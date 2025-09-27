@@ -1,151 +1,126 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f46.google.com (mail-ed1-f46.google.com [209.85.208.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4602417C91;
-	Fri, 26 Sep 2025 14:42:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 628D122F74D
+	for <iommu@lists.linux.dev>; Sat, 27 Sep 2025 19:20:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758897765; cv=none; b=siBa6ONDeRs3L8lgpBbeKFK7VRPEqxIhgXw6ExECNuQpxsvmAgLJWy3oiqQTMMLgJ10IgH96pgAF2sk4LsSKk9vPDn/MmXWfP1iI6bpxzMFM81DLQj29oZ2YHvcyq4MnQ1O1+UK0O5Gk+IjX5Jhsru5pL/n+LZYOQigRBPNgio0=
+	t=1759000830; cv=none; b=iHXVTNke54Z/bdUJcAUxKVMYj1Usae6Nuj68X6EyHr46g7PD1uyhrFcPSahIUzCQkvEGRdB8YGcR+VGiDT+Nvzgdt/kai4sFWVmodhtC06auariKPGjjIKSJC/fA5Oe3zxBaeIPccWY/X9lktoLF12no/vfd1yvfMwwgaanVS8c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758897765; c=relaxed/simple;
-	bh=D26fU8PCfxAV2/rnQjd/+ukqL80rtYmpOmBeDcURakU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=GIHgbEGG5+md3sziqtGB5CCQeyKWFrwb0unGEen6U4RPUYy6X4GlcQBA9gGMMqW83Kx2vFyOUHG/XJA/wO0dVcrMQ+LLPgo6wtNc9Efoz7stHzkdZNZwCF1Ay24dICKpR7UkWTvUtD8dwoAj6wIkQk9TZRqoMjT5JsGR0jnxZ30=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SOBkDd+m; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1759000830; c=relaxed/simple;
+	bh=yoeBWfsz0Rxzfbgk6BToAOC/vOnboIpPuqC1fyVrHZ8=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=jWtWuK690bAWFh8DOIVPUcK8Gqs7Ysdv/Onm+ufl2QAVy+UkFGnQzSgqqWkwkfQ8DNbTxefKHjiShfkMxDmYkMsM3/xuxDM40kA5T+XqfMtt5XOjen0wDsxl2FyaamJb0hUPpDGdiPPtwosZ1SuJGMhFo9ADk+16aF0REhe7WOQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=k9nLzb8u; arc=none smtp.client-ip=209.85.208.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SOBkDd+m"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1A95C4CEF4;
-	Fri, 26 Sep 2025 14:42:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1758897765;
-	bh=D26fU8PCfxAV2/rnQjd/+ukqL80rtYmpOmBeDcURakU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=SOBkDd+m3dNQt1II5PGGLkUa7XfDE4ac7m3+mnYzvGRcMKbDpj1Y7JR+uCrSaXcAs
-	 5uhobDRfp0TxbVkMdULO5Y2CroiqzNQLPUpfQwCuIo78i8+f5gVz1kJj/6gMt10ulU
-	 cSE3nzWUpsLu1MV2xE/SVZfSxNmLpl0AeF9uSGWJoQYaWjhl6iTjIc/mfllfS3Ul2T
-	 md9MT5kiqH8D8SmS4A7jm3EXcwhokB83yutLXIWqdALZnjIhgZ9RGHsajz6iBD/6l/
-	 YtOeoHBzpKld5CKahk+tXaQ5RtPeF7siu19N8v3C6mNy++qqduAC7JNpMov4ElJNNo
-	 G8HcM0SQZsjgQ==
-Date: Fri, 26 Sep 2025 15:42:38 +0100
-From: Will Deacon <will@kernel.org>
-To: Mostafa Saleh <smostafa@google.com>
-Cc: linux-kernel@vger.kernel.org, kvmarm@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	maz@kernel.org, oliver.upton@linux.dev, joey.gouly@arm.com,
-	suzuki.poulose@arm.com, yuzenghui@huawei.com,
-	catalin.marinas@arm.com, robin.murphy@arm.com,
-	jean-philippe@linaro.org, qperret@google.com, tabba@google.com,
-	jgg@ziepe.ca, mark.rutland@arm.com, praan@google.com
-Subject: Re: [PATCH v4 10/28] KVM: arm64: iommu: Shadow host stage-2 page
- table
-Message-ID: <aNamXlTErXDs1K8Z@willie-the-truck>
-References: <20250819215156.2494305-1-smostafa@google.com>
- <20250819215156.2494305-11-smostafa@google.com>
- <aMA8vz0v0Vn-02QP@willie-the-truck>
- <aMlzLsj5slPQhWEr@google.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="k9nLzb8u"
+Received: by mail-ed1-f46.google.com with SMTP id 4fb4d7f45d1cf-63486ff378cso6468614a12.0
+        for <iommu@lists.linux.dev>; Sat, 27 Sep 2025 12:20:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1759000827; x=1759605627; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=BpNpqT8E7PV/s4bEDWlZ98/qvJvoxkZccIvsTmWeJBY=;
+        b=k9nLzb8uBtd2WTBCT8JVDS6nuyfeFR6a3C3WmkkxceeCLNvDgiRGvdLsXVHWfrLOOD
+         NPTMQayHZtsMe4c1IjLNRfXQH3OFUxWsEYxsMu14jAyXhbjHeSoPyEuEM2WiHxc3gU2q
+         8KxmwUnRV+LKsza4t2kIoqVHHqTqS3bR64a+tuqq0kwjYMdgQ9CQGjdYdEu3TjMYaqKY
+         204w7d7U+dpEnirUeKpLO+3so+xPfYhik3bIU70/9j1k6jwOP8e7g8IVMQG414i4VKcj
+         TVkdBds7GKbJl1SxUKDgN7sf5yqY2BXzX5b64N+Wc5W90aT8fgHbNkdLJcggalK7Np+c
+         a8uA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1759000827; x=1759605627;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=BpNpqT8E7PV/s4bEDWlZ98/qvJvoxkZccIvsTmWeJBY=;
+        b=b9Ib830ePTuKQcfOx/6abLk9zbXkNYSkhspjkf03foX3pVTNWiKdkcipsWmpGoEgEv
+         GBtGBFNDGphPynWilEFDOlKPceguqQYxOu6ssdj+xZz3RBPRi+XYP7kivNkjGNVglw+1
+         mjjR87+nib2Q44b0FikQYrNqlM492shigmdvAyWdIYrIdG62Eph2Z+Nd9AB/jVYWYft1
+         JWZdxjfgjrvjVRR9q+KzQG0Z3J/I2GNaJGyUTtC3PKCy4+yoRQ5KJe6JOTcKzRYZUvFN
+         lL8uNpEYZTp5bTktVqEWVquS4xQvU9eNOuwMz3562c27JyPqnrGD0xpRHvvpKpeMr0ig
+         jesg==
+X-Forwarded-Encrypted: i=1; AJvYcCXTEYMqMGzP6DhgHY5Z3g+2hYKRxSh0zSMjhyrY9XvwmbAUwzJOe0xR6b9rzQgM5iGHrM//HQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yzh5fXkh+CI887C/NjW2mO6UwBE+9ceQlm767vVpXb6EhMjdWs4
+	VpVRop0KxslUClyu4eXGjwuv6HoB/epdpQsZ6lRmnRZ6OLZ4HsiD6Rj5g2h8daijxm7tGPTkGXc
+	ZoVoWdGRcNmnc2Oaj13daOtfl4G4GIlc=
+X-Gm-Gg: ASbGncsqC5SP1/Xv/+EgToSrUpDMTNKYMAYUv36gs0ZFyCgyVPNXlfJgKnBw/PsWTdN
+	cLHC1mPGaezk/xuXMu8lCt+o1PYv0eHmW8jQy2fPyTw4HPgsi6xLINeC4lWkO7pBYk/SIkCgsFF
+	KPb61/We8JdvcLfx4l6VGRsE3sQ3iMJ3kzPDiqkOOnAcj5m0aR85rpWWlI8KjbET+dKeMqabaTc
+	/iqiic3nl4HY7nAjyo=
+X-Google-Smtp-Source: AGHT+IE6MMpG/TRiFXxnrxz1Vvo3fuH5ytNgtdVEgpXL0NxXawEVfUDFtb+tMcdRPN344hi95Su67MTI32H6Ub9xTJM=
+X-Received: by 2002:a17:907:7b8b:b0:b3c:5f99:dac7 with SMTP id
+ a640c23a62f3a-b3c5fa9674amr74488566b.21.1759000826450; Sat, 27 Sep 2025
+ 12:20:26 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <aMlzLsj5slPQhWEr@google.com>
+References: <cover.1758219786.git.leon@kernel.org> <0c64474985af55b1aa934b857808068a0e609c6e.1758219787.git.leon@kernel.org>
+ <CA+=Fv5Q8dVUFVBh82mAe=fy3mV6mWtQT_0pBPLQwLNBt3f8E1g@mail.gmail.com>
+ <20250923171819.GM10800@unreal> <CA+=Fv5SJcQ5C4UeX2+deV9mPAe5QxrocMG8EJ2eVcYjbLE5U+A@mail.gmail.com>
+ <20250923235318.GD2617119@nvidia.com> <CA+=Fv5Tg7sQACpeG8aMZF6_E6dbRnN5ifg0aiHityXadxiHoPA@mail.gmail.com>
+In-Reply-To: <CA+=Fv5Tg7sQACpeG8aMZF6_E6dbRnN5ifg0aiHityXadxiHoPA@mail.gmail.com>
+From: Magnus Lindholm <linmag7@gmail.com>
+Date: Sat, 27 Sep 2025 21:20:15 +0200
+X-Gm-Features: AS18NWCUkmopfgQP7FxvlAuimXjc1tmQlQb-89CTajXeb-5Nlye2dR2BnBQqzEg
+Message-ID: <CA+=Fv5Sze_BNmHqzypmCh8p2JO6gytXH4E6hXv3gZdfoSJsMUQ@mail.gmail.com>
+Subject: Re: [PATCH 1/9] alpha: Convert mapping routine to rely on physical address
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Leon Romanovsky <leon@kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>, 
+	Andreas Larsson <andreas@gaisler.com>, Borislav Petkov <bp@alien8.de>, 
+	Dave Hansen <dave.hansen@linux.intel.com>, "David S. Miller" <davem@davemloft.net>, 
+	Geoff Levand <geoff@infradead.org>, Helge Deller <deller@gmx.de>, Ingo Molnar <mingo@redhat.com>, 
+	iommu@lists.linux.dev, 
+	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Jason Wang <jasowang@redhat.com>, 
+	Juergen Gross <jgross@suse.com>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, 
+	linuxppc-dev@lists.ozlabs.org, Madhavan Srinivasan <maddy@linux.ibm.com>, 
+	Matt Turner <mattst88@gmail.com>, Michael Ellerman <mpe@ellerman.id.au>, 
+	"Michael S. Tsirkin" <mst@redhat.com>, Richard Henderson <richard.henderson@linaro.org>, 
+	sparclinux@vger.kernel.org, Stefano Stabellini <sstabellini@kernel.org>, 
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Thomas Gleixner <tglx@linutronix.de>, 
+	virtualization@lists.linux.dev, x86@kernel.org, 
+	xen-devel@lists.xenproject.org
+Content-Type: text/plain; charset="UTF-8"
 
-On Tue, Sep 16, 2025 at 02:24:46PM +0000, Mostafa Saleh wrote:
-> On Tue, Sep 09, 2025 at 03:42:07PM +0100, Will Deacon wrote:
-> > On Tue, Aug 19, 2025 at 09:51:38PM +0000, Mostafa Saleh wrote:
-> > > diff --git a/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c b/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
-> > > index a01c036c55be..f7d1c8feb358 100644
-> > > --- a/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
-> > > +++ b/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
-> > > @@ -4,15 +4,94 @@
-> > >   *
-> > >   * Copyright (C) 2022 Linaro Ltd.
-> > >   */
-> > > +#include <linux/iommu.h>
-> > > +
-> > >  #include <nvhe/iommu.h>
-> > > +#include <nvhe/mem_protect.h>
-> > > +#include <nvhe/spinlock.h>
-> > >  
-> > >  /* Only one set of ops supported */
-> > >  struct kvm_iommu_ops *kvm_iommu_ops;
-> > >  
-> > > +/* Protected by host_mmu.lock */
-> > > +static bool kvm_idmap_initialized;
-> > > +
-> > > +static inline int pkvm_to_iommu_prot(enum kvm_pgtable_prot prot)
-> > > +{
-> > > +	int iommu_prot = 0;
-> > > +
-> > > +	if (prot & KVM_PGTABLE_PROT_R)
-> > > +		iommu_prot |= IOMMU_READ;
-> > > +	if (prot & KVM_PGTABLE_PROT_W)
-> > > +		iommu_prot |= IOMMU_WRITE;
-> > > +	if (prot == PKVM_HOST_MMIO_PROT)
-> > > +		iommu_prot |= IOMMU_MMIO;
-> > 
-> > This looks a little odd to me.
-> > 
-> > On the CPU side, the only different between PKVM_HOST_MEM_PROT and
-> > PKVM_HOST_MMIO_PROT is that the former has execute permission. Both are
-> > mapped as cacheable at stage-2 because it's the job of the host to set
-> > the more restrictive memory type at stage-1.
-> > 
-> > Carrying that over to the SMMU would suggest that we don't care about
-> > IOMMU_MMIO at stage-2 at all, so why do we need to set it here?
-> 
-> Unlike the CPU, the host can set the SMMU to bypass, in that case the
-> hypervisor will attach its stage-2 with no stage-1 configured. So,
-> stage-2 must have the correct attrs for MMIO.
+> > Suggest testing the same branch with the alpha patch reverted just to
+> > rule out any issue in the core code. If it reproduces suggest to
+> > bisect Leon's branch.
 
-I'm not sure about that.
+Hi again, I've booted up the ES40 again with the kernel build from Leons
+branch, it boots up but message log is full off messages like
+"EXT4-fs error (device sda4): ext4_find_extent:939: inode
+#16257327: comm init: pblk 65114257 bad header/extent:
+invalid magic"
 
-If the SMMU is in stage-1 bypass, we still have the incoming memory
-attributes from the transaction (modulo MTCFG which we shouldn't be
-setting) and they should combine with the stage-2 attributes in roughly
-the same way as the CPU, no?
+The filesystem is broken after just booting with the kernel.
+This time fsck did not fix it, I needed to re-install gentoo stage3.
+So it's for sure reproducible as well as destructive.  It's not possible to
+revert all the commits individually, since this will leave the source tree
+in a state where the kernel doesn't build. I've started off by reverting
+the following commits:
 
-> > > +static int __snapshot_host_stage2(const struct kvm_pgtable_visit_ctx *ctx,
-> > > +				  enum kvm_pgtable_walk_flags visit)
-> > > +{
-> > > +	u64 start = ctx->addr;
-> > > +	kvm_pte_t pte = *ctx->ptep;
-> > > +	u32 level = ctx->level;
-> > > +	u64 end = start + kvm_granule_size(level);
-> > > +	int prot =  IOMMU_READ | IOMMU_WRITE;
-> > > +
-> > > +	/* Keep unmapped. */
-> > > +	if (pte && !kvm_pte_valid(pte))
-> > > +		return 0;
-> > > +
-> > > +	if (kvm_pte_valid(pte))
-> > > +		prot = pkvm_to_iommu_prot(kvm_pgtable_stage2_pte_prot(pte));
-> > > +	else if (!addr_is_memory(start))
-> > > +		prot |= IOMMU_MMIO;
-> > 
-> > Why do we need to map MMIO regions pro-actively here? I'd have thought
-> > we could just do:
-> > 
-> > 	if (!kvm_pte_valid(pte))
-> > 		return 0;
-> > 
-> > 	prot = pkvm_to_iommu_prot(kvm_pgtable_stage2_pte_prot(pte);
-> > 	kvm_iommu_ops->host_stage2_idmap(start, end, prot);
-> > 	return 0;
-> > 
-> > but I think that IOMMU_MMIO is throwing me again...
-> 
-> We have to map everything pro-actively as we don’t handle page faults
-> in the SMMUv3 driver.
-> This would be a future work where the CPU stage-2 page table is shared with
-> the SMMUv3.
+e78a9d72517a88faa6f16dab4d1c6f966ed378ae
+(dma-mapping: remove unused map_page callback)
 
-Ah yes, I'd forgotten about that.
+d459e3b80ad1c81bf596d63d2e3347cf8c7bb0d9
+(alpha: Convert mapping routine to rely on physical address)
 
-Thanks,
+3cd47242d513050d7a81ac6e7020fd3ef5462ad4
+(block-dma: properly take MMIO path)
 
-Will
+7950995bef32aa7e5f74699c7d0fdac41d2dad14
+ (block-dma: migrate to dma_map_phys instead of map_page)
+
+
+After reverting the above commits, I'm able to build a working kernel,
+that is, no filesystem corruption occurs. I'll take a closer look at this
+after the weekend.
+
+Regards
+
+Magnus
