@@ -1,120 +1,119 @@
-Received: from mail-pl1-f201.google.com (mail-pl1-f201.google.com [209.85.214.201])
+Received: from mail-pf1-f180.google.com (mail-pf1-f180.google.com [209.85.210.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD01923A9AD
-	for <iommu@lists.linux.dev>; Sat, 27 Sep 2025 22:40:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81305283C93
+	for <iommu@lists.linux.dev>; Sun, 28 Sep 2025 05:37:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759012815; cv=none; b=H/SvJ5ilMouAblju542FyTvnddM89mfk36OMp861nrJb4j4yFrYcAYEfQIu26hcIAPE8Mu3iAPCNrnAKh6jwAFi+oUpbsWZZwWXKxg7dfKmvynknFnKGenUvlXFuQwY6j3SB23Yi+OJNRvBwEiV4266seEX182iNgUNRiyNFeLc=
+	t=1759037857; cv=none; b=plok37aLdHA4FLmni95Ir0qaC5E718GiPnHW1FmMDRhBAtwTnelcDaMNE5JNjvIQSdo2ZqbJdELMQ/n05RILb/BnSblU40xYtUIastJ1JNO7NZ7YrcG6fSHb8gCSVcK5xhOT35drCUYLzHAEOso1Ejx3GNTHBCiDy4qblzqywjA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759012815; c=relaxed/simple;
-	bh=b/oNVW2/yDoFBqwXnNKcqDo98sE8Dwz/kzjEHnPaqLI=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=jVgixzyLEze93eVM8dKyrLbMEV4fnD/eAnBoL5d93t4JxbUdOX48eUaWL0i++4n7hbD+YcHmdWIG1v52D6+ARaOqK/rpxY+97REJIvhN+GIeSupCRpex5tYtCs3uWpT/FZa/cs9Vf0f35P9Y35rBfppXDfK+BZTqs8oZQoRvN2o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--danielmentz.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=L7NwgZsi; arc=none smtp.client-ip=209.85.214.201
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--danielmentz.bounces.google.com
+	s=arc-20240116; t=1759037857; c=relaxed/simple;
+	bh=7bjA7esbKLfbNKm7N0blWR/6LMLQp5Zm2JjhopbxQdQ=;
+	h=From:To:Cc:Subject:Date:Message-Id; b=oWkPI9bs0lo89vllr70TfTzGDom1J4tGEJqtDH3XYAf3sgogy22TljCKyoMq1uookgu/gPh0Hnrtq7zf7C5ig/WqIAPXz74pYmMWYW389N7EXk2u9gmIma0CIk34Pl/934R4EEAs2Hx68CJR3CU9WGtYcMXLt9wWzbmpSN8tJCM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=czGH1nmU; arc=none smtp.client-ip=209.85.210.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="L7NwgZsi"
-Received: by mail-pl1-f201.google.com with SMTP id d9443c01a7336-244581ce13aso58288525ad.2
-        for <iommu@lists.linux.dev>; Sat, 27 Sep 2025 15:40:13 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="czGH1nmU"
+Received: by mail-pf1-f180.google.com with SMTP id d2e1a72fcca58-7811a02316bso1450900b3a.3
+        for <iommu@lists.linux.dev>; Sat, 27 Sep 2025 22:37:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1759012813; x=1759617613; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=4Q4ctgw3TCRfxdQOeE/B58PrVob15spvvnivVaYg/9A=;
-        b=L7NwgZsiTajsxJYzxP5Fq/sIYNQuXJ3n2vi7KVGRi8zDP8BHRsaXUEiLxsfehu3Gu9
-         HS/6LFyxUPDrf+8nheHUTi3nZ/il3xi7Xq+H9lMDhdDeGdNc8mcSTJ5tK/yqedNQ7T91
-         93GJMLilhuqX1ScKAvXzbj7nqZrvAKFz4i+JtYP56Uxtd5NH8srCyw34Nwbc5XMQP1Tw
-         fmQ1hGZvWCeHCOdCKBbvOmpV8wtGRMXuQxcrXvJcENPsexoR0MniewmSGL+Qa5JDsS4h
-         UrWrqSoktQ4/WOpJDFcJ1PLZh0becJh9rAEnCRZ3jT7h55QLmuRBBlLIQ2eeydTjJvgm
-         1zEQ==
+        d=bytedance.com; s=google; t=1759037855; x=1759642655; darn=lists.linux.dev;
+        h=message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=jbNj4M1kQE90OhLGOYogUCLDjUCje1Z07F5N02X50EY=;
+        b=czGH1nmUr22xYavdy0a+pLPOpHoG+KwX8KfDFTIXpHid9E/J+ojzyLoeNREIthMGh6
+         g0fCMghXWEEIJFEkC+PyXXHyQfiZplscfsuMU0rEniE+51if0/tWunc7Up53FkST2QvT
+         kEt3FAbwWowtJYTpmrz9X72TyS/tpvwrdUnJfNxGA4b864a6OEbzGbhtyI35hz/V6H33
+         RGPPUCdOC/zc7MdrQMmw6e1x7EnAuloH0zXcB1cHOCl9F997Pd3h9MT0hImzbnMuOFZX
+         jUbUeVREWxInVGrU8ElGQyfOBEe8c7UW//NwQ7BvIu/csKS9lFm2YK5ChG4yY7iZPPHd
+         gFmw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1759012813; x=1759617613;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=4Q4ctgw3TCRfxdQOeE/B58PrVob15spvvnivVaYg/9A=;
-        b=vEF6ZCH66Mob4emo3M95Jvi2s3zpupAqPRTopo52/BcvEBDqGiAkd0+conBZP295xE
-         pcMCR1K615p2o9PHY9fOM4RYmHU1koweXlmxIxO0AZSltwPF2pJeRQ5ONhWA3UDMNwfh
-         crLM4mgMIGdJC0y9IirHj4ppNHpq4hLYy7G1AjO3A4hkePlH+ia2QLFOiOLEhijdD+iA
-         BPQYneS/oFlQW4jEN9IiEjzKF2+B8WHrIymo+ek7FpeWj9oxaGc9BJxDOT0rLDIcCmSj
-         sbLNVca+AQv1heTtQZSVyVSm0gm4Pet9igHESAgwh76RqB4FpIw11Tr398po14ZvKnJO
-         ct/g==
-X-Gm-Message-State: AOJu0YxIv/PFNUlD19klbt9c08ttbIa/rPF8yM8ijjsKzPYHS8v109d1
-	mL2B7wy/LBkc/tUYZ/1JETzsd+TXx+r6wr4AZr0Py1ssD7TLUuzfpoBumiG+5ArK4uuixJleG0K
-	uJbWdCMaWPGDimc9O+4e0S5BK07Pf5GVDBfuB/qvudM+6CjSTuGo5HxjNRTw5wCXGZbFgIoPU3i
-	7Haevd8iWUlnEz6+dPqsi7ddyEfK6ixAEEZrwWW1E8GafIKQVP7AO0InB/orccRg==
-X-Google-Smtp-Source: AGHT+IGYiMn3jieoglt5EaDwtTABS1lQ7XOYjstaJzvmaH1fcBe9vU372TzFLpDxOPfBcxSuOS8Twkd59UTtaIkCkg==
-X-Received: from plau15.prod.google.com ([2002:a17:903:304f:b0:26a:e046:7605])
- (user=danielmentz job=prod-delivery.src-stubby-dispatcher) by
- 2002:a17:902:e946:b0:269:6052:3536 with SMTP id d9443c01a7336-27ed4a4937dmr133470415ad.45.1759012812970;
- Sat, 27 Sep 2025 15:40:12 -0700 (PDT)
-Date: Sat, 27 Sep 2025 22:39:53 +0000
-In-Reply-To: <20250927223953.936562-1-danielmentz@google.com>
+        d=1e100.net; s=20230601; t=1759037855; x=1759642655;
+        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=jbNj4M1kQE90OhLGOYogUCLDjUCje1Z07F5N02X50EY=;
+        b=pHyJekVwbSMxHMuZRnPLLWr483tyMcwh2g1jr0qPQ8af9QEXHQQH3W+oSKO/4oLKps
+         tdPr3hAlQoIZRYuepSYfdXTZiuBY6OPu1lEIGTXgeVQLw0z047YH3VEBYvY9bYkPWCMo
+         eYgr+q7DVIvajgnxHN7KDON9GX02VjN/P4bFfNGRG5DmBXWbAUKtO2THc6E0Q1xzP3xx
+         dSMSfYU0axoHXfd8sCPUqtYNMTDpzP6hJjz5J4wjCh46Xzo6Wefk7hCLy643LN39xy3L
+         SkiKzAi/RM2I69taylQUdoT4KepfuMIu7FjiOPQQ8jkcHJXI6N3/5uzyYTWRlvOvatdk
+         LlFQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVUPZcScx+C5S0V4O9ZZpO/OjvJH2K0/zeJYenYN7uyc95LkibvOoQm1eLzepElueHXinOYdw==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yyb7UksvVMiDTWd1y6Kd5HQBRpMtnFXrfAvy0y2xRZUh1ZQQb8n
+	sOVX4AmxA4SIYHOvgWTFi4WAjl279iOxgPBWpy9DFoJlQPKLmPGz2UzgsyU7ikVHIVA=
+X-Gm-Gg: ASbGncu7dNfNDHH4BM0jFjPpCdxQH3O5SG4Y1buQg/BRU4l6ySM9V7cv3NVvsGjXfqD
+	RJNuU7RslX0X+rkw2xZBTrzP3NCtqXz7nDpzCBdBnlz5WT/M3NDfSviEEBqv1MunVVr1XxPF78f
+	/dY31fy64CXvkWcArYMQ03DbASdTjaFuPIav7BgQm2KGjYVA7qXjkL1oZKxpQdR2E0ynSZY3xJb
+	SCgkKuPj/VfTP2I7ODUWldcSRSMgatAw+Brb0nyLIfWd33rhiRK54YWTGfLhuGd4iyiBQlo8I8n
+	88Z8y+v4vTbgFHdDyWgaZ76Ub1O2DtiKzEaoTvVavgTDOSyJBZu/E3z5QGMbtn+oJYdUopLFtTm
+	DvcQunrQPQws7z+KdrFly4/mLTXa55PQveVDMDvpzsC1pB0GyduaqW95x
+X-Google-Smtp-Source: AGHT+IGvLznIbL3Jv9TOfO8LsnXAXyMlehxo0ixhNotX4Er9QmV93PBHdrinkAV7m1NE6PfRgvb82g==
+X-Received: by 2002:a05:6a20:3c8e:b0:2ff:3752:8377 with SMTP id adf61e73a8af0-2ff3761c70amr4968168637.59.1759037854607;
+        Sat, 27 Sep 2025 22:37:34 -0700 (PDT)
+Received: from 5CG3510V44-KVS.bytedance.net ([203.208.189.11])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-78102c27d3esm8144214b3a.97.2025.09.27.22.37.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 27 Sep 2025 22:37:34 -0700 (PDT)
+From: Jinhui Guo <guojinhui.liam@bytedance.com>
+To: joro@8bytes.org,
+	suravee.suthikulpanit@amd.com
+Cc: guojinhui.liam@bytedance.com,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org
+Subject: [PATCH] iommu/amd: Fix pci_segment memleak in alloc_pci_segment()
+Date: Sun, 28 Sep 2025 13:36:57 +0800
+Message-Id: <20250928053657.1205-1-guojinhui.liam@bytedance.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20250927223953.936562-1-danielmentz@google.com>
-X-Mailer: git-send-email 2.51.0.570.gb178f27e6d-goog
-Message-ID: <20250927223953.936562-2-danielmentz@google.com>
-Subject: [PATCH 2/2] drivers/arm-smmu-v3: Implement .iotlb_sync_map callback
-From: Daniel Mentz <danielmentz@google.com>
-To: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Cc: Will Deacon <will@kernel.org>, Mostafa Saleh <smostafa@google.com>, 
-	Pranjal Shrivastava <praan@google.com>, Liviu Dudau <liviu.dudau@arm.com>, Jason Gunthorpe <jgg@nvidia.com>, 
-	Rob Clark <robin.clark@oss.qualcomm.com>, Daniel Mentz <danielmentz@google.com>
-Content-Type: text/plain; charset="UTF-8"
 
-Implement .iotlb_sync_map callback based on the new callback in the
-io-pgtable code.
+Fix a memory leak of struct amd_iommu_pci_segment in alloc_pci_segment()
+when system memory (or contiguous memory) is insufficient.
 
-Signed-off-by: Daniel Mentz <danielmentz@google.com>
+Fixes: 04230c119930 ("iommu/amd: Introduce per PCI segment device table")
+Fixes: eda797a27795 ("iommu/amd: Introduce per PCI segment rlookup table")
+Fixes: 99fc4ac3d297 ("iommu/amd: Introduce per PCI segment alias_table")
+Cc: stable@vger.kernel.org
+Signed-off-by: Jinhui Guo <guojinhui.liam@bytedance.com>
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ drivers/iommu/amd/init.c | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 2a8b46b948f0..0ffcc6c8e4bf 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -2541,6 +2541,7 @@ static int arm_smmu_domain_finalise(struct arm_smmu_domain *smmu_domain,
- 	pgtbl_cfg = (struct io_pgtable_cfg) {
- 		.pgsize_bitmap	= smmu->pgsize_bitmap,
- 		.coherent_walk	= smmu->features & ARM_SMMU_FEAT_COHERENCY,
-+		.defer_sync_pte	= true,
- 		.tlb		= &arm_smmu_flush_ops,
- 		.iommu_dev	= smmu->dev,
- 	};
-@@ -3366,6 +3367,18 @@ static int arm_smmu_map_pages(struct iommu_domain *domain, unsigned long iova,
- 	return ops->map_pages(ops, iova, paddr, pgsize, pgcount, prot, gfp, mapped);
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index ba9e582a8bbe..77afd5884984 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -1608,13 +1608,22 @@ static struct amd_iommu_pci_seg *__init alloc_pci_segment(u16 id,
+ 	list_add_tail(&pci_seg->list, &amd_iommu_pci_seg_list);
+ 
+ 	if (alloc_dev_table(pci_seg))
+-		return NULL;
++		goto err_free_pci_seg;
+ 	if (alloc_alias_table(pci_seg))
+-		return NULL;
++		goto err_free_dev_table;
+ 	if (alloc_rlookup_table(pci_seg))
+-		return NULL;
++		goto err_free_alias_table;
+ 
+ 	return pci_seg;
++
++err_free_alias_table:
++	free_alias_table(pci_seg);
++err_free_dev_table:
++	free_dev_table(pci_seg);
++err_free_pci_seg:
++	list_del(&pci_seg->list);
++	kfree(pci_seg);
++	return NULL;
  }
  
-+static int arm_smmu_iotlb_sync_map(struct iommu_domain *domain,
-+				    unsigned long iova, size_t size)
-+{
-+	struct io_pgtable_ops *ops = to_smmu_domain(domain)->pgtbl_ops;
-+
-+	if (!ops || !ops->iotlb_sync_map)
-+		return 0;
-+
-+	ops->iotlb_sync_map(ops, iova, size);
-+	return 0;
-+}
-+
- static size_t arm_smmu_unmap_pages(struct iommu_domain *domain, unsigned long iova,
- 				   size_t pgsize, size_t pgcount,
- 				   struct iommu_iotlb_gather *gather)
-@@ -3700,6 +3713,7 @@ static const struct iommu_ops arm_smmu_ops = {
- 		.map_pages		= arm_smmu_map_pages,
- 		.unmap_pages		= arm_smmu_unmap_pages,
- 		.flush_iotlb_all	= arm_smmu_flush_iotlb_all,
-+		.iotlb_sync_map		= arm_smmu_iotlb_sync_map,
- 		.iotlb_sync		= arm_smmu_iotlb_sync,
- 		.iova_to_phys		= arm_smmu_iova_to_phys,
- 		.free			= arm_smmu_domain_free_paging,
+ static struct amd_iommu_pci_seg *__init get_pci_segment(u16 id,
 -- 
-2.51.0.570.gb178f27e6d-goog
+2.20.1
 
