@@ -1,55 +1,55 @@
-Received: from mail-pl1-f202.google.com (mail-pl1-f202.google.com [209.85.214.202])
+Received: from mail-pf1-f202.google.com (mail-pf1-f202.google.com [209.85.210.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75BFF25A62E
-	for <iommu@lists.linux.dev>; Sun, 28 Sep 2025 19:07:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.202
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2011725C81F
+	for <iommu@lists.linux.dev>; Sun, 28 Sep 2025 19:07:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.202
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759086465; cv=none; b=lhmcmYAMGhC/9wLYQHsCXmcr6SyKwpJ01ChEqDOpOI7touA1dBcebU7vwiKbp45lcwW1Y9KfdbrnEVj3eZbK8IHJVleUYl5IAozaBY1gU6Cu2eimR3a0fVM1ckP0oxeFQZ5jL3fatSFjQjnnWXFlefXFcObSl5nbOvHG+RGEKoM=
+	t=1759086466; cv=none; b=beFGdNXtJ07Jrm4bIFdC/sJpZexOkFvn9QQ9PVhGIL1ed7zOPNpJyPpyGhyKiDRe8Fb6GmNaeHel2gZRaTJuVvbWh6iPQ0hhG96L1jph6hUPnhDZ0Tneyx9Yc1t+kJO1p1EPWlWWP20CvR6SdnuHX+jw07miCVvOkFHRznEo5Cg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759086465; c=relaxed/simple;
-	bh=K5fHpHWFykCx8GSNl+bRBubKB+z9YJLFyN3qkeQz+gs=;
+	s=arc-20240116; t=1759086466; c=relaxed/simple;
+	bh=TwkDwodBUCdAT08Dx1368hcmJsMEk9iOzMuO3YTeHgw=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=B5mST3ipSnkLfgA4gZkPlGsyC2DTT5bC3fT+nOaVSkblyjd08x9aMBuUFPEdwDEHvdHvFjss+Tsl47a24QcZm9lRwWaH0+16b2/bHDnHRxW1XgVLKuzOyycPuXyM9Q+NC4Yxf8KYWBdfFns7cdBmrcV+Lg2WKk/xsWuh9ioT3lI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=nRnGnNNq; arc=none smtp.client-ip=209.85.214.202
+	 To:Cc:Content-Type; b=pgFpJtv0kzmh7Xg5wgbgJCXYl5aLXY+/SJNCIYtcLyI1QuPNYwlIKAjWv3xH+kxPF1+UXKX+V6MbhPDR87t8gC8tFuE7wt5LoSHi11nPbuk3xU4LrJ5qWMWj1mfe58h1o1gSOpu+Xz3g6rCuHN+GqA4ODv1pzu0o1hpdJbdygwU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=sr7i81qu; arc=none smtp.client-ip=209.85.210.202
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="nRnGnNNq"
-Received: by mail-pl1-f202.google.com with SMTP id d9443c01a7336-244582bc5e4so42916905ad.2
-        for <iommu@lists.linux.dev>; Sun, 28 Sep 2025 12:07:43 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="sr7i81qu"
+Received: by mail-pf1-f202.google.com with SMTP id d2e1a72fcca58-7810912fc31so3027594b3a.3
+        for <iommu@lists.linux.dev>; Sun, 28 Sep 2025 12:07:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1759086463; x=1759691263; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1759086464; x=1759691264; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=uCuO86qV7dZm/aG2Dppf5kSqYkYatsl7iuzcTQdCTDQ=;
-        b=nRnGnNNq+RB8WOhxnsoosMeNWK/PcEGMU8U/Ng77JjNjRw6axeXHPFE2NdCc0NkvZM
-         kN/Twvom+GmmEm2xQSaOPD6p8WEn0Lt+c89KkOf607qVXf37jqsfxs/Da5KqTPkpoZdK
-         CuDka6kncqQD0HmZ9hfOSzpTMBbG3n8lo7pA6fQoQ6B051oYriUbNdwk3cHMWonYDuJ+
-         ga8GmRkkMJ8zxiPwlSOOg6mGb7OgdkJcxvPVxFw3sSu9TOO8nvpeDFLlYKvMUV69PalH
-         KhuOrVNWM5q6r9r15IOnBxji6EhaRpiHDBXO3xEYp7f8MsFNoxnoWVJ1Pu7Dx38nUxeU
-         9pdQ==
+        bh=IKcQOPAuV/AfXb11Bbc+ExvF6Mw54uI2kbWY/7dTIhc=;
+        b=sr7i81quzx9d5Yt6xdVCGakRn5WIdUMUvBkm3f1/uUIGK95rHfJ0JxOsN76090hZli
+         mfaaDsBWZ96qGwSb8/lYuy5EYL/fS+gbZe0phhG9j3udOe+B1Sl17/gqUQPHyTyCjYbv
+         Kz0Wep3YUg0mmWHCig07b3CLseSvBlh8FBORYnX+h8YxCMpt5uzU/qWDuSu76DqmZrBd
+         Xx8OBPeB/FyqrpBSVli9B2Wkrk5pwWRIRkqWzACmttJFXViIQbOVu/JbbiPTsx0b0b3d
+         8rLDnMS/DnW3PtCt+o2nnntm3mxljD00cRhTbCpXOOOEHpKUeJpItVjqc0y9NBOBs337
+         nUYw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1759086463; x=1759691263;
+        d=1e100.net; s=20230601; t=1759086464; x=1759691264;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=uCuO86qV7dZm/aG2Dppf5kSqYkYatsl7iuzcTQdCTDQ=;
-        b=wI/Z6J8VtlHw/NjuTjI8XLWCdMmpJJaP/lHq7xjP4+z5p0BCD8rJUDghx7HiQpOmfr
-         OB75g5kok7A2yygsJnE+y/lEdgj/l5vXfdhWs7msdD1/k1eYL06pOZwjoGGQgxsy3DpE
-         ownhnz16jopCCl/uVIiJsrx7GKGjFRfQK0X9yBYdFbTIc5lxxZhUnVdBf77giawtnsrh
-         3rDY0QAWvE3n3C2T9ERB7nWyLgRSekUJ1/QJgdiNOcUiZaO7Qx5Gp/ZWR95XxNVnoROG
-         +1vzY7SiPv1rG/k9TSvHcsFJ2773ODkGhSJD6dUOrR/kGl7BeyufXj5BQr6DOgNN1rKb
-         I2Bw==
-X-Forwarded-Encrypted: i=1; AJvYcCW8AratArkIlI1huC3Rtgy7dLNAQO9t8WV3FDemIRA52xX2hHdyQT7eEz5fQdSN3XaEWSNR0w==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxbC7+UpsbmvDRYlmZeG4XisFsjqMe/u0rPyVGdmBp9Ee7WfFVn
-	Bq02DqmZ2bS7ozo/520aIMuaLwkVRk8KPwaJbcPFGLNXdccpAQbt8BhQ8lI3zyIPJ2j8JRpVZTV
-	pxjiCuyfLetozVg==
-X-Google-Smtp-Source: AGHT+IGpJ49K/7HkT1GORRMDUMXXC7GDu2XGPfU5JdrnHAHFnDeqzWXWkVU/StxzhY59C7N/ChZl6seiFoS9WQ==
-X-Received: from pjbaz14.prod.google.com ([2002:a17:90b:28e:b0:32d:e264:a78e])
+        bh=IKcQOPAuV/AfXb11Bbc+ExvF6Mw54uI2kbWY/7dTIhc=;
+        b=Vh8pIn5EDyv2d4YtuKhFRFm64XGac8VMQge6QLAwPvz7NNZhpuie6jEHkH4wAyWBMQ
+         vzwklPaNxoO9LbXjnrFOMwOdMyDyzkgJ0WHgZQZ6xt3iQ5iUTmKHOcctCsTidk1eWDts
+         /U2BIJNH6JWCxw1uiHe/SXMpfRYQmRyWl4loWrWnM8Nm4F4B8NtGQPAs3a9UBf4+28IG
+         GfsqZlVMOArAp2TP5Y/kHWrFEwfQsNuME8buCw21cFzuQbJ2oMho584lJaXbjHt25IE2
+         K95YnLYMDejpjkWFXjPLIBd/3y+mHest9VXTAbRdpLYZK03c5qsRq+gS9LQVkxj4bntW
+         A92Q==
+X-Forwarded-Encrypted: i=1; AJvYcCXH22Pdd8j7ViQqS3I/bP1kGbBruVYtHIRQ4mRPP09jDU1baKxc+KzEznuj74/pAlVxOV1USg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwB3erKURNtvh/tjZ4g4A6PJYYqzktlS7qi6hmL/foNOlX/2n5P
+	VRH3rjhXHmm9Jp4flObX3rATDLwCB0QYrToNzJDy4zO5hrND7YdZvZlsb4MTgUGqwUuqcMaHAls
+	P/ky/b2KBuZYs1g==
+X-Google-Smtp-Source: AGHT+IHDYriJ2CM6vbXXafroWapgFfQBlAXQ04VVe+gXkI/tWSYoUN/rx+IsvTB3qwxKgNIrgENnlZqvrAEbqw==
+X-Received: from pfwz13.prod.google.com ([2002:a05:6a00:1d8d:b0:781:2040:d72b])
  (user=skhawaja job=prod-delivery.src-stubby-dispatcher) by
- 2002:a17:902:d2d0:b0:25c:b6fb:778 with SMTP id d9443c01a7336-27ed49fbbd6mr146672005ad.14.1759086462824;
- Sun, 28 Sep 2025 12:07:42 -0700 (PDT)
-Date: Sun, 28 Sep 2025 19:06:09 +0000
+ 2002:a05:6a00:8cb:b0:77f:efd:829b with SMTP id d2e1a72fcca58-780fceba2ffmr14102660b3a.22.1759086464308;
+ Sun, 28 Sep 2025 12:07:44 -0700 (PDT)
+Date: Sun, 28 Sep 2025 19:06:10 +0000
 In-Reply-To: <20250928190624.3735830-1-skhawaja@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -59,8 +59,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20250928190624.3735830-1-skhawaja@google.com>
 X-Mailer: git-send-email 2.51.0.536.g15c5d4f767-goog
-Message-ID: <20250928190624.3735830-2-skhawaja@google.com>
-Subject: [RFC PATCH 01/15] iommu/vt-d: Register with Live Update Orchestrator
+Message-ID: <20250928190624.3735830-3-skhawaja@google.com>
+Subject: [RFC PATCH 02/15] iommu: Add rw_semaphore to serialize live update state
 From: Samiullah Khawaja <skhawaja@google.com>
 To: David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
 	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
@@ -73,97 +73,62 @@ Cc: Samiullah Khawaja <skhawaja@google.com>, Robin Murphy <robin.murphy@arm.com>
 	Chris Li <chrisl@kernel.org>, praan@google.com
 Content-Type: text/plain; charset="UTF-8"
 
-Register Intel IOMMU driver with live update orchestrator as subsystem.
-Add stub implementation of the prepare, cancel and finish callbacks.
+Introduce a rw_semaphore to protect the IOMMU live update state.
+
+When a live update operation (prepare, cancel, etc.) is in progress, the
+underlying state of the IOMMU subsystem (e.g., the set of active
+hardware units, the state of preserved domains) must not be changed by
+concurrent events.
+
+This semaphore acts as a subsystem-wide lock to serialize the LUO
+callbacks against any other code path that might modify this state,
+such as IOMMU hardware hotplug.
+
+The LUO callbacks take a write lock, as they modify the live update
+state. Other code paths should take a read lock to check if a live
+update is in progress.
 
 Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
 ---
- MAINTAINERS                      |  2 ++
- drivers/iommu/intel/Makefile     |  1 +
- drivers/iommu/intel/liveupdate.c | 45 ++++++++++++++++++++++++++++++++
- 3 files changed, 48 insertions(+)
- create mode 100644 drivers/iommu/intel/liveupdate.c
+ drivers/iommu/iommu.c | 4 ++++
+ include/linux/iommu.h | 9 +++++++++
+ 2 files changed, 13 insertions(+)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index baeda8a526aa..e038cdd6aa41 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -14228,6 +14228,7 @@ F:	tools/testing/selftests/livepatch/
- LIVE UPDATE
- M:	Pasha Tatashin <pasha.tatashin@soleen.com>
- R:	Pratyush Yadav <pratyush@kernel.org>
-+R:	Samiullah Khawaja <skhawaja@google.com>
- L:	linux-kernel@vger.kernel.org
- S:	Maintained
- F:	Documentation/ABI/testing/sysfs-kernel-liveupdate
-@@ -14235,6 +14236,7 @@ F:	Documentation/admin-guide/liveupdate.rst
- F:	Documentation/core-api/liveupdate.rst
- F:	Documentation/mm/memfd_preservation.rst
- F:	Documentation/userspace-api/liveupdate.rst
-+F:	drivers/iommu/intel/liveupdate.c
- F:	include/linux/liveupdate.h
- F:	include/uapi/linux/liveupdate.h
- F:	kernel/liveupdate/
-diff --git a/drivers/iommu/intel/Makefile b/drivers/iommu/intel/Makefile
-index ada651c4a01b..58922d580c79 100644
---- a/drivers/iommu/intel/Makefile
-+++ b/drivers/iommu/intel/Makefile
-@@ -6,3 +6,4 @@ obj-$(CONFIG_INTEL_IOMMU_DEBUGFS) += debugfs.o
- obj-$(CONFIG_INTEL_IOMMU_SVM) += svm.o
- obj-$(CONFIG_IRQ_REMAP) += irq_remapping.o
- obj-$(CONFIG_INTEL_IOMMU_PERF_EVENTS) += perfmon.o
-+obj-$(CONFIG_LIVEUPDATE) += liveupdate.o
-diff --git a/drivers/iommu/intel/liveupdate.c b/drivers/iommu/intel/liveupdate.c
-new file mode 100644
-index 000000000000..d73d780d7e19
---- /dev/null
-+++ b/drivers/iommu/intel/liveupdate.c
-@@ -0,0 +1,45 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Copyright (C) 2025, Google LLC
-+ * Author: Samiullah Khawaja <skhawaja@google.com>
-+ */
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 060ebe330ee1..bfa7c8653720 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -2052,6 +2052,10 @@ struct iommu_domain *iommu_paging_domain_alloc_flags(struct device *dev,
+ }
+ EXPORT_SYMBOL_GPL(iommu_paging_domain_alloc_flags);
+ 
++#ifdef CONFIG_LIVEUPDATE
++DECLARE_RWSEM(liveupdate_state_rwsem);
++#endif
 +
-+#define pr_fmt(fmt)    "iommu: liveupdate: " fmt
+ void iommu_domain_free(struct iommu_domain *domain)
+ {
+ 	switch (domain->cookie_type) {
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index c30d12e16473..d23d078f7c18 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -598,6 +598,15 @@ __iommu_copy_struct_to_user(const struct iommu_user_data *dst_data,
+ 	__iommu_copy_struct_to_user(user_data, ksrc, data_type, sizeof(*ksrc), \
+ 				    offsetofend(typeof(*ksrc), min_last))
+ 
++#ifdef CONFIG_LIVEUPDATE
++extern struct rw_semaphore liveupdate_state_rwsem;
++#define guard_liveupdate_state_read() guard(rwsem_read)(&liveupdate_state_rwsem)
++#define guard_liveupdate_state_write() guard(rwsem_write)(&liveupdate_state_rwsem)
++#else
++#define guard_liveupdate_state_read()
++#define guard_liveupdate_state_write()
++#endif /* CONFIG_LIVEUPDATE */
 +
-+#include <linux/liveupdate.h>
-+#include <linux/module.h>
-+
-+static int intel_liveupdate_prepare(struct liveupdate_subsystem *handle, u64 *data)
-+{
-+	pr_warn("Not implemented\n");
-+	return 0;
-+}
-+
-+static void intel_liveupdate_cancel(struct liveupdate_subsystem *handle, u64 data)
-+{
-+	pr_warn("Not implemented\n");
-+}
-+
-+static void intel_liveupdate_finish(struct liveupdate_subsystem *handle, u64 data)
-+{
-+	pr_warn("Not implemented\n");
-+}
-+
-+static struct liveupdate_subsystem_ops intel_liveupdate_subsystem_ops = {
-+	.prepare = intel_liveupdate_prepare,
-+	.finish = intel_liveupdate_finish,
-+	.cancel = intel_liveupdate_cancel,
-+};
-+
-+static struct liveupdate_subsystem intel_liveupdate_subsystem = {
-+	.name = "intel-iommu",
-+	.ops = &intel_liveupdate_subsystem_ops,
-+};
-+
-+static int __init intel_liveupdate_init(void)
-+{
-+	WARN_ON_ONCE(liveupdate_register_subsystem(&intel_liveupdate_subsystem));
-+	return 0;
-+}
-+
-+late_initcall(intel_liveupdate_init);
+ /**
+  * struct iommu_ops - iommu ops and capabilities
+  * @capable: check capability
 -- 
 2.51.0.536.g15c5d4f767-goog
 
