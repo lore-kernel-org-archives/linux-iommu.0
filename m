@@ -1,60 +1,60 @@
-Received: from mail-pg1-f181.google.com (mail-pg1-f181.google.com [209.85.215.181])
+Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A27881E5B82
-	for <iommu@lists.linux.dev>; Sun, 28 Sep 2025 06:58:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51A8454918
+	for <iommu@lists.linux.dev>; Sun, 28 Sep 2025 07:26:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759042730; cv=none; b=sQt81uzKoy0Ts8uhLkGikexLuy5R8wmZs1mMsUrclj8gU8ctmcKKyIifYb8ZSPg11UpwVW2zkGCnbyughaYSibtb7MguLpgtFCeqaFYK0BVc8ROLF/8CQyWj5J5t93HsvHOQKFqFCS5P5OwcL918i+n+sYrGQuqmExo0QTULRsw=
+	t=1759044418; cv=none; b=WLpCs6r4HRyurAZCwTB3w3AlCOgBvCHyKJmOwNCGU64t5RkhVSCplhqnADR8qU0vymD4SY2FhTYVnQTbv9QZqyY4zwrZ/GzhWz57DFcwtafUzpz2jXGhMV07gaE60ANTz/cchFZzNFqh3Uku5UknO0+yx4ol2TFKLUlRlaS1tlY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759042730; c=relaxed/simple;
-	bh=9Bla6r5MFodPMwhxVQ7tWLS8XbjrbVJNG1aVVLSnnwg=;
-	h=From:To:Cc:Subject:Date:Message-Id; b=KVDmpP7orOO0bMEL0HY/I7uz3blNTuRk8V9AaJ1OHfxwbAusK5hu2GgGscN4Is2tla3Nx6owGVvkY2ggUnm6/K0AMN0ESMfVByt2JkHiINIU3opnqGZ6637vp6f3Z8F/4A2nfpasX9YMQ1s1djPexRo0KGvagGSZ3XznV3AJZ48=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=GpRdFzGS; arc=none smtp.client-ip=209.85.215.181
+	s=arc-20240116; t=1759044418; c=relaxed/simple;
+	bh=/SdbOeTbQpmJeBG/7uKnsxaZCMB9be//TsCeMES2BBA=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References; b=aid0TnSqd8TFN9bDaJ5q/BSLWgz4pREB2QYQkkNep8LcUbnJWM8pBxTjOd89uxXxPtOa/RuhdgM7sGSJ1ZoqFSe6zzTdAvwMExdMFc+gYQ6I8jyuh7JK0NHwy/9afNkKvcQGKCoOkZD+xrXftrj4V8QBdxTcbB5TH0c9o4yrLiE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=VCMWSFK4; arc=none smtp.client-ip=209.85.214.175
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="GpRdFzGS"
-Received: by mail-pg1-f181.google.com with SMTP id 41be03b00d2f7-b58445361e8so1039556a12.0
-        for <iommu@lists.linux.dev>; Sat, 27 Sep 2025 23:58:47 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="VCMWSFK4"
+Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-27ee41e074dso30410195ad.1
+        for <iommu@lists.linux.dev>; Sun, 28 Sep 2025 00:26:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance.com; s=google; t=1759042727; x=1759647527; darn=lists.linux.dev;
-        h=message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=s9qb4Xv7S/9iKlar3U/z3W5+/6qCV42UQ7G2sXllZfY=;
-        b=GpRdFzGSM28RVbWTS1dkBd34H/BfNdpe14fmiGrThg2vsGft4CprnPltKljmd7JhFF
-         utiWZAY9bah2D0zUZd84hB42a49bZVVmNk2G0mUipUR1rAqlcK9QKT9pb2+rH+0oCqpB
-         OznIRdyd042T6WUlRg+/pEha123TORqqoUY2VQ6uMn3shWMJ2t8BVmWCYkWQ4FX8p+U5
-         aL8wzQMYS5RlCVDzPOKNL9nhKuEbF7z/iXCqZn7d8Dp+RNu25LoojiOtjxfM50u1LTZk
-         JIYItvGtjxY0Scn2Wn+iGuIaTWH5JLLiP+jiauxXxFjPFnokb0/zE0jkyqjKfjxygLNA
-         ZgYg==
+        d=bytedance.com; s=google; t=1759044416; x=1759649216; darn=lists.linux.dev;
+        h=references:in-reply-to:message-id:date:subject:cc:to:from:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=UAaSdOVkV1NKdeMiOYB6QGMYFLsTHfIsFJ3zeJzXSPE=;
+        b=VCMWSFK4kfJhRHskYWEqKP0GrPXl+vP1WFEGL5WUQbnPt92CC2/8PhuJ9C3MhJezCY
+         qdY7UCzT6pyLt+U3b3zyjVMHHBU0BNOiQjkZFD8AcxxpRA3nEkZSQ9e8EEhg1xOHwYf0
+         QRUXu0LcSOzcfIf0ChnBvV1zjS7tU375FL+kLVjS1d8vL/ko26AdvkiIqIoGctr25Qp+
+         SMBbRUQZjxSk9NM+OsG0ha2tEhHbzyqMBDMqlyUUBe+eIL8M+nHNaxWQAOSvwv9XW4SB
+         okIVJC2sWud27s2Lptgfce4eRXWgXGhGzSIkl6VLaACnRHv9g/pOuDvl2Vo9HgAarafD
+         gAuA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1759042727; x=1759647527;
-        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=s9qb4Xv7S/9iKlar3U/z3W5+/6qCV42UQ7G2sXllZfY=;
-        b=ZNgOCCMphIdgWU/th0IzCvW0rrfwkvzwQlyl9HlwcGfsYvutBkdqlavInJ4Srg1tXj
-         ++M0K8b140uF4irKaZGEPZkriauY2uaN39WAh6GqLCjNzxc2/bMOSXdu+Gkktlm8YKcZ
-         a9jsM7G9DdDs+2Rcif5eQJNap85Uyr/2/kWse7VMn64ZxxUJKNJsIbaQV+CY2Jtns8tS
-         nGAzY7t0l9PzUG9aPkGV5DZ22yhBaYvyj7S9hw+rNTfjHAwSijX04VbRivzFUMIYkwEr
-         hu7Dsi5XL9HZeDGfJU2gZOJ+bIxlPJMuYTMwKRkAd6dHDJa3MSQf6C3VVZH68PGHJ/oP
-         a3hg==
-X-Forwarded-Encrypted: i=1; AJvYcCW/geRA2jImR834VxxwnXCah/GWk5ui7Cd2ceV/ttQ+DR8ATP3aHC0u3o5TeqrAU5EThBQTow==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwKfP+v6KMy2rdJ2rBszCA7KRUQGDo6Va7oP9xklw0y0nQWSk3d
-	2i+BubSFyovAwKTxfmLlU4D5fxcSSji8tALB6yMxyQ7vOEIwPKiC6Ujcwu92Kh+pbLU=
-X-Gm-Gg: ASbGncsI/eK9NDdwyEPCLBKNB2WWf079ay1DAEhlNkgw9PSe9MOUQ2dw4u709aeR9fe
-	NJWcRC8MuWKlqJMUden1/MGzS80u492gbb2sSDvQms83ZSmMnW279TMvd9v1JNilJY1xc+JWwSU
-	KMBZbISIkzG0Vqbq6nwTtz3Sj+9bURRV4nWHOKRKwhNt11jpCk27U/VF1nC3xKrKLHqZN92NBc4
-	sNBu4EXuldTMsJuVgO1znLzvdrumFjntqVUT//7OE8KMg8XPeR+SjV2HsW6nIyE9AMwQxF1V1fo
-	XdpwH1gHd4PFEW4STFsc1RvtrE7zH/C0dKvcnyF9x193muYZYYICJX8M+4O2LUqdqpyCUBctzzu
-	gsr64SVUnrWfGGePNwNIBG0rjjlxerzhmnWhZ1xUjqU3bXMkkXyX9cPv6
-X-Google-Smtp-Source: AGHT+IGzyRlP0aMu8WsFbE3pNjkGGB8M5OH35YpWtQqlIpwvlvTcJH1LjOwEOd1Ttxnx3O+rBgJR8g==
-X-Received: by 2002:a17:903:4b4f:b0:267:8b4f:df36 with SMTP id d9443c01a7336-2818ba15c86mr54104835ad.29.1759042726783;
-        Sat, 27 Sep 2025 23:58:46 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1759044416; x=1759649216;
+        h=references:in-reply-to:message-id:date:subject:cc:to:from
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=UAaSdOVkV1NKdeMiOYB6QGMYFLsTHfIsFJ3zeJzXSPE=;
+        b=RrapmRCUTErfYyFXVMM13/LoLzLZgI+ANrcVrZYvX7VFexbz/j5wQ5ZMHqr0RIauWF
+         jP2C2gMYytOgU18WqwjrkZ6w9pi7ZU/qVq3X6nh/HNehhGIQH3Qqa7lvtHg7OPFKkbhQ
+         i4O+1eHlz7Lxkr1PcZlfbrPyQCdT5eNsUWUxvTArOMMH0rRoP+6tm85tV/HZ6K8cw8Y+
+         LT+kP+wXQUyeItJVmgWWRrwY3UTmB+yVx8IfTUHWur4lhvoZ2AEPxce9g/1SzmEU3H9o
+         Xas+Yco6+deiLBa5eohUp6KN604I0RPVLIng3nIpTEe+2/0dtiZD16U8AYCzWV97bEiN
+         J/Ow==
+X-Forwarded-Encrypted: i=1; AJvYcCV/8IkyNoBq1OXY6oQerVkT+iWBVzlxQjw/D3EsA0UWA+0YJHTEHgbD99nNDUm9qTCSzbnTdw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YymA7MShsjolhxEGevF691I0z7RGvjnKNZWSZIml2g+h7y5Zx5P
+	cSA0lxVrRDhiZZw8t1BKdc/VRkxTn34kCJluCQ3Z8EQUnynu1wuzI+x33uDQ0D2o9b0=
+X-Gm-Gg: ASbGncs3Wzh7M9fcvK03eCcWsdocyBtEe0pjTZsYGuoUG3qZncoIGv4UsCaGFRdzywe
+	/X7BBvwQOGXstASCV/HlOvo1JVSooRfJhQFIb1Bhmq/TXryPTkxw4yLcgTdK+x6F2RstA2VdA6V
+	kUgC2a4JNuVwBEqilj53ViIsTgjzzHsMRA0C0W0auAqZljFd5LmuVZvtBcHUZClEu2ZXzacaizW
+	K5ydbiCkxG4Kqg+1R7dgFi+GbvsTl9W0bVl6rM/LZwgybAAf21PzdvLvCWu4De5RzYeIQjk6o5S
+	/BLZTb4t7spLDFyxMvL6iEqRiSCPtJchEkUkGgWme09T7iXeWxbDjfoMtKbeRSEzWtH36gx+zu5
+	6i/dnC+P7Svm3G5G2fsViix9S2XEjNwnVfLxlxYRIoN12Euh5hk0NSl1NT4X7woOFWto=
+X-Google-Smtp-Source: AGHT+IFHxe1rBHtIpqSjLfdUIUmkMST8JmIBra2PbaznOWAXLh3kC1g/w85xIIVUn0jBe/mif/ikOQ==
+X-Received: by 2002:a17:903:17cc:b0:275:3ff9:ab89 with SMTP id d9443c01a7336-27ed4a319a1mr130543335ad.27.1759044416495;
+        Sun, 28 Sep 2025 00:26:56 -0700 (PDT)
 Received: from 5CG3510V44-KVS.bytedance.net ([203.208.189.11])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-27ed66d32dasm97959615ad.27.2025.09.27.23.58.43
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-27ed66d32dasm98492675ad.27.2025.09.28.00.26.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 27 Sep 2025 23:58:46 -0700 (PDT)
+        Sun, 28 Sep 2025 00:26:55 -0700 (PDT)
 From: Jinhui Guo <guojinhui.liam@bytedance.com>
 To: joro@8bytes.org,
 	suravee.suthikulpanit@amd.com
@@ -62,48 +62,38 @@ Cc: guojinhui.liam@bytedance.com,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
 Subject: [PATCH] iommu/amd: Enable PCIe ACS once AMD IOMMU initialization succeeds
-Date: Sun, 28 Sep 2025 14:58:17 +0800
-Message-Id: <20250928065817.1279-1-guojinhui.liam@bytedance.com>
+Date: Sun, 28 Sep 2025 15:26:50 +0800
+Message-Id: <20250928072650.1419-1-guojinhui.liam@bytedance.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20250928065817.1279-1-guojinhui.liam@bytedance.com>
+References: <20250928065817.1279-1-guojinhui.liam@bytedance.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 
-Enable PCIe ACS after the AMD IOMMU has been initialized
-successfully.
+Date: Sun, 28 Sep 2025 14:58:17 +0800, Jinhui Guo wrote:
+>@@ -3212,9 +3212,6 @@ static bool __init detect_ivrs(void)
+> 	}
+> 
+>out:
+>-	/* Make sure ACS will be enabled during PCI probe */
+>-	pci_request_acs();
+>-
+>	return true;
+>}
+> 
+>@@ -3284,6 +3281,10 @@ static int __init state_next(void)
+> 			ret = -EINVAL;
+> 		} else {
+> 			ret = early_amd_iommu_init();
+>+			if (!ret) {
+>+				/* Make sure ACS will be enabled during PCI probe */
+>+				pci_request_acs();
+>+			}
+> 			init_state = ret ? IOMMU_INIT_ERROR : IOMMU_ACPI_FINISHED;
+> 		}
+> 		break;
 
-Signed-off-by: Jinhui Guo <guojinhui.liam@bytedance.com>
----
- drivers/iommu/amd/init.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index ba9e582a8bbe..b695efc54d5b 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -3212,9 +3212,6 @@ static bool __init detect_ivrs(void)
- 	}
- 
- out:
--	/* Make sure ACS will be enabled during PCI probe */
--	pci_request_acs();
--
- 	return true;
- }
- 
-@@ -3284,6 +3281,10 @@ static int __init state_next(void)
- 			ret = -EINVAL;
- 		} else {
- 			ret = early_amd_iommu_init();
-+			if (!ret) {
-+				/* Make sure ACS will be enabled during PCI probe */
-+				pci_request_acs();
-+			}
- 			init_state = ret ? IOMMU_INIT_ERROR : IOMMU_ACPI_FINISHED;
- 		}
- 		break;
--- 
-2.20.1
-
+Please discard this patch. It breaks when interrupt remapping is off.
