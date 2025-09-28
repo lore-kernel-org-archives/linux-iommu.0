@@ -1,101 +1,126 @@
-Received: from mail-pg1-f178.google.com (mail-pg1-f178.google.com [209.85.215.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63A33225D6
-	for <iommu@lists.linux.dev>; Sun, 28 Sep 2025 07:53:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BAAE11D8A10;
+	Sun, 28 Sep 2025 08:15:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759046001; cv=none; b=ZoMa8VtojpqsJjTzyEnSwJvr4aPC/BFs2WVRKUz9JyAeZ52cQapKBrguW++cqVGmbQC08VpZq6pAQxI+auyHAWh/GTqsrgpiGSu/sZFNRJEw1Y6FkaZj3w3ea4JOfxZeq2GjcGilMn8a71G9+CEecIGkSxrlrLxsu0z3nqaIhZE=
+	t=1759047317; cv=none; b=dFk6be9dL8e0O2Ppb5kL9QLtxa0geMyzqGN0aBl1exmR4j6Wrv4eVrwFL0wQE2JlCgjjLsOsPcbCjv+bFIaNMIFozqoFjvnjeVnV10xUxC06ui4Q95PdShkEZsqRKEqxPkFWvf4mfUfGuvQIRjA16jQpDhxUu84UGxrAPtueb28=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759046001; c=relaxed/simple;
-	bh=uYZ5IK1FTpOCbYNP61ldu2wAWMPnSD+m5gAYSA1y73M=;
-	h=From:To:Cc:Subject:Date:Message-Id; b=OxVHPtSgf5vkrcFmcI3wcwHaQn9Pt46+THNLMFVPE3EMvK1mDYygGRWZD/ItAsrLoAHTVb+npjxAPNmcFqBQEo4npkTC8p8zkq5v7qGLf4y0rf9kQmCl/neHvGHHP3uUUZ8rYkJ0vtv7GsZUCdStOXiRdlwGfP0mrhj6pZuTgUs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=Mu4xT5C6; arc=none smtp.client-ip=209.85.215.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
+	s=arc-20240116; t=1759047317; c=relaxed/simple;
+	bh=de9qzleZA+R2N/Kmiw9QQMnYG50hXtyYa8gfYsMACWk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=NnwNpZnbMcT99uc/0dJTGiDZyFcS1kImFebtn6n2DZ6YV31y/XFUEqpRyKkuZlJR7aAZWKf8rMDKf1b4XurCoRmtFBlq9c4+ExLqCgp0eaBgd0zpR9c5bw6LE7L1hPTRgLu49FJMlvK6vw7PyQLqZeNVTZiGoVs6ZSJcIiogtys=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KMtmLekY; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="Mu4xT5C6"
-Received: by mail-pg1-f178.google.com with SMTP id 41be03b00d2f7-b553412a19bso2661471a12.1
-        for <iommu@lists.linux.dev>; Sun, 28 Sep 2025 00:53:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance.com; s=google; t=1759046000; x=1759650800; darn=lists.linux.dev;
-        h=message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=2AwDk0uCNivTcVsDsRE5/fRsH4mSCZxsprGiICUsfJw=;
-        b=Mu4xT5C6D3t+u5nIv2e/UuVs+zeKbKldHBT1l+ecwei+4V3QTxKLSivlKzN7fqEEtg
-         F5MX+tllMv4U3e6k9FQXkLh+qwwpyXHcycQQlxAP8hwp5uPvob+uHFG2OT2vMCLIAjIm
-         pGyXA2u+NSpFp58OtBNg5tMe0KO8NJ04FH/SSl9Oi4E2QmCmDIwxgrS/cbrne1b+uk2h
-         0gxWSD48SUs0G4yZn3OhED5HsAwqZIPR7tAQAmCljclN5v/P3N2AuyLA2OsSLrWoWgmX
-         +TSZVmfQnDepgsoSNByfafugF2r1oKGuv5sQUI7UE9At/i6mec1vnSBhzZmHRHFp7WVg
-         GOdg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1759046000; x=1759650800;
-        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=2AwDk0uCNivTcVsDsRE5/fRsH4mSCZxsprGiICUsfJw=;
-        b=j904AJ5RNcxr51bZV1HPNEeN9MysNeee5iIzoUicOrTBchEeBgtkDFB3MpQr5KAFkC
-         rQCTAamz5Fovh9HfuTJfRwZEmnlKPuB1vcKHGXTBXjG65M5V9wqwq7ztH0Veustk+Xau
-         Dqvc+oWyPvG2HsSjEeEBAXZq56cUan8yrcBs8tysyoxZFdmFrq+r3xa3JkXvMOzPjsgo
-         GyNqldiRhhrYG/6NqZy64Vwv8sWd0V43ux2gYKPpEigzYZ3y9OyiEV0ffdWbr70pvXPo
-         ngLH1BnNzSsUmjUWylhzCv63wjR5SjmTz6dar8YparW2PRpgW6cztGVhuCb+eLdYxj9N
-         yc3A==
-X-Forwarded-Encrypted: i=1; AJvYcCUo2FigGLl7ylmHTIDGHMT60ZMq7oz3WdpxgNT7wHNX+f0SEsJMsIyNp9I8b/Ib7Lj53kQNvA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yz5SxYIM17NOxXCqcikOSBacvTi0Ej3UUOwJoaJd/4cvh4BbpAT
-	Hao2YTaIsrMchxcWUcRkERMn0b6lCvfNqW2Bog+/9jVPpwEcnWu59KomL831KvlGzq0=
-X-Gm-Gg: ASbGncvd+Tpz+SpKybRodEI9qarc9uICa79+t9AlnFnPpeB4uBeGsxWPb6739K05+fx
-	es6uwBPbRUSneXWIl3gs76lVDjxR1lT0qACvQkd6VKVbc3fNBWF3sGOrBLjcub9CocSlzApqfFU
-	Gt8uljL14jv2QtFV63cbpbd/zuoi89m1POmbRF2CGvqtQOZ42aWfJ04c2nS1BC0fn0Fsn0jeAGl
-	2FvDnmoOrZwalfzm8cCzU4whkoYwHZpkoquhQUxdFo3s+CsJzwOq0On1Xv+GnTnehoTOnU3iGgr
-	CZlGBx0jxCKF6lbzWRQDdtWfUuS4jvJMNVgJpiRtpluzLJ3KnC8/WsPK/sVRgHVvyYWeyiaj11N
-	+DwMoSyZlheZt9MzjIRLWoL/uBvDSdleKr7xwi1kLY3UYjpFrRG5kLWNBMg3pG1roj94=
-X-Google-Smtp-Source: AGHT+IHkVLr2GZuNjDyXevI+888VozHlhvOkrw3eWZlJjp5Td8JmDZsLN8RetVbQmgVfPUm/I4Rq/w==
-X-Received: by 2002:a17:903:4b04:b0:271:479d:3de2 with SMTP id d9443c01a7336-27ed4a1a2cdmr126605265ad.13.1759045999607;
-        Sun, 28 Sep 2025 00:53:19 -0700 (PDT)
-Received: from 5CG3510V44-KVS.bytedance.net ([203.208.189.11])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-27ed6ab640esm98722895ad.128.2025.09.28.00.53.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 28 Sep 2025 00:53:19 -0700 (PDT)
-From: Jinhui Guo <guojinhui.liam@bytedance.com>
-To: joro@8bytes.org,
-	suravee.suthikulpanit@amd.com
-Cc: guojinhui.liam@bytedance.com,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] iommu/amd: Enable PCIe ACS only if AMD IOMMU is on
-Date: Sun, 28 Sep 2025 15:52:57 +0800
-Message-Id: <20250928075257.1542-1-guojinhui.liam@bytedance.com>
-X-Mailer: git-send-email 2.17.1
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KMtmLekY"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 846E1C4CEF0;
+	Sun, 28 Sep 2025 08:15:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1759047317;
+	bh=de9qzleZA+R2N/Kmiw9QQMnYG50hXtyYa8gfYsMACWk=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=KMtmLekYVZUE7aRFSU9mkhSkk4d2ntkHA9S03kyf74bsqgqfKRQVhafqnCSWyOedv
+	 j3ALK52bH8Ib0Qcjq73RywxOiTyDmFQWvZrSLzgQu7h6BfCe96um8PU6yXa3j1+99V
+	 FGKhJMG48c569FGlH//UPB1ED5dl4Ifq6JGVIKZvrAca3dREYBHHST1Q5so4+z4eaY
+	 ccYycjRt92s6L0ewEIaOyQRQPsYgpAgUNUX7hHBLNc2rys8+IT/z1BVurmh2ZP0TbU
+	 V0pJks/SLiWWs/cl5dVESCI2dRN+y9HXnOHfSrklek/YOtBiMhW81kGRirOKn9C5ba
+	 xbPCNcierbgCQ==
+Date: Sun, 28 Sep 2025 11:15:12 +0300
+From: Leon Romanovsky <leon@kernel.org>
+To: Alex Williamson <alex.williamson@redhat.com>
+Cc: Jason Gunthorpe <jgg@nvidia.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+	dri-devel@lists.freedesktop.org, iommu@lists.linux.dev,
+	Jens Axboe <axboe@kernel.dk>, Joerg Roedel <joro@8bytes.org>,
+	kvm@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
+	linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-media@vger.kernel.org, linux-mm@kvack.org,
+	linux-pci@vger.kernel.org, Logan Gunthorpe <logang@deltatee.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Vivek Kasireddy <vivek.kasireddy@intel.com>,
+	Will Deacon <will@kernel.org>
+Subject: Re: [PATCH v2 03/10] PCI/P2PDMA: Refactor to separate core P2P
+ functionality from memory allocation
+Message-ID: <20250928081512.GD12165@unreal>
+References: <20250922150032.3e3da410.alex.williamson@redhat.com>
+ <20250923150414.GA2608121@nvidia.com>
+ <20250923113041.38bee711.alex.williamson@redhat.com>
+ <20250923174333.GE2608121@nvidia.com>
+ <20250923120932.47df57b2.alex.williamson@redhat.com>
+ <20250925070314.GA12165@unreal>
+ <20250925115308.GT2617119@nvidia.com>
+ <20250925163131.22a2c09b.alex.williamson@redhat.com>
+ <20250925230236.GB2617119@nvidia.com>
+ <20250926081350.16bb66c8.alex.williamson@redhat.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250926081350.16bb66c8.alex.williamson@redhat.com>
 
-To preserve PCIe performance, ACS is enabled only when
-AMD IOMMU is not disabled.
+On Fri, Sep 26, 2025 at 08:13:50AM -0600, Alex Williamson wrote:
+> On Thu, 25 Sep 2025 20:02:36 -0300
+> Jason Gunthorpe <jgg@nvidia.com> wrote:
+> 
+> > On Thu, Sep 25, 2025 at 04:31:31PM -0600, Alex Williamson wrote:
+> > > On Thu, 25 Sep 2025 08:53:08 -0300
+> > > Jason Gunthorpe <jgg@nvidia.com> wrote:
+> > >   
+> > > > On Thu, Sep 25, 2025 at 10:03:14AM +0300, Leon Romanovsky wrote:
+> > > >   
+> > > > > > It would at least make sense to me then to store the provider on the
+> > > > > > vfio_pci_dma_buf object at the time of the get feature call rather than
+> > > > > > vfio_pci_core_init_dev() though.  That would eliminate patch 08/ and
+> > > > > > the inline #ifdefs.    
+> > > > > 
+> > > > > I'll change it now. If "enable" function goes to be "get" function, we
+> > > > > won't need to store anything in vfio_pci_dma_buf too. At the end, we
+> > > > > have exactly two lines "provider = priv->vdev->provider[priv->bar];",
+> > > > > which can easily be changed to be "provider = pcim_p2pdma_provider(priv->vdev->pdev, priv->bar)"    
+> > > > 
+> > > > Not without some kind of locking change. I'd keep the
+> > > > priv->vdev->provider[priv->bar] because setup during probe doesn't
+> > > > need special locking.  
+> > > 
+> > > Why do we need to store the provider on the vfio_pci_core_device at
+> > > probe though, we can get it later via pcim_p2pdma_provider().   
+> > 
+> > Because you'd need some new locking to prevent races.
+> 
+> The race is avoided if we simply call pcim_p2pdma_provider() during
+> probe.  We don't need to save the returned provider.  That's where it
+> seems like pulling the setup out to a separate function would eliminate
+> this annoying BAR# arg.
+>  
+> > Besides, the model here should be to call the function once during
+> > probe and get back the allocated provider. The fact internally it is
+> > kind of nutzo still shouldn't leak out as a property of the ABI.
+> > 
+> > I would like to remove this weird behavior where it caches things
+> > inside the struct device. That's not normal for an API to do that, it
+> > is only done for the genalloc path that this doesn't use.
+> 
+> My goal in caching the provider on the vfio p2pdma object was to avoid
+> caching it on the vfio_pci_core_device, but now we're storing it on the
+> struct device, the vfio_pci_core_device, AND the vfio p2pdma object.
+> Given the current state that it's stored on the struct device, I think
+> we only need a setup call during probe (that could be stubbed out
+> rather than #ifdef'd), then cache the provider on the vfio p2pdma
+> object when a dmabuf is configured.  Thanks,
 
-Signed-off-by: Jinhui Guo <guojinhui.liam@bytedance.com>
----
- drivers/iommu/amd/init.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+I can do it.
 
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index ba9e582a8bbe..6e9eab365123 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -3212,8 +3212,10 @@ static bool __init detect_ivrs(void)
- 	}
- 
- out:
--	/* Make sure ACS will be enabled during PCI probe */
--	pci_request_acs();
-+	if (!amd_iommu_disabled || amd_iommu_force_enable) {
-+		/* Make sure ACS will be enabled during PCI probe */
-+		pci_request_acs();
-+	}
- 
- 	return true;
- }
--- 
-2.20.1
+Thanks
 
+> 
+> Alex
+> 
