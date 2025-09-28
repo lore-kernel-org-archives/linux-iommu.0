@@ -1,55 +1,55 @@
-Received: from mail-pf1-f202.google.com (mail-pf1-f202.google.com [209.85.210.202])
+Received: from mail-pl1-f202.google.com (mail-pl1-f202.google.com [209.85.214.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D9DE261594
-	for <iommu@lists.linux.dev>; Sun, 28 Sep 2025 19:07:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.202
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFEC2263C9E
+	for <iommu@lists.linux.dev>; Sun, 28 Sep 2025 19:07:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.202
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759086471; cv=none; b=jYpnO/8h1iwizG83aLlJdjkjbHgn+zvvyiUFq425QlAvKomz7gke2emhlmiKCLtBQCDV/t4MhIfJE3YrCG4YNZtNV//nMbnUyu8V47Vy6HHxPurk1vICuGsba01dONxnrbnMnzz3A2ir2iE0End/7f+0OziIV5Y9vsI4DpdvwRE=
+	t=1759086472; cv=none; b=JOjWEYVPympdD63z5U62Wn0+KbBIWfDbGMoX7JvSMjWVrURrUkzFNRxSCYR5JkDJ9Om2807uPuednlQNH/v5C3pR8lbJH3ehb75cIDHMWOvs46wsYIi9xV4ONDo3TnLzUV9TWUBaubtBeUXC0p4VG2gvp5QxULjITS2NEez+YzQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759086471; c=relaxed/simple;
-	bh=MuX3jZ3sSbwfMCn0UPvl+BEUskcLBHNXaIPs4MYUTto=;
+	s=arc-20240116; t=1759086472; c=relaxed/simple;
+	bh=EeovTi/1CEJ8oPAob1Hj6uM2MPZDtSjBccEqrgz0EFQ=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=rn8ZeGv5Ce+IXEIt8o2Y+N7gTvD0Io8JLxl1bfg2+lzZu0nNn8ph3pZgbp/hntBiHItK3+r92yRjj1nAuI6W9DtqEV6pyRTIa69bTy8FGXRKzZ9XRsblG90C7od44kDRI6jTv/q50t5O2b1cO6/9XiS1FclyGqqahvYFWVEDQmA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=GI/xEnvT; arc=none smtp.client-ip=209.85.210.202
+	 To:Cc:Content-Type; b=e3lGF03bFV+/Xb7PACrX2EDnIBFs6vHaLmdaFpVg5E3YoI7eW63wp19p2WbQZqFwcv1Q8Y/2/+gbgPkt1c6LorCeM9vAU8j3S7N2tMbL3P2Meum0iIZHBUxdtSr9PEAy9cNoDTjk7Gg3f07MwLZ4DnaDKvUYiA18FeO4qlnVQQw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=3eUDYq9W; arc=none smtp.client-ip=209.85.214.202
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="GI/xEnvT"
-Received: by mail-pf1-f202.google.com with SMTP id d2e1a72fcca58-7847cc45409so317514b3a.3
-        for <iommu@lists.linux.dev>; Sun, 28 Sep 2025 12:07:49 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="3eUDYq9W"
+Received: by mail-pl1-f202.google.com with SMTP id d9443c01a7336-28973df6a90so1932365ad.2
+        for <iommu@lists.linux.dev>; Sun, 28 Sep 2025 12:07:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1759086469; x=1759691269; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1759086470; x=1759691270; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=rdi2PyKiCCjIQ8wy03XR3Gwap8/Sh7/Zx1Xvfs/uPkQ=;
-        b=GI/xEnvTpMIcqqew56Mcc5Nuwt/OQzKU2+uXHfSu3pphKoGWlF+0u/xkdwHoH6EmT6
-         ZKIRb4HrgNaUfqq8v4gQd49zkf37CZrUWRQtc5xeOygBGgaY8W+XVHQwlilvsfl6QZ6q
-         d0K37Wslmh5LSPmG3ikWODo8MYKivofQLoPf+pgmuGKgodmliEroRSVIvis9B8qQLlj/
-         PVfp0U7MQLodkuSdil+muwsWTMYls83yz587kzvPu1/xVbwsljTy3mIfBOS67sjCufW4
-         +MjxmfEy9U7rDdkfgqJc41O9+B+LfJ4aVCaINK1Hi6EAA4kFXyuPIvJqcB4JuT3QzV+c
-         Z3sA==
+        bh=TH/9Jtoynp6nkNgBt5pZU0cN3mVwJHyFDfFaXLb+GfA=;
+        b=3eUDYq9WsHrM+us0evOLjot3GQK9GsvmCOt9nLT11q9WyMkiN8K/f1j4Ext3pluhcG
+         VQqb92eJkFm3K7V4InNxnNQNZyNM+wWH9V3lvDSz0oJvssT+t/iJC3w82xhhnnlY5u01
+         Q09O82fSN4O4oKp+jVQ5s1sT96RNMxheYqpPFCnCoHbe3vwlEvk9FGSJI52CVnXb+1qi
+         +HEFmzl5ye9NBeCpE2pbTn7Dfo85/94oUSXsJ/wWvEAMqAKKwjPK51TdBvQp5Tq1/As4
+         gbRAVTR3qarloOFpfjjk2+Q5k9q2b/Ly5kzTUKYJAxKNrEce/FTgm6s19ItpkP0xBdSI
+         ZLrg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1759086469; x=1759691269;
+        d=1e100.net; s=20230601; t=1759086470; x=1759691270;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=rdi2PyKiCCjIQ8wy03XR3Gwap8/Sh7/Zx1Xvfs/uPkQ=;
-        b=jy4Nw2xaYgNKfVq66VM+rUHvD1tQQHd6XuAb9l/6BOXKziemnLmvRH++gU03W6D6ld
-         NmSoED9LBd/ni65oTtD89kLh0owdRfj7IbLm2AuqomRcnpGRTbu1S0fIBCDrJyoVOUDj
-         6oZg0J79yen4ovEyslu+JyVFksnwiiUyfahENR/S6HiXmD27hi6jJRHeBDaxUFi4Blov
-         O+U5aHDPt0XlH9nJKTg7ND3nrfpB+6kP+M9Kmd9oQw1AP4RgLVeH7zhZznCrrXK3Ml/2
-         4mGUrzY33fHB38iRO3jmt7PgMWHsOe9/LDxAcKNrWcWCu0rDRSdXuE2s9O63Lz7w/Qpd
-         hKpA==
-X-Forwarded-Encrypted: i=1; AJvYcCU6rtU17tK3jNoQpm+8LEWra3FGsmM7XgAqMd2uMeiMICcKGX1+UOoADA1zpCA9uGKgWt4bfA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyVIEHgVpAcrE2DEnp9RZOzSEDcJ8VWuk4FWytmRK5sGT3ZlypP
-	l36C9N4l18EEajIiJki09UW9AsBZjjtb7Y2lo12GHtnWwzsrC0W5Sv6WtPOH+Ki4ASRi9oiRSNE
-	Fqk3lFp7Bf9WUfQ==
-X-Google-Smtp-Source: AGHT+IE9CnlJcLdiotMu3CPWOFGa4Qbbs3VcUOyfssl5nXIo/nwxXTHS8424T9CoJW4l01vDjDvbImmW+vK32A==
-X-Received: from pfbde1.prod.google.com ([2002:a05:6a00:4681:b0:77e:468d:c50d])
+        bh=TH/9Jtoynp6nkNgBt5pZU0cN3mVwJHyFDfFaXLb+GfA=;
+        b=A4dBIlPr2EuDrKOdNZYc0d2Ss8ZKHE/PggTCTWPe4sFXjsxs3Lr2G4M3SIDIbevKPc
+         OJptAMBvYujPQ8n7nW/xEpaNyuvIrkxmJZS583ZI4ndaDrldltGqZs7r9S/JyvZ2r/k8
+         IEmURe+pgjZST6PHLm62Qd72B3BK3kfz2OvSYmDSnE2wrRadeCHhH6HbtPlR6luNQquv
+         KZNh9pfza9XNU4h7x0iCtZPo3OIjmnwPmJwu3e7rCXnOHCiuW42kmFtnovDV/sZd9nlH
+         23WjQMD/8JsMVv4+2T9o0NnQFsG3qIQL3Umwu5UP8Go4/hekrPoVWZ/LJhSBlLWNdM4o
+         bBSg==
+X-Forwarded-Encrypted: i=1; AJvYcCVIiFvrcly8WRUta8ql0eT/h0mpJ/ZUsChZpajvhszvqmTHb1z/elHcvgQshM9pgAZtrioWHQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxKmaPFlidCxQFjMIu48THQh9LIT+prA7K8ZJKitmqYT7HmlqgY
+	PlPLgY5a+T5Vwy309v3+pSpZ+5M4+YxPeRRGY4GcOljmW2hUWCLcm/03pAy0Y+KPhHZDO93ohFg
+	1AEbu6FvKFq+CXQ==
+X-Google-Smtp-Source: AGHT+IEDySm4AN2rcWd3tpaQUgR+ObHMHdJfAIbGRY3+AD4vHP4FnsnrIni5cOLhrFkNB0nMmOkCgtANf3ycPg==
+X-Received: from pjbjx1.prod.google.com ([2002:a17:90b:46c1:b0:32d:df7e:66c2])
  (user=skhawaja job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:6a00:80ec:b0:77e:325b:f614 with SMTP id d2e1a72fcca58-780fce1fe2bmr12364767b3a.12.1759086468856;
- Sun, 28 Sep 2025 12:07:48 -0700 (PDT)
-Date: Sun, 28 Sep 2025 19:06:13 +0000
+ 2002:a17:902:f786:b0:240:3b9e:dd65 with SMTP id d9443c01a7336-27ed4aab57bmr154999485ad.38.1759086470179;
+ Sun, 28 Sep 2025 12:07:50 -0700 (PDT)
+Date: Sun, 28 Sep 2025 19:06:14 +0000
 In-Reply-To: <20250928190624.3735830-1-skhawaja@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -59,8 +59,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20250928190624.3735830-1-skhawaja@google.com>
 X-Mailer: git-send-email 2.51.0.536.g15c5d4f767-goog
-Message-ID: <20250928190624.3735830-6-skhawaja@google.com>
-Subject: [RFC PATCH 05/15] iommu: Introduce API to preserve iommu domain
+Message-ID: <20250928190624.3735830-7-skhawaja@google.com>
+Subject: [RFC PATCH 06/15] iommu/vt-d: Add stub intel iommu domain preserve op
 From: Samiullah Khawaja <skhawaja@google.com>
 To: David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
 	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
@@ -73,88 +73,75 @@ Cc: Samiullah Khawaja <skhawaja@google.com>, Robin Murphy <robin.murphy@arm.com>
 	Chris Li <chrisl@kernel.org>, praan@google.com
 Content-Type: text/plain; charset="UTF-8"
 
-Add an API that can be called by the iommu users to preserve iommu
-domain. Currently it only marks the iommu_domain as preserved.
+Add a stub implementation of iommu domain preserve for intel iommu
+driver. This is required so that the iommu_domain is marked as
+preserved.
 
 Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
 ---
- drivers/iommu/iommu.c | 20 ++++++++++++++++++++
- include/linux/iommu.h | 10 ++++++++++
- 2 files changed, 30 insertions(+)
+ drivers/iommu/intel/iommu.c      | 6 ++++++
+ drivers/iommu/intel/iommu.h      | 4 ++++
+ drivers/iommu/intel/liveupdate.c | 9 +++++++++
+ 3 files changed, 19 insertions(+)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index bfa7c8653720..2e6e9c3f26ec 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -2002,6 +2002,10 @@ static void iommu_domain_init(struct iommu_domain *domain, unsigned int type,
- 	domain->owner = ops;
- 	if (!domain->ops)
- 		domain->ops = ops->default_domain_ops;
-+
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index e236c7ec221f..7035ffca020f 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -4472,6 +4472,9 @@ const struct iommu_domain_ops intel_fs_paging_domain_ops = {
+ 	.iova_to_phys = intel_iommu_iova_to_phys,
+ 	.free = intel_iommu_domain_free,
+ 	.enforce_cache_coherency = intel_iommu_enforce_cache_coherency_fs,
 +#ifdef CONFIG_LIVEUPDATE
-+	atomic_set(&domain->preserved, 0);
-+#endif
- }
- 
- static struct iommu_domain *
-@@ -2054,6 +2058,22 @@ EXPORT_SYMBOL_GPL(iommu_paging_domain_alloc_flags);
- 
- #ifdef CONFIG_LIVEUPDATE
- DECLARE_RWSEM(liveupdate_state_rwsem);
-+
-+int iommu_domain_preserve(struct iommu_domain *domain)
-+{
-+	int ret;
-+
-+	lockdep_assert_held(&liveupdate_state_rwsem);
-+	if (!domain->ops->preserve)
-+		return -EOPNOTSUPP;
-+
-+	ret = domain->ops->preserve(domain);
-+	if (!ret)
-+		atomic_set(&domain->preserved, 1);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(iommu_domain_preserve);
- #endif
- 
- void iommu_domain_free(struct iommu_domain *domain)
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 40801d8eac61..aafd06134f5c 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -14,6 +14,7 @@
- #include <linux/err.h>
- #include <linux/of.h>
- #include <linux/iova_bitmap.h>
-+#include <linux/atomic.h>
- #include <uapi/linux/iommufd.h>
- 
- #define IOMMU_READ	(1 << 0)
-@@ -248,6 +249,10 @@ struct iommu_domain {
- 			struct list_head next;
- 		};
- 	};
-+
-+#ifdef CONFIG_LIVEUPDATE
-+	atomic_t preserved;
++	.preserve = intel_iommu_domain_liveupdate_preserve,
 +#endif
  };
  
- static inline bool iommu_is_dma_domain(struct iommu_domain *domain)
-@@ -915,6 +920,11 @@ static inline struct iommu_domain *iommu_paging_domain_alloc(struct device *dev)
- {
- 	return iommu_paging_domain_alloc_flags(dev, 0);
- }
-+
+ const struct iommu_domain_ops intel_ss_paging_domain_ops = {
+@@ -4485,6 +4488,9 @@ const struct iommu_domain_ops intel_ss_paging_domain_ops = {
+ 	.iova_to_phys = intel_iommu_iova_to_phys,
+ 	.free = intel_iommu_domain_free,
+ 	.enforce_cache_coherency = intel_iommu_enforce_cache_coherency_ss,
 +#ifdef CONFIG_LIVEUPDATE
-+int iommu_domain_preserve(struct iommu_domain *domain);
++	.preserve = intel_iommu_domain_liveupdate_preserve,
++#endif
+ };
+ 
+ const struct iommu_ops intel_iommu_ops = {
+diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+index 3056583d7f56..6b69232efffd 100644
+--- a/drivers/iommu/intel/iommu.h
++++ b/drivers/iommu/intel/iommu.h
+@@ -1345,6 +1345,10 @@ static inline int iopf_for_domain_replace(struct iommu_domain *new,
+ 	return 0;
+ }
+ 
++#ifdef CONFIG_LIVEUPDATE
++int intel_iommu_domain_liveupdate_preserve(struct iommu_domain *domain);
 +#endif
 +
- extern void iommu_domain_free(struct iommu_domain *domain);
- extern int iommu_attach_device(struct iommu_domain *domain,
- 			       struct device *dev);
+ #ifdef CONFIG_INTEL_IOMMU_SVM
+ void intel_svm_check(struct intel_iommu *iommu);
+ struct iommu_domain *intel_svm_domain_alloc(struct device *dev,
+diff --git a/drivers/iommu/intel/liveupdate.c b/drivers/iommu/intel/liveupdate.c
+index d73d780d7e19..a15feef4d9ca 100644
+--- a/drivers/iommu/intel/liveupdate.c
++++ b/drivers/iommu/intel/liveupdate.c
+@@ -9,6 +9,14 @@
+ #include <linux/liveupdate.h>
+ #include <linux/module.h>
+ 
++#include "iommu.h"
++
++int intel_iommu_domain_liveupdate_preserve(struct iommu_domain *domain)
++{
++	pr_warn("Not implemented\n");
++	return 0;
++}
++
+ static int intel_liveupdate_prepare(struct liveupdate_subsystem *handle, u64 *data)
+ {
+ 	pr_warn("Not implemented\n");
 -- 
 2.51.0.536.g15c5d4f767-goog
 
