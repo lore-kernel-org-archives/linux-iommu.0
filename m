@@ -1,55 +1,55 @@
-Received: from mail-pg1-f201.google.com (mail-pg1-f201.google.com [209.85.215.201])
+Received: from mail-pf1-f202.google.com (mail-pf1-f202.google.com [209.85.210.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B79A25A33F
-	for <iommu@lists.linux.dev>; Sun, 28 Sep 2025 19:07:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE810269CE1
+	for <iommu@lists.linux.dev>; Sun, 28 Sep 2025 19:07:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.202
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759086473; cv=none; b=kd6OOOnSHv8HL6FCjspVIIj+dqG8bKrNDknE9TFZm7BvUf6xXDQ+4QGboFyyVJEp0cbPYmCg/h8YaBsQrBFkfSAnoi4EjZTVpIsJJ8gbi1pxCwr9l3DfJyW95S7NK6tZSM0O6U1NoIZ5r08Yx8rkrfcWtPHnSHn99qT+H9/Wz4I=
+	t=1759086475; cv=none; b=Ryvy8+vdSF9oIY83P8PSsSaBzoU9cAteTjTk8YXB4siWVpwNcD6v3hQBLzYfac6EEJ7buSCzijkqsBSyQrFP32Wg6sBkI6P1pIwa0Ewd5wNtS/0cMzj0MBdTsNv9DzKEFhNfVOgtlUYu6wLdABK3psAJFIuLhgyHivMkUfx2nfU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759086473; c=relaxed/simple;
-	bh=5afXYIp78DkALWn3sB5Jmp4qKGsGM5Fm7+lS4mnhcaA=;
+	s=arc-20240116; t=1759086475; c=relaxed/simple;
+	bh=QR2Gs/iwXVTCtcLMACOzt1mygqy+KIwEpFthZZnCaC8=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=qtI2I9PTIGZ+UyqChoCKKV8Hg8wlmBOSPXbmnyYe3I4QVF0CZXO8rPnzPD71p5NWFG6dGxoXmIZVV1Lvw1VbFW3NVXyDtAL6vqHQ909fMaPV4ImWyN4lVbvANw97mK6ci/3eSXULhcg61umc988eFBqea1bFXuvEFTI7WLQxDcA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=CiLfZ5/O; arc=none smtp.client-ip=209.85.215.201
+	 To:Cc:Content-Type; b=tN0RsExJl608HvwFJGZlxh2LQkTzj/JkSYTDPIsLgXgrQ34PMU/K/KBN++DLasnwCl5S3aEWH4S518gP3LRqOvw0jJdVbv4AJt8Spc0+UWZjTdDLDCR82JnzvxNWxo3XSUNcWbVr1Bq5cRf36QFkRKArn4DlP8GfpAnmtHuB6LQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Z9KZE1Gt; arc=none smtp.client-ip=209.85.210.202
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="CiLfZ5/O"
-Received: by mail-pg1-f201.google.com with SMTP id 41be03b00d2f7-b522037281bso2439095a12.3
-        for <iommu@lists.linux.dev>; Sun, 28 Sep 2025 12:07:52 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Z9KZE1Gt"
+Received: by mail-pf1-f202.google.com with SMTP id d2e1a72fcca58-78427dae77eso403507b3a.3
+        for <iommu@lists.linux.dev>; Sun, 28 Sep 2025 12:07:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1759086472; x=1759691272; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1759086473; x=1759691273; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=vsU7Kqlniap8aOZDcuZtGEaTcQ9taaF5KqlzYc+vBSw=;
-        b=CiLfZ5/OEUIjlbr3+4UV3qDnrMEZp1Do8WXjW6Ng4IHcnUqBUIjfv0OM9yfYDUxgGY
-         ehHveiWmWFn7w+0FcjgOKUZWfN7i40d5g31zeTuJQccc8wYorK4OwqvB9hjW5u19jtA7
-         tllfAEFDAhwxP0SDEUJ9zzjq9GSYIUMayJVYD3yCs+ewzRWmaVYkrpvqJQ9l8ZJk2Uvk
-         6H1X64eaZYJnNG06YsJfhrbdKlSbxgITtl5NG3YGyQnNYgNFu7lfF59xPa20AmW3cPKA
-         6T6Xjnb6AVdqsVEv9l01UA23/QK9AcXL1msZAcy8qAA9QHeE65y4wyaOS8cAD35w7qyG
-         Y11g==
+        bh=QcKsX07BcsLgJUGWNvmQKTHOi+pK9yuzTPJl0W1HDJo=;
+        b=Z9KZE1GtODkXzrTbNIjTClBbxdS8k/LtGemKdL+tjFdPc6WLaqHtKjE1uw/53beXAb
+         X012AhIZXHNPhM8EafUklvVzFGtIfjZUfB5y/H2UNb/BIlZ7fxLZfomvIEt6MvhDzjbK
+         UZer0tTof9UNrDG6vqQjodZGKDbZidbAOAK4uhNc84358OUk4AsFb8jXI+Z6yev9k9VR
+         324Iw48AX5tiJIdMPIo3fawKyq8ai5Sqg33rVNGjNf0O/2zeUBcIQiOFWqAvGCmR/CFr
+         ExbnApXc1pUJrTnYgacvEXxKutKaY1XkagdNAaOmBlWP0Yo5Om/Fh+CiULkHxZORfV+E
+         TB1w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1759086472; x=1759691272;
+        d=1e100.net; s=20230601; t=1759086473; x=1759691273;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=vsU7Kqlniap8aOZDcuZtGEaTcQ9taaF5KqlzYc+vBSw=;
-        b=b4QklTnNwE4UiZpBT78KhwPYkCv9u5PuIzT9iBmpksSUgdPECdDqskSN/r/OBBS17n
-         CAm+MINKw/n06UGTR61gDowHLCy0A+xCmz/IhHlck2n6i3qWRRjVE854hXFGMjkdKBdM
-         yWhGMPBCtbGou1vQM4WznB+yn2UQG0DI+BxpPIGB9mqeKe9Bi/Gmt0v8wO4nYQVjGayk
-         xbBVPS29E5e6CaQcFwEHXRkT9FIyHXEBhFmL4isZwZO/HYE0VBa4VNL3nJld6MG7P97H
-         CGVnhAn0/m5zy9yRT9eN47vF5ffZOvJcW/w4eER38INOx8rbHttwuB1ITmpRtN1G9ZlZ
-         +eDA==
-X-Forwarded-Encrypted: i=1; AJvYcCW38MviwL1G1yWlut+auaB92XKaVsTYl9LJaRJI/JZ2yq41AA2118wfYLlcYBVdZBl7RtjhTg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxOoQHzGnSe2osiOKKA1BgZ4J1cIxJ/Ad/pqICTFJrr90oREDH1
-	uwA2/pAXOVqjEGaKGxwe7VQHzwLr+rf15u+oApWmVwcTX4ZtwZ1qLjo3YLPeqQmU3uSCe8Kwak9
-	RF95KDz1ZDTiUug==
-X-Google-Smtp-Source: AGHT+IHfdirlJBqh06AiPWU9gZRM34sOyCYlhqLwriEV1slCgLDHGPkpGuA/w9oi9uxQsxmHSL03/Is8uy3WGQ==
-X-Received: from pfrb29.prod.google.com ([2002:aa7:8edd:0:b0:772:749b:de38])
+        bh=QcKsX07BcsLgJUGWNvmQKTHOi+pK9yuzTPJl0W1HDJo=;
+        b=kZOlqQaWNhEwsK65+/LGvCIC3qy1oD7hKHkr+hfKFKuz7/NODCUypNjTGrc6XyYMKA
+         6pupET3Jone31ZZJtvX24Z7cIyXb7HMChzZ9rIzoiIt+QRGJG9INnszVFxy0QwcMZDMu
+         Eds7sj6FxDe/vsJ5klwXA0J1elYgNoyt75HxclxwGJku+Ncl71EE0W96sefKgcsVG554
+         raZ+Q/vE0Ajli6gOKiw13gW+qkO2+wl9EZNJLNOke1CwGe92MXEK8P5eN2LAPwzyd9wq
+         OD1ASVjF/3NSfnsEq3Gei9cUySMlSsU8ITDHZBVLCyMKHPz5F2WUqmsC4hgy0kTPqcX6
+         duVw==
+X-Forwarded-Encrypted: i=1; AJvYcCU3PxzfDJz+AYmm+zrhkEZCKPMoUdSurCk1qsauqrs64bNlfIIZVUtjyVU/DrvZzB1O9u0Okg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyNIfeLXsmmWN91edRDXPl/4JG86hPR8PfZWagfyyKEJMewlPh4
+	1LQZPdLUBhcuE7VL50Cp8ECaUaSoE65tT5Q1Lst7CQ0BiI9TQT+S2347M2d0rBgnF7YU1OuBQZE
+	yYu4Eiap1Md40XQ==
+X-Google-Smtp-Source: AGHT+IGFAKSNmw8iYSKRrK9GJvSB49WtExb49RjLckPU3ZxW1Xt1iEJUBMJZeDOD3UW4tcj2DZSh10gOcwSWPA==
+X-Received: from pfbf6.prod.google.com ([2002:a05:6a00:ad86:b0:77c:37c1:4bef])
  (user=skhawaja job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:6300:6d1a:b0:2f9:dc8d:d2b3 with SMTP id adf61e73a8af0-2f9dc8dd5e4mr5325467637.22.1759086471611;
- Sun, 28 Sep 2025 12:07:51 -0700 (PDT)
-Date: Sun, 28 Sep 2025 19:06:15 +0000
+ 2002:a05:6a00:6d5a:20b0:782:ec0f:d279 with SMTP id d2e1a72fcca58-782ec0fd804mr2724979b3a.10.1759086473198;
+ Sun, 28 Sep 2025 12:07:53 -0700 (PDT)
+Date: Sun, 28 Sep 2025 19:06:16 +0000
 In-Reply-To: <20250928190624.3735830-1-skhawaja@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -59,9 +59,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20250928190624.3735830-1-skhawaja@google.com>
 X-Mailer: git-send-email 2.51.0.536.g15c5d4f767-goog
-Message-ID: <20250928190624.3735830-8-skhawaja@google.com>
-Subject: [RFC PATCH 07/15] iommu/vt-d: Add implementation of live update
- prepare callback
+Message-ID: <20250928190624.3735830-9-skhawaja@google.com>
+Subject: [RFC PATCH 08/15] iommu/vt-d: Implement live update preserve_iommu_context
 From: Samiullah Khawaja <skhawaja@google.com>
 To: David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
 	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
@@ -74,228 +73,137 @@ Cc: Samiullah Khawaja <skhawaja@google.com>, Robin Murphy <robin.murphy@arm.com>
 	Chris Li <chrisl@kernel.org>, praan@google.com
 Content-Type: text/plain; charset="UTF-8"
 
-Liveupdate prepare callback preserves the iommus of the devices that are
-attached to a preserved iommu domain. It does this for only pcie devices
-by iterating through all the pcie devices and checking whether the
-attached iommu domain is preserved.
-
-Only stub implementation of the iommu and device preservation are added
-with this commit.
+Add implementation of preserve_iommu_context to preserve the root_table
+and the associated context tables. Also mark the iommu unit as
+preserved.
 
 Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
 ---
- drivers/iommu/intel/dmar.c       |   4 +
- drivers/iommu/intel/iommu.h      |   3 +
- drivers/iommu/intel/liveupdate.c | 150 ++++++++++++++++++++++++++++++-
- 3 files changed, 156 insertions(+), 1 deletion(-)
+ drivers/iommu/intel/iommu.c      |  2 -
+ drivers/iommu/intel/iommu.h      |  1 +
+ drivers/iommu/intel/liveupdate.c | 80 +++++++++++++++++++++++++++++++-
+ 3 files changed, 79 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-index 248bc7e9b035..cd6ce519c1da 100644
---- a/drivers/iommu/intel/dmar.c
-+++ b/drivers/iommu/intel/dmar.c
-@@ -1101,6 +1101,10 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
- 	ida_init(&iommu->domain_ida);
- 	mutex_init(&iommu->did_lock);
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 7035ffca020f..caac4fd9a51e 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -67,8 +67,6 @@ static int force_on = 0;
+ static int intel_iommu_tboot_noforce;
+ static int no_platform_optin;
  
-+#ifdef CONFIG_LIVEUPDATE
-+	atomic_set(&iommu->preserved, 0);
-+#endif
-+
- 	ver = readl(iommu->reg + DMAR_VER_REG);
- 	pr_info("%s: reg_base_addr %llx ver %d:%d cap %llx ecap %llx\n",
- 		iommu->name,
+-#define ROOT_ENTRY_NR (VTD_PAGE_SIZE/sizeof(struct root_entry))
+-
+ /*
+  * Take a root_entry and return the Lower Context Table Pointer (LCTP)
+  * if marked present.
 diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index 6b69232efffd..93ac55eb49f0 100644
+index 93ac55eb49f0..273d40812d09 100644
 --- a/drivers/iommu/intel/iommu.h
 +++ b/drivers/iommu/intel/iommu.h
-@@ -758,6 +758,9 @@ struct intel_iommu {
- 	void *perf_statistic;
- 
- 	struct iommu_pmu *pmu;
-+#ifdef CONFIG_LIVEUPDATE
-+	atomic_t preserved;
-+#endif
+@@ -556,6 +556,8 @@ struct root_entry {
+ 	u64     lo;
+ 	u64     hi;
  };
++
++#define ROOT_ENTRY_NR (VTD_PAGE_SIZE / sizeof(struct root_entry))
  
- /* PCI domain-device relationship */
+ /*
+  * low 64 bits:
 diff --git a/drivers/iommu/intel/liveupdate.c b/drivers/iommu/intel/liveupdate.c
-index a15feef4d9ca..94aabf025a60 100644
+index 94aabf025a60..fb214736aa3c 100644
 --- a/drivers/iommu/intel/liveupdate.c
 +++ b/drivers/iommu/intel/liveupdate.c
-@@ -6,24 +6,172 @@
- 
- #define pr_fmt(fmt)    "iommu: liveupdate: " fmt
- 
-+#include <linux/kexec_handover.h>
- #include <linux/liveupdate.h>
- #include <linux/module.h>
-+#include <linux/pci.h>
- 
- #include "iommu.h"
- 
-+struct iommu_unit_ser {
-+	u64 phys_addr;
-+	u64 root_table;
-+};
-+
-+struct device_ser {
-+	u64 bdf;
-+	u64 pasid_table;
-+	u64 pasid_order;
-+	u64 iommu_phys;
-+};
-+
-+struct iommu_ser {
-+	u64 nr_iommus;
-+	u64 nr_devices;
-+
-+	union {
-+		u64 iommu_units_phys;
-+		struct iommu_unit_ser *iommu_units;
-+	};
-+
-+	union {
-+		u64 devices_phys;
-+		struct device_ser *devices;
-+	};
-+};
-+
- int intel_iommu_domain_liveupdate_preserve(struct iommu_domain *domain)
- {
- 	pr_warn("Not implemented\n");
- 	return 0;
-+}
-+
-+static bool is_device_domain_preserved(struct device *dev)
-+{
-+	struct device_domain_info *info = dev_iommu_priv_get(dev);
- 
-+	return atomic_read(&info->domain->domain.preserved) == 1;
- }
- 
--static int intel_liveupdate_prepare(struct liveupdate_subsystem *handle, u64 *data)
-+static int preserve_device_state(struct pci_dev *dev, struct device_ser *ser)
- {
- 	pr_warn("Not implemented\n");
+@@ -59,11 +59,87 @@ static int preserve_device_state(struct pci_dev *dev, struct device_ser *ser)
  	return 0;
  }
  
-+static int preserve_iommu_state(struct intel_iommu *iommu,
-+				struct iommu_unit_ser *ser)
++static int unpreserve_iommu_context(struct intel_iommu *iommu, int end)
 +{
-+	pr_warn("Not implemented\n");
-+	return 0;
-+}
++	struct context_entry *context;
++	int i;
 +
-+static void unpreserve_state(struct iommu_ser *ser)
-+{
-+	pr_warn("Not implemented\n");
-+}
++	if (end < 0)
++		end = ROOT_ENTRY_NR;
 +
-+static int preserve_state(struct iommu_ser *ser)
-+{
-+	struct device_domain_info *info;
-+	struct pci_dev *pdev = NULL;
-+	struct dmar_drhd_unit *drhd;
-+	struct intel_iommu *iommu;
-+	int ret = 0;
++	for (i = 0; i < end; i++) {
++		context = iommu_context_addr(iommu, i, 0, 0);
++		if (context)
++			WARN_ON_ONCE(kho_unpreserve_folio(virt_to_folio(context)));
 +
-+	for_each_pci_dev(pdev) {
-+		if (!is_device_domain_preserved(&pdev->dev))
++		if (!sm_supported(iommu))
 +			continue;
 +
-+		info = dev_iommu_priv_get(&pdev->dev);
-+		if (!info)
-+			return -EINVAL;
-+
-+		if (ser->devices)
-+			ret = preserve_device_state(pdev, &ser->devices[ser->nr_devices]);
-+
-+		if (ret)
-+			return ret;
-+
-+		atomic_set(&info->iommu->preserved, 1);
-+		ser->nr_devices++;
-+	}
-+
-+	for_each_iommu(iommu, drhd) {
-+		if (!atomic_read(&iommu->preserved))
-+			continue;
-+
-+		atomic_set(&iommu->preserved, 0);
-+		if (ser->iommu_units)
-+			ret = preserve_iommu_state(iommu, &ser->iommu_units[ser->nr_iommus]);
-+
-+		if (ret)
-+			return ret;
-+
-+		ser->nr_iommus++;
++		context = iommu_context_addr(iommu, i, 0x80, 0);
++		if (context)
++			WARN_ON_ONCE(kho_unpreserve_folio(virt_to_folio(context)));
 +	}
 +
 +	return 0;
 +}
 +
-+static struct iommu_ser *alloc_preserve_state_mem(void)
++static int preserve_iommu_context(struct intel_iommu *iommu)
 +{
-+	struct iommu_ser *ser_ptr;
-+	struct iommu_ser ser;
-+	struct folio *folio;
-+	size_t sz;
++	struct context_entry *context;
 +	int ret;
++	int i;
 +
-+	memset(&ser, 0, sizeof(ser));
-+	ret = preserve_state(&ser);
-+	if (ret)
-+		goto error;
++	for (i = 0; i < ROOT_ENTRY_NR; i++) {
++		context = iommu_context_addr(iommu, i, 0, 0);
++		if (context) {
++			ret = kho_preserve_folio(virt_to_folio(context));
++			if (ret)
++				goto error;
++		}
 +
-+	sz = sizeof(struct iommu_ser) +
-+			(ser.nr_iommus * sizeof(struct iommu_unit_ser)) +
-+			(ser.nr_devices * sizeof(struct device_ser));
++		if (!sm_supported(iommu))
++			continue;
 +
-+	folio = folio_alloc(GFP_KERNEL, get_order(sz));
-+	if (!folio)
-+		return ERR_PTR(-ENOMEM);
++		context = iommu_context_addr(iommu, i, 0x80, 0);
++		if (context) {
++			ret = kho_preserve_folio(virt_to_folio(context));
++			if (ret)
++				goto error_sm;
++		}
++	}
 +
-+	ret = kho_preserve_folio(folio);
-+	if (ret)
-+		goto error_preserve;
++	return 0;
 +
-+	ser_ptr = folio_address(folio);
-+	memset(ser_ptr, 0, sz);
-+	ser_ptr->iommu_units = (void *)(ser_ptr + 1);
-+	ser_ptr->devices = (void *)(ser_ptr->iommu_units + ser.nr_iommus);
-+
-+	return ser_ptr;
-+
-+error_preserve:
-+	folio_put(folio);
++error_sm:
++	context = iommu_context_addr(iommu, i, 0, 0);
++	WARN_ON_ONCE(kho_unpreserve_folio(virt_to_folio(context)));
 +error:
-+	return ERR_PTR(ret);
-+}
-+
-+static int intel_liveupdate_prepare(struct liveupdate_subsystem *handle, u64 *data)
-+{
-+	struct iommu_ser *ser;
-+	int ret;
-+
-+	guard_liveupdate_state_write();
-+	ser = alloc_preserve_state_mem();
-+	if (IS_ERR(ser))
-+		return PTR_ERR(ser);
-+
-+	ret = preserve_state(ser);
-+	if (ret)
-+		unpreserve_state(ser);
-+
-+	if (!ret)
-+		*data = __pa(ser);
-+
++	WARN_ON_ONCE(unpreserve_iommu_context(iommu, i));
 +	return ret;
 +}
 +
- static void intel_liveupdate_cancel(struct liveupdate_subsystem *handle, u64 data)
+ static int preserve_iommu_state(struct intel_iommu *iommu,
+ 				struct iommu_unit_ser *ser)
  {
- 	pr_warn("Not implemented\n");
+-	pr_warn("Not implemented\n");
+-	return 0;
++	int ret;
++
++	spin_lock(&iommu->lock);
++	ret = preserve_iommu_context(iommu);
++	if (ret)
++		goto error;
++
++	ret = kho_preserve_folio(virt_to_folio(iommu->root_entry));
++	if (ret) {
++		unpreserve_iommu_context(iommu, -1);
++		goto error;
++	}
++
++	ser->phys_addr = iommu->reg_phys;
++	ser->root_table = __pa(iommu->root_entry);
++	atomic_set(&iommu->preserved, 1);
++error:
++	spin_unlock(&iommu->lock);
++	return ret;
+ }
+ 
+ static void unpreserve_state(struct iommu_ser *ser)
 -- 
 2.51.0.536.g15c5d4f767-goog
 
