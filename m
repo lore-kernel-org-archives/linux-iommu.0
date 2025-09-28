@@ -1,196 +1,104 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B639C1494C3;
-	Sun, 28 Sep 2025 17:17:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 059C7227BB5
+	for <iommu@lists.linux.dev>; Sun, 28 Sep 2025 17:35:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759079874; cv=none; b=u3tSHZdZuP9awJE9E8yhvpKBKRSbb/Kr/4aTVzkKQDYZEYaWxXzykEFKc3nGrYhwFYr7f8qZja4xwsddX6mB3M+gS6vvcKqryHlxivo0xOkT1xvLpi19ZSAVF7FwV+kjBZgrpBRO8zeBvtNOUfaKK9s6gKuq3I73+p9pn1CQ1Z8=
+	t=1759080958; cv=none; b=HWVB8wMvay3nH9M12jFVAJCGl81L+Ifxcgww84BIGcX+isSFQkJ5CIOArMdRadvp9+C44ZuGPjSKMgILMfkmbSldkU9T1O0kEcZgTpK8ngTcNrVUj8+Hx+0rJAM6wLg6Q4MlLoakPJU0m/cey8m0C6p2onQg/5Hm/Xltef8bUtQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759079874; c=relaxed/simple;
-	bh=5RBuK09EVOyYkXHD4zvVywFmut3grmLymlPS2wQ9/w4=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=NyHZ50OaBpaZnOeNApojBqwWlYS1cxlZFOanBN305o4dYXSIzFrlljn4+YjqBq90m2FHOWI9cHe/FMzzxs6mn5zCjoGHPvSi9JNwcKriXSzWzrwwMLChpAdFKR0DvapMo/5okmg3Ph5l4PDNcHzblAYCVSpFfA5vgC8Iq97NeIg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=C914esgf; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=qualcomm.com
+	s=arc-20240116; t=1759080958; c=relaxed/simple;
+	bh=1hWHgpM/rb70qd87juqmeSrMZFHqG1itquQCJwHGhEk=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=J57KjRgLf4uxd036pYodaDoxdwcPu9Whn63uu6jqqypFDzQM+kjgue0w1SGNtSs0sfc8SU17mvOqyDYANJhiinftRtlptCv0nIPdBPK73HQdpz4ZxF0QflWskncRMQ2Z8SDx32gHhsJp2eYzON2VWwSzpi9ysN2anUfzlDwaFIo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=b/1NBur6; arc=none smtp.client-ip=209.85.208.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="C914esgf"
-Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 58SGrFB7024946;
-	Sun, 28 Sep 2025 17:17:26 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:date:from:in-reply-to:message-id
-	:mime-version:references:subject:to; s=qcppdkim1; bh=4IP0H+KM2Y8
-	li2p4r3BV6jUlQlBH4IbPQPuiqrFVGg0=; b=C914esgfNmzSqK6Uo+D9Cbk5zhn
-	wOvYmNamRC6npqNRgkdUWUt9kjOCPTlX0nUy/nnwOkMCEhWMlCfGEkun91ZmPcSX
-	yUVqSAE0LBY92rSlys44ir66wiAGQxsry+C3Z5dy1TtctMTAgRzki0uQHxDNCDu+
-	YNKDBIq1Yi6CO8WBYB/lKwDcvDlsbopKT/2E4fUQYy4J4MPe7CMgvzudkiwEEx4V
-	uaCiTmuxTCGGlvoYWBLshKAUokOVcPhg7d1yYvuuDmPJjE6h61s5uLChyWIvGW20
-	lTvQJmA8tWY/a97EWRsIL5PLslP6RFVOVZNxwLd0whQLXwm4EmPZSrSPbcA==
-Received: from apblrppmta01.qualcomm.com (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 49e78fu30w-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Sun, 28 Sep 2025 17:17:26 +0000 (GMT)
-Received: from pps.filterd (APBLRPPMTA01.qualcomm.com [127.0.0.1])
-	by APBLRPPMTA01.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTP id 58SHHM87018671;
-	Sun, 28 Sep 2025 17:17:22 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-	by APBLRPPMTA01.qualcomm.com (PPS) with ESMTPS id 49e90k74pe-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Sun, 28 Sep 2025 17:17:22 +0000
-Received: from APBLRPPMTA01.qualcomm.com (APBLRPPMTA01.qualcomm.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 58SHHMRw018653;
-	Sun, 28 Sep 2025 17:17:22 GMT
-Received: from hu-devc-hyd-u22-c.qualcomm.com (hu-charante-hyd.qualcomm.com [10.213.97.134])
-	by APBLRPPMTA01.qualcomm.com (PPS) with ESMTPS id 58SHHMpL018647
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Sun, 28 Sep 2025 17:17:22 +0000
-Received: by hu-devc-hyd-u22-c.qualcomm.com (Postfix, from userid 389980)
-	id 379375F0; Sun, 28 Sep 2025 22:47:21 +0530 (+0530)
-From: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
-To: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
-        saravanak@google.com, conor+dt@kernel.org, robh@kernel.org,
-        mchehab@kernel.org, bod@kernel.org, krzk+dt@kernel.org,
-        abhinav.kumar@linux.dev, vikash.garodia@oss.qualcomm.com,
-        dikshita.agarwal@oss.qualcomm.com
-Cc: linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        iommu@lists.linux.dev,
-        Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
-Subject: [RFC PATCH 2/3] of: create a wrapper for of_map_id()
-Date: Sun, 28 Sep 2025 22:47:17 +0530
-Message-Id: <20250928171718.436440-3-charan.kalla@oss.qualcomm.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20250928171718.436440-1-charan.kalla@oss.qualcomm.com>
-References: <20250928171718.436440-1-charan.kalla@oss.qualcomm.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="b/1NBur6"
+Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-63486ff378cso7507341a12.0
+        for <iommu@lists.linux.dev>; Sun, 28 Sep 2025 10:35:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1759080955; x=1759685755; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=1hWHgpM/rb70qd87juqmeSrMZFHqG1itquQCJwHGhEk=;
+        b=b/1NBur6houioUR9rKLwKpNv26TqlqCeRLj5WfczSuDPRygdH4ryzflqZotNfBWnMS
+         pYfXGAVfME5/1ppguir3d2sc1wizHv1uQu5RIogBU5v/JNqhHyosXbZy9iBczRYsB4Kx
+         M6NzIvgY4xn4lawPL+b/TAUWKC1bcjNF3AErhy/J4DemRvI/X+Pq4Y595ueryii7r8JS
+         HVWIXMEBxaPvzb6q4yPek2oXWkPTpiKBgd1NcyMcskfzEbwzIfUvGjVKcbLUyM+Eu3ZL
+         DhwZdwQ9R4iNF8RAB0s3KrXDyU9uYW+oQk2C4xL+f7y/uUAb+CMSz46dPQEniZVaPmlI
+         lgiw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1759080955; x=1759685755;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=1hWHgpM/rb70qd87juqmeSrMZFHqG1itquQCJwHGhEk=;
+        b=L6ux2LbFogARET4q80ml8+Ust09A+2BthE+IVPP9aJdPatjdta1oVRzY63E39gXV4c
+         40/jgfxd0ivXvqW8NIOjIeeVPpExfZ2B0Jl7U0dp1QsAop5DoQSQqOs028rGzPD9UBrB
+         t0+/qpxGDXcA2ROoJe9LaLP33xI9v0M0CHWeU72yGqkKSP/S8yFu9Dv4HNzvbn64lKIl
+         F1E87HD/F0fEHtj/bHLGEK1AEO0oh2ucDdfWWJgwAaDNDAUzt6oVm/9FO1926WpIfOhs
+         Ku7J53zYxNrPI7/x7pna7MqWA+v8enXr0Q6EsmRE/Qe2IOz5rcLqc7VNJLCrlBlfGlAq
+         hIKw==
+X-Forwarded-Encrypted: i=1; AJvYcCV+KffKAZnU2cjzrxXZbiKPgU1A09YII4OXWEEbBCuYY37xdrD9K1oe23dHqqye97EGYdGbxA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyKnp5DSToi9M0AtXzT0e7poXM0MHxPE4q80Vm//cKBcwq9NuYR
+	QzShxWTOc57xeYmRQZuropcMFANHlMCSmmxt7rbyG2teG4S37cON0Eum53cVH/peYK6pu/yZjPp
+	EDcHC8AGatpSXRHtOnaydSX+fWa6cfdk=
+X-Gm-Gg: ASbGncvVH/vxgsxbWnJzqpT40wTaeoVidGk19CWKa/U4sHUGTbGyk6izpMTxbFYEjsZ
+	+0iwXSNPqn1ffL3480d8PmOq+tjn3qTLwq+OCtO94RY04jNT4Hzgu5WnY4fiMz5Y37F9XItMDrU
+	+kLQ0ovVUmDvwc4SfazF9XsDqtvhNgiHwjSXHwoEPfsFsGBA2vG37nr5W7ybmnBSzQJ03QkmPlU
+	Bx7We92nRnd65byXNM=
+X-Google-Smtp-Source: AGHT+IF4LtUw7v9U/JYoQT0Wh7nzvSFhJ3UqproTerTY3SiJCa0Vl/rRvk3JMudUZqWnlv9RN4X9SRqdzNlv4OAcKN8=
+X-Received: by 2002:a05:6402:352:b0:62f:453c:7235 with SMTP id
+ 4fb4d7f45d1cf-634ce845b9amr4127811a12.15.1759080955040; Sun, 28 Sep 2025
+ 10:35:55 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QCInternal: smtphost
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Authority-Analysis: v=2.4 cv=DZAaa/tW c=1 sm=1 tr=0 ts=68d96da6 cx=c_pps
- a=Ou0eQOY4+eZoSc0qltEV5Q==:117 a=Ou0eQOY4+eZoSc0qltEV5Q==:17
- a=yJojWOMRYYMA:10 a=EUspDBNiAAAA:8 a=BA3SHdP6qxbv-UjKQhIA:9
- a=cPQSjfK2_nFv0Q5t_7PE:22
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwOTI3MDAyMiBTYWx0ZWRfX5u4M687hG9T/
- yY7+cQIj6Fx0AMqx3pUivoB6DT/uSxTaRIgqTL+C28RWvYmhZ21eRubOBfEiJ1Cs/R6nECYBkr/
- jyI7Y+LTLNUZoqQqpuukR/1kJulPYoJl5vEF878wvvrDNQk+GUJ25tHQ4KbGAGurxvTCqIjZ9Mz
- 8YkZGDh2Z2ESXKLe280OUnbyB+CTNiNZUnaVd1+cCEJyuodLdELxNh99urfLtJicYr92GXqNICS
- 49p4jnUdF69iNYosjcvcNdYjXy8Qg/bVHz+b9mgs8rvfCoQe3gF40Bp+BPh4WFzU5ZcGTkU5HEj
- HoWKSGqKfEv1aOqA5YKyTiiMSQQ1f95LtrVgty8OP4Uhv9HdKVovVPGAtdZfmLAHNEeVOzXO928
- S8S5mqv+++1fu5woVlVLbB87qR8PAg==
-X-Proofpoint-GUID: 1xP_p3OU49YfZH8-Cq8WZDCHk8vjTmWT
-X-Proofpoint-ORIG-GUID: 1xP_p3OU49YfZH8-Cq8WZDCHk8vjTmWT
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1117,Hydra:6.1.9,FMLib:17.12.80.40
- definitions=2025-09-28_07,2025-09-26_01,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- phishscore=0 malwarescore=0 bulkscore=0 clxscore=1015 adultscore=0
- impostorscore=0 priorityscore=1501 lowpriorityscore=0 suspectscore=0
- spamscore=0 classifier=typeunknown authscore=0 authtc= authcc= route=outbound
- adjust=0 reason=mlx scancount=1 engine=8.19.0-2509150000
- definitions=main-2509270022
+References: <cover.1759071169.git.leon@kernel.org> <512d4c498103fcfccd8c60ce1982cd961434d30b.1759071169.git.leon@kernel.org>
+In-Reply-To: <512d4c498103fcfccd8c60ce1982cd961434d30b.1759071169.git.leon@kernel.org>
+From: Magnus Lindholm <linmag7@gmail.com>
+Date: Sun, 28 Sep 2025 19:35:43 +0200
+X-Gm-Features: AS18NWBtQV3w4fhUJT0qJjc42RZ2Y4lnsCSX8_2AFcicJQutzVlCWs2uQTVZ_oE
+Message-ID: <CA+=Fv5SzdR4=NXz68gRg0iXY-6Y=GRsO24UA-DF4tuyJ8r7w7Q@mail.gmail.com>
+Subject: Re: [PATCH v1 1/9] alpha: Convert mapping routine to rely on physical address
+To: Leon Romanovsky <leon@kernel.org>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Leon Romanovsky <leonro@nvidia.com>, 
+	Jason Gunthorpe <jgg@nvidia.com>, Andreas Larsson <andreas@gaisler.com>, Borislav Petkov <bp@alien8.de>, 
+	Dave Hansen <dave.hansen@linux.intel.com>, "David S. Miller" <davem@davemloft.net>, 
+	Geoff Levand <geoff@infradead.org>, Helge Deller <deller@gmx.de>, Ingo Molnar <mingo@redhat.com>, 
+	iommu@lists.linux.dev, 
+	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Jason Wang <jasowang@redhat.com>, 
+	Juergen Gross <jgross@suse.com>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, 
+	linuxppc-dev@lists.ozlabs.org, Madhavan Srinivasan <maddy@linux.ibm.com>, 
+	Matt Turner <mattst88@gmail.com>, Michael Ellerman <mpe@ellerman.id.au>, 
+	"Michael S. Tsirkin" <mst@redhat.com>, Richard Henderson <richard.henderson@linaro.org>, 
+	sparclinux@vger.kernel.org, Stefano Stabellini <sstabellini@kernel.org>, 
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Thomas Gleixner <tglx@linutronix.de>, 
+	virtualization@lists.linux.dev, x86@kernel.org, 
+	xen-devel@lists.xenproject.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Create a wrapper function for of_map_id(). This wrapper takes additional
-params in the subsequent patches. No functional changes.
+On Sun, Sep 28, 2025 at 5:02=E2=80=AFPM Leon Romanovsky <leon@kernel.org> w=
+rote:
+>
+> From: Leon Romanovsky <leonro@nvidia.com>
+>
+> Alpha doesn't need struct *page and can perform mapping based on
+> physical addresses. So convert it to implement new .map_phys callback.
+>
+> As part of this change, remove useless BUG_ON() as DMA mapping layer
+> ensures that right direction is provided.
 
-Signed-off-by: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
----
- drivers/of/base.c  | 36 ++++++++++++++++++++++++++++--------
- include/linux/of.h | 11 +++++++++++
- 2 files changed, 39 insertions(+), 8 deletions(-)
+After the changes in v1 this runs fine on Alpha. I've tested this on an
+ES40 Alphaserver during load (build kernel and unpack tar files).
+The v1 patch fixes the errors seen in the first revision of this patch.
 
-diff --git a/drivers/of/base.c b/drivers/of/base.c
-index 7043acd971a0..ed2a924d1fab 100644
---- a/drivers/of/base.c
-+++ b/drivers/of/base.c
-@@ -2054,17 +2054,11 @@ int of_find_last_cache_level(unsigned int cpu)
-  * @target: optional pointer to a target device node.
-  * @id_out: optional pointer to receive the translated ID.
-  *
-- * Given a device ID, look up the appropriate implementation-defined
-- * platform ID and/or the target device which receives transactions on that
-- * ID, as per the "iommu-map" and "msi-map" bindings. Either of @target or
-- * @id_out may be NULL if only the other is required. If @target points to
-- * a non-NULL device node pointer, only entries targeting that node will be
-- * matched; if it points to a NULL value, it will receive the device node of
-- * the first matching target phandle, with a reference held.
-+ * Look at the documentation of of_map_id().
-  *
-  * Return: 0 on success or a standard error code on failure.
-  */
--int of_map_id(const struct device_node *np, u32 id,
-+int of_map_id_and_mask(const struct device_node *np, u32 id,
- 	       const char *map_name, const char *map_mask_name,
- 	       struct device_node **target, u32 *id_out)
- {
-@@ -2149,4 +2143,30 @@ int of_map_id(const struct device_node *np, u32 id,
- 		*id_out = id;
- 	return 0;
- }
-+
-+/* of_map_id - Translate an ID through a downstream mapping.
-+ * @np: root complex device node.
-+ * @id: device ID to map.
-+ * @map_name: property name of the map to use.
-+ * @map_mask_name: optional property name of the mask to use.
-+ * @target: optional pointer to a target device node.
-+ * @id_out: optional pointer to receive the translated ID.
-+ *
-+ * Given a device ID, look up the appropriate implementation-defined
-+ * platform ID and/or the target device which receives transactions on that
-+ * ID, as per the "iommu-map" and "msi-map" bindings. Either of @target or
-+ * @id_out may be NULL if only the other is required. If @target points to
-+ * a non-NULL device node pointer, only entries targeting that node will be
-+ * matched; if it points to a NULL value, it will receive the device node of
-+ * the first matching target phandle, with a reference held.
-+ *
-+ * Return: 0 on success or a standard error code on failure.
-+ */
-+int of_map_id(const struct device_node *np, u32 id,
-+	       const char *map_name, const char *map_mask_name,
-+	       struct device_node **target, u32 *id_out)
-+{
-+	return of_map_id_and_mask(np, id, map_name, map_mask_name,
-+			target, id_out);
-+}
- EXPORT_SYMBOL_GPL(of_map_id);
-diff --git a/include/linux/of.h b/include/linux/of.h
-index a62154aeda1b..6fcc46e8b3da 100644
---- a/include/linux/of.h
-+++ b/include/linux/of.h
-@@ -460,6 +460,10 @@ int of_map_id(const struct device_node *np, u32 id,
- 	       const char *map_name, const char *map_mask_name,
- 	       struct device_node **target, u32 *id_out);
- 
-+int of_map_id_and_mask(const struct device_node *np, u32 id,
-+		const char *map_name, const char *map_mask_name,
-+		struct device_node **target, u32 *id_out);
-+
- phys_addr_t of_dma_get_max_cpu_address(struct device_node *np);
- 
- struct kimage;
-@@ -905,6 +909,13 @@ static inline int of_map_id(const struct device_node *np, u32 id,
- 	return -EINVAL;
- }
- 
-+static inline int of_map_id_and_mask(const struct device_node *np, u32 id,
-+		const char *map_name, const char *map_mask_name,
-+		struct device_node **target, u32 *id_out)
-+{
-+	return -EINVAL;
-+}
-+
- static inline phys_addr_t of_dma_get_max_cpu_address(struct device_node *np)
- {
- 	return PHYS_ADDR_MAX;
--- 
-2.34.1
-
+Tested-by: Magnus Lindholm <linmag7@gmail.com>
