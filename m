@@ -1,129 +1,120 @@
-Received: from mail-qv1-f48.google.com (mail-qv1-f48.google.com [209.85.219.48])
+Received: from mail-qt1-f174.google.com (mail-qt1-f174.google.com [209.85.160.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E093C21257F
-	for <iommu@lists.linux.dev>; Mon, 29 Sep 2025 17:43:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8479B15855E
+	for <iommu@lists.linux.dev>; Mon, 29 Sep 2025 17:46:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759167794; cv=none; b=AXL3AelatW27YgEVqye2xx9/7mpzz30avDE5xeLZ1zHyuX3IMrNPL04ESdqhXa8wgYbw/GEhKrkRUt9mhhVKicyvTsvX2WItqrVoHnydWHKo9DBlxmKfpEfgALw4KJ530D6efYugwn8BUiBLGKDCG+TM0r8atuYghrN+9eyDlnQ=
+	t=1759167979; cv=none; b=R6jt6MyHIQYPvJRlL6X8NgATpurHfcp4gdZNQUM7ToydTRpI3EGQwMNRbTJZ7bzaduWGCohN8yOjULJgQRN45IgMnPoRWhBQEISTiMM2WBIeK7U1vn9GMbquvqn/iL+REii1FETIP/qHZYtCa4sOm7lhlFF47SkWHdtrJiw6K9M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759167794; c=relaxed/simple;
-	bh=3JVKtBMAMZZBZ5zOL9O8wIoDC8qOntu82iaKyXHAYrE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lBXAcYZC3TE7XRepjuVA3widlEct2ZgT11ACHXdRBs2sDSW4Rpd/B01qF75w8SgrkIWcYzgbQ/JaVbFqbmS63WJUPedzlnV4nAWgrsEc8VDb/ghSxz1XfkUB/SLKYodJcC+jEUsJ/fKfKOFAtSdjMGJ8Bcsf2R+a8h32RK8Eg4g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=gg6tJ3aB; arc=none smtp.client-ip=209.85.219.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1759167979; c=relaxed/simple;
+	bh=eXmObNrvqTREabEVoaPfipK3nhi82p1Oorr9WTbWpS4=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=urKreDperbTSmyh2qmrM0K/ckzU7ZoQwTFPI/7ZLgieuDOMKmsXez/smcdMZr1qscOv5GOOxwNnSDhFLqOlIZ3CiqWgrmTZ1GG22se0Ouj7xXvNksaRtY3PbAwVBW1E2ffR/ajwmZfUHcaKO44U0kmuqn4tWcFBMG6Ca7S5u1Vw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=soleen.com; spf=pass smtp.mailfrom=soleen.com; dkim=pass (2048-bit key) header.d=soleen.com header.i=@soleen.com header.b=Cxgs6wpx; arc=none smtp.client-ip=209.85.160.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=soleen.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=soleen.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="gg6tJ3aB"
-Received: by mail-qv1-f48.google.com with SMTP id 6a1803df08f44-7ea50f94045so56944446d6.1
-        for <iommu@lists.linux.dev>; Mon, 29 Sep 2025 10:43:12 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=soleen.com header.i=@soleen.com header.b="Cxgs6wpx"
+Received: by mail-qt1-f174.google.com with SMTP id d75a77b69052e-4d9f7a34daaso43000181cf.0
+        for <iommu@lists.linux.dev>; Mon, 29 Sep 2025 10:46:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1759167792; x=1759772592; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=hTb85gQ4f+/WEhJAyT+/KrdoEgjCXeB2waAEe62R8S0=;
-        b=gg6tJ3aBDq4of1/9906RyPeLdpBJDeyBQQqWQhVSL9o01GucWk+OzR5PT1JFYOpVwx
-         WgCGGdjZeSxgQXo65Eg389KH76r07f9ZxWOVRVeBBxS+ZVpXYFxaPfTgVN9+X/WUP+JU
-         RYqSJrk/XYS7oQ7XhPjIPqmZYtNr2plKhEDUB9A10fSyn2FyISISiRCJY9JfPlxJ0jkf
-         myAVmzExl51yQWR9pLvbObgbLUJkb7fFMHtIZC87jDfAb9BpumTMWjezVtLHBZHdM+V7
-         MUQzf2KJkN/VSeTf0/McoioY4CAC4dUXVUAXEIU5iKmM+4kJCCFfN1b8KRJsMe6/XPRK
-         EGsA==
+        d=soleen.com; s=google; t=1759167975; x=1759772775; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=mp5nx4TC/38dVlnjuJTLG0gnQNJPQsJ2h6t5725+5tw=;
+        b=Cxgs6wpxTGOcu6AK7Lv2fdqNwmoALQ3x0elknlfAACEXJpA44LZ+X4eOw4RZ+Bq2lB
+         H7jCYabPdXHUPQXHo1il1m/jEIWB1fUrI1+qGijLZX2NXVyY4n1O2QPCBbUH9Ajz7jsC
+         7Bdx44rEXLLzVzaa3463ZwfzJXnw+rrVXoB3O2kdYQcyQaytGmDgg9e+kFRiRtdF4t2t
+         58t3gCS6NjcSXCRL2zAwGUwdtai6mB01YXW5lyU5an9j07pkv6WGPkIvISxziiWLGp8K
+         F5nOQRR4MPJU3UXQQA1Mdxza01d/PslpwMPT6vr7efxlQFz/2vbdRZG4ODuWoOzVhAZ+
+         GSTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1759167792; x=1759772592;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=hTb85gQ4f+/WEhJAyT+/KrdoEgjCXeB2waAEe62R8S0=;
-        b=SNavmUXk8n967RuT5d7RupvpX+ZWF1r+8SYXwqgxmIae/6UNmVQclvlJYnTjgBkstc
-         FQ0kDRxEm8L0Pww+fYJz3UUdrvTnu9h9Po7bK7KYuyVzD89jBJo8DmrakAAXJUjkx9zL
-         +rM195tCJ0alQZYsC50G+Sq+PxV04lsmbn0IHNavFuHTyKIsM2ME1erz5rhntcL948Ic
-         q+lcMjs86/7Es6VLjWjieOPHjuWPUpbEfclC50lDlVEhm3+a7/CXVKZlMDfIqHjOXSA/
-         ZCxZ3U9BaaRiYdY71Y7ylmfFxZCZqmDjNZ75mG1i17a3yw2g8FWATGJ9UKcD5SwQgz/g
-         hMrw==
-X-Forwarded-Encrypted: i=1; AJvYcCW8xzVlve55NZxXVOHrulU/ETbc0aLbOns6tA1ranNQLGyK7NRuFUs5SA6NpjLPQVG3HLZf7Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwgLpcOTr7QWs0s9RrRL1rHmVYbgR1gkYHQfYBEZW12OfILlhnP
-	zsQ9/K7KL5a96g7EsUEP9oYXqPMB5NqgW00SkdAN/jTAVwf5PoM/SMisvErt7CogLmQ=
-X-Gm-Gg: ASbGnctUazW1h1gtiV9oYKoOgHHyrcIXESIxmciQjfPRhzn1MEJampWyPoJ7QiDbKWo
-	VAhEOZwP/8OygxYTE62UJXAp0t1HT2u6A1A0IGoodeqQp01NDhiet3Hr2Q7botMW4sVCktVYnhM
-	Rgo/mBUA03iUCVra2rLV5rBKeHfvjRbnmq2XNgoAiNr+iTznBW0NYYpWGj24tCmDCF45Cs0zoc3
-	MiQSVn3B7AjyWYHwfrRqX1sry3tC2B2QQP+yJi74TSbMc7Hk9Jlbq77cqVbndT6lERq0tHiBD54
-	DhpzwPk4/5KfIOMJCUeU+Odmd5ZNEOwJ3FxjSjPeeluv7vwznUNcqx0i3PQw8+kTlhgHtuv+
-X-Google-Smtp-Source: AGHT+IFOpDHOnY9/ayuIhdieudSUU/wr+o55Uc1egUgLHoDjxTPuM7/x4vrcjFQx2LaetA0cp5o9Sw==
-X-Received: by 2002:a05:6214:ac1:b0:796:e048:ee97 with SMTP id 6a1803df08f44-869973a161fmr20467686d6.19.1759167791682;
-        Mon, 29 Sep 2025 10:43:11 -0700 (PDT)
-Received: from ziepe.ca ([130.41.10.202])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8013cdf31besm78947296d6.18.2025.09.29.10.43.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Sep 2025 10:43:10 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1v3Hu2-0000000CNjB-0ASr;
-	Mon, 29 Sep 2025 14:43:10 -0300
-Date: Mon, 29 Sep 2025 14:43:10 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Samiullah Khawaja <skhawaja@google.com>
-Cc: David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>, iommu@lists.linux.dev,
-	YiFei Zhu <zhuyifei@google.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Pratyush Yadav <pratyush@kernel.org>,
-	Kevin Tian <kevin.tian@intel.com>, linux-kernel@vger.kernel.org,
-	Saeed Mahameed <saeedm@nvidia.com>,
-	Adithya Jayachandran <ajayachandra@nvidia.com>,
-	Parav Pandit <parav@nvidia.com>,
-	Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>,
-	Vipin Sharma <vipinsh@google.com>, dmatlack@google.com,
-	Chris Li <chrisl@kernel.org>, praan@google.com
-Subject: Re: [RFC PATCH 13/15] iommufd: Persist iommu domains for live update
-Message-ID: <20250929174310.GH2695987@ziepe.ca>
-References: <20250928190624.3735830-1-skhawaja@google.com>
- <20250928190624.3735830-14-skhawaja@google.com>
- <20250929160034.GG2695987@ziepe.ca>
- <CAAywjhS+X5o3B60hKZiioTCqT_7cYThRTz09fHmi4WnSr3ceYA@mail.gmail.com>
+        d=1e100.net; s=20230601; t=1759167975; x=1759772775;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=mp5nx4TC/38dVlnjuJTLG0gnQNJPQsJ2h6t5725+5tw=;
+        b=jLc/5Q/FCDGIYXgjgHKAtqBUFTzorx4t4WycNF5i7pOJ4gD5O5VKwt/ZUuw1JSk0ZF
+         CxLiJJnuLWQdU0vFEfq+gvcw0cDY2IU1TQ+44HlAITnYrBJ6pdZXlAqlcnD71yxjnvwL
+         Y6jOaicGvxgp5/Ral7aXs0R/YXU8AhjEdDDU3+CZae3nYmApVuO0xRSi0AQEBaqrvO4F
+         epF2excAfPqwQt3M14jeP9a7wsp9nBYn4+RnFuUhdYeo/kRpGpuxc+IY+meddX5AxaI5
+         j1EhgTE30xMh4TlOcr1K8L+haCwav/7rSRm+ruHY+zWBpfIver5bVRqeoSORx8iBd3h5
+         9f4Q==
+X-Forwarded-Encrypted: i=1; AJvYcCXUp5u7DyG4kz4zLigD/XoQtoRYwy8WAxQoP7/aaXniSRnzJownz2gLPiksUcU5kxw++ifu0g==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyIpAHpmB0rRIXAaDOpn7FD09cnZWasuNJ9rrrj7dRGk9CNj7DL
+	R6ex+yOTWg75zwR/Mzf/1gcYrsakCtNBDI0I2H/9WQ13xI4a2eTSZBlObY4eMqtyTgITrZ+GPYI
+	hbLzGMfn6+cga6t9vT0aDKYphS4zHcL1GDFebWvm9ZQ==
+X-Gm-Gg: ASbGncsHRRCxBIgVen39Tj3a224Dcw2GeQYEDR/oTWuzKQsoc8/J4TOtRX7dU+J9577
+	cRg/UHtY8v8gijV1DEHij+3c2r7PWbrGt/SQ9Mhy6f0++4Cf/hwRo3dxwIrUs15fbmTCJ+GWVDr
+	0spFszF8SvOC+gU9C6L6aK+SHzMtN769a1RP372MWcY4MM0c0HZnWCW60hY7/Blu1jWg6tf9xib
+	To+s2WKWjRcHuw=
+X-Google-Smtp-Source: AGHT+IGOnelXZkDUZzjTRtovwRCe00xrTA+7vjG5Tw/7+5pwFeMcBzkyq8GKQCfm3J+xlHW1Nz5fVVpGOss9mnAfAYg=
+X-Received: by 2002:ac8:5d56:0:b0:4cf:1eba:f30e with SMTP id
+ d75a77b69052e-4da482d41d6mr58945371cf.24.1759167975081; Mon, 29 Sep 2025
+ 10:46:15 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+References: <20250928190624.3735830-1-skhawaja@google.com> <20250928190624.3735830-14-skhawaja@google.com>
+ <20250929160034.GG2695987@ziepe.ca> <CAAywjhS+X5o3B60hKZiioTCqT_7cYThRTz09fHmi4WnSr3ceYA@mail.gmail.com>
 In-Reply-To: <CAAywjhS+X5o3B60hKZiioTCqT_7cYThRTz09fHmi4WnSr3ceYA@mail.gmail.com>
+From: Pasha Tatashin <pasha.tatashin@soleen.com>
+Date: Mon, 29 Sep 2025 13:45:37 -0400
+X-Gm-Features: AS18NWBt_WgC2Y8Hsnai8qifkqT_eI5rwr_YhDjsltDobqYe3Ir-FVVNbB0ht3U
+Message-ID: <CA+CK2bA7LK2i-AOyTwx1KNUoF5fUWEWBA49i8T_wYXBApKkUBw@mail.gmail.com>
+Subject: Re: [RFC PATCH 13/15] iommufd: Persist iommu domains for live update
+To: Samiullah Khawaja <skhawaja@google.com>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>, David Woodhouse <dwmw2@infradead.org>, 
+	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, 
+	Will Deacon <will@kernel.org>, iommu@lists.linux.dev, YiFei Zhu <zhuyifei@google.com>, 
+	Robin Murphy <robin.murphy@arm.com>, Pratyush Yadav <pratyush@kernel.org>, 
+	Kevin Tian <kevin.tian@intel.com>, linux-kernel@vger.kernel.org, 
+	Saeed Mahameed <saeedm@nvidia.com>, Adithya Jayachandran <ajayachandra@nvidia.com>, 
+	Parav Pandit <parav@nvidia.com>, Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>, 
+	Vipin Sharma <vipinsh@google.com>, dmatlack@google.com, Chris Li <chrisl@kernel.org>, 
+	praan@google.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, Sep 29, 2025 at 10:32:22AM -0700, Samiullah Khawaja wrote:
-> On Mon, Sep 29, 2025 at 9:00 AM Jason Gunthorpe <jgg@ziepe.ca> wrote:
+On Mon, Sep 29, 2025 at 1:32=E2=80=AFPM Samiullah Khawaja <skhawaja@google.=
+com> wrote:
+>
+> On Mon, Sep 29, 2025 at 9:00=E2=80=AFAM Jason Gunthorpe <jgg@ziepe.ca> wr=
+ote:
 > >
 > > On Sun, Sep 28, 2025 at 07:06:21PM +0000, Samiullah Khawaja wrote:
 > > > +static int iommufd_save_ioas(struct iommufd_ctx *ictx,
 > > > +                          struct iommufd_lu *iommufd_lu)
 > > > +{
 > > > +     struct iommufd_hwpt_paging *hwpt_paging;
-> > > +     struct iommufd_ioas *ioas = NULL;
+> > > +     struct iommufd_ioas *ioas =3D NULL;
 > > > +     struct iommufd_object *obj;
 > > > +     unsigned long index;
 > > > +     int rc;
 > > > +
 > > > +     /* Iterate each ioas. */
 > > > +     xa_for_each(&ictx->objects, index, obj) {
-> > > +             if (obj->type != IOMMUFD_OBJ_IOAS)
+> > > +             if (obj->type !=3D IOMMUFD_OBJ_IOAS)
 > > > +                     continue;
 > >
 > > Wrong locking
 > >
 > > > +
-> > > +             ioas = (struct iommufd_ioas *)obj;
+> > > +             ioas =3D (struct iommufd_ioas *)obj;
 > > > +             mutex_lock(&ioas->mutex);
 > > > +
 > > > +             /*
-> > > +              * TODO: Iterate over each device of this iommufd and only save
+> > > +              * TODO: Iterate over each device of this iommufd and o=
+nly save
 > > > +              * hwpt/domain if the device is persisted.
 > > > +              */
-> > > +             list_for_each_entry(hwpt_paging, &ioas->hwpt_list, hwpt_item) {
+> > > +             list_for_each_entry(hwpt_paging, &ioas->hwpt_list, hwpt=
+_item) {
 > > > +                     if (!hwpt_paging->common.domain)
 > > > +                             continue;
 > >
@@ -135,17 +126,11 @@ On Mon, Sep 29, 2025 at 10:32:22AM -0700, Samiullah Khawaja wrote:
 > would that be considered an error during LUO PREPARE or should iommufd
 > serialize the remaining HWPTs here?
 
-yes that would be an error
+Users ~can~ serialize their sessions before system-wide prepare event.
+During prepare event all unserialized sessions and their FDs are going
+to be serialized anyways.
 
-I also think your patch series is a bit upside down, you should
-present the iommufd and core pieces first, then come with a driver
-implementation last.
+Pasha
 
-It will be easier to understand the context that having a driver
-implementation appear out of no where with no callers..
-
-And everything should be driven by iommufd in this step, the iommu
-driver should not be magically auto-preserving itself. Just preserve
-the drivers linked to devices being preserved by iommufd.
-
-Jason
+> >
+> > Jason
