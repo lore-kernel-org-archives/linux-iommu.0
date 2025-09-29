@@ -1,264 +1,133 @@
-Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
+Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com [209.85.160.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8917225A35F
-	for <iommu@lists.linux.dev>; Mon, 29 Sep 2025 19:57:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4D792494FE
+	for <iommu@lists.linux.dev>; Mon, 29 Sep 2025 20:42:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759175868; cv=none; b=lIq5vEerdBuNbgBgr9YT1g7/Uq11IV2YEvTUyuxO0HQt+uDnLqeQutGCKVYKQPB6QJ/oIBHF3OI05z5gvfohprCoCiJpnf3A967u50wfjdqnT5+32OwNsqXxXDr3+isRt0CtGyBDXJcHWKs/KSCk+FLe3/FiUwZBAB8IdWuhCvU=
+	t=1759178564; cv=none; b=bE5betHQCiMOk0kGIpWB4mx3slveN76wUqzxyrbzdv5zy3ztDBVSQBVKHwzwfsA+DqNzj9mJNcU3MvJvfqvymvKACHAJ3iKSTwmjPEYPdtA/clSS+Lz0ybslc7uKivMbidY/HSApzt41RZ2W1xN1ZUtpcemlXbuNf6dwX6pRJiA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759175868; c=relaxed/simple;
-	bh=gTsSNd2/zLIn2jp0BAXYJxZ3J/uFuF5NygJQfxzhs14=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VZ/tVJoCC18rJa6lVAtnrKoekSi5xqsrblxSiMvrNQ/BAIM4EsR1rJ11OFFEV2ZWc4Qgjk41rHEREilDaDcIIPUNvhyy56va86wn0qgxjulzOWxkeXgeLORaRzzoUw9khhGIVY2esqmO8E4c1IXInvmQLycn8mTufNxxAi1mCck=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=n88YjdNX; arc=none smtp.client-ip=209.85.214.181
+	s=arc-20240116; t=1759178564; c=relaxed/simple;
+	bh=oXJgIjEe3L2FI9kbI9ch0+g3fkejnXAUjmTtn7Kifx4=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=gs/zuobY+dXRw5K1mA5EOAk9LMOl5f8S92QW3Jf5jy/Aqx98cqbxFaAqY0AG121txhIT6nu/zqIZllL0arTPV90WUWI5Yjmpis7fUECW/iNDY0+9dmdpk+/pyVATT5GUUVXWqk5fsopsowfz8LZ45kqugCY1B6kg+5qurjF5hrc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=2ZFAxasm; arc=none smtp.client-ip=209.85.160.175
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="n88YjdNX"
-Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-2731ff54949so5745ad.1
-        for <iommu@lists.linux.dev>; Mon, 29 Sep 2025 12:57:46 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="2ZFAxasm"
+Received: by mail-qt1-f175.google.com with SMTP id d75a77b69052e-4df3fabe9c2so25231cf.1
+        for <iommu@lists.linux.dev>; Mon, 29 Sep 2025 13:42:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1759175866; x=1759780666; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=YOiOEwdEVIIe+BX2t9YU9UyrOKLzJd+0CHTB2Eboyys=;
-        b=n88YjdNXUW4qqWqdFmnDKY5FTxbhFbYlKecayAiWxa2hY7E4cyOL2lvySjrerXr6Iu
-         514AwKwvaqRkker+Ravs3+TiJumQgsTi/jzDYBU6GfJGNWcKnrVtbwSyHHIgRzMkozNI
-         iZr9IJL/+TsNXW9YpBxMS9o2D8CwLAYymcKUt/ob1N17ao2GcdaxVxRjUDe88XCNyYH0
-         dKI5pcxjOzcqEfd8sY2wmkVCseZ2j6DlPx63Vo5a9qdQ/Ea4VpJQidMDbxvK3VewgACc
-         4oGFZv9Rz4I0ZnqF+v6BX6qad8+0AgNV4GmfUE6pjdn8AlduitcQbbwTP+IO9jkoZ92T
-         5kxw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1759175866; x=1759780666;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        d=google.com; s=20230601; t=1759178561; x=1759783361; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=YOiOEwdEVIIe+BX2t9YU9UyrOKLzJd+0CHTB2Eboyys=;
-        b=ioGPyvVJUtYFBX8R8wSjqWX1h7DxYwwIKMNylNs1W8QSevSm+lMnGAl8Zd3SftnOWT
-         ar+j3XZudMdfZaW8y4rU2nAdJn9JiUufflCpf32NFinrVW/OJNNfg9eGjkuFwmcdnNCc
-         CFLmaMvlOTkqpKt6xeND6WTDQc62B8feL8vqYZ6GNMj8ioFhOjycqucK9Zk5jcex7jUb
-         es4V/E2MqgoubZoOIEiuYZ0eAK2absw4QlrWkaA7K3A7Ih67kh4LcnbsPD2G/Qwmm2D0
-         eP+A4SAIwh6fd3mUpHzhlh+rBl2gbzMWbhik49yzMTamOb/FOIUcWnUhzHmsxiydXrn9
-         IZOA==
-X-Gm-Message-State: AOJu0YynxtYbamQHtRPTFIiUYVYvndepgoyOrAs1W5UQjR//NPhtRNlg
-	XQ9CvJHElercrHUJPzVYC+RS7PfMDMre4+nak4eoz2pigItZbyNREcksGD53movDPA==
-X-Gm-Gg: ASbGncvk3eKWAiQTR8A9qE9m9m1ejo/YeT0SKy8+2cXua/DbZZkU5NBmSzAz1AiA741
-	z+j3oqNUTx6VaNE45Pl7Qqwhx7lpq/huki/gWH6w0QP8fO4acqGoCWbksp0rIw7Q/2x5ffQYxie
-	HcwZ45I9sJdLLWLGoCgIbsauHbC4c7zzJrTgyEAwsxoSz4ZDYjXtlU7qA9QVI9fyEz7tH128jYF
-	FwWQ9Xw3d1kVrm8qoLWsnXFJYmUV2fdsGh6sol14VSFPefsIjh3/1IpGXH5VKMFIcFIZgswTbcj
-	O+kCJbtmKFt/PQrWxuzXEBsa6X+HLVrslIrlPrPh3QsKYma63v5t1QiGuxhdOztChwNDWT86zhK
-	sx+E3sN4NtgfYqv8QHZXIhGvN0oxL1eQFqtMWwLRQc8BNkQqHhPZY4XacKc3xpAGQl8NfMZtgCg
-	==
-X-Google-Smtp-Source: AGHT+IE3kbV3lnUAbeVo87YFkQpxhK8UcbVtkpKbpU+wAfqg1zn+LgU/CyfWAyi+v2zOnuBVGxcXPg==
-X-Received: by 2002:a17:903:2348:b0:25b:ce96:7109 with SMTP id d9443c01a7336-28e640e487emr221805ad.3.1759175865356;
-        Mon, 29 Sep 2025 12:57:45 -0700 (PDT)
-Received: from google.com (21.168.124.34.bc.googleusercontent.com. [34.124.168.21])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-27ed69be6cdsm138179795ad.125.2025.09.29.12.57.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Sep 2025 12:57:44 -0700 (PDT)
-Date: Mon, 29 Sep 2025 19:57:39 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Daniel Mentz <danielmentz@google.com>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	Will Deacon <will@kernel.org>, Mostafa Saleh <smostafa@google.com>,
-	Liviu Dudau <liviu.dudau@arm.com>, Jason Gunthorpe <jgg@nvidia.com>,
-	Rob Clark <robin.clark@oss.qualcomm.com>
-Subject: Re: [PATCH 1/2] iommu/io-pgtable-arm: Implement .iotlb_sync_map
- callback
-Message-ID: <aNrks8eXTfHyVhKl@google.com>
-References: <20250927223953.936562-1-danielmentz@google.com>
+        bh=mEC74i6THPBvyxToCwC/1HpM1gtTzCHhQKVMM5vaV7E=;
+        b=2ZFAxasmAaLXWW9gwTl47NoLMuVsXdQmaqJFK8/ndHQdGI5WuUiodFklEkeVPJMcND
+         5t3Dq3HhjL8oFnY5dXd90jR93lkNfZ/G/PqMAwFQDnp5BF7pYbMXzT+1uqS4SudWNc3c
+         QuHeHoGevoADjRG97x1p5BvC7A2Iot605aoVD2BwusMUbnZ3oxtUWvebUCVje+ALWA5+
+         DKG0WWLJ4r9WAGA148zr/AuClGk8fLRqKrbvy7PH9De9bwKpgceHMZ5neU36jNuR5VgR
+         I50RyDEIVoPZ+K3rJS7MpcI0/Y16NvjxJs8SnYpOcPwXewCmfaDQxQzpeefFlkCpE55l
+         zFQg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1759178561; x=1759783361;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=mEC74i6THPBvyxToCwC/1HpM1gtTzCHhQKVMM5vaV7E=;
+        b=V71uhdFh2/0t++tF+lFf7fWmm3s5ktrFG4YSjn7UhfZxG2/HvJ0WWtkG+JqFxcDGTw
+         9nhaY2N2xPa4GvBOrpY2qea/IcM0qoOkMFguDcQsFHDBAmj0ZbSGKVHLEktNLt1POA8R
+         NlKbJH1hsyTXHkWVPak8r1qWoDVrod/TFY+PBWVIb8AzvPjiZ6h/jzTLYvSx9t/kXB1l
+         Z/h5oogQdS1JEthtjowBwEf5QoMtJ0mqYyQIwM1BkDGVrxzDge18Ygp/6nGPMlro77b1
+         ThykJ8157GJRtzzO5EV6Zc7ko1UZbYCZ6s7KHVqtk8N8Q4GJAdd4kpfSTOTACAtxeZM6
+         oJiQ==
+X-Gm-Message-State: AOJu0YxjbsKxXB3PKthboeFXi/9KOcAnq+gCgEbGERIvROiPujaf0sUM
+	O5jOFzOkadjSMhpPvwkA+wwV6vt4p6ZYlqTrXHoXhbfv7COGa7m9htdBWI9XYOBKwVuAmdNtK4/
+	7/70EDbE+qXc3aYYpkM+lVKAXXGJ5zj9D2dqfm4n6
+X-Gm-Gg: ASbGncsjR2HVfX6lYwV5sBO22T/yQ7E1X9e+yzHmATeg5g/8NCuMYVnJHfcr+Yz8DDM
+	vPY2Sd4tqStXpoSWiU2KGVTq8fUlHhgJfqNHUu+ioDhBR3vUOmQAvagSEsZFc9KaRUlP/dhYJ/P
+	9XUNlifxT7QxNHaH6h3piKfCe/2bF9qELSkOu/aQZwHbp/Tocv6cnKLQ9dsMLeQz8c1psjtHxdo
+	Wk+VXbK1ow=
+X-Google-Smtp-Source: AGHT+IEwLQc5fvRUVGPyGy8NV0Qi19qFJZstfSg+2T66md9AyC2s/4sHLcp2+Hx+syyTPDNwiHIA8qqIMcHvs2IsWFw=
+X-Received: by 2002:a05:622a:1486:b0:4d1:b2d0:2e2b with SMTP id
+ d75a77b69052e-4e2d0df3039mr1922061cf.6.1759178561226; Mon, 29 Sep 2025
+ 13:42:41 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250927223953.936562-1-danielmentz@google.com>
+References: <20250927223953.936562-1-danielmentz@google.com> <aNrks8eXTfHyVhKl@google.com>
+In-Reply-To: <aNrks8eXTfHyVhKl@google.com>
+From: Daniel Mentz <danielmentz@google.com>
+Date: Mon, 29 Sep 2025 13:42:29 -0700
+X-Gm-Features: AS18NWClVxUbv-JzilVwbpc6ZKlxzRQDsp7pvXXSKlzjb8hhrBGe7HxydTOUiSs
+Message-ID: <CAE2F3rCZhgLOPKMmAqvNaQt3mUdj0kez9_MDxM3nGVOpgr5wuA@mail.gmail.com>
+Subject: Re: [PATCH 1/2] iommu/io-pgtable-arm: Implement .iotlb_sync_map callback
+To: Pranjal Shrivastava <praan@google.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	Will Deacon <will@kernel.org>, Mostafa Saleh <smostafa@google.com>, Liviu Dudau <liviu.dudau@arm.com>, 
+	Jason Gunthorpe <jgg@nvidia.com>, Rob Clark <robin.clark@oss.qualcomm.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Sat, Sep 27, 2025 at 10:39:52PM +0000, Daniel Mentz wrote:
-> On systems with a non-coherent SMMU, the CPU must perform cache
-> maintenance operations (CMOs) after updating page table entries (PTEs).
-> This ensures that the SMMU reads the latest version of the descriptors
-> and not stale data from memory.
-> 
-> This requirement can lead to significant performance overhead,
-> especially when mapping long scatter-gather lists where each sg entry
-> maps into an iommu_map() call that only covers 4KB of address space.
-> 
-> In such scenarios, each small mapping operation modifies a single 8-byte
-> PTE but triggers a cache clean for the entire cache line (e.g., 64
-> bytes). This results in the same cache line being cleaned repeatedly,
-> once for each PTE it contains.
-> 
-> A more efficient implementation performs the cache clean operation only
-> after updating all descriptors that are co-located in the same cache
-> line. This patch introduces a mechanism to defer and batch the cache
-> maintenance:
-> 
-> A new boolean flag, defer_sync_pte, is added to struct io_pgtable_cfg.
-> When this flag is set, the arm-lpae backend will skip the cache sync
-> operation for leaf entries within its .map_pages implementation.
-> 
-> A new callback, .iotlb_sync_map, is added to struct io_pgtable_ops.
-> After performing a series of mapping operations, the caller is
-> responsible for invoking this callback for the entire IOVA range. This
-> function then walks the page tables for the specified range and performs
-> the necessary cache clean operations for all the modified PTEs.
-> 
-> This allows for a single, efficient cache maintenance operation to cover
-> multiple PTE updates, significantly reducing overhead for workloads that
-> perform many small, contiguous mappings.
-> 
-> Signed-off-by: Daniel Mentz <danielmentz@google.com>
-> ---
->  drivers/iommu/io-pgtable-arm.c | 66 +++++++++++++++++++++++++++++++++-
->  include/linux/io-pgtable.h     |  7 ++++
->  2 files changed, 72 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-> index 7e8e2216c294..a970eefb07fb 100644
-> --- a/drivers/iommu/io-pgtable-arm.c
-> +++ b/drivers/iommu/io-pgtable-arm.c
-> @@ -353,7 +353,7 @@ static void __arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
->  	for (i = 0; i < num_entries; i++)
->  		ptep[i] = pte | paddr_to_iopte(paddr + i * sz, data);
->  
-> -	if (!cfg->coherent_walk)
-> +	if (!cfg->coherent_walk && !cfg->defer_sync_pte)
->  		__arm_lpae_sync_pte(ptep, num_entries, cfg);
->  }
->  
-> @@ -582,6 +582,69 @@ static int arm_lpae_map_pages(struct io_pgtable_ops *ops, unsigned long iova,
->  	return ret;
->  }
->  
-> +static int __arm_lpae_iotlb_sync_map(struct arm_lpae_io_pgtable *data, unsigned long iova,
-> +			      size_t size, int lvl, arm_lpae_iopte *ptep)
-> +{
-> +	struct io_pgtable *iop = &data->iop;
-> +	size_t block_size = ARM_LPAE_BLOCK_SIZE(lvl, data);
-> +	int ret = 0, num_entries, max_entries;
-> +	unsigned long iova_offset, sync_idx_start, sync_idx_end;
-> +	int i, shift, synced_entries = 0;
-> +
-> +	shift = (ARM_LPAE_LVL_SHIFT(lvl - 1, data) + ARM_LPAE_PGD_IDX(lvl - 1, data));
-> +	iova_offset = iova & ((1ULL << shift) - 1);
-> +	sync_idx_start = ARM_LPAE_LVL_IDX(iova, lvl, data);
-> +	sync_idx_end = (iova_offset + size + block_size - ARM_LPAE_GRANULE(data)) >>
-> +		ARM_LPAE_LVL_SHIFT(lvl, data);
-> +	max_entries = arm_lpae_max_entries(sync_idx_start, data);
-> +	num_entries = min_t(unsigned long, sync_idx_end - sync_idx_start, max_entries);
-> +	ptep += sync_idx_start;
-> +
-> +	if (lvl < (ARM_LPAE_MAX_LEVELS - 1)) {
-> +		for (i = 0; i < num_entries; i++) {
-> +			arm_lpae_iopte pte = READ_ONCE(ptep[i]);
-> +			unsigned long synced;
-> +
-> +			WARN_ON(!pte);
-> +
-> +			if (iopte_type(pte) == ARM_LPAE_PTE_TYPE_TABLE) {
-> +				int n = i - synced_entries;
-> +
-> +				if (n) {
-> +					__arm_lpae_sync_pte(&ptep[synced_entries], n, &iop->cfg);
-> +					synced_entries += n;
-> +				}
-> +				ret = __arm_lpae_iotlb_sync_map(data, iova, size, lvl + 1,
-> +								iopte_deref(pte, data));
+On Mon, Sep 29, 2025 at 12:57=E2=80=AFPM Pranjal Shrivastava <praan@google.=
+com> wrote:
+>
+> On Sat, Sep 27, 2025 at 10:39:52PM +0000, Daniel Mentz wrote:
+> > +static int __arm_lpae_iotlb_sync_map(struct arm_lpae_io_pgtable *data,=
+ unsigned long iova,
+> > +                           size_t size, int lvl, arm_lpae_iopte *ptep)
+> > +{
+> > +     struct io_pgtable *iop =3D &data->iop;
+> > +     size_t block_size =3D ARM_LPAE_BLOCK_SIZE(lvl, data);
+> > +     int ret =3D 0, num_entries, max_entries;
+> > +     unsigned long iova_offset, sync_idx_start, sync_idx_end;
+> > +     int i, shift, synced_entries =3D 0;
+> > +
+> > +     shift =3D (ARM_LPAE_LVL_SHIFT(lvl - 1, data) + ARM_LPAE_PGD_IDX(l=
+vl - 1, data));
+> > +     iova_offset =3D iova & ((1ULL << shift) - 1);
+> > +     sync_idx_start =3D ARM_LPAE_LVL_IDX(iova, lvl, data);
+> > +     sync_idx_end =3D (iova_offset + size + block_size - ARM_LPAE_GRAN=
+ULE(data)) >>
+> > +             ARM_LPAE_LVL_SHIFT(lvl, data);
+> > +     max_entries =3D arm_lpae_max_entries(sync_idx_start, data);
+> > +     num_entries =3D min_t(unsigned long, sync_idx_end - sync_idx_star=
+t, max_entries);
+> > +     ptep +=3D sync_idx_start;
+> > +
+> > +     if (lvl < (ARM_LPAE_MAX_LEVELS - 1)) {
+> > +             for (i =3D 0; i < num_entries; i++) {
+> > +                     arm_lpae_iopte pte =3D READ_ONCE(ptep[i]);
+> > +                     unsigned long synced;
+> > +
+> > +                     WARN_ON(!pte);
+> > +
+> > +                     if (iopte_type(pte) =3D=3D ARM_LPAE_PTE_TYPE_TABL=
+E) {
+> > +                             int n =3D i - synced_entries;
+> > +
+> > +                             if (n) {
+> > +                                     __arm_lpae_sync_pte(&ptep[synced_=
+entries], n, &iop->cfg);
+> > +                                     synced_entries +=3D n;
+> > +                             }
+> > +                             ret =3D __arm_lpae_iotlb_sync_map(data, i=
+ova, size, lvl + 1,
+> > +                                                             iopte_der=
+ef(pte, data));
+>
+> I think we must check the returned value here and break the loop on
+> error. Otherwise, we might burry a failure by continuing the loop.
+> We should add something like:
+>
+> if (ret)
+>         break;
+>
 
-I think we must check the returned value here and break the loop on
-error. Otherwise, we might burry a failure by continuing the loop.
-We should add something like:
-
-if (ret)
-	break;
-
-> +				synced_entries++;
-> +			}
-> +			synced = block_size - (iova & (block_size - 1));
-> +			size -= synced;
-> +			iova += synced;
-> +		}
-> +	}
-> +
-> +	if (synced_entries != num_entries)
-> +		__arm_lpae_sync_pte(&ptep[synced_entries], num_entries - synced_entries, &iop->cfg);
-> +
-> +	return ret;
-> +}
-> +
-> +static int arm_lpae_iotlb_sync_map(struct io_pgtable_ops *ops, unsigned long iova,
-> +			    size_t size)
-> +{
-> +	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
-> +	struct io_pgtable_cfg *cfg = &data->iop.cfg;
-> +	arm_lpae_iopte *ptep = data->pgd;
-> +	int lvl = data->start_level;
-> +	long iaext = (s64)iova >> cfg->ias;
-> +
-> +	WARN_ON(!size);
-> +	WARN_ON(iaext);
-> +
-> +	return __arm_lpae_iotlb_sync_map(data, iova, size, lvl, ptep);
-> +}
-> +
->  static void __arm_lpae_free_pgtable(struct arm_lpae_io_pgtable *data, int lvl,
->  				    arm_lpae_iopte *ptep)
->  {
-> @@ -949,6 +1012,7 @@ arm_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg)
->  	data->iop.ops = (struct io_pgtable_ops) {
->  		.map_pages	= arm_lpae_map_pages,
->  		.unmap_pages	= arm_lpae_unmap_pages,
-> +		.iotlb_sync_map	= cfg->coherent_walk ? NULL : arm_lpae_iotlb_sync_map,
->  		.iova_to_phys	= arm_lpae_iova_to_phys,
->  		.read_and_clear_dirty = arm_lpae_read_and_clear_dirty,
->  		.pgtable_walk	= arm_lpae_pgtable_walk,
-> diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
-> index 138fbd89b1e6..c4927dbc0f61 100644
-> --- a/include/linux/io-pgtable.h
-> +++ b/include/linux/io-pgtable.h
-> @@ -57,6 +57,9 @@ struct iommu_flush_ops {
->   * @oas:           Output address (paddr) size, in bits.
->   * @coherent_walk  A flag to indicate whether or not page table walks made
->   *                 by the IOMMU are coherent with the CPU caches.
-> + * @defer_sync_pte A flag to indicate whether pte sync operations for leaf
-> + *                 entries shall be skipped during calls to .map_pages. A
-> + *                 subsequent call to .iotlb_sync_map is required.
->   * @tlb:           TLB management callbacks for this set of tables.
->   * @iommu_dev:     The device representing the DMA configuration for the
->   *                 page table walker.
-> @@ -110,6 +113,7 @@ struct io_pgtable_cfg {
->  	unsigned int			ias;
->  	unsigned int			oas;
->  	bool				coherent_walk;
-> +	bool				defer_sync_pte;
->  	const struct iommu_flush_ops	*tlb;
->  	struct device			*iommu_dev;
->  
-> @@ -204,6 +208,7 @@ struct arm_lpae_io_pgtable_walk_data {
->   * @unmap_pages:  Unmap a range of virtually contiguous pages of the same size.
->   * @iova_to_phys: Translate iova to physical address.
->   * @pgtable_walk: (optional) Perform a page table walk for a given iova.
-> + * @iotlb_sync_map: Sync ptes (Required for non-coherent page table walks)
->   *
->   * These functions map directly onto the iommu_ops member functions with
->   * the same names.
-> @@ -222,6 +227,8 @@ struct io_pgtable_ops {
->  				    unsigned long iova, size_t size,
->  				    unsigned long flags,
->  				    struct iommu_dirty_bitmap *dirty);
-> +	int (*iotlb_sync_map)(struct io_pgtable_ops *ops, unsigned long iova,
-> +			      size_t size);
->  };
->  
->  /**
-> -- 
-> 2.51.0.570.gb178f27e6d-goog
-> 
-
-Thanks,
-Praan
+Now, I'm realising that __arm_lpae_iotlb_sync_map always returns 0, in
+which case I could change the return type to void. Would that work for
+you?
