@@ -1,32 +1,25 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD6EC14B06C;
-	Mon, 29 Sep 2025 08:23:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4D52E2C11EB
+	for <iommu@lists.linux.dev>; Mon, 29 Sep 2025 10:20:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759134231; cv=none; b=T8ifKhYM5aux0tggBpWx9ujw9sNWn0SEh35AvPF6FFZW2YL40qUT8H1az/DxRRhjezNOG56T2WA4+kDZXVG8j1tnfKLABLI8GBkSAkJL2Y/bbBCTnOAa6AU3ygStT1+Xmf/riZ7fbbaiV2uBcDPNLbXEKJ96IQ7BX105C7NwCeM=
+	t=1759141243; cv=none; b=s3ZZ7zXH5gim7ZGzZp0ahukBGav0V5pXJU+CP2U8u6ONChWd89IP3tCru12NhfzHm1Kz78Ap3RZ+QQQxRfyFvN5XyQPtDIYf/yeMR3cW67qjBHNuP2yk98UZkYn5hPn30mqRZIvlqORh2EjZgzdN2IouSGSS4t6phOTM19Q5NJ0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759134231; c=relaxed/simple;
-	bh=wm0QjJCF1CMzW9/QYQ/5sGBAebod32hT9vhfjMmv9jY=;
-	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:Content-Type; b=f3e5uFITJhUXF1pVnUhoQEd3hQLk9dPP/kzVwQiepFF/faS8tODaS7gsJbQQCpSRqFy991d8SmAX7R1z2uV9un+XSpcLCUxZu9P/0CdsDCSeLTrUYoMMnr2/AWkoh9pT0M62xOBU6cnk/q4xyd8DhmGecs26OzJazzxbKMp/54o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bPR+XEzN; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bPR+XEzN"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89BDCC4CEF4;
-	Mon, 29 Sep 2025 08:23:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1759134230;
-	bh=wm0QjJCF1CMzW9/QYQ/5sGBAebod32hT9vhfjMmv9jY=;
-	h=Date:From:Subject:To:Cc:From;
-	b=bPR+XEzN6bcFMTLQRDkKMeoI3dh65WYaUmxSywqNoGy94DBQffhUmfQNX8S+MBwAA
-	 QIfZ6Cm0SDc7859MBlpseklj9koHPlKhzWwpa3oyrl5lobe8Rg103Wx+Gcq29Pfl9S
-	 Vwz16hPZQeZxUXc+MVfDyBOjjRFY8tes6pLSwwOM5nO7H4GuKF6M+sjTj7NF6tV1jb
-	 qtedXy6J5mQ/q3oADfYbAM7TLCGbjOMHbMEeBieCwlwaFQFnh5/OIy3IWGeRj6NjWE
-	 p6/1IELs6q5RLX/aXyzpbEVkP0gcnN0nhGHH/1xt9EwBEHFTQwRT4B1PJ1HEaZmIU6
-	 9MxhYGC6RXtRQ==
-Message-ID: <9a3ebe9b-518e-49ef-b87d-925d951a446f@kernel.org>
-Date: Mon, 29 Sep 2025 10:23:47 +0200
+	s=arc-20240116; t=1759141243; c=relaxed/simple;
+	bh=iQbslAWaCshqu1eHy2Ws5vifw8ykJDXAYtKPCCCm718=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=i9uXF70twz7FCchd1AxbD5tKtFLg1S5kNFFiMauXMhAkw6nrOrRHbbR0y2IhEJbqFitpXq6GrCPn3ZLPeJdJ7lOwb7R3/AiIATenn9QH1oWJKGOvtb9Q5ceQfOsVKxedHUbBapaqvapJqrz1xOEyogHoZUwBZAr4e3l0gJClCKY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 86C82150C;
+	Mon, 29 Sep 2025 03:20:32 -0700 (PDT)
+Received: from [10.57.34.17] (unknown [10.57.34.17])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C364E3F66E;
+	Mon, 29 Sep 2025 03:20:37 -0700 (PDT)
+Message-ID: <aec0f40a-8346-4194-8b18-1022fe3366bb@arm.com>
+Date: Mon, 29 Sep 2025 11:20:34 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -34,67 +27,102 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-From: Hans Verkuil <hverkuil+cisco@kernel.org>
-Content-Language: en-US, nl
-Subject: [PATCH] iommu: __iommu_attach_group: check for non-NULL
- blocking_domain
-To: iommu@lists.linux.dev
-Cc: Linux Kernel <linux-kernel@vger.kernel.org>,
- Linux Media Mailing List <linux-media@vger.kernel.org>,
- Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
- Jason Gunthorpe <jgg@nvidia.com>, Jason Gunthorpe <jgg@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
+Subject: Re: [RFC PATCH 0/3] Introduce iommu-map-masked for platform devices
+To: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>, joro@8bytes.org,
+ will@kernel.org, saravanak@google.com, conor+dt@kernel.org, robh@kernel.org,
+ mchehab@kernel.org, bod@kernel.org, krzk+dt@kernel.org,
+ abhinav.kumar@linux.dev, vikash.garodia@oss.qualcomm.com,
+ dikshita.agarwal@oss.qualcomm.com
+Cc: linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev
+References: <20250928171718.436440-1-charan.kalla@oss.qualcomm.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20250928171718.436440-1-charan.kalla@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-Loading the omap3isp driver fails in __iommu_attach_group:
-group->blocking_domain is NULL, and so the check
-group->domain != group->blocking_domain is always true and it
-returns -EBUSY.
+On 2025-09-28 6:17 pm, Charan Teja Kalla wrote:
+> This series introduces a new iommu property called iommu-map-masked(may
+> be there is a better name), which is used to represent the IOMMU
+> specifier pairs for each function of a __multi-functional platform
+> device__, where each function can emit unique master id(s) that can be
+> associated with individual translation context.
+> 
+> Currently, the iommu configuration - at least for arm architecture-
+> requires all the functions of a platform device will be represented
+> under single dt node thus endup in using only a single translation
+> context.
+> 
+> A simple solution to associate individual translation context for each
+> function of a device can be through creating per function child nodes in
+> the device tree, but dt is only to just represent the soc layout to
+> linux kernel.
+> 
+> Supporting such cases requires a new iommu property called,
+> iommu-map-masked(taking cue from iommu-map for pci devices) and syntax
+> is:
+>     iommu-map-masked = <FUNCTION_ID1 &iommu ID1 MASK1>,
+> 		      <FUNCTION_ID2 &iommu ID2 MASK2>;
+> NOTE: As an RFC, it is considered that this property always expects 4
+> cells.
+> 
+> During the probe phase of the driver for a multi-functional device
+> behind an IOMMU, a child device is instantiated for each FUNCTION_ID.
+> The call to of_dma_configure_id() on each child sets up the IOMMU
+> configuration, ensuring that each function of the device is associated
+> with a distinct translation context.
+> 
+> This property can also be used in association with 'iommus=' when dt
+> bindings requires the presence of 'iommus=', example[2]. For these
+> cases, representation will be(on arm64):
+>     iommus = <&iommu sid mask>; //for default function.
+>     iommu-map-masked = <FUNCTION_ID &iommu sid mask>;//additional
+> function.
+> 
+> USECASE [1]:
+> -----------
+> Video IP, 32bit, have 2 hardware sub blocks(or can be called as
+> functions) called as pixel and nonpixel blocks, that does decode and
+> encode of the video stream. These sub blocks are __configured__ to
+> generate different stream IDs.
 
-Only return -EBUSY if group->blocking_domain is non-NULL.
+So please clarify why you can't:
 
-Signed-off-by: Hans Verkuil <hverkuil+cisco@kernel.org>
-Fixes: 0286300e6045 ("iommu: iommu_group_claim_dma_owner() must always assign a domain")
----
-Since I am unfamiliar with the iommu core code, I am uncertain whether I am
-just papering over a bug elsewhere, or whether this is really the correct solution.
+a) Describe the sub-blocks as individual child nodes each with their own 
+distinct "iommus" property
 
-The omap3isp code in question is here:
+or:
 
-drivers/media/platform/ti/omap3isp/isp.c, function isp_attach_iommu().
+b) Use standard "iommu-map" which already supports mapping a masked 
+input ID to an arbitrary IOMMU specifier
 
-This omap3isp code predates the addition of blocking_domain and it used to work
-before that feature was added.
+Thanks,
+Robin.
 
-I've tested this patch with my Beagle XM board.
-
-If this patch is addressing the issue in the wrong place, then advise
-on what the correct solution is would be very much appreciated!
-
-I have a bunch of media omap3isp cleanup patches pending, but there is no point in
-posting those until this issue is resolved.
-
-Regards,
-
-	Hans
----
- drivers/iommu/iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 060ebe330ee1..0ab1671ee850 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -2220,7 +2220,7 @@ static int __iommu_attach_group(struct iommu_domain *domain,
- 	struct device *dev;
-
- 	if (group->domain && group->domain != group->default_domain &&
--	    group->domain != group->blocking_domain)
-+	    group->blocking_domain && group->domain != group->blocking_domain)
- 		return -EBUSY;
-
- 	dev = iommu_group_first_dev(group);
--- 
-2.47.2
-
+> With the classical approach of representing all sids with iommus= end up
+> in using a single translation context limited to the 4GB. There are
+> video usecases which needs larger IOVA space, like higher concurrent
+> video sessions(eg: 32 session and 192MB per session) where 4GB of IOVA
+> is not sufficient.
+> 
+> For this case, it can be considered as iommus= property can be
+> associated with pixel functionality and iommu-map-masked= is with
+> non-pixel or viceversa.
+> 
+> [1] https://lore.kernel.org/all/20250627-video_cb-v3-0-51e18c0ffbce@quicinc.com/
+> 
+> Charan Teja Kalla (3):
+>    dtbindings: add binding for iommu-map-masked property
+>    of: create a wrapper for of_map_id()
+>    of: implment the 'iommu-map-masked' to represent multi-functional
+>      devices
+> 
+>   .../bindings/media/qcom,sm8550-iris.yaml      | 31 ++++++++++-
+>   drivers/iommu/of_iommu.c                      | 44 +++++++++++++++
+>   drivers/of/base.c                             | 55 ++++++++++++++++---
+>   include/linux/of.h                            | 15 +++++
+>   4 files changed, 133 insertions(+), 12 deletions(-)
+> 
 
