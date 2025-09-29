@@ -1,186 +1,139 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f182.google.com (mail-pl1-f182.google.com [209.85.214.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 401A7221FC7
-	for <iommu@lists.linux.dev>; Mon, 29 Sep 2025 21:18:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4877D136658
+	for <iommu@lists.linux.dev>; Mon, 29 Sep 2025 22:24:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759180686; cv=none; b=OSc8aKLxwvj4RywMGcg5ONw/iLH8AXW/K4LWmhnwAT+vMnLN95iJiZ9IXUNmEE5WDQfvuX6O/DP+bMlxp/xlQPH22vTZZmAetun04dkqja0eztVObjK2QJKRdqit5NRN5Ipy7VYLBMb3h1vxhQIh8hOT++NFCyJZ4+9pLGZtMlI=
+	t=1759184656; cv=none; b=JqYAClQ99AKRonp+pW05ewpviLnbnZlL8kfQbu3laShDk9sOQ9oDnHkwra1Ke4mQ001wBgQotQSyrda7jKy8ep41XlZZ0DceShLbmAJ4rUBLLhEwLHxeZXvkQLKQ81ZG4l5/TH6mcNdS4RqubGmDYjfCOhWceFui25CqBD6WQlM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759180686; c=relaxed/simple;
-	bh=pkxsk78IHog0vv+IBSdn+sUVFtS8RfXXuKpUO43hniM=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=kqTIKwzpFOO8n6jNlvpD+QdNNnRT3bXXUcGrQhnG7PsRvoYCYimXMsg8id1hq38g1Dr7mo1Sl9ItboFQZZO4lq6090XWXH7ayAl6C7FlBbTTEcnAAjMX9gVexPoL5Ro+TpFPwyWRzYziuiN8fORYC59j4Ko/kuZseOOcUgyUqEI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=CBzr6Xco; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1759184656; c=relaxed/simple;
+	bh=+QkMh7n9U5/dhCCdFMn1w5z4Yn6XS22/kYuSo8EaVuY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=bmx81dK2SPgpbth0i+LekMmt2y6dPP6dzpQqqlVSOUBS0lkbmnX469UtQnoRtdcUal31VC9M7Sk4jEKdnBmaK+Y3tY9V2hVZgII3E/+whGNShc65G+mgapQXRFT+mTAqkhgx1oprFLFcyzaieBp1LkhESvlIY7As9WynnTPzQ6k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=NGw0CE/r; arc=none smtp.client-ip=209.85.214.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="CBzr6Xco"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1759180684;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=tBEzt7vDi7cQon8pe4PxgzLkANUC3bHfRN0ntBJldU8=;
-	b=CBzr6XcoeA61FWrAiuFmCXA+pe2BTPB36z0rQlWJl6QE0DlWFCZRKCWubkkG+FGLkyZstP
-	40FAnCFEuMgdRkvFZ6yUTkcwqx+3EFDjcUcwNJYbkGXATSM9A4zZXh42HjLzxa3O8cxvl1
-	rL0V0jAua5t4iobBCtC6UYBkaXUQrrQ=
-Received: from mail-il1-f200.google.com (mail-il1-f200.google.com
- [209.85.166.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-211-f2VZBZmjOC2QATeW7S37XQ-1; Mon, 29 Sep 2025 17:17:53 -0400
-X-MC-Unique: f2VZBZmjOC2QATeW7S37XQ-1
-X-Mimecast-MFC-AGG-ID: f2VZBZmjOC2QATeW7S37XQ_1759180673
-Received: by mail-il1-f200.google.com with SMTP id e9e14a558f8ab-42b18fa4b81so5192895ab.1
-        for <iommu@lists.linux.dev>; Mon, 29 Sep 2025 14:17:53 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="NGw0CE/r"
+Received: by mail-pl1-f182.google.com with SMTP id d9443c01a7336-2681645b7b6so34095ad.1
+        for <iommu@lists.linux.dev>; Mon, 29 Sep 2025 15:24:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1759184654; x=1759789454; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=N0RdJkud+E1SzNcaO56lEUH3WicvjYwTDzcVf+h8XfE=;
+        b=NGw0CE/rdPnOMyRvk1guCSWiuYZeP5EPhH+VE78k0S58WAjwx9ZPPBhx+7FKFM3PJB
+         oC1t20lMswupxOzCaEAZBBwxYcs/C5X7fG71HA/JkyRwSxxAfCZZ9p1zRa9XxlZPaHL1
+         l2rmdBL/pDE4E5l29f+cUTwBdRIvfBDjBnilxQrrJ1JihKsZn0JTlyjBBwqJzeQ+b6wT
+         mrrhLENg0mbCZ0SnBL0C25QCX3cY0i20LgfcIvGwYRBXiAR9wsKfdU6aWPGjypXnkNti
+         bLqHzhGMUKYWJ3FMVMgM3r5k9JFWRoyW8JwclslZ+VF9I1vJzPEHaRPFrtifOvGCveMT
+         iz+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1759180673; x=1759785473;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=tBEzt7vDi7cQon8pe4PxgzLkANUC3bHfRN0ntBJldU8=;
-        b=vvBBtf8EZ5nZfugzJEFTmSSJ365HAXkDQv+g7JqkCVelvnANGnbBCGnpkw+cGVDu/b
-         /dh7M9Ep7/EpXqmdaMLdMWPHCF3/smBr1R2jIuvASpR7HKd+b9Ct5P8eAPHlMUcthxdo
-         1RZBYLn4zDCBTmBCu1hp9/sej8rDaNuoWd6ArBEQGuai76ACrjeWJVvX4E9vPCjUyviK
-         m7sIQ4BwXHOsVB4Ur6sjk74G4bVzOwdhDYsxY23HnpSr2Hb6vDHx5DPbyEULlFuJnVN5
-         PH1eP7HYIR+mcFv0pMdmVtj3TI+J/DvHgllOmS+rFwtDWyKa8rZP09h3NosIchSrP3od
-         P/xA==
-X-Forwarded-Encrypted: i=1; AJvYcCWk+7T4idG84N2anp6geMsqL/1HvwVGsZES+Wr3Q0HguFAFYaX1fD3bEZccZHETK3Rh5sREbw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxtJK5a/LCu3GS+3xCldNH4GJnsXlpsaAsqzlmvJF8kQ3xiDIZ1
-	iqcDpz1/joKv6vL3T3kD5tDO7PTgvmtoChehva4HcpnKeJGXXHDhKI1Ohbm2aMuWfEBl74FTUeE
-	gpZ5OkhwHFHajwfxr3hptjvo9X3/2ehUHJAnYJw0LSqj48LmZR0JZ6zao
-X-Gm-Gg: ASbGncvMctOob9fjmvbk2oE3bimMdv4qUm4bzlp4F6JT/+bNN3Txi1k/X+yyUHp3UVB
-	mEvUl6+3qAmgP57v4M0kRrcJGcl+4/jdhohDkBzKIbX1B2CaEgIi5ZeeCQk2JhdqalL+nny8iqi
-	ENC056Xmc1FwckoYHQn+k0ErBwxgdCHHoZVU6M2OoTw2Q85o/isuyLsYIrpAeN2Y6oNqtD3uWf1
-	LDa6eQuYXlnXH0vdR3UdTfOAe9V6GjPqrD3cyVSGJJdFgWOtp2kx5AWOSezSNw+9X+EjnjQYLAq
-	mimagRNqors9k0Z5RLoBrYE7HoaWTcfFEB6nxSiXCiI=
-X-Received: by 2002:a05:6e02:1523:b0:425:9068:4ff with SMTP id e9e14a558f8ab-425955c8eb5mr97782455ab.1.1759180672730;
-        Mon, 29 Sep 2025 14:17:52 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IFTF4nahZRRX2gicTqxhxWdWKeUzRDCgsQQuCRfxHGJ4HNrczL75firr5hrFe4LKeaKRuPCNA==
-X-Received: by 2002:a05:6e02:1523:b0:425:9068:4ff with SMTP id e9e14a558f8ab-425955c8eb5mr97782155ab.1.1759180672251;
-        Mon, 29 Sep 2025 14:17:52 -0700 (PDT)
-Received: from redhat.com ([38.15.36.11])
-        by smtp.gmail.com with ESMTPSA id e9e14a558f8ab-425c05476fasm62141985ab.43.2025.09.29.14.17.50
+        d=1e100.net; s=20230601; t=1759184654; x=1759789454;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=N0RdJkud+E1SzNcaO56lEUH3WicvjYwTDzcVf+h8XfE=;
+        b=cJf+v/P47GTsH9C+WKzXXV8IoPx4/Te6MtwuKy9QQB/Y58rf7skhYH92qEXnM8PPdz
+         hyADE0nz5kz4f4CIh8iexvcWBYYYakVyxV0gp528AmFKLA44s5NhtcdukS1GI4+XR5GX
+         bAtNMBvuQeucjqoqVBuKlRJZ/v00VDn6S5j3gGlhMghDd1X57dNQXRki+O7mblQXYM8V
+         dCTwpjls/Ry/5d+VVpjJe+VE27FtwBrYdCYTEta2i5zJAtytmSc9vNxNETPHsF+2SDPJ
+         9SiCFzP6MQuF2mZKqx01OL2+uXzcPRTBODZZ4VmPnzvVFompn6UsASZnrQq8kLcJgmD4
+         AVTg==
+X-Gm-Message-State: AOJu0YzdB+rvGl8cB8rfWE/uH+LcvqCn9nozQLRgAt05TsF6o/+XkkAh
+	PZIEHA3Wo2V8VB6qA8EGISnalGMrqoZELmfsw+BP/AFQTmCNumftHWCNOKiCqCzHhQ==
+X-Gm-Gg: ASbGncs4RtUg1nRRmwRBfBWa0iFhyKSP0ScLWD/br1VWO2jVZf9twINWnKECyftzyqj
+	bQ5PdVbimpUiy38zIYH8xYneAs5KaFU4yQbmnpLDRVjlSkVQlx6vIihJ2dNboYWv8utrcXLVssT
+	UZLPs4ZrUjj4rKGjuptDaV5MCzctLD8HhF7Rv7iWVyyYj1E7XJBS5ZulHRyi7FkmYBn0yoVIl/e
+	mWPWptOb4qYbPdlTTWXtXa35TXhGVOROCn5Z7hn1CmzGuS/QFfe9Jrnfc87xNn8bvkKy0wn8jKt
+	OaMdQvsE9Gzef83Hhz/N9ug0WGvgvzpqZkeE1Le5Q7QzJqwixXVh3lQ7gBuQR6BEaUeRqd2PwVR
+	7Ie/CP18kykEXOj9zAt9gNCIVVZactoE/aLioBIa2mijdvaXfq1i0SfU3CJoezSg=
+X-Google-Smtp-Source: AGHT+IF4474zNSE/tR3t5AlScavptaVirEjnqy6OeJgr7wLeMqENH4oVXUgbWMO/R26nxFDRknYApQ==
+X-Received: by 2002:a17:903:2c07:b0:264:1805:df20 with SMTP id d9443c01a7336-28e147eab98mr2019975ad.4.1759184653958;
+        Mon, 29 Sep 2025 15:24:13 -0700 (PDT)
+Received: from google.com (21.168.124.34.bc.googleusercontent.com. [34.124.168.21])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-b57c55a33a8sm12092461a12.46.2025.09.29.15.24.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Sep 2025 14:17:51 -0700 (PDT)
-Date: Mon, 29 Sep 2025 15:17:49 -0600
-From: Alex Williamson <alex.williamson@redhat.com>
-To: Leon Romanovsky <leon@kernel.org>
-Cc: Leon Romanovsky <leonro@nvidia.com>, Jason Gunthorpe <jgg@nvidia.com>,
- Andrew Morton <akpm@linux-foundation.org>, Bjorn Helgaas
- <bhelgaas@google.com>, Christian =?UTF-8?B?S8O2bmln?=
- <christian.koenig@amd.com>, dri-devel@lists.freedesktop.org,
- iommu@lists.linux.dev, Jens Axboe <axboe@kernel.dk>, Joerg Roedel
- <joro@8bytes.org>, kvm@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
- linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-media@vger.kernel.org, linux-mm@kvack.org, linux-pci@vger.kernel.org,
- Logan Gunthorpe <logang@deltatee.com>, Marek Szyprowski
- <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Sumit
- Semwal <sumit.semwal@linaro.org>, Vivek Kasireddy
- <vivek.kasireddy@intel.com>, Will Deacon <will@kernel.org>
-Subject: Re: [PATCH v4 10/10] vfio/pci: Add dma-buf export support for MMIO
- regions
-Message-ID: <20250929151749.2007b192.alex.williamson@redhat.com>
-In-Reply-To: <53f3ea1947919a5e657b4f83e74ca53aa45814d4.1759070796.git.leon@kernel.org>
-References: <cover.1759070796.git.leon@kernel.org>
-	<53f3ea1947919a5e657b4f83e74ca53aa45814d4.1759070796.git.leon@kernel.org>
-X-Mailer: Claws Mail 4.3.1 (GTK 3.24.43; x86_64-redhat-linux-gnu)
+        Mon, 29 Sep 2025 15:24:13 -0700 (PDT)
+Date: Mon, 29 Sep 2025 22:24:08 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Daniel Mentz <danielmentz@google.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	Will Deacon <will@kernel.org>, Mostafa Saleh <smostafa@google.com>,
+	Liviu Dudau <liviu.dudau@arm.com>, Jason Gunthorpe <jgg@nvidia.com>,
+	Rob Clark <robin.clark@oss.qualcomm.com>
+Subject: Re: [PATCH 1/2] iommu/io-pgtable-arm: Implement .iotlb_sync_map
+ callback
+Message-ID: <aNsHCKdfzQNh9GFj@google.com>
+References: <20250927223953.936562-1-danielmentz@google.com>
+ <aNrks8eXTfHyVhKl@google.com>
+ <CAE2F3rCZhgLOPKMmAqvNaQt3mUdj0kez9_MDxM3nGVOpgr5wuA@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: YKyjfO_48JyetbWH-TXuCNi06_hDVfl9DKc93DNC1r4_1759180673
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAE2F3rCZhgLOPKMmAqvNaQt3mUdj0kez9_MDxM3nGVOpgr5wuA@mail.gmail.com>
 
-On Sun, 28 Sep 2025 17:50:20 +0300
-Leon Romanovsky <leon@kernel.org> wrote:
-> +static int validate_dmabuf_input(struct vfio_pci_core_device *vdev,
-> +				 struct vfio_device_feature_dma_buf *dma_buf,
-> +				 struct vfio_region_dma_range *dma_ranges,
-> +				 struct p2pdma_provider **provider)
-> +{
-> +	struct pci_dev *pdev = vdev->pdev;
-> +	u32 bar = dma_buf->region_index;
-> +	resource_size_t bar_size;
-> +	u64 sum;
-> +	int i;
-> +
-> +	if (dma_buf->flags)
-> +		return -EINVAL;
-> +	/*
-> +	 * For PCI the region_index is the BAR number like  everything else.
-> +	 */
-> +	if (bar >= VFIO_PCI_ROM_REGION_INDEX)
-> +		return -ENODEV;
-> +
-> +	*provider = pcim_p2pdma_provider(pdev, bar);
-> +	if (!provider)
+On Mon, Sep 29, 2025 at 01:42:29PM -0700, Daniel Mentz wrote:
+> On Mon, Sep 29, 2025 at 12:57 PM Pranjal Shrivastava <praan@google.com> wrote:
+> >
+> > On Sat, Sep 27, 2025 at 10:39:52PM +0000, Daniel Mentz wrote:
+> > > +static int __arm_lpae_iotlb_sync_map(struct arm_lpae_io_pgtable *data, unsigned long iova,
+> > > +                           size_t size, int lvl, arm_lpae_iopte *ptep)
+> > > +{
+> > > +     struct io_pgtable *iop = &data->iop;
+> > > +     size_t block_size = ARM_LPAE_BLOCK_SIZE(lvl, data);
+> > > +     int ret = 0, num_entries, max_entries;
+> > > +     unsigned long iova_offset, sync_idx_start, sync_idx_end;
+> > > +     int i, shift, synced_entries = 0;
+> > > +
+> > > +     shift = (ARM_LPAE_LVL_SHIFT(lvl - 1, data) + ARM_LPAE_PGD_IDX(lvl - 1, data));
+> > > +     iova_offset = iova & ((1ULL << shift) - 1);
+> > > +     sync_idx_start = ARM_LPAE_LVL_IDX(iova, lvl, data);
+> > > +     sync_idx_end = (iova_offset + size + block_size - ARM_LPAE_GRANULE(data)) >>
+> > > +             ARM_LPAE_LVL_SHIFT(lvl, data);
+> > > +     max_entries = arm_lpae_max_entries(sync_idx_start, data);
+> > > +     num_entries = min_t(unsigned long, sync_idx_end - sync_idx_start, max_entries);
+> > > +     ptep += sync_idx_start;
+> > > +
+> > > +     if (lvl < (ARM_LPAE_MAX_LEVELS - 1)) {
+> > > +             for (i = 0; i < num_entries; i++) {
+> > > +                     arm_lpae_iopte pte = READ_ONCE(ptep[i]);
+> > > +                     unsigned long synced;
+> > > +
+> > > +                     WARN_ON(!pte);
+> > > +
+> > > +                     if (iopte_type(pte) == ARM_LPAE_PTE_TYPE_TABLE) {
+> > > +                             int n = i - synced_entries;
+> > > +
+> > > +                             if (n) {
+> > > +                                     __arm_lpae_sync_pte(&ptep[synced_entries], n, &iop->cfg);
+> > > +                                     synced_entries += n;
+> > > +                             }
+> > > +                             ret = __arm_lpae_iotlb_sync_map(data, iova, size, lvl + 1,
+> > > +                                                             iopte_deref(pte, data));
+> >
+> > I think we must check the returned value here and break the loop on
+> > error. Otherwise, we might burry a failure by continuing the loop.
+> > We should add something like:
+> >
+> > if (ret)
+> >         break;
+> >
+> 
+> Now, I'm realising that __arm_lpae_iotlb_sync_map always returns 0, in
+> which case I could change the return type to void. Would that work for
+> you?
 
-This needs to be IS_ERR_OR_NULL() or the function needs to settle on a
-consistent error return value regardless of CONFIG_PCI_P2PDMA.
-
-> +		return -EINVAL;
-> +
-> +	bar_size = pci_resource_len(pdev, bar);
-
-We get to this feature via vfio_pci_core_ioctl_feature(), which is used
-by several variant drivers, some of which mangle the BAR size exposed
-to the user, ex. hisi_acc.  I'm afraid this might actually be giving
-dmabuf access to a portion of the BAR that isn't exposed otherwise.
-
-> +	for (i = 0; i < dma_buf->nr_ranges; i++) {
-> +		u64 offset = dma_ranges[i].offset;
-> +		u64 len = dma_ranges[i].length;
-> +
-> +		if (!PAGE_ALIGNED(offset) || !PAGE_ALIGNED(len))
-> +			return -EINVAL;
-> +
-> +		if (check_add_overflow(offset, len, &sum) || sum > bar_size)
-> +			return -EINVAL;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +int vfio_pci_core_feature_dma_buf(struct vfio_pci_core_device *vdev, u32 flags,
-> +				  struct vfio_device_feature_dma_buf __user *arg,
-> +				  size_t argsz)
-> +{
-> +	struct vfio_device_feature_dma_buf get_dma_buf = {};
-> +	struct vfio_region_dma_range *dma_ranges;
-> +	DEFINE_DMA_BUF_EXPORT_INFO(exp_info);
-> +	struct p2pdma_provider *provider;
-> +	struct vfio_pci_dma_buf *priv;
-> +	int ret;
-> +
-> +	ret = vfio_check_feature(flags, argsz, VFIO_DEVICE_FEATURE_GET,
-> +				 sizeof(get_dma_buf));
-> +	if (ret != 1)
-> +		return ret;
-> +
-> +	if (copy_from_user(&get_dma_buf, arg, sizeof(get_dma_buf)))
-> +		return -EFAULT;
-> +
-> +	if (!get_dma_buf.nr_ranges)
-> +		return -EINVAL;
-> +
-> +	dma_ranges = memdup_array_user(&arg->dma_ranges, get_dma_buf.nr_ranges,
-> +				       sizeof(*dma_ranges));
-> +	if (IS_ERR(dma_ranges))
-> +		return PTR_ERR(dma_ranges);
-> +
-> +	ret = validate_dmabuf_input(vdev, &get_dma_buf, dma_ranges, &provider);
-> +	if (ret)
-> +		return ret;
-
-goto err_free_ranges;
+Ah, yes, I just realized that too. I guess we can simply change the
+return type to void.
 
 Thanks,
-Alex
-
+Praan
