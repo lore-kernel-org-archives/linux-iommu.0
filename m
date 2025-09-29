@@ -1,199 +1,264 @@
-Received: from BL2PR02CU003.outbound.protection.outlook.com (mail-eastusazon11011039.outbound.protection.outlook.com [52.101.52.39])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 635A022D792;
-	Mon, 29 Sep 2025 19:12:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.52.39
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759173140; cv=fail; b=lwLy3Y0ckaSFchJO/tKQWyuuF0wgXDkao1ItQaTnZu7D/J8YPlw/WpDvUAL57tCxPHHwVngRtPIuigDnCbOpiji7pgfTHHjA8iEHvnU3CynExe8KsPdCsU72qGHXHlFtc0j8GNLeaE/kgmNJR1fjVs6NKijk4OAEkF0YF9QURAg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759173140; c=relaxed/simple;
-	bh=6dxlcXsbawc+0dbeGDPwp3yHM+6NLWb/ZaQArZBcJq0=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Qgp6zYer8IvNHzXSBMMOhUia+oS/rzfLAta7TSi6WczuHZCJ825Zi0bH5/pTg7JhlTOLRGFTo8aYRWtbuZuxD6mwsRMZfyNt8pTJJ3TR1yVijeyIjmWBPJUOCQMlf9jFvvecIrFcuP+HgV4vh8vpey1Bwaipa9J2QcfssAiI4w0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=P+DLsKEu; arc=fail smtp.client-ip=52.101.52.39
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8917225A35F
+	for <iommu@lists.linux.dev>; Mon, 29 Sep 2025 19:57:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.181
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1759175868; cv=none; b=lIq5vEerdBuNbgBgr9YT1g7/Uq11IV2YEvTUyuxO0HQt+uDnLqeQutGCKVYKQPB6QJ/oIBHF3OI05z5gvfohprCoCiJpnf3A967u50wfjdqnT5+32OwNsqXxXDr3+isRt0CtGyBDXJcHWKs/KSCk+FLe3/FiUwZBAB8IdWuhCvU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1759175868; c=relaxed/simple;
+	bh=gTsSNd2/zLIn2jp0BAXYJxZ3J/uFuF5NygJQfxzhs14=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=VZ/tVJoCC18rJa6lVAtnrKoekSi5xqsrblxSiMvrNQ/BAIM4EsR1rJ11OFFEV2ZWc4Qgjk41rHEREilDaDcIIPUNvhyy56va86wn0qgxjulzOWxkeXgeLORaRzzoUw9khhGIVY2esqmO8E4c1IXInvmQLycn8mTufNxxAi1mCck=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=n88YjdNX; arc=none smtp.client-ip=209.85.214.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="P+DLsKEu"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=F0pyve5HHxhw17bAtORJcByTr6JYD6VCjy/CrdBqFT208n/eVuXXCgQ1IOl20+fXdwr78ztyAf4prcbQp4Uwtfku6KXYkOZCRG3mVLXRaoMGcmHukZno3EZVvZgeK+vWUKr36JjZykZRQ9dINOmm2/02yZ8hL4O4Q/IhbPJmWvMr7muNBIu8Y5ltZRMtn55fJAsd5gfhgTpVte9nSV/f41SiNAEn/2UDhPOuzkKq8M6rHUsEPJiUjvDm8yzQiYuve+5rZaxvxV1uTxyvvwIyqrUr9n/O7QRNfgO/NIjvVl5moUngwispAuP55UeH1Q6N2qgwPHYJbBGyDirihB4M1w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=d0J1cItQkRKLU4Pf5cRn9CHeo1ftlxhfPrFjh9SYhos=;
- b=NeYfhn8mILGR7KRAwUd7I9pGF9CTQ0PKAvuszOhCf6DCCQrvYwT3LYpz7z27zbHmzF13UpHyWFuUTNkYyIly+ACpc4Zb1zkIGY5nNJ+NMhvWijhqieveB7UsCNLtEFyCQ8AH6t4R7OomaM7uwujL8W7U7zI3HecG+rdaxPGSScYDBdvepfGNkwaVodi9AvanvU+yGX2Yg+TkwCqEpvEvOZilNE3wl1amtYRxISlFCjl91FCbaqAyZIe8VSwc7wvfsVIn5bONRSHoL5xCxFmPlzWlRP7N/enXoBDMFJpCWVWFT5yaBmbFoes9rIS8NnNCy11sDDQESpdNfr6CJFnqWw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.233) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=d0J1cItQkRKLU4Pf5cRn9CHeo1ftlxhfPrFjh9SYhos=;
- b=P+DLsKEuHsb0kTo+xal+WHBFbL3TbTdmKfmMQupu+Z54k/2DOQSx+/3SnI7G2xjwkJpLMbNHY7CaE5JtO87OgnRAt+9LVVdK2wAdcalgFl/Al2JV8PLDJJc/+zhHFOW6GwVIM1tes3N413O3KlqnujbJmFFHft9OwORgK6Bkvf5fQx/I4I/k2LkTvoEwFn3rwISg8Lx04KmS3yYOYAPNvF3fQ5g3M/bxvtdUiT2max2O541NxH28QVA7yovNu1Uo7rnMU3m8vsC86EEGR1sFjUp63oWroYjYt6QJVoIiin6WxKQw/TZ2So6NfBfeSw3WxQQWuAPuUJYbj7nVx4mrvA==
-Received: from PH8P221CA0039.NAMP221.PROD.OUTLOOK.COM (2603:10b6:510:346::14)
- by SJ2PR12MB8806.namprd12.prod.outlook.com (2603:10b6:a03:4d0::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9160.15; Mon, 29 Sep
- 2025 19:12:07 +0000
-Received: from CY4PEPF0000FCC4.namprd03.prod.outlook.com
- (2603:10b6:510:346:cafe::13) by PH8P221CA0039.outlook.office365.com
- (2603:10b6:510:346::14) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9137.21 via Frontend Transport; Mon,
- 29 Sep 2025 19:12:07 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.233) by
- CY4PEPF0000FCC4.mail.protection.outlook.com (10.167.242.106) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9160.9 via Frontend Transport; Mon, 29 Sep 2025 19:12:07 +0000
-Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
- (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Mon, 29 Sep
- 2025 12:11:50 -0700
-Received: from drhqmail203.nvidia.com (10.126.190.182) by
- drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.20; Mon, 29 Sep 2025 12:11:49 -0700
-Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.126.190.182)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
- Transport; Mon, 29 Sep 2025 12:11:49 -0700
-Date: Mon, 29 Sep 2025 12:11:47 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
-	<jean-philippe@linaro.org>, <miko.lenczewski@arm.com>, <balbirs@nvidia.com>,
-	<peterz@infradead.org>, <smostafa@google.com>, <kevin.tian@intel.com>,
-	<praan@google.com>, <linux-arm-kernel@lists.infradead.org>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-	<patches@lists.linux.dev>
-Subject: Re: [PATCH rfcv2 5/8] iommu/arm-smmu-v3: Pre-allocate a per-master
- invalidation array
-Message-ID: <aNrZ8z92CXs+J1pH@Asurada-Nvidia>
-References: <cover.1757373449.git.nicolinc@nvidia.com>
- <f5f635077b791b27b46ea41b5c86a52fd4549a44.1757373449.git.nicolinc@nvidia.com>
- <20250924213230.GQ2617119@nvidia.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="n88YjdNX"
+Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-2731ff54949so5745ad.1
+        for <iommu@lists.linux.dev>; Mon, 29 Sep 2025 12:57:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1759175866; x=1759780666; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=YOiOEwdEVIIe+BX2t9YU9UyrOKLzJd+0CHTB2Eboyys=;
+        b=n88YjdNXUW4qqWqdFmnDKY5FTxbhFbYlKecayAiWxa2hY7E4cyOL2lvySjrerXr6Iu
+         514AwKwvaqRkker+Ravs3+TiJumQgsTi/jzDYBU6GfJGNWcKnrVtbwSyHHIgRzMkozNI
+         iZr9IJL/+TsNXW9YpBxMS9o2D8CwLAYymcKUt/ob1N17ao2GcdaxVxRjUDe88XCNyYH0
+         dKI5pcxjOzcqEfd8sY2wmkVCseZ2j6DlPx63Vo5a9qdQ/Ea4VpJQidMDbxvK3VewgACc
+         4oGFZv9Rz4I0ZnqF+v6BX6qad8+0AgNV4GmfUE6pjdn8AlduitcQbbwTP+IO9jkoZ92T
+         5kxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1759175866; x=1759780666;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=YOiOEwdEVIIe+BX2t9YU9UyrOKLzJd+0CHTB2Eboyys=;
+        b=ioGPyvVJUtYFBX8R8wSjqWX1h7DxYwwIKMNylNs1W8QSevSm+lMnGAl8Zd3SftnOWT
+         ar+j3XZudMdfZaW8y4rU2nAdJn9JiUufflCpf32NFinrVW/OJNNfg9eGjkuFwmcdnNCc
+         CFLmaMvlOTkqpKt6xeND6WTDQc62B8feL8vqYZ6GNMj8ioFhOjycqucK9Zk5jcex7jUb
+         es4V/E2MqgoubZoOIEiuYZ0eAK2absw4QlrWkaA7K3A7Ih67kh4LcnbsPD2G/Qwmm2D0
+         eP+A4SAIwh6fd3mUpHzhlh+rBl2gbzMWbhik49yzMTamOb/FOIUcWnUhzHmsxiydXrn9
+         IZOA==
+X-Gm-Message-State: AOJu0YynxtYbamQHtRPTFIiUYVYvndepgoyOrAs1W5UQjR//NPhtRNlg
+	XQ9CvJHElercrHUJPzVYC+RS7PfMDMre4+nak4eoz2pigItZbyNREcksGD53movDPA==
+X-Gm-Gg: ASbGncvk3eKWAiQTR8A9qE9m9m1ejo/YeT0SKy8+2cXua/DbZZkU5NBmSzAz1AiA741
+	z+j3oqNUTx6VaNE45Pl7Qqwhx7lpq/huki/gWH6w0QP8fO4acqGoCWbksp0rIw7Q/2x5ffQYxie
+	HcwZ45I9sJdLLWLGoCgIbsauHbC4c7zzJrTgyEAwsxoSz4ZDYjXtlU7qA9QVI9fyEz7tH128jYF
+	FwWQ9Xw3d1kVrm8qoLWsnXFJYmUV2fdsGh6sol14VSFPefsIjh3/1IpGXH5VKMFIcFIZgswTbcj
+	O+kCJbtmKFt/PQrWxuzXEBsa6X+HLVrslIrlPrPh3QsKYma63v5t1QiGuxhdOztChwNDWT86zhK
+	sx+E3sN4NtgfYqv8QHZXIhGvN0oxL1eQFqtMWwLRQc8BNkQqHhPZY4XacKc3xpAGQl8NfMZtgCg
+	==
+X-Google-Smtp-Source: AGHT+IE3kbV3lnUAbeVo87YFkQpxhK8UcbVtkpKbpU+wAfqg1zn+LgU/CyfWAyi+v2zOnuBVGxcXPg==
+X-Received: by 2002:a17:903:2348:b0:25b:ce96:7109 with SMTP id d9443c01a7336-28e640e487emr221805ad.3.1759175865356;
+        Mon, 29 Sep 2025 12:57:45 -0700 (PDT)
+Received: from google.com (21.168.124.34.bc.googleusercontent.com. [34.124.168.21])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-27ed69be6cdsm138179795ad.125.2025.09.29.12.57.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 29 Sep 2025 12:57:44 -0700 (PDT)
+Date: Mon, 29 Sep 2025 19:57:39 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Daniel Mentz <danielmentz@google.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	Will Deacon <will@kernel.org>, Mostafa Saleh <smostafa@google.com>,
+	Liviu Dudau <liviu.dudau@arm.com>, Jason Gunthorpe <jgg@nvidia.com>,
+	Rob Clark <robin.clark@oss.qualcomm.com>
+Subject: Re: [PATCH 1/2] iommu/io-pgtable-arm: Implement .iotlb_sync_map
+ callback
+Message-ID: <aNrks8eXTfHyVhKl@google.com>
+References: <20250927223953.936562-1-danielmentz@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250924213230.GQ2617119@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000FCC4:EE_|SJ2PR12MB8806:EE_
-X-MS-Office365-Filtering-Correlation-Id: 397e0242-0cc7-4544-e083-08ddff8c152f
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700013|7416014|376014|82310400026|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?6rEujkXMCx7S+zfcGgfJPJWnj7z2soo8ZyNhYF2zM9IWthRGtHHtWGfVBMnF?=
- =?us-ascii?Q?9CcynTfjsq5hE4+3rfQepgPmUKRbZv5KkKPPzs47U+j7IvXHcYlcRoDQf4Tp?=
- =?us-ascii?Q?+Mse5AXYQSpgbKJUt9lVF75tyLF1XAEyndXx5kwGr7NN6BRuTkjYMwlnfjt/?=
- =?us-ascii?Q?SAiJnz9FGKT6s6kQFeYSoRFH+oYE5j+mPIQVnT/+IJ/cfDqL+CQ38su1ivUc?=
- =?us-ascii?Q?m64S238frKB0Fc0HsPdMLnsWEaiL/f7hVdPFwKlGJHA3W8iyx116+DxpGHyw?=
- =?us-ascii?Q?VCYA8bhLO9XbV8RYV1rCiGCs7+1U+3VHNHG+x3GLhDLnanizWJC1jW/SFHCB?=
- =?us-ascii?Q?arrI5f1HXFwcz3bPnPFaiTcvQw3W8Tc04ioFu6XVqvlm1Ke95sEzE9pK+YzH?=
- =?us-ascii?Q?r9fp2HazpWmbhuNnnHjU6bqfOZ2iwu0+rPepWxdn6s2mkDQeUz9JDl8LMPLY?=
- =?us-ascii?Q?4VflBm4DDlIM1rRgc1cWlZPOuTOuWQM9MiNtCZywwShQ4urFXQupPZiW5wQM?=
- =?us-ascii?Q?sNGPVO4nWTa7xnqDCEZo6t//iLxNzai16BjnsMzKwFeJ0vulK5V3TwKs1zNi?=
- =?us-ascii?Q?3jghx2l4noNAVmGdDj4ADkVbkbtG2Qga65LbwT/7ndEKPkeEJW2Hz21boG5v?=
- =?us-ascii?Q?Psk3wBf/k2KJhI8dhMzyZaeCrOdf/T3YLQt9RHbfRV9ftxDE1Kp0IoLYVtSW?=
- =?us-ascii?Q?Ia1Bx1YGZv/u6onsZoCU3TWlXpnXF80Y+tSUCJeCTyromyM2KKb2irc9yLfN?=
- =?us-ascii?Q?v9K04kEBMraMjopngCDudBzjV5tGBJ5of2obzvYEJp5v4Scgcst72xhFBIiP?=
- =?us-ascii?Q?stezNzOwDte5z/ZkNwvB1Mxq6jfbJ7hsDPdIZO8C2O4OavcJNzo65ato60Al?=
- =?us-ascii?Q?OGX5aB1bwkQce+xgCOpIQ7kOF1g33DakmwYnE3evIaznYz4mtnbloiMiZD+E?=
- =?us-ascii?Q?qgtZrpUmMz777K2Aqat82lFDJO3TKDQDvkwjxQEuG+jOo/lJvj6eNnDzPhY0?=
- =?us-ascii?Q?TisXWfhL+4jFSeJpy2lpF9AMSNXhE9lAKraPolkCR9VCf1erb4/fZBKjPWLK?=
- =?us-ascii?Q?Squh6n+kaZazaET2vTdW5F9Xbo7QImqtl1ZtfKq98Lj6zgZXI9jvITrOfy5e?=
- =?us-ascii?Q?ZGeeq3TedbVQL509PfVlBKSbpfX9mgpJKhUnvLH39FQrgh1kmytuskAFLTdf?=
- =?us-ascii?Q?zxER3JtDGKW2MkkhRknaoYl2laTFHaGWWwjPqx5zYZOyH/JAgvAzXJkwlxcH?=
- =?us-ascii?Q?KtVK7f7PgMFVRknuvhbFiO6Fa7/nF4PU0x5dSey49AC41mvmNDHsiPuWWUC/?=
- =?us-ascii?Q?FGAJFYEgH34agJnRYXJO+7Hcugf79z/5lL9HDkZ5YUNDpxbPp5lu0P7Dosc1?=
- =?us-ascii?Q?/z76VyPptBGkLZMS7g4ig77GAEo7K5hN32I3PIy5kTzSe4/9VIGBQV+3MIhv?=
- =?us-ascii?Q?z11meGP8ELRfrNdYLp3ni4WWvuyDO7GSvEDWaFbZiVy+C2ArQ5AEfKY7/NZv?=
- =?us-ascii?Q?l43wyl3pmMGd9KJcpZ2njhrU8rVGSx6aFFBOOQ9gBTEpR9MWtL86IcUFzUKb?=
- =?us-ascii?Q?Bb9AlFDC/gsTL2wvHT8=3D?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230040)(36860700013)(7416014)(376014)(82310400026)(1800799024);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Sep 2025 19:12:07.1348
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 397e0242-0cc7-4544-e083-08ddff8c152f
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CY4PEPF0000FCC4.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB8806
+In-Reply-To: <20250927223953.936562-1-danielmentz@google.com>
 
-On Wed, Sep 24, 2025 at 06:32:30PM -0300, Jason Gunthorpe wrote:
-> On Mon, Sep 08, 2025 at 04:26:59PM -0700, Nicolin Chen wrote:
-> > +	/* Base case has 1 ASID or 1~2 VMIDs. ATS case adds num_ids */
-> > +	if (!ats_supported)
-> > +		master->build_invs = arm_smmu_invs_alloc(2);
-> > +	else
-> > +		master->build_invs = arm_smmu_invs_alloc(2 + fwspec->num_ids);
-> > +	if (IS_ERR(master->build_invs)) {
-> > +		kfree(master->streams);
-> > +		return PTR_ERR(master->build_invs);
-> > +	}
-> > +
-> > +	/* Put the ids into order for a sorted to_merge or to_unref array */
-> > +	sort_nonatomic(fwspec->ids, fwspec->num_ids, sizeof(fwspec->ids[0]),
-> > +		       arm_smmu_ids_cmp, NULL);
+On Sat, Sep 27, 2025 at 10:39:52PM +0000, Daniel Mentz wrote:
+> On systems with a non-coherent SMMU, the CPU must perform cache
+> maintenance operations (CMOs) after updating page table entries (PTEs).
+> This ensures that the SMMU reads the latest version of the descriptors
+> and not stale data from memory.
 > 
-> The sort could be moved under the above !ats_supported, a little more
-> insurance in case something is inspecting the ids.
+> This requirement can lead to significant performance overhead,
+> especially when mapping long scatter-gather lists where each sg entry
+> maps into an iommu_map() call that only covers 4KB of address space.
+> 
+> In such scenarios, each small mapping operation modifies a single 8-byte
+> PTE but triggers a cache clean for the entire cache line (e.g., 64
+> bytes). This results in the same cache line being cleaned repeatedly,
+> once for each PTE it contains.
+> 
+> A more efficient implementation performs the cache clean operation only
+> after updating all descriptors that are co-located in the same cache
+> line. This patch introduces a mechanism to defer and batch the cache
+> maintenance:
+> 
+> A new boolean flag, defer_sync_pte, is added to struct io_pgtable_cfg.
+> When this flag is set, the arm-lpae backend will skip the cache sync
+> operation for leaf entries within its .map_pages implementation.
+> 
+> A new callback, .iotlb_sync_map, is added to struct io_pgtable_ops.
+> After performing a series of mapping operations, the caller is
+> responsible for invoking this callback for the entire IOVA range. This
+> function then walks the page tables for the specified range and performs
+> the necessary cache clean operations for all the modified PTEs.
+> 
+> This allows for a single, efficient cache maintenance operation to cover
+> multiple PTE updates, significantly reducing overhead for workloads that
+> perform many small, contiguous mappings.
+> 
+> Signed-off-by: Daniel Mentz <danielmentz@google.com>
+> ---
+>  drivers/iommu/io-pgtable-arm.c | 66 +++++++++++++++++++++++++++++++++-
+>  include/linux/io-pgtable.h     |  7 ++++
+>  2 files changed, 72 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+> index 7e8e2216c294..a970eefb07fb 100644
+> --- a/drivers/iommu/io-pgtable-arm.c
+> +++ b/drivers/iommu/io-pgtable-arm.c
+> @@ -353,7 +353,7 @@ static void __arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
+>  	for (i = 0; i < num_entries; i++)
+>  		ptep[i] = pte | paddr_to_iopte(paddr + i * sz, data);
+>  
+> -	if (!cfg->coherent_walk)
+> +	if (!cfg->coherent_walk && !cfg->defer_sync_pte)
+>  		__arm_lpae_sync_pte(ptep, num_entries, cfg);
+>  }
+>  
+> @@ -582,6 +582,69 @@ static int arm_lpae_map_pages(struct io_pgtable_ops *ops, unsigned long iova,
+>  	return ret;
+>  }
+>  
+> +static int __arm_lpae_iotlb_sync_map(struct arm_lpae_io_pgtable *data, unsigned long iova,
+> +			      size_t size, int lvl, arm_lpae_iopte *ptep)
+> +{
+> +	struct io_pgtable *iop = &data->iop;
+> +	size_t block_size = ARM_LPAE_BLOCK_SIZE(lvl, data);
+> +	int ret = 0, num_entries, max_entries;
+> +	unsigned long iova_offset, sync_idx_start, sync_idx_end;
+> +	int i, shift, synced_entries = 0;
+> +
+> +	shift = (ARM_LPAE_LVL_SHIFT(lvl - 1, data) + ARM_LPAE_PGD_IDX(lvl - 1, data));
+> +	iova_offset = iova & ((1ULL << shift) - 1);
+> +	sync_idx_start = ARM_LPAE_LVL_IDX(iova, lvl, data);
+> +	sync_idx_end = (iova_offset + size + block_size - ARM_LPAE_GRANULE(data)) >>
+> +		ARM_LPAE_LVL_SHIFT(lvl, data);
+> +	max_entries = arm_lpae_max_entries(sync_idx_start, data);
+> +	num_entries = min_t(unsigned long, sync_idx_end - sync_idx_start, max_entries);
+> +	ptep += sync_idx_start;
+> +
+> +	if (lvl < (ARM_LPAE_MAX_LEVELS - 1)) {
+> +		for (i = 0; i < num_entries; i++) {
+> +			arm_lpae_iopte pte = READ_ONCE(ptep[i]);
+> +			unsigned long synced;
+> +
+> +			WARN_ON(!pte);
+> +
+> +			if (iopte_type(pte) == ARM_LPAE_PTE_TYPE_TABLE) {
+> +				int n = i - synced_entries;
+> +
+> +				if (n) {
+> +					__arm_lpae_sync_pte(&ptep[synced_entries], n, &iop->cfg);
+> +					synced_entries += n;
+> +				}
+> +				ret = __arm_lpae_iotlb_sync_map(data, iova, size, lvl + 1,
+> +								iopte_deref(pte, data));
 
-You mean this:
-----------------------------------------------------------------
-@@ -4080,19 +4080,19 @@ static int arm_smmu_insert_master(struct arm_smmu_device *smmu,
-        master->num_streams = fwspec->num_ids;
+I think we must check the returned value here and break the loop on
+error. Otherwise, we might burry a failure by continuing the loop.
+We should add something like:
 
-        /* Base case has 1 ASID or 1~2 VMIDs. ATS case adds num_ids */
--       if (!ats_supported)
-+       if (!ats_supported) {
-                master->build_invs = arm_smmu_invs_alloc(2);
--       else
-+       } else {
-+               /* Put the ids into order for a sorted to_merge or to_unref array */
-+               sort_nonatomic(fwspec->ids, fwspec->num_ids, sizeof(fwspec->ids[0]),
-+                              arm_smmu_ids_cmp, NULL);
-                master->build_invs = arm_smmu_invs_alloc(2 + fwspec->num_ids);
-+       }
-        if (IS_ERR(master->build_invs)) {
-                kfree(master->streams);
-                return PTR_ERR(master->build_invs);
-        }
+if (ret)
+	break;
 
--       /* Put the ids into order for a sorted to_merge or to_unref array */
--       sort_nonatomic(fwspec->ids, fwspec->num_ids, sizeof(fwspec->ids[0]),
--                      arm_smmu_ids_cmp, NULL);
--
-        mutex_lock(&smmu->streams_mutex);
-        for (i = 0; i < fwspec->num_ids; i++) {
-                struct arm_smmu_stream *new_stream = &master->streams[i];
-----------------------------------------------------------------
-?
+> +				synced_entries++;
+> +			}
+> +			synced = block_size - (iova & (block_size - 1));
+> +			size -= synced;
+> +			iova += synced;
+> +		}
+> +	}
+> +
+> +	if (synced_entries != num_entries)
+> +		__arm_lpae_sync_pte(&ptep[synced_entries], num_entries - synced_entries, &iop->cfg);
+> +
+> +	return ret;
+> +}
+> +
+> +static int arm_lpae_iotlb_sync_map(struct io_pgtable_ops *ops, unsigned long iova,
+> +			    size_t size)
+> +{
+> +	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
+> +	struct io_pgtable_cfg *cfg = &data->iop.cfg;
+> +	arm_lpae_iopte *ptep = data->pgd;
+> +	int lvl = data->start_level;
+> +	long iaext = (s64)iova >> cfg->ias;
+> +
+> +	WARN_ON(!size);
+> +	WARN_ON(iaext);
+> +
+> +	return __arm_lpae_iotlb_sync_map(data, iova, size, lvl, ptep);
+> +}
+> +
+>  static void __arm_lpae_free_pgtable(struct arm_lpae_io_pgtable *data, int lvl,
+>  				    arm_lpae_iopte *ptep)
+>  {
+> @@ -949,6 +1012,7 @@ arm_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg)
+>  	data->iop.ops = (struct io_pgtable_ops) {
+>  		.map_pages	= arm_lpae_map_pages,
+>  		.unmap_pages	= arm_lpae_unmap_pages,
+> +		.iotlb_sync_map	= cfg->coherent_walk ? NULL : arm_lpae_iotlb_sync_map,
+>  		.iova_to_phys	= arm_lpae_iova_to_phys,
+>  		.read_and_clear_dirty = arm_lpae_read_and_clear_dirty,
+>  		.pgtable_walk	= arm_lpae_pgtable_walk,
+> diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
+> index 138fbd89b1e6..c4927dbc0f61 100644
+> --- a/include/linux/io-pgtable.h
+> +++ b/include/linux/io-pgtable.h
+> @@ -57,6 +57,9 @@ struct iommu_flush_ops {
+>   * @oas:           Output address (paddr) size, in bits.
+>   * @coherent_walk  A flag to indicate whether or not page table walks made
+>   *                 by the IOMMU are coherent with the CPU caches.
+> + * @defer_sync_pte A flag to indicate whether pte sync operations for leaf
+> + *                 entries shall be skipped during calls to .map_pages. A
+> + *                 subsequent call to .iotlb_sync_map is required.
+>   * @tlb:           TLB management callbacks for this set of tables.
+>   * @iommu_dev:     The device representing the DMA configuration for the
+>   *                 page table walker.
+> @@ -110,6 +113,7 @@ struct io_pgtable_cfg {
+>  	unsigned int			ias;
+>  	unsigned int			oas;
+>  	bool				coherent_walk;
+> +	bool				defer_sync_pte;
+>  	const struct iommu_flush_ops	*tlb;
+>  	struct device			*iommu_dev;
+>  
+> @@ -204,6 +208,7 @@ struct arm_lpae_io_pgtable_walk_data {
+>   * @unmap_pages:  Unmap a range of virtually contiguous pages of the same size.
+>   * @iova_to_phys: Translate iova to physical address.
+>   * @pgtable_walk: (optional) Perform a page table walk for a given iova.
+> + * @iotlb_sync_map: Sync ptes (Required for non-coherent page table walks)
+>   *
+>   * These functions map directly onto the iommu_ops member functions with
+>   * the same names.
+> @@ -222,6 +227,8 @@ struct io_pgtable_ops {
+>  				    unsigned long iova, size_t size,
+>  				    unsigned long flags,
+>  				    struct iommu_dirty_bitmap *dirty);
+> +	int (*iotlb_sync_map)(struct io_pgtable_ops *ops, unsigned long iova,
+> +			      size_t size);
+>  };
+>  
+>  /**
+> -- 
+> 2.51.0.570.gb178f27e6d-goog
+> 
 
-Hmm, I am not sure how it insures against anything concurrent.
-
-Maybe we should sort it in arm_smmu_of_xlate() each time when
-adding a new ID? Or iommu_fwspec_add_ids() itself could sort,
-since we are thinking of generalizing this array in the core?
-
-Thanks
-Nicolin
+Thanks,
+Praan
