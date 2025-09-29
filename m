@@ -1,153 +1,219 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from SN4PR2101CU001.outbound.protection.outlook.com (mail-southcentralusazon11012000.outbound.protection.outlook.com [40.93.195.0])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB96E145B16;
-	Mon, 29 Sep 2025 13:30:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759152625; cv=none; b=pAcAP/tANzrlHzmIP5AIwjkogHcIs8ylvvt2eBSwtRrwpphXYUoqdX85W9aamFu4VFGnm5WQs5BD27Uj6KPlOihAfP03uD3D2T7y1qaH51Xd0I5dyzC9bOwBw8aTU8LvyJCxoOt/N/3GngDz4FfzZxp9OfHA2Gey/CLguMojtGk=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759152625; c=relaxed/simple;
-	bh=uHgIBibYdlDuNfkcTOkEkYN0C68bkD2VvKTcK12DGcw=;
-	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
-	 In-Reply-To:Content-Type; b=Tdp9/DD5UyIqS1RlfGGUtqMwOyGJHdlr1N9kG+4xSGaonO4l6WE5vIxeiRoIQN9Q/EwMlE2eWG7yvPlUZ31RiRQzJdrfYpYctJb/3XuZv9HIYcnJPdsaSHAekq6+UDq7UbKWZvtNLEg3lUUgwLS0wBBNDIAlv/1+Gm/lwCjzWiI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oVIc60Ya; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C003F307AD2
+	for <iommu@lists.linux.dev>; Mon, 29 Sep 2025 13:53:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.195.0
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1759154003; cv=fail; b=hKKQIbaL5UsDKbsT2e4uDVSr8wq7+MmnTeMtX5qqM9ArEE0RpdQmt1/+bbO3aYpRHBY4GyIT6m87i81Inwnadfn7XKhH9w3HRoIVky/opnfA7YA2/sStd5zO7Gb3zUHA7P4unITuRh0NNsAmsIGLCwsrKdMxTdUAjsjIgbmu7H8=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1759154003; c=relaxed/simple;
+	bh=Q4rAFhDz1x+DfYWo1YnNu+nGusX20rDLInqk9/vEK2E=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=aGoGc9B5BEY8AEZhapkPaY1bHn2UDvfbswaO2Y7hlfm7w1w+sa1VrYs8Cp0uWUsR8DDOTpOjj7UWvboYtWvEevWcymstnx23o8CdrJy2viLpidPppp8L6URLVGDeG1TgyUCw2cDHL+JyMU7gRNmGPJjU51S0ZBzkWQ20cDK8w0g=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=km2p0vsS; arc=fail smtp.client-ip=40.93.195.0
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oVIc60Ya"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 137CBC4CEF4;
-	Mon, 29 Sep 2025 13:30:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1759152625;
-	bh=uHgIBibYdlDuNfkcTOkEkYN0C68bkD2VvKTcK12DGcw=;
-	h=Date:From:Subject:To:Cc:References:In-Reply-To:From;
-	b=oVIc60Yau39MZ5crY2C3OPLwS1iKMficNc3xTJAZnJKumjxSf2zk6rRZVQd6Uizbf
-	 Wn5Fm5mV4MfZikLDTjVSE7V84C7SUlpeTHnNZ+NaV1BgiMitNuZdB5HmXKRUWFxuHv
-	 er7z2RT864Lnal50po44+o6GwdxK9TOEoxIJjiqPuGHkVycUBdh3Lx9XmtO2dcRMrj
-	 eRs8nP3dpiD5Pv4Kt6v2cyyvzuwC2bGm9r3FNLOdZ+sTNFFyjnfosFPSq3CfSxm6I1
-	 hj25AryanGK0K1Dx1WWmg3UjRUXEuGmR90SnPhnjE8IGHjOh+P6zZcVygoiGAgYQpB
-	 +5xYTdb8cYtHA==
-Message-ID: <4037d353-0ec4-4f68-a09c-564b93ba313b@kernel.org>
-Date: Mon, 29 Sep 2025 15:30:22 +0200
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="km2p0vsS"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=iS+T6VJ/UYYM+WSZXJjtIwaLS007a2U0e7RoFUX0hotCxExEDAoUT4xPvBKF/w8Osm7Nm7aSY6m/zjP/eGpSS00KohGjn28u6jtPQDc6P/uIuRMwJH4RAaHUY010HJwjo/V/iUsOUnB7JfqxZl2jwddMWTbUidD26JhoRZJlFIU5sVtsmSwcyWamitrDNj4i+0H+G1fEvFx+iDa6d9WXe8KDsKLM4mw0dtBs6/kkRNY9UicD8KSd2i+KkgZ8zD4fP91qVUqWTzPvhWL3p++OlBlbUOunnG9gd/9jHQAmr2b16r3SFSPhnytYBGzH7oBOsqTc60AjXtY0Mk15ufJ75g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=K/2mtQFmunpxBxAG4KW6KWXqRFPoF9TyAWN+P0va0Yc=;
+ b=f4MtntnC89OCVbIESHu1z63c1AqJFXeIJMpkhhF9AB2qOrkJ5SHTqHbZDFbka0oByHtj3HCbyavOo/PsxfLzlQfoyw78rFcRNgurQOP/VdIt0pDsmp3R2B6Sog4HkvvHh/1ZkG1feJwdR2dWaMaa2ShRTR4gHrcUVcqetlO0K7n1ZJhNUAYCC3lSavsGSQX19YcGhNpRkGck3VF/E4LwgPSgxGeHCG/QMyBVF4bTCtT2Vs0b+5hNcJBGhQVZU9pq+ZlNI+ghZgnxSfDucdp1kxIDO04dnjvjhO0ClQmMGLcLCiTF3gNmKPO4l89XvGZ944a58CAFzwQC7A2hVLeG7w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=K/2mtQFmunpxBxAG4KW6KWXqRFPoF9TyAWN+P0va0Yc=;
+ b=km2p0vsSJj6rCjlCxffBmZP5Eyw92ylROCfCwSf85l2DAh696nqgHhpzfft6EZbF8yrXCRV3YLsonVfiDZAFmDIvsrLSxmelQprSVGwirCnq/DisHHSrKDN2DW8/YI6EVetoWf0S6yIjhIED/QFF/1IgdcEIv/paKbcjt1aH17C+RXFMKF9qd7SiHHXo3nSWzUE6QCM5uQm9Ch5d6YoQXchppPUMlWHKcmxwkuA26OPD76aCYxEPWsX8bnnFIhBUZTyL5vLzjGtIE7vG8TQPQViqVOy4xqYWSXNIZ6lQU2qdeTsmv+bM2a2+5GOFhy1Dc7nYRVF6O8/wSkN/vSqNbQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from PH7PR12MB5757.namprd12.prod.outlook.com (2603:10b6:510:1d0::13)
+ by SA3PR12MB8437.namprd12.prod.outlook.com (2603:10b6:806:2f5::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9160.17; Mon, 29 Sep
+ 2025 13:53:18 +0000
+Received: from PH7PR12MB5757.namprd12.prod.outlook.com
+ ([fe80::f012:300c:6bf4:7632]) by PH7PR12MB5757.namprd12.prod.outlook.com
+ ([fe80::f012:300c:6bf4:7632%2]) with mapi id 15.20.9160.014; Mon, 29 Sep 2025
+ 13:53:18 +0000
+Date: Mon, 29 Sep 2025 10:53:16 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Hans Verkuil <hverkuil+cisco@kernel.org>
+Cc: iommu@lists.linux.dev, Linux Kernel <linux-kernel@vger.kernel.org>,
+	Linux Media Mailing List <linux-media@vger.kernel.org>,
+	Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+	Sakari Ailus <sakari.ailus@linux.intel.com>,
+	Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH] iommu: __iommu_attach_group: check for non-NULL
+ blocking_domain
+Message-ID: <20250929135316.GL2617119@nvidia.com>
+References: <9a3ebe9b-518e-49ef-b87d-925d951a446f@kernel.org>
+ <20250929120734.GG2617119@nvidia.com>
+ <58aabb55-0030-49df-81ed-d4a68174b57e@kernel.org>
+ <20250929130214.GK2617119@nvidia.com>
+ <4037d353-0ec4-4f68-a09c-564b93ba313b@kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4037d353-0ec4-4f68-a09c-564b93ba313b@kernel.org>
+X-ClientProxiedBy: YT4PR01CA0372.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:fd::21) To PH7PR12MB5757.namprd12.prod.outlook.com
+ (2603:10b6:510:1d0::13)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-From: Hans Verkuil <hverkuil+cisco@kernel.org>
-Subject: Re: [PATCH] iommu: __iommu_attach_group: check for non-NULL
- blocking_domain
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Linux Kernel <linux-kernel@vger.kernel.org>,
- Linux Media Mailing List <linux-media@vger.kernel.org>,
- Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
- Sakari Ailus <sakari.ailus@linux.intel.com>,
- Robin Murphy <robin.murphy@arm.com>
-References: <9a3ebe9b-518e-49ef-b87d-925d951a446f@kernel.org>
- <20250929120734.GG2617119@nvidia.com>
- <58aabb55-0030-49df-81ed-d4a68174b57e@kernel.org>
- <20250929130214.GK2617119@nvidia.com>
-Content-Language: en-US, nl
-In-Reply-To: <20250929130214.GK2617119@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH7PR12MB5757:EE_|SA3PR12MB8437:EE_
+X-MS-Office365-Filtering-Correlation-Id: daffb101-be38-4c88-e990-08ddff5f8b67
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|366016;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?la+onpWNsOmjyfZD+GvR/OFh08ldL3Pqun2QoKVjqAhKdpfxmTH4CcfcdoYi?=
+ =?us-ascii?Q?qFk6xq8ZnGPH8Nh7Do3isu3bj2+eTI1b410B60XIye8jAN44nGZgYYCX0CJv?=
+ =?us-ascii?Q?qNzQ4+GfKGhrSXa7OHvyD8ANFbj/s+BZ3+ntfHRSPV6qC3BIV11lzhC+emYw?=
+ =?us-ascii?Q?eU1HHzooGuz3BOnhCykIEDclM6Jz3PGUHu0DEO0jHBxErc/+kFUkqYiA2N4Y?=
+ =?us-ascii?Q?CVTHhyqXlvEV77XQ1rS8vjccVFlaDmS6zjPdrbQZnd0Px5XnpTJa8aknQAk2?=
+ =?us-ascii?Q?nWusSLrNJUR97sW3sPto78B1Fvnt7/1igcUKljGztUscMmuZfJw/WLwfiNw8?=
+ =?us-ascii?Q?CBUbcGEFQUSLnrrsU37kgSMm7TniX6k8As9i/H/wReEcedPrdZQIwRhJkNmg?=
+ =?us-ascii?Q?sOek97LlJrQo5pJSUJP8yEPcjakM8+c4D/w7z+6qZNInEmY0cdnHIJIM3OdD?=
+ =?us-ascii?Q?vvkjRCkrazDXYTetSURL/9zqGjmQ8J/hHhgNeso2yVeEpeqG8rvnX8Djo+EH?=
+ =?us-ascii?Q?pcTKz53+vpBk3V9ucC1TE0eIBep19FtvNC05S//7/+4JZjVo8FkfqNHWJrCV?=
+ =?us-ascii?Q?NyO3z/Yg3/mNPviL4wpfo0rD21+Sp0SYiq1eXAam7cWR5hOleT8m3mDj2Xuy?=
+ =?us-ascii?Q?q0vDKKm0Xvg56j4NGSNFHqTRo7b8WHbWU9mMdMBWet8DN5/Cy6IUdUONX3+4?=
+ =?us-ascii?Q?tm6dbURyrVwpOfNE3H8HcUhsNzULTGeRSpl8i0Np/EbGDhY9xsGys82+Te7a?=
+ =?us-ascii?Q?79a55NUSn74xb0x3Mgy1jkW6ii9wDHbmIml09HsR/Uv036VGIKMouUTyccJ3?=
+ =?us-ascii?Q?EdzGLS58R8IV70R7i1pzXkLaV+E+DkvPom4ogbTJYoYi1qQQ0COEWuBMYWb6?=
+ =?us-ascii?Q?8CeZ5H1cVX5JvJWHZ32KoHidC1QJxRD9QdIDgqLR/E/uF5ZNoR8E0uibmsnL?=
+ =?us-ascii?Q?NWYoIGGWljysxju9aoOu3GuAOBWFO5O5XcsjjlRQCLeP4sYstH384qTmPivE?=
+ =?us-ascii?Q?BvkDGpBLyfphAV28+CU3u75QaHq6OXa3qs+m6X5n7hACFz808RdvmuqlTk5M?=
+ =?us-ascii?Q?QpWQLOcxNkiU6HKWD8R4ckgY9+xkyirC17iLVtAlh6ClM0afBotdmYrMOCVL?=
+ =?us-ascii?Q?jAmn0tfrNM+/QiuCeXik3CioD5SAC0Y5f3XrqeV0A4q9tOcLMndFvvgAWFxh?=
+ =?us-ascii?Q?N7fb+a/lGe6Mhh3j36p4/vfW/CwDceqPkJ7jUWk382Vx8thIhQNgdvtsoOY8?=
+ =?us-ascii?Q?WhzojkViaMsDQfZoN6OLrnvtgxZZgpOq6uMVhd8CxSQx6QaktgYzBGt6Ai8T?=
+ =?us-ascii?Q?k9/hdbKlUZeHkvIpiDdYLGkYXf5nSgC8G2HfciYSVRXgFx6+P+FFvdW+jxmA?=
+ =?us-ascii?Q?5xttkJkvM5FObAPRMhIlUF6Ei7s8gWHRckPipTk4LmP18PDU31xJOXtQQs5M?=
+ =?us-ascii?Q?//b+6t31rhB/XC6ULZPdHO5RposEToeF?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5757.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?cC91n5hHXZx5H6w6Z1CtBMzqxjIISyh1z1nrD6wWYYQ7+6/HVpvVB1ZYojPQ?=
+ =?us-ascii?Q?UfOzTOd7GxgqC2m36KTEooB98zCsnhptdRIE6t5t94TFDtaA8aVVR1oP4uoO?=
+ =?us-ascii?Q?SU3ASHfFNY34tvHu7moA/PxIprNAyTUMiQS2kH5M04rtJ7FkYkXYQWZEQ9Q/?=
+ =?us-ascii?Q?DoMDSUwDMB1CIxENk+gXvenJNZViQ/MxMlgsWto08r5Zx9C2BiFmwjrxTTTa?=
+ =?us-ascii?Q?v64RHizDN3AsbDevSkJiVAF674WJjW1kpbcS2eGdVzH3ZYA3VglVofhV/0vF?=
+ =?us-ascii?Q?vMiAHRDoTcbuHGO90SkeaWEkP5WVlNgLyPnSD1xEx9hG/zVt1ymPlh1K6tCN?=
+ =?us-ascii?Q?ADCQ/6c5Ih7yceoWMGZLhAm7uPut7Rr//ewUE2QAmOPt4Jg35RMMXRTFxa7j?=
+ =?us-ascii?Q?IUMvHFtvXVqrImwR4QnzmapvBJ+AnWFnMOOTBS9nfhTDWYs4hziwD5VezQuP?=
+ =?us-ascii?Q?MvG/dDolSCeC/jEWLAsJCLvnYUxMd38wPgf4bDJy5xRHT8C9/HtwRgpD2qev?=
+ =?us-ascii?Q?EazqRC2WtFcZnzn6D2zaa+abgr7P30v+vKn6Ca5QjitDqOvfujSue3P8t8qH?=
+ =?us-ascii?Q?w6vS/o7+L7cNEBx5IouR1U+oCxLsFwOVB+bnEAono5+KfvQmSz378JJDybOU?=
+ =?us-ascii?Q?QxKeOkRAT1ag/4LtZxlfOPooJus6d1lc9oISL3zmO8MtV8DIUzyi5mxtdbKc?=
+ =?us-ascii?Q?kIAx0uvOaoFOJBEmoBZOrq9qy6He9fYpQOrHcpc7qaz5WytsIQWRtAvkY+fj?=
+ =?us-ascii?Q?tfjhZuGogcl0AFD0WaZ0ifn4oBP2mpxI4dJnVg9EJlH7VPooQuV//HvHKOW5?=
+ =?us-ascii?Q?dZNwF47aLy0eS0wHqeB8dBwulzYPX9Je2fiPAGY0D+xo6v4BKfP+njKJkqOa?=
+ =?us-ascii?Q?+zMzKRBeg7p41LjdVsWLrIyxL1vZ+IUlOQvTj7CAvsQ9ydp4Sl2897BmUiHG?=
+ =?us-ascii?Q?LyakvY5LOtwcK3kg7B3RTwscG6XVdaJkNy97MshlmoeWsRWzbrVBVqEFFLq6?=
+ =?us-ascii?Q?Qqib51LvjAOC/nUWFGvY598Zt8WEQiiZVt9AuvutcEtltWapeH+G0ndv9+AC?=
+ =?us-ascii?Q?56TqshfobwRRw9MeX0n7yRz0pPBgj74r8/4zoybeIQR6FBkYFbdwQN1yw6Nd?=
+ =?us-ascii?Q?MwXeCUsdJ2LwE0jDQtd6n9g8k4nkzH/y6E48W79Sos9O/L3xjFJc1dj6AFi8?=
+ =?us-ascii?Q?z0X4hxBNOb0/Ani+hXiw/zX2Hb0/3wBZYJgI3S4LGKMROOirUOPxhS2xqv4C?=
+ =?us-ascii?Q?eUqi55JHWQR6r5mCfJwTD63/0oH4nEh644VAzCBEcdRJR6DxPqx3izboj1Wk?=
+ =?us-ascii?Q?sIYHBZOWmwy0wxwXVivA3phtji8GD7rGrtG8A17UZBEOlM3mykVqNU5LOKZX?=
+ =?us-ascii?Q?fciQHgucj3Qfxp32Pr1h7Bq6Rd1jPtGlliyS0V+6FuHX//Q+b7JF8V9Citj+?=
+ =?us-ascii?Q?gRiSM38qD6DS5/B9gv827jeA8WjAlVXyzjei6Qp4bCg+AuHeXt0GInaf5d8U?=
+ =?us-ascii?Q?2LOQT87e5/yIo/VWsEvusXH7V7yas+BPCnOym5A/dNP09Qzqek8kWFxmtxdp?=
+ =?us-ascii?Q?g1Ul+6/a25j7aHQ6/Ng=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: daffb101-be38-4c88-e990-08ddff5f8b67
+X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5757.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Sep 2025 13:53:18.5281
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: HsYq6ozwa6ty4ZoSMGbla0di0EdIf2n4boMgA6+CZ6+RmuqGRWtERyY6WCNCmaVu
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR12MB8437
 
-On 29/09/2025 15:02, Jason Gunthorpe wrote:
-> On Mon, Sep 29, 2025 at 02:18:50PM +0200, Hans Verkuil wrote:
->> On 29/09/2025 14:07, Jason Gunthorpe wrote:
->>> On Mon, Sep 29, 2025 at 10:23:47AM +0200, Hans Verkuil wrote:
->>>
->>>> Since I am unfamiliar with the iommu core code, I am uncertain whether I am
->>>> just papering over a bug elsewhere, or whether this is really the correct solution.
->>>
->>> It is papering over something, group->domain is not supposed to be
->>> NULL at this point.. That probably means the iommu driver has not been
->>
->> It's group->blocking_domain that's NULL, not group->domain.
+On Mon, Sep 29, 2025 at 03:30:22PM +0200, Hans Verkuil wrote:
+> On 29/09/2025 15:02, Jason Gunthorpe wrote:
+> > On Mon, Sep 29, 2025 at 02:18:50PM +0200, Hans Verkuil wrote:
+> >> On 29/09/2025 14:07, Jason Gunthorpe wrote:
+> >>> On Mon, Sep 29, 2025 at 10:23:47AM +0200, Hans Verkuil wrote:
+> >>>
+> >>>> Since I am unfamiliar with the iommu core code, I am uncertain whether I am
+> >>>> just papering over a bug elsewhere, or whether this is really the correct solution.
+> >>>
+> >>> It is papering over something, group->domain is not supposed to be
+> >>> NULL at this point.. That probably means the iommu driver has not been
+> >>
+> >> It's group->blocking_domain that's NULL, not group->domain.
+> > 
+> > Er, I thought you were hitting a false positive on this:
+> > 
+> >   group->domain != group->blocking_domain
+> > 
+> > ie NULL != NULL
+> > 
+> > But I suppose the whole expression is checking for group->domain
+> > already.
+> > 
+> > All your patch does is entirely disable the safetly logic :\
+> > 
+> > What is isp_attach_iommu() trying to accomplish? It does
+> > arm_iommu_detach_device() and then arm_iommu_attach_device() ?
+> > 
+> > Why?
+> > 
+> > Is this trying to force a non-identity translation for ISP?
 > 
-> Er, I thought you were hitting a false positive on this:
-> 
->   group->domain != group->blocking_domain
-> 
-> ie NULL != NULL
-> 
-> But I suppose the whole expression is checking for group->domain
-> already.
-> 
-> All your patch does is entirely disable the safetly logic :\
-> 
-> What is isp_attach_iommu() trying to accomplish? It does
-> arm_iommu_detach_device() and then arm_iommu_attach_device() ?
-> 
-> Why?
-> 
-> Is this trying to force a non-identity translation for ISP?
+> I have absolutely no idea. The commit where this was added is this:
 
-I have absolutely no idea. The commit where this was added is this:
+Maybe try deleting everything in the CONFIG_ARM_DMA_USE_IOMMU branches
+and just succeed in isp_attach_iommu() ?
 
----------------------------------------------------------
-commit 2a0a5472af5caa0d0df334abb9975dc496f045da
-Author: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Date:   Thu Jan 2 20:06:08 2014 -0300
+It is almost the same code flow as in arm_setup_iommu_dma_ops(),
+except it ignores the DT.
 
-[media] omap3isp: Use the ARM DMA IOMMU-aware operations
+arm_setup_iommu_dma_ops() should be called by ISP via arch_setup_dma_ops():
 
-Attach an ARM DMA I/O virtual address space to the ISP device. This
-switches to the IOMMU-aware ARM DMA backend, we can thus remove the
-explicit calls to the OMAP IOMMU map and unmap functions.
+	if (device_iommu_mapped(dev))
+		arm_setup_iommu_dma_ops(dev);
 
-Signed-off-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Acked-by: Sakari Ailus <sakari.ailus@iki.fi>
-Signed-off-by: Mauro Carvalho Chehab <m.chehab@samsung.com>
----------------------------------------------------------
+?
 
+I'm thinking this is all dead code now. The original version was
+creating iommu_groups, so most likely 11 years ago
+device_iommu_mapped() == false during driver probe and it had to open
+code the whole sequence.
 
-That's over 11 years ago. I've CC-ed Sakari in case he remembers something about
-this.
+But today the groups are clearly there.. So the iommu should be
+setup..
 
-Later this was simplified a bit:
+The main direct difference was IPS hard wiring the 1G:
 
----------------------------------------------------------
-commit fd8e2d4b393252505783656471465c7f85f3c0a9
-Author: Suman Anna <s-anna@ti.com>
-Date:   Wed Apr 12 00:21:32 2017 -0500
+	mapping = arm_iommu_create_mapping(isp->dev, SZ_1G, SZ_2G);
 
-omap3isp: Remove iommu_group related code
+In the generic code this should come from the DT:
 
-The OMAP IOMMU driver has added the support for IOMMU groups internally,
-and the ISP device is automatically linked to the appropriate IOMMU group.
-So, remove the explicit function calls that creates/deletes an iommu_group
-and adds the ISP device to this group.
----------------------------------------------------------
+	if (dev->dma_range_map) {
+		dma_base = dma_range_map_min(dev->dma_range_map);
+		size = dma_range_map_max(dev->dma_range_map) - dma_base;
+	}
+	mapping = arm_iommu_create_mapping(dev, dma_base, size);
 
+So potentially a DT change is also needed?
 
-And finally the code detaching the device (which you referred to in your
-reply) was added here (much more recently):
+Can you check around these sequences to see what is happening?
 
----------------------------------------------------------
-commit 6bc076eec6f85f778f33a8242b438e1bd9fcdd59
-Author: Robin Murphy <robin.murphy@arm.com>
-Date:   Mon Oct 28 17:58:36 2024 +0000
-
-media: omap3isp: Handle ARM dma_iommu_mapping
-
-It's no longer practical for the OMAP IOMMU driver to trick
-arm_setup_iommu_dma_ops() into ignoring its presence, so let's use the
-same tactic as other IOMMU API users on 32-bit ARM and explicitly kick
-the arch code's dma_iommu_mapping out of the way to avoid problems.
----------------------------------------------------------
-
-
-All I know is that something is wrong after blocking_domain was added, which
-now causes the "failed to create ARM IOMMU mapping" error from isp.c when the
-omap3isp driver is probed.
-
-My (very likely flawed) reasoning for this patch was that if there is no
-blocking_domain (i.e. it's a NULL pointer), then the group->domain should
-just be accepted. But that reasoning was just based on the field names, and with
-no actual understanding of what is going on here :-)
-
-Regards,
-
-	Hans
+Jason
