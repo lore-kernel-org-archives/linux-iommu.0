@@ -1,239 +1,215 @@
-Received: from CY7PR03CU001.outbound.protection.outlook.com (mail-westcentralusazon11010036.outbound.protection.outlook.com [40.93.198.36])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1562523D7E5;
-	Mon, 29 Sep 2025 20:52:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.198.36
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759179176; cv=fail; b=bH3ztoo5XQZIjl0Sb93/RYrab+x8X+oGonMVuLaFhq32jftt+GwGbn46ekjMZNTwjv/jYkG5ir0SBH7pm04S7wMzXK/TcNf/ICNVGxBAd1Au9Vo7bvSQHBzjuZVA5feU4LhAvHKQ3sWgEcLBO4btFCPKs8eIHggFdd1KuWqJC7Y=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759179176; c=relaxed/simple;
-	bh=RxNHY49KeQCs0HBXKNooBZVH986ADuQC4wVdD70lktQ=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=DKSHGjrziiZXgG+hpKezU4ARyV9AgVXecc44+s3bGWKF7gqrVx78OV6Xa7GUM/t4ly1i86q9XnGY2PwB04vr4y58mV1TVpYMC3Kt1x9BtFnMG+CfgRCAxcMUUX5T6bgAVpnVWLlaWoKfoWNC6GU1YUBRSfwfuV/sLCaBMDnh7BQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=st+L8oNI; arc=fail smtp.client-ip=40.93.198.36
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B637713B58C
+	for <iommu@lists.linux.dev>; Mon, 29 Sep 2025 21:00:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.173
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1759179623; cv=none; b=fWXycKd+MnxBYe/amjpYv/biTI1P9xr3WvSq904qi+Ek5hs8ceOjt30MDXGLzih9JqmTM7x0J+UL8t7Vq3aUotKfbISgonB7bQSuPFMaiQmx1PWpJRU36viCbJVes88CMOG5HhS1QMEIlRRiOE1cQU3IIUKLVbjbbinyfH/J18o=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1759179623; c=relaxed/simple;
+	bh=B5dT1sx7pyVY13/Ois/NXMr5Sjxx8QH/Pe1nDwr2M2A=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=cLvbdUlHz2WIehzGn9hUbW5tH4uzzi137TPhsB/ggy3azX7tSfvgDET5WHZgPb+gMG48kZgKCyQNYVYktS/b3sFSb48/ZOWq2EOX23VTrhBcYIWhCe8q68PvY31ilV567+XPnmJ3Y8ge+rN17CF8PGXpboj8M8tgsVVw51SiLMg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=ckEcVzbV; arc=none smtp.client-ip=209.85.160.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="st+L8oNI"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=trDgioNhX8LhmdxBoYf1y/pawBgG1AKQQ6LlEqyjtxj6wZP3AXnrSVDTTMnOZtpnBsJXaffR9cOiidq5c2OKIXCx+pelba4nVumN4dihEH80NjyWXtwWfr6IT7q56rsVvMygf9d+EifCtqTMThR6JVePS1r+GnpUl56K2pTsXnPwIfye35R5Wea9+Q84C5Q0SNcDVgosggHnHpqCCdk5i11wpMfvhWoj/f7b9nzv+Q4T07GC779myv2FdfC6YO+Qy+x/AQljpZJrxoBhiLSJddz4ZI+MINiJr/65U3rCpHnxkfP7URLJv6nq8+Pkr1dZNFnoLiGO3tjqpzgQ9bI0YA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Fr6Hp/4LM6MGsvoKDnir0T5koxtrOukT9gM3UverxKI=;
- b=Vlh2Eetoi4gN26zUBIKZ3alUKtPaBNtLWIucNSYcQBAc8Ca/nvkG6bRPA+wIc6q8bApKeClLGOkRtytNOltZcPiC/ZrdGTa980s876B3awMrQbP8NvmZCa+IE9oJPEv3I7mBC+PKlckU8DW5dETy7EIGnQC0JEAsXeFO6Y/IK/lxnM0CPoyhkH2fvZsYexjvHI5SV1Tz8LEWk7lfAPBzhn0kuVeU3GVUZcOWl6RZzkFanHTRKki1oL3ZTx9Dgz4Ykkq8f/+j8d6YYcwX40QpKWLIlCWcPWRXUU1ckCY0BK31YTQDlfpLiK85Q1Uw/elNIVsppkYtYX9iKcdIz3XD/A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Fr6Hp/4LM6MGsvoKDnir0T5koxtrOukT9gM3UverxKI=;
- b=st+L8oNIl2EjBxKpBnIp1cZjva6SiMMkQGXv1wtN+RSxWayuzlnJOIK5t9RRJ9p0ZNTbIp3rHbvFbfV2qRf2hP7YryHH2oDbQu9+hc07DZNIy2/KExH+ygStHCnX9hiW90079PuHwZwbkxKx98qRuStqwvKAkCfuLjDPqNNrbL+MMQ2IoPW3eEkFJJeZa5KrKD2Rx5bYnfaHOYrL7zmLXl4TYPfImNYZhO3pVwihbf026Rhf/dSRR0bKZkVEmtG5Fe834tg3lG3KP0aUc8K2Pnt5hKylr8+BXOJ/Xygk2THb8c3T7sGKQyhLd1CSWUMvyFvOD6gfUCgKLCa3wO6W2Q==
-Received: from BN9PR03CA0798.namprd03.prod.outlook.com (2603:10b6:408:13f::23)
- by DS0PR12MB8575.namprd12.prod.outlook.com (2603:10b6:8:164::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9160.17; Mon, 29 Sep
- 2025 20:52:51 +0000
-Received: from MN1PEPF0000F0E1.namprd04.prod.outlook.com
- (2603:10b6:408:13f:cafe::65) by BN9PR03CA0798.outlook.office365.com
- (2603:10b6:408:13f::23) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9160.16 via Frontend Transport; Mon,
- 29 Sep 2025 20:52:50 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- MN1PEPF0000F0E1.mail.protection.outlook.com (10.167.242.39) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9160.9 via Frontend Transport; Mon, 29 Sep 2025 20:52:50 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Mon, 29 Sep
- 2025 13:52:33 -0700
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Mon, 29 Sep
- 2025 13:52:32 -0700
-Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.129.68.8)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
- Transport; Mon, 29 Sep 2025 13:52:31 -0700
-Date: Mon, 29 Sep 2025 13:52:30 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
-	<jean-philippe@linaro.org>, <miko.lenczewski@arm.com>, <balbirs@nvidia.com>,
-	<peterz@infradead.org>, <smostafa@google.com>, <kevin.tian@intel.com>,
-	<praan@google.com>, <linux-arm-kernel@lists.infradead.org>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-	<patches@lists.linux.dev>
-Subject: Re: [PATCH rfcv2 6/8] iommu/arm-smmu-v3: Populate smmu_domain->invs
- when attaching masters
-Message-ID: <aNrxjkUEEUzKU+za@Asurada-Nvidia>
-References: <cover.1757373449.git.nicolinc@nvidia.com>
- <d3f9777e46d531273dfecb54d69725428cdef308.1757373449.git.nicolinc@nvidia.com>
- <20250924214215.GR2617119@nvidia.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ckEcVzbV"
+Received: by mail-qt1-f173.google.com with SMTP id d75a77b69052e-4de60f19a57so117331cf.0
+        for <iommu@lists.linux.dev>; Mon, 29 Sep 2025 14:00:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1759179620; x=1759784420; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=dbk1KImMXIp7N8yUUQTD7fFEO8tjb/851I1iafEYnW0=;
+        b=ckEcVzbV5a8Y39T1z9E8OD5J8pVYFkRCsmfRHekY8NbHKCeIl0JI6KXtseF2o4cacx
+         CLzUGd8w1hoMpzAC1y6wvuWwbfaj/IOB6mw1yFNSTDRbWxkTN7jX69wFC84QThBgWqXX
+         e5vC3dx2RS7PoFFWG1VdcIfFW5xXOEtraoQ0uvS05DyYpIU/MCLKMv6T8LIxfJ0wbNo+
+         krIpeW6TVSinjFoSjp9B367GLlFykwLgGrxYTeqFrCX1tq8foJAVu+UTe6b9Clg1ZnGU
+         KjztV/m0Eoi1Mbvv1d1vaycX4We2Nv1/eUa54/gPWCICfwz6zqN62cTxsAO1VTPZllC8
+         x9Bg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1759179620; x=1759784420;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=dbk1KImMXIp7N8yUUQTD7fFEO8tjb/851I1iafEYnW0=;
+        b=sfXqZeAyl1b7gud2bKf9iyfnz1DFTkrYgAhemC2Y7ykv6FLSBVjx5t0VoVdTZ+xAkL
+         0R6czQ4pFT/0d4qAX/IPx3i8CBygvP1iyOfPVVCaj+dN74X5PDcvjFz/ls/Uc7wTqPen
+         kkbIfDBTHz6bHSqc3rFfJtJGMI195Ik9bE4njSLCDStMRfeg+kRjdeAgrMHu/X3+zELy
+         3mDRxogCdOjkRhJgCjgbmcCpeGStbiu3s31Nhc381FMWGC93oqZ0jiblScTANdACuP0N
+         MahPXejJL66g7uL4ia1V9AlGaLpS8sW4P4DtCRjEVppognNbX5cC87Jj2KRXRBNlTeHW
+         rf/Q==
+X-Gm-Message-State: AOJu0YyRJ0PDLpVSCsM0RIIlO023Pi9kmBXEqj7zvhFzMdg1ucxINUS9
+	1M46zuU6ydgbcPW9UPTGLQKQAy4vIMIDXK3+5mAkRs/RZuQMXO7oMWNSqHC2towS45Pa1xQMOGd
+	QlMAIrb6R+ToYZdmJePlRRHCiHHaiyo5Qsx1iH9La5PIkeodrKrfUxcDz8Ck=
+X-Gm-Gg: ASbGncu2nB3WleiMsT6OrURsOcnxccCHAIhg+7VJR7dDgyrTDG59EtfoLlBg16z9nUQ
+	+oK5SxThrs2pIYtLL4riafrix58Qatei61i7mx0oy2917+iQ/VAo8kZgDUcyOxApGBYDl46Bb+U
+	pla5i0RaEIgfWR3xPG9EoWmSD5CvVXaAWuWGcvaB9efL2tGlLk3g5rb++YyvK8cJF7VhFbL0oyc
+	+dNwXkDL/ys/yahU6k6fQ==
+X-Google-Smtp-Source: AGHT+IHokwX5fRmkNeCL/hET5rdxYyVxkqfPVrcHDkBJjFzCza8A7qlg3rTXeCBFEaZR2+o+4pyi42QPfP6XgCVj74k=
+X-Received: by 2002:a05:622a:1989:b0:4b3:8ee:521b with SMTP id
+ d75a77b69052e-4e2cc20909dmr2170951cf.0.1759179619909; Mon, 29 Sep 2025
+ 14:00:19 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20250924214215.GR2617119@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MN1PEPF0000F0E1:EE_|DS0PR12MB8575:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4b9a826b-2d19-4676-7349-08ddff9a274f
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|7416014|376014|1800799024|82310400026|36860700013;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?mveknu9RxggeH1lsnfUl9cq3bUCe4RmcfFKUlN55nkbbEr0hv5kp1xwmmtx3?=
- =?us-ascii?Q?wCi42xGYBd3kNTm0CjHzvCMt2ndPUBh2OcpVk5Pt6XpdEtmXuU7sLBWCBRi6?=
- =?us-ascii?Q?uzSAJtKPmt2XR0iytl3DFBGrTHpTmKE5kWXN+0xqCMtHe/OIJKPVSZbA9ICB?=
- =?us-ascii?Q?YZG5OHJ4tMhFXNuddb3EHOIaOtNqC4pCc530nolLXroR5GPlI11IKgak+YaM?=
- =?us-ascii?Q?kI6V0OB3yZYccI7OTJjcxS7oVE1pmDQmXx/j5+XpfDlHoSW9FBPA+u47QjVi?=
- =?us-ascii?Q?GWrD1ZO4D2ls4vR5QEUAXyQxXVA3p9+RW2l4zymnoYBnTY7POQmx0ue2/yB6?=
- =?us-ascii?Q?wZJDt5XXIkhoBBk5Gl6UJMq1JTLCGxQ+lGfNEgGlNvQ3eMC8NC28FfZ2N6kM?=
- =?us-ascii?Q?gwyo/yzRLKd27jTbmzhlunT5TOjXStLjv/PvvvGKisweOSsNDWA8XLHOpEzr?=
- =?us-ascii?Q?VbeVNN1DTMHhgZMftk4lVyPUPq5TWQlF87K/OtRfKgKSy+LSTWk0KKKD6P98?=
- =?us-ascii?Q?kJxQtOzKYEt1cDjzWhbur4uCYo4qglcwWP1bz63CrHpFi7UPB8KdhYVLt+9H?=
- =?us-ascii?Q?K1ugO5ntB7264BYwxHtCqkNgcPlojFkldRhI7gpRA0sPX9m9jvqDEJa045Df?=
- =?us-ascii?Q?9vgiD4DECbG44lEQNBZB/S2zO3h3nLZqC5g6MMyc7QalynAU4oJ1FrWgE1xv?=
- =?us-ascii?Q?qc5aJDh/T3JrBgtX2MzT36VgJMW+Vfq8tHEpthZvisJ04z1rtP2p389nnPx3?=
- =?us-ascii?Q?tHTXS9ImQVrkbkL6HwYv1YQ9DjPpDytuOTmNb/TKBnuAQZJKhvkqUteQ19ao?=
- =?us-ascii?Q?00jFOUUTsyMwR6s1RHEAuc+Bmag4E6ktLOODyKuFGK3wPh2ukL9qlDQ89E/O?=
- =?us-ascii?Q?IY7caf9RERyuzgdswYGowgOQYVo9h4OrARX4ttnCmVw7msFjv89H+7jNghDZ?=
- =?us-ascii?Q?Qlv6n18XROqh/LQL1UFhr5hnC/crFjzy445TS0qxoMionF3x65JYUnZYcB5G?=
- =?us-ascii?Q?qgfoD2Pl/dcMl0QafQye5DSyypEeuiDhRAWpBZNL1bmV+UIqB+8HZKNDESGb?=
- =?us-ascii?Q?0Vw6lvw2Kdoe+cBu030/RBXvqP2s7LfkN/y52UuJgK2UJa8C0/5F+a/nWwJw?=
- =?us-ascii?Q?ctDXLt4+loWRAdACOOt5fjL1FaBZE3riRefg+uXep9GBi0UpXN5QbT6k6BO+?=
- =?us-ascii?Q?800ATFGBvc2vmFZHiQjaTPJ6SLF+RsHGgET02nfkToLhIdM2r9MENmjY9Zk+?=
- =?us-ascii?Q?2xP80RGmjhxbAgCbZDc5kn1l+6r16I3vH6Pz/+e/avBTOpTDAH/Csa3kbnyi?=
- =?us-ascii?Q?Umhtvo4Ql4JiQH0n4ASysPKlZdZScWyuytalOwARoed5OBeaWLgPkeDz9QAc?=
- =?us-ascii?Q?Wwfm1CGGTPvH+24Ck/fVjOElayY5AFb50DKA75+WxP0dloqCTnOgHmQVJ6Ft?=
- =?us-ascii?Q?3bSc1yYigB3NAcs56X6H5KvMsllPB1D0OER16vGZxAaWFxBsyW7TEiY11DRN?=
- =?us-ascii?Q?4eN6P2iMjSWPKIsGYfzuWV+h/LjWBK5d9rCOqdbqUEtyAYrxm9cZ2DJmPxsR?=
- =?us-ascii?Q?JMRFgX9saK8oIIkylEg=3D?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(7416014)(376014)(1800799024)(82310400026)(36860700013);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Sep 2025 20:52:50.4288
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4b9a826b-2d19-4676-7349-08ddff9a274f
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	MN1PEPF0000F0E1.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB8575
+References: <20250927223953.936562-1-danielmentz@google.com> <aNp5sS7VpPirrRGE@google.com>
+In-Reply-To: <aNp5sS7VpPirrRGE@google.com>
+From: Daniel Mentz <danielmentz@google.com>
+Date: Mon, 29 Sep 2025 14:00:09 -0700
+X-Gm-Features: AS18NWA78WxKA80awrDCIvHNQD34tuBXU3MG7OYkegRYB2xHdzZKH5hZKOFioAU
+Message-ID: <CAE2F3rB6TYjy0a9yecW4zwBLraaj75YBafEz3DUh8zrLChnuCg@mail.gmail.com>
+Subject: Re: [PATCH 1/2] iommu/io-pgtable-arm: Implement .iotlb_sync_map callback
+To: Mostafa Saleh <smostafa@google.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	Will Deacon <will@kernel.org>, Pranjal Shrivastava <praan@google.com>, Liviu Dudau <liviu.dudau@arm.com>, 
+	Jason Gunthorpe <jgg@nvidia.com>, Rob Clark <robin.clark@oss.qualcomm.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, Sep 24, 2025 at 06:42:15PM -0300, Jason Gunthorpe wrote:
-> On Mon, Sep 08, 2025 at 04:27:00PM -0700, Nicolin Chen wrote:
-> > Update the invs array with the invalidations required by each domain type
-> > during attachment operations.
-> > 
-> > Only an SVA domain or a paging domain will have an invs array:
-> >  a. SVA domain will add an INV_TYPE_S1_ASID per SMMU and an INV_TYPE_ATS
-> >     per SID
-> > 
-> >  b. Non-nesting-parent paging domain with no ATS-enabled master will add
-> >     a single INV_TYPE_S1_ASID or INV_TYPE_S2_VMID per SMMU
-> > 
-> >  c. Non-nesting-parent paging domain with ATS-enabled master(s) will do
-> >     (b) and add an INV_TYPE_ATS per SID
-> > 
-> >  d. Nesting-parent paging domain will add an INV_TYPE_S2_VMID followed by
-> >     an INV_TYPE_S2_VMID_S1_CLEAR per vSMMU. For an ATS-enabled master, it
-> >     will add an INV_TYPE_ATS_FULL per SID
-> 
-> Just some minor forward looking clarification - this behavior should
-> be triggered when a nest-parent is attached through the viommu using
-> a nesting domain with a vSTE.
-> 
-> A nesting-parent that is just normally attached should act like a
-> normal S2 since it does not and can not have a two stage S1 on top of
-> it.
-> 
-> We can't quite get there yet until the next series of changing how the
-> VMID allocation works.
-
-Yea, you are right. Let's add this:
-
-Note that case #d is for the case when a nesting parent domain is attached
-through a vSMMU instance using a nested domain carrying a vSTE. This model
-will allocate a VMID per vSMMU instance v.s. the current driver allocating
-per S2 domain. So, this requires a few more patches for S2 domain sharing.
-
-> > The per-domain invalidation is not needed, until the domain is attached to
-> > a master, i.e. a possible translation request. Giving this clears a way to
-> > allowing the domain to be attached to many SMMUs, and avoids any pointless
-> > invalidation overheads during a teardown if there are no STE/CDs referring
-> > to the domain. This also means, when the last device is detached, the old
-> > domain must flush its ASID or VMID because any iommu_unmap() call after it
-> > wouldn't initiate any invalidation given an empty domain invs array.
-> 
-> Grammar/phrasing in this paragraph
-
-OK. I asked AI to rewrite it:
-
-The per-domain invalidation is not needed until the domain is attached to
-a master (when it starts to possibly use TLB). This will make it possible
-to attach the domain to multiple SMMUs and avoid unnecessary invalidation
-overhead during teardown if no STEs/CDs refer to the domain. It also means
-that when the last device is detached, the old domain must flush its ASID
-or VMID, since any new iommu_unmap() call would not trigger invalidations
-given an empty domain->invs array.
-
-> > @@ -1183,8 +1183,11 @@ size_t arm_smmu_invs_unref(struct arm_smmu_invs *invs,
-> >  			i++;
-> >  		} else if (cmp == 0) {
-> >  			/* same item */
-> > -			if (refcount_dec_and_test(&invs->inv[i].users))
-> > +			if (refcount_dec_and_test(&invs->inv[i].users)) {
-> > +				/* Notify the caller about this deletion */
-> > +				refcount_set(&to_unref->inv[j].users, 1);
-> >  				num_dels++;
-> 
-> This is a bit convoluted. Instead of marking the entry and then
-> iterating the list again just directly call a function to do the
-> invalidation.
-
-OK. If we want to generalize this arm_smmu_invs_unref function,
-I suppose we will need to pass in a callback function pointer.
-
-> > +	if (!new_invs) {
-> > +		size_t new_num = old_invs->num_invs;
+On Mon, Sep 29, 2025 at 5:21=E2=80=AFAM Mostafa Saleh <smostafa@google.com>=
+ wrote:
+>
+> On Sat, Sep 27, 2025 at 10:39:52PM +0000, Daniel Mentz wrote:
+> > On systems with a non-coherent SMMU, the CPU must perform cache
+> > maintenance operations (CMOs) after updating page table entries (PTEs).
+> > This ensures that the SMMU reads the latest version of the descriptors
+> > and not stale data from memory.
+> >
+> > This requirement can lead to significant performance overhead,
+> > especially when mapping long scatter-gather lists where each sg entry
+> > maps into an iommu_map() call that only covers 4KB of address space.
+> >
+> > In such scenarios, each small mapping operation modifies a single 8-byt=
+e
+> > PTE but triggers a cache clean for the entire cache line (e.g., 64
+> > bytes). This results in the same cache line being cleaned repeatedly,
+> > once for each PTE it contains.
+> >
+> > A more efficient implementation performs the cache clean operation only
+> > after updating all descriptors that are co-located in the same cache
+> > line. This patch introduces a mechanism to defer and batch the cache
+> > maintenance:
+> >
+> > A new boolean flag, defer_sync_pte, is added to struct io_pgtable_cfg.
+> > When this flag is set, the arm-lpae backend will skip the cache sync
+> > operation for leaf entries within its .map_pages implementation.
+> >
+> > A new callback, .iotlb_sync_map, is added to struct io_pgtable_ops.
+> > After performing a series of mapping operations, the caller is
+> > responsible for invoking this callback for the entire IOVA range. This
+> > function then walks the page tables for the specified range and perform=
+s
+> > the necessary cache clean operations for all the modified PTEs.
+> >
+> > This allows for a single, efficient cache maintenance operation to cove=
+r
+> > multiple PTE updates, significantly reducing overhead for workloads tha=
+t
+> > perform many small, contiguous mappings.
+> >
+> > Signed-off-by: Daniel Mentz <danielmentz@google.com>
+> > ---
+> >  drivers/iommu/io-pgtable-arm.c | 66 +++++++++++++++++++++++++++++++++-
+> >  include/linux/io-pgtable.h     |  7 ++++
+> >  2 files changed, 72 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-=
+arm.c
+> > index 7e8e2216c294..a970eefb07fb 100644
+> > --- a/drivers/iommu/io-pgtable-arm.c
+> > +++ b/drivers/iommu/io-pgtable-arm.c
+> > @@ -353,7 +353,7 @@ static void __arm_lpae_init_pte(struct arm_lpae_io_=
+pgtable *data,
+> >       for (i =3D 0; i < num_entries; i++)
+> >               ptep[i] =3D pte | paddr_to_iopte(paddr + i * sz, data);
+> >
+> > -     if (!cfg->coherent_walk)
+> > +     if (!cfg->coherent_walk && !cfg->defer_sync_pte)
+> >               __arm_lpae_sync_pte(ptep, num_entries, cfg);
+> >  }
+> >
+> > @@ -582,6 +582,69 @@ static int arm_lpae_map_pages(struct io_pgtable_op=
+s *ops, unsigned long iova,
+> >       return ret;
+> >  }
+> >
+> > +static int __arm_lpae_iotlb_sync_map(struct arm_lpae_io_pgtable *data,=
+ unsigned long iova,
+> > +                           size_t size, int lvl, arm_lpae_iopte *ptep)
+> > +{
+> > +     struct io_pgtable *iop =3D &data->iop;
+> > +     size_t block_size =3D ARM_LPAE_BLOCK_SIZE(lvl, data);
+> > +     int ret =3D 0, num_entries, max_entries;
+> > +     unsigned long iova_offset, sync_idx_start, sync_idx_end;
+> > +     int i, shift, synced_entries =3D 0;
 > > +
-> > +		/*
-> > +		 * OOM. Couldn't make a copy. Leave the array unoptimized. But
-> > +		 * trim its size if some tailing entries are marked as trash.
-> > +		 */
-> > +		while (new_num != 0) {
-> > +			if (refcount_read(&old_invs->inv[new_num - 1].users))
-> > +				break;
-> > +			new_num--;
-> > +		}
-> 
-> Would be nicer to have arm_smmu_invs_unref return the new size so we
-> don't need this loop
+> > +     shift =3D (ARM_LPAE_LVL_SHIFT(lvl - 1, data) + ARM_LPAE_PGD_IDX(l=
+vl - 1, data));
+> > +     iova_offset =3D iova & ((1ULL << shift) - 1);
+> > +     sync_idx_start =3D ARM_LPAE_LVL_IDX(iova, lvl, data);
+> > +     sync_idx_end =3D (iova_offset + size + block_size - ARM_LPAE_GRAN=
+ULE(data)) >>
+> > +             ARM_LPAE_LVL_SHIFT(lvl, data);
+> > +     max_entries =3D arm_lpae_max_entries(sync_idx_start, data);
+> > +     num_entries =3D min_t(unsigned long, sync_idx_end - sync_idx_star=
+t, max_entries);
+> > +     ptep +=3D sync_idx_start;
+> > +
+> > +     if (lvl < (ARM_LPAE_MAX_LEVELS - 1)) {
+> > +             for (i =3D 0; i < num_entries; i++) {
+> > +                     arm_lpae_iopte pte =3D READ_ONCE(ptep[i]);
+> > +                     unsigned long synced;
+> > +
+> > +                     WARN_ON(!pte);
+> > +
+> > +                     if (iopte_type(pte) =3D=3D ARM_LPAE_PTE_TYPE_TABL=
+E) {
+> > +                             int n =3D i - synced_entries;
+> > +
+> > +                             if (n) {
+> > +                                     __arm_lpae_sync_pte(&ptep[synced_=
+entries], n, &iop->cfg);
+> > +                                     synced_entries +=3D n;
+> > +                             }
+> > +                             ret =3D __arm_lpae_iotlb_sync_map(data, i=
+ova, size, lvl + 1,
+> > +                                                             iopte_der=
+ef(pte, data));
+> > +                             synced_entries++;
+> > +                     }
+> > +                     synced =3D block_size - (iova & (block_size - 1))=
+;
+> > +                     size -=3D synced;
+> > +                     iova +=3D synced;
+> > +             }
+> > +     }
+> > +
+> > +     if (synced_entries !=3D num_entries)
+> > +             __arm_lpae_sync_pte(&ptep[synced_entries], num_entries - =
+synced_entries, &iop->cfg);
+> > +
+> > +     return ret;
+> > +}
+>
+> Can't we rely on the exisiting generic table walker "__arm_lpae_iopte_wal=
+k",
+> instead writing a new one, that is already used for iova_to_phys and dirt=
+y bit.
 
-The "new size" must be invs->num_invs subtracting the number of
-the tailing trash entries. So, arm_smmu_invs_unref() would have
-to have the same loop validating the tailing entries, right?
-
-(I will address all other comments as well)
-
-Thanks!
-Nicolin
+The performance gains of .iotlb_sync_map are achieved by performing
+CMOs on a range of descriptors as opposed to individually on each
+descriptor in isolation. The function __arm_lpae_iopte_walk is
+inherently incompatible with this, because it calls the .visit
+callback once for each descriptor it finds in the specified range. I
+guess I could work around this limitation by saving some state in
+io_pgtable_walk_data and developing a .visit function that tries to
+coalesce individual descriptors into contiguous ranges and delays CMOs
+until it finds a break in continuity. I'm afraid, though, that that
+might hurt performance significantly.
