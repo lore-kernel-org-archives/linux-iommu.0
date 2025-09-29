@@ -1,109 +1,100 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0A481F584C
-	for <iommu@lists.linux.dev>; Sun, 28 Sep 2025 20:23:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD6EC14B06C;
+	Mon, 29 Sep 2025 08:23:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759091034; cv=none; b=pipkesVlchL3NLYqYSfjvIuEK7WCuDSA6JFRFicWBcDa+cPHZzCABP47+Ws9Z6UDVgkrGl14QVMy2sydFTI2Xh7e5sV3hNVUtnR5y2LXw55+TGJSxKD1//1hQWMMI5ODEEEDA/lcsdhczdHyX5OX0SQLITBojMZnU72bQrUs2bs=
+	t=1759134231; cv=none; b=T8ifKhYM5aux0tggBpWx9ujw9sNWn0SEh35AvPF6FFZW2YL40qUT8H1az/DxRRhjezNOG56T2WA4+kDZXVG8j1tnfKLABLI8GBkSAkJL2Y/bbBCTnOAa6AU3ygStT1+Xmf/riZ7fbbaiV2uBcDPNLbXEKJ96IQ7BX105C7NwCeM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759091034; c=relaxed/simple;
-	bh=f0KbGPF00kZzNzX882R/gqRn05yNZLkgA/Ha1ipTTiY=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=RArH6Cgt7YT/nuy1hoW7tBfKFXu7dtvryD2dbNazIb8zDGnQLbjI01gpDS7E1NJ/hXNCREyqFKlHtTd9PeVQi7yHzRdpUPVBz5+SGIdJVLuBIFTzSYyxMtzkkymuYry+wsyOYhwLtNDJ5PL3xPpwT/0KoLuwPNZ1B8XYnrBVdJ0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=R+2t5RUg; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1759134231; c=relaxed/simple;
+	bh=wm0QjJCF1CMzW9/QYQ/5sGBAebod32hT9vhfjMmv9jY=;
+	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:Content-Type; b=f3e5uFITJhUXF1pVnUhoQEd3hQLk9dPP/kzVwQiepFF/faS8tODaS7gsJbQQCpSRqFy991d8SmAX7R1z2uV9un+XSpcLCUxZu9P/0CdsDCSeLTrUYoMMnr2/AWkoh9pT0M62xOBU6cnk/q4xyd8DhmGecs26OzJazzxbKMp/54o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bPR+XEzN; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="R+2t5RUg"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FA80C4CEF0
-	for <iommu@lists.linux.dev>; Sun, 28 Sep 2025 20:23:54 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bPR+XEzN"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89BDCC4CEF4;
+	Mon, 29 Sep 2025 08:23:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1759091034;
-	bh=f0KbGPF00kZzNzX882R/gqRn05yNZLkgA/Ha1ipTTiY=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=R+2t5RUgotK+O5B/9A9YIogztwNESvf0W363S+UgXHbDl1ck0fvV3GcsLQ8gtsuIw
-	 aS4AngeHx6FSaxB3OPOKXhFu2RCJag9jvS/ThypK3OXnDw5UohS6Iqrp0DqKHrHDZm
-	 0rwAH2WWsEfuersMEGVi1mcvu8XJ63L2Q/jcpnuiSEDA3lAXDPrsfYKLeYyYdW+g5v
-	 TZ8U0YBwYN1Ai3SAnBTTKqgwpV2NTuSRTulONTcQ2QLRV+vbvSOXzk/M9V04bx5SGD
-	 rqOXZPfneL3+33RDBwg+stRErELMlXUHLQgVRV5AX1Y7C/3sYu2O/qdbiochfGQbvZ
-	 ieY6Mkw7IDEiA==
-Received: by mail-ej1-f41.google.com with SMTP id a640c23a62f3a-b2ef8e00becso327695966b.0
-        for <iommu@lists.linux.dev>; Sun, 28 Sep 2025 13:23:54 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCWiG6cDXGDKPCfBHAnQUWAIy8H7M38CE0xDtFxvio7vEwFztP9t4VRnqCN375LZv2LKaxbd3w==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzvtE17aSA9CjrUWrCIJV3smo7SIYL5d1YGkabp5hYEF5k/UZwq
-	SIfqTIIll7HDCWDeT/JBzlY0GfFx/6T18Pp/ozxyGhJXOwWWXJNw04qxO3go13ihrRReBYyMrYZ
-	7unJS9aWs13j7Iuqpvx4jpY3XWysyWA==
-X-Google-Smtp-Source: AGHT+IGljkA1Fha+nY81qrIVwl5aGRrhj/Ww61c1Va1R3cSc0Qwgx1hOVjVnCVYAJOUI9Ne0SY3WAcvwrWIE4YCtKW4=
-X-Received: by 2002:a17:907:97c7:b0:b3d:e9be:7ac2 with SMTP id
- a640c23a62f3a-b3de9be7bf9mr214954366b.5.1759091032783; Sun, 28 Sep 2025
- 13:23:52 -0700 (PDT)
+	s=k20201202; t=1759134230;
+	bh=wm0QjJCF1CMzW9/QYQ/5sGBAebod32hT9vhfjMmv9jY=;
+	h=Date:From:Subject:To:Cc:From;
+	b=bPR+XEzN6bcFMTLQRDkKMeoI3dh65WYaUmxSywqNoGy94DBQffhUmfQNX8S+MBwAA
+	 QIfZ6Cm0SDc7859MBlpseklj9koHPlKhzWwpa3oyrl5lobe8Rg103Wx+Gcq29Pfl9S
+	 Vwz16hPZQeZxUXc+MVfDyBOjjRFY8tes6pLSwwOM5nO7H4GuKF6M+sjTj7NF6tV1jb
+	 qtedXy6J5mQ/q3oADfYbAM7TLCGbjOMHbMEeBieCwlwaFQFnh5/OIy3IWGeRj6NjWE
+	 p6/1IELs6q5RLX/aXyzpbEVkP0gcnN0nhGHH/1xt9EwBEHFTQwRT4B1PJ1HEaZmIU6
+	 9MxhYGC6RXtRQ==
+Message-ID: <9a3ebe9b-518e-49ef-b87d-925d951a446f@kernel.org>
+Date: Mon, 29 Sep 2025 10:23:47 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250928171718.436440-1-charan.kalla@oss.qualcomm.com>
-In-Reply-To: <20250928171718.436440-1-charan.kalla@oss.qualcomm.com>
-From: Rob Herring <robh@kernel.org>
-Date: Sun, 28 Sep 2025 15:23:41 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqK9waZK=i+ov0jV-PonWSfddwHvE94Q+pks4zAEtKc+yg@mail.gmail.com>
-X-Gm-Features: AS18NWB9iYb53BkxRxGbaDbf_ZYxtXe5ZBA-hIIueyfkPaVxGM2QNyJN-EWNlNw
-Message-ID: <CAL_JsqK9waZK=i+ov0jV-PonWSfddwHvE94Q+pks4zAEtKc+yg@mail.gmail.com>
-Subject: Re: [RFC PATCH 0/3] Introduce iommu-map-masked for platform devices
-To: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
-Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, 
-	saravanak@google.com, conor+dt@kernel.org, mchehab@kernel.org, bod@kernel.org, 
-	krzk+dt@kernel.org, abhinav.kumar@linux.dev, vikash.garodia@oss.qualcomm.com, 
-	dikshita.agarwal@oss.qualcomm.com, linux-media@vger.kernel.org, 
-	linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+From: Hans Verkuil <hverkuil+cisco@kernel.org>
+Content-Language: en-US, nl
+Subject: [PATCH] iommu: __iommu_attach_group: check for non-NULL
+ blocking_domain
+To: iommu@lists.linux.dev
+Cc: Linux Kernel <linux-kernel@vger.kernel.org>,
+ Linux Media Mailing List <linux-media@vger.kernel.org>,
+ Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+ Jason Gunthorpe <jgg@nvidia.com>, Jason Gunthorpe <jgg@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Sun, Sep 28, 2025 at 12:17=E2=80=AFPM Charan Teja Kalla
-<charan.kalla@oss.qualcomm.com> wrote:
->
-> This series introduces a new iommu property called iommu-map-masked(may
-> be there is a better name), which is used to represent the IOMMU
-> specifier pairs for each function of a __multi-functional platform
-> device__, where each function can emit unique master id(s) that can be
-> associated with individual translation context.
->
-> Currently, the iommu configuration - at least for arm architecture-
-> requires all the functions of a platform device will be represented
-> under single dt node thus endup in using only a single translation
-> context.
->
-> A simple solution to associate individual translation context for each
-> function of a device can be through creating per function child nodes in
-> the device tree, but dt is only to just represent the soc layout to
-> linux kernel.
->
-> Supporting such cases requires a new iommu property called,
-> iommu-map-masked(taking cue from iommu-map for pci devices) and syntax
-> is:
->    iommu-map-masked =3D <FUNCTION_ID1 &iommu ID1 MASK1>,
->                       <FUNCTION_ID2 &iommu ID2 MASK2>;
-> NOTE: As an RFC, it is considered that this property always expects 4
-> cells.
->
-> During the probe phase of the driver for a multi-functional device
-> behind an IOMMU, a child device is instantiated for each FUNCTION_ID.
-> The call to of_dma_configure_id() on each child sets up the IOMMU
-> configuration, ensuring that each function of the device is associated
-> with a distinct translation context.
->
-> This property can also be used in association with 'iommus=3D' when dt
-> bindings requires the presence of 'iommus=3D', example[2]. For these
-> cases, representation will be(on arm64):
->    iommus =3D <&iommu sid mask>; //for default function.
->    iommu-map-masked =3D <FUNCTION_ID &iommu sid mask>;//additional
-> function.
+Loading the omap3isp driver fails in __iommu_attach_group:
+group->blocking_domain is NULL, and so the check
+group->domain != group->blocking_domain is always true and it
+returns -EBUSY.
 
-Where does the FUNCTION_ID value come from?
+Only return -EBUSY if group->blocking_domain is non-NULL.
 
-Why can't you just have multiple "iommus" entries where the index
-defines the default and any FUNCTION_ID entries? What's in each index
-is specific to the device.
+Signed-off-by: Hans Verkuil <hverkuil+cisco@kernel.org>
+Fixes: 0286300e6045 ("iommu: iommu_group_claim_dma_owner() must always assign a domain")
+---
+Since I am unfamiliar with the iommu core code, I am uncertain whether I am
+just papering over a bug elsewhere, or whether this is really the correct solution.
 
-Rob
+The omap3isp code in question is here:
+
+drivers/media/platform/ti/omap3isp/isp.c, function isp_attach_iommu().
+
+This omap3isp code predates the addition of blocking_domain and it used to work
+before that feature was added.
+
+I've tested this patch with my Beagle XM board.
+
+If this patch is addressing the issue in the wrong place, then advise
+on what the correct solution is would be very much appreciated!
+
+I have a bunch of media omap3isp cleanup patches pending, but there is no point in
+posting those until this issue is resolved.
+
+Regards,
+
+	Hans
+---
+ drivers/iommu/iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 060ebe330ee1..0ab1671ee850 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -2220,7 +2220,7 @@ static int __iommu_attach_group(struct iommu_domain *domain,
+ 	struct device *dev;
+
+ 	if (group->domain && group->domain != group->default_domain &&
+-	    group->domain != group->blocking_domain)
++	    group->blocking_domain && group->domain != group->blocking_domain)
+ 		return -EBUSY;
+
+ 	dev = iommu_group_first_dev(group);
+-- 
+2.47.2
+
+
