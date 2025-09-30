@@ -1,71 +1,85 @@
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C774024A043
-	for <iommu@lists.linux.dev>; Tue, 30 Sep 2025 12:25:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 846B82BDC33
+	for <iommu@lists.linux.dev>; Tue, 30 Sep 2025 12:38:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759235160; cv=none; b=H1ygjFlVeur1v1U2oxwGh1SyM0B9pUr/AZpFn9QhMoTkTxt0pEP1pP18SvakSpFSFF5ObqoynvbaNMki27mQBgsoHeCaznn9n+zDciLoorV2T3ALAraEM2OfCkesfapMlH06UXAwXTC49EXhcNjtePqdR8tl9JuV5PxJfGbt68c=
+	t=1759235924; cv=none; b=OWZTl0uDHE52lZYSCQsXIl1DTpf1M0TDzt2A4Bm2uq7kswyWoBb/sx8Pmt8Uu9R1INDklUmkvfs+ktC+HgRGF+6xa/jYXM8u3zOkIWuzF4gWne2yXQ0aeqrlx09zFQ8v5WjR0FT1+bGxL4UncBBKJMAj/gRh7dXv7U8kA/wvKx4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759235160; c=relaxed/simple;
-	bh=yDrAqvbEaiFHI18jN+gtlF8I9zQtJDkqQPohZZEUvSo=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=rC5/CzsIrzs2ilUpgCc7xaSiXWaiKbDgRPGFjRLktVmYanGYvVUXHAhaaoEOu25vDv6TvX+hCvAa9gVycazOZF6BcRNDyXkGgXGE6/qcngLFGVeE8JSwg4lcv3vdWJzjuENtvpEMQuQ/Q44WApET4gIGLzOgDzY3BYPj1ocsnv0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=aigme0IL; arc=none smtp.client-ip=209.85.128.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1759235924; c=relaxed/simple;
+	bh=xV29DIU2TbOmuryVDQ1P7PnHetrjWHc87hnpdn8mfxU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=FjZeANbDmRNIa0H2nT+vRDL96Xhs0C0YPaAA/90XaOA9vpooex9THaggG6a5TDkvqiQ63Z+hszLrww3znPf1Ymx/uQcMkz3Ni08atlUrLoQaJxNthYmVpKzLXHMvIz7PxlorzGR8PjGrGhkO+JinPUVkKLWmjw8XtJ6sHdsNLjQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=AhX2tddi; arc=none smtp.client-ip=209.85.160.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="aigme0IL"
-Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-46e2562e8cbso45466805e9.1
-        for <iommu@lists.linux.dev>; Tue, 30 Sep 2025 05:25:57 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="AhX2tddi"
+Received: by mail-qt1-f169.google.com with SMTP id d75a77b69052e-4ddabf2ada5so58530331cf.1
+        for <iommu@lists.linux.dev>; Tue, 30 Sep 2025 05:38:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1759235156; x=1759839956; darn=lists.linux.dev;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=GvPVBBH5vGqV3kuJKhWbZIWETLbBu5VFdtdFk49yg78=;
-        b=aigme0IL/wQu07//i5jLyZ2id+kjryQ0b9KOjsH00POcmlR2tO4sJxn0KuMTSJYmnT
-         Puv2/Mo4UDbk9PrQTXnV61KfRqfRZAjZAJaUPZwWtzhEXLTWYMUlJDfH0OB/AbUE3Eql
-         67Bs1b0ljHzD1XnbKmmGRamOpBuWfO4R7CohwzMNusg7KX9QbOPGsv0IPR76qiiNbTh3
-         JkV2RMIOmPf/+IiB8MMPSMpYE/HPzdhSiRltYno0k7BnhsGs6hp6Qv4dmR8kkuKAVBbh
-         oVPA1hrgokSI0sAP7CeBD2FP9PMwwkyMp6BvIfuy6Ewki7dlEHTJtIhYxuxXtQqWZe5K
-         pk/Q==
+        d=ziepe.ca; s=google; t=1759235921; x=1759840721; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=VBYh4sqVRv985C07Huopg2HBOyHMdBgVTsPZLDQuV38=;
+        b=AhX2tddi6iFLdishtUGVnFkXmVwz9mr5GyyqzFyse7/PueBvApYAB8cPlJet7fHH3h
+         mu/+SzZfS4Hv9Vy3oaVOxu2BOFMqs27+T7FsVbNlyM3NYDt+wO5qIm+r7J2L7UyHWpg/
+         i5FseoDyd47jevTS2mQw69RD9K4wSB6dNT3vhOg+i0C2IyTv9jM7PzIi3e+eg951N9Um
+         4UsE+iziGhhcljWbYj5GUiXuUzvJNum1VYffaP0htRmRrGwRG5XHQXx2j2jg3Z7vLQ7A
+         I37pKddwN59dsx4+tvphIs2cJFi/sL/yRbLfbpJhxPq6YPTQghnWW9FswGJxNwxBL8s8
+         VlkA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1759235156; x=1759839956;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=GvPVBBH5vGqV3kuJKhWbZIWETLbBu5VFdtdFk49yg78=;
-        b=XF76IYsLmF9CKfFvB4B3o/cU9Npdni7/J/DuMFzCGHrm0WTzeoadWFgk2E90m9TY0T
-         QxXnUiIeGiVXAHzjuCax/wThA2Y2YoET8hpF+UuDGRfQJkNS8pkP2jkEKwTgEl0A73/m
-         65zvO36SvOgNhyeaBghJKmf3yYCMwjHwQurfoun/jDyEP+VxpkkrgO5UGHwQPPCp1eMG
-         MBub8AvICd4ToMPZzB7bVu0qwLr9lpAOnswWR5BsQkE7s1gadLQ8kyOBPgBlppjLyAxY
-         bWPfD4SFFc1roix8SZcMCJVjgv4h9okAHjOjCu5qT88oUxxW4Qgy+KR5W8Lo2vwbtYuu
-         UFsA==
-X-Forwarded-Encrypted: i=1; AJvYcCXkLReshtteXsMXTThHrknjOI9EJStFgQJFMJZkMgjDYc79ZW5a8qOVW1yi9xUHq9ckfC7paA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yyy6K8HAbYhLZSDE8GUHUy6Rs+SZcyjFNysN6koKnVdE3YhX85F
-	YhSXPEHiADSdxHC+wguhuqYmlWe+vR2DJZ1qzFMrwbAPf2so9u+bm35UmLC4bAsbtC0=
-X-Gm-Gg: ASbGnctALb3GBvaNSU2B8km+Xj4LUg6/tDMjuOqjCYelnRBLAqnJhlbLUr2ROxzmlX8
-	u13pFZ5FpxvD59xtIollSedU/OtzJHLCfYV2pBMKyBrhwtSdmMVUsJJ+eO+8awRn1vmOH4Nrrim
-	5tOLzazLd3GCKFtrQxGSIVPTGk2t37yEIObkIMHsXv6FziqULMMth3/lLUmFD+WLXdrHFOSD4EZ
-	oTqWrgX6PlWErTs4d5QtWuVRqze08NxVEeK2bJ7gS9kMiXvqvc7chFsp1W+nwPwMruXku4CNhfo
-	WDp6rP7VKTmJpmxNa3zinL83ANwAfHYENJXUguJL1pS+qEQBK8at7AGgk3PF+VpHSZF5ny0lqcw
-	PM0o3i/AVGDJBMnrW5Q7Tj+aU4LQuv6sX99OSiE+2bwhHbp82m21WMcA0f+YDWEY=
-X-Google-Smtp-Source: AGHT+IHCMMkMmxX3p2DLBXTZhpA/m4X3bu/Jppin+k2ZScUSiWq4++pq+g8zHiUCjWlwdc3Xc6EA7w==
-X-Received: by 2002:a05:600c:4512:b0:45f:28d2:bd38 with SMTP id 5b1f17b1804b1-46e329f9b5amr223551295e9.18.1759235156187;
-        Tue, 30 Sep 2025 05:25:56 -0700 (PDT)
-Received: from localhost ([196.207.164.177])
-        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-46e56f3dab0sm54160645e9.1.2025.09.30.05.25.55
+        d=1e100.net; s=20230601; t=1759235921; x=1759840721;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=VBYh4sqVRv985C07Huopg2HBOyHMdBgVTsPZLDQuV38=;
+        b=nQrI55N0C19A3tFn5CMdKCY0XROOqoQv33rwUU3g9YkivhjyLoMXtE3TrQZMIYyP/1
+         0rf9mutn94iG+spD+2IEhrEghqey0O+ZxszhuYxcd7J/j6OCs2FhkniwFt+kpgp2jEBi
+         m26uLle9MbrsSRUoCE9k6Ve097LXtnZ5wFKHTm6LWaLn+oiagZ/wj+ulyKuzDF2Kn9RQ
+         8fKVMKXSx0i4b3GF2qTmTumEbN3TziolXi7Q2GzgC+JoBgDlgwe2lP51Mr/4WmeIs083
+         4dkMvTsyd9lWjY2KW5kyXzPws+gXH/jIAvooaL5Ld8QqVgJ79tixrMpx+r3AhtJ09j6W
+         eXNA==
+X-Forwarded-Encrypted: i=1; AJvYcCWtiz6P7u7WuF3DmgRD8lIK2Fye7RgybXftV8gLWJRKIsAgRc/CPhXe8YWmkzvv5yqCcPQYaw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwNMxc2b6p/i7zB7t8ZQqCAi7ovZUtnZ808vPKNwq2LZCycMZ/S
+	OTr5J0Ze6EEm4FS5ouV6ehRiuUek5Sc0d/s1X73l3rNH8+0DeXVIYA4OFoKxegnI+a4=
+X-Gm-Gg: ASbGncuVCpgHEIcmkNhml5i5AqpATWpRSpWGKpCvTXdQ2Mq5sWRs5mJdzZDUF6hMYUF
+	8kBbmzH48lIgUQELvT4iT1BiJhY97sdTuM0zApBczMMssE73gfQjCbNW5+HVO6aAAPeTnFAiboF
+	FcCDQwrA9MSYbgg/cGjXeE4Vgj7M0hk4XN37/9MKC9E3R9adNsDjrznj09Q5hZC+ce3XOMOpVDn
+	njjG+GdWEQjf1zBq0NczSP4LhkPWE2uBtrtQJY9O+Ea9yJqEaJM8X4xxnf3BId53J6ECCu4bJ9w
+	M5ayphY23M7vyllfOTZdOW9wRKH16wAmo0kRDn1F6aXziuse+fwszkohsSfvdKpuhKZ84nxRZKX
+	1QDMvX5d4ddlHC9+zxreJmmttvQMJF6h2UQfKlCZL4w==
+X-Google-Smtp-Source: AGHT+IHgKpbQVt29fnjPpYGRGvSeW5uUhJfqcsuhp73OzWARyNjA6lxGY/bFMFic1Y10TeqPQbcyEw==
+X-Received: by 2002:ac8:5c88:0:b0:4b1:247f:4e0f with SMTP id d75a77b69052e-4da4cd41ec5mr281429761cf.57.1759235921370;
+        Tue, 30 Sep 2025 05:38:41 -0700 (PDT)
+Received: from ziepe.ca ([130.41.10.202])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-4e34ef75712sm8696611cf.7.2025.09.30.05.38.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Sep 2025 05:25:55 -0700 (PDT)
-Date: Tue, 30 Sep 2025 15:25:52 +0300
-From: Dan Carpenter <dan.carpenter@linaro.org>
-To: Guixin Liu <kanie@linux.alibaba.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	kernel-janitors@vger.kernel.org
-Subject: [PATCH next] iommufd: Fix error code in iommu_device_register_bus()
-Message-ID: <aNvMULgt6s7-3ceR@stanley.mountain>
+        Tue, 30 Sep 2025 05:38:40 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1v3Zct-0000000CWSm-3Tg2;
+	Tue, 30 Sep 2025 09:38:39 -0300
+Date: Tue, 30 Sep 2025 09:38:39 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Mostafa Saleh <smostafa@google.com>
+Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+	kvmarm@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev, maz@kernel.org, oliver.upton@linux.dev,
+	joey.gouly@arm.com, suzuki.poulose@arm.com, yuzenghui@huawei.com,
+	catalin.marinas@arm.com, robin.murphy@arm.com,
+	jean-philippe@linaro.org, qperret@google.com, tabba@google.com,
+	mark.rutland@arm.com, praan@google.com
+Subject: Re: [PATCH v4 10/28] KVM: arm64: iommu: Shadow host stage-2 page
+ table
+Message-ID: <20250930123839.GL2695987@ziepe.ca>
+References: <20250819215156.2494305-1-smostafa@google.com>
+ <20250819215156.2494305-11-smostafa@google.com>
+ <aMA8vz0v0Vn-02QP@willie-the-truck>
+ <aMlzLsj5slPQhWEr@google.com>
+ <aNamXlTErXDs1K8Z@willie-the-truck>
+ <aNpm9odmzv__2RyA@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -74,30 +88,29 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-X-Mailer: git-send-email haha only kidding
+In-Reply-To: <aNpm9odmzv__2RyA@google.com>
 
-This error path accidentally returns success.  Return
-PTR_ERR(iommu->fwnode) instead.
+On Mon, Sep 29, 2025 at 11:01:10AM +0000, Mostafa Saleh wrote:
 
-Fixes: 885add2e6be6 ("iommufd: Register iommufd mock devices with fwspec")
-Signed-off-by: Dan Carpenter <dan.carpenter@linaro.org>
----
- drivers/iommu/iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> > If the SMMU is in stage-1 bypass, we still have the incoming memory
+> > attributes from the transaction (modulo MTCFG which we shouldn't be
+> > setting) and they should combine with the stage-2 attributes in roughly
+> > the same way as the CPU, no?
+> 
+> Makes sense, we can remove that for now and map all stage-2 with
+> IOMMU_CACHE. 
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index ddf398d8bcf9..59244c744eab 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -330,7 +330,7 @@ int iommu_device_register_bus(struct iommu_device *iommu,
- 	iommu->fwnode = fwnode_create_software_node(NULL, NULL);
- 	if (IS_ERR(iommu->fwnode)) {
- 		bus_unregister_notifier(bus, nb);
--		return err;
-+		return PTR_ERR(iommu->fwnode);
- 	}
- 
- 	spin_lock(&iommu_device_lock);
--- 
-2.51.0
+Robin was saying in another thread that the DMA API has to use
+IOMMU_MMIO properly or it won't work.. I think what happens depends on
+the SOC design.
 
+Yes, the incoming attribute combines, but unlike the CPU which will
+have per-page memory attributes in the S1, the DMA initiator will
+almost always use the same memory attributes.
+
+In other words, we cannot rely on the DMA initiator to indicate if the
+underlying memory should be MMIO or CACHE like the CPU can.
+
+I think you have to set CACHE/MMIO correctly here.
+
+Jason
