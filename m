@@ -1,97 +1,55 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8633E23E229
-	for <iommu@lists.linux.dev>; Tue, 30 Sep 2025 07:49:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4BF67D07D;
+	Tue, 30 Sep 2025 07:57:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759218592; cv=none; b=k4KtqFDCCgD3W/qkQTgoglZbyuibtaASE3Sw4FZKCn+28Wov7OMawIrUCSBFCjsdUbu7VCcAUu1On6Q1OH8HfexLBfIF/cDYfOW27wzStJtGmyuB1VweRsHdy4P+RTUgtUUiOIicJjEzbchN7GFKv4Vyiy8N3/Jmr3P7E1qAyFs=
+	t=1759219074; cv=none; b=KvQ6NmYq+awl+IxbDe+G1D31Tix11F6CM/f/vLM/LuA+bvG26tvHs+wLWL49VI1qQWvz0B6ycusrdGM6r4XcJcI9Wyeu9cUt3AniuMSZG2MuRfoan2us11+M9WVgIa572BaYarYTfhyYRv27MH40w3ap/bVOJdJxN+8NaOKlQkQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759218592; c=relaxed/simple;
-	bh=vPPstQsecnnkIWa6DxFaHD9gRnqYStgZOVelTzbVHqY=;
+	s=arc-20240116; t=1759219074; c=relaxed/simple;
+	bh=i3BtTTr7nZIJz33RyVUpfLlfxu4epWOssHy+VLrcscQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=mcbQ89a89ZMtabS7olglT3WINogdAda//hrX9ipk6x/k5TvvZKt29hbZ7A4tlHFpVXviQCPzOclSA4avqQmFPZS72kOvHdoc/JBkzp2Ee4i5z+VcyQW/C2WWJu8jQ7vzXJV1VU/P6gV8pz4xDgJ2pvVvYMXzcEGc8yEfGQ6eO4I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=mbPXCIfs; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=FNryZTMOREUpenBbTyZBZLuPwgBU+IJWtbAEVHEATQUGRgwQkm5CQrEouCeQvoXNkqTUCZH0zaLHzw22fwBq0MfenYPPn6iVjxfEnO80ddOZ/zm0PyAQhOzc1ni8lQIUQfnsiinHLc6r9RFaQtPlNLHUo2B1sbqD1fHrvnMcNzg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lKEnQkLh; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="mbPXCIfs"
-Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 58U4HPmC009323
-	for <iommu@lists.linux.dev>; Tue, 30 Sep 2025 07:49:51 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=tcDYvvx/kWESRIwdIUfePzUj
-	wXfd5DkiWsQQ0UqQcPs=; b=mbPXCIfsnKiNtisq0erGetEyK+l37muV+7YinheB
-	bYj644FZBNuf1NgkhSgSbqRlm+TYG5UJuTdvExajM+vrUhtwvopVf/wSpTJ/WkqC
-	hu2tYYX0OahWkjx/XHHgJ165uF0Hdl0hZ0NmfphU42nznbmNIJHNgJcE+NtGueab
-	od5nvAuCN+cVzlntj3IJiIy7FHLagNgVuDVgefB2uDbvVHjVWmKsT3TunRetSyK/
-	SXZxXbuQKgsXBy8egQfp4FHYNPv0FfnA5OKfkxqjjmN2DiFC/r0Lp+ZgdSNra7UX
-	qUjV2tDvYdey7K8eKSeHm1dSYSwas7M8x+dBmnqjSl5Xfg==
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com [209.85.160.200])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 49e977qvdp-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Tue, 30 Sep 2025 07:49:50 +0000 (GMT)
-Received: by mail-qt1-f200.google.com with SMTP id d75a77b69052e-4e0e7caf22eso54677991cf.3
-        for <iommu@lists.linux.dev>; Tue, 30 Sep 2025 00:49:50 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1759218589; x=1759823389;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=tcDYvvx/kWESRIwdIUfePzUjwXfd5DkiWsQQ0UqQcPs=;
-        b=haGJSWD1bsY1GDPdp5SeIR1J91fe1cUtie5JFZcDRFptgZW8ukjfIate1KcIFoGzDC
-         9O9RjC7RqBvjRUqqUcOTkR0c/b2RZKujKCI+nTZpzTm+wOcxuW2GHV182JISLJVY02ua
-         6deShXrHaGjtAhhQlkGC+0KwULPZSzLWF3x+fTzme7lNpfOgKKcFvCnvXJoLbzJ8uzJu
-         W6gfWegcHTZ2maDm8sEvR8cNzgM/wtVeR9BfvKFfmugxSVINkLoJgnqhVfLLMp5fm5jo
-         6h22k9BVXZK4PsgZ8ur9D3nexv/BxApz33dcu/L85pJnTuJl63jA8pQTUo3bX++IH7xu
-         yWRg==
-X-Forwarded-Encrypted: i=1; AJvYcCVr9un2t5bI5LEMAZOV0mMPHFJ2ujEQ4BCEN81kB8bJN5I44r9bCDxTEwejqx/hwpIP+Pb1DA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yy4kuTBlr52y48tHirQ5U+LBwLP84BNrrCTDbW8qNk7fC6ggOl8
-	aR73p8TKkxyUvzdwks/jGqQi/Qf/MnYL0uXSvINubmVY6UFGTZqLW8wYhZWe+vsfDF3vkLxj24K
-	dMJbfqd6MW6Bj7sWcVLEiUkTVqaW/bvBrtA7+BxUR9lvYzV5IlWDZ8MjZAg==
-X-Gm-Gg: ASbGncurHC1S1AuCz9gBNkK+yxh3M/VWDmO6+4Fsfhne4DHpc97TFExnmrQzP2ueB2E
-	xYFt8zO0BIEOLn5G9uLaWS86nI1QqePpxmWFpJVS+utZgFtT7I1u/6ZvTSTNtCMKKhozGpujaMg
-	k9BVhyZOsCpLUzgBabR27BP0emyUp74PibStGyxJcMgRIv+7m59zmEDO4th2iI7W/7FyIqc0hLk
-	+17DYvv95HP3Vlciju1RoL5BsvncNL5yVM8CrMU6Df0T1exNXg/kmRi+xbCMX/Q+6tBC9/DhiSF
-	YUvUSDGuPxp6/PqwIl1OOplpeIulnZuQqGtGeshQ5wlxSETZ0te7Uv9+tqeoHcL4zdvhFTlLqef
-	FYx4Up6x+8US+P41+Xd5EbcbT3CvO+AleRm3jO+rj1WhidLFLyzz4fiTeTg==
-X-Received: by 2002:a05:622a:17c3:b0:4e3:25d7:57d4 with SMTP id d75a77b69052e-4e325d772ffmr15078661cf.80.1759218589259;
-        Tue, 30 Sep 2025 00:49:49 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IF1NOqQxAPdQp+Dh3rh+AoIDtXwXlBUdceAQk5B9YJWaQLrY/hOzC1FHHQS6Zz8p9Hkpk4YgQ==
-X-Received: by 2002:a05:622a:17c3:b0:4e3:25d7:57d4 with SMTP id d75a77b69052e-4e325d772ffmr15078221cf.80.1759218588705;
-        Tue, 30 Sep 2025 00:49:48 -0700 (PDT)
-Received: from umbar.lan (2001-14ba-a0c3-3a00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a0c3:3a00:264b:feff:fe8b:be8a])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-58567242ef3sm2908507e87.19.2025.09.30.00.49.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Sep 2025 00:49:47 -0700 (PDT)
-Date: Tue, 30 Sep 2025 10:49:45 +0300
-From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-To: Akhil P Oommen <akhilpo@oss.qualcomm.com>
-Cc: Rob Clark <robin.clark@oss.qualcomm.com>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>, Sean Paul <sean@poorly.run>,
-        Dmitry Baryshkov <lumag@kernel.org>,
-        Abhinav Kumar <abhinav.kumar@linux.dev>,
-        Jessica Zhang <jessica.zhang@oss.qualcomm.com>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Jordan Crouse <jordan@cosmicpenguin.net>,
-        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        freedreno@lists.freedesktop.org, linux-arm-kernel@lists.infradead.org,
-        iommu@lists.linux.dev, devicetree@vger.kernel.org
-Subject: Re: [PATCH 15/17] drm/msm/adreno: Do CX GBIF config before GMU start
-Message-ID: <ae2ooybajk6mcjggeztumubht6auw5qlhmsdrblikc5ruoxtmm@oj5kvpxithva>
-References: <20250930-kaana-gpu-support-v1-0-73530b0700ed@oss.qualcomm.com>
- <20250930-kaana-gpu-support-v1-15-73530b0700ed@oss.qualcomm.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lKEnQkLh"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 879DEC4CEF0;
+	Tue, 30 Sep 2025 07:57:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1759219073;
+	bh=i3BtTTr7nZIJz33RyVUpfLlfxu4epWOssHy+VLrcscQ=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=lKEnQkLh/7QlrpMJsb5yRxE5AbBpzJMJNRvLELIbdmZqsMudIfJkl5IIjVlvWd45t
+	 9CdHZPBwdsFyTXltr7C+E/ikvBD8M3GKILT1uJbM/dqVtkzxxeI95NEbtW/zrd+Ep5
+	 UJKj7ByQ5cHM7iDUE5YdLldljkvDneKjj7T0/Jl4BAwLIv6rMPS82rffMeFvtqMlii
+	 rJtHqvVmDH+CUonBV/bnseaOumQHFjDS8yuzzqj15+2YNU8QWaz2EfS70aqZHG3yUz
+	 GrVG3wKTr88ok96rH2QGVO9OvriGTC+fSkO/DeP0k5odor2Iw88fzatiG+tDDQkt+a
+	 OH7f8EY3JlCxQ==
+Date: Tue, 30 Sep 2025 10:57:48 +0300
+From: Leon Romanovsky <leon@kernel.org>
+To: Alex Williamson <alex.williamson@redhat.com>
+Cc: Jason Gunthorpe <jgg@nvidia.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+	dri-devel@lists.freedesktop.org, iommu@lists.linux.dev,
+	Jens Axboe <axboe@kernel.dk>, Joerg Roedel <joro@8bytes.org>,
+	kvm@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
+	linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-media@vger.kernel.org, linux-mm@kvack.org,
+	linux-pci@vger.kernel.org, Logan Gunthorpe <logang@deltatee.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Vivek Kasireddy <vivek.kasireddy@intel.com>,
+	Will Deacon <will@kernel.org>
+Subject: Re: [PATCH v4 07/10] vfio/pci: Add dma-buf export config for MMIO
+ regions
+Message-ID: <20250930075748.GF324804@unreal>
+References: <cover.1759070796.git.leon@kernel.org>
+ <b1b44823f93fd9e7fa73dc165141d716cb74fa90.1759070796.git.leon@kernel.org>
+ <20250929151740.21f001e3.alex.williamson@redhat.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -100,48 +58,73 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250930-kaana-gpu-support-v1-15-73530b0700ed@oss.qualcomm.com>
-X-Proofpoint-GUID: BgVfq7hGLCZKFnXg8fd6sg8FAU2xSZMW
-X-Proofpoint-ORIG-GUID: BgVfq7hGLCZKFnXg8fd6sg8FAU2xSZMW
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwOTI3MDA0MyBTYWx0ZWRfX+6GKMPWsc0+u
- AT5PEP9urdPxFf+NbXJmOvrST5Fivkn0h8KpOoolRYpbIJc1cGXaR3ljbUDpQwLjOKrZ/9CuiJ6
- dZxb7VFyH+cki9a1lZa8Z1mV8yOw3+MUW1uc4ZiYlOLbtkv6ejNYtzv85Q16iZk+oJUVnookIT7
- dLYKT4W8WUys1hQBoeiBRgv+C+4iAHr7RVOPgVMru+pQMBqrdqmAJ9tRl6uxUZYgR7zF8BX6R/+
- WMJSWOk9V7K/5VCRUy0dylqEEILJS/6686CjXczjPOZw7yVx0DNLkx6aPo0MJT8DS/jSdUq5UeE
- j4o2oXScG+3z3Rh377uDF0C0FxpVQ9i6u6duIy2IJ1AJps2AHzh3jThBp1rnj4cPjqVaE4mBGT+
- Fjfsg1/K/e969XIvniCouLl6WycoXg==
-X-Authority-Analysis: v=2.4 cv=Sf36t/Ru c=1 sm=1 tr=0 ts=68db8b9e cx=c_pps
- a=JbAStetqSzwMeJznSMzCyw==:117 a=xqWC_Br6kY4A:10 a=kj9zAlcOel0A:10
- a=yJojWOMRYYMA:10 a=EUspDBNiAAAA:8 a=219S4Ll1wpRkBpzXM0IA:9 a=CjuIK1q_8ugA:10
- a=uxP6HrT_eTzRwkO_Te1X:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1117,Hydra:6.1.9,FMLib:17.12.80.40
- definitions=2025-09-30_01,2025-09-29_04,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1015 bulkscore=0 suspectscore=0 adultscore=0 spamscore=0
- priorityscore=1501 malwarescore=0 lowpriorityscore=0 phishscore=0
- impostorscore=0 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2509150000
- definitions=main-2509270043
+In-Reply-To: <20250929151740.21f001e3.alex.williamson@redhat.com>
 
-On Tue, Sep 30, 2025 at 11:18:20AM +0530, Akhil P Oommen wrote:
-> GMU lies on the CX domain and accesses CX GBIF. So do CX GBIF
-> configurations before GMU wakes up. Also, move these registers to
-> the catalog.
+On Mon, Sep 29, 2025 at 03:17:40PM -0600, Alex Williamson wrote:
+> On Sun, 28 Sep 2025 17:50:17 +0300
+> Leon Romanovsky <leon@kernel.org> wrote:
 > 
-> Signed-off-by: Akhil P Oommen <akhilpo@oss.qualcomm.com>
-
-Fixes tag?
-
-> ---
->  drivers/gpu/drm/msm/adreno/a6xx_catalog.c | 23 +++++++++++++++++++++++
->  drivers/gpu/drm/msm/adreno/a6xx_gmu.c     | 12 ++++++++++++
->  drivers/gpu/drm/msm/adreno/a6xx_gpu.c     | 17 ++++++++++-------
->  drivers/gpu/drm/msm/adreno/a6xx_gpu.h     |  1 +
->  drivers/gpu/drm/msm/adreno/a8xx_gpu.c     | 10 +++-------
->  5 files changed, 49 insertions(+), 14 deletions(-)
+> > From: Leon Romanovsky <leonro@nvidia.com>
+> > 
+> > Add new kernel config which indicates support for dma-buf export
+> > of MMIO regions, which implementation is provided in next patches.
+> > 
+> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> > ---
+> >  drivers/vfio/pci/Kconfig | 20 ++++++++++++++++++++
+> >  1 file changed, 20 insertions(+)
+> > 
+> > diff --git a/drivers/vfio/pci/Kconfig b/drivers/vfio/pci/Kconfig
+> > index 2b0172f54665..55ae888bf26a 100644
+> > --- a/drivers/vfio/pci/Kconfig
+> > +++ b/drivers/vfio/pci/Kconfig
+> > @@ -55,6 +55,26 @@ config VFIO_PCI_ZDEV_KVM
+> >  
+> >  	  To enable s390x KVM vfio-pci extensions, say Y.
+> >  
+> > +config VFIO_PCI_DMABUF
+> > +	bool "VFIO PCI extensions for DMA-BUF"
+> > +	depends on VFIO_PCI_CORE
+> > +	depends on PCI_P2PDMA && DMA_SHARED_BUFFER
+> > +	default y
+> > +	help
+> > +	  Enable support for VFIO PCI extensions that allow exporting
+> > +	  device MMIO regions as DMA-BUFs for peer devices to access via
+> > +	  peer-to-peer (P2P) DMA.
+> > +
+> > +	  This feature enables a VFIO-managed PCI device to export a portion
+> > +	  of its MMIO BAR as a DMA-BUF file descriptor, which can be passed
+> > +	  to other userspace drivers or kernel subsystems capable of
+> > +	  initiating DMA to that region.
+> > +
+> > +	  Say Y here if you want to enable VFIO DMABUF-based MMIO export
+> > +	  support for peer-to-peer DMA use cases.
+> > +
+> > +	  If unsure, say N.
+> > +
+> >  source "drivers/vfio/pci/mlx5/Kconfig"
+> >  
+> >  source "drivers/vfio/pci/hisilicon/Kconfig"
 > 
+> This is only necessary if we think there's a need to build a kernel with
+> P2PDMA and VFIO_PCI, but not VFIO_PCI_DMABUF.  Does that need really
+> exist?
 
--- 
-With best wishes
-Dmitry
+It is used to filter build of vfio_pci_dmabuf.c - drivers/vfio/pci/Makefile:
+vfio-pci-core-$(CONFIG_VFIO_PCI_DMABUF) += vfio_pci_dmabuf.o
+
+> 
+> I also find it unusual to create the Kconfig before adding the
+> supporting code.  Maybe this could be popped to the end or rolled into
+> the last patch if we decided to keep it.  Thanks,
+
+It is leftover from previous version, I can squash it, but first we need
+to decide what to do with pcim_p2pdma_init() call, if it needs to be
+guarded or not.
+
+Thanks
+
+> 
+> Alex
+> 
+> 
