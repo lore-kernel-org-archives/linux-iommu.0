@@ -1,156 +1,161 @@
-Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
+Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66FEB1AB6F1
-	for <iommu@lists.linux.dev>; Tue, 30 Sep 2025 14:56:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99C5F2236EB
+	for <iommu@lists.linux.dev>; Tue, 30 Sep 2025 15:10:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759244173; cv=none; b=an9YEZkO9QY0VlG/oSuFLypTFXdD58DHSRzyyk+wPAN3l7SfedLIidWhhZoyk0EMRj2xQZWqx6Z0GGlJFUADnvV5fcLkQSRX5rzRYPol0PnWrVkYDSmdpuf3zPd6/P9HmKF1u334jRLo5z/aWOEI/hytu27E5o+CeVB6Ps7+/+Q=
+	t=1759245041; cv=none; b=qVySW5n7rt91Ap2KW/iPyq4/HbYatd0LO69vGWhxw164jZHbTXZXi7z4EiKD0qarZlLLk33Hzq9q64bvVivS8Nfbvg0aN1a7KZpxtAXveiQwWM63UoAC4HPRIe5htYHeaSuLrxAheCtbUc8gEgNCVbN5pjG2nztshGRPbsznt+A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759244173; c=relaxed/simple;
-	bh=F+2PpfgjzAxd5eTgzmtA9811HRwzmk6SihyZQnBi8BE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=mh12ht17HbYnFaHAacnRmr3IkfxU+sTC3aqftHg1h4Bb39F8FKyprrTNCokUmqOlxPN2C//wji6qeCHD0yClM8uIa6xqPzNmc3AFmiJVnGg3fGBK83O5bglGzdNx/nWIwEjxfiCJg61tiMc5ECFWvOtctRUYj9g1c2pdlh3IN3U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=M8U6GUIQ; arc=none smtp.client-ip=209.85.214.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1759245041; c=relaxed/simple;
+	bh=/oRJeb7DGkI5trDZKieCsAvs0tLoEkJKE9QVEtLyRXQ=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=hFDpZNzYRBZilGZwCGTM9C3XUMN6airL8M8m1WPZaRWyhdl2OLRvJWdL85iGJPHA8sGntT86LDqyg0uo/GpXwuYFfSsCVFJ3fA9HW3ypOa/dliBm2OUPae3AUNeVPTTOWvjyYb+TY2QDKBKqv/Gunrk1Ll3WvEt0K5O79Y06HtI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=soleen.com; spf=pass smtp.mailfrom=soleen.com; dkim=pass (2048-bit key) header.d=soleen.com header.i=@soleen.com header.b=EeiVyU1I; arc=none smtp.client-ip=209.85.160.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=soleen.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=soleen.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="M8U6GUIQ"
-Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-2681645b7b6so160775ad.1
-        for <iommu@lists.linux.dev>; Tue, 30 Sep 2025 07:56:11 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=soleen.com header.i=@soleen.com header.b="EeiVyU1I"
+Received: by mail-qt1-f169.google.com with SMTP id d75a77b69052e-4db0b56f6e7so51715471cf.1
+        for <iommu@lists.linux.dev>; Tue, 30 Sep 2025 08:10:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1759244171; x=1759848971; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=H4R6lGWGAQ1gnxosb2gwPcgs8a9GrC1uXsCsflzO0H4=;
-        b=M8U6GUIQaHROW9YvdEwpYupJ8xAxUoj0t09uZrIQyPzoFiPe0voRptJNLpsGEdmtvk
-         GjiZC57N/3AIufTd8zo7qQnMm9aWN8EPc6Wqg+nm627zvUpmy9AHPArBrz6H7chdAlPt
-         jaIw6cs2vCwv39aAAvlNuCxMT8OLQBV/BS9wswEwAGKCDNtJGJBPFOIQxnnzSHfUhWq9
-         UOz/UzfDWyx6fcMk9cXPmmV7VKFLmX8QXyHRvDuep7k9kM7xVk1MQ0uPT50ddoSs9Oxg
-         xEYOtvPN+mYW/AbKxeFJsRY0l4VHDGJXoRjsj0cXC/QLCXOWlz49VqS6prGRp2/o63WD
-         sjZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1759244171; x=1759848971;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        d=soleen.com; s=google; t=1759245038; x=1759849838; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=H4R6lGWGAQ1gnxosb2gwPcgs8a9GrC1uXsCsflzO0H4=;
-        b=vT4MOUkTG4rvgYHoBVj5htCPxs/6OVJ6FcLScGaztULqb0zgiRwJcXTHKuW8y3oGKh
-         8qFCCChk0Bt9z/WgQGCLm3yZJL/jCOCC+1dbXxM0U8Wwdzh1QthMlm5mwkWYlkeWlD0Y
-         s1dlOIE5CV60LyKA7nF0tqO8oE8q3jg6+M9BXJoTZ0nkqN96e3y3wmmDYTmjJwGxsr0+
-         kMV3XJ8D64EwkiYQT0XSxCIHFBvVF9SvHs/MMqm91ImnwnSqcwjyuWL483tEB1yi08gp
-         M9eLFuVtgZtT+QzJZ/iq+n5tt5zQIbjSR0gRxW5sGk3mNqOeIu5CKQHgE0qsTJUyvN4E
-         GmZQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXbrfdSu66A1Vst7Vw5JilpWVyJD9/koV5H7ePUlSyuyFKdO5wpffW0bQ/sUtnNhirYsQTqow==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxHvFgp4LRuwVWbWbBgtsfrZ8GhloETQk6HbjPQU+H04fKSspKE
-	5qtS7VwPPfu3pTqfh+WDUzKM38tVBB02PvCDctNFYSdD+tqL5JXxmQ1jujHyesbsmw==
-X-Gm-Gg: ASbGncs5ANs8dQzLK5l1fQ62zBeSdYKPyfeDcC1f+OkzfxIXefSrW775c/L+olGM6GQ
-	3g3EgSFMBXi7YNKyUD2cGywnbafbpj9HHvW3+zQdmbJrvgaAWxnHrubuQ4jVnYL6YuAowO90R3F
-	hACW5qaZFZaxfZjWZMJML2U4kL9KxfjfPN2jYkSjCBk48O+LwJutGr4wDAw7ALyplrBPQsDaMR+
-	n/nPS7OG5k2hw137Qrx/FX8EIu0dfhpn+VU3bc2PCLW66SWvfxd5wE2YFPKWqvxfEzX2ZSLqYt0
-	H5JK627tPkcGmXSiypG/dG/Zp81pPai2Qy73NAsRopxKkn77vtBOts0IKLTKukncVZAR2ixVcuT
-	jXsnx7k8hRazwSo1FWGHgQzr+zgthineaIZutA8QGUrp3uOE79GVUWxFtsFB6DAXKM3FSGhhcSJ
-	+UGCqHyhaGtPHFAMz0oCXpJQ==
-X-Google-Smtp-Source: AGHT+IEKto9Z/ZQPK+LiszayWv4jowiWlKBwakXzvWFsQoNBQ3FBBuXDg73TnRLqqEz8s/+/yr7S4Q==
-X-Received: by 2002:a17:902:f64d:b0:28d:195a:7d77 with SMTP id d9443c01a7336-28e2f8a16e6mr5318465ad.16.1759244170301;
-        Tue, 30 Sep 2025 07:56:10 -0700 (PDT)
-Received: from google.com (21.168.124.34.bc.googleusercontent.com. [34.124.168.21])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-781023c1867sm14193305b3a.35.2025.09.30.07.56.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Sep 2025 07:56:09 -0700 (PDT)
-Date: Tue, 30 Sep 2025 14:56:04 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Mostafa Saleh <smostafa@google.com>
-Cc: Jason Gunthorpe <jgg@nvidia.com>, Daniel Mentz <danielmentz@google.com>,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	Will Deacon <will@kernel.org>, Liviu Dudau <liviu.dudau@arm.com>,
-	Rob Clark <robin.clark@oss.qualcomm.com>
-Subject: Re: [PATCH 2/2] drivers/arm-smmu-v3: Implement .iotlb_sync_map
- callback
-Message-ID: <aNvvhFsfySp9mW93@google.com>
-References: <20250927223953.936562-1-danielmentz@google.com>
- <20250927223953.936562-2-danielmentz@google.com>
- <20250929115803.GF2617119@nvidia.com>
- <aNp6fJNoehs8hMyF@google.com>
- <20250929124719.GJ2617119@nvidia.com>
- <aNsjFm56D8pnAKDp@google.com>
- <aNuieevIo9MuzBq2@google.com>
+        bh=n1xb6a+2PpfbKKBMnFwliVMTG3PqkR2AO+nTXR03sac=;
+        b=EeiVyU1If3010s58/eVPsAuRvXTOpwpQKFKk5p+kUBd8PvmgR3RZ3+/Iy/qA1i0kOJ
+         VSwWU6i2D/pxEEiFh3c4bMzQvBZiLvbYaZ2MxgDjJCnWTZQwrKu9eR4u6MaTpVnSm+2e
+         TiO0dknxlkJsJZLGS6SbgBYaP0Sw8AubRaM6C8x7UPu4z9Qesavbhoyhz8QQ0bYTIMcg
+         PcI1nD909Bq2AifaM1aiCtUB+w1Z6qyi2zh3oO6mICuEBlSVMDfF5IJ8rUaeQrOtDDsH
+         GlI6/2KajBAeEKwC8kE7tfqa3xrQjvnlh7Zxxnm01h8Yn/0B/lyRvNLSCw//5/DE5c9A
+         zyeQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1759245038; x=1759849838;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=n1xb6a+2PpfbKKBMnFwliVMTG3PqkR2AO+nTXR03sac=;
+        b=WyJqFgCWGxr84igbPjMjXIXQN8UObO4SvQGbq5kXr/9S/v3B9vaHkZ9ErbJSe19teV
+         P3xOmj40MVdjMsFaQtx3PPfn1iSD7i4MFdHjWkpF3YIzZ64Kw5Bc3ydAFx2hjO7lD5kY
+         +N9UcYsSbqtFeSXdKeSOqegEIm64QLthGDK0tEJcNol9FOeBLKpK6Zu8r6IkZsG4XFfS
+         LbOvNJ/+FYJpaJMfT1D3SZUf3Mk61Fh5z8HbvUVWWYwsHmlEh0ICIKddqSLMLByr4dCN
+         6+2lFq7w2G6/6ZjOFgl+K5IWhTIjiuT9qg+rc0bbM8CQH/inaWjnnzI7VnTDEdXpQZod
+         yPRg==
+X-Forwarded-Encrypted: i=1; AJvYcCX9Lu81R1wCBgVUmcTVI0H4Tbc7Eyo1AJFT8GGuF0l+ikS3Pvu9VatBKyJwL6QoRIQQpVElCA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwFoLqpH87Zj29fHcRhdnQsvjik4/6zDt40mLphDXDw3BKx+7d+
+	8j1ErAtBOzuYOXyQQ1AeIm+dfkfYOhcfXQA9M40gxdYZH0sf1JtnkBbv/CCZyzGqZdIP6OtSxV4
+	hhs4P2FuAOFqt8CmMp3HnZG/fcPxTEkw+yIDtn1aGZA==
+X-Gm-Gg: ASbGncui5RiF8N/7lkEyawIBUNmJ/kN1FZPojzp3fbI5pO+L9fLzUaeJBF8BAmQGx1A
+	pl3J7hpnSU9zjLnIaKXdalK6eE8Jbm4mvsWcaQ31noW16WX9i8G78lfG8UkcPxlvSakQQtmHqtP
+	Sl3bCrd0Yfu2iS9Cl4uLbybhMJOxohhSeTGPqGkBypxPvAXSkUkUlas5ShkAFb3/LhfjoAuECnf
+	rwiDnrXg3amSNE/QmxIyDJgVpPt
+X-Google-Smtp-Source: AGHT+IGiV3j5LpiB9kffux66sQ9Mdg2TUQqos6qaVH2bgGa+tmWH25t6LFAZuJa6A12b7cKlewiqaB+wKEcJg4qlmLk=
+X-Received: by 2002:a05:622a:2512:b0:4cf:6b60:8813 with SMTP id
+ d75a77b69052e-4e4046b4c5amr3806051cf.2.1759245038318; Tue, 30 Sep 2025
+ 08:10:38 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aNuieevIo9MuzBq2@google.com>
+References: <20250928190624.3735830-1-skhawaja@google.com> <20250928190624.3735830-14-skhawaja@google.com>
+ <20250929160034.GG2695987@ziepe.ca> <CA+CK2bDqDz3k0gXamJEbKUL7RPBLVjaA5=Jum=CF84wR+50izA@mail.gmail.com>
+ <20250930135916.GN2695987@ziepe.ca>
+In-Reply-To: <20250930135916.GN2695987@ziepe.ca>
+From: Pasha Tatashin <pasha.tatashin@soleen.com>
+Date: Tue, 30 Sep 2025 11:09:59 -0400
+X-Gm-Features: AS18NWCblimmsvYOgaNy7fesTvLr6J5LauXbqD7JnLPAapSwlA-9Rw_VkQ7GVVI
+Message-ID: <CA+CK2bAtChLRVyQftBMN18SKt2o7FcV0q-YUcPS9ZKn2qD87mg@mail.gmail.com>
+Subject: Re: [RFC PATCH 13/15] iommufd: Persist iommu domains for live update
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Samiullah Khawaja <skhawaja@google.com>, David Woodhouse <dwmw2@infradead.org>, 
+	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, 
+	Will Deacon <will@kernel.org>, iommu@lists.linux.dev, YiFei Zhu <zhuyifei@google.com>, 
+	Robin Murphy <robin.murphy@arm.com>, Pratyush Yadav <pratyush@kernel.org>, 
+	Kevin Tian <kevin.tian@intel.com>, linux-kernel@vger.kernel.org, 
+	Saeed Mahameed <saeedm@nvidia.com>, Adithya Jayachandran <ajayachandra@nvidia.com>, 
+	Parav Pandit <parav@nvidia.com>, Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>, 
+	Vipin Sharma <vipinsh@google.com>, dmatlack@google.com, Chris Li <chrisl@kernel.org>, 
+	praan@google.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, Sep 30, 2025 at 09:27:21AM +0000, Mostafa Saleh wrote:
-> On Tue, Sep 30, 2025 at 12:23:50AM +0000, Pranjal Shrivastava wrote:
-> > On Mon, Sep 29, 2025 at 09:47:19AM -0300, Jason Gunthorpe wrote:
-> > > On Mon, Sep 29, 2025 at 12:24:28PM +0000, Mostafa Saleh wrote:
-> > > > On Mon, Sep 29, 2025 at 08:58:03AM -0300, Jason Gunthorpe wrote:
-> > > > > On Sat, Sep 27, 2025 at 10:39:53PM +0000, Daniel Mentz wrote:
-> > > > > > @@ -3700,6 +3713,7 @@ static const struct iommu_ops arm_smmu_ops = {
-> > > > > >  		.map_pages		= arm_smmu_map_pages,
-> > > > > >  		.unmap_pages		= arm_smmu_unmap_pages,
-> > > > > >  		.flush_iotlb_all	= arm_smmu_flush_iotlb_all,
-> > > > > > +		.iotlb_sync_map		= arm_smmu_iotlb_sync_map,
-> > > > > 
-> > > > > Shouldn't this avoid defining the op on coherent systems?
-> > > > 
-> > > > Does that mean we need to have 2 iommu_ops, one for
-> > > > coherent/non-coherent SMMUs, as both can be mixed in the same system.
-> > > 
-> > > Yes, I think you'd have to do it with two ops..
-> > > 
-> > > It just seems wrong to penalize the normal fast case for these
-> > > systems.
-> > > 
-> > 
-> > I see we plan to set defer_sync_pte = true always. What if we invoke the
-> > ops->iotlb_sync_map() only for incoherent IOMMUs? Maybe something like:
-> > 
-> > static int arm_smmu_iotlb_sync_map(struct iommu_domain *domain,
-> > 				    unsigned long iova, size_t size)
-> > {
-> > 	struct io_pgtable_ops *ops = to_smmu_domain(domain)->pgtbl_ops;
-> > 	struct arm_smmu_device *smmu = to_smmu_domain(domain)->smmu;
-> > 	bool is_coherent = smmu->features & ARM_SMMU_FEAT_COHERENCY;
-> > 
-> > 
-> > 	if (!ops || !ops->iotlb_sync_map || is_coherent)
-> > 		return 0;
-> > 
-> > 	ops->iotlb_sync_map(ops, iova, size);
-> > 	return 0;
-> > }
-> > 
-> > If needed we can push the coherency check to the io-pgtable op
-> > iotlb_sync_map() as well. Just an idea..
-> > 
-> 
-> iotlb_sync_map is already NULL for coherent SMMUs, I beleive
-> Jason's point is about that the iommu_ops.default_domain_ops
-> will have the extra pointer which will be called by the core code
-> anyway, which immediatly returns; wasting some cylces.
-
-Ohh okay, I see.
-
-> To avoid this we can have 2 sets of the default_domain_ops for
-> coherent and non-coherent devices, to be chosen at domain alloc time.
-> 
-
-I guess it'd be better to have non-coherent def domain ops then.
-
-> Though, It would be intersting to measure how much overhead does the
-> current approach have in practice, maybe through dma_map_benchmark?
+On Tue, Sep 30, 2025 at 9:59=E2=80=AFAM Jason Gunthorpe <jgg@ziepe.ca> wrot=
+e:
 >
+> On Tue, Sep 30, 2025 at 09:07:48AM -0400, Pasha Tatashin wrote:
+> > On Mon, Sep 29, 2025 at 12:00=E2=80=AFPM Jason Gunthorpe <jgg@ziepe.ca>=
+ wrote:
+> > >
+> > > On Sun, Sep 28, 2025 at 07:06:21PM +0000, Samiullah Khawaja wrote:
+> > > > +static int iommufd_save_ioas(struct iommufd_ctx *ictx,
+> > > > +                          struct iommufd_lu *iommufd_lu)
+> > > > +{
+> > > > +     struct iommufd_hwpt_paging *hwpt_paging;
+> > > > +     struct iommufd_ioas *ioas =3D NULL;
+> > > > +     struct iommufd_object *obj;
+> > > > +     unsigned long index;
+> > > > +     int rc;
+> > > > +
+> > > > +     /* Iterate each ioas. */
+> > > > +     xa_for_each(&ictx->objects, index, obj) {
+> > > > +             if (obj->type !=3D IOMMUFD_OBJ_IOAS)
+> > > > +                     continue;
+> > >
+> > > Wrong locking
+> > >
+> > > > +
+> > > > +             ioas =3D (struct iommufd_ioas *)obj;
+> > > > +             mutex_lock(&ioas->mutex);
+> > > > +
+> > > > +             /*
+> > > > +              * TODO: Iterate over each device of this iommufd and=
+ only save
+> > > > +              * hwpt/domain if the device is persisted.
+> > > > +              */
+> > > > +             list_for_each_entry(hwpt_paging, &ioas->hwpt_list, hw=
+pt_item) {
+> > > > +                     if (!hwpt_paging->common.domain)
+> > > > +                             continue;
+> > >
+> > > I don't think this should be automatic. The user should directly
+> > > serialize/unserialize HWPTs by ID.
+> >
+> > Why not?  Live Updated uAPI is handled through FDs, and both iommufd
+> > and vfiofd have to be preserved; I assume we can automatically
+> > determine the hwpt to be preserved through dependencies. Why would we
+> > delegate this to the user?
+>
+> There are HWPTs outside the IOAS so it is inconsisent.
+>
+> We are not going to reconstruct the IOAS.
+>
+> The IDR ids of the HWPT may not be available on restore (we cannot
+> make this ABI), so without userspace expressly labeling them and
+> recovering the new IDR ids it doesn't work.
+>
+> Finally we expect to discard the preserved HWPTs and replace them we
+> rebuilt ones at least as a first step. Userspace needs to sequence all
+> of this..
 
-Yes, dma_map_benchmark can be used but its results won't reflect the
-impact on scatter-gather workloads since the benchmark doesn't cover
-dma_map_sg IIRC. I believe even a small per-call regression may get
-amplified at scale though.
+The way LUOv4 is implemented, "LUO sessions" are always participating
+LU. Once a user adds file descriptors to a session, that session and
+its contents are automatically carried across multiple consecutive
+live updates. The user only needs to act if they explicitly want to
+remove an FD and opt-out of preservation, or close session. This is
+consistent and convenient for long-running VM that should survive by
+default.
 
-Thanks,
-Praan
+I was hoping for a similar "preserve by default" or "opt-in-once"
+model for iommufd objects that are put into the LUO session to avoid a
+flurry of IOCTLs to re-register before every single live update.
+
+On the other hand, userspace still has to issue IOCTLs after retrieval
+to bring the restored FDs and associated objects back to a workable
+state. Perhaps, we could do something like "Yes, I'm actively using
+this object again, so please preserve it if another live update
+happens." ?
+
+Pasha
