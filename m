@@ -1,194 +1,216 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7903C6D1A7;
-	Tue, 30 Sep 2025 09:00:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D58DC17BEBF
+	for <iommu@lists.linux.dev>; Tue, 30 Sep 2025 09:10:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759222853; cv=none; b=ioGcblSGgD0lEXbQHL3ngeK9xVuS8kNc3q2NPn7jb8aqIKa9FnWF+jMs18Nyr77hXyM2CJsJQH61HkJUPjPzdZQqKdmKR8mXCG1mu/zVpzvYeOpV3Mgsjt5A3+xn5jrV5z9XUcKS6HI6msoBXJenOJiVnTrUDAFAgfgilF+AI18=
+	t=1759223451; cv=none; b=HIU6FKbHVIIh5mLV4U4/f0E5NOiiPWorO6XNH1aSvQ4GFtbVzEGhhxXpHCFrevRF4fhWAS96W9txAj8gN7i4MLQINvK93jgZl05djrd3HsA53x4Tca1pz/tL7hzQlyPWk3sE4j0OsguKD4Fo9kEN1JD55jxIiFuVn9xZUARirTY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759222853; c=relaxed/simple;
-	bh=Bz59FJNr6hSVIp1bIOKqTXqbYBhR+8gIiV4mOYWby0Y=;
+	s=arc-20240116; t=1759223451; c=relaxed/simple;
+	bh=4WefjqGDOXBttHZmJoadNpQptsIzaZDeP+hTJOqWc7M=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=AG2fjDpsjN6PMlA46bwoj88H0eQaqCyUT0iDRdNs/TOyrZSHcabBO0Ws+GVPRlrhgRTi1bo+lyb2o/LpIUzGib5lu8IZmRWyyGJyNFS3x6yfW4wsOe0VMlqb3kH/b0G6s6bL93uuSPXB6w8YC9Ic2j5jBpnJ/elTHj02tVrVwEE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=B0lc8Tee; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=nnDOTkYfmzV0etea1ir5e/q6MuFQaNiwDlTxxyg1F1lT6CR2dHTh6f3AC+hJVnsZe7edgqwiqPtGaDhIIEKYOdqB/eNu8mI9TYiifu9pNvEwzE7wSduf+lm7QdeBMVvll5vSmtOWb/xV81ZHTEEjFd/l+nJcVt+ZuIF7ZKamuRM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=mFVWdDXG; arc=none smtp.client-ip=209.85.128.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="B0lc8Tee"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86F3BC4CEF0;
-	Tue, 30 Sep 2025 09:00:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1759222853;
-	bh=Bz59FJNr6hSVIp1bIOKqTXqbYBhR+8gIiV4mOYWby0Y=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=B0lc8TeeFVkyKURqnlVC8tfbwXSnH5yhCiwnKUCAVw0XfnT/duR62IEit4doNOgit
-	 w0LQw67ADMu98aes/9UNSiFxePK8v71jREbYBwtX/hzTPbV9ZNh+ClsZ59o+JePTg3
-	 7DlSSNkO0ONIVmZkOrw6MQIgp6fEnwHYHtWOw8MrkSOFnIHrN5Kx6VbBkf0YlGbfZl
-	 MZQKCXYSs/sX24JFCduenUzxV3P1gFAK9MVDaD5Pry90wsMm4HClRFRF0dd4+CpJU+
-	 CF4BMSEI+7doVyxI4NIwXinKl4wjhKMt6rRd8SGJfdPJXpDQlmUgZ8z+R4E8IeipQt
-	 +xlwP9a2p+IWQ==
-Date: Tue, 30 Sep 2025 12:00:48 +0300
-From: Leon Romanovsky <leon@kernel.org>
-To: Alex Williamson <alex.williamson@redhat.com>
-Cc: Jason Gunthorpe <jgg@nvidia.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-	dri-devel@lists.freedesktop.org, iommu@lists.linux.dev,
-	Jens Axboe <axboe@kernel.dk>, Joerg Roedel <joro@8bytes.org>,
-	kvm@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
-	linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-media@vger.kernel.org, linux-mm@kvack.org,
-	linux-pci@vger.kernel.org, Logan Gunthorpe <logang@deltatee.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Sumit Semwal <sumit.semwal@linaro.org>,
-	Vivek Kasireddy <vivek.kasireddy@intel.com>,
-	Will Deacon <will@kernel.org>
-Subject: Re: [PATCH v4 10/10] vfio/pci: Add dma-buf export support for MMIO
- regions
-Message-ID: <20250930090048.GG324804@unreal>
-References: <cover.1759070796.git.leon@kernel.org>
- <53f3ea1947919a5e657b4f83e74ca53aa45814d4.1759070796.git.leon@kernel.org>
- <20250929151749.2007b192.alex.williamson@redhat.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="mFVWdDXG"
+Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-46e32c0e273so37735e9.1
+        for <iommu@lists.linux.dev>; Tue, 30 Sep 2025 02:10:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1759223448; x=1759828248; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=nPGIuH9O5UahXsLPdts/xJkrk4ytPXWvHSE6PjMMeDA=;
+        b=mFVWdDXG3HnyHbECxySDqmY2yGy9Xa4Om2gPUDV5zmWDykGnx+BDnwOlBXlhrTWpwF
+         IlmL5KHGdddccbNCjSitC7y3NBYy8bpR3CZzy41G8Lc7odyTgNOwQAaPWceVhRUhcb/e
+         +Vg93C1zGTh79NtCiuqjRccgA4GOHUUH1ADXGv4v5wYVqJRRjTV8XdQ1WbITa6yy2xl2
+         NLb1g6VuU7I3EzB5zKKF7aSuV4DPjOkmCRGMnMeFmo0ZoqfXRc//6k3RglO9OzxKdzZ+
+         2pDTBE++mpXeP1tv3rP0dE1klvfekYxiKPYP9XOuHSc49x640G71M++nmZFqM+O7BriX
+         UuLA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1759223448; x=1759828248;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=nPGIuH9O5UahXsLPdts/xJkrk4ytPXWvHSE6PjMMeDA=;
+        b=Jb6bVQ6F3V5fdtbcXVyhdnqDshh8DJ0Fu/Sdc2+VrVpGWVIhhlhYM6wyZGigfH7R/q
+         FOGtbBHS7oNzAeR8SpileFyhTG/iwQBU2sPYfUXAJAoGNty/4X21TiYaQ4NUJxrzKLz8
+         01ufDjqZ7rxr30mV+/JrzIKmFLWUWt7Sk/u4uJOaKVzKbnEJkujI5s2ASap1dDguWOey
+         gJY89FDa/c9N8JwM46lqygYyTLuRpQlzR11YnljaUfldjEoiwUbhPzHphUq2uKgu6S17
+         E1FJy1lApx6d5em9bX3FGFz02CN8ypO6YxBAHAUbTFeD//+bp1by/POD/kLufzlgzeem
+         cVqg==
+X-Gm-Message-State: AOJu0Yw+fKjfpfm1TjikTmdncQz6ZpztPUZbbuAGTFycj5Xl82MzlC4M
+	hGvMoFANm6kqBOC8io+EA85I7A6o4YvKDCOGNSuF3ADfigEbLaSL3MvFl1c2xRfKoQ==
+X-Gm-Gg: ASbGncsckxZhckV3RuC6xQQ9Z2eZKVEpkya669snF1carM1BbEIm6yi8/rM+wyVzkYv
+	IjHKwGDpKKxKrcUBgnR76bbRET7kLq+8CVAaavNfzbM9/H7cLPU9P1ydzB5AMXj2BU5/JH1S8kM
+	QPOLYHlwZUY03VVxYHMhJNQtxQw04k2G4tXg9AK0H5nn1uI07c6y7gvRrJas6oyv+4Plb1X/0MW
+	27hVGi9XwkCIkIN4/z8aNHvw6ugUr0OSfLova92R9yPNcGu+cqAOhlelqS4LDRdxRwCv3h+f5/x
+	WyVhhnQoVnJg+EfBXrblccua18ViT/EkkKL3EZtCCvsDe01AkBL+MTXhfZFYZ+NcGFx+CzDLd7j
+	h3TN3VSRAdmGgYX2FWos3HtvoeF34jHd3V+jR0kWWSuP8MVdksRS2HMgA7T9d8skBvs2uS7v0IR
+	V/VqAAQXLpIDaLazc/RSISUOM2Ig==
+X-Google-Smtp-Source: AGHT+IEWSkbFb5VicmOJKTu7n+clcEM5yHSBrBKSgC0+RfyuBu9aS1hrvYGZ7FIwH96AwQT50YFbaQ==
+X-Received: by 2002:a05:600c:68a:b0:45f:2e6d:c9ee with SMTP id 5b1f17b1804b1-46e59ccd62dmr1107735e9.6.1759223447901;
+        Tue, 30 Sep 2025 02:10:47 -0700 (PDT)
+Received: from google.com (140.240.76.34.bc.googleusercontent.com. [34.76.240.140])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-40fc6de90f9sm22005390f8f.48.2025.09.30.02.10.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Sep 2025 02:10:47 -0700 (PDT)
+Date: Tue, 30 Sep 2025 09:10:44 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: Daniel Mentz <danielmentz@google.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	Will Deacon <will@kernel.org>,
+	Pranjal Shrivastava <praan@google.com>,
+	Liviu Dudau <liviu.dudau@arm.com>, Jason Gunthorpe <jgg@nvidia.com>,
+	Rob Clark <robin.clark@oss.qualcomm.com>
+Subject: Re: [PATCH 1/2] iommu/io-pgtable-arm: Implement .iotlb_sync_map
+ callback
+Message-ID: <aNuelC9K24z_Ph_G@google.com>
+References: <20250927223953.936562-1-danielmentz@google.com>
+ <aNp5sS7VpPirrRGE@google.com>
+ <CAE2F3rB6TYjy0a9yecW4zwBLraaj75YBafEz3DUh8zrLChnuCg@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20250929151749.2007b192.alex.williamson@redhat.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAE2F3rB6TYjy0a9yecW4zwBLraaj75YBafEz3DUh8zrLChnuCg@mail.gmail.com>
 
-On Mon, Sep 29, 2025 at 03:17:49PM -0600, Alex Williamson wrote:
-> On Sun, 28 Sep 2025 17:50:20 +0300
-> Leon Romanovsky <leon@kernel.org> wrote:
-> > +static int validate_dmabuf_input(struct vfio_pci_core_device *vdev,
-> > +				 struct vfio_device_feature_dma_buf *dma_buf,
-> > +				 struct vfio_region_dma_range *dma_ranges,
-> > +				 struct p2pdma_provider **provider)
-> > +{
-> > +	struct pci_dev *pdev = vdev->pdev;
-> > +	u32 bar = dma_buf->region_index;
-> > +	resource_size_t bar_size;
-> > +	u64 sum;
-> > +	int i;
-> > +
-> > +	if (dma_buf->flags)
-> > +		return -EINVAL;
-> > +	/*
-> > +	 * For PCI the region_index is the BAR number like  everything else.
-> > +	 */
-> > +	if (bar >= VFIO_PCI_ROM_REGION_INDEX)
-> > +		return -ENODEV;
-> > +
-> > +	*provider = pcim_p2pdma_provider(pdev, bar);
-> > +	if (!provider)
+On Mon, Sep 29, 2025 at 02:00:09PM -0700, Daniel Mentz wrote:
+> On Mon, Sep 29, 2025 at 5:21 AM Mostafa Saleh <smostafa@google.com> wrote:
+> >
+> > On Sat, Sep 27, 2025 at 10:39:52PM +0000, Daniel Mentz wrote:
+> > > On systems with a non-coherent SMMU, the CPU must perform cache
+> > > maintenance operations (CMOs) after updating page table entries (PTEs).
+> > > This ensures that the SMMU reads the latest version of the descriptors
+> > > and not stale data from memory.
+> > >
+> > > This requirement can lead to significant performance overhead,
+> > > especially when mapping long scatter-gather lists where each sg entry
+> > > maps into an iommu_map() call that only covers 4KB of address space.
+> > >
+> > > In such scenarios, each small mapping operation modifies a single 8-byte
+> > > PTE but triggers a cache clean for the entire cache line (e.g., 64
+> > > bytes). This results in the same cache line being cleaned repeatedly,
+> > > once for each PTE it contains.
+> > >
+> > > A more efficient implementation performs the cache clean operation only
+> > > after updating all descriptors that are co-located in the same cache
+> > > line. This patch introduces a mechanism to defer and batch the cache
+> > > maintenance:
+> > >
+> > > A new boolean flag, defer_sync_pte, is added to struct io_pgtable_cfg.
+> > > When this flag is set, the arm-lpae backend will skip the cache sync
+> > > operation for leaf entries within its .map_pages implementation.
+> > >
+> > > A new callback, .iotlb_sync_map, is added to struct io_pgtable_ops.
+> > > After performing a series of mapping operations, the caller is
+> > > responsible for invoking this callback for the entire IOVA range. This
+> > > function then walks the page tables for the specified range and performs
+> > > the necessary cache clean operations for all the modified PTEs.
+> > >
+> > > This allows for a single, efficient cache maintenance operation to cover
+> > > multiple PTE updates, significantly reducing overhead for workloads that
+> > > perform many small, contiguous mappings.
+> > >
+> > > Signed-off-by: Daniel Mentz <danielmentz@google.com>
+> > > ---
+> > >  drivers/iommu/io-pgtable-arm.c | 66 +++++++++++++++++++++++++++++++++-
+> > >  include/linux/io-pgtable.h     |  7 ++++
+> > >  2 files changed, 72 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+> > > index 7e8e2216c294..a970eefb07fb 100644
+> > > --- a/drivers/iommu/io-pgtable-arm.c
+> > > +++ b/drivers/iommu/io-pgtable-arm.c
+> > > @@ -353,7 +353,7 @@ static void __arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
+> > >       for (i = 0; i < num_entries; i++)
+> > >               ptep[i] = pte | paddr_to_iopte(paddr + i * sz, data);
+> > >
+> > > -     if (!cfg->coherent_walk)
+> > > +     if (!cfg->coherent_walk && !cfg->defer_sync_pte)
+> > >               __arm_lpae_sync_pte(ptep, num_entries, cfg);
+> > >  }
+> > >
+> > > @@ -582,6 +582,69 @@ static int arm_lpae_map_pages(struct io_pgtable_ops *ops, unsigned long iova,
+> > >       return ret;
+> > >  }
+> > >
+> > > +static int __arm_lpae_iotlb_sync_map(struct arm_lpae_io_pgtable *data, unsigned long iova,
+> > > +                           size_t size, int lvl, arm_lpae_iopte *ptep)
+> > > +{
+> > > +     struct io_pgtable *iop = &data->iop;
+> > > +     size_t block_size = ARM_LPAE_BLOCK_SIZE(lvl, data);
+> > > +     int ret = 0, num_entries, max_entries;
+> > > +     unsigned long iova_offset, sync_idx_start, sync_idx_end;
+> > > +     int i, shift, synced_entries = 0;
+> > > +
+> > > +     shift = (ARM_LPAE_LVL_SHIFT(lvl - 1, data) + ARM_LPAE_PGD_IDX(lvl - 1, data));
+> > > +     iova_offset = iova & ((1ULL << shift) - 1);
+> > > +     sync_idx_start = ARM_LPAE_LVL_IDX(iova, lvl, data);
+> > > +     sync_idx_end = (iova_offset + size + block_size - ARM_LPAE_GRANULE(data)) >>
+> > > +             ARM_LPAE_LVL_SHIFT(lvl, data);
+> > > +     max_entries = arm_lpae_max_entries(sync_idx_start, data);
+> > > +     num_entries = min_t(unsigned long, sync_idx_end - sync_idx_start, max_entries);
+> > > +     ptep += sync_idx_start;
+> > > +
+> > > +     if (lvl < (ARM_LPAE_MAX_LEVELS - 1)) {
+> > > +             for (i = 0; i < num_entries; i++) {
+> > > +                     arm_lpae_iopte pte = READ_ONCE(ptep[i]);
+> > > +                     unsigned long synced;
+> > > +
+> > > +                     WARN_ON(!pte);
+> > > +
+> > > +                     if (iopte_type(pte) == ARM_LPAE_PTE_TYPE_TABLE) {
+> > > +                             int n = i - synced_entries;
+> > > +
+> > > +                             if (n) {
+> > > +                                     __arm_lpae_sync_pte(&ptep[synced_entries], n, &iop->cfg);
+> > > +                                     synced_entries += n;
+> > > +                             }
+> > > +                             ret = __arm_lpae_iotlb_sync_map(data, iova, size, lvl + 1,
+> > > +                                                             iopte_deref(pte, data));
+> > > +                             synced_entries++;
+> > > +                     }
+> > > +                     synced = block_size - (iova & (block_size - 1));
+> > > +                     size -= synced;
+> > > +                     iova += synced;
+> > > +             }
+> > > +     }
+> > > +
+> > > +     if (synced_entries != num_entries)
+> > > +             __arm_lpae_sync_pte(&ptep[synced_entries], num_entries - synced_entries, &iop->cfg);
+> > > +
+> > > +     return ret;
+> > > +}
+> >
+> > Can't we rely on the exisiting generic table walker "__arm_lpae_iopte_walk",
+> > instead writing a new one, that is already used for iova_to_phys and dirty bit.
 > 
-> This needs to be IS_ERR_OR_NULL() or the function needs to settle on a
-> consistent error return value regardless of CONFIG_PCI_P2PDMA.
+> The performance gains of .iotlb_sync_map are achieved by performing
+> CMOs on a range of descriptors as opposed to individually on each
+> descriptor in isolation. The function __arm_lpae_iopte_walk is
+> inherently incompatible with this, because it calls the .visit
+> callback once for each descriptor it finds in the specified range. I
+> guess I could work around this limitation by saving some state in
+> io_pgtable_walk_data and developing a .visit function that tries to
+> coalesce individual descriptors into contiguous ranges and delays CMOs
+> until it finds a break in continuity. I'm afraid, though, that that
+> might hurt performance significantly.
 
-pcim_p2pdma_provider() doesn't return errors after split to _init() and _get().
-The more accurate check needs to be if (!*provider) and not what is written.
+Exactly, I think that would be the way, I don’t have a strong opinion
+though, but I’d avoid open coding a new walker unless it’s necessary.
+Also, the current walker won’t do ranges, it needs some more changes,
+I did that as part of (half of the patch doesn’t apply for this case):
+https://lore.kernel.org/all/20241212180423.1578358-38-smostafa@google.com/
 
-> 
-> > +		return -EINVAL;
-> > +
-> > +	bar_size = pci_resource_len(pdev, bar);
-> 
-> We get to this feature via vfio_pci_core_ioctl_feature(), which is used
-> by several variant drivers, some of which mangle the BAR size exposed
-> to the user, ex. hisi_acc.  I'm afraid this might actually be giving
-> dmabuf access to a portion of the BAR that isn't exposed otherwise.
+Thanks,
+Mostafa
 
-Doe you mean that part?
-
-  1185 static int hisi_acc_vf_qm_init(struct hisi_acc_vf_core_device *hisi_acc_vdev)
-  1186 {
-...
-  1204          * Also the HiSilicon ACC VF devices supported by this driver on
-  1205          * HiSilicon hardware platforms are integrated end point devices
-  1206          * and the platform lacks the capability to perform any PCIe P2P
-  1207          * between these devices.
-  1208          */
-  1209
-  1210         vf_qm->io_base =
-  1211                 ioremap(pci_resource_start(vf_dev, VFIO_PCI_BAR2_REGION_INDEX),
-  1212                         pci_resource_len(vf_dev, VFIO_PCI_BAR2_REGION_INDEX));
-  1213         if (!vf_qm->io_base)
-  1214                 return -EIO;
-  1215
-
-According to the comment, it doesn't support p2p and in any case we will
-fail that platform in vfio_pci_dma_buf_attach() by taking "default" case:
-
-   34         switch (pci_p2pdma_map_type(priv->provider, attachment->dev)) {
-   35         case PCI_P2PDMA_MAP_THRU_HOST_BRIDGE:
-   36                 break;
-   37         case PCI_P2PDMA_MAP_BUS_ADDR:
-   38                 /*
-   39                  * There is no need in IOVA at all for this flow.
-   40                  * We rely on attachment->priv == NULL as a marker
-   41                  * for this mode.
-   42                  */
-   43                 return 0;
-   44         default:
-   45                 return -EINVAL;
-   46         }
-   47
-
-> 
-> > +	for (i = 0; i < dma_buf->nr_ranges; i++) {
-> > +		u64 offset = dma_ranges[i].offset;
-> > +		u64 len = dma_ranges[i].length;
-> > +
-> > +		if (!PAGE_ALIGNED(offset) || !PAGE_ALIGNED(len))
-> > +			return -EINVAL;
-> > +
-> > +		if (check_add_overflow(offset, len, &sum) || sum > bar_size)
-> > +			return -EINVAL;
-> > +	}
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +int vfio_pci_core_feature_dma_buf(struct vfio_pci_core_device *vdev, u32 flags,
-> > +				  struct vfio_device_feature_dma_buf __user *arg,
-> > +				  size_t argsz)
-> > +{
-> > +	struct vfio_device_feature_dma_buf get_dma_buf = {};
-> > +	struct vfio_region_dma_range *dma_ranges;
-> > +	DEFINE_DMA_BUF_EXPORT_INFO(exp_info);
-> > +	struct p2pdma_provider *provider;
-> > +	struct vfio_pci_dma_buf *priv;
-> > +	int ret;
-> > +
-> > +	ret = vfio_check_feature(flags, argsz, VFIO_DEVICE_FEATURE_GET,
-> > +				 sizeof(get_dma_buf));
-> > +	if (ret != 1)
-> > +		return ret;
-> > +
-> > +	if (copy_from_user(&get_dma_buf, arg, sizeof(get_dma_buf)))
-> > +		return -EFAULT;
-> > +
-> > +	if (!get_dma_buf.nr_ranges)
-> > +		return -EINVAL;
-> > +
-> > +	dma_ranges = memdup_array_user(&arg->dma_ranges, get_dma_buf.nr_ranges,
-> > +				       sizeof(*dma_ranges));
-> > +	if (IS_ERR(dma_ranges))
-> > +		return PTR_ERR(dma_ranges);
-> > +
-> > +	ret = validate_dmabuf_input(vdev, &get_dma_buf, dma_ranges, &provider);
-> > +	if (ret)
-> > +		return ret;
-> 
-> goto err_free_ranges;
-
-Thanks
-
-> 
-> Thanks,
-> Alex
-> 
-> 
