@@ -1,198 +1,199 @@
-Received: from mail-qt1-f179.google.com (mail-qt1-f179.google.com [209.85.160.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from CH5PR02CU005.outbound.protection.outlook.com (mail-northcentralusazon11012018.outbound.protection.outlook.com [40.107.200.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1A3027703C
-	for <iommu@lists.linux.dev>; Wed,  1 Oct 2025 11:47:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.179
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759319266; cv=none; b=IBmYvrcrj+2Jyx51HilxB8PuBC5BfQ3qfrH69olZwb2DwvOdIK6kKa+i5eLBQHXuvly9o0gFhWcQRjX4wmf4wHpB5+4VtZqZGfbAKwMZmhd6mw/bUfjy3pKtDmXC6TunRUmRPhqmvuND5eGzwprLyVWY4JO9+IugV2dZy0nb7jY=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759319266; c=relaxed/simple;
-	bh=Kym2K7zv6YgSbvtfYDjPoU8YAALp29UxTohwMy3Spj8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kokZBNOOv0KZA7fehRQ/ghW9mec6c/59ZKwqX82Sv4Qbn7uN90KoyrJSpa8HKrApD+11JvLDvTzcjdp+BM5kUEwxw8Hax36OXBsDrkAr4OAe/kTDbtCpKwLa+uCAPv0CDFbFbhUtFMrBYqFvNPoFd8Ijeb8ugNCr+fu5scrkfFU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=mpff+tlP; arc=none smtp.client-ip=209.85.160.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F5A727FD76
+	for <iommu@lists.linux.dev>; Wed,  1 Oct 2025 15:44:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.200.18
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1759333462; cv=fail; b=M67ZzNGVqPTk2zxcJoa/i4UfQRcvxQ6Bozqw5peABTGONZO/Rzn4gXi8ycFfB2vfb59qmHVwspfTSVfZnDtHZQkncuNTeRHCVSSYeGckYHqGp+IK0WT4HFJT8YpP/pJ8eDtYzSSZuH5LrQ+8EYcoJnCamExmFhmSXKlPyBlLlfg=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1759333462; c=relaxed/simple;
+	bh=c+0dN/gWQlZ+qxsum4i1mLkXQAE5lt2ZmQLo5Ckv+FA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=H2OQHOBLqg+u7G0Y9f/g30mBshibQ7qtbC42Q/MsT2hYicsR+7zcLYEltwIKMhawXUqbALVqOySZzaBSXBHVxTkeIXaquQG9Lp+/mTgBHzIkdLySEOEg9bX1zRCujSRcb3b7y4NlUwOdlmzvLAWp9XqIuuZQ6aeG/33IeU4q2nc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=NvNkUIte; arc=fail smtp.client-ip=40.107.200.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="mpff+tlP"
-Received: by mail-qt1-f179.google.com with SMTP id d75a77b69052e-4dfd1f48d4cso31022081cf.0
-        for <iommu@lists.linux.dev>; Wed, 01 Oct 2025 04:47:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1759319263; x=1759924063; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=rjfKbtWhsLucd83rhK1I64ABwmN4n30TmWSDIMpSYU4=;
-        b=mpff+tlPcN1j6KUYpotlikAOalSonSsH5avQWk8PP69JVhD1ibtZg4BFnCTz9nD0Ia
-         PLX+WZwHqkng9NcihhwmFKoGJuhrnKW6aAOB/ymbYogfP914ilNnzTGuKyL4S52laUPY
-         DjiWmWADpLj4u1KR0tjjOOuZFoCNWLK7vmmq9W5yoXFtuwrcJQTVLr+MaWsFN28qk3Yf
-         eEluJSAMIz2rElCXgy/WiaOmh6RasjyU1undnv5Ljhux8Eh77SjFJr5AXoTZF4g71fFx
-         zPF9yNbQMf4xg/C9le3rwjNPd9UL20azEjiOajMmPFJncXxyu3aj+mMZYf8TnBRHtuQX
-         CUfg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1759319263; x=1759924063;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=rjfKbtWhsLucd83rhK1I64ABwmN4n30TmWSDIMpSYU4=;
-        b=Y0mIbtWAjplphDi6+OYfWvrfFggVrlFH0GTmHSO14HabEYO8xsghx2H/eSYidZ3K/g
-         Fte7TifHKjarP6TiOcUCUlshQq6tpMuYxCkIBTArb7mku+fNWCjEdh5d1R0xBUXy8y+1
-         vscqpnmMkXuaj9qEPZ7N+NgYeRGORo+q9Zjn/bSA9JnSHow2H7qVlotLWMheXIrcbCZC
-         jYKbIxeb6BHd4zdDOSPAxPKZutHxicyXtLK6F+/JNSk3nf3GeBhnGz+xh+Tuw2LREUxU
-         HVs94VUlLWLC9G88EtytEEx2gtx0gho9EZ6TuNpIfU5zAL849ONoYOfm+Vn7mdRzhViF
-         Kpmg==
-X-Forwarded-Encrypted: i=1; AJvYcCXU2jsJ5aMmRksRYFgKFYiiH9M/VB+lN85sm1oi1iOcGACdvYKaVqe73+68HnN0jr55cFRkzQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yykr5nd3mhsfop44CB5WSH45X2dH6Qb+JtgE6GHdNN4w/TGakOu
-	9SeRKProi7PNUMr9aGeaeoP5YycxMdgZzOpsvXF239j8Lhv6ZkpBKa+QGmI32sSRZAQ=
-X-Gm-Gg: ASbGnctoIbPjP6e6Deh2ZIfmWAdl0u+/2BuDf5/rIOc/jbBKX0GmyP+CblxRVxHsDxs
-	QnS7xA/NcDaGsWGM2y0YFD8+Qnx+VI7eq8CLtLqp7Jr0j5r2h3dfahPx/jqviV5OkEo2B7Fr8oT
-	GiiUNSCC804SP3BQCvUkHwkk++RO1yQ0LjNIPCm1f6m+0H3dVEv7ieT6z2kNjY5Y3ZeTwdSM//E
-	7d8PVTQXZCpRo5hnDDo9O8lqNUa1/RUxadxdLMIeEknNHb9hhNRA7sY/+FkMcO534kF2dcCBRcb
-	DEl7JK+WphSV3Qi1Ksvu8qOzewVpKaMu3Hs3B6tx1yU+9nCDLyZTjL8AqxZkSaFxL2f/0EKxRI5
-	YvH/2dtQZypZ9Qqd0VB4e
-X-Google-Smtp-Source: AGHT+IExJR6eyJW/ikE5CVaFn5cEfc1pD9t1SxPLHxqTb+4f95a8pqcY5akCVVkUlNL9iNQo56Ln/g==
-X-Received: by 2002:a05:622a:411b:b0:4b3:214:1eb2 with SMTP id d75a77b69052e-4e41de72e4fmr41343891cf.47.1759319263539;
-        Wed, 01 Oct 2025 04:47:43 -0700 (PDT)
-Received: from ziepe.ca ([130.41.10.202])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-4db0b94599esm113778621cf.16.2025.10.01.04.47.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Oct 2025 04:47:42 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1v3vJ8-0000000Co9H-0LuM;
-	Wed, 01 Oct 2025 08:47:42 -0300
-Date: Wed, 1 Oct 2025 08:47:42 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Samiullah Khawaja <skhawaja@google.com>
-Cc: Pasha Tatashin <pasha.tatashin@soleen.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, iommu@lists.linux.dev,
-	YiFei Zhu <zhuyifei@google.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Pratyush Yadav <pratyush@kernel.org>,
-	Kevin Tian <kevin.tian@intel.com>, linux-kernel@vger.kernel.org,
-	Saeed Mahameed <saeedm@nvidia.com>,
-	Adithya Jayachandran <ajayachandra@nvidia.com>,
-	Parav Pandit <parav@nvidia.com>,
-	Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>,
-	Vipin Sharma <vipinsh@google.com>, dmatlack@google.com,
-	Chris Li <chrisl@kernel.org>, praan@google.com
-Subject: Re: [RFC PATCH 13/15] iommufd: Persist iommu domains for live update
-Message-ID: <20251001114742.GV2695987@ziepe.ca>
-References: <20250928190624.3735830-1-skhawaja@google.com>
- <20250928190624.3735830-14-skhawaja@google.com>
- <20250929160034.GG2695987@ziepe.ca>
- <CA+CK2bDqDz3k0gXamJEbKUL7RPBLVjaA5=Jum=CF84wR+50izA@mail.gmail.com>
- <20250930135916.GN2695987@ziepe.ca>
- <CAAywjhRGrGjZK3jQptieVWmdzvjfNtTYrp2ChTZJSmFyrBaRqw@mail.gmail.com>
- <20250930210504.GU2695987@ziepe.ca>
- <CAAywjhRQONuHsxTGQZ5R=EJbOHUD+xOF_CYjkNRbUyCQkORwig@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="NvNkUIte"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=I0o8kL7sp0Mn+VwQ4u4Fu/YZt1scz6Ydy4lLxFDUcFm77QHr57LnM3JmBCtwJ1usI+AzEY032AMCvSIMK7Zw9frzVt15Nl8j2ELZS1gSsrpNVkYVwc5u+98qGW7lVpQr5A6V1I6JsHUr/iHhKdX/xPt54zy5J/ilOpIPJVwZae5YQDTW3QuEa2bNd/MB6MkSlo6UK6B1Uo4EL2sifXFlylrb6Ncy8ZMTQZe2NzwfF6ueqlHYZb9pPj8K/nsNidQa+HfISG4yZtII06ULhDjQX2obSaoUBNufCN587t97XIcbyQcUvd9an7QZow/2iyoRqlZix17RlX3odWoE0H1p8Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=k/LexqHIlukupJmgPZguIYXRNCDcqja/CghGVuBexAA=;
+ b=FNdXAri9j2fXPUqDm4MuxJNzxlt4siq2K35w5LWIePIdCTPrIDZbipa8pZ3uXTtkdD9YBMurHDb6rTsL3gltEUwuLAeFjs9KYwpI4usHQAZkLQ7D3KfFpYxtgnKgivEKy8DXtMyxed3wsb7S949m6o0Tek3fcrop9kNS/efExUXT1XAN7TME0XvjamoF9aWy4/uQB/jRf0f62BtJcxv0XkLPXfJD3167MLPsG3638IwtV2jfhGcpV4ZzDwqrKOU2Nm1nCjww+ypOjtc/Xm5oEk5hCDiJUkEGqRyTa5ksa4ZHf5NZzBnfA6D6WbTymA7h2EzD04ojDv7Fs8mXsk4Oyg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=k/LexqHIlukupJmgPZguIYXRNCDcqja/CghGVuBexAA=;
+ b=NvNkUIteEm532mIPfQuq2Kvc0chXVPlKZwZcpScGW7u/6qOpSVKP6NTBO7sotsSRLQ3/e0em7X5/9q149nvUz7TfQTWK9Z78XqspmG1f3eCtVUfElNfdcwcD9Mf1IfRkaSxHemrrOLnH5wIsrZlMJnftqDHeQtttPxkeWUf5VXRksyt398WguSrUrVVqVh4332Ro7dMtZpk5+rTj2E8zj8onjQkoKpfgYwFTzGtclFIsak/5/x7uR/lJvAeRsFze1gMfKNAjvVcODL13EqiTF+p6uLUNfA+LUl1ILrn3bppGYpvrWKM9EitraGE4hqb4VtqD9AfzXWAPekXl5TObsA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from PH7PR12MB5757.namprd12.prod.outlook.com (2603:10b6:510:1d0::13)
+ by SA1PR12MB6896.namprd12.prod.outlook.com (2603:10b6:806:24f::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9160.18; Wed, 1 Oct
+ 2025 15:44:12 +0000
+Received: from PH7PR12MB5757.namprd12.prod.outlook.com
+ ([fe80::f012:300c:6bf4:7632]) by PH7PR12MB5757.namprd12.prod.outlook.com
+ ([fe80::f012:300c:6bf4:7632%2]) with mapi id 15.20.9160.015; Wed, 1 Oct 2025
+ 15:44:12 +0000
+Date: Wed, 1 Oct 2025 12:44:10 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Sakari Ailus <sakari.ailus@iki.fi>
+Cc: Hans Verkuil <hverkuil+cisco@kernel.org>, iommu@lists.linux.dev,
+	Linux Kernel <linux-kernel@vger.kernel.org>,
+	Linux Media Mailing List <linux-media@vger.kernel.org>,
+	Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+	Sakari Ailus <sakari.ailus@linux.intel.com>,
+	Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH] iommu: __iommu_attach_group: check for non-NULL
+ blocking_domain
+Message-ID: <20251001154410.GD3024065@nvidia.com>
+References: <9a3ebe9b-518e-49ef-b87d-925d951a446f@kernel.org>
+ <20250929120734.GG2617119@nvidia.com>
+ <58aabb55-0030-49df-81ed-d4a68174b57e@kernel.org>
+ <20250929130214.GK2617119@nvidia.com>
+ <4037d353-0ec4-4f68-a09c-564b93ba313b@kernel.org>
+ <aNzEOeCi8Zjn9S3N@valkosipuli.retiisi.eu>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <aNzEOeCi8Zjn9S3N@valkosipuli.retiisi.eu>
+X-ClientProxiedBy: SA9PR13CA0073.namprd13.prod.outlook.com
+ (2603:10b6:806:23::18) To PH7PR12MB5757.namprd12.prod.outlook.com
+ (2603:10b6:510:1d0::13)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAAywjhRQONuHsxTGQZ5R=EJbOHUD+xOF_CYjkNRbUyCQkORwig@mail.gmail.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH7PR12MB5757:EE_|SA1PR12MB6896:EE_
+X-MS-Office365-Filtering-Correlation-Id: a851e3d8-ad4f-41eb-fd0a-08de01015e1c
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|1800799024|366016;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?g4OGZ/ayQadP0x+GolJiPt2ktxjwi1R/TrZjRyHiJvApgbgng4yAS3bCQ9My?=
+ =?us-ascii?Q?nrjzaKUBjD9drharK0JHV0SsPnvMLh6yIk7XivKFlLP9uiVxNDctXXWVccC6?=
+ =?us-ascii?Q?+yfoGDx+CxF5vaDufpQVUmnQAtrD5YY4A1I3ntzoVG8NFR/5quFssf95qrHM?=
+ =?us-ascii?Q?zmRCffFANxNz+L+HCgv2do2Qy9nUiWM3frmkztZP0/BdiFHl78TgfcpT0a5j?=
+ =?us-ascii?Q?2jkPb7ydsJkw+P2GhN+3935EgVVHqDify3N1/bM4WpllERIaYhMO7Q8nBreC?=
+ =?us-ascii?Q?kHfl60/ApR5krZ9AVXq0u3xGe1mkszqHaWyedt8zPwf764hIlBxl3VZfzA0g?=
+ =?us-ascii?Q?vCaQ/MR/G3B3ZXCTfZc4vJt4TCTq1DKyTaB942xKQ6XeokDZsgx0OETDTiJi?=
+ =?us-ascii?Q?ZIsCNGHXbjh/1//PO+UZzZpz3B38NyRUAn7UixZWTpVnYjFywgK5G3Y0dAwL?=
+ =?us-ascii?Q?LlsnTwKs1eHJVsBpJVn/p4yTuG2BvxFv7V30WnsbZmAdwokpzWdfp7r3bPVJ?=
+ =?us-ascii?Q?OtqLcRkw7f9Y6KIB2TNrHDUCJqK7vlHzI4yqMCYUfQ0QGewqzD1+dkJDsuzE?=
+ =?us-ascii?Q?ej0ht/EK9hvxoEI9c7VeW6U2pXTYXkl9I9xHtFyOJHKb85rNaJ/Y8yMIZoST?=
+ =?us-ascii?Q?NdA9KTmkgoN6r3skPAWEif4n/0NKYwCp0+5uDFKZrticVXZiFl1kIfVgajOc?=
+ =?us-ascii?Q?jEX6d5mNphOXFGMr3A56Hdx3d49ADCMAO5hxuc7UltE/enJutT9/XMI47x3b?=
+ =?us-ascii?Q?dotkXwW3R6MxzFpYQvrhiucDpNoGI2h1JS+Q80dyPaIhHLRHSMAmIQctdvgh?=
+ =?us-ascii?Q?lQfdEEUV/wA9z1Pzuj5oOgfHQkYOY4de8nOhdcXXoRyHy/J0fJmYIJYb5GaY?=
+ =?us-ascii?Q?Zfy8XIVAqkBFEsE9SYEDJZsRZbNxvpkR1TQB8/cSQTs3/hAc0uCgwZUWhW0A?=
+ =?us-ascii?Q?nS+K8IrM/4T4/twpEn//rnVXVPVAb6ToN3hfw3kqHD62EhelLPRbhfYqWYIF?=
+ =?us-ascii?Q?EmXxqlxKvUlloNzlaS779/ZRgWwidGNM8ugnFWILyowDe943WqDOHjjiLIII?=
+ =?us-ascii?Q?oCq4k+PoIumCAv0CciYRUad2E4FOz0h02uGU66jI7Aes9HDEQe6cZFJPoruw?=
+ =?us-ascii?Q?nOikrNqeauABXEBgnEJYxpUUpJriHIm5ZYlEAnLoGMlqyrJsl2K2sGC/HSKi?=
+ =?us-ascii?Q?US8ClaGJTWXn8++h7+8SFNfTbaos1UT9LUGUzF4WcIGCXwNUVzhrMan+IXNa?=
+ =?us-ascii?Q?Fi+4SV2MB6/ickR3XCarA6flBSOeyQk+N3St4XSMkx7qwIY5kf3h/Uvlb3ft?=
+ =?us-ascii?Q?IkAX3ulMPBJxCDR+qkx8VaiwAWCsTDt9i3Rm6Yaf3/XY/fGduUr0KTV114Xd?=
+ =?us-ascii?Q?W5Tjuv4p8Am7g7JBLopWQjiRw/G/eFvEx91dc0xU0WDBrsP5kB2RYQKhgi2G?=
+ =?us-ascii?Q?Xt+31O6muyubSdxwt/hyUDqQ+5El1HPQ?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5757.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?cPnHWoQ9ZQrupUEiW83+UorYTwrqjdt7HCe0c1avxCqhj/jgnJiBp+Y/+efU?=
+ =?us-ascii?Q?dc/aNCAr1ZyEGqyAXEdAg48wB8PP7CCRe3rIZsHOohMYBV5CfqQ1jAPLq0zj?=
+ =?us-ascii?Q?0hCG+ihtuVvmMvmR/5wboJZRt9z7r3JXOgl9AM0MM2P+UbfAY4aGWZqSG9Vx?=
+ =?us-ascii?Q?fZfGYbXxsbbW2/JQMlcUpAcY8PzFFin74lGxThhlhKpnw1Jskcs4BM2nSSdP?=
+ =?us-ascii?Q?x/3cGCAkuLgp9xEg3a7AomuUUNI7xys+X0WuPDH5H6nKCfx49k+Q9X9N6phm?=
+ =?us-ascii?Q?qfQrGBiuw23teFBKgOe1o735cI+PHyqKXe45vvorXkp0DCz2jq7hZA1C/fif?=
+ =?us-ascii?Q?dc8/Us6fBy+5PRD7qnWG3GWCo5bBo8AYt8rgwiSInExO8lT7m0bxSGPgtzbD?=
+ =?us-ascii?Q?ELrPz/0NYyoD41TsF3sXNFWfgfszC3YaT2PtPWk5HnLSR7PVUg7wm7HnM7FY?=
+ =?us-ascii?Q?bNE6cFTYO6q+/Oqqz5lypYj8ETajUy5nR4R/mofF//tk4qDsppEDRzFrXxI3?=
+ =?us-ascii?Q?WkTfAcYU6yxGXA0IIjxkMclLdXbtdPBuqY2I5IOLSV2Yk3yFZrJ9A8K65EO5?=
+ =?us-ascii?Q?3SzO2Bu4S0Kt9NKny1Ag/feRGAvxpFkhEgL6ztWiuGbbVt2oFqez2zq/rhUW?=
+ =?us-ascii?Q?GXRaEmz9x93+Cho17VYsNnijHo/Ar9PvU4++utUUEoxGkGMsumOuuAux0DtG?=
+ =?us-ascii?Q?M9iCivH9dcrdQUwGYAwmVYd2LWiSL4B6Qll//o4HaHjPcd3U/JPppihEAvCw?=
+ =?us-ascii?Q?qjBK4g/c0XEjXciCk2GyvMBIwbgwkZgP+UJBGQb5Qt0WgdO5sXBIumF2IwkQ?=
+ =?us-ascii?Q?WYmXR3YHh/JVxh7xLt/n+NeHiGkgMCjFDq6z1CUHgMSlHk/2WqzISad0nwiT?=
+ =?us-ascii?Q?uOmyqkQNKbo4GEM5dOOaFSKFcy+s6mOHAjui2PP5SqLyfDYgXVGfMQbWz1fo?=
+ =?us-ascii?Q?VMiAAfQAgy3TYbo/lgEL1f5YB2z/DW8epoGJmiNstVkFD7Elv4omVUJM7Qj9?=
+ =?us-ascii?Q?78Kj6wiXeYKpH84Wce9TG6h0xSTMrdCpT7bByphxx75uRiAowYf4F3jeY+ha?=
+ =?us-ascii?Q?Bjk0Cwo7GW/qb6LT8dwOPvLwKqTmOz5jnM/No+48b/RbliXMfdq/RmKMHmnN?=
+ =?us-ascii?Q?pi6T0weF6H2qh9M8wMcOi4Y9/Q/DOGMmRZQANtCGw+4x9g+knTyPdssnfuMT?=
+ =?us-ascii?Q?4927uL3IVu/hmTI736ld2VE2vjnkoTp/X4qFl3NMmt/Lkuha1omNo9I3IUZu?=
+ =?us-ascii?Q?Dp5mO5x/ptxz9HMcm+EGPzJ5YBfQtn3Uf8nOoFRleslHv5xxQP7UQghLlP1b?=
+ =?us-ascii?Q?jnb/a3RMDwh024JAJGvd1xdyD73QGgNSMGX5KVp4pOlzSQLW9zY4VykqB4AH?=
+ =?us-ascii?Q?g2+AZSZOea6j5yShAt75QCA9wM2y0tBexuevqixyYtm40npWPf7+qGdwG9wP?=
+ =?us-ascii?Q?S9bNOIdda8I4Crq3/cx6OAYXbWVp1uekWJNMyYYkAtDnGWqPgGOVbAtZDTyM?=
+ =?us-ascii?Q?S+pZkScbbL6ry5EDVVmKpeqzPDMicpfwLY4V9AFQ1c2tDq2OUskGgndYW9+q?=
+ =?us-ascii?Q?Qf22g8fVNQH527Rx01zlY4jPb+wqIYJvmfkoyf9r?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a851e3d8-ad4f-41eb-fd0a-08de01015e1c
+X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5757.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Oct 2025 15:44:12.1811
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: G3cGS/AfcDTuzm1XeIbFD2/BXvxrsLwz4TiMgjFlCtiM3UfVX7KaG5UyyYoky7oY
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB6896
 
-On Tue, Sep 30, 2025 at 04:15:43PM -0700, Samiullah Khawaja wrote:
-
-> > The iommu core code should be restoring the iommu_domain as soon as
-> > the attached device is plugged in and attaching the preserved domain
-> > instead of something else during the device probe sequence
-> >
-> > This logic should not be in drivers.
-> >
-> > From there you either put the hwpt back into iommufd and have it free
-> > the iommu_domain when it destroys the hwpt
-> >
-> > Or you have the iommu core code free the iommu_domain at some point
-> > after iommufd has replaced the attachment with a new iommu_domain?
+On Wed, Oct 01, 2025 at 09:03:37AM +0300, Sakari Ailus wrote:
+> Hi Hans, Jason,
 > 
-> But we cannot do the replacement during domain attachment because
-> userspace might not have fully prepared the new domain with all the
-> required DMA mappings. Replace during LUO finish?
-
-The idea is the kernel will restore the iommu_domain during early boot
-in the iommu_core and then attach it. This should "rewrite" the IOMMU
-HW context for that device with identical content. Drivers must be
-enhanced to support this hitless rewrite (AMD and ARM are already
-done).
-
-At this point the kernel is operating normally with a normal domain
-and a normal driver, no special luo stuff.
-
-Later iommufd will come along and establish a HWPT that has an
-identical translation. Then we replace the luo domain with the new
-HWPT and free the luo domain.
-
-> 1. During boot, the IOMMU core sets up a default domain but doesn't
-> program the context entries for the preserved device. The hardware
-> keeps on using the old preserved tables.
-
-When the iommu driver first starts up it can take over the context
-memory from the predecessor kernel. But it has to go through it and
-clear out most of the context entries.
-
-Only context entries belonging to devices marked for preservation
-should be kept unchanged.
-
-Later we probe the struct device to the iommu and do as I said above
-to restore consistency.
-
-> 2. Userspace restores the iommufd, creates a new HWPT/domain and
-> populates mappings.
-
-Yes
-
-> 3. On FINISH, the IOMMU core updates the context entries of preserved
-> devices to point to the new domain.
-
-No, finish should never do anything on the restore path, IMHO. User
-should directly attach the newly created HWPT when it is ready.
-
-> I understand the desire to have the preserved iommu domain be restored
-> during boot so the device has a default domain and there is an owner
-> of the attached restored domain, but that would prevent the iommfud
-> from cooking a clean new domain.
-
-The "default domain" is the "DMA API domain" and it has to be created
-and setup always. The change here is instead of attaching the default
-domain we attach the luo restored domain at early boot.
-
-This sets the device into an "owned" mode but vfio can still attach
-and nothing prevents iommufd from building a new hwpt and attaching
-it.
-
-> Maybe we can refine the "Hotswap" model I had in mind. Basically on
-> boot the core restores the preserved iommu domain, but core lets
-> iommufd attach a new domain with preserved devices without replacing
-> the underlying context entries? 
-
-Replace the context entries. If everything is working properly the
-preserved domain should compute an identical context entry, so no
-reason to not just "replace" it which should be a NOP.
-
-> > Also there is an interesting behavior to note that if the iommu driver
-> > restores a domain then it will also prevent a non-vfio driver from
-> > binding to that device.
+> On Mon, Sep 29, 2025 at 03:30:22PM +0200, Hans Verkuil wrote:
+> > On 29/09/2025 15:02, Jason Gunthorpe wrote:
+> > > On Mon, Sep 29, 2025 at 02:18:50PM +0200, Hans Verkuil wrote:
+> > >> On 29/09/2025 14:07, Jason Gunthorpe wrote:
+> > >>> On Mon, Sep 29, 2025 at 10:23:47AM +0200, Hans Verkuil wrote:
+> > >>>
+> > >>>> Since I am unfamiliar with the iommu core code, I am uncertain whether I am
+> > >>>> just papering over a bug elsewhere, or whether this is really the correct solution.
+> > >>>
+> > >>> It is papering over something, group->domain is not supposed to be
+> > >>> NULL at this point.. That probably means the iommu driver has not been
+> > >>
+> > >> It's group->blocking_domain that's NULL, not group->domain.
+> > > 
+> > > Er, I thought you were hitting a false positive on this:
+> > > 
+> > >   group->domain != group->blocking_domain
+> > > 
+> > > ie NULL != NULL
+> > > 
+> > > But I suppose the whole expression is checking for group->domain
+> > > already.
+> > > 
+> > > All your patch does is entirely disable the safetly logic :\
+> > > 
+> > > What is isp_attach_iommu() trying to accomplish? It does
+> > > arm_iommu_detach_device() and then arm_iommu_attach_device() ?
+> > > 
+> > > Why?
+> > > 
+> > > Is this trying to force a non-identity translation for ISP?
 > 
-> Agreed. I think in the "Hotswap" approach I discussed above, if we
-> don't restore the domain, the core can just commit the context entries
-> of the new default domain if a non-vfio driver is bound to the device.
+> The omap3isp driver expects to use its own virtual address space for the
+> ISP: the video buffers are mapped there as virtually contiguous (physically
+> they can be whatever).
 
-As I said, the owned nature of the device will prevent attaching a
-non-vfio driver in the first place.
+Sure, but where does it do the mapping? I didn't see an iommu_map or
+any other iommu_* call in this driver.
 
-So the only path forward for userspace is to attach vfio, and then
-iommufd should take over that luo restored iommu_domain and eventually
-free it.
+I think it is using dma_map_* to do it - probably dma_map_sg though I
+could not find it?
 
-You might consider that finish should de-own the device if vfio didn't
-claim it. But that is a bit tricky since it needs a FLR before the
-domains can be switched around.
+This is why I gave my remarks, if it is relying on the DMA API for
+mapping then it should just rely on the DMA API to establish a paging
+domain and not try to open code something like that.
 
 Jason
