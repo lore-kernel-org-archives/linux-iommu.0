@@ -1,171 +1,143 @@
-Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com [209.85.160.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from lahtoruutu.iki.fi (lahtoruutu.iki.fi [185.185.170.37])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B60EB145B16
-	for <iommu@lists.linux.dev>; Tue, 30 Sep 2025 23:15:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.175
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759274158; cv=none; b=Mo1BrGSEuVxwfSCQ7zreWGpX0vgYtaeF5UT+Yr8K2JfsyiiroH4XuTQJJNCYEqzqH7krdElPacOQQIZCi3GgPO0cSOPQzD4GGHFCUYvMVtzlO8dFIi4OTvTl/lUQcyVR3JEb1LqsYapj8y16eOJ60u/4R1fL2vvUjF9KM5zfjxA=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759274158; c=relaxed/simple;
-	bh=avL1rWBunFTgSKQhZqowxnKhVr1RP4S9GV/sye2EIP4=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=q5f7aHTcn4XYp+yIhmnA+LbZMnI3dby8Q5pIsnMxAmvME2ytoP3BSt611ixhVDNt8OxKitnsvicUMiHIbS29mk9GGQj0N6cwoS59faiXPQwWzMvtxTiMvA+SR+p7KtmlB3bp6NE35uIWiPf6Owpm3te4QCurhChE/t9e1ErJ+Es=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=J4S3I/KI; arc=none smtp.client-ip=209.85.160.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 420251A76BC
+	for <iommu@lists.linux.dev>; Wed,  1 Oct 2025 06:04:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=185.185.170.37
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1759298642; cv=pass; b=VImdNu0iuFvdePcBWZglQ27gGn/BxdrfT6S5ozyktyNI2Q9kAo6ktSvwxF65NlVubcQVOFzoBJSeuxVgMo0ygZF4oH6Gf/peFymgmRmHuRB5tt21frB0UnOd0JTNSXeAxoyJ7noRH81/oDtx2CFH7vcxzm0ddvQd9Bt2p3gjKCY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1759298642; c=relaxed/simple;
+	bh=JxLk5jGqbQblNsSB0zOJAtfYJHn9g4zpvampSMxj2X8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=fSjxl40HCgo6tz4ZWe6htgBs+/MD4wbKhHLUS3pPL//zK+wc0ENf+vMYXQAH+bJnSGPGBfywfkmwdIMp5eMpfJj5lnUNws7moxuRMk++bcPVWVCWczdXv02VgeEGAoYvAQvRAqJw2MTnATeOCZ8xyGeHh2RGZO8vMauu/SPmwfU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iki.fi; spf=pass smtp.mailfrom=iki.fi; dkim=pass (2048-bit key) header.d=iki.fi header.i=@iki.fi header.b=Uf9VH97Q; dkim=pass (1024-bit key) header.d=iki.fi header.i=@iki.fi header.b=x+r31yfq; arc=pass smtp.client-ip=185.185.170.37
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iki.fi
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=iki.fi
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="J4S3I/KI"
-Received: by mail-qt1-f175.google.com with SMTP id d75a77b69052e-4df3fabe9c2so51331cf.1
-        for <iommu@lists.linux.dev>; Tue, 30 Sep 2025 16:15:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1759274155; x=1759878955; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=avL1rWBunFTgSKQhZqowxnKhVr1RP4S9GV/sye2EIP4=;
-        b=J4S3I/KIGogXFAq25XubB7WAt+9doxqsASLPuMbpTotCHt1QmzOo3GVPog2aIOcfqi
-         j/Io2loBhye5L5ZFfD6NKcHmnJuRqcpK2aLnU2J5F3Wq34hCGx4IRgJhzc1Q6fnINiyN
-         hN6DoXC41QOvOS8lXy8ZvKkRc3hkjzKZrt54WcWo2bHNBRFMoAMuAcnI70SKWZuuJ76v
-         M06x9NHNAr4dYW1EkBmVHEBSquPcLhzV1jrLabQ23VFQhDFIbWQgeCwea3llMbzzIb08
-         ZaHucnR4c5KBp6ZAKZZFkiOsT9VsytDLH44Y4il58cXOK9aWMmpGLZeHbdsS1hyL7Qw2
-         UVow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1759274155; x=1759878955;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=avL1rWBunFTgSKQhZqowxnKhVr1RP4S9GV/sye2EIP4=;
-        b=gHCqhJSCjT1LmWPrsDxvohLZ6BQAbKw49upJGxE3rP405GwEL8g7nJg1MDYBQR8VVK
-         77vLqioxRdV33mk1llUduLDyaVgEfaL8txwbUVueyHrRC346XgeVUhrjaW+enI+zIz2g
-         7XnrMoaiwIYQJRe8nKZLYOHfmhNyyBxHsvQsGJP8s6qdEUrEE965xN0Bhjo0ZSjZlNxF
-         ES3hbRSPw03kQ7vfDQFijFa2Q0TLH3Dyp3/FwyWcsG/0+t+PGfpPSC7I6FKoDd7QszvR
-         NA3sS/QA7k5vEdpYM2L795JBu1Gaxk2OR4yVogQrbzUsdY9jUY8hCaUdkz7ywoxyi39L
-         EagQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXSrof+5REdIz892mVn0TaRwtMU3DT2k11DlErf8KSXhHa26MaVU8ok84c7kPPmmrAUBS8kxA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyWo03rxrv9mklFWr3mUqzyfrWaSAJqrOKUudA8jF2dV+F9smAS
-	ccwwagRVABiiNT4V5sMFRirg9GpPDxc4fGyh9XE0viDPAMlczUQulGDv/bMynQaMaVHUAHnwuLM
-	nA1/zTAfDyy8Ov/HEWNPI8JGvRsM7jkD046WDyf/0
-X-Gm-Gg: ASbGncsR9eqU+0pnr/umMcEhRbrRoqNmNNPhIT1026l62zeGp+N9f7BG2XmC3yc3TZQ
-	gzV/uB5wRQXUM07EvvpyjNsvsjSY5TixAI97QNCx4ns9gKAIdjhRNnVKPVo8UBCMFA67uxa8nBo
-	n5dmBMsFK/rUIxvRPdE1xRtLGobYbSXFXlQ0lsJ2j25BjdGZ0HPFwY4G2mLfd2UvqSW/YaEkKug
-	hN2taVYC6zpkaf1b49zY5bXohaGHtdeFDlCRyGOHUkgFr8T+LrtxXvNDAGeoMlIIM3q6uatH8fc
-	KhE=
-X-Google-Smtp-Source: AGHT+IGPIoxnc9wl9XoB03dKZCaUowW6vVnO/ky57WoBHCiNTAZb+mWCRVcb+zmztZVZ9ReoYArCalm5QPGFPsWdPdY=
-X-Received: by 2002:a05:622a:30a:b0:4ca:c49a:549d with SMTP id
- d75a77b69052e-4e45111f774mr1258111cf.9.1759274155027; Tue, 30 Sep 2025
- 16:15:55 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=iki.fi header.i=@iki.fi header.b="Uf9VH97Q";
+	dkim=pass (1024-bit key) header.d=iki.fi header.i=@iki.fi header.b="x+r31yfq"
+Received: from meesny.iki.fi (meesny.iki.fi [IPv6:2001:67c:2b0:1c1::201])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by lahtoruutu.iki.fi (Postfix) with ESMTPS id 4cc49v61lDz49QBk
+	for <iommu@lists.linux.dev>; Wed,  1 Oct 2025 09:03:47 +0300 (EEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=iki.fi; s=lahtoruutu;
+	t=1759298627;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=jW4Im9F8xFHKXmTGaRIQznWZloQR5WOD3R5kATp41j8=;
+	b=Uf9VH97Q/BbpfatSGIV6y+m9T1GdhiJcHMoWBfJrFuZlLAix3hVpkYm/GAgtbqtZCRsNHi
+	BeenzrS5IrXbITjhBEFCH33KpGtlQC5k4hovltAW0co1Wn17iyk+Iz5DeI+v5Nwkcvtac/
+	FU/8Bi1ctk4xNx6pq6QjJPNooYWJjxxx0X7UuPN3q05ANXEv5XrgZHDzeUgIdo8hIF/60J
+	S6joX6WYMN7V0BT+tST7PcwChEa4w6Uuwwzrm5hxLUXvYN76I9elQSK07GA7YeOBC4/008
+	WNGYG/BqcU9hYqLzA52o7Bkj+2QvKPoJ7ZdsksN7uc8/dUIpndkXi0Kra5T8dg==
+Received: from hillosipuli.retiisi.eu (91-158-51-183.elisa-laajakaista.fi [91.158.51.183])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: sailus)
+	by meesny.iki.fi (Postfix) with ESMTPSA id 4cc49k3M0lzyQK;
+	Wed,  1 Oct 2025 09:03:38 +0300 (EEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=iki.fi; s=meesny;
+	t=1759298619;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=jW4Im9F8xFHKXmTGaRIQznWZloQR5WOD3R5kATp41j8=;
+	b=x+r31yfqnJTgNafbe8gt6eKvZX7qcTGa4yOnOMwjsNO7EYc5R74vQuUnrrbUTBOpmux/kA
+	RcpwjWANvgJx6fjo6F2m4ib88lWE4EpREYTgmtSFVISGSv69NuWQaL+K1gsVzr9yZ5ZF76
+	fCTLa63YR0VvoGN7y8lFyx90eG3TN/U=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=iki.fi;
+	s=meesny; t=1759298619;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=jW4Im9F8xFHKXmTGaRIQznWZloQR5WOD3R5kATp41j8=;
+	b=SzY6Mfc9JD0IvyQIp1lVcAcJdp1I17s1YixMSPlsK7Uhb0xCWQbmpmu3Ghgr5HHC972GuR
+	S8KOYSWq7tj7H3vAcnpDGK9UkwveqYesdAc5Az7a568228gHAImI6ayc29SnF14fnqRQfo
+	AnY3LsgrA/kSjMGhqvv55HZCsH8fuHE=
+ARC-Seal: i=1; s=meesny; d=iki.fi; t=1759298619; a=rsa-sha256; cv=none;
+	b=zLEkjZDrMCxfrPwCiI0WLd70dYmxEumaWlIPdgBBWSaVju1DL34mFlpLthoZs7NOzMvt89
+	vy7IL66EnwrR7NuYAMbf2szByc9zPDL5Ott2ydWCwXi9oyKTPux+ug8HGIt3eM77FaovkB
+	uncP/0UaLEiBEAoDuQC7dWbT5sS8zsg=
+ARC-Authentication-Results: i=1;
+	ORIGINATING;
+	auth=pass smtp.auth=sailus smtp.mailfrom=sakari.ailus@iki.fi
+Received: from valkosipuli.retiisi.eu (valkosipuli.local [192.168.4.2])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by hillosipuli.retiisi.eu (Postfix) with ESMTPS id 95477634C93;
+	Wed,  1 Oct 2025 09:03:37 +0300 (EEST)
+Date: Wed, 1 Oct 2025 09:03:37 +0300
+From: Sakari Ailus <sakari.ailus@iki.fi>
+To: Hans Verkuil <hverkuil+cisco@kernel.org>
+Cc: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
+	Linux Kernel <linux-kernel@vger.kernel.org>,
+	Linux Media Mailing List <linux-media@vger.kernel.org>,
+	Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+	Sakari Ailus <sakari.ailus@linux.intel.com>,
+	Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH] iommu: __iommu_attach_group: check for non-NULL
+ blocking_domain
+Message-ID: <aNzEOeCi8Zjn9S3N@valkosipuli.retiisi.eu>
+References: <9a3ebe9b-518e-49ef-b87d-925d951a446f@kernel.org>
+ <20250929120734.GG2617119@nvidia.com>
+ <58aabb55-0030-49df-81ed-d4a68174b57e@kernel.org>
+ <20250929130214.GK2617119@nvidia.com>
+ <4037d353-0ec4-4f68-a09c-564b93ba313b@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250928190624.3735830-1-skhawaja@google.com> <20250928190624.3735830-14-skhawaja@google.com>
- <20250929160034.GG2695987@ziepe.ca> <CA+CK2bDqDz3k0gXamJEbKUL7RPBLVjaA5=Jum=CF84wR+50izA@mail.gmail.com>
- <20250930135916.GN2695987@ziepe.ca> <CAAywjhRGrGjZK3jQptieVWmdzvjfNtTYrp2ChTZJSmFyrBaRqw@mail.gmail.com>
- <20250930210504.GU2695987@ziepe.ca>
-In-Reply-To: <20250930210504.GU2695987@ziepe.ca>
-From: Samiullah Khawaja <skhawaja@google.com>
-Date: Tue, 30 Sep 2025 16:15:43 -0700
-X-Gm-Features: AS18NWBnk-42w8cdejF4xgnkLcF9Jd68pR7aYC-MmhJCljNRDOOGNN7hUI9RPdo
-Message-ID: <CAAywjhRQONuHsxTGQZ5R=EJbOHUD+xOF_CYjkNRbUyCQkORwig@mail.gmail.com>
-Subject: Re: [RFC PATCH 13/15] iommufd: Persist iommu domains for live update
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Pasha Tatashin <pasha.tatashin@soleen.com>, David Woodhouse <dwmw2@infradead.org>, 
-	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, 
-	Will Deacon <will@kernel.org>, iommu@lists.linux.dev, YiFei Zhu <zhuyifei@google.com>, 
-	Robin Murphy <robin.murphy@arm.com>, Pratyush Yadav <pratyush@kernel.org>, 
-	Kevin Tian <kevin.tian@intel.com>, linux-kernel@vger.kernel.org, 
-	Saeed Mahameed <saeedm@nvidia.com>, Adithya Jayachandran <ajayachandra@nvidia.com>, 
-	Parav Pandit <parav@nvidia.com>, Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>, 
-	Vipin Sharma <vipinsh@google.com>, dmatlack@google.com, Chris Li <chrisl@kernel.org>, 
-	praan@google.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4037d353-0ec4-4f68-a09c-564b93ba313b@kernel.org>
 
-On Tue, Sep 30, 2025 at 2:05=E2=80=AFPM Jason Gunthorpe <jgg@ziepe.ca> wrot=
-e:
->
-> On Tue, Sep 30, 2025 at 01:02:31PM -0700, Samiullah Khawaja wrote:
-> > > There are HWPTs outside the IOAS so it is inconsisent.
-> >
-> > This makes sense. But if I understand correctly a HWPT should be
-> > associated one way or another to a preserved device or IOAS. Also the
-> > nested ones will have parent HWPT. Can we not look at the dependencies
-> > here and find the HWPTs that need to preserved.
->
-> Maybe in some capacity, but I would say more of don't allow preserving
-> things that depend on things not already preserved somehow.
+Hi Hans, Jason,
 
-I agree. I think this makes sense. Users can explicitly indicate that
-they want to preserve HWPTs and iommufd can enforce the dependencies.
->
-> > > Finally we expect to discard the preserved HWPTs and replace them we
-> > > rebuilt ones at least as a first step. Userspace needs to sequence al=
-l
-> > > of this..
-> >
-> > But if we discard the old HWPTs and replace them with the new ones, we
-> > shouldn't need labeling of the old HWPTs? We would definitely need to
-> > sequence the replacement and discard of the old ones, but that can
-> > also be inferred through the dependencies between the new HWPTs?
->
-> It depends how this ends up being designed and who is responsible to
-> free the restored iommu_domain.
+On Mon, Sep 29, 2025 at 03:30:22PM +0200, Hans Verkuil wrote:
+> On 29/09/2025 15:02, Jason Gunthorpe wrote:
+> > On Mon, Sep 29, 2025 at 02:18:50PM +0200, Hans Verkuil wrote:
+> >> On 29/09/2025 14:07, Jason Gunthorpe wrote:
+> >>> On Mon, Sep 29, 2025 at 10:23:47AM +0200, Hans Verkuil wrote:
+> >>>
+> >>>> Since I am unfamiliar with the iommu core code, I am uncertain whether I am
+> >>>> just papering over a bug elsewhere, or whether this is really the correct solution.
+> >>>
+> >>> It is papering over something, group->domain is not supposed to be
+> >>> NULL at this point.. That probably means the iommu driver has not been
+> >>
+> >> It's group->blocking_domain that's NULL, not group->domain.
+> > 
+> > Er, I thought you were hitting a false positive on this:
+> > 
+> >   group->domain != group->blocking_domain
+> > 
+> > ie NULL != NULL
+> > 
+> > But I suppose the whole expression is checking for group->domain
+> > already.
+> > 
+> > All your patch does is entirely disable the safetly logic :\
+> > 
+> > What is isp_attach_iommu() trying to accomplish? It does
+> > arm_iommu_detach_device() and then arm_iommu_attach_device() ?
+> > 
+> > Why?
+> > 
+> > Is this trying to force a non-identity translation for ISP?
 
-Agreed. I think it depends on how much is restored from the previous
-kernel. Discussed further below inline.
->
-> The iommu core code should be restoring the iommu_domain as soon as
-> the attached device is plugged in and attaching the preserved domain
-> instead of something else during the device probe sequence
->
-> This logic should not be in drivers.
->
-> From there you either put the hwpt back into iommufd and have it free
-> the iommu_domain when it destroys the hwpt
->
-> Or you have the iommu core code free the iommu_domain at some point
-> after iommufd has replaced the attachment with a new iommu_domain?
+The omap3isp driver expects to use its own virtual address space for the
+ISP: the video buffers are mapped there as virtually contiguous (physically
+they can be whatever).
 
-But we cannot do the replacement during domain attachment because
-userspace might not have fully prepared the new domain with all the
-required DMA mappings. Replace during LUO finish?
+-- 
+Kind regards,
 
-This is actually very close to what I had in mind for the "Hotswap"
-model. My thought was:
-
-1. During boot, the IOMMU core sets up a default domain but doesn't
-program the context entries for the preserved device. The hardware
-keeps on using the old preserved tables.
-2. Userspace restores the iommufd, creates a new HWPT/domain and
-populates mappings.
-3. On FINISH, the IOMMU core updates the context entries of preserved
-devices to point to the new domain.
-
-I have a sequence diagram for this in the cover letter also.
-
-I understand the desire to have the preserved iommu domain be restored
-during boot so the device has a default domain and there is an owner
-of the attached restored domain, but that would prevent the iommfud
-from cooking a clean new domain.
-
-Maybe we can refine the "Hotswap" model I had in mind. Basically on
-boot the core restores the preserved iommu domain, but core lets
-iommufd attach a new domain with preserved devices without replacing
-the underlying context entries? The core replaces the context entries
-when the iommufd indicates that the domain is fully prepared (during
-luo finish).
->
-> I'm not sure which is a better option..
->
-> Also there is an interesting behavior to note that if the iommu driver
-> restores a domain then it will also prevent a non-vfio driver from
-> binding to that device.
-
-Agreed. I think in the "Hotswap" approach I discussed above, if we
-don't restore the domain, the core can just commit the context entries
-of the new default domain if a non-vfio driver is bound to the device.
->
-> Jason
+Sakari Ailus
