@@ -1,110 +1,122 @@
-Received: from mail-qk1-f173.google.com (mail-qk1-f173.google.com [209.85.222.173])
+Received: from mail-qt1-f177.google.com (mail-qt1-f177.google.com [209.85.160.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1901B13C8E8
-	for <iommu@lists.linux.dev>; Thu,  2 Oct 2025 15:13:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CD0750276
+	for <iommu@lists.linux.dev>; Thu,  2 Oct 2025 16:16:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759417992; cv=none; b=eWERVLEdmua1RS7Nuq1SeWZ/i5r+3eChsVaL62nofYeZjoN645l11BKY65t/eVf+bTgFZfheZBbKQfVoKhgI5O4oKxXmYjPF5N55S0+WJUDSMx9IFYiT+yRj+S+mAxcPZr50SVDt8b/i3vTgHvBqjYO4M2Vu2+lh50jpOaDXFLs=
+	t=1759421793; cv=none; b=Hqg8dbXQl+54JcZljQjEQlgsVY57R3DA7DMeMXTBWo/XQIbUSrHGNNb9mm5OjzzG6qxC7mdxsBXcel9ygmzj+A/C+ZlGrEaYX8uMa9pyOrmZ0U40l8POHo/bk+le1l0tFMZJQgaDtDYhtW1+TwXaJoXREEVqJFc1ApRJtNcq544=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759417992; c=relaxed/simple;
-	bh=XJdd5gCENWxVBNzk0LITi7rBVPLt55cKg02vaft5zSo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WKVTDOSpkaN+wxSmutMj29d2+SCiCUkAKa5k/94xbJvk6ZXRJig3bY71r6gv6R8T4xh/i9iAI+a0nEJILUvbwnO81cQHo9KLwF/izbgbaiJaIGyzCptBFCgPCm0pbh/BEmyq+W0r67hQFsrNSMTZLth4UVmu3Fbwxmgs9A0aJLY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=ozZlq+CB; arc=none smtp.client-ip=209.85.222.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1759421793; c=relaxed/simple;
+	bh=vOP57pLo9t+NIdpLJnSYQ9SV9U2TJKKVwuOHtKXSaAU=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Q2Vqt/cRCLz+jL3QOe5y6CG7BxhZ5f/fc0viRjlvUdzwS0XJUfKGPnl1fcx1TQoueY1yIXDN9fz9mhvIHOS1b0+OHhA8E8yPhyPH0/IMdjbg0z8WmuIC/pGSDZ+sOiLxFpCR0YJbqWYOdfRmQQOaO8kVoTCcekXqyMcaXXehUXo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bitbyteword.org; spf=pass smtp.mailfrom=bitbyteword.org; dkim=pass (2048-bit key) header.d=bitbyteword.org header.i=@bitbyteword.org header.b=MKbYwjqS; arc=none smtp.client-ip=209.85.160.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bitbyteword.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bitbyteword.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="ozZlq+CB"
-Received: by mail-qk1-f173.google.com with SMTP id af79cd13be357-875d55217a5so120734285a.2
-        for <iommu@lists.linux.dev>; Thu, 02 Oct 2025 08:13:10 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=bitbyteword.org header.i=@bitbyteword.org header.b="MKbYwjqS"
+Received: by mail-qt1-f177.google.com with SMTP id d75a77b69052e-4dfd1f48d4cso8319161cf.0
+        for <iommu@lists.linux.dev>; Thu, 02 Oct 2025 09:16:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1759417990; x=1760022790; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=XJdd5gCENWxVBNzk0LITi7rBVPLt55cKg02vaft5zSo=;
-        b=ozZlq+CBYIDW705C1qQ1msoxIe8tPau7T14wivo6nkeCnGAGtPRP5YjjAPFHqxDG9g
-         Y3JlSd7aB2DROA+cHtX2wIZd5m+jENeT5iFaTrPgoNaf8FoC8twLMJDY1dqwqmddkOYr
-         57t1HRbL0iuq9HTTfzqWh7FJPZoNlF4d3dsrwpxb7tpvsFkd9SaREvmWBeF1B6ey+nGH
-         mvZIOvxWZF25L8GF1NS+gh7Z4iWDKb9sLoDg+eG8nE3UwcoKZ4j7ip0ribFcobrHTS4b
-         yvwEwa+0mSdhL0LGQuZ1M/dGRIDG3ZZnnrj5//8teTqmiKN/nBk+bjRjrLz4IhGExVr6
-         JktA==
+        d=bitbyteword.org; s=google; t=1759421789; x=1760026589; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=DxritUvOZnvW7GTOw2Z5mKJYXhzRcHFVVfyj1Hwre+Q=;
+        b=MKbYwjqSqiJUT4u0FiGyFCg34PFdrvPnqyqbgnlCTfYCAjD/p79GzuT9+k59SY+0bb
+         3vXdW2wvDOoi0UWlN2SF4J8t+iNmoIwCs97M5HAfk2tCVEWxLZOvX+C3KsMtBnM/ZoIb
+         qd0EEVFKUOXnkLCkhmfNY5mpFnRyFJ7OSYNHtF1W8MDjQ/8zicyFUfZAEP0c0618GgkJ
+         rNwcVPOrmINNFhF8IWODcsibIOe6qVJTW6QvniwUg7iK/u9PQypDzWo7nWjkcDaqNz1D
+         NN0jTPVeBMNoUoOSIp7lbZXaSqKGCjRWt3Q6wCfk1D1ny01A2JA65J3iR3lOZv2dk7h0
+         AT3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1759417990; x=1760022790;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=XJdd5gCENWxVBNzk0LITi7rBVPLt55cKg02vaft5zSo=;
-        b=D9Uq1SDCPGh0kZhWcrosGfFYGhQQA8AiFk0uYdD8eHIADepiA8pRdHFZ8E9n/hs3u+
-         61JUTYiuBKURu/ExFr+4QKTXs//tqvfF9FnPX5xsbSW/kgHggyAVGteWWmjtfZfWJfUu
-         JqUpoT7Vk0qQ/mdAtveF01fjU5dCSb4e/1U1/r1aTodtLueZvcC4VgtMKDBnhAhDXDVl
-         xxuikkkdGH1Pvq/w1aJUrQRDi4wGgmJimUvht6kt6PKZtSR5ovzqCSs3WYwNIYIbnnJ7
-         uCbotbkpp/o2zZsSburn3Cq3j6xoXQrjRsI2XShDJAbINNjtS2WgS7HxllyCpF7bskWI
-         uC/g==
-X-Forwarded-Encrypted: i=1; AJvYcCXgW5wALo0oI+ZccPnsx9JYcZamhSqhsXR7qZOpZKHgumrZBSpYePV5bz72FyjssXwks2m0jg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxCiGNEkCzCFy/Vo9qLaZrDuYoVpI+ht9qjs11Qb+V29V6MpYrx
-	bBJRUrOkYu9yNLe8a9LxfirEugMwxFVhLpMxvIzTv1H60MQ8DG4GQ6eViC2fx38wiHM=
-X-Gm-Gg: ASbGnctmWSF9NsZbk2DvtFv1gqswW3WYcdH4yFSGt1orDmhtQxQ4JvCa+R2ct/celMW
-	u12x8nCEaf92heqHNF17bcEGer7KHaW9mGOAV8spqpHhZKvZr4XGi7tSJcQsLS/zz+r9bffZT8V
-	PCiqPTFsaZ7Jvntpa/RENJc+19pkIcAI1pvoPqaHSaGHL3NfIaW5NNlpQuZ2OZ0xqW340w0VltX
-	iRvTANJOfxbthjhrFNfDtMPGVR/2fdLX93wWd9N02PzoY+Zu4ABNaiRAw/fGbOipaykNe0G+Tty
-	mOWBRPz0L7sQZTqgOGqSgHErA/CSqxIeLaYcT4F2wg9Dxo1UR8JEeHxQfc56bYISbCdo1ikhKo9
-	/V49ulYFCDjXqqxDwgRHT45GiSWPCglOq/TbM5DUGMLAccVyDdI72raNhMB6+UZUD3qplEtLx0F
-	ef5ZFpt7sGCOgDQgZs
-X-Google-Smtp-Source: AGHT+IG0oPe5CNlBpr3wJjmSULJ8S5uq9PiyYd4xVRPRgnIUY7cEyRWUA/GTHx85PtOoXdDh+uje/A==
-X-Received: by 2002:a05:620a:1a0c:b0:85e:5022:33b7 with SMTP id af79cd13be357-8737780ae60mr1108818085a.72.1759417989421;
-        Thu, 02 Oct 2025 08:13:09 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-47-55-120-4.dhcp-dynamic.fibreop.ns.bellaliant.net. [47.55.120.4])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-8777aabeac7sm224623585a.64.2025.10.02.08.13.08
+        d=1e100.net; s=20230601; t=1759421789; x=1760026589;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=DxritUvOZnvW7GTOw2Z5mKJYXhzRcHFVVfyj1Hwre+Q=;
+        b=vAv6dkxmFkj0HRE4I9ssXuGArxEGk2ZhmXFp2qFlbGChLo1LnYKcSlYwypfnpNqBb/
+         Ewt9JxXHFSLYUmAmaLRch7YyS/Y4O+zst4ZWsrwYEv1sUwrmQlcg5p63ct2vZD9pxL85
+         oUhSLuHrcwWTbu70S3NPWMC++I+nIUI43HvlvL0coHbayv5zKWGGR+nY7xDzPfbG2C8Z
+         agS6et/j7gfZi5fov56Yx80RlZJmjamexUWu4MqFVCgGMiO1L69IAz1eCSvyd7uzdIGC
+         5hSDv+OEOd48mW2GzPM3o04QO9ZDYUaq5wMmVbF6Ny/tdn79ikUVbjdHz9LBNOjh29Qy
+         rnHQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUpnkJMIYKqZE49cH/2gEY21yCUEfcWPlsXh9yVVB1zXDwwk5q3sVELr1N1bX3mCEcMI+0bNw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwEV9vNqNtNRzMy5ys6C9l7Z2OuT+WMdKoIOHLmJPd+5li1Ukiu
+	jo+HTqBm5PZl4w7SLd8UnKy7+Wb8KnNtZ5HykIRIglrRuO26hxxdfsaDkLrumRnzryw=
+X-Gm-Gg: ASbGncsdklKzU+QojIzkCppqpFnpmCtdMKrFCTftJRLi3P06n5oFcRyVEP18ovkYeW4
+	q2Xr8getjVf3Jx7JEY17G1TJUJ+Ma6FRX+ZtnGLh6i05N9JozuziwlAvBTZM3H805nzi/VCgH4/
+	Itf/Iq4johh9WaRCr7QwdMsRf1JzDwUdfez/wo4SV50/rGAC5beR3yVUx7gm4+IqKMVtujn5c8R
+	2SgfOV72JOihOSa6jObSwWK80kevFxS2T8T0rjAR/IG3cyzgvk1yzWul7NrVsAWHFBQ9u+mkbbo
+	eJXRxoxa0prf3NwE3OxWCdsf93eEAnaCNoZilXPj+2g4cqleGGU3Jsq/CohdbNA6gkc/DzMTWCv
+	B8x6JZ9N6fLW+KxhclTbR4bvzB2+Qy+rhFMN4ec35SFnUQ+dls6bfAa9wuCiyrW1oO07r+a4xap
+	VzJakoIjpAKa0ugNS1ubWtFejcYgagDJo=
+X-Google-Smtp-Source: AGHT+IEVcrgDPTukLnX7GKNxMifNYwBRtwRpqPpzAI3H9EctG9klhVojcgO2GIKDXibk9hO5aPas7Q==
+X-Received: by 2002:a05:622a:598b:b0:4d9:5ce:3746 with SMTP id d75a77b69052e-4e41de6f81cmr106450431cf.46.1759421788717;
+        Thu, 02 Oct 2025 09:16:28 -0700 (PDT)
+Received: from vineethrp-dev.lan (c-73-143-21-186.hsd1.vt.comcast.net. [73.143.21.186])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-4e56d9cd10csm14093781cf.42.2025.10.02.09.16.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Oct 2025 08:13:08 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1v4KzU-0000000DqDS-0i6h;
-	Thu, 02 Oct 2025 12:13:08 -0300
-Date: Thu, 2 Oct 2025 12:13:08 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Mostafa Saleh <smostafa@google.com>
-Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
-	kvmarm@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev, maz@kernel.org, oliver.upton@linux.dev,
-	joey.gouly@arm.com, suzuki.poulose@arm.com, yuzenghui@huawei.com,
-	catalin.marinas@arm.com, robin.murphy@arm.com,
-	jean-philippe@linaro.org, qperret@google.com, tabba@google.com,
-	mark.rutland@arm.com, praan@google.com
-Subject: Re: [PATCH v4 15/28] iommu/arm-smmu-v3: Load the driver later in KVM
- mode
-Message-ID: <20251002151308.GG3195829@ziepe.ca>
-References: <20250819215156.2494305-1-smostafa@google.com>
- <20250819215156.2494305-16-smostafa@google.com>
- <aMQmA9cLaeYWG5_C@willie-the-truck>
- <aNKwROPzDCWgJBGQ@google.com>
- <20250923173806.GF2547959@ziepe.ca>
- <aNppE9A3PDiDg_1W@google.com>
+        Thu, 02 Oct 2025 09:16:28 -0700 (PDT)
+From: "Vineeth Pillai (Google)" <vineeth@bitbyteword.org>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: "Vineeth Pillai (Google)" <vineeth@bitbyteword.org>,
+	dmaluka@google.com,
+	shraash@google.com,
+	efremov@linux.com,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] iommu/vt-d: set INTEL_IOMMU_FLOPPY_WA depend on BLK_DEV_FD
+Date: Thu,  2 Oct 2025 12:16:23 -0400
+Message-ID: <20251002161625.1155133-1-vineeth@bitbyteword.org>
+X-Mailer: git-send-email 2.51.0.618.g983fd99d29-goog
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aNppE9A3PDiDg_1W@google.com>
+Content-Transfer-Encoding: 8bit
 
-On Mon, Sep 29, 2025 at 11:10:11AM +0000, Mostafa Saleh wrote:
-> Another possible solution, to keep a device bound to the KVM driver,
-> is to probe the SMMUs from the KVM driver, then to create child devices;
-> possibly use something as device_set_of_node_from_dev to bind those to
-> the main SMMUv3 or find another way to probe the main SMMUv3 without
-> changes.
+INTEL_IOMMU_FLOPPY_WA workaround was introduced to create direct mappings
+for first 16MB for floppy devices as the floppy drivers were not using
+dma apis. We need not do this direct map if floppy driver is not
+enabled.
 
-I do prefer something more like this one, I think it is nice that the
-kvm specific driver will remain bound and visible so there is some
-breadcrumbs about what happened to the system for debugging/etc.
+INTEL_IOMMU_FLOPPY_WA is generally not a good idea. Iommu will be
+mapping pages in this address range while kernel would also be
+allocating from this range(mostly on memory stress). A misbehaving
+device using this domain will have access to the pages that the
+kernel might be actively using. We noticed this while running a test
+that was trying to figure out if any pages used by kernel is in iommu
+page tables.
 
-Not sure how to do it, but I think it should be achievable..
+This patch reduces the scope of the above issue by disabling the
+workaround when floppy driver is not enabled. But we would still need to
+fix the floppy driver to use dma apis so that we need not do direct map
+without reserving the pages. Or the other option is to reserve this
+memory range in firmware so that kernel will not use the pages.
 
-Maybe even a simple faux/aux device and just pick up the of_node from
-the parent..
+Fixes: d850c2ee5fe22 ("iommu/vt-d: Expose ISA direct mapping region via iommu_get_resv_regions")
+Fixes: 49a0429e53f2 ("Intel IOMMU: Iommu floppy workaround")
 
-Jason
+Signed-off-by: Vineeth Pillai (Google) <vineeth@bitbyteword.org>
+---
+ drivers/iommu/intel/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/intel/Kconfig b/drivers/iommu/intel/Kconfig
+index f2f538c70650..17a91f881b2e 100644
+--- a/drivers/iommu/intel/Kconfig
++++ b/drivers/iommu/intel/Kconfig
+@@ -66,7 +66,7 @@ config INTEL_IOMMU_DEFAULT_ON
+ 
+ config INTEL_IOMMU_FLOPPY_WA
+ 	def_bool y
+-	depends on X86
++	depends on X86 && BLK_DEV_FD
+ 	help
+ 	  Floppy disk drivers are known to bypass DMA API calls
+ 	  thereby failing to work when IOMMU is enabled. This
+-- 
+2.51.0.618.g983fd99d29-goog
+
