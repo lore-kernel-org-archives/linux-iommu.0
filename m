@@ -1,136 +1,115 @@
-Received: from mail-qv1-f50.google.com (mail-qv1-f50.google.com [209.85.219.50])
+Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com [209.85.160.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70F161D54E2
-	for <iommu@lists.linux.dev>; Thu,  2 Oct 2025 21:12:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C50D2AF1D
+	for <iommu@lists.linux.dev>; Thu,  2 Oct 2025 21:31:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759439544; cv=none; b=EZFFWPbN5co4QgxjefCM7JAmXhWwFfzyYLwjijzVXrfxqBDpLxb7e2DHQQdlx++9lnKeU74K4/ATcRTI9Cpbwm+iAGhkOB1EP40mIzRGO2x84K2k76ZW3ySUMt/OHENrARq/iM35VS0gsx5npkX5+x1yggAV0elgX4WXwuTs4uY=
+	t=1759440693; cv=none; b=QiRooxH9Zk7RAVEKXil21MF7ppICwMPsgZl7mdDEbYr8KnZKE3pynkdsvHAk67mAhzWWSX91kaNmaow7DZRGoaMTa5AjpCi6uQUv8Xk4HQjhAiyjez0HNXh4u+aGxi32hEf6StcD0c27U/d4ZjIA2gvF75UOa3Go5OENb2NwDu8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759439544; c=relaxed/simple;
-	bh=iT7/AYK4t8uxayoTReNhK3pljGDwN3pTd3WBJnHuGT4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=oPMBkXS+uy3Ptk1fGcAu6woT80vtKa9+hoEYEEtl4nRs9Nx9aqz3TzOd8Li3y6r5h7fPNN+ivfm7nEHrzXk65WmGseo5Anu3LpShOWtbq8R+rBZHKg0xIKAMO6Dy509E72jxSlAi+EEwaCUwBgIf5dfxYnQTK26xWYeNBHBPp9g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=DiKkZkzu; arc=none smtp.client-ip=209.85.219.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1759440693; c=relaxed/simple;
+	bh=ADVKA72uibgUp8chHhCTUoKhB8iWg6QqufDfTX9xhfg=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=divK/XTKh9DBms1Khv2FXEy4i/WmJK+nK06OUn7PJ1DvfG5vS8XM0hCF4rjoztkQMVn9aWl+ebJCBRxiDtWrgyxSWq1w4Pn9lLoBT4pRrkQaPYpBSBk5xdR0WSXcvvl2qhcY/n+m+CS21ZuwCzxbTnfJVtWdw87LSOEDnUvFrYM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=soleen.com; spf=pass smtp.mailfrom=soleen.com; dkim=pass (2048-bit key) header.d=soleen.com header.i=@soleen.com header.b=h6X3ZFe5; arc=none smtp.client-ip=209.85.160.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=soleen.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=soleen.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="DiKkZkzu"
-Received: by mail-qv1-f50.google.com with SMTP id 6a1803df08f44-86be8a110f5so16163966d6.3
-        for <iommu@lists.linux.dev>; Thu, 02 Oct 2025 14:12:20 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=soleen.com header.i=@soleen.com header.b="h6X3ZFe5"
+Received: by mail-qt1-f175.google.com with SMTP id d75a77b69052e-4dffec0f15aso19755241cf.0
+        for <iommu@lists.linux.dev>; Thu, 02 Oct 2025 14:31:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1759439539; x=1760044339; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=iT7/AYK4t8uxayoTReNhK3pljGDwN3pTd3WBJnHuGT4=;
-        b=DiKkZkzu5D9O16+NVFYZi45xgCBvQEmgtYIANu9P0ck22ufmgXtoWpVXNjDbUcmxhO
-         Xe9GcL9JTWdQiDf8p1nXojjBYccVj1g/CY9tha2vI5yCqpVQB98ikvrCRWm16eNbMKaL
-         swpJv/5C4ofrVgBrSgbyU58mSJYMz5H1ywWGFSmhvWE1cTOZHSF8eUy0hKohTKJzFxm0
-         vamTLH0o1Dy5G4/zquG3q6CR9ctCbFwmSQKdnM8G2ga2TGX2KK0cVEiRxAbvRqbbPzzU
-         bpU7c0cME0tzE0H4dkySJaWm+iYGhL8U1r423fewq3xVph/ytMG6GLcJrKS1/7iUHY8l
-         B8vg==
+        d=soleen.com; s=google; t=1759440691; x=1760045491; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=ADVKA72uibgUp8chHhCTUoKhB8iWg6QqufDfTX9xhfg=;
+        b=h6X3ZFe5gtBgTMkA3OmguTZXiSbfhnTg+3AgQs+9FLjbsS5B3tAC1CTTtXxe0Nq6ws
+         FKy4CrdPLUVD4pKsO9FI2eZCt+nTkk6ILGiixLQkwovhSyREpB9VDQc7O2vtScRk182N
+         38f8d6MJDggoX8PcuwF7WIO8bL9o+NZDOVOjKGDWRsC35UJej4B1wHOOIQy6Q7uoO0VD
+         dYEB5V1cNJ0zqUBUEZCb3n3ukhlGHJAlygPS2mKIKjBxoX9Ckmio+MysnkWPvJmk6KC1
+         7UbKwc14HK0VUYe6miHYeZijpeDAvehM6zO4GIteSF2UNf8o5hvAVA8QYp6+K2q0MUvP
+         dqPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1759439539; x=1760044339;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=iT7/AYK4t8uxayoTReNhK3pljGDwN3pTd3WBJnHuGT4=;
-        b=Xck0HSyi2n6HOoMs9pNN6rjAQ7gy6RbKirjg59zaxLUo0QLAvmmGw5+XjdvvJMmWBA
-         S42goif3kOV13DDWoNAel5uxJKoIv/I08cu3Yj14OpvhtU1lTX6RJaXZcYPRPKPWnyMP
-         fLxBpY+XSVddIXD0IEwfNf3MTJJEdhhiG++MPi+zQmSGlBGvn03r9fXZrTQMbitYLSZB
-         38w0AzAd2bBRdb/fL4psSRZS4wyA4pxIVV0rBakbhXtREy71cCx3/Ptpy0eK/fkuxGuZ
-         0deH/qEgricQAUJNb6ZXToXf1OgKdpl8WgeJGh9hUWvYozpLBBYm0Sjs1IcztFDewjdk
-         ouew==
-X-Forwarded-Encrypted: i=1; AJvYcCVLVkN27pZhutIGDYRDmVXnsfiAnbN9S0SBQUwDeJ6zmESc+iPudwa9GYY6RbUcG3GJ38i+OA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxOP/F/VyhARycb4c3TEObNfX2gtmXyikLs5Q8iG5oIt0sCnnIF
-	ZgDlvMQpnb0V9wi+AV6kddz0nrAkbwszaIhLxjob2GSSquvaVek3B56CMd8evJNr8zA=
-X-Gm-Gg: ASbGnct4P2NBnLmu/IGCJ4APWkyz/tgX0ci9+km5zx6TyCpfLsu0oH30w9Q6GEkQ4+5
-	XyQnN4lnM3M0A4qRKldpoEG/OeDWGJvSc6FRP0xK8rK2E2r/sMZbAOG/3eWOj5GD9TUqQS2IH/d
-	jVrPvQOJUyNmXxOnoeo28YWmYqUIK2ltuXI6eLIh9n/UcVrnz3rC9okQ9CpXU1Dd3t5WqHrh5rF
-	B0itWZKPXuLb4eec81fimaiXZXyxaFZcVGNu6X0m3FnKN/Wva7lhcgeKOsQMNtpRuU9yQB537W4
-	WOv6ltAhoKKc/vOrS69ABe9Sc9wT4kySzGLKtYLktgXcbY0HJpQFwlXYDQGWMLQKu/aGEXs/2tD
-	7tjfJkJBMUR1LKRwtwjTsUxafNBCnXCuNNm95msToT//LiaISylRCjm27afr7FS1JXiw7g5fmJJ
-	VASkKPb+EeQ3tQq8PL
-X-Google-Smtp-Source: AGHT+IHHvVsAZOqVxWndcmJwbJMSlKmjI2WMP+ieJr8pz5dnwNzMlZwNBTV8WRdGNWtSpYM4WRBOcw==
-X-Received: by 2002:a05:6214:e87:b0:78f:2a6c:11 with SMTP id 6a1803df08f44-879dc86a53bmr11662886d6.62.1759439539193;
-        Thu, 02 Oct 2025 14:12:19 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-47-55-120-4.dhcp-dynamic.fibreop.ns.bellaliant.net. [47.55.120.4])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-878bdf53343sm24655486d6.54.2025.10.02.14.12.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Oct 2025 14:12:18 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1v4Qb3-0000000E0oN-3d66;
-	Thu, 02 Oct 2025 18:12:17 -0300
-Date: Thu, 2 Oct 2025 18:12:17 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Samiullah Khawaja <skhawaja@google.com>
-Cc: Pasha Tatashin <pasha.tatashin@soleen.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, iommu@lists.linux.dev,
-	YiFei Zhu <zhuyifei@google.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Pratyush Yadav <pratyush@kernel.org>,
-	Kevin Tian <kevin.tian@intel.com>, linux-kernel@vger.kernel.org,
-	Saeed Mahameed <saeedm@nvidia.com>,
-	Adithya Jayachandran <ajayachandra@nvidia.com>,
-	Parav Pandit <parav@nvidia.com>,
-	Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>,
-	Vipin Sharma <vipinsh@google.com>, dmatlack@google.com,
-	Chris Li <chrisl@kernel.org>, praan@google.com
-Subject: Re: [RFC PATCH 13/15] iommufd: Persist iommu domains for live update
-Message-ID: <20251002211217.GI3195829@ziepe.ca>
-References: <20250930135916.GN2695987@ziepe.ca>
- <CAAywjhRGrGjZK3jQptieVWmdzvjfNtTYrp2ChTZJSmFyrBaRqw@mail.gmail.com>
- <20250930210504.GU2695987@ziepe.ca>
- <CAAywjhRQONuHsxTGQZ5R=EJbOHUD+xOF_CYjkNRbUyCQkORwig@mail.gmail.com>
- <20251001114742.GV2695987@ziepe.ca>
- <CA+CK2bAvnTTz+vPg7v38_1dajRZQHyPQ8iDmziiW8GFUqy6=Ag@mail.gmail.com>
- <20251002115712.GA3195829@ziepe.ca>
- <CA+CK2bAudSHq2t5NZPBKDC2wfzsF6SSxTF7aZ2kxueOTzWYcfg@mail.gmail.com>
- <20251002151012.GF3195829@ziepe.ca>
- <CAAywjhQGQx2_2X8r0rf3AgMDbJj-9C=9_1a3xgiLwuzKLAvXCQ@mail.gmail.com>
+        d=1e100.net; s=20230601; t=1759440691; x=1760045491;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ADVKA72uibgUp8chHhCTUoKhB8iWg6QqufDfTX9xhfg=;
+        b=BYIHaLByq+ZsB8Ykcp1fVPxfBJmT4uNFLXavuEa/c5IPN1F8tlnNCSkYdTRspjdNqK
+         Zlo8pPB5DO2f3B8tDzPkWM4pOv7Lex8yJmhl3ijVsAfLrcuW7+qre3RIwwiRSesHE+u6
+         z4ei0T0mgjbLlr918YWh16TSfFWEZ2aQsiPQYriO4/k1VxMVxpk8nOpFq+1GNfMl+Tfg
+         fInShU2fQvLrhS12OjVXbM4lQjT/DbQpCbnNFjCIAYUHLpYOdnSoaKNabVOnQKfFZ9Q0
+         VWWkXBBeSHQ1wEDJuwNG2na9GQV5wYBaKGy8JICnUB1kgw/I1UWgFoGj4B5OLYUsORFX
+         HhfQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXEWuE4B23/Tp69GbQPIkhrfVCfK4tHZ23YKJ4jyhmF2VUC5EfpLugSwOJgm6Js8ditMFRFuA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxMOe6gCzY+y7oagyTrCvZswxMp5LXswd8MHFXqaXNmv0skDjjQ
+	BbLRi16sTq3XPBsu3qD3Sk+bE6Vl4NtNd3ZD+QBLsiK2wqgr+Ni8dSqS0CsJz4mJ5bRBXObtKNs
+	rRH2jBanp7UA7jt2PSJTe5i9TWHj1piWUzD1bkVEeyQ==
+X-Gm-Gg: ASbGncs6/Y2c6ivR4P8ET8gknjUKhJrnJwu53e7hKLR2koIe91OLVNT/2sg6Kbwl2Ry
+	fRHEbncir20FlyAC9kuSIQ/tGv59+bOr4XhFBryiZi6jTcN3oCiK/3Nsva7+wGbrfGg4mLGjQgE
+	Gy+j+sSTsCLzrS6P9kMVu+68aPTMcEpPPnFy3aeeq1OXzJcgU+kd45zUKAqkOxUBAnOcjEjkvHi
+	CNbRA0cPzdFbtLYZN7gJdpkUUqR
+X-Google-Smtp-Source: AGHT+IH/16s1by7ClONo0CJZp6FuEYc35ekFOWh9F2qUqnyBNSe6GVvhTvy0I7DJrBfu1/4oG5whYxgQGdE0sVEdVNU=
+X-Received: by 2002:a05:622a:4c84:b0:4da:c4cb:c824 with SMTP id
+ d75a77b69052e-4e576aaab42mr13472301cf.48.1759440690935; Thu, 02 Oct 2025
+ 14:31:30 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAAywjhQGQx2_2X8r0rf3AgMDbJj-9C=9_1a3xgiLwuzKLAvXCQ@mail.gmail.com>
+References: <20250930135916.GN2695987@ziepe.ca> <CAAywjhRGrGjZK3jQptieVWmdzvjfNtTYrp2ChTZJSmFyrBaRqw@mail.gmail.com>
+ <20250930210504.GU2695987@ziepe.ca> <CAAywjhRQONuHsxTGQZ5R=EJbOHUD+xOF_CYjkNRbUyCQkORwig@mail.gmail.com>
+ <20251001114742.GV2695987@ziepe.ca> <CA+CK2bAvnTTz+vPg7v38_1dajRZQHyPQ8iDmziiW8GFUqy6=Ag@mail.gmail.com>
+ <20251002115712.GA3195829@ziepe.ca> <CA+CK2bAudSHq2t5NZPBKDC2wfzsF6SSxTF7aZ2kxueOTzWYcfg@mail.gmail.com>
+ <20251002151012.GF3195829@ziepe.ca> <CAAywjhQGQx2_2X8r0rf3AgMDbJj-9C=9_1a3xgiLwuzKLAvXCQ@mail.gmail.com>
+ <20251002211217.GI3195829@ziepe.ca>
+In-Reply-To: <20251002211217.GI3195829@ziepe.ca>
+From: Pasha Tatashin <pasha.tatashin@soleen.com>
+Date: Thu, 2 Oct 2025 17:30:53 -0400
+X-Gm-Features: AS18NWAU1FKYkrHqSIxGFn313yno9EcdIcVYoO9fXd9wYXzV-AO6SzBS_A-_2S0
+Message-ID: <CA+CK2bBJ_RoRuCxiHuraDH4Gya-ZON3S6PE9PgPfsxObvBRY4w@mail.gmail.com>
+Subject: Re: [RFC PATCH 13/15] iommufd: Persist iommu domains for live update
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Samiullah Khawaja <skhawaja@google.com>, David Woodhouse <dwmw2@infradead.org>, 
+	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, 
+	Will Deacon <will@kernel.org>, iommu@lists.linux.dev, YiFei Zhu <zhuyifei@google.com>, 
+	Robin Murphy <robin.murphy@arm.com>, Pratyush Yadav <pratyush@kernel.org>, 
+	Kevin Tian <kevin.tian@intel.com>, linux-kernel@vger.kernel.org, 
+	Saeed Mahameed <saeedm@nvidia.com>, Adithya Jayachandran <ajayachandra@nvidia.com>, 
+	Parav Pandit <parav@nvidia.com>, Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>, 
+	Vipin Sharma <vipinsh@google.com>, dmatlack@google.com, Chris Li <chrisl@kernel.org>, 
+	praan@google.com
+Content-Type: text/plain; charset="UTF-8"
 
-On Thu, Oct 02, 2025 at 12:29:25PM -0700, Samiullah Khawaja wrote:
-> I had a quick discussion with Pasha to see how LUO can help with FD
-> dependencies and FINISH order. Perhaps we need a new LUO API that
-> iommufd can call before live update, explicitly telling LUO that it
-> depends on an FD that is going to be preserved.
+> Maybe finish is too broad grained? What if each session had a finish?
+> All the objects in the session are cleaned up, invoke the session
+> finish and the memfd's in the session unfreeze?
 
-Keeping track of a dependency graph is possible.
+All sessions have their own finish:
+https://lore.kernel.org/all/20250929010321.3462457-15-pasha.tatashin@soleen.com
+LIVEUPDATE_SESSION_SET_EVENT
 
-But I wonder if it is really needed to be fine grained.
+Each session can go into a "finished" state independently. However, I
+am still thinking about whether a dependency graph is needed. I feel
+that if we require FDs to be added to a session in a specific order
+(i.e., dependencies must be added first), and every subsequent FD
+checks that all prerequisites are already in the session via the
+existing can_preserve() callback, we should be okay, as long as we
+finish() them in reverse order.
 
-If a memfd remains frozen until finish, and finish can't happen until
-all luo objects that are internally refering to outside memory
-indicate they are done, don't we get the same outcome?
+There are two issues:
+1. What do we do with LIVEUPDATE_SESSION_UNPRESERVE_FD ?
+We can simply remove this IOCTL all together. Stuff can be unpreserved
+by simply closing session FD.
 
-Is there a reason a specific memfd should be unfrozen before finish?
+2. Remembering this order on the way back, and since we are using the
+token as an iterator, that is not going to work, unless the graph is
+also preserved. However, now that we have sessions and the token
+values are independent for each session, I am thinking we can go back
+to the model where the kernel issues tokens when FDs are preserved, as
+each session will always start from token=0. This way FD preservation
+order and token order will always match.
 
-Maybe finish is too broad grained? What if each session had a finish?
-All the objects in the session are cleaned up, invoke the session
-finish and the memfd's in the session unfreeze?
-
-Otherwise to build a dependency graph we'd need things like
-iommu_domain to record all the memfds/etc stored within it and
-preserve that and so on. This information has to come from the IOAS in
-iommfd so it is quite a bit more weirdness to inject.
-
-Whereas if we have the preserving iommufd do a sequence where it
-pushes all the ioas pages (memfd/etc) to luo, and only then permits
-the hwpt to be preserved to the same session, we get the same basic
-tracking without needing to store a graph.
-
-Donno...
-
-Jason
+Pasha
