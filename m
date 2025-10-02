@@ -1,88 +1,95 @@
-Received: from mail-ot1-f42.google.com (mail-ot1-f42.google.com [209.85.210.42])
+Received: from mail-ot1-f46.google.com (mail-ot1-f46.google.com [209.85.210.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70570283C93
-	for <iommu@lists.linux.dev>; Thu,  2 Oct 2025 13:01:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 697FE311977
+	for <iommu@lists.linux.dev>; Thu,  2 Oct 2025 13:41:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759410083; cv=none; b=UsoJlEFMZdSigu72tYKwekXvxIlis7UYT1EZ/Dd1B8422XfJ/QsoxuhZsu/Ija97HqqGTDWrMh3yonXw5e8jESfYmZW+YYyTcVyCArBF1aX3QPQ/dTnNwEz4pa6Y3GB/nKRCa35JAcikMr0M1mRtRUV4zub60fPHpSdS8uH02rY=
+	t=1759412477; cv=none; b=VJi+/MFecJ5jnsWDD47GYu22csPSd3BkoRxT0L3NuRUSyLGtBfsuh7AEIKijf9Z6U6sgqpaJbOMvdd9uvrOwBNJfW6KZ3GDRR551owNm75XLuL3/yA1/b1TdN1ZVTMwk8edgMvR7+NjLBCHeXymToI+Pzt8xt/kJavx30SQS3yI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759410083; c=relaxed/simple;
-	bh=HeyU0X1Cd7WV8d7kBuIX1FDpgYGRaAtOSZh6Uw8ZlE4=;
+	s=arc-20240116; t=1759412477; c=relaxed/simple;
+	bh=VCUZW3Nvj0PlHse4ZIyPzDgY02LRnAE4zmy76PVnWfw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=fYhDLvnWd3Ya/0F1I/5eHIlKl+2YJ4XvL06ev2+eqLiX7m8VUauno/YBpY8nJ4Upw4nExZifTr0GvczOY6suNzVRfHLGfBqgbBIKPnGbIK8ZxO1lvlhuvVu7Bk6FKZ1eZnG0ybl1DqLEnMb2UBPTiB0NnoTAFRrh2heVpfTyJNw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=UgFMbQ16; arc=none smtp.client-ip=209.85.210.42
+	 Content-Type:Content-Disposition:In-Reply-To; b=Qe5nb74lhIe3Ink57hhIC4i0+uHus13Un5acwrPsd74BZp7aX9xyt6uzAaB8rUFDWBiIrOEk4BiuiEyBPqDDNEmJZfkwBm/bNtUmHwKasdRCrepsUmjgz6nOHxdLyDdwRz1i0crPbHDf8erwUQD/mgfYAuNA9TkU1IVAaYJ42nY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=G/wM/DjT; arc=none smtp.client-ip=209.85.210.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="UgFMbQ16"
-Received: by mail-ot1-f42.google.com with SMTP id 46e09a7af769-74526ca7a46so324568a34.2
-        for <iommu@lists.linux.dev>; Thu, 02 Oct 2025 06:01:21 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="G/wM/DjT"
+Received: by mail-ot1-f46.google.com with SMTP id 46e09a7af769-7bc626c5467so712891a34.2
+        for <iommu@lists.linux.dev>; Thu, 02 Oct 2025 06:41:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1759410080; x=1760014880; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1759412474; x=1760017274; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=sUsMdpmRM7X879n8mCS3/9BWR9IxrODIsWMUJBwywLc=;
-        b=UgFMbQ16FlzUX2Jc7PVoKa7yH7aGNQSAP0iao+3fvaLypSN3LSgjmNyBF3x08oXN0h
-         u6wpxFnqc5qv/4Nh2lovaL2sBdlfVCWPIfG5qETlSo8EtUf0Whbb00PH/zApZtY15nje
-         4WaJTaXFlRjMxPnAT2sOJseuCgBIy3ukBgzbcdAyIDMLmHKcarWAnjoce8kcri+zLbPm
-         XATUUY8sCLeDQp7yQP0YLum2PPoNyjHUR4g4hwQwr+jgNIo86lMeSLI6n+Due+0+OdQb
-         kDnk0LG+J5aFbFOuwsaJWjUlSAxHzfnPw4xdN8RF3NSrbUDOyqfoaUa/V0q9SPVXcJKi
-         InMg==
+        bh=PmaKBvWqIjSyu9OcOIOXhZlZKkkawFeVoff3riiQ5Jg=;
+        b=G/wM/DjTpEsOx0pYlLYY9bCWNTPYwjmFDZ+uwPzkJ6HbmyAKIC5j9xOVp7eoJHLAKg
+         +rMrZQaSBDNmVbCg5QoWDFDlBUZBrV0PAuGhTtRNjvAv/VK1KDsSYX2g0xHRm98zP1+M
+         EtcA9K3eHMtUECt9wy/YD/7TXttn7S5j81tE4pOGj54ofqPdaCU5yTq1IXNC9lPsG4fp
+         ch//9ITusawOhP7ZfvLbbDV1UbxlRV3DdDZsWDg6K8OUWiHvbftqyFnKBaV/IOYxjgZW
+         fDboDoBz3sUPvyQR9LFoRLDUCPoBi8iQ2ABqTiDlF9YtzBSLqyzq77skkjM/LE0iWUDB
+         oGNg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1759410080; x=1760014880;
+        d=1e100.net; s=20230601; t=1759412474; x=1760017274;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=sUsMdpmRM7X879n8mCS3/9BWR9IxrODIsWMUJBwywLc=;
-        b=loem/UX1iUrWTbL+6JaxG74X0fhl5UoI6TP4GehGsO+dn9hrywX5QPy7fQsRxnIld5
-         PxQqIpDdj4dHFct0GNmTBEfdAaGurlz60DWmFEhTJa9gnf/9In7uDuIWkKX/CUmCWmDG
-         ABOIGF6bUjzwj05/Zmoqzr/fqp+YYx7BrgwAHbg5B+Py843Pg9CWtMa3ejwRWx1EUHrx
-         ZQH+fUG+8kFh5yoylmIENOdY/HTu9oGCtj807n8GNM9XjjgAv3oyXXqnDoj85g/wn1E9
-         C/Bp6ld9K2z+hBqgteyCpspIrIls4lvn/iEKSHJzkUVIxZbvQabx9EVtQUloEP7vrNxV
-         0AeA==
-X-Forwarded-Encrypted: i=1; AJvYcCVjbw2Re1RQsCw41tzK5ccI/TyHN0wHtIUAHYu4BhW1SvNF6XGUf7YY8ZQr2zK/jSemCt98HA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzEHa++DLl8QYwNxIIyY+Aig7MUC4JJR/IRvsMUGz1412EG6ape
-	9ertXoOetgU4SLiuf32TDwU4TGxKlJz23Omn0ks1G76bPsAY9l/2pHdc/BXJn4NGeoo=
-X-Gm-Gg: ASbGncutIAXlHloByeTWJfaWzai4PqRmaWsTRmt/s14XyySGzIpS+jjLwzGuk+m/4xS
-	PY+aMVAPe8iphMEhdsUHpaBavqvSWGh1+EmVGrGctCpkuNgM4xX28ZFxPknhVUjLHYmP2hZ01tq
-	MxxzCmgBxG7n658uruZosQHSxBu8ElOO9X1uoncDJSLy23aCWsoXPop7AswWP4yH6VmqoDuHqwV
-	JcPGpNPTQLenUbOKglTQt1zScB+yor+MEz6Jbsu9tPCK2SYnsL7N9XOi3LWsxc9xI+5m5B4ehmM
-	5KmWRk9idIvfSNJqz4XLDxOFnUWqraGGtiByb81ZL9fZJbIILlacPdrWrlwjPDU5z3FU5GN6WVl
-	OZEtpiC+MiW9ESVi+LQfn
-X-Google-Smtp-Source: AGHT+IGFzneyhPIwEYTxTRu+3x9cUEyBSh7N480rnZah8RtVK6QFov2ZqKcqlL3gifb/fKYD/MCqYw==
-X-Received: by 2002:a05:6830:6001:b0:7ba:e3fb:f2b0 with SMTP id 46e09a7af769-7bddb7ed06cmr6745878a34.31.1759410080285;
-        Thu, 02 Oct 2025 06:01:20 -0700 (PDT)
+        bh=PmaKBvWqIjSyu9OcOIOXhZlZKkkawFeVoff3riiQ5Jg=;
+        b=AskbbEvzrzCSnjz0BnIaAMiIs9aj1KIkIR8vVpEIqjh2cJrWSCD53Ep6DK+wZ4Q5AK
+         Jg6p/hY+mLwx1V/kaTvBC+iSG0vVS+PFX6brLzgwh3BIknuhou7swCwGevV9ZDNj/sPX
+         9t8FWmP1W2VTNHQHyWcmTkVzWB+cM21GaybVQnrQN+ip3NFZBIVMYmkoPDeuQyO966Fx
+         zAaj3POkn4Yx9KwlqVus0t1VUYgyYHlH6ynXVLjTicji3PwxTVcp9P3q9NNW7zBlz/5F
+         mf/iJkhOGQoctp36qpkR2t2H9hMpIdjXhy0732jVhvHwkiJC/ZDJ73hiR4dxCbYbSk0Q
+         lBrg==
+X-Forwarded-Encrypted: i=1; AJvYcCUL2JxQeFp+2eT1oDqY2CutNtEfQMCZ+WKijnitm8lFr/CfVrIQnx+BOn8B8c/XSmPUcA43pg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YytjCSqEYEk2fvGurs0R2g7HC20HafiDQbsiv7mht78IeMxS1UW
+	irjlJtgwvOd+okcjZKV6lyHoskinRXV9JuEyYNR/iUpwgp35cOPln0LXQUc+pTPgqrE=
+X-Gm-Gg: ASbGncve06S13/77QQoJBkvNd/py5+LkyB9phmHDjZi0G8VacYK/B2hkseinDB6kHgT
+	NdCacr4mjfnCCXcK2L9/VoYMlJN9MP7HPlLiKGPmvpsBGxf1Xx7LOCnWMrduw5wLxt+lR+6PfD5
+	JmSVZ+Ak6U6gSZB2J/mhyc6v0+Nwb8LkrPg6S2sI5hSYXPG7VWYHSq4ACtYKT5Wys3onwCemtlb
+	WI0HIA1MFz2XymgSMnXIvvqYrnrEZ1GDbUUpNxbvkqrR/goSYvt4Zej1fAXPjapPOn41An41bSp
+	637GdP125d6N7jmVkqqaZWtDXFAdWaKH3T+zYe7I6g1MGsNt1D0j4ADuL3uy7OFP7VQbs50Hr/d
+	hxpbtTjZckFgi7dBGN2cl
+X-Google-Smtp-Source: AGHT+IFxDIQM42E8wYDD/YlbjZwi8VbGSBiQY2HlW12G+z0jmgjkeEufW1JtpOZFmbmeO3fGFnaKgQ==
+X-Received: by 2002:a05:6808:d54:b0:437:f573:b175 with SMTP id 5614622812f47-43fa41be418mr4594199b6e.31.1759412474306;
+        Thu, 02 Oct 2025 06:41:14 -0700 (PDT)
 Received: from ziepe.ca ([130.41.10.202])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7bf439d2ccdsm613003a34.35.2025.10.02.06.01.18
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-3ab59bda0c5sm778082fac.0.2025.10.02.06.41.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Oct 2025 06:01:19 -0700 (PDT)
+        Thu, 02 Oct 2025 06:41:13 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1v4Ivt-0000000DhmS-03Ch;
-	Thu, 02 Oct 2025 10:01:17 -0300
-Date: Thu, 2 Oct 2025 10:01:17 -0300
+	id 1v4JYW-0000000DiFO-1CwW;
+	Thu, 02 Oct 2025 10:41:12 -0300
+Date: Thu, 2 Oct 2025 10:41:12 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Johan Hovold <johan@kernel.org>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Sven Peter <sven@kernel.org>,
-	Janne Grunau <j@jannau.net>,
-	Rob Clark <robin.clark@oss.qualcomm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Yong Wu <yong.wu@mediatek.com>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	Chen-Yu Tsai <wens@csie.org>,
-	Thierry Reding <thierry.reding@gmail.com>,
-	Krishna Reddy <vdumpa@nvidia.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 00/14] iommu: fix device leaks
-Message-ID: <20251002130116.GB3195829@ziepe.ca>
-References: <20250925122756.10910-1-johan@kernel.org>
- <20250930182158.GS2695987@ziepe.ca>
- <0d5d4d02-eb78-43dc-8784-83c0760099f7@arm.com>
- <20251001155851.GW2695987@ziepe.ca>
- <2d94b52c-cffc-40af-930a-20f0130a23ea@arm.com>
+To: Samiullah Khawaja <skhawaja@google.com>
+Cc: Pasha Tatashin <pasha.tatashin@soleen.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, iommu@lists.linux.dev,
+	YiFei Zhu <zhuyifei@google.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Pratyush Yadav <pratyush@kernel.org>,
+	Kevin Tian <kevin.tian@intel.com>, linux-kernel@vger.kernel.org,
+	Saeed Mahameed <saeedm@nvidia.com>,
+	Adithya Jayachandran <ajayachandra@nvidia.com>,
+	Parav Pandit <parav@nvidia.com>,
+	Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>,
+	Vipin Sharma <vipinsh@google.com>, dmatlack@google.com,
+	Chris Li <chrisl@kernel.org>, praan@google.com
+Subject: Re: [RFC PATCH 13/15] iommufd: Persist iommu domains for live update
+Message-ID: <20251002134112.GD3195829@ziepe.ca>
+References: <20250928190624.3735830-1-skhawaja@google.com>
+ <20250928190624.3735830-14-skhawaja@google.com>
+ <20250929160034.GG2695987@ziepe.ca>
+ <CA+CK2bDqDz3k0gXamJEbKUL7RPBLVjaA5=Jum=CF84wR+50izA@mail.gmail.com>
+ <20250930135916.GN2695987@ziepe.ca>
+ <CAAywjhRGrGjZK3jQptieVWmdzvjfNtTYrp2ChTZJSmFyrBaRqw@mail.gmail.com>
+ <20250930210504.GU2695987@ziepe.ca>
+ <CAAywjhRQONuHsxTGQZ5R=EJbOHUD+xOF_CYjkNRbUyCQkORwig@mail.gmail.com>
+ <20251001114742.GV2695987@ziepe.ca>
+ <CAAywjhRKvZBShj7KAXew2v_uGjn3HhvO=sFrZ=bVfMJ8ye-Vyw@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -91,58 +98,59 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2d94b52c-cffc-40af-930a-20f0130a23ea@arm.com>
+In-Reply-To: <CAAywjhRKvZBShj7KAXew2v_uGjn3HhvO=sFrZ=bVfMJ8ye-Vyw@mail.gmail.com>
 
-On Thu, Oct 02, 2025 at 12:48:35PM +0100, Robin Murphy wrote:
-> > However the SMMU drivers are doing this under the
-> > iommu_probe_device_lock and not stashing the pointer into a drvdata
-> > where there is no locking protecting it.
+On Wed, Oct 01, 2025 at 06:00:58PM -0700, Samiullah Khawaja wrote:
+> > No, finish should never do anything on the restore path, IMHO. User
+> > should directly attach the newly created HWPT when it is ready.
 > 
-> Huh? Every .of_xlate call is under probe_device_lock just as much as
-> .probe_device calls are; they *have* to be, since they too are in the
-> position of working with dev->iommu before dev->iommu_group is set to
-> guarantee its stability.
+> Makes sense. But if the user never replaces the restored iommu_domain
+> with a new HWPT, we will have to discard the old (restored) domain on
+> finish since it doesn't have any associated HWPT. I see you already
+> hinted at this below. This needs to be handled carefully considering
+> the vfio cdev FD state also. Discussed further below.
 
-Yes, of_xlate is under the lock, but IIRC there are still cases where
-probe gets deferred, the probe_device_lock is unlocked, and the
-drvdata continues to exist.
+I think the simplest thing is the domain exists forever until
+userspace attaches an iommufd, takes ownership of it and frees it.
+Nothing to do with finish.
 
-> indeed the driver cannot be removed, because we hold a module reference
-> around the call
+While the domain is attached iommu_device_use_default_domain() will
+fail.
 
-That's not how module reference counts work. Drivers can be unbound
-through sysfs at any time.
+> This is the part that I was concerned about since I was looking into
+> the auto_domain. Users that attach to ioas directly and use
+> auto_domain would not be able to restore the mappings before attaching
+> to the device.
 
-> > Anyhow, I drafted a nice fix for all of this. After all the rework it
-> > is trivial for the core code to pass in the struct iommu_device * to
-> > probe and then most of the drivers just drop this ugly code
-> > completely.
-> >
-> > https://github.com/jgunthorpe/linux/commits/iommu-fwspec/
-> 
-> Eww, that is neither nice nor a "fix". Once again it's just piling on a load
-> of extra complexity to have multiple confusingly-overlapping-but-different
-> ways of doing the same thing, one of which is still the exact same one
-> you've decided to object to because you've failed to understand it (as
-> demonstrated by the commit message below, the obvious bug in the hideous
-> mess below that, and at a glance the other patches actively *breaking* at
-> least one driver.)
+IMHO luo users need to be sophisticated enough to avoid auto_domain.
 
-It is hard to take you seriously with such vauge objections
-Robin. Please try to be constructive. If you are specific I'll go fix
-the things and maybe other people besides you can understand this
-stuff.
+> That's a good point. But it might be tricky since the ownership of the
+> device is with the vfio cdev FD. So if vfio cdev FD is never
+> restored/reclaimed the device can be FLR'd. iommufd will follow along
+> and discard the domain.
 
-I'm shocked you disagree with the core code helping the drivers find
-their iommu_driver. This seems like very basic obvious good stuff. We
-don't need all sorts of different open coded ugly ways for drivers to
-do this. It removes 200 lines of junk for drivers :\
+Honestly, I keep wanting things to be kept as simple as possible with
+as few exception flows as necessary.
 
-> > +			iommu = fwspec_iommu->ops->probe_device(dev);
-> > +			if (IS_ERR(iommu))
-> > +				return PTR_ERR(iommu);
-> > +			if (WARN_ON(iommu != fwspec_iommu)) {
+If we make it so that iommu_device_claim_dma_owner() is aware of luo
+and the only way vfio can get ownership is if it is also restoring the
+luo session then that sounds perfect.
 
-This is at least one typo.
+Attaching a non-luo VFIO would be blocked by the kernel so we never
+get these inconsistencies.
+
+> The more interesting case might be where cdev is restored and bound to
+> iommufd but the user never recreates and hotswaps a new HWPT. In this
+> case we can discard the restored iommu_domain and replace it with the
+> blocking domain as it should have been if the device was not
+> preserved.
+
+Maybe the HWPT has to be auto-created inside the iommufd as soon as it
+is attached. The "restore" ioctl would just return back the ID of this
+already created HWPT.
+
+Again, this seems to avoid special cases as once we exit the special
+luo mode of iommu_device_claim_dma_owner() iommufd is always
+responsible for the iommu_domain.
 
 Jason
