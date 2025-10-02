@@ -1,139 +1,144 @@
-Received: from mail-oi1-f169.google.com (mail-oi1-f169.google.com [209.85.167.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96FDB30AD08
-	for <iommu@lists.linux.dev>; Thu,  2 Oct 2025 11:57:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.169
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 738723101DA
+	for <iommu@lists.linux.dev>; Thu,  2 Oct 2025 12:05:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759406239; cv=none; b=q6IqZd+2xyFhwJzoOpQE3HKOCSJhhbQjkKF9QN1dau+9KQIYnm9mqFh7mpUS53CvWrRMl7JOlgKYNaBYFg3FyYKgc7xEXOMeGFhX46oHKme8aj3r2Y+3KKHxC3mVmL62RkLjuQIPh/1zwff/3/gGAXNU88tuHogdySrfiTEH/OE=
+	t=1759406718; cv=none; b=Cjf1rKi0Y8xmgMukpM2FerQOZAHNE73kk3mWz0IrWqcProWUe9u5tCgZxVLVpRVwmT4L4SWJTSFAyYhzfjG0Yt/k2m/Es673TMj3Y5vrfvyhJm02h14eY3deQT09ZR4153018KJy/JatTAW+QlUZBW/pDP3ew+eyOctp7iXNs64=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759406239; c=relaxed/simple;
-	bh=hzlW48U3p27HalC0zjHa19nIsygs8guIlr4gM2QtnRg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qw9b/LAfQ06kLXuuz+gBdHc2W05Cp6N+d8Pyihey4V5BuIYOp93O1i3pU8QSClbSyTObxPPFIZcD6dS4pf55drnT7gbMyEK74Nu/2c8GresmXLeiEXw4bVm6gMoCtN9kSSr+xuevVAyDL3jwz0AsrTtw3C8T0xQ4NMlPRHJ+lPk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Uscqn7Wi; arc=none smtp.client-ip=209.85.167.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Uscqn7Wi"
-Received: by mail-oi1-f169.google.com with SMTP id 5614622812f47-43fac2df7d4so442089b6e.3
-        for <iommu@lists.linux.dev>; Thu, 02 Oct 2025 04:57:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1759406235; x=1760011035; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=lypYEd3l4ejDslQUD2xntmHuywWs1a99Jd+mtc30NnI=;
-        b=Uscqn7WizG2mzyrHyQXAOeejP1GUNChQJBUF3ZLe2sIdnLK8DNhzRKV7z3QpZ7iDF7
-         pvuSKFhN5+O6xRSoawlOfa1PZEZEV8lsPv+ejObHjbOWbEgpY/gvrw7jcu5aPLqRB0gO
-         nfZIedK7LgHV9APzXrEmogXz5L75kKmgIhcED2VWkvL21ngvj53Dfj/m/gWE4gNtDA52
-         C8+D7x7bMOhJQPyh/MubYF9Jvx6/nU6txv1Bn6SietFoqhcMKNMeYLkajfAVgd/c5FoS
-         Q0ZdWYzpvUu6QMa1Bmhna+faBw/viHv+5rR5SwOyu6v5s+Mevb+f6BR6VO9jcP5svUD/
-         svww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1759406235; x=1760011035;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=lypYEd3l4ejDslQUD2xntmHuywWs1a99Jd+mtc30NnI=;
-        b=MRT88saeSwJC3YFpencQiqd+ycXaCAu0aecqEUYZI2RAx73k0sqYU5EZDet42FdD44
-         9yj3ManCFuzPjFmat9s7Uh9doib/1d14emvcYLhQgxMSMaNmokiFcaOGJVrt+kgsAP6g
-         WnJCLwuzuJe6J4IGSOO+ykm7yyEgqP7bIjpJa011Pd4c7p/o3hnrmm6u1aLT2ojgFD2T
-         2thxg6C8WDOlqJf6/63cB0qaKJbE8B9Rz7g86VrgslEumJEuRDwMmMFowu9kW8tmZUFK
-         AeueYhjgO7qM7knYi8WAbhRatA31ghyEd0QJyBfgXG32d6Aj3G8zGvmIxCrozT+V4+14
-         sBzQ==
-X-Forwarded-Encrypted: i=1; AJvYcCW3WqOU1E+ZuIxDH4XfETwJOa/IfC0kIbvCwHyUHS3vZhbO6uAT4+fSxgkqqwEmFlk8ZwQl0A==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yy1YDEZZ0wN7VelJiqfMXWqnAFWq30YnxBcZX94RFIUeIWKJRYd
-	CjuFe+QQBt7iIHFEayBdgvYyxLP/rRQ3yH/P9NPTSoS3O6WI9lGnLgF63KG9MNAe5j8=
-X-Gm-Gg: ASbGnct5Ebcn5x014kzpLzyY7XHAp2tJdZduGFGbpu8IAl4mnoGVbRpenEA/nA0SBMh
-	GTyo4wOrIjNl1YsBF45d0UVEwLTHSqasdYy0LRCmLH8BBdcnhHONeftxRW9yLA3SgIJllew79gf
-	Box8Vn83rkttBiNCEwYRg1xqQJydjFRsqfxWrp6is1yfboaYfq3rnVSXKkTo4jXuoRcFQTQX7xB
-	zYSd2FzvTQ+O8Dtvbrffi/UBfHmgcFspLPP0mXkw53gHEpYn8KTPLHKfO8Juu1C+/DuKbXFCai5
-	JwOujkDJNTaQif+f7ZSg8w26wsjbdq1E1DtEhbIpADCHW7LWweOH/GWd/fH+CXe7I7yqMHdk2bX
-	Z3+5REarznlpDFAVr1zPl
-X-Google-Smtp-Source: AGHT+IE1srVbckOdMIlenVgAWZmXaZ17xCibMpNXp1sus8P4KPWibOXVJIJ+3ZlJ9dMn/d1vo7M2dA==
-X-Received: by 2002:a05:6808:4f29:b0:43b:91b7:cc2d with SMTP id 5614622812f47-43fa40d79aamr2956448b6e.18.1759406235399;
-        Thu, 02 Oct 2025 04:57:15 -0700 (PDT)
-Received: from ziepe.ca ([130.41.10.202])
-        by smtp.gmail.com with ESMTPSA id 006d021491bc7-64e1b7a8842sm423034eaf.12.2025.10.02.04.57.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Oct 2025 04:57:14 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1v4Hvs-0000000Dh2T-2nRE;
-	Thu, 02 Oct 2025 08:57:12 -0300
-Date: Thu, 2 Oct 2025 08:57:12 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Pasha Tatashin <pasha.tatashin@soleen.com>
-Cc: Samiullah Khawaja <skhawaja@google.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, iommu@lists.linux.dev,
-	YiFei Zhu <zhuyifei@google.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Pratyush Yadav <pratyush@kernel.org>,
-	Kevin Tian <kevin.tian@intel.com>, linux-kernel@vger.kernel.org,
-	Saeed Mahameed <saeedm@nvidia.com>,
-	Adithya Jayachandran <ajayachandra@nvidia.com>,
-	Parav Pandit <parav@nvidia.com>,
-	Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>,
-	Vipin Sharma <vipinsh@google.com>, dmatlack@google.com,
-	Chris Li <chrisl@kernel.org>, praan@google.com
-Subject: Re: [RFC PATCH 13/15] iommufd: Persist iommu domains for live update
-Message-ID: <20251002115712.GA3195829@ziepe.ca>
-References: <20250928190624.3735830-1-skhawaja@google.com>
- <20250928190624.3735830-14-skhawaja@google.com>
- <20250929160034.GG2695987@ziepe.ca>
- <CA+CK2bDqDz3k0gXamJEbKUL7RPBLVjaA5=Jum=CF84wR+50izA@mail.gmail.com>
- <20250930135916.GN2695987@ziepe.ca>
- <CAAywjhRGrGjZK3jQptieVWmdzvjfNtTYrp2ChTZJSmFyrBaRqw@mail.gmail.com>
- <20250930210504.GU2695987@ziepe.ca>
- <CAAywjhRQONuHsxTGQZ5R=EJbOHUD+xOF_CYjkNRbUyCQkORwig@mail.gmail.com>
- <20251001114742.GV2695987@ziepe.ca>
- <CA+CK2bAvnTTz+vPg7v38_1dajRZQHyPQ8iDmziiW8GFUqy6=Ag@mail.gmail.com>
+	s=arc-20240116; t=1759406718; c=relaxed/simple;
+	bh=6W3Vy4HMSC/bCOzdV9y65fLEP+yshFxn9SuPxaybkws=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=OpT+AA8ucv719SapLfZmedMjKX1HcgGbWO29rkuc5nBXUzXkY5jdje42fFZa2k9MRZVszGQGmaB40DFVqhufqOCuOg/lYfg3oWW1//edLnf5pBsbN23FC/1leF+6KLPDiBhi9XSBgfmsWidBLhkFHHqwqkQINs1Vujci0bRyPLw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C17A9168F;
+	Thu,  2 Oct 2025 05:05:07 -0700 (PDT)
+Received: from [10.57.2.183] (unknown [10.57.2.183])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7FCD43F66E;
+	Thu,  2 Oct 2025 05:05:12 -0700 (PDT)
+Message-ID: <8e98159d-5c13-453f-8d4b-c7ff80617239@arm.com>
+Date: Thu, 2 Oct 2025 13:05:08 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+CK2bAvnTTz+vPg7v38_1dajRZQHyPQ8iDmziiW8GFUqy6=Ag@mail.gmail.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 11/14] iommu/omap: fix device leaks on probe_device()
+To: Johan Hovold <johan@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>
+Cc: Sven Peter <sven@kernel.org>, Janne Grunau <j@jannau.net>,
+ Rob Clark <robin.clark@oss.qualcomm.com>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, Yong Wu <yong.wu@mediatek.com>,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Chen-Yu Tsai <wens@csie.org>, Thierry Reding <thierry.reding@gmail.com>,
+ Krishna Reddy <vdumpa@nvidia.com>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+ Suman Anna <s-anna@ti.com>
+References: <20250925122756.10910-1-johan@kernel.org>
+ <20250925122756.10910-12-johan@kernel.org>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20250925122756.10910-12-johan@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Oct 01, 2025 at 03:28:56PM -0400, Pasha Tatashin wrote:
-> > > 3. On FINISH, the IOMMU core updates the context entries of preserved
-> > > devices to point to the new domain.
-> >
-> > No, finish should never do anything on the restore path, IMHO. User
-> > should directly attach the newly created HWPT when it is ready.
+On 2025-09-25 1:27 pm, Johan Hovold wrote:
+> Make sure to drop the reference taken to the iommu platform devices
+> during probe_device() on errors and when the device is later released.
 > 
-> But, finish is our indicator that a particular session (VM) is out of
-> blackout, and now we are free to do slow things, such as
-> re-allocating/recreating page tables. Why start it before a VM is out
-> of blackout?
+> Fixes: 9d5018deec86 ("iommu/omap: Add support to program multiple iommus")
+> Fixes: 7d6827748d54 ("iommu/omap: Fix iommu archdata name for DT-based devices")
+> Cc: stable@vger.kernel.org	# 3.18
+> Cc: Suman Anna <s-anna@ti.com>
+> Signed-off-by: Johan Hovold <johan@kernel.org>
+> ---
+>   drivers/iommu/omap-iommu.c | 27 +++++++++++++++++++--------
+>   1 file changed, 19 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+> index 6fb93927bdb9..77023d49bd24 100644
+> --- a/drivers/iommu/omap-iommu.c
+> +++ b/drivers/iommu/omap-iommu.c
+> @@ -1636,7 +1636,7 @@ static struct iommu_device *omap_iommu_probe_device(struct device *dev)
+>   	struct platform_device *pdev;
+>   	struct omap_iommu *oiommu;
+>   	struct device_node *np;
+> -	int num_iommus, i;
+> +	int num_iommus, i, ret;
+>   
+>   	/*
+>   	 * Allocate the per-device iommu structure for DT-based devices.
+> @@ -1663,22 +1663,22 @@ static struct iommu_device *omap_iommu_probe_device(struct device *dev)
+>   	for (i = 0, tmp = arch_data; i < num_iommus; i++, tmp++) {
+>   		np = of_parse_phandle(dev->of_node, "iommus", i);
+>   		if (!np) {
+> -			kfree(arch_data);
+> -			return ERR_PTR(-EINVAL);
+> +			ret = -EINVAL;
+> +			goto err_put_iommus;
+>   		}
+>   
+>   		pdev = of_find_device_by_node(np);
+>   		if (!pdev) {
+>   			of_node_put(np);
+> -			kfree(arch_data);
+> -			return ERR_PTR(-ENODEV);
+> +			ret = -ENODEV;
+> +			goto err_put_iommus;
+>   		}
+>   
+>   		oiommu = platform_get_drvdata(pdev);
+>   		if (!oiommu) {
+>   			of_node_put(np);
+> -			kfree(arch_data);
+> -			return ERR_PTR(-EINVAL);
+> +			ret = -EINVAL;
+> +			goto err_put_iommus;
+>   		}
+>   
+>   		tmp->iommu_dev = oiommu;
+> @@ -1697,17 +1697,28 @@ static struct iommu_device *omap_iommu_probe_device(struct device *dev)
+>   	oiommu = arch_data->iommu_dev;
+>   
+>   	return &oiommu->iommu;
+> +
+> +err_put_iommus:
+> +	for (tmp = arch_data; tmp->dev; tmp++)
+> +		put_device(tmp->dev);
 
-Things should be paired.. The suspend side is
+This should just pair with the of_node_put() calls (other than the first 
+one, of course), i.e. do it in the success path as well and drop the 
+release_device change below. It doesn't serve any purpose for client 
+devices to hold additional references on the IOMMU device when those are 
+strictly within the lifetime of the IOMMU driver being bound to it anyway.
 
- start luo - "brown out" - kernel does basically nothing as the luo is empty
- add all sorts of things to sessions
- finish - kernel does last minute things
+Thanks,
+Robin.
 
-While the resume is the symmetric opposite:
-
- kexec boot - kernel restores the critical stuff it needs to boot to
-               userspace
- userspace does all sorts of stuff and gets things out of the sessions
- finish - luo should be empty now as everything was taken out by
-          userspace
-
-I think when things come out of luo they should be fully operational
-immediately.
-
-Finish on resume shouldn't indicate anything specific beyond the luo
-should be empty and everything should have been restored. It isn't
-like finish on pre-kexec.
-
-Userspace decides how it sequences things and what steps it takes
-before ending blackout and resuming the VM.
-
-Jason
+> +
+> +	kfree(arch_data);
+> +
+> +	return ERR_PTR(ret);
+>   }
+>   
+>   static void omap_iommu_release_device(struct device *dev)
+>   {
+>   	struct omap_iommu_arch_data *arch_data = dev_iommu_priv_get(dev);
+> +	struct omap_iommu_arch_data *tmp;
+>   
+>   	if (!dev->of_node || !arch_data)
+>   		return;
+>   
+> -	kfree(arch_data);
+> +	for (tmp = arch_data; tmp->dev; tmp++)
+> +		put_device(tmp->dev);
+>   
+> +	kfree(arch_data);
+>   }
+>   
+>   static int omap_iommu_of_xlate(struct device *dev, const struct of_phandle_args *args)
