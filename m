@@ -1,339 +1,139 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7D7AF256C6C
-	for <iommu@lists.linux.dev>; Thu,  2 Oct 2025 11:48:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-oi1-f169.google.com (mail-oi1-f169.google.com [209.85.167.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96FDB30AD08
+	for <iommu@lists.linux.dev>; Thu,  2 Oct 2025 11:57:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759405723; cv=none; b=pkWRXwqsSHSx4RrRrz7EwbZ2SQ39+ZWSiA7jKhN7r1a40DflLpL7V6X0BgnLELVIW/MMTdrd6oON/y7be0PGuaKmBUdtWxIeZLrrB5kYNLYZIvkcNMFmmpqprYeh69Mk44t9bli2MogiA9I3mGSaxDxICWgX3S99/39C1Vjtoq0=
+	t=1759406239; cv=none; b=q6IqZd+2xyFhwJzoOpQE3HKOCSJhhbQjkKF9QN1dau+9KQIYnm9mqFh7mpUS53CvWrRMl7JOlgKYNaBYFg3FyYKgc7xEXOMeGFhX46oHKme8aj3r2Y+3KKHxC3mVmL62RkLjuQIPh/1zwff/3/gGAXNU88tuHogdySrfiTEH/OE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759405723; c=relaxed/simple;
-	bh=FNRlhie3KHd4wCsDZxCRy24JbY25FHsakG6SAIaGnHs=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=hYyT9V4YlnRladdzSGHz4L1MIDg4fgpr68uVr52iJ9nKp2FDonAxcS2YrVsfxihHMozFIsQQ8dhckbqBIS83Y9x/09xSgRZlZZDZEsR8bDIaw2HbecYBq0fXXRFZbiDqgb0mcQfg3jvMGS4KzWcip4FnOZXsQVxY4ICu40Elu9A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D6B8D168F;
-	Thu,  2 Oct 2025 04:48:32 -0700 (PDT)
-Received: from [10.57.2.183] (unknown [10.57.2.183])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EE76A3F59E;
-	Thu,  2 Oct 2025 04:48:37 -0700 (PDT)
-Message-ID: <2d94b52c-cffc-40af-930a-20f0130a23ea@arm.com>
-Date: Thu, 2 Oct 2025 12:48:35 +0100
+	s=arc-20240116; t=1759406239; c=relaxed/simple;
+	bh=hzlW48U3p27HalC0zjHa19nIsygs8guIlr4gM2QtnRg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=qw9b/LAfQ06kLXuuz+gBdHc2W05Cp6N+d8Pyihey4V5BuIYOp93O1i3pU8QSClbSyTObxPPFIZcD6dS4pf55drnT7gbMyEK74Nu/2c8GresmXLeiEXw4bVm6gMoCtN9kSSr+xuevVAyDL3jwz0AsrTtw3C8T0xQ4NMlPRHJ+lPk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Uscqn7Wi; arc=none smtp.client-ip=209.85.167.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Uscqn7Wi"
+Received: by mail-oi1-f169.google.com with SMTP id 5614622812f47-43fac2df7d4so442089b6e.3
+        for <iommu@lists.linux.dev>; Thu, 02 Oct 2025 04:57:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1759406235; x=1760011035; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=lypYEd3l4ejDslQUD2xntmHuywWs1a99Jd+mtc30NnI=;
+        b=Uscqn7WizG2mzyrHyQXAOeejP1GUNChQJBUF3ZLe2sIdnLK8DNhzRKV7z3QpZ7iDF7
+         pvuSKFhN5+O6xRSoawlOfa1PZEZEV8lsPv+ejObHjbOWbEgpY/gvrw7jcu5aPLqRB0gO
+         nfZIedK7LgHV9APzXrEmogXz5L75kKmgIhcED2VWkvL21ngvj53Dfj/m/gWE4gNtDA52
+         C8+D7x7bMOhJQPyh/MubYF9Jvx6/nU6txv1Bn6SietFoqhcMKNMeYLkajfAVgd/c5FoS
+         Q0ZdWYzpvUu6QMa1Bmhna+faBw/viHv+5rR5SwOyu6v5s+Mevb+f6BR6VO9jcP5svUD/
+         svww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1759406235; x=1760011035;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=lypYEd3l4ejDslQUD2xntmHuywWs1a99Jd+mtc30NnI=;
+        b=MRT88saeSwJC3YFpencQiqd+ycXaCAu0aecqEUYZI2RAx73k0sqYU5EZDet42FdD44
+         9yj3ManCFuzPjFmat9s7Uh9doib/1d14emvcYLhQgxMSMaNmokiFcaOGJVrt+kgsAP6g
+         WnJCLwuzuJe6J4IGSOO+ykm7yyEgqP7bIjpJa011Pd4c7p/o3hnrmm6u1aLT2ojgFD2T
+         2thxg6C8WDOlqJf6/63cB0qaKJbE8B9Rz7g86VrgslEumJEuRDwMmMFowu9kW8tmZUFK
+         AeueYhjgO7qM7knYi8WAbhRatA31ghyEd0QJyBfgXG32d6Aj3G8zGvmIxCrozT+V4+14
+         sBzQ==
+X-Forwarded-Encrypted: i=1; AJvYcCW3WqOU1E+ZuIxDH4XfETwJOa/IfC0kIbvCwHyUHS3vZhbO6uAT4+fSxgkqqwEmFlk8ZwQl0A==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy1YDEZZ0wN7VelJiqfMXWqnAFWq30YnxBcZX94RFIUeIWKJRYd
+	CjuFe+QQBt7iIHFEayBdgvYyxLP/rRQ3yH/P9NPTSoS3O6WI9lGnLgF63KG9MNAe5j8=
+X-Gm-Gg: ASbGnct5Ebcn5x014kzpLzyY7XHAp2tJdZduGFGbpu8IAl4mnoGVbRpenEA/nA0SBMh
+	GTyo4wOrIjNl1YsBF45d0UVEwLTHSqasdYy0LRCmLH8BBdcnhHONeftxRW9yLA3SgIJllew79gf
+	Box8Vn83rkttBiNCEwYRg1xqQJydjFRsqfxWrp6is1yfboaYfq3rnVSXKkTo4jXuoRcFQTQX7xB
+	zYSd2FzvTQ+O8Dtvbrffi/UBfHmgcFspLPP0mXkw53gHEpYn8KTPLHKfO8Juu1C+/DuKbXFCai5
+	JwOujkDJNTaQif+f7ZSg8w26wsjbdq1E1DtEhbIpADCHW7LWweOH/GWd/fH+CXe7I7yqMHdk2bX
+	Z3+5REarznlpDFAVr1zPl
+X-Google-Smtp-Source: AGHT+IE1srVbckOdMIlenVgAWZmXaZ17xCibMpNXp1sus8P4KPWibOXVJIJ+3ZlJ9dMn/d1vo7M2dA==
+X-Received: by 2002:a05:6808:4f29:b0:43b:91b7:cc2d with SMTP id 5614622812f47-43fa40d79aamr2956448b6e.18.1759406235399;
+        Thu, 02 Oct 2025 04:57:15 -0700 (PDT)
+Received: from ziepe.ca ([130.41.10.202])
+        by smtp.gmail.com with ESMTPSA id 006d021491bc7-64e1b7a8842sm423034eaf.12.2025.10.02.04.57.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Oct 2025 04:57:14 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1v4Hvs-0000000Dh2T-2nRE;
+	Thu, 02 Oct 2025 08:57:12 -0300
+Date: Thu, 2 Oct 2025 08:57:12 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Pasha Tatashin <pasha.tatashin@soleen.com>
+Cc: Samiullah Khawaja <skhawaja@google.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, iommu@lists.linux.dev,
+	YiFei Zhu <zhuyifei@google.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Pratyush Yadav <pratyush@kernel.org>,
+	Kevin Tian <kevin.tian@intel.com>, linux-kernel@vger.kernel.org,
+	Saeed Mahameed <saeedm@nvidia.com>,
+	Adithya Jayachandran <ajayachandra@nvidia.com>,
+	Parav Pandit <parav@nvidia.com>,
+	Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>,
+	Vipin Sharma <vipinsh@google.com>, dmatlack@google.com,
+	Chris Li <chrisl@kernel.org>, praan@google.com
+Subject: Re: [RFC PATCH 13/15] iommufd: Persist iommu domains for live update
+Message-ID: <20251002115712.GA3195829@ziepe.ca>
+References: <20250928190624.3735830-1-skhawaja@google.com>
+ <20250928190624.3735830-14-skhawaja@google.com>
+ <20250929160034.GG2695987@ziepe.ca>
+ <CA+CK2bDqDz3k0gXamJEbKUL7RPBLVjaA5=Jum=CF84wR+50izA@mail.gmail.com>
+ <20250930135916.GN2695987@ziepe.ca>
+ <CAAywjhRGrGjZK3jQptieVWmdzvjfNtTYrp2ChTZJSmFyrBaRqw@mail.gmail.com>
+ <20250930210504.GU2695987@ziepe.ca>
+ <CAAywjhRQONuHsxTGQZ5R=EJbOHUD+xOF_CYjkNRbUyCQkORwig@mail.gmail.com>
+ <20251001114742.GV2695987@ziepe.ca>
+ <CA+CK2bAvnTTz+vPg7v38_1dajRZQHyPQ8iDmziiW8GFUqy6=Ag@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 00/14] iommu: fix device leaks
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Johan Hovold <johan@kernel.org>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Sven Peter <sven@kernel.org>,
- Janne Grunau <j@jannau.net>, Rob Clark <robin.clark@oss.qualcomm.com>,
- Marek Szyprowski <m.szyprowski@samsung.com>, Yong Wu <yong.wu@mediatek.com>,
- Matthias Brugger <matthias.bgg@gmail.com>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- Chen-Yu Tsai <wens@csie.org>, Thierry Reding <thierry.reding@gmail.com>,
- Krishna Reddy <vdumpa@nvidia.com>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-References: <20250925122756.10910-1-johan@kernel.org>
- <20250930182158.GS2695987@ziepe.ca>
- <0d5d4d02-eb78-43dc-8784-83c0760099f7@arm.com>
- <20251001155851.GW2695987@ziepe.ca>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20251001155851.GW2695987@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+CK2bAvnTTz+vPg7v38_1dajRZQHyPQ8iDmziiW8GFUqy6=Ag@mail.gmail.com>
 
-On 2025-10-01 4:58 pm, Jason Gunthorpe wrote:
-> On Tue, Sep 30, 2025 at 08:35:01PM +0100, Robin Murphy wrote:
->> On 2025-09-30 7:21 pm, Jason Gunthorpe wrote:
->>> On Thu, Sep 25, 2025 at 02:27:42PM +0200, Johan Hovold wrote:
->>>> This series fixes device leaks in the iommu drivers, which pretty
->>>> consistently failed to drop the reference taken by
->>>> of_find_device_by_node() when looking up iommu platform devices.
->>>
->>> Yes, they are mis-designed in many ways :\
->>
->> Historically they weren't really leaks either, just spare references on a
->> device which at that point could definitely never go away. I suppose now
->> that we finally have the .of_xlate calls in IOMMU registration, it would be
->> possible for some error during probe to cause the IOMMU driver to fail to
->> bind, at which point the references could rightly be considered leaked,
->> however these are all embedded platforms with essentially zero chance of
->> platform device hotplug, especially not of IOMMU devices, so realistically
->> those references still don't matter to anything other than code checkers.
->>
->> In summary; meh.
+On Wed, Oct 01, 2025 at 03:28:56PM -0400, Pasha Tatashin wrote:
+> > > 3. On FINISH, the IOMMU core updates the context entries of preserved
+> > > devices to point to the new domain.
+> >
+> > No, finish should never do anything on the restore path, IMHO. User
+> > should directly attach the newly created HWPT when it is ready.
 > 
-> Yeah, it isn't a real practical bug, but it still ugly and no doubt
-> upsets static tools.
-> 
->>> IDK if it is worth fixing like this, or if more effort should be put
->>> to make the drivers use of_xlate properly - the arm smmu drivers show
->>> the only way to use it..
->>
->> The SMMU drivers are really doing the same thing, they just defer that
->> lookup operation to .probe_device time (largely for historical reasons, I
->> think), and they use bus_find_device_by_node()
-> 
-> However the SMMU drivers are doing this under the
-> iommu_probe_device_lock and not stashing the pointer into a drvdata
-> where there is no locking protecting it.
+> But, finish is our indicator that a particular session (VM) is out of
+> blackout, and now we are free to do slow things, such as
+> re-allocating/recreating page tables. Why start it before a VM is out
+> of blackout?
 
-Huh? Every .of_xlate call is under probe_device_lock just as much as 
-.probe_device calls are; they *have* to be, since they too are in the 
-position of working with dev->iommu before dev->iommu_group is set to 
-guarantee its stability.
+Things should be paired.. The suspend side is
 
->> It's not racy; if we're calling the .of_xlate op (or really any op for that
->> matter), it's because an IOMMU driver has registered (or is registering) for
->> the given fwnode, which means it is bound to the corresponding struct
->> device.
-> 
-> It is not racy if you make the very practical assumption there is no
-> iommu driver unplug.
+ start luo - "brown out" - kernel does basically nothing as the luo is empty
+ add all sorts of things to sessions
+ finish - kernel does last minute things
 
-If the IOMMU code allowed a driver to be removed while it's in the 
-middle of calling into that driver, that would hardly be the driver's 
-fault. And indeed the driver cannot be removed, because we hold a module 
-reference around the call (and if a buggy driver failed to suppress 
-manual sysfs unbinding, this case is frankly one of the smallest drops 
-in the ocean of catastrophic consequences there.)
+While the resume is the symmetric opposite:
 
-> Anyhow, I drafted a nice fix for all of this. After all the rework it
-> is trivial for the core code to pass in the struct iommu_device * to
-> probe and then most of the drivers just drop this ugly code
-> completely.
- >
- > https://github.com/jgunthorpe/linux/commits/iommu-fwspec/
+ kexec boot - kernel restores the critical stuff it needs to boot to
+               userspace
+ userspace does all sorts of stuff and gets things out of the sessions
+ finish - luo should be empty now as everything was taken out by
+          userspace
 
-Eww, that is neither nice nor a "fix". Once again it's just piling on a 
-load of extra complexity to have multiple 
-confusingly-overlapping-but-different ways of doing the same thing, one 
-of which is still the exact same one you've decided to object to because 
-you've failed to understand it (as demonstrated by the commit message 
-below, the obvious bug in the hideous mess below that, and at a glance 
-the other patches actively *breaking* at least one driver.)
+I think when things come out of luo they should be fully operational
+immediately.
 
-Thanks,
-Robin.
+Finish on resume shouldn't indicate anything specific beyond the luo
+should be empty and everything should have been restored. It isn't
+like finish on pre-kexec.
 
-> 
-> Jason
-> 
-> commit cca42a9b5325b96bfd3d74e24628511f537afbe9
-> Author: Jason Gunthorpe <jgg@ziepe.ca>
-> Date:   Wed Oct 1 09:18:13 2025 -0300
-> 
->      iommu: Add a probe_device_fwspec() op
->      
->      For fwspec using drivers the core code has already determined which struct
->      iommu_device instance the fwspec is linked to. It can trivially pass that
->      instance pointer into the driver.
->      
->      This frees fwspec drivers from having to repeat the work of trying to find
->      the struct iommu_device for the fwspec.
->      
->      Non-fwspec drivers (x86/etc) continue to use the old probe function which
->      is called on the first non-fwspec iommu driver registered.
->      
->      This is only usable by drivers that support a single iommu instance per
->      device. There are some drivers (msm, exynos, dart) that do have an iommus
->      property that list multiple iommu_devices with multiple IDs. They cannot
->      use this simplified mechanism.
->      
->      Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 060ebe330ee163..718a1da8f54710 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -142,6 +142,8 @@ static void __iommu_group_free_device(struct iommu_group *group,
->   				      struct group_device *grp_dev);
->   static void iommu_domain_init(struct iommu_domain *domain, unsigned int type,
->   			      const struct iommu_ops *ops);
-> +static struct iommu_device *
-> +iommu_from_fwnode(const struct fwnode_handle *fwnode);
->   
->   #define IOMMU_GROUP_ATTR(_name, _mode, _show, _store)		\
->   struct iommu_group_attribute iommu_group_attr_##_name =		\
-> @@ -406,13 +408,75 @@ void dev_iommu_priv_set(struct device *dev, void *priv)
->   }
->   EXPORT_SYMBOL_GPL(dev_iommu_priv_set);
->   
-> +static int iommu_do_probe_device(struct device *dev)
-> +{
-> +	struct iommu_device *iommu;
-> +	int ret;
-> +
-> +	lockdep_assert_held(&iommu_probe_device_lock);
-> +
-> +	if (dev->iommu->fwspec) {
-> +		struct iommu_device *fwspec_iommu;
-> +
-> +		fwspec_iommu =
-> +			iommu_from_fwnode(dev->iommu->fwspec->iommu_fwnode);
-> +		if (!fwspec_iommu)
-> +			return -ENODEV;
-> +
-> +		if (fwspec_iommu->ops->probe_device_fwspec) {
-> +			ret = fwspec_iommu->ops->probe_device_fwspec(
-> +				fwspec_iommu, dev);
-> +			if (ret)
-> +				return ret;
-> +			iommu = fwspec_iommu;
-> +		} else {
-> +			iommu = fwspec_iommu->ops->probe_device(dev);
-> +			if (IS_ERR(iommu))
-> +				return PTR_ERR(iommu);
-> +			if (WARN_ON(iommu != fwspec_iommu)) {
-> +				ret = -EINVAL;
-> +				goto err_release;
-> +			}
-> +		}
-> +	} else {
-> +		/*
-> +		 * At this point, relevant devices either now have a fwspec
-> +		 * which will match ops registered with a non-NULL fwnode, or we
-> +		 * can reasonably assume that only one of Intel, AMD, s390, PAMU
-> +		 * or legacy SMMUv2 can be present, and that any of their
-> +		 * registered instances has suitable ops for probing, and thus
-> +		 * cheekily co-opt the same mechanism.
-> +		 */
-> +		iommu = iommu_from_fwnode(NULL);
-> +		if (!iommu)
-> +			return -ENODEV;
-> +		/* Non fwspec drivers must identify their instance internally */
-> +		if (WARN_ON(!iommu->ops->probe_device))
-> +			return -EINVAL;
-> +		iommu = iommu->ops->probe_device(dev);
-> +		if (IS_ERR(iommu))
-> +			return PTR_ERR(iommu);
-> +	}
-> +
-> +	if (!try_module_get(iommu->ops->owner)) {
-> +		ret = -EINVAL;
-> +		goto err_release;
-> +	}
-> +
-> +	dev->iommu->iommu_dev = iommu;
-> +
-> +err_release:
-> +	if (iommu->ops->release_device)
-> +		iommu->ops->release_device(dev);
-> +	return ret;
-> +}
-> +
->   /*
->    * Init the dev->iommu and dev->iommu_group in the struct device and get the
->    * driver probed
->    */
->   static int iommu_init_device(struct device *dev)
->   {
-> -	const struct iommu_ops *ops;
->   	struct iommu_device *iommu_dev;
->   	struct iommu_group *group;
->   	int ret;
-> @@ -434,36 +498,17 @@ static int iommu_init_device(struct device *dev)
->   		if (!dev->iommu || dev->iommu_group)
->   			return -ENODEV;
->   	}
-> -	/*
-> -	 * At this point, relevant devices either now have a fwspec which will
-> -	 * match ops registered with a non-NULL fwnode, or we can reasonably
-> -	 * assume that only one of Intel, AMD, s390, PAMU or legacy SMMUv2 can
-> -	 * be present, and that any of their registered instances has suitable
-> -	 * ops for probing, and thus cheekily co-opt the same mechanism.
-> -	 */
-> -	ops = iommu_fwspec_ops(dev->iommu->fwspec);
-> -	if (!ops) {
-> -		ret = -ENODEV;
-> -		goto err_free;
-> -	}
->   
-> -	if (!try_module_get(ops->owner)) {
-> -		ret = -EINVAL;
-> +	ret = iommu_do_probe_device(dev);
-> +	if (ret)
->   		goto err_free;
-> -	}
-> -
-> -	iommu_dev = ops->probe_device(dev);
-> -	if (IS_ERR(iommu_dev)) {
-> -		ret = PTR_ERR(iommu_dev);
-> -		goto err_module_put;
-> -	}
-> -	dev->iommu->iommu_dev = iommu_dev;
-> +	iommu_dev = dev->iommu->iommu_dev;
->   
->   	ret = iommu_device_link(iommu_dev, dev);
->   	if (ret)
->   		goto err_release;
->   
-> -	group = ops->device_group(dev);
-> +	group = iommu_dev->ops->device_group(dev);
->   	if (WARN_ON_ONCE(group == NULL))
->   		group = ERR_PTR(-EINVAL);
->   	if (IS_ERR(group)) {
-> @@ -473,17 +518,17 @@ static int iommu_init_device(struct device *dev)
->   	dev->iommu_group = group;
->   
->   	dev->iommu->max_pasids = dev_iommu_get_max_pasids(dev);
-> -	if (ops->is_attach_deferred)
-> -		dev->iommu->attach_deferred = ops->is_attach_deferred(dev);
-> +	if (iommu_dev->ops->is_attach_deferred)
-> +		dev->iommu->attach_deferred =
-> +			iommu_dev->ops->is_attach_deferred(dev);
->   	return 0;
->   
->   err_unlink:
->   	iommu_device_unlink(iommu_dev, dev);
->   err_release:
-> -	if (ops->release_device)
-> -		ops->release_device(dev);
-> -err_module_put:
-> -	module_put(ops->owner);
-> +	if (iommu_dev->ops->release_device)
-> +		iommu_dev->ops->release_device(dev);
-> +	module_put(iommu_dev->ops->owner);
->   err_free:
->   	dev->iommu->iommu_dev = NULL;
->   	dev_iommu_free(dev);
-> @@ -2855,9 +2900,10 @@ bool iommu_default_passthrough(void)
->   }
->   EXPORT_SYMBOL_GPL(iommu_default_passthrough);
->   
-> -static const struct iommu_device *iommu_from_fwnode(const struct fwnode_handle *fwnode)
-> +static struct iommu_device *iommu_from_fwnode(
-> +	const struct fwnode_handle *fwnode)
->   {
-> -	const struct iommu_device *iommu, *ret = NULL;
-> +	struct iommu_device *iommu, *ret = NULL;
->   
->   	spin_lock(&iommu_device_lock);
->   	list_for_each_entry(iommu, &iommu_device_list, list)
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index c30d12e16473df..52e74ccdb4dc79 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -48,6 +48,7 @@ struct iommufd_ctx;
->   struct iommufd_viommu;
->   struct msi_desc;
->   struct msi_msg;
-> +struct iommu_device;
->   
->   #define IOMMU_FAULT_PERM_READ	(1 << 0) /* read */
->   #define IOMMU_FAULT_PERM_WRITE	(1 << 1) /* write */
-> @@ -680,6 +681,8 @@ struct iommu_ops {
->   		struct device *dev, struct iommu_domain *parent, u32 flags,
->   		const struct iommu_user_data *user_data);
->   
-> +	int (*probe_device_fwspec)(struct iommu_device *iommu,
-> +				   struct device *dev);
->   	struct iommu_device *(*probe_device)(struct device *dev);
->   	void (*release_device)(struct device *dev);
->   	void (*probe_finalize)(struct device *dev);
+Userspace decides how it sequences things and what steps it takes
+before ending blackout and resuming the VM.
+
+Jason
