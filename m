@@ -1,219 +1,174 @@
-Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 371D25227
-	for <iommu@lists.linux.dev>; Thu,  2 Oct 2025 01:01:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B352D1A285
+	for <iommu@lists.linux.dev>; Thu,  2 Oct 2025 01:01:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759366873; cv=none; b=n6v796UqOlmMeQnziQQA8uKHGst9LD0MX67ptuSmFDFTaL1WNckdqSUBhv3lfaektVqnhSABXpKW/HBH2i6tvYkZahsqny0wVY2Pf0TUsB5aoRXlDfPwN+pgg4Tb7EurLsJ1Xxr3xzWT/JocRG56xbTrklPDHRqNY6dZWXYJkI4=
+	t=1759366915; cv=none; b=Ff1Ta2XBas1ScTZvMKamMdemKHb3gsDMJO9i5EwpJuP84UIB7WbKtf5vMM1M3v96c5dhJRaPiSqegVQNEOO9DulXd4GBV7V5C8QuKU6D39UoPRyosNPy9XeS2ezvyfkbVp3bh78b35othgCdPnS3gLDJcfjaQgP+oVmdoE4MmL0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759366873; c=relaxed/simple;
-	bh=TIu7h1xeIgBHKKl2I6wLR7XEqYt0J6cvSYGxq+2z8nQ=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=jGsBch4k8iC93KENKEs3oB3MjbXYHVMMhRA8txZ7rV1y8rvHzw0qcQ+Rk5c7g4+yoK2ZDksL8qXJMOMUzKoDOhvsZpgwKXFp4SDLrr0nD0BG+C2IqswVX0S/waJq9lAGaYIi5e28GAZMWKCIumPmzpja7dhdZ29CXGWdja+WfmQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=vUcybF5u; arc=none smtp.client-ip=209.85.160.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1759366915; c=relaxed/simple;
+	bh=HCZdNAoMBnXI97RBUrQ9js+GcawBirknDeCnyIBfdF8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=czs9m8HrVY1w9fLJr0YY3HZRFuGPrKvzxLnZDe2vV79nzGGAxARy8NTSlSIPY04dgRNxMrifm7qAX8gJrMnplrU1HmZ8V6x5ORBzoPl3WKCS/lG1XDgFOxZPvg+i0Td345bIM7dMGFgYJkU1ePaekmRAIuF8MSqDEiVf+FnEWX0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=pzJAo28G; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="vUcybF5u"
-Received: by mail-qt1-f173.google.com with SMTP id d75a77b69052e-4de66881569so230341cf.0
-        for <iommu@lists.linux.dev>; Wed, 01 Oct 2025 18:01:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1759366871; x=1759971671; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=TIu7h1xeIgBHKKl2I6wLR7XEqYt0J6cvSYGxq+2z8nQ=;
-        b=vUcybF5u667i3ixQY7rXBbDVuQB9vxx6EYvI/wmUaVK9d1kGJluW1/hJJ3McdM0LQB
-         mUetVOrY+rJjZtHXPwTZ53bubBM/btWDl/7m16BDHBJx5QWlMdvNgcKB9R6rIw9BPizc
-         vjVPBrU190rjUx5O55K8oSqJaNPvQBtU7scKZ/3rnnyk+fVt3QmKnuFNYhgtB0CEU8LM
-         ho5+JZzSQWeIty7SKw+Sm3YFALkBYg8WoWmy795Wd2qzqQaxT97Zfo0cJ5qAhYS0s4ME
-         oCAROpSXI8RbxSVwirI/G+F23mrfG0hxN5yiTr+Ou8R05tFPeobN5T26UulSHV/nl2aI
-         qjIw==
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="pzJAo28G"
+Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 591Ic5mO005972
+	for <iommu@lists.linux.dev>; Thu, 2 Oct 2025 01:01:50 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-type:date:from:in-reply-to:message-id:mime-version
+	:references:subject:to; s=qcppdkim1; bh=+uuV+cAEUShNKUExukS8Sgyd
+	D6777ETGVMv3jAdKCJQ=; b=pzJAo28GyVqZx1sMk+eBu2npT920kGL71Izeb9ie
+	5Sv1dzeXKseKZQpR6MRLHAUdZTQhn9lZI1VA2Tr1CG/guG4ptPbv/EqNjdbZ3lBI
+	YS2+vGtRN/g1FHQ8A4vvoHJVpYXOo6BWE5NE3Cpq/joefc9THzWLWwERRU4TzW+O
+	aU3+Qqn1/Ww3pk6dJoz1LNFZ/b+SrxJEhks3p3a/vxYFJqGXT/5ARVCMZBk+WTeP
+	Hmt2YUjhWVZDtdpfjHfbcwsEvCQyHDsUncpSkhBSRjpcee/3ZFTVM4QGPyksrPOI
+	9RUUmlmKcRQakxMFYTFiIG9oNgZG035AY3j1TEyNGLCeYg==
+Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com [209.85.160.198])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 49e8pdp2e7-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Thu, 02 Oct 2025 01:01:49 +0000 (GMT)
+Received: by mail-qt1-f198.google.com with SMTP id d75a77b69052e-4de2c597a6eso18013991cf.1
+        for <iommu@lists.linux.dev>; Wed, 01 Oct 2025 18:01:49 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1759366871; x=1759971671;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=TIu7h1xeIgBHKKl2I6wLR7XEqYt0J6cvSYGxq+2z8nQ=;
-        b=BIU7i1J5cDUUlobA7aIvqgOC81NaOVSpwnf87TNPVRAF7N2vTPJEXx6hfE6pXcfhgA
-         eD5OTfNVxhe1X9c9jSfMzYIRh6HhB0vVgppuhkyLFFUyCSFUkh6HATAI42dXwKX+8t5z
-         3Sv/P0DJUcEFxBX3x2XuQXVhZnqdm60DHGVAWQ20cYvSrRZOBrMQZ3gdaFdnN2E47JIT
-         pNOlBGM/mHtrpJpZhCD8XP9NAtq01TTuQ7bNd7DgW6WHTr+A/5khnn7ie3/HjcZj17uA
-         w3oluMzFxx+6dxzZ2YSYLHGR2UzXalO6uQu8HB9YKuINKo7i9E2GBYF8Krez6XCHVSgd
-         74kg==
-X-Forwarded-Encrypted: i=1; AJvYcCXwlGV++UM1hXYyxgZyx0Q7adngU/Z0JVxW7pwlDff2nRPyt+OKJ20SY1rVptS6yluuQB6Hsw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzKihlgy4gPqLlfOzKj0wLtU7ckQ92ZeFHG4oR79nIHBmWY5lmJ
-	ZYSyvdrBPcGWWVzIbAOMWXKZhuEm9Ctj8jNKSkPwtPwADj5uQJIfB78tA5OyUYX3pTbqPrmeskG
-	J9RLXgw3XMSQ/96VrO9aoO5EmVBjiLGP94Cr9itFo
-X-Gm-Gg: ASbGncsKDccyBy2JqQGaDOpKuv5BOSqfknhzjet64SWtlrKsjpYs7JNg8LjQjvxYo4e
-	g19EiVKkKlOdIFJaw4Ou+6EBfJO7bOM0Gur20W+xksGpqgTD137Ssj+OQbXILk555tC9SdC10Mm
-	/BVpW4IAfBs33e2MpumL+BY025zk5kmKKGOyGDvPeMKfbmWk4zAtixFhA7z/VaHZ76PPn7s1XNP
-	9Y8ze9m/xMFBoTJegWm9jeUWU8tumt58tIu0QoS8PAp37TmwnA37D/3hWKkDd1UGFRZoWc=
-X-Google-Smtp-Source: AGHT+IEv1WzjEquiM1NfLv5QPI43hNJpK4KVIQfGAHhJ/qmStxnbo/qPo29TIZNVNN+eisyz+YCW0ZgCCimLjJZMX94=
-X-Received: by 2002:a05:622a:1817:b0:4e0:ba0b:6f2a with SMTP id
- d75a77b69052e-4e56b1c363dmr2533731cf.14.1759366870490; Wed, 01 Oct 2025
- 18:01:10 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1759366908; x=1759971708;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=+uuV+cAEUShNKUExukS8SgydD6777ETGVMv3jAdKCJQ=;
+        b=f/QDmIyfx2tco7fj/Hf36YySiqkM6eXvfvnFFFz2LkKUj0sfsejI/KpeErQV0y7pjd
+         J7NWDlm+RWKJfC9x+RhUtvXoTY18fauW27EDOIxckV9TQBd0Gt4EHORa06+zE6IUOsA0
+         YkINkRWy4+rPejmPwPkRGhsmOwS0PaAqgn+nV8pNl5au0aRq7WMzIVcyK85Qz5kt1Fin
+         zy6DqGF6ser0FUZfUN2Nt5sAqcmJ5C9675oGZCv13IYPrm4v4YxVMEh7aN9E/31zlkxu
+         YwJ+lLmNhcyhN7Xnv40zFR5vNueEOOpkP6A85Jvn1HtDtNxBuEB6GqaRkODCcdJ+wjSJ
+         TeZQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUdnezkoDLfRc+HADDRStxzhZ2XGdyEn/qZhKVElx1XFtelClg3s/Aw0Ba94wwQpNT/QjeVEA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwbQ9pI60vi/rXrDEX6VN5rY71tZ/pgebYQ9a442EgffLCZ0J+m
+	+heU2Cp4rjtj0fqbpf3FJU7ZyXpI5zN4gHG2LY1teWFDXM3yaTontA5BPKLTsEhABzxlay+NaFN
+	9nbzd6/W7F4/bI/N3TEqAVtKrgkKFHtQ0l7YgDjCdJ9e15vSGoIyYep/fWA==
+X-Gm-Gg: ASbGncvPuIdIJ0m9C9I04tYUP6OmPORozW4/0rgtUJw1Rrbk6E7xinlz6DKQLehYdN4
+	MHtxinz19W6LWDBvlkrki0CQXh/IVqRIbUAUkNEJQ6oxCdpCMAbi8cr4bNHFxCpllae8nQwYoWS
+	2xswhi2+U3IYAi6kFsiW980LEHmfogauaYzyYxDYTOw120EbVb75bm39R4+GkmuvEctU3UhANCY
+	2q8UQtiAMq4nPPYkq+uoZGntK4MY/TvbZwe/cVv75tTGbLiID8gvgawN9Opl2TBTglDP6lFac8z
+	UT926cgaaw489Hj93J8npw3RvXBLeH5neb7jgw7lga778f7IW1FEDpe8vQmDOUPGHfMKVTU36uc
+	marELCaxxegacbLQ+XxaIAAxcTq1f489XvGbYn6qrTSYgIvrJKdK7xWWQVg==
+X-Received: by 2002:a05:622a:7c0d:b0:4e5:c50:54c9 with SMTP id d75a77b69052e-4e50c505d71mr35071961cf.14.1759366908201;
+        Wed, 01 Oct 2025 18:01:48 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IFn+cgowdIyCiT+tSd84oPTNAKVxBzdxq8x33fvDr8hPGJVsiMB7AsHFEUbdO1IdCvcYvE2oQ==
+X-Received: by 2002:a05:622a:7c0d:b0:4e5:c50:54c9 with SMTP id d75a77b69052e-4e50c505d71mr35071211cf.14.1759366907553;
+        Wed, 01 Oct 2025 18:01:47 -0700 (PDT)
+Received: from umbar.lan (2001-14ba-a0c3-3a00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a0c3:3a00:264b:feff:fe8b:be8a])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-58b0113f3ddsm344791e87.52.2025.10.01.18.01.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Oct 2025 18:01:45 -0700 (PDT)
+Date: Thu, 2 Oct 2025 04:01:43 +0300
+From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+To: Akhil P Oommen <akhilpo@oss.qualcomm.com>
+Cc: Rob Clark <robin.clark@oss.qualcomm.com>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>, Sean Paul <sean@poorly.run>,
+        Dmitry Baryshkov <lumag@kernel.org>,
+        Abhinav Kumar <abhinav.kumar@linux.dev>,
+        Jessica Zhang <jessica.zhang@oss.qualcomm.com>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Jordan Crouse <jordan@cosmicpenguin.net>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org, linux-arm-kernel@lists.infradead.org,
+        iommu@lists.linux.dev, devicetree@vger.kernel.org
+Subject: Re: [PATCH 06/17] drm/msm/adreno: Move adreno_gpu_func to catalogue
+Message-ID: <edfc7ke5ktoah7ftjbwk7dzihsgh2mq7tatfy6a5oxbn6yt7d6@yf6nz7b7jrmx>
+References: <20250930-kaana-gpu-support-v1-0-73530b0700ed@oss.qualcomm.com>
+ <20250930-kaana-gpu-support-v1-6-73530b0700ed@oss.qualcomm.com>
+ <cp7djnezyp4whhfqcnsfpes5kxfbyvqvc2ceimdrnrl7s7agyk@z7ozx6oihezd>
+ <82cd8782-b2ee-46ce-9964-e564ab6a0199@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250928190624.3735830-1-skhawaja@google.com> <20250928190624.3735830-14-skhawaja@google.com>
- <20250929160034.GG2695987@ziepe.ca> <CA+CK2bDqDz3k0gXamJEbKUL7RPBLVjaA5=Jum=CF84wR+50izA@mail.gmail.com>
- <20250930135916.GN2695987@ziepe.ca> <CAAywjhRGrGjZK3jQptieVWmdzvjfNtTYrp2ChTZJSmFyrBaRqw@mail.gmail.com>
- <20250930210504.GU2695987@ziepe.ca> <CAAywjhRQONuHsxTGQZ5R=EJbOHUD+xOF_CYjkNRbUyCQkORwig@mail.gmail.com>
- <20251001114742.GV2695987@ziepe.ca>
-In-Reply-To: <20251001114742.GV2695987@ziepe.ca>
-From: Samiullah Khawaja <skhawaja@google.com>
-Date: Wed, 1 Oct 2025 18:00:58 -0700
-X-Gm-Features: AS18NWClc2AUSNQhBbZ9vE_PU_Z8tSuRXnmyJUXgj81sp5NS2cvTVsg3RJFphCw
-Message-ID: <CAAywjhRKvZBShj7KAXew2v_uGjn3HhvO=sFrZ=bVfMJ8ye-Vyw@mail.gmail.com>
-Subject: Re: [RFC PATCH 13/15] iommufd: Persist iommu domains for live update
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Pasha Tatashin <pasha.tatashin@soleen.com>, David Woodhouse <dwmw2@infradead.org>, 
-	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, 
-	Will Deacon <will@kernel.org>, iommu@lists.linux.dev, YiFei Zhu <zhuyifei@google.com>, 
-	Robin Murphy <robin.murphy@arm.com>, Pratyush Yadav <pratyush@kernel.org>, 
-	Kevin Tian <kevin.tian@intel.com>, linux-kernel@vger.kernel.org, 
-	Saeed Mahameed <saeedm@nvidia.com>, Adithya Jayachandran <ajayachandra@nvidia.com>, 
-	Parav Pandit <parav@nvidia.com>, Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>, 
-	Vipin Sharma <vipinsh@google.com>, dmatlack@google.com, Chris Li <chrisl@kernel.org>, 
-	praan@google.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <82cd8782-b2ee-46ce-9964-e564ab6a0199@oss.qualcomm.com>
+X-Proofpoint-GUID: xFMRTadOdrWkKp0-RJq1-f3Jn9r3uqoy
+X-Authority-Analysis: v=2.4 cv=MYZhep/f c=1 sm=1 tr=0 ts=68ddcefd cx=c_pps
+ a=mPf7EqFMSY9/WdsSgAYMbA==:117 a=xqWC_Br6kY4A:10 a=kj9zAlcOel0A:10
+ a=x6icFKpwvdMA:10 a=EUspDBNiAAAA:8 a=RvmDfw1ThOOzoc4muVMA:9 a=CjuIK1q_8ugA:10
+ a=dawVfQjAaf238kedN5IG:22
+X-Proofpoint-ORIG-GUID: xFMRTadOdrWkKp0-RJq1-f3Jn9r3uqoy
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwOTI3MDAzNiBTYWx0ZWRfXwuPMQ17bU4kV
+ EXqI2pqoFOSIp1K5wA+tLTz77obzXi3tI7fdgAiZpKIqLxQrdJQ31RtDqVUs26aePdIevjPORYk
+ dKRujilavlRvZqZnYtT/U9OsY+MG/b4weK/VZcc/qRQ1+SbhAbcrKBx5ywmNBv/Xnslw5Qj7kVR
+ K671TYr8bGFSmfdawZcmimenNvLOYGNvzFK4GwMLWhN2w3jGyLKJbtCroTtNwOOak63uNByo2LN
+ VDTT3bYM4m0MYaxAxUqYj5XRXfOCDCQhrdEy9o5+GxCB7xcz/YSo09lb2NZLshYoglTpGUXGBEp
+ dGqvpwSBCIUMSkl2DVn6zy/7KxfjnZrYGP1tc2nV7nFgjZHKFiKN+nBACJLiwEPrBEJy3BtQPpX
+ L1tZFot+MDQnD6iWR0QLRygJfXl7bw==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1117,Hydra:6.1.9,FMLib:17.12.80.40
+ definitions=2025-10-01_07,2025-09-29_04,2025-03-28_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ suspectscore=0 clxscore=1015 bulkscore=0 lowpriorityscore=0
+ priorityscore=1501 phishscore=0 malwarescore=0 spamscore=0 impostorscore=0
+ adultscore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2509150000
+ definitions=main-2509270036
 
-On Wed, Oct 1, 2025 at 4:47=E2=80=AFAM Jason Gunthorpe <jgg@ziepe.ca> wrote=
-:
->
-> On Tue, Sep 30, 2025 at 04:15:43PM -0700, Samiullah Khawaja wrote:
->
-> > > The iommu core code should be restoring the iommu_domain as soon as
-> > > the attached device is plugged in and attaching the preserved domain
-> > > instead of something else during the device probe sequence
-> > >
-> > > This logic should not be in drivers.
-> > >
-> > > From there you either put the hwpt back into iommufd and have it free
-> > > the iommu_domain when it destroys the hwpt
-> > >
-> > > Or you have the iommu core code free the iommu_domain at some point
-> > > after iommufd has replaced the attachment with a new iommu_domain?
-> >
-> > But we cannot do the replacement during domain attachment because
-> > userspace might not have fully prepared the new domain with all the
-> > required DMA mappings. Replace during LUO finish?
->
-> The idea is the kernel will restore the iommu_domain during early boot
-> in the iommu_core and then attach it. This should "rewrite" the IOMMU
-> HW context for that device with identical content. Drivers must be
-> enhanced to support this hitless rewrite (AMD and ARM are already
-> done).
->
-> At this point the kernel is operating normally with a normal domain
-> and a normal driver, no special luo stuff.
->
-> Later iommufd will come along and establish a HWPT that has an
-> identical translation. Then we replace the luo domain with the new
-> HWPT and free the luo domain.
->
-> > 1. During boot, the IOMMU core sets up a default domain but doesn't
-> > program the context entries for the preserved device. The hardware
-> > keeps on using the old preserved tables.
->
-> When the iommu driver first starts up it can take over the context
-> memory from the predecessor kernel. But it has to go through it and
-> clear out most of the context entries.
->
-> Only context entries belonging to devices marked for preservation
-> should be kept unchanged.
+On Thu, Oct 02, 2025 at 01:24:36AM +0530, Akhil P Oommen wrote:
+> On 9/30/2025 12:39 PM, Dmitry Baryshkov wrote:
+> > On Tue, Sep 30, 2025 at 11:18:11AM +0530, Akhil P Oommen wrote:
+> >> In A6x family (which is a pretty big one), there are separate
+> >> adreno_func definitions for each sub-generations. To streamline the
+> >> identification of the correct struct for a gpu, move it to the
+> >> catalogue and move the gpu_init routine to struct adreno_gpu_funcs.
+> >>
+> >> Signed-off-by: Akhil P Oommen <akhilpo@oss.qualcomm.com>
+> >> ---
+> >>  drivers/gpu/drm/msm/adreno/a2xx_catalog.c  |   8 +-
+> >>  drivers/gpu/drm/msm/adreno/a2xx_gpu.c      |  50 +++----
+> >>  drivers/gpu/drm/msm/adreno/a3xx_catalog.c  |  14 +-
+> >>  drivers/gpu/drm/msm/adreno/a3xx_gpu.c      |  52 +++----
+> >>  drivers/gpu/drm/msm/adreno/a4xx_catalog.c  |   8 +-
+> >>  drivers/gpu/drm/msm/adreno/a4xx_gpu.c      |  54 ++++----
+> >>  drivers/gpu/drm/msm/adreno/a5xx_catalog.c  |  18 +--
+> >>  drivers/gpu/drm/msm/adreno/a5xx_gpu.c      |  61 ++++-----
+> >>  drivers/gpu/drm/msm/adreno/a6xx_catalog.c  |  50 +++----
+> >>  drivers/gpu/drm/msm/adreno/a6xx_gpu.c      | 209 ++++++++++++++---------------
+> >>  drivers/gpu/drm/msm/adreno/adreno_device.c |   2 +-
+> >>  drivers/gpu/drm/msm/adreno/adreno_gpu.h    |  11 +-
+> >>  12 files changed, 275 insertions(+), 262 deletions(-)
+> >>
+> >> diff --git a/drivers/gpu/drm/msm/adreno/a2xx_catalog.c b/drivers/gpu/drm/msm/adreno/a2xx_catalog.c
+> >> index 5ddd015f930d9a7dd04e2d2035daa0b2f5ff3f27..af3e4cceadd11d4e0ec4ba75f75e405af276cb7e 100644
+> >> --- a/drivers/gpu/drm/msm/adreno/a2xx_catalog.c
+> >> +++ b/drivers/gpu/drm/msm/adreno/a2xx_catalog.c
+> >> @@ -8,6 +8,8 @@
+> >>  
+> >>  #include "adreno_gpu.h"
+> >>  
+> >> +extern const struct adreno_gpu_funcs a2xx_gpu_funcs;
+> > 
+> > Please move these definitions to aNxx_gpu.h (a2xx_gpu.h, etc). LGTM
+> > otherwise.
+> 
+> This is a special case. These symbols needs to be visible only here.
 
-Agreed. We have to sanitize these and remove unused entries. I think
-the same goes for any PASID tables.
->
-> Later we probe the struct device to the iommu and do as I said above
-> to restore consistency.
->
-> > 2. Userspace restores the iommufd, creates a new HWPT/domain and
-> > populates mappings.
->
-> Yes
->
-> > 3. On FINISH, the IOMMU core updates the context entries of preserved
-> > devices to point to the new domain.
->
-> No, finish should never do anything on the restore path, IMHO. User
-> should directly attach the newly created HWPT when it is ready.
+Why? They also need to be visible at the point of the actual definition.
+As such, I think they should be a part of the common gen-specific
+header.
 
-Makes sense. But if the user never replaces the restored iommu_domain
-with a new HWPT, we will have to discard the old (restored) domain on
-finish since it doesn't have any associated HWPT. I see you already
-hinted at this below. This needs to be handled carefully considering
-the vfio cdev FD state also. Discussed further below.
->
-> > I understand the desire to have the preserved iommu domain be restored
-> > during boot so the device has a default domain and there is an owner
-> > of the attached restored domain, but that would prevent the iommfud
-> > from cooking a clean new domain.
->
-> The "default domain" is the "DMA API domain" and it has to be created
-> and setup always. The change here is instead of attaching the default
-> domain we attach the luo restored domain at early boot.
-
-Oh... I meant the group->domain instead of group->default_domain.
-Should have written active domain instead of default domain.
->
-> This sets the device into an "owned" mode but vfio can still attach
-> and nothing prevents iommufd from building a new hwpt and attaching
-> it.
-
-This is the part that I was concerned about since I was looking into
-the auto_domain. Users that attach to ioas directly and use
-auto_domain would not be able to restore the mappings before attaching
-to the device. But users that use HWPT directly should be able to
-prepare a new domain and hotswap when ready. But I think a new
-interface can be built to support IOAS only use cases also. We can
-revisit this later.
->
-> > Maybe we can refine the "Hotswap" model I had in mind. Basically on
-> > boot the core restores the preserved iommu domain, but core lets
-> > iommufd attach a new domain with preserved devices without replacing
-> > the underlying context entries?
->
-> Replace the context entries. If everything is working properly the
-> preserved domain should compute an identical context entry, so no
-> reason to not just "replace" it which should be a NOP.
->
-> > > Also there is an interesting behavior to note that if the iommu drive=
-r
-> > > restores a domain then it will also prevent a non-vfio driver from
-> > > binding to that device.
-> >
-> > Agreed. I think in the "Hotswap" approach I discussed above, if we
-> > don't restore the domain, the core can just commit the context entries
-> > of the new default domain if a non-vfio driver is bound to the device.
->
-> As I said, the owned nature of the device will prevent attaching a
-> non-vfio driver in the first place.
->
-> So the only path forward for userspace is to attach vfio, and then
-> iommufd should take over that luo restored iommu_domain and eventually
-> free it.
->
-> You might consider that finish should de-own the device if vfio didn't
-> claim it. But that is a bit tricky since it needs a FLR before the
-> domains can be switched around.
-
-That's a good point. But it might be tricky since the ownership of the
-device is with the vfio cdev FD. So if vfio cdev FD is never
-restored/reclaimed the device can be FLR'd. iommufd will follow along
-and discard the domain.
-
-The more interesting case might be where cdev is restored and bound to
-iommufd but the user never recreates and hotswaps a new HWPT. In this
-case we can discard the restored iommu_domain and replace it with the
-blocking domain as it should have been if the device was not
-preserved.
->
-> Jason
+-- 
+With best wishes
+Dmitry
