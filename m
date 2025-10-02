@@ -1,213 +1,163 @@
-Received: from DM1PR04CU001.outbound.protection.outlook.com (mail-centralusazon11010069.outbound.protection.outlook.com [52.101.61.69])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEAA11FDA
-	for <iommu@lists.linux.dev>; Thu,  2 Oct 2025 18:00:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.61.69
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759428058; cv=fail; b=RjKcneg8ryRkmFM7C3XhcMwLnQ6vCXE75nik8XcboLZ+3gruWPi9q/Vn4uzm9uZjSF/wxSDDJmrmHECr9MqZQW9ftLtXyuxx4OF73qMG6z234O2rHjr7yl1zmfTmrDydaqHJV+caqgPHg1xyCPQs2cdzk4RqemJZ3/0P19fV7rI=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759428058; c=relaxed/simple;
-	bh=kNRQfJh4o+x3dSwhM4muxrBc/KqFzs8dZgAKSGbVojc=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ShUbEBYzBbryWZ0iFqn0KeLN29YvLCrD9968tZfMwOcjqb+p2LcM9uiYerMHAiTMqbWGsA3HCQwmauRcQyos8OkOPixcR/LL4XVgn/nmMD5SAWNVrrmUUTJg562cDGc2OobFCkFvJZe/04pTQaU07MqDHIAu1TFTiMqGEomgqyU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=B7fPojGE; arc=fail smtp.client-ip=52.101.61.69
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 510C526F287
+	for <iommu@lists.linux.dev>; Thu,  2 Oct 2025 18:08:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.169
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1759428509; cv=none; b=VTGVuKzgqMQWZ5/tkomdtvzI/neqcEAGos3obX/6vi0HF3QMciG12sUw5E7imVVpFNBHVurkwgDb4UZ0cXCbFIbN4cGWFLb8wRq6bYwNvI3QysjhVbNW+lBB48/+bB+c2FNSOW8CuALwN8/Gc2pRv1clB6W4WvcEFckVGI3ugzc=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1759428509; c=relaxed/simple;
+	bh=g38T6g1L7joJTmSvGU76LmE7YNEsX6Xc26blEFLSnfA=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=TwzdnKrShdfNHXgvbBzXWS2KA6MPxWnQvQ4+TA0hf1B6KQAbC0Sd4o6QW1jQF30fk4Hi0h3FGnOR8t1vRwRWSRu/vAuK1aVV0L8myc/65kNTd51XcCM6WHx6AoelVjImvJBAlltvVDYoQnghpB2yj7Z0VS7ys6GdRSJZewvQac8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=QzAxlrbz; arc=none smtp.client-ip=209.85.160.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="B7fPojGE"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=qMeXtOfQAl82RJxnQympvm56MYvGjI2o/OlbkBIJ4wH41HAX9o0t8r59p2Yy/OF92ptE6WS1CK74Q1IXHG71Ty/p1pu8ydi3zL4JczTNbtcPNwBXkPI7nNICQ71x5bYUZdHlmxZKy30fPNwGl6L4r4Hdn7jI97yt8dktCuPif02NBq6l9mG2IUnXWMt/GZEZfTXC8hFswhJRXUM9p9wPVgjCPsaqCanEj4yp75sHXhsdfEf/2nIfN6lQwKI33xoy3sUWm6sFfywll2nvuxV74cdvfITbCvodQw9Ie+hOpcjgaBVx4VlXZGU1EDES0psla1SA6O1Jy01fu0PDHX2D6A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Cw9gf6CvO21FHUIFWBx+li6pgjdUSPIjkyS4r//kS00=;
- b=dI3A3LdAdhw4DuGupqZdZxcL7Y8x41q129Nj90PPvxmcTieaaK9Iq9D1AsxSMXG8hVIuB0dyVP4o3lyFbMsPJosZHmTapfcvLzM31oSZimIdAfWc1MqxrgZ+Uo5B7quiAptlaNuangAOBD0zox5Rt4t0XZwpdxHnY1Sh580fS5+E/y1QpS+ghR/Z3RnHlExEDXjATFYgGfnuuCc5RsQt/c+dYE2F/X0rsokdtnSL7iz+W+pENJu7HX8eL063srXERefaFegwB2WWRNf7oyyE1tV8lMYJe2D7lkzuXsslLetLAu/BhL0AsqB5gbenAcDG4+tjXDEImN1w54eEmZ+HpA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=amd.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Cw9gf6CvO21FHUIFWBx+li6pgjdUSPIjkyS4r//kS00=;
- b=B7fPojGElZiAxA+tElaz7cbHBE9likyjwuk9skhJ1tg7uP4UrYJwi0UPFnpa7k2o/cjjoy8Rm7P52QyK5t68SgTlcxqgbE81b2eRdiDQGwohap7HgI7Gz+bSExE7DNmgGAvsKtOdE/9NbGLHN3N+JJ8KFguPurDUYeifrcWTOxN26DKF+If42+QGxotVk4r6CumXwgNKMoDvO96313ceKy0gumC9DY9HrmsD/nou0niEDEs+p4LXn9vKTb/Z5rspGWu4+qd1nfNgTMdBmiI7Fg4vsSz3/PCVTD8yVVf5Q6WB1lA6eY7sbzhsEhnIQDDV8sTQJMcb3KEzfTxC+VhbHQ==
-Received: from SN7PR04CA0091.namprd04.prod.outlook.com (2603:10b6:806:122::6)
- by SN7PR12MB7979.namprd12.prod.outlook.com (2603:10b6:806:32a::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9160.18; Thu, 2 Oct
- 2025 18:00:46 +0000
-Received: from SA2PEPF0000150B.namprd04.prod.outlook.com
- (2603:10b6:806:122:cafe::17) by SN7PR04CA0091.outlook.office365.com
- (2603:10b6:806:122::6) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9182.14 via Frontend Transport; Thu,
- 2 Oct 2025 18:00:38 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- SA2PEPF0000150B.mail.protection.outlook.com (10.167.242.43) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9182.15 via Frontend Transport; Thu, 2 Oct 2025 18:00:46 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Thu, 2 Oct
- 2025 11:00:18 -0700
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail205.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Thu, 2 Oct
- 2025 11:00:17 -0700
-Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.129.68.10)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
- Transport; Thu, 2 Oct 2025 11:00:15 -0700
-Date: Thu, 2 Oct 2025 11:00:14 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-CC: <jgg@nvidia.com>, <linux-kernel@vger.kernel.org>, <robin.murphy@arm.com>,
-	<will@kernel.org>, <joro@8bytes.org>, <kevin.tian@intel.com>,
-	<jsnitsel@redhat.com>, <vasant.hegde@amd.com>, <iommu@lists.linux.dev>,
-	<santosh.shukla@amd.com>, <sairaj.arunkodilkar@amd.com>, <jon.grimm@amd.com>,
-	<prashanthpra@google.com>, <wvw@google.com>, <wnliu@google.com>,
-	<gptran@google.com>, <kpsingh@google.com>, <joao.m.martins@oracle.com>,
-	<alejandro.j.jimenez@oracle.com>
-Subject: Re: [PATCH v2 09/12] iommu/amd: Add support for nest parent domain
- allocation
-Message-ID: <aN69rkBJS2hIcZjk@Asurada-Nvidia>
-References: <20251001060954.5030-1-suravee.suthikulpanit@amd.com>
- <20251001060954.5030-10-suravee.suthikulpanit@amd.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="QzAxlrbz"
+Received: by mail-qt1-f169.google.com with SMTP id d75a77b69052e-4dcc9cebfdfso31771cf.1
+        for <iommu@lists.linux.dev>; Thu, 02 Oct 2025 11:08:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1759428507; x=1760033307; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=g38T6g1L7joJTmSvGU76LmE7YNEsX6Xc26blEFLSnfA=;
+        b=QzAxlrbz2+x3NaS6FY/ICYd4v5AuaMAbQO2R/JtmzcJQrGC3Zb7GEfPiIrm5eR1WzJ
+         A03ZjsUicml/v5erE735DorBR5IUbXX31dXSVNpW5Yb2X93uEpiDRdJ1XWj9T8G72ZYl
+         UhRvYCCZ30Bd/uYrcDU0yLqf62/EXOEFIkIkavsKJFDoDfDS6kWQ3cJ2ipX0mLWiWI76
+         x7sxOEJfeiXIOEjw4Nufz9Fe/yYD7pzPUhFJkjNxL9hM4YeGF6RsSGyNv47QaG1US8Lx
+         Lzc9QBz3ZXGqROAZyDohp72FmHr/O8maVW+5u8njtmQmTNUNtKmUby2qqrM1audYvWed
+         7F/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1759428507; x=1760033307;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=g38T6g1L7joJTmSvGU76LmE7YNEsX6Xc26blEFLSnfA=;
+        b=h9WnX7PTFkT6Rclx5wCR02icq/ggWL46gh35FnGOnCAUTPcFbQOIXk3Q71OhEUUjzk
+         tBqPQorf0thuJ5mRm7ydeRykTQjcRqERwpqqNkb92eng8+4AWGStutbJeNAp8+QHkVhr
+         EvVcGhZJ8Nj6BHCruM/JgjbtaacJBzn6iBZwelxwUMnuuXoOBF2s/plxviE9RcR7zDKp
+         aMi1lFK23KVUfyTe6xzBaNbeIrA+HT4ItUmwI+skJ5LflQeTvTJQLoqtGAt6lOnqSOFe
+         Ony/mDlHG0r9bewN8tfVurYt3I1fLhMezTG/4TqsXgCDA/vY18MxWUciz2prKWqyEIdD
+         Ib9g==
+X-Forwarded-Encrypted: i=1; AJvYcCWdvbnkOq0w3jQ9wgtiPAHSQQvn8ehom7Uj8Qb+IFbT5ZB0f+JuQzhGaqMliwVEbrZsHsy5xQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yz4E8uBjaFjc2ITitrX+GNTisVQPlWOcPIRrwG+Y81S+vtqOmfk
+	cLM6wRV0OzMTfO5TPG75+j7XKtYiOlIIIKyOewLA8vF5u6v4K+VxD7+4x6d/Wb2nuv8CKS+Hfpo
+	KV0aiueshz4xAhqk/+TAa5hUQr5/zzvXQqRnDCEr3
+X-Gm-Gg: ASbGnctjvAjY7uS8i0iZmsFpTOqGQC4akytEwfi+Ka5sX9+x43N7ojyT9/bJcDRR0Vx
+	nicLRiVl4iR5vPpeH2cBiJLTKHbC+4oh9TMwEf6pVleHYTBvAoLdiVWRLTD1etYBL1jVr4bm9Xb
+	JpqPyK7eY9oFQ3O8rrl4EetQMyHjwGgQyXxcJh0D8xrXDZcv65LbxNhCvJT/9l4b1TLZho7Qcbv
+	zJLgVdpvFLhGEk7elvWsxpCYEs0vlRCz8QSlzZFIIYaA1rqJ+0qrByMfaPeU20NSlZgbOg=
+X-Google-Smtp-Source: AGHT+IFgcqgS6ij+CGSYq6UnkUeAzdjMDFKaA1fGxKd4PkuuqKYQ/kuguF6nULX/Gyc2qNd4HMMNrn1RGTamPFxAjfM=
+X-Received: by 2002:a05:622a:44b:b0:4b7:94d7:8b4c with SMTP id
+ d75a77b69052e-4e5769456e8mr540491cf.0.1759428506788; Thu, 02 Oct 2025
+ 11:08:26 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20251001060954.5030-10-suravee.suthikulpanit@amd.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SA2PEPF0000150B:EE_|SN7PR12MB7979:EE_
-X-MS-Office365-Filtering-Correlation-Id: f059aa28-7bd6-49cc-c7a3-08de01dd9d0e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|376014|82310400026|36860700013|7416014|7053199007;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?MIobF4Ch4CNi99yCOy0yuCBABd0T8+Dor+UUlEAOm+k4Wnvu+sSvNlyiTn9n?=
- =?us-ascii?Q?z/Rv94kfgQORG7D3cEAagIMr0Z3uZDzPaZ5rjmdbIYqJZAqP+MRg+XY19VTa?=
- =?us-ascii?Q?sEGulGPVvQTrHwFfTSP4Nv/kY/qT0jXKwwzsN7hMAhPfy6LzHq0+YOfajfl1?=
- =?us-ascii?Q?ifkXJVK0JjDAH3Qye+vz9CsNy///qOF5J+xBNkN5S4PDl1DnR9dVLW5KSm74?=
- =?us-ascii?Q?W3xxDSGVjxH/pbVZS/BCWF0gVmyzbMIqcPI+LEGZnv9IdjyCgBPQJ1wgkIwx?=
- =?us-ascii?Q?dpnqOcC2UVKevcrSBsRxorNp7jkp2b/njhpCQ6dAOqD6BPO8UjR7OkMx1C3C?=
- =?us-ascii?Q?bvHcnMimuvaAveVdz+rRC1EWJYm+nxiP3AtJ1hilBmn/i+kyr1NGpvKElNYt?=
- =?us-ascii?Q?BLY+kkbfK9CTT3Y5KXTs/ctqBnjKfPFQozOBgPjnRqYidqJLk6H47jdMdP1D?=
- =?us-ascii?Q?1MLu1O6dW73T1B5EeuBNOBpYOGsyE0l5PAJLcJjqILWCDfCoq9G2Rf0SmVjP?=
- =?us-ascii?Q?XLM1RzxB/YAgWw6tp4fN2QUfAKy81aEMMlJbUgh62uKtD77uJHM0fbru9ZQz?=
- =?us-ascii?Q?Q8teVIgYH1IWssfqSpuaMplL5CrLN299kmUzE/Cn9YK5ca4tqrqqRGyu6h7A?=
- =?us-ascii?Q?WrGSRNYmsDO/NrjfE+Voo9S7K+NZb8hXvXJVQNfMf4UBxppX+bIpFOscTA5F?=
- =?us-ascii?Q?eNXb0sCFbPCJ/jhSrjzVSwnVeyi+GbAhOT1IOWm8mufoo9DVzKRywl+kjLFP?=
- =?us-ascii?Q?Pfr8sNuXAjUUL5Pro4u3BQec4wITDVp3lDCC5CBJ60ze4Qj3+5+y9oL7vL37?=
- =?us-ascii?Q?fUDCOeUnyE0Voo6LcQioefOlURexuMtsvdDxBfLn1YYia9MCNLUZi72ivCFO?=
- =?us-ascii?Q?/nKiR7d49otymyqMDNpLquSsc2w1dYqEh6KThEcaXN2K+y67AY5giGus2/yP?=
- =?us-ascii?Q?owt2q4rfRItmsvrq6Ytoz2CvO/KHwCIuj4z3gEgGdLGb34gBy9rAH6BJEXpL?=
- =?us-ascii?Q?Dz9s1r2wU84+uo+hWEmWBbj7klhBduixBb1P0UHEBB42ZiGCIpdvDt2vtg7h?=
- =?us-ascii?Q?xrqxc7jcv29qXjSFgkM2nq4pD/sAOlQAduxretyJzYkqTEe81mnNUxdLecdW?=
- =?us-ascii?Q?3Jk+HG8jgVYqBXL+GbKt7u6jNDVioyHXxoJvuOObh3Xvv7EW+OPvILDJtnlL?=
- =?us-ascii?Q?i9WBUADu5Usg2+f4uiKUBhkCnEyhqqH1q1KZyEZKbkBmVPjESR562Ivzm3fV?=
- =?us-ascii?Q?f/tk7bZVECbD07S6+I3QzdZqWyGeFDnVCTqe1WIooWRyt5OJVShOqDluLoNQ?=
- =?us-ascii?Q?U68ED+tR4snakYSqrSn3qT0l4mGd0s179NFs01I1krTme1YWXaeOCgZ0TsEI?=
- =?us-ascii?Q?jJ95bhhKDi9j5/Qe/aJj9lFPH78rvRwTkeijNMlLW0QJb7BULMZ6V9FO5+tA?=
- =?us-ascii?Q?ZIWavXM+6rr5H/xnPCaG66WURQES1E5BxF/dtF9IBEYWr68vyulP+VcpPcbB?=
- =?us-ascii?Q?0vOtgEtywV8QoBHvxlVM0PoUqTWj2A0JQ9kuK71l9N+m/jB+7VEm0G9XN1uP?=
- =?us-ascii?Q?eusIDNnYEuNB2q71Ghc=3D?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(376014)(82310400026)(36860700013)(7416014)(7053199007);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Oct 2025 18:00:46.6265
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: f059aa28-7bd6-49cc-c7a3-08de01dd9d0e
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SA2PEPF0000150B.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB7979
+References: <20250929160034.GG2695987@ziepe.ca> <CA+CK2bDqDz3k0gXamJEbKUL7RPBLVjaA5=Jum=CF84wR+50izA@mail.gmail.com>
+ <20250930135916.GN2695987@ziepe.ca> <CAAywjhRGrGjZK3jQptieVWmdzvjfNtTYrp2ChTZJSmFyrBaRqw@mail.gmail.com>
+ <20250930210504.GU2695987@ziepe.ca> <CAAywjhRQONuHsxTGQZ5R=EJbOHUD+xOF_CYjkNRbUyCQkORwig@mail.gmail.com>
+ <20251001114742.GV2695987@ziepe.ca> <CAAywjhRKvZBShj7KAXew2v_uGjn3HhvO=sFrZ=bVfMJ8ye-Vyw@mail.gmail.com>
+ <20251002134112.GD3195829@ziepe.ca> <CAAywjhQrAWPjb8YtO=+G+pfJpW7p-rwrj03zB8ZqdhB0wtsO0w@mail.gmail.com>
+ <20251002173715.GH3195829@ziepe.ca>
+In-Reply-To: <20251002173715.GH3195829@ziepe.ca>
+From: Samiullah Khawaja <skhawaja@google.com>
+Date: Thu, 2 Oct 2025 11:08:14 -0700
+X-Gm-Features: AS18NWB8vFBhNg3zLO-LSZdH2zdVlC9_FLZZQKmUF4ohKaV1RcU7Tg5O2RPHFCY
+Message-ID: <CAAywjhQsyU4j4wfOqVuLxaVu0FsxuqCCjhJHuk4vcYAo3Cqh_g@mail.gmail.com>
+Subject: Re: [RFC PATCH 13/15] iommufd: Persist iommu domains for live update
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Pasha Tatashin <pasha.tatashin@soleen.com>, David Woodhouse <dwmw2@infradead.org>, 
+	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, 
+	Will Deacon <will@kernel.org>, iommu@lists.linux.dev, YiFei Zhu <zhuyifei@google.com>, 
+	Robin Murphy <robin.murphy@arm.com>, Pratyush Yadav <pratyush@kernel.org>, 
+	Kevin Tian <kevin.tian@intel.com>, linux-kernel@vger.kernel.org, 
+	Saeed Mahameed <saeedm@nvidia.com>, Adithya Jayachandran <ajayachandra@nvidia.com>, 
+	Parav Pandit <parav@nvidia.com>, Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>, 
+	Vipin Sharma <vipinsh@google.com>, dmatlack@google.com, Chris Li <chrisl@kernel.org>, 
+	praan@google.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, Oct 01, 2025 at 06:09:51AM +0000, Suravee Suthikulpanit wrote:
-> To support nested translation, the nest parent domain is allocated with
-> IOMMU_HWPT_ALLOC_NEST_PARENT flag, and stores information of the v1 page
-> table for stage 2 (i.e. GPA->SPA).
-> 
-> Also, only support nest parent domain on AMD system, which can support
-> the Guest CR3 Table (GCR3TRPMode) feature. This feature is required in
-> order to program DTE[GCR3 Table Root Pointer] with the GPA.
-> 
-> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+On Thu, Oct 2, 2025 at 10:37=E2=80=AFAM Jason Gunthorpe <jgg@ziepe.ca> wrot=
+e:
+>
+> On Thu, Oct 02, 2025 at 10:03:05AM -0700, Samiullah Khawaja wrote:
+> > > I think the simplest thing is the domain exists forever until
+> > > userspace attaches an iommufd, takes ownership of it and frees it.
+> > > Nothing to do with finish.
+> >
+> > Hmm.. I think this is tricky. There needs to be a way to clean up and
+> > discard the old state if the userspace doesn't need it.
+>
+> Why?
+>
+> Isn't "userspace doesn't need it" some extermely weird unused corner
+> case?
+>
+> This should not be automatic or divorced from userspace, if the
+> operator would like to switch something out of LUO then they should
+> have userspace that co-ordinates this. Receive the iommufd, close it,
+> install a normal kernel driver.
+>
+> Why make special code in the kernel to sequence this automatically?
+>
+> > session manager (VMM or LUOD) decides that the finish needs to happen
+> > and the iommufd (or the underlying HWPTs) are not restored, it means
+> > that LUOD has decided that the VM is not going to come up and the
+> > preserved state and resources (domain, device, memory) need to be
+> > freed/released.
+>
+> I've been assuming if luo fails so catastrophically the whole node
+> would reboot to recover.
+>
+> Is there really a case where you might say a kexec happens and a
+> single VM out of many doesn't survive? Seems weird..
+>
+> So to repeat above, if this is something people want then the
+> userspace should complete luo restoring the failed vm and then turn
+> around and free up all the resources. Why should the kernel
+> automatically do the same operations?
+>
+> Maybe userspace needs some contingency flow where there is a dedicated
+> reaper program for a luo session. The VMM crashes during restore, OK,
+> we pass the luo FD to a reaper and it cleans up the objects in the
+> session and closes it.
 
-> +static inline bool is_nest_parent_supported(u32 flags)
-> +{
-> +	/* Only allow nest parent when these features are supported */
-> +	if ((flags & IOMMU_HWPT_ALLOC_NEST_PARENT) &&
-> +	    (!check_feature(FEATURE_GT) ||
-> +	     !check_feature(FEATURE_GIOSUP) ||
-> +	     !check_feature2(FEATURE_GCR3TRPMODE)))
-> +		return false;
-> +
-> +	return true;
+These are all great points. I agree, it makes sense. It keeps the
+FINISH lightweight and makes the domain ownership model very clean. I
+will further discuss the memfd dependency scenario in the other
+thread.
+>
+> > > Maybe the HWPT has to be auto-created inside the iommufd as soon as i=
+t
+> > > is attached. The "restore" ioctl would just return back the ID of thi=
+s
+> > > already created HWPT.
+> >
+> > Once we return the ID, do we make this HWPT mutable? Or is this
+> > re-created HWPT just a handle to keep the domain ownership?
+>
+> That's a bigger question..
+>
+> For starting I was imagining that the restored iommu_domain was
+> immutable, eg it does not have map and unmap operations. It never
+> becomes mutable.
+>
+> As I outlined this special luo immutable domain is then attached
+> during early boot, which sould be a NOP, and gets turned into a HWPT
+> during iommufd restoration. The only thing userspace should be able to
+> do with that HWPT handle is destroy it after replacing it.
 
-If the "flags" doesn't have IOMMU_HWPT_ALLOC_NEST_PARENT while one
-of the features is missing, this would return true, indicating the
-HW supports nesting parent, which will be logically wrong although
-it does validate the nest parent flag.
-
-Following the existing coding style, I think this could be just:
-
-static inline bool is_nest_parent_supported(void)
-{
-	/* Only allow nest parent when these features are supported */
-	return check_feature(FEATURE_GT) && check_feature(FEATURE_GIOSUP) &&
-	       check_feature2(FEATURE_GCR3TRPMODE);
-}
-
-> @@ -2591,15 +2603,22 @@ amd_iommu_domain_alloc_paging_flags(struct device *dev, u32 flags,
->  {
->  	struct amd_iommu *iommu = get_amd_iommu_from_dev(dev);
->  	const u32 supported_flags = IOMMU_HWPT_ALLOC_DIRTY_TRACKING |
-> -						IOMMU_HWPT_ALLOC_PASID;
-> +						IOMMU_HWPT_ALLOC_PASID |
-> +						IOMMU_HWPT_ALLOC_NEST_PARENT;
->  
-> -	if ((flags & ~supported_flags) || user_data)
-> +	if ((flags & ~supported_flags) || user_data || !is_nest_parent_supported(flags))
->  		return ERR_PTR(-EOPNOTSUPP);
-
-Un-change this, given the code below is already validating flags.
-
->  	switch (flags & supported_flags) {
->  	case IOMMU_HWPT_ALLOC_DIRTY_TRACKING:
-> -		/* Allocate domain with v1 page table for dirty tracking */
-> -		if (!amd_iommu_hd_support(iommu))
-> +	case IOMMU_HWPT_ALLOC_NEST_PARENT:
-> +	case IOMMU_HWPT_ALLOC_DIRTY_TRACKING | IOMMU_HWPT_ALLOC_NEST_PARENT:
-> +		/*
-> +		 * Allocate domain with v1 page table for dirty tracking
-> +		 * and/or Nest parent.
-> +		 */
-> +		if ((flags & IOMMU_HWPT_ALLOC_DIRTY_TRACKING) &&
-> +		    !amd_iommu_hd_support(iommu))
->  			break;
-
-And add here:
-		if ((flags & IOMMU_HWPT_ALLOC_NEST_PARENT)) &&
-		    !is_nest_parent_supported())
-			    break;
-
-Otherwise, this looks good to me:
-
-Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
+Okay, this is great. An immutable HWPT associated with the restored
+iommu_domain confirms my intuition that this is just a handle to the
+underlying domain. The user can destroy it when it is replaced, or
+when iommufd is closed without HWPT replacement.
+>
+> Jason
