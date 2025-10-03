@@ -1,196 +1,150 @@
-Received: from mail-wm1-f73.google.com (mail-wm1-f73.google.com [209.85.128.73])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from cmx-mtlrgo001.bell.net (mta-mtl-008.bell.net [209.71.208.31])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24E392DBF75
-	for <iommu@lists.linux.dev>; Fri,  3 Oct 2025 17:32:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.73
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC22617A2E1;
+	Fri,  3 Oct 2025 20:29:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.71.208.31
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759512773; cv=none; b=ESLnytkD+xpw/9IlXiJvW4YHXFAdfz4eHeI2jnpIhS96pwWxi5ZZt9+kXU/nn3RhG8ZArbraRjZhk2tQkWsCYAiDiVAQh0MtqUoChb5DjPxNBa5d4UMH6zUNDHOgGjSl5ojSyxEdG+qPJv7QNjuk0lMe2CObOviBg4IznXtROpI=
+	t=1759523364; cv=none; b=ViD4mXlTfPva7qQjxXhHWA43tiyCW4OxkALI6HT0XWDO3QgHKACjuob1wwdw/y//EcNiGCnHa+iIfo1vEuedhkHHps9hh1DuX2CRpnBWTpsjr2RIBwo6SE35jrMO31S5i8YEQoLNB6+YdVRHH70CD9JeiqtMqmEWLj69ul33rCA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759512773; c=relaxed/simple;
-	bh=yI6VMn+rJIop9uglbD/KsbP7syNK0e5JT3wJcuKCcIc=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=XSEJg0HP0Z0MAkpOQfdGN4PEdvhEVw0+R0DeFFPoJr91dwwHyz89FST1SgLSqZ5YveA21SUiBM4WpDzoAQWodW4qmSFntkL+KpJXnnmgTyRxKzPnw1tpf7Z9uQeyHsjU8fb6qlSyth7EwPEZQKME1R4T0XiMusKp5dcYmXc0bA4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=mE8nwmXV; arc=none smtp.client-ip=209.85.128.73
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com
+	s=arc-20240116; t=1759523364; c=relaxed/simple;
+	bh=ElPDQiuadoR9C0rLZs+feEn9fL50HvihNVM98MScwDA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=XameFolJFsdVJwDfX9Dj+hATxVSsQRoFKKbVNA43W2usMukdGz/wOTlTM/2YvUqRiiQX/QMtOU1844N81d3IERy29+PJNJEvt2C6gw8FhnpYCFvLb4FdR6C6fiYUPRB54r5nfAtvsPop2vF9lYnCJJFatUF30tCl22pxiedhsHU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bell.net; spf=pass smtp.mailfrom=bell.net; dkim=pass (2048-bit key) header.d=bell.net header.i=@bell.net header.b=xd+jZoa4; arc=none smtp.client-ip=209.71.208.31
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bell.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bell.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="mE8nwmXV"
-Received: by mail-wm1-f73.google.com with SMTP id 5b1f17b1804b1-46e4943d713so18227725e9.1
-        for <iommu@lists.linux.dev>; Fri, 03 Oct 2025 10:32:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1759512768; x=1760117568; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=AgDVF0Sn62dc4Fy33aQ885t/YxSjHp9XC3s20FTM60M=;
-        b=mE8nwmXV2HOp9dM2fowhrNWLjrhmD9lx+Kl7Oe9BjwissLNYO9YQkK536FZvvs+wmr
-         b7ia/1UegzzCESCdH8Zknif2cY+85RUAO1MUS/tjy0Fq0FVxEX0vMOZMgCuzRPpTN6mg
-         rSvvUcc283BskPb7OpFJ6cBEkwBtAsL4B+WO4iN3TRqTlmAVeqtKkNc91IaCQFgxzOhp
-         Is2LsCt7EzC/ECgMTmdAYrSbCoyqXdP3YdzfLnF9S6n9WGYm3F34SUC6oEcQWrln5pRU
-         V7YLIPs4MHRW3NT0406LKBzwu2HnFEQ5GIE/capm0HmbgxGMoO1EKG5vuYDJuA4+i2/Z
-         ZrjA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1759512768; x=1760117568;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=AgDVF0Sn62dc4Fy33aQ885t/YxSjHp9XC3s20FTM60M=;
-        b=kd8zMfXcIxglokilEiYqfSdFSEzi6Vz4s7MUeC7jwB/l1wJP/A7sKa0jDBvbQWN5oF
-         5CCiGSgrovquZcaER/C46lKs7pWFv7d6ZcHJTIDUDiG9EYJ3Fci5NO1hI2DfYiWOD2CN
-         ZxSXZlwQKT+QZan8/0JJfgiz6Id6epuK9Rm2iTOpaE32LjxrDLS3T8KWk8KgXjkUs/P+
-         LptfK/pSuCHtsP+pA49Ad5jf7lXJIrth0TF3+GHlWiqwlqg4xa0Lbcd0YYIOO9tqgIbU
-         FWW1YuVcofUGiQ4psq0BB0UfjRxeo08//3Ed+yrq27HzpiSYsNn8fCbQeKFszXy4+wnn
-         mtsA==
-X-Forwarded-Encrypted: i=1; AJvYcCUkt5nCedkypAm1JvyJQJtrl45P9X0iQegCz/W6KLdtDbmam4MMgXoYvCr+lk0QdvuouH9Wug==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyyaCFPVZ/zuh/td6p6VmIfbRSW72hx5buLSgbLQonbVNHLbbBe
-	IFi8S6m3sfUlI9tOv8qdwEEqm1JMZ0cDtDVMDhQ9+91IMEDudSZTovdd3tF9aUcER8dccOR7zhc
-	v9+ECr+AP1QkfVQ==
-X-Google-Smtp-Source: AGHT+IE28Cn+D6RTRtX91pYwDnd5zfpJjbOEGfORhMIoLTvvcoagejiT2Mcgwr5tybnnq3WA/m4ZzUqRkVc5Cw==
-X-Received: from wmcn6.prod.google.com ([2002:a05:600c:c0c6:b0:45d:d522:48a9])
- (user=smostafa job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:600c:8115:b0:46e:3b81:c3f9 with SMTP id 5b1f17b1804b1-46e71143012mr33226465e9.17.1759512768358;
- Fri, 03 Oct 2025 10:32:48 -0700 (PDT)
-Date: Fri,  3 Oct 2025 17:32:28 +0000
-In-Reply-To: <20251003173229.1533640-1-smostafa@google.com>
+	dkim=pass (2048-bit key) header.d=bell.net header.i=@bell.net header.b="xd+jZoa4"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bell.net; s=selector1; t=1759523362; 
+        bh=ZSiozYL9av6/yqYZ1ojB886S7qQBNu1kIdF3OOFiSt4=;
+        h=Message-ID:Date:MIME-Version:Subject:To:References:From:In-Reply-To:Content-Type;
+        b=xd+jZoa49i+8XhpeLuMxtaYRu6uq8Z9nmG1SyFHdVJI8wzbJDyq13RrznHKLiHZGhnrE2gaazMTJLUI5HHGXQkuUSmilqgnRKpaGBoyxajqD7kdFqNeJACcSZ7EgcDvOVTJ/VCCoWYhVdQKLuL/KC48IwdAVHXTZvQWArq6d0RJ+K3jlz7oQWL9xrT8EpKodyrh9qZdKYntXzfFQOrobw3qOfnS78Edoif68mJsml+YnfMuUMrtbGSrNgVoVfzqJiCZ3RmQoK19E39Yy5iSwRHgwoYFlo5f2zBFKQ2aNxQnQNWTYaAp+8xZ747HsMA3b3sXmaYpw4CUHYYffmAwY0Q==
+X-RG-SOPHOS: Clean
+X-RG-VADE-SC: 0
+X-RG-VADE: Clean
+X-RG-Env-Sender: dave.anglin@bell.net
+X-RG-Rigid: 68C1701503F87783
+X-RazorGate-Vade: dmFkZTFAVSVH3SiUOFRgEpdKbxkygZJRN+wjQ3+7JLA/aHxHSm5i7/PF4mTBT8WtBn7+lxiMRPYLKXtCf7iS9x+McIrTICRECzSEsBDDmX0g+rXi4ctSksWPFcfviRm+PotPodUreZwFE6frq9b/vZEWb9zohQp8N7b1TBIv581R6bMFc3aRYEoBuh6XFu7wQcCcbyctvLBQ9AekV97lK3DUxQ9tGcTDjh44Ei8XDzNWZYGLXru/OXuyyVa7U035NNK7XE/UT2nBkRYYlTzUefAExYdm5r1AjIdGXoCVmMdRppQMDACxagJbItn+DPkJkK1D0uasAZcsSUoBAyFDdObcd9rbrkK+4MlJQXN6niRN7ztkec65gQWM7JFKddfdKIVZMsOdle3RXVrmEbYnkuZw+ClrPLYlsCYCGLNnzy9/eHGWmdlSKWKykBjq3V3P/imMdsohjOWPsu3FAU7N961cqrCS6BAleJcJRZ7cZRqO1xwU6qJPWAk1eKkeK2KmEypOTyHDN/P+DrdGdY/zckiNfWcrY1QB9SoGB7IFYrdtE99hVyEjkzjAzm/yGBJlaP3J8IBYWqFZyPtHFt6E+Ch59FlmNbZ+3GPApsc7p/7XvSOS82tfG4hA2Bu9MDLbD+hvLd4FUqQUBf0W5NH3gX5MPaP17NoqnnFOR1XFqkNnFwFm0g
+X-RazorGate-Vade-Verdict: clean 0
+X-RazorGate-Vade-Classification: clean
+Received: from [192.168.2.49] (142.126.189.246) by cmx-mtlrgo001.bell.net (authenticated as dave.anglin@bell.net)
+        id 68C1701503F87783; Fri, 3 Oct 2025 16:28:45 -0400
+Message-ID: <45e1dff3-aff1-4a41-ab24-6eddf6171e3a@bell.net>
+Date: Fri, 3 Oct 2025 16:28:45 -0400
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20251003173229.1533640-1-smostafa@google.com>
-X-Mailer: git-send-email 2.51.0.618.g983fd99d29-goog
-Message-ID: <20251003173229.1533640-4-smostafa@google.com>
-Subject: [RFC PATCH 3/4] drivers/iommu-debug: Track IOMMU pages
-From: Mostafa Saleh <smostafa@google.com>
-To: linux-mm@kvack.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	linux-doc@vger.kernel.org
-Cc: corbet@lwn.net, joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, 
-	akpm@linux-foundation.org, vbabka@suse.cz, surenb@google.com, mhocko@suse.com, 
-	jackmanb@google.com, hannes@cmpxchg.org, ziy@nvidia.com, david@redhat.com, 
-	lorenzo.stoakes@oracle.com, Liam.Howlett@oracle.com, rppt@kernel.org, 
-	Mostafa Saleh <smostafa@google.com>
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v1 3/9] parisc: Convert DMA map_page to map_phys interface
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Leon Romanovsky <leon@kernel.org>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Leon Romanovsky <leonro@nvidia.com>, Andreas Larsson <andreas@gaisler.com>,
+ Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>,
+ "David S. Miller" <davem@davemloft.net>, Geoff Levand <geoff@infradead.org>,
+ Helge Deller <deller@gmx.de>, Ingo Molnar <mingo@redhat.com>,
+ iommu@lists.linux.dev,
+ "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+ Jason Wang <jasowang@redhat.com>, Juergen Gross <jgross@suse.com>,
+ linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+ linuxppc-dev@lists.ozlabs.org, Madhavan Srinivasan <maddy@linux.ibm.com>,
+ Matt Turner <mattst88@gmail.com>, Michael Ellerman <mpe@ellerman.id.au>,
+ "Michael S. Tsirkin" <mst@redhat.com>,
+ Richard Henderson <richard.henderson@linaro.org>,
+ sparclinux@vger.kernel.org, Stefano Stabellini <sstabellini@kernel.org>,
+ Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+ Thomas Gleixner <tglx@linutronix.de>, virtualization@lists.linux.dev,
+ x86@kernel.org, xen-devel@lists.xenproject.org,
+ Magnus Lindholm <linmag7@gmail.com>
+References: <cover.1759071169.git.leon@kernel.org>
+ <333ec4dabec16d3d913a93780bc6e7ddb5240fcf.1759071169.git.leon@kernel.org>
+ <20251003150144.GC3360665@nvidia.com>
+ <610b10bc-1aa2-4fad-a40b-be5fcfa04430@bell.net>
+ <20251003172618.GJ3360665@nvidia.com>
+From: John David Anglin <dave.anglin@bell.net>
+Content-Language: en-US
+Autocrypt: addr=dave.anglin@bell.net; keydata=
+ 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
+ T70V9SSrl2hiw38vRzsl
+In-Reply-To: <20251003172618.GJ3360665@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Using the new calls use an atomic refcount to track how many times
-a page is mapped in any of the IOMMUs.
+On 2025-10-03 1:26 p.m., Jason Gunthorpe wrote:
+> On Fri, Oct 03, 2025 at 01:18:32PM -0400, John David Anglin wrote:
+>> On 2025-10-03 11:01 a.m., Jason Gunthorpe wrote:
+>>> This doesn't actually use the virt at all:
+>>>
+>>> 	offset = ((unsigned long) addr) & ~IOVP_MASK;
+>>> 	if((size % L1_CACHE_BYTES) || ((unsigned long)addr % L1_CACHE_BYTES))
+>>> 		ccio_io_pdir_entry(pdir_start, KERNEL_SPACE, (unsigned long)addr, hint);
+>>>
+>>> And ccio_io_pdir_entry():
+>>> 	pa = lpa(vba);
+>>>
+>>> Is a special instruction that uses virt but AI tells me that special
+>>> LPA instruction is returning phys. Not sure if that is a different
+>>> value than virt_to_phys()..
+>>
+>> ccio_io_pdir_entry currently only supports KERNEL_SPACE.  For KERNEL_SPACE, lpa() and
+>> virt_to_phys() are equivalent if page is mapped.  lpa() returns 0 if a non-access data
+>> TLB fault occurs (i.e., page isn't mapped).  Not sure if that
+>> matters.
+> 
+> After unfolding everything the expression is
+> 
+>   lpa(phys_to_virt(pa))
+> 
+> So if that is always equal to pa then lets just drop it.
 
-For unmap we need to use iova_to_phys() to get the physical address
-of the pages.
+If lpa() was replaced by virt_to_phys(), the result would always be equal to pa.  So, I think it
+can be dropped.
 
-We use the smallest supported page size as the granularity of tracking
-per domain.
-This is important as it possible to map pages and unmap them with
-larger sizes (as in map_sg()) cases.
-
-Signed-off-by: Mostafa Saleh <smostafa@google.com>
----
- drivers/iommu/iommu-debug.c | 83 +++++++++++++++++++++++++++++++++++++
- 1 file changed, 83 insertions(+)
-
-diff --git a/drivers/iommu/iommu-debug.c b/drivers/iommu/iommu-debug.c
-index 607f1fcf2235..cec8f594c7fa 100644
---- a/drivers/iommu/iommu-debug.c
-+++ b/drivers/iommu/iommu-debug.c
-@@ -27,16 +27,99 @@ struct page_ext_operations page_iommu_debug_ops = {
- 	.need = need_iommu_debug,
- };
- 
-+static struct page_ext *get_iommu_page_ext(phys_addr_t phys)
-+{
-+	struct page *page = phys_to_page(phys);
-+	struct page_ext *page_ext = page_ext_get(page);
-+
-+	return page_ext;
-+}
-+
-+static struct iommu_debug_metadate *get_iommu_data(struct page_ext *page_ext)
-+{
-+	return page_ext_data(page_ext, &page_iommu_debug_ops);
-+}
-+
-+static void iommu_debug_inc_page(phys_addr_t phys)
-+{
-+	struct page_ext *page_ext = get_iommu_page_ext(phys);
-+	struct iommu_debug_metadate *d = get_iommu_data(page_ext);
-+
-+	WARN_ON(atomic_inc_return(&d->ref) <= 0);
-+	page_ext_put(page_ext);
-+}
-+
-+static void iommu_debug_dec_page(phys_addr_t phys)
-+{
-+	struct page_ext *page_ext = get_iommu_page_ext(phys);
-+	struct iommu_debug_metadate *d = get_iommu_data(page_ext);
-+
-+	WARN_ON(atomic_dec_return(&d->ref) < 0);
-+	page_ext_put(page_ext);
-+}
-+
-+/*
-+ * IOMMU pages size might not match the CPU page size, in that case, we use
-+ * the smallest IOMMU page size to refcount the pages in the vmemap.
-+ * That's is important as both map and unmap has to use the same page size
-+ * to update the refcount to avoid double counting the same page.
-+ * And as we can't know from iommu_unmap() what was the original page size
-+ * used for map, we just use the minimum supported one for both.
-+ */
-+static size_t iommu_debug_page_size(struct iommu_domain *domain)
-+{
-+	return 1UL << __ffs(domain->pgsize_bitmap);
-+}
-+
- void iommu_debug_map(struct iommu_domain *domain, phys_addr_t phys, size_t size)
- {
-+	size_t off;
-+	size_t page_size = iommu_debug_page_size(domain);
-+
-+	if (!static_branch_likely(&iommu_debug_initialized))
-+		return;
-+
-+	for (off = 0 ; off < size ; off += page_size) {
-+		if (!pfn_valid(__phys_to_pfn(phys + off)))
-+			continue;
-+		iommu_debug_inc_page(phys + off);
-+	}
- }
- 
- void iommu_debug_unmap(struct iommu_domain *domain, unsigned long iova, size_t size)
- {
-+	size_t off;
-+	size_t page_size = iommu_debug_page_size(domain);
-+
-+	if (!static_branch_likely(&iommu_debug_initialized))
-+		return;
-+
-+	for (off = 0 ; off < size ; off += page_size) {
-+		phys_addr_t phys = iommu_iova_to_phys(domain, iova + off);
-+
-+		if (!phys || !pfn_valid(__phys_to_pfn(phys + off)))
-+			continue;
-+
-+		iommu_debug_dec_page(phys);
-+	}
- }
- 
- void iommu_debug_remap(struct iommu_domain *domain, unsigned long iova, size_t size)
- {
-+	size_t off;
-+	size_t page_size = iommu_debug_page_size(domain);
-+
-+	if (!static_branch_likely(&iommu_debug_initialized))
-+		return;
-+
-+	for (off = 0 ; off < size ; off += page_size) {
-+		phys_addr_t phys = iommu_iova_to_phys(domain, iova + off);
-+
-+		if (!phys || !pfn_valid(__phys_to_pfn(phys + off)))
-+			continue;
-+
-+		iommu_debug_inc_page(phys);
-+	}
- }
- 
- void iommu_debug_init(void)
+Dave
 -- 
-2.51.0.618.g983fd99d29-goog
-
+John David Anglin  dave.anglin@bell.net
