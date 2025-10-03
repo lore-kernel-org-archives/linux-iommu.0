@@ -1,99 +1,102 @@
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A14891FDA
-	for <iommu@lists.linux.dev>; Fri,  3 Oct 2025 07:00:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1FE64227B94
+	for <iommu@lists.linux.dev>; Fri,  3 Oct 2025 07:07:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759474825; cv=none; b=Bll0sHnVOuBdDJMptE+J8Ep90jcdbqnlQIaaR3YoFMMuZx+9/rylQUFQyb3n+qhNsZsi593g0adhsHN0hMT33tymT9OAWLGY0qD6PwODTe7EEFfEJQGqhMtzpbfA1EAX3+rRsB9Igw9qPgbeuAesAtSLTGLu/YPk/fpQcGjWkxg=
+	t=1759475243; cv=none; b=SnxQT0QF2gJzDb48j66TFuZv8fXgLu5izZuIq9QVFejS8cYBxk4W7xpxSMjMrY/cMlsVHN/+kSRXaanm04JKmWpY3CfMINU2jc1Qp+Gmg1iuuBRTs1NlJvVWw8nAyuQHK7jToh0porNsgb4oSn7B7K12WXXl2zBInYXWToGiq3E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759474825; c=relaxed/simple;
-	bh=boKwQQTvvSbv4t+73ZXF28R6yCtMpd5mDWoNlD9rM/M=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
-	 Content-Type:References; b=E9hmcc9+Dt6Usyw1eWOW2qoK/MA3hwayRHj9Ttup5wApf/3ZbZwsRkYRJXsY1YwjH4ISP2hHRQqBqMaELGFzmYtNoMmTv6PhbHpy995wH9zKmHpY8Mo2YEWGO1tFW0yHOp6oIogvgAR3Y1X6sz9TBpgseBw8iVi09VuR6OaQEAg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=e/KK7viQ; arc=none smtp.client-ip=210.118.77.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1759475243; c=relaxed/simple;
+	bh=NmBarXdprph0Ea9BqhLbnDit9HvUdKIbTKXdxSGKLqA=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=Bo9wx43q+qmQRr8GKENEI1KnnK1eRIxxZjr5tiQaRdW2tB6YG7ZhTjJIsAGnNdYU8SN7VSSxPxJ6xiwrybHGLKbGYAmw50R7oL5KC7FBr7u1b5RWFgjXjdO20EXbfCm1vbxp8q3cACg6IfsZL2V0TNagM4uYYTgdsu9u1OKJwdU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=BB2k2tm+; arc=none smtp.client-ip=209.85.218.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="e/KK7viQ"
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20251003070015euoutp02a191752319ffe85096d0d84a5ae3ec46~q6QXWyUwc2848228482euoutp02T
-	for <iommu@lists.linux.dev>; Fri,  3 Oct 2025 07:00:15 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20251003070015euoutp02a191752319ffe85096d0d84a5ae3ec46~q6QXWyUwc2848228482euoutp02T
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1759474815;
-	bh=LSGPDYp4xyAWC832iPznscRm+XYwz1Gfb+Q2HoGidkk=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=e/KK7viQmpNxw3W+nPiQFLEo7KfiUm/Wdcem3LzvjEi0RgpGIsS4Jr6G5vqigNmcC
-	 IkYuXFpTzPlmViynbA5JrA9NIJXuUvr9iK670edeJxwSOFQjcGr5uQuLwj5QUN91ap
-	 UPcSgkBqG7Be9/Fs7Ge7OOZ6FzrQWfFSJmuTNw2c=
-Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20251003070015eucas1p13319bcc33f480b5b5f27054c21b4c018~q6QW2j5bi2697726977eucas1p10;
-	Fri,  3 Oct 2025 07:00:15 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20251003070014eusmtip2580963f80bd4896a98960b2d4b2ac4fe~q6QV_npGR2697326973eusmtip2o;
-	Fri,  3 Oct 2025 07:00:14 +0000 (GMT)
-Message-ID: <9505e149-29e3-4fc2-ac71-898e88492667@samsung.com>
-Date: Fri, 3 Oct 2025 09:00:13 +0200
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="BB2k2tm+"
+Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-b3b1eac8460so34676166b.2
+        for <iommu@lists.linux.dev>; Fri, 03 Oct 2025 00:07:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1759475238; x=1760080038; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=7oJsClXNUdjNS3IHTnmCIDO3oNqk4uGp8NgO3dHySVY=;
+        b=BB2k2tm+nIu5idzT9/PygohKLgi0WGWU9Hgi7v/FG+Z5N6u10PcmgJN/CQt9WTfpk3
+         Frpw9qggm3uAWIHbuVYL6RwYPxytCTuDYvjjJN+NQae2pfAhjw4cMkL2CnLPnALfbH7S
+         4IUw/XpNif0oMjOvfwjlHftDCtYvT3TkvwqwdZcf4DXDJ4kUn7fstgkOSvd51YX9gRX0
+         oPjiQkHHERDMXzxjohIsjKu6FGDRyVYKgtLzPvTPUxyApiU67ZzlK2GJrhWkUpcExPAJ
+         cveFSt9yLtAvWDqlkI/DK1KAYJAqSaqqvFCu7a7Z6sjbrpJglgrfre9oHVqYWI07sAhs
+         PHeg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1759475238; x=1760080038;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=7oJsClXNUdjNS3IHTnmCIDO3oNqk4uGp8NgO3dHySVY=;
+        b=MZCYOm//5TBc10dN3eA2fC1cG2RWoeZtW6MBaYBgR6GvSl77QdR+/ng9W0JoAcJYE2
+         I9TjNdn4jrgrr9eo7vV5HTyKSheTVN1yEM3WYFh+azuoZDfTKto+jAmXugHjcnWquemy
+         s2fhIcguJhFGa3S58BQW0A/y9kKxDUjd5Dk3nm8E8AxVzSppBUF7j2xxDvO9yVDtpUJA
+         9AK8CrBznxqewVBZbtYKlWgGwfTd8DyIk5MJ6xYli4xHYmdM6fw3xu5xM4FoL/+XvNwi
+         aIxFWGlqWbBnc+X3u5ixRyLO1LRGfxBlOYS8Uc/e2mHBn8x5nxTtYCsx3Xi2JQ31wOJU
+         c5OA==
+X-Forwarded-Encrypted: i=1; AJvYcCUbTGcaCZXBf7f4oFE2ADRHPlwQtoFCaaTU6KjigK0WTAwAvSL1Fz7lNA3PPzojwegaR2VI0Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwJpQeQ9Z7V6CeOLD9sqwhBt97FFO7wmIuQPs6cjxM62OjtAe1c
+	Nle1Yt/x73YE2BUAKjjlqxARGFzxzXl1w/zgRzKxkk6uCXNjQEeFqEtXO6HhtmByVzI=
+X-Gm-Gg: ASbGncvFD7Bw8+vO327BcPVH9msTp8d1rGjMbr7pElBZraObG5VLrBFMjIvh6vZXpPR
+	C6rOE7eGW457kpxhp20fdnOEwtzpkSyLXtU264c8F/hx+ziKcn97aRkTqgQNQgeNcLo3kswLW7u
+	z8Ywk5S/I1jBmIbRAy2mt/tLzsolQ4Y9j9jcdHsorDxMupQWtOVsaIF2FwAf4iewRq1+m7jGfWP
+	Cvaz0TpH7dwqMRcNYF9FGsjrY/X6Tx0Kx1G49i9EJoY/90aqKGez7aRfUTvCVP9EBkmFmx7sbn7
+	n4J2jT1XC4zN3bJ0QkGoL8IRPyL2jecNss+sQn1aOWPDcjGVJj3owdsi/rugsy0rv3rbYMtWpVA
+	fC9zJwnuZDRMt3ldBVlrp2HkHkgsByPPu10Dd1ZL/XEB4/uN6RFzenKq/6zkzSkMh2VjEyYhgWh
+	llfqXKJSRHZg86V3sH024hkfutyyjvhrY5fUK90VXYq2UD/BNfYxMq
+X-Google-Smtp-Source: AGHT+IFHgcgAxKrBEwL/rl1KkiwB5iUsa34TbQ1eqD87gj7Bd+hJwtRTUeDPma+saazo3hj9xNIPCw==
+X-Received: by 2002:a17:907:94c8:b0:b3d:6ec6:9e88 with SMTP id a640c23a62f3a-b49c295f869mr130567666b.7.1759475238345;
+        Fri, 03 Oct 2025 00:07:18 -0700 (PDT)
+Received: from mordecai.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-3010-3bd6-8521-caf1.ipv6.o2.cz. [2a00:1028:83b8:1e7a:3010:3bd6:8521:caf1])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b4869b4d9f5sm375183666b.66.2025.10.03.00.07.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 03 Oct 2025 00:07:18 -0700 (PDT)
+Date: Fri, 3 Oct 2025 09:07:08 +0200
+From: Petr Tesarik <ptesarik@suse.com>
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Steven Rostedt <rostedt@goodmis.org>, Masami Hiramatsu
+ <mhiramat@kernel.org>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+ Sean Anderson <sean.anderson@linux.dev>, Robin Murphy
+ <robin.murphy@arm.com>, linux-trace-kernel@vger.kernel.org,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dma-mapping: fix direction in dma_alloc direction
+ traces
+Message-ID: <20251003090708.7951d755@mordecai.tesarici.cz>
+In-Reply-To: <9505e149-29e3-4fc2-ac71-898e88492667@samsung.com>
+References: <CGME20251001061047eucas1p1f96a848ff2643b48179dd3e55959da7e@eucas1p1.samsung.com>
+	<20251001061028.412258-1-ptesarik@suse.com>
+	<9505e149-29e3-4fc2-ac71-898e88492667@samsung.com>
+X-Mailer: Claws Mail 4.3.1 (GTK 3.24.50; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH] dma-mapping: fix direction in dma_alloc direction
- traces
-To: Petr Tesarik <ptesarik@suse.com>, Steven Rostedt <rostedt@goodmis.org>,
-	Masami Hiramatsu <mhiramat@kernel.org>, Mathieu Desnoyers
-	<mathieu.desnoyers@efficios.com>, Sean Anderson <sean.anderson@linux.dev>,
-	Robin Murphy <robin.murphy@arm.com>
-Cc: linux-trace-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <20251001061028.412258-1-ptesarik@suse.com>
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-CMS-MailID: 20251003070015eucas1p13319bcc33f480b5b5f27054c21b4c018
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20251001061047eucas1p1f96a848ff2643b48179dd3e55959da7e
-X-EPHeader: CA
-X-CMS-RootMailID: 20251001061047eucas1p1f96a848ff2643b48179dd3e55959da7e
-References: <CGME20251001061047eucas1p1f96a848ff2643b48179dd3e55959da7e@eucas1p1.samsung.com>
-	<20251001061028.412258-1-ptesarik@suse.com>
 
-On 01.10.2025 08:10, Petr Tesarik wrote:
-> Set __entry->dir to the actual "dir" parameter of all trace events
-> in dma_alloc_class. This struct member was left uninitialized by
-> mistake.
->
-> Signed-off-by: Petr Tesarik <ptesarik@suse.com>
-> Fixes: 3afff779a725 ("dma-mapping: trace dma_alloc/free direction")
+On Fri, 3 Oct 2025 09:00:13 +0200
+Marek Szyprowski <m.szyprowski@samsung.com> wrote:
 
-Applied to dma-mapping-for-next (for v6.18-rc1) branch. Thanks!
+> On 01.10.2025 08:10, Petr Tesarik wrote:
+> > Set __entry->dir to the actual "dir" parameter of all trace events
+> > in dma_alloc_class. This struct member was left uninitialized by
+> > mistake.
+> >
+> > Signed-off-by: Petr Tesarik <ptesarik@suse.com>
+> > Fixes: 3afff779a725 ("dma-mapping: trace dma_alloc/free direction")  
+> 
+> Applied to dma-mapping-for-next (for v6.18-rc1) branch. Thanks!
 
-> ---
->   include/trace/events/dma.h | 1 +
->   1 file changed, 1 insertion(+)
->
-> diff --git a/include/trace/events/dma.h b/include/trace/events/dma.h
-> index d8ddc27b6a7c8..945fcbaae77e9 100644
-> --- a/include/trace/events/dma.h
-> +++ b/include/trace/events/dma.h
-> @@ -134,6 +134,7 @@ DECLARE_EVENT_CLASS(dma_alloc_class,
->   		__entry->dma_addr = dma_addr;
->   		__entry->size = size;
->   		__entry->flags = flags;
-> +		__entry->dir = dir;
->   		__entry->attrs = attrs;
->   	),
->   
+Thank you for maintaining the code!
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
-
+Petr T
