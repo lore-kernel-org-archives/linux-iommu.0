@@ -1,105 +1,116 @@
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4656F12B94;
-	Sat,  4 Oct 2025 06:50:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=93.17.235.10
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19B71450FE;
+	Sat,  4 Oct 2025 17:34:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759560636; cv=none; b=sy9XkcMQMDmfrPKic207zqqmMTGPwrsJ4trfl11Wm9768LWo9R5ceT8hjYYgn6HQg8QXi7FBq2/Cuo4W017DK6zwC4hHghQS6aykUMuH7+e4oVFBCmkhoTqkJWMiAvUuIr2Y5GnSmZz5ks97qRejHh2N1C7NZ5Wdw3iXtBia6N4=
+	t=1759599299; cv=none; b=gdwODxE8t9ZXVic7YayrAflk1sT31OQqYjWnhl1PjJP2Flrs3MYOALMxyKbAmnr1/32nhmwkLdTEbfJztoYrw3pxmWzqeGe43xv/zcAsXzj7/0cG90nkrVkcaHVZIzfMT/FOTYJkW569MGNOrY3i6nVcPMWwJ27eNmgiFzmCP4o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759560636; c=relaxed/simple;
-	bh=ZV6AuDykQs1/uRmEpmkhZA9AGRC6FbUqoybHL0tj1rY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=oAWDNtaxoDH5s47+TQPjuPS7G3uBNMY0V4riutzb0O/nJ3VJAkUK30D9uwT48n7wkEGcLapjqBsN4638itVPc32IiSBIYFuSJbtDLk6DGdRSPXftFIeq0MUMBURAJGX72H/HvHTkw0H7SKR+fxUm5Al5u3mv69ylK2oOxjVastU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=csgroup.eu; spf=pass smtp.mailfrom=csgroup.eu; arc=none smtp.client-ip=93.17.235.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=csgroup.eu
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=csgroup.eu
-Received: from localhost (mailhub4.si.c-s.fr [172.26.127.67])
-	by localhost (Postfix) with ESMTP id 4cdwNt1QHbz9sS7;
-	Sat,  4 Oct 2025 08:19:42 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-	by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id b_idirMR5ok8; Sat,  4 Oct 2025 08:19:42 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-	by pegase2.c-s.fr (Postfix) with ESMTP id 4cdwNt0Pvmz9sRy;
-	Sat,  4 Oct 2025 08:19:42 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-	by messagerie.si.c-s.fr (Postfix) with ESMTP id E8E218B768;
-	Sat,  4 Oct 2025 08:19:41 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-	by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-	with ESMTP id FGXi2r7cLeL7; Sat,  4 Oct 2025 08:19:41 +0200 (CEST)
-Received: from [192.168.235.99] (unknown [192.168.235.99])
-	by messagerie.si.c-s.fr (Postfix) with ESMTP id A40F08B766;
-	Sat,  4 Oct 2025 08:19:40 +0200 (CEST)
-Message-ID: <909c5ab3-b3d3-4b5b-bc64-8b30c220ac92@csgroup.eu>
-Date: Sat, 4 Oct 2025 08:19:40 +0200
+	s=arc-20240116; t=1759599299; c=relaxed/simple;
+	bh=QrmbzFWdXVjrkXP1XKgkDdSN8NwVcE41VeySN7cDksE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=T5O68sdoNZFgyP1dr00YTfDjhlbM45aFf4DQj3Ej/TYhbBigP9fl6OS5N288nfmm3A4BlDIu70GxAAbajibnVvq8nmxUraIIB8RPOMR9aRF6077lpzZXayMoWApyIYjlrlLXBWHWA/aeJK98sYnLt6N6AvM8xcrE+vuWAHqBvmA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eCjJKPd2; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eCjJKPd2"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02629C4CEF1;
+	Sat,  4 Oct 2025 17:34:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1759599298;
+	bh=QrmbzFWdXVjrkXP1XKgkDdSN8NwVcE41VeySN7cDksE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=eCjJKPd2kPpbJvaqPjAXAInrSnxBDV5nb0AMICsS9hQMMliN3fJvCdbrmwXy3fIUV
+	 ohrVoxpkW+be4EVH/w9nbxZM7Ak/E6/EDK9Lp0NCknVpI1GCETARXpO07wmg2ZpD/+
+	 DByXFfpXXyYeZlQkVVLtzRVnyK8TVARObjp8O7/bLifZSMLL3hFAVhw59jraHJGJSU
+	 jJr5Bwc/tv5Yfh1bMT1CVVujvmV4wENVMTyccM7ocR9rWZd+tiM8xB2zSxYZLMMv7w
+	 gkh7Ny1wYGPxEy8eZ5XMWwF7ZVqYYm7f++8qAjKK70TwSHcLWR4seTowQlJ4Il6NDN
+	 EngbGLHwMM0Sg==
+Date: Sat, 4 Oct 2025 23:04:35 +0530
+From: Manivannan Sadhasivam <mani@kernel.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Bjorn Helgaas <helgaas@kernel.org>, 
+	manivannan.sadhasivam@oss.qualcomm.com, Bjorn Helgaas <bhelgaas@google.com>, 
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	Joerg Roedel <jroedel@suse.de>, iommu@lists.linux.dev, Anders Roxell <anders.roxell@linaro.org>, 
+	Naresh Kamboju <naresh.kamboju@linaro.org>, Pavankumar Kondeti <quic_pkondeti@quicinc.com>, 
+	Xingang Wang <wangxingang5@huawei.com>, Marek Szyprowski <m.szyprowski@samsung.com>, 
+	stable@vger.kernel.org
+Subject: Re: [PATCH 2/2] iommu/of: Call pci_request_acs() before enumerating
+ the Root Port device
+Message-ID: <5f4uclyawwh57u5pdwlk5q36keeg3oyhk5hw42xgnryz6xs7ph@rrkulj4ex2xb>
+References: <20250924185750.GA2128243@bhelgaas>
+ <b8a871d8-d84b-4c86-8f63-f4e1b2a5fccf@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1 4/9] powerpc: Convert to physical address DMA mapping
-To: Jason Gunthorpe <jgg@nvidia.com>, Leon Romanovsky <leon@kernel.org>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
- Leon Romanovsky <leonro@nvidia.com>, Andreas Larsson <andreas@gaisler.com>,
- Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>,
- "David S. Miller" <davem@davemloft.net>, Geoff Levand <geoff@infradead.org>,
- Helge Deller <deller@gmx.de>, Ingo Molnar <mingo@redhat.com>,
- iommu@lists.linux.dev,
- "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
- Jason Wang <jasowang@redhat.com>, Juergen Gross <jgross@suse.com>,
- linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
- linuxppc-dev@lists.ozlabs.org, Madhavan Srinivasan <maddy@linux.ibm.com>,
- Matt Turner <mattst88@gmail.com>, Michael Ellerman <mpe@ellerman.id.au>,
- "Michael S. Tsirkin" <mst@redhat.com>,
- Richard Henderson <richard.henderson@linaro.org>,
- sparclinux@vger.kernel.org, Stefano Stabellini <sstabellini@kernel.org>,
- Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
- Thomas Gleixner <tglx@linutronix.de>, virtualization@lists.linux.dev,
- x86@kernel.org, xen-devel@lists.xenproject.org,
- Magnus Lindholm <linmag7@gmail.com>
-References: <cover.1759071169.git.leon@kernel.org>
- <f2b69a0ac2308cc8fd8635dceac951670d41cea2.1759071169.git.leon@kernel.org>
- <20251003163505.GI3360665@nvidia.com>
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
-Content-Language: fr-FR
-In-Reply-To: <20251003163505.GI3360665@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <b8a871d8-d84b-4c86-8f63-f4e1b2a5fccf@arm.com>
 
+On Wed, Sep 24, 2025 at 08:49:26PM +0100, Robin Murphy wrote:
 
+[...]
 
-Le 03/10/2025 à 18:35, Jason Gunthorpe a écrit :
-> On Sun, Sep 28, 2025 at 06:02:24PM +0300, Leon Romanovsky wrote:
->> From: Leon Romanovsky <leonro@nvidia.com>
->>
->> Adapt PowerPC DMA to use physical addresses in order to prepare code
->> to removal .map_page and .unmap_page.
->>
->> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
->> ---
->>   arch/powerpc/include/asm/iommu.h         |  8 +++---
->>   arch/powerpc/kernel/dma-iommu.c          | 22 +++++++---------
->>   arch/powerpc/kernel/iommu.c              | 14 +++++-----
->>   arch/powerpc/platforms/ps3/system-bus.c  | 33 ++++++++++++++----------
->>   arch/powerpc/platforms/pseries/ibmebus.c | 15 ++++++-----
->>   arch/powerpc/platforms/pseries/vio.c     | 21 ++++++++-------
->>   6 files changed, 60 insertions(+), 53 deletions(-)
+> > I don't doubt that the current code doesn't detect presence or use of
+> > IOMMU until later.  But that feels like an implementation defect
+> > because logically the IOMMU is upstream of any PCI device that uses
+> > it, so architecturally I would expect it to be *possible* to detect it
+> > before PCI enumeration.
+> > 
+> > More to the point, it's not at all obvious how to infer that
+> > 'iommu-map' in the devicetree means the IOMMU will be used.
 > 
-> I think this is good enough for PPC anything more looks quite hard
-
-Can you tell what you have in mind ? What more would be interesting to 
-do but looks hard ? Maybe it can be a follow-up change ?
-
-Christophe
-
-> 
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> 
-> Jason
+> Indeed, I would say the way to go down that route would be to echo what we
+> do for "iommus", and defer probing the entire host controller driver until
+> the targets of an "iommu-map" are either present or assumed to never be
+> appearing. (And of course an ACPI equivalent for that would be tricky...)
 > 
 
+Maybe we should just call pci_enable_acs() only when the iommu is detected for
+the device? But ofc, this is not possible for non-OF platforms as they tend to
+call pci_request_acs() pretty early.
+
+> However, even that isn't necessarily the full solution, as just as it's not
+> really appropriate for PCI to force ACS without knowing whether an IOMMU is
+> actually present to make it meaningful, it's also not strictly appropriate
+> for an IOMMU driver to request ACS globally without knowing that it actually
+> serves any relevant PCIe devices. Even in the ideal scenario, I think the
+> point of actually knowing is still a bit too late for the current API
+> design:
+> 
+>   pci_device_add
+>     pci_init_capabilities
+>       pci_acs_init
+>         pci_enable_acs
+>     device_add
+>       iommu_bus_notifier
+>         iommu_probe_device
+>           //logically, request ACS for dev here
+> 
+> (at the moment, iommu_probe_device() will actually end up calling into the
+> same of_iommu_configure()->pci_request_acs() path, but the plan is still to
+> eventually shorten and streamline that.)
+> 
+
+What is worrying me is that of_iommu_configure() is called for each PCI device,
+as opposed to just one time on other platforms. But I think that's a good thing
+to have as the IOMMU driver can have a per-device ACS policy, instead of a
+global one.
+
+> I guess we might want to separate the actual ACS enablement from the basic
+> capability init, or at least perhaps just call pci_enable_acs() again after
+> the IOMMU notifier may have changed the policy?
+> 
+
+Is this applicable to other platforms as well? Not just OF?
+
+- Mani
+
+-- 
+மணிவண்ணன் சதாசிவம்
