@@ -1,114 +1,135 @@
-Received: from mail-pj1-f73.google.com (mail-pj1-f73.google.com [209.85.216.73])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28614155389
-	for <iommu@lists.linux.dev>; Tue,  7 Oct 2025 17:54:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.73
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 409AC1DE3DB
+	for <iommu@lists.linux.dev>; Tue,  7 Oct 2025 18:16:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759859685; cv=none; b=Qx81fqtXjxbzTj0IwvlLtWdXACWCwU/8TBWRS5cqhtTu8m96gP+kiI5E85voOc1Mk9gFPG5n/xqRa9wWLxvifixmpcPRxo47UjdFUjUWUBxybTA1UWTZH9R2p5CKvYSLUnl2Wo51+Drgoj6TPm5wpaAaXw44I2VSFLbE9ttnw30=
+	t=1759860973; cv=none; b=HDbkbZVYuWyYxqTnX8R72Z7yzdvGLDfu4gLynlQEf7mMGl073jvmKQEqVwjiYaa/KNvB7xmHfGtos9D0CQQplcZ6pry1Mt+lNiWCaYeQDXejdY2wRDCPrRlD+NCa3rb65liL9nlhI6AeQTlLf9Kjgj2ACk32D8lUjNIcxLWKWcs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759859685; c=relaxed/simple;
-	bh=2r0JdXKCeVe9VBGPBX7YgW5LS+LGefnDxCKhK7rrcWg=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=I/TyF2yUt3N44lhZTESlB6IXGcXzWo3OvKeSQAPc83o7axzq16ctkYGcBLMbXqwvdkFNOaQ9nPyc+7Whxkwn6+RDHEvB381M8YJSA6Dfd8BfzwxXTJStBwsCco+9x6qxaBAfwffsAmMtt88Di8C3r/pF4r15yLwnBaeb4PkAz+s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=fT90yram; arc=none smtp.client-ip=209.85.216.73
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
+	s=arc-20240116; t=1759860973; c=relaxed/simple;
+	bh=IJn6+OEr5PRU7LqFeUIorEgBVqq+3a+QNqJUq7/206c=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=bC7gZ6icP382tpQBEZpvEteR7n+Z2FhxiQ00WU+FAuA+IFRC93f00LwmCMjWZ7wKKC1QOJgTf2umVDIoFCkoLQGmz0oyS4oxMagcHumXgAYdtD11L+jFhjHpkWtg+UVRQSSj2Qp2mFghY7kEDuxq+vh9zo/Kp2d5iDv7WBfWXTA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=cPd3DRCZ; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="fT90yram"
-Received: by mail-pj1-f73.google.com with SMTP id 98e67ed59e1d1-33428befc5bso6859951a91.0
-        for <iommu@lists.linux.dev>; Tue, 07 Oct 2025 10:54:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1759859683; x=1760464483; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=kmiHdAF668/2CebNhsKGCc+Mo+khp6HCpNN5SRyYyO0=;
-        b=fT90yramFp5HV7LH/ALHkJDSdhOzqZP7tenhu66vaNglzj80+4qgRduY1GqGotHXd7
-         30tbFBRovLUXzTj5oKhfqbbBFxfzdOod91UOaaKbbML/n98miTTZdiRVQMPnER/e2+2r
-         VPgHDdOZlmP1HNktQ7uSKxrc97OziTRJejDeHKA8L0BdkQAe66w3BJBitg0fJY2KuLi/
-         r+SLM3gUZ4Vsd7f83+1DmnqhZUgNwLuf+ZyyPyVMKOnPi9Nn7L5EqINvvWsW9R3ChHjt
-         18snikzonoPAIe4F6u+Q6IX17paSAvE3dE5rx3VD0DKx+ud3jq/h5iYqXh27A/jzzh/Y
-         1A8Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1759859683; x=1760464483;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=kmiHdAF668/2CebNhsKGCc+Mo+khp6HCpNN5SRyYyO0=;
-        b=El7oU74nX1YnEHgS7/8qkaAspvKzLGWZzt1FRm5uxtxkS74J5IKrD6d+FmzbQwXOF5
-         3++sbSOttxY7nUOYSiriNKDBX2rNstarKXIjahrUU+q103DA7hS0ocGdT4SavzWqEmp1
-         mF+QV3I5fjLP1OqG6EY2cwhUVKNLqFSO2+O4ueVtoI5cxZrX4PXKC9WabQLCSjBb8dwD
-         PwqP7OW8DR0xx7nfKbhoSRcyHx8EUyMhA1N4UasslRaFWAsdzkcE56Qi5LhofXtEk7Ql
-         VwITsKj93IAEcvwIykRX7eVWNARFk36DpBkE16rPCUZcbScc8whK1S0k9+LWQi2q8Pjq
-         bAtw==
-X-Forwarded-Encrypted: i=1; AJvYcCXnfqYvJd+PsABmUsSTQvvQd11YQKDCO088lbZuOwfCCdZ5b5rEqdDjjAPkWEfxBC5FiEoOWQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzTZaj9oVrfCXK8+6qRsJRgcdPlJWom8F/4qW7od4j4Ib17BpCv
-	xxdvyKkBR8jL2tEGLShcqmbaSOAJl4P7dOyy5k5oxZivmpHF+r+aA1nvD0/v48hq7ypGwyTr0yc
-	flZx+0g==
-X-Google-Smtp-Source: AGHT+IGJlrr/LCzcUL09z20onDWdDhGAc1LfHCBGyLIEH4WKBfa0LY3kl4bE3fyFX7Z6M3k3Fcs24jbGwFY=
-X-Received: from pjbmy15.prod.google.com ([2002:a17:90b:4c8f:b0:329:7dfc:f4e1])
- (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a17:90b:3810:b0:339:bf9e:62a6
- with SMTP id 98e67ed59e1d1-33b51129786mr472557a91.11.1759859683491; Tue, 07
- Oct 2025 10:54:43 -0700 (PDT)
-Date: Tue, 7 Oct 2025 10:54:41 -0700
-In-Reply-To: <20250918130320.GA119526@k08j02272.eu95sqa>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="cPd3DRCZ"
+Received: from localhost (unknown [20.236.10.129])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 1AFE62038B48;
+	Tue,  7 Oct 2025 11:16:07 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 1AFE62038B48
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1759860967;
+	bh=fZIQkg/lZu7LWCnMY/qKlx0r16KjPbDICAsGIgA4a6Y=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=cPd3DRCZ4Bo1hvEdRn1FWDtIg473rOqmqGmK8L8glzW4oTZtVF0fY1borNltKl4pY
+	 ghW0NIUkUx4R4zpImDLs1NlZ7po+2Zi2U1SFWvALh6vZCMTWu1CaZmHwQF75KaGXR5
+	 T4MWuzGthou6snnVNEDclcdI4RYvnpLEJnUb18/E=
+Date: Tue, 7 Oct 2025 11:16:06 -0700
+From: Jacob Pan <jacob.pan@linux.microsoft.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: <linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>, Will Deacon <will@kernel.org>, Jason Gunthorpe
+ <jgg@nvidia.com>, Robin Murphy <robin.murphy@arm.com>, Zhang Yu
+ <zhangyu1@linux.microsoft.com>, Jean Philippe-Brucker
+ <jean-philippe@linaro.org>, Alexander Grest <Alexander.Grest@microsoft.com>
+Subject: Re: [PATCH 2/2] iommu/arm-smmu-v3: Improve CMDQ lock fairness and
+ efficiency
+Message-ID: <20251007111606.00005849@linux.microsoft.com>
+In-Reply-To: <aORn/vKfVL88q05w@nvidia.com>
+References: <20250924175438.7450-1-jacob.pan@linux.microsoft.com>
+	<20250924175438.7450-3-jacob.pan@linux.microsoft.com>
+	<aORn/vKfVL88q05w@nvidia.com>
+Organization: LSG
+X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20250315031048.2374109-1-seanjc@google.com> <20250918130320.GA119526@k08j02272.eu95sqa>
-Message-ID: <aOVT4VlumG01X0Hk@google.com>
-Subject: Re: [PATCH] iommu/amd: Ensure GA log notifier callbacks finish
- running before module unload
-From: Sean Christopherson <seanjc@google.com>
-To: Hou Wenlong <houwenlong.hwl@antgroup.com>
-Cc: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Thu, Sep 18, 2025, Hou Wenlong wrote:
-> On Fri, Mar 14, 2025 at 08:10:48PM -0700, Sean Christopherson wrote:
-> > Synchronize RCU when unregistering KVM's GA log notifier to ensure all
-> > in-flight interrupt handlers complete before KVM-the module is unloaded.
-> > 
-> > Signed-off-by: Sean Christopherson <seanjc@google.com>
-> > ---
-> >  drivers/iommu/amd/iommu.c | 8 ++++++++
-> >  1 file changed, 8 insertions(+)
-> > 
-> > diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> > index b48a72bd7b23..b314523d9194 100644
-> > --- a/drivers/iommu/amd/iommu.c
-> > +++ b/drivers/iommu/amd/iommu.c
-> > @@ -982,6 +982,14 @@ int amd_iommu_register_ga_log_notifier(int (*notifier)(u32))
+On Mon, 6 Oct 2025 18:08:14 -0700
+Nicolin Chen <nicolinc@nvidia.com> wrote:
+
+> On Wed, Sep 24, 2025 at 10:54:38AM -0700, Jacob Pan wrote:
+> >  static void arm_smmu_cmdq_shared_lock(struct arm_smmu_cmdq *cmdq)
 > >  {
-> >  	iommu_ga_log_notifier = notifier;
-> >  
-> > +	/*
-> > +	 * Ensure all in-flight IRQ handlers run to completion before returning
-> > +	 * to the caller, e.g. to ensure module code isn't unloaded while it's
-> > +	 * being executed in the IRQ handler.
-> > +	 */
-> > +	if (!notifier)
-> > +		synchronize_rcu();
-> > +
-> >  	return 0;
-> >  }
-> >  EXPORT_SYMBOL(amd_iommu_register_ga_log_notifier);
-> > 
-> > base-commit: ea9bd29a9c0d757b3384ae3e633e6bbaddf00725
-> > -- 
-> > 2.49.0.rc1.451.g8f38331e32-goog
-> > 
-> >
-> Hi Sean,
+> > -	int val;
+> > -
+> >  	/*
+> > -	 * We can try to avoid the cmpxchg() loop by simply
+> > incrementing the
+> > -	 * lock counter. When held in exclusive state, the lock
+> > counter is set
+> > -	 * to INT_MIN so these increments won't hurt as the value
+> > will remain
+> > -	 * negative.
+> > +	 * We can simply increment the lock counter. When held in
+> > exclusive
+> > +	 * state, the lock counter is set to INT_MIN so these
+> > increments won't
+> > +	 * hurt as the value will remain negative.  
 > 
-> Sorry to bother you. I'm reworking the hardware_setup() path in our
-> internal multi-KVM, but I didn't see any usage of
-> 'amd_iommu_register_ga_log_notifier(NULL)' in the KVM code for now. Has
-> it not been committed?
+> It seems to me that the change at the first statement is not very
+> necessary.
+> 
+I can delete "We can simply increment the lock counter." since it is
+obvious. But the change to delete cmpxchg in the comment matches the
+code change the follows.
 
-Huh.  I completely forgot to send (or even write?) the patch.  I'll send one
-shortly.
+> > This will also signal the
+> > +	 * exclusive locker that there are shared waiters. Once
+> > the exclusive
+> > +	 * locker releases the lock, the sign bit will be cleared
+> > and our
+> > +	 * increment will make the lock counter positive, allowing
+> > us to
+> > +	 * proceed.
+> >  	 */
+> >  	if (atomic_fetch_inc_relaxed(&cmdq->lock) >= 0)
+> >  		return;
+> >  
+> > -	do {
+> > -		val = atomic_cond_read_relaxed(&cmdq->lock, VAL >=
+> > 0);
+> > -	} while (atomic_cmpxchg_relaxed(&cmdq->lock, val, val + 1)
+> > != val);
+> > +	atomic_cond_read_relaxed(&cmdq->lock, VAL >= 0);  
+> 
+> The returned value is not captured for anything. Is this read()
+> necessary? If so, a line of comments elaborating it?
+We don't need the return value, how about this explanation?
+/*
+ * Someone else is holding the lock in exclusive state, so wait
+ * for them to finish. Since we already incremented the lock counter,
+ * no exclusive lock can be acquired until we finish. We don't need
+ * the return value since we only care that the exclusive lock is
+ * released (i.e. the lock counter is non-negative).
+ */
+> > +/*
+> > + * Only clear the sign bit when releasing the exclusive lock this
+> > will
+> > + * allow any shared_lock() waiters to proceed without the
+> > possibility
+> > + * of entering the exclusive lock in a tight loop.
+> > + */
+> >  #define arm_smmu_cmdq_exclusive_unlock_irqrestore(cmdq,
+> > flags)		\ ({
+> > 				\
+> > -	atomic_set_release(&cmdq->lock, 0);
+> > 	\
+> > +	atomic_fetch_and_release(~INT_MIN, &cmdq->lock);
+> > 			\  
+> 
+> By a quick skim, the whole thing looks quite smart to me. But I
+> need some time to revisit and perhaps test it as well.
+> 
+> It's also important to get feedback from Will. Both patches are
+> touching his writing that has been running for years already..
+Definitely, really appreciated your review. I think part of the reason
+is that cmdq size is usually quite large, queue full is a rare case.
 
-Thanks much!
+
