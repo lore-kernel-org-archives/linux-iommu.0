@@ -1,148 +1,170 @@
-Received: from mail-il1-f182.google.com (mail-il1-f182.google.com [209.85.166.182])
+Received: from mail-io1-f77.google.com (mail-io1-f77.google.com [209.85.166.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 379BC246BA8
-	for <iommu@lists.linux.dev>; Tue,  7 Oct 2025 21:28:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD4FC21D3CA
+	for <iommu@lists.linux.dev>; Tue,  7 Oct 2025 23:32:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759872514; cv=none; b=gaNLIYLfA3x2glWiprNRj/UsrW9dETOiq+ICNEoQYUplI61OOMsfXFjQSauwSc1LXpuwBI9NfULSFZzaSNBwqKxE+v5spGZ3k6/8WTNaoYuniG5ZNJDzI02ZcIw9BEuXWnimBIiFQESzuRMidwKbvfhyQ9mTB5qzq2pxp9HuhCQ=
+	t=1759879951; cv=none; b=XYCj4vjoV48QDF+glDh4RF20201lfI67jE6DdfbKPPjOeZNAidV5ztnw9Xtdvtc9HNRo089c+huZyjBe4N4V1kJPU8BIrkv6R/W0s8O8meQyIL1E7IaOAM4GAUq40K3YpDphXHeAbhphbGwAYMMGcnZmZL6tXtUpH6pOidEM3+E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759872514; c=relaxed/simple;
-	bh=ybSy4Tv5iFVM78XbJXlpVrFeVjI9pBLjjyVsYoM1g0M=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=C9h3WW0lnmHzDacaPBa+hKuiynbEjZUoSv/UgBPA/cYIUSswQ55XXOSwVsh0DPVHDNqUtTCnXhsH9BRWM6UKYqvcnzaH+0jGuFke7eTRl8tW6V2hYjEVwDWyLzzsz1znrpN35p1tgC3Q1KV+sAxfMKBdhP807YAVcQfrwS5MKLc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linuxfoundation.org; spf=pass smtp.mailfrom=linuxfoundation.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=hHy3JtGm; arc=none smtp.client-ip=209.85.166.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linuxfoundation.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="hHy3JtGm"
-Received: by mail-il1-f182.google.com with SMTP id e9e14a558f8ab-42f61004750so23066285ab.2
-        for <iommu@lists.linux.dev>; Tue, 07 Oct 2025 14:28:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google; t=1759872511; x=1760477311; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=ZRsJlXyUS+y130OtDxYwG/Abbe7/BVe6s/xFEvukloE=;
-        b=hHy3JtGmUTWO5n/IzClSSh5XFXtI7hv9Rizn2Y8/dFk4dqBTbwJIfKU4YQqOMtH+EL
-         AjpgnPNLDVz36ub/cx4RD4/GMNXKY5aGikzj573yfEIfGFBtm0qmWaIQfXAQG/TsxXB1
-         GEWYFz05dfPS5+FlEhGqa900oRwchkqXnb3gg=
+	s=arc-20240116; t=1759879951; c=relaxed/simple;
+	bh=oHFqVz1jq1oi6phvuAR2XlAJXCsaRdNNF0HwkIN+Do4=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=kaLFhYGQW+ZW6/lS+SvxkGlLKM6JCPUUXSzcVHKIzg3zpuq34PRYk39/KIBTSiYAPnWY1fjJ2jGJ1v/jwgp6oIj//Zc8hInGjiCLBGdE8tN0oVuBgf2s+dlZslIqwk8Jub9FN8lxaHiFVC4VxmVWAr/FzLXt1usuGAE10h4BN+k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-io1-f77.google.com with SMTP id ca18e2360f4ac-9201572ebfbso1791540539f.3
+        for <iommu@lists.linux.dev>; Tue, 07 Oct 2025 16:32:29 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1759872511; x=1760477311;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ZRsJlXyUS+y130OtDxYwG/Abbe7/BVe6s/xFEvukloE=;
-        b=kpAL+T38XZnEgtWMiYNt/hGXzWHZa7aloeF0a00BnVN/DJK6CjIsWW6ZT5DRlgi5xO
-         AU+nOVfGMoSwGstZUM4l+G+2bmtSUBz4l6BdVrPs2hC0L+vPEzIuc6wB9rzbddquUt0/
-         iQiqlpH//duZ7cxITg4nioBFBr1VXgx9u3pmHx03os12tpAgP56XuRCOlfdkB/5Zb2AF
-         QiJya9cI/B4nDkB5mUQRbNCg+n/pWDuimNyFs4s3uBwAK4gd9uE3Mck9oybCPgSc8UxQ
-         FyVz0LWGXxhLHrUOQ1BCIfIfWIo9Xw06R0sKtPFXjlM5uZltMOcjXaTRwkbnTZVilgdW
-         nYww==
-X-Gm-Message-State: AOJu0YyKa8/7oCkY4SJJKRdLOLtCQEw+S4Abgpw+cTHKhzHYUy97Ipgl
-	lC0ESS3Fh/gCJG/HGpNxuEQF2Clq8GpwxpA84hqmK3ykr7PM5xG4kr01ThQ0LV2W/BA=
-X-Gm-Gg: ASbGncst6KTQpC6fcw34+TQtWIOJFN9hJ8O/Yxn58wfr8EMC6DDiOztUOhguzzoGZWw
-	9+6NpV5cwVA5JpVDwiK9ZybI0ouUFrtfJKzLpXLprw2P6VrWtixfeO2ajGU4hc6R7+nL/tBBVjp
-	7nsm7GDVZdBBLqW+skVgH+Cglrh2pRnfCeP6801sZo4r4kXkEQLXpVj9EKeZGbdCqpcsNIarP2S
-	HEhoD8oAOPHvACIgU7JAjwxjrT3DQhbOyAlBEbz049VmloCrXLx/sSO53SgL90D6UZJt9pcb63u
-	O0/HqCSbXyYuQzNiG0nlj6EmRhZpXkg5kjzcMQlCKEtPAGoh7kgFs8OHw3Lwq7YT1i8VFdg0eal
-	9dvEV83IE6BXoHHoVtRvkPliy6HL+//SYaZu5uyy2qth+IQryFjDwZj7VqyY=
-X-Google-Smtp-Source: AGHT+IHeHTgxlltTMg2jkQR8M4ckc7kuuLQqcNCSqE/YdELv/3ZHWfkOaY8nRgco+jsklhYgevWYbA==
-X-Received: by 2002:a05:6e02:18cc:b0:425:8744:de7d with SMTP id e9e14a558f8ab-42f87419a6amr8445705ab.30.1759872511151;
-        Tue, 07 Oct 2025 14:28:31 -0700 (PDT)
-Received: from [192.168.1.14] ([38.175.187.108])
-        by smtp.gmail.com with ESMTPSA id e9e14a558f8ab-42d8b294f91sm67698345ab.34.2025.10.07.14.28.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Oct 2025 14:28:30 -0700 (PDT)
-Message-ID: <dc360969-c1af-4b87-a259-cc265a8d553d@linuxfoundation.org>
-Date: Tue, 7 Oct 2025 15:28:29 -0600
+        d=1e100.net; s=20230601; t=1759879949; x=1760484749;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=H+V4BB0SYrSnQNgVu+nCSW9roKQJL9Ev+We4fb/qOTk=;
+        b=vIK5tW9xW7P0gLqJqMem6+flo7TuxlTc3AjbarS0qAizBq02zkg8bIjiW3cpVzs0C6
+         iJTL6leb9g5QOK8ODUSXAe6svyNLEK+k3DGcuY7gh9v2FXgWKhgOhfo6AOL9XdhQ623p
+         ufbjwMrQqPZ+0ezYndIdUgUzanpOsTZdliDzJ4iyIV/BJEcuOl61g9Pd6R7nmpNS1VIB
+         1XMVn4P4qcly3matXe+fVGP8qNX1vGx88oYcI7FIcJHsvy38cc3HCQ1E1uY0MhWUbbrx
+         aY7em+YzCLMNhHT7cdZG/Zw1fQyVzXzi7TUGK6ag+tIyEjiiN1+21B5qBBQCMwC6Qz01
+         81Zw==
+X-Gm-Message-State: AOJu0Yw5p2yMEOp+RvwLnAbMTf741r9nf8QHl2XOJ32FanUyD3n4TJCr
+	3FAMrge2Q2sDIgVCvuQAmfz0Zaxbz4zezdfT9HSTLVkoHmyjYi2cw/ZN9omvZDh3oTFpL2IeirV
+	BXrX05axan68mlYPSyQmzQ0kSDw3byBgsHhnn1G2srLgWo8e9TQIj7On5TFiGrw==
+X-Google-Smtp-Source: AGHT+IE33uGQahccdyFgAdtwOojge90eBwTzHM4KgfC2NY/iYVmYRWSbUa0fG79ZfIzcVswvk/KkggMQiaCTdll9rjeV8AtcFEzj
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] Fix to avoid the usage of the `res` variable
- uninitialized in the following macro expansions.
-To: Alessandro Zanni <alessandro.zanni87@gmail.com>, jgg@ziepe.ca,
- kevin.tian@intel.com, shuah@kernel.org
-Cc: iommu@lists.linux.dev, linux-kselftest@vger.kernel.org,
- linux-kernel@vger.kernel.org, Shuah Khan <skhan@linuxfoundation.org>
-References: <20250924165801.49523-1-alessandro.zanni87@gmail.com>
-Content-Language: en-US
-From: Shuah Khan <skhan@linuxfoundation.org>
-In-Reply-To: <20250924165801.49523-1-alessandro.zanni87@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6602:1490:b0:8dd:d9c5:140d with SMTP id
+ ca18e2360f4ac-93bd193c6b1mr115736039f.12.1759879949109; Tue, 07 Oct 2025
+ 16:32:29 -0700 (PDT)
+Date: Tue, 07 Oct 2025 16:32:29 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <68e5a30d.050a0220.256323.002e.GAE@google.com>
+Subject: [syzbot] [iommu?] divide error in iova_bitmap_alloc
+From: syzbot <syzbot+093a8a8b859472e6c257@syzkaller.appspotmail.com>
+To: iommu@lists.linux.dev, jgg@ziepe.ca, joro@8bytes.org, kevin.tian@intel.com, 
+	linux-kernel@vger.kernel.org, robin.murphy@arm.com, 
+	syzkaller-bugs@googlegroups.com, will@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On 9/24/25 10:57, Alessandro Zanni wrote:
+Hello,
 
-Fix to avoid the usage of the `res` variable uninitialized in the following macro expansions.
+syzbot found the following issue on:
 
-ret not res?
+HEAD commit:    971199ad2a0f Merge tag 'arm64-fixes' of git://git.kernel.o..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=1570f92f980000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=87fcad19f7d09298
+dashboard link: https://syzkaller.appspot.com/bug?extid=093a8a8b859472e6c257
+compiler:       gcc (Debian 12.2.0-14+deb12u1) 12.2.0, GNU ld (GNU Binutils for Debian) 2.40
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16286304580000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1370f92f980000
 
-You can simplify the shortlog "Fix ret unitialized warning" perhaps.
+Downloadable assets:
+disk image (non-bootable): https://storage.googleapis.com/syzbot-assets/d900f083ada3/non_bootable_disk-971199ad.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/a4f2f91ba510/vmlinux-971199ad.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/8fa7552ebcd0/bzImage-971199ad.xz
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+093a8a8b859472e6c257@syzkaller.appspotmail.com
+
+Oops: divide error: 0000 [#1] SMP KASAN NOPTI
+CPU: 2 UID: 0 PID: 6098 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.3-debian-1.16.3-2~bpo12+1 04/01/2014
+RIP: 0010:iova_bitmap_offset_to_index drivers/iommu/iommufd/iova_bitmap.c:135 [inline]
+RIP: 0010:iova_bitmap_alloc+0xe8/0x350 drivers/iommu/iommufd/iova_bitmap.c:259
+Code: e8 3d ad 7e fc 48 83 fd 3f 0f 87 c0 8c e9 fb e8 be b1 7e fc 89 e9 b8 08 00 00 00 31 d2 48 d3 e0 48 8d 7b 40 48 89 c1 4c 89 e0 <48> f7 f1 48 ba 00 00 00 00 00 fc ff df 48 89 f9 48 c1 e9 03 48 83
+RSP: 0018:ffffc900034ffba8 EFLAGS: 00010246
+RAX: ffffffffffffffff RBX: ffff888032636100 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: ffffffff853dc2d2 RDI: ffff888032636140
+RBP: 000000000000003f R08: 0000000000000007 R09: 000000000000003f
+R10: 000000000000003f R11: 0000000000000000 R12: ffffffffffffffff
+R13: 0000000000000000 R14: 0000000000000000 R15: ffffffff8c065aa0
+FS:  000055558b0da500(0000) GS:ffff8880d6bdf000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000001b2f463fff CR3: 000000004ee7c000 CR4: 0000000000352ef0
+Call Trace:
+ <TASK>
+ iommu_read_and_clear_dirty drivers/iommu/iommufd/io_pagetable.c:543 [inline]
+ iopt_read_and_clear_dirty_data+0x271/0x4c0 drivers/iommu/iommufd/io_pagetable.c:603
+ iommufd_hwpt_get_dirty_bitmap+0x1c3/0x340 drivers/iommu/iommufd/hw_pagetable.c:485
+ iommufd_fops_ioctl+0x34d/0x540 drivers/iommu/iommufd/main.c:533
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:597 [inline]
+ __se_sys_ioctl fs/ioctl.c:583 [inline]
+ __x64_sys_ioctl+0x18b/0x210 fs/ioctl.c:583
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0xcd/0xfa0 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f705598eec9
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 a8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffeac4d43a8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 00007f7055be5fa0 RCX: 00007f705598eec9
+RDX: 0000200000000300 RSI: 0000000000003b8c RDI: 0000000000000003
+RBP: 00007f7055a11f91 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f7055be5fa0 R14: 00007f7055be5fa0 R15: 0000000000000003
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:iova_bitmap_offset_to_index drivers/iommu/iommufd/iova_bitmap.c:135 [inline]
+RIP: 0010:iova_bitmap_alloc+0xe8/0x350 drivers/iommu/iommufd/iova_bitmap.c:259
+Code: e8 3d ad 7e fc 48 83 fd 3f 0f 87 c0 8c e9 fb e8 be b1 7e fc 89 e9 b8 08 00 00 00 31 d2 48 d3 e0 48 8d 7b 40 48 89 c1 4c 89 e0 <48> f7 f1 48 ba 00 00 00 00 00 fc ff df 48 89 f9 48 c1 e9 03 48 83
+RSP: 0018:ffffc900034ffba8 EFLAGS: 00010246
+RAX: ffffffffffffffff RBX: ffff888032636100 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: ffffffff853dc2d2 RDI: ffff888032636140
+RBP: 000000000000003f R08: 0000000000000007 R09: 000000000000003f
+R10: 000000000000003f R11: 0000000000000000 R12: ffffffffffffffff
+R13: 0000000000000000 R14: 0000000000000000 R15: ffffffff8c065aa0
+FS:  000055558b0da500(0000) GS:ffff8880d6cdf000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000055558b0da808 CR3: 000000004ee7c000 CR4: 0000000000352ef0
+----------------
+Code disassembly (best guess):
+   0:	e8 3d ad 7e fc       	call   0xfc7ead42
+   5:	48 83 fd 3f          	cmp    $0x3f,%rbp
+   9:	0f 87 c0 8c e9 fb    	ja     0xfbe98ccf
+   f:	e8 be b1 7e fc       	call   0xfc7eb1d2
+  14:	89 e9                	mov    %ebp,%ecx
+  16:	b8 08 00 00 00       	mov    $0x8,%eax
+  1b:	31 d2                	xor    %edx,%edx
+  1d:	48 d3 e0             	shl    %cl,%rax
+  20:	48 8d 7b 40          	lea    0x40(%rbx),%rdi
+  24:	48 89 c1             	mov    %rax,%rcx
+  27:	4c 89 e0             	mov    %r12,%rax
+* 2a:	48 f7 f1             	div    %rcx <-- trapping instruction
+  2d:	48 ba 00 00 00 00 00 	movabs $0xdffffc0000000000,%rdx
+  34:	fc ff df
+  37:	48 89 f9             	mov    %rdi,%rcx
+  3a:	48 c1 e9 03          	shr    $0x3,%rcx
+  3e:	48                   	rex.W
+  3f:	83                   	.byte 0x83
 
 
-> It solves the following warning:
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-Fix the following warning.
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
 
-> In function ‘iommufd_viommu_vdevice_alloc’,
->    inlined from ‘wrapper_iommufd_viommu_vdevice_alloc’ at
-> iommufd.c:2889:1:
-> ../kselftest_harness.h:760:12: warning: ‘ret’ may be used uninitialized
-> [-Wmaybe-uninitialized]
->    760 |   if (!(__exp _t __seen)) { \
->        |      ^
-> ../kselftest_harness.h:513:9: note: in expansion of macro ‘__EXPECT’
->    513 |   __EXPECT(expected, #expected, seen, #seen, ==, 1)
->        |   ^~~~~~~~
-> iommufd_utils.h:1057:9: note: in expansion of macro ‘ASSERT_EQ’
->   1057 |   ASSERT_EQ(0, _test_cmd_trigger_vevents(self->fd, dev_id,
-> nvevents))
->        |   ^~~~~~~~~
-> iommufd.c:2924:17: note: in expansion of macro
-> ‘test_cmd_trigger_vevents’
->   2924 |   test_cmd_trigger_vevents(dev_id, 3);
->        |   ^~~~~~~~~~~~~~~~~~~~~~~~
-> 
-> The issue can be reproduced, building the tests, with the command:
-> make -C tools/testing/selftests TARGETS=iommu
-> 
-> Signed-off-by: Alessandro Zanni <alessandro.zanni87@gmail.com>
-> ---
->   tools/testing/selftests/iommu/iommufd_utils.h | 8 +++-----
->   1 file changed, 3 insertions(+), 5 deletions(-)
-> 
-> diff --git a/tools/testing/selftests/iommu/iommufd_utils.h b/tools/testing/selftests/iommu/iommufd_utils.h
-> index 3c3e08b8c90e..772ca1db6e59 100644
-> --- a/tools/testing/selftests/iommu/iommufd_utils.h
-> +++ b/tools/testing/selftests/iommu/iommufd_utils.h
-> @@ -1042,15 +1042,13 @@ static int _test_cmd_trigger_vevents(int fd, __u32 dev_id, __u32 nvevents)
->   			.dev_id = dev_id,
->   		},
->   	};
-> -	int ret;
->   
->   	while (nvevents--) {
-> -		ret = ioctl(fd, _IOMMU_TEST_CMD(IOMMU_TEST_OP_TRIGGER_VEVENT),
-> -			    &trigger_vevent_cmd);
-> -		if (ret < 0)
-> +		if (!ioctl(fd, _IOMMU_TEST_CMD(IOMMU_TEST_OP_TRIGGER_VEVENT),
-> +			    &trigger_vevent_cmd))
->   			return -1;
->   	}
-> -	return ret;
+If the report is already addressed, let syzbot know by replying with:
+#syz fix: exact-commit-title
 
-Hmm. with this change -1 is returned instead of ret
+If you want syzbot to run the reproducer, reply with:
+#syz test: git://repo/address.git branch-or-commit-hash
+If you attach or paste a git patch, syzbot will apply it before testing.
 
-> +	return 0;
->   }
->   
->   #define test_cmd_trigger_vevents(dev_id, nvevents) \
+If you want to overwrite report's subsystems, reply with:
+#syz set subsystems: new-subsystem
+(See the list of subsystem names on the web dashboard)
 
-thanks,
--- Shuah
+If the report is a duplicate of another one, reply with:
+#syz dup: exact-subject-of-another-report
 
+If you want to undo deduplication, reply with:
+#syz undup
