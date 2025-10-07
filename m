@@ -1,214 +1,148 @@
-Received: from BN1PR04CU002.outbound.protection.outlook.com (mail-eastus2azon11010036.outbound.protection.outlook.com [52.101.56.36])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-il1-f182.google.com (mail-il1-f182.google.com [209.85.166.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F243218AB4
-	for <iommu@lists.linux.dev>; Tue,  7 Oct 2025 20:37:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.56.36
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759869432; cv=fail; b=Mk2vdiUiVTwtwZSvnKNkCdDkdo1undtDTVfEVwNyVQ/h/TR659PKiNJQD9onrCPl2XWy/vxPno0h2GWPW5eNhxJ6+PuGN66fU+yOhaO5OtXI3EbwNYed9K4tGUSJLUNh/whJdTsxGE9j/srlzP9saUPzpuDRViH3F0bHuiX9goY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759869432; c=relaxed/simple;
-	bh=1grdaqmN2VucA68m/29YHovqvakzQ5R9sHlGsDiktg0=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=ewSKkV0xWO4lTbjNqUooz6t1SZ8KnMT+rE/LVfgmmM8cwBW4sKcmtcyGlgLzJ4dnGZVutyIszzw8Ln+8a8SWgwi1WJUDcT6LrpMM9IKCxVSlKrX5mH12rm0MJcuoglxki+wg3uo15ZjmQVV1DoKgRmofyHn3m92934yyJmEuEPs=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=e0iISmFO; arc=fail smtp.client-ip=52.101.56.36
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 379BC246BA8
+	for <iommu@lists.linux.dev>; Tue,  7 Oct 2025 21:28:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.182
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1759872514; cv=none; b=gaNLIYLfA3x2glWiprNRj/UsrW9dETOiq+ICNEoQYUplI61OOMsfXFjQSauwSc1LXpuwBI9NfULSFZzaSNBwqKxE+v5spGZ3k6/8WTNaoYuniG5ZNJDzI02ZcIw9BEuXWnimBIiFQESzuRMidwKbvfhyQ9mTB5qzq2pxp9HuhCQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1759872514; c=relaxed/simple;
+	bh=ybSy4Tv5iFVM78XbJXlpVrFeVjI9pBLjjyVsYoM1g0M=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=C9h3WW0lnmHzDacaPBa+hKuiynbEjZUoSv/UgBPA/cYIUSswQ55XXOSwVsh0DPVHDNqUtTCnXhsH9BRWM6UKYqvcnzaH+0jGuFke7eTRl8tW6V2hYjEVwDWyLzzsz1znrpN35p1tgC3Q1KV+sAxfMKBdhP807YAVcQfrwS5MKLc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linuxfoundation.org; spf=pass smtp.mailfrom=linuxfoundation.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=hHy3JtGm; arc=none smtp.client-ip=209.85.166.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linuxfoundation.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="e0iISmFO"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=cO+wrNPDQHV3hGufeTkeUhFcAk5Y64Fga/wqAQ9mRjNGgS6VGmMQzWrZ5HBwdgEQGKqhMGQDq1NbFH0liU4uT86nHXKKqR32NfVSzNQkEaytHvTeXfbj/AJuzjIMuYW8CWOTSAkTfrcg+fbyEsQND5JV3QPgfpqSd9seyAFvXFPGicZl/otxCFs+69iop+AoQSa6Ff7tD0droJ5NY6coQFwr5r+mNQPcHFMsUW56zPKG2qWCERg0wJGj39fAjNd6qV7XaZUzPJP6wnSMYnC2e0KRrQwIPmCI+ocSW90+EUOOwFIUJrUVFJEbPemQ62B1SCocPTV/e7crwyVxQd/T1w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=P+FVIStw2xKo9gfnQrd3tvWoMJMHSGGsR7NdSSU7/Yk=;
- b=ZiG3saV6nI1yk48DVW7upnLWXUu09pZdRvKgecd7scsQyzBH4uzIzZJEpU/Yt4+mir1qRDvr1Sz629EelObXmS++FRiCazlqk1CV0oek5h9z2PutD7z+tYMqGnJsStqWYzkk25qJq/GshC75yjD3kzPkvK7687TwIlxte6qtNxcFb6g560NbSRv0l8gu6lG/2xgvc0H6DUMtrWz+3romqQGoY02k5LTiwJzjAvBIqfGyah2UbX6mugLBopS9R5dG2YWqu+t2ktzC/H3gC3KxrSMrROfIbh5YYOxSSitSY8ZLpDRRfX8JL9rkIB4TMe95ftUuxKuQ1lB7tjAEbBB6Jg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=P+FVIStw2xKo9gfnQrd3tvWoMJMHSGGsR7NdSSU7/Yk=;
- b=e0iISmFOdQrcwhWC6xH1WJZFapF+YDc45vskakUzNrCgD56Qqzq3RqchJvoIYYu3fvi9qPF52/krBzS8kkwn6oTD5I6iFHX7WN6UaflHpKFh9fUlsFyp48gMa1FCk2HIp8g7powjGsYHcgvpLXF/LbMeBP4puJSRfOqR/jVjmuw=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DM8PR12MB5445.namprd12.prod.outlook.com (2603:10b6:8:24::7) by
- SJ2PR12MB9212.namprd12.prod.outlook.com (2603:10b6:a03:563::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9182.20; Tue, 7 Oct
- 2025 20:37:01 +0000
-Received: from DM8PR12MB5445.namprd12.prod.outlook.com
- ([fe80::a544:caf8:b505:5db6]) by DM8PR12MB5445.namprd12.prod.outlook.com
- ([fe80::a544:caf8:b505:5db6%6]) with mapi id 15.20.9203.007; Tue, 7 Oct 2025
- 20:37:01 +0000
-Message-ID: <fd4341ea-869f-459c-a3be-a98cd1c8ba4b@amd.com>
-Date: Tue, 7 Oct 2025 15:36:58 -0500
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 10/12] iommu/amd: Add support for nested domain
- allocation
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: nicolinc@nvidia.com, linux-kernel@vger.kernel.org, robin.murphy@arm.com,
- will@kernel.org, joro@8bytes.org, kevin.tian@intel.com, jsnitsel@redhat.com,
- vasant.hegde@amd.com, iommu@lists.linux.dev, santosh.shukla@amd.com,
- sairaj.arunkodilkar@amd.com, jon.grimm@amd.com, prashanthpra@google.com,
- wvw@google.com, wnliu@google.com, gptran@google.com, kpsingh@google.com,
- joao.m.martins@oracle.com, alejandro.j.jimenez@oracle.com
-References: <20251001060954.5030-1-suravee.suthikulpanit@amd.com>
- <20251001060954.5030-11-suravee.suthikulpanit@amd.com>
- <20251006144936.GS3360665@nvidia.com>
-From: "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>
-In-Reply-To: <20251006144936.GS3360665@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SN7P220CA0017.NAMP220.PROD.OUTLOOK.COM
- (2603:10b6:806:123::22) To DM8PR12MB5445.namprd12.prod.outlook.com
- (2603:10b6:8:24::7)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="hHy3JtGm"
+Received: by mail-il1-f182.google.com with SMTP id e9e14a558f8ab-42f61004750so23066285ab.2
+        for <iommu@lists.linux.dev>; Tue, 07 Oct 2025 14:28:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google; t=1759872511; x=1760477311; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=ZRsJlXyUS+y130OtDxYwG/Abbe7/BVe6s/xFEvukloE=;
+        b=hHy3JtGmUTWO5n/IzClSSh5XFXtI7hv9Rizn2Y8/dFk4dqBTbwJIfKU4YQqOMtH+EL
+         AjpgnPNLDVz36ub/cx4RD4/GMNXKY5aGikzj573yfEIfGFBtm0qmWaIQfXAQG/TsxXB1
+         GEWYFz05dfPS5+FlEhGqa900oRwchkqXnb3gg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1759872511; x=1760477311;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=ZRsJlXyUS+y130OtDxYwG/Abbe7/BVe6s/xFEvukloE=;
+        b=kpAL+T38XZnEgtWMiYNt/hGXzWHZa7aloeF0a00BnVN/DJK6CjIsWW6ZT5DRlgi5xO
+         AU+nOVfGMoSwGstZUM4l+G+2bmtSUBz4l6BdVrPs2hC0L+vPEzIuc6wB9rzbddquUt0/
+         iQiqlpH//duZ7cxITg4nioBFBr1VXgx9u3pmHx03os12tpAgP56XuRCOlfdkB/5Zb2AF
+         QiJya9cI/B4nDkB5mUQRbNCg+n/pWDuimNyFs4s3uBwAK4gd9uE3Mck9oybCPgSc8UxQ
+         FyVz0LWGXxhLHrUOQ1BCIfIfWIo9Xw06R0sKtPFXjlM5uZltMOcjXaTRwkbnTZVilgdW
+         nYww==
+X-Gm-Message-State: AOJu0YyKa8/7oCkY4SJJKRdLOLtCQEw+S4Abgpw+cTHKhzHYUy97Ipgl
+	lC0ESS3Fh/gCJG/HGpNxuEQF2Clq8GpwxpA84hqmK3ykr7PM5xG4kr01ThQ0LV2W/BA=
+X-Gm-Gg: ASbGncst6KTQpC6fcw34+TQtWIOJFN9hJ8O/Yxn58wfr8EMC6DDiOztUOhguzzoGZWw
+	9+6NpV5cwVA5JpVDwiK9ZybI0ouUFrtfJKzLpXLprw2P6VrWtixfeO2ajGU4hc6R7+nL/tBBVjp
+	7nsm7GDVZdBBLqW+skVgH+Cglrh2pRnfCeP6801sZo4r4kXkEQLXpVj9EKeZGbdCqpcsNIarP2S
+	HEhoD8oAOPHvACIgU7JAjwxjrT3DQhbOyAlBEbz049VmloCrXLx/sSO53SgL90D6UZJt9pcb63u
+	O0/HqCSbXyYuQzNiG0nlj6EmRhZpXkg5kjzcMQlCKEtPAGoh7kgFs8OHw3Lwq7YT1i8VFdg0eal
+	9dvEV83IE6BXoHHoVtRvkPliy6HL+//SYaZu5uyy2qth+IQryFjDwZj7VqyY=
+X-Google-Smtp-Source: AGHT+IHeHTgxlltTMg2jkQR8M4ckc7kuuLQqcNCSqE/YdELv/3ZHWfkOaY8nRgco+jsklhYgevWYbA==
+X-Received: by 2002:a05:6e02:18cc:b0:425:8744:de7d with SMTP id e9e14a558f8ab-42f87419a6amr8445705ab.30.1759872511151;
+        Tue, 07 Oct 2025 14:28:31 -0700 (PDT)
+Received: from [192.168.1.14] ([38.175.187.108])
+        by smtp.gmail.com with ESMTPSA id e9e14a558f8ab-42d8b294f91sm67698345ab.34.2025.10.07.14.28.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 07 Oct 2025 14:28:30 -0700 (PDT)
+Message-ID: <dc360969-c1af-4b87-a259-cc265a8d553d@linuxfoundation.org>
+Date: Tue, 7 Oct 2025 15:28:29 -0600
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM8PR12MB5445:EE_|SJ2PR12MB9212:EE_
-X-MS-Office365-Filtering-Correlation-Id: bd9dc2d4-7419-46e1-b6c4-08de05e1446f
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|7416014|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?M2F4a3VIL3VLdFhUS0NobFhyNTliRitsV1FoeC9xaEE3VFU0STlSbVpxV2Nw?=
- =?utf-8?B?byt0RUdXa2xmWGtsWTRzV1cza2RFZ21rb2RQYVlGejZuWEJDNy9wOStXcHo5?=
- =?utf-8?B?QjJDdkdlUlUza0pKV2p0ZUNLWUV0VlRsS3dMUDI0ZVRJd3FBc3BEenVHVTlQ?=
- =?utf-8?B?eE0zWkFodE5ieXJxQVVFVWVuMS9sRU5qdjFkVzFTUThQREtPSENGbXk1V1U4?=
- =?utf-8?B?eWR5TkZtRDNjNFVVNWZibU80K1FRd1BjRjcxaWF2NTRhQVM3YmdiTEJjM3hz?=
- =?utf-8?B?bTJXWHcrOWIxd202dHR1TUJDOURzYjBmaGRtWXV3N0wvL1BNd1pZMWtVNDFk?=
- =?utf-8?B?N3dTQ2o1TklmaHhta3JUZHNSWmF5dWl4TWdzTzQ2eVV1TjAxaU9QMDFiMWZq?=
- =?utf-8?B?bTZjZkUyNUoyazhOOFZqcTJFeGhSVkczbnh4LzIyQmtLQUhDZWkzbVdrMlMz?=
- =?utf-8?B?a2dGR3A0RDUrUXZDbjQ1UXhWa1M3YU5OamNSTTNQS2NQSkUwdzZGTUFNQmNt?=
- =?utf-8?B?MzAveGcrZFpoanY2b2MxNndjZC9qYURDRUt3Nmtic3VNT3J0bk5OcTlZYXlK?=
- =?utf-8?B?RHdiNHVJcThSTnFLUU9EZ2daOWg4SnBEWS9pTTQ1SVpob0pMNHRNTWJkdzEz?=
- =?utf-8?B?SlE2eTc4RnZISnozOW5YdWJIbGd0MFJnQTBjeHhKVHRnMkE0OGtRd3liY1Vi?=
- =?utf-8?B?T0p0Myt4NGZLU3VGRXltKzFEMFJoNUF4dERUeFpuMWlEM041Qk1RREZlbzRi?=
- =?utf-8?B?dWQ3eTk1VGM0aWNtdWtMZmhtcmo2ZGxxaW82dytaaThkZithMFZ1YjlzZDEx?=
- =?utf-8?B?eG5mbFBMYjcxaUJkMkZlNkcvZ2pQUHJLR0txb1R5SUFibjRRSm9XTFV3Y1VE?=
- =?utf-8?B?L2VxY2pXWDBZQ2VIN05USkpZMHpqZmRRS0FMbmpVQkpGc1g1KzdNQVZZSnN4?=
- =?utf-8?B?SDZ1UUtwOXg1SVVYUnpwaEllZUh0cG0zSVc5UnVlVldkTHNVRkY1RnozRU90?=
- =?utf-8?B?OE5YdHdOZ3BJblZYaitma043R2RlOUdtS1IwRGtHL2NjUC9zTURnNkJOVHox?=
- =?utf-8?B?U1AzOTZWSSs0TVpjc2JId2NjODRWYklDVCsremNYdHJWT2dUSXFLaDR1MlJq?=
- =?utf-8?B?ejd6dnJTbEpPS1JOQXp1Q2Vkbk9YSDBnRXZJM1hZaU5LT0Y5LzNPM0NSWStK?=
- =?utf-8?B?UWlMa1RyQjgrMGlwTEFlY2xSSDRIMkhKU3FGOW5zckZoc2ZTMEE0SlFrS2Fp?=
- =?utf-8?B?a3lXUjk1RG5IOTliY2pxMXhzcVFCcnp5U2NJNU9ZWklNbGw4blFvQUxFWThX?=
- =?utf-8?B?OCs3VVI0dTY0NGZQeHZmN3o1VXQ1YWFHb04xQ2NtZ1RVYUE5YzVoVUw0M0hY?=
- =?utf-8?B?dlRwaDdwYlNUWGpNUElFMUJlQTZadzNLdnZGdlpydmphS000ZWNHM3FHMklH?=
- =?utf-8?B?WCtoUXdEWGFxK3ZTQmNUU2RVR0NSWVlReW9FWU51TTFERXZIMEh4clVYdGJF?=
- =?utf-8?B?NXRrVjcxOVZpY1RVMjlkMnhVcjM1aWk3cDBtemhYUVg4ZEZOK2luclJrRGdB?=
- =?utf-8?B?S0FmaEdhN3UxTURCeWdTK1VCRjNqTkVDVG04aG1ibWc2SGVTR0Z5NktLMStv?=
- =?utf-8?B?WlRaVklkd2xMdW9wK1R0ejNGU2FxTUhVMmNTT0FuQStyQVZia0J5bXhPQmty?=
- =?utf-8?B?NXZTWlhiRFk5V256VEluNUpSSi8zQ0d4cVBZZTBhbUlyNUJHYzBEZWZQOThG?=
- =?utf-8?B?RnFLTzY5N3BCUzQvT24zbXVUbkpheC9WZ01yWWpMNEhYMU4vRTZVOWx6dlRr?=
- =?utf-8?B?eUtDcFAzQit3TXlrQmpVeUhNeVlZN1g3S2V5M2hNcWt4M1loTDBKZmthbEor?=
- =?utf-8?B?SzcrVzVXYmRvU1JaZDVPZUFkOTFWSmF6MzRpd0pucDB0MWVnMEZHRHNmSW1u?=
- =?utf-8?Q?O12sfLWFkp1fMnwtBv4K5L6hSX25SGk+?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR12MB5445.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(7416014)(1800799024);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?eDZnNC9Sc2h6aTBRKzhaMGtiRkRISHBkd1ZHbU82SWlNRnR3ejNnblZmR09Q?=
- =?utf-8?B?UUNIM3RrcWFyaG5Gdy9Fb3Y5RURUZDBPcThjWW5JMHJCaFY0SzY1NXBheXZt?=
- =?utf-8?B?ZjdJK0pHMjZKL0xReUdhWUh2THExNEpJZko3R0t2VHZMcysrYnhWaDBnVnpV?=
- =?utf-8?B?WG4vYno5TFQvMVZkSHNSWnZPR3RVTWk0SnVaaXZkOFZ2QktiWmdMWDFGRll6?=
- =?utf-8?B?bUlWRndRamh0RW9ZcC9ZVzdZYjFMZlRnOFpXdVUrY3UzaWpSWC9KMm84WmxM?=
- =?utf-8?B?cDVsMkZYeWdRZ0g5L0VHUG56V3NWeWlWV3ltN3UxZ21BRjdteUhqRmk2YUpF?=
- =?utf-8?B?cDJaU2RoUUpRYVVzTUkzRnloOTh5eTdCa2s3TDR4QVU4MHFSTkFQVVdYK21i?=
- =?utf-8?B?Q01tS08vcm9kck9VdTlvLzFyRzY3YjJQMUp6YVNWSzFUSDdvc3RzQitjTDls?=
- =?utf-8?B?MlJ0eVpFU0RDK3dHRkErbjVFMzJOWC9aOEJYMW9Hc1VqZHFiWEdpUk1ZckJv?=
- =?utf-8?B?UEVvTXdFbWw1THQ2WXB2VGpvSVlXNlBuWHJtZzlneXdBbkRlWnhxSE9GaGNT?=
- =?utf-8?B?dVB1T2lMU3FOWFMzamF1MGg0MHJoemg5Z3dNU2ZJUjRML1ZBMjFaUkl2YVl1?=
- =?utf-8?B?Q2ZTSi9IQUs2NERSZWNZbGJjWm1QWVpsYjNKU2VqZE10bFRTcXY3TzI1aEhG?=
- =?utf-8?B?cy9tZWJQek5YcXJmVTJiYnY0M1dmc1MzYnJIMU4xeXBOLzhHTmEwdy8rRC8v?=
- =?utf-8?B?cWg2SlhtVjBXMEdTZ3BZdDdjVWxMYmdQVk1abDFJTFd4UUg0eTV6OEVlR3ll?=
- =?utf-8?B?ZGtTWW16eEZWQXVDN2dZQkFiblBuUmZWZC9Xb1dEd2JoNmlQUHpNc2tWcFds?=
- =?utf-8?B?bnFGcWNQUUNFUTU1ME1Ud2gyUVl4UmtKWVhDdldMeml1RDRMUnNQRzR0U1Zk?=
- =?utf-8?B?amhCTDhWMDdoVndsYjJ5TWgzaHdiK2lWVkNmTmVaRlJqZ29ybTBMM3k0VkNw?=
- =?utf-8?B?bzZ3a1ZTRzRLRmszTVBsdHRFRDdsN0NVSENaVkFJZkdVNEcweUtTakQyWTJi?=
- =?utf-8?B?bzY0cUlVcWsycFBlVWJLVDJpWWRzQXp4OWkrWVV4TXByQlRKNTA5alJsemtY?=
- =?utf-8?B?VUQ4Rmp0a3Y2RExaWmJNYmpjdzNqbUN1TFpLVkJnczY2OHBaOXJsYTFzdFMw?=
- =?utf-8?B?ajI1Q1VYS21qZ3IrcENrekprSzJFS2s3OEVEMXUrQ2R4TVVZZHJZc2YzRmE0?=
- =?utf-8?B?SUFyQ21zb0hBa1lremk5WWJSeHBDRldFTklrRkRObkpiTW5UNzdEbUNCd3F3?=
- =?utf-8?B?b00xUGMvVjRvcmNaaDVDVzc3RjRNbTRtSUR2dHg2TzMzNWN1eTZlTFluNUV2?=
- =?utf-8?B?MVNXNWpORTNVbmRvRHJnUEJ6TXhCVjRueldPaEdxQnkzRWZmUlZkRlF2Zktr?=
- =?utf-8?B?TUJmeURuY056YzV1Qkk4LzM4akFCSnBlZW90UVpzMThGY2E3QkwyalpDS1BG?=
- =?utf-8?B?WUVZNEh5WnhqbTQzUGZwMCtRM3F0dWlCd05xVHgxNmY5a2g2OHFVT25sdXI3?=
- =?utf-8?B?NG1PQmdJbG9pODFlL3BiZm1nbVBLNVQ5dkM1UFJ0Z2doaUtiUjQzdHBZYit5?=
- =?utf-8?B?d2JqQm9sc3FpZldTU0VmZXEwV0ZCTCsrS3Q5V1RSVDJydGx4d2JKMzRrcTNQ?=
- =?utf-8?B?Yzd0Zk5heXYzN245SXBNdGhtSDJ2QUJlK1RLaUJ2ajhrMndHalVUQ2dza1pN?=
- =?utf-8?B?Sjg0S0xhVERSUkNmUVZMZUdocHZ6ZmdVQnUySWR5dk5vb3U3aFlOS3dEU1ZY?=
- =?utf-8?B?SEJCL3RhTVMwa0liWFZEVmVKV011WFJ0bWx3Tnd0S01IV0crbEFzdHRFc0kx?=
- =?utf-8?B?SEFYZTF5aHRlNDRmSU9PUTBnNlJHdFI5bkZ6dXpkU3lLMWsrTVV1T0FqV2Jw?=
- =?utf-8?B?RFhyNFpSbW90T2JwMUVqK1JYemNYNlh0Sit2TGZWWjNpaHFBVXpqeW1VWWhR?=
- =?utf-8?B?VUNQS1VuZ0pudDI4QWhtZ2xFK1JLNEtjVjFFUC8vdkNvK0F0UEJNTGI1cmRP?=
- =?utf-8?B?b0hQODhHY3dTSVp1MFVZNENPN1VkR3V3bzZIV0lYbGpnYlA0N1RMQ1RyQ3ls?=
- =?utf-8?Q?CUhx6eTzKBAJIyxFebIlRM53O?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bd9dc2d4-7419-46e1-b6c4-08de05e1446f
-X-MS-Exchange-CrossTenant-AuthSource: DM8PR12MB5445.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Oct 2025 20:37:00.9432
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: UTlPdcdDno3RokwdcqF8SpYBNYea3pJLrdDG2iHcgzDdSMKhNpz7GMT6ZkCsjEKGepK+Lq/7cyuxOhJwB6f4Jg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB9212
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] Fix to avoid the usage of the `res` variable
+ uninitialized in the following macro expansions.
+To: Alessandro Zanni <alessandro.zanni87@gmail.com>, jgg@ziepe.ca,
+ kevin.tian@intel.com, shuah@kernel.org
+Cc: iommu@lists.linux.dev, linux-kselftest@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Shuah Khan <skhan@linuxfoundation.org>
+References: <20250924165801.49523-1-alessandro.zanni87@gmail.com>
+Content-Language: en-US
+From: Shuah Khan <skhan@linuxfoundation.org>
+In-Reply-To: <20250924165801.49523-1-alessandro.zanni87@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+
+On 9/24/25 10:57, Alessandro Zanni wrote:
+
+Fix to avoid the usage of the `res` variable uninitialized in the following macro expansions.
+
+ret not res?
+
+You can simplify the shortlog "Fix ret unitialized warning" perhaps.
 
 
+> It solves the following warning:
 
-On 10/6/2025 9:49 AM, Jason Gunthorpe wrote:
-> On Wed, Oct 01, 2025 at 06:09:52AM +0000, Suravee Suthikulpanit wrote:
-> ....
->> +
->> +	ret = iommu_copy_struct_from_user(&gdte, user_data,
->> +					  IOMMU_HWPT_DATA_AMD_GUEST,
->> +					  dte);
->> +	if (ret)
->> +		return ERR_PTR(ret);
->> +
->> +	ndom = kzalloc(sizeof(*ndom), GFP_KERNEL);
->> +	if (IS_ERR(ndom))
->> +		return ERR_PTR(-ENOMEM);
->> +
->> +	ndom->domain.ops = &nested_domain_ops;
->> +	ndom->domain.type = IOMMU_DOMAIN_NESTED;
->> +	memcpy(&ndom->guest_dte, &gdte, sizeof(struct dev_table_entry));
->> +
->> +	/* Due to possible aliasing issue use per-device nested domain ID */
->> +	ndom->id = amd_iommu_pdom_id_alloc();
+Fix the following warning.
+
+> In function ‘iommufd_viommu_vdevice_alloc’,
+>    inlined from ‘wrapper_iommufd_viommu_vdevice_alloc’ at
+> iommufd.c:2889:1:
+> ../kselftest_harness.h:760:12: warning: ‘ret’ may be used uninitialized
+> [-Wmaybe-uninitialized]
+>    760 |   if (!(__exp _t __seen)) { \
+>        |      ^
+> ../kselftest_harness.h:513:9: note: in expansion of macro ‘__EXPECT’
+>    513 |   __EXPECT(expected, #expected, seen, #seen, ==, 1)
+>        |   ^~~~~~~~
+> iommufd_utils.h:1057:9: note: in expansion of macro ‘ASSERT_EQ’
+>   1057 |   ASSERT_EQ(0, _test_cmd_trigger_vevents(self->fd, dev_id,
+> nvevents))
+>        |   ^~~~~~~~~
+> iommufd.c:2924:17: note: in expansion of macro
+> ‘test_cmd_trigger_vevents’
+>   2924 |   test_cmd_trigger_vevents(dev_id, 3);
+>        |   ^~~~~~~~~~~~~~~~~~~~~~~~
 > 
-> I've forgotten the details, but doesn't the gdet have the virtual
-> domain ID in side it? Shouldn't this be going to the viommu struct and
-> mapping virtual domain IDs to physical ones so they can be shared if
-> the guest says it is safe to share them? I guess that is an
-> optimization, but it should have a note here explaining it.
+> The issue can be reproduced, building the tests, with the command:
+> make -C tools/testing/selftests TARGETS=iommu
+> 
+> Signed-off-by: Alessandro Zanni <alessandro.zanni87@gmail.com>
+> ---
+>   tools/testing/selftests/iommu/iommufd_utils.h | 8 +++-----
+>   1 file changed, 3 insertions(+), 5 deletions(-)
+> 
+> diff --git a/tools/testing/selftests/iommu/iommufd_utils.h b/tools/testing/selftests/iommu/iommufd_utils.h
+> index 3c3e08b8c90e..772ca1db6e59 100644
+> --- a/tools/testing/selftests/iommu/iommufd_utils.h
+> +++ b/tools/testing/selftests/iommu/iommufd_utils.h
+> @@ -1042,15 +1042,13 @@ static int _test_cmd_trigger_vevents(int fd, __u32 dev_id, __u32 nvevents)
+>   			.dev_id = dev_id,
+>   		},
+>   	};
+> -	int ret;
+>   
+>   	while (nvevents--) {
+> -		ret = ioctl(fd, _IOMMU_TEST_CMD(IOMMU_TEST_OP_TRIGGER_VEVENT),
+> -			    &trigger_vevent_cmd);
+> -		if (ret < 0)
+> +		if (!ioctl(fd, _IOMMU_TEST_CMD(IOMMU_TEST_OP_TRIGGER_VEVENT),
+> +			    &trigger_vevent_cmd))
+>   			return -1;
+>   	}
+> -	return ret;
 
-The gDTE[DomainID] field contains guest Domain ID (gDomID). The host 
-IOMMU driver uses the gDomId and guest ID (gid) to index the Domain ID 
-mapping table, and store the host Domain ID (hDomID) in the table entry. 
-This data structure is required by hw to translation gDomID->hDomID to 
-virtualize guest invalidation command. This will be part of the upcoming 
-series to enable hw-vIOMMU.
+Hmm. with this change -1 is returned instead of ret
 
-This ndom->id is the hDomID, which is currently allocated per-device to 
-avoid TLB aliasing i.e. A guest w/ multiple pass-through devices w/ the 
-same hDomID (same stage 2 table) and different stage-1 tables with same 
-PASID. IOMMU would use the same TLB tag, which results in TLB aliasing 
-issue. Therefore, we workaround the issue by allocating per-device 
-hDomID for nested domain.
+> +	return 0;
+>   }
+>   
+>   #define test_cmd_trigger_vevents(dev_id, nvevents) \
 
-Thanks,
-Suravee
+thanks,
+-- Shuah
 
-
-
-Thanks,
-Suravee
