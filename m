@@ -1,135 +1,246 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 409AC1DE3DB
-	for <iommu@lists.linux.dev>; Tue,  7 Oct 2025 18:16:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759860973; cv=none; b=HDbkbZVYuWyYxqTnX8R72Z7yzdvGLDfu4gLynlQEf7mMGl073jvmKQEqVwjiYaa/KNvB7xmHfGtos9D0CQQplcZ6pry1Mt+lNiWCaYeQDXejdY2wRDCPrRlD+NCa3rb65liL9nlhI6AeQTlLf9Kjgj2ACk32D8lUjNIcxLWKWcs=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759860973; c=relaxed/simple;
-	bh=IJn6+OEr5PRU7LqFeUIorEgBVqq+3a+QNqJUq7/206c=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=bC7gZ6icP382tpQBEZpvEteR7n+Z2FhxiQ00WU+FAuA+IFRC93f00LwmCMjWZ7wKKC1QOJgTf2umVDIoFCkoLQGmz0oyS4oxMagcHumXgAYdtD11L+jFhjHpkWtg+UVRQSSj2Qp2mFghY7kEDuxq+vh9zo/Kp2d5iDv7WBfWXTA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=cPd3DRCZ; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+Received: from SN4PR0501CU005.outbound.protection.outlook.com (mail-southcentralusazon11011065.outbound.protection.outlook.com [40.93.194.65])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 875862CCC0
+	for <iommu@lists.linux.dev>; Tue,  7 Oct 2025 19:22:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.194.65
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1759864959; cv=fail; b=jpT0kIEodCNu2V2RLDWX3Qb0HdDCYe+R+g3Mr5Z9ktvoqXMatJQWt/HquCLueBiiB8sHjOA3Jz06CsjOu62Hc1FXL7dWBzeTw/fg6pNiw+T5lqi5K9nzDoSWtgId8YfvpoIrh6/7U1GV0xEdTe2d1D40B7JEp7ohBRg/upbrgHo=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1759864959; c=relaxed/simple;
+	bh=WqDwwFJdhLdKAne662AQ/4uFe04Rmyobi/w38OaxfEI=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=ZAstqvO+AYW1CCmhxjNqrKh5n7aiYlcNCCZ/OWh0VBOOB0suGsUS+8oxrKVXId98bYk0rUVEZgVHrHeUC3yOTKQHoJ6YBh3dvUa8Bl5JRMI8vZbeM1QE/rzbIDohtqSrOHpA/HPaJq9T386iuhPP7nNnMl9Q8so0VXArMiGrJxU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=uJHLJ9d0; arc=fail smtp.client-ip=40.93.194.65
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="cPd3DRCZ"
-Received: from localhost (unknown [20.236.10.129])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 1AFE62038B48;
-	Tue,  7 Oct 2025 11:16:07 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 1AFE62038B48
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1759860967;
-	bh=fZIQkg/lZu7LWCnMY/qKlx0r16KjPbDICAsGIgA4a6Y=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=cPd3DRCZ4Bo1hvEdRn1FWDtIg473rOqmqGmK8L8glzW4oTZtVF0fY1borNltKl4pY
-	 ghW0NIUkUx4R4zpImDLs1NlZ7po+2Zi2U1SFWvALh6vZCMTWu1CaZmHwQF75KaGXR5
-	 T4MWuzGthou6snnVNEDclcdI4RYvnpLEJnUb18/E=
-Date: Tue, 7 Oct 2025 11:16:06 -0700
-From: Jacob Pan <jacob.pan@linux.microsoft.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: <linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>, Will Deacon <will@kernel.org>, Jason Gunthorpe
- <jgg@nvidia.com>, Robin Murphy <robin.murphy@arm.com>, Zhang Yu
- <zhangyu1@linux.microsoft.com>, Jean Philippe-Brucker
- <jean-philippe@linaro.org>, Alexander Grest <Alexander.Grest@microsoft.com>
-Subject: Re: [PATCH 2/2] iommu/arm-smmu-v3: Improve CMDQ lock fairness and
- efficiency
-Message-ID: <20251007111606.00005849@linux.microsoft.com>
-In-Reply-To: <aORn/vKfVL88q05w@nvidia.com>
-References: <20250924175438.7450-1-jacob.pan@linux.microsoft.com>
-	<20250924175438.7450-3-jacob.pan@linux.microsoft.com>
-	<aORn/vKfVL88q05w@nvidia.com>
-Organization: LSG
-X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="uJHLJ9d0"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=MICr9pmi5gr2fMsgTj2nsN3OV368vfXgqmxI/Um4xGvK8+7IBgsUBrk4dQMwKzX2o/D1eyycRhCObfHf4pgLnGUKtij9amSxnpV/Z9naKE+4WCLg9+ThOhc0zqnWTiMjFEAWhSGNYuWXaQxm7PcMYKgwF7LOR8k5hAixRKBBq3aoxG9LX/RjJc+mh7nSz8vt8MFq/hu3LoZibFxp+R7ep1a0yTV0g7lIyLn+qHoXc2d1J7uR2Aj9Ns23erPUyQSV2OQYtRUXUO8IBYwx/f6FBOVLQYB9GBAWaUkXWeJ7hnKv8rxrbdSXnETRNpkbTPecjLUUYCbQ+rzKM66k7kR7QA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=cn+wgvto4vYTlR8X0NScM3xMcx3S0dUe4tZUFayYHJU=;
+ b=TluITC2LueKHiSNz+yOzVaioA8ptjcNMy/7T6XSx+Pi5DYkEjj0of3aCv4X2S2f5R09cDpj4nGqJaWuZONNbVVfXj0uO71IIpipD90ZeuS1gnb3WqW8Bhuqa4R+B2ONn+BRNnRXJDzg4fowHVxmKAYT+kttrHED0kXD/qred/R4MgFujE+H5imzAO/JpQU+DGne1wRizjhZOd+yH2VeK7T1h5++We+WOQ3uFdCZyB8wKEsOwyDvDD73/7x1iRoayujxpby4nNRmiSmFFJQoRmditgABwDaFBPMz/4aNFvnypoBPd6/ra0xtxuNum1ruQD7ZshWcvUulwbussYNmhkw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=cn+wgvto4vYTlR8X0NScM3xMcx3S0dUe4tZUFayYHJU=;
+ b=uJHLJ9d0QLNDD2w1lSuHxOIetTos4wRFC5IUd/hJWT4UmQulOT/MHSY5SKIFkNBvHdGn8pZZqyqf38xii9KlmsYwX9ILQFcHJdo5TJp6B2TOovEuAm9JpFA2EpummCM0wydM2aN/FZZQzVtwvUOWolGpsUTEotuKr1euV91T4Y8=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DM8PR12MB5445.namprd12.prod.outlook.com (2603:10b6:8:24::7) by
+ IA0PPF8FC6E1236.namprd12.prod.outlook.com (2603:10b6:20f:fc04::bda) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9160.17; Tue, 7 Oct
+ 2025 19:22:33 +0000
+Received: from DM8PR12MB5445.namprd12.prod.outlook.com
+ ([fe80::a544:caf8:b505:5db6]) by DM8PR12MB5445.namprd12.prod.outlook.com
+ ([fe80::a544:caf8:b505:5db6%6]) with mapi id 15.20.9203.007; Tue, 7 Oct 2025
+ 19:22:33 +0000
+Message-ID: <3e27de73-61a1-4977-b0a1-629ffaa81032@amd.com>
+Date: Tue, 7 Oct 2025 14:22:30 -0500
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 11/12] iommu/amd: Add support for nested domain
+ attach/detach
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: nicolinc@nvidia.com, linux-kernel@vger.kernel.org, robin.murphy@arm.com,
+ will@kernel.org, joro@8bytes.org, kevin.tian@intel.com, jsnitsel@redhat.com,
+ vasant.hegde@amd.com, iommu@lists.linux.dev, santosh.shukla@amd.com,
+ sairaj.arunkodilkar@amd.com, jon.grimm@amd.com, prashanthpra@google.com,
+ wvw@google.com, wnliu@google.com, gptran@google.com, kpsingh@google.com,
+ joao.m.martins@oracle.com, alejandro.j.jimenez@oracle.com
+References: <20251001060954.5030-1-suravee.suthikulpanit@amd.com>
+ <20251001060954.5030-12-suravee.suthikulpanit@amd.com>
+ <20251006145900.GT3360665@nvidia.com>
+From: "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>
+In-Reply-To: <20251006145900.GT3360665@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SA9PR13CA0088.namprd13.prod.outlook.com
+ (2603:10b6:806:23::33) To DM8PR12MB5445.namprd12.prod.outlook.com
+ (2603:10b6:8:24::7)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM8PR12MB5445:EE_|IA0PPF8FC6E1236:EE_
+X-MS-Office365-Filtering-Correlation-Id: c7b8d353-f6d6-4c7e-9105-08de05d6dd66
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|7416014|376014|366016|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?UVhZM1RxM2NlUmx2ejlWMHlORVNWV1hXempaeUtOWi9LQnA3dWJrTEhaUFgv?=
+ =?utf-8?B?VFQ0NWQ5Y1hOSjJQS1c2aXNITG5rOENqc1VhR1Y2cWhWeDZRZ1dKZCtJZFha?=
+ =?utf-8?B?WVVvTk5nei9aejdQTnJzWTRnU2NPTkd4dzJKVnlmZ2VDZ2xjeDV4MDFZazVh?=
+ =?utf-8?B?LzdlR1BXZnJ2QlJSSGNQazRwRVN3dmcyY1NZK2RRWno0QzlpdG5TY3ZJYlVh?=
+ =?utf-8?B?WHN4NmRSUGlVU3FoZWJkbWlPVkJ1QytkbTduUDNZb3RnUjBOZGx0OWVGVUI2?=
+ =?utf-8?B?L1FQZnFVTGpFTWwvakJmdSs0czdEN1p0UkVOeDZzY0VWRFh1L3QvejZ3UUsx?=
+ =?utf-8?B?YzdNS2xKM2ZGZHNaQTl2ODJJQTRFN2l4NFYybUhGV1I4LzZaaEZxV3lRd2dp?=
+ =?utf-8?B?YzZGZENVNWNuSlIvYUh0N0p2eUtzb1F3Njhvb1BxbkRHSGwvUDYwVzVmVFRn?=
+ =?utf-8?B?Z1hMZWI3SUUyaW45cWczS2ZTU01pRlNiY085T3hvdU1PNUp0alFlWjZ1WmZX?=
+ =?utf-8?B?cVZoeFU2RU1xVE1iQkY2Sk1RSnJ2TEhaeTN2ckpITE5UWXVYQncvUVVGaXZE?=
+ =?utf-8?B?RWNNMThkYUwxSTBZWkh3ZkRCMEhReGtXOEdiTnRFalArTXNHcnVhQWdDaUI4?=
+ =?utf-8?B?M0pOMnYxb0hwbmU5cUxvbHFvOHVSV1A5K293akxIMkFzakcybTNmQlNuWTNE?=
+ =?utf-8?B?K3pZQ2JLcm8yb1JiOTE0VU5DMEoxQlZxT1FVSHhFUDF6TStaT1QyRlAwVmpw?=
+ =?utf-8?B?MExxU0ZrbVJDS3o2a1lRazB4Y1BNck9ocEVCZ1BLclVjaHE3SC9MRWVYUVNZ?=
+ =?utf-8?B?WVVWVy9SMlR4VjlsUUVMWmdSMmNuOFVqWjFJMVJJZU9kbUo0NURiZlNkQVQz?=
+ =?utf-8?B?bnBDbTJhK0VzMjlUTmdTRDZWWVB5ajBkaUJROW1zL3hSQmo0ZlpINlgrTEpn?=
+ =?utf-8?B?bzVYY3BXR0hHRlVGSkdiaTVxNTZzc2wvUFJVczNrSG81M3dEM05reXJxNUwr?=
+ =?utf-8?B?TzR6eVJHWmd3U29vS0RTbnh0MEd6dE1oNWJFaHZnMEZWMWpqZGNTMnUyWTJW?=
+ =?utf-8?B?RmpEdFlMWTZxRE43ckphaFV1VU5UQkZXSG53QzRyRU5VZGh5am5yZWp5Z2Nh?=
+ =?utf-8?B?MVlVNEw1a0pNRUdFREhnbjdEY3FDekJmbnZtMUNlSFRJYWQ4YjNoczR4b0Vk?=
+ =?utf-8?B?bDMyWEFsV0YvdEdySmZxR3VDTExKaTZUMkRnenRBam5vYUNNWVU5dlRyZllL?=
+ =?utf-8?B?a3piRnY4RTBpUFNmRWw0WEtLUm1CaEgyV0UwUFBJOUxjYXlZM3dKaFA5OTRB?=
+ =?utf-8?B?Y1RPUzQxcHFBOWhRQ2FyS0FTd2pVUjZGYTZYWmxXQ1ArblBxSUxiSmd1a2VI?=
+ =?utf-8?B?cUVRbXR6anUwcDlmS1BBWlZsM0tSSmpZSVBoS0Ira0N5WVJwaGVsYTkrMWEv?=
+ =?utf-8?B?ZXcwRDc5R0JjaVJ5YW52eXRPa3R0emNabS9qOXNEbURoTmdjRjNvamhLRDFs?=
+ =?utf-8?B?SUdpaklpUU96dGdPZWtrR0ZGR1ZpdU80QzU2cmtUVXIrL2RpM096VnBoVWlj?=
+ =?utf-8?B?ZnZHNFNRMktDcWJPRHhabGRXUjVnQ3hIRnFPQjJaM2RQajNpRk9wWDNkc1Fl?=
+ =?utf-8?B?THNiZG53T0wyd0ZobitBcFBlZVNrQ3M2Y1RuMEJ2ak5RNkdXVDJFdTZubGtV?=
+ =?utf-8?B?aEM5ckFScWZuSlRUbXliRmVXbGdBcklIbnlla0JDeDdmcjBPR2VwdTYrYkNz?=
+ =?utf-8?B?Q3Y5dTRreG5ueklMRXRnQVJnTXY3WFVHZExZNHpEYitlYTFMdTFxVDVaWEJ4?=
+ =?utf-8?B?eDYwdDZEYkZBSk9uTGdQRThVWlg0ZURrQXlLaS9ReFY4bmV5aG5DNDhUZUpH?=
+ =?utf-8?B?ajRDZVV2YU1MUlpPcUszeEEzV3dQY0dibU5ZMkdHTjlmM2VGc29UenlQY3VW?=
+ =?utf-8?Q?8arpJPd9wvjoyMvyIdB9MM9XQkhH6XIr?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR12MB5445.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(366016)(1800799024);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?dUk2eGt2MDFBYzRQTlJ6d1kvWmVkcWN1TVR5MU4yYXFpTlRqYUx0cUtCTW0v?=
+ =?utf-8?B?bkJkdGtPRGZodXhMRVNmVWJjTzJMVHRrQzN0RitXMm5nWWRuOXlna3RWTXJk?=
+ =?utf-8?B?SjdJbE9WaHRTU1d0TFljaXhDTXN4SmlwajV3Yk5kVHpkbkRHY21PQU5FTkZU?=
+ =?utf-8?B?R0tHUHRLalA3aDkxbDB0WS84N3VYWmZHNVEzUk1mTWo4MVVUanJib2FJcVVV?=
+ =?utf-8?B?RjJpb2YrWWI4K3lwYktSRU1sTlByb2szOU5XUkpMODVLUFdlL2I1NXR6UWFk?=
+ =?utf-8?B?STVQNGpLQmt2UmQ3ZnFZQm5VaUxib1owem5oT21raFhHdXowNXFIYWVOOXN3?=
+ =?utf-8?B?SmR3RVN5MUkrUmQ4UHJnNm01R3hvTTZ3dHFqaGhiZTFIL0FDcXRDWnpnZzlj?=
+ =?utf-8?B?T0cwazRycUwxRWFQSUV5ckRYUmkyQ3Vyclo3TWRuNzhMUnUyaVk2OGdlZTFl?=
+ =?utf-8?B?MWcvMytzSWR0KzZtYkh4ZVZ6WW1kYXdGUU0wSWUyZkxpRVc5UVlhMmI2Zk5L?=
+ =?utf-8?B?TVU1OWVuTmx5ZGJEbGRBcm5aYnRXRzl4N2FNdFVoOGVXMXVmNGZ0YjAxdXBv?=
+ =?utf-8?B?dm1uRlhzQjBrRlJqMUJCS1N6RnVDTmZCSWcwSE4xWDB5bks4UXBuaU1EZUxm?=
+ =?utf-8?B?VUdOamJ4Zyt3UGtIK016RGpoZGNCRWRLY0tpN1lwMXdTaXNaUUwvY0JlZEZk?=
+ =?utf-8?B?SW5tWFhLczNmbkZqenJNVlNMR0NzQlgvdnJuNkpKalhrbk93NXFtUXR6RzVk?=
+ =?utf-8?B?WXNLbFgrSkdDSmpiN1FRVmhWR1pEckUvRWdGTHdvVVgxVDB3MkhPN0RSWE11?=
+ =?utf-8?B?bWpIUFBXRVJ0SkNJT0IzUlNHM0pDL0lNcFpORDN4VkZsNmRaRlFGSDNOQ2RP?=
+ =?utf-8?B?bVhsVmhCSzlzVmtVR1FoVkRpYkdlajF6ZTl4a0hLUjArc2FJaXhScGExZUtW?=
+ =?utf-8?B?S1EwSWY1cG5PMVlQalRIRkxlUFFxdHRuY3RrU3diaUFjaTBFdEliWUlFbXd3?=
+ =?utf-8?B?YkRCNUlCZGhtR2tKdk81K2xWTjR2NHBxbWxnOHdWcHFkM1oxVWYrRW1BdlJQ?=
+ =?utf-8?B?Sysyd1JSRGVQREI0VDF4YzRmK09kdEtqOXZIRUhvZjF6Y0I3VTVXZi9NcEk1?=
+ =?utf-8?B?UkdudndQU2VCdWFlSEFJbU96cVNtWURickRlVXdrYWVlSTFTV1NtYXNMY29r?=
+ =?utf-8?B?QXlIUkVJWHMxaEdieVMyZWIyVEhmU3ZKc1d6cTNlcUdWQWFuL1VodHpuOXlR?=
+ =?utf-8?B?STlUTVVocUdQU1JFYjlSVnhzZE9RZTBFdTFORnd4cERHQXI5MGRCRm9Fbkdm?=
+ =?utf-8?B?ck1ybkQ1b3ZEUnVVQ3M1NHJUck1lV3F6dnNINEZabnJaZHpXRi9ObS9FM2Er?=
+ =?utf-8?B?YkdvdDJBZzhpdXJKNHRQK3czSTVINUtmek5wNTFMakNXeUFYdnZ2Y21jYjh1?=
+ =?utf-8?B?NHovZGFQUGVDNnJJa0xneUcrMFVoek13MGxOMEI4TktVd3BEWTlMeDlJTEph?=
+ =?utf-8?B?MXQ5STNUNDlKUnhjVjZCK0ZBZlQ0RjcyRFlvMyt3NVJXMDkvZEdqREljeVI5?=
+ =?utf-8?B?RS9PSVNyMGovelFpVjVjYSt4cktzcis5NVI2N3oweitRaWxvVXUwY1krU0xo?=
+ =?utf-8?B?K1NheDhLb0lMS3QyTXU2eTA5WURZdXJoanN5UE9IbW16dUE2YjBHU3ZOYVkz?=
+ =?utf-8?B?SGt6OVV1UEhhNjlnQVNEN1NpWVR0a1lsQXpjd0R1R1JBNlVybUVJTFNGOWZR?=
+ =?utf-8?B?VzRnVG1Rd1JUaFBpd2Faem5FTlAvMUtwNzg3UXBMMWFJYVlub3AxUHZWSjlx?=
+ =?utf-8?B?UGI1T3pwY2lINGt5enV0WW5Ic0dHZUZoYzQ5eGlZVjJ5M29XNFNqM0gySlg1?=
+ =?utf-8?B?NkpZK1E3bWdQckhHUmN6Tm82TWNseWd0RWRqdkVDWC95WGMya2Z3eFIvRWpx?=
+ =?utf-8?B?dTJXNVYzTFowOEZpK3JXSHVaM2k3ZmZsUUZVcTFHY00zTDg1dmRJNHlEdnJ0?=
+ =?utf-8?B?RUxtWDlKMWc3Mk52clU2R0ZLOVRXbXJwZ1JWSnNidUsrNEQ5eGFMb0VwZHRQ?=
+ =?utf-8?B?dVhVaFNZZVlWVDdWNXRSTGYzYTJWa1oydHovRWRCVXVtMjRsK1pMVzZwYytF?=
+ =?utf-8?Q?v38tWTC+6baipg/Oqkrkwbdhf?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c7b8d353-f6d6-4c7e-9105-08de05d6dd66
+X-MS-Exchange-CrossTenant-AuthSource: DM8PR12MB5445.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Oct 2025 19:22:33.1054
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: dR7wNTN6UxGGBxlBNLEFuo7vDQrfXSagXRua3d2rjMorzv0hk4EcfGJGgpf4bzsMZW+qVP7pomu8pQ6YcxSPXg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PPF8FC6E1236
 
-On Mon, 6 Oct 2025 18:08:14 -0700
-Nicolin Chen <nicolinc@nvidia.com> wrote:
-
-> On Wed, Sep 24, 2025 at 10:54:38AM -0700, Jacob Pan wrote:
-> >  static void arm_smmu_cmdq_shared_lock(struct arm_smmu_cmdq *cmdq)
-> >  {
-> > -	int val;
-> > -
-> >  	/*
-> > -	 * We can try to avoid the cmpxchg() loop by simply
-> > incrementing the
-> > -	 * lock counter. When held in exclusive state, the lock
-> > counter is set
-> > -	 * to INT_MIN so these increments won't hurt as the value
-> > will remain
-> > -	 * negative.
-> > +	 * We can simply increment the lock counter. When held in
-> > exclusive
-> > +	 * state, the lock counter is set to INT_MIN so these
-> > increments won't
-> > +	 * hurt as the value will remain negative.  
-> 
-> It seems to me that the change at the first statement is not very
-> necessary.
-> 
-I can delete "We can simply increment the lock counter." since it is
-obvious. But the change to delete cmpxchg in the comment matches the
-code change the follows.
-
-> > This will also signal the
-> > +	 * exclusive locker that there are shared waiters. Once
-> > the exclusive
-> > +	 * locker releases the lock, the sign bit will be cleared
-> > and our
-> > +	 * increment will make the lock counter positive, allowing
-> > us to
-> > +	 * proceed.
-> >  	 */
-> >  	if (atomic_fetch_inc_relaxed(&cmdq->lock) >= 0)
-> >  		return;
-> >  
-> > -	do {
-> > -		val = atomic_cond_read_relaxed(&cmdq->lock, VAL >=
-> > 0);
-> > -	} while (atomic_cmpxchg_relaxed(&cmdq->lock, val, val + 1)
-> > != val);
-> > +	atomic_cond_read_relaxed(&cmdq->lock, VAL >= 0);  
-> 
-> The returned value is not captured for anything. Is this read()
-> necessary? If so, a line of comments elaborating it?
-We don't need the return value, how about this explanation?
-/*
- * Someone else is holding the lock in exclusive state, so wait
- * for them to finish. Since we already incremented the lock counter,
- * no exclusive lock can be acquired until we finish. We don't need
- * the return value since we only care that the exclusive lock is
- * released (i.e. the lock counter is non-negative).
- */
-> > +/*
-> > + * Only clear the sign bit when releasing the exclusive lock this
-> > will
-> > + * allow any shared_lock() waiters to proceed without the
-> > possibility
-> > + * of entering the exclusive lock in a tight loop.
-> > + */
-> >  #define arm_smmu_cmdq_exclusive_unlock_irqrestore(cmdq,
-> > flags)		\ ({
-> > 				\
-> > -	atomic_set_release(&cmdq->lock, 0);
-> > 	\
-> > +	atomic_fetch_and_release(~INT_MIN, &cmdq->lock);
-> > 			\  
-> 
-> By a quick skim, the whole thing looks quite smart to me. But I
-> need some time to revisit and perhaps test it as well.
-> 
-> It's also important to get feedback from Will. Both patches are
-> touching his writing that has been running for years already..
-Definitely, really appreciated your review. I think part of the reason
-is that cmdq size is usually quite large, queue full is a rare case.
 
 
+On 10/6/2025 9:59 AM, Jason Gunthorpe wrote:
+> On Wed, Oct 01, 2025 at 06:09:53AM +0000, Suravee Suthikulpanit wrote:
+>> ....
+>> +	if (WARN_ON(!ndom || !pdom || (pdom->iop.mode == PAGE_MODE_NONE)))
+>> +		return;
+>> +
+>> +	amd_iommu_make_clear_dte(dev_data, &new);
+>> +
+>> +	new.data[0] |= iommu_virt_to_phys(pdom->iop.root);
+>> +	new.data[0] |= FIELD_PREP(DTE_MODE_MASK, pdom->iop.mode);
+>> +	new.data[0] |= DTE_FLAG_IR | DTE_FLAG_IW | DTE_FLAG_TV;
+>> +	new.data[0] |= (DTE_FLAG_PPR & gdte->data[0]);
+> 
+>> +	if (pdom->dirty_tracking)
+>> +		new.data[0] |= DTE_FLAG_HAD;
+>> +
+>> +	if (dev_data->ats_enabled)
+>> +		new.data[1] |= DTE_FLAG_IOTLB;
+> 
+> This sequence should be in some set_dte_gcr3() ??
+
+Not sure what you mean. This logic was in set_dte_entry(), and 
+duplicated here in the set_dte_nested() since we no longer calling 
+set_dte_entry() from the nested path. Also, it's not really related to 
+GCR3 table.
+
+>> +	/*
+>> +	 * Restore cached persistent DTE bits, which can be set by information
+>> +	 * in IVRS table. See set_dev_entry_from_acpi().
+>> +	 */
+>> +	initial_dte = amd_iommu_get_ivhd_dte_flags(iommu->pci_seg->id, dev_data->devid);
+>> +	if (initial_dte) {
+>> +		new.data128[0] |= initial_dte->data128[0];
+>> +		new.data128[1] |= initial_dte->data128[1];
+>> +	}
+> 
+> This should go into amd_iommu_make_clear_dte() I think, and refactor
+> it out of iommu_update_dte256() ?
+> Every created DTE needs these bits set, right?
+
+Currently, the amd_iommu_make_clear_dte() clears all the DTE bits and 
+set the DTE[V] (valid) bit. This is used when preparing the DTE for 
+programming, detaching domain, and when setting the blocking domain. 
+Putting this logic in the function would change the behavior.
+
+These bits affect Interrupt remapping (Lint0/Lint1/NMI/INIT/ExtInt 
+interrupt pass-through) and System management message behavior. It 
+should be okay to set these up for the specified devices in the current 
+implementation.
+
+>> +
+>> +	/* Guest translation stuff */
+>> +	new.data[0] |= (gdte->data[0] &
+>> +		       (DTE_GLX | DTE_FLAG_GV | DTE_FLAG_GIOV));
+>> +
+>> +	/* GCR3 table */
+>> +	new.data[0] |= (gdte->data[0] & DTE_GCR3_14_12);
+>> +	new.data[1] |= (gdte->data[1] & (DTE_GCR3_30_15 | DTE_GCR3_51_31));
+>> +
+>> +	/* Guest paging mode */
+>> +	new.data[2] |= (gdte->data[2] & DTE_GPT_LEVEL_MASK);
+> 
+> I didn't see anything validating gdte has only permitted set bits in
+> the prior patch?
+
+Not sure which on are you referring to.
+
+> If this is goint to decode array item by item then why not use struct
+> iommu_hwpt_amd_guest in the nested_domain ?
+
+The struct dev_table_entry *gdte is basically the same information as in 
+the struct iommu_hwpt_amd_guest.dte that we copied from the userspace 
+into the more appropriate in-kernel data structure type, which is used 
+within the driver.
+
+Here, we just select only what we needed for configuring guest page 
+table specifically to be programmed onto the host DTE.
+
+Thanks,
+Suravee
