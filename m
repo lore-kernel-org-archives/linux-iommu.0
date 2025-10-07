@@ -1,147 +1,257 @@
-Received: from MW6PR02CU001.outbound.protection.outlook.com (mail-westus2azon11012054.outbound.protection.outlook.com [52.101.48.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9F541E1E1C
-	for <iommu@lists.linux.dev>; Tue,  7 Oct 2025 16:32:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.48.54
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759854778; cv=fail; b=c4raAQdLIMNpYwMMWOgFiDLuJZHsYvuBirZj/5YaDMVKgaLoSS8Ac64vZWsShscyCJIKR1doXQ7g2NIjX7Pr4vINgePg7ZV77TWHalH18un+bB/6oCZ6bT+CU9DQ/rC3PzbgaUySOwoPX5/a0sEPDg1kVlctgPajNDlXxZIBVYo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759854778; c=relaxed/simple;
-	bh=KEzw6VQUyy3fwyHAuP6fgJylQnVvDGFByQgeZcpq0zY=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Zu914eZAA81y0HL3GmGTr3Ym73PdDxFG5M1RGJggsw/cSGF0B/eEKMadPeCm8ecdft0mpdCDmIQs7U3Ogg+mtj/jSBwAs5uqdL/KlZ2X+/tkeFazmIlQFStpoRBKOwCRyM3pgVNDFmBZlmdhfcJlR7Tl+JlcP9dpsZLViPMR/Pw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=nKIKNQd/; arc=fail smtp.client-ip=52.101.48.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CE791DF738
+	for <iommu@lists.linux.dev>; Tue,  7 Oct 2025 17:45:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.170
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1759859135; cv=none; b=YAMAvtH1i5FrxMfNn7+UXSbWhfbzMlrgBj/U5UQzx3tMnf1uakUkC7siHGbg47ML/vPqxRN0mj/h1hpVcKpzlZPrLJbpENz1KwQ/DXkhNcgo49KpqMGde6A8jwErGlRLdlx2CRa48PyZbqL1eJ+5RWRm7mCAswMaPEtogGTJeXo=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1759859135; c=relaxed/simple;
+	bh=A9ePXX71Y+LsTLae1xp4zR0f461PjyxprdjUgwTk7fM=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=aAuzToQXY5nD2A75hJKQqE4DzGbJug9rdCx4Kzovp65oe50Ojqun7V7bcRYYgrnBnOSKHH9mnseI/ukEMlGkzy7xkRrQe46BDQ2ND0JLihcKwTiYpXOXtBrmDNROM1XSNbiFsPRNPdUH+NmhEyQzAxeu2ommPY74v6kf8wA1hP8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=soleen.com; spf=pass smtp.mailfrom=soleen.com; dkim=pass (2048-bit key) header.d=soleen.com header.i=@soleen.com header.b=BV8hsTJz; arc=none smtp.client-ip=209.85.160.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=soleen.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=soleen.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="nKIKNQd/"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=qCnRi4kNj8DjZBO5TqsAsYPkHZ63EKrTZxeViSSICLjel/s/camvPBY0jWsYkDASAD8h8tBPZJRxQjo8NQ5/bDqeNsmpvz1sB1aYbwNkZWyXOGPew00o3XAgcUWCniKYBSBVui59cLJ3TzS7DJ3iAzOG6+nD+NY7ptv1siDp0d3h7XdFv2nHqMpo4yk9I3XNdQLwsSpStzUWisPZC8QuGCdhyZPbivzBVIvhwz0cJYGyNamhVsu0MuXq+IdASSKnt7nfQ6EhV4JG2s+e0EkWZBu+TepNNJPDWHZ9s4EoL0HD4MI3Wnmoh/IxybJ16FccQ+EqGBExSveHCGJmNpXkrA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=KEzw6VQUyy3fwyHAuP6fgJylQnVvDGFByQgeZcpq0zY=;
- b=wIw1Czm49prMHVerKYrvgqduq7NLDpS/X+P2f2KW5OqUFTO4lWBXqrJccvJdiRD+cdMFxkibdpuIWW0XYi0CPUPVql9ozdR7lCYocgcQ53gfMbVIruImGIMirz/GNL3DmT2vqyIm1jJZDz/jPGuONOApcQiNcbzjjZ7Ph1HA3ebybKmPKAMfTf9dkS/qixTx97tbUCvUTGwB0RoFsB2Efqgjr+fOroaFLHDxo9gDZxTy4dEm4wnCedc2GOeDkIx7w7c+mLJVdEjizH/WCc3AYeVROCfbqoCEojpVJU5nxvwawXljFrrmhBHNmnlAzV3hcGv4fa29UCNEjW37cg7mDA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=linux.microsoft.com
- smtp.mailfrom=nvidia.com; dmarc=pass (p=reject sp=reject pct=100) action=none
- header.from=nvidia.com; dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KEzw6VQUyy3fwyHAuP6fgJylQnVvDGFByQgeZcpq0zY=;
- b=nKIKNQd/XsAxg/L3TBrDqicE37iFCh/UBP82ErG2xMSVL6INtSv4kHecWMeEBshKcgWbT8T/cY+rSUYRjA+d78dCoplF8+YuttOMARoQ7q1cb7ykpKdrAordLlruMDFiDBxSkRifWjNNtlcZgrNmqWyMudBgu/XiLHvzLQhspPfBZ2e2LXBQ9m50Dgo5PhkDHmzhEMrwYYIITTOoo33Vzl2+62B1uR3+ETPPRFxjFQeGefuvQBqj2XdLQywBtbnZPWsuzzi6OTbueam+chSGkwcIm2TynbYRwiqP9W2nFaxi2LiQDqVVlaG0LpsWYuTkK3aUT9lzRwntql9wPNOGYQ==
-Received: from SN6PR05CA0018.namprd05.prod.outlook.com (2603:10b6:805:de::31)
- by IA0PR12MB8374.namprd12.prod.outlook.com (2603:10b6:208:40e::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9182.20; Tue, 7 Oct
- 2025 16:32:50 +0000
-Received: from SN1PEPF00036F42.namprd05.prod.outlook.com
- (2603:10b6:805:de:cafe::bc) by SN6PR05CA0018.outlook.office365.com
- (2603:10b6:805:de::31) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9203.9 via Frontend Transport; Tue, 7
- Oct 2025 16:32:49 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- SN1PEPF00036F42.mail.protection.outlook.com (10.167.248.26) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9203.9 via Frontend Transport; Tue, 7 Oct 2025 16:32:49 +0000
-Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Tue, 7 Oct
- 2025 09:32:38 -0700
-Received: from drhqmail203.nvidia.com (10.126.190.182) by
- drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.20; Tue, 7 Oct 2025 09:32:38 -0700
-Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.126.190.182)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
- Transport; Tue, 7 Oct 2025 09:32:38 -0700
-Date: Tue, 7 Oct 2025 09:32:36 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jacob Pan <jacob.pan@linux.microsoft.com>
-CC: <linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, Will Deacon <will@kernel.org>, Jason Gunthorpe
-	<jgg@nvidia.com>, Robin Murphy <robin.murphy@arm.com>, Zhang Yu
-	<zhangyu1@linux.microsoft.com>, Jean Philippe-Brucker
-	<jean-philippe@linaro.org>, Alexander Grest <Alexander.Grest@microsoft.com>
-Subject: Re: [PATCH 1/2] iommu/arm-smmu-v3: Fix CMDQ timeout warning
-Message-ID: <aOVApKmiaaqWp89A@Asurada-Nvidia>
-References: <20250924175438.7450-1-jacob.pan@linux.microsoft.com>
- <20250924175438.7450-2-jacob.pan@linux.microsoft.com>
- <aORieLYckU9YLdVF@nvidia.com>
- <20251007091220.00003a44@linux.microsoft.com>
+	dkim=pass (2048-bit key) header.d=soleen.com header.i=@soleen.com header.b="BV8hsTJz"
+Received: by mail-qt1-f170.google.com with SMTP id d75a77b69052e-4dfd1f48d4cso46217501cf.0
+        for <iommu@lists.linux.dev>; Tue, 07 Oct 2025 10:45:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=soleen.com; s=google; t=1759859132; x=1760463932; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Pg8Ok5I2xXMgGAu/MYDoh42vS3DGGi3CdtYED5anodk=;
+        b=BV8hsTJzs8jXGzkf5BbXWV6wlF50R8pgb2VbNLCuwXJhQ795+wsr8F8oivwufcWQnx
+         scB5XG6v8gzmUzG+xybJT1KJJuMIw0Zz4rApZ8eq75LX1zSr4bqU6niD2e9n3WMNRpgT
+         11Koikm3qRpUYAXHplsygj7dY7zQ58b63CI3KpwDlrqb4LKzdXbPLPHkn2Gv2K7p6MNG
+         ArWmoxZ/K180nYXNxqga03SICHJ/oShYFReqnZ6B6wyvivv6DoMN4JLUzS7dMDoRVlxP
+         8DGFAGs4Ke1/MYCjdfJ6ip7w4GbrkSBqyhH57yiP6KkSt8nYDhCd7FAHrWWdJr3+OKTs
+         xDkQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1759859132; x=1760463932;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Pg8Ok5I2xXMgGAu/MYDoh42vS3DGGi3CdtYED5anodk=;
+        b=MnAjur/FVlLrixXQu4sZP8rhl8z3ruJ8XIlZHoUp+bBhIc3AWBXGEPxBfrCwNEj2Mj
+         zsD8RhLejP6RxcCN6AZCAOFA3Zt0psp8emGiyeJzzUNyh5DZkSWZDx0Ix0mHQlA+jgKv
+         8kca2f5/ALsNeMGsK5bf0Dov3FGbiFD7bZ7DOTLK9V+W5fWlflB4h20lhoKcyeTiPqS7
+         yeDN5RllrTbSH1ACqenOthWGqF2xV7MP35nxRup90Kr2Pvr+awbVDqBSXWLeKjSiP+FF
+         K9mdRtGpSl3Mcv725rMXiYTB4qVnHIhXHc9cUUxE+SgmE0yA0KOEoXLH5xsFYwT4zLp+
+         VxoA==
+X-Forwarded-Encrypted: i=1; AJvYcCUu/ghYAFIi6UAub4cYMkp3mh03EADkhON1s2z3d8cVN6lq+dx/kz6nKIq4TAjWQAnZz8bLxQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YycXLtH6z1FEETZIuPsFMn795HCQ1djocxxXqowPEAheAJjSCht
+	Qy/z4bJgnof7yin907pQC/4sKUl4bEz/RhHZ6eHUey8XTViwx8TIzNsspw6QsICInweLvEKZW8a
+	19sq6gKiwBtvQmy1pWntOAlkR1J+RTL8Xs2/PQ08wWQ==
+X-Gm-Gg: ASbGnctV9RsEWq4LrANXIk3Ff6thC/HYgt4+OMw8So0WE0EaLLnGPLrVKpm2wLRzRxy
+	80Q1CArM2IadYqjOCJqgTfqVFWNktHHXktgKpOkDDzh0Lth6vTcaZJy+MYOpcDycU/BiDyfzWVs
+	NzJrb+VbcoEK4kTL3Uvty5yRNeFT1x4DOL5uKwQSok0MoKz5ZGsX+Pp5jDtIdFUiNJXMvtA25Qw
+	roQW+1T5Y0E3+vATguab0jBEeTR
+X-Google-Smtp-Source: AGHT+IHNjzqpOMzH8y9LtPxqns/WAVziX7arXy0dAsX1RKPk6LIPf4fgO+HjB3KbrVxZePVT+qHVLaK+4PsanmQvw4Y=
+X-Received: by 2002:a05:622a:5984:b0:4cb:57b4:4d6c with SMTP id
+ d75a77b69052e-4e6eaccc73cmr6198371cf.12.1759859131884; Tue, 07 Oct 2025
+ 10:45:31 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20251007091220.00003a44@linux.microsoft.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SN1PEPF00036F42:EE_|IA0PR12MB8374:EE_
-X-MS-Office365-Filtering-Correlation-Id: eb97e74c-b331-4a9d-9c32-08de05bf27a8
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|82310400026|36860700013|376014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?MIF5czATQvv2qrutK3TR839jQ9TdWKdISIbeW0UF2fBipxRI9ipDo4SG9C6g?=
- =?us-ascii?Q?VQ2TWqGW+WHK/pupR/ZbIWgUV7JopN9Md1tpJUcgW24pSm+VGJ8wtEFNsvuX?=
- =?us-ascii?Q?pdpM27DeSS5G6ugO32nJiDmNp2wCZsolCWy8a69zkt4iax8f0ST124tRvMbC?=
- =?us-ascii?Q?hni/hsP4ZfLXV1zuPvdI9NNnoB7A7+Ih5xUPy8ClNZssz162KbbXyLUgq9wq?=
- =?us-ascii?Q?4hx6njjkBSItrtzFGsZeAIXX9+8YstAz+pSct5Pp4lpmX1gWwupzr58GGGvQ?=
- =?us-ascii?Q?guz37G/EsjTeNxkEfeUqIA97+V+TGL21fmo7iQRyUawyF/yeLeqVZ9qFyDLo?=
- =?us-ascii?Q?wG5uz10vBNp6nwkxb+J42doSil7XERLSz+JhFyqBZ5kcC7Cq85QOEvuB1iFk?=
- =?us-ascii?Q?7ZwJjQeXYGO4lyaiN2cWSjwEDQyGzmHQ5h1UNu042ZTJw6vK+uHvHRDnZ5nY?=
- =?us-ascii?Q?0KS+hEUIU7vy/6cghQU+O10+ve9HmQG/He5Vorry32EeJzGE7VAc3eksQts6?=
- =?us-ascii?Q?GjA3ZPVbEcr2y7IvjkqLa4b5iUuwlG2wtwwAL3xOVVsKhQtnr42bqdIymBZQ?=
- =?us-ascii?Q?YTyoUQEgAv5LvKDeq9i6uHBYBnnkQT3dZNU78FI0sf18zJrpdzURSJ0Qvve7?=
- =?us-ascii?Q?C1F98fbaBvZZaHVij7eiQ2ms6TdolKD+wyIRPRv+Pqu84RQflVMlfeDJuSsh?=
- =?us-ascii?Q?MgtgoCxAoHFI5QJ/8b7H3UdxP3CItpaL2D4fpHz09mvI9woA8eN9awHjUSwu?=
- =?us-ascii?Q?TMteEnibFK3lCYFwVqbXAbIXsKYKWjO9VP+MyMlnto3hUxDEdtEUuQRCbtbg?=
- =?us-ascii?Q?gO0+qJYIxyNV13fi9Snf+8odEHz/KuqmhTxi3styI/H9LwOCmZWohI3UsH48?=
- =?us-ascii?Q?AsSQbar+pE/2w0FV/HMGjRGfREuMygKqer3gC+7WGjd6icLBoGhON0DWTgRX?=
- =?us-ascii?Q?HtVNbY5/zF0o6hnfp8shL99zieC1q4op8dQMxFmT6da2FEdm5hJBGIMYUd8P?=
- =?us-ascii?Q?PFhmoDgbmZZW6C07d7l6n/Gl+KGvydEVyvKWsXUV9mzSt+qwFn8LOZ+Bz6rv?=
- =?us-ascii?Q?9wyI9CHdgNkjfoehm6Dn/vszBC6UeRWK2LpK+KScxbK0SYtFfHejIoXUnt5R?=
- =?us-ascii?Q?lQOOh4vtmof1zD7TdQNxuTCisi04eY6AF3Clmj1H0xlrW/PEMnuG9nVxER9a?=
- =?us-ascii?Q?cVJ1hb3IbdGCI19FQ/nGr4hbVo7R7K/68F+WZx093CVVe+uGh7K0UTjD/vvW?=
- =?us-ascii?Q?i4HTUxGXZWB4zEIi3L1Pr1CynvVi+VbC6k7EBJErn1ssSmwXtgKVPJ0IqaZA?=
- =?us-ascii?Q?5NpsWpNJXbEbN97q5CCQ/DtHb1LS7ROa8p9uXYFRRWTte1EyTg9M+mRFioWy?=
- =?us-ascii?Q?RmOg7Lsu3201YP0A+J/w0+/f2wGW1N0GddzQEiqjg77dHx4FGZwna8ZZbAHj?=
- =?us-ascii?Q?3OfmQMMLt08TdVaGpQQ7Zbdsn4KMaE5sPbvu+oZsykfTBN/9wb9qGHbLQE0E?=
- =?us-ascii?Q?Sua8QU0HcB77PQANx/Nw5Q69q3/6S1lS5AB8vNDPrSSCMRIdLVik/k7lWz3d?=
- =?us-ascii?Q?yVpXtjgtRHZXD9N9pKc=3D?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(82310400026)(36860700013)(376014);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Oct 2025 16:32:49.4167
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: eb97e74c-b331-4a9d-9c32-08de05bf27a8
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SN1PEPF00036F42.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB8374
+References: <0-v6-0fb54a1d9850+36b-iommu_pt_jgg@nvidia.com>
+In-Reply-To: <0-v6-0fb54a1d9850+36b-iommu_pt_jgg@nvidia.com>
+From: Pasha Tatashin <pasha.tatashin@soleen.com>
+Date: Tue, 7 Oct 2025 13:44:54 -0400
+X-Gm-Features: AS18NWDVmKIn_CzJQvh8opoEabYMKh9EbkUyk4WKvUuBQpzLn_UekMBEkXUqjwM
+Message-ID: <CA+CK2bBT80np3hZbSu=dRH8UOKT9RruHF3jtaXyTJUmNe8UfFQ@mail.gmail.com>
+Subject: Re: [PATCH v6 00/15] Consolidate iommu page table implementations (AMD)
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Jonathan Corbet <corbet@lwn.net>, iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, 
+	Justin Stitt <justinstitt@google.com>, Kevin Tian <kevin.tian@intel.com>, linux-doc@vger.kernel.org, 
+	linux-kselftest@vger.kernel.org, llvm@lists.linux.dev, 
+	Bill Wendling <morbo@google.com>, Nathan Chancellor <nathan@kernel.org>, 
+	Nick Desaulniers <nick.desaulniers+lkml@gmail.com>, Miguel Ojeda <ojeda@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Shuah Khan <shuah@kernel.org>, 
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, Will Deacon <will@kernel.org>, 
+	Alexey Kardashevskiy <aik@amd.com>, Alejandro Jimenez <alejandro.j.jimenez@oracle.com>, 
+	James Gowans <jgowans@amazon.com>, Michael Roth <michael.roth@amd.com>, patches@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, Oct 07, 2025 at 09:12:20AM -0700, Jacob Pan wrote:
-> But I am not following what you mean by "replacing
-> arm_smmu_cmdq_exclusive_unlock_irqrestore()", could you elaborate?
+On Tue, Oct 7, 2025 at 12:12=E2=80=AFPM Jason Gunthorpe <jgg@nvidia.com> wr=
+ote:
+>
+> [All the precursor patches are merged now and AMD/RISCV/VTD conversions
+> are written]
+>
+> Currently each of the iommu page table formats duplicates all of the logi=
+c
+> to maintain the page table and perform map/unmap/etc operations. There ar=
+e
+> several different versions of the algorithms between all the different
+> formats. The io-pgtable system provides an interface to help isolate the
+> page table code from the iommu driver, but doesn't provide tools to
+> implement the common algorithms.
+>
+> This makes it very hard to improve the state of the pagetable code under
+> the iommu domains as any proposed improvement needs to alter a large
+> number of different driver code paths. Combined with a lack of software
+> based testing this makes improvement in this area very hard.
+>
+> iommufd wants several new page table operations:
+>  - More efficient map/unmap operations, using iommufd's batching logic
+>  - unmap that returns the physical addresses into a batch as it progresse=
+s
+>  - cut that allows splitting areas so large pages can have holes
+>    poked in them dynamically (ie guestmemfd hitless shared/private
+>    transitions)
+>  - More agressive freeing of table memory to avoid waste
+>  - Fragmenting large pages so that dirty tracking can be more granular
+>  - Reassembling large pages so that VMs can run at full IO performance
+>    in migration/dirty tracking error flows
+>  - KHO integration for kernel live upgrade
+>
+> Together these are algorithmically complex enough to be a very significan=
+t
+> task to go and implement in all the page table formats we support. Just
+> the "server" focused drivers use almost all the formats (ARMv8 S1&S2 / x8=
+6
+> PAE / AMDv1 / VT-D SS / RISCV)
+>
+> Instead of doing the duplicated work, this series takes the first step to
+> consolidate the algorithms into one places. In spirit it is similar to th=
+e
+> work Christoph did a few years back to pull the redundant get_user_pages(=
+)
+> implementations out of the arch code into core MM. This unlocked a great
+> deal of improvement in that space in the following years. I would like to
+> see the same benefit in iommu as well.
+>
+> My first RFC showed a bigger picture with all most all formats and more
+> algorithms. This series reorganizes that to be narrowly focused on just
+> enough to convert the AMD driver to use the new mechanism.
+>
+> kunit tests are provided that allow good testing of the algorithms and al=
+l
+> formats on x86, nothing is arch specific.
+>
+> AMD is one of the simpler options as the HW is quite uniform with few
+> different options/bugs while still requiring the complicated contiguous
+> pages support. The HW also has a very simple range based invalidation
+> approach that is easy to implement.
+>
+> The AMD v1 and AMD v2 page table formats are implemented bit for bit
+> identical to the current code, tested using a compare kunit test that
+> checks against the io-pgtable version (on github, see below).
+>
+> Updating the AMD driver to replace the io-pgtable layer with the new stuf=
+f
+> is fairly straightforward now. The layering is fixed up in the new versio=
+n
+> so that all the invalidation goes through function pointers.
+>
+> Several small fixing patches have come out of this as I've been fixing th=
+e
+> problems that the test suite uncovers in the current code, and
+> implementing the fixed version in iommupt.
+>
+> On performance, there is a quite wide variety of implementation designs
+> across all the drivers. Looking at some key performance across
+> the main formats:
+>
+> iommu_map():
+>    pgsz  ,avg new,old ns, min new,old ns  , min % (+ve is better)
+>      2^12,     53,66    ,      51,63      ,  19.19 (AMDV1)
+>  256*2^12,    386,1909  ,     367,1795    ,  79.79
+>  256*2^21,    362,1633  ,     355,1556    ,  77.77
+>
+>      2^12,     56,62    ,      52,59      ,  11.11 (AMDv2)
+>  256*2^12,    405,1355  ,     357,1292    ,  72.72
+>  256*2^21,    393,1160  ,     358,1114    ,  67.67
+>
+>      2^12,     55,65    ,      53,62      ,  14.14 (VTD second stage)
+>  256*2^12,    391,518   ,     332,512     ,  35.35
+>  256*2^21,    383,635   ,     336,624     ,  46.46
+>
+>      2^12,     57,65    ,      55,63      ,  12.12 (ARM 64 bit)
+>  256*2^12,    380,389   ,     361,369     ,   2.02
+>  256*2^21,    358,419   ,     345,400     ,  13.13
+>
+> iommu_unmap():
+>    pgsz  ,avg new,old ns, min new,old ns  , min % (+ve is better)
+>      2^12,     69,88    ,      65,85      ,  23.23 (AMDv1)
+>  256*2^12,    353,6498  ,     331,6029    ,  94.94
+>  256*2^21,    373,6014  ,     360,5706    ,  93.93
+>
+>      2^12,     71,72    ,      66,69      ,   4.04 (AMDv2)
+>  256*2^12,    228,891   ,     206,871     ,  76.76
+>  256*2^21,    254,721   ,     245,711     ,  65.65
+>
+>      2^12,     69,87    ,      65,82      ,  20.20 (VTD second stage)
+>  256*2^12,    210,321   ,     200,315     ,  36.36
+>  256*2^21,    255,349   ,     238,342     ,  30.30
+>
+>      2^12,     72,77    ,      68,74      ,   8.08 (ARM 64 bit)
+>  256*2^12,    521,357   ,     447,346     , -29.29
+>  256*2^21,    489,358   ,     433,345     , -25.25
+>
+>   * Above numbers include additional patches to remove the iommu_pgsize()
+>     overheads. gcc 13.3.0, i7-12700
+>
+> This version provides fairly consistent performance across formats. ARM
+> unmap performance is quite different because this version supports
+> contiguous pages and uses a very different algorithm for unmapping. Thoug=
+h
+> why it is so worse compared to AMDv1 I haven't figured out yet.
+>
+> The per-format commits include a more detailed chart.
+>
+> There is a second branch:
+>    https://github.com/jgunthorpe/linux/commits/iommu_pt_all
+>
+> Containing supporting work and future steps:
+>  - ARM short descriptor (32 bit), ARM long descriptor (64 bit) formats
+>  - RISCV format and RISCV conversion
+>     https://github.com/jgunthorpe/linux/commits/iommu_pt_riscv
+>  - Support for a DMA incoherent HW page table walker
+>  - VT-D second stage format and VT-D conversion
+>     https://github.com/jgunthorpe/linux/commits/iommu_pt_vtd
+>  - DART v1 & v2 format
+>  - Draft of a iommufd 'cut' operation to break down huge pages
+>  - A compare test that checks the iommupt formats against the iopgtable
+>    interface, including updating AMD to have a working iopgtable and patc=
+hes
+>    to make VT-D have an iopgtable for testing.
+>  - A performance test to micro-benchmark map and unmap against iogptable
+>
+> My strategy is to go one by one for the drivers:
+>  - AMD driver conversion
+>  - RISCV page table and driver
+>  - Intel VT-D driver and VTDSS page table
+>  - Flushing improvements for RISCV
+>  - ARM SMMUv3
+>
+> And concurrently work on the algorithm side:
+>  - debugfs content dump, like VT-D has
+>  - Cut support
+>  - Increase/Decrease page size support
+>  - map/unmap batching
+>  - KHO
 
-Oh, "replacing arm_smmu_cmdq_poll_until_not_full()" I meant.
+I'm wondering if this work could be used in the future to expand
+page_table_check to support IOMMU page tables. For instance, every
+time a PTE is inserted or removed, an external state machine could
+check for false sharing or improper logic. This approach could
+significantly help with preventing and detecting memory corruption
+early.
 
-Nicolin
+The main requirement would be to define a common logic for all IOMMU
+page tables. For the existing page_table_check, we use double-mapping
+detection logic [1]. If we were to implement something similar for the
+IOMMU, what kind of logic could we apply?
+
+Pasha
+
+[1] https://docs.kernel.org/mm/page_table_check.html
