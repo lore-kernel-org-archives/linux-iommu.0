@@ -1,170 +1,177 @@
-Received: from mail-io1-f77.google.com (mail-io1-f77.google.com [209.85.166.77])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from CH5PR02CU005.outbound.protection.outlook.com (mail-northcentralusazon11012034.outbound.protection.outlook.com [40.107.200.34])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD4FC21D3CA
-	for <iommu@lists.linux.dev>; Tue,  7 Oct 2025 23:32:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.77
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759879951; cv=none; b=XYCj4vjoV48QDF+glDh4RF20201lfI67jE6DdfbKPPjOeZNAidV5ztnw9Xtdvtc9HNRo089c+huZyjBe4N4V1kJPU8BIrkv6R/W0s8O8meQyIL1E7IaOAM4GAUq40K3YpDphXHeAbhphbGwAYMMGcnZmZL6tXtUpH6pOidEM3+E=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759879951; c=relaxed/simple;
-	bh=oHFqVz1jq1oi6phvuAR2XlAJXCsaRdNNF0HwkIN+Do4=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=kaLFhYGQW+ZW6/lS+SvxkGlLKM6JCPUUXSzcVHKIzg3zpuq34PRYk39/KIBTSiYAPnWY1fjJ2jGJ1v/jwgp6oIj//Zc8hInGjiCLBGdE8tN0oVuBgf2s+dlZslIqwk8Jub9FN8lxaHiFVC4VxmVWAr/FzLXt1usuGAE10h4BN+k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-io1-f77.google.com with SMTP id ca18e2360f4ac-9201572ebfbso1791540539f.3
-        for <iommu@lists.linux.dev>; Tue, 07 Oct 2025 16:32:29 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1759879949; x=1760484749;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=H+V4BB0SYrSnQNgVu+nCSW9roKQJL9Ev+We4fb/qOTk=;
-        b=vIK5tW9xW7P0gLqJqMem6+flo7TuxlTc3AjbarS0qAizBq02zkg8bIjiW3cpVzs0C6
-         iJTL6leb9g5QOK8ODUSXAe6svyNLEK+k3DGcuY7gh9v2FXgWKhgOhfo6AOL9XdhQ623p
-         ufbjwMrQqPZ+0ezYndIdUgUzanpOsTZdliDzJ4iyIV/BJEcuOl61g9Pd6R7nmpNS1VIB
-         1XMVn4P4qcly3matXe+fVGP8qNX1vGx88oYcI7FIcJHsvy38cc3HCQ1E1uY0MhWUbbrx
-         aY7em+YzCLMNhHT7cdZG/Zw1fQyVzXzi7TUGK6ag+tIyEjiiN1+21B5qBBQCMwC6Qz01
-         81Zw==
-X-Gm-Message-State: AOJu0Yw5p2yMEOp+RvwLnAbMTf741r9nf8QHl2XOJ32FanUyD3n4TJCr
-	3FAMrge2Q2sDIgVCvuQAmfz0Zaxbz4zezdfT9HSTLVkoHmyjYi2cw/ZN9omvZDh3oTFpL2IeirV
-	BXrX05axan68mlYPSyQmzQ0kSDw3byBgsHhnn1G2srLgWo8e9TQIj7On5TFiGrw==
-X-Google-Smtp-Source: AGHT+IE33uGQahccdyFgAdtwOojge90eBwTzHM4KgfC2NY/iYVmYRWSbUa0fG79ZfIzcVswvk/KkggMQiaCTdll9rjeV8AtcFEzj
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D68D25D917
+	for <iommu@lists.linux.dev>; Tue,  7 Oct 2025 23:39:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.200.34
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1759880381; cv=fail; b=ePZW9Xue/lhl07zTqjTTmk3dFuuJvsrI04A7zf2qfDNTErDlo/9tEIOOHiTQPKf/sJWCpAw5Ua3NlAD+AF3aTaRZXWPvypkrzAeju9jPfeLQP6aBZuZa+M9rYPL8QUcXorlqO60sEw8HsQRDVdu46nMx+QH1+TPN0rrNa5370gg=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1759880381; c=relaxed/simple;
+	bh=PUalWuLxcLGBrhtHkdelTHWztV9Bo3KcQZ6Zf9D2G/I=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=eidnTeZVrfr5rlndsCfeQaAq/DwkrOvxtLEtypwm1BiSjL/vn+TYdlCWRhONWbC4/7+ZPECfPxXl8yOao9u3GTSplkW+dHfr/pJ8xL4pcngNosYEABoTXMLB8WC2eDfp9jhwOpkXJcNROHcke3HybNDlAU0zt6+sUTORael02sU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=At6WICTS; arc=fail smtp.client-ip=40.107.200.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="At6WICTS"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=IWGEXUNIVMrkih6YuKGqXsUj2mFvIZQn/6ea3CDjtQ5jV2FgMWzeqdoUEKHuViJypWTcookico4c3TZIf0EyZRToM45wcWpNiWPx4rQBNZ9JXwOPa5baRhJhAgC2x5lfenyJqvdVwfJR8a5lwatbpT+Zv0c5HFl86T6EM9u1mXIGnX49AKwhP8S4KmxxWSPBCTjZiOIBBVtOShr1k1PPeiixlV2KTMZYTKzEYG4wVoycrtK6nUDNuWkNmYXIdoXIHokqERdSJQZVDx3NebsRXE6Dg9JroCjQem1EFPvnmnUSvHwdylHQt1Gy+I46jgIxa6xDALWz1BM7/oKpOYz2GA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=PUalWuLxcLGBrhtHkdelTHWztV9Bo3KcQZ6Zf9D2G/I=;
+ b=oUeYH6t2nM9Uh3yZY8BE5LYht2ionHk07Rcts9jpXG62c22P6xbP4p9Nc2Q8DG+obvbjZIEfnHHfKHw8rLgjPm8E7vGm7bZp7P66GBenMXsCn+0ymO9UMOsbX6N7/NNW/5ZG0yuy3yj53dhbuX17bLlS79U/NkjG+Ihj3a3vK+4kCykyw00/nZLT3drhdoR6dgK1fDj3UZ4kwrjxTlzao+ZvZbGh2EDGvFtITcNz1ct+5k8QeVcq0oqZ2FpOW4BAXUQQMEgGteEDywYjoomfm3S3Bf57SgiaN8176QvI88OH+nD4/aUettMs/W2T5phHkjW9FXYB81OUYeb9QhFpag==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=PUalWuLxcLGBrhtHkdelTHWztV9Bo3KcQZ6Zf9D2G/I=;
+ b=At6WICTSjfzKz/LZgsvXQOiShS6uZPYxAZQ0Ieq9psnpg1mo15TtJixm8RohP5x8wq1d2YsL4j0opqAqSzcRESuVA6ich76I4xl1aZI2ivTVsi0iHcX/FZ24WquQt4JLNsq7+uMIXAtmAWAIBwh7ba01pYAaCyljSBloZuoqoVHAUtJz3LCTkmdfRQAfd6dPojb4bDRtbC1ZUM+WEmFvtPy7tH7NU7UXMRZN7NnDqLEDucl9ijnzJ3PoEvPy1r0v/piegfe8VrqH8CMkpZCXO1ydgIWBaRnqTUFDZ1ylFvSd6twBN5PhCee4RoG1dl0csZsnsZxmNjbG9j2s+2RJoA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB3613.namprd12.prod.outlook.com (2603:10b6:208:c1::17)
+ by BY5PR12MB4146.namprd12.prod.outlook.com (2603:10b6:a03:20d::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9182.20; Tue, 7 Oct
+ 2025 23:39:36 +0000
+Received: from MN2PR12MB3613.namprd12.prod.outlook.com
+ ([fe80::1b3b:64f5:9211:608b]) by MN2PR12MB3613.namprd12.prod.outlook.com
+ ([fe80::1b3b:64f5:9211:608b%4]) with mapi id 15.20.9182.017; Tue, 7 Oct 2025
+ 23:39:34 +0000
+Date: Tue, 7 Oct 2025 20:39:31 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>
+Cc: nicolinc@nvidia.com, linux-kernel@vger.kernel.org, robin.murphy@arm.com,
+	will@kernel.org, joro@8bytes.org, kevin.tian@intel.com,
+	jsnitsel@redhat.com, vasant.hegde@amd.com, iommu@lists.linux.dev,
+	santosh.shukla@amd.com, sairaj.arunkodilkar@amd.com,
+	jon.grimm@amd.com, prashanthpra@google.com, wvw@google.com,
+	wnliu@google.com, gptran@google.com, kpsingh@google.com,
+	joao.m.martins@oracle.com, alejandro.j.jimenez@oracle.com
+Subject: Re: [PATCH v2 10/12] iommu/amd: Add support for nested domain
+ allocation
+Message-ID: <20251007233931.GD3474167@nvidia.com>
+References: <20251001060954.5030-1-suravee.suthikulpanit@amd.com>
+ <20251001060954.5030-11-suravee.suthikulpanit@amd.com>
+ <20251006144936.GS3360665@nvidia.com>
+ <fd4341ea-869f-459c-a3be-a98cd1c8ba4b@amd.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <fd4341ea-869f-459c-a3be-a98cd1c8ba4b@amd.com>
+X-ClientProxiedBy: BYAPR07CA0069.namprd07.prod.outlook.com
+ (2603:10b6:a03:60::46) To MN2PR12MB3613.namprd12.prod.outlook.com
+ (2603:10b6:208:c1::17)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:1490:b0:8dd:d9c5:140d with SMTP id
- ca18e2360f4ac-93bd193c6b1mr115736039f.12.1759879949109; Tue, 07 Oct 2025
- 16:32:29 -0700 (PDT)
-Date: Tue, 07 Oct 2025 16:32:29 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <68e5a30d.050a0220.256323.002e.GAE@google.com>
-Subject: [syzbot] [iommu?] divide error in iova_bitmap_alloc
-From: syzbot <syzbot+093a8a8b859472e6c257@syzkaller.appspotmail.com>
-To: iommu@lists.linux.dev, jgg@ziepe.ca, joro@8bytes.org, kevin.tian@intel.com, 
-	linux-kernel@vger.kernel.org, robin.murphy@arm.com, 
-	syzkaller-bugs@googlegroups.com, will@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MN2PR12MB3613:EE_|BY5PR12MB4146:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5b9e5d5f-e41a-4ab7-3690-08de05fac558
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|7416014|376014;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?gcDNkuz2+ru0aZfDSBdJ9X+MQ5SZglOiAVqIuxQ6/5N2N8d5pyQYBYQxBDlg?=
+ =?us-ascii?Q?8qw52GLzpg9Mts6VlItMk7OZyMaA6xYjSzmmxvOtH6cpVZaMb4lXTiJP4hN3?=
+ =?us-ascii?Q?NEKpH2w6eiV3FgLn8h70exX9U66bX29Zu3oSR6U3CwNBW1TZ+ltyDqpugMAY?=
+ =?us-ascii?Q?+VULkMw4v7ttLXafQ3zlR+GrGSh5YWUmIHXP0d5vXwuJonaXQoqmBvko+Obt?=
+ =?us-ascii?Q?8KkJQ50eQakYa3osJd5VhoSSKxBFKzcQrSSh5s2d1IR5kzcbOz0BQJR/l5Yj?=
+ =?us-ascii?Q?Q8pqoohtCa9P0xBlFlDqBXCY569Q5pHaa8RqgcJUKEmjROSxeotezKOhH2tf?=
+ =?us-ascii?Q?vz8jjzPGKMNr4vkbhxNkxR+osYbELplSZ72bVW8pdXQxTaCH8JMcVND+Wkpu?=
+ =?us-ascii?Q?QFyybZwvzgYD5lkaDFxDZmX8tqIslEwZImqdi5WoaHYf+TTlkhjwfbjxi9M2?=
+ =?us-ascii?Q?WntsJtBPWxA+l2o5MxjZd8AJPHXlV5+KtgrnInoA29xQjznTHnW5wvFFayn0?=
+ =?us-ascii?Q?MAdzp2hc8mijvHGLLeZvAATYmvDFkqaZkuibwKEY/jNMsfZehqWdKx8MM6GR?=
+ =?us-ascii?Q?KDBnM42hBlVpF2qeNZ2YstHOlHnr5GkyOGOlprFQMFSmDrlCSk7LUvYzn2ch?=
+ =?us-ascii?Q?sO5AUyHKVTvZV6gdirYMjvET62NwXCHFOqlpbA8lGnsiaKTMSVmpxz3q9RLQ?=
+ =?us-ascii?Q?s2oP0BMsyrPa/kCl4RQObX/fY1PRshaRPSF9GVayRmrAhMZunVtnFJmFW/ih?=
+ =?us-ascii?Q?QLk64fURiCtL50Es+RvDEF5UfWfa5dsfxBFCDNoKu/ohOxe0R0yEb3r/vh+X?=
+ =?us-ascii?Q?qbGXetIhGNoA3sWtYVFMj1RYpm38g5z9GfGc0Fi+AtkJIvS+qD0q9QJETusp?=
+ =?us-ascii?Q?nUn9VRXhpWh2/Ozl8bmjYiGxnIq+EDqIv5m7JGkjcJ3yWK67gUjsOvQVpXZw?=
+ =?us-ascii?Q?9dogihBcsBW3clJzgsU8n1fTHgdsrAOtoGRjKS6D68kygJL+IDc1qkGW1N2H?=
+ =?us-ascii?Q?zXC53rjmZUT+rtzpxmQTR0BxD7q8f9wtvWcg7Etf9ps3iw06QwBaWc8328eR?=
+ =?us-ascii?Q?LVsLdnmN9jsqED81eHF/yVvTWcdJIfNDkX5Kjm9CG2ggp2KvvnWxOJx8KT33?=
+ =?us-ascii?Q?uCp9kNM7WlaRBpVqfi+pqGT1o4wwGkaHuH8qTcYbSpHucWZ0s69HZUbtdTeA?=
+ =?us-ascii?Q?WR6zHe6/ez3js47AQgXHU6kU1shE/MVsgdu7fyN3KZENEI0sXk38T7D7vkmi?=
+ =?us-ascii?Q?zwBEYt+UKfcVffoyjTndsug44jujch+Yw5E++2p4nyrU5PrODvqULjnFhur5?=
+ =?us-ascii?Q?8xMpVjojELtCLWYGFf7NQtoJEOZ2G8ALoScF7tTwQH4Mf1NReJfWOwkZVuCJ?=
+ =?us-ascii?Q?22RXx9nChIDN5bJXiEfu9V78et6ecStHd8DKmsheoNvLh+ZIv53sABRWWQbD?=
+ =?us-ascii?Q?+zHMNRMPzIyFkEeg0quCIu/Jqf92p8zS?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB3613.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(7416014)(376014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?v+jrrMVkX7cHcqUZzRjiNMnUFIvLEYUfKF2sLS5xKtlcrAhnyA350FLYrmTq?=
+ =?us-ascii?Q?NH9CJ98Jr0AVu6vE8Uf36wAZUfWlBd8gNRIN39dQe+5se443YOEFj7By2wCL?=
+ =?us-ascii?Q?kIcHsTFUSPMxUHUMVRWyfu9A7F1BR9IRDZugozM4tndR1Tq61bdnd5deBs/G?=
+ =?us-ascii?Q?3Algv2yDW8cFGcZMiA6ZWj4Z4aNepY8tnCDMOsLYhqShhd3kafCXTYsk7TOO?=
+ =?us-ascii?Q?olJnBmufgE9ZlU/tdpKH7+hjQovNHDq/pEioXjJSzbAajOxOGxKRQzad2DKo?=
+ =?us-ascii?Q?1K7t6pFzHmX+8P7DmiBtLNFGxRdsuVV8wLLP2OcpSWsjp0lgtNNIAC0HRI+v?=
+ =?us-ascii?Q?+/sXecZKUKFNNCL6LeJdrC08dboT+vp6mhDOR3g0uLSBbN4COZa6e3G6xV9d?=
+ =?us-ascii?Q?YDCpEfuzC83o/F4eJDWjDHlaCr7GaH1/iNiEuuSUUKvfNbgtmAmk5bCeyfbf?=
+ =?us-ascii?Q?D2oCGqZ0x0r7xFD6SHJQ4w3ILUOO/Jajge8wMu+cd85svW9AkzCAIwTRLi6M?=
+ =?us-ascii?Q?D07RHGSJjB2rTaFXZRAeXWbYmYV+ZFuPR5pRUhOLJ8NLeGnxTIEH/v7rw9V1?=
+ =?us-ascii?Q?bbfQ0oVrqQh+FaPUxoXo4l9S8e3TqjdFFcbwgFsd5LmDNsYSDWqg+7OsxWVM?=
+ =?us-ascii?Q?F06150bPMVWOUXpMuzGPyktqGnPRtm7lz+fLG//KaV5UshH3eGUufDIzgr89?=
+ =?us-ascii?Q?8TROopTs/0l/nRaTH6Kw9JdPESTV3NAb9fBeNG2rjM+X3PZYKJ8Y1RDn3vfj?=
+ =?us-ascii?Q?6TMSeZI+1a1lQ6zUzvoDvkryjsGJEfijLbR6fEweFSxJPECHRDstDYuBobje?=
+ =?us-ascii?Q?kgeMVD/LhicNn+5AoVVVOn2pTzmzfOmcOSmEtVzKsDgjoS8yV+BOXwORd/LI?=
+ =?us-ascii?Q?xzG+oY44Wd1hBWIHwy/8wFanO5ev7Rw4UtXHJv+S8O14QRUOuhyM4TVwyJmb?=
+ =?us-ascii?Q?DU1lKIHkB4eLIkxnSUoSzAWbZ6rvnOG48t1McHlgkF65Ro8YL3d+0UwbetE4?=
+ =?us-ascii?Q?G8UpnzD5EM6XAWFWxSMgxwtzt5JnoM1t1XBYZRLkifZn/NbP0S8Mf7+jiNQT?=
+ =?us-ascii?Q?rBX1+27Cv9q1xpOk22TGWkGBfKS7n9VljUYsOiHfY7GButG2rQ9EhL6Oxq2m?=
+ =?us-ascii?Q?c4UT/mNRIcsPRonOJycr0HIHxZZQrFsAY4vaaqkME7cdiYMRNQR8qN6+4bvW?=
+ =?us-ascii?Q?VwgoM5lcRxFfzteFtrB9HVs4a/B1aI1sVZVmmlcmcTx1usjtiuOCxlVtnQMn?=
+ =?us-ascii?Q?5zcYaQTEn29tquPwJ0EbhI2U7jX3Gz0suOreOggkuEYPAK10c+Xu6/yA9y05?=
+ =?us-ascii?Q?rzPclup0mbsGPI0X6AWITBQvfzzsA9nbsqhL4n5lvz/Tj4bUWFz1JCfFyQ9u?=
+ =?us-ascii?Q?j/qXQRaQ+I/tUPiGQmd70TM7SqKHJaa/XuWwWugq8BxB7LmTpAJIkFqbzseI?=
+ =?us-ascii?Q?WDUAdvhmdn4/KRrdGSywOEsTCw8KJuB4LKZ+zuiQmqbZ5L0+IRI4UzsWg/LT?=
+ =?us-ascii?Q?tOB0CfUpCC1+OlMcm4y3pMEVBf+pleOr8tPtMZh4d8FAZeGkldnJJSP8mxKv?=
+ =?us-ascii?Q?OMcYHkHFHuS/PTaoA2zoNMK8RKM2iSnOLXv/jy8v?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5b9e5d5f-e41a-4ab7-3690-08de05fac558
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB3613.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Oct 2025 23:39:34.7062
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: AQVrCPUNls4L5EUHBUb7VdykEDbc+KkyRPmoxYtU1JZkwl4BESwzkxj3yGdbsLaQ
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4146
 
-Hello,
+On Tue, Oct 07, 2025 at 03:36:58PM -0500, Suthikulpanit, Suravee wrote:
+> The gDTE[DomainID] field contains guest Domain ID (gDomID). The host IOMMU
+> driver uses the gDomId and guest ID (gid) to index the Domain ID mapping
+> table, and store the host Domain ID (hDomID) in the table entry. This data
+> structure is required by hw to translation gDomID->hDomID to virtualize
+> guest invalidation command. This will be part of the upcoming series to
+> enable hw-vIOMMU.
 
-syzbot found the following issue on:
+Sure, this translation is part of viommu
 
-HEAD commit:    971199ad2a0f Merge tag 'arm64-fixes' of git://git.kernel.o..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=1570f92f980000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=87fcad19f7d09298
-dashboard link: https://syzkaller.appspot.com/bug?extid=093a8a8b859472e6c257
-compiler:       gcc (Debian 12.2.0-14+deb12u1) 12.2.0, GNU ld (GNU Binutils for Debian) 2.40
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16286304580000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1370f92f980000
+> This ndom->id is the hDomID, which is currently allocated per-device to
+> avoid TLB aliasing i.e. A guest w/ multiple pass-through devices w/ the same
+> hDomID (same stage 2 table) and different stage-1 tables with same PASID.
+> IOMMU would use the same TLB tag, which results in TLB aliasing issue.
+> Therefore, we workaround the issue by allocating per-device hDomID for
+> nested domain.
 
-Downloadable assets:
-disk image (non-bootable): https://storage.googleapis.com/syzbot-assets/d900f083ada3/non_bootable_disk-971199ad.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/a4f2f91ba510/vmlinux-971199ad.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/8fa7552ebcd0/bzImage-971199ad.xz
+But this is what I mean here, the gDomId should be 1:1 with the hDomId
+and here you are making it 1:N.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+093a8a8b859472e6c257@syzkaller.appspotmail.com
+It has to be like this or you cannot manage invalidation.
 
-Oops: divide error: 0000 [#1] SMP KASAN NOPTI
-CPU: 2 UID: 0 PID: 6098 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.3-debian-1.16.3-2~bpo12+1 04/01/2014
-RIP: 0010:iova_bitmap_offset_to_index drivers/iommu/iommufd/iova_bitmap.c:135 [inline]
-RIP: 0010:iova_bitmap_alloc+0xe8/0x350 drivers/iommu/iommufd/iova_bitmap.c:259
-Code: e8 3d ad 7e fc 48 83 fd 3f 0f 87 c0 8c e9 fb e8 be b1 7e fc 89 e9 b8 08 00 00 00 31 d2 48 d3 e0 48 8d 7b 40 48 89 c1 4c 89 e0 <48> f7 f1 48 ba 00 00 00 00 00 fc ff df 48 89 f9 48 c1 e9 03 48 83
-RSP: 0018:ffffc900034ffba8 EFLAGS: 00010246
-RAX: ffffffffffffffff RBX: ffff888032636100 RCX: 0000000000000000
-RDX: 0000000000000000 RSI: ffffffff853dc2d2 RDI: ffff888032636140
-RBP: 000000000000003f R08: 0000000000000007 R09: 000000000000003f
-R10: 000000000000003f R11: 0000000000000000 R12: ffffffffffffffff
-R13: 0000000000000000 R14: 0000000000000000 R15: ffffffff8c065aa0
-FS:  000055558b0da500(0000) GS:ffff8880d6bdf000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000001b2f463fff CR3: 000000004ee7c000 CR4: 0000000000352ef0
-Call Trace:
- <TASK>
- iommu_read_and_clear_dirty drivers/iommu/iommufd/io_pagetable.c:543 [inline]
- iopt_read_and_clear_dirty_data+0x271/0x4c0 drivers/iommu/iommufd/io_pagetable.c:603
- iommufd_hwpt_get_dirty_bitmap+0x1c3/0x340 drivers/iommu/iommufd/hw_pagetable.c:485
- iommufd_fops_ioctl+0x34d/0x540 drivers/iommu/iommufd/main.c:533
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:597 [inline]
- __se_sys_ioctl fs/ioctl.c:583 [inline]
- __x64_sys_ioctl+0x18b/0x210 fs/ioctl.c:583
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0xcd/0xfa0 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f705598eec9
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 a8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffeac4d43a8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 00007f7055be5fa0 RCX: 00007f705598eec9
-RDX: 0000200000000300 RSI: 0000000000003b8c RDI: 0000000000000003
-RBP: 00007f7055a11f91 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f7055be5fa0 R14: 00007f7055be5fa0 R15: 0000000000000003
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:iova_bitmap_offset_to_index drivers/iommu/iommufd/iova_bitmap.c:135 [inline]
-RIP: 0010:iova_bitmap_alloc+0xe8/0x350 drivers/iommu/iommufd/iova_bitmap.c:259
-Code: e8 3d ad 7e fc 48 83 fd 3f 0f 87 c0 8c e9 fb e8 be b1 7e fc 89 e9 b8 08 00 00 00 31 d2 48 d3 e0 48 8d 7b 40 48 89 c1 4c 89 e0 <48> f7 f1 48 ba 00 00 00 00 00 fc ff df 48 89 f9 48 c1 e9 03 48 83
-RSP: 0018:ffffc900034ffba8 EFLAGS: 00010246
-RAX: ffffffffffffffff RBX: ffff888032636100 RCX: 0000000000000000
-RDX: 0000000000000000 RSI: ffffffff853dc2d2 RDI: ffff888032636140
-RBP: 000000000000003f R08: 0000000000000007 R09: 000000000000003f
-R10: 000000000000003f R11: 0000000000000000 R12: ffffffffffffffff
-R13: 0000000000000000 R14: 0000000000000000 R15: ffffffff8c065aa0
-FS:  000055558b0da500(0000) GS:ffff8880d6cdf000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000055558b0da808 CR3: 000000004ee7c000 CR4: 0000000000352ef0
-----------------
-Code disassembly (best guess):
-   0:	e8 3d ad 7e fc       	call   0xfc7ead42
-   5:	48 83 fd 3f          	cmp    $0x3f,%rbp
-   9:	0f 87 c0 8c e9 fb    	ja     0xfbe98ccf
-   f:	e8 be b1 7e fc       	call   0xfc7eb1d2
-  14:	89 e9                	mov    %ebp,%ecx
-  16:	b8 08 00 00 00       	mov    $0x8,%eax
-  1b:	31 d2                	xor    %edx,%edx
-  1d:	48 d3 e0             	shl    %cl,%rax
-  20:	48 8d 7b 40          	lea    0x40(%rbx),%rdi
-  24:	48 89 c1             	mov    %rax,%rcx
-  27:	4c 89 e0             	mov    %r12,%rax
-* 2a:	48 f7 f1             	div    %rcx <-- trapping instruction
-  2d:	48 ba 00 00 00 00 00 	movabs $0xdffffc0000000000,%rdx
-  34:	fc ff df
-  37:	48 89 f9             	mov    %rdi,%rcx
-  3a:	48 c1 e9 03          	shr    $0x3,%rcx
-  3e:	48                   	rex.W
-  3f:	83                   	.byte 0x83
+Given this series is not really functional it is OK to leave a little
+hack I guess, but it is worth noting how it is supposed to work.
 
+It also probably means we should see the viommu series pretty quickly
+with a goal to merge them all together in one cycle.
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-
-If the report is already addressed, let syzbot know by replying with:
-#syz fix: exact-commit-title
-
-If you want syzbot to run the reproducer, reply with:
-#syz test: git://repo/address.git branch-or-commit-hash
-If you attach or paste a git patch, syzbot will apply it before testing.
-
-If you want to overwrite report's subsystems, reply with:
-#syz set subsystems: new-subsystem
-(See the list of subsystem names on the web dashboard)
-
-If the report is a duplicate of another one, reply with:
-#syz dup: exact-subject-of-another-report
-
-If you want to undo deduplication, reply with:
-#syz undup
+Jason
