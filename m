@@ -1,34 +1,34 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5DEF2D8771;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3C002D876A;
 	Tue,  7 Oct 2025 09:44:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759830295; cv=none; b=cmy/j5aOpXjAA6BFWo+0WJNA3eRZysrlJhV5brZZJNuVhA3Y9D+FfPEWipaQb+SHAuAXx7A28oZMDsLSP1pT09hRJDXw8ZiGsshEU8z2hyB1RqExw/Lo1sV4zP8mu9TssTDt7S8nYFuZUlQK2Z5tOX3kxymyV4OUdrurp+u2hkU=
+	t=1759830295; cv=none; b=QDL04w5FBjfR72XojIbzjsoVWTtY2F8wEVA13cIoKV8hC1IE6T89Y5VOiqAUvYQDkHDTLbHWgwz9sF/aZVuRZ7eQ6EgABb0gXoAET2HTmnWNY531k6jJ7cEPSgnHweleG8AYU+3ujAf0/hdWjj6ptrujqi/orzJzGxQn3o0q4/c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1759830295; c=relaxed/simple;
-	bh=9esiiaNsIjLJT9q+6kigJzz3FXDUJEcBF8kGxPcFTEY=;
+	bh=8MwwusWhD3Nfmd2dXw3awuzZtltqINN/xlTNNCP9H5c=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=toRehJk429IA3SzJR9BdUtYhof5zjs+7ZXRCnUH1tknhdRoVvAwIDFf93ElzmH/GOPzsf72j+4HO3vmgqE6jmyz9Kvv0y3/c5xm1fP3K9URtM9Ge9PqqlwaOEiNrN+ktQ0LEg4zEb7sek8DfLyKZv7BcCllOYa9tsBDxmQ1bAew=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=b5TWRQM/; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=enshbNKObTS8vCeWp8UEcVdd86eHp4faWr7yS96aqZqIoa7J0QKs1bIS2xZaOdUSQmd3pyNxQJe5NPBRiJ+A+4svndW3JA3TUa3bRe+YhMm6naPVRXVq24VyeZ9XvnVxiieOwchYlD9Za4HenBD9oaah170VdzQRXnXOwKn3JAc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aY21KRx5; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="b5TWRQM/"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88176C4AF0B;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aY21KRx5"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 863F9C16AAE;
 	Tue,  7 Oct 2025 09:44:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1759830295;
-	bh=9esiiaNsIjLJT9q+6kigJzz3FXDUJEcBF8kGxPcFTEY=;
+	bh=8MwwusWhD3Nfmd2dXw3awuzZtltqINN/xlTNNCP9H5c=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=b5TWRQM/fHVWyhLveNUH9G4xZYVgaU+KEcUXv9cLFEtknQuEiYqcCPDaL2tRVLp6P
-	 eEC/TQvK+e1fGy9eUx/21vIZG130lOcDHG5wIUQPg5zs57fCM0lBv6gcY6LdKcLAxP
-	 6lSkGSi091k8415SKN0WK/clAhuXw/L9PIGs+bMKnjmHUGHSB6geUTpeyJrolZPD+3
-	 RqjCsoYhgmMqhFlrpoY34dbrCPKltuV9YIkdufB4pcQvv5KnqbXQ/wTysPZ5+z4xMC
-	 xCg4/FTg2byz7vadt5x8jU2vkU+QTHW/BGwnz+IVYFdSPOiwxGg+Zp7WpQ15uONK9W
-	 IM8UUyIHjtP8Q==
+	b=aY21KRx58O5U13wwmk6sv9UeD9mKwuu3XBQorhZYo0IZC4Piedvkau94ZpgNos7fy
+	 FPfwDptQS+RJ3jfvclgEOA+vjKiNgxjbfsmVrWeg8w+vgDz2SVdFEXjSkVGrKBTrYr
+	 nHLA/V/+i4LGdRwW2zjlNl+wK66vqQWsfnkzjh2jzdbqmx1+CCwzVamzbTpjIlYgUs
+	 hShbmerU9ONo47h5ZkLnt1gvr0GgCI8Qd4DF7TCXqOVOUC+J5aK+3hk6gszpr6VDS+
+	 dQfy4yUCAsdx0Ncooeo4o8e2met6p3g3RfznvC2R7DZeQLQnfNaHloraXOybI9ZvrR
+	 U4164Qp/sIkmg==
 Received: from johan by xi.lan with local (Exim 4.98.2)
 	(envelope-from <johan@kernel.org>)
-	id 1v64FZ-00000000363-3BhL;
+	id 1v64FZ-00000000365-3VfD;
 	Tue, 07 Oct 2025 11:44:53 +0200
 From: Johan Hovold <johan@kernel.org>
 To: Joerg Roedel <joro@8bytes.org>,
@@ -46,12 +46,10 @@ Cc: Robin Murphy <robin.murphy@arm.com>,
 	Krishna Reddy <vdumpa@nvidia.com>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
-	Johan Hovold <johan@kernel.org>,
-	stable@vger.kernel.org,
-	Suman Anna <s-anna@ti.com>
-Subject: [PATCH v2 11/14] iommu/omap: fix device leaks on probe_device()
-Date: Tue,  7 Oct 2025 11:43:24 +0200
-Message-ID: <20251007094327.11734-12-johan@kernel.org>
+	Johan Hovold <johan@kernel.org>
+Subject: [PATCH v2 12/14] iommu/omap: simplify probe_device() error handling
+Date: Tue,  7 Oct 2025 11:43:25 +0200
+Message-ID: <20251007094327.11734-13-johan@kernel.org>
 X-Mailer: git-send-email 2.49.1
 In-Reply-To: <20251007094327.11734-1-johan@kernel.org>
 References: <20251007094327.11734-1-johan@kernel.org>
@@ -63,65 +61,44 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Make sure to drop the references taken to the iommu platform devices
-when looking up their driver data during probe_device().
+Simplify the probe_device() error handling by dropping the iommu OF node
+reference sooner.
 
-Note that the arch data device pointer added by commit 604629bcb505
-("iommu/omap: add support for late attachment of iommu devices") has
-never been used. Remove it to underline that the references are not
-needed.
-
-Fixes: 9d5018deec86 ("iommu/omap: Add support to program multiple iommus")
-Fixes: 7d6827748d54 ("iommu/omap: Fix iommu archdata name for DT-based devices")
-Cc: stable@vger.kernel.org	# 3.18
-Cc: Suman Anna <s-anna@ti.com>
 Acked-by: Robin Murphy <robin.murphy@arm.com>
 Signed-off-by: Johan Hovold <johan@kernel.org>
 ---
- drivers/iommu/omap-iommu.c | 2 +-
- drivers/iommu/omap-iommu.h | 2 --
- 2 files changed, 1 insertion(+), 3 deletions(-)
+ drivers/iommu/omap-iommu.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
 diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-index 6fb93927bdb9..b87ce129fb1f 100644
+index b87ce129fb1f..2e161d174b5a 100644
 --- a/drivers/iommu/omap-iommu.c
 +++ b/drivers/iommu/omap-iommu.c
-@@ -1675,6 +1675,7 @@ static struct iommu_device *omap_iommu_probe_device(struct device *dev)
+@@ -1668,8 +1668,8 @@ static struct iommu_device *omap_iommu_probe_device(struct device *dev)
  		}
  
- 		oiommu = platform_get_drvdata(pdev);
-+		put_device(&pdev->dev);
- 		if (!oiommu) {
- 			of_node_put(np);
+ 		pdev = of_find_device_by_node(np);
++		of_node_put(np);
+ 		if (!pdev) {
+-			of_node_put(np);
  			kfree(arch_data);
-@@ -1682,7 +1683,6 @@ static struct iommu_device *omap_iommu_probe_device(struct device *dev)
+ 			return ERR_PTR(-ENODEV);
+ 		}
+@@ -1677,14 +1677,11 @@ static struct iommu_device *omap_iommu_probe_device(struct device *dev)
+ 		oiommu = platform_get_drvdata(pdev);
+ 		put_device(&pdev->dev);
+ 		if (!oiommu) {
+-			of_node_put(np);
+ 			kfree(arch_data);
+ 			return ERR_PTR(-EINVAL);
  		}
  
  		tmp->iommu_dev = oiommu;
--		tmp->dev = &pdev->dev;
- 
- 		of_node_put(np);
+-
+-		of_node_put(np);
  	}
-diff --git a/drivers/iommu/omap-iommu.h b/drivers/iommu/omap-iommu.h
-index 27697109ec79..50b39be61abc 100644
---- a/drivers/iommu/omap-iommu.h
-+++ b/drivers/iommu/omap-iommu.h
-@@ -88,7 +88,6 @@ struct omap_iommu {
- /**
-  * struct omap_iommu_arch_data - omap iommu private data
-  * @iommu_dev: handle of the OMAP iommu device
-- * @dev: handle of the iommu device
-  *
-  * This is an omap iommu private data object, which binds an iommu user
-  * to its iommu device. This object should be placed at the iommu user's
-@@ -97,7 +96,6 @@ struct omap_iommu {
-  */
- struct omap_iommu_arch_data {
- 	struct omap_iommu *iommu_dev;
--	struct device *dev;
- };
  
- struct cr_regs {
+ 	dev_iommu_priv_set(dev, arch_data);
 -- 
 2.49.1
 
