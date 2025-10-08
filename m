@@ -1,73 +1,50 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA5412C21C4
-	for <iommu@lists.linux.dev>; Wed,  8 Oct 2025 19:11:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABA85241690
+	for <iommu@lists.linux.dev>; Wed,  8 Oct 2025 19:42:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759950664; cv=none; b=HQablfoUTkqagt9f3wibYatiMf9haBF54rFCWZX62XzNY/N7H2RkFEIhmNkuFHHNA8fqY4RF5+bwuum0kTnY6F+XHHGXcf4epMzVGT6wkyeWpmU/cfPHsyZQ8lyHWUKmWA6yF3xdMOMn1IV1cDUAHVmul3cU+WtuuiHfMSXhmq0=
+	t=1759952576; cv=none; b=U0CAxSc3mt+laJFXm6DYrt1xcg6szzLo3WRnJI4XQxbAywITQ3EE5s91DPeLJ9coaRmmHJI9bs1SFD8T8JhGD0s1vA6Nzxe/ey9LqJCwUv+nPmh4/dgCWHyfl9vo5cF1RkjqX4pBvvQsnji9O9iSQ9m5hj+S5o43bLKhK12L1yo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759950664; c=relaxed/simple;
-	bh=Ii5p//lANQpwUR+totbFED/Y+2YNQArSAdIfd7L7Oq4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=e7P6Z9LbCbsKFynFYpzgUK7IvbvZ0tib11MI36Z1DCWpAH+ogcZKIuAhPVm+z1ObovyH0qJ3iJcICLQxMd963c+CdneO4gCRKkuoHWqquM6IrbhXy+g27Bg66Wfa8Djq1dSdojQAFd+K01e3G0TKKzSsOWAXBXi77GKvgGRN52I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=PmT5xaWJ; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1759952576; c=relaxed/simple;
+	bh=N3wUMr4zilqdOSdwWk6l78xey8r2OSlsB3dkEbi6Xv0=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
+	 In-Reply-To:Content-Type; b=ZZwUESljswn1iN0kNcgVUWul91pJUcsNKKKo3FNV0nJorZStvYdF/G38SREifDC04zqJ4oQ9i8SY0o8wU2oezrDhYaet+3+Mmnjd1jqO0g+sU3Yu8kSQluoDb0lq/ExbIllMEgPUHhFN+BQm73vMbP2UUJQpvRsL96PnsI5+uas=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Chtqds1f; arc=none smtp.client-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="PmT5xaWJ"
-Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 598I5I6h004514
-	for <iommu@lists.linux.dev>; Wed, 8 Oct 2025 19:11:02 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	v2Ckrd2MBpwnD5dVtICWm9gQnW8kfuaGhxbrS62TfrE=; b=PmT5xaWJe2G6LtuB
-	yTIu1hnJR6OgEDqn71ZXfUX805mHX84p+e2/iXQjr7YIBySYX2QYS13as5WmdYg2
-	9ZjFRKy0d6jVw6fUpKQBmZ6nxje540p7dfyYQzI/jsT2OEpXepFkAT1VUpoOc3lW
-	FanPWwdrrLCaqT+5eU0G69Wsw++ajE3iEbvZm2EmW200UvH0VKfgmvCxxWToZQVW
-	tHQ3OVUAZhwTyprk6JOtyFzMoFOrvSJy6kbXj4FSUz02e0D4T98vPS++qaWaUgJj
-	eVcastXt7dEYwo7338Eav8kuugjqdnJsmpnLp4xVB6aHKr0+HFBCDpHgDt/FNvlp
-	tRMZeg==
-Received: from mail-pl1-f200.google.com (mail-pl1-f200.google.com [209.85.214.200])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 49nv4krasr-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Wed, 08 Oct 2025 19:11:01 +0000 (GMT)
-Received: by mail-pl1-f200.google.com with SMTP id d9443c01a7336-28eb14e3cafso4609775ad.1
-        for <iommu@lists.linux.dev>; Wed, 08 Oct 2025 12:11:01 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1759950661; x=1760555461;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=v2Ckrd2MBpwnD5dVtICWm9gQnW8kfuaGhxbrS62TfrE=;
-        b=GTByu+nY16vcE2kA8JpVhPkAKKveRjIaSoiZFdtq0Yn1rglwL8ikuyusHvydtyzx9q
-         qqIIKoXzNNqBuSSzSuq6s7r+PzvJHZwnxL6v8Wiu18LRDKGBpJnVEsR+uNOeaMyqXf1u
-         aTmqijwZIpJQKBnLl1p5tiF+5B6muvds3EzuoIB9ph75vDaOPxsXbWO4KR4J9Z4tD2jL
-         J4YME2iCuRec+hn4+RXHbkjbGNP41uYpzXHQF2UaGV7O3lR1XMFgTjSliXidnE5sdLQd
-         ZJupO3AJAxVuPmNyosQ5mxRc5fJcXW1MscsHX5s/fOeCfNaaCLDrMTqsfM0K5hfeSM1W
-         lrJQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWRs2TbqfSQcMNRhwRBvG3xUYA9vmMIkJkfHwXkQLB+z/ExdlRiog9iatpx+Styl4xvIcHCQw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yz45+uoHsk1GWBt5oPfGaVVbHwSMI2gcfAOJkTm8r2/3M3q0aKg
-	UiDjdBXXJbGP4lti0++r//Ii64XmVNgVwkeUBw/ecD8826N7WKfjbyAt+WAMfFWxqs3+JL1ZsfQ
-	bs+jPG0z+MHprnpa0fw0V20MnV2ELJSb3yrYLDYhMjj2VhD5w6S3XwOfACQ==
-X-Gm-Gg: ASbGncu8k2xeXly/rK4AOCaO4Ntmxq+ABfHTJn2tPUppDsHdtDRYFSH5zYsU4ns6Dxo
-	0LXH9STpaGFtKR4RMD4Gdtz855zwD7NMhTl4NO/5H771e3P06mBfyLTHaous1nLUrsF5A94wXGz
-	04ad9svaxq7udysCcMyss2BpPhk5BXt1w2qn3D+xY9xi4BPKdjIvqG/SYO2ayRWo8r9Y3TRlCr/
-	ET9yeNu+XZxO/bW8D9mGDXV7lmFrevYbsNTlQsKmJvREQBihC5/v6mnSXZFngRbH8i9D+Cwbv+P
-	GgCtSzgwdKGpw66EzTQLkWFU3foGb2uaVTvpVWklkpWXtgDshPwlqpFuIkjnyFyqMw1xHslHORZ
-	X
-X-Received: by 2002:a17:903:3807:b0:269:4741:6d33 with SMTP id d9443c01a7336-2902737a672mr59929015ad.23.1759950660786;
-        Wed, 08 Oct 2025 12:11:00 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IFoltEn2VRkpyMuHU5UPRZwV8um+jjn0mCO/9YfDOkYq9eUvZtXCOTDt/5dwPosSV7tuY7/xA==
-X-Received: by 2002:a17:903:3807:b0:269:4741:6d33 with SMTP id d9443c01a7336-2902737a672mr59928625ad.23.1759950660344;
-        Wed, 08 Oct 2025 12:11:00 -0700 (PDT)
-Received: from [192.168.1.6] ([122.181.205.161])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-29034de5defsm4950085ad.15.2025.10.08.12.10.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Oct 2025 12:10:59 -0700 (PDT)
-Message-ID: <0d0560cc-9757-4c7b-8de4-170148d99481@oss.qualcomm.com>
-Date: Thu, 9 Oct 2025 00:40:52 +0530
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Chtqds1f"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1759952574; x=1791488574;
+  h=message-id:date:mime-version:subject:from:to:cc:
+   references:in-reply-to:content-transfer-encoding;
+  bh=N3wUMr4zilqdOSdwWk6l78xey8r2OSlsB3dkEbi6Xv0=;
+  b=Chtqds1fQFY697MDTXT2GcSg6qLUbnLYlZvixFkvV8HpsSsfArl65vEE
+   rCT5lMKnPXIFnbDnES+e/AHTB+pF9hkBwJTRceMTzvgfMI7UtZUQfONXh
+   47TWxY8RvZWJXkCkyT1LJL73xWsVdR1p6JT7SnmMhGoeOgsU5M45vJo7c
+   mQrsQGCsTH1crvxWbDK6M97R+cqllw3/u3s1kg+KaoaD+Z93n9pSjYqcn
+   LM+nNQa9FJgQce2rNg5xSJgHzUWIStnTeUSOoHq0kAfYF+11EnyvWWsiN
+   80lBDzab++ewHqlTAfMRxp5LFB7/gn6YFHwqIZc1/gxdLkRk/OmyBtPht
+   Q==;
+X-CSE-ConnectionGUID: piiziT0jTn6DzcVUKdB/CQ==
+X-CSE-MsgGUID: afj0ahzWTXuWzaEtT+MG1w==
+X-IronPort-AV: E=McAfee;i="6800,10657,11576"; a="79597288"
+X-IronPort-AV: E=Sophos;i="6.19,214,1754982000"; 
+   d="scan'208";a="79597288"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Oct 2025 12:42:53 -0700
+X-CSE-ConnectionGUID: FOAw+Ys+ToyoW+RRavHDSQ==
+X-CSE-MsgGUID: vp3HlePQT0CuBfXNohA7mg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.19,214,1754982000"; 
+   d="scan'208";a="181283817"
+Received: from rchatre-mobl4.amr.corp.intel.com (HELO [10.125.110.204]) ([10.125.110.204])
+  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Oct 2025 12:42:51 -0700
+Message-ID: <d3cf3716-98ec-419b-90b7-b91b83599498@intel.com>
+Date: Wed, 8 Oct 2025 12:42:50 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -75,102 +52,110 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC PATCH 0/3] Introduce iommu-map-masked for platform devices
-To: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org, will@kernel.org,
-        saravanak@google.com, conor+dt@kernel.org, robh@kernel.org,
-        mchehab@kernel.org, bod@kernel.org, krzk+dt@kernel.org,
-        abhinav.kumar@linux.dev, vikash.garodia@oss.qualcomm.com,
-        dikshita.agarwal@oss.qualcomm.com,
-        Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
-        bjorn.andersson@oss.qualcomm.com,
-        Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-Cc: linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        iommu@lists.linux.dev
-References: <20250928171718.436440-1-charan.kalla@oss.qualcomm.com>
- <aec0f40a-8346-4194-8b18-1022fe3366bb@arm.com>
+Subject: Re: [PATCH v5 0/8] Fix stale IOTLB entries for kernel address space
+From: Dave Hansen <dave.hansen@intel.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Kevin Tian <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
+ Jann Horn <jannh@google.com>, Vasant Hegde <vasant.hegde@amd.com>,
+ Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>,
+ Borislav Petkov <bp@alien8.de>, Alistair Popple <apopple@nvidia.com>,
+ Peter Zijlstra <peterz@infradead.org>, Uladzislau Rezki <urezki@gmail.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Andy Lutomirski <luto@kernel.org>, Yi Lai <yi1.lai@intel.com>,
+ David Hildenbrand <david@redhat.com>,
+ Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
+ "Liam R. Howlett" <Liam.Howlett@oracle.com>,
+ Andrew Morton <akpm@linux-foundation.org>, Vlastimil Babka <vbabka@suse.cz>,
+ Mike Rapoport <rppt@kernel.org>, Michal Hocko <mhocko@kernel.org>,
+ Matthew Wilcox <willy@infradead.org>
+Cc: iommu@lists.linux.dev, security@kernel.org, x86@kernel.org,
+ linux-mm@kvack.org, linux-kernel@vger.kernel.org
+References: <20250919054007.472493-1-baolu.lu@linux.intel.com>
+ <c04d4c9d-e868-4883-af92-26f142bc84be@intel.com>
 Content-Language: en-US
-From: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
-In-Reply-To: <aec0f40a-8346-4194-8b18-1022fe3366bb@arm.com>
+Autocrypt: addr=dave.hansen@intel.com; keydata=
+ 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
+In-Reply-To: <c04d4c9d-e868-4883-af92-26f142bc84be@intel.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMDA4MDEyMSBTYWx0ZWRfX7h1jVbpr6yd3
- z05FLKozBlXf+6tXLvSz+G4AK736QxLsQzfC6MepXuMNZaY1YNUFm3kQNwMmfO2sgp1spo/st8+
- h2lEW/mlSfxZAKoelOit8nCFLENS2xoQNyuLJPwIbsJ+RYoNja10mBJyyAc89cgK7Og/LDM/yav
- qt/s5f232/XNWTj5yPcL+tZo3afH/FpLTe4ZEPw5WC8H/BNDNcII3hRYLisUWVwN89aCSmg/8GZ
- xZpsXf40gIRVY5t8wBVEwSUoyeqF62bN9eGQwqvYUr0DynaQTbAMLeaxt1TDkm8+oMUbZkG7rc4
- RiLo5Sj1qNVv+H12qfkAS9IN2TUPAQilb/jGr5HbQdNr14ug771hQUU0uyRlXuhIQtWs38uvbSu
- WCjxHgZsvu121uGHR0/KcLasIA9bGQ==
-X-Proofpoint-GUID: Owjmcz4lmdsr_4ZJ5_Bs40tus5XR-08m
-X-Proofpoint-ORIG-GUID: Owjmcz4lmdsr_4ZJ5_Bs40tus5XR-08m
-X-Authority-Analysis: v=2.4 cv=SJxPlevH c=1 sm=1 tr=0 ts=68e6b745 cx=c_pps
- a=IZJwPbhc+fLeJZngyXXI0A==:117 a=6JKELlXEPSgWT0DDZg8VgQ==:17
- a=IkcTkHD0fZMA:10 a=x6icFKpwvdMA:10 a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8
- a=qT7v1YyD-ofD8Pk09kQA:9 a=QEXdDO2ut3YA:10 a=uG9DUKGECoFWVXl0Dc02:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1117,Hydra:6.1.9,FMLib:17.12.80.40
- definitions=2025-10-08_05,2025-10-06_01,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- malwarescore=0 suspectscore=0 impostorscore=0 spamscore=0 phishscore=0
- clxscore=1015 bulkscore=0 lowpriorityscore=0 priorityscore=1501 adultscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.19.0-2510020000 definitions=main-2510080121
 
+I wondered why no mm folks were commenting on this. linux-mm@ was cc'd,
+but the _people_ on cc seem to have been almost all IOMMU and x86 folks.
+so I added a few mm folks...
 
-On 9/29/2025 3:50 PM, Robin Murphy wrote:
->> USECASE [1]:
->> -----------
->> Video IP, 32bit, have 2 hardware sub blocks(or can be called as
->> functions) called as pixel and nonpixel blocks, that does decode and
->> encode of the video stream. These sub blocks are __configured__ to
->> generate different stream IDs.
+On 9/25/25 13:24, Dave Hansen wrote:
+> On 9/18/25 22:39, Lu Baolu wrote:
+>> This solution introduces a deferred freeing mechanism for kernel page
+>> table pages, which provides a safe window to notify the IOMMU to
+>> invalidate its caches before the page is reused.
 > 
-> So please clarify why you can't:
+> I think all the activity has died down and I everyone seems happy enough
+> with how this looks. Right?
 > 
-> a) Describe the sub-blocks as individual child nodes each with their own
-> distinct "iommus" property
->
+> So is this something we should prod Andrew to take through the mm tree,
+> or is it x86-specific enough it should go through tip?
 
-Thanks Robin for your time. Sorry for late reply as I really didn't have
-concrete answer for this question.
+Hi Folks! We've got a bug fix here that has impact on x86, mm, and IOMMU
+code. I know I've talked with a few of you about this along the way, but
+it's really thin on mm reviews, probably because mm folks haven't been
+cc'd. Any eyeballs on it would be appreciated!
 
-First let me clarify the word "sub blocks" -- This is just the logical
-separation with no separate address space to really able to define them
-as sub devices. Think of it like a single video IP with 2 dma
-engines(used for pixel and non-pixel purpose).
+It seems like it should _probably_ go through the mm tree, although I'm
+happy to send it through tip if folks disagree.
 
-I should agree that the child-nodes in the device tree is the easy one
-and infact, it is how being used in downstream.
+Diffstat for reference:
 
-For upstream -- Since there is no real address space to interact with
-these sub-blocks(or logical blocks), does it really qualify to define as
-child nodes in the device tree? I see there is some push back[1].
-
-  > or:
-> 
-> b) Use standard "iommu-map" which already supports mapping a masked
-> input ID to an arbitrary IOMMU specifier
-> 
-
-I think clients is also required to program non-zero smr mask, where as
-iommu-map just maps the id to an IOMMU specifier(sid). Please LMK if I
-am unable to catch your thought here.
-
-Do you suggest to extend the iommu-map to give the non-zero SMR mask
-value[2]?
-
-
-[1]
-https://lore.kernel.org/all/ogslvjglnz56lz6nria7py6i4ccp6zvcd4ujpiusrq6xutydsm@xb72os5wk67r/#t
-
-[2]
-https://lore.kernel.org/all/bffc8478-4de9-4a9b-9248-96a936f20096@oss.qualcomm.com/>
-Thanks,
-> Robin.
-> 
->> With the classical approach of representing all sids with iommus= end up
->> in using a single translation context limited to the 4GB. There are
->> video usecases which needs larger IOVA space, like higher concurrent
->> video sessions(eg: 32 session and 192MB per session) where 4GB of IOVA
->> is not sufficient. 
-
+ arch/x86/Kconfig              |  1 +
+ arch/x86/mm/init_64.c         |  2 +-
+ arch/x86/mm/pat/set_memory.c  |  2 +-
+ arch/x86/mm/pgtable.c         | 12 ++++-----
+ drivers/iommu/iommu-sva.c     | 29 +++++++++++++++++++++-
+ include/asm-generic/pgalloc.h | 18 ++++++++++++++
+ include/linux/iommu.h         |  4 +++
+ include/linux/mm.h            | 24 +++++++++++++++---
+ include/linux/page-flags.h    | 46 +++++++++++++++++++++++++++++++++++
+ mm/Kconfig                    |  3 +++
+ mm/pgtable-generic.c          | 39 +++++++++++++++++++++++++++++
+ 11 files changed, 168 insertions(+), 12 deletions(-)
