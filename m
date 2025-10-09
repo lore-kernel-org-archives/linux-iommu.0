@@ -1,109 +1,178 @@
-Received: from mail-pf1-f169.google.com (mail-pf1-f169.google.com [209.85.210.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED0C73A1DB
-	for <iommu@lists.linux.dev>; Thu,  9 Oct 2025 01:09:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17A9F212559
+	for <iommu@lists.linux.dev>; Thu,  9 Oct 2025 03:05:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759972160; cv=none; b=aPbsrJRx9M/XYeOvKXfMxAGfHK0ye7f8fNXLHNUuc86eW+F0lkjrwtBVlIJYNWVcGCBAvMSpJPS3XgLFjU/4bW1yEn7ImodsFDdQrZe/krQ4ZXoppZmy7K7/X6f2rvDsLyfuQ1jfccRqPgi5WBb4T/hYsLI7P/o3B+3o8cSDeQ8=
+	t=1759979144; cv=none; b=W+gOaPxbUbvM9bAzL32iWTw4xroaswWW7yrciqPQiBVqeUad19Ttqd+voyDJKGgv4fBR0oz+HjapJNjGDjjNZg8fq3Dkq+O8umweWbpQmgNkogWcyRNIuGsqlutj0XETRBoy6MFkZEjEZkd2O7hK9Qi43KRRvDPNgJNwzJ+89vw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759972160; c=relaxed/simple;
-	bh=91+WbqIZVIOE4sofIpB0yEZNBPRPt4wB+LIzBkBCdpE=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=CTpZYPBOtTqQ6ljLCZ0Y+6jwnlkAi3+iHAu/s3SuouJUcjog7MFDZr6jsw+ows8oqQFYamG7IQyKF1gqcNdH/V4U4CheWHwki8GhSbSRQd9O+LI3d+5PdzYC/kiw/F/Zk02ANDOHt1KSIc3eiyexwoQPoqXC3TFybAp5jMl19FA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=aashishsharma.net; spf=pass smtp.mailfrom=aashishsharma.net; dkim=pass (2048-bit key) header.d=aashishsharma.net header.i=@aashishsharma.net header.b=mz4UHB84; arc=none smtp.client-ip=209.85.210.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=aashishsharma.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=aashishsharma.net
+	s=arc-20240116; t=1759979144; c=relaxed/simple;
+	bh=adDtwrABqJItP/LyGiv+12nt0zW4ItDbkMVAAXVZyZs=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=pne+bTtfrieVQW9QiIZuQBsLcf+7ozxGaOkuRhP40xi08+DXHX8VPIOcXcmUkzrhijqlRHInljNFsb5Mc57k7isQRj2EvCeVzWp+QT78g3ZqggFuX7CZMVbcf+XrN2c9yEHO74r2/3FF06oY0yoNgsOcdKMq7peMVWoVttqCfAA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=ND241/W6; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=aashishsharma.net header.i=@aashishsharma.net header.b="mz4UHB84"
-Received: by mail-pf1-f169.google.com with SMTP id d2e1a72fcca58-781001e3846so396247b3a.2
-        for <iommu@lists.linux.dev>; Wed, 08 Oct 2025 18:09:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=aashishsharma.net; s=google; t=1759972157; x=1760576957; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=Uf6SXDKqJICw08NoDh9xk9/MF/JYlGO1Q1LMu9XTd6E=;
-        b=mz4UHB84IsuDp16tGA1fXydVN/6SBdj4stTACUtynrXCfrUcSnt0GlB+aRu51Viprv
-         QR45S/zj2GISJLN4GAlj4XJHqnjtbEz/wzE5WhLeKRE7GtZdG+F+5kyIDTsfNeDXOwlY
-         9K6daAq4wQ/xNcswDeGd6Bdwjt7GWQQiZR7Qe03iVKqjG13n2yFKM1QCaHcpDKFLGc2r
-         W3F4A1GW1jVLi0LwcWo9Ur5NfgwCvzTvosVLAolv42GLINNsrETwfB1dbjsf41xncL4c
-         DwdLBtVtY7aU40EijmrouFw6I1XFqzlfD74l28PrLX78I/TOWUbrKfqwSpTH5tRWb5Gj
-         l2dA==
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="ND241/W6"
+Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 598I5Qfv020694
+	for <iommu@lists.linux.dev>; Thu, 9 Oct 2025 03:05:42 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	maw0nAtOoBVHhqJ9ExerU0/ECtcBryU6vpXt6hYX7LY=; b=ND241/W6roZpTLMY
+	8lUSgg8HBk+LobuHZI6DurU0YtpM1lVcdu49kvkvHfia6vg8KMA8LTNv3d3fLoPv
+	aPzhoQTGWwc48lgdBV8VZdRWVP7PV9IAXi4Sis6ZiHTejJG/NeQRhTOz9AL1aQ3O
+	VupH+Bq11JzqA/S/qA7U6ibACD0C7zXGqjrDNT+2JZH8SeAHUoZoKmFtznMRFeQV
+	Mdl95/Z6iEk/6mIGhBvYshkpFOJq2xEZh3TOyWpFiWxj50RQDZZoO82QHiQ7kRj7
+	pVKCNC5sVxd/HpRbB3TuKdunx8/LE7v9Gng5KMFxvZpnMwOjpWskaXCg6VHdYJiv
+	KTmPdQ==
+Received: from mail-pl1-f200.google.com (mail-pl1-f200.google.com [209.85.214.200])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 49nv4kh9v1-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Thu, 09 Oct 2025 03:05:42 +0000 (GMT)
+Received: by mail-pl1-f200.google.com with SMTP id d9443c01a7336-269a2b255aaso13765425ad.3
+        for <iommu@lists.linux.dev>; Wed, 08 Oct 2025 20:05:42 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1759972157; x=1760576957;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Uf6SXDKqJICw08NoDh9xk9/MF/JYlGO1Q1LMu9XTd6E=;
-        b=DTAf+eNqCVv+AF+9iMLzZlbAUb4wKs/IYIJ0DyAK7sGvoKILOpvp2f4xE4jrQBrYt3
-         Lv/N+pzC5rQ+m05PSZS5/YbOtS/uKp0/42u4SQRnsn9pyZwZ8wWk1HQX/d62PZaKNFL8
-         PRsFubi7aHES6DbXTCihIB5J9FoXd7wRIlIzclAA+59HGC1+fMGGHu10ilCGDf905Wta
-         YOcErp5ZSBj0sXEB2DN3efKIkkhftS/9XZd+7Llyly/6j6GhYs4riWB/JJHPLtPz/o2c
-         LLEUPLRwT/4vr+BkBqZZiaFLzfaqABAkxGU6pvagxygjfFeqQRZaLzxvFyzMrZV5Z2An
-         a/GA==
-X-Forwarded-Encrypted: i=1; AJvYcCViedCxqXbnVkARCrFudcU8UWv2W7DiUkinUVWfSvR97b6sDFc5y4pb/oAD35tPjTR6wCPDwQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw88gamshOOBYlzsJbVfv1SyNwbg1oI9eTOVODxtkMmDOYYuZWG
-	+pttoiLKysceoxBMVNvAhSCbYVEfImE5vVPVzfqKRJ7HLuPXTr49RMfX6r9td+DfEuY=
-X-Gm-Gg: ASbGncu3ogMi4FN+C6lsA7jkQi4cHBudJzU63UvlQpvFt4E5ehRvXTXrBPdrOxTs7Dn
-	kaOxT0Y26wfXLnJgvQmcbifjKF8Q3ri5WH0iRtywEwSADAd+koTI3egGvKiojO4OyqIkQ2TRJP1
-	zNK79xX84BcIIrLLtFU6KE4wisQHZpL09ezgwD81MdWizs54tpIzIxRqk1pPF4RXopq8Hv4kjkJ
-	z1+u5QcXskU+ZDC2F2M/4qGm0PgcXv6JdUCp3+RHVhFhsgt/XvP57/7CM8ift7X7vvKAtPpec4Y
-	f60xuMIYL0yUXiGNGDF8SmenEa1s+mz0mL/G4FI2IXtMVWz1TJ6iOi8+4BVecv6NX/Nqs2pLmUQ
-	4xV3oZSEMB0JtmLQHEKNH4iQ8omBszl5FE64hverjShrHOzj3ygYH4rSkgExi/LrP/CtianlbxT
-	RQ80RCfdfjY/5CvVeK+iclOYzrkm48sh8u6p3Ja1rzIX5H
-X-Google-Smtp-Source: AGHT+IG8Hn5ffuKifHjR9/YsygBkJPCAVUztAOOOJeVgTKeXeNze6yjiQg5d2xADPv3Ea5hlzzceZQ==
-X-Received: by 2002:a05:6a00:cc9:b0:781:189:ae43 with SMTP id d2e1a72fcca58-79386e51126mr5418064b3a.20.1759972156874;
-        Wed, 08 Oct 2025 18:09:16 -0700 (PDT)
-Received: from shraash.sjc.corp.google.com ([2a00:79e0:2ebe:8:6608:a363:a036:abf1])
-        by smtp.googlemail.com with ESMTPSA id d2e1a72fcca58-794e33efc2bsm995186b3a.77.2025.10.08.18.09.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Oct 2025 18:09:16 -0700 (PDT)
-From: Aashish Sharma <aashish@aashishsharma.net>
-To: Vineeth Pillai <vineeth@bitbyteword.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Dmytro Maluka <dmaluka@google.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Joerg Roedel <joro@8bytes.org>,
-	Tina Zhang <tina.zhang@intel.com>
-Cc: Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Aashish Sharma <shraash@google.com>,
-	Aashish Sharma <aashish@aashishsharma.net>
-Subject: [PATCH] iommu/vt-d: Fix unused invalidation hint in qi_desc_iotlb
-Date: Wed,  8 Oct 2025 18:09:03 -0700
-Message-ID: <20251009010903.1323979-1-aashish@aashishsharma.net>
-X-Mailer: git-send-email 2.51.0.710.ga91ca5db03-goog
+        d=1e100.net; s=20230601; t=1759979141; x=1760583941;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=maw0nAtOoBVHhqJ9ExerU0/ECtcBryU6vpXt6hYX7LY=;
+        b=I6t9ovXLohe3HGxyjfBu/D9uPwErS21eSlNbeR48vk2KXmsGshEeBTfGx27ksTSPj5
+         3r4oj4DsNUplTu8e8sO4uzOAD6hKPreIxYfF0DDrsnvo40uOemzljgknF1+7RE4/+bMi
+         4xoUn0KfzWCZxR0Iq1meeI7hRZk76CX1QJR0+LS3WwMv2h6JD9GHaxhtUCGiJAuteWaF
+         uVMFjPl6NNrc0olEnuf9ENekbeL58556C9/10F1dXHEiY9WZsUwltYFLlesdHUjAVmUZ
+         AAAx9xBUnE8sg9JKyDwRU3VDxQLvaraZKOf0ISFuIQ8Z3jIq3oSiVuLYcFHrRHNk077A
+         hiVw==
+X-Forwarded-Encrypted: i=1; AJvYcCULr2Q6Al8lWgkfWj865dIY690hHSy+S9GI4JQTSgVOd/LO7GvohMydlY5SMz+4g4itwd9SIg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxlPa0C6Lblzm8vK9cqEbyb09BeIoISt4eKFF/+rAhpErOQ0uL2
+	kR2sVf/uSoMXU5c+c9aEkoTr+fNBwJeHnvPTRQShv6SRMAB55ONZsWHPBMHHl2LlT6MgMPj4wZH
+	4yh6JwAWf/h8FOstZJH8l2bP8tqc5ztHDcRLzaRPKUO4SbJ0Ssa3qjpqTww==
+X-Gm-Gg: ASbGnctexNK+RH3AwXniK2knMoi4UsyY4SXFwXUO2vhqOUMQYGRP4BRj8YYANS1/aNg
+	3BBr29TdULp8OQpVeHSg0J4YzH3CrA3xkihA9eFFyVGcyxB5fFmGdUzGc52KzKlYEh46n939xAQ
+	xHHSBjluIe2CZ8L7etsLqh1xNyrC1Kb0hUfCoYB3fwyMPWZBBOyt45cEuPAIV7O93gY9idYm2PU
+	kGjmCWF3Cr2vpZaY5xiHvaxZAY2N9gXxmMyiMUAbeG+ilOyM/esd01RlMln7roL8/3JZjEkVZB2
+	ljXBiJJL7EtvgT5Upyfyh4afpHi7P4OVbxX2srsQ3jzvT90kQAilvRpVLQBUNmW90FrACllG+4y
+	yZeux
+X-Received: by 2002:a17:903:37c3:b0:269:a4ed:13c9 with SMTP id d9443c01a7336-290273ee214mr75265235ad.30.1759979141305;
+        Wed, 08 Oct 2025 20:05:41 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IEnBY9dBUVR4JO7ffBEWJAcyiS5SqEqUqPfk7J2CB3UN/A0lC50/P3L8vjezocgdBSm41IWow==
+X-Received: by 2002:a17:903:37c3:b0:269:a4ed:13c9 with SMTP id d9443c01a7336-290273ee214mr75264785ad.30.1759979140837;
+        Wed, 08 Oct 2025 20:05:40 -0700 (PDT)
+Received: from [192.168.0.166] ([49.205.248.131])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-29034f56c04sm11854475ad.110.2025.10.08.20.05.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 08 Oct 2025 20:05:39 -0700 (PDT)
+Message-ID: <1151394a-5f76-5ba8-bd5b-0635a9a57be6@oss.qualcomm.com>
+Date: Thu, 9 Oct 2025 08:35:33 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.1
+Subject: Re: [RFC PATCH 0/3] Introduce iommu-map-masked for platform devices
+Content-Language: en-US
+To: Rob Herring <robh@kernel.org>,
+        Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
+Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
+        saravanak@google.com, conor+dt@kernel.org, mchehab@kernel.org,
+        bod@kernel.org, krzk+dt@kernel.org, abhinav.kumar@linux.dev,
+        dikshita.agarwal@oss.qualcomm.com, linux-media@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+        Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+References: <20250928171718.436440-1-charan.kalla@oss.qualcomm.com>
+ <CAL_JsqK9waZK=i+ov0jV-PonWSfddwHvE94Q+pks4zAEtKc+yg@mail.gmail.com>
+From: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
+In-Reply-To: <CAL_JsqK9waZK=i+ov0jV-PonWSfddwHvE94Q+pks4zAEtKc+yg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Authority-Analysis: v=2.4 cv=dojWylg4 c=1 sm=1 tr=0 ts=68e72686 cx=c_pps
+ a=IZJwPbhc+fLeJZngyXXI0A==:117 a=5kJkhVZBw43gkfrlxLPpYw==:17
+ a=IkcTkHD0fZMA:10 a=x6icFKpwvdMA:10 a=VwQbUJbxAAAA:8 a=KKAkSRfTAAAA:8
+ a=EUspDBNiAAAA:8 a=sGZhk1M-rbKiZVnir_gA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+ a=uG9DUKGECoFWVXl0Dc02:22 a=cvBusfyB2V15izCimMoJ:22
+X-Proofpoint-GUID: DRRN0JzbAlkdjj0b1vPKaleLqDozexyf
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMDA4MDEyMSBTYWx0ZWRfX6g5gaIhjUgMQ
+ BjQICX5OTB1Z7mTGYmildoPIZGX7idAqHhbeuNBK4/oYyzMmyTC/J0McIcSyr25D9EVjaGMO1tH
+ rkLS4xFwQHKA2dnJKi/+jROJASvR6/lbBf4csXc5xWAfnvTzmn+65CUZ8yJ5PsJawWfpxGyEjHS
+ wEj6FOvpI6K6DW9s8GZMvbuRMothkvGaajTZh46RpY64qV6b4c8wXaKsQ2o9cInk+jiOlcvx6hn
+ nGEpgfuzfWOIMjYoTMu4b1yPnUTb1aGqhcy3w9SnowBNES0XLn9VhNjtQ7zdZ+OXw7em9nklZuQ
+ a5Q8a4tE4XfmHtqOUqg51CG1KfhrzZqLDNbudxZFdvc+jqM+rd/Iw5Zw9WxiREGJEb+zPNyKY3o
+ gPOz4Dx+86lLk4Tyq8imKgntRjg9SA==
+X-Proofpoint-ORIG-GUID: DRRN0JzbAlkdjj0b1vPKaleLqDozexyf
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1117,Hydra:6.1.9,FMLib:17.12.80.40
+ definitions=2025-10-09_01,2025-10-06_01,2025-03-28_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ clxscore=1011 impostorscore=0 suspectscore=0 lowpriorityscore=0 adultscore=0
+ bulkscore=0 spamscore=0 priorityscore=1501 phishscore=0 malwarescore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.19.0-2510020000 definitions=main-2510080121
 
-Invalidation hint (ih) in the function 'qi_desc_iotlb' is
-initialized to zero and never used. It is embedded in the 0th bit
-of the 'addr' parameter. Get the correct 'ih' value from there.
 
-Fixes: f701c9f36bcb ("iommu/vt-d: Factor out invalidation descriptor composition")
-Signed-off-by: Aashish Sharma <aashish@aashishsharma.net>
----
- drivers/iommu/intel/iommu.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On 9/29/2025 1:53 AM, Rob Herring wrote:
+> On Sun, Sep 28, 2025 at 12:17 PM Charan Teja Kalla
+> <charan.kalla@oss.qualcomm.com> wrote:
+>>
+>> This series introduces a new iommu property called iommu-map-masked(may
+>> be there is a better name), which is used to represent the IOMMU
+>> specifier pairs for each function of a __multi-functional platform
+>> device__, where each function can emit unique master id(s) that can be
+>> associated with individual translation context.
+>>
+>> Currently, the iommu configuration - at least for arm architecture-
+>> requires all the functions of a platform device will be represented
+>> under single dt node thus endup in using only a single translation
+>> context.
+>>
+>> A simple solution to associate individual translation context for each
+>> function of a device can be through creating per function child nodes in
+>> the device tree, but dt is only to just represent the soc layout to
+>> linux kernel.
+>>
+>> Supporting such cases requires a new iommu property called,
+>> iommu-map-masked(taking cue from iommu-map for pci devices) and syntax
+>> is:
+>>    iommu-map-masked = <FUNCTION_ID1 &iommu ID1 MASK1>,
+>>                       <FUNCTION_ID2 &iommu ID2 MASK2>;
+>> NOTE: As an RFC, it is considered that this property always expects 4
+>> cells.
+>>
+>> During the probe phase of the driver for a multi-functional device
+>> behind an IOMMU, a child device is instantiated for each FUNCTION_ID.
+>> The call to of_dma_configure_id() on each child sets up the IOMMU
+>> configuration, ensuring that each function of the device is associated
+>> with a distinct translation context.
+>>
+>> This property can also be used in association with 'iommus=' when dt
+>> bindings requires the presence of 'iommus=', example[2]. For these
+>> cases, representation will be(on arm64):
+>>    iommus = <&iommu sid mask>; //for default function.
+>>    iommu-map-masked = <FUNCTION_ID &iommu sid mask>;//additional
+>> function.
+> 
+> Where does the FUNCTION_ID value come from?
+> 
+> Why can't you just have multiple "iommus" entries where the index
+> defines the default and any FUNCTION_ID entries? What's in each index
+> is specific to the device.
 
-diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index 3056583d7f56..dcc5466d35f9 100644
---- a/drivers/iommu/intel/iommu.h
-+++ b/drivers/iommu/intel/iommu.h
-@@ -1097,7 +1097,7 @@ static inline void qi_desc_iotlb(struct intel_iommu *iommu, u16 did, u64 addr,
- 				 struct qi_desc *desc)
- {
- 	u8 dw = 0, dr = 0;
--	int ih = 0;
-+	int ih = addr & 1;
- 
- 	if (cap_write_drain(iommu->cap))
- 		dw = 1;
--- 
-2.51.0.710.ga91ca5db03-goog
+Are you trying to suggest something like this [1] ? I am not sure, if extending
+the iommus would get us "unique" devices where those SIDs (from different
+function_id) can be associated with respective device. AFAIU, existing iommus
+entries associates all of them in same device.
 
+[1]
+https://lore.kernel.org/linux-media/9bae595a-597e-46e6-8eb2-44424fe21db6@linaro.org/
+
+Regards,
+Vikash
+> 
+> Rob
