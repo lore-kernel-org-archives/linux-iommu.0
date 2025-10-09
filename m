@@ -1,160 +1,233 @@
-Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A59D9222586
-	for <iommu@lists.linux.dev>; Thu,  9 Oct 2025 07:56:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5B1B274B5F
+	for <iommu@lists.linux.dev>; Thu,  9 Oct 2025 08:14:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759996587; cv=none; b=cvSXm5U91/5yrzjCa6MUzRWSBpOtn9Z7eaqeIowMSeaWXOUc+h1nMq5pkHPTFweSjAKtHTHuhBM4qmkEbtWBfBulTzNuYdsWDgO1vbi6TsI3w16xgbxcWf0imfQ+oFnXAj/yjKK6BeMe7ecnNoyfMt9BDIGLFyUGa/R9ccOOk94=
+	t=1759997659; cv=none; b=geS/DyAxpwILaZ0YyCbDfLxGB2b0JRX0e/UHxEf5vi38A8fKQoqTqRGi8T1HXZQFZHTYOwqtxlm4k70qgMiJNO+XqiJLuP1PBels6niI4a/TgJ1BLnJ++TsayRKimvtEn7e08AEKx+R8sMpzaEt+iSB/ZxQCQlDRxCwy79Xi6OM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759996587; c=relaxed/simple;
-	bh=rhd2Vz+1e/iOi2LHto5xUh03sKP51Qg56huR5FisGJo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=EUjoCGDwX3vy1dfl403yIe+Qt5dzmaD/DwnlVSfyfVq2/rsMEbGNSJQVYI6vMm+sJXQD3niSxcmxhMzxx5o8bd+5qRIGiHW7T3JA1OmN/uUqyVLcKfs7T6HHWOCOiECIH5g/e/TLKPBe6sDAoMPioVxyKLd6yF4FUlaRpmH7kfw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=OJPqRnFi; arc=none smtp.client-ip=209.85.221.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1759997659; c=relaxed/simple;
+	bh=V+JAWiJg2U6kE1ohoWIw0uVFkG7IaGFYvp2AU1nrZ3A=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Mhijp975XsSMDgM/KT7lU8qo2UOnJamNPz/fQcMHnQbcHG10TcoF1jDSLVkruXVeo47/9vwXNsulV8XVET5cfoukCXJ8ZUrh5Srbm+nvAJU8wuN8IWk16Q9IuUoSVmxo4bYezizEpc/BCbyvyFdqTfLmK06SDvl9ftOK8FGxAuk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=dfesaZvl; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OJPqRnFi"
-Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-3f2cf786abeso568328f8f.3
-        for <iommu@lists.linux.dev>; Thu, 09 Oct 2025 00:56:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1759996583; x=1760601383; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=T0a1fYc0MJ9EuqumxNBgOSane0jVrbsSTPrQvSq4lE4=;
-        b=OJPqRnFiZWyRGRtJSKh+uwiWHeOYe/VpQny6cW86RzzJZzeh2IQ/vmEdKBcFBIX66J
-         CEFyrFtnP5VFpTlqZiwwSmWiMli/K4Q/KKaiubFJ+AjOGCxCZ5zTz3aYLySC50/1KA4I
-         wY44cefnUh5BwiTRKYtvn8hpKa2uWE/9K33QAt1a9IqmsokWhov+ILMmpITkr4sq4S+S
-         rKaKAAHOgoBkeJSAo3HjWrlWwyqUPln/CbnDVxTeaR9NI78WI3eSG8vUkpfAXCx0Ajuv
-         Lr6hAcN+4sUb8neUdt8R2jJRbeWpWtUU1Qi5FVkGcMwNqt7erbsNR7oytjkv9rR3sPvw
-         TKnw==
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="dfesaZvl"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1759997653;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=z/B31lhY4bVYeZNnk+dMlfOVrRbTYtHHzwgcdMMaTVE=;
+	b=dfesaZvlsQUtr0U58MS8V+R5ClgquCeqxooEl/2t5bVBYTplzY5cRC/FXZo/gf4iDd6x3z
+	5wP5oxNppzcxtkWI9zdEgHWL99pLF6xDxtKxkWxSwNPeRQ3NgXIaru35skPzrl26Lx2t4s
+	ynvXvKIEawwU5DrX1FdaEZlIFEIF8gk=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-45-zhbowMSKOW6yb07J0x97gg-1; Thu, 09 Oct 2025 04:14:12 -0400
+X-MC-Unique: zhbowMSKOW6yb07J0x97gg-1
+X-Mimecast-MFC-AGG-ID: zhbowMSKOW6yb07J0x97gg_1759997648
+Received: by mail-wm1-f69.google.com with SMTP id 5b1f17b1804b1-46e4335fa87so3775295e9.0
+        for <iommu@lists.linux.dev>; Thu, 09 Oct 2025 01:14:12 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1759996583; x=1760601383;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=T0a1fYc0MJ9EuqumxNBgOSane0jVrbsSTPrQvSq4lE4=;
-        b=vFqlKwWEX6kj9QBnwfVbLvyaXeLW16q9cGvtgbCK1TgkFDch9o6gAXrCA05Mq7lJeS
-         bsEggnklfdGJeHPoMW+/v4OFlcbPbTn23fv3y8PJl+kK6XV3/e14+I+g+ny9WPXbJujo
-         E2oL1IyUU5YuINE6VNEHpgkbUujjDLIfQbDUfLpX2l/LL7YisL9MmbLoi2c8GxmcOsoH
-         RyBfFUzapRVtFWbQPyaf1Cfg1cA3ciMrpw+Jh/yeQ2BwsfWJfrmQ2m3zqONFET75w3Fz
-         GE5alKQ04W+aq6sDwXA7mJhqhL2k+e7u4CCfmRfz3b81U1XzISieyZIbropO5gC30Q7K
-         QXmg==
-X-Forwarded-Encrypted: i=1; AJvYcCUTUItOVmwdrl1zQsybodEBUzkOCEeGrjlRpUjKVGDC5mtW0I3QLvqd4E0lHH77p6pLApLhUg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzMMVHM63hwNhOgP7VzQkeo3UF8nZtYbPXhDc/slfQ1HLRZN9I9
-	eyHLYXBeGvyD9Imepw97nbJPR6FDcyCc34Slchu4qZQM3hBUWn/DIooB
-X-Gm-Gg: ASbGnct+iTniBPLR3a2x3xyLtHcrXpVqO6Z6wIptWgdAFmfNK5F71QrzaKNUaBl2jGT
-	q0Usyhl/bR/xa0W8N+CfjUfN0gN3dm8qkIszT1fDAbhgVf3tru1714obO8ndjfhgHxr16nEFjud
-	wZ+KNF5o/itm15TGys28EKdAPsQc8myJ5iTHL/PAp8jXt4fWdSEa84V90rslCYf6GOYHTXok1uj
-	4zTI4JTtinBUDZwuKG0mDHNG3HBFsFnfHKRvPu4ZX/OI/Xcpuy8U1GH2FrB6am0/+pLuKwh5ZLl
-	5U09FZKZLvfnwPpFf8RggCHviqQ8F5qHv1MuW9ZCYqtIeONHT3U6eqSNTmQFXpCmlmxQi+buz/9
-	eH2hGIH6umFdHeXnxbT+HG+b5QD8M0bUFIdw5FeDiGpE+iJwoIAY0rUZk/jXUYf+b9TOFhax+cm
-	GwK0+sXFiuHpN+fbZVzW4bkfua38Pu8tkWpoKdej97wooo
-X-Google-Smtp-Source: AGHT+IHdPDeElx1hyAYh5U0ai1YogNJIHEcNDQIevaS+npNxA1G4K3X5r3iKDWJLm2QYPiZpKcmqQA==
-X-Received: by 2002:a05:6000:2301:b0:425:72cd:8364 with SMTP id ffacd0b85a97d-4266e8e1afamr4240788f8f.53.1759996582753;
-        Thu, 09 Oct 2025 00:56:22 -0700 (PDT)
-Received: from orome (p200300e41f28f500f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f28:f500:f22f:74ff:fe1f:3a53])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4255d8a6bbesm33269369f8f.12.2025.10.09.00.56.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Oct 2025 00:56:20 -0700 (PDT)
-Date: Thu, 9 Oct 2025 09:56:18 +0200
-From: Thierry Reding <thierry.reding@gmail.com>
-To: Johan Hovold <johan@kernel.org>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Sven Peter <sven@kernel.org>, Janne Grunau <j@jannau.net>, 
-	Rob Clark <robin.clark@oss.qualcomm.com>, Marek Szyprowski <m.szyprowski@samsung.com>, 
-	Yong Wu <yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>, 
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, Chen-Yu Tsai <wens@csie.org>, Krishna Reddy <vdumpa@nvidia.com>, 
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, stable@vger.kernel.org, 
-	Thierry Reding <treding@nvidia.com>, Miaoqian Lin <linmq006@gmail.com>
-Subject: Re: [PATCH v2 14/14] iommu/tegra: fix device leak on probe_device()
-Message-ID: <rp2yiradenf3twznebagx7tgsruwh66exiikal37c4fwo75t4t@4breto65stqt>
-References: <20251007094327.11734-1-johan@kernel.org>
- <20251007094327.11734-15-johan@kernel.org>
+        d=1e100.net; s=20230601; t=1759997648; x=1760602448;
+        h=content-transfer-encoding:in-reply-to:autocrypt:content-language
+         :from:references:cc:to:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=z/B31lhY4bVYeZNnk+dMlfOVrRbTYtHHzwgcdMMaTVE=;
+        b=Vp+0tpqTdlM/q5SgrS8SEzlxMCgCCZ2l9nPlBkcXDOM5Fq9dYsWIFNP/edTsvIpn1A
+         WVL+omVbw1iqEDghAfxonc0qcep6qq2q2TuW0olvJWUbxyz8/ufjvXrQF43lcXdpOWjU
+         4CNRZQZmit8EZ9JhjpeTnUiseIRB3dnmqrA/s6q5GgyadEBtFz81c2OVO5WkGqAEQSCk
+         3jpAyDEBfSTtHlAPRKpTa+2lr9aCIjrOGGGpL94A8V/A9c1rvcZQD1uW3P7KcInW+cge
+         hAOswhGQwfZ2jsCBnwJ983b4MmIauN1Bi3g/59g0VT4HJEWWQzaCNRk+f1ID3YiQttY6
+         J3Nw==
+X-Forwarded-Encrypted: i=1; AJvYcCVXsb4rvJTjAQP+s2vFvjwejozyp8Bz+WJWTkMy43v1/NOqJ6HGzSR3N5FYtUu2XIUa5Y4mKQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwRIgkRGJi42yotdHCNvcsZbA0JPpkutT77NvxK8j1rCKZiqD0D
+	Z9s/mpcsQ+wo4R6c0kzHpu3LaQJQOblSiyobYRFFM8CrUKFx69k/8I0RPLwWjbNYUpZwGIZVwwx
+	eV31rtCUfZHZ6yb2mphM5Mt/cicZuIUfGxwonbct1iwAQsx7EY/o92yJL
+X-Gm-Gg: ASbGncsPfmT1TNAX9o6XIG3YBK1mm0RwfHY0W74FsY+h1r7cweuA6lWc5XmvFrubAgz
+	n/OVgKDGaPgGAIFtyyXIYjK9vtmH7ElvVka900ZlHPpS8x5h17u97QYhXIKmawR1MeZMyEA/cOF
+	YPMd+6XgleKXwczM69pgPdPeUx1APpTdvZqHG+W1L1nHAkjbA8yu567pz49PiwXUfhmD5Zrg3vK
+	KlizQ97b7hHRbhLd/XXpxjgPifxmoFEPcdskGmMIvOiqEBwpbHC4pCG6QAF14Cfs05odr1hHbuQ
+	joip+h+78/kDKJHY5pWL0zDufeGO9lR94vWDayutfpekbDiDuZE8P0iQc9vTmAOFuJwJykx20/c
+	nqsY1KjO3
+X-Received: by 2002:a05:600c:4750:b0:45f:28d2:bd38 with SMTP id 5b1f17b1804b1-46fa9af3095mr47092665e9.18.1759997648084;
+        Thu, 09 Oct 2025 01:14:08 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IGo93r/upxlN0XWroa/gVbVuSE1HI9H4cBHGhOGnkYv+FuHkp7MlpzQ4ByJt+h+2JF6rzGBiQ==
+X-Received: by 2002:a05:600c:4750:b0:45f:28d2:bd38 with SMTP id 5b1f17b1804b1-46fa9af3095mr47092215e9.18.1759997647608;
+        Thu, 09 Oct 2025 01:14:07 -0700 (PDT)
+Received: from [192.168.3.141] (tmo-083-189.customers.d1-online.com. [80.187.83.189])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-46fa9d6fb41sm71628175e9.17.2025.10.09.01.14.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 09 Oct 2025 01:14:07 -0700 (PDT)
+Message-ID: <9361c75a-ab37-4d7f-8680-9833430d93d4@redhat.com>
+Date: Thu, 9 Oct 2025 10:14:02 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="wgvpzj7uzsv4xh6z"
-Content-Disposition: inline
-In-Reply-To: <20251007094327.11734-15-johan@kernel.org>
+User-Agent: Mozilla Thunderbird
+Subject: Re: (bisected) [PATCH v2 08/37] mm/hugetlb: check for unreasonable
+ folio sizes when registering hstate
+To: Christophe Leroy <christophe.leroy@csgroup.eu>,
+ linux-kernel@vger.kernel.org
+Cc: Zi Yan <ziy@nvidia.com>, Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
+ "Liam R. Howlett" <Liam.Howlett@oracle.com>,
+ Alexander Potapenko <glider@google.com>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ Brendan Jackman <jackmanb@google.com>, Christoph Lameter <cl@gentwo.org>,
+ Dennis Zhou <dennis@kernel.org>, Dmitry Vyukov <dvyukov@google.com>,
+ dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+ iommu@lists.linux.dev, io-uring@vger.kernel.org,
+ Jason Gunthorpe <jgg@nvidia.com>, Jens Axboe <axboe@kernel.dk>,
+ Johannes Weiner <hannes@cmpxchg.org>, John Hubbard <jhubbard@nvidia.com>,
+ kasan-dev@googlegroups.com, kvm@vger.kernel.org,
+ Linus Torvalds <torvalds@linux-foundation.org>, linux-arm-kernel@axis.com,
+ linux-arm-kernel@lists.infradead.org, linux-crypto@vger.kernel.org,
+ linux-ide@vger.kernel.org, linux-kselftest@vger.kernel.org,
+ linux-mips@vger.kernel.org, linux-mmc@vger.kernel.org, linux-mm@kvack.org,
+ linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
+ linux-scsi@vger.kernel.org, Marco Elver <elver@google.com>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, Michal Hocko <mhocko@suse.com>,
+ Mike Rapoport <rppt@kernel.org>, Muchun Song <muchun.song@linux.dev>,
+ netdev@vger.kernel.org, Oscar Salvador <osalvador@suse.de>,
+ Peter Xu <peterx@redhat.com>, Robin Murphy <robin.murphy@arm.com>,
+ Suren Baghdasaryan <surenb@google.com>, Tejun Heo <tj@kernel.org>,
+ virtualization@lists.linux.dev, Vlastimil Babka <vbabka@suse.cz>,
+ wireguard@lists.zx2c4.com, x86@kernel.org,
+ "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>
+References: <20250901150359.867252-1-david@redhat.com>
+ <20250901150359.867252-9-david@redhat.com>
+ <3e043453-3f27-48ad-b987-cc39f523060a@csgroup.eu>
+ <d3fc12d4-0b59-4b1f-bb5c-13189a01e13d@redhat.com>
+ <faf62f20-8844-42a0-a7a7-846d8ead0622@csgroup.eu>
+From: David Hildenbrand <david@redhat.com>
+Autocrypt: addr=david@redhat.com; keydata=
+ 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
+ qIws/H2t
+In-Reply-To: <faf62f20-8844-42a0-a7a7-846d8ead0622@csgroup.eu>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: j2SypZxCeKO1ggoYDT9o0R6XWfjX3J1PLPz21oqGopQ_1759997648
+X-Mimecast-Originator: redhat.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
+On 09.10.25 10:04, Christophe Leroy wrote:
+> 
+> 
+> Le 09/10/2025 à 09:22, David Hildenbrand a écrit :
+>> On 09.10.25 09:14, Christophe Leroy wrote:
+>>> Hi David,
+>>>
+>>> Le 01/09/2025 à 17:03, David Hildenbrand a écrit :
+>>>> diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+>>>> index 1e777cc51ad04..d3542e92a712e 100644
+>>>> --- a/mm/hugetlb.c
+>>>> +++ b/mm/hugetlb.c
+>>>> @@ -4657,6 +4657,7 @@ static int __init hugetlb_init(void)
+>>>>         BUILD_BUG_ON(sizeof_field(struct page, private) * BITS_PER_BYTE <
+>>>>                 __NR_HPAGEFLAGS);
+>>>> +    BUILD_BUG_ON_INVALID(HUGETLB_PAGE_ORDER > MAX_FOLIO_ORDER);
+>>>>         if (!hugepages_supported()) {
+>>>>             if (hugetlb_max_hstate || default_hstate_max_huge_pages)
+>>>> @@ -4740,6 +4741,7 @@ void __init hugetlb_add_hstate(unsigned int order)
+>>>>         }
+>>>>         BUG_ON(hugetlb_max_hstate >= HUGE_MAX_HSTATE);
+>>>>         BUG_ON(order < order_base_2(__NR_USED_SUBPAGE));
+>>>> +    WARN_ON(order > MAX_FOLIO_ORDER);
+>>>>         h = &hstates[hugetlb_max_hstate++];
+>>>>         __mutex_init(&h->resize_lock, "resize mutex", &h->resize_key);
+>>>>         h->order = order;
+>>
+>> We end up registering hugetlb folios that are bigger than
+>> MAX_FOLIO_ORDER. So we have to figure out how a config can trigger that
+>> (and if we have to support that).
+>>
+> 
+> MAX_FOLIO_ORDER is defined as:
+> 
+> #ifdef CONFIG_ARCH_HAS_GIGANTIC_PAGE
+> #define MAX_FOLIO_ORDER		PUD_ORDER
+> #else
+> #define MAX_FOLIO_ORDER		MAX_PAGE_ORDER
+> #endif
+> 
+> MAX_PAGE_ORDER is the limit for dynamic creation of hugepages via
+> /sys/kernel/mm/hugepages/ but bigger pages can be created at boottime
+> with kernel boot parameters without CONFIG_ARCH_HAS_GIGANTIC_PAGE:
+> 
+>     hugepagesz=64m hugepages=1 hugepagesz=256m hugepages=1
+> 
+> Gives:
+> 
+> HugeTLB: registered 1.00 GiB page size, pre-allocated 0 pages
+> HugeTLB: 0 KiB vmemmap can be freed for a 1.00 GiB page
+> HugeTLB: registered 64.0 MiB page size, pre-allocated 1 pages
+> HugeTLB: 0 KiB vmemmap can be freed for a 64.0 MiB page
+> HugeTLB: registered 256 MiB page size, pre-allocated 1 pages
+> HugeTLB: 0 KiB vmemmap can be freed for a 256 MiB page
+> HugeTLB: registered 4.00 MiB page size, pre-allocated 0 pages
+> HugeTLB: 0 KiB vmemmap can be freed for a 4.00 MiB page
+> HugeTLB: registered 16.0 MiB page size, pre-allocated 0 pages
+> HugeTLB: 0 KiB vmemmap can be freed for a 16.0 MiB page
 
---wgvpzj7uzsv4xh6z
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH v2 14/14] iommu/tegra: fix device leak on probe_device()
-MIME-Version: 1.0
+I think it's a violation of CONFIG_ARCH_HAS_GIGANTIC_PAGE. The existing 
+folio_dump() code would not handle it correctly as well.
 
-On Tue, Oct 07, 2025 at 11:43:27AM +0200, Johan Hovold wrote:
-> Make sure to drop the reference taken to the iommu platform device when
-> looking up its driver data during probe_device().
->=20
-> Note that commit 9826e393e4a8 ("iommu/tegra-smmu: Fix missing
-> put_device() call in tegra_smmu_find") fixed the leak in an error path,
-> but the reference is still leaking on success.
->=20
-> Fixes: 891846516317 ("memory: Add NVIDIA Tegra memory controller support")
-> Cc: stable@vger.kernel.org	# 3.19: 9826e393e4a8
-> Cc: Thierry Reding <treding@nvidia.com>
-> Cc: Miaoqian Lin <linmq006@gmail.com>
-> Acked-by: Robin Murphy <robin.murphy@arm.com>
-> Signed-off-by: Johan Hovold <johan@kernel.org>
-> ---
->  drivers/iommu/tegra-smmu.c | 5 ++---
->  1 file changed, 2 insertions(+), 3 deletions(-)
->=20
-> diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-> index 36cdd5fbab07..f6f26a072820 100644
-> --- a/drivers/iommu/tegra-smmu.c
-> +++ b/drivers/iommu/tegra-smmu.c
-> @@ -830,10 +830,9 @@ static struct tegra_smmu *tegra_smmu_find(struct dev=
-ice_node *np)
->  		return NULL;
-> =20
->  	mc =3D platform_get_drvdata(pdev);
-> -	if (!mc) {
-> -		put_device(&pdev->dev);
-> +	put_device(&pdev->dev);
-> +	if (!mc)
->  		return NULL;
-> -	}
-> =20
->  	return mc->smmu;
+See how snapshot_page() uses MAX_FOLIO_NR_PAGES.
 
-pdev->dev is what's backing mc, so if we use put_device() here, then the
-MC could go away at any time, right?
+-- 
+Cheers
 
-So the goal here was to make sure that the MC stays around during the
-entire lifetime of the IOMMU attachment. We don't currently release that
-reference, ever, so there is a leak, but wouldn't it be more appropriate
-to release it in a .release_device implementation?
+David / dhildenb
 
-Thierry
-
---wgvpzj7uzsv4xh6z
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmjnaqIACgkQ3SOs138+
-s6GKbhAAsfz1wZw0MTC9RsEY4Yd9FfbGZFwUqkdbKTFeuIj2pdIDddlr1W27EUR4
-k8LSmG+B/zzQVAB+e6/9evMs0tBh7sAJqdN+4KS9Xu9oCSz0NZT/DVYKPEhAH44D
-/LkM2+RGcyVcF/2ebov9rCMzHJpcNbgjU6gg9NfQlCrl7diKXSUGhTcSL/Emycmg
-3FuBz6DDHAD0J1slkQ7Tfy+jUKm4Z8Ewh4NBTF0Cv8k+S6WdTq8TOlVhedYyOhii
-YGJeu84qQoOfIf3wFIWqIswb0NmzL/uN/kMw4eLy3FaJ+H9LjYVrfHkDO5lNfW/N
-wwj7QOHLllKcSavr7TPGLglzrRBj2l0ApXL+8Xe1zLvhTx7VX4ksEAVzkJY4mHmu
-5M2JLtgntGiyAY8Korl+NY0K3G42D48qa4fWIewpTEjbT5IQB3C0GQsDMaz0uaZT
-xQK1Ik2W4zP6w/de2FlZj7YF2D/8tAuS7Af8uEZXMny3addBpoICCgraDg4aU1XV
-Nqx/TP3mFHu4V/J6twarFQM7zTeKiKdUyp0yJ428Jed/yGVREBjAqS8Vvml/Zmpn
-e7LFJGHYCLUVymAE1z61G3HPSt1w1IAnRaHrSrq/IbanY3Jhfeu95Az/fpYcW2hU
-FOjysPFAigkUvlqz6M954uRgLGHixqtm3vI/VA+LtKqjR1PJo3w=
-=VlYs
------END PGP SIGNATURE-----
-
---wgvpzj7uzsv4xh6z--
