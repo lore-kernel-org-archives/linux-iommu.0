@@ -1,72 +1,72 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 953851E0E1F
-	for <iommu@lists.linux.dev>; Thu,  9 Oct 2025 19:16:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1507D1E0E1F
+	for <iommu@lists.linux.dev>; Thu,  9 Oct 2025 19:19:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760037405; cv=none; b=AfbUH5r++JLbH+pHqjblhNW3OQ1nkck7chJCVWC2TR+RiOFdjFJAkNMcAoyGqRF6otVidPeinjyGQ7Vmk5Ces9JY9TL3fX3jaYkzX2yW5mj7uCEVCLPDCckc/DTkoLAGdVFQ5BBCJIi7ysDWpPtOv/Urtz8l2ZtOHN6syHrfbDw=
+	t=1760037563; cv=none; b=JuYGi4QOlgHpz9W8jSD0Lwd/EPpAkvoZ5xELMRMgr56RQuOpgbdwYt7H4ZHkrwFHrW6WWtkR7Ma/JnduFHWmY4Si2dQOSao0foDR8aE2gB2vZXjkDdMx7GvsbuzAzNWWQjQbMgOD8khD+yvdaejDAFDVpjtY92OGBnH9ochPeLk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760037405; c=relaxed/simple;
-	bh=O8Zv30WGnZYC9mVrYMZ4C/OoFisrJ2rjhARUBD8ZGbE=;
+	s=arc-20240116; t=1760037563; c=relaxed/simple;
+	bh=9HpnDUUNM1Za7tp008fNatOpyEuNyRIDJRFp+lClZ80=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=sJ0yE4U1GKRpJMxUzCkeROe4FczcyRGxFA8WaLaC0xQ9ZdI4jJd3v0ZCzYAHtg8L9U8Ow+3umyxxgU2tgGTlQhWta91HmGdGQRGec3KVp6P6/eqCNUJFF6DS/jC9UwrnsMlvKHfopAx6avpLR88Q/bLOYGPBdrPKDeuu/RVkmjg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=euR6vlxf; arc=none smtp.client-ip=170.10.129.124
+	 In-Reply-To:Content-Type; b=HdqRpMnZiECLnL3klk+BQlrOCCx5LewVwEFjSgnjmLc4AReYb5bLIzymGPWOY7n56cnpxd70pPiJ2+Qj4AtWLgLXZReVyXznq0ej0RZ/oYSz3kn3TGs2xyjTH5C/hqOlrWL0LDD0R3zJkGDOH6F/YY0T8WgDsdI+YjCfET/6oMY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=anBkhGhg; arc=none smtp.client-ip=170.10.133.124
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="euR6vlxf"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="anBkhGhg"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1760037402;
+	s=mimecast20190719; t=1760037560;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=/jjq7BLRoYI2nQdmAcFZDfdFEssHTj+qWciljr1C06A=;
-	b=euR6vlxfrhdN+hZhhlZdizODLA6MMYzeMfbGhYDK40GGF4+fBrsFcs5einAhHOCJclxnrn
-	eqIV7OAs+GuYGDEDaVl/TybYXUuFP997t8ptm62aj3fM9kWqXsJ1u7aYVmis2apITV4DiX
-	+Ida4a2/CppmOl//adKnmK6SMbejYy4=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=TQurpp90SeeCWbZFWp94YAV9HMnF9Yu3um4IgQUYoDg=;
+	b=anBkhGhgFA0ocnJLNK+MgoIVSC6VFRiH71U8Th7/dwp6+FXMHYNlwAPCCLbayUn8Gikxvg
+	/fX0WzA33G+GjIFHlg/d2X3d7AlEisoe4fuyQFj5PU0fDmtyrhcpEvE6UeVnkBRsnCdJZs
+	+vZe9qXw8qZjnPSqo4g7Gpo/5y5Q6L0=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-643-jRKNfouhNI6WjA4V4Yagjw-1; Thu, 09 Oct 2025 15:16:41 -0400
-X-MC-Unique: jRKNfouhNI6WjA4V4Yagjw-1
-X-Mimecast-MFC-AGG-ID: jRKNfouhNI6WjA4V4Yagjw_1760037400
-Received: by mail-wm1-f70.google.com with SMTP id 5b1f17b1804b1-46e407c600eso8422695e9.3
-        for <iommu@lists.linux.dev>; Thu, 09 Oct 2025 12:16:41 -0700 (PDT)
+ us-mta-592-ztFqcaOcM7Gi-aakMq3iRQ-1; Thu, 09 Oct 2025 15:19:19 -0400
+X-MC-Unique: ztFqcaOcM7Gi-aakMq3iRQ-1
+X-Mimecast-MFC-AGG-ID: ztFqcaOcM7Gi-aakMq3iRQ_1760037559
+Received: by mail-wm1-f72.google.com with SMTP id 5b1f17b1804b1-46e32eb4798so8905295e9.2
+        for <iommu@lists.linux.dev>; Thu, 09 Oct 2025 12:19:19 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1760037400; x=1760642200;
+        d=1e100.net; s=20230601; t=1760037558; x=1760642358;
         h=content-transfer-encoding:in-reply-to:autocrypt:content-language
          :from:references:cc:to:subject:user-agent:mime-version:date
          :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=/jjq7BLRoYI2nQdmAcFZDfdFEssHTj+qWciljr1C06A=;
-        b=ChPt2Y1WcV28YIS65f5jqgcdp6Z+N5JON7krnfXydH6FFWOEV/CkZeVa+ur0R9pSHo
-         LyY0xRmrBpV5PqPjtT/Qnukt+9j4N7L+XuIIgMyBGt5dfBW/NjD8LpmxnWsUYSiN9xGu
-         HjaihGXGwbHpMaoCZBK+iP2jhMPivPtuZkw0ykBKz9bAMKqYXZGbzfZA95WWo2Fzi/8y
-         69CFMEJ0bLbt83wlXa81utzt4N35AY7DM5CnCqA9sETTNHh7IcBGLwJQYAMBgeszpmHa
-         Ydhm/YfMXbhKeoG7bUSIzAXZLzTR6gOVb6HmGrSnsD/QRaOwo10x50hrBXY+vA75jbPZ
-         CJMw==
-X-Gm-Message-State: AOJu0YwVk0pctZDQq404zVnnBtYaPcTRTPndaMNdQfA0g5CimG+HanuE
-	XeLN2kS/uaJAf17AKguN/g4iANkc3RjcN3F4TcUKH4Eay1Bu+JP9aCOnJlvUs/fCksJ873k01z6
-	uStX4MD3qF5WF6jgVqwz9uUS1zdn0B/okJykp5PvY/LMbsspI9537mE2S
-X-Gm-Gg: ASbGncuaulsu2gixao1tS4CnH4jvHp1vpnAjv7un9sl3TFwq0B9ueEtOhN5vAowIFk2
-	Y4w+EKbziZqOcbfNGvOsCL/ONl4ZpZHbkR2mgSbaSxoksTQ5uw2NLiEx80bkEUxK3QX36lnm+YV
-	tkCy17dCd7x+So6zRnkwitkGxTdZ+jnQNF3lfanBLVCF+nvyNpxG2fD/HNZtjF0FAsgP4Gs6WPz
-	46d2ySfvODWx86/Hwh5DZfkeN0eQf6E0K8MS3VtaY7x7qZghrXx9KP+7CUyjAavp4gSew+snwAi
-	AY0kBX/9mcXzmsNaEi1fyOZVkVTBHP6bVKbAclN0BegRqcMYjZIteaQh9vlD+cnYUlLgPnnU12y
-	RIWipTbZg
-X-Received: by 2002:a05:600c:3e87:b0:46e:3d41:6001 with SMTP id 5b1f17b1804b1-46fa9b17df1mr59434435e9.34.1760037400241;
-        Thu, 09 Oct 2025 12:16:40 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IHxEViiRN8Lw2h0KvemsqiiXPHU95kQiydslrrD2f9G9rGLUFyRDI7eBLoEqJHlLxcoXRSxgA==
-X-Received: by 2002:a05:600c:3e87:b0:46e:3d41:6001 with SMTP id 5b1f17b1804b1-46fa9b17df1mr59433925e9.34.1760037399787;
-        Thu, 09 Oct 2025 12:16:39 -0700 (PDT)
+        bh=TQurpp90SeeCWbZFWp94YAV9HMnF9Yu3um4IgQUYoDg=;
+        b=GfQ85rhj7s2xY6ELpmDKe0WOI/AXBvJwfPXaXH/QiSxkmtegb18gThLELfAAursg6r
+         vNoZHoHqxFXRSyBSBXnbCGgIQzRuRP0NKTneztfamPPlHH7XXfBE9VpOiE2O8Cj5RO0R
+         csRsNTB+CbW/WKQXqV9xLzTxb6etBCnp8A/t1XAielP+duQ/r/Ja//Uy753Dz3ZR8xHh
+         tVc0yhc/Pc1cuTTWeRazZclvLiF4V6lJsTJc9fFRiRTg2Kj70O3o0dRc7aweZxq+q7BZ
+         N79mA/6NZ2idnBzoxIMwP/1ga6V3hOqeXlndeN82xLuleBwIUo8BSGYu9jPInQSaN4LN
+         2t/g==
+X-Gm-Message-State: AOJu0YwWBvDbGmlSGMQzedKz3wzvBSzG/9Yg0BeM6IVwHusciE0PPMHp
+	r6L7dPc8fc6/QwkYuP6GQ8EORJVq251r8eSFzRkwj763JcAeAHaPgronKLGRRumu7OkW5mp4CG5
+	GFAgJJSfhIitEgDmfMb8FCLs2hAmK2hIulyXUyvEADsuvsIf0mvAes9WB
+X-Gm-Gg: ASbGncugeEwzZnDEZi3pyilzZS1P84G36TxeYev2qVuneeDhhZpWfKUUud7yvWXFhq4
+	vgpkrfSSpACkDAA5MnYYnvxalKXDl5r+qkwJt23lpp5FqwtinKBxETj/RcGhbemagyZz6R/KdGP
+	2TPRelWum3L7/2bdZj8eqwf4jyJo2xyA2OzmidF1MWj4m16/o/Lv12Rsh9IejbW9k76EyzegASb
+	a2hfvgClAOhv4kFndBbrIn9kkH8CartIKdUHNgMzk3ZvG1nl/wFNzdWnurA8OKSnNsiewsxPywW
+	YLvut9QxDi7JtOZouY3nNxeoTSRPjTsn3s5KQyyHQOyButJASKiR5sCIO6Xe5znbPQAAUQTo7EY
+	YTxWZbowi
+X-Received: by 2002:a05:600c:a14:b0:45f:29ed:2cff with SMTP id 5b1f17b1804b1-46fa9b116f1mr67840575e9.35.1760037558609;
+        Thu, 09 Oct 2025 12:19:18 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IEPGvbDunIELcWNQQhDPqw6NuTM3NX/huGnUquW01rlLkgxG+DlLb8fYLVnv4s+DldW5Q8i5A==
+X-Received: by 2002:a05:600c:a14:b0:45f:29ed:2cff with SMTP id 5b1f17b1804b1-46fa9b116f1mr67840375e9.35.1760037558196;
+        Thu, 09 Oct 2025 12:19:18 -0700 (PDT)
 Received: from [192.168.3.141] (tmo-083-189.customers.d1-online.com. [80.187.83.189])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-426ce5e0a03sm403646f8f.37.2025.10.09.12.16.35
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-426ce5e7e44sm407353f8f.46.2025.10.09.12.19.16
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 09 Oct 2025 12:16:39 -0700 (PDT)
-Message-ID: <abe539bb-375a-43ec-ba36-6d10a35dd85d@redhat.com>
-Date: Thu, 9 Oct 2025 21:16:34 +0200
+        Thu, 09 Oct 2025 12:19:17 -0700 (PDT)
+Message-ID: <6a2e341b-7aa2-4bd8-bce5-dfdbd08d92b6@redhat.com>
+Date: Thu, 9 Oct 2025 21:19:15 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -74,27 +74,22 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 0/8] Fix stale IOTLB entries for kernel address space
-To: Dave Hansen <dave.hansen@intel.com>, Lu Baolu <baolu.lu@linux.intel.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
- Jason Gunthorpe <jgg@nvidia.com>, Jann Horn <jannh@google.com>,
- Vasant Hegde <vasant.hegde@amd.com>, Thomas Gleixner <tglx@linutronix.de>,
- Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+Subject: Re: [PATCH v5 2/8] mm: Actually mark kernel page table pages
+To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Kevin Tian <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
+ Jann Horn <jannh@google.com>, Vasant Hegde <vasant.hegde@amd.com>,
+ Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>,
+ Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@intel.com>,
  Alistair Popple <apopple@nvidia.com>, Peter Zijlstra <peterz@infradead.org>,
  Uladzislau Rezki <urezki@gmail.com>,
  Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Andy Lutomirski <luto@kernel.org>, Yi Lai <yi1.lai@intel.com>,
- Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
- "Liam R. Howlett" <Liam.Howlett@oracle.com>,
- Andrew Morton <akpm@linux-foundation.org>, Vlastimil Babka <vbabka@suse.cz>,
- Mike Rapoport <rppt@kernel.org>, Michal Hocko <mhocko@kernel.org>,
- Matthew Wilcox <willy@infradead.org>
+ Andy Lutomirski <luto@kernel.org>, Yi Lai <yi1.lai@intel.com>
 Cc: iommu@lists.linux.dev, security@kernel.org, x86@kernel.org,
- linux-mm@kvack.org, linux-kernel@vger.kernel.org
+ linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+ Dave Hansen <dave.hansen@linux.intel.com>
 References: <20250919054007.472493-1-baolu.lu@linux.intel.com>
- <c04d4c9d-e868-4883-af92-26f142bc84be@intel.com>
- <d3cf3716-98ec-419b-90b7-b91b83599498@intel.com>
+ <20250919054007.472493-3-baolu.lu@linux.intel.com>
 From: David Hildenbrand <david@redhat.com>
 Autocrypt: addr=david@redhat.com; keydata=
  xsFNBFXLn5EBEAC+zYvAFJxCBY9Tr1xZgcESmxVNI/0ffzE/ZQOiHJl6mGkmA1R7/uUpiCjJ
@@ -140,62 +135,32 @@ Autocrypt: addr=david@redhat.com; keydata=
  3iyY2Nsd7JxfKu1PRhCGwXzRw5TlfEsoRI7V9A8isUCoqE2Dzh3FvYHVeX4Us+bRL/oqareJ
  CIFqgYMyvHj7Q06kTKmauOe4Nf0l0qEkIuIzfoLJ3qr5UyXc2hLtWyT9Ir+lYlX9efqh7mOY
  qIws/H2t
-In-Reply-To: <d3cf3716-98ec-419b-90b7-b91b83599498@intel.com>
+In-Reply-To: <20250919054007.472493-3-baolu.lu@linux.intel.com>
 X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: BKCZ3z9CWdI4wuSTw_KO51Gd3gS0Q_QhXvv19V1k1TY_1760037400
+X-Mimecast-MFC-PROC-ID: WY_Txa4JYGn_JmDFhtTG6oPT5nUdVhXvGGa77FB-sx0_1760037559
 X-Mimecast-Originator: redhat.com
 Content-Language: en-US
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 08.10.25 21:42, Dave Hansen wrote:
-> I wondered why no mm folks were commenting on this. linux-mm@ was cc'd,
-> but the _people_ on cc seem to have been almost all IOMMU and x86 folks.
-> so I added a few mm folks...
+On 19.09.25 07:40, Lu Baolu wrote:
+> From: Dave Hansen <dave.hansen@linux.intel.com>
+> 
+> Now that the API is in place, mark kernel page table pages just
+> after they are allocated. Unmark them just before they are freed.
+> 
+> Note: Unconditionally clearing the 'kernel' marking (via
+> ptdesc_clear_kernel()) would be functionally identical to what
+> is here. But having the if() makes it logically clear that this
+> function can be used for kernel and non-kernel page tables.
+> 
+> Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> ---
 
-Thanks. Lately I find myself scanning linux-mm only randomly. So if it's 
-not in my inbox, likely I won't realize easily that there is something 
-that needs our attention.
-
-Will take a look.
-
-> 
-> On 9/25/25 13:24, Dave Hansen wrote:
->> On 9/18/25 22:39, Lu Baolu wrote:
->>> This solution introduces a deferred freeing mechanism for kernel page
->>> table pages, which provides a safe window to notify the IOMMU to
->>> invalidate its caches before the page is reused.
->>
->> I think all the activity has died down and I everyone seems happy enough
->> with how this looks. Right?
->>
->> So is this something we should prod Andrew to take through the mm tree,
->> or is it x86-specific enough it should go through tip?
-> 
-> Hi Folks! We've got a bug fix here that has impact on x86, mm, and IOMMU
-> code. I know I've talked with a few of you about this along the way, but
-> it's really thin on mm reviews, probably because mm folks haven't been
-> cc'd. Any eyeballs on it would be appreciated!
-> 
-> It seems like it should _probably_ go through the mm tree, although I'm
-> happy to send it through tip if folks disagree.
-> 
-> Diffstat for reference:
-> 
->   arch/x86/Kconfig              |  1 +
->   arch/x86/mm/init_64.c         |  2 +-
->   arch/x86/mm/pat/set_memory.c  |  2 +-
->   arch/x86/mm/pgtable.c         | 12 ++++-----
->   drivers/iommu/iommu-sva.c     | 29 +++++++++++++++++++++-
->   include/asm-generic/pgalloc.h | 18 ++++++++++++++
->   include/linux/iommu.h         |  4 +++
->   include/linux/mm.h            | 24 +++++++++++++++---
->   include/linux/page-flags.h    | 46 +++++++++++++++++++++++++++++++++++
->   mm/Kconfig                    |  3 +++
->   mm/pgtable-generic.c          | 39 +++++++++++++++++++++++++++++
->   11 files changed, 168 insertions(+), 12 deletions(-)
-> 
-
+Acked-by: David Hildenbrand <david@redhat.com>
 
 -- 
 Cheers
