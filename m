@@ -1,25 +1,39 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CBBF3155C88
-	for <iommu@lists.linux.dev>; Thu,  9 Oct 2025 12:16:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CE96325A659;
+	Thu,  9 Oct 2025 12:20:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=93.17.235.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760012182; cv=none; b=JWWRBROHwkFiJekZawb+v5LyR+GfZXFCqLjrXszlISo+rDAko7Zq4ijH518Y6BcuYM+wvGW4TAOb9b/5LB6Jfo7bHVI4M2YoQ7uZqthVae3/DhLjOohqT8zkzs4G2Hl5hT8OdUSVbIzxZIoQwj64PrT6iEJRnqtmN6Z1L8rqa70=
+	t=1760012436; cv=none; b=uWuojevCZJ/nX4WkZqBhcB+sxk7egahBBg86luJxplkeSYGN+x7uw6ziYtZ2Ks7+ekOTQDFBqx7Q/kL1o4tbMUMx9z+/VixWF8rFS0asNXzsP1fsu/ZzBuz2LUrk23BIyeswPAb06zcLNP5BolEoxYp36Rh873asa8Bu7er4hsA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760012182; c=relaxed/simple;
-	bh=mCKEyRUdNIwoQi693Be3g9WMtS9hamqKlb0qQo8BiVE=;
+	s=arc-20240116; t=1760012436; c=relaxed/simple;
+	bh=zDonaJpRAiUsN7ef58lzcnUFZxmJYuyagkoOMx7FG34=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=EOFJ4/zk/fWkKdYnyYDgE43d8xtNDhjfUj/U+pIeBg1jfYa9/DTiNHLjTavYuQ/sOhhkitiABmkYXVTPX146+rFdfrQBzbALSF4MviBeLU1VaNsPmM6iAUZ7fwkHiwynuOUVkiZq3Ny/llCekvJhajGi+YT9E1d8S3fVBojSj/A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0CB2D176A;
-	Thu,  9 Oct 2025 05:16:12 -0700 (PDT)
-Received: from [10.57.3.102] (unknown [10.57.3.102])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6A78E3F66E;
-	Thu,  9 Oct 2025 05:16:13 -0700 (PDT)
-Message-ID: <496c2d88-2558-42fe-8434-81c000955a84@arm.com>
-Date: Thu, 9 Oct 2025 13:16:10 +0100
+	 In-Reply-To:Content-Type; b=kyg2nS0F+MPDCwgBDXPUxHc45sTcMSSPjGX7QrmLe6ASc6GfQV2yzwg3iDHOUNjdm4i7Pa4QAHA/p8HJq7wJWOzT2w9n7CCQky6KK56L2pB471tvZh7x/5LM1KJJVJ0q7tyaaMpyse/DjfMwmJJhZlgfjbC2+7E7GDFf3q1ViuM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=csgroup.eu; spf=pass smtp.mailfrom=csgroup.eu; arc=none smtp.client-ip=93.17.235.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=csgroup.eu
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=csgroup.eu
+Received: from localhost (mailhub4.si.c-s.fr [172.26.127.67])
+	by localhost (Postfix) with ESMTP id 4cj7tc3BBqz9sSy;
+	Thu,  9 Oct 2025 14:08:08 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+	by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id t-GI2jPxTJia; Thu,  9 Oct 2025 14:08:08 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+	by pegase2.c-s.fr (Postfix) with ESMTP id 4cj7tc1MWCz9sSv;
+	Thu,  9 Oct 2025 14:08:08 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+	by messagerie.si.c-s.fr (Postfix) with ESMTP id 08F7B8B76C;
+	Thu,  9 Oct 2025 14:08:08 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+	by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+	with ESMTP id dX5DSkuE_w6O; Thu,  9 Oct 2025 14:08:07 +0200 (CEST)
+Received: from [192.168.235.99] (unknown [192.168.235.99])
+	by messagerie.si.c-s.fr (Postfix) with ESMTP id BC52E8B767;
+	Thu,  9 Oct 2025 14:08:05 +0200 (CEST)
+Message-ID: <4632e721-0ac8-4d72-a8ed-e6c928eee94d@csgroup.eu>
+Date: Thu, 9 Oct 2025 14:08:05 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -27,98 +41,279 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC PATCH 0/3] Introduce iommu-map-masked for platform devices
-To: Krzysztof Kozlowski <krzk@kernel.org>, Rob Herring <robh@kernel.org>,
- Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
-Cc: joro@8bytes.org, will@kernel.org, saravanak@google.com,
- conor+dt@kernel.org, mchehab@kernel.org, bod@kernel.org, krzk+dt@kernel.org,
- abhinav.kumar@linux.dev, vikash.garodia@oss.qualcomm.com,
- dikshita.agarwal@oss.qualcomm.com, linux-media@vger.kernel.org,
- linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-References: <20250928171718.436440-1-charan.kalla@oss.qualcomm.com>
- <CAL_JsqK9waZK=i+ov0jV-PonWSfddwHvE94Q+pks4zAEtKc+yg@mail.gmail.com>
- <1d36569c-55b9-4390-87d1-fd0c2f837014@kernel.org>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <1d36569c-55b9-4390-87d1-fd0c2f837014@kernel.org>
+Subject: Re: (bisected) [PATCH v2 08/37] mm/hugetlb: check for unreasonable
+ folio sizes when registering hstate
+To: David Hildenbrand <david@redhat.com>, linux-kernel@vger.kernel.org
+Cc: Zi Yan <ziy@nvidia.com>, Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
+ "Liam R. Howlett" <Liam.Howlett@oracle.com>,
+ Alexander Potapenko <glider@google.com>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ Brendan Jackman <jackmanb@google.com>, Christoph Lameter <cl@gentwo.org>,
+ Dennis Zhou <dennis@kernel.org>, Dmitry Vyukov <dvyukov@google.com>,
+ dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+ iommu@lists.linux.dev, io-uring@vger.kernel.org,
+ Jason Gunthorpe <jgg@nvidia.com>, Jens Axboe <axboe@kernel.dk>,
+ Johannes Weiner <hannes@cmpxchg.org>, John Hubbard <jhubbard@nvidia.com>,
+ kasan-dev@googlegroups.com, kvm@vger.kernel.org,
+ Linus Torvalds <torvalds@linux-foundation.org>, linux-arm-kernel@axis.com,
+ linux-arm-kernel@lists.infradead.org, linux-crypto@vger.kernel.org,
+ linux-ide@vger.kernel.org, linux-kselftest@vger.kernel.org,
+ linux-mips@vger.kernel.org, linux-mmc@vger.kernel.org, linux-mm@kvack.org,
+ linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
+ linux-scsi@vger.kernel.org, Marco Elver <elver@google.com>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, Michal Hocko <mhocko@suse.com>,
+ Mike Rapoport <rppt@kernel.org>, Muchun Song <muchun.song@linux.dev>,
+ netdev@vger.kernel.org, Oscar Salvador <osalvador@suse.de>,
+ Peter Xu <peterx@redhat.com>, Robin Murphy <robin.murphy@arm.com>,
+ Suren Baghdasaryan <surenb@google.com>, Tejun Heo <tj@kernel.org>,
+ virtualization@lists.linux.dev, Vlastimil Babka <vbabka@suse.cz>,
+ wireguard@lists.zx2c4.com, x86@kernel.org,
+ "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>
+References: <20250901150359.867252-1-david@redhat.com>
+ <20250901150359.867252-9-david@redhat.com>
+ <3e043453-3f27-48ad-b987-cc39f523060a@csgroup.eu>
+ <d3fc12d4-0b59-4b1f-bb5c-13189a01e13d@redhat.com>
+ <faf62f20-8844-42a0-a7a7-846d8ead0622@csgroup.eu>
+ <9361c75a-ab37-4d7f-8680-9833430d93d4@redhat.com>
+ <03671aa8-4276-4707-9c75-83c96968cbb2@csgroup.eu>
+ <1db15a30-72d6-4045-8aa1-68bd8411b0ba@redhat.com>
+ <0c730c52-97ee-43ea-9697-ac11d2880ab7@csgroup.eu>
+ <543e9440-8ee0-4d9e-9b05-0107032d665b@redhat.com>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
+Content-Language: fr-FR
+In-Reply-To: <543e9440-8ee0-4d9e-9b05-0107032d665b@redhat.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-On 2025-10-09 1:26 am, Krzysztof Kozlowski wrote:
-> On 29/09/2025 05:23, Rob Herring wrote:
->> On Sun, Sep 28, 2025 at 12:17 PM Charan Teja Kalla
->> <charan.kalla@oss.qualcomm.com> wrote:
->>>
->>> This series introduces a new iommu property called iommu-map-masked(may
->>> be there is a better name), which is used to represent the IOMMU
->>> specifier pairs for each function of a __multi-functional platform
->>> device__, where each function can emit unique master id(s) that can be
->>> associated with individual translation context.
->>>
->>> Currently, the iommu configuration - at least for arm architecture-
->>> requires all the functions of a platform device will be represented
->>> under single dt node thus endup in using only a single translation
->>> context.
->>>
->>> A simple solution to associate individual translation context for each
->>> function of a device can be through creating per function child nodes in
->>> the device tree, but dt is only to just represent the soc layout to
->>> linux kernel.
->>>
->>> Supporting such cases requires a new iommu property called,
->>> iommu-map-masked(taking cue from iommu-map for pci devices) and syntax
->>> is:
->>>     iommu-map-masked = <FUNCTION_ID1 &iommu ID1 MASK1>,
->>>                        <FUNCTION_ID2 &iommu ID2 MASK2>;
->>> NOTE: As an RFC, it is considered that this property always expects 4
->>> cells.
->>>
->>> During the probe phase of the driver for a multi-functional device
->>> behind an IOMMU, a child device is instantiated for each FUNCTION_ID.
->>> The call to of_dma_configure_id() on each child sets up the IOMMU
->>> configuration, ensuring that each function of the device is associated
->>> with a distinct translation context.
->>>
->>> This property can also be used in association with 'iommus=' when dt
->>> bindings requires the presence of 'iommus=', example[2]. For these
->>> cases, representation will be(on arm64):
->>>     iommus = <&iommu sid mask>; //for default function.
->>>     iommu-map-masked = <FUNCTION_ID &iommu sid mask>;//additional
->>> function.
+
+
+Le 09/10/2025 à 12:27, David Hildenbrand a écrit :
+> On 09.10.25 12:01, Christophe Leroy wrote:
 >>
->> Where does the FUNCTION_ID value come from?
 >>
->> Why can't you just have multiple "iommus" entries where the index
->> defines the default and any FUNCTION_ID entries? What's in each index
->> is specific to the device.
+>> Le 09/10/2025 à 11:20, David Hildenbrand a écrit :
+>>> On 09.10.25 11:16, Christophe Leroy wrote:
+>>>>
+>>>>
+>>>> Le 09/10/2025 à 10:14, David Hildenbrand a écrit :
+>>>>> On 09.10.25 10:04, Christophe Leroy wrote:
+>>>>>>
+>>>>>>
+>>>>>> Le 09/10/2025 à 09:22, David Hildenbrand a écrit :
+>>>>>>> On 09.10.25 09:14, Christophe Leroy wrote:
+>>>>>>>> Hi David,
+>>>>>>>>
+>>>>>>>> Le 01/09/2025 à 17:03, David Hildenbrand a écrit :
+>>>>>>>>> diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+>>>>>>>>> index 1e777cc51ad04..d3542e92a712e 100644
+>>>>>>>>> --- a/mm/hugetlb.c
+>>>>>>>>> +++ b/mm/hugetlb.c
+>>>>>>>>> @@ -4657,6 +4657,7 @@ static int __init hugetlb_init(void)
+>>>>>>>>>           BUILD_BUG_ON(sizeof_field(struct page, private) *
+>>>>>>>>> BITS_PER_BYTE <
+>>>>>>>>>                   __NR_HPAGEFLAGS);
+>>>>>>>>> +    BUILD_BUG_ON_INVALID(HUGETLB_PAGE_ORDER > MAX_FOLIO_ORDER);
+>>>>>>>>>           if (!hugepages_supported()) {
+>>>>>>>>>               if (hugetlb_max_hstate ||
+>>>>>>>>> default_hstate_max_huge_pages)
+>>>>>>>>> @@ -4740,6 +4741,7 @@ void __init hugetlb_add_hstate(unsigned int
+>>>>>>>>> order)
+>>>>>>>>>           }
+>>>>>>>>>           BUG_ON(hugetlb_max_hstate >= HUGE_MAX_HSTATE);
+>>>>>>>>>           BUG_ON(order < order_base_2(__NR_USED_SUBPAGE));
+>>>>>>>>> +    WARN_ON(order > MAX_FOLIO_ORDER);
+>>>>>>>>>           h = &hstates[hugetlb_max_hstate++];
+>>>>>>>>>           __mutex_init(&h->resize_lock, "resize mutex", &h-
+>>>>>>>>>> resize_key);
+>>>>>>>>>           h->order = order;
+>>>>>>>
+>>>>>>> We end up registering hugetlb folios that are bigger than
+>>>>>>> MAX_FOLIO_ORDER. So we have to figure out how a config can trigger
+>>>>>>> that
+>>>>>>> (and if we have to support that).
+>>>>>>>
+>>>>>>
+>>>>>> MAX_FOLIO_ORDER is defined as:
+>>>>>>
+>>>>>> #ifdef CONFIG_ARCH_HAS_GIGANTIC_PAGE
+>>>>>> #define MAX_FOLIO_ORDER        PUD_ORDER
+>>>>>> #else
+>>>>>> #define MAX_FOLIO_ORDER        MAX_PAGE_ORDER
+>>>>>> #endif
+>>>>>>
+>>>>>> MAX_PAGE_ORDER is the limit for dynamic creation of hugepages via
+>>>>>> /sys/kernel/mm/hugepages/ but bigger pages can be created at boottime
+>>>>>> with kernel boot parameters without CONFIG_ARCH_HAS_GIGANTIC_PAGE:
+>>>>>>
+>>>>>>       hugepagesz=64m hugepages=1 hugepagesz=256m hugepages=1
+>>>>>>
+>>>>>> Gives:
+>>>>>>
+>>>>>> HugeTLB: registered 1.00 GiB page size, pre-allocated 0 pages
+>>>>>> HugeTLB: 0 KiB vmemmap can be freed for a 1.00 GiB page
+>>>>>> HugeTLB: registered 64.0 MiB page size, pre-allocated 1 pages
+>>>>>> HugeTLB: 0 KiB vmemmap can be freed for a 64.0 MiB page
+>>>>>> HugeTLB: registered 256 MiB page size, pre-allocated 1 pages
+>>>>>> HugeTLB: 0 KiB vmemmap can be freed for a 256 MiB page
+>>>>>> HugeTLB: registered 4.00 MiB page size, pre-allocated 0 pages
+>>>>>> HugeTLB: 0 KiB vmemmap can be freed for a 4.00 MiB page
+>>>>>> HugeTLB: registered 16.0 MiB page size, pre-allocated 0 pages
+>>>>>> HugeTLB: 0 KiB vmemmap can be freed for a 16.0 MiB page
+>>>>>
+>>>>> I think it's a violation of CONFIG_ARCH_HAS_GIGANTIC_PAGE. The 
+>>>>> existing
+>>>>> folio_dump() code would not handle it correctly as well.
+>>>>
+>>>> I'm trying to dig into history and when looking at commit 4eb0716e868e
+>>>> ("hugetlb: allow to free gigantic pages regardless of the
+>>>> configuration") I understand that CONFIG_ARCH_HAS_GIGANTIC_PAGE is
+>>>> needed to be able to allocate gigantic pages at runtime. It is not
+>>>> needed to reserve gigantic pages at boottime.
+>>>>
+>>>> What am I missing ?
+>>>
+>>> That CONFIG_ARCH_HAS_GIGANTIC_PAGE has nothing runtime-specific in its
+>>> name.
+>>
+>> In its name for sure, but the commit I mention says:
+>>
+>>       On systems without CONTIG_ALLOC activated but that support gigantic
+>> pages,
+>>       boottime reserved gigantic pages can not be freed at all.  This 
+>> patch
+>>       simply enables the possibility to hand back those pages to memory
+>>       allocator.
+> 
+> Right, I think it was a historical artifact.
+> 
+>>
+>> And one of the hunks is:
+>>
+>> diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+>> index 7f7fbd8bd9d5b..7a1aa53d188d3 100644
+>> --- a/arch/arm64/Kconfig
+>> +++ b/arch/arm64/Kconfig
+>> @@ -19,7 +19,7 @@ config ARM64
+>>           select ARCH_HAS_FAST_MULTIPLIER
+>>           select ARCH_HAS_FORTIFY_SOURCE
+>>           select ARCH_HAS_GCOV_PROFILE_ALL
+>> -       select ARCH_HAS_GIGANTIC_PAGE if CONTIG_ALLOC
+>> +       select ARCH_HAS_GIGANTIC_PAGE
+>>           select ARCH_HAS_KCOV
+>>           select ARCH_HAS_KEEPINITRD
+>>           select ARCH_HAS_MEMBARRIER_SYNC_CORE
+>>
+>> So I understand from the commit message that it was possible at that
+>> time to have gigantic pages without ARCH_HAS_GIGANTIC_PAGE as long as
+>> you didn't have to be able to free them during runtime.
+> 
+> Yes, I agree.
+> 
+>>
+>>>
+>>> Can't we just select CONFIG_ARCH_HAS_GIGANTIC_PAGE for the relevant
+>>> hugetlb config that allows for *gigantic pages*.
+>>>
+>>
+>> We probably can, but I'd really like to understand history and how we
+>> ended up in the situation we are now.
+>> Because blind fixes often lead to more problems.
+> 
+> Yes, let's figure out how to to it cleanly.
+> 
+>>
+>> If I follow things correctly I see a helper gigantic_page_supported()
+>> added by commit 944d9fec8d7a ("hugetlb: add support for gigantic page
+>> allocation at runtime").
+>>
+>> And then commit 461a7184320a ("mm/hugetlb: introduce
+>> ARCH_HAS_GIGANTIC_PAGE") is added to wrap gigantic_page_supported()
+>>
+>> Then commit 4eb0716e868e ("hugetlb: allow to free gigantic pages
+>> regardless of the configuration") changed gigantic_page_supported() to
+>> gigantic_page_runtime_supported()
+>>
+>> So where are we now ?
+> 
+> In
+> 
+> commit fae7d834c43ccdb9fcecaf4d0f33145d884b3e5c
+> Author: Matthew Wilcox (Oracle) <willy@infradead.org>
+> Date:   Tue Feb 27 19:23:31 2024 +0000
+> 
+>      mm: add __dump_folio()
 > 
 > 
-> We discussed the problem earlier and that is what I asked them to do.
-> Apparently I was just ignored so now two maintainers say the same. We
-> can get ignored still and the third maintainer will have to tell this.
+> We started assuming that a folio in the system (boottime, dynamic, 
+> whatever)
+> has a maximum of MAX_FOLIO_NR_PAGES.
+> 
+> Any other interpretation doesn't make any sense for MAX_FOLIO_NR_PAGES.
+> 
+> 
+> So we have two questions:
+> 
+> 1) How to teach MAX_FOLIO_NR_PAGES that hugetlb supports gigantic pages
+> 
+> 2) How do we handle CONFIG_ARCH_HAS_GIGANTIC_PAGE
+> 
+> 
+> We have the following options
+> 
+> (A) Rename existing CONFIG_ARCH_HAS_GIGANTIC_PAGE to something else that is
+> clearer and add a new CONFIG_ARCH_HAS_GIGANTIC_PAGE.
+> 
+> (B) Rename existing CONFIG_ARCH_HAS_GIGANTIC_PAGE -> to something else 
+> that is
+> clearer and derive somehow else that hugetlb in that config supports 
+> gigantic pages.
+> 
+> (c) Just use CONFIG_ARCH_HAS_GIGANTIC_PAGE if hugetlb on an architecture
+> supports gigantic pages.
+> 
+> 
+> I don't quite see why an architecture should be able to opt in into 
+> dynamically
+> allocating+freeing gigantic pages. That's just CONTIG_ALLOC magic and 
+> not some
+> arch-specific thing IIRC.
+> 
+> 
+> Note that in mm/hugetlb.c it is
+> 
+>      #ifdef CONFIG_ARCH_HAS_GIGANTIC_PAGE
+>      #ifdef CONFIG_CONTIG_ALLOC
+> 
+> Meaning that at least the allocation side is guarded by CONTIG_ALLOC.
 
-The reason why that isn't really viable is that the "iommus" property 
-needs to be consumed directly by the relevant IOMMU driver(s) without a 
-dependency on any driver for the client device represented by the node 
-itself. For security/isolation purposes the IOMMU has to know about all 
-potential DMA sources and be able to be configured for them *before* 
-anyone else gets a chance to start initiating DMA from them. If the DT 
-consumer is, say, a bare-metal hypervisor, it may have no understanding 
-whatsoever of what most of the client devices are nor how they work.
+Yes but not the freeing since commit 4eb0716e868e ("hugetlb: allow to 
+free gigantic pages regardless of the configuration")
 
-This is part of the reason why we went for a separate "iommu-map" 
-property for buses, so that an IOMMU consumer *can* easily tell when 
-multiple specifiers do not represent an indivisible set tied to the 
-given device, and thus it can expect help from a bus driver to subdivide 
-them later (but in the meantime can still safely isolate the entire bus 
-based on the output of the map without having to understand the inputs.)
+> 
+> So I think (C) is just the right thing to do.
+> 
+> diff --git a/fs/Kconfig b/fs/Kconfig
+> index 0bfdaecaa8775..12c11eb9279d3 100644
+> --- a/fs/Kconfig
+> +++ b/fs/Kconfig
+> @@ -283,6 +283,8 @@ config HUGETLB_PMD_PAGE_TABLE_SHARING
+>          def_bool HUGETLB_PAGE
+>          depends on ARCH_WANT_HUGE_PMD_SHARE && SPLIT_PMD_PTLOCKS
+> 
+> +# An architecture must select this option if there is any mechanism 
+> (esp. hugetlb)
+> +# could obtain gigantic folios.
+>   config ARCH_HAS_GIGANTIC_PAGE
+>          bool
+> 
+> 
 
-Now, I suppose in some cases it might be technically possible for a 
-client device driver to collude with an IOMMU driver to divide a 
-monolithic DT device into logical functions after the fact, but for 
-Linux I don't see an acceptable way of doing that without some major 
-changes to the driver model abstraction and IOMMU API...
+I gave it a try. That's not enough, it fixes the problem for 64 Mbytes 
+pages and 256 Mbytes pages, but not for 1 Gbytes pages.
 
-Thanks,
-Robin.
+Max folio is defined by PUD_ORDER, but PUD_SIZE is 256 Mbytes so we need 
+to make MAX_FOLIO larger. Do we change it to P4D_ORDER or is it too much 
+? P4D_SIZE is 128 Gbytes
+
+Christophe
+
