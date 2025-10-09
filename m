@@ -1,245 +1,204 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C00DA23717F
-	for <iommu@lists.linux.dev>; Thu,  9 Oct 2025 18:25:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 953851E0E1F
+	for <iommu@lists.linux.dev>; Thu,  9 Oct 2025 19:16:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760034309; cv=none; b=E7uTNtQNXIfcLvt6pD8TTeWrYFvXpRyw/atFn01xGL8AquLgemWYLSBKh5jyYLYT1mdHcJsazIXu44zd5n1HUjclwE1YYHmppHC/9Lox5iJJ63Jj5rIiURJjnmg/GcoDP11R+u1IF0SfYBBWMZxsPVfr7mlt3jbxqveignUZ8rI=
+	t=1760037405; cv=none; b=AfbUH5r++JLbH+pHqjblhNW3OQ1nkck7chJCVWC2TR+RiOFdjFJAkNMcAoyGqRF6otVidPeinjyGQ7Vmk5Ces9JY9TL3fX3jaYkzX2yW5mj7uCEVCLPDCckc/DTkoLAGdVFQ5BBCJIi7ysDWpPtOv/Urtz8l2ZtOHN6syHrfbDw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760034309; c=relaxed/simple;
-	bh=jp6n23+Qon0Y2Rd5lGPNFx2F8NwRI69m1if3zfSKUiw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=tqt6QXncTv9/eH0rWQuJFsnXkGDm6Btr03E7Gp6UVskH9jV1QWGrmoRoo85mTWTXHxQ58E911aLUlPFwHqa+n5kpwsG0EoDJqAxJt98kia7W4FGHcb6dTMaJMfJKhjz0Nbw0qfE2XTVWCEoUt7GEO00v71f91xBwQ4lLS6Y6pSk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=cxQpPko1; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1760037405; c=relaxed/simple;
+	bh=O8Zv30WGnZYC9mVrYMZ4C/OoFisrJ2rjhARUBD8ZGbE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=sJ0yE4U1GKRpJMxUzCkeROe4FczcyRGxFA8WaLaC0xQ9ZdI4jJd3v0ZCzYAHtg8L9U8Ow+3umyxxgU2tgGTlQhWta91HmGdGQRGec3KVp6P6/eqCNUJFF6DS/jC9UwrnsMlvKHfopAx6avpLR88Q/bLOYGPBdrPKDeuu/RVkmjg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=euR6vlxf; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="cxQpPko1"
-Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 599EuB9C022311
-	for <iommu@lists.linux.dev>; Thu, 9 Oct 2025 18:25:06 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=5WmouaigJPMDcXEgyz/YOkL3
-	CsweO/cHwliU0xFmscw=; b=cxQpPko1m4R5ETiRSRsON0iOUsd7pvVZsXzuf6/A
-	ZukqQ/Td1GO0OSs5x1uio3fRynGzgdqtWe1Crj9MtQW4j/x7ikTSSvAwuQnGGLjY
-	dvdLpT1z7iG6E7l5Gi67PAopxeNTbkrOAsuVL0gLFxa9AemQwpe7LPnUbgUiD2KV
-	myW3OiSoz8yrN+klOGmBGgBPRVCtu9ImP3a42lJirldq4RWexxzuKGnZ4CxztwBx
-	649UrhsprGXTDf/g2a5wnoo29E8i02EQDftZhUmgrkeRQHzw1Uj6iAHdAKgP0Br5
-	yTEQ4YniMtc6q49wotfArH3nJAl/Tnca34BTDhom/g3ddw==
-Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com [209.85.160.199])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 49nv4skw5p-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Thu, 09 Oct 2025 18:25:06 +0000 (GMT)
-Received: by mail-qt1-f199.google.com with SMTP id d75a77b69052e-4df80d0d4aaso50078571cf.2
-        for <iommu@lists.linux.dev>; Thu, 09 Oct 2025 11:25:06 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="euR6vlxf"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1760037402;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=/jjq7BLRoYI2nQdmAcFZDfdFEssHTj+qWciljr1C06A=;
+	b=euR6vlxfrhdN+hZhhlZdizODLA6MMYzeMfbGhYDK40GGF4+fBrsFcs5einAhHOCJclxnrn
+	eqIV7OAs+GuYGDEDaVl/TybYXUuFP997t8ptm62aj3fM9kWqXsJ1u7aYVmis2apITV4DiX
+	+Ida4a2/CppmOl//adKnmK6SMbejYy4=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-643-jRKNfouhNI6WjA4V4Yagjw-1; Thu, 09 Oct 2025 15:16:41 -0400
+X-MC-Unique: jRKNfouhNI6WjA4V4Yagjw-1
+X-Mimecast-MFC-AGG-ID: jRKNfouhNI6WjA4V4Yagjw_1760037400
+Received: by mail-wm1-f70.google.com with SMTP id 5b1f17b1804b1-46e407c600eso8422695e9.3
+        for <iommu@lists.linux.dev>; Thu, 09 Oct 2025 12:16:41 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1760034306; x=1760639106;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=5WmouaigJPMDcXEgyz/YOkL3CsweO/cHwliU0xFmscw=;
-        b=Up+OkvepKs+4o3GEq7jBsjjaLQ/541t2iq5Lz8CxJ5gmLMgIdjLKYsk2R9k8P16KgO
-         23WcOr+hjbCm7+SEg4vZJ9TXUv6AzqVyydFvfDY28GDdZeq38rLRDJtqpFRfsTtXE+Xo
-         9CCctZtWF+Mo+cAHFIxFQK61GjoHeVFV36Pu6GCmO3kJz+FdhG4BXhx4vAQ0HlmBil08
-         2sQVQkPhxh55rxA9xsLu79Hfs3w9duBP0691YrK5bCS1s9RZ1xrm2RXDfEdfEsJduYuX
-         HWQDaZQo2X1rVl1yY9Hx92Sg7mmCZPwXlPUHzXIgZilMYmCXZuhZUwmZ061cqVrCoVua
-         2sjA==
-X-Forwarded-Encrypted: i=1; AJvYcCUw1ue122vg52VL1GlrinejSYApb8btaj0luWOAd70SFwavg5z8HhWKFzHQTYC4ozv1NZXnVg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yy48xd8qJOyo4fy8fKr+iVVstScrOjUi4C+uqmgrPbjP9IbVqWz
-	VPiifI1gJ2ieK3DgGe4ew1liomX0L8G+YxCVt/xioWti9XscIpC1xDgrg19I0jFuTxD/ytUKKJL
-	eO3JqOYvyuEwc87N2eANQ8MaxPCguq7aY6QWZmfdQaTFs5MEKSjtbZfKU+w==
-X-Gm-Gg: ASbGnctLCmongaSXATj1rENKdHHhDGmb8vpGkkedxcIgdrI73TMVFRFMHDHHFz2W+Mu
-	smnmcurH1V8lhM+g4V/33Sd4DbZLkXIQ06S9yVYTIOVb/eMOd8V+Ax0I6jYrvrhpXs9zOCTxWdi
-	BOGd9w77v1Z78pxuo3DN/YhsFxj61PNJF6wYeBA+/T5bTZxvbbWqdX7yv36b6BD8Uy2tPOk3hV2
-	E/LJvZEvGcys3UBk6GODOB49VkI2rlgzPCW1BlI7NNpp9CJSELFJj0/xokDHSl+dH88d38VsHt4
-	G6Fb7BcNFKNxaP83oDhVkn+MFT9eiqSr1egtgI+zMfbSg1Te3p8kH5ucuaCBJPXEYSZZn5g+Xml
-	l0iNFiFKUNEoA3O8ScoysK9A3GdMAYm7MS2XlA3nGWbj9cNhhvo9LWt/3fw==
-X-Received: by 2002:a05:622a:5c8c:b0:4da:3218:e8d7 with SMTP id d75a77b69052e-4e6eacc1f4fmr134279221cf.4.1760034305395;
-        Thu, 09 Oct 2025 11:25:05 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IEXYd5icY3uU+XNXR6r+B65WuUw2SxQ/2Nhq6GlN0Pnod95XOYX21DP+RvUBPb3V4ep5r8nMQ==
-X-Received: by 2002:a05:622a:5c8c:b0:4da:3218:e8d7 with SMTP id d75a77b69052e-4e6eacc1f4fmr134278401cf.4.1760034304710;
-        Thu, 09 Oct 2025 11:25:04 -0700 (PDT)
-Received: from umbar.lan (2001-14ba-a0c3-3a00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a0c3:3a00:264b:feff:fe8b:be8a])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5908857792dsm63841e87.105.2025.10.09.11.25.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Oct 2025 11:25:03 -0700 (PDT)
-Date: Thu, 9 Oct 2025 21:25:01 +0300
-From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>, joro@8bytes.org,
-        will@kernel.org, saravanak@google.com, conor+dt@kernel.org,
-        robh@kernel.org, mchehab@kernel.org, bod@kernel.org,
-        krzk+dt@kernel.org, abhinav.kumar@linux.dev,
-        vikash.garodia@oss.qualcomm.com, dikshita.agarwal@oss.qualcomm.com,
-        Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
-        bjorn.andersson@oss.qualcomm.com, linux-media@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-Subject: Re: [RFC PATCH 0/3] Introduce iommu-map-masked for platform devices
-Message-ID: <fhb4woejzh3r6v5dxvdiopnsbuwstucfuuzbiymxg4wrxrjc7t@dt3z3utq6lwd>
-References: <20250928171718.436440-1-charan.kalla@oss.qualcomm.com>
- <aec0f40a-8346-4194-8b18-1022fe3366bb@arm.com>
- <0d0560cc-9757-4c7b-8de4-170148d99481@oss.qualcomm.com>
- <ead7cf8b-fbc4-4242-a9da-b313dded1abc@arm.com>
- <nzqte4glwtpjs5bhkxz43yhdufelxvqvzmg5tepudxwetimir3@bvlw5csjizsh>
- <9d3eeb9f-b8ea-48e5-a1d9-0865f63ef991@arm.com>
+        d=1e100.net; s=20230601; t=1760037400; x=1760642200;
+        h=content-transfer-encoding:in-reply-to:autocrypt:content-language
+         :from:references:cc:to:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=/jjq7BLRoYI2nQdmAcFZDfdFEssHTj+qWciljr1C06A=;
+        b=ChPt2Y1WcV28YIS65f5jqgcdp6Z+N5JON7krnfXydH6FFWOEV/CkZeVa+ur0R9pSHo
+         LyY0xRmrBpV5PqPjtT/Qnukt+9j4N7L+XuIIgMyBGt5dfBW/NjD8LpmxnWsUYSiN9xGu
+         HjaihGXGwbHpMaoCZBK+iP2jhMPivPtuZkw0ykBKz9bAMKqYXZGbzfZA95WWo2Fzi/8y
+         69CFMEJ0bLbt83wlXa81utzt4N35AY7DM5CnCqA9sETTNHh7IcBGLwJQYAMBgeszpmHa
+         Ydhm/YfMXbhKeoG7bUSIzAXZLzTR6gOVb6HmGrSnsD/QRaOwo10x50hrBXY+vA75jbPZ
+         CJMw==
+X-Gm-Message-State: AOJu0YwVk0pctZDQq404zVnnBtYaPcTRTPndaMNdQfA0g5CimG+HanuE
+	XeLN2kS/uaJAf17AKguN/g4iANkc3RjcN3F4TcUKH4Eay1Bu+JP9aCOnJlvUs/fCksJ873k01z6
+	uStX4MD3qF5WF6jgVqwz9uUS1zdn0B/okJykp5PvY/LMbsspI9537mE2S
+X-Gm-Gg: ASbGncuaulsu2gixao1tS4CnH4jvHp1vpnAjv7un9sl3TFwq0B9ueEtOhN5vAowIFk2
+	Y4w+EKbziZqOcbfNGvOsCL/ONl4ZpZHbkR2mgSbaSxoksTQ5uw2NLiEx80bkEUxK3QX36lnm+YV
+	tkCy17dCd7x+So6zRnkwitkGxTdZ+jnQNF3lfanBLVCF+nvyNpxG2fD/HNZtjF0FAsgP4Gs6WPz
+	46d2ySfvODWx86/Hwh5DZfkeN0eQf6E0K8MS3VtaY7x7qZghrXx9KP+7CUyjAavp4gSew+snwAi
+	AY0kBX/9mcXzmsNaEi1fyOZVkVTBHP6bVKbAclN0BegRqcMYjZIteaQh9vlD+cnYUlLgPnnU12y
+	RIWipTbZg
+X-Received: by 2002:a05:600c:3e87:b0:46e:3d41:6001 with SMTP id 5b1f17b1804b1-46fa9b17df1mr59434435e9.34.1760037400241;
+        Thu, 09 Oct 2025 12:16:40 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IHxEViiRN8Lw2h0KvemsqiiXPHU95kQiydslrrD2f9G9rGLUFyRDI7eBLoEqJHlLxcoXRSxgA==
+X-Received: by 2002:a05:600c:3e87:b0:46e:3d41:6001 with SMTP id 5b1f17b1804b1-46fa9b17df1mr59433925e9.34.1760037399787;
+        Thu, 09 Oct 2025 12:16:39 -0700 (PDT)
+Received: from [192.168.3.141] (tmo-083-189.customers.d1-online.com. [80.187.83.189])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-426ce5e0a03sm403646f8f.37.2025.10.09.12.16.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 09 Oct 2025 12:16:39 -0700 (PDT)
+Message-ID: <abe539bb-375a-43ec-ba36-6d10a35dd85d@redhat.com>
+Date: Thu, 9 Oct 2025 21:16:34 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9d3eeb9f-b8ea-48e5-a1d9-0865f63ef991@arm.com>
-X-Proofpoint-GUID: MJItEKWQr7zlQYJVb2Dp_ki3oTx_uP9f
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMDA4MDEyMSBTYWx0ZWRfX0tqsPxgIHcnb
- Uai5E38l187swuL/0seIj1/4F1nx5KUV25XB+VjbTuZpEArMbUduNvcBTe4rPMKSSnR2iZDy0qC
- YdEnHE2+67tL7eag3GiaDZu/bxEdnhTQ6ATcq3mg6N59ACMqMGqESZvcYEm/s+eJ8FIkPK5TWfm
- +wJgV9rEs3UCSWOS1ETFC7AHwvUo5UxB8fOf4lCi0HUGRitnvHDW2g6M5Scv7y0vSHq+BfYT5ci
- NAW9/Kv0jcjBftF/6pReK3n+7Wm7O5hmjqLIh0bYxDd58bCcQt2QHEYzZ4Qz/2bCNpE0EzX0TLp
- K0n5Y2jtWxaM2VDdAHALRY9PE0qJapM8RpdNrWpzY3K06NMggiVSQwDzjPCZE0pQLkSN7UIGHFm
- t7PlFCC1PbnblPlUNOcVjFtrNdhLhg==
-X-Authority-Analysis: v=2.4 cv=SfL6t/Ru c=1 sm=1 tr=0 ts=68e7fe02 cx=c_pps
- a=WeENfcodrlLV9YRTxbY/uA==:117 a=xqWC_Br6kY4A:10 a=kj9zAlcOel0A:10
- a=x6icFKpwvdMA:10 a=9yEbADBicBGoLvg7PPkA:9 a=CjuIK1q_8ugA:10
- a=kacYvNCVWA4VmyqE58fU:22
-X-Proofpoint-ORIG-GUID: MJItEKWQr7zlQYJVb2Dp_ki3oTx_uP9f
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1117,Hydra:6.1.9,FMLib:17.12.80.40
- definitions=2025-10-09_06,2025-10-06_01,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- adultscore=0 clxscore=1015 malwarescore=0 bulkscore=0 priorityscore=1501
- suspectscore=0 impostorscore=0 lowpriorityscore=0 phishscore=0 spamscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.19.0-2510020000 definitions=main-2510080121
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 0/8] Fix stale IOTLB entries for kernel address space
+To: Dave Hansen <dave.hansen@intel.com>, Lu Baolu <baolu.lu@linux.intel.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
+ Jason Gunthorpe <jgg@nvidia.com>, Jann Horn <jannh@google.com>,
+ Vasant Hegde <vasant.hegde@amd.com>, Thomas Gleixner <tglx@linutronix.de>,
+ Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+ Alistair Popple <apopple@nvidia.com>, Peter Zijlstra <peterz@infradead.org>,
+ Uladzislau Rezki <urezki@gmail.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Andy Lutomirski <luto@kernel.org>, Yi Lai <yi1.lai@intel.com>,
+ Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
+ "Liam R. Howlett" <Liam.Howlett@oracle.com>,
+ Andrew Morton <akpm@linux-foundation.org>, Vlastimil Babka <vbabka@suse.cz>,
+ Mike Rapoport <rppt@kernel.org>, Michal Hocko <mhocko@kernel.org>,
+ Matthew Wilcox <willy@infradead.org>
+Cc: iommu@lists.linux.dev, security@kernel.org, x86@kernel.org,
+ linux-mm@kvack.org, linux-kernel@vger.kernel.org
+References: <20250919054007.472493-1-baolu.lu@linux.intel.com>
+ <c04d4c9d-e868-4883-af92-26f142bc84be@intel.com>
+ <d3cf3716-98ec-419b-90b7-b91b83599498@intel.com>
+From: David Hildenbrand <david@redhat.com>
+Autocrypt: addr=david@redhat.com; keydata=
+ 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
+ qIws/H2t
+In-Reply-To: <d3cf3716-98ec-419b-90b7-b91b83599498@intel.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: BKCZ3z9CWdI4wuSTw_KO51Gd3gS0Q_QhXvv19V1k1TY_1760037400
+X-Mimecast-Originator: redhat.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Thu, Oct 09, 2025 at 06:03:29PM +0100, Robin Murphy wrote:
-> On 2025-10-09 2:19 pm, Dmitry Baryshkov wrote:
-> > On Thu, Oct 09, 2025 at 11:46:55AM +0100, Robin Murphy wrote:
-> > > On 2025-10-08 8:10 pm, Charan Teja Kalla wrote:
-> > > > 
-> > > > On 9/29/2025 3:50 PM, Robin Murphy wrote:
-> > > > > > USECASE [1]:
-> > > > > > -----------
-> > > > > > Video IP, 32bit, have 2 hardware sub blocks(or can be called as
-> > > > > > functions) called as pixel and nonpixel blocks, that does decode and
-> > > > > > encode of the video stream. These sub blocks are __configured__ to
-> > > > > > generate different stream IDs.
-> > > > > 
-> > > > > So please clarify why you can't:
-> > > > > 
-> > > > > a) Describe the sub-blocks as individual child nodes each with their own
-> > > > > distinct "iommus" property
-> > > > > 
-> > > > 
-> > > > Thanks Robin for your time. Sorry for late reply as I really didn't have
-> > > > concrete answer for this question.
-> > > > 
-> > > > First let me clarify the word "sub blocks" -- This is just the logical
-> > > > separation with no separate address space to really able to define them
-> > > > as sub devices. Think of it like a single video IP with 2 dma
-> > > > engines(used for pixel and non-pixel purpose).
-> > > > 
-> > > > I should agree that the child-nodes in the device tree is the easy one
-> > > > and infact, it is how being used in downstream.
-> > > > 
-> > > > For upstream -- Since there is no real address space to interact with
-> > > > these sub-blocks(or logical blocks), does it really qualify to define as
-> > > > child nodes in the device tree? I see there is some push back[1].
-> > > 
-> > > Who says you need an address space? Child nodes without "reg" properties,
-> > > referenced by name, compatible or phandle, exist all over the place for all
-> > > manner of reasons. If there are distinct logical functions with their own
-> > > distinct hardware properties, then I would say having child nodes to
-> > > describe and associate those properties with their respective functions is
-> > > entirely natural and appropriate. The first example that comes to mind of
-> > > where this is a well-established practice is PMICs - to pick one at random:
-> > > Documentation/devicetree/bindings/regulator/qcom,rpmh-regulator.yaml
-> > 
-> > Logical function, that's correct. And also note, for PMICs that practice
-> > has bitten us back. For PM8008 we switched back to a non-subdevice
-> > representation.
-> > 
-> > > For bonus irony, you can't take the other approaches without inherently
-> > > *introducing* a notional address space in the form of your logical function
-> > > IDs anyway.
-> > > 
-> > > >     > or:
-> > > > > 
-> > > > > b) Use standard "iommu-map" which already supports mapping a masked
-> > > > > input ID to an arbitrary IOMMU specifier
-> > > > > 
-> > > > 
-> > > > I think clients is also required to program non-zero smr mask, where as
-> > > > iommu-map just maps the id to an IOMMU specifier(sid). Please LMK if I
-> > > > am unable to catch your thought here.
-> > > An IOMMU specifier is whatever the target IOMMU node's #iommu-cells says it
-> > > is. The fact that Linux's parsing code only works properly for #iommu-cells
-> > > = 1 is not really a DT binding problem (other than it stemming from a loose
-> > > assumption stated in the PCI binding's use of the property).
-> > 
-> > I really don't like the idea of extending the #iommu-cells. The ARM SMMU
-> > has only one cell, which is correct even for our platforms. The fact
-> > that we need to identify different IOMMU SIDs (and handle them in a
-> > differnt ways) is internal to the video device (and several other
-> > devices). There is nothing to be handled on the ARM SMMU side.
+On 08.10.25 21:42, Dave Hansen wrote:
+> I wondered why no mm folks were commenting on this. linux-mm@ was cc'd,
+> but the _people_ on cc seem to have been almost all IOMMU and x86 folks.
+> so I added a few mm folks...
+
+Thanks. Lately I find myself scanning linux-mm only randomly. So if it's 
+not in my inbox, likely I won't realize easily that there is something 
+that needs our attention.
+
+Will take a look.
+
 > 
-> Huh? So if you prefer not to change anything, are you suggesting this series
-> doesn't need to exist at all? Now I'm thoroughly confused...
-
-Hmm. We need changes, but I don't feel like adding the FUNCTION_ID to
-#iommu-cells is the best idea.
-
-> If you want to use SMR masks, then you absolutely need #iommu-cells = 2,
-> because that is the SMMU binding for using SMR masks. It would definitely
-
-I'm sorry. Yes, we have #iommu-cells = <2>.
-
-> not be OK to have some magic property trying to smuggle
-> IOMMU-driver-specific data contrary to what the IOMMU node itself says. As
-> for iommu-map, I don't see what would be objectionable about improving the
-> parsing to respect a real #iommu-cells value rather than hard-coding an
-> assumption. Yes, we'd probably need to forbid entries with length > 1
-> targeting IOMMUs with #iommu-cells > 1, since the notion of a linear
-
-This will break e.g. PCIe on Qualcomm platforms:
-
-                        iommu-map = <0x0   &apps_smmu 0x1400 0x1>,
-                                    <0x100 &apps_smmu 0x1401 0x1>;
-
-
-But this seems unlogical anyway wrt. apps_smmu having #iommu-cells =
-<2>. It depends on ARM SMMU ignoring the second cell when it's not
-present.
-
-> relationship between the input ID and the output specifier falls apart when
-> the specifier is complex, but that seems simple enough to implement and
-> document (even if it's too fiddly to describe in the schema itself), and
-> still certainly no worse than having another property that *is* just
-> iommu-map with implicit length = 1.
+> On 9/25/25 13:24, Dave Hansen wrote:
+>> On 9/18/25 22:39, Lu Baolu wrote:
+>>> This solution introduces a deferred freeing mechanism for kernel page
+>>> table pages, which provides a safe window to notify the IOMMU to
+>>> invalidate its caches before the page is reused.
+>>
+>> I think all the activity has died down and I everyone seems happy enough
+>> with how this looks. Right?
+>>
+>> So is this something we should prod Andrew to take through the mm tree,
+>> or is it x86-specific enough it should go through tip?
 > 
-> And if you want individual StreamIDs for logical functions to be attachable
-> to distinct contexts then those functions absolutely must be visible to the
-> IOMMU layer and the SMMU driver as independent devices with their own unique
-> properties, which means either they come that way from the DT as of_platform
-> devices in the first place, or you implement a full bus_type abstraction
-
-Not necessarily. Tegra display driver creates a device for each context
-on its own. In fact, using OF to create context devices is _less_
-robust, because now the driver needs to sync, checking that there is a
-subdevice, that it has probed, etc. Using manually created devices seems
-better from my POV.
-
-> which will have to be hooked up to the IOMMU layer. You cannot make IOMMU
-> configuration "internal" to the actual client driver which is only allowed
-> to bind *after* said IOMMU configuration has already been made.
-
-I'm not sure I follow this, I'm sorry.
+> Hi Folks! We've got a bug fix here that has impact on x86, mm, and IOMMU
+> code. I know I've talked with a few of you about this along the way, but
+> it's really thin on mm reviews, probably because mm folks haven't been
+> cc'd. Any eyeballs on it would be appreciated!
+> 
+> It seems like it should _probably_ go through the mm tree, although I'm
+> happy to send it through tip if folks disagree.
+> 
+> Diffstat for reference:
+> 
+>   arch/x86/Kconfig              |  1 +
+>   arch/x86/mm/init_64.c         |  2 +-
+>   arch/x86/mm/pat/set_memory.c  |  2 +-
+>   arch/x86/mm/pgtable.c         | 12 ++++-----
+>   drivers/iommu/iommu-sva.c     | 29 +++++++++++++++++++++-
+>   include/asm-generic/pgalloc.h | 18 ++++++++++++++
+>   include/linux/iommu.h         |  4 +++
+>   include/linux/mm.h            | 24 +++++++++++++++---
+>   include/linux/page-flags.h    | 46 +++++++++++++++++++++++++++++++++++
+>   mm/Kconfig                    |  3 +++
+>   mm/pgtable-generic.c          | 39 +++++++++++++++++++++++++++++
+>   11 files changed, 168 insertions(+), 12 deletions(-)
+> 
 
 
 -- 
-With best wishes
-Dmitry
+Cheers
+
+David / dhildenb
+
