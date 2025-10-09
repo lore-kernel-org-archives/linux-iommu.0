@@ -1,73 +1,39 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 730D92D0C9A
-	for <iommu@lists.linux.dev>; Thu,  9 Oct 2025 07:22:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2B53C2D0639;
+	Thu,  9 Oct 2025 07:50:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=93.17.235.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759994548; cv=none; b=ie5EkSoqNF+sD/J7EnNV2Wp6luqlYpeMkrlJeKgcXSmBihBvBK0izrW8qr3htEi6d2tR83N52nHvBzOwSbAxqbIm8M3EeRbuKq6/9xzjhekcLqHbfkUuIhT+GaLKrpvAA/piGBCwDuqPFvL8HhVPamfxcR0msrOpbMJZfIOrg1c=
+	t=1759996236; cv=none; b=NTShmcWHJ9oW/gx0XDdMHMqSne4wrjYWojlLbguf+sixYj9GzEcn9mzygOlHzZiBaLkHRKcnzTL3szF+CzCna7wQO1Su5x0Oqsl3tkCjQBWutq2hilcsYa/l8f25ATKycYWv5pfo0GqmUsAjVfPgJ8MxYC3BBKvMOBIo/PeIeic=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759994548; c=relaxed/simple;
-	bh=NoSsNhFoqKTD2GND/uojUC1d3tf5roBQEmoiq+BTOBY=;
+	s=arc-20240116; t=1759996236; c=relaxed/simple;
+	bh=hSDqszayzc1URyLW0uaDx+454Q64tykY5sefroniNHg=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=GviTc93cX+jfVbV2FToBvOt511Kzm+osZhpF69mvRRncDh52rKkL9KdOO94w42AD/Y3meVk6lFrU30lsK+trstUYfeQmxSht+JpxI3HBidj1YZQnNQrv0DZ5qwna10LoRP91zCfmAMrJiU9/JfeMTw+1Z+Zwzlx8pM8uOO+Xb68=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=dPANKf4+; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="dPANKf4+"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1759994545;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=NR0GPPrQth8s1EL9fLV4+qP3WUCAWdzIUfVSZ9j+y5w=;
-	b=dPANKf4+ue6wc7GttDLbrsVWeZq1jmmAdReiD232fVcnComFNUtbSq2mLgW3mn0xFb5Dwh
-	zTXHfLi2TsxB8oDG7yqUuH5xqnw/AwjrgosJNfDI9LoAkzIwTTugfBZKMF9fX0bsBh9wO4
-	jLe5IgjQUrF6VqJTDTMD1Ygy5tT2jLQ=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-499-uw3fOJ9xPgyHGAZbAJeRKA-1; Thu, 09 Oct 2025 03:22:22 -0400
-X-MC-Unique: uw3fOJ9xPgyHGAZbAJeRKA-1
-X-Mimecast-MFC-AGG-ID: uw3fOJ9xPgyHGAZbAJeRKA_1759994541
-Received: by mail-wr1-f70.google.com with SMTP id ffacd0b85a97d-4256fae4b46so443776f8f.0
-        for <iommu@lists.linux.dev>; Thu, 09 Oct 2025 00:22:21 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1759994541; x=1760599341;
-        h=content-transfer-encoding:in-reply-to:autocrypt:content-language
-         :from:references:cc:to:subject:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=NR0GPPrQth8s1EL9fLV4+qP3WUCAWdzIUfVSZ9j+y5w=;
-        b=Oz+8TkTFmm6pCiPoxOP/B9ZP3hgpIjc9NC0z1DoqSFwcIIe06FeNDV3/fENR/9VEEF
-         sFIXQzExHiDK6d0CJ2QhAwEQp5V43dyct4y9sD38bI+4UlXImt1vltqRqxP1fBCgrGJe
-         fCIk8idM905SHncS29oz+Gnpp1EG7V7U5LvmwI/mW3Hg4+dkGn6cKCT3xxfYmkQohb+U
-         D85++Sh7aGgPhF5+IYU/k0XKyvqdmL6mOs/A2S6vnSKeMwcpm9EIVLoxgRDCsrQlBIFM
-         LfsudEe3ONYAcKA+NguZRNuOBnl39YpqPlGHLjOHb6ma4XWhKqPI22QGmcyw8MATr4MX
-         B1JQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVMxIoYsnUpN5rcgRPIEapCEK6iFNDsBQPphE5YQKuNHqScZorm3CcRk62a/44LX3d1+bH4Ww==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwVv9kwGJiY4GYCJOmxAZu3CShuTMGHxVFWaLEbyCCtISClc4Zf
-	HfCMdPAJPC4jK9zCQDuqLUvivZdrCk1/et2+qU40MwHsHN9XyJ8USLKQqGDnkg+xOQtvllPsU/7
-	k6+57EcFz81tqnTW3wRUIf0EATq1qbgEp3E/GtmFkS1yPU4HiUra6xCGT
-X-Gm-Gg: ASbGnctp2KYHzWjK9EyHB7vH9u3ErvqqdCWAPeLqwnhSA1UKpYel0OqtsqV1hwrqg90
-	h7ffop1zIQV6XLz9cT/SAfxQ+GvQWi48qKUfsrirbd7bi8S44Sb8niEzjntQ4eoRJ9opfQSP9NT
-	039l9j/Con5egYzmc9ON2Tpf98Py8Nqb/AR92DbllaxeE+iqdRHrBDF6RRF2CalrcOoi7qShMQJ
-	FXuUtc/mNxqt1lew/LKh2gYQnavJbvAzY3F04mtsGqbXc8N+uwffcKnRVm+J6JfYi/2KC0sFB/V
-	7n+aAK8IdTX09aSaAxyMBu2MHHPJzyqiLU+xeik+JwT/CEBmh1Go8z2qFYfPqA+oH0a/SPOLHZg
-	GUT+xVxkk
-X-Received: by 2002:a5d:5f84:0:b0:3ee:1578:3181 with SMTP id ffacd0b85a97d-4266e8de444mr4275608f8f.49.1759994540819;
-        Thu, 09 Oct 2025 00:22:20 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IE3pZJrfQfix+9KKt4WdXWXcZ6zm7mHa+Vng4C8E+STUwzM8VHEo7EV1uD0vgxW+NxE9Pp9bw==
-X-Received: by 2002:a5d:5f84:0:b0:3ee:1578:3181 with SMTP id ffacd0b85a97d-4266e8de444mr4275568f8f.49.1759994540323;
-        Thu, 09 Oct 2025 00:22:20 -0700 (PDT)
-Received: from [192.168.3.141] (tmo-083-189.customers.d1-online.com. [80.187.83.189])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-46fa9d62890sm68237045e9.14.2025.10.09.00.22.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 09 Oct 2025 00:22:19 -0700 (PDT)
-Message-ID: <d3fc12d4-0b59-4b1f-bb5c-13189a01e13d@redhat.com>
-Date: Thu, 9 Oct 2025 09:22:14 +0200
+	 In-Reply-To:Content-Type; b=U9S6FM6rHR+NorHRdNO0d1VTPA5wXWfOMgtMYt/gB1phayEPGadfvIyEUOMmyjCoP/N9EQ4g+TdpJgM6yTPk7/Lw2r/glawAsGrP+djhZF+EWZUcu0E3JOWCui4Cgp2396gttZUcNRgPx9B8LOj1FFEgeNPJbT+yeaTkVRrMeB4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=csgroup.eu; spf=pass smtp.mailfrom=csgroup.eu; arc=none smtp.client-ip=93.17.235.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=csgroup.eu
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=csgroup.eu
+Received: from localhost (mailhub4.si.c-s.fr [172.26.127.67])
+	by localhost (Postfix) with ESMTP id 4cj22T4GVLz9sSy;
+	Thu,  9 Oct 2025 09:44:33 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+	by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id e-hrpkSiMM5A; Thu,  9 Oct 2025 09:44:33 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+	by pegase2.c-s.fr (Postfix) with ESMTP id 4cj22T2bCVz9sSq;
+	Thu,  9 Oct 2025 09:44:33 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+	by messagerie.si.c-s.fr (Postfix) with ESMTP id 3E1858B768;
+	Thu,  9 Oct 2025 09:44:33 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+	by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+	with ESMTP id iEsvyTlwygx4; Thu,  9 Oct 2025 09:44:33 +0200 (CEST)
+Received: from [192.168.235.99] (unknown [192.168.235.99])
+	by messagerie.si.c-s.fr (Postfix) with ESMTP id 4940A8B767;
+	Thu,  9 Oct 2025 09:44:31 +0200 (CEST)
+Message-ID: <1fb2259f-65e1-4cd0-ae70-b355843970e4@csgroup.eu>
+Date: Thu, 9 Oct 2025 09:44:30 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -77,8 +43,7 @@ MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Subject: Re: (bisected) [PATCH v2 08/37] mm/hugetlb: check for unreasonable
  folio sizes when registering hstate
-To: Christophe Leroy <christophe.leroy@csgroup.eu>,
- linux-kernel@vger.kernel.org
+To: David Hildenbrand <david@redhat.com>, linux-kernel@vger.kernel.org
 Cc: Zi Yan <ziy@nvidia.com>, Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
  "Liam R. Howlett" <Liam.Howlett@oracle.com>,
  Alexander Potapenko <glider@google.com>,
@@ -107,121 +72,53 @@ Cc: Zi Yan <ziy@nvidia.com>, Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
 References: <20250901150359.867252-1-david@redhat.com>
  <20250901150359.867252-9-david@redhat.com>
  <3e043453-3f27-48ad-b987-cc39f523060a@csgroup.eu>
-From: David Hildenbrand <david@redhat.com>
-Autocrypt: addr=david@redhat.com; keydata=
- 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
- qIws/H2t
-In-Reply-To: <3e043453-3f27-48ad-b987-cc39f523060a@csgroup.eu>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: FIdrQd5t80fOpBw8uGCAlzERwDyFmgdFXAXiJ44zfic_1759994541
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
+ <d3fc12d4-0b59-4b1f-bb5c-13189a01e13d@redhat.com>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
+Content-Language: fr-FR
+In-Reply-To: <d3fc12d4-0b59-4b1f-bb5c-13189a01e13d@redhat.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-On 09.10.25 09:14, Christophe Leroy wrote:
-> Hi David,
+
+
+Le 09/10/2025 à 09:22, David Hildenbrand a écrit :
+> On 09.10.25 09:14, Christophe Leroy wrote:
+>> Hi David,
+>>
+>> Le 01/09/2025 à 17:03, David Hildenbrand a écrit :
+>>> Let's check that no hstate that corresponds to an unreasonable folio 
+>>> size
+>>> is registered by an architecture. If we were to succeed registering, we
+>>> could later try allocating an unsupported gigantic folio size.
+>>>
+>>> Further, let's add a BUILD_BUG_ON() for checking that HUGETLB_PAGE_ORDER
+>>> is sane at build time. As HUGETLB_PAGE_ORDER is dynamic on powerpc, 
+>>> we have
+>>> to use a BUILD_BUG_ON_INVALID() to make it compile.
+>>>
+>>> No existing kernel configuration should be able to trigger this check:
+>>> either SPARSEMEM without SPARSEMEM_VMEMMAP cannot be configured or
+>>> gigantic folios will not exceed a memory section (the case on sparse).
+>>>
+>>> Reviewed-by: Zi Yan <ziy@nvidia.com>
+>>> Reviewed-by: Lorenzo Stoakes <lorenzo.stoakes@oracle.com>
+>>> Reviewed-by: Liam R. Howlett <Liam.Howlett@oracle.com>
+>>> Signed-off-by: David Hildenbrand <david@redhat.com>
+>>
+>> I get following warning on powerpc with linus tree, bisected to commit
+>> 7b4f21f5e038 ("mm/hugetlb: check for unreasonable folio sizes when
+>> registering hstate")
 > 
-> Le 01/09/2025 à 17:03, David Hildenbrand a écrit :
->> Let's check that no hstate that corresponds to an unreasonable folio size
->> is registered by an architecture. If we were to succeed registering, we
->> could later try allocating an unsupported gigantic folio size.
->>
->> Further, let's add a BUILD_BUG_ON() for checking that HUGETLB_PAGE_ORDER
->> is sane at build time. As HUGETLB_PAGE_ORDER is dynamic on powerpc, we have
->> to use a BUILD_BUG_ON_INVALID() to make it compile.
->>
->> No existing kernel configuration should be able to trigger this check:
->> either SPARSEMEM without SPARSEMEM_VMEMMAP cannot be configured or
->> gigantic folios will not exceed a memory section (the case on sparse).
->>
->> Reviewed-by: Zi Yan <ziy@nvidia.com>
->> Reviewed-by: Lorenzo Stoakes <lorenzo.stoakes@oracle.com>
->> Reviewed-by: Liam R. Howlett <Liam.Howlett@oracle.com>
->> Signed-off-by: David Hildenbrand <david@redhat.com>
+> Do you have the kernel config around? Is it 32bit?
 > 
-> I get following warning on powerpc with linus tree, bisected to commit
-> 7b4f21f5e038 ("mm/hugetlb: check for unreasonable folio sizes when
-> registering hstate")
+> That would be helpful.
 
-Do you have the kernel config around? Is it 32bit?
+That's corenet64_smp_defconfig
 
-That would be helpful.
+Boot on QEMU with:
 
-[...]
+	qemu-system-ppc64 -smp 2 -nographic -M ppce500 -cpu e5500 -m 1G
 
->> ---
->>    mm/hugetlb.c | 2 ++
->>    1 file changed, 2 insertions(+)
->>
->> diff --git a/mm/hugetlb.c b/mm/hugetlb.c
->> index 1e777cc51ad04..d3542e92a712e 100644
->> --- a/mm/hugetlb.c
->> +++ b/mm/hugetlb.c
->> @@ -4657,6 +4657,7 @@ static int __init hugetlb_init(void)
->>    
->>    	BUILD_BUG_ON(sizeof_field(struct page, private) * BITS_PER_BYTE <
->>    			__NR_HPAGEFLAGS);
->> +	BUILD_BUG_ON_INVALID(HUGETLB_PAGE_ORDER > MAX_FOLIO_ORDER);
->>    
->>    	if (!hugepages_supported()) {
->>    		if (hugetlb_max_hstate || default_hstate_max_huge_pages)
->> @@ -4740,6 +4741,7 @@ void __init hugetlb_add_hstate(unsigned int order)
->>    	}
->>    	BUG_ON(hugetlb_max_hstate >= HUGE_MAX_HSTATE);
->>    	BUG_ON(order < order_base_2(__NR_USED_SUBPAGE));
->> +	WARN_ON(order > MAX_FOLIO_ORDER);
->>    	h = &hstates[hugetlb_max_hstate++];
->>    	__mutex_init(&h->resize_lock, "resize mutex", &h->resize_key);
->>    	h->order = order;
 
-We end up registering hugetlb folios that are bigger than 
-MAX_FOLIO_ORDER. So we have to figure out how a config can trigger that 
-(and if we have to support that).
 
--- 
-Cheers
-
-David / dhildenb
-
+Christophe
