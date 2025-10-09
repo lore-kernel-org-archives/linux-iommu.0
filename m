@@ -1,35 +1,78 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f169.google.com (mail-pf1-f169.google.com [209.85.210.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AD2D155C82;
-	Thu,  9 Oct 2025 01:07:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED0C73A1DB
+	for <iommu@lists.linux.dev>; Thu,  9 Oct 2025 01:09:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759972042; cv=none; b=LNZAwBhNqjUC2gcQFKkdHAG2AGPMGiW1IaIIhcOZOJNC5FVFpxn1wKQocITFfucHzBFDTzLmxA0QHQwjQdXWeenoOpN1doDMNrqH0JYdkJTpr/6cW9K223PDXHImlEh0Zx579kUs5sU4E2gEMyu6f4k5nQxuDqZyNCucZfN/fW0=
+	t=1759972160; cv=none; b=aPbsrJRx9M/XYeOvKXfMxAGfHK0ye7f8fNXLHNUuc86eW+F0lkjrwtBVlIJYNWVcGCBAvMSpJPS3XgLFjU/4bW1yEn7ImodsFDdQrZe/krQ4ZXoppZmy7K7/X6f2rvDsLyfuQ1jfccRqPgi5WBb4T/hYsLI7P/o3B+3o8cSDeQ8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759972042; c=relaxed/simple;
-	bh=gOZMzGofq4mPMi4a6FfMrSXrrYqWnEJSEe2U4H+HIxI=;
-	h=Content-Type:MIME-Version:Subject:From:Message-Id:Date:References:
-	 In-Reply-To:To:Cc; b=VNRVrwE8YDMhefRAzP72LLs9XrHatPRPhbae+zcBfVI1fXzjEkhr99sZpyHVwOIKOZCbN33K9xaeJwFDLu5bA9QsWxQQrnS9JdfHZvdUlZhFCznwgLQTIEtgdV7KBokaCrY71szTQKfcmCy8aAMGyIrySdBz7Bu6Ljn+GWqDVDg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rIX5UnrQ; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1759972160; c=relaxed/simple;
+	bh=91+WbqIZVIOE4sofIpB0yEZNBPRPt4wB+LIzBkBCdpE=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=CTpZYPBOtTqQ6ljLCZ0Y+6jwnlkAi3+iHAu/s3SuouJUcjog7MFDZr6jsw+ows8oqQFYamG7IQyKF1gqcNdH/V4U4CheWHwki8GhSbSRQd9O+LI3d+5PdzYC/kiw/F/Zk02ANDOHt1KSIc3eiyexwoQPoqXC3TFybAp5jMl19FA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=aashishsharma.net; spf=pass smtp.mailfrom=aashishsharma.net; dkim=pass (2048-bit key) header.d=aashishsharma.net header.i=@aashishsharma.net header.b=mz4UHB84; arc=none smtp.client-ip=209.85.210.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=aashishsharma.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=aashishsharma.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rIX5UnrQ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EFE9C4CEE7;
-	Thu,  9 Oct 2025 01:07:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1759972041;
-	bh=gOZMzGofq4mPMi4a6FfMrSXrrYqWnEJSEe2U4H+HIxI=;
-	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=rIX5UnrQuVtPUja4Kq/zNxiwyTbf5s+hCzHT8aH9/VUdnNlKWh8D4mSKFL/eXwlaD
-	 7z8+SEmVkcAfo9fmiSSyJ11EAUKKRJcwMVTb9iuWDWBwheam1F4EfrpnDWIzUjmitV
-	 mpUbtUtSbqOH/UnhpYe9i14SkLmyq3I1gfKlnnkK+sqgEdkc4pLZ6mWhV/a0ryPI+M
-	 cnqFIsiLX5CDpbNJvCwTuxPNZCjZR+B1mOV2TKr1ssRJwK/PuLD12JWWzuO1dLp+oX
-	 6de792lhNHw6SaLSFK1kZpeE0QJJFPFLV/HILKfJuySwcXVffLr7XVkoyczsYsHHIo
-	 /dSAJt7cVsj/Q==
-Received: from [10.30.226.235] (localhost [IPv6:::1])
-	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id ADDA93A41017;
-	Thu,  9 Oct 2025 01:07:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+	dkim=pass (2048-bit key) header.d=aashishsharma.net header.i=@aashishsharma.net header.b="mz4UHB84"
+Received: by mail-pf1-f169.google.com with SMTP id d2e1a72fcca58-781001e3846so396247b3a.2
+        for <iommu@lists.linux.dev>; Wed, 08 Oct 2025 18:09:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=aashishsharma.net; s=google; t=1759972157; x=1760576957; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Uf6SXDKqJICw08NoDh9xk9/MF/JYlGO1Q1LMu9XTd6E=;
+        b=mz4UHB84IsuDp16tGA1fXydVN/6SBdj4stTACUtynrXCfrUcSnt0GlB+aRu51Viprv
+         QR45S/zj2GISJLN4GAlj4XJHqnjtbEz/wzE5WhLeKRE7GtZdG+F+5kyIDTsfNeDXOwlY
+         9K6daAq4wQ/xNcswDeGd6Bdwjt7GWQQiZR7Qe03iVKqjG13n2yFKM1QCaHcpDKFLGc2r
+         W3F4A1GW1jVLi0LwcWo9Ur5NfgwCvzTvosVLAolv42GLINNsrETwfB1dbjsf41xncL4c
+         DwdLBtVtY7aU40EijmrouFw6I1XFqzlfD74l28PrLX78I/TOWUbrKfqwSpTH5tRWb5Gj
+         l2dA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1759972157; x=1760576957;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Uf6SXDKqJICw08NoDh9xk9/MF/JYlGO1Q1LMu9XTd6E=;
+        b=DTAf+eNqCVv+AF+9iMLzZlbAUb4wKs/IYIJ0DyAK7sGvoKILOpvp2f4xE4jrQBrYt3
+         Lv/N+pzC5rQ+m05PSZS5/YbOtS/uKp0/42u4SQRnsn9pyZwZ8wWk1HQX/d62PZaKNFL8
+         PRsFubi7aHES6DbXTCihIB5J9FoXd7wRIlIzclAA+59HGC1+fMGGHu10ilCGDf905Wta
+         YOcErp5ZSBj0sXEB2DN3efKIkkhftS/9XZd+7Llyly/6j6GhYs4riWB/JJHPLtPz/o2c
+         LLEUPLRwT/4vr+BkBqZZiaFLzfaqABAkxGU6pvagxygjfFeqQRZaLzxvFyzMrZV5Z2An
+         a/GA==
+X-Forwarded-Encrypted: i=1; AJvYcCViedCxqXbnVkARCrFudcU8UWv2W7DiUkinUVWfSvR97b6sDFc5y4pb/oAD35tPjTR6wCPDwQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yw88gamshOOBYlzsJbVfv1SyNwbg1oI9eTOVODxtkMmDOYYuZWG
+	+pttoiLKysceoxBMVNvAhSCbYVEfImE5vVPVzfqKRJ7HLuPXTr49RMfX6r9td+DfEuY=
+X-Gm-Gg: ASbGncu3ogMi4FN+C6lsA7jkQi4cHBudJzU63UvlQpvFt4E5ehRvXTXrBPdrOxTs7Dn
+	kaOxT0Y26wfXLnJgvQmcbifjKF8Q3ri5WH0iRtywEwSADAd+koTI3egGvKiojO4OyqIkQ2TRJP1
+	zNK79xX84BcIIrLLtFU6KE4wisQHZpL09ezgwD81MdWizs54tpIzIxRqk1pPF4RXopq8Hv4kjkJ
+	z1+u5QcXskU+ZDC2F2M/4qGm0PgcXv6JdUCp3+RHVhFhsgt/XvP57/7CM8ift7X7vvKAtPpec4Y
+	f60xuMIYL0yUXiGNGDF8SmenEa1s+mz0mL/G4FI2IXtMVWz1TJ6iOi8+4BVecv6NX/Nqs2pLmUQ
+	4xV3oZSEMB0JtmLQHEKNH4iQ8omBszl5FE64hverjShrHOzj3ygYH4rSkgExi/LrP/CtianlbxT
+	RQ80RCfdfjY/5CvVeK+iclOYzrkm48sh8u6p3Ja1rzIX5H
+X-Google-Smtp-Source: AGHT+IG8Hn5ffuKifHjR9/YsygBkJPCAVUztAOOOJeVgTKeXeNze6yjiQg5d2xADPv3Ea5hlzzceZQ==
+X-Received: by 2002:a05:6a00:cc9:b0:781:189:ae43 with SMTP id d2e1a72fcca58-79386e51126mr5418064b3a.20.1759972156874;
+        Wed, 08 Oct 2025 18:09:16 -0700 (PDT)
+Received: from shraash.sjc.corp.google.com ([2a00:79e0:2ebe:8:6608:a363:a036:abf1])
+        by smtp.googlemail.com with ESMTPSA id d2e1a72fcca58-794e33efc2bsm995186b3a.77.2025.10.08.18.09.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Oct 2025 18:09:16 -0700 (PDT)
+From: Aashish Sharma <aashish@aashishsharma.net>
+To: Vineeth Pillai <vineeth@bitbyteword.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Dmytro Maluka <dmaluka@google.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Joerg Roedel <joro@8bytes.org>,
+	Tina Zhang <tina.zhang@intel.com>
+Cc: Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Aashish Sharma <shraash@google.com>,
+	Aashish Sharma <aashish@aashishsharma.net>
+Subject: [PATCH] iommu/vt-d: Fix unused invalidation hint in qi_desc_iotlb
+Date: Wed,  8 Oct 2025 18:09:03 -0700
+Message-ID: <20251009010903.1323979-1-aashish@aashishsharma.net>
+X-Mailer: git-send-email 2.51.0.710.ga91ca5db03-goog
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -37,57 +80,30 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: update kernel-doc for MEMBLOCK_RSRV_NOINIT (was: Re: [PATCH RFC
- 10/35] mm/hugetlb: cleanup hugetlb_folio_init_tail_vmemmap())
-From: patchwork-bot+linux-riscv@kernel.org
-Message-Id: 
- <175997202925.3661959.5694356441030280085.git-patchwork-notify@kernel.org>
-Date: Thu, 09 Oct 2025 01:07:09 +0000
-References: <aKyWIriZ1bmnIrBW@kernel.org>
-In-Reply-To: <aKyWIriZ1bmnIrBW@kernel.org>
-To: Mike Rapoport <rppt@kernel.org>
-Cc: linux-riscv@lists.infradead.org, david@redhat.com, mpenttil@redhat.com,
- linux-kernel@vger.kernel.org, glider@google.com, akpm@linux-foundation.org,
- jackmanb@google.com, cl@gentwo.org, dennis@kernel.org, dvyukov@google.com,
- dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
- iommu@lists.linux.dev, io-uring@vger.kernel.org, jgg@nvidia.com,
- axboe@kernel.dk, hannes@cmpxchg.org, jhubbard@nvidia.com,
- kasan-dev@googlegroups.com, kvm@vger.kernel.org, Liam.Howlett@oracle.com,
- torvalds@linux-foundation.org, linux-arm-kernel@axis.com,
- linux-arm-kernel@lists.infradead.org, linux-crypto@vger.kernel.org,
- linux-ide@vger.kernel.org, linux-kselftest@vger.kernel.org,
- linux-mips@vger.kernel.org, linux-mmc@vger.kernel.org, linux-mm@kvack.org,
- linux-s390@vger.kernel.org, linux-scsi@vger.kernel.org,
- lorenzo.stoakes@oracle.com, elver@google.com, m.szyprowski@samsung.com,
- mhocko@suse.com, muchun.song@linux.dev, netdev@vger.kernel.org,
- osalvador@suse.de, peterx@redhat.com, robin.murphy@arm.com,
- surenb@google.com, tj@kernel.org, virtualization@lists.linux.dev,
- vbabka@suse.cz, wireguard@lists.zx2c4.com, x86@kernel.org, ziy@nvidia.com
 
-Hello:
+Invalidation hint (ih) in the function 'qi_desc_iotlb' is
+initialized to zero and never used. It is embedded in the 0th bit
+of the 'addr' parameter. Get the correct 'ih' value from there.
 
-This patch was applied to riscv/linux.git (for-next)
-by Mike Rapoport (Microsoft) <rppt@kernel.org>:
+Fixes: f701c9f36bcb ("iommu/vt-d: Factor out invalidation descriptor composition")
+Signed-off-by: Aashish Sharma <aashish@aashishsharma.net>
+---
+ drivers/iommu/intel/iommu.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-On Mon, 25 Aug 2025 19:58:10 +0300 you wrote:
-> On Mon, Aug 25, 2025 at 06:23:48PM +0200, David Hildenbrand wrote:
-> >
-> > I don't quite understand the interaction with PG_Reserved and why anybody
-> > using this function should care.
-> >
-> > So maybe you can rephrase in a way that is easier to digest, and rather
-> > focuses on what callers of this function are supposed to do vs. have the
-> > liberty of not doing?
-> 
-> [...]
-
-Here is the summary with links:
-  - update kernel-doc for MEMBLOCK_RSRV_NOINIT (was: Re: [PATCH RFC 10/35] mm/hugetlb: cleanup hugetlb_folio_init_tail_vmemmap())
-    https://git.kernel.org/riscv/c/b3dcc9d1d806
-
-You are awesome, thank you!
+diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+index 3056583d7f56..dcc5466d35f9 100644
+--- a/drivers/iommu/intel/iommu.h
++++ b/drivers/iommu/intel/iommu.h
+@@ -1097,7 +1097,7 @@ static inline void qi_desc_iotlb(struct intel_iommu *iommu, u16 did, u64 addr,
+ 				 struct qi_desc *desc)
+ {
+ 	u8 dw = 0, dr = 0;
+-	int ih = 0;
++	int ih = addr & 1;
+ 
+ 	if (cap_write_drain(iommu->cap))
+ 		dw = 1;
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.51.0.710.ga91ca5db03-goog
 
