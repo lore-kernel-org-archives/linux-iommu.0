@@ -1,50 +1,50 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C583A248F7F
-	for <iommu@lists.linux.dev>; Thu,  9 Oct 2025 19:31:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04F241B423B
+	for <iommu@lists.linux.dev>; Thu,  9 Oct 2025 19:32:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760038293; cv=none; b=m4Wji/A/YO+0uPRMzZE1hEAr+BvufNWO7Fm2EjxHBdLxbKsRP7GO+YvGda6+v0E/Vak8N+aZMob+zO4iEayvqEI/JEyfVkvsTV+TWMB8kB3ICM8Qzl9CAZ9KCjOHfS7PUiZ+GwXePqbIaH/JA5lgE+TxMWzc6ExhG58h6KhRUKI=
+	t=1760038337; cv=none; b=BJ5q55+ZfAyIZ1K/jIITN9m+uXLO5GbmypHtLLJp4V05Lw8BKRzdBVWYcgCBDY1ueTfFimaPECxI/2dFKhbHZURlgxjHU7QtEOB63U66hO6Fyw1LAnebxuYQ7hOiDUQV9Bc11ot1Vf6kXyssXi2hqgXo+YBYOVa/adV0ZPicQ+s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760038293; c=relaxed/simple;
-	bh=lQaJx5mf2Mcb86lyOVhEpWWdXR0OG4rqbcrV0v1p+lk=;
+	s=arc-20240116; t=1760038337; c=relaxed/simple;
+	bh=QTIZB4cXar6tcTAPv6wGI1eBlG8KHsLbakGl0mcnySY=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=g3fX7IIRE9TQhZK1GnFP5nPE4YziNPUU41Whj9iFV61tmQMmdSBN7z6B6hNICdc6Pp2nBP+qUFVCQFbBPxGVTjuRLfF2g6VAQ3rCYQVtEy9cge1dQDL6ElPEkXZis2VJPzySE7Rw6U4wtjMZolu6ja0pdH85XQjx4oOfNDRONxQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lLIc5Num; arc=none smtp.client-ip=192.198.163.14
+	 In-Reply-To:Content-Type; b=tSLJZc6bbz+T9a+3djnNG/vTV0jKtZoTan8nXV5hPYjwd7XRfdZkFQdvCdGFBxVl9usWAd0pgb/3pJbbKU93DF/AmeAeLoqIZ+IcgWpW/cNwhFZz6PYh10a2LmfkfnS1F9XXkFq/rCOmZML/MRYwaApfN0heB2jFb+/UCZ6anss=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ntGbiAl/; arc=none smtp.client-ip=192.198.163.14
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lLIc5Num"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ntGbiAl/"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1760038291; x=1791574291;
+  t=1760038332; x=1791574332;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=lQaJx5mf2Mcb86lyOVhEpWWdXR0OG4rqbcrV0v1p+lk=;
-  b=lLIc5NumyuNDL58lCGimUBGIxKM3DzWDanO0T0iO196hdHcOMIHDF1mw
-   eI5xmy1e/554SxmW1e+JRb0Z+2jJJ2YiPvDVAFRe0JDkoKw7+WFUXvazn
-   28j4HVoMAaeizV1TVSzvQ10w8O/9Oqq0hnjPYneHGkQSntlr371Kdmudi
-   X1j/SzIChz8abTJtx1heaNoztIF0Hp/W7mkilsY1oPXfObTH8X1yGw5jH
-   VGc6kstqHJ0yoprCsgB2O9/D5Ipp24obj0MCuI9Ev0LWDMsgHPIzJoso7
-   w4dKfiPlxzR5/0WN+hiZPXxV+e/K09pkQhhfcl0MvV+h4R8ELmUqIFGJ8
-   Q==;
-X-CSE-ConnectionGUID: gqRQi8SRSt68fZSaa96/yw==
-X-CSE-MsgGUID: lzw3IkmaQ2mNMjWfFEAF5Q==
-X-IronPort-AV: E=McAfee;i="6800,10657,11577"; a="62286515"
+  bh=QTIZB4cXar6tcTAPv6wGI1eBlG8KHsLbakGl0mcnySY=;
+  b=ntGbiAl/Ih02aBgGZArtzulDgrRe6Qpw1aAEN5nWYn6xhsIaMHHb4lo6
+   g19HoY+c3uc2Oz4/9dttosYPREA8cZ3Gm4fNyobtw+kCzC3a7ucoKPfny
+   Xswg6DgWusHVOgB2ZnV9aSclzR1yXTJ+uLxIu1yllh1/Ef5zbBWuSS2k5
+   D72Lq1DsCX/MfSwTYPBkzpskctSxkK35FlMLMYi2ibClVcPFcKpy0Hy9j
+   zRhiXE8yF++08hjVpFHL4mYZBNJY3M4lWo4AYIMwrIIOpxfI8zpR0cAGl
+   xom2mjnc2JjGknw8Zf7viFRv4x+ExpBFC6um8HJ5i3gFQtQOHkEVHlFnr
+   w==;
+X-CSE-ConnectionGUID: DtfWOrvNQnyF8A6PVVFS/Q==
+X-CSE-MsgGUID: IomNAQf4SfSkQmmtopU4Ow==
+X-IronPort-AV: E=McAfee;i="6800,10657,11577"; a="62286579"
 X-IronPort-AV: E=Sophos;i="6.19,217,1754982000"; 
-   d="scan'208";a="62286515"
+   d="scan'208";a="62286579"
 Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2025 12:31:30 -0700
-X-CSE-ConnectionGUID: KuJYPbv8RnaazmneQeRSDw==
-X-CSE-MsgGUID: 974nS1LmTwKbUepnyb6Zaw==
+  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2025 12:32:05 -0700
+X-CSE-ConnectionGUID: 2dIFX4OXSYKjl+0raW5S5A==
+X-CSE-MsgGUID: ibQ1W0FOTVqpk0fcIifTxg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.19,217,1754982000"; 
-   d="scan'208";a="180814987"
+   d="scan'208";a="180815015"
 Received: from unknown (HELO [10.24.81.144]) ([10.24.81.144])
-  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2025 12:31:29 -0700
-Message-ID: <e4c0c578-50e9-4e65-8e7f-7a6d995b22e0@intel.com>
-Date: Thu, 9 Oct 2025 12:31:28 -0700
+  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2025 12:32:02 -0700
+Message-ID: <aefa20f8-49d4-4fa9-9d18-39b7b0ffebf3@intel.com>
+Date: Thu, 9 Oct 2025 12:32:01 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,7 +52,8 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 3/8] x86/mm: Use 'ptdesc' when freeing PMD pages
+Subject: Re: [PATCH v5 6/8] mm: Introduce deferred freeing for kernel page
+ tables
 To: David Hildenbrand <david@redhat.com>, Lu Baolu
  <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
  Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
@@ -67,10 +68,10 @@ Cc: iommu@lists.linux.dev, security@kernel.org, x86@kernel.org,
  linux-mm@kvack.org, linux-kernel@vger.kernel.org,
  Dave Hansen <dave.hansen@linux.intel.com>
 References: <20250919054007.472493-1-baolu.lu@linux.intel.com>
- <20250919054007.472493-4-baolu.lu@linux.intel.com>
- <9648e990-18e0-4aed-8110-b02f4b45aa47@redhat.com>
-From: Dave Hansen <dave.hansen@intel.com>
+ <20250919054007.472493-7-baolu.lu@linux.intel.com>
+ <4858074d-f058-41ec-a581-a8254b8cc2d7@redhat.com>
 Content-Language: en-US
+From: Dave Hansen <dave.hansen@intel.com>
 Autocrypt: addr=dave.hansen@intel.com; keydata=
  xsFNBE6HMP0BEADIMA3XYkQfF3dwHlj58Yjsc4E5y5G67cfbt8dvaUq2fx1lR0K9h1bOI6fC
  oAiUXvGAOxPDsB/P6UEOISPpLl5IuYsSwAeZGkdQ5g6m1xq7AlDJQZddhr/1DC/nMVa/2BoY
@@ -114,29 +115,15 @@ Autocrypt: addr=dave.hansen@intel.com; keydata=
  MTsCeQDdjpgHsj+P2ZDeEKCbma4m6Ez/YWs4+zDm1X8uZDkZcfQlD9NldbKDJEXLIjYWo1PH
  hYepSffIWPyvBMBTW2W5FRjJ4vLRrJSUoEfJuPQ3vW9Y73foyo/qFoURHO48AinGPZ7PC7TF
  vUaNOTjKedrqHkaOcqB185ahG2had0xnFsDPlx5y
-In-Reply-To: <9648e990-18e0-4aed-8110-b02f4b45aa47@redhat.com>
+In-Reply-To: <4858074d-f058-41ec-a581-a8254b8cc2d7@redhat.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-On 10/9/25 12:25, David Hildenbrand wrote:
->>
->> @@ -750,8 +750,8 @@ int pud_free_pmd_page(pud_t *pud, unsigned long addr)
->>         for (i = 0; i < PTRS_PER_PMD; i++) {
->>           if (!pmd_none(pmd_sv[i])) {
->> -            pte = (pte_t *)pmd_page_vaddr(pmd_sv[i]);
->> -            pte_free_kernel(&init_mm, pte);
->> +            pt = page_ptdesc(pmd_page(pmd_sv[i]));
->> +            pagetable_dtor_free(pt);
+On 10/9/25 12:28, David Hildenbrand wrote:
+...
+> Can we please squash #7 in here and make sure to call the config knob
+> something that indicates that it is for *kernel* page tables only?
 > 
-> There is pmd_ptdesc() which does
-> 
->     page_ptdesc(pmd_pgtable_page(pmd));
-> 
-> It's buried in a
-> 
->     #if defined(CONFIG_SPLIT_PMD_PTLOCKS)
-> 
-> Can't we just make that always available so we can use it here?
+> ASYNC_KERNEL_PGTABLE_FREE
 
-Yes, that looks like a good idea. I never noticed pmd_ptdesc() when I
-was writing this for sure.
+I'm fine with both of those. That name ^ looks fine to me too.
