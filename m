@@ -1,141 +1,110 @@
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 357E71F7569;
-	Thu,  9 Oct 2025 08:20:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=93.17.235.10
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1014E253356;
+	Thu,  9 Oct 2025 08:27:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759998037; cv=none; b=ticQ+c0xjYncPza5QJoF62J3+/lw7C0E0zGlsDtljqWdM8uBrbHm/Ok3+pcytxmpiPfMXDSCldaq54WrFeqRrYFpcXiimd2zVqFnhcjPKf7xwGF6Wba44RaS1rC3soq63lA88hE5uwpdD5alvrqe9WJ9lGyTK/3+BuKSss98pkE=
+	t=1759998478; cv=none; b=iGUZOj4zv1llAD0xbKX58Jm6U5eSiyArfn4o19wsJeaTH95FmYX0vwvKlFaXzY3DccJlUMThceOAXztKot6IcpfLBHbytqiG8WWgDV8phDIEhhOMiwnyuq+WYhgv0uZsLDMi4Tc5BQamoppTKRDU495s99vhnOZ3J2/ebWcnAgM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759998037; c=relaxed/simple;
-	bh=r4j7KL3ZDY2ItBlX7tAcF4DYZ7j4P2ykR08zNx+Sdac=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=gQkgTQkXvnDBRYMxQoXBDFph+lUt5BFFb0GmkMLH46w92rT75g8Vqec/H3MEJREGq6rpvA83+add6BNndp5ByfQezflX+U+tf5QuDYeMkMqxlEd/zEMAcgr6tNUZqvDbLzqkfhY1vywMamil5ttPqPQdA5/DP7WQBWk81KWUm8g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=csgroup.eu; spf=pass smtp.mailfrom=csgroup.eu; arc=none smtp.client-ip=93.17.235.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=csgroup.eu
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=csgroup.eu
-Received: from localhost (mailhub4.si.c-s.fr [172.26.127.67])
-	by localhost (Postfix) with ESMTP id 4cj2Td0Mj6z9sSL;
-	Thu,  9 Oct 2025 10:04:37 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-	by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id qQ36Dhni13kk; Thu,  9 Oct 2025 10:04:36 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-	by pegase2.c-s.fr (Postfix) with ESMTP id 4cj2Tc5kJ8z9sSC;
-	Thu,  9 Oct 2025 10:04:36 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-	by messagerie.si.c-s.fr (Postfix) with ESMTP id A8FDF8B770;
-	Thu,  9 Oct 2025 10:04:36 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-	by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-	with ESMTP id CnXkw3FAfnqR; Thu,  9 Oct 2025 10:04:36 +0200 (CEST)
-Received: from [192.168.235.99] (unknown [192.168.235.99])
-	by messagerie.si.c-s.fr (Postfix) with ESMTP id AE04F8B76D;
-	Thu,  9 Oct 2025 10:04:34 +0200 (CEST)
-Message-ID: <faf62f20-8844-42a0-a7a7-846d8ead0622@csgroup.eu>
-Date: Thu, 9 Oct 2025 10:04:34 +0200
+	s=arc-20240116; t=1759998478; c=relaxed/simple;
+	bh=rZSSjMlfyp1/DY/FUZFefqXE1tJXo2iaAfShYMGP5t8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=JrJeTmpHyeqJDfAzXGP53NtETLsncx27008gnGP2FCbPy+U2mfqC1NfM0+wjrPqMCEAjMLyuW/rQqaF55jrdGuS+gvDVSN6kQuEsW/gqLhP1pBBa/buQIvE4n8f4qryhTFENodI9gSZoYX7JJF0Pyn4ASAel+SzTVPnFCipx9tI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DdA+a5pI; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DdA+a5pI"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6564FC4CEE7;
+	Thu,  9 Oct 2025 08:27:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1759998477;
+	bh=rZSSjMlfyp1/DY/FUZFefqXE1tJXo2iaAfShYMGP5t8=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=DdA+a5pIqIR7UM7ITP9VqMbrQ/uGA1V12t1LNQDOuPyrLQEoJKE5WKh2NSlGCFcFH
+	 uGV+H0pwp2yawTthgjn/F2Z0S6P2suSREhU47mceABhSQ+lsz4NACjbsay/R1WY6xl
+	 63eVDxL1HjTFsgs/K4KbrMpb8/bYp4irws9z33gqhrlUwxHverez29c2Tz9ErOzkD4
+	 lI3+p6SBzsx9lFVrFr5mtC7WR+54NC05PADE4DaHpGWvtVsMpKmDKEi7ct0qWmaPC0
+	 Ke7yKxdzEgNBLhs2Eb1NQka8ViQMV9K4MiwFR6XhqnCVW6ZTKG2vr0HUAKxlQ2nSl/
+	 qu7Zcvd+NNQBA==
+Received: from johan by xi.lan with local (Exim 4.98.2)
+	(envelope-from <johan@kernel.org>)
+	id 1v6m0B-000000001lE-3wvQ;
+	Thu, 09 Oct 2025 10:27:55 +0200
+Date: Thu, 9 Oct 2025 10:27:55 +0200
+From: Johan Hovold <johan@kernel.org>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, Sven Peter <sven@kernel.org>,
+	Janne Grunau <j@jannau.net>,
+	Rob Clark <robin.clark@oss.qualcomm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Yong Wu <yong.wu@mediatek.com>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	Chen-Yu Tsai <wens@csie.org>, Krishna Reddy <vdumpa@nvidia.com>,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org, Thierry Reding <treding@nvidia.com>,
+	Miaoqian Lin <linmq006@gmail.com>
+Subject: Re: [PATCH v2 14/14] iommu/tegra: fix device leak on probe_device()
+Message-ID: <aOdyC1toHHIeE4i5@hovoldconsulting.com>
+References: <20251007094327.11734-1-johan@kernel.org>
+ <20251007094327.11734-15-johan@kernel.org>
+ <rp2yiradenf3twznebagx7tgsruwh66exiikal37c4fwo75t4t@4breto65stqt>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: (bisected) [PATCH v2 08/37] mm/hugetlb: check for unreasonable
- folio sizes when registering hstate
-To: David Hildenbrand <david@redhat.com>, linux-kernel@vger.kernel.org
-Cc: Zi Yan <ziy@nvidia.com>, Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
- "Liam R. Howlett" <Liam.Howlett@oracle.com>,
- Alexander Potapenko <glider@google.com>,
- Andrew Morton <akpm@linux-foundation.org>,
- Brendan Jackman <jackmanb@google.com>, Christoph Lameter <cl@gentwo.org>,
- Dennis Zhou <dennis@kernel.org>, Dmitry Vyukov <dvyukov@google.com>,
- dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
- iommu@lists.linux.dev, io-uring@vger.kernel.org,
- Jason Gunthorpe <jgg@nvidia.com>, Jens Axboe <axboe@kernel.dk>,
- Johannes Weiner <hannes@cmpxchg.org>, John Hubbard <jhubbard@nvidia.com>,
- kasan-dev@googlegroups.com, kvm@vger.kernel.org,
- Linus Torvalds <torvalds@linux-foundation.org>, linux-arm-kernel@axis.com,
- linux-arm-kernel@lists.infradead.org, linux-crypto@vger.kernel.org,
- linux-ide@vger.kernel.org, linux-kselftest@vger.kernel.org,
- linux-mips@vger.kernel.org, linux-mmc@vger.kernel.org, linux-mm@kvack.org,
- linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
- linux-scsi@vger.kernel.org, Marco Elver <elver@google.com>,
- Marek Szyprowski <m.szyprowski@samsung.com>, Michal Hocko <mhocko@suse.com>,
- Mike Rapoport <rppt@kernel.org>, Muchun Song <muchun.song@linux.dev>,
- netdev@vger.kernel.org, Oscar Salvador <osalvador@suse.de>,
- Peter Xu <peterx@redhat.com>, Robin Murphy <robin.murphy@arm.com>,
- Suren Baghdasaryan <surenb@google.com>, Tejun Heo <tj@kernel.org>,
- virtualization@lists.linux.dev, Vlastimil Babka <vbabka@suse.cz>,
- wireguard@lists.zx2c4.com, x86@kernel.org,
- "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>
-References: <20250901150359.867252-1-david@redhat.com>
- <20250901150359.867252-9-david@redhat.com>
- <3e043453-3f27-48ad-b987-cc39f523060a@csgroup.eu>
- <d3fc12d4-0b59-4b1f-bb5c-13189a01e13d@redhat.com>
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
-Content-Language: fr-FR
-In-Reply-To: <d3fc12d4-0b59-4b1f-bb5c-13189a01e13d@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="KFWfMBBEp9y0HjZa"
+Content-Disposition: inline
+In-Reply-To: <rp2yiradenf3twznebagx7tgsruwh66exiikal37c4fwo75t4t@4breto65stqt>
 
 
+--KFWfMBBEp9y0HjZa
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Le 09/10/2025 à 09:22, David Hildenbrand a écrit :
-> On 09.10.25 09:14, Christophe Leroy wrote:
->> Hi David,
->>
->> Le 01/09/2025 à 17:03, David Hildenbrand a écrit :
->>> diff --git a/mm/hugetlb.c b/mm/hugetlb.c
->>> index 1e777cc51ad04..d3542e92a712e 100644
->>> --- a/mm/hugetlb.c
->>> +++ b/mm/hugetlb.c
->>> @@ -4657,6 +4657,7 @@ static int __init hugetlb_init(void)
->>>        BUILD_BUG_ON(sizeof_field(struct page, private) * BITS_PER_BYTE <
->>>                __NR_HPAGEFLAGS);
->>> +    BUILD_BUG_ON_INVALID(HUGETLB_PAGE_ORDER > MAX_FOLIO_ORDER);
->>>        if (!hugepages_supported()) {
->>>            if (hugetlb_max_hstate || default_hstate_max_huge_pages)
->>> @@ -4740,6 +4741,7 @@ void __init hugetlb_add_hstate(unsigned int order)
->>>        }
->>>        BUG_ON(hugetlb_max_hstate >= HUGE_MAX_HSTATE);
->>>        BUG_ON(order < order_base_2(__NR_USED_SUBPAGE));
->>> +    WARN_ON(order > MAX_FOLIO_ORDER);
->>>        h = &hstates[hugetlb_max_hstate++];
->>>        __mutex_init(&h->resize_lock, "resize mutex", &h->resize_key);
->>>        h->order = order;
-> 
-> We end up registering hugetlb folios that are bigger than 
-> MAX_FOLIO_ORDER. So we have to figure out how a config can trigger that 
-> (and if we have to support that).
-> 
+On Thu, Oct 09, 2025 at 09:56:18AM +0200, Thierry Reding wrote:
+> On Tue, Oct 07, 2025 at 11:43:27AM +0200, Johan Hovold wrote:
 
-MAX_FOLIO_ORDER is defined as:
+> > @@ -830,10 +830,9 @@ static struct tegra_smmu *tegra_smmu_find(struct d=
+evice_node *np)
+> >  		return NULL;
+> > =20
+> >  	mc =3D platform_get_drvdata(pdev);
+> > -	if (!mc) {
+> > -		put_device(&pdev->dev);
+> > +	put_device(&pdev->dev);
+> > +	if (!mc)
+> >  		return NULL;
+> > -	}
+> > =20
+> >  	return mc->smmu;
+>=20
+> pdev->dev is what's backing mc, so if we use put_device() here, then the
+> MC could go away at any time, right?
 
-#ifdef CONFIG_ARCH_HAS_GIGANTIC_PAGE
-#define MAX_FOLIO_ORDER		PUD_ORDER
-#else
-#define MAX_FOLIO_ORDER		MAX_PAGE_ORDER
-#endif
+Holding a reference to a device does not prevent its driver data from
+going away so there is no point in keeping the reference.
 
-MAX_PAGE_ORDER is the limit for dynamic creation of hugepages via 
-/sys/kernel/mm/hugepages/ but bigger pages can be created at boottime 
-with kernel boot parameters without CONFIG_ARCH_HAS_GIGANTIC_PAGE:
+But from what I can tell, you don't need to worry about that anyway
+since it's the memory controller driver that registers the iommu (and
+the driver can't be unbound).
 
-   hugepagesz=64m hugepages=1 hugepagesz=256m hugepages=1
+Johan
 
-Gives:
+--KFWfMBBEp9y0HjZa
+Content-Type: application/pgp-signature; name=signature.asc
 
-HugeTLB: registered 1.00 GiB page size, pre-allocated 0 pages
-HugeTLB: 0 KiB vmemmap can be freed for a 1.00 GiB page
-HugeTLB: registered 64.0 MiB page size, pre-allocated 1 pages
-HugeTLB: 0 KiB vmemmap can be freed for a 64.0 MiB page
-HugeTLB: registered 256 MiB page size, pre-allocated 1 pages
-HugeTLB: 0 KiB vmemmap can be freed for a 256 MiB page
-HugeTLB: registered 4.00 MiB page size, pre-allocated 0 pages
-HugeTLB: 0 KiB vmemmap can be freed for a 4.00 MiB page
-HugeTLB: registered 16.0 MiB page size, pre-allocated 0 pages
-HugeTLB: 0 KiB vmemmap can be freed for a 16.0 MiB page
+-----BEGIN PGP SIGNATURE-----
 
+iHUEABYKAB0WIQQHbPq+cpGvN/peuzMLxc3C7H1lCAUCaOdyBwAKCRALxc3C7H1l
+CEs2AP0RtypMzHwKSdgb+1LkzszK9dEi+yrUUVVJnU4HXJHGcQD/W3QAlXRFlmAR
+1c8Lq3vdjCx4jKS7G127MmgisGSECgw=
+=inx4
+-----END PGP SIGNATURE-----
 
-Christophe
+--KFWfMBBEp9y0HjZa--
