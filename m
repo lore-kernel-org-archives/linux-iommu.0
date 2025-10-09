@@ -1,150 +1,245 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E3454214813
-	for <iommu@lists.linux.dev>; Thu,  9 Oct 2025 17:03:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C00DA23717F
+	for <iommu@lists.linux.dev>; Thu,  9 Oct 2025 18:25:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760029422; cv=none; b=GZxIb6f5wiI+5mGgpEYqQZ6hHYJ1du+SVTHS4CzH7ZWE0uo5F0c4PVzc2Wv2p9et75kNuoiiT5/ib/6pFLhbptTr7f2F/0o/t93raf+D4cxOmesPOr2QlRciJOEGw0BLXK8cRm+s8DuefptTF791YYMKiCRlVo7Tqz7Gh7u87BA=
+	t=1760034309; cv=none; b=E7uTNtQNXIfcLvt6pD8TTeWrYFvXpRyw/atFn01xGL8AquLgemWYLSBKh5jyYLYT1mdHcJsazIXu44zd5n1HUjclwE1YYHmppHC/9Lox5iJJ63Jj5rIiURJjnmg/GcoDP11R+u1IF0SfYBBWMZxsPVfr7mlt3jbxqveignUZ8rI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760029422; c=relaxed/simple;
-	bh=dvZuHKC+jRuZ29hsRElrVWZQ0CVV3aVULPajs+QQGIQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=UUaGiPPX3EQViPKPb78k5LBRz5yAAmtpHIZgizYC1pmgxWDtX46x8HwxpaOqL2uo2Pr4h4nPfZiOBzTj6Tf7fOVKPoAhkIj18E2TUf7jda09fo6Ae59ga7FV3Nr+x2Lciq3MWNKV4kbyGnP2jg2Q1wSyyOx9tCHCWXAY4N/aTjE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 42A761762;
-	Thu,  9 Oct 2025 10:03:32 -0700 (PDT)
-Received: from [10.57.3.102] (unknown [10.57.3.102])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 75D333F66E;
-	Thu,  9 Oct 2025 10:03:35 -0700 (PDT)
-Message-ID: <9d3eeb9f-b8ea-48e5-a1d9-0865f63ef991@arm.com>
-Date: Thu, 9 Oct 2025 18:03:29 +0100
+	s=arc-20240116; t=1760034309; c=relaxed/simple;
+	bh=jp6n23+Qon0Y2Rd5lGPNFx2F8NwRI69m1if3zfSKUiw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=tqt6QXncTv9/eH0rWQuJFsnXkGDm6Btr03E7Gp6UVskH9jV1QWGrmoRoo85mTWTXHxQ58E911aLUlPFwHqa+n5kpwsG0EoDJqAxJt98kia7W4FGHcb6dTMaJMfJKhjz0Nbw0qfE2XTVWCEoUt7GEO00v71f91xBwQ4lLS6Y6pSk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=cxQpPko1; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="cxQpPko1"
+Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 599EuB9C022311
+	for <iommu@lists.linux.dev>; Thu, 9 Oct 2025 18:25:06 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-type:date:from:in-reply-to:message-id:mime-version
+	:references:subject:to; s=qcppdkim1; bh=5WmouaigJPMDcXEgyz/YOkL3
+	CsweO/cHwliU0xFmscw=; b=cxQpPko1m4R5ETiRSRsON0iOUsd7pvVZsXzuf6/A
+	ZukqQ/Td1GO0OSs5x1uio3fRynGzgdqtWe1Crj9MtQW4j/x7ikTSSvAwuQnGGLjY
+	dvdLpT1z7iG6E7l5Gi67PAopxeNTbkrOAsuVL0gLFxa9AemQwpe7LPnUbgUiD2KV
+	myW3OiSoz8yrN+klOGmBGgBPRVCtu9ImP3a42lJirldq4RWexxzuKGnZ4CxztwBx
+	649UrhsprGXTDf/g2a5wnoo29E8i02EQDftZhUmgrkeRQHzw1Uj6iAHdAKgP0Br5
+	yTEQ4YniMtc6q49wotfArH3nJAl/Tnca34BTDhom/g3ddw==
+Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com [209.85.160.199])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 49nv4skw5p-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Thu, 09 Oct 2025 18:25:06 +0000 (GMT)
+Received: by mail-qt1-f199.google.com with SMTP id d75a77b69052e-4df80d0d4aaso50078571cf.2
+        for <iommu@lists.linux.dev>; Thu, 09 Oct 2025 11:25:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1760034306; x=1760639106;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=5WmouaigJPMDcXEgyz/YOkL3CsweO/cHwliU0xFmscw=;
+        b=Up+OkvepKs+4o3GEq7jBsjjaLQ/541t2iq5Lz8CxJ5gmLMgIdjLKYsk2R9k8P16KgO
+         23WcOr+hjbCm7+SEg4vZJ9TXUv6AzqVyydFvfDY28GDdZeq38rLRDJtqpFRfsTtXE+Xo
+         9CCctZtWF+Mo+cAHFIxFQK61GjoHeVFV36Pu6GCmO3kJz+FdhG4BXhx4vAQ0HlmBil08
+         2sQVQkPhxh55rxA9xsLu79Hfs3w9duBP0691YrK5bCS1s9RZ1xrm2RXDfEdfEsJduYuX
+         HWQDaZQo2X1rVl1yY9Hx92Sg7mmCZPwXlPUHzXIgZilMYmCXZuhZUwmZ061cqVrCoVua
+         2sjA==
+X-Forwarded-Encrypted: i=1; AJvYcCUw1ue122vg52VL1GlrinejSYApb8btaj0luWOAd70SFwavg5z8HhWKFzHQTYC4ozv1NZXnVg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy48xd8qJOyo4fy8fKr+iVVstScrOjUi4C+uqmgrPbjP9IbVqWz
+	VPiifI1gJ2ieK3DgGe4ew1liomX0L8G+YxCVt/xioWti9XscIpC1xDgrg19I0jFuTxD/ytUKKJL
+	eO3JqOYvyuEwc87N2eANQ8MaxPCguq7aY6QWZmfdQaTFs5MEKSjtbZfKU+w==
+X-Gm-Gg: ASbGnctLCmongaSXATj1rENKdHHhDGmb8vpGkkedxcIgdrI73TMVFRFMHDHHFz2W+Mu
+	smnmcurH1V8lhM+g4V/33Sd4DbZLkXIQ06S9yVYTIOVb/eMOd8V+Ax0I6jYrvrhpXs9zOCTxWdi
+	BOGd9w77v1Z78pxuo3DN/YhsFxj61PNJF6wYeBA+/T5bTZxvbbWqdX7yv36b6BD8Uy2tPOk3hV2
+	E/LJvZEvGcys3UBk6GODOB49VkI2rlgzPCW1BlI7NNpp9CJSELFJj0/xokDHSl+dH88d38VsHt4
+	G6Fb7BcNFKNxaP83oDhVkn+MFT9eiqSr1egtgI+zMfbSg1Te3p8kH5ucuaCBJPXEYSZZn5g+Xml
+	l0iNFiFKUNEoA3O8ScoysK9A3GdMAYm7MS2XlA3nGWbj9cNhhvo9LWt/3fw==
+X-Received: by 2002:a05:622a:5c8c:b0:4da:3218:e8d7 with SMTP id d75a77b69052e-4e6eacc1f4fmr134279221cf.4.1760034305395;
+        Thu, 09 Oct 2025 11:25:05 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IEXYd5icY3uU+XNXR6r+B65WuUw2SxQ/2Nhq6GlN0Pnod95XOYX21DP+RvUBPb3V4ep5r8nMQ==
+X-Received: by 2002:a05:622a:5c8c:b0:4da:3218:e8d7 with SMTP id d75a77b69052e-4e6eacc1f4fmr134278401cf.4.1760034304710;
+        Thu, 09 Oct 2025 11:25:04 -0700 (PDT)
+Received: from umbar.lan (2001-14ba-a0c3-3a00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a0c3:3a00:264b:feff:fe8b:be8a])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5908857792dsm63841e87.105.2025.10.09.11.25.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Oct 2025 11:25:03 -0700 (PDT)
+Date: Thu, 9 Oct 2025 21:25:01 +0300
+From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>, joro@8bytes.org,
+        will@kernel.org, saravanak@google.com, conor+dt@kernel.org,
+        robh@kernel.org, mchehab@kernel.org, bod@kernel.org,
+        krzk+dt@kernel.org, abhinav.kumar@linux.dev,
+        vikash.garodia@oss.qualcomm.com, dikshita.agarwal@oss.qualcomm.com,
+        Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
+        bjorn.andersson@oss.qualcomm.com, linux-media@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+Subject: Re: [RFC PATCH 0/3] Introduce iommu-map-masked for platform devices
+Message-ID: <fhb4woejzh3r6v5dxvdiopnsbuwstucfuuzbiymxg4wrxrjc7t@dt3z3utq6lwd>
+References: <20250928171718.436440-1-charan.kalla@oss.qualcomm.com>
+ <aec0f40a-8346-4194-8b18-1022fe3366bb@arm.com>
+ <0d0560cc-9757-4c7b-8de4-170148d99481@oss.qualcomm.com>
+ <ead7cf8b-fbc4-4242-a9da-b313dded1abc@arm.com>
+ <nzqte4glwtpjs5bhkxz43yhdufelxvqvzmg5tepudxwetimir3@bvlw5csjizsh>
+ <9d3eeb9f-b8ea-48e5-a1d9-0865f63ef991@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC PATCH 0/3] Introduce iommu-map-masked for platform devices
-To: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-Cc: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>, joro@8bytes.org,
- will@kernel.org, saravanak@google.com, conor+dt@kernel.org, robh@kernel.org,
- mchehab@kernel.org, bod@kernel.org, krzk+dt@kernel.org,
- abhinav.kumar@linux.dev, vikash.garodia@oss.qualcomm.com,
- dikshita.agarwal@oss.qualcomm.com,
- Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
- bjorn.andersson@oss.qualcomm.com, linux-media@vger.kernel.org,
- linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-References: <20250928171718.436440-1-charan.kalla@oss.qualcomm.com>
- <aec0f40a-8346-4194-8b18-1022fe3366bb@arm.com>
- <0d0560cc-9757-4c7b-8de4-170148d99481@oss.qualcomm.com>
- <ead7cf8b-fbc4-4242-a9da-b313dded1abc@arm.com>
- <nzqte4glwtpjs5bhkxz43yhdufelxvqvzmg5tepudxwetimir3@bvlw5csjizsh>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <nzqte4glwtpjs5bhkxz43yhdufelxvqvzmg5tepudxwetimir3@bvlw5csjizsh>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9d3eeb9f-b8ea-48e5-a1d9-0865f63ef991@arm.com>
+X-Proofpoint-GUID: MJItEKWQr7zlQYJVb2Dp_ki3oTx_uP9f
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMDA4MDEyMSBTYWx0ZWRfX0tqsPxgIHcnb
+ Uai5E38l187swuL/0seIj1/4F1nx5KUV25XB+VjbTuZpEArMbUduNvcBTe4rPMKSSnR2iZDy0qC
+ YdEnHE2+67tL7eag3GiaDZu/bxEdnhTQ6ATcq3mg6N59ACMqMGqESZvcYEm/s+eJ8FIkPK5TWfm
+ +wJgV9rEs3UCSWOS1ETFC7AHwvUo5UxB8fOf4lCi0HUGRitnvHDW2g6M5Scv7y0vSHq+BfYT5ci
+ NAW9/Kv0jcjBftF/6pReK3n+7Wm7O5hmjqLIh0bYxDd58bCcQt2QHEYzZ4Qz/2bCNpE0EzX0TLp
+ K0n5Y2jtWxaM2VDdAHALRY9PE0qJapM8RpdNrWpzY3K06NMggiVSQwDzjPCZE0pQLkSN7UIGHFm
+ t7PlFCC1PbnblPlUNOcVjFtrNdhLhg==
+X-Authority-Analysis: v=2.4 cv=SfL6t/Ru c=1 sm=1 tr=0 ts=68e7fe02 cx=c_pps
+ a=WeENfcodrlLV9YRTxbY/uA==:117 a=xqWC_Br6kY4A:10 a=kj9zAlcOel0A:10
+ a=x6icFKpwvdMA:10 a=9yEbADBicBGoLvg7PPkA:9 a=CjuIK1q_8ugA:10
+ a=kacYvNCVWA4VmyqE58fU:22
+X-Proofpoint-ORIG-GUID: MJItEKWQr7zlQYJVb2Dp_ki3oTx_uP9f
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1117,Hydra:6.1.9,FMLib:17.12.80.40
+ definitions=2025-10-09_06,2025-10-06_01,2025-03-28_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ adultscore=0 clxscore=1015 malwarescore=0 bulkscore=0 priorityscore=1501
+ suspectscore=0 impostorscore=0 lowpriorityscore=0 phishscore=0 spamscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.19.0-2510020000 definitions=main-2510080121
 
-On 2025-10-09 2:19 pm, Dmitry Baryshkov wrote:
-> On Thu, Oct 09, 2025 at 11:46:55AM +0100, Robin Murphy wrote:
->> On 2025-10-08 8:10 pm, Charan Teja Kalla wrote:
->>>
->>> On 9/29/2025 3:50 PM, Robin Murphy wrote:
->>>>> USECASE [1]:
->>>>> -----------
->>>>> Video IP, 32bit, have 2 hardware sub blocks(or can be called as
->>>>> functions) called as pixel and nonpixel blocks, that does decode and
->>>>> encode of the video stream. These sub blocks are __configured__ to
->>>>> generate different stream IDs.
->>>>
->>>> So please clarify why you can't:
->>>>
->>>> a) Describe the sub-blocks as individual child nodes each with their own
->>>> distinct "iommus" property
->>>>
->>>
->>> Thanks Robin for your time. Sorry for late reply as I really didn't have
->>> concrete answer for this question.
->>>
->>> First let me clarify the word "sub blocks" -- This is just the logical
->>> separation with no separate address space to really able to define them
->>> as sub devices. Think of it like a single video IP with 2 dma
->>> engines(used for pixel and non-pixel purpose).
->>>
->>> I should agree that the child-nodes in the device tree is the easy one
->>> and infact, it is how being used in downstream.
->>>
->>> For upstream -- Since there is no real address space to interact with
->>> these sub-blocks(or logical blocks), does it really qualify to define as
->>> child nodes in the device tree? I see there is some push back[1].
->>
->> Who says you need an address space? Child nodes without "reg" properties,
->> referenced by name, compatible or phandle, exist all over the place for all
->> manner of reasons. If there are distinct logical functions with their own
->> distinct hardware properties, then I would say having child nodes to
->> describe and associate those properties with their respective functions is
->> entirely natural and appropriate. The first example that comes to mind of
->> where this is a well-established practice is PMICs - to pick one at random:
->> Documentation/devicetree/bindings/regulator/qcom,rpmh-regulator.yaml
+On Thu, Oct 09, 2025 at 06:03:29PM +0100, Robin Murphy wrote:
+> On 2025-10-09 2:19 pm, Dmitry Baryshkov wrote:
+> > On Thu, Oct 09, 2025 at 11:46:55AM +0100, Robin Murphy wrote:
+> > > On 2025-10-08 8:10 pm, Charan Teja Kalla wrote:
+> > > > 
+> > > > On 9/29/2025 3:50 PM, Robin Murphy wrote:
+> > > > > > USECASE [1]:
+> > > > > > -----------
+> > > > > > Video IP, 32bit, have 2 hardware sub blocks(or can be called as
+> > > > > > functions) called as pixel and nonpixel blocks, that does decode and
+> > > > > > encode of the video stream. These sub blocks are __configured__ to
+> > > > > > generate different stream IDs.
+> > > > > 
+> > > > > So please clarify why you can't:
+> > > > > 
+> > > > > a) Describe the sub-blocks as individual child nodes each with their own
+> > > > > distinct "iommus" property
+> > > > > 
+> > > > 
+> > > > Thanks Robin for your time. Sorry for late reply as I really didn't have
+> > > > concrete answer for this question.
+> > > > 
+> > > > First let me clarify the word "sub blocks" -- This is just the logical
+> > > > separation with no separate address space to really able to define them
+> > > > as sub devices. Think of it like a single video IP with 2 dma
+> > > > engines(used for pixel and non-pixel purpose).
+> > > > 
+> > > > I should agree that the child-nodes in the device tree is the easy one
+> > > > and infact, it is how being used in downstream.
+> > > > 
+> > > > For upstream -- Since there is no real address space to interact with
+> > > > these sub-blocks(or logical blocks), does it really qualify to define as
+> > > > child nodes in the device tree? I see there is some push back[1].
+> > > 
+> > > Who says you need an address space? Child nodes without "reg" properties,
+> > > referenced by name, compatible or phandle, exist all over the place for all
+> > > manner of reasons. If there are distinct logical functions with their own
+> > > distinct hardware properties, then I would say having child nodes to
+> > > describe and associate those properties with their respective functions is
+> > > entirely natural and appropriate. The first example that comes to mind of
+> > > where this is a well-established practice is PMICs - to pick one at random:
+> > > Documentation/devicetree/bindings/regulator/qcom,rpmh-regulator.yaml
+> > 
+> > Logical function, that's correct. And also note, for PMICs that practice
+> > has bitten us back. For PM8008 we switched back to a non-subdevice
+> > representation.
+> > 
+> > > For bonus irony, you can't take the other approaches without inherently
+> > > *introducing* a notional address space in the form of your logical function
+> > > IDs anyway.
+> > > 
+> > > >     > or:
+> > > > > 
+> > > > > b) Use standard "iommu-map" which already supports mapping a masked
+> > > > > input ID to an arbitrary IOMMU specifier
+> > > > > 
+> > > > 
+> > > > I think clients is also required to program non-zero smr mask, where as
+> > > > iommu-map just maps the id to an IOMMU specifier(sid). Please LMK if I
+> > > > am unable to catch your thought here.
+> > > An IOMMU specifier is whatever the target IOMMU node's #iommu-cells says it
+> > > is. The fact that Linux's parsing code only works properly for #iommu-cells
+> > > = 1 is not really a DT binding problem (other than it stemming from a loose
+> > > assumption stated in the PCI binding's use of the property).
+> > 
+> > I really don't like the idea of extending the #iommu-cells. The ARM SMMU
+> > has only one cell, which is correct even for our platforms. The fact
+> > that we need to identify different IOMMU SIDs (and handle them in a
+> > differnt ways) is internal to the video device (and several other
+> > devices). There is nothing to be handled on the ARM SMMU side.
 > 
-> Logical function, that's correct. And also note, for PMICs that practice
-> has bitten us back. For PM8008 we switched back to a non-subdevice
-> representation.
+> Huh? So if you prefer not to change anything, are you suggesting this series
+> doesn't need to exist at all? Now I'm thoroughly confused...
+
+Hmm. We need changes, but I don't feel like adding the FUNCTION_ID to
+#iommu-cells is the best idea.
+
+> If you want to use SMR masks, then you absolutely need #iommu-cells = 2,
+> because that is the SMMU binding for using SMR masks. It would definitely
+
+I'm sorry. Yes, we have #iommu-cells = <2>.
+
+> not be OK to have some magic property trying to smuggle
+> IOMMU-driver-specific data contrary to what the IOMMU node itself says. As
+> for iommu-map, I don't see what would be objectionable about improving the
+> parsing to respect a real #iommu-cells value rather than hard-coding an
+> assumption. Yes, we'd probably need to forbid entries with length > 1
+> targeting IOMMUs with #iommu-cells > 1, since the notion of a linear
+
+This will break e.g. PCIe on Qualcomm platforms:
+
+                        iommu-map = <0x0   &apps_smmu 0x1400 0x1>,
+                                    <0x100 &apps_smmu 0x1401 0x1>;
+
+
+But this seems unlogical anyway wrt. apps_smmu having #iommu-cells =
+<2>. It depends on ARM SMMU ignoring the second cell when it's not
+present.
+
+> relationship between the input ID and the output specifier falls apart when
+> the specifier is complex, but that seems simple enough to implement and
+> document (even if it's too fiddly to describe in the schema itself), and
+> still certainly no worse than having another property that *is* just
+> iommu-map with implicit length = 1.
 > 
->> For bonus irony, you can't take the other approaches without inherently
->> *introducing* a notional address space in the form of your logical function
->> IDs anyway.
->>
->>>     > or:
->>>>
->>>> b) Use standard "iommu-map" which already supports mapping a masked
->>>> input ID to an arbitrary IOMMU specifier
->>>>
->>>
->>> I think clients is also required to program non-zero smr mask, where as
->>> iommu-map just maps the id to an IOMMU specifier(sid). Please LMK if I
->>> am unable to catch your thought here.
->> An IOMMU specifier is whatever the target IOMMU node's #iommu-cells says it
->> is. The fact that Linux's parsing code only works properly for #iommu-cells
->> = 1 is not really a DT binding problem (other than it stemming from a loose
->> assumption stated in the PCI binding's use of the property).
-> 
-> I really don't like the idea of extending the #iommu-cells. The ARM SMMU
-> has only one cell, which is correct even for our platforms. The fact
-> that we need to identify different IOMMU SIDs (and handle them in a
-> differnt ways) is internal to the video device (and several other
-> devices). There is nothing to be handled on the ARM SMMU side.
+> And if you want individual StreamIDs for logical functions to be attachable
+> to distinct contexts then those functions absolutely must be visible to the
+> IOMMU layer and the SMMU driver as independent devices with their own unique
+> properties, which means either they come that way from the DT as of_platform
+> devices in the first place, or you implement a full bus_type abstraction
 
-Huh? So if you prefer not to change anything, are you suggesting this 
-series doesn't need to exist at all? Now I'm thoroughly confused...
+Not necessarily. Tegra display driver creates a device for each context
+on its own. In fact, using OF to create context devices is _less_
+robust, because now the driver needs to sync, checking that there is a
+subdevice, that it has probed, etc. Using manually created devices seems
+better from my POV.
 
-If you want to use SMR masks, then you absolutely need #iommu-cells = 2, 
-because that is the SMMU binding for using SMR masks. It would 
-definitely not be OK to have some magic property trying to smuggle 
-IOMMU-driver-specific data contrary to what the IOMMU node itself says. 
-As for iommu-map, I don't see what would be objectionable about 
-improving the parsing to respect a real #iommu-cells value rather than 
-hard-coding an assumption. Yes, we'd probably need to forbid entries 
-with length > 1 targeting IOMMUs with #iommu-cells > 1, since the notion 
-of a linear relationship between the input ID and the output specifier 
-falls apart when the specifier is complex, but that seems simple enough 
-to implement and document (even if it's too fiddly to describe in the 
-schema itself), and still certainly no worse than having another 
-property that *is* just iommu-map with implicit length = 1.
+> which will have to be hooked up to the IOMMU layer. You cannot make IOMMU
+> configuration "internal" to the actual client driver which is only allowed
+> to bind *after* said IOMMU configuration has already been made.
 
-And if you want individual StreamIDs for logical functions to be 
-attachable to distinct contexts then those functions absolutely must be 
-visible to the IOMMU layer and the SMMU driver as independent devices 
-with their own unique properties, which means either they come that way 
-from the DT as of_platform devices in the first place, or you implement 
-a full bus_type abstraction which will have to be hooked up to the IOMMU 
-layer. You cannot make IOMMU configuration "internal" to the actual 
-client driver which is only allowed to bind *after* said IOMMU 
-configuration has already been made.
+I'm not sure I follow this, I'm sorry.
 
-Thanks,
-Robin.
+
+-- 
+With best wishes
+Dmitry
