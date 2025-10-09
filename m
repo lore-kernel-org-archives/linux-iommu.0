@@ -1,73 +1,62 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from SA9PR02CU001.outbound.protection.outlook.com (mail-southcentralusazon11013046.outbound.protection.outlook.com [40.93.196.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0C80296BDE
-	for <iommu@lists.linux.dev>; Thu,  9 Oct 2025 06:12:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759990357; cv=none; b=aaPUJPGSxoocv3kbkgrNTUSkdpJC0/HS9CJfT6dbTBA15eg+3gKCbGAe/NtJRIVr2j1TRGymHptvu74zfJ18CqDhvmn3MqsGXVf5zvEqSKjybbk65UCjV6EB5JzpzkF9MyLDd7oAP0CBUZHffref+pABntyq6wIdux9bN91L4gg=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759990357; c=relaxed/simple;
-	bh=MI6RSF4NOK4MepNK6VnhBlb5+fKB4cfghytxEFoX7MI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=I1o5yMw3UubNn6Z2gxUtTf519qtDuBO0yACd76eEuikMViKuOOz3MtLV35zVUjCLgSDgxcgoSI86mjg19fIFkeodYh251ufeMcPSBmLpglHtMBUKfJN+p9vF6TBghk1KEw7i1Cm5hkfLF0FweUk3N0/eBJGY1xz0qSKrZ0whcJk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=GVkoDJJ8; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A837DAD4B
+	for <iommu@lists.linux.dev>; Thu,  9 Oct 2025 06:22:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.196.46
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1759990959; cv=fail; b=ZrG0XIIKto/df3ojbgf0O9EzBKFBrmZnbJMH07ZqvEYruhnIMqqPzDS5cVUENoaF+y7eWjuUShQQfFPAQQTN5QgfQszEpktKAYA8pDzHpdVPdIqsAuSiM+AeaDN1GZeRmQcJZe3NepHB91EO5fzwqskHuPTjiWm5Y18D773uWiE=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1759990959; c=relaxed/simple;
+	bh=qY0aDF+SKshSoiBR1qwMRqQR0MDtN/n/sCDUFdpShdI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=BFw8x2f+8x9hNUETF1fEknOGZ/sBiMKzSTHBhneuoB1qGfEPp0Fen6fGzrIuWONKQ3hSz6ExajnzIADvT8itVZXFg9g0xDApjbaWim2o3bKuRGSN40U3nO/P1ojaDBegxlfsQjziSHKZsxwo3ZGBKl/8DU1HxIm7GZjkYpLINEQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=e+Z4uv9i; arc=fail smtp.client-ip=40.93.196.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="GVkoDJJ8"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1759990354;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=NRkB3HnbXEauvObRKfhLALPNCnH0LKvnQC+gj83VPV0=;
-	b=GVkoDJJ8aDT8Kvu1DJaGC0dgC3KWKucpfi8R0VXt/7MVnua55dMQSUnb3fPmK4MYyNODLd
-	YelcsTyUT1slnGvreP71T0+rwJXY/u8QwPwgaLtG0R5vvw76UjqDe+64p2Y1B/5GD2Myf7
-	v48vFz7Vzj9e/WoLXXnNXrxi/Cigkvs=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-324-NzWBTIf_Pt2sJ0ln5bCv3Q-1; Thu, 09 Oct 2025 02:12:31 -0400
-X-MC-Unique: NzWBTIf_Pt2sJ0ln5bCv3Q-1
-X-Mimecast-MFC-AGG-ID: NzWBTIf_Pt2sJ0ln5bCv3Q_1759990350
-Received: by mail-wm1-f69.google.com with SMTP id 5b1f17b1804b1-46e31191379so3809385e9.3
-        for <iommu@lists.linux.dev>; Wed, 08 Oct 2025 23:12:31 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1759990350; x=1760595150;
-        h=content-transfer-encoding:in-reply-to:autocrypt:content-language
-         :from:references:cc:to:subject:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=NRkB3HnbXEauvObRKfhLALPNCnH0LKvnQC+gj83VPV0=;
-        b=c1ZTzjDiF8t3NEU4QGZzMEJDZcErb1gxQVFvC15zYl5MSGDCBG3jrcRWvalEynU/zb
-         8lfZVZSiVDQsVl884z1X4TWuv610rJkRtxMd4Ig7LnUeHCEnqa86EGOwxfmK6M4Ts4Qi
-         wekcgoXqtTgivbjq0f+xaiYWc3bSLfAGU+7WnQNPKJUyqEO4NvLWl1XDLfbzOepprd+g
-         vSKONX2g1WUZmb23TnuHg54Q0hSdtVykYPNfpuvajWsnjIM0P3RB5Gpb9Sa7rSCkE38U
-         ynehdUV9nELxCaO3+Ns5thL5PPPu64G9nC4LgdPngxeOeoYL6/Zay2gn0tQ0YYZ3NKfK
-         FIKg==
-X-Forwarded-Encrypted: i=1; AJvYcCW+E22eDat2xt0oQS6ixsux9VHOSaWXKu2gNVB/QNdb8rwv2O38ZFCTzd3cWjP6llJC/euBRw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxZj4GSaAIVceeRObafe72bpdfjMWLPeAobTLI/KD5a3MeTNc8t
-	zYj37C9014dFdeVRq/I6y8d7izUgPPDbREHqNX9RJ9NXdE7zO0UyKX/9BblZ92SCFNE2Tfooilv
-	u3MlZ5F5QAINklWxPTlvZfEucEFhI+W+g3fowqCYHx2SVfdQgLU3BX5sa
-X-Gm-Gg: ASbGncukURLGNg1HiPidOQF+MHr7wIqe3v4SStt1nze0YmpHohXhRLMVMykMFBafrL+
-	b/j3zPfdwEemJEJaMBvlW2dYRHWg6VsSbcCXkNScYG6N9TMA6xGuQMOxStxRvjQzoWSlRGSGUmK
-	R6y2QyIKPPJLLIDut08wPdk9XkQmZTfQIDIbNwceOz7e7eFZqvj+AAqVMsXyBiuUgNhq5yHe3FO
-	SdrdvmytqTBIBcTP+kZV0AYgm6YNZypMN1IpKR85TQQRgXmjNKuaoCvxAcB35Y8zTjeXpgNAHBa
-	09qf1fZ8+iJ/mZyI1FDtxXGeCnwPUoBgBGzNrMoaFN7TM0tshGy/pb8R4/qYVFM7ltvcErlf9N4
-	EefX0tlIY
-X-Received: by 2002:a05:600c:34cc:b0:46e:59dd:1b4d with SMTP id 5b1f17b1804b1-46fa9aa2076mr63277785e9.16.1759990350193;
-        Wed, 08 Oct 2025 23:12:30 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IGgr3EwtW4kZSC4wN79xTrMonutG/ORyGxtzc7Y7j2Fbu8/LN9oI7c3abBPFzy3SYjFVQbwOQ==
-X-Received: by 2002:a05:600c:34cc:b0:46e:59dd:1b4d with SMTP id 5b1f17b1804b1-46fa9aa2076mr63277065e9.16.1759990349745;
-        Wed, 08 Oct 2025 23:12:29 -0700 (PDT)
-Received: from [192.168.3.141] (tmo-083-189.customers.d1-online.com. [80.187.83.189])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4255d869d50sm33971611f8f.0.2025.10.08.23.12.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Oct 2025 23:12:29 -0700 (PDT)
-Message-ID: <5a5013ca-e976-4622-b881-290eb0d78b44@redhat.com>
-Date: Thu, 9 Oct 2025 08:12:25 +0200
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="e+Z4uv9i"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=nS0nnf/x4WRDd2Iyr7RruM+UHcHEU/zIEWqWimkhnXc3nmz8SMj0+qz36Uhhnxzv26OUNpehxkyZhwklLc6ZN0k8HXo52nFhT9Snw1kvSaa43V+pW2ZbIWdt90uNbMIBaTJKIPvEAXgr254NFC8sUvoKkkVkAeWY8XeS2o0ehDTe1vR0oGlZCnyNuB1BfTv+qlnqe5un8FXg3FjA11nz+pW6e0qQY+taxu82E3JO8KRWu2u0A45zjER33cLySn4fjHU7cUM7d71EqwOk0o9XNQ2NaXGS1w+rvzdd2SO65aaM/PrqshyDL7skULYCKKjpyEHWGzSuYPpZMwCQMby7ow==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=/EJW+GtRPfJ0810p+Bh4m69BN4MpCtwea+DFpvDIYRw=;
+ b=CGuKUndf2oqygnIpGc944D8i2p8XOm5mj44hcFhz22qAxNvz3oK8NGjWF6uAWxOSxli+i+mgTopgJg9QMaBog2ij1wY/vlHAUbDrMQlU35COnfve639jtqcMMxNkGVl3fXXx0tBiSpibKvt6KzEIf06tqLQ2jUUhfNSLT9eXAbzyckzQbQT7wmwYw9Hm6yXnv43c2H4qVj9XupQnpp4qB6bUc1Nc2ct+rrq60lFkVIYXJrU+sB9VqlUHGC+n2x+c003nqY2OO7ThTdqkVOrKwTjMmczGvb6n0pBb+I1obJkT4Yr45ocw4hswBmzFLJ3eqNQ2tN/HR59tTC9UgK+SBg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=nvidia.com smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/EJW+GtRPfJ0810p+Bh4m69BN4MpCtwea+DFpvDIYRw=;
+ b=e+Z4uv9iM6kjKbMcvUfMBD0d4idy4lBz4tSQNWQMW3lQsNnTjz+lXACAm8ysyuRF42peAfjT5ox6i1HVCfKiRlvRE2ZqnIK7Hc9dp2uR3E0d7kPO0Hn8K+/KSxR4iSmPdWfrSvy6xEsWoYkHYlmxk5ISbhApTpAafzYP0uZolcY=
+Received: from SN6PR2101CA0006.namprd21.prod.outlook.com
+ (2603:10b6:805:106::16) by SN7PR12MB7275.namprd12.prod.outlook.com
+ (2603:10b6:806:2ae::9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9203.9; Thu, 9 Oct
+ 2025 06:22:34 +0000
+Received: from SA2PEPF00003AE4.namprd02.prod.outlook.com
+ (2603:10b6:805:106:cafe::18) by SN6PR2101CA0006.outlook.office365.com
+ (2603:10b6:805:106::16) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9228.6 via Frontend Transport; Thu, 9
+ Oct 2025 06:22:24 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
+Received: from satlexmb07.amd.com (165.204.84.17) by
+ SA2PEPF00003AE4.mail.protection.outlook.com (10.167.248.4) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.9203.9 via Frontend Transport; Thu, 9 Oct 2025 06:22:34 +0000
+Received: from [172.31.35.81] (10.180.168.240) by satlexmb07.amd.com
+ (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.17; Wed, 8 Oct
+ 2025 23:22:28 -0700
+Message-ID: <bff5f16e-ea25-4c59-96de-8002373f17c0@amd.com>
+Date: Thu, 9 Oct 2025 11:52:23 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -75,172 +64,127 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFC 06/35] mm/page_alloc: reject unreasonable
- folio/compound page sizes in alloc_contig_range_noprof()
-To: Balbir Singh <balbirs@nvidia.com>, linux-kernel@vger.kernel.org
-Cc: Alexander Potapenko <glider@google.com>,
- Andrew Morton <akpm@linux-foundation.org>,
- Brendan Jackman <jackmanb@google.com>, Christoph Lameter <cl@gentwo.org>,
- Dennis Zhou <dennis@kernel.org>, Dmitry Vyukov <dvyukov@google.com>,
- dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
- iommu@lists.linux.dev, io-uring@vger.kernel.org,
- Jason Gunthorpe <jgg@nvidia.com>, Jens Axboe <axboe@kernel.dk>,
- Johannes Weiner <hannes@cmpxchg.org>, John Hubbard <jhubbard@nvidia.com>,
- kasan-dev@googlegroups.com, kvm@vger.kernel.org,
- "Liam R. Howlett" <Liam.Howlett@oracle.com>,
- Linus Torvalds <torvalds@linux-foundation.org>, linux-arm-kernel@axis.com,
- linux-arm-kernel@lists.infradead.org, linux-crypto@vger.kernel.org,
- linux-ide@vger.kernel.org, linux-kselftest@vger.kernel.org,
- linux-mips@vger.kernel.org, linux-mmc@vger.kernel.org, linux-mm@kvack.org,
- linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
- linux-scsi@vger.kernel.org, Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
- Marco Elver <elver@google.com>, Marek Szyprowski <m.szyprowski@samsung.com>,
- Michal Hocko <mhocko@suse.com>, Mike Rapoport <rppt@kernel.org>,
- Muchun Song <muchun.song@linux.dev>, netdev@vger.kernel.org,
- Oscar Salvador <osalvador@suse.de>, Peter Xu <peterx@redhat.com>,
- Robin Murphy <robin.murphy@arm.com>, Suren Baghdasaryan <surenb@google.com>,
- Tejun Heo <tj@kernel.org>, virtualization@lists.linux.dev,
- Vlastimil Babka <vbabka@suse.cz>, wireguard@lists.zx2c4.com, x86@kernel.org,
- Zi Yan <ziy@nvidia.com>
-References: <20250821200701.1329277-1-david@redhat.com>
- <20250821200701.1329277-7-david@redhat.com>
- <fa2e262c-d732-48e3-9c59-6ed7c684572c@nvidia.com>
-From: David Hildenbrand <david@redhat.com>
-Autocrypt: addr=david@redhat.com; keydata=
- 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
- qIws/H2t
-In-Reply-To: <fa2e262c-d732-48e3-9c59-6ed7c684572c@nvidia.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: ifo0E7-5Wp_KFC8b04Yl84Ywn9B7fnR3Db0a_aQSHVA_1759990350
-X-Mimecast-Originator: redhat.com
+Subject: Re: [PATCH v2 10/12] iommu/amd: Add support for nested domain
+ allocation
 Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To: Jason Gunthorpe <jgg@nvidia.com>, "Suthikulpanit, Suravee"
+	<suravee.suthikulpanit@amd.com>
+CC: <nicolinc@nvidia.com>, <linux-kernel@vger.kernel.org>,
+	<robin.murphy@arm.com>, <will@kernel.org>, <joro@8bytes.org>,
+	<kevin.tian@intel.com>, <jsnitsel@redhat.com>, <vasant.hegde@amd.com>,
+	<iommu@lists.linux.dev>, <santosh.shukla@amd.com>,
+	<sairaj.arunkodilkar@amd.com>, <jon.grimm@amd.com>,
+	<prashanthpra@google.com>, <wvw@google.com>, <wnliu@google.com>,
+	<gptran@google.com>, <kpsingh@google.com>, <joao.m.martins@oracle.com>,
+	<alejandro.j.jimenez@oracle.com>
+References: <20251001060954.5030-1-suravee.suthikulpanit@amd.com>
+ <20251001060954.5030-11-suravee.suthikulpanit@amd.com>
+ <20251006144936.GS3360665@nvidia.com>
+ <fd4341ea-869f-459c-a3be-a98cd1c8ba4b@amd.com>
+ <20251007233931.GD3474167@nvidia.com>
+From: Sairaj Kodilkar <sarunkod@amd.com>
+In-Reply-To: <20251007233931.GD3474167@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: satlexmb07.amd.com (10.181.42.216) To satlexmb07.amd.com
+ (10.181.42.216)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SA2PEPF00003AE4:EE_|SN7PR12MB7275:EE_
+X-MS-Office365-Filtering-Correlation-Id: f65727d8-8a99-40bf-a851-08de06fc3bfc
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|7416014|1800799024|82310400026|376014|36860700013;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?TmR6YVNOMDYzUkFxUkxOQ3M5cFUxS0VITXM1QTZVMVZ4NG5LaWpnSElXcy95?=
+ =?utf-8?B?cG8wYkswaHcreEY4SkF1ZnVidEtnZS9kdnZSVWo3c0VSeXZOSHAyR3MrR1Z2?=
+ =?utf-8?B?T3VEcFN1eXo4ZE9VODVjVUFVbXFHRmJzM0ZjMEwyUFdWZmJhYTZHQUhKZ2Mv?=
+ =?utf-8?B?NU14SlNKMXlxdkp5QkVYVURaTFJET0drMnBMZURCYWNzbVFPTTNGeXpKMjk1?=
+ =?utf-8?B?eEtKRURHUVQ5RTVsZC9YZEN0b0thMnVSbGtGR2MwWm5qdzFlWWk1SXpjRUZj?=
+ =?utf-8?B?VkwwVW9sbDV1QkJHbkpCR2NlWnNxS1NoT1JGNWRMbkdmRzM4YkMyVUpiWktO?=
+ =?utf-8?B?Q1NGVjEzUCtLT2hhRTkrQjd0ak5XN3ZVelpwS0ExMjBWU0hVaUdjdlRlbG02?=
+ =?utf-8?B?ajdWUkNac2ZHcHp1elNPbkFudFlhWmNvZXFwL1hEaVBLKzhTRW96V2YyclFI?=
+ =?utf-8?B?SEFjaXNWS3dYdGNWdzFLSGNOdTRHZmZOeTBQQnR2UENwcjloOUt4VWFkeXJ2?=
+ =?utf-8?B?TjlNQlJQUEJReEcrTHNOazNzMlRhT1Z2M3VXcU42TTNnUjluUUkyVytZSDVy?=
+ =?utf-8?B?dlhIYURuNC9vR3pTeUpSMVZlWmRvR3VtV1NhWFFEY2MwZFI4dzFlc25wN1Fi?=
+ =?utf-8?B?VllRdEtrREgvZmtlTzdLK0IyZnhLYm40RHZYKzFKb0MzenFPM1ZsMVRJR284?=
+ =?utf-8?B?Y0x5eFVFRUtaM2oxUnhzWmFrSll0TmZpUDUvUGRzaXhuUEFSSWZoeVVXalB2?=
+ =?utf-8?B?ekhOVndsQitRcjIvQTlCdXZhcmxFWDVmemMzR1dOVy9lN2c0STJYVlI2VzB6?=
+ =?utf-8?B?V0xhQ3d1c3d1RTZCT2lmckpObU1ZMUlqL3piRE5qeEJYcGlXUmJXcXBuaUdw?=
+ =?utf-8?B?REVuWnJVMVUrZmw1Q0Y5Yjh2S2hBUzIvUXNWcnJJMHN0T2JQVmdmNmlUbDEv?=
+ =?utf-8?B?ekdnTEVxSFV6U3RQQWJqR0szM3JaSVg5a3VoYWtYa1VsY2hmM0lRelJKc0lz?=
+ =?utf-8?B?WnJTTW5uZ3NicDNqbmgxc3M2aHpneGc4VE4zRGE1ZCtGRkVqNlR5ZU5KMDky?=
+ =?utf-8?B?WExCMmgwQy9VVVVQMzllaEplN2E3YW1lZnpWNDlCV0xLL3V2eElKeS9zTHRS?=
+ =?utf-8?B?d3Izd2Y0d2hvUGhaUk5sMk1ZenN6NlJvdEFTSitaQlpuN3hsbWtWUTMvWjZy?=
+ =?utf-8?B?UVowbUhYNFRjcW1BdWViSUNsTUtiNDVUWFUzNmNsaGdnNnR3T3NMZVRnbTNJ?=
+ =?utf-8?B?U1czOHcvT1FrUUJ0eXlsY2ppQVcxVEFTUDc1SDNDVGxXNy9lN3dGa05US29S?=
+ =?utf-8?B?Q3JEY3c1YmhGYTg2am9qclVreHFMY3Q3TU4xN0YzYWNSQXR4OUhkaUpqZll0?=
+ =?utf-8?B?eEFHcFl3Sk9jblpES2o3SG5jZG00R28yUEVsVFlBc2dERlBMSW9zTllSNkMy?=
+ =?utf-8?B?RlUwSzJqMm5VcFRKd0wyaGlyd0tINnpwZGxRR0svRDdDd3hXZVJOZkYzVHY3?=
+ =?utf-8?B?NjU4REZLLzNMRndpWmxGMndRaFkwZzUzWWdhNUwwY1BON1FhUGdrdk5zdmZ3?=
+ =?utf-8?B?Y0lLLzd2dGsrRFA0VXRiRHlmWHlQajJ1dlpDbXVUOHp1YVZHTGhjU3hqbFFK?=
+ =?utf-8?B?WHBZbTZ5SzRNWmJDeGJadVc0dkphQ2djWGdacHJwQVh2L1JoR1JVcUYweXNF?=
+ =?utf-8?B?bkxyT2ZMeFVoRmtCQ2ovZDJETWdaS3RySnNmVGRVYnA4d2VjT3djd3ZYTGRW?=
+ =?utf-8?B?ek1KTVl5cWZFcWJnejlVR3NrWEJpTm85Q01Ja3hVYkZ1WGpZaFl0aWMrTysx?=
+ =?utf-8?B?UmdYYVF1dDdkQ2g5MUNUNnBLN3lRc2pRcjByeEpWUFFQeGFCaGZYcmhSeUdR?=
+ =?utf-8?B?Q0U5aldFZkhNS0ZzTnF3YTRUeGJ4VmZsYTBYZUkydWw2Zko2RUZKbG5oTUIr?=
+ =?utf-8?B?YXJ2MGpibVBIYTFaWTJEK2tyVFg1aXgrdWc2Yy9sNStodnEzcHN6ZXNJQTRY?=
+ =?utf-8?B?RisyYW4zMWlMaXI0dHhoYXRJY3drU1RZbkVid2dGYlNOM2VkalJYMEplK1p5?=
+ =?utf-8?B?OFp1L1lReWpmazJiY1ZrUk5PR00wSEhPekJqU0lsb0cwcElmWHVoSi94Rkt0?=
+ =?utf-8?Q?EfL4=3D?=
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(7416014)(1800799024)(82310400026)(376014)(36860700013);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Oct 2025 06:22:34.0471
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: f65727d8-8a99-40bf-a851-08de06fc3bfc
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SA2PEPF00003AE4.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB7275
 
-On 09.10.25 06:21, Balbir Singh wrote:
-> On 8/22/25 06:06, David Hildenbrand wrote:
->> Let's reject them early, which in turn makes folio_alloc_gigantic() reject
->> them properly.
->>
->> To avoid converting from order to nr_pages, let's just add MAX_FOLIO_ORDER
->> and calculate MAX_FOLIO_NR_PAGES based on that.
->>
->> Signed-off-by: David Hildenbrand <david@redhat.com>
->> ---
->>   include/linux/mm.h | 6 ++++--
->>   mm/page_alloc.c    | 5 ++++-
->>   2 files changed, 8 insertions(+), 3 deletions(-)
->>
->> diff --git a/include/linux/mm.h b/include/linux/mm.h
->> index 00c8a54127d37..77737cbf2216a 100644
->> --- a/include/linux/mm.h
->> +++ b/include/linux/mm.h
->> @@ -2055,11 +2055,13 @@ static inline long folio_nr_pages(const struct folio *folio)
->>   
->>   /* Only hugetlbfs can allocate folios larger than MAX_ORDER */
->>   #ifdef CONFIG_ARCH_HAS_GIGANTIC_PAGE
->> -#define MAX_FOLIO_NR_PAGES	(1UL << PUD_ORDER)
->> +#define MAX_FOLIO_ORDER		PUD_ORDER
-> 
-> Do we need to check for CONTIG_ALLOC as well with CONFIG_ARCH_HAS_GIGANTIC_PAGE?
-> 
 
-I don't think so, can you elaborate?
 
->>   #else
->> -#define MAX_FOLIO_NR_PAGES	MAX_ORDER_NR_PAGES
->> +#define MAX_FOLIO_ORDER		MAX_PAGE_ORDER
->>   #endif
->>   
->> +#define MAX_FOLIO_NR_PAGES	(1UL << MAX_FOLIO_ORDER)
->> +
->>   /*
->>    * compound_nr() returns the number of pages in this potentially compound
->>    * page.  compound_nr() can be called on a tail page, and is defined to
->> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
->> index ca9e6b9633f79..1e6ae4c395b30 100644
->> --- a/mm/page_alloc.c
->> +++ b/mm/page_alloc.c
->> @@ -6833,6 +6833,7 @@ static int __alloc_contig_verify_gfp_mask(gfp_t gfp_mask, gfp_t *gfp_cc_mask)
->>   int alloc_contig_range_noprof(unsigned long start, unsigned long end,
->>   			      acr_flags_t alloc_flags, gfp_t gfp_mask)
->>   {
->> +	const unsigned int order = ilog2(end - start);
-> 
-> Do we need a VM_WARN_ON(end < start)?
+On 10/8/2025 5:09 AM, Jason Gunthorpe wrote:
+> On Tue, Oct 07, 2025 at 03:36:58PM -0500, Suthikulpanit, Suravee wrote:
+>> The gDTE[DomainID] field contains guest Domain ID (gDomID). The host IOMMU
+>> driver uses the gDomId and guest ID (gid) to index the Domain ID mapping
+>> table, and store the host Domain ID (hDomID) in the table entry. This data
+>> structure is required by hw to translation gDomID->hDomID to virtualize
+>> guest invalidation command. This will be part of the upcoming series to
+>> enable hw-vIOMMU.
+> Sure, this translation is part of viommu
+>
+>> This ndom->id is the hDomID, which is currently allocated per-device to
+>> avoid TLB aliasing i.e. A guest w/ multiple pass-through devices w/ the same
+>> hDomID (same stage 2 table) and different stage-1 tables with same PASID.
+>> IOMMU would use the same TLB tag, which results in TLB aliasing issue.
+>> Therefore, we workaround the issue by allocating per-device hDomID for
+>> nested domain.
+> But this is what I mean here, the gDomId should be 1:1 with the hDomId
+> and here you are making it 1:N.
+Hi Jason,
+The guest will only see V2 page table when we are using hardware vIOMMU.
+Since IOMMU driver allocates per device domains when it is using V2 page 
+table,
+the mappings are still N:N and invalidations will work similar to V2 
+page table mode in
+host.
 
-I don't think so.
-
-> 
->>   	unsigned long outer_start, outer_end;
->>   	int ret = 0;
->>   
->> @@ -6850,6 +6851,9 @@ int alloc_contig_range_noprof(unsigned long start, unsigned long end,
->>   					    PB_ISOLATE_MODE_CMA_ALLOC :
->>   					    PB_ISOLATE_MODE_OTHER;
->>   
->> +	if (WARN_ON_ONCE((gfp_mask & __GFP_COMP) && order > MAX_FOLIO_ORDER))
->> +		return -EINVAL;
->> +
->>   	gfp_mask = current_gfp_context(gfp_mask);
->>   	if (__alloc_contig_verify_gfp_mask(gfp_mask, (gfp_t *)&cc.gfp_mask))
->>   		return -EINVAL;
->> @@ -6947,7 +6951,6 @@ int alloc_contig_range_noprof(unsigned long start, unsigned long end,
->>   			free_contig_range(end, outer_end - end);
->>   	} else if (start == outer_start && end == outer_end && is_power_of_2(end - start)) {
->>   		struct page *head = pfn_to_page(start);
->> -		int order = ilog2(end - start);
->>   
->>   		check_new_pages(head, order);
->>   		prep_new_page(head, order, gfp_mask, 0);
-> 
-> Acked-by: Balbir Singh <balbirs@nvidia.com>
-
-Thanks for the review, but note that this is already upstream.
-
--- 
-Cheers
-
-David / dhildenb
+Thanks
+Sairaj
+>
+> It has to be like this or you cannot manage invalidation.
+>
+> Given this series is not really functional it is OK to leave a little
+> hack I guess, but it is worth noting how it is supposed to work.
+>
+> It also probably means we should see the viommu series pretty quickly
+> with a goal to merge them all together in one cycle.
+>
+> Jason
 
