@@ -1,72 +1,72 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1896282E1
-	for <iommu@lists.linux.dev>; Thu,  9 Oct 2025 19:26:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D56F917555
+	for <iommu@lists.linux.dev>; Thu,  9 Oct 2025 19:27:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760037990; cv=none; b=uX4pyZ7VYQIe7jJRfvzVE5KO3PmUBRV33KwJJfakkUuMOdubzWkcY2MQBNijwF8zmcw1GXiCy9w6eAcGBxy/LiOtuadXL2q+sF8AEj7GiGX3X4CSbiOYEqiadx1Yt1UFMFJon8gv+R+49c4QGj6XTzqkNTmDYT4Rw2nMG5+mkYE=
+	t=1760038029; cv=none; b=A+LAlpClM+2clrTMWJxTUWKjTUdTCpK6Z1nzHpnmQG01MZsNfGYhRBhpXCJHudiB2erwaCw7BWPGuE0FY8YOl80jW8Yk2hT8kNvDkA7fHpkWxkg0MS988ddftvnOgHAiIKD50MpTDTNiqqle9ogM3jX2S+V9yCqY4Zii/PjO6Qk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760037990; c=relaxed/simple;
-	bh=7q2YWJYpQaCZUvR/ZTZ8el7P1YcW8PJr6NQTIwA6NmU=;
+	s=arc-20240116; t=1760038029; c=relaxed/simple;
+	bh=AuZ1xHfQENYaRe3ExOrzXIdB/SUMKJjJgeKT3WD7AnU=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=IOOtAMYLk1Iy8zGWurOuYo/+txTuuiCXHhywR3moB07p1MP9eg/pxcfUaU9X/QjN8pb4XtuO9B49ViRiBNUydIzVrmOW48yok+FrWvqZ8qJV3UjagSjSNYF2Ll8c1uGSMe17g2LnHkhhC2E4Ow3l8QxrkB3KwBGWEJiVLLJtGXY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=Oxat8xjQ; arc=none smtp.client-ip=170.10.133.124
+	 In-Reply-To:Content-Type; b=b+XKU3eatrgAnUmxUJ9tFgVXrfHKHrxeNVkzRlZwrxxGz1BlISPLqwI67H/p0PRmf6lWYXkNUIkFU7BuMOl8KoZGkhhcqmFIbqPOLCip4aQohc1f1k+efm440SooiCKrk2axeJSj7WLIkdQt9lZ32lUbn7tHCP1z61qZwAFxjHc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=CXa4JfRZ; arc=none smtp.client-ip=170.10.129.124
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Oxat8xjQ"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="CXa4JfRZ"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1760037987;
+	s=mimecast20190719; t=1760038022;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=W2B8vT5pvQD+mfwnpX1+1iKZS8FrGv7Z2N6yCTBVfn4=;
-	b=Oxat8xjQWOBkPZTCDSqayp4Kw5cjtcY702+BZnDgW4u2KwNJg+0j94Nzx0FGo62o9gP3af
-	Rfwv7v18IOuZJGN0JzFGF7TQIjgZnWJ/Set471WZxapqJWUJwLcXUtMpulxa/czzyf9tCR
-	f9twIRgKXG0VZBrWypqN+yK6O1ssqKI=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=kEnK6fpozBhIAiBgrIzZuihFNuo5JowklnBGljzyNCw=;
+	b=CXa4JfRZkd54yUBOfaO4EH69gkuuhMl68MpClY9+82e3vBm8G3Qt8EpGG8U/5gyIx1Msrq
+	Rpijl7s3rBohW26obt+qdirFQSuTbGY2vkXqesSDzqeV8Y5tehA8uzZRGIGwgMcY8cR/oz
+	k5GE4H40vMLDrkmb/XN1UeXUbsUxWKA=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-616-KyalQ84oOJWUNsp2jZJEDw-1; Thu, 09 Oct 2025 15:26:26 -0400
-X-MC-Unique: KyalQ84oOJWUNsp2jZJEDw-1
-X-Mimecast-MFC-AGG-ID: KyalQ84oOJWUNsp2jZJEDw_1760037985
-Received: by mail-wr1-f69.google.com with SMTP id ffacd0b85a97d-3ecdc9dbc5fso883500f8f.1
-        for <iommu@lists.linux.dev>; Thu, 09 Oct 2025 12:26:26 -0700 (PDT)
+ us-mta-609-5qNXnKjePBmAsa6Bpb6Q-Q-1; Thu, 09 Oct 2025 15:27:01 -0400
+X-MC-Unique: 5qNXnKjePBmAsa6Bpb6Q-Q-1
+X-Mimecast-MFC-AGG-ID: 5qNXnKjePBmAsa6Bpb6Q-Q_1760038020
+Received: by mail-wm1-f71.google.com with SMTP id 5b1f17b1804b1-46b303f6c9cso10698195e9.2
+        for <iommu@lists.linux.dev>; Thu, 09 Oct 2025 12:27:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1760037985; x=1760642785;
+        d=1e100.net; s=20230601; t=1760038020; x=1760642820;
         h=content-transfer-encoding:in-reply-to:autocrypt:content-language
          :from:references:cc:to:subject:user-agent:mime-version:date
          :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=W2B8vT5pvQD+mfwnpX1+1iKZS8FrGv7Z2N6yCTBVfn4=;
-        b=be8vEmLscC3lzTSMuS/5CfrjDuREdU8z6tDuguyBXLUAj6x4YLU0DC7Z6fE9+/mEtm
-         2Tc+YOByF2SVXTKH3r2dui9awzfT+ZtGnyVSyfe4j1jP1BXHOik8XD7ZP1aRzekBOTfk
-         Z9wE85puJw42FUgGcbqkGCbUtN3v2mUIuE8iNSctz/OQdknu8iXO6GZZHYEBUYZV/SQN
-         x/dTebcYgFi2h0dodbRJCqfajhJNMvrcJQ8vVwhJ1MSIYpKj8gQyBVgfVBGBbvvexkgD
-         FGBj9QO9DHppojObdYdCLmxorawdNmpYVp3Lc8nOorGv7BeQ6uSJUwN3a1q87bzmeZaO
-         hQlA==
-X-Gm-Message-State: AOJu0Ywo4uA+8skAC8yi25ujA3CmyIGw47kDuZG5iVedoguYKGV2wWyR
-	PraYHr1JNXG7aSKeJjhKLuuilLnZWtQQgngd1STjV3AStlqDgXjrKvU7D8nQmkR9U3iYRpqIHQd
-	J3K7tq99KswaAaGMAMV2bJEn6Dnn0fzl1P0mb8zEl3vY6Rm/KixzQ8AxH
-X-Gm-Gg: ASbGncvnF4Yo0EfeutoeeJiiiO04/cDerp4PtgvBm448OV3VjhW+RXTPNL+VHWMQ8JY
-	3aZeLMHUDICR1XQo9ipOEUYVPhbtmv0kczaarwbOzlVF3WyRv1+IkyC+pZq25+l1qdN6KG/UXoy
-	kjncUMkpxFcBfdGvyNcCvrQfaHRVoIRK1qwS/vJdiReYFwkve2H1k+Fxico3ZaoVwH/XXmRM3O9
-	YJvph+E7t2bFC+B9mHt88onb6TCakKq79/1nJtpE9muUC0l1xcwp+EbPt6CWxI7MuWjAeZYfi7o
-	9UITXNTgQud1iZxJLQ5H2vlmNR3pK8j3Ql459U371dS/YVDSed8mN+/gQcJH9KeQywdbj9Nsj0y
-	KBdAdvkkh
-X-Received: by 2002:a05:6000:1861:b0:3e7:4fda:fe0c with SMTP id ffacd0b85a97d-42666da6dd4mr5743424f8f.15.1760037985156;
-        Thu, 09 Oct 2025 12:26:25 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IHr53Oq5rgi0BWcMZ9Fm+pXJK59Y4s0sHr9nDLiWoMs2OEe75OxVzju/Ffcx6q/sukO2F7BzA==
-X-Received: by 2002:a05:6000:1861:b0:3e7:4fda:fe0c with SMTP id ffacd0b85a97d-42666da6dd4mr5743402f8f.15.1760037984752;
-        Thu, 09 Oct 2025 12:26:24 -0700 (PDT)
+        bh=kEnK6fpozBhIAiBgrIzZuihFNuo5JowklnBGljzyNCw=;
+        b=SuKRWwllMKwjf+OhylRhWTuttwaz3KcB+xTApPRzDpeoyjLxragVy5ldGmkSNde1yC
+         dO9N2nMaNHa97Se43Oy1uFEwVnlse6SjGWvyCvF6jWU3KNdr5XabtzDBvLOtcsfpU3dF
+         lHb7SIta/Rbj0s5dbSgwnkPRBy5Mt0uhhYPrPbfsGHseNzT6P5T6LoodUvz7D6d2c9VX
+         hh5cap66iUSlSCbJnQiv/ckIEtFBQHpYAm5+MLbc1TaId/3niHyBqC+owMQLykE5LoFC
+         l4yzaJgdBYeqX1krgLou3FLKehBzXMmQMqkMUaHSIwEL/KnN07m07HJznCLmEv+oDtGt
+         rJeA==
+X-Gm-Message-State: AOJu0YwuA4Ljx1KE7WUifMZBFzLrNxb5faBDPazLo1wJ3A9E602yJOw0
+	jAD94/8CJ1rorJ4tGRb70ZpxbMUkEd1+F6WPElYkR9z0vjsDRJ1IAAovqa1fIdClt1clXkQ6dja
+	pb3oNQVxCPUC4OjhC6H3YWUH7Wgosb4t6zYahJgXUlxizCAq+mlpteFxg
+X-Gm-Gg: ASbGncu50psfHWgUIrSJOoMZ3cx1pDQowXAdXYCVSwmJsMYeKbriIcn9N2MgWt8y4h5
+	k30MQhiatmn8C7rzu5J43wGSub6tkCM91FldG/Hb9BCi+Cn1fiUUOl2FmIWphP7gTMrfoxiyn2d
+	Q0vSaFuktiEOpzUMzXn/31vRjw+dWUVyu3K6FIjuYrKbDZh0LiLxii5VUvzT/G072sIf2eFPLcx
+	ZsamxVsrQmDQdj5uuyhnY67Xwd4wXlyfiZbz3eIf0LCGjNWOUVUYCA7IfMUVqdMzDAMwfTxWseh
+	6mm31A5SRFFtXj4R5VVao6y/37p8KWIPTfk9eGzNdIiTcHxMl2s3bJS9G6BEb4iex72li6vkn5k
+	4OOss4xxS
+X-Received: by 2002:a05:600c:3d87:b0:45b:7d77:b592 with SMTP id 5b1f17b1804b1-46fa9a9ede8mr61532875e9.12.1760038020398;
+        Thu, 09 Oct 2025 12:27:00 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IHq4yODAxz2pcaMx7a04UaAUODwZat3HOAUOtZRv5icQqy/NoE4KlujCgSLikJjIvHu8XTYew==
+X-Received: by 2002:a05:600c:3d87:b0:45b:7d77:b592 with SMTP id 5b1f17b1804b1-46fa9a9ede8mr61532735e9.12.1760038019986;
+        Thu, 09 Oct 2025 12:26:59 -0700 (PDT)
 Received: from [192.168.3.141] (tmo-083-189.customers.d1-online.com. [80.187.83.189])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-426ce5d0061sm434778f8f.30.2025.10.09.12.26.22
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-46fb482ba41sm12434105e9.4.2025.10.09.12.26.57
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 09 Oct 2025 12:26:24 -0700 (PDT)
-Message-ID: <646c392c-0a3d-46f6-9d81-c007d6a736da@redhat.com>
-Date: Thu, 9 Oct 2025 21:26:22 +0200
+        Thu, 09 Oct 2025 12:26:59 -0700 (PDT)
+Message-ID: <94851383-7496-4e98-acfb-a16cbfe7523b@redhat.com>
+Date: Thu, 9 Oct 2025 21:26:56 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -74,7 +74,7 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 4/8] mm: Introduce pure page table freeing function
+Subject: Re: [PATCH v5 5/8] x86/mm: Use pagetable_free()
 To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
  Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
  Kevin Tian <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
@@ -86,10 +86,9 @@ To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
  Jean-Philippe Brucker <jean-philippe@linaro.org>,
  Andy Lutomirski <luto@kernel.org>, Yi Lai <yi1.lai@intel.com>
 Cc: iommu@lists.linux.dev, security@kernel.org, x86@kernel.org,
- linux-mm@kvack.org, linux-kernel@vger.kernel.org,
- Dave Hansen <dave.hansen@linux.intel.com>
+ linux-mm@kvack.org, linux-kernel@vger.kernel.org
 References: <20250919054007.472493-1-baolu.lu@linux.intel.com>
- <20250919054007.472493-5-baolu.lu@linux.intel.com>
+ <20250919054007.472493-6-baolu.lu@linux.intel.com>
 From: David Hildenbrand <david@redhat.com>
 Autocrypt: addr=david@redhat.com; keydata=
  xsFNBFXLn5EBEAC+zYvAFJxCBY9Tr1xZgcESmxVNI/0ffzE/ZQOiHJl6mGkmA1R7/uUpiCjJ
@@ -135,63 +134,23 @@ Autocrypt: addr=david@redhat.com; keydata=
  3iyY2Nsd7JxfKu1PRhCGwXzRw5TlfEsoRI7V9A8isUCoqE2Dzh3FvYHVeX4Us+bRL/oqareJ
  CIFqgYMyvHj7Q06kTKmauOe4Nf0l0qEkIuIzfoLJ3qr5UyXc2hLtWyT9Ir+lYlX9efqh7mOY
  qIws/H2t
-In-Reply-To: <20250919054007.472493-5-baolu.lu@linux.intel.com>
+In-Reply-To: <20250919054007.472493-6-baolu.lu@linux.intel.com>
 X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: drlX8CS18ta-6mg7RL9nD7bcpLRwelCGByLuCX9siCw_1760037985
+X-Mimecast-MFC-PROC-ID: iAiwBsNmVCaPgROw53AUT9hTCeXl6lakUEsge1suAw4_1760038020
 X-Mimecast-Originator: redhat.com
 Content-Language: en-US
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 19.09.25 07:40, Lu Baolu wrote:
-> From: Dave Hansen <dave.hansen@linux.intel.com>
+> The kernel's memory management subsystem provides a dedicated interface,
+> pagetable_free(), for freeing page table pages. Updates two call sites to
+> use pagetable_free() instead of the lower-level __free_page() or
+> free_pages(). This improves code consistency and clarity, and ensures the
+> correct freeing mechanism is used.
 > 
-> The pages used for ptdescs are currently freed back to the allocator
-> in a single location. They will shortly be freed from a second
-> location.
-> 
-> Create a simple helper that just frees them back to the allocator.
-> 
-> Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
 > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
 > ---
->   include/linux/mm.h | 11 ++++++++---
->   1 file changed, 8 insertions(+), 3 deletions(-)
-> 
-> diff --git a/include/linux/mm.h b/include/linux/mm.h
-> index f3db3a5ebefe..668d519edc0f 100644
-> --- a/include/linux/mm.h
-> +++ b/include/linux/mm.h
-> @@ -2884,6 +2884,13 @@ static inline struct ptdesc *pagetable_alloc_noprof(gfp_t gfp, unsigned int orde
->   }
->   #define pagetable_alloc(...)	alloc_hooks(pagetable_alloc_noprof(__VA_ARGS__))
->   
-> +static inline void __pagetable_free(struct ptdesc *pt)
-> +{
-> +	struct page *page = ptdesc_page(pt);
-> +
-> +	__free_pages(page, compound_order(page));
-> +}
-> +
->   /**
->    * pagetable_free - Free pagetables
->    * @pt:	The page table descriptor
-> @@ -2893,12 +2900,10 @@ static inline struct ptdesc *pagetable_alloc_noprof(gfp_t gfp, unsigned int orde
->    */
->   static inline void pagetable_free(struct ptdesc *pt)
->   {
-> -	struct page *page = ptdesc_page(pt);
-> -
->   	if (ptdesc_test_kernel(pt))
->   		ptdesc_clear_kernel(pt);
->   
-> -	__free_pages(page, compound_order(page));
-> +	__pagetable_free(pt);
->   }
->   
->   #if defined(CONFIG_SPLIT_PTE_PTLOCKS)
 
 Acked-by: David Hildenbrand <david@redhat.com>
 
