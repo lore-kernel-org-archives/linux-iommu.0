@@ -1,72 +1,72 @@
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D56F917555
-	for <iommu@lists.linux.dev>; Thu,  9 Oct 2025 19:27:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 368B9258CFA
+	for <iommu@lists.linux.dev>; Thu,  9 Oct 2025 19:29:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760038029; cv=none; b=A+LAlpClM+2clrTMWJxTUWKjTUdTCpK6Z1nzHpnmQG01MZsNfGYhRBhpXCJHudiB2erwaCw7BWPGuE0FY8YOl80jW8Yk2hT8kNvDkA7fHpkWxkg0MS988ddftvnOgHAiIKD50MpTDTNiqqle9ogM3jX2S+V9yCqY4Zii/PjO6Qk=
+	t=1760038152; cv=none; b=eiLo2l43sLnG/ypMNz0E3X7pLtvEwCig7HOXyOHMSHoDpSZLybX7bTSJ7jqZ9iAqKHRIkJUFTM5TGRvypzoADasuBxqtl8dSM/t7arEwVcUEWA7/4E7iSEPDJFA/826eWIJk5UoSwArA/Yk/vNCTA5aFUuArdc5n6q1xCZwKUfQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760038029; c=relaxed/simple;
-	bh=AuZ1xHfQENYaRe3ExOrzXIdB/SUMKJjJgeKT3WD7AnU=;
+	s=arc-20240116; t=1760038152; c=relaxed/simple;
+	bh=H/mYcSY8IRc8FFw6hGHOaUcyuzzyejgI2LVImLSxLCw=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=b+XKU3eatrgAnUmxUJ9tFgVXrfHKHrxeNVkzRlZwrxxGz1BlISPLqwI67H/p0PRmf6lWYXkNUIkFU7BuMOl8KoZGkhhcqmFIbqPOLCip4aQohc1f1k+efm440SooiCKrk2axeJSj7WLIkdQt9lZ32lUbn7tHCP1z61qZwAFxjHc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=CXa4JfRZ; arc=none smtp.client-ip=170.10.129.124
+	 In-Reply-To:Content-Type; b=CTHRBkYjWT4mo5q970kTr6yl90yg8Lrgo8ZHhxr5hlELFb+Bu1djV6MZwuAqrGxbSbzAplbd6Vk/2HUCKUAuyXpITiPMlirKuj18BmtgW65PW/MW1ECJ+0Ur4OnWyrwH6QsS4ugxyKxA1gdFDJMj8CxQbgxB3k7M791ZCDfhVhc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=K+oqna0I; arc=none smtp.client-ip=170.10.129.124
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="CXa4JfRZ"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="K+oqna0I"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1760038022;
+	s=mimecast20190719; t=1760038146;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=kEnK6fpozBhIAiBgrIzZuihFNuo5JowklnBGljzyNCw=;
-	b=CXa4JfRZkd54yUBOfaO4EH69gkuuhMl68MpClY9+82e3vBm8G3Qt8EpGG8U/5gyIx1Msrq
-	Rpijl7s3rBohW26obt+qdirFQSuTbGY2vkXqesSDzqeV8Y5tehA8uzZRGIGwgMcY8cR/oz
-	k5GE4H40vMLDrkmb/XN1UeXUbsUxWKA=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=UYizE6uG9dNRCx3B33Lx7SghCaXuP30ktU90LRwaflI=;
+	b=K+oqna0IVxLKwGXSQBV9hHshneFRu79W7UyieKd9kRDbMkF2bg2gr09DzlzTvM2kslifQO
+	utrqFX/VyFIPVeYcVR/aJI6LxNCc4QGy5VyVs0DIizjr93M8gQqMx0pqFBjTsdbrlbFaS/
+	cmyjr+N1Dxuoiwjij7XasOUWYl25fps=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-609-5qNXnKjePBmAsa6Bpb6Q-Q-1; Thu, 09 Oct 2025 15:27:01 -0400
-X-MC-Unique: 5qNXnKjePBmAsa6Bpb6Q-Q-1
-X-Mimecast-MFC-AGG-ID: 5qNXnKjePBmAsa6Bpb6Q-Q_1760038020
-Received: by mail-wm1-f71.google.com with SMTP id 5b1f17b1804b1-46b303f6c9cso10698195e9.2
-        for <iommu@lists.linux.dev>; Thu, 09 Oct 2025 12:27:01 -0700 (PDT)
+ us-mta-681-d1QHNaRlPUaLbMXZZ78lvQ-1; Thu, 09 Oct 2025 15:29:03 -0400
+X-MC-Unique: d1QHNaRlPUaLbMXZZ78lvQ-1
+X-Mimecast-MFC-AGG-ID: d1QHNaRlPUaLbMXZZ78lvQ_1760038142
+Received: by mail-wr1-f72.google.com with SMTP id ffacd0b85a97d-3f93db57449so863584f8f.2
+        for <iommu@lists.linux.dev>; Thu, 09 Oct 2025 12:29:02 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1760038020; x=1760642820;
+        d=1e100.net; s=20230601; t=1760038142; x=1760642942;
         h=content-transfer-encoding:in-reply-to:autocrypt:content-language
          :from:references:cc:to:subject:user-agent:mime-version:date
          :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=kEnK6fpozBhIAiBgrIzZuihFNuo5JowklnBGljzyNCw=;
-        b=SuKRWwllMKwjf+OhylRhWTuttwaz3KcB+xTApPRzDpeoyjLxragVy5ldGmkSNde1yC
-         dO9N2nMaNHa97Se43Oy1uFEwVnlse6SjGWvyCvF6jWU3KNdr5XabtzDBvLOtcsfpU3dF
-         lHb7SIta/Rbj0s5dbSgwnkPRBy5Mt0uhhYPrPbfsGHseNzT6P5T6LoodUvz7D6d2c9VX
-         hh5cap66iUSlSCbJnQiv/ckIEtFBQHpYAm5+MLbc1TaId/3niHyBqC+owMQLykE5LoFC
-         l4yzaJgdBYeqX1krgLou3FLKehBzXMmQMqkMUaHSIwEL/KnN07m07HJznCLmEv+oDtGt
-         rJeA==
-X-Gm-Message-State: AOJu0YwuA4Ljx1KE7WUifMZBFzLrNxb5faBDPazLo1wJ3A9E602yJOw0
-	jAD94/8CJ1rorJ4tGRb70ZpxbMUkEd1+F6WPElYkR9z0vjsDRJ1IAAovqa1fIdClt1clXkQ6dja
-	pb3oNQVxCPUC4OjhC6H3YWUH7Wgosb4t6zYahJgXUlxizCAq+mlpteFxg
-X-Gm-Gg: ASbGncu50psfHWgUIrSJOoMZ3cx1pDQowXAdXYCVSwmJsMYeKbriIcn9N2MgWt8y4h5
-	k30MQhiatmn8C7rzu5J43wGSub6tkCM91FldG/Hb9BCi+Cn1fiUUOl2FmIWphP7gTMrfoxiyn2d
-	Q0vSaFuktiEOpzUMzXn/31vRjw+dWUVyu3K6FIjuYrKbDZh0LiLxii5VUvzT/G072sIf2eFPLcx
-	ZsamxVsrQmDQdj5uuyhnY67Xwd4wXlyfiZbz3eIf0LCGjNWOUVUYCA7IfMUVqdMzDAMwfTxWseh
-	6mm31A5SRFFtXj4R5VVao6y/37p8KWIPTfk9eGzNdIiTcHxMl2s3bJS9G6BEb4iex72li6vkn5k
-	4OOss4xxS
-X-Received: by 2002:a05:600c:3d87:b0:45b:7d77:b592 with SMTP id 5b1f17b1804b1-46fa9a9ede8mr61532875e9.12.1760038020398;
-        Thu, 09 Oct 2025 12:27:00 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IHq4yODAxz2pcaMx7a04UaAUODwZat3HOAUOtZRv5icQqy/NoE4KlujCgSLikJjIvHu8XTYew==
-X-Received: by 2002:a05:600c:3d87:b0:45b:7d77:b592 with SMTP id 5b1f17b1804b1-46fa9a9ede8mr61532735e9.12.1760038019986;
-        Thu, 09 Oct 2025 12:26:59 -0700 (PDT)
+        bh=UYizE6uG9dNRCx3B33Lx7SghCaXuP30ktU90LRwaflI=;
+        b=an/pDgP/PgD6l2gWZ5ZfnaJashDGZAyFMM2eHZ9+EbM2seqCztwD5lMsThi8nONWTp
+         Na44zmsTzDal9McK+2CFbSimVbkxcWBzslDY0gHK/DwxqCi+KC5/5/A2FiqUL57ChFmg
+         w5yvtcWoK7ZaLc09Soo7jVBGH5g+RhRqUDXwYhTgLxYup0sMB2nsWH3P3PgTg5yWgQnr
+         OMWQzZcYlagFiK496ISNt6t1SJlR7sFgUnDSZ6Fhf/rnfbJ+9Cfh+bLnNJw3HsXqI7Hh
+         EfflEFx92tjBCDdKyMNYvD4JYm9Z+m4zw5wj8RjDvRUMC5zRatilpnv7149p92rBMeXz
+         DJ5g==
+X-Gm-Message-State: AOJu0Yy5zNrFEXkBji9VpkBsGxRzv9Kulvu80UFYW2k3qwHi3uUlWsqx
+	oeoJb5gqF3v+na/rDPOGElphA8/5IfePrlzKj9wr9gG/0gah+Gs4zNhMkKkaJSzBKEnPpq6pEaH
+	4GXLbp+l+W1rjZuvpd7GIQfwvaFUYixCacVxJi21PiZnLjHGExuikRQLX
+X-Gm-Gg: ASbGnctqLBB5Zo37vhG6edcdZE42UKtzFpftkpBtXZA9nFjNPCZGcAJxnFR4pPyi+mT
+	zmtUUortsA2eKq/OePJEur2xdrYZ4CMjwmfHDJQq3Uf+w2GQTBrMt0GUHNHSVw2bZrfeflIGwFb
+	bLbD31gSqhnmYCL4cyBZbf3vmgqE1YEf6orEQ2CC3aCYul/P9f68lxGgYTanLNBxvlpRAoq9nFv
+	TmBWmEdNoU48Bw5fP5juUUVnjf3XE/kpxGtuq7R+F2eSAUcoAZgXZGGFdt4kaafdDy6mXv2CZZE
+	Jy5trJWIEu6t/JM1VjwYvqqgPxRvq+ne+ZB2bpJALc+kCIAllzsskFyvqlBY+7T7LyxLmd3WP4L
+	rea6AtDXy
+X-Received: by 2002:a05:6000:4313:b0:3ea:6680:8fb5 with SMTP id ffacd0b85a97d-42666ab29d5mr4954564f8f.2.1760038141798;
+        Thu, 09 Oct 2025 12:29:01 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IF2gGT2xa1+bv3tEdvDcUr7e+R3VDfPgA0ByjD5pwZbjp/sJ5A191i0yd157sCivGgarXbQ8g==
+X-Received: by 2002:a05:6000:4313:b0:3ea:6680:8fb5 with SMTP id ffacd0b85a97d-42666ab29d5mr4954535f8f.2.1760038141331;
+        Thu, 09 Oct 2025 12:29:01 -0700 (PDT)
 Received: from [192.168.3.141] (tmo-083-189.customers.d1-online.com. [80.187.83.189])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-46fb482ba41sm12434105e9.4.2025.10.09.12.26.57
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-426ce5833dcsm468974f8f.19.2025.10.09.12.28.59
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 09 Oct 2025 12:26:59 -0700 (PDT)
-Message-ID: <94851383-7496-4e98-acfb-a16cbfe7523b@redhat.com>
-Date: Thu, 9 Oct 2025 21:26:56 +0200
+        Thu, 09 Oct 2025 12:29:00 -0700 (PDT)
+Message-ID: <4858074d-f058-41ec-a581-a8254b8cc2d7@redhat.com>
+Date: Thu, 9 Oct 2025 21:28:58 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -74,7 +74,8 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 5/8] x86/mm: Use pagetable_free()
+Subject: Re: [PATCH v5 6/8] mm: Introduce deferred freeing for kernel page
+ tables
 To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
  Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
  Kevin Tian <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
@@ -86,9 +87,10 @@ To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
  Jean-Philippe Brucker <jean-philippe@linaro.org>,
  Andy Lutomirski <luto@kernel.org>, Yi Lai <yi1.lai@intel.com>
 Cc: iommu@lists.linux.dev, security@kernel.org, x86@kernel.org,
- linux-mm@kvack.org, linux-kernel@vger.kernel.org
+ linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+ Dave Hansen <dave.hansen@linux.intel.com>
 References: <20250919054007.472493-1-baolu.lu@linux.intel.com>
- <20250919054007.472493-6-baolu.lu@linux.intel.com>
+ <20250919054007.472493-7-baolu.lu@linux.intel.com>
 From: David Hildenbrand <david@redhat.com>
 Autocrypt: addr=david@redhat.com; keydata=
  xsFNBFXLn5EBEAC+zYvAFJxCBY9Tr1xZgcESmxVNI/0ffzE/ZQOiHJl6mGkmA1R7/uUpiCjJ
@@ -134,25 +136,40 @@ Autocrypt: addr=david@redhat.com; keydata=
  3iyY2Nsd7JxfKu1PRhCGwXzRw5TlfEsoRI7V9A8isUCoqE2Dzh3FvYHVeX4Us+bRL/oqareJ
  CIFqgYMyvHj7Q06kTKmauOe4Nf0l0qEkIuIzfoLJ3qr5UyXc2hLtWyT9Ir+lYlX9efqh7mOY
  qIws/H2t
-In-Reply-To: <20250919054007.472493-6-baolu.lu@linux.intel.com>
+In-Reply-To: <20250919054007.472493-7-baolu.lu@linux.intel.com>
 X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: iAiwBsNmVCaPgROw53AUT9hTCeXl6lakUEsge1suAw4_1760038020
+X-Mimecast-MFC-PROC-ID: PGQQFauUcn1lnJBhMZcuPjcB3P86IeyBprzSP1OveCo_1760038142
 X-Mimecast-Originator: redhat.com
 Content-Language: en-US
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 19.09.25 07:40, Lu Baolu wrote:
-> The kernel's memory management subsystem provides a dedicated interface,
-> pagetable_free(), for freeing page table pages. Updates two call sites to
-> use pagetable_free() instead of the lower-level __free_page() or
-> free_pages(). This improves code consistency and clarity, and ensures the
-> correct freeing mechanism is used.
+> From: Dave Hansen <dave.hansen@linux.intel.com>
 > 
+> This introduces a conditional asynchronous mechanism, enabled by
+> CONFIG_ASYNC_PGTABLE_FREE. When enabled, this mechanism defers the freeing
+> of pages that are used as page tables for kernel address mappings. These
+> pages are now queued to a work struct instead of being freed immediately.
+> 
+> This deferred freeing provides a safe context for a future patch to add
+> an IOMMU-specific callback, which might be expensive on large-scale
+> systems. This ensures the necessary IOMMU cache invalidation is performed
+> before the page is finally returned to the page allocator outside of any
+> critical, non-sleepable path.
+> 
+> Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
 > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
 > ---
 
-Acked-by: David Hildenbrand <david@redhat.com>
+Can we please squash #7 in here and make sure to call the config knob 
+something that indicates that it is for *kernel* page tables only?
+
+ASYNC_KERNEL_PGTABLE_FREE
+
+or sth like that.
 
 -- 
 Cheers
