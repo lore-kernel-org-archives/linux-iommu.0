@@ -1,151 +1,221 @@
-Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DEA8275AFD
-	for <iommu@lists.linux.dev>; Thu,  9 Oct 2025 10:16:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.52
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 33E3A2C0F89;
+	Thu,  9 Oct 2025 10:20:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=93.17.235.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760004964; cv=none; b=nPXvMez1DXi2FvMqZJRUIcQzpoDezX1GjBj8eBnXfByLVpsEfdlXruLywWukB1Qx3DijMgmbJ2kvJo6oFcsfUA1KGOThO9/6epcZITPWnlG31QfVs9hXmZuBaDv/q8SKxzvQwV34E5t7K5a/xaRPZMLth3OnNTWE0xHRk0BV/WA=
+	t=1760005238; cv=none; b=VReYfd/UsW0XKjO/qLCJ+IIjkIuY8z57CcqP3O3fesFrn9A21eMWtA4ogYCWcCy3YDkLLESVGnv04XZEc7IQWDDRBpiZM2KIhzFF2g55wpbJiXceFnBq6w5A1N+/MwEViw81T+yaRDhK5dvcy1iFxcJhb5FagNcoPDIPjvLhsSg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760004964; c=relaxed/simple;
-	bh=9qRHHYEqmADy2Hg7PePBEBsrGtyY7ax7aZmn7NMwQzY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=PK7W92UIM2OXEkmNSQ1ILnbugI5liQprX8XDfUD8E+oqqPo1D1Yk45qB1XPBrE8tBSuwcdMVggFqW8hG3kQiJiUOLFoZQMXvId4d9eGxUZnMV3FuGoiGvyKoJZ9KDlusI45WERpse615/8Vde80CcwgDBulITZNF749KHV9G43I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BhFdX6mG; arc=none smtp.client-ip=209.85.221.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BhFdX6mG"
-Received: by mail-wr1-f52.google.com with SMTP id ffacd0b85a97d-3fa528f127fso616703f8f.1
-        for <iommu@lists.linux.dev>; Thu, 09 Oct 2025 03:16:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1760004961; x=1760609761; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=OM8w5j3cNslas5sLb0Tl+m0IuMNBdYJF77WJyrPk0Zo=;
-        b=BhFdX6mGSUfc3MIRTiBMvveCiRQ9RQyQUEePPdAZEvCLCZK7ocdVL4ciiCTkS5Poud
-         3XRl4okku54Xk14U5XPqsaU6gN8EIY7LjMhFXeR8NiOMVQbLck05Q+CLPqRlzbJ1Z6+5
-         StctA/uaIsCrNMxSqhvxjkGDq4Wx9LtkhjPmZRQZ9T/8hyxoxVvL3AjHmJ8nqI3kLad6
-         Fjp9V9tE7rvGn7KUu71pGbv+wKi/2uRpycdycRGZkRw3oft4Ht1LN9vLTx6lg2ETcIEu
-         J/LDIA3GTk0+HJmYFpAv1M3dDEsIN0byK5U6fVMJ/WeD0sLZ4HV0/i7iWWtAIPwhSCYm
-         tY+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1760004961; x=1760609761;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=OM8w5j3cNslas5sLb0Tl+m0IuMNBdYJF77WJyrPk0Zo=;
-        b=GX2eDAMKqF+5pGAbzRTjG56jlx2npUgPTB6q1gS5j4alZ71Eoha5FhkPQBi5jtfvMB
-         slAXv4nDHWLkITc03+FAK2h7tHXLQxPyvyLB2ts2GsaR8XYJLEjNk2rOXt1Gw7Utgpe0
-         9yCiwzrLMhSaUqt0tVNYVqHTRNrOLt5UPMtMG3dd4Oh49LbuBde/pL1+pdWW1xYyMF+z
-         Cy5wQGsSvD5nFq47DBwjvJekWtbY5yPbbeSd1REPfsBat+FRFe7wgVlIm0DBehy/T6iP
-         pGzu2iOENN1RR8dNWLgdbMLRqi3rasPEYLagVWipQ/NGRSdcVUAHuOoObLkup4dkUG+2
-         NcRw==
-X-Forwarded-Encrypted: i=1; AJvYcCXm0Mn8WF11Aijolpt1fl9DzOhQhthhRtaj31J09lsvRWfPK8azE7pTjPOodbg1oH3dCffacg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Ywg+Mp+bVsnKassS5tilTqYWNfSXgpZgQKnXVVzU/RcBnVsUeFC
-	YciBV3lmar/2ucznOCptKvo5VXipjlbID1itP21HkwbgNZqIP9ODWuB8
-X-Gm-Gg: ASbGncvtU5S0xs68lucUzXgtkl1ZEOYDCYQyeweSNJwIZ9wgaThvv6ZgsjmgsXB/5qw
-	GWT2mItv961+AmEX0gcE5oYOBNOpcMIlFTTA5kkJEoI8S5x8Q0L26JbMCfmOtAUe7XzDHdkDYyx
-	c4ekciqgfKoICCrikL5rOlkKV65wt2AsCUidC5EU9xXSL9LDVSqezyPYzbzay5KHgN4bHzIIa2T
-	9r/bveNp/MLMJ9hMbNzPogPYUg34Jw/PklHlWjpkWrDQbCufQfIpS3bPfhVREpS/SaA0NCCzG0d
-	6WWRR+CSqAHDn3QqbaRJ5xNMH/Y+VJFTyedqhzNSz4K3yTSDrN/hHWkyEOIfHvLq/B/ZiRtDSHc
-	HaIPftcquhiO7Q+t8hmxeta+B3GzxrihUhwX6XUa8BXFVFgi2SJ/UA5PP0Zzrf1+s6u3CPdaIeF
-	8uTry1zwFsElyRpVWZetybS0ISoiWHKKLn1K1tq+V7r5dO
-X-Google-Smtp-Source: AGHT+IFlFWC9kU+Mnozr0FajDi8lLvELWyKIXfkOw61WlClbcF8AFrsB7MLFt16hX93JOqSFya6Ipw==
-X-Received: by 2002:a05:6000:4283:b0:3ee:1368:a921 with SMTP id ffacd0b85a97d-4266e7cfb85mr5665226f8f.28.1760004961089;
-        Thu, 09 Oct 2025 03:16:01 -0700 (PDT)
-Received: from orome (p200300e41f28f500f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f28:f500:f22f:74ff:fe1f:3a53])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4255d8a6bb2sm33100275f8f.10.2025.10.09.03.15.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Oct 2025 03:15:59 -0700 (PDT)
-Date: Thu, 9 Oct 2025 12:15:57 +0200
-From: Thierry Reding <thierry.reding@gmail.com>
-To: Johan Hovold <johan@kernel.org>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Sven Peter <sven@kernel.org>, Janne Grunau <j@jannau.net>, 
-	Rob Clark <robin.clark@oss.qualcomm.com>, Marek Szyprowski <m.szyprowski@samsung.com>, 
-	Yong Wu <yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>, 
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, Chen-Yu Tsai <wens@csie.org>, Krishna Reddy <vdumpa@nvidia.com>, 
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, stable@vger.kernel.org, 
-	Thierry Reding <treding@nvidia.com>, Miaoqian Lin <linmq006@gmail.com>
-Subject: Re: [PATCH v2 14/14] iommu/tegra: fix device leak on probe_device()
-Message-ID: <4uszly3pf2iddttdwbrfnt5pypzsyj4loz4i3a6ecnekkiedgr@r2bbpn6ymtax>
-References: <20251007094327.11734-1-johan@kernel.org>
- <20251007094327.11734-15-johan@kernel.org>
- <rp2yiradenf3twznebagx7tgsruwh66exiikal37c4fwo75t4t@4breto65stqt>
- <aOdyC1toHHIeE4i5@hovoldconsulting.com>
+	s=arc-20240116; t=1760005238; c=relaxed/simple;
+	bh=lUs8p2fW3v1l2sBrZO8lIJGpAyvrMi+W3vfGsTEx0nY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=XNXhwqJusBq8uc0NR5t19eab6XRreli0uKJECdHz9tlq24THZgYinykcp0pEMbWQh8/wWH541mzlz5+LoHN7SVb4p4GK+5v8Ju+z4MUrvXYn+bjq/Q6KhaNe08IFo/s5FCTvIZbFfE8NBd477aQ60QfTimvvYEp6Xz+iJo66ofs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=csgroup.eu; spf=pass smtp.mailfrom=csgroup.eu; arc=none smtp.client-ip=93.17.235.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=csgroup.eu
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=csgroup.eu
+Received: from localhost (mailhub4.si.c-s.fr [172.26.127.67])
+	by localhost (Postfix) with ESMTP id 4cj548110xz9sSL;
+	Thu,  9 Oct 2025 12:01:12 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+	by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id qOLNCcqM6pFr; Thu,  9 Oct 2025 12:01:12 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+	by pegase2.c-s.fr (Postfix) with ESMTP id 4cj5476tjqz9sSC;
+	Thu,  9 Oct 2025 12:01:11 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+	by messagerie.si.c-s.fr (Postfix) with ESMTP id D06108B76C;
+	Thu,  9 Oct 2025 12:01:11 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+	by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+	with ESMTP id MfDghYtIuYkA; Thu,  9 Oct 2025 12:01:11 +0200 (CEST)
+Received: from [192.168.235.99] (unknown [192.168.235.99])
+	by messagerie.si.c-s.fr (Postfix) with ESMTP id 776CE8B767;
+	Thu,  9 Oct 2025 12:01:09 +0200 (CEST)
+Message-ID: <0c730c52-97ee-43ea-9697-ac11d2880ab7@csgroup.eu>
+Date: Thu, 9 Oct 2025 12:01:08 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="c3sygtlebt6s3awu"
-Content-Disposition: inline
-In-Reply-To: <aOdyC1toHHIeE4i5@hovoldconsulting.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: (bisected) [PATCH v2 08/37] mm/hugetlb: check for unreasonable
+ folio sizes when registering hstate
+To: David Hildenbrand <david@redhat.com>, linux-kernel@vger.kernel.org
+Cc: Zi Yan <ziy@nvidia.com>, Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
+ "Liam R. Howlett" <Liam.Howlett@oracle.com>,
+ Alexander Potapenko <glider@google.com>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ Brendan Jackman <jackmanb@google.com>, Christoph Lameter <cl@gentwo.org>,
+ Dennis Zhou <dennis@kernel.org>, Dmitry Vyukov <dvyukov@google.com>,
+ dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+ iommu@lists.linux.dev, io-uring@vger.kernel.org,
+ Jason Gunthorpe <jgg@nvidia.com>, Jens Axboe <axboe@kernel.dk>,
+ Johannes Weiner <hannes@cmpxchg.org>, John Hubbard <jhubbard@nvidia.com>,
+ kasan-dev@googlegroups.com, kvm@vger.kernel.org,
+ Linus Torvalds <torvalds@linux-foundation.org>, linux-arm-kernel@axis.com,
+ linux-arm-kernel@lists.infradead.org, linux-crypto@vger.kernel.org,
+ linux-ide@vger.kernel.org, linux-kselftest@vger.kernel.org,
+ linux-mips@vger.kernel.org, linux-mmc@vger.kernel.org, linux-mm@kvack.org,
+ linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
+ linux-scsi@vger.kernel.org, Marco Elver <elver@google.com>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, Michal Hocko <mhocko@suse.com>,
+ Mike Rapoport <rppt@kernel.org>, Muchun Song <muchun.song@linux.dev>,
+ netdev@vger.kernel.org, Oscar Salvador <osalvador@suse.de>,
+ Peter Xu <peterx@redhat.com>, Robin Murphy <robin.murphy@arm.com>,
+ Suren Baghdasaryan <surenb@google.com>, Tejun Heo <tj@kernel.org>,
+ virtualization@lists.linux.dev, Vlastimil Babka <vbabka@suse.cz>,
+ wireguard@lists.zx2c4.com, x86@kernel.org,
+ "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>
+References: <20250901150359.867252-1-david@redhat.com>
+ <20250901150359.867252-9-david@redhat.com>
+ <3e043453-3f27-48ad-b987-cc39f523060a@csgroup.eu>
+ <d3fc12d4-0b59-4b1f-bb5c-13189a01e13d@redhat.com>
+ <faf62f20-8844-42a0-a7a7-846d8ead0622@csgroup.eu>
+ <9361c75a-ab37-4d7f-8680-9833430d93d4@redhat.com>
+ <03671aa8-4276-4707-9c75-83c96968cbb2@csgroup.eu>
+ <1db15a30-72d6-4045-8aa1-68bd8411b0ba@redhat.com>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
+Content-Language: fr-FR
+In-Reply-To: <1db15a30-72d6-4045-8aa1-68bd8411b0ba@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
 
---c3sygtlebt6s3awu
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH v2 14/14] iommu/tegra: fix device leak on probe_device()
-MIME-Version: 1.0
 
-On Thu, Oct 09, 2025 at 10:27:55AM +0200, Johan Hovold wrote:
-> On Thu, Oct 09, 2025 at 09:56:18AM +0200, Thierry Reding wrote:
-> > On Tue, Oct 07, 2025 at 11:43:27AM +0200, Johan Hovold wrote:
->=20
-> > > @@ -830,10 +830,9 @@ static struct tegra_smmu *tegra_smmu_find(struct=
- device_node *np)
-> > >  		return NULL;
-> > > =20
-> > >  	mc =3D platform_get_drvdata(pdev);
-> > > -	if (!mc) {
-> > > -		put_device(&pdev->dev);
-> > > +	put_device(&pdev->dev);
-> > > +	if (!mc)
-> > >  		return NULL;
-> > > -	}
-> > > =20
-> > >  	return mc->smmu;
-> >=20
-> > pdev->dev is what's backing mc, so if we use put_device() here, then the
-> > MC could go away at any time, right?
->=20
-> Holding a reference to a device does not prevent its driver data from
-> going away so there is no point in keeping the reference.
->=20
-> But from what I can tell, you don't need to worry about that anyway
-> since it's the memory controller driver that registers the iommu (and
-> the driver can't be unbound).
+Le 09/10/2025 à 11:20, David Hildenbrand a écrit :
+> On 09.10.25 11:16, Christophe Leroy wrote:
+>>
+>>
+>> Le 09/10/2025 à 10:14, David Hildenbrand a écrit :
+>>> On 09.10.25 10:04, Christophe Leroy wrote:
+>>>>
+>>>>
+>>>> Le 09/10/2025 à 09:22, David Hildenbrand a écrit :
+>>>>> On 09.10.25 09:14, Christophe Leroy wrote:
+>>>>>> Hi David,
+>>>>>>
+>>>>>> Le 01/09/2025 à 17:03, David Hildenbrand a écrit :
+>>>>>>> diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+>>>>>>> index 1e777cc51ad04..d3542e92a712e 100644
+>>>>>>> --- a/mm/hugetlb.c
+>>>>>>> +++ b/mm/hugetlb.c
+>>>>>>> @@ -4657,6 +4657,7 @@ static int __init hugetlb_init(void)
+>>>>>>>          BUILD_BUG_ON(sizeof_field(struct page, private) *
+>>>>>>> BITS_PER_BYTE <
+>>>>>>>                  __NR_HPAGEFLAGS);
+>>>>>>> +    BUILD_BUG_ON_INVALID(HUGETLB_PAGE_ORDER > MAX_FOLIO_ORDER);
+>>>>>>>          if (!hugepages_supported()) {
+>>>>>>>              if (hugetlb_max_hstate || 
+>>>>>>> default_hstate_max_huge_pages)
+>>>>>>> @@ -4740,6 +4741,7 @@ void __init hugetlb_add_hstate(unsigned int
+>>>>>>> order)
+>>>>>>>          }
+>>>>>>>          BUG_ON(hugetlb_max_hstate >= HUGE_MAX_HSTATE);
+>>>>>>>          BUG_ON(order < order_base_2(__NR_USED_SUBPAGE));
+>>>>>>> +    WARN_ON(order > MAX_FOLIO_ORDER);
+>>>>>>>          h = &hstates[hugetlb_max_hstate++];
+>>>>>>>          __mutex_init(&h->resize_lock, "resize mutex", &h- 
+>>>>>>> >resize_key);
+>>>>>>>          h->order = order;
+>>>>>
+>>>>> We end up registering hugetlb folios that are bigger than
+>>>>> MAX_FOLIO_ORDER. So we have to figure out how a config can trigger 
+>>>>> that
+>>>>> (and if we have to support that).
+>>>>>
+>>>>
+>>>> MAX_FOLIO_ORDER is defined as:
+>>>>
+>>>> #ifdef CONFIG_ARCH_HAS_GIGANTIC_PAGE
+>>>> #define MAX_FOLIO_ORDER        PUD_ORDER
+>>>> #else
+>>>> #define MAX_FOLIO_ORDER        MAX_PAGE_ORDER
+>>>> #endif
+>>>>
+>>>> MAX_PAGE_ORDER is the limit for dynamic creation of hugepages via
+>>>> /sys/kernel/mm/hugepages/ but bigger pages can be created at boottime
+>>>> with kernel boot parameters without CONFIG_ARCH_HAS_GIGANTIC_PAGE:
+>>>>
+>>>>      hugepagesz=64m hugepages=1 hugepagesz=256m hugepages=1
+>>>>
+>>>> Gives:
+>>>>
+>>>> HugeTLB: registered 1.00 GiB page size, pre-allocated 0 pages
+>>>> HugeTLB: 0 KiB vmemmap can be freed for a 1.00 GiB page
+>>>> HugeTLB: registered 64.0 MiB page size, pre-allocated 1 pages
+>>>> HugeTLB: 0 KiB vmemmap can be freed for a 64.0 MiB page
+>>>> HugeTLB: registered 256 MiB page size, pre-allocated 1 pages
+>>>> HugeTLB: 0 KiB vmemmap can be freed for a 256 MiB page
+>>>> HugeTLB: registered 4.00 MiB page size, pre-allocated 0 pages
+>>>> HugeTLB: 0 KiB vmemmap can be freed for a 4.00 MiB page
+>>>> HugeTLB: registered 16.0 MiB page size, pre-allocated 0 pages
+>>>> HugeTLB: 0 KiB vmemmap can be freed for a 16.0 MiB page
+>>>
+>>> I think it's a violation of CONFIG_ARCH_HAS_GIGANTIC_PAGE. The existing
+>>> folio_dump() code would not handle it correctly as well.
+>>
+>> I'm trying to dig into history and when looking at commit 4eb0716e868e
+>> ("hugetlb: allow to free gigantic pages regardless of the
+>> configuration") I understand that CONFIG_ARCH_HAS_GIGANTIC_PAGE is
+>> needed to be able to allocate gigantic pages at runtime. It is not
+>> needed to reserve gigantic pages at boottime.
+>>
+>> What am I missing ?
+> 
+> That CONFIG_ARCH_HAS_GIGANTIC_PAGE has nothing runtime-specific in its 
+> name.
 
-That's true. It'd be nice to at least conceptually do the right thing
-here, but not sure it's worth it. As you said, driver data going away
-would need special handling and it's not even clear what that would
-mean in terms of the clients...
+In its name for sure, but the commit I mention says:
 
-Acked-by: Thierry Reding <treding@nvidia.com>
+     On systems without CONTIG_ALLOC activated but that support gigantic 
+pages,
+     boottime reserved gigantic pages can not be freed at all.  This patch
+     simply enables the possibility to hand back those pages to memory
+     allocator.
 
---c3sygtlebt6s3awu
-Content-Type: application/pgp-signature; name="signature.asc"
+And one of the hunks is:
 
------BEGIN PGP SIGNATURE-----
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index 7f7fbd8bd9d5b..7a1aa53d188d3 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -19,7 +19,7 @@ config ARM64
+         select ARCH_HAS_FAST_MULTIPLIER
+         select ARCH_HAS_FORTIFY_SOURCE
+         select ARCH_HAS_GCOV_PROFILE_ALL
+-       select ARCH_HAS_GIGANTIC_PAGE if CONTIG_ALLOC
++       select ARCH_HAS_GIGANTIC_PAGE
+         select ARCH_HAS_KCOV
+         select ARCH_HAS_KEEPINITRD
+         select ARCH_HAS_MEMBARRIER_SYNC_CORE
 
-iQIzBAABCgAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmjni1kACgkQ3SOs138+
-s6Hxrg//eMtMJXdv/o41OWNrAKnyhekEvAPwh5MW/YZi09gOgbHUcjPGo7vThuPz
-JSWzANjX6kXaUPvM0lVPbg19I+qQGCldNOP33d3RjMKpeRbWtoFOCsVj0ejUx/eq
-Y06TzaFYDlNmR8aF+QqlBltg6fj+CNUbxYqndjyft88d+84QvhxXeI+ZsGcB/Fbi
-FazMs3Qcqe4U1+ZPpRz08hrH4fTL2I77X3zZKiAqb1FFSewEtIeC6wlohOTgCELe
-mgS9n7eW8PatznfexWMAsf14LLegxFs/KstlJGu6Oe+9oXOzKMcn165y8GGGy6wc
-h4TsdPMnbkEzRwxqjkQ0ONFOZ35ozFKfa8LuKbhEf7oGbqZEKRN2ZapqcCfGHckh
-ssUgFXmQ2dA4DCysprjvQ9EV9gLdyzMy0/Q57Ogwo1zrJz+fmke6HTPPY+fWoiLP
-QWx6TWuG7ZQhh4lb+uo1ZQAnMGNttLTvLygk5jvaHEIPW8xM88jnDwVn7Bpf8qdV
-9TrKejE1xVgQsbuPQZUOERdGX677mNudKdm+t9+JTD+VtPBNfBLUN/R4f2dOi/3L
-xNNyM54fXljVBx49pvIAw2xbsP/tjPLUfFOOtGoU9tdhxbjMHWMYe5LdktpyeoCv
-QFWHWcgx+C+w4y4YzM6f+zI7TJ6ZB4eLXR5rAtt+J4FjdB5vMt0=
-=XUBA
------END PGP SIGNATURE-----
+So I understand from the commit message that it was possible at that 
+time to have gigantic pages without ARCH_HAS_GIGANTIC_PAGE as long as 
+you didn't have to be able to free them during runtime.
 
---c3sygtlebt6s3awu--
+> 
+> Can't we just select CONFIG_ARCH_HAS_GIGANTIC_PAGE for the relevant 
+> hugetlb config that allows for *gigantic pages*.
+> 
+
+We probably can, but I'd really like to understand history and how we 
+ended up in the situation we are now.
+Because blind fixes often lead to more problems.
+
+If I follow things correctly I see a helper gigantic_page_supported() 
+added by commit 944d9fec8d7a ("hugetlb: add support for gigantic page 
+allocation at runtime").
+
+And then commit 461a7184320a ("mm/hugetlb: introduce 
+ARCH_HAS_GIGANTIC_PAGE") is added to wrap gigantic_page_supported()
+
+Then commit 4eb0716e868e ("hugetlb: allow to free gigantic pages 
+regardless of the configuration") changed gigantic_page_supported() to 
+gigantic_page_runtime_supported()
+
+So where are we now ?
+
+Christophe
