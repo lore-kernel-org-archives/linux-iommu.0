@@ -1,62 +1,39 @@
-Received: from CY7PR03CU001.outbound.protection.outlook.com (mail-westcentralusazon11010045.outbound.protection.outlook.com [40.93.198.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A2422459D7
-	for <iommu@lists.linux.dev>; Thu,  9 Oct 2025 07:18:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.198.45
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759994327; cv=fail; b=jIaBvEGmEg/C4bi69pugV1Ei6aLWgbMYzuZ293gPFoIsuK+tUjS5aJQL7sGL90kwZUdvD7qko2Sx7L0g59KpptYA0/QEMvUHFDn0Ek9PmMeulvS6QxKSDYePJ8QOCJrJ8nP1S/1qPUsFlwD32J10BZUUp726KIQm+kSYpi1sY08=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759994327; c=relaxed/simple;
-	bh=RUPo5Y6b5SYBCW5N3aStxsbb34yP8oU0zRiwxjQASZ4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=TUtVgnR2V+gMuJjV+tEzYOgJekoS2V7Jwh9BIPEztAgT+Y4rEe8YJPXFE2CUE9fGHczBSe3QDfG/20Fu0fgC8xZ2/mrNDnn0h5ysVA3RxQuHcD1+VmflIz63g3wGTcYmkzPHdkrnQZAcRoUAOwEzh0HeIzqusw3d0cpXXaq3abk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=Bt3CzPH4; arc=fail smtp.client-ip=40.93.198.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="Bt3CzPH4"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=j9a7f2hEP323VPblbRYgUu8s6JViUP6uuUezMQeawcYkIQHZF1SCam2dXWnVmvo3h5BSMpju0ep7YEYRdKRRrZF/0eGq7BtFg1CeJgBAu/gbWm8uits8aeSe/KpWDwqUaN9acntlaOGo8vJNZOGmjRvBS4COQjnsWbqrn6R0XtN7ghghADNz2RxVvro67eMaR0lkQtP8aLlnFmI+Wrq/FvfaAAEkk8eoXiHyOFsN4GjJEYKYgnIgP6SDz3P5hQO4wCzwVbw/xW9mObA7dPam1tL+slAD322gA0QVe3OVhKqm/peZQvvQNOuzui7BTJTik05SeZ9TMpBhpprhfTQP3w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=oC6RvycqsvUO2M8TBa7VosAeAS+9YFc8Z30Rpc7Mstg=;
- b=Ppf/uezZmO1fXL6GPpgU+diGOsNFU5glwMNnETFcrE6Jl3ac2v2TsJ/Uu5eWcVBMfg3bQxBvuP+MPb9U0fELbyCa+AZ7v9V/EivJfUzVQ+a/6DaeY75p+LUbo3dNWEgqmBDxAhGJPNL9q59eRcP2t/NyiVp5ROFeYOdGH6UpvtEd9Gn1+YzWi7wc8I9vo5z2lGJQf87GV8HXk6OiFJBBuiDnxuzBOO3HRHbBIa2AgYBMZ1BinAEv5DLi9dz9poL59PdaTwY14VstSxa6xQS682tEV+R6A8WlcjIkTrlG2W0Y6e7s7jEVpjOVEXnCn+i400JFQm7Yg7U8twuvks8G2w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=nvidia.com smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oC6RvycqsvUO2M8TBa7VosAeAS+9YFc8Z30Rpc7Mstg=;
- b=Bt3CzPH4tNYJF8/Sp8pfpt9t4bpVYeYKsH5Z1uCTSpGdT/sC5siQhyl3KED/GeBG/P1mdIfK1X2k9TRETbt91jxmYMRUGlSbgWXTpYFJMHunVIo20HBnc26vO3lVXD7EkM5al95r5Nef6TDRzb2eQZUl1kVjRuWdxB6z59D8cgE=
-Received: from BN0PR04CA0098.namprd04.prod.outlook.com (2603:10b6:408:ec::13)
- by CY5PR12MB6180.namprd12.prod.outlook.com (2603:10b6:930:23::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9203.9; Thu, 9 Oct
- 2025 07:18:36 +0000
-Received: from BL02EPF00021F6F.namprd02.prod.outlook.com
- (2603:10b6:408:ec:cafe::bd) by BN0PR04CA0098.outlook.office365.com
- (2603:10b6:408:ec::13) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9182.20 via Frontend Transport; Thu,
- 9 Oct 2025 07:18:36 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
-Received: from satlexmb07.amd.com (165.204.84.17) by
- BL02EPF00021F6F.mail.protection.outlook.com (10.167.249.11) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9203.9 via Frontend Transport; Thu, 9 Oct 2025 07:18:36 +0000
-Received: from [172.31.35.81] (10.180.168.240) by satlexmb07.amd.com
- (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.17; Thu, 9 Oct
- 2025 00:18:30 -0700
-Message-ID: <32d2a380-ec66-4087-83f6-339f22745889@amd.com>
-Date: Thu, 9 Oct 2025 12:48:27 +0530
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0C537222586;
+	Thu,  9 Oct 2025 07:20:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=93.17.235.10
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1759994436; cv=none; b=ozYhkuaNZZIOikcvqrcgDeoXTxpRYWCZzu7bQ6kLZ51SCZbkblTXwsHczAoo5VM4utDOoeyY9ajZVVa4WwQYOcSIUpam/hcsP5uCp+DC5TePIj6xIIAeCP7A+uwi03JhZTRO0ZKDf87KyTK+/edBI2cWj+8wVDtjtGamU/g+uII=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1759994436; c=relaxed/simple;
+	bh=qiRw4QuoIHdxgOMBw5rOBwaXySx4YLDEZtVJzzfIsuA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Z1iMZdIQ2LfY98Zq9sJDWmqOVQg3nEREc9g5XGqwJ+oyo6Bf/a4s+ziwP2nXVp5lKb2iAnO3cryLV/X91lomZF6sezxjUTlw9LgXwYdcPUeFcDySq2Bh2WY4wtA8Lu1gw0Y+GajJdjDO4RBUxunfgRyWOERuZ0+qZ359hv9oPVA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=csgroup.eu; spf=pass smtp.mailfrom=csgroup.eu; arc=none smtp.client-ip=93.17.235.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=csgroup.eu
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=csgroup.eu
+Received: from localhost (mailhub4.si.c-s.fr [172.26.127.67])
+	by localhost (Postfix) with ESMTP id 4cj1Mm20R5z9sSd;
+	Thu,  9 Oct 2025 09:14:28 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+	by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id IrXIuvb4y-IU; Thu,  9 Oct 2025 09:14:28 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+	by pegase2.c-s.fr (Postfix) with ESMTP id 4cj1Mm0p1dz9sSb;
+	Thu,  9 Oct 2025 09:14:28 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+	by messagerie.si.c-s.fr (Postfix) with ESMTP id F24048B76C;
+	Thu,  9 Oct 2025 09:14:27 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+	by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+	with ESMTP id wHEaqnf6dd0R; Thu,  9 Oct 2025 09:14:27 +0200 (CEST)
+Received: from [192.168.235.99] (unknown [192.168.235.99])
+	by messagerie.si.c-s.fr (Postfix) with ESMTP id D85288B768;
+	Thu,  9 Oct 2025 09:14:25 +0200 (CEST)
+Message-ID: <3e043453-3f27-48ad-b987-cc39f523060a@csgroup.eu>
+Date: Thu, 9 Oct 2025 09:14:24 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -64,182 +41,188 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 11/12] iommu/amd: Add support for nested domain
- attach/detach
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>, "Suthikulpanit, Suravee"
-	<suravee.suthikulpanit@amd.com>
-CC: <nicolinc@nvidia.com>, <linux-kernel@vger.kernel.org>,
-	<robin.murphy@arm.com>, <will@kernel.org>, <joro@8bytes.org>,
-	<kevin.tian@intel.com>, <jsnitsel@redhat.com>, <vasant.hegde@amd.com>,
-	<iommu@lists.linux.dev>, <santosh.shukla@amd.com>,
-	<sairaj.arunkodilkar@amd.com>, <jon.grimm@amd.com>,
-	<prashanthpra@google.com>, <wvw@google.com>, <wnliu@google.com>,
-	<gptran@google.com>, <kpsingh@google.com>, <joao.m.martins@oracle.com>,
-	<alejandro.j.jimenez@oracle.com>
-References: <20251001060954.5030-1-suravee.suthikulpanit@amd.com>
- <20251001060954.5030-12-suravee.suthikulpanit@amd.com>
- <20251006145900.GT3360665@nvidia.com>
- <3e27de73-61a1-4977-b0a1-629ffaa81032@amd.com>
- <20251007234313.GE3474167@nvidia.com>
-From: Sairaj Kodilkar <sarunkod@amd.com>
-In-Reply-To: <20251007234313.GE3474167@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+Subject: Re: (bisected) [PATCH v2 08/37] mm/hugetlb: check for unreasonable
+ folio sizes when registering hstate
+To: David Hildenbrand <david@redhat.com>, linux-kernel@vger.kernel.org
+Cc: Zi Yan <ziy@nvidia.com>, Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
+ "Liam R. Howlett" <Liam.Howlett@oracle.com>,
+ Alexander Potapenko <glider@google.com>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ Brendan Jackman <jackmanb@google.com>, Christoph Lameter <cl@gentwo.org>,
+ Dennis Zhou <dennis@kernel.org>, Dmitry Vyukov <dvyukov@google.com>,
+ dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+ iommu@lists.linux.dev, io-uring@vger.kernel.org,
+ Jason Gunthorpe <jgg@nvidia.com>, Jens Axboe <axboe@kernel.dk>,
+ Johannes Weiner <hannes@cmpxchg.org>, John Hubbard <jhubbard@nvidia.com>,
+ kasan-dev@googlegroups.com, kvm@vger.kernel.org,
+ Linus Torvalds <torvalds@linux-foundation.org>, linux-arm-kernel@axis.com,
+ linux-arm-kernel@lists.infradead.org, linux-crypto@vger.kernel.org,
+ linux-ide@vger.kernel.org, linux-kselftest@vger.kernel.org,
+ linux-mips@vger.kernel.org, linux-mmc@vger.kernel.org, linux-mm@kvack.org,
+ linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
+ linux-scsi@vger.kernel.org, Marco Elver <elver@google.com>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, Michal Hocko <mhocko@suse.com>,
+ Mike Rapoport <rppt@kernel.org>, Muchun Song <muchun.song@linux.dev>,
+ netdev@vger.kernel.org, Oscar Salvador <osalvador@suse.de>,
+ Peter Xu <peterx@redhat.com>, Robin Murphy <robin.murphy@arm.com>,
+ Suren Baghdasaryan <surenb@google.com>, Tejun Heo <tj@kernel.org>,
+ virtualization@lists.linux.dev, Vlastimil Babka <vbabka@suse.cz>,
+ wireguard@lists.zx2c4.com, x86@kernel.org,
+ "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>
+References: <20250901150359.867252-1-david@redhat.com>
+ <20250901150359.867252-9-david@redhat.com>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
+Content-Language: fr-FR
+In-Reply-To: <20250901150359.867252-9-david@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: satlexmb07.amd.com (10.181.42.216) To satlexmb07.amd.com
- (10.181.42.216)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL02EPF00021F6F:EE_|CY5PR12MB6180:EE_
-X-MS-Office365-Filtering-Correlation-Id: edc37460-d4fa-44b8-c251-08de07040fff
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|7416014|376014|36860700013|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?RnpTbVBTbVp3djhBNGJQT0JuSWNJcjl1MFprYTVCcnlYMGI5Zk02SWp0aWpB?=
- =?utf-8?B?SmljQzh3dnB6L2xDbXJRYzFwSFVXdWZDcGttRkd0MWxIamx6S2JHbUZNM01o?=
- =?utf-8?B?M0NwZ0JZeXRncnlGK0d6Yis5QnVnY0t6bkhLKzIxKzJMZ0ZTTzBTejVQTlpF?=
- =?utf-8?B?bFlMZkhyWlpuNEc4NUQrQ2RZRXRadElKcDErbzV2eVBSdUpuUWVSMzkzSzgz?=
- =?utf-8?B?U1RFNDlNMjFnNDBFVDloYWp1VUhXbzJoNENkTlVxcEwwSkdzYmkzelNrSm5n?=
- =?utf-8?B?WXM0WStEM0l3SThqTmh1SDRSVUJkaEMvdjlnVDBkczEydHh5SFFWSUFUaWY0?=
- =?utf-8?B?d3V4YjFqNWZYblJqakJTNzNjbUJObGp0bitpdTA2Z2d5eGsxMnJSMEZ5VmQ3?=
- =?utf-8?B?S2wwaVk2ZnhzRm51dGRxVnpVNmZsUUd2bHNFcGswbWhTSTVHTGxsSFJHZWkz?=
- =?utf-8?B?SEhJNXZ2WWtGdjZZT3ovWm93R1dZNjQ2dWU4NzFZaUEzVXNiVnQ0OVVxNi9j?=
- =?utf-8?B?cERVUVZUVG1IMWNSVHF0RUNHL1lGMVY2NDFqSElDL0dNRzdlTDEzYmdHZFdq?=
- =?utf-8?B?b0hCU3pNUVlHQ1BOZXhsaU5rTmo4eUdCamlnbGVxZ1ZkSjlvRnNEU2pzdEdO?=
- =?utf-8?B?dTkxNi9rVWtWYnNVUDFCV25XVWpjRTlnUTRBRU85Vm9QZ0NKVDhxL1B0d1Zw?=
- =?utf-8?B?NzZ6ZUtDZXN4eHdIT2RQbHlhR3hEaHlPMUxZblBLdDlCWFBhakM1Z3MxU0Yw?=
- =?utf-8?B?UytJTGROeXBkTGtiL2gvbVR0eG9HVHQrbFhnNEx1Nm9yYVhoM3NsNENSa2w3?=
- =?utf-8?B?N1JkNFNIL1orOFd4UWlhN29RK3hHT1ZVRUxyeUppQmFVL3pScGRFNzd4MTJU?=
- =?utf-8?B?T2p6a3RHWThpeThJaUFpWDhNUDI2eVdWNkU2SE5hUWJ0bENwakZ2N2NSYWxD?=
- =?utf-8?B?MGR4MEtZL1pETkpuVnZYSjBSZEVlekxIZnFXUWREMENhMG9aOTQ1bEs0Vk9C?=
- =?utf-8?B?cTB3VkxLTFZ2MVlzcHlzNVNqSldLU3ZuTU9OelFKQ2F5YU96ZUNxZVlpQXQx?=
- =?utf-8?B?M1dPSDMzdDdrclluTHNnTHd0L3p3NHdZcUhvbXQ4NGhocHBIOGRCM0RteGsz?=
- =?utf-8?B?T3RMZmJtUVBXOFo5Tyt2KzB1MVM5QVEycU5IcVNxdmsyTWUzTTV3ZlNSYU5H?=
- =?utf-8?B?SjhjckdnY0N5MVBHYU0vWUFwZGV4ZXhDb2REYTFqYURKMFNZRFdPcU45aHZv?=
- =?utf-8?B?dm5XSC9KeVMzQ3ZIaXhmTmljakx4RytiK21iTGQ4VWVuem1GZkFBT3I5cjdo?=
- =?utf-8?B?NElYRmtYRlljUkw1eklBR0lNOTJaZDdQUmpYYVNOLy9qOENlMmhXUGZhT0cz?=
- =?utf-8?B?a05KUTlBY1NmeWoyT1NlTlFUVS9yVkNUSVBzSlRNWmZvbndpVUVmZnVvZndK?=
- =?utf-8?B?V1ViNTBDTG9FdFI1UHo4TVVvMkMxc1BNcm1YZUlYUHkvMFdHYUVsNldPZTVZ?=
- =?utf-8?B?Z0ZyUWE3L2JxWEpmMGJKc3NWRFNXbHFmYnR4akVoYWxKUFcxZXd3b25VK1I2?=
- =?utf-8?B?M2dLZWVLTjIvcFhLelRFOS9zdktKL1QwbUFrVEVjMm9TSTJ2OVdFbHBxL0pH?=
- =?utf-8?B?RFcwYWxiV2FCV1BRenZndll0SlFFTTBkSGMwcFpsR3RqcjVUNFNpTEhpMEpl?=
- =?utf-8?B?ZWorcGhNT1pmSEVMbUNWeGEwNnFWOXV3SFNWOEJ5KzQ3VEFSU1h5RjMrbk85?=
- =?utf-8?B?M1YrMEUyRW9NamovNlF2YlRHcUd3bG1vaUw1cTYxRU90dHVnUnA4MUVmbGl4?=
- =?utf-8?B?cWFkbkZwV09qQy9aaWJ6RTgrVU5SZ1M0QndWOXJ6eEE1RVhxelUzWWJ0MFB3?=
- =?utf-8?B?bWNNVDk4SkIxOVExR3JKb1ZrNjBrRjU4dWpHRy9GME84UElLd2tNTUdtQnEy?=
- =?utf-8?B?UHBGZlFXVFNQMVJEa3NHTmNaajllWTZGOVplTzVBcmNKbUdMakRVdm0rU3g0?=
- =?utf-8?B?bFREUkRTN1llb0hLUTVibjAzb0IweXduRDU4RGhoaEwvSEVJSnQ2cFFUVUJw?=
- =?utf-8?B?MnU5TjZ3aDUvblozeHpPYWZkREkxa0I2SnVvRFJWN3Z4RnhhYys4TkxDaEFn?=
- =?utf-8?Q?aDq4=3D?=
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(7416014)(376014)(36860700013)(1800799024);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Oct 2025 07:18:36.2438
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: edc37460-d4fa-44b8-c251-08de07040fff
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BL02EPF00021F6F.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6180
+
+Hi David,
+
+Le 01/09/2025 à 17:03, David Hildenbrand a écrit :
+> Let's check that no hstate that corresponds to an unreasonable folio size
+> is registered by an architecture. If we were to succeed registering, we
+> could later try allocating an unsupported gigantic folio size.
+> 
+> Further, let's add a BUILD_BUG_ON() for checking that HUGETLB_PAGE_ORDER
+> is sane at build time. As HUGETLB_PAGE_ORDER is dynamic on powerpc, we have
+> to use a BUILD_BUG_ON_INVALID() to make it compile.
+> 
+> No existing kernel configuration should be able to trigger this check:
+> either SPARSEMEM without SPARSEMEM_VMEMMAP cannot be configured or
+> gigantic folios will not exceed a memory section (the case on sparse).
+> 
+> Reviewed-by: Zi Yan <ziy@nvidia.com>
+> Reviewed-by: Lorenzo Stoakes <lorenzo.stoakes@oracle.com>
+> Reviewed-by: Liam R. Howlett <Liam.Howlett@oracle.com>
+> Signed-off-by: David Hildenbrand <david@redhat.com>
+
+I get following warning on powerpc with linus tree, bisected to commit 
+7b4f21f5e038 ("mm/hugetlb: check for unreasonable folio sizes when 
+registering hstate")
+
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 0 at mm/hugetlb.c:4744 hugetlb_add_hstate+0xc0/0x180
+Modules linked in:
+CPU: 0 UID: 0 PID: 0 Comm: swapper Not tainted 
+6.17.0-rc4-00275-g7b4f21f5e038 #1683 NONE
+Hardware name: QEMU ppce500 e5500 0x80240020 QEMU e500
+NIP:  c000000001357408 LR: c000000001357c90 CTR: 0000000000000003
+REGS: c00000000152bad0 TRAP: 0700   Not tainted 
+(6.17.0-rc4-00275-g7b4f21f5e038)
+MSR:  0000000080021002 <CE,ME>  CR: 44000448  XER: 20000000
+IRQMASK: 1
+GPR00: c000000001357c90 c00000000152bd70 c000000001339000 0000000000000012
+GPR04: 000000000000000a 0000000000001000 000000000000001e 0000000000000000
+GPR08: 0000000000000000 0000000000000000 0000000000000001 000000000000000a
+GPR12: c000000001357b68 c000000001590000 0000000000000000 0000000000000000
+GPR16: 0000000000000000 0000000000000000 0000000000000000 0000000000000000
+GPR20: 0000000000000000 0000000000000000 0000000000000000 0000000000000000
+GPR24: c0000000011adb40 c00000000156b528 0000000000000000 c00000000156b4b0
+GPR28: c00000000156b528 0000000000000012 0000000040000000 0000000000000000
+NIP [c000000001357408] hugetlb_add_hstate+0xc0/0x180
+LR [c000000001357c90] hugepagesz_setup+0x128/0x150
+Call Trace:
+[c00000000152bd70] [c00000000152bda0] init_stack+0x3da0/0x4000 (unreliable)
+[c00000000152be10] [c000000001357c90] hugepagesz_setup+0x128/0x150
+[c00000000152be80] [c00000000135841c] hugetlb_bootmem_alloc+0x84/0x104
+[c00000000152bec0] [c00000000135143c] mm_core_init+0x30/0x174
+[c00000000152bf30] [c000000001332ed4] start_kernel+0x540/0x880
+[c00000000152bfe0] [c000000000000a50] start_here_common+0x1c/0x20
+Code: 2c09000f 39000001 38e00000 39400001 7d00401e 0b080000 281d0001 
+7d00505e 79080020 0b080000 281d000c 7d4a385e <0b0a0000> 1f5a00b8 
+38bf0020 3c82ffe8
+---[ end trace 0000000000000000 ]---
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 0 at mm/hugetlb.c:4744 hugetlb_add_hstate+0xc0/0x180
+Modules linked in:
+CPU: 0 UID: 0 PID: 0 Comm: swapper Tainted: G        W 
+6.17.0-rc4-00275-g7b4f21f5e038 #1683 NONE
+Tainted: [W]=WARN
+Hardware name: QEMU ppce500 e5500 0x80240020 QEMU e500
+NIP:  c000000001357408 LR: c000000001357c90 CTR: 0000000000000005
+REGS: c00000000152bad0 TRAP: 0700   Tainted: G        W 
+(6.17.0-rc4-00275-g7b4f21f5e038)
+MSR:  0000000080021002 <CE,ME>  CR: 48000448  XER: 20000000
+IRQMASK: 1
+GPR00: c000000001357c90 c00000000152bd70 c000000001339000 000000000000000e
+GPR04: 000000000000000a 0000000000001000 0000000040000000 0000000000000000
+GPR08: 0000000000000000 0000000000000001 0000000000000001 0000000000000280
+GPR12: c000000001357b68 c000000001590000 0000000000000000 0000000000000000
+GPR16: 0000000000000000 0000000000000000 0000000000000000 0000000000000000
+GPR20: 0000000000000000 0000000000000000 0000000000000000 0000000000000000
+GPR24: c0000000011adb40 c00000000156b5e0 0000000000000001 c00000000156b4b0
+GPR28: c00000000156b528 000000000000000e 0000000004000000 00000000000000b8
+NIP [c000000001357408] hugetlb_add_hstate+0xc0/0x180
+LR [c000000001357c90] hugepagesz_setup+0x128/0x150
+Call Trace:
+[c00000000152bd70] [c000000000f27048] __func__.0+0x0/0x18 (unreliable)
+[c00000000152be10] [c000000001357c90] hugepagesz_setup+0x128/0x150
+[c00000000152be80] [c00000000135841c] hugetlb_bootmem_alloc+0x84/0x104
+[c00000000152bec0] [c00000000135143c] mm_core_init+0x30/0x174
+[c00000000152bf30] [c000000001332ed4] start_kernel+0x540/0x880
+[c00000000152bfe0] [c000000000000a50] start_here_common+0x1c/0x20
+Code: 2c09000f 39000001 38e00000 39400001 7d00401e 0b080000 281d0001 
+7d00505e 79080020 0b080000 281d000c 7d4a385e <0b0a0000> 1f5a00b8 
+38bf0020 3c82ffe8
+---[ end trace 0000000000000000 ]---
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 0 at mm/hugetlb.c:4744 hugetlb_add_hstate+0xc0/0x180
+Modules linked in:
+CPU: 0 UID: 0 PID: 0 Comm: swapper Tainted: G        W 
+6.17.0-rc4-00275-g7b4f21f5e038 #1683 NONE
+Tainted: [W]=WARN
+Hardware name: QEMU ppce500 e5500 0x80240020 QEMU e500
+NIP:  c000000001357408 LR: c000000001357c90 CTR: 0000000000000004
+REGS: c00000000152bad0 TRAP: 0700   Tainted: G        W 
+(6.17.0-rc4-00275-g7b4f21f5e038)
+MSR:  0000000080021002 <CE,ME>  CR: 48000448  XER: 20000000
+IRQMASK: 1
+GPR00: c000000001357c90 c00000000152bd70 c000000001339000 0000000000000010
+GPR04: 000000000000000a 0000000000001000 0000000004000000 0000000000000000
+GPR08: 0000000000000000 0000000000000002 0000000000000001 0000000000000a00
+GPR12: c000000001357b68 c000000001590000 0000000000000000 0000000000000000
+GPR16: 0000000000000000 0000000000000000 0000000000000000 0000000000000000
+GPR20: 0000000000000000 0000000000000000 0000000000000000 0000000000000000
+GPR24: c0000000011adb40 c00000000156b698 0000000000000002 c00000000156b4b0
+GPR28: c00000000156b528 0000000000000010 0000000010000000 0000000000000170
+NIP [c000000001357408] hugetlb_add_hstate+0xc0/0x180
+LR [c000000001357c90] hugepagesz_setup+0x128/0x150
+Call Trace:
+[c00000000152bd70] [c000000000f27048] __func__.0+0x0/0x18 (unreliable)
+[c00000000152be10] [c000000001357c90] hugepagesz_setup+0x128/0x150
+[c00000000152be80] [c00000000135841c] hugetlb_bootmem_alloc+0x84/0x104
+[c00000000152bec0] [c00000000135143c] mm_core_init+0x30/0x174
+[c00000000152bf30] [c000000001332ed4] start_kernel+0x540/0x880
+[c00000000152bfe0] [c000000000000a50] start_here_common+0x1c/0x20
+Code: 2c09000f 39000001 38e00000 39400001 7d00401e 0b080000 281d0001 
+7d00505e 79080020 0b080000 281d000c 7d4a385e <0b0a0000> 1f5a00b8 
+38bf0020 3c82ffe8
+---[ end trace 0000000000000000 ]---
 
 
+> ---
+>   mm/hugetlb.c | 2 ++
+>   1 file changed, 2 insertions(+)
+> 
+> diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+> index 1e777cc51ad04..d3542e92a712e 100644
+> --- a/mm/hugetlb.c
+> +++ b/mm/hugetlb.c
+> @@ -4657,6 +4657,7 @@ static int __init hugetlb_init(void)
+>   
+>   	BUILD_BUG_ON(sizeof_field(struct page, private) * BITS_PER_BYTE <
+>   			__NR_HPAGEFLAGS);
+> +	BUILD_BUG_ON_INVALID(HUGETLB_PAGE_ORDER > MAX_FOLIO_ORDER);
+>   
+>   	if (!hugepages_supported()) {
+>   		if (hugetlb_max_hstate || default_hstate_max_huge_pages)
+> @@ -4740,6 +4741,7 @@ void __init hugetlb_add_hstate(unsigned int order)
+>   	}
+>   	BUG_ON(hugetlb_max_hstate >= HUGE_MAX_HSTATE);
+>   	BUG_ON(order < order_base_2(__NR_USED_SUBPAGE));
+> +	WARN_ON(order > MAX_FOLIO_ORDER);
+>   	h = &hstates[hugetlb_max_hstate++];
+>   	__mutex_init(&h->resize_lock, "resize mutex", &h->resize_key);
+>   	h->order = order;
 
-On 10/8/2025 5:13 AM, Jason Gunthorpe wrote:
-> On Tue, Oct 07, 2025 at 02:22:30PM -0500, Suthikulpanit, Suravee wrote:
->>
->> On 10/6/2025 9:59 AM, Jason Gunthorpe wrote:
->>> On Wed, Oct 01, 2025 at 06:09:53AM +0000, Suravee Suthikulpanit wrote:
->>>> ....
->>>> +	if (WARN_ON(!ndom || !pdom || (pdom->iop.mode == PAGE_MODE_NONE)))
->>>> +		return;
->>>> +
->>>> +	amd_iommu_make_clear_dte(dev_data, &new);
->>>> +
->>>> +	new.data[0] |= iommu_virt_to_phys(pdom->iop.root);
->>>> +	new.data[0] |= FIELD_PREP(DTE_MODE_MASK, pdom->iop.mode);
->>>> +	new.data[0] |= DTE_FLAG_IR | DTE_FLAG_IW | DTE_FLAG_TV;
->>>> +	new.data[0] |= (DTE_FLAG_PPR & gdte->data[0]);
->>>> +	if (pdom->dirty_tracking)
->>>> +		new.data[0] |= DTE_FLAG_HAD;
->>>> +
->>>> +	if (dev_data->ats_enabled)
->>>> +		new.data[1] |= DTE_FLAG_IOTLB;
->>> This sequence should be in some set_dte_gcr3() ??
->> Not sure what you mean. This logic was in set_dte_entry(), and duplicated
->> here in the set_dte_nested() since we no longer calling set_dte_entry() from
->> the nested path. Also, it's not really related to GCR3 table.
-> Sorry some make_ste_v1()
->
-> This logic should be the same for any v1 page table.
->>>> +	/*
->>>> +	 * Restore cached persistent DTE bits, which can be set by information
->>>> +	 * in IVRS table. See set_dev_entry_from_acpi().
->>>> +	 */
->>>> +	initial_dte = amd_iommu_get_ivhd_dte_flags(iommu->pci_seg->id, dev_data->devid);
->>>> +	if (initial_dte) {
->>>> +		new.data128[0] |= initial_dte->data128[0];
->>>> +		new.data128[1] |= initial_dte->data128[1];
->>>> +	}
->>> This should go into amd_iommu_make_clear_dte() I think, and refactor
->>> it out of iommu_update_dte256() ?
->>> Every created DTE needs these bits set, right?
->> Currently, the amd_iommu_make_clear_dte() clears all the DTE bits and set
->> the DTE[V] (valid) bit. This is used when preparing the DTE for programming,
->> detaching domain, and when setting the blocking domain. Putting this logic
->> in the function would change the behavior.
-> Yes, but it seems like that is the right behavior?
->
->> These bits affect Interrupt remapping (Lint0/Lint1/NMI/INIT/ExtInt interrupt
->> pass-through) and System management message behavior.
-> Because these bits shouldn't be cleared on a blocking domain!
-> Interrupts are still expected to work.
->
->
->>>> +
->>>> +	/* Guest translation stuff */
->>>> +	new.data[0] |= (gdte->data[0] &
->>>> +		       (DTE_GLX | DTE_FLAG_GV | DTE_FLAG_GIOV));
->>>> +
->>>> +	/* GCR3 table */
->>>> +	new.data[0] |= (gdte->data[0] & DTE_GCR3_14_12);
->>>> +	new.data[1] |= (gdte->data[1] & (DTE_GCR3_30_15 | DTE_GCR3_51_31));
->>>> +
->>>> +	/* Guest paging mode */
->>>> +	new.data[2] |= (gdte->data[2] & DTE_GPT_LEVEL_MASK);
->>> I didn't see anything validating gdte has only permitted set bits in
->>> the prior patch?
->> Not sure which on are you referring to.
-> You have to validate gdte has only valid bits.
->
->>> If this is goint to decode array item by item then why not use struct
->>> iommu_hwpt_amd_guest in the nested_domain ?
->> The struct dev_table_entry *gdte is basically the same information as in the
->> struct iommu_hwpt_amd_guest.dte that we copied from the userspace into the
->> more appropriate in-kernel data structure type, which is used within the
->> driver.
-> The appropriate type is the userspace type if you don't actually ever
-> use anything unique to the kernel type. You can avoid the special
-> assert/etc since this way of accessing it is not sensitive to layout.
->
->> Here, we just select only what we needed for configuring guest page table
->> specifically to be programmed onto the host DTE.
-> Everything you don't pick up should be checked to be 0. VMM needs to
-> filter out unsuopported things or generate a bad DTE error.
-An alternative can be to introduce a struct which only contains relevant 
-fields.
-Something similar to -->
-
-struct iommu_hwpt_amd_guest {
-    void *gcr3;
-    unsigned char guest_paging_mode;
-}
-
-VMM can take care of writing to these fields.
-
-Thanks
-Sairaj
