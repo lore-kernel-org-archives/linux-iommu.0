@@ -1,316 +1,113 @@
-Received: from mail-pf1-f201.google.com (mail-pf1-f201.google.com [209.85.210.201])
+Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com [209.85.160.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7C1F226D17
-	for <iommu@lists.linux.dev>; Fri, 10 Oct 2025 01:20:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D7AD19E97B
+	for <iommu@lists.linux.dev>; Fri, 10 Oct 2025 01:29:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760059218; cv=none; b=EMzf4pPGU/AOSkhmtqnQyL5GkLiTcTX19FkNOAux513OjAVRrUtFaFHZp3H77jp4Xy8sx0b22eZ++f2szks3kb3Rqq6Z+ffya/qJxS5xOxGaCweTRVrkADdvUEJ/V5l0RwJgI24oI4C4Gd03sU19iGvAumxMottUGmYirk7ZSUo=
+	t=1760059763; cv=none; b=EAvYm+WaLIKkn9ZsspW0q6RlTYM4+AD5TlPI3wSgarfZSOOndt+mhozr6TFQlL9LbJDQUCTclFCW/ACfnNOhlXKYV7xwNQFDARIpK8Gwv4GpiXQWg2KPxZdsGbMNDATwqITyQ5+xnsAK5SXCZOhAkd67gNISSoAZCUQTzw5JSQw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760059218; c=relaxed/simple;
-	bh=oyemZIe+YmeGtd9SCcDsGnEDPdQlvUm05tKLh3ceOSk=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=hBM/n4Ap+0xw/Xkj7HmY7qN3bcQfFUtBB+P+Zd8EDgzYd2AS9zj6aHSbjn1YHPwN3DRpTEK5+TJ/sfyEZhhCjLC364iGlQIqxPpPVY1YrzfVdD0De5gWkigIlPkok57GwEKE6Ogsq9XI0qjtwZdrFBO7+lPa6zabqhpXMmyOBN8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--surenb.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Pk710+q5; arc=none smtp.client-ip=209.85.210.201
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--surenb.bounces.google.com
+	s=arc-20240116; t=1760059763; c=relaxed/simple;
+	bh=7c5rwEMg8SrN1qzR5HQA9Xm/CmUTmi2KGtRzPG/E4B0=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=r3WEuktUZ1Gv1LyldsIfWSdd6GLgC4BF6DmoHyRXqd8GGxRPBI1wRoAXSWYNKmygqv44xAFCJWUG0X+NBEWnHtMtY2LtDMvh0tV+kYIBtei5VuKR2nlk/6MpVYVjJRBfe6rndQhSZuSCYACEWs0DgxNoJz7z1iYLBqSO1BWK+KA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=soleen.com; spf=pass smtp.mailfrom=soleen.com; dkim=pass (2048-bit key) header.d=soleen.com header.i=@soleen.com header.b=Jm4e6K+C; arc=none smtp.client-ip=209.85.160.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=soleen.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=soleen.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Pk710+q5"
-Received: by mail-pf1-f201.google.com with SMTP id d2e1a72fcca58-78427dae77eso2299935b3a.3
-        for <iommu@lists.linux.dev>; Thu, 09 Oct 2025 18:20:14 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=soleen.com header.i=@soleen.com header.b="Jm4e6K+C"
+Received: by mail-qt1-f175.google.com with SMTP id d75a77b69052e-4df2911ac5aso8889361cf.2
+        for <iommu@lists.linux.dev>; Thu, 09 Oct 2025 18:29:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1760059214; x=1760664014; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Vrde2qlU5hqI2CpGGepvHr5s2l9yi26YQf6xU7aW9eE=;
-        b=Pk710+q5osztJQu5/UJtkjfEhMO61nTxYgHB59XLIjnvGx2QSvutZXUurmtaunDgpZ
-         NTnijJmbFNzTPW8Rm60hgXukTh1iBH1snQ4F+7AbSZEmkQmSVK6gCIb0DQa0SWQ/OlEA
-         rA5rKW58fyCfxdyM0skov7lpt49woFIIFNu3GD4gf81IbkCPbykbr5yOysTgF05OgOMd
-         fTeFB09zoLn9kIkc+3GdA720WJxpueCso9hWVE4uRqsIWuVZUdVpWsmOUmFfnKdMEcxe
-         iDle36lPw8YdWZpURflDq+lwnlFU9S1GIByyJq/D/yGhNZ0p2HXiDxiSGCyRT/ZM6Nng
-         3Z2A==
+        d=soleen.com; s=google; t=1760059761; x=1760664561; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=7c5rwEMg8SrN1qzR5HQA9Xm/CmUTmi2KGtRzPG/E4B0=;
+        b=Jm4e6K+Chx35t+sv5M633IdZZXWze0I//ghXC0qYFAWrz2Fv92xSkZ+0jE6IveGc67
+         jVdcNVUJ0MP4eSkRxaFgFzuRTEppellaYCmR6AIj91CI9ihAOjK/Ar5Z6Q/tWSz3Yr4+
+         kC2qQgQirJxkRm2PJbGycxfSzqrTD51rSpBa+Z+hTJUiELK5jqwvzJCI3bDOLDdQGJr3
+         qsY0Jlqn26rSs/To0akcEHnbQCFTJURXDD32fu5cZ4WTr0toD5OphZxboCZoC4lzCKlz
+         PRBVotxp1a5KvFpu7QAfGmEt9YVvw/S/M52YnxOOlz2ST/ZtO4e0NqnMFf6QQ8WX012u
+         ZO/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1760059214; x=1760664014;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Vrde2qlU5hqI2CpGGepvHr5s2l9yi26YQf6xU7aW9eE=;
-        b=SksacGKr55UcRWa1t3kJUf95XLeWfAHyAWtqGUW785gnVRgTCgvToDs087WF1Oyr4T
-         EZVDR7nRQ+9d+H+Q78I73Um+sKxfp+b8x5r4vE4L4ssIkesQ7KbtIXjljRc4+O2tzFWP
-         JtTwBt3xAsE+xikm6LhEBtblB5GPXwpvLjiBLC3GxKH+NRT4k3voPLxEx+IwuRWnZhRW
-         GBe52ki78oRAXsycOBHElujsBOdpGfJnLsAKOm0x2Ib1/+KXurpMZAenQ39dKC75nRSQ
-         thqxSeV6Yq+oTafATDUtItmzb1uUsgVLUTa7bh/a4rz0QU/1OvF+lR5voadm36KCgNtm
-         oC8g==
-X-Forwarded-Encrypted: i=1; AJvYcCVIHUCZz1KLGxhNiwfHTQus5ha0uKlJpEX7UcHr+/LDq4EE1LDDcPL1i6gwbgOKhzjcWWpLfg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzZoOI0IcT2mS4s09DNEX04n5CO+rAn+uHiP7Bd5MI9NGzztfPp
-	6imvv+h0wXsik9PwLD6GqYvVAmRUwgCKGsuIs2UADXO3JAV0A/OeYbf2AxY+0D1XSyGZ2RayTFN
-	E4qWdhQ==
-X-Google-Smtp-Source: AGHT+IHv8uHGO40bLuN/jD5N/hL/DXXvgcz7LG4u+TAflEKVP3j7kuuG1LjFXB0Jk3SVlTNaWflJDBbA6Ac=
-X-Received: from pgew27.prod.google.com ([2002:a63:af1b:0:b0:b55:794f:64bb])
- (user=surenb job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a20:12ce:b0:309:48d8:cf0a
- with SMTP id adf61e73a8af0-32da8462fb2mr12231761637.54.1760059213708; Thu, 09
- Oct 2025 18:20:13 -0700 (PDT)
-Date: Thu,  9 Oct 2025 18:19:51 -0700
-In-Reply-To: <20251010011951.2136980-1-surenb@google.com>
+        d=1e100.net; s=20230601; t=1760059761; x=1760664561;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=7c5rwEMg8SrN1qzR5HQA9Xm/CmUTmi2KGtRzPG/E4B0=;
+        b=J0tZtECpIQf5X1Wk5DvmNA0QHA+J8cjo5sEavaWuRae5jMwiVJoUJcitzx/CxQHQ64
+         HQz3fZvIIn+SalkqtZOM5shfB/BRJ4tOU2/f6HMD60xzWCxA7eyV/im1taogYPquvZXx
+         a+f9kIQIm6/WuLqzz8wqo0VC2RVuJM4Cpy6igYHvSNHpsxZ22Cpjol6ZgXv8tc8GZRUL
+         94hYrDRUrcZCKe0CEqTA+UK12iPOYPHbI5C1w2YZCe3VdgOff392rB3BMQtF/KrSTtCX
+         R4vs4AVQUx1K+sKQRYqba2Q1Cu121Uw2ip6SbyUL3stChzEaTcn9X5l5r8a/SQOoKxYe
+         zOdA==
+X-Forwarded-Encrypted: i=1; AJvYcCU7qP3Hp6ldOu5Tsfq+084Ei7Pu0ecr27wKpEOvT+sL377F+qYwItslt7lJbyqDqf9Nun1wyA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyxOzjImna2l9DMCVTdiZbsoHiKOMXkuxBe2ZAOEYZeMkzo7HZa
+	tnUjCEBTs3XKfflIXIyg2GpCTSC7SE52MvCDcHTU+1SsJgYVs8t2BKev0mMpE+vMgNIE2aE/E7g
+	2eZbKVvU7iZyEQcSH9UW3VkIsTNAQPYuDz2ovdcDu5A==
+X-Gm-Gg: ASbGncs8+FOZnyyPAos7exj2yX9N/qJ8em0ckinCdFkp2AWLrbUaLH1a8sGM5LlJQJ+
+	IquRCr/WNo77ZxwPEpjDJ61isQbMWrul5ILBtLYuY85n8RrmP9Y3Dcfjme9jiQGm0Q+vCDdOb+W
+	avqIVcf7ACd4byvTk6mtwF3A7Tc69mTalnVBwwIyzxWJD8+w/ZgeR0ryqBJsGzel+T8vbEL6Jr4
+	3q/JCeFEHlPqPOJnijFR2IaDVNn
+X-Google-Smtp-Source: AGHT+IFYIAwQ01bOh934nEooe6YyzjY9BSYL4qW3XccSVaxr7aFcJrk9W6LVbYGLQHAQNTZz3Rnu871Z5RCJbyw4chg=
+X-Received: by 2002:a05:622a:4c18:b0:4d9:f929:1531 with SMTP id
+ d75a77b69052e-4e6eace963bmr157505201cf.23.1760059761013; Thu, 09 Oct 2025
+ 18:29:21 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20251010011951.2136980-1-surenb@google.com>
-X-Mailer: git-send-email 2.51.0.740.g6adb054d12-goog
-Message-ID: <20251010011951.2136980-9-surenb@google.com>
-Subject: [PATCH 8/8] mm: integrate GCMA with CMA using dt-bindings
-From: Suren Baghdasaryan <surenb@google.com>
-To: akpm@linux-foundation.org
-Cc: david@redhat.com, lorenzo.stoakes@oracle.com, Liam.Howlett@oracle.com, 
-	vbabka@suse.cz, alexandru.elisei@arm.com, peterx@redhat.com, sj@kernel.org, 
-	rppt@kernel.org, mhocko@suse.com, corbet@lwn.net, axboe@kernel.dk, 
-	viro@zeniv.linux.org.uk, brauner@kernel.org, hch@infradead.org, jack@suse.cz, 
-	willy@infradead.org, m.szyprowski@samsung.com, robin.murphy@arm.com, 
-	hannes@cmpxchg.org, zhengqi.arch@bytedance.com, shakeel.butt@linux.dev, 
-	axelrasmussen@google.com, yuanchu@google.com, weixugc@google.com, 
-	minchan@kernel.org, surenb@google.com, linux-mm@kvack.org, 
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-block@vger.kernel.org, linux-fsdevel@vger.kernel.org, 
-	iommu@lists.linux.dev, Minchan Kim <minchan@google.com>
+MIME-Version: 1.0
+References: <20250929160034.GG2695987@ziepe.ca> <CA+CK2bDqDz3k0gXamJEbKUL7RPBLVjaA5=Jum=CF84wR+50izA@mail.gmail.com>
+ <20250930135916.GN2695987@ziepe.ca> <CAAywjhRGrGjZK3jQptieVWmdzvjfNtTYrp2ChTZJSmFyrBaRqw@mail.gmail.com>
+ <20250930210504.GU2695987@ziepe.ca> <CAAywjhRQONuHsxTGQZ5R=EJbOHUD+xOF_CYjkNRbUyCQkORwig@mail.gmail.com>
+ <20251001114742.GV2695987@ziepe.ca> <CAAywjhRKvZBShj7KAXew2v_uGjn3HhvO=sFrZ=bVfMJ8ye-Vyw@mail.gmail.com>
+ <20251002134112.GD3195829@ziepe.ca> <CAAywjhQrAWPjb8YtO=+G+pfJpW7p-rwrj03zB8ZqdhB0wtsO0w@mail.gmail.com>
+ <20251002173715.GH3195829@ziepe.ca>
+In-Reply-To: <20251002173715.GH3195829@ziepe.ca>
+From: Pasha Tatashin <pasha.tatashin@soleen.com>
+Date: Thu, 9 Oct 2025 21:28:44 -0400
+X-Gm-Features: AS18NWDnCmbQmTfSFshrGhyBAifH9UjAR4aAfwdB_LFAs9e46ObD6oWFGCIZCGs
+Message-ID: <CA+CK2bC58SLTrROtBQaegzSfjU+bwH_3pjjWdd+JTnHqQPuAwg@mail.gmail.com>
+Subject: Re: [RFC PATCH 13/15] iommufd: Persist iommu domains for live update
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Samiullah Khawaja <skhawaja@google.com>, David Woodhouse <dwmw2@infradead.org>, 
+	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, 
+	Will Deacon <will@kernel.org>, iommu@lists.linux.dev, YiFei Zhu <zhuyifei@google.com>, 
+	Robin Murphy <robin.murphy@arm.com>, Pratyush Yadav <pratyush@kernel.org>, 
+	Kevin Tian <kevin.tian@intel.com>, linux-kernel@vger.kernel.org, 
+	Saeed Mahameed <saeedm@nvidia.com>, Adithya Jayachandran <ajayachandra@nvidia.com>, 
+	Parav Pandit <parav@nvidia.com>, Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>, 
+	Vipin Sharma <vipinsh@google.com>, dmatlack@google.com, Chris Li <chrisl@kernel.org>, 
+	praan@google.com
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Introduce a new "guarantee" property for shared-dma-pool to enable
-GCMA-backed memory pools. Memory allocations from such pools will
-have low latency and will be guaranteed to succeed as long as there
-is contiguous space inside the reservation.
-dt-schema for shared-dma-pool [1] will need to be updated once this
-patch is accepted.
+On Thu, Oct 2, 2025 at 1:37=E2=80=AFPM Jason Gunthorpe <jgg@ziepe.ca> wrote=
+:
+>
+> On Thu, Oct 02, 2025 at 10:03:05AM -0700, Samiullah Khawaja wrote:
+> > > I think the simplest thing is the domain exists forever until
+> > > userspace attaches an iommufd, takes ownership of it and frees it.
+> > > Nothing to do with finish.
+> >
+> > Hmm.. I think this is tricky. There needs to be a way to clean up and
+> > discard the old state if the userspace doesn't need it.
+>
+> Why?
+>
+> Isn't "userspace doesn't need it" some extermely weird unused corner
+> case?
 
-[1] https://github.com/devicetree-org/dt-schema/blob/main/dtschema/schemas/reserved-memory/shared-dma-pool.yaml
+It might be a corner case, but at cloud scale, even rare cases happen.
+For example, if four VMs are resumed and one crashes while retrieving
+half of its resources, we can't simply reboot the machine because of
+that. We must have a way to recover the machine to a normal state,
+even if some resources are not reclaimed. I would say that finish must
+be properly backward-ordered, but we still should release resources
+that are not reclaimed during finish, as well as those that were
+reclaimed but later closed.
 
-Signed-off-by: Minchan Kim <minchan@google.com>
-Signed-off-by: Suren Baghdasaryan <surenb@google.com>
----
- include/linux/cma.h     | 11 +++++++++--
- kernel/dma/contiguous.c | 11 ++++++++++-
- mm/Kconfig              |  2 +-
- mm/cma.c                | 37 +++++++++++++++++++++++++++----------
- mm/cma.h                |  1 +
- mm/cma_sysfs.c          | 10 ++++++++++
- mm/gcma.c               |  2 +-
- 7 files changed, 59 insertions(+), 15 deletions(-)
-
-diff --git a/include/linux/cma.h b/include/linux/cma.h
-index 62d9c1cf6326..3ec2e76a8666 100644
---- a/include/linux/cma.h
-+++ b/include/linux/cma.h
-@@ -43,10 +43,17 @@ static inline int __init cma_declare_contiguous(phys_addr_t base,
- extern int __init cma_declare_contiguous_multi(phys_addr_t size,
- 			phys_addr_t align, unsigned int order_per_bit,
- 			const char *name, struct cma **res_cma, int nid);
--extern int cma_init_reserved_mem(phys_addr_t base, phys_addr_t size,
-+extern int __cma_init_reserved_mem(phys_addr_t base, phys_addr_t size,
- 					unsigned int order_per_bit,
- 					const char *name,
--					struct cma **res_cma);
-+					struct cma **res_cma, bool gcma);
-+static inline int cma_init_reserved_mem(phys_addr_t base, phys_addr_t size,
-+					unsigned int order_per_bit,
-+					const char *name,
-+					struct cma **res_cma)
-+{
-+	return __cma_init_reserved_mem(base, size, order_per_bit, name, res_cma, false);
-+}
- extern struct page *cma_alloc(struct cma *cma, unsigned long count, unsigned int align,
- 			      bool no_warn);
- extern bool cma_pages_valid(struct cma *cma, const struct page *pages, unsigned long count);
-diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
-index d9b9dcba6ff7..73a699ef0377 100644
---- a/kernel/dma/contiguous.c
-+++ b/kernel/dma/contiguous.c
-@@ -461,6 +461,7 @@ static int __init rmem_cma_setup(struct reserved_mem *rmem)
- 	unsigned long node = rmem->fdt_node;
- 	bool default_cma = of_get_flat_dt_prop(node, "linux,cma-default", NULL);
- 	struct cma *cma;
-+	bool gcma;
- 	int err;
- 
- 	if (size_cmdline != -1 && default_cma) {
-@@ -478,7 +479,15 @@ static int __init rmem_cma_setup(struct reserved_mem *rmem)
- 		return -EINVAL;
- 	}
- 
--	err = cma_init_reserved_mem(rmem->base, rmem->size, 0, rmem->name, &cma);
-+	gcma = !!of_get_flat_dt_prop(node, "guarantee", NULL);
-+#ifndef CONFIG_GCMA
-+	if (gcma) {
-+		pr_err("Reserved memory: unable to setup GCMA region, GCMA is not enabled\n");
-+		return -EINVAL;
-+	}
-+#endif
-+	err = __cma_init_reserved_mem(rmem->base, rmem->size, 0, rmem->name,
-+				      &cma, gcma);
- 	if (err) {
- 		pr_err("Reserved memory: unable to setup CMA region\n");
- 		return err;
-diff --git a/mm/Kconfig b/mm/Kconfig
-index 41ce5ef8db55..729f150369cc 100644
---- a/mm/Kconfig
-+++ b/mm/Kconfig
-@@ -1015,7 +1015,7 @@ config CMA_AREAS
- 
- config GCMA
-        bool "GCMA (Guaranteed Contiguous Memory Allocator)"
--       depends on CLEANCACHE
-+       depends on CLEANCACHE && CMA
- 	help
- 	  This enables the Guaranteed Contiguous Memory Allocator to allow
- 	  low latency guaranteed contiguous memory allocations. Memory
-diff --git a/mm/cma.c b/mm/cma.c
-index 813e6dc7b095..71fb494ef2a4 100644
---- a/mm/cma.c
-+++ b/mm/cma.c
-@@ -28,6 +28,7 @@
- #include <linux/highmem.h>
- #include <linux/io.h>
- #include <linux/kmemleak.h>
-+#include <linux/gcma.h>
- #include <trace/events/cma.h>
- 
- #include "internal.h"
-@@ -161,11 +162,18 @@ static void __init cma_activate_area(struct cma *cma)
- 			count = early_pfn[r] - cmr->base_pfn;
- 			bitmap_count = cma_bitmap_pages_to_bits(cma, count);
- 			bitmap_set(cmr->bitmap, 0, bitmap_count);
-+		} else {
-+			count = 0;
- 		}
- 
--		for (pfn = early_pfn[r]; pfn < cmr->base_pfn + cmr->count;
--		     pfn += pageblock_nr_pages)
--			init_cma_reserved_pageblock(pfn_to_page(pfn));
-+		if (cma->gcma) {
-+			gcma_register_area(cma->name, early_pfn[r],
-+					   cma->count - count);
-+		} else {
-+			for (pfn = early_pfn[r]; pfn < cmr->base_pfn + cmr->count;
-+			     pfn += pageblock_nr_pages)
-+				init_cma_reserved_pageblock(pfn_to_page(pfn));
-+		}
- 	}
- 
- 	spin_lock_init(&cma->lock);
-@@ -252,7 +260,7 @@ static void __init cma_drop_area(struct cma *cma)
- }
- 
- /**
-- * cma_init_reserved_mem() - create custom contiguous area from reserved memory
-+ * __cma_init_reserved_mem() - create custom contiguous area from reserved memory
-  * @base: Base address of the reserved area
-  * @size: Size of the reserved area (in bytes),
-  * @order_per_bit: Order of pages represented by one bit on bitmap.
-@@ -260,13 +268,14 @@ static void __init cma_drop_area(struct cma *cma)
-  *        the area will be set to "cmaN", where N is a running counter of
-  *        used areas.
-  * @res_cma: Pointer to store the created cma region.
-+ * @gcma: Flag to reserve guaranteed reserved memory area.
-  *
-  * This function creates custom contiguous area from already reserved memory.
-  */
--int __init cma_init_reserved_mem(phys_addr_t base, phys_addr_t size,
--				 unsigned int order_per_bit,
--				 const char *name,
--				 struct cma **res_cma)
-+int __init __cma_init_reserved_mem(phys_addr_t base, phys_addr_t size,
-+				   unsigned int order_per_bit,
-+				   const char *name,
-+				   struct cma **res_cma, bool gcma)
- {
- 	struct cma *cma;
- 	int ret;
-@@ -297,6 +306,7 @@ int __init cma_init_reserved_mem(phys_addr_t base, phys_addr_t size,
- 	cma->ranges[0].count = cma->count;
- 	cma->nranges = 1;
- 	cma->nid = NUMA_NO_NODE;
-+	cma->gcma = gcma;
- 
- 	*res_cma = cma;
- 
-@@ -836,7 +846,11 @@ static int cma_range_alloc(struct cma *cma, struct cma_memrange *cmr,
- 		spin_unlock_irq(&cma->lock);
- 
- 		mutex_lock(&cma->alloc_mutex);
--		ret = alloc_contig_range(pfn, pfn + count, ACR_FLAGS_CMA, gfp);
-+		if (cma->gcma)
-+			ret = gcma_alloc_range(pfn, count, gfp);
-+		else
-+			ret = alloc_contig_range(pfn, pfn + count,
-+						 ACR_FLAGS_CMA, gfp);
- 		mutex_unlock(&cma->alloc_mutex);
- 		if (!ret)
- 			break;
-@@ -1009,7 +1023,10 @@ bool cma_release(struct cma *cma, const struct page *pages,
- 	if (r == cma->nranges)
- 		return false;
- 
--	free_contig_range(pfn, count);
-+	if (cma->gcma)
-+		gcma_free_range(pfn, count);
-+	else
-+		free_contig_range(pfn, count);
- 	cma_clear_bitmap(cma, cmr, pfn, count);
- 	cma_sysfs_account_release_pages(cma, count);
- 	trace_cma_release(cma->name, pfn, pages, count);
-diff --git a/mm/cma.h b/mm/cma.h
-index c70180c36559..3b09e8619082 100644
---- a/mm/cma.h
-+++ b/mm/cma.h
-@@ -49,6 +49,7 @@ struct cma {
- 	char name[CMA_MAX_NAME];
- 	int nranges;
- 	struct cma_memrange ranges[CMA_MAX_RANGES];
-+	bool gcma;
- #ifdef CONFIG_CMA_SYSFS
- 	/* the number of CMA page successful allocations */
- 	atomic64_t nr_pages_succeeded;
-diff --git a/mm/cma_sysfs.c b/mm/cma_sysfs.c
-index 97acd3e5a6a5..4ecc36270a4d 100644
---- a/mm/cma_sysfs.c
-+++ b/mm/cma_sysfs.c
-@@ -80,6 +80,15 @@ static ssize_t available_pages_show(struct kobject *kobj,
- }
- CMA_ATTR_RO(available_pages);
- 
-+static ssize_t gcma_show(struct kobject *kobj,
-+			 struct kobj_attribute *attr, char *buf)
-+{
-+	struct cma *cma = cma_from_kobj(kobj);
-+
-+	return sysfs_emit(buf, "%d\n", cma->gcma);
-+}
-+CMA_ATTR_RO(gcma);
-+
- static void cma_kobj_release(struct kobject *kobj)
- {
- 	struct cma *cma = cma_from_kobj(kobj);
-@@ -95,6 +104,7 @@ static struct attribute *cma_attrs[] = {
- 	&release_pages_success_attr.attr,
- 	&total_pages_attr.attr,
- 	&available_pages_attr.attr,
-+	&gcma_attr.attr,
- 	NULL,
- };
- ATTRIBUTE_GROUPS(cma);
-diff --git a/mm/gcma.c b/mm/gcma.c
-index 3ee0e1340db3..8e7d7a829b49 100644
---- a/mm/gcma.c
-+++ b/mm/gcma.c
-@@ -119,7 +119,7 @@ int gcma_register_area(const char *name,
- 		folio_set_count(folio, 0);
- 		list_add(&folio->lru, &folios);
- 	}
--
-+	folio_zone(pfn_folio(start_pfn))->cma_pages += count;
- 	cleancache_backend_put_folios(pool_id, &folios);
- 
- 	spin_lock(&gcma_area_lock);
--- 
-2.51.0.740.g6adb054d12-goog
-
+Pasha
