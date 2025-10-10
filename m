@@ -1,114 +1,112 @@
-Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EAC7D21C16A
-	for <iommu@lists.linux.dev>; Fri, 10 Oct 2025 01:43:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6FB521CC4B;
+	Fri, 10 Oct 2025 02:40:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760060593; cv=none; b=blo5RRYxtFhwN1+Le9/10lFLJJIw8VhR5miCZ0gaWxqSyngmNown8n92/aOmX9bq6BFdQNi/Aybvu6AKyFPq/bHUd4Rgx76jXIQY4TILOkDsbhYwCPu68FIVje8G0PSBp2etBenx7IrCnuqQLOt94+xE3mUYFE9h8ds3LbDMCEY=
+	t=1760064015; cv=none; b=Un5SiGBvQrCHGiABVQT9HyaesTF4K8PdjVsI+e8fKi3woAWksv59a+pn7nJMpGf/3ch3fuUzD7z166YwIO9SrziT9GFdSrlB8CQNpTenubc7TAMjFWz0TiEctVD8WX2s/XqjXNne6o73jrp7EMs++5N/ihwKxUEjnCQ/wYh9yIU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760060593; c=relaxed/simple;
-	bh=NPtqkvv98yoDXNHLCe00Nr0xHDE7ZeJDXsad4q7/TKY=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=lmZvf2TPOe/6jZXGXe1c96zeKRnabrBG5QrsL8mINKqT67jhM/NHSd507AsXBUy0sReCjwevecamXlv+O3HTJRNwGYN38cox5qNjiff7+zT7psXUNtCfbvdQw2aDrHYY0Cw5DmFu02r4eUATluXMoA/vMGPFG/OjzPTyP2Vzsko=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=R55QFzaC; arc=none smtp.client-ip=209.85.160.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1760064015; c=relaxed/simple;
+	bh=+O5fD/fAvfcINgglSqBg1fQcHMPTu+YnoaXoYPykJP4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=PGA9/OB7NuYsrwoLCGb+PDFKW8HGYixefzdH7PW3NbISOE9D72Mj3Nrb4qlLqTtbz3cM5nJ9QPGSQ5lOcMNENFUoOr4bJapseKb3UcLcWCc/p0WHFAnKTllky3qyBH8cXDBByCyqikOPDGWHYg8rXcooHHdoVC9vgiqs1F4H9ms=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=v2KuPb7+; arc=none smtp.client-ip=90.155.50.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="R55QFzaC"
-Received: by mail-qt1-f170.google.com with SMTP id d75a77b69052e-4dcc9cebfdfso81621cf.1
-        for <iommu@lists.linux.dev>; Thu, 09 Oct 2025 18:43:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1760060591; x=1760665391; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=96az3arQQNj4x6OI7kGaXy8qdPeeaXxUJmGrbGqdnv8=;
-        b=R55QFzaCgAHW7IhVQGBq2mU40y+i9u5e70kQIqq5vf4F83uRck7yZlK1jf3KPZSneB
-         vA538zozb4g+BMoMi5ic5zKKIPsOBRqvQIGU98fHKghKayrtJUHbxM33tpZjC/CQq8t/
-         iUYpkHdhf+43+duTybyrV8Yima7XRJF9YU5goSc7+HgjdRdJPObJG8rhlHfTs1hHVA+0
-         CmV04k5WgU0UK+zb9nYMUi0Ykiolc5Oe7EhRRh7cOHLr7ep8VIY1vmG3kyXLEV59Zy8A
-         KAEzGtnqgaJpIqYNI8Z1MMYMq/WmfFQtvSQtvEEpuOWEYehdf7WOuQLwYI1QvzG6vBVX
-         2Kwg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1760060591; x=1760665391;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=96az3arQQNj4x6OI7kGaXy8qdPeeaXxUJmGrbGqdnv8=;
-        b=fSiwt/0vpTBldeARkeX3M1/dhy8Ijj8gbwXURmrzD2f0vefXmrp/35lZv+P6dVmT+N
-         cZH7vQBya3kDzKAKbO5TFWwKT44v7Q43y8xlXjsquShYjQ72vyF3Sd01bFZO22GTZqxe
-         b8NNGACYE9eMCkZxR0mh3Q65g/KPxYeQsHolz7lRWA4VJhUx4Ge0th4jg2g1Cq4PipDR
-         U9jJ2ZtcO0H+ggQEcB5LF+SmvK3Rtci7Cp4p3mtzGXZxVhOyA+fBcVEwrnU+O5K03XGJ
-         nF4FbcLN7sY5auSytOiYNOQY3WwRkeG4S+K5rW7S9ORaHuqfGa+oXmT8GVnMRkpfJyGa
-         dWwA==
-X-Forwarded-Encrypted: i=1; AJvYcCXO3boEngSWuWtIH262MqeJRBfwVVlUjItMGXSfZ/50DmEPlD70BXvFhYJjzCdrsXKoHwRfYg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw7QRDfPUlksuyeej5SbkLh+n2cSw9GHbcz0SrMBeIMfwBZPprk
-	KuHcy/K0s74PXln3drNxZ1/vaPfPgc2nCtEUDEVeFEuFAfh4OP8wkNezyh/qyuDlc9ShgvUleQR
-	4INbSMGR6HIKU3Zy/oBObqnRmwpRHUxUOzjjgaTzq
-X-Gm-Gg: ASbGncuYYbP5dnPxAr1nI6xRFnLswybTxHqiOnSvmJ8RiIYuyHQ+IUHJrAZnuO3iCYu
-	LGWxiIK4Ctof0FFJ08Wzl5RLv44jX34T2tOUAyt6TEtV1AlgOgpyqsQRe6Ncgc8aqsVnC43iIkK
-	d1yHVfsOADpg0PXsFCZdTYf5PRwSTthVQPgwWaPesCHfwfiI5s1uNYbAncj6zIa7ptwPr8tFaPW
-	gfe+KNWpl7sVCj9hHYF1Ltt0J4jKUL/YqKulLtfvoxQdwTaMHvUOr3jsuEHcR1cpYpDx7pFH5Dx
-	fcU=
-X-Google-Smtp-Source: AGHT+IGu0DK2CtCxN7hIIonTOKdPg8kH2c5mClv9tYOC7wcuhU0agjHl/Z5qabjh4i0XRN459MUgMBBjudlklfZKzww=
-X-Received: by 2002:ac8:590c:0:b0:4b7:a72f:55d9 with SMTP id
- d75a77b69052e-4e6eac2a26bmr18693271cf.13.1760060590253; Thu, 09 Oct 2025
- 18:43:10 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="v2KuPb7+"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=5nEgPiwNZqJY/+pI9FIhkXYcYvcHnRfvZ3w5CnVMM8Q=; b=v2KuPb7+X3CquJ8kc7LUjH9LyU
+	lXhmAD0NZIy8B9cVZIjPqtRCU/mTL197+QHuEWB+JvZi2dHdt8x+oVEoohFVJ/5/bofowuOY8cw1+
+	W34mQIV8jcJfn7f+m/Le//QjkQPy8/PTr/EH9kIbgc34HGov9DcIe1eG1s+6P0btLYxQ8YZcmk7UI
+	CpP7lSE3KDiwpMZo11L++VW+5WIapejtvBwxr8R5ZrvfooDPB3H0NRJmmcxHYoeiCiHwvFL4jJ/V+
+	w3dCKWfggOWZqSlGPX4XpmPp85/yLo1n6Gd3tA62nu50W5JHRYbTv6ucOwQ847lT4yro+jr1hgrmG
+	YWdN3oBA==;
+Received: from willy by casper.infradead.org with local (Exim 4.98.2 #2 (Red Hat Linux))
+	id 1v732r-00000002Scf-3b0v;
+	Fri, 10 Oct 2025 02:39:49 +0000
+Date: Fri, 10 Oct 2025 03:39:49 +0100
+From: Matthew Wilcox <willy@infradead.org>
+To: Suren Baghdasaryan <surenb@google.com>
+Cc: akpm@linux-foundation.org, david@redhat.com, lorenzo.stoakes@oracle.com,
+	Liam.Howlett@oracle.com, vbabka@suse.cz, alexandru.elisei@arm.com,
+	peterx@redhat.com, sj@kernel.org, rppt@kernel.org, mhocko@suse.com,
+	corbet@lwn.net, axboe@kernel.dk, viro@zeniv.linux.org.uk,
+	brauner@kernel.org, hch@infradead.org, jack@suse.cz,
+	m.szyprowski@samsung.com, robin.murphy@arm.com, hannes@cmpxchg.org,
+	zhengqi.arch@bytedance.com, shakeel.butt@linux.dev,
+	axelrasmussen@google.com, yuanchu@google.com, weixugc@google.com,
+	minchan@kernel.org, linux-mm@kvack.org, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
+	linux-fsdevel@vger.kernel.org, iommu@lists.linux.dev,
+	Minchan Kim <minchan@google.com>
+Subject: Re: [PATCH 1/8] mm: implement cleancache
+Message-ID: <aOhx9Zj1a6feN8wC@casper.infradead.org>
+References: <20251010011951.2136980-1-surenb@google.com>
+ <20251010011951.2136980-2-surenb@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20251010011951.2136980-1-surenb@google.com> <20251010011951.2136980-2-surenb@google.com>
- <20251009183145.3ed17cb0819f8b7e7fb4ec43@linux-foundation.org>
-In-Reply-To: <20251009183145.3ed17cb0819f8b7e7fb4ec43@linux-foundation.org>
-From: Suren Baghdasaryan <surenb@google.com>
-Date: Thu, 9 Oct 2025 18:42:59 -0700
-X-Gm-Features: AS18NWC-Nnw6mbU0XDp5pk62GdBblSXl-3NkXh8X6HtK-SeNhS47_j3D0edxdNk
-Message-ID: <CAJuCfpEPOOFOtd-Vp4VtTJyqxP_5+7h7SaMT=6exY1YZOE9v5Q@mail.gmail.com>
-Subject: Re: [PATCH 1/8] mm: implement cleancache
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: david@redhat.com, lorenzo.stoakes@oracle.com, Liam.Howlett@oracle.com, 
-	vbabka@suse.cz, alexandru.elisei@arm.com, peterx@redhat.com, sj@kernel.org, 
-	rppt@kernel.org, mhocko@suse.com, corbet@lwn.net, axboe@kernel.dk, 
-	viro@zeniv.linux.org.uk, brauner@kernel.org, hch@infradead.org, jack@suse.cz, 
-	willy@infradead.org, m.szyprowski@samsung.com, robin.murphy@arm.com, 
-	hannes@cmpxchg.org, zhengqi.arch@bytedance.com, shakeel.butt@linux.dev, 
-	axelrasmussen@google.com, yuanchu@google.com, weixugc@google.com, 
-	minchan@kernel.org, linux-mm@kvack.org, linux-doc@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-block@vger.kernel.org, 
-	linux-fsdevel@vger.kernel.org, iommu@lists.linux.dev, 
-	Minchan Kim <minchan@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20251010011951.2136980-2-surenb@google.com>
 
-On Thu, Oct 9, 2025 at 6:31=E2=80=AFPM Andrew Morton <akpm@linux-foundation=
-.org> wrote:
->
-> On Thu,  9 Oct 2025 18:19:44 -0700 Suren Baghdasaryan <surenb@google.com>=
- wrote:
->
-> > Subject: [PATCH 1/8] mm: implement cleancache
->
-> Well that's confusing.  We removed cleancache 3+ years ago in 0a4ee518185=
-e.
+On Thu, Oct 09, 2025 at 06:19:44PM -0700, Suren Baghdasaryan wrote:
+> +	/*
+> +	 * 99% of the time, we don't need to flush the cleancache on the bdev.
+> +	 * But, for the strange corners, lets be cautious
+> +	 */
+> +	cleancache_invalidate_inode(mapping, mapping->host);
 
-Yes, this version is a complete rewrite. Previous version was a thin
-layer acting as a middleman and having hooks deep in the FS code. This
-version implements most of the cleancache page management inside
-cleancache itself and allows GCMA and future clients to be thin. It is
-also much less invasive, limiting its hooks mostly to the MM code.
-From the cover letter:
+Why do we need to pass in both address_space and inode?
 
-New implementation:
-1. Avoids intrusive hooks into filesystem code, limiting them to two
-hooks for filesystem mount/unmount events and a hook for bdev
-invalidation.
-2. Manages inode to folio association and handles pools of donated
-folios inside cleancache itself, freeing backends of this burden.
+> +/*
+> + * Backend API
+> + *
+> + * Cleancache does not touch page reference. Page refcount should be 1 when
+> + * page is placed or returned into cleancache and pages obtained from
+> + * cleancache will also have their refcount at 1.
 
-The idea was presented at this year's LSF/MM and RFC was posted at
-https://lore.kernel.org/all/20250320173931.1583800-1-surenb@google.com/
-earlier this year.
+I don't like these references to page refcount.  Surely you mean folio
+refcount?
+
+> +	help
+> +	  Cleancache can be thought of as a page-granularity victim cache
+> +	  for clean pages that the kernel's pageframe replacement algorithm
+> +	  (PFRA) would like to keep around, but can't since there isn't enough
+
+PFRA seems to be an acronym you've just made up.  Why?
+
+> +struct cleancache_inode {
+> +	struct inode *inode;
+> +	struct hlist_node hash;
+> +	refcount_t ref_count;
+> +	struct xarray folios; /* protected by folios.xa_lock */
+
+This is a pointless comment.  All xarrays are protected by their own
+xa_lock.
+
+> +static DEFINE_IDR(fs_idr);
+
+No.  The IDR is deprecated.  Use an allocating XArray.
+
+> +/*
+> + * Folio attributes:
+> + *	folio->_mapcount - pool_id
+> + *	folio->mapping - ccinode reference or NULL if folio is unused
+> + *	folio->index - file offset
+
+No.  Don't reuse fields for something entirely different.  Put a
+properly named field in the union.
+
+> +static void folio_attachment(struct folio *folio, struct cleancache_inode **ccinode,
+
+Unnecessarily long line
+
