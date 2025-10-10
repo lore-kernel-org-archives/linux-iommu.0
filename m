@@ -1,114 +1,309 @@
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+Received: from AS8PR04CU009.outbound.protection.outlook.com (mail-westeuropeazon11011036.outbound.protection.outlook.com [52.101.70.36])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF20F1F790F
-	for <iommu@lists.linux.dev>; Fri, 10 Oct 2025 17:30:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760117438; cv=none; b=QM6TSno+a4SPwmaw/bCGK0AlKx9e2Xx4+OqepVVPoCUyoLtLeFn74+Tecm2NyVr/d8bnz5EEj6W7vuIH/7B0v65mqjltIbx7oHg963SIV5Hs2tQ8h3HGd6qb8R1UScDb7f+vBHsrFH5a4pTyLj0XRgyzxlrCoiQh1AoXewuq4Nw=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760117438; c=relaxed/simple;
-	bh=YbZ/7JveVWcTwyM5r7IGGzLazstNbKsWuH0SvULtBH0=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type:
-	 References; b=HG+mxQzeDFSS/7JFIulaAv3e59QGvPuqkLcf7XPLG1nKuTtpvFfixZ0ifVyDnKy0lXIu1goSi6KRX1wFFPmEIIT/Ds2hYR2j8zWNpxQbGH44veIRmBV/ANE6/+K8b8ABAQCfxOE5MV82ViOVUEruyKasVBYbp63Hqh9AZZyFSvE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=L0ARrzIj; arc=none smtp.client-ip=210.118.77.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08A6A23D7D4;
+	Fri, 10 Oct 2025 18:50:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.70.36
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1760122245; cv=fail; b=p1qeYz7xB6hAiC7LysME+8P/aYWyEPvwIfcqrnBrRly3DQDayFWQbSTuQKf2m55NsvFLBRHLjnKKDOq315Qqn1SKAgdNWh8/OiZ+uHaKh8PQYkvkVYqgwvlxCpbYgjm1SFZO8FHVKf//4Sb101BP0dJ5tylh6rzJkX/+7Ulrd7o=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1760122245; c=relaxed/simple;
+	bh=hrf8YhKBxY1dlitoms//KC7XdyYNkT5/I1dgcbvO5uk=;
+	h=From:Subject:Date:Message-Id:Content-Type:To:Cc:MIME-Version; b=El8m7FI89WY7iXqWEA+f+j5A8oftkVyg56LqCRj3Z50XhB3wgxsRKjIp1wzjMWGIzCx0CQHH1HyO3DqHZ7IF9JlbFRQC3JMTm3D80p2A/el92Vr6qcpPeu1daHJdA5Eg9oAIuxTZDYDJGHX8Je3jn3sdY4cuX34zywAb3VIpH0I=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com; spf=pass smtp.mailfrom=nxp.com; dkim=pass (2048-bit key) header.d=nxp.com header.i=@nxp.com header.b=TQKBzMlo; arc=fail smtp.client-ip=52.101.70.36
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nxp.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="L0ARrzIj"
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20251010173033euoutp01c8b520ff533d198649bbade3f88bcffd~tMXrYGCN42271322713euoutp01B
-	for <iommu@lists.linux.dev>; Fri, 10 Oct 2025 17:30:33 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20251010173033euoutp01c8b520ff533d198649bbade3f88bcffd~tMXrYGCN42271322713euoutp01B
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1760117433;
-	bh=6tFHuuK0qC8nGlJ1SzSICW59vf38J6nYrrUDLyYcupI=;
-	h=From:To:Cc:Subject:Date:References:From;
-	b=L0ARrzIjXHBE4Er9ryt1PGlnIkeAOwh0BJt9U6gLZbP9EvPP7cwEZWjBFkV6vTRLv
-	 4stQK97CmYsuWbsmiMz5/DxOgio8QBMT/eKjUKcZA+CLNDn0iQzY7pbeVoiHDmLFbF
-	 GIOziON2DJAOfM9BIdpPSyehOfUJlp40ZUzEIEBE=
-Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20251010173032eucas1p24ec518d7c35003805bc6e732c942843c~tMXrNS9uh1158011580eucas1p2o;
-	Fri, 10 Oct 2025 17:30:32 +0000 (GMT)
-Received: from AMDC4653.digital.local (unknown [106.120.51.32]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20251010173032eusmtip18cda9ca2b3f75cfb98c4be5c6f117eef~tMXq3VVVf2117121171eusmtip1d;
-	Fri, 10 Oct 2025 17:30:32 +0000 (GMT)
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-To: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy
-	<robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>, Andrew Morton
-	<akpm@linux-foundation.org>, Catalin Marinas <catalin.marinas@arm.com>
-Subject: [PATCH v2] dma-debug: don't report false positives with
- DMA_BOUNCE_UNALIGNED_KMALLOC
-Date: Fri, 10 Oct 2025 19:30:09 +0200
-Message-Id: <20251010173009.3916215-1-m.szyprowski@samsung.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (2048-bit key) header.d=nxp.com header.i=@nxp.com header.b="TQKBzMlo"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=n4MN/TqRVuGFZ6P+yz1N3YHDZJhD8kHQMFX2cuuzRVmKbFVa6wwh3kBZO3xUnOcRnoHakWeafpvCTLaIrZL/3PKmSMyVgfASVtOQKPF4kRW6IoqIeXFt/mDCSVa0J34B3y+Qs9g4mZ+td8sXahxhf3oVBVvutqVsC43xY7FU2rW/yXF6qLKvEWyVCnMcIAqwYNG9zRQhHbDQYiZphERlrl9Fj+I1JnoT/ufwKNJ5t/tzKAhoa9+NgLfMEj3Of4EcxvCbrN8BRzf9P7b7TT6agPwwM2+ZP72ujIUvUKKR47byTSKD57QgxrLXCG3i5tHiMnb5eOSrN73b9vDEKUr0AQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=+sl2FlOQYKN1KEh/3uh6LwxYoy8FLGK22KnAKMtMFcM=;
+ b=IGtHTkatSYhr437JtTElwYVJVKMeQYStXTCgWw4xAdwmaDFNeN+Jsf2Z0s9336dIKsL6EkK7G0WEK55U5tdPgsXpU7WeeQ+cS459ATQVV4QG55wI6yoJqo+Raj57kyzIgH01oiK6dQ+eds0HmFLbt23oAid0+L11bzxkqhMopyb+SFzF4NNuRDANnX1bC9QfL19HZnwLMxiupHIw7e9LSeSMKVmyM2UDGFJ35LJamNvISDSK2zAgGQDg2Rwq8Q9muaKlVXP5VUp5Dg68zEkY6Ei2xuFMchBfdeba2QgUbVXSsr9YDGZp99EYP4SNm17T5NvxYQoyG+yryayr6clojQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+sl2FlOQYKN1KEh/3uh6LwxYoy8FLGK22KnAKMtMFcM=;
+ b=TQKBzMloKzvZhIc2LEyYvTIdA/uWiUEHr4vvzBuX0ZcD+gYkzlwVaFk3zUcAwFGKoPRGX2ZQRQ0DSAmq49oKpoFBMOrJx9MHP/IhfBNvoU1LGtZELlt7PO+JaBZkabXlZ48DK/iZnvguFlR5JIhCtIKpSxwBFSGXwH+JemurARCVsxRdrHWb+n5JmgstMAGOGEM//iIce/bv1D14YKGdOmCrcWgO2UDqMu7VuN4gMPnl1gSuywJIA3gxomaHr/xyqjD/sw4ZUZapkks0di+xsQ4SPZJZ2dj7Vbb9hzE6Zu5JA/pSggSLWReauaOLnKXFk0Sd+EQgz+M2bEiToOrcEw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from PAXSPRMB0053.eurprd04.prod.outlook.com (2603:10a6:102:23f::21)
+ by DU0PR04MB9659.eurprd04.prod.outlook.com (2603:10a6:10:320::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9203.10; Fri, 10 Oct
+ 2025 18:50:39 +0000
+Received: from PAXSPRMB0053.eurprd04.prod.outlook.com
+ ([fe80::504f:2a06:4579:5f15]) by PAXSPRMB0053.eurprd04.prod.outlook.com
+ ([fe80::504f:2a06:4579:5f15%6]) with mapi id 15.20.9203.007; Fri, 10 Oct 2025
+ 18:50:39 +0000
+From: Frank Li <Frank.Li@nxp.com>
+Subject: [PATCH 0/3] dma_mapping: Add auto cleanup support
+Date: Fri, 10 Oct 2025 14:50:23 -0400
+Message-Id: <20251010-dmamap_cleanup-v1-0-ec5bc14e82c4@nxp.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAG9V6WgC/x3MQQqAIBBA0avErBMmQ4quEhFDTjWQJkoRSHdPW
+ r7F/xkSR+EEQ5Uh8i1JTl/Q1BUsO/mNldhi0KhNg9gr68hRmJeDyV9BWaRuRaMNtRZKFCKv8vz
+ DcXrfD0v2POJgAAAA
+X-Change-ID: 20251008-dmamap_cleanup-d0a7f0525a3d
+To: Marek Szyprowski <m.szyprowski@samsung.com>, 
+ Robin Murphy <robin.murphy@arm.com>, Dong Aisheng <aisheng.dong@nxp.com>, 
+ Andi Shyti <andi.shyti@kernel.org>, Shawn Guo <shawnguo@kernel.org>, 
+ Sascha Hauer <s.hauer@pengutronix.de>, 
+ Pengutronix Kernel Team <kernel@pengutronix.de>, 
+ Fabio Estevam <festevam@gmail.com>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
+ linux-i2c@vger.kernel.org, imx@lists.linux.dev, 
+ linux-arm-kernel@lists.infradead.org, Frank Li <Frank.Li@nxp.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1760122235; l=3179;
+ i=Frank.Li@nxp.com; s=20240130; h=from:subject:message-id;
+ bh=hrf8YhKBxY1dlitoms//KC7XdyYNkT5/I1dgcbvO5uk=;
+ b=zpWuZndjQ9h0RkBv0IMXDJZK5NtuNjnHyFaMCwMPnmm6hfTCL7WKQ3ZyUpGGNtmPRMZYkl5c1
+ aJi63Tzyx/tBRxMOMjA6/p7RH06zEGU6g2cG8JtaXHCD04UhjwLJbao
+X-Developer-Key: i=Frank.Li@nxp.com; a=ed25519;
+ pk=I0L1sDUfPxpAkRvPKy7MdauTuSENRq+DnA+G4qcS94Q=
+X-ClientProxiedBy: SJ0PR03CA0212.namprd03.prod.outlook.com
+ (2603:10b6:a03:39f::7) To PAXSPRMB0053.eurprd04.prod.outlook.com
+ (2603:10a6:102:23f::21)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CMS-MailID: 20251010173032eucas1p24ec518d7c35003805bc6e732c942843c
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20251010173032eucas1p24ec518d7c35003805bc6e732c942843c
-X-EPHeader: CA
-X-CMS-RootMailID: 20251010173032eucas1p24ec518d7c35003805bc6e732c942843c
-References: <CGME20251010173032eucas1p24ec518d7c35003805bc6e732c942843c@eucas1p2.samsung.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PAXSPRMB0053:EE_|DU0PR04MB9659:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9f364701-8295-48fa-b07a-08de082de7dd
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|376014|7416014|366016|52116014|19092799006|38350700014;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?REV3Q21DL1JzRU10RzZuRFU2NVowTk5kNDh2OWhIRWpHWUx2VUJsVmlYOGF2?=
+ =?utf-8?B?Rko1L1BaTzFSVitUaHhpcXFDaTFqeHVrbjF5bEpEOVo5MlU3cm1pS1ZXaEVM?=
+ =?utf-8?B?aGkybERXZzhiWEhCWkhnT2hLTGI2VGJGeitJMVZmeVFlNWFsNkNJWFg1MExD?=
+ =?utf-8?B?cVUrZVBWTEFhc2grLzR6SmdEY0lLNVNWbDRCMTBRa3ZUVEhNV0VRb1BmQ2Z6?=
+ =?utf-8?B?bkRsNU9RUkhWQ1Z1Wkw2Rm9VQUduWUg2cGRyUURSaVJCQlh4WDB1dW9mYzkv?=
+ =?utf-8?B?VXo3OWF5SUdNbGhWZWwralRQcGZCc1RMRWxIV3BwY21Hdy9vcmNqYVpxMWJ2?=
+ =?utf-8?B?NFdSaUJFb2tta2JFVko2T251L21IK2w3TjFVN0c1SDZnY3JuQVZsY041UVhM?=
+ =?utf-8?B?MjFFQ01WQkJSWWRlV2R5K2kwdndYU0U4d0x1aFZ4US92YjhyNmEwNVh0ZTBK?=
+ =?utf-8?B?V3djOHp3UC9iYk1iMXF2cURqTm5rYWJzYk5sRHN3K0tOejZhUko0b0UzMnNN?=
+ =?utf-8?B?dyttWkovdjZYaG96WXFRZy9SMzhneFpxbVVsZXFRbUxMWTZMYjBVNzVXRlBu?=
+ =?utf-8?B?T1VxY254Ym93S0RJREc0b1BJUXdjYSt2aktVczZqcVRYbWgzbllRcWUvUEZ2?=
+ =?utf-8?B?c2haSW9JYjkxc01yaWxKekVGM3hDalByRjEyMzZvUGltOVJsbXdhcW1UL1VS?=
+ =?utf-8?B?Y3oyVmZQZE9NM2lBb1NGMUw1K2o2cXFSMjdVMEJHbTJMSlJWdzBSc3ZvdVR2?=
+ =?utf-8?B?Q1N1UnNuMHVuUjh3QXdhbkljbVV6cmczOW5JT203dU96NGVZY21wcndwTDJQ?=
+ =?utf-8?B?d3IwbTFwNERkcllEalJRREFrNCtQQkVaODhaalJaQ2NCUkZhWWFRbWtPUDJJ?=
+ =?utf-8?B?enNnbHI5bWRPblJhWElrZDF1N21PK2NXQjlzUEloMmVnL01UVllSS040YkFR?=
+ =?utf-8?B?VVBjYUJLTWcyTm4zRHVuWVpKVTBKOVRyc0pJZ2svSGNzcXA0UThoK3BNM3Ro?=
+ =?utf-8?B?aUIwQkNBbWRHc3EydlBoNGJQbGR0MzE2OThzS2ZUbURNUG9NcVErc2xERTBM?=
+ =?utf-8?B?MVRpaHZIK1paaEtJTTQ0UzFwNWw2amM1VjVzOTdKQkpGaVpTbVRJS2FMWmNK?=
+ =?utf-8?B?STU5cU5mNWV2aExBT2pSd3cwWSsrbjl3ZStncGxZdHdYREtOSmZsQWtxc2Fm?=
+ =?utf-8?B?ejJYQ1BHL05WSnBIWmJQY0ZWRHNyVXErRXNyQklkUWNHNk5tZU45V1czdVRF?=
+ =?utf-8?B?SFpSNGZzOXdUeXNkbXh2U3ZJZnlTeDVIUmZaSmQvdk55UjBZM2FONDZkbjNQ?=
+ =?utf-8?B?THh0YzE3Yk03Y09NUDRzUjVYc3FnV1ZMVlc3cmFWWlVncG9iWXhMWTlRUUN2?=
+ =?utf-8?B?VDV6Skplcm1tQkJqWDJCQXZzNFM2S0tLZk54RTB1NGhYSkxjQ0VqdWJ2d01p?=
+ =?utf-8?B?NUxZMzA0YjdCb2F2citodEl6bTRCRTkwVTFiRDY4UkpiZWFTaU1Vd1Jjc1FN?=
+ =?utf-8?B?N1RmTFlSSzNWWkgrOUhyU1V5T3FoRGMyZ1ZVT1JYeFY4aFRycUV0K2d1TWg2?=
+ =?utf-8?B?ODlkamZVQ0ROaUV1aEk5Nkx5RkNkdExWeXZscWF5c1RtT0kxZ2N1c1l2a29o?=
+ =?utf-8?B?STB2RWEyVVlEd2R5QVMvQVFjVjE0MEk0d0NVbnBMOCtvSE00WGVTU2N6R2pM?=
+ =?utf-8?B?SWxKSEZpdmFBMTZQY3JkRm14aUdvalVPbDFWZ3VYaUQ2QmdBbGhSNzY2Y3NI?=
+ =?utf-8?B?RmZzdFNUaExmMU1tWm1pZjkwVzRhQ0FFNThmKzJYZEo0RUx5QThjRzUwVnpj?=
+ =?utf-8?B?cU11MDV2cUtrRlBQSnl2TjhXa0tkSy90TlZtVkZwZ21aUjE4bjlUSVMvbXpJ?=
+ =?utf-8?B?ZEcvTC82MytSampNTmxYODNWOGU0VWFEWGZINUNQTUxnVmZYRXVXUFBNVnQw?=
+ =?utf-8?B?YUErRlFQOHBTN0ZzdWpJMTVSZ3lUSkQwRk5BSXdBZDV5RE8xTHhnMFM2QjdF?=
+ =?utf-8?B?Nm1GWFQzQ0Exc0VHeXBtR1BwbUxXbGh4NVdkWE1qNW1vQnh5aFBZVVc2L3Yy?=
+ =?utf-8?Q?qO9JkH?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXSPRMB0053.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(7416014)(366016)(52116014)(19092799006)(38350700014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?V2pJNTBHVEllTU0rYkhXWU00YXpsaHZJZXZMWVJHazhqOE9ucEdicWFOUGwz?=
+ =?utf-8?B?bnIwcHVuSmRvcGdlZ3libEwxdGJXUnRKU3VCVHlDcCtqMWQxYjZ6MHNiTVZR?=
+ =?utf-8?B?RWFnK1lMRmlGQ3UwZENwWThLbW52Q1B6K1RZNy9pdXVINVkxUmRJM3B0aTA5?=
+ =?utf-8?B?UUlWdTZpT3NtYnhHUE1JNVJmWlNHcWNZQUQ1emxjZmRwN2o0L2J4OFZtSmpN?=
+ =?utf-8?B?UUFGNi9QMzR4K0ZaWjZ1NlRObDRKTXRJNW8zcnNVNzVXbjN1YlpSUVB5T3g0?=
+ =?utf-8?B?UHBuRzMxaktZTWVIcEpkN1hraURHYjVuZ3h2KzB5YVZEZ2c4ZFE5WTBVRzFT?=
+ =?utf-8?B?czFaWWJZWnY4akR5aXEvOEdVQ0FVYTFFSGdmOFN4MXVSNDl3QUVrVktubnYz?=
+ =?utf-8?B?a1FNQzJiMWhSbGpDSmh1YWVmYW1TM2ZUa0NCWXZqdFZCdlpYc0g0RTIybkgw?=
+ =?utf-8?B?QnIrY1V0ZzVsOStFZTdCM2hxcVJQZEY0Ry9WY2E4dXU0UlRwcWhEUUo5WU1L?=
+ =?utf-8?B?RmtPemxnMkxTOHAxTCtRYk44blRhOW5TQjdrWnhDTE5VeWQrZ0JSZTQ5V1NB?=
+ =?utf-8?B?TGFxN1JMUGx3OWFYT2l2NVcrUmlzNGFjc3k4QTdaU2hGajRpZjNTbURkbGRo?=
+ =?utf-8?B?aENqY1FTNGxkU2UzSTBzQVhFdWl2QjhMTjEzd1hubzB1UXBJUlh6U3BFTnRw?=
+ =?utf-8?B?MzE3MUgrMVVOdnNZRFRvUmIzRWZCZUJhdVhMclRLVXRGanJZME5zd2hEUWQw?=
+ =?utf-8?B?QlZUdDlsWkZ4c2VvRXdSeGhSb2NweGJXWEVoSTljR3FaYzNiVGtOZHVUdVVt?=
+ =?utf-8?B?YWwyS0tIaUcvd1BQKzlnL1J4b1BjajNLQ09ML01DVlVjMWc3VGhuTDY3bndL?=
+ =?utf-8?B?NW0wWlBvRDJRNzhvQ0NuSTVxZzBPbEJHcVdIejNEMXQ1NktCbkVSeHBBZmlw?=
+ =?utf-8?B?T1dCYjF4ckdvWUZCYmZScmhJNU1BODJpWVplZWMxNUFkNzNUVzd6QWF6Q0U1?=
+ =?utf-8?B?Z0w2VVNNejN6amdhSlh3TmdKYks4d3JFeWNiR2lLZmtDMHJkZUxKdE5kMUNZ?=
+ =?utf-8?B?ZGFnaUNsRTJzUmJVM3ZORldqS01sVXRta2lzQlI5ZXVhYlpvZGorQ3pMcE91?=
+ =?utf-8?B?eG1zWSs2ZWE0TUovd1p3Qll1SFRrblQxYXBrV2hGRDMvc1NiaWhJMktPMEhO?=
+ =?utf-8?B?eVFPcGpUUE9RV1JvckZUNlppZUY5cjhwMWhBTGhWTGJQTkhkK2Iyay8wWStq?=
+ =?utf-8?B?YnZDU0V1TFBCdHRkQTROZllidWVISk41Nkt4bWFJbFNEeVM0eEhDUldIOUZh?=
+ =?utf-8?B?WGY0enhSSnk5Q1F2eStnYmJKVTJBRDk2RFFaSVFvdW0xK2R3L2hJV3Z1bS9J?=
+ =?utf-8?B?a0pWc1ZWbUxrY3luTTVUbEw1RmFmeDJPMWV6SlBaL05BclZCc21MQ0JPVnRp?=
+ =?utf-8?B?RHdWNHlqakpmTkJaZCt1c0dtU0Ywazg2Z0gvcFFST0d6cUhlSE81ZG5DQXJP?=
+ =?utf-8?B?eGxMcGl5dytGREo3VWpYODJhak9OWUhhT25RS0dzZHRMUHJJanRZOE5EcDZE?=
+ =?utf-8?B?QldNbUQ3YWpKeGw1d25zRG1RUUtLY3lIaC82Mmc5a25iamRscXRpTlg2cDVD?=
+ =?utf-8?B?Vm1ib1RSVWVwZmhNWDZWSU1lbTRScFpOYUN2OEVuTmtTL2VHaHJwUzE5eWZB?=
+ =?utf-8?B?UXpwNU9kd3ZhZU5xa05BSXhBdU1aS2g0UFlXZ2FGYUQ5YnhLT1l4SGd6RnFm?=
+ =?utf-8?B?Y0ptUm1Bb3cvbWswSDJ6bFk3SnhoYkhhbSttcVZiSTlDMWlKcmxicTVRaFZR?=
+ =?utf-8?B?OWlsQTdTMzBMZHhFcGVwVGNiWHdId3c0WEhNWXVXWFczazczQ2ZaUnFZeDAw?=
+ =?utf-8?B?RjYrS2JYem1PMzdhS25yV1FwUlNPZStjb2hqY0luWFlwTnpKTWYrNThQVkVB?=
+ =?utf-8?B?dHA1MElwOGtndUZIdTlteFlwNFV2QUVLTU9oYi9rdS84VlZ1UFphNkUrV2lG?=
+ =?utf-8?B?R2NYY3NuK0FaRi9nRVNkMmdSSkg3N2hRajFkSFVCaGM1aURQRXJHSWhxL0lD?=
+ =?utf-8?B?NTlpaWJjNURkRm92R2FpZE5jelF2SVVnd3BpQmh3eWZFMVRTUVRJVEdPMzZ4?=
+ =?utf-8?Q?gDWG6hfXYL895D+slB/EUZ4IV?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9f364701-8295-48fa-b07a-08de082de7dd
+X-MS-Exchange-CrossTenant-AuthSource: PAXSPRMB0053.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Oct 2025 18:50:39.1169
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1vKHQNKYDmT+63mTzRQ0K1wRYNfNzUs2JUx7p0mEDh0yB9gSgLiez/Re1vdkhc2L633rW9ppdS7MQNdtq4KrvQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0PR04MB9659
 
-Commit 370645f41e6e ("dma-mapping: force bouncing if the kmalloc() size
-is not cache-line-aligned") introduced DMA_BOUNCE_UNALIGNED_KMALLOC
-feature and lets architecture specific code to configure kmalloc slabs
-with sizes smaller than the value of dma_get_cache_alignment().
+There are many below pattern
 
-When that feature is enabled, the physical address of some small
-kmalloc()-ed buffers might be not aligned to the CPU cachelines, thus not
-really suitable for typical DMA. To properly handle that case a SWIOTLB
-buffer bouncing is used, so no CPU cache corruption occurs. When that
-happens, there is no point reporting a false-positive DMA-API warning
-that the buffer is not properly aligned, as this is not a client driver
-fault.
+	fun()
+	{
+		...
+		dma_map_single();
+		if (dma_mapping_error)
+			goto err1;
 
-Fixes: 370645f41e6e ("dma-mapping: force bouncing if the kmalloc() size is not cache-line-aligned")
-Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+		dmaengine_prep_slave_single()
+		if (...)
+			goto err2
+
+		dmaengine_submit()
+		if (...)
+			goto err3
+
+		wait_for_completion_timeout()
+		if (...)
+			goto err4
+
+	err4:
+	err3:
+	err2:
+		dma_umap_single();
+	err1:
+	}
+
+Use cleanup can simple error handle like guard(), such as guard(mutex).
+or __free(kfree) = kmalloc.
+
+But dma_umap_single() need more argurements. So situation below complex.
+
+It need pack argurments list into structure.
+
+	#define __DEFINE_GUARD_CLASS(_name, _return_type, _list_class_fields)   \
+	typedef struct {                                                \
+	       	 _return_type ret;                                       \
+	        bool    okay;                                           \
+	        struct  {                                               \
+	                __REMOVE(_list_class_fields);                   \
+	        } args;                                                 \
+	} class_##_name##_t;
+
+So save all arugments to it.
+
+__DEFINE_GUARD_CLASS(dma_map_single, dma_addr_t, (struct device *dev; void *ptr; size_t size; enum dma_data_direction dir)
+will expand to
+
+	struct {
+		dma_addr_t ret;
+		bool	okay;
+		struct {
+			struct device *dev;
+			void *ptr;
+			size_t size;
+			enum dma_data_direction dir;
+		}
+	}
+
+So cleanup function can use saved argurement.
+
+The above fun will be
+
+	fun()
+	{
+		CLASS(dma_map_single, dma)(dev, ...);
+
+		...
+		if (...)
+			return err;
+	}
+
+if funtion return, which need keep map,
+
+	submit()
+	{
+		dma_map_single();
+		...
+		dmaengine_submit();
+		if (...)
+			goto err1
+		return;
+
+	goto err1:
+		dma_umap_single();
+	}
+
+Macro retain_and_empty() will clean varible to avoid unmap.
+
+        ({                                  \
+                __auto_type __ptr = &(t); typeof(t) empty= {};   \
+                __auto_type __val = *__ptr; \
+                __ptr->okay = 0;        \
+                __val.ret;              \
+        })
+
+So
+
+	submit()
+	{
+       		CLASS(dma_map_single, dma)(dev,...;
+
+	        ...
+	        dmaengine_submit();
+		if (...)
+			return err;
+
+		//before return;
+
+		retain_and_empty(dma)
+	}
+
+This series just show how to hanndle many agurement at resource alloc/free
+functions. Only show dma_map_single. If the over all method is acceptable.
+I will more define for dma mapping functions.
+
+Signed-off-by: Frank Li <Frank.Li@nxp.com>
 ---
-v2:
-- replaced is_swiotlb_allocated() with is_swiotlb_active(entry->dev) as
-  suggested by Catalin
+Frank Li (3):
+      cleanup: Add DEFINE_GUARD_ARGS_CLASS macro for resource alloc/free functions with multiple arguments
+      dma-mapping: Add auto cleanup support dma_map_single()
+      i2c: lpi2c: Use auto cleanup for dma_map_single()
 
-v1: https://lore.kernel.org/all/20251009141508.2342138-1-m.szyprowski@samsung.com/
+ drivers/i2c/busses/i2c-imx-lpi2c.c | 13 ++++---
+ include/linux/cleanup.h            | 73 ++++++++++++++++++++++++++++++++++++++
+ include/linux/dma-mapping.h        |  8 +++++
+ 3 files changed, 87 insertions(+), 7 deletions(-)
 ---
- kernel/dma/debug.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+base-commit: 7c3ba4249a3604477ea9c077e10089ba7ddcaa03
+change-id: 20251008-dmamap_cleanup-d0a7f0525a3d
 
-diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-index b82399437db0..7458382be840 100644
---- a/kernel/dma/debug.c
-+++ b/kernel/dma/debug.c
-@@ -23,6 +23,7 @@
- #include <linux/ctype.h>
- #include <linux/list.h>
- #include <linux/slab.h>
-+#include <linux/swiotlb.h>
- #include <asm/sections.h>
- #include "debug.h"
- 
-@@ -594,7 +595,9 @@ static void add_dma_entry(struct dma_debug_entry *entry, unsigned long attrs)
- 	if (rc == -ENOMEM) {
- 		pr_err_once("cacheline tracking ENOMEM, dma-debug disabled\n");
- 		global_disable = true;
--	} else if (rc == -EEXIST && !(attrs & DMA_ATTR_SKIP_CPU_SYNC)) {
-+	} else if (rc == -EEXIST && !(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
-+		   !(IS_ENABLED(CONFIG_DMA_BOUNCE_UNALIGNED_KMALLOC) &&
-+		     is_swiotlb_active(entry->dev))) {
- 		err_printk(entry->dev, entry,
- 			"cacheline tracking EEXIST, overlapping mappings aren't supported\n");
- 	}
--- 
-2.34.1
+Best regards,
+--
+Frank Li <Frank.Li@nxp.com>
 
