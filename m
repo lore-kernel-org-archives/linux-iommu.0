@@ -1,55 +1,55 @@
-Received: from mail-pg1-f201.google.com (mail-pg1-f201.google.com [209.85.215.201])
+Received: from mail-pl1-f201.google.com (mail-pl1-f201.google.com [209.85.214.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51DB1258EFE
-	for <iommu@lists.linux.dev>; Fri, 10 Oct 2025 01:20:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B0F7260587
+	for <iommu@lists.linux.dev>; Fri, 10 Oct 2025 01:20:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760059213; cv=none; b=BEWMcI5F8rk+1wKZOWBP0pVNNvVRiYXNeqBB7QjhfKs0Z/f2QtqwlM3B4oPhedFCYWvbBnHqWLjMkRlau0+yOcqvSZZthjBPBOVbBFrsXNLboc1bkgI7sH40WEWALMcv0UyciDE7cq8qd29o3rf91RKbfm5Mxo7Z07TMb265YSg=
+	t=1760059214; cv=none; b=md4XRXitAwk2EaLQmAlmo+C5Bfbs/RYdUn5QqPzRFrNnNZL59xDiASUfFVK8Dniww6vlaZiodzeId+z9n0hu5HBJWcOPsR8ufX77XU49il25EZmIUayMyLEhojB1LE8gebgSUxWODCwn0aEe3otjfbko4WzGh+9vkmqJKo06EFA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760059213; c=relaxed/simple;
-	bh=NHw3RZ90+Da7UyHMBKVXx8p20p9oL5hkY0RUKVTk0us=;
+	s=arc-20240116; t=1760059214; c=relaxed/simple;
+	bh=2Kc+vG/8MkGEpxWJcD4ifjS1MgE6MwSmoOS8ymE7jeg=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=nBpby81NDmSZhGkogJhnn9tA+56mRms2soiue7795mneaSAv3he5qRP+hByzYEp3vvYTZVScQLMuKDVobGvd8mi+nUoibA9JSccC4cvo9Y1TX/K63FMIDD3gi/nB1kedEmnxBImsvxoqI/Vyinl8wJQ/0WlwySIUQDp5fSSYo0o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--surenb.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=FKETGBzW; arc=none smtp.client-ip=209.85.215.201
+	 To:Cc:Content-Type; b=fY3FGfceuFH6QHplVbKf4eCtb+pXT5VS+5Ze2NOStntBYhRjNyuDtFIqpmCgUJ9aeAXBtSu23BC1GXc3yr9En5s+r88cTJW/RpwcTcxSDWb6ht0AbLjdgqXwEhUvTacrQKXcOeokwgp/6uJiyqrTXjUaN6xn5nE6JnAaVxQoJ3I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--surenb.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=lENUOZlp; arc=none smtp.client-ip=209.85.214.201
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--surenb.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="FKETGBzW"
-Received: by mail-pg1-f201.google.com with SMTP id 41be03b00d2f7-b557abaad02so3736373a12.3
-        for <iommu@lists.linux.dev>; Thu, 09 Oct 2025 18:20:10 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="lENUOZlp"
+Received: by mail-pl1-f201.google.com with SMTP id d9443c01a7336-28973df6a90so25959135ad.2
+        for <iommu@lists.linux.dev>; Thu, 09 Oct 2025 18:20:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1760059210; x=1760664010; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1760059211; x=1760664011; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=TF3568yP8arSICTc3vnXw7wkTlYOmrE0XKsy2eUArt4=;
-        b=FKETGBzWpLFjgCfD/KypSNa0RdBy/lUqu74J4s5NdVkb7iQsOafVLRIfBYYV9JE2PJ
-         qHjoM6GzoO+9LHtOi90x4KsQp/4U8DeB8UrfIz77G9onssM0YFm5xktE3mFL7YSfNn/6
-         qeMXayufWJ9pe9XufqRtBrTVWpC0007P7dpeAy+VPT9DbpOXrKVWuA1qiHjSo1/trJQM
-         /tiRqGPJg/Hbv3IOOj3t1SqJxwKb1k4MbaRpl8Hx+kgOg4yqvjpsIwiicjLYEix/HKph
-         clE/byC7AA1Iw15+CzjK1eGLhp/hDKb+5K/KThovtdSiIPJReYBTIXNUH9PC9gMWjIUz
-         qIbA==
+        bh=BMspCuJAq7oIjVtiLnvMgH+BOK3foud4K2myRpZR2Ss=;
+        b=lENUOZlpMkv9GBvYJ98+mT9keNYMzeDCwdc6AYwzEKY5oyg/jsyIL3/S98w3h0iFUn
+         gqshNBHfTpdAg6KNJ8mCsbW2hyulj6j0x7LXgr4nVIZSn8zkr4TivqiLQG4c/HSFdOvM
+         4CGjdUotnV55ECmrKyH/dL5nkiu/AV/H52vrs0qIkiN9JwPc6/onUs7nWTl6S8SoOy1q
+         YDvhCW0Zp6wp7v7raRUzz7o3uW47Qj82RGBiamqO22qGACTO82EmBZ7TtvI6Hb4Fn73s
+         b44Bggz4ePD+qywbDaG9Csr9PWn1lC5DcnfChgVdXsz/RSo98p2WGPZAMVmmehh5usg5
+         +dEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1760059210; x=1760664010;
+        d=1e100.net; s=20230601; t=1760059211; x=1760664011;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=TF3568yP8arSICTc3vnXw7wkTlYOmrE0XKsy2eUArt4=;
-        b=cNVMTehAk8AoddyhWgcPxJD4yIdjX45QzS0U4NmUrlPFweIHlRXzRR95JyhsaA+x18
-         Ji4XZYVTkFqsVhrkAAefyCFJEDH5/zEtVSGIs+PFCe3Mi6XiWisAlgW0TuGUyE7iSzID
-         Kso5f8jQohUuB4Y1cXKyuK9vfTlkhYK8kx8+3fCGEbb4IxI1OCV96d+mlRy04ezVXvnH
-         ZAG405qkeYMbTp4TNSpinEo3OBAxRWMOcXyBCt1CKG8RMcEYq0/61uzOpaPdqxr8EShw
-         /f7lcnOrBlQLGHWjU2EpbEreQwJ3f8yfJm8ZKzV68t/ZxTn4suxoIb4GPQDOmI7dU2J5
-         OOAg==
-X-Forwarded-Encrypted: i=1; AJvYcCWBlEaNYkOTRzBLSbWnJS90sNbgZbFoAS77uAROcGq/8DoBtkFON2397L3TWDTmoFzgRJrUXA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwDn7BHKFqDogREsSSTxc3b0CCpoLBynvAn39nDRT8jtXJdJxtJ
-	/qb02Y6a/K9LU8u/AzbSenDiLWXJOXPJ6zfItz0VsNZ5dRQTOxj7Kii9m12OOgGqhY6W6e0QO5w
-	zbwnCYg==
-X-Google-Smtp-Source: AGHT+IHpnUj2OMWlXlYxp3ZZZRkgvkpKUji8FWq+Is/jpL7rJv/HUvTEG2aUVmhGkdq+yIG7uf4JBu02rqQ=
-X-Received: from pgbcq6.prod.google.com ([2002:a05:6a02:4086:b0:b49:de56:6e3c])
- (user=surenb job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a20:431f:b0:32d:80ab:7132
- with SMTP id adf61e73a8af0-32da83de283mr12170415637.37.1760059209572; Thu, 09
- Oct 2025 18:20:09 -0700 (PDT)
-Date: Thu,  9 Oct 2025 18:19:49 -0700
+        bh=BMspCuJAq7oIjVtiLnvMgH+BOK3foud4K2myRpZR2Ss=;
+        b=YQ43IBMqfrJlr6vua4ehGKo38KglEtEX4rY+GjY6p4AgpzRw3iGiWFUGSuYAfwrb1P
+         WtmVPewwIwG2YDZdEKLQwwyup0oa/yqKpI+GBHpu4w9zGjf0NtbYZBKSNOiOk6sqxYHv
+         PzNrOJdy4C7jTmJK6ljI2+QMYQp4QOPeUI73OTI4MhtDo5c/3DmZFIN2so/5qZ9l4LQ6
+         ENt0tkk4GRojgOr9WsqgdNRwJLtK1M20QJsE35NsT9DiCrrQfXgZPR2fAxuM6WiRfnzh
+         8brkLJinvIqF+M+Qb1DUV+c6zjztJALO9QGV002PmHHxCycO2l25uxV9vSeu58EDOhAz
+         DNqg==
+X-Forwarded-Encrypted: i=1; AJvYcCVrZ9sWFOMBGD8YjbY1OsB+oj9ZVfSnTH4YW0TKP3xhylFWxBOP3BOKDNA02eCA6QR74ngI6g==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwumS82IPm2WlJ/ZMgittXle+pLrvopGDMMT11Cbifq+U/YJX7E
+	YyUcGnR/PalvPupCV4Dl85Ne/FSswXQ8QVugF8A25YFu0bpCKCihkDjTx1rA6ZtfsP91nrgUrfo
+	++0+WQQ==
+X-Google-Smtp-Source: AGHT+IEWKkEivo5xkxXtogAKm07PhNF4ozYnoXCJEzQk/zOL2Y/TNZ+SlYrB9tiZy0+b63lcurI0GuhAwZk=
+X-Received: from plas15.prod.google.com ([2002:a17:903:200f:b0:25f:48ba:97e1])
+ (user=surenb job=prod-delivery.src-stubby-dispatcher) by 2002:a17:903:2d0:b0:25e:78db:4a0d
+ with SMTP id d9443c01a7336-290273eddd5mr117013065ad.36.1760059211496; Thu, 09
+ Oct 2025 18:20:11 -0700 (PDT)
+Date: Thu,  9 Oct 2025 18:19:50 -0700
 In-Reply-To: <20251010011951.2136980-1-surenb@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -59,8 +59,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20251010011951.2136980-1-surenb@google.com>
 X-Mailer: git-send-email 2.51.0.740.g6adb054d12-goog
-Message-ID: <20251010011951.2136980-7-surenb@google.com>
-Subject: [PATCH 6/8] add cleancache documentation
+Message-ID: <20251010011951.2136980-8-surenb@google.com>
+Subject: [PATCH 7/8] mm: introduce GCMA
 From: Suren Baghdasaryan <surenb@google.com>
 To: akpm@linux-foundation.org
 Cc: david@redhat.com, lorenzo.stoakes@oracle.com, Liam.Howlett@oracle.com, 
@@ -73,148 +73,371 @@ Cc: david@redhat.com, lorenzo.stoakes@oracle.com, Liam.Howlett@oracle.com,
 	minchan@kernel.org, surenb@google.com, linux-mm@kvack.org, 
 	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
 	linux-block@vger.kernel.org, linux-fsdevel@vger.kernel.org, 
-	iommu@lists.linux.dev
+	iommu@lists.linux.dev, Minchan Kim <minchan@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-Document cleancache, it's APIs and sysfs interface.
+From: Minchan Kim <minchan@google.com>
 
+This patch introduces GCMA (Guaranteed Contiguous Memory Allocator)
+cleacache backend which reserves some amount of memory at the boot
+and then donates it to store clean file-backed pages in the cleancache.
+GCMA aims to guarantee contiguous memory allocation success as well as
+low and deterministic allocation latency.
+
+Notes:
+Originally, the idea was posted by SeongJae Park and Minchan Kim [1].
+Later Minchan reworked it to be used in Android as a reference for
+Android vendors to use [2].
+
+[1] https://lwn.net/Articles/619865/
+[2] https://android-review.googlesource.com/q/topic:%22gcma_6.12%22
+
+Signed-off-by: Minchan Kim <minchan@google.com>
 Signed-off-by: Suren Baghdasaryan <surenb@google.com>
 ---
- Documentation/mm/cleancache.rst | 112 ++++++++++++++++++++++++++++++++
- MAINTAINERS                     |   1 +
- 2 files changed, 113 insertions(+)
- create mode 100644 Documentation/mm/cleancache.rst
+ MAINTAINERS          |   2 +
+ include/linux/gcma.h |  36 +++++++
+ mm/Kconfig           |  15 +++
+ mm/Makefile          |   1 +
+ mm/gcma.c            | 231 +++++++++++++++++++++++++++++++++++++++++++
+ 5 files changed, 285 insertions(+)
+ create mode 100644 include/linux/gcma.h
+ create mode 100644 mm/gcma.c
 
-diff --git a/Documentation/mm/cleancache.rst b/Documentation/mm/cleancache.rst
-new file mode 100644
-index 000000000000..deaf7de51829
---- /dev/null
-+++ b/Documentation/mm/cleancache.rst
-@@ -0,0 +1,112 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+
-+==========
-+Cleancache
-+==========
-+
-+Motivation
-+==========
-+
-+Cleancache is a feature to utilize unused reserved memory for extending
-+page cache.
-+
-+Cleancache can be thought of as a folio-granularity victim cache for clean
-+file-backed pages that the kernel's pageframe replacement algorithm (PFRA)
-+would like to keep around, but can't since there isn't enough memory. So
-+when the PFRA "evicts" a folio, it stores the data contained in the folio
-+into cleancache memory which is not directly accessible or addressable by
-+the kernel (transcendent memory) and is of unknown and possibly
-+time-varying size.
-+
-+Later, when a filesystem wishes to access a folio in a file on disk, it
-+first checks cleancache to see if it already contains required data; if it
-+does, the folio data is copied into the kernel and a disk access is
-+avoided.
-+
-+The memory cleancache uses is donated by other system components, which
-+reserve memory not directly addressable by the kernel. By donating this
-+memory to cleancache, the memory owner enables its utilization while it
-+is not used. Memory donation is done using cleancache backend API and any
-+donated memory can be taken back at any time by its donor without no delay
-+and with guarantees success. Since cleancache uses this memory only to
-+store clean file-backed data, it can be dropped at any time and therefore
-+the donor's request to take back the memory can be always satisfied.
-+
-+Implementation Overview
-+=======================
-+
-+Cleancache "backend" (donor that provides transcendent memory), registers
-+itself with cleancache "frontend" and received a unique pool_id which it
-+can use in all later API calls to identify the pool of folios it donates.
-+Once registered, backend can call cleancache_backend_put_folio() or
-+cleancache_backend_put_folios() to donate memory to cleancache. Note that
-+cleancache currently supports only 0-order folios and will not accept
-+larger-order ones. Once the backend needs that memory back, it can get it
-+by calling cleancache_backend_get_folio(). Only the original backend can
-+take the folio it donated from the cleancache.
-+
-+Kernel uses cleancache by first calling cleancache_add_fs() to register
-+each file system and then using a combination of cleancache_store_folio(),
-+cleancache_restore_folio(), cleancache_invalidate_{folio|inode} to store,
-+restore and invalidate folio content.
-+cleancache_{start|end}_inode_walk() are used to walk over folios inside
-+an inode and cleancache_restore_from_inode() is used to restore folios
-+during such walks.
-+
-+From kernel's point of view folios which are copied into cleancache have
-+an indefinite lifetime which is completely unknowable by the kernel and so
-+may or may not still be in cleancache at any later time. Thus, as its name
-+implies, cleancache is not suitable for dirty folios. Cleancache has
-+complete discretion over what folios to preserve and what folios to discard
-+and when.
-+
-+Cleancache Performance Metrics
-+==============================
-+
-+If CONFIG_CLEANCACHE_SYSFS is enabled, monitoring of cleancache performance
-+can be done via sysfs in the `/sys/kernel/mm/cleancache` directory.
-+The effectiveness of cleancache can be measured (across all filesystems)
-+with provided stats.
-+Global stats are published directly under `/sys/kernel/mm/cleancache` and
-+include:
-+
-+``stored``
-+	number of successful cleancache folio stores.
-+
-+``skipped``
-+	number of folios skipped during cleancache store operation.
-+
-+``restored``
-+	number of successful cleancache folio restore operations.
-+
-+``missed``
-+	number of failed cleancache folio restore operations.
-+
-+``reclaimed``
-+	number of folios reclaimed from the cleancache due to insufficient
-+	memory.
-+
-+``recalled``
-+	number of times cleancache folio content was discarded as a result
-+	of the cleancache backend taking the folio back.
-+
-+``invalidated``
-+	number of times cleancache folio content was discarded as a result
-+	of invalidation.
-+
-+``cached``
-+	number of folios currently cached in the cleancache.
-+
-+Per-pool stats are published under `/sys/kernel/mm/cleancache/<pool name>`
-+where "pool name" is the name pool was registered under. These stats
-+include:
-+
-+``size``
-+	number of folios donated to this pool.
-+
-+``cached``
-+	number of folios currently cached in the pool.
-+
-+``recalled``
-+	number of times cleancache folio content was discarded as a result
-+	of the cleancache backend taking the folio back from the pool.
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 1c97227e7ffa..441e68c94177 100644
+index 441e68c94177..95b5ad26ec11 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -6053,6 +6053,7 @@ CLEANCACHE
- M:	Suren Baghdasaryan <surenb@google.com>
- L:	linux-mm@kvack.org
- S:	Maintained
-+F:	Documentation/mm/cleancache.rst
- F:	include/linux/cleancache.h
- F:	mm/cleancache.c
- F:	mm/cleancache_sysfs.c
+@@ -16361,6 +16361,7 @@ F:	Documentation/admin-guide/mm/
+ F:	Documentation/mm/
+ F:	include/linux/cma.h
+ F:	include/linux/dmapool.h
++F:	include/linux/gcma.h
+ F:	include/linux/ioremap.h
+ F:	include/linux/memory-tiers.h
+ F:	include/linux/page_idle.h
+@@ -16372,6 +16373,7 @@ F:	mm/dmapool.c
+ F:	mm/dmapool_test.c
+ F:	mm/early_ioremap.c
+ F:	mm/fadvise.c
++F:	mm/gcma.c
+ F:	mm/ioremap.c
+ F:	mm/mapping_dirty_helpers.c
+ F:	mm/memory-tiers.c
+diff --git a/include/linux/gcma.h b/include/linux/gcma.h
+new file mode 100644
+index 000000000000..20b2c85de87b
+--- /dev/null
++++ b/include/linux/gcma.h
+@@ -0,0 +1,36 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef __GCMA_H__
++#define __GCMA_H__
++
++#include <linux/types.h>
++
++#ifdef CONFIG_GCMA
++
++int gcma_register_area(const char *name,
++		       unsigned long start_pfn, unsigned long count);
++
++/*
++ * NOTE: allocated pages are still marked reserved and when freeing them
++ * the caller should ensure they are isolated and not referenced by anyone
++ * other than the caller.
++ */
++int gcma_alloc_range(unsigned long start_pfn, unsigned long count, gfp_t gfp);
++int gcma_free_range(unsigned long start_pfn, unsigned long count);
++
++#else /* CONFIG_GCMA */
++
++static inline int gcma_register_area(const char *name,
++				     unsigned long start_pfn,
++				     unsigned long count)
++		{ return -EOPNOTSUPP; }
++static inline int gcma_alloc_range(unsigned long start_pfn,
++				   unsigned long count, gfp_t gfp)
++		{ return -EOPNOTSUPP; }
++
++static inline int gcma_free_range(unsigned long start_pfn,
++				   unsigned long count)
++		{ return -EOPNOTSUPP; }
++
++#endif /* CONFIG_GCMA */
++
++#endif /* __GCMA_H__ */
+diff --git a/mm/Kconfig b/mm/Kconfig
+index 9f4da8a848f4..41ce5ef8db55 100644
+--- a/mm/Kconfig
++++ b/mm/Kconfig
+@@ -1013,6 +1013,21 @@ config CMA_AREAS
+ 
+ 	  If unsure, leave the default value "8" in UMA and "20" in NUMA.
+ 
++config GCMA
++       bool "GCMA (Guaranteed Contiguous Memory Allocator)"
++       depends on CLEANCACHE
++	help
++	  This enables the Guaranteed Contiguous Memory Allocator to allow
++	  low latency guaranteed contiguous memory allocations. Memory
++	  reserved by GCMA is donated to cleancache to be used as pagecache
++	  extension. Once GCMA allocation is requested, necessary pages are
++	  taken back from the cleancache and used to satisfy the request.
++	  Cleancache guarantees low latency successful allocation as long
++	  as the total size of GCMA allocations does not exceed the size of
++	  the memory donated to the cleancache.
++
++	  If unsure, say "N".
++
+ #
+ # Select this config option from the architecture Kconfig, if available, to set
+ # the max page order for physically contiguous allocations.
+diff --git a/mm/Makefile b/mm/Makefile
+index 845841a140e3..05aee66a8b07 100644
+--- a/mm/Makefile
++++ b/mm/Makefile
+@@ -149,3 +149,4 @@ obj-$(CONFIG_TMPFS_QUOTA) += shmem_quota.o
+ obj-$(CONFIG_PT_RECLAIM) += pt_reclaim.o
+ obj-$(CONFIG_CLEANCACHE) += cleancache.o
+ obj-$(CONFIG_CLEANCACHE_SYSFS)	+= cleancache_sysfs.o
++obj-$(CONFIG_GCMA)	+= gcma.o
+diff --git a/mm/gcma.c b/mm/gcma.c
+new file mode 100644
+index 000000000000..3ee0e1340db3
+--- /dev/null
++++ b/mm/gcma.c
+@@ -0,0 +1,231 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * GCMA (Guaranteed Contiguous Memory Allocator)
++ *
++ */
++
++#define pr_fmt(fmt) "gcma: " fmt
++
++#include <linux/cleancache.h>
++#include <linux/gcma.h>
++#include <linux/hashtable.h>
++#include <linux/highmem.h>
++#include <linux/idr.h>
++#include <linux/slab.h>
++#include <linux/xarray.h>
++#include "internal.h"
++
++#define MAX_GCMA_AREAS		64
++#define GCMA_AREA_NAME_MAX_LEN	32
++
++struct gcma_area {
++	int pool_id;
++	unsigned long start_pfn;
++	unsigned long end_pfn;
++	char name[GCMA_AREA_NAME_MAX_LEN];
++};
++
++static struct gcma_area areas[MAX_GCMA_AREAS];
++static atomic_t nr_gcma_area = ATOMIC_INIT(0);
++static DEFINE_SPINLOCK(gcma_area_lock);
++
++static int free_folio_range(struct gcma_area *area,
++			     unsigned long start_pfn, unsigned long end_pfn)
++{
++	unsigned long scanned = 0;
++	struct folio *folio;
++	unsigned long pfn;
++
++	for (pfn = start_pfn; pfn < end_pfn; pfn++) {
++		int err;
++
++		if (!(++scanned % XA_CHECK_SCHED))
++			cond_resched();
++
++		folio = pfn_folio(pfn);
++		err = cleancache_backend_put_folio(area->pool_id, folio);
++		if (WARN(err, "PFN %lu: folio is still in use\n", pfn))
++			return -EINVAL;
++	}
++
++	return 0;
++}
++
++static int alloc_folio_range(struct gcma_area *area,
++			      unsigned long start_pfn, unsigned long end_pfn,
++			      gfp_t gfp)
++{
++	unsigned long scanned = 0;
++	unsigned long pfn;
++
++	for (pfn = start_pfn; pfn < end_pfn; pfn++) {
++		int err;
++
++		if (!(++scanned % XA_CHECK_SCHED))
++			cond_resched();
++
++		err = cleancache_backend_get_folio(area->pool_id, pfn_folio(pfn));
++		if (err) {
++			free_folio_range(area, start_pfn, pfn);
++			return err;
++		}
++	}
++
++	return 0;
++}
++
++static struct gcma_area *find_area(unsigned long start_pfn, unsigned long end_pfn)
++{
++	int nr_area = atomic_read_acquire(&nr_gcma_area);
++	int i;
++
++	for (i = 0; i < nr_area; i++) {
++		struct gcma_area *area = &areas[i];
++
++		if (area->end_pfn <= start_pfn)
++			continue;
++
++		if (area->start_pfn > end_pfn)
++			continue;
++
++		/* The entire range should belong to a single area */
++		if (start_pfn < area->start_pfn || end_pfn > area->end_pfn)
++			break;
++
++		/* Found the area containing the entire range */
++		return area;
++	}
++
++	return NULL;
++}
++
++int gcma_register_area(const char *name,
++		       unsigned long start_pfn, unsigned long count)
++{
++	LIST_HEAD(folios);
++	int i, pool_id;
++	int nr_area;
++	int ret = 0;
++
++	pool_id = cleancache_backend_register_pool(name);
++	if (pool_id < 0)
++		return pool_id;
++
++	for (i = 0; i < count; i++) {
++		struct folio *folio;
++
++		folio = pfn_folio(start_pfn + i);
++		folio_clear_reserved(folio);
++		folio_set_count(folio, 0);
++		list_add(&folio->lru, &folios);
++	}
++
++	cleancache_backend_put_folios(pool_id, &folios);
++
++	spin_lock(&gcma_area_lock);
++
++	nr_area = atomic_read(&nr_gcma_area);
++	if (nr_area < MAX_GCMA_AREAS) {
++		struct gcma_area *area = &areas[nr_area];
++
++		area->pool_id = pool_id;
++		area->start_pfn = start_pfn;
++		area->end_pfn = start_pfn + count;
++		strscpy(area->name, name);
++		/* Ensure above stores complete before we increase the count */
++		atomic_set_release(&nr_gcma_area, nr_area + 1);
++	} else {
++		ret = -ENOMEM;
++	}
++
++	spin_unlock(&gcma_area_lock);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(gcma_register_area);
++
++int gcma_alloc_range(unsigned long start_pfn, unsigned long count, gfp_t gfp)
++{
++	unsigned long end_pfn = start_pfn + count;
++	struct gcma_area *area;
++	struct folio *folio;
++	int err, order = 0;
++
++	gfp = current_gfp_context(gfp);
++	if (gfp & __GFP_COMP) {
++		if (!is_power_of_2(count))
++			return -EINVAL;
++
++		order = ilog2(count);
++		if (order >= MAX_PAGE_ORDER)
++			return -EINVAL;
++	}
++
++	area = find_area(start_pfn, end_pfn);
++	if (!area)
++		return -EINVAL;
++
++	err = alloc_folio_range(area, start_pfn, end_pfn, gfp);
++	if (err)
++		return err;
++
++	/*
++	 * GCMA returns pages with refcount 1 and expects them to have
++	 * the same refcount 1 when they are freed.
++	 */
++	if (order) {
++		folio = pfn_folio(start_pfn);
++		set_page_count(&folio->page, 1);
++		prep_compound_page(&folio->page, order);
++	} else {
++		for (unsigned long pfn = start_pfn; pfn < end_pfn; pfn++) {
++			folio = pfn_folio(pfn);
++			set_page_count(&folio->page, 1);
++		}
++	}
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(gcma_alloc_range);
++
++int gcma_free_range(unsigned long start_pfn, unsigned long count)
++{
++	unsigned long end_pfn = start_pfn + count;
++	struct gcma_area *area;
++	struct folio *folio;
++
++	area = find_area(start_pfn, end_pfn);
++	if (!area)
++		return -EINVAL;
++
++	folio = pfn_folio(start_pfn);
++	if (folio_test_large(folio)) {
++		int expected = folio_nr_pages(folio);
++
++		if (WARN(count != expected, "PFN %lu: count %lu != expected %d\n",
++			  start_pfn, count, expected))
++			return -EINVAL;
++
++		if (WARN(!folio_ref_dec_and_test(folio),
++			 "PFN %lu: invalid folio refcount when freeing\n", start_pfn))
++			return -EINVAL;
++
++		free_pages_prepare(&folio->page, folio_order(folio));
++	} else {
++		for (unsigned long pfn = start_pfn; pfn < end_pfn; pfn++) {
++			folio = pfn_folio(pfn);
++			if (folio_nr_pages(folio) == 1)
++				count--;
++
++			if (WARN(!folio_ref_dec_and_test(folio),
++				 "PFN %lu: invalid folio refcount when freeing\n", pfn))
++				return -EINVAL;
++
++			free_pages_prepare(&folio->page, 0);
++		}
++		WARN(count != 0, "%lu pages are still in use!\n", count);
++	}
++
++	return free_folio_range(area, start_pfn, end_pfn);
++}
++EXPORT_SYMBOL_GPL(gcma_free_range);
 -- 
 2.51.0.740.g6adb054d12-goog
 
