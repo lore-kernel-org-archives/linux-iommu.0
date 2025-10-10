@@ -1,324 +1,155 @@
-Received: from mail-il1-f175.google.com (mail-il1-f175.google.com [209.85.166.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 263BD26CE28
-	for <iommu@lists.linux.dev>; Fri, 10 Oct 2025 22:09:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D52680604
+	for <iommu@lists.linux.dev>; Fri, 10 Oct 2025 22:30:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760134173; cv=none; b=BfVDojfE/1JujYNZBbb+BmCnIfzAqw9h8aRuDArszW2EVAQYRuHxPnhSmrFg9M3iwr3zhroDfDoagX4rISFOpiUvoaS1K24sApgBYdwRshIlMQndyd2py0NCzguQmaO8ScMGSOgyIEwRp471gh+cXSP5SPH7dTx5Mf6Y1/54CXM=
+	t=1760135425; cv=none; b=O7CML9hpzLiKaOUQxjHQUcIEJVU5v44CprVgiAlDUjcxiYmVjrDBrDLd2/vR5O3II4F2/yvmEL4QXoFdf8zxFLZ1Pod1B2WGiFo1n4cG2hLIPXUrnpFfxIw/YeDtBi8YXSpOOGutMquMOUKJDOfwpKFsamSMaWx2ETWU2TFmBJI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760134173; c=relaxed/simple;
-	bh=whVp2qZBbeukaKmVgYtaHYfETEJJ1mPdQ4+rkrdkiFw=;
+	s=arc-20240116; t=1760135425; c=relaxed/simple;
+	bh=sx8RlxKZpctnoFBweJS6xvncbNrY1voIIKFf38weEJU=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=RIlr3qkKEvGjg4yi7MaatyenrnXKO0PThrgmtctuIW/nYWQaCufMN1WrubxB/0XtyuEhUqaNJI7ToIKfazFIvS5+SRA4obJtWBvNabi4mfynOvPu1URZRijLfUTk2fdOReYpT7MpD8IXTydTeVUd3zy1Lof7V9PH9R3TvXxHCXo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Z0FqpvSO; arc=none smtp.client-ip=209.85.166.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 To:Cc:Content-Type; b=QjBQSI4aMZh4ZPKkeM8q/LHxEKzxM/uhjV73CyDJ7VzxCFQTrDl1Cm01uiQEAZaQYFZuJfgJmvvHZH5Mm6fOIt8jWjbBjl/2J/qrmOucmcuOcYq9UqwvSMoD9zr0LhmG4yb9hzVPfQFXPOHacO8CrXh8Cw/7UWV8qhOk+U2Y9y8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=o1eYd7dH; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Z0FqpvSO"
-Received: by mail-il1-f175.google.com with SMTP id e9e14a558f8ab-42f6af58c39so239755ab.0
-        for <iommu@lists.linux.dev>; Fri, 10 Oct 2025 15:09:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1760134170; x=1760738970; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=LWDl81NsDb6bdxq6lZZ3Oo5fI0gR9e+s7CI7q6rmrnY=;
-        b=Z0FqpvSOLH4pxIyURk7TZpWE2A9Y9VKDoJ7Apiohyf7ZlFS9wUSSNtQSZxUBmhKgBY
-         s2zP+Q0y5yai5Xd6GVsjiHqxqArV1aFbnwGLWvvp+V43XKrpOELDgT6A2mFfF8DaD/X5
-         H3I5pnG7mzT0Ht6Vt4QTdtqzbkMKYHdD6VF3iIypzHOIBKYYF7ar8AkqJif5VmH5D0N8
-         79FRPQcw1usYUsoQD5D77r5QJd1Tg1avE0T2dMYcHr56mDoJzxIXXV4deukqBD3NYblO
-         msDAqK1RkTJ+GYMOU24Fvs7K+aMdgmU/0Fo0SYwMHMIjd9xUqQnZhcs4bE8ZQFaLgobD
-         DmrA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1760134170; x=1760738970;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=LWDl81NsDb6bdxq6lZZ3Oo5fI0gR9e+s7CI7q6rmrnY=;
-        b=unHbs4zzq/XMzhgcI/EPzgkNVVFxnNbPNRpRpE0VlJWSvYQF6LCCEFr48MZ7jxuokn
-         Rar1aZG/q6sejJfrpWh30DWqtbn/LjBXD/Aq2D34BPMr7n7/sqv/pE3h4WmVy3KNs332
-         XVoIj5mC912PKd8kP2uKJpZ1jzat+h3i3BzrwSuZwG50X8Ln+lNRPzXQdH08F6w3TFYX
-         tJ4kAf1IBpQ6lEJiQ+Xc+5YLdNvcG0lHyqpfWxKP2kfkFz8+RlSKNMS2pDClynz0Zdc4
-         B/rZVk55evZXEY2Ur8divWG6aIKmtrHEY2ZpZDDd5wC5c7sJmCYhfOzoMWoF5aHE1Cw5
-         4CsA==
-X-Forwarded-Encrypted: i=1; AJvYcCUN++DaYCl9LCS43WhuSbFWIGx6oB3MvSz7bAmpRmZ9NRjK6SMKmCtszLHopkX8fFauy9CE1A==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyE6p6YDk2Fbs/2DrOYJD/dFhp38Jdgp0qCHlzU6Wiusc+gYAvM
-	Tv9kn4HaPChFsWDaAPWzUOp20E4f+1oawB+FNMvyhH8zSflf9xHD0/XXt8aqGAnVV9F6rxHD5lH
-	5/txE6Wh8/TILakipq5kXresFJi3rkNKanCPU8xte
-X-Gm-Gg: ASbGncvP4gqHSlCgMhU3G3oyRXrdYzmrOKw9of2BGUhSR49EdshJlxQvfmxWRBMEuew
-	o3H8NsVHf9f/m+eewZR500WfRe101HtSg5EPtJguwgDpkIwa4M3kpqhB16wq3Puf5PXCYbsqrt5
-	ez3nDUUux00/WJMMHhv2tkZBAMBe6WuW1fgeaEOW3tSg8IROwR6MJeEDTEqZaOb0LIzQlGjZM0+
-	EXRB9hyFCA78kjE8I/c+G1tOUzn6kM=
-X-Google-Smtp-Source: AGHT+IEheEysfffoa2UToJd25UhCG01OYZFDrESO0ecdrZ/jfSjqLqSlKoaOdjO8BC9OyiGuvNfvS8dJfmUrxJvS6qg=
-X-Received: by 2002:a05:622a:1111:b0:4b3:1617:e617 with SMTP id
- d75a77b69052e-4e6eabcef17mr26585351cf.11.1760134169530; Fri, 10 Oct 2025
- 15:09:29 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="o1eYd7dH"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33D1CC116C6
+	for <iommu@lists.linux.dev>; Fri, 10 Oct 2025 22:30:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1760135425;
+	bh=sx8RlxKZpctnoFBweJS6xvncbNrY1voIIKFf38weEJU=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=o1eYd7dHZIXngemP67EIzsgbqIA0L3klykBwdyF6/bIPZbplABgEjsmZ/9NcBEvGi
+	 eLJSlaczmFYktWp1kIZKiDYsW+QF1mq/6Ys/PGAfsdOocOXHkB+hZQKlvE9rq3bIjD
+	 kozFm5JTqkqKPLBE9Qtd13pOdxy2b+S/hqmupQsrKSpdDju1gOnbQfS31FNzLXarUO
+	 CyaIrF+/V/dnzgD7jB12p6ZO30rOEXp1U21RphIuuQPFGj/cz3ItnvjHGsyaP+VfYb
+	 fSVwe4lf+k0hZS71b9u5GvZ+3Z13YaPl/ifDug/hdQWwsZeNtFifS+Tkm696qMVGqo
+	 dCtJjv5yakJGQ==
+Received: by mail-ej1-f47.google.com with SMTP id a640c23a62f3a-b3e44f22f15so364444866b.2
+        for <iommu@lists.linux.dev>; Fri, 10 Oct 2025 15:30:25 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCWPAq6VZzK4WXQWe4fir4f4BVvvUq2vg7EViy6FCER6SE/4CoQN2E3snWH+GvXdtWJ6pDgs5A==@lists.linux.dev
+X-Gm-Message-State: AOJu0Ywnad788j0UW9GPa768fM8AsBnhEeODtHU12GPSFqpL6RjKJKOx
+	mSXk0Ww8kvbqCTL6qqihR1zF2rWFI0lMcxbGi0ULYLPcZHU/sFoiGE8A0gUCfBCDXUDdTqkNR6i
+	Na8VxTlCHwXI6apyHfEYDITbNSQI90Q==
+X-Google-Smtp-Source: AGHT+IGdYPfHL1gnUujQzCp8M6WogUc1LbdE4xIMlDxV2yOAQw/4MfeeyPV2JzMy1aQ4kJRIZ9ePrEIFshlr8zpVXxg=
+X-Received: by 2002:a17:907:a909:b0:b3e:5f20:888d with SMTP id
+ a640c23a62f3a-b50aa7a1685mr1585501166b.27.1760135423725; Fri, 10 Oct 2025
+ 15:30:23 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20251010011951.2136980-7-surenb@google.com> <20251010202034.58002-1-sj@kernel.org>
-In-Reply-To: <20251010202034.58002-1-sj@kernel.org>
-From: Suren Baghdasaryan <surenb@google.com>
-Date: Fri, 10 Oct 2025 15:09:18 -0700
-X-Gm-Features: AS18NWAqrvtXxssXuPoUdtLG3YkWXccAtAeaTjudhXcSXDHpPbRX_NTpHoxKXI4
-Message-ID: <CAJuCfpHmLpE-7U2_efn9XqK=3SM+zRw-jUkDgJRBW=2tWZTepg@mail.gmail.com>
-Subject: Re: [PATCH 6/8] add cleancache documentation
-To: SeongJae Park <sj@kernel.org>
-Cc: akpm@linux-foundation.org, david@redhat.com, lorenzo.stoakes@oracle.com, 
-	Liam.Howlett@oracle.com, vbabka@suse.cz, alexandru.elisei@arm.com, 
-	peterx@redhat.com, rppt@kernel.org, mhocko@suse.com, corbet@lwn.net, 
-	axboe@kernel.dk, viro@zeniv.linux.org.uk, brauner@kernel.org, 
-	hch@infradead.org, jack@suse.cz, willy@infradead.org, 
-	m.szyprowski@samsung.com, robin.murphy@arm.com, hannes@cmpxchg.org, 
-	zhengqi.arch@bytedance.com, shakeel.butt@linux.dev, axelrasmussen@google.com, 
-	yuanchu@google.com, weixugc@google.com, minchan@kernel.org, 
-	linux-mm@kvack.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-block@vger.kernel.org, linux-fsdevel@vger.kernel.org, 
+References: <20250928171718.436440-1-charan.kalla@oss.qualcomm.com>
+ <aec0f40a-8346-4194-8b18-1022fe3366bb@arm.com> <0d0560cc-9757-4c7b-8de4-170148d99481@oss.qualcomm.com>
+ <ead7cf8b-fbc4-4242-a9da-b313dded1abc@arm.com> <nzqte4glwtpjs5bhkxz43yhdufelxvqvzmg5tepudxwetimir3@bvlw5csjizsh>
+ <9d3eeb9f-b8ea-48e5-a1d9-0865f63ef991@arm.com> <fhb4woejzh3r6v5dxvdiopnsbuwstucfuuzbiymxg4wrxrjc7t@dt3z3utq6lwd>
+ <c863f6a7-b117-4444-ae6d-1d525b572be2@oss.qualcomm.com>
+In-Reply-To: <c863f6a7-b117-4444-ae6d-1d525b572be2@oss.qualcomm.com>
+From: Rob Herring <robh@kernel.org>
+Date: Fri, 10 Oct 2025 17:30:11 -0500
+X-Gmail-Original-Message-ID: <CAL_Jsq+LPpJxVRUP4b9Gt40t=Wr=2B+697Jv2sjtDqTpqwGezQ@mail.gmail.com>
+X-Gm-Features: AS18NWAgf_96UGCOZLypid2OePxqb7YT8CX9tJwVzXdlzHqYAmMGtDO6SoLnFQ8
+Message-ID: <CAL_Jsq+LPpJxVRUP4b9Gt40t=Wr=2B+697Jv2sjtDqTpqwGezQ@mail.gmail.com>
+Subject: Re: [RFC PATCH 0/3] Introduce iommu-map-masked for platform devices
+To: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
+Cc: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, Robin Murphy <robin.murphy@arm.com>, 
+	joro@8bytes.org, will@kernel.org, saravanak@google.com, conor+dt@kernel.org, 
+	mchehab@kernel.org, bod@kernel.org, krzk+dt@kernel.org, 
+	abhinav.kumar@linux.dev, vikash.garodia@oss.qualcomm.com, 
+	dikshita.agarwal@oss.qualcomm.com, 
+	Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>, bjorn.andersson@oss.qualcomm.com, 
+	linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
 	iommu@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Oct 10, 2025 at 1:20=E2=80=AFPM SeongJae Park <sj@kernel.org> wrote=
-:
+On Fri, Oct 10, 2025 at 2:53=E2=80=AFPM Charan Teja Kalla
+<charan.kalla@oss.qualcomm.com> wrote:
 >
-> Hello Suren,
-
-Hi SJ!
-
 >
-> On Thu,  9 Oct 2025 18:19:49 -0700 Suren Baghdasaryan <surenb@google.com>=
- wrote:
 >
-> > Document cleancache, it's APIs and sysfs interface.
+> On 10/9/2025 11:55 PM, Dmitry Baryshkov wrote:
+> >>> I really don't like the idea of extending the #iommu-cells. The ARM S=
+MMU
+> >>> has only one cell, which is correct even for our platforms. The fact
+> >>> that we need to identify different IOMMU SIDs (and handle them in a
+> >>> differnt ways) is internal to the video device (and several other
+> >>> devices). There is nothing to be handled on the ARM SMMU side.
+> >> Huh? So if you prefer not to change anything, are you suggesting this =
+series
+> >> doesn't need to exist at all? Now I'm thoroughly confused...
+> > Hmm. We need changes, but I don't feel like adding the FUNCTION_ID to
+> > #iommu-cells is the best idea.
 > >
-> > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
-> > ---
-> >  Documentation/mm/cleancache.rst | 112 ++++++++++++++++++++++++++++++++
-> >  MAINTAINERS                     |   1 +
->
-> I think this great document is better to be linked on mm/index.rst.
-
-Ack.
-
->
-> Also, would it make sense to split the sysfs interface part and put under
-> Documentation/admin-guide/mm/ ?
-
-Hmm. I guess that makes sense.
-
->
-> >  2 files changed, 113 insertions(+)
-> >  create mode 100644 Documentation/mm/cleancache.rst
+> >> If you want to use SMR masks, then you absolutely need #iommu-cells =
+=3D 2,
+> >> because that is the SMMU binding for using SMR masks. It would definit=
+ely
+> > I'm sorry. Yes, we have #iommu-cells =3D <2>.
 > >
-> > diff --git a/Documentation/mm/cleancache.rst b/Documentation/mm/cleanca=
-che.rst
-> > new file mode 100644
-> > index 000000000000..deaf7de51829
-> > --- /dev/null
-> > +++ b/Documentation/mm/cleancache.rst
-> > @@ -0,0 +1,112 @@
-> > +.. SPDX-License-Identifier: GPL-2.0
-> > +
-> > +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > +Cleancache
-> > +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > +
-> > +Motivation
-> > +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > +
-> > +Cleancache is a feature to utilize unused reserved memory for extendin=
-g
-> > +page cache.
-> > +
-> > +Cleancache can be thought of as a folio-granularity victim cache for c=
-lean
-> > +file-backed pages that the kernel's pageframe replacement algorithm (P=
-FRA)
-> > +would like to keep around, but can't since there isn't enough memory. =
-So
-> > +when the PFRA "evicts" a folio, it stores the data contained in the fo=
-lio
-> > +into cleancache memory which is not directly accessible or addressable=
- by
-> > +the kernel (transcendent memory) and is of unknown and possibly
-> > +time-varying size.
+> >> not be OK to have some magic property trying to smuggle
+> >> IOMMU-driver-specific data contrary to what the IOMMU node itself says=
+. As
+> >> for iommu-map, I don't see what would be objectionable about improving=
+ the
+> >> parsing to respect a real #iommu-cells value rather than hard-coding a=
+n
+> >> assumption. Yes, we'd probably need to forbid entries with length > 1
+> >> targeting IOMMUs with #iommu-cells > 1, since the notion of a linear
+> > This will break e.g. PCIe on Qualcomm platforms:
+> >
+> >                         iommu-map =3D <0x0   &apps_smmu 0x1400 0x1>,
+> >                                     <0x100 &apps_smmu 0x1401 0x1>;
+> >
+> >
+> > But this seems unlogical anyway wrt. apps_smmu having #iommu-cells =3D
+> > <2>. It depends on ARM SMMU ignoring the second cell when it's not
+> > present.
+> >
+> >> relationship between the input ID and the output specifier falls apart=
+ when
+> >> the specifier is complex, but that seems simple enough to implement an=
+d
+> >> document (even if it's too fiddly to describe in the schema itself), a=
+nd
+> >> still certainly no worse than having another property that *is* just
+> >> iommu-map with implicit length =3D 1.
+> >>
+> >> And if you want individual StreamIDs for logical functions to be attac=
+hable
+> >> to distinct contexts then those functions absolutely must be visible t=
+o the
+> >> IOMMU layer and the SMMU driver as independent devices with their own =
+unique
+> >> properties, which means either they come that way from the DT as of_pl=
+atform
+> >> devices in the first place, or you implement a full bus_type abstracti=
+on
 >
-> IMHO, "(transcendent memory)" better to be dropped, as it has removed by =
-commit
-> 814bbf49dcd0 ("xen: remove tmem driver").
+> I don't want to dilute what Dmitry is saying here, but the below is what
+> i can make out of Robin comments, please CMIW:
+>
+> iommu {
+>         #iommu-cells =3D <2>;
+> }
+>
+> video {
+>    iommu =3D <iommu sid1 mask1>, <iommu sid2 mask2>;
+>    #iommu-map-cells =3D 2; /* does it look weird to define here, even if
+> it is SMMU property? */
 
-Ah, good point. Will remove.
+No, not weird. interrupt-map similarly requires #interrupt-cells. So
+it would be just #iommu-cells here.
 
->
-> > +
-> > +Later, when a filesystem wishes to access a folio in a file on disk, i=
-t
-> > +first checks cleancache to see if it already contains required data; i=
-f it
-> > +does, the folio data is copied into the kernel and a disk access is
-> > +avoided.
-> > +
-> > +The memory cleancache uses is donated by other system components, whic=
-h
-> > +reserve memory not directly addressable by the kernel. By donating thi=
-s
-> > +memory to cleancache, the memory owner enables its utilization while i=
-t
-> > +is not used. Memory donation is done using cleancache backend API and =
-any
-> > +donated memory can be taken back at any time by its donor without no d=
-elay
->
-> "without delay" or "with no delay" ?
+>    iommu-map =3D <0 smmu sid3 mask3>,
+>                <0 smmu sid4 mask4>;
 
-Ack. Will change to "without delay"
+But you only have 1 cell, not 2 here. The #iommu-cells in this node
+would define the number of cells before 'smmu'. The #iommu-cells in
+the &smmu node is the number of cells after the &smmu phandle.
 
->
-> > +and with guarantees success. Since cleancache uses this memory only to
-> > +store clean file-backed data, it can be dropped at any time and theref=
-ore
-> > +the donor's request to take back the memory can be always satisfied.
-> > +
-> > +Implementation Overview
-> > +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > +
-> > +Cleancache "backend" (donor that provides transcendent memory), regist=
-ers
->
-> Again, "transcendent memory" part seems better to be dropped.
-
-Ack.
-
->
-> > +itself with cleancache "frontend" and received a unique pool_id which =
-it
-> > +can use in all later API calls to identify the pool of folios it donat=
-es.
-> > +Once registered, backend can call cleancache_backend_put_folio() or
-> > +cleancache_backend_put_folios() to donate memory to cleancache. Note t=
-hat
-> > +cleancache currently supports only 0-order folios and will not accept
-> > +larger-order ones. Once the backend needs that memory back, it can get=
- it
-> > +by calling cleancache_backend_get_folio(). Only the original backend c=
-an
-> > +take the folio it donated from the cleancache.
-> > +
-> > +Kernel uses cleancache by first calling cleancache_add_fs() to registe=
-r
-> > +each file system and then using a combination of cleancache_store_foli=
-o(),
-> > +cleancache_restore_folio(), cleancache_invalidate_{folio|inode} to sto=
-re,
-> > +restore and invalidate folio content.
-> > +cleancache_{start|end}_inode_walk() are used to walk over folios insid=
-e
-> > +an inode and cleancache_restore_from_inode() is used to restore folios
-> > +during such walks.
-> > +
-> > +From kernel's point of view folios which are copied into cleancache ha=
-ve
-> > +an indefinite lifetime which is completely unknowable by the kernel an=
-d so
-> > +may or may not still be in cleancache at any later time. Thus, as its =
-name
-> > +implies, cleancache is not suitable for dirty folios. Cleancache has
-> > +complete discretion over what folios to preserve and what folios to di=
-scard
-> > +and when.
-> > +
-> > +Cleancache Performance Metrics
-> > +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D
-> > +
-> > +If CONFIG_CLEANCACHE_SYSFS is enabled, monitoring of cleancache perfor=
-mance
-> > +can be done via sysfs in the `/sys/kernel/mm/cleancache` directory.
-> > +The effectiveness of cleancache can be measured (across all filesystem=
-s)
-> > +with provided stats.
-> > +Global stats are published directly under `/sys/kernel/mm/cleancache` =
-and
-> > +include:
->
-> ``/sys/kernel/mm/cleancache`` ?
-
-Ack.
-
->
-> > +
-> > +``stored``
-> > +     number of successful cleancache folio stores.
-> > +
-> > +``skipped``
-> > +     number of folios skipped during cleancache store operation.
-> > +
-> > +``restored``
-> > +     number of successful cleancache folio restore operations.
-> > +
-> > +``missed``
-> > +     number of failed cleancache folio restore operations.
-> > +
-> > +``reclaimed``
-> > +     number of folios reclaimed from the cleancache due to insufficien=
-t
-> > +     memory.
-> > +
-> > +``recalled``
-> > +     number of times cleancache folio content was discarded as a resul=
-t
-> > +     of the cleancache backend taking the folio back.
-> > +
-> > +``invalidated``
-> > +     number of times cleancache folio content was discarded as a resul=
-t
-> > +     of invalidation.
-> > +
-> > +``cached``
-> > +     number of folios currently cached in the cleancache.
-> > +
-> > +Per-pool stats are published under `/sys/kernel/mm/cleancache/<pool na=
-me>`
->
-> ``/sys/kernel/mm/cleancache/<pool name>`` ?
-
-Ack.
-
->
-> > +where "pool name" is the name pool was registered under. These stats
-> > +include:
-> > +
-> > +``size``
-> > +     number of folios donated to this pool.
-> > +
-> > +``cached``
-> > +     number of folios currently cached in the pool.
-> > +
-> > +``recalled``
-> > +     number of times cleancache folio content was discarded as a resul=
-t
-> > +     of the cleancache backend taking the folio back from the pool.
-> > diff --git a/MAINTAINERS b/MAINTAINERS
-> > index 1c97227e7ffa..441e68c94177 100644
-> > --- a/MAINTAINERS
-> > +++ b/MAINTAINERS
-> > @@ -6053,6 +6053,7 @@ CLEANCACHE
-> >  M:   Suren Baghdasaryan <surenb@google.com>
-> >  L:   linux-mm@kvack.org
-> >  S:   Maintained
-> > +F:   Documentation/mm/cleancache.rst
-> >  F:   include/linux/cleancache.h
-> >  F:   mm/cleancache.c
-> >  F:   mm/cleancache_sysfs.c
-> > --
-> > 2.51.0.740.g6adb054d12-goog
->
->
-> Thanks,
-> SJ
-
-Thanks for the review!
+Rob
