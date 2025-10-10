@@ -1,55 +1,55 @@
-Received: from mail-pl1-f202.google.com (mail-pl1-f202.google.com [209.85.214.202])
+Received: from mail-pg1-f201.google.com (mail-pg1-f201.google.com [209.85.215.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E446255F22
-	for <iommu@lists.linux.dev>; Fri, 10 Oct 2025 01:20:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.202
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51DB1258EFE
+	for <iommu@lists.linux.dev>; Fri, 10 Oct 2025 01:20:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760059211; cv=none; b=F47a6oLy/61TLAJeSpnK//lzofO+JkVcBiOMkTrhS3uPskq6LZ4ziTbR3fGQu9zKR9n/iVr18QnGtvH9YsH3jkDQ1WGy7SUn2A0RYlDGwdUohswXk3LuGBi1d/ZGhbA7peF681CPHp1vNV5KyqKJzaIqKsf0A0otnV7HwXLN/EY=
+	t=1760059213; cv=none; b=BEWMcI5F8rk+1wKZOWBP0pVNNvVRiYXNeqBB7QjhfKs0Z/f2QtqwlM3B4oPhedFCYWvbBnHqWLjMkRlau0+yOcqvSZZthjBPBOVbBFrsXNLboc1bkgI7sH40WEWALMcv0UyciDE7cq8qd29o3rf91RKbfm5Mxo7Z07TMb265YSg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760059211; c=relaxed/simple;
-	bh=VRxXrZZF2VXTYZ8iIq1VsjEC5bkGWZOb9Rg6YcJl7ZM=;
+	s=arc-20240116; t=1760059213; c=relaxed/simple;
+	bh=NHw3RZ90+Da7UyHMBKVXx8p20p9oL5hkY0RUKVTk0us=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=jzDWLMxC9bYptq20492CUJYM+k+25CmBYyForCuy+85AbRGBPeMQAfyNSJKZXpoNOxfafFIC8vyKsekoKGOp/4HPUY7DYiqUP3RYt8uEmx0o5etTjbT7wPNVJXebr2f0ugYiL4WcOGEWuASC5ET3d2RH15SvGe/OGfdWMLaftdk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--surenb.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=TonKvr8n; arc=none smtp.client-ip=209.85.214.202
+	 To:Cc:Content-Type; b=nBpby81NDmSZhGkogJhnn9tA+56mRms2soiue7795mneaSAv3he5qRP+hByzYEp3vvYTZVScQLMuKDVobGvd8mi+nUoibA9JSccC4cvo9Y1TX/K63FMIDD3gi/nB1kedEmnxBImsvxoqI/Vyinl8wJQ/0WlwySIUQDp5fSSYo0o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--surenb.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=FKETGBzW; arc=none smtp.client-ip=209.85.215.201
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--surenb.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="TonKvr8n"
-Received: by mail-pl1-f202.google.com with SMTP id d9443c01a7336-277f0ea6ee6so31062335ad.0
-        for <iommu@lists.linux.dev>; Thu, 09 Oct 2025 18:20:07 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="FKETGBzW"
+Received: by mail-pg1-f201.google.com with SMTP id 41be03b00d2f7-b557abaad02so3736373a12.3
+        for <iommu@lists.linux.dev>; Thu, 09 Oct 2025 18:20:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1760059207; x=1760664007; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1760059210; x=1760664010; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=pEIUd4ZHclhGCkol/EpGDU6dqFXNl4VLKrOL2ZuQAlU=;
-        b=TonKvr8nB49kQdgUOK9Q9W1qEAxcYmZX+APob1Yfd5sDzLg6lWnd5Jrfp6lP1khzU/
-         VyQ7SjiLMwo3T6TvqVq75IW2Afqsrn1Zzj/vNJr+A+JpKMVhCEHniZROhPbAC7lpmNGG
-         iIf2X9IHat7O0lsaN7y+OtJC/k8qLijpL5SOuGIl1fRRmtdHFtiei9boOiTSSXiGDWO4
-         fUbdBJiAQYPLP6OxHywEuTXzaWfaNH7xIt5lbkekLZPR0PTvQBEPiB5jVz3DoQ+Ei6IM
-         TYGYbdZc4mrxZQt9eZ2DLjj3b7OMWcww2w136CWbT6iMmiapXY41v28m3vQwA5b1nFll
-         HNAA==
+        bh=TF3568yP8arSICTc3vnXw7wkTlYOmrE0XKsy2eUArt4=;
+        b=FKETGBzWpLFjgCfD/KypSNa0RdBy/lUqu74J4s5NdVkb7iQsOafVLRIfBYYV9JE2PJ
+         qHjoM6GzoO+9LHtOi90x4KsQp/4U8DeB8UrfIz77G9onssM0YFm5xktE3mFL7YSfNn/6
+         qeMXayufWJ9pe9XufqRtBrTVWpC0007P7dpeAy+VPT9DbpOXrKVWuA1qiHjSo1/trJQM
+         /tiRqGPJg/Hbv3IOOj3t1SqJxwKb1k4MbaRpl8Hx+kgOg4yqvjpsIwiicjLYEix/HKph
+         clE/byC7AA1Iw15+CzjK1eGLhp/hDKb+5K/KThovtdSiIPJReYBTIXNUH9PC9gMWjIUz
+         qIbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1760059207; x=1760664007;
+        d=1e100.net; s=20230601; t=1760059210; x=1760664010;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=pEIUd4ZHclhGCkol/EpGDU6dqFXNl4VLKrOL2ZuQAlU=;
-        b=m2Qs+Kvqs5c+/HEgbV/r3h9lKi9Q9rG4q+nZm3kehlUjyWvYJ6IP5gSMa+AHcsG25a
-         JjelkabGlwH3K4/QxTzmwQYORkg7O0Aicr89BTXzkOMrLOg2ngu/2gkhVB95h67A7DCm
-         BMq+MX/sVnO+6a7NJVB3P9A1wVsT+bfhUagCLXyVJC1r/ndDuHDmKYzTrtu+ZrN/7eqf
-         LVQBtdrBEt9SpGpTS5Z1sbN4GkOdhS+dM1zZTrfwp5CeEE8YtnBP0Er5VjQ3uxJQuqJH
-         XI4rXf8Dl7987Ux/Y1bMoYc81pH0Kp8YHqqmswbshi9SoeRiET5ns7XDODFdizWVxQyT
-         XZGg==
-X-Forwarded-Encrypted: i=1; AJvYcCXgNtzSOAUDkHiJyncA5U/8aomojmfypyyst9SPMcuX/BfSwDpPA5LWBAQLxGkJNPu36bkMxA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwqYQWpJvAVKLgt3JpTyk2CdtZFNufFPPsjIK3D/WGS9uJ3NiDW
-	ph2FiJE68KHeTtyc5LSt6XwCngMdiYOq6HrLyROjX2Cq3SdFxbzyKNknEGQBrjqG6om6JLbu2Gd
-	q57EOdA==
-X-Google-Smtp-Source: AGHT+IHEfcZb//+A/XoFxHeEt6Ogc1LHbtC/aY5NYrm9NviJtA9b0iGFosX3+0YfoF7OGZYkFgLjPVJGLKw=
-X-Received: from plps24.prod.google.com ([2002:a17:902:9898:b0:267:de1d:2687])
- (user=surenb job=prod-delivery.src-stubby-dispatcher) by 2002:a17:902:e943:b0:264:f714:8dce
- with SMTP id d9443c01a7336-290272c2542mr118120205ad.36.1760059207349; Thu, 09
- Oct 2025 18:20:07 -0700 (PDT)
-Date: Thu,  9 Oct 2025 18:19:48 -0700
+        bh=TF3568yP8arSICTc3vnXw7wkTlYOmrE0XKsy2eUArt4=;
+        b=cNVMTehAk8AoddyhWgcPxJD4yIdjX45QzS0U4NmUrlPFweIHlRXzRR95JyhsaA+x18
+         Ji4XZYVTkFqsVhrkAAefyCFJEDH5/zEtVSGIs+PFCe3Mi6XiWisAlgW0TuGUyE7iSzID
+         Kso5f8jQohUuB4Y1cXKyuK9vfTlkhYK8kx8+3fCGEbb4IxI1OCV96d+mlRy04ezVXvnH
+         ZAG405qkeYMbTp4TNSpinEo3OBAxRWMOcXyBCt1CKG8RMcEYq0/61uzOpaPdqxr8EShw
+         /f7lcnOrBlQLGHWjU2EpbEreQwJ3f8yfJm8ZKzV68t/ZxTn4suxoIb4GPQDOmI7dU2J5
+         OOAg==
+X-Forwarded-Encrypted: i=1; AJvYcCWBlEaNYkOTRzBLSbWnJS90sNbgZbFoAS77uAROcGq/8DoBtkFON2397L3TWDTmoFzgRJrUXA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwDn7BHKFqDogREsSSTxc3b0CCpoLBynvAn39nDRT8jtXJdJxtJ
+	/qb02Y6a/K9LU8u/AzbSenDiLWXJOXPJ6zfItz0VsNZ5dRQTOxj7Kii9m12OOgGqhY6W6e0QO5w
+	zbwnCYg==
+X-Google-Smtp-Source: AGHT+IHpnUj2OMWlXlYxp3ZZZRkgvkpKUji8FWq+Is/jpL7rJv/HUvTEG2aUVmhGkdq+yIG7uf4JBu02rqQ=
+X-Received: from pgbcq6.prod.google.com ([2002:a05:6a02:4086:b0:b49:de56:6e3c])
+ (user=surenb job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a20:431f:b0:32d:80ab:7132
+ with SMTP id adf61e73a8af0-32da83de283mr12170415637.37.1760059209572; Thu, 09
+ Oct 2025 18:20:09 -0700 (PDT)
+Date: Thu,  9 Oct 2025 18:19:49 -0700
 In-Reply-To: <20251010011951.2136980-1-surenb@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -59,8 +59,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20251010011951.2136980-1-surenb@google.com>
 X-Mailer: git-send-email 2.51.0.740.g6adb054d12-goog
-Message-ID: <20251010011951.2136980-6-surenb@google.com>
-Subject: [PATCH 5/8] mm/tests: add cleancache kunit test
+Message-ID: <20251010011951.2136980-7-surenb@google.com>
+Subject: [PATCH 6/8] add cleancache documentation
 From: Suren Baghdasaryan <surenb@google.com>
 To: akpm@linux-foundation.org
 Cc: david@redhat.com, lorenzo.stoakes@oracle.com, Liam.Howlett@oracle.com, 
@@ -76,642 +76,145 @@ Cc: david@redhat.com, lorenzo.stoakes@oracle.com, Liam.Howlett@oracle.com,
 	iommu@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
-Introduce a kunit test that creates fake inodes, fills them with folios
-with predefined content, registers a cleancache pool, allocates and
-donates folios to the new pool. After this initialization it runs
-several scenarios:
-1. cleancache_restore_test - stores fake inode pages into cleancache,
-then restores them into auxiliary folios and checks restored content;
-2. cleancache_invalidate_test - stores a folio, successfully restores
-it, invalidates it and tries to restore again expecting a failure;
-3. cleancache_reclaim_test - fills up the cleancache, stores one
-more folio and verifies that the oldest folio got reclaimed;
-4. cleancache_backend_api_test - takes all donated folios and puts them
-back verifying the results;
+Document cleancache, it's APIs and sysfs interface.
 
 Signed-off-by: Suren Baghdasaryan <surenb@google.com>
 ---
- MAINTAINERS                 |   1 +
- mm/Kconfig.debug            |  13 ++
- mm/Makefile                 |   1 +
- mm/cleancache.c             |  35 ++-
- mm/tests/Makefile           |   6 +
- mm/tests/cleancache_kunit.c | 425 ++++++++++++++++++++++++++++++++++++
- 6 files changed, 480 insertions(+), 1 deletion(-)
- create mode 100644 mm/tests/Makefile
- create mode 100644 mm/tests/cleancache_kunit.c
+ Documentation/mm/cleancache.rst | 112 ++++++++++++++++++++++++++++++++
+ MAINTAINERS                     |   1 +
+ 2 files changed, 113 insertions(+)
+ create mode 100644 Documentation/mm/cleancache.rst
 
+diff --git a/Documentation/mm/cleancache.rst b/Documentation/mm/cleancache.rst
+new file mode 100644
+index 000000000000..deaf7de51829
+--- /dev/null
++++ b/Documentation/mm/cleancache.rst
+@@ -0,0 +1,112 @@
++.. SPDX-License-Identifier: GPL-2.0
++
++==========
++Cleancache
++==========
++
++Motivation
++==========
++
++Cleancache is a feature to utilize unused reserved memory for extending
++page cache.
++
++Cleancache can be thought of as a folio-granularity victim cache for clean
++file-backed pages that the kernel's pageframe replacement algorithm (PFRA)
++would like to keep around, but can't since there isn't enough memory. So
++when the PFRA "evicts" a folio, it stores the data contained in the folio
++into cleancache memory which is not directly accessible or addressable by
++the kernel (transcendent memory) and is of unknown and possibly
++time-varying size.
++
++Later, when a filesystem wishes to access a folio in a file on disk, it
++first checks cleancache to see if it already contains required data; if it
++does, the folio data is copied into the kernel and a disk access is
++avoided.
++
++The memory cleancache uses is donated by other system components, which
++reserve memory not directly addressable by the kernel. By donating this
++memory to cleancache, the memory owner enables its utilization while it
++is not used. Memory donation is done using cleancache backend API and any
++donated memory can be taken back at any time by its donor without no delay
++and with guarantees success. Since cleancache uses this memory only to
++store clean file-backed data, it can be dropped at any time and therefore
++the donor's request to take back the memory can be always satisfied.
++
++Implementation Overview
++=======================
++
++Cleancache "backend" (donor that provides transcendent memory), registers
++itself with cleancache "frontend" and received a unique pool_id which it
++can use in all later API calls to identify the pool of folios it donates.
++Once registered, backend can call cleancache_backend_put_folio() or
++cleancache_backend_put_folios() to donate memory to cleancache. Note that
++cleancache currently supports only 0-order folios and will not accept
++larger-order ones. Once the backend needs that memory back, it can get it
++by calling cleancache_backend_get_folio(). Only the original backend can
++take the folio it donated from the cleancache.
++
++Kernel uses cleancache by first calling cleancache_add_fs() to register
++each file system and then using a combination of cleancache_store_folio(),
++cleancache_restore_folio(), cleancache_invalidate_{folio|inode} to store,
++restore and invalidate folio content.
++cleancache_{start|end}_inode_walk() are used to walk over folios inside
++an inode and cleancache_restore_from_inode() is used to restore folios
++during such walks.
++
++From kernel's point of view folios which are copied into cleancache have
++an indefinite lifetime which is completely unknowable by the kernel and so
++may or may not still be in cleancache at any later time. Thus, as its name
++implies, cleancache is not suitable for dirty folios. Cleancache has
++complete discretion over what folios to preserve and what folios to discard
++and when.
++
++Cleancache Performance Metrics
++==============================
++
++If CONFIG_CLEANCACHE_SYSFS is enabled, monitoring of cleancache performance
++can be done via sysfs in the `/sys/kernel/mm/cleancache` directory.
++The effectiveness of cleancache can be measured (across all filesystems)
++with provided stats.
++Global stats are published directly under `/sys/kernel/mm/cleancache` and
++include:
++
++``stored``
++	number of successful cleancache folio stores.
++
++``skipped``
++	number of folios skipped during cleancache store operation.
++
++``restored``
++	number of successful cleancache folio restore operations.
++
++``missed``
++	number of failed cleancache folio restore operations.
++
++``reclaimed``
++	number of folios reclaimed from the cleancache due to insufficient
++	memory.
++
++``recalled``
++	number of times cleancache folio content was discarded as a result
++	of the cleancache backend taking the folio back.
++
++``invalidated``
++	number of times cleancache folio content was discarded as a result
++	of invalidation.
++
++``cached``
++	number of folios currently cached in the cleancache.
++
++Per-pool stats are published under `/sys/kernel/mm/cleancache/<pool name>`
++where "pool name" is the name pool was registered under. These stats
++include:
++
++``size``
++	number of folios donated to this pool.
++
++``cached``
++	number of folios currently cached in the pool.
++
++``recalled``
++	number of times cleancache folio content was discarded as a result
++	of the cleancache backend taking the folio back from the pool.
 diff --git a/MAINTAINERS b/MAINTAINERS
-index f66307cd9c4b..1c97227e7ffa 100644
+index 1c97227e7ffa..441e68c94177 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -6057,6 +6057,7 @@ F:	include/linux/cleancache.h
+@@ -6053,6 +6053,7 @@ CLEANCACHE
+ M:	Suren Baghdasaryan <surenb@google.com>
+ L:	linux-mm@kvack.org
+ S:	Maintained
++F:	Documentation/mm/cleancache.rst
+ F:	include/linux/cleancache.h
  F:	mm/cleancache.c
  F:	mm/cleancache_sysfs.c
- F:	mm/cleancache_sysfs.h
-+F:	mm/tests/cleancache_kunit.c
- 
- CLK API
- M:	Russell King <linux@armlinux.org.uk>
-diff --git a/mm/Kconfig.debug b/mm/Kconfig.debug
-index 32b65073d0cc..c3482f7bc977 100644
---- a/mm/Kconfig.debug
-+++ b/mm/Kconfig.debug
-@@ -309,3 +309,16 @@ config PER_VMA_LOCK_STATS
- 	  overhead in the page fault path.
- 
- 	  If in doubt, say N.
-+
-+config CLEANCACHE_KUNIT
-+	tristate "KUnit test for cleancache" if !KUNIT_ALL_TESTS
-+	depends on KUNIT
-+	depends on CLEANCACHE
-+	default KUNIT_ALL_TESTS
-+	help
-+	  This builds the cleancache unit test.
-+	  Tests the clencache functionality.
-+	  For more information on KUnit and unit tests in general please refer
-+	  to the KUnit documentation in Documentation/dev-tools/kunit/.
-+
-+	  If unsure, say N.
-diff --git a/mm/Makefile b/mm/Makefile
-index a7a635f762ee..845841a140e3 100644
---- a/mm/Makefile
-+++ b/mm/Makefile
-@@ -70,6 +70,7 @@ obj-y += init-mm.o
- obj-y += memblock.o
- obj-y += $(memory-hotplug-y)
- obj-y += slub.o
-+obj-y += tests/
- 
- ifdef CONFIG_MMU
- 	obj-$(CONFIG_ADVISE_SYSCALLS)	+= madvise.o
-diff --git a/mm/cleancache.c b/mm/cleancache.c
-index 56dce7e03709..fd18486b0407 100644
---- a/mm/cleancache.c
-+++ b/mm/cleancache.c
-@@ -11,6 +11,8 @@
- #include <linux/slab.h>
- #include <linux/workqueue.h>
- #include <linux/xarray.h>
-+#include <kunit/test-bug.h>
-+#include <kunit/test.h>
- 
- #include "cleancache_sysfs.h"
- 
-@@ -74,6 +76,28 @@ static DEFINE_SPINLOCK(pools_lock); /* protects pools */
- static LIST_HEAD(cleancache_lru);
- static DEFINE_SPINLOCK(lru_lock); /* protects cleancache_lru */
- 
-+#if IS_ENABLED(CONFIG_CLEANCACHE_KUNIT)
-+
-+static bool is_pool_allowed(int pool_id)
-+{
-+	struct kunit *test = kunit_get_current_test();
-+
-+	/* Restrict kunit tests to using only the test pool */
-+	return test && *((int *)test->priv) == pool_id;
-+}
-+
-+#else /* CONFIG_CLEANCACHE_KUNIT */
-+
-+static bool is_pool_allowed(int pool_id) { return true; }
-+
-+#endif /* CONFIG_CLEANCACHE_KUNIT */
-+
-+#if IS_MODULE(CONFIG_CLEANCACHE_KUNIT)
-+#define EXPORT_SYMBOL_FOR_KUNIT(x) EXPORT_SYMBOL(x)
-+#else
-+#define EXPORT_SYMBOL_FOR_KUNIT(x)
-+#endif
-+
- /*
-  * Folio attributes:
-  *	folio->_mapcount - pool_id
-@@ -184,7 +208,7 @@ static struct folio *pick_folio_from_any_pool(void)
- 	for (int i = 0; i < count; i++) {
- 		pool = &pools[i];
- 		spin_lock(&pool->lock);
--		if (!list_empty(&pool->folio_list)) {
-+		if (!list_empty(&pool->folio_list) && is_pool_allowed(i)) {
- 			folio = list_last_entry(&pool->folio_list,
- 						struct folio, lru);
- 			WARN_ON(!remove_folio_from_pool(folio, pool));
-@@ -747,6 +771,7 @@ void cleancache_add_fs(struct super_block *sb)
- err:
- 	sb->cleancache_id = CLEANCACHE_ID_INVALID;
- }
-+EXPORT_SYMBOL_FOR_KUNIT(cleancache_add_fs);
- 
- void cleancache_remove_fs(struct super_block *sb)
- {
-@@ -766,6 +791,7 @@ void cleancache_remove_fs(struct super_block *sb)
- 	/* free the object */
- 	put_fs(fs);
- }
-+EXPORT_SYMBOL_FOR_KUNIT(cleancache_remove_fs);
- 
- bool cleancache_store_folio(struct inode *inode, struct folio *folio)
- {
-@@ -795,6 +821,7 @@ bool cleancache_store_folio(struct inode *inode, struct folio *folio)
- 
- 	return ret;
- }
-+EXPORT_SYMBOL_FOR_KUNIT(cleancache_store_folio);
- 
- bool cleancache_restore_folio(struct inode *inode, struct folio *folio)
- {
-@@ -822,6 +849,7 @@ bool cleancache_restore_folio(struct inode *inode, struct folio *folio)
- 
- 	return ret;
- }
-+EXPORT_SYMBOL_FOR_KUNIT(cleancache_restore_folio);
- 
- bool cleancache_invalidate_folio(struct address_space *mapping,
- 				 struct inode *inode, struct folio *folio)
-@@ -853,6 +881,7 @@ bool cleancache_invalidate_folio(struct address_space *mapping,
- 
- 	return ret;
- }
-+EXPORT_SYMBOL_FOR_KUNIT(cleancache_invalidate_folio);
- 
- bool cleancache_invalidate_inode(struct address_space *mapping,
- 				 struct inode *inode)
-@@ -877,6 +906,7 @@ bool cleancache_invalidate_inode(struct address_space *mapping,
- 
- 	return count > 0;
- }
-+EXPORT_SYMBOL_FOR_KUNIT(cleancache_invalidate_inode);
- 
- struct cleancache_inode *
- cleancache_start_inode_walk(struct address_space *mapping, struct inode *inode,
-@@ -906,6 +936,7 @@ cleancache_start_inode_walk(struct address_space *mapping, struct inode *inode,
- 
- 	return ccinode;
- }
-+EXPORT_SYMBOL_FOR_KUNIT(cleancache_start_inode_walk);
- 
- void cleancache_end_inode_walk(struct cleancache_inode *ccinode)
- {
-@@ -914,6 +945,7 @@ void cleancache_end_inode_walk(struct cleancache_inode *ccinode)
- 	put_inode(ccinode);
- 	put_fs(fs);
- }
-+EXPORT_SYMBOL_FOR_KUNIT(cleancache_end_inode_walk);
- 
- bool cleancache_restore_from_inode(struct cleancache_inode *ccinode,
- 				   struct folio *folio)
-@@ -940,6 +972,7 @@ bool cleancache_restore_from_inode(struct cleancache_inode *ccinode,
- 
- 	return ret;
- }
-+EXPORT_SYMBOL_FOR_KUNIT(cleancache_restore_from_inode);
- 
- /* Backend API */
- /*
-diff --git a/mm/tests/Makefile b/mm/tests/Makefile
-new file mode 100644
-index 000000000000..fac2e964b4d5
---- /dev/null
-+++ b/mm/tests/Makefile
-@@ -0,0 +1,6 @@
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# Makefile for tests of kernel mm subsystem.
-+
-+# KUnit tests
-+obj-$(CONFIG_CLEANCACHE_KUNIT) += cleancache_kunit.o
-diff --git a/mm/tests/cleancache_kunit.c b/mm/tests/cleancache_kunit.c
-new file mode 100644
-index 000000000000..18b4386d6322
---- /dev/null
-+++ b/mm/tests/cleancache_kunit.c
-@@ -0,0 +1,425 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * KUnit test for the Cleancache.
-+ *
-+ * Copyright (C) 2025, Google LLC.
-+ * Author: Suren Baghdasaryan <surenb@google.com>
-+ */
-+#include <kunit/test.h>
-+
-+#include <linux/cleancache.h>
-+#include <linux/highmem.h>
-+#include <linux/pagemap.h>
-+
-+#include "../internal.h"
-+
-+#define INODE_COUNT		5
-+#define FOLIOS_PER_INODE	4
-+#define FOLIO_COUNT		(INODE_COUNT * FOLIOS_PER_INODE)
-+
-+static const u32 TEST_CONTENT = 0xBADCAB32;
-+
-+struct inode_data {
-+	struct address_space mapping;
-+	struct inode inode;
-+	struct folio *folios[FOLIOS_PER_INODE];
-+};
-+
-+static struct test_data {
-+	/* Mock a fs */
-+	struct super_block sb;
-+	struct inode_data inodes[INODE_COUNT];
-+	/* Folios donated to the cleancache pools */
-+	struct folio *pool_folios[FOLIO_COUNT];
-+	/* Auxiliary folio */
-+	struct folio *aux_folio;
-+	int pool_id;
-+} test_data;
-+
-+static void set_folio_content(struct folio *folio, u32 value)
-+{
-+	u32 *data;
-+
-+	data = kmap_local_folio(folio, 0);
-+	*data = value;
-+	kunmap_local(data);
-+}
-+
-+static u32 get_folio_content(struct folio *folio)
-+{
-+	unsigned long value;
-+	u32 *data;
-+
-+	data = kmap_local_folio(folio, 0);
-+	value = *data;
-+	kunmap_local(data);
-+
-+	return value;
-+}
-+
-+static void fill_cleancache(struct kunit *test)
-+{
-+	struct inode_data *inode_data;
-+	struct folio *folio;
-+
-+	/* Store inode folios into cleancache */
-+	for (int inode = 0; inode < INODE_COUNT; inode++) {
-+		inode_data = &test_data.inodes[inode];
-+		for (int fidx = 0; fidx < FOLIOS_PER_INODE; fidx++) {
-+			folio = inode_data->folios[fidx];
-+			KUNIT_EXPECT_NOT_NULL(test, folio);
-+			folio_lock(folio); /* Folio has to be locked */
-+			folio_set_workingset(folio);
-+			KUNIT_EXPECT_TRUE(test, cleancache_store_folio(&inode_data->inode, folio));
-+			folio_unlock(folio);
-+		}
-+	}
-+}
-+
-+static int cleancache_suite_init(struct kunit_suite *suite)
-+{
-+	LIST_HEAD(pool_folios);
-+
-+	/* Add a fake fs superblock */
-+	cleancache_add_fs(&test_data.sb);
-+
-+	/* Initialize fake inodes */
-+	for (int inode = 0; inode < INODE_COUNT; inode++) {
-+		struct inode_data *inode_data = &test_data.inodes[inode];
-+
-+		inode_data->inode.i_sb = &test_data.sb;
-+		inode_data->inode.i_ino = inode;
-+		inode_data->mapping.host = &inode_data->inode;
-+
-+		/* Allocate folios for the inode  */
-+		for (int fidx = 0; fidx < FOLIOS_PER_INODE; fidx++) {
-+			struct folio *folio = folio_alloc(GFP_KERNEL | __GFP_ZERO, 0);
-+
-+			if (!folio)
-+				return -ENOMEM;
-+
-+			set_folio_content(folio, (u32)fidx);
-+			folio->mapping = &inode_data->mapping;
-+			folio->index = PAGE_SIZE * fidx;
-+			inode_data->folios[fidx] = folio;
-+		}
-+	}
-+
-+	/* Register new cleancache pool and donate test folios */
-+	test_data.pool_id = cleancache_backend_register_pool("kunit_pool");
-+	if (test_data.pool_id < 0)
-+		return -EINVAL;
-+
-+	/* Allocate folios and put them to cleancache  */
-+	for (int fidx = 0; fidx < FOLIO_COUNT; fidx++) {
-+		struct folio *folio = folio_alloc(GFP_KERNEL | __GFP_ZERO, 0);
-+
-+		if (!folio)
-+			return -ENOMEM;
-+
-+		folio_ref_freeze(folio, 1);
-+		test_data.pool_folios[fidx] = folio;
-+		list_add(&folio->lru, &pool_folios);
-+	}
-+
-+	cleancache_backend_put_folios(test_data.pool_id, &pool_folios);
-+
-+	/* Allocate auxiliary folio for testing  */
-+	test_data.aux_folio = folio_alloc(GFP_KERNEL | __GFP_ZERO, 0);
-+	if (!test_data.aux_folio)
-+		return -ENOMEM;
-+
-+	return 0;
-+}
-+
-+static void cleancache_suite_exit(struct kunit_suite *suite)
-+{
-+	/* Take back donated folios and free them */
-+	for (int fidx = 0; fidx < FOLIO_COUNT; fidx++) {
-+		struct folio *folio = test_data.pool_folios[fidx];
-+
-+		if (folio) {
-+			if (!cleancache_backend_get_folio(test_data.pool_id,
-+							  folio))
-+				set_page_refcounted(&folio->page);
-+			folio_put(folio);
-+		}
-+	}
-+
-+	/* Free the auxiliary folio */
-+	if (test_data.aux_folio) {
-+		test_data.aux_folio->mapping = NULL;
-+		folio_put(test_data.aux_folio);
-+	}
-+
-+	/* Free inode folios */
-+	for (int inode = 0; inode < INODE_COUNT; inode++) {
-+		for (int fidx = 0; fidx < FOLIOS_PER_INODE; fidx++) {
-+			struct folio *folio = test_data.inodes[inode].folios[fidx];
-+
-+			if (folio) {
-+				folio->mapping = NULL;
-+				folio_put(folio);
-+			}
-+		}
-+	}
-+
-+	cleancache_remove_fs(&test_data.sb);
-+}
-+
-+static int cleancache_test_init(struct kunit *test)
-+{
-+	/* Pass pool_id to cleancache to restrict pools that can be used for tests */
-+	test->priv = &test_data.pool_id;
-+
-+	return 0;
-+}
-+
-+static void cleancache_restore_test(struct kunit *test)
-+{
-+	struct inode_data *inode_data;
-+	struct folio *folio;
-+
-+	/* Store inode folios into cleancache */
-+	fill_cleancache(test);
-+
-+	/* Restore and validate folios stored in cleancache */
-+	for (int inode = 0; inode < INODE_COUNT; inode++) {
-+		inode_data = &test_data.inodes[inode];
-+		for (int fidx = 0; fidx < FOLIOS_PER_INODE; fidx++) {
-+			folio = inode_data->folios[fidx];
-+			test_data.aux_folio->mapping = folio->mapping;
-+			test_data.aux_folio->index = folio->index;
-+			KUNIT_EXPECT_TRUE(test, cleancache_restore_folio(&inode_data->inode,
-+									 test_data.aux_folio));
-+			KUNIT_EXPECT_EQ(test, get_folio_content(test_data.aux_folio),
-+					get_folio_content(folio));
-+		}
-+	}
-+}
-+
-+static void cleancache_walk_and_restore_test(struct kunit *test)
-+{
-+	struct cleancache_inode *ccinode;
-+	struct inode_data *inode_data;
-+	struct folio *folio;
-+
-+	/* Store inode folios into cleancache */
-+	fill_cleancache(test);
-+
-+	/* Restore and validate folios stored in the first inode */
-+	inode_data = &test_data.inodes[0];
-+	ccinode = cleancache_start_inode_walk(&inode_data->mapping, &inode_data->inode,
-+					      FOLIOS_PER_INODE);
-+	KUNIT_EXPECT_NOT_NULL(test, ccinode);
-+	for (int fidx = 0; fidx < FOLIOS_PER_INODE; fidx++) {
-+		folio = inode_data->folios[fidx];
-+		test_data.aux_folio->mapping = folio->mapping;
-+		test_data.aux_folio->index = folio->index;
-+		KUNIT_EXPECT_TRUE(test, cleancache_restore_from_inode(ccinode,
-+								      test_data.aux_folio));
-+		KUNIT_EXPECT_EQ(test, get_folio_content(test_data.aux_folio),
-+				get_folio_content(folio));
-+	}
-+	cleancache_end_inode_walk(ccinode);
-+}
-+
-+static void cleancache_invalidate_test(struct kunit *test)
-+{
-+	struct inode_data *inode_data;
-+	struct folio *folio;
-+
-+	/* Store inode folios into cleancache */
-+	fill_cleancache(test);
-+
-+	/* Invalidate one folio */
-+	inode_data = &test_data.inodes[0];
-+	folio = inode_data->folios[0];
-+	test_data.aux_folio->mapping = folio->mapping;
-+	test_data.aux_folio->index = folio->index;
-+	KUNIT_EXPECT_TRUE(test, cleancache_restore_folio(&inode_data->inode,
-+							 test_data.aux_folio));
-+	folio_lock(folio); /* Folio has to be locked */
-+	KUNIT_EXPECT_TRUE(test, cleancache_invalidate_folio(&inode_data->mapping,
-+							    &inode_data->inode,
-+							    inode_data->folios[0]));
-+	folio_unlock(folio);
-+	KUNIT_EXPECT_FALSE(test, cleancache_restore_folio(&inode_data->inode,
-+							  test_data.aux_folio));
-+
-+	/* Invalidate one node */
-+	inode_data = &test_data.inodes[1];
-+	KUNIT_EXPECT_TRUE(test, cleancache_invalidate_inode(&inode_data->mapping,
-+							    &inode_data->inode));
-+
-+	/* Verify results */
-+	for (int inode = 0; inode < INODE_COUNT; inode++) {
-+		inode_data = &test_data.inodes[inode];
-+		for (int fidx = 0; fidx < FOLIOS_PER_INODE; fidx++) {
-+			folio = inode_data->folios[fidx];
-+			test_data.aux_folio->mapping = folio->mapping;
-+			test_data.aux_folio->index = folio->index;
-+			if (inode == 0 && fidx == 0) {
-+				/* Folio should be missing */
-+				KUNIT_EXPECT_FALSE(test,
-+					cleancache_restore_folio(&inode_data->inode,
-+								 test_data.aux_folio));
-+				continue;
-+			}
-+			if (inode == 1) {
-+				/* Folios in the node should be missing */
-+				KUNIT_EXPECT_FALSE(test,
-+					cleancache_restore_folio(&inode_data->inode,
-+								 test_data.aux_folio));
-+				continue;
-+			}
-+			KUNIT_EXPECT_TRUE(test,
-+					cleancache_restore_folio(&inode_data->inode,
-+								 test_data.aux_folio));
-+			KUNIT_EXPECT_EQ(test, get_folio_content(test_data.aux_folio),
-+					get_folio_content(folio));
-+		}
-+	}
-+}
-+
-+static void cleancache_reclaim_test(struct kunit *test)
-+{
-+	struct inode_data *inode_data;
-+	struct inode_data *inode_new;
-+	unsigned long new_index;
-+	struct folio *folio;
-+
-+	/* Store inode folios into cleancache */
-+	fill_cleancache(test);
-+
-+	/*
-+	 * Store one extra new folio. There should be no free folios, so the
-+	 * oldest folio will be reclaimed to store new folio. Add it into the
-+	 * last node at the next unoccupied offset.
-+	 */
-+	inode_new = &test_data.inodes[INODE_COUNT - 1];
-+	new_index = inode_new->folios[FOLIOS_PER_INODE - 1]->index + PAGE_SIZE;
-+
-+	test_data.aux_folio->mapping = &inode_new->mapping;
-+	test_data.aux_folio->index = new_index;
-+	set_folio_content(test_data.aux_folio, TEST_CONTENT);
-+	folio_lock(test_data.aux_folio); /* Folio has to be locked */
-+	folio_set_workingset(test_data.aux_folio);
-+	KUNIT_EXPECT_TRUE(test, cleancache_store_folio(&inode_new->inode, test_data.aux_folio));
-+	folio_unlock(test_data.aux_folio);
-+
-+	/* Verify results */
-+	for (int inode = 0; inode < INODE_COUNT; inode++) {
-+		inode_data = &test_data.inodes[inode];
-+		for (int fidx = 0; fidx < FOLIOS_PER_INODE; fidx++) {
-+			folio = inode_data->folios[fidx];
-+			test_data.aux_folio->mapping = folio->mapping;
-+			test_data.aux_folio->index = folio->index;
-+			/*
-+			 * The first folio of the first node was added first,
-+			 * so it's the oldest and must have been reclaimed.
-+			 */
-+			if (inode == 0 && fidx == 0) {
-+				/* Reclaimed folio should be missing */
-+				KUNIT_EXPECT_FALSE_MSG(test,
-+						cleancache_restore_folio(&inode_data->inode,
-+									 test_data.aux_folio),
-+						"inode %d, folio %d is invalid\n", inode, fidx);
-+				continue;
-+			}
-+			KUNIT_EXPECT_TRUE_MSG(test,
-+					cleancache_restore_folio(&inode_data->inode,
-+								 test_data.aux_folio),
-+								"inode %d, folio %d is invalid\n",
-+								inode, fidx);
-+			KUNIT_EXPECT_EQ_MSG(test, get_folio_content(test_data.aux_folio),
-+					    get_folio_content(folio),
-+					    "inode %d, folio %d content is invalid\n",
-+					    inode, fidx);
-+		}
-+	}
-+
-+	/* Auxiliary folio should be stored */
-+	test_data.aux_folio->mapping = &inode_new->mapping;
-+	test_data.aux_folio->index = new_index;
-+	KUNIT_EXPECT_TRUE_MSG(test,
-+			      cleancache_restore_folio(&inode_new->inode, test_data.aux_folio),
-+			      "inode %lu, folio %ld is invalid\n",
-+			      inode_new->inode.i_ino, new_index);
-+	KUNIT_EXPECT_EQ_MSG(test, get_folio_content(test_data.aux_folio), TEST_CONTENT,
-+			    "inode %lu, folio %ld content is invalid\n",
-+			    inode_new->inode.i_ino, new_index);
-+}
-+
-+static void cleancache_backend_api_test(struct kunit *test)
-+{
-+	struct folio *folio;
-+	LIST_HEAD(folios);
-+	int unused = 0;
-+	int used = 0;
-+
-+	/* Store inode folios into cleancache */
-+	fill_cleancache(test);
-+
-+	/* Get all donated folios back */
-+	for (int fidx = 0; fidx < FOLIO_COUNT; fidx++) {
-+		KUNIT_EXPECT_EQ(test, cleancache_backend_get_folio(test_data.pool_id,
-+						test_data.pool_folios[fidx]),  0);
-+		set_page_refcounted(&test_data.pool_folios[fidx]->page);
-+	}
-+
-+	/* Try putting a refcounted folio */
-+	KUNIT_EXPECT_NE(test, cleancache_backend_put_folio(test_data.pool_id,
-+					test_data.pool_folios[0]), 0);
-+
-+	/* Put some of the folios back into cleancache */
-+	for (int fidx = 0; fidx < FOLIOS_PER_INODE; fidx++) {
-+		folio_ref_freeze(test_data.pool_folios[fidx], 1);
-+		KUNIT_EXPECT_EQ(test, cleancache_backend_put_folio(test_data.pool_id,
-+						test_data.pool_folios[fidx]), 0);
-+	}
-+
-+	/* Put the rest back into cleancache but keep half of folios still refcounted */
-+	for (int fidx = FOLIOS_PER_INODE; fidx < FOLIO_COUNT; fidx++) {
-+		if (fidx % 2) {
-+			folio_ref_freeze(test_data.pool_folios[fidx], 1);
-+			unused++;
-+		} else {
-+			used++;
-+		}
-+		list_add(&test_data.pool_folios[fidx]->lru, &folios);
-+	}
-+	KUNIT_EXPECT_NE(test, cleancache_backend_put_folios(test_data.pool_id,
-+					&folios), 0);
-+	/* Used folios should be still in the list */
-+	KUNIT_EXPECT_EQ(test, list_count_nodes(&folios), used);
-+
-+	/* Release refcounts and put the remaining folios into cleancache */
-+	list_for_each_entry(folio, &folios, lru)
-+		folio_ref_freeze(folio, 1);
-+	KUNIT_EXPECT_EQ(test, cleancache_backend_put_folios(test_data.pool_id,
-+					&folios), 0);
-+	KUNIT_EXPECT_TRUE(test, list_empty(&folios));
-+}
-+
-+static struct kunit_case cleancache_test_cases[] = {
-+	KUNIT_CASE(cleancache_restore_test),
-+	KUNIT_CASE(cleancache_walk_and_restore_test),
-+	KUNIT_CASE(cleancache_invalidate_test),
-+	KUNIT_CASE(cleancache_reclaim_test),
-+	KUNIT_CASE(cleancache_backend_api_test),
-+	{},
-+};
-+
-+static struct kunit_suite hashtable_test_module = {
-+	.name = "cleancache",
-+	.init = cleancache_test_init,
-+	.suite_init = cleancache_suite_init,
-+	.suite_exit = cleancache_suite_exit,
-+	.test_cases = cleancache_test_cases,
-+};
-+
-+kunit_test_suites(&hashtable_test_module);
-+
-+MODULE_DESCRIPTION("KUnit test for the Kernel Cleancache");
-+MODULE_LICENSE("GPL");
 -- 
 2.51.0.740.g6adb054d12-goog
 
