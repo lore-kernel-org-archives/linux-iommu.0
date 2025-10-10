@@ -1,225 +1,354 @@
-Received: from AS8PR04CU009.outbound.protection.outlook.com (mail-westeuropeazon11011031.outbound.protection.outlook.com [52.101.70.31])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8922B301498;
-	Fri, 10 Oct 2025 18:50:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.70.31
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760122255; cv=fail; b=E8oIGfpSk838nx9PDRv/m7Gp3GhC6IshaXDGLFznJw+OvN/EZxq9NM5V+Zdauf+jOozlTrdHe3UVCcJzvZe9g3lfFiMALCXPFUO6vwiT9Ra0mNSJCJpeW3bI5zBCUXpL6ftdNksh/aJc9zZCELdm38T4q61uI63pt4e+9/fEiiw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760122255; c=relaxed/simple;
-	bh=aqvECgYHadrJpFYtfOSsLxaFaplUyXoxr6bd5wsHOXY=;
-	h=From:Date:Subject:Content-Type:Message-Id:References:In-Reply-To:
-	 To:Cc:MIME-Version; b=Ou+UV1k5H9Q66WbkEUsKpdn8kj5YAbr1dtxc3AQbuYx5LY8NFdJCDHvqf6KRTbMga9K0rkG2GbFSJxkHw42GquEAX3lPE79wRONacKzVLkLNi9K6aPzI9OEp1mwXvqlKK4r0cj4mOz6FMimYMCWIAYotgdGRqtjazFVUiQw9I5g=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com; spf=pass smtp.mailfrom=nxp.com; dkim=pass (2048-bit key) header.d=nxp.com header.i=@nxp.com header.b=aFJilxbY; arc=fail smtp.client-ip=52.101.70.31
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nxp.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A431130170F
+	for <iommu@lists.linux.dev>; Fri, 10 Oct 2025 19:53:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1760126037; cv=none; b=J74ryEphfY1Ad0iCnSO8Zo634ZPYL/EvwcDOjR15wjd1o3aYutxGyL+gr2Adbr81I6XZ+M86SysGxboKj/Jh+ZviTDHFKHxrUjf+rvPOKn6R1M9H61vys79+XaAk5RmoY5TRKLF8bG1EhlK3bFCirIVDNyjD17uRNJodtiJwMIg=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1760126037; c=relaxed/simple;
+	bh=5b/h/Rp35LUmB9SEWYk1Tv6h8r31mjMf3n8/iHHk8HY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=dOPTvSztEdGf1YuKfqJE0L0izwUuqPgJ0AU/jzRF9g0aHXlaFCzBMoxhqP0sA0fX+xQMq/8VBCiAPoO32uCriGUYC1AZZg5t3qEfhn2v+gl+DgImSQ1UyZJZVuXoXkYKXsxOa9jzt8JFdIPknVxUA2anJ1woRfAsHXALTjfO0gs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=Jddvg2QM; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=nxp.com header.i=@nxp.com header.b="aFJilxbY"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=CdXHX90l0SPWjXXGGBNAFdadmxybj/aczMFe7MzExwln6I6gkylFOLwZ5vmROYyuE+dMRGZqKcXx6Kuuu8LbUjqDrDDUg4bXmZ20XqdopvuO5AR5Nx/ykjIADzfdd0O9jv3EIewXzyRq+C+CEiECCOuduGtzH/jSrjucU6I+kxIgmbKukSr2SwFj2vO7zycze/z1i51JzM8bmycl8IADN2g5JmSgd0am+ioYwWWfwujVr6vSmF+h+uvsPlDzMDXxruD/yy1J6vP+FtVmvVzgEWMxl2oC4bbIyYosHexcGaT412Dg4iN2n3QuvkNyxl7MJwWu8V13RlIOJR63uYADCg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=bQw6yH5Z9L7B+fgrcbS65Cks5ky2LLS7ty0gZ1n3rTg=;
- b=O1Xphm6e2uieP113n5/QdhUonHjq9EhEzZ9MdOEZjcojBIWtfLea/OFdqvzhB20OlU8tDu9QHqkQJIlhk742Y+EwCRq8w76xldJyh1foJr3Y7iT0rcfUJeHplIy5HFl4qh3I2LFlBYI6NAsyMeOxozzJb/ZUv0jmdhGYp/+b+0tPvuPd5ulpwAv6zXNFbzOtsjK+P3zyRzw8LMyuTMortHco+5WFnE9vSB/wFbufB0B5L8TIVPlgF4vurN7RbV0NYVKdPP7+4Mvo766lcSlldLkvg2k78Fce2WwwTIjrtrMl8xrD54Um9t+4eYM9enAHNnZP4037NgHE0BsdnE2NTA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bQw6yH5Z9L7B+fgrcbS65Cks5ky2LLS7ty0gZ1n3rTg=;
- b=aFJilxbYjacbew6lbW90fWReNNsLOBwHPykTzuMXAm7IrUMTVCOR4gMY1vOUYh6+nLPNnHfrm6hQJTcyCzrLDgZm+7d53umpfJUIQcIqYTwNEveS9mxOYqpa2DmkvkT17A/xmD/rf9cekU8fyyMO+ZVTX8rFsFyONv30QbX9lWs5Wo7nGGna2SS4lh7uVyAytSEA2G02MAAzDohtGRvjgQc6i75asaOdC0zRW4ktbpAOugqBcWBRfxGtuj+SFJGMOtR43/w1/g6hJT6rpde92nIJKZvRcyJH3cj9VGMjQJhKPuAutcxkYiEYJWIi8YnovNrlOTqxsRXcqGmi0w3/KQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from PAXSPRMB0053.eurprd04.prod.outlook.com (2603:10a6:102:23f::21)
- by DU0PR04MB9659.eurprd04.prod.outlook.com (2603:10a6:10:320::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9203.10; Fri, 10 Oct
- 2025 18:50:50 +0000
-Received: from PAXSPRMB0053.eurprd04.prod.outlook.com
- ([fe80::504f:2a06:4579:5f15]) by PAXSPRMB0053.eurprd04.prod.outlook.com
- ([fe80::504f:2a06:4579:5f15%6]) with mapi id 15.20.9203.007; Fri, 10 Oct 2025
- 18:50:50 +0000
-From: Frank Li <Frank.Li@nxp.com>
-Date: Fri, 10 Oct 2025 14:50:26 -0400
-Subject: [PATCH 3/3] i2c: lpi2c: Use auto cleanup for dma_map_single()
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20251010-dmamap_cleanup-v1-3-ec5bc14e82c4@nxp.com>
-References: <20251010-dmamap_cleanup-v1-0-ec5bc14e82c4@nxp.com>
-In-Reply-To: <20251010-dmamap_cleanup-v1-0-ec5bc14e82c4@nxp.com>
-To: Marek Szyprowski <m.szyprowski@samsung.com>, 
- Robin Murphy <robin.murphy@arm.com>, Dong Aisheng <aisheng.dong@nxp.com>, 
- Andi Shyti <andi.shyti@kernel.org>, Shawn Guo <shawnguo@kernel.org>, 
- Sascha Hauer <s.hauer@pengutronix.de>, 
- Pengutronix Kernel Team <kernel@pengutronix.de>, 
- Fabio Estevam <festevam@gmail.com>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
- linux-i2c@vger.kernel.org, imx@lists.linux.dev, 
- linux-arm-kernel@lists.infradead.org, Frank Li <Frank.Li@nxp.com>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1760122235; l=1781;
- i=Frank.Li@nxp.com; s=20240130; h=from:subject:message-id;
- bh=aqvECgYHadrJpFYtfOSsLxaFaplUyXoxr6bd5wsHOXY=;
- b=cNHjs/qQAREU2O8pb6iG2KPjHbHEB9y0WVehHpS3bG7zdaSM4dlWA8QDxWTtqcNaanwwOwWJL
- ORttjxQz8KyDAO+bVCQ1YZy84zSh14I6lwlzNnNLy0vZKSg04FCL7d1
-X-Developer-Key: i=Frank.Li@nxp.com; a=ed25519;
- pk=I0L1sDUfPxpAkRvPKy7MdauTuSENRq+DnA+G4qcS94Q=
-X-ClientProxiedBy: SJ0PR03CA0212.namprd03.prod.outlook.com
- (2603:10b6:a03:39f::7) To PAXSPRMB0053.eurprd04.prod.outlook.com
- (2603:10a6:102:23f::21)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="Jddvg2QM"
+Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 59AFjoQl024176
+	for <iommu@lists.linux.dev>; Fri, 10 Oct 2025 19:53:54 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	YFTq9SfFdhLMTERxwfmxv1dKsZDfHpEAvo+MIED1COs=; b=Jddvg2QMHQpfUDxi
+	lzLIoH2yNczGccUwZLzDOmQdCs4e5ew880EMdytwWrlDuYw7x2n49SMEvWwLCpKP
+	gEq8TjUELDtXwH7W9vc6LFS3vDF/LG9ajfQYEnbjOTPS0orCh0LjRTOhOOgYmOFY
+	qOp71Qlll4jv0Ed5y3mV3zkRtoQ9hFKgb2lx+p6CRRlQg3adQsFJbb+enJkQBUuS
+	IkdZZE7I69MLgagmvkVaMtazcH8iOW3VMVuRy1pHEg+daVB+FTbr2nTZK6aUCyBT
+	cpd/0V0XxxVNeXiMDkmK66JfOEQWizoQP6eIPrtMCX4AjPQbTALv+hzgWqCcIoRl
+	Y7p3LQ==
+Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com [209.85.214.198])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 49nv4kyjdt-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Fri, 10 Oct 2025 19:53:53 +0000 (GMT)
+Received: by mail-pl1-f198.google.com with SMTP id d9443c01a7336-28d1747f23bso51379915ad.3
+        for <iommu@lists.linux.dev>; Fri, 10 Oct 2025 12:53:53 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1760126033; x=1760730833;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=YFTq9SfFdhLMTERxwfmxv1dKsZDfHpEAvo+MIED1COs=;
+        b=DAyMoP2hgHP/hAqv6vdPFVsGCYsxMjjWFCOb0mlaa4ZYGI22VSRn9FkR5eyJV0ZkaQ
+         x0/cS+HPtnoQci/+q+AegDMB9HDcbJXEyCprEeR0XgqrAMDdXPstplp1ueNCUnwFy9N6
+         EBBX9YnsTK9UGFrIQByq0D+sm/LVvMs70ae1ogR7WW2fA6OhLl/gN7XK0wim3AA5rA7m
+         Y1Iw75YergZS9LwyN1J09IugkVKEa9qEib9AqxBTfyh5RgomNrvYxlzbAnrVJc0mQbyJ
+         hTC5Vbav57SterIBUymy8FDuVeVDx7N0w6ZvqVNxYQvPh6yietj9JJAeRYDQAPTiyo1d
+         pA+A==
+X-Forwarded-Encrypted: i=1; AJvYcCUQmGMcaLJpeQSYGfXBd2f7Mi8tShxe87vqC2VrJTyYi3OySCvj3VYSUcfXoVDwQhr1nYrltA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxY1LfTx27zbHrZymidFogZrDokilCVlbc78i/vz2JjHfeYvJtj
+	8ELW0HwenKYROS2rH9bArCHUuuJFZpZGVEUNUB/CaACSgFZzls3rkPkXwrE0TdlRoDuoG1UE7ez
+	8Vex66PVVVoOGkGDILJ4CVtz+Obq1vuWgsQjVjsLlAh6drRVRbUkNqRQg4A==
+X-Gm-Gg: ASbGncuNUXPgSNLrqLtSKp9a3Hdc31xP5R3PrYeh2OeXegNHr9hOHFScRK1bNmfGnll
+	/n0SPrhVVATL7zdmjDZNcoZAsKwkvI9cInHGtVt08krWa91dROkEeSEjIjbsWmeWYtM7xbVKOrR
+	B6UnzvITBnGj/ZkufaEGYvgSTkdbSS18uYNsXhf+rkISI9mSTZdU3zTZXHR0xfG3GFD1cpevnL+
+	4hHT4or2H9tRJUq6TWeEt+K/ytDuUYU2onvQnyN/u/63n895fPoPzdxdGbaTWcgKpX1Kv0YtxKs
+	qOO/rIMZhHP9is/MMQgd6oG12JMcZKi2o6ycizY=
+X-Received: by 2002:a17:902:f650:b0:276:305b:14a7 with SMTP id d9443c01a7336-290273ef0ebmr165720235ad.33.1760126032655;
+        Fri, 10 Oct 2025 12:53:52 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IE7+3w3vBsY6LYeccU+mN4KwyNGzOtDggHxqGdw7Hj3TVrWLuesSk97dfDRKHO97M+QBWfHTA==
+X-Received: by 2002:a17:902:f650:b0:276:305b:14a7 with SMTP id d9443c01a7336-290273ef0ebmr165719765ad.33.1760126031947;
+        Fri, 10 Oct 2025 12:53:51 -0700 (PDT)
+Received: from [192.168.1.3] ([122.181.197.191])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-29034f4ae6csm64827695ad.108.2025.10.10.12.53.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 10 Oct 2025 12:53:51 -0700 (PDT)
+Message-ID: <c863f6a7-b117-4444-ae6d-1d525b572be2@oss.qualcomm.com>
+Date: Sat, 11 Oct 2025 01:23:43 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PAXSPRMB0053:EE_|DU0PR04MB9659:EE_
-X-MS-Office365-Filtering-Correlation-Id: dbfe068f-f00c-47da-7ee4-08de082dee4d
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|376014|7416014|366016|52116014|19092799006|38350700014;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?YXNpRUlzTm5wSDlhN0J5VGpKYmd6S1dLOHMrQWlXRG9zb2w1SytoRXh6eVhZ?=
- =?utf-8?B?SHltQkNMNnIvMWkvVmtKSlRrRlhzS1Y4djRJVHJVd09zT1BETkd0dCtHYXhF?=
- =?utf-8?B?eTk2REw4NHNhekNpN2VxdkoyYXcyczVBZFVnc09Cb1FkMy9pTzZ1R2QwMVZl?=
- =?utf-8?B?QWF2TTNnb3JLSVIyUUdwNlgvU1BDMGFsUDVhdUw3YjY1eEZNb3pDQmpuSkk1?=
- =?utf-8?B?azRkN3hMeC9leDhUc0VtS01zSEtJcWtCN0JKYmtYYVMwMU5CaStyUk82Q0li?=
- =?utf-8?B?R1R1d05uWUJVU1FxWXJPT0lRMzRGNzJTYUxDRGc3TmJ6bjFvQjlrOHFpL2M1?=
- =?utf-8?B?R2tiaSt6V3pSSUUxakViNEgrYW1yQXNZcTd3UGVmTE1YZ2tqL1BCZmwvUGlT?=
- =?utf-8?B?bEw1Nk9mTUlOTUl0Z1hLNWFYTGFqVU5CVEl3QStsQWlYYWhKR1lXOExHa2o2?=
- =?utf-8?B?emxVOWlUMXRibk56VkVxRk9senZPdTF3T1pQNWM4b3hEejBSVStIekcyTzhw?=
- =?utf-8?B?bm43WXUxeUd0NVhYa0JURldkaU9rT2Q4bHBBL1pyU1daTkpFanV2WU9UT1li?=
- =?utf-8?B?YTJ1bEVBTXEyalIzaVB6S3B1SUJiLzdETyt0Q0cyQlVad3VOWkdOL29wanZk?=
- =?utf-8?B?K09lUlh3Y1ZtcTFQQXZ5d0dXbnZicXhCdDRCMkZuVUtqbHdNeDlHQU1HeG1G?=
- =?utf-8?B?dk94SHZWb1I4Nmc0WnlBSW8wSkd1WC9ZZHhicGgwaDUvVCttK3FTTXBSN3NV?=
- =?utf-8?B?a0JOVHNtUUttZGFVWmdGeEdCUjd0dHgvNmhrTU9PcndOdXhQVk9oOGs4SjFo?=
- =?utf-8?B?Y09UcDl4VGN1WWhCUy85clhZNEpCNHZCUDZpbnZ2Vk9wSlVzWDN5YXZzSDR3?=
- =?utf-8?B?NUo0T2pIcUdUMnpDRHE0YS9jcjBqUkh2MmZmTkgvQjhRN3hLOGhRMHdtZGRy?=
- =?utf-8?B?V0UzVThtd3d5aVpLVVBmazd3NzJJNEdFVVpBVno3WW1hV1VTTjNVUEQyUlNI?=
- =?utf-8?B?d1lEeThMTzcvMGgzTjRZSm9zeWpvWEI1RHJuSjVOSllVaGM5OUFUS1lMaEFQ?=
- =?utf-8?B?Ny9WdjJ3dS9qZGRQMzU1Q0hRZnhoUEtmbEhuanpLNFF2bHBVTU9kZGxqWXUx?=
- =?utf-8?B?Y2ZxYUpYKzYrNWx6WEp1ZGg2T2NvSmNEUkNLQlpkOFFpL1IraE9IUE9HWWx0?=
- =?utf-8?B?dEdna1puN1J6aGw1ZEN1NmFGbW9IanVqKy9nMVFZTGNXd3QvWE91WHJUWE0r?=
- =?utf-8?B?QUlFaWM5bXp1V1JiOVBXZU1tOWt6V2RQaTg3YVFwTUYrZWNZeEVzUXI2WkM3?=
- =?utf-8?B?ZDV3ZnFJOVhqdjVZY0E2QXNVRzlUejlxUnBMNkNZNGhvNWFweGVuQ21uRmJX?=
- =?utf-8?B?R200TE55R01yWSs4VTM0cWx2SUtWc3ZRODc5ZDBlS1N3WWFvY09ENWpxTWtO?=
- =?utf-8?B?dWpZZEJQZm8wS1hZTWhjSVlXa0pzL3c2cTFJRkkrV28wN0sxNVVaWktNQ0FY?=
- =?utf-8?B?Q2h2d2ZCemdNZVQ2YWNaaUVLTVBMNnpzNkJ0Sk02UE1aSXg3cFRMWmloRzNV?=
- =?utf-8?B?cXNVK3I5VFUyTFNDaFNLbkRmS09tcElWdXFsSXdoeEs3bnNjNUVFWjRCMnBn?=
- =?utf-8?B?NHhCWlZkb1k5dUNJZXlQalVJUWNzU01Mc0tjUGxFcWI5K0U3Y0hERW1XSmRK?=
- =?utf-8?B?Z29qalNCMUlHSURtNHVDUjRkN3ZhQXNQRGRiNmhxYlJQa3hUQ1VWMzhMRzJo?=
- =?utf-8?B?cDlBV0ZyTGtyZEtIU1c2a0dFYmhuM2o4bzRLTzZ1YkcvRC8xU2IvL3VqTlF4?=
- =?utf-8?B?VDdhRlk5V292bVRCWkVqcWtQNGVucnJldzVTREhlbGxnajE2amhJSHg3bzR4?=
- =?utf-8?B?dU5CZnRJeUI4WVprUmdveUxqVzFXZUpOa21VdnRHRmV4OG81MDFmTTJ6ajZl?=
- =?utf-8?B?aHYrRXByaUM3SlhHaDlkRXlGd0F1WXEvVk9TNnpDWmZtOW1nWWN4RW1OOEhX?=
- =?utf-8?B?cUlvUlAyWUNFSnFpdTFqL1d4T3k0Z3NyanU1ODNyNjI5Mlpva3NhK1QyaFZn?=
- =?utf-8?Q?pYGvlA?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXSPRMB0053.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(7416014)(366016)(52116014)(19092799006)(38350700014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?NHJIaGVVdldHYmlhMGV4Y1h1QnR5YkNYWW9nR0N5ZDJLNW5qMlBQRGNzNngx?=
- =?utf-8?B?VUUrUlp0TVppQU1UTDVjVjI1VXlrWEtkTWhXU0FzUVdxUTdKNS9NZXNqNXE1?=
- =?utf-8?B?MU0wdTJISzMwb2NkTEJETkM2d1Zud2w0aThYVmRDUUpkZjhqYjF1K29EL0Nh?=
- =?utf-8?B?Q3dPV2pGS1Eydnpsdk14Y0xHYmhKSEcwVnNUM01SRDNucTUwcXhReWtGKzBJ?=
- =?utf-8?B?bHlLVkFwbkRBY0ptTWFRMVhRWFc4S2I3MGdBaU12N3I2eWVqU2xVSENNV3gr?=
- =?utf-8?B?N0JSWitxMTJIbDlEaEk4REdqRU1CUnZkOElFa004MFVJWXdieWl6a0FvZjN0?=
- =?utf-8?B?UFp6TGo2TUhFQWxHRmlBUnFwRDdhUHRxcTZuamZkYzI3NzdGaG9hRkRwQXVE?=
- =?utf-8?B?QktZQXJqWkJVVXhVQnRscVBqR0JyRklLU0xnNXliTTlBR1BqamduL09iK3JR?=
- =?utf-8?B?bFdVNlFWYTcxcnBZYXB1VFYxSXhmY2RPeHdlWG9PQVRoeGViZCt1Z3I5dElE?=
- =?utf-8?B?R0ExcG1wMXpyaUxsMFJrTjRtU29zWk5DenR5YXBBNlh1LzF0YzZjYk9TY0Jn?=
- =?utf-8?B?d1pjS29xdXpnbDI1bTFwNHNTOHpXYUFkOWIyTGkxNHlOU2lhU01sQVQ0Tng3?=
- =?utf-8?B?MHdpZ0sySVJvWnV3Y0c5dVJlL2orV1M1RmwyTG9mOUxEdHlmcjRwUm5MYzdQ?=
- =?utf-8?B?Z0N3RHEveVVQMjdQR2FEWmZKN2JTZTBHZS8yMy9qaE9aQkJmUVI3WFdtdkVl?=
- =?utf-8?B?S2lTZHNvYkpHNldMNHhWS1B2VHhocFIxUGZQTGlWbnIwTGZGTGNVTnN6NW9l?=
- =?utf-8?B?MDZ3cVk0bnFFR2pBZ0JxUUl2TW9UbjRFdEtmYlhROVBJUlZnZUIvVWxFbkNS?=
- =?utf-8?B?RHVyMVFmdWdHTTBtbC9hSDlEdERuNjJ5S0FCLzRjam9CU2lWM201cHlPeC9o?=
- =?utf-8?B?WVhqd0NWN0pCSTVNZ1EzUFNHSU1tdG51QU52SnlmbEhxV3AxUThGZUhpNjYv?=
- =?utf-8?B?NDNqaUVTYWVNZHVDREYwY292YkhPVG9Gd1N2bGdtSC9LeUg1cU5uakJPb0ta?=
- =?utf-8?B?YkhHQyt0NmFNWFpQN01IMHcvSUc5a0JGSTJUNUo0aU9pYzBnanIrQy9hSmNh?=
- =?utf-8?B?NS9UdGRaRzYwYk9VK2lZcTBqZVdWWUp1MDVITnhrMXR1SWtJNHdVaVNNdDEy?=
- =?utf-8?B?cXhwSThQSHBGdUdvMU04a0NsUi8zUGM1M0dUN0tyUjlCNFg2aEVNbnNqMnUx?=
- =?utf-8?B?ZlJNYVEwSVAyMFJxaHZZTHJiK0g4bDFQSklwN1ZpMGJ5M0tFTlNlNEYyUW93?=
- =?utf-8?B?OGJkR2JiakY4eUVveWR2K2RJNTh0WUExdms5ZXdMRDdrVG1HUXpYVkpKNHd5?=
- =?utf-8?B?WW9nV1hLZGRFSytwc3NPSHVrUDE5bHhMVkhlL2M5U292eDkxZDV5L1N6cmIz?=
- =?utf-8?B?QWZBTWFRVDhaYldmNG4vNElrWFV6djVCakVCbVY3YVIrRGdSTWtJbWY0RDYy?=
- =?utf-8?B?cHVMNHdUWVV5Q1Q0V2FKck1BRk80N2ZaemF3eFNEc1BLY0l5eGNKc0t5Y0tE?=
- =?utf-8?B?T1hMOFY2SHdpYXJreVBLcm4zZGZzbkY3STBpWVRBMjhhQnhuQ2FKS2wvWEd1?=
- =?utf-8?B?UEZ1VGZxU1ZoOVNGTlMvVVpLK1ZEMEViWC9UUFdzSXhHVUE3bGJxdkVBRmYw?=
- =?utf-8?B?TTFLVS91MnVPd3M5K1BLSTRoK0JSMGJiNDJ4OVdHODdQUHRKWC8vSG52Wm50?=
- =?utf-8?B?d2d2eVh2UkVMcTV1UFY4QkttR0lSQVBtSSs3SXk4czQ1QUNmWGRJZlZrOVdB?=
- =?utf-8?B?amlSUkt2dEY4RnhuMzVMRDJvYnVIS0thcDlLdXBnZytvRTdNSVVWREE0RGJF?=
- =?utf-8?B?b0dZbTlCKzVZWTRHbjBJNkpEdVJNdFZ4WDF0MjBKKzRaMGVNeXZlK0cyejZn?=
- =?utf-8?B?TS9vUFA0TWQ4YkIvQXRDVUNhM3VPT0x4MFAyemRHNS9TL24xTllHUVRIcE52?=
- =?utf-8?B?YU1iYTVBbHFsemZUNzdWSFZGRnJodXNRUlUyV0xKcWZaVWNXb20vb3RWOWZS?=
- =?utf-8?B?OTJweTJuNUlVaURyZEduUVIzVkxzNFFkWVExcDRhK1BmT3JOSTRmMGdsN2po?=
- =?utf-8?Q?vmDxcMbyNIkieOTvpO82QsdMS?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: dbfe068f-f00c-47da-7ee4-08de082dee4d
-X-MS-Exchange-CrossTenant-AuthSource: PAXSPRMB0053.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Oct 2025 18:50:49.9114
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: OqIf2gggw0aEpYdOR346vEv8E4GxXceU1da5tYtxP32rV3G6sm3PsmtWbdBWSbf0GOBs+OUu2kETDmiTdt36Vg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0PR04MB9659
+User-Agent: Mozilla Thunderbird
+Subject: Re: [RFC PATCH 0/3] Introduce iommu-map-masked for platform devices
+To: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
+        Robin Murphy <robin.murphy@arm.com>
+Cc: joro@8bytes.org, will@kernel.org, saravanak@google.com,
+        conor+dt@kernel.org, robh@kernel.org, mchehab@kernel.org,
+        bod@kernel.org, krzk+dt@kernel.org, abhinav.kumar@linux.dev,
+        vikash.garodia@oss.qualcomm.com, dikshita.agarwal@oss.qualcomm.com,
+        Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
+        bjorn.andersson@oss.qualcomm.com, linux-media@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+References: <20250928171718.436440-1-charan.kalla@oss.qualcomm.com>
+ <aec0f40a-8346-4194-8b18-1022fe3366bb@arm.com>
+ <0d0560cc-9757-4c7b-8de4-170148d99481@oss.qualcomm.com>
+ <ead7cf8b-fbc4-4242-a9da-b313dded1abc@arm.com>
+ <nzqte4glwtpjs5bhkxz43yhdufelxvqvzmg5tepudxwetimir3@bvlw5csjizsh>
+ <9d3eeb9f-b8ea-48e5-a1d9-0865f63ef991@arm.com>
+ <fhb4woejzh3r6v5dxvdiopnsbuwstucfuuzbiymxg4wrxrjc7t@dt3z3utq6lwd>
+Content-Language: en-US
+From: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
+In-Reply-To: <fhb4woejzh3r6v5dxvdiopnsbuwstucfuuzbiymxg4wrxrjc7t@dt3z3utq6lwd>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMDA4MDEyMSBTYWx0ZWRfXx5DvHnQzPJDt
+ oKcSfoBrIfFiT+K+Jn7Ezq1GLYsABGURnzrefhekBria7k2O16X2+9C8ZY/pG5byTmAMgOwSjvJ
+ IgawFuzYBlfcRxUnKhwxjEu3oU4S8uYp/0FHcyFfta7vo5Vaq/4ysEpbMak8A/C6s1mIYZnsOwV
+ o6W3XYPE0x6HWpl2Wyvzy2/Y2xuCwIyoIZ54eNyAJG8JH8A45h7LrE77EVKrgFQh56y0nyFeB6R
+ iVbKr27jFOtRqpXpWEjp/vEQk2N5G+iwYtYgpIQ09nWm1x9mjsNUBcMbEsVbsHxi5pq4TM20t55
+ jJpY0DC/mqq7BYHRgDCtd6t0UadqZB9Gt7EwfuR7FBMmPl9dNl2QYE8MFaGirggMYmCiz53Y816
+ A8+rB0U9hZpdH94ruzwSXkbFWW3s5Q==
+X-Proofpoint-GUID: HFdCzIh3rApVVsEuWGYVQexgzP_1xy2q
+X-Proofpoint-ORIG-GUID: HFdCzIh3rApVVsEuWGYVQexgzP_1xy2q
+X-Authority-Analysis: v=2.4 cv=SJxPlevH c=1 sm=1 tr=0 ts=68e96451 cx=c_pps
+ a=MTSHoo12Qbhz2p7MsH1ifg==:117 a=2UNsNDcC2suIOuNS33efzA==:17
+ a=IkcTkHD0fZMA:10 a=x6icFKpwvdMA:10 a=sTZWew2cqMYcmsX6pukA:9
+ a=QEXdDO2ut3YA:10 a=GvdueXVYPmCkWapjIL-Q:22
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1117,Hydra:6.1.9,FMLib:17.12.80.40
+ definitions=2025-10-10_05,2025-10-06_01,2025-03-28_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ malwarescore=0 suspectscore=0 impostorscore=0 spamscore=0 phishscore=0
+ clxscore=1015 bulkscore=0 lowpriorityscore=0 priorityscore=1501 adultscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.19.0-2510020000 definitions=main-2510080121
 
-Use auto cleanup for dma_map_single() to simple code.
 
-Signed-off-by: Frank Li <Frank.Li@nxp.com>
----
-Demostrate to how to use auto cleanup for dma map functiongs. It will
-simple more if need map multi buffers at a functions.
----
- drivers/i2c/busses/i2c-imx-lpi2c.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/i2c/busses/i2c-imx-lpi2c.c b/drivers/i2c/busses/i2c-imx-lpi2c.c
-index 03b5a7e8c361abe1d75fb4d31f9614bbc6387d93..2c89d441ab1b3e607b8a2b0a6589e5909fa39ef4 100644
---- a/drivers/i2c/busses/i2c-imx-lpi2c.c
-+++ b/drivers/i2c/busses/i2c-imx-lpi2c.c
-@@ -727,9 +727,11 @@ static int lpi2c_dma_rx_cmd_submit(struct lpi2c_imx_struct *lpi2c_imx)
- 	struct dma_chan *txchan = dma->chan_tx;
- 	dma_cookie_t cookie;
- 
--	dma->dma_tx_addr = dma_map_single(txchan->device->dev,
--					  dma->rx_cmd_buf, dma->rx_cmd_buf_len,
--					  DMA_TO_DEVICE);
-+	CLASS(dma_map_single, dma_addr)(txchan->device->dev,
-+					dma->rx_cmd_buf, dma->rx_cmd_buf_len,
-+					DMA_TO_DEVICE);
-+	dma->dma_tx_addr = dma_addr.ret;
-+
- 	if (dma_mapping_error(txchan->device->dev, dma->dma_tx_addr)) {
- 		dev_err(&lpi2c_imx->adapter.dev, "DMA map failed, use pio\n");
- 		return -EINVAL;
-@@ -749,18 +751,15 @@ static int lpi2c_dma_rx_cmd_submit(struct lpi2c_imx_struct *lpi2c_imx)
- 		goto submit_err_exit;
- 	}
- 
-+	retain_and_empty(dma_addr);
- 	dma_async_issue_pending(txchan);
- 
- 	return 0;
- 
- desc_prepare_err_exit:
--	dma_unmap_single(txchan->device->dev, dma->dma_tx_addr,
--			 dma->rx_cmd_buf_len, DMA_TO_DEVICE);
- 	return -EINVAL;
- 
- submit_err_exit:
--	dma_unmap_single(txchan->device->dev, dma->dma_tx_addr,
--			 dma->rx_cmd_buf_len, DMA_TO_DEVICE);
- 	dmaengine_desc_free(rx_cmd_desc);
- 	return -EINVAL;
+On 10/9/2025 11:55 PM, Dmitry Baryshkov wrote:
+>>> I really don't like the idea of extending the #iommu-cells. The ARM SMMU
+>>> has only one cell, which is correct even for our platforms. The fact
+>>> that we need to identify different IOMMU SIDs (and handle them in a
+>>> differnt ways) is internal to the video device (and several other
+>>> devices). There is nothing to be handled on the ARM SMMU side.
+>> Huh? So if you prefer not to change anything, are you suggesting this series
+>> doesn't need to exist at all? Now I'm thoroughly confused...
+> Hmm. We need changes, but I don't feel like adding the FUNCTION_ID to
+> #iommu-cells is the best idea.
+> 
+>> If you want to use SMR masks, then you absolutely need #iommu-cells = 2,
+>> because that is the SMMU binding for using SMR masks. It would definitely
+> I'm sorry. Yes, we have #iommu-cells = <2>.
+> 
+>> not be OK to have some magic property trying to smuggle
+>> IOMMU-driver-specific data contrary to what the IOMMU node itself says. As
+>> for iommu-map, I don't see what would be objectionable about improving the
+>> parsing to respect a real #iommu-cells value rather than hard-coding an
+>> assumption. Yes, we'd probably need to forbid entries with length > 1
+>> targeting IOMMUs with #iommu-cells > 1, since the notion of a linear
+> This will break e.g. PCIe on Qualcomm platforms:
+> 
+>                         iommu-map = <0x0   &apps_smmu 0x1400 0x1>,
+>                                     <0x100 &apps_smmu 0x1401 0x1>;
+> 
+> 
+> But this seems unlogical anyway wrt. apps_smmu having #iommu-cells =
+> <2>. It depends on ARM SMMU ignoring the second cell when it's not
+> present.
+> 
+>> relationship between the input ID and the output specifier falls apart when
+>> the specifier is complex, but that seems simple enough to implement and
+>> document (even if it's too fiddly to describe in the schema itself), and
+>> still certainly no worse than having another property that *is* just
+>> iommu-map with implicit length = 1.
+>>
+>> And if you want individual StreamIDs for logical functions to be attachable
+>> to distinct contexts then those functions absolutely must be visible to the
+>> IOMMU layer and the SMMU driver as independent devices with their own unique
+>> properties, which means either they come that way from the DT as of_platform
+>> devices in the first place, or you implement a full bus_type abstraction
+
+I don't want to dilute what Dmitry is saying here, but the below is what
+i can make out of Robin comments, please CMIW:
+
+iommu {
+	#iommu-cells = <2>;
+}
+
+video {
+   iommu = <iommu sid1 mask1>, <iommu sid2 mask2>;
+   #iommu-map-cells = 2; /* does it look weird to define here, even if
+it is SMMU property? */
+   iommu-map = <0 smmu sid3 mask3>,
+	       <0 smmu sid4 mask4>;
+};
+
+video driver calls of_dma_configure_id(, id) for each of the logical
+functionality, id is the index(which can be treated as SMMU identifier
+for logical function). Multiple smmu identifiers for a logical function
+can be represented as bitmap indices in 'id'...
+
+The sample code below, based on #iommu-map-cells defined in video{}
+node,  on top of this RFC patch.
+-------------------------------8888-------------------------------------
+diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+index 2363de8f2fd6..ed5568278e2a 100644
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -41,27 +41,24 @@ static int of_iommu_xlate(struct device *dev,
+ 	return ret;
  }
 
--- 
-2.34.1
+-static int of_iommu_map_id(const __be32 *map, u32 id,
++static int of_iommu_map_id(const __be32 *map, u32 idx, u32 id, u32
+cell_count,
+ 				struct device *dev, void *data)
+ {
+ 	struct device_node *phandle_node;
+ 	struct of_phandle_args *iommu_spec = data;
+-	u32 id_base = be32_to_cpup(map + 0);
+ 	u32 phandle = be32_to_cpup(map + 1);
+-	u32 master_id0 = be32_to_cpup(map + 2);
+-	u32 master_id1 = be32_to_cpup(map + 3);
+-	int err;
++	int err, i;
 
+ 	phandle_node = of_find_node_by_phandle(phandle);
+ 	if (!phandle_node)
+ 		return -ENODEV;
+
+-	if (id != id_base)
++	if (!test_bit(idx, (unsigned long*)&id))
+ 		return -EAGAIN;
+
+ 	iommu_spec->np = phandle_node;
+-	iommu_spec->args[0] = master_id0;
+-	iommu_spec->args[1] = master_id1;
++	for (i = 0; i <= cell_count; ++i)
++		iommu_spec->args[i] = be32_to_cpup(map + 2 + i);
+
+ 	err = of_iommu_xlate(dev, iommu_spec);
+ 	of_node_put(iommu_spec->np);
+@@ -76,7 +73,7 @@ static int of_iommu_configure_map_id_and_mask(struct
+device_node *master_np,
+ 	struct of_phandle_args iommu_spec = { .args_count = 2 };
+
+ 	return of_map_id_and_mask(master_np, *id,
+-		 "iommu-map-masked", NULL,
++		 "iommu-map", "iommu-map-mask",
+ 		 &iommu_spec.np, NULL,
+ 		 dev, (void *)&iommu_spec, of_iommu_map_id);
+ }
+@@ -86,10 +83,14 @@ static int of_iommu_configure_dev_id(struct
+device_node *master_np,
+ 				     const u32 *id)
+ {
+ 	struct of_phandle_args iommu_spec = { .args_count = 1 };
++	u32 cell_count;
+ 	int err;
+-	bool iommu_map_masked = !!of_find_property(master_np,
+"iommu-map-masked", NULL);
+
+-	if (iommu_map_masked)
++	err = of_property_read_u32(master_np, "iommu-map-cells", &cell_count);
++	if (err)
++		return err;
++
++	if (cell_count > 1)
+ 		return of_iommu_configure_map_id_and_mask(master_np, dev, id);
+
+ 	err = of_map_id(master_np, *id, "iommu-map",
+diff --git a/drivers/of/base.c b/drivers/of/base.c
+index bb11125e9624..c42d77beed52 100644
+--- a/drivers/of/base.c
++++ b/drivers/of/base.c
+@@ -2065,12 +2065,15 @@ int of_map_id_and_mask(const struct device_node
+*np, u32 id,
+ 	       const char *map_name, const char *map_mask_name,
+ 	       struct device_node **target, u32 *id_out,
+ 	       struct device *dev, void *data,
+-	       int (*fn)(const __be32 *map, u32 id, struct device *dev, void
+*data))
++	       int (*fn)(const __be32 *map, u32 idx, u32 id,
++		       u32 cell_count, struct device *dev, void *data))
+ {
++	const char *cells_prop_name __free(kfree);
+ 	u32 map_mask, masked_id;
++	u32 cell_count;
+ 	int map_len;
+-	int ret;
+ 	const __be32 *map = NULL;
++	int ret, list_count, idx;
+
+ 	if (!np || !map_name || (!target && !id_out))
+ 		return -EINVAL;
+@@ -2084,7 +2087,16 @@ int of_map_id_and_mask(const struct device_node
+*np, u32 id,
+ 		return 0;
+ 	}
+
+-	if (!map_len || map_len % (4 * sizeof(*map))) {
++	cells_prop_name = kasprintf(GFP_KERNEL, "#%s-cells", map_name);
++	ret = of_property_read_u32(np, cells_prop_name, &cell_count);
++	if (ret == -EINVAL) // property doesn't defined
++		cell_count = 1;
++	else
++		return ret;
++
++	/* syntax: [base iommu cell0 <cell1 ...celln> len] */
++	list_count = 2 + cell_count + 1;
++	if (!map_len || map_len % (list_count  * sizeof(*map))) {
+ 		pr_err("%pOF: Error: Bad %s length: %d\n", np,
+ 			map_name, map_len);
+ 		return -EINVAL;
+@@ -2101,12 +2113,12 @@ int of_map_id_and_mask(const struct device_node
+*np, u32 id,
+ 		of_property_read_u32(np, map_mask_name, &map_mask);
+
+ 	masked_id = map_mask & id;
+-	for ( ; map_len > 0; map_len -= 4 * sizeof(*map), map += 4) {
++	for (idx = 0; map_len > 0; map_len -= list_count  * sizeof(*map), map
++= list_count, idx++) {
+ 		struct device_node *phandle_node;
+ 		u32 id_base = be32_to_cpup(map + 0);
+ 		u32 phandle = be32_to_cpup(map + 1);
+ 		u32 out_base = be32_to_cpup(map + 2);
+-		u32 id_len = be32_to_cpup(map + 3);
++		u32 id_len = be32_to_cpup(map + cell_count - 1);
+
+ 		if (id_base & ~map_mask) {
+ 			pr_err("%pOF: Invalid %s translation - %s-mask (0x%x) ignores
+id-base (0x%x)\n",
+@@ -2115,8 +2127,14 @@ int of_map_id_and_mask(const struct device_node
+*np, u32 id,
+ 			return -EFAULT;
+ 		}
+
+-		if (fn) {
+-			ret = fn(map, id, dev, data);
++		/* for >1 cell count, avoid the linear translation. It is
++		 * expected that custom mapping managed in cb fn().
++		 */
++		if (cell_count > 2) {
++			if (!fn)
++				return -EINVAL;
++			/* list of required indices is mentioned in id */
++			ret = fn(map, idx, id, cell_count, dev, data);
+ 			if (ret != -EAGAIN)
+ 				break;
+ 			continue;
+diff --git a/include/linux/of.h b/include/linux/of.h
+index 7f3890ab26d5..b7f38a43ffc7 100644
+--- a/include/linux/of.h
++++ b/include/linux/of.h
+@@ -464,7 +464,8 @@ int of_map_id_and_mask(const struct device_node *np,
+u32 id,
+ 		const char *map_name, const char *map_mask_name,
+ 		struct device_node **target, u32 *id_out,
+ 		struct device *dev, void *data,
+-		int (*fn)(const __be32 *map, u32 id, struct device *dev, void *data));
++		int (*fn)(const __be32 *map, u32 id, u32 idx, u32 cell_count,
++			struct device *dev, void *data));
+
+ phys_addr_t of_dma_get_max_cpu_address(struct device_node *np);
+
+------------------------------------------------------------------------
+
+Thanks,
+Charan
