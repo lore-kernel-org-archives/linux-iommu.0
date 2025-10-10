@@ -1,354 +1,200 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from DM1PR04CU001.outbound.protection.outlook.com (mail-centralusazon11010044.outbound.protection.outlook.com [52.101.61.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A431130170F
-	for <iommu@lists.linux.dev>; Fri, 10 Oct 2025 19:53:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760126037; cv=none; b=J74ryEphfY1Ad0iCnSO8Zo634ZPYL/EvwcDOjR15wjd1o3aYutxGyL+gr2Adbr81I6XZ+M86SysGxboKj/Jh+ZviTDHFKHxrUjf+rvPOKn6R1M9H61vys79+XaAk5RmoY5TRKLF8bG1EhlK3bFCirIVDNyjD17uRNJodtiJwMIg=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760126037; c=relaxed/simple;
-	bh=5b/h/Rp35LUmB9SEWYk1Tv6h8r31mjMf3n8/iHHk8HY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=dOPTvSztEdGf1YuKfqJE0L0izwUuqPgJ0AU/jzRF9g0aHXlaFCzBMoxhqP0sA0fX+xQMq/8VBCiAPoO32uCriGUYC1AZZg5t3qEfhn2v+gl+DgImSQ1UyZJZVuXoXkYKXsxOa9jzt8JFdIPknVxUA2anJ1woRfAsHXALTjfO0gs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=Jddvg2QM; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A13923019A2
+	for <iommu@lists.linux.dev>; Fri, 10 Oct 2025 19:58:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.61.44
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1760126287; cv=fail; b=TSVLH2Bwo7kEX32rBqDoQyhGmI1qTFdVy40dqOnkpgFr+TOF06T6t5P6GE3bcQirVXBnxvSEfs53ve8Vk5EWFvdeL72enpfY9NN5+6T/J2BxeyCzH4Zd9gnUN2wc9hlsV/qyo6RywRl4uQ3Nix5OFkpPbpWexgZMdldzc8+Odo4=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1760126287; c=relaxed/simple;
+	bh=FOAVZwyPiSOEQy8ONjiEDUvg17cruY/++c7eKJ919I4=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=eQOJJKaEdcDNcAqSIiNXIGiB4ed0rivvXthZQng7ASUoOi0BS7mamlOqaG/2cTYKJ7ZREkwDxsj2Jb6tD3uwZ3+cgyAlAIUn2Ah0MlfRS9kojBQacY0r0ZsS8lTHGlxRHl7PwfT/m257OSUncf1cF3J94n2R4fzXZT4J6Fql2VU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=mE/4No5c; arc=fail smtp.client-ip=52.101.61.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="Jddvg2QM"
-Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 59AFjoQl024176
-	for <iommu@lists.linux.dev>; Fri, 10 Oct 2025 19:53:54 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	YFTq9SfFdhLMTERxwfmxv1dKsZDfHpEAvo+MIED1COs=; b=Jddvg2QMHQpfUDxi
-	lzLIoH2yNczGccUwZLzDOmQdCs4e5ew880EMdytwWrlDuYw7x2n49SMEvWwLCpKP
-	gEq8TjUELDtXwH7W9vc6LFS3vDF/LG9ajfQYEnbjOTPS0orCh0LjRTOhOOgYmOFY
-	qOp71Qlll4jv0Ed5y3mV3zkRtoQ9hFKgb2lx+p6CRRlQg3adQsFJbb+enJkQBUuS
-	IkdZZE7I69MLgagmvkVaMtazcH8iOW3VMVuRy1pHEg+daVB+FTbr2nTZK6aUCyBT
-	cpd/0V0XxxVNeXiMDkmK66JfOEQWizoQP6eIPrtMCX4AjPQbTALv+hzgWqCcIoRl
-	Y7p3LQ==
-Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com [209.85.214.198])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 49nv4kyjdt-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Fri, 10 Oct 2025 19:53:53 +0000 (GMT)
-Received: by mail-pl1-f198.google.com with SMTP id d9443c01a7336-28d1747f23bso51379915ad.3
-        for <iommu@lists.linux.dev>; Fri, 10 Oct 2025 12:53:53 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1760126033; x=1760730833;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=YFTq9SfFdhLMTERxwfmxv1dKsZDfHpEAvo+MIED1COs=;
-        b=DAyMoP2hgHP/hAqv6vdPFVsGCYsxMjjWFCOb0mlaa4ZYGI22VSRn9FkR5eyJV0ZkaQ
-         x0/cS+HPtnoQci/+q+AegDMB9HDcbJXEyCprEeR0XgqrAMDdXPstplp1ueNCUnwFy9N6
-         EBBX9YnsTK9UGFrIQByq0D+sm/LVvMs70ae1ogR7WW2fA6OhLl/gN7XK0wim3AA5rA7m
-         Y1Iw75YergZS9LwyN1J09IugkVKEa9qEib9AqxBTfyh5RgomNrvYxlzbAnrVJc0mQbyJ
-         hTC5Vbav57SterIBUymy8FDuVeVDx7N0w6ZvqVNxYQvPh6yietj9JJAeRYDQAPTiyo1d
-         pA+A==
-X-Forwarded-Encrypted: i=1; AJvYcCUQmGMcaLJpeQSYGfXBd2f7Mi8tShxe87vqC2VrJTyYi3OySCvj3VYSUcfXoVDwQhr1nYrltA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxY1LfTx27zbHrZymidFogZrDokilCVlbc78i/vz2JjHfeYvJtj
-	8ELW0HwenKYROS2rH9bArCHUuuJFZpZGVEUNUB/CaACSgFZzls3rkPkXwrE0TdlRoDuoG1UE7ez
-	8Vex66PVVVoOGkGDILJ4CVtz+Obq1vuWgsQjVjsLlAh6drRVRbUkNqRQg4A==
-X-Gm-Gg: ASbGncuNUXPgSNLrqLtSKp9a3Hdc31xP5R3PrYeh2OeXegNHr9hOHFScRK1bNmfGnll
-	/n0SPrhVVATL7zdmjDZNcoZAsKwkvI9cInHGtVt08krWa91dROkEeSEjIjbsWmeWYtM7xbVKOrR
-	B6UnzvITBnGj/ZkufaEGYvgSTkdbSS18uYNsXhf+rkISI9mSTZdU3zTZXHR0xfG3GFD1cpevnL+
-	4hHT4or2H9tRJUq6TWeEt+K/ytDuUYU2onvQnyN/u/63n895fPoPzdxdGbaTWcgKpX1Kv0YtxKs
-	qOO/rIMZhHP9is/MMQgd6oG12JMcZKi2o6ycizY=
-X-Received: by 2002:a17:902:f650:b0:276:305b:14a7 with SMTP id d9443c01a7336-290273ef0ebmr165720235ad.33.1760126032655;
-        Fri, 10 Oct 2025 12:53:52 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IE7+3w3vBsY6LYeccU+mN4KwyNGzOtDggHxqGdw7Hj3TVrWLuesSk97dfDRKHO97M+QBWfHTA==
-X-Received: by 2002:a17:902:f650:b0:276:305b:14a7 with SMTP id d9443c01a7336-290273ef0ebmr165719765ad.33.1760126031947;
-        Fri, 10 Oct 2025 12:53:51 -0700 (PDT)
-Received: from [192.168.1.3] ([122.181.197.191])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-29034f4ae6csm64827695ad.108.2025.10.10.12.53.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 10 Oct 2025 12:53:51 -0700 (PDT)
-Message-ID: <c863f6a7-b117-4444-ae6d-1d525b572be2@oss.qualcomm.com>
-Date: Sat, 11 Oct 2025 01:23:43 +0530
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="mE/4No5c"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=fm6QwENI+5rTlIQKq8FqKwxZva1meFj9fEgo1MZ8VWwPsK0IXI2erDqTC4EW1JwaDFVuTmK7bqnvIXt7lr1xN+KDy5eIgQn+aUWfK+Xe9+aOeNHO/zDs35gTO9vAMwBQA6aukSVkp3rtdxoKJez/d9WywIL1NEWZM+5SDf1Sa/TdJElcSo78FAfJScB03bL4Ka0qM1ik/cCrhAE3l4ODWZhlZnkGrF98QTRWnFgCQXtMxx2jyfe7HZWCW/g8SHjkhxck3GnjnhtS3uATp83z305Ghhk5cbovT7OLwMTfnT0OmVKw0X8vvdRc0N02ikQRLmH0E85LMtMoitgHc/xzkg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=QmalEKPCvda2xUJLYOxMBZ03AAx5LhcRWBLovA6Lnb4=;
+ b=rb2NBfMDQ682tyHUwmswfNVITrE4uF6KdjYsKBoYxiCA5dvaW/yHp/SLilzCEU6uk884z2BmIMoV+vhSugdrGN3JWrO+ik8+AA/ouXZhQFNnaMaRTO2sN9OVvWuGmP7wN3m1h1vWSB8qXoqM6TdK7EhWpW2PXc9PHXifjVmAj1hoiwhZI4vc/ASklv1I64aFDEWyksc7jJ7YE4OoJLWpOLTsysp9JvWCCn8ABAF4pzCyCyGbMmSCmHfYYMW6Az4Cx1sq1Ftt3/8W/HSHOw1yltrFazQLhrV9dpHs2BaK4a+zCKjoduSPQ0VV8wP76ToT9uKErPq783lxvA0ra8DXoQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=QmalEKPCvda2xUJLYOxMBZ03AAx5LhcRWBLovA6Lnb4=;
+ b=mE/4No5cfa1njS5Y16i1ExcTNO6WOMYdEdbpZRKq5kn3L+79PiwEkWHzh2nnBBEbwAdVZ9xOkpltyT3Bie1NOWOiu0CCZO6O3evFrkJ0VTj+4yMNqcU0wOmfvGIo1rjTW/dZ5/cLPyQzLGF6VRVHw8AKtJpk4pOX5u9POG6f1Y0=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DM8PR12MB5445.namprd12.prod.outlook.com (2603:10b6:8:24::7) by
+ IA1PR12MB7517.namprd12.prod.outlook.com (2603:10b6:208:41a::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9203.10; Fri, 10 Oct
+ 2025 19:58:02 +0000
+Received: from DM8PR12MB5445.namprd12.prod.outlook.com
+ ([fe80::a544:caf8:b505:5db6]) by DM8PR12MB5445.namprd12.prod.outlook.com
+ ([fe80::a544:caf8:b505:5db6%6]) with mapi id 15.20.9203.009; Fri, 10 Oct 2025
+ 19:58:01 +0000
+Message-ID: <12e27a8a-3fea-4d33-b0a5-4ef0b38a28b7@amd.com>
+Date: Fri, 10 Oct 2025 14:57:59 -0500
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu/amd: Enable PCIe ACS only if AMD IOMMU is on
+Content-Language: en-US
+To: Jinhui Guo <guojinhui.liam@bytedance.com>, joro@8bytes.org
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20250928075257.1542-1-guojinhui.liam@bytedance.com>
+From: "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>
+In-Reply-To: <20250928075257.1542-1-guojinhui.liam@bytedance.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SA1P222CA0059.NAMP222.PROD.OUTLOOK.COM
+ (2603:10b6:806:2c1::11) To DM8PR12MB5445.namprd12.prod.outlook.com
+ (2603:10b6:8:24::7)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC PATCH 0/3] Introduce iommu-map-masked for platform devices
-To: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
-        Robin Murphy <robin.murphy@arm.com>
-Cc: joro@8bytes.org, will@kernel.org, saravanak@google.com,
-        conor+dt@kernel.org, robh@kernel.org, mchehab@kernel.org,
-        bod@kernel.org, krzk+dt@kernel.org, abhinav.kumar@linux.dev,
-        vikash.garodia@oss.qualcomm.com, dikshita.agarwal@oss.qualcomm.com,
-        Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
-        bjorn.andersson@oss.qualcomm.com, linux-media@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-References: <20250928171718.436440-1-charan.kalla@oss.qualcomm.com>
- <aec0f40a-8346-4194-8b18-1022fe3366bb@arm.com>
- <0d0560cc-9757-4c7b-8de4-170148d99481@oss.qualcomm.com>
- <ead7cf8b-fbc4-4242-a9da-b313dded1abc@arm.com>
- <nzqte4glwtpjs5bhkxz43yhdufelxvqvzmg5tepudxwetimir3@bvlw5csjizsh>
- <9d3eeb9f-b8ea-48e5-a1d9-0865f63ef991@arm.com>
- <fhb4woejzh3r6v5dxvdiopnsbuwstucfuuzbiymxg4wrxrjc7t@dt3z3utq6lwd>
-Content-Language: en-US
-From: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
-In-Reply-To: <fhb4woejzh3r6v5dxvdiopnsbuwstucfuuzbiymxg4wrxrjc7t@dt3z3utq6lwd>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMDA4MDEyMSBTYWx0ZWRfXx5DvHnQzPJDt
- oKcSfoBrIfFiT+K+Jn7Ezq1GLYsABGURnzrefhekBria7k2O16X2+9C8ZY/pG5byTmAMgOwSjvJ
- IgawFuzYBlfcRxUnKhwxjEu3oU4S8uYp/0FHcyFfta7vo5Vaq/4ysEpbMak8A/C6s1mIYZnsOwV
- o6W3XYPE0x6HWpl2Wyvzy2/Y2xuCwIyoIZ54eNyAJG8JH8A45h7LrE77EVKrgFQh56y0nyFeB6R
- iVbKr27jFOtRqpXpWEjp/vEQk2N5G+iwYtYgpIQ09nWm1x9mjsNUBcMbEsVbsHxi5pq4TM20t55
- jJpY0DC/mqq7BYHRgDCtd6t0UadqZB9Gt7EwfuR7FBMmPl9dNl2QYE8MFaGirggMYmCiz53Y816
- A8+rB0U9hZpdH94ruzwSXkbFWW3s5Q==
-X-Proofpoint-GUID: HFdCzIh3rApVVsEuWGYVQexgzP_1xy2q
-X-Proofpoint-ORIG-GUID: HFdCzIh3rApVVsEuWGYVQexgzP_1xy2q
-X-Authority-Analysis: v=2.4 cv=SJxPlevH c=1 sm=1 tr=0 ts=68e96451 cx=c_pps
- a=MTSHoo12Qbhz2p7MsH1ifg==:117 a=2UNsNDcC2suIOuNS33efzA==:17
- a=IkcTkHD0fZMA:10 a=x6icFKpwvdMA:10 a=sTZWew2cqMYcmsX6pukA:9
- a=QEXdDO2ut3YA:10 a=GvdueXVYPmCkWapjIL-Q:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1117,Hydra:6.1.9,FMLib:17.12.80.40
- definitions=2025-10-10_05,2025-10-06_01,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- malwarescore=0 suspectscore=0 impostorscore=0 spamscore=0 phishscore=0
- clxscore=1015 bulkscore=0 lowpriorityscore=0 priorityscore=1501 adultscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.19.0-2510020000 definitions=main-2510080121
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM8PR12MB5445:EE_|IA1PR12MB7517:EE_
+X-MS-Office365-Filtering-Correlation-Id: fe2657a9-c8fd-42b9-1b08-08de0837518d
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014|7053199007;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?QVlkUmJMT3F1WEJLNGNMN1pIOVlMWmgzWjRlVlB1b0huZWRtQjh3N3RJVXQ2?=
+ =?utf-8?B?WjJibU1IbE9LL1lOQUdIRTQ5NVdNb0VaN2JoSW45d0NMLzN3U1pIUFFMbmMr?=
+ =?utf-8?B?Ynh2V0FJbGQ1ZThBKysxSWw5SlUvTWl2dGlTL21VcXJDR1dPZVJhWmd4Q2tE?=
+ =?utf-8?B?bkd5dEt0RFpzc2J6OTd0OGQwbE5FVldIV1l2cCt0THpVd3l1R2J4R0RHRHdZ?=
+ =?utf-8?B?R1FtNnViN0V0U3FJeERZaHFJeGt0aHc1Vi9rRmloajYyUllreGJkQVFQWFl4?=
+ =?utf-8?B?NGdCSkVsZmp0L0VCSzVwNzMraXBISVRBVGNnV1lzRUdiSzNqVWlNQzFybVZu?=
+ =?utf-8?B?bjM4OWxlYk80MmRpc0t2dDVOUjU1SCtlMEJycEhOSTdlNkgxaUZkVTJ3M2d3?=
+ =?utf-8?B?c1Izd2RjMjF6VEY4bmhCNFZRR09keFU4cjBPNFVNeUdYdzgxaHBUVlNsd0Z1?=
+ =?utf-8?B?Rko2RllXZUdrVXdaR0xaYmlzTVlkSzFldUhqL2kwTjgwSXVsbGpWOVdSSDVK?=
+ =?utf-8?B?T1lrZ2l3WW5NYkNGMUVSN0hrdzFVc3J4RXN3dVFWT0FFbFFYQm1GQ1ZXdENi?=
+ =?utf-8?B?a0Y3cTkzbzRyb0R0Y3VpK0t3dVEwQThOdWFUcnJLdG4zclhKdno5VVVKSENU?=
+ =?utf-8?B?bkhCSks3QnUyb3IyMUt1OS9ValpDSStnSEpGeUpxNTFMZ1hqTjRLSWNQNXU1?=
+ =?utf-8?B?SVYxT1FNODZkSEVxUy8zVEpKNjZNd3lTbk5LVmdmdE5DcUtjd1gxOHJEUnVi?=
+ =?utf-8?B?QWFyVGM5K0ZKSmpEVWwwRGxnQmFZRkxpOXhkbm80NkpJeXZETjQrVUVxSmlB?=
+ =?utf-8?B?Q0R1eXZtRVdhbjdKN0NrRzdhaDkyNmNtaC9BVW8xb1V0ZjBJdjZTYWpDcHBR?=
+ =?utf-8?B?RnV0OWM1VDRVS2NydzdhZUltSU5vVU16SzV6dHdGZTNpMVFibFhxMXhoY0RY?=
+ =?utf-8?B?bklrT0JXVE5NKzRMT21JRXdjNm1kaUd5V0loeG5DYXFWbDE5VDJ6NVhET3Ju?=
+ =?utf-8?B?L3Z5S1A0TnRKaXlyaC8xeVkyOGlwNm14bHVqK3RUeFZSYlc1Qk40L0p0QnBq?=
+ =?utf-8?B?aEpjQ3JVQ29YREozZC9sTGlDbGkxUkwrenZLTEkzUDVGcG00VnVYcVZ3aDl6?=
+ =?utf-8?B?RFczMEZ5RStnRUg0TDI2eGcyd3NVcXppSjU4MDJCdGYyZzFKdUxudWY3YWJB?=
+ =?utf-8?B?YUg0YitCa0dPaTBBVVA1K2NQZFlReWF5UXNMTFRwTVBwTkhHc2Exb2REam1V?=
+ =?utf-8?B?QUJoVjF2RUdpNFJLRkNzZUNOOXM2QnpyQzVZemdkcWhsV2l3Zk5qcmRXUmFs?=
+ =?utf-8?B?VzZnV082aGZyQ1FuYjNkclFsSDVFUkZCbHlySVM2MzFIMFJ2MTVNNExsVDZU?=
+ =?utf-8?B?OURuMjliU1hsejJLU0VmMXZBY09abExZYXIrcHB5Z0IvZmgxL0k0OW54bDRZ?=
+ =?utf-8?B?bHlmdGtVT2wxMy9hcmNLWWZ3eDM5Q1Y2emtlY3o3Vms1VHRWemV0azFaNm9h?=
+ =?utf-8?B?M2JHRmZ5VUg0SzVFc01wcnBReTduZGE1WEQwcCthTEt6cFZMd2dpN0EyL2NI?=
+ =?utf-8?B?eWhCM0lKWFRQWVhTdWpJaGNXMmQ3TlNjVndubHpTK2FwSGVxSjNFVjVTWXpW?=
+ =?utf-8?B?L01qVUYyT29OZW5pMDRTQUR2L3A4aEhVRmpVMkxpVDdGRS9uSVdVcGZlNVkz?=
+ =?utf-8?B?S0RoVENkcTRna1dPUHRnaUp6MG54TmhibXc1bmFmdERqTUZJbDRabEx5ZUw3?=
+ =?utf-8?B?QmtzVHVmdjJqRzQ3WTZ3eUcwN0FJZXI1YnV6eVhtUGFVOFRaRmNXZWt1RnlY?=
+ =?utf-8?B?TlpKSUlndGlTOEVWV2Q5Z3dXcTg0dFpRRHd6MUtkYmVtRFpmaUpUUmJ6eWd6?=
+ =?utf-8?B?WWFWNGRnM1U4dGtHd2x0WkRWczBCVzlTOGZrVUg4cDhmaUJDalpSeHk4ZGI1?=
+ =?utf-8?Q?Y93UZZZb1qDRILXAdX2BHV/wYh13hXwG?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR12MB5445.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(7053199007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?WkhFVE1udyt3Y1R4TkJoZDdIVlNwUUpvMTJTRzB6MTYrNURXc3Z1WWJuRjNF?=
+ =?utf-8?B?QWt0dkFoRFczYXFNT0h2ZVVDSWRJdEpxN3kzYUVaN1E3em1BL2w1SnUwSWRm?=
+ =?utf-8?B?MFpKK2dnNktIUy90Mjc5TUFhRktEWXg5YWgvYkpPWTBIYUMyY2N3WHc1MDhY?=
+ =?utf-8?B?YVlxZ3VnNm42czJVdGdEUVlMODJmTkEweU1TaHBkNXZJd093ZmxWL0FsYXNw?=
+ =?utf-8?B?ek9LUUVHanJRbVJWVFRSSFI0bG5zbFBlaGRmQXEybXJxQzYxTjJSWW5LcWtO?=
+ =?utf-8?B?SmtveC9DRU51ZkJCTG1oNThlQStIT2JGM0JuRHBQazJnZUkwRTdSY0hVS3hl?=
+ =?utf-8?B?VWFXUFhiMVZWL2ZIODd5UXpiQmZYR2NsaEtTNThORzQ5Um00cU8wbkswbTJx?=
+ =?utf-8?B?NmxPb21RcUx3VE1MajJEWmR1YnlXRjh5dllHSUZzMXlPRnNzTEVwQU5naC80?=
+ =?utf-8?B?VDZqWXp2MnFXdXA1d0tqK2ZIMFFIa0NBcVRnWG5NNVcxVG1WRU1vZitDaHFh?=
+ =?utf-8?B?Vk8yWmJRbmNvM3o0RkRmb0lOcVRsT2Y1VHBhaE8vZ2I1UFM3Q1N5cm9vazBp?=
+ =?utf-8?B?cGlEMEVJcWJCSXlSV2hLWEZ6OGtnNGNWY0szMU5WY1JXdkNaRGFjZFpSYnhk?=
+ =?utf-8?B?NHhBWUxvNk9ZU0FxbkZsN2lEZldMdTRmWjRIM0VKaXo5UnJOck1LWmdaZ2Nw?=
+ =?utf-8?B?ejVhelh0QmdoMjhmWVR4ZnlqMVYwNnRITnNiTXdQV3krTmxkSmc5VUxJR21X?=
+ =?utf-8?B?MWp0YktwWmNtdWw3M3ppTmpVY1Q5dnV0TDIwdlBqUWE0OXNOU1RkdU11b2FT?=
+ =?utf-8?B?VC9HM1R3ZEoycHhyU2VSbmVnbDkySks0R2tEdlNHankvcjF2NWZYTFdlQXdi?=
+ =?utf-8?B?RE1MMFZvMmNneTlzSFZXaGEvNUc2V2NERzRMcFJQbFViQjJ3QkI4a3BhcUtF?=
+ =?utf-8?B?bWFsQytma3kxOW1GMk5jTWc2SXd1VklvMU9zbzNoMk0zWlBaM2xUYVlFaStE?=
+ =?utf-8?B?emJxdEMzUGRrdzFqNmNnVWVqdnF1QVB1eG1NOVJyL2hSQmxkVkxQWEZFcUls?=
+ =?utf-8?B?bTl2K2VMZ3dQS2dVdWJvY2N6eGJFUklJQjlBdTV6QUNPOUtoRUx6NzFudUpr?=
+ =?utf-8?B?bGRkN1FlQWxsY1BYYjdad0IwYUJMd2VPL00wZmprall3elRXMHhQV1JaRmVx?=
+ =?utf-8?B?NExZYzB4ajRpMjBEZTQwZFZRYkdnUjl6WjhReU4rOTVMWis4dVNGekRlem1q?=
+ =?utf-8?B?a2UrUXB3NzM5WGNRV2JOLzhVUzR2WHc3TU9KaUV2dng0NU9ucjA4SithTzN2?=
+ =?utf-8?B?Wng4RC8zR1RmUWcrTXlYU3lmaGhGZWdNNnFUMmJPMFU3NGI4dUhRMnFyQm9r?=
+ =?utf-8?B?RjdHbWx0cmZhU3VMZXFoYkJCNTAxK0pUZnJ5ZE5hNmhWUmM3MkhtcGgraW04?=
+ =?utf-8?B?VEN2c2lFODFBM0hYQjBtejhhZDRteUZ1cXQwTkE5UUkzcWc1WjJEYTJWVTRa?=
+ =?utf-8?B?SlpxbWluenMxQ1ptVDdQbytlbjA4d3RKeW9TNElBaS9uTXJ0NnRDK1MvMkFE?=
+ =?utf-8?B?dHllZldZRmZESkIvaUFWV2N3aFI4Vkd0OE44dHM5dWV1TEVGUEVqZDh2Ulp0?=
+ =?utf-8?B?SFhBbElqUDBhbVJkbXVDanZJTmE5MVFGZ1NIWG9FaWVyamlLeDNsTmoyV3Yv?=
+ =?utf-8?B?dkIyMFdnaDhXM3RqT01ER0FyWVZWSnRvd0I3ZDhiZUFpdGE5L0pXNlc1aGIv?=
+ =?utf-8?B?MTlMNTE1S2VzNEVLUFRCUXdLR1NsSXV6RXZ5Rk9xTm91Y2tLZmwzUUtIeWJZ?=
+ =?utf-8?B?WExmZGc4QWk5QU1KdUdYSDgwMy9KcHpTZHRYQU1KRWlNTFFLSU5lN2YzVDdE?=
+ =?utf-8?B?NElEdTVhRmkwdmdRdG5zQktWWitRWGhNR2JGM08wM0NJNDdIQkpVL3dDdmRB?=
+ =?utf-8?B?S1BhTlVRQkZSNWtTdmZ0MGVyNEEwNHRTeWRqK3JTTlFrM3Ztb2FJdkZuNU5y?=
+ =?utf-8?B?TXNPWVJRblRwSEFTbzlxYlhzeXZpckQ3YVRNcW05WmFlNzlVL0tkb3FvUzJt?=
+ =?utf-8?B?MmI1WkNzSTNnMzV6cy9jaTRXK2I1MGxLZTNHSURxV0kvZGUxOFA1d3ZMZmNR?=
+ =?utf-8?Q?OfoC7iryMPmoHbVIuScnQhoBi?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: fe2657a9-c8fd-42b9-1b08-08de0837518d
+X-MS-Exchange-CrossTenant-AuthSource: DM8PR12MB5445.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Oct 2025 19:58:01.9225
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: GJu33G2i9hCBqq6qJ8Srj3XlbDyaU8LwOIdtL26X6X3kacbZ3+rSf+0SkoI4t2tol02ZdhWWtSNlcvOjEm7tAg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB7517
 
 
 
-On 10/9/2025 11:55 PM, Dmitry Baryshkov wrote:
->>> I really don't like the idea of extending the #iommu-cells. The ARM SMMU
->>> has only one cell, which is correct even for our platforms. The fact
->>> that we need to identify different IOMMU SIDs (and handle them in a
->>> differnt ways) is internal to the video device (and several other
->>> devices). There is nothing to be handled on the ARM SMMU side.
->> Huh? So if you prefer not to change anything, are you suggesting this series
->> doesn't need to exist at all? Now I'm thoroughly confused...
-> Hmm. We need changes, but I don't feel like adding the FUNCTION_ID to
-> #iommu-cells is the best idea.
+On 9/28/2025 2:52 AM, Jinhui Guo wrote:
+> To preserve PCIe performance, ACS is enabled only when
+> AMD IOMMU is not disabled.
 > 
->> If you want to use SMR masks, then you absolutely need #iommu-cells = 2,
->> because that is the SMMU binding for using SMR masks. It would definitely
-> I'm sorry. Yes, we have #iommu-cells = <2>.
+> Signed-off-by: Jinhui Guo <guojinhui.liam@bytedance.com>
+> ---
+>   drivers/iommu/amd/init.c | 6 ++++--
+>   1 file changed, 4 insertions(+), 2 deletions(-)
 > 
->> not be OK to have some magic property trying to smuggle
->> IOMMU-driver-specific data contrary to what the IOMMU node itself says. As
->> for iommu-map, I don't see what would be objectionable about improving the
->> parsing to respect a real #iommu-cells value rather than hard-coding an
->> assumption. Yes, we'd probably need to forbid entries with length > 1
->> targeting IOMMUs with #iommu-cells > 1, since the notion of a linear
-> This will break e.g. PCIe on Qualcomm platforms:
-> 
->                         iommu-map = <0x0   &apps_smmu 0x1400 0x1>,
->                                     <0x100 &apps_smmu 0x1401 0x1>;
-> 
-> 
-> But this seems unlogical anyway wrt. apps_smmu having #iommu-cells =
-> <2>. It depends on ARM SMMU ignoring the second cell when it's not
-> present.
-> 
->> relationship between the input ID and the output specifier falls apart when
->> the specifier is complex, but that seems simple enough to implement and
->> document (even if it's too fiddly to describe in the schema itself), and
->> still certainly no worse than having another property that *is* just
->> iommu-map with implicit length = 1.
->>
->> And if you want individual StreamIDs for logical functions to be attachable
->> to distinct contexts then those functions absolutely must be visible to the
->> IOMMU layer and the SMMU driver as independent devices with their own unique
->> properties, which means either they come that way from the DT as of_platform
->> devices in the first place, or you implement a full bus_type abstraction
+> diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+> index ba9e582a8bbe..6e9eab365123 100644
+> --- a/drivers/iommu/amd/init.c
+> +++ b/drivers/iommu/amd/init.c
+> @@ -3212,8 +3212,10 @@ static bool __init detect_ivrs(void)
+>   	}
+>   
+>   out:
+> -	/* Make sure ACS will be enabled during PCI probe */
+> -	pci_request_acs();
+> +	if (!amd_iommu_disabled || amd_iommu_force_enable) {
 
-I don't want to dilute what Dmitry is saying here, but the below is what
-i can make out of Robin comments, please CMIW:
+You should not need to check the amd_iommu_force_enable since it is used 
+only to skip a workaround logic within the same function. You can simply 
+just do
 
-iommu {
-	#iommu-cells = <2>;
-}
+	if (!amd_iommu_disabled)
+		/* Make sure ACS will be enabled during PCI probe */
+		pci_request_acs();
 
-video {
-   iommu = <iommu sid1 mask1>, <iommu sid2 mask2>;
-   #iommu-map-cells = 2; /* does it look weird to define here, even if
-it is SMMU property? */
-   iommu-map = <0 smmu sid3 mask3>,
-	       <0 smmu sid4 mask4>;
-};
+With that
 
-video driver calls of_dma_configure_id(, id) for each of the logical
-functionality, id is the index(which can be treated as SMMU identifier
-for logical function). Multiple smmu identifiers for a logical function
-can be represented as bitmap indices in 'id'...
-
-The sample code below, based on #iommu-map-cells defined in video{}
-node,  on top of this RFC patch.
--------------------------------8888-------------------------------------
-diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-index 2363de8f2fd6..ed5568278e2a 100644
---- a/drivers/iommu/of_iommu.c
-+++ b/drivers/iommu/of_iommu.c
-@@ -41,27 +41,24 @@ static int of_iommu_xlate(struct device *dev,
- 	return ret;
- }
-
--static int of_iommu_map_id(const __be32 *map, u32 id,
-+static int of_iommu_map_id(const __be32 *map, u32 idx, u32 id, u32
-cell_count,
- 				struct device *dev, void *data)
- {
- 	struct device_node *phandle_node;
- 	struct of_phandle_args *iommu_spec = data;
--	u32 id_base = be32_to_cpup(map + 0);
- 	u32 phandle = be32_to_cpup(map + 1);
--	u32 master_id0 = be32_to_cpup(map + 2);
--	u32 master_id1 = be32_to_cpup(map + 3);
--	int err;
-+	int err, i;
-
- 	phandle_node = of_find_node_by_phandle(phandle);
- 	if (!phandle_node)
- 		return -ENODEV;
-
--	if (id != id_base)
-+	if (!test_bit(idx, (unsigned long*)&id))
- 		return -EAGAIN;
-
- 	iommu_spec->np = phandle_node;
--	iommu_spec->args[0] = master_id0;
--	iommu_spec->args[1] = master_id1;
-+	for (i = 0; i <= cell_count; ++i)
-+		iommu_spec->args[i] = be32_to_cpup(map + 2 + i);
-
- 	err = of_iommu_xlate(dev, iommu_spec);
- 	of_node_put(iommu_spec->np);
-@@ -76,7 +73,7 @@ static int of_iommu_configure_map_id_and_mask(struct
-device_node *master_np,
- 	struct of_phandle_args iommu_spec = { .args_count = 2 };
-
- 	return of_map_id_and_mask(master_np, *id,
--		 "iommu-map-masked", NULL,
-+		 "iommu-map", "iommu-map-mask",
- 		 &iommu_spec.np, NULL,
- 		 dev, (void *)&iommu_spec, of_iommu_map_id);
- }
-@@ -86,10 +83,14 @@ static int of_iommu_configure_dev_id(struct
-device_node *master_np,
- 				     const u32 *id)
- {
- 	struct of_phandle_args iommu_spec = { .args_count = 1 };
-+	u32 cell_count;
- 	int err;
--	bool iommu_map_masked = !!of_find_property(master_np,
-"iommu-map-masked", NULL);
-
--	if (iommu_map_masked)
-+	err = of_property_read_u32(master_np, "iommu-map-cells", &cell_count);
-+	if (err)
-+		return err;
-+
-+	if (cell_count > 1)
- 		return of_iommu_configure_map_id_and_mask(master_np, dev, id);
-
- 	err = of_map_id(master_np, *id, "iommu-map",
-diff --git a/drivers/of/base.c b/drivers/of/base.c
-index bb11125e9624..c42d77beed52 100644
---- a/drivers/of/base.c
-+++ b/drivers/of/base.c
-@@ -2065,12 +2065,15 @@ int of_map_id_and_mask(const struct device_node
-*np, u32 id,
- 	       const char *map_name, const char *map_mask_name,
- 	       struct device_node **target, u32 *id_out,
- 	       struct device *dev, void *data,
--	       int (*fn)(const __be32 *map, u32 id, struct device *dev, void
-*data))
-+	       int (*fn)(const __be32 *map, u32 idx, u32 id,
-+		       u32 cell_count, struct device *dev, void *data))
- {
-+	const char *cells_prop_name __free(kfree);
- 	u32 map_mask, masked_id;
-+	u32 cell_count;
- 	int map_len;
--	int ret;
- 	const __be32 *map = NULL;
-+	int ret, list_count, idx;
-
- 	if (!np || !map_name || (!target && !id_out))
- 		return -EINVAL;
-@@ -2084,7 +2087,16 @@ int of_map_id_and_mask(const struct device_node
-*np, u32 id,
- 		return 0;
- 	}
-
--	if (!map_len || map_len % (4 * sizeof(*map))) {
-+	cells_prop_name = kasprintf(GFP_KERNEL, "#%s-cells", map_name);
-+	ret = of_property_read_u32(np, cells_prop_name, &cell_count);
-+	if (ret == -EINVAL) // property doesn't defined
-+		cell_count = 1;
-+	else
-+		return ret;
-+
-+	/* syntax: [base iommu cell0 <cell1 ...celln> len] */
-+	list_count = 2 + cell_count + 1;
-+	if (!map_len || map_len % (list_count  * sizeof(*map))) {
- 		pr_err("%pOF: Error: Bad %s length: %d\n", np,
- 			map_name, map_len);
- 		return -EINVAL;
-@@ -2101,12 +2113,12 @@ int of_map_id_and_mask(const struct device_node
-*np, u32 id,
- 		of_property_read_u32(np, map_mask_name, &map_mask);
-
- 	masked_id = map_mask & id;
--	for ( ; map_len > 0; map_len -= 4 * sizeof(*map), map += 4) {
-+	for (idx = 0; map_len > 0; map_len -= list_count  * sizeof(*map), map
-+= list_count, idx++) {
- 		struct device_node *phandle_node;
- 		u32 id_base = be32_to_cpup(map + 0);
- 		u32 phandle = be32_to_cpup(map + 1);
- 		u32 out_base = be32_to_cpup(map + 2);
--		u32 id_len = be32_to_cpup(map + 3);
-+		u32 id_len = be32_to_cpup(map + cell_count - 1);
-
- 		if (id_base & ~map_mask) {
- 			pr_err("%pOF: Invalid %s translation - %s-mask (0x%x) ignores
-id-base (0x%x)\n",
-@@ -2115,8 +2127,14 @@ int of_map_id_and_mask(const struct device_node
-*np, u32 id,
- 			return -EFAULT;
- 		}
-
--		if (fn) {
--			ret = fn(map, id, dev, data);
-+		/* for >1 cell count, avoid the linear translation. It is
-+		 * expected that custom mapping managed in cb fn().
-+		 */
-+		if (cell_count > 2) {
-+			if (!fn)
-+				return -EINVAL;
-+			/* list of required indices is mentioned in id */
-+			ret = fn(map, idx, id, cell_count, dev, data);
- 			if (ret != -EAGAIN)
- 				break;
- 			continue;
-diff --git a/include/linux/of.h b/include/linux/of.h
-index 7f3890ab26d5..b7f38a43ffc7 100644
---- a/include/linux/of.h
-+++ b/include/linux/of.h
-@@ -464,7 +464,8 @@ int of_map_id_and_mask(const struct device_node *np,
-u32 id,
- 		const char *map_name, const char *map_mask_name,
- 		struct device_node **target, u32 *id_out,
- 		struct device *dev, void *data,
--		int (*fn)(const __be32 *map, u32 id, struct device *dev, void *data));
-+		int (*fn)(const __be32 *map, u32 id, u32 idx, u32 cell_count,
-+			struct device *dev, void *data));
-
- phys_addr_t of_dma_get_max_cpu_address(struct device_node *np);
-
-------------------------------------------------------------------------
+Reviewed-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 
 Thanks,
-Charan
+Suravee
+
+> +		/* Make sure ACS will be enabled during PCI probe */
+> +		pci_request_acs();
+> +	}
+>   
+>   	return true;
+>   }
