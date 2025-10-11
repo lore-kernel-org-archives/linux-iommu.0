@@ -1,203 +1,100 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from gfmail1.glenfly.com (gfmail1.glenfly.com [106.75.234.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D8252CCC5
-	for <iommu@lists.linux.dev>; Sat, 11 Oct 2025 00:55:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD4D2FC1D
+	for <iommu@lists.linux.dev>; Sat, 11 Oct 2025 02:46:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=106.75.234.1
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760144108; cv=none; b=uxCVLDhyVBjRX3OdyPHAX2kX6kjSqTUarWFrT6bOywz/3XlxbM+8oh/N8HbTSgXO07LtiAMKMExGBwH4tJ+i0D0XTz48TyQzBYuAAt5wGn7ALcGYmGUXVbSyPBnIEPS82R1nAkAWpWSthdra6JxHDIcqTf2DbGWUzTvCeykrNHc=
+	t=1760150815; cv=none; b=e2QJJ5bNjHC6Wx164NPjJUODAPG+oR7eX73SWclTrWj/K5l3ElKXJZOtw+jFxJp/vuiJLB4/bZP11wi7JMs8JJ1ROo4aEp7tDCxKqk0o1tPyLMGxElCtGGSkVJ60NXHFxWNn4t00M4jBZG0CVwflQSbF68ZFI8JC1laBt4eztDU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760144108; c=relaxed/simple;
-	bh=vi5IL7gL2WbF9PAP2+XIfl5Vm1qsFPHUVEzsR7J8UBQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=OX3rnpHBwc/6WaskXVPxQOLmdQ+CiajA8JGVqGrsnS4y2KmhMhXQPYAVQTEkbzbB5mDdotqdCqarN38/l1YgduwcPrB6dE9BPDiFTUD4GI1ZGC3TZLV/Nuz+3E86qDuJICihdSRutanhqtk3vD0STD5mB/KkDDEoIE9zyMXaa+k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=PBKHJrrS; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="PBKHJrrS"
-Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 59AFYa8Q008228
-	for <iommu@lists.linux.dev>; Sat, 11 Oct 2025 00:55:04 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	zElZAglfow04KlHk8Ohc4+IvGBRtXWc8AJ3vgbED59o=; b=PBKHJrrS1zktZacW
-	tsVoa60FeJKDj4hN1HwyV39ejelQb56msQXKXTI23qEPX+zEiIwtFDOIiJ5ROyO3
-	L/ztItePqUTEtzXJj9zeZ6sYnYM1A8gd1tBuVLRvqWDJrwzPUN2HESgSNOz/sdaa
-	x8IXByEKLwprfIdUqhRM4A57Qrg0kTdRSb1cbMo9S4yXJ/+cRBt+BF+MAfleDgX6
-	zN23leaOXnjNI/fSrl9PcCYHYIdtLB0a6AT6X95JBV3I0vSyPpvr2g0x7tdB0xh3
-	fpvH4fpzzgGBOpqBnCDtjC+ymexO1vMhPakM9h/DZgDBjh8jmIJdZq/hdrJgeL31
-	yN+ydw==
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com [209.85.222.198])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 49nv4kr1j9-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Sat, 11 Oct 2025 00:55:04 +0000 (GMT)
-Received: by mail-qk1-f198.google.com with SMTP id af79cd13be357-854bec86266so195799185a.1
-        for <iommu@lists.linux.dev>; Fri, 10 Oct 2025 17:55:04 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1760144103; x=1760748903;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=zElZAglfow04KlHk8Ohc4+IvGBRtXWc8AJ3vgbED59o=;
-        b=TWSu2CHWwf0RTy8XC04GXdBxQYoLOcs5+dEpdjphKQthBtIG2MqWnLLzO+9i7GpmqU
-         1IioavBuJVfJDPxqgufviOee3wK6GIVuLPOXnhb0EDDTTkqMMNNhD22VqWhxJrB5Vg3j
-         Ncex2itKY3W1ImtCVzCl4vzFGxLgOWJfTMo8MoX7L/E2lNaySJu7pbwFTCg2TEzqfFzc
-         1gxd8KBVnEVJwrB3l4ygI9q3Mw7NNOpTaqFBiP6B5t2Gas97sBHfwxPOGfmMgAYrmVXW
-         LEQLr+L8KVV8RR/njl4AwPZo6TWNqp5S+MTvL9yOJeNT4QXDZnyLMhk+dHpB9Le3oTXX
-         mXaw==
-X-Forwarded-Encrypted: i=1; AJvYcCXwYC9S2X7oXDH0ZJQ3xIr36E+CtCiWqJ86FT7Kx2Xf3IfYLFjTp0y1go+fU+D59lFrMRP2zA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yyjhjh2uf7eSMepB+7nEkOJpbvbwPsAYRg6nim/f4uIbpmyUN3/
-	hquI/vSK4EWH6LTCwL5iTo2X3IvkqJJ08cmWh3x7OQogVICT6ahgXUUxhgSnl4VeU+OJto4y/Bj
-	3eI2ydQl+n2ZSEcrmrxboibCBRbMoJSZ8a4mtd+bw32ENrxH/yFfUrNaHEQ==
-X-Gm-Gg: ASbGnctlc+LLFVF6eKfvrHpUmzCmemUwU6a8TVncSPsZqEEzAh6XcyzRsbfUimKPVKR
-	G7b6NTbpm8XQOoAXX0cSHbbyXj2nJb2EdnA7nys1H55hgbP8jdAd4Q4UxqgaHIsrZOrIU8WQYOG
-	QFQ1hr5AXB5POoTR2HQQaS1u6k0ZwRc8SkJaAnL00mdLG+46H77bgkZjROyugX3d2l6genUg1KD
-	HtCKlhwWKyPC5GB6mjsMHH1G8CXkbaZkJPnt6lrh4QH9M6DvVcuVZqcQ3ARS8tgX+wiW+00osLA
-	dScxLusL79EQhgLrJWLZYdQ9eQAodCEGJgw1dny7Ldah3tkCsTIR1sAPj3ElRy0joWyEwPGz5S/
-	Guvycr14ovl04mvdhLLIuNS6EBISaioW9Zo8ySed5BerT8tChcfO1
-X-Received: by 2002:a05:620a:28cd:b0:85a:8ea3:6bc with SMTP id af79cd13be357-883530825dfmr1952571585a.76.1760144103058;
-        Fri, 10 Oct 2025 17:55:03 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IHBu5SGEW5C5gP7CCF4QRIhTixeNmjP2vRuCHeD0uAcIlHgu237/1p80MfhyPqdzhEljr1ATQ==
-X-Received: by 2002:a05:620a:28cd:b0:85a:8ea3:6bc with SMTP id af79cd13be357-883530825dfmr1952567585a.76.1760144102348;
-        Fri, 10 Oct 2025 17:55:02 -0700 (PDT)
-Received: from umbar.lan (2001-14ba-a0c3-3a00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a0c3:3a00:264b:feff:fe8b:be8a])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-59088563ca7sm1374441e87.76.2025.10.10.17.54.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Oct 2025 17:55:00 -0700 (PDT)
-Date: Sat, 11 Oct 2025 03:54:57 +0300
-From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-To: Rob Herring <robh@kernel.org>
-Cc: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>,
-        Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org, will@kernel.org,
-        saravanak@google.com, conor+dt@kernel.org, mchehab@kernel.org,
-        bod@kernel.org, krzk+dt@kernel.org, abhinav.kumar@linux.dev,
-        vikash.garodia@oss.qualcomm.com, dikshita.agarwal@oss.qualcomm.com,
-        Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
-        bjorn.andersson@oss.qualcomm.com, linux-media@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-Subject: Re: [RFC PATCH 0/3] Introduce iommu-map-masked for platform devices
-Message-ID: <yoqrve424xt54wbuntcrksh5nwzekntwqgbu4rzy6v4ekwzjej@mpopdkmzjrd4>
-References: <20250928171718.436440-1-charan.kalla@oss.qualcomm.com>
- <aec0f40a-8346-4194-8b18-1022fe3366bb@arm.com>
- <0d0560cc-9757-4c7b-8de4-170148d99481@oss.qualcomm.com>
- <ead7cf8b-fbc4-4242-a9da-b313dded1abc@arm.com>
- <nzqte4glwtpjs5bhkxz43yhdufelxvqvzmg5tepudxwetimir3@bvlw5csjizsh>
- <9d3eeb9f-b8ea-48e5-a1d9-0865f63ef991@arm.com>
- <fhb4woejzh3r6v5dxvdiopnsbuwstucfuuzbiymxg4wrxrjc7t@dt3z3utq6lwd>
- <c863f6a7-b117-4444-ae6d-1d525b572be2@oss.qualcomm.com>
- <CAL_Jsq+LPpJxVRUP4b9Gt40t=Wr=2B+697Jv2sjtDqTpqwGezQ@mail.gmail.com>
+	s=arc-20240116; t=1760150815; c=relaxed/simple;
+	bh=Yhv4pHlqoa8JML2XCsLrnsHokPg6xfTY7V1h7EBTC9c=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=ogxiY4NUXzMgaCHm3RPNERSeV+P7/R1CVfKXiLPfasO+4ggFQxqZiiYjXOQuojfjq3b8YTsULmWdNmOcwS9qA/10RPjcgPd1IByDU7QUCsi/ji4gncnb9r8VUuveVToIZitRI3kJ5RrRjfO9jWtvtq86Tj66U5ucA42bLQUGW74=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=glenfly.com; spf=pass smtp.mailfrom=glenfly.com; arc=none smtp.client-ip=106.75.234.1
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=glenfly.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=glenfly.com
+X-ASG-Debug-ID: 1760149803-196b4b048bb0da0001-Djp6mn
+Received: from GFSHEXCH03.glenfly.com (GFSHEXCH03.glenfly.com [10.5.250.53]) by gfmail1.glenfly.com with ESMTP id wl0dZeELfCuJW1jC (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO); Sat, 11 Oct 2025 10:30:03 +0800 (CST)
+X-Barracuda-Envelope-From: ReaperLiOC@glenfly.com
+X-Barracuda-RBL-Trusted-Forwarder: 10.5.250.53
+Received: from glenfly.com (10.30.16.59) by GFSHEXCH03.glenfly.com
+ (10.5.250.53) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.59; Sat, 11 Oct
+ 2025 10:30:03 +0800
+From: Reaper Li <reaperlioc@glenfly.com>
+X-Barracuda-RBL-Trusted-Forwarder: 10.5.250.53
+To: <will@kernel.org>, <robin.murphy@arm.com>
+CC: <joro@8bytes.org>, <linux-arm-kernel@lists.infradead.org>,
+	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+	<reaperlioc@glenfly.com>
+Subject: [PATCH] iommu/arm-smmu-v3: fix probe device bug due to duplicated stream IDS.
+Date: Sat, 11 Oct 2025 10:30:03 +0800
+X-ASG-Orig-Subj: [PATCH] iommu/arm-smmu-v3: fix probe device bug due to duplicated stream IDS.
+Message-ID: <20251011023003.159922-1-reaperlioc@glenfly.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAL_Jsq+LPpJxVRUP4b9Gt40t=Wr=2B+697Jv2sjtDqTpqwGezQ@mail.gmail.com>
-X-Authority-Analysis: v=2.4 cv=dojWylg4 c=1 sm=1 tr=0 ts=68e9aae8 cx=c_pps
- a=qKBjSQ1v91RyAK45QCPf5w==:117 a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10
- a=x6icFKpwvdMA:10 a=EUspDBNiAAAA:8 a=E6X_DewmVMaNMEPXfb4A:9 a=3ZKOabzyN94A:10
- a=QEXdDO2ut3YA:10 a=NFOGd7dJGGMPyQGDc5-O:22
-X-Proofpoint-GUID: Uy92vQrD2IAlWPaj2qD33_HjcPYlnW0x
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMDA4MDEyMSBTYWx0ZWRfX+ehkjhythVlV
- 25Y94ZLdNriyWSZAGaefsLpA3lLdMewl1Zt2OhboyaVUOawbg43VYEWKaCO5aTYC8lU4iNGCl6b
- VvvdMZ1sSb3jkKu9WkHcwrs2wimzIkeGiDqlPSY1BMF3vkQtztfbiQ6TFpDNSxe4y9R0sRWKzU5
- kSnd+9IN5LoknEZPybclMPJGKd+e4/PRyfqBRszrt4LSQVejLfvzW1r8kZx9wmiv3zWRHPCVIRu
- TfAKUCTpvPdjiDtkLcLXYLvJi8M6e05R+17/U8i0Jbva6J0JP1DbhRvnS4ggNERhD7uPHclj/sb
- 4QkATV7EL7NRIxp85kYad7cwY41KZmTMSlsMTLycS80WibX90RBcZTKxNVrUFwC5r3EoadNcmzf
- 9bWFY50qNL2EGpvyRQSVqE8MSLX1bw==
-X-Proofpoint-ORIG-GUID: Uy92vQrD2IAlWPaj2qD33_HjcPYlnW0x
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1117,Hydra:6.1.9,FMLib:17.12.80.40
- definitions=2025-10-10_06,2025-10-06_01,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1015 impostorscore=0 suspectscore=0 lowpriorityscore=0 adultscore=0
- bulkscore=0 spamscore=0 priorityscore=1501 phishscore=0 malwarescore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.19.0-2510020000 definitions=main-2510080121
+Content-Type: text/plain
+X-ClientProxiedBy: GFSHEXCH02.glenfly.com (10.5.250.52) To
+ GFSHEXCH03.glenfly.com (10.5.250.53)
+X-Barracuda-Connect: GFSHEXCH03.glenfly.com[10.5.250.53]
+X-Barracuda-Start-Time: 1760149803
+X-Barracuda-Encrypted: ECDHE-RSA-AES128-GCM-SHA256
+X-Barracuda-URL: https://10.5.252.52:443/cgi-mod/mark.cgi
+X-Virus-Scanned: by bsmtpd at glenfly.com
+X-Barracuda-Scan-Msg-Size: 1594
+X-Barracuda-BRTS-Status: 1
+X-Barracuda-Spam-Score: 0.50
+X-Barracuda-Spam-Status: No, SCORE=0.50 using global scores of TAG_LEVEL=1000.0 QUARANTINE_LEVEL=1000.0 KILL_LEVEL=9.0 tests=BSF_RULE7568M
+X-Barracuda-Spam-Report: Code version 3.2, rules version 3.2.3.148472
+	Rule breakdown below
+	 pts rule name              description
+	---- ---------------------- --------------------------------------------------
+	0.50 BSF_RULE7568M          Custom Rule 7568M
 
-On Fri, Oct 10, 2025 at 05:30:11PM -0500, Rob Herring wrote:
-> On Fri, Oct 10, 2025 at 2:53 PM Charan Teja Kalla
-> <charan.kalla@oss.qualcomm.com> wrote:
-> > On 10/9/2025 11:55 PM, Dmitry Baryshkov wrote:
-> > >>> I really don't like the idea of extending the #iommu-cells. The ARM SMMU
-> > >>> has only one cell, which is correct even for our platforms. The fact
-> > >>> that we need to identify different IOMMU SIDs (and handle them in a
-> > >>> differnt ways) is internal to the video device (and several other
-> > >>> devices). There is nothing to be handled on the ARM SMMU side.
-> > >> Huh? So if you prefer not to change anything, are you suggesting this series
-> > >> doesn't need to exist at all? Now I'm thoroughly confused...
-> > > Hmm. We need changes, but I don't feel like adding the FUNCTION_ID to
-> > > #iommu-cells is the best idea.
-> > >
-> > >> If you want to use SMR masks, then you absolutely need #iommu-cells = 2,
-> > >> because that is the SMMU binding for using SMR masks. It would definitely
-> > > I'm sorry. Yes, we have #iommu-cells = <2>.
-> > >
-> > >> not be OK to have some magic property trying to smuggle
-> > >> IOMMU-driver-specific data contrary to what the IOMMU node itself says. As
-> > >> for iommu-map, I don't see what would be objectionable about improving the
-> > >> parsing to respect a real #iommu-cells value rather than hard-coding an
-> > >> assumption. Yes, we'd probably need to forbid entries with length > 1
-> > >> targeting IOMMUs with #iommu-cells > 1, since the notion of a linear
-> > > This will break e.g. PCIe on Qualcomm platforms:
-> > >
-> > >                         iommu-map = <0x0   &apps_smmu 0x1400 0x1>,
-> > >                                     <0x100 &apps_smmu 0x1401 0x1>;
-> > >
-> > >
-> > > But this seems unlogical anyway wrt. apps_smmu having #iommu-cells =
-> > > <2>. It depends on ARM SMMU ignoring the second cell when it's not
-> > > present.
-> > >
-> > >> relationship between the input ID and the output specifier falls apart when
-> > >> the specifier is complex, but that seems simple enough to implement and
-> > >> document (even if it's too fiddly to describe in the schema itself), and
-> > >> still certainly no worse than having another property that *is* just
-> > >> iommu-map with implicit length = 1.
-> > >>
-> > >> And if you want individual StreamIDs for logical functions to be attachable
-> > >> to distinct contexts then those functions absolutely must be visible to the
-> > >> IOMMU layer and the SMMU driver as independent devices with their own unique
-> > >> properties, which means either they come that way from the DT as of_platform
-> > >> devices in the first place, or you implement a full bus_type abstraction
-> >
-> > I don't want to dilute what Dmitry is saying here, but the below is what
-> > i can make out of Robin comments, please CMIW:
-> >
-> > iommu {
-> >         #iommu-cells = <2>;
-> > }
-> >
-> > video {
-> >    iommu = <iommu sid1 mask1>, <iommu sid2 mask2>;
-> >    #iommu-map-cells = 2; /* does it look weird to define here, even if
-> > it is SMMU property? */
-> 
-> No, not weird. interrupt-map similarly requires #interrupt-cells. So
-> it would be just #iommu-cells here.
+From: Reaper <reaperlioc@glenfly.com>
 
-The major problem is that our DTs already use the currently-defined
-single-cell iommu-maps. I'm not sure if it is possible to support
-old and new semantics. So #iommu-map-cells (but placed into the IOMMU
-device) might be a good way: by default iommu-map parsing code will try
-parsing just a SID, but with #iommu-map-cells it will use specified
-number of arguments. The only question is what if #iommu-map-cells !=
-#iommu-cells.
+Commit 9246b487ab3c ("PCI: Add function 0 DMA alias quirk for Glenfly Arise
+chip ") add quirk to fix hda dma request issue, but IORT logic populaties
+two identical IDs into the fwspec->ids array via DMA aliasing in
+iort_pci_iommu_init() called by pci_for_each_dma_alias().
 
-> 
-> >    iommu-map = <0 smmu sid3 mask3>,
-> >                <0 smmu sid4 mask4>;
-> 
-> But you only have 1 cell, not 2 here. The #iommu-cells in this node
-> would define the number of cells before 'smmu'. The #iommu-cells in
-> the &smmu node is the number of cells after the &smmu phandle.
+Signed-off-by: ReaperLi <reaperlioc@glenfly.com>
+---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 2a8b46b94..996d3c0f8 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -3476,10 +3476,21 @@ static int arm_smmu_insert_master(struct arm_smmu_device *smmu,
+ 				rb_entry(existing, struct arm_smmu_stream, node)
+ 					->master;
+ 
++			struct device *mdev = master->dev;
++			struct device *existing_mdev = existing_master->dev;
++
+ 			/* Bridged PCI devices may end up with duplicated IDs */
+ 			if (existing_master == master)
+ 				continue;
+ 
++			/* Dma alias PCI devices may end up with duplicated IDs */
++			if (existing_mdev != mdev &&
++				dev_is_pci(existing_mdev) && dev_is_pci(mdev) &&
++				to_pci_dev(existing_mdev)->bus == to_pci_dev(mdev)->bus &&
++				pci_devs_are_dma_aliases(to_pci_dev(existing_mdev),
++										 to_pci_dev(mdev)))
++				continue;
++
+ 			dev_warn(master->dev,
+ 				 "Aliasing StreamID 0x%x (from %s) unsupported, expect DMA to be broken\n",
+ 				 sid, dev_name(existing_master->dev));
 -- 
-With best wishes
-Dmitry
+2.34.1
+
