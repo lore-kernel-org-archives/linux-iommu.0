@@ -1,100 +1,100 @@
-Received: from gfmail1.glenfly.com (gfmail1.glenfly.com [106.75.234.1])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f179.google.com (mail-pg1-f179.google.com [209.85.215.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD4D2FC1D
-	for <iommu@lists.linux.dev>; Sat, 11 Oct 2025 02:46:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=106.75.234.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD2191C84C6
+	for <iommu@lists.linux.dev>; Sat, 11 Oct 2025 03:15:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760150815; cv=none; b=e2QJJ5bNjHC6Wx164NPjJUODAPG+oR7eX73SWclTrWj/K5l3ElKXJZOtw+jFxJp/vuiJLB4/bZP11wi7JMs8JJ1ROo4aEp7tDCxKqk0o1tPyLMGxElCtGGSkVJ60NXHFxWNn4t00M4jBZG0CVwflQSbF68ZFI8JC1laBt4eztDU=
+	t=1760152508; cv=none; b=LldueKPkf3+qBHBrc5NX/TikEVEoXZvGvPzY+WiBj871I1vJjr3ezsaecCGJfoIx66OWHB4sEC5Mz7qastHRuZfxVgo33FPqHZwJ8dgqjeqyI2XBwBbRrH0imW1/NAatCxEykqVNitQbfOvhoaXVNfaUaCbs3wg0WGeXinC/syc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760150815; c=relaxed/simple;
-	bh=Yhv4pHlqoa8JML2XCsLrnsHokPg6xfTY7V1h7EBTC9c=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=ogxiY4NUXzMgaCHm3RPNERSeV+P7/R1CVfKXiLPfasO+4ggFQxqZiiYjXOQuojfjq3b8YTsULmWdNmOcwS9qA/10RPjcgPd1IByDU7QUCsi/ji4gncnb9r8VUuveVToIZitRI3kJ5RrRjfO9jWtvtq86Tj66U5ucA42bLQUGW74=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=glenfly.com; spf=pass smtp.mailfrom=glenfly.com; arc=none smtp.client-ip=106.75.234.1
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=glenfly.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=glenfly.com
-X-ASG-Debug-ID: 1760149803-196b4b048bb0da0001-Djp6mn
-Received: from GFSHEXCH03.glenfly.com (GFSHEXCH03.glenfly.com [10.5.250.53]) by gfmail1.glenfly.com with ESMTP id wl0dZeELfCuJW1jC (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO); Sat, 11 Oct 2025 10:30:03 +0800 (CST)
-X-Barracuda-Envelope-From: ReaperLiOC@glenfly.com
-X-Barracuda-RBL-Trusted-Forwarder: 10.5.250.53
-Received: from glenfly.com (10.30.16.59) by GFSHEXCH03.glenfly.com
- (10.5.250.53) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.59; Sat, 11 Oct
- 2025 10:30:03 +0800
-From: Reaper Li <reaperlioc@glenfly.com>
-X-Barracuda-RBL-Trusted-Forwarder: 10.5.250.53
-To: <will@kernel.org>, <robin.murphy@arm.com>
-CC: <joro@8bytes.org>, <linux-arm-kernel@lists.infradead.org>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-	<reaperlioc@glenfly.com>
-Subject: [PATCH] iommu/arm-smmu-v3: fix probe device bug due to duplicated stream IDS.
-Date: Sat, 11 Oct 2025 10:30:03 +0800
-X-ASG-Orig-Subj: [PATCH] iommu/arm-smmu-v3: fix probe device bug due to duplicated stream IDS.
-Message-ID: <20251011023003.159922-1-reaperlioc@glenfly.com>
-X-Mailer: git-send-email 2.34.1
+	s=arc-20240116; t=1760152508; c=relaxed/simple;
+	bh=VgRc1HSUo/GGyelxPOPx/dvYNds7xqzzw1DHBYUoj/c=;
+	h=From:To:Cc:Subject:Date:Message-Id; b=gSRpKbSkfXKAfBregk6lTnf2c+SnemY2bcgCAXjp8hvPq8vkCc6srahXTr1/EJ/o/BGShBAocW1DLkznxO+dEB8YPOY9S9kPktvUZjUoqQGy2i9yWnNlssrLsWjydfra+ILqWiOUmu2tSjViBZYCoPTAf76bMDXxv3tHXGh8XP0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=kyxeOS+r; arc=none smtp.client-ip=209.85.215.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="kyxeOS+r"
+Received: by mail-pg1-f179.google.com with SMTP id 41be03b00d2f7-b550a522a49so2199839a12.2
+        for <iommu@lists.linux.dev>; Fri, 10 Oct 2025 20:15:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance.com; s=google; t=1760152506; x=1760757306; darn=lists.linux.dev;
+        h=message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=BzkBY0PBFsLQsNCmiEa3AufeeUbE2KtfHbRsNCZScNU=;
+        b=kyxeOS+rxHXphZ0/NDLdaXBp4gSZmRCJQz26A8fcMIrklWgh4g6bZYLWcJhitgvns3
+         FQSNxSlyiiDKOTGx4IWZ4vxDt3do8wQDy7FcxwrANOP4y1MH37T1MOKa6Rpm9plC2PwA
+         EJq8G3pEbt6ju/hMF2hy5+bc0VgFQdjKUasoBxQn71xZMtTSpGkNwvqE0NZ/yPupz36i
+         N2szkBp7jGDcgfNLSkhU5j0/8rD1scOfUYokMhu7YwNZ2QH43iIGvZk62nuFTQY/pjpW
+         KjhumtgIssxlO1RFUo2v+6IaK++rUlh1ajs/ganqFn5Qx9vrSZVK9XPCCSyyNTpWVgnA
+         jMBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1760152506; x=1760757306;
+        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=BzkBY0PBFsLQsNCmiEa3AufeeUbE2KtfHbRsNCZScNU=;
+        b=lAvwbzbrBVJnrlh0xeL3byR5roU/yCNs2Glvt1B8kPimy7BPl166ntE3/RLAVlIi2N
+         fENHUv6AvC0hfAXTrR0YDWjDbMB6DuAA8lpgH1HrOEPny8hTEMnVRYmHQxgdo6CCzL+V
+         bt/c89Mn3s7gzxzd6NeysFHq25eFkFTSptO8o700HIlFLc7P5LzM0F0indVGF4O5/jqn
+         zNARa5Xyi1bgti7Gxtyw2YIRJepAKe4IKc0MpeeKFuz/E04p5SzG9H1rW05DLhe1b08U
+         E+DhuH175Vapc+luwMuBTFMxkh4P/OH7CGzlzOt2CfJUQYGulMxL+Q8MBgJtPhj0fk56
+         sYuw==
+X-Forwarded-Encrypted: i=1; AJvYcCUGj2rZxzZ9xmx5D01DgwH6/Un4O+kIwmxmWzT6w11EsD4u/6lEpaGTy/+dUhauJDE36i65iw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyjAa7g3Lj8L3ZwbnXcbDd8FPp3/1/IvXkeRD5Zwz4oAulXSvzK
+	n4Ie1vLPIV3vZ6TWeZD4UJYh2h8IGWtNzHieaj9QgVxIEQAubjRnkaWYWRQdzF/8a3U=
+X-Gm-Gg: ASbGncsXUXs8f5V6sZNao3q3M7tBvE7L1t4WH6PkxLEtJmbTjinVZXafXCrbOh2T/5u
+	Dzu6blwcgltKxMETfd9PbhnLfgmXsGMOzZI/18TOZzbNzffEwAuzzv9rNbPwF1kFSD1VNiiI3VY
+	uM+vQy6Sa6cN3fnD4awMimu+O/c9RUVw3ZSlJdmwMx39HU17UE8xPVmkBtP5rSAPENzaJlNuUOT
+	rm3ES5u7CZ41lYOPtMCyDD6kdma7HcX+x7MboU68PHaDQAzd/5SDYEGRn8+PJADSXQ21hrcqTGE
+	exsf8Cy3hYWMn038JzL/0KF/DZZgScoyopUqzXjAfAGyWlMzao8VTAx4XihPHjKBbel9z9KM9NG
+	yQ65ldNy/3p7Z1+JlZrm0lK26R39K4FRRZuaPICzxTCFviXK9iyyxqUGVJhBgirxMjooXtywF0h
+	2JhwviGS4=
+X-Google-Smtp-Source: AGHT+IHHjgXbpYOhl8Tft2FvsCqOzsuJfl2ZGri0jE7siTM5jH20pQ4uTxhaMN3qUY1IfRSVHqZPXQ==
+X-Received: by 2002:a05:6a20:7348:b0:2c7:55a3:6168 with SMTP id adf61e73a8af0-32da83de308mr18596310637.30.1760152505897;
+        Fri, 10 Oct 2025 20:15:05 -0700 (PDT)
+Received: from 5CG3510V44-KVS.bytedance.net ([139.177.225.224])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-b6792f508c6sm3496863a12.24.2025.10.10.20.15.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Oct 2025 20:15:05 -0700 (PDT)
+From: Jinhui Guo <guojinhui.liam@bytedance.com>
+To: joro@8bytes.org,
+	suravee.suthikulpanit@amd.com
+Cc: guojinhui.liam@bytedance.com,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v2 0/1] iommu/amd: Enable PCIe ACS only if AMD IOMMU is
+Date: Sat, 11 Oct 2025 11:14:47 +0800
+Message-Id: <20251011031448.2699-1-guojinhui.liam@bytedance.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: GFSHEXCH02.glenfly.com (10.5.250.52) To
- GFSHEXCH03.glenfly.com (10.5.250.53)
-X-Barracuda-Connect: GFSHEXCH03.glenfly.com[10.5.250.53]
-X-Barracuda-Start-Time: 1760149803
-X-Barracuda-Encrypted: ECDHE-RSA-AES128-GCM-SHA256
-X-Barracuda-URL: https://10.5.252.52:443/cgi-mod/mark.cgi
-X-Virus-Scanned: by bsmtpd at glenfly.com
-X-Barracuda-Scan-Msg-Size: 1594
-X-Barracuda-BRTS-Status: 1
-X-Barracuda-Spam-Score: 0.50
-X-Barracuda-Spam-Status: No, SCORE=0.50 using global scores of TAG_LEVEL=1000.0 QUARANTINE_LEVEL=1000.0 KILL_LEVEL=9.0 tests=BSF_RULE7568M
-X-Barracuda-Spam-Report: Code version 3.2, rules version 3.2.3.148472
-	Rule breakdown below
-	 pts rule name              description
-	---- ---------------------- --------------------------------------------------
-	0.50 BSF_RULE7568M          Custom Rule 7568M
 
-From: Reaper <reaperlioc@glenfly.com>
+Hi all,
 
-Commit 9246b487ab3c ("PCI: Add function 0 DMA alias quirk for Glenfly Arise
-chip ") add quirk to fix hda dma request issue, but IORT logic populaties
-two identical IDs into the fwspec->ids array via DMA aliasing in
-iort_pci_iommu_init() called by pci_for_each_dma_alias().
+To preserve PCIe performance, ACS is enabled only when
+AMD IOMMU is not disabled.
 
-Signed-off-by: ReaperLi <reaperlioc@glenfly.com>
+[This text serves solely as the patch changelog.]
+
+Thanks,
+Jinhui
+
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+v1: https://lore.kernel.org/all/20250928075257.1542-1-guojinhui.liam@bytedance.com/
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 2a8b46b94..996d3c0f8 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -3476,10 +3476,21 @@ static int arm_smmu_insert_master(struct arm_smmu_device *smmu,
- 				rb_entry(existing, struct arm_smmu_stream, node)
- 					->master;
- 
-+			struct device *mdev = master->dev;
-+			struct device *existing_mdev = existing_master->dev;
-+
- 			/* Bridged PCI devices may end up with duplicated IDs */
- 			if (existing_master == master)
- 				continue;
- 
-+			/* Dma alias PCI devices may end up with duplicated IDs */
-+			if (existing_mdev != mdev &&
-+				dev_is_pci(existing_mdev) && dev_is_pci(mdev) &&
-+				to_pci_dev(existing_mdev)->bus == to_pci_dev(mdev)->bus &&
-+				pci_devs_are_dma_aliases(to_pci_dev(existing_mdev),
-+										 to_pci_dev(mdev)))
-+				continue;
-+
- 			dev_warn(master->dev,
- 				 "Aliasing StreamID 0x%x (from %s) unsupported, expect DMA to be broken\n",
- 				 sid, dev_name(existing_master->dev));
+Changelog in v1 -> v2 (suggested by Suravee):
+ - Drop the amd_iommu_force_enable check; it's only used
+   to skip a workaround in the same function.
+
+Jinhui Guo (1):
+  iommu/amd: Enable PCIe ACS only if AMD IOMMU is on
+
+ drivers/iommu/amd/init.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
 -- 
-2.34.1
+2.20.1
 
