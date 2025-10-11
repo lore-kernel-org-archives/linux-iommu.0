@@ -1,105 +1,167 @@
-Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7908717A2F0
-	for <iommu@lists.linux.dev>; Sat, 11 Oct 2025 03:15:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0A601F463F
+	for <iommu@lists.linux.dev>; Sat, 11 Oct 2025 06:28:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760152517; cv=none; b=qYx1kUMtLQCrcFZ7DQ7XrgsqaZNOao3VimEYqOQvrAVVbhCP6Qu26Qap/68bUKCwm8kYh9pUKRftMxPTcyzAv8e8WZzKz6KYuZCZnWMTcFqZJ/genIxWWb7WPwNshK9DSNuYMRaJyIfkfm7abIYXvp7utWSwoWS1Pw60W6IGmhA=
+	t=1760164103; cv=none; b=KbLX254IFa1HakqHQnBmLVY2bwEuGpbfyynRYCtFAGhbT9XRDPtxI3uL22BhSUns3trIoOWpvn225xAO0Ix3OGSHOdOjWaI8i+JcOKye0A6EkvIzeuPfTAhczn5wXBI7eH8VsD/QiLTfNp5aJE/NrIaiBU9s8SDa3IsepStqUoA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760152517; c=relaxed/simple;
-	bh=T5m96n00h9j0rwBj2nC35ttbnxoSv61in8rfpFxj3fI=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References; b=FflVNB/6FLvftSygiSuUw+d0EPmKFd+LGfH2Ak9wGykU31KQe1wnrIcMDZtpJDDohL72UnQjcdC0jn0Q82Iph4piZaRWC6BR01oPBKF8qlEiL5EjnkZO4r06uBH4YTceu2GauCzqeFaJyLlG+hieSiXIFF6v363jmMaN3tsWG38=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=GVS9ym8M; arc=none smtp.client-ip=209.85.214.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
+	s=arc-20240116; t=1760164103; c=relaxed/simple;
+	bh=JmDOfQUbMEHiVtzCQOOrc24XvL9I3YKy6Q+bCgh3a1o=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=olU/lrNfV9MJjvD9BUGpM4e2fS8+yTwBp5ahFsf87Lr456VWIuWK44GXsbWEdOzN2uK2fVTV7T7LBPhUI71Un/RIHmuetXTxf7VjBnbNAE8jEhfc/ohIulugvS8iggKRsYxkV6cW3iCzm6iYtn0v5d1aRIeWsdi0+FMgnAcNGrU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=VatXPrGG; arc=none smtp.client-ip=198.175.65.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="GVS9ym8M"
-Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-271067d66fbso25448055ad.3
-        for <iommu@lists.linux.dev>; Fri, 10 Oct 2025 20:15:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance.com; s=google; t=1760152515; x=1760757315; darn=lists.linux.dev;
-        h=references:in-reply-to:message-id:date:subject:cc:to:from:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=xC2iEqXbWN1thmmL3fYhGYvST5k9EmpT4WpUUIQfjzE=;
-        b=GVS9ym8MD0r6ysS8nVK3/z877gQXQlzC+cTiCP/EfarvvHDRnZ9VbB7WyJYKIfrj9k
-         zGWy2ZOYZAbff1AkRXbqEaNxhH9ZvHnqx1i73LdkdAGibU3vuTONVgB3VbU3kn6hKPdf
-         J18unpib/3t0+4O6IY70sTUm7g/OEZfiE94Rl59ClVYCJyxHW2gHdY0bMRtkzCcRv6es
-         bQBAbre3bFeSBeLCS514SZSZTROXC7noIXAzET2+lwQ3KrrtQCRRVbNxf7vJmUbdPeBg
-         2NXIceWVVh+3OlaoRdF4akhLbhJtaVlHiSIyn3qFlReDJI9ECaxppvZI9Kci/JYxNvjk
-         qAFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1760152515; x=1760757315;
-        h=references:in-reply-to:message-id:date:subject:cc:to:from
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=xC2iEqXbWN1thmmL3fYhGYvST5k9EmpT4WpUUIQfjzE=;
-        b=vWH4nPg9RXVcvyooFghp9MbYJHnxuAGwInOluTqaCVxaG/+1S7xMWxxGmx/W9f/HcM
-         2pbDGHPFuQNZCaKLc99WonyJX0jgtfouaiodp7LmWiu3sotQ8jX+GWEDXE9Ahqpauz0Z
-         3mQQpKKOHkXIg1j5qJ0r6OVXtET+3+SKlByr6AuCePF42/Z6vJzYuTI/9Z6Se2d7UmUc
-         wHaVraxqUQ6Kv7wMZJpBQHEBVd/yPqNDbNKkQQbs6oTDoNX0G7Fx7OnR/I2VsEtk+LuN
-         pjZcntS14mnS8ECm5PgG9rpxYvFw1cni518ASETEv1WMyROKlQIlmFW3VdoOnj+jfQOB
-         N9VQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWmr7O95Lvec7yKgTQSZoLSfckm38cJra2sqmkqQYib3iPKdAR7pl1hLSToJFGskfgMr4v1gA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxQLMPVLVPS8EaRs9kQLUCvSRDDBSB4a84wUT43WYQAiNw/fQxa
-	igOmEcZHFBch7+sLRyYRWkAUMu4nxAwl9qmhSNV9DMPNmB8+GXmf20qNGcR7rApgzb8=
-X-Gm-Gg: ASbGncvLqRCNMQzu7AXhl/9XH+xGQdIzc/l03skXwOEBZP7UDtfXMOEzbUjsTRzt6a9
-	hJyQc4WC/4ADKVRpkjR7ySGiWaiE7GHC2F/GFKl5DCM1KxpSjM0fnB13z4F4yC2OvfE1H+P1nT4
-	PuhRtvqtd3fDiCEIJ4BiPsqK9cADB97eoONwUXpLX/8jKrM6O70lqBvPnOfArtq/vAB+UqO8J17
-	np/gySabCThXHfAFFbyg6ZZEzdPv4tBNkFj9ZfjKm5KDko8/z8FrEBNxEezjR6DmaU/DetnGs7d
-	qiW0yh1VpWw6THv2L/DviFHL931JnBuhcLuzyTqwQzkEw1YsQ/DSHMwoJYZMbTVRX2sWPgv6Omb
-	sod+aASDMeBUKBqPnpLQWz9FXGVT1xJcpsi7ByPVsHF2sNTauR2i7dM7gd5Wa488THg8x8YVuFz
-	yRByXCRpoWel90hGeyGA==
-X-Google-Smtp-Source: AGHT+IGazKTZCuo3QvlO68e49AlCvJAUzg/nhX9t12iwUEoG/vrNKdi3oaHu1O2JRqQ12XuI+dvu1A==
-X-Received: by 2002:a17:903:2405:b0:267:8049:7c7f with SMTP id d9443c01a7336-29027356377mr203066565ad.7.1760152514619;
-        Fri, 10 Oct 2025 20:15:14 -0700 (PDT)
-Received: from 5CG3510V44-KVS.bytedance.net ([139.177.225.224])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-b6792f508c6sm3496863a12.24.2025.10.10.20.15.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Oct 2025 20:15:14 -0700 (PDT)
-From: Jinhui Guo <guojinhui.liam@bytedance.com>
-To: joro@8bytes.org,
-	suravee.suthikulpanit@amd.com
-Cc: guojinhui.liam@bytedance.com,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v2 1/1] iommu/amd: Enable PCIe ACS only if AMD IOMMU is on
-Date: Sat, 11 Oct 2025 11:14:48 +0800
-Message-Id: <20251011031448.2699-2-guojinhui.liam@bytedance.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20251011031448.2699-1-guojinhui.liam@bytedance.com>
-References: <20251011031448.2699-1-guojinhui.liam@bytedance.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="VatXPrGG"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1760164101; x=1791700101;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=JmDOfQUbMEHiVtzCQOOrc24XvL9I3YKy6Q+bCgh3a1o=;
+  b=VatXPrGGd6inhjlcQX3/6woHzxD2gvPzRFOeeKu2wGyNJYnB2Mf4TvvS
+   AA/RBzh0aCcsVmka0BC3eGuvnLJkvVrBI2o3JIJmIeHkLyyOHN1Sk2+5u
+   +30U52UG6J2lab3dR7MND+VFS0H/kEaA3s5jCoZNATvDEFK6hbJUj3qGW
+   R5SMc2HGaQah9oQrG0VR+XGcLLDz/9iCapHCWi89zzjDx5hYqbjOqv2Pp
+   5RoUihTSLs+Lh2wP3eGMVbcH1fP7KWzTxADuMt+cIr1udxC76QLFYhxbV
+   3X0qG191VP3mknLWFS5bb1Wo0dLQJPG57VLMlAcqKei3HH93K6ST66QaZ
+   w==;
+X-CSE-ConnectionGUID: z+irBkKpRuuFCCzX9Qy3iQ==
+X-CSE-MsgGUID: RRTNbz0sTeuMcEOG+9eHqQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11578"; a="62258569"
+X-IronPort-AV: E=Sophos;i="6.19,220,1754982000"; 
+   d="scan'208";a="62258569"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Oct 2025 23:28:20 -0700
+X-CSE-ConnectionGUID: ak6XigH/QdeMlk+cNQCyDA==
+X-CSE-MsgGUID: +31j5JXqT2muzztIzmPLXQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.19,220,1754982000"; 
+   d="scan'208";a="180257706"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Oct 2025 23:28:14 -0700
+Message-ID: <3971a3fd-c733-4864-851a-87dc9d3f686a@linux.intel.com>
+Date: Sat, 11 Oct 2025 14:24:41 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 1/8] mm: Add a ptdesc flag to mark kernel page tables
+To: Matthew Wilcox <willy@infradead.org>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
+ Jason Gunthorpe <jgg@nvidia.com>, Jann Horn <jannh@google.com>,
+ Vasant Hegde <vasant.hegde@amd.com>, Thomas Gleixner <tglx@linutronix.de>,
+ Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+ Dave Hansen <dave.hansen@intel.com>, Alistair Popple <apopple@nvidia.com>,
+ Peter Zijlstra <peterz@infradead.org>, Uladzislau Rezki <urezki@gmail.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Andy Lutomirski <luto@kernel.org>, Yi Lai <yi1.lai@intel.com>,
+ iommu@lists.linux.dev, security@kernel.org, x86@kernel.org,
+ linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+ Dave Hansen <dave.hansen@linux.intel.com>
+References: <20250919054007.472493-1-baolu.lu@linux.intel.com>
+ <20250919054007.472493-2-baolu.lu@linux.intel.com>
+ <aObCAwbf1-Sxepni@casper.infradead.org>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <aObCAwbf1-Sxepni@casper.infradead.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-To preserve PCIe performance, ACS is enabled only when
-AMD IOMMU is not disabled.
+On 10/9/25 03:56, Matthew Wilcox wrote:
+> On Fri, Sep 19, 2025 at 01:39:59PM +0800, Lu Baolu wrote:
+>> +static inline void ptdesc_set_kernel(struct ptdesc *ptdesc)
+>> +{
+>> +	struct folio *folio = ptdesc_folio(ptdesc);
+>> +
+>> +	folio_set_referenced(folio);
+>> +}
+> So this was the right way to do this at the time.  However, if you look
+> at commit 522abd92279a this should now be ...
+> 
+>   enum pt_flags {
+>   	PT_reserved = PG_reserved,
+> +	PT_kernel = PG_referenced,
+>   	/* High bits are used for zone/node/section */
+>   };
+> [...]
+> 
+> +static inline void ptdesc_set_kernel(struct ptdesc *ptdesc)
+> +{
+> +	set_bit(PT_kernel, &pt->pt_flags.f);
+> +}
 
-Signed-off-by: Jinhui Guo <guojinhui.liam@bytedance.com>
-Reviewed-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
----
- drivers/iommu/amd/init.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+Thank you for the review comment. I updated the patch like the
+following:
 
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index f2991c11867c..38e8c38c5f10 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -3314,8 +3314,10 @@ static bool __init detect_ivrs(void)
- 	}
- 
- out:
--	/* Make sure ACS will be enabled during PCI probe */
--	pci_request_acs();
-+	if (!amd_iommu_disabled) {
-+		/* Make sure ACS will be enabled during PCI probe */
-+		pci_request_acs();
-+	}
- 
- 	return true;
- }
--- 
-2.20.1
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index a3f97c551ad8..5abd427b6202 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -2940,6 +2940,7 @@ static inline pmd_t *pmd_alloc(struct mm_struct 
+*mm, pud_t *pud, unsigned long a
+  #endif /* CONFIG_MMU */
 
+  enum pt_flags {
++       PT_kernel = PG_referenced,
+         PT_reserved = PG_reserved,
+         /* High bits are used for zone/node/section */
+  };
+@@ -2965,6 +2966,46 @@ static inline bool pagetable_is_reserved(struct 
+ptdesc *pt)
+         return test_bit(PT_reserved, &pt->pt_flags.f);
+  }
+
++/**
++ * ptdesc_set_kernel - Mark a ptdesc used to map the kernel
++ * @ptdesc: The ptdesc to be marked
++ *
++ * Kernel page tables often need special handling. Set a flag so that
++ * the handling code knows this ptdesc will not be used for userspace.
++ */
++static inline void ptdesc_set_kernel(struct ptdesc *ptdesc)
++{
++       set_bit(PT_kernel, &ptdesc->pt_flags.f);
++}
++
++/**
++ * ptdesc_clear_kernel - Mark a ptdesc as no longer used to map the kernel
++ * @ptdesc: The ptdesc to be unmarked
++ *
++ * Use when the ptdesc is no longer used to map the kernel and no longer
++ * needs special handling.
++ */
++static inline void ptdesc_clear_kernel(struct ptdesc *ptdesc)
++{
++       /*
++        * Note: the 'PG_referenced' bit does not strictly need to be
++        * cleared before freeing the page. But this is nice for
++        * symmetry.
++        */
++       clear_bit(PT_kernel, &ptdesc->pt_flags.f);
++}
++
++/**
++ * ptdesc_test_kernel - Check if a ptdesc is used to map the kernel
++ * @ptdesc: The ptdesc being tested
++ *
++ * Call to tell if the ptdesc used to map the kernel.
++ */
++static inline bool ptdesc_test_kernel(struct ptdesc *ptdesc)
++{
++       return test_bit(PT_kernel, &ptdesc->pt_flags.f);
++}
++
+  /**
+   * pagetable_alloc - Allocate pagetables
+   * @gfp:    GFP flags
+
+Thanks,
+baolu
