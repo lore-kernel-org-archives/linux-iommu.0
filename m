@@ -1,335 +1,203 @@
-Received: from DM1PR04CU001.outbound.protection.outlook.com (mail-centralusazon11010016.outbound.protection.outlook.com [52.101.61.16])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0D27BA3F
-	for <iommu@lists.linux.dev>; Fri, 10 Oct 2025 23:20:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.61.16
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760138432; cv=fail; b=lUby5EdggJNIo8quO7AECD669Yast8+qUM8nwuHzY2veHVw8L1lbRZI4P5TScJE+OfgarP45MKZdZx6TLoSsE80WnZ0PzsZl1GwQHB+HhsKx6G3T69iyRc13eBj2o6pqf53wIB9ss2BcIcHuMQuAJf2ODycngsI7xPyNUIicByA=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760138432; c=relaxed/simple;
-	bh=DY2qKrJVIy6SwNj9HXCu8zjS1AYirnUZbnlB6G6BVuU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=KxKs/u2bSwPKP3jbAiD+gcC2ui+NgIsPnZneGnvjSqGLbfW5dDAJswqffODLG8NHaRJVdYbRWU/Etbdk8HiQZhcfbS7d5GX5MVrixUe57ruGSHlnQcjkK7q3CMISVZxtwLuJLck1/LwW9xUGnxXgQX3EQJO5BkefImWxUABp/4o=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=DTlwrqql; arc=fail smtp.client-ip=52.101.61.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D8252CCC5
+	for <iommu@lists.linux.dev>; Sat, 11 Oct 2025 00:55:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1760144108; cv=none; b=uxCVLDhyVBjRX3OdyPHAX2kX6kjSqTUarWFrT6bOywz/3XlxbM+8oh/N8HbTSgXO07LtiAMKMExGBwH4tJ+i0D0XTz48TyQzBYuAAt5wGn7ALcGYmGUXVbSyPBnIEPS82R1nAkAWpWSthdra6JxHDIcqTf2DbGWUzTvCeykrNHc=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1760144108; c=relaxed/simple;
+	bh=vi5IL7gL2WbF9PAP2+XIfl5Vm1qsFPHUVEzsR7J8UBQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=OX3rnpHBwc/6WaskXVPxQOLmdQ+CiajA8JGVqGrsnS4y2KmhMhXQPYAVQTEkbzbB5mDdotqdCqarN38/l1YgduwcPrB6dE9BPDiFTUD4GI1ZGC3TZLV/Nuz+3E86qDuJICihdSRutanhqtk3vD0STD5mB/KkDDEoIE9zyMXaa+k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=PBKHJrrS; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="DTlwrqql"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=DuBREzZdBIAE98qqhoWDgpOLyJS7RQJGPdUvUK7gWyGF4wWmKh6QagwmaGjW2yoTOOj8PMb/O64z5DHta//jVEoBhSF+5w9smfPj4iW5a0d9LIs8NvlNkrId9pTsnSLNYrROYaltstxg1g8t0/aeFz7YcY2NNOyd/94H3HwHZOC8R1WXGquwBI8sBNycLdFq8zJpuMhvvxAa/kQI3Q97e/iRGoH68uIX5GLKp7H9G9NXLGWLknyNohRDbymbolwEoyQr6MyA0vlI0Jrfh3cC9isEEyeF9igltN3liBjCeQou5o8JAARWeylL1emnOgZqZftIXJx4itOYgk4zyLO55Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=sBA/XOy/llyvjojKdIQ71kQgBCU6PhE/iSQPnd0VagY=;
- b=a6Amfj4fI4EujaL4VnhUxKZpL4S98lMb9ZZbQRiryYrIABiN3di/B1hkr2wkj1olyka2RzfkplxitUbzFMBBPYKtX+UCgS+J22cLIaSN6WfeS7Kmzc8zWP6yuBfE6LQMOdhrPweasvZWVrTYq6wZ4LeAhOsZ6ndcEaikBaaUwUSj66k/dw8upki8TP9Pjkg/Io6beYBIEBVxCNN5LCct+lMs/gPn6WoRL6weoC22h8bD2ZwmD9+s6DOhVcgE3xKGo5Zz+5S/bOrQCQeGsLgFXssoXsOWfdvB0NzdknVbYz2hTc3W8yPiu7vorohq1bsmjl903CLFh/q4fLUzoAdJ7g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sBA/XOy/llyvjojKdIQ71kQgBCU6PhE/iSQPnd0VagY=;
- b=DTlwrqqlTwxtpPH8hJgbbC3jIEnUpLkeKDCxXzc87PiGBDN472Hsl7Xw3aqLeD6rKR515b+ltFMeSi8WKvr3wk5yEy5Dfw3KOyYk+CcSCh0usCSz1YrGlzGhIQfBxOIdEWGIO+KCnns+/HBDdwluL3kt73YU6kJpsGYCEbuK7328viJI2KG0w6rPpN9/UwATOX9dQtAqXrDo8SbLQwkaubX/3MDgwzMi8Qx5IKbwNlmE6OOlglb4YO5UFR4EjS/yKes/f7D5Kqb3MQ5nvt9sTi+1XuZnFRSNz5RTKPArDQPTawq3bv4QVK2O8I2UAqPyajXyHFBm6/bX4QEfEmRBtg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB3613.namprd12.prod.outlook.com (2603:10b6:208:c1::17)
- by SJ2PR12MB7867.namprd12.prod.outlook.com (2603:10b6:a03:4cd::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9203.10; Fri, 10 Oct
- 2025 23:20:25 +0000
-Received: from MN2PR12MB3613.namprd12.prod.outlook.com
- ([fe80::1b3b:64f5:9211:608b]) by MN2PR12MB3613.namprd12.prod.outlook.com
- ([fe80::1b3b:64f5:9211:608b%4]) with mapi id 15.20.9203.009; Fri, 10 Oct 2025
- 23:20:25 +0000
-Date: Fri, 10 Oct 2025 20:20:24 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Cc: nicolinc@nvidia.com, linux-kernel@vger.kernel.org, robin.murphy@arm.com,
-	will@kernel.org, joro@8bytes.org, kevin.tian@intel.com,
-	jsnitsel@redhat.com, vasant.hegde@amd.com, iommu@lists.linux.dev,
-	santosh.shukla@amd.com, sairaj.arunkodilkar@amd.com,
-	jon.grimm@amd.com, prashanthpra@google.com, wvw@google.com,
-	wnliu@google.com, gptran@google.com, kpsingh@google.com,
-	joao.m.martins@oracle.com, alejandro.j.jimenez@oracle.com
-Subject: Re: [PATCH v3 15/15] iommu/amd: Add support for nested domain
- attach/detach
-Message-ID: <20251010232024.GP3901471@nvidia.com>
-References: <20251009235755.4497-1-suravee.suthikulpanit@amd.com>
- <20251009235755.4497-16-suravee.suthikulpanit@amd.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20251009235755.4497-16-suravee.suthikulpanit@amd.com>
-X-ClientProxiedBy: MN2PR05CA0017.namprd05.prod.outlook.com
- (2603:10b6:208:c0::30) To MN2PR12MB3613.namprd12.prod.outlook.com
- (2603:10b6:208:c1::17)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="PBKHJrrS"
+Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 59AFYa8Q008228
+	for <iommu@lists.linux.dev>; Sat, 11 Oct 2025 00:55:04 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	zElZAglfow04KlHk8Ohc4+IvGBRtXWc8AJ3vgbED59o=; b=PBKHJrrS1zktZacW
+	tsVoa60FeJKDj4hN1HwyV39ejelQb56msQXKXTI23qEPX+zEiIwtFDOIiJ5ROyO3
+	L/ztItePqUTEtzXJj9zeZ6sYnYM1A8gd1tBuVLRvqWDJrwzPUN2HESgSNOz/sdaa
+	x8IXByEKLwprfIdUqhRM4A57Qrg0kTdRSb1cbMo9S4yXJ/+cRBt+BF+MAfleDgX6
+	zN23leaOXnjNI/fSrl9PcCYHYIdtLB0a6AT6X95JBV3I0vSyPpvr2g0x7tdB0xh3
+	fpvH4fpzzgGBOpqBnCDtjC+ymexO1vMhPakM9h/DZgDBjh8jmIJdZq/hdrJgeL31
+	yN+ydw==
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com [209.85.222.198])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 49nv4kr1j9-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Sat, 11 Oct 2025 00:55:04 +0000 (GMT)
+Received: by mail-qk1-f198.google.com with SMTP id af79cd13be357-854bec86266so195799185a.1
+        for <iommu@lists.linux.dev>; Fri, 10 Oct 2025 17:55:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1760144103; x=1760748903;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=zElZAglfow04KlHk8Ohc4+IvGBRtXWc8AJ3vgbED59o=;
+        b=TWSu2CHWwf0RTy8XC04GXdBxQYoLOcs5+dEpdjphKQthBtIG2MqWnLLzO+9i7GpmqU
+         1IioavBuJVfJDPxqgufviOee3wK6GIVuLPOXnhb0EDDTTkqMMNNhD22VqWhxJrB5Vg3j
+         Ncex2itKY3W1ImtCVzCl4vzFGxLgOWJfTMo8MoX7L/E2lNaySJu7pbwFTCg2TEzqfFzc
+         1gxd8KBVnEVJwrB3l4ygI9q3Mw7NNOpTaqFBiP6B5t2Gas97sBHfwxPOGfmMgAYrmVXW
+         LEQLr+L8KVV8RR/njl4AwPZo6TWNqp5S+MTvL9yOJeNT4QXDZnyLMhk+dHpB9Le3oTXX
+         mXaw==
+X-Forwarded-Encrypted: i=1; AJvYcCXwYC9S2X7oXDH0ZJQ3xIr36E+CtCiWqJ86FT7Kx2Xf3IfYLFjTp0y1go+fU+D59lFrMRP2zA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yyjhjh2uf7eSMepB+7nEkOJpbvbwPsAYRg6nim/f4uIbpmyUN3/
+	hquI/vSK4EWH6LTCwL5iTo2X3IvkqJJ08cmWh3x7OQogVICT6ahgXUUxhgSnl4VeU+OJto4y/Bj
+	3eI2ydQl+n2ZSEcrmrxboibCBRbMoJSZ8a4mtd+bw32ENrxH/yFfUrNaHEQ==
+X-Gm-Gg: ASbGnctlc+LLFVF6eKfvrHpUmzCmemUwU6a8TVncSPsZqEEzAh6XcyzRsbfUimKPVKR
+	G7b6NTbpm8XQOoAXX0cSHbbyXj2nJb2EdnA7nys1H55hgbP8jdAd4Q4UxqgaHIsrZOrIU8WQYOG
+	QFQ1hr5AXB5POoTR2HQQaS1u6k0ZwRc8SkJaAnL00mdLG+46H77bgkZjROyugX3d2l6genUg1KD
+	HtCKlhwWKyPC5GB6mjsMHH1G8CXkbaZkJPnt6lrh4QH9M6DvVcuVZqcQ3ARS8tgX+wiW+00osLA
+	dScxLusL79EQhgLrJWLZYdQ9eQAodCEGJgw1dny7Ldah3tkCsTIR1sAPj3ElRy0joWyEwPGz5S/
+	Guvycr14ovl04mvdhLLIuNS6EBISaioW9Zo8ySed5BerT8tChcfO1
+X-Received: by 2002:a05:620a:28cd:b0:85a:8ea3:6bc with SMTP id af79cd13be357-883530825dfmr1952571585a.76.1760144103058;
+        Fri, 10 Oct 2025 17:55:03 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IHBu5SGEW5C5gP7CCF4QRIhTixeNmjP2vRuCHeD0uAcIlHgu237/1p80MfhyPqdzhEljr1ATQ==
+X-Received: by 2002:a05:620a:28cd:b0:85a:8ea3:6bc with SMTP id af79cd13be357-883530825dfmr1952567585a.76.1760144102348;
+        Fri, 10 Oct 2025 17:55:02 -0700 (PDT)
+Received: from umbar.lan (2001-14ba-a0c3-3a00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a0c3:3a00:264b:feff:fe8b:be8a])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-59088563ca7sm1374441e87.76.2025.10.10.17.54.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Oct 2025 17:55:00 -0700 (PDT)
+Date: Sat, 11 Oct 2025 03:54:57 +0300
+From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+To: Rob Herring <robh@kernel.org>
+Cc: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>,
+        Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org, will@kernel.org,
+        saravanak@google.com, conor+dt@kernel.org, mchehab@kernel.org,
+        bod@kernel.org, krzk+dt@kernel.org, abhinav.kumar@linux.dev,
+        vikash.garodia@oss.qualcomm.com, dikshita.agarwal@oss.qualcomm.com,
+        Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
+        bjorn.andersson@oss.qualcomm.com, linux-media@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+Subject: Re: [RFC PATCH 0/3] Introduce iommu-map-masked for platform devices
+Message-ID: <yoqrve424xt54wbuntcrksh5nwzekntwqgbu4rzy6v4ekwzjej@mpopdkmzjrd4>
+References: <20250928171718.436440-1-charan.kalla@oss.qualcomm.com>
+ <aec0f40a-8346-4194-8b18-1022fe3366bb@arm.com>
+ <0d0560cc-9757-4c7b-8de4-170148d99481@oss.qualcomm.com>
+ <ead7cf8b-fbc4-4242-a9da-b313dded1abc@arm.com>
+ <nzqte4glwtpjs5bhkxz43yhdufelxvqvzmg5tepudxwetimir3@bvlw5csjizsh>
+ <9d3eeb9f-b8ea-48e5-a1d9-0865f63ef991@arm.com>
+ <fhb4woejzh3r6v5dxvdiopnsbuwstucfuuzbiymxg4wrxrjc7t@dt3z3utq6lwd>
+ <c863f6a7-b117-4444-ae6d-1d525b572be2@oss.qualcomm.com>
+ <CAL_Jsq+LPpJxVRUP4b9Gt40t=Wr=2B+697Jv2sjtDqTpqwGezQ@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MN2PR12MB3613:EE_|SJ2PR12MB7867:EE_
-X-MS-Office365-Filtering-Correlation-Id: 68631a98-83e8-4ab7-414d-08de085397bc
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|7416014|376014|1800799024|366016|7053199007;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?8Pyr85O6HjY9fC6oe3PLqR1F+eM2vJj6dFMagD5v6cTsgS4U5Ha+zTKLJpxq?=
- =?us-ascii?Q?YtjFcgjBKhvAvpLqvHwV0nmW+C4W/IEMKYUxxejgqKqKTCK8WZKurSvW10Ss?=
- =?us-ascii?Q?+y9lqwBTHGERoqrarX9T91AtPCtYW6QtUrO3T7V1mCsTRpSz46ObnGw/UaC6?=
- =?us-ascii?Q?cD7R0t1WwRh4PRtBycJUBQnZxx21hmsIRI8Q8mxyMpxQBPqmikP+b81nrRey?=
- =?us-ascii?Q?TMRirUjRuf9xfYrfPlQLU8eSBpZG3/WZW9JFwmuvjlyMcKOUbaxRcxbA1V0S?=
- =?us-ascii?Q?+GyTDH8T+goN2FhrgCsx+RuJEIqG0XZGp6nqdcGIIfNp2wIN2+UynxZqTOY/?=
- =?us-ascii?Q?Toqs1reDYloo2zO4bLyaay78iwWmdy58x2WIyPszmLcaXm8CmdAAs/zGeZH/?=
- =?us-ascii?Q?Mknf4iepsTUgyDU0ObC1LmwlY8MUT8WceZ0ywCg6Y4rqJKWYvCEEl225jAXo?=
- =?us-ascii?Q?6WqlJgzK9fVBc1uVTZVo4LYTV9qg/ht4eN3xCluEvDbvedq+Tsp9fninoRXL?=
- =?us-ascii?Q?67e2xuwn+SVX6byJtx7T2MkwkybJN+VwKryHKkVw7art9LdWCmKWx4dR98xc?=
- =?us-ascii?Q?O3llcC8Cl+92SyElyR1qpvGKnTQbCre+o9EREnKcO04DJLPvkCTZIF2alRRq?=
- =?us-ascii?Q?vuLqUngTEwTUfqkkDQYAfDJC3CXRbYNkvPo5jov3iwSH8uZK6o8yw5ARWpzC?=
- =?us-ascii?Q?uLmpkE6GaSzUdOnBMISPyqtTvkQdcYYdpx2Dl79kuEB/M+vJMGuukWa2hrd+?=
- =?us-ascii?Q?OqLCcksovZvYVEL+QNgRthRnQBBUAu2ysVNmVmSzzkzZ2OyT/ZDM7myFY6ig?=
- =?us-ascii?Q?Fts3XFsGh1SnR5qJtRIGLzqbwgySwALydh7voDd1l0wV/bdf1b58R2dXCvbO?=
- =?us-ascii?Q?QuMahuZl1CchBb2GgTqA1rkNLv+v1M+ldhw1ho2hJ15Bcf2PsvRTITCWrXGv?=
- =?us-ascii?Q?fjDhjL16oyyvog/i+4O0MRDrTwutyrjPH1iD1y6lAx3SJ5mJ9oIDLz/jVtar?=
- =?us-ascii?Q?MI64tmXUJe6PfdauCLGEtA8qkpr0/nCG6AzwmpVfqp83H1HuUpX2i9npVVwp?=
- =?us-ascii?Q?Vx9y2KwZC/xmAOpwLeEnO0Tm6kpH6rVvgA35NGVc+4wvqGd7IUPWQgcWuYUT?=
- =?us-ascii?Q?UWKq5eShn65J9m2R2y05u6fAvPJ8SI27DDwcj1uovw4TEet96TzPJEFQ8iOc?=
- =?us-ascii?Q?Jv7pacIUiC90OotmeXlndlCVB33qGJD5ZbHU04AdNHfIt6p0J7EW8EjdbZiD?=
- =?us-ascii?Q?TRfEydvh7lsaCgSKOVaZmQkB3PvKRbZbjIzaUEtNyA0KZDujI6VU1JKze/hB?=
- =?us-ascii?Q?NSe8BCZ4EfY8xFfi+9srJM/ru5iZY/tDpk4aP5kUNKimA764LqdPr5qSffza?=
- =?us-ascii?Q?cQFWjQffspmXvSTMnI5ruykhWftRH+JVI7akayygcHRqCIym2jW3p8lrDqT4?=
- =?us-ascii?Q?91tQGw0jl6NG3iCGdddB3PN8zXy8Xe9V?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB3613.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(1800799024)(366016)(7053199007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?zTcGw25WylZtKtgK3CwaMglAPEzI6/qPcNx0uBwvGzMoEeCFiIbToL53voTD?=
- =?us-ascii?Q?qltM/EKHj9CG/+nzJ0iwsE7Hb62GsQElbBVWZ+Ab5UOCvCcnAcSEER83Mrgl?=
- =?us-ascii?Q?XJnuBiSI1OmadEEVA+m/rvb89W+Wf8lOSn313jOmzNwNsY2A+RXAFYAkfOQ9?=
- =?us-ascii?Q?LM1RysxK4n3KVPs0P+xzgCFyTbF1xW1Z8Y9jckxwEBFk7CabhG9OjaRQ+k1R?=
- =?us-ascii?Q?XTFvfwfY0le2fkQu9jYxeCSmErVcme9jfgRg/miqi/xKXhM1PdvwqE6qcUmL?=
- =?us-ascii?Q?NO1L+VDeGyUnVrNstVMhVij/Y4DSOxIkIZHgJx2r3ONtFd3WciuEE9+YpLKq?=
- =?us-ascii?Q?XJMO/Z38EbYnQ/33s7UsdE3BOBMAkQLRYhV6i2iAqGPGZTqPeJwrZy72CBzh?=
- =?us-ascii?Q?17UvCVy0i1YEmK5zy+GLUUgzR58owo/2eSa06rTuVsdKIaZ6ZNB/mT/iUTiI?=
- =?us-ascii?Q?w5pF/fHDmH2FdR7oByo7TFG7hMP1seCkSiD1KvErOF+hey7NLFSQIilIA+7g?=
- =?us-ascii?Q?iSpEfQFNlP/CsNBzWnD64jle+obPcaK63Eah/hy1ZtS3AddlN+JRY6gaKO6O?=
- =?us-ascii?Q?W9ms6rSUIr20Lytrm/PjrGCxiKu9NR5epNbjDbRA6rufxmFFd54x6QdqQRs4?=
- =?us-ascii?Q?Zd4ZfOFGrkdclcfxJgbYFOSFl6hjSKNduwzbBXwoDJwgPbWRa+7C8oqMipGP?=
- =?us-ascii?Q?5pD0rsUnznNAt9CxbsFlZryZpN7L3U7I5LFoOaiRWsS0qqFVsUOuIu0BvPIC?=
- =?us-ascii?Q?n0Q+Fa6/rMFoh8u4Pf90EDuqnbhqX6EyTJQ74aTlc1Dv8U4ZP2fHwR4Xo6Om?=
- =?us-ascii?Q?JwsibWlZw8wPBY9srw+956NBxrum8IkIVgnwNdmtSK7qKmqpgjA00dvhIQso?=
- =?us-ascii?Q?OdNlKDpkuVov+LBO3X3718XsYbbDCPaWXIIKoUB+BwofbDFZ9yBfaFVWdl+N?=
- =?us-ascii?Q?PWu/zDOx7q9O327kA3yDPXeQdsEPH1eJHVeaGZBmTZQ2GUIZtXGEY918P46F?=
- =?us-ascii?Q?I+orj7Y8yj9oRGJ9cmFAR9KF+XVEjpHUzrpAplFtc91r3gYOUHpE5rcgkxsc?=
- =?us-ascii?Q?BjfpG4w+AqNzm+zAUzrYrnLuQ3hGsgjgIUs7QJEr5ct/JTl6pMVTCCSObMvT?=
- =?us-ascii?Q?PrdWBlBUtYHOJN6JHFB8gbz9yAAuDOwcPWLb2fIE3T9ZnE6YKOjMipiMuMAa?=
- =?us-ascii?Q?jkHkjnnYyjmP4vTL0wSbE79cFTl5i8qge+ZpgD+n7Oq+bbZTMA7mpU+cEN4G?=
- =?us-ascii?Q?HQCgz5AfceibSgAokZC2BplRRGYIplcw5CdZqh1cOlSXuqXqySque0sb31tr?=
- =?us-ascii?Q?tmigUs8w8Z3ANdqolpBgA9uUff55PTT1AaAL9GYlZNmUoyyccvvhYEIT91Xg?=
- =?us-ascii?Q?dnw23b5f+VPH/LZl46OGdXNUCvRaAkoX/vZOB0g2cySypfYopKbq7haTwMMx?=
- =?us-ascii?Q?VFAJWYgSBKwMPILbySp6qdqrtSS3TZ/h7Unmg4YPUA3q5pn5R50n2ueh5oRf?=
- =?us-ascii?Q?85dqpyXNn3kNdyZIgaiGg65MEMinbytIoX66M7+fbH6aywYc9z8HM2F4tLG7?=
- =?us-ascii?Q?jq/jo6Ar4oUq6lzOZtU=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 68631a98-83e8-4ab7-414d-08de085397bc
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB3613.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Oct 2025 23:20:25.6858
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 8V3AsdjV0cF8HzyNjdtxs5MnJpULGgjlUybes3QPIJP5QfGBX2QQAy5fNaa9Z2qN
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB7867
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAL_Jsq+LPpJxVRUP4b9Gt40t=Wr=2B+697Jv2sjtDqTpqwGezQ@mail.gmail.com>
+X-Authority-Analysis: v=2.4 cv=dojWylg4 c=1 sm=1 tr=0 ts=68e9aae8 cx=c_pps
+ a=qKBjSQ1v91RyAK45QCPf5w==:117 a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10
+ a=x6icFKpwvdMA:10 a=EUspDBNiAAAA:8 a=E6X_DewmVMaNMEPXfb4A:9 a=3ZKOabzyN94A:10
+ a=QEXdDO2ut3YA:10 a=NFOGd7dJGGMPyQGDc5-O:22
+X-Proofpoint-GUID: Uy92vQrD2IAlWPaj2qD33_HjcPYlnW0x
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMDA4MDEyMSBTYWx0ZWRfX+ehkjhythVlV
+ 25Y94ZLdNriyWSZAGaefsLpA3lLdMewl1Zt2OhboyaVUOawbg43VYEWKaCO5aTYC8lU4iNGCl6b
+ VvvdMZ1sSb3jkKu9WkHcwrs2wimzIkeGiDqlPSY1BMF3vkQtztfbiQ6TFpDNSxe4y9R0sRWKzU5
+ kSnd+9IN5LoknEZPybclMPJGKd+e4/PRyfqBRszrt4LSQVejLfvzW1r8kZx9wmiv3zWRHPCVIRu
+ TfAKUCTpvPdjiDtkLcLXYLvJi8M6e05R+17/U8i0Jbva6J0JP1DbhRvnS4ggNERhD7uPHclj/sb
+ 4QkATV7EL7NRIxp85kYad7cwY41KZmTMSlsMTLycS80WibX90RBcZTKxNVrUFwC5r3EoadNcmzf
+ 9bWFY50qNL2EGpvyRQSVqE8MSLX1bw==
+X-Proofpoint-ORIG-GUID: Uy92vQrD2IAlWPaj2qD33_HjcPYlnW0x
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1117,Hydra:6.1.9,FMLib:17.12.80.40
+ definitions=2025-10-10_06,2025-10-06_01,2025-03-28_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ clxscore=1015 impostorscore=0 suspectscore=0 lowpriorityscore=0 adultscore=0
+ bulkscore=0 spamscore=0 priorityscore=1501 phishscore=0 malwarescore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.19.0-2510020000 definitions=main-2510080121
 
-On Thu, Oct 09, 2025 at 11:57:55PM +0000, Suravee Suthikulpanit wrote:
-> Introduce set_dte_nested() to program guest translation settings in
-> the host DTE when attaches the nested domain to a device.
+On Fri, Oct 10, 2025 at 05:30:11PM -0500, Rob Herring wrote:
+> On Fri, Oct 10, 2025 at 2:53 PM Charan Teja Kalla
+> <charan.kalla@oss.qualcomm.com> wrote:
+> > On 10/9/2025 11:55 PM, Dmitry Baryshkov wrote:
+> > >>> I really don't like the idea of extending the #iommu-cells. The ARM SMMU
+> > >>> has only one cell, which is correct even for our platforms. The fact
+> > >>> that we need to identify different IOMMU SIDs (and handle them in a
+> > >>> differnt ways) is internal to the video device (and several other
+> > >>> devices). There is nothing to be handled on the ARM SMMU side.
+> > >> Huh? So if you prefer not to change anything, are you suggesting this series
+> > >> doesn't need to exist at all? Now I'm thoroughly confused...
+> > > Hmm. We need changes, but I don't feel like adding the FUNCTION_ID to
+> > > #iommu-cells is the best idea.
+> > >
+> > >> If you want to use SMR masks, then you absolutely need #iommu-cells = 2,
+> > >> because that is the SMMU binding for using SMR masks. It would definitely
+> > > I'm sorry. Yes, we have #iommu-cells = <2>.
+> > >
+> > >> not be OK to have some magic property trying to smuggle
+> > >> IOMMU-driver-specific data contrary to what the IOMMU node itself says. As
+> > >> for iommu-map, I don't see what would be objectionable about improving the
+> > >> parsing to respect a real #iommu-cells value rather than hard-coding an
+> > >> assumption. Yes, we'd probably need to forbid entries with length > 1
+> > >> targeting IOMMUs with #iommu-cells > 1, since the notion of a linear
+> > > This will break e.g. PCIe on Qualcomm platforms:
+> > >
+> > >                         iommu-map = <0x0   &apps_smmu 0x1400 0x1>,
+> > >                                     <0x100 &apps_smmu 0x1401 0x1>;
+> > >
+> > >
+> > > But this seems unlogical anyway wrt. apps_smmu having #iommu-cells =
+> > > <2>. It depends on ARM SMMU ignoring the second cell when it's not
+> > > present.
+> > >
+> > >> relationship between the input ID and the output specifier falls apart when
+> > >> the specifier is complex, but that seems simple enough to implement and
+> > >> document (even if it's too fiddly to describe in the schema itself), and
+> > >> still certainly no worse than having another property that *is* just
+> > >> iommu-map with implicit length = 1.
+> > >>
+> > >> And if you want individual StreamIDs for logical functions to be attachable
+> > >> to distinct contexts then those functions absolutely must be visible to the
+> > >> IOMMU layer and the SMMU driver as independent devices with their own unique
+> > >> properties, which means either they come that way from the DT as of_platform
+> > >> devices in the first place, or you implement a full bus_type abstraction
+> >
+> > I don't want to dilute what Dmitry is saying here, but the below is what
+> > i can make out of Robin comments, please CMIW:
+> >
+> > iommu {
+> >         #iommu-cells = <2>;
+> > }
+> >
+> > video {
+> >    iommu = <iommu sid1 mask1>, <iommu sid2 mask2>;
+> >    #iommu-map-cells = 2; /* does it look weird to define here, even if
+> > it is SMMU property? */
 > 
-> In addition, introduce struct amd_iommu_viommu, which stores reference to
-> the nest parent domain assigned during the call to struct
-> iommu_ops.viommu_init(). Information in the nest parent domain is needed
-> when setting up the DTE for nested translation.
+> No, not weird. interrupt-map similarly requires #interrupt-cells. So
+> it would be just #iommu-cells here.
+
+The major problem is that our DTs already use the currently-defined
+single-cell iommu-maps. I'm not sure if it is possible to support
+old and new semantics. So #iommu-map-cells (but placed into the IOMMU
+device) might be a good way: by default iommu-map parsing code will try
+parsing just a SID, but with #iommu-map-cells it will use specified
+number of arguments. The only question is what if #iommu-map-cells !=
+#iommu-cells.
+
 > 
-> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-> ---
->  drivers/iommu/amd/amd_iommu.h       |  3 ++
->  drivers/iommu/amd/amd_iommu_types.h |  8 ++++
->  drivers/iommu/amd/iommu.c           |  8 ++--
->  drivers/iommu/amd/nested.c          | 66 +++++++++++++++++++++++++++++
->  4 files changed, 81 insertions(+), 4 deletions(-)
+> >    iommu-map = <0 smmu sid3 mask3>,
+> >                <0 smmu sid4 mask4>;
 > 
-> diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
-> index cfb63de7732a..98351b0cb9a0 100644
-> --- a/drivers/iommu/amd/amd_iommu.h
-> +++ b/drivers/iommu/amd/amd_iommu.h
-> @@ -190,6 +190,9 @@ struct iommu_dev_data *search_dev_data(struct amd_iommu *iommu, u16 devid);
->  int amd_iommu_completion_wait(struct amd_iommu *iommu);
->  
->  /* DTE */
-> +void amd_iommu_set_dte_v1(struct iommu_dev_data *dev_data,
-> +			  struct protection_domain *domain, u16 domid,
-> +			  struct dev_table_entry *new);
->  int amd_iommu_device_flush_dte(struct iommu_dev_data *dev_data);
->  void amd_iommu_update_dte256(struct amd_iommu *iommu,
->  			     struct iommu_dev_data *dev_data,
-> diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-> index a68b5c2fc0a2..683ee288c636 100644
-> --- a/drivers/iommu/amd/amd_iommu_types.h
-> +++ b/drivers/iommu/amd/amd_iommu_types.h
-> @@ -17,6 +17,7 @@
->  #include <linux/list.h>
->  #include <linux/spinlock.h>
->  #include <linux/pci.h>
-> +#include <linux/iommufd.h>
->  #include <linux/irqreturn.h>
->  #include <linux/io-pgtable.h>
->  
-> @@ -420,6 +421,7 @@
->  #define DTE_FLAG_HAD	(3ULL << 7)
->  #define DTE_MODE_MASK	GENMASK_ULL(11, 9)
->  #define DTE_HOST_TRP	GENMASK_ULL(51, 12)
-> +#define DTE_FLAG_PPR	BIT_ULL(52)
->  #define DTE_FLAG_GIOV	BIT_ULL(54)
->  #define DTE_FLAG_GV	BIT_ULL(55)
->  #define DTE_GLX		GENMASK_ULL(57, 56)
-> @@ -590,6 +592,11 @@ struct pdom_iommu_info {
->  	u32 refcnt;	/* Count of attached dev/pasid per domain/IOMMU */
->  };
->  
-> +struct amd_iommu_viommu {
-> +	struct iommufd_viommu core;
-> +	struct protection_domain *parent; /* nest parent domain for this viommu */
-> +};
+> But you only have 1 cell, not 2 here. The #iommu-cells in this node
+> would define the number of cells before 'smmu'. The #iommu-cells in
+> the &smmu node is the number of cells after the &smmu phandle.
 
-This alone is not enough, the core code needs to allocate this
-memory too. Make adding the viommu to be its own patch before adding
-allocating the nested domain and move these hunks:
-
-> @@ -607,6 +614,7 @@ struct nested_domain {
->  	struct iommu_domain domain; /* generic domain handle used by iommu core code */
->  	u16 id;	                    /* the domain id written to the device table */
->  	struct iommu_hwpt_amd_guest gdte; /* Guest vIOMMU DTE */
-> +	struct amd_iommu_viommu *viommu;  /* AMD hw-viommu this nested domain belong to */
-
-Into the nested domain allocation patch.
-
-> @@ -2044,9 +2044,9 @@ static void set_dte_gcr3_table(struct amd_iommu *iommu,
->  		target->data[2] |= FIELD_PREP(DTE_GPT_LEVEL_MASK, GUEST_PGTABLE_4_LEVEL);
->  }
->  
-> -static void set_dte_v1(struct iommu_dev_data *dev_data,
-> -		       struct protection_domain *domain, u16 domid,
-> -		       struct dev_table_entry *new)
-> +void amd_iommu_set_dte_v1(struct iommu_dev_data *dev_data,
-> +			  struct protection_domain *domain, u16 domid,
-> +			  struct dev_table_entry *new)
->  {
-
-Give the function the right name in the patch that adds it?
-
-> diff --git a/drivers/iommu/amd/nested.c b/drivers/iommu/amd/nested.c
-> index 3307c925d3c1..ca3d3001c87f 100644
-> --- a/drivers/iommu/amd/nested.c
-> +++ b/drivers/iommu/amd/nested.c
-> @@ -63,6 +63,7 @@ amd_iommu_alloc_domain_nested(struct iommufd_viommu *viommu, u32 flags,
->  			      const struct iommu_user_data *user_data)
->  {
->  	int ret;
-> +	struct amd_iommu_viommu *aviommu = container_of(viommu, struct amd_iommu_viommu, core);
->  	struct iommu_hwpt_amd_guest gdte;
->  	struct nested_domain *ndom;
->  
-> @@ -85,6 +86,7 @@ amd_iommu_alloc_domain_nested(struct iommufd_viommu *viommu, u32 flags,
->  
->  	ndom->domain.ops = &nested_domain_ops;
->  	ndom->domain.type = IOMMU_DOMAIN_NESTED;
-> +	ndom->viommu = aviommu;
->  	memcpy(&ndom->gdte, &gdte, sizeof(gdte));
-
-These hunks to the nesting domain allocation patch
-
-> +static void set_dte_nested(struct amd_iommu *iommu,
-> +			   struct iommu_domain *dom,
-> +			   struct iommu_dev_data *dev_data)
-> +{
-> +	struct protection_domain *parent;
-> +	struct dev_table_entry new = {0};
-> +	struct nested_domain *ndom = to_ndomain(dom);
-> +	struct iommu_hwpt_amd_guest *gdte = &ndom->gdte;
-> +
-> +	/*
-> +	 * The nest parent domain is attached during the call to the
-> +	 * struct iommu_ops.viommu_init(), which will be stored as part
-> +	 * of the struct amd_iommu_viommu.parent.
-> +	 */
-> +	if (WARN_ON(!ndom->viommu || !ndom->viommu->parent))
-> +		return;
-> +
-> +	parent = ndom->viommu->parent;
-> +	amd_iommu_make_clear_dte(dev_data, &new);
-> +
-> +	/*
-> +	 * Use nested domain ID to program DTE.
-> +	 * See amd_iommu_alloc_domain_nested().
-> +	 */
-> +	amd_iommu_set_dte_v1(dev_data, parent, ndom->id, &new);
-> +
-> +	/* Guest PPR */
-> +	new.data[0] |= gdte->dte[0] & DTE_FLAG_PPR;
-> +
-> +	/* Guest translation stuff */
-> +	new.data[0] |= gdte->dte[0] & (DTE_GLX | DTE_FLAG_GV | DTE_FLAG_GIOV);
-> +
-> +	/* GCR3 table */
-> +	new.data[0] |= gdte->dte[0] & DTE_GCR3_14_12;
-> +	new.data[1] |= gdte->dte[1] & (DTE_GCR3_30_15 | DTE_GCR3_51_31);
-> +
-> +	/* Guest paging mode */
-> +	new.data[2] |= gdte->dte[2] & DTE_GPT_LEVEL_MASK;
-> +
-> +	amd_iommu_update_dte256(iommu, dev_data, &new);
-> +}
-
-This looks good
-
-> +static int nested_attach_device(struct iommu_domain *dom, struct device *dev)
-> +{
-> +	struct iommu_dev_data *dev_data = dev_iommu_priv_get(dev);
-> +	struct amd_iommu *iommu = get_amd_iommu_from_dev_data(dev_data);
-> +	int ret = 0;
-> +
-> +	if (WARN_ON(dom->type != IOMMU_DOMAIN_NESTED))
-> +		return -EINVAL;
-> +
-> +	mutex_lock(&dev_data->mutex);
-> +
-> +	/* Update device table entry */
-> +	set_dte_nested(iommu, dom, dev_data);
-> +	amd_iommu_device_flush_dte(dev_data);
-> +	amd_iommu_completion_wait(iommu);
-> +
-> +	mutex_unlock(&dev_data->mutex);
-
-Where does the code record the ndom->id to push invalidates when the
-S2 is changed? Seems like an important thing to be missing!
-
-Shouldn't all this attach related stuff be in here too??
-
-        ret = pdom_attach_iommu(iommu, domain);
-        dev_data->domain = domain;
-
-        spin_lock_irqsave(&domain->lock, flags);
-        list_add(&dev_data->list, &domain->dev_list);
-        spin_unlock_irqrestore(&domain->lock, flags);
-
-At a bare minimum if the series is going to stop here then it must
-also do correct invalidation for any S2 changes.
-
-Given that, I'd suggest to also fix the domain id's with the xarray so
-you don't have to redo the invalidation logic.
-
-Jason
+-- 
+With best wishes
+Dmitry
