@@ -1,108 +1,195 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F17C61EDA1E
-	for <iommu@lists.linux.dev>; Sat, 11 Oct 2025 06:34:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14B9D236453
+	for <iommu@lists.linux.dev>; Sun, 12 Oct 2025 10:52:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760164474; cv=none; b=jL9/fu04Da6mnBJ2q+6X24KEJkYM4qD5zubftlaJ+gdYoWsfl3YLs4TGkOQbfSXVZ1YEYNVX9rugoQXgmeGej34JFs2n+DkIXjY9HvUVIfsY9SX35nDkqCxbtzWLTGCLw2NXh4zqP/8H5PG1rF8au7vXLq6QmXV8u0iGh18hLp8=
+	t=1760266347; cv=none; b=TtNMU6DLe6sUGfI4JvcilMI+SUmO5UbngcmGsaUluxD7B2zHwXFx0OKcAcTmC33p3ajAd7o0XiwgQl8WtpenXrnfqLVO1e59GTH9+PTVk2qm0Dkkf8qAqIih1Cy8BvV64nlB9fVKVOr//mLaYmMzNWIPpD7DKqoag8Gb7duVHIc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760164474; c=relaxed/simple;
-	bh=ZHoGBUbqzplr1SqOVtjjpzhNhjDVkJ8UthME/KpzTy8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=eub0Nv6PRKQay5YJ2KdV1w5pg2EbBZK0ggiq3gAW+G6y0yPOIU4WGNHb5nFi3Wc5JjdvpZRLlqStS1YsY+Us5J97hnYEafdqkQNqeK/5/3Gnrt7ukIUVCBNpO9V5cdqBHCiNRhvVM4FFbA0yGiWt+tO8yH/fywGwFZMaTJnEqAI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GpuRKwpb; arc=none smtp.client-ip=192.198.163.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1760266347; c=relaxed/simple;
+	bh=MqF5cMOJ84e/bDS4TErqwcOhQLiLI58hkMImp466mJw=;
+	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type; b=iCWBPYxV8tszYuK+phCoAV/bs65v8CmY74c7Rp6taDHHbfTwjgjCPZ1fJZnj1PEYS3uQ6yKMlgi+MBW25mkKn4dolDLUdnIdoEpQNMX3eYrWpqSZ+X3/Q04WZ8PIjbsB1FsQc4uTN+1TzwzHkWMvfhuY4sAbuRwSfoCguuisuHc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KlqfiSJs; arc=none smtp.client-ip=209.85.218.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GpuRKwpb"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1760164473; x=1791700473;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=ZHoGBUbqzplr1SqOVtjjpzhNhjDVkJ8UthME/KpzTy8=;
-  b=GpuRKwpb5feBKRsoFo8CU4lzGAf7o8B9JPDmBlq9vLjFtgUypJexDd1M
-   hP3B/qb2ceBE8JOjPmKX+MRPrJbQbbas848jPnsT+KmUmeMmLqu41d6sj
-   0P0BwT+l2KCIdLBGhxfS1rk3QjQJkONSDWjIKra7Vi+0fmswPvLySsD9t
-   A/nTZm81q84KG0pjJun6n7uoGo22kLG+gM4smZ0BuZYsPaYgyqHDo15K9
-   pi8DbCMIghrTQ5+NrQHF1Jyaly3IGLw5BwIWu8EUj69jvCVYF+VBZMe9F
-   PIzOTYfkqdQ6Q5LxHcR5GARz9shDOFFV6ok0j2ATeOHVV7hlFh4UFuvXA
-   Q==;
-X-CSE-ConnectionGUID: uMn0P3IaTuK8oJaU6yARAw==
-X-CSE-MsgGUID: MmOWUrc5SiqepJR/vvvABA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11578"; a="87838069"
-X-IronPort-AV: E=Sophos;i="6.19,220,1754982000"; 
-   d="scan'208";a="87838069"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Oct 2025 23:34:32 -0700
-X-CSE-ConnectionGUID: VcSPh3W0SuyKVz7g68oZuw==
-X-CSE-MsgGUID: hnXs8JcbTyOib7kc4CEhjA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.19,220,1754982000"; 
-   d="scan'208";a="204824426"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Oct 2025 23:34:27 -0700
-Message-ID: <7a001cb9-fb09-487c-bfa9-e2d329b0f6a8@linux.intel.com>
-Date: Sat, 11 Oct 2025 14:30:54 +0800
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KlqfiSJs"
+Received: by mail-ej1-f45.google.com with SMTP id a640c23a62f3a-b3e44f22f15so483790666b.2
+        for <iommu@lists.linux.dev>; Sun, 12 Oct 2025 03:52:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1760266343; x=1760871143; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:subject:to:from
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=iOpabM86lbztALBXEjkkJUpQktj7v1p6dsQQlchyZsk=;
+        b=KlqfiSJsl1/Y8GcPwbwDSqaHZf2ahqxfBuSvw+IZ83reZ7Ohi3I0gkawj7ZK9tjDGa
+         8ZyuqwxUZBo09ng5Odmo8QURu+joCPn5YPYoMGyat7yAVu+aScQkSCpjUGjOtAFcam8f
+         rOKNRjn1l3HThTpJOeDiWLbMHrds/tBD1M3Z45XwfCV/rKeCq5kCEIFZeD3ffoyT8bVF
+         eYJ7KioTlgiNu1F7r7Su+5Ct8Hy78IWfHw/wqsZqxSmDQHptIbhlzcBOP601B4/ZO95d
+         sOTnmfOXVij20QCMeO9KkNLeoVS6/M/XlqpzWfGSNHof0PQPskDqwSybLYFp6XAKGcwX
+         wXFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1760266343; x=1760871143;
+        h=content-transfer-encoding:mime-version:message-id:subject:to:from
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=iOpabM86lbztALBXEjkkJUpQktj7v1p6dsQQlchyZsk=;
+        b=jjKrtazdPgqiyrTwiW2S/HHNv0PYhPB/E0+AQXxymRMQToYoDSoty7p46K8Y1ca+WD
+         lyMvY5qWEgINxJkXBLPUl5uszJyNJmB9hqTD6oFZGcqTyFY8tIfSLzRfXtH22zKm1jbo
+         zXkrYHK07pZxrmadil/hpJ82GMrnK8hOFed7b5zRnw19FVoi6C0yVcBujH9XmUmdXm0Q
+         +ZLDLG3b1lPhr+oMjpPqYEg5++X1Mj9wQaErm26BsiqjRw/rHBBmtF1TEaz7yndSIIj1
+         7uOQYCDuMwEtaAxRW7l2Dd4SJzdYXlvj6RSi0YDihiTHG2fKt4nhzGfr6isRGtfajVKw
+         N4vQ==
+X-Gm-Message-State: AOJu0YwZKYNc8l31yP6YieMMWKCn71PYXfOX8yYUFYO6sMQAU4fGz1NU
+	ilRr/IbQXn0tR24Ni/ZtfZRDErQbum58zCfv5qbiie+VglWskwaMOUy9wVXvng==
+X-Gm-Gg: ASbGncsWelgy7JpcQWLtRcl5caoLZLl3c8SkkC/OfI37Of/3F1oi3M/JjLlfg+kfM+p
+	kwn2FTa6lvxBDGfVCFL8BF6ddo58dJwc2Lg42hTBAq3YonYqavWHExiqXuqpca0p4FTerWnt6jv
+	mUHmKpKAqZYAKC+P87E3gjjq2cGpOtwGsySJkbHhvhHcnAaaUzt2iogz7GCp0K3s1uOS8P3YcrN
+	ZJK+0Na4LBBk+ycljPJlDrSW5C5chi2o4vfZ/JYtuCEJhrA1WHBIyba09uTpAJWHkxOrL0O/yl+
+	hRmdrROe77ws9z38Bcm/EJlYPszotZlr10qhW5ieAFT+zTGy/lXoDEionPPyuyBc7wCfXwDbXVL
+	F5QgZqd6vNXQbYJpWnyC6xW0ew7HtzdB+03ofH9YUZkLOElnaR1wQ3PoIq/fbxjt9Ht4Z5oEb/8
+	E=
+X-Google-Smtp-Source: AGHT+IGpnc73DvzgvhXnM6IXi/RiZA/Mw6XZR7FH07n78kbcJVw1ff18xsQwbSwwRBD8xIEozEoGuQ==
+X-Received: by 2002:a17:907:3e22:b0:b3e:b226:5bad with SMTP id a640c23a62f3a-b50a9a6d8a3mr1889184266b.8.1760266343213;
+        Sun, 12 Oct 2025 03:52:23 -0700 (PDT)
+Received: from foxbook (bff184.neoplus.adsl.tpnet.pl. [83.28.43.184])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b55d5cacba7sm688164366b.5.2025.10.12.03.52.22
+        (version=TLS1_2 cipher=AES128-SHA bits=128/128);
+        Sun, 12 Oct 2025 03:52:22 -0700 (PDT)
+Date: Sun, 12 Oct 2025 12:52:18 +0200
+From: Michal Pecio <michal.pecio@gmail.com>
+To: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ linux-pci@vger.kernel.org
+Subject: [PATCH RFC] Implement DMA Guard Pages
+Message-ID: <20251012125218.45c5f972.michal.pecio@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 6/8] mm: Introduce deferred freeing for kernel page
- tables
-To: David Hildenbrand <david@redhat.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Kevin Tian <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
- Jann Horn <jannh@google.com>, Vasant Hegde <vasant.hegde@amd.com>,
- Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>,
- Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@intel.com>,
- Alistair Popple <apopple@nvidia.com>, Peter Zijlstra <peterz@infradead.org>,
- Uladzislau Rezki <urezki@gmail.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Andy Lutomirski <luto@kernel.org>, Yi Lai <yi1.lai@intel.com>
-Cc: iommu@lists.linux.dev, security@kernel.org, x86@kernel.org,
- linux-mm@kvack.org, linux-kernel@vger.kernel.org,
- Dave Hansen <dave.hansen@linux.intel.com>
-References: <20250919054007.472493-1-baolu.lu@linux.intel.com>
- <20250919054007.472493-7-baolu.lu@linux.intel.com>
- <5b494700-a3af-4feb-8c5f-1ca424ad9841@redhat.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <5b494700-a3af-4feb-8c5f-1ca424ad9841@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On 10/10/25 23:47, David Hildenbrand wrote:
-> On 19.09.25 07:40, Lu Baolu wrote:
->> From: Dave Hansen <dave.hansen@linux.intel.com>
->>
->> This introduces a conditional asynchronous mechanism, enabled by
->> CONFIG_ASYNC_PGTABLE_FREE. When enabled, this mechanism defers the 
->> freeing
->> of pages that are used as page tables for kernel address mappings. These
->> pages are now queued to a work struct instead of being freed immediately.
->>
-> 
-> Okay, I now looked at patch #8 and I think the whole reason of this 
-> patch is "batch-free page tables to minimize the impact of an expensive 
-> cross-page table operation" which is a single TLB flush.
-> 
->> This deferred freeing provides a safe context for a future patch to add
-> 
-> So I would claridy here instead something like
-> 
-> "This deferred freeing allows for batch-freeing of page tables, 
-> providing a safe context for performing a single expensive operation 
-> (TLB flush) for a batch of kernel page tables instead of performing that 
-> expensive operation for each page table."
+Hi all,
 
-The commit message has been updated, and CONFIG_ASYNC_PGTABLE_FREE has
-been replaced with CONFIG_ASYNC_KERNEL_PGTABLE_FREE. Thank you for the
-comments.
+I wonder if there is any interest in a feature like this?
 
-Thanks,
-baolu
+DMA Guard Pages are unmapped pages inserted between consecutive DMA
+mappings for devices behind IOMMUs. A device accessing its mappings
+out of bounds will hopefully fault instead of hitting other memory.
+
+I wrote this hack yesterday to debug such a device, since getting
+an IOMMU fault is easier to detect and more convenient than looking
+at some weird malfunction and wondering where it came from.
+
+(BTW, can a PCI driver "catch" IOMMU faults by its devices?)
+
+It looks like a useful aid for PCI driver developers and testers,
+or maybe somebody would want this in regular use for reliability?
+
+Honestly, I was surprised that no such thing (apparently?) exists.
+So I dug into dma-iommu.c and wrote my own. The implementation is
+trivial, it hooks into iommu_dma_alloc_iova()/iommu_dma_free_iova()
+which appear to be a bottleneck where all iova (de)allocations for
+DMA mappings must pass. The allocations are increased a little, but
+callers are unaware of that and only map what they wanted to map.
+
+It even seems to work, but beware it's first time I touch this code.
+
+Michal
+
+---
+ drivers/iommu/Kconfig     | 18 ++++++++++++++++++
+ drivers/iommu/dma-iommu.c | 29 ++++++++++++++++++++++-------
+ 2 files changed, 40 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 70d29b14d851..f607873bf39a 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -157,6 +157,24 @@ config IOMMU_DMA
+ 	select NEED_SG_DMA_LENGTH
+ 	select NEED_SG_DMA_FLAGS if SWIOTLB
+ 
++config IOMMU_DMA_GUARD_PAGES_KB
++	int "DMA Guard Pages size in KB"
++	default 0
++	depends on IOMMU_DMA && EXPERT
++	help
++	  Specify the minimum amount of Guard Pages to be inserted between
++	  consecutive DMA mappings to devices behind IOMMUs. DMA Guard Pages
++	  are not mapped to any memory and hardware attempts to access them
++	  will fault. This helps catch hardware accessing valid mappings out
++	  of bounds which could otherwise unintentionally consume or corrupt
++	  other memory mapped adjacently.
++
++	  Size will be automatically increased to one or more IOMMU pages,
++	  depending on applicable alignment constraints. Small power-of-two
++	  mappings may get as many Guard Pages as the mapping uses itself.
++
++	  If unsure, use the default size of zero to disable DMA Guard Pages.
++
+ # Shared Virtual Addressing
+ config IOMMU_SVA
+ 	select IOMMU_MM_DATA
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 7944a3af4545..51edf148f6c4 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -746,6 +746,17 @@ static int dma_info_to_prot(enum dma_data_direction dir, bool coherent,
+ 	}
+ }
+ 
++static unsigned long size_to_iova_len(struct iova_domain *iovad, size_t size)
++{
++	size_t guard_size = 0;
++
++	/* allocate optional guard pages after the requested mapping */
++	if (CONFIG_IOMMU_DMA_GUARD_PAGES_KB)
++		guard_size = iova_align(iovad, CONFIG_IOMMU_DMA_GUARD_PAGES_KB << 10);
++
++	return (size + guard_size) >> iova_shift(iovad);
++}
++
+ static dma_addr_t iommu_dma_alloc_iova(struct iommu_domain *domain,
+ 		size_t size, u64 dma_limit, struct device *dev)
+ {
+@@ -759,7 +770,7 @@ static dma_addr_t iommu_dma_alloc_iova(struct iommu_domain *domain,
+ 	}
+ 
+ 	shift = iova_shift(iovad);
+-	iova_len = size >> shift;
++	iova_len = size_to_iova_len(iovad, size);
+ 
+ 	dma_limit = min_not_zero(dma_limit, dev->bus_dma_limit);
+ 
+@@ -796,17 +807,21 @@ static void iommu_dma_free_iova(struct iommu_domain *domain, dma_addr_t iova,
+ 				size_t size, struct iommu_iotlb_gather *gather)
+ {
+ 	struct iova_domain *iovad = &domain->iova_cookie->iovad;
++	unsigned long iova_len;
+ 
+ 	/* The MSI case is only ever cleaning up its most recent allocation */
+-	if (domain->cookie_type == IOMMU_COOKIE_DMA_MSI)
++	if (domain->cookie_type == IOMMU_COOKIE_DMA_MSI) {
+ 		domain->msi_cookie->msi_iova -= size;
+-	else if (gather && gather->queued)
++		return;
++	}
++
++	iova_len = size_to_iova_len(iovad, size);
++
++	if (gather && gather->queued)
+ 		queue_iova(domain->iova_cookie, iova_pfn(iovad, iova),
+-				size >> iova_shift(iovad),
+-				&gather->freelist);
++				iova_len, &gather->freelist);
+ 	else
+-		free_iova_fast(iovad, iova_pfn(iovad, iova),
+-				size >> iova_shift(iovad));
++		free_iova_fast(iovad, iova_pfn(iovad, iova), iova_len);
+ }
+ 
+ static void __iommu_dma_unmap(struct device *dev, dma_addr_t dma_addr,
+-- 
+2.48.1
