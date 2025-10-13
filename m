@@ -1,54 +1,53 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6DCB22E2F1A;
-	Mon, 13 Oct 2025 06:45:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E32ED1B4F09;
+	Mon, 13 Oct 2025 07:18:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760337904; cv=none; b=rRcNJybkAkdHfQ31Luc1m/SpzBUYlZuoPFHMTaIsrOZ82zuFKrSMJGXsNA7VcJoz9nMxSecqGK3MUvC6N5ABfgTKXZR+3qu4cVhQumIXtqiOJ93poBSWQDSy4UYY38WstGkJwaXK/4P9IDm8kECnTsFSBte9KaIi419b7gJZ9Us=
+	t=1760339888; cv=none; b=USItf5F7/ePmJBeIBA3pqpSxD8xcQQPYj8RY+Mfl91P5ut7oBPCD5f+50VHC2aAfM9GPSEcWPMRQ7wA3dlJXCUsripruXfdNYJAHTAoovG60NcCKg0C3imQra66ZGXzQmIlRs7OFPKwAVlxy3/iGdXKe035bzQ8p9y0ZrpgADxQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760337904; c=relaxed/simple;
-	bh=FgRFBbP8P5fV8E314WVTZ5BzxJCmZ5LLaCDYigU4+TI=;
+	s=arc-20240116; t=1760339888; c=relaxed/simple;
+	bh=YLv5InJLlW0GnvCcW21BMvEaiqUu0JrGPOOfzqOIL7Y=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=mujny9BDxMcetNGN/orpMlZbmIugtZRM72qN0DvmNK7iKfB9kIfZSMU76KA5FuQ848dZ/kQLZvI2qBzV8zcFZcKWB2Ktx+Y5N/aJQ1vuYjWDAg/rolQHj/bSFVIUaAXIRWYeCL9A8oMb5B7JDk6+kXN1tacQbGaJZyg/v4kOxc4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=g52eOs+T; arc=none smtp.client-ip=198.137.202.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org
+	 Content-Type:Content-Disposition:In-Reply-To; b=qe6NVzm3+fGJtEEwYvHBIDPUA+F1WBs4T2H8oaYlbchAlH4cH2nlRTgcAiv4hUpRpWpDf3ZLpQzxqQsXjg1aEXkEER9ADJ4lo93o87a/PfTPmyJ5lBhd5PqZdVbF16Zm2d0SIOY17l8Yb6XdGijl1XMyV0t/XatEXQ1YdXRmrX8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=X4R3k1LZ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="g52eOs+T"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=CK6xCOG1HC+zooaL67URetqqCyoarWjYFpW68lZJ0Jg=; b=g52eOs+TJooN70t73Ap5LaWvb/
-	tDW2aFYo1hCGOfJNG56k9V76XHyv8t9sdwaVxNXaIjgUWyTSWXRyihXJNsYgIhrSdF0r7F8n2mf48
-	KyKVu9Xd29YJFNTqgMkLBFOt96lGLeP0TLf1DNGQ4Ke6fUUEMO8tGmt6uCiU154rphKsXG7zMIrTq
-	y1ctylhYAgkk4jxJSpagC+OOngT90ufONdearUKda+EaFjmd7kAjf64XDCou3dQHP37VbApXtYZPw
-	663yF/gmCorKESypTCX50kkSPDGtlr361yfhYYr9aLEmfBXX5g+9ocAZzLwu7a3yC1RUqEpEYApXC
-	0krra5gw==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.98.2 #2 (Red Hat Linux))
-	id 1v8CIe-0000000CQN3-19Sa;
-	Mon, 13 Oct 2025 06:44:52 +0000
-Date: Sun, 12 Oct 2025 23:44:52 -0700
-From: Christoph Hellwig <hch@infradead.org>
-To: Suren Baghdasaryan <surenb@google.com>
-Cc: akpm@linux-foundation.org, david@redhat.com, lorenzo.stoakes@oracle.com,
-	Liam.Howlett@oracle.com, vbabka@suse.cz, alexandru.elisei@arm.com,
-	peterx@redhat.com, sj@kernel.org, rppt@kernel.org, mhocko@suse.com,
-	corbet@lwn.net, axboe@kernel.dk, viro@zeniv.linux.org.uk,
-	brauner@kernel.org, hch@infradead.org, jack@suse.cz,
-	willy@infradead.org, m.szyprowski@samsung.com, robin.murphy@arm.com,
-	hannes@cmpxchg.org, zhengqi.arch@bytedance.com,
-	shakeel.butt@linux.dev, axelrasmussen@google.com,
-	yuanchu@google.com, weixugc@google.com, minchan@kernel.org,
-	linux-mm@kvack.org, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
-	linux-fsdevel@vger.kernel.org, iommu@lists.linux.dev,
-	Minchan Kim <minchan@google.com>
-Subject: Re: [PATCH 1/8] mm: implement cleancache
-Message-ID: <aOyf5FxH8rXmCxLX@infradead.org>
-References: <20251010011951.2136980-1-surenb@google.com>
- <20251010011951.2136980-2-surenb@google.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="X4R3k1LZ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E43EAC4CEE7;
+	Mon, 13 Oct 2025 07:17:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1760339887;
+	bh=YLv5InJLlW0GnvCcW21BMvEaiqUu0JrGPOOfzqOIL7Y=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=X4R3k1LZHzpGoa3CGNOP1VANnxZgqbYFTh3O1uI0UOUZI6egZH7DS9iXzCNanfPj6
+	 5l4hRVdl8kug78iGi503BMwTf4nOfB4vvPqzfQblO8bANCTR0IepYFAi8pg4PmXcJl
+	 v5mRsMXje08tODxTmyA5OIz0MV0Bp+hR52IAzNGX/P+svL+EdB5DLwEoWOUND+O6Kf
+	 YuSG4fNpL6qP9OxqgNyTvU+dffpgHu93yEHMZLAsR25uNDeEeJ6nise1nSkPELIGCx
+	 VGgNLmvwA2eaX+H2UuCy8fUgkQfgvKdAEN9XvtoacZlIyOarhWxcIvseAbwa+xrPpj
+	 rWlSnFWp2aHtA==
+Date: Mon, 13 Oct 2025 10:17:55 +0300
+From: Mike Rapoport <rppt@kernel.org>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
+	Jann Horn <jannh@google.com>, Vasant Hegde <vasant.hegde@amd.com>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@intel.com>,
+	Alistair Popple <apopple@nvidia.com>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Uladzislau Rezki <urezki@gmail.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Andy Lutomirski <luto@kernel.org>, Yi Lai <yi1.lai@intel.com>,
+	iommu@lists.linux.dev, security@kernel.org, x86@kernel.org,
+	linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+	Dave Hansen <dave.hansen@linux.intel.com>
+Subject: Re: [PATCH v5 2/8] mm: Actually mark kernel page table pages
+Message-ID: <aOynozGF70jD3bo_@kernel.org>
+References: <20250919054007.472493-1-baolu.lu@linux.intel.com>
+ <20250919054007.472493-3-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -57,11 +56,106 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20251010011951.2136980-2-surenb@google.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+In-Reply-To: <20250919054007.472493-3-baolu.lu@linux.intel.com>
 
-Please don't add abstractions just because you can.  Just call directly
-into your gcma code instead of adding a costly abstraction with a single
-user.  That'll also make it much eaiser to review what GCMA actually
-does.
+On Fri, Sep 19, 2025 at 01:40:00PM +0800, Lu Baolu wrote:
+> From: Dave Hansen <dave.hansen@linux.intel.com>
+> 
+> Now that the API is in place, mark kernel page table pages just
+> after they are allocated. Unmark them just before they are freed.
+> 
+> Note: Unconditionally clearing the 'kernel' marking (via
+> ptdesc_clear_kernel()) would be functionally identical to what
+> is here. But having the if() makes it logically clear that this
+> function can be used for kernel and non-kernel page tables.
+> 
+> Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
 
+Acked-by: Mike Rapoport (Microsoft) <rppt@kernel.org>
+
+> ---
+>  include/asm-generic/pgalloc.h | 18 ++++++++++++++++++
+>  include/linux/mm.h            |  3 +++
+>  2 files changed, 21 insertions(+)
+> 
+> diff --git a/include/asm-generic/pgalloc.h b/include/asm-generic/pgalloc.h
+> index 3c8ec3bfea44..b9d2a7c79b93 100644
+> --- a/include/asm-generic/pgalloc.h
+> +++ b/include/asm-generic/pgalloc.h
+> @@ -28,6 +28,8 @@ static inline pte_t *__pte_alloc_one_kernel_noprof(struct mm_struct *mm)
+>  		return NULL;
+>  	}
+>  
+> +	ptdesc_set_kernel(ptdesc);
+> +
+>  	return ptdesc_address(ptdesc);
+>  }
+>  #define __pte_alloc_one_kernel(...)	alloc_hooks(__pte_alloc_one_kernel_noprof(__VA_ARGS__))
+> @@ -146,6 +148,10 @@ static inline pmd_t *pmd_alloc_one_noprof(struct mm_struct *mm, unsigned long ad
+>  		pagetable_free(ptdesc);
+>  		return NULL;
+>  	}
+> +
+> +	if (mm == &init_mm)
+> +		ptdesc_set_kernel(ptdesc);
+> +
+>  	return ptdesc_address(ptdesc);
+>  }
+>  #define pmd_alloc_one(...)	alloc_hooks(pmd_alloc_one_noprof(__VA_ARGS__))
+> @@ -179,6 +185,10 @@ static inline pud_t *__pud_alloc_one_noprof(struct mm_struct *mm, unsigned long
+>  		return NULL;
+>  
+>  	pagetable_pud_ctor(ptdesc);
+> +
+> +	if (mm == &init_mm)
+> +		ptdesc_set_kernel(ptdesc);
+> +
+>  	return ptdesc_address(ptdesc);
+>  }
+>  #define __pud_alloc_one(...)	alloc_hooks(__pud_alloc_one_noprof(__VA_ARGS__))
+> @@ -233,6 +243,10 @@ static inline p4d_t *__p4d_alloc_one_noprof(struct mm_struct *mm, unsigned long
+>  		return NULL;
+>  
+>  	pagetable_p4d_ctor(ptdesc);
+> +
+> +	if (mm == &init_mm)
+> +		ptdesc_set_kernel(ptdesc);
+> +
+>  	return ptdesc_address(ptdesc);
+>  }
+>  #define __p4d_alloc_one(...)	alloc_hooks(__p4d_alloc_one_noprof(__VA_ARGS__))
+> @@ -277,6 +291,10 @@ static inline pgd_t *__pgd_alloc_noprof(struct mm_struct *mm, unsigned int order
+>  		return NULL;
+>  
+>  	pagetable_pgd_ctor(ptdesc);
+> +
+> +	if (mm == &init_mm)
+> +		ptdesc_set_kernel(ptdesc);
+> +
+>  	return ptdesc_address(ptdesc);
+>  }
+>  #define __pgd_alloc(...)	alloc_hooks(__pgd_alloc_noprof(__VA_ARGS__))
+> diff --git a/include/linux/mm.h b/include/linux/mm.h
+> index 1ae97a0b8ec7..f3db3a5ebefe 100644
+> --- a/include/linux/mm.h
+> +++ b/include/linux/mm.h
+> @@ -2895,6 +2895,9 @@ static inline void pagetable_free(struct ptdesc *pt)
+>  {
+>  	struct page *page = ptdesc_page(pt);
+>  
+> +	if (ptdesc_test_kernel(pt))
+> +		ptdesc_clear_kernel(pt);
+> +
+>  	__free_pages(page, compound_order(page));
+>  }
+>  
+> -- 
+> 2.43.0
+> 
+
+-- 
+Sincerely yours,
+Mike.
