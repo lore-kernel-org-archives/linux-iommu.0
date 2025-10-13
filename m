@@ -1,209 +1,122 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3ED992FB97F;
-	Mon, 13 Oct 2025 08:35:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C16225A65A;
+	Mon, 13 Oct 2025 08:52:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760344536; cv=none; b=VfOAei1APVb1Nx9J5RN6gVDuUAci+ka7M5Xx8NPAaXn1z3wYrGCMstqF2N9RA4DYKqGe/8l4Ou139A839FgrMDWcBpoHfYfqhL9dLUZEpOA4DMrVODJ9jcruHzdrndTVI5azUeC/AxotXlAJbzjJ6R1sb1X0vvVUH+a3/aCF4uI=
+	t=1760345525; cv=none; b=C4XYXhCWRoOMpNcfWHYFol6PnFRFuho+2sEsUDQCsOM7OBwfbGuUcy6NN+Q0BhCb00VLS7ixht/g3tmOqx6pZJgX/iGCm+Jog44GsYzC0hJlFH5nqgys3yVPPa8CyL4zvLzBOscseYY09miELxoHK4/3bpJEWnz3kT97CpJZYzw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760344536; c=relaxed/simple;
-	bh=KLq6UV149iWlcbOb9BAgyPNNCpzPtwQ5QaRQCIh5ebk=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=Bd6RroZ1p5ZbFLBKreWss+fiN5ttAfQklrRAY0sauQ8KaYqe6Y3Hutqz4ykk2X2tnwEcdUwJEcoShBybhWA5A0MrJZxAIQLKYNwUqMxWAqz7/OoOIcpTs+RthupyhlFVFzMKd+TQXcfd4Rr2x9Wego0DFvzY6x/hr+uK6eLC+nA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Sl+YtXJN; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1760345525; c=relaxed/simple;
+	bh=D0Pm5gDAEf/J/fLMJeYhII2rupxN55IU1PVARShdLz8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
+	 Content-Type:References; b=rfM1wRomOUfd+XYcPqYCWIB0APG5z7CRIlW/9u7tcd7H8jNFwzjOVf7fe/0Zdj+ns6UPjn7Btwpr7naShEeTX34O6XSxdvMhNLevwN1GIOT198EOBVDObxX4cWtBuaSeLbEsRoqKNrZgbXrdYDEmnSEiz2aJmTdeBenK9R8hT4Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=BQoGMpil; arc=none smtp.client-ip=210.118.77.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Sl+YtXJN"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6ABFAC116B1;
-	Mon, 13 Oct 2025 08:35:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1760344535;
-	bh=KLq6UV149iWlcbOb9BAgyPNNCpzPtwQ5QaRQCIh5ebk=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:From;
-	b=Sl+YtXJNxiPzUTKnj5nq7CzD43piYS7wBecQAXfiXUxaN94nXtUgXkTFnKXYLWHJ2
-	 //ttm99e5QkvlcJSSlRjvk2r9KxeHpidc/j/xyNP4xZdsmAaLg+e2Cf7s9AtBqnO3C
-	 pSDXZGssVOarVlUO1MmNkp7PO/mQoofCC3ur/DX1n3LkOXiLEhvBgUevaaD7in4059
-	 rbgkE5z1rRx6XiG2IjkZty8gHd8FPYtqHixT7yFWMWDhuJ/iXCAc4S/eMw8KQlxMFc
-	 oFSXtPJSwsYIiXrcFSRAfN4eLWO4bJ0rAXdSg5aSjTmIhlPo3ZQk+0ZGJmOjZSjRzM
-	 tWecRHFZNPHQg==
-From: Maxime Ripard <mripard@kernel.org>
-Date: Mon, 13 Oct 2025 10:35:20 +0200
-Subject: [PATCH v8 5/5] dma-buf: heaps: cma: Create CMA heap for each CMA
- reserved region
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="BQoGMpil"
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20251013085200euoutp0266e34edf90c863a4c01eb72fc5c48eb3~uAOyYTX0q1874618746euoutp02G;
+	Mon, 13 Oct 2025 08:52:00 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20251013085200euoutp0266e34edf90c863a4c01eb72fc5c48eb3~uAOyYTX0q1874618746euoutp02G
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1760345520;
+	bh=JyDd/uFH2Am1LZ5SPDN+k8UExukF9D/xq2Z7HY8ZnFU=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=BQoGMpilRJCUe8Y44BcqjJWkeRiS+JPfur3kcgk/2YoTAS+ViVlUzaRYX89zuEjDq
+	 wkZ//2bWyV40qfk9fRhKG5W52cbl/HFo0RcqE6+fae76UZ4N7VyDdV6dd9ILg/D8OP
+	 faJI0JVLj/Gc3HQk8b0emDKXb80ilcDcD66u6PCM=
+Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20251013085200eucas1p2f4ded79121c5a222f59ecf4ddda0816c~uAOx-fHcX0880708807eucas1p26;
+	Mon, 13 Oct 2025 08:52:00 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20251013085157eusmtip27fccd916a2ad4442a7f4d1fa1f91c70b~uAOvsyZiW2933229332eusmtip2d;
+	Mon, 13 Oct 2025 08:51:57 +0000 (GMT)
+Message-ID: <e1d3661d-26ba-49ae-a124-dc5233c9107d@samsung.com>
+Date: Mon, 13 Oct 2025 10:51:57 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Betterbird (Windows)
+Subject: Re: [PATCH v1 3/6] iommu/exynos-iommu: Set release_domain to
+ exynos_identity_domain
+To: Nicolin Chen <nicolinc@nvidia.com>, joro@8bytes.org, jgg@nvidia.com,
+	kevin.tian@intel.com
+Cc: suravee.suthikulpanit@amd.com, will@kernel.org, robin.murphy@arm.com,
+	sven@kernel.org, j@jannau.net, robin.clark@oss.qualcomm.com,
+	krzk@kernel.org, dwmw2@infradead.org, baolu.lu@linux.intel.com,
+	yong.wu@mediatek.com, matthias.bgg@gmail.com,
+	angelogioacchino.delregno@collabora.com, tjeznach@rivosinc.com,
+	pjw@kernel.org, palmer@dabbelt.com, aou@eecs.berkeley.edu, heiko@sntech.de,
+	schnelle@linux.ibm.com, mjrosato@linux.ibm.com, orsonzhai@gmail.com,
+	baolin.wang@linux.alibaba.com, wens@csie.org, jernej.skrabec@gmail.com,
+	samuel@sholland.org, thierry.reding@gmail.com, jonathanh@nvidia.com,
+	jean-philippe@linaro.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, asahi@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+	linux-samsung-soc@vger.kernel.org, linux-mediatek@lists.infradead.org,
+	linux-riscv@lists.infradead.org, linux-rockchip@lists.infradead.org,
+	linux-s390@vger.kernel.org, linux-sunxi@lists.linux.dev,
+	linux-tegra@vger.kernel.org, virtualization@lists.linux.dev,
+	patches@lists.linux.dev
+Content-Language: en-US
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <56175bec385d24af9eb2a38632e1d6ce889025e3.1760312540.git.nicolinc@nvidia.com>
 Content-Transfer-Encoding: 7bit
-Message-Id: <20251013-dma-buf-ecc-heap-v8-5-04ce150ea3d9@kernel.org>
-References: <20251013-dma-buf-ecc-heap-v8-0-04ce150ea3d9@kernel.org>
-In-Reply-To: <20251013-dma-buf-ecc-heap-v8-0-04ce150ea3d9@kernel.org>
-To: Sumit Semwal <sumit.semwal@linaro.org>, 
- Benjamin Gaignard <benjamin.gaignard@collabora.com>, 
- Brian Starkey <Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>, 
- "T.J. Mercier" <tjmercier@google.com>, Jonathan Corbet <corbet@lwn.net>, 
- =?utf-8?q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
- Marek Szyprowski <m.szyprowski@samsung.com>, 
- Robin Murphy <robin.murphy@arm.com>
-Cc: Andrew Davis <afd@ti.com>, Jared Kangas <jkangas@redhat.com>, 
- Mattijs Korpershoek <mkorpershoek@kernel.org>, linux-media@vger.kernel.org, 
- dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, 
- linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
- iommu@lists.linux.dev, Maxime Ripard <mripard@kernel.org>
-X-Mailer: b4 0.14.2
+X-CMS-MailID: 20251013085200eucas1p2f4ded79121c5a222f59ecf4ddda0816c
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20251012235812eucas1p1209a75bffb5a4784955781d437746731
+X-EPHeader: CA
+X-CMS-RootMailID: 20251012235812eucas1p1209a75bffb5a4784955781d437746731
+References: <cover.1760312540.git.nicolinc@nvidia.com>
+	<CGME20251012235812eucas1p1209a75bffb5a4784955781d437746731@eucas1p1.samsung.com>
+	<56175bec385d24af9eb2a38632e1d6ce889025e3.1760312540.git.nicolinc@nvidia.com>
 
-Aside from the main CMA region, it can be useful to allow userspace to
-allocate from the other CMA reserved regions.
+On 13.10.2025 01:57, Nicolin Chen wrote:
+> Following a coming core change to pass in the old domain pointer into the
+> attach_dev op and its callbacks, exynos_iommu_identity_attach() will need
+> this new argument too, which the release_device op doesn't provide.
+>
+> Instead, the core provides a release_domain to attach to the device prior
+> to invoking the release_device callback. Thus, simply use that.
+>
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+Acked-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> ---
+>   drivers/iommu/exynos-iommu.c | 3 +--
+>   1 file changed, 1 insertion(+), 2 deletions(-)
+>
+> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+> index b6edd178fe25e..0857519ca7188 100644
+> --- a/drivers/iommu/exynos-iommu.c
+> +++ b/drivers/iommu/exynos-iommu.c
+> @@ -1429,8 +1429,6 @@ static void exynos_iommu_release_device(struct device *dev)
+>   	struct exynos_iommu_owner *owner = dev_iommu_priv_get(dev);
+>   	struct sysmmu_drvdata *data;
+>   
+> -	WARN_ON(exynos_iommu_identity_attach(&exynos_identity_domain, dev));
+> -
+>   	list_for_each_entry(data, &owner->controllers, owner_node)
+>   		device_link_del(data->link);
+>   }
+> @@ -1476,6 +1474,7 @@ static int exynos_iommu_of_xlate(struct device *dev,
+>   
+>   static const struct iommu_ops exynos_iommu_ops = {
+>   	.identity_domain = &exynos_identity_domain,
+> +	.release_domain = &exynos_identity_domain,
+>   	.domain_alloc_paging = exynos_iommu_domain_alloc_paging,
+>   	.device_group = generic_device_group,
+>   	.probe_device = exynos_iommu_probe_device,
 
-Indeed, those regions can have specific properties that can be useful to
-a specific us-case.
-
-For example, one of them platform I've been with has ECC enabled on the
-entire memory but for a specific region. Using that region to allocate
-framebuffers can be particular beneficial because enabling the ECC has a
-performance and memory footprint cost.
-
-Thus, exposing these regions as heaps user-space can allocate from and
-import wherever needed allows to cover that use-case.
-
-For now, only shared-dma-pools regions with the reusable property (ie,
-backed by CMA) are supported, but eventually we'll want to support other
-DMA pools types.
-
-Since we collected all the CMA regions created during boot, we can
-simply iterate over all of them to create the heaps.
-
-This has a weird interaction with the recent work on the CMA name, in
-particular the backward compatibility code created by commit
-854acbe75ff4 ("dma-buf: heaps: Give default CMA heap a fixed name").
-
-Indeed, the old name was either 'reserved', or the name of the
-reserved-memory region device tree node if the linux,cma-default
-property was set.
-
-In both these cases, we have now collected this region during boot, and
-we're using the same name. So we're now largely redundant with the
-code to handle backward compatibility code, and we can thus remove it
-and the associated Kconfig option.
-
-Reviewed-by: T.J. Mercier <tjmercier@google.com>
-Signed-off-by: Maxime Ripard <mripard@kernel.org>
----
- Documentation/userspace-api/dma-buf-heaps.rst |  9 +++++---
- drivers/dma-buf/heaps/Kconfig                 | 10 --------
- drivers/dma-buf/heaps/cma_heap.c              | 33 +++++++++++++--------------
- 3 files changed, 22 insertions(+), 30 deletions(-)
-
-diff --git a/Documentation/userspace-api/dma-buf-heaps.rst b/Documentation/userspace-api/dma-buf-heaps.rst
-index 17bf6829efd7963bc849765db54d327644e8c395..b78d2faeba62cda721a1f49d49e02bcb520ad429 100644
---- a/Documentation/userspace-api/dma-buf-heaps.rst
-+++ b/Documentation/userspace-api/dma-buf-heaps.rst
-@@ -22,8 +22,11 @@ following heaps:
-    through the ``cma`` parameter, a memory region Device-Tree node with
-    the ``linux,cma-default`` property set, or through the
-    ``CMA_SIZE_MBYTES`` or ``CMA_SIZE_PERCENTAGE`` Kconfig options. Prior
-    to Linux 6.17, its name wasn't stable and could be called
-    ``reserved``, ``linux,cma``, or ``default-pool``, depending on the
--   platform. From Linux 6.17 onwards, the creation of these heaps is
--   controlled through the ``DMABUF_HEAPS_CMA_LEGACY`` Kconfig option for
--   backwards compatibility.
-+   platform.
-+
-+ - A heap will be created for each reusable region in the device tree
-+   with the ``shared-dma-pool`` compatible, using the full device tree
-+   node name as its name. The buffer semantics are identical to
-+   ``default-cma-region``.
-diff --git a/drivers/dma-buf/heaps/Kconfig b/drivers/dma-buf/heaps/Kconfig
-index bb369b38b001af51721b56e065df92825022f1f1..a5eef06c422644e8aadaf5aff2bd9a33c49c1ba3 100644
---- a/drivers/dma-buf/heaps/Kconfig
-+++ b/drivers/dma-buf/heaps/Kconfig
-@@ -10,15 +10,5 @@ config DMABUF_HEAPS_CMA
- 	depends on DMABUF_HEAPS && DMA_CMA
- 	help
- 	  Choose this option to enable dma-buf CMA heap. This heap is backed
- 	  by the Contiguous Memory Allocator (CMA). If your system has these
- 	  regions, you should say Y here.
--
--config DMABUF_HEAPS_CMA_LEGACY
--	bool "Legacy DMA-BUF CMA Heap"
--	default y
--	depends on DMABUF_HEAPS_CMA
--	help
--	  Add a duplicate CMA-backed dma-buf heap with legacy naming derived
--	  from the CMA area's devicetree node, or "reserved" if the area is not
--	  defined in the devicetree. This uses the same underlying allocator as
--	  CONFIG_DMABUF_HEAPS_CMA.
-diff --git a/drivers/dma-buf/heaps/cma_heap.c b/drivers/dma-buf/heaps/cma_heap.c
-index 2a901af635ed76cdb085915c03258c235e302792..42f88193eab9f8f4571064c7b3b8a73bca20fdf4 100644
---- a/drivers/dma-buf/heaps/cma_heap.c
-+++ b/drivers/dma-buf/heaps/cma_heap.c
-@@ -20,10 +20,12 @@
- #include <linux/err.h>
- #include <linux/highmem.h>
- #include <linux/io.h>
- #include <linux/mm.h>
- #include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/of_reserved_mem.h>
- #include <linux/scatterlist.h>
- #include <linux/slab.h>
- #include <linux/vmalloc.h>
- 
- #define DEFAULT_CMA_NAME "default_cma_region"
-@@ -407,35 +409,32 @@ static int __init __add_cma_heap(struct cma *cma, const char *name)
- 	}
- 
- 	return 0;
- }
- 
--static int __init add_default_cma_heap(void)
-+static int __init add_cma_heaps(void)
- {
- 	struct cma *default_cma = dev_get_cma_area(NULL);
--	const char *legacy_cma_name;
-+	unsigned int i;
- 	int ret;
- 
--	if (!default_cma)
--		return 0;
-+	if (default_cma) {
-+		ret = __add_cma_heap(default_cma, DEFAULT_CMA_NAME);
-+		if (ret)
-+			return ret;
-+	}
- 
--	ret = __add_cma_heap(default_cma, DEFAULT_CMA_NAME);
--	if (ret)
--		return ret;
-+	for (i = 0; i < dma_areas_num; i++) {
-+		struct cma *cma = dma_areas[i];
- 
--	if (IS_ENABLED(CONFIG_DMABUF_HEAPS_CMA_LEGACY)) {
--		legacy_cma_name = cma_get_name(default_cma);
--		if (!strcmp(legacy_cma_name, DEFAULT_CMA_NAME)) {
--			pr_warn("legacy name and default name are the same, skipping legacy heap\n");
--			return 0;
-+		ret = __add_cma_heap(cma, cma_get_name(cma));
-+		if (ret) {
-+			pr_warn("Failed to add CMA heap %s", cma_get_name(cma));
-+			continue;
- 		}
- 
--		ret = __add_cma_heap(default_cma, legacy_cma_name);
--		if (ret)
--			pr_warn("failed to add legacy heap: %pe\n",
--				ERR_PTR(ret));
- 	}
- 
- 	return 0;
- }
--module_init(add_default_cma_heap);
-+module_init(add_cma_heaps);
- MODULE_DESCRIPTION("DMA-BUF CMA Heap");
-
+Best regards
 -- 
-2.51.0
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
