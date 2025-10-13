@@ -1,383 +1,181 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BCAA18C03F
-	for <iommu@lists.linux.dev>; Mon, 13 Oct 2025 12:31:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB24930CDBF;
+	Mon, 13 Oct 2025 15:26:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760358678; cv=none; b=sFqg6AY+Dh6+eTYlMHWNd5fSS50bEq7lcJsc5Z8y/WO0TTIYahJbYnZMbQ5LmHhkGC+FYoSaP9Vg9JyqP6mhtYzBWEvBw/2X0kw9MRbZXLPWkbOwCviIH2LLcHH/4I14xB6swHUnc4MBwCah+ZZR0tEb4y/3XtFLYarpZmV5DF0=
+	t=1760369188; cv=none; b=X5ozrGk5sghpZA1Qkx5ka5I4x29di8NgPpLej3QlaSYuJk2wsN4Pi2a4S4J8SZxre5cHo9OMNq/uSOFjf5R7faivCTf9KWmedltMvt8kNgvrVNmtKO3IIfvnmp2gLBHl3JMFKeSwCMiFTeeoO1w9ej4RSYZiAf0Hor/ALrT+2mo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760358678; c=relaxed/simple;
-	bh=uoTIS15MH8nY66zuIG6Cb/OhBybk23RAtlaq7Vr7FlY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=C7RpfQZ4KvghCyDXwSLXHCPSwKntDlzOlp+Qfpq7HCtaQKAhNvoz8drSy69ONOXVziTR18d/aOKC1LPEzYjhnRq8lJYlkG8bRjxPYxi+sQ21hYqKa93qRNNlLqqYvY/MqZn4KK9a8+278cXILcIH8xvgDUN/pr94IPUqY6EvxLM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=oRGkeqnU; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1760369188; c=relaxed/simple;
+	bh=iwT2J/6Ee3JNCasRQZJmlsM7yv8uBxsSvtO7x8CH+0Y=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=lJtgoQkhZAFbVYkCxo3gGg34Gwjxibtt9MZbfVN3RKvvMLYkLcPBI90+72zlyoRkW75VlZrkDMHG1df0EhTQ62xPREtiZEJUScR54Vvzm1HnmnCqX46aMiAdxt+cgMXJzsjPEcYdrHOGcg4qfobZilEY1awONK06I+jgy0Mabyk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QI46AevF; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="oRGkeqnU"
-Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 59DAIBdw024173
-	for <iommu@lists.linux.dev>; Mon, 13 Oct 2025 12:31:15 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=5zCwVcNtc4FphT3xLZL9GNyV
-	sIOnupN3QcblUxzzUZA=; b=oRGkeqnUKIBDmnnMrkJfo7jFYyes3mWLDq0rikzw
-	xqSZ7grGWwFUlIVZ3qYOsug/cXgTzlqtg17ZF20GSfYpn0myy64dQdkaryZeRSwz
-	IwkBz2qChHb0oM8c/Z+m8jyc6ftWTFUYctM/PzOGp9sWG959XflFiFjORSg7d1ZQ
-	JQTVR9jWmCK6WS+8Tlc68g9GkLJFyYSP5UJ/DK1nb5n3KoS3DxJi2DI7hxSd3M40
-	ZOJM+0jkhzAqY4WGaYH+7+yn3b+NMA8ah4tdpcMASgb0opt/cXllGVT4/gBrdk/W
-	SowgJCngBWAE3jftS56Z4Hu/HNn4WYMiLjSzPnm3ReEisg==
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com [209.85.222.200])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 49qfa84hsm-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Mon, 13 Oct 2025 12:31:15 +0000 (GMT)
-Received: by mail-qk1-f200.google.com with SMTP id af79cd13be357-871614ad3efso2173404585a.0
-        for <iommu@lists.linux.dev>; Mon, 13 Oct 2025 05:31:15 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1760358674; x=1760963474;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=5zCwVcNtc4FphT3xLZL9GNyVsIOnupN3QcblUxzzUZA=;
-        b=X4uJFC/+QZhGuQHk/HHFrkyklYCjcABPlNR1+/gXBtbHJy90nY/6bjn3715LSU24c+
-         9HgTnApz6dRNGHjdOqTaW7OPi6RpLP6BfEodM/j8zC20Z6QTdhOlGNFf0vswvdHnInbB
-         OrM2VSi/ABjkDXF8v3Nt08DapWA8wsBG5RsjDBO1a8iaOmWb11GWmo8EslsIDE9Mq0OF
-         1zeXHUpH8oa0xYPMxzjWLB/XUlgwKn/nXI7BF+E7IxjyLbW3Aq9X6t+dAd81HLZ5/d1W
-         Y1SBbO8vUco9ilUrvvjRWWo3WqDufk5xnxLrm6msiE1gG1x5CWVfsDXm23P88cEHUak6
-         DhUw==
-X-Forwarded-Encrypted: i=1; AJvYcCWfR4wZaKJDgREilYLzv0T0UoWX4BpQmr9ePCR0PAjuak3og0Z1Mdl10ffRbhZUy5UyltnV6w==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzBG3Tn94gu37Wu+ZPTf4lCYfTE7CjznBA0NUS0so6EUHBnJfE4
-	4xT2xg8PZUHqG4bOA7o8sOG8c8ZffAkw9/3T9ytYVCE53+pksRjLioh1Amu3mxeDof46n+Pg/eF
-	Y0dwKENIlezZeWMGWy3fSDuYlgC/lS0pn5t9MsdQxkxicpRU363g+uFKkxg==
-X-Gm-Gg: ASbGncsmaGV44qPIi2FWUMvyDBVXt/icCubFqHUXLfPM2Z4Zc3unsZNPPALLw2lTLW+
-	VGwVlFUBlGknrET/xXvguPc6e1oRHv81lPBYdElQ5U6AxQTD4FeZ6CKHnNeMMA4mPlLAb//XH/B
-	an01sogXQPGqBNx9IrFELInfu8jBZ+o+HD5aqu7D0ubuIocSaE4E30pdfeWBgRH/BM8pxtxlatc
-	vqQ86YXIUENQ7GCuMjgItJAy8MxfUKIoXx89XuObNt2nKFIK3+ZyZzJvF+kKajeHATSHVLCmp4W
-	tdxPp5N8fpyW8s355WuEarm0BKPDxgfjtWZMt3rBErYFzr7ENliU5Gm8ZaWlKz6k9x6C42lEqto
-	9AgFO9AX065wVWpwsgtMz1yw6Y5u6fFS4Z44MB2/ws/YWewdB8yJL
-X-Received: by 2002:a05:620a:2590:b0:829:1528:721a with SMTP id af79cd13be357-8835088edbdmr2950637185a.27.1760358674166;
-        Mon, 13 Oct 2025 05:31:14 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IG1nSkwDzlu6z+r9dEsjnMTj3G8obGwPaEPkbut/N88CeJLY+od62fAKykMgjMzXgMHhwvaTg==
-X-Received: by 2002:a05:620a:2590:b0:829:1528:721a with SMTP id af79cd13be357-8835088edbdmr2950629085a.27.1760358673497;
-        Mon, 13 Oct 2025 05:31:13 -0700 (PDT)
-Received: from umbar.lan (2001-14ba-a0c3-3a00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a0c3:3a00:264b:feff:fe8b:be8a])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-3762ea115fcsm29958491fa.40.2025.10.13.05.31.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Oct 2025 05:31:12 -0700 (PDT)
-Date: Mon, 13 Oct 2025 15:31:10 +0300
-From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>, joro@8bytes.org,
-        will@kernel.org, saravanak@google.com, conor+dt@kernel.org,
-        robh@kernel.org, mchehab@kernel.org, bod@kernel.org,
-        krzk+dt@kernel.org, abhinav.kumar@linux.dev,
-        vikash.garodia@oss.qualcomm.com, dikshita.agarwal@oss.qualcomm.com,
-        Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
-        bjorn.andersson@oss.qualcomm.com, linux-media@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-Subject: Re: [RFC PATCH 0/3] Introduce iommu-map-masked for platform devices
-Message-ID: <zcgn4xw2xghyna2eysavujbzbiydyki7p7upzzv7one5mdyjy6@sj7f75kc4vwu>
-References: <20250928171718.436440-1-charan.kalla@oss.qualcomm.com>
- <aec0f40a-8346-4194-8b18-1022fe3366bb@arm.com>
- <0d0560cc-9757-4c7b-8de4-170148d99481@oss.qualcomm.com>
- <ead7cf8b-fbc4-4242-a9da-b313dded1abc@arm.com>
- <nzqte4glwtpjs5bhkxz43yhdufelxvqvzmg5tepudxwetimir3@bvlw5csjizsh>
- <9d3eeb9f-b8ea-48e5-a1d9-0865f63ef991@arm.com>
- <fhb4woejzh3r6v5dxvdiopnsbuwstucfuuzbiymxg4wrxrjc7t@dt3z3utq6lwd>
- <8d88cd9d-16e8-43f9-8eb3-89862da1d0c1@arm.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QI46AevF"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F303AC4CEFE;
+	Mon, 13 Oct 2025 15:26:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1760369187;
+	bh=iwT2J/6Ee3JNCasRQZJmlsM7yv8uBxsSvtO7x8CH+0Y=;
+	h=From:To:Cc:Subject:Date:From;
+	b=QI46AevFpmY08Ci9IDO9Gbh1+r/WU2BxnmEGrp2cn2WKFO9huEbazJLddAk4lN5GX
+	 b5c/n1Xuj+sMBclqJh5bm30LuSPzc6gcOuf3MBJoABy1hwPlYjR9mrnXGr0b+7QdBH
+	 fhxk9/aQRt4ipCV+PI/GqslOGkkvvHIuFGClxI7pj6yC11uh2TNxiWya2U/uyAT24m
+	 ZNi8xuJ0//k5X/ObU507wts9lR7ncxAQFX2BVBDLEAaxW0xvMTsRJHR/EzMS3LIB1a
+	 WgkAoZ71H1kPSiyyABQNvnMsFUwlG5bAg4iD17Ru5KX1wb5ub49SkfrHTpAFNdvccF
+	 ulvZnDXcm9buA==
+From: Leon Romanovsky <leon@kernel.org>
+To: Alex Williamson <alex.williamson@redhat.com>
+Cc: Jason Gunthorpe <jgg@nvidia.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	=?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+	dri-devel@lists.freedesktop.org,
+	iommu@lists.linux.dev,
+	Jens Axboe <axboe@kernel.dk>,
+	Joerg Roedel <joro@8bytes.org>,
+	kvm@vger.kernel.org,
+	linaro-mm-sig@lists.linaro.org,
+	linux-block@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-media@vger.kernel.org,
+	linux-mm@kvack.org,
+	linux-pci@vger.kernel.org,
+	Logan Gunthorpe <logang@deltatee.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Vivek Kasireddy <vivek.kasireddy@intel.com>,
+	Will Deacon <will@kernel.org>
+Subject: [PATCH v5 0/9] vfio/pci: Allow MMIO regions to be exported through dma-buf
+Date: Mon, 13 Oct 2025 18:26:02 +0300
+Message-ID: <cover.1760368250.git.leon@kernel.org>
+X-Mailer: git-send-email 2.51.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8d88cd9d-16e8-43f9-8eb3-89862da1d0c1@arm.com>
-X-Proofpoint-GUID: qqVaK08zTWhZzzCHAnm5zNDxhS-6trK3
-X-Proofpoint-ORIG-GUID: qqVaK08zTWhZzzCHAnm5zNDxhS-6trK3
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMDExMDAxNyBTYWx0ZWRfX7loAB7zEBxnD
- schpPSn5KZnqfQm9CZkZVTkYS2CQ3MpKRFb7gK5/Rj8KsvluAU/NyfBDV8D5tUU7cQ2v91/RPwW
- WltEXJTNyyF3vHoWES/E5N9v81Mwsdm5jhaMkFGUcjjDiqWx+dSIszKqeXaCUdB+QJoPaERadsy
- 0M5CKxYhUVQKJGUpg6FFv8LF7n3vu2cjuJYlCd8j/QXjDEyVPVvGqKBz+Oui3MRJZG4dskSKwd8
- UZ5PWPa39piIaN7gFI5HY1jEOq2ITO7sUDqt3lemo/LJQSueuzmidyeUp6Jk0uG1MAXCwtXpVy6
- /24bCUMdb3jbn5W7nJ3bTSQ9cfLsIC9NXeYK3rLoTAPcvo2vRC/jY6b0ptvyDxkY6SusmGpPTG4
- Ikowk+cV6rCM0/BvxYM7tG8PyMCOlw==
-X-Authority-Analysis: v=2.4 cv=JLw2csKb c=1 sm=1 tr=0 ts=68ecf113 cx=c_pps
- a=hnmNkyzTK/kJ09Xio7VxxA==:117 a=xqWC_Br6kY4A:10 a=kj9zAlcOel0A:10
- a=x6icFKpwvdMA:10 a=VwQbUJbxAAAA:8 a=KKAkSRfTAAAA:8 a=A-iAV8OxTwgq9s7Eiz8A:9
- a=CjuIK1q_8ugA:10 a=PEH46H7Ffwr30OY-TuGO:22 a=cvBusfyB2V15izCimMoJ:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1117,Hydra:6.1.9,FMLib:17.12.80.40
- definitions=2025-10-13_04,2025-10-06_01,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- lowpriorityscore=0 phishscore=0 adultscore=0 bulkscore=0 priorityscore=1501
- impostorscore=0 suspectscore=0 malwarescore=0 spamscore=0 clxscore=1015
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.19.0-2510020000 definitions=main-2510110017
+Content-Transfer-Encoding: 8bit
 
-On Mon, Oct 13, 2025 at 12:20:54PM +0100, Robin Murphy wrote:
-> On 2025-10-09 7:25 pm, Dmitry Baryshkov wrote:
-> > On Thu, Oct 09, 2025 at 06:03:29PM +0100, Robin Murphy wrote:
-> > > On 2025-10-09 2:19 pm, Dmitry Baryshkov wrote:
-> > > > On Thu, Oct 09, 2025 at 11:46:55AM +0100, Robin Murphy wrote:
-> > > > > On 2025-10-08 8:10 pm, Charan Teja Kalla wrote:
-> > > > > > 
-> > > > > > On 9/29/2025 3:50 PM, Robin Murphy wrote:
-> > > > > > > > USECASE [1]:
-> > > > > > > > -----------
-> > > > > > > > Video IP, 32bit, have 2 hardware sub blocks(or can be called as
-> > > > > > > > functions) called as pixel and nonpixel blocks, that does decode and
-> > > > > > > > encode of the video stream. These sub blocks are __configured__ to
-> > > > > > > > generate different stream IDs.
-> > > > > > > 
-> > > > > > > So please clarify why you can't:
-> > > > > > > 
-> > > > > > > a) Describe the sub-blocks as individual child nodes each with their own
-> > > > > > > distinct "iommus" property
-> > > > > > > 
-> > > > > > 
-> > > > > > Thanks Robin for your time. Sorry for late reply as I really didn't have
-> > > > > > concrete answer for this question.
-> > > > > > 
-> > > > > > First let me clarify the word "sub blocks" -- This is just the logical
-> > > > > > separation with no separate address space to really able to define them
-> > > > > > as sub devices. Think of it like a single video IP with 2 dma
-> > > > > > engines(used for pixel and non-pixel purpose).
-> > > > > > 
-> > > > > > I should agree that the child-nodes in the device tree is the easy one
-> > > > > > and infact, it is how being used in downstream.
-> > > > > > 
-> > > > > > For upstream -- Since there is no real address space to interact with
-> > > > > > these sub-blocks(or logical blocks), does it really qualify to define as
-> > > > > > child nodes in the device tree? I see there is some push back[1].
-> > > > > 
-> > > > > Who says you need an address space? Child nodes without "reg" properties,
-> > > > > referenced by name, compatible or phandle, exist all over the place for all
-> > > > > manner of reasons. If there are distinct logical functions with their own
-> > > > > distinct hardware properties, then I would say having child nodes to
-> > > > > describe and associate those properties with their respective functions is
-> > > > > entirely natural and appropriate. The first example that comes to mind of
-> > > > > where this is a well-established practice is PMICs - to pick one at random:
-> > > > > Documentation/devicetree/bindings/regulator/qcom,rpmh-regulator.yaml
-> > > > 
-> > > > Logical function, that's correct. And also note, for PMICs that practice
-> > > > has bitten us back. For PM8008 we switched back to a non-subdevice
-> > > > representation.
-> > > > 
-> > > > > For bonus irony, you can't take the other approaches without inherently
-> > > > > *introducing* a notional address space in the form of your logical function
-> > > > > IDs anyway.
-> > > > > 
-> > > > > >      > or:
-> > > > > > > 
-> > > > > > > b) Use standard "iommu-map" which already supports mapping a masked
-> > > > > > > input ID to an arbitrary IOMMU specifier
-> > > > > > > 
-> > > > > > 
-> > > > > > I think clients is also required to program non-zero smr mask, where as
-> > > > > > iommu-map just maps the id to an IOMMU specifier(sid). Please LMK if I
-> > > > > > am unable to catch your thought here.
-> > > > > An IOMMU specifier is whatever the target IOMMU node's #iommu-cells says it
-> > > > > is. The fact that Linux's parsing code only works properly for #iommu-cells
-> > > > > = 1 is not really a DT binding problem (other than it stemming from a loose
-> > > > > assumption stated in the PCI binding's use of the property).
-> > > > 
-> > > > I really don't like the idea of extending the #iommu-cells. The ARM SMMU
-> > > > has only one cell, which is correct even for our platforms. The fact
-> > > > that we need to identify different IOMMU SIDs (and handle them in a
-> > > > differnt ways) is internal to the video device (and several other
-> > > > devices). There is nothing to be handled on the ARM SMMU side.
-> > > 
-> > > Huh? So if you prefer not to change anything, are you suggesting this series
-> > > doesn't need to exist at all? Now I'm thoroughly confused...
-> > 
-> > Hmm. We need changes, but I don't feel like adding the FUNCTION_ID to
-> > #iommu-cells is the best idea.
-> 
-> What? No, any function ID would be an *input* to a map, not part of the
-> output specifier; indeed it should never go anywhere near the IOMMU, I don't
-> think anyone suggested that.
+Changelog:
+v5:
+ * Rebased on top of v6.18-rc1.
+ * Added more validation logic to make sure that DMA-BUF length doesn't
+   overflow in various scenarios.
+ * Hide kernel config from the users.
+ * Fixed type conversion issue. DMA ranges are exposed with u64 length,
+   but DMA-BUF uses "unsigned int" as a length for SG entries.
+ * Added check to prevent from VFIO drivers which reports BAR size
+   different from PCI, do not use DMA-BUF functionality.
+v4: https://lore.kernel.org/all/cover.1759070796.git.leon@kernel.org
+ * Split pcim_p2pdma_provider() to two functions, one that initializes
+   array of providers and another to return right provider pointer.
+v3: https://lore.kernel.org/all/cover.1758804980.git.leon@kernel.org
+ * Changed pcim_p2pdma_enable() to be pcim_p2pdma_provider().
+ * Cache provider in vfio_pci_dma_buf struct instead of BAR index.
+ * Removed misleading comment from pcim_p2pdma_provider().
+ * Moved MMIO check to be in pcim_p2pdma_provider().
+v2: https://lore.kernel.org/all/cover.1757589589.git.leon@kernel.org/
+ * Added extra patch which adds new CONFIG, so next patches can reuse
+ * it.
+ * Squashed "PCI/P2PDMA: Remove redundant bus_offset from map state"
+   into the other patch.
+ * Fixed revoke calls to be aligned with true->false semantics.
+ * Extended p2pdma_providers to be per-BAR and not global to whole
+ * device.
+ * Fixed possible race between dmabuf states and revoke.
+ * Moved revoke to PCI BAR zap block.
+v1: https://lore.kernel.org/all/cover.1754311439.git.leon@kernel.org
+ * Changed commit messages.
+ * Reused DMA_ATTR_MMIO attribute.
+ * Returned support for multiple DMA ranges per-dMABUF.
+v0: https://lore.kernel.org/all/cover.1753274085.git.leonro@nvidia.com
 
-It was Bryan, https://lore.kernel.org/linux-arm-msm/9bae595a-597e-46e6-8eb2-44424fe21db6@linaro.org
+---------------------------------------------------------------------------
+Based on "[PATCH v6 00/16] dma-mapping: migrate to physical address-based API"
+https://lore.kernel.org/all/cover.1757423202.git.leonro@nvidia.com/ series.
+---------------------------------------------------------------------------
 
-> 
-> > > If you want to use SMR masks, then you absolutely need #iommu-cells = 2,
-> > > because that is the SMMU binding for using SMR masks. It would definitely
-> > 
-> > I'm sorry. Yes, we have #iommu-cells = <2>.
-> > 
-> > > not be OK to have some magic property trying to smuggle
-> > > IOMMU-driver-specific data contrary to what the IOMMU node itself says. As
-> > > for iommu-map, I don't see what would be objectionable about improving the
-> > > parsing to respect a real #iommu-cells value rather than hard-coding an
-> > > assumption. Yes, we'd probably need to forbid entries with length > 1
-> > > targeting IOMMUs with #iommu-cells > 1, since the notion of a linear
-> > 
-> > This will break e.g. PCIe on Qualcomm platforms:
-> > 
-> >                          iommu-map = <0x0   &apps_smmu 0x1400 0x1>,
-> >                                      <0x100 &apps_smmu 0x1401 0x1>;
-> > 
-> > 
-> > But this seems unlogical anyway wrt. apps_smmu having #iommu-cells =
-> > <2>. It depends on ARM SMMU ignoring the second cell when it's not
-> > present.
-> 
-> Urgh, yes, that's just broken already :(
-> 
-> At least they all seem to be a sufficiently consistent pattern that a
-> targeted workaround to detect old DTBs looks feasible (I'm thinking, if
-> iommu-map size % 4 == 0 and cells n*4 + 3 are all 1 and cells n*4 + 1 are
-> all the same phandle to an IOMMU with #iommu-cells == 2, then parse as if
-> #iommu-cells == 1)
+This series extends the VFIO PCI subsystem to support exporting MMIO
+regions from PCI device BARs as dma-buf objects, enabling safe sharing of
+non-struct page memory with controlled lifetime management. This allows RDMA
+and other subsystems to import dma-buf FDs and build them into memory regions
+for PCI P2P operations.
 
-How do we handle the case of #iommu-cells = <2>? I.e. what should be the
-"fixed" representation of the map above? Should we have usual cells and
-one extra "length" just for the sake of it?
+The series supports a use case for SPDK where a NVMe device will be
+owned by SPDK through VFIO but interacting with a RDMA device. The RDMA
+device may directly access the NVMe CMB or directly manipulate the NVMe
+device's doorbell using PCI P2P.
 
-               iommu-map = <0x0   &apps_smmu 0x1400 0x0 0x1>,
-                           <0x100 &apps_smmu 0x1401 0x0 0x1>;
+However, as a general mechanism, it can support many other scenarios with
+VFIO. This dmabuf approach can be usable by iommufd as well for generic
+and safe P2P mappings.
 
+In addition to the SPDK use-case mentioned above, the capability added
+in this patch series can also be useful when a buffer (located in device
+memory such as VRAM) needs to be shared between any two dGPU devices or
+instances (assuming one of them is bound to VFIO PCI) as long as they
+are P2P DMA compatible.
 
-I really like the idea of fixing iommu-map as that would remove the need
-for other properties, but 
+The implementation provides a revocable attachment mechanism using dma-buf
+move operations. MMIO regions are normally pinned as BARs don't change
+physical addresses, but access is revoked when the VFIO device is closed
+or a PCI reset is issued. This ensures kernel self-defense against
+potentially hostile userspace.
 
-> 
-> > > relationship between the input ID and the output specifier falls apart when
-> > > the specifier is complex, but that seems simple enough to implement and
-> > > document (even if it's too fiddly to describe in the schema itself), and
-> > > still certainly no worse than having another property that *is* just
-> > > iommu-map with implicit length = 1.
-> > > 
-> > > And if you want individual StreamIDs for logical functions to be attachable
-> > > to distinct contexts then those functions absolutely must be visible to the
-> > > IOMMU layer and the SMMU driver as independent devices with their own unique
-> > > properties, which means either they come that way from the DT as of_platform
-> > > devices in the first place, or you implement a full bus_type abstraction
-> > 
-> > Not necessarily. Tegra display driver creates a device for each context
-> > on its own.
-> No, the *display* driver does not; the host1x bus driver does, which is the
-> point I was making - that has a proper bus abstraction tied into the IOMMU
-> layer, such that the devices are correctly configured long before the actual
-> DRM driver(s) get anywhere near them.
+The series includes significant refactoring of the PCI P2PDMA subsystem
+to separate core P2P functionality from memory allocation features,
+making it more modular and suitable for VFIO use cases that don't need
+struct page support.
 
-Ack. I agree. it's drivers/gpu/host1x/context, not drivers/gpu/drm/
+-----------------------------------------------------------------------
+The series is based originally on
+https://lore.kernel.org/all/20250307052248.405803-1-vivek.kasireddy@intel.com/
+but heavily rewritten to be based on DMA physical API.
+-----------------------------------------------------------------------
+The WIP branch can be found here:
+https://git.kernel.org/pub/scm/linux/kernel/git/leon/linux-rdma.git/log/?h=dmabuf-vfio-v5
 
-> 
-> > In fact, using OF to create context devices is _less_
-> > robust, because now the driver needs to sync, checking that there is a
-> > subdevice, that it has probed, etc. Using manually created devices seems
-> > better from my POV.
-> 
-> Huh? A simple call to of_platform_populate() is somehow less robust than
-> open-coding much of the same logic that of_platform_populate() does plus a
-> bunch of hackery to try to fake up an of_node to make the new device appear
-> to own the appropriate properties?
-> 
-> Having entire sub-*drivers* for child devices or not is an orthogonal issue
-> regardless of whichever way they are created.
+Thanks
 
-I was (again) looking at host1x. It doesn't fake of_node (nor does it
-have actual OF nodes). Instead it just mapps IOMMUs directly to the
-context devices. Compare this to misc/fastrpc.c, which has subdevices
-and drivers to map contexts. The latter one looks less robust.
+Leon Romanovsky (7):
+  PCI/P2PDMA: Separate the mmap() support from the core logic
+  PCI/P2PDMA: Simplify bus address mapping API
+  PCI/P2PDMA: Refactor to separate core P2P functionality from memory
+    allocation
+  PCI/P2PDMA: Export pci_p2pdma_map_type() function
+  types: move phys_vec definition to common header
+  vfio/pci: Enable peer-to-peer DMA transactions by default
+  vfio/pci: Add dma-buf export support for MMIO regions
 
-And from DT perspective compare:
+Vivek Kasireddy (2):
+  vfio: Export vfio device get and put registration helpers
+  vfio/pci: Share the core device pointer while invoking feature
+    functions
 
-		fastrpc {
-			compatible = "qcom,fastrpc";
-			#address-cells = <1>;
-			#size-cells = <0>;
-
-			compute-cb@3 {
-				compatible = "qcom,fastrpc-compute-cb";
-				reg = <3>;
-				iommus = <&apps_smmu 0x1803 0x0>;
-			};
-
-			compute-cb@4 {
-				compatible = "qcom,fastrpc-compute-cb";
-				reg = <4>;
-				iommus = <&apps_smmu 0x1804 0x0>;
-			};
-
-			compute-cb@5 {
-				compatible = "qcom,fastrpc-compute-cb";
-				reg = <5>;
-				iommus = <&apps_smmu 0x1805 0x0>;
-			};
-		};
-
-VS (note, it doesn't have 'length', it can be added back with no issues):
-
-		fastrpc {
-			compatible = "qcom,fastrpc";
-			#address-cells = <1>;
-			#size-cells = <0>;
-
-			iommu-map = <3 &apps_smmu 0x1803 0x0>,
-				    <4 &apps_smmu 0x1804 0x0>,
-				    <5 &apps_smmu 0x1805 0x0>;
-		};
-
-
-I think the latter is more compact, and more robust.
-
-Note, to make a complete example, it should be probably something like
-(sc7280, cdsp, note duplicate IDs in the map, again, I omitted length):
-
-	       fastrpc {
-			compatible = "qcom,fastrpc";
-
-			iommu-map = <1 &apps_smmu 0x11a1 0x0420>,
-				    <1 &apps_smmu 0x1181 0x0420>,
-				    <2 &apps_smmu 0x11a2 0x0420>,
-				    <2 &apps_smmu 0x1182 0x0420>,
-				    <3 &apps_smmu 0x11a3 0x0420>,
-				    <3 &apps_smmu 0x1183 0x0420>;
-			dma-coherent;
-		};
-
-
-> > > which will have to be hooked up to the IOMMU layer. You cannot make IOMMU
-> > > configuration "internal" to the actual client driver which is only allowed
-> > > to bind *after* said IOMMU configuration has already been made.
-> > 
-> > I'm not sure I follow this, I'm sorry.
-> I mean IOMMU configuration is designed to happen at device_add() time, and
-> client drivers must not assume otherwise (the mechanisms for handling IOMMU
-> drivers registering "late" from modules are internal details that can and
-> will change). If you're under the impression that a straightforward platform
-> driver for the video codec itself would be able to invoke IOMMU
-> configuration for the video codec platform device (without unacceptable
-> levels of hackery) then you are mistaken, sorry.
-> 
-> Again, to be able to assign StreamIDs to different contexts, those StreamIDs
-> must uniquely belong to different struct devices. Thus in terms of how you
-> get to those struct devices from a DT representation, either they come from
-> distinct DT nodes with standard "iommus" properties that the generic
-> of_platform code can create and configure accordingly, or you're doing a
-> non-trivial amount of work to implement your own bus layer like
-> host1x_context_bus to manage your own type of sub-device. There is no valid
-> middle ground of trying to stuff driver-specific knowledge of arbitrarily
-> made-up function IDs into the generic platform bus code.
-
-
-I'd totally prefer something like:
-
-	video-codec@foobar {
-		compatible = "qcom,video";
-
-		iommus = <&apps_smmu 0x1234 0xca>;
-		iommu-maps = <PIXEL &apps_smmu 0xabcdef 0xac>,
-			     <SECURE_PIXEL &apps_smmu 0x898989 0xac>,
-			     <SECURE_BITSTREAM &apps_smmu 0x898998 0xac>;
-	};
+ block/blk-mq-dma.c                 |   7 +-
+ drivers/iommu/dma-iommu.c          |   4 +-
+ drivers/pci/p2pdma.c               | 175 ++++++++---
+ drivers/vfio/pci/Kconfig           |   3 +
+ drivers/vfio/pci/Makefile          |   2 +
+ drivers/vfio/pci/vfio_pci_config.c |  22 +-
+ drivers/vfio/pci/vfio_pci_core.c   |  63 ++--
+ drivers/vfio/pci/vfio_pci_dmabuf.c | 446 +++++++++++++++++++++++++++++
+ drivers/vfio/pci/vfio_pci_priv.h   |  23 ++
+ drivers/vfio/vfio_main.c           |   2 +
+ include/linux/pci-p2pdma.h         | 120 +++++---
+ include/linux/types.h              |   5 +
+ include/linux/vfio.h               |   2 +
+ include/linux/vfio_pci_core.h      |   1 +
+ include/uapi/linux/vfio.h          |  25 ++
+ kernel/dma/direct.c                |   4 +-
+ mm/hmm.c                           |   2 +-
+ 17 files changed, 785 insertions(+), 121 deletions(-)
+ create mode 100644 drivers/vfio/pci/vfio_pci_dmabuf.c
 
 -- 
-With best wishes
-Dmitry
+2.51.0
+
