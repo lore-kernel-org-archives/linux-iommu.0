@@ -1,122 +1,198 @@
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-il1-f176.google.com (mail-il1-f176.google.com [209.85.166.176])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C16225A65A;
-	Mon, 13 Oct 2025 08:52:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD8982FD7A7
+	for <iommu@lists.linux.dev>; Mon, 13 Oct 2025 09:32:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760345525; cv=none; b=C4XYXhCWRoOMpNcfWHYFol6PnFRFuho+2sEsUDQCsOM7OBwfbGuUcy6NN+Q0BhCb00VLS7ixht/g3tmOqx6pZJgX/iGCm+Jog44GsYzC0hJlFH5nqgys3yVPPa8CyL4zvLzBOscseYY09miELxoHK4/3bpJEWnz3kT97CpJZYzw=
+	t=1760347961; cv=none; b=IiOtMkhyEaqwPFc+NAzHFKQCPUVjLM83w/h0IrwdmbAOWQjo/OrHUQRDWcec88+eOdWqRVGs6BEkcrbe8aTEN9vLKbyw0gtWAe+DgwEv5/iuh1hwFCdnCfBEPyCwgtFqp5vxrTh3yo4vacQFyy6JAhNU36vYVJwwanp+mihIP2M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760345525; c=relaxed/simple;
-	bh=D0Pm5gDAEf/J/fLMJeYhII2rupxN55IU1PVARShdLz8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
-	 Content-Type:References; b=rfM1wRomOUfd+XYcPqYCWIB0APG5z7CRIlW/9u7tcd7H8jNFwzjOVf7fe/0Zdj+ns6UPjn7Btwpr7naShEeTX34O6XSxdvMhNLevwN1GIOT198EOBVDObxX4cWtBuaSeLbEsRoqKNrZgbXrdYDEmnSEiz2aJmTdeBenK9R8hT4Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=BQoGMpil; arc=none smtp.client-ip=210.118.77.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1760347961; c=relaxed/simple;
+	bh=/RdAf5lc8yISn7YJzDBYoS5c95yTpesCdkfWXNuZnG4=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=qQZP3Q1MNwNlHDvu689gBEFv6coQ6ouiNUKDB6hZ/KypUhebaKrEwQhu3qiW3gnUA5BXJxVDX5aN5iSUglTZHjrxayEJU7jPYqJtymj+Qn9Y+f6evR29Bre6mMR0qEiTXOMp0lxJdK/okBEXo6IPP+E68EPK98Yv87DYGOG1YFg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=wghQByFk; arc=none smtp.client-ip=209.85.166.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="BQoGMpil"
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20251013085200euoutp0266e34edf90c863a4c01eb72fc5c48eb3~uAOyYTX0q1874618746euoutp02G;
-	Mon, 13 Oct 2025 08:52:00 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20251013085200euoutp0266e34edf90c863a4c01eb72fc5c48eb3~uAOyYTX0q1874618746euoutp02G
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1760345520;
-	bh=JyDd/uFH2Am1LZ5SPDN+k8UExukF9D/xq2Z7HY8ZnFU=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=BQoGMpilRJCUe8Y44BcqjJWkeRiS+JPfur3kcgk/2YoTAS+ViVlUzaRYX89zuEjDq
-	 wkZ//2bWyV40qfk9fRhKG5W52cbl/HFo0RcqE6+fae76UZ4N7VyDdV6dd9ILg/D8OP
-	 faJI0JVLj/Gc3HQk8b0emDKXb80ilcDcD66u6PCM=
-Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20251013085200eucas1p2f4ded79121c5a222f59ecf4ddda0816c~uAOx-fHcX0880708807eucas1p26;
-	Mon, 13 Oct 2025 08:52:00 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20251013085157eusmtip27fccd916a2ad4442a7f4d1fa1f91c70b~uAOvsyZiW2933229332eusmtip2d;
-	Mon, 13 Oct 2025 08:51:57 +0000 (GMT)
-Message-ID: <e1d3661d-26ba-49ae-a124-dc5233c9107d@samsung.com>
-Date: Mon, 13 Oct 2025 10:51:57 +0200
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="wghQByFk"
+Received: by mail-il1-f176.google.com with SMTP id e9e14a558f8ab-4308afd43f0so1102965ab.0
+        for <iommu@lists.linux.dev>; Mon, 13 Oct 2025 02:32:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1760347958; x=1760952758; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=2cY5pJObfGgpMBLjEh34BMdDJO3is2w6d+mwNZItIM0=;
+        b=wghQByFkm3afDNt27WlC5l4c2inVxFbcCDcmSzqoN/UlDr6yqyR4L8WWTYDzpt71TC
+         p/TT3ROYSqx7z2m/9aP5TjDnJHJKrWHk3w3CjJ0URYikbxE5JDTjH5HT/lRelA1iAo4H
+         HjCuToSERJDb0MtiM5g7W3uBnBYhykQYP9+SxYpKTZVdCbnSJQ+4o3lC3y36cat9nC2U
+         k9aW+VXmXV3c3lX7LSNodNszx9391dCyj/y5o2EYLL/qin/EJi/5N7W/U2HWqzyZLEO2
+         lCBq1z7QC49K+EX80An9LBrT6bJWgbHP696aoZ2sffTt5cH6XzLNgezOBqJIHJmwaZqr
+         L0Ww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1760347958; x=1760952758;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=2cY5pJObfGgpMBLjEh34BMdDJO3is2w6d+mwNZItIM0=;
+        b=QxiBWyPHG1kZIz4H2WH4e/s4acJOuh5s28fuFx6PLBufJo/+z+0c8Vvlcqf8Go62wA
+         y9SzUfG+LFba41wrRaYjWZYCLpu/hJhePLV9jIbqw6tMSeAwBZYT2c0okQR6SdOB1ucQ
+         Nsm5n4ZKERFln44QR7orECFXK5mvVJ7ANcTjHTsNmIP70SNtMTumXKUnOjVMAZcXwiLT
+         48JRjsjm7TA+k13+G5nIZ0XRI62m9hTBpwoDWqjzA5ETmyRu7mgx0tbwhrfwc5Om65Cv
+         a/TWOyt86cgL4SQfEMrJh99NmEYC7aigW1DaBaexRjeXMplejE84I4VFJo8WTMJ3OP23
+         W4Sw==
+X-Gm-Message-State: AOJu0YytUZZnbF+Z4FbWkwAwpy+Zx1juXFUxMPIysI6iiGhFtVnpuXVt
+	f9cGadVtEyhdA8gjJ09vm+9/SPv+56NTtewt7WR9uNWkU14j+DqiCDfFBEjBCn8nEtjwqvJI4Gp
+	sUJmhnrf0NPb5PvEJHdIw7YLGb0aCjXc0b9FAcx2sici0T8lvUkUs5E45
+X-Gm-Gg: ASbGncvQn1BRRj1DOzMC/YKsrBLMAxkhzLjHeUfqZcTLjEoqw9tKrCy8i3XfhYyR9xe
+	W5MyAB1JwiKb8VhJ/nkiKGBLDJ8TIskJ89u4jt9CZ4HzoN9T4Rd5GQEJTm4E7Pk+JiAthpRi5qt
+	gh3ZrCyZ1vzRACgb7m2l/qTX2LiKHKaqh6K6t1yuOQl8wyyz7Zl1MGbElAUd2MnFMUmxdn3BzJB
+	2zu+7Y9Aw+UGXzz8rbq1ES1HzrwFIAoztEtZdP2X7VFBGNNnks8oVPG1l3SFoTq9ghhU54=
+X-Google-Smtp-Source: AGHT+IFD0U0uqRWglh/byx1FjKPjMX0/8ojaak8mgzvQHmpOzLLzkC7WYtfOUF9FNclcN4ih9bpH9zBVGTGC6vHRbs8=
+X-Received: by 2002:ac8:590e:0:b0:4e6:e07f:dc98 with SMTP id
+ d75a77b69052e-4e6eabcf4camr36864821cf.9.1760347957508; Mon, 13 Oct 2025
+ 02:32:37 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH v1 3/6] iommu/exynos-iommu: Set release_domain to
- exynos_identity_domain
-To: Nicolin Chen <nicolinc@nvidia.com>, joro@8bytes.org, jgg@nvidia.com,
-	kevin.tian@intel.com
-Cc: suravee.suthikulpanit@amd.com, will@kernel.org, robin.murphy@arm.com,
-	sven@kernel.org, j@jannau.net, robin.clark@oss.qualcomm.com,
-	krzk@kernel.org, dwmw2@infradead.org, baolu.lu@linux.intel.com,
-	yong.wu@mediatek.com, matthias.bgg@gmail.com,
-	angelogioacchino.delregno@collabora.com, tjeznach@rivosinc.com,
-	pjw@kernel.org, palmer@dabbelt.com, aou@eecs.berkeley.edu, heiko@sntech.de,
-	schnelle@linux.ibm.com, mjrosato@linux.ibm.com, orsonzhai@gmail.com,
-	baolin.wang@linux.alibaba.com, wens@csie.org, jernej.skrabec@gmail.com,
-	samuel@sholland.org, thierry.reding@gmail.com, jonathanh@nvidia.com,
-	jean-philippe@linaro.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, asahi@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-	linux-samsung-soc@vger.kernel.org, linux-mediatek@lists.infradead.org,
-	linux-riscv@lists.infradead.org, linux-rockchip@lists.infradead.org,
-	linux-s390@vger.kernel.org, linux-sunxi@lists.linux.dev,
-	linux-tegra@vger.kernel.org, virtualization@lists.linux.dev,
-	patches@lists.linux.dev
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <56175bec385d24af9eb2a38632e1d6ce889025e3.1760312540.git.nicolinc@nvidia.com>
-Content-Transfer-Encoding: 7bit
-X-CMS-MailID: 20251013085200eucas1p2f4ded79121c5a222f59ecf4ddda0816c
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20251012235812eucas1p1209a75bffb5a4784955781d437746731
-X-EPHeader: CA
-X-CMS-RootMailID: 20251012235812eucas1p1209a75bffb5a4784955781d437746731
-References: <cover.1760312540.git.nicolinc@nvidia.com>
-	<CGME20251012235812eucas1p1209a75bffb5a4784955781d437746731@eucas1p1.samsung.com>
-	<56175bec385d24af9eb2a38632e1d6ce889025e3.1760312540.git.nicolinc@nvidia.com>
+References: <20250929155001.3287719-1-smostafa@google.com>
+In-Reply-To: <20250929155001.3287719-1-smostafa@google.com>
+From: Mostafa Saleh <smostafa@google.com>
+Date: Mon, 13 Oct 2025 10:32:25 +0100
+X-Gm-Features: AS18NWBnoAflrsPjZ5od3RG3GtAXLBcqTt1b7ZmUjAfG8TvaxEyJScccM8v1Vt4
+Message-ID: <CAFgf54opaN2GciRzRv_BJ2SJZybSJ6ib+mkVvHY0K5A1h0-5pg@mail.gmail.com>
+Subject: Re: [PATCH v5 0/4] Move io-pgtable-arm selftest to KUnit
+To: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+	linux-kernel@vger.kernel.org
+Cc: robin.murphy@arm.com, will@kernel.org, joro@8bytes.org, jgg@ziepe.ca, 
+	praan@google.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 13.10.2025 01:57, Nicolin Chen wrote:
-> Following a coming core change to pass in the old domain pointer into the
-> attach_dev op and its callbacks, exynos_iommu_identity_attach() will need
-> this new argument too, which the release_device op doesn't provide.
+On Mon, Sep 29, 2025 at 4:50=E2=80=AFPM Mostafa Saleh <smostafa@google.com>=
+ wrote:
 >
-> Instead, the core provides a release_domain to attach to the device prior
-> to invoking the release_device callback. Thus, simply use that.
+> This is a small series to clean up the io-pgtable-arm library.
 >
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-Acked-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> ---
->   drivers/iommu/exynos-iommu.c | 3 +--
->   1 file changed, 1 insertion(+), 2 deletions(-)
+> The first patch is a small clean up to reduce the depedencies of the
+> test before moving it.
 >
-> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-> index b6edd178fe25e..0857519ca7188 100644
-> --- a/drivers/iommu/exynos-iommu.c
-> +++ b/drivers/iommu/exynos-iommu.c
-> @@ -1429,8 +1429,6 @@ static void exynos_iommu_release_device(struct device *dev)
->   	struct exynos_iommu_owner *owner = dev_iommu_priv_get(dev);
->   	struct sysmmu_drvdata *data;
->   
-> -	WARN_ON(exynos_iommu_identity_attach(&exynos_identity_domain, dev));
-> -
->   	list_for_each_entry(data, &owner->controllers, owner_node)
->   		device_link_del(data->link);
->   }
-> @@ -1476,6 +1474,7 @@ static int exynos_iommu_of_xlate(struct device *dev,
->   
->   static const struct iommu_ops exynos_iommu_ops = {
->   	.identity_domain = &exynos_identity_domain,
-> +	.release_domain = &exynos_identity_domain,
->   	.domain_alloc_paging = exynos_iommu_domain_alloc_paging,
->   	.device_group = generic_device_group,
->   	.probe_device = exynos_iommu_probe_device,
+> The second patch was originally part of the SMMUv3 KVM driver support[1],
+> which needed to factor out the kernel code from the io-pgtable-arm
+> library, and based on Jason=E2=80=99s suggestion this can be taken out as=
+ a
+> cleanup, and a step further to convert it to kunit.
+>
+> The second patch just moves the code to a new file with no other changes,
+> so it can be easier to review with =E2=80=9C--color-moved=E2=80=9D
+>
+> The third patch converts the sefltest to be modular, that is useful as
+> kunit can be a module and it can run anytime after boot.
+>
+> The fourth patch registers the test using kunit, and converges some of
+> the APIs, some notes about that:
+>
+> Granularity of tests:
+> ---------------------
+> To make the series easier to review, the series changes the test to run i=
+n
+> kunit without making intrusive changes to the test itself.
+> It=E2=80=99s possible to refactor the tests to have smaller granularity (=
+although
+> I think that would make it less efficient as we might create the same io-=
+pgtable
+> config multiple times) and integrate them in kunit as multiple tests, tha=
+t
+> change would be more intrusive, if you think that is the right approach,
+> I can add a couple of more patches re-writing the tests.
+>
+> Other changes:
+> --------------
+> - Also, to make the test changes minimal, and the fail messages similar,
+>   =E2=80=9CKUNIT_FAIL()=E2=80=9D is used to fail all tests instead of usi=
+ng KUNIT specific
+>   assertions.
+>
+> - Instead of using faux device, we rely on kunit_device_register()
+>
+> - The WARN is removed when a test fails, as that doesn=E2=80=99t seem to =
+be a pattern
+>   used with kunit.
+>
+>
+> You can find the instructions on how to run kunit in the last patch commi=
+t message.
+>
+> A failure at the test with the new implementation look as
+> [  191.675985]     # arm_lpae_do_selftests: selftest: pgsize_bitmap 0x200=
+10000, IAS 40 OAS 48
+> [  191.676057]     # arm_lpae_do_selftests: EXPECTATION FAILED at drivers=
+/iommu/io-pgtable-arm-selftests.c:91
+> [  191.676087]     # arm_lpae_do_selftests: selftest: test failed for fmt=
+ idx 0
+>
+> Changes in v5:
+> --------------
+> - Rebase on iommu/next tree
+> - Collected Jason and Praan Rbs
+> - Move back #include <slab.h> to the main file.
+>
+> v4: https://lore.kernel.org/linux-iommu/20250922090003.686704-1-smostafa@=
+google.com/
+>
+> Main changes in v4:
+> -------------------
+> - Remove one missed __init.
+> - Change the kconfig dependencies back as it broke ARM
+> https://lore.kernel.org/all/202509201819.f369wBHc-lkp@intel.com/
+>
+> v3: https://lore.kernel.org/all/20250919133316.2741279-1-smostafa@google.=
+com/
+>
+> Main changes in v3:
+> -------------------
+> - Move back unused code
+> - Simplify printing based on Jason comments + some renames
+> - Collect Jasons Rb
+> v2: https://lore.kernel.org/all/20250917191143.3847487-1-smostafa@google.=
+com/
+>
+> Main changes in v2:
+> -------------------
+> - Make the test modular
+> v1: https://lore.kernel.org/linux-iommu/20250917140216.2199055-1-smostafa=
+@google.com/
+>
+> [1] https://lore.kernel.org/all/20250819215156.2494305-5-smostafa@google.=
+com/
+>
+>
+> Mostafa Saleh (4):
+>   iommu/io-pgtable-arm: Simplify error prints for selftests
+>   iommu/io-pgtable-arm: Move selftests to a separate file
+>   iommu/io-pgtable-arm-selftests: Modularize the test
+>   iommu/io-pgtable-arm-selftests: Use KUnit
+>
+>  drivers/iommu/Kconfig                    |  11 +-
+>  drivers/iommu/Makefile                   |   1 +
+>  drivers/iommu/io-pgtable-arm-selftests.c | 221 +++++++++++++++++++++++
+>  drivers/iommu/io-pgtable-arm.c           | 203 ---------------------
+>  4 files changed, 228 insertions(+), 208 deletions(-)
+>  create mode 100644 drivers/iommu/io-pgtable-arm-selftests.c
+>
+>
+> base-commit: 5f4b8c03f41782f37d278946296d9443a7194153
+> --
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+Pinging, as this has been reviewed for while, Is there anything
+blocking it or any more feedback?
 
+Thanks,
+Mostafa
+
+> 2.51.0.536.g15c5d4f767-goog
+>
