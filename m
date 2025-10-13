@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E32ED1B4F09;
-	Mon, 13 Oct 2025 07:18:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCD5A27F01E;
+	Mon, 13 Oct 2025 07:25:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760339888; cv=none; b=USItf5F7/ePmJBeIBA3pqpSxD8xcQQPYj8RY+Mfl91P5ut7oBPCD5f+50VHC2aAfM9GPSEcWPMRQ7wA3dlJXCUsripruXfdNYJAHTAoovG60NcCKg0C3imQra66ZGXzQmIlRs7OFPKwAVlxy3/iGdXKe035bzQ8p9y0ZrpgADxQ=
+	t=1760340308; cv=none; b=rdYtySM5rZzdxgQj0yPL+IcLqPNquTpFLtGXysWaY3C8LAgIgDNUNG+TR8B2kgmUrvG1YjARMaFrJS3oW8FGOxQSkA+uBO1NT1AZWz8/pj+NTo750V6FtxlPB2gUc8krWZMFuvs9dCFPU3PIaettPJyMIjWcfii1ktT8EqrLsF4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760339888; c=relaxed/simple;
-	bh=YLv5InJLlW0GnvCcW21BMvEaiqUu0JrGPOOfzqOIL7Y=;
+	s=arc-20240116; t=1760340308; c=relaxed/simple;
+	bh=gII/rqVdzvgABnhQTeiRtQ3APigY1bkGSbg2ncs8UI4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qe6NVzm3+fGJtEEwYvHBIDPUA+F1WBs4T2H8oaYlbchAlH4cH2nlRTgcAiv4hUpRpWpDf3ZLpQzxqQsXjg1aEXkEER9ADJ4lo93o87a/PfTPmyJ5lBhd5PqZdVbF16Zm2d0SIOY17l8Yb6XdGijl1XMyV0t/XatEXQ1YdXRmrX8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=X4R3k1LZ; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=AqL1FwaFOfkAH7wt+iA96FCY7hoHNBZzTxU4OXJdgDti78rvaYDwMqbfCGWBmTJdCx6YhKkZnhJoCj8uo2e68SR+KOU5J0vavikV3wpAZXARpXERFf3GGENCgVzoPvMXzWmr1sUZ5f5QJtPrBcQmXdT8QVmd6ZfcIbQYRXTnB3g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=tTcUiFNg; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="X4R3k1LZ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E43EAC4CEE7;
-	Mon, 13 Oct 2025 07:17:59 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="tTcUiFNg"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 482E7C4CEE7;
+	Mon, 13 Oct 2025 07:25:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1760339887;
-	bh=YLv5InJLlW0GnvCcW21BMvEaiqUu0JrGPOOfzqOIL7Y=;
+	s=k20201202; t=1760340308;
+	bh=gII/rqVdzvgABnhQTeiRtQ3APigY1bkGSbg2ncs8UI4=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=X4R3k1LZHzpGoa3CGNOP1VANnxZgqbYFTh3O1uI0UOUZI6egZH7DS9iXzCNanfPj6
-	 5l4hRVdl8kug78iGi503BMwTf4nOfB4vvPqzfQblO8bANCTR0IepYFAi8pg4PmXcJl
-	 v5mRsMXje08tODxTmyA5OIz0MV0Bp+hR52IAzNGX/P+svL+EdB5DLwEoWOUND+O6Kf
-	 YuSG4fNpL6qP9OxqgNyTvU+dffpgHu93yEHMZLAsR25uNDeEeJ6nise1nSkPELIGCx
-	 VGgNLmvwA2eaX+H2UuCy8fUgkQfgvKdAEN9XvtoacZlIyOarhWxcIvseAbwa+xrPpj
-	 rWlSnFWp2aHtA==
-Date: Mon, 13 Oct 2025 10:17:55 +0300
+	b=tTcUiFNgA8f9RQj1G+tmaaat8FQKV2nAO0xl6ARFmhVEnywlrEbAdsxzK+vuKFBYs
+	 TzHUu0gA77BvaT3EVRa1ADwjhvw5OPKPkMdbYUAgdekcznzJmuY1ru5DskWelfOJlW
+	 pHUXLZMgnvlaJzByHaFEKyNS17LZFh861tjyGQ0VtFpDvdHylb1oXYpO/IERDn6m81
+	 PRQ+pyktSTOh4+XSyYooxudt99fp1ADhp2HpaebagpT5bOeST8g+LCo49sc14mO2Cw
+	 qRMZfB2rnuFa9MFUtm0CFDB6o8glTXc6sLiVBNn8Yp+mnD0enK9UpXFLEzd4cqNUAP
+	 W4UpxzoosZWYA==
+Date: Mon, 13 Oct 2025 10:24:57 +0300
 From: Mike Rapoport <rppt@kernel.org>
 To: Lu Baolu <baolu.lu@linux.intel.com>
 Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
@@ -44,10 +44,10 @@ Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
 	iommu@lists.linux.dev, security@kernel.org, x86@kernel.org,
 	linux-mm@kvack.org, linux-kernel@vger.kernel.org,
 	Dave Hansen <dave.hansen@linux.intel.com>
-Subject: Re: [PATCH v5 2/8] mm: Actually mark kernel page table pages
-Message-ID: <aOynozGF70jD3bo_@kernel.org>
+Subject: Re: [PATCH v5 4/8] mm: Introduce pure page table freeing function
+Message-ID: <aOypSS-Pk-LppKhV@kernel.org>
 References: <20250919054007.472493-1-baolu.lu@linux.intel.com>
- <20250919054007.472493-3-baolu.lu@linux.intel.com>
+ <20250919054007.472493-5-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -56,18 +56,16 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250919054007.472493-3-baolu.lu@linux.intel.com>
+In-Reply-To: <20250919054007.472493-5-baolu.lu@linux.intel.com>
 
-On Fri, Sep 19, 2025 at 01:40:00PM +0800, Lu Baolu wrote:
+On Fri, Sep 19, 2025 at 01:40:02PM +0800, Lu Baolu wrote:
 > From: Dave Hansen <dave.hansen@linux.intel.com>
 > 
-> Now that the API is in place, mark kernel page table pages just
-> after they are allocated. Unmark them just before they are freed.
+> The pages used for ptdescs are currently freed back to the allocator
+> in a single location. They will shortly be freed from a second
+> location.
 > 
-> Note: Unconditionally clearing the 'kernel' marking (via
-> ptdesc_clear_kernel()) would be functionally identical to what
-> is here. But having the if() makes it logically clear that this
-> function can be used for kernel and non-kernel page tables.
+> Create a simple helper that just frees them back to the allocator.
 > 
 > Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
 > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
@@ -77,81 +75,41 @@ On Fri, Sep 19, 2025 at 01:40:00PM +0800, Lu Baolu wrote:
 Acked-by: Mike Rapoport (Microsoft) <rppt@kernel.org>
 
 > ---
->  include/asm-generic/pgalloc.h | 18 ++++++++++++++++++
->  include/linux/mm.h            |  3 +++
->  2 files changed, 21 insertions(+)
+>  include/linux/mm.h | 11 ++++++++---
+>  1 file changed, 8 insertions(+), 3 deletions(-)
 > 
-> diff --git a/include/asm-generic/pgalloc.h b/include/asm-generic/pgalloc.h
-> index 3c8ec3bfea44..b9d2a7c79b93 100644
-> --- a/include/asm-generic/pgalloc.h
-> +++ b/include/asm-generic/pgalloc.h
-> @@ -28,6 +28,8 @@ static inline pte_t *__pte_alloc_one_kernel_noprof(struct mm_struct *mm)
->  		return NULL;
->  	}
->  
-> +	ptdesc_set_kernel(ptdesc);
-> +
->  	return ptdesc_address(ptdesc);
->  }
->  #define __pte_alloc_one_kernel(...)	alloc_hooks(__pte_alloc_one_kernel_noprof(__VA_ARGS__))
-> @@ -146,6 +148,10 @@ static inline pmd_t *pmd_alloc_one_noprof(struct mm_struct *mm, unsigned long ad
->  		pagetable_free(ptdesc);
->  		return NULL;
->  	}
-> +
-> +	if (mm == &init_mm)
-> +		ptdesc_set_kernel(ptdesc);
-> +
->  	return ptdesc_address(ptdesc);
->  }
->  #define pmd_alloc_one(...)	alloc_hooks(pmd_alloc_one_noprof(__VA_ARGS__))
-> @@ -179,6 +185,10 @@ static inline pud_t *__pud_alloc_one_noprof(struct mm_struct *mm, unsigned long
->  		return NULL;
->  
->  	pagetable_pud_ctor(ptdesc);
-> +
-> +	if (mm == &init_mm)
-> +		ptdesc_set_kernel(ptdesc);
-> +
->  	return ptdesc_address(ptdesc);
->  }
->  #define __pud_alloc_one(...)	alloc_hooks(__pud_alloc_one_noprof(__VA_ARGS__))
-> @@ -233,6 +243,10 @@ static inline p4d_t *__p4d_alloc_one_noprof(struct mm_struct *mm, unsigned long
->  		return NULL;
->  
->  	pagetable_p4d_ctor(ptdesc);
-> +
-> +	if (mm == &init_mm)
-> +		ptdesc_set_kernel(ptdesc);
-> +
->  	return ptdesc_address(ptdesc);
->  }
->  #define __p4d_alloc_one(...)	alloc_hooks(__p4d_alloc_one_noprof(__VA_ARGS__))
-> @@ -277,6 +291,10 @@ static inline pgd_t *__pgd_alloc_noprof(struct mm_struct *mm, unsigned int order
->  		return NULL;
->  
->  	pagetable_pgd_ctor(ptdesc);
-> +
-> +	if (mm == &init_mm)
-> +		ptdesc_set_kernel(ptdesc);
-> +
->  	return ptdesc_address(ptdesc);
->  }
->  #define __pgd_alloc(...)	alloc_hooks(__pgd_alloc_noprof(__VA_ARGS__))
 > diff --git a/include/linux/mm.h b/include/linux/mm.h
-> index 1ae97a0b8ec7..f3db3a5ebefe 100644
+> index f3db3a5ebefe..668d519edc0f 100644
 > --- a/include/linux/mm.h
 > +++ b/include/linux/mm.h
-> @@ -2895,6 +2895,9 @@ static inline void pagetable_free(struct ptdesc *pt)
->  {
->  	struct page *page = ptdesc_page(pt);
+> @@ -2884,6 +2884,13 @@ static inline struct ptdesc *pagetable_alloc_noprof(gfp_t gfp, unsigned int orde
+>  }
+>  #define pagetable_alloc(...)	alloc_hooks(pagetable_alloc_noprof(__VA_ARGS__))
 >  
-> +	if (ptdesc_test_kernel(pt))
-> +		ptdesc_clear_kernel(pt);
+> +static inline void __pagetable_free(struct ptdesc *pt)
+> +{
+> +	struct page *page = ptdesc_page(pt);
 > +
->  	__free_pages(page, compound_order(page));
+> +	__free_pages(page, compound_order(page));
+> +}
+> +
+>  /**
+>   * pagetable_free - Free pagetables
+>   * @pt:	The page table descriptor
+> @@ -2893,12 +2900,10 @@ static inline struct ptdesc *pagetable_alloc_noprof(gfp_t gfp, unsigned int orde
+>   */
+>  static inline void pagetable_free(struct ptdesc *pt)
+>  {
+> -	struct page *page = ptdesc_page(pt);
+> -
+>  	if (ptdesc_test_kernel(pt))
+>  		ptdesc_clear_kernel(pt);
+>  
+> -	__free_pages(page, compound_order(page));
+> +	__pagetable_free(pt);
 >  }
 >  
+>  #if defined(CONFIG_SPLIT_PTE_PTLOCKS)
 > -- 
 > 2.43.0
 > 
