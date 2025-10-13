@@ -1,62 +1,25 @@
-Received: from SJ2PR03CU001.outbound.protection.outlook.com (mail-westusazon11012011.outbound.protection.outlook.com [52.101.43.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63B4D3054FB
-	for <iommu@lists.linux.dev>; Mon, 13 Oct 2025 10:52:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.43.11
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760352733; cv=fail; b=qTpHEw7kbMWC1zO4Sr6ADP+KIpbP481Ta3pEm1W8fzm6vPKrlNpF5Z2iZ85vGnpa1W4I05KIm0Vq6B0qTIVPrJPVKB09bZaqDp0VNNICF7zygTbFq4JyuxokmBa3sMPan0hWzrok9R+Hwh2cqU4Jj7FOhYY6ZNLvv1hAKrBter0=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760352733; c=relaxed/simple;
-	bh=FyJFSFg20eUEfsC8jhi0v7ap44+doLtPkgP60AaXV6g=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=HuwVud1yGLTwWntZEzVFUkaugC6zOYywfeRMh/eYmgxEa2IfOqrpjnC9JxxaB1SGmTX+L/YT0bOIBtFfjdgMBvwf46kL2jbOIh1C1k3z/SB4hMUkg0V2iuKQGHQUVfTIeR0DlaCfAqaC/HT0uPyehXenrcuOWBSZsnBwtvaSxAk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=ZhFCGAmH; arc=fail smtp.client-ip=52.101.43.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="ZhFCGAmH"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=nDsjwQXc3FhsFuDofs7Lp+gkBUfh4JzovSj1PtkMhZSZe1epECbc/W0G6Kh1NGWhetGp+YK6sDVaoa0mAPO4yOSKX2aGcbi1h05sJ2qG904dA0rrVXyFssbCqwSaLttVhXQW7Pvh9YZGVMR4LHi9nk9q1PyesqSUYJnqZ3QiZvQkDAMXu4SWwuNHfXraK4MWxJCnhvq5vvus1+fHulhVi3a5XQKUFJoRex95lcAYMEeW1z9FTBAvi8vy1Opjh6Jl5Jq3rgcu9gs41jd3/8Fow8urtuG0DgbWYPID7i8jWpNTr95ih4m27rgGmjSGKyDC8vZJ9H3l5AD70eQ66tUZwg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=QUyQXAFO0HiaQZu7rfQP4k1MH0EgSQEfu48wpwZQNjs=;
- b=If3nV42FzS74ic5m4X01pf3w95Mn9Sz4P7IVKHyTI0Kd6LkN6KIUJKkgR6A13e+327mo7o0JAJO+Y3gIL3Yzm8mYQcme7wVdhED+8nG8hxBoN28UMb7pPY9fmzXXszOVsnxDhmzpdc0Ha1MGawG2tBeVCaGf0Ui04Sqli6v82+ZxnK1Zd5V8Lnikr/NVkmNV7svXjv/lqFFbtSvOdCh3BuM2o2gRa0ITeTTFgshJwh+onMx3QOo1bhY48FssLMTy8vYmwzSGKQt9ogWd6NvxANl7rbjyGqiV6TUErsFnV1qFjRAETyZoZRESK5Y5Mq/fe49SBRM7IMTSoqideQSeZQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=nvidia.com smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QUyQXAFO0HiaQZu7rfQP4k1MH0EgSQEfu48wpwZQNjs=;
- b=ZhFCGAmHfIOo4Xe8RpSLOttH33x3lBxinlhqrlhXsQLhyYfToSYq29sY2c9T9HtuDnxwFPN79pT/usxBHkCG0zfJcwi5DVZPhCMEi/SlLxumkbGF6AfcxcK4USTCeShKYoX2LJMacw+G5OYH1RKWc6/pRQBMKf+p35wlvV4OaQY=
-Received: from MW4PR03CA0218.namprd03.prod.outlook.com (2603:10b6:303:b9::13)
- by SA5PPFA403A61D8.namprd12.prod.outlook.com (2603:10b6:80f:fc04::8da) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9203.10; Mon, 13 Oct
- 2025 10:52:05 +0000
-Received: from SJ5PEPF000001E8.namprd05.prod.outlook.com
- (2603:10b6:303:b9:cafe::83) by MW4PR03CA0218.outlook.office365.com
- (2603:10b6:303:b9::13) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9203.11 via Frontend Transport; Mon,
- 13 Oct 2025 10:52:05 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
-Received: from satlexmb07.amd.com (165.204.84.17) by
- SJ5PEPF000001E8.mail.protection.outlook.com (10.167.242.196) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9228.7 via Frontend Transport; Mon, 13 Oct 2025 10:52:05 +0000
-Received: from [172.31.35.81] (10.180.168.240) by satlexmb07.amd.com
- (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.17; Mon, 13 Oct
- 2025 03:51:55 -0700
-Message-ID: <d062e8c8-fe8d-40a8-bbdf-0a8483c23b03@amd.com>
-Date: Mon, 13 Oct 2025 16:21:47 +0530
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4C8BA248F4F
+	for <iommu@lists.linux.dev>; Mon, 13 Oct 2025 11:21:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1760354466; cv=none; b=liC2R/ERi4PdyCxgC2yKnei1f2idFVhgNZGLlTn/L15qVmHrSAVbzRNXoJJda6f9t20bvC2rGSR5Mnk7JlhQdzLp42w9HLGM23CpHEfZGbIgMovpniLKsxmpsjfm7b9Hiz+bD7gqWf5aQYJAjh5426EfPsQLMA7929vKcoPKwZc=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1760354466; c=relaxed/simple;
+	bh=tQje5bDbSj9y1kcqNgldXUREwqU4Y0MJp/r7D9wd3RA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=I4Dzs4yoMXmYYiRMnypCyEs634TgJj242LWsJzU7lHKz0Yp+t70SmX3henegqm3lqonukkefj4uQbRC4/wIEUshdDAMTXzSyPNum8BORaAAV5hbrQZ/BOYfZeM5ISWGdpE/wJpTp4EWoAPSALwyI92xmiJLLKX7OiGFEwbaXVTg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 531BF113E;
+	Mon, 13 Oct 2025 04:20:55 -0700 (PDT)
+Received: from [10.57.5.235] (unknown [10.57.5.235])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 90BB03F6A8;
+	Mon, 13 Oct 2025 04:20:57 -0700 (PDT)
+Message-ID: <8d88cd9d-16e8-43f9-8eb3-89862da1d0c1@arm.com>
+Date: Mon, 13 Oct 2025 12:20:54 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -64,128 +27,196 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 01/15] iommu/amd: Rename DEV_DOMID_MASK to
- DTE_DOMID_MASK
-Content-Language: en-US
-To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, <jgg@nvidia.com>,
-	<nicolinc@nvidia.com>
-CC: <linux-kernel@vger.kernel.org>, <robin.murphy@arm.com>, <will@kernel.org>,
-	<joro@8bytes.org>, <kevin.tian@intel.com>, <jsnitsel@redhat.com>,
-	<vasant.hegde@amd.com>, <iommu@lists.linux.dev>, <santosh.shukla@amd.com>,
-	<sairaj.arunkodilkar@amd.com>, <jon.grimm@amd.com>,
-	<prashanthpra@google.com>, <wvw@google.com>, <wnliu@google.com>,
-	<gptran@google.com>, <kpsingh@google.com>, <joao.m.martins@oracle.com>,
-	<alejandro.j.jimenez@oracle.com>
-References: <20251009235755.4497-1-suravee.suthikulpanit@amd.com>
- <20251009235755.4497-2-suravee.suthikulpanit@amd.com>
-From: Sairaj Kodilkar <sarunkod@amd.com>
-In-Reply-To: <20251009235755.4497-2-suravee.suthikulpanit@amd.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+Subject: Re: [RFC PATCH 0/3] Introduce iommu-map-masked for platform devices
+To: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+Cc: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>, joro@8bytes.org,
+ will@kernel.org, saravanak@google.com, conor+dt@kernel.org, robh@kernel.org,
+ mchehab@kernel.org, bod@kernel.org, krzk+dt@kernel.org,
+ abhinav.kumar@linux.dev, vikash.garodia@oss.qualcomm.com,
+ dikshita.agarwal@oss.qualcomm.com,
+ Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
+ bjorn.andersson@oss.qualcomm.com, linux-media@vger.kernel.org,
+ linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+References: <20250928171718.436440-1-charan.kalla@oss.qualcomm.com>
+ <aec0f40a-8346-4194-8b18-1022fe3366bb@arm.com>
+ <0d0560cc-9757-4c7b-8de4-170148d99481@oss.qualcomm.com>
+ <ead7cf8b-fbc4-4242-a9da-b313dded1abc@arm.com>
+ <nzqte4glwtpjs5bhkxz43yhdufelxvqvzmg5tepudxwetimir3@bvlw5csjizsh>
+ <9d3eeb9f-b8ea-48e5-a1d9-0865f63ef991@arm.com>
+ <fhb4woejzh3r6v5dxvdiopnsbuwstucfuuzbiymxg4wrxrjc7t@dt3z3utq6lwd>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <fhb4woejzh3r6v5dxvdiopnsbuwstucfuuzbiymxg4wrxrjc7t@dt3z3utq6lwd>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: satlexmb08.amd.com (10.181.42.217) To satlexmb07.amd.com
- (10.181.42.216)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ5PEPF000001E8:EE_|SA5PPFA403A61D8:EE_
-X-MS-Office365-Filtering-Correlation-Id: 729e06f4-ee66-4001-0d40-08de0a468c60
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|7416014|376014|82310400026|36860700013|7053199007;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?ajQzSkhvcDNjYzVFTTVCWWlEYkZya292Ri9lT2h5SmNyUVI5aGVQaXJRVlAz?=
- =?utf-8?B?YnhlODlxQnFiZnowNkluQ2hEZ1cvZ3Y4OFdtWmZrNXJhWmEvUXgzdkllM1Vx?=
- =?utf-8?B?aWZibzhwaUMweGtNUTFRd09vTTBxdzhZMEtTbGFKdmlBN1Uza3BQaVNlZVJI?=
- =?utf-8?B?M3BjaSsveDFuNVQwOTF5Z2FwbHgzOXpNNUkxMkdobzk1KzI4bUlpWDB3QVFY?=
- =?utf-8?B?ZktHU3ZJUE9SODZabTdHSjNGbDQzazY0US9DWERERytzZXF0b1hCYlg0NDEv?=
- =?utf-8?B?L0N6UkZSNXVIZFkwL1d2bHJNT0tVaVN4YnUvT1ZqUy9iMHZjNUI0YW85ZVp2?=
- =?utf-8?B?ekFSMVh2QW1pNm12TVg0RVVHUEwwQ2llUEI0NmhkcE9IRHdEWXp2b1R1dVZw?=
- =?utf-8?B?M0htRkNxRm02UldYRTJnNWFWZ0JKcjhUQ2dWazB1cGpaQ2JGZU5jNTZ2bzUy?=
- =?utf-8?B?MFdyeWhZai9Iem9CU1dseDIwSnVKa1pOOVh3V3FIZ1Y4TnlrR3JrMlRPbzZE?=
- =?utf-8?B?amFobDdhbk9qN0JoeENNOExpRDhvNVFqbERoNlp0alVPWGY5YVRlT1RxU0Nj?=
- =?utf-8?B?SW0reUZBbW5lMTFtcHBVMjBuYXVUZjZMZ1graFlZeStZdWpMTVoyWnNIaSs1?=
- =?utf-8?B?Mm5kQVZIYzZJeGxIV1NWZXJHSlI1MGRkSWlWTGh0b3FFMnNINXdLMVhYcmpu?=
- =?utf-8?B?eDUwd3ROanJQOElpY05CQlVra296T29CdnlLRzlBQXVUYU1wRXFBUFBNVmZL?=
- =?utf-8?B?dUt5UE51UDRhUW85WVRkZ0s0ckpHQTYzckVMc2NPdTl5L0hxemdJaW1yMlhR?=
- =?utf-8?B?bjJpcC9YYjF6N1M5dXNjb1dMQlVTWU41b0piT3BseFJuelkwYmp0ekpCMXdW?=
- =?utf-8?B?NldMcFYzaHN6QURvOW9od0VXQ3dPYVFEWFNUdm1qWldsM2JxdnlEeGg4MENK?=
- =?utf-8?B?dG0ybEdxTTEzVGlCcUlFeTJyd1JyMHRCaHd0Nmh1NXN0bEdFQUxFdmQrQWRq?=
- =?utf-8?B?aFZ4alNDT2RtNlZ5NjFTbTVqMjFRUEVhbnU3aHg2QVJaRXNwQUJYTXIvaVQ5?=
- =?utf-8?B?a0JuanVEUXBHVlZ5bEg0REJkbUVPNnE5eFZta09KbmtmMVVPbDB0eEU3bjVE?=
- =?utf-8?B?emd3QkN1OGR4VjJRUlhuZ1BPTW4raDJER21YNTNBREdWV2xNNG1tYW9jYjlM?=
- =?utf-8?B?UER4cnJvK1hsYm1adGFLUlRhNUdmaGdoVThYZnRIQ0RreHg0WkRIL0F2cWtn?=
- =?utf-8?B?OVh3SUpnN3EzMjFXWjVLbWFPNm50MTRQK0NnRUtoWm5rZGo1NUtGQnRJM0Fv?=
- =?utf-8?B?MGpxQk4wN3RpZExRNjZqNmJMcjh5UkN3eU82MU9wZDRaS2EyeWxWbXZoa25N?=
- =?utf-8?B?YytsSHhYZ3dlU3B2R0F2bmhSS3VPUWhsb2x3MVVIK0J4aVhqRGw0TU9OeHh1?=
- =?utf-8?B?QWpHdzJEZ3FKVCtWbXVpK25SS2VDTytXc05Na2tQQ1FXVFFTYXN0cXYwWDUw?=
- =?utf-8?B?QzJPL0UraGxETlh2ZU1Wd01KUU9oM1ZJR1BPbHh2SjBDTmpDTXRpV3NrZTBI?=
- =?utf-8?B?T0pSb1UrUDFQazU2b0hQbVdHV0xPcUdWRElNRE5DRWhqUFRPeDViQVNOZGdF?=
- =?utf-8?B?NVpkTzQvWkdZalhaVGd4Wi9FOXg4c0pxdExHZ3UyVmQxMndINUlIUEVkZFIr?=
- =?utf-8?B?K1kzdlZSYmNFb3BtZUM1T2lsWlZvWG1uOVpHYkNRTzZMSWhrRi9WMmpXOVhE?=
- =?utf-8?B?U1MwdWhqSlhLQ2dRWm1uQ3pJZ0xpR0paNGV5V1pIMWhqLzZ1N1NscHprOTNX?=
- =?utf-8?B?SzZybUVHTVpGUHNOSHQ3ZXRVcGRwSnFMM1FlYkJLMVJUcWJ1SWlHaHVEVUxL?=
- =?utf-8?B?bzgyWGVsTTVHbUpCbmtmNGpUZkNhZ3A1cHBlQjBnWlQ4bmVXWS93U1JaVmNE?=
- =?utf-8?B?eU1EOXJxMVNTNm5nNTBPRFZObXFMa0FqZlpEWk84eXBIWm5LVkMvTGtweW41?=
- =?utf-8?B?WElyQlpXSTFDN0NSWms5MWRHTGxyOVI5QUZHQWJtSmhJM0hGTjFoWnhpMHdm?=
- =?utf-8?B?cHRPdEFoTmpEV0ZDVXZ0UklMNWRzYzJRV1UvUk5VaytNd2c5eGx3MVdoZEVs?=
- =?utf-8?Q?1GsE=3D?=
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(376014)(82310400026)(36860700013)(7053199007);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Oct 2025 10:52:05.0969
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 729e06f4-ee66-4001-0d40-08de0a468c60
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SJ5PEPF000001E8.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA5PPFA403A61D8
 
+On 2025-10-09 7:25 pm, Dmitry Baryshkov wrote:
+> On Thu, Oct 09, 2025 at 06:03:29PM +0100, Robin Murphy wrote:
+>> On 2025-10-09 2:19 pm, Dmitry Baryshkov wrote:
+>>> On Thu, Oct 09, 2025 at 11:46:55AM +0100, Robin Murphy wrote:
+>>>> On 2025-10-08 8:10 pm, Charan Teja Kalla wrote:
+>>>>>
+>>>>> On 9/29/2025 3:50 PM, Robin Murphy wrote:
+>>>>>>> USECASE [1]:
+>>>>>>> -----------
+>>>>>>> Video IP, 32bit, have 2 hardware sub blocks(or can be called as
+>>>>>>> functions) called as pixel and nonpixel blocks, that does decode and
+>>>>>>> encode of the video stream. These sub blocks are __configured__ to
+>>>>>>> generate different stream IDs.
+>>>>>>
+>>>>>> So please clarify why you can't:
+>>>>>>
+>>>>>> a) Describe the sub-blocks as individual child nodes each with their own
+>>>>>> distinct "iommus" property
+>>>>>>
+>>>>>
+>>>>> Thanks Robin for your time. Sorry for late reply as I really didn't have
+>>>>> concrete answer for this question.
+>>>>>
+>>>>> First let me clarify the word "sub blocks" -- This is just the logical
+>>>>> separation with no separate address space to really able to define them
+>>>>> as sub devices. Think of it like a single video IP with 2 dma
+>>>>> engines(used for pixel and non-pixel purpose).
+>>>>>
+>>>>> I should agree that the child-nodes in the device tree is the easy one
+>>>>> and infact, it is how being used in downstream.
+>>>>>
+>>>>> For upstream -- Since there is no real address space to interact with
+>>>>> these sub-blocks(or logical blocks), does it really qualify to define as
+>>>>> child nodes in the device tree? I see there is some push back[1].
+>>>>
+>>>> Who says you need an address space? Child nodes without "reg" properties,
+>>>> referenced by name, compatible or phandle, exist all over the place for all
+>>>> manner of reasons. If there are distinct logical functions with their own
+>>>> distinct hardware properties, then I would say having child nodes to
+>>>> describe and associate those properties with their respective functions is
+>>>> entirely natural and appropriate. The first example that comes to mind of
+>>>> where this is a well-established practice is PMICs - to pick one at random:
+>>>> Documentation/devicetree/bindings/regulator/qcom,rpmh-regulator.yaml
+>>>
+>>> Logical function, that's correct. And also note, for PMICs that practice
+>>> has bitten us back. For PM8008 we switched back to a non-subdevice
+>>> representation.
+>>>
+>>>> For bonus irony, you can't take the other approaches without inherently
+>>>> *introducing* a notional address space in the form of your logical function
+>>>> IDs anyway.
+>>>>
+>>>>>      > or:
+>>>>>>
+>>>>>> b) Use standard "iommu-map" which already supports mapping a masked
+>>>>>> input ID to an arbitrary IOMMU specifier
+>>>>>>
+>>>>>
+>>>>> I think clients is also required to program non-zero smr mask, where as
+>>>>> iommu-map just maps the id to an IOMMU specifier(sid). Please LMK if I
+>>>>> am unable to catch your thought here.
+>>>> An IOMMU specifier is whatever the target IOMMU node's #iommu-cells says it
+>>>> is. The fact that Linux's parsing code only works properly for #iommu-cells
+>>>> = 1 is not really a DT binding problem (other than it stemming from a loose
+>>>> assumption stated in the PCI binding's use of the property).
+>>>
+>>> I really don't like the idea of extending the #iommu-cells. The ARM SMMU
+>>> has only one cell, which is correct even for our platforms. The fact
+>>> that we need to identify different IOMMU SIDs (and handle them in a
+>>> differnt ways) is internal to the video device (and several other
+>>> devices). There is nothing to be handled on the ARM SMMU side.
+>>
+>> Huh? So if you prefer not to change anything, are you suggesting this series
+>> doesn't need to exist at all? Now I'm thoroughly confused...
+> 
+> Hmm. We need changes, but I don't feel like adding the FUNCTION_ID to
+> #iommu-cells is the best idea.
 
+What? No, any function ID would be an *input* to a map, not part of the 
+output specifier; indeed it should never go anywhere near the IOMMU, I 
+don't think anyone suggested that.
 
-On 10/10/2025 5:27 AM, Suravee Suthikulpanit wrote:
-> Also change the define to use GENMASK_ULL instead.
-> There is no functional change.
->
-> Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-> ---
->   drivers/iommu/amd/amd_iommu_types.h | 2 +-
->   drivers/iommu/amd/iommu.c           | 2 +-
->   2 files changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-> index a698a2e7ce2a..556f1df32d53 100644
-> --- a/drivers/iommu/amd/amd_iommu_types.h
-> +++ b/drivers/iommu/amd/amd_iommu_types.h
-> @@ -422,7 +422,7 @@
->   
->   #define DTE_FLAG_IOTLB	BIT_ULL(32)
->   #define DTE_FLAG_MASK	(0x3ffULL << 32)
-> -#define DEV_DOMID_MASK	0xffffULL
-> +#define DTE_DOMID_MASK	GENMASK_ULL(15, 0)
->   
->   #define DTE_GCR3_14_12	GENMASK_ULL(60, 58)
->   #define DTE_GCR3_30_15	GENMASK_ULL(31, 16)
-> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> index b57a6993179d..a9b17d31a969 100644
-> --- a/drivers/iommu/amd/iommu.c
-> +++ b/drivers/iommu/amd/iommu.c
-> @@ -2094,7 +2094,7 @@ static void set_dte_entry(struct amd_iommu *iommu,
->   	if (dev_data->ats_enabled)
->   		new.data[1] |= DTE_FLAG_IOTLB;
->   
-> -	old_domid = READ_ONCE(dte->data[1]) & DEV_DOMID_MASK;
-> +	old_domid = READ_ONCE(dte->data[1]) & DTE_DOMID_MASK;
->   	new.data[1] |= domid;
->   
->   	/*
-Hi suravee
-Please update the replace the usage of DEV_DOMID_MASK in
-init.c:__copy_device_table as well
+>> If you want to use SMR masks, then you absolutely need #iommu-cells = 2,
+>> because that is the SMMU binding for using SMR masks. It would definitely
+> 
+> I'm sorry. Yes, we have #iommu-cells = <2>.
+> 
+>> not be OK to have some magic property trying to smuggle
+>> IOMMU-driver-specific data contrary to what the IOMMU node itself says. As
+>> for iommu-map, I don't see what would be objectionable about improving the
+>> parsing to respect a real #iommu-cells value rather than hard-coding an
+>> assumption. Yes, we'd probably need to forbid entries with length > 1
+>> targeting IOMMUs with #iommu-cells > 1, since the notion of a linear
+> 
+> This will break e.g. PCIe on Qualcomm platforms:
+> 
+>                          iommu-map = <0x0   &apps_smmu 0x1400 0x1>,
+>                                      <0x100 &apps_smmu 0x1401 0x1>;
+> 
+> 
+> But this seems unlogical anyway wrt. apps_smmu having #iommu-cells =
+> <2>. It depends on ARM SMMU ignoring the second cell when it's not
+> present.
 
-Thanks
-Sairaj
+Urgh, yes, that's just broken already :(
+
+At least they all seem to be a sufficiently consistent pattern that a 
+targeted workaround to detect old DTBs looks feasible (I'm thinking, if 
+iommu-map size % 4 == 0 and cells n*4 + 3 are all 1 and cells n*4 + 1 
+are all the same phandle to an IOMMU with #iommu-cells == 2, then parse 
+as if #iommu-cells == 1)
+
+>> relationship between the input ID and the output specifier falls apart when
+>> the specifier is complex, but that seems simple enough to implement and
+>> document (even if it's too fiddly to describe in the schema itself), and
+>> still certainly no worse than having another property that *is* just
+>> iommu-map with implicit length = 1.
+>>
+>> And if you want individual StreamIDs for logical functions to be attachable
+>> to distinct contexts then those functions absolutely must be visible to the
+>> IOMMU layer and the SMMU driver as independent devices with their own unique
+>> properties, which means either they come that way from the DT as of_platform
+>> devices in the first place, or you implement a full bus_type abstraction
+> 
+> Not necessarily. Tegra display driver creates a device for each context
+> on its own.
+No, the *display* driver does not; the host1x bus driver does, which is 
+the point I was making - that has a proper bus abstraction tied into the 
+IOMMU layer, such that the devices are correctly configured long before 
+the actual DRM driver(s) get anywhere near them.
+
+> In fact, using OF to create context devices is _less_
+> robust, because now the driver needs to sync, checking that there is a
+> subdevice, that it has probed, etc. Using manually created devices seems
+> better from my POV.
+
+Huh? A simple call to of_platform_populate() is somehow less robust than 
+open-coding much of the same logic that of_platform_populate() does plus 
+a bunch of hackery to try to fake up an of_node to make the new device 
+appear to own the appropriate properties?
+
+Having entire sub-*drivers* for child devices or not is an orthogonal 
+issue regardless of whichever way they are created.
+>> which will have to be hooked up to the IOMMU layer. You cannot make IOMMU
+>> configuration "internal" to the actual client driver which is only allowed
+>> to bind *after* said IOMMU configuration has already been made.
+> 
+> I'm not sure I follow this, I'm sorry.
+I mean IOMMU configuration is designed to happen at device_add() time, 
+and client drivers must not assume otherwise (the mechanisms for 
+handling IOMMU drivers registering "late" from modules are internal 
+details that can and will change). If you're under the impression that a 
+straightforward platform driver for the video codec itself would be able 
+to invoke IOMMU configuration for the video codec platform device 
+(without unacceptable levels of hackery) then you are mistaken, sorry.
+
+Again, to be able to assign StreamIDs to different contexts, those 
+StreamIDs must uniquely belong to different struct devices. Thus in 
+terms of how you get to those struct devices from a DT representation, 
+either they come from distinct DT nodes with standard "iommus" 
+properties that the generic of_platform code can create and configure 
+accordingly, or you're doing a non-trivial amount of work to implement 
+your own bus layer like host1x_context_bus to manage your own type of 
+sub-device. There is no valid middle ground of trying to stuff 
+driver-specific knowledge of arbitrarily made-up function IDs into the 
+generic platform bus code.
+
+Thanks,
+Robin.
