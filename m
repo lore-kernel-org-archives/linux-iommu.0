@@ -1,238 +1,210 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C4941946AA;
-	Mon, 13 Oct 2025 09:59:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E5C628000A;
+	Mon, 13 Oct 2025 10:18:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760349589; cv=none; b=XlbF1dbcAVYhzpkaw3fIOuL+VpDr9aoGn9JyVOgAouCBUnGcMaP/z39ZS2+D+thd/c4s3/SFL/oDz3vauTe27t5TCCkLpBXPgFGGIrxBwsKpqbOF92EPX3sEISmgT72h3CSbfUX+CdD9KZtnBfGHAwhBVP8VboJ3ErBqvFNiwpI=
+	t=1760350691; cv=none; b=nvHI3g8DMafaDzp/uThoI34cQ9VMqJbQgcsMHPNoN4XjGO6f5ZNMzXShL/TCGFje1kUyzkkPsG3/lqfPRDeUfqnTjDXv11q+pmIx+0Lodt0yb+A448hZnf16AY4rYKXF3cpItOGUJCETGbKCTLsQajB+wubYykjmOLFTIplRpAE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760349589; c=relaxed/simple;
-	bh=VvJ6LiAl6bxxjZu/VsVT7anbbFmjNtSEFhVe43hw+d4=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=mUKumGlJEf6gixWaYdPT3T8Jb4/OR7rFRR2Wh8c9twTlm+Xs75ungY6wQ1387SEfvuGxCzg8V4WbmS4Of6gigdO3lAX0RRwBjGfvGowEnkqVWuPxq83mD1hgg0kEAt0AfJFGtt/StqgTX7BsUaS8OMa+Iz8xE73h3GI/cJy8poU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=EongFvxo; arc=none smtp.client-ip=148.163.156.1
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+	s=arc-20240116; t=1760350691; c=relaxed/simple;
+	bh=YthDpkR+oLWgZls0ALfZLAM7hGcGSvH5hlnAbWxBnjw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=rW5B63EpuQCKOW+McpXgzGTrsYbxs/iVC/bfispVqeQ7m2adPyg89ZZBf04pQSNn2qbcA83Wq38HNvc3ECNcCMttR3lZrCSipNrCzX9Ks/fZLNasx1ESQV7uTkvHwaxVcpi/1zWkZ+TuIe8azvKoY+lDd9JliYip1TEizLCynUE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EnXlRhX8; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="EongFvxo"
-Received: from pps.filterd (m0356517.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 59D2jFYk019492;
-	Mon, 13 Oct 2025 09:59:23 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=pp1; bh=jBhMnJ
-	zS9Z83HawXd2RDjG6FUzPokDAbz28bCdes0uc=; b=EongFvxo6BXKZiclVAOOwL
-	AOYamchoR70Fn0GCwC6K6KhzPFG1WOTXVvUA7zuGzVyBMGj173W7bHlFEE5Ha69b
-	7Dyaz4PufpMn4vCEPnuD3QhY4/S9KKICmr3J9cMqON5TezlIgnFR5WMpKBZMn0r+
-	ePLsISL9KNaDLensRtoE9VU0J6Zj6uXvvqhTgobB96YEXnMg8wL93j7WMmXMSMqb
-	VppdkLhN7M7CkguOOJdc/sORjwM0SjIwVsYerhuk91pHRzGUeHF+kddMt+K1zdNz
-	crJ9mzQ8Q7xis9ZNCmnJuoe5zZSz6Ss10ZjacDkaTFG6jtfaku2TUUYtVE4TuKtA
-	==
-Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 49qey8g7gr-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 13 Oct 2025 09:59:23 +0000 (GMT)
-Received: from m0356517.ppops.net (m0356517.ppops.net [127.0.0.1])
-	by pps.reinject (8.18.1.12/8.18.0.8) with ESMTP id 59D9uBsM025567;
-	Mon, 13 Oct 2025 09:59:22 GMT
-Received: from ppma11.dal12v.mail.ibm.com (db.9e.1632.ip4.static.sl-reverse.com [50.22.158.219])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 49qey8g7gm-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 13 Oct 2025 09:59:22 +0000 (GMT)
-Received: from pps.filterd (ppma11.dal12v.mail.ibm.com [127.0.0.1])
-	by ppma11.dal12v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 59D7ONg6003928;
-	Mon, 13 Oct 2025 09:59:21 GMT
-Received: from smtprelay03.dal12v.mail.ibm.com ([172.16.1.5])
-	by ppma11.dal12v.mail.ibm.com (PPS) with ESMTPS id 49r490vxee-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 13 Oct 2025 09:59:21 +0000
-Received: from smtpav06.dal12v.mail.ibm.com (smtpav06.dal12v.mail.ibm.com [10.241.53.105])
-	by smtprelay03.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 59D9xL5f12321512
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Mon, 13 Oct 2025 09:59:21 GMT
-Received: from smtpav06.dal12v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 1391D58043;
-	Mon, 13 Oct 2025 09:59:21 +0000 (GMT)
-Received: from smtpav06.dal12v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 25AB65805D;
-	Mon, 13 Oct 2025 09:59:15 +0000 (GMT)
-Received: from [9.111.15.176] (unknown [9.111.15.176])
-	by smtpav06.dal12v.mail.ibm.com (Postfix) with ESMTP;
-	Mon, 13 Oct 2025 09:59:14 +0000 (GMT)
-Message-ID: <ca1980887ae352811b922fca28965f5cd4639f97.camel@linux.ibm.com>
-Subject: Re: [PATCH v1 17/20] iommu/s390-iommu: Implement
- s390_iommu_domain_test_device
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-To: Nicolin Chen <nicolinc@nvidia.com>, joro@8bytes.org, jgg@nvidia.com,
-        kevin.tian@intel.com
-Cc: suravee.suthikulpanit@amd.com, will@kernel.org, robin.murphy@arm.com,
-        sven@kernel.org, j@jannau.net, jean-philippe@linaro.org,
-        robin.clark@oss.qualcomm.com, dwmw2@infradead.org,
-        baolu.lu@linux.intel.com, yong.wu@mediatek.com, matthias.bgg@gmail.com,
-        angelogioacchino.delregno@collabora.com, tjeznach@rivosinc.com,
-        pjw@kernel.org, palmer@dabbelt.com, aou@eecs.berkeley.edu,
-        heiko@sntech.de, mjrosato@linux.ibm.com, wens@csie.org,
-        jernej.skrabec@gmail.com, samuel@sholland.org,
-        thierry.reding@gmail.com, jonathanh@nvidia.com, iommu@lists.linux.dev,
-        linux-kernel@vger.kernel.org, asahi@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-riscv@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-s390@vger.kernel.org,
-        linux-sunxi@lists.linux.dev, linux-tegra@vger.kernel.org,
-        virtualization@lists.linux.dev, patches@lists.linux.dev
-Date: Mon, 13 Oct 2025 11:59:14 +0200
-In-Reply-To: <792e825476efe58d14cc16cca18209a2b6088a4b.1760312725.git.nicolinc@nvidia.com>
-References: <cover.1760312725.git.nicolinc@nvidia.com>
-	 <792e825476efe58d14cc16cca18209a2b6088a4b.1760312725.git.nicolinc@nvidia.com>
-Autocrypt: addr=schnelle@linux.ibm.com; prefer-encrypt=mutual;
- keydata=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
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.56.2 (3.56.2-2.fc42) 
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EnXlRhX8"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E29D9C4CEF8;
+	Mon, 13 Oct 2025 10:18:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1760350688;
+	bh=YthDpkR+oLWgZls0ALfZLAM7hGcGSvH5hlnAbWxBnjw=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=EnXlRhX8sw9r8Eas+JakkwrvLXvw39f8en3ub8q2m/JAsTD6u8qkc9L8qTFAbhwDY
+	 w9/3zDRUC4kpkJfNVNtFmLRMwjk+zYzJyBtr3vzu1CnYD1pJudxQ2VlLmqF2bfiyB8
+	 DiaGPKgL0dqatbCMpmbx0c9jLLF+jAqMcQ+Bu5oF5Dddm2ZoLfmIfFGmmu4tUQ5r5h
+	 zy0nZA1jO0ob7DjsM1LrSvCx66YzghMtXXfmLlFiD1kfAyAhGFupC1QlAM0bmP7nIs
+	 s/kjrpVuz2VVLNlBM+3yckQeilU1KDVWtHso3PNbppyuBkHY/gi8WWa5dAyLUj8qJ4
+	 ZZhLWpCM64WpQ==
+Message-ID: <452c8af1-7ec0-4bc3-9d85-8993c0773c86@kernel.org>
+Date: Mon, 13 Oct 2025 11:18:01 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: NN1Ri8As_3unIKGQxOhzOqdABPZbGliV
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMDExMDAxMSBTYWx0ZWRfX45iRCyF/SmFv
- cyiVovpS/6ywmKLxXcBh911mDAD1a/uE1ZJVHH+T4fqvvvXPLgRolkAfzOO+tyjaDLnEWQV8PdJ
- jS0/+OinbIirD1CVSTGTLrkWiDwPkkwkr2FJjbJp1LjnjkD82S13ZCVAs3RjcRfzSDQnFW5FpJA
- EWTJ5vXcjMRPcCOBJsK8j6rE5RRQwMbfjD+atUGZaTTJ91nYv81GBBzyYGnScyKR3dOo4qqYnW/
- os4utCq2Vs8j3b/mq+L4eiKocAiXmFpV6znl27PwFplis4+OPCqmLUYQA09S3RQxaxPBCw8+DQq
- xKYI0W9ufg3wQqtORL3Z8jp5od/JaXrRGdtKm2DSRarkvg/p9zNySmBmTrSxczOsjXxAsY4VCJ8
- khdZJE5p5+V8uWHZCdU8K2rIisdWOg==
-X-Proofpoint-GUID: WDeGIxavFBN_1amMctHLvXj_kQ_5X7Wg
-X-Authority-Analysis: v=2.4 cv=QZ5rf8bv c=1 sm=1 tr=0 ts=68eccd7b cx=c_pps
- a=aDMHemPKRhS1OARIsFnwRA==:117 a=aDMHemPKRhS1OARIsFnwRA==:17
- a=IkcTkHD0fZMA:10 a=x6icFKpwvdMA:10 a=Ikd4Dj_1AAAA:8 a=VnNF1IyMAAAA:8
- a=Vk_oO6w6bVgZBSUyZL0A:9 a=QEXdDO2ut3YA:10 a=DXsff8QfwkrTrK3sU8N1:22
- a=Z5ABNNGmrOfJ6cZ5bIyy:22 a=bWyr8ysk75zN3GCy5bjg:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1117,Hydra:6.1.9,FMLib:17.12.80.40
- definitions=2025-10-13_03,2025-10-06_01,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- lowpriorityscore=0 priorityscore=1501 phishscore=0 bulkscore=0 suspectscore=0
- spamscore=0 malwarescore=0 impostorscore=0 clxscore=1015 adultscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.19.0-2510020000 definitions=main-2510110011
+User-Agent: Mozilla Thunderbird
+Subject: Re: [RFC PATCH 0/3] Introduce iommu-map-masked for platform devices
+To: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+Cc: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>,
+ Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org, will@kernel.org,
+ saravanak@google.com, conor+dt@kernel.org, robh@kernel.org,
+ mchehab@kernel.org, krzk+dt@kernel.org, abhinav.kumar@linux.dev,
+ vikash.garodia@oss.qualcomm.com, dikshita.agarwal@oss.qualcomm.com,
+ Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
+ bjorn.andersson@oss.qualcomm.com, linux-media@vger.kernel.org,
+ linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+References: <20250928171718.436440-1-charan.kalla@oss.qualcomm.com>
+ <aec0f40a-8346-4194-8b18-1022fe3366bb@arm.com>
+ <0d0560cc-9757-4c7b-8de4-170148d99481@oss.qualcomm.com>
+ <ead7cf8b-fbc4-4242-a9da-b313dded1abc@arm.com>
+ <nzqte4glwtpjs5bhkxz43yhdufelxvqvzmg5tepudxwetimir3@bvlw5csjizsh>
+ <9d3eeb9f-b8ea-48e5-a1d9-0865f63ef991@arm.com>
+ <fhb4woejzh3r6v5dxvdiopnsbuwstucfuuzbiymxg4wrxrjc7t@dt3z3utq6lwd>
+ <0zcQcB2YYWH_ufElq3ptqtLsGDsxvMEAkHCt_jYaSpwV597VFc22pFWzyMz0rSY-DKqWCQgOCiKpsIRNA0Fisw==@protonmail.internalid>
+ <c863f6a7-b117-4444-ae6d-1d525b572be2@oss.qualcomm.com>
+ <3c1eb276-abde-4af4-ab39-c934c30aa447@kernel.org>
+ <4yMPpVuyUWPNYEAfCpYtZnf3fgFlbDavEA9cqVIJTTOufoxdbJmQ8sWMiK5afpKXUwLZMQGhm1UbHtBaAnV5Iw==@protonmail.internalid>
+ <mtt7x2fqvuotwko6ztczosiep5ofyaupayumyggch6e2piqxmr@4v5tb5u2a5u3>
+From: Bryan O'Donoghue <bod@kernel.org>
+Content-Language: en-US
+In-Reply-To: <mtt7x2fqvuotwko6ztczosiep5ofyaupayumyggch6e2piqxmr@4v5tb5u2a5u3>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Sun, 2025-10-12 at 17:05 -0700, Nicolin Chen wrote:
-> Move sanity and compatibility tests from the attach_dev callback to the
-> new test_dev callback function. The IOMMU core makes sure an attach_dev
-> call must be invoked after a successful test_dev call.
->=20
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> ---
->  drivers/iommu/s390-iommu.c | 22 +++++++++++++++-------
->  1 file changed, 15 insertions(+), 7 deletions(-)
->=20
-> diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-> index 366e47978ac07..3c6141a4a1faf 100644
-> --- a/drivers/iommu/s390-iommu.c
-> +++ b/drivers/iommu/s390-iommu.c
-> @@ -694,6 +694,20 @@ static int blocking_domain_attach_device(struct iomm=
-u_domain *domain,
->  	return 0;
->  }
-> =20
-> +static int s390_iommu_domain_test_device(struct iommu_domain *domain,
-> +					 struct device *dev, ioasid_t pasid,
-> +					 struct iommu_domain *old)
-> +{
-> +	struct zpci_dev *zdev =3D to_zpci_dev(dev);
-> +
-> +	if (!zdev)
-> +		return -ENODEV;
-> +	if (WARN_ON(domain->geometry.aperture_start > zdev->end_dma ||
-> +		    domain->geometry.aperture_end < zdev->start_dma))
-> +		return -EINVAL;
-> +	return 0;
-> +}
-> +
->  static int s390_iommu_attach_device(struct iommu_domain *domain,
->  				    struct device *dev,
->  				    struct iommu_domain *old)
-> @@ -704,13 +718,6 @@ static int s390_iommu_attach_device(struct iommu_dom=
-ain *domain,
->  	u8 status;
->  	int cc;
-> =20
-> -	if (!zdev)
-> -		return -ENODEV;
-> -
-> -	if (WARN_ON(domain->geometry.aperture_start > zdev->end_dma ||
-> -		domain->geometry.aperture_end < zdev->start_dma))
-> -		return -EINVAL;
-> -
->  	blocking_domain_attach_device(&blocking_domain, dev);
-> =20
->  	/* If we fail now DMA remains blocked via blocking domain */
-> @@ -1177,6 +1184,7 @@ static struct iommu_domain blocking_domain =3D {
->  	.device_group =3D generic_device_group, \
->  	.get_resv_regions =3D s390_iommu_get_resv_regions, \
->  	.default_domain_ops =3D &(const struct iommu_domain_ops) { \
-> +		.test_dev	=3D s390_iommu_domain_test_device, \
->  		.attach_dev	=3D s390_iommu_attach_device, \
->  		.map_pages	=3D s390_iommu_map_pages, \
->  		.unmap_pages	=3D s390_iommu_unmap_pages, \
+On 12/10/2025 23:47, Dmitry Baryshkov wrote:
+> On Sun, Oct 12, 2025 at 09:44:43PM +0100, Bryan O'Donoghue wrote:
+>> On 10/10/2025 20:53, Charan Teja Kalla wrote:
+>>> I don't want to dilute what Dmitry is saying here, but the below is what
+>>> i can make out of Robin comments, please CMIW:
+>>>
+>>> iommu {
+>>> 	#iommu-cells = <2>;
+>>> }
+>>>
+>>> video {
+>>>      iommu = <iommu sid1 mask1>, <iommu sid2 mask2>;
+>>>      #iommu-map-cells = 2; /* does it look weird to define here, even if
+>>> it is SMMU property? */
+>>>      iommu-map = <0 smmu sid3 mask3>,
+>>> 	       <0 smmu sid4 mask4>;
+>>> };
+>>
+>>
+>> This whole iommu-map thing is a wrong direction, its a workaround.
+>>
+>> It stems from here:
+>>
+>> 1. Vikash posted a series adding a platform device
+>> https://lore.kernel.org/linux-media/20250627-video_cb-v3-0-51e18c0ffbce@quicinc.com/
+>>
+>>     The two objectives of this are
+>>
+>>     a. Allow Linux, the APPS as qcom calls it,@ EL1 or EL2
+>>        to setup iommu entries for function_ids that are
+>>        not the APPS @ EL1/EL2.
+> 
+> No.
+> 
+> Up to now we were talking only about the non-pixel bitstreams and secure
+> en-/decoding data.  None of that is related to anything except Linux
+> running in EL1/EL2. Only Linux consumes / provides normal non-pixel
+> data. Only Linux handles decoded secure buffers. Only Linux sets up the
+> video decoding of secure data and then blending of that data inside DPU.
 
-Looks good to me, thanks!
+As I understand some of these >>        For example the APPS running in 
+TEE or one of the
+>>        various co-processors - like say the Compute DSP cDSP.
+> 
+> How did CDSP or TEE get into the picture?
 
-Reviewed-by: Niklas Schnelle <schnelle@linux.ibm.com>
+Hypothetical examples of the non-HLOS VMID. Call these AC_VM_CP_BITSREAM 
+or AC_VM_CP_NON_PIXEL to use values from the documentation.
+
+>>
+>>     b. Allowing for each device to have a full IOVA range.
+>>
+>> 2. Krzysztof queried about changing _existing_ entries e.g.
+>> https://lore.kernel.org/linux-media/6fd3fa34-69e1-484f-ad6f-8caa852f1a6c@kernel.org/
+>>
+>>     The point about ABI breakage.
+>>
+>> 3. This proposal to introduce iommu-map as a workaround
+>>     Gets the FUNCTION_ID APPS v cDSP v TZ into the DT
+> 
+> It's neither CDSP nor TZ. The source or the consumer of the data might
+> be crypto core or just Linux process. For non-secured non-pixel data it
+> _is_ Linux process.
+> 
+>>
+>>     So it solves 1/a I'm not sure it solves 1/b
+>>
+>>     However if you were designing from scratch you wouldn't
+>>     have a motivation to assign this additional property.
+>>
+>>     The motivation is to not break the ABI I think.
+>>
+>> 4. Robin said
+>>
+>>     "And if you want individual StreamIDs for logical functions to be
+>>      attachable to distinct contexts then those functions absolutely
+>>      must be visible to the IOMMU layer and the SMMU driver as
+>>      independent devices"
+> 
+> Correct. But it doesn't require separate OF device nodes. See
+> host1x_memory_context_list_init().
+
+Fine could be platform code too.
+
+
+>>
+>> 5. If you think about this, its actually the right long term solution
+>>
+>>     - Individual devices means something like:
+>>
+>>       video-codec@aa00000 {
+>>           /* Any SID mapping to S1_VIDEO_HLOS belongs here */
+>>           compatible = "qcom,sm8550-iris";
+>>           iommus = <&apps_smmu 0x1947 0x0000>;
+>>       };
+>>
+>>       video-codec-non-pixel {
+>>           /* Any SID mapping to S1_VIDEO_HLOS_P belongs here */
+>>           compatible = "qcom,sm8550-iris-non-pixel";
+>>           iommus = <&apps_smmu 0x1940 0x0000>;
+>>       };
+> 
+> Which piece of hardware is described by this node? Why is it separate
+> from the main video-codec? The IOMMU stream doesn't have any specifics,
+> it's just a part of the video codec core.
+
+You could conceivably start associating /dev/video entries with a device 
+that maps to AC_VM_CP_PIXEL - the protected video stream.
+
+There may be data other than SID/FUNCTION_ID that we would want to 
+associate with those devices, I'll stipulate to further discussion there.
+>>
+>>     - Or do something like that above again in platform code.
+>>
+>> 6. We should on introduction of a new SoC
+>>
+>>     - Fix the iommus = <> for "qcom,newsoc-iris" to contain
+>>       only what is pertinent to S1_VIDEO_HLOS
+>>
+>>     - Make new devices in the DT for each FUNCTION_ID
+>>
+>>     - Then look at how - if - that fix can be brought back to Lemans
+>>
+>> My problem with introducing the iommu-map is that it bakes into the video
+>> codec definitions a fixup which then gets carried forward.
+>>
+>> But the right thing to do is individual devices so, let's do that and worry
+>> about how to back-port that fix to older SoCs once done.
+
+So really whether we end up representing these devices in DT or platform 
+code, separate devices are the answer - both for the FUNCTION_ID mapping 
+and the IOVA range.
+
+You just need to carefully think about what ends up being a device if 
+the IOVA range is a concern.
+
+Its unfortunate that sm8550 has an addtional iommu entry that wants to 
+live in a different device - but, that's a problem for sm8550.
+
+Perhaps something we can backport to Lanai, Lemans and friends once we 
+get the new submissions right..
+
+---
+bod
