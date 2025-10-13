@@ -1,33 +1,62 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from SJ2PR03CU001.outbound.protection.outlook.com (mail-westusazon11012011.outbound.protection.outlook.com [52.101.43.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E5C628000A;
-	Mon, 13 Oct 2025 10:18:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760350691; cv=none; b=nvHI3g8DMafaDzp/uThoI34cQ9VMqJbQgcsMHPNoN4XjGO6f5ZNMzXShL/TCGFje1kUyzkkPsG3/lqfPRDeUfqnTjDXv11q+pmIx+0Lodt0yb+A448hZnf16AY4rYKXF3cpItOGUJCETGbKCTLsQajB+wubYykjmOLFTIplRpAE=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760350691; c=relaxed/simple;
-	bh=YthDpkR+oLWgZls0ALfZLAM7hGcGSvH5hlnAbWxBnjw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=rW5B63EpuQCKOW+McpXgzGTrsYbxs/iVC/bfispVqeQ7m2adPyg89ZZBf04pQSNn2qbcA83Wq38HNvc3ECNcCMttR3lZrCSipNrCzX9Ks/fZLNasx1ESQV7uTkvHwaxVcpi/1zWkZ+TuIe8azvKoY+lDd9JliYip1TEizLCynUE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EnXlRhX8; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63B4D3054FB
+	for <iommu@lists.linux.dev>; Mon, 13 Oct 2025 10:52:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.43.11
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1760352733; cv=fail; b=qTpHEw7kbMWC1zO4Sr6ADP+KIpbP481Ta3pEm1W8fzm6vPKrlNpF5Z2iZ85vGnpa1W4I05KIm0Vq6B0qTIVPrJPVKB09bZaqDp0VNNICF7zygTbFq4JyuxokmBa3sMPan0hWzrok9R+Hwh2cqU4Jj7FOhYY6ZNLvv1hAKrBter0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1760352733; c=relaxed/simple;
+	bh=FyJFSFg20eUEfsC8jhi0v7ap44+doLtPkgP60AaXV6g=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=HuwVud1yGLTwWntZEzVFUkaugC6zOYywfeRMh/eYmgxEa2IfOqrpjnC9JxxaB1SGmTX+L/YT0bOIBtFfjdgMBvwf46kL2jbOIh1C1k3z/SB4hMUkg0V2iuKQGHQUVfTIeR0DlaCfAqaC/HT0uPyehXenrcuOWBSZsnBwtvaSxAk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=ZhFCGAmH; arc=fail smtp.client-ip=52.101.43.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EnXlRhX8"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E29D9C4CEF8;
-	Mon, 13 Oct 2025 10:18:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1760350688;
-	bh=YthDpkR+oLWgZls0ALfZLAM7hGcGSvH5hlnAbWxBnjw=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=EnXlRhX8sw9r8Eas+JakkwrvLXvw39f8en3ub8q2m/JAsTD6u8qkc9L8qTFAbhwDY
-	 w9/3zDRUC4kpkJfNVNtFmLRMwjk+zYzJyBtr3vzu1CnYD1pJudxQ2VlLmqF2bfiyB8
-	 DiaGPKgL0dqatbCMpmbx0c9jLLF+jAqMcQ+Bu5oF5Dddm2ZoLfmIfFGmmu4tUQ5r5h
-	 zy0nZA1jO0ob7DjsM1LrSvCx66YzghMtXXfmLlFiD1kfAyAhGFupC1QlAM0bmP7nIs
-	 s/kjrpVuz2VVLNlBM+3yckQeilU1KDVWtHso3PNbppyuBkHY/gi8WWa5dAyLUj8qJ4
-	 ZZhLWpCM64WpQ==
-Message-ID: <452c8af1-7ec0-4bc3-9d85-8993c0773c86@kernel.org>
-Date: Mon, 13 Oct 2025 11:18:01 +0100
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="ZhFCGAmH"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=nDsjwQXc3FhsFuDofs7Lp+gkBUfh4JzovSj1PtkMhZSZe1epECbc/W0G6Kh1NGWhetGp+YK6sDVaoa0mAPO4yOSKX2aGcbi1h05sJ2qG904dA0rrVXyFssbCqwSaLttVhXQW7Pvh9YZGVMR4LHi9nk9q1PyesqSUYJnqZ3QiZvQkDAMXu4SWwuNHfXraK4MWxJCnhvq5vvus1+fHulhVi3a5XQKUFJoRex95lcAYMEeW1z9FTBAvi8vy1Opjh6Jl5Jq3rgcu9gs41jd3/8Fow8urtuG0DgbWYPID7i8jWpNTr95ih4m27rgGmjSGKyDC8vZJ9H3l5AD70eQ66tUZwg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=QUyQXAFO0HiaQZu7rfQP4k1MH0EgSQEfu48wpwZQNjs=;
+ b=If3nV42FzS74ic5m4X01pf3w95Mn9Sz4P7IVKHyTI0Kd6LkN6KIUJKkgR6A13e+327mo7o0JAJO+Y3gIL3Yzm8mYQcme7wVdhED+8nG8hxBoN28UMb7pPY9fmzXXszOVsnxDhmzpdc0Ha1MGawG2tBeVCaGf0Ui04Sqli6v82+ZxnK1Zd5V8Lnikr/NVkmNV7svXjv/lqFFbtSvOdCh3BuM2o2gRa0ITeTTFgshJwh+onMx3QOo1bhY48FssLMTy8vYmwzSGKQt9ogWd6NvxANl7rbjyGqiV6TUErsFnV1qFjRAETyZoZRESK5Y5Mq/fe49SBRM7IMTSoqideQSeZQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=nvidia.com smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=QUyQXAFO0HiaQZu7rfQP4k1MH0EgSQEfu48wpwZQNjs=;
+ b=ZhFCGAmHfIOo4Xe8RpSLOttH33x3lBxinlhqrlhXsQLhyYfToSYq29sY2c9T9HtuDnxwFPN79pT/usxBHkCG0zfJcwi5DVZPhCMEi/SlLxumkbGF6AfcxcK4USTCeShKYoX2LJMacw+G5OYH1RKWc6/pRQBMKf+p35wlvV4OaQY=
+Received: from MW4PR03CA0218.namprd03.prod.outlook.com (2603:10b6:303:b9::13)
+ by SA5PPFA403A61D8.namprd12.prod.outlook.com (2603:10b6:80f:fc04::8da) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9203.10; Mon, 13 Oct
+ 2025 10:52:05 +0000
+Received: from SJ5PEPF000001E8.namprd05.prod.outlook.com
+ (2603:10b6:303:b9:cafe::83) by MW4PR03CA0218.outlook.office365.com
+ (2603:10b6:303:b9::13) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9203.11 via Frontend Transport; Mon,
+ 13 Oct 2025 10:52:05 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
+Received: from satlexmb07.amd.com (165.204.84.17) by
+ SJ5PEPF000001E8.mail.protection.outlook.com (10.167.242.196) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.9228.7 via Frontend Transport; Mon, 13 Oct 2025 10:52:05 +0000
+Received: from [172.31.35.81] (10.180.168.240) by satlexmb07.amd.com
+ (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.17; Mon, 13 Oct
+ 2025 03:51:55 -0700
+Message-ID: <d062e8c8-fe8d-40a8-bbdf-0a8483c23b03@amd.com>
+Date: Mon, 13 Oct 2025 16:21:47 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -35,176 +64,128 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC PATCH 0/3] Introduce iommu-map-masked for platform devices
-To: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-Cc: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>,
- Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org, will@kernel.org,
- saravanak@google.com, conor+dt@kernel.org, robh@kernel.org,
- mchehab@kernel.org, krzk+dt@kernel.org, abhinav.kumar@linux.dev,
- vikash.garodia@oss.qualcomm.com, dikshita.agarwal@oss.qualcomm.com,
- Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
- bjorn.andersson@oss.qualcomm.com, linux-media@vger.kernel.org,
- linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-References: <20250928171718.436440-1-charan.kalla@oss.qualcomm.com>
- <aec0f40a-8346-4194-8b18-1022fe3366bb@arm.com>
- <0d0560cc-9757-4c7b-8de4-170148d99481@oss.qualcomm.com>
- <ead7cf8b-fbc4-4242-a9da-b313dded1abc@arm.com>
- <nzqte4glwtpjs5bhkxz43yhdufelxvqvzmg5tepudxwetimir3@bvlw5csjizsh>
- <9d3eeb9f-b8ea-48e5-a1d9-0865f63ef991@arm.com>
- <fhb4woejzh3r6v5dxvdiopnsbuwstucfuuzbiymxg4wrxrjc7t@dt3z3utq6lwd>
- <0zcQcB2YYWH_ufElq3ptqtLsGDsxvMEAkHCt_jYaSpwV597VFc22pFWzyMz0rSY-DKqWCQgOCiKpsIRNA0Fisw==@protonmail.internalid>
- <c863f6a7-b117-4444-ae6d-1d525b572be2@oss.qualcomm.com>
- <3c1eb276-abde-4af4-ab39-c934c30aa447@kernel.org>
- <4yMPpVuyUWPNYEAfCpYtZnf3fgFlbDavEA9cqVIJTTOufoxdbJmQ8sWMiK5afpKXUwLZMQGhm1UbHtBaAnV5Iw==@protonmail.internalid>
- <mtt7x2fqvuotwko6ztczosiep5ofyaupayumyggch6e2piqxmr@4v5tb5u2a5u3>
-From: Bryan O'Donoghue <bod@kernel.org>
+Subject: Re: [PATCH v3 01/15] iommu/amd: Rename DEV_DOMID_MASK to
+ DTE_DOMID_MASK
 Content-Language: en-US
-In-Reply-To: <mtt7x2fqvuotwko6ztczosiep5ofyaupayumyggch6e2piqxmr@4v5tb5u2a5u3>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, <jgg@nvidia.com>,
+	<nicolinc@nvidia.com>
+CC: <linux-kernel@vger.kernel.org>, <robin.murphy@arm.com>, <will@kernel.org>,
+	<joro@8bytes.org>, <kevin.tian@intel.com>, <jsnitsel@redhat.com>,
+	<vasant.hegde@amd.com>, <iommu@lists.linux.dev>, <santosh.shukla@amd.com>,
+	<sairaj.arunkodilkar@amd.com>, <jon.grimm@amd.com>,
+	<prashanthpra@google.com>, <wvw@google.com>, <wnliu@google.com>,
+	<gptran@google.com>, <kpsingh@google.com>, <joao.m.martins@oracle.com>,
+	<alejandro.j.jimenez@oracle.com>
+References: <20251009235755.4497-1-suravee.suthikulpanit@amd.com>
+ <20251009235755.4497-2-suravee.suthikulpanit@amd.com>
+From: Sairaj Kodilkar <sarunkod@amd.com>
+In-Reply-To: <20251009235755.4497-2-suravee.suthikulpanit@amd.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
-
-On 12/10/2025 23:47, Dmitry Baryshkov wrote:
-> On Sun, Oct 12, 2025 at 09:44:43PM +0100, Bryan O'Donoghue wrote:
->> On 10/10/2025 20:53, Charan Teja Kalla wrote:
->>> I don't want to dilute what Dmitry is saying here, but the below is what
->>> i can make out of Robin comments, please CMIW:
->>>
->>> iommu {
->>> 	#iommu-cells = <2>;
->>> }
->>>
->>> video {
->>>      iommu = <iommu sid1 mask1>, <iommu sid2 mask2>;
->>>      #iommu-map-cells = 2; /* does it look weird to define here, even if
->>> it is SMMU property? */
->>>      iommu-map = <0 smmu sid3 mask3>,
->>> 	       <0 smmu sid4 mask4>;
->>> };
->>
->>
->> This whole iommu-map thing is a wrong direction, its a workaround.
->>
->> It stems from here:
->>
->> 1. Vikash posted a series adding a platform device
->> https://lore.kernel.org/linux-media/20250627-video_cb-v3-0-51e18c0ffbce@quicinc.com/
->>
->>     The two objectives of this are
->>
->>     a. Allow Linux, the APPS as qcom calls it,@ EL1 or EL2
->>        to setup iommu entries for function_ids that are
->>        not the APPS @ EL1/EL2.
-> 
-> No.
-> 
-> Up to now we were talking only about the non-pixel bitstreams and secure
-> en-/decoding data.  None of that is related to anything except Linux
-> running in EL1/EL2. Only Linux consumes / provides normal non-pixel
-> data. Only Linux handles decoded secure buffers. Only Linux sets up the
-> video decoding of secure data and then blending of that data inside DPU.
-
-As I understand some of these >>        For example the APPS running in 
-TEE or one of the
->>        various co-processors - like say the Compute DSP cDSP.
-> 
-> How did CDSP or TEE get into the picture?
-
-Hypothetical examples of the non-HLOS VMID. Call these AC_VM_CP_BITSREAM 
-or AC_VM_CP_NON_PIXEL to use values from the documentation.
-
->>
->>     b. Allowing for each device to have a full IOVA range.
->>
->> 2. Krzysztof queried about changing _existing_ entries e.g.
->> https://lore.kernel.org/linux-media/6fd3fa34-69e1-484f-ad6f-8caa852f1a6c@kernel.org/
->>
->>     The point about ABI breakage.
->>
->> 3. This proposal to introduce iommu-map as a workaround
->>     Gets the FUNCTION_ID APPS v cDSP v TZ into the DT
-> 
-> It's neither CDSP nor TZ. The source or the consumer of the data might
-> be crypto core or just Linux process. For non-secured non-pixel data it
-> _is_ Linux process.
-> 
->>
->>     So it solves 1/a I'm not sure it solves 1/b
->>
->>     However if you were designing from scratch you wouldn't
->>     have a motivation to assign this additional property.
->>
->>     The motivation is to not break the ABI I think.
->>
->> 4. Robin said
->>
->>     "And if you want individual StreamIDs for logical functions to be
->>      attachable to distinct contexts then those functions absolutely
->>      must be visible to the IOMMU layer and the SMMU driver as
->>      independent devices"
-> 
-> Correct. But it doesn't require separate OF device nodes. See
-> host1x_memory_context_list_init().
-
-Fine could be platform code too.
+X-ClientProxiedBy: satlexmb08.amd.com (10.181.42.217) To satlexmb07.amd.com
+ (10.181.42.216)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SJ5PEPF000001E8:EE_|SA5PPFA403A61D8:EE_
+X-MS-Office365-Filtering-Correlation-Id: 729e06f4-ee66-4001-0d40-08de0a468c60
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|7416014|376014|82310400026|36860700013|7053199007;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?ajQzSkhvcDNjYzVFTTVCWWlEYkZya292Ri9lT2h5SmNyUVI5aGVQaXJRVlAz?=
+ =?utf-8?B?YnhlODlxQnFiZnowNkluQ2hEZ1cvZ3Y4OFdtWmZrNXJhWmEvUXgzdkllM1Vx?=
+ =?utf-8?B?aWZibzhwaUMweGtNUTFRd09vTTBxdzhZMEtTbGFKdmlBN1Uza3BQaVNlZVJI?=
+ =?utf-8?B?M3BjaSsveDFuNVQwOTF5Z2FwbHgzOXpNNUkxMkdobzk1KzI4bUlpWDB3QVFY?=
+ =?utf-8?B?ZktHU3ZJUE9SODZabTdHSjNGbDQzazY0US9DWERERytzZXF0b1hCYlg0NDEv?=
+ =?utf-8?B?L0N6UkZSNXVIZFkwL1d2bHJNT0tVaVN4YnUvT1ZqUy9iMHZjNUI0YW85ZVp2?=
+ =?utf-8?B?ekFSMVh2QW1pNm12TVg0RVVHUEwwQ2llUEI0NmhkcE9IRHdEWXp2b1R1dVZw?=
+ =?utf-8?B?M0htRkNxRm02UldYRTJnNWFWZ0JKcjhUQ2dWazB1cGpaQ2JGZU5jNTZ2bzUy?=
+ =?utf-8?B?MFdyeWhZai9Iem9CU1dseDIwSnVKa1pOOVh3V3FIZ1Y4TnlrR3JrMlRPbzZE?=
+ =?utf-8?B?amFobDdhbk9qN0JoeENNOExpRDhvNVFqbERoNlp0alVPWGY5YVRlT1RxU0Nj?=
+ =?utf-8?B?SW0reUZBbW5lMTFtcHBVMjBuYXVUZjZMZ1graFlZeStZdWpMTVoyWnNIaSs1?=
+ =?utf-8?B?Mm5kQVZIYzZJeGxIV1NWZXJHSlI1MGRkSWlWTGh0b3FFMnNINXdLMVhYcmpu?=
+ =?utf-8?B?eDUwd3ROanJQOElpY05CQlVra296T29CdnlLRzlBQXVUYU1wRXFBUFBNVmZL?=
+ =?utf-8?B?dUt5UE51UDRhUW85WVRkZ0s0ckpHQTYzckVMc2NPdTl5L0hxemdJaW1yMlhR?=
+ =?utf-8?B?bjJpcC9YYjF6N1M5dXNjb1dMQlVTWU41b0piT3BseFJuelkwYmp0ekpCMXdW?=
+ =?utf-8?B?NldMcFYzaHN6QURvOW9od0VXQ3dPYVFEWFNUdm1qWldsM2JxdnlEeGg4MENK?=
+ =?utf-8?B?dG0ybEdxTTEzVGlCcUlFeTJyd1JyMHRCaHd0Nmh1NXN0bEdFQUxFdmQrQWRq?=
+ =?utf-8?B?aFZ4alNDT2RtNlZ5NjFTbTVqMjFRUEVhbnU3aHg2QVJaRXNwQUJYTXIvaVQ5?=
+ =?utf-8?B?a0JuanVEUXBHVlZ5bEg0REJkbUVPNnE5eFZta09KbmtmMVVPbDB0eEU3bjVE?=
+ =?utf-8?B?emd3QkN1OGR4VjJRUlhuZ1BPTW4raDJER21YNTNBREdWV2xNNG1tYW9jYjlM?=
+ =?utf-8?B?UER4cnJvK1hsYm1adGFLUlRhNUdmaGdoVThYZnRIQ0RreHg0WkRIL0F2cWtn?=
+ =?utf-8?B?OVh3SUpnN3EzMjFXWjVLbWFPNm50MTRQK0NnRUtoWm5rZGo1NUtGQnRJM0Fv?=
+ =?utf-8?B?MGpxQk4wN3RpZExRNjZqNmJMcjh5UkN3eU82MU9wZDRaS2EyeWxWbXZoa25N?=
+ =?utf-8?B?YytsSHhYZ3dlU3B2R0F2bmhSS3VPUWhsb2x3MVVIK0J4aVhqRGw0TU9OeHh1?=
+ =?utf-8?B?QWpHdzJEZ3FKVCtWbXVpK25SS2VDTytXc05Na2tQQ1FXVFFTYXN0cXYwWDUw?=
+ =?utf-8?B?QzJPL0UraGxETlh2ZU1Wd01KUU9oM1ZJR1BPbHh2SjBDTmpDTXRpV3NrZTBI?=
+ =?utf-8?B?T0pSb1UrUDFQazU2b0hQbVdHV0xPcUdWRElNRE5DRWhqUFRPeDViQVNOZGdF?=
+ =?utf-8?B?NVpkTzQvWkdZalhaVGd4Wi9FOXg4c0pxdExHZ3UyVmQxMndINUlIUEVkZFIr?=
+ =?utf-8?B?K1kzdlZSYmNFb3BtZUM1T2lsWlZvWG1uOVpHYkNRTzZMSWhrRi9WMmpXOVhE?=
+ =?utf-8?B?U1MwdWhqSlhLQ2dRWm1uQ3pJZ0xpR0paNGV5V1pIMWhqLzZ1N1NscHprOTNX?=
+ =?utf-8?B?SzZybUVHTVpGUHNOSHQ3ZXRVcGRwSnFMM1FlYkJLMVJUcWJ1SWlHaHVEVUxL?=
+ =?utf-8?B?bzgyWGVsTTVHbUpCbmtmNGpUZkNhZ3A1cHBlQjBnWlQ4bmVXWS93U1JaVmNE?=
+ =?utf-8?B?eU1EOXJxMVNTNm5nNTBPRFZObXFMa0FqZlpEWk84eXBIWm5LVkMvTGtweW41?=
+ =?utf-8?B?WElyQlpXSTFDN0NSWms5MWRHTGxyOVI5QUZHQWJtSmhJM0hGTjFoWnhpMHdm?=
+ =?utf-8?B?cHRPdEFoTmpEV0ZDVXZ0UklMNWRzYzJRV1UvUk5VaytNd2c5eGx3MVdoZEVs?=
+ =?utf-8?Q?1GsE=3D?=
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(376014)(82310400026)(36860700013)(7053199007);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Oct 2025 10:52:05.0969
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 729e06f4-ee66-4001-0d40-08de0a468c60
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SJ5PEPF000001E8.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA5PPFA403A61D8
 
 
->>
->> 5. If you think about this, its actually the right long term solution
->>
->>     - Individual devices means something like:
->>
->>       video-codec@aa00000 {
->>           /* Any SID mapping to S1_VIDEO_HLOS belongs here */
->>           compatible = "qcom,sm8550-iris";
->>           iommus = <&apps_smmu 0x1947 0x0000>;
->>       };
->>
->>       video-codec-non-pixel {
->>           /* Any SID mapping to S1_VIDEO_HLOS_P belongs here */
->>           compatible = "qcom,sm8550-iris-non-pixel";
->>           iommus = <&apps_smmu 0x1940 0x0000>;
->>       };
-> 
-> Which piece of hardware is described by this node? Why is it separate
-> from the main video-codec? The IOMMU stream doesn't have any specifics,
-> it's just a part of the video codec core.
 
-You could conceivably start associating /dev/video entries with a device 
-that maps to AC_VM_CP_PIXEL - the protected video stream.
+On 10/10/2025 5:27 AM, Suravee Suthikulpanit wrote:
+> Also change the define to use GENMASK_ULL instead.
+> There is no functional change.
+>
+> Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+> ---
+>   drivers/iommu/amd/amd_iommu_types.h | 2 +-
+>   drivers/iommu/amd/iommu.c           | 2 +-
+>   2 files changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
+> index a698a2e7ce2a..556f1df32d53 100644
+> --- a/drivers/iommu/amd/amd_iommu_types.h
+> +++ b/drivers/iommu/amd/amd_iommu_types.h
+> @@ -422,7 +422,7 @@
+>   
+>   #define DTE_FLAG_IOTLB	BIT_ULL(32)
+>   #define DTE_FLAG_MASK	(0x3ffULL << 32)
+> -#define DEV_DOMID_MASK	0xffffULL
+> +#define DTE_DOMID_MASK	GENMASK_ULL(15, 0)
+>   
+>   #define DTE_GCR3_14_12	GENMASK_ULL(60, 58)
+>   #define DTE_GCR3_30_15	GENMASK_ULL(31, 16)
+> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+> index b57a6993179d..a9b17d31a969 100644
+> --- a/drivers/iommu/amd/iommu.c
+> +++ b/drivers/iommu/amd/iommu.c
+> @@ -2094,7 +2094,7 @@ static void set_dte_entry(struct amd_iommu *iommu,
+>   	if (dev_data->ats_enabled)
+>   		new.data[1] |= DTE_FLAG_IOTLB;
+>   
+> -	old_domid = READ_ONCE(dte->data[1]) & DEV_DOMID_MASK;
+> +	old_domid = READ_ONCE(dte->data[1]) & DTE_DOMID_MASK;
+>   	new.data[1] |= domid;
+>   
+>   	/*
+Hi suravee
+Please update the replace the usage of DEV_DOMID_MASK in
+init.c:__copy_device_table as well
 
-There may be data other than SID/FUNCTION_ID that we would want to 
-associate with those devices, I'll stipulate to further discussion there.
->>
->>     - Or do something like that above again in platform code.
->>
->> 6. We should on introduction of a new SoC
->>
->>     - Fix the iommus = <> for "qcom,newsoc-iris" to contain
->>       only what is pertinent to S1_VIDEO_HLOS
->>
->>     - Make new devices in the DT for each FUNCTION_ID
->>
->>     - Then look at how - if - that fix can be brought back to Lemans
->>
->> My problem with introducing the iommu-map is that it bakes into the video
->> codec definitions a fixup which then gets carried forward.
->>
->> But the right thing to do is individual devices so, let's do that and worry
->> about how to back-port that fix to older SoCs once done.
-
-So really whether we end up representing these devices in DT or platform 
-code, separate devices are the answer - both for the FUNCTION_ID mapping 
-and the IOVA range.
-
-You just need to carefully think about what ends up being a device if 
-the IOVA range is a concern.
-
-Its unfortunate that sm8550 has an addtional iommu entry that wants to 
-live in a different device - but, that's a problem for sm8550.
-
-Perhaps something we can backport to Lanai, Lemans and friends once we 
-get the new submissions right..
-
----
-bod
+Thanks
+Sairaj
