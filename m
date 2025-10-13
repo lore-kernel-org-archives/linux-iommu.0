@@ -1,92 +1,52 @@
-Received: from BN1PR04CU002.outbound.protection.outlook.com (mail-eastus2azon11010022.outbound.protection.outlook.com [52.101.56.22])
+Received: from canpmsgout09.his.huawei.com (canpmsgout09.his.huawei.com [113.46.200.224])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C54F684A35;
-	Mon, 13 Oct 2025 00:06:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.56.22
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760313997; cv=fail; b=diHixB6Elv7PBGYXmRLuwesEgERWyCSDIUDTAoV22O/ySIWf+AP4fob8o0uoYpQAXvNFmQ/amycZVS5DpbeP/zpvurpp+Xorsi5FCvn77f2vebD4KwW1SZWMIh54GeFA0sUvLqIdz9RKRGEyYM/pvTiauiH479eXXSDpFLYIlVY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760313997; c=relaxed/simple;
-	bh=EHRDc2Ox8ldUhytPOVzDHFCwMXylIx86WuyPR4JpUG4=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=aOxNNOwz0HXuenIE+OU1ffsTyMNu7QT75St0Q7bsgdJix6LUvds2O5xXuzHtToF+cBBPcOjmmf2bynnnue9zySGvzG6sGGdXhWdT28s8Wpj2kXAnW8eZisv4yZEiD7bVnU83eLnMisBumf4oUs2Qmrtf9+kn7oPobSHZAS5ovjo=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=MAMEBTEw; arc=fail smtp.client-ip=52.101.56.22
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6EA21EDA03
+	for <iommu@lists.linux.dev>; Mon, 13 Oct 2025 06:43:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=113.46.200.224
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1760337798; cv=none; b=JfK2anFFm1/xBhyjS6tzYYe0SCbW6WI2dhR2cLplO5s020iSjzVGy4+4cr/N4K4y1BeZ3jf8sz2DkNsIuHkIZzpn/B2FKhE5Ffqr+yz6TDUo7ABYwssCkq4ya3la+GmXKxmSafGsoZ/iPZ4rPJ1JeCLhM1asFS78UbtJaeMyYRw=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1760337798; c=relaxed/simple;
+	bh=TX7yoT4TamhrnNyuk5lBBU2XZN4bh5E3VSPIfykUZw4=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=AHGeGNWKoNUyRdsZXQfmYGVFoOJpvgEEEw+6rgQ2gnN8cMunmTVEIuPyRLinssTyMVqht2jXQHr5gwCraZyY323yVENZ0NVIJO6v7EJHikHN+01qcJiSOKn556472l4/2imsyWOIoU9vddWqgBQC410GRJhzNPNBb2GOcBHvil8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b=aDD8GUUO; arc=none smtp.client-ip=113.46.200.224
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="MAMEBTEw"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=mBKsW4NkesCoR3OlG8+OgPIT56nz3YScPBWy/g052WQQlHZ588LbebWgkfG6OVG9jWN0IgDRZ7Z1UhgDUnXAL8JoDLuQNER/i3V08kPFe670XHD5V/+rKFtYL8TH1xHYJ+PibMC6kVTJSlPFmbwZaNZyFAkHrlaboFG0YwaxVqPgW5G//kuasq4BfJAHaQUsVTCouiuPKxyTm9uKC0Y1C41K9HoCB5RD0m9kr9bf4W0lAhUtxreKY+S4EBm+ODzR963ePh6D/zwUgpXrRQOy9KKsETghMH5Hx+ICg7fApf0mq1ludp86Sq7EdqE6a652Adomjt1bHhHhGq+apah/Jg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Hk2cVIy8uwAn25YfiMtMX5GI5sI1IX2K4N1rX+eSuaE=;
- b=mN2RtHQ1Q/yUt0EpGSGJPpLj5ED9vyzZnQ+vcVc5JGThJIpWnC9e/SPDNrUPo0GGNtVTzOdyPsEwPJrsbPHHQFAjZNradq7fWcQQ0YzFjyaBrX4l+/xmLjXfcKbYZIlQ4e7Ev+zzVxyCdnusE72QlTW9VBrEH2RCSbMEBYRGPOEMxOIse+w3vgImTHRwWiVQxByxhSFDxrln+tEwSi3PFy36u+Rj6evlmV9kGUT1KErCVXTxbHIAlCb0tICNItTBG0NEUwNsL5fkhtpgnJ7xIYl16jbOAJDK+m6GUc5Uq7jE8xaKCROYxfL4v3RhHWzIGTcj1rxIBIbyfH2KDsL/yA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=8bytes.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Hk2cVIy8uwAn25YfiMtMX5GI5sI1IX2K4N1rX+eSuaE=;
- b=MAMEBTEwDI1dCwVTGivMXwbn5P54HxGhMJ1labsU5BX4RWvsdkR5lO8lqQnC+MGjsoW4pbg+ZDt5/2ETHO+puRF82RTbkYifo5+AzRMxJCcrA3vnhyIqmiHW8KCJ0oyGaHZfkHKLAX6kdfhtZev8Z+eUni7x9dFssjTlKiOsanhEPsVBtVKESYJPP2dt8FiaLSMH4SeoKTHFxTmRq7INAlwePrEAwsmf8OuiB9CREFA6QOv8AQ5qE8n3pih07xv3oF95kXSphopgBs7XZ0Ki3IKkTI7A9bKzbiOODvljGUlFTTYpq7xGVM3CV3htklNwx/rbftMkPwjRDgwVTyAT9g==
-Received: from CY5PR17CA0012.namprd17.prod.outlook.com (2603:10b6:930:17::18)
- by CY3PR12MB9704.namprd12.prod.outlook.com (2603:10b6:930:102::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9203.12; Mon, 13 Oct
- 2025 00:06:30 +0000
-Received: from CY4PEPF0000EE3C.namprd03.prod.outlook.com
- (2603:10b6:930:17:cafe::45) by CY5PR17CA0012.outlook.office365.com
- (2603:10b6:930:17::18) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9203.12 via Frontend Transport; Mon,
- 13 Oct 2025 00:06:30 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- CY4PEPF0000EE3C.mail.protection.outlook.com (10.167.242.13) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9228.7 via Frontend Transport; Mon, 13 Oct 2025 00:06:30 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.34; Sun, 12 Oct
- 2025 17:06:24 -0700
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail202.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Sun, 12 Oct
- 2025 17:06:21 -0700
-Received: from Asurada-Nvidia.nvidia.com (10.127.8.12) by mail.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server id 15.2.2562.20 via Frontend
- Transport; Sun, 12 Oct 2025 17:06:19 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: <joro@8bytes.org>, <jgg@nvidia.com>, <kevin.tian@intel.com>
-CC: <suravee.suthikulpanit@amd.com>, <will@kernel.org>,
-	<robin.murphy@arm.com>, <sven@kernel.org>, <j@jannau.net>,
-	<jean-philippe@linaro.org>, <robin.clark@oss.qualcomm.com>,
-	<dwmw2@infradead.org>, <baolu.lu@linux.intel.com>, <yong.wu@mediatek.com>,
-	<matthias.bgg@gmail.com>, <angelogioacchino.delregno@collabora.com>,
-	<tjeznach@rivosinc.com>, <pjw@kernel.org>, <palmer@dabbelt.com>,
-	<aou@eecs.berkeley.edu>, <heiko@sntech.de>, <schnelle@linux.ibm.com>,
-	<mjrosato@linux.ibm.com>, <wens@csie.org>, <jernej.skrabec@gmail.com>,
-	<samuel@sholland.org>, <thierry.reding@gmail.com>, <jonathanh@nvidia.com>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-	<asahi@lists.linux.dev>, <linux-arm-kernel@lists.infradead.org>,
-	<linux-arm-msm@vger.kernel.org>, <linux-mediatek@lists.infradead.org>,
-	<linux-riscv@lists.infradead.org>, <linux-rockchip@lists.infradead.org>,
-	<linux-s390@vger.kernel.org>, <linux-sunxi@lists.linux.dev>,
-	<linux-tegra@vger.kernel.org>, <virtualization@lists.linux.dev>,
-	<patches@lists.linux.dev>
-Subject: [PATCH v1 20/20] iommu/tegra-smmu: Implement tegra_smmu_domain_test_dev
-Date: Sun, 12 Oct 2025 17:05:17 -0700
-Message-ID: <7c06a0d6165e69b7a8aac10e5b8aea45c8e020f1.1760312725.git.nicolinc@nvidia.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <cover.1760312725.git.nicolinc@nvidia.com>
-References: <cover.1760312725.git.nicolinc@nvidia.com>
+	dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b="aDD8GUUO"
+dkim-signature: v=1; a=rsa-sha256; d=huawei.com; s=dkim;
+	c=relaxed/relaxed; q=dns/txt;
+	h=From;
+	bh=t+kQn+l8NiDpU6SXgOx9uxgsvDw/42sI1GnBIfHgYJM=;
+	b=aDD8GUUOo7J4GGh/PfNuwch4LNYMaSdXOXUG5aoAR+1gaa2qiX1XEz8mlaFPTjr2FC0n+iLA8
+	BAz1gD8BF70nCt6k4GcNjEsQ99SJ7uhSv6kKfrUvNe19APR3368XZ1+WX1QD/hm2AAaxeffIHaW
+	ETsw4b0yuUOSU8QzlFWxdYY=
+Received: from mail.maildlp.com (unknown [172.19.88.214])
+	by canpmsgout09.his.huawei.com (SkyGuard) with ESMTPS id 4clSTQ3gMhz1cyQv;
+	Mon, 13 Oct 2025 14:42:50 +0800 (CST)
+Received: from dggemv706-chm.china.huawei.com (unknown [10.3.19.33])
+	by mail.maildlp.com (Postfix) with ESMTPS id 7B2C91A016C;
+	Mon, 13 Oct 2025 14:43:09 +0800 (CST)
+Received: from kwepemq200012.china.huawei.com (7.202.194.183) by
+ dggemv706-chm.china.huawei.com (10.3.19.33) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.11; Mon, 13 Oct 2025 14:43:09 +0800
+Received: from huawei.com (10.175.112.208) by kwepemq200012.china.huawei.com
+ (7.202.194.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.11; Mon, 13 Oct
+ 2025 14:43:08 +0800
+From: Wang Wensheng <wangwensheng4@huawei.com>
+To: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
+	<jgg@ziepe.ca>, <nicolinc@nvidia.com>, <kevin.tian@intel.com>,
+	<praan@google.com>, <baolu.lu@linux.intel.com>,
+	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>
+CC: <chenjun102@huawei.com>, <wangwensheng4@huawei.com>
+Subject: [RFC PATCH] iommu/arm-smmu-v3: Defer shutdown to syscore_ops
+Date: Mon, 13 Oct 2025 14:35:29 +0800
+Message-ID: <20251013063529.108949-1-wangwensheng4@huawei.com>
+X-Mailer: git-send-email 2.22.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -95,135 +55,193 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000EE3C:EE_|CY3PR12MB9704:EE_
-X-MS-Office365-Filtering-Correlation-Id: d9bb0a35-4e89-446e-67cf-08de09ec5ce7
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|7416014|376014|36860700013|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?Txk4NSskoZkwOYl3/X/f/kcpNc0ofUJHsse7PoIuysRxafHaNUojgxxNlF7c?=
- =?us-ascii?Q?htKLe+Fa1mH8bFcUxlUXB5J8AyFP7zbQJ7ygpP+IZ2+N7lvVz/F5bXynE4Hr?=
- =?us-ascii?Q?824tBTBNC1mVX/JMDnASOIF88uFA4O8g6Bz2/DwAxApRlsptZF+aqYmxT8JR?=
- =?us-ascii?Q?Lcvx5Itujv/h98L6gojKQ/ReWj7JXmAaBP6M73gx4PCcik76X7pNUGNLoqJy?=
- =?us-ascii?Q?xZYGjTHfouZU+M2OFlzM6Qv4qLFINhYlPiAHv0slDqfNNXx347UBVzaeecNd?=
- =?us-ascii?Q?JEE0OQPIgxmO2Ek9jtrsc1bY5qxRwBM+45rqzmxExhXiHHKgUlTOhb+vANlD?=
- =?us-ascii?Q?iuAJOf7Pg0CN1347+0oExp05rg6ie54BjiA90pjDx/VYKgWbY1HNEVkjfBrz?=
- =?us-ascii?Q?UQ5xen4xvD4N7YkAcCC8d8L/r2tN5FcadSc+2ry7eoKzIUwTQZJVXg2M71KE?=
- =?us-ascii?Q?o9Vxx5GGtxLWzddLboo8ZZVu8U7JGErcJP5LLevqrN/KPsIdGzxmKWnqyXwn?=
- =?us-ascii?Q?X14eiDrdccSXYmKDLYC5g86OtizZXXOvXPBZKpIZMyiFEVX6Q0UydSXNS1b6?=
- =?us-ascii?Q?q0RxCB6I+oc+kzh3V/klTxRBgi68zxrHyr+u1NSQLq0SxMNz9Z3dBisp1GqX?=
- =?us-ascii?Q?V39Tqu8PlC8JpZ3crpzfG+7iR1+hHludowJ6MTXk5ElQgcgYHw0Cl+e0jZp2?=
- =?us-ascii?Q?5EDjRcdQ/N+6Z1vNa+4lkfxKCvViIG2w1H4nCk+IZ5yEjLPvrxYlAx503/gy?=
- =?us-ascii?Q?5lmBkJMv8tdFCjhgkvFc+HIAg7BsyLS3FJT7iFmk/JtFuiY3X6vbD4uq9gy9?=
- =?us-ascii?Q?NFWU4e9sXRQV6bKjWaxiYRpB6u8/Ed1oypVHwQl4UvOcAEssq5Lk7BmOt6Ke?=
- =?us-ascii?Q?EcgHqAK33HZcegSPf4d08zisdyLf11L8cB706HjqJ1oEcKSd4VlnBHDuLE41?=
- =?us-ascii?Q?Kvw3JwcYuVkTk0W9I9f9vRaLe56V+MpDUqF7OiVLDnmVarqXY6FOe3e6jaNG?=
- =?us-ascii?Q?jcvVJkhjMBVAhoUe6WjA8hx9c3zyPIcgBV3H7qJeLs/5Hdujv0TpU5oJSbTp?=
- =?us-ascii?Q?BQWJZbTrtRQHTlHjs6czUOBHq4kJD1fza59sd1amo6dpA91cKVPL3WBKBswi?=
- =?us-ascii?Q?B2R0qE/0v/DwFoum9H+6lrozqb4P+4ybhqiKqf95aXSbYJmBxgHd8MhlakVi?=
- =?us-ascii?Q?9UNEexPMW8GiDF8v8fmXKzC/Nn6rgPzfH68G2W0eKBrOfqS6ac2s1iDRE1aw?=
- =?us-ascii?Q?pXOiCMumRM0P+txGGJbEsIz3iFXsG2tKAXPJEZRCZsQZqLT4ivI/fk8pOQdf?=
- =?us-ascii?Q?PhVI6AEDacVVsM+apcA9iK2osA5BId+UT/IulctHGyO+xPvd3pM+rm+7H42Q?=
- =?us-ascii?Q?sAf5sbyDYgq19WioflLb5aGgqCKSeMeMi/wF9A3UfzfWqmT0B0W2iZU9w/oi?=
- =?us-ascii?Q?hLxjJfVOgjS5mpCk8iCKD9nbZ+1/zqpBXQPIwCv7gtXakg95tvmvBBN0w8B8?=
- =?us-ascii?Q?eSypBK8aB+9hfT3gpFmIkrllTY4qd1zj7AKRqMOE3C4y/b7SyiDgZ16YKhdD?=
- =?us-ascii?Q?qcQthlTwRe40bG25Gsc=3D?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(7416014)(376014)(36860700013)(1800799024);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Oct 2025 00:06:30.8053
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: d9bb0a35-4e89-446e-67cf-08de09ec5ce7
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CY4PEPF0000EE3C.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY3PR12MB9704
+X-ClientProxiedBy: kwepems500002.china.huawei.com (7.221.188.17) To
+ kwepemq200012.china.huawei.com (7.202.194.183)
 
-Move sanity and compatibility tests from the attach_dev callback to the
-new test_dev callback function. The IOMMU core makes sure an attach_dev
-call must be invoked after a successful test_dev call.
+We meet several softlockup while shutdown or reboot the system. The
+kernel log is here:
 
-Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+[  126.487508] arm-smmu-v3 a8000000.camera_smmu_controller0: CMD_SYNC timeout at 0x000001a3 [hwprod 0x000001a4, hwcons 0x00000016]
+[  126.487675] (4375,3191)[drv_camera][hicam_buf] isp_smmu_cleanup_iova_dom cluster_id=0 unmap, key=0x0000000000000000, iova=0x0000000000000000, size=49152
+[  127.300458] rcu: INFO: rcu_sched detected stalls on CPUs/tasks:
+[  127.300464] rcu: 	3-...0: (8 ticks this GP) idle=086/1/0x4000000000000000 softirq=25646/25646 fqs=2475
+[  127.300466] rcu: 	(detected by 0, t=5252 jiffies, g=30897, q=752)
+[  127.300470] Sending NMI from CPU 0 to CPUs 3:
+[  127.556735] arm-smmu-v3 a8000000.camera_smmu_controller0: CMD_SYNC timeout at 0x000001b0 [hwprod 0x000001b1, hwcons 0x00000016]
+[  127.556966] (4375,3191)[drv_camera][hicam_buf] isp_smmu_cleanup_iova_dom cluster_id=0 unmap, key=0x0000000000000000, iova=0x0000000000000000, size=49152
+[  128.626066] arm-smmu-v3 a8000000.camera_smmu_controller0: CMD_SYNC timeout at 0x000001bd [hwprod 0x000001be, hwcons 0x00000016]
+[  128.626232] (4375,3191)[drv_camera][hicam_buf] isp_smmu_cleanup_iova_dom cluster_id=0 unmap, key=0x0000000000000000, iova=0x0000000000000000, size=49152
+...
+[  132.903350] watchdog: BUG: soft lockup - CPU#7 stuck for 23s! [dds_discovery:3191]
+...
+[  132.903564] Call trace:
+[  132.903566]  arm_smmu_cmdq_issue_cmdlist+0x560/0x6c8
+[  132.903568]  __arm_smmu_tlb_inv_range.isra.41+0x160/0x20c
+[  132.903570]  arm_smmu_tlb_inv_range_domain+0x90/0x164
+[  132.903572]  arm_smmu_iotlb_sync+0x3c/0x50
+[  132.903576]  iommu_unmap+0x88/0xc0
+[  132.903589]  isp_smmu_do_iommu_unmap.isra.6+0x5c/0x128 [drv_hicam_buf]
+[  132.903594]  isp_smmu_unmap_iova+0x128/0x2f4 [drv_hicam_buf]
+[  132.903598]  isp_smmu_cleanup_iova_dom+0xf0/0x1c8 [drv_hicam_buf]
+[  132.903602]  hicambuf_check_and_ummap_remain_buffer+0x90/0xa0 [drv_hicam_buf]
+[  132.903609]  himdcisp_release+0x1d0/0x228 [drv_himdcisp]
+[  132.903615]  __fput+0xa4/0x2cc
+[  132.903617]  ____fput+0x20/0x30
+[  132.903620]  task_work_run+0x120/0x198
+[  132.903623]  do_exit+0x444/0xd20
+[  132.903625]  do_group_exit+0x40/0x140
+[  132.903628]  get_signal+0x21c/0xab0
+[  132.903630]  do_notify_resume+0x380/0x4a8
+
+The direct reason for this softlockup is that the driver want to access
+the smmu device after it has been shutdown. Here the driver call the
+iommu_unmap() a few times and get CMD_SYNC timeout, cost one second a
+time, then the cpu where the driver runs on get stuck. There is another
+case where a process that was bound to several smmu devices is exiting,
+then the process would access the smmu devices through mmu_notifer
+callbacks and get the similar stuck.
+
+[   93.161307] Call trace:
+[   93.161309]  arm_smmu_cmdq_issue_cmdlist+0x58c/0x948
+[   93.161313]  __arm_smmu_cmdq_issue_cmd+0x60/0xb0
+[   93.161316]  arm_smmu_tlb_inv_asid+0x6c/0x98
+[   93.161321]  arm_smmu_mm_release+0x70/0xd4
+[   93.161325]  __mmu_notifier_release+0x88/0x268
+[   93.161332]  exit_mmap+0x374/0x4b4
+[   93.161339]  mmput+0x7c/0x1c4
+[   93.161346]  xsmem_release+0x6a8/0x91c [xsmem]
+[   93.161364]  __fput+0x21c/0x340
+[   93.161369]  ____fput+0x20/0x30
+[   93.161371]  task_work_run+0x104/0x1a0
+[   93.161377]  do_exit+0x4c0/0xe60
+[   93.161382]  do_group_exit+0x38/0x138
+
+Normally the reboot/shutdown command would kill all the process before
+calling into kernel. But the user process may not exit in time, so the
+process could run on the reboot_cpu while the reboot/shutdown command
+running on another cpu run into kernel and shutdown smmu devices. Then
+the process runs on the reboot_cpu would get stcuk and block the
+reboot/shutdown command in migrate_to_reboot_cpu(). Move the shutdown
+for smmu to syscore_ops to solve the issue. Because syscore_ops
+would be called after migrate_to_reboot_cpu() and even another process
+would access smmu device in other cpus after smmu shutdown, it cannot
+block the reboot process.
+
+Signed-off-by: Wang Wensheng <wangwensheng4@huawei.com>
 ---
- drivers/iommu/tegra-smmu.c | 23 ++++++++++++++---------
- 1 file changed, 14 insertions(+), 9 deletions(-)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 39 ++++++++++++++++-----
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  2 ++
+ 2 files changed, 32 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 336e0a3ff41fb..cfbe67678a426 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -489,6 +489,18 @@ static void tegra_smmu_as_unprepare(struct tegra_smmu *smmu,
- 	mutex_unlock(&smmu->lock);
- }
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 2a8b46b948f0..cf43ea249f22 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -29,6 +29,7 @@
+ #include <linux/string_choices.h>
+ #include <kunit/visibility.h>
+ #include <uapi/linux/iommufd.h>
++#include <linux/syscore_ops.h>
  
-+static int tegra_smmu_domain_test_dev(struct iommu_domain *domain,
-+				      struct device *dev, ioasid_t pasid,
-+				      struct iommu_domain *old)
-+{
-+	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-+
-+	if (!fwspec || !fwspec->num_ids)
-+		return -ENOENT;
-+
-+	return 0;
-+}
-+
- static int tegra_smmu_attach_dev(struct iommu_domain *domain,
- 				 struct device *dev, struct iommu_domain *old)
- {
-@@ -498,9 +510,6 @@ static int tegra_smmu_attach_dev(struct iommu_domain *domain,
- 	unsigned int index;
- 	int err;
+ #include "arm-smmu-v3.h"
+ #include "../../dma-iommu.h"
+@@ -38,6 +39,9 @@ module_param(disable_msipolling, bool, 0444);
+ MODULE_PARM_DESC(disable_msipolling,
+ 	"Disable MSI-based polling for CMD_SYNC completion.");
  
--	if (!fwspec)
--		return -ENOENT;
--
- 	for (index = 0; index < fwspec->num_ids; index++) {
- 		err = tegra_smmu_as_prepare(smmu, as);
- 		if (err)
-@@ -509,9 +518,6 @@ static int tegra_smmu_attach_dev(struct iommu_domain *domain,
- 		tegra_smmu_enable(smmu, fwspec->ids[index], as->id);
++static LIST_HEAD(smmu_device_list);
++static DEFINE_MUTEX(smmu_device_lock);
++
+ static const struct iommu_ops arm_smmu_ops;
+ static struct iommu_dirty_ops arm_smmu_dirty_ops;
+ 
+@@ -4835,6 +4839,9 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+ 		goto err_free_sysfs;
  	}
  
--	if (index == 0)
--		return -ENODEV;
--
++	scoped_guard(mutex, &smmu_device_lock)
++		list_add(&smmu->list_node, &smmu_device_list);
++
  	return 0;
  
- disable:
-@@ -532,9 +538,6 @@ static int tegra_smmu_identity_attach(struct iommu_domain *identity_domain,
- 	struct tegra_smmu *smmu;
- 	unsigned int index;
+ err_free_sysfs:
+@@ -4850,6 +4857,8 @@ static void arm_smmu_device_remove(struct platform_device *pdev)
+ {
+ 	struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
  
--	if (!fwspec)
--		return -ENODEV;
--
- 	if (old == identity_domain || !old)
- 		return 0;
- 
-@@ -548,6 +551,7 @@ static int tegra_smmu_identity_attach(struct iommu_domain *identity_domain,
++	scoped_guard(mutex, &smmu_device_lock)
++		list_del(&smmu->list_node);
+ 	iommu_device_unregister(&smmu->iommu);
+ 	iommu_device_sysfs_remove(&smmu->iommu);
+ 	arm_smmu_device_disable(smmu);
+@@ -4857,23 +4866,36 @@ static void arm_smmu_device_remove(struct platform_device *pdev)
+ 	ida_destroy(&smmu->vmid_map);
  }
  
- static struct iommu_domain_ops tegra_smmu_identity_ops = {
-+	.test_dev = tegra_smmu_domain_test_dev,
- 	.attach_dev = tegra_smmu_identity_attach,
+-static void arm_smmu_device_shutdown(struct platform_device *pdev)
+-{
+-	struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
+-
+-	arm_smmu_device_disable(smmu);
+-}
+-
+ static const struct of_device_id arm_smmu_of_match[] = {
+ 	{ .compatible = "arm,smmu-v3", },
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(of, arm_smmu_of_match);
+ 
++static void arm_smmu_shutdown(void)
++{
++	struct arm_smmu_device *smmu;
++
++	guard(mutex)(&smmu_device_lock);
++	list_for_each_entry(smmu, &smmu_device_list, list_node)
++		arm_smmu_device_disable(smmu);
++}
++
++static struct syscore_ops arm_smmu_syscore_ops = {
++	.shutdown = arm_smmu_shutdown,
++};
++
+ static void arm_smmu_driver_unregister(struct platform_driver *drv)
+ {
+ 	arm_smmu_sva_notifier_synchronize();
+ 	platform_driver_unregister(drv);
++	unregister_syscore_ops(&arm_smmu_syscore_ops);
++}
++
++static int arm_smmu_driver_register(struct platform_driver *drv)
++{
++	register_syscore_ops(&arm_smmu_syscore_ops);
++	return platform_driver_register(drv);
+ }
+ 
+ static struct platform_driver arm_smmu_driver = {
+@@ -4884,9 +4906,8 @@ static struct platform_driver arm_smmu_driver = {
+ 	},
+ 	.probe	= arm_smmu_device_probe,
+ 	.remove = arm_smmu_device_remove,
+-	.shutdown = arm_smmu_device_shutdown,
+ };
+-module_driver(arm_smmu_driver, platform_driver_register,
++module_driver(arm_smmu_driver, arm_smmu_driver_register,
+ 	      arm_smmu_driver_unregister);
+ 
+ MODULE_DESCRIPTION("IOMMU API for ARM architected SMMUv3 implementations");
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+index ae23aacc3840..1bb952e99676 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+@@ -805,6 +805,8 @@ struct arm_smmu_device {
+ 
+ 	struct rb_root			streams;
+ 	struct mutex			streams_mutex;
++
++	struct list_head		list_node;
  };
  
-@@ -1005,6 +1009,7 @@ static const struct iommu_ops tegra_smmu_ops = {
- 	.device_group = tegra_smmu_device_group,
- 	.of_xlate = tegra_smmu_of_xlate,
- 	.default_domain_ops = &(const struct iommu_domain_ops) {
-+		.test_dev	= tegra_smmu_domain_test_dev,
- 		.attach_dev	= tegra_smmu_attach_dev,
- 		.map_pages	= tegra_smmu_map,
- 		.unmap_pages	= tegra_smmu_unmap,
+ struct arm_smmu_stream {
 -- 
-2.43.0
+2.22.0
 
