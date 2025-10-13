@@ -1,108 +1,181 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 030DE2E7192;
-	Mon, 13 Oct 2025 07:28:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74C40223DFD;
+	Mon, 13 Oct 2025 08:35:21 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760340495; cv=none; b=TEZtsfYbt141+MeDL2iYti3MQ8fgpOQJCGLgXBBYLpokbAwI3Ixt+rxH53d7Jqnl2z8D/VzfDpoVeSCaLmQJzUpRuXqrmHvl2o3eulSuLEkYsnRU2tL+FQdvFDxkQrfL6CXHAq+HNYKNx51Hx8HDdBS90jdYBer++dFwfPg0R/A=
+	t=1760344521; cv=none; b=TagOhPpFTVl/WRTMCVGWLK7niRPotpi5YT+Emp5N29nXdnhC1ssIFCoV6xLq1R3dRX0RXf6ftRNLuNJb4ANAnX3iv9EhEGOLOGDPQgm7FJehyCOoWCHnsmCyllXoedg8Uwhx0NMs3CG2x1sGvNS9nrerSWPbOSl+79vrQkb30Us=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760340495; c=relaxed/simple;
-	bh=LXq06zOJDZCJjFxJSMriSR2r1NN0TNY9ryW7UFEsHNE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=CIofKfE8gUIrcyxlTtzoGdOYXmoC4JCtVniD/bT6KM8n0LqJDr+IweE8tmNSGGBrOe4228bxrpydTppJkjJaSGEKquszvcQfxl5v7WNk9DSSFpu/MwpwlXXf1/lI5B6FaRyX3s8yScm+d+4RomHB6BQaoRfsK9ycYXPzuD6w5vk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nbL2UtGh; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1760344521; c=relaxed/simple;
+	bh=sqP8me6x8vHK+dhZnCoXUPEUGaQUJmxSAwIYgLVXXfQ=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=oCZ2P3LrMWXXuYkoPJc84TkYXaNmY9kt50v1JLjL01PK6K4DIou1sw2e7Hkl8t+feEIsWWgRCH12n2EShi0QkBTMItcXZDKpx+YXkmB/XQSENVIDz9dc8fs6ZEredimdXx2IDYWwPm4VniRswCDJQmBdUyNJF5xoyNPfMdSapOE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=pwmZt5RI; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nbL2UtGh"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC21AC4CEE7;
-	Mon, 13 Oct 2025 07:28:07 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="pwmZt5RI"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99F4FC116C6;
+	Mon, 13 Oct 2025 08:35:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1760340494;
-	bh=LXq06zOJDZCJjFxJSMriSR2r1NN0TNY9ryW7UFEsHNE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=nbL2UtGhHwSUcGWW+HFftTr1Zex2h56UWPi+59Dlbir/2koiJXfOyrHQboEf6dLFp
-	 DYECR09j/iAerh8uOTGkq3WkobLDm3Kp1DAN5ThsizadNmN9snCCVcjNt+sh3H/SRi
-	 9R8SvKkNNdcmwOqnJqo1kZ6mIvWSCEqzE6qVnN7efWns9muMgrNEAH6pGZoqjzQQ7o
-	 MLIY7oXQVhj3QtNHmSuaYExcIgWzSaK27QgdY3UuvUaXb1ZcmNuW1ZAkOQYodFtOWo
-	 eUyo1Rm/AoUSn7fraueBneQSX4KBMfTlQsdXCd69lPvhULXHr6e/qObo9nvsq+IS+t
-	 zAL5OVBdmdBeA==
-Date: Mon, 13 Oct 2025 10:28:04 +0300
-From: Mike Rapoport <rppt@kernel.org>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
-	Jann Horn <jannh@google.com>, Vasant Hegde <vasant.hegde@amd.com>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@intel.com>,
-	Alistair Popple <apopple@nvidia.com>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Uladzislau Rezki <urezki@gmail.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Andy Lutomirski <luto@kernel.org>, Yi Lai <yi1.lai@intel.com>,
-	iommu@lists.linux.dev, security@kernel.org, x86@kernel.org,
-	linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 5/8] x86/mm: Use pagetable_free()
-Message-ID: <aOyqBKjIut4fNr_B@kernel.org>
-References: <20250919054007.472493-1-baolu.lu@linux.intel.com>
- <20250919054007.472493-6-baolu.lu@linux.intel.com>
+	s=k20201202; t=1760344521;
+	bh=sqP8me6x8vHK+dhZnCoXUPEUGaQUJmxSAwIYgLVXXfQ=;
+	h=From:Subject:Date:To:Cc:From;
+	b=pwmZt5RIWCiJOqlM4kLmg22p30EWttw4n5RbO1SzjJ8m4xXzlcqDSelkkq5d/zJ1l
+	 5WT6Mxii6RJQootl5x0DFx2EdLeowWhCB9zRA6bsC+X2Ezuf7lwfpsTmcO86s/cSic
+	 IoC7l9HyOpeR00mN3w0N4HU4RroNongmYqxLGvdqL/jlGt0+WFodR0a0WaepCS3BvZ
+	 jPbOJSwH7h6WhwnyF60hH5//lpH/4zm2I2Hr2GszteYNPus9EtH8JRUrTLQxK0+R+c
+	 dLrPu3ZkqnuMcCyCxmMfqLliYCr8LPIU8VW3QKnFkgbp1l/DQ8csL8EIwbRmlVmVj7
+	 /IezHZX/0eGzg==
+From: Maxime Ripard <mripard@kernel.org>
+Subject: [PATCH v8 0/5] dma-buf: heaps: Create a CMA heap for each CMA
+ reserved region
+Date: Mon, 13 Oct 2025 10:35:15 +0200
+Message-Id: <20251013-dma-buf-ecc-heap-v8-0-04ce150ea3d9@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250919054007.472493-6-baolu.lu@linux.intel.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAMO57GgC/33SyU7DMBAA0F+JfMaRx1uSCqH+B+LgZUxCSVPsN
+ AJV/XecFtSiRBzHkt+sJ5IwdpjIpjiRiFOXumGfg/qhIK41+1eknc8x4YxLpkBR3xtqj4Gic7R
+ Fc6C8NgLAc9dIJPnbIWLoPi/k80uO2y6NQ/y6ZJhgfv0Hm4AyqqSz1jPZKIDtDuMe38shvpJZm
+ /ivoJhksCLwLDApgmdMGzBhIYh7oVoRRBaaynkvtFGBNwtB3gTF2YogKVDrOUIAayV3C0HdBA1
+ rNai5C2O9U7UWRi670DehYs2KoLPgjWtsqFkQyi+E6k7ga5Os5hoE1EIjmEbyP8L5uuqIH8d8N
+ ON136THlMzlaDbF4097DARwASVUXGpe5dG87fJlmbSN6Fszlm7on+bLsSYhzUHfjZti0iVoGp3
+ Kqc7fL7YOk6cCAAA=
+X-Change-ID: 20240515-dma-buf-ecc-heap-28a311d2c94e
+To: Sumit Semwal <sumit.semwal@linaro.org>, 
+ Benjamin Gaignard <benjamin.gaignard@collabora.com>, 
+ Brian Starkey <Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>, 
+ "T.J. Mercier" <tjmercier@google.com>, Jonathan Corbet <corbet@lwn.net>, 
+ =?utf-8?q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
+ Marek Szyprowski <m.szyprowski@samsung.com>, 
+ Robin Murphy <robin.murphy@arm.com>
+Cc: Andrew Davis <afd@ti.com>, Jared Kangas <jkangas@redhat.com>, 
+ Mattijs Korpershoek <mkorpershoek@kernel.org>, linux-media@vger.kernel.org, 
+ dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, 
+ linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ iommu@lists.linux.dev, Maxime Ripard <mripard@kernel.org>
+X-Mailer: b4 0.14.2
 
-On Fri, Sep 19, 2025 at 01:40:03PM +0800, Lu Baolu wrote:
-> The kernel's memory management subsystem provides a dedicated interface,
-> pagetable_free(), for freeing page table pages. Updates two call sites to
-> use pagetable_free() instead of the lower-level __free_page() or
-> free_pages(). This improves code consistency and clarity, and ensures the
-> correct freeing mechanism is used.
-> 
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Hi,
 
-Acked-by: Mike Rapoport (Microsoft) <rppt@kernel.org>
+Here's another attempt at supporting user-space allocations from a
+specific carved-out reserved memory region.
 
-> ---
->  arch/x86/mm/init_64.c        | 2 +-
->  arch/x86/mm/pat/set_memory.c | 2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/arch/x86/mm/init_64.c b/arch/x86/mm/init_64.c
-> index b9426fce5f3e..3d9a5e4ccaa4 100644
-> --- a/arch/x86/mm/init_64.c
-> +++ b/arch/x86/mm/init_64.c
-> @@ -1031,7 +1031,7 @@ static void __meminit free_pagetable(struct page *page, int order)
->  		free_reserved_pages(page, nr_pages);
->  #endif
->  	} else {
-> -		free_pages((unsigned long)page_address(page), order);
-> +		pagetable_free(page_ptdesc(page));
->  	}
->  }
->  
-> diff --git a/arch/x86/mm/pat/set_memory.c b/arch/x86/mm/pat/set_memory.c
-> index 8834c76f91c9..8b78a8855024 100644
-> --- a/arch/x86/mm/pat/set_memory.c
-> +++ b/arch/x86/mm/pat/set_memory.c
-> @@ -438,7 +438,7 @@ static void cpa_collapse_large_pages(struct cpa_data *cpa)
->  
->  	list_for_each_entry_safe(ptdesc, tmp, &pgtables, pt_list) {
->  		list_del(&ptdesc->pt_list);
-> -		__free_page(ptdesc_page(ptdesc));
-> +		pagetable_free(ptdesc);
->  	}
->  }
->  
-> -- 
-> 2.43.0
-> 
+The initial problem we were discussing was that I'm currently working on
+a platform which has a memory layout with ECC enabled. However, enabling
+the ECC has a number of drawbacks on that platform: lower performance,
+increased memory usage, etc. So for things like framebuffers, the
+trade-off isn't great and thus there's a memory region with ECC disabled
+to allocate from for such use cases.
 
+After a suggestion from John, I chose to first start using heap
+allocations flags to allow for userspace to ask for a particular ECC
+setup. This is then backed by a new heap type that runs from reserved
+memory chunks flagged as such, and the existing DT properties to specify
+the ECC properties.
+
+After further discussion, it was considered that flags were not the
+right solution, and relying on the names of the heaps would be enough to
+let userspace know the kind of buffer it deals with.
+
+Thus, even though the uAPI part of it had been dropped in this second
+version, we still needed a driver to create heaps out of carved-out memory
+regions. In addition to the original usecase, a similar driver can be
+found in BSPs from most vendors, so I believe it would be a useful
+addition to the kernel.
+
+Some extra discussion with Rob Herring [1] came to the conclusion that
+some specific compatible for this is not great either, and as such an
+new driver probably isn't called for either.
+
+Some other discussions we had with John [2] also dropped some hints that
+multiple CMA heaps might be a good idea, and some vendors seem to do
+that too.
+
+So here's another attempt that doesn't affect the device tree at all and
+will just create a heap for every CMA reserved memory region.
+
+It also falls nicely into the current plan we have to support cgroups in
+DRM/KMS and v4l2, which is an additional benefit.
+
+Let me know what you think,
+Maxime
+
+1: https://lore.kernel.org/all/20250707-cobalt-dingo-of-serenity-dbf92c@houat/
+2: https://lore.kernel.org/all/CANDhNCroe6ZBtN_o=c71kzFFaWK-fF5rCdnr9P5h1sgPOWSGSw@mail.gmail.com/
+
+Let me know what you think,
+Maxime
+
+Signed-off-by: Maxime Ripard <mripard@kernel.org>
+---
+Changes in v8:
+- Rebased on top of 6.18-rc1
+- Added TJ R-b
+- Link to v7: https://lore.kernel.org/r/20250721-dma-buf-ecc-heap-v7-0-031836e1a942@kernel.org
+
+Changes in v7:
+- Invert the logic and register CMA heap from the reserved memory /
+  dma contiguous code, instead of iterating over them from the CMA heap.
+- Link to v6: https://lore.kernel.org/r/20250709-dma-buf-ecc-heap-v6-0-dac9bf80f35d@kernel.org
+
+Changes in v6:
+- Drop the new driver and allocate a CMA heap for each region now
+- Dropped the binding
+- Rebased on 6.16-rc5
+- Link to v5: https://lore.kernel.org/r/20250617-dma-buf-ecc-heap-v5-0-0abdc5863a4f@kernel.org
+
+Changes in v5:
+- Rebased on 6.16-rc2
+- Switch from property to dedicated binding
+- Link to v4: https://lore.kernel.org/r/20250520-dma-buf-ecc-heap-v4-1-bd2e1f1bb42c@kernel.org
+
+Changes in v4:
+- Rebased on 6.15-rc7
+- Map buffers only when map is actually called, not at allocation time
+- Deal with restricted-dma-pool and shared-dma-pool
+- Reword Kconfig options
+- Properly report dma_map_sgtable failures
+- Link to v3: https://lore.kernel.org/r/20250407-dma-buf-ecc-heap-v3-0-97cdd36a5f29@kernel.org
+
+Changes in v3:
+- Reworked global variable patch
+- Link to v2: https://lore.kernel.org/r/20250401-dma-buf-ecc-heap-v2-0-043fd006a1af@kernel.org
+
+Changes in v2:
+- Add vmap/vunmap operations
+- Drop ECC flags uapi
+- Rebase on top of 6.14
+- Link to v1: https://lore.kernel.org/r/20240515-dma-buf-ecc-heap-v1-0-54cbbd049511@kernel.org
+
+---
+Maxime Ripard (5):
+      doc: dma-buf: List the heaps by name
+      dma-buf: heaps: cma: Register list of CMA regions at boot
+      dma: contiguous: Register reusable CMA regions at boot
+      dma: contiguous: Reserve default CMA heap
+      dma-buf: heaps: cma: Create CMA heap for each CMA reserved region
+
+ Documentation/userspace-api/dma-buf-heaps.rst | 24 ++++++++------
+ MAINTAINERS                                   |  1 +
+ drivers/dma-buf/heaps/Kconfig                 | 10 ------
+ drivers/dma-buf/heaps/cma_heap.c              | 47 +++++++++++++++++----------
+ include/linux/dma-buf/heaps/cma.h             | 16 +++++++++
+ kernel/dma/contiguous.c                       | 11 +++++++
+ 6 files changed, 72 insertions(+), 37 deletions(-)
+---
+base-commit: 47633099a672fc7bfe604ef454e4f116e2c954b1
+change-id: 20240515-dma-buf-ecc-heap-28a311d2c94e
+prerequisite-message-id: <20250610131231.1724627-1-jkangas@redhat.com>
+prerequisite-patch-id: bc44be5968feb187f2bc1b8074af7209462b18e7
+prerequisite-patch-id: f02a91b723e5ec01fbfedf3c3905218b43d432da
+prerequisite-patch-id: e944d0a3e22f2cdf4d3b3906e5603af934696deb
+
+Best regards,
 -- 
-Sincerely yours,
-Mike.
+Maxime Ripard <mripard@kernel.org>
+
