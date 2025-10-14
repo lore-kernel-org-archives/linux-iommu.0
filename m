@@ -1,48 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D8CB2C2372
-	for <iommu@lists.linux.dev>; Tue, 14 Oct 2025 13:08:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D174C31960C
+	for <iommu@lists.linux.dev>; Tue, 14 Oct 2025 13:08:21 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760447295; cv=none; b=mhcqJ+VPFbUQJpIwlEIj9rReoM0e6Xi2ef2dYK2SdZ+3mE+rsgavPqQ3VBBLGerynmk3b1zz6SsPRH5fUUXeZOA80/7nmRyz/i4yYZbk5OdMeCHtGN6gzOpGmZzUt0axrSnKSdj3wu/i1xHGMNmmY9lJ4nIvD47KjjSWJWy9OF0=
+	t=1760447303; cv=none; b=aRy4AVQwoIBSiSoI1X3kBMKoltrrWChJCymsc9N53NMITVB4eyxgV2Es65Rcpn6m1bZS7NtjP2kyBWtsJMfFBJwOJKelyFoxsK/nMR68BnOZfYrJRnRbgdwTtyc0TT9CbjJklLpN7/7lRyMj7vm3d95T4cQbVSDP2FievSdPfLI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760447295; c=relaxed/simple;
-	bh=F4I8Kvtwn3jusskaFJsgVirsMtZJ1VpejkaxbIoXrsI=;
+	s=arc-20240116; t=1760447303; c=relaxed/simple;
+	bh=i9IOH9O/QwIEJOJX4Hmu4TbYsCb1D/4y6+SywTSOJWg=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=CrdvHy7i07rpdFOI6/Ipab9B3tuSfpwyL7IyWFcQwTCxcCgONoxwVkJXov5MEddhmTdkJghM6qcz0IrZPFXvOQ4zZ3HggKnwbbbELU8RF+pqbrt7zAjYo6RCvexMgq0XAKdWR6tz4UnbY/wEy5XUN5EAldr+syOslb8SwvkPlsI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=c3iKYpzs; arc=none smtp.client-ip=198.175.65.21
+	 MIME-Version; b=OH5ArCG6LgVuiztDoqpbfDJvRNN0MEUiMWmCWmNAQwim7s7UPZuX9lqK1mL2AgX4aA52SRbD0yOp/js0CnNaZZcNv84tMOp1+KxofgZCm/p0Z2/lpDdGxyKK2ecukOAo/6mxlt8O+Hltds40fLc4HYXMi40joEYt98nOZ0Ckwyk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=D1srO15R; arc=none smtp.client-ip=198.175.65.21
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="c3iKYpzs"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="D1srO15R"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1760447294; x=1791983294;
+  t=1760447302; x=1791983302;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=F4I8Kvtwn3jusskaFJsgVirsMtZJ1VpejkaxbIoXrsI=;
-  b=c3iKYpzsurDhqR+MNcDxeR3YwywD69nhK5FAb8uXZOLSkoSU0bP0+u+6
-   ela9jE2rO7vw8JZtUKjdIav6xbLcagP1dQZpTO7JVup7HA9b5k+hGt7WM
-   GJg+mbsXBL3LzH7rBloBTuHqGodJJYaw4pxdBKcqjU9co3z/KFE7gqoDl
-   2va85mEjvyrJ7FEelOUGr7h1+w6YXdLgySVETUYZO5v4uIPg41YEnt5lX
-   gW+C3hCtUR9IYBX837QbcmLJmEXHkfXs22Of53cmn7U/yLK6I3IfU/WCV
-   SEMA+uWZfeMgB6URFrZiIUWGoAhhktdzQ+zd/0cHidFD7m5sKnyS8A2ue
+  bh=i9IOH9O/QwIEJOJX4Hmu4TbYsCb1D/4y6+SywTSOJWg=;
+  b=D1srO15RM0Gmo4UiVPf1izv1zpJjKaHumqUgW7BuMIO4wKzsynFbRuhJ
+   d2zu/gia5D4GDpx7O8mQLkvppgri/vJBHyg2Mbn46WDgkX0i/72gKArbd
+   VHkH/awaFyGhMd6PQjmEcydwQdgVUW5BiC1ysKmbdUrVFWyYp/MlBZOPh
+   XiKuetaFRTE0dAK73WOgTqtTVGkMdWj0PycpWZGEgsE358eHWlwoUiiyo
+   drGTm1FUivnrSq91PUdm2pCngwVaIdhR5eJmoP0o6UN5ki5VTFrzU4R1i
+   TtfGDderCrnkkbH79dUoSErY2NyvS+pOsJKFBZI70L11oAqFCF7ByNqL8
    A==;
-X-CSE-ConnectionGUID: DYBPUmicTi+N0sC5vzSpSw==
-X-CSE-MsgGUID: ggLBTvRLS/27xsaPPQ62rw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11531"; a="62515469"
+X-CSE-ConnectionGUID: rvq3US6xSu2IHvNJhZoZFQ==
+X-CSE-MsgGUID: sgnEN9crSoqt9mRZvlQDwQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11531"; a="62515509"
 X-IronPort-AV: E=Sophos;i="6.17,312,1747724400"; 
-   d="scan'208";a="62515469"
+   d="scan'208";a="62515509"
 Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Oct 2025 06:08:14 -0700
-X-CSE-ConnectionGUID: tSK9WVeGSxqGkNXKwf99Kg==
-X-CSE-MsgGUID: OTzctZkDTmCiQhcd/KV4OQ==
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Oct 2025 06:08:21 -0700
+X-CSE-ConnectionGUID: 53aYxaR4Qh2tVgAdaUeJww==
+X-CSE-MsgGUID: cJiEiFtbThGI+AD5JzUPxQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.19,228,1754982000"; 
-   d="scan'208";a="182675699"
+   d="scan'208";a="182675720"
 Received: from allen-box.sh.intel.com ([10.239.159.52])
-  by fmviesa010.fm.intel.com with ESMTP; 14 Oct 2025 06:08:06 -0700
+  by fmviesa010.fm.intel.com with ESMTP; 14 Oct 2025 06:08:13 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>,
@@ -74,11 +74,11 @@ Cc: iommu@lists.linux.dev,
 	x86@kernel.org,
 	linux-mm@kvack.org,
 	linux-kernel@vger.kernel.org,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v6 6/7] mm: Introduce deferred freeing for kernel page tables
-Date: Tue, 14 Oct 2025 21:04:36 +0800
-Message-ID: <20251014130437.1090448-7-baolu.lu@linux.intel.com>
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	stable@vger.kernel.org
+Subject: [PATCH v6 7/7] iommu/sva: Invalidate stale IOTLB entries for kernel address space
+Date: Tue, 14 Oct 2025 21:04:37 +0800
+Message-ID: <20251014130437.1090448-8-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20251014130437.1090448-1-baolu.lu@linux.intel.com>
 References: <20251014130437.1090448-1-baolu.lu@linux.intel.com>
@@ -90,141 +90,177 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Dave Hansen <dave.hansen@linux.intel.com>
+In the IOMMU Shared Virtual Addressing (SVA) context, the IOMMU hardware
+shares and walks the CPU's page tables. The x86 architecture maps the
+kernel's virtual address space into the upper portion of every process's
+page table. Consequently, in an SVA context, the IOMMU hardware can walk
+and cache kernel page table entries.
 
-This introduces a conditional asynchronous mechanism, enabled by
-CONFIG_ASYNC_KERNEL_PGTABLE_FREE. When enabled, this mechanism defers the
-freeing of pages that are used as page tables for kernel address mappings.
-These pages are now queued to a work struct instead of being freed
-immediately.
+The Linux kernel currently lacks a notification mechanism for kernel page
+table changes, specifically when page table pages are freed and reused.
+The IOMMU driver is only notified of changes to user virtual address
+mappings. This can cause the IOMMU's internal caches to retain stale
+entries for kernel VA.
 
-This deferred freeing allows for batch-freeing of page tables, providing
-a safe context for performing a single expensive operation (TLB flush)
-for a batch of kernel page tables instead of performing that expensive
-operation for each page table.
+A Use-After-Free (UAF) and Write-After-Free (WAF) condition arises when
+kernel page table pages are freed and later reallocated. The IOMMU could
+misinterpret the new data as valid page table entries. The IOMMU might
+then walk into attacker-controlled memory, leading to arbitrary physical
+memory DMA access or privilege escalation. This is also a Write-After-Free
+issue, as the IOMMU will potentially continue to write Accessed and Dirty
+bits to the freed memory while attempting to walk the stale page tables.
 
-On x86, CONFIG_ASYNC_KERNEL_PGTABLE_FREE is selected if CONFIG_IOMMU_SVA
-is enabled, because both Intel and AMD IOMMU architectures could
-potentially cache kernel page table entries in their paging structure
-cache, regardless of the permission.
+Currently, SVA contexts are unprivileged and cannot access kernel
+mappings. However, the IOMMU will still walk kernel-only page tables
+all the way down to the leaf entries, where it realizes the mapping
+is for the kernel and errors out. This means the IOMMU still caches
+these intermediate page table entries, making the described vulnerability
+a real concern.
 
-Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
+To mitigate this, a new IOMMU interface is introduced to flush IOTLB
+entries for the kernel address space. This interface is invoked from the
+x86 architecture code that manages combined user and kernel page tables,
+specifically before any kernel page table page is freed and reused.
+
+This addresses the main issue with vfree() which is a common occurrence
+and can be triggered by unprivileged users. While this resolves the
+primary problem, it doesn't address some extremely rare case related to
+memory unplug of memory that was present as reserved memory at boot,
+which cannot be triggered by unprivileged users. The discussion can be
+found at the link below.
+
+Fixes: 26b25a2b98e4 ("iommu: Bind process address spaces to devices")
+Cc: stable@vger.kernel.org
+Suggested-by: Jann Horn <jannh@google.com>
+Co-developed-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
 Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Link: https://lore.kernel.org/linux-iommu/04983c62-3b1d-40d4-93ae-34ca04b827e5@intel.com/
 ---
- arch/x86/Kconfig     |  1 +
- mm/Kconfig           |  3 +++
- include/linux/mm.h   | 16 +++++++++++++---
- mm/pgtable-generic.c | 37 +++++++++++++++++++++++++++++++++++++
- 4 files changed, 54 insertions(+), 3 deletions(-)
+ include/linux/iommu.h     |  4 ++++
+ drivers/iommu/iommu-sva.c | 29 ++++++++++++++++++++++++++++-
+ mm/pgtable-generic.c      |  2 ++
+ 3 files changed, 34 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index fa3b616af03a..ded29ee848fd 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -279,6 +279,7 @@ config X86
- 	select HAVE_PCI
- 	select HAVE_PERF_REGS
- 	select HAVE_PERF_USER_STACK_DUMP
-+	select ASYNC_KERNEL_PGTABLE_FREE 	if IOMMU_SVA
- 	select MMU_GATHER_RCU_TABLE_FREE
- 	select MMU_GATHER_MERGE_VMAS
- 	select HAVE_POSIX_CPU_TIMERS_TASK_WORK
-diff --git a/mm/Kconfig b/mm/Kconfig
-index 0e26f4fc8717..a83df9934acd 100644
---- a/mm/Kconfig
-+++ b/mm/Kconfig
-@@ -908,6 +908,9 @@ config PAGE_MAPCOUNT
- config PGTABLE_HAS_HUGE_LEAVES
- 	def_bool TRANSPARENT_HUGEPAGE || HUGETLB_PAGE
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index c30d12e16473..66e4abb2df0d 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -1134,7 +1134,9 @@ struct iommu_sva {
  
-+config ASYNC_KERNEL_PGTABLE_FREE
-+	def_bool n
-+
- # TODO: Allow to be enabled without THP
- config ARCH_SUPPORTS_HUGE_PFNMAP
- 	def_bool n
-diff --git a/include/linux/mm.h b/include/linux/mm.h
-index bb235a9f991e..fe5515725c46 100644
---- a/include/linux/mm.h
-+++ b/include/linux/mm.h
-@@ -3031,6 +3031,14 @@ static inline void __pagetable_free(struct ptdesc *pt)
- 	__free_pages(page, compound_order(page));
+ struct iommu_mm_data {
+ 	u32			pasid;
++	struct mm_struct	*mm;
+ 	struct list_head	sva_domains;
++	struct list_head	mm_list_elm;
+ };
+ 
+ int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode);
+@@ -1615,6 +1617,7 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev,
+ 					struct mm_struct *mm);
+ void iommu_sva_unbind_device(struct iommu_sva *handle);
+ u32 iommu_sva_get_pasid(struct iommu_sva *handle);
++void iommu_sva_invalidate_kva_range(unsigned long start, unsigned long end);
+ #else
+ static inline struct iommu_sva *
+ iommu_sva_bind_device(struct device *dev, struct mm_struct *mm)
+@@ -1639,6 +1642,7 @@ static inline u32 mm_get_enqcmd_pasid(struct mm_struct *mm)
  }
  
-+#ifdef CONFIG_ASYNC_KERNEL_PGTABLE_FREE
-+void pagetable_free_kernel(struct ptdesc *pt);
-+#else
-+static inline void pagetable_free_kernel(struct ptdesc *pt)
-+{
-+	__pagetable_free(pt);
-+}
-+#endif
- /**
-  * pagetable_free - Free pagetables
-  * @pt:	The page table descriptor
-@@ -3040,10 +3048,12 @@ static inline void __pagetable_free(struct ptdesc *pt)
-  */
- static inline void pagetable_free(struct ptdesc *pt)
- {
--	if (ptdesc_test_kernel(pt))
-+	if (ptdesc_test_kernel(pt)) {
- 		ptdesc_clear_kernel(pt);
--
--	__pagetable_free(pt);
-+		pagetable_free_kernel(pt);
-+	} else {
-+		__pagetable_free(pt);
+ static inline void mm_pasid_drop(struct mm_struct *mm) {}
++static inline void iommu_sva_invalidate_kva_range(unsigned long start, unsigned long end) {}
+ #endif /* CONFIG_IOMMU_SVA */
+ 
+ #ifdef CONFIG_IOMMU_IOPF
+diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
+index 1a51cfd82808..d236aef80a8d 100644
+--- a/drivers/iommu/iommu-sva.c
++++ b/drivers/iommu/iommu-sva.c
+@@ -10,6 +10,8 @@
+ #include "iommu-priv.h"
+ 
+ static DEFINE_MUTEX(iommu_sva_lock);
++static bool iommu_sva_present;
++static LIST_HEAD(iommu_sva_mms);
+ static struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
+ 						   struct mm_struct *mm);
+ 
+@@ -42,6 +44,7 @@ static struct iommu_mm_data *iommu_alloc_mm_data(struct mm_struct *mm, struct de
+ 		return ERR_PTR(-ENOSPC);
+ 	}
+ 	iommu_mm->pasid = pasid;
++	iommu_mm->mm = mm;
+ 	INIT_LIST_HEAD(&iommu_mm->sva_domains);
+ 	/*
+ 	 * Make sure the write to mm->iommu_mm is not reordered in front of
+@@ -132,8 +135,13 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm
+ 	if (ret)
+ 		goto out_free_domain;
+ 	domain->users = 1;
+-	list_add(&domain->next, &mm->iommu_mm->sva_domains);
+ 
++	if (list_empty(&iommu_mm->sva_domains)) {
++		if (list_empty(&iommu_sva_mms))
++			iommu_sva_present = true;
++		list_add(&iommu_mm->mm_list_elm, &iommu_sva_mms);
 +	}
++	list_add(&domain->next, &iommu_mm->sva_domains);
+ out:
+ 	refcount_set(&handle->users, 1);
+ 	mutex_unlock(&iommu_sva_lock);
+@@ -175,6 +183,13 @@ void iommu_sva_unbind_device(struct iommu_sva *handle)
+ 		list_del(&domain->next);
+ 		iommu_domain_free(domain);
+ 	}
++
++	if (list_empty(&iommu_mm->sva_domains)) {
++		list_del(&iommu_mm->mm_list_elm);
++		if (list_empty(&iommu_sva_mms))
++			iommu_sva_present = false;
++	}
++
+ 	mutex_unlock(&iommu_sva_lock);
+ 	kfree(handle);
  }
+@@ -312,3 +327,15 @@ static struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
  
- #if defined(CONFIG_SPLIT_PTE_PTLOCKS)
+ 	return domain;
+ }
++
++void iommu_sva_invalidate_kva_range(unsigned long start, unsigned long end)
++{
++	struct iommu_mm_data *iommu_mm;
++
++	guard(mutex)(&iommu_sva_lock);
++	if (!iommu_sva_present)
++		return;
++
++	list_for_each_entry(iommu_mm, &iommu_sva_mms, mm_list_elm)
++		mmu_notifier_arch_invalidate_secondary_tlbs(iommu_mm->mm, start, end);
++}
 diff --git a/mm/pgtable-generic.c b/mm/pgtable-generic.c
-index 567e2d084071..1c7caa8ef164 100644
+index 1c7caa8ef164..8c22be79b734 100644
 --- a/mm/pgtable-generic.c
 +++ b/mm/pgtable-generic.c
-@@ -406,3 +406,40 @@ pte_t *__pte_offset_map_lock(struct mm_struct *mm, pmd_t *pmd,
- 	pte_unmap_unlock(pte, ptl);
- 	goto again;
+@@ -13,6 +13,7 @@
+ #include <linux/swap.h>
+ #include <linux/swapops.h>
+ #include <linux/mm_inline.h>
++#include <linux/iommu.h>
+ #include <asm/pgalloc.h>
+ #include <asm/tlb.h>
+ 
+@@ -430,6 +431,7 @@ static void kernel_pgtable_work_func(struct work_struct *work)
+ 	list_splice_tail_init(&kernel_pgtable_work.list, &page_list);
+ 	spin_unlock(&kernel_pgtable_work.lock);
+ 
++	iommu_sva_invalidate_kva_range(PAGE_OFFSET, TLB_FLUSH_ALL);
+ 	list_for_each_entry_safe(pt, next, &page_list, pt_list)
+ 		__pagetable_free(pt);
  }
-+
-+#ifdef CONFIG_ASYNC_KERNEL_PGTABLE_FREE
-+static void kernel_pgtable_work_func(struct work_struct *work);
-+
-+static struct {
-+	struct list_head list;
-+	/* protect above ptdesc lists */
-+	spinlock_t lock;
-+	struct work_struct work;
-+} kernel_pgtable_work = {
-+	.list = LIST_HEAD_INIT(kernel_pgtable_work.list),
-+	.lock = __SPIN_LOCK_UNLOCKED(kernel_pgtable_work.lock),
-+	.work = __WORK_INITIALIZER(kernel_pgtable_work.work, kernel_pgtable_work_func),
-+};
-+
-+static void kernel_pgtable_work_func(struct work_struct *work)
-+{
-+	struct ptdesc *pt, *next;
-+	LIST_HEAD(page_list);
-+
-+	spin_lock(&kernel_pgtable_work.lock);
-+	list_splice_tail_init(&kernel_pgtable_work.list, &page_list);
-+	spin_unlock(&kernel_pgtable_work.lock);
-+
-+	list_for_each_entry_safe(pt, next, &page_list, pt_list)
-+		__pagetable_free(pt);
-+}
-+
-+void pagetable_free_kernel(struct ptdesc *pt)
-+{
-+	spin_lock(&kernel_pgtable_work.lock);
-+	list_add(&pt->pt_list, &kernel_pgtable_work.list);
-+	spin_unlock(&kernel_pgtable_work.lock);
-+
-+	schedule_work(&kernel_pgtable_work.work);
-+}
-+#endif
 -- 
 2.43.0
 
