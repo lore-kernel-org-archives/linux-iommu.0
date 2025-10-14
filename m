@@ -1,47 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE07B3164D8
-	for <iommu@lists.linux.dev>; Tue, 14 Oct 2025 13:07:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62E943168FD
+	for <iommu@lists.linux.dev>; Tue, 14 Oct 2025 13:07:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760447239; cv=none; b=QmtJMhPEZH30W2OilqhtLUukmhlEjxnRQ2uuXrJ1hxphJ1NiwHJbW+dTW/HJiotQwGffMbRkbV1iQELZSuNn7gkyrg7PhbcN4u0fyCIer11tvjtUWsqvSvAzrNulL+FuPb28kkPOlbUbtsnqBmGvOZX+7KDFMjOlb+xxtiCyeKQ=
+	t=1760447254; cv=none; b=gLfTHFMVhf7LjMfkB79yiWckTZVn52UOa5xEU/Bod9QBGRNwLfAA82ZW/dJzWWowRAMpBjSkwU47lKaccFwVwrkFEFIzBqlzTvr07tLtnzEvHokpJ92zcKCT4ndww9uo2R8VginMm4jGV/oAzMDVmCJyOi84pO+q7mDUud8/ZN8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760447239; c=relaxed/simple;
-	bh=+Ij5X6I1pn3tOPVFV6qa8qHb+MGgIveks54UsCnznwg=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=EMgzgXm61rvzbbBy4a68TtWPSShq0mzUG8OwTpX+oPWHFbEbpkN7f+YhcULB+5vrV0QcnKQMVHhA/a4eesEgWDT81KcsKn3LtdDKabirhpEpX3FtptiBYEVVPzMTQViEpNnvwTss5qq4g3AnJBHussWuCYzgNNHeL8Y6IGwfE80=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=CVfTq1Nw; arc=none smtp.client-ip=198.175.65.21
+	s=arc-20240116; t=1760447254; c=relaxed/simple;
+	bh=gJZPFOgCCY7Vm1gn07xeeMUAM+JDjIVlwa8HcX5Wx9M=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=dA1IqDZVADRbBqUE0BmBgekg7aElhf9RmHhwAFSxxP9kilTrYFCGwBzENpKyFpRJTpmnm8GLFbX44wEAa2TANbhB5GHydHTnQpJVv7XNTir6OHAj8a0x/N13SdrtCh6bwBAGtQBkc/UZeR2miBgDf8V82WC8quNv/JWuzrfM85w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=VKjYmE6y; arc=none smtp.client-ip=198.175.65.21
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="CVfTq1Nw"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="VKjYmE6y"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1760447238; x=1791983238;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=+Ij5X6I1pn3tOPVFV6qa8qHb+MGgIveks54UsCnznwg=;
-  b=CVfTq1NwG8nziCWkd4maUEAd1w4rxrB0x6nG0UJib7doSOuOtTwaLEdj
-   L8LNXLWVSgO2+cVnH0DYKyCLDjj42NabcrNVGp3esKdHsqRRGC0/2h0F9
-   tNXNcwe9YDDG0w3hTScNeW53R2FG1sdS9iuTcE9NW5JlbgMCheLbOoOCv
-   XWNrj+CAHhDTwP+CKk4goUU6TQeuR1j2jlFuUEt9DESSdAvXLyo8VDkde
-   ZV1eqYY7SwazYsuKfpUU/S912hb0uSBbFuxC5p9YK9mgjQwEprvsVMa+V
-   Ps3Ra+OsY4vsggSJU3qX3WqgDRZqK2/vv0EduSxDstOmUcdWPddNhQw/U
-   Q==;
-X-CSE-ConnectionGUID: 47yS+vKSTcWvshi4hSFCeA==
-X-CSE-MsgGUID: pistiHLHQDeHcoG7aks1Ug==
-X-IronPort-AV: E=McAfee;i="6800,10657,11531"; a="62515299"
+  t=1760447253; x=1791983253;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=gJZPFOgCCY7Vm1gn07xeeMUAM+JDjIVlwa8HcX5Wx9M=;
+  b=VKjYmE6yjYgscVm1jQUeeHvKgCOhYliz7cp2WMVMixA2EdhuB/Ii6wv5
+   JWxIUYyS1Y8shBQg73jQuTgd2LQUYwurxTd0F+174WuL19HyvPJNUuiFx
+   eLUyxILRYWE7JDordtrBd1KGC5PKHDTZ2WOzDQpMRgUZa79OXczL7GQvI
+   pHAovNU5Mq/pa8UMOWo6WrcNhQ4LdniBevN+eQQYxnaPgckpi2AzbExUz
+   w9hnU2pMTRQaKRpOu5HJVPjOat6viMs3DZ5L5niPFkAAYKKWWUo4SU/m7
+   14tQIKvhrWUWDSCxZWiQZSuxb9Umc/CM6qCjxTpY4Whv3hjnirl8J589A
+   g==;
+X-CSE-ConnectionGUID: B5OX3crlSlS+YbJZsv3rgQ==
+X-CSE-MsgGUID: G2z9QHXISPavq2nBi1Aq3A==
+X-IronPort-AV: E=McAfee;i="6800,10657,11531"; a="62515330"
 X-IronPort-AV: E=Sophos;i="6.17,312,1747724400"; 
-   d="scan'208";a="62515299"
+   d="scan'208";a="62515330"
 Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Oct 2025 06:07:17 -0700
-X-CSE-ConnectionGUID: x1UbzMZCTya0ZQljcGcOEg==
-X-CSE-MsgGUID: 1SrbxBknSoO93W5oE+HWXA==
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Oct 2025 06:07:32 -0700
+X-CSE-ConnectionGUID: LLjJGhPvRVORbJ3C2K7/Og==
+X-CSE-MsgGUID: WwAf0EKjTJi6kFtDp18FpQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.19,228,1754982000"; 
-   d="scan'208";a="182675488"
+   d="scan'208";a="182675546"
 Received: from allen-box.sh.intel.com ([10.239.159.52])
-  by fmviesa010.fm.intel.com with ESMTP; 14 Oct 2025 06:07:09 -0700
+  by fmviesa010.fm.intel.com with ESMTP; 14 Oct 2025 06:07:18 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>,
@@ -73,11 +74,14 @@ Cc: iommu@lists.linux.dev,
 	x86@kernel.org,
 	linux-mm@kvack.org,
 	linux-kernel@vger.kernel.org,
+	Dave Hansen <dave.hansen@linux.intel.com>,
 	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v6 0/7] Fix stale IOTLB entries for kernel address space
-Date: Tue, 14 Oct 2025 21:04:30 +0800
-Message-ID: <20251014130437.1090448-1-baolu.lu@linux.intel.com>
+Subject: [PATCH v6 1/7] mm: Add a ptdesc flag to mark kernel page tables
+Date: Tue, 14 Oct 2025 21:04:31 +0800
+Message-ID: <20251014130437.1090448-2-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20251014130437.1090448-1-baolu.lu@linux.intel.com>
+References: <20251014130437.1090448-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -86,89 +90,97 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This proposes a fix for a security vulnerability related to IOMMU Shared
-Virtual Addressing (SVA). In an SVA context, an IOMMU can cache kernel
-page table entries. When a kernel page table page is freed and
-reallocated for another purpose, the IOMMU might still hold stale,
-incorrect entries. This can be exploited to cause a use-after-free or
-write-after-free condition, potentially leading to privilege escalation
-or data corruption.
+From: Dave Hansen <dave.hansen@linux.intel.com>
 
-This solution introduces a deferred freeing mechanism for kernel page
-table pages, which provides a safe window to notify the IOMMU to
-invalidate its caches before the page is reused.
+The page tables used to map the kernel and userspace often have very
+different handling rules. There are frequently *_kernel() variants of
+functions just for kernel page tables. That's not great and has lead
+to code duplication.
 
-Change log:
-v6:
- - Follow commit 522abd92279a to set/clear/test a flag of struct
-   ptdesc.
- - User page_ptdesc() helper.
- - Squash previous PATCH 6 and 7.
- - Rename CONFIG_ASYNC_PGTABLE_FREE to CONFIG_ASYNC_KERNEL_PGTABLE_FREE.
- - Refine commit message.
- - Rebase on top of v6.18-rc1.
+Instead of having completely separate call paths, allow a 'ptdesc' to
+be marked as being for kernel mappings. Introduce helpers to set and
+clear this status.
 
-v5:
- - https://lore.kernel.org/linux-iommu/20250919054007.472493-1-baolu.lu@linux.intel.com/
- - Renamed pagetable_free_async() to pagetable_free_kernel() to avoid
-   confusion.
- - Removed list_del() when the list is on the stack, as it will be freed
-   when the function returns.
- - Discussed a corner case related to memory unplug of memory that was
-   present as reserved memory at boot. Given that it's extremely rare
-   and cannot be triggered by unprivileged users. We decided to focus
-   our efforts on the common vfree() case and noted that corner case in
-   the commit message.
- - Some cleanups.
+Note: this uses the PG_referenced bit. Page flags are a great fit for
+this since it is truly a single bit of information.  Use PG_referenced
+itself because it's a fairly benign flag (as opposed to things like
+PG_lock). It's also (according to Willy) unlikely to go away any time
+soon.
 
-v4:
- - https://lore.kernel.org/linux-iommu/20250905055103.3821518-1-baolu.lu@linux.intel.com/
- - Introduce a mechanism to defer the freeing of page-table pages for
-   KVA mappings. Call iommu_sva_invalidate_kva_range() in the deferred
-   work thread before freeing the pages.
+PG_referenced is not in PAGE_FLAGS_CHECK_AT_FREE. It does not need to
+be cleared before freeing the page, and pages coming out of the
+allocator should have it cleared. Regardless, introduce an API to
+clear it anyway. Having symmetry in the API makes it easier to change
+the underlying implementation later, like if there was a need to move
+to a PAGE_FLAGS_CHECK_AT_FREE bit.
 
-v3:
- - https://lore.kernel.org/linux-iommu/20250806052505.3113108-1-baolu.lu@linux.intel.com/
- - iommu_sva_mms is an unbound list; iterating it in an atomic context
-   could introduce significant latency issues. Schedule it in a kernel
-   thread and replace the spinlock with a mutex.
- - Replace the static key with a normal bool; it can be brought back if
-   data shows the benefit.
- - Invalidate KVA range in the flush_tlb_all() paths.
- - All previous reviewed-bys are preserved. Please let me know if there
-   are any objections.
+Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+---
+ include/linux/mm.h | 41 +++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 41 insertions(+)
 
-v2:
- - https://lore.kernel.org/linux-iommu/20250709062800.651521-1-baolu.lu@linux.intel.com/
- - Remove EXPORT_SYMBOL_GPL(iommu_sva_invalidate_kva_range);
- - Replace the mutex with a spinlock to make the interface usable in the
-   critical regions.
-
-v1: https://lore.kernel.org/linux-iommu/20250704133056.4023816-1-baolu.lu@linux.intel.com/
-
-Dave Hansen (5):
-  mm: Add a ptdesc flag to mark kernel page tables
-  mm: Actually mark kernel page table pages
-  x86/mm: Use 'ptdesc' when freeing PMD pages
-  mm: Introduce pure page table freeing function
-  mm: Introduce deferred freeing for kernel page tables
-
-Lu Baolu (2):
-  x86/mm: Use pagetable_free()
-  iommu/sva: Invalidate stale IOTLB entries for kernel address space
-
- arch/x86/Kconfig              |  1 +
- mm/Kconfig                    |  3 ++
- include/asm-generic/pgalloc.h | 18 +++++++++
- include/linux/iommu.h         |  4 ++
- include/linux/mm.h            | 71 ++++++++++++++++++++++++++++++++---
- arch/x86/mm/init_64.c         |  2 +-
- arch/x86/mm/pat/set_memory.c  |  2 +-
- arch/x86/mm/pgtable.c         | 12 +++---
- drivers/iommu/iommu-sva.c     | 29 +++++++++++++-
- mm/pgtable-generic.c          | 39 +++++++++++++++++++
- 10 files changed, 167 insertions(+), 14 deletions(-)
-
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index d16b33bacc32..9741affc574e 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -2940,6 +2940,7 @@ static inline pmd_t *pmd_alloc(struct mm_struct *mm, pud_t *pud, unsigned long a
+ #endif /* CONFIG_MMU */
+ 
+ enum pt_flags {
++	PT_kernel = PG_referenced,
+ 	PT_reserved = PG_reserved,
+ 	/* High bits are used for zone/node/section */
+ };
+@@ -2965,6 +2966,46 @@ static inline bool pagetable_is_reserved(struct ptdesc *pt)
+ 	return test_bit(PT_reserved, &pt->pt_flags.f);
+ }
+ 
++/**
++ * ptdesc_set_kernel - Mark a ptdesc used to map the kernel
++ * @ptdesc: The ptdesc to be marked
++ *
++ * Kernel page tables often need special handling. Set a flag so that
++ * the handling code knows this ptdesc will not be used for userspace.
++ */
++static inline void ptdesc_set_kernel(struct ptdesc *ptdesc)
++{
++	set_bit(PT_kernel, &ptdesc->pt_flags.f);
++}
++
++/**
++ * ptdesc_clear_kernel - Mark a ptdesc as no longer used to map the kernel
++ * @ptdesc: The ptdesc to be unmarked
++ *
++ * Use when the ptdesc is no longer used to map the kernel and no longer
++ * needs special handling.
++ */
++static inline void ptdesc_clear_kernel(struct ptdesc *ptdesc)
++{
++	/*
++	 * Note: the 'PG_referenced' bit does not strictly need to be
++	 * cleared before freeing the page. But this is nice for
++	 * symmetry.
++	 */
++	clear_bit(PT_kernel, &ptdesc->pt_flags.f);
++}
++
++/**
++ * ptdesc_test_kernel - Check if a ptdesc is used to map the kernel
++ * @ptdesc: The ptdesc being tested
++ *
++ * Call to tell if the ptdesc used to map the kernel.
++ */
++static inline bool ptdesc_test_kernel(struct ptdesc *ptdesc)
++{
++	return test_bit(PT_kernel, &ptdesc->pt_flags.f);
++}
++
+ /**
+  * pagetable_alloc - Allocate pagetables
+  * @gfp:    GFP flags
 -- 
 2.43.0
 
