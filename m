@@ -1,128 +1,103 @@
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D92F529ACC0
-	for <iommu@lists.linux.dev>; Wed, 15 Oct 2025 03:26:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.61.82.184
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A02091DFE22
+	for <iommu@lists.linux.dev>; Wed, 15 Oct 2025 05:23:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760498790; cv=none; b=knlEUqNacDhnV5BFxCH9wh1QnoLeRAbeoHt/yd+wK/LyuziIPsOe7L5ZmMb2OBBNHcL8DsBckjOjuEGLvm7JvxvrF4UGg+srCQZDkoiJF+PKaygMjQcg9C/8U0c2CzQRdIRBKAy0YcVpI9obe3q5G3T4KHWOic8StRc0NjV+vZY=
+	t=1760505813; cv=none; b=LenvZ8uYCBAQlq/2wXdn42+eAAI09XPROs2bmKUWBrkpcW7N+V0ODiwoyAOv6haCQKgOa4ug0P/GgbZ/8VUgU4Pq4ETxR5cxyeZATsz+lQCVLbzGbopA2YaqKj+hqAh4Vn7IdIL9rXtLXBRZDKTsYVLbv3JlA3fQ+qqU7wyFgIQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760498790; c=relaxed/simple;
-	bh=WtSvoLNsAxKoxW7blJdRHMjowr6CW7E556wE1B7WnZU=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ksn1V6GKhKsNClVwe94sW6w5cG071M0x73tRzVhhtPfAh3Z5Mu22OoDWuFr/3Pwp+8zhMygJ4t1xZq/pa5mUlpdLZlpIthEEnguyO/AMLRi5z1SUFq2FQQy8C2bRvQ0EZKe9e/TPuA8SBjl/9n6vCdSMP8W6faY50Qc8Ju3EphA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com; spf=pass smtp.mailfrom=mediatek.com; dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b=Il2Bji5q; arc=none smtp.client-ip=210.61.82.184
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mediatek.com
+	s=arc-20240116; t=1760505813; c=relaxed/simple;
+	bh=eK0inZ4rNk5w2Qq8gSVATW8wmK6XxymTxfw6OxJSz54=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=tTa0ity0jYqkCBqVGwtqCNPZe1l1oY0eDW8dPRs01uLvsETVnYaKC2fn3LnbKXWd71WqYDKplwUkPIQZUalUNPzPw9I5lNTOwFD5spXPMVoCPlrgP4wZ/K9XDW2vthPRrEoz4qhwyTAalh2waAKs9TmcbQ8NGZ1b1le6HbT3nBQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=deT1h9c0; arc=none smtp.client-ip=198.175.65.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="Il2Bji5q"
-X-UUID: b7f557c0a97611f0b33aeb1e7f16c2b6-20251015
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-	h=Content-Type:Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=KL2SbvG0s1BFoUBmW3PHmXT6JxteiGRugU92tkqCr4s=;
-	b=Il2Bji5q+J3Bbkxeth2OTsPUxIkGOgjqo20MFvHPV260q0KDWCRXKz5vDnbkZVB9Y1iy7UK2ahOxRzxlz7feuuvmGuMiCeCzOiTbWK4TqeNLN8ufHLsSJrW0je4lGTEmLh4ke2pjBXY4QPXZwfcDnP0pRQiEpQ01t1frtDijod4=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.3.6,REQID:ad547d34-2845-41af-a5f4-074b5454c4d4,IP:0,UR
-	L:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:r
-	elease,TS:0
-X-CID-META: VersionHash:a9d874c,CLOUDID:d1a81151-c509-4cf3-8dc0-fcdaad49a6d3,B
-	ulkID:nil,BulkQuantity:0,Recheck:0,SF:81|82|102|836|888|898,TC:-5,Content:
-	0|15|50,EDM:-3,IP:nil,URL:0,File:130,RT:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,
-	OSI:0,OSA:0,AV:0,LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
-X-CID-BVR: 2,SSN|SDN
-X-CID-BAS: 2,SSN|SDN,0,_
-X-CID-FACTOR: TF_CID_SPAM_SNR
-X-CID-RHF: D41D8CD98F00B204E9800998ECF8427E
-X-UUID: b7f557c0a97611f0b33aeb1e7f16c2b6-20251015
-Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw02.mediatek.com
-	(envelope-from <zhengnan.chen@mediatek.com>)
-	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-	with ESMTP id 1528142288; Wed, 15 Oct 2025 11:26:20 +0800
-Received: from mtkmbs13n2.mediatek.inc (172.21.101.108) by
- MTKMBS09N2.mediatek.inc (172.21.101.94) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.10; Wed, 15 Oct 2025 11:26:18 +0800
-Received: from mhfsdcap04.gcn.mediatek.inc (10.17.3.154) by
- mtkmbs13n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.1748.10 via Frontend Transport; Wed, 15 Oct 2025 11:26:18 +0800
-From: Zhengnan Chen <zhengnan.chen@mediatek.com>
-To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, Will
- Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Rob Herring
-	<robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
-	<conor+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-CC: <iommu@lists.linux.dev>, <linux-mediatek@lists.infradead.org>,
-	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>,
-	<Project_Global_Chrome_Upstream_Group@mediatek.com>, Zhengnan Chen
-	<zhengnan.chen@mediatek.com>
-Subject: [PATCH v2 5/5] iommu/mediatek: mt8189: Add MM IOMMUs support
-Date: Wed, 15 Oct 2025 11:24:21 +0800
-Message-ID: <20251015032509.5057-6-zhengnan.chen@mediatek.com>
-X-Mailer: git-send-email 2.46.0
-In-Reply-To: <20251015032509.5057-1-zhengnan.chen@mediatek.com>
-References: <20251015032509.5057-1-zhengnan.chen@mediatek.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="deT1h9c0"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1760505812; x=1792041812;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=eK0inZ4rNk5w2Qq8gSVATW8wmK6XxymTxfw6OxJSz54=;
+  b=deT1h9c0YoNr37UIT34YuMOL5JQMyV5ot1ANLpfQGrSmHq+pzscEiEiA
+   SUgq6nnuOvWoqts2iOv1ge5iazp/Lg7oLTAiiCQBO9shIjc8fQ8j0JBvq
+   WZAtc43ZcX1T/NbkPlyUQ2r1XYpx4iIfR0GEHN8PlJzK8scY2Twebvxvr
+   MMxmEtcN/NkrbAKMDgbj1G/JoC+alZCGgXSeY7fY94qcYNRZlKg1DFdgd
+   d9M7VLxxvUdiI71MUWxvVhpgGcvhwLgGd3jFR3o65XNSnwmvYiHRcZKTX
+   6gn2ikSLrn5klCT4H0Io8/rig5nfLMBZwx2gq0xJR2B452/NKP1LJdPlT
+   Q==;
+X-CSE-ConnectionGUID: t0ShdggaQ2q69te9p7Mufg==
+X-CSE-MsgGUID: 1u3IO6ZHTDaaVQMsmlf/Bg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11582"; a="85290281"
+X-IronPort-AV: E=Sophos;i="6.19,230,1754982000"; 
+   d="scan'208";a="85290281"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Oct 2025 22:23:31 -0700
+X-CSE-ConnectionGUID: T0k5dDuKTp6Gt6SVFGKEog==
+X-CSE-MsgGUID: eUacngtfTZetlmPxF9skJQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.19,230,1754982000"; 
+   d="scan'208";a="182018745"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Oct 2025 22:23:24 -0700
+Message-ID: <bf6ee535-cd5c-41ed-b0a0-f2dc10c1382d@linux.intel.com>
+Date: Wed, 15 Oct 2025 13:19:44 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v6 3/7] x86/mm: Use 'ptdesc' when freeing PMD pages
+To: Dave Hansen <dave.hansen@intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Kevin Tian <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
+ Jann Horn <jannh@google.com>, Vasant Hegde <vasant.hegde@amd.com>,
+ Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>,
+ Borislav Petkov <bp@alien8.de>, Alistair Popple <apopple@nvidia.com>,
+ Peter Zijlstra <peterz@infradead.org>, Uladzislau Rezki <urezki@gmail.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Andy Lutomirski <luto@kernel.org>, Yi Lai <yi1.lai@intel.com>,
+ David Hildenbrand <david@redhat.com>,
+ Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
+ "Liam R . Howlett" <Liam.Howlett@oracle.com>,
+ Andrew Morton <akpm@linux-foundation.org>, Vlastimil Babka <vbabka@suse.cz>,
+ Mike Rapoport <rppt@kernel.org>, Michal Hocko <mhocko@kernel.org>,
+ Matthew Wilcox <willy@infradead.org>
+Cc: iommu@lists.linux.dev, security@kernel.org, x86@kernel.org,
+ linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+ Dave Hansen <dave.hansen@linux.intel.com>
+References: <20251014130437.1090448-1-baolu.lu@linux.intel.com>
+ <20251014130437.1090448-4-baolu.lu@linux.intel.com>
+ <b6fdba02-cc3e-4d06-b013-fba94209e7a1@intel.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <b6fdba02-cc3e-4d06-b013-fba94209e7a1@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Add support for mt8189 MM IOMMUs.
+On 10/15/25 07:19, Dave Hansen wrote:
+> On 10/14/25 06:04, Lu Baolu wrote:
+>> -#if defined(CONFIG_SPLIT_PMD_PTLOCKS)
+>> -
+>> +#if defined(CONFIG_SPLIT_PMD_PTLOCKS) || defined(CONFIG_X86_64)
+> 
+> What's with the #ifdef munging? It's not mentioned in the changelog.
+> 
+> I went looking at this because pmd_free_pte_page() is right in the
+> middle of the action on this reported use after free:
+> 
+>> https://lore.kernel.org/all/68eeb99e.050a0220.91a22.0220.GAE@google.com/
+> 
+> so something fishy is going on. It would be great to narrow that report
+> down to a _specific_ patch in the series.
 
-Signed-off-by: Zhengnan Chen <zhengnan.chen@mediatek.com>
----
- drivers/iommu/mtk_iommu.c | 28 ++++++++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
+Yes. I am trying to reproduce the issue on my local machine and then
+narrow down the reported issue.
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 2eb62a073a58..64b641f43298 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -1771,6 +1771,33 @@ static const struct mtk_iommu_plat_data mt8189_data_infra = {
- 	.iova_region_nr	= ARRAY_SIZE(single_domain),
- };
- 
-+static const u32 mt8189_larb_region_msk[MT8192_MULTI_REGION_NR_MAX][MTK_LARB_NR_MAX] = {
-+	[0] = {~0, ~0, ~0, [22] = BIT(0)},	/* Region0: all ports for larb0/1/2 */
-+	[1] = {[3] = ~0, [4] = ~0},		/* Region1: all ports for larb4(3)/7(4) */
-+	[2] = {[5] = ~0, [6] = ~0,		/* Region2: all ports for larb9(5)/11(6) */
-+	       [7] = ~0, [8] = ~0,		/* Region2: all ports for larb13(7)/14(8) */
-+	       [9] = ~0, [10] = ~0,		/* Region2: all ports for larb16(9)/17(10) */
-+	       [11] = ~0, [12] = ~0,		/* Region2: all ports for larb19(11)/20(12) */
-+	       [21] = ~0},			/* Region2: larb21 fake GCE larb */
-+};
-+
-+static const struct mtk_iommu_plat_data mt8189_data_mm = {
-+	.m4u_plat	= M4U_MT8189,
-+	.flags		= HAS_BCLK | HAS_SUB_COMM_3BITS | OUT_ORDER_WR_EN |
-+			  WR_THROT_EN | IOVA_34_EN | MTK_IOMMU_TYPE_MM |
-+			  PGTABLE_PA_35_EN | DL_WITH_MULTI_LARB,
-+	.hw_list	= &m4ulist,
-+	.inv_sel_reg	= REG_MMU_INV_SEL_GEN2,
-+	.banks_num	= 5,
-+	.banks_enable	= {true, false, false, false, false},
-+	.iova_region	= mt8192_multi_dom,
-+	.iova_region_nr	= ARRAY_SIZE(mt8192_multi_dom),
-+	.iova_region_larb_msk = mt8189_larb_region_msk,
-+	.larbid_remap	= {{0}, {1}, {21/* GCE_D */, 21/* GCE_M */, 2},
-+			   {19, 20, 9, 11}, {7}, {4},
-+			   {13, 17}, {14, 16}},
-+};
-+
- static const struct mtk_iommu_plat_data mt8192_data = {
- 	.m4u_plat       = M4U_MT8192,
- 	.flags          = HAS_BCLK | HAS_SUB_COMM_2BITS | OUT_ORDER_WR_EN |
-@@ -1874,6 +1901,7 @@ static const struct of_device_id mtk_iommu_of_ids[] = {
- 	{ .compatible = "mediatek,mt8188-iommu-vpp",   .data = &mt8188_data_vpp},
- 	{ .compatible = "mediatek,mt8189-iommu-apu",   .data = &mt8189_data_apu},
- 	{ .compatible = "mediatek,mt8189-iommu-infra", .data = &mt8189_data_infra},
-+	{ .compatible = "mediatek,mt8189-iommu-mm",    .data = &mt8189_data_mm},
- 	{ .compatible = "mediatek,mt8192-m4u", .data = &mt8192_data},
- 	{ .compatible = "mediatek,mt8195-iommu-infra", .data = &mt8195_data_infra},
- 	{ .compatible = "mediatek,mt8195-iommu-vdo",   .data = &mt8195_data_vdo},
--- 
-2.46.0
-
+Thanks,
+baolu
