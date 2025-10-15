@@ -1,120 +1,119 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9EACA3233F5;
-	Wed, 15 Oct 2025 11:58:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B908E1DDC37
+	for <iommu@lists.linux.dev>; Wed, 15 Oct 2025 12:57:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=60.244.123.138
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760529523; cv=none; b=XMJBMb6eBcb43J1VbSdjZCW7kMkwv9vIASU7WDobeP7QFNuBuHlnrl52w9faFqOkGK04pan87Ur11Kl/RR3jI2hooldWXXf25DpaPr/54n3ixvV6d0PnOCXiI5n121qnAJtA5cTtEz8dM7qCHKhIATK5RXMyHy92O0hJRB4wav4=
+	t=1760533038; cv=none; b=oP7U1b/UwcQNlZ4skS3nXlf1W9bxcF7Z/jUPLYFL/fctruSA5IrgJngUAPTkBv5BJqyFrK6w3DXDapJ00cHHIMVPtbLrAARFntS9/O2Ous7xECFOVjT6t338S6ozmXY0lc2XSKHVSyq9x6AHZotvCVAnV3dsHIGeZNGMGDa1szo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760529523; c=relaxed/simple;
-	bh=Rh23M01bmd+Uo4dW+JzHGlrL82LSKsPD8E2qifm7m0s=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=P9ZQGuQCXiGcWUd1i+6XD24fXM1Ube3IlujgbBecu1yPUy8CRZVdF4XJQ30/BrrTJUUSYdZyG4RmbBLE4gQeFVipfuA3IEFaZjlxN1++jwrzFagYJQ4jbRuKGIUqc6/PdnuGaJscG6SNo1oFjY5cbRBmVjvmVusuklewyIU7/lg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=kbgx0SFK; arc=none smtp.client-ip=198.175.65.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1760533038; c=relaxed/simple;
+	bh=MS33kYmVbAfDBf4w0xV5HM6ziBuxUf4smxdzEYxZR0M=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=WVo451CJLkeclbLfiVQTfKf70nZFvJoDiFKmztcDWc8JmiW+e00zEnTRxjU+nXWBWfZVkdr+CSzfCEVJ/MYLYfpjMvzeEeI6xXDQdWui2DgzH954btUybvC83Lr8POSNfI1r/Bqq98e4mKB9+tFyk09W5yrbrN3BuYb/rAuriSo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com; spf=pass smtp.mailfrom=mediatek.com; dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b=EOAoYoAq; arc=none smtp.client-ip=60.244.123.138
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mediatek.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kbgx0SFK"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1760529522; x=1792065522;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Rh23M01bmd+Uo4dW+JzHGlrL82LSKsPD8E2qifm7m0s=;
-  b=kbgx0SFKvrzf8KLr5D8KFL2/wfsvjW+KwzMmEWLXzlKjC8tRL9hvpK4J
-   Wmtxn988Jx30mDjsW+3EjMkhpqd+lL6cOncqQclgCdqsIXfaGKR6jXAa2
-   DeB1jSZoNBUywjpfxCUCsgv+Ix7mktS2Q7oBUrKztZISO5bnxupSTtvvm
-   qGvpBAuU750U7dUDpS3T7V1G3TSSIhuxnBJIVXMe+wBBMBKyoFhwy5ERy
-   XIc2retL65vo1lxf89Zelc2O2KQpvYuzjED4LzuYESqNyXCmpGL12s/U2
-   hnorussK0Q929DzIkgpEpr3Kw8TsPPsbfzXf1bh9CrA8YTnVj5PFTlTL4
-   w==;
-X-CSE-ConnectionGUID: Zi3fJb/8SV6TpgC13ot3qQ==
-X-CSE-MsgGUID: +W+UmbjHR1imnnAPwiVVHQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11582"; a="80138447"
-X-IronPort-AV: E=Sophos;i="6.19,231,1754982000"; 
-   d="scan'208";a="80138447"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Oct 2025 04:58:42 -0700
-X-CSE-ConnectionGUID: UZ0EamPpQIKKIBkFRCmpBg==
-X-CSE-MsgGUID: hl2HG8F6TPKGptlSC4HUtQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.19,231,1754982000"; 
-   d="scan'208";a="219297447"
-Received: from lkp-server02.sh.intel.com (HELO 66d7546c76b2) ([10.239.97.151])
-  by orviesa001.jf.intel.com with ESMTP; 15 Oct 2025 04:58:38 -0700
-Received: from kbuild by 66d7546c76b2 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1v909L-0003oN-3B;
-	Wed, 15 Oct 2025 11:58:36 +0000
-Date: Wed, 15 Oct 2025 19:58:05 +0800
-From: kernel test robot <lkp@intel.com>
-To: Nicolin Chen <nicolinc@nvidia.com>, jgg@nvidia.com,
-	kevin.tian@intel.com
-Cc: oe-kbuild-all@lists.linux.dev, robin.murphy@arm.com, joro@8bytes.org,
-	will@kernel.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, shuah@kernel.org,
-	linux-kselftest@vger.kernel.org, shyamsaini@linux.microsoft.com
-Subject: Re: [PATCH v2 4/7] iommufd: Add IOMMU_OPTION_SW_MSI_START/SIZE ioctls
-Message-ID: <202510151909.E0Zb31Ah-lkp@intel.com>
-References: <6c36de14b00a3f06df3a602f18baf6b51fde429f.1760487869.git.nicolinc@nvidia.com>
+	dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="EOAoYoAq"
+X-UUID: 7366781ea9c611f0ae1e63ff8927bad3-20251015
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+	h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:CC:To:From; bh=4aznyswgxbtzCDp+tK6zg0PO3+Q09TU9/s3JSyyLDKI=;
+	b=EOAoYoAqC9vXZL7u9xXlE3w0RGG1RKGXU32nKWnpzGOsNGb6eaOU/4V8QSNgtXGdotIEFV7pxKZkJWaXU3CXaLUpXA2yl8mPe/55mw2CviEzVulx1iEmLmL+cFt9TTh9kVyVx8lZIOVOTwo3qN9aRhylm6FO3uJqMCdFhcHI/WQ=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.3.6,REQID:f0692741-71e7-4d15-b569-ab22697226b0,IP:0,UR
+	L:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:
+	release,TS:-5
+X-CID-META: VersionHash:a9d874c,CLOUDID:8e2b33b9-795c-4f99-91f3-c115e0d49051,B
+	ulkID:nil,BulkQuantity:0,Recheck:0,SF:102|836|888|898,TC:-5,Content:0|15|5
+	0,EDM:-3,IP:nil,URL:99|1,File:130,RT:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI
+	:0,OSA:0,AV:0,LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
+X-CID-BVR: 2,SSN|SDN
+X-CID-BAS: 2,SSN|SDN,0,_
+X-CID-FACTOR: TF_CID_SPAM_SNR,TF_CID_SPAM_ULS
+X-CID-RHF: D41D8CD98F00B204E9800998ECF8427E
+X-UUID: 7366781ea9c611f0ae1e63ff8927bad3-20251015
+Received: from mtkmbs13n2.mediatek.inc [(172.21.101.108)] by mailgw01.mediatek.com
+	(envelope-from <zhengnan.chen@mediatek.com>)
+	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+	with ESMTP id 85036494; Wed, 15 Oct 2025 20:57:05 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.10; Wed, 15 Oct 2025 20:57:03 +0800
+Received: from mhfsdcap04.gcn.mediatek.inc (10.17.3.154) by
+ mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.1748.10 via Frontend Transport; Wed, 15 Oct 2025 20:57:02 +0800
+From: Zhengnan Chen <zhengnan.chen@mediatek.com>
+To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, Will
+ Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Rob Herring
+	<robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+	<conor+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+CC: <iommu@lists.linux.dev>, <linux-mediatek@lists.infradead.org>,
+	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>,
+	<Project_Global_Chrome_Upstream_Group@mediatek.com>, Zhengnan Chen
+	<zhengnan.chen@mediatek.com>
+Subject: [PATCH v3 0/5] MT8189 IOMMU SUPPORT
+Date: Wed, 15 Oct 2025 20:55:12 +0800
+Message-ID: <20251015125532.9041-1-zhengnan.chen@mediatek.com>
+X-Mailer: git-send-email 2.46.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6c36de14b00a3f06df3a602f18baf6b51fde429f.1760487869.git.nicolinc@nvidia.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 
-Hi Nicolin,
+Based on tag: next-20251014, linux-next/master
 
-kernel test robot noticed the following build warnings:
+This patchset adds MT8189 iommu support.
 
-[auto build test WARNING on shuah-kselftest/next]
-[also build test WARNING on shuah-kselftest/fixes linus/master v6.18-rc1 next-20251014]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+MT8189 have 3 IOMMU HWs. 1 IOMMU HW is for multimedia,
+1 IOMMU HW is for apu(AI processer unit),
+and 2 IOMMU HW is for infra-master, like PCIe/USB.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Nicolin-Chen/iommufd-device-Move-sw_msi_start-from-igroup-to-idev/20251015-083453
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/shuah/linux-kselftest.git next
-patch link:    https://lore.kernel.org/r/6c36de14b00a3f06df3a602f18baf6b51fde429f.1760487869.git.nicolinc%40nvidia.com
-patch subject: [PATCH v2 4/7] iommufd: Add IOMMU_OPTION_SW_MSI_START/SIZE ioctls
-config: i386-buildonly-randconfig-002-20251015 (https://download.01.org/0day-ci/archive/20251015/202510151909.E0Zb31Ah-lkp@intel.com/config)
-compiler: gcc-14 (Debian 14.2.0-19) 14.2.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20251015/202510151909.E0Zb31Ah-lkp@intel.com/reproduce)
+About the INFRA IOMMU, it don't have larbs, the master connects the
+iommu directly. It use a independent pgtable, and these two
+INFRA IOMMU HW share a pgtable.
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202510151909.E0Zb31Ah-lkp@intel.com/
+In mt8189, the display connect with larb1 and larb2 at the same time.
+Thus, we should add link between disp-dev with these two larbs.
 
-All warnings (new ones prefixed by >>):
+The software solutions can be summarized as follows:
+1. Add iommu support for mt8189
+2. Add a flag DL_WITH_MULTI_LARB to support the HW which connect with
+   multiple larbs.
 
-   In file included from include/linux/overflow.h:6,
-                    from include/linux/string.h:13,
-                    from include/linux/scatterlist.h:5,
-                    from include/linux/iommu.h:10,
-                    from drivers/iommu/iommufd/io_pagetable.c:13:
-   drivers/iommu/iommufd/io_pagetable.c: In function 'iopt_table_enforce_dev_resv_regions':
->> include/linux/limits.h:11:25: warning: conversion from 'long long unsigned int' to 'long unsigned int' changes value from '18446744073709551615' to '4294967295' [-Woverflow]
-      11 | #define PHYS_ADDR_MAX   (~(phys_addr_t)0)
-         |                         ^
-   drivers/iommu/iommufd/io_pagetable.c:1461:39: note: in expansion of macro 'PHYS_ADDR_MAX'
-    1461 |                 unsigned long start = PHYS_ADDR_MAX, last = 0;
-         |                                       ^~~~~~~~~~~~~
+---
+Changes in v3:
+- Exclude the mediatek,larbs attribute of apu iommu in mediatek,iommu.yaml
+- Link to v2:
+  https://lore.kernel.org/all/20251015032509.5057-1-zhengnan.chen@mediatek.com/
 
+Changes in v2:
+- Split mt8189 iommu support patch into three patches, namely APU IOMMU,
+  INFRA IOMMU and MM IOMMU
+- Disable bank 4 of MM IOMMU
+- Link to v1:
+  https://lore.kernel.org/all/20250807095756.11840-1-zhengnan.chen@mediatek.com/
+---
 
-vim +11 include/linux/limits.h
+Zhengnan Chen (5):
+  dt-bindings: mediatek: mt8189: Add bindings for MM & APU & INFRA IOMMU
+  iommu/mediatek: Add a flag DL_WITH_MULTI_LARB
+  iommu/mediatek: mt8189: Add APU IOMMUs support
+  iommu/mediatek: mt8189: Add INFRA IOMMUs support
+  iommu/mediatek: mt8189: Add MM IOMMUs support
 
-54d50897d544c8 Masahiro Yamada 2019-03-07   8  
-54d50897d544c8 Masahiro Yamada 2019-03-07   9  #define SIZE_MAX	(~(size_t)0)
-dabba87229411a Pasha Tatashin  2022-05-27  10  #define SSIZE_MAX	((ssize_t)(SIZE_MAX >> 1))
-54d50897d544c8 Masahiro Yamada 2019-03-07 @11  #define PHYS_ADDR_MAX	(~(phys_addr_t)0)
-54d50897d544c8 Masahiro Yamada 2019-03-07  12  
+ .../bindings/iommu/mediatek,iommu.yaml        |   8 +
+ drivers/iommu/mtk_iommu.c                     | 132 +++++++-
+ .../memory/mediatek,mt8189-memory-port.h      | 283 ++++++++++++++++++
+ 3 files changed, 410 insertions(+), 13 deletions(-)
+ create mode 100644 include/dt-bindings/memory/mediatek,mt8189-memory-port.h
 
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+2.46.0
+
