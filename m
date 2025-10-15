@@ -1,120 +1,171 @@
-Received: from mail-qk1-f178.google.com (mail-qk1-f178.google.com [209.85.222.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC3FD2C21F4
-	for <iommu@lists.linux.dev>; Wed, 15 Oct 2025 15:10:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 718762D73BA
+	for <iommu@lists.linux.dev>; Wed, 15 Oct 2025 15:55:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760541008; cv=none; b=tKwQeW5UPohwT7PneTCgV1XBd6jBGG2mjkyTpW+SRgwmF/XRO7P9fSG9flOO2zbLhOwSvwAJwIVZaXby5g/vQqFIO24uNEzZHJfJeb8si72G4SR+o9qwOCIkU2FvwoMsgZ2qViZRGM2HyOIErv/E5AxnAZim2OFHSD9/GqA/jnw=
+	t=1760543725; cv=none; b=BKMGwFlNH6FYp+zN/Dqv1RhEVO2CGF+XBfrcagmipjrwH8RGWP7WnxZe8AmsuW3yHPU+shA4Ug3Y/L9SsQlkvwXRKnjcguqINYTZEEuLdklogbPncRh9/H9D+hyr3u0IeTl9yTzd9S3Yh43GYQvbVWiiIyEd29h9kCUtihhbCVs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760541008; c=relaxed/simple;
-	bh=H0JR/dA7pq3APucJyEmbtctldjfu0GEcZAibz+CTRWI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=cDdJzl+UOiwk3WZpyTHiI2BjaY3g80KJ5G3qab/umb/CuwNGIk3VQhN/KdnyrMxW2VcVk+jYznyBzcPpyV54UpRsJin11dfGdCwd7nZc8f4tgDqCIF0evu9ViPyHoToH1vbt1DnIHkIHl/fxN1nR4BpaaqVZehjdLSKAqDFOQqo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=YYgT0Zyp; arc=none smtp.client-ip=209.85.222.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1760543725; c=relaxed/simple;
+	bh=S9yNFLTbhi4KQGgGfnRYFdCq2kVd6d+5069UHhBhEIQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=HATkjNAYSIVh0hT0VlVdLt84w5sMirMc2DE1vEUKYOYOkclqmeSyFFIZTWna4Y+iAx3Kd6sa8Aaq8p81RBBFkDl3OPFt3RPHxngXWJJ7vJqS0kXFc7bGCJVoJZFLymqvuEjZN2j2Av109iVuFpAJH5FPkjnyOgMsoyiv/LGEQf8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OfuwfWAs; arc=none smtp.client-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="YYgT0Zyp"
-Received: by mail-qk1-f178.google.com with SMTP id af79cd13be357-84827ef386aso666114485a.0
-        for <iommu@lists.linux.dev>; Wed, 15 Oct 2025 08:10:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1760541003; x=1761145803; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ILwpaE+T5XpzmGXk5vDJm+k5n9Pb/8cfvXWouFnzCso=;
-        b=YYgT0ZypdVmbEBgUl4UXKg54/w2wdKrek+3VAMiEQSdpq3FytstlRSxQVLYWR0j11U
-         JLgHjsHD4MBgOm0aF63yXQCQnUkixuMTc4JdiIIKkkmUFhy3rxRQlpR5zdsaGIm7VVqv
-         LAIZKb5R23hFGQNdkevx0ei06mh7GKqyq8o2tqNnbLa5+hnUlW7bdh3G1S/q0M2nyFpI
-         tkdCSv4Phy4H7/gGzS9Zh4tQ/9SCqGBfdqNlWHJJ62Vscg6MIet48Xp+TBzZlqHkcOsd
-         Ppx2CzBCfqqvjc4G+IzGztgcc+9+yPaxkIu5Jh96VAOXLAGs3ULVeq41nLxvK/qskF3s
-         ALeA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1760541003; x=1761145803;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ILwpaE+T5XpzmGXk5vDJm+k5n9Pb/8cfvXWouFnzCso=;
-        b=J9JFKL8k7eRaiajcGDowU+Y2hzmQaLwVTJ3DfBuY7gUvdtjehw2OfqDMjP4wjwhD1p
-         G/RvjGYm8x6GiD2nhmfdAzfgg3Mvaqm/hbvZ7vr9qLdNrpSqTGg8090+EOMiky9clmKR
-         SdiBnoo7gUa6vRODPG3QHoXkgmfSpeBLBxGrVjlyF1ey2c8GYANynDDEgK3jv4R0KOIF
-         RkpWFjZ39T5x0DwGonb3MW9BLeY1aeMoO+nijv0FJSrMUqGlbic/5NEaYmCRDxulNFV0
-         reE7PRmMNP+8DEFIUybazCX7eplWCzLvOP4qI0Eo2bKpDvWvOeOqoZ/5QreMdSPSV5gH
-         hdKw==
-X-Forwarded-Encrypted: i=1; AJvYcCU+DB9lx2LvsaXbDu3m4ruyC9hkBRMNC7H4B8kKSYwY98KSBvjtRX/XQ0OiSir2q9aiAtjh8Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxaUI7j5OuFM/hDUguT76qFFwKELUVikj2++G6I0gdbggtKTrGF
-	uvmhMnF7PNqvmSvRoiH1wfERYURn1PKAlfxGe/SYqxiSj3NIJMeJKg5UrFam9/BRI7U=
-X-Gm-Gg: ASbGncsrVi1MHEviFB5Q8zP0POdI05xJ/3zokdMKGRVzfCg9UXmX45WvPqgrl0NrMUn
-	qvqbtP+hjS8ZfUCDx174eWQtyXNsr9x5xsD4kgvnCrURTVLuMeJDl0phSlj9KjGsk3T1xAeJDNf
-	mrCtSIQs6sq+WgiZzcGG9L4F5B0YzMb1+cVttTFrWy61Ne1BMMs6DbHevU/kWznhB+n0gm9oYOK
-	+1Zipy4i8s2z6/uqOmKB6T1U16tMlGq5MS1zv3bbtpxX9T1BDadK3t2f87xCh9Oz3vSdzH4yced
-	NoHU+UCfzBnHTOucxOBdbtxQ9gJtlA10DksaX4Rqz110z5b16kiy9FczJWcbHGVyFSFW1EFCv2N
-	p5WuZ5q3bTSm1qEE=
-X-Google-Smtp-Source: AGHT+IGT/kELmEXYXPGlJfuB2PbHSRRnqIl4KI4SjW2i78+LYVAn+gH5X+YwxfAWjMG/wVMJe0rtQQ==
-X-Received: by 2002:ac8:5885:0:b0:4b7:9581:a211 with SMTP id d75a77b69052e-4e6eace7e6cmr385756551cf.24.1760541003496;
-        Wed, 15 Oct 2025 08:10:03 -0700 (PDT)
-Received: from ziepe.ca ([130.41.10.202])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-4e881c577e6sm20528841cf.7.2025.10.15.08.10.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Oct 2025 08:10:03 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1v938c-0000000HRP6-0a8o;
-	Wed, 15 Oct 2025 12:10:02 -0300
-Date: Wed, 15 Oct 2025 12:10:02 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Mostafa Saleh <smostafa@google.com>, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	will@kernel.org, joro@8bytes.org, praan@google.com
-Subject: Re: [PATCH v5 4/4] iommu/io-pgtable-arm-selftests: Use KUnit
-Message-ID: <20251015151002.GH3938986@ziepe.ca>
-References: <20250929155001.3287719-1-smostafa@google.com>
- <20250929155001.3287719-5-smostafa@google.com>
- <86ca3918-4992-41a2-894f-f1fd8ce4121f@arm.com>
- <aO9vI1aEhnyZx1PL@google.com>
- <b48193a4-a37b-41ba-b4ba-8b5c67d812bd@arm.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OfuwfWAs"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1760543724; x=1792079724;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=S9yNFLTbhi4KQGgGfnRYFdCq2kVd6d+5069UHhBhEIQ=;
+  b=OfuwfWAssvu+VHZoJpI/9TFcJVNHScQmiLtKfaWT+AFbG244O/0dj/DC
+   CA/eloBaMJWrvUHvWIEMQH39du4NkhmcfLQ2zOKfI8pPKzH0rNHjkcqcT
+   hK5v6C2IXNOSOEmT42xY9Kmzp6VEmEOwD+5toy524xuPoUTqi9d5Al2sX
+   AzyEtnsZkS3+w9ZjvqPvUOUSEWywFT4i6mLKsu32kTH5zs7VMk6CsidCq
+   rXvmxf+BThfHUfpnyMobffDRbrdjfUSpmuEJIIHcbnsIigkUF7TZVGVlb
+   buaS7H01y5/FZ4CzTrKhww7UcWX5i8E+bpT4Wl2LNLVtJIFKnzsgX17jx
+   A==;
+X-CSE-ConnectionGUID: ySXmG3Y2Qt+ereDdbEPj4Q==
+X-CSE-MsgGUID: 3i1MeAwQSLuzh6xWW0XrNg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11583"; a="88191013"
+X-IronPort-AV: E=Sophos;i="6.19,231,1754982000"; 
+   d="scan'208";a="88191013"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Oct 2025 08:55:23 -0700
+X-CSE-ConnectionGUID: BODiAZaRQcaYxfgzQJiLGw==
+X-CSE-MsgGUID: DxN9gEAKSyeFdMCQtcw0Dg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.19,231,1754982000"; 
+   d="scan'208";a="213156431"
+Received: from ldmartin-desk2.corp.intel.com (HELO [10.125.111.202]) ([10.125.111.202])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Oct 2025 08:55:22 -0700
+Message-ID: <ecee3200-c8e2-47ec-a219-c88e8e905b32@intel.com>
+Date: Wed, 15 Oct 2025 08:55:21 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b48193a4-a37b-41ba-b4ba-8b5c67d812bd@arm.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v6 0/7] Fix stale IOTLB entries for kernel address space
+To: Baolu Lu <baolu.lu@linux.intel.com>,
+ Andrew Morton <akpm@linux-foundation.org>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
+ Jason Gunthorpe <jgg@nvidia.com>, Jann Horn <jannh@google.com>,
+ Vasant Hegde <vasant.hegde@amd.com>, Thomas Gleixner <tglx@linutronix.de>,
+ Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+ Alistair Popple <apopple@nvidia.com>, Peter Zijlstra <peterz@infradead.org>,
+ Uladzislau Rezki <urezki@gmail.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Andy Lutomirski <luto@kernel.org>, Yi Lai <yi1.lai@intel.com>,
+ David Hildenbrand <david@redhat.com>,
+ Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
+ "Liam R . Howlett" <Liam.Howlett@oracle.com>,
+ Vlastimil Babka <vbabka@suse.cz>, Mike Rapoport <rppt@kernel.org>,
+ Michal Hocko <mhocko@kernel.org>, Matthew Wilcox <willy@infradead.org>,
+ iommu@lists.linux.dev, security@kernel.org, x86@kernel.org,
+ linux-mm@kvack.org, linux-kernel@vger.kernel.org
+References: <20251014130437.1090448-1-baolu.lu@linux.intel.com>
+ <20251014174339.c7b7d2cfb9f60d225e4fe5ec@linux-foundation.org>
+ <6b187b20-6017-4f85-93ac-529d5df33aa2@linux.intel.com>
+From: Dave Hansen <dave.hansen@intel.com>
+Content-Language: en-US
+Autocrypt: addr=dave.hansen@intel.com; keydata=
+ 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
+In-Reply-To: <6b187b20-6017-4f85-93ac-529d5df33aa2@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Wed, Oct 15, 2025 at 02:51:15PM +0100, Robin Murphy wrote:
-> On 2025-10-15 10:53 am, Mostafa Saleh wrote:
-> > > Conversely, this is infrastructure, not an actual test of expected
-> > > io-pgtable behaviour, so I think just:
-> > > 
-> > > 	cfg.iommu_dev = kunit_device_register(test, "io-pgtable-test");
-> > > 	if (IS_ERR(cfg.iommu_dev))
-> > > 		return;
-> > > 
-> > > (it doesn't return NULLs either)
-> > > 
-> > 
-> > Yes, I was not sure about this one, when checking the code base, every test
-> > handles kunit_device_register() failure differently, this seemed the
-> > most strict one so I used it, I will update that in the next version.
+On 10/14/25 22:38, Baolu Lu wrote:
+> On 10/15/25 08:43, Andrew Morton wrote:
+>>> This solution introduces a deferred freeing mechanism for kernel page
+>>> table pages, which provides a safe window to notify the IOMMU to
+>>> invalidate its caches before the page is reused.
+>>
+>> Thanks for working on this.
+>>
+>> Can we expect any performance impact from this?  Have any measurements
+>> been performed?
 > 
-> Yeah, my impression is that those have likely been copied from the
-> lib/kunit/ code where it is actually testing its own API. I've now sent a
-> patch for the example in the docs...
+> This change only defers page table page freeing, allows for batch-
+> freeing of page table pages, and notifies the IOMMU driver to invalidate
+> the related caches. It doesn't impose any overhead in any critical path;
+> therefore, I don't see any potential performance impact.
 
-I think any failure to run the test should be reported, either with an
-err or a skip. Tests that didn't do anything and silently report
-success are not a good design.
+Thankfully, freeing kernel page tables just isn't a common operation.
+It's also done right next to a big fat flush_tlb_kernel_range() which is
+going to IPI the whole world. So I'd expect this new gunk to be in the
+noise behind all those IPIs.
 
-Looking at the existing users I see alot are in init functions, so
-they propogate an error code and fail the init.
+We should double check that 0day has had a go at this series and hasn't
+found anything. But other than that, I don't think we need to do any
+specific performance testing on it.
 
-And the rest inside tests do something like this:
+>> Only [7/7] has a cc:stable, even though that patch is not at all
+>> backportable.  Please give some thought and suggestions regarding
+>> whether you think we should backport this into earlier kernels.
+> 
+> Yes. We should backport this series to stable kernels.
+> 
+>> If "yes" then the size and scope of the series looks problematic.  Is
+>> it possible to put together something simple and expedient just to plug
+>> the hole in older kernels?
+> 
+> Squashing some patches is one way. But would it be workable to backport
+> this series manually? Say, could we send a pull request to the stable
+> mailing list after this series has landed?
+I honestly think we should just disable SVA in old kernels at compile
+time, or at least default it to be disabled at runtime. That's the
+simplest thing.
 
-	dev = kunit_device_register(test, dev_name);			
-	KUNIT_ASSERT_FALSE_MSG(test, IS_ERR(dev);
-			       "Cannot register test device\n");
+The other alternative is to have arch_vmap_pmd_supported() return false
+when SVA is active, or maybe when it's supported on the platform.
 
-Jason
+Either of those are 10-ish lines of code and easy to backport.
