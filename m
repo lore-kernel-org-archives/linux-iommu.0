@@ -1,172 +1,132 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E53731984E;
-	Wed, 15 Oct 2025 09:13:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDEAB311C36
+	for <iommu@lists.linux.dev>; Wed, 15 Oct 2025 09:41:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760519638; cv=none; b=NPIEDKM8nedg8n36fxCK2lfskubJzk2lcAa399pbhyTmAdDr8GvkFFLnnOgS7TfvWimfVzhdojI4EexWrGrjgwKCu8Od/uPpVcV6DupJcGmZq32lWNrR1Td0qS9lF/I6JBOeoccMTp2KQVrvln/RFriFxvVDU9XqDHCbVuhB3p0=
+	t=1760521303; cv=none; b=LVovfPK//ED05Ln3LdKQtylVQPxARjw2PZe2KuvHTI6GfJD7h3Em3fTV7l8Mr1fy3ZrDxmq3mY2sBLfZs05u4l1ntXXNfFGhg9yggHpstfYwdYxc9dgknFmKmGx20FjQfgoOzDt7ssZGrH3jatTI+rsO30QN8ZdmIX9qQNMNx0o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760519638; c=relaxed/simple;
-	bh=jbBStLIP7sXhH5ASWp90/3Kel7nJYFQjjdng7+NCqnU=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=DH0wVb+t5EN7g08P+Wk4+RbkX6icrmQz0aIhzk25J8mYRsL2cyhdjZzNu6Pu1rlyHHEW7YxhJTdadtTWmlvThzaaqnoV/D11EbV8k3iATWIeQLaUS35RI4bkXLvoKmwhNDbxEMkpnEiMd2jMOX9YdJOY1W99JRhqlnQ/LqKwIRU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cYni+pn0; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1760521303; c=relaxed/simple;
+	bh=xCvkHIm7qec+IuTZyhD3i3j8fJiu+BYGzrZ6a014T/Y=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=CBGiSfPldOYAGn9zKurDi1c9CdTFuzWAEUiFRUOIjJzdiMxWZKS+HkAKw079puzod497ycYIyUf6UVeDssyhFyIIWlApnNSNHNrOIBG4T9IQSUmrhcNI9c60VlfH8LvmLdV+5FERfMLUaRbwJD+vcv1k7qq3QevyTLAAcjQtpL0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=PvFShShV; arc=none smtp.client-ip=209.85.128.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cYni+pn0"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BA70C116D0;
-	Wed, 15 Oct 2025 09:13:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1760519638;
-	bh=jbBStLIP7sXhH5ASWp90/3Kel7nJYFQjjdng7+NCqnU=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=cYni+pn0hntzXMjiHeAuS5C74xt5skwmhT36I3n+0lgrdCfhhRxdMz4DFq9bbtcE6
-	 KyshYgEW2BEQMCguUhfamAui6SDGk97Pwkv6cy20V4cWR1TsHKQXW5pPWPZJB0bROU
-	 z4ZKgWbbq79xXqedNuYW1MC9dow455r9BBysavYn2gIaxdDnPgefyKpbQmttDiywRR
-	 XVHkKv/NSbuh2sEJWfTis1y15Zck5wSXJQZhSm+nGRhMqLrjGmqENY85tfi+Y0OYZP
-	 t5B2ZZLAkMXiTAZ3Qc6jG3RANx5TxKdOkQVsq+nUWiPqAyNSSsDxWgXnNXCMBoBXwP
-	 N8uyupiJgjgjg==
-From: Leon Romanovsky <leon@kernel.org>
-To: Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Russell King <linux@armlinux.org.uk>,
-	Juergen Gross <jgross@suse.com>,
-	Stefano Stabellini <sstabellini@kernel.org>,
-	Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-	Richard Henderson <richard.henderson@linaro.org>,
-	Matt Turner <mattst88@gmail.com>,
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-	"James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-	Helge Deller <deller@gmx.de>,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	Christophe Leroy <christophe.leroy@csgroup.eu>,
-	Geoff Levand <geoff@infradead.org>,
-	"David S. Miller" <davem@davemloft.net>,
-	Andreas Larsson <andreas@gaisler.com>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Ingo Molnar <mingo@redhat.com>,
-	Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	x86@kernel.org,
-	"H. Peter Anvin" <hpa@zytor.com>
-Cc: iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	xen-devel@lists.xenproject.org,
-	linux-alpha@vger.kernel.org,
-	linux-mips@vger.kernel.org,
-	linux-parisc@vger.kernel.org,
-	linuxppc-dev@lists.ozlabs.org,
-	sparclinux@vger.kernel.org,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH v5 14/14] dma-mapping: remove unused map_page callback
-Date: Wed, 15 Oct 2025 12:13:00 +0300
-Message-ID: <20251015-remove-map-page-v5-14-3bbfe3a25cdf@kernel.org>
-X-Mailer: git-send-email 2.51.0
-In-Reply-To: <20251015-remove-map-page-v5-0-3bbfe3a25cdf@kernel.org>
-References: <20251015-remove-map-page-v5-0-3bbfe3a25cdf@kernel.org>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="PvFShShV"
+Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-470ff2f6e56so36465e9.0
+        for <iommu@lists.linux.dev>; Wed, 15 Oct 2025 02:41:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1760521300; x=1761126100; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=B7gNIafNOAAdT8vVW1v+tnHUrlaQMtRV3mgcHVHcyVA=;
+        b=PvFShShVw13F2hPCyIVj6nC+dhaAfhmkwT+LoM3h16w28EXvT9vUni8+PqSOa2gdTH
+         H3DtOZqud7TDuamy1SAjWMoD3UO/XHu9bzKFXH+yfUvwyOMEZNKy+klh6aIgo4aubW3U
+         F8/H5W/vfzXkUsiCaFmq7v7ulfI8Sd7Y0Lq/+tZI3aImOhmjqPHePuDksNyJbb0PNqI+
+         gnOc0rZ61PKiw6Aw4mT7K/GngBpELvNWAXO8V/z9GwT/Xt0LCiJHP3Ztu3XN9gZv8HD+
+         8vXTyXfR6r/B9DR43OoOfD8xACAyP7Zl2YLldNWil1x13gpdiX+nF3JHU6jqogEEyhSa
+         OzPQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1760521300; x=1761126100;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=B7gNIafNOAAdT8vVW1v+tnHUrlaQMtRV3mgcHVHcyVA=;
+        b=mGkI/EncwVBJx56qxQhdvZhZzaDT6KwB2b9wtoY5w1VWeq4R1+A2+Dcsc2iG7LemRy
+         1wJ82u6DZpT1/P4eqUhQZbN/olkN5p5xuy8QqpDms1GWCaVJmIrkVBXxff3Q/vbivN1b
+         asMkmOGT9e84LjT3yIRFUM9/+WULs1O5cim8Pg2L+KTn0szyX8h0v0c3kiM0ddfLZ8LX
+         B2E2exrI/EEotsA/qJHAjYGMW32iXgYLzqlUY5wDpuk+XFIOAXc1vg3IRDGPByCZ89/n
+         9XaozyUtJIwuamjcJcQzTN6jJ24gcGOGSEIk8DpW1kKIRI0g7KArgZaFckZFT309CbQf
+         +duQ==
+X-Gm-Message-State: AOJu0YzCNkmdmuPPF9yqdlWlDMAHcJpcPqZDSZYdUzC8W5PkZKKz5dH6
+	RHwgetp9ZxvBfM/UDAt8gDLt8rFl56OpWAYEzlLOkf6N3+vChdKGAQ6fEZgtdsRa8Q==
+X-Gm-Gg: ASbGncsRUXeBzYVhULD6Yp/ycevMbem73Nmbyq7bRd/Sbu5s4+nL1mRK0fGDjQGJgIS
+	3cgsD5Y/sEcYItW62fINZjDiH3ZRpE9exX4rsm0jCJn01fGoAmEi+TRU9dJ2gztT16UfC4zA6Vv
+	u8Piv/C+w0hx3+evSGTJkVEQUCtFkE9/WqxKAu45IeZbqU/liKteF48SPmscEZksdUe9oaf8zJ1
+	7kvwBFgo86pA73Cf8kK4eU9sRObsjZSqvD94a+rD12cLibs7A0T9a1EISn0RJTkA4t3s4RKEndg
+	4mQg/aV5KT8/6v00gcFghvijyTomTNsBcbjujy9Nh67gsCLee3ikVXBGwAK3Xs6kMfVyGbVnXmH
+	kXv4c0x+g9klFE/9xZLA4ntQX6DpD93cDkfTwr5DEy2kH9a9KYmFExyFCIrzvkZHVR++fGyVEm+
+	4GJW0PfVN5KA==
+X-Google-Smtp-Source: AGHT+IHR5pyr1xnwIimpgjpOhjIZXkvm+AJq3ntKDNIiM5QNlOCKNqqBRMSb2N3JBImOJuWcOi7CEA==
+X-Received: by 2002:a05:600c:a316:b0:45a:2861:3625 with SMTP id 5b1f17b1804b1-470fd76ca76mr1181095e9.4.1760521300016;
+        Wed, 15 Oct 2025 02:41:40 -0700 (PDT)
+Received: from google.com (140.240.76.34.bc.googleusercontent.com. [34.76.240.140])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-426ce5d0006sm28388114f8f.34.2025.10.15.02.41.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Oct 2025 02:41:39 -0700 (PDT)
+Date: Wed, 15 Oct 2025 09:41:36 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, will@kernel.org, joro@8bytes.org,
+	jgg@ziepe.ca, praan@google.com, Jason Gunthorpe <jgg@nvidia.com>
+Subject: Re: [PATCH v5 1/4] iommu/io-pgtable-arm: Simplify error prints for
+ selftests
+Message-ID: <aO9sUNYmOg9W2Vru@google.com>
+References: <20250929155001.3287719-1-smostafa@google.com>
+ <20250929155001.3287719-2-smostafa@google.com>
+ <526186fa-d17a-4b79-b51d-83492b19c941@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-X-Mailer: b4 0.15-dev
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <526186fa-d17a-4b79-b51d-83492b19c941@arm.com>
 
-From: Leon Romanovsky <leonro@nvidia.com>
+On Tue, Oct 14, 2025 at 12:09:56PM +0100, Robin Murphy wrote:
+> On 2025-09-29 4:49 pm, Mostafa Saleh wrote:
+> > At the moment, if the self test fails it prints a lot of information
+> > about the page table (size, levels...) this requires access to many
+> > internals, which has to be exposed in the next patch moving the
+> > tests out.
+> > 
+> > Instead, we can simplify the print, using ias, oas, pgsize_bitmap
+> > and fmt is enough to identify the failed case, and the rest can
+> > be deduced from the code.
+> 
+> That is the same cfg information already logged at the start of the test, so
+> if it's not useful to dump the actual internal details of the ops then just
+> remove the whole function and make life even simpler. (Otherwise export it
+> or turn it into a callback.)
 
-After conversion of arch code to use physical address mapping,
-there are no users of .map_page() and .unmap_page() callbacks,
-so let's remove them.
+I see, I think it's better to just remove the whole function.
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
----
- include/linux/dma-map-ops.h |  7 -------
- kernel/dma/mapping.c        | 12 ------------
- kernel/dma/ops_helpers.c    |  8 +-------
- 3 files changed, 1 insertion(+), 26 deletions(-)
+Thanks,
+Mostafa
 
-diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
-index 2e98ecc313a3..4809204c674c 100644
---- a/include/linux/dma-map-ops.h
-+++ b/include/linux/dma-map-ops.h
-@@ -31,13 +31,6 @@ struct dma_map_ops {
- 			void *cpu_addr, dma_addr_t dma_addr, size_t size,
- 			unsigned long attrs);
- 
--	dma_addr_t (*map_page)(struct device *dev, struct page *page,
--			unsigned long offset, size_t size,
--			enum dma_data_direction dir, unsigned long attrs);
--	void (*unmap_page)(struct device *dev, dma_addr_t dma_handle,
--			size_t size, enum dma_data_direction dir,
--			unsigned long attrs);
--
- 	dma_addr_t (*map_phys)(struct device *dev, phys_addr_t phys,
- 			size_t size, enum dma_data_direction dir,
- 			unsigned long attrs);
-diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-index 32a85bfdf873..37163eb49f9f 100644
---- a/kernel/dma/mapping.c
-+++ b/kernel/dma/mapping.c
-@@ -171,16 +171,6 @@ dma_addr_t dma_map_phys(struct device *dev, phys_addr_t phys, size_t size,
- 		addr = iommu_dma_map_phys(dev, phys, size, dir, attrs);
- 	else if (ops->map_phys)
- 		addr = ops->map_phys(dev, phys, size, dir, attrs);
--	else if (!is_mmio && ops->map_page) {
--		struct page *page = phys_to_page(phys);
--		size_t offset = offset_in_page(phys);
--
--		/*
--		 * The dma_ops API contract for ops->map_page() requires
--		 * kmappable memory.
--		 */
--		addr = ops->map_page(dev, page, offset, size, dir, attrs);
--	}
- 
- 	if (!is_mmio)
- 		kmsan_handle_dma(phys, size, dir);
-@@ -222,8 +212,6 @@ void dma_unmap_phys(struct device *dev, dma_addr_t addr, size_t size,
- 		iommu_dma_unmap_phys(dev, addr, size, dir, attrs);
- 	else if (ops->unmap_phys)
- 		ops->unmap_phys(dev, addr, size, dir, attrs);
--	else
--		ops->unmap_page(dev, addr, size, dir, attrs);
- 	trace_dma_unmap_phys(dev, addr, size, dir, attrs);
- 	debug_dma_unmap_phys(dev, addr, size, dir);
- }
-diff --git a/kernel/dma/ops_helpers.c b/kernel/dma/ops_helpers.c
-index 1eccbdbc99c1..20caf9cabf69 100644
---- a/kernel/dma/ops_helpers.c
-+++ b/kernel/dma/ops_helpers.c
-@@ -76,11 +76,8 @@ struct page *dma_common_alloc_pages(struct device *dev, size_t size,
- 	if (use_dma_iommu(dev))
- 		*dma_handle = iommu_dma_map_phys(dev, phys, size, dir,
- 						 DMA_ATTR_SKIP_CPU_SYNC);
--	else if (ops->map_phys)
--		*dma_handle = ops->map_phys(dev, phys, size, dir,
--					    DMA_ATTR_SKIP_CPU_SYNC);
- 	else
--		*dma_handle = ops->map_page(dev, page, 0, size, dir,
-+		*dma_handle = ops->map_phys(dev, phys, size, dir,
- 					    DMA_ATTR_SKIP_CPU_SYNC);
- 	if (*dma_handle == DMA_MAPPING_ERROR) {
- 		dma_free_contiguous(dev, page, size);
-@@ -102,8 +99,5 @@ void dma_common_free_pages(struct device *dev, size_t size, struct page *page,
- 	else if (ops->unmap_phys)
- 		ops->unmap_phys(dev, dma_handle, size, dir,
- 				DMA_ATTR_SKIP_CPU_SYNC);
--	else if (ops->unmap_page)
--		ops->unmap_page(dev, dma_handle, size, dir,
--				DMA_ATTR_SKIP_CPU_SYNC);
- 	dma_free_contiguous(dev, page, size);
- }
-
--- 
-2.51.0
-
+> 
+> Thanks,
+> Robin.
+> > Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> > Reviewed-by: Pranjal Shrivastava <praan@google.com>
+> > Signed-off-by: Mostafa Saleh <smostafa@google.com>
+> > ---
+> >   drivers/iommu/io-pgtable-arm.c | 10 +++-------
+> >   1 file changed, 3 insertions(+), 7 deletions(-)
+> > 
+> > diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+> > index 7e8e2216c294..00218af5d5f7 100644
+> > --- a/drivers/iommu/io-pgtable-arm.c
+> > +++ b/drivers/iommu/io-pgtable-arm.c
+> > @@ -1299,14 +1299,10 @@ static const struct iommu_flush_ops dummy_tlb_ops __initconst = {
+> >   static void __init arm_lpae_dump_ops(struct io_pgtable_ops *ops)
+> >   {
+> > -	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
+> > -	struct io_pgtable_cfg *cfg = &data->iop.cfg;
+> > +	struct io_pgtable_cfg *cfg = &io_pgtable_ops_to_pgtable(ops)->cfg;
+> > -	pr_err("cfg: pgsize_bitmap 0x%lx, ias %u-bit\n",
+> > -		cfg->pgsize_bitmap, cfg->ias);
+> > -	pr_err("data: %d levels, 0x%zx pgd_size, %u pg_shift, %u bits_per_level, pgd @ %p\n",
+> > -		ARM_LPAE_MAX_LEVELS - data->start_level, ARM_LPAE_PGD_SIZE(data),
+> > -		ilog2(ARM_LPAE_GRANULE(data)), data->bits_per_level, data->pgd);
+> > +	pr_err("cfg: pgsize_bitmap 0x%lx, ias %u-bit oas %u-bit\n",
+> > +		cfg->pgsize_bitmap, cfg->ias, cfg->oas);
+> >   }
+> >   #define __FAIL(ops, i)	({						\
+> 
