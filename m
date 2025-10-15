@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 718762D73BA
-	for <iommu@lists.linux.dev>; Wed, 15 Oct 2025 15:55:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D551F337681;
+	Wed, 15 Oct 2025 16:25:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760543725; cv=none; b=BKMGwFlNH6FYp+zN/Dqv1RhEVO2CGF+XBfrcagmipjrwH8RGWP7WnxZe8AmsuW3yHPU+shA4Ug3Y/L9SsQlkvwXRKnjcguqINYTZEEuLdklogbPncRh9/H9D+hyr3u0IeTl9yTzd9S3Yh43GYQvbVWiiIyEd29h9kCUtihhbCVs=
+	t=1760545560; cv=none; b=h+GGEkcBGMpPNkKcWbyPOnuL8Mfe8LsmmFaY/9mHrvhJz3rK7Mwhls/VWNESCyG/isSaO5N4PnMiybelP54uNIVX9hEfn8jzHyLyQwrTTJ6iD4JdNjkt7sH4TWswBBWoow4BF7Legzr21xfqaK/6ngtw6Q7BVBSB1u9ReTaKjcA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760543725; c=relaxed/simple;
-	bh=S9yNFLTbhi4KQGgGfnRYFdCq2kVd6d+5069UHhBhEIQ=;
+	s=arc-20240116; t=1760545560; c=relaxed/simple;
+	bh=ZMHqUjjRMecUoMSYtZ3448DhY0XDVwqidZ24uC6AjB0=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=HATkjNAYSIVh0hT0VlVdLt84w5sMirMc2DE1vEUKYOYOkclqmeSyFFIZTWna4Y+iAx3Kd6sa8Aaq8p81RBBFkDl3OPFt3RPHxngXWJJ7vJqS0kXFc7bGCJVoJZFLymqvuEjZN2j2Av109iVuFpAJH5FPkjnyOgMsoyiv/LGEQf8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OfuwfWAs; arc=none smtp.client-ip=192.198.163.7
+	 In-Reply-To:Content-Type; b=k+1m8ppVZJ97xq0sPWdh72lSZD8TQFJUiKX2WMvSm7r8f/X8U663GAhmc+DFcktRaGR+GDuaadhxQnUpJWVYXWfGhfKXJbQUDS2FzyLZS7XxfCAF5yDJSxbgqaGBb5x7xHhksPoBXF25fpIFKrac7fhuhjF2uHs8aBsvIVle9tQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hgOW5xH0; arc=none smtp.client-ip=198.175.65.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OfuwfWAs"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hgOW5xH0"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1760543724; x=1792079724;
+  t=1760545559; x=1792081559;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=S9yNFLTbhi4KQGgGfnRYFdCq2kVd6d+5069UHhBhEIQ=;
-  b=OfuwfWAssvu+VHZoJpI/9TFcJVNHScQmiLtKfaWT+AFbG244O/0dj/DC
-   CA/eloBaMJWrvUHvWIEMQH39du4NkhmcfLQ2zOKfI8pPKzH0rNHjkcqcT
-   hK5v6C2IXNOSOEmT42xY9Kmzp6VEmEOwD+5toy524xuPoUTqi9d5Al2sX
-   AzyEtnsZkS3+w9ZjvqPvUOUSEWywFT4i6mLKsu32kTH5zs7VMk6CsidCq
-   rXvmxf+BThfHUfpnyMobffDRbrdjfUSpmuEJIIHcbnsIigkUF7TZVGVlb
-   buaS7H01y5/FZ4CzTrKhww7UcWX5i8E+bpT4Wl2LNLVtJIFKnzsgX17jx
-   A==;
-X-CSE-ConnectionGUID: ySXmG3Y2Qt+ereDdbEPj4Q==
-X-CSE-MsgGUID: 3i1MeAwQSLuzh6xWW0XrNg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11583"; a="88191013"
+  bh=ZMHqUjjRMecUoMSYtZ3448DhY0XDVwqidZ24uC6AjB0=;
+  b=hgOW5xH0chvdMlqFQoqA7Imz4YeHBy37PB3P7RZ5xfGh8bLoWkF/sl6T
+   tuUMNbu+8pDkxMx5/lb1xHhHCvauhEiqMlKWWLKHhJSJJqWo/v1xLekBQ
+   Ah4qmxJfnxtHElPYxHHriQYEkOXEsHNzUm87RPG0AS5ghMn/tUwkXLiIK
+   BtQEkLUFGFuq1R6TJvOjhp8Xd1hGWez3xE0E08wtyAKz7pf05Qs1l2AoO
+   YJLDFOFCMjiyysnXWdRiKRXrnI6vjZKD7TEUjp6rWnbaauZDoP+tEeZYZ
+   SVGWmQXzaj3DGYu4uM/9PEVtCsQiFeZWPcuCgHfbiyQKdX7YS6c4k2i82
+   g==;
+X-CSE-ConnectionGUID: Rnn2QiFjQdibD9SxqdxFmg==
+X-CSE-MsgGUID: USCioq/kST2fWBvRHD3vLA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11583"; a="66378810"
 X-IronPort-AV: E=Sophos;i="6.19,231,1754982000"; 
-   d="scan'208";a="88191013"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Oct 2025 08:55:23 -0700
-X-CSE-ConnectionGUID: BODiAZaRQcaYxfgzQJiLGw==
-X-CSE-MsgGUID: DxN9gEAKSyeFdMCQtcw0Dg==
+   d="scan'208";a="66378810"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Oct 2025 09:25:58 -0700
+X-CSE-ConnectionGUID: 4oqxeFpYQJaQbWtbCxrgeA==
+X-CSE-MsgGUID: J/iikkarTcGc2GuVi06PPw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.19,231,1754982000"; 
-   d="scan'208";a="213156431"
+   d="scan'208";a="205919283"
 Received: from ldmartin-desk2.corp.intel.com (HELO [10.125.111.202]) ([10.125.111.202])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Oct 2025 08:55:22 -0700
-Message-ID: <ecee3200-c8e2-47ec-a219-c88e8e905b32@intel.com>
-Date: Wed, 15 Oct 2025 08:55:21 -0700
+  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Oct 2025 09:25:56 -0700
+Message-ID: <89146527-3f41-4f1e-8511-0d06e169c09e@intel.com>
+Date: Wed, 15 Oct 2025 09:25:55 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,28 +52,20 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 0/7] Fix stale IOTLB entries for kernel address space
-To: Baolu Lu <baolu.lu@linux.intel.com>,
- Andrew Morton <akpm@linux-foundation.org>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
- Jason Gunthorpe <jgg@nvidia.com>, Jann Horn <jannh@google.com>,
- Vasant Hegde <vasant.hegde@amd.com>, Thomas Gleixner <tglx@linutronix.de>,
- Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
- Alistair Popple <apopple@nvidia.com>, Peter Zijlstra <peterz@infradead.org>,
- Uladzislau Rezki <urezki@gmail.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Andy Lutomirski <luto@kernel.org>, Yi Lai <yi1.lai@intel.com>,
- David Hildenbrand <david@redhat.com>,
- Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
- "Liam R . Howlett" <Liam.Howlett@oracle.com>,
- Vlastimil Babka <vbabka@suse.cz>, Mike Rapoport <rppt@kernel.org>,
- Michal Hocko <mhocko@kernel.org>, Matthew Wilcox <willy@infradead.org>,
- iommu@lists.linux.dev, security@kernel.org, x86@kernel.org,
- linux-mm@kvack.org, linux-kernel@vger.kernel.org
-References: <20251014130437.1090448-1-baolu.lu@linux.intel.com>
- <20251014174339.c7b7d2cfb9f60d225e4fe5ec@linux-foundation.org>
- <6b187b20-6017-4f85-93ac-529d5df33aa2@linux.intel.com>
+Subject: Re: [syzbot ci] Re: Fix stale IOTLB entries for kernel address space
+To: syzbot ci <syzbot+cid009622971eb4566@syzkaller.appspotmail.com>,
+ akpm@linux-foundation.org, apopple@nvidia.com, baolu.lu@linux.intel.com,
+ bp@alien8.de, dave.hansen@linux.intel.com, david@redhat.com,
+ iommu@lists.linux.dev, jannh@google.com, jean-philippe@linaro.org,
+ jgg@nvidia.com, joro@8bytes.org, kevin.tian@intel.com,
+ liam.howlett@oracle.com, linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+ lorenzo.stoakes@oracle.com, luto@kernel.org, mhocko@kernel.org,
+ mingo@redhat.com, peterz@infradead.org, robin.murphy@arm.com,
+ rppt@kernel.org, security@kernel.org, stable@vger.kernel.org,
+ tglx@linutronix.de, urezki@gmail.com, vasant.hegde@amd.com, vbabka@suse.cz,
+ will@kernel.org, willy@infradead.org, x86@kernel.org, yi1.lai@intel.com
+Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+References: <68eeb99e.050a0220.91a22.0220.GAE@google.com>
 From: Dave Hansen <dave.hansen@intel.com>
 Content-Language: en-US
 Autocrypt: addr=dave.hansen@intel.com; keydata=
@@ -119,53 +111,24 @@ Autocrypt: addr=dave.hansen@intel.com; keydata=
  MTsCeQDdjpgHsj+P2ZDeEKCbma4m6Ez/YWs4+zDm1X8uZDkZcfQlD9NldbKDJEXLIjYWo1PH
  hYepSffIWPyvBMBTW2W5FRjJ4vLRrJSUoEfJuPQ3vW9Y73foyo/qFoURHO48AinGPZ7PC7TF
  vUaNOTjKedrqHkaOcqB185ahG2had0xnFsDPlx5y
-In-Reply-To: <6b187b20-6017-4f85-93ac-529d5df33aa2@linux.intel.com>
+In-Reply-To: <68eeb99e.050a0220.91a22.0220.GAE@google.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-On 10/14/25 22:38, Baolu Lu wrote:
-> On 10/15/25 08:43, Andrew Morton wrote:
->>> This solution introduces a deferred freeing mechanism for kernel page
->>> table pages, which provides a safe window to notify the IOMMU to
->>> invalidate its caches before the page is reused.
->>
->> Thanks for working on this.
->>
->> Can we expect any performance impact from this?  Have any measurements
->> been performed?
-> 
-> This change only defers page table page freeing, allows for batch-
-> freeing of page table pages, and notifies the IOMMU driver to invalidate
-> the related caches. It doesn't impose any overhead in any critical path;
-> therefore, I don't see any potential performance impact.
+Here's the part that confuses me:
 
-Thankfully, freeing kernel page tables just isn't a common operation.
-It's also done right next to a big fat flush_tlb_kernel_range() which is
-going to IPI the whole world. So I'd expect this new gunk to be in the
-noise behind all those IPIs.
+On 10/14/25 13:59, syzbot ci wrote:
+> page last free pid 5965 tgid 5964 stack trace:
+>  reset_page_owner include/linux/page_owner.h:25 [inline]
+>  free_pages_prepare mm/page_alloc.c:1394 [inline]
+>  __free_frozen_pages+0xbc4/0xd30 mm/page_alloc.c:2906
+>  pmd_free_pte_page+0xa1/0xc0 arch/x86/mm/pgtable.c:783
+>  vmap_try_huge_pmd mm/vmalloc.c:158 [inline]
+...
 
-We should double check that 0day has had a go at this series and hasn't
-found anything. But other than that, I don't think we need to do any
-specific performance testing on it.
+So, vmap_try_huge_pmd() did a pmd_free_pte_page(). Yet, somehow, the PMD
+stuck around so that it *could* be used after being freed. It _looks_
+like pmd_free_pte_page() freed the page, returned 0, and made
+vmap_try_huge_pmd() return early, skipping the pmd pmd_set_huge().
 
->> Only [7/7] has a cc:stable, even though that patch is not at all
->> backportable.  Please give some thought and suggestions regarding
->> whether you think we should backport this into earlier kernels.
-> 
-> Yes. We should backport this series to stable kernels.
-> 
->> If "yes" then the size and scope of the series looks problematic.  Is
->> it possible to put together something simple and expedient just to plug
->> the hole in older kernels?
-> 
-> Squashing some patches is one way. But would it be workable to backport
-> this series manually? Say, could we send a pull request to the stable
-> mailing list after this series has landed?
-I honestly think we should just disable SVA in old kernels at compile
-time, or at least default it to be disabled at runtime. That's the
-simplest thing.
-
-The other alternative is to have arch_vmap_pmd_supported() return false
-when SVA is active, or maybe when it's supported on the platform.
-
-Either of those are 10-ish lines of code and easy to backport.
+But I don't know how that could possibly happen.
