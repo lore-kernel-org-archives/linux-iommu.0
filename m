@@ -1,86 +1,110 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CE41234BA37
-	for <iommu@lists.linux.dev>; Thu, 16 Oct 2025 15:31:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 578F930C376
+	for <iommu@lists.linux.dev>; Thu, 16 Oct 2025 17:17:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760628670; cv=none; b=Z69cRRwgXIuC4mSf2cXMmVi6mhfl6crSnwaD8edkMlRDd7SlbpLfsOvg1IbMjq+Dw9RGdyPMSLUgRlFDtQYDEhUd63Hd+6dXXJHFBV3QZWQozy2mrKQUJ+i3GOQ11rJ8ktx2L2IOs4bZV0Qx8YE/aBy11amNBrpL+Gpcl0BepXc=
+	t=1760635062; cv=none; b=Xdbpnibqt0FEll6lggiCvCNNrZu8JYRljSQ0nFsz4SKgC967tRh/zFOUWFiHLLwFLTWgzmfh4w5EV8fWdH6vFrwJ/NiQvBOGJtpiyhJPaS+RfTEaC51t2ROqZTE1rW/3jblgPu1NSAwdlP7rHa0hhDTFU09xXvCjjpkCjUx1mfA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760628670; c=relaxed/simple;
-	bh=tG5OOuXeUWI2eXizLChcud8024S6FbBMNLQjqqyGqIo=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=bTBN2uA3cKMMyCZku9zQLD+n+luyRMdva66qPE6tlvbOjulXLp7zaxNOiwBrmjf2yeBnjyQTrovR3kMnLCT+DGdOnQsnIpO9wdvpsHufm58gn6tkNdiDBMHZ/yZl1G2QlWPgFNEMEdR4oKQjslg78hK64mjb9eYui2pRdBL39iI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=jlp4AvJ/; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="jlp4AvJ/"
-Received: from localhost (unknown [20.236.10.120])
-	by linux.microsoft.com (Postfix) with ESMTPSA id AFC47211CFB4;
-	Thu, 16 Oct 2025 08:31:03 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com AFC47211CFB4
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1760628664;
-	bh=ARfP24dBUs8fSS257602OfB6P4HZvIrohgAIMGINijo=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=jlp4AvJ/7LCGOgJMVRUVivYl2TI6DabNsAlRS4knhdVygR2NeC9VPzpe9nAynzcei
-	 U+Bd1tR12YEVe+YffqyNE2Bu2k9RE/UHGOvZQ275MGjLA+5of4XxNtYoVhTwxrqyE4
-	 2zMRPPjX9yTn6PiljyTFoBIveuz7nMbSnrghp2ik=
-Date: Thu, 16 Oct 2025 08:31:02 -0700
-From: Jacob Pan <jacob.pan@linux.microsoft.com>
-To: linux-kernel@vger.kernel.org, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>, Will Deacon <will@kernel.org>, Jason Gunthorpe
- <jgg@nvidia.com>, Robin Murphy <robin.murphy@arm.com>, Nicolin Chen
- <nicolinc@nvidia.com>, Joerg Roedel <joro@8bytes.org>
-Cc: Zhang Yu <zhangyu1@linux.microsoft.com>, Jean Philippe-Brucker
- <jean-philippe@linaro.org>, Alexander Grest <Alexander.Grest@microsoft.com>
-Subject: Re: [PATCH 0/2] SMMU v3 CMDQ fix and improvement
-Message-ID: <20251016083102.0000585d@linux.microsoft.com>
-In-Reply-To: <20250924175438.7450-1-jacob.pan@linux.microsoft.com>
-References: <20250924175438.7450-1-jacob.pan@linux.microsoft.com>
-Organization: LSG
-X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
+	s=arc-20240116; t=1760635062; c=relaxed/simple;
+	bh=cwIHUhRsMLJsQkWr4HfOu/7/fl3QvoFPf39FKcgG5uE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=rLKUe2fl0oAGQz334ZIy5Q/NaSXfpLzRkER+g12q8Rm8opQMeIYEoTjbCxLjrY+ymHpw6H9Tj4qFfFt+TImm18PLdHXWKiavMc2n5zGbFMGb8AjuXNTnoeNnr5tvdpKb3Gl+Vka6pPgNJTOJQMckagXHjmA9wUUZuaGOctdzLm0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 798601713;
+	Thu, 16 Oct 2025 10:17:31 -0700 (PDT)
+Received: from [10.57.35.229] (unknown [10.57.35.229])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 038B53F66E;
+	Thu, 16 Oct 2025 10:17:37 -0700 (PDT)
+Message-ID: <73a1d5d0-8077-450c-a38f-c1b027088258@arm.com>
+Date: Thu, 16 Oct 2025 18:17:35 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 4/4] iommu/io-pgtable-arm-selftests: Use KUnit
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Mostafa Saleh <smostafa@google.com>, iommu@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ will@kernel.org, joro@8bytes.org, praan@google.com
+References: <20250929155001.3287719-1-smostafa@google.com>
+ <20250929155001.3287719-5-smostafa@google.com>
+ <86ca3918-4992-41a2-894f-f1fd8ce4121f@arm.com> <aO9vI1aEhnyZx1PL@google.com>
+ <b48193a4-a37b-41ba-b4ba-8b5c67d812bd@arm.com>
+ <20251015151002.GH3938986@ziepe.ca>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20251015151002.GH3938986@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-Hi Will,
+On 2025-10-15 4:10 pm, Jason Gunthorpe wrote:
+> On Wed, Oct 15, 2025 at 02:51:15PM +0100, Robin Murphy wrote:
+>> On 2025-10-15 10:53 am, Mostafa Saleh wrote:
+>>>> Conversely, this is infrastructure, not an actual test of expected
+>>>> io-pgtable behaviour, so I think just:
+>>>>
+>>>> 	cfg.iommu_dev = kunit_device_register(test, "io-pgtable-test");
+>>>> 	if (IS_ERR(cfg.iommu_dev))
+>>>> 		return;
+>>>>
+>>>> (it doesn't return NULLs either)
+>>>>
+>>>
+>>> Yes, I was not sure about this one, when checking the code base, every test
+>>> handles kunit_device_register() failure differently, this seemed the
+>>> most strict one so I used it, I will update that in the next version.
+>>
+>> Yeah, my impression is that those have likely been copied from the
+>> lib/kunit/ code where it is actually testing its own API. I've now sent a
+>> patch for the example in the docs...
+> 
+> I think any failure to run the test should be reported, either with an
+> err or a skip. Tests that didn't do anything and silently report
+> success are not a good design.
 
-Just wondering if you had a chance to review these?
+Sure, a test that hasn't completed hasn't succeeded, but it hasn't 
+failed either, in the sense of there being no fault found in the actual 
+code being tested. Hence it seems intuitive to me that reporting a 
+failure in the test infrastructure itself as if it were incorrect 
+behaviour of the target code is not right.
+
+In this case AFAICS kunit_device_register() can only fail due to OOM or 
+something unexpectedly messed up in the kobject/sysfs hierarchy, all of 
+which should already scream (and represent the system being sufficiently 
+hosed that any actual test results probably no longer matter anyway) - 
+otherwise I would have suggested a kunit_err() message too.
+
+> Looking at the existing users I see alot are in init functions, so
+> they propogate an error code and fail the init.
+
+Indeed I think this one ultimately wants to end up in an init function 
+too once everything is unpicked, but for now...
+> And the rest inside tests do something like this:
+> 
+> 	dev = kunit_device_register(test, dev_name);			
+> 	KUNIT_ASSERT_FALSE_MSG(test, IS_ERR(dev);
+> 			       "Cannot register test device\n");
+
+The confusion is that most of those KUNIT_ASSERTs are where the KUnit 
+API *is* the thing under test, or have clearly copy-pasted the same 
+example soon after, and some are in init functions which could fail 
+gracefully, so it's far from clear how much considered intent they 
+actually represent. In fact AFAICS it's only the two cases of that exact 
+pattern in overflow and fortify that hint at being an older notion.
+
+However, on further inspection, I see that there also about as many of 
+examples of kunit_skip() being used when failing to allocate per-test 
+resources, so I guess that's the pattern I was after, hurrah! I wouldn't 
+consider the difference between "test skipped because it unexpectedly 
+couldn't run" and "test skipped because it knowingly wouldn't have been 
+meaningful or possible to run" significant enough to be worth trying to 
+split further.
 
 Thanks,
-
-Jacob
-
-On Wed, 24 Sep 2025 10:54:36 -0700
-Jacob Pan <jacob.pan@linux.microsoft.com> wrote:
-
-> Hi Will et al,
-> 
-> These two patches are derived from testing SMMU driver with smaller
-> CMDQ sizes where we see soft lockups.
-> 
-> This happens on HyperV emulated SMMU v3 as well as baremetal ARM
-> servers with artificially reduced queue size and microbenchmark to
-> stress test concurrency.
-> 
-> Thanks,
-> 
-> Jacob 
-> 
-> 
-> Alexander Grest (1):
->   iommu/arm-smmu-v3: Improve CMDQ lock fairness and efficiency
-> 
-> Jacob Pan (1):
->   iommu/arm-smmu-v3: Fix CMDQ timeout warning
-> 
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 85
-> +++++++++------------ 1 file changed, 35 insertions(+), 50
-> deletions(-)
-> 
-
+Robin.
