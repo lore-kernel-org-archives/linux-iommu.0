@@ -1,163 +1,86 @@
-Received: from CH5PR02CU005.outbound.protection.outlook.com (mail-northcentralusazon11012003.outbound.protection.outlook.com [40.107.200.3])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9958C50276
-	for <iommu@lists.linux.dev>; Thu, 16 Oct 2025 15:22:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.200.3
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760628157; cv=fail; b=NaLa5SvakvbQ4enksOmKZmUJAE6kSzOBnrdqFqEmiQ3tGpG5EGT5XCXPZNj8wv91tEKCdLhqNee2+Did7fAY4EihDtSSxdf6CugBu6YC834wYcl/74oTaxRXf+02f/hb9U08v1nvks6/fGQnGbmIVGne2YsNcfQADObgnYYi8KE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760628157; c=relaxed/simple;
-	bh=4pzezHOOI2aPcvAb22U11XNZHKdn1xtxhpBoNOf1p3U=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=c0iEdfIUaqhnEX5qZ33vMRiXSIi3Bjj4wr9vELjp0k5MMocy56lmvaZjgZYOq+LaTCC2htUi+Uy81rDTgWJpy1soygB1fJoJpYvBTlZjv3ssiHBJeQmy8eKBbQ2eL3/mEf/TGWZog1NyT9r/1aNw/P9ZTp1GM8maU9EvVB5rP18=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=eBOZSI+m; arc=fail smtp.client-ip=40.107.200.3
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CE41234BA37
+	for <iommu@lists.linux.dev>; Thu, 16 Oct 2025 15:31:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1760628670; cv=none; b=Z69cRRwgXIuC4mSf2cXMmVi6mhfl6crSnwaD8edkMlRDd7SlbpLfsOvg1IbMjq+Dw9RGdyPMSLUgRlFDtQYDEhUd63Hd+6dXXJHFBV3QZWQozy2mrKQUJ+i3GOQ11rJ8ktx2L2IOs4bZV0Qx8YE/aBy11amNBrpL+Gpcl0BepXc=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1760628670; c=relaxed/simple;
+	bh=tG5OOuXeUWI2eXizLChcud8024S6FbBMNLQjqqyGqIo=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=bTBN2uA3cKMMyCZku9zQLD+n+luyRMdva66qPE6tlvbOjulXLp7zaxNOiwBrmjf2yeBnjyQTrovR3kMnLCT+DGdOnQsnIpO9wdvpsHufm58gn6tkNdiDBMHZ/yZl1G2QlWPgFNEMEdR4oKQjslg78hK64mjb9eYui2pRdBL39iI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=jlp4AvJ/; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="eBOZSI+m"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=a0CS1bVxkCSD5JbSLWECCgPb29lFiAbr0BYqqPbvn6WpjcgI/Nn2Gxq0pqHoygyh9ZXwyYqlH3BCF0zijwR7UHkiGw8OTQZJ596FH2WR58pkylEO1Y3fAGDR5vlPPELGGWyEmS3472KBTZwQQN+/YsP34tZC0gsdXStpqDHriS5s7XHXfJLdjaYAXy4a1ebvlLoi5kkFn+PtEfEsJPnF4q77yREHdpsBZWQRIXfQ1251OxWAOs82NejgBga/BHU5fdmLEiFjtZpAaBrUEWfx3+lJ9h5LL1rFVBXpM5Kj+K1ALJXs3RDoOp8r0Y5UU7JTsIdpAgNzClVTBViP4TWEig==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=p8tYLxsfCD6uVPBGHv6AcKUvMSDzwj2PAo6zQl3bvEM=;
- b=MwxhdTv9f5vc9rDX2nB54gyHHAdpDwOtxJ8RL2mCGXh19inK8IBsA1gOH/zBljD34eOQF8lpYWjQ7Nzs41/iwGH6f/T3iMiYW+awxBdrpufm51T6X5dF0HkgvOrbfOvndSmTjVxbtvMr9ncfeTzrpG9WSJiPYD6gg7NNW4WqHB0QhipEInUV4rI+m7u6Ir9fhFCYnCrs6U9Fuv8n3PVouj85kZgr/3g0ds4O75ifn6ULU8Ep9N0efQPZ/vaLuDzERYOOWlcgmak5ibUsrcjyar4E+RAAgSAlb2efWno1vc+LWu3yVMDGW67AMcVVKIYuiVj9FtsyiWIvpr+nKzzg8Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=p8tYLxsfCD6uVPBGHv6AcKUvMSDzwj2PAo6zQl3bvEM=;
- b=eBOZSI+m5RaB77Xc1IbopV+dcxrDgPpX/z5foUvAa/JOgZhQtQSAyNsnOSb7R2aj3Emo4toPkqpH4j5ZFr2FUV8agN+5bbpLMI8l509PsIcNLOPhqG3EAGaN5tpbNEiiYQkavYyIkf7PCNnkENi7urVCa4RcokARNU7wJY23N9zEc/1/mYgH+DZfv+RiGDPCzUtf7E2TNn3MZzIRXIyGiPXgyNfa9fekzd+xyIv4bgeZJxGV9VKXCSbcOjht0dFVKapj9vkYR/OMTLEBXS7bcsSB3ijYgYN63DD6gY3FKh3BSI0pJ3yR1mHLmVH+TRfnb9UAvYAzvBXNSfoZN43jqw==
-Received: from BLAPR03CA0129.namprd03.prod.outlook.com (2603:10b6:208:32e::14)
- by PH7PR12MB6761.namprd12.prod.outlook.com (2603:10b6:510:1ab::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9228.13; Thu, 16 Oct
- 2025 15:22:27 +0000
-Received: from BN1PEPF00004683.namprd03.prod.outlook.com
- (2603:10b6:208:32e:cafe::1f) by BLAPR03CA0129.outlook.office365.com
- (2603:10b6:208:32e::14) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9203.13 via Frontend Transport; Thu,
- 16 Oct 2025 15:22:27 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- BN1PEPF00004683.mail.protection.outlook.com (10.167.243.89) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9228.7 via Frontend Transport; Thu, 16 Oct 2025 15:22:26 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.34; Thu, 16 Oct
- 2025 08:22:10 -0700
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Thu, 16 Oct
- 2025 08:22:09 -0700
-Received: from Asurada-Nvidia (10.127.8.12) by mail.nvidia.com (10.129.68.8)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
- Transport; Thu, 16 Oct 2025 08:22:09 -0700
-Date: Thu, 16 Oct 2025 08:22:07 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Alessandro Zanni <alessandrozanni.dev@gmail.com>
-CC: "Tian, Kevin" <kevin.tian@intel.com>, "jgg@nvidia.com" <jgg@nvidia.com>,
-	"shuah@kernel.org" <shuah@kernel.org>, "alessandro.zanni87@gmail.com"
-	<alessandro.zanni87@gmail.com>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "linux-kselftest@vger.kernel.org"
-	<linux-kselftest@vger.kernel.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH rc] iommufd/selftest: Fix ioctl return value in
- _test_cmd_trigger_vevents()
-Message-ID: <aPENnxVR+wtlGVAJ@Asurada-Nvidia>
-References: <20251014214847.1113759-1-nicolinc@nvidia.com>
- <BN9PR11MB5276834E90A7990269EBBF608CE9A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <gn4l62kroj74d765uojx2vmu4tugxbmwnhodckfbath2pafeuz@nw2kudzcucv2>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="jlp4AvJ/"
+Received: from localhost (unknown [20.236.10.120])
+	by linux.microsoft.com (Postfix) with ESMTPSA id AFC47211CFB4;
+	Thu, 16 Oct 2025 08:31:03 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com AFC47211CFB4
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1760628664;
+	bh=ARfP24dBUs8fSS257602OfB6P4HZvIrohgAIMGINijo=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=jlp4AvJ/7LCGOgJMVRUVivYl2TI6DabNsAlRS4knhdVygR2NeC9VPzpe9nAynzcei
+	 U+Bd1tR12YEVe+YffqyNE2Bu2k9RE/UHGOvZQ275MGjLA+5of4XxNtYoVhTwxrqyE4
+	 2zMRPPjX9yTn6PiljyTFoBIveuz7nMbSnrghp2ik=
+Date: Thu, 16 Oct 2025 08:31:02 -0700
+From: Jacob Pan <jacob.pan@linux.microsoft.com>
+To: linux-kernel@vger.kernel.org, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>, Will Deacon <will@kernel.org>, Jason Gunthorpe
+ <jgg@nvidia.com>, Robin Murphy <robin.murphy@arm.com>, Nicolin Chen
+ <nicolinc@nvidia.com>, Joerg Roedel <joro@8bytes.org>
+Cc: Zhang Yu <zhangyu1@linux.microsoft.com>, Jean Philippe-Brucker
+ <jean-philippe@linaro.org>, Alexander Grest <Alexander.Grest@microsoft.com>
+Subject: Re: [PATCH 0/2] SMMU v3 CMDQ fix and improvement
+Message-ID: <20251016083102.0000585d@linux.microsoft.com>
+In-Reply-To: <20250924175438.7450-1-jacob.pan@linux.microsoft.com>
+References: <20250924175438.7450-1-jacob.pan@linux.microsoft.com>
+Organization: LSG
+X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <gn4l62kroj74d765uojx2vmu4tugxbmwnhodckfbath2pafeuz@nw2kudzcucv2>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN1PEPF00004683:EE_|PH7PR12MB6761:EE_
-X-MS-Office365-Filtering-Correlation-Id: ee92dad4-846e-4d4b-007d-08de0cc7d08a
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|36860700013|82310400026|376014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?MHFccf+jbshrJ3sWmh6489mDLd4A2VolxBf2RxMyIR89SUsDdkZ4tmFe2Nxt?=
- =?us-ascii?Q?ETGbuRnARTgjkvbiVMcwFqJGRotVL58XIY6tTJHwHS3+nWQe8hgT8km0fD/w?=
- =?us-ascii?Q?nNEwYfJmXWoI19Cqtck5lPfyekdhtcPZYQqpNlw0BYcEanbTesWetOq1tIHK?=
- =?us-ascii?Q?SqGiHIYILValWFzQPhXrZudCxhQVhcyInsMLGc8u4h5oODr0ZIoShvKDrno7?=
- =?us-ascii?Q?G3t4BwFztWAyPnUQxSgMuu8spIrmuqYO+X+d5y9FVrOiG04cyQMT6/DAMdPn?=
- =?us-ascii?Q?e/wnLD9gTEZG8zIYuzeiUrfWY3O0FXVINdUYUn0guEzPaj6fd1da4xNRMs0Y?=
- =?us-ascii?Q?bVvwuRomIpUO01/4YHE48uJPijSuOaRruYOllR3jTEHL2o4f2nDUB2reti/Z?=
- =?us-ascii?Q?q0ygwXeWfAkJeXmlLOn7cARWdcZlwgtTNmeEGnhY8Nv1WzoHpIN81k3V0iyx?=
- =?us-ascii?Q?XM56STUsnHjLfcldBA4DWxYrBoT1/j3WJDuh0iP0XfoAZXvSGvfhxCLNOVsu?=
- =?us-ascii?Q?zzViHj5ErgmB3iL8ymdZSZPGJ5jaAKk+Ix1Wbp5WSTBm6nwm2wFsh60Vj+cN?=
- =?us-ascii?Q?TtuEAiAB48a2dFov43cgwUf2+oW94wMdn/IcKDjRMq9WCq1IeTDJpQLEFf9x?=
- =?us-ascii?Q?Yyl1//2ARo9nGTDXrIs9pe8dje9/SIuezYitMneiM+EVZliJ6uD19z20Rx8T?=
- =?us-ascii?Q?Hom1yk/m5DvFwkFrWtRjNcuWOiwGfAuHc2xA45vtz47ZJxLHDUGJ/7+FmCoH?=
- =?us-ascii?Q?pKlj2faF/2YGhkXIkrPpnHfTp1YV+OCyh0i3jFIUfw3L/VbWt/JEbJz8WKsd?=
- =?us-ascii?Q?tj//oBlCHOnWa2kSicZbxe91V+JLtuTNb8tgOmzuTCFImLb462o+I4hylNEg?=
- =?us-ascii?Q?o7g3H/vldYhnC98vrEeQMgHiTPx4ZjLUFC+JqPfhKTCArCpSJo3/IsSj/wvz?=
- =?us-ascii?Q?WvhPfU8sz/nnGrsUCCFFmSzwx/Zu8kKzru39+xjLpeSAsiCSz4aOY6IkJMgt?=
- =?us-ascii?Q?KhOBSpegyzW9uu5sbS5HrrQiSlqysZ8nCUyjvklRA4Qn052WQr+fBu9o785q?=
- =?us-ascii?Q?L38l/2r9p2NFNX2NCjwO7gVVzLiaIpq+P569Bqtw2cEmGkQtItm5XW8etXZi?=
- =?us-ascii?Q?47khkNmeR8gbaI4QBLIbRDNP6Y7tk0qETo2B/N22MBqIKYPAlBEuLU87Xjww?=
- =?us-ascii?Q?kJZOfpJeoEf7PIJJD4HCRbl7CG87oHUuXRcHvqHiFWhBNmSpNHrSow6duEKu?=
- =?us-ascii?Q?cO1qQIgwDZeb+SxmDUD737x63A86Ir7+zhrD2/j0v8JIOjLRHeoh4iZU9NzR?=
- =?us-ascii?Q?VsLYihVizMSxgJniEdqVYWs+PNFNwpTLz9XwNj8RzJKPdkV2WbATg40wQfJL?=
- =?us-ascii?Q?qn1ua2yne2EdFMHo6Wvebm8wTBpq6QGEGz+MMlS3RMtVZA7zaqk0mPcyJ8UM?=
- =?us-ascii?Q?4NKeZkQciFBy+Hi58itW4Cpb90HHndIi6rWYiwzQcy70rSejo83glp18EvTW?=
- =?us-ascii?Q?nwONiTG+JZ9Xh5WhAyuxHslx6kK/zr8G2dszw4NwilsRjBzWQbilrB7DXZrt?=
- =?us-ascii?Q?SlU/PjG7sqkKx/GN3xI=3D?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(36860700013)(82310400026)(376014);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Oct 2025 15:22:26.8029
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: ee92dad4-846e-4d4b-007d-08de0cc7d08a
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN1PEPF00004683.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6761
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Thu, Oct 16, 2025 at 11:09:59AM +0200, Alessandro Zanni wrote:
-> On Thu, Oct 16, 2025 at 07:47:20AM +0000, Tian, Kevin wrote:
-> > > From: Nicolin Chen <nicolinc@nvidia.com>
-> > > Sent: Wednesday, October 15, 2025 5:49 AM
-> > > 
-> > > The ioctl returns 0 upon success, so !0 returning -1 breaks the selftest.
-> > > 
-> > > Drop the '!' to fix it.
-> > > 
-> > > Fixes: 1d235d849425 ("iommu/selftest: prevent use of uninitialized variable")
-> > > Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> > 
-> > Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Hi Will,
+
+Just wondering if you had a chance to review these?
+
+Thanks,
+
+Jacob
+
+On Wed, 24 Sep 2025 10:54:36 -0700
+Jacob Pan <jacob.pan@linux.microsoft.com> wrote:
+
+> Hi Will et al,
 > 
-> With this fix a positive value returned by the ioctl() ends the loop and returns -1
-> to the assert.
+> These two patches are derived from testing SMMU driver with smaller
+> CMDQ sizes where we see soft lockups.
+> 
+> This happens on HyperV emulated SMMU v3 as well as baremetal ARM
+> servers with artificially reduced queue size and microbenchmark to
+> stress test concurrency.
+> 
+> Thanks,
+> 
+> Jacob 
+> 
+> 
+> Alexander Grest (1):
+>   iommu/arm-smmu-v3: Improve CMDQ lock fairness and efficiency
+> 
+> Jacob Pan (1):
+>   iommu/arm-smmu-v3: Fix CMDQ timeout warning
+> 
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 85
+> +++++++++------------ 1 file changed, 35 insertions(+), 50
+> deletions(-)
+> 
 
-Not with this particular ioctl(). And in fact, I don't recall we
-have an ioctl in iommufd uAPI that returns a positive value. All
-the other ioctls in selftest check "if (ret)".
-
-Nicolin
