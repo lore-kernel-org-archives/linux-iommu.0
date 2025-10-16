@@ -1,73 +1,73 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1CF8B2DA775
-	for <iommu@lists.linux.dev>; Thu, 16 Oct 2025 19:33:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6543714F112
+	for <iommu@lists.linux.dev>; Thu, 16 Oct 2025 19:35:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760643233; cv=none; b=pOCE+RNTHKhKHM49t3fwoBFmslwHWlEJsFsLFoCvGLqHvd6+8g7HIe7el5CK67XSgDFiah5ffVIVzBCkGPQIyaPZuSZVPtn5dVY5QQeEzvd0iRiOYJpv1n5yQrcKBNgGyDWzbQrY8Ek8rDIBTCI24kpLqNgwtLIJPOWK+sbEPvE=
+	t=1760643320; cv=none; b=qrCLVvo7HUoTnXyGUnMQuTt1uqVTOKKnIMka7Wz++RbHYsJwl6+U83A26WeWwS50xMh0IhIaaZVffOi/sTlWirHjK3I0ZXQ3s5ma03OwPksWv0W8vow5nkJwbMUXDhp+GRRisBLdzFWWJT4hiLKntLQ8Iq3POeEvmhmDDhYCnKY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760643233; c=relaxed/simple;
-	bh=BbReeajioyVdpdH5EfCQ1kWml7ui1MCQlkHRH4jcTCg=;
+	s=arc-20240116; t=1760643320; c=relaxed/simple;
+	bh=nreNVeYUBbg9i70ecdEVMZOQbQA1QCcWewf5uIYnUpY=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=DFQbyoDiOn0G09ZFvYciUKT+S/U/B7qoxXwgoImqCP7sPOzFh4jh2wdGI13OKFd8zcGpaNQ/vpl619As9ihmkIZPQDS/R4iJ3uEkQjLKU1Q4jmGDqkKTR9YfFlWl0zzVZ6VoiVnrHzm0a+i5138ZAw2xVORX/ZUPz9zuG9Y/bJk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=fQ/oJbzZ; arc=none smtp.client-ip=170.10.129.124
+	 In-Reply-To:Content-Type; b=q++fQ/9KIjeCpLCn5EhgPERJir+hHRpSp/tl2ZhlhB4w0m0NRunF3+YYYaDNKzGb39d9eZS93hPneE0aAYidAQVsaNF6+esWDp5q+5hGbZFoJhocdx5LueBzrqzTpduJ+vm+HggO8Bh95My/0a31iM03MV/HBpUBv7Jotvy2Ywg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=RrAsCB4L; arc=none smtp.client-ip=170.10.133.124
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="fQ/oJbzZ"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="RrAsCB4L"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1760643231;
+	s=mimecast20190719; t=1760643317;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=5k258mGUTXr57SH1nKnjEgecOQG7w002Lx/0nyjvVDw=;
-	b=fQ/oJbzZYQaYgVUFoiT64t9YximNe/mHkaNh81SwoqUOdV1OQtS+xoXexGa0iWEJdX1oG3
-	249e8v+YpZPWEP1+Bvfg3bFf4+1v0uLSM8DTcJz+N5RayV4Y+GYPdeIpkMvUX+fXPjyIV1
-	22RWhfX/lfVbGnTBNWzWmJ05zZhK0F8=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=Mzf2KOoxYTwPszQZbnCr3w1S1PHGYisO4oTStjZPcT8=;
+	b=RrAsCB4LVrPxrkaEHyp8r/Pfsh7Q7n2NmKcwgbKJOomrair7zux3cEJhVp90KjUK5oo/3w
+	C8u6QhiQnWXNJY/Adz5sS915IlnJ2+jxHNyN+qR4eGXdRZfF+yaoOP8eUvsylKrSXn9TrA
+	NRwK75k2D+T6XKYaUqyKPExcVNWXopY=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-59-vMxzHbG2MxuHQoN4c11D4A-1; Thu, 16 Oct 2025 15:33:47 -0400
-X-MC-Unique: vMxzHbG2MxuHQoN4c11D4A-1
-X-Mimecast-MFC-AGG-ID: vMxzHbG2MxuHQoN4c11D4A_1760643226
-Received: by mail-wr1-f70.google.com with SMTP id ffacd0b85a97d-3ee130237e1so702503f8f.0
-        for <iommu@lists.linux.dev>; Thu, 16 Oct 2025 12:33:46 -0700 (PDT)
+ us-mta-596-Mu1dO3GqPyaAhb-3GXFCuQ-1; Thu, 16 Oct 2025 15:35:16 -0400
+X-MC-Unique: Mu1dO3GqPyaAhb-3GXFCuQ-1
+X-Mimecast-MFC-AGG-ID: Mu1dO3GqPyaAhb-3GXFCuQ_1760643315
+Received: by mail-wm1-f69.google.com with SMTP id 5b1f17b1804b1-471168953bdso6084315e9.1
+        for <iommu@lists.linux.dev>; Thu, 16 Oct 2025 12:35:15 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1760643226; x=1761248026;
+        d=1e100.net; s=20230601; t=1760643315; x=1761248115;
         h=content-transfer-encoding:in-reply-to:autocrypt:content-language
          :from:references:cc:to:subject:user-agent:mime-version:date
          :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=5k258mGUTXr57SH1nKnjEgecOQG7w002Lx/0nyjvVDw=;
-        b=fiZrNUCp8Ag3SkR/utuEe7d6o9VR7BQoL9f+iA5E0QpiGfRpPiYrienJQGxnBm8jVK
-         AoNNgx9VTOJJBKYNPuZvGGDJpiO8wlC2hz7oNClHgZ4xi+ZJl9hA/aHjJ0TwuBxmoV+W
-         2a0Dw/zqhu8CBcC5VLycKtsZSLsggNnP18KWEXVQj3T5pfwCt/LIVTpoKm5zbGukCtwT
-         jDr/ybMMsrYkl3z5mc7J1RKAn9Ah3XAsDExOxyXZd9jQl5BtjVuM2/zsCmDDFBb5/Cn3
-         T4BVubQzTCHKkzCz1ulb9fJc11tz/BrVd7JttDXmSHSC7qPERAfHugU7nB5dgC1bbcmB
-         AXBw==
-X-Gm-Message-State: AOJu0YwoLu/YCLR07WhtnO/lvnaFEWoP6ySXbCjWB1hJAwFYx16bNrJa
-	ijVtl0PzF5UwrJ9ccOT7KjoiXViZXMiK8BP88gXCPSTEWUmycNjDBthvs7ODAJmwUQ7WEqLnnC7
-	EZklpmo/VKZCOkqnSpuyzi35v1+NAu2oqug/4HikBLw7cPtUlpNhvmKWJ
-X-Gm-Gg: ASbGncuPqSezdiksfvj3TT90syQ8Q8661c/PMRWssB0zaMAQAQUAuWt4Lwgs/lu25oG
-	qsWkAnTDQVXYvXQzaTUePYyT7y5n79BqRsVzCSotFn6yJF7Ozw6A8AjZ/gB6NIAPX75in3G03QH
-	ICqEGtDNfxMY1vizKKb6HARmvL2MVL888Y7ZYE3UEeQ4vbThOhQQgMf270/oGDH+1tbfX60xN81
-	XA2zDCSUmzgE3RctNYvWpSYKOvYtPuKMKPhTScxPY1KsGctg6IG9ZsDP5pfGu8ASErz4HGnfn0X
-	bSt+Zao1103msmKpcvVwQVk2Oy0wCDSLoY14iXHPe5SzjcLd70X7nqHVPVJ0yetgn4zwhxGuGwE
-	jfLNELAwh/c3vRjEV3z/IBpO1Jd7VCgzyWoEEC8L6xAPMuheoopZ+72gW805lX4T3DNeyAdfdsn
-	ygdS/s/y46AeWFlxADmdtaVmLpTO0=
-X-Received: by 2002:a05:6000:25c6:b0:3ee:1294:4784 with SMTP id ffacd0b85a97d-42704db5d28mr907037f8f.37.1760643225872;
-        Thu, 16 Oct 2025 12:33:45 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IGfcc8Stm51iYuGklKchoOX+xG5epa3pMdO3lfWEiLBnXCqovN2Px+K7w/7mGkDHX2bMpQSYw==
-X-Received: by 2002:a05:6000:25c6:b0:3ee:1294:4784 with SMTP id ffacd0b85a97d-42704db5d28mr907016f8f.37.1760643225439;
-        Thu, 16 Oct 2025 12:33:45 -0700 (PDT)
+        bh=Mzf2KOoxYTwPszQZbnCr3w1S1PHGYisO4oTStjZPcT8=;
+        b=utxJ4Y005YIyR29msNMLLZbweU5xBgtSt30cnlSVqfA2okKDDifFJcQl6CsuZZp86f
+         5WXwArl8I4uV3Itj1I3frdBa+yxD5OjwhAKILYkUUtRSKsVmHUJmCwAGqTJ0hDAu+h28
+         aOodIOewooT+1J8gykssl4wXLvegBGT8dGoMxomRRavueCIm9jcQ0jML6RsjglmmU17F
+         gLMdAIMlYnWPPutjO2nKajMdA6pOYVGZQ9xX9tO2Bl0QvneKDV4h/J1h+lPKpS+D8wBd
+         LWpFveG+qxp8XrgUcq1w9Ug9eGt/lrgsWM2vASPU6VK824LWWi4dsnslm4me8gqSUvr1
+         Yavw==
+X-Gm-Message-State: AOJu0YwFDs4sq2oWq0IeV9yzXacZ0ldHyTe3X3RO11ZwGKQf65L8xjVB
+	xv7YkG97xIq61MKg0bpooHWqbHm4xC7cToXBp9SQ5sPlDt/oWkREvHQllPl3DIhOzKe9B9s2zBj
+	J+mdbfgHj9yLVnKiSDR5huNH6dand7ZlW9D2Rpg+YHevtI+ym8TGPW+is
+X-Gm-Gg: ASbGncvWg6D3gpyZbDZP+Cn0o4T60Dc9WpJwHfktk/o4kcvjnIggZfiB3/e92M/ahyA
+	ltMrownwXKiyVD9KcnjC7mwn5zBzuV9jwdSa9kcRm2DzdjofDPO9/UJNOnZi7dbU1AABKvNbq/K
+	J3BwI1ShpQgdBlt2GN4KRSZj6f3aofc8Y7SYaY7YiG1VJmJnuoRLPhOzsYu7ZJhzeseGthTHoB3
+	jNCEUXtUdd7NQatmRbm338pVCtSc09F6m+cLNKExW3kvVYI6Ub6M4vLd0z2ND9q4ct+2ClkK9di
+	jG1Miu5Y5rs5RPH+/rD/5DzaWcPRUC2WeE0KYsluGEH7UdxSOrXLlKgOavSRZmPPVNJ0/tg8dQn
+	1cpLPLaU5ISqahrpeAmIuldndSQDAPc3PJfCcZhukEPO3eGWfYrWZuuFkxwKA4vQQVUkeXMzK+7
+	DTYvA3Hgc5xEG7zXRX+h4q/F0J10k=
+X-Received: by 2002:a05:600c:548c:b0:45d:5c71:769d with SMTP id 5b1f17b1804b1-4711726289cmr12476985e9.8.1760643314709;
+        Thu, 16 Oct 2025 12:35:14 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IHM6TLgln996pR3E0IOQ8FhCXzoWThxFAhFVfWLmNgeZg4GR6X6l66UDma89Hxbe82/HUeJxw==
+X-Received: by 2002:a05:600c:548c:b0:45d:5c71:769d with SMTP id 5b1f17b1804b1-4711726289cmr12476595e9.8.1760643314233;
+        Thu, 16 Oct 2025 12:35:14 -0700 (PDT)
 Received: from ?IPV6:2003:d8:2f0c:c200:fa4a:c4ff:1b32:21ce? (p200300d82f0cc200fa4ac4ff1b3221ce.dip0.t-ipconnect.de. [2003:d8:2f0c:c200:fa4a:c4ff:1b32:21ce])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-426ce57cc0esm36868337f8f.6.2025.10.16.12.33.43
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4710f2ab58bsm26257825e9.10.2025.10.16.12.35.12
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Oct 2025 12:33:44 -0700 (PDT)
-Message-ID: <54a30819-25e2-4835-80c7-5631237b8e9a@redhat.com>
-Date: Thu, 16 Oct 2025 21:33:43 +0200
+        Thu, 16 Oct 2025 12:35:13 -0700 (PDT)
+Message-ID: <e62bad6a-bd49-48d9-aa2d-9e2022f829b3@redhat.com>
+Date: Thu, 16 Oct 2025 21:35:12 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -75,7 +75,8 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 3/7] x86/mm: Use 'ptdesc' when freeing PMD pages
+Subject: Re: [PATCH v6 6/7] mm: Introduce deferred freeing for kernel page
+ tables
 To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
  Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
  Kevin Tian <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
@@ -95,7 +96,7 @@ Cc: iommu@lists.linux.dev, security@kernel.org, x86@kernel.org,
  linux-mm@kvack.org, linux-kernel@vger.kernel.org,
  Dave Hansen <dave.hansen@linux.intel.com>
 References: <20251014130437.1090448-1-baolu.lu@linux.intel.com>
- <20251014130437.1090448-4-baolu.lu@linux.intel.com>
+ <20251014130437.1090448-7-baolu.lu@linux.intel.com>
 From: David Hildenbrand <david@redhat.com>
 Autocrypt: addr=david@redhat.com; keydata=
  xsFNBFXLn5EBEAC+zYvAFJxCBY9Tr1xZgcESmxVNI/0ffzE/ZQOiHJl6mGkmA1R7/uUpiCjJ
@@ -141,9 +142,9 @@ Autocrypt: addr=david@redhat.com; keydata=
  3iyY2Nsd7JxfKu1PRhCGwXzRw5TlfEsoRI7V9A8isUCoqE2Dzh3FvYHVeX4Us+bRL/oqareJ
  CIFqgYMyvHj7Q06kTKmauOe4Nf0l0qEkIuIzfoLJ3qr5UyXc2hLtWyT9Ir+lYlX9efqh7mOY
  qIws/H2t
-In-Reply-To: <20251014130437.1090448-4-baolu.lu@linux.intel.com>
+In-Reply-To: <20251014130437.1090448-7-baolu.lu@linux.intel.com>
 X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: ig4ohymctwNl1-V6DRjnd_rsishhirSLooWje0_ljl4_1760643226
+X-Mimecast-MFC-PROC-ID: RgT1M1K9lLvU6QnhVw024nPncOUZIL5BhX4oLKg7rmc_1760643315
 X-Mimecast-Originator: redhat.com
 Content-Language: en-US
 Content-Type: text/plain; charset=UTF-8; format=flowed
@@ -152,60 +153,47 @@ Content-Transfer-Encoding: 7bit
 On 14.10.25 15:04, Lu Baolu wrote:
 > From: Dave Hansen <dave.hansen@linux.intel.com>
 > 
-> There are a billion ways to refer to a physical memory address.
-> One of the x86 PMD freeing code location chooses to use a 'pte_t *' to
-> point to a PMD page and then call a PTE-specific freeing function for
-> it.  That's a bit wonky.
+> This introduces a conditional asynchronous mechanism, enabled by
+> CONFIG_ASYNC_KERNEL_PGTABLE_FREE. When enabled, this mechanism defers the
+> freeing of pages that are used as page tables for kernel address mappings.
+> These pages are now queued to a work struct instead of being freed
+> immediately.
 > 
-> Just use a 'struct ptdesc *' instead. Its entire purpose is to refer
-> to page table pages. It also means being able to remove an explicit
-> cast.
+> This deferred freeing allows for batch-freeing of page tables, providing
+> a safe context for performing a single expensive operation (TLB flush)
+> for a batch of kernel page tables instead of performing that expensive
+> operation for each page table.
 > 
-> Right now, pte_free_kernel() is a one-liner that calls
-> pagetable_dtor_free(). Effectively, all this patch does is
-> remove one superfluous __pa(__va(paddr)) conversion and then
-> call pagetable_dtor_free() directly instead of through a helper.
+> On x86, CONFIG_ASYNC_KERNEL_PGTABLE_FREE is selected if CONFIG_IOMMU_SVA
+> is enabled, because both Intel and AMD IOMMU architectures could
+> potentially cache kernel page table entries in their paging structure
+> cache, regardless of the permission.
+
+See below, I assume this is patch #7 material.
+
 > 
 > Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
 > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 > Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 > Reviewed-by: Kevin Tian <kevin.tian@intel.com>
 > ---
->   include/linux/mm.h    |  6 ++++--
->   arch/x86/mm/pgtable.c | 12 ++++++------
->   2 files changed, 10 insertions(+), 8 deletions(-)
+>   arch/x86/Kconfig     |  1 +
+>   mm/Kconfig           |  3 +++
+>   include/linux/mm.h   | 16 +++++++++++++---
+>   mm/pgtable-generic.c | 37 +++++++++++++++++++++++++++++++++++++
+>   4 files changed, 54 insertions(+), 3 deletions(-)
 > 
-> diff --git a/include/linux/mm.h b/include/linux/mm.h
-> index 15ce0c415d36..94e2ec6c5685 100644
-> --- a/include/linux/mm.h
-> +++ b/include/linux/mm.h
-> @@ -3203,8 +3203,7 @@ pte_t *pte_offset_map_rw_nolock(struct mm_struct *mm, pmd_t *pmd,
->   	((unlikely(pmd_none(*(pmd))) && __pte_alloc_kernel(pmd))? \
->   		NULL: pte_offset_kernel(pmd, address))
->   
-> -#if defined(CONFIG_SPLIT_PMD_PTLOCKS)
-> -
-> +#if defined(CONFIG_SPLIT_PMD_PTLOCKS) || defined(CONFIG_X86_64)
+> diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+> index fa3b616af03a..ded29ee848fd 100644
+> --- a/arch/x86/Kconfig
+> +++ b/arch/x86/Kconfig
+> @@ -279,6 +279,7 @@ config X86
+>   	select HAVE_PCI
+>   	select HAVE_PERF_REGS
+>   	select HAVE_PERF_USER_STACK_DUMP
+> +	select ASYNC_KERNEL_PGTABLE_FREE 	if IOMMU_SVA
 
-Yeah, that is weird. I'd have thought we can simply move this out of
-the ifdef? The CONFIG_X86_64 stuff certainly has to go one way or the other.
-
-As PTE tables always fit in a single page, pgtable_page(pte) is sufficient.
-
-PMD tables can exceed a single page on some archs, so we have to find 
-the first page first that we can then cast.
-
-Can't immediately see why that causes compile issues.
-
->   static inline struct page *pmd_pgtable_page(pmd_t *pmd)
->   {
->   	unsigned long mask = ~(PTRS_PER_PMD * sizeof(pmd_t) - 1);
-> @@ -3215,6 +3214,9 @@ static inline struct ptdesc *pmd_ptdesc(pmd_t *pmd)
->   {
->   	return page_ptdesc(pmd_pgtable_page(pmd));
->   }
-> +#endif
-
+That should belong into patch #7, no?
 
 -- 
 Cheers
