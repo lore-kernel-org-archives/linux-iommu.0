@@ -1,108 +1,166 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F05B6FC5
-	for <iommu@lists.linux.dev>; Fri, 17 Oct 2025 01:46:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A42FD334686;
+	Fri, 17 Oct 2025 05:40:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760665562; cv=none; b=Dc7UD9y5t9XMPZbxHqhedaQBkreVWKYiAB1MmBLfbLnh05/lg55I8KMHrSGvgW8Ev4xLW6N/rrwjUVCAYvnFKonBs0W5jahEoEIoMoFm2UP+10ms+gPXdnp3im6PovLgwT73D6Lib7ZL4CquVE9PKTw0dMmGGGMNvgrYKsJHwo8=
+	t=1760679611; cv=none; b=TSFib6nVuopUos3fObkGv+so6wxj9Ro+jRM6gHu/efW2nvH5arAt9ybkskQvRk1yrqmwtKMM86JYBl2F5eD40z8nCgWq0z0fDWOlqclbKwjP3ZIf2C357Jq+BVhsyuDIr/nPhZcuEsBtPQJjdW3QNkUJnRMlNJ5d27s9zMXWbzU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760665562; c=relaxed/simple;
-	bh=STs8Y+GLuT3+amxLmUST+PZ8gj8KTQE9Glui5npCtTo=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=lOqCS5Z8zxYhD0jp/Sn1ameQwYkhQbuacaxm2eNwKn4gPeGGMOH9/cLBstgJpt3Pj8I0BgllZ3Nq2bQAAJo+EDQal/PNcd0dfAJMUUYmAsL/0xVgjdT8sj0kX7iZhnAdki35l2KjlhMKUDimjmxNMAsKJaQJi7UD3b//U0TIS0M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IR9yqRnz; arc=none smtp.client-ip=192.198.163.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1760679611; c=relaxed/simple;
+	bh=QatSK3vs5GP8c8e8mP/n3Zh7cEbbQ3Zbp2cyGT+36CI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=VZ6tBGhiFWtdM1tZBil9+syboxUnuId4I7rr+jrOawfIyc+FProdN09n3QUImXu+kNjKCq7nIAEN+zYhjt6Dy6kvwc+96FaTMCFHGMSlZzkGlfR+wW4fol6Fe5Gg64e4KxXmZsqv34qBJiDn0YIFCih/JCh7ezAwF5cB0iuwsGI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JpP2Mu5B; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IR9yqRnz"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1760665561; x=1792201561;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=STs8Y+GLuT3+amxLmUST+PZ8gj8KTQE9Glui5npCtTo=;
-  b=IR9yqRnz61Owh8NijBgxhAhWaP7x7jfOh2q6fgJoM+jOkPSxvdG9toV7
-   PbdulIOe68jRoJFkT0X/CK/8Ly/Kh5e9G3YJZFBuA6NupDPSa47/YHs+1
-   OLFuqjFrZuf5VnHZgwBsT66LaD67C4WjY7Gb1ZcIxp7ZQKtLspoWs0eih
-   8l/6h3QvZZL4H4xVJh37PceTOmVod8/rtC8XYwehZac6bx9CMkGJXXzst
-   NEgFioymZiZsouTNd83HZgLcwUNaicDC4hxh1BEZdKxyN2XZ+AOJoTZBB
-   l/fPVksuxSiB25OqNOA9WZPJtiJ9s8fT2kS7mqfdj/arxL0Xoe/VJcAi3
-   g==;
-X-CSE-ConnectionGUID: TplEv2DmS/uE/jWrXI+mKQ==
-X-CSE-MsgGUID: F2Rs7zoxS/6ALhsQCdCBtQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11584"; a="62082053"
-X-IronPort-AV: E=Sophos;i="6.19,234,1754982000"; 
-   d="scan'208";a="62082053"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Oct 2025 18:46:00 -0700
-X-CSE-ConnectionGUID: VLbXrEyqS+mO5QoMlH6F3Q==
-X-CSE-MsgGUID: YKaojFyXR1qwVxffdSsIwA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.19,234,1754982000"; 
-   d="scan'208";a="181744500"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Oct 2025 18:45:54 -0700
-Message-ID: <11cad2be-9402-4d45-8d2b-c92d8962edfc@linux.intel.com>
-Date: Fri, 17 Oct 2025 09:42:10 +0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JpP2Mu5B"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD16DC4CEE7;
+	Fri, 17 Oct 2025 05:40:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1760679611;
+	bh=QatSK3vs5GP8c8e8mP/n3Zh7cEbbQ3Zbp2cyGT+36CI=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=JpP2Mu5B3aLEq2tithF2l4ekoWI7PQCF+VFS8MQGgHf4eBvOc+yXOj+6j3SF1JJGp
+	 pEWPTs1ub7jCDFoztpJusE1SvuXOPIOS3EDzNJKolsvP7ynn443SDWb6+4ru7KM3Ik
+	 4j+XYNWMaoFpTvU03u3ve6ByEq+Ss1Fm2ijL//zmgS/KjrczzYtQkY9DonD8sLZBjR
+	 wAsx5V7EeXmlXZROMgB5Yk8A5L2w8KdUAli094vKeMAxXL3wpcyYeEh7KW2U9dbVP1
+	 B/DzVQ/2C+MLErckpLFiu2Jq3uo28qrca2pT6QzZpBpkxmTwNhHCgEXgkTF1WRW82g
+	 apdepzvlnSlOA==
+Date: Fri, 17 Oct 2025 08:40:07 +0300
+From: Leon Romanovsky <leon@kernel.org>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Alex Williamson <alex.williamson@redhat.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+	dri-devel@lists.freedesktop.org, iommu@lists.linux.dev,
+	Jens Axboe <axboe@kernel.dk>, Joerg Roedel <joro@8bytes.org>,
+	kvm@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
+	linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-media@vger.kernel.org, linux-mm@kvack.org,
+	linux-pci@vger.kernel.org, Logan Gunthorpe <logang@deltatee.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Vivek Kasireddy <vivek.kasireddy@intel.com>,
+	Will Deacon <will@kernel.org>
+Subject: Re: [PATCH v5 9/9] vfio/pci: Add dma-buf export support for MMIO
+ regions
+Message-ID: <20251017054007.GB6199@unreal>
+References: <cover.1760368250.git.leon@kernel.org>
+ <72ecaa13864ca346797e342d23a7929562788148.1760368250.git.leon@kernel.org>
+ <20251016235332.GA265079@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 0/7] Fix stale IOTLB entries for kernel address space
-To: Dave Hansen <dave.hansen@intel.com>,
- Andrew Morton <akpm@linux-foundation.org>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
- Jason Gunthorpe <jgg@nvidia.com>, Jann Horn <jannh@google.com>,
- Vasant Hegde <vasant.hegde@amd.com>, Thomas Gleixner <tglx@linutronix.de>,
- Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
- Alistair Popple <apopple@nvidia.com>, Peter Zijlstra <peterz@infradead.org>,
- Uladzislau Rezki <urezki@gmail.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Andy Lutomirski <luto@kernel.org>, Yi Lai <yi1.lai@intel.com>,
- David Hildenbrand <david@redhat.com>,
- Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
- "Liam R . Howlett" <Liam.Howlett@oracle.com>,
- Vlastimil Babka <vbabka@suse.cz>, Mike Rapoport <rppt@kernel.org>,
- Michal Hocko <mhocko@kernel.org>, Matthew Wilcox <willy@infradead.org>,
- iommu@lists.linux.dev, security@kernel.org, x86@kernel.org,
- linux-mm@kvack.org, linux-kernel@vger.kernel.org
-References: <20251014130437.1090448-1-baolu.lu@linux.intel.com>
- <20251014174339.c7b7d2cfb9f60d225e4fe5ec@linux-foundation.org>
- <6b187b20-6017-4f85-93ac-529d5df33aa2@linux.intel.com>
- <ecee3200-c8e2-47ec-a219-c88e8e905b32@intel.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <ecee3200-c8e2-47ec-a219-c88e8e905b32@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20251016235332.GA265079@nvidia.com>
 
-On 10/15/25 23:55, Dave Hansen wrote:
->>> Only [7/7] has acc:stable, even though that patch is not at all
->>> backportable.  Please give some thought and suggestions regarding
->>> whether you think we should backport this into earlier kernels.
->> Yes. We should backport this series to stable kernels.
->>
->>> If "yes" then the size and scope of the series looks problematic.  Is
->>> it possible to put together something simple and expedient just to plug
->>> the hole in older kernels?
->> Squashing some patches is one way. But would it be workable to backport
->> this series manually? Say, could we send a pull request to the stable
->> mailing list after this series has landed?
-> I honestly think we should just disable SVA in old kernels at compile
-> time, or at least default it to be disabled at runtime. That's the
-> simplest thing.
+On Thu, Oct 16, 2025 at 08:53:32PM -0300, Jason Gunthorpe wrote:
+> On Mon, Oct 13, 2025 at 06:26:11PM +0300, Leon Romanovsky wrote:
+> > +
+> > +static int vfio_pci_dma_buf_attach(struct dma_buf *dmabuf,
+> > +				   struct dma_buf_attachment *attachment)
+> > +{
+> > +	struct vfio_pci_dma_buf *priv = dmabuf->priv;
+> > +
+> > +	if (!attachment->peer2peer)
+> > +		return -EOPNOTSUPP;
+> > +
+> > +	if (priv->revoked)
+> > +		return -ENODEV;
+> > +
+> > +	switch (pci_p2pdma_map_type(priv->provider, attachment->dev)) {
+> > +	case PCI_P2PDMA_MAP_THRU_HOST_BRIDGE:
+> > +		break;
+> > +	case PCI_P2PDMA_MAP_BUS_ADDR:
+> > +		/*
+> > +		 * There is no need in IOVA at all for this flow.
+> > +		 * We rely on attachment->priv == NULL as a marker
+> > +		 * for this mode.
+> > +		 */
+> > +		return 0;
+> > +	default:
+> > +		return -EINVAL;
+> > +	}
+> > +
+> > +	attachment->priv = kzalloc(sizeof(struct dma_iova_state), GFP_KERNEL);
+> > +	if (!attachment->priv)
+> > +		return -ENOMEM;
+> > +
+> > +	dma_iova_try_alloc(attachment->dev, attachment->priv, 0, priv->size);
 > 
-> The other alternative is to have arch_vmap_pmd_supported() return false
-> when SVA is active, or maybe when it's supported on the platform.
+> The lifetime of this isn't good..
 > 
-> Either of those are 10-ish lines of code and easy to backport.
+> > +	return 0;
+> > +}
+> > +
+> > +static void vfio_pci_dma_buf_detach(struct dma_buf *dmabuf,
+> > +				    struct dma_buf_attachment *attachment)
+> > +{
+> > +	kfree(attachment->priv);
+> > +}
+> 
+> If the caller fails to call map then it leaks the iova.
 
-Hi iommu folks, any insights on this?
+I'm relying on dmabuf code and documentation:
 
-Thanks,
-baolu
+   926 /**
+   927  * dma_buf_dynamic_attach - Add the device to dma_buf's attachments list
+...   
+   932  *
+   933  * Returns struct dma_buf_attachment pointer for this attachment. Attachments
+   934  * must be cleaned up by calling dma_buf_detach().
+
+Successful call to vfio_pci_dma_buf_attach() MUST be accompanied by call
+to vfio_pci_dma_buf_detach(), so as far as dmabuf implementation follows
+it, there is no leak.
+
+> 
+> > +static struct sg_table *
+> > +vfio_pci_dma_buf_map(struct dma_buf_attachment *attachment,
+> > +		     enum dma_data_direction dir)
+> > +{
+> [..]
+> 
+> 
+> > +err_unmap_dma:
+> > +	if (!i || !state)
+> > +		; /* Do nothing */
+> > +	else if (dma_use_iova(state))
+> > +		dma_iova_destroy(attachment->dev, state, mapped_len, dir,
+> > +				 attrs);
+> 
+> If we hit this error path then it is freed..
+> 
+> > +static void vfio_pci_dma_buf_unmap(struct dma_buf_attachment *attachment,
+> > +				   struct sg_table *sgt,
+> > +				   enum dma_data_direction dir)
+> > +{
+> > +	struct vfio_pci_dma_buf *priv = attachment->dmabuf->priv;
+> > +	struct dma_iova_state *state = attachment->priv;
+> > +	unsigned long attrs = DMA_ATTR_MMIO;
+> > +	struct scatterlist *sgl;
+> > +	int i;
+> > +
+> > +	if (!state)
+> > +		; /* Do nothing */
+> > +	else if (dma_use_iova(state))
+> > +		dma_iova_destroy(attachment->dev, state, priv->size, dir,
+> > +				 attrs);
+> 
+> It is freed here too, but we can call map multiple times. Every time a
+> move_notify happens can trigger another call to map.
+> 
+> I think just call unlink in those two and put dma_iova_free in detach
+
+Yes, it can work.
+
+Thanks
+
+> 
+> Jason
