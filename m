@@ -1,180 +1,177 @@
-Received: from BL2PR02CU003.outbound.protection.outlook.com (mail-eastusazon11011052.outbound.protection.outlook.com [52.101.52.52])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64068332EC8
-	for <iommu@lists.linux.dev>; Fri, 17 Oct 2025 12:16:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.52.52
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760703378; cv=fail; b=gtlastoKH3Z/jrzwHfYSqncLNYG1D9yGb2XPqMMZO3KW8ErlYXjAKnv7fyusEpvXGtZqzLUgymrzpHrd61XK6fzVETpADGI+CUTESsswKvLizTvx23Tb2cU8xqlDV+dX2vzZQ0vARFsVjoDpAyVrz8m23wOyAkkRYGHMrAfkDsY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760703378; c=relaxed/simple;
-	bh=GupcQpGC9r6QALO/HDSunDt+iORuQkoqDG4Vz10Y5vM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=IJTGwYiLF70xf5UCTB65zzIgp7UUeDg54ch9ZZpHMSKiLFr9U6WU5P4GV1TDqv2aB0r8tAezqtXQk7eBcWbPgnk6IvVQrTsnZZnUGf1KGwMtEHLm1Smc15XBWSWZ6Fr+clj498ZgahZsi0Nbwz8KDpZheUu1iXnqeVfWDcN5NXU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=Pzfc7b8J; arc=fail smtp.client-ip=52.101.52.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC35D30C61F;
+	Fri, 17 Oct 2025 12:28:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1760704104; cv=none; b=i4FU9yrsHj9Klmf7iuDwRbmkgIep1c+5oyruOP1bubKxO9Dxg6oDG1C5AR9MXXBnwqiWnDwVxk73vL6jCECAM1ctwmgi+emb7nVEfYtj3l6lgycHEnVr6yOU9LH4dyqStvfkjrG84VodDqfytRpysS9IEWY0//O3h4H/ipKgwlw=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1760704104; c=relaxed/simple;
+	bh=kSd/Ls5L3AtHUzQLW/f0nkA8Foo/0v2sZRfvkQmkirU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Vk90sYRoZzwly3krPMY8c3EfNay3go9N1C3nUixJI/QHVkPFz6cRXMr2I5gckPihy0iKHlQPlLVlYJ1p1j6nqi3yZt1HLpUzitliB6dZZyu/a6m41ws0MLuVXRE53dkSG31mvzGdopyI0VQOf9XJl2idty3Xrxt1u1KB9g7ddb0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=eE5W0N9n; arc=none smtp.client-ip=148.163.156.1
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Pzfc7b8J"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=KoC/PCBaeH+z5uEGiA0IapLq+0wx+FzEgbfEZ12FmfEq0uAQZjbv7HjZNMf3pToLOcGx3O6jgli300EBh0gX+llHNTWVaYzKtelickW+KNRO63vbR+ZtPqdxjNs9woVsddTITtcSa4qcSdcSrYGKxeGJ4H/P/36LrF66Qh4/PfPTHPfwSLfYp6RebW9QhixSF5LyUe5AGidGgG1lypgy7bUJVohp2zG83n+73kIjDL+AfLVAnNWOc7E0rw9wyHJPY3Ik2LjDc3msTaoVuZpgS7WDMuIWMOHiAfDsIvGM634sasHYp4+5zSRjMb3hT6twx+azhm/Ws97FGtZwodjnwA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vCXWwpfZQF2zjZPGpnDxYq/+0sz0HuH7oVgF14+Bcws=;
- b=K+Qj6xNKAnJYIoGUGzZWdtnaChFegVZIqGxOQ7oJk9dtuzRLIYjVNk55/bN61JTWKSZZhmGtR00NMD/Xo3VJLymtN5rWNMwFJQtbPx0n+I0ibWV8kxZrvpcD/xs1NPg0+BXEEHzPJAy6vT3qnqbPgV0Cw57ZYGNx7e3PLEyy6zp467GNe3XwWNCjBL4CsvPPX3EwsijCtcRq8yIv5NXRfsIa/xkHjpu6s/8y3dR1Xu7e4PfgsUfT5cnU+DAvZvZXh3p3sjUCF8CwJNgxWC7cvof3uxIa0QzNA7wBLxDTeonylcYdk7szjeX28Vj77nDvK13aslnCSiMA6oPsw5QCLw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vCXWwpfZQF2zjZPGpnDxYq/+0sz0HuH7oVgF14+Bcws=;
- b=Pzfc7b8JJhduygzsqpRcall5wXQiPw7Hj3K3oPzyNLttHb4eYwf9S9yxJaBBy2hixd+LqwgY9PtfMZEVtZemtYwsDkYp+NqlTK/ckKvARKDcKVPfNtER8d/LsNnIE8VTVaKxgN7aS+J2tN5mQSPFELh6aYAzxNZ486m4FziBeS6qEPm4otgWiY/A4lJtulJfV1tJKFvr7vQnuamJPzyrfPlQCDurR5C/hgNrwi9scDJW+WKgUpO2f0LAyVYV7DYEHwvnPUONfzhty6L6lhxoWIfnE4U4rt3hwbalJQPhXf56OEjMjM5rA7cKykbL9nuTNgi5bZdOxNzU3W/lBkT3mw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB3613.namprd12.prod.outlook.com (2603:10b6:208:c1::17)
- by DS0PR12MB8414.namprd12.prod.outlook.com (2603:10b6:8:fb::7) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9228.12; Fri, 17 Oct 2025 12:16:14 +0000
-Received: from MN2PR12MB3613.namprd12.prod.outlook.com
- ([fe80::1b3b:64f5:9211:608b]) by MN2PR12MB3613.namprd12.prod.outlook.com
- ([fe80::1b3b:64f5:9211:608b%4]) with mapi id 15.20.9228.010; Fri, 17 Oct 2025
- 12:16:14 +0000
-Date: Fri, 17 Oct 2025 09:16:10 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Christoph Hellwig <hch@infradead.org>
-Cc: Leon Romanovsky <leon@kernel.org>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Leon Romanovsky <leonro@nvidia.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
-	dri-devel@lists.freedesktop.org, iommu@lists.linux.dev,
-	Jens Axboe <axboe@kernel.dk>, Joerg Roedel <joro@8bytes.org>,
-	kvm@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
-	linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-media@vger.kernel.org, linux-mm@kvack.org,
-	linux-pci@vger.kernel.org, Logan Gunthorpe <logang@deltatee.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Sumit Semwal <sumit.semwal@linaro.org>,
-	Vivek Kasireddy <vivek.kasireddy@intel.com>,
-	Will Deacon <will@kernel.org>
-Subject: Re: [PATCH v5 9/9] vfio/pci: Add dma-buf export support for MMIO
- regions
-Message-ID: <20251017121610.GI3901471@nvidia.com>
-References: <cover.1760368250.git.leon@kernel.org>
- <72ecaa13864ca346797e342d23a7929562788148.1760368250.git.leon@kernel.org>
- <aPHjUP7pdIXuEPIq@infradead.org>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aPHjUP7pdIXuEPIq@infradead.org>
-X-ClientProxiedBy: SJ0PR03CA0198.namprd03.prod.outlook.com
- (2603:10b6:a03:2ef::23) To MN2PR12MB3613.namprd12.prod.outlook.com
- (2603:10b6:208:c1::17)
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="eE5W0N9n"
+Received: from pps.filterd (m0353729.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 59HAarsL010294;
+	Fri, 17 Oct 2025 12:28:03 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-type:date:from:in-reply-to:message-id:mime-version
+	:references:subject:to; s=pp1; bh=zcD/4uYFsGN+ddlc5XN7jrlEbZPy90
+	Q3VYii2jxgM9Y=; b=eE5W0N9ngKQsBCaEoKP5X7uMprOx6srXl/Y5VSnftyarLC
+	FSGEDSCmpjEvwqDQFh7AEijQZhgnsC4DjNtYcVSD2tWylUvlrd4mw2tUZr96iquP
+	/Z+lp47gr9mIxlR3dOKgFjPzYEUIvnSowb+LGqWv/mwux3Hir+753eGvRXblGAVl
+	S/1vztL894fE4p+ROE4dyTuhsSxnbHKOHNZ8TZpwoVVIQRwGqR1AFUMHqQ1rhx5Y
+	oJV9EhNt4y4mTiiWLDsGZ5H7lIV3YJc8+elXhzspQaeNoIjaX6oeGSgjxMHKd8Bi
+	2/n7WNnKjsQMvJom9/+Vry4AmFzLW57ZDlOaJsVg==
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 49qewujm35-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 17 Oct 2025 12:28:03 +0000 (GMT)
+Received: from m0353729.ppops.net (m0353729.ppops.net [127.0.0.1])
+	by pps.reinject (8.18.1.12/8.18.0.8) with ESMTP id 59HCS2e4011949;
+	Fri, 17 Oct 2025 12:28:02 GMT
+Received: from ppma13.dal12v.mail.ibm.com (dd.9e.1632.ip4.static.sl-reverse.com [50.22.158.221])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 49qewujm2x-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 17 Oct 2025 12:28:02 +0000 (GMT)
+Received: from pps.filterd (ppma13.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma13.dal12v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 59H9Ms3A015041;
+	Fri, 17 Oct 2025 12:28:01 GMT
+Received: from smtprelay06.fra02v.mail.ibm.com ([9.218.2.230])
+	by ppma13.dal12v.mail.ibm.com (PPS) with ESMTPS id 49r3sjvxxw-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 17 Oct 2025 12:28:01 +0000
+Received: from smtpav01.fra02v.mail.ibm.com (smtpav01.fra02v.mail.ibm.com [10.20.54.100])
+	by smtprelay06.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 59HCRviL24904158
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Fri, 17 Oct 2025 12:27:57 GMT
+Received: from smtpav01.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 80522200F0;
+	Fri, 17 Oct 2025 12:27:57 +0000 (GMT)
+Received: from smtpav01.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id DE081200ED;
+	Fri, 17 Oct 2025 12:27:54 +0000 (GMT)
+Received: from li-2b55cdcc-350b-11b2-a85c-a78bff51fc11.ibm.com (unknown [9.111.68.179])
+	by smtpav01.fra02v.mail.ibm.com (Postfix) with ESMTPS;
+	Fri, 17 Oct 2025 12:27:54 +0000 (GMT)
+Date: Fri, 17 Oct 2025 14:27:53 +0200
+From: Sumanth Korikkar <sumanthk@linux.ibm.com>
+To: Andrew Morton <akpm@linux-foundation.org>
+Cc: Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
+        Jonathan Corbet <corbet@lwn.net>, Matthew Wilcox <willy@infradead.org>,
+        Guo Ren <guoren@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Andreas Larsson <andreas@gaisler.com>, Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>, Nicolas Pitre <nico@fluxnic.net>,
+        Muchun Song <muchun.song@linux.dev>,
+        Oscar Salvador <osalvador@suse.de>,
+        David Hildenbrand <david@redhat.com>,
+        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>,
+        Baoquan He <bhe@redhat.com>, Vivek Goyal <vgoyal@redhat.com>,
+        Dave Young <dyoung@redhat.com>, Tony Luck <tony.luck@intel.com>,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Dave Martin <Dave.Martin@arm.com>, James Morse <james.morse@arm.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>,
+        "Liam R . Howlett" <Liam.Howlett@oracle.com>,
+        Vlastimil Babka <vbabka@suse.cz>, Mike Rapoport <rppt@kernel.org>,
+        Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>,
+        Hugh Dickins <hughd@google.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Uladzislau Rezki <urezki@gmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>, Jann Horn <jannh@google.com>,
+        Pedro Falcato <pfalcato@suse.de>, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-csky@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-s390@vger.kernel.org, sparclinux@vger.kernel.org,
+        nvdimm@lists.linux.dev, linux-cxl@vger.kernel.org, linux-mm@kvack.org,
+        ntfs3@lists.linux.dev, kexec@lists.infradead.org,
+        kasan-dev@googlegroups.com, Jason Gunthorpe <jgg@nvidia.com>,
+        iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v4 11/14] mm/hugetlbfs: update hugetlbfs to use
+ mmap_prepare
+Message-ID: <aPI2SZ5rFgZVT-I8@li-2b55cdcc-350b-11b2-a85c-a78bff51fc11.ibm.com>
+References: <cover.1758135681.git.lorenzo.stoakes@oracle.com>
+ <e5532a0aff1991a1b5435dcb358b7d35abc80f3b.1758135681.git.lorenzo.stoakes@oracle.com>
+ <aNKJ6b7kmT_u0A4c@li-2b55cdcc-350b-11b2-a85c-a78bff51fc11.ibm.com>
+ <20250923141704.90fba5bdf8c790e0496e6ac1@linux-foundation.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MN2PR12MB3613:EE_|DS0PR12MB8414:EE_
-X-MS-Office365-Filtering-Correlation-Id: deecd648-4a2b-4792-1ea5-08de0d76f677
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014|7416014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?mtGJtXRR8FJHDn/FZVkq5w0T6lBy+XhsCU+koBx28npdLhm5FvkPoGPQsplu?=
- =?us-ascii?Q?iyDwvrrg7e4WUQYpU7AINx+KBEmGUD9Uc+ITRLOJNHJkzr6sN3uHNldoZ7N4?=
- =?us-ascii?Q?wZ2nCcNsIWCLBOdf6940k34XnISCZ6CKOj6EfjRpUBsdlUksx3nZFu1LtRO7?=
- =?us-ascii?Q?c5MmfcW+69RxgomRTMAVhrXAkUOBacj3pXWvFBDxpHz4ohi4hy6iDMnHib/2?=
- =?us-ascii?Q?9+efYwEPAB5+mjch6A9ey5Cx3ubrXpyU/82bPGtUjPeiukTWxW1hZ60kXSFe?=
- =?us-ascii?Q?2WKoZesonHudtNmHAA9zdhoNwQ4se580kRckJCvSELZqMcrT/s8absU1zuIo?=
- =?us-ascii?Q?OYfaGTLVcUSM7i5XQZHJMg/TP/+8hgKYCuzlrq8jqbBAAfcSNkGk/GwcdoW7?=
- =?us-ascii?Q?O9f9jSnU9gpCewS7akn1eRf8yuNdZM8q67VvjNuIbyvrpk7HqsZ6PiXhRQum?=
- =?us-ascii?Q?Qml4pemyQira4HiTw3Pp2cDzH13Gj41yvG9V0CkrxKNf1GCGDu+p74c8NbsC?=
- =?us-ascii?Q?laZZ7NRe2wj9oudhZsm5WsPmseHFa2vQ34sfX42wp233VvxndmTpd4NDHX1l?=
- =?us-ascii?Q?+qi/z0UU0sZ/Rjp+peRILhPcW+oJuEVzSVHMHolFG1jj5tTF0f6rZW+U5bep?=
- =?us-ascii?Q?sKGUN+YTqbz1HWZzFjyCbiFYmGAw0/iglxwsjOn7ktzG+zrRGnTYcIbdCK99?=
- =?us-ascii?Q?JzwjZ1g+0cQvb8fJlHcwWxveT4rcENldS/FD93Za6UHhYPW6MMhfJklVh0+q?=
- =?us-ascii?Q?Wis+++NI2TaBG88YR1LBypMzTgW6VcIFao/E2Yx9qQ1kVSg70dtFsfRrc6az?=
- =?us-ascii?Q?wfToK5DKLcZI7C8M5RqynDP/q1YmSJ/NRr0+z7jiQPha8RDPnv3iArKZo3ok?=
- =?us-ascii?Q?eP2EH5Up9SeFBNAugqZ5cFPC0JT1vBsp3r5CBu7qop3DBLWIWhAGN3zcAyW/?=
- =?us-ascii?Q?0rj8JXocp2TpvZeXEd6vHCwCbOIMMPtoW9VMrfCSdT2l+OYSUlL1mE/8SkND?=
- =?us-ascii?Q?rri2dUYD9rdy8JFhFa+Sm72v/3imGqV87or4xRBcdy1/7JLg3dOsN1bD2MJ3?=
- =?us-ascii?Q?NIi9JGvkNyJCjLgS6rkVOz4DywF+SE2ruylzzM0yuc8rz6twUg6RlX1b1M2z?=
- =?us-ascii?Q?cdNf93XzAZTG+8tYgUdWmXA6/6y4WmXqQfREtOpL6GbCYsPiQoH8LepSNp23?=
- =?us-ascii?Q?aWkbVKSkbEIfzH7bMUm8YKnzr3fr3Y1LEMp3fFSGLjJh90irEOQacvq7J5PN?=
- =?us-ascii?Q?+uGygTpLrX11DIYKwS4gLTgq9bHblSe0WAKzI3ErsQ802WJ3lNHJ1L8Ap752?=
- =?us-ascii?Q?pZ0/0k0OyB2G2c/ZzSa5m+Qi1lp637GmuCo9JVx4/pltVoZX7Q+MnTFWYBJR?=
- =?us-ascii?Q?Afd9thgoTgIiS0tZ7uc5o8q9ESv/OjjhtbvQj+H8RStqyB9aJwRbjkP4VZIw?=
- =?us-ascii?Q?KUabM4cpmKYChPa16sV1PmNq+MYquxMb?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB3613.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(7416014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?8ycwLfysewRWGSM3Hw23SiCkLA7ecFzFA4ba+xgG+pQLG3e0TcbYMI8/4EHi?=
- =?us-ascii?Q?XCvWQhoDW4fQN6OUn4X09QAMNSD/IwKQeSpKAvmrsch2ESwjR1kK3BQ8i/z8?=
- =?us-ascii?Q?ck7/nRl1/HccRKR9BZhGOJSsUpys2IfdBJUoGpkelqgUAyVgd5iTsaL1J4SL?=
- =?us-ascii?Q?anbgEvyVihpS/eozE2RIAwF6yY1JybQ0aSMnHuF3hySTVPflSZVuAxZ191Hj?=
- =?us-ascii?Q?Ejqbk7YA4syRPpeAUuuo5E7sy70W2VIpMiIuQKBMwsM91SSpXzgHBEgni8Eb?=
- =?us-ascii?Q?JtlDN6Dtb++Pe8rFtvoqeJ2dXIFi+v6AEXpDhg6U3sGS0ot7V9E+EJuxbAAa?=
- =?us-ascii?Q?JOaQobPuzQBg93XLT6QqWt5dCIPoe1fDX4cynOGnDYAfwzVa3/uL2tZacua/?=
- =?us-ascii?Q?QE2M1qPEoNbm/9jvVd9iBCmiavayaf2P9OalSrEg8gUYBrPf9RhYLa42DmaV?=
- =?us-ascii?Q?/54hGGlQWa7mKcDzyBZXJMlqGr72PK65B+OemrxiFQPoYxuoMwmxdwBRwBKa?=
- =?us-ascii?Q?geoVoJt7VPcsRGaEf5LT5by7dW6GSwJNkP4RL2E+koQM507OhWzyXFcmiJiK?=
- =?us-ascii?Q?eOfwVMu7knx+vBWs5zRgUiHZEbNhGk0v4NK6jlXCN2KGLwjqD9QSYM3NqRd2?=
- =?us-ascii?Q?5Rzpoo/if4S5dlHGpamNZKh0uSfHAqZNwHu2cxYh2a8zXn2k2cRiEtfS3vUx?=
- =?us-ascii?Q?kBO0YZMCdXbQm8myTBsM8qBf53WUeotew9moF3jwkWgAUioa8UdybnGhjKix?=
- =?us-ascii?Q?67RljetHhiU200fKNliE5+JpOpXY0Ov0sJIPU/z/2JLqgu8SOOJ6HpmqXeHK?=
- =?us-ascii?Q?YVgANhj4g2xMqOb7Bhlu4ekStjROox2lgk95R0dGruZPVOis3JoUGW+Zz/8E?=
- =?us-ascii?Q?JxiyepL4k5Gtuf1a7HzIgt5E61k/Rx8YLhoVTFUlvHfvlXZpuLCi2BtC+g8D?=
- =?us-ascii?Q?Thc3EKUq6Cuvo++Bot5NKk0DKXrJLYhvrgAIjiw6tPj6auUf+zxdOikzEFv2?=
- =?us-ascii?Q?v23zCUgvBASzzTnyhTJuwGVPs+PtlYvUp+S8onnF18WRiFNZRh+bI2DTx7SF?=
- =?us-ascii?Q?LpZpC/m3KvLuCSeLPmm3K6tEytnYu7cXsyHUDQRWiCiV2kAFjD8gHPemPFhG?=
- =?us-ascii?Q?FrikO7QU7fEH4TLjZhAKPzlP8NE2S2usifewj/ZB/GUbC6f1t9RKb7nBZ4hN?=
- =?us-ascii?Q?GZueADyrX+Oou1P/coJ+F2rNNqz47ZL35ntUqmvZWJlMH1xD/X7Li1GEX2Jf?=
- =?us-ascii?Q?2fbThTnizl4Vs6YQXMtbEuO8TTQJB2WeWBlWLdniYDQM9WMXAzW8eo4DOZRq?=
- =?us-ascii?Q?NcxcAis9PQMdKf+ItqebkUsCE1Ri7htl79p7RlwUxcDttqLX4xTPb2KgOX7V?=
- =?us-ascii?Q?gcRG0tOaiUVKm5lN7zTI2yaF6U/D8nW0mPhbGaf1cpl79GOM5tr8GBgsSaCW?=
- =?us-ascii?Q?nxsw8BcN/NP9vlFKVUgiEauMn9z+8Y+nTW9eYcsGvTNvdf9SUO6p1kB1rLCh?=
- =?us-ascii?Q?3NYIXalImxJJ6oNUy8TmejWSl4gcoGmmasKivmDfbklYYCF26VKdEbB0anQO?=
- =?us-ascii?Q?ODEr5Iq4JGYl5HCbuUzUf8Tn1Lx2zpgC93dhIjyr?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: deecd648-4a2b-4792-1ea5-08de0d76f677
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB3613.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Oct 2025 12:16:14.0525
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: wTZlMYP67K2Lr5as/EYle3rK72cMc6RgQWSs+OGUgswKMREr2AnxPdbkoXyTNUKr
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB8414
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250923141704.90fba5bdf8c790e0496e6ac1@linux-foundation.org>
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: oq4BBwfqQ48M4fFrJYto5eFg6cOrIUo4
+X-Authority-Analysis: v=2.4 cv=Kr1AGGWN c=1 sm=1 tr=0 ts=68f23653 cx=c_pps
+ a=AfN7/Ok6k8XGzOShvHwTGQ==:117 a=AfN7/Ok6k8XGzOShvHwTGQ==:17
+ a=kj9zAlcOel0A:10 a=x6icFKpwvdMA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=VnNF1IyMAAAA:8 a=Q64uQKxdJJvBSAPQG9IA:9 a=CjuIK1q_8ugA:10
+ a=UhEZJTgQB8St2RibIkdl:22 a=Z5ABNNGmrOfJ6cZ5bIyy:22 a=QOGEsqRv6VhmHaoFNykA:22
+X-Proofpoint-ORIG-GUID: 6VusDNc5IkEdh68Kaj2ZTeyqGB4LSNCy
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMDExMDAxNCBTYWx0ZWRfXxloq0CHfoAPH
+ XWVL1aBHdkm9/xfBCuiQ3NRDkHBHHJBzuRDZONYMy2fb9zEbQIvnfmYJ/id2eywCKro3ajwNeBN
+ 4kh50+Ptwe9WC/jgv6TvlSU3BjTjj8J4e8Q28WaUW15+fWE4+obYIhdatSNa8pR7s7K3qc9B/vz
+ /NrDUP9sclcVLmwCaUq8/8kitasnnMGBQ+06iNPPJ2JLfYTXft3CE9tZA6j7MvZnByxSm0WG2L9
+ 6HJF8v/KHOyke08jKmTMex92BViTc6nNAZ8Mf08l0p8tEVPKsDoeg+/woBR1eJnDItXypZ8WKoi
+ 4hmgIRXSm+rnxVDlrmJgusCv4UyparD/Ec+dlPRV+dFyojmExkE6m1pDYvzlIJcGkJRfebaDxiR
+ gMuyJhCR/K7vXVkZsF8tcUl7kIfexg==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.9,FMLib:17.12.80.40
+ definitions=2025-10-17_04,2025-10-13_01,2025-03-28_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ spamscore=0 priorityscore=1501 lowpriorityscore=0 bulkscore=0 adultscore=0
+ phishscore=0 suspectscore=0 malwarescore=0 clxscore=1015 impostorscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.19.0-2510020000 definitions=main-2510110014
 
-On Thu, Oct 16, 2025 at 11:33:52PM -0700, Christoph Hellwig wrote:
-> On Mon, Oct 13, 2025 at 06:26:11PM +0300, Leon Romanovsky wrote:
-> > From: Leon Romanovsky <leonro@nvidia.com>
-> > 
-> > Add support for exporting PCI device MMIO regions through dma-buf,
-> > enabling safe sharing of non-struct page memory with controlled
-> > lifetime management. This allows RDMA and other subsystems to import
-> > dma-buf FDs and build them into memory regions for PCI P2P operations.
-> > 
-> > The implementation provides a revocable attachment mechanism using
-> > dma-buf move operations. MMIO regions are normally pinned as BARs
-> > don't change physical addresses, but access is revoked when the VFIO
-> > device is closed or a PCI reset is issued. This ensures kernel
-> > self-defense against potentially hostile userspace.
+On Tue, Sep 23, 2025 at 02:17:04PM -0700, Andrew Morton wrote:
+> On Tue, 23 Sep 2025 13:52:09 +0200 Sumanth Korikkar <sumanthk@linux.ibm.com> wrote:
 > 
-> This still completely fails to explain why you think that it actually
-> is safe without the proper pgmap handling.
+> > > --- a/fs/hugetlbfs/inode.c
+> > > +++ b/fs/hugetlbfs/inode.c
+> > > @@ -96,8 +96,15 @@ static const struct fs_parameter_spec hugetlb_fs_parameters[] = {
+> > >  #define PGOFF_LOFFT_MAX \
+> > >  	(((1UL << (PAGE_SHIFT + 1)) - 1) <<  (BITS_PER_LONG - (PAGE_SHIFT + 1)))
+> > >  
+> > > -static int hugetlbfs_file_mmap(struct file *file, struct vm_area_struct *vma)
+> > > +static int hugetlb_file_mmap_prepare_success(const struct vm_area_struct *vma)
+> > >  {
+> > > +	/* Unfortunate we have to reassign vma->vm_private_data. */
+> > > +	return hugetlb_vma_lock_alloc((struct vm_area_struct *)vma);
+> > > +}
+> > 
+> > Hi Lorenzo,
+> > 
+> > The following tests causes the kernel to enter a blocked state,
+> > suggesting an issue related to locking order. I was able to reproduce
+> > this behavior in certain test runs.
+> 
+> Thanks.  I pulled this series out of mm.git's mm-stable branch, put it
+> back into mm-unstable.
 
-Leon, this keeps coming up, please clean up and copy the text from my
-prior email into the commit message & cover letter explaining in
-detail how lifetime magement works by using revocation/invalidation
-driven by dmabuf move_notify callbacks.
+Hi all,
 
-Jason
+The issue is reproducible again in linux-next with the following commit:
+5fdb155933fa ("mm/hugetlbfs: update hugetlbfs to use mmap_prepare")
+
+Thanks,
+Sumanth
