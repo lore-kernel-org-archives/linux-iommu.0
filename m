@@ -1,74 +1,51 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBEB12FC87B
-	for <iommu@lists.linux.dev>; Fri, 17 Oct 2025 17:10:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50FEC29A312
+	for <iommu@lists.linux.dev>; Fri, 17 Oct 2025 17:28:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760721035; cv=none; b=WLbqDQnHqclszOFfa3eKYATIOpZPp19H1YgNn2/1fBtHmhqNmi9X0LTPDfRCbJu8czF8V9APhkVLRBiPk8+HsKVHzyBX2/7joqCqczI/6cHELFOPmVtDwglsHZn7dfZ4/44Z26sr7kPu8z3IBO6zJWLRI0v4Dp3qLn4grfoFm2Y=
+	t=1760722134; cv=none; b=JNiehqX4zFI2femKCfJcv+gRdBKDHyMbRpy9dSTr02H8f9QFbBczdzFspxGjVTDGthqG5wc3ZFEkAFbxJdzJnNR7355u0zYwLZTJbNZOFu7az12uUWYhZhYPxQZtWjAcUwkg4mapaQIyfcCJ7zr+DBQ/k6CB7VQekZpZMiLXG2U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760721035; c=relaxed/simple;
-	bh=EbgvQowcTpT0CFVtPsor1bVGvj7CjZAAIwTNi5v6oWE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=JVXsNKYeanaqw9otz0KYbpsdN9O94HyIH5D3uWB27y3J2QJxGHycL2JzAEZE64s4dND95T+D/8AwVspomSopMzmrVcsiOj54Hv3bCvrZCWdA61hmASmiIsdEmgfasizd562cKXMqH1g/Q7JAnM3Ouz6PT0wCk/e9NUk7ch33ffg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=XeZXesqc; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1760722134; c=relaxed/simple;
+	bh=SvKQ/17WNYzFeQtnqjZcX24DdJXumkbVdSqHG56jAyY=;
+	h=Content-Type:Message-ID:Date:MIME-Version:Subject:To:Cc:
+	 References:From:In-Reply-To; b=L/yYgzATsZBaX6502FLkr3cMlC+kjDMPZ72+GzRF6FkMMGawRZZNOGGqnnRCO+76iBPUikyyorAHt8Wj+3Hm3SLn+z4QwoguDpJQ2JSG11r6E0X/GOYeuglUq4qE5w7iW7h3/q6twWQfqUjJ91h/EGIcS4ahRTF9kDDzSkdJ0ec=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Jd23N6Wq; arc=none smtp.client-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="XeZXesqc"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1760721032;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=UK8HD9G+Kwd4HVQdRALdCmHeg5SXgo45lh6yR0QBxjc=;
-	b=XeZXesqcKcSzCERaE+ZcHSi71eLSGGUmPpiJ0NzzPICe9ZNtBXkHYbNUEcXIqNieaFMd/E
-	EWi43DUwrNcZJPWd4+gNN9GVB+9Hj0gnpu0O1uumyBFq9pPJ9Mcx2s4f0cPRH1QR/vTn+q
-	Y7kCneCmgghxjcVwHKMGwuwZonO+NFk=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-552-ttXEylm7NTu57HI2uPJBXA-1; Fri, 17 Oct 2025 13:10:31 -0400
-X-MC-Unique: ttXEylm7NTu57HI2uPJBXA-1
-X-Mimecast-MFC-AGG-ID: ttXEylm7NTu57HI2uPJBXA_1760721030
-Received: by mail-wm1-f70.google.com with SMTP id 5b1f17b1804b1-47111dc7c5dso13705635e9.0
-        for <iommu@lists.linux.dev>; Fri, 17 Oct 2025 10:10:31 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1760721030; x=1761325830;
-        h=content-transfer-encoding:in-reply-to:autocrypt:content-language
-         :from:references:cc:to:subject:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=UK8HD9G+Kwd4HVQdRALdCmHeg5SXgo45lh6yR0QBxjc=;
-        b=uU+EUdQ5P4wjmxamnbEU559MCEuxH+g+FxGo4VtspN+iqoG4mQNPTd/JFJhqKnWR6Q
-         Zgcv+hP43U2nYcuLcCVMwdMg/eGrY3r/IlPoWuiFjR2+cSsdjAZCf24dYIOrutQS5ACl
-         FYPmtk8D8VO2Cc5CtQ7iqR8JjRM5rw82K1Whv+WGUl0mSguj5M9OSqeP5HwV4vV0iqW5
-         5gbHRNuWGEFpi9tIRdnmvDAuc+JFIWRARoKMF1B+dLYiM1Mty0Oof9+fMMuBJmdjEk01
-         kdrARH7w3G1ksLzrT5fiYP4BkMET1GsX/xuhg81qCf58wAnxWtA8TY17mUaJWFwckvxw
-         lrbQ==
-X-Forwarded-Encrypted: i=1; AJvYcCU5hzYaxk83F7K0W2r6hWRusNdy0YXfe/+1vJH/8aPC2m/iQuNzTABmLjYWg4liNPzkGSnb5A==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx06zfQtVWY2QAyHfIwT4YGt7oBxY3p1HZ3nbmDNLlMIggg1k2L
-	prBJqvuav4to9andZl6VsKnIl5DMxWxtwblyKwRsUBLXTXtZOMoh0VfkTPXaTkevtUh+nGNiv3f
-	a4Nwq1+ART+hHvu4uBQNc6ikOwYpWChUk5OozLAoLcdvzCv1i4K/EQ2m1
-X-Gm-Gg: ASbGnct2BO4f0sk/5TZxsC0m/4khb103etqDrqQWc5fO82VlsoJZjTy2lHUX2BY4xuI
-	VifuV3NhJf9djuk7t3OwWibVbCmrumF4wBYen244Utuv3r+6XG12umQySdF7vlsp1Gmzti7Swv0
-	KIfYrYNTGUAUpucCrosw7AMxWjKGGY2SuLvR1tlUEh01DDEOdrjGFg2UXPY31AExHTdwCyKnGMQ
-	O4Jb3oc6IPgwJiF+9SS065roYEOVhsaUSATyZeY0+fweDjjv8M2BWr9RyDUBvu5vcnQdrGd3EG9
-	fZeVmLN81ZfbzIbGpSVRZrs7sACzfhXniHmxdV+iEAA1wvkSmEs1dGeAPMZ7nZl+alV7TU9yT69
-	q5x5FSJ+4SZZH1i+Lvaj5swnFl5nomGGIJDloZI/XeT5ic7i/gnNHrvpZTphhhtD0/LUTmFDJXY
-	417A1E6ttkPNnEQoLeOijUP8ias98=
-X-Received: by 2002:a05:600c:294b:b0:46f:b42e:e363 with SMTP id 5b1f17b1804b1-47109b5f8f4mr47517015e9.20.1760721030362;
-        Fri, 17 Oct 2025 10:10:30 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IFvb0y9fCRtWnytuEMED2PPHaBvVSeuDvOip/abNeYWVJN8mhS8t8p9uAnDfOHyvUkNRDsLQw==
-X-Received: by 2002:a05:600c:294b:b0:46f:b42e:e363 with SMTP id 5b1f17b1804b1-47109b5f8f4mr47516765e9.20.1760721029880;
-        Fri, 17 Oct 2025 10:10:29 -0700 (PDT)
-Received: from ?IPV6:2003:d8:2f0c:c200:fa4a:c4ff:1b32:21ce? (p200300d82f0cc200fa4ac4ff1b3221ce.dip0.t-ipconnect.de. [2003:d8:2f0c:c200:fa4a:c4ff:1b32:21ce])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4715520dd65sm3981765e9.15.2025.10.17.10.10.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 17 Oct 2025 10:10:29 -0700 (PDT)
-Message-ID: <d1a6c65c-6518-4227-8ec3-f2af4f7724ad@redhat.com>
-Date: Fri, 17 Oct 2025 19:10:27 +0200
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Jd23N6Wq"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1760722132; x=1792258132;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to;
+  bh=SvKQ/17WNYzFeQtnqjZcX24DdJXumkbVdSqHG56jAyY=;
+  b=Jd23N6WqU0N8RIJS6WPrjdd0Rr6Ln+GYHMV4kvtye1pjEGHgDpgKpsZf
+   feLrVIiNlPuNwzakOhEkqBMdC7juy0n4Ng47sDwVJ5kyZupCqOgjrFnqN
+   EjUkxPGobN6FxXBjywcD1SVBrSag3sBOzfNssI8u5OkHA+JgsR+eX3Pxl
+   2n/mT+dIVVi6MCK67OB9UEzZZomilnPRwHm5dERyWcyI4jocCJcgVgemk
+   kxWy/qM8vGL62/BCbgY6ysgv11Z4pe2b9ZZuRpInf3pcQNqqm338d3u5Y
+   sawMxTE4DVithpsmZwpZmp0xpsEvyRjQzEdckWTPWjpp/9N+68fr4nxGH
+   w==;
+X-CSE-ConnectionGUID: A3azJzixRu21yhQwWfoGUQ==
+X-CSE-MsgGUID: MjFVVbNoRXKBgUXjhPBDmw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11585"; a="80383763"
+X-IronPort-AV: E=Sophos;i="6.19,237,1754982000"; 
+   d="scan'208";a="80383763"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Oct 2025 10:28:51 -0700
+X-CSE-ConnectionGUID: 4dIFaWtDQWWjFKptpRyRCg==
+X-CSE-MsgGUID: uUiANFI5Q9uSKDD5Q5s3wQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.19,237,1754982000"; 
+   d="scan'208";a="186807165"
+Received: from spandruv-mobl4.amr.corp.intel.com (HELO [10.125.108.40]) ([10.125.108.40])
+  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Oct 2025 10:28:51 -0700
+Content-Type: multipart/mixed; boundary="------------GwXy19Mun0gf93RLFz0jKSy7"
+Message-ID: <c3eee56a-7fe3-454c-878f-cff37467fb7e@intel.com>
+Date: Fri, 17 Oct 2025 10:28:50 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -76,122 +53,159 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [syzbot ci] Re: Fix stale IOTLB entries for kernel address space
-To: Baolu Lu <baolu.lu@linux.intel.com>, Dave Hansen <dave.hansen@intel.com>,
- syzbot ci <syzbot+cid009622971eb4566@syzkaller.appspotmail.com>,
- akpm@linux-foundation.org, apopple@nvidia.com, bp@alien8.de,
- dave.hansen@linux.intel.com, iommu@lists.linux.dev, jannh@google.com,
- jean-philippe@linaro.org, jgg@nvidia.com, joro@8bytes.org,
- kevin.tian@intel.com, liam.howlett@oracle.com, linux-kernel@vger.kernel.org,
- linux-mm@kvack.org, lorenzo.stoakes@oracle.com, luto@kernel.org,
- mhocko@kernel.org, mingo@redhat.com, peterz@infradead.org,
- robin.murphy@arm.com, rppt@kernel.org, security@kernel.org,
- stable@vger.kernel.org, tglx@linutronix.de, urezki@gmail.com,
- vasant.hegde@amd.com, vbabka@suse.cz, will@kernel.org, willy@infradead.org,
- x86@kernel.org, yi1.lai@intel.com
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-References: <68eeb99e.050a0220.91a22.0220.GAE@google.com>
- <89146527-3f41-4f1e-8511-0d06e169c09e@intel.com>
- <8cdb459f-f7d1-4ca0-a6a0-5c83d5092cd8@linux.intel.com>
-From: David Hildenbrand <david@redhat.com>
-Autocrypt: addr=david@redhat.com; keydata=
- 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
- qIws/H2t
-In-Reply-To: <8cdb459f-f7d1-4ca0-a6a0-5c83d5092cd8@linux.intel.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: _wyFOyNhHF3IowVh5qc8uyp01VeaYjK-fGb5qjNVkU4_1760721030
-X-Mimecast-Originator: redhat.com
+Subject: Re: [PATCH v6 0/7] Fix stale IOTLB entries for kernel address space
+To: Jason Gunthorpe <jgg@nvidia.com>, Baolu Lu <baolu.lu@linux.intel.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>, Joerg Roedel
+ <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
+ Jann Horn <jannh@google.com>, Vasant Hegde <vasant.hegde@amd.com>,
+ Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>,
+ Borislav Petkov <bp@alien8.de>, Alistair Popple <apopple@nvidia.com>,
+ Peter Zijlstra <peterz@infradead.org>, Uladzislau Rezki <urezki@gmail.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Andy Lutomirski <luto@kernel.org>, Yi Lai <yi1.lai@intel.com>,
+ David Hildenbrand <david@redhat.com>,
+ Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
+ "Liam R . Howlett" <Liam.Howlett@oracle.com>,
+ Vlastimil Babka <vbabka@suse.cz>, Mike Rapoport <rppt@kernel.org>,
+ Michal Hocko <mhocko@kernel.org>, Matthew Wilcox <willy@infradead.org>,
+ iommu@lists.linux.dev, security@kernel.org, x86@kernel.org,
+ linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+ "Jiang, Dave" <dave.jiang@intel.com>,
+ Vinicius Costa Gomes <vinicius.gomes@intel.com>
+References: <20251014130437.1090448-1-baolu.lu@linux.intel.com>
+ <20251014174339.c7b7d2cfb9f60d225e4fe5ec@linux-foundation.org>
+ <6b187b20-6017-4f85-93ac-529d5df33aa2@linux.intel.com>
+ <ecee3200-c8e2-47ec-a219-c88e8e905b32@intel.com>
+ <11cad2be-9402-4d45-8d2b-c92d8962edfc@linux.intel.com>
+ <20251017140101.GM3901471@nvidia.com>
+From: Dave Hansen <dave.hansen@intel.com>
 Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Autocrypt: addr=dave.hansen@intel.com; keydata=
+ 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
+In-Reply-To: <20251017140101.GM3901471@nvidia.com>
+
+This is a multi-part message in MIME format.
+--------------GwXy19Mun0gf93RLFz0jKSy7
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 16.10.25 10:00, Baolu Lu wrote:
-> On 10/16/25 00:25, Dave Hansen wrote:
->> Here's the part that confuses me:
->>
->> On 10/14/25 13:59, syzbot ci wrote:
->>> page last free pid 5965 tgid 5964 stack trace:
->>>    reset_page_owner include/linux/page_owner.h:25 [inline]
->>>    free_pages_prepare mm/page_alloc.c:1394 [inline]
->>>    __free_frozen_pages+0xbc4/0xd30 mm/page_alloc.c:2906
->>>    pmd_free_pte_page+0xa1/0xc0 arch/x86/mm/pgtable.c:783
->>>    vmap_try_huge_pmd mm/vmalloc.c:158 [inline]
->> ...
->>
->> So, vmap_try_huge_pmd() did a pmd_free_pte_page(). Yet, somehow, the PMD
->> stuck around so that it *could* be used after being freed. It _looks_
->> like pmd_free_pte_page() freed the page, returned 0, and made
->> vmap_try_huge_pmd() return early, skipping the pmd pmd_set_huge().
->>
->> But I don't know how that could possibly happen.
-> 
-> The reported issue is only related to this patch:
-> 
-> - [PATCH v6 3/7] x86/mm: Use 'ptdesc' when freeing PMD pages
-> 
-> It appears that the pmd_ptdesc() helper can't be used directly here in
-> this patch. pmd_ptdesc() retrieves the page table page that the PMD
-> entry resides in:
-> 
-> static inline struct page *pmd_pgtable_page(pmd_t *pmd)
-> {
->           unsigned long mask = ~(PTRS_PER_PMD * sizeof(pmd_t) - 1);
->           return virt_to_page((void *)((unsigned long) pmd & mask));
-> }
-> 
-> static inline struct ptdesc *pmd_ptdesc(pmd_t *pmd)
-> {
->           return page_ptdesc(pmd_pgtable_page(pmd));
-> }
-> 
-> while, in this patch, we need the page descriptor that a pmd entry
-> points to.
+On 10/17/25 07:01, Jason Gunthorpe wrote:
+>>> The other alternative is to have arch_vmap_pmd_supported() return false
+>>> when SVA is active, or maybe when it's supported on the platform.
+>>>
+>>> Either of those are 10-ish lines of code and easy to backport.
+>> Hi iommu folks, any insights on this?
+> IDK, the only SVA user on x86 I know is IDXD, so if you do the above
+> plan you break IDXD in all stable kernels. Doesn't sound OK?
 
-Ah. But that's just pointing at a leaf page table, right?
+Vinicius, any thoughts on this?
 
--- 
-Cheers
+I'm thinking that even messing with arch_vmap_pmd_supported() would be
+suboptimal. The easiest thing is to just stick the attached patch in
+stable kernels and disable SVA at compile time.
 
-David / dhildenb
+There just aren't enough SVA users out in the wild to justify more
+complexity than this.
+--------------GwXy19Mun0gf93RLFz0jKSy7
+Content-Type: text/x-patch; charset=UTF-8; name="svm.patch"
+Content-Disposition: attachment; filename="svm.patch"
+Content-Transfer-Encoding: base64
 
+ZGlmZiAtLWdpdCBhL2FyY2gveDg2L2VudHJ5L3ZzeXNjYWxsL3ZzeXNjYWxsXzY0LmMgYi9h
+cmNoL3g4Ni9lbnRyeS92c3lzY2FsbC92c3lzY2FsbF82NC5jCmluZGV4IGM5MTAzYTZmYTA2
+ZS4uMGIwZTAyODM5OTRmIDEwMDY0NAotLS0gYS9hcmNoL3g4Ni9lbnRyeS92c3lzY2FsbC92
+c3lzY2FsbF82NC5jCisrKyBiL2FyY2gveDg2L2VudHJ5L3ZzeXNjYWxsL3ZzeXNjYWxsXzY0
+LmMKQEAgLTEyNCw3ICsxMjQsOCBAQCBib29sIGVtdWxhdGVfdnN5c2NhbGwodW5zaWduZWQg
+bG9uZyBlcnJvcl9jb2RlLAogCWlmICgoZXJyb3JfY29kZSAmIChYODZfUEZfV1JJVEUgfCBY
+ODZfUEZfVVNFUikpICE9IFg4Nl9QRl9VU0VSKQogCQlyZXR1cm4gZmFsc2U7CiAKLQlpZiAo
+IShlcnJvcl9jb2RlICYgWDg2X1BGX0lOU1RSKSkgeworCS8qIEF2b2lkIGVtdWxhdGlvbiB1
+bmxlc3MgdXNlcnNwYWNlIHdhcyBleGVjdXRpbmcgZnJvbSB2c3lzY2FsbCBwYWdlOiAqLwor
+CWlmIChhZGRyZXNzICE9IHJlZ3MtPmlwKSB7CiAJCS8qIEZhaWxlZCB2c3lzY2FsbCByZWFk
+ICovCiAJCWlmICh2c3lzY2FsbF9tb2RlID09IEVNVUxBVEUpCiAJCQlyZXR1cm4gZmFsc2U7
+CkBAIC0xMzYsMTMgKzEzNywxNiBAQCBib29sIGVtdWxhdGVfdnN5c2NhbGwodW5zaWduZWQg
+bG9uZyBlcnJvcl9jb2RlLAogCQlyZXR1cm4gZmFsc2U7CiAJfQogCisKKwkvKiBYODZfUEZf
+SU5TVFIgaXMgb25seSBzZXQgd2hlbiBOWCBpcyBzdXBwb3J0ZWQ6ICovCisJaWYgKGNwdV9m
+ZWF0dXJlX2VuYWJsZWQoWDg2X0ZFQVRVUkVfTlgpKQorCQlXQVJOX09OX09OQ0UoIShlcnJv
+cl9jb2RlICYgWDg2X1BGX0lOU1RSKSk7CisKIAkvKgogCSAqIE5vIHBvaW50IGluIGNoZWNr
+aW5nIENTIC0tIHRoZSBvbmx5IHdheSB0byBnZXQgaGVyZSBpcyBhIHVzZXIgbW9kZQogCSAq
+IHRyYXAgdG8gYSBoaWdoIGFkZHJlc3MsIHdoaWNoIG1lYW5zIHRoYXQgd2UncmUgaW4gNjQt
+Yml0IHVzZXIgY29kZS4KIAkgKi8KIAotCVdBUk5fT05fT05DRShhZGRyZXNzICE9IHJlZ3Mt
+PmlwKTsKLQogCWlmICh2c3lzY2FsbF9tb2RlID09IE5PTkUpIHsKIAkJd2Fybl9iYWRfdnN5
+c2NhbGwoS0VSTl9JTkZPLCByZWdzLAogCQkJCSAgInZzeXNjYWxsIGF0dGVtcHRlZCB3aXRo
+IHZzeXNjYWxsPW5vbmUiKTsKZGlmZiAtLWdpdCBhL2FyY2gveDg2L21tL3RsYi5jIGIvYXJj
+aC94ODYvbW0vdGxiLmMKaW5kZXggMzlmODAxMTFlNmYxLi5lM2NlOWIwYjI0NDcgMTAwNjQ0
+Ci0tLSBhL2FyY2gveDg2L21tL3RsYi5jCisrKyBiL2FyY2gveDg2L21tL3RsYi5jCkBAIC02
+NjUsNiArNjY1LDcgQEAgc3RhdGljIHVuc2lnbmVkIGxvbmcgbW1fbWFuZ2xlX3RpZl9zcGVj
+X2JpdHMoc3RydWN0IHRhc2tfc3RydWN0ICpuZXh0KQogc3RhdGljIHZvaWQgY29uZF9taXRp
+Z2F0aW9uKHN0cnVjdCB0YXNrX3N0cnVjdCAqbmV4dCkKIHsKIAl1bnNpZ25lZCBsb25nIHBy
+ZXZfbW0sIG5leHRfbW07CisJYm9vbCB1c2Vyc3BhY2VfbmVlZHNfaWJwYiA9IGZhbHNlOwog
+CiAJaWYgKCFuZXh0IHx8ICFuZXh0LT5tbSkKIAkJcmV0dXJuOwpAQCAtNzIyLDcgKzcyMyw3
+IEBAIHN0YXRpYyB2b2lkIGNvbmRfbWl0aWdhdGlvbihzdHJ1Y3QgdGFza19zdHJ1Y3QgKm5l
+eHQpCiAJCSAqLwogCQlpZiAobmV4dF9tbSAhPSBwcmV2X21tICYmCiAJCSAgICAobmV4dF9t
+bSB8IHByZXZfbW0pICYgTEFTVF9VU0VSX01NX0lCUEIpCi0JCQlpbmRpcmVjdF9icmFuY2hf
+cHJlZGljdGlvbl9iYXJyaWVyKCk7CisJCQl1c2Vyc3BhY2VfbmVlZHNfaWJwYiA9IHRydWU7
+CiAJfQogCiAJaWYgKHN0YXRpY19icmFuY2hfdW5saWtlbHkoJnN3aXRjaF9tbV9hbHdheXNf
+aWJwYikpIHsKQEAgLTczMiw5ICs3MzMsMTEgQEAgc3RhdGljIHZvaWQgY29uZF9taXRpZ2F0
+aW9uKHN0cnVjdCB0YXNrX3N0cnVjdCAqbmV4dCkKIAkJICogbGFzdCBvbiB0aGlzIENQVS4K
+IAkJICovCiAJCWlmICgocHJldl9tbSAmIH5MQVNUX1VTRVJfTU1fU1BFQ19NQVNLKSAhPSAo
+dW5zaWduZWQgbG9uZyluZXh0LT5tbSkKLQkJCWluZGlyZWN0X2JyYW5jaF9wcmVkaWN0aW9u
+X2JhcnJpZXIoKTsKKwkJCXVzZXJzcGFjZV9uZWVkc19pYnBiID0gdHJ1ZTsKIAl9CiAKKwl0
+aGlzX2NwdV93cml0ZSh4ODZfaWJwYl9leGl0X3RvX3VzZXIsIHVzZXJzcGFjZV9uZWVkc19p
+YnBiKTsKKwogCWlmIChzdGF0aWNfYnJhbmNoX3VubGlrZWx5KCZzd2l0Y2hfbW1fY29uZF9s
+MWRfZmx1c2gpKSB7CiAJCS8qCiAJCSAqIEZsdXNoIEwxRCB3aGVuIHRoZSBvdXRnb2luZyB0
+YXNrIHJlcXVlc3RlZCBpdCBhbmQvb3IKZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvaW50
+ZWwvS2NvbmZpZyBiL2RyaXZlcnMvaW9tbXUvaW50ZWwvS2NvbmZpZwppbmRleCBmMmY1Mzhj
+NzA2NTAuLmE1ZDY2YmZkOWU1MCAxMDA2NDQKLS0tIGEvZHJpdmVycy9pb21tdS9pbnRlbC9L
+Y29uZmlnCisrKyBiL2RyaXZlcnMvaW9tbXUvaW50ZWwvS2NvbmZpZwpAQCAtNDgsNyArNDgs
+MTAgQEAgY29uZmlnIElOVEVMX0lPTU1VX0RFQlVHRlMKIAogY29uZmlnIElOVEVMX0lPTU1V
+X1NWTQogCWJvb2wgIlN1cHBvcnQgZm9yIFNoYXJlZCBWaXJ0dWFsIE1lbW9yeSB3aXRoIElu
+dGVsIElPTU1VIgotCWRlcGVuZHMgb24gWDg2XzY0CisJIyBUaGUga2VybmVsIGRvZXMgbm90
+IGludmFsaWRhdGUgSU9UTEIgZW50cmllcyB3aGVuIGZyZWVpbmcKKwkjIGtlcm5lbCBwYWdl
+IHRhYmxlcy4gVGhpcyBjYW4gbGVhZCB0byBJT01NVXMgd2Fsa2luZyAoYW5kCisJIyB3cml0
+aW5nIHRvKSBDUFUgcGFnZSB0YWJsZXMgYWZ0ZXIgdGhleSBhcmUgZnJlZWQuCisJZGVwZW5k
+cyBvbiBCUk9LRU4KIAlzZWxlY3QgTU1VX05PVElGSUVSCiAJc2VsZWN0IElPTU1VX1NWQQog
+CWhlbHAK
+
+--------------GwXy19Mun0gf93RLFz0jKSy7--
