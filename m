@@ -1,127 +1,85 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AAADD137923;
-	Fri, 17 Oct 2025 16:14:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 286C92E5D17
+	for <iommu@lists.linux.dev>; Fri, 17 Oct 2025 16:50:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760717643; cv=none; b=lz36GyM0YAyipewhfiqZkzzWFCUG5HWF7yw5fl0Tr6ltmyctSJQe9f2EHdJWsZ3ZCw6c2dlVaFaylxHt4RPjgGHXG+CDyPpcogDcXIdUc70cpjvaCDpixJIlreEFgicGcFwjsWzjSOkidjwSJnh19P607Tz1Q/6AttO6l7wyZnw=
+	t=1760719835; cv=none; b=eITgwn7eeTCaVc1RpCTcSqaT9HEoOZHJtV4BqAZ2gpu7EklddV06O1UM+mmJgffIR1gMCPaNj2Y89ul8ARrym+cgvuELVKaKXFETZrKIaewt66mo6SiXMAA7p4CdMsf9L9VmRkVf1xmUJKwTTfJE2tk5MhgJuzxtZzPqbQAIOf4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760717643; c=relaxed/simple;
-	bh=CFcYtcEk7uP8GckKeqhWU4+P+5/c+ra0lxow6L4SUMs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=DLI6bkp7lceRb9LLEScfPsVWhNWoKxpF/W9RfySAsFKj1l/3A2BakFgoI542UQOTgwi9jVkS0yLnqvw5T0FwNA/l6FZk91P6xCGXJVKxct68F1EyOXDQ4WNkgOo0pBwfObfE448MYoNiB2jgKtJQFrcPa7lRpuVoq+eqcw+p7rk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jTCLpLij; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1760719835; c=relaxed/simple;
+	bh=mtCbXHEAPt2iILdrFLSo9e/AY9Dnd5QIxv4IZlxgLUY=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=Zo3DRAY8lghT90my/zsfGhI9L39CLfmbiHv/qJdpBZfXR8wb/1C3tHxOOfIkPxD66rAm+Xr6RhTC3dSfiTHC2G4n7PlpqNuaD/3cFiu3Sa4QkuWmf4Vy0k6LMHBhWhX7uqqtpqgmuYM4bhfefbayX2ybmzBOQpaLSoLohMzD89o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=Rx5DkkLh; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jTCLpLij"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82A6CC4CEE7;
-	Fri, 17 Oct 2025 16:14:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1760717643;
-	bh=CFcYtcEk7uP8GckKeqhWU4+P+5/c+ra0lxow6L4SUMs=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=jTCLpLij/ghgEicXuXTN+FZWe2vozg4SlZDHShFYvfPIUqub9PEm0BZPbrfwhk5Y5
-	 kHa3fBtd0I8PMX+AkKdag0U4BIzd+49ChSgph58nyWLMOvvlEkwLSjIU2QA34zc5nd
-	 BpBoDkebgbg0pPisYn/W4PGMd45z0hbP0jVSgkM4MgKyCqfaMb/c3ml+HtbaZZruJK
-	 9IAS1YwF8RfmI7S0ETdhisl70QdOy43W8iOfuHMtQEZdTi632zsoLdFP1Hd/l02tPB
-	 yhqVnuCW1LoEbFlWHwImXvx1hZKb3X24VRl34jQQI9Hw9D2yq1wpOpB62Ntmkc5Aj7
-	 qEnbZ7Op0le6g==
-Date: Fri, 17 Oct 2025 19:13:58 +0300
-From: Leon Romanovsky <leon@kernel.org>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="Rx5DkkLh"
+Received: from localhost (unknown [20.236.10.66])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 0F0C1201726A;
+	Fri, 17 Oct 2025 09:50:32 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 0F0C1201726A
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1760719833;
+	bh=WuaP/6xvHr8sPltUX+ihhaZydpYE0LvTzCz4z5o5434=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=Rx5DkkLhSMxz9rqZXdRkTkeh4YUpyDDxrZnxO6EHexshdwlHWQ6Cod58U7s5KiI6k
+	 GX8U10UXBDo005auREFjks/g71fW0woQG2bWmitqDnkRkWDTsgAP3az2iuurhJDh+L
+	 4Kr+Cwnjl/lt4yS1daPUU4kPqjcwpEWUoM9tk3nE=
+Date: Fri, 17 Oct 2025 09:50:31 -0700
+From: Jacob Pan <jacob.pan@linux.microsoft.com>
 To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Alex Williamson <alex.williamson@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-	dri-devel@lists.freedesktop.org, iommu@lists.linux.dev,
-	Jens Axboe <axboe@kernel.dk>, Joerg Roedel <joro@8bytes.org>,
-	kvm@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
-	linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-media@vger.kernel.org, linux-mm@kvack.org,
-	linux-pci@vger.kernel.org, Logan Gunthorpe <logang@deltatee.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Sumit Semwal <sumit.semwal@linaro.org>,
-	Vivek Kasireddy <vivek.kasireddy@intel.com>,
-	Will Deacon <will@kernel.org>
-Subject: Re: [PATCH v5 9/9] vfio/pci: Add dma-buf export support for MMIO
- regions
-Message-ID: <20251017161358.GC6199@unreal>
-References: <cover.1760368250.git.leon@kernel.org>
- <72ecaa13864ca346797e342d23a7929562788148.1760368250.git.leon@kernel.org>
- <20251017130249.GA309181@nvidia.com>
+Cc: Mostafa Saleh <smostafa@google.com>, linux-kernel@vger.kernel.org,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>, Will Deacon
+ <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Nicolin Chen
+ <nicolinc@nvidia.com>, Zhang Yu <zhangyu1@linux.microsoft.com>, Jean
+ Philippe-Brucker <jean-philippe@linaro.org>, Alexander Grest
+ <Alexander.Grest@microsoft.com>
+Subject: Re: [PATCH 0/2] SMMU v3 CMDQ fix and improvement
+Message-ID: <20251017095031.00000b84@linux.microsoft.com>
+In-Reply-To: <20251017135145.GL3901471@nvidia.com>
+References: <20250924175438.7450-1-jacob.pan@linux.microsoft.com>
+	<aPIhMGnzHiBkIEam@google.com>
+	<20251017135145.GL3901471@nvidia.com>
+Organization: LSG
+X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20251017130249.GA309181@nvidia.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Fri, Oct 17, 2025 at 10:02:49AM -0300, Jason Gunthorpe wrote:
-> On Mon, Oct 13, 2025 at 06:26:11PM +0300, Leon Romanovsky wrote:
-> > +static void dma_ranges_to_p2p_phys(struct vfio_pci_dma_buf *priv,
-> > +				   struct vfio_device_feature_dma_buf *dma_buf,
-> > +				   struct vfio_region_dma_range *dma_ranges,
-> > +				   struct p2pdma_provider *provider)
-> > +{
-> > +	struct pci_dev *pdev = priv->vdev->pdev;
-> > +	phys_addr_t pci_start;
-> > +	u32 i;
-> > +
-> > +	pci_start = pci_resource_start(pdev, dma_buf->region_index);
-> > +	for (i = 0; i < dma_buf->nr_ranges; i++) {
-> > +		priv->phys_vec[i].len = dma_ranges[i].length;
-> > +		priv->phys_vec[i].paddr = pci_start + dma_ranges[i].offset;
-> > +		priv->size += priv->phys_vec[i].len;
-> > +	}
-> 
-> This is missing validation, the userspace can pass in any
-> length/offset but the resource is of limited size. Like this:
-> 
-> static int dma_ranges_to_p2p_phys(struct vfio_pci_dma_buf *priv,
-> 				  struct vfio_device_feature_dma_buf *dma_buf,
-> 				  struct vfio_region_dma_range *dma_ranges,
-> 				  struct p2pdma_provider *provider)
-> {
-> 	struct pci_dev *pdev = priv->vdev->pdev;
-> 	phys_addr_t len = pci_resource_len(pdev, dma_buf->region_index);
-> 	phys_addr_t pci_start;
-> 	phys_addr_t pci_last;
-> 	u32 i;
-> 
-> 	if (!len)
-> 		return -EINVAL;
-> 	pci_start = pci_resource_start(pdev, dma_buf->region_index);
-> 	pci_last = pci_start + len - 1;
-> 	for (i = 0; i < dma_buf->nr_ranges; i++) {
-> 		phys_addr_t last;
-> 
-> 		if (!dma_ranges[i].length)
-> 			return -EINVAL;
-> 
-> 		if (check_add_overflow(pci_start, dma_ranges[i].offset,
-> 				       &priv->phys_vec[i].paddr) ||
-> 		    check_add_overflow(priv->phys_vec[i].paddr,
-> 				       dma_ranges[i].length - 1, &last))
-> 			return -EOVERFLOW;
-> 		if (last > pci_last)
-> 			return -EINVAL;
-> 
-> 		priv->phys_vec[i].len = dma_ranges[i].length;
-> 		priv->size += priv->phys_vec[i].len;
-> 	}
-> 	priv->nr_ranges = dma_buf->nr_ranges;
-> 	priv->provider = provider;
-> 	return 0;
-> }
+On Fri, 17 Oct 2025 10:51:45 -0300
+Jason Gunthorpe <jgg@nvidia.com> wrote:
 
-I have these checks in validate_dmabuf_input(). Do you think that I need
-to add extra checks?
-
-Thanks
-
+> On Fri, Oct 17, 2025 at 10:57:52AM +0000, Mostafa Saleh wrote:
+> > On Wed, Sep 24, 2025 at 10:54:36AM -0700, Jacob Pan wrote:  
+> > > Hi Will et al,
+> > > 
+> > > These two patches are derived from testing SMMU driver with
+> > > smaller CMDQ sizes where we see soft lockups.
+> > > 
+> > > This happens on HyperV emulated SMMU v3 as well as baremetal ARM
+> > > servers with artificially reduced queue size and microbenchmark
+> > > to stress test concurrency.  
+> > 
+> > Is it possible to share what are the artificial sizes and does the
+> > HW/emulation support range invalidation (IRD3.RIL)?
+> > 
+> > I'd expect it would be really hard to overwhelm the command queue,
+> > unless the HW doesn't support range invalidation and/or the queue
+> > entries are close to the number of CPUs.  
 > 
-> Jason
+> At least on Jacob's system there is no RIL and there are 72/144 CPU
+> cores potentially banging on this.
+> 
+> I think it is combination of lots of required invalidation commands,
+> low queue depth and slow retirement of commands that make it easier to
+> create a queue full condition.
+> 
+> Without RIL one SVA invalidation may take out the entire small queue,
+> for example.
+Right, no range invalidation and queue depth is 256 in this case.
+
