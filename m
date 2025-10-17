@@ -1,79 +1,64 @@
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 706FC331A44
-	for <iommu@lists.linux.dev>; Fri, 17 Oct 2025 13:04:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C920334AAEE;
+	Fri, 17 Oct 2025 13:49:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760706297; cv=none; b=i9teuyuc9yt0XHLyjrCtx8NOqrzKPKr0V8OJL6dQN8oExIIzM2F6VAm70FS/jOvS0l7QuQ+4XeBbd0spAdIUEpegcSFw8fx+dSzwrf/5VXCgghhT64G8dGVl2axuEjxepIrtl8cieZ65f7nWpg9HAUlOFCW9wpbI4U6fij8l5kA=
+	t=1760708946; cv=none; b=oE+o7IHuxNtXceqdCQVsjU5DW4bCT3WL44K+iTOdHJhOgW+OwUgLAThkPn92mKmwVdrZyzQuYYqB5y17FWxdBgPtvQu5d9ahkErINGgyb1vXO16L21C5JrHfJBRDfMxcG9yYqzR0WFFyvxDHf7RGboHBoRjEr9isfLVBEfw8B74=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760706297; c=relaxed/simple;
-	bh=D6GD96XH6c1uPDjO4m7Me2P068YTsAO1fDghSTnE868=;
+	s=arc-20240116; t=1760708946; c=relaxed/simple;
+	bh=Zi09GkycV22dT8wm57/LcjjsOT5fAWiZE/vyzw5z4N8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=T5OHurL2CZeJ00HOto4QPz57Ota7WKSzUs8jRQ4tOzStZlmc/oxWaNKUAT6c3X7/i+jcm3N2bVdkR/ldv8MLVj/2ZUR01kWVnFFr/HBzOTvbc3nMW4647i+fnXNTr2POcfc0OBfCG9PyLK1sTdNX2e8OigCkx9Mfa5ajMZ+xmck=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=wuDQkZnO; arc=none smtp.client-ip=209.85.128.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=T0P2Ky1MBYJTP6cww/Pf1+dwWejAbbE8WpGN9rx7zUIDySowcOCmZBMOBxnZPWwBCp7psqTbYCqAjLAgnS/Uvsssw/ZfMGeTIUuCWtv8I9GO1tN+NjIpUg7XHFdNgpufr/df0ZaZfTGccB+wXsf9vk+J+5WATQ8tJGstyrlo5Yc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hjeR+N/6; arc=none smtp.client-ip=198.175.65.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="wuDQkZnO"
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-470ff2f6e56so61815e9.0
-        for <iommu@lists.linux.dev>; Fri, 17 Oct 2025 06:04:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1760706294; x=1761311094; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=/uOtMpgkdFsT3xs6ZaMKy6KvAAsnI9htzuHhcFlR9Cc=;
-        b=wuDQkZnOQHCCc1xpSQbHk0TMuzBP2ffQndPNqTaAvznN7pZBWliYCK8w++Go8chT9t
-         rcnTccbw0ikuMD0Z8g+GG36rCGaDs7+EpSar8R2bIvX38e1DIGEyBvtunPGmdznaYRxl
-         9D2GwlExfGtp2jzmZlCK2fJRVxRtIWRSwVqTUhMV1OywgYMM5c1RgbclIOv9e6SttPqe
-         RHIY71WvfGoWIcKO3Nni8FY3WY+tgPi0bstWSC5bP3p8HleW83Dbe3Oa028IKG5HorrY
-         IE31to4iqVt73C7CzNA9z+DszM+zj8KHq/biFrhHVDDW/kQmF+3uwTTbZiJiJ9gJrRmc
-         wfGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1760706294; x=1761311094;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=/uOtMpgkdFsT3xs6ZaMKy6KvAAsnI9htzuHhcFlR9Cc=;
-        b=Kces8DTSmtHth/KR05q7nqIH1NvRlWX2vGWGgYiLyjwNxol+MwIdDOFG9ac9MRcY9P
-         oUfDblCZwi3onPpZXD+itNAn/G0ZwErdBG+ENzAabvhmjBfefqtkwn0re8aD7p1GWUMc
-         rmYtOD75vzovrsGK2BwKRHVRARV9XaX9ffE/ZKB/BVzwI4Mn8pSMp7xL89E/eEzddyxL
-         CHttTLp97H2VM49Ve15DNI8jZTcGkAgk6CFn50w0m/8eLZvm+hQUSBHyItfOelvI+hZP
-         G6HMLkQDVLUcNu18j7a4VkExYo/yEMr9765yiV1hyEI2lC37Jd5f2tvROH+TX/YBPjbG
-         3zvw==
-X-Forwarded-Encrypted: i=1; AJvYcCXmr+oIs2/Ec6a/IPr8hWK5abpQOg+S+Sdt+/Y6lhDvKaPR0JpsuqQzDZSH1K/WuTjzMu9Cvw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Ywi24SYEqY9Fz/1CDLA18wBbQeabpGK87TpGwoy3QNDgkWF2oSC
-	PKoPStXixCtFgtxjCiI23gDLHNYYdGuw3+CCLvo9zelYtkLVZwqNgtuSAINtPvCPag==
-X-Gm-Gg: ASbGncv6gCjPiney6FaK+ZZ0tbbG16jZlarESe5hIvvKKO9MnYx/L5BcqIvVtTd5D4R
-	vge0yTUjg5AOimVeSYE7rSLBtaPHZMIAR3RpzGthRIuoX+Kg9F4Ej0NMZvP8RH741hAptObJnmL
-	YGkze6WRrecH3ZBlfYYyNAKRHKmAYAZ4P88Hek4wPoiUVCUxY6zZcoRHSr1po0FXQFBc4KNBaVd
-	ExN80WTeWbNJq3KCoVw1YF/hn5/MCWaPbXOlRpX0r6Cu1IzKqZZ32JWpHkTOa9VLkO+hUnieKss
-	LjrzAIFiuXGHuKTsOq2Lr/7+kvLF8piSN7uj+PIPdyfBK00ayN3xjsLSG6zPvPHtz5mmMuWN0pR
-	h5cv2Pt+HR7bteTVXUvhKYrgo69UVwN2KuMT73dYPbzb66n+To+lUcHj/hXr9K9ESxyTABiwa6/
-	CTfFHwX+T88Gw2ahY3U/+Zfo5yt+Dl4TTF9TnPBQ==
-X-Google-Smtp-Source: AGHT+IHHqOInInZkrsgUSaFHEdB/oepCnSzJpUuVqDSMtpMN/dAjmVaOtZHBHO2hfRyQeEAhX4nWOA==
-X-Received: by 2002:a05:600c:c117:b0:45d:f51c:193 with SMTP id 5b1f17b1804b1-470ff2e9797mr4996635e9.7.1760706293693;
-        Fri, 17 Oct 2025 06:04:53 -0700 (PDT)
-Received: from google.com (140.240.76.34.bc.googleusercontent.com. [34.76.240.140])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-471144b5d48sm83222295e9.9.2025.10.17.06.04.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Oct 2025 06:04:53 -0700 (PDT)
-Date: Fri, 17 Oct 2025 13:04:49 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	will@kernel.org, joro@8bytes.org, praan@google.com
-Subject: Re: [PATCH v5 4/4] iommu/io-pgtable-arm-selftests: Use KUnit
-Message-ID: <aPI-8YfqC83QlltH@google.com>
-References: <20250929155001.3287719-1-smostafa@google.com>
- <20250929155001.3287719-5-smostafa@google.com>
- <86ca3918-4992-41a2-894f-f1fd8ce4121f@arm.com>
- <aO9vI1aEhnyZx1PL@google.com>
- <b48193a4-a37b-41ba-b4ba-8b5c67d812bd@arm.com>
- <20251015151002.GH3938986@ziepe.ca>
- <73a1d5d0-8077-450c-a38f-c1b027088258@arm.com>
- <20251016172524.GN3938986@ziepe.ca>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hjeR+N/6"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1760708944; x=1792244944;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Zi09GkycV22dT8wm57/LcjjsOT5fAWiZE/vyzw5z4N8=;
+  b=hjeR+N/6uhqSjf2+gQQhIMkKNihLPOqR3WzESgK6LGz4geGfQyjR6cte
+   4dI+uH8rEBd6T4pPvoG1ymBJoQAN5iux5Vf/TvpckjF2Ge0U6g46d1ELk
+   Pv5pUy+Q0E0BUMrdKvSBE6REycBHSoxApgbo6QPHzNexmJ+4dMSCqC+Wk
+   8nKsZIqxezRmVneHEK+e9euUXsq5kPmoR8FK4EckYjjTI+50DiARyYZW1
+   39s7qbHe3FpCqthcffw4VXceF0rSHv0JLJhCMArp5YCZAXH17ggcwamDl
+   004vL8L8N14tar9CetmzqRRegS4tlqy33hJocNkXKwL6gQgGLaTbQlCqM
+   A==;
+X-CSE-ConnectionGUID: S75PMGkFQJGib/OZpaYPkQ==
+X-CSE-MsgGUID: xJfdCZBoSe20in+8VYVTyA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11585"; a="85536051"
+X-IronPort-AV: E=Sophos;i="6.19,236,1754982000"; 
+   d="scan'208";a="85536051"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Oct 2025 06:49:04 -0700
+X-CSE-ConnectionGUID: TUlmEQZ6R7S3EFzMCTd7uQ==
+X-CSE-MsgGUID: rby14u31Tvqwz37AjO2YBQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.19,236,1754982000"; 
+   d="scan'208";a="182438446"
+Received: from lkp-server02.sh.intel.com (HELO 66d7546c76b2) ([10.239.97.151])
+  by fmviesa007.fm.intel.com with ESMTP; 17 Oct 2025 06:48:59 -0700
+Received: from kbuild by 66d7546c76b2 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1v9koW-0005zZ-34;
+	Fri, 17 Oct 2025 13:48:24 +0000
+Date: Fri, 17 Oct 2025 21:47:07 +0800
+From: kernel test robot <lkp@intel.com>
+To: Nicolin Chen <nicolinc@nvidia.com>, will@kernel.org, jgg@nvidia.com
+Cc: oe-kbuild-all@lists.linux.dev, jean-philippe@linaro.org,
+	robin.murphy@arm.com, joro@8bytes.org, balbirs@nvidia.com,
+	miko.lenczewski@arm.com, peterz@infradead.org, kevin.tian@intel.com,
+	praan@google.com, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 3/7] iommu/arm-smmu-v3: Introduce a per-domain
+ arm_smmu_invs array
+Message-ID: <202510172156.WHU485ad-lkp@intel.com>
+References: <345bb7703ebd19992694758b47e371900267fa0e.1760555863.git.nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -82,41 +67,61 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20251016172524.GN3938986@ziepe.ca>
+In-Reply-To: <345bb7703ebd19992694758b47e371900267fa0e.1760555863.git.nicolinc@nvidia.com>
 
-On Thu, Oct 16, 2025 at 02:25:24PM -0300, Jason Gunthorpe wrote:
-> On Thu, Oct 16, 2025 at 06:17:35PM +0100, Robin Murphy wrote:
-> 
-> > In this case AFAICS kunit_device_register() can only fail due to OOM or
-> > something unexpectedly messed up in the kobject/sysfs hierarchy, all of
-> > which should already scream (and represent the system being sufficiently
-> > hosed that any actual test results probably no longer matter anyway) -
-> > otherwise I would have suggested a kunit_err() message too.
-> 
-> Yes, I think so too. Which is why I think the simple
-> KUNIT_ASSERT_FALSE is fine - we don't need to over think something
-> that should never happen.
-> 
-> Basically it is a simple logic for the test writer, any thing in the
-> test body that doesn't work as expected triggers a
-> KUNIT_ASSERT. Infrastructure included.
-> 
-> At least that is how I've written all my tests so far, including the
-> userspace ones..
+Hi Nicolin,
 
-Maybe as Robin suggested, something as:
-	if (IS_ERR(dev)) {
-		kunit_skip(test, "Failed to allocated device!\n");
-		return;
-	}
+kernel test robot noticed the following build warnings:
 
-Is simple enough and verbose and can distinguished from test failures,
-it will look like:
-[    2.095812]     ok 1 arm_lpae_do_selftests # SKIP Failed to allocated device!
+[auto build test WARNING on soc/for-next]
+[also build test WARNING on linus/master v6.18-rc1 next-20251016]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-Thanks,
-Mostafa
+url:    https://github.com/intel-lab-lkp/linux/commits/Nicolin-Chen/iommu-arm-smmu-v3-Explicitly-set-smmu_domain-stage-for-SVA/20251016-034754
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/soc/soc.git for-next
+patch link:    https://lore.kernel.org/r/345bb7703ebd19992694758b47e371900267fa0e.1760555863.git.nicolinc%40nvidia.com
+patch subject: [PATCH v3 3/7] iommu/arm-smmu-v3: Introduce a per-domain arm_smmu_invs array
+config: arm64-randconfig-r123-20251017 (https://download.01.org/0day-ci/archive/20251017/202510172156.WHU485ad-lkp@intel.com/config)
+compiler: clang version 22.0.0git (https://github.com/llvm/llvm-project 754ebc6ebb9fb9fbee7aef33478c74ea74949853)
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20251017/202510172156.WHU485ad-lkp@intel.com/reproduce)
 
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202510172156.WHU485ad-lkp@intel.com/
 
-> 
-> Jason
+sparse warnings: (new ones prefixed by >>)
+   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c: note: in included file:
+>> drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h:1048:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected struct callback_head *head @@     got struct callback_head [noderef] __rcu * @@
+   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h:1048:9: sparse:     expected struct callback_head *head
+   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h:1048:9: sparse:     got struct callback_head [noderef] __rcu *
+>> drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h:1048:9: sparse: sparse: cast removes address space '__rcu' of expression
+--
+   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c: note: in included file (through arch/arm64/include/asm/atomic.h, include/linux/atomic.h, include/asm-generic/bitops/atomic.h, ...):
+   arch/arm64/include/asm/cmpxchg.h:168:1: sparse: sparse: cast truncates bits from constant value (ffffffff80000000 becomes 0)
+   arch/arm64/include/asm/cmpxchg.h:168:1: sparse: sparse: cast truncates bits from constant value (ffffffff80000000 becomes 0)
+   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c: note: in included file:
+>> drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h:1048:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected struct callback_head *head @@     got struct callback_head [noderef] __rcu * @@
+   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h:1048:9: sparse:     expected struct callback_head *head
+   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h:1048:9: sparse:     got struct callback_head [noderef] __rcu *
+>> drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h:1048:9: sparse: sparse: cast removes address space '__rcu' of expression
+>> drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h:1048:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected struct callback_head *head @@     got struct callback_head [noderef] __rcu * @@
+   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h:1048:9: sparse:     expected struct callback_head *head
+   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h:1048:9: sparse:     got struct callback_head [noderef] __rcu *
+>> drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h:1048:9: sparse: sparse: cast removes address space '__rcu' of expression
+
+vim +1048 drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+
+  1045	
+  1046	static inline void arm_smmu_domain_free(struct arm_smmu_domain *smmu_domain)
+  1047	{
+> 1048		kfree_rcu(smmu_domain->invs, rcu);
+  1049		kfree(smmu_domain);
+  1050	}
+  1051	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
