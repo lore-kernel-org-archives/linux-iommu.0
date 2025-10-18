@@ -1,130 +1,261 @@
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com [209.85.218.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DFDF62D7DC8
-	for <iommu@lists.linux.dev>; Sat, 18 Oct 2025 13:26:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=60.244.123.138
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1D1422127A
+	for <iommu@lists.linux.dev>; Sat, 18 Oct 2025 16:03:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760794000; cv=none; b=igarFeRgkKMnU/yap2vEpllQ/Eug2T87D1Km49HyvxE7Bogrc27CJqkv/30t63wBa6/o5U0qDacCWeJG9zl3MUgerWA6rBXXekIE+D85ECCrmf5JhvSg2MTvTj2kLB8wsogpqj9ncs8s4LjHqYFbS0y8MDWG4Et2cFuS+4cQuCE=
+	t=1760803411; cv=none; b=CsVyoEmyM9coLG+dbttitI9hKwMCehVTwv+B7zNS+lNsPihRi0wbMKBIi1Clk9M71VWFlQyb5IRRZIMOMV3ZQWHeS6qYf8MDAJV0eCEzuzRYmMQxJwUlDP2CAOi9C0IQ5X8DtP64nu06S7JN1wvv09APVDyfE70X3+r2wckKWAQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760794000; c=relaxed/simple;
-	bh=C5nGxywVFgoREh4zne4pmgDnPHDvmBiqbUS2gaJRZyk=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=QQCeLPG9aPzDsTNzGCEiHQ7T1ZKjHm86vZqisyUH7bmZZVCiFpVdC/2CND7BH2TXw379wLtOH8fMROcZmWEegSGFh/nmRT+1eItkvKqoOHWYFJy6Hcdn539pfqDDyQwgJ5hT+YxhAb6zb/+/Zb5ja9YJka1P6T/3Rf/wHl/XF6Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com; spf=pass smtp.mailfrom=mediatek.com; dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b=ez8RxCs6; arc=none smtp.client-ip=60.244.123.138
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mediatek.com
+	s=arc-20240116; t=1760803411; c=relaxed/simple;
+	bh=AqHCcWojn351gM4lS2LpJMueGLu6kVYRaIe4ZTtmHj0=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=eJpw1KY0tNljAsE5E+LGYJqnoInC1fCCV8gedc1q0PrJKW3QITcp1RjLDkbd9K4fx7UmEfddvXnBUy3WdnIrV7hvVNlhAOL5kdh0nbxyDN0ZYIwqZzRX0H+wUY+TMAm2201SKq0ITrEFgjcikOwI/yD4+sI1sb3wNyRF9KXJkW8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=ziWzdxdE; arc=none smtp.client-ip=209.85.218.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="ez8RxCs6"
-X-UUID: 1140bdeaac2611f0ae1e63ff8927bad3-20251018
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-	h=Content-Type:Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=GqSnn4N2+xwCdyaHv2txZ21/LyrmQQPl6bRhFXBkPBc=;
-	b=ez8RxCs6rivwBKmKWW8L1/0WHJ8fdxbr0Ca+r3lQNH+7IrwyTIpVpXqYsk/TV5HdemEhSvlxke+EylXcc3goEPQc9ErQggqPeybcVs9Ppf28Vmb0bvV8D9he8lSRAb+8GQVUH/V+qkSdGENrnz7JwM8CHOYgjNr0wzlg2N5FqhY=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.3.6,REQID:258ecbcd-8b26-46d7-9a1a-08cb9c5b0cd5,IP:0,UR
-	L:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:r
-	elease,TS:0
-X-CID-META: VersionHash:a9d874c,CLOUDID:25335a86-2e17-44e4-a09c-1e463bf6bc47,B
-	ulkID:nil,BulkQuantity:0,Recheck:0,SF:81|82|102|836|888|898,TC:-5,Content:
-	0|15|50,EDM:-3,IP:nil,URL:0,File:130,RT:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,
-	OSI:0,OSA:0,AV:0,LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
-X-CID-BVR: 2,SSN|SDN
-X-CID-BAS: 2,SSN|SDN,0,_
-X-CID-FACTOR: TF_CID_SPAM_SNR
-X-CID-RHF: D41D8CD98F00B204E9800998ECF8427E
-X-UUID: 1140bdeaac2611f0ae1e63ff8927bad3-20251018
-Received: from mtkmbs14n1.mediatek.inc [(172.21.101.75)] by mailgw01.mediatek.com
-	(envelope-from <zhengnan.chen@mediatek.com>)
-	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-	with ESMTP id 1654531085; Sat, 18 Oct 2025 21:26:34 +0800
-Received: from mtkmbs13n1.mediatek.inc (172.21.101.193) by
- MTKMBS14N1.mediatek.inc (172.21.101.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.26; Sat, 18 Oct 2025 21:26:30 +0800
-Received: from mhfsdcap04.gcn.mediatek.inc (10.17.3.154) by
- mtkmbs13n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.1748.26 via Frontend Transport; Sat, 18 Oct 2025 21:26:29 +0800
-From: Zhengnan Chen <zhengnan.chen@mediatek.com>
-To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, Will
- Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Rob Herring
-	<robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
-	<conor+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-CC: <iommu@lists.linux.dev>, <linux-mediatek@lists.infradead.org>,
-	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>,
-	<Project_Global_Chrome_Upstream_Group@mediatek.com>, Zhengnan Chen
-	<zhengnan.chen@mediatek.com>
-Subject: [PATCH v4 5/5] iommu/mediatek: mt8189: Add MM IOMMUs support
-Date: Sat, 18 Oct 2025 21:26:14 +0800
-Message-ID: <20251018132625.14428-6-zhengnan.chen@mediatek.com>
-X-Mailer: git-send-email 2.46.0
-In-Reply-To: <20251018132625.14428-1-zhengnan.chen@mediatek.com>
-References: <20251018132625.14428-1-zhengnan.chen@mediatek.com>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="ziWzdxdE"
+Received: by mail-ej1-f41.google.com with SMTP id a640c23a62f3a-b472842981fso383063666b.1
+        for <iommu@lists.linux.dev>; Sat, 18 Oct 2025 09:03:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1760803406; x=1761408206; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=3PDE1i70uMuyHnvAFVWfjyIRl/K/1UfDOKuhRPGumqU=;
+        b=ziWzdxdEzbfgh9mpchBXgxLIoHRWvvwJHlmh0QGcGz4W8mmDQXlt1z+HD9Ad2bO+Zm
+         RsUdC6GUH4Y1gIxqHvj3MWl3nOfHXg8VUREyFyI89/KbAyx0GgWxc50s7FNtyHUWUCyT
+         +dfeE1+XVIcqrZFYtA8KzkwI+htzhE9i8JHrcSjPH6XteMMCg756bcurcRgByK7VqpT0
+         ei0+PDR27brzMKzXxTAJ9dlOnUCeLkzBDjAbxqER6QnHktExHyHMXzd6o6pKOwHKb7Kh
+         +gpBqHMzKm5HgoOB1N3ipMyRgyQ2R7bbpkdMsUPtNU9IqyWlbnkgED0Og3ElGSR5fMXe
+         kbyw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1760803406; x=1761408206;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=3PDE1i70uMuyHnvAFVWfjyIRl/K/1UfDOKuhRPGumqU=;
+        b=HqFALl7TUYIp0If4vHYd1j4rX+sGon8GvD7bLR93k9VR4xdwVHJXUU0RM4wQnyCkwJ
+         eBxV37Yl0S2xcmdT/e+TAYh0yhrjmlG39hoKW6oNhGSHXCjg+Ka8NZTGOl5f+jND2HML
+         dOew5qvRTG2vJhQcLMfadAw0czZbUqtHnQujs0L6gXaPXQWoFWghD3jDM85k9/7UGw/o
+         8fjZmaDqMQlcxPlcOy1yGn9B8tsY7/oxBOLm2TtkPQEfzv69+4AhY6gR5JorhEFhn5Kw
+         OVhE0rjVfLpQ7nRcYpIAyNn1ngYpNvZCPzMoEX2rVraGuYoEhkXHQQXlEOADL5VcxUML
+         X9ZA==
+X-Forwarded-Encrypted: i=1; AJvYcCVd96NKR3GyzXlrLuivGGUKdnZrymzPrBcTW11a3pSLD87+PKlVEFlHRj0X4Y+eiGUZSfB/dQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzVqjfo2T/dgM1mx8/JP8R/MSkBOAF1TVFFTVFUEu5u7t8JbI0A
+	jjmIDDE9wGlI0ulLTqHItXCXyRW3CNDjKRH1g2/bSxylP/+s03OqxJAWUesgrhq5ymMXmlUllPZ
+	ob6quq5Xdmkccazj6JukI7KbYW/L6HQ56py43MQGztA==
+X-Gm-Gg: ASbGncv5yy0GHADX3KNyiPeqcSeLy2qzy+lJpv/5lqVJ7OvAxeIXmpDec8fo7NTva+y
+	T6yVUKW4cGZBbiWnGai/kEpK1Zzpi5DTqiqQci4R+V4tsS/hTU4Het+i8LijuZxGIqztirvGwu7
+	zphaF2WuNIDaKS1/lCNwUNfGQyo62DVdpROvWclnWj0wUIKdJHzxhh7NDnM1Xg5158OozIUltU0
+	JcbjzFLy0mP4DM5H4OUn+FUaHL3ZLxd1ecOk0Z98LAScCJHHYAIPzaNZ49tgk7dkEPXrCf4VVtC
+	xjGakPbu2VRTh3gNAhT2CxnxmTo=
+X-Google-Smtp-Source: AGHT+IHexk19IgNk6IuP2jV+2x2wF7f0unp4c1GwwYyOBf/8w9heBdr+ysi7d7B9dpzKsMkgpYC1PUK3YyRIdsL9bbA=
+X-Received: by 2002:a17:907:97d4:b0:b2a:10a3:7113 with SMTP id
+ a640c23a62f3a-b64725722f3mr807862966b.29.1760803406106; Sat, 18 Oct 2025
+ 09:03:26 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+References: <20251013-dma-buf-ecc-heap-v8-0-04ce150ea3d9@kernel.org> <CAO_48GGD8sCoQt_qWKqcbg6v7Cyi5U9QsxsvNOcqfkLRqHS7_w@mail.gmail.com>
+In-Reply-To: <CAO_48GGD8sCoQt_qWKqcbg6v7Cyi5U9QsxsvNOcqfkLRqHS7_w@mail.gmail.com>
+From: Sumit Semwal <sumit.semwal@linaro.org>
+Date: Sat, 18 Oct 2025 21:33:14 +0530
+X-Gm-Features: AS18NWCxIWZfRS3hG4C_yzteaWS7C2gP5_aCiLwTRjHCdW6sGbeW-DvFPRdxwEc
+Message-ID: <CAO_48GEXC0FDkeRN57e5Yc=4WCwjh=9pDpZXjowZzEaPPsAd-w@mail.gmail.com>
+Subject: Re: [PATCH v8 0/5] dma-buf: heaps: Create a CMA heap for each CMA
+ reserved region
+To: Maxime Ripard <mripard@kernel.org>
+Cc: Benjamin Gaignard <benjamin.gaignard@collabora.com>, Brian Starkey <Brian.Starkey@arm.com>, 
+	John Stultz <jstultz@google.com>, "T.J. Mercier" <tjmercier@google.com>, 
+	Jonathan Corbet <corbet@lwn.net>, =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, 
+	Andrew Davis <afd@ti.com>, Jared Kangas <jkangas@redhat.com>, 
+	Mattijs Korpershoek <mkorpershoek@kernel.org>, linux-media@vger.kernel.org, 
+	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, 
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	iommu@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Add support for mt8189 MM IOMMUs.
+On Wed, 15 Oct 2025 at 13:53, Sumit Semwal <sumit.semwal@linaro.org> wrote:
+>
+> Hi Maxime,
+>
+> On Mon, 13 Oct 2025 at 14:05, Maxime Ripard <mripard@kernel.org> wrote:
+> >
+> > Hi,
+> >
+> > Here's another attempt at supporting user-space allocations from a
+> > specific carved-out reserved memory region.
+>
+>
+> Thank you for the series - I think it looks pretty decent, and with
+> Marek's Acked-by for the cma patch [1], I'm inclined to merge it.
+>
+> I'll wait till today evening, in case there are any more comments, and
+> then go ahead and merge it.
 
-Signed-off-by: Zhengnan Chen <zhengnan.chen@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Yong Wu <yong.wu@mediatek.com>
----
- drivers/iommu/mtk_iommu.c | 28 ++++++++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index e71acaa292cc..989e07599193 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -1771,6 +1771,33 @@ static const struct mtk_iommu_plat_data mt8189_data_infra = {
- 	.iova_region_nr	= ARRAY_SIZE(single_domain),
- };
- 
-+static const u32 mt8189_larb_region_msk[MT8192_MULTI_REGION_NR_MAX][MTK_LARB_NR_MAX] = {
-+	[0] = {~0, ~0, ~0, [22] = BIT(0)},	/* Region0: all ports for larb0/1/2 */
-+	[1] = {[3] = ~0, [4] = ~0},		/* Region1: all ports for larb4(3)/7(4) */
-+	[2] = {[5] = ~0, [6] = ~0,		/* Region2: all ports for larb9(5)/11(6) */
-+	       [7] = ~0, [8] = ~0,		/* Region2: all ports for larb13(7)/14(8) */
-+	       [9] = ~0, [10] = ~0,		/* Region2: all ports for larb16(9)/17(10) */
-+	       [11] = ~0, [12] = ~0,		/* Region2: all ports for larb19(11)/20(12) */
-+	       [21] = ~0},			/* Region2: larb21 fake GCE larb */
-+};
-+
-+static const struct mtk_iommu_plat_data mt8189_data_mm = {
-+	.m4u_plat	= M4U_MT8189,
-+	.flags		= HAS_BCLK | HAS_SUB_COMM_3BITS | OUT_ORDER_WR_EN |
-+			  WR_THROT_EN | IOVA_34_EN | MTK_IOMMU_TYPE_MM |
-+			  PGTABLE_PA_35_EN | DL_WITH_MULTI_LARB,
-+	.hw_list	= &m4ulist,
-+	.inv_sel_reg	= REG_MMU_INV_SEL_GEN2,
-+	.banks_num	= 5,
-+	.banks_enable	= {true, false, false, false, false},
-+	.iova_region	= mt8192_multi_dom,
-+	.iova_region_nr	= ARRAY_SIZE(mt8192_multi_dom),
-+	.iova_region_larb_msk = mt8189_larb_region_msk,
-+	.larbid_remap	= {{0}, {1}, {21/* GCE_D */, 21/* GCE_M */, 2},
-+			   {19, 20, 9, 11}, {7}, {4},
-+			   {13, 17}, {14, 16}},
-+};
-+
- static const struct mtk_iommu_plat_data mt8192_data = {
- 	.m4u_plat       = M4U_MT8192,
- 	.flags          = HAS_BCLK | HAS_SUB_COMM_2BITS | OUT_ORDER_WR_EN |
-@@ -1874,6 +1901,7 @@ static const struct of_device_id mtk_iommu_of_ids[] = {
- 	{ .compatible = "mediatek,mt8188-iommu-vpp",   .data = &mt8188_data_vpp},
- 	{ .compatible = "mediatek,mt8189-iommu-apu",   .data = &mt8189_data_apu},
- 	{ .compatible = "mediatek,mt8189-iommu-infra", .data = &mt8189_data_infra},
-+	{ .compatible = "mediatek,mt8189-iommu-mm",    .data = &mt8189_data_mm},
- 	{ .compatible = "mediatek,mt8192-m4u", .data = &mt8192_data},
- 	{ .compatible = "mediatek,mt8195-iommu-infra", .data = &mt8195_data_infra},
- 	{ .compatible = "mediatek,mt8195-iommu-vdo",   .data = &mt8195_data_vdo},
--- 
-2.46.0
+Thank you; it's merged to drm-misc-next now.
+>
+>
+> Best,
+> Sumit.
+>
+> >
+> > The initial problem we were discussing was that I'm currently working o=
+n
+> > a platform which has a memory layout with ECC enabled. However, enablin=
+g
+> > the ECC has a number of drawbacks on that platform: lower performance,
+> > increased memory usage, etc. So for things like framebuffers, the
+> > trade-off isn't great and thus there's a memory region with ECC disable=
+d
+> > to allocate from for such use cases.
+> >
+> > After a suggestion from John, I chose to first start using heap
+> > allocations flags to allow for userspace to ask for a particular ECC
+> > setup. This is then backed by a new heap type that runs from reserved
+> > memory chunks flagged as such, and the existing DT properties to specif=
+y
+> > the ECC properties.
+> >
+> > After further discussion, it was considered that flags were not the
+> > right solution, and relying on the names of the heaps would be enough t=
+o
+> > let userspace know the kind of buffer it deals with.
+> >
+> > Thus, even though the uAPI part of it had been dropped in this second
+> > version, we still needed a driver to create heaps out of carved-out mem=
+ory
+> > regions. In addition to the original usecase, a similar driver can be
+> > found in BSPs from most vendors, so I believe it would be a useful
+> > addition to the kernel.
+> >
+> > Some extra discussion with Rob Herring [1] came to the conclusion that
+> > some specific compatible for this is not great either, and as such an
+> > new driver probably isn't called for either.
+> >
+> > Some other discussions we had with John [2] also dropped some hints tha=
+t
+> > multiple CMA heaps might be a good idea, and some vendors seem to do
+> > that too.
+> >
+> > So here's another attempt that doesn't affect the device tree at all an=
+d
+> > will just create a heap for every CMA reserved memory region.
+> >
+> > It also falls nicely into the current plan we have to support cgroups i=
+n
+> > DRM/KMS and v4l2, which is an additional benefit.
+> >
+> > Let me know what you think,
+> > Maxime
+> >
+> > 1: https://lore.kernel.org/all/20250707-cobalt-dingo-of-serenity-dbf92c=
+@houat/
+> > 2: https://lore.kernel.org/all/CANDhNCroe6ZBtN_o=3Dc71kzFFaWK-fF5rCdnr9=
+P5h1sgPOWSGSw@mail.gmail.com/
+> >
+> > Let me know what you think,
+> > Maxime
+> >
+> > Signed-off-by: Maxime Ripard <mripard@kernel.org>
+> > ---
+> > Changes in v8:
+> > - Rebased on top of 6.18-rc1
+> > - Added TJ R-b
+> > - Link to v7: https://lore.kernel.org/r/20250721-dma-buf-ecc-heap-v7-0-=
+031836e1a942@kernel.org
+> >
+> > Changes in v7:
+> > - Invert the logic and register CMA heap from the reserved memory /
+> >   dma contiguous code, instead of iterating over them from the CMA heap=
+.
+> > - Link to v6: https://lore.kernel.org/r/20250709-dma-buf-ecc-heap-v6-0-=
+dac9bf80f35d@kernel.org
+> >
+> > Changes in v6:
+> > - Drop the new driver and allocate a CMA heap for each region now
+> > - Dropped the binding
+> > - Rebased on 6.16-rc5
+> > - Link to v5: https://lore.kernel.org/r/20250617-dma-buf-ecc-heap-v5-0-=
+0abdc5863a4f@kernel.org
+> >
+> > Changes in v5:
+> > - Rebased on 6.16-rc2
+> > - Switch from property to dedicated binding
+> > - Link to v4: https://lore.kernel.org/r/20250520-dma-buf-ecc-heap-v4-1-=
+bd2e1f1bb42c@kernel.org
+> >
+> > Changes in v4:
+> > - Rebased on 6.15-rc7
+> > - Map buffers only when map is actually called, not at allocation time
+> > - Deal with restricted-dma-pool and shared-dma-pool
+> > - Reword Kconfig options
+> > - Properly report dma_map_sgtable failures
+> > - Link to v3: https://lore.kernel.org/r/20250407-dma-buf-ecc-heap-v3-0-=
+97cdd36a5f29@kernel.org
+> >
+> > Changes in v3:
+> > - Reworked global variable patch
+> > - Link to v2: https://lore.kernel.org/r/20250401-dma-buf-ecc-heap-v2-0-=
+043fd006a1af@kernel.org
+> >
+> > Changes in v2:
+> > - Add vmap/vunmap operations
+> > - Drop ECC flags uapi
+> > - Rebase on top of 6.14
+> > - Link to v1: https://lore.kernel.org/r/20240515-dma-buf-ecc-heap-v1-0-=
+54cbbd049511@kernel.org
+> >
+> > ---
+> > Maxime Ripard (5):
+> >       doc: dma-buf: List the heaps by name
+> >       dma-buf: heaps: cma: Register list of CMA regions at boot
+> >       dma: contiguous: Register reusable CMA regions at boot
+> >       dma: contiguous: Reserve default CMA heap
+> >       dma-buf: heaps: cma: Create CMA heap for each CMA reserved region
+> >
+> >  Documentation/userspace-api/dma-buf-heaps.rst | 24 ++++++++------
+> >  MAINTAINERS                                   |  1 +
+> >  drivers/dma-buf/heaps/Kconfig                 | 10 ------
+> >  drivers/dma-buf/heaps/cma_heap.c              | 47 +++++++++++++++++--=
+--------
+> >  include/linux/dma-buf/heaps/cma.h             | 16 +++++++++
+> >  kernel/dma/contiguous.c                       | 11 +++++++
+> >  6 files changed, 72 insertions(+), 37 deletions(-)
+> > ---
+> > base-commit: 47633099a672fc7bfe604ef454e4f116e2c954b1
+> > change-id: 20240515-dma-buf-ecc-heap-28a311d2c94e
+> > prerequisite-message-id: <20250610131231.1724627-1-jkangas@redhat.com>
+> > prerequisite-patch-id: bc44be5968feb187f2bc1b8074af7209462b18e7
+> > prerequisite-patch-id: f02a91b723e5ec01fbfedf3c3905218b43d432da
+> > prerequisite-patch-id: e944d0a3e22f2cdf4d3b3906e5603af934696deb
+> >
+> > Best regards,
+> > --
+> > Maxime Ripard <mripard@kernel.org>
+> >
+>
+>
+> --
+> Thanks and regards,
+>
+> Sumit Semwal (he / him)
+> Senior Tech Lead - Android, Platforms and Virtualisation
+> Linaro.org =E2=94=82 Arm Solutions at Light Speed
 
+
+
+--=20
+Thanks and regards,
+
+Sumit Semwal (he / him)
+Senior Tech Lead - Android, Platforms and Virtualisation
+Linaro.org =E2=94=82 Arm Solutions at Light Speed
