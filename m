@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78A2A2C0278;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88D012C0298;
 	Mon, 20 Oct 2025 04:56:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760936197; cv=none; b=h+fT7znlSx746nMuQmVwC69MOJiSnHOeuf+HBpBeVwmTSuJutfmVPXDbcMkGWqXJeN92vlgRe3u25fS8KGru84m4WFMUaDquY3zBF6+wGdIVU1ohsitFCV/wGJeOCh8b9TeaDEPywtT1ioOzoyzoqD9wS8JlLpYUfkLAcx4G2ic=
+	t=1760936197; cv=none; b=oDQkzrzssWQvlvL/LO0u/eKgcz3QXmLD1VxVxBBukIHoVepVqrvtmtPUq9tfv65TkpwBzFKG9e32gdamqpj8BHdmvrzqdyoAiQJlsFTjavloOsbv73Hl+iRuU9ZCehELfPdirlbAA2v4lOsni1+6sQu1XeyANh/DQcVnY7Wfcj0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1760936197; c=relaxed/simple;
-	bh=oLg6WHZ3aWKPMgrdsNiH4CTRs3dtYtjw8ulmKtz/VGk=;
+	bh=tHVRW+tk17pqNuK7fYLET2iKWngthkKfcRRhifSxTno=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=O6MbLKcI4BzJuqga++85ttSlftOaETFMxyi/r7Kgpa4WrqR7Ln3urh8a63jllUwC/Q/pewJPglja8pAtFx0edAjn8es8rwF/ywDNaAZv2kcxF3HBlZeBD4hWmKCKyC0TU+WbuZhyEmXmE7ZiWbcyfQ+rbLM3Va/0E/R894bZ2DM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IfXi8Mzk; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=cgkG79yYfq1bsM/DCbYLV4II1XObR6OnjsmfoLlhHHZu4+1vh9Po0WDWNq4lgtzrWpKzjWlLU1wUogYqeicRDP1snCquweWJmbLmoGzuT2w4M4GE6ZFW7dQUhSRiGVEbpR2fVp84cGY4LM4eVQebybCMPQ2GJts/IU9XPm6kONY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZXBdEOqu; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IfXi8Mzk"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26AF5C116C6;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZXBdEOqu"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C284C2BC86;
 	Mon, 20 Oct 2025 04:56:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1760936197;
-	bh=oLg6WHZ3aWKPMgrdsNiH4CTRs3dtYtjw8ulmKtz/VGk=;
+	bh=tHVRW+tk17pqNuK7fYLET2iKWngthkKfcRRhifSxTno=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=IfXi8MzkFkrnoX55/gJrRe9WDImh+XSAdZFrqDh3FsgpzgQifmLU2xHahw+zvizq6
-	 1JiNbX8Vb2zNCsbEudJ7uxTkbOTCnMa0kKM0iiLHw6rhzdR7NHulVLp6XYnbA0SspR
-	 A7OgzGXv1OxmmzlLfrYHl5syODf0d28OJGKFNqmt3A8CizdrQEqj+DxQDHgyZmH0C7
-	 jlsBsQnou/1LJC2S9/RhxX485cR4WMR64ZmOBqn2yiva+EP6Cm+LpAPuz/ptL9vWon
-	 quvL2hTALH0WDVDUKjZAS2X3c7da3h7Xqa+l/CJfByzz5P5EnSWLAE/NBX2PU8S0eO
-	 VdXqZ+lVlCnYA==
+	b=ZXBdEOqu3tnm+H6MAvaIx5y1l0QxcloLJo4N3Rlhrmiskno3wm+L2UQIeMwA/yfp6
+	 YxYjgZ16wIh2RYxjCzrcoERJPlhdaKcpsEsOE+Yo5lywqw9zVU3Sh9T3kSxFLn4SRr
+	 5gnGdyaZmdMmpnL3LqJ5oYtm1SQC5pF3ZZINNU+6W8u6xZtviGg7x5jTMYEkroxATT
+	 CLKBSuE9wvUQSdby/rgPZmGdSm3w1fSRDeqwjGhpXt4cIOPKXMem7AiA0pwKyNupry
+	 6jf3uOqLwZflolsk4ZN+fxVpIhrlYX+kZWHqPKxgAq/ts3B26CDV176xLLT1dpqtpy
+	 a6tz8k0zWksOw==
 Received: from johan by xi.lan with local (Exim 4.98.2)
 	(envelope-from <johan@kernel.org>)
-	id 1vAhwm-00000000833-3mu7;
-	Mon, 20 Oct 2025 06:56:40 +0200
+	id 1vAhwn-0000000083G-1hfX;
+	Mon, 20 Oct 2025 06:56:41 +0200
 From: Johan Hovold <johan@kernel.org>
 To: Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>
@@ -46,12 +46,10 @@ Cc: Robin Murphy <robin.murphy@arm.com>,
 	Krishna Reddy <vdumpa@nvidia.com>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
-	Johan Hovold <johan@kernel.org>,
-	stable@vger.kernel.org,
-	Yu Kuai <yukuai3@huawei.com>
-Subject: [PATCH v3 02/14] iommu/qcom: fix device leak on of_xlate()
-Date: Mon, 20 Oct 2025 06:53:06 +0200
-Message-ID: <20251020045318.30690-3-johan@kernel.org>
+	Johan Hovold <johan@kernel.org>
+Subject: [PATCH v3 07/14] iommu/mediatek: simplify dt parsing error handling
+Date: Mon, 20 Oct 2025 06:53:11 +0200
+Message-ID: <20251020045318.30690-8-johan@kernel.org>
 X-Mailer: git-send-email 2.49.1
 In-Reply-To: <20251020045318.30690-1-johan@kernel.org>
 References: <20251020045318.30690-1-johan@kernel.org>
@@ -63,57 +61,44 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Make sure to drop the reference taken to the iommu platform device when
-looking up its driver data during of_xlate().
+As previously documented by commit 26593928564c ("iommu/mediatek: Add
+error path for loop of mm_dts_parse"), the id mapping may not be linear
+so the whole larb array needs to be iterated on devicetree parsing
+errors.
 
-Note that commit e2eae09939a8 ("iommu/qcom: add missing put_device()
-call in qcom_iommu_of_xlate()") fixed the leak in a couple of error
-paths, but the reference is still leaking on success and late failures.
+Simplify the loop by iterating from index zero while dropping the
+redundant NULL check for consistency with later cleanups.
 
-Fixes: 0ae349a0f33f ("iommu/qcom: Add qcom_iommu")
-Cc: stable@vger.kernel.org	# 4.14: e2eae09939a8
-Cc: Rob Clark <robin.clark@oss.qualcomm.com>
-Cc: Yu Kuai <yukuai3@huawei.com>
+Also add back the comment which was removed by commit 462e768b55a2
+("iommu/mediatek: Fix forever loop in error handling") to prevent anyone
+from trying to optimise the loop by iterating backwards from 'i'.
+
+Cc: Yong Wu <yong.wu@mediatek.com>
 Acked-by: Robin Murphy <robin.murphy@arm.com>
 Signed-off-by: Johan Hovold <johan@kernel.org>
 ---
- drivers/iommu/arm/arm-smmu/qcom_iommu.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+ drivers/iommu/mtk_iommu.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iommu/arm/arm-smmu/qcom_iommu.c b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-index c5be95e56031..9c1166a3af6c 100644
---- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-+++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-@@ -565,14 +565,14 @@ static int qcom_iommu_of_xlate(struct device *dev,
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 64ce041238fd..f21cd3766069 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -1239,11 +1239,10 @@ static int mtk_iommu_mm_dts_parse(struct device *dev, struct component_match **m
+ 	return 0;
  
- 	qcom_iommu = platform_get_drvdata(iommu_pdev);
- 
-+	put_device(&iommu_pdev->dev);
-+
- 	/* make sure the asid specified in dt is valid, so we don't have
- 	 * to sanity check this elsewhere:
- 	 */
- 	if (WARN_ON(asid > qcom_iommu->max_asid) ||
--	    WARN_ON(qcom_iommu->ctxs[asid] == NULL)) {
--		put_device(&iommu_pdev->dev);
-+	    WARN_ON(qcom_iommu->ctxs[asid] == NULL))
- 		return -EINVAL;
+ err_larbdev_put:
+-	for (i = MTK_LARB_NR_MAX - 1; i >= 0; i--) {
+-		if (!data->larb_imu[i].dev)
+-			continue;
++	/* id mapping may not be linear, loop the whole array */
++	for (i = 0; i < MTK_LARB_NR_MAX; i++)
+ 		put_device(data->larb_imu[i].dev);
 -	}
++
+ 	return ret;
+ }
  
- 	if (!dev_iommu_priv_get(dev)) {
- 		dev_iommu_priv_set(dev, qcom_iommu);
-@@ -581,10 +581,8 @@ static int qcom_iommu_of_xlate(struct device *dev,
- 		 * multiple different iommu devices.  Multiple context
- 		 * banks are ok, but multiple devices are not:
- 		 */
--		if (WARN_ON(qcom_iommu != dev_iommu_priv_get(dev))) {
--			put_device(&iommu_pdev->dev);
-+		if (WARN_ON(qcom_iommu != dev_iommu_priv_get(dev)))
- 			return -EINVAL;
--		}
- 	}
- 
- 	return iommu_fwspec_add_ids(dev, &asid, 1);
 -- 
 2.49.1
 
