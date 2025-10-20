@@ -1,34 +1,34 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7203F2C0266;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 766622C026A;
 	Mon, 20 Oct 2025 04:56:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760936197; cv=none; b=iiD5NyXzpP//fvT0r49l7QA6x+JuwWdKzL2d3m9/npnPlSAs88M+AHpPHPPUdRBINZ5RV03HCCLQCZ35hK/HuKOO8GH7za01EG71wqoUTCVd14NcrslhtNoTkOf+SzIHrXT3kfzzILdsbYOutlHJ/X7Gyooh4UghX6Dru0lOyJQ=
+	t=1760936197; cv=none; b=fmsD5MxySb5dgH/Bg5Rooh5ED209IhvxQRoglBHyoI8kq/MO82JpzVL7sSUduiP/S+OxzBWj0KlrrRGjyNrrNXQrIEAP4QVjR0CS6d13y92g+Wpn1Z0PusarKSecOTXY75eHRMr+HVFh67nHBIdLCjuxyxec0QwRYufh5knpnXU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1760936197; c=relaxed/simple;
-	bh=FyWhY5bdBhnBjSs0edv55LlddyoKr6zkeQMAkUftQ70=;
+	bh=r9qtk/zGzPX4aPYztAqcO0jnG1letB1R7xNmRkHttgM=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=a+JmbbjSI+ZydRnYD/EvXKxRO+aLFm+JIShc410TB8n56IzHWnU+qJ5NGexS2xCIu7s4Cqkaayw1VjX8GImFBLRSV50G8hjyJRxIrJudbou46hFD4ajibfeoHPLVwD9mKnMPxSNunQed4yAowyMUfKimE04Kgrx0vduMn0v6u+g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NbNsoq84; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=QNGYPS+oc5NU5ruPqWGie2AqIM0+fPaytSBCuS/IqaMfb7TdC2nuvp/ZbsKxP8TosJ7lPi0PET5k1cBWJQ27QSLfBaqtKRcwowQY8hNr1kuCrrjShhFsUlUsf1zplbb5TrmmjGeO7pECohU1TLCwx7bQ1D7MHxM0jIOKpapazCA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CsXsSPqR; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NbNsoq84"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 359C5C19421;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CsXsSPqR"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25A47C16AAE;
 	Mon, 20 Oct 2025 04:56:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1760936197;
-	bh=FyWhY5bdBhnBjSs0edv55LlddyoKr6zkeQMAkUftQ70=;
+	bh=r9qtk/zGzPX4aPYztAqcO0jnG1letB1R7xNmRkHttgM=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=NbNsoq84dyjFRgMtcA96mVS3b2XBf/pIlooEgaFs7+3i3Js3NvAioIrM2QRxCIlP1
-	 /DOGUZbzxwJ4KKeBhXqDDv4JiyyEjq0GB2z7WpCYzWXXz9Rf1H0NvQD5PFEHPiYQyD
-	 imxXO+6wv/dj6NmQv0NGW9LGXYGFGtzX91pvNr3c05Uy/onWLbKggp6mymu+e8OROV
-	 VT6RlQiMHAItRzYMwbcqZBc9vNeMdGnTJynywE2hPYur8MMwPNkeXm4hxe3+42Fvu5
-	 hc9U1b4dykspZiNE1Ca0cI2qIn9gHGir7D/03Ln7dzDP6PSuOd6LSN6dUCTugJ+1IK
-	 U9bBDOJbtYpcA==
+	b=CsXsSPqR4/uGaj51CAzk6fPYMGPxWJVS+rHIPqDdnu3Is9J2BjUJgsFY3/ileZNu+
+	 Bl2lOQnZNTWtA+0rZy20KmAK9p7wz4LffAwBI8JYHlryW3Lbzdh2YhAYLVAkAwefWx
+	 cze8yrnZOMrndcepMG8UC2AGSXjI9YxwPJSx1rkUof/YoPttfOI8GG1kCBZhzDN4OX
+	 DuIOX6xlQduq2DUe+wABEE8wX9ZGNGqycWC1oKQe1gNNPM/wWpQRdX7JBqoLbz+iEt
+	 pYxArjd0ZeELhN3o8saaMeCTpIymnmgQNtCp4CwEjrUlXBPfG0AP91430icrNmFRZ5
+	 mrR4if8Zm0egQ==
 Received: from johan by xi.lan with local (Exim 4.98.2)
 	(envelope-from <johan@kernel.org>)
-	id 1vAhwn-0000000083B-0zoc;
+	id 1vAhwn-00000000835-00sN;
 	Mon, 20 Oct 2025 06:56:41 +0200
 From: Johan Hovold <johan@kernel.org>
 To: Joerg Roedel <joro@8bytes.org>,
@@ -47,10 +47,11 @@ Cc: Robin Murphy <robin.murphy@arm.com>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
 	Johan Hovold <johan@kernel.org>,
-	stable@vger.kernel.org
-Subject: [PATCH v3 05/14] iommu/mediatek: fix device leak on of_xlate()
-Date: Mon, 20 Oct 2025 06:53:09 +0200
-Message-ID: <20251020045318.30690-6-johan@kernel.org>
+	stable@vger.kernel.org,
+	Yu Kuai <yukuai3@huawei.com>
+Subject: [PATCH v3 03/14] iommu/exynos: fix device leak on of_xlate()
+Date: Mon, 20 Oct 2025 06:53:07 +0200
+Message-ID: <20251020045318.30690-4-johan@kernel.org>
 X-Mailer: git-send-email 2.49.1
 In-Reply-To: <20251020045318.30690-1-johan@kernel.org>
 References: <20251020045318.30690-1-johan@kernel.org>
@@ -65,28 +66,45 @@ Content-Transfer-Encoding: 8bit
 Make sure to drop the reference taken to the iommu platform device when
 looking up its driver data during of_xlate().
 
-Fixes: 0df4fabe208d ("iommu/mediatek: Add mt8173 IOMMU driver")
-Cc: stable@vger.kernel.org	# 4.6
+Note that commit 1a26044954a6 ("iommu/exynos: add missing put_device()
+call in exynos_iommu_of_xlate()") fixed the leak in a couple of error
+paths, but the reference is still leaking on success.
+
+Fixes: aa759fd376fb ("iommu/exynos: Add callback for initializing devices from device tree")
+Cc: stable@vger.kernel.org	# 4.2: 1a26044954a6
+Cc: Yu Kuai <yukuai3@huawei.com>
 Acked-by: Robin Murphy <robin.murphy@arm.com>
-Reviewed-by: Yong Wu <yong.wu@mediatek.com>
+Acked-by: Marek Szyprowski <m.szyprowski@samsung.com>
 Signed-off-by: Johan Hovold <johan@kernel.org>
 ---
- drivers/iommu/mtk_iommu.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/iommu/exynos-iommu.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 0e0285348d2b..8d8e85186188 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -974,6 +974,8 @@ static int mtk_iommu_of_xlate(struct device *dev,
- 			return -EINVAL;
+diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+index b6edd178fe25..ce9e935cb84c 100644
+--- a/drivers/iommu/exynos-iommu.c
++++ b/drivers/iommu/exynos-iommu.c
+@@ -1446,17 +1446,14 @@ static int exynos_iommu_of_xlate(struct device *dev,
+ 		return -ENODEV;
  
- 		dev_iommu_priv_set(dev, platform_get_drvdata(m4updev));
-+
-+		put_device(&m4updev->dev);
- 	}
+ 	data = platform_get_drvdata(sysmmu);
+-	if (!data) {
+-		put_device(&sysmmu->dev);
++	put_device(&sysmmu->dev);
++	if (!data)
+ 		return -ENODEV;
+-	}
  
- 	return iommu_fwspec_add_ids(dev, args->args, 1);
+ 	if (!owner) {
+ 		owner = kzalloc(sizeof(*owner), GFP_KERNEL);
+-		if (!owner) {
+-			put_device(&sysmmu->dev);
++		if (!owner)
+ 			return -ENOMEM;
+-		}
+ 
+ 		INIT_LIST_HEAD(&owner->controllers);
+ 		mutex_init(&owner->rpm_lock);
 -- 
 2.49.1
 
