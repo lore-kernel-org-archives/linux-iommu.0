@@ -1,40 +1,40 @@
 Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D7CD23AB9D
-	for <iommu@lists.linux.dev>; Mon, 20 Oct 2025 10:35:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35E8A2F6929
+	for <iommu@lists.linux.dev>; Mon, 20 Oct 2025 10:35:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.251.105.195
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760956559; cv=none; b=VE16cFfd7TknucpEJ40SV12IbqSRzUnLh26LG06q3p8z3lYI8L5FAPdnznjihumc0C8vejYnrZFesm2iM4J9amGpobiWCOEYyr+4uGPEe8X9q546pZam6ohYycCEQ/rOawkDZ6EzzlEKTMTfbb34jUhq9uYbc6zSM9Bqi5S7Qgs=
+	t=1760956559; cv=none; b=GT+p1CXCSVcK9W/brXE/mGmhsgIfZMiwUK67VQfQ7V9sSJTdlkOTRBpDb+Ml2qvZkaP8DWvOEIknw+g6XJLAo8BAIiGgpDNvKL7OXNzRbJ98TUwWML+2rOX9/q6nf7bpX/BIBELLCkFN4v24ZMtjkg2TjlsODK7h43IsiJ5Ha8s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1760956559; c=relaxed/simple;
-	bh=mGHh4+u3muodQrfYI8vuBXTSLKVHsvy01DupG4JFCeE=;
+	bh=V4y+htwEdDmlnLK1Fy+0wRN95xzwTz+++IQ2l0uvEM0=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=mnVrOUDT3LiPwEn2l+p5nEe7IvHAOMttzERovR60VdDLyWAFmY4PzovKshIbfONtO8/0GlxRylM/Zdy3L7sZgJEHHrkNeGvSBpD87G+L1dW2vY6XS6VMP44ZGAq8zVoEEeDYmTtVAQc6FtV+lLAkNd7/aaQIJlVY9M0qyjVraXw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=Ymbfzvez; arc=none smtp.client-ip=148.251.105.195
+	 In-Reply-To:Content-Type; b=HkSrtmvD9Ap4UstCNRQDh4MfgcIt6xAjWUlrnZBX/Tu7A4R1HH55eJR4CfS4RvaQub3qzozKQNy1BRCehkSskZSpshrt51a6a1QOq7CKtQbWWpkmQhAkM9tuhFc03uNz34ht5YFEnS0UFCAmd7N3abp4lQL4vvO5DzI4wsyvPtg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=VN6MfDXl; arc=none smtp.client-ip=148.251.105.195
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="Ymbfzvez"
+	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="VN6MfDXl"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1760956554;
-	bh=mGHh4+u3muodQrfYI8vuBXTSLKVHsvy01DupG4JFCeE=;
+	s=mail; t=1760956556;
+	bh=V4y+htwEdDmlnLK1Fy+0wRN95xzwTz+++IQ2l0uvEM0=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=Ymbfzvez+47CIF5d88vLk3/jJF1VCySlB0GnWuxV/7I2EqRdFhqODClhSF2k46i6d
-	 8ZpQpf0W3FuD9mE2Df+j+VJ5JgIt2NIEWrnZc04VE1JsjtViJZzNGc46Q4+hZoktzk
-	 Pp5y23ZHduL3pSHqgQ6lCCsl+lvNIVD2aURzD+qEWlTcZQMlAyzSEFJSFcBiVNEMOV
-	 DHKhb0HeM1Tk+wLmOGHlm3r9g3xf9Q4E7KKO2ImukohnQ6HEevHMTeep8ehTIEm/o6
-	 y64dUPFznjcq6nObFb6feWAvaLmp0dBD/JL28EW7LuvEdeVt1FmQKnwp8jORU0883p
-	 H8oW6WMDuDLzQ==
+	b=VN6MfDXleMzUgYPAqde+/NStyEs/FvxzccEouEiYA07mr8NfQC96cQhOoR0eiq3Xu
+	 ZqdmP/thH4nT3adCmRBgKJOFLOn1bEe0W/uYR9PO6cz4HGSICLF4fICP2u+MPlHbYL
+	 AxMyD0ziBu0p0Kf1rhywGhZr3TKpe16ePuCNl26ig6KAVR83GSACyozArd0NpwRvI4
+	 /AjOtQLhbiUAOX2W8+o9CAbYFLKWOoDnLSGiSfeaboe4OVm/Vkcpc5yfKUR9ZDzAVO
+	 /4iURn10rwFcdrURFFRpGRcvSxy04Tufjr9GvoLyo9/MApfG4lqY2R30lWTZ/hHhWx
+	 aNHS76UKI7VCQ==
 Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
 	(Authenticated sender: kholk11)
-	by bali.collaboradmins.com (Postfix) with ESMTPSA id 8C8EB17E0C87;
-	Mon, 20 Oct 2025 12:35:53 +0200 (CEST)
-Message-ID: <12cdd987-796b-44fb-a508-eb1dc7cde8be@collabora.com>
-Date: Mon, 20 Oct 2025 12:35:52 +0200
+	by bali.collaboradmins.com (Postfix) with ESMTPSA id A622017E13F9;
+	Mon, 20 Oct 2025 12:35:55 +0200 (CEST)
+Message-ID: <9177efff-3ded-4ea8-844c-c1a2178c58d4@collabora.com>
+Date: Mon, 20 Oct 2025 12:35:55 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -42,8 +42,8 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 10/14] iommu/mediatek-v1: add missing larb count sanity
- check
+Subject: Re: [PATCH v3 08/14] iommu/mediatek-v1: fix device leak on
+ probe_device()
 To: Johan Hovold <johan@kernel.org>, Joerg Roedel <joro@8bytes.org>,
  Will Deacon <will@kernel.org>
 Cc: Robin Murphy <robin.murphy@arm.com>, Sven Peter <sven@kernel.org>,
@@ -51,19 +51,23 @@ Cc: Robin Murphy <robin.murphy@arm.com>, Sven Peter <sven@kernel.org>,
  Marek Szyprowski <m.szyprowski@samsung.com>, Yong Wu <yong.wu@mediatek.com>,
  Matthias Brugger <matthias.bgg@gmail.com>, Chen-Yu Tsai <wens@csie.org>,
  Thierry Reding <thierry.reding@gmail.com>, Krishna Reddy
- <vdumpa@nvidia.com>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+ <vdumpa@nvidia.com>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ stable@vger.kernel.org, Honghui Zhang <honghui.zhang@mediatek.com>
 References: <20251020045318.30690-1-johan@kernel.org>
- <20251020045318.30690-11-johan@kernel.org>
+ <20251020045318.30690-9-johan@kernel.org>
 From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 Content-Language: en-US
-In-Reply-To: <20251020045318.30690-11-johan@kernel.org>
+In-Reply-To: <20251020045318.30690-9-johan@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 Il 20/10/25 06:53, Johan Hovold ha scritto:
-> Add the missing larb count sanity check to avoid writing beyond a fixed
-> sized array in case of a malformed devicetree.
+> Make sure to drop the reference taken to the iommu platform device when
+> looking up its driver data during probe_device().
 > 
+> Fixes: b17336c55d89 ("iommu/mediatek: add support for mtk iommu generation one HW")
+> Cc: stable@vger.kernel.org	# 4.8
+> Cc: Honghui Zhang <honghui.zhang@mediatek.com>
 > Acked-by: Robin Murphy <robin.murphy@arm.com>
 > Reviewed-by: Yong Wu <yong.wu@mediatek.com>
 > Signed-off-by: Johan Hovold <johan@kernel.org>
