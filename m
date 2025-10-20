@@ -1,33 +1,34 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59F602BF3F4;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59EEA29BD90;
 	Mon, 20 Oct 2025 04:56:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760936197; cv=none; b=DbAAO7MRxMGxL4EbzF8Zuy6hEOk5JGAoIN97UhFLyqscrQFzA9iWObVRpuUUbhy6dWN3FNRU3dvNzhaKzNSXK/S4UkOpRYg+itv51GadoEYME3MGoc772CpAw9IjygCkqdHzh6lg/I+Y7CNYZHX8MRaEZI4N+RPuee7PklqPels=
+	t=1760936197; cv=none; b=gtsGUGlYCbu4oG8cCHZzyF4oqcYgIGcc9xsZGMEnra7j+cE5mDzkXMQ3na9rgyjXZLbJ1n6/EmQdd6qfksaZD2DgEwc/4gWghsp2l7pk/SUKc+41TySUtdn8+iUcf/Cm4/yl8ILpCYNO/ykPV6uSUUk99eclZg40n41avTJv2Dk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1760936197; c=relaxed/simple;
-	bh=knUidLk/WfGmOIs1Y9PoZq64HcYmaba7BCKKYXsS7kA=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=VtlOIhY2GXbXwyTUs7Wf02Q3fThskNX7SVN6WUX6P7TPzn241BKNxv55UiuEuSG8U0GQhLEKQI1aOLpm5gAAmxMs8HAFuO/5xkEl1pvo5hvFuaug3mdXapZww4dEMg4HkcLv5cTG9lMN2v7FskJeeeKikcgTw7StJB6NC240Swk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aMwtCmvR; arc=none smtp.client-ip=10.30.226.201
+	bh=zphBEhYRgWZAxroiGCHNYyuNwE4bWqDyjlGgmN4zMeM=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=Sg0Ia8jOl5gu11FMsAW+dzhzor3FCBgIel7Iy0Xt1tha+Lyn4NhZZEEa2tkfrGEDpcLBseafw+f6J64DJch8pcwSonmbMVRwePFpLaK+GB5f22zMmN7fqv5knuZd3TNg6UpOo7lZgx0i+84nkjnDhyEV3yEJe9+DDI5OlY3xbGA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gUa6eCTI; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aMwtCmvR"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07FC6C4CEF9;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gUa6eCTI"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AAABC4CEFB;
 	Mon, 20 Oct 2025 04:56:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1760936197;
-	bh=knUidLk/WfGmOIs1Y9PoZq64HcYmaba7BCKKYXsS7kA=;
-	h=From:To:Cc:Subject:Date:From;
-	b=aMwtCmvR9qHD3LD18YwF4lEKiTMvYC4JmMT7IKS7REcHOzxAyRddwVWpaXZfDpkO9
-	 s4+zTGq1F7oEbIfTYXZuGDjVvg1PuaG4XBD/X4YNG0Z8b9dr72N0VUuoRqIyfPfxya
-	 dcbNEI09hYxGnv/bRsBagoXwFl6aQPzCaXMqbJgm8SxTAs8F6h7wXRajzdnNWoo5k1
-	 Hmcal3rgaMdmmJ8JNXPFaAYH4lSzV7LRb1617oFgDk1eTfc7VBppG2bZU6ODOgB7Lq
-	 ZzenNSKsJAHxs4IQpL8fmWE5S3RItR1kU6QYKDps7F0Y60J8Ey9+pfpbccYHQA6o1t
-	 KK9rvTa3noxEg==
+	bh=zphBEhYRgWZAxroiGCHNYyuNwE4bWqDyjlGgmN4zMeM=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=gUa6eCTIBwfS4ltnJk8WDLY2NvmFlqgOIL6Fo9omcbSKVUxkbgYSRttT+E8SFnxS9
+	 ZeBzTk4RvxUvdek0JivuHRFjvCNkcAy/NXnUHKBte1yaYvwmC2iS9p7c1O89Y+DQUc
+	 l5zxf2OWSdRCt4Z8+vwzx9sarRR8CfPTKp37oNx7I9wyriW2PkCsfrL6lKHFFORLYI
+	 X3vTim9RXMUB5G39SyJ6jREn4JZ5OrEieJh00wBbleZYKyp9MuJm8kXxEPdupiF2Kx
+	 id2gpeIRM8BXQBuSo9A7wyxUmtdIG288UolXjJLmsfg8CTVpFYHAeSaMSS09f7G53x
+	 hIlvBu11ZjBrg==
 Received: from johan by xi.lan with local (Exim 4.98.2)
 	(envelope-from <johan@kernel.org>)
-	id 1vAhwm-0000000082z-2h25;
+	id 1vAhwm-00000000831-3MyP;
 	Mon, 20 Oct 2025 06:56:40 +0200
 From: Johan Hovold <johan@kernel.org>
 To: Joerg Roedel <joro@8bytes.org>,
@@ -45,11 +46,14 @@ Cc: Robin Murphy <robin.murphy@arm.com>,
 	Krishna Reddy <vdumpa@nvidia.com>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
-	Johan Hovold <johan@kernel.org>
-Subject: [PATCH v3 00/14] iommu: fix device leaks
-Date: Mon, 20 Oct 2025 06:53:04 +0200
-Message-ID: <20251020045318.30690-1-johan@kernel.org>
+	Johan Hovold <johan@kernel.org>,
+	stable@vger.kernel.org
+Subject: [PATCH v3 01/14] iommu/apple-dart: fix device leak on of_xlate()
+Date: Mon, 20 Oct 2025 06:53:05 +0200
+Message-ID: <20251020045318.30690-2-johan@kernel.org>
 X-Mailer: git-send-email 2.49.1
+In-Reply-To: <20251020045318.30690-1-johan@kernel.org>
+References: <20251020045318.30690-1-johan@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -58,54 +62,31 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This series fixes device leaks in the iommu drivers, which pretty
-consistently failed to drop the reference taken by
-of_find_device_by_node() when looking up iommu platform devices.
+Make sure to drop the reference taken to the iommu platform device when
+looking up its driver data during of_xlate().
 
-Included are also a couple of related cleanups.
+Fixes: 46d1fb072e76 ("iommu/dart: Add DART iommu driver")
+Cc: stable@vger.kernel.org	# 5.15
+Cc: Sven Peter <sven@kernel.org>
+Acked-by: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Johan Hovold <johan@kernel.org>
+---
+ drivers/iommu/apple-dart.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Johan
-
-
-Changes in v3
- - fix mediatek use-after-free on probe deferral
- - add acks and reviewed-bys from Marek, Yong and Thierry
-
-Changes in v2
- - drop omap reference sooner; remove unused pointer
-  - amend exynos commit message with reference to partial fix
-   - amend tegra commit message with reference to partial fix
-    - add Robin's ack
-
-
-Johan Hovold (14):
-  iommu/apple-dart: fix device leak on of_xlate()
-  iommu/qcom: fix device leak on of_xlate()
-  iommu/exynos: fix device leak on of_xlate()
-  iommu/ipmmu-vmsa: fix device leak on of_xlate()
-  iommu/mediatek: fix device leak on of_xlate()
-  iommu/mediatek: fix use-after-free on probe deferral
-  iommu/mediatek: simplify dt parsing error handling
-  iommu/mediatek-v1: fix device leak on probe_device()
-  iommu/mediatek-v1: fix device leaks on probe()
-  iommu/mediatek-v1: add missing larb count sanity check
-  iommu/omap: fix device leaks on probe_device()
-  iommu/omap: simplify probe_device() error handling
-  iommu/sun50i: fix device leak on of_xlate()
-  iommu/tegra: fix device leak on probe_device()
-
- drivers/iommu/apple-dart.c              |  2 ++
- drivers/iommu/arm/arm-smmu/qcom_iommu.c | 10 +++-----
- drivers/iommu/exynos-iommu.c            |  9 +++----
- drivers/iommu/ipmmu-vmsa.c              |  2 ++
- drivers/iommu/mtk_iommu.c               | 34 +++++++++++++++++--------
- drivers/iommu/mtk_iommu_v1.c            | 28 ++++++++++++++++----
- drivers/iommu/omap-iommu.c              |  7 ++---
- drivers/iommu/omap-iommu.h              |  2 --
- drivers/iommu/sun50i-iommu.c            |  2 ++
- drivers/iommu/tegra-smmu.c              |  5 ++--
- 10 files changed, 63 insertions(+), 38 deletions(-)
-
+diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
+index 95a4e62b8f63..9804022c7f59 100644
+--- a/drivers/iommu/apple-dart.c
++++ b/drivers/iommu/apple-dart.c
+@@ -802,6 +802,8 @@ static int apple_dart_of_xlate(struct device *dev,
+ 	struct apple_dart *cfg_dart;
+ 	int i, sid;
+ 
++	put_device(&iommu_pdev->dev);
++
+ 	if (args->args_count != 1)
+ 		return -EINVAL;
+ 	sid = args->args[0];
 -- 
 2.49.1
 
