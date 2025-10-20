@@ -1,213 +1,191 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E86923EA9C
-	for <iommu@lists.linux.dev>; Mon, 20 Oct 2025 14:26:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE373223DD0;
+	Mon, 20 Oct 2025 15:04:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760970371; cv=none; b=jK619OKIJJ1p3k4bcsEnttjbYDc7CiUQkqhKw9L1srcBw5pMKBQauSRjxQ7EJW0LRooCr2cvAXqOw0OI/oJuPLH2s0/K9IqTP0Rv1hBYzMCYa/13LPzybcbylvpyDa9rNyv55+UjEFxHhIHhZ2UDESM73mue6+CfJwkgZ39JO2w=
+	t=1760972658; cv=none; b=Gx7PzqaJlwjAo6x2Ee3Y5cGH3KwKdkqAs8qZSaX57pwOzeSPoP09S9esXZgUDd0P813C/U8fA4q36oyv2EAVglR1wwHBKym9Iqje/fGExzvGh2t5n+rW7FsAymnvMVPlxNfkanI5r5zamq2ucfQErtRPhCRWQIuq/McBH00zUiY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760970371; c=relaxed/simple;
-	bh=hQAelAZ9HvVlNDMc9j43CpUIrb6f3Hpl+8tUuJ8nWUE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Dhs51ZHjm7L82c3tWt8nBANR4j+lUlmozahBiJWx5msNkr9jRkWd171g/dMh2VLrLjEgPf05FssoXYdp0ddO0uqpgW1XLiyIChzHQBoc5b2rcZC7NRzeDfaYZoHtWK+Q5tFy1/s7M6AHUQwVTKuntWjf+c/TMtpab41NtEOd7fM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=XgQgPuSW; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1760972658; c=relaxed/simple;
+	bh=opgDUacvsAEAblCjRwc/cnZnXjDHKNzApka9lSwmFm0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=gUCJGq7oLBs8iufG/N1KxDq0gGHNH9SR+TTAeUkJGfE5YSwtMbUWq6KJPrfRIjW1NSw/tdHctm8QhTpoDVBOup/2HNbKnruv6F0GZ3drD2CLhhuJfrvZEIUt/+Hi6jClqCpzurrAuZHne95O+Ir7sKxAT58K7LOvr2JTMHv/XWI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iRT5USF1; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="XgQgPuSW"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1760970368;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=pQyqqPVnzX80M9s6VBgWNHBBaztCyITJ++CqjP/sV5c=;
-	b=XgQgPuSWDbEZkzDME35zKg/AkStoqhnzRHtSDf2OyOYX9YCjT+xDDCj9+zhrXkoEP/nK4H
-	Rl7MiGGFloxnO1S8/T/PFcJKYVDz+IwpWVsPA/pxhG4TZ2J0NpVfAuSHQ5My7Rfjl+M6Rb
-	K1WXlLl5hINkJVy1V9b31PI4cR754+o=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-63-Wl8fcxZJOwCiNCwjrMI_8Q-1; Mon, 20 Oct 2025 10:26:06 -0400
-X-MC-Unique: Wl8fcxZJOwCiNCwjrMI_8Q-1
-X-Mimecast-MFC-AGG-ID: Wl8fcxZJOwCiNCwjrMI_8Q_1760970365
-Received: by mail-wm1-f70.google.com with SMTP id 5b1f17b1804b1-46fa88b5760so15202765e9.3
-        for <iommu@lists.linux.dev>; Mon, 20 Oct 2025 07:26:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1760970365; x=1761575165;
-        h=content-transfer-encoding:in-reply-to:autocrypt:content-language
-         :from:references:cc:to:subject:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=pQyqqPVnzX80M9s6VBgWNHBBaztCyITJ++CqjP/sV5c=;
-        b=qxahYEHu/HOuuc5NPCEATUP5H/cGQ9ywnAwNgPJchihIXcPBp/LC/HigyjE/5WPGAH
-         2lf+A5UG8Mj00qC2kWtEjoaj2HuWdWbQyNySaUJX70/GKksXdiQO0mgN3elvzOB+zhbp
-         JaO20EurAV7vPaBymkAIqBcFi76Cs3m15Y1kovETYVd4nm9eYkuAUFGUt8TJ3WGFTvlz
-         2JbgEZLg2k7BQTriv1hFgAIVr6LRiR2TtTrepJRfvyY6G8TeNgcv9Oasoj623o1Hqiy/
-         UKPRfnmO+M3WMTo6wNdhA3JDMbtiYEBAIwvzJXa29w19FqRxe+f8ws73BjlPwzjNObgO
-         hB4w==
-X-Forwarded-Encrypted: i=1; AJvYcCX6dXPOEAxvN9/MHV0z9m51djQNJP+sa7eOfpW2WKxfy7agCjMpQpSlBMnzPOkP032pPchpBw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx95l+6votdQ8fdwDrhei+3d5CU5WLH4gOLpQ53rtZLIoA1Wtqp
-	KjUC1Wk02d30db7oAd3ncfA/QRWXAhef/9xgO2tFKpQsQslrsIa2pJcxsZvK4aazjndo5S81CFh
-	opec6rdJTEP/q9xNt1Ao4bL7GuGJja0E2FW2hzGdiJCXPb9JRaawrcnaB
-X-Gm-Gg: ASbGncsEnab2BFPIEVYI9Kzt83Wd1ESi2sI2JcqpAdyYi0OLjLCUDXROUrHzl5ceJmc
-	OmKJTXTEhovFzwMrf5briYiVj8Bjw63EIDUapXcMCfr8HbxZAt3qQYxTMT6K3a2yDOsN229p6S1
-	06DlQ0mRyH73lSFghr+Fq6gg1KGNAK0jbCguifJg5iZKmPJmEGeThaIyza1rWdhg3RZxxhJ7k1f
-	+YNh574V97S5RnvsFlG7UX1hc5fuJq/0zkiijmn2mH4QpD8G8UZrkfJSIC1KNY/vYACluAi6tpZ
-	oxH4dy9v5YJII7laWIBvDZZ/w8pHaG+fy9fY+LiU5dhQUdQDwmsGaKL6cuxp2pMLH6ts+uGTNPV
-	ssfbKJJhqvwMjv/g0Pq/oOK3LH72pgKymb/P3DXhraQQk/x3COST3YnJMaMZi05FLbSe9FB7sU0
-	BiyZ6r9fIrEuyfOmcfkvFFWzSLgT4=
-X-Received: by 2002:a05:600d:62b1:b0:46f:b43a:aef4 with SMTP id 5b1f17b1804b1-471b5341411mr31713305e9.38.1760970364928;
-        Mon, 20 Oct 2025 07:26:04 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IFivef5uKK4dO0bLoUG5afbj0PkGjj8ivIcoCqNvXGcEAdVc8Dd+wjfTpX6dFddxGB9NaRtjw==
-X-Received: by 2002:a05:600d:62b1:b0:46f:b43a:aef4 with SMTP id 5b1f17b1804b1-471b5341411mr31713105e9.38.1760970364447;
-        Mon, 20 Oct 2025 07:26:04 -0700 (PDT)
-Received: from ?IPV6:2003:d8:2f0c:c200:fa4a:c4ff:1b32:21ce? (p200300d82f0cc200fa4ac4ff1b3221ce.dip0.t-ipconnect.de. [2003:d8:2f0c:c200:fa4a:c4ff:1b32:21ce])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4715520d753sm148339825e9.13.2025.10.20.07.26.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Oct 2025 07:26:03 -0700 (PDT)
-Message-ID: <4f2066f8-f26e-4704-9f75-4652d4018cd9@redhat.com>
-Date: Mon, 20 Oct 2025 16:26:00 +0200
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iRT5USF1"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6DD1C4CEF9;
+	Mon, 20 Oct 2025 15:04:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1760972657;
+	bh=opgDUacvsAEAblCjRwc/cnZnXjDHKNzApka9lSwmFm0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=iRT5USF1c9hlxYuIAOhCLi5vAK5WR7rom9xRkIU3R7gF7myd/1e5DMMfNCS0kUZkY
+	 3iRkzX0tjSk5Oi94wjBXhi3wnlTtnIwsAvgfAKJFuquBcdXjW7d9WDWrPNIf5J0bU5
+	 zVOo4RRrxdwbFsBukm+Rj6kIqO8vqJWtwlc9Wep5HFp36crF5d7piD0ABkB0lYukcY
+	 occ87bgOGiq4SFUOt5aNiFNgE39VrrMYCKAhg7FXj21tnyeBL4evlgZwZyr9LIYUQF
+	 TbY2GnPoLUsXHvGaif5VObAw2oxejIFZ08On78dvTXugRYsJ65uWf5lD//iEs7lnk9
+	 fxqi91aJMPONw==
+Date: Mon, 20 Oct 2025 18:04:12 +0300
+From: Leon Romanovsky <leon@kernel.org>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Christoph Hellwig <hch@infradead.org>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+	dri-devel@lists.freedesktop.org, iommu@lists.linux.dev,
+	Jens Axboe <axboe@kernel.dk>, Joerg Roedel <joro@8bytes.org>,
+	kvm@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
+	linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-media@vger.kernel.org, linux-mm@kvack.org,
+	linux-pci@vger.kernel.org, Logan Gunthorpe <logang@deltatee.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Vivek Kasireddy <vivek.kasireddy@intel.com>,
+	Will Deacon <will@kernel.org>
+Subject: Re: [PATCH v5 1/9] PCI/P2PDMA: Separate the mmap() support from the
+ core logic
+Message-ID: <20251020150412.GP6199@unreal>
+References: <cover.1760368250.git.leon@kernel.org>
+ <1044f7aa09836d63de964d4eb6e646b3071c1fdb.1760368250.git.leon@kernel.org>
+ <aPHibioUFZV8Wnd1@infradead.org>
+ <20251017115320.GF3901471@nvidia.com>
+ <aPYqliGwJTcZznSX@infradead.org>
+ <20251020125854.GL316284@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [syzbot ci] Re: Fix stale IOTLB entries for kernel address space
-To: Baolu Lu <baolu.lu@linux.intel.com>, Dave Hansen <dave.hansen@intel.com>,
- syzbot ci <syzbot+cid009622971eb4566@syzkaller.appspotmail.com>,
- akpm@linux-foundation.org, apopple@nvidia.com, bp@alien8.de,
- dave.hansen@linux.intel.com, iommu@lists.linux.dev, jannh@google.com,
- jean-philippe@linaro.org, jgg@nvidia.com, joro@8bytes.org,
- kevin.tian@intel.com, liam.howlett@oracle.com, linux-kernel@vger.kernel.org,
- linux-mm@kvack.org, lorenzo.stoakes@oracle.com, luto@kernel.org,
- mhocko@kernel.org, mingo@redhat.com, peterz@infradead.org,
- robin.murphy@arm.com, rppt@kernel.org, security@kernel.org,
- stable@vger.kernel.org, tglx@linutronix.de, urezki@gmail.com,
- vasant.hegde@amd.com, vbabka@suse.cz, will@kernel.org, willy@infradead.org,
- x86@kernel.org, yi1.lai@intel.com
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
-References: <68eeb99e.050a0220.91a22.0220.GAE@google.com>
- <89146527-3f41-4f1e-8511-0d06e169c09e@intel.com>
- <8cdb459f-f7d1-4ca0-a6a0-5c83d5092cd8@linux.intel.com>
- <d1a6c65c-6518-4227-8ec3-f2af4f7724ad@redhat.com>
- <13d660ea-9bff-47dc-9cd7-ae74869edc5a@linux.intel.com>
-From: David Hildenbrand <david@redhat.com>
-Autocrypt: addr=david@redhat.com; keydata=
- xsFNBFXLn5EBEAC+zYvAFJxCBY9Tr1xZgcESmxVNI/0ffzE/ZQOiHJl6mGkmA1R7/uUpiCjJ
- dBrn+lhhOYjjNefFQou6478faXE6o2AhmebqT4KiQoUQFV4R7y1KMEKoSyy8hQaK1umALTdL
- QZLQMzNE74ap+GDK0wnacPQFpcG1AE9RMq3aeErY5tujekBS32jfC/7AnH7I0v1v1TbbK3Gp
- XNeiN4QroO+5qaSr0ID2sz5jtBLRb15RMre27E1ImpaIv2Jw8NJgW0k/D1RyKCwaTsgRdwuK
- Kx/Y91XuSBdz0uOyU/S8kM1+ag0wvsGlpBVxRR/xw/E8M7TEwuCZQArqqTCmkG6HGcXFT0V9
- PXFNNgV5jXMQRwU0O/ztJIQqsE5LsUomE//bLwzj9IVsaQpKDqW6TAPjcdBDPLHvriq7kGjt
- WhVhdl0qEYB8lkBEU7V2Yb+SYhmhpDrti9Fq1EsmhiHSkxJcGREoMK/63r9WLZYI3+4W2rAc
- UucZa4OT27U5ZISjNg3Ev0rxU5UH2/pT4wJCfxwocmqaRr6UYmrtZmND89X0KigoFD/XSeVv
- jwBRNjPAubK9/k5NoRrYqztM9W6sJqrH8+UWZ1Idd/DdmogJh0gNC0+N42Za9yBRURfIdKSb
- B3JfpUqcWwE7vUaYrHG1nw54pLUoPG6sAA7Mehl3nd4pZUALHwARAQABzSREYXZpZCBIaWxk
- ZW5icmFuZCA8ZGF2aWRAcmVkaGF0LmNvbT7CwZoEEwEIAEQCGwMCF4ACGQEFCwkIBwICIgIG
- FQoJCAsCBBYCAwECHgcWIQQb2cqtc1xMOkYN/MpN3hD3AP+DWgUCaJzangUJJlgIpAAKCRBN
- 3hD3AP+DWhAxD/9wcL0A+2rtaAmutaKTfxhTP0b4AAp1r/eLxjrbfbCCmh4pqzBhmSX/4z11
- opn2KqcOsueRF1t2ENLOWzQu3Roiny2HOU7DajqB4dm1BVMaXQya5ae2ghzlJN9SIoopTWlR
- 0Af3hPj5E2PYvQhlcqeoehKlBo9rROJv/rjmr2x0yOM8qeTroH/ZzNlCtJ56AsE6Tvl+r7cW
- 3x7/Jq5WvWeudKrhFh7/yQ7eRvHCjd9bBrZTlgAfiHmX9AnCCPRPpNGNedV9Yty2Jnxhfmbv
- Pw37LA/jef8zlCDyUh2KCU1xVEOWqg15o1RtTyGV1nXV2O/mfuQJud5vIgzBvHhypc3p6VZJ
- lEf8YmT+Ol5P7SfCs5/uGdWUYQEMqOlg6w9R4Pe8d+mk8KGvfE9/zTwGg0nRgKqlQXrWRERv
- cuEwQbridlPAoQHrFWtwpgYMXx2TaZ3sihcIPo9uU5eBs0rf4mOERY75SK+Ekayv2ucTfjxr
- Kf014py2aoRJHuvy85ee/zIyLmve5hngZTTe3Wg3TInT9UTFzTPhItam6dZ1xqdTGHZYGU0O
- otRHcwLGt470grdiob6PfVTXoHlBvkWRadMhSuG4RORCDpq89vu5QralFNIf3EysNohoFy2A
- LYg2/D53xbU/aa4DDzBb5b1Rkg/udO1gZocVQWrDh6I2K3+cCs7BTQRVy5+RARAA59fefSDR
- 9nMGCb9LbMX+TFAoIQo/wgP5XPyzLYakO+94GrgfZjfhdaxPXMsl2+o8jhp/hlIzG56taNdt
- VZtPp3ih1AgbR8rHgXw1xwOpuAd5lE1qNd54ndHuADO9a9A0vPimIes78Hi1/yy+ZEEvRkHk
- /kDa6F3AtTc1m4rbbOk2fiKzzsE9YXweFjQvl9p+AMw6qd/iC4lUk9g0+FQXNdRs+o4o6Qvy
- iOQJfGQ4UcBuOy1IrkJrd8qq5jet1fcM2j4QvsW8CLDWZS1L7kZ5gT5EycMKxUWb8LuRjxzZ
- 3QY1aQH2kkzn6acigU3HLtgFyV1gBNV44ehjgvJpRY2cC8VhanTx0dZ9mj1YKIky5N+C0f21
- zvntBqcxV0+3p8MrxRRcgEtDZNav+xAoT3G0W4SahAaUTWXpsZoOecwtxi74CyneQNPTDjNg
- azHmvpdBVEfj7k3p4dmJp5i0U66Onmf6mMFpArvBRSMOKU9DlAzMi4IvhiNWjKVaIE2Se9BY
- FdKVAJaZq85P2y20ZBd08ILnKcj7XKZkLU5FkoA0udEBvQ0f9QLNyyy3DZMCQWcwRuj1m73D
- sq8DEFBdZ5eEkj1dCyx+t/ga6x2rHyc8Sl86oK1tvAkwBNsfKou3v+jP/l14a7DGBvrmlYjO
- 59o3t6inu6H7pt7OL6u6BQj7DoMAEQEAAcLBfAQYAQgAJgIbDBYhBBvZyq1zXEw6Rg38yk3e
- EPcA/4NaBQJonNqrBQkmWAihAAoJEE3eEPcA/4NaKtMQALAJ8PzprBEXbXcEXwDKQu+P/vts
- IfUb1UNMfMV76BicGa5NCZnJNQASDP/+bFg6O3gx5NbhHHPeaWz/VxlOmYHokHodOvtL0WCC
- 8A5PEP8tOk6029Z+J+xUcMrJClNVFpzVvOpb1lCbhjwAV465Hy+NUSbbUiRxdzNQtLtgZzOV
- Zw7jxUCs4UUZLQTCuBpFgb15bBxYZ/BL9MbzxPxvfUQIPbnzQMcqtpUs21CMK2PdfCh5c4gS
- sDci6D5/ZIBw94UQWmGpM/O1ilGXde2ZzzGYl64glmccD8e87OnEgKnH3FbnJnT4iJchtSvx
- yJNi1+t0+qDti4m88+/9IuPqCKb6Stl+s2dnLtJNrjXBGJtsQG/sRpqsJz5x1/2nPJSRMsx9
- 5YfqbdrJSOFXDzZ8/r82HgQEtUvlSXNaXCa95ez0UkOG7+bDm2b3s0XahBQeLVCH0mw3RAQg
- r7xDAYKIrAwfHHmMTnBQDPJwVqxJjVNr7yBic4yfzVWGCGNE4DnOW0vcIeoyhy9vnIa3w1uZ
- 3iyY2Nsd7JxfKu1PRhCGwXzRw5TlfEsoRI7V9A8isUCoqE2Dzh3FvYHVeX4Us+bRL/oqareJ
- CIFqgYMyvHj7Q06kTKmauOe4Nf0l0qEkIuIzfoLJ3qr5UyXc2hLtWyT9Ir+lYlX9efqh7mOY
- qIws/H2t
-In-Reply-To: <13d660ea-9bff-47dc-9cd7-ae74869edc5a@linux.intel.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: XgodrILNrRp1Ir9Yh3N7h3LdPSGZGiam-FwaJm9koxc_1760970365
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20251020125854.GL316284@nvidia.com>
 
-On 20.10.25 07:34, Baolu Lu wrote:
-> On 10/18/25 01:10, David Hildenbrand wrote:
->> On 16.10.25 10:00, Baolu Lu wrote:
->>> On 10/16/25 00:25, Dave Hansen wrote:
->>>> Here's the part that confuses me:
->>>>
->>>> On 10/14/25 13:59, syzbot ci wrote:
->>>>> page last free pid 5965 tgid 5964 stack trace:
->>>>>     reset_page_owner include/linux/page_owner.h:25 [inline]
->>>>>     free_pages_prepare mm/page_alloc.c:1394 [inline]
->>>>>     __free_frozen_pages+0xbc4/0xd30 mm/page_alloc.c:2906
->>>>>     pmd_free_pte_page+0xa1/0xc0 arch/x86/mm/pgtable.c:783
->>>>>     vmap_try_huge_pmd mm/vmalloc.c:158 [inline]
->>>> ...
->>>>
->>>> So, vmap_try_huge_pmd() did a pmd_free_pte_page(). Yet, somehow, the PMD
->>>> stuck around so that it *could* be used after being freed. It _looks_
->>>> like pmd_free_pte_page() freed the page, returned 0, and made
->>>> vmap_try_huge_pmd() return early, skipping the pmd pmd_set_huge().
->>>>
->>>> But I don't know how that could possibly happen.
->>>
->>> The reported issue is only related to this patch:
->>>
->>> - [PATCH v6 3/7] x86/mm: Use 'ptdesc' when freeing PMD pages
->>>
->>> It appears that the pmd_ptdesc() helper can't be used directly here in
->>> this patch. pmd_ptdesc() retrieves the page table page that the PMD
->>> entry resides in:
->>>
->>> static inline struct page *pmd_pgtable_page(pmd_t *pmd)
->>> {
->>>            unsigned long mask = ~(PTRS_PER_PMD * sizeof(pmd_t) - 1);
->>>            return virt_to_page((void *)((unsigned long) pmd & mask));
->>> }
->>>
->>> static inline struct ptdesc *pmd_ptdesc(pmd_t *pmd)
->>> {
->>>            return page_ptdesc(pmd_pgtable_page(pmd));
->>> }
->>>
->>> while, in this patch, we need the page descriptor that a pmd entry
->>> points to.
->>
->> Ah. But that's just pointing at a leaf page table, right?
+On Mon, Oct 20, 2025 at 09:58:54AM -0300, Jason Gunthorpe wrote:
+> On Mon, Oct 20, 2025 at 05:27:02AM -0700, Christoph Hellwig wrote:
+> > On Fri, Oct 17, 2025 at 08:53:20AM -0300, Jason Gunthorpe wrote:
+> > > On Thu, Oct 16, 2025 at 11:30:06PM -0700, Christoph Hellwig wrote:
+> > > > On Mon, Oct 13, 2025 at 06:26:03PM +0300, Leon Romanovsky wrote:
+> > > > > The DMA API now has a new flow, and has gained phys_addr_t support, so
+> > > > > it no longer needs struct pages to perform P2P mapping.
+> > > > 
+> > > > That's news to me.  All the pci_p2pdma_map_state machinery is still
+> > > > based on pgmaps and thus pages.
+> > > 
+> > > We had this discussion already three months ago:
+> > > 
+> > > https://lore.kernel.org/all/20250729131502.GJ36037@nvidia.com/
+> > > 
+> > > These couple patches make the core pci_p2pdma_map_state machinery work
+> > > on struct p2pdma_provider, and pgmap is just one way to get a
+> > > p2pdma_provider *
+> > > 
+> > > The struct page paths through pgmap go page->pgmap->mem to get
+> > > p2pdma_provider.
+> > > 
+> > > The non-struct page paths just have a p2pdma_provider * without a
+> > > pgmap. In this series VFIO uses
+> > > 
+> > > +	*provider = pcim_p2pdma_provider(pdev, bar);
+> > > 
+> > > To get the provider for a specific BAR.
+> > 
+> > And what protects that life time?  I've not seen anyone actually
+> > building the proper lifetime management.  And if someone did the patches
+> > need to clearly point to that.
 > 
-> Yes, that points to a leaf page table.
+> It is this series!
+> 
+> The above API gives a lifetime that is driver bound. The calling
+> driver must ensure it stops using provider and stops doing DMA with it
+> before remove() completes.
+> 
+> This VFIO series does that through the move_notify callchain I showed
+> in the previous email. This callchain is always triggered before
+> remove() of the VFIO PCI driver is completed.
+> 
+> > > I think I've answered this three times now - for DMABUF the DMABUF
+> > > invalidation scheme is used to control the lifetime and no DMA mapping
+> > > outlives the provider, and the provider doesn't outlive the driver.
+> > 
+> > How?
+> 
+> I explained it in detail in the message you are repling to. If
+> something is not clear can you please be more specific??
+> 
+> Is it the mmap in VFIO perhaps that is causing these questions?
+> 
+> VFIO uses a PFNMAP VMA, so you can't pin_user_page() it. It uses
+> unmap_mapping_range() during its remove() path to get rid of the VMA
+> PTEs.
+> 
+> The DMA activity doesn't use the mmap *at all*. It isn't like NVMe
+> which relies on the ZONE_DEVICE pages and VMAs to link drivers
+> togther.
+> 
+> Instead the DMABUF FD is used to pass the MMIO pages between VFIO and
+> another driver. DMABUF has a built in invalidation mechanism that VFIO
+> triggers before remove(). The invalidation removes access from the
+> other driver.
+> 
+> This is different than NVMe which has no invalidation. NVMe does
+> unmap_mapping_range() on the VMA and waits for all the short lived
+> pgmap references to clear. We don't need anything like that because
+> DMABUF invalidation is synchronous.
+> 
+> The full picture for VFIO is something like:
+> 
+> [startup]
+>   MMIO is acquired from the pci_resource
+>   p2p_providers are setup
+> 
+> [runtime]
+>   MMIO is mapped into PFNMAP VMAs
+>   MMIO is linked to a DMABUF FD
+>   DMABUF FD gets DMA mapped using the p2p_provider
+> 
+> [unplug]
+>   unmap_mapping_range() is called so all VMAs are emptied out and the
+>   fault handler prevents new PTEs 
+>     ** No access to the MMIO through VMAs is possible**
+> 
+>   vfio_pci_dma_buf_cleanup() is called which prevents new DMABUF
+>   mappings from starting, and does dma_buf_move_notify() on all the
+>   open DMABUF FDs to invalidate other drivers. Other drivers stop
+>   doing DMA and we need to free the IOVA from the IOMMU/etc.
+>     ** No DMA access from other drivers is possible now**
+> 
+>   Any still open DMABUF FD will fail inside VFIO immediately due to
+>   the priv->revoked checks.
+>     **No code touches the p2p_provider anymore**
+> 
+>   The p2p_provider is destroyed by devm.
+> 
+> > > Obviously you cannot use the new p2provider mechanism without some
+> > > kind of protection against use after hot unplug, but it doesn't have
+> > > to be struct page based.
+> > 
+> > And how does this interact with everyone else expecting pgmap based
+> > lifetime management.
+> 
+> They continue to use pgmap and nothing changes for them.
+> 
+> The pgmap path always waited until nothing was using the pgmap and
+> thus provider before allowing device driver remove() to complete.
+> 
+> The refactoring doesn't change the lifecycle model, it just provides
+> entry points to access the driver bound lifetime model directly
+> instead of being forced to use pgmap.
+> 
+> Leon, can you add some remarks to the comments about what the rules
+> are to call pcim_p2pdma_provider() ?
 
-Right, so I guess there is no simplifying that.
+Yes, sure.
 
-Like we have in pte_lockptr():
+Thanks
 
-	return ptlock_ptr(page_ptdesc(pmd_page(*pmd)));
-
-So page_ptdesc(pmd_page()) is the way to go for now.
-
-Sorry for the confusion.
-
--- 
-Cheers
-
-David / dhildenb
-
+> 
+> Jason
