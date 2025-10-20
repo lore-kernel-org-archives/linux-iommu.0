@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 295512C326C;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47D252D027F;
 	Mon, 20 Oct 2025 04:56:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760936198; cv=none; b=QRLMSqwA2bCYqpFtGv7LjZJPWnH61xBNw5sVcCQouKGvqcGsl6mOvf+ZxPJq95T1BXq3VkmzOyJYX54E1mMX+FAUJZ4VSXdHd8MnZkZl5uVtPN7UoQdUoaIsxSo+yCZjbTP1QS+6Hzd1N8SEgfuOetnWbKSXpOpYI6z8E+974bw=
+	t=1760936198; cv=none; b=eo/y5Nzbuh/kLPWTjcP63kADXIhi4YGkE0W4AZX4UL4aDH9Z7tjEmQO4iL8kJ5ErXTAMJhk6V6jClyn1/Qb5N4Czdd714MuaBGOpEmWTFUeAF7fJpHYd5E3uJFXaAFPFdUv2BgzHr+htUKj9RtgrWw9RR6PPBpuiEYuLFw1irFg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1760936198; c=relaxed/simple;
-	bh=MYEOUbyF4ZGD5XYEwadELPgQLrWxXxJkfb5idHjpHFo=;
+	bh=I1WdqYJWLR3PNSOWKpin7GH4bbZsu9qz49UM1zdBbDo=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=gy4ogA0USotvwu5+UhlnxroX3RSfJIrOv11q6z+0vHjJCofY2DmAM7PBnjZ3Of6fYOrTcqqW1F594W5DhxXW5nmxNAeNuFHj95FgOA/Y8WZFhEyH0CBf0PsBfPDitVOMvDXc5IiPVcmmyo3WSPgS7SvKd9IFwV10ntZFocBPfaI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=j+YgynLQ; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=OYD2ciEpDJLHz8QfNYew0qTTbmCPnVhIhs4jU+0lY1PQIRYV9zHMczaqokbe46yoBUMoWrhZJRgkjltMcYyQG8FHt1MD5oIJ7lIs4gZY/RwvRsV9DLa+QrEwz+w6pM1tKKQmRezuNpsnLepFg0MBWa6xP2x0zi/XQsEQ0AB4PYM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NE+3MNAL; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="j+YgynLQ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1FBAC4AF15;
-	Mon, 20 Oct 2025 04:56:37 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NE+3MNAL"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19C44C4CEFE;
+	Mon, 20 Oct 2025 04:56:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1760936198;
-	bh=MYEOUbyF4ZGD5XYEwadELPgQLrWxXxJkfb5idHjpHFo=;
+	bh=I1WdqYJWLR3PNSOWKpin7GH4bbZsu9qz49UM1zdBbDo=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=j+YgynLQSCK3/n+whncI0z58x+0lE8g3mkuDkUeI8TeNfp6yvZNRgtc+a9yrrK7Yy
-	 Bz0CEZ4EsgTC6g0p7tJ3J8urs/E+8TfTkhGLvv0VU37H9BFLK0sAP3NsVIYXwNvBI5
-	 qe9+bsH+fOjdjj6YkCIygOg+h1VY5hCUMp6cedqJLwg1Qh1TtuVgw2Zsyt3p0mkee5
-	 31W417IVWmrYdS/HgHyB7xu/mv76LzMcElFppmXoXwRZ6YdxKfO4Rv4FkfIK2ZiA+M
-	 RIR3USN4lRsHlJiee7fklKTz9G3bqtJg1wV2LDT8Qi4KmMR/kiL8n8muqTynmSoAMt
-	 nAL0LAiHKiZiA==
+	b=NE+3MNAL8pCWwQSpY+zdGeHjh9pQQO7YW3PLk/0h1w4tkRIQnZwbujBnxt9upN9Kz
+	 QaoSzBCd5rZMXQWMYvepUk8XAJQ/Ov/9YlSFR+sWJHJX8VVE1ePHbV2jP8AffTmw13
+	 uFaFwzxy3YO2vLeSM+B8I6gskE/XTbFWylcacZ+osCM4hwmZ7KTXxxsZYUTi8jTJTa
+	 QAJ4q6jCkBpY6cxzmJNOY6N0B4NzM3I1REv4nDifgOY0AIpTcBz0Sr5u4zZCEH9gcb
+	 q4wWObZDOOnnVSrW5U+CkmWCOgfi/DCHyS+B7YbFgwCj7gb0WxGNBMZeQ8vchE7i/G
+	 FYX8FlWmFgOlQ==
 Received: from johan by xi.lan with local (Exim 4.98.2)
 	(envelope-from <johan@kernel.org>)
-	id 1vAhwn-0000000083T-3ILe;
-	Mon, 20 Oct 2025 06:56:41 +0200
+	id 1vAhwo-0000000083i-0NeK;
+	Mon, 20 Oct 2025 06:56:42 +0200
 From: Johan Hovold <johan@kernel.org>
 To: Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>
@@ -48,10 +48,11 @@ Cc: Robin Murphy <robin.murphy@arm.com>,
 	linux-kernel@vger.kernel.org,
 	Johan Hovold <johan@kernel.org>,
 	stable@vger.kernel.org,
-	Suman Anna <s-anna@ti.com>
-Subject: [PATCH v3 11/14] iommu/omap: fix device leaks on probe_device()
-Date: Mon, 20 Oct 2025 06:53:15 +0200
-Message-ID: <20251020045318.30690-12-johan@kernel.org>
+	Miaoqian Lin <linmq006@gmail.com>,
+	Thierry Reding <treding@nvidia.com>
+Subject: [PATCH v3 14/14] iommu/tegra: fix device leak on probe_device()
+Date: Mon, 20 Oct 2025 06:53:18 +0200
+Message-ID: <20251020045318.30690-15-johan@kernel.org>
 X-Mailer: git-send-email 2.49.1
 In-Reply-To: <20251020045318.30690-1-johan@kernel.org>
 References: <20251020045318.30690-1-johan@kernel.org>
@@ -63,65 +64,40 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Make sure to drop the references taken to the iommu platform devices
-when looking up their driver data during probe_device().
+Make sure to drop the reference taken to the iommu platform device when
+looking up its driver data during probe_device().
 
-Note that the arch data device pointer added by commit 604629bcb505
-("iommu/omap: add support for late attachment of iommu devices") has
-never been used. Remove it to underline that the references are not
-needed.
+Note that commit 9826e393e4a8 ("iommu/tegra-smmu: Fix missing
+put_device() call in tegra_smmu_find") fixed the leak in an error path,
+but the reference is still leaking on success.
 
-Fixes: 9d5018deec86 ("iommu/omap: Add support to program multiple iommus")
-Fixes: 7d6827748d54 ("iommu/omap: Fix iommu archdata name for DT-based devices")
-Cc: stable@vger.kernel.org	# 3.18
-Cc: Suman Anna <s-anna@ti.com>
+Fixes: 891846516317 ("memory: Add NVIDIA Tegra memory controller support")
+Cc: stable@vger.kernel.org	# 3.19: 9826e393e4a8
+Cc: Miaoqian Lin <linmq006@gmail.com>
 Acked-by: Robin Murphy <robin.murphy@arm.com>
+Acked-by: Thierry Reding <treding@nvidia.com>
 Signed-off-by: Johan Hovold <johan@kernel.org>
 ---
- drivers/iommu/omap-iommu.c | 2 +-
- drivers/iommu/omap-iommu.h | 2 --
- 2 files changed, 1 insertion(+), 3 deletions(-)
+ drivers/iommu/tegra-smmu.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-index 5c6f5943f44b..c0315c86cd18 100644
---- a/drivers/iommu/omap-iommu.c
-+++ b/drivers/iommu/omap-iommu.c
-@@ -1675,6 +1675,7 @@ static struct iommu_device *omap_iommu_probe_device(struct device *dev)
- 		}
+diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+index 36cdd5fbab07..f6f26a072820 100644
+--- a/drivers/iommu/tegra-smmu.c
++++ b/drivers/iommu/tegra-smmu.c
+@@ -830,10 +830,9 @@ static struct tegra_smmu *tegra_smmu_find(struct device_node *np)
+ 		return NULL;
  
- 		oiommu = platform_get_drvdata(pdev);
-+		put_device(&pdev->dev);
- 		if (!oiommu) {
- 			of_node_put(np);
- 			kfree(arch_data);
-@@ -1682,7 +1683,6 @@ static struct iommu_device *omap_iommu_probe_device(struct device *dev)
- 		}
+ 	mc = platform_get_drvdata(pdev);
+-	if (!mc) {
+-		put_device(&pdev->dev);
++	put_device(&pdev->dev);
++	if (!mc)
+ 		return NULL;
+-	}
  
- 		tmp->iommu_dev = oiommu;
--		tmp->dev = &pdev->dev;
- 
- 		of_node_put(np);
- 	}
-diff --git a/drivers/iommu/omap-iommu.h b/drivers/iommu/omap-iommu.h
-index 27697109ec79..50b39be61abc 100644
---- a/drivers/iommu/omap-iommu.h
-+++ b/drivers/iommu/omap-iommu.h
-@@ -88,7 +88,6 @@ struct omap_iommu {
- /**
-  * struct omap_iommu_arch_data - omap iommu private data
-  * @iommu_dev: handle of the OMAP iommu device
-- * @dev: handle of the iommu device
-  *
-  * This is an omap iommu private data object, which binds an iommu user
-  * to its iommu device. This object should be placed at the iommu user's
-@@ -97,7 +96,6 @@ struct omap_iommu {
-  */
- struct omap_iommu_arch_data {
- 	struct omap_iommu *iommu_dev;
--	struct device *dev;
- };
- 
- struct cr_regs {
+ 	return mc->smmu;
+ }
 -- 
 2.49.1
 
