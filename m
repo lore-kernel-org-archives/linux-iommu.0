@@ -1,121 +1,145 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBDD62D949A;
-	Mon, 20 Oct 2025 06:57:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55F78221FC4
+	for <iommu@lists.linux.dev>; Mon, 20 Oct 2025 09:23:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760943464; cv=none; b=V1gnrvbYp37jvypVyI0iylT5Ft0CGdQHU4wqxy6/RUa6aAPh4aDDu3qg5+3JtF86hPeno/K+1+sunBi3BUE1asLD+YLvTMu/u3eqHwLx8eUXVoo8yephl0FTaAr1cESlCjjhPogOyxn5uCXuuolIq8noV3DUbwIezBkiDNZtEFI=
+	t=1760952185; cv=none; b=GzjtIbMlbcBHebirD+Mtb01HkQ0gmzC+JMvR4ZTS1TtnHUoTZVPqdTRpKcFQES3yhNGsrmVJG+nKEB22hH6VK9u5K/XglgjBP61464CzajXsIwpRxW4/KMkK275Rk8u+CDVGvc+PATRBsvsN/KwOG9hQfHw3F1BQst524MVtJhA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760943464; c=relaxed/simple;
-	bh=3zKcbSMPDP4MWcdlhzd5uYSC4CKRpKj4OpV+hFKX4mQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=HmOxyYCJ78GnfZYhicEWPrWnTSAOy+sz8vMcgg0W1+wTRyKijiWDpgmK00lE678wLzm/GYYMVwgT/z9dKVl+fXfIapF4ZsXJi1LVgxBen1Gz8ZlUthtweW0oGWMgh587UOaMDVq1YCnLdQbhpfBnCg+u8xqw1b4ccUwKoDh2Dm8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=h/c2r9fK; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1760952185; c=relaxed/simple;
+	bh=hMFzAE+u+nASc8Ayen4g5l9uc68xWJVxUvqNMCpeXuw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Z+OCepCwZ+vSqoppKHc/Qd0V380vqdp4n9HZCWC5xA6+04kU0AfuTJeSOz5rcsBhKE63YhgPa7jwszMPF7HpIl2JrGKAkQSETxQGKXYjtH1fmFZq53FtdanSo2EjBI1p8831JlqMZRGX2T+VmFMnGMF40VRFSvV3tGcu03rrLEI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=zcA0ZmsD; arc=none smtp.client-ip=209.85.128.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="h/c2r9fK"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B54AC4CEF9;
-	Mon, 20 Oct 2025 06:57:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1760943463;
-	bh=3zKcbSMPDP4MWcdlhzd5uYSC4CKRpKj4OpV+hFKX4mQ=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=h/c2r9fKO5C/9wOuhV2YrXDqKfIorKXbdecYWIkwER6qlgC4ozMkjC3qAQYwLs9AP
-	 tJujPtHztTZtW1geiCoa7E+GpLfLeaCFgheEaST3T7PqeIu/fO3HDpXXjTv/wANzNu
-	 jPgS3SOgbJSJGRTBIaQPG0mbRofhtVsRnxL48eSNkIdOXoPsjU4jFUr5o1HQFmGnti
-	 6lWhqEANjU7EhoKEzFa/mrIJrm18WQmKZUiKblQvz8YeTdFw12rgY7j2X+rg/EK1bt
-	 a3WFWZSQgBoWddUnY5ISPlI3c3Ne2EzbffjZilRWpShSXu0LheYnqbeuccIH6pZ3Jw
-	 McoKR2jNhgSNg==
-Message-ID: <737b57e6-6d91-49fc-b52d-32e40861d25f@kernel.org>
-Date: Mon, 20 Oct 2025 08:57:37 +0200
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="zcA0ZmsD"
+Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-471193a9d9eso35785165e9.2
+        for <iommu@lists.linux.dev>; Mon, 20 Oct 2025 02:23:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1760952182; x=1761556982; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=cdA6CsjifSV/CpZyjz8ziwjcjaEoS8UMM+9gCn6fwe8=;
+        b=zcA0ZmsDH5QV7+VDW6FjN9tBoR8kjDgm4xaYQJudTsMUsnCjPuoWYx5JgkLMaBYROs
+         aq4srpy9NgW7m+ji0rB1537B805heVpYPmvzf/0Ifhxd/+TZip7e4u/GThh70mQ4KIqK
+         zS4IRgL092RXkegHxkurBEWxm7IeXbTi8gtWL5tdNj3HrA0anK0e2Pb/pNsYfhH1okMf
+         +Td8bz5aQ8aIFm39HoZoGdS4PR74Iptx5145QGxpGXCGNyG7sFYKOF3ZaSI4aZ4ePDfh
+         Wkmy1Tdca36M5DqcWFxpZEi5hcvcwn5bxkYa41UGt8AP+QV4ppTlVhaYwB0nghpUO11W
+         85Uw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1760952182; x=1761556982;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=cdA6CsjifSV/CpZyjz8ziwjcjaEoS8UMM+9gCn6fwe8=;
+        b=VukmY+9mqf8rEnMXkV1l79El13QJtXNBWxNVIK+YwwVEr9MyJd7MInDdMhgRdFIBBZ
+         PnQAJfvcuOtEGhqB23xQmCIKwj4MzTQDFZLsDowrNapAZEb80Dl33wkp9tzHq8h/5fUF
+         CKAGkMWRYe/67CftxN/TTctJfSTB2ssHcZsYGc72XER2cjFuK8pHmOBfguu3UzCRa9kX
+         2j3M/XLH00XoJk0o3qf1p16NM1rgIEt9yhntB3K4wblEnSMBx6IsX/HN6XZ3iqZgFWk0
+         9zM8uAY4uTgmRUZkWZpkiaBwFJJq70/uc+zjZo0nXFGUm6Yx84CXkhTIQUcUL0ZkvWox
+         mQ8Q==
+X-Forwarded-Encrypted: i=1; AJvYcCW5EyqzTwtnw6/m4r9qfh/PkySsnmAaIMdLHBjSkAGLCADXVWFwZD1fffnopPQ1Dl3qSGdY+A==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzoTgMqN8f++oueq/zC7a3kH+qK1fae/2d2cVlA/RGJutmMTGaC
+	0IqR5nYxM/j2sYhotS0ncqO4ncitWfZv21pP9PQJ3nEx+Bi0/q4Qb1bynDG4YGpJNZ4=
+X-Gm-Gg: ASbGnctx2J3zAZcccxwaFwGkaLMEnt3+Z2DtI/xEg6w2Q2LynS9QICoQ3ffJSCBbz0G
+	9yQZa56vgvK3W8ZFxmPMw525r6RziAADbJX1W536EFxdxpue9j5vfREhYOCn+e3kD4GgAJ7pNXY
+	ZurMIvQL4lKY0+DBOteLEEJJkZ03mmxQmphwrPua32lPh6SkmLqBLvM6XQnCRD4osySepNmygLy
+	da6rlXpqDjiiE4BIZEgh+zc+SXkgMehWSgNYS9xg4et3VhArdYCLFSmaQxadVEB3LHH1WqTszKD
+	OKXjRM4IgDfR5y3PBrlPB3Fpb1DLn6DsFMmCjx2upGYf89lEH7zPzOpTvOzzk2eZcGyRhyAZG7Q
+	qm04ByQI6AG97qgF8WWN3hlro8fSD+VXfa6mpY097WBhWaH5EF9NqBseGgDNDVxdBznPVNP7pjK
+	If0u/yIVZMJjTOOi6w4e9t
+X-Google-Smtp-Source: AGHT+IHNJzL0kQawtKy3fF4ivQKWG3FizlSZ82gu6HDNZ3hRrmE0LPQKVq82Mev6dpQnwG8Un0IyIw==
+X-Received: by 2002:a05:600c:3b03:b0:46e:330a:1762 with SMTP id 5b1f17b1804b1-471179079dfmr98103875e9.22.1760952181601;
+        Mon, 20 Oct 2025 02:23:01 -0700 (PDT)
+Received: from linaro.org ([2a02:2454:ff21:30:363f:e987:7dd1:4f47])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-47152959b55sm139906525e9.6.2025.10.20.02.23.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Oct 2025 02:23:01 -0700 (PDT)
+Date: Mon, 20 Oct 2025 11:22:56 +0200
+From: Stephan Gerhold <stephan.gerhold@linaro.org>
+To: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+Cc: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Konrad Dybcio <konradybcio@kernel.org>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, linux-arm-msm@vger.kernel.org,
+	iommu@lists.linux.dev, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Konrad Dybcio <konrad.dybcio@linaro.org>
+Subject: Re: [PATCH v2] dt-bindings: iommu: qcom_iommu: Allow 'tbu' clock
+Message-ID: <aPX_cKtial56AgvU@linaro.org>
+References: <20251015-topic-qciommu_bindings_fix-v2-1-a0f3c705d0f3@oss.qualcomm.com>
+ <8e7a145e-6871-4974-ae19-40699747803b@arm.com>
+ <56fcl2ip6ecu4inig7ecpjt7qrsdt6sehkrzrk6joysbp6tea7@4xdgxhhe3aso>
+ <38c3bf97-4b69-4450-9e23-32ece07e38dc@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 1/5] dt-bindings: mediatek: mt8189: Add bindings for MM
- & APU & INFRA IOMMU
-To: Zhengnan Chen <zhengnan.chen@mediatek.com>, Yong Wu
- <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Matthias Brugger
- <matthias.bgg@gmail.com>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Cc: iommu@lists.linux.dev, linux-mediatek@lists.infradead.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org,
- Project_Global_Chrome_Upstream_Group@mediatek.com,
- Conor Dooley <conor.dooley@microchip.com>
-References: <20251015125532.9041-1-zhengnan.chen@mediatek.com>
- <20251015125532.9041-2-zhengnan.chen@mediatek.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 a/A=
-In-Reply-To: <20251015125532.9041-2-zhengnan.chen@mediatek.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <38c3bf97-4b69-4450-9e23-32ece07e38dc@oss.qualcomm.com>
 
-On 15/10/2025 14:55, Zhengnan Chen wrote:
-> There are three iommu in total, namely MM_IOMMU, APU_IOMMU, INFRA_IOMMU,
-> Add bindings for them.
+On Thu, Oct 16, 2025 at 10:09:58AM +0200, Konrad Dybcio wrote:
+> On 10/15/25 10:10 PM, Dmitry Baryshkov wrote:
+> > On Wed, Oct 15, 2025 at 05:48:05PM +0100, Robin Murphy wrote:
+> >> On 2025-10-15 5:41 pm, Konrad Dybcio wrote:
+> >>> From: Konrad Dybcio <konrad.dybcio@linaro.org>
+> >>>
+> >>> Some IOMMUs on some platforms (there doesn't seem to be a good denominator
+> > 
+> > It would be nice to provide some examples here.
+> > 
+> >>> for this) require the presence of a third clock, specifically for
+> >>> accessing the IOMMU's Translation Buffer Unit (TBU). Allow it.
+> >>
+> >> Hmmm, but isn't the only thing that accesses TBUs the consumer of the
+> >> qcom,tbu binding, which already has its own clock?
+> > 
+> > qcom,tbu is only defined for normal arm,mmu-500 platforms. Here Konrad
+> > is fixing the older and more obscure Qualcomm virtual MMU device.
 > 
-> Signed-off-by: Zhengnan Chen <zhengnan.chen@mediatek.com>
-> Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
-> Acked-by: Conor Dooley <conor.dooley@microchip.com>
-> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> ---
->  .../bindings/iommu/mediatek,iommu.yaml        |   8 +
->  .../memory/mediatek,mt8189-memory-port.h      | 283 ++++++++++++++++++
->  2 files changed, 291 insertions(+)
->  create mode 100644 include/dt-bindings/memory/mediatek,mt8189-memory-port.h
+> (for context: this touches upon 2014-ish platforms)
 > 
-For memory-controller:
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> I checked the address map of the physical MMU500 that lies underneath
+> this virtual impl and it doesn't fully expose the same registers that
+> the modern ones do, I only see PWR_STATUS.
+> 
+> The BSP kernels for those oldies don't seem to have a notion of a TBU
+> either, except for toggling clocks that contain "_TBU" in their name
+> at both the IOMMU device and some DMA-capable multimedia blocks, which
+> I suppose makes some sense..
+> 
 
-Best regards,
-Krzysztof
+On MSM8939 for the &gpu_iommu, the "tbu" clock isn't listed for
+accessing the TBU registers, it's necessary to avoid timeouts during TLB
+flushes. See Qualcomm Snapdragon 410E Processor (APQ8016E) Technical
+Reference Manual, SMMU chapter, section "8.8.3.1.2 Clock gating":
+
+  Clock gating programming guide
+
+    For APPS TCU/TBU (TBU to TCU interface is asynchronous)
+    Software should turn ON clock to APPS TCU
+      - During APPS TCU register programming sequence
+
+    For GPU TCU/TBU (TBU to TCU interface is synchronous)
+    Software should turn ON clock to GPU TBU
+      - During GPU TLB invalidation sequence <=====================
+    Software should turn ON clock to GPU TCU
+      - During GPU TCU register programming sequence
+      - While GPU master clock is Active
+
+Might be worth clarifying this in the commit message. It was also
+mentioned in commit 5bc1cf1466f6 ("iommu/qcom: add optional 'tbu' clock
+for TLB invalidate") (not sure why that commit didn't adjust the
+bindings...).
+
+Thanks,
+Stephan
