@@ -1,46 +1,46 @@
-Received: from PH7PR06CU001.outbound.protection.outlook.com (mail-westus3azon11010056.outbound.protection.outlook.com [52.101.201.56])
+Received: from SJ2PR03CU001.outbound.protection.outlook.com (mail-westusazon11012067.outbound.protection.outlook.com [52.101.43.67])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43B9926FA77
-	for <iommu@lists.linux.dev>; Tue, 21 Oct 2025 01:44:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.201.56
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 784F82701D8
+	for <iommu@lists.linux.dev>; Tue, 21 Oct 2025 01:45:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.43.67
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761011094; cv=fail; b=Sfyblo4NaFmPPC0N4xdLURBAQ5GuQfR5/7LWfbg4Zd6Y+fSxDPWnqkVbTnAZiB6e7OYyGuCbemEzGxZZu5hc85gIHgJumK+SVh7NpXCHVC93z99yst+JmEORNc7XrzicvR7qD7/VLksuCg3mnGSv/9gJ6qKrDrNiGKBa7w9kVTM=
+	t=1761011103; cv=fail; b=ebUiAQ3R1PPaeINowo3R5LKdL5K+6cf+fPPORls1tWS5YUwxNZr3633fTo7wt6gPjYRl88iGjASES6pHVGI47HKO4rlcLSZlvY3zY3zt2sQ6gHKtc3yWyXxY91xiWfGbbACbWoUTZlBgWQw/JwWMCuhPcDKQo81RuogOSTYyhg8=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761011094; c=relaxed/simple;
-	bh=A9edhFBXdjTaNowGKnYXQhFz3LzesRigwAlyQU+r/No=;
+	s=arc-20240116; t=1761011103; c=relaxed/simple;
+	bh=yBPfp1UQmc/E5UcM1jlOlu11zZILUAEdvWl1xFwXOlE=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=c9wKlj+JrWgavyl+FfWosVvvAW1RjrkMlTMuHDDld2TEa5zEle8aqeSoKxlSAPA5oB34xezHTgRrNbaTgydEzj6BOGmLKTlUNvIMRmtjamLwrHhr6SGe0D6WbVLNuAcp1xt2ylCS8O9wX8DxvJXBn+1ci3zKSXffg9XN6DRd6dA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=i0MAA/wp; arc=fail smtp.client-ip=52.101.201.56
+	 MIME-Version:Content-Type; b=eX5fjF9qkyv/bTLQxlm+I8+ez3XeDupjaThCYT2nWRfj0HXTBOTnYJSXxMul6YWDeuPWckFPq8sFGLVuElLck0DlJBts1E/XN13fu8qkRmBBXvVXeYd6OiiyCVvWwQ8Sy72F3DFiu3qycuIGAWtuAGUIXRznes173EBcray6HII=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=D5MAuGoH; arc=fail smtp.client-ip=52.101.43.67
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="i0MAA/wp"
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="D5MAuGoH"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=E1Nw4aJKo8hVlMNAKzrF3wS2u7jlDbZajo/lmWOxCz3NVyuaMUTHLIgwQB7rtFhwltUXEbX1sl1swrXLPJkpLRT3iKx8nTYU/KXkEhZuFjxYxLPF8nMgk8yW1p/OV+Ts0m6BJ3JS1kEaRqs+af0FzDz8PBchBupkO0WYE9A1iCXnmxLFE3eewnKWpcvLjP1ekd32dQoMrdKSAh6kLEj6vcn4EGkvwWSP10WLQdQo8SYsguqHLFqJnn6NgH395QF26boI4wUN85ToJH9j/m25cSdU9qt9PGcQujAhwR3GgTY9FBnGCNcnNvMJgUFEU2Rs5he9/Oqa59Da5Zvkoe3eJQ==
+ b=EKgvx5l0C7X2PDEb8daGNxM7Gl5HQAYDaaTu+SgNHyZKoBdSngGGFvDn78QNtNuPYXP50NKfunIkxm0cEwpXUUYQOJhbONcwfS6otP9upWOo19fdowh/ll9O10ziwgphqxDipviqn8oBG+d8EHVasPvrxpkHR31aB3hVrzTLhmNPrbUOTwMsm3jgQwIw+cg+fbFp6I2T1M1fFflinTsiMaktNZcNn0Uk7uUiXyInaocGx1vYzY9yHFHMZOYmZnXjNALC7nf8Sn3pOHJ2Xc7EAzPnMUitVEmyWJuS254W7aidHaTSis3SBL8XaKfYRl3jnfvz1nj09deSBS8d0AQBmQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=qgfCS9+DlXq8cEmo+iUS4VirQw1rdvkQM+ndwzxnE4g=;
- b=a4YQv/5z0TQLgJ8sCG1IhpOtoAJCOf13fA3vUA9XmIXXulijAxlcchDMBlIK4oME15u5ieVbbuULByR3AyEUUjLUNoRFcZEK1NjruihhMty5cicsRSZrKforc1Juw8aE/Desnpy9QiAaEHjnZhHraNeZVWYDihSPs0OZSitot3CuVbtSd0+MSA9Pey03miKhaBSPU/Heu/bNCDb0lW2+ii7yT5auWQN2T2DwKXMAMF0JuYjgBqmcI3qzleBfpGNrTI3TgJ1CV7J0Tz2MkjJvRLlTqexRCevJC+5ehc9mZIBb86LWZvJg5KkUPJ8dCw44gGmzMOzJbbmek5cA3TtrTA==
+ bh=7huBxxPSb/VfC5GKGybo6Z7RmGjYtH/vOguKnnFvjOA=;
+ b=ikjdYKIISQOK5IqR/8kJaCgHTnUuFYUODp2EM2Ruc8639L4inueuictN2/tHqxYwmF9CElvkDxYptvC2dHoCXDez4uvrLBKf52BTjRmZWSpVzOxVoCqcHgKz+7/VSq+1O8WWXXP/vv65xkK7/fqc+QRdtIsWdXvn+MY7dalO7iHr8gwccmnun86pU9tFIBcZgkunJcJXju25FP25T2KZPNcJemOq7FGeetCDbgj08zdlXuTXl1MixH02yQp8/PkfP1oG3D7XJ6tE7IoffpRjh7t15z6qiyZHvHDKzC5hQk77//5Vhuogi4KGRyFcmhKG2YLsMUgEx9ojoneDVr1tJg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=nvidia.com smtp.mailfrom=amd.com; dmarc=pass
  (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
  dkim=none (message not signed); arc=none (0)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qgfCS9+DlXq8cEmo+iUS4VirQw1rdvkQM+ndwzxnE4g=;
- b=i0MAA/wpd0RTG1ebg7sLXkCUkVJO0CO/H9l/g1bx9tmNF9BR76aXKALkFHegEvBYs870WHbcwVDW5xyO2Ty+Y4Z898tW8X0Jz4yALirtbkSHTmAT+9I08RH9UDm1NSo/TWS5KSBaJBW/iqhuwf3OuXrq9qYsb0w7iIia+tOscZ4=
-Received: from BL1PR13CA0441.namprd13.prod.outlook.com (2603:10b6:208:2c3::26)
- by DM4PR12MB5889.namprd12.prod.outlook.com (2603:10b6:8:65::18) with
+ bh=7huBxxPSb/VfC5GKGybo6Z7RmGjYtH/vOguKnnFvjOA=;
+ b=D5MAuGoHUzc2DRmxZekfSZ3McszbU7YRUsIENuLb8V/3rot6+SkAbgFzDyjYeDWxcVDYe683ZsOWX4Ao+5n8wfLo2eyuFISvk/puYekxPt0ib8JQqZyvySQq8cPJLuanAJh+yK3cWB2lqSGuazpN1J9U6aktjiASrWQLbJfYvSw=
+Received: from BL1PR13CA0437.namprd13.prod.outlook.com (2603:10b6:208:2c3::22)
+ by SA3PR12MB9225.namprd12.prod.outlook.com (2603:10b6:806:39e::13) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9228.16; Tue, 21 Oct
- 2025 01:44:47 +0000
+ 2025 01:44:57 +0000
 Received: from BN3PEPF0000B074.namprd04.prod.outlook.com
- (2603:10b6:208:2c3:cafe::65) by BL1PR13CA0441.outlook.office365.com
- (2603:10b6:208:2c3::26) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9253.12 via Frontend Transport; Tue,
- 21 Oct 2025 01:44:46 +0000
+ (2603:10b6:208:2c3:cafe::85) by BL1PR13CA0437.outlook.office365.com
+ (2603:10b6:208:2c3::22) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9253.10 via Frontend Transport; Tue,
+ 21 Oct 2025 01:44:57 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -50,11 +50,11 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
 Received: from satlexmb07.amd.com (165.204.84.17) by
  BN3PEPF0000B074.mail.protection.outlook.com (10.167.243.119) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9253.7 via Frontend Transport; Tue, 21 Oct 2025 01:44:46 +0000
+ 15.20.9253.7 via Frontend Transport; Tue, 21 Oct 2025 01:44:57 +0000
 Received: from purico-ed03host.amd.com (10.180.168.240) by satlexmb07.amd.com
  (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.17; Mon, 20 Oct
- 2025 18:44:40 -0700
+ 2025 18:44:51 -0700
 From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 To: <jgg@nvidia.com>, <nicolinc@nvidia.com>
 CC: <linux-kernel@vger.kernel.org>, <robin.murphy@arm.com>, <will@kernel.org>,
@@ -65,9 +65,9 @@ CC: <linux-kernel@vger.kernel.org>, <robin.murphy@arm.com>, <will@kernel.org>,
 	<gptran@google.com>, <kpsingh@google.com>, <joao.m.martins@oracle.com>,
 	<alejandro.j.jimenez@oracle.com>, Suravee Suthikulpanit
 	<suravee.suthikulpanit@amd.com>
-Subject: [PATCH v4 10/16] iommu/amd: Add support for nest parent domain allocation
-Date: Tue, 21 Oct 2025 01:43:18 +0000
-Message-ID: <20251021014324.5837-11-suravee.suthikulpanit@amd.com>
+Subject: [PATCH v4 12/16] iommu/amd: Add support for nested domain allocation
+Date: Tue, 21 Oct 2025 01:43:20 +0000
+Message-ID: <20251021014324.5837-13-suravee.suthikulpanit@amd.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20251021014324.5837-1-suravee.suthikulpanit@amd.com>
 References: <20251021014324.5837-1-suravee.suthikulpanit@amd.com>
@@ -83,133 +83,250 @@ X-ClientProxiedBy: satlexmb07.amd.com (10.181.42.216) To satlexmb07.amd.com
  (10.181.42.216)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN3PEPF0000B074:EE_|DM4PR12MB5889:EE_
-X-MS-Office365-Filtering-Correlation-Id: ea936bab-31fe-47bf-de95-08de10436a79
+X-MS-TrafficTypeDiagnostic: BN3PEPF0000B074:EE_|SA3PR12MB9225:EE_
+X-MS-Office365-Filtering-Correlation-Id: c167d304-260c-42f9-c737-08de104370c1
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|82310400026|7416014|1800799024|36860700013|7053199007;
+	BCL:0;ARA:13230040|82310400026|7416014|376014|36860700013|1800799024|7053199007;
 X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?8LYfEi53H+xFL98lZjxZt08I94707h+7GcjgeAvnP49H9M5FJVkJfmCaybII?=
- =?us-ascii?Q?MRS0TP6cYu6N2qKhy28jC67zTco2XQwqXtEOc18SA1xrGBqu1qIuV4dnzkAa?=
- =?us-ascii?Q?qDWDdcBvjzcZ4E01nAT96jbaEmzqUlcKaJ23MLS5/DQIaXKbUo9yB0aPOL+i?=
- =?us-ascii?Q?29JM0XNioTLeAMaGNmk0RmHp0KrItbhqewXw6/dlBA+QsNQbRPo1EX9/qtS0?=
- =?us-ascii?Q?hgFtocmxZ0kpXLoP64WTsNq4Vmpl+w4SNSpudPIIVdZXKV8IAW3VeOSdAgPS?=
- =?us-ascii?Q?RzmDSffKYU/4jx9ZQpvq7vNBra7ZvogRssMyjOA0ENlt5sBhT1l8OpZsNxsT?=
- =?us-ascii?Q?OL7wHFWygBGn76PGdhk+XKVm7u900xGDnuBHJovuXpqUMHICF1nvvWTeGz7B?=
- =?us-ascii?Q?zEFMPxv83GxF6tiYA5oLhosinywGaLeEkCxqjPsnGtQ9+ae9jdASFH5W+mwA?=
- =?us-ascii?Q?YYuH2KRE3GzBPK560eLZFOkojn4ggN9B5L/epA+kddcymJB+tDJuQsyCfnpT?=
- =?us-ascii?Q?LItgWytnsTbjrXXZ1+GRNs8qFH77JBtDotdXkCasrs0zVL4DUQXCn2u/iv98?=
- =?us-ascii?Q?I9s4IwztL0yVH1B4wfZP6wXSZM7H5FhPYS+WsevdXOgtrNvpznpMNIAq7n8a?=
- =?us-ascii?Q?IhgU1TlTCEKerxMokhpo+YwU9qExRN6bzuU+z33RIBrWOq4AbvFOyeeCHOO1?=
- =?us-ascii?Q?LYn1hGeLoXhHs/pZsBiQAS9d54bGk9HNT0ty2yWkEf2855FSAI2M1MgpTTaM?=
- =?us-ascii?Q?pF9Egu3f2L628tx88JNHKLr3Y3SeHb2CSzXZcoihgz51m71rsvE+fOBkIaOt?=
- =?us-ascii?Q?VDgZAE4hV/nZmzoS8oRG75MJosu7tHbujz6I2NFArQuq7/UjtleY4aUq5gQf?=
- =?us-ascii?Q?V5L8au5hPjWrO8tPKr70ugVG6NUg44YdEXUArugDNpaXdmNlKBBCblMwuXuM?=
- =?us-ascii?Q?krqUfaP5jcay0PrDMGpbz0jCI5w6EXj/ZcmJyKJuVswEZIeWw6GH5dKoglsA?=
- =?us-ascii?Q?/ZVF9SkEmRTAfba8zcLVy0xZ6NpJHQNtc0CHB+v78I/ygITz1+Tb8IggTZLX?=
- =?us-ascii?Q?FGYQdYhxzKjeYCDImGch9dWZDwRXH70L/Zn9IBvOoY6sG7kEEwnSSXz8GeU5?=
- =?us-ascii?Q?iHlSwewmAn6Z9lAoZb4vmsMS++4SMxROfOgtC7rtBsEJmBoJUI1sXGOXbp4g?=
- =?us-ascii?Q?RgQIa9/7awX66sNLm3kz/gy3ICbA90YjVRO3vKOUNma1qr3sSwT0wkQWE6em?=
- =?us-ascii?Q?NiHGRY4eApW780Th+ZpVAe7HoZKAUf5UEni27e++BfqQ9SkybRtMYjFrGP89?=
- =?us-ascii?Q?O5xVABPuuXApeh1Rbax1hp5EMtSqvXjGoM505lPKil7/VWDaYmS5F+DRTEPQ?=
- =?us-ascii?Q?1QU6xWSmT5HCS3zdcRFZWY9wLY8BZKY0yce4dxLuids7BVJ0bjvjDABvTfv7?=
- =?us-ascii?Q?i3CCtn+fNCRZhf5LmEKfKYW9YzEWEXnz/tuG4/1RHheNVW3wFlf3F9lCRXpR?=
- =?us-ascii?Q?GSFtxlnLtxIFMIi0StF7fCjlZLXfwN3VHjfG2hjKU3MReE1VsJ91mTaHonhP?=
- =?us-ascii?Q?pN7j8wGshd/uFf/jYvc=3D?=
+	=?us-ascii?Q?Wrhx9XcxRzdqpeECmTYPNEkhgkgpNqWm6GjXjk28Cs798IDM236Oqpxt5Rkh?=
+ =?us-ascii?Q?sse0FNRX+xJ0wu+G/3nHpoBDG1HtNKy/kcMGBFUbalSp/KdQqgRCjqAorUE6?=
+ =?us-ascii?Q?Pp5Q7ARogcM01LpAhlS+pkl++eveBNFeCTom0Il5VBxvVJzOG56CfsxgNoaW?=
+ =?us-ascii?Q?g7GhO8BlNB8Ah4TnT2gLn7rld0xpW9Zi7ntSOedzthZssP+KMcxRJ6u3QdLy?=
+ =?us-ascii?Q?k5ZoIouyah0EuX6Km42SnlWqVEB0wxaX/7OQgpVu+HAwLTDdr4AQULmJe8qz?=
+ =?us-ascii?Q?7HcPAZitIAVd+AmiKEzPR+affuvZYCLDg7e2dxyaeNZEms5MWa/LtTQSxv6a?=
+ =?us-ascii?Q?M9MPAikGi5XnicBeLyPmV9bf828hGQS/n7sekR9hXEhlDvXs0rCGB1aaVwv5?=
+ =?us-ascii?Q?1SsAaITP97ZcMTTh+iX9s0a7aIplLaPVM3ns9+CN00Hsv0WM+drP9OcAkIKh?=
+ =?us-ascii?Q?+i8KUDOKskr4AWDsciS/gWzx32umoujBE4T9p5hev2oyQadUWAqNpOR3hklO?=
+ =?us-ascii?Q?i8rWj+1Xctm3g3AG8SvSZUQq/v4mv9R1z7dBX/Zltht62JcektW1n+wD3VW9?=
+ =?us-ascii?Q?zD1oD/fEnmZU11/u75uN5orAEK/7pPS6VxZJ1HFQERTwfjP+GFsYBVAY/BO6?=
+ =?us-ascii?Q?3HXIPKKh0Bp9ZTXr/7acUPScL4wKs2qnfk/NQ1x2A6i2OcncXQ+z7T/rPZ0Q?=
+ =?us-ascii?Q?cr14nCf+RXYiTxupYlWUA3HUeB/XhEfO4rWnZppFPG2hZckAcXC6SBiRY/lG?=
+ =?us-ascii?Q?DV54EBW169km7dYYqebiX2Xdi3NN8xRYSHrDc/CNTuXUi72/VzHD9Pj78CdO?=
+ =?us-ascii?Q?zGIpyFKS2h0ZNpZN3lL1FcjEHTQWyn1rdaA0kJ541/upyVEBu0ZRaOdSXM4q?=
+ =?us-ascii?Q?X8PwIcAfYEfYbAF20po/Arc1nw64BzqnWXv7zmS+MqqfOWfhyQ4P+qRJzli0?=
+ =?us-ascii?Q?1D1f1XQiVT85DFveSoqtslPTFEM3rh3XhUmuHFW/2D0/ra3wK8axRKIrdeX+?=
+ =?us-ascii?Q?xqv60XeKb0/6Mjdebbor6LQb0AfbpC3Hzk5MbzOf6BjUm0ZTJiSkFWMhbXUB?=
+ =?us-ascii?Q?84LQXnZ9RAgflYmyFzHq3sn/5o75uCkPNktjyTakp0gaBNmU5PYB3TwjjDtj?=
+ =?us-ascii?Q?EHgjYsgbeFxDM15JyQbXzgKEchKnzSxnJD6GJd3NIOnjTrIUNqVEWhOqj6bK?=
+ =?us-ascii?Q?N1Ptr/1+Zurm/587p14CMLlb5eKffPQYZGhLkF3XdItsJ6cnWUHKe0SK7W/l?=
+ =?us-ascii?Q?jpjcQhQGzgcocEsp/WjQ2g7T6hQ/zvlYBxm/Yq2f1dlGcbUS7fmh74HNHi4h?=
+ =?us-ascii?Q?ohSyKlN5NKY3NhJ5ZcMTiYfibnFid2OEiVyUuRB86bXZ3HoHez7bjAR/yWpA?=
+ =?us-ascii?Q?aV8Hua8sWU1NMpaMGAbUOsel2nfLW1qMIWj6xZdBnoUdWgaXJYg02Yw2/+At?=
+ =?us-ascii?Q?aw3X9p7fX4VGELGWB6xU4O6AOMt50XsCVqr52e9O6cbq7EC8dnLWdAXjzSqz?=
+ =?us-ascii?Q?V4sZFsmXdl3eNk956vPbSNQNtl0GvSW6XPa3M9C6Sf4XhbyCtd/h7SwC/q+T?=
+ =?us-ascii?Q?xOROR07H/HF/WZF3USI=3D?=
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(376014)(82310400026)(7416014)(1800799024)(36860700013)(7053199007);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(7416014)(376014)(36860700013)(1800799024)(7053199007);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Oct 2025 01:44:46.7980
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Oct 2025 01:44:57.3366
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: ea936bab-31fe-47bf-de95-08de10436a79
+X-MS-Exchange-CrossTenant-Network-Message-Id: c167d304-260c-42f9-c737-08de104370c1
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
 	BN3PEPF0000B074.namprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5889
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR12MB9225
 
-To support nested translation, the nest parent domain is allocated with
-IOMMU_HWPT_ALLOC_NEST_PARENT flag, and stores information of the v1 page
-table for stage 2 (i.e. GPA->SPA).
-
-Also, only support nest parent domain on AMD system, which can support
-the Guest CR3 Table (GCR3TRPMode) feature. This feature is required in
-order to program DTE[GCR3 Table Root Pointer] with the GPA.
+The nested domain is allocated with IOMMU_DOMAIN_NESTED type to store
+stage-1 translation (i.e. GVA->GPA). This includes the GCR3 root pointer
+table along with guest page tables. The struct iommu_hwpt_amd_guest
+contains this information, and is passed from user-space as a parameter
+of the struct iommu_ops.domain_alloc_nested().
 
 Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 ---
- drivers/iommu/amd/amd_iommu_types.h |  1 +
- drivers/iommu/amd/iommu.c           | 26 +++++++++++++++++++++++---
- 2 files changed, 24 insertions(+), 3 deletions(-)
+ drivers/iommu/amd/Makefile          |   2 +-
+ drivers/iommu/amd/amd_iommu.h       |   4 +
+ drivers/iommu/amd/amd_iommu_types.h |  14 ++++
+ drivers/iommu/amd/nested.c          | 111 ++++++++++++++++++++++++++++
+ 4 files changed, 130 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/iommu/amd/nested.c
 
-diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index 9226edd8af69..c34604cf1811 100644
---- a/drivers/iommu/amd/amd_iommu_types.h
-+++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -107,6 +107,7 @@
- 
- 
- /* Extended Feature 2 Bits */
-+#define FEATURE_GCR3TRPMODE	BIT_ULL(3)
- #define FEATURE_SNPAVICSUP	GENMASK_ULL(7, 5)
- #define FEATURE_SNPAVICSUP_GAM(x) \
- 	(FIELD_GET(FEATURE_SNPAVICSUP, x) == 0x1)
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index e0bfcda678a8..e489e360bb77 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -2584,6 +2584,14 @@ do_iommu_domain_alloc(struct device *dev, u32 flags,
- 	return &domain->domain;
+diff --git a/drivers/iommu/amd/Makefile b/drivers/iommu/amd/Makefile
+index 5ae46d99a45b..afa12ca2110e 100644
+--- a/drivers/iommu/amd/Makefile
++++ b/drivers/iommu/amd/Makefile
+@@ -1,4 +1,4 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ obj-y += iommu.o init.o quirks.o io_pgtable.o io_pgtable_v2.o ppr.o pasid.o
+-obj-$(CONFIG_AMD_IOMMU_IOMMUFD) += iommufd.o
++obj-$(CONFIG_AMD_IOMMU_IOMMUFD) += iommufd.o nested.o
+ obj-$(CONFIG_AMD_IOMMU_DEBUGFS) += debugfs.o
+diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
+index d533bb8851ea..3730d8bbe6dc 100644
+--- a/drivers/iommu/amd/amd_iommu.h
++++ b/drivers/iommu/amd/amd_iommu.h
+@@ -202,4 +202,8 @@ amd_iommu_make_clear_dte(struct iommu_dev_data *dev_data, struct dev_table_entry
+ 	new->data128[1] = 0;
  }
  
-+static inline bool is_nest_parent_supported(u32 flags)
++/* NESTED */
++struct iommu_domain *
++amd_iommu_alloc_domain_nested(struct iommufd_viommu *viommu, u32 flags,
++			      const struct iommu_user_data *user_data);
+ #endif /* AMD_IOMMU_H */
+diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
+index a0c7e7329233..e0f0cd3d34f2 100644
+--- a/drivers/iommu/amd/amd_iommu_types.h
++++ b/drivers/iommu/amd/amd_iommu_types.h
+@@ -21,6 +21,8 @@
+ #include <linux/irqreturn.h>
+ #include <linux/io-pgtable.h>
+ 
++#include <uapi/linux/iommufd.h>
++
+ /*
+  * Maximum number of IOMMUs supported
+  */
+@@ -417,6 +419,8 @@
+ #define DTE_FLAG_V	BIT_ULL(0)
+ #define DTE_FLAG_TV	BIT_ULL(1)
+ #define DTE_FLAG_HAD	(3ULL << 7)
++#define DTE_MODE_MASK	GENMASK_ULL(11, 9)
++#define DTE_HOST_TRP	GENMASK_ULL(51, 12)
+ #define DTE_FLAG_GIOV	BIT_ULL(54)
+ #define DTE_FLAG_GV	BIT_ULL(55)
+ #define DTE_GLX		GENMASK_ULL(57, 56)
+@@ -592,6 +596,16 @@ struct amd_iommu_viommu {
+ 	struct protection_domain *parent; /* nest parent domain for this viommu */
+ };
+ 
++/*
++ * Nested domain is specifically used for nested translation
++ */
++struct nested_domain {
++	struct iommu_domain domain; /* generic domain handle used by iommu core code */
++	u16 gdom_id;                /* domain ID from gDTE */
++	struct iommu_hwpt_amd_guest gdte; /* Guest vIOMMU DTE */
++	struct amd_iommu_viommu *viommu;  /* AMD hw-viommu this nested domain belong to */
++};
++
+ /*
+  * This structure contains generic data for  IOMMU protection domains
+  * independent of their use.
+diff --git a/drivers/iommu/amd/nested.c b/drivers/iommu/amd/nested.c
+new file mode 100644
+index 000000000000..e7b6f69a9d0c
+--- /dev/null
++++ b/drivers/iommu/amd/nested.c
+@@ -0,0 +1,111 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Copyright (C) 2025 Advanced Micro Devices, Inc.
++ */
++
++#define dev_fmt(fmt)	"AMD-Vi: " fmt
++
++#include <linux/iommu.h>
++#include <uapi/linux/iommufd.h>
++
++#include "amd_iommu.h"
++
++static const struct iommu_domain_ops nested_domain_ops;
++
++static inline struct nested_domain *to_ndomain(struct iommu_domain *dom)
 +{
-+	/* Only allow nest parent when these features are supported */
-+	return check_feature(FEATURE_GT) &&
-+	       check_feature(FEATURE_GIOSUP) &&
-+	       check_feature2(FEATURE_GCR3TRPMODE);
++	return container_of(dom, struct nested_domain, domain);
 +}
 +
- static struct iommu_domain *
- amd_iommu_domain_alloc_paging_flags(struct device *dev, u32 flags,
- 				    const struct iommu_user_data *user_data)
-@@ -2591,16 +2599,28 @@ amd_iommu_domain_alloc_paging_flags(struct device *dev, u32 flags,
- {
- 	struct amd_iommu *iommu = get_amd_iommu_from_dev(dev);
- 	const u32 supported_flags = IOMMU_HWPT_ALLOC_DIRTY_TRACKING |
--						IOMMU_HWPT_ALLOC_PASID;
-+						IOMMU_HWPT_ALLOC_PASID |
-+						IOMMU_HWPT_ALLOC_NEST_PARENT;
- 
- 	if ((flags & ~supported_flags) || user_data)
- 		return ERR_PTR(-EOPNOTSUPP);
- 
- 	switch (flags & supported_flags) {
- 	case IOMMU_HWPT_ALLOC_DIRTY_TRACKING:
--		/* Allocate domain with v1 page table for dirty tracking */
--		if (!amd_iommu_hd_support(iommu))
-+	case IOMMU_HWPT_ALLOC_NEST_PARENT:
-+	case IOMMU_HWPT_ALLOC_DIRTY_TRACKING | IOMMU_HWPT_ALLOC_NEST_PARENT:
-+		/*
-+		 * Allocate domain with v1 page table for dirty tracking
-+		 * and/or Nest parent.
-+		 */
-+		if ((flags & IOMMU_HWPT_ALLOC_DIRTY_TRACKING) &&
-+		    !amd_iommu_hd_support(iommu))
-+			break;
++/*
++ * Validate guest DTE to make sure that configuration for host (v1)
++ * and guest (v2) page tables are valid when allocating nested domain.
++ */
++static int validate_gdte_nested(struct iommu_hwpt_amd_guest *gdte)
++{
++	u32 gpt_level = FIELD_GET(DTE_GPT_LEVEL_MASK, gdte->dte[2]);
 +
-+		if ((flags & IOMMU_HWPT_ALLOC_NEST_PARENT) &&
-+		    !is_nest_parent_supported(flags))
- 			break;
++	/* Must be zero: Mode, Host-TPR */
++	if (FIELD_GET(DTE_MODE_MASK, gdte->dte[0]) != 0 ||
++	    FIELD_GET(DTE_HOST_TRP, gdte->dte[0]) != 0)
++		return -EINVAL;
 +
- 		return do_iommu_domain_alloc(dev, flags, PD_MODE_V1);
- 	case IOMMU_HWPT_ALLOC_PASID:
- 		/* Allocate domain with v2 page table if IOMMU supports PASID. */
++	/* Must be non-zero: V, GIOV, GV, GCR3 TRP */
++	if (FIELD_GET(DTE_FLAG_V, gdte->dte[0]) == 0 ||
++	    FIELD_GET(DTE_FLAG_GIOV, gdte->dte[0]) == 0 ||
++	    FIELD_GET(DTE_FLAG_GV, gdte->dte[0]) == 0 ||
++	    (FIELD_GET(DTE_GCR3_14_12, gdte->dte[0]) == 0 &&
++	     FIELD_GET(DTE_GCR3_30_15, gdte->dte[1]) == 0 &&
++	     FIELD_GET(DTE_GCR3_51_31, gdte->dte[1]) == 0))
++		return -EINVAL;
++
++	/* Valid Guest Paging Mode values are 0 and 1 */
++	if (gpt_level != 0 && gpt_level != 1)
++		return -EINVAL;
++
++	/* GLX = 3 is reserved */
++	if (FIELD_GET(DTE_GLX, gdte->dte[0]) == 3)
++		return -EINVAL;
++
++	/*
++	 * We need to check host capability before setting
++	 * the Guest Paging Mode
++	 */
++	if (gpt_level == GUEST_PGTABLE_5_LEVEL &&
++	    amd_iommu_gpt_level < PAGE_MODE_5_LEVEL)
++		return -EOPNOTSUPP;
++
++	return 0;
++}
++
++/*
++ * This function is assigned to struct iommufd_viommu_ops.alloc_domain_nested()
++ * during the call to struct iommu_ops.viommu_init().
++ */
++struct iommu_domain *
++amd_iommu_alloc_domain_nested(struct iommufd_viommu *viommu, u32 flags,
++			      const struct iommu_user_data *user_data)
++{
++	int ret;
++	struct nested_domain *ndom;
++	struct amd_iommu_viommu *aviommu = container_of(viommu, struct amd_iommu_viommu, core);
++
++	if (user_data->type != IOMMU_HWPT_DATA_AMD_GUEST)
++		return ERR_PTR(-EOPNOTSUPP);
++
++	ndom = kzalloc(sizeof(*ndom), GFP_KERNEL);
++	if (!ndom)
++		return ERR_PTR(-ENOMEM);
++
++	ret = iommu_copy_struct_from_user(&ndom->gdte, user_data,
++					  IOMMU_HWPT_DATA_AMD_GUEST,
++					  dte);
++	if (ret)
++		goto out_err;
++
++	ret = validate_gdte_nested(&ndom->gdte);
++	if (ret)
++		goto out_err;
++
++	ndom->gdom_id = FIELD_GET(DTE_DOMID_MASK, ndom->gdte.dte[1]);
++	ndom->domain.ops = &nested_domain_ops;
++	ndom->domain.type = IOMMU_DOMAIN_NESTED;
++	ndom->viommu = aviommu;
++
++	return &ndom->domain;
++out_err:
++	kfree(ndom);
++	return ERR_PTR(ret);
++}
++
++static void nested_domain_free(struct iommu_domain *dom)
++{
++	struct nested_domain *ndom = to_ndomain(dom);
++
++	kfree(ndom);
++}
++
++static const struct iommu_domain_ops nested_domain_ops = {
++	.free = nested_domain_free,
++};
++
 -- 
 2.34.1
 
