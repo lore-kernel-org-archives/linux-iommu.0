@@ -1,134 +1,147 @@
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E306C303A15;
-	Tue, 21 Oct 2025 08:48:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 51272333742
+	for <iommu@lists.linux.dev>; Tue, 21 Oct 2025 11:45:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761036526; cv=none; b=df1Y8yoeTI6PLC8r/RKf43S9dzleTACjbphyuqmLXxt8nuJGl59ffh+18otfugNj5V0UGUlQ+SXh8X0KhoSriAnCuRbGqpQjY3Jz1K+6/W58ztFvm5tpiPt0dBYNesxkXir21fE+/RhxPk4rDMJTAgjT2F0kKjz8dofNREw+gJo=
+	t=1761047155; cv=none; b=ZcB8lS+879IlAx9RcQB8U1wwVkLXgw8oPB/AsjB+YCqjKVSF4tjAd+IimY+jnV5Ki7zQaGmB+oAq1p7OgCD4TIxcj6Fp5uIJ3ji4Uv4SezWqV/os85K4doWS1GoB5cZoDMaSRsJc8NRtUWaOUnipHpECiwUavTmSfgeduJfYTXE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761036526; c=relaxed/simple;
-	bh=0vRwJbUYs0Gu/VJYQ2xfMLpSFAeGteIkNSPUVasCNE4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=IdsajJHmMc9NzHQs8Bv3reHf9+IWDFfhBztVKj1KbO8WIa1M8uHG/8P5NHmGliCGQe/IndkbA7ccaE4oF4rRVyfvteJykik5yCoHoGPup5zgGtpvI5DlvNqBLwAYwh8NrYT9yrkzdaTFFrmCTgah3L/kk/GlA1tC2FmKUC7Skuc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=sMUMWAXX; arc=none smtp.client-ip=148.163.158.5
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="sMUMWAXX"
-Received: from pps.filterd (m0360072.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 59L5lgc1020450;
-	Tue, 21 Oct 2025 08:48:25 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
-	:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=pp1; bh=z7oyuGf+YmrdjdAlCdljzaOoBcmjt3
-	nedZ0w+/dyCrI=; b=sMUMWAXX/8sY8Do1huxbrboQr5eFVQnwPlBEki6stGqniW
-	ldYu1HZKhMzVPDElU1aXezrbtB4lgLP8ckyaP/GumTFfxl2oZrCEBQQqbhm4UcN3
-	LFaGusmctrYMbp18Tvh8JsC0xmCrJ3TfUinBLPP2/NsjVyMa+mFTZWpsC+CfwlMs
-	w3YcPLvERjs41TDcxL8HAEhvLtHRZQFTHZCklpYDCImAxYdisewiSNb+G3gA8cOZ
-	iaJresCsFCo7vBE5SNattGsJ0uX6iv7hgIYsiDjUeIsjMRQ7LRuiVVzXMd3jLuoH
-	Z+0jFkX+m/p6lcWSKuc2N99ZxVl1E9s7o5IZ1p9A==
-Received: from ppma12.dal12v.mail.ibm.com (dc.9e.1632.ip4.static.sl-reverse.com [50.22.158.220])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 49v31c4sc8-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 21 Oct 2025 08:48:25 +0000 (GMT)
-Received: from pps.filterd (ppma12.dal12v.mail.ibm.com [127.0.0.1])
-	by ppma12.dal12v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 59L6CiX8014658;
-	Tue, 21 Oct 2025 08:48:24 GMT
-Received: from smtprelay04.fra02v.mail.ibm.com ([9.218.2.228])
-	by ppma12.dal12v.mail.ibm.com (PPS) with ESMTPS id 49vn7s22hc-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 21 Oct 2025 08:48:24 +0000
-Received: from smtpav04.fra02v.mail.ibm.com (smtpav04.fra02v.mail.ibm.com [10.20.54.103])
-	by smtprelay04.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 59L8mMtt16974242
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 21 Oct 2025 08:48:22 GMT
-Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 653A120043;
-	Tue, 21 Oct 2025 08:48:22 +0000 (GMT)
-Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id E5C9720040;
-	Tue, 21 Oct 2025 08:48:21 +0000 (GMT)
-Received: from li-008a6a4c-3549-11b2-a85c-c5cc2836eea2.ibm.com (unknown [9.111.75.81])
-	by smtpav04.fra02v.mail.ibm.com (Postfix) with ESMTPS;
-	Tue, 21 Oct 2025 08:48:21 +0000 (GMT)
-Date: Tue, 21 Oct 2025 10:48:20 +0200
-From: Alexander Gordeev <agordeev@linux.ibm.com>
-To: Anshuman Khandual <anshuman.khandual@arm.com>
-Cc: linux-mm@kvack.org, linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-        linux-s390@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        virtualization@lists.linux.dev
-Subject: Re: [PATCH] mm: Make INVALID_PHYS_ADDR a generic macro
-Message-ID: <8ef6bea9-5905-4d15-be77-f58645d967d0-agordeev@linux.ibm.com>
-References: <20251021025638.2420216-1-anshuman.khandual@arm.com>
+	s=arc-20240116; t=1761047155; c=relaxed/simple;
+	bh=ihkESXXFhGEMGxotWCa/rtAXS2eUXkMN05EckVch9Mg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=EiPhx3lSXb+L6CCxQDQq/TL7xuGOOet7Zj5firu7n4u9JC31QQbw5/LZdiPoMWyA/UQUNtipte7p1u/vm4jdFh7obu+BHCN6CwIrz+YyyNZ9swJjyL7CvrQu4KbfF85IRg2IgPi+H61RPW/4O4H1HtOV4B4r/6Ejx8WgXEc9YbM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D0D941063;
+	Tue, 21 Oct 2025 04:45:44 -0700 (PDT)
+Received: from [10.57.37.65] (unknown [10.57.37.65])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B7D2C3F63F;
+	Tue, 21 Oct 2025 04:45:50 -0700 (PDT)
+Message-ID: <336c5a8a-ac2c-4e4c-b2f9-a0bc056aa498@arm.com>
+Date: Tue, 21 Oct 2025 12:45:48 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20251021025638.2420216-1-anshuman.khandual@arm.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: SFsr08sj6VOHWyp68BfmatDwsVOqiBAF
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMDE4MDAyMiBTYWx0ZWRfXybe+b5Oqvt21
- 7nQzCRWt0Qdz0L6NetKOeEaFWC9/bRTheXys9Jo0yPruZzS8K1X5soLFYF64NcSmqjVmSyDC5k7
- ecAg26cW+S87fUIL3yYns3aen8OVIZD9HAosIUS/itSROuTxJahgvxsQ9eTLyCOX3V+9XbM18Ux
- srZPJXF0zBCi/JPzlDtS6TSEVgZ8QMfo9UBC3MMgfAsge8DoTecVq1HmUygmZIYfkQHQ1VBWHr4
- MkNT+sO9OhvDdmRk9hEKXAmmD0Z+/PVMR94eMBvCLLoe9Pedp+1Eh5J7uwYNuoGZ8FKyYreVc7L
- MISNLC2tSYEN2woAfEBhoNkzvNR0Cg5qmF16Lu+Rj2FPXRxwP241fYzx4PO6UF+Z7hfl1eOTFgk
- OALOr+UD8heOc/vPfeqdN+n37aFx9Q==
-X-Proofpoint-GUID: SFsr08sj6VOHWyp68BfmatDwsVOqiBAF
-X-Authority-Analysis: v=2.4 cv=SKNPlevH c=1 sm=1 tr=0 ts=68f748d9 cx=c_pps
- a=bLidbwmWQ0KltjZqbj+ezA==:117 a=bLidbwmWQ0KltjZqbj+ezA==:17
- a=kj9zAlcOel0A:10 a=x6icFKpwvdMA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=VwQbUJbxAAAA:8 a=37rDS-QxAAAA:8 a=JfrnYn6hAAAA:8 a=7CQSdrXTAAAA:8
- a=VnNF1IyMAAAA:8 a=mrUCOdJJ3iSU8PumKu0A:9 a=CjuIK1q_8ugA:10
- a=k1Nq6YrhK2t884LQW06G:22 a=1CNFftbPRP8L7MoqJWF3:22 a=a-qgeE7W1pNrGK8U0ZQC:22
- a=cPQSjfK2_nFv0Q5t_7PE:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.9,FMLib:17.12.80.40
- definitions=2025-10-20_07,2025-10-13_01,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- phishscore=0 malwarescore=0 suspectscore=0 clxscore=1011 priorityscore=1501
- spamscore=0 impostorscore=0 bulkscore=0 lowpriorityscore=0 adultscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.19.0-2510020000 definitions=main-2510180022
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 0/2] SMMU v3 CMDQ fix and improvement
+To: Jacob Pan <jacob.pan@linux.microsoft.com>
+Cc: Mostafa Saleh <smostafa@google.com>, linux-kernel@vger.kernel.org,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ Will Deacon <will@kernel.org>, Nicolin Chen <nicolinc@nvidia.com>,
+ Zhang Yu <zhangyu1@linux.microsoft.com>,
+ Jean Philippe-Brucker <jean-philippe@linaro.org>,
+ Alexander Grest <Alexander.Grest@microsoft.com>,
+ Jason Gunthorpe <jgg@nvidia.com>
+References: <20250924175438.7450-1-jacob.pan@linux.microsoft.com>
+ <aPIhMGnzHiBkIEam@google.com> <20251017135145.GL3901471@nvidia.com>
+ <20251017095031.00000b84@linux.microsoft.com>
+ <20251020120240.GI316284@nvidia.com>
+ <20251020115710.0000258b@linux.microsoft.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20251020115710.0000258b@linux.microsoft.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, Oct 21, 2025 at 03:56:38AM +0100, Anshuman Khandual wrote:
-> INVALID_PHYS_ADDR has very similar definitions across the code base. Hence
-> just move that inside header <liux/mm.h> for more generic usage. Also drop
-> the now redundant ones which are no longer required.
+On 2025-10-20 7:57 pm, Jacob Pan wrote:
+> On Mon, 20 Oct 2025 09:02:40 -0300
+> Jason Gunthorpe <jgg@nvidia.com> wrote:
 > 
-> Cc: linux-kernel@vger.kernel.org
-> Cc: linux-mm@kvack.org
-> Cc: iommu@lists.linux.dev
-> Cc: linux-s390@vger.kernel.org
-> Cc: linux-arm-kernel@lists.infradead.org
-> Cc: virtualization@lists.linux.dev
-> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
-> ---
->  arch/arm64/mm/mmu.c                  | 2 --
->  arch/s390/boot/vmem.c                | 1 -
->  drivers/vdpa/vdpa_user/iova_domain.h | 2 --
->  include/linux/mm.h                   | 2 ++
->  kernel/dma/swiotlb.c                 | 2 --
->  5 files changed, 2 insertions(+), 7 deletions(-)
-...
-> diff --git a/arch/s390/boot/vmem.c b/arch/s390/boot/vmem.c
-> index cea3de4dce8c..fbe64ffdfb96 100644
-> --- a/arch/s390/boot/vmem.c
-> +++ b/arch/s390/boot/vmem.c
-> @@ -16,7 +16,6 @@
->  #include "decompressor.h"
->  #include "boot.h"
->  
-> -#define INVALID_PHYS_ADDR (~(phys_addr_t)0)
->  struct ctlreg __bootdata_preserved(s390_invalid_asce);
->  
->  #ifdef CONFIG_PROC_FS
+>> On Fri, Oct 17, 2025 at 09:50:31AM -0700, Jacob Pan wrote:
+>>> On Fri, 17 Oct 2025 10:51:45 -0300
+>>> Jason Gunthorpe <jgg@nvidia.com> wrote:
+>>>    
+>>>> On Fri, Oct 17, 2025 at 10:57:52AM +0000, Mostafa Saleh wrote:
+>>>>> On Wed, Sep 24, 2025 at 10:54:36AM -0700, Jacob Pan wrote:
+>>>>>> Hi Will et al,
+>>>>>>
+>>>>>> These two patches are derived from testing SMMU driver with
+>>>>>> smaller CMDQ sizes where we see soft lockups.
+>>>>>>
+>>>>>> This happens on HyperV emulated SMMU v3 as well as baremetal
+>>>>>> ARM servers with artificially reduced queue size and
+>>>>>> microbenchmark to stress test concurrency.
+>>>>>
+>>>>> Is it possible to share what are the artificial sizes and does
+>>>>> the HW/emulation support range invalidation (IRD3.RIL)?
+>>>>>
+>>>>> I'd expect it would be really hard to overwhelm the command
+>>>>> queue, unless the HW doesn't support range invalidation and/or
+>>>>> the queue entries are close to the number of CPUs.
+>>>>
+>>>> At least on Jacob's system there is no RIL and there are 72/144
+>>>> CPU cores potentially banging on this.
+>>>>
+>>>> I think it is combination of lots of required invalidation
+>>>> commands, low queue depth and slow retirement of commands that
+>>>> make it easier to create a queue full condition.
+>>>>
+>>>> Without RIL one SVA invalidation may take out the entire small
+>>>> queue, for example.
+>>> Right, no range invalidation and queue depth is 256 in this case.
+>>
+>> I think Robin is asking you to justify why the queue depth is 256 when
+>> ARM is recommending much larger depths specifically to fix issues like
+>> this?
+> The smaller queue depth is chosen for CMD_SYNC latency reasons. But I
+> don't know the implementation details of HyperV and host SMMU driver.
 
-Acked-by: Alexander Gordeev <agordeev@linux.ibm.com>	# s390
+TBH that sounds highly dubious. The only way I could imagine CMDQ size 
+bearing any relation to CMD_SYNC at all is if a hypervisor is emulating 
+a stage 1 vCMDQ in such a naive and lazy manner that a) performance is 
+already off the table, and b) it has a good chance of being broken anyway.
 
-Thanks!
+For the hardware to actually process, say, 1023 invalidations followed 
+by a sync takes as long as it takes, based on how busy the SMMU is. The 
+only difference in issuing that sequence of commands on a 256-entry 
+queue vs. a 1024-entry queue is that in the latter case, software does 
+not have to sit waiting for the first 768 to actually be consumed before 
+it can finish the submission and potentially get on with something else 
+until the sync completes. Yes, one could claim that technically the time 
+between *issuing* the CMD_SYNC and its completion is then lower, but 
+only because that extra time has now been wasted in a polling loop 
+waiting for CMDQ space instead - it's a meaningless distinction overall.
+
+> IMHO, queue size is orthogonal to what this patch is trying to
+> address, which is a specific locking problem and improve efficiency.
+> e.g. eliminated cmpxchg
+> -	do {
+> -		val = atomic_cond_read_relaxed(&cmdq->lock, VAL >= 0);
+> -	} while (atomic_cmpxchg_relaxed(&cmdq->lock, val, val + 1) != val);
+> +	atomic_cond_read_relaxed(&cmdq->lock, VAL > 0);
+> 
+> Even on BM with restricted queue size, this patch reduces latency of
+> concurrent madvise(MADV_DONTNEED) from multiple CPUs (I tested 32 CPUs,
+> cutting 50% latency unmap 1GB buffer in 2MB chucks per CPU).
+My point is that a 50% improvement on nonsense is likely still nonsense. 
+With only 256 entries, every single one of those 2MB unmaps needs to 
+fill the entire CMDQ more than twice over. 32 CPUs all jostling to issue 
+about 34x as many commands as the queue can hold *each* is a ridiculous 
+level of contention. If a hypervisor is advertising an SMMU_IDR1.CMDQS 
+value that is absurdly tiny for the size of the VM then that represents 
+such an obvious bottleneck that it's hardly mainline Linux's 
+responsibility to maintain code to help "debug" it. As for "BM with 
+restricted queue size", like I said, just don't do that.
+
+What is the difference on an un-hacked bare-metal system with a 
+normally-sized queue? Is it even measurable? That's what's actually 
+interesting. Furthermore, what exactly does that measurement even mean? 
+If we're still issuing the same number of commands I struggle to believe 
+we could lose 50% of the *overall* time just bouncing a cacheline 
+between shared and exclusive state - is this actually just the *maximum* 
+per-CPU latency going down, at the cost of the minimum latency 
+correspondingly increasing just as much (if not comparatively more) due 
+to better fairness? And if so, how important is that really? I can 
+imagine there are equally cases where other callers might prefer a lower 
+minimum/mean latency at the price of some longer outliers.
+
+Note I'm not saying I'm necessarily against making these changes, just 
+that I'm against making them without a believable justification that it 
+is actually beneficial to mainline users.
+
+Thanks,
+Robin.
