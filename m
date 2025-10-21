@@ -1,360 +1,256 @@
-Received: from BL0PR03CU003.outbound.protection.outlook.com (mail-eastusazon11012069.outbound.protection.outlook.com [52.101.53.69])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 368AB353ADF;
-	Tue, 21 Oct 2025 17:19:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.53.69
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761067159; cv=fail; b=aoQ6sWlC6P5sEQ283I1/nOR6oV1ZJ7FPj2DFn6YX5IYQFGn78X4krcLN+7ln7rqx758+ugoXTEsXwohe4jtLZjSD6dRRdYf6pyvbeUjhKoMCwB5Etf/fK7xB9ztm396Pc3EfcAl7ie0O1Hc1vdcFKjhZJqThi4VjhkUeBWawql8=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761067159; c=relaxed/simple;
-	bh=boRjueFfVm5BcH40R0qPsSpmiiqE/qMvUAyb+ku5vvQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=qsWkINCA0bQAWUlDfBSWUsxXtRNABWDdmCBvSVnBOFrb2MoryVW6owvCpMK4B0P1fcQQsT20fA0JRyexKUqrIOefxBkin0LXpaKW5N5x2q/UN//JpM3TfPjIq6UY6GZyHAAv++OArv52eDKweqiMi93B9fNxTbXXxQj6aO9uknI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=pX9pcdQX; arc=fail smtp.client-ip=52.101.53.69
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E925F35950
+	for <iommu@lists.linux.dev>; Tue, 21 Oct 2025 20:37:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1761079075; cv=none; b=bSwkLnXiQ2svPPmHmLUmYoVxN1FAz9CCwN2QVHVjw5OaQlS3LK1HHr4OR+T7effiitNj2OsALhKIGUvlxfHGEfWrJsaXwHS9Z8DR90eAhk7CaTxWIXf83Y2+Ta99+SaqpI7uBtZV18nuPWijlMdg4AQqVBy8CnLFY8Ngz3QeGu4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1761079075; c=relaxed/simple;
+	bh=HmECysQgda6YvOetuuCfUSWxczoogPdzJj9upSFshvw=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=QOp7X2WROdH+wYXENV5RAHD5vMmRbmqcsRqArkQZp4iYgOgBVKj8jgsMRHF5sSe3B5muX1mc31JlI6m8SbMBMMGlt1i6ESFW3ZpIeGIEOKfvsqkbnoaIwbECiotiLPSmfTGGBoQfiFuL8LbnJnJTjgXkYgWoQpxU829YJ4qBX3U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=lMv+yxXz; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="pX9pcdQX"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=pGkEcOcFNnS2XLuvly0YaKe9c9ubFdXiHv8imZnvGVfR9xO2wZDZpOSkB28jqe1kiSi87DwvE060JRrIN7ojuLvhVx9l1bhp3yMo2jDSYHtzwNGU5gvBdqbPO5t/2GSM0ED4Psr5p7s/jFDAbGggTR9U2gLnyINfcE1vAJzoCEcIE9WmmCXWi+On0lotYtornzrgfuODpIV+ZT7kOoD9qrTnK+rUJ77zjHVbrIgkxWfdVaOelSdq9hcr5DQFs7IsKX14BJb1Hr1qe5ICYSSld6LnRHzufIeGTqwGhd21CcxBf/Mzqp0jJQ01ms426KbymwC708HInxBrGEk7/5rUvA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=pfIKvKbhlf5nDV/5OBreet7fe0jiPdOlAySlXWfdjII=;
- b=dFmjOVlJNQcYJYbFQ1WRZilA5rBYGdk5e2FchcZImFQKCDyf1F3uNCKJ1YDOfC+aQWubxhvqbrQL1bm7/pReSDwBE8SYA0DdVA+kf+4PJ5cvNTawkvFAGFcpmpDiYIPXBQB/0EZ9zIB93vNQmjXgOX7aR7jBXZF2KCwEhz5bV1JSoODzJN6PhrktF9xpbr6OuR1tRY6zvHKdaYgRw0LWV3Jbvf2/DrpolxC/n10trlugsTRvwaIb1cCKhvz5370ccHz+fC4lqopaFN5MMtbDfcfUAaHrXtkQBYfjzJJN9R+WmqfViuPRnJsDpA42uvorY0ar1spDqSfhz33YWR2XfQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pfIKvKbhlf5nDV/5OBreet7fe0jiPdOlAySlXWfdjII=;
- b=pX9pcdQX7tOoJEvzP0wMI/Mp58cAB+xRckDXH4c72zS3mtYZsviTxwZEFnXAWKim/g2drHcL651h62RyA1VbWnnNs1tJMKWUARsXZbZ47qRDERIy3YsCTsyD5RDBl3++SZETVk3F2JtGtbwOTKfJUXBbRc/zEh3TSfbmgzM6+Jdw8A9q7A8tCNuC6y2arPV6EQGrctjHt3y2+n6VPa3wERbkcAgtfdopXCYd7BJO7I4xvw91+ThgZRPVteZs76JT0aFpYBa0/SfV4LibXPBYw2i2TAGvg89mprzZWqgGeCggXOmVoUb5Y0PhJ8iNhF/B7PQhCvpAhObxJnnFfNzoGw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from BN8PR12MB3604.namprd12.prod.outlook.com (2603:10b6:408:45::31)
- by CY8PR12MB8066.namprd12.prod.outlook.com (2603:10b6:930:70::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9228.17; Tue, 21 Oct
- 2025 17:19:12 +0000
-Received: from BN8PR12MB3604.namprd12.prod.outlook.com
- ([fe80::9629:2c9f:f386:841f]) by BN8PR12MB3604.namprd12.prod.outlook.com
- ([fe80::9629:2c9f:f386:841f%5]) with mapi id 15.20.9228.015; Tue, 21 Oct 2025
- 17:19:12 +0000
-Date: Tue, 21 Oct 2025 14:19:10 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: Jonathan Corbet <corbet@lwn.net>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	Joerg Roedel <joro@8bytes.org>,
-	Justin Stitt <justinstitt@google.com>,
-	"linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-	"llvm@lists.linux.dev" <llvm@lists.linux.dev>,
-	Bill Wendling <morbo@google.com>,
-	Nathan Chancellor <nathan@kernel.org>,
-	Nick Desaulniers <nick.desaulniers+lkml@gmail.com>,
-	Miguel Ojeda <ojeda@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Shuah Khan <shuah@kernel.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Will Deacon <will@kernel.org>, Alexey Kardashevskiy <aik@amd.com>,
-	Alejandro Jimenez <alejandro.j.jimenez@oracle.com>,
-	James Gowans <jgowans@amazon.com>,
-	Michael Roth <michael.roth@amd.com>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>,
-	"patches@lists.linux.dev" <patches@lists.linux.dev>
-Subject: Re: [PATCH v6 07/15] iommupt: Add map_pages op
-Message-ID: <20251021171910.GH712833@nvidia.com>
-References: <0-v6-0fb54a1d9850+36b-iommu_pt_jgg@nvidia.com>
- <7-v6-0fb54a1d9850+36b-iommu_pt_jgg@nvidia.com>
- <BN9PR11MB5276271302BF0AAAE2C7085A8CE9A@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BN9PR11MB5276271302BF0AAAE2C7085A8CE9A@BN9PR11MB5276.namprd11.prod.outlook.com>
-X-ClientProxiedBy: DM6PR08CA0026.namprd08.prod.outlook.com
- (2603:10b6:5:80::39) To BN8PR12MB3604.namprd12.prod.outlook.com
- (2603:10b6:408:45::31)
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="lMv+yxXz"
+Received: from localhost (unknown [20.236.11.29])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 7F39C201DAC8;
+	Tue, 21 Oct 2025 13:37:52 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 7F39C201DAC8
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1761079072;
+	bh=3phraGjaS/C+izoBKBNrnVVsq7XHeGxq+f7PQUzmclc=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=lMv+yxXz1CbhzOPWDBnC7UAsZnKpAQQHrwV9evjF+MLEJOXyxchubKGxBXqLNkkfS
+	 mfGJ03b0TsoofcZeB0ZBkRS45BoTjGWP37kHve+PcnYEY7F1SQGoGJZdo3xQsuqoW1
+	 qfBSUvZFhO4ATsMK/x2gTDau/sSv7KRNnaUv68QY=
+Date: Tue, 21 Oct 2025 13:37:51 -0700
+From: Jacob Pan <jacob.pan@linux.microsoft.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Mostafa Saleh <smostafa@google.com>, linux-kernel@vger.kernel.org,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>, Will Deacon
+ <will@kernel.org>, Nicolin Chen <nicolinc@nvidia.com>, Zhang Yu
+ <zhangyu1@linux.microsoft.com>, Jean Philippe-Brucker
+ <jean-philippe@linaro.org>, Alexander Grest
+ <Alexander.Grest@microsoft.com>, Jason Gunthorpe <jgg@nvidia.com>
+Subject: Re: [PATCH 0/2] SMMU v3 CMDQ fix and improvement
+Message-ID: <20251021133751.0000418f@linux.microsoft.com>
+In-Reply-To: <336c5a8a-ac2c-4e4c-b2f9-a0bc056aa498@arm.com>
+References: <20250924175438.7450-1-jacob.pan@linux.microsoft.com>
+	<aPIhMGnzHiBkIEam@google.com>
+	<20251017135145.GL3901471@nvidia.com>
+	<20251017095031.00000b84@linux.microsoft.com>
+	<20251020120240.GI316284@nvidia.com>
+	<20251020115710.0000258b@linux.microsoft.com>
+	<336c5a8a-ac2c-4e4c-b2f9-a0bc056aa498@arm.com>
+Organization: LSG
+X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN8PR12MB3604:EE_|CY8PR12MB8066:EE_
-X-MS-Office365-Filtering-Correlation-Id: 530355b8-ae8a-465a-5a4c-08de10c5f3b8
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014|7416014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?8dG68tBnWUQ2FjH7OlabvaABt8OQek9Z/FWYSpte3T+uWZpO8qiCxuNw+A0v?=
- =?us-ascii?Q?36XWSnqyt1hNNG5OjLXgpy+k6msCU+4BsoWF69CRMkJ4KZHn4Nuv63s50Tby?=
- =?us-ascii?Q?JhQBXff5UkN2sOGoxavHWQk+kZ9wjwd+OS8x/H8rg6Ean02CrvPOlrYIGQnk?=
- =?us-ascii?Q?luMmEc4kAuTKIORFNKJfo5jFFV5J0E4Hp/3mage05A/TjlL07QVf3hrqfOw5?=
- =?us-ascii?Q?ioIClO3CyWH/bj0TxVPv+ddPVX4K2xwgKWccAx/Fna3hMK4/Pw55DfniltWh?=
- =?us-ascii?Q?NvcdQJqCvai5ZjtrcEU5QtVVkZzNP7Ri4gjPdja7ILAcBOHc+TpypeNwwXCt?=
- =?us-ascii?Q?nXwxKj5c9kaT/cn0CvApVTHhIpEO5zUQdDgKq9IJ1baT34PQXsz0gqP80FFT?=
- =?us-ascii?Q?HprymI9vUUUlgBWPSuiLVkyt3GhpTP39c5qhSXd306+yZySIVfpJJakuy7mM?=
- =?us-ascii?Q?bZI4FI6HjwG9plCAj140oOZWcBZyZ/hk2R3TayISo0SMvygZzYWXcpjg/wOv?=
- =?us-ascii?Q?wWzFgsJsRuXe6tpn+l1eCAZM+Pvab6aSH1tO1QqWpayYsavPyyPahKXw/Iln?=
- =?us-ascii?Q?DBuMezqbNVkLYkZnJlepE3wvuGX3vabd06CJngWDe5y3by/NXFCA/btTl0L4?=
- =?us-ascii?Q?o1p+g1f6ZlYK2kSg7Ulul0YeSsJDxzZI/Z+HJhkNlmo41QNpxmkvRw7vRSHd?=
- =?us-ascii?Q?b852nbmGiverNLL+GWLwSRxcJSdEWV/pf3YNfyOIWeSyLZgmJKc8oVKRzT6/?=
- =?us-ascii?Q?IUBusSXLJDNNGbPD5qK4R4B16FyA7iTyMvPvX2TbJEhnE8abXwi/ND4dSsyP?=
- =?us-ascii?Q?9awo8jYHHkJEaurdX6H8F0xFQjDnoRnvekNC9qxkmSvsHzFF20a7bK7bj60A?=
- =?us-ascii?Q?Mj7zaYk6GDC6Wq6MjzG7Gu7KdqXZjA+BVbxGTNnTFEuqr5JXw0pfvBhJKMOI?=
- =?us-ascii?Q?QJVZvVkI40TBoUM7z+TXRWqbuzAAYIPMmLWa0kRGdtJ+L0g2PPHdSwPpbi+F?=
- =?us-ascii?Q?eycY+8G+80NqpEvbVqDFMTkuJMxFTN+iOyboUixMihTLuu4+DSxGbw9LlQ83?=
- =?us-ascii?Q?cKJMw4MeQcIffJAalsDwwipeblTAfu0zUJFHorUh0joAzJqJt4Unw/Xa9f3D?=
- =?us-ascii?Q?BRnfz1/UT6TSeii3l2y4rx6LlC6OJQP8iki0NmtzKIZK5C/emmBR/4vV39IR?=
- =?us-ascii?Q?hp0XsGtqIrcElJPBdlcyaaynV21awaqugQg3vapDy8g4lok1Uq7wh5kndjqF?=
- =?us-ascii?Q?qV+AR0YHR1gW3ZvEp7+/GrtsTjTQHj8E6Tq7tVUWbAFKUTbUG3ka9lpc6XpR?=
- =?us-ascii?Q?YtwBBNJozxhRfV/jeqj964C+ge9kFa4VFAmwYZ8rwRsx2cBBMd2qpppgelBs?=
- =?us-ascii?Q?OvffeSS2hhLnzCAx39yGAHiLy3Il3JnC8WjBGM/k0Er1ASnZcdngSBUtdpIP?=
- =?us-ascii?Q?+vGahPAH/T83/K7839TH4gNwspTY7gcl?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR12MB3604.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(7416014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?w0wiwYuSx8ITDfxktoTYYCIB3JPyIOoVfM1RMNkqEZtBm66eF0MOFL6+Q0l9?=
- =?us-ascii?Q?tyeLlyimrlMswMDVsOGo0Ey41JiJW8cJBCe2sTnYH9hle8jdiu7kzjnDzxwi?=
- =?us-ascii?Q?RTiNhI+LaFUMYdpo0joxxbwcmX2FjLgRGHYRRRAf9NI7mcPubiEnNTn9MjGg?=
- =?us-ascii?Q?B6Ir4bjq+yIL9IMa6ocavYwhsqhv+FzQ2R5Z5OVNBtVCwbVdFO1DAaEG55eD?=
- =?us-ascii?Q?PFkX/bLlYd4+K9IH12HrM5JHNACIQY7BgcrIs5UaC4DpgigSq3z4PZjIP0MP?=
- =?us-ascii?Q?33rq0HjfA+2P7C+95RHlUGeJDAfo6ycV/ivdKlqdfWQ31bwoWam10DV5Isd8?=
- =?us-ascii?Q?OjW3aHLUG7TfCwku5BbNvF1wxIM3q/UksiM5CK4AcqQClBYyRWJw6KdKwWdK?=
- =?us-ascii?Q?pyMqTr6z6RektOquJey9TMgASVVmYNpKXhCWbZ1J3FigZZFgUYOpVEqVx/qW?=
- =?us-ascii?Q?RLi3tnF+ncOjgDQwqR7BywuzbBvhAmCBFPglrcz5QlZbRJu0gjHAPGK6iiwi?=
- =?us-ascii?Q?9msy8zz+A8IX9yVdbIWRTFvQgtziyWoAYELHOPx95IfBrnatcRBpp9nnu8/F?=
- =?us-ascii?Q?BhIfU8gDq3V3L63WylyqwJLMBO9+katDFcW30MJDb0MSXyGD1MXcHyKgsuiV?=
- =?us-ascii?Q?ukQOsNJERvXFVeIEHrQFQD2lHYgCoiVtDoaWw63DLLKMqzgQPDOP8V+wg1f6?=
- =?us-ascii?Q?Yo6lwfhnAjVaXt3nUm/rQxnSwsf+gZBxtKYFkl3PtUC/knnPiUeM6OqAbBNB?=
- =?us-ascii?Q?wQ1AJK45xxDKu3nWTvdlAl7oauLM6OzG0QadGEotEtKjOQ2jutMOxFAgqfty?=
- =?us-ascii?Q?gLQPPkoxh4IILEYikw3BrvG3KhhjoVLNn6VP7p41BRnMAmOK0goPfhz5EJJQ?=
- =?us-ascii?Q?61as0ztzkl4IHUgrBBoDBPGYFp0noVHgXCog3076SLBhZ2+4/vWE3G+pvjap?=
- =?us-ascii?Q?9rqKIMCFh9a9p5mb53geBK9Ydku5RlfnT2W92VOa9yGB2LrXZg7SYxjpStvC?=
- =?us-ascii?Q?JN1zAzFMqS2XMVyUCxw5ZG2+FdQd0BLgLHBanubW0z8o+00gdMp7PZxQM5fb?=
- =?us-ascii?Q?VPhzNeFyoIF80fgOiCwFj4+x0YTJstA8qrr5UT1jBMpOaK1t5BuSuEZUBGRc?=
- =?us-ascii?Q?C6BfLO11I59BCFKExvDcDQ4/MnieShSyDmHogHRPmiDp+hRg23mCv/vN1D2B?=
- =?us-ascii?Q?sRiOpjGOooFosWPfqPpexdarM5XM+RIgn6Amb0mNiiA3EAYPhT7rdkjPIkX7?=
- =?us-ascii?Q?ROkdmC3IsLEKK7TxPOwzbj9lXeMu/h/nZ27GiNHAb3Z3QPcJmLFn8g77CLyT?=
- =?us-ascii?Q?B/FM8BJ++jWjCD4VNzjR+SFS/xHWh/uRwAMdXnjhqQdFcX0DIIu7mgkPJYWB?=
- =?us-ascii?Q?EV9e08md6DrVZewZiUdl4ao5s5Ga35VmHqF5P40+oPCQxMM0vSI1d8w2TTby?=
- =?us-ascii?Q?52J0yuyth+WzvWaZlEzsZHqo1fLrvvHAGu41O49IzN1/hRjzJvQAGYYkBX/7?=
- =?us-ascii?Q?Ml9zr0K7WBO9F2WBsxUwnT5B0iRS8HNqVs1VeKm+Sjmpy4nWLpv3/GLEbveQ?=
- =?us-ascii?Q?wnrq0Ok3+uo0AyRCOw9s1Gb2SkAV5zJEaGnvMKuD?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 530355b8-ae8a-465a-5a4c-08de10c5f3b8
-X-MS-Exchange-CrossTenant-AuthSource: BN8PR12MB3604.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Oct 2025 17:19:12.5702
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: NlAqYFmKnLyZYPgGhhCXDb9us2epLyEivFdS4TDVkn5Eii8h1ddxel3jKivNMtNe
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB8066
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Thu, Oct 16, 2025 at 06:52:09AM +0000, Tian, Kevin wrote:
-> > +static __always_inline int __do_map_single_page(struct pt_range *range,
-> > +						void *arg, unsigned int level,
-> > +						struct pt_table_p *table,
-> > +						pt_level_fn_t descend_fn)
-> > +{
-> > +	struct pt_state pts = pt_init(range, level, table);
-> > +	struct pt_iommu_map_args *map = arg;
-> > +
-> > +	pts.type = pt_load_single_entry(&pts);
-> > +	if (level == 0) {
-> > +		if (pts.type != PT_ENTRY_EMPTY)
-> > +			return -EADDRINUSE;
-> > +		pt_install_leaf_entry(&pts, map->oa, PAGE_SHIFT,
-> > +				      &map->attrs);
-> > +		map->oa += PAGE_SIZE;
-> > +		return 0;
-> > +	}
-> > +	if (pts.type != PT_ENTRY_TABLE)
-> > +		return -EAGAIN;
+On Tue, 21 Oct 2025 12:45:48 +0100
+Robin Murphy <robin.murphy@arm.com> wrote:
+
+> On 2025-10-20 7:57 pm, Jacob Pan wrote:
+> > On Mon, 20 Oct 2025 09:02:40 -0300
+> > Jason Gunthorpe <jgg@nvidia.com> wrote:
+> >   
+> >> On Fri, Oct 17, 2025 at 09:50:31AM -0700, Jacob Pan wrote:  
+> >>> On Fri, 17 Oct 2025 10:51:45 -0300
+> >>> Jason Gunthorpe <jgg@nvidia.com> wrote:
+> >>>      
+> >>>> On Fri, Oct 17, 2025 at 10:57:52AM +0000, Mostafa Saleh wrote:  
+> >>>>> On Wed, Sep 24, 2025 at 10:54:36AM -0700, Jacob Pan wrote:  
+> >>>>>> Hi Will et al,
+> >>>>>>
+> >>>>>> These two patches are derived from testing SMMU driver with
+> >>>>>> smaller CMDQ sizes where we see soft lockups.
+> >>>>>>
+> >>>>>> This happens on HyperV emulated SMMU v3 as well as baremetal
+> >>>>>> ARM servers with artificially reduced queue size and
+> >>>>>> microbenchmark to stress test concurrency.  
+> >>>>>
+> >>>>> Is it possible to share what are the artificial sizes and does
+> >>>>> the HW/emulation support range invalidation (IRD3.RIL)?
+> >>>>>
+> >>>>> I'd expect it would be really hard to overwhelm the command
+> >>>>> queue, unless the HW doesn't support range invalidation and/or
+> >>>>> the queue entries are close to the number of CPUs.  
+> >>>>
+> >>>> At least on Jacob's system there is no RIL and there are 72/144
+> >>>> CPU cores potentially banging on this.
+> >>>>
+> >>>> I think it is combination of lots of required invalidation
+> >>>> commands, low queue depth and slow retirement of commands that
+> >>>> make it easier to create a queue full condition.
+> >>>>
+> >>>> Without RIL one SVA invalidation may take out the entire small
+> >>>> queue, for example.  
+> >>> Right, no range invalidation and queue depth is 256 in this case.
+> >>>  
+> >>
+> >> I think Robin is asking you to justify why the queue depth is 256
+> >> when ARM is recommending much larger depths specifically to fix
+> >> issues like this?  
+> > The smaller queue depth is chosen for CMD_SYNC latency reasons. But
+> > I don't know the implementation details of HyperV and host SMMU
+> > driver.  
 > 
-> return -EADDRINUSE if PT_ENTRY_OA. No need to retry if no empty.
-
-I wanted to keep it small this catches if the table needs to be
-allocated too. This is a bit clearer:
-
-	if (pts.type == PT_ENTRY_TABLE)
-		return pt_descend(&pts, arg, descend_fn);
-	/* Something else, use the slow path */
-	return -EAGAIN;
-
-> > +/**
-> > + * map_pages() - Install translation for an IOVA range
-> > + * @domain: Domain to manipulate
-> > + * @iova: IO virtual address to start
-> > + * @paddr: Physical/Output address to start
-> > + * @pgsize: Length of each page
-> > + * @pgcount: Length of the range in pgsize units starting from @iova
-> > + * @prot: A bitmap of IOMMU_READ/WRITE/CACHE/NOEXEC/MMIO
-> > + * @gfp: GFP flags for any memory allocations
-> > + * @mapped: Total bytes successfully mapped
-> > + *
-> > + * The range starting at IOVA will have paddr installed into it. The caller
-> > + * must specify a valid pgsize and pgcount to segment the range into
-> > compatible
-> > + * blocks.
-> > + *
-> > + * On error the caller will probably want to invoke unmap on the range from
-> > iova
-> > + * up to the amount indicated by @mapped to return the table back to an
-> > + * unchanged state.
-> > + *
-> > + * Context: The caller must hold a write range lock that includes the whole
-> > + * range.
-> > + *
-> > + * Returns: -ERRNO on failure, 0 on success. The number of bytes of VA that
-> > were
-> > + * mapped are added to @mapped, @mapped is not zerod first.
+> TBH that sounds highly dubious. The only way I could imagine CMDQ
+> size bearing any relation to CMD_SYNC at all is if a hypervisor is
+> emulating a stage 1 vCMDQ in such a naive and lazy manner that a)
+> performance is already off the table, and b) it has a good chance of
+> being broken anyway.
 > 
-> hmm seems drivers are not consistent on this, e.g. Intel and several
-> others (virtio, rockchip. etc.) don't use addition. and there is no such
-> guidance from iommu.h.
+> For the hardware to actually process, say, 1023 invalidations
+> followed by a sync takes as long as it takes, based on how busy the
+> SMMU is. The only difference in issuing that sequence of commands on
+> a 256-entry queue vs. a 1024-entry queue is that in the latter case,
+> software does not have to sit waiting for the first 768 to actually
+> be consumed before it can finish the submission and potentially get
+> on with something else until the sync completes. Yes, one could claim
+> that technically the time between *issuing* the CMD_SYNC and its
+> completion is then lower, but only because that extra time has now
+> been wasted in a polling loop waiting for CMDQ space instead - it's a
+> meaningless distinction overall.
+I agree that a smaller emulated queue size does not change the
+time took the physical IOMMU to do the invalidation. I am not defending
+the current emulation which I think can be improved overtime
+transparent to the guest.
 
-Yes. At least ARM64 does addition though.
+> > IMHO, queue size is orthogonal to what this patch is trying to
+> > address, which is a specific locking problem and improve efficiency.
+> > e.g. eliminated cmpxchg
+> > -	do {
+> > -		val = atomic_cond_read_relaxed(&cmdq->lock, VAL >=
+> > 0);
+> > -	} while (atomic_cmpxchg_relaxed(&cmdq->lock, val, val + 1)
+> > != val);
+> > +	atomic_cond_read_relaxed(&cmdq->lock, VAL > 0);
+> > 
+> > Even on BM with restricted queue size, this patch reduces latency of
+> > concurrent madvise(MADV_DONTNEED) from multiple CPUs (I tested 32
+> > CPUs, cutting 50% latency unmap 1GB buffer in 2MB chucks per CPU).  
+> My point is that a 50% improvement on nonsense is likely still
+> nonsense. With only 256 entries, every single one of those 2MB unmaps
+> needs to fill the entire CMDQ more than twice over. 32 CPUs all
+> jostling to issue about 34x as many commands as the queue can hold
+> *each* is a ridiculous level of contention. If a hypervisor is
+> advertising an SMMU_IDR1.CMDQS value that is absurdly tiny for the
+> size of the VM then that represents such an obvious bottleneck that
+> it's hardly mainline Linux's responsibility to maintain code to help
+> "debug" it. As for "BM with restricted queue size", like I said, just
+> don't do that.
+I don't think we are asking the mainline Linux to debug our emulation
+problem, quite the contrary, this setup helped to exposed mainline
+Linux's bug (Patch 1/2 clearly shows that the queue space contention
+has not been adequately tested)
 
-> Existing callers e.g. iommu_map_nosync() initializes mmaped to 0,
-> so this difference doesn't lead to observable problem so far. 
+This madvise test is intended to show:
+a) the locking change is functionally sound, no harm to existing
+mainline users
+b) create extreme contentions that expose the problems with the current
+code
+c) performance differences
 
-Yep
+> What is the difference on an un-hacked bare-metal system with a 
+> normally-sized queue? Is it even measurable?
+Not measurable on my BM system with a large cmdq size. The condition
+!queue_has_space() is rarely met, so the exclusive lock is almost never
+acquired.
 
-> But it may be good to unify drivers while at it.
+> That's what's actually 
+> interesting. Furthermore, what exactly does that measurement even
+> mean?
+I agree this is not a measurement of real workload performance, but the
+test shows:
+a) no more occasional soft lockup as shared lock is no longer starved
+b) shared lock can be taken quickly as we get rid of the unnecessary
+cmpxchg.
 
-As it doesn't cause any issue, I'm just going to leave it.. The new
-implementation will consistently use the addition mode like ARM did
-and that is convenient for the kunit as well.
+> If we're still issuing the same number of commands I struggle
+> to believe we could lose 50% of the *overall* time just bouncing a
+> cacheline between shared and exclusive state - is this actually just
+> the *maximum* per-CPU latency going down, at the cost of the minimum
+> latency correspondingly increasing just as much (if not comparatively
+> more) due to better fairness? And if so, how important is that
+> really? I can imagine there are equally cases where other callers
+> might prefer a lower minimum/mean latency at the price of some longer
+> outliers.
+The importance is that this change avoided a soft lockup where
+exclusive lock is taken all the time. It is not about bouncing a
+cacheline between shared and exclusive state. I have tried to flush the
+lock cacheline after shared lock winning the cmpxchg but it didn't help
+avoiding the lockup.
 
-> > +	/* Calculate target page size and level for the leaves */
-> > +	if (pt_has_system_page_size(common) && pgsize == PAGE_SIZE &&
-> > +	    pgcount == 1) {
-> > +		PT_WARN_ON(!(pgsize_bitmap & PAGE_SIZE));
-> > +		if (log2_mod(iova | paddr, PAGE_SHIFT))
-> > +			return -ENXIO;
-> > +		map.leaf_pgsize_lg2 = PAGE_SHIFT;
-> > +		map.leaf_level = 0;
-> > +		single_page = true;
-> > +	} else {
-> > +		map.leaf_pgsize_lg2 = pt_compute_best_pgsize(
-> > +			pgsize_bitmap, range.va, range.last_va, paddr);
-> > +		if (!map.leaf_pgsize_lg2)
-> > +			return -ENXIO;
-> > +		map.leaf_level =
-> > +			pt_pgsz_lg2_to_level(common, map.leaf_pgsize_lg2);
-> > +	}
-> > +
-> > +	ret = check_map_range(iommu_table, &range, &map);
-> > +	if (ret)
-> > +		return ret;
-> 
-> single_page should aways pass the check then could skip it.
+> Note I'm not saying I'm necessarily against making these changes,
+> just that I'm against making them without a believable justification
+> that it is actually beneficial to mainline users.
+The benefit to mainline users ( I assume you meant SMMUs with large cmdq
+size), at the minium, is that shared lock can be taken quicker when it
+is released from the exclusive state.
 
-Even single_page needs this check, it checks if iova is with in range.
+> > -	do {
+> > -		val = atomic_cond_read_relaxed(&cmdq->lock, VAL >=
+> > 0);
+> > -	} while (atomic_cmpxchg_relaxed(&cmdq->lock, val, val + 1)
+> > != val);
+> > +	atomic_cond_read_relaxed(&cmdq->lock, VAL > 0);
 
-> > +	PT_WARN_ON(map.leaf_level > range.top_level);
-> > +
-> > +	do {
-> > +		if (single_page) {
-> > +			ret = pt_walk_range(&range, __map_single_page,
-> > &map);
-> > +			if (ret != -EAGAIN)
-> > +				break;
-> > +		}
-> > +
-> > +		if (map.leaf_level == range.top_level)
-> > +			ret = pt_walk_range(&range, __map_range_leaf,
-> > &map);
-> > +		else
-> > +			ret = pt_walk_range(&range, __map_range, &map);
-> > +	} while (false);
-> 
-> what is the point of do...while(false) compared to 'goto'?
+Here is the assembly code diff :
 
-Didn't want to use goto for something other than an error exit
+BEFORE:
+    27bc:       14000008        b       27dc
+<arm_smmu_cmdq_issue_cmdlist+0x364> val =
+atomic_cond_read_relaxed(&cmdq->lock, VAL >= 0); 27c0:       93407c00
+     sxtw    x0, w0 __CMPWAIT_CASE(w,  , 32);
+    27c4:       d50320bf        sevl
+    27c8:       d503205f        wfe
+    27cc:       885f7c22        ldxr    w2, [x1]
+    27d0:       4a000042        eor     w2, w2, w0
+    27d4:       35000042        cbnz    w2, 27dc
+<arm_smmu_cmdq_issue_cmdlist+0x364> 27d8:       d503205f        wfe
+    27dc:       b940ce60        ldr     w0, [x19, #204]
+    27e0:       37ffff00        tbnz    w0, #31, 27c0
+<arm_smmu_cmdq_issue_cmdlist+0x348> } while
+(atomic_cmpxchg_relaxed(&cmdq->lock, val, val + 1) != val); 27e4:
+11000403        add     w3, w0, #0x1 27e8:       14000004        b
+ 27f8 <arm_smmu_cmdq_issue_cmdlist+0x380> __CMPXCHG_CASE(w,  ,     ,
+32,   ) 27ec:       2a0003e2        mov     w2, w0
+    27f0:       88a27c23        cas     w2, w3, [x1]
+    27f4:       14000008        b       2814
+<arm_smmu_cmdq_issue_cmdlist+0x39c> __CMPXCHG_CASE(    , 32)
+    27f8:       93407c04        sxtw    x4, w0
+__CMPXCHG_CASE(w,  ,     , 32,        ,  ,  ,         , K)
+    27fc:       f9800031        prfm    pstl1strm, [x1]
+    2800:       885f7c22        ldxr    w2, [x1]
+    2804:       4a040045        eor     w5, w2, w4
+    2808:       35000065        cbnz    w5, 2814
+<arm_smmu_cmdq_issue_cmdlist+0x39c> 280c:       88057c23        stxr
+w5, w3, [x1] 2810:       35ffff85        cbnz    w5, 2800
+<arm_smmu_cmdq_issue_cmdlist+0x388> 2814:       6b02001f        cmp
+w0, w2 2818:       54fffe21        b.ne    27dc
+<arm_smmu_cmdq_issue_cmdlist+0x364>  // b.any
 
-Let's put it in a function:
-
-static int do_map(struct pt_range *range, bool single_page,
-		  struct pt_iommu_map_args *map)
-{
-	if (single_page) {
-		int ret;
-
-		ret = pt_walk_range(range, __map_single_page, map);
-		if (ret != -EAGAIN)
-			return ret;
-		/* EAGAIN falls through to the full path */
-	}
-
-	if (map->leaf_level == range->top_level)
-		return pt_walk_range(range, __map_range_leaf, map);
-	return pt_walk_range(range, __map_range, map);
-}
-
-> > +/**
-> > + * struct pt_iommu_flush_ops - HW IOTLB cache flushing operations
-> > + *
-> > + * The IOMMU driver should implement these using
-> > container_of(iommu_table) to
-> > + * get to it's iommu_domain derived structure. All ops can be called in
-> > atomic
-> > + * contexts as they are buried under DMA API calls.
-> > + */
-> > +struct pt_iommu_flush_ops {
-> 
-> not sure it's appropriate to call it flush_ops. It's not purely about flush,
-> e.g. @change_top requires the driver to actually change the top.
-
-Hmm, at one point it did have flush related calls but now it is just
-about change top..
-
-I'll change it to pt_iommu_driver_ops
-
-> > +	 * HW references to this domain with a new top address and
-> > +	 * configuration. On return mappings placed in the new top must be
-> > +	 * reachable by the HW.
-> > +	 *
-> > +	 * top_level encodes the level in IOMMU PT format, level 0 is the
-> > +	 * smallest page size increasing from there. This has to be translated
-> > +	 * to any HW specific format. During this call the new top will not be
-> > +	 * visible to any other API.
-> > +	 *
-> > +	 * This op is only used by PT_FEAT_DYNAMIC_TOP, and is required if
-> > +	 * enabled.
-> > +	 */
-> > +	void (*change_top)(struct pt_iommu *iommu_table, phys_addr_t
-> > top_paddr,
-> > +			   unsigned int top_level);
-> > +
-> > +	/**
-> > +	 * @get_top_lock: Return a lock to hold when changing the table top
-> > +	 * @iommu_table: Table to operate on
-> > +	 *
-> 
-> blank line
+AFTER:
+        atomic_cond_read_relaxed(&cmdq->lock, VAL > 0);
+    27bc:       b940ce60        ldr     w0, [x19, #204]
+    27c0:       7100001f        cmp     w0, #0x0
+    27c4:       5400006d        b.le    27d0
+<arm_smmu_cmdq_issue_cmdlist+0x358>
 
 
-	/**
-	 * @get_top_lock: lock to hold when changing the table top
-	 * @iommu_table: Table to operate on
-	 *
-	 * Return a lock to hold when changing the table top page table from
-	 * being stored in HW. The lock will be held prior to calling
-	 * change_top() and released once the top is fully visible.
-	 *
-	 * Typically this would be a lock that protects the iommu_domain's
-	 * attachment list.
-	 *
-	 * This op is only used by PT_FEAT_DYNAMIC_TOP, and is required if
-	 * enabled.
-	 */
 
-Thanks,
-Jason
+
+
+
+> Thanks,
+> Robin.
+
