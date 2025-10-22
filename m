@@ -1,264 +1,172 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 288D430EF7C
-	for <iommu@lists.linux.dev>; Wed, 22 Oct 2025 08:30:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3649D32861C
+	for <iommu@lists.linux.dev>; Wed, 22 Oct 2025 11:23:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=46.255.230.98
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761121811; cv=none; b=bvsnWRFR209eQBdV3qbtkWriMhYEtG2A3DVveEwDjbntS834bwG43NK5j262MOKa27A5e2NSMs+GnMIydbE2QCiLRzvjAuFGt7aO0vsqk0JF9FPwjGgYoFTWtr2qGYjBKSmDbknSDL7u8Spx8lIJHld7PtsA0zDt3UOM16F/hDo=
+	t=1761132230; cv=none; b=WyBTosK9//IKVPBMl6wWUe+dhhQdh7Acktp6n3a3qTRxmCftm2ybcxHpkzU5ljDRQfn8UkcOUwSbdmk+KCCtLsOm4tu6jv4f00Ox8rJGNgk/z3Er3bzU6xu89rkt5/5185Ig6ajFQ4AN+hF8bchEKYAu/eAiFP2uWnhNdw/a5qI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761121811; c=relaxed/simple;
-	bh=pYxXXEg2O9fWt+fbB3M4N2RdzAEstcUlrOLKKj3r6lg=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=jHtP6I+Gl/aCiIBRRcdQixHFIRfCbALPmibjic0iAvketqK9xayqhIviv2DCB30jRGAc0yyYSwJVpBoaHT1sJZWbWfYijAV+/nXSsH2ZJoXDcAWWq/zj0+fVKK68+TD46EsOCjkP03N1fDe2pIiCN/cc41wSHktKgFrWF+2pljQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=B5iU8Z9k; arc=none smtp.client-ip=198.175.65.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1761132230; c=relaxed/simple;
+	bh=Sto90th+ZCJpEnfp/VcT4pT9JuOxd6d1o8AqSToBMrg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=GbBg3oZ/QtlbrRs6l1mg5ND9tSuiDHlVBnKv3kWSAildNuP1f7mYF8gy+nH4jH/GY+hZffLOTziGn9pphql+oDCqUBwdP/mBt1St3wnsPRDkImtENfIB13s2lnqAMHCkPynOAvh9dnPGIdYriAClesAb6RkSYJ3uaoAw6+wYeyw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ucw.cz; spf=pass smtp.mailfrom=ucw.cz; dkim=pass (1024-bit key) header.d=ucw.cz header.i=@ucw.cz header.b=pqCbupnN; arc=none smtp.client-ip=46.255.230.98
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ucw.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ucw.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="B5iU8Z9k"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1761121809; x=1792657809;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=pYxXXEg2O9fWt+fbB3M4N2RdzAEstcUlrOLKKj3r6lg=;
-  b=B5iU8Z9kZvabwerNcmJ+KvNURGQfVJ0rAO8caNJD3Bd00bjmGUsHr0yt
-   Yoin7ZLC7lzaNbJjeEkmMpHk9GfF5quUvd5uGGfbcfflfMEko5vrjkqqZ
-   eKJIx2/RMKhLTrEwA/30PoeLHVeK2w2xXOujzQRq+6sjppZC6lmFchjOG
-   FSSFJOgTNqE/sG0nSCd45cYP5NQ5AZdW7cz4aPbiGBHD7xkAla4QYZOy8
-   2zURRtk6SFr2G9PM7RGoi7AOgrvr+SjDAKc2UZLile18MjDxEFSciHfw7
-   pa6ktblF7YEzbHEMuKan9tY9ZXfXuzaZlweKjMBKgcD2Ss4JQtID1exVP
-   A==;
-X-CSE-ConnectionGUID: oSxrVC/4SMq4rQOgESAsLQ==
-X-CSE-MsgGUID: mKfruRlPRzmGPJR952zRPQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11586"; a="85885841"
-X-IronPort-AV: E=Sophos;i="6.19,246,1754982000"; 
-   d="scan'208";a="85885841"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2025 01:30:07 -0700
-X-CSE-ConnectionGUID: Vd5TeOLTRfWrRlzhiL3YXg==
-X-CSE-MsgGUID: il39B/P2R6OCMqQBbfev/A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.19,246,1754982000"; 
-   d="scan'208";a="183516494"
-Received: from allen-box.sh.intel.com ([10.239.159.52])
-  by fmviesa007.fm.intel.com with ESMTP; 22 Oct 2025 01:30:01 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	Jann Horn <jannh@google.com>,
-	Vasant Hegde <vasant.hegde@amd.com>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Ingo Molnar <mingo@redhat.com>,
-	Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@intel.com>,
-	Alistair Popple <apopple@nvidia.com>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Uladzislau Rezki <urezki@gmail.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Andy Lutomirski <luto@kernel.org>,
-	Yi Lai <yi1.lai@intel.com>,
-	David Hildenbrand <david@redhat.com>,
-	Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
-	"Liam R . Howlett" <Liam.Howlett@oracle.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Vlastimil Babka <vbabka@suse.cz>,
-	Mike Rapoport <rppt@kernel.org>,
-	Michal Hocko <mhocko@kernel.org>,
-	Matthew Wilcox <willy@infradead.org>,
-	Vinicius Costa Gomes <vinicius.gomes@intel.com>
-Cc: iommu@lists.linux.dev,
-	security@kernel.org,
-	x86@kernel.org,
-	linux-mm@kvack.org,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v7 8/8] iommu/sva: Invalidate stale IOTLB entries for kernel address space
-Date: Wed, 22 Oct 2025 16:26:34 +0800
-Message-ID: <20251022082635.2462433-9-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20251022082635.2462433-1-baolu.lu@linux.intel.com>
-References: <20251022082635.2462433-1-baolu.lu@linux.intel.com>
+	dkim=pass (1024-bit key) header.d=ucw.cz header.i=@ucw.cz header.b="pqCbupnN"
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+	id 15D481C0088; Wed, 22 Oct 2025 13:23:45 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ucw.cz; s=gen1;
+	t=1761132225;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=lJy21XbWgHp7MjGSXfr0/SiKeaKudWY5JLr70CDGgKg=;
+	b=pqCbupnNygoqjhYdJh+SCZh/oNfOBS94VpWGG/hzyei2HcK3MabOx5SFCwkpVC61xwOs7u
+	kBUNEPVa2OaVIxl0U8f+ElyReralUEauxeyeryR+9Oj0aktXucB7Nk4gKyZZy19G+bIB/Z
+	IPRgNPTEJp/FXhjKBa218zWpoFhtef4=
+Date: Wed, 22 Oct 2025 13:23:44 +0200
+From: Pavel Machek <pavel@ucw.cz>
+To: Luca Weiss <luca.weiss@fairphone.com>
+Cc: barnabas.czeman@mainlining.org, Bjorn Andersson <andersson@kernel.org>,
+	Michael Turquette <mturquette@baylibre.com>,
+	Stephen Boyd <sboyd@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Stephan Gerhold <stephan@gerhold.net>,
+	Otto =?iso-8859-1?Q?Pfl=FCger?= <otto.pflueger@abscue.de>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Lee Jones <lee@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Konrad Dybcio <konradybcio@kernel.org>, Sean Paul <sean@poorly.run>,
+	Abhinav Kumar <quic_abhinavk@quicinc.com>,
+	Marijn Suijten <marijn.suijten@somainline.org>,
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	Dmitry Baryshkov <lumag@kernel.org>,
+	Adam Skladowski <a_skl39@protonmail.com>,
+	Sireesh Kodali <sireeshkodali@protonmail.com>,
+	Rob Clark <robin.clark@oss.qualcomm.com>,
+	Abhinav Kumar <abhinav.kumar@linux.dev>,
+	Jessica Zhang <jessica.zhang@oss.qualcomm.com>,
+	Srinivas Kandagatla <srini@kernel.org>,
+	linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-gpio@vger.kernel.org, iommu@lists.linux.dev,
+	dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+	phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+	linux@mainlining.org,
+	Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+Subject: Re: [PATCH v7 6/6] arm64: dts: qcom: Add Xiaomi Redmi 3S
+Message-ID: <aPi+wIY/bUuZl9hv@duo.ucw.cz>
+References: <20250831-msm8937-v7-0-232a9fb19ab7@mainlining.org>
+ <20250831-msm8937-v7-6-232a9fb19ab7@mainlining.org>
+ <aNGLPdmOyh/pfroq@duo.ucw.cz>
+ <97ee369f6ffbe42c72c57ebd72887b23@mainlining.org>
+ <aNJKniJ46YuUsbQ+@duo.ucw.cz>
+ <DD038IVOWESM.24X3EZZXH3UE@fairphone.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="afFovrNgGG7Vhs2p"
+Content-Disposition: inline
+In-Reply-To: <DD038IVOWESM.24X3EZZXH3UE@fairphone.com>
 
-Introduce a new IOMMU interface to flush IOTLB paging cache entries for
-the CPU kernel address space. This interface is invoked from the
-x86 architecture code that manages combined user and kernel page tables,
-specifically before any kernel page table page is freed and reused.
 
-This addresses the main issue with vfree() which is a common occurrence
-and can be triggered by unprivileged users. While this resolves the
-primary problem, it doesn't address some extremely rare case related to
-memory unplug of memory that was present as reserved memory at boot,
-which cannot be triggered by unprivileged users. The discussion can be
-found at the link below.
+--afFovrNgGG7Vhs2p
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Enable SVA on x86 architecture since the IOMMU can now receive
-notification to flush the paging cache before freeing the CPU kernel
-page table pages.
+Hi!
 
-Suggested-by: Jann Horn <jannh@google.com>
-Co-developed-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Link: https://lore.kernel.org/linux-iommu/04983c62-3b1d-40d4-93ae-34ca04b827e5@intel.com/
----
- arch/x86/Kconfig          |  1 +
- include/linux/iommu.h     |  4 ++++
- drivers/iommu/iommu-sva.c | 32 ++++++++++++++++++++++++++++----
- mm/pgtable-generic.c      |  2 ++
- 4 files changed, 35 insertions(+), 4 deletions(-)
+> On Tue Sep 23, 2025 at 9:22 AM CEST, Pavel Machek wrote:
+> > Hi!
+> >> > Hi!
+> >> >=20
+> >> > > +	led-controller@45 {
+> >> > > +		compatible =3D "awinic,aw2013";
+> >> > > +		reg =3D <0x45>;
+> >> > > +		#address-cells =3D <1>;
+> >> > > +		#size-cells =3D <0>;
+> >> > > +
+> >> > > +		vcc-supply =3D <&pm8937_l10>;
+> >> > > +		vio-supply =3D <&pm8937_l5>;
+> >> > > +
+> >> > > +		led@0 {
+> >> > > +			reg =3D <0>;
+> >> > > +			function =3D LED_FUNCTION_STATUS;
+> >> > > +			led-max-microamp =3D <5000>;
+> >> > > +			color =3D <LED_COLOR_ID_RED>;
+> >> > > +		};
+> >> > > +
+> >> > > +		led@1 {
+> >> > > +			reg =3D <1>;
+> >> > > +			function =3D LED_FUNCTION_STATUS;
+> >> > > +			led-max-microamp =3D <5000>;
+> >> > > +			color =3D <LED_COLOR_ID_GREEN>;
+> >> > > +		};
+> >> > > +
+> >> > > +		led@2 {
+> >> > > +			reg =3D <2>;
+> >> > > +			function =3D LED_FUNCTION_STATUS;
+> >> > > +			led-max-microamp =3D <5000>;
+> >> > > +			color =3D <LED_COLOR_ID_BLUE>;
+> >> > > +		};
+> >> > > +	};
+> >> > > +};
+> >> >=20
+> >> > That's single, 3-color LED, right? Please see LED multicolor support.
+> >> As far as i know aw2013 driver does not have multicolor support.
+> >> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tr=
+ee/Documentation/devicetree/bindings/leds/leds-aw2013.yaml
+> >
+> > I believe that needs to be fixed before more bugs are added on top to
+> > work around that problem...
+> >
+> > ...and before that bug is cemented in the ABI.
+>=20
+> Honestly I don't think it's reasonable to expect people contributing dts
+> to then first start patching existing LED drivers and adding support for
+> x y or z to it, and block dts addition on that.
 
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index fa3b616af03a..a3700766a8c0 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -279,6 +279,7 @@ config X86
- 	select HAVE_PCI
- 	select HAVE_PERF_REGS
- 	select HAVE_PERF_USER_STACK_DUMP
-+	select ASYNC_KERNEL_PGTABLE_FREE	if IOMMU_SVA
- 	select MMU_GATHER_RCU_TABLE_FREE
- 	select MMU_GATHER_MERGE_VMAS
- 	select HAVE_POSIX_CPU_TIMERS_TASK_WORK
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index c30d12e16473..66e4abb2df0d 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -1134,7 +1134,9 @@ struct iommu_sva {
- 
- struct iommu_mm_data {
- 	u32			pasid;
-+	struct mm_struct	*mm;
- 	struct list_head	sva_domains;
-+	struct list_head	mm_list_elm;
- };
- 
- int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode);
-@@ -1615,6 +1617,7 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev,
- 					struct mm_struct *mm);
- void iommu_sva_unbind_device(struct iommu_sva *handle);
- u32 iommu_sva_get_pasid(struct iommu_sva *handle);
-+void iommu_sva_invalidate_kva_range(unsigned long start, unsigned long end);
- #else
- static inline struct iommu_sva *
- iommu_sva_bind_device(struct device *dev, struct mm_struct *mm)
-@@ -1639,6 +1642,7 @@ static inline u32 mm_get_enqcmd_pasid(struct mm_struct *mm)
- }
- 
- static inline void mm_pasid_drop(struct mm_struct *mm) {}
-+static inline void iommu_sva_invalidate_kva_range(unsigned long start, unsigned long end) {}
- #endif /* CONFIG_IOMMU_SVA */
- 
- #ifdef CONFIG_IOMMU_IOPF
-diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
-index a0442faad952..d236aef80a8d 100644
---- a/drivers/iommu/iommu-sva.c
-+++ b/drivers/iommu/iommu-sva.c
-@@ -10,6 +10,8 @@
- #include "iommu-priv.h"
- 
- static DEFINE_MUTEX(iommu_sva_lock);
-+static bool iommu_sva_present;
-+static LIST_HEAD(iommu_sva_mms);
- static struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
- 						   struct mm_struct *mm);
- 
-@@ -42,6 +44,7 @@ static struct iommu_mm_data *iommu_alloc_mm_data(struct mm_struct *mm, struct de
- 		return ERR_PTR(-ENOSPC);
- 	}
- 	iommu_mm->pasid = pasid;
-+	iommu_mm->mm = mm;
- 	INIT_LIST_HEAD(&iommu_mm->sva_domains);
- 	/*
- 	 * Make sure the write to mm->iommu_mm is not reordered in front of
-@@ -77,9 +80,6 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm
- 	if (!group)
- 		return ERR_PTR(-ENODEV);
- 
--	if (IS_ENABLED(CONFIG_X86))
--		return ERR_PTR(-EOPNOTSUPP);
--
- 	mutex_lock(&iommu_sva_lock);
- 
- 	/* Allocate mm->pasid if necessary. */
-@@ -135,8 +135,13 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm
- 	if (ret)
- 		goto out_free_domain;
- 	domain->users = 1;
--	list_add(&domain->next, &mm->iommu_mm->sva_domains);
- 
-+	if (list_empty(&iommu_mm->sva_domains)) {
-+		if (list_empty(&iommu_sva_mms))
-+			iommu_sva_present = true;
-+		list_add(&iommu_mm->mm_list_elm, &iommu_sva_mms);
-+	}
-+	list_add(&domain->next, &iommu_mm->sva_domains);
- out:
- 	refcount_set(&handle->users, 1);
- 	mutex_unlock(&iommu_sva_lock);
-@@ -178,6 +183,13 @@ void iommu_sva_unbind_device(struct iommu_sva *handle)
- 		list_del(&domain->next);
- 		iommu_domain_free(domain);
- 	}
-+
-+	if (list_empty(&iommu_mm->sva_domains)) {
-+		list_del(&iommu_mm->mm_list_elm);
-+		if (list_empty(&iommu_sva_mms))
-+			iommu_sva_present = false;
-+	}
-+
- 	mutex_unlock(&iommu_sva_lock);
- 	kfree(handle);
- }
-@@ -315,3 +327,15 @@ static struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
- 
- 	return domain;
- }
-+
-+void iommu_sva_invalidate_kva_range(unsigned long start, unsigned long end)
-+{
-+	struct iommu_mm_data *iommu_mm;
-+
-+	guard(mutex)(&iommu_sva_lock);
-+	if (!iommu_sva_present)
-+		return;
-+
-+	list_for_each_entry(iommu_mm, &iommu_sva_mms, mm_list_elm)
-+		mmu_notifier_arch_invalidate_secondary_tlbs(iommu_mm->mm, start, end);
-+}
-diff --git a/mm/pgtable-generic.c b/mm/pgtable-generic.c
-index 1c7caa8ef164..8c22be79b734 100644
---- a/mm/pgtable-generic.c
-+++ b/mm/pgtable-generic.c
-@@ -13,6 +13,7 @@
- #include <linux/swap.h>
- #include <linux/swapops.h>
- #include <linux/mm_inline.h>
-+#include <linux/iommu.h>
- #include <asm/pgalloc.h>
- #include <asm/tlb.h>
- 
-@@ -430,6 +431,7 @@ static void kernel_pgtable_work_func(struct work_struct *work)
- 	list_splice_tail_init(&kernel_pgtable_work.list, &page_list);
- 	spin_unlock(&kernel_pgtable_work.lock);
- 
-+	iommu_sva_invalidate_kva_range(PAGE_OFFSET, TLB_FLUSH_ALL);
- 	list_for_each_entry_safe(pt, next, &page_list, pt_list)
- 		__pagetable_free(pt);
- }
--- 
-2.43.0
+Well, the dts is wrong, it describes three leds when you only have
+one.
 
+> At least in postmarketOS the user space components we have (e.g.
+> feedbackd) detect the LED things (and most others) automatically since
+> various devices have various different setups. So once/if aw2013 gets
+> multicolor support, the dts can be updated without problems.
+
+> Sure, maybe today changing something on the N900 which would change
+> sysfs paths is not the best idea because people will probably have 10+
+> years of random shell scripts lying around, but nowadays we usually have
+> better ways of abstraction that can handle that.
+
+I'm pretty sure someone, somewhere will have shell scripts.
+
+BR,
+							Pavel
+--=20
+I don't work for Nazis and criminals, and neither should you.
+Boycott Putin, Trump, Netanyahu and Musk!
+
+--afFovrNgGG7Vhs2p
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCaPi+wAAKCRAw5/Bqldv6
+8k0GAJkB+A1MYLsaFrYi7NQtR20dd9gtSwCfTNIAA7o2+c88KcU2rXh0E4whh1s=
+=m2+z
+-----END PGP SIGNATURE-----
+
+--afFovrNgGG7Vhs2p--
