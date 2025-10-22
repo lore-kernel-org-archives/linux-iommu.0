@@ -1,48 +1,48 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2C2F30B52E
-	for <iommu@lists.linux.dev>; Wed, 22 Oct 2025 08:29:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C57130BB9A
+	for <iommu@lists.linux.dev>; Wed, 22 Oct 2025 08:29:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761121789; cv=none; b=XfdgJWVRvSBz1jDjk/8UtGI3Y09tX9Ta/cjxASeQ/JoIJplpFpuAiX36pRlWC3Hpm3H+7D7PyBxxeAsVBrCO3hilePUfcCl5Z8O/k3Iut/52hCjSDegCIoLKqZKfHpI4yZRcCqAPeMxNCy5BqA9lMPCpJJedhb3tIS3DOyN9R9w=
+	t=1761121795; cv=none; b=sy4yniIC8Ya+E63qq7df5HfioHJJuBbVdByzpvNWmjcQVsj4ZiEEow9qrc93HLM8SwWF+hu9cu2Zn0lzT8zDT2hofYcVFkg3j+bC2tMnQu5XsqiRkFcHfpH4oHKur2Y5xzyXIYsaf7+QwWJ0eq348jj+igJV/+aD7AcDtNmPZ34=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761121789; c=relaxed/simple;
-	bh=mbPmTlwTy+FeaIisuAWPXHAhimNAXyev/5jdHXGKqJc=;
+	s=arc-20240116; t=1761121795; c=relaxed/simple;
+	bh=UdXEkbwZwh7s3Ab/yIsSNM8JqfKTQQu6KsOh09Fx8rY=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=OjoU88SoiwmRG14MUsFDpHkK9HmlL9GYq+uXAdQ/zOAOLY0IrPwJ5NBrFxBbTtC3UHjRo+UH7mhhuUb8pH/s2cBCXzgyqJATBACjhOMv84tPO8LG3WYgEDW+iDuuUn1sZcLfY2k4r0vSX2Vostj7+FAOy4CHkfTSS2if4MG6FLQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=I58yTDHo; arc=none smtp.client-ip=192.198.163.7
+	 MIME-Version; b=IzQrytikEcJahW1VjbHwGeSV2ON9lQbeXFK3E5oimrh4hRQ1DpLJ9Z4/hcoKnuMgBvpUvE4drDyqxV09lypjTfk643nNTIFA6yPUY6R2PL0zLf6+8AMTo7C4nwefzARq2TQgGVQsfaOSkXb9PvM2I1jigx6QwV9oM0TCYH76KFA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=mLnwmAlf; arc=none smtp.client-ip=192.198.163.13
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="I58yTDHo"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="mLnwmAlf"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1761121787; x=1792657787;
+  t=1761121794; x=1792657794;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=mbPmTlwTy+FeaIisuAWPXHAhimNAXyev/5jdHXGKqJc=;
-  b=I58yTDHoAVNKhegtfL4jH8GCRyV4ufPiGgb/qXN9mYHC86oMKLN3QPTj
-   3iZPLSXRK5CAckY4L/4SwE/UnJ72Pi40GMwJAvWhsgw2JF+yv/69n5pv8
-   38AIs+8rSQBw4iuEVbLhX9CtiVae9E1SB4Nxg1fRwMJ2X5OcoAHnSGC6h
-   OoZ28SBt8XZgolnu3kGWMwfiQ8TEF4L462EJqqLQl7IcLF6hGCKOrHV8u
-   0ctAFiWrpfPBm5kgmsU6FndrR123YUobtTW5IYymRWOoL2aKiT154qCjh
-   ptN2CdD+aBu0nUblw2Gq9DEs8LkYwkmrZ6oMzRrbu4zQ/WAI5ZVuq1E8V
-   A==;
-X-CSE-ConnectionGUID: 6ZPvWHNMTJqqErs0itkYbg==
-X-CSE-MsgGUID: WoRJ/zI9THehoivxB9XIGg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11586"; a="88729913"
+  bh=UdXEkbwZwh7s3Ab/yIsSNM8JqfKTQQu6KsOh09Fx8rY=;
+  b=mLnwmAlfAGbkTWmIvBxC3hqNIilGGKo0e2aW8w//hGXbn4PTbjwibYww
+   JwX2o6my/mT7b8LMFzBm6ssirFf0pWXfZylhZ3ykU2fiLhTPN1G1tQKuH
+   nppHMYrSHXVuqlyOtwlHSy/754U/FBcOF2Lv/SO8KXJtaTpJCe5HrH9O0
+   vBD15ZPDGPzhAM0cnptlHTvupItWBsc4wIksVDA3kYAY229cxBcVltVRQ
+   RzKTWQgQun5Le4g4KCaMQkEyTHHeinaiP6ILVHPcLnOxAoIxHUFZ0paoL
+   WNYJKpaeGZxAAXuM3WmjwIkgCn0kxUqsvj+3C0t152dsJiWTED8Q7+Awp
+   g==;
+X-CSE-ConnectionGUID: rkmVYFGJQAqxIGr5YEW1Ng==
+X-CSE-MsgGUID: yfIikf1tSr6J6+OuD0SJXw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11586"; a="65879192"
 X-IronPort-AV: E=Sophos;i="6.19,246,1754982000"; 
-   d="scan'208";a="88729913"
+   d="scan'208";a="65879192"
 Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2025 01:29:47 -0700
-X-CSE-ConnectionGUID: mg1a5UIgSHOP6I/XJ15gVA==
-X-CSE-MsgGUID: YMVBwWzsSoyi79/QzztH9A==
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2025 01:29:53 -0700
+X-CSE-ConnectionGUID: xpCywqjkQey1za499pJiyQ==
+X-CSE-MsgGUID: sVb55JoAQ0aCTSAQaUEdMQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.19,246,1754982000"; 
-   d="scan'208";a="183516383"
+   d="scan'208";a="183516428"
 Received: from allen-box.sh.intel.com ([10.239.159.52])
-  by fmviesa007.fm.intel.com with ESMTP; 22 Oct 2025 01:29:40 -0700
+  by fmviesa007.fm.intel.com with ESMTP; 22 Oct 2025 01:29:47 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>,
@@ -75,11 +75,10 @@ Cc: iommu@lists.linux.dev,
 	x86@kernel.org,
 	linux-mm@kvack.org,
 	linux-kernel@vger.kernel.org,
-	Dave Hansen <dave.hansen@linux.intel.com>,
 	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v7 5/8] mm: Introduce pure page table freeing function
-Date: Wed, 22 Oct 2025 16:26:31 +0800
-Message-ID: <20251022082635.2462433-6-baolu.lu@linux.intel.com>
+Subject: [PATCH v7 6/8] x86/mm: Use pagetable_free()
+Date: Wed, 22 Oct 2025 16:26:32 +0800
+Message-ID: <20251022082635.2462433-7-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20251022082635.2462433-1-baolu.lu@linux.intel.com>
 References: <20251022082635.2462433-1-baolu.lu@linux.intel.com>
@@ -91,56 +90,47 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Dave Hansen <dave.hansen@linux.intel.com>
+The kernel's memory management subsystem provides a dedicated interface,
+pagetable_free(), for freeing page table pages. Updates two call sites to
+use pagetable_free() instead of the lower-level __free_page() or
+free_pages(). This improves code consistency and clarity, and ensures the
+correct freeing mechanism is used.
 
-The pages used for ptdescs are currently freed back to the allocator
-in a single location. They will shortly be freed from a second
-location.
-
-Create a simple helper that just frees them back to the allocator.
-
-Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
 Acked-by: David Hildenbrand <david@redhat.com>
 Acked-by: Mike Rapoport (Microsoft) <rppt@kernel.org>
 ---
- include/linux/mm.h | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ arch/x86/mm/init_64.c        | 2 +-
+ arch/x86/mm/pat/set_memory.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/mm.h b/include/linux/mm.h
-index cca5946a9771..52ae551d0eb4 100644
---- a/include/linux/mm.h
-+++ b/include/linux/mm.h
-@@ -3024,6 +3024,13 @@ static inline struct ptdesc *pagetable_alloc_noprof(gfp_t gfp, unsigned int orde
- }
- #define pagetable_alloc(...)	alloc_hooks(pagetable_alloc_noprof(__VA_ARGS__))
- 
-+static inline void __pagetable_free(struct ptdesc *pt)
-+{
-+	struct page *page = ptdesc_page(pt);
-+
-+	__free_pages(page, compound_order(page));
-+}
-+
- /**
-  * pagetable_free - Free pagetables
-  * @pt:	The page table descriptor
-@@ -3033,12 +3040,10 @@ static inline struct ptdesc *pagetable_alloc_noprof(gfp_t gfp, unsigned int orde
-  */
- static inline void pagetable_free(struct ptdesc *pt)
- {
--	struct page *page = ptdesc_page(pt);
--
- 	if (ptdesc_test_kernel(pt))
- 		ptdesc_clear_kernel(pt);
- 
--	__free_pages(page, compound_order(page));
-+	__pagetable_free(pt);
+diff --git a/arch/x86/mm/init_64.c b/arch/x86/mm/init_64.c
+index 0e4270e20fad..3d9a5e4ccaa4 100644
+--- a/arch/x86/mm/init_64.c
++++ b/arch/x86/mm/init_64.c
+@@ -1031,7 +1031,7 @@ static void __meminit free_pagetable(struct page *page, int order)
+ 		free_reserved_pages(page, nr_pages);
+ #endif
+ 	} else {
+-		__free_pages(page, order);
++		pagetable_free(page_ptdesc(page));
+ 	}
  }
  
- #if defined(CONFIG_SPLIT_PTE_PTLOCKS)
+diff --git a/arch/x86/mm/pat/set_memory.c b/arch/x86/mm/pat/set_memory.c
+index 970981893c9b..fffb6ef1997d 100644
+--- a/arch/x86/mm/pat/set_memory.c
++++ b/arch/x86/mm/pat/set_memory.c
+@@ -429,7 +429,7 @@ static void cpa_collapse_large_pages(struct cpa_data *cpa)
+ 
+ 	list_for_each_entry_safe(ptdesc, tmp, &pgtables, pt_list) {
+ 		list_del(&ptdesc->pt_list);
+-		__free_page(ptdesc_page(ptdesc));
++		pagetable_free(ptdesc);
+ 	}
+ }
+ 
 -- 
 2.43.0
 
