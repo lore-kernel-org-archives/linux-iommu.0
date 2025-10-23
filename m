@@ -1,109 +1,170 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FA6B261B8C;
-	Thu, 23 Oct 2025 05:10:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF8862BDC15;
+	Thu, 23 Oct 2025 07:08:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761196255; cv=none; b=ldfpv4V20kZ8aSfa5xFWQ/abLNq/3SMCQxSMOjobOOGuo/mVYxx+HQenpomKNMqUt7acBVcSRdcO+iJ/tsCN+w3Udd0mILMZqgrXJIMe6LxOk6d25ETwsQgOIvEAGNQZsgHJOYDEf1jdyOiU/jncDIcEFgMwO9h1e+ki+TYpRD8=
+	t=1761203290; cv=none; b=RDOBSM49LG/4mcnNvYKA2Rzqhfez3dG4PIIKsEgVHpZL0HevGzaykquIjS5WHyGXw7uYZvJvxHzAXF0M49eT458+MgXbu3ZmEh0MOU0vqijaCK8yz/1aGZso+IiJEKXKdwNpfQxVbfykMoMO6TNUmOknm682Q+PNiIalCTaR7PE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761196255; c=relaxed/simple;
-	bh=aKhXAgLHi9hmESNfGrTuSyyU3uGYkrJW93/qzCuJl3Y=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=QWQ4F8hbLDPAKEvcsOjVd5mDmG0NspSyQZqmsYh6n9jaxeJTxw1YgEyc+hiBnyfQ9lvEU+e0h1GAzrnZerU1GMUlhU0TvG3d7AqcfRaFDSAaaqSRzdi9gBjmIuL5/fnm2MIbDryRAbOtRldRSI1U3VFHxwUrqYS6PGwCHf378Bg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cI3E5xq9; arc=none smtp.client-ip=198.175.65.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1761203290; c=relaxed/simple;
+	bh=/EbgptFjltHpGE9hJH8u5LNNSpy34GESNrMM1A23qrE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=MjbefJdGVTZt2Gs/Ym3B8i6w2lW593k+I6q8A28yAvmIvLJH6vyO3UTIHIKpTOAhFFuijyGT87OOBFy+XgyS5Y8Noee26u7Ns1V3DfW0Apic8KLrcMfkPNU+wpQ7PxHnVfT2HfjL+eR3EkuzZEH6DmojRnoaMcy5/D9YZ3zUcwY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Rs6Ym6T7; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cI3E5xq9"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1761196252; x=1792732252;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=aKhXAgLHi9hmESNfGrTuSyyU3uGYkrJW93/qzCuJl3Y=;
-  b=cI3E5xq9YVzHxpiUfle5500mgRwE3k645t9R66NHVZjd70kCaC0yHDqI
-   y1jeAWx3JwQJPpYuxFOz/CmLUo34LDHVnrTNN0tC5vNDF4PRqfti+aQLD
-   62CSD+Dmny/zUCIRrpl6+OUkvpvPPZwHah8s91d3DKr/8sQv9D/7V6az4
-   30KmaXle4UP+cECN/aDlur+nsioRFvfjGIfVclctru3hF9jF9KZrS0JHW
-   KxIgMIm3eMxUmhbIOVbOLlNM1Y/liqhVU7bTGvM8GHRlr4afHwl75GHmc
-   U+cnfeIDGJh0smZpPYDX5s7erxHwDJQHRHH/43kqSRvmV08CbqIL8MtUo
-   w==;
-X-CSE-ConnectionGUID: g2g1B6PXR8ezqydpmibI7g==
-X-CSE-MsgGUID: UdyddruqSpyoFJdYk6EXtw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11586"; a="73645430"
-X-IronPort-AV: E=Sophos;i="6.19,248,1754982000"; 
-   d="scan'208";a="73645430"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2025 22:10:52 -0700
-X-CSE-ConnectionGUID: Z+VhdaUHRuSq6XPL/6mgHA==
-X-CSE-MsgGUID: PVLbJFWUT5qWiIesV7OmAg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.19,248,1754982000"; 
-   d="scan'208";a="214988427"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2025 22:10:47 -0700
-Message-ID: <9292db0f-74cd-4ce5-8797-cc2a88449768@linux.intel.com>
-Date: Thu, 23 Oct 2025 13:06:53 +0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Rs6Ym6T7"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5E66C4CEE7;
+	Thu, 23 Oct 2025 07:08:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1761203290;
+	bh=/EbgptFjltHpGE9hJH8u5LNNSpy34GESNrMM1A23qrE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=Rs6Ym6T7BbcLd2KezItSx+fYibGUohW2Oc/YROMvNUgniEYdltGFzwokK/M4/FMV/
+	 FBB1t3/NKq91hyVRGvn7THYbYlRWMw1fT1ww2KiqLAPobMlwXaLN1xK6xNT5sccFlp
+	 6Dmm+2s9jDQ6rAfygOUGJh2JtgSg6iEq0duU/jfdNb5+oKnkftxztWtbzoTDoQ0l92
+	 ZsByAGWMX0IcXKLN2h+2i4Xhj+bXBVd/GwhHruCuVhF3KF4TfBlYYtP0HFZzZoL4so
+	 ++JATIn7/Ez/asIWL0x1QTXGBThusMEMem1VF5Fud9HZCgQLB39GcfgWwqhJMJoC4B
+	 MAQEfT4m+nAyw==
+Date: Thu, 23 Oct 2025 10:07:57 +0300
+From: Mike Rapoport <rppt@kernel.org>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
+	Jann Horn <jannh@google.com>, Vasant Hegde <vasant.hegde@amd.com>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@intel.com>,
+	Alistair Popple <apopple@nvidia.com>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Uladzislau Rezki <urezki@gmail.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Andy Lutomirski <luto@kernel.org>, Yi Lai <yi1.lai@intel.com>,
+	David Hildenbrand <david@redhat.com>,
+	Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
+	"Liam R . Howlett" <Liam.Howlett@oracle.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Vlastimil Babka <vbabka@suse.cz>, Michal Hocko <mhocko@kernel.org>,
+	Matthew Wilcox <willy@infradead.org>,
+	Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+	iommu@lists.linux.dev, security@kernel.org, x86@kernel.org,
+	linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+	Dave Hansen <dave.hansen@linux.intel.com>
+Subject: Re: [PATCH v7 2/8] mm: Add a ptdesc flag to mark kernel page tables
+Message-ID: <aPnUTfMXD7qReWUl@kernel.org>
+References: <20251022082635.2462433-1-baolu.lu@linux.intel.com>
+ <20251022082635.2462433-3-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 3/3] iommu: Allow drivers to say if they use
- report_iommu_fault()
-To: Jason Gunthorpe <jgg@nvidia.com>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- Christian Benvenuti <benve@cisco.com>, Heiko Stuebner <heiko@sntech.de>,
- iommu@lists.linux.dev, Jernej Skrabec <jernej.skrabec@gmail.com>,
- Joerg Roedel <joro@8bytes.org>, Leon Romanovsky <leon@kernel.org>,
- linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
- linux-mediatek@lists.infradead.org, linux-rdma@vger.kernel.org,
- linux-rockchip@lists.infradead.org, linux-sunxi@lists.linux.dev,
- Matthias Brugger <matthias.bgg@gmail.com>,
- Nelson Escobar <neescoba@cisco.com>, Rob Clark
- <robin.clark@oss.qualcomm.com>, Robin Murphy <robin.murphy@arm.com>,
- Samuel Holland <samuel@sholland.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Chen-Yu Tsai <wens@csie.org>, Will Deacon <will@kernel.org>,
- Yong Wu <yong.wu@mediatek.com>
-Cc: patches@lists.linux.dev
-References: <3-v1-391058a85f30+14b-iommu_set_fault_jgg@nvidia.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <3-v1-391058a85f30+14b-iommu_set_fault_jgg@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20251022082635.2462433-3-baolu.lu@linux.intel.com>
 
-On 10/23/25 01:12, Jason Gunthorpe wrote:
-> report_iommu_fault() is an older API that has been superseded by
-> iommu_report_device_fault() which is capable to support PRI.
+On Wed, Oct 22, 2025 at 04:26:28PM +0800, Lu Baolu wrote:
+> From: Dave Hansen <dave.hansen@linux.intel.com>
 > 
-> Only two external drivers consume this, drivers/remoteproc and
-> drivers/gpu/drm/msm. Ideally they would move over to the new APIs, but for
-> now protect against accidentally mix and matching the wrong components.
+> The page tables used to map the kernel and userspace often have very
+> different handling rules. There are frequently *_kernel() variants of
+> functions just for kernel page tables. That's not great and has lead
+> to code duplication.
 > 
-> The iommu drivers support either the old iommu_set_fault_handler() via the
-> driver calling report_iommu_fault(), or they are newer server focused
-> drivers that call iommu_report_device_fault().
+> Instead of having completely separate call paths, allow a 'ptdesc' to
+> be marked as being for kernel mappings. Introduce helpers to set and
+> clear this status.
 > 
-> Include a flag in the domain_ops if it calls report_iommu_fault() and
-> block iommu_set_fault_handler() on iommu's that can't support it.
+> Note: this uses the PG_referenced bit. Page flags are a great fit for
+> this since it is truly a single bit of information.  Use PG_referenced
+> itself because it's a fairly benign flag (as opposed to things like
+> PG_lock). It's also (according to Willy) unlikely to go away any time
+> soon.
 > 
-> Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
+> PG_referenced is not in PAGE_FLAGS_CHECK_AT_FREE. It does not need to
+> be cleared before freeing the page, and pages coming out of the
+> allocator should have it cleared. Regardless, introduce an API to
+> clear it anyway. Having symmetry in the API makes it easier to change
+> the underlying implementation later, like if there was a need to move
+> to a PAGE_FLAGS_CHECK_AT_FREE bit.
+> 
+> Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> Acked-by: David Hildenbrand <david@redhat.com>
+
+Acked-by: Mike Rapoport (Microsoft) <rppt@kernel.org>
+
 > ---
->   drivers/iommu/arm/arm-smmu/arm-smmu.c   | 1 +
->   drivers/iommu/arm/arm-smmu/qcom_iommu.c | 1 +
->   drivers/iommu/iommu.c                   | 6 +++++-
->   drivers/iommu/ipmmu-vmsa.c              | 1 +
->   drivers/iommu/mtk_iommu.c               | 1 +
->   drivers/iommu/mtk_iommu_v1.c            | 1 +
->   drivers/iommu/omap-iommu.c              | 1 +
->   drivers/iommu/rockchip-iommu.c          | 1 +
->   drivers/iommu/sun50i-iommu.c            | 1 +
->   include/linux/iommu.h                   | 3 +++
->   10 files changed, 16 insertions(+), 1 deletion(-)
+>  include/linux/mm.h | 41 +++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 41 insertions(+)
+> 
+> diff --git a/include/linux/mm.h b/include/linux/mm.h
+> index d16b33bacc32..354d7925bf77 100644
+> --- a/include/linux/mm.h
+> +++ b/include/linux/mm.h
+> @@ -2940,6 +2940,7 @@ static inline pmd_t *pmd_alloc(struct mm_struct *mm, pud_t *pud, unsigned long a
+>  #endif /* CONFIG_MMU */
+>  
+>  enum pt_flags {
+> +	PT_kernel = PG_referenced,
+>  	PT_reserved = PG_reserved,
+>  	/* High bits are used for zone/node/section */
+>  };
+> @@ -2965,6 +2966,46 @@ static inline bool pagetable_is_reserved(struct ptdesc *pt)
+>  	return test_bit(PT_reserved, &pt->pt_flags.f);
+>  }
+>  
+> +/**
+> + * ptdesc_set_kernel - Mark a ptdesc used to map the kernel
+> + * @ptdesc: The ptdesc to be marked
+> + *
+> + * Kernel page tables often need special handling. Set a flag so that
+> + * the handling code knows this ptdesc will not be used for userspace.
+> + */
+> +static inline void ptdesc_set_kernel(struct ptdesc *ptdesc)
+> +{
+> +	set_bit(PT_kernel, &ptdesc->pt_flags.f);
+> +}
+> +
+> +/**
+> + * ptdesc_clear_kernel - Mark a ptdesc as no longer used to map the kernel
+> + * @ptdesc: The ptdesc to be unmarked
+> + *
+> + * Use when the ptdesc is no longer used to map the kernel and no longer
+> + * needs special handling.
+> + */
+> +static inline void ptdesc_clear_kernel(struct ptdesc *ptdesc)
+> +{
+> +	/*
+> +	 * Note: the 'PG_referenced' bit does not strictly need to be
+> +	 * cleared before freeing the page. But this is nice for
+> +	 * symmetry.
+> +	 */
+> +	clear_bit(PT_kernel, &ptdesc->pt_flags.f);
+> +}
+> +
+> +/**
+> + * ptdesc_test_kernel - Check if a ptdesc is used to map the kernel
+> + * @ptdesc: The ptdesc being tested
+> + *
+> + * Call to tell if the ptdesc used to map the kernel.
+> + */
+> +static inline bool ptdesc_test_kernel(const struct ptdesc *ptdesc)
+> +{
+> +	return test_bit(PT_kernel, &ptdesc->pt_flags.f);
+> +}
+> +
+>  /**
+>   * pagetable_alloc - Allocate pagetables
+>   * @gfp:    GFP flags
+> -- 
+> 2.43.0
+> 
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+-- 
+Sincerely yours,
+Mike.
