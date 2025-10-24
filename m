@@ -1,78 +1,88 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 01FC830F7EF
-	for <iommu@lists.linux.dev>; Fri, 24 Oct 2025 10:20:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D65A72C08C5;
+	Fri, 24 Oct 2025 10:30:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761301249; cv=none; b=VrPG1NnIXUeWqsM4osQpd6Axy1DEF68P49GfJpEbsriAHMjjajMZKPUJeWF2R8/66WC7kQRbL6I8a7k2yz38PUFO89UCEaIfi+ufb51UiQoZpKySHPsiAFkcjSdul9dtz8akKQ7LDAVn2XKKF5oohSvTRkIaN5NjmkeyPVEYmNA=
+	t=1761301843; cv=none; b=WqszXQ8Y1GDhUpTUg/4Blg8h60kIOww2lHd7bdc1E5ECjLi8LEM9hShjyATOBDbKwo7ObuBo6lNVlH1Pn3aHzwn3zx3999FjBRwTzxlOKoFCew6LNvvc7Y5CQrPHfPO6S83gYCcNTy9zDD3g3bN1XJDkiBR0yyOz3t4GtdNYIOY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761301249; c=relaxed/simple;
-	bh=j3FZcvyVc7uVHCdm8JHf7dDO483uOgihIOxjv4IX4No=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=r7FXHg2PDmEB0CJ103edP8UicEA1aXYetEuYhSC1lQhNijot94SckaBpS6fkbsPfBmky3MA4jb9PrIVlTdjEK8SCC+Xd71xK6J40LHoM7By5Bp22XE6dyIlOjpFcngn7+VJ6WDwrG5X9OHc204xmV+l89NT7GQEZvsFIOpIKgrs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4EF9C175A;
-	Fri, 24 Oct 2025 03:20:39 -0700 (PDT)
-Received: from [10.57.33.202] (unknown [10.57.33.202])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 158A83F66E;
-	Fri, 24 Oct 2025 03:20:45 -0700 (PDT)
-Message-ID: <8a75e90f-596e-407b-976f-e8a509c9065d@arm.com>
-Date: Fri, 24 Oct 2025 11:20:33 +0100
+	s=arc-20240116; t=1761301843; c=relaxed/simple;
+	bh=xjBMkmI+qsDoGp9ZiRzBUp/jILZSgk47twlvE8podR4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=V3tLwzIjbKeEYPSi2uB1jC8xElcJElsFUQBW+bL3lag82L5dWdGogO0j2ND7PJNmpxax1BRahWTKnVW+FwatlmBO0j0TZaCR8rUzoFUPWoMS+UDuM5Akun5De4LI/orJEy7f4PX/+EC41MlB1w3ZYxwADrK6fwIjDdmBSK+BABM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=l/d2Y+U8; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="l/d2Y+U8"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E75CC4CEF1;
+	Fri, 24 Oct 2025 10:30:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1761301842;
+	bh=xjBMkmI+qsDoGp9ZiRzBUp/jILZSgk47twlvE8podR4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=l/d2Y+U8bQs8VF+XsPwC/lo+bxBE0j4eWS6VDHNCD/dOyGEFM7pOVi7s1xB8wyT1F
+	 jv0kcNfIyneAU7DFc2XMuu8oHJ2C93dqlydWRrXYT3RCBqDbolkiQ18EsFfqCwzdIT
+	 F0FJ+u2jbBRNARJVywQ0ZMr1PM6LZQ50TTD9W4llmkHp0cxkQM8R7YTAZNZuhKj472
+	 K02nhKLn9f/Q1d19EUPlbhQT59235yFCKn8XDWmWaJOjbnUv34C0E0GbdT7yY2B8c1
+	 q4jVSAnw+7Qfl9JCs14YGXOOwUUitTY/lsolUgoznKOAtNMsr23PjYx6i1nIOnN4f/
+	 YsZZGbsmS20jw==
+Date: Fri, 24 Oct 2025 12:30:37 +0200
+From: Andi Shyti <andi.shyti@kernel.org>
+To: "Rob Herring (Arm)" <robh@kernel.org>
+Cc: Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+	Conor Dooley <conor+dt@kernel.org>, Stephen Boyd <sboyd@kernel.org>, 
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Thomas Zimmermann <tzimmermann@suse.de>, 
+	Andrzej Hajda <andrzej.hajda@intel.com>, Robert Foss <rfoss@kernel.org>, Vinod Koul <vkoul@kernel.org>, 
+	Moritz Fischer <mdf@kernel.org>, Xu Yilun <yilun.xu@intel.com>, 
+	Bartosz Golaszewski <brgl@bgdev.pl>, Guenter Roeck <linux@roeck-us.net>, 
+	Jonathan Cameron <jic23@kernel.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, 
+	Georgi Djakov <djakov@kernel.org>, Thomas Gleixner <tglx@linutronix.de>, 
+	Joerg Roedel <joro@8bytes.org>, Jassi Brar <jassisinghbrar@gmail.com>, 
+	Mauro Carvalho Chehab <mchehab@kernel.org>, Lee Jones <lee@kernel.org>, 
+	Miquel Raynal <miquel.raynal@bootlin.com>, Richard Weinberger <richard@nod.at>, 
+	Vignesh Raghavendra <vigneshr@ti.com>, Andrew Lunn <andrew+netdev@lunn.ch>, 
+	"David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
+	Johannes Berg <johannes@sipsolutions.net>, Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kwilczynski@kernel.org>, 
+	Manivannan Sadhasivam <mani@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, 
+	Kishon Vijay Abraham I <kishon@kernel.org>, Sebastian Reichel <sre@kernel.org>, 
+	Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, Mark Brown <broonie@kernel.org>, 
+	Mathieu Poirier <mathieu.poirier@linaro.org>, Philipp Zabel <p.zabel@pengutronix.de>, 
+	Olivia Mackall <olivia@selenic.com>, Herbert Xu <herbert@gondor.apana.org.au>, 
+	Daniel Lezcano <daniel.lezcano@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org, 
+	dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, dmaengine@vger.kernel.org, 
+	linux-fpga@vger.kernel.org, linux-gpio@vger.kernel.org, linux-hwmon@vger.kernel.org, 
+	linux-i2c@vger.kernel.org, linux-iio@vger.kernel.org, linux-input@vger.kernel.org, 
+	linux-pm@vger.kernel.org, iommu@lists.linux.dev, linux-media@vger.kernel.org, 
+	linux-mtd@lists.infradead.org, netdev@vger.kernel.org, linux-wireless@vger.kernel.org, 
+	linux-pci@vger.kernel.org, linux-phy@lists.infradead.org, linux-pwm@vger.kernel.org, 
+	linux-remoteproc@vger.kernel.org, linux-crypto@vger.kernel.org, linux-sound@vger.kernel.org, 
+	linux-usb@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: Remove extra blank lines
+Message-ID: <fncqrwr6pi3ttxkf44hncy35ogxqdvql52hdcycq4yakbkeose@gv6lxr6a4uri>
+References: <20251023143957.2899600-1-robh@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommu/arm-smmu-v3: fix probe device bug due to duplicated
- stream IDS.
-To: Jason Gunthorpe <jgg@ziepe.ca>, Reaper Li <reaperlioc@glenfly.com>
-Cc: will@kernel.org, joro@8bytes.org, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20251011023003.159922-1-reaperlioc@glenfly.com>
- <20251023181235.GH21554@ziepe.ca>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20251023181235.GH21554@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20251023143957.2899600-1-robh@kernel.org>
 
-On 2025-10-23 7:12 pm, Jason Gunthorpe wrote:
-> On Sat, Oct 11, 2025 at 10:30:03AM +0800, Reaper Li wrote:
->> From: Reaper <reaperlioc@glenfly.com>
->>
->> Commit 9246b487ab3c ("PCI: Add function 0 DMA alias quirk for Glenfly Arise
->> chip ") add quirk to fix hda dma request issue, but IORT logic populaties
->> two identical IDs into the fwspec->ids array via DMA aliasing in
->> iort_pci_iommu_init() called by pci_for_each_dma_alias().
+Hi Rob,
+
+On Thu, Oct 23, 2025 at 09:37:56AM -0500, Rob Herring (Arm) wrote:
+> Generally at most 1 blank line is the standard style for DT schema
+> files. Remove the few cases with more than 1 so that the yamllint check
+> for this can be enabled.
 > 
-> I'd rather we not have duplicate IDs in the same fwspec, can we avoid
-> that at the source?
+> Signed-off-by: Rob Herring (Arm) <robh@kernel.org>
 
-The original reason for not doing that is that there are multiple 
-sources - the drivers' own .of_xlate routines for DT, but the 
-IORT/VIOT/RIMT/whatever code for ACPI. Yes, iommu_fwspec_add_ids() is in 
-a common path there, but that's only responsible for appending an opaque 
-block of data to another opaque block of data - only the producer or 
-consumer of that data know how to interpret it (e.g. for SMMUv2, 
-[0x00000002, 0x00000003] may or may not be considered equivalent to 
-[0x00010002]).
-
-Anyway, this patch is wrong regardless, and it is definitely not fixing 
-any bug. SMMUv3 has explicitly never supported StreamID aliasing between 
-*different* devices, because doing that correctly is a challenge. It 
-needs custom group assignment based on StreamID-to-group lookup (like 
-SMMUv2) - we can't just assume it's OK for PCI devices, since as soon as 
-we allow aliasing at all then we also allow it outside the PCI hierarchy 
-where pci_device_group() can't see it (like on the Arm Juno platform). 
-These days we do have arm_smmu_find_master() which makes *that* 
-feasible, but conversely means we now also have to be concerned with 
-disallowing ATS/PRI and working out what to do with anything else that 
-is subtly broken by no longer having the assumed 1:1 correspondence of 
-StreamID:device.
+Acked-by: Andi Shyti <andi.shyti@kernel.org>
 
 Thanks,
-Robin.
+Andi
