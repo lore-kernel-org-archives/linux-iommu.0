@@ -1,112 +1,78 @@
-Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 557682FC88C
-	for <iommu@lists.linux.dev>; Fri, 24 Oct 2025 08:02:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.46
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 01FC830F7EF
+	for <iommu@lists.linux.dev>; Fri, 24 Oct 2025 10:20:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761292959; cv=none; b=WyOsIHdlkgVb+Sk3Bv0XVFSU1osDNISLUpF45rU2vMj7XNkQqYALgY4iYnzXv7EYZy5ONeGBWdtNqSK4eBhIUkElpLuaoxyZGNARcW+U7/Yven+RIQvWHhGdUQJhvLF732eT+YOKWHB+B7Ze6TMguQm+b5XtqkO+upyyCRE4zNc=
+	t=1761301249; cv=none; b=VrPG1NnIXUeWqsM4osQpd6Axy1DEF68P49GfJpEbsriAHMjjajMZKPUJeWF2R8/66WC7kQRbL6I8a7k2yz38PUFO89UCEaIfi+ufb51UiQoZpKySHPsiAFkcjSdul9dtz8akKQ7LDAVn2XKKF5oohSvTRkIaN5NjmkeyPVEYmNA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761292959; c=relaxed/simple;
-	bh=WyWdMElonDGVN0iFKYKqXrLPkR+tQfERlo9IF3HeJD0=;
-	h=From:Mime-Version:Date:Message-ID:Subject:To:Cc:Content-Type; b=NcPDsaDcElhhnKiPwX+d2W7sDFhpSXuRXqGtJiKg87w/LXfhDYkHz0GAaHmhZyQy2GfUP6vDdZtSdZinnsazk8z4z2taUwWzpiGX0VBir5DAQDyuB7Kt7P9oh+Nrz/baMxbNT4B2DYR6fjDplATcbBUiol4PxrbEqSkYo8N6UbA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=UkYjZwx/; arc=none smtp.client-ip=209.85.221.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="UkYjZwx/"
-Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-42966ce6dbdso1147170f8f.0
-        for <iommu@lists.linux.dev>; Fri, 24 Oct 2025 01:02:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance.com; s=google; t=1761292955; x=1761897755; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:mime-version:from:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=QVkfvNOE05bgFyjQFvQ8jxU+LxgCYyMiozDi6BCH2IE=;
-        b=UkYjZwx/sKge1iIzITURn6kgKBam8OWCIq9BnmLpotzJ9gTyitBTHnaPq5wZQwLNPV
-         2AfUtvUZsmI+8fMu9huO2Ckn/E4ZxvlW/OZnntdtOxOy6nmWK83QGpwTbL+x+OiNV+IA
-         6Cp4dp37j9m765APFbHES2UuXbmf4eWHkVa+DkJVs7ipmv7HVtQ0KttsRJ9J/FPjqmos
-         7yntbWlrg4nKGMOGYKH3KQb1GrA/FaVA9wEJ4kIoRbQzGYcMjR33+ARgV/T7jyDhgOgU
-         0lk90VQKKTRYhdXaI2d/MR8oPYUkk6y1g9FzYgeSPo12QiCsT4ZSGCnc6yUG6i2+Ufr0
-         9BBg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1761292955; x=1761897755;
-        h=cc:to:subject:message-id:date:mime-version:from:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=QVkfvNOE05bgFyjQFvQ8jxU+LxgCYyMiozDi6BCH2IE=;
-        b=aPkjfRPOY0EyaZrkOBSujgluqdcCWtS9/J2PRnxxq6NPxbK9TtdTUTVX6KAe804nWl
-         OLAAlojMAhZ7NfCJz7BGP8xbMAIsH0I6SS+xuUZPsbYzdj9/x/anrLV16Pdy1H/zeanS
-         HJkxXeUaBre39ocq++WlnHumVcT643tgLEekjIcNAV3mlpx7e1h2ZLthxdYTT6vptj1f
-         A8DDlBwwdO5dq4msX5zqIeyNR8xRPDK07AZQJKcsPuWwgo7WPcUX0Coj4mG1VeLdjAUA
-         mbE7MRgdL6zw6CePE4KneWXhZ/LP9Pgk2jE3ZEQ28zr7XDgUZMuMe/p2nLYbScRQYnos
-         U9ZA==
-X-Forwarded-Encrypted: i=1; AJvYcCXvaalbHv/nnphrcedQdqzkyR/AEbjRL8RJXXE0G0UW1r15knS7TF6+6nygOUDZDD2YcGuojA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YybPmLH2RZkSfnMTp6WtF62g3dFmXDvLZ5O4VdM++6fEYyGjU7d
-	HYsVXIv5j0gaEAMa6BebnqIq+4PlemA6T989ES/yjTSNTbG/5OlKHBaVSXXESOLkZhUxB1K1EG9
-	7PcyQRwlBtmYuJGpDXulbABkx+NkgCisURL7eWIQzMA==
-X-Gm-Gg: ASbGnctOPi60ShqSilJJhrXC7EhuOR1nRWJCbQGnymKCummiLnsjc8OfCZfWDiPPKIs
-	3ZrFDabEO9i9Tgd1YNUUA3K73dsups1L5dQ/Pg98z3E60QnlmUuvso2JqQyHECW3NRgD3pp5QQM
-	3hhBz44TDJhPAh1dCbHAt4Ki73Ra4t2P6HgTW6YVhFE2gaIqt6xqQl6DVx12M7Sgjrti5atKZwL
-	6BIw+uxyflU7+Gq18HibqcU9TvpZ5lZfrBWQd++Heszb3Xkd43cvIUVdX7ODIM+PRVvRkWYfAth
-	vjEaBzXy
-X-Google-Smtp-Source: AGHT+IEDMvcKtfBgWfrP3ZyctUGsfciyGaBJ5AzyE+b5gOTpk78Wf06aMuH8uJW94/vjXjqIP3j/1lisp+qXxvTWYy0=
-X-Received: by 2002:a05:6000:2c06:b0:429:92bf:3a3 with SMTP id
- ffacd0b85a97d-42992bf0644mr98922f8f.11.1761292955312; Fri, 24 Oct 2025
- 01:02:35 -0700 (PDT)
-Received: from 44278815321 named unknown by gmailapi.google.com with HTTPREST;
- Fri, 24 Oct 2025 01:02:34 -0700
-Received: from 44278815321 named unknown by gmailapi.google.com with HTTPREST;
- Fri, 24 Oct 2025 01:02:34 -0700
-From: Songtang Liu <liusongtang@bytedance.com>
-X-Mailer: git-send-email 2.39.5
+	s=arc-20240116; t=1761301249; c=relaxed/simple;
+	bh=j3FZcvyVc7uVHCdm8JHf7dDO483uOgihIOxjv4IX4No=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=r7FXHg2PDmEB0CJ103edP8UicEA1aXYetEuYhSC1lQhNijot94SckaBpS6fkbsPfBmky3MA4jb9PrIVlTdjEK8SCC+Xd71xK6J40LHoM7By5Bp22XE6dyIlOjpFcngn7+VJ6WDwrG5X9OHc204xmV+l89NT7GQEZvsFIOpIKgrs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4EF9C175A;
+	Fri, 24 Oct 2025 03:20:39 -0700 (PDT)
+Received: from [10.57.33.202] (unknown [10.57.33.202])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 158A83F66E;
+	Fri, 24 Oct 2025 03:20:45 -0700 (PDT)
+Message-ID: <8a75e90f-596e-407b-976f-e8a509c9065d@arm.com>
+Date: Fri, 24 Oct 2025 11:20:33 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-X-Original-From: Songtang Liu <liusongtang@bytedance.com>
-Date: Fri, 24 Oct 2025 01:02:34 -0700
-X-Gm-Features: AWmQ_bmgfhEOQj2FZh2LiWfKD8MoIdgjL5VT1xU_C_QJQWPA7IczJX34PTJBxTc
-Message-ID: <CAA=HWd3_nKzKguK4JAs3aX7MhyX3mxFPLNLzEqwRPiSPTwvm6Q@mail.gmail.com>
-Subject: [PATCH] iommu/amd: Fix potential out-of-bounds read in iommu_mmio_show
-To: joro@8bytes.org, will@kernel.org
-Cc: suravee.suthikulpanit@amd.com, robin.murphy@arm.com, vasant.hegde@amd.com, 
-	dheerajkumar.srivastava@amd.com, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, liusongtang@bytedance.com
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu/arm-smmu-v3: fix probe device bug due to duplicated
+ stream IDS.
+To: Jason Gunthorpe <jgg@ziepe.ca>, Reaper Li <reaperlioc@glenfly.com>
+Cc: will@kernel.org, joro@8bytes.org, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20251011023003.159922-1-reaperlioc@glenfly.com>
+ <20251023181235.GH21554@ziepe.ca>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20251023181235.GH21554@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-In iommu_mmio_write(), it validates the user-provided offset with the
-check: `iommu->dbg_mmio_offset > iommu->mmio_phys_end - 4`.
-This assumes a 4-byte access. However, the corresponding
-show handler, iommu_mmio_show(), uses readq() to perform an 8-byte
-(64-bit) read.
+On 2025-10-23 7:12 pm, Jason Gunthorpe wrote:
+> On Sat, Oct 11, 2025 at 10:30:03AM +0800, Reaper Li wrote:
+>> From: Reaper <reaperlioc@glenfly.com>
+>>
+>> Commit 9246b487ab3c ("PCI: Add function 0 DMA alias quirk for Glenfly Arise
+>> chip ") add quirk to fix hda dma request issue, but IORT logic populaties
+>> two identical IDs into the fwspec->ids array via DMA aliasing in
+>> iort_pci_iommu_init() called by pci_for_each_dma_alias().
+> 
+> I'd rather we not have duplicate IDs in the same fwspec, can we avoid
+> that at the source?
 
-If a user provides an offset equal to `mmio_phys_end - 4`, the check
-passes, and will lead to a 4-byte out-of-bounds read.
+The original reason for not doing that is that there are multiple 
+sources - the drivers' own .of_xlate routines for DT, but the 
+IORT/VIOT/RIMT/whatever code for ACPI. Yes, iommu_fwspec_add_ids() is in 
+a common path there, but that's only responsible for appending an opaque 
+block of data to another opaque block of data - only the producer or 
+consumer of that data know how to interpret it (e.g. for SMMUv2, 
+[0x00000002, 0x00000003] may or may not be considered equivalent to 
+[0x00010002]).
 
-Fix this by adjusting the boundary check to use sizeof(u64), which
-corresponds to the size of the readq() operation.
+Anyway, this patch is wrong regardless, and it is definitely not fixing 
+any bug. SMMUv3 has explicitly never supported StreamID aliasing between 
+*different* devices, because doing that correctly is a challenge. It 
+needs custom group assignment based on StreamID-to-group lookup (like 
+SMMUv2) - we can't just assume it's OK for PCI devices, since as soon as 
+we allow aliasing at all then we also allow it outside the PCI hierarchy 
+where pci_device_group() can't see it (like on the Arm Juno platform). 
+These days we do have arm_smmu_find_master() which makes *that* 
+feasible, but conversely means we now also have to be concerned with 
+disallowing ATS/PRI and working out what to do with anything else that 
+is subtly broken by no longer having the assumed 1:1 correspondence of 
+StreamID:device.
 
-Fixes: 7a4ee419e8c1 ("iommu/amd: Add debugfs support to dump IOMMU
-MMIO registers")
-Signed-off-by: Songtang Liu <liusongtang@bytedance.com>
----
- drivers/iommu/amd/debugfs.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/amd/debugfs.c b/drivers/iommu/amd/debugfs.c
-index 8b4d7db7869a4..5d85c47478a57 100644
---- a/drivers/iommu/amd/debugfs.c
-+++ b/drivers/iommu/amd/debugfs.c
-@@ -37,7 +37,7 @@ static ssize_t iommu_mmio_write(struct file *filp,
-const char __user *ubuf,
- 	if (ret)
- 		return ret;
-
--	if (iommu->dbg_mmio_offset > iommu->mmio_phys_end - 4) {
-+	if (iommu->dbg_mmio_offset > iommu->mmio_phys_end - sizeof(u64)) {
- 		iommu->dbg_mmio_offset = -1;
- 		return  -EINVAL;
- 	}
--- 
-2.39.5
+Thanks,
+Robin.
