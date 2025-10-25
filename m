@@ -1,43 +1,48 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 867D2302CB8;
-	Sat, 25 Oct 2025 16:24:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22EDA2264D4;
+	Sat, 25 Oct 2025 16:25:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761409485; cv=none; b=uCCnrAlkPfcFu+vf2WL5eEaAB4/E8p928uDAK09jd3WumHxgJXx3W98oV80J4ifKFdYyQ6QAD5R68XPQAP88t4KgtcIVDOmtR3bTpWGxOHs2JvKvjUdHkK57HdZsv7e/13Xr5Tb1VdqDAkibxZ/bVswvBdkuTIXN2R28Zqq1JcM=
+	t=1761409551; cv=none; b=htxx6fRTg5pQ4VhoFn5TSshdxf+tq7uhvJu9kitczfX3RDv+yHENwPuBGezrXnQtvbSq197fwek1bOVfLQYvigsjcWWQ8FO9AxfKljepWNNGisP/PzqmHPcBkVqn+HoQO3e3TEAOWw+SHL9jywtrwch2BsxVXVH1uq1YkyUv5go=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761409485; c=relaxed/simple;
-	bh=rk3G3WM6efAJRetQFee0jg61Wboa43cijZ7Gtlo5zdw=;
+	s=arc-20240116; t=1761409551; c=relaxed/simple;
+	bh=Em1vmYzb3CPqjJdulvBWr7VV9J5NImJHW4FlbVzFjhc=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=VKme718/CLB3nhFJTrTO2Y/uz/bgzXatLARdxR6UrpShgeA4xyoAQDr3MD30F09j1eLknJQE84EB8oSPzuGO02A12/Dynn/WWAbuODML3l4It0mN83rrhw6xD85At1xmRPUdpO0qvnsVohgZhrqE8/z5nWhYGZ/mn53QW0Ov8l8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=glMG+Yza; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=ZI0b/Rn82JXvIpb1S85nfxzRBKH5EsdnsNAdEX566vTWF6YlT69oAPR+KQ93Phn3T0nq/+QUMIVY6aHXsJvg0gzvHCguTZ7eCLIL/OZ0OSNGbX0QM6RorciXLCBatpO4R2VnDTXcIO+5bTLy59R0wFxnPiQbOzmYnvJHSQeayk8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=C83fisvN; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="glMG+Yza"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E71AC4CEFB;
-	Sat, 25 Oct 2025 16:24:44 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="C83fisvN"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 900E6C4CEFB;
+	Sat, 25 Oct 2025 16:25:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1761409485;
-	bh=rk3G3WM6efAJRetQFee0jg61Wboa43cijZ7Gtlo5zdw=;
+	s=k20201202; t=1761409551;
+	bh=Em1vmYzb3CPqjJdulvBWr7VV9J5NImJHW4FlbVzFjhc=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=glMG+YzakiprAAzSq7u4r7Csv4gSQmGItYuCpWfk7YZEImR4Sspsj/d7lsBDQRC0r
-	 HqmsDrRsYdr8/sDlMJ9Qp0+v6hQrR4G3aXCgIZovxhPwJFUX1+M72Qv8+F99RpmkNA
-	 ghR0Rj4H1oSWotA+b5d+xA3K4+tuETqLhiIglqbJ00PQ+Xcq3eCfZbGpWiBZ95TSoX
-	 kArBfeTc/eR0ejHZZBtGYxj2gcV/CtwpTzRst2MKf0H8+SvzI0lwn8HSnMldWw0l0n
-	 cDJSP+4dEJQq9QrpbRw04f1s/sl6t79Dq9DOuDlQ20KiBsqXO7WzYa3Z6pZcIOlaJW
-	 0vC0tb5R7BEfA==
+	b=C83fisvN6GC1POYJioqMtF7W6fBWly6hd2mrsBvtQI1QhukBKifLvwCCD66ABpG35
+	 ODhG5ogR7mIa+t6nAmJP/wHTZeQmQ3b5uOi8pS8Gi/hCBl9l4uDilJuvM32pvMJ5+M
+	 ES7YYSzCgpzI6lOojchjgQzPLG6kfUti3fV6Osu34EQHMDCY2gnbtsp7vIQpvBEu5w
+	 mf800yzNQItEXNTZFpNnD6OgfzjNVRbAnGnkqnQ15e80JgvzOhcuId2r7tgcsVzuzV
+	 2Un3LOGgfwlJ8elBcMhoNuSD8auWj8CoDdkPGFBZS7NUlTaTxQcoA/OPGdbtvt21Ji
+	 iS9DAI0bf5Itg==
 From: Sasha Levin <sashal@kernel.org>
 To: patches@lists.linux.dev,
 	stable@vger.kernel.org
-Cc: Seyediman Seyedarab <ImanDevel@gmail.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
+Cc: Hector Martin <marcan@marcan.st>,
+	Janne Grunau <j@jannau.net>,
+	Sven Peter <sven@kernel.org>,
+	Neal Gompa <neal@gompa.dev>,
 	Joerg Roedel <joerg.roedel@amd.com>,
 	Sasha Levin <sashal@kernel.org>,
-	dwmw2@infradead.org,
+	joro@8bytes.org,
+	will@kernel.org,
+	asahi@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
 	iommu@lists.linux.dev
-Subject: [PATCH AUTOSEL 6.17-5.15] iommu/vt-d: Replace snprintf with scnprintf in dmar_latency_snapshot()
-Date: Sat, 25 Oct 2025 11:59:36 -0400
-Message-ID: <20251025160905.3857885-345-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.17-6.6] iommu/apple-dart: Clear stream error indicator bits for T8110 DARTs
+Date: Sat, 25 Oct 2025 11:59:52 -0400
+Message-ID: <20251025160905.3857885-361-sashal@kernel.org>
 X-Mailer: git-send-email 2.51.0
 In-Reply-To: <20251025160905.3857885-1-sashal@kernel.org>
 References: <20251025160905.3857885-1-sashal@kernel.org>
@@ -53,159 +58,91 @@ X-stable-base: Linux 6.17.5
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-From: Seyediman Seyedarab <ImanDevel@gmail.com>
+From: Hector Martin <marcan@marcan.st>
 
-[ Upstream commit 75c02a037609f34db17e91be195cedb33b61bae0 ]
+[ Upstream commit ecf6508923f87e4597228f70cc838af3d37f6662 ]
 
-snprintf() returns the number of bytes that would have been written, not
-the number actually written. Using this for offset tracking can cause
-buffer overruns if truncation occurs.
+These registers exist and at least on the t602x variant the IRQ only
+clears when theses are cleared.
 
-Replace snprintf() with scnprintf() to ensure the offset stays within
-bounds.
-
-Since scnprintf() never returns a negative value, and zero is not possible
-in this context because 'bytes' starts at 0 and 'size - bytes' is
-DEBUG_BUFFER_SIZE in the first call, which is large enough to hold the
-string literals used, the return value is always positive. An integer
-overflow is also completely out of reach here due to the small and fixed
-buffer size. The error check in latency_show_one() is therefore
-unnecessary. Remove it and make dmar_latency_snapshot() return void.
-
-Signed-off-by: Seyediman Seyedarab <ImanDevel@gmail.com>
-Link: https://lore.kernel.org/r/20250731225048.131364-1-ImanDevel@gmail.com
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Signed-off-by: Hector Martin <marcan@marcan.st>
+Signed-off-by: Janne Grunau <j@jannau.net>
+Reviewed-by: Sven Peter <sven@kernel.org>
+Reviewed-by: Neal Gompa <neal@gompa.dev>
+Link: https://lore.kernel.org/r/20250826-dart-t8110-stream-error-v1-1-e33395112014@jannau.net
 Signed-off-by: Joerg Roedel <joerg.roedel@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
 
 LLM Generated explanations, may be completely bogus:
 
-YES – This fixes a real memory-corruption bug in the Intel VT-d debugfs
-latency snapshot and the change is tight, self-contained, and low risk
-for stable.
+YES
 
-- `drivers/iommu/intel/perf.c:116-160` now uses `scnprintf` for every
-  append into `debug_buf`. Previously `snprintf` advanced the `bytes`
-  cursor by the would-have-been length; once the counters grew large
-  enough to truncate a write, `bytes` could exceed `size`, and the next
-  `snprintf(str + bytes, size - bytes, …)` would wrap the length
-  argument and scribble past the 1 KB buffer. That overflow is a latent
-  kernel memory corruption reachable from the `dmar_perf_latency`
-  debugfs file. With `scnprintf`, the offset can no longer run past the
-  remaining space, eliminating the corruption risk.
-- `drivers/iommu/intel/debugfs.c:659-666` drops the dead `< 0` error
-  handling and simply prints the buffer, matching the new `void` return
-  semantics and avoiding bogus “Failed to get latency snapshot”
-  messages.
-- `drivers/iommu/intel/perf.h:37-70` updates the prototype and the
-  `!CONFIG_DMAR_PERF` stub accordingly so all callers build cleanly; no
-  other interfaces or architectures are touched.
+- Fixes a real bug: On T8110-class DARTs, the interrupt only deasserts
+  when per‑stream error indicator bits are cleared. Without clearing
+  them, the IRQ can remain asserted, causing repeated interrupts and
+  potential system instability.
+- Minimal, contained change: Adds one register define and a short clear
+  loop in the T8110 IRQ handler only.
+  - Adds `DART_T8110_ERROR_STREAMS` at `0x1c0` (drivers/iommu/apple-
+    dart.c:125).
+  - In `apple_dart_t8110_irq`, after acknowledging the error status
+    (`writel(error, ...)`), clears all stream error indicator words:
+    `for (int i = 0; i < BITS_TO_U32(dart->num_streams); i++)
+    writel(U32_MAX, dart->regs + DART_T8110_ERROR_STREAMS + 4 * i);`
+    (drivers/iommu/apple-dart.c:1093, drivers/iommu/apple-dart.c:1094,
+    drivers/iommu/apple-dart.c:1095).
+- Scoped to T8110 only: The handler is registered only for the T8110
+  hardware variant (drivers/iommu/apple-dart.c:1298), so it does not
+  affect other Apple DART generations.
+- Safe by design:
+  - `num_streams` is read from hardware (`DART_T8110_PARAMS4_NUM_SIDS`)
+    and bounded by `DART_MAX_STREAMS` (drivers/iommu/apple-dart.c:1152,
+    drivers/iommu/apple-dart.c:1153, drivers/iommu/apple-dart.c:1156,
+    drivers/iommu/apple-dart.c:1161).
+  - `BITS_TO_U32(...)` ensures the correct number of 32‑bit words are
+    cleared.
+  - The driver already uses the same write‑all‑ones bitmap pattern for
+    stream operations (e.g., enabling all streams) showing these
+    registers are W1C bitmaps and that this access pattern is
+    established and safe (drivers/iommu/apple-dart.c:485,
+    drivers/iommu/apple-dart.c:486).
+- No architectural changes or API/ABI effects: This is a straightforward
+  IRQ acknowledgment fix limited to the Apple DART IOMMU driver.
+- User impact: Prevents stuck/level interrupts and interrupt floods on
+  affected Apple SoCs (e.g., t602x using T8110 DART), improving
+  stability and correctness.
 
-The bug exists in all trees that have Intel IOMMU debugfs
-(`CONFIG_INTEL_IOMMU_DEBUGFS` selects this code) and can be triggered by
-routine use once latency counters accumulate large values. The fix is
-entirely in debug/perf code, introduces no behavioural changes beyond
-removing the overflow, and carries negligible regression risk.
-Backporting is recommended.
+Given it is a clear bug fix, small and localized, with low regression
+risk and meaningful user impact, it is a strong candidate for
+backporting to stable kernels that include the T8110 DART support.
 
- drivers/iommu/intel/debugfs.c | 10 ++--------
- drivers/iommu/intel/perf.c    | 10 ++++------
- drivers/iommu/intel/perf.h    |  5 ++---
- 3 files changed, 8 insertions(+), 17 deletions(-)
+ drivers/iommu/apple-dart.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/iommu/intel/debugfs.c b/drivers/iommu/intel/debugfs.c
-index 5aa7f46a420b5..38790ff50977c 100644
---- a/drivers/iommu/intel/debugfs.c
-+++ b/drivers/iommu/intel/debugfs.c
-@@ -661,17 +661,11 @@ DEFINE_SHOW_ATTRIBUTE(ir_translation_struct);
- static void latency_show_one(struct seq_file *m, struct intel_iommu *iommu,
- 			     struct dmar_drhd_unit *drhd)
- {
--	int ret;
--
- 	seq_printf(m, "IOMMU: %s Register Base Address: %llx\n",
- 		   iommu->name, drhd->reg_base_addr);
+diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
+index 190f28d766151..8b1272b7bb44a 100644
+--- a/drivers/iommu/apple-dart.c
++++ b/drivers/iommu/apple-dart.c
+@@ -122,6 +122,8 @@
+ #define DART_T8110_ERROR_ADDR_LO 0x170
+ #define DART_T8110_ERROR_ADDR_HI 0x174
  
--	ret = dmar_latency_snapshot(iommu, debug_buf, DEBUG_BUFFER_SIZE);
--	if (ret < 0)
--		seq_puts(m, "Failed to get latency snapshot");
--	else
--		seq_puts(m, debug_buf);
--	seq_puts(m, "\n");
-+	dmar_latency_snapshot(iommu, debug_buf, DEBUG_BUFFER_SIZE);
-+	seq_printf(m, "%s\n", debug_buf);
++#define DART_T8110_ERROR_STREAMS 0x1c0
++
+ #define DART_T8110_PROTECT 0x200
+ #define DART_T8110_UNPROTECT 0x204
+ #define DART_T8110_PROTECT_LOCK 0x208
+@@ -1077,6 +1079,9 @@ static irqreturn_t apple_dart_t8110_irq(int irq, void *dev)
+ 		error, stream_idx, error_code, fault_name, addr);
+ 
+ 	writel(error, dart->regs + DART_T8110_ERROR);
++	for (int i = 0; i < BITS_TO_U32(dart->num_streams); i++)
++		writel(U32_MAX, dart->regs + DART_T8110_ERROR_STREAMS + 4 * i);
++
+ 	return IRQ_HANDLED;
  }
  
- static int latency_show(struct seq_file *m, void *v)
-diff --git a/drivers/iommu/intel/perf.c b/drivers/iommu/intel/perf.c
-index adc4de6bbd88e..dceeadc3ee7cd 100644
---- a/drivers/iommu/intel/perf.c
-+++ b/drivers/iommu/intel/perf.c
-@@ -113,7 +113,7 @@ static char *latency_type_names[] = {
- 	"     svm_prq"
- };
- 
--int dmar_latency_snapshot(struct intel_iommu *iommu, char *str, size_t size)
-+void dmar_latency_snapshot(struct intel_iommu *iommu, char *str, size_t size)
- {
- 	struct latency_statistic *lstat = iommu->perf_statistic;
- 	unsigned long flags;
-@@ -122,7 +122,7 @@ int dmar_latency_snapshot(struct intel_iommu *iommu, char *str, size_t size)
- 	memset(str, 0, size);
- 
- 	for (i = 0; i < COUNTS_NUM; i++)
--		bytes += snprintf(str + bytes, size - bytes,
-+		bytes += scnprintf(str + bytes, size - bytes,
- 				  "%s", latency_counter_names[i]);
- 
- 	spin_lock_irqsave(&latency_lock, flags);
-@@ -130,7 +130,7 @@ int dmar_latency_snapshot(struct intel_iommu *iommu, char *str, size_t size)
- 		if (!dmar_latency_enabled(iommu, i))
- 			continue;
- 
--		bytes += snprintf(str + bytes, size - bytes,
-+		bytes += scnprintf(str + bytes, size - bytes,
- 				  "\n%s", latency_type_names[i]);
- 
- 		for (j = 0; j < COUNTS_NUM; j++) {
-@@ -156,11 +156,9 @@ int dmar_latency_snapshot(struct intel_iommu *iommu, char *str, size_t size)
- 				break;
- 			}
- 
--			bytes += snprintf(str + bytes, size - bytes,
-+			bytes += scnprintf(str + bytes, size - bytes,
- 					  "%12lld", val);
- 		}
- 	}
- 	spin_unlock_irqrestore(&latency_lock, flags);
--
--	return bytes;
- }
-diff --git a/drivers/iommu/intel/perf.h b/drivers/iommu/intel/perf.h
-index df9a36942d643..1d4baad7e852e 100644
---- a/drivers/iommu/intel/perf.h
-+++ b/drivers/iommu/intel/perf.h
-@@ -40,7 +40,7 @@ void dmar_latency_disable(struct intel_iommu *iommu, enum latency_type type);
- bool dmar_latency_enabled(struct intel_iommu *iommu, enum latency_type type);
- void dmar_latency_update(struct intel_iommu *iommu, enum latency_type type,
- 			 u64 latency);
--int dmar_latency_snapshot(struct intel_iommu *iommu, char *str, size_t size);
-+void dmar_latency_snapshot(struct intel_iommu *iommu, char *str, size_t size);
- #else
- static inline int
- dmar_latency_enable(struct intel_iommu *iommu, enum latency_type type)
-@@ -64,9 +64,8 @@ dmar_latency_update(struct intel_iommu *iommu, enum latency_type type, u64 laten
- {
- }
- 
--static inline int
-+static inline void
- dmar_latency_snapshot(struct intel_iommu *iommu, char *str, size_t size)
- {
--	return 0;
- }
- #endif /* CONFIG_DMAR_PERF */
 -- 
 2.51.0
 
