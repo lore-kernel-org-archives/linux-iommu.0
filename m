@@ -1,72 +1,73 @@
-Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com [209.85.208.52])
+Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B42A33002CD
-	for <iommu@lists.linux.dev>; Sat, 25 Oct 2025 14:52:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6795A2FFDCF
+	for <iommu@lists.linux.dev>; Sat, 25 Oct 2025 15:14:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761403967; cv=none; b=bPhY4nzQ3TrJF2wgiFqCYy0BIyKkGgujE9NrEcUw1fEI/H0oaWn1K5fVSJR4QONemAQCqckoiKp5IWeZiX+S+o1VKByUf0ZvUTMkf1VNlGYOfKkLkdHBtbKB/vgsi+P7pb5irqgJTe/+Y/z6kukCu8Gyfjw4WCmLZtRFPs6Fypk=
+	t=1761405250; cv=none; b=kH3MVPIw0xMmJ+52msF3cx/tddMS1QWVslzYn/ymNNadfnYQfkLY8kVTO4enIxVpOnDlirEhixhWIqmO8xTqoCY1ZxX8yWxhYfHkAio/McAkSGeBN82OYBaCDmpOjMQyIsC/qgGeRU7KS9xRyAW0+nokZZDmvQOMGxugUqyGvN8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761403967; c=relaxed/simple;
-	bh=rxkH9HqQp8MJpuSr9SUPPrL1eIBYUI8t2HD6mPry1gY=;
+	s=arc-20240116; t=1761405250; c=relaxed/simple;
+	bh=CL675AwnhszTvchkoKww0pB3s+a1NTfUgwGopybj9qc=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Xqs9GuBwEM1QQor/V8lBWwz+D7qbbJ/kKkwi9zNEKV//zu7+KMDjgGXOm2hDIv5UOhr96Kv8DCAEJ4w9NF8oCICmFTB1l1R1829sHEXpVc0MZVOwLACoVI3fg/Cw1pU6cdLNVrrn+u7ZUBujEApbpBdqBa6Wil2+u/PsHc/PUHA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=soleen.com; spf=pass smtp.mailfrom=soleen.com; dkim=pass (2048-bit key) header.d=soleen.com header.i=@soleen.com header.b=gyTuKpDl; arc=none smtp.client-ip=209.85.208.52
+	 To:Cc:Content-Type; b=aDGJO2uE5NrxiCaU7HU8hYLFR5uRo/ocYnn6dCRJ+KxDT55iXgbegbhKO2lT5BHNPxVwtioGw7jqX+VO2qdl8rzVxPQB0xjlZZUOhfKYdh/U8YTvxNPDe3SYYd7h3vlBrs0Qlk5Vb0tTp12LTta63nxmSRyq7tSunvjAWIXR+5s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=soleen.com; spf=pass smtp.mailfrom=soleen.com; dkim=pass (2048-bit key) header.d=soleen.com header.i=@soleen.com header.b=PdQXU03k; arc=none smtp.client-ip=209.85.218.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=soleen.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=soleen.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=soleen.com header.i=@soleen.com header.b="gyTuKpDl"
-Received: by mail-ed1-f52.google.com with SMTP id 4fb4d7f45d1cf-63b9da57cecso4933366a12.0
-        for <iommu@lists.linux.dev>; Sat, 25 Oct 2025 07:52:44 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=soleen.com header.i=@soleen.com header.b="PdQXU03k"
+Received: by mail-ej1-f49.google.com with SMTP id a640c23a62f3a-b6d6c11f39aso338768766b.2
+        for <iommu@lists.linux.dev>; Sat, 25 Oct 2025 08:14:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=soleen.com; s=google; t=1761403963; x=1762008763; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=rxkH9HqQp8MJpuSr9SUPPrL1eIBYUI8t2HD6mPry1gY=;
-        b=gyTuKpDlC7h/8d+8pgTfoWAWqWRXJJL1Xk6JRhnU8eshfqr0Qeo88YQDvi/rTLj6pY
-         GrXTpS4yRFEEg8Z/fHItlCIReTO+Des8WRUxXPCrkvafw6gYztKgqc8961xlrnMveETu
-         8J/UwcCF3W4pgMoYAxN/Yg6MJ01jk7B92mwPhTXjONi+EKs6X2gnE4WM0njSnvUsAz2d
-         DddpD4TNsC44taEes7hs9qgLrEpBrNkKTsjsuNqQoruqP2iu5NcF5evWYYJr74QKUGaQ
-         s13R4X0qIpVywmXO4KAhAcrZsAsO4EOB/TUCefKINIiapbojkqLD3TIqa5OiD+S8yHBy
-         bbjw==
+        d=soleen.com; s=google; t=1761405245; x=1762010045; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=r6ZApRvRb7vW0G2zoc1eEE/W2po0au9F5FmCvI0sheY=;
+        b=PdQXU03kEfE+IGdXYK7s08GrvcYwfgbEu+PN0R5cnhz5zPN9x1BfcJb+rLwKxcvKkJ
+         IophMaJrE1mUwF34DfzYqJFTzuWzXh9KX4E/KQp+MFY7hqoe1hTF/lqA737zrawuw/oI
+         j8zZQuW8BB1Ydvm6WMK+K/IHHU+F3pKHdrhizT3uujOR/2kCFJILRCp5amnzBHoUwHtl
+         u5P6tZWhXj39IYuZUEA3zT+cgIXeKgF0ZxYA/9z9damQ4slhwaRk3jRVEivVnFE/a3K6
+         xd3AO+cWmMcTbJWy2W8KLHK5eJnikc4cGL0fe2AMf4MRVXSlR44Ql+VGsLcBAqY1qBwR
+         75Cw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1761403963; x=1762008763;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=rxkH9HqQp8MJpuSr9SUPPrL1eIBYUI8t2HD6mPry1gY=;
-        b=ZQZTwHrk6mhRhCHqqf0FWvpXTlW6UX21XyrGtCfV19L7Hrs+Li6u4hH1xVLzfF3a1b
-         zVP5ATMSWu6xqYrGjMZ+7uhVtWEDi7uLn5WBCFUMalR4+oCrTdzotQSnIw0XpWvah8VA
-         eLRcwg2E5om5gyEKPF4Z+vFtxh+rDQXqr5PHrssse8niKJIw7J9lsz01a8U+egoADy1m
-         aH1hZGBfcjiT59fZXuQ3t3ExwqmUrDLkIMluqCc02nu6qDgIzpGJAoNBWBQGzNIHNAi2
-         kCrcjjgGV5y0gqR1aFFKpS7P2QrZ8RvOlGWKAs4lRzU5TkPUC0LroGCEcZ17uQtholKN
-         ddhg==
-X-Forwarded-Encrypted: i=1; AJvYcCXzp9yqCMc4m2Zi4AGw3LqAp0XXlbHniRwfyXldcUd6NKjeiCKaUQgm4OPCxThOop5z0tPvqg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yyf0VTCHsu1CnfzimI+au8PI6AofB7NPw+il+3wjiAit34+ir2e
-	LqJJrZ+E68geufIeglqEIBVOuznvEFxfUD3qblNurPD3BlAJpKLS5b3tO6WYUHfx22rAP0Zmstb
-	qlMgRhv9UhWnADgPtOdgxs35h8nk8AYAmp9pG8FVZbw==
-X-Gm-Gg: ASbGnctzkHJU9JcGLQbWFLDSbYJYAM/cx+l52uU40YQnBwkrqbTwYlm96GyXXzW+6d8
-	L2NkUaNvwyMa5UhS+rPGlSwBd/ISfZF+SxeFi5Cfab2NZDh5+d1TzV3Biaas2H72UrnD0uVN5+P
-	99HxcHG8zG2herlI6waf2fUQ5M4ha0c5BGQlU28WSdXc2CArWWJSMLXTk+4b4XdcUEFWFxkFtE4
-	GABupCyjNs9BU9y7uvMEyZm+TMQnWPDx/FZ3XLsQ5JSBEUpLJLLeNkQGYLoo4jGBhTrW3FQXsZ0
-	VrNQRWD0+P3r1JgCWntAOJs9cBv4
-X-Google-Smtp-Source: AGHT+IEEmtC5AP/1Gyl7o28TLb62A6fjQmpgJI/nFlghPy3b8TZfgzFAjEpwZUdPvlcd5pyK5S+BLKOml0q59+GzhB4=
-X-Received: by 2002:a05:6402:13ca:b0:637:f07d:e80f with SMTP id
- 4fb4d7f45d1cf-63c1f58c0d3mr30957969a12.0.1761403962844; Sat, 25 Oct 2025
- 07:52:42 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1761405245; x=1762010045;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=r6ZApRvRb7vW0G2zoc1eEE/W2po0au9F5FmCvI0sheY=;
+        b=gAemvC+nR1k7Qbs5dBZTzbzxVnPR+LkEWuNuvFRECXNHojjk8OBT0Wc3D1+KNKHWxS
+         N2YBRHnsRCOaZsupxT3tfTHH+c0z0hiMmhFK21Tf70nZNyNR0HTBid5XoXQ+hMmYb07/
+         PDDBs0Dz0oDWIP3pXsPA6Dw5wznm6HSfsbyUKh/cJlkizJgDGrzUC+5f36WuWrsgaRHi
+         uCyO9lmxirlGQk8pYfkoGk4aJ+KrBhhDvJ1E+tGq2IyCFEyqjTqGTFWRGGQ2DdIsC1II
+         EsVGST2dRmfP2NplwQRNcb7gJZY62F0UyQUtEUj0LPZkMI8Zmh5PWhTbY/Mo4bU1ck2n
+         lXdg==
+X-Forwarded-Encrypted: i=1; AJvYcCWae/SPLNkyLsfN9Be1gyDLCyn+XBgK+Cz+xhWgh/pVF2IMuhMLuwYuiQ531kCTzznXNG02dg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yzyi96ioT25fTTh9Bpsq/hu7TozPRrMkAMFToD3W2BT1Xij+RKt
+	2iW/JHb4q+8aZ/0StTQgR4hdRmlAWZbiUtvjiQhAKFgXtmhLp6vqR5JT7J0L6M8mOHbYVRL22r0
+	B0sLqEl1nfeO4LVspMyUcS5SbpiSDuvIOsD/LONOr7w==
+X-Gm-Gg: ASbGnctqPDbKPKJrNwTe2AR3VTBd/UDI5gLGzMDIhlyDvyLolMpVZiFjHZzfkJvjH6O
+	p+YYpEpDY0lZA+8gvimadLJMnmV3/QuCRr/JJdSknM5ZBIlGZ1kiqUFW/QlI8AH+X67FmXsEElx
+	Jwfic3Ux+ijiBeDK//zxxpPp3SWPUy589/4lQmzV4CQaX94xQFkZR2OIjQ84Acp/+dqHzTW+GWB
+	bNCs+0bqGkPqV6AK/VA1fd9wvdfp6IItDSPcI89ZJRzHeA0sVuAYxGemhbc19uR29QPdJnDSBQp
+	3cCF+EZg9bM14XuwIw9jhWgQyhrS
+X-Google-Smtp-Source: AGHT+IHaV1ZPy0NcxBjvZpBvRmdUs/H93j26P98BKr5SgBmvXnyMy41VvCYN1RoSAKCw4YXmnyQMwoR6KSlG6St14Q0=
+X-Received: by 2002:a17:907:86a0:b0:b3f:f822:2db2 with SMTP id
+ a640c23a62f3a-b6d51aeff2amr1161620066b.11.1761405244508; Sat, 25 Oct 2025
+ 08:14:04 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <0-v7-ab019a8791e2+175b8-iommu_pt_jgg@nvidia.com>
-In-Reply-To: <0-v7-ab019a8791e2+175b8-iommu_pt_jgg@nvidia.com>
+References: <0-v7-ab019a8791e2+175b8-iommu_pt_jgg@nvidia.com> <1-v7-ab019a8791e2+175b8-iommu_pt_jgg@nvidia.com>
+In-Reply-To: <1-v7-ab019a8791e2+175b8-iommu_pt_jgg@nvidia.com>
 From: Pasha Tatashin <pasha.tatashin@soleen.com>
-Date: Sat, 25 Oct 2025 10:52:07 -0400
-X-Gm-Features: AWmQ_bllNz8YycDjixpyqg8hZuOQcw77RRZ1nqOvRZhBjS1lHQKHtPcetSr4uhE
-Message-ID: <CA+CK2bBvCytQhJ-DbgBDUo-MT0xtuXNW=yzX3StwaNUj=JfnoQ@mail.gmail.com>
-Subject: Re: [PATCH v7 00/15] Consolidate iommu page table implementations (AMD)
+Date: Sat, 25 Oct 2025 11:13:28 -0400
+X-Gm-Features: AWmQ_bnwA61ouglJ0muhK3QYt2JBH2l0zMaAEi3nbw0px0nYabPLbrggddVDt6k
+Message-ID: <CA+CK2bB8JTN8qcSumb_tmY2gzmbahoDCeWS88W-Fh7P68pDhjg@mail.gmail.com>
+Subject: Re: [PATCH v7 01/15] genpt: Generic Page Table base API
 To: Jason Gunthorpe <jgg@nvidia.com>
 Cc: Alexandre Ghiti <alex@ghiti.fr>, Anup Patel <anup@brainfault.org>, 
 	Albert Ou <aou@eecs.berkeley.edu>, Jonathan Corbet <corbet@lwn.net>, iommu@lists.linux.dev, 
@@ -81,16 +82,66 @@ Cc: Alexandre Ghiti <alex@ghiti.fr>, Anup Patel <anup@brainfault.org>,
 	James Gowans <jgowans@amazon.com>, Kevin Tian <kevin.tian@intel.com>, 
 	Michael Roth <michael.roth@amd.com>, patches@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
+On Thu, Oct 23, 2025 at 2:21=E2=80=AFPM Jason Gunthorpe <jgg@nvidia.com> wr=
+ote:
 >
-> Cc: Michael Roth <michael.roth@amd.com>
-> Cc: Alexey Kardashevskiy <aik@amd.com>
-> Cc: Pasha Tatashin <pasha.tatashin@soleen.com>
-> Cc: James Gowans <jgowans@amazon.com>
+> The generic API is intended to be separated from the implementation of
+> page table algorithms. It contains only accessors for walking and
+> manipulating the table and helpers that are useful for building an
+> implementation. Memory management is not in the generic API, but part of
+> the implementation.
+>
+> Using a multi-compilation approach the implementation module would includ=
+e
+> headers in this order:
+>
+>   common.h
+>   defs_FMT.h
+>   pt_defs.h
+>   FMT.h
+>   pt_common.h
+>   IMPLEMENTATION.h
+>
+> Where each compilation unit would have a combination of FMT and
+> IMPLEMENTATION to produce a per-format per-implementation module.
+>
+> The API is designed so that the format headers have minimal logic, and
+> default implementations are provided if the format doesn't include one.
+>
+> Generally formats provide their code via an inline function using the
+> pattern:
+>
+>   static inline FMTpt_XX(..) {}
+>   #define pt_XX FMTpt_XX
+>
+> The common code then enforces a function signature so that there is no
+> drift in function arguments, or accidental polymorphic functions (as has
+> been slightly troublesome in mm). Use of function-like #defines are
+> avoided in the format even though many of the functions are small enough.
+>
+> Provide kdocs for the API surface.
+>
+> This is enough to implement the 8 initial format variations with all of
+> their features:
+>  * Entries comprised of contiguous blocks of IO PTEs for larger page
+>    sizes (AMDv1, ARMv8)
+>  * Multi-level tables, up to 6 levels. Runtime selected top level
+>  * The size of the top table level can be selected at runtime (ARM's
+>    concatenated tables)
+>  * The number of levels in the table can optionally increase dynamically
+>    during map (AMDv1)
+>  * Optional leaf entries at any level
+>  * 32 bit/64 bit virtual and output addresses, using every bit
+>  * Sign extended addressing (x86)
+>  * Dirty tracking
+>
+> A basic simple format takes about 200 lines to declare the require inline
+> functions.
+>
+> Tested-by: Alejandro Jimenez <alejandro.j.jimenez@oracle.com>
+> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
 > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 
-I tested this series via iova_stress [1], on Intel, AMD, and ARM
-machines, no regressions were detected.
-Tested-by: Pasha Tatashin <pasha.tatashin@soleen.com>
-
-[1] https://github.com/soleen/iova_stress
+Reviewed-by: Pasha Tatashin <pasha.tatashin@soleen.com>
