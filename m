@@ -1,137 +1,148 @@
-Received: from sender4-pp-f112.zoho.com (sender4-pp-f112.zoho.com [136.143.188.112])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0EE733019A3
-	for <iommu@lists.linux.dev>; Fri, 24 Oct 2025 23:26:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.112
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761348364; cv=pass; b=K2KTXzAfw4KBZ6tp4CRdHf8pCR4cUx/QTqRtu6raN6sw94f6C4S3NRX7pPVTv2x6yhWGV6M+tzo0GQDTn9JfK62SCZv3vxgb/pLliL+kX1u02vhEEMTeqUeHeQphmrydpCUAY970VEpvO8oz+eLWn2eSn1Fvy64Hv58oAWwCFGs=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761348364; c=relaxed/simple;
-	bh=NQ0CrT99S0HB3iA81tiE1fKOXNruYRsIn5L3vGBZdtI=;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 678F286337;
+	Sat, 25 Oct 2025 00:32:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1761352360; cv=none; b=P4MCyZFEQ3eiWWmf/eeVPvy6nUlAKvFh9Vc4uD1UpP6ny+3x+cSbBu1u/0MbR5cnr1KsWI2wSeGrpYrmbM29bb3XU+rVNtHRU7wozjj3xgyhAuSbYeLS/0ySBlyaTQb0EpRbsoO0actshPrmegwlhVCglbQAQ057/PClJvSRUo0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1761352360; c=relaxed/simple;
+	bh=xTIYdd8VsKQA2709uB50P3MiBnUYPX1PRmdeoF1Xh0Y=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=cSD5miRLyUA8epeGtsgKSu5H85HnuPM6Wg6UN+l1fPax62qXnoGMfGfwytaKRhZE7NdQngeV7XygZdV+hRmW93I9fVxB/Eexc4TaQknTNN2lbH57YP15llLnzk4R2UTBs7nhsiKpJs2EHcAAIaXo+BEJRJ7l2HxpsTxp4+GVsG8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=sebastian.reichel@collabora.com header.b=ht97i7wA; arc=pass smtp.client-ip=136.143.188.112
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=qegi0pmH4sKpzi28iF3PbZMZtGIjcgApt+71WTqrN9i9spxybyaIdCcadk4ZrwXQ/yXgiUHdWM/prCX71AW3eMCGlcCy4mt8nwdeDo/aV2u56pKNXiuVz6+BdqNhp4CvX180IWCxhckMUNd2Xc/HxBAl1tvtKqPKqSr8eqAX4AU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=g/QfOfCY; arc=none smtp.client-ip=192.198.163.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=collabora.com header.i=sebastian.reichel@collabora.com header.b="ht97i7wA"
-ARC-Seal: i=1; a=rsa-sha256; t=1761348284; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=nUSq+eGpPsWaOR2huttk+9os9TV0P/OuWHFU6NnStHxF37O90E8m9egYW7m1k9Jw1NDIuz920n2tYs6WsuQCY/FCbIy00JDocA5vgUkzeHx04qDvThfwm7StoW5jgEQv+/v+lzoSjZEOm6vdG7tZnK+ELXs4V+k/MdWn1mB2XKw=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1761348284; h=Content-Type:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=TolhaGIsyaj1gVoV8dHb9QimZIX1Tzw1zXYiEcETqjM=; 
-	b=A0dwAGofwe57t5FVZfHNsR7hNx84shoXZdrMW+KqP5m6oqZVC/8lLB1VIQXdxKVfuw165b/NdIOMZprW781T0fm1CLLhZzq9+XgJc70yZ+Id+45Bb1dioiPOt9j1MeAJe4g90yq6L9nEWurG4zqI4WaQtSbzMASjQyorgDXu2bw=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=collabora.com;
-	spf=pass  smtp.mailfrom=sebastian.reichel@collabora.com;
-	dmarc=pass header.from=<sebastian.reichel@collabora.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1761348284;
-	s=zohomail; d=collabora.com; i=sebastian.reichel@collabora.com;
-	h=Date:Date:From:From:To:To:Cc:Cc:Subject:Subject:Message-ID:References:MIME-Version:Content-Type:In-Reply-To:Message-Id:Reply-To;
-	bh=TolhaGIsyaj1gVoV8dHb9QimZIX1Tzw1zXYiEcETqjM=;
-	b=ht97i7wAjMxWf17LAhpwrdlIDowY69CmFDI+cWK1dCeICyT7kM2V2Nfzc0bUF3IT
-	cx7FDF0TNsOaG1Zy3zhRAk9YI53YYXgS12j/In+L0DpM82WJJfQx9v3atR58D4QsPB+
-	X9mS+B6EX81ORNLumUxqPRhox7C2rKGQrWzj3yhc=
-Received: by mx.zohomail.com with SMTPS id 1761348279897500.52128589096606;
-	Fri, 24 Oct 2025 16:24:39 -0700 (PDT)
-Received: by venus (Postfix, from userid 1000)
-	id 476FE181935; Sat, 25 Oct 2025 01:24:06 +0200 (CEST)
-Date: Sat, 25 Oct 2025 01:24:06 +0200
-From: Sebastian Reichel <sebastian.reichel@collabora.com>
-To: "Rob Herring (Arm)" <robh@kernel.org>
-Cc: Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Stephen Boyd <sboyd@kernel.org>, 
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Thomas Zimmermann <tzimmermann@suse.de>, 
-	Andrzej Hajda <andrzej.hajda@intel.com>, Robert Foss <rfoss@kernel.org>, Vinod Koul <vkoul@kernel.org>, 
-	Moritz Fischer <mdf@kernel.org>, Xu Yilun <yilun.xu@intel.com>, 
-	Bartosz Golaszewski <brgl@bgdev.pl>, Guenter Roeck <linux@roeck-us.net>, 
-	Andi Shyti <andi.shyti@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>, Georgi Djakov <djakov@kernel.org>, 
-	Thomas Gleixner <tglx@linutronix.de>, Joerg Roedel <joro@8bytes.org>, 
-	Jassi Brar <jassisinghbrar@gmail.com>, Mauro Carvalho Chehab <mchehab@kernel.org>, 
-	Lee Jones <lee@kernel.org>, Miquel Raynal <miquel.raynal@bootlin.com>, 
-	Richard Weinberger <richard@nod.at>, Vignesh Raghavendra <vigneshr@ti.com>, 
-	Andrew Lunn <andrew+netdev@lunn.ch>, "David S. Miller" <davem@davemloft.net>, 
-	Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, 
-	Paolo Abeni <pabeni@redhat.com>, Johannes Berg <johannes@sipsolutions.net>, 
-	Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kwilczynski@kernel.org>, Manivannan Sadhasivam <mani@kernel.org>, 
-	Bjorn Helgaas <bhelgaas@google.com>, Kishon Vijay Abraham I <kishon@kernel.org>, 
-	Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, Mark Brown <broonie@kernel.org>, 
-	Mathieu Poirier <mathieu.poirier@linaro.org>, Philipp Zabel <p.zabel@pengutronix.de>, 
-	Olivia Mackall <olivia@selenic.com>, Herbert Xu <herbert@gondor.apana.org.au>, 
-	Daniel Lezcano <daniel.lezcano@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org, 
-	dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, dmaengine@vger.kernel.org, 
-	linux-fpga@vger.kernel.org, linux-gpio@vger.kernel.org, linux-hwmon@vger.kernel.org, 
-	linux-i2c@vger.kernel.org, linux-iio@vger.kernel.org, linux-input@vger.kernel.org, 
-	linux-pm@vger.kernel.org, iommu@lists.linux.dev, linux-media@vger.kernel.org, 
-	linux-mtd@lists.infradead.org, netdev@vger.kernel.org, linux-wireless@vger.kernel.org, 
-	linux-pci@vger.kernel.org, linux-phy@lists.infradead.org, linux-pwm@vger.kernel.org, 
-	linux-remoteproc@vger.kernel.org, linux-crypto@vger.kernel.org, linux-sound@vger.kernel.org, 
-	linux-usb@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: Remove extra blank lines
-Message-ID: <god73pukywwznfyym7tym6m5k6fn3u7hwzj5gwhrxytt7oinfv@pokb4aos7pp6>
-References: <20251023143957.2899600-1-robh@kernel.org>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="g/QfOfCY"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1761352358; x=1792888358;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=xTIYdd8VsKQA2709uB50P3MiBnUYPX1PRmdeoF1Xh0Y=;
+  b=g/QfOfCY+tW/TL0U07KsMRuBy3ddrjh6QSoiR+P40GYzat+VJq0pcFoe
+   zrp9F7qNP2fUC2JvA5PqglhxqSTcYurIgR7gCItALIq2DRffvZHQ6FD2V
+   /P0R/eFL6OFLFhbIoGRbwNjUPgZAT3JXVKMX2seHTiy3GHfrisr7tMoeL
+   1bHY0356S47gIKa4LIp7v9OsV3KK04JonRIxPgTjVLerDR2lrpLnDKPwU
+   0y80JLMlXHqWzWe9Ph+JJT/YTmjPEWRPAxw2G9jbTuYS8GnnN0PvzrnmV
+   vf9iOwkExouYuDq8OGLcvfAfP5M7zz/1zeNSeI0yqvolNqx1hqcyjxC+F
+   A==;
+X-CSE-ConnectionGUID: G4UO0P7fTyOIuzsyIYjpbw==
+X-CSE-MsgGUID: rm3Un7p/TrypFb7N7pLC1A==
+X-IronPort-AV: E=McAfee;i="6800,10657,11586"; a="62742492"
+X-IronPort-AV: E=Sophos;i="6.19,253,1754982000"; 
+   d="scan'208";a="62742492"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2025 17:32:38 -0700
+X-CSE-ConnectionGUID: FHWEFqmfRR+p93DZhDM3RA==
+X-CSE-MsgGUID: 3ziwwJRORWaA6arprqFGBA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.19,253,1754982000"; 
+   d="scan'208";a="215209673"
+Received: from lkp-server02.sh.intel.com (HELO 66d7546c76b2) ([10.239.97.151])
+  by orviesa002.jf.intel.com with ESMTP; 24 Oct 2025 17:32:36 -0700
+Received: from kbuild by 66d7546c76b2 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1vCSCv-000F07-0L;
+	Sat, 25 Oct 2025 00:32:33 +0000
+Date: Sat, 25 Oct 2025 08:31:54 +0800
+From: kernel test robot <lkp@intel.com>
+To: Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>,
+	joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Cc: oe-kbuild-all@lists.linux.dev, suravee.suthikulpanit@amd.com,
+	Vasant.Hegde@amd.com, Santosh.Shukla@amd.com,
+	Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>
+Subject: Re: [PATCH v2] iommu/amd: Enhance "Completion-wait Time-out" error
+ message
+Message-ID: <202510250855.7wiC1wSz-lkp@intel.com>
+References: <20251024061041.707-1-dheerajkumar.srivastava@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="4uianbie6i5kbvu2"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20251023143957.2899600-1-robh@kernel.org>
-X-Zoho-Virus-Status: 1
-X-Zoho-Virus-Status: 1
-X-Zoho-AV-Stamp: zmail-av-1.4.3/261.330.82
-X-ZohoMailClient: External
+In-Reply-To: <20251024061041.707-1-dheerajkumar.srivastava@amd.com>
+
+Hi Dheeraj,
+
+kernel test robot noticed the following build warnings:
+
+[auto build test WARNING on linus/master]
+[also build test WARNING on v6.18-rc2 next-20251024]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Dheeraj-Kumar-Srivastava/iommu-amd-Enhance-Completion-wait-Time-out-error-message/20251024-141312
+base:   linus/master
+patch link:    https://lore.kernel.org/r/20251024061041.707-1-dheerajkumar.srivastava%40amd.com
+patch subject: [PATCH v2] iommu/amd: Enhance "Completion-wait Time-out" error message
+config: x86_64-buildonly-randconfig-003-20251025 (https://download.01.org/0day-ci/archive/20251025/202510250855.7wiC1wSz-lkp@intel.com/config)
+compiler: gcc-14 (Debian 14.2.0-19) 14.2.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20251025/202510250855.7wiC1wSz-lkp@intel.com/reproduce)
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202510250855.7wiC1wSz-lkp@intel.com/
+
+All warnings (new ones prefixed by >>):
+
+   drivers/iommu/amd/iommu.c: In function 'wait_on_sem':
+>> drivers/iommu/amd/iommu.c:1171:21: warning: variable 'head' set but not used [-Wunused-but-set-variable]
+    1171 |                 int head, tail;
+         |                     ^~~~
 
 
---4uianbie6i5kbvu2
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH] dt-bindings: Remove extra blank lines
-MIME-Version: 1.0
+vim +/head +1171 drivers/iommu/amd/iommu.c
 
-Hi,
+  1153	
+  1154	/****************************************************************************
+  1155	 *
+  1156	 * IOMMU command queuing functions
+  1157	 *
+  1158	 ****************************************************************************/
+  1159	
+  1160	static int wait_on_sem(struct amd_iommu *iommu, u64 data)
+  1161	{
+  1162		struct iommu_cmd *cmd;
+  1163		int i = 0;
+  1164	
+  1165		while (*iommu->cmd_sem != data && i < LOOP_TIMEOUT) {
+  1166			udelay(1);
+  1167			i += 1;
+  1168		}
+  1169	
+  1170		if (i == LOOP_TIMEOUT) {
+> 1171			int head, tail;
+  1172	
+  1173			head = readl(iommu->mmio_base + MMIO_CMD_HEAD_OFFSET);
+  1174			tail = readl(iommu->mmio_base + MMIO_CMD_TAIL_OFFSET);
+  1175	
+  1176			pr_alert("IOMMU %04x:%02x:%02x.%01x: Completion-Wait loop timed out\n",
+  1177				 iommu->pci_seg->id, PCI_BUS_NUM(iommu->devid),
+  1178				 PCI_SLOT(iommu->devid), PCI_FUNC(iommu->devid));
+  1179			/*
+  1180			 * On command buffer completion timeout, step back by 2 commands
+  1181			 * to locate the actual command that is causing the issue.
+  1182			 */
+  1183			tail = (MMIO_CMD_BUFFER_TAIL(tail) - 2) & (CMD_BUFFER_ENTRIES - 1);
+  1184			cmd = (struct iommu_cmd *)(iommu->cmd_buf + tail * sizeof(*cmd));
+  1185			dump_command(iommu_virt_to_phys(cmd));
+  1186	
+  1187			return -EIO;
+  1188		}
+  1189	
+  1190		return 0;
+  1191	}
+  1192	
 
-On Thu, Oct 23, 2025 at 09:37:56AM -0500, Rob Herring (Arm) wrote:
-> Generally at most 1 blank line is the standard style for DT schema
-> files. Remove the few cases with more than 1 so that the yamllint check
-> for this can be enabled.
->=20
-> Signed-off-by: Rob Herring (Arm) <robh@kernel.org>
-> ---
->  .../devicetree/bindings/power/supply/mt6360_charger.yaml     | 1 -
->  .../bindings/power/supply/stericsson,ab8500-charger.yaml     | 1 -
-
-Acked-by: Sebastian Reichel <sebastian.reichel@collabora.com>
-
--- Sebastian
-
---4uianbie6i5kbvu2
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmj8CpEACgkQ2O7X88g7
-+pqEIQ//WxlORWTU9xe37JxSV9323KQXYJPU3wtmtK4U8OlNGoVKu9XeR3w5pitG
-uy2cIzo80EdVMKsq5GKcONqwht31w9+RJaWZmytnll9Wbe3eiW3Lu6Ymx2zopgcW
-OoRuaiPPQUqGdgt7+VKgNt+4kH1sX/ur8z/Zd1rUrK9Xkks09pdqcZ/wpjm6KlQw
-e7x03OaDQ5h17Cg56SgH7NwoYjoUXDuSEKoZDx4wv5DQWh171Ez0/tWvYwYxM7+a
-Pxqt+zTDC1hdh6j1CaiOuwNb7pbdfcOWS7WZC8BPHNYW3eqFk5OQg+tZwEgoK9zV
-GLO0FrPPimJLgL2mfnq5FP0SzYU7FNgJD6gD/qKPzjsQlFLnwn69QCH/nTA9J/ZT
-ajcxgv6FLs3R3CGRptDBEUPOXez3dJeMeaN7hNeoswZNAe9uw1irXmedEzxLDO7S
-8WDVz6MvUAXOdXEcI+pUvuYfGWPwuJHspOgPuOwzO2sqg212V3sScOGcATq2BTDD
-mpc8LtRdKoZ3vUS9cVLRxtqLo8YB5roCBg0HEOexrwJayA074TSteqXhF2LH7LOW
-IcSZ37y+8QgWjTO2aXsiLJjoK2PsOLnvKzBRD5aeLhMd4H1Lw1xCxi75ut/fJPUY
-MLaS7WMtq7TVMRxBrjz8kaiR4opj84mVIXbVgoiISYooEKbbdic=
-=pPcb
------END PGP SIGNATURE-----
-
---4uianbie6i5kbvu2--
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
