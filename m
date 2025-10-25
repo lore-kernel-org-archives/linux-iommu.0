@@ -1,148 +1,218 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 678F286337;
-	Sat, 25 Oct 2025 00:32:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761352360; cv=none; b=P4MCyZFEQ3eiWWmf/eeVPvy6nUlAKvFh9Vc4uD1UpP6ny+3x+cSbBu1u/0MbR5cnr1KsWI2wSeGrpYrmbM29bb3XU+rVNtHRU7wozjj3xgyhAuSbYeLS/0ySBlyaTQb0EpRbsoO0actshPrmegwlhVCglbQAQ057/PClJvSRUo0=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761352360; c=relaxed/simple;
-	bh=xTIYdd8VsKQA2709uB50P3MiBnUYPX1PRmdeoF1Xh0Y=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qegi0pmH4sKpzi28iF3PbZMZtGIjcgApt+71WTqrN9i9spxybyaIdCcadk4ZrwXQ/yXgiUHdWM/prCX71AW3eMCGlcCy4mt8nwdeDo/aV2u56pKNXiuVz6+BdqNhp4CvX180IWCxhckMUNd2Xc/HxBAl1tvtKqPKqSr8eqAX4AU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=g/QfOfCY; arc=none smtp.client-ip=192.198.163.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A33051DD525
+	for <iommu@lists.linux.dev>; Sat, 25 Oct 2025 09:18:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=210.61.82.184
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1761383927; cv=fail; b=C5MM709U2MLHtzwcwfu55j+BGFVooHO1vQrFI0ddlXUdmm/yUf+lwZmnbKWMyy5pnO/5n+gffH8p6z9+NHJmdqb23H3fMO/YMpn7rye+YoQvlMnAsoOAM9uEvQnxAXFP2ElVstVBycUouDiyx5D4nACB8kOx0HPKzsdxncqLL1Y=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1761383927; c=relaxed/simple;
+	bh=6yuA6MtEypvjvSt2JD8x4PFVAklbrdC4W7qnjEeu3KA=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=uPkpHQfAGmfYqgrcAurY1yER5i2wiOKPV7LH9VDPUKl/U5bqxrB0bJvTfn8YZBc9H7zySf35ApTOzC9oWY2uGZ9VkCnvVtkjHd5Hsfb3VePrJwClVQo4hLgYB20fv13LglsNuFV0VH7THLGw3EPWFASfYgUfAE2P+rbJ96IZnPo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com; spf=pass smtp.mailfrom=mediatek.com; dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b=Ju9uRyzg; dkim=pass (1024-bit key) header.d=mediateko365.onmicrosoft.com header.i=@mediateko365.onmicrosoft.com header.b=BAA3bgdl; arc=fail smtp.client-ip=210.61.82.184
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mediatek.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="g/QfOfCY"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1761352358; x=1792888358;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=xTIYdd8VsKQA2709uB50P3MiBnUYPX1PRmdeoF1Xh0Y=;
-  b=g/QfOfCY+tW/TL0U07KsMRuBy3ddrjh6QSoiR+P40GYzat+VJq0pcFoe
-   zrp9F7qNP2fUC2JvA5PqglhxqSTcYurIgR7gCItALIq2DRffvZHQ6FD2V
-   /P0R/eFL6OFLFhbIoGRbwNjUPgZAT3JXVKMX2seHTiy3GHfrisr7tMoeL
-   1bHY0356S47gIKa4LIp7v9OsV3KK04JonRIxPgTjVLerDR2lrpLnDKPwU
-   0y80JLMlXHqWzWe9Ph+JJT/YTmjPEWRPAxw2G9jbTuYS8GnnN0PvzrnmV
-   vf9iOwkExouYuDq8OGLcvfAfP5M7zz/1zeNSeI0yqvolNqx1hqcyjxC+F
-   A==;
-X-CSE-ConnectionGUID: G4UO0P7fTyOIuzsyIYjpbw==
-X-CSE-MsgGUID: rm3Un7p/TrypFb7N7pLC1A==
-X-IronPort-AV: E=McAfee;i="6800,10657,11586"; a="62742492"
-X-IronPort-AV: E=Sophos;i="6.19,253,1754982000"; 
-   d="scan'208";a="62742492"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Oct 2025 17:32:38 -0700
-X-CSE-ConnectionGUID: FHWEFqmfRR+p93DZhDM3RA==
-X-CSE-MsgGUID: 3ziwwJRORWaA6arprqFGBA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.19,253,1754982000"; 
-   d="scan'208";a="215209673"
-Received: from lkp-server02.sh.intel.com (HELO 66d7546c76b2) ([10.239.97.151])
-  by orviesa002.jf.intel.com with ESMTP; 24 Oct 2025 17:32:36 -0700
-Received: from kbuild by 66d7546c76b2 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1vCSCv-000F07-0L;
-	Sat, 25 Oct 2025 00:32:33 +0000
-Date: Sat, 25 Oct 2025 08:31:54 +0800
-From: kernel test robot <lkp@intel.com>
-To: Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>,
-	joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Cc: oe-kbuild-all@lists.linux.dev, suravee.suthikulpanit@amd.com,
-	Vasant.Hegde@amd.com, Santosh.Shukla@amd.com,
-	Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>
-Subject: Re: [PATCH v2] iommu/amd: Enhance "Completion-wait Time-out" error
- message
-Message-ID: <202510250855.7wiC1wSz-lkp@intel.com>
-References: <20251024061041.707-1-dheerajkumar.srivastava@amd.com>
+	dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="Ju9uRyzg";
+	dkim=pass (1024-bit key) header.d=mediateko365.onmicrosoft.com header.i=@mediateko365.onmicrosoft.com header.b="BAA3bgdl"
+X-UUID: 95874c24b18311f0b33aeb1e7f16c2b6-20251025
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+	h=MIME-Version:Content-Transfer-Encoding:Content-ID:Content-Type:In-Reply-To:References:Message-ID:Date:Subject:CC:To:From; bh=6yuA6MtEypvjvSt2JD8x4PFVAklbrdC4W7qnjEeu3KA=;
+	b=Ju9uRyzgQsYRLz+C/4YVs/hom3rsR+NuIZN33HrJIkoZitKqcLfJdNWSYzQrnmb8dQHoZvwJyZCek8vHKvEgbNrRbWcG4T8oXuweG6b+huAARW8NoI0GPV8d8a3APlbDHHl9wXCh8m9TKkG5XC2KzFai/glhSiKetO0kmhrNGEo=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.3.6,REQID:2b5ccbbb-caa5-408b-b293-877c19ff8a45,IP:0,UR
+	L:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:r
+	elease,TS:0
+X-CID-META: VersionHash:a9d874c,CLOUDID:4a6ace58-98d8-4d0a-b903-bc96efd77f78,B
+	ulkID:nil,BulkQuantity:0,Recheck:0,SF:80|81|82|83|102|110|111|836|888|898,
+	TC:-5,Content:0|15|50,EDM:-3,IP:nil,URL:0,File:130,RT:nil,Bulk:nil,QS:nil,
+	BEC:nil,COL:0,OSI:0,OSA:0,AV:0,LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
+X-CID-BVR: 2,SSN|SDN
+X-CID-BAS: 2,SSN|SDN,0,_
+X-CID-FACTOR: TF_CID_SPAM_SNR
+X-CID-RHF: D41D8CD98F00B204E9800998ECF8427E
+X-UUID: 95874c24b18311f0b33aeb1e7f16c2b6-20251025
+Received: from mtkmbs13n2.mediatek.inc [(172.21.101.108)] by mailgw02.mediatek.com
+	(envelope-from <yong.wu@mediatek.com>)
+	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+	with ESMTP id 386159878; Sat, 25 Oct 2025 17:18:35 +0800
+Received: from mtkmbs10n1.mediatek.inc (172.21.101.34) by
+ MTKMBS14N1.mediatek.inc (172.21.101.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.26; Sat, 25 Oct 2025 17:18:33 +0800
+Received: from SG2PR04CU010.outbound.protection.outlook.com (172.21.101.237)
+ by mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server id
+ 15.2.1748.26 via Frontend Transport; Sat, 25 Oct 2025 17:18:33 +0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=Zb4LLLZ1HmgsolNdSzuE2qDOPWufU8Z9hCWG5GBE1+wqAZS6wpgxzTHnGKRzRBgUDTo8vMZWvvWwao9CGJRVuhYpeX1W9b6G5G0pQunnnnxgpkmaXGJikkeJXdYOGmM8DKX2Eb6p2Qw1b+mNeRdZUWgQkIuZpX8Usgdh1KDFONHAQD0FUq1ogN2UkEsis1OQuQ5d70RpnVXZVdvc/Cso1nMck6YuT4XBo+Is/KcMsK7CyjYvxwc3CV0t+NR/e89wx6I+amX9+MghVpgkhEeVdvD3Dby8sNwMH8ZUnv15zIJF4ylWZ7IUIuCzFkUb5jr3TET4VjleUXd5IF7TqCuHUw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=6yuA6MtEypvjvSt2JD8x4PFVAklbrdC4W7qnjEeu3KA=;
+ b=qUGMNvKO4kjHHWNDjj7l3L5xGtnCmPyMS677ZQhWxw1cTC9HokchTuQBIfnGf2KhGVeKW+sHcgKaufg5OA3fxQtex4Nke8rj1a7l9yWv6u2m8JIJXUipz2hW4bA+vafTgcIMJWLb0Hi2DAGp7uXEcz4oDoruTakxUfqz0ts4x6GnQ5+CN8mdRrv0QeKng2OpmnL62MpH50vYwRmVjsv1/ZSiguP8wagSGduhM9SCKhUlw0blaUiJ6Uj4ceqLNtLxQpE8m1shnfbsvHqZ3wF2O3j0l+V22qCpuaPUt2jdxtQSsE+ufIfqFQuYSCsRH1IEFUgMrgfTP05TCoTbJozcYw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mediatek.com; dmarc=pass action=none header.from=mediatek.com;
+ dkim=pass header.d=mediatek.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mediateko365.onmicrosoft.com; s=selector2-mediateko365-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6yuA6MtEypvjvSt2JD8x4PFVAklbrdC4W7qnjEeu3KA=;
+ b=BAA3bgdlblpjB/RrHkFdJVdNRq8lN1JIBz8ke1fWvvpsE2q1wLPUb2PSIcY/zuebRB7IF076QdAhPJ0zUiIMj5pk02PJrQ7QW1Wgt/5tdmIr7JW4KkjZqArnvVfjvam/5ldzgTt9MstSnj4liKlhwpUlJ2FsxUYccC/RSfcJ/Rc=
+Received: from SI2PR03MB5885.apcprd03.prod.outlook.com (2603:1096:4:142::7) by
+ TYZPR03MB6766.apcprd03.prod.outlook.com (2603:1096:400:202::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9253.15; Sat, 25 Oct
+ 2025 09:18:31 +0000
+Received: from SI2PR03MB5885.apcprd03.prod.outlook.com
+ ([fe80::683a:246a:d31f:1c0]) by SI2PR03MB5885.apcprd03.prod.outlook.com
+ ([fe80::683a:246a:d31f:1c0%7]) with mapi id 15.20.9253.013; Sat, 25 Oct 2025
+ 09:18:30 +0000
+From: =?utf-8?B?WW9uZyBXdSAo5ZC05YuHKQ==?= <Yong.Wu@mediatek.com>
+To: "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
+	"johan@kernel.org" <johan@kernel.org>
+CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"j@jannau.net" <j@jannau.net>, "vdumpa@nvidia.com" <vdumpa@nvidia.com>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>, "m.szyprowski@samsung.com"
+	<m.szyprowski@samsung.com>, "wens@csie.org" <wens@csie.org>,
+	"thierry.reding@gmail.com" <thierry.reding@gmail.com>,
+	"stable@vger.kernel.org" <stable@vger.kernel.org>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
+	"robin.clark@oss.qualcomm.com" <robin.clark@oss.qualcomm.com>,
+	"sven@kernel.org" <sven@kernel.org>, AngeloGioacchino Del Regno
+	<angelogioacchino.delregno@collabora.com>
+Subject: Re: [PATCH v3 06/14] iommu/mediatek: fix use-after-free on probe
+ deferral
+Thread-Topic: [PATCH v3 06/14] iommu/mediatek: fix use-after-free on probe
+ deferral
+Thread-Index: AQHcQX4K5/AUWCz4X0S+LMu+GDv4FrTSnasA
+Date: Sat, 25 Oct 2025 09:18:30 +0000
+Message-ID: <7eb3fd3a200396ab5cd5b9227b31eeddab41db80.camel@mediatek.com>
+References: <20251020045318.30690-1-johan@kernel.org>
+	 <20251020045318.30690-7-johan@kernel.org>
+In-Reply-To: <20251020045318.30690-7-johan@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=mediatek.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: SI2PR03MB5885:EE_|TYZPR03MB6766:EE_
+x-ms-office365-filtering-correlation-id: c53e8755-937a-4c57-fb3a-08de13a776b9
+x-ld-processed: a7687ede-7a6b-4ef6-bace-642f677fbe31,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;ARA:13230040|376014|7416014|366016|1800799024|38070700021;
+x-microsoft-antispam-message-info: =?utf-8?B?eGprcmhhbHdJTFUvcHBHd1M2b1ZZNkNSSlo5eW5hM1lZOU9UZFp0a2xLbTdx?=
+ =?utf-8?B?REZGZ3pteldlQTBMWHFPc3hNZDF1TnplWnZ4Zlo2dFk4ZlNqcXVzcGRXczJa?=
+ =?utf-8?B?bmo1QnFsSXRHNllxZDBxVzZZZG1XS0ZZeVNrOEp0VkhrRXhEcjBnU1FyN1lx?=
+ =?utf-8?B?TWN3c05xcmVnYlRTVTYxVzdIN3NvMUR6SXNOUzF1Njh5aTNKcitGcDFQWGNu?=
+ =?utf-8?B?M0tyRVVIUzI0Q09OanZKN0xJbERmT3RKdDJBSWViRXQ2THVxY0lyeElZU0hv?=
+ =?utf-8?B?RVhvZXl4cmVOWHVETkc2RjZQZmkzazhUVXZTMFlLWGpyL1lmN3dkeTJEd3U3?=
+ =?utf-8?B?UlhKVCtVU0l5aFM1QU5WVHJQWkR0eTN2Qk9NaUtHS0x3VTRFbFQvWnoycFkz?=
+ =?utf-8?B?aWdEblFKVCtBcWdtNXRBQm5DaEZnTEVNeEhPeTJoNmdMR1QwMjY3RWxLSG9y?=
+ =?utf-8?B?YUxFT3MvOFBKYmxRTHVpSU5GWFo3b0NCRGZ3anQwU2kzY3lZRDJQbDRkRVZw?=
+ =?utf-8?B?L0w1STBWWEQraEJsbUUxSkNldzJoOHdOMVArYUxyZVNYaThmOVY4dnZJdE05?=
+ =?utf-8?B?SHVHOEl3emczMHNiOVY2b1JkTjlVRHhnZmZVS3RuY0ZCL09uNnFkd2lON3Ax?=
+ =?utf-8?B?M2JMUWZMOVV6RDV6emh3ZVI0SEc3L3BBYU5UZUw2VEovdCtRRzhWR01lZmtm?=
+ =?utf-8?B?TjdhSFl4NHdqeXhHY2Ftd2t1T24rbS9uK05yS0JWQlhPREp6Q0ZqMVhmMHYr?=
+ =?utf-8?B?N1VZTUMva2RQY2JBRWlaVWZGQ0Vtek90L3lkTjJKd1JzeUFKSTY0MEdJSDhi?=
+ =?utf-8?B?eW1yS3RjeFNhOEtaT2dlZHd4bGg1QWVSbjJnWHhBcW92WHNyVFJrTFVncFVG?=
+ =?utf-8?B?QjFlNXdOOVJlMzNKbnpGdEM3WWF1UWd3ZlFZRm9hUlo0WkFaUG1EbkhvUlQv?=
+ =?utf-8?B?YU9icklEaUJVa2ZjOGJWeVZhM1hud1lSZk1NL0U3RzlKdFVKbEJMTHpsTlpy?=
+ =?utf-8?B?bWNVdXZpS3JWRVo0SzNueWQ1NXRSSmIxZDNabTNiYlBPZ1VqZ0dHNDVaQ0JW?=
+ =?utf-8?B?WC9qYmZpM21JRkRPNSs5dkRKcnM2dHRqb21NYWFwa282V0RUWmd3bUppMkgr?=
+ =?utf-8?B?czhRNzJWU3dKR1VSSVhnRHJpYlZGWTF3aVZrS3JzeVJQa0xGaEJSblFIOWEw?=
+ =?utf-8?B?QzloTlE2T0h6c1hHd0VMR2hac2NFWWlWZ25jczJpa1NjTFdPdGxNR2JreVQ1?=
+ =?utf-8?B?aHpZZVFzYllEQTZLbzM3eklSS3FVMEtmTWczcXRHWUdDeUxCRjVjd3dTb2xJ?=
+ =?utf-8?B?RktTc3NiQ1pnMU1DSlpPSEx6d2N3VkJsbXI4TVlxSk5sbW80eE1yYm9LeDRL?=
+ =?utf-8?B?TUNpVFo1cFJUVDF2bCtHeGJwR1FMU2owS1A2dkFoZEVYeVNIbC9rMDlJZENR?=
+ =?utf-8?B?NUd3R3B4THlJdWorcDVQYndEd2NwZG9BeHBFd1dSRkE0aVVqbnNmb1FJRTBD?=
+ =?utf-8?B?aUJ3V1VHZkNNYlJDY0NrVUhXTE1oOC9UeGwyWGhNRno5SFV5aTV1UHBuNGJT?=
+ =?utf-8?B?b1NjR0ltYS92UjNuTTlZNzQwbHhRandsdzgrdmVNRzl1OGQvS2ptblFVdGFO?=
+ =?utf-8?B?MGF3c3k0VzFoTG9TMTEzbCtCcVhsWHlheGVkQmtNOW5Xc0N5SSt0YUlDMVpL?=
+ =?utf-8?B?VzlVOUFGVXNGb2VDa0dud08xNlNITEplVDNNejFkdzRzMWdTbnQ2Z1pJM0RE?=
+ =?utf-8?B?WmV3VnZNZkxyd1lOY0wvdUJoZGE5U2lQTC83U2xyQ2gvbTVyVUNHcGZNNkVU?=
+ =?utf-8?B?cTBPZDFXd1d2YVB2RTlsZXlsMDIvS255bVhLaXF4SEQzc1FjcFVOTFc5aFNL?=
+ =?utf-8?B?Zm9zbkpFeEliWEI2cW5ROHZzQ0s4a3ZFUER2cjlTa1FEZStXTWlTcVE1ckpv?=
+ =?utf-8?B?Zis3VWlSUmRWc3l4RGF4ZUliS2lKa29XbUVIS1FhS1NMQUU1S1hxbkVESEpj?=
+ =?utf-8?B?OVIrNjBucEU4WnZHemtoUklPdjRwSUVvVHExMyt4bDFpWkNFUFRhQ203Kzlz?=
+ =?utf-8?Q?m8Iupw?=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SI2PR03MB5885.apcprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(366016)(1800799024)(38070700021);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?UGoxNmhXTFlIOVpZQkhDMk9XSmFOUEx5Mm5hR29MUWV6WHRhcE84Tm1OQ1ZH?=
+ =?utf-8?B?em44OUFHYnJsQ2lnUnYwdHhGSjZLeUc2QjNYa1NFL2pDeTc1ZTA1MXBxTy9n?=
+ =?utf-8?B?b1UzVWVVS3BwWVVNajh1NTdFK1hIVEVYcXdFbEUvVDUzS2lONktrdGZGY29B?=
+ =?utf-8?B?ZU5pRGdPcUplTnkzakJ2aXFlRXNUSkpHZEUvMGFuT3RmTmNyV0JueWhnNVVD?=
+ =?utf-8?B?bG56Q2k0VTYvTDBvZWZJa3laYzF4eTl4T203MGp1aEQ1V1E5VWwybms5b2Jq?=
+ =?utf-8?B?eS9zUmRVVWpyS0llcEc5QlJCdkc2S3p3aGdxTUl5VHczTXp1bk9ZWlFzbnhI?=
+ =?utf-8?B?NGIydEk4VlIwMU1xdzBrNlhVazhXanR5ZXZhY1V4SFU1QlZLTjRPcytHclZ3?=
+ =?utf-8?B?UlhsZWVKZG9NdDlYTGpUcHFJS1dhWXl1TEhPWVhyRmwwMWxoVmxoekdkRXM0?=
+ =?utf-8?B?aGlzZ2JDRzZRb25ZQkg3VlUyTkNubHI2YnB6bHFLRUtZdVZLYnp1Qlk5SHVJ?=
+ =?utf-8?B?TmVKNTdTVlZNYnI3ODRrL2s1eXo3RW15N2RqZU1GVW1NQSswNEtFcVNDN1dO?=
+ =?utf-8?B?NVhQWVE1YWowQUJUa1hra0UwV0ZqbEttcVhLWWRkR3NtdnpJMkhsWmZCanU1?=
+ =?utf-8?B?WmhPQWFYMGFBdnowS1QxRTNWVkpIUEtEZkpqc2x3dldiVDF3NktrVXVxSmpY?=
+ =?utf-8?B?cTZveXpyVU1jeTZEbm5YZTZZaUpTVzgzWmpzalZwMDJicUVQWlhsL1dxUlkv?=
+ =?utf-8?B?VGh4emZVSHVkeDRzU25UNERQRUN1UEM3WmNXZkdzMlJQdjBDQmtqenovbEow?=
+ =?utf-8?B?dk94bmJhK0dIU0E4enYvb1A5M25wczRpZGNieWlQQmtsak1IME1EQUpBUU5X?=
+ =?utf-8?B?SXI4YVVpK242a2pqWTBLeXZ1V2hWOXNVZ1pXUFd1Z0oxRkFXemVVRlk2S0RL?=
+ =?utf-8?B?NFJ0eU52UjRDaUxhQi85NVZoSmtyTFEwSklMRjJSaVd0YWNydW9VN3hPc2Fa?=
+ =?utf-8?B?MDgyZmRQLzN2V2tzYng4N3VOTW9iRisyZ0x0K2xVYS91UnNjMktsNXAxMURa?=
+ =?utf-8?B?Qi9XdEpPeHQ4Q1RySXhWdSt2VU5NSldXWEVyTkFIbU8zOHFpbmdkQW1QQmpF?=
+ =?utf-8?B?U2xXZHU1NUNTS2VWQzJzNFRPcStzdDBWL2xIdDNKYW91dGg2cHFSb3k3N0tZ?=
+ =?utf-8?B?bkdwR2MyZW1YaW5pc1VKVzJMcmg3Q1RLSElXcmVkT05FS0pDejJLcXVWNFZr?=
+ =?utf-8?B?NDlzZTJxLzZ2Tmw0QUtCY1NlTTQrcmpTSUd1Rkx1N2VOM0dUOXppbmpBM2wx?=
+ =?utf-8?B?eVFyYjgwZitsaUp6WjEvTnpuMnNZWGdPSTgwZitmdlRmZWtjQUpEb1BzNys3?=
+ =?utf-8?B?T3dTYUNvME9mdEh4NUJOK09qcE5HVGxwdGk2K1FHOFZVeTNMdysrTHRPbzlt?=
+ =?utf-8?B?QXRxZnFvR29hT0ZEaG8xMm5zUlJvMG5tK1lNRUczNnprTUV2QVl5TTd5d2xL?=
+ =?utf-8?B?VUJxS1Bpc0tsczhGSUxROHFKaWl3OHI3TUo2VVV5bUpIVUc0ZEdRWkxYZHRi?=
+ =?utf-8?B?Q3RYV2tpN1hYejlyZWs4NGgwMkVwNGM0Zmx0SFhBKzgrZmlyNkpnZERJNzkw?=
+ =?utf-8?B?UUQwRyt6V1VWRnYwMHR6b2IzL1o3TW9UTjhOYmJ2NENkcGhzdG0rT1Q2Z1N3?=
+ =?utf-8?B?amIydWtlSHgzcElSbmREcWQwSkFUcXE5Z0RlNVEyT3pzUXN6TU92NExIT21l?=
+ =?utf-8?B?VjNHWXpqc2JvRlJtUkRoa2RsRTlCWW1NdzRvdkF4WElOb0cwbUdadmEzb1hv?=
+ =?utf-8?B?RTN0Rmd3QzRXRDZ1OE5PYVdvdG01eHc4ZURabGtUVkxva1c4UjRoYlRUTW04?=
+ =?utf-8?B?ZnJMRzhycXFEUEh6Rllqc0U0VFVWbG5VVXdqYWh6SnhYYkxjU0ZWNkZBTDE3?=
+ =?utf-8?B?c1h5STFTYnBJc29mQ2phdGRwUzRvUHdrdjV3aUxKSENMZllHeEI4aWtJQ1c3?=
+ =?utf-8?B?MHFnN2NnYk1uelNRa3B4WWxrSWVSNytaWGZxSStuVVBOZmhUSjFFMFBzbm9S?=
+ =?utf-8?B?VVdNRTAydnRDY3VhSFQ0eHgrcE1ya3hpOVUrc2JSZXkvZHZSTEtXYXpPNmgr?=
+ =?utf-8?Q?vRYAI2uE7TRIlf65ZPL2DWArz?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <EA141B9BAC759140AE084156A9BA7A00@apcprd03.prod.outlook.com>
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20251024061041.707-1-dheerajkumar.srivastava@amd.com>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SI2PR03MB5885.apcprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c53e8755-937a-4c57-fb3a-08de13a776b9
+X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Oct 2025 09:18:30.4933
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a7687ede-7a6b-4ef6-bace-642f677fbe31
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: HfFrw2dtUcWoB5pcCfwvpz3sNu0KL7hrjt/OF1j7HYxvUwRLuROhE6ksvC2glcvrMQfr9XrhNb7r8MUIUOThRQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYZPR03MB6766
+X-MTK: N
 
-Hi Dheeraj,
-
-kernel test robot noticed the following build warnings:
-
-[auto build test WARNING on linus/master]
-[also build test WARNING on v6.18-rc2 next-20251024]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Dheeraj-Kumar-Srivastava/iommu-amd-Enhance-Completion-wait-Time-out-error-message/20251024-141312
-base:   linus/master
-patch link:    https://lore.kernel.org/r/20251024061041.707-1-dheerajkumar.srivastava%40amd.com
-patch subject: [PATCH v2] iommu/amd: Enhance "Completion-wait Time-out" error message
-config: x86_64-buildonly-randconfig-003-20251025 (https://download.01.org/0day-ci/archive/20251025/202510250855.7wiC1wSz-lkp@intel.com/config)
-compiler: gcc-14 (Debian 14.2.0-19) 14.2.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20251025/202510250855.7wiC1wSz-lkp@intel.com/reproduce)
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202510250855.7wiC1wSz-lkp@intel.com/
-
-All warnings (new ones prefixed by >>):
-
-   drivers/iommu/amd/iommu.c: In function 'wait_on_sem':
->> drivers/iommu/amd/iommu.c:1171:21: warning: variable 'head' set but not used [-Wunused-but-set-variable]
-    1171 |                 int head, tail;
-         |                     ^~~~
-
-
-vim +/head +1171 drivers/iommu/amd/iommu.c
-
-  1153	
-  1154	/****************************************************************************
-  1155	 *
-  1156	 * IOMMU command queuing functions
-  1157	 *
-  1158	 ****************************************************************************/
-  1159	
-  1160	static int wait_on_sem(struct amd_iommu *iommu, u64 data)
-  1161	{
-  1162		struct iommu_cmd *cmd;
-  1163		int i = 0;
-  1164	
-  1165		while (*iommu->cmd_sem != data && i < LOOP_TIMEOUT) {
-  1166			udelay(1);
-  1167			i += 1;
-  1168		}
-  1169	
-  1170		if (i == LOOP_TIMEOUT) {
-> 1171			int head, tail;
-  1172	
-  1173			head = readl(iommu->mmio_base + MMIO_CMD_HEAD_OFFSET);
-  1174			tail = readl(iommu->mmio_base + MMIO_CMD_TAIL_OFFSET);
-  1175	
-  1176			pr_alert("IOMMU %04x:%02x:%02x.%01x: Completion-Wait loop timed out\n",
-  1177				 iommu->pci_seg->id, PCI_BUS_NUM(iommu->devid),
-  1178				 PCI_SLOT(iommu->devid), PCI_FUNC(iommu->devid));
-  1179			/*
-  1180			 * On command buffer completion timeout, step back by 2 commands
-  1181			 * to locate the actual command that is causing the issue.
-  1182			 */
-  1183			tail = (MMIO_CMD_BUFFER_TAIL(tail) - 2) & (CMD_BUFFER_ENTRIES - 1);
-  1184			cmd = (struct iommu_cmd *)(iommu->cmd_buf + tail * sizeof(*cmd));
-  1185			dump_command(iommu_virt_to_phys(cmd));
-  1186	
-  1187			return -EIO;
-  1188		}
-  1189	
-  1190		return 0;
-  1191	}
-  1192	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+T24gTW9uLCAyMDI1LTEwLTIwIGF0IDA2OjUzICswMjAwLCBKb2hhbiBIb3ZvbGQgd3JvdGU6DQo+
+IEV4dGVybmFsIGVtYWlsIDogUGxlYXNlIGRvIG5vdCBjbGljayBsaW5rcyBvciBvcGVuIGF0dGFj
+aG1lbnRzIHVudGlsDQo+IHlvdSBoYXZlIHZlcmlmaWVkIHRoZSBzZW5kZXIgb3IgdGhlIGNvbnRl
+bnQuDQo+IA0KPiANCj4gVGhlIGRyaXZlciBpcyBkcm9wcGluZyB0aGUgcmVmZXJlbmNlcyB0YWtl
+biB0byB0aGUgbGFyYiBkZXZpY2VzDQo+IGR1cmluZw0KPiBwcm9iZSBhZnRlciBzdWNjZXNzZnVs
+IGxvb2t1cCBhcyB3ZWxsIGFzIG9uIGVycm9ycy4gVGhpcyBjYW4NCj4gcG90ZW50aWFsbHkgbGVh
+ZCB0byBhIHVzZS1hZnRlci1mcmVlIGluIGNhc2UgYSBsYXJiIGRldmljZSBoYXMgbm90DQo+IHll
+dA0KPiBiZWVuIGJvdW5kIHRvIGl0cyBkcml2ZXIgc28gdGhhdCB0aGUgaW9tbXUgZHJpdmVyIHBy
+b2JlIGRlZmVycy4NCj4gDQo+IEZpeCB0aGlzIGJ5IGtlZXBpbmcgdGhlIHJlZmVyZW5jZXMgYXMg
+ZXhwZWN0ZWQgd2hpbGUgdGhlIGlvbW11IGRyaXZlcg0KPiBpcw0KPiBib3VuZC4NCj4gDQo+IEZp
+eGVzOiAyNjU5MzkyODU2NGMgKCJpb21tdS9tZWRpYXRlazogQWRkIGVycm9yIHBhdGggZm9yIGxv
+b3Agb2YNCj4gbW1fZHRzX3BhcnNlIikNCj4gQ2M6IHN0YWJsZUB2Z2VyLmtlcm5lbC5vcmcNCj4g
+Q2M6IFlvbmcgV3UgPHlvbmcud3VAbWVkaWF0ZWsuY29tPg0KPiBBY2tlZC1ieTogUm9iaW4gTXVy
+cGh5IDxyb2Jpbi5tdXJwaHlAYXJtLmNvbT4NCj4gU2lnbmVkLW9mZi1ieTogSm9oYW4gSG92b2xk
+IDxqb2hhbkBrZXJuZWwub3JnPg0KPiAtLS0NCg0KUmV2aWV3ZWQtYnk6IFlvbmcgV3UgPHlvbmcu
+d3VAbWVkaWF0ZWsuY29tPg0KDQo=
