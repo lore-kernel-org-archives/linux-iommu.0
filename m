@@ -1,97 +1,110 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from out30-101.freemail.mail.aliyun.com (out30-101.freemail.mail.aliyun.com [115.124.30.101])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 044A118DF9D;
-	Sun, 26 Oct 2025 07:38:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46ABA22F386
+	for <iommu@lists.linux.dev>; Sun, 26 Oct 2025 07:55:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.101
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761464314; cv=none; b=CJkObRie3z4ysHH/9PJt5Wf9qNe6r2CWDHECjKCblqvLBZoFUkEFBwH0+7oSiQgnzov+TZnUPKpNxQosyVxJN7uW4Vn4pK/09ndQCsb8tFcGdKejXmebGDNs8zZKdEckfujmQufNbE6zDMcfgZmtCV/CsYNwjsN5wGKJxuPFtvQ=
+	t=1761465315; cv=none; b=c5WpWJ3uusqJxwGaX2+eUjpy+sMIQp4CgxTNpll/X6SqczslIv3F8M+YkWCp+hnTtEgdw4bg3rvM2Ts57Ruls8m6PXYOrp2lhbUEC9S0Wq1kvF21w489aXOL9s0OpzUtm1s7iLUwwD0bcBEJDvAjPOLo8QYF7Q9PAYDF+xtIxgA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761464314; c=relaxed/simple;
-	bh=tE6duDWkMhf/izPfcVJAu0QGF5RniuWMZJNurHMPV4k=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Pvjo59lmC7L3AhzoknXbtAwzHpgg02LaZ5Bws7X3EvFzR+3dy0wpTEQcxibNokSGx0NoqqRDtjL+SK9+jYrkO2GMhZpKcFnJf5lRNItgfh0UC7CM5Goc+1xPlGkqngL6+SbIrIJQR5bA2+3I7PiEDytX+AEAIuTTC3JyRj4ZSNw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=m+Fmvy/T; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1761465315; c=relaxed/simple;
+	bh=6gQ0b96ksH6i06Ro3IgrAKOKydTsy37oius49iYhX08=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=LnLwzwA/LgJlkXL7oXfZ+BiN6rOX1ALw1dg3gZqsCq1HuCCGHbxP5xGZ1v609veGYS+qh3ItS6XzKWJVZZBT7OqRPaA5rGXpU5aAv4J8WIGy47pgHj0ngDZvsKY1xriEBv+2Br1SDZs4SH7tlV27OKoQGShBhNfhFAkMrWAm9Gs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=w1EvaNvl; arc=none smtp.client-ip=115.124.30.101
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="m+Fmvy/T"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBEC0C4CEE7;
-	Sun, 26 Oct 2025 07:38:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1761464312;
-	bh=tE6duDWkMhf/izPfcVJAu0QGF5RniuWMZJNurHMPV4k=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=m+Fmvy/TkbKsHE/ly3nNuV5cMvplX6wPfLQ8hDaDmyX3wLacnUE7JOG/nZvuUxvmv
-	 CczVISfw5M2fl/jL4dxMpQZjR+1heTwgUYiFF7wTs743d7UeCv0GILFXzjGlxgVBC0
-	 oE76qdMbU/6QmYSolZLhh/1ehXnuAH4Wfx1TxENucSoXAohh6TFciSEQZaKMP7NYm1
-	 JNqz8+TYhassoC4ST69Mi5FA0Qr+hRmr+2UhbjR5EKFyOegX19oAs4ZZ/0v57u0VQ0
-	 /l9R6yk8RlGVj+rmA/30TcaUiEVUwLELSxYEgJrK1wn3ZV8WITcnHNlOkzodvgsSHW
-	 uuxeQvWuJFb7A==
-Date: Sun, 26 Oct 2025 09:38:28 +0200
-From: Leon Romanovsky <leon@kernel.org>
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Robin Murphy <robin.murphy@arm.com>,
-	Russell King <linux@armlinux.org.uk>,
-	Juergen Gross <jgross@suse.com>,
-	Stefano Stabellini <sstabellini@kernel.org>,
-	Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-	Richard Henderson <richard.henderson@linaro.org>,
-	Matt Turner <mattst88@gmail.com>,
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-	Helge Deller <deller@gmx.de>,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	Christophe Leroy <christophe.leroy@csgroup.eu>,
-	Geoff Levand <geoff@infradead.org>,
-	"David S. Miller" <davem@davemloft.net>,
-	Andreas Larsson <andreas@gaisler.com>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-	"H. Peter Anvin" <hpa@zytor.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	xen-devel@lists.xenproject.org, linux-alpha@vger.kernel.org,
-	linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
-	linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org,
-	Magnus Lindholm <linmag7@gmail.com>, Jason Gunthorpe <jgg@ziepe.ca>
-Subject: Re: [PATCH v5 00/14] Remove DMA map_page/map_resource and their
- unmap callbacks
-Message-ID: <20251026073828.GC12554@unreal>
-References: <CGME20251015091313eucas1p2426ae40b579d7f3b4f29b46e0e788c0d@eucas1p2.samsung.com>
- <20251015-remove-map-page-v5-0-3bbfe3a25cdf@kernel.org>
- <4a47088d-6542-45f2-917b-c91f7dd1eb1a@samsung.com>
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="w1EvaNvl"
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1761465308; h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
+	bh=gbW6lsAeQnITBSvhA7va7FPK1N1OCTuc7ZM09ubMnwE=;
+	b=w1EvaNvl6VFnpLbbIhM9EH3J+k5X0NviL/4AMSLRUIkIBb+piVyJkusnscjydLGVvKu8spPiicc04LDecNvsFhKSVDF04tSt5ysDuE6zx/nxRA6UgIWJq00z4h8gD83xtiiQbxddnm0/V0kAPbJPASglw5DenO0U0CUmqenwv14=
+Received: from 30.246.176.102(mailfrom:xueshuai@linux.alibaba.com fp:SMTPD_---0Wqyle5w_1761465304 cluster:ay36)
+          by smtp.aliyun-inc.com;
+          Sun, 26 Oct 2025 15:55:06 +0800
+Message-ID: <3db524e7-b6ce-4652-8420-fdb4639ac73a@linux.alibaba.com>
+Date: Sun, 26 Oct 2025 15:55:04 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4a47088d-6542-45f2-917b-c91f7dd1eb1a@samsung.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 9/9] vfio/pci: Add dma-buf export support for MMIO
+ regions
+To: Jason Gunthorpe <jgg@nvidia.com>, Leon Romanovsky <leon@kernel.org>
+Cc: Alex Williamson <alex.williamson@redhat.com>,
+ Leon Romanovsky <leonro@nvidia.com>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ Bjorn Helgaas <bhelgaas@google.com>,
+ =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+ dri-devel@lists.freedesktop.org, iommu@lists.linux.dev,
+ Jens Axboe <axboe@kernel.dk>, Joerg Roedel <joro@8bytes.org>,
+ kvm@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
+ linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-media@vger.kernel.org, linux-mm@kvack.org, linux-pci@vger.kernel.org,
+ Logan Gunthorpe <logang@deltatee.com>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Robin Murphy <robin.murphy@arm.com>, Sumit Semwal <sumit.semwal@linaro.org>,
+ Vivek Kasireddy <vivek.kasireddy@intel.com>, Will Deacon <will@kernel.org>
+References: <cover.1760368250.git.leon@kernel.org>
+ <72ecaa13864ca346797e342d23a7929562788148.1760368250.git.leon@kernel.org>
+ <20251022125012.GB244727@nvidia.com>
+From: Shuai Xue <xueshuai@linux.alibaba.com>
+In-Reply-To: <20251022125012.GB244727@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Mon, Oct 20, 2025 at 06:27:32PM +0200, Marek Szyprowski wrote:
-> Dear All,
-> 
-> On 15.10.2025 11:12, Leon Romanovsky wrote:
-> > This series is a combination of previous two steps [1, 2] to reduce
-> > number of accesses to struct page in the code "below" DMA layer.
-> >
-> > In this series, the DMA .map_page/.map_resource/.unmap_page/.unmap_resource
-> > callbacks are converted to newly introduced .map_phys/.unmap_phys interfaces.
-> 
-> I would like to have some acks from respective arch maintainers before 
-> applying this patchset.
 
-If to judge by git log and lore for some of these arch (didn't check all),
-you won't get any response and will need to make a call by yourself.
 
-Thanks
+在 2025/10/22 20:50, Jason Gunthorpe 写道:
+> On Mon, Oct 13, 2025 at 06:26:11PM +0300, Leon Romanovsky wrote:
+>> From: Leon Romanovsky <leonro@nvidia.com>
+>>
+>> Add support for exporting PCI device MMIO regions through dma-buf,
+>> enabling safe sharing of non-struct page memory with controlled
+>> lifetime management. This allows RDMA and other subsystems to import
+>> dma-buf FDs and build them into memory regions for PCI P2P operations.
+>>
+>> The implementation provides a revocable attachment mechanism using
+>> dma-buf move operations. MMIO regions are normally pinned as BARs
+>> don't change physical addresses, but access is revoked when the VFIO
+>> device is closed or a PCI reset is issued. This ensures kernel
+>> self-defense against potentially hostile userspace.
+> 
+> Let's enhance this:
+> 
+> Currently VFIO can take MMIO regions from the device's BAR and map
+> them into a PFNMAP VMA with special PTEs. This mapping type ensures
+> the memory cannot be used with things like pin_user_pages(), hmm, and
+> so on. In practice only the user process CPU and KVM can safely make
+> use of these VMA. When VFIO shuts down these VMAs are cleaned by
+> unmap_mapping_range() to prevent any UAF of the MMIO beyond driver
+> unbind.
+> 
+> However, VFIO type 1 has an insecure behavior where it uses
+> follow_pfnmap_*() to fish a MMIO PFN out of a VMA and program it back
+> into the IOMMU. This has a long history of enabling P2P DMA inside
+> VMs, but has serious lifetime problems by allowing a UAF of the MMIO
+> after the VFIO driver has been unbound.
 
-> 
-> Best regards
-> -- 
-> Marek Szyprowski, PhD
-> Samsung R&D Institute Poland
-> 
+Hi, Jason,
+
+Can you elaborate on this more?
+
+ From my understanding of the VFIO type 1 implementation:
+
+- When a device is opened through VFIO type 1, it increments the
+   device->refcount
+- During unbind, the driver waits for this refcount to drop to zero via
+   wait_for_completion(&device->comp)
+- This should prevent the unbind() from completing while the device is
+   still in use
+
+Given this refcount mechanism, I do not figure out how the UAF can
+occur.
+
+Thanks.
