@@ -1,176 +1,205 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f201.google.com (mail-yw1-f201.google.com [209.85.128.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B236BF9C1;
-	Sun, 26 Oct 2025 15:33:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FE1226B0B3
+	for <iommu@lists.linux.dev>; Sun, 26 Oct 2025 20:36:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761492814; cv=none; b=jFJA2oDK+0ALqHN1uGmhIVlPxqj0abKpJXRhdzeJWhygt6DE0tSXe69XLRz2NAwPy9f+ZG4htbgCzq2dWWFq65Liy923K6VBUAZJMris7qEZWrs+gfGzFq+seNzM3peSoZspLzQoVAjI2Q9PIstMEyaj/1wQCyQB8s0nIw5VM0A=
+	t=1761510978; cv=none; b=eg9SKlgOdO8w5wHKczRo4JvYXg7ajwiyybO2yiHWySP+NhTUhZNrMnCG+3hPAVImEMsaQD8FzFz668oDRrIcXAixOpHSI+msvC5/db3nyLafECdYhhcZllGRU+n3WvN6xKakHUfk3c9u2utsQI705/I5BAlsLiw0i4snWBR8qeA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761492814; c=relaxed/simple;
-	bh=xcyneBcmqEXh1gtIGSMH8hZ6blwtbmsHjpXAgiQk4og=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WBi40C7la0e99wtQN9qJd9atfOEQZLYyChbkC5OT3+TYnTRRqvC/X5BBM3DpoDsJF7hKWbZNrvLZ+FDFnlwgQfbAeXq8lThfNd9UFXpnH5cnuX0tY7Rf+Cg28zsOx38Z+f6gdMyMnZ5uP+Qc0dGmWrp32upcUB5d6PoCq3xbUk8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fMOgmYUh; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1761510978; c=relaxed/simple;
+	bh=EtPHM/rxvf1s6wpudENnj+c1ViV9senew6m5yYbiKog=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=LVboPAty4zzzzW507nT22PXTFrXwN06cCmB2bSIsVmP7PKoJOOQ1zNKD5sJL57EjrupCYqBgjmGXOUzS8QbVETRmSqE9pDogO+r928XoOOhK6rKqNWLUDDUWp28FB8hCggb9+9iPhdktLl/didX5lvnuwQ+fUzqZb5bzz1ZFMWM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--surenb.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=CuT4oOGz; arc=none smtp.client-ip=209.85.128.201
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--surenb.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fMOgmYUh"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08561C4CEE7;
-	Sun, 26 Oct 2025 15:33:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1761492813;
-	bh=xcyneBcmqEXh1gtIGSMH8hZ6blwtbmsHjpXAgiQk4og=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=fMOgmYUhH5CWiLpmpAcqvE2aJlNaa9a4g/kR0KAf7QFm3VqHWnqDGFH6fiFiRXAM7
-	 719RKdGnJaRpD5lYwjB9/+FGx+ADZLfA27ZyDl+Nos3NEnpOzfd+82u1znie4kyKSe
-	 ZeWvy7BGLefzertq5pdnKd+TYG5J5Um+zmnxR3uIjWn6yiEJa551R7aZZa14y0K8WO
-	 d7ZGFTNbDc10a6h73Aa5T1L5ejIPcXo3g9WBxrp6mfEbYBuGSKF70AzOnB1Vkp0OvV
-	 dj/+Pk8065yu30LhoAjkLSPUFLhaPWozHEb6dt0QS2vN8PkeW5pBlRGGfsWvGvs3J8
-	 fmkxtoOgOOKWQ==
-Date: Sun, 26 Oct 2025 21:03:07 +0530
-From: Manivannan Sadhasivam <mani@kernel.org>
-To: "Rob Herring (Arm)" <robh@kernel.org>
-Cc: Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Stephen Boyd <sboyd@kernel.org>, 
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Thomas Zimmermann <tzimmermann@suse.de>, 
-	Andrzej Hajda <andrzej.hajda@intel.com>, Robert Foss <rfoss@kernel.org>, Vinod Koul <vkoul@kernel.org>, 
-	Moritz Fischer <mdf@kernel.org>, Xu Yilun <yilun.xu@intel.com>, 
-	Bartosz Golaszewski <brgl@bgdev.pl>, Guenter Roeck <linux@roeck-us.net>, 
-	Andi Shyti <andi.shyti@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>, Georgi Djakov <djakov@kernel.org>, 
-	Thomas Gleixner <tglx@linutronix.de>, Joerg Roedel <joro@8bytes.org>, 
-	Jassi Brar <jassisinghbrar@gmail.com>, Mauro Carvalho Chehab <mchehab@kernel.org>, 
-	Lee Jones <lee@kernel.org>, Miquel Raynal <miquel.raynal@bootlin.com>, 
-	Richard Weinberger <richard@nod.at>, Vignesh Raghavendra <vigneshr@ti.com>, 
-	Andrew Lunn <andrew+netdev@lunn.ch>, "David S. Miller" <davem@davemloft.net>, 
-	Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, 
-	Paolo Abeni <pabeni@redhat.com>, Johannes Berg <johannes@sipsolutions.net>, 
-	Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kwilczynski@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, 
-	Kishon Vijay Abraham I <kishon@kernel.org>, Sebastian Reichel <sre@kernel.org>, 
-	Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, Mark Brown <broonie@kernel.org>, 
-	Mathieu Poirier <mathieu.poirier@linaro.org>, Philipp Zabel <p.zabel@pengutronix.de>, 
-	Olivia Mackall <olivia@selenic.com>, Herbert Xu <herbert@gondor.apana.org.au>, 
-	Daniel Lezcano <daniel.lezcano@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org, 
-	dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, dmaengine@vger.kernel.org, 
-	linux-fpga@vger.kernel.org, linux-gpio@vger.kernel.org, linux-hwmon@vger.kernel.org, 
-	linux-i2c@vger.kernel.org, linux-iio@vger.kernel.org, linux-input@vger.kernel.org, 
-	linux-pm@vger.kernel.org, iommu@lists.linux.dev, linux-media@vger.kernel.org, 
-	linux-mtd@lists.infradead.org, netdev@vger.kernel.org, linux-wireless@vger.kernel.org, 
-	linux-pci@vger.kernel.org, linux-phy@lists.infradead.org, linux-pwm@vger.kernel.org, 
-	linux-remoteproc@vger.kernel.org, linux-crypto@vger.kernel.org, linux-sound@vger.kernel.org, 
-	linux-usb@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: Remove extra blank lines
-Message-ID: <hodycue2cqii22epdawn2pqx7twy5mzgrrlb53u7nj4h5w37ek@yvptyb2u6jj2>
-References: <20251023143957.2899600-1-robh@kernel.org>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="CuT4oOGz"
+Received: by mail-yw1-f201.google.com with SMTP id 00721157ae682-7837a5e5b46so56492847b3.0
+        for <iommu@lists.linux.dev>; Sun, 26 Oct 2025 13:36:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1761510976; x=1762115776; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=oIYNgmwaiZev52ielsOny0g8kp/qW6C19JMGXvUOw8g=;
+        b=CuT4oOGzSDDPCqA81zAzR5LUhPhNxgSbufQgaW5WUnDStOnx4yuKQ9eaKz8+MxKqy3
+         iPoRdsEWyjhVPaEsha7Jh6sDaZx0jwGzh8Unkim/18fh89i7qlT5ujbKq6gj0xy0GZip
+         jGLMu3CvSHCU5kqixLV7saPST6B/u73x3haAu4tWTffqEqkJeHu5sNuRbwsAM2UIaj9u
+         yWWzhNr0db5Nsnm7ebgkmtV8DKUppBqnREyaskFKIN4iglv4UKncEYkW0+998dkuc9FX
+         Poju/GulhGFHOCNS6VYKYeUlMlAE1twF0ssVtnbtFg6IwBAtm5K7uNY7TGu3tnuCOo/r
+         Wc1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1761510976; x=1762115776;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=oIYNgmwaiZev52ielsOny0g8kp/qW6C19JMGXvUOw8g=;
+        b=KhIgkAs3SZGxvy1E43OceKdzsLONs3D7J532vb45VLi72Aycnq69ZWLwWhRCnfcmhi
+         m6GNUShfoAw1RV4vIDw7oLAfqdhSFl9wZ/s24yZs0MO2XslOpOPtcH7dKqmJHSPIIfBb
+         uwzzfsWaN+lSZwDV2a+CCrmtj61rJFZWJB9kuzeArWuTQHLfbR7BMPo7lWluSqS8B53J
+         x98odYEL61pE/b/APv9EuxkYYKp3/drvZOdGy0Pr8IDW087P3tu9iim6eVyOmKIeU6Gl
+         fLge52e0SEWTUZ7OVJ+9VgTq8ClUmBEZVEc3qiIjbVvunipdKknwzVx1jutMCw6jxZTz
+         2PmA==
+X-Forwarded-Encrypted: i=1; AJvYcCVtm4mctinHsdlGyfwGlXwe5BrkEF7NXyCKyya8R6rHZAyGl3Jc7nzn6nqs/HHicQ6sd37KzA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzHim3puEFs074p70MfepBx45hTzwQf8wI2YDVgZxVm9bEIwg4t
+	kr2Or9T+j/5SCL9pCTIgUt+vP61vG5M/CpmTEtWh8QDbsvttElMoLMQmahXFI+RL23+X0suP5jK
+	87Istow==
+X-Google-Smtp-Source: AGHT+IEQ9Pwyyd7kjVHYsKEBM6jXV+KGbNmmj3ZfQc3rnB2XqZ4bQZDKRwRIjK4vvzIoUgZwP2mnd9XDO/0=
+X-Received: from yxdd3.prod.google.com ([2002:a05:690e:2443:b0:63f:2d9a:656b])
+ (user=surenb job=prod-delivery.src-stubby-dispatcher) by 2002:a05:690c:9a07:b0:784:8620:1c49
+ with SMTP id 00721157ae682-78486201eacmr444866607b3.30.1761510975632; Sun, 26
+ Oct 2025 13:36:15 -0700 (PDT)
+Date: Sun, 26 Oct 2025 13:36:03 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20251023143957.2899600-1-robh@kernel.org>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.51.1.851.g4ebd6896fd-goog
+Message-ID: <20251026203611.1608903-1-surenb@google.com>
+Subject: [PATCH v2 0/8] Guaranteed CMA
+From: Suren Baghdasaryan <surenb@google.com>
+To: akpm@linux-foundation.org
+Cc: david@redhat.com, lorenzo.stoakes@oracle.com, Liam.Howlett@oracle.com, 
+	vbabka@suse.cz, alexandru.elisei@arm.com, peterx@redhat.com, sj@kernel.org, 
+	rppt@kernel.org, mhocko@suse.com, corbet@lwn.net, axboe@kernel.dk, 
+	viro@zeniv.linux.org.uk, brauner@kernel.org, hch@infradead.org, jack@suse.cz, 
+	willy@infradead.org, m.szyprowski@samsung.com, robin.murphy@arm.com, 
+	hannes@cmpxchg.org, zhengqi.arch@bytedance.com, shakeel.butt@linux.dev, 
+	axelrasmussen@google.com, yuanchu@google.com, weixugc@google.com, 
+	minchan@kernel.org, surenb@google.com, linux-mm@kvack.org, 
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-block@vger.kernel.org, linux-fsdevel@vger.kernel.org, 
+	iommu@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-On Thu, Oct 23, 2025 at 09:37:56AM -0500, Rob Herring (Arm) wrote:
-> Generally at most 1 blank line is the standard style for DT schema
-> files. Remove the few cases with more than 1 so that the yamllint check
-> for this can be enabled.
-> 
-> Signed-off-by: Rob Herring (Arm) <robh@kernel.org>
-> ---
->  Documentation/devicetree/bindings/.yamllint                  | 2 +-
->  Documentation/devicetree/bindings/arm/psci.yaml              | 1 -
->  .../bindings/clock/allwinner,sun4i-a10-gates-clk.yaml        | 1 -
->  .../devicetree/bindings/clock/renesas,cpg-mssr.yaml          | 1 -
->  .../devicetree/bindings/clock/xlnx,clocking-wizard.yaml      | 1 -
->  .../display/allwinner,sun4i-a10-display-frontend.yaml        | 1 -
->  .../devicetree/bindings/display/allwinner,sun6i-a31-drc.yaml | 1 -
->  .../bindings/display/allwinner,sun8i-a83t-dw-hdmi.yaml       | 1 -
->  .../devicetree/bindings/display/amlogic,meson-vpu.yaml       | 1 -
->  .../devicetree/bindings/display/bridge/adi,adv7511.yaml      | 1 -
->  .../devicetree/bindings/display/bridge/lvds-codec.yaml       | 1 -
->  .../devicetree/bindings/display/bridge/toshiba,tc358767.yaml | 1 -
->  .../devicetree/bindings/display/ilitek,ili9486.yaml          | 1 -
->  Documentation/devicetree/bindings/display/msm/gpu.yaml       | 1 -
->  .../devicetree/bindings/display/panel/panel-timing.yaml      | 1 -
->  .../devicetree/bindings/display/panel/tpo,tpg110.yaml        | 1 -
->  .../devicetree/bindings/display/rockchip/rockchip,dw-dp.yaml | 1 -
->  .../devicetree/bindings/display/simple-framebuffer.yaml      | 1 -
->  .../devicetree/bindings/dma/snps,dma-spear1340.yaml          | 1 -
->  Documentation/devicetree/bindings/dma/stericsson,dma40.yaml  | 1 -
->  .../devicetree/bindings/dma/stm32/st,stm32-dma.yaml          | 1 -
->  Documentation/devicetree/bindings/edac/apm,xgene-edac.yaml   | 1 -
->  .../devicetree/bindings/firmware/qemu,fw-cfg-mmio.yaml       | 1 -
->  Documentation/devicetree/bindings/fpga/fpga-region.yaml      | 5 -----
->  .../devicetree/bindings/gpio/brcm,xgs-iproc-gpio.yaml        | 1 -
->  .../devicetree/bindings/gpio/fairchild,74hc595.yaml          | 1 -
->  Documentation/devicetree/bindings/hwmon/adi,ltc2947.yaml     | 1 -
->  Documentation/devicetree/bindings/hwmon/adi,max31827.yaml    | 1 -
->  Documentation/devicetree/bindings/hwmon/national,lm90.yaml   | 1 -
->  Documentation/devicetree/bindings/hwmon/ti,tmp513.yaml       | 1 -
->  Documentation/devicetree/bindings/hwmon/ti,tps23861.yaml     | 1 -
->  Documentation/devicetree/bindings/i2c/i2c-mux-gpmux.yaml     | 1 -
->  .../devicetree/bindings/i2c/realtek,rtl9301-i2c.yaml         | 1 -
->  Documentation/devicetree/bindings/i2c/tsd,mule-i2c-mux.yaml  | 2 --
->  Documentation/devicetree/bindings/iio/adc/adi,ad7380.yaml    | 1 -
->  Documentation/devicetree/bindings/iio/adc/adi,ad7606.yaml    | 1 -
->  Documentation/devicetree/bindings/iio/adc/adi,ad7949.yaml    | 1 -
->  Documentation/devicetree/bindings/iio/adc/adi,ade9000.yaml   | 1 -
->  .../devicetree/bindings/iio/adc/cosmic,10001-adc.yaml        | 1 -
->  Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml  | 1 -
->  .../devicetree/bindings/iio/adc/x-powers,axp209-adc.yaml     | 1 -
->  .../devicetree/bindings/iio/afe/voltage-divider.yaml         | 1 -
->  .../devicetree/bindings/iio/frequency/adi,admv4420.yaml      | 1 -
->  .../devicetree/bindings/iio/pressure/murata,zpa2326.yaml     | 1 -
->  .../devicetree/bindings/iio/proximity/semtech,sx9324.yaml    | 1 -
->  .../devicetree/bindings/iio/temperature/adi,ltc2983.yaml     | 1 -
->  Documentation/devicetree/bindings/input/ti,drv266x.yaml      | 1 -
->  .../devicetree/bindings/interconnect/qcom,rpmh.yaml          | 1 -
->  .../devicetree/bindings/interrupt-controller/arm,gic-v3.yaml | 1 -
->  .../bindings/interrupt-controller/aspeed,ast2700-intc.yaml   | 1 -
->  .../bindings/interrupt-controller/fsl,vf610-mscm-ir.yaml     | 1 -
->  .../bindings/interrupt-controller/loongson,liointc.yaml      | 1 -
->  .../bindings/interrupt-controller/mediatek,mtk-cirq.yaml     | 1 -
->  .../bindings/interrupt-controller/mscc,ocelot-icpu-intr.yaml | 1 -
->  Documentation/devicetree/bindings/iommu/arm,smmu.yaml        | 4 ----
->  Documentation/devicetree/bindings/mailbox/arm,mhu.yaml       | 1 -
->  Documentation/devicetree/bindings/mailbox/arm,mhuv2.yaml     | 1 -
->  Documentation/devicetree/bindings/mailbox/mtk,adsp-mbox.yaml | 1 -
->  Documentation/devicetree/bindings/media/amphion,vpu.yaml     | 1 -
->  Documentation/devicetree/bindings/media/i2c/adi,adv7604.yaml | 2 --
->  .../devicetree/bindings/media/i2c/techwell,tw9900.yaml       | 1 -
->  Documentation/devicetree/bindings/media/nxp,imx8-jpeg.yaml   | 1 -
->  .../devicetree/bindings/media/qcom,sc8280xp-camss.yaml       | 1 -
->  .../bindings/media/samsung,exynos4212-fimc-is.yaml           | 1 -
->  .../devicetree/bindings/media/samsung,s5pv210-jpeg.yaml      | 1 -
->  Documentation/devicetree/bindings/media/st,stm32-dma2d.yaml  | 1 -
->  .../devicetree/bindings/media/video-interface-devices.yaml   | 4 ----
->  .../memory-controllers/qcom,ebi2-peripheral-props.yaml       | 1 -
->  Documentation/devicetree/bindings/mfd/stericsson,ab8500.yaml | 1 -
->  .../devicetree/bindings/mtd/amlogic,meson-nand.yaml          | 1 -
->  .../devicetree/bindings/mtd/marvell,nand-controller.yaml     | 1 -
->  Documentation/devicetree/bindings/mux/mux-controller.yaml    | 1 -
->  .../devicetree/bindings/net/allwinner,sun8i-a83t-emac.yaml   | 2 --
->  Documentation/devicetree/bindings/net/brcm,bcmgenet.yaml     | 1 -
->  .../devicetree/bindings/net/brcm,mdio-mux-iproc.yaml         | 1 -
->  .../devicetree/bindings/net/cortina,gemini-ethernet.yaml     | 1 -
->  Documentation/devicetree/bindings/net/fsl,gianfar.yaml       | 2 --
->  .../devicetree/bindings/net/mdio-mux-multiplexer.yaml        | 1 -
->  Documentation/devicetree/bindings/net/qcom,ipa.yaml          | 1 -
->  Documentation/devicetree/bindings/net/ti,cpsw-switch.yaml    | 1 -
->  .../devicetree/bindings/net/wireless/ti,wlcore.yaml          | 1 -
->  .../devicetree/bindings/pci/altr,pcie-root-port.yaml         | 1 -
->  Documentation/devicetree/bindings/pci/loongson.yaml          | 1 -
->  Documentation/devicetree/bindings/pci/rockchip-dw-pcie.yaml  | 1 -
->  .../devicetree/bindings/pci/starfive,jh7110-pcie.yaml        | 1 -
+Guaranteed CMA (GCMA) is designed to improve utilization of reserved
+memory carveouts without compromising their advantages of:
+1. Guaranteed success of allocation (as long as total allocation size is
+below the size of the reservation.
+2. Low allocation latency.
+The idea is that carved out memory when not used for its primary purpose
+can be donated and used as an extension of the pagecache and any donated
+folio can be taken back at any moment with minimal latency and guaranteed
+success.
+
+To achieve this, GCMA needs to use memory that is not addressable by the
+kernel (can't be pinned) and that contains content that can be discarded.
+To provide such memory we reintroduce cleancache idea [1] with two major
+changes. New implementation:
+1. Avoids intrusive hooks into filesystem code, limiting them to two hooks
+for filesystem mount/unmount events and a hook for bdev invalidation.
+2. Manages inode to folio association and handles pools of donated folios
+inside cleancache itself, freeing backends of this burden.
+
+Cleancache provides a simple interface to its backends which lets them
+donate folios to cleancache, take a folio back for own use and return the
+folio back to cleancache when not needed.
+
+With cleancache in place, GCMA becomes a thin layer linking CMA allocator
+to cleancache, which allows existing CMA API to be used for continuous
+memory allocations with additional guarantees listed above.
+The limitation of GCMA is that its donated memory can be used only to
+extend file-backed pagecache. Note that both CMA and GCMA can be used
+at the same time.
+
+Accounting for folios allocated from GCMA is implemented the same way as
+for CMA. The reasoning is that both CMA and GCMA use reserved memory for
+contiguous allocations with the only difference in how that memory gets
+donated while not in use. CMA donates its memory to the system for movable
+allocations with expectation that it will be returned when it is needed.
+GCMA donatest its memory to cleancache with the same expectation. Once CMA
+or GCMA use that memory for contiguous allocation, the difference between
+them disappears, therefore accounting at that point should not differ.
+
+The patchset borrows some ideas and code from previous implementations of
+the cleancache and GCMA [2] as well as Android's reference patchset [3]
+implemented by Minchan Kim and used by many Android vendors.
+
+[1] https://elixir.bootlin.com/linux/v5.16.20/source/Documentation/vm/cleancache.rst
+[2] https://lore.kernel.org/lkml/1424721263-25314-1-git-send-email-sj38.park@gmail.com/
+[3] https://android-review.googlesource.com/q/topic:%22gcma_6.12%22
+
+Patchset is based on mm-new.
+
+Changes since v1 [1]:
+- Removed extra address_space parameter in cleancache hooks,
+per Matthew Wilcox
+- Updated comments to replace page with folio, per Matthew Wilcox
+- Removed unnecessary new abbreviations from Kconfig, changelog and
+documentation, per Matthew Wilcox
+- Removed unnecessary comment about lock protecting xarray,
+per Matthew Wilcox
+- Replaced IDR with xarray for storage, per Matthew Wilcox
+- Added unions in the folio for aliased fields, per Matthew Wilcox
+- Removed an unused variable in the test, per kernel test robot
+- Linked the cleancache document in mm/index.rst, per SeongJae Park
+- Split cleancache sysfs documenation into cleancache_sysfs.rst and
+linked it in Documentation/admin-guide/mm/index.rst, per SeongJae Park
+- Cleaned up free_folio_range() code, per SeongJae Park
+- Reworked gcma_free_range() to handle failures and properly rollback
+refcount changes, per SeongJae Park
+- Removed references to transcendent memory, per SeongJae Park
+- Other minor documentation fixups, per SeongJae Park
+- Added Minchan Kim as cleancache maintainer
+- Minor code and documentation cleanups
+
+Minchan Kim (1):
+  mm: introduce GCMA
+
+Suren Baghdasaryan (7):
+  mm: implement cleancache
+  mm/cleancache: add cleancache LRU for folio aging
+  mm/cleancache: readahead support
+  mm/cleancache: add sysfs interface
+  mm/tests: add cleancache kunit test
+  add cleancache documentation
+  mm: integrate GCMA with CMA using dt-bindings
+
+ .../admin-guide/mm/cleancache_sysfs.rst       |   51 +
+ Documentation/admin-guide/mm/index.rst        |    1 +
+ Documentation/mm/cleancache.rst               |   68 +
+ Documentation/mm/index.rst                    |    1 +
+ MAINTAINERS                                   |   15 +
+ block/bdev.c                                  |    6 +
+ fs/super.c                                    |    3 +
+ include/linux/cleancache.h                    |   77 ++
+ include/linux/cma.h                           |   11 +-
+ include/linux/fs.h                            |    6 +
+ include/linux/gcma.h                          |   36 +
+ include/linux/mm_types.h                      |   12 +-
+ include/linux/pagemap.h                       |    1 +
+ kernel/dma/contiguous.c                       |   11 +-
+ mm/Kconfig                                    |   39 +
+ mm/Kconfig.debug                              |   13 +
+ mm/Makefile                                   |    4 +
+ mm/cleancache.c                               | 1127 +++++++++++++++++
+ mm/cleancache_sysfs.c                         |  209 +++
+ mm/cleancache_sysfs.h                         |   58 +
+ mm/cma.c                                      |   37 +-
+ mm/cma.h                                      |    1 +
+ mm/cma_sysfs.c                                |   10 +
+ mm/filemap.c                                  |   26 +
+ mm/gcma.c                                     |  244 ++++
+ mm/readahead.c                                |   54 +
+ mm/tests/Makefile                             |    6 +
+ mm/tests/cleancache_kunit.c                   |  420 ++++++
+ mm/truncate.c                                 |    4 +
+ mm/vmscan.c                                   |    1 +
+ 30 files changed, 2537 insertions(+), 15 deletions(-)
+ create mode 100644 Documentation/admin-guide/mm/cleancache_sysfs.rst
+ create mode 100644 Documentation/mm/cleancache.rst
+ create mode 100644 include/linux/cleancache.h
+ create mode 100644 include/linux/gcma.h
+ create mode 100644 mm/cleancache.c
+ create mode 100644 mm/cleancache_sysfs.c
+ create mode 100644 mm/cleancache_sysfs.h
+ create mode 100644 mm/gcma.c
+ create mode 100644 mm/tests/Makefile
+ create mode 100644 mm/tests/cleancache_kunit.c
 
 
-Acked-by: Manivannan Sadhasivam <mani@kernel.org> # For PCI controller bindings
-
-- Mani
-
+base-commit: 752c460b5865d87117095c915addcce7a68296f2
 -- 
-மணிவண்ணன் சதாசிவம்
+2.51.1.851.g4ebd6896fd-goog
+
