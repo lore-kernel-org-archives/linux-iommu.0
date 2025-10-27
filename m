@@ -1,45 +1,55 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 73A4C22E406
-	for <iommu@lists.linux.dev>; Mon, 27 Oct 2025 12:49:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DF4F624DCED;
+	Mon, 27 Oct 2025 12:55:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761569357; cv=none; b=GusoKmKo0cQLgNmlIYazarQhpi1/kViXINd76cwDaBLM8hU9+ds+Fd56bjhjIDKlUmjFzE6/dK1bgAniDzXs6QSLb7W4+Qhs/byuB3i5YQ/SQSIs6mNBEs+p8yudPMjGm0QPcIibKO3eRlqdSYUJI3hClexKJzRplIzqcf+DVuA=
+	t=1761569759; cv=none; b=isT81xFxsGKsHMiUdQmGhicigFp4PhSC8JOZiFcsHVrthgzlr/X8gPmy63Xj/RFF1nerD1+R187PcLAuzTbRvpwfEFz9zvijO54gHbsz94BnJCvv8GXI4/Xmp6Q7EeRsAuFv7OXgQ/phCUKFCsw6se0lxc8i8m04mRX02SjC7J0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761569357; c=relaxed/simple;
-	bh=2c/2TGXe1TvOXnyySJnc/eJoic2DVPnvVTIFzQKKPVg=;
+	s=arc-20240116; t=1761569759; c=relaxed/simple;
+	bh=wdPrvvPNgCJ92pfYnd82XapNMb2/K9Lk7SnMdXsPwYo=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WIJg6skhjCJFgmZqJH/y/SdEDZ/qiWoO5A/BUsAG6cPgwV2NqxbS04La6VEVL+wInzdgQ3P3xECXBDb+sK2C4Ai0Fjg1efEdvbrL4cakUMrxER3NwvCpkr6FLvUDH2hMpCsaWyoSuyr/tTREjowlmUNxs6sFWa+nVssRuF6NRxo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=Q1tSslCY; arc=none smtp.client-ip=85.214.250.239
+	 Content-Type:Content-Disposition:In-Reply-To; b=EcxjKKuroC0M+JM/6H3PTXelv5YUJUaRVBaBlump9zUQEFADlhhcYntmpeub5vf3hjGcblHLCpBw9dccC5iPf1B+yXbbwXj4vbf0GKyH+bhl3QV31b90Tf1EuP7MOHgTSfjncgROJu/kG0BgyCmumZifBhOlpdDp5F/lWEw2ej8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=HA4IsI57; arc=none smtp.client-ip=85.214.250.239
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="Q1tSslCY"
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="HA4IsI57"
 Received: from 8bytes.org (p549214ac.dip0.t-ipconnect.de [84.146.20.172])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 4F7E5598F5;
-	Mon, 27 Oct 2025 13:49:13 +0100 (CET)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 574F959993;
+	Mon, 27 Oct 2025 13:55:56 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1761569353;
-	bh=2c/2TGXe1TvOXnyySJnc/eJoic2DVPnvVTIFzQKKPVg=;
+	s=default; t=1761569756;
+	bh=wdPrvvPNgCJ92pfYnd82XapNMb2/K9Lk7SnMdXsPwYo=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Q1tSslCYQiIrLVNZDVV9VcYf6zV0LJhi9qCYpcj0H3ZdhSouGi2+QELJrlmjNLCK4
-	 /WyUGdhhlZzsJoQ9LKrzU6hkjZh+n3+ybFvYreGGNAr4W3OmipqTqFIYfOXdeWwsCy
-	 ECvijRprBOK4F4WC/2gfPv6+nBjqQNQyfpa573u1zbSfvMDyeAXvps/GJXZqsCY0YK
-	 NC3B8woZBtlovRXWE0BduYtNKAipwUFNuHa9KcBd7RTucsbpdGGR1sa5OyqrF/gBR2
-	 YxsSf2jpEVYGRdjn03FoVze5ffaA9O/4424HrNcUsmcDRMeUWbBaUQN0mdWagjz/QR
-	 SZPW3tiyy5Fgw==
-Date: Mon, 27 Oct 2025 13:49:12 +0100
+	b=HA4IsI57/crRJKm5huZnz2yM9cueuQ83JrqqF31F0g7mwiTfeSnd43x0jF6LZthZc
+	 xInJr7Dl8APiu4Qf/1dKwgAOW7EJNTBxKaqeF3SCeMWstoORITwx7nsvUeINWh5k+9
+	 Ny8WfW/m0sLSzi4YzjffMfU5XZZBpghT634JsVKbHjtinJ84F0IqokpBXMlZ9vPJO6
+	 HareDmhYXldiDUpmdDec87KCRVmJXWOlsHVldVZQAV6o+WAdhsPOkS6ZLKvwvFxjCx
+	 iZSNYPT42T4jbU1r7D4nVssf6XfXSjG7/V3tsl+vP1evUijU+Z9RswofRmqxeAExhN
+	 NJmXcf6NEl0nQ==
+Date: Mon, 27 Oct 2025 13:55:55 +0100
 From: =?utf-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>
-To: Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>
-Cc: will@kernel.org, robin.murphy@arm.com, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, suravee.suthikulpanit@amd.com, Vasant.Hegde@amd.com, 
-	Santosh.Shukla@amd.com
-Subject: Re: [PATCH] iommu/amd: Enhance "Completion-wait Time-out" error
- message
-Message-ID: <tgugv7ebuxtnp6ou5jnt7od7jmccsipblqityiinhkgratosu6@bxsr73hpiiny>
-References: <20251016150809.5465-1-dheerajkumar.srivastava@amd.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: jgg@nvidia.com, kevin.tian@intel.com, suravee.suthikulpanit@amd.com, 
+	will@kernel.org, robin.murphy@arm.com, sven@kernel.org, j@jannau.net, 
+	robin.clark@oss.qualcomm.com, m.szyprowski@samsung.com, krzk@kernel.org, dwmw2@infradead.org, 
+	baolu.lu@linux.intel.com, yong.wu@mediatek.com, matthias.bgg@gmail.com, 
+	angelogioacchino.delregno@collabora.com, tjeznach@rivosinc.com, pjw@kernel.org, palmer@dabbelt.com, 
+	aou@eecs.berkeley.edu, heiko@sntech.de, schnelle@linux.ibm.com, mjrosato@linux.ibm.com, 
+	orsonzhai@gmail.com, baolin.wang@linux.alibaba.com, wens@csie.org, 
+	jernej.skrabec@gmail.com, samuel@sholland.org, thierry.reding@gmail.com, 
+	jonathanh@nvidia.com, jean-philippe@linaro.org, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+	linux-arm-msm@vger.kernel.org, linux-samsung-soc@vger.kernel.org, 
+	linux-mediatek@lists.infradead.org, linux-riscv@lists.infradead.org, 
+	linux-rockchip@lists.infradead.org, linux-s390@vger.kernel.org, linux-sunxi@lists.linux.dev, 
+	linux-tegra@vger.kernel.org, virtualization@lists.linux.dev, patches@lists.linux.dev
+Subject: Re: [PATCH v2 0/6] iommu: Pass in old_domain pointer to attach_dev
+Message-ID: <xlu227m6u3wubnexhxh2cpx7nwudhvbmgqcqoas57a6sqgvege@p4s5i5p77v7a>
+References: <cover.1761017765.git.nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -48,60 +58,45 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20251016150809.5465-1-dheerajkumar.srivastava@amd.com>
+In-Reply-To: <cover.1761017765.git.nicolinc@nvidia.com>
 
-Hey Dheeraj,
+On Wed, Oct 22, 2025 at 07:21:03PM -0700, Nicolin Chen wrote:
+> Jason Gunthorpe (1):
+>   iommu: Generic support for RMRs during device release
+> 
+> Nicolin Chen (5):
+>   iommu/arm-smmu-v3: Set release_domain to arm_smmu_blocked_domain
+>   iommu/exynos-iommu: Set release_domain to exynos_identity_domain
+>   iommu/amd: Set release_domain to blocked_domain
+>   iommu: Do not revert set_domain for the last gdev
+>   iommu: Pass in old domain to attach_dev callback functions
+> 
+>  include/linux/iommu.h                         |  3 +-
+>  arch/powerpc/kernel/iommu.c                   |  5 ++-
+>  drivers/iommu/amd/iommu.c                     | 21 +++------
+>  drivers/iommu/apple-dart.c                    |  9 ++--
+>  .../arm/arm-smmu-v3/arm-smmu-v3-iommufd.c     |  5 ++-
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 31 ++++++-------
+>  drivers/iommu/arm/arm-smmu/arm-smmu.c         |  9 ++--
+>  drivers/iommu/arm/arm-smmu/qcom_iommu.c       | 11 ++---
+>  drivers/iommu/exynos-iommu.c                  | 11 ++---
+>  drivers/iommu/fsl_pamu_domain.c               | 12 ++---
+>  drivers/iommu/intel/iommu.c                   | 10 +++--
+>  drivers/iommu/intel/nested.c                  |  2 +-
+>  drivers/iommu/iommu.c                         | 44 +++++++++++++------
+>  drivers/iommu/iommufd/selftest.c              |  2 +-
+>  drivers/iommu/ipmmu-vmsa.c                    | 10 ++---
+>  drivers/iommu/msm_iommu.c                     | 11 ++---
+>  drivers/iommu/mtk_iommu.c                     |  8 ++--
+>  drivers/iommu/mtk_iommu_v1.c                  |  7 ++-
+>  drivers/iommu/omap-iommu.c                    | 12 ++---
+>  drivers/iommu/riscv/iommu.c                   |  9 ++--
+>  drivers/iommu/rockchip-iommu.c                | 20 ++++++---
+>  drivers/iommu/s390-iommu.c                    | 13 +++---
+>  drivers/iommu/sprd-iommu.c                    |  3 +-
+>  drivers/iommu/sun50i-iommu.c                  |  8 ++--
+>  drivers/iommu/tegra-smmu.c                    | 10 ++---
+>  drivers/iommu/virtio-iommu.c                  |  6 ++-
+>  26 files changed, 172 insertions(+), 120 deletions(-)
 
-On Thu, Oct 16, 2025 at 08:38:09PM +0530, Dheeraj Kumar Srivastava wrote:
->  static int wait_on_sem(struct amd_iommu *iommu, u64 data)
->  {
-> -	int i = 0;
-> +	struct iommu_cmd *cmd;
-> +	int i = 0, j;
->  
->  	while (*iommu->cmd_sem != data && i < LOOP_TIMEOUT) {
->  		udelay(1);
-> @@ -1166,7 +1167,33 @@ static int wait_on_sem(struct amd_iommu *iommu, u64 data)
->  	}
->  
->  	if (i == LOOP_TIMEOUT) {
-> -		pr_alert("Completion-Wait loop timed out\n");
-> +		int head, tail;
-> +
-> +		head = readl(iommu->mmio_base + MMIO_CMD_HEAD_OFFSET);
-> +		tail = readl(iommu->mmio_base + MMIO_CMD_TAIL_OFFSET);
-> +
-> +		pr_alert("IOMMU %04x:%02x:%02x.%01x: Completion-Wait loop timed out\n",
-> +			 iommu->pci_seg->id, PCI_BUS_NUM(iommu->devid),
-> +			 PCI_SLOT(iommu->devid), PCI_FUNC(iommu->devid));
-
-Better use dev_err(&amd_iommu->dev->dev, ...) here.
-
-> +		if (!amd_iommu_dump) {
-> +			/*
-> +			 * On command buffer completion timeout, step back by 2 commands
-> +			 * to locate the actual command that is causing the issue.
-> +			 */
-> +			tail = (MMIO_CMD_BUFFER_TAIL(tail) - 2) & (CMD_BUFFER_ENTRIES - 1);
-> +			cmd = (struct iommu_cmd *)(iommu->cmd_buf + tail * sizeof(*cmd));
-> +			dump_command(iommu_virt_to_phys(cmd));
-> +		} else {
-> +			/* Dump entire command buffer along with head and tail indices */
-> +			pr_alert("CMD Buffer head=%d tail=%d\n", (int)(MMIO_CMD_BUFFER_HEAD(head)),
-> +				 (int)(MMIO_CMD_BUFFER_TAIL(tail)));
-> +			for (j = 0; j < CMD_BUFFER_ENTRIES; j++) {
-> +				cmd = (struct iommu_cmd *)(iommu->cmd_buf + j * sizeof(*cmd));
-> +				pr_err("%3d: %08x %08x %08x %08x\n", j, cmd->data[0], cmd->data[1],
-> +				       cmd->data[2], cmd->data[3]);
-> +			}
-> +		}
-
-I don't think it makes much sense to just print the command before the failed
-completion wait. In case of a timeout and amd_iommu_dump == true, just dump the
-whole pending command buffer, from head to tail.
-
-Also, please put all the parsing/dumping code into a separate function.
-
-Regards,
-
-	Joerg
+Applied, thanks.
