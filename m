@@ -1,36 +1,36 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EA3117E0E8
-	for <iommu@lists.linux.dev>; Mon, 27 Oct 2025 12:41:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1E0AD30E0F3
+	for <iommu@lists.linux.dev>; Mon, 27 Oct 2025 12:43:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761568870; cv=none; b=QZaK6NsGStTAd5T03Xb7jy4hNmDe93QCEmXMSkPSttel8HoQSlXIFpYQcYmeJbLybLFQqO1TeSX6FvLu3QDQtl4uAp7VW1jctQRnzaooWB3UFJSeRiA+Sg3iQoB8MgIueo7E0ZmSG36kdTVfmlRKpF6eZ/fnmDgsyIw9lmUpbR4=
+	t=1761569022; cv=none; b=upjhh4kuIIsCDGvAS+PtILo4aSsNMuTwKQJ89DjJTImI1QeDW9hRhrUgF5yz5yH1yPbEQhE9ligYIYyi3xfbeQ99pz569+izBze78OMz7uGkpllN/JobOrr5mFuhqt9FxmuHCA0t6a7h8dBIsJPpGsuvUItw1oYU6SjJ+K9hHJI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761568870; c=relaxed/simple;
-	bh=igQFF0LAtPQV99bIr387rWS186dezYa19i/THLPhjSw=;
+	s=arc-20240116; t=1761569022; c=relaxed/simple;
+	bh=2G56BnpRGoI+NqEwEfPETIyrfVpN7iBlb7p/Lhy7kEs=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=deKGHNlTLiDA5URGK2fEP+yE8cqtWvJa1WqFJSikpdmPpbRGfdtC1up71PgmhU1QLES5TqKwHD/PQ2eQNgB68YPCD0wZ2jqND2fra9Tr+GF8BctPd2nmJkgc1/dcfZNkl++FxDLtV5djNf0AlQxRF2fwm7s1lnz1G8vQ+NXfjZw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=d4RjCFF5; arc=none smtp.client-ip=85.214.250.239
+	 Content-Type:Content-Disposition:In-Reply-To; b=FrpG5VNlpeJwDtcHenZnP95xJBlgTzjcVMrP/XkzWJ7E4UYACMDv6NJehK7Czm6oZfod2cVPDU00mjTvb2E6KPt1VMTfgVZNbgJMdvD56f//YLbuYQGr4Tr4Ih3G9pH7mjJzU+ZQmCyrNIQLNkb7Ar2s0VYDMODLD+FNXvhPZv4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=FqiODjdG; arc=none smtp.client-ip=85.214.250.239
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="d4RjCFF5"
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="FqiODjdG"
 Received: from 8bytes.org (p549214ac.dip0.t-ipconnect.de [84.146.20.172])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id B93D659903;
-	Mon, 27 Oct 2025 13:41:06 +0100 (CET)
+	by mail.8bytes.org (Postfix) with ESMTPSA id F096A59903;
+	Mon, 27 Oct 2025 13:43:37 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1761568866;
-	bh=igQFF0LAtPQV99bIr387rWS186dezYa19i/THLPhjSw=;
+	s=default; t=1761569018;
+	bh=2G56BnpRGoI+NqEwEfPETIyrfVpN7iBlb7p/Lhy7kEs=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=d4RjCFF5lA02+c+sEf23kjw/bg91wHHikccPRvpR6HrVOR3MHLBgk8LUTsOYSfAc6
-	 V/w0sk0gAu2fqxw65/HR1oWMLwmTDrOU9Ca3O1A7hI8i74ugs7/Sj091vlwq/R1aYa
-	 OvoG1S5BArCYlJIYnZ/Jm6D9iTZ5tyfK/HSKwqkIdmtSKgSLMREKZl2IS8jRNyeBtE
-	 h1qxTsGj2JJOAfF8Js7G12Z8TIijtiMV5Ggkl678X+Okc47GsHM7npqOmF2bzVUFBM
-	 fyVDHQyILVtOMEGFu65TKOzTG8lCiASocuHDlXF1YkpAdgIsnIjoxaIBeEOOjH0uBW
-	 kpji/5yNJuYcA==
-Date: Mon, 27 Oct 2025 13:41:05 +0100
+	b=FqiODjdGsHG3QIPyv6y1hgH1SJBEBvJAVuF70t2w19PW6FTBU5dU93uaxknOuuwLz
+	 RU6wFENh+OpdEZVTCQYR1I9XWND1eCvmyb10IMWv+SzYrlSCz3y5kFxn8yxAo13lmu
+	 0yRdaolADOmUlLnAD8JSluajl8waz2SU09xjOH/BBYfRyHhyXAos2MGe1hrJRbM6lj
+	 Yw0TDAle0xRyf3PQzlAj1ypSSUZL0B3f7ANpqkwqdkiJ5/T3etsTD9dPlAm+kAYzl3
+	 FvZgArL5YYo5kIbY+mdvOLVxvqbcD7kqF086FzrfJ8Yk1bEovxZCHqv609Ojk9KjcI
+	 a1ZZnCQiPaFiw==
+Date: Mon, 27 Oct 2025 13:43:36 +0100
 From: Joerg Roedel <joro@8bytes.org>
 To: Zhengnan Chen <zhengnan.chen@mediatek.com>
 Cc: Yong Wu <yong.wu@mediatek.com>, Will Deacon <will@kernel.org>, 
@@ -40,9 +40,9 @@ Cc: Yong Wu <yong.wu@mediatek.com>, Will Deacon <will@kernel.org>,
 	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, iommu@lists.linux.dev, linux-mediatek@lists.infradead.org, 
 	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
 	linux-arm-kernel@lists.infradead.org, Project_Global_Chrome_Upstream_Group@mediatek.com
-Subject: Re: [PATCH v2 0/5] MT8189 IOMMU SUPPORT
-Message-ID: <xjzigctqrjzbfuneejicj5o6jppxdoous3iwmhhz6tfy62vnaa@zu4zsdlh26hx>
-References: <20251015032509.5057-1-zhengnan.chen@mediatek.com>
+Subject: Re: [PATCH v4 0/5] MT8189 IOMMU SUPPORT
+Message-ID: <b4jjrpqu4pqu6nm3nohye57eauqvlqny7xtesnelhj4kcnwc6w@cohioft65alz>
+References: <20251018132625.14428-1-zhengnan.chen@mediatek.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -51,9 +51,9 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20251015032509.5057-1-zhengnan.chen@mediatek.com>
+In-Reply-To: <20251018132625.14428-1-zhengnan.chen@mediatek.com>
 
-On Wed, Oct 15, 2025 at 11:24:16AM +0800, Zhengnan Chen wrote:
+On Sat, Oct 18, 2025 at 09:26:09PM +0800, Zhengnan Chen wrote:
 > Zhengnan Chen (5):
 >   dt-bindings: mediatek: mt8189: Add bindings for MM & APU & INFRA IOMMU
 >   iommu/mediatek: Add a flag DL_WITH_MULTI_LARB
@@ -61,10 +61,11 @@ On Wed, Oct 15, 2025 at 11:24:16AM +0800, Zhengnan Chen wrote:
 >   iommu/mediatek: mt8189: Add INFRA IOMMUs support
 >   iommu/mediatek: mt8189: Add MM IOMMUs support
 > 
->  .../bindings/iommu/mediatek,iommu.yaml        |   7 +
+>  .../bindings/iommu/mediatek,iommu.yaml        |   8 +
 >  drivers/iommu/mtk_iommu.c                     | 132 +++++++-
 >  .../memory/mediatek,mt8189-memory-port.h      | 283 ++++++++++++++++++
->  3 files changed, 409 insertions(+), 13 deletions(-)
+>  3 files changed, 410 insertions(+), 13 deletions(-)
 >  create mode 100644 include/dt-bindings/memory/mediatek,mt8189-memory-port.h
 
-Applied, thanks.
+Just realized this newer version, removed v1 and applied this. Sorry for the
+confusion.
