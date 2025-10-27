@@ -1,107 +1,52 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 146F61DF99C
-	for <iommu@lists.linux.dev>; Mon, 27 Oct 2025 01:50:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF6BE298CDC;
+	Mon, 27 Oct 2025 06:54:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761529826; cv=none; b=DyI2dFe6ll8YqKzVSWNnYZWRV61ef3P/xuK2I1rx5mpDhhPaoiOdUlJcQraYe3U/OQAa54scjG+7ZjVqahkfRFKklfJLeROZbe9W21ztDrfKXfxMJV8s+0BJDT14gb3xogFZA4LVs58ODvMRCwkg0fc5cZiHG5WTMEjSogW71iQ=
+	t=1761548093; cv=none; b=HclaoFwVSgKHfAKiU0gootHERY/TvdNHeAR9OdudJuUm0+UnoIkdupUuQ8jAT+7hg1TR76pefb0amk36c6VRt/yX0c5ayX3amqXPmmv0+1uVTwWa3gH9qskTZB+aGF8HjhMYk+qHvvnoe3ZIWdE9xEuJ6Ln/0lYFScxZqCcQzp8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761529826; c=relaxed/simple;
-	bh=T3pkaI/GJuOsGFoVg5/R4SNriMbvV6bNB454qQaWZQ8=;
+	s=arc-20240116; t=1761548093; c=relaxed/simple;
+	bh=HZ1cENyC3OKTlLcokwNqr7wXJ9H0uHel37Dp79dnSVo=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LQAtezO5/4R5PaFcURhdb+93yXLU+udan6DUbahneHDgX/tNmJex+Mke+1RBYEhRPCdTQtpFYVYGW3k9xfSjG6MMT3IG2qPcZH8u8Y5hYyWMc4lpOmj2P73Rc39u6BD9t3mIJRCkwzeaPMTfrHZTzOfKeXirCwGEodO4oyF1bIU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=eGh8KZyF; arc=none smtp.client-ip=192.198.163.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=SirGOKTBdU+mzwm44dycwqN+LkAdZl5qMoTO/3jNMg22UbMmegIrqrd9rEjylv4m6oO0cL3WV6TTeJg+IiiE+4FI236sL/1cxcs2HpEwWZYbrxo0Olw7CYPq79bieky6WmFY/OlF14nfICu+4bv2YZRQQ7+aojng7FqO4+N2nUk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=H0uxDnnF; arc=none smtp.client-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="eGh8KZyF"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1761529824; x=1793065824;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=T3pkaI/GJuOsGFoVg5/R4SNriMbvV6bNB454qQaWZQ8=;
-  b=eGh8KZyF3XNe+RFOMymhBNZHWav5SMty52zqCNFPzFdn2ZV+OGYudH7d
-   aVNjV3NJVoUQbVH95r3G6+Q1X3lW/+9Kb+giK8mRJ3dddGCEOV4OJ260/
-   vWwQQpAEoTo7CroR9wXzCesXplvVMjSrNG0/QtK44S1o+cOtwuR3H1q3t
-   WbtTkwDWNfN3XknfqMD0/JJK1hFbIEQs2zcGrm6QHxwj6KcO033ErKLKI
-   9SnZnQZSD9cnvOnvutvdHfdyEtyR/M9ubO7Jt8VZ+09/b2F3nD3OC2J2r
-   W36HpQn+bLym7ZsduQ7P7vWOJgVvWqy0uKrWmPCyYTARJjFB2HTGPSaHF
-   A==;
-X-CSE-ConnectionGUID: uZ2I4kw7SJGkJHzZ8mrGwQ==
-X-CSE-MsgGUID: QzImxWOQSZis2ctFD5H4Rg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11586"; a="63702038"
-X-IronPort-AV: E=Sophos;i="6.19,257,1754982000"; 
-   d="scan'208";a="63702038"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2025 18:50:23 -0700
-X-CSE-ConnectionGUID: RqD3PVgcSpO3hdFc8HdBsw==
-X-CSE-MsgGUID: bAZX7S5kQLGkCNKy4yStdQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.19,257,1754982000"; 
-   d="scan'208";a="188967609"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
-  by orviesa003.jf.intel.com with ESMTP; 26 Oct 2025 18:50:09 -0700
-Date: Mon, 27 Oct 2025 09:36:28 +0800
-From: Xu Yilun <yilun.xu@linux.intel.com>
-To: "Rob Herring (Arm)" <robh@kernel.org>
-Cc: Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Stephen Boyd <sboyd@kernel.org>,
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	Andrzej Hajda <andrzej.hajda@intel.com>,
-	Robert Foss <rfoss@kernel.org>, Vinod Koul <vkoul@kernel.org>,
-	Moritz Fischer <mdf@kernel.org>, Xu Yilun <yilun.xu@intel.com>,
-	Bartosz Golaszewski <brgl@bgdev.pl>,
-	Guenter Roeck <linux@roeck-us.net>,
-	Andi Shyti <andi.shyti@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Georgi Djakov <djakov@kernel.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Joerg Roedel <joro@8bytes.org>,
-	Jassi Brar <jassisinghbrar@gmail.com>,
-	Mauro Carvalho Chehab <mchehab@kernel.org>,
-	Lee Jones <lee@kernel.org>,
-	Miquel Raynal <miquel.raynal@bootlin.com>,
-	Richard Weinberger <richard@nod.at>,
-	Vignesh Raghavendra <vigneshr@ti.com>,
-	Andrew Lunn <andrew+netdev@lunn.ch>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Johannes Berg <johannes@sipsolutions.net>,
-	Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kwilczynski@kernel.org>,
-	Manivannan Sadhasivam <mani@kernel.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Kishon Vijay Abraham I <kishon@kernel.org>,
-	Sebastian Reichel <sre@kernel.org>,
-	Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
-	Mark Brown <broonie@kernel.org>,
-	Mathieu Poirier <mathieu.poirier@linaro.org>,
-	Philipp Zabel <p.zabel@pengutronix.de>,
-	Olivia Mackall <olivia@selenic.com>,
-	Herbert Xu <herbert@gondor.apana.org.au>,
-	Daniel Lezcano <daniel.lezcano@linaro.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-clk@vger.kernel.org, dri-devel@lists.freedesktop.org,
-	linux-fbdev@vger.kernel.org, dmaengine@vger.kernel.org,
-	linux-fpga@vger.kernel.org, linux-gpio@vger.kernel.org,
-	linux-hwmon@vger.kernel.org, linux-i2c@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
-	linux-pm@vger.kernel.org, iommu@lists.linux.dev,
-	linux-media@vger.kernel.org, linux-mtd@lists.infradead.org,
-	netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-	linux-pci@vger.kernel.org, linux-phy@lists.infradead.org,
-	linux-pwm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-	linux-crypto@vger.kernel.org, linux-sound@vger.kernel.org,
-	linux-usb@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: Remove extra blank lines
-Message-ID: <aP7MnJ8mIlZhT//S@yilunxu-OptiPlex-7050>
-References: <20251023143957.2899600-1-robh@kernel.org>
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="H0uxDnnF"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=HZ1cENyC3OKTlLcokwNqr7wXJ9H0uHel37Dp79dnSVo=; b=H0uxDnnFfGSmqhHOC8bIChmg2U
+	zqeyhzXYYeltjfd6s4eSCvSF70/LWP568ahKfzgVEL36melttZ6xkUEonRCPOOtUxFfYSBRpetta+
+	C7jrPsmafvNgsoxIx7/8DlYPxU5PJY9qXHXCDW0eoWTxVVCPHBWhfdRrqyjlYhSM5niMX66o9vCB8
+	J7qRUYdVoIioFx7orkFpT2m/6CPixRMfzocTeUS/eIX9j6/yvQzDPN05SSmiVgbZX6oI1Wv6FVQ0+
+	IUxehKy2s3qD05HoxXBvxki94YTFIG+ro6y75bhoL0D6Pr5Wv9t7QOYZcqZ9EfHhKRnHFPTgiQ6gp
+	KHi+loWA==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.98.2 #2 (Red Hat Linux))
+	id 1vDH7p-0000000DEPR-06m6;
+	Mon, 27 Oct 2025 06:54:41 +0000
+Date: Sun, 26 Oct 2025 23:54:41 -0700
+From: Christoph Hellwig <hch@infradead.org>
+To: Suren Baghdasaryan <surenb@google.com>
+Cc: akpm@linux-foundation.org, david@redhat.com, lorenzo.stoakes@oracle.com,
+	Liam.Howlett@oracle.com, vbabka@suse.cz, alexandru.elisei@arm.com,
+	peterx@redhat.com, sj@kernel.org, rppt@kernel.org, mhocko@suse.com,
+	corbet@lwn.net, axboe@kernel.dk, viro@zeniv.linux.org.uk,
+	brauner@kernel.org, hch@infradead.org, jack@suse.cz,
+	willy@infradead.org, m.szyprowski@samsung.com, robin.murphy@arm.com,
+	hannes@cmpxchg.org, zhengqi.arch@bytedance.com,
+	shakeel.butt@linux.dev, axelrasmussen@google.com,
+	yuanchu@google.com, weixugc@google.com, minchan@kernel.org,
+	linux-mm@kvack.org, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
+	linux-fsdevel@vger.kernel.org, iommu@lists.linux.dev
+Subject: Re: [PATCH v2 0/8] Guaranteed CMA
+Message-ID: <aP8XMZ_DfJEvrNxL@infradead.org>
+References: <20251026203611.1608903-1-surenb@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -110,17 +55,13 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20251023143957.2899600-1-robh@kernel.org>
+In-Reply-To: <20251026203611.1608903-1-surenb@google.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 
-On Thu, Oct 23, 2025 at 09:37:56AM -0500, Rob Herring (Arm) wrote:
-> Generally at most 1 blank line is the standard style for DT schema
-> files. Remove the few cases with more than 1 so that the yamllint check
-> for this can be enabled.
-> 
-> Signed-off-by: Rob Herring (Arm) <robh@kernel.org>
+Hi Sure,
 
-[...]
+jsut as last time please don't build empires with abstractions that
+don't have a single user, and instead directly wire up your CMA variant.
+Which actually allows to much more easily review both this submission
+and any future MM changes touching it.
 
->  Documentation/devicetree/bindings/fpga/fpga-region.yaml      | 5 -----
-
-Acked-by: Xu Yilun <yilun.xu@intel.com>
