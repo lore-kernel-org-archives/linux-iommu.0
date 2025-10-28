@@ -1,174 +1,122 @@
-Received: from PH0PR06CU001.outbound.protection.outlook.com (mail-westus3azon11011016.outbound.protection.outlook.com [40.107.208.16])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 182E32264D3
-	for <iommu@lists.linux.dev>; Tue, 28 Oct 2025 09:57:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.208.16
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761645464; cv=fail; b=FfGaxvRmdteKfe8qjtGHxl6RyQsp0ydRl7RHIFXQFzG9Ck0AL7ZVDosmJGyaixpy8VQAd8tmrb02rd3kUOzMHDe1bxIAXsdoH9dqMTROHQUFUB8uNuwe+e1RVCl9JKDZ8pVpHXgm2x0w3R1Y2Uiged3xJZlcLD57ft/fy8HI8Iw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761645464; c=relaxed/simple;
-	bh=kRH/xxuyw7zPpElbOBhHSgGiPbH+rEyRU2Zs9C8T6wU=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=RacfNo1pzt34bhFOGNizQO91FmWYtdEQJd3SDekJOBpHh4h7zE72055ImQMhi9KYoDQJfakYX+pf5qZ9FoRgbdr8hE9gtA3xtO503PtzJ/qbRBwZG8oVvRmrsPmS7gXPXrZziTRdcXKQumMXYtbNdPk4w5j5oVJJ/GGBep68DOs=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=qh0cGJcx; arc=fail smtp.client-ip=40.107.208.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B565230595F
+	for <iommu@lists.linux.dev>; Tue, 28 Oct 2025 10:53:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.43
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1761648833; cv=none; b=pFae2PcQXfz/E5l9EU3+XB4yyD4OW7mMfEHV6v9MrJ1L9i2PWliqvyfovomtFdoD6l0s2iWflsQnZo2tHuz+7/t8UQGQHXBV9z8e7c3umcgqryECIbRZ8SQ4tMmNHC1twep9tHTYmhamNNtzeOO0ygdCgFvZ+8LNy8OfW2EbseI=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1761648833; c=relaxed/simple;
+	bh=KAAq3UD42W1vG9OmM9VYHYbQDySbjL7ySIBoXYb+P6s=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=O4BXkGiPFrXD6H2xXNUIR2ZAqxiXdM14m6uuamCj2Gz8lMqpJfmT++IGL8rLH6o7HMzo/Ry23BgYAQNfbAbkFIZdk0Cr5VO48FsJm6kwUB/3VoysH11OS+PgEgfYjRMV5M1NoYlx1e8d86j3TlXigLIVc2QXvcTXPkZ4nysvKcc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=s9WzrjR8; arc=none smtp.client-ip=209.85.221.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="qh0cGJcx"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=ov326Nidd82eRNhGMBuDdo1iBzgFAh736vvzZTAf/cWWYOYsIgtAvQsmZePUrXAzJxQjfm7ljHl/ww1TLmIP2SjY75dhL/G/0urF7PBgfVKSpMDkc6bMKyhD8nU3+setSUz/uuUAb1EOa0ahlcxm8PGC+XI352qrAjNecQ/CWQbe/aAXfRtuqOEnN4TZpGQEnV2GiX6OWWlClxvHsCarLru3KnUM39TYQ8TTSkdp7UBzU11MiCIaRO7cq5QIjZPdUf/p/uyQSTAjGOnf1nlqGuvy+exEorrZluQI9Pd0NDd9C+onuL6ZDLQd2BvVFE0xjGbSg70+VZiY1TJ+e1u4hw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ofAfSeqDvrLapbZyWS6Fj7aoO8bMduhDmBsb+iha6Sg=;
- b=hiNppjpfTJF1xHysPWeoeS8HaSZ/8gkWjAVDvSI9c54i6qbbeiGRnPjLbdb/x9rBRT9xwFT2FEuqKjvyIwxD+KJdHlk5CgSqwnF4C5PQgol2p9GtpgFVoptvhUrtDjHCpoy7fAvPPwfUKPrA93wfVRLyJ/jpXCrjGjUACa4hW26lEXT6YdDdu4vxuJmwkILfFlVyBQgBVE6FoBJYNI+HZxjrIbqhOp1D4YuqDXItYruX24mntDBBPd4ealbcqvAcPoAW+FaYjEXtt3g8bwEnPx1ZnFj/ezLgJBEnxwsERfchzzl9IA6tETw/ICdv16u6OGJLGFm0SJC9PfaSLUpnHA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ofAfSeqDvrLapbZyWS6Fj7aoO8bMduhDmBsb+iha6Sg=;
- b=qh0cGJcxBsYtto3k/XIUKFepKtZCZLrjpoByNGF2g8IHxNy6lEtX21jMKiHAgly0BAIWD7ulfyDqvVtaAoM7CARvdyTCnogUwhlVwjPNO2hmbuf5/Pua/vf2rjmJ9XnUJ1If5/PV63kRrBAG+R+BoQa9phQeWITswO1rq0nD/Tlm6+lVeWt1UW194+xVVlX9LZsu6wmwyRlXEGevOLs+x0hEtSNFqvtLzxKoyG/NGhJHVpEufacL00mcXZMpZFaun6AHPAAj9AGn042h7+dk+lMbDIVooiTI8vrLelGTb+JKDhtU8c5gJM8SYPf8AuzXyQXoVxpn8rSdklzxNKbbzQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from PH8PR12MB7277.namprd12.prod.outlook.com (2603:10b6:510:223::13)
- by MN6PR12MB8592.namprd12.prod.outlook.com (2603:10b6:208:478::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9253.18; Tue, 28 Oct
- 2025 09:57:39 +0000
-Received: from PH8PR12MB7277.namprd12.prod.outlook.com
- ([fe80::3a4:70ea:ff05:1251]) by PH8PR12MB7277.namprd12.prod.outlook.com
- ([fe80::3a4:70ea:ff05:1251%7]) with mapi id 15.20.9275.011; Tue, 28 Oct 2025
- 09:57:38 +0000
-Message-ID: <af36aed2-a52c-42ce-839c-96413327af17@nvidia.com>
-Date: Tue, 28 Oct 2025 20:57:33 +1100
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 2/7] iommu/arm-smmu-v3: Add an inline
- arm_smmu_domain_free()
-To: Nicolin Chen <nicolinc@nvidia.com>, will@kernel.org, jgg@nvidia.com
-Cc: jean-philippe@linaro.org, robin.murphy@arm.com, joro@8bytes.org,
- miko.lenczewski@arm.com, peterz@infradead.org, kevin.tian@intel.com,
- praan@google.com, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <cover.1761590851.git.nicolinc@nvidia.com>
- <a4febbb5533127a20f61796e1afc21bc4a132203.1761590851.git.nicolinc@nvidia.com>
-Content-Language: en-US
-From: Balbir Singh <balbirs@nvidia.com>
-In-Reply-To: <a4febbb5533127a20f61796e1afc21bc4a132203.1761590851.git.nicolinc@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SJ0PR03CA0017.namprd03.prod.outlook.com
- (2603:10b6:a03:33a::22) To PH8PR12MB7277.namprd12.prod.outlook.com
- (2603:10b6:510:223::13)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="s9WzrjR8"
+Received: by mail-wr1-f43.google.com with SMTP id ffacd0b85a97d-4283be7df63so2810898f8f.1
+        for <iommu@lists.linux.dev>; Tue, 28 Oct 2025 03:53:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1761648830; x=1762253630; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=5ciiMP+aVPTGP01jthAKSkaUntJMAjHCa/1wZcaGOww=;
+        b=s9WzrjR8LspZo+X9NeRVROTtzCjlsrGTSf099N7UNEMPbNTrQJ3tii1GUAyMQDyrbL
+         aFnXt1fV4t1tGI8q+rcZvLZI3iDmog8L87dB5R/3r/CanyAbTcLhI1/e7oNLT7nzFlAO
+         XCeJ+SaAXXAGdvrpPgG832vl6dYoNfkUFuWftwAkr7teO/KHS/8ujAnhCEsQNNjSD13Y
+         N0V6XXQ1OxC/aUBlXlJB8sONsdRA7m+HZvxhKNy27LAODKXG3ULJNjPWXxeu+bSAKDqK
+         U4N9Zi1zOa+mmuMDnlF/RpncKHVf9HQCogNnYz92J0TDs7xb7s5m7DWTNLeIUjMSy+2P
+         XNUg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1761648830; x=1762253630;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=5ciiMP+aVPTGP01jthAKSkaUntJMAjHCa/1wZcaGOww=;
+        b=s12lWYUT/BhyB3czGu3Toz0WnS46Yw6fAi4lg6mqzGMH7UOPAj4EyxQ+cOJc1VLVxk
+         XPkWxTFA+7JBKwrPnBSK4kglUrygPUMn4FNBL6HnYUrqvPC4d3ljNhDdUS+K5eFVirQ2
+         TBqKVgT1mDDjF6J0M3SZNqMvXTzr064acmfVouccYtEsRxB29ajgy8651W2WaKhbfBQd
+         XhXLfUA7Em0q1YEAoWHOeDVREtD3OhPSprUP+p65es9Q4pkQtmR9IO54R7wqeDtMZyvr
+         MZnMixU2UTq4+KMTqPZePm33VFBjYUOqvFcB/HJ3gSP9si8zY6Ngz3N3DqI/pJJD1oA+
+         20uA==
+X-Forwarded-Encrypted: i=1; AJvYcCWQ3oqpKzM98DB5/Uw5F05INFs7CUagel3WsSnbGzT9xGQM8CQxIEnkRhZWo3lqOD6GsqeK3g==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyCJmqSTLRHdqtTJIdXz8+qoT3COqoT2Xvsz6/8nmirdFGSwmeM
+	tGy8Uw66qIEIw2ZTSq5ssavpQVfcxWaPPOOui9OnvKFvVODKHQG4Xxp+SesK3Iu8dGs=
+X-Gm-Gg: ASbGncuyXbTkA+srNHFZLjEM/5+LsuqgsXyytjqXbQwD0g8WQFCenkMI4cqPSb3mg2r
+	A+3J6C8oPGZCkTAMo6PA93l+8ZLEetvEOi4llF35RFtw699rLCwJE8DCvEwuouKFMQ0NEAaOgYm
+	TITSPN4SOupiuk8vzEPC+XJizQt1v8aDAtrUi+NXvi3MVdyZuwvFDrSKqtCKtsSKo1rsCj4MJUB
+	+QbfTj9x9jg2E8wjpIQlM/GbmHsVAet4WUzyikxVHSQwl2f6va2jnQTORL8XCojfglX+k3uNljw
+	N1vZakNU/2ryB6m3O2wIgQBKPuU1Tzd6mtypfNa3NtvTA0vLgXbl5M29mrJCiWL6Q9HMP81nErA
+	WMNlsqHpJUR5E8Wz2i+6BmaF83LbeMx+qa15Av75PIYcW+gLHVWJiqiPrwu34hWXffGrKBdxquS
+	aPhx8cdf+Go7sP/F3m86jR
+X-Google-Smtp-Source: AGHT+IGNt3x1+qvnQdvPMrB8YbMOh25mEuFQD2Py5L6FbHFNPHpPfAZVVrBrzGdO5MKQniNEUyPgGA==
+X-Received: by 2002:a05:6000:26d1:b0:3eb:9447:b97a with SMTP id ffacd0b85a97d-429a7e8e222mr2559278f8f.54.1761648829920;
+        Tue, 28 Oct 2025 03:53:49 -0700 (PDT)
+Received: from linaro.org ([2a02:2454:ff21:30:7f41:186a:1d61:ae59])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-475dd374e21sm191479545e9.9.2025.10.28.03.53.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Oct 2025 03:53:49 -0700 (PDT)
+Date: Tue, 28 Oct 2025 11:53:44 +0100
+From: Stephan Gerhold <stephan.gerhold@linaro.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+	Rob Clark <robin.clark@oss.qualcomm.com>,
+	Manivannan Sadhasivam <mani@kernel.org>,
+	Johan Hovold <johan@kernel.org>,
+	Bjorn Andersson <andersson@kernel.org>, iommu@lists.linux.dev,
+	linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu/arm-smmu-qcom: Enable use of all SMR groups when
+ running bare-metal
+Message-ID: <aQCguL11h6oa5Y4C@linaro.org>
+References: <20250821-arm-smmu-qcom-all-smr-v1-1-7f5cbbceac3e@linaro.org>
+ <aMAkJ7CfPQuhvhfm@willie-the-truck>
+ <aMBJNzXpQTMg4Ncs@linaro.org>
+ <d73e5026-ccb0-4a19-9742-099a0443f878@arm.com>
+ <aMsJHheI6Y1V5q74@linaro.org>
+ <aM0LZVudBKjWuVrT@willie-the-truck>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH8PR12MB7277:EE_|MN6PR12MB8592:EE_
-X-MS-Office365-Filtering-Correlation-Id: 86d9de64-377d-49e5-e923-08de16086d5a
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|7416014|10070799003|376014|366016|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?Qk1seFZ0Z0s4M1NVVUI5MGIwUFhBUXMvbkt5ME53WWZuRGJmZzNJaFh3bE5w?=
- =?utf-8?B?Sjlzdk5IOWtuc0lPVVN0bjRYMEVuaXJnUndrRDdnUkpBQVpOcDMzU3B5U0tV?=
- =?utf-8?B?YWJpL2h5VWN1K2kzRlVsUGZOMk5mNVlPcjY4Zmp0V28rdjlpMVZpdENqL3A1?=
- =?utf-8?B?VEd6OUpxT0FMVEY3YmsrV3lWL2pndkFIMTA5MlpZN1ZlT2pPUVhpZzlPYm1w?=
- =?utf-8?B?RnBlUG43YlZqOG9EUmN5VWFSV0JNWlZMTzhGdEZkdTRhWThVWXFpUDA5WGJj?=
- =?utf-8?B?STZtSldaQXNQSG15WW9Vd1pndkFqaGgrTTBwa1hwcCtjc2sxMjRXQTB0YnNU?=
- =?utf-8?B?K1ZUVzlxR1N0Z2svZ2N5WHYyVXNpYi9pVUNaaklvN0w3U1JzRTRLZnlnaTdG?=
- =?utf-8?B?NmtWSmQyRVZ4YXNZdzJPa0wydXQwcUIyRzNBYXA4SS9Dd3ZRVHhMWHBYa0RW?=
- =?utf-8?B?QkNEV0E0ZnFybVoxUVRYLzRST0FISU1mU01KU2NBVW1tOGV1NzRHZ2NTUHEy?=
- =?utf-8?B?K1VBbGxBTC9kRW9oYm5LRjUvU2o4QVhlSFZaUzBLdXJ3R1BFU3p2Ylg4KzFX?=
- =?utf-8?B?ZVo2b1EvMFkvNEtuaklCU0IvMVJEeFRsTCtqOVF3U214Wmk1QTRZRnVEQjRV?=
- =?utf-8?B?UW9HeGJGR3MxUkNiMmdjeklGeWFnUTVacHY1ZVhDdXp5NEx4b0IyckZGQWt5?=
- =?utf-8?B?NzVGVlRJTzJKMUpOQ2thWGYvWGl3ckZKbUI4Nm9nb3dMUXEyMUptQmpobTBk?=
- =?utf-8?B?bG5HSFhpejVMMzMzSGZDK1hhSHFEc2pIcS9kQ1FydWYyWk1uZHkwdWpRUUs4?=
- =?utf-8?B?NGh6blU3Q2dLUDNBRHp5b1RFWElVQnN4UWVmOGV4UTdxcWlRTUZ2azVFQlN1?=
- =?utf-8?B?V3ExSmFudUFNNHQ0N0RHTXF5Smd3Qm1pZ0NYemZRdkRWVVlqUWg3UTFqb0VO?=
- =?utf-8?B?MkJ0ZnJkUjZ3SFR3THJLNGRISnJjU1BGTDdKWk5MTmpqRE14eG01bVl5Nkly?=
- =?utf-8?B?NExVa2F6R0RqSWxrdjVVWTdhU1JqME83cDhOYmhldmhTVXpLTlpRWU9GZDlO?=
- =?utf-8?B?ckdVOGVSZTJpVkpkTWFSZ1Q5MlpPdEpMaFV4UitvM2dVaHFwVmxzazZraTFD?=
- =?utf-8?B?UC9YR2syYy9MdFIyQXJSRTVlU25EaUtkNy9VakY1cS9TMUxtbGZpckRVRi93?=
- =?utf-8?B?WmFERlZmN3dNbU1aV01wNDZHcUpXRnRYNFM3YytQRjlLSmlQMmFhRlpPKzRN?=
- =?utf-8?B?ZmZhQVhsbmRJZG90VThzSk1wdm9ndXJCWUg5TTViV2JvSVJtUS93N3Izbnll?=
- =?utf-8?B?Q2o4U1d0WWtHbS9hTHBsajhuaG1oTXpJTVZSRnE3ZlVMOC94aWYzSEp4VXNn?=
- =?utf-8?B?T3IxaHlwYlJQVnJ4eFpzQm1NQjJDL2F0aE9tbHdrMEovS1l0VlcrUEM0bmxu?=
- =?utf-8?B?SGkvem00UlVFTndwZlVORmtienBaKzlHQ21IZGZ1VGF5eWczSUo2UFBjYTZv?=
- =?utf-8?B?K0tsdTJEamFNZmc4MHFoNytLdzBZZFFkMW01NzNZaXR2cVpyOGlUOGFJUEVj?=
- =?utf-8?B?cEtnRkZCcGpOQ09CR3RyN3Q3VU1QWFlJV2t1SExmVC9mM0h0UDVWQTRkaGFO?=
- =?utf-8?B?aUhNY3RPV0hwelpuWFBBMnhFbURyM2RDeU9YUENlQ2VYSDJvcE1weWUxWUVU?=
- =?utf-8?B?elRQcjZjc09HMFlrNkNJdTA2UEF2UnFOdlI2Z1QrdFlJcXFWQU9hdVdlZEpu?=
- =?utf-8?B?VkhWK1hWL2o3eTZRaWtTaGg2b2ZsZHArRkNHWTZTSUJtczd2MXh6cXJreFdG?=
- =?utf-8?B?QXBFRHlKcVBSMUI3azRJMGJKNXUzRURDYnZTcnpnM2pRcWZIYmJNS1FYdVBm?=
- =?utf-8?B?TUtBME1aaUlpUDhQQm83d1RLUTdlbG9ZOW1FeDRmZHVZdmNHd3dxUElIbnBM?=
- =?utf-8?Q?6x1H+DosQmL9HPDEqSFqsG60wM8bgmO4?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR12MB7277.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(10070799003)(376014)(366016)(1800799024);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?ZEdZWUt6YVJmZDdmM3dPSHltblVaR043dUUwK0RNd3FSUTRiL0Y0NDc3eWU3?=
- =?utf-8?B?MmVZNTFjTXdNSXFKaUY3VCsxRExTTUp6ekdvRmlDbWhPRFRRTzZXb2pRWTNv?=
- =?utf-8?B?QUF4cnRrY2RSSWx2V0pZbGVtQkhlUEdNR0ZxVzB0WG12c1Qzd0U4VUNxSllw?=
- =?utf-8?B?UzFzMGRtUkxCV2VTNUlabGltYmtHMjBmM3lIVkZlUDZ6cEdxU1RqSWpVeHI1?=
- =?utf-8?B?M3h0ckE1MkZSQmRMVGUxZVRhQ1lsUytXc2J0cWphNGtwMC9naXF3NnI1MjJ4?=
- =?utf-8?B?cjJTT05IS25BY0xBME9JZjhoenZkU2Zhc2Ixa1REN25HeFZZRUpyS0RqV0pZ?=
- =?utf-8?B?RjF2VnVGRy94WjI0ZHgyckRCTkwrWVZzY1d3QzdKSFcwYkIvRkZNd1cwR3Nn?=
- =?utf-8?B?c050c1R4bkxWemdCcFN6Lzk0d3VHKzVGdE11VEdwOWNCMEFISkZBaGFJMnhj?=
- =?utf-8?B?bXAzNW9HWk5xUkRxbGZ0YTdSUFR1UXhWelM4emd4SWZmTEhYMENvRFdHd2oy?=
- =?utf-8?B?OGdhbERSM01aZm1wRVNLaDVNcXVrWEg4d2tsdzloSzBNTTIrM250TkNLdGJs?=
- =?utf-8?B?dFJpd3ZhTVVJeTZhUythQjBJaWdvM0lLM1RXQktHdXUvdFQ2amhxOFd3U2sx?=
- =?utf-8?B?eEIwTDBWQjlDbTdzdDhQL3REU29waFJ3N2FCNXV1TGt5TUVBYnFUa3c2TTBU?=
- =?utf-8?B?OU1FZTNzSlAvSlE4Vm1jcDFpVFBSclQ0R2VQWmpiZzlkQkZSVWhna1c0T0Zl?=
- =?utf-8?B?dzViQ2pLTEtoOUxtSmF2Rnh5cUhJU0RIL3F3NXFvN0w4bndIWmxwQ3lGVkZC?=
- =?utf-8?B?bkJSMWZQVVVrWlM1dGVCVzRLS3pGSVkwdzVveVFpQ2ZwRTd1cnhaeFVWUERB?=
- =?utf-8?B?NTV2TCt6b2I1WXdCbmZ6cDJna0RoMGt2ZWhNNXBUNk1ubGFNeFIwaTFuanJ6?=
- =?utf-8?B?cjBubkdjamNSaW5QQTVKeXJaZTlaN3VaWnlzd1dxSFVydlUvVERQRlJBRWxH?=
- =?utf-8?B?R1ZQMi9MNWxjZ3hFbDBiWDZ1Zk15eFo3YzNaU280WWtoOHpKM0RJSU9xY0sz?=
- =?utf-8?B?RGJhRUtwQ3l6NVJPWFdCaTd0UmtpMFcrT1doM3M5MFpLZEcrYVFSWlZ6Zk5n?=
- =?utf-8?B?N1J1VXoxTXlna2VoMjl1dTRjYXR5dk1vZVpFV2FjM0t3R29DTnA0bTZ3UVpi?=
- =?utf-8?B?dmdHOGhLYTFCbGtVNHJxcjg5ekNoUlU4aHFGMnk0Y3RTTVdyNksvT0ljZVhu?=
- =?utf-8?B?RzVqN2FNK2dzT0VzZ0RzMjR0eHNldG1iRmhGYS9FaEV1cUttamE3K09EZVRu?=
- =?utf-8?B?Uzc0Z0gvZkk2TE9QSDZFSE43MkZaU1F6dEpqck4xU0ZwZXh4ZGF1V2VBK3ZN?=
- =?utf-8?B?VGUzQmFBT1JnTEhaWXgyREd6aG5VaFBXUWhucks0K01CdjZiN0VCZ0NwcVVk?=
- =?utf-8?B?MUJhb2YvVzBKdXJsalEvQ0tiamxMWjU2dWxEY3YrelN4d0hKTkRRWlA1ZFBl?=
- =?utf-8?B?RXgrR25BWnRiVmY1MGZtdUU0TFlZZGowOHVJWjVLcVlETmFpKzJLa201SGJi?=
- =?utf-8?B?dUZZVUpaZVQxUVhOUVdtNXFEVFhoQ1dOOUYrZC9jekFkYlJTSkttbHJGYzBk?=
- =?utf-8?B?N1pxeEx6amFaQXl4a2lGSXBXL2FPSkczK0lBQUNRUFl1cGlIc21EYkxLWkxw?=
- =?utf-8?B?TDhHby9Za2tZdmJ0U0puV0F4dHdpeWlQVWRyZ3dlQkVJRE5yTEhLQjBZTHM4?=
- =?utf-8?B?c1E5bkFPS3hnMnhucUpFcm0wY0FMNyszRlV3b3ZOVWtyZ2IxQW9xRXdaTVdY?=
- =?utf-8?B?c1pJZzVpSEJXVElZQ0dOeFRjNy93RVNPTDVFQnlpMWFXdUJRZGMxZ3lyYzRj?=
- =?utf-8?B?b3Z4aE0yMk1GZm4vLzQ3L2E5UmVPSkJKMm5mVE9ZNlFoVjlwRmVaNFJiOHpT?=
- =?utf-8?B?cUFyUDRCdS9RZU90RSt4WmJZVjlrQnV4aFpOTktUQzFRdkxkNURCYUhsYXJh?=
- =?utf-8?B?K294RkViMm9uSHJvQTRDeXdBa3pDeFNJNHA3T3F1cWlhblBycUYyMU5Sa3pY?=
- =?utf-8?B?Sk0zNXQ0amsrczhzUlRkNWhEN0VXTWRkVE1ZajlhcXIvWUk2bGNVUUs5OTVy?=
- =?utf-8?B?WXBPc0IyUWIvOHFaVHpOUmZJS2JXcHZCUmpyZzVIdmNlbzhyNFdVZUk0ZE9o?=
- =?utf-8?Q?FXtuk1fvqd375oLN/2dkGULeFEILysRhSgM/D+EG5417?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 86d9de64-377d-49e5-e923-08de16086d5a
-X-MS-Exchange-CrossTenant-AuthSource: PH8PR12MB7277.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Oct 2025 09:57:38.5182
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: VqzbqKs14x9PpEC6Dw3bbnSst1ROozSHqmJhrRl+a/DR9Al+pIMBJ3hL2TqryPChGuE6UKejjVJhv/N+lzkYIw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN6PR12MB8592
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <aM0LZVudBKjWuVrT@willie-the-truck>
 
-On 10/28/25 05:54, Nicolin Chen wrote:
-> There will be a bit more things to free than smmu_domain itself. So keep a
-> simple inline function in the header to share aross files.
+Hi Robin,
+
+On Fri, Sep 19, 2025 at 08:51:01AM +0100, Will Deacon wrote:
+> On Wed, Sep 17, 2025 at 09:16:46PM +0200, Stephan Gerhold wrote:
+> > I realize it is weird to allow non-architectural features like this, but
+> > I haven't found any indication that the additional SMRs work any
+> > different from the standard ones. The SMMU spec seems to reserve space
+> > for up to 256 SMRs in the address space and the register bits, as if it
+> > was intended to be extended like this later. That's also why it works
+> > correctly without any changes in arm-smmu.c: the bit masks used there
+> > already allow up to 256 SMRs.
+> > 
+> > What do you think?
 > 
-> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> ---
+> Although it's all pretty ugly, I think we really only have two choices:
+> 
+>   - Teach the core driver code about all this and use an rmr-like scheme
+>     to leave the upper SMRs in bypass
+> 
+>   - Hack it in the impl code as per your patch
+> 
+> The latter option is probably the most pragmatic (especially considering
+> the need to handle the virtualised case differently) but I'd like to see
+> what Robin thinks.
 
-Acked-by: Balbir Singh <balbirs@nvidia.com>
+Do you have any thoughts for this?
+
+The stream match conflicts that happen without this patch still exist,
+I've been testing this patch for quite some time now and have never
+noticed any issues.
+
+Thanks,
+Stephan
