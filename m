@@ -1,82 +1,146 @@
-Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mout.web.de (mout.web.de [212.227.15.3])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAD6170814
-	for <iommu@lists.linux.dev>; Tue, 28 Oct 2025 12:45:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DAAF32D0CE
+	for <iommu@lists.linux.dev>; Tue, 28 Oct 2025 13:05:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.15.3
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761655526; cv=none; b=UfdS42SJiSM35VNR3WUqy9XcNXxK70Fce/lKzxknUBPHwBfs8Ijmx/Iecd4tsWXoUth7b6GgvdM8LvXkl4e+MGgIl34o3r7HF0asTuqAgrwlaubAPUp78GqgCkVG6FMkc96xS2Me748RMVPgGfyNtvegJHvTL8MbAT9xbQJvox0=
+	t=1761656735; cv=none; b=PiSlaPeHOS8P4vq/BJqKMJ4O7ABJJ68TEjBa+sYY9CB2vgS9odqEVLQMuMwzzSd9JT3ozf40vZ1LxKCJlgJgjUJZK7K+AolzNZffgnI1EEIEVywypSgQTQA8/0q8Qh03uPrmaJGu9xI/XcSvfgTdGaZ/6Cf+WGiNmEXj1NqnhrM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761655526; c=relaxed/simple;
-	bh=pD2wyVS9S4hK5ior0MWTs+rsfRGHshMDbPlBWECXKi0=;
-	h=MIME-Version:From:Date:Message-ID:Subject:To:Cc:Content-Type; b=m0b6mqbKd2F3nkMcfGzJE6RehKU/imMX1KOxfbGgMlkqma7mIfZunaeZuCEfRRcBL+GriDhqb/lOPalDXcjvwpbKGAK0vnMxf4si+rXyP52NF9M9xZywYWZmig19YEheqjSxR+QiC6AxT3EHO5/KnuKqoEk5ayjRbh3U06R2aIc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=G2463xee; arc=none smtp.client-ip=209.85.208.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1761656735; c=relaxed/simple;
+	bh=oblVEJw19kd3V+RC5737pJlRfPFXsR3YSGpz2cE/KRc=;
+	h=Message-ID:Date:MIME-Version:To:Cc:References:Subject:From:
+	 In-Reply-To:Content-Type; b=lnxRHkZ1ugGqD/726D4hZjIO428JVpwZWwYLQkLjTJSX5JG0ePpfqvuZRLiGBlo120eEl1QOGSXQXePX4cFZgymtp2egcX71Z+y0HeiDA9jgev/VVg5TBoJD3Nh9v1DO2HUl4pachKPoQjpTwhjtmpszTEAHuF1pOfOB3DShAdg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de; spf=pass smtp.mailfrom=web.de; dkim=pass (2048-bit key) header.d=web.de header.i=markus.elfring@web.de header.b=sSmUYYHE; arc=none smtp.client-ip=212.227.15.3
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=web.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="G2463xee"
-Received: by mail-ed1-f47.google.com with SMTP id 4fb4d7f45d1cf-63c0eb94ac3so10540633a12.2
-        for <iommu@lists.linux.dev>; Tue, 28 Oct 2025 05:45:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1761655523; x=1762260323; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=pD2wyVS9S4hK5ior0MWTs+rsfRGHshMDbPlBWECXKi0=;
-        b=G2463xeexdffB4OBxNMTKoM9NKpW4tyrpMf0hWqgtDit7JuOkaYF0K5VgoTQAQOkpg
-         cjxl5mnESoFS1UZuFevF9jo6NfMe+523bSL4PJ77QNCkIYPmkDCywYBVFbGNds91wGwW
-         PIYQvY+LarJtYyy0D2NKgcNkkrMyHVdimDFtThanjsKyIDuvpTYgc7VbO968ZYAvLkTL
-         s05zoU+2NxfTDGbqKlD7TMookxK6X5RBOWzqtX0fHIURWlaCyH9VULVSHEY4UFXq7jaW
-         UQl4UwHB7hSo3ezdq07taoEUF+FqDaaVu9+sUgPR4pgqAkqrwbkLE0mlFFYLv5FQ1DB2
-         tO6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1761655523; x=1762260323;
-        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=pD2wyVS9S4hK5ior0MWTs+rsfRGHshMDbPlBWECXKi0=;
-        b=OiTXkqUJuYx0gtBkimxWFiKQdLGddUaninQT6d8y+M88iQnQOPJUoaD06nSydi9eZr
-         ARoxppxPYJwgTuGtukQ96+sW8qC2KtYctX0Qu7FWJRwAeFbSVwX1brZy1jmUl0Do6ThK
-         cRtZbMg9v9fs4i2i88O4a2d/Maiae7FFLHwXhYFn8d/KJ3eb07eh/2BKiMrP9XFjzt8h
-         Xf8ad0mhVC540ear3BHYpH6g5Fm5YtH2QTZDVzNIEOzegCiSojN6r3nZXDj7YzQqBFTT
-         df+7NrVqpwqbM4ricQj4uCA+FlyyeECCt/jgZO7BV2VKd7XbvOEROwRxvcde9HG5jQFh
-         Gvuw==
-X-Gm-Message-State: AOJu0YzeWf4gpo8RmlihCwkvdf1QehBbpMm84LMB2qf77z8QZAbWNV/3
-	z+QC40WYhaV+pqv8sFvPwIv6ORQFI2LyEdUz8lvkAIIbxAngbrMri5B2bo0a1W6wkMv310dGBeI
-	nWk3tAJaVH/sKTFLPvVwEP7FzwaeDFYw=
-X-Gm-Gg: ASbGncuisFGPPicgzb3anj+N5uDUWXnBkrvu2FX3morc1GAmSHTKbUc8iExn471+4ec
-	fbykFSYXKiLTPofIwvUnCjy+zgkSqWSfvnSRkkuQkb1GkXjuxQTQ+CcN4yCrSDz0teskRzEyukj
-	bVh7yXIgX4XOFxtSxof0ykBFX6S6xjw7IX8WoS97alyY5RecoEOXn15d17CE53Drki1hugd39AL
-	XGKUQirHClqILZR2yV9lunoy7uRBPVXxH9t7TNfSNMwovHwKjbR6mqhjs+6
-X-Google-Smtp-Source: AGHT+IH46MShUzaMMndH4fBGSeQ86Y0UMqWKRy0Hg7cZyNdRcf5CVne0a9e3jLaxdSu07hi1Yzy4mqs89mWqzsQWrpM=
-X-Received: by 2002:a05:6402:4415:b0:63c:215e:4377 with SMTP id
- 4fb4d7f45d1cf-63ed8162202mr3154546a12.24.1761655522954; Tue, 28 Oct 2025
- 05:45:22 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=web.de header.i=markus.elfring@web.de header.b="sSmUYYHE"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=web.de;
+	s=s29768273; t=1761656715; x=1762261515; i=markus.elfring@web.de;
+	bh=oblVEJw19kd3V+RC5737pJlRfPFXsR3YSGpz2cE/KRc=;
+	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:To:Cc:References:
+	 Subject:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:
+	 cc:content-transfer-encoding:content-type:date:from:message-id:
+	 mime-version:reply-to:subject:to;
+	b=sSmUYYHETdxKKRioTgaOfdyqJt/Ui8zDUuTWYUHQB9xjX74DxoNFlpf0jTPVw52/
+	 d84uf9+zaJ/QeiwG7iSziRJh1aGMv3XX7lopTXp/nvsu9MvrDWwTyZMxEyWPHTJRa
+	 CiZeJoTDU5oZ39yK0ywtw0qcrStJhXkC26kXb2CRgN8IrM1zdDXnQ8TYlfxL0E2hr
+	 ayO5sNsgHWp0LU1Wsns3IZn3rKzSolwtXxEfZtQxAAiJRazpAmeDqEHS0RHGE7g+k
+	 0kbtg4HpR5xABmVK32PNL/nQC9mzP9/l6TG1VADXhBbZH87W6Ejc2uXZwK9h3Y09V
+	 k7x2iNaaJd5yQne+UQ==
+X-UI-Sender-Class: 814a7b36-bfc1-4dae-8640-3722d8ec6cd6
+Received: from [192.168.178.29] ([94.31.69.187]) by smtp.web.de (mrweb006
+ [213.165.67.108]) with ESMTPSA (Nemesis) id 1M6HKG-1vKIxn2S76-00CyKG; Tue, 28
+ Oct 2025 14:05:15 +0100
+Message-ID: <1ea5b423-365f-46fe-94f1-ee248ad6b307@web.de>
+Date: Tue, 28 Oct 2025 14:05:14 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-From: zhang bruce <brucezhang5337@gmail.com>
-Date: Tue, 28 Oct 2025 20:45:10 +0800
-X-Gm-Features: AWmQ_bmrlCUJIPjAUhRmm6nODZ5mR7spZp0Ws6NHFBtOyRurdDxQOgzJ7Nf7mjw
-Message-ID: <CAJZPk7T0K51zBKNNQXw2qx9OYrPa8BJ6jQTvOM-YrxwBndPbzQ@mail.gmail.com>
-Subject: Question about IOMMU and streaming DMA
-To: robin.murphy@arm.com, joro@8bytes.org, will@kernel.org
-Cc: iommu@lists.linux.dev, chenglingfei22s@ict.ac.cn
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla Thunderbird
+To: Miaoqian Lin <linmq006@gmail.com>, iommu@lists.linux.dev,
+ =?UTF-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>, Rob Herring
+ <robh@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Thierry Reding <treding@nvidia.com>, Will Deacon <will@kernel.org>
+Cc: stable@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+References: <20251028063601.71934-1-linmq006@gmail.com>
+Subject: Re: [PATCH] iommu/of: Fix device node reference leak in
+ of_iommu_get_resv_regions
+Content-Language: en-GB, de-DE
+From: Markus Elfring <Markus.Elfring@web.de>
+In-Reply-To: <20251028063601.71934-1-linmq006@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:37WBgU3x/ii4dwV8P7dMk91JvIMx9tJjp4DoPc0A2tX8yy5xe9+
+ 4PIIbXvg8IF3w+cu7J5EQpgT53z7VgssXm07hrNFtTy6ZvXYhXbN9ei2O1CUCBTDwVDxeKS
+ oPcd2kr8yA2oYr3d/W6rHK7V1valsiVwthxW+Yw1LI8h36svJBOFz8gZ3YVtgczaxm0LnE2
+ gn48+BxzUaTQSBT2sxb9Q==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:DxvGRryXlxE=;Bt3yInbtfXawGQ7QEDuuuWsPllV
+ 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
+ kzePM8LHUBAZeuEr61Lf2CQmdVGH07OfCGg=
 
-Hello,
+=E2=80=A6
+> Add a call to of_node_put() to release the reference after the usage.
+=E2=80=A6
 
-The driver invokes the dma_sync_single_for_cpu API to access the
-current state of the dma_buffer data.
-However, dma_sync_sync_single_for_cpu does not unmap the IOMMU
-mapping. In this case, while the
-driver is reading the dma_buffer data, can the device still modify the
-data concurrently?
+How do you think about to use the attribute =E2=80=9C__free(device_node)=
+=E2=80=9D?
+https://elixir.bootlin.com/linux/v6.18-rc3/source/include/linux/of.h#L138
+https://elixir.bootlin.com/linux/v6.18-rc3/source/drivers/iommu/of_iommu.c=
+#L196-L271
 
-If the IOMMU mapping remains valid, how is the ownership of the buffer
-transferred from the device to the CPU [1]?
-
-[1]https://lwn.net/Articles/75780/
-
-Best regards!
+Regards,
+Markus
