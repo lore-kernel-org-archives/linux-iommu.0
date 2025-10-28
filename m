@@ -1,89 +1,108 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0E7153090E8
-	for <iommu@lists.linux.dev>; Tue, 28 Oct 2025 11:57:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFA80328617;
+	Tue, 28 Oct 2025 12:02:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761652627; cv=none; b=F0BX2M7bU4mbGInP7Zh4vdd/mLqAuHGoVYHmJ/1EaAmv5Xn0hxKZuQUWkNdfaYzVDGdnP21zo5OrZnoQqhrMP3mHvQwQRyYHBcgr5nf9bGqFYrBIHtuBP+EiPdV0LjDOZFYpuNUcZ/Swsnclhxd9B5wsNFEKGnWbhnHrffS/Nl8=
+	t=1761652934; cv=none; b=tFlJd6m5qCI/+fVZ5nVK+91PnCj9ALCDNHW6jbOiBqyJI143p3x1ry2QzizxiFPFpmqVIEudp4AqavLaA3WhTD4VkbthhPdklyZ5EnnZPIdBJjwQvQ6HSxs3XzQ7PJPafNLMWVT53npdfBS1QQxggj2xGZqhIzmpv9vzzMXbHNk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761652627; c=relaxed/simple;
-	bh=z5CXhGy/LBc2zpdHHMxomM5MbPIp7P2Uxn6ZD1HAR94=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=KLCA8tZm5B3OzNigbGa+y24d+cNUT5IihJLAN9oQRnJlef5jd6ti6uEop35qFTPpblA4LkIeHNmF0jf0BmX7goUMj7n/JcpTqwHD7+C1gMls1VD65cktClcr6LQ7MSWGHsd4EH7s7+aZd7P6+vJBe1mXoXEk2j/Pf2fq1Rum3M8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7486F168F;
-	Tue, 28 Oct 2025 04:56:56 -0700 (PDT)
-Received: from [10.57.39.79] (unknown [10.57.39.79])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0BC743F63F;
-	Tue, 28 Oct 2025 04:57:02 -0700 (PDT)
-Message-ID: <6c35e1e4-8267-4eba-a53e-04ff74e224a2@arm.com>
-Date: Tue, 28 Oct 2025 11:57:00 +0000
+	s=arc-20240116; t=1761652934; c=relaxed/simple;
+	bh=mZf/YKmsAob1fECJczEmiCct9PI3ELB+8/2Zjo1x01o=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=DyShAmpB1sV1LVad2AisW335Gq33qdq7SEzXH5pLBPojMUQhZ75sk6z8gq0FAOSpBj9U6QfP6tKFR4cdGXq2J5E6ZKu53sxtjCphaYERhSG7Se5vYx9JTxTIEb/9LCTMNzifmvEMCd/4juNeiKG3C4Iuym8si4bIHZrE//oWKKY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SwZX30kq; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SwZX30kq"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9F27C4CEE7;
+	Tue, 28 Oct 2025 12:02:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1761652933;
+	bh=mZf/YKmsAob1fECJczEmiCct9PI3ELB+8/2Zjo1x01o=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=SwZX30kqTRxKywW3JAgQpZq9YEFkCs4mbYnsls8E10OCO8sCik7skaC6kTTCKlfog
+	 IAGPeflZVG4EU9joGw/E4TiGl7RA8FEFNbJr5eZDvYRVR5AqDOAKiVBJ3RW9NglqMt
+	 YrKtMpdU8ZM7ej9CU2ASIMTiUtmkgbi/4YlElhPAm8ukENsd2Q5yb9qGC57bQdTv87
+	 kSyfTWb41F+rhshf2CL1q0957AOwBmoHWs/npuXlrXKWFgxS/IeSKCP1J/gK/MKvkJ
+	 lcPBPR7SnFgSuuCKpUntaxB+uWX3d7haPhR2st8URjXBigR+NbHjYiQJL0WRxmtmiQ
+	 /cOOFozsC/eiA==
+Date: Tue, 28 Oct 2025 14:02:07 +0200
+From: Leon Romanovsky <leon@kernel.org>
+To: David Matlack <dmatlack@google.com>
+Cc: Alex Williamson <alex.williamson@redhat.com>,
+	Jason Gunthorpe <jgg@nvidia.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+	dri-devel@lists.freedesktop.org, iommu@lists.linux.dev,
+	Jens Axboe <axboe@kernel.dk>, Joerg Roedel <joro@8bytes.org>,
+	kvm@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
+	linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-media@vger.kernel.org, linux-mm@kvack.org,
+	linux-pci@vger.kernel.org, Logan Gunthorpe <logang@deltatee.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Vivek Kasireddy <vivek.kasireddy@intel.com>,
+	Will Deacon <will@kernel.org>
+Subject: Re: [PATCH v5 9/9] vfio/pci: Add dma-buf export support for MMIO
+ regions
+Message-ID: <20251028120207.GQ12554@unreal>
+References: <cover.1760368250.git.leon@kernel.org>
+ <72ecaa13864ca346797e342d23a7929562788148.1760368250.git.leon@kernel.org>
+ <CALzav=cj_g8ndvbWdm=dukW+37cDh04k1n7ssFrDG+dN3D+cbw@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommu/of: Fix device node reference leak in
- of_iommu_get_resv_regions
-To: Miaoqian Lin <linmq006@gmail.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Thierry Reding <treding@nvidia.com>,
- Rob Herring <robh@kernel.org>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-Cc: stable@vger.kernel.org
-References: <20251028063601.71934-1-linmq006@gmail.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20251028063601.71934-1-linmq006@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CALzav=cj_g8ndvbWdm=dukW+37cDh04k1n7ssFrDG+dN3D+cbw@mail.gmail.com>
 
-On 2025-10-28 6:36 am, Miaoqian Lin wrote:
-> In of_iommu_get_resv_regions(), of_find_node_by_phandle() returns a device
-> node with its reference count incremented. The caller is responsible for
-> releasing this reference when the node is no longer needed.
+On Mon, Oct 27, 2025 at 04:13:05PM -0700, David Matlack wrote:
+> On Mon, Oct 13, 2025 at 8:44 AM Leon Romanovsky <leon@kernel.org> wrote:
+> >
+> > From: Leon Romanovsky <leonro@nvidia.com>
+> >
+> > Add support for exporting PCI device MMIO regions through dma-buf,
+> > enabling safe sharing of non-struct page memory with controlled
+> > lifetime management. This allows RDMA and other subsystems to import
+> > dma-buf FDs and build them into memory regions for PCI P2P operations.
 > 
-> Add a call to of_node_put() to release the reference after the usage.
-
-Just put the reference immediately after getting it - this inner usage 
-only happens if it's the same dev->of_node we're already using for the 
-outer iteration, so we don't need to bother holding an extra reference 
-as it can't suddenly disappear anyway (or even if it could, that's still 
-not *this* code's problem...)
-
-Thanks,
-Robin.
-
-> Found via static analysis.
+> > +/**
+> > + * Upon VFIO_DEVICE_FEATURE_GET create a dma_buf fd for the
+> > + * regions selected.
+> > + *
+> > + * open_flags are the typical flags passed to open(2), eg O_RDWR, O_CLOEXEC,
+> > + * etc. offset/length specify a slice of the region to create the dmabuf from.
+> > + * nr_ranges is the total number of (P2P DMA) ranges that comprise the dmabuf.
+> > + *
+> > + * Return: The fd number on success, -1 and errno is set on failure.
+> > + */
+> > +#define VFIO_DEVICE_FEATURE_DMA_BUF 11
+> > +
+> > +struct vfio_region_dma_range {
+> > +       __u64 offset;
+> > +       __u64 length;
+> > +};
+> > +
+> > +struct vfio_device_feature_dma_buf {
+> > +       __u32   region_index;
+> > +       __u32   open_flags;
+> > +       __u32   flags;
+> > +       __u32   nr_ranges;
+> > +       struct vfio_region_dma_range dma_ranges[];
+> > +};
 > 
-> Fixes: a5bf3cfce8cb ("iommu: Implement of_iommu_get_resv_regions()")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-> ---
->   drivers/iommu/of_iommu.c | 2 ++
->   1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-> index 6b989a62def2..02448da8ff90 100644
-> --- a/drivers/iommu/of_iommu.c
-> +++ b/drivers/iommu/of_iommu.c
-> @@ -256,6 +256,7 @@ void of_iommu_get_resv_regions(struct device *dev, struct list_head *list)
->   				maps = of_translate_dma_region(np, maps, &iova, &length);
->   				if (length == 0) {
->   					dev_warn(dev, "Cannot reserve IOVA region of 0 size\n");
-> +					of_node_put(np);
->   					continue;
->   				}
->   				type = iommu_resv_region_get_type(dev, &phys, iova, length);
-> @@ -265,6 +266,7 @@ void of_iommu_get_resv_regions(struct device *dev, struct list_head *list)
->   				if (region)
->   					list_add_tail(&region->list, list);
->   			}
-> +			of_node_put(np);
->   		}
->   	}
->   #endif
+> This uAPI would be a good candidate for a VFIO selftest. You can test
+> that it returns an error when it's supposed to, and a valid fd when
+> it's supposed to. And once the iommufd importer side is ready, we can
+> extend the test and verify that the fd can be mapped into iommufd.
 
+No problem, I'll add such test, but let's focus on making sure that this
+series is accepted first.
+
+Thanks
