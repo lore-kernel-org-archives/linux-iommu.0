@@ -1,894 +1,1935 @@
-Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FB8D3314CB
-	for <iommu@lists.linux.dev>; Tue, 28 Oct 2025 17:33:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D70D1137923
+	for <iommu@lists.linux.dev>; Tue, 28 Oct 2025 20:23:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761672824; cv=none; b=AdNHgaCRfSj8ROxxdF2dI28+2P4YiOjaRKQt+PifksKmnbSAXagLOVNcngs8sHmFvwgBc2eB0IkSEYG33WEZbSCwCqogZ9xF5cAGyL5308Iqry4L3NEnEWYLC9CUwtxNtihc4ljwWPXmP5y28nsh322KQYpriIeHE3EsQDwjxhE=
+	t=1761682985; cv=none; b=ZcRWyFBpG13JKnY4j2kIDMexceprlswT438CIrm2jGDzq53LJ6lfL71Xe7DhpqWo70CNa9/bg6xwFwOrOAoJTBYmIuAy9DtNK87ef61zxr4W+yvQ5cEkTN1eKI98BQli67L+3/vytGKHeCR9KWW7f6dS16woEEN3//iyLq2Mrl4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761672824; c=relaxed/simple;
-	bh=0d83xKYl1wQDmuK5SOzlObBg7g6kLf+TuqQJprxbfYg=;
+	s=arc-20240116; t=1761682985; c=relaxed/simple;
+	bh=k7Pvh4+IZqOHbZLxiVDQt99E9hfg/xaz/UsTh3np7XE=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=XosI+t0X+sqj0GRItHwh3Pijs7s1K4wt2gx3wYgVRBGdSbh3RTjaMBR4vBIIRh/ewP63RIrGn3qPzU1vFHBCnOZinR3ze879r8sV/ppgTMLY+x7NWCQ1zg8upCxJvyIMfe4l6BnpyX8mLLQajiUTI7h+Q/kdBO+1abhtTMKlYzU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Zhi5vxab; arc=none smtp.client-ip=209.85.160.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 To:Cc:Content-Type; b=YRuNuPNa/PnQzKnvZdttWeDsvVhh3sQcbdFBGRrR5KMshEnKdk18v98dOfETZ8MWwTpr538KRgi+T0WYDhV3ve18ke+1ECRMZ/KB/hYe0lXrnh7nSmvF8iNw96LGV/puaePc6qoZKX4wsqwBVoK+dVCLD39qC7vs00rjOAGKrWg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=c7MB7yi7; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=JB0xntEV; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Zhi5vxab"
-Received: by mail-qt1-f173.google.com with SMTP id d75a77b69052e-4eccff716f4so27621cf.0
-        for <iommu@lists.linux.dev>; Tue, 28 Oct 2025 10:33:40 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="c7MB7yi7";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="JB0xntEV"
+Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 59SJle8A2623055
+	for <iommu@lists.linux.dev>; Tue, 28 Oct 2025 20:23:01 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:reply-to:subject:to; s=
+	qcppdkim1; bh=a+Vwz3fUljVkqmIN9UhEAG/5sDPTIna51tYgjfORPcg=; b=c7
+	MB7yi7P2NOci2vHETHVSUBx0oAtbHySifbO9cm4h0EOkQDQTEvUecI33w+aJoCH/
+	IxtXX8So5lhtPp5tWt9dDQ8pmWlLVKjr2QLwBt64xwESawh/okqTkg0OXgMvoA4t
+	B/m2rHc4L+vaCvXbRhCsqT/nfUM0hkBi4I6BMIoH/Nenk+f+yYC18aweuyu41txa
+	R2NMrMYJBZkWNrFrw8nDny06NH7r9kYBRQkbjU7oquRVR4j1nhfdd7gNBCo5QRmB
+	y1hlRDEteJpCP9o5tU4tZYICBvPj7a+zAJeRl2dZAEuyW7HoZWN2l53hxH5WBDNo
+	Jct/8h1WQQU8s4zekMsQ==
+Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com [209.85.167.198])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4a34a10370-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Tue, 28 Oct 2025 20:23:00 +0000 (GMT)
+Received: by mail-oi1-f198.google.com with SMTP id 5614622812f47-44f6d6e3c2bso466320b6e.2
+        for <iommu@lists.linux.dev>; Tue, 28 Oct 2025 13:23:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1761672819; x=1762277619; darn=lists.linux.dev;
+        d=oss.qualcomm.com; s=google; t=1761682977; x=1762287777; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=HiMvzBWe7SjDMscpj3l62WNAaYy0ZgC7K7y+gnKoTyk=;
-        b=Zhi5vxabU9IKkX4mhz353KAUBclNBpOsmOYVVBfUteYjhsnFq0FNbq7HYqV3S6LWM7
-         w2UlLjlaQVwPazeHUdrNCCFNX9wH4HEppXZma8ExAAddEENugDvtj/XtJCEYwL/0JE5/
-         mJZm+9wcrFI24xJTpAJjcM/s4t4SQK9LulIi9fXtpmY6SY8Sol5jZwo7WZfT+rInx3g1
-         UyJyRHJKe4ZpsA4ol6vCHP7RSu+LJAEWVW3ZDgpiztFvKQwHoJdjl4A25l+/kgoyb0x0
-         QAfWRUwqGnH92v6TFyHyncfq4F/vhnIHE2IufVxYtdbHdotShLq2PmQPb6JsHIoel0rg
-         rm5w==
+         :reply-to:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=a+Vwz3fUljVkqmIN9UhEAG/5sDPTIna51tYgjfORPcg=;
+        b=JB0xntEVOf+FUT0s+UMivLsinBeYgKjstPOwtTwN/J6PKs/+m/v7Q/MNniWo9+wimI
+         hxR53RJKcECC7uglPARsMLGrD7haB1BZekvVAQLIlZET7K8Rr86ckMgNWKiOTrij939a
+         UKOuGVvrC08tZ05LKkj7gUxawkp8oZKqzhx1uZQEWEzHXSMCzGWzOO1Cb1/2O2/BgoXc
+         q/Fmb5oW69glxa4zFdvbB/ewwZYLZEvTaR58vIvvXd0aPFX3fhPN5V050w+HLXyPCkxu
+         8g5LadeJJTS6bcZiE8yVXysFDw94/ujyeO24G1eHWFmizSBhBrjJkrcQfZjGnTEJfroN
+         ecdA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1761672819; x=1762277619;
+        d=1e100.net; s=20230601; t=1761682977; x=1762287777;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=HiMvzBWe7SjDMscpj3l62WNAaYy0ZgC7K7y+gnKoTyk=;
-        b=u48r6s+WcxKRzdGYnC3bHGIF5ZiK/JDg4Y4V/IFAykhWs3M7oVGUGXfkprqDGXEjKJ
-         w2R02nAdLyuqvhOrv5BlNxro6XItwADiZ8reAN1+E0K8mLiwT024gjulMUSQL4tkQnK+
-         dBUbQBFif/MlQRzG+Qeh3uRiUnpp5Fa4pjBO6F02hLrIwX/RHopbl2nr+k8ZPcIlRUdu
-         USLLCUoyVdGC3soSkeYl6DYt11KO5VPP59K0esgTt02QF5bdpyBz2FSNCTtkQIVRaI8T
-         iw7Q5cbq3BtYA3Ce55r/vgGUqxa99pmuTDcWtku3IoHo+DH/8UAUpmWmoo5BSraNmAer
-         exnQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWOciYZ++LgwpsP+a4NIQl95yKmoUTjsCVOsMX2l2rmlnvosJLn4cp4nMHIs6ZM5+SgvWmLtQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxxehWInyr61Ur/6Y8B4fu4sV43BcGpt9FIKZ4zCpU0Xnn9Jzew
-	y7ojvDtHzU8SHU8dYD21iZi5NH6AUvKEOfmzIqjG1d5vEUsYRB7SRPt7eCh3Xdmw+kNI7phCx88
-	HgVgxv83vhbhYsrEfcD24VT+797qiL46Pgm9OS7co
-X-Gm-Gg: ASbGncsiC8f/PLuWupPiKMnoGZRn2EvXApOsvdP7nmejvh+bGfHzfF6WCfU4pBjPkhr
-	4voYNsYB4bbRo0CbwUMwf7/CIFoyIbeFbOQPxtJ6CKx+W5itlQjhUEwluC4zcoocyZ4yzEFgf+A
-	uxfOgSFiZPjHr9HsOZYtLO6hJpFdqsP7Arwms/5D0GHDGNPWFOeMjFtMO6ZohR2m8RPpBvrrW4J
-	fciebxYm/SuEQnGoyfkjNYL0ahXOJUednG1zZIwyewRvG4rYQ3k0soge37nmhpVinXhYh53qJQW
-	mW9EyMNdx+HNwX7Hf/BoNGhKog==
-X-Google-Smtp-Source: AGHT+IEcICpr72thqlfGJHuQJHhO8Hak7s/s7V/6QRLg8bFH/QzOWFBGk0kFrXpHpcF0fPpQ/nWmsdRzlRZYsmt/giY=
-X-Received: by 2002:a05:622a:1b20:b0:4eb:7681:d90 with SMTP id
- d75a77b69052e-4ed158ac668mr348861cf.16.1761672818575; Tue, 28 Oct 2025
- 10:33:38 -0700 (PDT)
+         :reply-to:in-reply-to:references:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=a+Vwz3fUljVkqmIN9UhEAG/5sDPTIna51tYgjfORPcg=;
+        b=eXh5zbptSuxe5f9rjECL4cciSJwev19s9nxf4GDqXMed826ktTn46sJVBO1qcWv3Ks
+         d3mc/3e+DlWKDQofOxCeeY+lJNaHF5j7795cwcdkTeJJWgIhEwKz5C7YF2mrxWi8jg1w
+         4qkAIwjB7F2vZJhqixa6WcxwB4yP6u5mZRzdHR+/eV/vHHDtkcF26zgHaETD4VNwXiwL
+         UDrXmpcMqkaU+KF0oU2eoxyD4zqZc3xS263RUWGY32amsca7NDBE6T4M+fy8MgDSGxSt
+         xNryMSq3VUJ0idTJdnWdcQvbZ2fjq7vm5sZKssoeL60TaaptQ/02JPv8fZU+VL8h1KGt
+         utZQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWtcYeLMkDK14Hbffhd9lewInpyvJDZle1OfssmMm7VW4fFHBh07lKlr50qkNcBcur7J2nP3Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzicHuYLPOaClquZPHQPc0o8OZ6ImiIKVa/Npuq9XG7kC1gEkcg
+	YIry5gBjosuwSEa9rOAcXVHet5/NhnxUbQ33v/pcr3zYSNbE95v+bUvPvVKijkSIjEBvRUenLNb
+	5rxW5IHssBiKvTT4pRFMHzipYIMK0cZ1bbsGF5TW94DeRnX98AFVGOUkHs9/iNoxV1BOzyVQjIR
+	MhSuGZzo3u6Ce3Ej6LMa3yjPgjGAKIUwkP
+X-Gm-Gg: ASbGncsah8E92OKtZId85keEPMwK0aRKpra/JsLRNTobEZGFKjrYMtETMinzIMjl0X+
+	iMMC2Cbq7gad3Hll0vg5SmDn3S4PMMGh9sMEysUS/UZDv0miLiEFY8o0RcS0hx6bbg4ZbrWwHrm
+	pr3bEEQRd6ijWjnOQxFZRzZ2RMFr8bjLYSjGdCVkE32gbDcN3N8/aPooEPri8vvWqFjUBG7CcSE
+	5A+HXAsIa4dFps=
+X-Received: by 2002:a05:6808:1983:b0:43f:68a3:625d with SMTP id 5614622812f47-44f7a75b3camr401568b6e.5.1761682976474;
+        Tue, 28 Oct 2025 13:22:56 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IFDTTBeERnwNoIxP6/EU+teL5FUQPBhliZRB7borsBRdAq/SZUcL8Zar7hWpL+CJbupFaMLKuiHRtBTNf5WGSE=
+X-Received: by 2002:a05:6808:1983:b0:43f:68a3:625d with SMTP id
+ 5614622812f47-44f7a75b3camr401548b6e.5.1761682975569; Tue, 28 Oct 2025
+ 13:22:55 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <0-v7-ab019a8791e2+175b8-iommu_pt_jgg@nvidia.com> <7-v7-ab019a8791e2+175b8-iommu_pt_jgg@nvidia.com>
-In-Reply-To: <7-v7-ab019a8791e2+175b8-iommu_pt_jgg@nvidia.com>
-From: Samiullah Khawaja <skhawaja@google.com>
-Date: Tue, 28 Oct 2025 10:33:26 -0700
-X-Gm-Features: AWmQ_bnwc9wY_U0rvFSmlqfR3lhj-c_ni0ioHeLq90Ikj-KCeZjIcMtyHKyqPxA
-Message-ID: <CAAywjhS+-CNXTR3_EpVjsie3bmz_2szBR7nh53hA-dWCm5j1kA@mail.gmail.com>
-Subject: Re: [PATCH v7 07/15] iommupt: Add map_pages op
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Alexandre Ghiti <alex@ghiti.fr>, Anup Patel <anup@brainfault.org>, 
-	Albert Ou <aou@eecs.berkeley.edu>, Jonathan Corbet <corbet@lwn.net>, iommu@lists.linux.dev, 
-	Joerg Roedel <joro@8bytes.org>, Justin Stitt <justinstitt@google.com>, linux-doc@vger.kernel.org, 
-	linux-kselftest@vger.kernel.org, linux-riscv@lists.infradead.org, 
-	llvm@lists.linux.dev, Bill Wendling <morbo@google.com>, 
-	Nathan Chancellor <nathan@kernel.org>, Nick Desaulniers <nick.desaulniers+lkml@gmail.com>, 
-	Miguel Ojeda <ojeda@kernel.org>, Palmer Dabbelt <palmer@dabbelt.com>, Paul Walmsley <pjw@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Shuah Khan <shuah@kernel.org>, 
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, Will Deacon <will@kernel.org>, 
-	Alexey Kardashevskiy <aik@amd.com>, Alejandro Jimenez <alejandro.j.jimenez@oracle.com>, 
-	James Gowans <jgowans@amazon.com>, Kevin Tian <kevin.tian@intel.com>, 
-	Michael Roth <michael.roth@amd.com>, Pasha Tatashin <pasha.tatashin@soleen.com>, 
-	patches@lists.linux.dev
+References: <20250930-kaana-gpu-support-v1-0-73530b0700ed@oss.qualcomm.com> <20250930-kaana-gpu-support-v1-12-73530b0700ed@oss.qualcomm.com>
+In-Reply-To: <20250930-kaana-gpu-support-v1-12-73530b0700ed@oss.qualcomm.com>
+Reply-To: rob.clark@oss.qualcomm.com
+From: Rob Clark <rob.clark@oss.qualcomm.com>
+Date: Tue, 28 Oct 2025 13:22:43 -0700
+X-Gm-Features: AWmQ_bmvzbFVf5keFUYm5Ti6gHrCrQR8_BAN8lrdz0I2ZeYNRAc7Y9etGPr4DP8
+Message-ID: <CACSVV03HaKAvfDa5A5LqRZM4_o8g-haVU3A6GgWqfTO0QNcK2w@mail.gmail.com>
+Subject: Re: [PATCH 12/17] drm/msm/adreno: Introduce A8x GPU Support
+To: Akhil P Oommen <akhilpo@oss.qualcomm.com>
+Cc: Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>, Sean Paul <sean@poorly.run>,
+        Dmitry Baryshkov <lumag@kernel.org>,
+        Abhinav Kumar <abhinav.kumar@linux.dev>,
+        Jessica Zhang <jessica.zhang@oss.qualcomm.com>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Jordan Crouse <jordan@cosmicpenguin.net>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org, linux-arm-kernel@lists.infradead.org,
+        iommu@lists.linux.dev, devicetree@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
+X-Proofpoint-GUID: xltDuu8EAkhdN1hwNDFrd4UkBugJqYui
+X-Proofpoint-ORIG-GUID: xltDuu8EAkhdN1hwNDFrd4UkBugJqYui
+X-Authority-Analysis: v=2.4 cv=A5dh/qWG c=1 sm=1 tr=0 ts=69012624 cx=c_pps
+ a=4ztaESFFfuz8Af0l9swBwA==:117 a=IkcTkHD0fZMA:10 a=x6icFKpwvdMA:10
+ a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22 a=e5mUnYsNAAAA:8 a=EUspDBNiAAAA:8
+ a=2FcyS5ZzHI4p1F1skQsA:9 a=QEXdDO2ut3YA:10 a=TPnrazJqx2CeVZ-ItzZ-:22
+ a=Vxmtnl_E_bksehYqCbjh:22
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMDI4MDE3MSBTYWx0ZWRfXxf11LbJnp/uF
+ xpBosXX5MttI8JL1M/DoAp+IaNLajjg3whD8xOdUWeiKfvZeM9e6yUDUtDf9Tm4WJuE4f/cwJGt
+ BOClay7N+ag9uEh98FDHH/gP5XAa5RX2H/AGpDiWq5f8e553NOXNA1nfeAX4leDd3hrgPB5RACR
+ Ej2agP7k4NXJ9z7Vdl9zslp3YkaU+Aoghmwv8ifaiantXMdH7JQTeI82jxWKlvgDqjCLVz9EyPR
+ uqb+Zk+bBFvc0gPsrghITXQt54gc3jeJIK5UylOYbnFhyw2xW0rJsKsO9EHLN0Esoy3fj0eMhNZ
+ XXfYn9bB1vuE94DZ9apleG4XmTjQe7R6lxdgKDRe80aw2Xp/BrGLiCl+iVifqzNFndQ5jCUfP6s
+ 6069Dq+1zxTWqUg4AXM5IC/J7JdCzg==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.9,FMLib:17.12.80.40
+ definitions=2025-10-28_07,2025-10-22_01,2025-03-28_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ phishscore=0 priorityscore=1501 spamscore=0 bulkscore=0 impostorscore=0
+ clxscore=1015 malwarescore=0 adultscore=0 lowpriorityscore=0 suspectscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2510240001 definitions=main-2510280171
 
-On Thu, Oct 23, 2025 at 11:21=E2=80=AFAM Jason Gunthorpe <jgg@nvidia.com> w=
-rote:
+On Mon, Sep 29, 2025 at 10:51=E2=80=AFPM Akhil P Oommen
+<akhilpo@oss.qualcomm.com> wrote:
 >
-> map is slightly complicated because it has to handle a number of special
-> edge cases:
->  - Overmapping a previously shared, but now empty, table level with an OA=
-.
->    Requries validating and freeing the possibly empty tables
->  - Doing the above across an entire to-be-created contiguous entry
->  - Installing a new shared table level concurrently with another thread
->  - Expanding the table by adding more top levels
+> A8x is the next generation of Adreno GPUs, featuring a significant
+> hardware design change. A major update to the design is the introduction
+> of Slice architecture. Slices are sort of mini-GPUs within the GPU which
+> are more independent in processing Graphics and compute workloads. Also,
+> in addition to the BV and BR pipe we saw in A7x, CP has more concurrency
+> with additional pipes.
 >
-> Table expansion is a unique feature of AMDv1, this version is quite
-> similar except we handle racing concurrent lockless map. The table top
-> pointer and starting level are encoded in a single uintptr_t which ensure=
-s
-> we can READ_ONCE() without tearing. Any op will do the READ_ONCE() and us=
-e
-> that fixed point as its starting point. Concurrent expansion is handled
-> with a table global spinlock.
->
-> When inserting a new table entry map checks that the entire portion of th=
-e
-> table is empty. This includes freeing any empty lower tables that will be
-> overwritten by an OA. A separate free list is used while checking and
-> collecting all the empty lower tables so that writing the new entry is
-> uninterrupted, either the new entry fully writes or nothing changes.
->
-> A special fast path for PAGE_SIZE is implemented that does a direct walk
-> to the leaf level and installs a single entry. This gives ~15% improvemen=
-t
-> for iommu_map() when mapping lists of single pages.
->
-> This version sits under the iommu_domain_ops as map_pages() but does not
-> require the external page size calculation. The implementation is actuall=
+> From a software interface perspective, these changes have a significant
+> impact on the KMD side. First, the GPU register space has been extensivel=
 y
-> map_range() and can do arbitrary ranges, internally handling all the
-> validation and supporting any arrangment of page sizes. A future series
-> can optimize iommu_map() to take advantage of this.
+> reorganized. Second, to avoid  a register space explosion caused by the
+> new slice architecture and additional pipes, many registers are now
+> virtualized, instead of duplicated as in A7x. KMD must configure an
+> aperture register with the appropriate slice and pipe ID before accessing
+> these virtualized registers.
 >
-> Tested-by: Alejandro Jimenez <alejandro.j.jimenez@oracle.com>
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> This patch adds only a skeleton support for the A8x family. An A8x GPU
+> support will be added in an upcoming patch.
+>
+> Signed-off-by: Akhil P Oommen <akhilpo@oss.qualcomm.com>
 > ---
->  drivers/iommu/generic_pt/iommu_pt.h | 501 +++++++++++++++++++++++++++-
->  drivers/iommu/generic_pt/pt_iter.h  |   2 +-
->  include/linux/generic_pt/iommu.h    |  59 ++++
->  3 files changed, 560 insertions(+), 2 deletions(-)
+>  drivers/gpu/drm/msm/Makefile                      |    1 +
+>  drivers/gpu/drm/msm/adreno/a6xx_gpu.c             |  103 +-
+>  drivers/gpu/drm/msm/adreno/a6xx_gpu.h             |   21 +
+>  drivers/gpu/drm/msm/adreno/a8xx_gpu.c             | 1238 +++++++++++++++=
+++++++
+>  drivers/gpu/drm/msm/adreno/adreno_gpu.h           |    7 +
+>  drivers/gpu/drm/msm/registers/adreno/a6xx.xml     |    1 -
+>  drivers/gpu/drm/msm/registers/adreno/a6xx_gmu.xml |    1 +
+>  7 files changed, 1344 insertions(+), 28 deletions(-)
 >
-> diff --git a/drivers/iommu/generic_pt/iommu_pt.h b/drivers/iommu/generic_=
-pt/iommu_pt.h
-> index e3d1b272723db0..f32e81509f4f09 100644
-> --- a/drivers/iommu/generic_pt/iommu_pt.h
-> +++ b/drivers/iommu/generic_pt/iommu_pt.h
-> @@ -91,6 +91,23 @@ static __maybe_unused int make_range_u64(struct pt_com=
-mon *common,
->                 ret;                                                     =
-\
->         })
+> diff --git a/drivers/gpu/drm/msm/Makefile b/drivers/gpu/drm/msm/Makefile
+> index 7acf2cc13cd047eb7f5b3f14e1a42a1cc145e087..8aa7d07303fb0cd66869767cb=
+6298b38a621b366 100644
+> --- a/drivers/gpu/drm/msm/Makefile
+> +++ b/drivers/gpu/drm/msm/Makefile
+> @@ -24,6 +24,7 @@ adreno-y :=3D \
+>         adreno/a6xx_gmu.o \
+>         adreno/a6xx_hfi.o \
+>         adreno/a6xx_preempt.o \
+> +       adreno/a8xx_gpu.o \
 >
-> +static inline unsigned int compute_best_pgsize(struct pt_state *pts,
-> +                                              pt_oaddr_t oa)
-> +{
-> +       struct pt_iommu *iommu_table =3D iommu_from_common(pts->range->co=
-mmon);
-> +
-> +       if (!pt_can_have_leaf(pts))
-> +               return 0;
-> +
-> +       /*
-> +        * The page size is limited by the domain's bitmap. This allows t=
-he core
-> +        * code to reduce the supported page sizes by changing the bitmap=
-.
-> +        */
-> +       return pt_compute_best_pgsize(pt_possible_sizes(pts) &
-> +                                             iommu_table->domain.pgsize_=
-bitmap,
-> +                                     pts->range->va, pts->range->last_va=
-, oa);
-> +}
-> +
->  static __always_inline int __do_iova_to_phys(struct pt_range *range, voi=
-d *arg,
->                                              unsigned int level,
->                                              struct pt_table_p *table,
-> @@ -147,6 +164,8 @@ EXPORT_SYMBOL_NS_GPL(DOMAIN_NS(iova_to_phys), "GENERI=
-C_PT_IOMMU");
+>  adreno-$(CONFIG_DEBUG_FS) +=3D adreno/a5xx_debugfs.o \
 >
->  struct pt_iommu_collect_args {
->         struct iommu_pages_list free_list;
-> +       /* Fail if any OAs are within the range */
-> +       u8 check_mapped : 1;
->  };
->
->  static int __collect_tables(struct pt_range *range, void *arg,
-> @@ -156,7 +175,7 @@ static int __collect_tables(struct pt_range *range, v=
-oid *arg,
->         struct pt_iommu_collect_args *collect =3D arg;
->         int ret;
->
-> -       if (!pt_can_have_table(&pts))
-> +       if (!collect->check_mapped && !pt_can_have_table(&pts))
->                 return 0;
->
->         for_each_pt_level_entry(&pts) {
-> @@ -167,6 +186,8 @@ static int __collect_tables(struct pt_range *range, v=
-oid *arg,
->                                 return ret;
->                         continue;
->                 }
-> +               if (pts.type =3D=3D PT_ENTRY_OA && collect->check_mapped)
-> +                       return -EADDRINUSE;
+> diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/=
+adreno/a6xx_gpu.c
+> index bd4f98b5457356c5454d0316e59d7e8253401712..4aeeaceb1fb30a9d68ac636c1=
+4249e3853ef73ac 100644
+> --- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+> +++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+> @@ -239,14 +239,21 @@ static void a6xx_set_pagetable(struct a6xx_gpu *a6x=
+x_gpu,
 >         }
->         return 0;
->  }
-> @@ -187,6 +208,477 @@ static inline struct pt_table_p *table_alloc_top(st=
-ruct pt_common *common,
->                 log2_to_int(pt_top_memsize_lg2(common, top_of_table)));
->  }
 >
-> +/* Allocate an interior table */
-> +static inline struct pt_table_p *table_alloc(const struct pt_state *pare=
-nt_pts,
-> +                                            gfp_t gfp)
-> +{
-> +       struct pt_iommu *iommu_table =3D
-> +               iommu_from_common(parent_pts->range->common);
-> +       struct pt_state child_pts =3D
-> +               pt_init(parent_pts->range, parent_pts->level - 1, NULL);
-> +
-> +       return iommu_alloc_pages_node_sz(
-> +               iommu_table->nid, gfp,
-> +               log2_to_int(pt_num_items_lg2(&child_pts) +
-> +                           ilog2(PT_ITEM_WORD_SIZE)));
-> +}
-> +
-> +static inline int pt_iommu_new_table(struct pt_state *pts,
-> +                                    struct pt_write_attrs *attrs)
-> +{
-> +       struct pt_table_p *table_mem;
-> +       phys_addr_t phys;
-> +
-> +       /* Given PA/VA/length can't be represented */
-> +       if (PT_WARN_ON(!pt_can_have_table(pts)))
-> +               return -ENXIO;
-> +
-> +       table_mem =3D table_alloc(pts, attrs->gfp);
-> +       if (IS_ERR(table_mem))
-> +               return PTR_ERR(table_mem);
-> +
-> +       phys =3D virt_to_phys(table_mem);
-> +       if (!pt_install_table(pts, phys, attrs)) {
-> +               iommu_free_pages(table_mem);
-> +               return -EAGAIN;
-> +       }
-> +
-> +       if (IS_ENABLED(CONFIG_DEBUG_GENERIC_PT)) {
-> +               /*
-> +                * The underlying table can't store the physical table ad=
-dress.
-> +                * This happens when kunit testing tables outside their n=
-ormal
-> +                * environment where a CPU might be limited.
-> +                */
-> +               pt_load_single_entry(pts);
-> +               if (PT_WARN_ON(pt_table_pa(pts) !=3D phys)) {
-> +                       pt_clear_entries(pts, ilog2(1));
-> +                       iommu_free_pages(table_mem);
-> +                       return -EINVAL;
-> +               }
-> +       }
-> +
-> +       pts->table_lower =3D table_mem;
-> +       return 0;
-> +}
-> +
-> +struct pt_iommu_map_args {
-> +       struct iommu_iotlb_gather *iotlb_gather;
-> +       struct pt_write_attrs attrs;
-> +       pt_oaddr_t oa;
-> +       unsigned int leaf_pgsize_lg2;
-> +       unsigned int leaf_level;
-> +};
-> +
-> +/*
-> + * This will recursively check any tables in the block to validate they =
-are
-> + * empty and then free them through the gather.
-> + */
-> +static int clear_contig(const struct pt_state *start_pts,
-> +                       struct iommu_iotlb_gather *iotlb_gather,
-> +                       unsigned int step, unsigned int pgsize_lg2)
-> +{
-> +       struct pt_iommu *iommu_table =3D
-> +               iommu_from_common(start_pts->range->common);
-> +       struct pt_range range =3D *start_pts->range;
-> +       struct pt_state pts =3D
-> +               pt_init(&range, start_pts->level, start_pts->table);
-> +       struct pt_iommu_collect_args collect =3D { .check_mapped =3D true=
- };
-> +       int ret;
-> +
-> +       pts.index =3D start_pts->index;
-> +       pts.end_index =3D start_pts->index + step;
-> +       for (; _pt_iter_load(&pts); pt_next_entry(&pts)) {
-> +               if (pts.type =3D=3D PT_ENTRY_TABLE) {
-> +                       collect.free_list =3D
-> +                               IOMMU_PAGES_LIST_INIT(collect.free_list);
-> +                       ret =3D pt_walk_descend_all(&pts, __collect_table=
-s,
-> +                                                 &collect);
-> +                       if (ret)
-> +                               return ret;
-> +
-> +                       /*
-> +                        * The table item must be cleared before we can u=
-pdate
-> +                        * the gather
-> +                        */
-> +                       pt_clear_entries(&pts, ilog2(1));
-> +
-> +                       iommu_pages_list_add(&collect.free_list,
-> +                                            pt_table_ptr(&pts));
-> +                       gather_range_pages(
-> +                               iotlb_gather, iommu_table, range.va,
-> +                               log2_to_int(pt_table_item_lg2sz(&pts)),
-> +                               &collect.free_list);
-> +               } else if (pts.type !=3D PT_ENTRY_EMPTY) {
-> +                       return -EADDRINUSE;
-> +               }
-> +       }
-> +       return 0;
-> +}
-> +
-> +static int __map_range_leaf(struct pt_range *range, void *arg,
-> +                           unsigned int level, struct pt_table_p *table)
-> +{
-> +       struct pt_state pts =3D pt_init(range, level, table);
-> +       struct pt_iommu_map_args *map =3D arg;
-> +       unsigned int leaf_pgsize_lg2 =3D map->leaf_pgsize_lg2;
-> +       unsigned int start_index;
-> +       pt_oaddr_t oa =3D map->oa;
-> +       unsigned int step;
-> +       bool need_contig;
-> +       int ret =3D 0;
-> +
-> +       PT_WARN_ON(map->leaf_level !=3D level);
-> +       PT_WARN_ON(!pt_can_have_leaf(&pts));
-> +
-> +       step =3D log2_to_int_t(unsigned int,
-> +                            leaf_pgsize_lg2 - pt_table_item_lg2sz(&pts))=
-;
-> +       need_contig =3D leaf_pgsize_lg2 !=3D pt_table_item_lg2sz(&pts);
-> +
-> +       _pt_iter_first(&pts);
-> +       start_index =3D pts.index;
-> +       do {
-> +               pts.type =3D pt_load_entry_raw(&pts);
-> +               if (pts.type !=3D PT_ENTRY_EMPTY || need_contig) {
-> +                       if (pts.index !=3D start_index)
-> +                               pt_index_to_va(&pts);
-> +                       ret =3D clear_contig(&pts, map->iotlb_gather, ste=
-p,
-> +                                          leaf_pgsize_lg2);
-> +                       if (ret)
-> +                               break;
-> +               }
-> +
-> +               if (IS_ENABLED(CONFIG_DEBUG_GENERIC_PT)) {
-> +                       pt_index_to_va(&pts);
-> +                       PT_WARN_ON(compute_best_pgsize(&pts, oa) !=3D
-> +                                  leaf_pgsize_lg2);
-> +               }
-> +               pt_install_leaf_entry(&pts, oa, leaf_pgsize_lg2, &map->at=
-trs);
-> +
-> +               oa +=3D log2_to_int(leaf_pgsize_lg2);
-> +               pts.index +=3D step;
-> +       } while (pts.index < pts.end_index);
-> +
-> +       map->oa =3D oa;
-> +       return ret;
-> +}
-> +
-> +static int __map_range(struct pt_range *range, void *arg, unsigned int l=
-evel,
-> +                      struct pt_table_p *table)
-> +{
-> +       struct pt_state pts =3D pt_init(range, level, table);
-> +       struct pt_iommu_map_args *map =3D arg;
-> +       int ret;
-> +
-> +       PT_WARN_ON(map->leaf_level =3D=3D level);
-> +       PT_WARN_ON(!pt_can_have_table(&pts));
-> +
-> +       _pt_iter_first(&pts);
-> +
-> +       /* Descend to a child table */
-> +       do {
-> +               pts.type =3D pt_load_entry_raw(&pts);
-> +
-> +               if (pts.type !=3D PT_ENTRY_TABLE) {
-> +                       if (pts.type !=3D PT_ENTRY_EMPTY)
-> +                               return -EADDRINUSE;
-> +                       ret =3D pt_iommu_new_table(&pts, &map->attrs);
-> +                       if (ret) {
-> +                               /*
-> +                                * Racing with another thread installing =
-a table
-> +                                */
-> +                               if (ret =3D=3D -EAGAIN)
-> +                                       continue;
-> +                               return ret;
-> +                       }
+>         if (!sysprof) {
+> -               if (!adreno_is_a7xx(adreno_gpu)) {
+> +               if (!(adreno_is_a7xx(adreno_gpu) || adreno_is_a8xx(adreno=
+_gpu))) {
+>                         /* Turn off protected mode to write to special re=
+gisters */
+>                         OUT_PKT7(ring, CP_SET_PROTECTED_MODE, 1);
+>                         OUT_RING(ring, 0);
+>                 }
+>
+> -               OUT_PKT4(ring, REG_A6XX_RBBM_PERFCTR_SRAM_INIT_CMD, 1);
+> -               OUT_RING(ring, 1);
+> +               if (adreno_is_a8xx(adreno_gpu)) {
+> +                       OUT_PKT4(ring, REG_A8XX_RBBM_PERFCTR_SRAM_INIT_CM=
+D, 1);
+> +                       OUT_RING(ring, 1);
+> +                       OUT_PKT4(ring, REG_A8XX_RBBM_SLICE_PERFCTR_SRAM_I=
+NIT_CMD, 1);
+> +                       OUT_RING(ring, 1);
 > +               } else {
-> +                       pts.table_lower =3D pt_table_ptr(&pts);
+> +                       OUT_PKT4(ring, REG_A6XX_RBBM_PERFCTR_SRAM_INIT_CM=
+D, 1);
+> +                       OUT_RING(ring, 1);
 > +               }
-> +
-> +               /*
-> +                * The already present table can possibly be shared with =
-another
-> +                * concurrent map.
-> +                */
-> +               if (map->leaf_level =3D=3D level - 1)
-> +                       ret =3D pt_descend(&pts, arg, __map_range_leaf);
-> +               else
-> +                       ret =3D pt_descend(&pts, arg, __map_range);
-> +               if (ret)
-> +                       return ret;
-> +
-> +               pts.index++;
-> +               pt_index_to_va(&pts);
-> +               if (pts.index >=3D pts.end_index)
-> +                       break;
-> +       } while (true);
-> +       return 0;
-> +}
-> +
-> +/*
-> + * Fast path for the easy case of mapping a 4k page to an already alloca=
-ted
-> + * table. This is a common workload. If it returns EAGAIN run the full a=
-lgorithm
-> + * instead.
-> + */
-> +static __always_inline int __do_map_single_page(struct pt_range *range,
-> +                                               void *arg, unsigned int l=
-evel,
-> +                                               struct pt_table_p *table,
-> +                                               pt_level_fn_t descend_fn)
-> +{
-> +       struct pt_state pts =3D pt_init(range, level, table);
-> +       struct pt_iommu_map_args *map =3D arg;
-> +
-> +       pts.type =3D pt_load_single_entry(&pts);
-> +       if (level =3D=3D 0) {
-> +               if (pts.type !=3D PT_ENTRY_EMPTY)
-> +                       return -EADDRINUSE;
-> +               pt_install_leaf_entry(&pts, map->oa, PAGE_SHIFT,
-> +                                     &map->attrs);
-> +               map->oa +=3D PAGE_SIZE;
-> +               return 0;
-> +       }
-> +       if (pts.type =3D=3D PT_ENTRY_TABLE)
-> +               return pt_descend(&pts, arg, descend_fn);
-> +       /* Something else, use the slow path */
-> +       return -EAGAIN;
-> +}
-> +PT_MAKE_LEVELS(__map_single_page, __do_map_single_page);
-> +
-> +/*
-> + * Add a table to the top, increasing the top level as much as necessary=
- to
-> + * encompass range.
-> + */
-> +static int increase_top(struct pt_iommu *iommu_table, struct pt_range *r=
-ange,
-> +                       struct pt_iommu_map_args *map)
-> +{
-> +       struct iommu_pages_list free_list =3D IOMMU_PAGES_LIST_INIT(free_=
-list);
-> +       struct pt_common *common =3D common_from_iommu(iommu_table);
-> +       uintptr_t top_of_table =3D READ_ONCE(common->top_of_table);
-> +       uintptr_t new_top_of_table =3D top_of_table;
-> +       struct pt_table_p *table_mem;
-> +       unsigned int new_level;
-> +       spinlock_t *domain_lock;
-> +       unsigned long flags;
-> +       int ret;
-> +
-> +       while (true) {
-> +               struct pt_range top_range =3D
-> +                       _pt_top_range(common, new_top_of_table);
-> +               struct pt_state pts =3D pt_init_top(&top_range);
-> +
-> +               top_range.va =3D range->va;
-> +               top_range.last_va =3D range->last_va;
-> +
-> +               if (!pt_check_range(&top_range) && map->leaf_level <=3D p=
-ts.level)
-> +                       break;
-> +
-> +               pts.level++;
-> +               if (pts.level > PT_MAX_TOP_LEVEL ||
-> +                   pt_table_item_lg2sz(&pts) >=3D common->max_vasz_lg2) =
-{
-> +                       ret =3D -ERANGE;
-> +                       goto err_free;
-> +               }
-> +
-> +               new_level =3D pts.level;
-> +               table_mem =3D table_alloc_top(
-> +                       common, _pt_top_set(NULL, pts.level), map->attrs.=
-gfp);
-> +               if (IS_ERR(table_mem))
-> +                       return PTR_ERR(table_mem);
-> +               iommu_pages_list_add(&free_list, table_mem);
-> +
-> +               /* The new table links to the lower table always at index=
- 0 */
-> +               top_range.va =3D 0;
-> +               top_range.top_level =3D new_level;
-> +               pts.table_lower =3D pts.table;
-> +               pts.table =3D table_mem;
-> +               pt_load_single_entry(&pts);
-> +               PT_WARN_ON(pts.index !=3D 0);
-> +               pt_install_table(&pts, virt_to_phys(pts.table_lower),
-> +                                &map->attrs);
-> +               new_top_of_table =3D _pt_top_set(pts.table, pts.level);
-> +       }
-> +
-> +       /*
-> +        * top_of_table is write locked by the spinlock, but readers can =
-use
-> +        * READ_ONCE() to get the value. Since we encode both the level a=
-nd the
-> +        * pointer in one quanta the lockless reader will always see some=
-thing
-> +        * valid. The HW must be updated to the new level under the spinl=
-ock
-> +        * before top_of_table is updated so that concurrent readers don'=
-t map
-> +        * into the new level until it is fully functional. If another th=
-read
-> +        * already updated it while we were working then throw everything=
- away
-> +        * and try again.
-> +        */
-> +       domain_lock =3D iommu_table->driver_ops->get_top_lock(iommu_table=
-);
-> +       spin_lock_irqsave(domain_lock, flags);
-> +       if (common->top_of_table !=3D top_of_table) {
-> +               spin_unlock_irqrestore(domain_lock, flags);
-> +               ret =3D -EAGAIN;
-> +               goto err_free;
-> +       }
-> +
-> +       /*
-> +        * We do not issue any flushes for change_top on the expectation =
-that
-> +        * any walk cache will not become a problem by adding another lay=
-er to
-> +        * the tree. Misses will rewalk from the updated top pointer, hit=
-s
-> +        * continue to be correct. Negative caching is fine too since all=
- the
-> +        * new IOVA added by the new top is non-present.
-> +        */
-> +       iommu_table->driver_ops->change_top(
-> +               iommu_table, virt_to_phys(table_mem), new_level);
-> +       WRITE_ONCE(common->top_of_table, new_top_of_table);
-> +       spin_unlock_irqrestore(domain_lock, flags);
-> +       return 0;
-> +
-> +err_free:
-> +       iommu_put_pages_list(&free_list);
-> +       return ret;
-> +}
-> +
-> +static int check_map_range(struct pt_iommu *iommu_table, struct pt_range=
- *range,
-> +                          struct pt_iommu_map_args *map)
-> +{
-> +       struct pt_common *common =3D common_from_iommu(iommu_table);
-> +       int ret;
-> +
-> +       do {
-> +               ret =3D pt_check_range(range);
-> +               if (!pt_feature(common, PT_FEAT_DYNAMIC_TOP))
-> +                       return ret;
-> +
-> +               if (!ret && map->leaf_level <=3D range->top_level)
-> +                       break;
-> +
-> +               ret =3D increase_top(iommu_table, range, map);
-> +               if (ret && ret !=3D -EAGAIN)
-> +                       return ret;
-> +
-> +               /* Reload the new top */
-> +               *range =3D pt_make_range(common, range->va, range->last_v=
-a);
-> +       } while (ret);
-> +       PT_WARN_ON(pt_check_range(range));
-> +       return 0;
-> +}
-> +
-> +static int do_map(struct pt_range *range, bool single_page,
-> +                 struct pt_iommu_map_args *map)
-> +{
-> +       if (single_page) {
-> +               int ret;
-> +
-> +               ret =3D pt_walk_range(range, __map_single_page, map);
-> +               if (ret !=3D -EAGAIN)
-> +                       return ret;
-> +               /* EAGAIN falls through to the full path */
-> +       }
-> +
-> +       if (map->leaf_level =3D=3D range->top_level)
-> +               return pt_walk_range(range, __map_range_leaf, map);
-> +       return pt_walk_range(range, __map_range, map);
-> +}
-> +
-> +/**
-> + * map_pages() - Install translation for an IOVA range
-> + * @domain: Domain to manipulate
-> + * @iova: IO virtual address to start
-> + * @paddr: Physical/Output address to start
-> + * @pgsize: Length of each page
-> + * @pgcount: Length of the range in pgsize units starting from @iova
-> + * @prot: A bitmap of IOMMU_READ/WRITE/CACHE/NOEXEC/MMIO
-> + * @gfp: GFP flags for any memory allocations
-> + * @mapped: Total bytes successfully mapped
-> + *
-> + * The range starting at IOVA will have paddr installed into it. The cal=
-ler
-> + * must specify a valid pgsize and pgcount to segment the range into com=
-patible
-> + * blocks.
-> + *
-> + * On error the caller will probably want to invoke unmap on the range f=
-rom iova
-> + * up to the amount indicated by @mapped to return the table back to an
-> + * unchanged state.
-> + *
-> + * Context: The caller must hold a write range lock that includes the wh=
-ole
-> + * range.
-> + *
-> + * Returns: -ERRNO on failure, 0 on success. The number of bytes of VA t=
-hat were
-> + * mapped are added to @mapped, @mapped is not zerod first.
-> + */
-> +int DOMAIN_NS(map_pages)(struct iommu_domain *domain, unsigned long iova=
-,
-> +                        phys_addr_t paddr, size_t pgsize, size_t pgcount=
-,
-> +                        int prot, gfp_t gfp, size_t *mapped)
-> +{
-> +       struct pt_iommu *iommu_table =3D
-> +               container_of(domain, struct pt_iommu, domain);
-> +       pt_vaddr_t pgsize_bitmap =3D iommu_table->domain.pgsize_bitmap;
-> +       struct pt_common *common =3D common_from_iommu(iommu_table);
-> +       struct iommu_iotlb_gather iotlb_gather;
-> +       pt_vaddr_t len =3D pgsize * pgcount;
-> +       struct pt_iommu_map_args map =3D {
-> +               .iotlb_gather =3D &iotlb_gather,
-> +               .oa =3D paddr,
-> +               .leaf_pgsize_lg2 =3D vaffs(pgsize),
-> +       };
-> +       bool single_page =3D false;
-> +       struct pt_range range;
-> +       int ret;
-> +
-> +       iommu_iotlb_gather_init(&iotlb_gather);
-> +
-> +       if (WARN_ON(!(prot & (IOMMU_READ | IOMMU_WRITE))))
-> +               return -EINVAL;
-> +
-> +       /* Check the paddr doesn't exceed what the table can store */
-> +       if ((sizeof(pt_oaddr_t) < sizeof(paddr) &&
-> +            (pt_vaddr_t)paddr > PT_VADDR_MAX) ||
-> +           (common->max_oasz_lg2 !=3D PT_VADDR_MAX_LG2 &&
-> +            oalog2_div(paddr, common->max_oasz_lg2)))
-> +               return -ERANGE;
-> +
-> +       ret =3D pt_iommu_set_prot(common, &map.attrs, prot);
-> +       if (ret)
-> +               return ret;
-> +       map.attrs.gfp =3D gfp;
-> +
-> +       ret =3D make_range_no_check(common, &range, iova, len);
-> +       if (ret)
-> +               return ret;
-> +
-> +       /* Calculate target page size and level for the leaves */
-> +       if (pt_has_system_page_size(common) && pgsize =3D=3D PAGE_SIZE &&
-> +           pgcount =3D=3D 1) {
-> +               PT_WARN_ON(!(pgsize_bitmap & PAGE_SIZE));
-> +               if (log2_mod(iova | paddr, PAGE_SHIFT))
-> +                       return -ENXIO;
-> +               map.leaf_pgsize_lg2 =3D PAGE_SHIFT;
-> +               map.leaf_level =3D 0;
-> +               single_page =3D true;
-> +       } else {
-> +               map.leaf_pgsize_lg2 =3D pt_compute_best_pgsize(
-> +                       pgsize_bitmap, range.va, range.last_va, paddr);
-> +               if (!map.leaf_pgsize_lg2)
-> +                       return -ENXIO;
-> +               map.leaf_level =3D
-> +                       pt_pgsz_lg2_to_level(common, map.leaf_pgsize_lg2)=
-;
-> +       }
-> +
-> +       ret =3D check_map_range(iommu_table, &range, &map);
-> +       if (ret)
-> +               return ret;
-> +
-> +       PT_WARN_ON(map.leaf_level > range.top_level);
-> +
-> +       ret =3D do_map(&range, single_page, &map);
-> +
-> +       /*
-> +        * Table levels were freed and replaced with large items, flush a=
-ny walk
-> +        * cache that may refer to the freed levels.
-> +        */
-> +       if (!iommu_pages_list_empty(&iotlb_gather.freelist))
-> +               iommu_iotlb_sync(&iommu_table->domain, &iotlb_gather);
-> +
-> +       /* Bytes successfully mapped */
-> +       PT_WARN_ON(!ret && map.oa - paddr !=3D len);
-> +       *mapped +=3D map.oa - paddr;
-> +       return ret;
-> +}
-> +EXPORT_SYMBOL_NS_GPL(DOMAIN_NS(map_pages), "GENERIC_PT_IOMMU");
-> +
->  struct pt_unmap_args {
->         struct iommu_pages_list free_list;
->         pt_vaddr_t unmapped;
-> @@ -445,6 +937,7 @@ static void pt_iommu_zero(struct pt_iommu_table *fmt_=
-table)
->         memset_after(fmt_table, 0, iommu.domain);
+>         }
 >
->         /* The caller can initialize some of these values */
-> +       iommu_table->driver_ops =3D cfg.driver_ops;
->         iommu_table->nid =3D cfg.nid;
+>         /* Execute the table update */
+> @@ -275,7 +282,7 @@ static void a6xx_set_pagetable(struct a6xx_gpu *a6xx_=
+gpu,
+>          * to make sure BV doesn't race ahead while BR is still switching
+>          * pagetables.
+>          */
+> -       if (adreno_is_a7xx(&a6xx_gpu->base)) {
+> +       if (adreno_is_a7xx(&a6xx_gpu->base) && adreno_is_a8xx(&a6xx_gpu->=
+base)) {
+>                 OUT_PKT7(ring, CP_THREAD_CONTROL, 1);
+>                 OUT_RING(ring, CP_THREAD_CONTROL_0_SYNC_THREADS | CP_SET_=
+THREAD_BR);
+>         }
+> @@ -289,20 +296,22 @@ static void a6xx_set_pagetable(struct a6xx_gpu *a6x=
+x_gpu,
+>         OUT_RING(ring, CACHE_INVALIDATE);
+>
+>         if (!sysprof) {
+> +               u32 reg_status =3D adreno_is_a8xx(adreno_gpu) ?
+> +                       REG_A8XX_RBBM_PERFCTR_SRAM_INIT_STATUS :
+> +                       REG_A6XX_RBBM_PERFCTR_SRAM_INIT_STATUS;
+>                 /*
+>                  * Wait for SRAM clear after the pgtable update, so the
+>                  * two can happen in parallel:
+>                  */
+>                 OUT_PKT7(ring, CP_WAIT_REG_MEM, 6);
+>                 OUT_RING(ring, CP_WAIT_REG_MEM_0_FUNCTION(WRITE_EQ));
+> -               OUT_RING(ring, CP_WAIT_REG_MEM_POLL_ADDR_LO(
+> -                               REG_A6XX_RBBM_PERFCTR_SRAM_INIT_STATUS));
+> +               OUT_RING(ring, CP_WAIT_REG_MEM_POLL_ADDR_LO(reg_status));
+>                 OUT_RING(ring, CP_WAIT_REG_MEM_POLL_ADDR_HI(0));
+>                 OUT_RING(ring, CP_WAIT_REG_MEM_3_REF(0x1));
+>                 OUT_RING(ring, CP_WAIT_REG_MEM_4_MASK(0x1));
+>                 OUT_RING(ring, CP_WAIT_REG_MEM_5_DELAY_LOOP_CYCLES(0));
+>
+> -               if (!adreno_is_a7xx(adreno_gpu)) {
+> +               if (!(adreno_is_a7xx(adreno_gpu) || adreno_is_a8xx(adreno=
+_gpu))) {
+>                         /* Re-enable protected mode: */
+>                         OUT_PKT7(ring, CP_SET_PROTECTED_MODE, 1);
+>                         OUT_RING(ring, 1);
+> @@ -441,6 +450,7 @@ static void a7xx_submit(struct msm_gpu *gpu, struct m=
+sm_gem_submit *submit)
+>         struct a6xx_gpu *a6xx_gpu =3D to_a6xx_gpu(adreno_gpu);
+>         struct msm_ringbuffer *ring =3D submit->ring;
+>         unsigned int i, ibs =3D 0;
+> +       u32 rbbm_perfctr_cp0, cp_always_on_counter;
+>
+>         adreno_check_and_reenable_stall(adreno_gpu);
+>
+> @@ -460,10 +470,16 @@ static void a7xx_submit(struct msm_gpu *gpu, struct=
+ msm_gem_submit *submit)
+>         if (gpu->nr_rings > 1)
+>                 a6xx_emit_set_pseudo_reg(ring, a6xx_gpu, submit->queue);
+>
+> -       get_stats_counter(ring, REG_A7XX_RBBM_PERFCTR_CP(0),
+> -               rbmemptr_stats(ring, index, cpcycles_start));
+> -       get_stats_counter(ring, REG_A6XX_CP_ALWAYS_ON_COUNTER,
+> -               rbmemptr_stats(ring, index, alwayson_start));
+> +       if (adreno_is_a8xx(adreno_gpu)) {
+> +               rbbm_perfctr_cp0 =3D REG_A8XX_RBBM_PERFCTR_CP(0);
+> +               cp_always_on_counter =3D REG_A8XX_CP_ALWAYS_ON_COUNTER;
+> +       } else {
+> +               rbbm_perfctr_cp0 =3D REG_A7XX_RBBM_PERFCTR_CP(0);
+> +               cp_always_on_counter =3D REG_A6XX_CP_ALWAYS_ON_COUNTER;
+> +       }
+> +
+> +       get_stats_counter(ring, rbbm_perfctr_cp0, rbmemptr_stats(ring, in=
+dex, cpcycles_start));
+> +       get_stats_counter(ring, cp_always_on_counter, rbmemptr_stats(ring=
+, index, alwayson_start));
+>
+>         OUT_PKT7(ring, CP_THREAD_CONTROL, 1);
+>         OUT_RING(ring, CP_SET_THREAD_BOTH);
+> @@ -510,10 +526,8 @@ static void a7xx_submit(struct msm_gpu *gpu, struct =
+msm_gem_submit *submit)
+>                 OUT_RING(ring, 0x00e); /* IB1LIST end */
+>         }
+>
+> -       get_stats_counter(ring, REG_A7XX_RBBM_PERFCTR_CP(0),
+> -               rbmemptr_stats(ring, index, cpcycles_end));
+> -       get_stats_counter(ring, REG_A6XX_CP_ALWAYS_ON_COUNTER,
+> -               rbmemptr_stats(ring, index, alwayson_end));
+> +       get_stats_counter(ring, rbbm_perfctr_cp0, rbmemptr_stats(ring, in=
+dex, cpcycles_end));
+> +       get_stats_counter(ring, cp_always_on_counter, rbmemptr_stats(ring=
+, index, alwayson_end));
+>
+>         /* Write the fence to the scratch register */
+>         OUT_PKT4(ring, REG_A6XX_CP_SCRATCH(2), 1);
+> @@ -706,8 +720,11 @@ static int a6xx_calc_ubwc_config(struct adreno_gpu *=
+gpu)
+>         /* Copy the data into the internal struct to drop the const quali=
+fier (temporarily) */
+>         *cfg =3D *common_cfg;
+>
+> -       cfg->ubwc_swizzle =3D 0x6;
+> -       cfg->highest_bank_bit =3D 15;
+> +       /* Use common config as is for A8x */
+> +       if (!adreno_is_a8xx(gpu)) {
+> +               cfg->ubwc_swizzle =3D 0x6;
+> +               cfg->highest_bank_bit =3D 15;
+> +       }
+>
+>         if (adreno_is_a610(gpu)) {
+>                 cfg->highest_bank_bit =3D 13;
+> @@ -818,7 +835,7 @@ static void a6xx_set_ubwc_config(struct msm_gpu *gpu)
+>                   cfg->macrotile_mode);
 >  }
 >
-> @@ -478,6 +971,12 @@ int pt_iommu_init(struct pt_iommu_table *fmt_table,
->         if (ret)
->                 return ret;
+> -static void a7xx_patch_pwrup_reglist(struct msm_gpu *gpu)
+> +void a7xx_patch_pwrup_reglist(struct msm_gpu *gpu)
+>  {
+>         struct adreno_gpu *adreno_gpu =3D to_adreno_gpu(gpu);
+>         struct a6xx_gpu *a6xx_gpu =3D to_a6xx_gpu(adreno_gpu);
+> @@ -868,7 +885,7 @@ static void a7xx_patch_pwrup_reglist(struct msm_gpu *=
+gpu)
+>         lock->dynamic_list_len =3D 0;
+>  }
 >
-> +       if (pt_feature(common, PT_FEAT_DYNAMIC_TOP) &&
-> +           WARN_ON(!iommu_table->driver_ops ||
-> +                   !iommu_table->driver_ops->change_top ||
-> +                   !iommu_table->driver_ops->get_top_lock))
-> +               return -EINVAL;
+> -static int a7xx_preempt_start(struct msm_gpu *gpu)
+> +int a7xx_preempt_start(struct msm_gpu *gpu)
+>  {
+>         struct adreno_gpu *adreno_gpu =3D to_adreno_gpu(gpu);
+>         struct a6xx_gpu *a6xx_gpu =3D to_a6xx_gpu(adreno_gpu);
+> @@ -925,7 +942,7 @@ static int a6xx_cp_init(struct msm_gpu *gpu)
+>         return a6xx_idle(gpu, ring) ? 0 : -EINVAL;
+>  }
+>
+> -static int a7xx_cp_init(struct msm_gpu *gpu)
+> +int a7xx_cp_init(struct msm_gpu *gpu)
+>  {
+>         struct adreno_gpu *adreno_gpu =3D to_adreno_gpu(gpu);
+>         struct a6xx_gpu *a6xx_gpu =3D to_a6xx_gpu(adreno_gpu);
+> @@ -993,7 +1010,7 @@ static bool a6xx_ucode_check_version(struct a6xx_gpu=
+ *a6xx_gpu,
+>                 return false;
+>
+>         /* A7xx is safe! */
+> -       if (adreno_is_a7xx(adreno_gpu) || adreno_is_a702(adreno_gpu))
+> +       if (adreno_is_a7xx(adreno_gpu) || adreno_is_a702(adreno_gpu) || a=
+dreno_is_a8xx(adreno_gpu))
+>                 return true;
+>
+>         /*
+> @@ -2161,7 +2178,7 @@ void a6xx_bus_clear_pending_transactions(struct adr=
+eno_gpu *adreno_gpu, bool gx_
+>  void a6xx_gpu_sw_reset(struct msm_gpu *gpu, bool assert)
+>  {
+>         /* 11nm chips (e.g. ones with A610) have hw issues with the reset=
+ line! */
+> -       if (adreno_is_a610(to_adreno_gpu(gpu)))
+> +       if (adreno_is_a610(to_adreno_gpu(gpu)) || adreno_is_a8xx(to_adren=
+o_gpu(gpu)))
+>                 return;
+>
+>         gpu_write(gpu, REG_A6XX_RBBM_SW_RESET_CMD, assert);
+> @@ -2192,7 +2209,12 @@ static int a6xx_gmu_pm_resume(struct msm_gpu *gpu)
+>
+>         msm_devfreq_resume(gpu);
+>
+> -       adreno_is_a7xx(adreno_gpu) ? a7xx_llc_activate(a6xx_gpu) : a6xx_l=
+lc_activate(a6xx_gpu);
+> +       if (adreno_is_a8xx(adreno_gpu))
+> +               a8xx_llc_activate(a6xx_gpu);
+> +       else if (adreno_is_a7xx(adreno_gpu))
+> +               a7xx_llc_activate(a6xx_gpu);
+> +       else
+> +               a6xx_llc_activate(a6xx_gpu);
+>
+>         return ret;
+>  }
+> @@ -2561,10 +2583,8 @@ static struct msm_gpu *a6xx_gpu_init(struct drm_de=
+vice *dev)
+>         adreno_gpu->base.hw_apriv =3D
+>                 !!(config->info->quirks & ADRENO_QUIRK_HAS_HW_APRIV);
+>
+> -       /* gpu->info only gets assigned in adreno_gpu_init() */
+> -       is_a7xx =3D config->info->family =3D=3D ADRENO_7XX_GEN1 ||
+> -                 config->info->family =3D=3D ADRENO_7XX_GEN2 ||
+> -                 config->info->family =3D=3D ADRENO_7XX_GEN3;
+> +       /* gpu->info only gets assigned in adreno_gpu_init(). A8x is incl=
+uded intentionally */
+> +       is_a7xx =3D config->info->family >=3D ADRENO_7XX_GEN1;
+>
+>         a6xx_llc_slices_init(pdev, a6xx_gpu, is_a7xx);
+>
+> @@ -2730,3 +2750,32 @@ const struct adreno_gpu_funcs a7xx_gpu_funcs =3D {
+>         .bus_halt =3D a6xx_bus_clear_pending_transactions,
+>         .mmu_fault_handler =3D a6xx_fault_handler,
+>  };
 > +
->         if (pt_feature(common, PT_FEAT_SIGN_EXTEND) &&
->             (pt_feature(common, PT_FEAT_FULL_VA) ||
->              pt_feature(common, PT_FEAT_DYNAMIC_TOP)))
-> diff --git a/drivers/iommu/generic_pt/pt_iter.h b/drivers/iommu/generic_p=
-t/pt_iter.h
-> index 87f4a26c1a417a..c0d8617cce2928 100644
-> --- a/drivers/iommu/generic_pt/pt_iter.h
-> +++ b/drivers/iommu/generic_pt/pt_iter.h
-> @@ -612,7 +612,7 @@ static inline int __pt_make_level_fn_err(struct pt_ra=
-nge *range, void *arg,
->   * This builds a function call tree that can be fully inlined.
->   * The caller must provide a function body in an __always_inline functio=
-n::
->   *
-> - *  static __always_inline int do(struct pt_range *range, void *arg,
-> + *  static __always_inline int do_fn(struct pt_range *range, void *arg,
->   *         unsigned int level, struct pt_table_p *table,
->   *         pt_level_fn_t descend_fn)
->   *
-> diff --git a/include/linux/generic_pt/iommu.h b/include/linux/generic_pt/=
-iommu.h
-> index ceb6bc9cea37cd..0d59423024d57f 100644
-> --- a/include/linux/generic_pt/iommu.h
-> +++ b/include/linux/generic_pt/iommu.h
-> @@ -11,6 +11,7 @@
->
->  struct iommu_iotlb_gather;
->  struct pt_iommu_ops;
-> +struct pt_iommu_driver_ops;
->
->  /**
->   * DOC: IOMMU Radix Page Table
-> @@ -43,6 +44,12 @@ struct pt_iommu {
->          */
->         const struct pt_iommu_ops *ops;
->
-> +       /**
-> +        * @driver_ops: Function pointers provided by the HW driver to he=
-lp
-> +        * manage HW details like caches.
-> +        */
-> +       const struct pt_iommu_driver_ops *driver_ops;
+> +const struct adreno_gpu_funcs a8xx_gpu_funcs =3D {
+> +       .base =3D {
+> +               .get_param =3D adreno_get_param,
+> +               .set_param =3D adreno_set_param,
+> +               .hw_init =3D a8xx_hw_init,
+> +               .ucode_load =3D a6xx_ucode_load,
+> +               .pm_suspend =3D a6xx_gmu_pm_suspend,
+> +               .pm_resume =3D a6xx_gmu_pm_resume,
+> +               .recover =3D a8xx_recover,
+> +               .submit =3D a7xx_submit,
+> +               .active_ring =3D a6xx_active_ring,
+> +               .irq =3D a8xx_irq,
+> +               .destroy =3D a6xx_destroy,
+> +               .gpu_busy =3D a8xx_gpu_busy,
+> +               .gpu_get_freq =3D a6xx_gmu_get_freq,
+> +               .gpu_set_freq =3D a6xx_gpu_set_freq,
+> +               .create_vm =3D a6xx_create_vm,
+> +               .create_private_vm =3D a6xx_create_private_vm,
+> +               .get_rptr =3D a6xx_get_rptr,
+> +               .progress =3D a8xx_progress,
+> +       },
+> +       .init =3D a6xx_gpu_init,
+> +       .get_timestamp =3D a8xx_gmu_get_timestamp,
+> +       .submit_flush =3D a8xx_flush,
+> +       .feature_probe =3D a8xx_gpu_feature_probe,
+> +       .bus_halt =3D a8xx_bus_clear_pending_transactions,
+> +       .mmu_fault_handler =3D a8xx_fault_handler,
+> +};
+> diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.h b/drivers/gpu/drm/msm/=
+adreno/a6xx_gpu.h
+> index 0b17d36c36a9567e6afa4269ae7783ed3578e40e..18300b12bf2a8bcd5601797df=
+0fcc7afa8943863 100644
+> --- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.h
+> +++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.h
+> @@ -46,6 +46,7 @@ struct a6xx_info {
+>         const struct adreno_protect *protect;
+>         const struct adreno_reglist_list *pwrup_reglist;
+>         const struct adreno_reglist_list *ifpc_reglist;
+> +       const struct adreno_reglist_pipe *nonctxt_reglist;
+>         u32 gmu_chipid;
+>         u32 gmu_cgc_mode;
+>         u32 prim_fifo_threshold;
+> @@ -101,6 +102,11 @@ struct a6xx_gpu {
+>         void *htw_llc_slice;
+>         bool have_mmu500;
+>         bool hung;
 > +
->         /**
->          * @nid: Node ID to use for table memory allocations. The IOMMU d=
-river
->          * may want to set the NID to the device's NID, if there are mult=
-iple
-> @@ -84,6 +91,53 @@ struct pt_iommu_ops {
->         void (*deinit)(struct pt_iommu *iommu_table);
+> +       u32 cached_aperture;
+> +       spinlock_t aperture_lock;
+
+I don't see aperture_lock used.. but seems like maybe a good idea if
+a8xx_aperture_slice_set() acquired the lock and we had an
+corresponding _release() which dropped the lock, so that we couldn't
+have race conditions between the users of the aperture.
+
+BR,
+-R
+
+> +
+> +       u32 slice_mask;
 >  };
 >
-> +/**
-> + * struct pt_iommu_driver_ops - HW IOTLB cache flushing operations
-> + *
-> + * The IOMMU driver should implement these using container_of(iommu_tabl=
-e) to
-> + * get to it's iommu_domain derived structure. All ops can be called in =
-atomic
-> + * contexts as they are buried under DMA API calls.
-> + */
-> +struct pt_iommu_driver_ops {
-> +       /**
-> +        * @change_top: Update the top of table pointer
-> +        * @iommu_table: Table to operate on
-> +        * @top_paddr: New CPU physical address of the top pointer
-> +        * @top_level: IOMMU PT level of the new top
-> +        *
-> +        * Called under the get_top_lock() spinlock. The driver must upda=
-te all
-> +        * HW references to this domain with a new top address and
-> +        * configuration. On return mappings placed in the new top must b=
-e
-> +        * reachable by the HW.
-> +        *
-> +        * top_level encodes the level in IOMMU PT format, level 0 is the
-> +        * smallest page size increasing from there. This has to be trans=
-lated
-> +        * to any HW specific format. During this call the new top will n=
-ot be
-> +        * visible to any other API.
-> +        *
-> +        * This op is only used by PT_FEAT_DYNAMIC_TOP, and is required i=
-f
-> +        * enabled.
-> +        */
-> +       void (*change_top)(struct pt_iommu *iommu_table, phys_addr_t top_=
-paddr,
-> +                          unsigned int top_level);
+>  #define to_a6xx_gpu(x) container_of(x, struct a6xx_gpu, base)
+> @@ -299,4 +305,19 @@ void a6xx_bus_clear_pending_transactions(struct adre=
+no_gpu *adreno_gpu, bool gx_
+>  void a6xx_gpu_sw_reset(struct msm_gpu *gpu, bool assert);
+>  int a6xx_fenced_write(struct a6xx_gpu *gpu, u32 offset, u64 value, u32 m=
+ask, bool is_64b);
+>
+> +void a7xx_patch_pwrup_reglist(struct msm_gpu *gpu);
+> +int a7xx_preempt_start(struct msm_gpu *gpu);
+> +int a7xx_cp_init(struct msm_gpu *gpu);
 > +
-> +       /**
-> +        * @get_top_lock: lock to hold when changing the table top
-> +        * @iommu_table: Table to operate on
-> +        *
-> +        * Return a lock to hold when changing the table top page table f=
-rom
-> +        * being stored in HW. The lock will be held prior to calling
-> +        * change_top() and released once the top is fully visible.
-> +        *
-> +        * Typically this would be a lock that protects the iommu_domain'=
-s
-> +        * attachment list.
-> +        *
-> +        * This op is only used by PT_FEAT_DYNAMIC_TOP, and is required i=
-f
-> +        * enabled.
+> +void a8xx_bus_clear_pending_transactions(struct adreno_gpu *adreno_gpu, =
+bool gx_off);
+> +int a8xx_fault_handler(void *arg, unsigned long iova, int flags, void *d=
+ata);
+> +void a8xx_flush(struct msm_gpu *gpu, struct msm_ringbuffer *ring);
+> +int a8xx_gmu_get_timestamp(struct msm_gpu *gpu, uint64_t *value);
+> +u64 a8xx_gpu_busy(struct msm_gpu *gpu, unsigned long *out_sample_rate);
+> +int a8xx_gpu_feature_probe(struct msm_gpu *gpu);
+> +int a8xx_hw_init(struct msm_gpu *gpu);
+> +irqreturn_t a8xx_irq(struct msm_gpu *gpu);
+> +void a8xx_llc_activate(struct a6xx_gpu *a6xx_gpu);
+> +bool a8xx_progress(struct msm_gpu *gpu, struct msm_ringbuffer *ring);
+> +void a8xx_recover(struct msm_gpu *gpu);
+>  #endif /* __A6XX_GPU_H__ */
+> diff --git a/drivers/gpu/drm/msm/adreno/a8xx_gpu.c b/drivers/gpu/drm/msm/=
+adreno/a8xx_gpu.c
+> new file mode 100644
+> index 0000000000000000000000000000000000000000..6a64b1f96d730a46301545c52=
+a83d62dddc6c2ff
+> --- /dev/null
+> +++ b/drivers/gpu/drm/msm/adreno/a8xx_gpu.c
+> @@ -0,0 +1,1238 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/* Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries. */
+> +
+> +
+> +#include "msm_gem.h"
+> +#include "msm_mmu.h"
+> +#include "msm_gpu_trace.h"
+> +#include "a6xx_gpu.h"
+> +#include "a6xx_gmu.xml.h"
+> +
+> +#include <linux/bitfield.h>
+> +#include <linux/devfreq.h>
+> +#include <linux/firmware/qcom/qcom_scm.h>
+> +#include <linux/pm_domain.h>
+> +#include <linux/soc/qcom/llcc-qcom.h>
+> +
+> +#define GPU_PAS_ID 13
+> +
+> +static void a8xx_aperture_slice_set(struct msm_gpu *gpu, enum adreno_pip=
+e pipe, u32 slice)
+> +{
+> +       struct adreno_gpu *adreno_gpu =3D to_adreno_gpu(gpu);
+> +       struct a6xx_gpu *a6xx_gpu =3D to_a6xx_gpu(adreno_gpu);
+> +       u32 val;
+> +
+> +       val =3D A8XX_CP_APERTURE_CNTL_HOST_PIPEID(pipe) | A8XX_CP_APERTUR=
+E_CNTL_HOST_SLICEID(slice);
+> +
+> +       if (a6xx_gpu->cached_aperture =3D=3D val)
+> +               return;
+> +
+> +       gpu_write(gpu, REG_A8XX_CP_APERTURE_CNTL_HOST, val);
+> +
+> +       a6xx_gpu->cached_aperture =3D val;
+> +}
+> +
+> +static void a8xx_aperture_set(struct msm_gpu *gpu, enum adreno_pipe pipe=
+)
+> +{
+> +       a8xx_aperture_slice_set(gpu, pipe, 0);
+> +}
+> +
+> +static void a8xx_write_pipe(struct msm_gpu *gpu, enum adreno_pipe pipe, =
+u32 offset, u32 data)
+> +{
+> +       a8xx_aperture_set(gpu, pipe);
+> +
+> +       gpu_write(gpu, offset, data);
+> +}
+> +
+> +static u32 a8xx_read_pipe(struct msm_gpu *gpu, enum adreno_pipe pipe, u3=
+2 offset)
+> +{
+> +       a8xx_aperture_set(gpu, pipe);
+> +
+> +       return gpu_read(gpu, offset);
+> +}
+> +
+> +static u32 a8xx_read_pipe_slice(struct msm_gpu *gpu, enum adreno_pipe pi=
+pe, u32 slice, u32 offset)
+> +{
+> +       a8xx_aperture_slice_set(gpu, pipe, slice);
+> +
+> +       return gpu_read(gpu, offset);
+> +}
+> +
+> +static void a8xx_gpu_get_slice_info(struct msm_gpu *gpu)
+> +{
+> +       struct adreno_gpu *adreno_gpu =3D to_adreno_gpu(gpu);
+> +       struct a6xx_gpu *a6xx_gpu =3D to_a6xx_gpu(adreno_gpu);
+> +
+> +       if (adreno_gpu->info->family < ADRENO_8XX_GEN1)
+> +               return;
+> +
+> +       if (a6xx_gpu->slice_mask)
+> +               return;
+> +
+> +       a6xx_gpu->slice_mask =3D a6xx_llc_read(a6xx_gpu,
+> +                       REG_A8XX_CX_MISC_SLICE_ENABLE_FINAL) & GENMASK(3,=
+ 0);
+> +}
+> +
+> +static u32 a8xx_get_first_slice(struct a6xx_gpu *a6xx_gpu)
+> +{
+> +       return ffs(a6xx_gpu->slice_mask) - 1;
+> +}
+> +
+> +static inline bool _a8xx_check_idle(struct msm_gpu *gpu)
+> +{
+> +       struct adreno_gpu *adreno_gpu =3D to_adreno_gpu(gpu);
+> +       struct a6xx_gpu *a6xx_gpu =3D to_a6xx_gpu(adreno_gpu);
+> +
+> +       /* Check that the GMU is idle */
+> +       if (!a6xx_gmu_isidle(&a6xx_gpu->gmu))
+> +               return false;
+> +
+> +       /* Check that the CX master is idle */
+> +       if (gpu_read(gpu, REG_A8XX_RBBM_STATUS) &
+> +                       ~A8XX_RBBM_STATUS_CP_AHB_BUSY_CX_MASTER)
+> +               return false;
+> +
+> +       return !(gpu_read(gpu, REG_A8XX_RBBM_INT_0_STATUS) &
+> +               A6XX_RBBM_INT_0_MASK_RBBM_HANG_DETECT);
+> +}
+> +
+> +static bool a8xx_idle(struct msm_gpu *gpu, struct msm_ringbuffer *ring)
+> +{
+> +       /* wait for CP to drain ringbuffer: */
+> +       if (!adreno_idle(gpu, ring))
+> +               return false;
+> +
+> +       if (spin_until(_a8xx_check_idle(gpu))) {
+> +               DRM_ERROR("%s: %ps: timeout waiting for GPU to idle: stat=
+us %8.8X irq %8.8X rptr/wptr %d/%d\n",
+> +                       gpu->name, __builtin_return_address(0),
+> +                       gpu_read(gpu, REG_A8XX_RBBM_STATUS),
+> +                       gpu_read(gpu, REG_A8XX_RBBM_INT_0_STATUS),
+> +                       gpu_read(gpu, REG_A6XX_CP_RB_RPTR),
+> +                       gpu_read(gpu, REG_A6XX_CP_RB_WPTR));
+> +               return false;
+> +       }
+> +
+> +       return true;
+> +}
+> +
+> +void a8xx_flush(struct msm_gpu *gpu, struct msm_ringbuffer *ring)
+> +{
+> +       struct adreno_gpu *adreno_gpu =3D to_adreno_gpu(gpu);
+> +       struct a6xx_gpu *a6xx_gpu =3D to_a6xx_gpu(adreno_gpu);
+> +       uint32_t wptr;
+> +       unsigned long flags;
+> +
+> +       spin_lock_irqsave(&ring->preempt_lock, flags);
+> +
+> +       /* Copy the shadow to the actual register */
+> +       ring->cur =3D ring->next;
+> +
+> +       /* Make sure to wrap wptr if we need to */
+> +       wptr =3D get_wptr(ring);
+> +
+> +       /* Update HW if this is the current ring and we are not in preemp=
+t*/
+> +       if (!a6xx_in_preempt(a6xx_gpu)) {
+> +               if (a6xx_gpu->cur_ring =3D=3D ring)
+> +                       gpu_write(gpu, REG_A6XX_CP_RB_WPTR, wptr);
+> +               else
+> +                       ring->restore_wptr =3D true;
+> +       } else {
+> +               ring->restore_wptr =3D true;
+> +       }
+> +
+> +       spin_unlock_irqrestore(&ring->preempt_lock, flags);
+> +}
+> +
+> +static void a8xx_set_hwcg(struct msm_gpu *gpu, bool state)
+> +{
+> +       struct adreno_gpu *adreno_gpu =3D to_adreno_gpu(gpu);
+> +       struct a6xx_gpu *a6xx_gpu =3D to_a6xx_gpu(adreno_gpu);
+> +       struct a6xx_gmu *gmu =3D &a6xx_gpu->gmu;
+> +       u32 val;
+> +
+> +       gmu_write(gmu, REG_A6XX_GPU_GMU_AO_GMU_CGC_MODE_CNTL,
+> +                       state ? adreno_gpu->info->a6xx->gmu_cgc_mode : 0)=
+;
+> +       gmu_write(gmu, REG_A6XX_GPU_GMU_AO_GMU_CGC_DELAY_CNTL,
+> +                       state ? 0x110111 : 0);
+> +       gmu_write(gmu, REG_A6XX_GPU_GMU_AO_GMU_CGC_HYST_CNTL,
+> +                       state ? 0x55555 : 0);
+> +
+> +       gpu_write(gpu, REG_A8XX_RBBM_CLOCK_CNTL_GLOBAL, 1);
+> +       gpu_write(gpu, REG_A8XX_RBBM_CGC_GLOBAL_LOAD_CMD, state ? 1 : 0);
+> +
+> +       if (state) {
+> +               gpu_write(gpu, REG_A8XX_RBBM_CGC_P2S_TRIG_CMD, 1);
+> +
+> +               if (gpu_poll_timeout(gpu, REG_A8XX_RBBM_CGC_P2S_STATUS, v=
+al,
+> +                                    val & A8XX_RBBM_CGC_P2S_STATUS_TXDON=
+E, 1, 10)) {
+> +                       dev_err(&gpu->pdev->dev, "RBBM_CGC_P2S_STATUS TXD=
+ONE Poll failed\n");
+> +                       return;
+> +               }
+> +
+> +               gpu_write(gpu, REG_A8XX_RBBM_CLOCK_CNTL_GLOBAL, 0);
+> +       } else {
+> +               /*
+> +                * GMU enables clk gating in GBIF during boot up. So, ove=
+rride that here when
+> +                * hwcg feature is disabled
+> +                */
+> +               gpu_rmw(gpu, REG_A8XX_GBIF_CX_CONFIG, BIT(0), 0);
+> +       }
+> +}
+> +
+> +static void a8xx_set_cp_protect(struct msm_gpu *gpu)
+> +{
+> +       struct adreno_gpu *adreno_gpu =3D to_adreno_gpu(gpu);
+> +       const struct adreno_protect *protect =3D adreno_gpu->info->a6xx->=
+protect;
+> +       unsigned int i;
+> +       u32 cntl;
+> +
+> +
+> +       cntl =3D A8XX_CP_PROTECT_CNTL_PIPE_ACCESS_PROT_EN |
+> +               A8XX_CP_PROTECT_CNTL_PIPE_ACCESS_FAULT_ON_VIOL_EN |
+> +               A8XX_CP_PROTECT_CNTL_PIPE_LAST_SPAN_INF_RANGE;
+> +       /*
+> +        * Enable access protection to privileged registers, fault on an =
+access
+> +        * protect violation and select the last span to protect from the=
+ start
+> +        * address all the way to the end of the register address space
 > +        */
-> +       spinlock_t *(*get_top_lock)(struct pt_iommu *iommu_table);
+> +       a8xx_write_pipe(gpu, PIPE_BR, REG_A8XX_CP_PROTECT_CNTL_PIPE, cntl=
+);
+> +       a8xx_write_pipe(gpu, PIPE_BV, REG_A8XX_CP_PROTECT_CNTL_PIPE, cntl=
+);
+> +
+> +       /* Clear aperture */
+> +       a8xx_aperture_set(gpu, 0);
+> +
+> +       for (i =3D 0; i < protect->count - 1; i++) {
+> +               /* Intentionally skip writing to some registers */
+> +               if (protect->regs[i])
+> +                       gpu_write(gpu, REG_A8XX_CP_PROTECT_GLOBAL(i), pro=
+tect->regs[i]);
+> +       }
+> +       /* last CP_PROTECT to have "infinite" length on the last entry */
+> +       gpu_write(gpu, REG_A8XX_CP_PROTECT_GLOBAL(protect->count_max - 1)=
+, protect->regs[i]);
+> +
+> +       /* Last span feature is only supported on PIPE specific register.=
+ So update those here */
+> +       a8xx_write_pipe(gpu, PIPE_BR, REG_A8XX_CP_PROTECT_PIPE(15), prote=
+ct->regs[i]);
+> +       a8xx_write_pipe(gpu, PIPE_BV, REG_A8XX_CP_PROTECT_PIPE(15), prote=
+ct->regs[i]);
+> +
+> +       /* Clear aperture */
+> +       a8xx_aperture_set(gpu, 0);
+> +}
+> +
+> +static void a8xx_set_ubwc_config(struct msm_gpu *gpu)
+> +{
+> +       struct adreno_gpu *adreno_gpu =3D to_adreno_gpu(gpu);
+> +       const struct qcom_ubwc_cfg_data *cfg =3D adreno_gpu->ubwc_config;
+> +       /*
+> +        * We subtract 13 from the highest bank bit (13 is the minimum va=
+lue
+> +        * allowed by hw) and write the lowest two bits of the remaining =
+value
+> +        * as hbb_lo and the one above it as hbb_hi to the hardware.
+> +        */
+> +       WARN_ON(cfg->highest_bank_bit < 13);
+> +       u32 hbb =3D cfg->highest_bank_bit - 13;
+> +       u32 level2_swizzling_dis =3D !(cfg->ubwc_swizzle & UBWC_SWIZZLE_E=
+NABLE_LVL2);
+> +       u32 level3_swizzling_dis =3D !(cfg->ubwc_swizzle & UBWC_SWIZZLE_E=
+NABLE_LVL3);
+> +       u32 ubwc_version =3D cfg->ubwc_enc_version;
+> +       bool yuvnotcomptofc =3D false, min_acc_len_64b =3D false;
+> +       bool rgb565_predicator =3D false, amsbc =3D false;
+> +       bool ubwc_mode =3D qcom_ubwc_get_ubwc_mode(cfg);
+> +       bool rgba8888_lossless =3D false, fp16compoptdis =3D false;
+> +       u8 uavflagprd_inv =3D 2;
+> +       u32 hbb_hi =3D hbb >> 2;
+> +       u32 hbb_lo =3D hbb & 3;
+> +       u32 mode =3D 1;
+> +
+> +       switch (ubwc_version) {
+> +       case UBWC_6_0:
+> +               yuvnotcomptofc =3D true;
+> +               mode =3D 5;
+> +               break;
+> +       case UBWC_5_0:
+> +               amsbc =3D true;
+> +               rgb565_predicator =3D true;
+> +               mode =3D 4;
+> +               break;
+> +       case UBWC_4_0:
+> +               amsbc =3D true;
+> +               rgb565_predicator =3D true;
+> +               fp16compoptdis =3D true;
+> +               rgba8888_lossless =3D true;
+> +               mode =3D 2;
+> +               break;
+> +       case UBWC_3_0:
+> +               amsbc =3D true;
+> +               mode =3D 1;
+> +               break;
+> +       default:
+> +               dev_err(&gpu->pdev->dev, "Unknown UBWC version: 0x%x\n", =
+ubwc_version);
+> +               break;
+> +       }
+> +
+> +       a8xx_write_pipe(gpu, PIPE_BV, REG_A8XX_GRAS_NC_MODE_CNTL, hbb << =
+5);
+> +       a8xx_write_pipe(gpu, PIPE_BR, REG_A8XX_GRAS_NC_MODE_CNTL, hbb << =
+5);
+> +
+> +       a8xx_write_pipe(gpu, PIPE_BR, REG_A8XX_RB_CCU_NC_MODE_CNTL,
+> +                       yuvnotcomptofc << 6 |
+> +                       hbb_hi << 3 |
+> +                       hbb_lo << 1);
+> +
+> +       a8xx_write_pipe(gpu, PIPE_BR, REG_A8XX_RB_CMP_NC_MODE_CNTL,
+> +                       mode << 15 |
+> +                       yuvnotcomptofc << 6 |
+> +                       rgba8888_lossless << 4 |
+> +                       fp16compoptdis << 3 |
+> +                       rgb565_predicator << 2 |
+> +                       amsbc << 1 |
+> +                       min_acc_len_64b);
+> +
+> +       /* Clear aperture */
+> +       a8xx_aperture_set(gpu, 0);
+> +
+> +       gpu_write(gpu, REG_A6XX_SP_NC_MODE_CNTL,
+> +                 level3_swizzling_dis << 13 |
+> +                 level2_swizzling_dis << 12 |
+> +                 hbb_hi << 10 |
+> +                 uavflagprd_inv << 4 |
+> +                 min_acc_len_64b << 3 |
+> +                 hbb_lo << 1 | ubwc_mode);
+> +
+> +       gpu_write(gpu, REG_A6XX_TPL1_NC_MODE_CNTL,
+> +                 level3_swizzling_dis << 7 |
+> +                 level2_swizzling_dis << 6 |
+> +                 hbb_hi << 4 |
+> +                 min_acc_len_64b << 3 |
+> +                 hbb_lo << 1 | ubwc_mode);
+> +}
+> +
+> +static int a8xx_zap_shader_init(struct msm_gpu *gpu)
+> +{
+> +       static bool loaded;
+> +       int ret;
+> +
+> +       if (loaded)
+> +               return 0;
+> +
+> +       ret =3D adreno_zap_shader_load(gpu, GPU_PAS_ID);
+> +
+> +       loaded =3D !ret;
+> +       return ret;
+> +}
+> +
+> +static void a8xx_nonctxt_config(struct msm_gpu *gpu, u32 *gmem_protect)
+> +{
+> +       struct adreno_gpu *adreno_gpu =3D to_adreno_gpu(gpu);
+> +       const struct a6xx_info *info =3D adreno_gpu->info->a6xx;
+> +       const struct adreno_reglist_pipe *regs =3D info->nonctxt_reglist;
+> +       int pipe_id, i;
+> +
+> +       for (pipe_id =3D PIPE_NONE; pipe_id <=3D PIPE_DDE_BV; pipe_id++) =
+{
+> +               /* We don't have support for LPAC yet */
+> +               if (pipe_id =3D=3D PIPE_LPAC)
+> +                       continue;
+> +
+> +               for (i =3D 0; regs[i].offset; i++) {
+> +                       if (!(BIT(pipe_id) & regs[i].pipe))
+> +                               continue;
+> +
+> +                       if (regs[i].offset =3D=3D REG_A8XX_RB_GC_GMEM_PRO=
+TECT)
+> +                               *gmem_protect =3D regs[i].value;
+> +
+> +                       a8xx_write_pipe(gpu, pipe_id, regs[i].offset, reg=
+s[i].value);
+> +               }
+> +       }
+> +
+> +       a8xx_aperture_set(gpu, 0);
+> +}
+> +
+> +static int a8xx_cp_init(struct msm_gpu *gpu)
+> +{
+> +       struct msm_ringbuffer *ring =3D gpu->rb[0];
+> +       u32 mask;
+> +
+> +       /* Disable concurrent binning before sending CP init */
+> +       OUT_PKT7(ring, CP_THREAD_CONTROL, 1);
+> +       OUT_RING(ring, BIT(27));
+> +
+> +       OUT_PKT7(ring, CP_ME_INIT, 4);
+> +
+> +       /* Use multiple HW contexts */
+> +       mask =3D BIT(0);
+> +
+> +       /* Enable error detection */
+> +       mask |=3D BIT(1);
+> +
+> +       /* Set default reset state */
+> +       mask |=3D BIT(3);
+> +
+> +       /* Disable save/restore of performance counters across preemption=
+ */
+> +       mask |=3D BIT(6);
+> +
+> +       OUT_RING(ring, mask);
+> +
+> +       /* Enable multiple hardware contexts */
+> +       OUT_RING(ring, 0x00000003);
+> +
+> +       /* Enable error detection */
+> +       OUT_RING(ring, 0x20000000);
+> +
+> +       /* Operation mode mask */
+> +       OUT_RING(ring, 0x00000002);
+> +
+> +       a8xx_flush(gpu, ring);
+> +       return a8xx_idle(gpu, ring) ? 0 : -EINVAL;
+> +}
+> +
+> +#define A8XX_INT_MASK \
+> +       (A6XX_RBBM_INT_0_MASK_CP_AHB_ERROR | \
+> +        A6XX_RBBM_INT_0_MASK_RBBM_ATB_ASYNCFIFO_OVERFLOW | \
+> +        A6XX_RBBM_INT_0_MASK_RBBM_GPC_ERROR | \
+> +        A6XX_RBBM_INT_0_MASK_CP_SW | \
+> +        A6XX_RBBM_INT_0_MASK_CP_HW_ERROR | \
+> +        A6XX_RBBM_INT_0_MASK_PM4CPINTERRUPT | \
+> +        A6XX_RBBM_INT_0_MASK_CP_RB_DONE_TS | \
+> +        A6XX_RBBM_INT_0_MASK_CP_CACHE_FLUSH_TS | \
+> +        A6XX_RBBM_INT_0_MASK_RBBM_ATB_BUS_OVERFLOW | \
+> +        A6XX_RBBM_INT_0_MASK_RBBM_HANG_DETECT | \
+> +        A6XX_RBBM_INT_0_MASK_UCHE_OOB_ACCESS | \
+> +        A6XX_RBBM_INT_0_MASK_UCHE_TRAP_INTR | \
+> +        A6XX_RBBM_INT_0_MASK_TSBWRITEERROR | \
+> +        A6XX_RBBM_INT_0_MASK_SWFUSEVIOLATION)
+> +
+> +#define A8XX_APRIV_MASK \
+> +       (A8XX_CP_APRIV_CNTL_PIPE_ICACHE | \
+> +        A8XX_CP_APRIV_CNTL_PIPE_RBFETCH | \
+> +        A8XX_CP_APRIV_CNTL_PIPE_RBPRIVLEVEL | \
+> +        A8XX_CP_APRIV_CNTL_PIPE_RBRPWB)
+> +
+> +#define A8XX_BR_APRIV_MASK \
+> +       (A8XX_APRIV_MASK | \
+> +        A8XX_CP_APRIV_CNTL_PIPE_CDREAD | \
+> +        A8XX_CP_APRIV_CNTL_PIPE_CDWRITE)
+> +
+> +#define A8XX_CP_GLOBAL_INT_MASK \
+> +       (A8XX_CP_GLOBAL_INT_MASK_HWFAULTBR | \
+> +        A8XX_CP_GLOBAL_INT_MASK_HWFAULTBV | \
+> +        A8XX_CP_GLOBAL_INT_MASK_HWFAULTLPAC | \
+> +        A8XX_CP_GLOBAL_INT_MASK_HWFAULTAQE0 | \
+> +        A8XX_CP_GLOBAL_INT_MASK_HWFAULTAQE1 | \
+> +        A8XX_CP_GLOBAL_INT_MASK_HWFAULTDDEBR | \
+> +        A8XX_CP_GLOBAL_INT_MASK_HWFAULTDDEBV | \
+> +        A8XX_CP_GLOBAL_INT_MASK_SWFAULTBR | \
+> +        A8XX_CP_GLOBAL_INT_MASK_SWFAULTBV | \
+> +        A8XX_CP_GLOBAL_INT_MASK_SWFAULTLPAC | \
+> +        A8XX_CP_GLOBAL_INT_MASK_SWFAULTAQE0 | \
+> +        A8XX_CP_GLOBAL_INT_MASK_SWFAULTAQE1 | \
+> +        A8XX_CP_GLOBAL_INT_MASK_SWFAULTDDEBR | \
+> +        A8XX_CP_GLOBAL_INT_MASK_SWFAULTDDEBV)
+> +
+> +#define A8XX_CP_INTERRUPT_STATUS_MASK_PIPE \
+> +       (A8XX_CP_INTERRUPT_STATUS_MASK_PIPE_CSFRBWRAP | \
+> +        A8XX_CP_INTERRUPT_STATUS_MASK_PIPE_CSFIB1WRAP | \
+> +        A8XX_CP_INTERRUPT_STATUS_MASK_PIPE_CSFIB2WRAP | \
+> +        A8XX_CP_INTERRUPT_STATUS_MASK_PIPE_CSFIB3WRAP | \
+> +        A8XX_CP_INTERRUPT_STATUS_MASK_PIPE_CSFSDSWRAP | \
+> +        A8XX_CP_INTERRUPT_STATUS_MASK_PIPE_CSFMRBWRAP | \
+> +        A8XX_CP_INTERRUPT_STATUS_MASK_PIPE_CSFVSDWRAP | \
+> +        A8XX_CP_INTERRUPT_STATUS_MASK_PIPE_OPCODEERROR | \
+> +        A8XX_CP_INTERRUPT_STATUS_MASK_PIPE_VSDPARITYERROR | \
+> +        A8XX_CP_INTERRUPT_STATUS_MASK_PIPE_REGISTERPROTECTIONERROR | \
+> +        A8XX_CP_INTERRUPT_STATUS_MASK_PIPE_ILLEGALINSTRUCTION | \
+> +        A8XX_CP_INTERRUPT_STATUS_MASK_PIPE_SMMUFAULT | \
+> +        A8XX_CP_INTERRUPT_STATUS_MASK_PIPE_VBIFRESP | \
+> +        A8XX_CP_INTERRUPT_STATUS_MASK_PIPE_RTWROVF | \
+> +        A8XX_CP_INTERRUPT_STATUS_MASK_PIPE_LRZRTWROVF | \
+> +        A8XX_CP_INTERRUPT_STATUS_MASK_PIPE_LRZRTREFCNTOVF | \
+> +        A8XX_CP_INTERRUPT_STATUS_MASK_PIPE_LRZRTCLRRESMISS)
+> +
+> +#define A8XX_CP_HW_FAULT_STATUS_MASK_PIPE \
+> +       (A8XX_CP_HW_FAULT_STATUS_MASK_PIPE_CSFRBFAULT | \
+> +        A8XX_CP_HW_FAULT_STATUS_MASK_PIPE_CSFIB1FAULT | \
+> +        A8XX_CP_HW_FAULT_STATUS_MASK_PIPE_CSFIB2FAULT | \
+> +        A8XX_CP_HW_FAULT_STATUS_MASK_PIPE_CSFIB3FAULT | \
+> +        A8XX_CP_HW_FAULT_STATUS_MASK_PIPE_CSFSDSFAULT | \
+> +        A8XX_CP_HW_FAULT_STATUS_MASK_PIPE_CSFMRBFAULT | \
+> +        A8XX_CP_HW_FAULT_STATUS_MASK_PIPE_CSFVSDFAULT | \
+> +        A8XX_CP_HW_FAULT_STATUS_MASK_PIPE_SQEREADBURSTOVF | \
+> +        A8XX_CP_HW_FAULT_STATUS_MASK_PIPE_EVENTENGINEOVF | \
+> +        A8XX_CP_HW_FAULT_STATUS_MASK_PIPE_UCODEERROR)
+> +
+> +static int hw_init(struct msm_gpu *gpu)
+> +{
+> +       struct adreno_gpu *adreno_gpu =3D to_adreno_gpu(gpu);
+> +       struct a6xx_gpu *a6xx_gpu =3D to_a6xx_gpu(adreno_gpu);
+> +       struct a6xx_gmu *gmu =3D &a6xx_gpu->gmu;
+> +       unsigned int pipe_id, i;
+> +       u32 gmem_protect =3D 0;
+> +       u64 gmem_range_min;
+> +       int ret;
+> +
+> +       /* Read the slice info on A8x GPUs */
+> +       a8xx_gpu_get_slice_info(gpu);
+> +
+> +       ret =3D a6xx_gmu_set_oob(&a6xx_gpu->gmu, GMU_OOB_GPU_SET);
+> +       if (ret)
+> +               return ret;
+> +
+> +       /* Clear the cached value to force aperture configuration next ti=
+me */
+> +       a6xx_gpu->cached_aperture =3D UINT_MAX;
+> +       a8xx_aperture_set(gpu, 0);
+> +
+> +       /* Clear GBIF halt in case GX domain was not collapsed */
+> +       gpu_write(gpu, REG_A6XX_GBIF_HALT, 0);
+> +       gpu_read(gpu, REG_A6XX_GBIF_HALT);
+> +
+> +       gpu_write(gpu, REG_A8XX_RBBM_GBIF_HALT, 0);
+> +       gpu_read(gpu, REG_A8XX_RBBM_GBIF_HALT);
+> +
+> +       gpu_write(gpu, REG_A6XX_RBBM_SECVID_TSB_CNTL, 0);
+> +
+> +       /*
+> +        * Disable the trusted memory range - we don't actually supported=
+ secure
+> +        * memory rendering at this point in time and we don't want to bl=
+ock off
+> +        * part of the virtual memory space.
+> +        */
+> +       gpu_write64(gpu, REG_A6XX_RBBM_SECVID_TSB_TRUSTED_BASE, 0x0000000=
+0);
+> +       gpu_write(gpu, REG_A6XX_RBBM_SECVID_TSB_TRUSTED_SIZE, 0x00000000)=
+;
+> +
+> +       gpu_write(gpu, REG_A6XX_GBIF_QSB_SIDE0, 0x00071620);
+> +       gpu_write(gpu, REG_A6XX_GBIF_QSB_SIDE1, 0x00071620);
+> +       gpu_write(gpu, REG_A6XX_GBIF_QSB_SIDE2, 0x00071620);
+> +       gpu_write(gpu, REG_A6XX_GBIF_QSB_SIDE3, 0x00071620);
+> +       gpu_write(gpu, REG_A8XX_GBIF_CX_CONFIG, 0x20023000);
+> +       gmu_write(gmu, REG_A6XX_GMU_MRC_GBIF_QOS_CTRL, 0x33);
+> +
+> +       /* Make all blocks contribute to the GPU BUSY perf counter */
+> +       gpu_write(gpu, REG_A8XX_RBBM_PERFCTR_GPU_BUSY_MASKED, 0xffffffff)=
+;
+> +
+> +       /* Setup GMEM Range in UCHE */
+> +       gmem_range_min =3D SZ_64M;
+> +       /* Set the GMEM VA range [0x100000:0x100000 + gpu->gmem - 1] */
+> +       gpu_write64(gpu, REG_A8XX_UCHE_CCHE_GC_GMEM_RANGE_MIN, gmem_range=
+_min);
+> +       gpu_write64(gpu, REG_A8XX_SP_HLSQ_GC_GMEM_RANGE_MIN, gmem_range_m=
+in);
+> +
+> +       /* Setup UCHE Trap region */
+> +       gpu_write64(gpu, REG_A8XX_UCHE_TRAP_BASE, adreno_gpu->uche_trap_b=
+ase);
+> +       gpu_write64(gpu, REG_A8XX_UCHE_WRITE_THRU_BASE, adreno_gpu->uche_=
+trap_base);
+> +       gpu_write64(gpu, REG_A8XX_UCHE_CCHE_TRAP_BASE, adreno_gpu->uche_t=
+rap_base);
+> +       gpu_write64(gpu, REG_A8XX_UCHE_CCHE_WRITE_THRU_BASE, adreno_gpu->=
+uche_trap_base);
+> +
+> +       /* Turn on performance counters */
+> +       gpu_write(gpu, REG_A8XX_RBBM_PERFCTR_CNTL, 0x1);
+> +       gpu_write(gpu, REG_A8XX_RBBM_SLICE_PERFCTR_CNTL, 0x1);
+> +
+> +       /* Turn on the IFPC counter (countable 4 on XOCLK1) */
+> +       gmu_write(&a6xx_gpu->gmu, REG_A8XX_GMU_CX_GMU_POWER_COUNTER_SELEC=
+T_XOCLK_1,
+> +                 FIELD_PREP(GENMASK(7, 0), 0x4));
+> +
+> +       /* Select CP0 to always count cycles */
+> +       gpu_write(gpu, REG_A8XX_CP_PERFCTR_CP_SEL(0), PERF_CP_ALWAYS_COUN=
+T);
+> +
+> +       a8xx_set_ubwc_config(gpu);
+> +
+> +       /* Set weights for bicubic filtering */
+> +       gpu_write(gpu, REG_A8XX_TPL1_BICUBIC_WEIGHTS_TABLE(0), 0);
+> +       gpu_write(gpu, REG_A8XX_TPL1_BICUBIC_WEIGHTS_TABLE(1), 0x3fe05ff4=
+);
+> +       gpu_write(gpu, REG_A8XX_TPL1_BICUBIC_WEIGHTS_TABLE(2), 0x3fa0ebee=
+);
+> +       gpu_write(gpu, REG_A8XX_TPL1_BICUBIC_WEIGHTS_TABLE(3), 0x3f5193ed=
+);
+> +       gpu_write(gpu, REG_A8XX_TPL1_BICUBIC_WEIGHTS_TABLE(4), 0x3f0243f0=
+);
+> +       gpu_write(gpu, REG_A8XX_TPL1_BICUBIC_WEIGHTS_TABLE(5), 0x00000000=
+);
+> +       gpu_write(gpu, REG_A8XX_TPL1_BICUBIC_WEIGHTS_TABLE(6), 0x3fd093e8=
+);
+> +       gpu_write(gpu, REG_A8XX_TPL1_BICUBIC_WEIGHTS_TABLE(7), 0x3f4133dc=
+);
+> +       gpu_write(gpu, REG_A8XX_TPL1_BICUBIC_WEIGHTS_TABLE(8), 0x3ea1dfdb=
+);
+> +       gpu_write(gpu, REG_A8XX_TPL1_BICUBIC_WEIGHTS_TABLE(9), 0x3e0283e0=
+);
+> +       gpu_write(gpu, REG_A8XX_TPL1_BICUBIC_WEIGHTS_TABLE(10), 0x0000ac2=
+b);
+> +       gpu_write(gpu, REG_A8XX_TPL1_BICUBIC_WEIGHTS_TABLE(11), 0x0000f01=
+d);
+> +       gpu_write(gpu, REG_A8XX_TPL1_BICUBIC_WEIGHTS_TABLE(12), 0x0011441=
+2);
+> +       gpu_write(gpu, REG_A8XX_TPL1_BICUBIC_WEIGHTS_TABLE(13), 0x0021980=
+a);
+> +       gpu_write(gpu, REG_A8XX_TPL1_BICUBIC_WEIGHTS_TABLE(14), 0x0051ec0=
+5);
+> +       gpu_write(gpu, REG_A8XX_TPL1_BICUBIC_WEIGHTS_TABLE(15), 0x0000380=
+e);
+> +       gpu_write(gpu, REG_A8XX_TPL1_BICUBIC_WEIGHTS_TABLE(16), 0x3ff0900=
+1);
+> +       gpu_write(gpu, REG_A8XX_TPL1_BICUBIC_WEIGHTS_TABLE(17), 0x3fc10bf=
+a);
+> +       gpu_write(gpu, REG_A8XX_TPL1_BICUBIC_WEIGHTS_TABLE(18), 0x3f9193f=
+7);
+> +       gpu_write(gpu, REG_A8XX_TPL1_BICUBIC_WEIGHTS_TABLE(19), 0x3f7227f=
+7);
+> +
+> +       /* Enable fault detection */
+> +       gpu_write(gpu, REG_A8XX_RBBM_INTERFACE_HANG_INT_CNTL, BIT(30) | 0=
+xcfffff);
+> +       gpu_write(gpu, REG_A8XX_RBBM_SLICE_INTERFACE_HANG_INT_CNTL, BIT(3=
+0));
+> +
+> +       gpu_write(gpu, REG_A8XX_UCHE_CLIENT_PF, BIT(7) | 0x1);
+> +
+> +       a8xx_nonctxt_config(gpu, &gmem_protect);
+> +
+> +       /* Enable the GMEM save/restore feature for preemption */
+> +       a8xx_write_pipe(gpu, PIPE_BR, REG_A6XX_RB_CONTEXT_SWITCH_GMEM_SAV=
+E_RESTORE_ENABLE, 1);
+> +       a8xx_aperture_set(gpu, 0);
+> +
+> +       /* Set up the CX GMU counter 0 to count busy ticks */
+> +       gmu_write(gmu, REG_A6XX_GPU_GMU_AO_GPU_CX_BUSY_MASK, 0xff000000);
+> +
+> +       /* Enable the power counter */
+> +       gmu_rmw(gmu, REG_A8XX_GMU_CX_GMU_POWER_COUNTER_SELECT_XOCLK_0, 0x=
+ff, BIT(5));
+> +       gmu_write(gmu, REG_A6XX_GMU_CX_GMU_POWER_COUNTER_ENABLE, 1);
+> +
+> +       /* Protect registers from the CP */
+> +       a8xx_set_cp_protect(gpu);
+> +
+> +       for (pipe_id =3D PIPE_BR; pipe_id <=3D PIPE_DDE_BV; pipe_id++) {
+> +               u32 apriv_mask =3D A8XX_APRIV_MASK;
+> +
+> +               if (pipe_id =3D=3D PIPE_LPAC)
+> +                       continue;
+> +
+> +               if (pipe_id =3D=3D PIPE_BR)
+> +                       apriv_mask =3D A8XX_BR_APRIV_MASK;
+> +
+> +               a8xx_write_pipe(gpu, pipe_id, REG_A8XX_CP_APRIV_CNTL_PIPE=
+, apriv_mask);
+> +               a8xx_write_pipe(gpu, pipe_id, REG_A8XX_CP_INTERRUPT_STATU=
+S_MASK_PIPE,
+> +                               A8XX_CP_INTERRUPT_STATUS_MASK_PIPE);
+> +               a8xx_write_pipe(gpu, pipe_id, REG_A8XX_CP_HW_FAULT_STATUS=
+_MASK_PIPE,
+> +                               A8XX_CP_HW_FAULT_STATUS_MASK_PIPE);
+> +       }
+> +
+> +       /* Clear aperture */
+> +       a8xx_aperture_set(gpu, 0);
+> +
+> +       /* Enable interrupts */
+> +       gpu_write(gpu, REG_A8XX_CP_INTERRUPT_STATUS_MASK_GLOBAL, A8XX_CP_=
+GLOBAL_INT_MASK);
+> +       gpu_write(gpu, REG_A8XX_RBBM_INT_0_MASK, A8XX_INT_MASK);
+> +
+> +       ret =3D adreno_hw_init(gpu);
+> +       if (ret)
+> +               goto out;
+> +
+> +       gpu_write64(gpu, REG_A8XX_CP_SQE_INSTR_BASE, a6xx_gpu->sqe_iova);
+> +       /* Set the ringbuffer address */
+> +       gpu_write64(gpu, REG_A6XX_CP_RB_BASE, gpu->rb[0]->iova);
+> +       gpu_write(gpu, REG_A6XX_CP_RB_CNTL, MSM_GPU_RB_CNTL_DEFAULT);
+> +
+> +       /* Configure the RPTR shadow if needed: */
+> +       gpu_write64(gpu, REG_A6XX_CP_RB_RPTR_ADDR, shadowptr(a6xx_gpu, gp=
+u->rb[0]));
+> +       gpu_write64(gpu, REG_A8XX_CP_RB_RPTR_ADDR_BV, rbmemptr(gpu->rb[0]=
+, bv_rptr));
+> +
+> +       for (i =3D 0; i < gpu->nr_rings; i++)
+> +               a6xx_gpu->shadow[i] =3D 0;
+> +
+> +       /* Always come up on rb 0 */
+> +       a6xx_gpu->cur_ring =3D gpu->rb[0];
+> +
+> +       for (i =3D 0; i < gpu->nr_rings; i++)
+> +               gpu->rb[i]->cur_ctx_seqno =3D 0;
+> +
+> +       /* Enable the SQE_to start the CP engine */
+> +       gpu_write(gpu, REG_A8XX_CP_SQE_CNTL, 1);
+> +
+> +       ret =3D a8xx_cp_init(gpu);
+> +       if (ret)
+> +               goto out;
+> +
+> +       /*
+> +        * Try to load a zap shader into the secure world. If successful
+> +        * we can use the CP to switch out of secure mode. If not then we
+> +        * have no resource but to try to switch ourselves out manually. =
+If we
+> +        * guessed wrong then access to the RBBM_SECVID_TRUST_CNTL regist=
+er will
+> +        * be blocked and a permissions violation will soon follow.
+> +        */
+> +       ret =3D a8xx_zap_shader_init(gpu);
+> +       if (!ret) {
+> +               OUT_PKT7(gpu->rb[0], CP_SET_SECURE_MODE, 1);
+> +               OUT_RING(gpu->rb[0], 0x00000000);
+> +
+> +               a8xx_flush(gpu, gpu->rb[0]);
+> +               if (!a8xx_idle(gpu, gpu->rb[0]))
+> +                       return -EINVAL;
+> +       } else if (ret =3D=3D -ENODEV) {
+> +               /*
+> +                * This device does not use zap shader (but print a warni=
+ng
+> +                * just in case someone got their dt wrong.. hopefully th=
+ey
+> +                * have a debug UART to realize the error of their ways..=
+.
+> +                * if you mess this up you are about to crash horribly)
+> +                */
+> +               dev_warn_once(gpu->dev->dev,
+> +                       "Zap shader not enabled - using SECVID_TRUST_CNTL=
+ instead\n");
+> +               gpu_write(gpu, REG_A6XX_RBBM_SECVID_TRUST_CNTL, 0x0);
+> +               ret =3D 0;
+> +       } else {
+> +               return ret;
+> +       }
+> +
+> +       /*
+> +        * GMEM_PROTECT register should be programmed after GPU is transi=
+tioned to
+> +        * non-secure mode
+> +        */
+> +       a8xx_write_pipe(gpu, PIPE_BR, REG_A8XX_RB_GC_GMEM_PROTECT, gmem_p=
+rotect);
+> +       WARN_ON(!gmem_protect);
+> +
+> +       /* Clear aperture */
+> +       a8xx_aperture_set(gpu, 0);
+> +
+> +       /* Enable hardware clockgating */
+> +       a8xx_set_hwcg(gpu, true);
+> +out:
+> +       /*
+> +        * Tell the GMU that we are done touching the GPU and it can star=
+t power
+> +        * management
+> +        */
+> +       a6xx_gmu_clear_oob(&a6xx_gpu->gmu, GMU_OOB_GPU_SET);
+> +
+> +       return ret;
+> +}
+> +
+> +int a8xx_hw_init(struct msm_gpu *gpu)
+> +{
+> +       struct adreno_gpu *adreno_gpu =3D to_adreno_gpu(gpu);
+> +       struct a6xx_gpu *a6xx_gpu =3D to_a6xx_gpu(adreno_gpu);
+> +       int ret;
+> +
+> +       mutex_lock(&a6xx_gpu->gmu.lock);
+> +       ret =3D hw_init(gpu);
+> +       mutex_unlock(&a6xx_gpu->gmu.lock);
+> +
+> +       return ret;
+> +}
+> +
+> +static void a8xx_dump(struct msm_gpu *gpu)
+> +{
+> +       DRM_DEV_INFO(&gpu->pdev->dev, "status:   %08x\n",
+> +                       gpu_read(gpu, REG_A8XX_RBBM_STATUS));
+> +       adreno_dump(gpu);
+> +}
+> +
+> +void a8xx_recover(struct msm_gpu *gpu)
+> +{
+> +       struct adreno_gpu *adreno_gpu =3D to_adreno_gpu(gpu);
+> +       struct a6xx_gpu *a6xx_gpu =3D to_a6xx_gpu(adreno_gpu);
+> +       struct a6xx_gmu *gmu =3D &a6xx_gpu->gmu;
+> +       int i, active_submits;
+> +
+> +       adreno_dump_info(gpu);
+> +
+> +       for (i =3D 0; i < 4; i++)
+> +               DRM_DEV_INFO(&gpu->pdev->dev, "CP_SCRATCH_REG%d: %u\n", i=
+,
+> +                       gpu_read(gpu, REG_A8XX_CP_SCRATCH_GLOBAL(i)));
+> +
+> +       if (hang_debug)
+> +               a8xx_dump(gpu);
+> +
+> +       /*
+> +        * To handle recovery specific sequences during the rpm suspend w=
+e are
+> +        * about to trigger
+> +        */
+> +       a6xx_gpu->hung =3D true;
+> +
+> +       /* Halt SQE first */
+> +       gpu_write(gpu, REG_A8XX_CP_SQE_CNTL, 3);
+> +
+> +       pm_runtime_dont_use_autosuspend(&gpu->pdev->dev);
+> +
+> +       /* active_submit won't change until we make a submission */
+> +       mutex_lock(&gpu->active_lock);
+> +       active_submits =3D gpu->active_submits;
+> +
+> +       /*
+> +        * Temporarily clear active_submits count to silence a WARN() in =
+the
+> +        * runtime suspend cb
+> +        */
+> +       gpu->active_submits =3D 0;
+> +
+> +       reinit_completion(&gmu->pd_gate);
+> +       dev_pm_genpd_add_notifier(gmu->cxpd, &gmu->pd_nb);
+> +       dev_pm_genpd_synced_poweroff(gmu->cxpd);
+> +
+> +       /* Drop the rpm refcount from active submits */
+> +       if (active_submits)
+> +               pm_runtime_put(&gpu->pdev->dev);
+> +
+> +       /* And the final one from recover worker */
+> +       pm_runtime_put_sync(&gpu->pdev->dev);
+> +
+> +       if (!wait_for_completion_timeout(&gmu->pd_gate, msecs_to_jiffies(=
+1000)))
+> +               DRM_DEV_ERROR(&gpu->pdev->dev, "cx gdsc didn't collapse\n=
+");
+> +
+> +       dev_pm_genpd_remove_notifier(gmu->cxpd);
+> +
+> +       pm_runtime_use_autosuspend(&gpu->pdev->dev);
+> +
+> +       if (active_submits)
+> +               pm_runtime_get(&gpu->pdev->dev);
+> +
+> +       pm_runtime_get_sync(&gpu->pdev->dev);
+> +
+> +       gpu->active_submits =3D active_submits;
+> +       mutex_unlock(&gpu->active_lock);
+> +
+> +       msm_gpu_hw_init(gpu);
+> +       a6xx_gpu->hung =3D false;
+> +}
+> +
+> +static const char *a8xx_uche_fault_block(struct msm_gpu *gpu, u32 mid)
+> +{
+> +       static const char * const uche_clients[] =3D {
+> +               "BR_VFD", "BR_SP", "BR_VSC", "BR_VPC", "BR_HLSQ", "BR_PC"=
+, "BR_LRZ", "BR_TP",
+> +               "BV_VFD", "BV_SP", "BV_VSC", "BV_VPC", "BV_HLSQ", "BV_PC"=
+, "BV_LRZ", "BV_TP",
+> +               "STCHE",
+> +       };
+> +       static const char * const uche_clients_lpac[] =3D {
+> +               "-", "SP_LPAC", "-", "-", "HLSQ_LPAC", "-", "-", "TP_LPAC=
+",
+> +       };
+> +       u32 val;
+> +
+> +       /*
+> +        * The source of the data depends on the mid ID read from FSYNR1.
+> +        * and the client ID read from the UCHE block
+> +        */
+> +       val =3D gpu_read(gpu, REG_A8XX_UCHE_CLIENT_PF);
+> +
+> +       val &=3D GENMASK(6, 0);
+> +
+> +       /* mid=3D3 refers to BR or BV */
+> +       if (mid =3D=3D 3) {
+> +               if (val < ARRAY_SIZE(uche_clients))
+> +                       return uche_clients[val];
+> +               else
+> +                       return "UCHE";
+> +       }
+> +
+> +       /* mid=3D8 refers to LPAC */
+> +       if (mid =3D=3D 8) {
+> +               if (val < ARRAY_SIZE(uche_clients_lpac))
+> +                       return uche_clients_lpac[val];
+> +               else
+> +                       return "UCHE_LPAC";
+> +       }
+> +
+> +       return "Unknown";
+> +}
+> +
+> +static const char *a8xx_fault_block(struct msm_gpu *gpu, u32 id)
+> +{
+> +       switch (id) {
+> +       case 0x0:
+> +               return "CP";
+> +       case 0x1:
+> +               return "UCHE: Unknown";
+> +       case 0x2:
+> +               return "UCHE_LPAC: Unknown";
+> +       case 0x3:
+> +       case 0x8:
+> +               return a8xx_uche_fault_block(gpu, id);
+> +       case 0x4:
+> +               return "CCU";
+> +       case 0x5:
+> +               return "Flag cache";
+> +       case 0x6:
+> +               return "PREFETCH";
+> +       case 0x7:
+> +               return "GMU";
+> +       case 0x9:
+> +               return "UCHE_HPAC";
+> +       }
+> +
+> +       return "Unknown";
+> +}
+> +
+> +int a8xx_fault_handler(void *arg, unsigned long iova, int flags, void *d=
+ata)
+> +{
+> +       struct msm_gpu *gpu =3D arg;
+> +       struct adreno_smmu_fault_info *info =3D data;
+> +       const char *block =3D "unknown";
+> +
+> +       u32 scratch[] =3D {
+> +                       gpu_read(gpu, REG_A8XX_CP_SCRATCH_GLOBAL(0)),
+> +                       gpu_read(gpu, REG_A8XX_CP_SCRATCH_GLOBAL(1)),
+> +                       gpu_read(gpu, REG_A8XX_CP_SCRATCH_GLOBAL(2)),
+> +                       gpu_read(gpu, REG_A8XX_CP_SCRATCH_GLOBAL(3)),
+> +       };
+> +
+> +       if (info)
+> +               block =3D a8xx_fault_block(gpu, info->fsynr1 & 0xff);
+> +
+> +       return adreno_fault_handler(gpu, iova, flags, info, block, scratc=
+h);
+> +}
+> +
+> +static void a8xx_cp_hw_err_irq(struct msm_gpu *gpu)
+> +{
+> +       struct adreno_gpu *adreno_gpu =3D to_adreno_gpu(gpu);
+> +       struct a6xx_gpu *a6xx_gpu =3D to_a6xx_gpu(adreno_gpu);
+> +       u32 slice =3D a8xx_get_first_slice(a6xx_gpu);
+> +       u32 status =3D gpu_read(gpu, REG_A8XX_CP_INTERRUPT_STATUS_GLOBAL)=
+;
+> +       u32 hw_fault_mask =3D GENMASK(6, 0);
+> +       u32 sw_fault_mask =3D GENMASK(22, 16);
+> +       enum adreno_pipe pipe;
+> +       int i;
+> +
+> +       dev_err_ratelimited(&gpu->pdev->dev, "CP Fault Global INT status:=
+ 0x%x\n", status);
+> +
+> +       switch (status) {
+> +       case A8XX_CP_GLOBAL_INT_MASK_HWFAULTBR:
+> +       case A8XX_CP_GLOBAL_INT_MASK_SWFAULTBR:
+> +               pipe =3D PIPE_BR;
+> +               break;
+> +       case A8XX_CP_GLOBAL_INT_MASK_HWFAULTBV:
+> +       case A8XX_CP_GLOBAL_INT_MASK_SWFAULTBV:
+> +               pipe =3D PIPE_BV;
+> +               break;
+> +       case A8XX_CP_GLOBAL_INT_MASK_HWFAULTLPAC:
+> +       case A8XX_CP_GLOBAL_INT_MASK_SWFAULTLPAC:
+> +               pipe =3D PIPE_LPAC;
+> +               break;
+> +       case A8XX_CP_GLOBAL_INT_MASK_HWFAULTAQE0:
+> +       case A8XX_CP_GLOBAL_INT_MASK_SWFAULTAQE0:
+> +               pipe =3D PIPE_AQE0;
+> +               break;
+> +       case A8XX_CP_GLOBAL_INT_MASK_HWFAULTAQE1:
+> +       case A8XX_CP_GLOBAL_INT_MASK_SWFAULTAQE1:
+> +               pipe =3D PIPE_AQE1;
+> +               break;
+> +       case A8XX_CP_GLOBAL_INT_MASK_HWFAULTDDEBR:
+> +       case A8XX_CP_GLOBAL_INT_MASK_SWFAULTDDEBR:
+> +               pipe =3D PIPE_DDE_BR;
+> +               break;
+> +       case A8XX_CP_GLOBAL_INT_MASK_HWFAULTDDEBV:
+> +       case A8XX_CP_GLOBAL_INT_MASK_SWFAULTDDEBV:
+> +               pipe =3D PIPE_DDE_BV;
+> +               break;
+> +       default:
+> +               dev_err_ratelimited(&gpu->pdev->dev, "CP Fault Unknown pi=
+pe\n");
+> +               return;
+> +       }
+> +
+> +       if (hw_fault_mask & status) {
+> +               status =3D a8xx_read_pipe_slice(gpu, pipe, slice, REG_A8X=
+X_CP_HW_FAULT_STATUS_PIPE);
+> +               dev_err_ratelimited(&gpu->pdev->dev,
+> +                               "CP HW FAULT pipe: %u status: 0x%x\n", pi=
+pe, status);
+> +               /* Clear aperture */
+> +               a8xx_aperture_set(gpu, 0);
+> +               return;
+> +       }
+> +
+> +       if (sw_fault_mask & status) {
+> +               status =3D a8xx_read_pipe_slice(gpu, pipe, slice, REG_A8X=
+X_CP_INTERRUPT_STATUS_PIPE);
+> +               dev_err_ratelimited(&gpu->pdev->dev,
+> +                               "CP SW FAULT pipe: %u status: 0x%x\n", pi=
+pe, status);
+> +
+> +               if (status & BIT(8)) {
+> +                       a8xx_write_pipe(gpu, pipe, REG_A8XX_CP_SQE_STAT_A=
+DDR_PIPE, 1);
+> +                       status =3D a8xx_read_pipe_slice(gpu, pipe, slice,
+> +                                       REG_A8XX_CP_SQE_STAT_DATA_PIPE);
+> +                       dev_err_ratelimited(&gpu->pdev->dev,
+> +                                       "CP Opcode error, opcode=3D0x%x\n=
+", status);
+> +               }
+> +
+> +               for (i =3D 0; i < 4; i++)
+> +                       DRM_DEV_INFO(&gpu->pdev->dev, "CP_SCRATCH_REG%d: =
+%u\n", i,
+> +                               gpu_read(gpu, REG_A8XX_CP_SCRATCH_GLOBAL(=
+i)));
+> +
+> +               for (pipe =3D PIPE_BR; pipe <=3D PIPE_DDE_BV; pipe++) {
+> +                       for (i =3D 0; i < 5; i++)
+> +                               DRM_DEV_INFO(&gpu->pdev->dev, "CP_SCRATCH=
+_PIPE_REG%d: %u\n", i,
+> +                                       a8xx_read_pipe(gpu, pipe, REG_A8X=
+X_CP_SCRATCH_PIPE(i)));
+> +               }
+> +
+> +               /* Clear aperture */
+> +               a8xx_aperture_set(gpu, 0);
+> +               return;
+> +       }
+> +}
+> +
+> +static u32 gpu_periph_read(struct msm_gpu *gpu, enum adreno_pipe pipe, u=
+32 dbg_offset)
+> +{
+> +       a8xx_write_pipe(gpu, pipe, REG_A8XX_CP_SQE_UCODE_DBG_ADDR_PIPE, d=
+bg_offset);
+> +
+> +       return a8xx_read_pipe(gpu, pipe, REG_A8XX_CP_SQE_UCODE_DBG_DATA_P=
+IPE);
+> +}
+> +
+> +static u64 gpu_periph_read64(struct msm_gpu *gpu, enum adreno_pipe pipe,=
+ u32 dbg_offset)
+> +{
+> +       u64 lo, hi;
+> +
+> +       lo =3D gpu_periph_read(gpu, pipe, dbg_offset);
+> +       hi =3D gpu_periph_read(gpu, pipe, dbg_offset + 1);
+> +
+> +       return (hi << 32) | lo;
+> +}
+> +
+> +#define CP_PERIPH_IB1_BASE_LO   0x7005
+> +#define CP_PERIPH_IB1_BASE_HI   0x7006
+> +#define CP_PERIPH_IB1_SIZE      0x7007
+> +#define CP_PERIPH_IB1_OFFSET    0x7008
+> +#define CP_PERIPH_IB2_BASE_LO   0x7009
+> +#define CP_PERIPH_IB2_BASE_HI   0x700a
+> +#define CP_PERIPH_IB2_SIZE      0x700b
+> +#define CP_PERIPH_IB2_OFFSET    0x700c
+> +#define CP_PERIPH_IB3_BASE_LO   0x700d
+> +#define CP_PERIPH_IB3_BASE_HI   0x700e
+> +#define CP_PERIPH_IB3_SIZE      0x700f
+> +#define CP_PERIPH_IB3_OFFSET    0x7010
+> +
+> +static void a8xx_fault_detect_irq(struct msm_gpu *gpu)
+> +{
+> +       struct adreno_gpu *adreno_gpu =3D to_adreno_gpu(gpu);
+> +       struct a6xx_gpu *a6xx_gpu =3D to_a6xx_gpu(adreno_gpu);
+> +       struct msm_ringbuffer *ring =3D gpu->funcs->active_ring(gpu);
+> +
+> +       /*
+> +        * If stalled on SMMU fault, we could trip the GPU's hang detecti=
+on,
+> +        * but the fault handler will trigger the devcore dump, and we wa=
+nt
+> +        * to otherwise resume normally rather than killing the submit, s=
+o
+> +        * just bail.
+> +        */
+> +       if (gpu_read(gpu, REG_A8XX_RBBM_MISC_STATUS) & A8XX_RBBM_MISC_STA=
+TUS_SMMU_STALLED_ON_FAULT)
+> +               return;
+> +
+> +       /*
+> +        * Force the GPU to stay on until after we finish
+> +        * collecting information
+> +        */
+> +       if (!adreno_has_gmu_wrapper(adreno_gpu))
+> +               gmu_write(&a6xx_gpu->gmu, REG_A6XX_GMU_GMU_PWR_COL_KEEPAL=
+IVE, 1);
+> +
+> +       a8xx_aperture_set(gpu, PIPE_BR);
+> +
+> +       DRM_DEV_ERROR(&gpu->pdev->dev,
+> +               "gpu fault ring %d fence %x status %8.8X gfx_status %8.8X=
+\n",
+> +               ring ? ring->id : -1, ring ? ring->fctx->last_fence : 0,
+> +               gpu_read(gpu, REG_A8XX_RBBM_STATUS), gpu_read(gpu, REG_A8=
+XX_RBBM_GFX_STATUS));
+> +
+> +       DRM_DEV_ERROR(&gpu->pdev->dev,
+> +               "BR: status %8.8X rb %4.4x/%4.4x ib1 %16.16llX/%4.4x ib2 =
+%16.16llX/%4.4x ib3 %16.16llX/%4.4x\n",
+> +               gpu_read(gpu, REG_A8XX_RBBM_GFX_BR_STATUS),
+> +               gpu_read(gpu, REG_A6XX_CP_RB_RPTR),
+> +               gpu_read(gpu, REG_A6XX_CP_RB_WPTR),
+> +               gpu_periph_read64(gpu, PIPE_BR, CP_PERIPH_IB1_BASE_LO),
+> +               gpu_periph_read(gpu, PIPE_BR, CP_PERIPH_IB1_OFFSET),
+> +               gpu_periph_read64(gpu, PIPE_BR, CP_PERIPH_IB2_BASE_LO),
+> +               gpu_periph_read(gpu, PIPE_BR, CP_PERIPH_IB2_OFFSET),
+> +               gpu_periph_read64(gpu, PIPE_BR, CP_PERIPH_IB3_BASE_LO),
+> +               gpu_periph_read(gpu, PIPE_BR, CP_PERIPH_IB3_OFFSET));
+> +
+> +       DRM_DEV_ERROR(&gpu->pdev->dev,
+> +               "BV: status %8.8X rb %4.4x/%4.4x ib1 %16.16llX/%4.4x ib2 =
+%16.16llX/%4.4x ib3 %16.16llX/%4.4x\n",
+> +               gpu_read(gpu, REG_A8XX_RBBM_GFX_BV_STATUS),
+> +               gpu_read(gpu, REG_A8XX_CP_RB_RPTR_BV),
+> +               gpu_read(gpu, REG_A6XX_CP_RB_WPTR),
+> +               gpu_periph_read64(gpu, PIPE_BV, CP_PERIPH_IB1_BASE_LO),
+> +               gpu_periph_read(gpu, PIPE_BV, CP_PERIPH_IB1_OFFSET),
+> +               gpu_periph_read64(gpu, PIPE_BV, CP_PERIPH_IB2_BASE_LO),
+> +               gpu_periph_read(gpu, PIPE_BV, CP_PERIPH_IB2_OFFSET),
+> +               gpu_periph_read64(gpu, PIPE_BV, CP_PERIPH_IB3_BASE_LO),
+> +               gpu_periph_read(gpu, PIPE_BV, CP_PERIPH_IB3_OFFSET));
+> +
+> +       a8xx_aperture_set(gpu, 0);
+> +
+> +       /* Turn off the hangcheck timer to keep it from bothering us */
+> +       timer_delete(&gpu->hangcheck_timer);
+> +
+> +       kthread_queue_work(gpu->worker, &gpu->recover_work);
+> +}
+> +
+> +static void a8xx_sw_fuse_violation_irq(struct msm_gpu *gpu)
+> +{
+> +       u32 status;
+> +
+> +       status =3D gpu_read(gpu, REG_A8XX_RBBM_SW_FUSE_INT_STATUS);
+> +       gpu_write(gpu, REG_A8XX_RBBM_SW_FUSE_INT_MASK, 0);
+> +
+> +       dev_err_ratelimited(&gpu->pdev->dev, "SW fuse violation status=3D=
+%8.8x\n", status);
+> +
+> +       /*
+> +        * Ignore FASTBLEND violations, because the HW will silently fall=
+ back
+> +        * to legacy blending.
+> +        */
+> +       if (status & (A7XX_CX_MISC_SW_FUSE_VALUE_RAYTRACING |
+> +                     A7XX_CX_MISC_SW_FUSE_VALUE_LPAC)) {
+> +               timer_delete(&gpu->hangcheck_timer);
+> +
+> +               kthread_queue_work(gpu->worker, &gpu->recover_work);
+> +       }
+> +}
+> +
+> +irqreturn_t a8xx_irq(struct msm_gpu *gpu)
+> +{
+> +       struct msm_drm_private *priv =3D gpu->dev->dev_private;
+> +       u32 status =3D gpu_read(gpu, REG_A8XX_RBBM_INT_0_STATUS);
+> +
+> +       gpu_write(gpu, REG_A8XX_RBBM_INT_CLEAR_CMD, status);
+> +
+> +       if (priv->disable_err_irq)
+> +               status &=3D A6XX_RBBM_INT_0_MASK_CP_CACHE_FLUSH_TS;
+> +
+> +       if (status & A6XX_RBBM_INT_0_MASK_RBBM_HANG_DETECT)
+> +               a8xx_fault_detect_irq(gpu);
+> +
+> +       if (status & A6XX_RBBM_INT_0_MASK_CP_AHB_ERROR) {
+> +               u32 rl0, rl1;
+> +
+> +               rl0 =3D gpu_read(gpu, REG_A8XX_CP_RL_ERROR_DETAILS_0);
+> +               rl1 =3D gpu_read(gpu, REG_A8XX_CP_RL_ERROR_DETAILS_1);
+> +               dev_err_ratelimited(&gpu->pdev->dev,
+> +                               "CP | AHB bus error RL_ERROR_1: %x, RL_ER=
+ROR_2: %x\n", rl0, rl1);
+> +       }
+> +
+> +       if (status & A6XX_RBBM_INT_0_MASK_CP_HW_ERROR)
+> +               a8xx_cp_hw_err_irq(gpu);
+> +
+> +       if (status & A6XX_RBBM_INT_0_MASK_RBBM_ATB_ASYNCFIFO_OVERFLOW)
+> +               dev_err_ratelimited(&gpu->pdev->dev, "RBBM | ATB ASYNC ov=
+erflow\n");
+> +
+> +       if (status & A6XX_RBBM_INT_0_MASK_RBBM_ATB_BUS_OVERFLOW)
+> +               dev_err_ratelimited(&gpu->pdev->dev, "RBBM | ATB bus over=
+flow\n");
+> +
+> +       if (status & A6XX_RBBM_INT_0_MASK_UCHE_OOB_ACCESS)
+> +               dev_err_ratelimited(&gpu->pdev->dev, "UCHE | Out of bound=
+s access\n");
+> +
+> +       if (status & A6XX_RBBM_INT_0_MASK_UCHE_TRAP_INTR)
+> +               dev_err_ratelimited(&gpu->pdev->dev, "UCHE | Trap interru=
+pt\n");
+> +
+> +       if (status & A6XX_RBBM_INT_0_MASK_SWFUSEVIOLATION)
+> +               a8xx_sw_fuse_violation_irq(gpu);
+> +
+> +       if (status & A6XX_RBBM_INT_0_MASK_CP_CACHE_FLUSH_TS) {
+> +               msm_gpu_retire(gpu);
+> +               a6xx_preempt_trigger(gpu);
+> +       }
+> +
+> +       if (status & A6XX_RBBM_INT_0_MASK_CP_SW)
+> +               a6xx_preempt_irq(gpu);
+> +
+> +       return IRQ_HANDLED;
+> +}
+> +
+> +void a8xx_llc_activate(struct a6xx_gpu *a6xx_gpu)
+> +{
+> +       struct adreno_gpu *adreno_gpu =3D &a6xx_gpu->base;
+> +       struct msm_gpu *gpu =3D &adreno_gpu->base;
+> +
+> +       if (!llcc_slice_activate(a6xx_gpu->llc_slice)) {
+> +               u32 gpu_scid =3D llcc_get_slice_id(a6xx_gpu->llc_slice);
+> +
+> +               gpu_scid &=3D GENMASK(5, 0);
+> +
+> +               gpu_write(gpu, REG_A6XX_GBIF_SCACHE_CNTL1,
+> +                         FIELD_PREP(GENMASK(29, 24), gpu_scid) |
+> +                         FIELD_PREP(GENMASK(23, 18), gpu_scid) |
+> +                         FIELD_PREP(GENMASK(17, 12), gpu_scid) |
+> +                         FIELD_PREP(GENMASK(11, 6), gpu_scid)  |
+> +                         FIELD_PREP(GENMASK(5, 0), gpu_scid));
+> +
+> +               gpu_write(gpu, REG_A6XX_GBIF_SCACHE_CNTL0,
+> +                         FIELD_PREP(GENMASK(27, 22), gpu_scid) |
+> +                         FIELD_PREP(GENMASK(21, 16), gpu_scid) |
+> +                         FIELD_PREP(GENMASK(15, 10), gpu_scid) |
+> +                         BIT(8));
+> +       }
+> +
+> +       llcc_slice_activate(a6xx_gpu->htw_llc_slice);
+> +}
+> +
+> +int a8xx_gpu_feature_probe(struct msm_gpu *gpu)
+> +{
+> +       struct adreno_gpu *adreno_gpu =3D to_adreno_gpu(gpu);
+> +       struct a6xx_gpu *a6xx_gpu =3D to_a6xx_gpu(adreno_gpu);
+> +       u32 fuse_val;
+> +       int ret;
+> +
+> +       /*
+> +        * Assume that if qcom scm isn't available, that whatever
+> +        * replacement allows writing the fuse register ourselves.
+> +        * Users of alternative firmware need to make sure this
+> +        * register is writeable or indicate that it's not somehow.
+> +        * Print a warning because if you mess this up you're about to
+> +        * crash horribly.
+> +        */
+> +       if (!qcom_scm_is_available()) {
+> +               dev_warn_once(gpu->dev->dev,
+> +                       "SCM is not available, poking fuse register\n");
+> +               a6xx_llc_write(a6xx_gpu, REG_A7XX_CX_MISC_SW_FUSE_VALUE,
+> +                       A7XX_CX_MISC_SW_FUSE_VALUE_RAYTRACING |
+> +                       A7XX_CX_MISC_SW_FUSE_VALUE_FASTBLEND |
+> +                       A7XX_CX_MISC_SW_FUSE_VALUE_LPAC);
+> +               adreno_gpu->has_ray_tracing =3D true;
+> +               return 0;
+> +       }
+> +
+> +       ret =3D qcom_scm_gpu_init_regs(QCOM_SCM_GPU_ALWAYS_EN_REQ |
+> +                                    QCOM_SCM_GPU_TSENSE_EN_REQ);
+> +       if (ret)
+> +               return ret;
+> +
+> +       /*
+> +        * On a750 raytracing may be disabled by the firmware, find out
+> +        * whether that's the case. The scm call above sets the fuse
+> +        * register.
+> +        */
+> +       fuse_val =3D a6xx_llc_read(a6xx_gpu,
+> +                                REG_A7XX_CX_MISC_SW_FUSE_VALUE);
+> +       adreno_gpu->has_ray_tracing =3D
+> +               !!(fuse_val & A7XX_CX_MISC_SW_FUSE_VALUE_RAYTRACING);
+> +
+> +       return 0;
+> +}
+> +
+> +
+> +#define GBIF_CLIENT_HALT_MASK          BIT(0)
+> +#define GBIF_ARB_HALT_MASK             BIT(1)
+> +#define VBIF_XIN_HALT_CTRL0_MASK       GENMASK(3, 0)
+> +#define VBIF_RESET_ACK_MASK            0xF0
+> +#define GPR0_GBIF_HALT_REQUEST         0x1E0
+> +
+> +void a8xx_bus_clear_pending_transactions(struct adreno_gpu *adreno_gpu, =
+bool gx_off)
+> +{
+> +       struct msm_gpu *gpu =3D &adreno_gpu->base;
+> +
+> +       if (gx_off) {
+> +               /* Halt the gx side of GBIF */
+> +               gpu_write(gpu, REG_A8XX_RBBM_GBIF_HALT, 1);
+> +               spin_until(gpu_read(gpu, REG_A8XX_RBBM_GBIF_HALT_ACK) & 1=
+);
+> +       }
+> +
+> +       /* Halt new client requests on GBIF */
+> +       gpu_write(gpu, REG_A6XX_GBIF_HALT, GBIF_CLIENT_HALT_MASK);
+> +       spin_until((gpu_read(gpu, REG_A6XX_GBIF_HALT_ACK) &
+> +                       (GBIF_CLIENT_HALT_MASK)) =3D=3D GBIF_CLIENT_HALT_=
+MASK);
+> +
+> +       /* Halt all AXI requests on GBIF */
+> +       gpu_write(gpu, REG_A6XX_GBIF_HALT, GBIF_ARB_HALT_MASK);
+> +       spin_until((gpu_read(gpu,  REG_A6XX_GBIF_HALT_ACK) &
+> +                       (GBIF_ARB_HALT_MASK)) =3D=3D GBIF_ARB_HALT_MASK);
+> +
+> +       /* The GBIF halt needs to be explicitly cleared */
+> +       gpu_write(gpu, REG_A6XX_GBIF_HALT, 0x0);
+> +}
+> +
+> +int a8xx_gmu_get_timestamp(struct msm_gpu *gpu, uint64_t *value)
+> +{
+> +       struct adreno_gpu *adreno_gpu =3D to_adreno_gpu(gpu);
+> +       struct a6xx_gpu *a6xx_gpu =3D to_a6xx_gpu(adreno_gpu);
+> +
+> +       mutex_lock(&a6xx_gpu->gmu.lock);
+> +
+> +       /* Force the GPU power on so we can read this register */
+> +       a6xx_gmu_set_oob(&a6xx_gpu->gmu, GMU_OOB_PERFCOUNTER_SET);
+> +
+> +       *value =3D gpu_read64(gpu, REG_A8XX_CP_ALWAYS_ON_COUNTER);
+> +
+> +       a6xx_gmu_clear_oob(&a6xx_gpu->gmu, GMU_OOB_PERFCOUNTER_SET);
+> +
+> +       mutex_unlock(&a6xx_gpu->gmu.lock);
+> +
+> +       return 0;
+> +}
+> +
+> +u64 a8xx_gpu_busy(struct msm_gpu *gpu, unsigned long *out_sample_rate)
+> +{
+> +       struct adreno_gpu *adreno_gpu =3D to_adreno_gpu(gpu);
+> +       struct a6xx_gpu *a6xx_gpu =3D to_a6xx_gpu(adreno_gpu);
+> +       u64 busy_cycles;
+> +
+> +       /* 19.2MHz */
+> +       *out_sample_rate =3D 19200000;
+> +
+> +       busy_cycles =3D gmu_read64(&a6xx_gpu->gmu,
+> +                       REG_A8XX_GMU_CX_GMU_POWER_COUNTER_XOCLK_0_L,
+> +                       REG_A8XX_GMU_CX_GMU_POWER_COUNTER_XOCLK_0_H);
+> +
+> +       return busy_cycles;
+> +}
+> +
+> +bool a8xx_progress(struct msm_gpu *gpu, struct msm_ringbuffer *ring)
+> +{
+> +       return true;
+> +}
+> diff --git a/drivers/gpu/drm/msm/adreno/adreno_gpu.h b/drivers/gpu/drm/ms=
+m/adreno/adreno_gpu.h
+> index 9831401c3bc865b803c2f9759d5e2ffcd79d19f8..6a2157f31122ba0c2f2a7005c=
+98e3e4f1ada6acc 100644
+> --- a/drivers/gpu/drm/msm/adreno/adreno_gpu.h
+> +++ b/drivers/gpu/drm/msm/adreno/adreno_gpu.h
+> @@ -90,6 +90,13 @@ struct adreno_reglist {
+>         u32 value;
+>  };
+>
+> +/* Reglist with pipe information */
+> +struct adreno_reglist_pipe {
+> +       u32 offset;
+> +       u32 value;
+> +       u32 pipe;
 > +};
 > +
->  static inline void pt_iommu_deinit(struct pt_iommu *iommu_table)
->  {
->         /*
-> @@ -120,6 +174,10 @@ struct pt_iommu_cfg {
->  #define IOMMU_PROTOTYPES(fmt)                                           =
-       \
->         phys_addr_t pt_iommu_##fmt##_iova_to_phys(struct iommu_domain *do=
-main, \
->                                                   dma_addr_t iova);      =
-      \
-> +       int pt_iommu_##fmt##_map_pages(struct iommu_domain *domain,      =
-      \
-> +                                      unsigned long iova, phys_addr_t pa=
-ddr,  \
-> +                                      size_t pgsize, size_t pgcount,    =
-      \
-> +                                      int prot, gfp_t gfp, size_t *mappe=
-d);   \
->         size_t pt_iommu_##fmt##_unmap_pages(                             =
-      \
->                 struct iommu_domain *domain, unsigned long iova,         =
-      \
->                 size_t pgsize, size_t pgcount,                           =
-      \
-> @@ -142,6 +200,7 @@ struct pt_iommu_cfg {
->   */
->  #define IOMMU_PT_DOMAIN_OPS(fmt)                        \
->         .iova_to_phys =3D &pt_iommu_##fmt##_iova_to_phys, \
-> +       .map_pages =3D &pt_iommu_##fmt##_map_pages,       \
->         .unmap_pages =3D &pt_iommu_##fmt##_unmap_pages
+>  struct adreno_speedbin {
+>         uint16_t fuse;
+>         uint16_t speedbin;
+> diff --git a/drivers/gpu/drm/msm/registers/adreno/a6xx.xml b/drivers/gpu/=
+drm/msm/registers/adreno/a6xx.xml
+> index ddde2e03b748f447b5e57571e2b04c68f8f2efc2..c3a202c8dce65d414c89bf76f=
+1cb458b206b4eca 100644
+> --- a/drivers/gpu/drm/msm/registers/adreno/a6xx.xml
+> +++ b/drivers/gpu/drm/msm/registers/adreno/a6xx.xml
+> @@ -4876,7 +4876,6 @@ by a particular renderpass/blit.
+>  <domain name=3D"A6XX_CX_MISC" width=3D"32" prefix=3D"variant" varset=3D"=
+chip">
+>         <reg32 offset=3D"0x0001" name=3D"SYSTEM_CACHE_CNTL_0"/>
+>         <reg32 offset=3D"0x0002" name=3D"SYSTEM_CACHE_CNTL_1"/>
+> -       <reg32 offset=3D"0x0087" name=3D"SLICE_ENABLE_FINAL" variants=3D"=
+A8XX-"/>
+>         <reg32 offset=3D"0x0039" name=3D"CX_MISC_TCM_RET_CNTL" variants=
+=3D"A7XX-"/>
+>         <reg32 offset=3D"0x0087" name=3D"CX_MISC_SLICE_ENABLE_FINAL" vari=
+ants=3D"A8XX"/>
+>         <reg32 offset=3D"0x0400" name=3D"CX_MISC_SW_FUSE_VALUE" variants=
+=3D"A7XX-">
+> diff --git a/drivers/gpu/drm/msm/registers/adreno/a6xx_gmu.xml b/drivers/=
+gpu/drm/msm/registers/adreno/a6xx_gmu.xml
+> index 5dce7934056dd6472c368309b4894f0ed4a4d960..c4e00b1263cda65dce89c2f16=
+860e5bf6f1c6244 100644
+> --- a/drivers/gpu/drm/msm/registers/adreno/a6xx_gmu.xml
+> +++ b/drivers/gpu/drm/msm/registers/adreno/a6xx_gmu.xml
+> @@ -60,6 +60,7 @@ xsi:schemaLocation=3D"https://gitlab.freedesktop.org/fr=
+eedreno/ rules-fd.xsd">
+>         <reg32 offset=3D"0x1f400" name=3D"GMU_ICACHE_CONFIG"/>
+>         <reg32 offset=3D"0x1f401" name=3D"GMU_DCACHE_CONFIG"/>
+>         <reg32 offset=3D"0x1f40f" name=3D"GMU_SYS_BUS_CONFIG"/>
+> +       <reg32 offset=3D"0x1f50b" name=3D"GMU_MRC_GBIF_QOS_CTRL"/>
+>         <reg32 offset=3D"0x1f800" name=3D"GMU_CM3_SYSRESET"/>
+>         <reg32 offset=3D"0x1f801" name=3D"GMU_CM3_BOOT_CONFIG"/>
+>         <reg32 offset=3D"0x1f81a" name=3D"GMU_CM3_FW_BUSY"/>
 >
->  /*
 > --
-> 2.43.0
+> 2.51.0
 >
->
-
-Reviewed-by: Samiullah Khawaja <skhawaja@google.com>
