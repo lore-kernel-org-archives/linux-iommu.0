@@ -1,131 +1,88 @@
-Received: from out30-118.freemail.mail.aliyun.com (out30-118.freemail.mail.aliyun.com [115.124.30.118])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB386205E02
-	for <iommu@lists.linux.dev>; Tue, 28 Oct 2025 13:46:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.118
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DD3B218ACC;
+	Tue, 28 Oct 2025 13:48:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761659220; cv=none; b=jIu7xcMgKOt1cX2mEIHDz2sAWVrtQdCUuL6g5MmZIzAgSbdSXShZydSf/t15eJyXZlPYWSNAw1LgkvQ8Dh+liHdiEih3qL8hg9QsbtLSxayGEPgAHWOX9yu1nehFvVA04Jvy823lzpwNhTdf+XtgyqJ+8LdyDR6CoYRLEaM0r9Y=
+	t=1761659307; cv=none; b=HmUzxMzYwo66jYnhTWku6C2LWzT+2eqXeBykTvY4zAQR7VwOv5kgditoOg47KvXsz2I7YzjKMUzgiJIyHgxhiy9jD4myTkIoRW8W49FpdlrgYJPMX7u04IyK/xhdMmRqg8elHiZiGE4SAMHy2xSjc/sT6FU/KuO24qqic1aRQT8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761659220; c=relaxed/simple;
-	bh=3Wa50ZqGT8eSNTFPzwHcDHhGPw3XmeC01Xuy33bOsgE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=XiiqCHbR4Q70K/ZbKrTP65niKeWjhwTyFijugOuvbtVziAQDh3/Tf/b83Zv4HsrsZCfpPT1unCFMEXKfZcWWW8BjEiNBoq8MhCsCfQmOR/Eh5Alc/+4iuagCdXo2oJqshHIhLhyYZh62ae/m5cAnahN3qjqJFCcJqGUofhsYGbk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=a4QvicBh; arc=none smtp.client-ip=115.124.30.118
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
+	s=arc-20240116; t=1761659307; c=relaxed/simple;
+	bh=G7qi5rvC9Ca8mwYeyrUYcrHvUOWw2LAZZygmude9OI0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=NcZ8idmzGbTXYnBUk3Wt0vwxFG9Smci8xrLajKHBIHKIfUIcU1oMBLN79cv53AaNiJzB5XMG8JtQFnfWBPzI35z7dHtqARRTX43IuxuqPx+yL+MC56Lg6p8vhz4t8lehMEYtXVmvpv632ljmQV1Sr5hq9Q2dc2UMJJZKehaPB3E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EtFqslrT; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="a4QvicBh"
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux.alibaba.com; s=default;
-	t=1761659214; h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
-	bh=SdP4P384sbs4h39646JsReKLjr8gZ9zv4XENPQNf9Lk=;
-	b=a4QvicBhKu7BrMaOW0kT0Dwui2BH/axotYbjhhLYIK2f0FBvkiEDY2yEy8ETyM1e0v8cCfuLtZjtug6WX2uf2MiFe/zsUPCh7z65Ya3IwctJcsOVQ/Vzv2uZ+PNN+K5lO3xGanvNfN6P+SppfRgGYeYswq1hgVZOuu47NKZdoxM=
-Received: from 30.246.176.102(mailfrom:xueshuai@linux.alibaba.com fp:SMTPD_---0WrCJu3H_1761659211 cluster:ay36)
-          by smtp.aliyun-inc.com;
-          Tue, 28 Oct 2025 21:46:52 +0800
-Message-ID: <0d95b8af-97e4-43b6-a35a-aa3ce153f0ee@linux.alibaba.com>
-Date: Tue, 28 Oct 2025 21:46:51 +0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EtFqslrT"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB7DEC4CEE7;
+	Tue, 28 Oct 2025 13:48:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1761659306;
+	bh=G7qi5rvC9Ca8mwYeyrUYcrHvUOWw2LAZZygmude9OI0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=EtFqslrTEIwU0Bu0hONlK7yuekEuZM+xv00UqPmQdRWjZ1EK6TlynFwreSv0L1GoO
+	 V0US9D1AmPSzNhGs5Gdv8892rgR6FN+elyOEqQaO5Mbqg6whyNHJI3BuG7g5mbFitS
+	 ZJVcHv3R9vUpWbKclpdXLC/R1c5RGa5HOtCGw9vR0NCewZj/2pl9cW8FgBzAfc2tON
+	 5xfAdA1jFKli4j99BR++D+E9FySLkEfNbUEv4QjjCPByUe9AKDFtdk7y/kOQS0KgyB
+	 5qbn4fRvbJROvh3OUIlEbc2/Nd9eSu9uK87avljtC3c7H4Dt2Yw4hG/UIj1c+sXJjK
+	 WL2PrEGWOq9+A==
+Date: Tue, 28 Oct 2025 08:51:24 -0500
+From: Bjorn Andersson <andersson@kernel.org>
+To: Abel Vesa <abel.vesa@linaro.org>
+Cc: Rob Clark <robin.clark@oss.qualcomm.com>, 
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Joerg Roedel <joro@8bytes.org>, iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu/arm-smmu-qcom: Add Glymur MDSS compatible
+Message-ID: <mnq4muqhkssqmvbjb6upkqhoag5r4dpfx5vmfgydcarffh6usf@kzyi7xikttpg>
+References: <20251028-iommu-arm-smmu-qcom-add-glymur-v1-1-73f8f884c9b4@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 9/9] vfio/pci: Add dma-buf export support for MMIO
- regions
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Leon Romanovsky <leon@kernel.org>,
- Alex Williamson <alex.williamson@redhat.com>,
- Leon Romanovsky <leonro@nvidia.com>,
- Andrew Morton <akpm@linux-foundation.org>,
- Bjorn Helgaas <bhelgaas@google.com>,
- =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
- dri-devel@lists.freedesktop.org, iommu@lists.linux.dev,
- Jens Axboe <axboe@kernel.dk>, Joerg Roedel <joro@8bytes.org>,
- kvm@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
- linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-media@vger.kernel.org, linux-mm@kvack.org, linux-pci@vger.kernel.org,
- Logan Gunthorpe <logang@deltatee.com>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Robin Murphy <robin.murphy@arm.com>, Sumit Semwal <sumit.semwal@linaro.org>,
- Vivek Kasireddy <vivek.kasireddy@intel.com>, Will Deacon <will@kernel.org>
-References: <cover.1760368250.git.leon@kernel.org>
- <72ecaa13864ca346797e342d23a7929562788148.1760368250.git.leon@kernel.org>
- <20251022125012.GB244727@nvidia.com>
- <3db524e7-b6ce-4652-8420-fdb4639ac73a@linux.alibaba.com>
- <20251027120904.GA896317@nvidia.com>
-From: Shuai Xue <xueshuai@linux.alibaba.com>
-In-Reply-To: <20251027120904.GA896317@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20251028-iommu-arm-smmu-qcom-add-glymur-v1-1-73f8f884c9b4@linaro.org>
 
-
-
-在 2025/10/27 20:09, Jason Gunthorpe 写道:
-> On Sun, Oct 26, 2025 at 03:55:04PM +0800, Shuai Xue wrote:
->>
->>
->> 在 2025/10/22 20:50, Jason Gunthorpe 写道:
->>> On Mon, Oct 13, 2025 at 06:26:11PM +0300, Leon Romanovsky wrote:
->>>> From: Leon Romanovsky <leonro@nvidia.com>
->>>>
->>>> Add support for exporting PCI device MMIO regions through dma-buf,
->>>> enabling safe sharing of non-struct page memory with controlled
->>>> lifetime management. This allows RDMA and other subsystems to import
->>>> dma-buf FDs and build them into memory regions for PCI P2P operations.
->>>>
->>>> The implementation provides a revocable attachment mechanism using
->>>> dma-buf move operations. MMIO regions are normally pinned as BARs
->>>> don't change physical addresses, but access is revoked when the VFIO
->>>> device is closed or a PCI reset is issued. This ensures kernel
->>>> self-defense against potentially hostile userspace.
->>>
->>> Let's enhance this:
->>>
->>> Currently VFIO can take MMIO regions from the device's BAR and map
->>> them into a PFNMAP VMA with special PTEs. This mapping type ensures
->>> the memory cannot be used with things like pin_user_pages(), hmm, and
->>> so on. In practice only the user process CPU and KVM can safely make
->>> use of these VMA. When VFIO shuts down these VMAs are cleaned by
->>> unmap_mapping_range() to prevent any UAF of the MMIO beyond driver
->>> unbind.
->>>
->>> However, VFIO type 1 has an insecure behavior where it uses
->>> follow_pfnmap_*() to fish a MMIO PFN out of a VMA and program it back
->>> into the IOMMU. This has a long history of enabling P2P DMA inside
->>> VMs, but has serious lifetime problems by allowing a UAF of the MMIO
->>> after the VFIO driver has been unbound.
->>
->> Hi, Jason,
->>
->> Can you elaborate on this more?
->>
->>  From my understanding of the VFIO type 1 implementation:
->>
->> - When a device is opened through VFIO type 1, it increments the
->>    device->refcount
->> - During unbind, the driver waits for this refcount to drop to zero via
->>    wait_for_completion(&device->comp)
->> - This should prevent the unbind() from completing while the device is
->>    still in use
->>
->> Given this refcount mechanism, I do not figure out how the UAF can
->> occur.
+On Tue, Oct 28, 2025 at 02:38:19PM +0200, Abel Vesa wrote:
+> Add the Glymur DPU compatible to clients compatible list, as it needs
+> the workarounds.
 > 
-> A second vfio device can be opened and then use follow_pfnmap_*() to
-> read the first vfio device's PTEs. There is no relationship betweent
-> the first and second VFIO devices, so once the first is unbound it
-> sails through the device->comp while the second device retains the PFN
-> in its type1 iommu_domain.
+> Signed-off-by: Abel Vesa <abel.vesa@linaro.org>
+
+Reviewed-by: Bjorn Andersson <andersson@kernel.org>
+
+Regards,
+Bjorn
+
+> ---
+> The compatible is documented here:
+> https://lore.kernel.org/r/20251027-glymur-display-v3-1-aa13055818ac@linaro.org
+> ---
+>  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> Jason
-
-I see.
-
-Thanks.
-
-Best Regard,
-Shuai
-
+> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> index 57c097e87613084ffdfbe685d4406a236d3b4b74..c21a401c71ebe768115364bf282dd324f8222109 100644
+> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> @@ -367,6 +367,7 @@ static int qcom_adreno_smmu_init_context(struct arm_smmu_domain *smmu_domain,
+>  static const struct of_device_id qcom_smmu_client_of_match[] __maybe_unused = {
+>  	{ .compatible = "qcom,adreno" },
+>  	{ .compatible = "qcom,adreno-gmu" },
+> +	{ .compatible = "qcom,glymur-mdss" },
+>  	{ .compatible = "qcom,mdp4" },
+>  	{ .compatible = "qcom,mdss" },
+>  	{ .compatible = "qcom,qcm2290-mdss" },
+> 
+> ---
+> base-commit: f7d2388eeec24966fc4d5cf32d706f0514f29ac5
+> change-id: 20251028-iommu-arm-smmu-qcom-add-glymur-7e953cd459a9
+> 
+> Best regards,
+> -- 
+> Abel Vesa <abel.vesa@linaro.org>
+> 
+> 
