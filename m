@@ -1,190 +1,101 @@
-Received: from DM1PR04CU001.outbound.protection.outlook.com (mail-centralusazon11010057.outbound.protection.outlook.com [52.101.61.57])
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20026327798
-	for <iommu@lists.linux.dev>; Wed, 29 Oct 2025 09:59:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.61.57
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761731952; cv=fail; b=Qi7JB2/+wcC80b1WZjsIsKecI9JV7XampEbNBNALvyTEvWYWJupeweuUExYkUZ2HJ+ppWCkQssnuFBiaoEiNDGwnIuD5C6DddLkvdMwJcCPugIm9siyM5brHRcX3GTT4B/aNT186ZcRh2fPp9vAAHzATpsU484B5QeZYg93DLfs=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761731952; c=relaxed/simple;
-	bh=MWmOr0WqqhYF5AOrZOhzm1FZXcaJfePjG7Rq1VtWfGM=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=ZJLZCNwakay/QFqiNS1Z+REuxbAvPF711j+ZY+PYSqaFS6Gh5F/ydA0yVXgw6/wvn79GKCAKvsm8pe1jmOiPmZc1Qyr/esHulmcUDPhcsiV+oqQYecVf6yRM6oehcz9t3XLkLy6X08Mcrr8ugMNudutpDr9KvEuFLnLHCLD4fRI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=4E0BNLTW; arc=fail smtp.client-ip=52.101.61.57
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86B60289340
+	for <iommu@lists.linux.dev>; Wed, 29 Oct 2025 10:00:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1761732050; cv=none; b=Eiw9duHs7IIFOGlkscHRhfn2ovI1RHSXdW0bb507yBocr68jYsn8m9ibiV24m5hc8vqPtWS6VQWV4lzxGn+tVf8vonKPJzAHbu/lKQDNmduNSgP1pmksrsuoWm3qqLjVytCTeJBBcSVEL67jl2l6OszOaYhabRbC7QjKuEVumaU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1761732050; c=relaxed/simple;
+	bh=/ejEbpv3YjlaubY6kroqMVNYHccFsSdgdgs6VeRvqfI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
+	 Content-Type:References; b=AjMmu+pbDDM0Wyg9q5UbfZ1fWQ1DswuT63gNsESfQE1v82hIw7iYEoBSIcEuHELqLhPilEDWl6J9mlW7yVFKQnNLkcjEptELfs5QCJhX6Cb8g9qa33x/ZxTP9hAhuINBHUPfcHM+LuyhL3uKJT2eH7QKDTLDBq/vCNEEc70J+qE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=Q8nA+g0P; arc=none smtp.client-ip=210.118.77.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="4E0BNLTW"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=GzEyZG1CqOCAVIKTA2WssGZ2Y1k3UaGqisDszAQJXr8itxnZiWPSEwfPlfPbUd+/5wJzPW9u12b2Mm45J0GtOyi50ZdIrIjLs9YRMro6JUeAYyzc8FQ/UCvXk2OhtY0FjUH8Kv2goqNiPigCQtDcnIScoG34/U7qx4HyzUqzaN++xV9m4uM31L3P7z9PxYcQwq9GXRZVBDfsvJJeS3gvyy/kg+6Tb2OVxiG4iH1R5ki+EWjSTAeCIeKAtzsT62BkeYjcpcJH2N4CLp0GLR+UFHEeS0eVzdgjYUaNzkG3eoflfg2LzwBd9VJQAloje+SIOA4y7mkWWlqaVyVrS6uSpA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4F0M6j1g6EAVC3oOELlkU2ZLcNeNNPitHFL2kJZ2/Z0=;
- b=sqoq8j4T5akw8PFY5Ybqra9w1Cv2XJiA6tAAAbpG1KUAto6kPCkOR/4AbnvtpiATqi/f7Jb3Kqvk16SJ4KS2YfTZ2NibE8jf4R//FHgvSB7N5HHwJok97rudK8TsntBCkFvmJkwgeaCVJ/DQa7fa7bJKhvZoTHOGLdnR33DGCBLF0BBS5FIwwu6fArjTRzYfLISmfOFNQQ0jqrkDD9TR1Izlp/8oiW0JIlzgqlpAwFOmVENAvzuWotbpM9U6qvBq0OPljct9WT+SS4UWFF8cALt8ux53plFUMdF49E+zhECvsaxQMK5m3MzHu+y6HQjNsIdvrLEot/ph48/rq7z8cg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=8bytes.org smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4F0M6j1g6EAVC3oOELlkU2ZLcNeNNPitHFL2kJZ2/Z0=;
- b=4E0BNLTWGrnep/fALicFMZDpG3rWbLkJE78+4XIyXYpzfcTiT9jYV14/QQQzC+WOPtfTaHg0aitj+0ZolKN7lzyNyNwl0df0QRjd7vCG7VzkJE5g5QCQSm/qsSeWXOinh5XMwyzjIoyu942xe0K86sO9hQmffSowhoidGgYufDw=
-Received: from BN0PR04CA0168.namprd04.prod.outlook.com (2603:10b6:408:eb::23)
- by IA1PR12MB8495.namprd12.prod.outlook.com (2603:10b6:208:44d::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9275.13; Wed, 29 Oct
- 2025 09:59:04 +0000
-Received: from BN3PEPF0000B06C.namprd21.prod.outlook.com
- (2603:10b6:408:eb:cafe::52) by BN0PR04CA0168.outlook.office365.com
- (2603:10b6:408:eb::23) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9253.18 via Frontend Transport; Wed,
- 29 Oct 2025 09:59:04 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
-Received: from satlexmb07.amd.com (165.204.84.17) by
- BN3PEPF0000B06C.mail.protection.outlook.com (10.167.243.71) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9298.0 via Frontend Transport; Wed, 29 Oct 2025 09:59:04 +0000
-Received: from BLR-L1-SARUNKOD.amd.com (10.180.168.240) by satlexmb07.amd.com
- (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.17; Wed, 29 Oct
- 2025 02:59:00 -0700
-From: Sairaj Kodilkar <sarunkod@amd.com>
-To: <joro@8bytes.org>, <suravee.suthikulpanit@amd.com>, <will@kernel.org>,
-	<robin.murphy@arm.com>, <jgg@ziepe.ca>, <kevin.tian@intel.com>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-	<vasant.hegde@amd.com>
-CC: Sairaj Kodilkar <sarunkod@amd.com>
-Subject: [RFC PATCH] iommu/amd: Add control register in `struct iommu_hw_info_amd`
-Date: Wed, 29 Oct 2025 15:28:46 +0530
-Message-ID: <20251029095846.4486-1-sarunkod@amd.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="Q8nA+g0P"
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20251029100039euoutp022901308f3eab82458d8910c81b526532~y7fTFrdGq2797727977euoutp027;
+	Wed, 29 Oct 2025 10:00:39 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20251029100039euoutp022901308f3eab82458d8910c81b526532~y7fTFrdGq2797727977euoutp027
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1761732039;
+	bh=Lz0Rir68dfVLNeA+kqLkIpgtVfATL7Zz4GqfoJVdUA8=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=Q8nA+g0P0Lp8yYsVx23P8MkKmaRp5d92Nf+2imBS2NlZqa8/5ThIee3tXBOiLNt99
+	 PjQedQ0JFXgKyV+emfETcayFtfRKIpSeQMZ0pgMqy9Wn3IoNaAw6sZ7VjxwGv7ehjb
+	 3V9ekRK8wOTbOvttHwAsGVylPABrI1wC7ZTCqE2c=
+Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20251029100038eucas1p2fe4a84df0bc07dc1cd96f49b4f740618~y7fRb9PRk1129911299eucas1p2W;
+	Wed, 29 Oct 2025 10:00:38 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+	20251029100034eusmtip1f745a429892e79db9ec765d9fa07cdc8~y7fOJa_AZ2915029150eusmtip1F;
+	Wed, 29 Oct 2025 10:00:34 +0000 (GMT)
+Message-ID: <5e6eb6f0-fbbb-4359-9c40-075b25231e0d@samsung.com>
+Date: Wed, 29 Oct 2025 11:00:33 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Betterbird (Windows)
+Subject: Re: [PATCH v5 00/14] Remove DMA map_page/map_resource and their
+ unmap callbacks
+To: Leon Romanovsky <leon@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Russell King <linux@armlinux.org.uk>, Juergen Gross <jgross@suse.com>,
+	Stefano Stabellini <sstabellini@kernel.org>, Oleksandr Tyshchenko
+	<oleksandr_tyshchenko@epam.com>, Richard Henderson
+	<richard.henderson@linaro.org>, Matt Turner <mattst88@gmail.com>, Thomas
+	Bogendoerfer <tsbogend@alpha.franken.de>, "James E.J. Bottomley"
+	<James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>,
+	Madhavan Srinivasan <maddy@linux.ibm.com>, Michael Ellerman
+	<mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy
+	<christophe.leroy@csgroup.eu>, Geoff Levand <geoff@infradead.org>, "David S.
+ Miller" <davem@davemloft.net>, Andreas Larsson <andreas@gaisler.com>, Thomas
+	Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav
+	Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>,
+	x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, xen-devel@lists.xenproject.org,
+	linux-alpha@vger.kernel.org, linux-mips@vger.kernel.org,
+	linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+	sparclinux@vger.kernel.org, Magnus Lindholm <linmag7@gmail.com>, Jason
+	Gunthorpe <jgg@ziepe.ca>
+Content-Language: en-US
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <20251015-remove-map-page-v5-0-3bbfe3a25cdf@kernel.org>
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: satlexmb08.amd.com (10.181.42.217) To satlexmb07.amd.com
- (10.181.42.216)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN3PEPF0000B06C:EE_|IA1PR12MB8495:EE_
-X-MS-Office365-Filtering-Correlation-Id: 39fb947e-3a3d-4abc-0061-08de16d1cb1e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|376014|1800799024|36860700013|13003099007;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?1FAKKtx0O9B/bciyLTc6pQ4ezHg2XuJNEiJRHS/zy36iuLY0Y79NTGiss2cq?=
- =?us-ascii?Q?wZ8CYE5Hxy+ufY5EOlkIViYo5rQ2ue2+npUdr5lGhLaMkNzEqM0TBu1e77df?=
- =?us-ascii?Q?61vQqfQFUtSftrBSjFOhfQgUJUwB+g1vqH+cKh2pGXHW6H2fvOMSrJgjZHxI?=
- =?us-ascii?Q?Wo3aL3/q9ekwKrJ2eeytKR210luglbEcqKTU4huy3tFKLDKlAsP3HvmuySRL?=
- =?us-ascii?Q?IpqDExm99P4RHCHJVhMSM7y3IQ2VuvLikB9ON3+FTl8UMIHg/tccP1aIcSfL?=
- =?us-ascii?Q?JEeHcaj4g3P9pYU3KlPDxvH+ExBd92laNsQLdVXVkYqUTU+qhsR5n/IJRo1b?=
- =?us-ascii?Q?tj2jRRPJZs/X6Cu/nxt5P7eDLsZnuzML4eSjAdQ0jdu89vd3uDiu25J2uPiN?=
- =?us-ascii?Q?0jlVeaPdw+feOBxpsNnagiBLhX3Y6w+4zk9gChorK8RtKnf/M7+yc+fBFURj?=
- =?us-ascii?Q?iqdqwflXb6ygK3vJprnZxTjlO4TsLZ4BeIsXw9x64grqwFn8i0DmROgPhNcp?=
- =?us-ascii?Q?dQ25olkYVuMO+y0qsweNHg8qZX8+DeZ16xR/Xvo3KKfQRfznrDLbJg2TkQzg?=
- =?us-ascii?Q?h4J52rO34/TvjK8IKVPfVLHv+S/OhxnvwddAjctQTW3iq9miuRDWNrV9kGsG?=
- =?us-ascii?Q?EV11eIt22TKkaYBDiLrf+d51MEKS7U8GkQVqdCKywj2t7oi5BBX8VfmOZJoj?=
- =?us-ascii?Q?aj9VNGDnhR8XPgP4RJqKXuAJXmEn4Zae3BcFlU9fMD4ruI2ERI+t27rg94XN?=
- =?us-ascii?Q?WMKzpQ0b5xh/fLa69bQXROmyA/kNzDncRtGx2tixW2mDk40WQczrLCmKNu0z?=
- =?us-ascii?Q?td5pFfCiJaZcHAOgcd39vhqoP1yaohRYrCYvusPmKM/6w8WtZmQDT1JskG6h?=
- =?us-ascii?Q?psAk4RK6IEMEVqTugvPYi6dDy2HPelY49Nb3GE9wIMTq8+2w4ePXZpcdwB6w?=
- =?us-ascii?Q?0b9wmY93wKxbfOIZclIPv6YIufcHxEOQ+SF04fxcTEX3/eb9XLkb0z2EKoLN?=
- =?us-ascii?Q?JezG2gdFYoNbJYB5aVL3M5R5VCy2RsMCiiXEjNCmfiNKCNlf75iT1ycVli/F?=
- =?us-ascii?Q?VLDWG0DY66GaU2PZcI9v892iNSNoXh6BtYG7JhbEliQeWlo5ani6ryLLUqRo?=
- =?us-ascii?Q?sw1lCm+BcydVZqeX6kqVEA0f2JB7Vp6v0wo8qMpW4cNCzZ0ndzrVYT8rySbB?=
- =?us-ascii?Q?Qf+Y/Jl7czkDzT6Qo4DF8jI1vH+4cF4/CDHz/0d7nPvYyyK0bRb1/saNK+jL?=
- =?us-ascii?Q?VL2bx3dCSjm1xyqJ+JbqjSRWFKGRAe9ZefFjx0dQsEC50LS0QomT6egB6+J7?=
- =?us-ascii?Q?p9w2SePyM8bhy9EmZVKZaw1iwRDauB944x6QzuBHz3EhjyT6/hfFov/dKzja?=
- =?us-ascii?Q?6/rWq7O5+lrHrOEnoZOT2gGN3R0eYMMCjxIEYVZkoe/P21IiK82V0JtQ/Mr1?=
- =?us-ascii?Q?KUjhPfmz9szLc66xZ3LdA/gOqsNLcBKqbdX5SalMMywGn1jrWj8Q1STz+Vmq?=
- =?us-ascii?Q?WpbxV0D9vVesF0AxDm+dDg21Eyyfc6YvWBfrD5dFcN/Y0z9YPO5ognJTbPqn?=
- =?us-ascii?Q?gmRUXFaI37E6sIByQTA=3D?=
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(376014)(1800799024)(36860700013)(13003099007);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Oct 2025 09:59:04.4495
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 39fb947e-3a3d-4abc-0061-08de16d1cb1e
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN3PEPF0000B06C.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB8495
+X-CMS-MailID: 20251029100038eucas1p2fe4a84df0bc07dc1cd96f49b4f740618
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20251015091313eucas1p2426ae40b579d7f3b4f29b46e0e788c0d
+X-EPHeader: CA
+X-CMS-RootMailID: 20251015091313eucas1p2426ae40b579d7f3b4f29b46e0e788c0d
+References: <CGME20251015091313eucas1p2426ae40b579d7f3b4f29b46e0e788c0d@eucas1p2.samsung.com>
+	<20251015-remove-map-page-v5-0-3bbfe3a25cdf@kernel.org>
 
-When user does IOMMU_GET_HW_INFO ioctl, read the IOMMU control
-register (MMIO offset 0x0018) and return it as part of
-`struct iommu_hw_info_amd`.
+On 15.10.2025 11:12, Leon Romanovsky wrote:
+> This series is a combination of previous two steps [1, 2] to reduce
+> number of accesses to struct page in the code "below" DMA layer.
+>
+> In this series, the DMA .map_page/.map_resource/.unmap_page/.unmap_resource
+> callbacks are converted to newly introduced .map_phys/.unmap_phys interfaces.
+>
+> Thanks
+>
+> [1] https://lore.kernel.org/all/cover.1758203802.git.leon@kernel.org
+> [2] https://lore.kernel.org/all/cover.1759071169.git.leon@kernel.org
 
-Userspace can use this information to determine the features
-supported by the underlying host kernel.
+Applied to dma-mapping-for-next branch.
 
-Signed-off-by: Sairaj Kodilkar <sarunkod@amd.com>
----
 
-The patch exposes the control register to the user space so that QEMU
-can determine the list of features enabled by the host IOMMU driver
-when there are passthrough devices. QEMU can use this information to
-selectively enable the guest feature. One example of such feature is
-enabling upto 2048 MSIs for passthrough devices. QEMU must not enable
-this feature for passthrough devices when host IOMMU driver has not
-enabled it.
-
-The patch is based on top v6.17 (e5f0a698b34e) and patch [1] by Suravee
-
-[1] https://lore.kernel.org/linux-iommu/20250926141901.511313-1-suravee.suthikulpanit@amd.com/
-
----
-
- drivers/iommu/amd/iommufd.c  | 3 +++
- include/uapi/linux/iommufd.h | 1 +
- 2 files changed, 4 insertions(+)
-
-diff --git a/drivers/iommu/amd/iommufd.c b/drivers/iommu/amd/iommufd.c
-index 72eaaa923d04..83f34fc77ae8 100644
---- a/drivers/iommu/amd/iommufd.c
-+++ b/drivers/iommu/amd/iommufd.c
-@@ -12,6 +12,7 @@
- void *amd_iommufd_hw_info(struct device *dev, u32 *length, u32 *type)
- {
- 	struct iommu_hw_info_amd *hwinfo;
-+	struct amd_iommu *iommu = get_amd_iommu_from_dev(dev);
- 
- 	if (*type != IOMMU_HW_INFO_TYPE_DEFAULT &&
- 	    *type != IOMMU_HW_INFO_TYPE_AMD)
-@@ -26,6 +27,8 @@ void *amd_iommufd_hw_info(struct device *dev, u32 *length, u32 *type)
- 
- 	hwinfo->efr = amd_iommu_efr;
- 	hwinfo->efr2 = amd_iommu_efr2;
-+	hwinfo->control_register = readq(iommu->mmio_base
-+					 + MMIO_CONTROL_OFFSET);
- 
- 	return hwinfo;
- }
-diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-index efb52709c0a2..9435b2d877e7 100644
---- a/include/uapi/linux/iommufd.h
-+++ b/include/uapi/linux/iommufd.h
-@@ -637,6 +637,7 @@ struct iommu_hw_info_tegra241_cmdqv {
- struct iommu_hw_info_amd {
- 	__aligned_u64 efr;
- 	__aligned_u64 efr2;
-+	__aligned_u64 control_register;
- };
- 
- /**
+Best regards
 -- 
-2.34.1
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
