@@ -1,222 +1,131 @@
-Received: from mail-qt1-f179.google.com (mail-qt1-f179.google.com [209.85.160.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8562F23E320
-	for <iommu@lists.linux.dev>; Thu, 30 Oct 2025 01:07:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6939317B43F;
+	Thu, 30 Oct 2025 06:48:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761786468; cv=none; b=cThUDDPKSY29FZuSzYMpmboFPZ1Bn54BBl3Bc07jDnZ0DnquY1dCrwgvidamfUFMMzoqJLdh6ym854ly3Y7WJUhBY7rC6ICZnCYlMMssHWe7sS0J8V4iuVx9nPmzfa0SZh1jPBUEzuodJeIviEvnrWuD6v7SvSQhPvGeLD23Ejs=
+	t=1761806904; cv=none; b=ICD1nYZD23eoxUGKJ0n+lCSLz1EAaY2wIOJcTt2L5tilFKzmqN3iVhgxaflTlf99zdb92yGTe2mznHo2hFluMgPUfwzXe2pLkla6rHunfeS4wPHXhRF2405YjyC+kY/56i4WbYlkIbK3GwbvcN+wGFO9A1vjv6LPlmjw/dHVjp4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761786468; c=relaxed/simple;
-	bh=8tAWjgpXV1eqZ8A1xZ+NFLAkTUNs/79UOfIRKhLL2sU=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=gdDae5y9oiiLsTVTNnROtHNNIICmzupWz8AKxe1pABQCjAbUPncF1+0Xj4QzFHUCSg0jV8HAl0IL6XeLYaT88zphwOtf9sLpsn24Qh1GG6JJJ1lCjWBLawLjSVtUiRn3Npt2gDaDvEG6C0GxdkzJSds4yWfxEfe7JUIHorzGF4A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=pcKXY0RS; arc=none smtp.client-ip=209.85.160.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1761806904; c=relaxed/simple;
+	bh=Hh7skkg065ylczpCr0Iv292nYGj50H++UlcoJlqnTFg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Y/GKlT6ddPKELQvFv33SMVK1v8si1Q0LJ+7Xx+n8YOHxG2RI3t9jTWkmnlBUl0zRXZ9aYi6J/x5BaVe0hrgoP1PCHl+0Aeh7WGGgYbX1DboqVFTGGlWTzUNom4o9zNduORjvYNwUDf+lp5TWjvSOKN/bpcNPsuAHS3kTYczadvM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Jvaq5XNT; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="pcKXY0RS"
-Received: by mail-qt1-f179.google.com with SMTP id d75a77b69052e-4ecfafb92bcso93811cf.1
-        for <iommu@lists.linux.dev>; Wed, 29 Oct 2025 18:07:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1761786465; x=1762391265; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Id3gb4VM70r8JjlpIpMntwH9hB/tw0n4UthxF1ao5+Q=;
-        b=pcKXY0RS/xcacrOsjBQ89CwiKiYnLkRl4erREvNhFusWbDJhvq5XLe3CKL9ieZPFBC
-         MuOK/myBx5qRgr8W0SmZ4PIovhoJywKc/xtPcyRRq3h24A1g6TXjg8eb4rvXuEU3hxn1
-         sdgzfR7T/RJl14FamLVkEqD6fi4JtwprzmzgovLI9hPOuGd0A+242YOlFPZUqZmH+K0Z
-         Koglet5anWQ3frFjvyBuslde4INSP7bmPyYDRAi1Cq2PGUFI0eCs5kPWDmgDoQB8dF9X
-         LcfurZZE9eXR6MiHzGXAvqtpdWqfwv41S/9c5nej7lDEUUpLLGZ99+i0D4Sqmg3UHfDj
-         L0fQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1761786465; x=1762391265;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Id3gb4VM70r8JjlpIpMntwH9hB/tw0n4UthxF1ao5+Q=;
-        b=FiJ40uGlbfl0h859BRcRyu5LIHiGA6gF35LTpqEXz8dKcunD/mH80j8e+COGS5f3zI
-         kotYN+/2JWcsr/x8TB74JLezI+UfchWURyt3u7t/lQRhcId91FVnuhXgBOeWuDH5xWfD
-         NLmQzQnFPRwk7qAx+rwh4UU0FXIzdwj+YftP1xP6vPLiqF4YtstPJSzwK5MfgUF7254Q
-         koCpTOsKkVL32ABit8ElM/lCHSc3G93ZkEaaWVdCFwAZal90rL9/kqyXbZFzere9dRtd
-         /O3ZFfXYK/qW14PV0w/ozPSN9aF+hyodHRDGzfe3r6X8ur+CiLDCqNIw5jdj95xNtWWc
-         XmQw==
-X-Forwarded-Encrypted: i=1; AJvYcCWO+FYb4prBWrAvyuMFzexRDGycFUBmRNarBwoiD/urcIZkFg7KOIPBICXUIipeI1cqB4ta7g==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yyi4g/zxTkWnxhmEzDdhNqVOcupJp1jhjqnvkxszIBpH+9U+GOy
-	GoKthFVnvmyU0Ha6ivqig6GX7KChGcwujSZo9AXJBO1aMC1aIdfEjYFR4qrBBuV4gFsxJjDl5Dg
-	0YZk1iLLhiNxbM5fsF7CuXnJlg7+BqyOkVSMALcaC
-X-Gm-Gg: ASbGncvCyNZPnajfninRCzhhGwt5LNpGx7RxmG1Z+qdFCtJGngMPjnpBQbf5iXWj1bR
-	mNeRH/4mvgNai+RwwOlibUOw6EOURB3Ekn+I7M4pAOYcbC+MgAxxgccfN9kjWvf2mzRmQACsILW
-	Ebi9lC2IO43vbx18WnP7nP+i+bU4k5u4hmeJ1zbOOlPBBUVPCQR2+Mi9b/ECAyo0tFUCpUorbzC
-	0Pg1MQUIiMhcy7itUPqrTDLcsQDXF2N/QEpJp9UK27+0ypuhByAzid2z5ZDKN2ZFSzUPdomX5CM
-	6sxWukV0w3EG5ECg7CUp6fxF6EBv
-X-Google-Smtp-Source: AGHT+IGk+D8yQ9+SwKPD0nEhpyf/NXripmysWq7Sb6LYWYRSuXaYyS1yHre0OvZakqvcTcUMROj68CxyaozwBa97GHQ=
-X-Received: by 2002:a05:622a:260d:b0:4e5:8707:d31 with SMTP id
- d75a77b69052e-4ed23bf51a5mr1888081cf.7.1761786465168; Wed, 29 Oct 2025
- 18:07:45 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Jvaq5XNT"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26554C4CEF1;
+	Thu, 30 Oct 2025 06:48:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1761806903;
+	bh=Hh7skkg065ylczpCr0Iv292nYGj50H++UlcoJlqnTFg=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=Jvaq5XNTepDILhgg1JjU/RUVDN3aAiAJIkCA81z5TSuHPckkaF3X0SyKZTH4NiHLo
+	 x+finAT9AqYTJiYKAczU3VWRnf+rm3VE20OrKWYI/Xxc5hFGsCXFzXGxlRgl84S3cn
+	 1erdjEeAotdXzH15cDoYeVH+bTlS6vCEewWmlIP12FHqqmKW1wIhJVbVTWmVOPGJrX
+	 RJ5aoNnkrAbFiXF+dpmpZF6tfJYJwn+YpHGgTwxQxqrtPlhVJhYtSdcxvt/ny5ubyp
+	 08qX3boYwst6Z/pSklUkGal7BAeNf8rJyf2PuG4I88FPZtBaphc13e3GPPIzUbz0sz
+	 yNDwwG6BUC0cA==
+Date: Thu, 30 Oct 2025 08:48:18 +0200
+From: Leon Romanovsky <leon@kernel.org>
+To: Samiullah Khawaja <skhawaja@google.com>
+Cc: Alex Williamson <alex.williamson@redhat.com>,
+	Jason Gunthorpe <jgg@nvidia.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+	dri-devel@lists.freedesktop.org, iommu@lists.linux.dev,
+	Jens Axboe <axboe@kernel.dk>, Joerg Roedel <joro@8bytes.org>,
+	kvm@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
+	linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-media@vger.kernel.org, linux-mm@kvack.org,
+	linux-pci@vger.kernel.org, Logan Gunthorpe <logang@deltatee.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Vivek Kasireddy <vivek.kasireddy@intel.com>,
+	Will Deacon <will@kernel.org>
+Subject: Re: [PATCH v5 9/9] vfio/pci: Add dma-buf export support for MMIO
+ regions
+Message-ID: <20251030064818.GA60090@unreal>
+References: <cover.1760368250.git.leon@kernel.org>
+ <72ecaa13864ca346797e342d23a7929562788148.1760368250.git.leon@kernel.org>
+ <CAAywjhRb6Nwmzy+QWFPH9Zkn-xvtvOktNjAZ8HMpM2wmVw2rjw@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <0-v7-ab019a8791e2+175b8-iommu_pt_jgg@nvidia.com> <10-v7-ab019a8791e2+175b8-iommu_pt_jgg@nvidia.com>
-In-Reply-To: <10-v7-ab019a8791e2+175b8-iommu_pt_jgg@nvidia.com>
-From: Samiullah Khawaja <skhawaja@google.com>
-Date: Wed, 29 Oct 2025 18:07:33 -0700
-X-Gm-Features: AWmQ_bkkP7FCKXR-SsBvX0XmrZ4yVNMBIM5BqatCpZRvsfd8j587v0wxvY7VreQ
-Message-ID: <CAAywjhRW17C-RbqM6zUSuEF7mB2SXzK1E_zthHJ9iJaEo6ejxQ@mail.gmail.com>
-Subject: Re: [PATCH v7 10/15] iommupt: Add a mock pagetable format for iommufd
- selftest to use
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Alexandre Ghiti <alex@ghiti.fr>, Anup Patel <anup@brainfault.org>, 
-	Albert Ou <aou@eecs.berkeley.edu>, Jonathan Corbet <corbet@lwn.net>, iommu@lists.linux.dev, 
-	Joerg Roedel <joro@8bytes.org>, Justin Stitt <justinstitt@google.com>, linux-doc@vger.kernel.org, 
-	linux-kselftest@vger.kernel.org, linux-riscv@lists.infradead.org, 
-	llvm@lists.linux.dev, Bill Wendling <morbo@google.com>, 
-	Nathan Chancellor <nathan@kernel.org>, Nick Desaulniers <nick.desaulniers+lkml@gmail.com>, 
-	Miguel Ojeda <ojeda@kernel.org>, Palmer Dabbelt <palmer@dabbelt.com>, Paul Walmsley <pjw@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Shuah Khan <shuah@kernel.org>, 
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, Will Deacon <will@kernel.org>, 
-	Alexey Kardashevskiy <aik@amd.com>, Alejandro Jimenez <alejandro.j.jimenez@oracle.com>, 
-	James Gowans <jgowans@amazon.com>, Kevin Tian <kevin.tian@intel.com>, 
-	Michael Roth <michael.roth@amd.com>, Pasha Tatashin <pasha.tatashin@soleen.com>, 
-	patches@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAAywjhRb6Nwmzy+QWFPH9Zkn-xvtvOktNjAZ8HMpM2wmVw2rjw@mail.gmail.com>
 
-On Thu, Oct 23, 2025 at 11:21=E2=80=AFAM Jason Gunthorpe <jgg@nvidia.com> w=
-rote:
->
-> The iommufd self test uses an xarray to store the pfns and their orders t=
-o
-> emulate a page table. Slightly modify the amdv1 page table to create a
-> real page table that has similar properties:
->
->  - 2k base granule to simulate something like a 4k page table on a 64K
->    PAGE_SIZE ARM system
->  - Contiguous page support for every PFN order
->  - Dirty tracking
->
-> AMDv1 is the closest format, as it is the only one that already supports
-> every page size. Tweak it to have only 5 levels and an 11 bit base granul=
-e
-> and compile it separately as a format variant.
->
-> Tested-by: Alejandro Jimenez <alejandro.j.jimenez@oracle.com>
-> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->  drivers/iommu/generic_pt/fmt/Makefile     |  1 +
->  drivers/iommu/generic_pt/fmt/amdv1.h      | 18 ++++++++++++++++--
->  drivers/iommu/generic_pt/fmt/iommu_mock.c | 10 ++++++++++
->  include/linux/generic_pt/iommu.h          |  6 ++++++
->  4 files changed, 33 insertions(+), 2 deletions(-)
->  create mode 100644 drivers/iommu/generic_pt/fmt/iommu_mock.c
->
-> diff --git a/drivers/iommu/generic_pt/fmt/Makefile b/drivers/iommu/generi=
-c_pt/fmt/Makefile
-> index 32f3956c7509f8..f0c22cf5f7bee6 100644
-> --- a/drivers/iommu/generic_pt/fmt/Makefile
-> +++ b/drivers/iommu/generic_pt/fmt/Makefile
-> @@ -1,6 +1,7 @@
->  # SPDX-License-Identifier: GPL-2.0
->
->  iommu_pt_fmt-$(CONFIG_IOMMU_PT_AMDV1) +=3D amdv1
-> +iommu_pt_fmt-$(CONFIG_IOMMUFD_TEST) +=3D mock
->
->  IOMMU_PT_KUNIT_TEST :=3D
->  define create_format
-> diff --git a/drivers/iommu/generic_pt/fmt/amdv1.h b/drivers/iommu/generic=
-_pt/fmt/amdv1.h
-> index 706a70c8603017..81ced24585ff93 100644
-> --- a/drivers/iommu/generic_pt/fmt/amdv1.h
-> +++ b/drivers/iommu/generic_pt/fmt/amdv1.h
-> @@ -26,11 +26,23 @@
->  #include <linux/string.h>
->
->  enum {
-> -       PT_MAX_OUTPUT_ADDRESS_LG2 =3D 52,
-> -       PT_MAX_VA_ADDRESS_LG2 =3D 64,
->         PT_ITEM_WORD_SIZE =3D sizeof(u64),
-> +       /*
-> +        * The IOMMUFD selftest uses the AMDv1 format with some alteratio=
-ns It
-> +        * uses a 2k page size to test cases where the CPU page size is n=
-ot the
-> +        * same.
-> +        */
-> +#ifdef AMDV1_IOMMUFD_SELFTEST
-> +       PT_MAX_VA_ADDRESS_LG2 =3D 56,
-> +       PT_MAX_OUTPUT_ADDRESS_LG2 =3D 51,
-> +       PT_MAX_TOP_LEVEL =3D 4,
-> +       PT_GRANULE_LG2SZ =3D 11,
-> +#else
-> +       PT_MAX_VA_ADDRESS_LG2 =3D 64,
-> +       PT_MAX_OUTPUT_ADDRESS_LG2 =3D 52,
->         PT_MAX_TOP_LEVEL =3D 5,
->         PT_GRANULE_LG2SZ =3D 12,
-> +#endif
->         PT_TABLEMEM_LG2SZ =3D 12,
->
->         /* The DTE only has these bits for the top phyiscal address */
-> @@ -378,6 +390,7 @@ static inline int amdv1pt_iommu_fmt_init(struct pt_io=
-mmu_amdv1 *iommu_table,
->  }
->  #define pt_iommu_fmt_init amdv1pt_iommu_fmt_init
->
-> +#ifndef PT_FMT_VARIANT
->  static inline void
->  amdv1pt_iommu_fmt_hw_info(struct pt_iommu_amdv1 *table,
->                           const struct pt_range *top_range,
-> @@ -388,6 +401,7 @@ amdv1pt_iommu_fmt_hw_info(struct pt_iommu_amdv1 *tabl=
-e,
->         info->mode =3D top_range->top_level + 1;
->  }
->  #define pt_iommu_fmt_hw_info amdv1pt_iommu_fmt_hw_info
-> +#endif
->
->  #if defined(GENERIC_PT_KUNIT)
->  static const struct pt_iommu_amdv1_cfg amdv1_kunit_fmt_cfgs[] =3D {
-> diff --git a/drivers/iommu/generic_pt/fmt/iommu_mock.c b/drivers/iommu/ge=
-neric_pt/fmt/iommu_mock.c
-> new file mode 100644
-> index 00000000000000..74e597cba9d9cd
-> --- /dev/null
-> +++ b/drivers/iommu/generic_pt/fmt/iommu_mock.c
-> @@ -0,0 +1,10 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * Copyright (c) 2024-2025, NVIDIA CORPORATION & AFFILIATES
-> + */
-> +#define AMDV1_IOMMUFD_SELFTEST 1
-> +#define PT_FMT amdv1
-> +#define PT_FMT_VARIANT mock
-> +#define PT_SUPPORTED_FEATURES 0
-> +
-> +#include "iommu_template.h"
-> diff --git a/include/linux/generic_pt/iommu.h b/include/linux/generic_pt/=
-iommu.h
-> index 03a906fbe12a83..848a5fb76272a9 100644
-> --- a/include/linux/generic_pt/iommu.h
-> +++ b/include/linux/generic_pt/iommu.h
-> @@ -237,6 +237,12 @@ struct pt_iommu_amdv1_hw_info {
->
->  IOMMU_FORMAT(amdv1, amdpt);
->
-> +/* amdv1_mock is used by the iommufd selftest */
-> +#define pt_iommu_amdv1_mock pt_iommu_amdv1
-> +#define pt_iommu_amdv1_mock_cfg pt_iommu_amdv1_cfg
-> +struct pt_iommu_amdv1_mock_hw_info;
-> +IOMMU_PROTOTYPES(amdv1_mock);
-> +
->  #undef IOMMU_PROTOTYPES
->  #undef IOMMU_FORMAT
->  #endif
-> --
-> 2.43.0
->
->
+On Wed, Oct 29, 2025 at 05:25:03PM -0700, Samiullah Khawaja wrote:
+> On Mon, Oct 13, 2025 at 8:27 AM Leon Romanovsky <leon@kernel.org> wrote:
+> >
+> > From: Leon Romanovsky <leonro@nvidia.com>
+> >
+> > Add support for exporting PCI device MMIO regions through dma-buf,
+> > enabling safe sharing of non-struct page memory with controlled
+> > lifetime management. This allows RDMA and other subsystems to import
+> > dma-buf FDs and build them into memory regions for PCI P2P operations.
+> >
+> > The implementation provides a revocable attachment mechanism using
+> > dma-buf move operations. MMIO regions are normally pinned as BARs
+> > don't change physical addresses, but access is revoked when the VFIO
+> > device is closed or a PCI reset is issued. This ensures kernel
+> > self-defense against potentially hostile userspace.
+> >
+> > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> > Signed-off-by: Vivek Kasireddy <vivek.kasireddy@intel.com>
+> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> > ---
+> >  drivers/vfio/pci/Kconfig           |   3 +
+> >  drivers/vfio/pci/Makefile          |   2 +
+> >  drivers/vfio/pci/vfio_pci_config.c |  22 +-
+> >  drivers/vfio/pci/vfio_pci_core.c   |  28 ++
+> >  drivers/vfio/pci/vfio_pci_dmabuf.c | 446 +++++++++++++++++++++++++++++
+> >  drivers/vfio/pci/vfio_pci_priv.h   |  23 ++
+> >  include/linux/vfio_pci_core.h      |   1 +
+> >  include/uapi/linux/vfio.h          |  25 ++
+> >  8 files changed, 546 insertions(+), 4 deletions(-)
+> >  create mode 100644 drivers/vfio/pci/vfio_pci_dmabuf.c
 
-Reviewed-by: Samiullah Khawaja <skhawaja@google.com>
+<...>
+
+> > +void vfio_pci_dma_buf_move(struct vfio_pci_core_device *vdev, bool revoked)
+> > +{
+> > +       struct vfio_pci_dma_buf *priv;
+> > +       struct vfio_pci_dma_buf *tmp;
+> > +
+> > +       lockdep_assert_held_write(&vdev->memory_lock);
+> > +
+> > +       list_for_each_entry_safe(priv, tmp, &vdev->dmabufs, dmabufs_elm) {
+> > +               if (!get_file_active(&priv->dmabuf->file))
+> > +                       continue;
+> > +
+> > +               if (priv->revoked != revoked) {
+> > +                       dma_resv_lock(priv->dmabuf->resv, NULL);
+> > +                       priv->revoked = revoked;
+> > +                       dma_buf_move_notify(priv->dmabuf);
+> 
+> I think this should only be called when revoked is true, otherwise
+> this will be calling move_notify on the already revoked dmabuf
+> attachments.
+
+This case is protected by "if (priv->revoked)" check both in vfio_pci_dma_buf_map
+and vfio_pci_dma_buf_attach. They will prevent DMABUF recreation if revoked is false.
+
+VTW, please trim your replies, it is time consuming to find your reply
+among 600 lines of unrelated text.
+
+Thanks
+
+> > +                       dma_resv_unlock(priv->dmabuf->resv);
+> > +               }
+> > +               dma_buf_put(priv->dmabuf);
+> > +       }
+> > +}
+
