@@ -1,915 +1,1077 @@
-Received: from mail-qt1-f176.google.com (mail-qt1-f176.google.com [209.85.160.176])
+Received: from mail-qt1-f179.google.com (mail-qt1-f179.google.com [209.85.160.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC0BB1DE4F1
-	for <iommu@lists.linux.dev>; Thu, 30 Oct 2025 00:25:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7767521C9E5
+	for <iommu@lists.linux.dev>; Thu, 30 Oct 2025 01:06:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761783920; cv=none; b=uA5O/wbzprXWS0odyDta3DQ4KCgoAbjcOo58rPmR8rOIwJMroxqOtLSMq+Hd4XUPbx9CItrnYdU3kE4P2mXMW0ERR4FVzhIIpw7c1zmm1cHeXuL5PAw3NFOL7OHlqK2lbbNuL3Gt1uFbBgT3drFVBp6Y5TNAEc2ZznSs14k1oSs=
+	t=1761786416; cv=none; b=gioeiUfvEPEeap7XtScNIbSGuq10GwgQ+yE4W1GTkPTrvutfvRG85QaamVpPV+mD43xZxgcEQAYy9kT7t6YspCC72qvCkacipzms1E6BFzENN6o4QaZc3rjJmMr/7ozl0aaUqtjJJruxQC0CpXQSelHlfaidfUGi+XJmrzmHRKw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761783920; c=relaxed/simple;
-	bh=h0ZayanKdKCGbFJsuJ/aE3Q4cf74rNt3JjypjVWyJpI=;
+	s=arc-20240116; t=1761786416; c=relaxed/simple;
+	bh=szTkHDRCOniI3KdkyePi39n3aDLaXrWvNI90EcgpvFg=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=MbbUneqnVE22fFfQx6UDGGrmsqWPQtnFR1ayiR/mAifOLT5n7zF/mzgvt8QiyJ/S5xLuwOVdGW/rUQKPnB2ImddDFdENgQddGeUq09FlCd7vSxhHGBFWSYse5PcGowjcuxYgvPUGbxByvuJEhtVE62plw7sp/rky8olI/CMHPlg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=KBQ/C9mc; arc=none smtp.client-ip=209.85.160.176
+	 To:Cc:Content-Type; b=QfhR6G95SZbkGp47DPAQOA5cLU2TE6d3LtlQca9AoFRdDYnqM4IGcbcnqh27GV6RgAzkYxZc6dOsmxoy8w2HEtAFd6aatVBbi53xSgyInmC93mARxy7YiJTl39xK9qSP1JqBldRhL899hJBaXYg+4YausiI+Ea+jpV6gb1ONgxo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=gYdOfbf7; arc=none smtp.client-ip=209.85.160.179
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="KBQ/C9mc"
-Received: by mail-qt1-f176.google.com with SMTP id d75a77b69052e-4ea12242d2eso84731cf.1
-        for <iommu@lists.linux.dev>; Wed, 29 Oct 2025 17:25:16 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="gYdOfbf7"
+Received: by mail-qt1-f179.google.com with SMTP id d75a77b69052e-4ecfafb92bcso93591cf.1
+        for <iommu@lists.linux.dev>; Wed, 29 Oct 2025 18:06:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1761783916; x=1762388716; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1761786411; x=1762391211; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=cFv/dMC2oPnvePb++YRgOZAe9/2gnZCa+p3qqfXzTAM=;
-        b=KBQ/C9mcIZXqSbIQJOWTX/PnLqhvsyNDMH6wrLzmCPapDWLt3+yCYBNINNWIJbrQiF
-         lV9aPKeeTXabIKvW+lQw4CbEotG9d2M/0DytFwEEIIqwKOUFlKvr7MFX2bWQ1TQVbG0v
-         wKyYh3oesyUwOM6VogFM2Sy9H8vEFuDopNg9uAJHfGkQPcMNbmlIEKl0l8z6Wt2yodnW
-         PG/iDMHB4OEU0Bv0rhmgLL77EZLQ57uZqE3bfgnXXfTWeiALz+b4SrhZ2RW0pekejKzO
-         e018cIqqGb9Z6jWn5uAG81U0wVSBu+RW3lLqaO0tj4wAa2W3961MrvRTDA/EX39+P12B
-         n1Ew==
+        bh=O0T3+TWFIfkeTj+Rk+rqHRkiiKweQsvwJP2CjsYyaYs=;
+        b=gYdOfbf7ELCkxzWMhobwn/ts5R+BcM9gfvzc6oylkib51nxtn/KCylHA8WKOUtrOkK
+         ucXRrbXGgnkVCfS6lJl8Y8b0DGJ/ZN+MVTN+HvoODKpGuktCOyxGlyqGToZmJYkTchY+
+         bv9xB6aBK2s/QnxA0P34nMre8hP8rh9kEIt0nAggmHodqYCr+pP4ldqoZUOUSwxv8t3K
+         F9nDdZDPyX28zv3j/hp4AIoHlLnqhrwTHhhtIJhjKiJrUAuvutFlPPRjJGelVxJDy5pE
+         U93p1Jtesmv1Aumx7Ci97HJIsbVeIG9aSZPQQhztxrGP47yPkGXwqhdGmDZn2SRDRAfC
+         yY2Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1761783916; x=1762388716;
+        d=1e100.net; s=20230601; t=1761786411; x=1762391211;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=cFv/dMC2oPnvePb++YRgOZAe9/2gnZCa+p3qqfXzTAM=;
-        b=IqFu3mhAUaI6xilbsveS05wLLKoSRweqCNZV2y0GZbgngSVkiWIwLEXcB7xuQwtDXL
-         2MXGV/CCEp32mAPOIsYnMa+a6Y1ZD5ykIHLJuPvTMXz2AtHulZhEiXWMb+8dxYcRptfN
-         0TsV6ZUc6cZl6kITG5DbE6zwhF9j5l2ehd4100TtYT7A2Wk9ZiveJEGW5kCK/75Jodl1
-         2G2JKt0phym53DyD9q5TtaagcdEAhbFaLC9AVfv5dUGMa6j6fNPvcuV+kAtcWYWtLdVZ
-         OtBv2tg59i2Qyl5PAz6akbHwH4nzVSMta75oIoA5TrGD38qs5CS3oToMDVOwF6bxrMb0
-         FNkQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXGQnIRLbxVypU5URAINPEFP1vztg0iry9fvBZPmIruVY1EYSNqBA9O57uOMgRPOqpSdbpVfQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwMAFmdwqBJfTczYdBdFgvLbicFTkgCSaCpQPSucZ3FhuFPaj3P
-	umaIdtjDciuRBAcGHZEC/Q3E7/90Za9j3mQ7fyVVkYA+e3zUnEBSxi2iRcyPbXDAQ3FNbirt7Dz
-	zQ3dSvyoECzL0KRe1tSpUJWugRfBADo2O7G9XZECf
-X-Gm-Gg: ASbGncvV+TEL1QmP1ZR96imDVBFH6QGUV2C3aMbAtM5L0iVcH2ldsl1YvbYquDaw3VE
-	ymHFiIrGoJ4y2eqzqDpa2T0hZ/2Mh43mPj6f4Whnzyqhi7iYx1PeZVljVTW5bBkKDEV2LeeLLsk
-	ec+llAjPFF0oZY7zTxHUYAS1G4RoZayQNMsUXPHmBOdirQ06mNL+rNQ6Z3bGX3aKp73twntfNwB
-	+rytDVIVnbn/14IsaBUbJZjE4gFAKz0UVJcPfEuHgk1sCH+7vrUbvap83RO9QnAXpL9dahN2i/a
-	dkv004KmWJbrQjNv3HSckVOB18Py
-X-Google-Smtp-Source: AGHT+IFEMbvu1ikrYucCl8dBDIzfUlORm9URjIpPQq7LIjPdLzRazlAcQffXrENl/mx/WkO1JrXyIx0gcIYP2n8AgJk=
-X-Received: by 2002:ac8:5f11:0:b0:4e6:e07f:dc98 with SMTP id
- d75a77b69052e-4ed241c39e2mr1465181cf.9.1761783915260; Wed, 29 Oct 2025
- 17:25:15 -0700 (PDT)
+        bh=O0T3+TWFIfkeTj+Rk+rqHRkiiKweQsvwJP2CjsYyaYs=;
+        b=Tg5ltQSPBOs8IIce4cczemLDwU6iiqK3ofHIgImdmv2y7ymsfpZA91svtTWqh1H0Y7
+         aYnPOL97AalIO5HyCeobW4mWyFEqy5ykhgeeSIAu2ejh0LWbcfXU0WqOydxTtU8zdtrv
+         T0+Ial2CV7dhUdUcYnyvkBBuNt6cAuTPrm4ldcsxVkZb9vp6TIW9b/VfX6fUz/TTvjlE
+         toT5XHvYrxBJyuQ0zYxg+vfz1/3ULgvjlswnwmXEk0K7a48lIavUSjrINiXPKhkYQVd+
+         LUS8LNzu6PzQo9kg/O/61H3CjtHQh372xkrm4KRu5LPbpPpvVNbbboGlnqwR+/Gzg820
+         hVJA==
+X-Forwarded-Encrypted: i=1; AJvYcCV+92yDYb4AahfPVRuMsoyv+gM539Wb9aES0WBdXz1EMORaGFwdO1a8EQZA+wJCrWKw9UZASA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy8RAbmPJTgKQOztdf+Jh6U0GSBCQEyZon3voXQqGfeJySbZ5jf
+	xGEjSZYRx/N+820+e0jnccCt0e3LAIA/JFDkpOSFGlc6DGj25M7HWdcpHFYDUIw3TkFrsvr3baG
+	h/iVtezVenoPncGWSQXyN5CVdg4k2+GYigC9TfBka
+X-Gm-Gg: ASbGncu0ATW9L4hRgjc/O/Es+GPIqwRma0i/LIzclBny7Q0nqecl/4sXuBXMmW8u3/T
+	pV4Bp0aBv2TtxAS9fe37ZtxSKrHWhcIH/RBMBM5XQkFsN9UXGpum3gqFDQnUpiXTLuifBUag4dY
+	tD8RDOj2Yc+RmgcGGE6QFa0ScL4NL/BMyTMvabjEeKvdCij7B6Duo/hyoDR4LGEkW1xAyah6YLG
+	TnVRrPZfjVD1mwZH93cQn28x5ML3vRtDee/b4eL0n39x49oVRhCCYKJRjrvad0ZRU2wFFVRqFDV
+	kguzoKhU4kw1eKLBRxFnSoqQ5N1p
+X-Google-Smtp-Source: AGHT+IGtby5pPyiG3YXeNYOvRdqpOoXqplSqoinsOg6q6R+lmgBgF7fvZT5JI4DwXsWOP7WlMcJ16mmVNkF6meJEvNU=
+X-Received: by 2002:a05:622a:1456:b0:4e8:aa24:80ec with SMTP id
+ d75a77b69052e-4ed2251bf39mr3388191cf.14.1761786410816; Wed, 29 Oct 2025
+ 18:06:50 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <cover.1760368250.git.leon@kernel.org> <72ecaa13864ca346797e342d23a7929562788148.1760368250.git.leon@kernel.org>
-In-Reply-To: <72ecaa13864ca346797e342d23a7929562788148.1760368250.git.leon@kernel.org>
+References: <0-v7-ab019a8791e2+175b8-iommu_pt_jgg@nvidia.com> <11-v7-ab019a8791e2+175b8-iommu_pt_jgg@nvidia.com>
+In-Reply-To: <11-v7-ab019a8791e2+175b8-iommu_pt_jgg@nvidia.com>
 From: Samiullah Khawaja <skhawaja@google.com>
-Date: Wed, 29 Oct 2025 17:25:03 -0700
-X-Gm-Features: AWmQ_bk_lamZnxOGKMiY4_uYy9zsC2c9IQ2Q8tmFJRkEGX5qGpHewJD6IMe1CiM
-Message-ID: <CAAywjhRb6Nwmzy+QWFPH9Zkn-xvtvOktNjAZ8HMpM2wmVw2rjw@mail.gmail.com>
-Subject: Re: [PATCH v5 9/9] vfio/pci: Add dma-buf export support for MMIO regions
-To: Leon Romanovsky <leon@kernel.org>
-Cc: Alex Williamson <alex.williamson@redhat.com>, Leon Romanovsky <leonro@nvidia.com>, 
-	Jason Gunthorpe <jgg@nvidia.com>, Andrew Morton <akpm@linux-foundation.org>, 
-	Bjorn Helgaas <bhelgaas@google.com>, =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
-	dri-devel@lists.freedesktop.org, iommu@lists.linux.dev, 
-	Jens Axboe <axboe@kernel.dk>, Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org, 
-	linaro-mm-sig@lists.linaro.org, linux-block@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-media@vger.kernel.org, linux-mm@kvack.org, 
-	linux-pci@vger.kernel.org, Logan Gunthorpe <logang@deltatee.com>, 
-	Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, 
-	Sumit Semwal <sumit.semwal@linaro.org>, Vivek Kasireddy <vivek.kasireddy@intel.com>, 
-	Will Deacon <will@kernel.org>
+Date: Wed, 29 Oct 2025 18:06:39 -0700
+X-Gm-Features: AWmQ_bmXko2ADnbC_c0dxd4seg8had1xXHLwrkuK_dK0NvMRIHGbi4brQ1V7RMM
+Message-ID: <CAAywjhROX5jU4j5f1bCUPSKBKJWDGMvzxY72RVWDDst-jrHzkA@mail.gmail.com>
+Subject: Re: [PATCH v7 11/15] iommufd: Change the selftest to use iommupt
+ instead of xarray
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Alexandre Ghiti <alex@ghiti.fr>, Anup Patel <anup@brainfault.org>, 
+	Albert Ou <aou@eecs.berkeley.edu>, Jonathan Corbet <corbet@lwn.net>, iommu@lists.linux.dev, 
+	Joerg Roedel <joro@8bytes.org>, Justin Stitt <justinstitt@google.com>, linux-doc@vger.kernel.org, 
+	linux-kselftest@vger.kernel.org, linux-riscv@lists.infradead.org, 
+	llvm@lists.linux.dev, Bill Wendling <morbo@google.com>, 
+	Nathan Chancellor <nathan@kernel.org>, Nick Desaulniers <nick.desaulniers+lkml@gmail.com>, 
+	Miguel Ojeda <ojeda@kernel.org>, Palmer Dabbelt <palmer@dabbelt.com>, Paul Walmsley <pjw@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Shuah Khan <shuah@kernel.org>, 
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, Will Deacon <will@kernel.org>, 
+	Alexey Kardashevskiy <aik@amd.com>, Alejandro Jimenez <alejandro.j.jimenez@oracle.com>, 
+	James Gowans <jgowans@amazon.com>, Kevin Tian <kevin.tian@intel.com>, 
+	Michael Roth <michael.roth@amd.com>, Pasha Tatashin <pasha.tatashin@soleen.com>, 
+	patches@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Oct 13, 2025 at 8:27=E2=80=AFAM Leon Romanovsky <leon@kernel.org> w=
+On Thu, Oct 23, 2025 at 11:21=E2=80=AFAM Jason Gunthorpe <jgg@nvidia.com> w=
 rote:
 >
-> From: Leon Romanovsky <leonro@nvidia.com>
+> The iommufd self test uses an xarray to store the pfns and their orders t=
+o
+> emulate a page table. Make it act more like a real iommu driver by
+> replacing the xarray with an iommupt based page table. The new AMDv1 mock
+> format behaves similarly to the xarray.
 >
-> Add support for exporting PCI device MMIO regions through dma-buf,
-> enabling safe sharing of non-struct page memory with controlled
-> lifetime management. This allows RDMA and other subsystems to import
-> dma-buf FDs and build them into memory regions for PCI P2P operations.
+> Add set_dirty() as a iommu_pt operation to allow the test suite to
+> simulate HW dirty.
 >
-> The implementation provides a revocable attachment mechanism using
-> dma-buf move operations. MMIO regions are normally pinned as BARs
-> don't change physical addresses, but access is revoked when the VFIO
-> device is closed or a PCI reset is issued. This ensures kernel
-> self-defense against potentially hostile userspace.
+> Userspace can select between several formats including the normal AMDv1
+> format and a special MOCK_IOMMUPT_HUGE variation for testing huge page
+> dirty tracking. To make the dirty tracking test work the page table must
+> only store exactly 2M huge pages otherwise the logic the test uses
+> fails. They cannot be broken up or combined.
 >
+> Aside from aligning the selftest with a real page table implementation,
+> this helps test the iommupt code itself.
+>
+> Tested-by: Alejandro Jimenez <alejandro.j.jimenez@oracle.com>
+> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
 > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> Signed-off-by: Vivek Kasireddy <vivek.kasireddy@intel.com>
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 > ---
->  drivers/vfio/pci/Kconfig           |   3 +
->  drivers/vfio/pci/Makefile          |   2 +
->  drivers/vfio/pci/vfio_pci_config.c |  22 +-
->  drivers/vfio/pci/vfio_pci_core.c   |  28 ++
->  drivers/vfio/pci/vfio_pci_dmabuf.c | 446 +++++++++++++++++++++++++++++
->  drivers/vfio/pci/vfio_pci_priv.h   |  23 ++
->  include/linux/vfio_pci_core.h      |   1 +
->  include/uapi/linux/vfio.h          |  25 ++
->  8 files changed, 546 insertions(+), 4 deletions(-)
->  create mode 100644 drivers/vfio/pci/vfio_pci_dmabuf.c
+>  drivers/iommu/generic_pt/iommu_pt.h           |  39 ++
+>  drivers/iommu/iommufd/Kconfig                 |   1 +
+>  drivers/iommu/iommufd/iommufd_test.h          |  11 +-
+>  drivers/iommu/iommufd/selftest.c              | 438 +++++++-----------
+>  include/linux/generic_pt/iommu.h              |  12 +
+>  tools/testing/selftests/iommu/iommufd.c       |  60 ++-
+>  tools/testing/selftests/iommu/iommufd_utils.h |  12 +
+>  7 files changed, 289 insertions(+), 284 deletions(-)
 >
-> diff --git a/drivers/vfio/pci/Kconfig b/drivers/vfio/pci/Kconfig
-> index 2b0172f54665..2b9fca00e9e8 100644
-> --- a/drivers/vfio/pci/Kconfig
-> +++ b/drivers/vfio/pci/Kconfig
-> @@ -55,6 +55,9 @@ config VFIO_PCI_ZDEV_KVM
->
->           To enable s390x KVM vfio-pci extensions, say Y.
->
-> +config VFIO_PCI_DMABUF
-> +       def_bool y if VFIO_PCI_CORE && PCI_P2PDMA && DMA_SHARED_BUFFER
-> +
->  source "drivers/vfio/pci/mlx5/Kconfig"
->
->  source "drivers/vfio/pci/hisilicon/Kconfig"
-> diff --git a/drivers/vfio/pci/Makefile b/drivers/vfio/pci/Makefile
-> index cf00c0a7e55c..f9155e9c5f63 100644
-> --- a/drivers/vfio/pci/Makefile
-> +++ b/drivers/vfio/pci/Makefile
-> @@ -2,7 +2,9 @@
->
->  vfio-pci-core-y :=3D vfio_pci_core.o vfio_pci_intrs.o vfio_pci_rdwr.o vf=
-io_pci_config.o
->  vfio-pci-core-$(CONFIG_VFIO_PCI_ZDEV_KVM) +=3D vfio_pci_zdev.o
-> +
->  obj-$(CONFIG_VFIO_PCI_CORE) +=3D vfio-pci-core.o
-> +vfio-pci-core-$(CONFIG_VFIO_PCI_DMABUF) +=3D vfio_pci_dmabuf.o
->
->  vfio-pci-y :=3D vfio_pci.o
->  vfio-pci-$(CONFIG_VFIO_PCI_IGD) +=3D vfio_pci_igd.o
-> diff --git a/drivers/vfio/pci/vfio_pci_config.c b/drivers/vfio/pci/vfio_p=
-ci_config.c
-> index 8f02f236b5b4..1f6008eabf23 100644
-> --- a/drivers/vfio/pci/vfio_pci_config.c
-> +++ b/drivers/vfio/pci/vfio_pci_config.c
-> @@ -589,10 +589,12 @@ static int vfio_basic_config_write(struct vfio_pci_=
-core_device *vdev, int pos,
->                 virt_mem =3D !!(le16_to_cpu(*virt_cmd) & PCI_COMMAND_MEMO=
-RY);
->                 new_mem =3D !!(new_cmd & PCI_COMMAND_MEMORY);
->
-> -               if (!new_mem)
-> +               if (!new_mem) {
->                         vfio_pci_zap_and_down_write_memory_lock(vdev);
-> -               else
-> +                       vfio_pci_dma_buf_move(vdev, true);
-> +               } else {
->                         down_write(&vdev->memory_lock);
-> +               }
->
->                 /*
->                  * If the user is writing mem/io enable (new_mem/io) and =
-we
-> @@ -627,6 +629,8 @@ static int vfio_basic_config_write(struct vfio_pci_co=
-re_device *vdev, int pos,
->                 *virt_cmd &=3D cpu_to_le16(~mask);
->                 *virt_cmd |=3D cpu_to_le16(new_cmd & mask);
->
-> +               if (__vfio_pci_memory_enabled(vdev))
-> +                       vfio_pci_dma_buf_move(vdev, false);
->                 up_write(&vdev->memory_lock);
->         }
->
-> @@ -707,12 +711,16 @@ static int __init init_pci_cap_basic_perm(struct pe=
-rm_bits *perm)
->  static void vfio_lock_and_set_power_state(struct vfio_pci_core_device *v=
-dev,
->                                           pci_power_t state)
->  {
-> -       if (state >=3D PCI_D3hot)
-> +       if (state >=3D PCI_D3hot) {
->                 vfio_pci_zap_and_down_write_memory_lock(vdev);
-> -       else
-> +               vfio_pci_dma_buf_move(vdev, true);
-> +       } else {
->                 down_write(&vdev->memory_lock);
-> +       }
->
->         vfio_pci_set_power_state(vdev, state);
-> +       if (__vfio_pci_memory_enabled(vdev))
-> +               vfio_pci_dma_buf_move(vdev, false);
->         up_write(&vdev->memory_lock);
+> diff --git a/drivers/iommu/generic_pt/iommu_pt.h b/drivers/iommu/generic_=
+pt/iommu_pt.h
+> index 448c5796d4a861..142001f5aa83fd 100644
+> --- a/drivers/iommu/generic_pt/iommu_pt.h
+> +++ b/drivers/iommu/generic_pt/iommu_pt.h
+> @@ -264,6 +264,41 @@ int DOMAIN_NS(read_and_clear_dirty)(struct iommu_dom=
+ain *domain,
 >  }
->
-> @@ -900,7 +908,10 @@ static int vfio_exp_config_write(struct vfio_pci_cor=
-e_device *vdev, int pos,
->
->                 if (!ret && (cap & PCI_EXP_DEVCAP_FLR)) {
->                         vfio_pci_zap_and_down_write_memory_lock(vdev);
-> +                       vfio_pci_dma_buf_move(vdev, true);
->                         pci_try_reset_function(vdev->pdev);
-> +                       if (__vfio_pci_memory_enabled(vdev))
-> +                               vfio_pci_dma_buf_move(vdev, false);
->                         up_write(&vdev->memory_lock);
->                 }
->         }
-> @@ -982,7 +993,10 @@ static int vfio_af_config_write(struct vfio_pci_core=
-_device *vdev, int pos,
->
->                 if (!ret && (cap & PCI_AF_CAP_FLR) && (cap & PCI_AF_CAP_T=
-P)) {
->                         vfio_pci_zap_and_down_write_memory_lock(vdev);
-> +                       vfio_pci_dma_buf_move(vdev, true);
->                         pci_try_reset_function(vdev->pdev);
-> +                       if (__vfio_pci_memory_enabled(vdev))
-> +                               vfio_pci_dma_buf_move(vdev, false);
->                         up_write(&vdev->memory_lock);
->                 }
->         }
-> diff --git a/drivers/vfio/pci/vfio_pci_core.c b/drivers/vfio/pci/vfio_pci=
-_core.c
-> index fe247d0e2831..56b1320238a9 100644
-> --- a/drivers/vfio/pci/vfio_pci_core.c
-> +++ b/drivers/vfio/pci/vfio_pci_core.c
-> @@ -287,6 +287,8 @@ static int vfio_pci_runtime_pm_entry(struct vfio_pci_=
-core_device *vdev,
->          * semaphore.
->          */
->         vfio_pci_zap_and_down_write_memory_lock(vdev);
-> +       vfio_pci_dma_buf_move(vdev, true);
-> +
->         if (vdev->pm_runtime_engaged) {
->                 up_write(&vdev->memory_lock);
->                 return -EINVAL;
-> @@ -370,6 +372,8 @@ static void vfio_pci_runtime_pm_exit(struct vfio_pci_=
-core_device *vdev)
->          */
->         down_write(&vdev->memory_lock);
->         __vfio_pci_runtime_pm_exit(vdev);
-> +       if (__vfio_pci_memory_enabled(vdev))
-> +               vfio_pci_dma_buf_move(vdev, false);
->         up_write(&vdev->memory_lock);
->  }
->
-> @@ -690,6 +694,8 @@ void vfio_pci_core_close_device(struct vfio_device *c=
-ore_vdev)
->  #endif
->         vfio_pci_core_disable(vdev);
->
-> +       vfio_pci_dma_buf_cleanup(vdev);
-> +
->         mutex_lock(&vdev->igate);
->         if (vdev->err_trigger) {
->                 eventfd_ctx_put(vdev->err_trigger);
-> @@ -1222,7 +1228,10 @@ static int vfio_pci_ioctl_reset(struct vfio_pci_co=
-re_device *vdev,
->          */
->         vfio_pci_set_power_state(vdev, PCI_D0);
->
-> +       vfio_pci_dma_buf_move(vdev, true);
->         ret =3D pci_try_reset_function(vdev->pdev);
-> +       if (__vfio_pci_memory_enabled(vdev))
-> +               vfio_pci_dma_buf_move(vdev, false);
->         up_write(&vdev->memory_lock);
->
->         return ret;
-> @@ -1511,6 +1520,19 @@ int vfio_pci_core_ioctl_feature(struct vfio_device=
- *device, u32 flags,
->                 return vfio_pci_core_pm_exit(vdev, flags, arg, argsz);
->         case VFIO_DEVICE_FEATURE_PCI_VF_TOKEN:
->                 return vfio_pci_core_feature_token(vdev, flags, arg, args=
-z);
-> +       case VFIO_DEVICE_FEATURE_DMA_BUF:
-> +               if (device->ops->ioctl !=3D vfio_pci_core_ioctl)
-> +                       /*
-> +                        * Devices that overwrite general .ioctl() callba=
-ck
-> +                        * usually do it to implement their own
-> +                        * VFIO_DEVICE_GET_REGION_INFO handlerm and they =
-present
-> +                        * different BAR information from the real PCI.
-> +                        *
-> +                        * DMABUF relies on real PCI information.
-> +                        */
-> +                       return -EOPNOTSUPP;
-> +
-> +               return vfio_pci_core_feature_dma_buf(vdev, flags, arg, ar=
-gsz);
->         default:
->                 return -ENOTTY;
->         }
-> @@ -2095,6 +2117,7 @@ int vfio_pci_core_init_dev(struct vfio_device *core=
-_vdev)
->         ret =3D pcim_p2pdma_init(vdev->pdev);
->         if (ret !=3D -EOPNOTSUPP)
->                 return ret;
-> +       INIT_LIST_HEAD(&vdev->dmabufs);
->         init_rwsem(&vdev->memory_lock);
->         xa_init(&vdev->ctx);
->
-> @@ -2459,6 +2482,7 @@ static int vfio_pci_dev_set_hot_reset(struct vfio_d=
-evice_set *dev_set,
->                         break;
->                 }
->
-> +               vfio_pci_dma_buf_move(vdev, true);
->                 vfio_pci_zap_bars(vdev);
->         }
->
-> @@ -2482,6 +2506,10 @@ static int vfio_pci_dev_set_hot_reset(struct vfio_=
-device_set *dev_set,
->
->         ret =3D pci_reset_bus(pdev);
->
-> +       list_for_each_entry(vdev, &dev_set->device_list, vdev.dev_set_lis=
-t)
-> +               if (__vfio_pci_memory_enabled(vdev))
-> +                       vfio_pci_dma_buf_move(vdev, false);
-> +
->         vdev =3D list_last_entry(&dev_set->device_list,
->                                struct vfio_pci_core_device, vdev.dev_set_=
-list);
->
-> diff --git a/drivers/vfio/pci/vfio_pci_dmabuf.c b/drivers/vfio/pci/vfio_p=
-ci_dmabuf.c
-> new file mode 100644
-> index 000000000000..eaba010777f3
-> --- /dev/null
-> +++ b/drivers/vfio/pci/vfio_pci_dmabuf.c
-> @@ -0,0 +1,446 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/* Copyright (c) 2025, NVIDIA CORPORATION & AFFILIATES.
-> + */
-> +#include <linux/dma-buf.h>
-> +#include <linux/pci-p2pdma.h>
-> +#include <linux/dma-resv.h>
-> +
-> +#include "vfio_pci_priv.h"
-> +
-> +MODULE_IMPORT_NS("DMA_BUF");
-> +
-> +struct vfio_pci_dma_buf {
-> +       struct dma_buf *dmabuf;
-> +       struct vfio_pci_core_device *vdev;
-> +       struct list_head dmabufs_elm;
-> +       size_t size;
-> +       struct phys_vec *phys_vec;
-> +       struct p2pdma_provider *provider;
-> +       u32 nr_ranges;
-> +       u8 revoked : 1;
-> +};
-> +
-> +static int vfio_pci_dma_buf_attach(struct dma_buf *dmabuf,
-> +                                  struct dma_buf_attachment *attachment)
-> +{
-> +       struct vfio_pci_dma_buf *priv =3D dmabuf->priv;
-> +
-> +       if (!attachment->peer2peer)
-> +               return -EOPNOTSUPP;
-> +
-> +       if (priv->revoked)
-> +               return -ENODEV;
-> +
-> +       switch (pci_p2pdma_map_type(priv->provider, attachment->dev)) {
-> +       case PCI_P2PDMA_MAP_THRU_HOST_BRIDGE:
-> +               break;
-> +       case PCI_P2PDMA_MAP_BUS_ADDR:
-> +               /*
-> +                * There is no need in IOVA at all for this flow.
-> +                * We rely on attachment->priv =3D=3D NULL as a marker
-> +                * for this mode.
-> +                */
-> +               return 0;
-> +       default:
-> +               return -EINVAL;
-> +       }
-> +
-> +       attachment->priv =3D kzalloc(sizeof(struct dma_iova_state), GFP_K=
-ERNEL);
-> +       if (!attachment->priv)
-> +               return -ENOMEM;
-> +
-> +       dma_iova_try_alloc(attachment->dev, attachment->priv, 0, priv->si=
-ze);
-> +       return 0;
-> +}
-> +
-> +static void vfio_pci_dma_buf_detach(struct dma_buf *dmabuf,
-> +                                   struct dma_buf_attachment *attachment=
-)
-> +{
-> +       kfree(attachment->priv);
-> +}
-> +
-> +static struct scatterlist *fill_sg_entry(struct scatterlist *sgl, u64 le=
-ngth,
-> +                                        dma_addr_t addr)
-> +{
-> +       unsigned int len, nents;
-> +       int i;
-> +
-> +       nents =3D DIV_ROUND_UP(length, UINT_MAX);
-> +       for (i =3D 0; i < nents; i++) {
-> +               len =3D min_t(u64, length, UINT_MAX);
-> +               length -=3D len;
-> +               /*
-> +                * Follow the DMABUF rules for scatterlist, the struct pa=
-ge can
-> +                * be NULL'd for MMIO only memory.
-> +                */
-> +               sg_set_page(sgl, NULL, len, 0);
-> +               sg_dma_address(sgl) =3D addr + i * UINT_MAX;
-> +               sg_dma_len(sgl) =3D len;
-> +               sgl =3D sg_next(sgl);
-> +       }
-> +
-> +       return sgl;
-> +}
-> +
-> +static unsigned int calc_sg_nents(struct vfio_pci_dma_buf *priv,
-> +                                 struct dma_iova_state *state)
-> +{
-> +       struct phys_vec *phys_vec =3D priv->phys_vec;
-> +       unsigned int nents =3D 0;
-> +       u32 i;
-> +
-> +       if (!state || !dma_use_iova(state))
-> +               for (i =3D 0; i < priv->nr_ranges; i++)
-> +                       nents +=3D DIV_ROUND_UP(phys_vec[i].len, UINT_MAX=
+>  EXPORT_SYMBOL_NS_GPL(DOMAIN_NS(read_and_clear_dirty), "GENERIC_PT_IOMMU"=
 );
-> +       else
-> +               /*
-> +                * In IOVA case, there is only one SG entry which spans
-> +                * for whole IOVA address space, but we need to make sure
-> +                * that it fits sg->length, maybe we need more.
-> +                */
-> +               nents =3D DIV_ROUND_UP(priv->size, UINT_MAX);
+>
+> +static inline int __set_dirty(struct pt_range *range, void *arg,
+> +                             unsigned int level, struct pt_table_p *tabl=
+e)
+> +{
+> +       struct pt_state pts =3D pt_init(range, level, table);
 > +
-> +       return nents;
+> +       switch (pt_load_single_entry(&pts)) {
+> +       case PT_ENTRY_EMPTY:
+> +               return -ENOENT;
+> +       case PT_ENTRY_TABLE:
+> +               return pt_descend(&pts, arg, __set_dirty);
+> +       case PT_ENTRY_OA:
+> +               if (!pt_entry_make_write_dirty(&pts))
+> +                       return -EAGAIN;
+> +               return 0;
+> +       }
+> +       return -ENOENT;
 > +}
 > +
-> +static struct sg_table *
-> +vfio_pci_dma_buf_map(struct dma_buf_attachment *attachment,
-> +                    enum dma_data_direction dir)
+> +static int __maybe_unused NS(set_dirty)(struct pt_iommu *iommu_table,
+> +                                       dma_addr_t iova)
 > +{
-> +       struct vfio_pci_dma_buf *priv =3D attachment->dmabuf->priv;
-> +       struct dma_iova_state *state =3D attachment->priv;
-> +       struct phys_vec *phys_vec =3D priv->phys_vec;
-> +       unsigned long attrs =3D DMA_ATTR_MMIO;
-> +       unsigned int nents, mapped_len =3D 0;
-> +       struct scatterlist *sgl;
-> +       struct sg_table *sgt;
-> +       dma_addr_t addr;
+> +       struct pt_range range;
 > +       int ret;
-> +       u32 i;
 > +
-> +       dma_resv_assert_held(priv->dmabuf->resv);
-> +
-> +       if (priv->revoked)
-> +               return ERR_PTR(-ENODEV);
-> +
-> +       sgt =3D kzalloc(sizeof(*sgt), GFP_KERNEL);
-> +       if (!sgt)
-> +               return ERR_PTR(-ENOMEM);
-> +
-> +       nents =3D calc_sg_nents(priv, state);
-> +       ret =3D sg_alloc_table(sgt, nents, GFP_KERNEL | __GFP_ZERO);
+> +       ret =3D make_range(common_from_iommu(iommu_table), &range, iova, =
+1);
 > +       if (ret)
-> +               goto err_kfree_sgt;
-> +
-> +       sgl =3D sgt->sgl;
-> +
-> +       for (i =3D 0; i < priv->nr_ranges; i++) {
-> +               if (!state) {
-> +                       addr =3D pci_p2pdma_bus_addr_map(priv->provider,
-> +                                                      phys_vec[i].paddr)=
-;
-> +               } else if (dma_use_iova(state)) {
-> +                       ret =3D dma_iova_link(attachment->dev, state,
-> +                                           phys_vec[i].paddr, 0,
-> +                                           phys_vec[i].len, dir, attrs);
-> +                       if (ret)
-> +                               goto err_unmap_dma;
-> +
-> +                       mapped_len +=3D phys_vec[i].len;
-> +               } else {
-> +                       addr =3D dma_map_phys(attachment->dev, phys_vec[i=
-].paddr,
-> +                                           phys_vec[i].len, dir, attrs);
-> +                       ret =3D dma_mapping_error(attachment->dev, addr);
-> +                       if (ret)
-> +                               goto err_unmap_dma;
-> +               }
-> +
-> +               if (!state || !dma_use_iova(state))
-> +                       sgl =3D fill_sg_entry(sgl, phys_vec[i].len, addr)=
-;
-> +       }
-> +
-> +       if (state && dma_use_iova(state)) {
-> +               WARN_ON_ONCE(mapped_len !=3D priv->size);
-> +               ret =3D dma_iova_sync(attachment->dev, state, 0, mapped_l=
-en);
-> +               if (ret)
-> +                       goto err_unmap_dma;
-> +               sgl =3D fill_sg_entry(sgl, mapped_len, state->addr);
-> +       }
-> +
-> +       /*
-> +        * SGL must be NULL to indicate that SGL is the last one
-> +        * and we allocated correct number of entries in sg_alloc_table()
-> +        */
-> +       WARN_ON_ONCE(sgl);
-> +       return sgt;
-> +
-> +err_unmap_dma:
-> +       if (!i || !state)
-> +               ; /* Do nothing */
-> +       else if (dma_use_iova(state))
-> +               dma_iova_destroy(attachment->dev, state, mapped_len, dir,
-> +                                attrs);
-> +       else
-> +               for_each_sgtable_dma_sg(sgt, sgl, i)
-> +                       dma_unmap_phys(attachment->dev, sg_dma_address(sg=
-l),
-> +                                       sg_dma_len(sgl), dir, attrs);
-> +       sg_free_table(sgt);
-> +err_kfree_sgt:
-> +       kfree(sgt);
-> +       return ERR_PTR(ret);
-> +}
-> +
-> +static void vfio_pci_dma_buf_unmap(struct dma_buf_attachment *attachment=
-,
-> +                                  struct sg_table *sgt,
-> +                                  enum dma_data_direction dir)
-> +{
-> +       struct vfio_pci_dma_buf *priv =3D attachment->dmabuf->priv;
-> +       struct dma_iova_state *state =3D attachment->priv;
-> +       unsigned long attrs =3D DMA_ATTR_MMIO;
-> +       struct scatterlist *sgl;
-> +       int i;
-> +
-> +       if (!state)
-> +               ; /* Do nothing */
-> +       else if (dma_use_iova(state))
-> +               dma_iova_destroy(attachment->dev, state, priv->size, dir,
-> +                                attrs);
-> +       else
-> +               for_each_sgtable_dma_sg(sgt, sgl, i)
-> +                       dma_unmap_phys(attachment->dev, sg_dma_address(sg=
-l),
-> +                                      sg_dma_len(sgl), dir, attrs);
-> +
-> +       sg_free_table(sgt);
-> +       kfree(sgt);
-> +}
-> +
-> +static void vfio_pci_dma_buf_release(struct dma_buf *dmabuf)
-> +{
-> +       struct vfio_pci_dma_buf *priv =3D dmabuf->priv;
-> +
-> +       /*
-> +        * Either this or vfio_pci_dma_buf_cleanup() will remove from the=
- list.
-> +        * The refcount prevents both.
-> +        */
-> +       if (priv->vdev) {
-> +               down_write(&priv->vdev->memory_lock);
-> +               list_del_init(&priv->dmabufs_elm);
-> +               up_write(&priv->vdev->memory_lock);
-> +               vfio_device_put_registration(&priv->vdev->vdev);
-> +       }
-> +       kfree(priv->phys_vec);
-> +       kfree(priv);
-> +}
-> +
-> +static const struct dma_buf_ops vfio_pci_dmabuf_ops =3D {
-> +       .attach =3D vfio_pci_dma_buf_attach,
-> +       .detach =3D vfio_pci_dma_buf_detach,
-> +       .map_dma_buf =3D vfio_pci_dma_buf_map,
-> +       .release =3D vfio_pci_dma_buf_release,
-> +       .unmap_dma_buf =3D vfio_pci_dma_buf_unmap,
-> +};
-> +
-> +static void dma_ranges_to_p2p_phys(struct vfio_pci_dma_buf *priv,
-> +                                  struct vfio_device_feature_dma_buf *dm=
-a_buf,
-> +                                  struct vfio_region_dma_range *dma_rang=
-es,
-> +                                  struct p2pdma_provider *provider)
-> +{
-> +       struct pci_dev *pdev =3D priv->vdev->pdev;
-> +       phys_addr_t pci_start;
-> +       u32 i;
-> +
-> +       pci_start =3D pci_resource_start(pdev, dma_buf->region_index);
-> +       for (i =3D 0; i < dma_buf->nr_ranges; i++) {
-> +               priv->phys_vec[i].len =3D dma_ranges[i].length;
-> +               priv->phys_vec[i].paddr =3D pci_start + dma_ranges[i].off=
-set;
-> +               priv->size +=3D priv->phys_vec[i].len;
-> +       }
-> +       priv->nr_ranges =3D dma_buf->nr_ranges;
-> +       priv->provider =3D provider;
-> +}
-> +
-> +static int validate_dmabuf_input(struct vfio_pci_core_device *vdev,
-> +                                struct vfio_device_feature_dma_buf *dma_=
-buf,
-> +                                struct vfio_region_dma_range *dma_ranges=
-,
-> +                                struct p2pdma_provider **provider)
-> +{
-> +       struct pci_dev *pdev =3D vdev->pdev;
-> +       u32 bar =3D dma_buf->region_index;
-> +       resource_size_t bar_size;
-> +       u64 length =3D 0, sum;
-> +       u32 i;
-> +
-> +       if (dma_buf->flags)
-> +               return -EINVAL;
-> +       /*
-> +        * For PCI the region_index is the BAR number like  everything el=
-se.
-> +        */
-> +       if (bar >=3D VFIO_PCI_ROM_REGION_INDEX)
-> +               return -ENODEV;
-> +
-> +       *provider =3D pcim_p2pdma_provider(pdev, bar);
-> +       if (!*provider)
-> +               return -EINVAL;
-> +
-> +       bar_size =3D pci_resource_len(pdev, bar);
-> +       for (i =3D 0; i < dma_buf->nr_ranges; i++) {
-> +               u64 offset =3D dma_ranges[i].offset;
-> +               u64 len =3D dma_ranges[i].length;
-> +
-> +               if (!len || !PAGE_ALIGNED(offset) || !PAGE_ALIGNED(len))
-> +                       return -EINVAL;
-> +
-> +               if (check_add_overflow(offset, len, &sum) || sum > bar_si=
-ze)
-> +                       return -EINVAL;
-> +
-> +               /* Total requested length can't overflow IOVA size */
-> +               if (check_add_overflow(length, len, &sum))
-> +                       return -EINVAL;
-> +
-> +               length =3D sum;
-> +       }
-> +
-> +       /*
-> +        * DMA API uses size_t, so make sure that requested region length
-> +        * can fit into size_t variable, which can be unsigned int (32bit=
-s).
-> +        *
-> +        * In addition make sure that high bit of total length is not use=
-d too
-> +        * as it is used as a marker for DMA IOVA API.
-> +        */
-> +       if (overflows_type(length, size_t) || length & DMA_IOVA_USE_SWIOT=
-LB)
-> +               return -EINVAL;
-> +
-> +       return 0;
-> +}
-> +
-> +int vfio_pci_core_feature_dma_buf(struct vfio_pci_core_device *vdev, u32=
- flags,
-> +                                 struct vfio_device_feature_dma_buf __us=
-er *arg,
-> +                                 size_t argsz)
-> +{
-> +       struct vfio_device_feature_dma_buf get_dma_buf =3D {};
-> +       struct vfio_region_dma_range *dma_ranges;
-> +       DEFINE_DMA_BUF_EXPORT_INFO(exp_info);
-> +       struct p2pdma_provider *provider;
-> +       struct vfio_pci_dma_buf *priv;
-> +       int ret;
-> +
-> +       ret =3D vfio_check_feature(flags, argsz, VFIO_DEVICE_FEATURE_GET,
-> +                                sizeof(get_dma_buf));
-> +       if (ret !=3D 1)
 > +               return ret;
 > +
-> +       if (copy_from_user(&get_dma_buf, arg, sizeof(get_dma_buf)))
-> +               return -EFAULT;
-> +
-> +       if (!get_dma_buf.nr_ranges)
-> +               return -EINVAL;
-> +
-> +       dma_ranges =3D memdup_array_user(&arg->dma_ranges, get_dma_buf.nr=
-_ranges,
-> +                                      sizeof(*dma_ranges));
-> +       if (IS_ERR(dma_ranges))
-> +               return PTR_ERR(dma_ranges);
-> +
-> +       ret =3D validate_dmabuf_input(vdev, &get_dma_buf, dma_ranges, &pr=
-ovider);
-> +       if (ret)
-> +               goto err_free_ranges;
-> +
-> +       priv =3D kzalloc(sizeof(*priv), GFP_KERNEL);
-> +       if (!priv) {
-> +               ret =3D -ENOMEM;
-> +               goto err_free_ranges;
-> +       }
-> +       priv->phys_vec =3D kcalloc(get_dma_buf.nr_ranges, sizeof(*priv->p=
-hys_vec),
-> +                                GFP_KERNEL);
-> +       if (!priv->phys_vec) {
-> +               ret =3D -ENOMEM;
-> +               goto err_free_priv;
-> +       }
-> +
-> +       priv->vdev =3D vdev;
-> +       dma_ranges_to_p2p_phys(priv, &get_dma_buf, dma_ranges, provider);
-> +       kfree(dma_ranges);
-> +       dma_ranges =3D NULL;
-> +
-> +       if (!vfio_device_try_get_registration(&vdev->vdev)) {
-> +               ret =3D -ENODEV;
-> +               goto err_free_phys;
-> +       }
-> +
-> +       exp_info.ops =3D &vfio_pci_dmabuf_ops;
-> +       exp_info.size =3D priv->size;
-> +       exp_info.flags =3D get_dma_buf.open_flags;
-> +       exp_info.priv =3D priv;
-> +
-> +       priv->dmabuf =3D dma_buf_export(&exp_info);
-> +       if (IS_ERR(priv->dmabuf)) {
-> +               ret =3D PTR_ERR(priv->dmabuf);
-> +               goto err_dev_put;
-> +       }
-> +
-> +       /* dma_buf_put() now frees priv */
-> +       INIT_LIST_HEAD(&priv->dmabufs_elm);
-> +       down_write(&vdev->memory_lock);
-> +       dma_resv_lock(priv->dmabuf->resv, NULL);
-> +       priv->revoked =3D !__vfio_pci_memory_enabled(vdev);
-> +       list_add_tail(&priv->dmabufs_elm, &vdev->dmabufs);
-> +       dma_resv_unlock(priv->dmabuf->resv);
-> +       up_write(&vdev->memory_lock);
-> +
 > +       /*
-> +        * dma_buf_fd() consumes the reference, when the file closes the =
-dmabuf
-> +        * will be released.
+> +        * Note: There is no locking here yet, if the test suite races th=
+is it
+> +        * can crash. It should use RCU locking eventually.
 > +        */
-> +       return dma_buf_fd(priv->dmabuf, get_dma_buf.open_flags);
-> +
-> +err_dev_put:
-> +       vfio_device_put_registration(&vdev->vdev);
-> +err_free_phys:
-> +       kfree(priv->phys_vec);
-> +err_free_priv:
-> +       kfree(priv);
-> +err_free_ranges:
-> +       kfree(dma_ranges);
-> +       return ret;
+> +       return pt_walk_range(&range, __set_dirty, NULL);
 > +}
 > +
-> +void vfio_pci_dma_buf_move(struct vfio_pci_core_device *vdev, bool revok=
-ed)
-> +{
-> +       struct vfio_pci_dma_buf *priv;
-> +       struct vfio_pci_dma_buf *tmp;
-> +
-> +       lockdep_assert_held_write(&vdev->memory_lock);
-> +
-> +       list_for_each_entry_safe(priv, tmp, &vdev->dmabufs, dmabufs_elm) =
-{
-> +               if (!get_file_active(&priv->dmabuf->file))
-> +                       continue;
-> +
-> +               if (priv->revoked !=3D revoked) {
-> +                       dma_resv_lock(priv->dmabuf->resv, NULL);
-> +                       priv->revoked =3D revoked;
-> +                       dma_buf_move_notify(priv->dmabuf);
-
-I think this should only be called when revoked is true, otherwise
-this will be calling move_notify on the already revoked dmabuf
-attachments.
-> +                       dma_resv_unlock(priv->dmabuf->resv);
-> +               }
-> +               dma_buf_put(priv->dmabuf);
-> +       }
-> +}
-> +
-> +void vfio_pci_dma_buf_cleanup(struct vfio_pci_core_device *vdev)
-> +{
-> +       struct vfio_pci_dma_buf *priv;
-> +       struct vfio_pci_dma_buf *tmp;
-> +
-> +       down_write(&vdev->memory_lock);
-> +       list_for_each_entry_safe(priv, tmp, &vdev->dmabufs, dmabufs_elm) =
-{
-> +               if (!get_file_active(&priv->dmabuf->file))
-> +                       continue;
-> +
-> +               dma_resv_lock(priv->dmabuf->resv, NULL);
-> +               list_del_init(&priv->dmabufs_elm);
-> +               priv->vdev =3D NULL;
-> +               priv->revoked =3D true;
-> +               dma_buf_move_notify(priv->dmabuf);
-> +               dma_resv_unlock(priv->dmabuf->resv);
-> +               vfio_device_put_registration(&vdev->vdev);
-> +               dma_buf_put(priv->dmabuf);
-> +       }
-> +       up_write(&vdev->memory_lock);
-> +}
-> diff --git a/drivers/vfio/pci/vfio_pci_priv.h b/drivers/vfio/pci/vfio_pci=
-_priv.h
-> index a9972eacb293..28a405f8b97c 100644
-> --- a/drivers/vfio/pci/vfio_pci_priv.h
-> +++ b/drivers/vfio/pci/vfio_pci_priv.h
-> @@ -107,4 +107,27 @@ static inline bool vfio_pci_is_vga(struct pci_dev *p=
-dev)
->         return (pdev->class >> 8) =3D=3D PCI_CLASS_DISPLAY_VGA;
+>  struct pt_iommu_collect_args {
+>         struct iommu_pages_list free_list;
+>         /* Fail if any OAs are within the range */
+> @@ -957,6 +992,10 @@ static void NS(deinit)(struct pt_iommu *iommu_table)
 >  }
 >
-> +#ifdef CONFIG_VFIO_PCI_DMABUF
-> +int vfio_pci_core_feature_dma_buf(struct vfio_pci_core_device *vdev, u32=
- flags,
-> +                                 struct vfio_device_feature_dma_buf __us=
-er *arg,
-> +                                 size_t argsz);
-> +void vfio_pci_dma_buf_cleanup(struct vfio_pci_core_device *vdev);
-> +void vfio_pci_dma_buf_move(struct vfio_pci_core_device *vdev, bool revok=
-ed);
-> +#else
-> +static inline int
-> +vfio_pci_core_feature_dma_buf(struct vfio_pci_core_device *vdev, u32 fla=
-gs,
-> +                             struct vfio_device_feature_dma_buf __user *=
-arg,
-> +                             size_t argsz)
-> +{
-> +       return -ENOTTY;
-> +}
-> +static inline void vfio_pci_dma_buf_cleanup(struct vfio_pci_core_device =
-*vdev)
-> +{
-> +}
-> +static inline void vfio_pci_dma_buf_move(struct vfio_pci_core_device *vd=
-ev,
-> +                                        bool revoked)
-> +{
-> +}
+>  static const struct pt_iommu_ops NS(ops) =3D {
+> +#if IS_ENABLED(CONFIG_IOMMUFD_DRIVER) && defined(pt_entry_is_write_dirty=
+) && \
+> +       IS_ENABLED(CONFIG_IOMMUFD_TEST) && defined(pt_entry_make_write_di=
+rty)
+> +       .set_dirty =3D NS(set_dirty),
 > +#endif
-> +
->  #endif
-> diff --git a/include/linux/vfio_pci_core.h b/include/linux/vfio_pci_core.=
-h
-> index f541044e42a2..30d74b364f25 100644
-> --- a/include/linux/vfio_pci_core.h
-> +++ b/include/linux/vfio_pci_core.h
-> @@ -94,6 +94,7 @@ struct vfio_pci_core_device {
->         struct vfio_pci_core_device     *sriov_pf_core_dev;
->         struct notifier_block   nb;
->         struct rw_semaphore     memory_lock;
-> +       struct list_head        dmabufs;
+>         .get_info =3D NS(get_info),
+>         .deinit =3D NS(deinit),
+>  };
+> diff --git a/drivers/iommu/iommufd/Kconfig b/drivers/iommu/iommufd/Kconfi=
+g
+> index 2beeb4f60ee538..eae3f03629b0c1 100644
+> --- a/drivers/iommu/iommufd/Kconfig
+> +++ b/drivers/iommu/iommufd/Kconfig
+> @@ -41,6 +41,7 @@ config IOMMUFD_TEST
+>         depends on DEBUG_KERNEL
+>         depends on FAULT_INJECTION
+>         depends on RUNTIME_TESTING_MENU
+> +       depends on IOMMU_PT_AMDV1
+>         select IOMMUFD_DRIVER
+>         default n
+>         help
+> diff --git a/drivers/iommu/iommufd/iommufd_test.h b/drivers/iommu/iommufd=
+/iommufd_test.h
+> index 8fc618b2bcf967..781a75c79eeaec 100644
+> --- a/drivers/iommu/iommufd/iommufd_test.h
+> +++ b/drivers/iommu/iommufd/iommufd_test.h
+> @@ -31,9 +31,18 @@ enum {
+>         IOMMU_TEST_OP_PASID_CHECK_HWPT,
 >  };
 >
->  /* Will be exported for vfio pci drivers usage */
-> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-> index 75100bf009ba..63214467c875 100644
-> --- a/include/uapi/linux/vfio.h
-> +++ b/include/uapi/linux/vfio.h
-> @@ -1478,6 +1478,31 @@ struct vfio_device_feature_bus_master {
+> +enum {
+> +       MOCK_IOMMUPT_DEFAULT =3D 0,
+> +       MOCK_IOMMUPT_HUGE,
+> +       MOCK_IOMMUPT_AMDV1,
+> +};
+> +
+> +/* These values are true for MOCK_IOMMUPT_DEFAULT */
+>  enum {
+>         MOCK_APERTURE_START =3D 1UL << 24,
+>         MOCK_APERTURE_LAST =3D (1UL << 31) - 1,
+> +       MOCK_PAGE_SIZE =3D 2048,
+> +       MOCK_HUGE_PAGE_SIZE =3D 512 * MOCK_PAGE_SIZE,
 >  };
->  #define VFIO_DEVICE_FEATURE_BUS_MASTER 10
 >
-> +/**
-> + * Upon VFIO_DEVICE_FEATURE_GET create a dma_buf fd for the
-> + * regions selected.
-> + *
-> + * open_flags are the typical flags passed to open(2), eg O_RDWR, O_CLOE=
-XEC,
-> + * etc. offset/length specify a slice of the region to create the dmabuf=
- from.
-> + * nr_ranges is the total number of (P2P DMA) ranges that comprise the d=
-mabuf.
-> + *
-> + * Return: The fd number on success, -1 and errno is set on failure.
-> + */
-> +#define VFIO_DEVICE_FEATURE_DMA_BUF 11
+>  enum {
+> @@ -52,7 +61,6 @@ enum {
+>
+>  enum {
+>         MOCK_FLAGS_DEVICE_NO_DIRTY =3D 1 << 0,
+> -       MOCK_FLAGS_DEVICE_HUGE_IOVA =3D 1 << 1,
+>         MOCK_FLAGS_DEVICE_PASID =3D 1 << 2,
+>  };
+>
+> @@ -205,6 +213,7 @@ struct iommu_test_hw_info {
+>   */
+>  struct iommu_hwpt_selftest {
+>         __u32 iotlb;
+> +       __u32 pagetable_type;
+>  };
+>
+>  /* Should not be equal to any defined value in enum iommu_hwpt_invalidat=
+e_data_type */
+> diff --git a/drivers/iommu/iommufd/selftest.c b/drivers/iommu/iommufd/sel=
+ftest.c
+> index de178827a078a9..2fc90b483ae909 100644
+> --- a/drivers/iommu/iommufd/selftest.c
+> +++ b/drivers/iommu/iommufd/selftest.c
+> @@ -12,6 +12,8 @@
+>  #include <linux/slab.h>
+>  #include <linux/xarray.h>
+>  #include <uapi/linux/iommufd.h>
+> +#include <linux/generic_pt/iommu.h>
+> +#include "../iommu-pages.h"
+>
+>  #include "../iommu-priv.h"
+>  #include "io_pagetable.h"
+> @@ -41,21 +43,6 @@ static DEFINE_IDA(mock_dev_ida);
+>
+>  enum {
+>         MOCK_DIRTY_TRACK =3D 1,
+> -       MOCK_IO_PAGE_SIZE =3D PAGE_SIZE / 2,
+> -       MOCK_HUGE_PAGE_SIZE =3D 512 * MOCK_IO_PAGE_SIZE,
+> -
+> -       /*
+> -        * Like a real page table alignment requires the low bits of the =
+address
+> -        * to be zero. xarray also requires the high bit to be zero, so w=
+e store
+> -        * the pfns shifted. The upper bits are used for metadata.
+> -        */
+> -       MOCK_PFN_MASK =3D ULONG_MAX / MOCK_IO_PAGE_SIZE,
+> -
+> -       _MOCK_PFN_START =3D MOCK_PFN_MASK + 1,
+> -       MOCK_PFN_START_IOVA =3D _MOCK_PFN_START,
+> -       MOCK_PFN_LAST_IOVA =3D _MOCK_PFN_START,
+> -       MOCK_PFN_DIRTY_IOVA =3D _MOCK_PFN_START << 1,
+> -       MOCK_PFN_HUGE_IOVA =3D _MOCK_PFN_START << 2,
+>  };
+>
+>  static int mock_dev_enable_iopf(struct device *dev, struct iommu_domain =
+*domain);
+> @@ -124,10 +111,15 @@ void iommufd_test_syz_conv_iova_id(struct iommufd_u=
+cmd *ucmd,
+>  }
+>
+>  struct mock_iommu_domain {
+> +       union {
+> +               struct iommu_domain domain;
+> +               struct pt_iommu iommu;
+> +               struct pt_iommu_amdv1 amdv1;
+> +       };
+>         unsigned long flags;
+> -       struct iommu_domain domain;
+> -       struct xarray pfns;
+>  };
+> +PT_IOMMU_CHECK_DOMAIN(struct mock_iommu_domain, iommu, domain);
+> +PT_IOMMU_CHECK_DOMAIN(struct mock_iommu_domain, amdv1.iommu, domain);
+>
+>  static inline struct mock_iommu_domain *
+>  to_mock_domain(struct iommu_domain *domain)
+> @@ -344,74 +336,6 @@ static int mock_domain_set_dirty_tracking(struct iom=
+mu_domain *domain,
+>         return 0;
+>  }
+>
+> -static bool mock_test_and_clear_dirty(struct mock_iommu_domain *mock,
+> -                                     unsigned long iova, size_t page_siz=
+e,
+> -                                     unsigned long flags)
+> -{
+> -       unsigned long cur, end =3D iova + page_size - 1;
+> -       bool dirty =3D false;
+> -       void *ent, *old;
+> -
+> -       for (cur =3D iova; cur < end; cur +=3D MOCK_IO_PAGE_SIZE) {
+> -               ent =3D xa_load(&mock->pfns, cur / MOCK_IO_PAGE_SIZE);
+> -               if (!ent || !(xa_to_value(ent) & MOCK_PFN_DIRTY_IOVA))
+> -                       continue;
+> -
+> -               dirty =3D true;
+> -               /* Clear dirty */
+> -               if (!(flags & IOMMU_DIRTY_NO_CLEAR)) {
+> -                       unsigned long val;
+> -
+> -                       val =3D xa_to_value(ent) & ~MOCK_PFN_DIRTY_IOVA;
+> -                       old =3D xa_store(&mock->pfns, cur / MOCK_IO_PAGE_=
+SIZE,
+> -                                      xa_mk_value(val), GFP_KERNEL);
+> -                       WARN_ON_ONCE(ent !=3D old);
+> -               }
+> -       }
+> -
+> -       return dirty;
+> -}
+> -
+> -static int mock_domain_read_and_clear_dirty(struct iommu_domain *domain,
+> -                                           unsigned long iova, size_t si=
+ze,
+> -                                           unsigned long flags,
+> -                                           struct iommu_dirty_bitmap *di=
+rty)
+> -{
+> -       struct mock_iommu_domain *mock =3D to_mock_domain(domain);
+> -       unsigned long end =3D iova + size;
+> -       void *ent;
+> -
+> -       if (!(mock->flags & MOCK_DIRTY_TRACK) && dirty->bitmap)
+> -               return -EINVAL;
+> -
+> -       do {
+> -               unsigned long pgsize =3D MOCK_IO_PAGE_SIZE;
+> -               unsigned long head;
+> -
+> -               ent =3D xa_load(&mock->pfns, iova / MOCK_IO_PAGE_SIZE);
+> -               if (!ent) {
+> -                       iova +=3D pgsize;
+> -                       continue;
+> -               }
+> -
+> -               if (xa_to_value(ent) & MOCK_PFN_HUGE_IOVA)
+> -                       pgsize =3D MOCK_HUGE_PAGE_SIZE;
+> -               head =3D iova & ~(pgsize - 1);
+> -
+> -               /* Clear dirty */
+> -               if (mock_test_and_clear_dirty(mock, head, pgsize, flags))
+> -                       iommu_dirty_bitmap_record(dirty, iova, pgsize);
+> -               iova +=3D pgsize;
+> -       } while (iova < end);
+> -
+> -       return 0;
+> -}
+> -
+> -static const struct iommu_dirty_ops dirty_ops =3D {
+> -       .set_dirty_tracking =3D mock_domain_set_dirty_tracking,
+> -       .read_and_clear_dirty =3D mock_domain_read_and_clear_dirty,
+> -};
+> -
+>  static struct mock_iommu_domain_nested *
+>  __mock_domain_alloc_nested(const struct iommu_user_data *user_data)
+>  {
+> @@ -446,7 +370,7 @@ mock_domain_alloc_nested(struct device *dev, struct i=
+ommu_domain *parent,
+>
+>         if (flags & ~IOMMU_HWPT_ALLOC_PASID)
+>                 return ERR_PTR(-EOPNOTSUPP);
+> -       if (!parent || parent->ops !=3D mock_ops.default_domain_ops)
+> +       if (!parent || !(parent->type & __IOMMU_DOMAIN_PAGING))
+>                 return ERR_PTR(-EINVAL);
+>
+>         mock_parent =3D to_mock_domain(parent);
+> @@ -459,6 +383,138 @@ mock_domain_alloc_nested(struct device *dev, struct=
+ iommu_domain *parent,
+>         return &mock_nested->domain;
+>  }
+>
+> +static void mock_domain_free(struct iommu_domain *domain)
+> +{
+> +       struct mock_iommu_domain *mock =3D to_mock_domain(domain);
 > +
-> +struct vfio_region_dma_range {
-> +       __u64 offset;
-> +       __u64 length;
+> +       pt_iommu_deinit(&mock->iommu);
+> +       kfree(mock);
+> +}
+> +
+> +static void mock_iotlb_sync(struct iommu_domain *domain,
+> +                               struct iommu_iotlb_gather *gather)
+> +{
+> +       iommu_put_pages_list(&gather->freelist);
+> +}
+> +
+> +static const struct iommu_domain_ops amdv1_mock_ops =3D {
+> +       IOMMU_PT_DOMAIN_OPS(amdv1_mock),
+> +       .free =3D mock_domain_free,
+> +       .attach_dev =3D mock_domain_nop_attach,
+> +       .set_dev_pasid =3D mock_domain_set_dev_pasid_nop,
+> +       .iotlb_sync =3D &mock_iotlb_sync,
 > +};
 > +
-> +struct vfio_device_feature_dma_buf {
-> +       __u32   region_index;
-> +       __u32   open_flags;
-> +       __u32   flags;
-> +       __u32   nr_ranges;
-> +       struct vfio_region_dma_range dma_ranges[];
+> +static const struct iommu_domain_ops amdv1_mock_huge_ops =3D {
+> +       IOMMU_PT_DOMAIN_OPS(amdv1_mock),
+> +       .free =3D mock_domain_free,
+> +       .attach_dev =3D mock_domain_nop_attach,
+> +       .set_dev_pasid =3D mock_domain_set_dev_pasid_nop,
+> +       .iotlb_sync =3D &mock_iotlb_sync,
+> +};
+> +#undef pt_iommu_amdv1_mock_map_pages
+> +
+> +static const struct iommu_dirty_ops amdv1_mock_dirty_ops =3D {
+> +       IOMMU_PT_DIRTY_OPS(amdv1_mock),
+> +       .set_dirty_tracking =3D mock_domain_set_dirty_tracking,
 > +};
 > +
->  /* -------- API for Type1 VFIO IOMMU -------- */
+> +static const struct iommu_domain_ops amdv1_ops =3D {
+> +       IOMMU_PT_DOMAIN_OPS(amdv1),
+> +       .free =3D mock_domain_free,
+> +       .attach_dev =3D mock_domain_nop_attach,
+> +       .set_dev_pasid =3D mock_domain_set_dev_pasid_nop,
+> +       .iotlb_sync =3D &mock_iotlb_sync,
+> +};
+> +
+> +static const struct iommu_dirty_ops amdv1_dirty_ops =3D {
+> +       IOMMU_PT_DIRTY_OPS(amdv1),
+> +       .set_dirty_tracking =3D mock_domain_set_dirty_tracking,
+> +};
+> +
+> +static struct mock_iommu_domain *
+> +mock_domain_alloc_pgtable(struct device *dev,
+> +                         const struct iommu_hwpt_selftest *user_cfg, u32=
+ flags)
+> +{
+> +       struct mock_iommu_domain *mock;
+> +       int rc;
+> +
+> +       mock =3D kzalloc(sizeof(*mock), GFP_KERNEL);
+> +       if (!mock)
+> +               return ERR_PTR(-ENOMEM);
+> +       mock->domain.type =3D IOMMU_DOMAIN_UNMANAGED;
+> +
+> +       mock->amdv1.iommu.nid =3D NUMA_NO_NODE;
+> +
+> +       switch (user_cfg->pagetable_type) {
+> +       case MOCK_IOMMUPT_DEFAULT:
+> +       case MOCK_IOMMUPT_HUGE: {
+> +               struct pt_iommu_amdv1_cfg cfg =3D {};
+> +
+> +               /* The mock version has a 2k page size */
+> +               cfg.common.hw_max_vasz_lg2 =3D 56;
+> +               cfg.common.hw_max_oasz_lg2 =3D 51;
+> +               cfg.starting_level =3D 2;
+> +               if (user_cfg->pagetable_type =3D=3D MOCK_IOMMUPT_HUGE)
+> +                       mock->domain.ops =3D &amdv1_mock_huge_ops;
+> +               else
+> +                       mock->domain.ops =3D &amdv1_mock_ops;
+> +               rc =3D pt_iommu_amdv1_mock_init(&mock->amdv1, &cfg, GFP_K=
+ERNEL);
+> +               if (rc)
+> +                       goto err_free;
+> +
+> +               /*
+> +                * In huge mode userspace should only provide huge pages,=
+ we
+> +                * have to include PAGE_SIZE for the domain to be accepte=
+d by
+> +                * iommufd.
+> +                */
+> +               if (user_cfg->pagetable_type =3D=3D MOCK_IOMMUPT_HUGE)
+> +                       mock->domain.pgsize_bitmap =3D MOCK_HUGE_PAGE_SIZ=
+E |
+> +                                                    PAGE_SIZE;
+> +               if (flags & IOMMU_HWPT_ALLOC_DIRTY_TRACKING)
+> +                       mock->domain.dirty_ops =3D &amdv1_mock_dirty_ops;
+> +               break;
+> +       }
+> +
+> +       case MOCK_IOMMUPT_AMDV1: {
+> +               struct pt_iommu_amdv1_cfg cfg =3D {};
+> +
+> +               cfg.common.hw_max_vasz_lg2 =3D 64;
+> +               cfg.common.hw_max_oasz_lg2 =3D 52;
+> +               cfg.common.features =3D BIT(PT_FEAT_DYNAMIC_TOP) |
+> +                                     BIT(PT_FEAT_AMDV1_ENCRYPT_TABLES) |
+> +                                     BIT(PT_FEAT_AMDV1_FORCE_COHERENCE);
+> +               cfg.starting_level =3D 2;
+> +               mock->domain.ops =3D &amdv1_ops;
+> +               rc =3D pt_iommu_amdv1_init(&mock->amdv1, &cfg, GFP_KERNEL=
+);
+> +               if (rc)
+> +                       goto err_free;
+> +               if (flags & IOMMU_HWPT_ALLOC_DIRTY_TRACKING)
+> +                       mock->domain.dirty_ops =3D &amdv1_dirty_ops;
+> +               break;
+> +       }
+> +       default:
+> +               rc =3D -EOPNOTSUPP;
+> +               goto err_free;
+> +       }
+> +
+> +       /*
+> +        * Override the real aperture to the MOCK aperture for test purpo=
+ses.
+> +        */
+> +       if (user_cfg->pagetable_type =3D=3D MOCK_IOMMUPT_DEFAULT) {
+> +               WARN_ON(mock->domain.geometry.aperture_start !=3D 0);
+> +               WARN_ON(mock->domain.geometry.aperture_end < MOCK_APERTUR=
+E_LAST);
+> +
+> +               mock->domain.geometry.aperture_start =3D MOCK_APERTURE_ST=
+ART;
+> +               mock->domain.geometry.aperture_end =3D MOCK_APERTURE_LAST=
+;
+> +       }
+> +
+> +       return mock;
+> +err_free:
+> +       kfree(mock);
+> +       return ERR_PTR(rc);
+> +}
+> +
+>  static struct iommu_domain *
+>  mock_domain_alloc_paging_flags(struct device *dev, u32 flags,
+>                                const struct iommu_user_data *user_data)
+> @@ -469,151 +525,30 @@ mock_domain_alloc_paging_flags(struct device *dev,=
+ u32 flags,
+>                                  IOMMU_HWPT_ALLOC_PASID;
+>         struct mock_dev *mdev =3D to_mock_dev(dev);
+>         bool no_dirty_ops =3D mdev->flags & MOCK_FLAGS_DEVICE_NO_DIRTY;
+> +       struct iommu_hwpt_selftest user_cfg =3D {};
+>         struct mock_iommu_domain *mock;
+> +       int rc;
 >
->  /**
+> -       if (user_data)
+> -               return ERR_PTR(-EOPNOTSUPP);
+>         if ((flags & ~PAGING_FLAGS) || (has_dirty_flag && no_dirty_ops))
+>                 return ERR_PTR(-EOPNOTSUPP);
+>
+> -       mock =3D kzalloc(sizeof(*mock), GFP_KERNEL);
+> -       if (!mock)
+> -               return ERR_PTR(-ENOMEM);
+> -       mock->domain.geometry.aperture_start =3D MOCK_APERTURE_START;
+> -       mock->domain.geometry.aperture_end =3D MOCK_APERTURE_LAST;
+> -       mock->domain.pgsize_bitmap =3D MOCK_IO_PAGE_SIZE;
+> -       if (dev && mdev->flags & MOCK_FLAGS_DEVICE_HUGE_IOVA)
+> -               mock->domain.pgsize_bitmap |=3D MOCK_HUGE_PAGE_SIZE;
+> -       mock->domain.ops =3D mock_ops.default_domain_ops;
+> -       mock->domain.type =3D IOMMU_DOMAIN_UNMANAGED;
+> -       xa_init(&mock->pfns);
+> +       if (user_data && (user_data->type !=3D IOMMU_HWPT_DATA_SELFTEST &=
+&
+> +                         user_data->type !=3D IOMMU_HWPT_DATA_NONE))
+> +               return ERR_PTR(-EOPNOTSUPP);
+>
+> -       if (has_dirty_flag)
+> -               mock->domain.dirty_ops =3D &dirty_ops;
+> +       if (user_data) {
+> +               rc =3D iommu_copy_struct_from_user(
+> +                       &user_cfg, user_data, IOMMU_HWPT_DATA_SELFTEST, i=
+otlb);
+> +               if (rc)
+> +                       return ERR_PTR(rc);
+> +       }
+> +
+> +       mock =3D mock_domain_alloc_pgtable(dev, &user_cfg, flags);
+> +       if (IS_ERR(mock))
+> +               return ERR_CAST(mock);
+>         return &mock->domain;
+>  }
+>
+> -static void mock_domain_free(struct iommu_domain *domain)
+> -{
+> -       struct mock_iommu_domain *mock =3D to_mock_domain(domain);
+> -
+> -       WARN_ON(!xa_empty(&mock->pfns));
+> -       kfree(mock);
+> -}
+> -
+> -static int mock_domain_map_pages(struct iommu_domain *domain,
+> -                                unsigned long iova, phys_addr_t paddr,
+> -                                size_t pgsize, size_t pgcount, int prot,
+> -                                gfp_t gfp, size_t *mapped)
+> -{
+> -       struct mock_iommu_domain *mock =3D to_mock_domain(domain);
+> -       unsigned long flags =3D MOCK_PFN_START_IOVA;
+> -       unsigned long start_iova =3D iova;
+> -
+> -       /*
+> -        * xarray does not reliably work with fault injection because it =
+does a
+> -        * retry allocation, so put our own failure point.
+> -        */
+> -       if (iommufd_should_fail())
+> -               return -ENOENT;
+> -
+> -       WARN_ON(iova % MOCK_IO_PAGE_SIZE);
+> -       WARN_ON(pgsize % MOCK_IO_PAGE_SIZE);
+> -       for (; pgcount; pgcount--) {
+> -               size_t cur;
+> -
+> -               for (cur =3D 0; cur !=3D pgsize; cur +=3D MOCK_IO_PAGE_SI=
+ZE) {
+> -                       void *old;
+> -
+> -                       if (pgcount =3D=3D 1 && cur + MOCK_IO_PAGE_SIZE =
+=3D=3D pgsize)
+> -                               flags =3D MOCK_PFN_LAST_IOVA;
+> -                       if (pgsize !=3D MOCK_IO_PAGE_SIZE) {
+> -                               flags |=3D MOCK_PFN_HUGE_IOVA;
+> -                       }
+> -                       old =3D xa_store(&mock->pfns, iova / MOCK_IO_PAGE=
+_SIZE,
+> -                                      xa_mk_value((paddr / MOCK_IO_PAGE_=
+SIZE) |
+> -                                                  flags),
+> -                                      gfp);
+> -                       if (xa_is_err(old)) {
+> -                               for (; start_iova !=3D iova;
+> -                                    start_iova +=3D MOCK_IO_PAGE_SIZE)
+> -                                       xa_erase(&mock->pfns,
+> -                                                start_iova /
+> -                                                        MOCK_IO_PAGE_SIZ=
+E);
+> -                               return xa_err(old);
+> -                       }
+> -                       WARN_ON(old);
+> -                       iova +=3D MOCK_IO_PAGE_SIZE;
+> -                       paddr +=3D MOCK_IO_PAGE_SIZE;
+> -                       *mapped +=3D MOCK_IO_PAGE_SIZE;
+> -                       flags =3D 0;
+> -               }
+> -       }
+> -       return 0;
+> -}
+> -
+> -static size_t mock_domain_unmap_pages(struct iommu_domain *domain,
+> -                                     unsigned long iova, size_t pgsize,
+> -                                     size_t pgcount,
+> -                                     struct iommu_iotlb_gather *iotlb_ga=
+ther)
+> -{
+> -       struct mock_iommu_domain *mock =3D to_mock_domain(domain);
+> -       bool first =3D true;
+> -       size_t ret =3D 0;
+> -       void *ent;
+> -
+> -       WARN_ON(iova % MOCK_IO_PAGE_SIZE);
+> -       WARN_ON(pgsize % MOCK_IO_PAGE_SIZE);
+> -
+> -       for (; pgcount; pgcount--) {
+> -               size_t cur;
+> -
+> -               for (cur =3D 0; cur !=3D pgsize; cur +=3D MOCK_IO_PAGE_SI=
+ZE) {
+> -                       ent =3D xa_erase(&mock->pfns, iova / MOCK_IO_PAGE=
+_SIZE);
+> -
+> -                       /*
+> -                        * iommufd generates unmaps that must be a strict
+> -                        * superset of the map's performend So every
+> -                        * starting/ending IOVA should have been an iova =
+passed
+> -                        * to map.
+> -                        *
+> -                        * This simple logic doesn't work when the HUGE_P=
+AGE is
+> -                        * turned on since the core code will automatical=
+ly
+> -                        * switch between the two page sizes creating a b=
+reak in
+> -                        * the unmap calls. The break can land in the mid=
+dle of
+> -                        * contiguous IOVA.
+> -                        */
+> -                       if (!(domain->pgsize_bitmap & MOCK_HUGE_PAGE_SIZE=
+)) {
+> -                               if (first) {
+> -                                       WARN_ON(ent && !(xa_to_value(ent)=
+ &
+> -                                                        MOCK_PFN_START_I=
+OVA));
+> -                                       first =3D false;
+> -                               }
+> -                               if (pgcount =3D=3D 1 &&
+> -                                   cur + MOCK_IO_PAGE_SIZE =3D=3D pgsize=
+)
+> -                                       WARN_ON(ent && !(xa_to_value(ent)=
+ &
+> -                                                        MOCK_PFN_LAST_IO=
+VA));
+> -                       }
+> -
+> -                       iova +=3D MOCK_IO_PAGE_SIZE;
+> -                       ret +=3D MOCK_IO_PAGE_SIZE;
+> -               }
+> -       }
+> -       return ret;
+> -}
+> -
+> -static phys_addr_t mock_domain_iova_to_phys(struct iommu_domain *domain,
+> -                                           dma_addr_t iova)
+> -{
+> -       struct mock_iommu_domain *mock =3D to_mock_domain(domain);
+> -       void *ent;
+> -
+> -       WARN_ON(iova % MOCK_IO_PAGE_SIZE);
+> -       ent =3D xa_load(&mock->pfns, iova / MOCK_IO_PAGE_SIZE);
+> -       WARN_ON(!ent);
+> -       return (xa_to_value(ent) & MOCK_PFN_MASK) * MOCK_IO_PAGE_SIZE;
+> -}
+> -
+>  static bool mock_domain_capable(struct device *dev, enum iommu_cap cap)
+>  {
+>         struct mock_dev *mdev =3D to_mock_dev(dev);
+> @@ -955,15 +890,6 @@ static const struct iommu_ops mock_ops =3D {
+>         .user_pasid_table =3D true,
+>         .get_viommu_size =3D mock_get_viommu_size,
+>         .viommu_init =3D mock_viommu_init,
+> -       .default_domain_ops =3D
+> -               &(struct iommu_domain_ops){
+> -                       .free =3D mock_domain_free,
+> -                       .attach_dev =3D mock_domain_nop_attach,
+> -                       .map_pages =3D mock_domain_map_pages,
+> -                       .unmap_pages =3D mock_domain_unmap_pages,
+> -                       .iova_to_phys =3D mock_domain_iova_to_phys,
+> -                       .set_dev_pasid =3D mock_domain_set_dev_pasid_nop,
+> -               },
+>  };
+>
+>  static void mock_domain_free_nested(struct iommu_domain *domain)
+> @@ -1047,7 +973,7 @@ get_md_pagetable(struct iommufd_ucmd *ucmd, u32 mock=
+pt_id,
+>         if (IS_ERR(hwpt))
+>                 return hwpt;
+>         if (hwpt->domain->type !=3D IOMMU_DOMAIN_UNMANAGED ||
+> -           hwpt->domain->ops !=3D mock_ops.default_domain_ops) {
+> +           hwpt->domain->owner !=3D &mock_ops) {
+>                 iommufd_put_object(ucmd->ictx, &hwpt->obj);
+>                 return ERR_PTR(-EINVAL);
+>         }
+> @@ -1088,7 +1014,6 @@ static struct mock_dev *mock_dev_create(unsigned lo=
+ng dev_flags)
+>                 {},
+>         };
+>         const u32 valid_flags =3D MOCK_FLAGS_DEVICE_NO_DIRTY |
+> -                               MOCK_FLAGS_DEVICE_HUGE_IOVA |
+>                                 MOCK_FLAGS_DEVICE_PASID;
+>         struct mock_dev *mdev;
+>         int rc, i;
+> @@ -1277,23 +1202,25 @@ static int iommufd_test_md_check_pa(struct iommuf=
+d_ucmd *ucmd,
+>  {
+>         struct iommufd_hw_pagetable *hwpt;
+>         struct mock_iommu_domain *mock;
+> +       unsigned int page_size;
+>         uintptr_t end;
+>         int rc;
+>
+> -       if (iova % MOCK_IO_PAGE_SIZE || length % MOCK_IO_PAGE_SIZE ||
+> -           (uintptr_t)uptr % MOCK_IO_PAGE_SIZE ||
+> -           check_add_overflow((uintptr_t)uptr, (uintptr_t)length, &end))
+> -               return -EINVAL;
+> -
+>         hwpt =3D get_md_pagetable(ucmd, mockpt_id, &mock);
+>         if (IS_ERR(hwpt))
+>                 return PTR_ERR(hwpt);
+>
+> -       for (; length; length -=3D MOCK_IO_PAGE_SIZE) {
+> +       page_size =3D 1 << __ffs(mock->domain.pgsize_bitmap);
+> +       if (iova % page_size || length % page_size ||
+> +           (uintptr_t)uptr % page_size ||
+> +           check_add_overflow((uintptr_t)uptr, (uintptr_t)length, &end))
+> +               return -EINVAL;
+> +
+> +       for (; length; length -=3D page_size) {
+>                 struct page *pages[1];
+> +               phys_addr_t io_phys;
+>                 unsigned long pfn;
+>                 long npages;
+> -               void *ent;
+>
+>                 npages =3D get_user_pages_fast((uintptr_t)uptr & PAGE_MAS=
+K, 1, 0,
+>                                              pages);
+> @@ -1308,15 +1235,14 @@ static int iommufd_test_md_check_pa(struct iommuf=
+d_ucmd *ucmd,
+>                 pfn =3D page_to_pfn(pages[0]);
+>                 put_page(pages[0]);
+>
+> -               ent =3D xa_load(&mock->pfns, iova / MOCK_IO_PAGE_SIZE);
+> -               if (!ent ||
+> -                   (xa_to_value(ent) & MOCK_PFN_MASK) * MOCK_IO_PAGE_SIZ=
+E !=3D
+> -                           pfn * PAGE_SIZE + ((uintptr_t)uptr % PAGE_SIZ=
+E)) {
+> +               io_phys =3D mock->domain.ops->iova_to_phys(&mock->domain,=
+ iova);
+> +               if (io_phys !=3D
+> +                   pfn * PAGE_SIZE + ((uintptr_t)uptr % PAGE_SIZE)) {
+>                         rc =3D -EINVAL;
+>                         goto out_put;
+>                 }
+> -               iova +=3D MOCK_IO_PAGE_SIZE;
+> -               uptr +=3D MOCK_IO_PAGE_SIZE;
+> +               iova +=3D page_size;
+> +               uptr +=3D page_size;
+>         }
+>         rc =3D 0;
+>
+> @@ -1795,7 +1721,7 @@ static int iommufd_test_dirty(struct iommufd_ucmd *=
+ucmd, unsigned int mockpt_id,
+>         if (IS_ERR(hwpt))
+>                 return PTR_ERR(hwpt);
+>
+> -       if (!(mock->flags & MOCK_DIRTY_TRACK)) {
+> +       if (!(mock->flags & MOCK_DIRTY_TRACK) || !mock->iommu.ops->set_di=
+rty) {
+>                 rc =3D -EINVAL;
+>                 goto out_put;
+>         }
+> @@ -1814,22 +1740,10 @@ static int iommufd_test_dirty(struct iommufd_ucmd=
+ *ucmd, unsigned int mockpt_id,
+>         }
+>
+>         for (i =3D 0; i < max; i++) {
+> -               unsigned long cur =3D iova + i * page_size;
+> -               void *ent, *old;
+> -
+>                 if (!test_bit(i, (unsigned long *)tmp))
+>                         continue;
+> -
+> -               ent =3D xa_load(&mock->pfns, cur / page_size);
+> -               if (ent) {
+> -                       unsigned long val;
+> -
+> -                       val =3D xa_to_value(ent) | MOCK_PFN_DIRTY_IOVA;
+> -                       old =3D xa_store(&mock->pfns, cur / page_size,
+> -                                      xa_mk_value(val), GFP_KERNEL);
+> -                       WARN_ON_ONCE(ent !=3D old);
+> -                       count++;
+> -               }
+> +               mock->iommu.ops->set_dirty(&mock->iommu, iova + i * page_=
+size);
+> +               count++;
+>         }
+>
+>         cmd->dirty.out_nr_dirty =3D count;
+> @@ -2202,3 +2116,5 @@ void iommufd_test_exit(void)
+>         platform_device_unregister(selftest_iommu_dev);
+>         debugfs_remove_recursive(dbgfs_root);
+>  }
+> +
+> +MODULE_IMPORT_NS("GENERIC_PT_IOMMU");
+> diff --git a/include/linux/generic_pt/iommu.h b/include/linux/generic_pt/=
+iommu.h
+> index 848a5fb76272a9..f2a763aba08846 100644
+> --- a/include/linux/generic_pt/iommu.h
+> +++ b/include/linux/generic_pt/iommu.h
+> @@ -73,6 +73,18 @@ struct pt_iommu_info {
+>  };
+>
+>  struct pt_iommu_ops {
+> +       /**
+> +        * @set_dirty: Make the iova write dirty
+> +        * @iommu_table: Table to manipulate
+> +        * @iova: IO virtual address to start
+> +        *
+> +        * This is only used by iommufd testing. It makes the iova dirty =
+so that
+> +        * read_and_clear_dirty() will see it as dirty. Unlike all the ot=
+her ops
+> +        * this one is safe to call without holding any locking. It may r=
+eturn
+> +        * -EAGAIN if there is a race.
+> +        */
+> +       int (*set_dirty)(struct pt_iommu *iommu_table, dma_addr_t iova);
+> +
+>         /**
+>          * @get_info: Return the pt_iommu_info structure
+>          * @iommu_table: Table to query
+> diff --git a/tools/testing/selftests/iommu/iommufd.c b/tools/testing/self=
+tests/iommu/iommufd.c
+> index 3eebf5e3b974f4..595b0a3ead645c 100644
+> --- a/tools/testing/selftests/iommu/iommufd.c
+> +++ b/tools/testing/selftests/iommu/iommufd.c
+> @@ -13,9 +13,6 @@
+>
+>  static unsigned long HUGEPAGE_SIZE;
+>
+> -#define MOCK_PAGE_SIZE (PAGE_SIZE / 2)
+> -#define MOCK_HUGE_PAGE_SIZE (512 * MOCK_PAGE_SIZE)
+> -
+>  static unsigned long get_huge_page_size(void)
+>  {
+>         char buf[80];
+> @@ -2058,6 +2055,12 @@ FIXTURE_VARIANT(iommufd_dirty_tracking)
+>
+>  FIXTURE_SETUP(iommufd_dirty_tracking)
+>  {
+> +       struct iommu_option cmd =3D {
+> +               .size =3D sizeof(cmd),
+> +               .option_id =3D IOMMU_OPTION_HUGE_PAGES,
+> +               .op =3D IOMMU_OPTION_OP_SET,
+> +               .val64 =3D 0,
+> +       };
+>         size_t mmap_buffer_size;
+>         unsigned long size;
+>         int mmap_flags;
+> @@ -2066,7 +2069,7 @@ FIXTURE_SETUP(iommufd_dirty_tracking)
+>
+>         if (variant->buffer_size < MOCK_PAGE_SIZE) {
+>                 SKIP(return,
+> -                    "Skipping buffer_size=3D%lu, less than MOCK_PAGE_SIZ=
+E=3D%lu",
+> +                    "Skipping buffer_size=3D%lu, less than MOCK_PAGE_SIZ=
+E=3D%u",
+>                      variant->buffer_size, MOCK_PAGE_SIZE);
+>         }
+>
+> @@ -2114,16 +2117,18 @@ FIXTURE_SETUP(iommufd_dirty_tracking)
+>         assert((uintptr_t)self->bitmap % PAGE_SIZE =3D=3D 0);
+>
+>         test_ioctl_ioas_alloc(&self->ioas_id);
+> -       /* Enable 1M mock IOMMU hugepages */
+> -       if (variant->hugepages) {
+> -               test_cmd_mock_domain_flags(self->ioas_id,
+> -                                          MOCK_FLAGS_DEVICE_HUGE_IOVA,
+> -                                          &self->stdev_id, &self->hwpt_i=
+d,
+> -                                          &self->idev_id);
+> -       } else {
+> -               test_cmd_mock_domain(self->ioas_id, &self->stdev_id,
+> -                                    &self->hwpt_id, &self->idev_id);
+> -       }
+> +
+> +       /*
+> +        * For dirty testing it is important that the page size fed into
+> +        * the iommu page tables matches the size the dirty logic
+> +        * expects, or set_dirty can touch too much stuff.
+> +        */
+> +       cmd.object_id =3D self->ioas_id;
+> +       if (!variant->hugepages)
+> +               ASSERT_EQ(0, ioctl(self->fd, IOMMU_OPTION, &cmd));
+> +
+> +       test_cmd_mock_domain(self->ioas_id, &self->stdev_id, &self->hwpt_=
+id,
+> +                            &self->idev_id);
+>  }
+>
+>  FIXTURE_TEARDOWN(iommufd_dirty_tracking)
+> @@ -2248,18 +2253,23 @@ TEST_F(iommufd_dirty_tracking, device_dirty_capab=
+ility)
+>  TEST_F(iommufd_dirty_tracking, get_dirty_bitmap)
+>  {
+>         uint32_t page_size =3D MOCK_PAGE_SIZE;
+> +       uint32_t ioas_id =3D self->ioas_id;
+>         uint32_t hwpt_id;
+> -       uint32_t ioas_id;
+>
+>         if (variant->hugepages)
+>                 page_size =3D MOCK_HUGE_PAGE_SIZE;
+>
+> -       test_ioctl_ioas_alloc(&ioas_id);
+>         test_ioctl_ioas_map_fixed_id(ioas_id, self->buffer,
+>                                      variant->buffer_size, MOCK_APERTURE_=
+START);
+>
+> -       test_cmd_hwpt_alloc(self->idev_id, ioas_id,
+> -                           IOMMU_HWPT_ALLOC_DIRTY_TRACKING, &hwpt_id);
+> +       if (variant->hugepages)
+> +               test_cmd_hwpt_alloc_iommupt(self->idev_id, ioas_id,
+> +                                           IOMMU_HWPT_ALLOC_DIRTY_TRACKI=
+NG,
+> +                                           MOCK_IOMMUPT_HUGE, &hwpt_id);
+> +       else
+> +               test_cmd_hwpt_alloc_iommupt(self->idev_id, ioas_id,
+> +                                           IOMMU_HWPT_ALLOC_DIRTY_TRACKI=
+NG,
+> +                                           MOCK_IOMMUPT_DEFAULT, &hwpt_i=
+d);
+>
+>         test_cmd_set_dirty_tracking(hwpt_id, true);
+>
+> @@ -2285,18 +2295,24 @@ TEST_F(iommufd_dirty_tracking, get_dirty_bitmap)
+>  TEST_F(iommufd_dirty_tracking, get_dirty_bitmap_no_clear)
+>  {
+>         uint32_t page_size =3D MOCK_PAGE_SIZE;
+> +       uint32_t ioas_id =3D self->ioas_id;
+>         uint32_t hwpt_id;
+> -       uint32_t ioas_id;
+>
+>         if (variant->hugepages)
+>                 page_size =3D MOCK_HUGE_PAGE_SIZE;
+>
+> -       test_ioctl_ioas_alloc(&ioas_id);
+>         test_ioctl_ioas_map_fixed_id(ioas_id, self->buffer,
+>                                      variant->buffer_size, MOCK_APERTURE_=
+START);
+>
+> -       test_cmd_hwpt_alloc(self->idev_id, ioas_id,
+> -                           IOMMU_HWPT_ALLOC_DIRTY_TRACKING, &hwpt_id);
+> +
+> +       if (variant->hugepages)
+> +               test_cmd_hwpt_alloc_iommupt(self->idev_id, ioas_id,
+> +                                           IOMMU_HWPT_ALLOC_DIRTY_TRACKI=
+NG,
+> +                                           MOCK_IOMMUPT_HUGE, &hwpt_id);
+> +       else
+> +               test_cmd_hwpt_alloc_iommupt(self->idev_id, ioas_id,
+> +                                           IOMMU_HWPT_ALLOC_DIRTY_TRACKI=
+NG,
+> +                                           MOCK_IOMMUPT_DEFAULT, &hwpt_i=
+d);
+>
+>         test_cmd_set_dirty_tracking(hwpt_id, true);
+>
+> diff --git a/tools/testing/selftests/iommu/iommufd_utils.h b/tools/testin=
+g/selftests/iommu/iommufd_utils.h
+> index 772ca1db6e5971..08e529fde1cc71 100644
+> --- a/tools/testing/selftests/iommu/iommufd_utils.h
+> +++ b/tools/testing/selftests/iommu/iommufd_utils.h
+> @@ -215,6 +215,18 @@ static int _test_cmd_hwpt_alloc(int fd, __u32 device=
+_id, __u32 pt_id, __u32 ft_i
+>         ASSERT_EQ(0, _test_cmd_hwpt_alloc(self->fd, device_id, pt_id, 0, =
+flags,   \
+>                                           hwpt_id, IOMMU_HWPT_DATA_NONE, =
+NULL, \
+>                                           0))
+> +#define test_cmd_hwpt_alloc_iommupt(device_id, pt_id, flags, iommupt_typ=
+e, \
+> +                                   hwpt_id)                             =
+  \
+> +       ({                                                               =
+  \
+> +               struct iommu_hwpt_selftest user_cfg =3D {                =
+    \
+> +                       .pagetable_type =3D iommupt_type                 =
+    \
+> +               };                                                       =
+  \
+> +                                                                        =
+   \
+> +               ASSERT_EQ(0, _test_cmd_hwpt_alloc(                       =
+  \
+> +                                    self->fd, device_id, pt_id, 0, flags=
+, \
+> +                                    hwpt_id, IOMMU_HWPT_DATA_SELFTEST,  =
+  \
+> +                                    &user_cfg, sizeof(user_cfg)));      =
+  \
+> +       })
+>  #define test_err_hwpt_alloc(_errno, device_id, pt_id, flags, hwpt_id)   =
+\
+>         EXPECT_ERRNO(_errno, _test_cmd_hwpt_alloc(                      \
+>                                      self->fd, device_id, pt_id, 0, flags=
+, \
 > --
-> 2.51.0
+> 2.43.0
 >
 >
+
+Reviewed-by: Samiullah Khawaja <skhawaja@google.com>
