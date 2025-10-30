@@ -1,272 +1,348 @@
-Received: from SN4PR0501CU005.outbound.protection.outlook.com (mail-southcentralusazon11011050.outbound.protection.outlook.com [40.93.194.50])
+Received: from fhigh-a1-smtp.messagingengine.com (fhigh-a1-smtp.messagingengine.com [103.168.172.152])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA0EF304982;
-	Thu, 30 Oct 2025 19:44:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.194.50
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761853467; cv=fail; b=lMHtaCwt3ei+5uAwGcWVMWWcVxesD1yAiCVy6tzoE4xNYLbPtCnu2EvVT/LBVK/RUhxAUaGgz+hKpsyQehI3POFOd8AxotbBJh+E/iKWpc/F459SD58h2joG3Rn3M+liO5UkOY2ujFi6weJZOu+tttiNfjYxsw8X3a7xDK3ClQw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761853467; c=relaxed/simple;
-	bh=km3IrBxS0fDii0DFfWD2ce+QuN+G5cMYAHhB1XNP5VU=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rgxK53mYuXNyEv71W8ZJrarmzppS9Q3jx/DgGzI14ABBhTFFKhi2vQKthjco51XtaF425Rfvdfm5Vmp3zId4xC3V/apKyeBcqFeA0y2QrakR2HkaLLc2j6lYWPt1g6pXLUn8tHj35CHXk/8Fo/oNM06/efE//WaO1l0h7v3HqCQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=n636A038; arc=fail smtp.client-ip=40.93.194.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5199A325487
+	for <iommu@lists.linux.dev>; Thu, 30 Oct 2025 20:38:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.152
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1761856725; cv=none; b=uoPZXZU/kqBqgUs9GY2WNqw6qENz2N7cDZ5MTa7ryf23xdnYQcFAneN/fh9t87Faee2Zi3IGgZv8dLDTG1NUbcQihkolfnq+WMDuF8BLY2CzdK+KlFS//1zeWHslDvRYqlg7BpBtGifVPbi+WXuEsL27CXUlYMkl5hXf6Cv4I9M=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1761856725; c=relaxed/simple;
+	bh=Otc/CbhHm7gxjIcqJPP+5I/QV+QqqLRp7pDOdr60Iuk=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=WhR1b/mIhb2CSbXYfxR5NaWGXZnO5gN4hLG7Dr+NH76Je2vi2fZofJExQnyd+2yzVtqyRqIyVqDWEp2wWjACQwalNVCdmqKm7kfApOk/UYW31ojt6U+FAnuy7otKSu7p5k9rxM3KVVnds/CKhHYcAnkAjDRa/rOfze6FUDvcPes=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=shazbot.org; spf=pass smtp.mailfrom=shazbot.org; dkim=pass (2048-bit key) header.d=shazbot.org header.i=@shazbot.org header.b=DsC38lET; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=yWVHoBY1; arc=none smtp.client-ip=103.168.172.152
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=shazbot.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=shazbot.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="n636A038"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=tIt9Al490i85L/oS8knO96IcmdOLqGL6rKZpVgdB3eYlm3PO01plIwtpJB/974p69qzQ6OFV+E/i8oQGd1AqtUJxSNUk4RIlcWIlamGj+5ez+jsynQrLvS2YFbTB4FMuqNFOMau4VsWXD/jtvEshD8cBHvWYcqEQcvXS4WL0Nm0VMNdm6uTUJuMT7r+jc3cR2N72Z8DSs9UtD70bBcc8Vbes+Fo997dMo4Q1W1xT1S/MXY2zynGJbsTyX7n55c6m2Xf0NoGkpzCbpqsida021exIo9KvHtHHq+Ym49m6P9u3UyyeEaqijqUDD5+5E4yBReFYkewa+anhf4YyErvA2Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=LvqEx1G2ygyvTN3lLDG32I0dvexEIahM9G3t/0OYeS8=;
- b=FawP3FyzvIxNVh/0d5o5G7gK5f0eAL+L45k6jMGLpYVyBCVwaocmr9C5ry+hNVfmUZldU2SPY5nlqdZwkM3PjOTEuMfjx2DfYsz0GItDSj6rQWGUoSElynzdk5pNwLvk18A0GulLjJqXKrv/+/KOAn2OYsyZ2FKz7R2M9yaDKf16xO8GWLrMzl7ZxtPsx+mwh710e3sybSU7dIBXtL7HiOVYDo1ReVJECn8SOmVd2X8+3MW2XsJpYloFkxgLqw1MI4/z+kc6I6lplg61dQGrt+RjtfSE30FfI2PB9p0y5qf3D4zXfpQ4L0V3xcOuE7kqb6gBJwgj6TVs+UklWq2HGA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=LvqEx1G2ygyvTN3lLDG32I0dvexEIahM9G3t/0OYeS8=;
- b=n636A038RwCuAU+b0PzE9Od2AG9Ue5KZ+Q6m2/9T5vbIjK543e/0nboc3Vo0EpB3Dhp3qfSfO2j1o0in8PaY9iI3xLC80AvDeks/2iweUpRVgXDezvqexfhOfis3Z5tvdahDGjqOLnxAlK/HrB5vrqpdur9Y6zPiO/+E82Zi6jkAsimFm9nV01k4GJjePTWB29EBf21QQxgigtCVsgHCCuiXYzWQuzz2z4vwBaWeMco6S2hwQ37upYP2L7VKgdXRMd8mDjxxOoKjUVDd69jvUTPv1PKRzwmq2LIiPDmOyUyx+TkkaYXCcnreHlq1OrciN9lG161pNe4QnNzSMuTsZA==
-Received: from BN9PR03CA0769.namprd03.prod.outlook.com (2603:10b6:408:13a::24)
- by SJ0PR12MB6968.namprd12.prod.outlook.com (2603:10b6:a03:47b::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9275.12; Thu, 30 Oct
- 2025 19:44:21 +0000
-Received: from BN2PEPF0000449E.namprd02.prod.outlook.com
- (2603:10b6:408:13a:cafe::85) by BN9PR03CA0769.outlook.office365.com
- (2603:10b6:408:13a::24) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9275.14 via Frontend Transport; Thu,
- 30 Oct 2025 19:44:15 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- BN2PEPF0000449E.mail.protection.outlook.com (10.167.243.149) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9253.7 via Frontend Transport; Thu, 30 Oct 2025 19:44:21 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Thu, 30 Oct
- 2025 12:44:03 -0700
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Thu, 30 Oct
- 2025 12:44:03 -0700
-Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com (10.129.68.10)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
- Transport; Thu, 30 Oct 2025 12:44:01 -0700
-Date: Thu, 30 Oct 2025 12:43:59 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-CC: "joro@8bytes.org" <joro@8bytes.org>, "jgg@nvidia.com" <jgg@nvidia.com>,
-	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
-	"will@kernel.org" <will@kernel.org>, "robin.murphy@arm.com"
-	<robin.murphy@arm.com>, "sven@kernel.org" <sven@kernel.org>, "j@jannau.net"
-	<j@jannau.net>, "jean-philippe@linaro.org" <jean-philippe@linaro.org>,
-	"robin.clark@oss.qualcomm.com" <robin.clark@oss.qualcomm.com>,
-	"dwmw2@infradead.org" <dwmw2@infradead.org>, "baolu.lu@linux.intel.com"
-	<baolu.lu@linux.intel.com>, "yong.wu@mediatek.com" <yong.wu@mediatek.com>,
-	"matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
-	"angelogioacchino.delregno@collabora.com"
-	<angelogioacchino.delregno@collabora.com>, "tjeznach@rivosinc.com"
-	<tjeznach@rivosinc.com>, "pjw@kernel.org" <pjw@kernel.org>,
-	"palmer@dabbelt.com" <palmer@dabbelt.com>, "aou@eecs.berkeley.edu"
-	<aou@eecs.berkeley.edu>, "heiko@sntech.de" <heiko@sntech.de>,
-	"schnelle@linux.ibm.com" <schnelle@linux.ibm.com>, "mjrosato@linux.ibm.com"
-	<mjrosato@linux.ibm.com>, "wens@csie.org" <wens@csie.org>,
-	"jernej.skrabec@gmail.com" <jernej.skrabec@gmail.com>, "samuel@sholland.org"
-	<samuel@sholland.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
-	"jonathanh@nvidia.com" <jonathanh@nvidia.com>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "asahi@lists.linux.dev"
-	<asahi@lists.linux.dev>, "linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, "linux-arm-msm@vger.kernel.org"
-	<linux-arm-msm@vger.kernel.org>, "linux-mediatek@lists.infradead.org"
-	<linux-mediatek@lists.infradead.org>, "linux-riscv@lists.infradead.org"
-	<linux-riscv@lists.infradead.org>, "linux-rockchip@lists.infradead.org"
-	<linux-rockchip@lists.infradead.org>, "linux-s390@vger.kernel.org"
-	<linux-s390@vger.kernel.org>, "linux-sunxi@lists.linux.dev"
-	<linux-sunxi@lists.linux.dev>, "linux-tegra@vger.kernel.org"
-	<linux-tegra@vger.kernel.org>, "virtualization@lists.linux.dev"
-	<virtualization@lists.linux.dev>, "patches@lists.linux.dev"
-	<patches@lists.linux.dev>
-Subject: Re: [PATCH v1 02/20] iommu: Introduce a test_dev domain op and an
- internal helper
-Message-ID: <aQO//+6/B/WbdK2h@Asurada-Nvidia>
-References: <cover.1760312725.git.nicolinc@nvidia.com>
- <32ce256a2ece5d63e99d5858f953586859818ffc.1760312725.git.nicolinc@nvidia.com>
- <BN9PR11MB5276D10BD480FE66881870B08CFBA@BN9PR11MB5276.namprd11.prod.outlook.com>
+	dkim=pass (2048-bit key) header.d=shazbot.org header.i=@shazbot.org header.b="DsC38lET";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="yWVHoBY1"
+Received: from phl-compute-02.internal (phl-compute-02.internal [10.202.2.42])
+	by mailfhigh.phl.internal (Postfix) with ESMTP id 8C9A014001DA;
+	Thu, 30 Oct 2025 16:38:41 -0400 (EDT)
+Received: from phl-mailfrontend-01 ([10.202.2.162])
+  by phl-compute-02.internal (MEProxy); Thu, 30 Oct 2025 16:38:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=shazbot.org; h=
+	cc:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to; s=fm2; t=1761856721;
+	 x=1761943121; bh=p/8nyxWirOj4W+hYeRtMTG+81adajTiGVYuh/z6LXOE=; b=
+	DsC38lETCmk/UCR0NCEwSG/uMsWXv3KF8nqtv5mXrxnOSNXAuNpeCuWFpcBvb+Rd
+	qJBjT5+eedr1G7iNzvqfrWIs8YRmqr2Wn21vsB0Emgw2ammXeAjJNTKT8X3CRF7f
+	sgThj4w6Go/EWjZJV5hnPtkmvfi6+pv64RwRGY8broPbxr/l47tuMqaHoojfoTlR
+	x8NDbZZySjAGPtlXTOwEeVtGqPiFwdzOMit5oo4Jlrg3Xiv12ZeKHlQsjJ2dfLoo
+	Dd4zchU1KSWfT+xErx3Qp84XfWS++Q21slSUIXTr2Vf+w51bpou71HnP2egRiZFl
+	JYynwj6jAFgGlfam/THdRQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1761856721; x=
+	1761943121; bh=p/8nyxWirOj4W+hYeRtMTG+81adajTiGVYuh/z6LXOE=; b=y
+	WVHoBY1ck0fhOfaNyfXlK3MsltrJ16L4JMUjk4/8F1vhiZvK9+ByZAPE2Fr+lDEn
+	31wuiMAdQO9JUckxnFimEg9qgiR7Buz2VVu3gcL2K4BISNU112JvnuEfmtkVFPU/
+	WkKn9wiMCn/ibulsR45YnPo3Fgmy6RI+6Fk3aMG8co7oZG18ttXuQ58m649z8toG
+	uT5IEDW7hMQMIpoPYi22aGzWDJxfD1aqI4Iw7ZnDH3Ltcib06o+rASeKq7T4jlRO
+	a3slUeUe0CCl0KdMKPV16WqcZAYF7H/sqwJXPOUxsj0SzU4xV0yEV9o7Tp0CRH3k
+	UOAJNTt/tx/Lco0qxnstA==
+X-ME-Sender: <xms:z8wDaZLo5dD7ZxDV6II0FqH4O7jccYwOPy06udjLAl4RXkxI_trqqw>
+    <xme:z8wDaW3NyxbzGjLL5VL8Xo8PzYRVFCOzMbstflMQqva5Wle0FjF3VlMyKQrzHC5El
+    q3grRf5LAMq5wsIJswOZBD4TQxX7zoQ86zYjcR_77WmesqtyRs2M7A>
+X-ME-Received: <xmr:z8wDaVIW0bK32xwhEPjPTrLSw9kl2duIIdiJN2tr1QWnNDZ4iA2BxWRaG40>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdeggdduieejheelucetufdoteggodetrf
+    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfurfetoffkrfgpnffqhgenuceu
+    rghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujf
+    gurhepfffhvfevuffkjghfgggtgfesthejredttddtvdenucfhrhhomheptehlvgigucgh
+    ihhllhhirghmshhonhcuoegrlhgvgiesshhhrgiisghothdrohhrgheqnecuggftrfgrth
+    htvghrnhepteetudelgeekieegudegleeuvdffgeehleeivddtfeektdekkeehffehudet
+    hffhnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheprg
+    hlvgigsehshhgriigsohhtrdhorhhgpdhnsggprhgtphhtthhopedvgedpmhhouggvpehs
+    mhhtphhouhhtpdhrtghpthhtoheplhgvohhnsehkvghrnhgvlhdrohhrghdprhgtphhtth
+    hopegrlhgvgidrfihilhhlihgrmhhsohhnsehrvgguhhgrthdrtghomhdprhgtphhtthho
+    pehlvghonhhrohesnhhvihguihgrrdgtohhmpdhrtghpthhtohepjhhgghesnhhvihguih
+    grrdgtohhmpdhrtghpthhtoheprghkphhmsehlihhnuhigqdhfohhunhgurghtihhonhdr
+    ohhrghdprhgtphhtthhopegshhgvlhhgrggrshesghhoohhglhgvrdgtohhmpdhrtghpth
+    htoheptghhrhhishhtihgrnhdrkhhovghnihhgsegrmhgurdgtohhmpdhrtghpthhtohep
+    ughrihdquggvvhgvlheslhhishhtshdrfhhrvggvuggvshhkthhophdrohhrghdprhgtph
+    htthhopehiohhmmhhusehlihhsthhsrdhlihhnuhigrdguvghv
+X-ME-Proxy: <xmx:z8wDaaMiGwbWX7czDe5iiad6EIpQFwJ1yQIteZ0s-dAUbUDysgOuAQ>
+    <xmx:z8wDaWyOXEdvkv2nByzkDyCMSCs83bIcsse_dM2y2-1KvLiBXmR81Q>
+    <xmx:z8wDaSIr0J6kFZz5NMvG-wATtPZO5nIJ7XYS0F5DucQqhu-KLzZWag>
+    <xmx:z8wDaVrwkjuhIMeJQEscr9oJy00Glt_Gj0UMB1ES18qD9i2fTKlcuQ>
+    <xmx:0cwDacSuknghBUpyXTe85wMhy52PcPg_FWLjbD2hGGkyV4h7HjHD1dZT>
+Feedback-ID: i03f14258:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 30 Oct 2025 16:38:37 -0400 (EDT)
+Date: Thu, 30 Oct 2025 14:38:36 -0600
+From: Alex Williamson <alex@shazbot.org>
+To: Leon Romanovsky <leon@kernel.org>
+Cc: Alex Williamson <alex.williamson@redhat.com>, Leon Romanovsky
+ <leonro@nvidia.com>, Jason Gunthorpe <jgg@nvidia.com>, Andrew Morton
+ <akpm@linux-foundation.org>, Bjorn Helgaas <bhelgaas@google.com>, Christian
+ =?UTF-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+ dri-devel@lists.freedesktop.org, iommu@lists.linux.dev, Jens Axboe
+ <axboe@kernel.dk>, Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+ linaro-mm-sig@lists.linaro.org, linux-block@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+ linux-mm@kvack.org, linux-pci@vger.kernel.org, Logan Gunthorpe
+ <logang@deltatee.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin
+ Murphy <robin.murphy@arm.com>, Sumit Semwal <sumit.semwal@linaro.org>,
+ Vivek Kasireddy <vivek.kasireddy@intel.com>, Will Deacon <will@kernel.org>
+Subject: Re: [PATCH v5 9/9] vfio/pci: Add dma-buf export support for MMIO
+ regions
+Message-ID: <20251030143836.66cdf116@shazbot.org>
+In-Reply-To: <72ecaa13864ca346797e342d23a7929562788148.1760368250.git.leon@kernel.org>
+References: <cover.1760368250.git.leon@kernel.org>
+	<72ecaa13864ca346797e342d23a7929562788148.1760368250.git.leon@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <BN9PR11MB5276D10BD480FE66881870B08CFBA@BN9PR11MB5276.namprd11.prod.outlook.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN2PEPF0000449E:EE_|SJ0PR12MB6968:EE_
-X-MS-Office365-Filtering-Correlation-Id: fc59e19b-660d-4245-4f39-08de17ecb8cd
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|7416014|1800799024|376014|82310400026|36860700013;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?coK9pFakNqZRASNqG9fe3/gaEPZb8DlHiclo4EwaWEkWZAKKl8GlJNWz4wrR?=
- =?us-ascii?Q?zr6ViIzANRUVty7P99UfaFiscK6nLpr28ZYfvN+3ieH8u5EU0PlZdzTG/Afy?=
- =?us-ascii?Q?9HtkE76k8HFPo2wEF7vzBuNyCHWwLVui7AE1MCsT0DFS+ERvONEuzQyaJKeu?=
- =?us-ascii?Q?9lsMlb89vAivBHTVROLFdkCFPOvoUSk3ulS9U8LWkKCQNQbw9FCgoB/Dps5M?=
- =?us-ascii?Q?aSc0meAcs1ZuPZyhpdcD/2P/yGkpqUSNKm7timTw822b4HHBlezHDD6xtKBO?=
- =?us-ascii?Q?d9cVxKl88MNbGNqrOGCyV9o9GhJHxC7ldYqicslM9TQpw6gpM2ugh5z/IST4?=
- =?us-ascii?Q?S69EL6HnJjEztdEhfXopBiRbSVZT0m3aCX9Vj1f6D8iHzlroOvHMCmwJ+QSz?=
- =?us-ascii?Q?DmBPTmC6NuhTH38HAsU54abx43pd1jp1VM5AOtne09fvdzKaghdvuPkAkCPM?=
- =?us-ascii?Q?XO4yeMOTS21GC4MSKdXnteGNrh9SHqFFSPzkgGoK3qlAap8V6VzLD7FfUTvd?=
- =?us-ascii?Q?wGukH/5GQqklCtNw2se3iLpyJKq+yhh/p7x1Oh7DAaUwQLwQjjhn9VveSwuH?=
- =?us-ascii?Q?1857KxQeN3PTGK5vwLoSrc36xZnaKV4Y1NGZGq/RjhokDp3qKYTmVDAsvgrQ?=
- =?us-ascii?Q?F9JiGn9dj0FwWNOA1FmjZ6CaW5rwKM3RmtGlxJRwyjQi0/hVnrPvDiAqanBy?=
- =?us-ascii?Q?IXO0TNdS7RqvcbpeG2KKyNlC7QAI6CzO02EXM7dKamonTcYhzhYuzDcQtKEh?=
- =?us-ascii?Q?MM8FIwAQOnhXCNkPS+hEANX/WJ5fjurKBYbHr8dv6l9WzKD2cEEuByaP2FNP?=
- =?us-ascii?Q?s2HH/3fYRVASoag9C6ZsoJ+XquGxFVd5/qX7dnt3t0fECWt1C+Ei616YPRLr?=
- =?us-ascii?Q?tCdTAEMsMQaTW3hQnA2bqdbA7OoKoPNeXlogC4psRj66SNa+kAm5zqbHVlAi?=
- =?us-ascii?Q?0HRRGi1rUlrR6/yNkXFnD2xOcaNv4yJBvpab7GMpJovLEyDLQYKREvxpVTWU?=
- =?us-ascii?Q?siryXShKBvANj84uEopBeG28/O+oT0AkYNFwm0l7ALhI5ybfgQ2jk51pSONe?=
- =?us-ascii?Q?3gZQR/E3Ztarm+j92prFSIn/R5b4n3BN4OmlQyyhuQcEkNKv1sN9oebOlAmx?=
- =?us-ascii?Q?loHctz0qkAx71sLMMkvs95YDc5KPTmYQnJ762Jq+UMRFjAFT4iT82Jri1FTv?=
- =?us-ascii?Q?XA2/NI6euISdRqATCUafc/tZMdbnkVUEAF65vDqv9wJJpu99o6lC975E2Wp+?=
- =?us-ascii?Q?vGXluXdS0JBIshFii2XnCUAHDPFAC021nPCiN1b4AcYRo6YMdx2qysYqlich?=
- =?us-ascii?Q?8jvJHA1MxtV9ktf1E3pTn4J1eyHyjAp/nOAEUN2xHLRpyz7/sXAgrvbyYWfz?=
- =?us-ascii?Q?dRHUAURlBpSrw+12M00B+tqMj30axKiQHXpCE1E3y5CHcMF0TbXep0yd55ee?=
- =?us-ascii?Q?r86P+evwtILnuGLvonMgKy7l9L06kp/9dmgrUZKiE3jjzuQiGM/md/q6pG3G?=
- =?us-ascii?Q?PiXfZGRB1lHNUfpK3AQPB7bmpLA7+uqbGm9u7Q32CqbsvkZb8YdYUUhFXKpH?=
- =?us-ascii?Q?lcz3iGBIFP3flMEcEyQ=3D?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(7416014)(1800799024)(376014)(82310400026)(36860700013);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Oct 2025 19:44:21.1890
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: fc59e19b-660d-4245-4f39-08de17ecb8cd
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN2PEPF0000449E.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB6968
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Thu, Oct 30, 2025 at 08:47:18AM +0000, Tian, Kevin wrote:
-> It might need more work to meet this requirement. e.g. after patch4
-> I could still spot other errors easily in the attach path:
-> 
-> intel_iommu_attach_device()
->   iopf_for_domain_set()
->     intel_iommu_enable_iopf():
-> 
->         if (!info->pri_enabled)
->                 return -ENODEV;
+On Mon, 13 Oct 2025 18:26:11 +0300
+Leon Romanovsky <leon@kernel.org> wrote:
+> diff --git a/drivers/vfio/pci/vfio_pci_core.c b/drivers/vfio/pci/vfio_pci_core.c
+> index fe247d0e2831..56b1320238a9 100644
+> --- a/drivers/vfio/pci/vfio_pci_core.c
+> +++ b/drivers/vfio/pci/vfio_pci_core.c
+> @@ -1511,6 +1520,19 @@ int vfio_pci_core_ioctl_feature(struct vfio_device *device, u32 flags,
+>  		return vfio_pci_core_pm_exit(vdev, flags, arg, argsz);
+>  	case VFIO_DEVICE_FEATURE_PCI_VF_TOKEN:
+>  		return vfio_pci_core_feature_token(vdev, flags, arg, argsz);
+> +	case VFIO_DEVICE_FEATURE_DMA_BUF:
+> +		if (device->ops->ioctl != vfio_pci_core_ioctl)
+> +			/*
+> +			 * Devices that overwrite general .ioctl() callback
+> +			 * usually do it to implement their own
+> +			 * VFIO_DEVICE_GET_REGION_INFO handlerm and they present
 
-Yea, I missed that.
+Typo, "handlerm"
 
-> intel_iommu_attach_device()
->   dmar_domain_attach_device()
->     domain_attach_iommu():
->       
->        curr = xa_cmpxchg(&domain->iommu_array, iommu->seq_id,
->                           NULL, info, GFP_KERNEL);
->         if (curr) {
->                 ret = xa_err(curr) ? : -EBUSY;
->                 goto err_clear;
->         }
+> +			 * different BAR information from the real PCI.
+> +			 *
+> +			 * DMABUF relies on real PCI information.
+> +			 */
+> +			return -EOPNOTSUPP;
+> +
+> +		return vfio_pci_core_feature_dma_buf(vdev, flags, arg, argsz);
+>  	default:
+>  		return -ENOTTY;
+>  	}
+...
+> @@ -2459,6 +2482,7 @@ static int vfio_pci_dev_set_hot_reset(struct vfio_device_set *dev_set,
+>  			break;
+>  		}
+>  
+> +		vfio_pci_dma_buf_move(vdev, true);
+>  		vfio_pci_zap_bars(vdev);
+>  	}
+>  
+> @@ -2482,6 +2506,10 @@ static int vfio_pci_dev_set_hot_reset(struct vfio_device_set *dev_set,
+>  
+>  	ret = pci_reset_bus(pdev);
+>  
+> +	list_for_each_entry(vdev, &dev_set->device_list, vdev.dev_set_list)
+> +		if (__vfio_pci_memory_enabled(vdev))
+> +			vfio_pci_dma_buf_move(vdev, false);
+> +
+>  	vdev = list_last_entry(&dev_set->device_list,
+>  			       struct vfio_pci_core_device, vdev.dev_set_list);
+>  
 
-There is actually an xa_load() in this function:
+This needs to be placed in the existing undo loop with the up_write(),
+otherwise it can be missed in the error case.
 
-	curr = xa_load(&domain->iommu_array, iommu->seq_id);
-	if (curr) {
-		curr->refcnt++;
-		kfree(info);
-		return 0;
-	}
+> diff --git a/drivers/vfio/pci/vfio_pci_dmabuf.c b/drivers/vfio/pci/vfio_pci_dmabuf.c
+> new file mode 100644
+> index 000000000000..eaba010777f3
+> --- /dev/null
+> +++ b/drivers/vfio/pci/vfio_pci_dmabuf.c
+> +static unsigned int calc_sg_nents(struct vfio_pci_dma_buf *priv,
+> +				  struct dma_iova_state *state)
+> +{
+> +	struct phys_vec *phys_vec = priv->phys_vec;
+> +	unsigned int nents = 0;
+> +	u32 i;
+> +
+> +	if (!state || !dma_use_iova(state))
+> +		for (i = 0; i < priv->nr_ranges; i++)
+> +			nents += DIV_ROUND_UP(phys_vec[i].len, UINT_MAX);
+> +	else
+> +		/*
+> +		 * In IOVA case, there is only one SG entry which spans
+> +		 * for whole IOVA address space, but we need to make sure
+> +		 * that it fits sg->length, maybe we need more.
+> +		 */
+> +		nents = DIV_ROUND_UP(priv->size, UINT_MAX);
 
-	[...]
+I think we're arguably running afoul of the coding style standard here
+that this is not a single simple statement and should use braces.
 
-	info->refcnt	= 1;
-	info->did	= num;
-	info->iommu	= iommu;
-	curr = xa_cmpxchg(&domain->iommu_array, iommu->seq_id,
-			  NULL, info, GFP_KERNEL);
-	if (curr) {
-		ret = xa_err(curr) ? : -EBUSY;
-		goto err_clear;
-	}
+> +
+> +	return nents;
+> +}
+> +
+> +static struct sg_table *
+> +vfio_pci_dma_buf_map(struct dma_buf_attachment *attachment,
+> +		     enum dma_data_direction dir)
+> +{
+> +	struct vfio_pci_dma_buf *priv = attachment->dmabuf->priv;
+> +	struct dma_iova_state *state = attachment->priv;
+> +	struct phys_vec *phys_vec = priv->phys_vec;
+> +	unsigned long attrs = DMA_ATTR_MMIO;
+> +	unsigned int nents, mapped_len = 0;
+> +	struct scatterlist *sgl;
+> +	struct sg_table *sgt;
+> +	dma_addr_t addr;
+> +	int ret;
+> +	u32 i;
+> +
+> +	dma_resv_assert_held(priv->dmabuf->resv);
+> +
+> +	if (priv->revoked)
+> +		return ERR_PTR(-ENODEV);
+> +
+> +	sgt = kzalloc(sizeof(*sgt), GFP_KERNEL);
+> +	if (!sgt)
+> +		return ERR_PTR(-ENOMEM);
+> +
+> +	nents = calc_sg_nents(priv, state);
+> +	ret = sg_alloc_table(sgt, nents, GFP_KERNEL | __GFP_ZERO);
+> +	if (ret)
+> +		goto err_kfree_sgt;
+> +
+> +	sgl = sgt->sgl;
+> +
+> +	for (i = 0; i < priv->nr_ranges; i++) {
+> +		if (!state) {
+> +			addr = pci_p2pdma_bus_addr_map(priv->provider,
+> +						       phys_vec[i].paddr);
+> +		} else if (dma_use_iova(state)) {
+> +			ret = dma_iova_link(attachment->dev, state,
+> +					    phys_vec[i].paddr, 0,
+> +					    phys_vec[i].len, dir, attrs);
+> +			if (ret)
+> +				goto err_unmap_dma;
+> +
+> +			mapped_len += phys_vec[i].len;
+> +		} else {
+> +			addr = dma_map_phys(attachment->dev, phys_vec[i].paddr,
+> +					    phys_vec[i].len, dir, attrs);
+> +			ret = dma_mapping_error(attachment->dev, addr);
+> +			if (ret)
+> +				goto err_unmap_dma;
+> +		}
+> +
+> +		if (!state || !dma_use_iova(state))
+> +			sgl = fill_sg_entry(sgl, phys_vec[i].len, addr);
+> +	}
+> +
+> +	if (state && dma_use_iova(state)) {
+> +		WARN_ON_ONCE(mapped_len != priv->size);
+> +		ret = dma_iova_sync(attachment->dev, state, 0, mapped_len);
+> +		if (ret)
+> +			goto err_unmap_dma;
+> +		sgl = fill_sg_entry(sgl, mapped_len, state->addr);
+> +	}
+> +
+> +	/*
+> +	 * SGL must be NULL to indicate that SGL is the last one
+> +	 * and we allocated correct number of entries in sg_alloc_table()
+> +	 */
+> +	WARN_ON_ONCE(sgl);
+> +	return sgt;
+> +
+> +err_unmap_dma:
+> +	if (!i || !state)
+> +		; /* Do nothing */
+> +	else if (dma_use_iova(state))
+> +		dma_iova_destroy(attachment->dev, state, mapped_len, dir,
+> +				 attrs);
+> +	else
+> +		for_each_sgtable_dma_sg(sgt, sgl, i)
+> +			dma_unmap_phys(attachment->dev, sg_dma_address(sgl),
+> +					sg_dma_len(sgl), dir, attrs);
 
-It seems that this xa_cmpxchg could be just xa_store()?
+Same, here for braces.
 
-> intel_iommu_attach_device()
->   dmar_domain_attach_device()
->     domain_setup_first_level()
->       __domain_setup_first_level()
->         intel_pasid_setup_first_level():
+> +	sg_free_table(sgt);
+> +err_kfree_sgt:
+> +	kfree(sgt);
+> +	return ERR_PTR(ret);
+> +}
+> +
+> +static void vfio_pci_dma_buf_unmap(struct dma_buf_attachment *attachment,
+> +				   struct sg_table *sgt,
+> +				   enum dma_data_direction dir)
+> +{
+> +	struct vfio_pci_dma_buf *priv = attachment->dmabuf->priv;
+> +	struct dma_iova_state *state = attachment->priv;
+> +	unsigned long attrs = DMA_ATTR_MMIO;
+> +	struct scatterlist *sgl;
+> +	int i;
+> +
+> +	if (!state)
+> +		; /* Do nothing */
+> +	else if (dma_use_iova(state))
+> +		dma_iova_destroy(attachment->dev, state, priv->size, dir,
+> +				 attrs);
+> +	else
+> +		for_each_sgtable_dma_sg(sgt, sgl, i)
+> +			dma_unmap_phys(attachment->dev, sg_dma_address(sgl),
+> +				       sg_dma_len(sgl), dir, attrs);
+> +
 
-Yea. There are a few others in the track also..
+Here too.
 
->         pte = intel_pasid_get_entry(dev, pasid);
->         if (!pte) {
->                 spin_unlock(&iommu->lock);
->                 return -ENODEV;
->         }
-> 
->         if (pasid_pte_is_present(pte)) {
->                 spin_unlock(&iommu->lock);
->                 return -EBUSY;
->         }
+> +	sg_free_table(sgt);
+> +	kfree(sgt);
+> +}
+...
+> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
+> index 75100bf009ba..63214467c875 100644
+> --- a/include/uapi/linux/vfio.h
+> +++ b/include/uapi/linux/vfio.h
+> @@ -1478,6 +1478,31 @@ struct vfio_device_feature_bus_master {
+>  };
+>  #define VFIO_DEVICE_FEATURE_BUS_MASTER 10
+>  
+> +/**
+> + * Upon VFIO_DEVICE_FEATURE_GET create a dma_buf fd for the
+> + * regions selected.
+> + *
+> + * open_flags are the typical flags passed to open(2), eg O_RDWR, O_CLOEXEC,
+> + * etc. offset/length specify a slice of the region to create the dmabuf from.
+> + * nr_ranges is the total number of (P2P DMA) ranges that comprise the dmabuf.
+> + *
 
-Hmm, this is fenced by iommu->lock and can race with !attach_dev
-callbacks. It might be difficult to shift these to test_dev..
+Probably worth noting that .flags should be zero, I see we enforce
+that.  Thanks,
 
-> On the other hand, how do we communicate whatever errors returned
-> by attach_dev in the reset_done path back to userspace? As noted above
-> resource allocation failures could still occur in attach_dev, but userspace
-> may think the requested attach in middle of a reset has succeeded as
-> long as it passes the test_dev check.
+Alex
 
-That's a legit point. Jason pointed out that we would end up with
-some inconsistency between driver and core as well, at the SMMUv3
-patch. So, this test_dev doesn't seemingly solve our problem very
-well..
+> + * Return: The fd number on success, -1 and errno is set on failure.
+> + */
+> +#define VFIO_DEVICE_FEATURE_DMA_BUF 11
+> +
+> +struct vfio_region_dma_range {
+> +	__u64 offset;
+> +	__u64 length;
+> +};
+> +
+> +struct vfio_device_feature_dma_buf {
+> +	__u32	region_index;
+> +	__u32	open_flags;
+> +	__u32   flags;
+> +	__u32   nr_ranges;
+> +	struct vfio_region_dma_range dma_ranges[];
+> +};
+> +
+>  /* -------- API for Type1 VFIO IOMMU -------- */
+>  
+>  /**
 
-> Does it work better to block the attaching process upon ongoing reset
-> and wake it up later upon reset_done to resume attach?
-
-Yea, I think returning -EBUSY would be the simplest solution like
-we did in the previous version.
-
-But the concern is that VF might not be aware of a PF reset, so it
-can still race an attachment, which would be -EBUSY as well. Then,
-if its driver doesn't retry/defer the attach, this might break it?
-
-FWIW, I am thinking of another design based on Jason's remarks:
-https://lore.kernel.org/linux-iommu/aQBopHFub8wyQh5C@Asurada-Nvidia/
-
-So, instead of core initiating the round trip between the blocking
-domain and group->domain, it forwards dev_reset_prepare/done to the
-driver where it does a low-level attachment that wouldn't fail:
-  For SMMUv3, it's an STE update.
-  For intel_iommu, it seems to be the context table update?
-
-Then, any concurrent would be allowed to carry on to go through all
-the compatibility/sanity checks as usual, but it would bypass the
-final step: STE or context table update.
-
-Thanks
-Nicolin
