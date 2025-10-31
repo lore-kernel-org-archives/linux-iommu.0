@@ -1,238 +1,264 @@
-Received: from BL2PR02CU003.outbound.protection.outlook.com (mail-eastusazon11011067.outbound.protection.outlook.com [52.101.52.67])
+Received: from smtpbgbr2.qq.com (smtpbgbr2.qq.com [54.207.22.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5B46303A18
-	for <iommu@lists.linux.dev>; Fri, 31 Oct 2025 06:30:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.52.67
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761892230; cv=fail; b=jjctJ1i3hRLI5V9dNZEnOAka6y5rLP5XzJtstylBRIMlCojpFi4Rgb7q3woE1TEr3TpeE7t6L6kpsbgCwz1i+oSR5EXxl7u+xu7donPASTmfFUYOWfyzx6aSFvob9BeqrYJd5WUsUcEbIudN0P2Pq/HR8aiSqx/VAy0/dCl1RBc=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761892230; c=relaxed/simple;
-	bh=SSbDvBBW6ZXisNzTWWLKQS48Hep8okVDgeN4fnJuY6w=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=e8PdAGTW35uVD9+BRM2HJobjKX14lAM89TlINgnG9kkguMAyqNoAAHx+/RnB5Ba00anMFbKahTcMyYj11imBrHq0M8q5eQJzgO9G5wLJiTDJknMneOCVozgBVfdeA16ekVrUW4eUzmSlcGOnORjI7uKC9bmYLTo/RiHH3Tavrv0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=oEwsMkRZ; arc=fail smtp.client-ip=52.101.52.67
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="oEwsMkRZ"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Ksv8qvreiZCOBXdPu00ECosl00mYhnPLtdFa2HCV4R5QV0jxGHppBLXPiXGMhbrjhFT/eCKCbjUUD6e6r+VSyYb52rqmxDQjjx7hGtGv8MDYm70fnn9QEjMmKHOdEE4otCpbCINNIFlZ8Rjom3/d2LrXbTkIXuqX8ec+tlFDvcKcJqqXQy5qZcRM+vQynkwGkzehsENnxMiW+YjYYu1XkxJ8blAGZFzpnDPEmiyuiChsE2HOHGtJyxtzhe1r+qXC93W4mauog+izA42zeNafK/c6jQkTvAQwGH8QrnHRHmTJOqBdLAqD776M88fhExJSNsb2A56JjKn9V0dF5VJGBg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=IYvj0ypeNxcEODqdKVzZAsLDj14ePhydmCi7JCF5YvY=;
- b=XWKcwlz5913hwy1aO/Vu5eI+fdZPoLYBtfk9o1XOh0vy2DmqScrsyU288dHH+L7n/cU+8qAq5sO4VVLGtYYsLzF4pEzL9QYa/T7AuLJmig5V3GLyKo7q9i9qij+PCdineKQn8uOztazGi+zpPOBWTynwEfnMBAqdy121OvaHgYAAJDhbsmULvKDYXSphWNjZSMcAYl5OcHdHf2jX184K8Nf8DV+odMkCRm04A219JvmQfkctKxmqKuB0uaXBdvROqlf8LDM8EcPFcQ09I1Ogx/wvjyr+jKyThCpVld0TWA5XKKNeq3SVlxEiyWOpJnVHhLBX724fgozStbu41BkNjQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IYvj0ypeNxcEODqdKVzZAsLDj14ePhydmCi7JCF5YvY=;
- b=oEwsMkRZE7bNBbHNGsKSyEV6tQBR9T11PFfMyKx1bjILvGv904UoYGrvOVrPsZe0V23p2NO0L0E2OjdbRzKmhw1Y6q6SRwIy3caSagZgelm8Ssa02V5Xgu4fXLEg0KyZJm22HuKXnl92agreglZnPFmH2wG2+7bXswpOzNJuUyyPc9qxT9vdFEe3FvBesTrenH0bZwA3geUP5hO+C7StgV3cI9oc8RiWn7etDq6kzqmO1SQIUU2p0rkhs1UvzOgbwN+1ZdzHbQsJ3D1euooVABHXI9zDY4XFGXEUGj3OCA3HW/dbRpj2cwe7o01K/G+P3b9HZRu2hsQ6waHb0DD4sg==
-Received: from BN0PR04CA0134.namprd04.prod.outlook.com (2603:10b6:408:ed::19)
- by DM6PR12MB4059.namprd12.prod.outlook.com (2603:10b6:5:215::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9275.15; Fri, 31 Oct
- 2025 06:30:25 +0000
-Received: from BN2PEPF00004FBF.namprd04.prod.outlook.com
- (2603:10b6:408:ed:cafe::fe) by BN0PR04CA0134.outlook.office365.com
- (2603:10b6:408:ed::19) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9275.15 via Frontend Transport; Fri,
- 31 Oct 2025 06:30:03 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- BN2PEPF00004FBF.mail.protection.outlook.com (10.167.243.185) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9275.10 via Frontend Transport; Fri, 31 Oct 2025 06:30:24 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Thu, 30 Oct
- 2025 23:30:06 -0700
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail202.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Thu, 30 Oct
- 2025 23:30:05 -0700
-Received: from build-amhetre-focal-20250825.internal (10.127.8.10) by
- mail.nvidia.com (10.129.68.9) with Microsoft SMTP Server id 15.2.2562.20 via
- Frontend Transport; Thu, 30 Oct 2025 23:30:05 -0700
-From: Ashish Mhetre <amhetre@nvidia.com>
-To: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
-	<robh@kernel.org>, <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
-	<thierry.reding@gmail.com>, <jonathanh@nvidia.com>, <jgg@ziepe.ca>,
-	<nicolinc@nvidia.com>
-CC: <linux-tegra@nvidia.com>, <linux-arm-kernel@lists.infradead.org>,
-	<iommu@lists.linux.dev>, <devicetree@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, <linux-tegra@vger.kernel.org>, Ashish Mhetre
-	<amhetre@nvidia.com>
-Subject: [PATCH 2/3] dt-bindings: iommu: Add NVIDIA Tegra CMDQV support
-Date: Fri, 31 Oct 2025 06:29:58 +0000
-Message-ID: <20251031062959.1521704-3-amhetre@nvidia.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20251031062959.1521704-1-amhetre@nvidia.com>
-References: <20251031062959.1521704-1-amhetre@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0099627A900
+	for <iommu@lists.linux.dev>; Fri, 31 Oct 2025 06:46:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=54.207.22.56
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1761893222; cv=none; b=Gez4WkEZchA3m5o0orUj0fbVAQLgW44M+WsC976EpjhVuHxYIBd8VBqEMCHSXIAnpXTryZ4OSvwqA5s0mn2+etmI0k7rmTz4fvygNWgMBnLDaiwwC2DJXSa+kMCRJAK5ZI3xbPHZOdJ4Z1t6oQyfdCwXjyKpeqHYCzgaTbM6SzU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1761893222; c=relaxed/simple;
+	bh=JZ4d4kYh8rfhRKOmG05eahnty61ao/DjaXEzL0J39VE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=TskgaPVQJsUCUuHXplTXXLo5eukzUN6/Q7Wkl7H7QqPVPsZEkVxtSyvpZ9hLtQbI00b+JikGCQ9r5etgDgA4AVRoE3uzfS/kUMkVb5aXHKnLdOQ1mcVfG/U7REJOiDvSqXLK5YMgJ8zFJwpCYXnQOj1EYgo4xBq+LVuMpAXgCsY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=quarantine dis=none) header.from=linux.starfivetech.com; spf=none smtp.mailfrom=linux.starfivetech.com; arc=none smtp.client-ip=54.207.22.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=quarantine dis=none) header.from=linux.starfivetech.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.starfivetech.com
+X-QQ-mid: esmtpgz13t1761893210tf21d82f4
+X-QQ-Originating-IP: R90kadoSj/Lu9jhXDo3EOBK+P2zoChp7ZYtBXxB6TvQ=
+Received: from [192.168.125.98] ( [113.104.140.154])
+	by bizesmtp.qq.com (ESMTP) with 
+	id ; Fri, 31 Oct 2025 14:46:46 +0800 (CST)
+X-QQ-SSF: 0000000000000000000000000000000
+X-QQ-GoodBg: 0
+X-BIZMAIL-ID: 1332421492275545379
+Message-ID: <99841AD0EE6A35D4+4a6afacb-4d1c-4727-9a75-134190350aca@linux.starfivetech.com>
+Date: Fri, 31 Oct 2025 14:46:46 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-NVConfidentiality: public
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN2PEPF00004FBF:EE_|DM6PR12MB4059:EE_
-X-MS-Office365-Filtering-Correlation-Id: b612642d-25ec-4447-fb4b-08de1846f96a
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|7416014|82310400026|36860700013|1800799024|13003099007|921020;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?BpIayLrNrgqJ3w2hBnpZDBXdV2/YPjsjIR1VG2ITlE68BpOM+yXGn+L0C982?=
- =?us-ascii?Q?FTRMPEltioZrcnnEsy6CDJhbR6z/vZJDR7jNTSbZb+WnD2AqTneTrfD1Nnvl?=
- =?us-ascii?Q?mGLAKPs8hnoQGG93Zn36+f8ysw1o6inYks2oMqt0+VLEfxjgUFGSqwFu8CeH?=
- =?us-ascii?Q?Y/O2kFFSbpiINyv/z2wa4FR/KAaPUrEieq/J3umRTVakQtQW0KiD4P0r5xcj?=
- =?us-ascii?Q?QpWJdbjrYHqlP5BrZ78ViRNzdW4PPcZsp5Sb99DWn+fMbq0viWlgAiTLZU/+?=
- =?us-ascii?Q?5UMpNweJoJP6UBigGFEqVS053RVgpRO7V7wUGhjeloo6f18l+Xywugm9pD0k?=
- =?us-ascii?Q?4H3JN+RdnSP7ATZzY1Tgms1zK6yspgVCGGVUvGFMvK9XPOSoxlUUxykkCQDZ?=
- =?us-ascii?Q?qtZH9jIK98ElVJhqocHPytZ6dzzpdDHg8Yj/dUIZEnj0soYYVvl+FXlehDOW?=
- =?us-ascii?Q?DkPD/0pd0Ie1thpniJyLFVpUy7fo1Qf1cE/AiGkRbi9kxJORPmHFDCk+tHYM?=
- =?us-ascii?Q?mhe4o+CbfDWnXcjSYSriMC21Y5r5XgQvEEW4zpcnJefWgKWURUh2axBA9qgy?=
- =?us-ascii?Q?iAKwMZpexcgKO7SEaSHURc/zOMSQRfbENBImfMcR/Zl+MuGfXDLUUfkLED5i?=
- =?us-ascii?Q?WVh4jyrTSwPbqKOgShXnFEbYm6BDVnowBFEb3jXIZsC1AmSmT6bOMDb4b2RE?=
- =?us-ascii?Q?0hk8o2GzkplMpo5V25JuBmNv8Wl6lEiZGyzRWtxlr41WeMVzg2mbxWASYIUo?=
- =?us-ascii?Q?wJYuevU4AM/CZcqcxexedez95B8bkAccYS++AdF/FrfoNhixrct3dsvnBQ4b?=
- =?us-ascii?Q?U2rSVcHpwxCZ0Iyf6BB/O1fwNl86rWtNZtf8yVVh0xX7UA0TvlfM8RpWZjre?=
- =?us-ascii?Q?azGhNsyTIjoSeSNEQF/6t+OBO3xAPkGo/XVBhC041XW0z4qbH+QSZjHRAnBY?=
- =?us-ascii?Q?MGjksCp+O7yA+uU7PJSzCIe3bPH0vKr9kCzrjqKt4yyE+m4dVVyyRvmbQh8C?=
- =?us-ascii?Q?/d8BmGjXxzb9QjyUQg5Va3/LcXDdIB34RUitdePoc0JV4XPr7xVlUsL3jVRt?=
- =?us-ascii?Q?iY1ed8JoOlixQbVBdQv42eExg7pfnAAlOxONCW/s/70poOFi54lIwCYkcWMr?=
- =?us-ascii?Q?D/CvJAgcw7YEV3/MOVehm72zbNu+ryUvIyjEPlhLnR2ZtkXaqiC4DP5BbV1F?=
- =?us-ascii?Q?lRqnbMLH68RlHsGM0JMp2OzWm7fldiwtvEXfFvMvN+r/kWM7iICJCjNTIxwL?=
- =?us-ascii?Q?Txqv3Ei0RS7b7YveAcdCWPDIjD8pchfCaXSS1Aadht8wGBFdRf+tAuKDn42q?=
- =?us-ascii?Q?V512rHE6AHeddcunW8V5YU+F0gpe4YjNGQE52a3NH05JzPwi+8PQBeD2u0sN?=
- =?us-ascii?Q?wYrnj4fIH0RYe5DLIJlKo6y64vgx3vUogBFyb5n+RykdpHCGgbA9K26zE/ob?=
- =?us-ascii?Q?Kl+v/yNWtVDyP9pDHkOGgQBqF95bgMTeM66UJ94aZyzzQr2s48zhW5s7AfLE?=
- =?us-ascii?Q?NKeg3TcR70UIrs/5bL3wFWy9qas4nlpVY7IsTqR8eryMvebgIn2Enl3oOByP?=
- =?us-ascii?Q?eAI/VeAbRle6kSjWNZ+QdYY/vnyFELk9+/9uplPy?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(376014)(7416014)(82310400026)(36860700013)(1800799024)(13003099007)(921020);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Oct 2025 06:30:24.2691
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b612642d-25ec-4447-fb4b-08de1846f96a
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN2PEPF00004FBF.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4059
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] dt-bindings: Remove extra blank lines
+To: "Rob Herring (Arm)" <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Stephen Boyd <sboyd@kernel.org>,
+ David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Thomas Zimmermann <tzimmermann@suse.de>,
+ Andrzej Hajda <andrzej.hajda@intel.com>, Robert Foss <rfoss@kernel.org>,
+ Vinod Koul <vkoul@kernel.org>, Moritz Fischer <mdf@kernel.org>,
+ Xu Yilun <yilun.xu@intel.com>, Bartosz Golaszewski <brgl@bgdev.pl>,
+ Guenter Roeck <linux@roeck-us.net>, Andi Shyti <andi.shyti@kernel.org>,
+ Jonathan Cameron <jic23@kernel.org>,
+ Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+ Georgi Djakov <djakov@kernel.org>, Thomas Gleixner <tglx@linutronix.de>,
+ Joerg Roedel <joro@8bytes.org>, Jassi Brar <jassisinghbrar@gmail.com>,
+ Mauro Carvalho Chehab <mchehab@kernel.org>, Lee Jones <lee@kernel.org>,
+ Miquel Raynal <miquel.raynal@bootlin.com>,
+ Richard Weinberger <richard@nod.at>, Vignesh Raghavendra <vigneshr@ti.com>,
+ Andrew Lunn <andrew+netdev@lunn.ch>, "David S. Miller"
+ <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ Johannes Berg <johannes@sipsolutions.net>,
+ =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kwilczynski@kernel.org>,
+ Manivannan Sadhasivam <mani@kernel.org>, Bjorn Helgaas
+ <bhelgaas@google.com>, Kishon Vijay Abraham I <kishon@kernel.org>,
+ Sebastian Reichel <sre@kernel.org>, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?=
+ <ukleinek@kernel.org>, Mark Brown <broonie@kernel.org>,
+ Mathieu Poirier <mathieu.poirier@linaro.org>,
+ Philipp Zabel <p.zabel@pengutronix.de>, Olivia Mackall <olivia@selenic.com>,
+ Herbert Xu <herbert@gondor.apana.org.au>,
+ Daniel Lezcano <daniel.lezcano@linaro.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-clk@vger.kernel.org, dri-devel@lists.freedesktop.org,
+ linux-fbdev@vger.kernel.org, dmaengine@vger.kernel.org,
+ linux-fpga@vger.kernel.org, linux-gpio@vger.kernel.org,
+ linux-hwmon@vger.kernel.org, linux-i2c@vger.kernel.org,
+ linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+ linux-pm@vger.kernel.org, iommu@lists.linux.dev,
+ linux-media@vger.kernel.org, linux-mtd@lists.infradead.org,
+ netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+ linux-pci@vger.kernel.org, linux-phy@lists.infradead.org,
+ linux-pwm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+ linux-crypto@vger.kernel.org, linux-sound@vger.kernel.org,
+ linux-usb@vger.kernel.org
+References: <20251023143957.2899600-1-robh@kernel.org>
+Content-Language: en-US
+From: Hal Feng <hal.feng@linux.starfivetech.com>
+In-Reply-To: <20251023143957.2899600-1-robh@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: esmtpgz:linux.starfivetech.com:qybglogicsvrgz:qybglogicsvrgz5a-1
+X-QQ-XMAILINFO: NqcI9G0mljVPHlZnLQw3xgw2kf/d9aF5s5+EcmMZEbvVRyQ1odkgRlRl
+	+jfT0Sidt0LxlobAov/UuxBi7zRZKcElztA9akkk9Jf1GOBzPvaDZtXD1xMUd81p8kJ6Hyz
+	EN4m3vx2HO1Fwx2f4zwGdxxIIr0yNkbGB9nRsdeno4MwsCzUWVRSm89jzWz4XgU20HkG+Bi
+	EPCLTEsgN0e6YwsD28Vn798fqTi1nH1xPULtv5+oRStTactxEaWhGZ2Ea5jBoUwrZPjNtCl
+	KtfL9Qpnl3gXMqJqPed9mGaRPgLTO2XV2K87xBoIqx3DA51puzSQPjSlObK+/xTi+aMlW+1
+	fDLmbrQzCBVwNaUic9Z8uTC1Bc5gtQH/TLs5kJLqlQtag514tIVBJ04QCs6pYonYaXsn6EG
+	2LkGw7y0X8Tz1HhEDDhPtVPtvJP8M+kzO5W0vWf21JiLG7CaQngncyqWLVa8A9d9txFIZA9
+	mQ/f6LwS2FZ4ICsdNKbWWMurhR3mHY9yTYmGXSyppy1nWpdPr2EO5e3E1qUiNnOYNd5d5jd
+	V8f6CYeN9xuI7DbWGhxoFhTuLoiEUL7CoMogQUNnAMO4plqO2VK0rrkAMIrU083OlyS4Onf
+	SMz/dzDKfGjsc4u1rGGYqfoxA8FZMK93gzdQnr8u4sIunrUJv98dX4cl/riclCVvACp6OtH
+	jda0HrhrC9NhVU2bZ5DXK8oo2xlp0AOtGom3D0Gyy9+hhP8aTeIapuUsEPRRj4wpv8bUJ2I
+	18qWpi3KC9XqEbK70FwErh4xBL/cMBO5VVI5Aw6D6Rk4AFHfvowV70/fTA2jml6v7I2r4t0
+	eiG3Vjo9wCe0n8sghLiMzSE1/U0XvJ2VNLkgbIBi2T2lBzPOGRIkM9glJMylFwKODsCC89V
+	aSwAkvc3R1W62fELjrfWLA3iIocfsjXatYoevXlYA+XazhCRU0XMTyH2HunXOrXP2xWqB9d
+	k9mhj/irc/bGlw7QrR84hCAHmWEp5hG8WgWM=
+X-QQ-XMRINFO: NS+P29fieYNw95Bth2bWPxk=
+X-QQ-RECHKSPAM: 0
 
-The Command Queue Virtualization (CMDQV) hardware is part of the
-SMMUv3 implementation on NVIDIA Tegra SoCs. It assists in
-virtualizing the command queue for the SMMU.
+On 10/23/2025 10:37 PM, Rob Herring (Arm) wrote:
+> Generally at most 1 blank line is the standard style for DT schema
+> files. Remove the few cases with more than 1 so that the yamllint check
+> for this can be enabled.
+> 
+> Signed-off-by: Rob Herring (Arm) <robh@kernel.org>
+> ---
+>  Documentation/devicetree/bindings/.yamllint                  | 2 +-
+>  Documentation/devicetree/bindings/arm/psci.yaml              | 1 -
+>  .../bindings/clock/allwinner,sun4i-a10-gates-clk.yaml        | 1 -
+>  .../devicetree/bindings/clock/renesas,cpg-mssr.yaml          | 1 -
+>  .../devicetree/bindings/clock/xlnx,clocking-wizard.yaml      | 1 -
+>  .../display/allwinner,sun4i-a10-display-frontend.yaml        | 1 -
+>  .../devicetree/bindings/display/allwinner,sun6i-a31-drc.yaml | 1 -
+>  .../bindings/display/allwinner,sun8i-a83t-dw-hdmi.yaml       | 1 -
+>  .../devicetree/bindings/display/amlogic,meson-vpu.yaml       | 1 -
+>  .../devicetree/bindings/display/bridge/adi,adv7511.yaml      | 1 -
+>  .../devicetree/bindings/display/bridge/lvds-codec.yaml       | 1 -
+>  .../devicetree/bindings/display/bridge/toshiba,tc358767.yaml | 1 -
+>  .../devicetree/bindings/display/ilitek,ili9486.yaml          | 1 -
+>  Documentation/devicetree/bindings/display/msm/gpu.yaml       | 1 -
+>  .../devicetree/bindings/display/panel/panel-timing.yaml      | 1 -
+>  .../devicetree/bindings/display/panel/tpo,tpg110.yaml        | 1 -
+>  .../devicetree/bindings/display/rockchip/rockchip,dw-dp.yaml | 1 -
+>  .../devicetree/bindings/display/simple-framebuffer.yaml      | 1 -
+>  .../devicetree/bindings/dma/snps,dma-spear1340.yaml          | 1 -
+>  Documentation/devicetree/bindings/dma/stericsson,dma40.yaml  | 1 -
+>  .../devicetree/bindings/dma/stm32/st,stm32-dma.yaml          | 1 -
+>  Documentation/devicetree/bindings/edac/apm,xgene-edac.yaml   | 1 -
+>  .../devicetree/bindings/firmware/qemu,fw-cfg-mmio.yaml       | 1 -
+>  Documentation/devicetree/bindings/fpga/fpga-region.yaml      | 5 -----
+>  .../devicetree/bindings/gpio/brcm,xgs-iproc-gpio.yaml        | 1 -
+>  .../devicetree/bindings/gpio/fairchild,74hc595.yaml          | 1 -
+>  Documentation/devicetree/bindings/hwmon/adi,ltc2947.yaml     | 1 -
+>  Documentation/devicetree/bindings/hwmon/adi,max31827.yaml    | 1 -
+>  Documentation/devicetree/bindings/hwmon/national,lm90.yaml   | 1 -
+>  Documentation/devicetree/bindings/hwmon/ti,tmp513.yaml       | 1 -
+>  Documentation/devicetree/bindings/hwmon/ti,tps23861.yaml     | 1 -
+>  Documentation/devicetree/bindings/i2c/i2c-mux-gpmux.yaml     | 1 -
+>  .../devicetree/bindings/i2c/realtek,rtl9301-i2c.yaml         | 1 -
+>  Documentation/devicetree/bindings/i2c/tsd,mule-i2c-mux.yaml  | 2 --
+>  Documentation/devicetree/bindings/iio/adc/adi,ad7380.yaml    | 1 -
+>  Documentation/devicetree/bindings/iio/adc/adi,ad7606.yaml    | 1 -
+>  Documentation/devicetree/bindings/iio/adc/adi,ad7949.yaml    | 1 -
+>  Documentation/devicetree/bindings/iio/adc/adi,ade9000.yaml   | 1 -
+>  .../devicetree/bindings/iio/adc/cosmic,10001-adc.yaml        | 1 -
+>  Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml  | 1 -
+>  .../devicetree/bindings/iio/adc/x-powers,axp209-adc.yaml     | 1 -
+>  .../devicetree/bindings/iio/afe/voltage-divider.yaml         | 1 -
+>  .../devicetree/bindings/iio/frequency/adi,admv4420.yaml      | 1 -
+>  .../devicetree/bindings/iio/pressure/murata,zpa2326.yaml     | 1 -
+>  .../devicetree/bindings/iio/proximity/semtech,sx9324.yaml    | 1 -
+>  .../devicetree/bindings/iio/temperature/adi,ltc2983.yaml     | 1 -
+>  Documentation/devicetree/bindings/input/ti,drv266x.yaml      | 1 -
+>  .../devicetree/bindings/interconnect/qcom,rpmh.yaml          | 1 -
+>  .../devicetree/bindings/interrupt-controller/arm,gic-v3.yaml | 1 -
+>  .../bindings/interrupt-controller/aspeed,ast2700-intc.yaml   | 1 -
+>  .../bindings/interrupt-controller/fsl,vf610-mscm-ir.yaml     | 1 -
+>  .../bindings/interrupt-controller/loongson,liointc.yaml      | 1 -
+>  .../bindings/interrupt-controller/mediatek,mtk-cirq.yaml     | 1 -
+>  .../bindings/interrupt-controller/mscc,ocelot-icpu-intr.yaml | 1 -
+>  Documentation/devicetree/bindings/iommu/arm,smmu.yaml        | 4 ----
+>  Documentation/devicetree/bindings/mailbox/arm,mhu.yaml       | 1 -
+>  Documentation/devicetree/bindings/mailbox/arm,mhuv2.yaml     | 1 -
+>  Documentation/devicetree/bindings/mailbox/mtk,adsp-mbox.yaml | 1 -
+>  Documentation/devicetree/bindings/media/amphion,vpu.yaml     | 1 -
+>  Documentation/devicetree/bindings/media/i2c/adi,adv7604.yaml | 2 --
+>  .../devicetree/bindings/media/i2c/techwell,tw9900.yaml       | 1 -
+>  Documentation/devicetree/bindings/media/nxp,imx8-jpeg.yaml   | 1 -
+>  .../devicetree/bindings/media/qcom,sc8280xp-camss.yaml       | 1 -
+>  .../bindings/media/samsung,exynos4212-fimc-is.yaml           | 1 -
+>  .../devicetree/bindings/media/samsung,s5pv210-jpeg.yaml      | 1 -
+>  Documentation/devicetree/bindings/media/st,stm32-dma2d.yaml  | 1 -
+>  .../devicetree/bindings/media/video-interface-devices.yaml   | 4 ----
+>  .../memory-controllers/qcom,ebi2-peripheral-props.yaml       | 1 -
+>  Documentation/devicetree/bindings/mfd/stericsson,ab8500.yaml | 1 -
+>  .../devicetree/bindings/mtd/amlogic,meson-nand.yaml          | 1 -
+>  .../devicetree/bindings/mtd/marvell,nand-controller.yaml     | 1 -
+>  Documentation/devicetree/bindings/mux/mux-controller.yaml    | 1 -
+>  .../devicetree/bindings/net/allwinner,sun8i-a83t-emac.yaml   | 2 --
+>  Documentation/devicetree/bindings/net/brcm,bcmgenet.yaml     | 1 -
+>  .../devicetree/bindings/net/brcm,mdio-mux-iproc.yaml         | 1 -
+>  .../devicetree/bindings/net/cortina,gemini-ethernet.yaml     | 1 -
+>  Documentation/devicetree/bindings/net/fsl,gianfar.yaml       | 2 --
+>  .../devicetree/bindings/net/mdio-mux-multiplexer.yaml        | 1 -
+>  Documentation/devicetree/bindings/net/qcom,ipa.yaml          | 1 -
+>  Documentation/devicetree/bindings/net/ti,cpsw-switch.yaml    | 1 -
+>  .../devicetree/bindings/net/wireless/ti,wlcore.yaml          | 1 -
+>  .../devicetree/bindings/pci/altr,pcie-root-port.yaml         | 1 -
+>  Documentation/devicetree/bindings/pci/loongson.yaml          | 1 -
+>  Documentation/devicetree/bindings/pci/rockchip-dw-pcie.yaml  | 1 -
+>  .../devicetree/bindings/pci/starfive,jh7110-pcie.yaml        | 1 -
+>  Documentation/devicetree/bindings/pci/versatile.yaml         | 1 -
+>  .../bindings/phy/qcom,sc8280xp-qmp-usb3-uni-phy.yaml         | 1 -
+>  .../devicetree/bindings/pinctrl/brcm,bcm21664-pinctrl.yaml   | 1 -
+>  .../devicetree/bindings/pinctrl/fsl,imx9-pinctrl.yaml        | 1 -
+>  .../devicetree/bindings/pinctrl/qcom,qcs404-pinctrl.yaml     | 1 -
+>  .../bindings/pinctrl/qcom,sm6115-lpass-lpi-pinctrl.yaml      | 1 -
+>  .../devicetree/bindings/pinctrl/qcom,sm6125-tlmm.yaml        | 1 -
+>  .../devicetree/bindings/pinctrl/renesas,rza1-ports.yaml      | 3 ---
+>  .../devicetree/bindings/pinctrl/starfive,jh7100-pinctrl.yaml | 1 -
+>  .../devicetree/bindings/power/supply/mt6360_charger.yaml     | 1 -
+>  .../bindings/power/supply/stericsson,ab8500-charger.yaml     | 1 -
+>  .../devicetree/bindings/pwm/allwinner,sun4i-a10-pwm.yaml     | 1 -
+>  .../bindings/regulator/richtek,rt6245-regulator.yaml         | 1 -
+>  .../devicetree/bindings/remoteproc/ti,k3-r5f-rproc.yaml      | 2 --
+>  Documentation/devicetree/bindings/reset/ti,sci-reset.yaml    | 1 -
+>  .../bindings/rng/inside-secure,safexcel-eip76.yaml           | 2 --
+>  .../devicetree/bindings/soc/fsl/cpm_qe/fsl,qe-muram.yaml     | 1 -
+>  .../devicetree/bindings/soc/mediatek/mediatek,mutex.yaml     | 1 -
+>  .../bindings/soc/microchip/atmel,at91rm9200-tcb.yaml         | 1 -
+>  Documentation/devicetree/bindings/soc/rockchip/grf.yaml      | 1 -
+>  Documentation/devicetree/bindings/soc/ti/ti,pruss.yaml       | 3 ---
+>  Documentation/devicetree/bindings/sound/adi,adau1372.yaml    | 1 -
+>  Documentation/devicetree/bindings/sound/adi,adau7118.yaml    | 1 -
+>  .../devicetree/bindings/sound/rockchip,i2s-tdm.yaml          | 1 -
+>  .../devicetree/bindings/sound/rockchip,rk3328-codec.yaml     | 2 +-
+>  Documentation/devicetree/bindings/sound/samsung,tm2.yaml     | 1 -
+>  .../devicetree/bindings/sound/ti,tlv320dac3100.yaml          | 1 -
+>  Documentation/devicetree/bindings/sound/wlf,wm8903.yaml      | 1 -
+>  .../devicetree/bindings/timer/nvidia,tegra-timer.yaml        | 1 -
+>  .../devicetree/bindings/timer/nvidia,tegra186-timer.yaml     | 1 -
+>  Documentation/devicetree/bindings/usb/qcom,pmic-typec.yaml   | 1 -
+>  116 files changed, 2 insertions(+), 136 deletions(-)
+> 
 
-Add a new device tree binding document for nvidia,tegra264-cmdqv.
+...
 
-Also update the arm,smmu-v3 binding to include an optional nvidia,cmdqv
-property. This property is a phandle to the CMDQV device node, allowing
-the SMMU driver to associate with its corresponding CMDQV instance.
+> diff --git a/Documentation/devicetree/bindings/pci/starfive,jh7110-pcie.yaml b/Documentation/devicetree/bindings/pci/starfive,jh7110-pcie.yaml
+> index 5f432452c815..33c80626e8ec 100644
+> --- a/Documentation/devicetree/bindings/pci/starfive,jh7110-pcie.yaml
+> +++ b/Documentation/devicetree/bindings/pci/starfive,jh7110-pcie.yaml
+> @@ -16,7 +16,6 @@ properties:
+>    compatible:
+>      const: starfive,jh7110-pcie
+>  
+> -
+>    reg:
+>      maxItems: 2
+>  
 
-Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
----
- .../bindings/iommu/arm,smmu-v3.yaml           | 10 ++++
- .../bindings/iommu/nvidia,tegra264-cmdqv.yaml | 46 +++++++++++++++++++
- 2 files changed, 56 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iommu/nvidia,tegra264-cmdqv.yaml
+...
 
-diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml
-index 75fcf4cb52d9..edc0c20a0c80 100644
---- a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml
-+++ b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml
-@@ -58,6 +58,15 @@ properties:
- 
-   msi-parent: true
- 
-+  nvidia,cmdqv:
-+    description: |
-+      A phandle to its pairing CMDQV extension for an implementation on NVIDIA
-+      Tegra SoC.
-+
-+      If this property is absent, CMDQ-Virtualization won't be used and SMMU
-+      will only use its own CMDQ.
-+    $ref: /schemas/types.yaml#/definitions/phandle
-+
-   hisilicon,broken-prefetch-cmd:
-     type: boolean
-     description: Avoid sending CMD_PREFETCH_* commands to the SMMU.
-@@ -92,4 +101,5 @@ examples:
-             dma-coherent;
-             #iommu-cells = <1>;
-             msi-parent = <&its 0xff0000>;
-+            nvidia,cmdqv = <&cmdqv>;
-     };
-diff --git a/Documentation/devicetree/bindings/iommu/nvidia,tegra264-cmdqv.yaml b/Documentation/devicetree/bindings/iommu/nvidia,tegra264-cmdqv.yaml
-new file mode 100644
-index 000000000000..f22c370278a3
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iommu/nvidia,tegra264-cmdqv.yaml
-@@ -0,0 +1,46 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: NVIDIA Tegra264 CMDQV
-+description: |
-+  The CMDQ-Virtualization hardware block is part of the SMMUv3 implementation
-+  on Tegra264 SoCs. It assists in virtualizing the command queue for the SMMU.
-+
-+maintainers:
-+  - NVIDIA Corporation <linux-tegra@nvidia.com>
-+
-+properties:
-+  compatible:
-+    const: nvidia,tegra264-cmdqv
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  interrupt-names:
-+    items:
-+      - const: cmdqv
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - interrupt-names
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    cmdqv: cmdqv@8105200000 {
-+        compatible = "nvidia,tegra264-cmdqv";
-+        reg = <0x81 0x05200000 0x0 0x00830000>;
-+        interrupts = <GIC_SPI 19 IRQ_TYPE_LEVEL_HIGH>;
-+        interrupt-names = "cmdqv";
-+    };
--- 
-2.25.1
+> diff --git a/Documentation/devicetree/bindings/pinctrl/starfive,jh7100-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/starfive,jh7100-pinctrl.yaml
+> index f3258f2fd3a4..3f14eab01c54 100644
+> --- a/Documentation/devicetree/bindings/pinctrl/starfive,jh7100-pinctrl.yaml
+> +++ b/Documentation/devicetree/bindings/pinctrl/starfive,jh7100-pinctrl.yaml
+> @@ -32,7 +32,6 @@ description: |
+>      | | |     |   |   |          -------
+>      UART0     UART1 --
+>  
+> -
+>    The big MUX in the diagram only has 7 different ways of mapping peripherals
+>    on the left to pins on the right. StarFive calls the 7 configurations "signal
+>    groups".
 
+Reviewed-by: Hal Feng <hal.feng@starfivetech.com>
+
+Best regards,
+Hal
