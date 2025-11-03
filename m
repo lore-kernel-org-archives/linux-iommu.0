@@ -1,175 +1,186 @@
-Received: from mail-pg1-f169.google.com (mail-pg1-f169.google.com [209.85.215.169])
+Received: from mail-wm1-f73.google.com (mail-wm1-f73.google.com [209.85.128.73])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ACF9314F9D6
-	for <iommu@lists.linux.dev>; Mon,  3 Nov 2025 08:56:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 203E230CD81
+	for <iommu@lists.linux.dev>; Mon,  3 Nov 2025 12:34:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.73
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762160179; cv=none; b=mdNYSN8+wRwz0/TEsFhCyR4rHbv18ISaW+TS3rhKgL6lV9IZmxbrVGBJeTeD8BZlOuEtGvKrqVb5It6rq1HDO79n1wh/WYnkm3NqvwD5JdgenfLy+n2WtxnhvNOfBd2Deq/97Af9NdPtQSoXu6ptKPeMDMx0DACox6zCHVdtKvs=
+	t=1762173244; cv=none; b=h7OWU6QE3+/TzXmvsUbPDn7uQwWHEOv9ZlszbdtKQORG9wSkZGMlhNKacyqAw/mJOi6Rw9SwFG7qTxu4kBfAPhYQafcfC3wXXvTN7WXQ1Ysr98fYhvzj8haU5nxpWwP+9Ni4isMQWE5PmBhkA0uBHI6r42+nRQwjm/+2Am68fas=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762160179; c=relaxed/simple;
-	bh=cdG/2GNESlbUp6+q1QrgnV9FBjJKweM3wcW1s9bN0Co=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=G2dPpMpx7U1Tb3F6gdF5qbJa8Q7rRtukpP9Ul6uNJmM950BJQ34oBfQnSttkPn5tx7C1m/eD2UK4zqUChFuTo8GViOGBpMQ6noTVDq9O4W50+zp5rZG5m0+dHi4n5Dz5QP6MN5WvFoTbjyrzu3qv5ed11mXk6Hf4gTNy9MYwwo0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fqOP/nRr; arc=none smtp.client-ip=209.85.215.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1762173244; c=relaxed/simple;
+	bh=w36KW/wPb3cVagvybLftrF4CjYrWqxSZqwj4SEHtr88=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=kwZZRUIVV5V1N6ZIhzp0nA5ENFRKL+4hj6E+fTV1H+cuGmErLVlsZ+md8cosl8GHj9vMEvpx6tr/KoGIk6UQKddDMAIIVRJi0qGxfjCeSaK6jrGvkBO0DqSEofG559yskYjlHFY7S0e6+A8KUCz1MQBsdeIEXgTXijkJ29v4crE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=NsHbOgXa; arc=none smtp.client-ip=209.85.128.73
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fqOP/nRr"
-Received: by mail-pg1-f169.google.com with SMTP id 41be03b00d2f7-b593def09e3so2964495a12.2
-        for <iommu@lists.linux.dev>; Mon, 03 Nov 2025 00:56:17 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="NsHbOgXa"
+Received: by mail-wm1-f73.google.com with SMTP id 5b1f17b1804b1-47113dfdd20so19092425e9.1
+        for <iommu@lists.linux.dev>; Mon, 03 Nov 2025 04:34:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1762160177; x=1762764977; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=QqNH2TcSY0Cf3Gw2Gm7ueN4cQjJXED+OmhcKafNVeF4=;
-        b=fqOP/nRr6VXxDn86Opr2PTHGdZZdbJPGYT5yX3Qy+HaKUcJkrOkRsjh3cTWPy5vQv2
-         jUWJVMqHH9SuA3h9TDnkn3oMvwdfCgWuEb3+raDFMaifz2oeS3lSizY90fl2LPhERBDu
-         iMAntFxVdSdtP3LG+hurBXtNml7YYZnaQnRVoGlroxRfUZCicTuG5a6B55oYzI/oIeI+
-         17tM9dRemcPmAVw+PprM3T2XAiq8VKsLHgPQrIz/3He9KQ6opwECChmLs5mvkI+zd/0D
-         FAhAmyU+N2myoKF8XWhac8nkvtzX4sUbXZLr1jn20ORrThrjiKsH0ItBGBhS/uaubj/z
-         TmmA==
+        d=google.com; s=20230601; t=1762173241; x=1762778041; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:from:subject:message-id
+         :mime-version:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=MSAYutkZ7+a569qs6E4HPdsGwXOmRZ2wAq/f2x6mExQ=;
+        b=NsHbOgXaiQQQcd8ZsgN4BL7G8ceNwf0Z5uq0sz4OATRTZwhUulOkna7rTQ63TGSTqY
+         UDMdh065/eMNUhPIuJH+0PMloacOwG3vrzaWcFD/yL3M24klQKIWh+OhWWNhaNn4janM
+         RPOEoRojY17KNgLcBtojUy8B9maKv3gDHnQkFRuzrJ3WXKl2LLuai0BtB+We4CBCeI5a
+         Nf0BUua1/920xFWVppSf9AJzMgDixReY2Hc39F6pQYNkCsYY2i+twiQJwf3xMFSu8GJz
+         8asNRs1aJUvWWSqz3Vaf4byC5ObOYbUB2sidu12AaPiyK3F2yWdITjBNyVdtlaKZU6Qu
+         SSfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1762160177; x=1762764977;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=QqNH2TcSY0Cf3Gw2Gm7ueN4cQjJXED+OmhcKafNVeF4=;
-        b=qq99BisjrZxEt2Wa0dqpaCDsKl/hdha2TulVJiSU4CLu/ypqTvYor3fqpPJpRg1BFN
-         Stm0DaLP1DPWWK1VXC2M2yOthBvg/tHzX7+cbJCLi8BnlC4R8a5TEFduEwUIBmownq0d
-         7AVXiy6lHQBFTVk2gUCa1/DvAm16R0d+wzxNOoi9+cHboFOsi3fiagyKOA2m5dOffHgi
-         qbzbjjDn2A6H15XQEMhr+E1l1ytVLGkFhhGbY8m2JSVAuRV7NxMWWWS7TrGvfOeRymQY
-         Kyof19Q2/vIbTGS9pjYymoHfDP7aEyMCab9rHRZhzbHssrpCAyCi76Wa69xfQoSSkihk
-         p1MA==
-X-Gm-Message-State: AOJu0Yxm29IWzPtdjxJwmQP+ll7q2cMRohhCgNFtsmqE+/klu5TAZSlc
-	sGC4Pz57t2MB2Kc+/dnLZmjThFdy2eUcDpch7qFR+ME7nkCP9rEhBpkS
-X-Gm-Gg: ASbGnctxE2BvHrDQO3nWQwnx0/hviuiEBZ0vQZWuEzw8yeC8ALnKprCysrvB/D+WKH+
-	0uAKdNuQCW0HmjdGco3FnsLikWJisSQZLrekXlIo0XxOX9i0ftRGqtA+QHEjHZhBKmWslmVhTjx
-	xstkTk/XStdqAL1uNYZUSiJrEzMrZyYgDRUDpT0Dmwqu4Kqmub99/uINLP7eaZDAcO0q/7Ij49w
-	gtRU6mUV6zkN5YqAFeW6GVcbMUp7YaisjIQtRbJM4yE2534iBLQ9nu2IKcBL1vmZ44ipnF1VBES
-	dORUQJHj8soU/Fw0oVY/nqENfb/pmQ6rsLreDF3XPb/Rns1OnHsb8/pMOItCE8X54MPtXmBpk2T
-	YqIebWxtxY4KY6NQ3YUpX2lHH1bj6FEqs0jPFpJKeiBSp2feTIO/3vVTUDknHMdeExHw4eyqsrK
-	D71NRa+WR6rrcC9rY=
-X-Google-Smtp-Source: AGHT+IGkgEsePzXxOC8diAv/i5Np1XTP2RcGbYFduDEBYKr/iatAaBQiTbvcgvvKRavZB/+3psCtUw==
-X-Received: by 2002:a17:902:c405:b0:295:426a:77a6 with SMTP id d9443c01a7336-295426a786amr114478515ad.32.1762160176891;
-        Mon, 03 Nov 2025 00:56:16 -0800 (PST)
-Received: from fedora.flets-east.jp ([2400:4050:a0e1:7d00:af43:dc37:28a7:37db])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-295586482c6sm75414465ad.22.2025.11.03.00.56.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Nov 2025 00:56:16 -0800 (PST)
-From: Ryo Takakura <ryotkkr98@gmail.com>
-To: geert@linux-m68k.org,
-	den@valinux.co.jp
-Cc: iommu@lists.linux.dev,
-	joro@8bytes.org,
-	linux-kernel@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org,
-	robin.murphy@arm.com,
-	will@kernel.org
-Subject: Re: [PATCH] iommu: ipmmu-vmsa: Add DMA controllers to devices_allowlist
-Date: Mon,  3 Nov 2025 17:56:12 +0900
-Message-ID: <20251103085612.42134-1-ryotkkr98@gmail.com>
-X-Mailer: git-send-email 2.47.1
-In-Reply-To: <CAMuHMdVtR_8OZG2XrD5PHY+ybaH4dudya4VXNXD3iHktdDyF8w@mail.gmail.com>
-References: <CAMuHMdVtR_8OZG2XrD5PHY+ybaH4dudya4VXNXD3iHktdDyF8w@mail.gmail.com>
+        d=1e100.net; s=20230601; t=1762173241; x=1762778041;
+        h=content-transfer-encoding:cc:to:from:subject:message-id
+         :mime-version:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=MSAYutkZ7+a569qs6E4HPdsGwXOmRZ2wAq/f2x6mExQ=;
+        b=gUYixNdmQEbUkO+dJo/aScv3yxcRQKLWB+MxEz0S1TWrydAB8SH6YtIi0pl48CNZFO
+         NpVdQ4iu+zaka6P7OE7r8tv0nL4bBIAcHOuUNTwmo6/IgygXZ7yLfEtRXdjGHUD6gsXS
+         Q6W/FCNheXrsWPa0JcifV7vuf5bnSwXwOQ4D7PxIe8/CczkObAihIT5M2a8SqcMgrzm1
+         vocXn6tnmljxva1wrKwm7IB9lYKuyjqDGVe+M4jkI2hGiBpvejrv33kjQXbfiaeGFCoZ
+         j9cmG4koUfmG8iWGItonF6GPacl7CPiXrs+p4QqaR2/HutRCvNs/2qm/Z6BT9OtMKEze
+         tMTA==
+X-Gm-Message-State: AOJu0Yxz0td1lS2l7PcwLjzBSYCQtah4J9fOkXTo2OG9Y3hbcifCm0wC
+	3Jn0tArFyi4+B7qfoh+D+oGgpP4JaO/EXHev53phrhcLSyG3qAMmrEe37HcWmd+qOQ6nRgAkBoi
+	zLzUI60Rf5aUlRgRdvXvf+5ZX5e9K8usmGvAQ80iOtnIHzjnLcwyVyUgewNdMjOeonzZ4S90L/m
+	GjVgyVQnUPEU7gIFZMNOrkpqI/Zo5J6qJ/aUqiR4UNK1Ie0w==
+X-Google-Smtp-Source: AGHT+IE3BVSRA1xaeeR33gXX0nVF0a1SF+382+YyhshPRNKnmANoXw9zOSGPxjdhjzWLcN6ym2yRotwlAcsWrA==
+X-Received: from wmbgz3.prod.google.com ([2002:a05:600c:8883:b0:477:df7:b01a])
+ (user=smostafa job=prod-delivery.src-stubby-dispatcher) by
+ 2002:a05:600c:4e08:b0:471:3b6:f2d with SMTP id 5b1f17b1804b1-477308aeaeamr104092065e9.38.1762173241601;
+ Mon, 03 Nov 2025 04:34:01 -0800 (PST)
+Date: Mon,  3 Nov 2025 12:33:48 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.51.1.930.gacf6e81ea2-goog
+Message-ID: <20251103123355.1769093-1-smostafa@google.com>
+Subject: [PATCH v6 0/4] Move io-pgtable-arm selftest to KUnit
+From: Mostafa Saleh <smostafa@google.com>
+To: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+	linux-kernel@vger.kernel.org
+Cc: robin.murphy@arm.com, will@kernel.org, joro@8bytes.org, jgg@ziepe.ca, 
+	praan@google.com, Mostafa Saleh <smostafa@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi, Geert!
+This is a small series to clean up the io-pgtable-arm library.
 
-I'm helping out Den-san a bit on the issue.
+The first patch is a small clean up to reduce the depedencies of the
+test before moving it.
 
-On Wed, 29 Oct 2025 17:08:07 +0100, Geert Uytterhoeven wrote:
->On Mon, 27 Oct 2025 at 02:26, Koichiro Den <den@valinux.co.jp> wrote:
->> Add Renesas DMA controller devices to the devices_allowlist to enable
->> their use with the IPMMU. This allows DMA channels to operate through
->> the IOMMU when enabled.
->>
->> Signed-off-by: Koichiro Den <den@valinux.co.jp>
->
->Thanks for your patch!
->
->> --- a/drivers/iommu/ipmmu-vmsa.c
->> +++ b/drivers/iommu/ipmmu-vmsa.c
->> @@ -741,7 +741,9 @@ static const char * const devices_allowlist[] = {
->>         "ee100000.mmc",
->>         "ee120000.mmc",
->>         "ee140000.mmc",
->> -       "ee160000.mmc"
->> +       "ee160000.mmc",
->> +       "e7350000.dma-controller",
->> +       "e7351000.dma-controller"
->
->While your change looks correct to me, it causes DMA mapping failures on
->Gray Hawk Single and Sparrow Hawk when IPMMU support is enabled
->(on renesas-drivers-2025-10-28-v6.18-rc3 with renesas_defconfig
->+ CONFIG_IPMMU_VMSA=y):
->
->    rcar-dmac e7351000.dma-controller: chan1: failed to map 1@0x00000000e656000c
->    sh-sci e6560000.serial: Failed preparing Tx DMA descriptor
->
->0xe656000c = HSCIF2 Transmit FIFO data register.
+The second patch was originally part of the SMMUv3 KVM driver support[1],
+which needed to factor out the kernel code from the io-pgtable-arm
+library, and based on Jason=E2=80=99s suggestion this can be taken out as a
+cleanup, and a step further to convert it to kunit.
 
-Thank you for sharing.
-I was able to reproduce the issue on Gray Hawk Single(r8a779h2).
+The second patch just moves the code to a new file with no other changes,
+so it can be easier to review with =E2=80=9C--color-moved=E2=80=9D
 
->With "#define DEBUG" added to drivers/dma/sh/rcar-dmac.c:
->
->    rcar-dmac e7351000.dma-controller: chan1: failed to map 1@0x00000000e656000c
->    sh-sci e6560000.serial: Failed preparing Tx DMA descriptor
->    rcar-dmac e7351000.dma-controller: chan2: map 1@0x00000000e6560014
->to 0x00000000fff82014 dir: DMA_TO_DEVICE
->    rcar-dmac e7351000.dma-controller: chan2: chunk
->00000000e5110c20/000000005e0ede90 sgl 0@000000000d8c5440, 256/256
->0x00000000fff82014 -> 0x00000000ffed6000
->    rcar-dmac e7351000.dma-controller: chan2: submit #2@000000005e0ede90
->    rcar-dmac e7351000.dma-controller: chan2: chunk
->0000000025f2f66c/00000000e5f0dd15 sgl 0@0000000064f1067f, 256/256
->0x00000000fff82014 -> 0x00000000ffed6100
->    rcar-dmac e7351000.dma-controller: chan2: submit #3@00000000e5f0dd15
->    rcar-dmac e7351000.dma-controller: chan2: queue chunk
->00000000e5110c20: 256@0x00000000fff82014 -> 0x00000000ffed6000
->
->0xe6560014 = HSCIF2 Receive FIFO data register
+The third patch converts the sefltest to be modular, that is useful as
+kunit can be a module and it can run anytime after boot.
 
-Does IPMMU support handling FIFO registers?
-(Forgive me the question... I'm still trying to learn how it works.)
+The fourth patch registers the test using kunit, and converges some of
+the APIs, some notes about that:
 
-If not, with now dma-controller backed with IPMMU, maybe what
-we need is to map FIFO register directly like it used to do?
+Granularity of tests:
+---------------------
+To make the series easier to review, the series changes the test to run in
+kunit without making intrusive changes to the test itself.
+It=E2=80=99s possible to refactor the tests to have smaller granularity (al=
+though
+I think that would make it less efficient as we might create the same io-pg=
+table
+config multiple times) and integrate them in kunit as multiple tests, that
+change would be more intrusive, if you think that is the right approach,
+I can add a couple of more patches re-writing the tests.
 
->Comparing to the CONFIG_IPMMU_VMSA=n case:
->
->    rcar-dmac e7351000.dma-controller: chan1: map 1@0x00000000e656000c
->to 0x00000000e656000c dir: DMA_FROM_DEVICE
->    rcar-dmac e7351000.dma-controller: chan1: chunk
->0000000096396eb4/00000000f35357b6 sgl 0@0000000013546bf6, 74/74
->0x0000000489ab5000 -> 0x00000000e656000c
->    rcar-dmac e7351000.dma-controller: chan1: submit #2@00000000f35357b6
->    rcar-dmac e7351000.dma-controller: chan1: queue chunk
->0000000096396eb4: 74@0x0000000489ab5000 -> 0x00000000e656000c
->
->This confuses me even more: why no DMA_TO_DEVICE mapping in the
->latter case?
+Other changes:
+--------------
+- Also, to make the test changes minimal, and the fail messages similar,
+  =E2=80=9CKUNIT_FAIL()=E2=80=9D is used to fail all tests instead of using=
+ KUNIT specific
+  assertions.
 
-I believe the DEVICE being reffered in DMA_FROM_DEVICE is
-DMAC rather than FIFO TX register.
-So from DMAC's point of view, the dma of DMAC->FIFO TX register
-should be think of it as DMA_FROM_DEVICE. 
+- Instead of using faux device, we rely on kunit_device_register()
 
->>  };
->>
->>  static bool ipmmu_device_is_allowed(struct device *dev)
->
->Gr{oetje,eeting}s,
->
->                        Geert
+- The WARN is removed when a test fails, as that doesn=E2=80=99t seem to be=
+ a pattern
+  used with kunit.
 
-Sincerely,
-Ryo Takakura
+
+You can find the instructions on how to run kunit in the last patch commit =
+message.
+
+A failure at the test with the new implementation look as
+[   55.631877]     # arm_lpae_do_selftests: pgsize_bitmap 0x20010000, IAS 4=
+4 OAS 48
+[   55.632135]     # arm_lpae_do_selftests: EXPECTATION FAILED at drivers/i=
+ommu/io-pgtable-arm-selftests.c:144
+[   55.632135] test failed for fmt idx 0
+
+Changes in v6:
+--------------
+- Remove arm_lpae_dump_ops()
+- Simplify __FAIL()
+
+v5: https://lore.kernel.org/linux-iommu/20250929155001.3287719-1-smostafa@g=
+oogle.com/
+
+Changes in v5:
+--------------
+- Rebase on iommu/next tree
+- Collected Jason and Praan Rbs
+- Move back #include <slab.h> to the main file.
+
+v4: https://lore.kernel.org/linux-iommu/20250922090003.686704-1-smostafa@go=
+ogle.com/
+
+Main changes in v4:
+-------------------
+- Remove one missed __init.
+- Change the kconfig dependencies back as it broke ARM
+https://lore.kernel.org/all/202509201819.f369wBHc-lkp@intel.com/
+
+v3: https://lore.kernel.org/all/20250919133316.2741279-1-smostafa@google.co=
+m/
+
+Main changes in v3:
+-------------------
+- Move back unused code
+- Simplify printing based on Jason comments + some renames
+- Collect Jasons Rb
+v2: https://lore.kernel.org/all/20250917191143.3847487-1-smostafa@google.co=
+m/
+
+Main changes in v2:
+-------------------
+- Make the test modular
+v1: https://lore.kernel.org/linux-iommu/20250917140216.2199055-1-smostafa@g=
+oogle.com/
+
+[1] https://lore.kernel.org/all/20250819215156.2494305-5-smostafa@google.co=
+m/
+
+
+Mostafa Saleh (4):
+  iommu/io-pgtable-arm: Remove arm_lpae_dump_ops()
+  iommu/io-pgtable-arm: Move selftests to a separate file
+  iommu/io-pgtable-arm-selftests: Modularize the test
+  iommu/io-pgtable-arm-selftests: Use KUnit
+
+ drivers/iommu/Kconfig                    |  11 +-
+ drivers/iommu/Makefile                   |   1 +
+ drivers/iommu/io-pgtable-arm-selftests.c | 214 +++++++++++++++++++++++
+ drivers/iommu/io-pgtable-arm.c           | 203 ---------------------
+ 4 files changed, 221 insertions(+), 208 deletions(-)
+ create mode 100644 drivers/iommu/io-pgtable-arm-selftests.c
+
+
+base-commit: 6146a0f1dfae5d37442a9ddcba012add260bceb0
+--=20
+2.51.1.930.gacf6e81ea2-goog
+
