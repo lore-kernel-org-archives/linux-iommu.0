@@ -1,338 +1,221 @@
-Received: from mail-wr1-f74.google.com (mail-wr1-f74.google.com [209.85.221.74])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from CY7PR03CU001.outbound.protection.outlook.com (mail-westcentralusazon11010064.outbound.protection.outlook.com [40.93.198.64])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F248330E0D8
-	for <iommu@lists.linux.dev>; Mon,  3 Nov 2025 12:34:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.74
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762173249; cv=none; b=EFn60RBQEGwc4RvGcRKt5XIvoYMeRrPdRfETR7I+8UGjQ5XRkZKdMDTEs15lR9bXy1dxQpbnAv1RZ0EmjUBPNIv4zIuHXW/oGjgQ+Bf7vjaU73W1U6svPqictX08XBmOcGyLmhh3ppkM1aG8JrY1IcaJVu1EpggNhAol2LmEC18=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762173249; c=relaxed/simple;
-	bh=ZZnDkxRVyIENEbgmqjm/2mUdcyU2VYJAQU+6uU6pKTw=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=fTc6pCe2P5IkLQMHFYs28SJk3YNz97SThvZkIaTr4xELqevsb3EEKdq24QiRNpOWlH/5zxKhDNf2lSEWy7G0YTjyWy5+35Rn2gfVbj8FLmZHNCtiP9EiDVTMjgpMqqkCABLe6o8qtjGh65B6uTKm1L1xajxiSufeeRbwdqsiNzE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=O5d6kGnt; arc=none smtp.client-ip=209.85.221.74
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 756EB3126D8
+	for <iommu@lists.linux.dev>; Mon,  3 Nov 2025 13:06:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.198.64
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1762175192; cv=fail; b=XMZFfQAdmz6pJktBswl5wrlNE1TtmY4QxKnPfESwzLasvsvGKwJnR93qNzc3cCWZoYZdhxAk1MypXyRVbsyYnXoTNurRIsb0kdlOFl8bZ1UKVMjuK5gZyT20w2+XwwPeC2CdMV/QI0ZQt5nomu/B9g+Oo3ys0Nj3K6i0fMs/X8Q=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1762175192; c=relaxed/simple;
+	bh=XIzRxB23y8vOnlVWUAq/YOiCzaoZVgWpQmYPqbPOlhQ=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=qYDDPnQwwt0Fhl6qqa/QTDduz3eoRqS77yFM69QZGoGmA6BDRoVEajjKN/mfkIk8Mjo2F9EYjOBzhZgI0T1G0XmI/pGMMGQOXljxRsY8OsQH9r+mA3uupdUySITswGnMLMrveL6IF0wgkfikLn3GKO1jKAjHcrBUM8JptJvbsqw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=dygQ0GI+; arc=fail smtp.client-ip=40.93.198.64
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="O5d6kGnt"
-Received: by mail-wr1-f74.google.com with SMTP id ffacd0b85a97d-429be5aee5bso1190050f8f.3
-        for <iommu@lists.linux.dev>; Mon, 03 Nov 2025 04:34:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1762173245; x=1762778045; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=4LKEOMyqjqgBvPHQx5V7MbLjfxSu8M1O7xqqETG0HSs=;
-        b=O5d6kGnttkCsFKKXkVpXKXCI896ICjdlHX57bKarResxjamN36szIFWO2pTPEsvp15
-         FTtfqhnEshZlGFpj6uETCWVnX5iuAjRCw2M2M084Thm15Qkh7Prqb8Z3dACq8/+L4hhQ
-         RMLk6kgIjqLrMapEUKTFRhpKQOflCXIP7zY4FA1+BbIB2jvsUCXaJXBXSefAhpkeHT1a
-         9ik80nq3CmbW1FgscbqgMOnAvoCDKfB3QrWPKVKdHyRaZR3pA/APmi9B63Cvy4cSALCo
-         x1H0MJbzFkC2MbEks5ZfRQ0DYHBpd5uDTBW6/UILVM39K6l4IcRwXJGrAnidaX+DXdQC
-         c6BQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1762173245; x=1762778045;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=4LKEOMyqjqgBvPHQx5V7MbLjfxSu8M1O7xqqETG0HSs=;
-        b=ijQ1eOcKYjE0aqi8fTQ5f9E3DVbahfqGb+PHF1tNAILjsDhBDJdsSsIpdhLI3UjpxW
-         rUMzofcYDOQnnPceU3Pqp0OCuPQEkJ3tL/mZFweu5r5IbKx3lo87+7G9c1A9WedWJmVh
-         hVes4GJIiIu36jP0SZ3Y3fJtR7AUxlBKxgKeC/kXxOkngTye9rU9258UsjoMRoAXhmeH
-         P6pmA+XXksxiV38lwl00SdcNBLL13VsqXiu0QpZ120LZ9z5PYafY0MeLcULHOzPvZ2vd
-         6cvCo/N1ykSs1nbp6CsT7MmC5+4+TnshI6GCSlbttYyNEkCoE0IYQ+oK0x0S5lID1rcP
-         2yQA==
-X-Gm-Message-State: AOJu0YwD2IQzeTpdHZynp57f8c7vy0EgYjE7pxVubcQPK4XNPkZ/sN5O
-	cqeQ+REqSkq5WM0UNXqRwaZv3047lM0s0wD8ertxVD2rQQ7Mix1vmGz2ewX//gB6cw16hnOIauy
-	1femV/dPf2BO+jY6KToERi8dSbuy6ylN66I6QIkK/apuniKhZB34z9XRnUa15469JW27dlOuYT8
-	RlpbeaCK8CHfJF4gxqGAuqNhvlLyKjTCsNcp4l5uOYNd8Hlg==
-X-Google-Smtp-Source: AGHT+IEeYIjFUdrZpu4l4ib2e0zrBNK41Il+QS1uUdlEcvl9aDJoHa5mpKNWO9cQe02uAQGChLkaUrNjED4NBw==
-X-Received: from wrad11.prod.google.com ([2002:adf:a40b:0:b0:429:d0c9:ed74])
- (user=smostafa job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:6000:4b0f:b0:429:c965:afa with SMTP id ffacd0b85a97d-429c9650c2emr5684998f8f.36.1762173245204;
- Mon, 03 Nov 2025 04:34:05 -0800 (PST)
-Date: Mon,  3 Nov 2025 12:33:52 +0000
-In-Reply-To: <20251103123355.1769093-1-smostafa@google.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="dygQ0GI+"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=QNVyt+BpdltTk0Kccrr84LRtwj6D810PJbljuOTL4/iQ5Rsp9CH2toxK80iPtW1goX4NDzS0Zmtdbeui5HPvtgOmS2LcT32O3IHjm8jIAobz7MU4IHM+n3dUzouUlM5vrQd+35bUmzgc/b4J5hQ7sT+FSVM9PXZcHn8FTTfMOVRpamcsHajLPInBFb3sMkCR2zLKWpMypvZl1qaZwdLw0dVx1Y2Hlf5Ds59ZMhQlp9MYVgMpKHOgdIEecVBrkJcxLR/ooqB/0Kh+eejZigjfoQP/E6Z0DVJLZNNCmevVwji5Hbbg17Q2V+v/vp5S/sOr7/NcRLOb331PfA55uBbVdw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=hWK5lfxcE8N9re200G1ZSSNW1CLnQ/q42SOEWkcMuU8=;
+ b=U0NgRSUIkI/fev0+KfVA0vSxLWvLbZUk62YKjeW/WiqU+jY0nQLJ0R4qhMfX1GfKG+gW2o6tSa0xLToRokhNMLZP5pHn3WTeX61SEAhG9TTPNqhjIiqD2rlPpDvjBR8LQ+mvh5hQbFEMxTbZMRJQdHPAuFRajUz5gopj4Kz8lCLA9EcTGP5X0UOo/K+84o5GPFuLIOpbe5+TQZ9aBoX+42f62zil71Nl5hQdXzNksTVnD+8u9yZkQ4tmz1wgjmNGagmiCtxupcCvFVv+HFVb1FWSXTts/M9jztr6bQAQAArBHFW7VxNTebmmeNQVpozeSazjeeqsLB5E6+Ty58Mj0Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hWK5lfxcE8N9re200G1ZSSNW1CLnQ/q42SOEWkcMuU8=;
+ b=dygQ0GI+6KGrTflqBq5qGMktZ3wx+fHl/gODBON3BIxH/5GKOAFhsx+zx3ft4qHREus59ZeMRyk2789uk8dHJJvqcwlWiULtDn90ywYymnAJl/KfuJODyiZDH8uYtcJj5q7YnFmu/Fjk79bInimej/Qmvjzg3inaYxGJsbStg2bhE2sD5RIN8xhQchdJpmYYC0y8uY3lWNhegK13IEtXq62jb8nzSxQzt5WeVQgwzwdKk+dG/hzl/mYjkLlgb/BwEBSPfXy4UGt5oXQLJvEFhZhKskhqR98UyNJriKuDXvJ0cqrb50UGxHHXUAagOGPcO1jc9K/SKV05A9wJ0uwdaQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CY5PR12MB9056.namprd12.prod.outlook.com (2603:10b6:930:34::5)
+ by CH2PR12MB4038.namprd12.prod.outlook.com (2603:10b6:610:7b::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9275.16; Mon, 3 Nov
+ 2025 13:06:25 +0000
+Received: from CY5PR12MB9056.namprd12.prod.outlook.com
+ ([fe80::9a15:4da5:cfae:f5c6]) by CY5PR12MB9056.namprd12.prod.outlook.com
+ ([fe80::9a15:4da5:cfae:f5c6%4]) with mapi id 15.20.9275.015; Mon, 3 Nov 2025
+ 13:06:25 +0000
+Message-ID: <ac51c86e-775f-46c3-8767-c373d68c5522@nvidia.com>
+Date: Mon, 3 Nov 2025 18:36:16 +0530
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/3] iommu/arm-smmu-v3: Add device-tree support for CMDQV
+ driver
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org, robh@kernel.org,
+ krzk+dt@kernel.org, conor+dt@kernel.org, thierry.reding@gmail.com,
+ jonathanh@nvidia.com, jgg@ziepe.ca, linux-tegra@nvidia.com,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-tegra@vger.kernel.org
+References: <20251031062959.1521704-1-amhetre@nvidia.com>
+ <20251031062959.1521704-2-amhetre@nvidia.com>
+ <aQTyBBF0IoE+pcXW@Asurada-Nvidia>
+Content-Language: en-US
+From: Ashish Mhetre <amhetre@nvidia.com>
+In-Reply-To: <aQTyBBF0IoE+pcXW@Asurada-Nvidia>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: MA5P287CA0244.INDP287.PROD.OUTLOOK.COM
+ (2603:1096:a01:1ae::10) To CY5PR12MB9056.namprd12.prod.outlook.com
+ (2603:10b6:930:34::5)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20251103123355.1769093-1-smostafa@google.com>
-X-Mailer: git-send-email 2.51.1.930.gacf6e81ea2-goog
-Message-ID: <20251103123355.1769093-5-smostafa@google.com>
-Subject: [PATCH v6 4/4] iommu/io-pgtable-arm-selftests: Use KUnit
-From: Mostafa Saleh <smostafa@google.com>
-To: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
-	linux-kernel@vger.kernel.org
-Cc: robin.murphy@arm.com, will@kernel.org, joro@8bytes.org, jgg@ziepe.ca, 
-	praan@google.com, Mostafa Saleh <smostafa@google.com>, Jason Gunthorpe <jgg@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CY5PR12MB9056:EE_|CH2PR12MB4038:EE_
+X-MS-Office365-Filtering-Correlation-Id: 651f81ec-0961-48da-d60e-08de1ad9cb1d
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|7416014|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?VGVvQXpzemE2TUZJQ2VUZG1oQzV2VWdVTlZIeVdlNmI5cmQvN1I2eFNBc09G?=
+ =?utf-8?B?enlFUm93TzFsQVFXbDg3L0M1NHBTSnpleGE0VTUyQjlWQ081Y3Ava1VBUStp?=
+ =?utf-8?B?d0RmR2VEcllrSkh1aCs3dWlnRHBkRWZYQW41S2NVSUxpMDNnMDF0bHZrWEtu?=
+ =?utf-8?B?bmxIVUpsZk1ZTmRTYTJsY1FMbDZTaWhTTTE5OCtwNjNHZ1JWQWFpR1ZUL1hI?=
+ =?utf-8?B?a2lKT1RmcExhMDBLVkk0dk9GLzV4eXQ2d0E0QVMzenZNa1d1QnB4NXFvNG5n?=
+ =?utf-8?B?eVNRYmNmNDFCeWJBdmFLcG5ZVHlSMTBmK3hTSU14N0g1a2hJUzdxbTA1UVVR?=
+ =?utf-8?B?aU1NZFVid0w2RkFWV0tpcVh2eWFYbm12dnZJYTZ3S2ZYVWo1c3gySHZSWHRF?=
+ =?utf-8?B?WUFBZmwyWFpXY0J5VVhsSW1NQWhrS0V5S3FHUjdBRVNDR1Ztd2dpSUl4dlBu?=
+ =?utf-8?B?eEhmM1Fnd1pVbUFRNkFIcGM5bUNaRzNGU082MzRBaFVoTFMyR3hhSG84RzZa?=
+ =?utf-8?B?QXhaM1QxaUJGTUxaNjJQZE9FQXE1OXRvd1NWS1Y1Mmp1SVJKUDRYT3B2aUww?=
+ =?utf-8?B?dll4a1Z6WGVVbVYwYkRSemROeU0rMEI2Vzlscy90Q1N1WXJZZE01T1MwODJW?=
+ =?utf-8?B?clBlUGdjZnM2dmdXTWRsd0xITFZNNjIrT0hRaDlpWVpkQ1UxakthYkFleTlG?=
+ =?utf-8?B?Vy9odGpYMUUydS85NUtlUGliajg4TlpNMDdsT0tBWFB0ME9Yazh0SDRjQXdE?=
+ =?utf-8?B?OGpGN1kxTlJ1Z3JBaXRwNmVHSEJhYUNXRE9QQlBZQ0FoRVZFSDdBQ2g4aStr?=
+ =?utf-8?B?dlRnVVZLTmtlYk0xL3EyZGJ2VmVFbitjU2lEUUhpS094UGJQSTNHYXo1ekZp?=
+ =?utf-8?B?UjBqVnd5WFgzZm0rSmxYUk5zcW1WOEZ2Z0hRaXZuR3Y1SVhPMkhvbDl1bmcr?=
+ =?utf-8?B?K2tzTEpUTVZnY2VrK2Rhck93V3o4SWI5dTlNWUhCckxCQ0NuS0tYZmtHK0d6?=
+ =?utf-8?B?d2QwVXRWdkRuVTVoZFZhRVFIL2tmdSsrKzd2aHdmbXgxeFl5VE9wa3pOZFQ0?=
+ =?utf-8?B?QlpGNDFMdnZoTlE3VWw1Ym40TjhyY3FTQnhja28rRVZrLzFnM0tEQU5pb3lw?=
+ =?utf-8?B?dG9pYTF6Rml2SEVtenJuNDRwNGN3aHh2empsOHN3LzVkb3FDRTNlenQrUVFR?=
+ =?utf-8?B?MGFEWHB6K3JyeGtqYkYzMDF6cm9FcDJtSHFORFU1S2lJOVRHY0wzS0tkTy84?=
+ =?utf-8?B?cjJ3V3R0cHFOODNIK3A5bldkd0JENVhSMXdhc3ZkcUd1R1dMZ3Nlb3Q3b2c1?=
+ =?utf-8?B?YXRBKzI5TlZxTTdkeWNYUlFWM2E4cHJOM0hLMlBaUGNYNFlPSzdFblE1N2k2?=
+ =?utf-8?B?UnpYN3MwY1B4cDBHc0NaVDdxdUIrT1hHSElVTGVjblZwVE00ZCtpNVlpbXdW?=
+ =?utf-8?B?Y3p0ZGNWa3ozdEV1dlRucHBnNnJCelBPVVFSMVpzMGxBK3ZacTJVNlZadlZS?=
+ =?utf-8?B?MktDWU1VMlNZdFByRisyekdxL1VwWTVJYjdLUEVvbk5DRUwrYkdWa1JaVDgx?=
+ =?utf-8?B?Q29sd3JRZmk0RVV0TXRhVjI4SlYzMlpWNzYrN255ZUoyc2lqOEtKRU5CN3ZW?=
+ =?utf-8?B?SVNaR01mb1U3NkMyYVlUL3BKNWYwRWRTR0FIUC9La0p1Ymd1QTEzRXRNeUdh?=
+ =?utf-8?B?Y1pYbER1WGtQTSs4SjhPbVJ3ZlZvckMvRldsbG1hT1NsQWpnTmR3bkZVWTlE?=
+ =?utf-8?B?QkpSNVdwRzFJTE1nV3I0dUN3T2ZEeDdVQUZQMnJPeVo3c0JJSmNaUnRJamxU?=
+ =?utf-8?B?SUljTlZFSmptRnBEbm1TUStlMDJOUGIwUmxuS0NMV3FNVkpqOWZLa1J0NDBK?=
+ =?utf-8?B?R2RVcWNaaURxTllGTjJIeVpLZTRELyt2YXc4OWw2dTVpK0hZT3JjRUgyeUE3?=
+ =?utf-8?Q?/9HJyQZJq7nLrBxhMXp6G4zwn5GbF33q?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB9056.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(7416014)(1800799024);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?OFFZdVl3S2FHQ2hEUXZKT21KM3hXbm9LY1dXYzdpYlE5ZmhIT0xJbE5WaUV3?=
+ =?utf-8?B?TkxQR2UzLzkwa2dvayt0MjloNUN0T2xoU1FjZy83UjA5czd6eGdiTDBVa29h?=
+ =?utf-8?B?c2hKUTBPNXhCVjZwY2hMNWl5QXU4MkgzUXF0aExmUWJWRURWaHVwM2VmNEkr?=
+ =?utf-8?B?aVB4ZjM4dUdvVHZoYUpDbTF1eUlRT293RlFyTjFxUHczV28zRm1xL3JIcjYx?=
+ =?utf-8?B?NmxZUm0wbC9FalJHS0NwUWZVSHZiM0prWkh6c01IdXJjNnRXUEhheHplZmxB?=
+ =?utf-8?B?RmFlMWNuR2J2U201aE5UYVFRNXY1a0paWWVqN2VoaXowYklBNW9OK2lHTW56?=
+ =?utf-8?B?ODhUN1BWZXU2OVhCL0dnNS9sKzZ0T0tNc2prREpLa2F6a2Eyb0t6Mis2S0hL?=
+ =?utf-8?B?R3dHN09JaGxacFRYNk4vY2M2MjhjaGNPZFNkWllNMmpiOTZSODNBR2dVQTlB?=
+ =?utf-8?B?clpYS292aDdXalpmZk84S2tLaU9YYVFMMlZ6dys3a3pUUWl1anl1cDRyMVl1?=
+ =?utf-8?B?b2tEcTQ0MGsvRnBuWE5rbktIbmpXZE9WL0hLaVFNZTZNWFgwTjhuZDdWYjBv?=
+ =?utf-8?B?aU4rN0x0RGozTmtoY1pGT2Rwc2VNdnFlVkY4b05GRFlPQmNxaFRPUTA4S3VR?=
+ =?utf-8?B?NDRPVG1WWXUzMlhreVR6bzNJbHd3UEY3ZjdObVd6MDJoc3NnT0R1VDJLdU4v?=
+ =?utf-8?B?TXJtK3BXL2Q2RTVDRTJ2R2Ywa2NzVmtnNTk0YjF0bTBFcm12RlY3dHpodmpR?=
+ =?utf-8?B?NnNtSTFrVHNYdEs0VlY4QWpCd0h0bTIwRGJtN0ZVd1JaQVNqQ1BNOFJIdUI5?=
+ =?utf-8?B?M09uZFk2aGZRRHNDczFDN1YySmxUWHZPUlRQdzBDY2F2allPb2djUmJzaWJ4?=
+ =?utf-8?B?SmRvaEVua1hGa2xLb0V0SlhCcTQ4Tm9Rek9uQVNDWlZaTzdJL3VzbGgwQlVN?=
+ =?utf-8?B?Y2NkanQ0dG9QM1h6RG92QkdRUGIxbjEvVGU1VndRaG1kYXcwbWdEN0tJVVBw?=
+ =?utf-8?B?b0VRN1Q5VEhGVjlvcnJhQ0pVTlhFT05wZmZXamZyZkV6VFNyNnN5Ylh5azhq?=
+ =?utf-8?B?WG12cEhOUFhGUXNmcmRveUNmYmtjWDVSNG83VUE4NndFT3RmWStIT0p0YW1I?=
+ =?utf-8?B?UEZBNUthSnNqNDlmSUltT2tnRUpONVhiK2FQcUZKZ3RIRW1ZYitZMktLdi93?=
+ =?utf-8?B?bXVOdTV4bDkzYnJod3dmaG1sR05mNFZJTXpLam1TUkhyY2hJNVBkS0tOdnVv?=
+ =?utf-8?B?MVhEdW53RnNScEJEY0toTmFsWVVYYXpybVNnVmxMVitEQkxWbE1pNFBxTUlX?=
+ =?utf-8?B?eEhKTEZEUHFMYTl6UGZpRTNWUzYzZ05lM1ZVaU51VXdGOTFMb1BQYk9ZTDFG?=
+ =?utf-8?B?Nzd5UGNya25jNzNUMWdENUxSRCthK1BPcmVWdVIxNk9jcmdKSDJxb1BnYS9o?=
+ =?utf-8?B?N0pWZzNyMEFKcjIxNkZJQ2RrbmRabHVXMjlQTkk3VlcrU1FrMjhITklBcXM3?=
+ =?utf-8?B?Y2cyWGFvVEpIWDkwMWZKcStQQVFuRGI2MVBPNFh0QUxLS0dGQVoyZms3NUww?=
+ =?utf-8?B?MkNtR3Nya1lpNytiVGg2Rnc2MWJ5ZGNhS0hyQy9nU2k2NVZHQ2hkY2NCSXBE?=
+ =?utf-8?B?eGtKT0FjWlhkSTlscmN6QWZJQ3l0V3dDQkdkYmRZaDJUM1RkTlgrZWRrU3Ar?=
+ =?utf-8?B?R1JUakRHVUovRW1FSkFZR1REeUZFUWovRmlpVkpqdk9MZEdjN2w1MkR6S0hi?=
+ =?utf-8?B?dXhmZk1sbCtNTUdUNXV5ME5RM0gyd0RPcUNSb1JvbHozZFdpbmJmcWhmNG41?=
+ =?utf-8?B?N1FIbzhZYkNpMGRvWlRWOC9qY3JxbGtseXcrMkRsZTh4cEVZaUNjSENUcHlk?=
+ =?utf-8?B?a1dRYXQ1RWV0VjhVNm16clA0M0JObWZSSk43bEN1cXVxcjBkS29OYUhwVDIr?=
+ =?utf-8?B?MXhFc1BDT0h2amtSdGtXb1drUkhsOFEveFJhWkV3Q25BTTM5NFNTTE82TjR3?=
+ =?utf-8?B?T3hGZ0V6OWkrTXhlelQ0bXJnT0h0OXZ4dUZCK1d6dFV4MTZyZzZGb2szcStR?=
+ =?utf-8?B?QS93OXdma3RUc0ZUZjd4Vm42NXJLbHVuMzNjVnM0U3lVcUlVQTVUTVdNdDVL?=
+ =?utf-8?Q?8brtE1NiXuTC6KlWXfVw0zbnL?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 651f81ec-0961-48da-d60e-08de1ad9cb1d
+X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB9056.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Nov 2025 13:06:25.3005
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: sqz7zRk6V9pHX+ihKkPft8O2kNazaF1U74xF90sei4Tj/bdItv5pUWdBz8KOV91nHdj4Qzkopyl4TWENf0fooQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4038
 
-Integrate the selftests as part of kunit.
 
-Now instead of the test only being run at boot, it can run:
+On 10/31/2025 10:59 PM, Nicolin Chen wrote:
+> On Fri, Oct 31, 2025 at 06:29:57AM +0000, Ashish Mhetre wrote:
+>> Add device tree support to the CMDQV driver to enable usage on Tegra264
+>> SoCs. The implementation mirrors the existing ACPI probe path, parsing
+>> the nvidia,cmdqv phandle from the SMMU device tree node to associate
+>> each SMMU with its corresponding CMDQV instance.
+>>
+>> Remove the ACPI dependency from Kconfig as the driver now supports both
+>> ACPI and device tree initialization through conditional compilation.
+>>
+>> Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
+> Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
+>
+> With two nits:
 
-- With CONFIG_IOMMU_IO_PGTABLE_LPAE_KUNIT_TEST=y
-  It will automatically run at boot as before.
+Thanks Nic, I'll address these in next version and add reviewed by.
+>> diff --git a/drivers/iommu/arm/Kconfig b/drivers/iommu/arm/Kconfig
+>> index ef42bbe07dbe..5fac08b89dee 100644
+>> --- a/drivers/iommu/arm/Kconfig
+>> +++ b/drivers/iommu/arm/Kconfig
+>> @@ -121,7 +121,6 @@ config ARM_SMMU_V3_KUNIT_TEST
+>>   
+>>   config TEGRA241_CMDQV
+>>   	bool "NVIDIA Tegra241 CMDQ-V extension support for ARM SMMUv3"
+>> -	depends on ACPI
+> Perhaps:
+> depends on OF || ACPI
+>
+> and update the commit message.
 
-- Otherwise with CONFIG_IOMMU_IO_PGTABLE_LPAE_KUNIT_TEST=m:
-  1) on module load:
-     Once the module load the self test will run
-     # modprobe io-pgtable-arm-selftests
+Sure, I will fix this in V2.
+>> +static void tegra_cmdqv_dt_probe(struct device_node *smmu_node,
+>> +				 struct arm_smmu_device *smmu)
+>> +{
+>> +	struct platform_device *pdev;
+>> +	struct device_node *np;
+>> +
+>> +	np = of_parse_phandle(smmu_node, "nvidia,cmdqv", 0);
+>> +	if (!np)
+>> +		return;
+>> +
+>> +	pdev = of_find_device_by_node(np);
+>> +	of_node_put(np);
+>> +	if (!pdev)
+>> +		return;
+>> +
+>> +	smmu->impl_dev = &pdev->dev;
+>> +	smmu->options |= ARM_SMMU_OPT_TEGRA241_CMDQV;
+>> +	dev_info(smmu->dev, "found companion CMDQV device: %s\n",
+>> +			dev_name(smmu->impl_dev));
+> 	dev_info(smmu->dev, "found companion CMDQV device: %s\n",
+> 		 dev_name(smmu->impl_dev));
 
-  2) debugfs
-     With CONFIG_KUNIT_DEBUGFS=y You can run the test with
-     # echo 1 > /sys/kernel/debug/kunit/io-pgtable-arm-test/run
-
-  3) Using kunit.py
-     You can also use the helper script which uses Qemu in the background
-
-     # ./tools/testing/kunit/kunit.py run --build_dir build_kunit_arm64 --arch arm64 \
-       --make_options LLVM=1 --kunitconfig ./kunit/kunitconfig
-      [18:01:09] ============= io-pgtable-arm-test (1 subtest) ==============
-      [18:01:09] [PASSED] arm_lpae_do_selftests
-      [18:01:09] =============== [PASSED] io-pgtable-arm-test ===============
-      [18:01:09] ============================================================
-
-Suggested-by: Jason Gunthorpe <jgg@ziepe.ca>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: Pranjal Shrivastava <praan@google.com>
-Signed-off-by: Mostafa Saleh <smostafa@google.com>
----
- drivers/iommu/Kconfig                    | 11 ++--
- drivers/iommu/Makefile                   |  2 +-
- drivers/iommu/io-pgtable-arm-selftests.c | 81 +++++++++++++-----------
- 3 files changed, 50 insertions(+), 44 deletions(-)
-
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index 553522ef3ca9..d50685433347 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -40,12 +40,13 @@ config IOMMU_IO_PGTABLE_LPAE
- 	  sizes at both stage-1 and stage-2, as well as address spaces
- 	  up to 48-bits in size.
- 
--config IOMMU_IO_PGTABLE_LPAE_SELFTEST
--	tristate "LPAE selftests"
--	depends on IOMMU_IO_PGTABLE_LPAE
-+config IOMMU_IO_PGTABLE_LPAE_KUNIT_TEST
-+	tristate "KUnit tests for LPAE"
-+	depends on IOMMU_IO_PGTABLE_LPAE && KUNIT
-+	default KUNIT_ALL_TESTS
- 	help
--	  Enable self-tests for LPAE page table allocator. This performs
--	  a series of page-table consistency checks during boot.
-+	  Enable kunit tests for LPAE page table allocator. This performs
-+	  a series of page-table consistency checks.
- 
- 	  If unsure, say N here.
- 
-diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-index 5250a2eea13f..ac3851570303 100644
---- a/drivers/iommu/Makefile
-+++ b/drivers/iommu/Makefile
-@@ -12,7 +12,7 @@ obj-$(CONFIG_IOMMU_DMA) += dma-iommu.o
- obj-$(CONFIG_IOMMU_IO_PGTABLE) += io-pgtable.o
- obj-$(CONFIG_IOMMU_IO_PGTABLE_ARMV7S) += io-pgtable-arm-v7s.o
- obj-$(CONFIG_IOMMU_IO_PGTABLE_LPAE) += io-pgtable-arm.o
--obj-$(CONFIG_IOMMU_IO_PGTABLE_LPAE_SELFTEST) += io-pgtable-arm-selftests.o
-+obj-$(CONFIG_IOMMU_IO_PGTABLE_LPAE_KUNIT_TEST) += io-pgtable-arm-selftests.o
- obj-$(CONFIG_IOMMU_IO_PGTABLE_DART) += io-pgtable-dart.o
- obj-$(CONFIG_IOMMU_IOVA) += iova.o
- obj-$(CONFIG_OF_IOMMU)	+= of_iommu.o
-diff --git a/drivers/iommu/io-pgtable-arm-selftests.c b/drivers/iommu/io-pgtable-arm-selftests.c
-index 8361d01b49c5..334e70350924 100644
---- a/drivers/iommu/io-pgtable-arm-selftests.c
-+++ b/drivers/iommu/io-pgtable-arm-selftests.c
-@@ -9,7 +9,8 @@
- 
- #define pr_fmt(fmt)	"arm-lpae io-pgtable: " fmt
- 
--#include <linux/device/faux.h>
-+#include <kunit/device.h>
-+#include <kunit/test.h>
- #include <linux/io-pgtable.h>
- #include <linux/kernel.h>
- 
-@@ -42,12 +43,12 @@ static const struct iommu_flush_ops dummy_tlb_ops = {
- 	.tlb_add_page	= dummy_tlb_add_page,
- };
- 
--#define __FAIL(i) ({							\
--		WARN(1, "selftest: test failed for fmt idx %d\n", (i));	\
--		-EFAULT;						\
-+#define __FAIL(test, i) ({							\
-+		KUNIT_FAIL(test, "test failed for fmt idx %d\n", (i));		\
-+		-EFAULT;							\
- })
- 
--static int arm_lpae_run_tests(struct io_pgtable_cfg *cfg)
-+static int arm_lpae_run_tests(struct kunit *test, struct io_pgtable_cfg *cfg)
- {
- 	static const enum io_pgtable_fmt fmts[] = {
- 		ARM_64_LPAE_S1,
-@@ -63,7 +64,7 @@ static int arm_lpae_run_tests(struct io_pgtable_cfg *cfg)
- 		cfg_cookie = cfg;
- 		ops = alloc_io_pgtable_ops(fmts[i], cfg, cfg);
- 		if (!ops) {
--			pr_err("selftest: failed to allocate io pgtable ops\n");
-+			kunit_err(test, "failed to allocate io pgtable ops\n");
- 			return -ENOMEM;
- 		}
- 
-@@ -72,13 +73,13 @@ static int arm_lpae_run_tests(struct io_pgtable_cfg *cfg)
- 		 * Empty page tables shouldn't provide any translations.
- 		 */
- 		if (ops->iova_to_phys(ops, 42))
--			return __FAIL(i);
-+			return __FAIL(test, i);
- 
- 		if (ops->iova_to_phys(ops, SZ_1G + 42))
--			return __FAIL(i);
-+			return __FAIL(test, i);
- 
- 		if (ops->iova_to_phys(ops, SZ_2G + 42))
--			return __FAIL(i);
-+			return __FAIL(test, i);
- 
- 		/*
- 		 * Distinct mappings of different granule sizes.
-@@ -91,16 +92,16 @@ static int arm_lpae_run_tests(struct io_pgtable_cfg *cfg)
- 					   IOMMU_READ | IOMMU_WRITE |
- 					   IOMMU_NOEXEC | IOMMU_CACHE,
- 					   GFP_KERNEL, &mapped))
--				return __FAIL(i);
-+				return __FAIL(test, i);
- 
- 			/* Overlapping mappings */
- 			if (!ops->map_pages(ops, iova, iova + size, size, 1,
- 					    IOMMU_READ | IOMMU_NOEXEC,
- 					    GFP_KERNEL, &mapped))
--				return __FAIL(i);
-+				return __FAIL(test, i);
- 
- 			if (ops->iova_to_phys(ops, iova + 42) != (iova + 42))
--				return __FAIL(i);
-+				return __FAIL(test, i);
- 
- 			iova += SZ_1G;
- 		}
-@@ -111,18 +112,18 @@ static int arm_lpae_run_tests(struct io_pgtable_cfg *cfg)
- 			size = 1UL << j;
- 
- 			if (ops->unmap_pages(ops, iova, size, 1, NULL) != size)
--				return __FAIL(i);
-+				return __FAIL(test, i);
- 
- 			if (ops->iova_to_phys(ops, iova + 42))
--				return __FAIL(i);
-+				return __FAIL(test, i);
- 
- 			/* Remap full block */
- 			if (ops->map_pages(ops, iova, iova, size, 1,
- 					   IOMMU_WRITE, GFP_KERNEL, &mapped))
--				return __FAIL(i);
-+				return __FAIL(test, i);
- 
- 			if (ops->iova_to_phys(ops, iova + 42) != (iova + 42))
--				return __FAIL(i);
-+				return __FAIL(test, i);
- 
- 			iova += SZ_1G;
- 		}
-@@ -138,11 +139,11 @@ static int arm_lpae_run_tests(struct io_pgtable_cfg *cfg)
- 				   IOMMU_READ | IOMMU_WRITE |
- 				   IOMMU_NOEXEC | IOMMU_CACHE,
- 				   GFP_KERNEL, &mapped))
--			return __FAIL(i);
-+			return __FAIL(test, i);
- 		if (mapped != size)
--			return __FAIL(i);
-+			return __FAIL(test, i);
- 		if (ops->unmap_pages(ops, iova, size, 1, NULL) != size)
--			return __FAIL(i);
-+			return __FAIL(test, i);
- 
- 		free_io_pgtable_ops(ops);
- 	}
-@@ -150,7 +151,7 @@ static int arm_lpae_run_tests(struct io_pgtable_cfg *cfg)
- 	return 0;
- }
- 
--static int arm_lpae_do_selftests(void)
-+static void arm_lpae_do_selftests(struct kunit *test)
- {
- 	static const unsigned long pgsize[] = {
- 		SZ_4K | SZ_2M | SZ_1G,
-@@ -163,18 +164,19 @@ static int arm_lpae_do_selftests(void)
- 	};
- 
- 	int i, j, k, pass = 0, fail = 0;
--	struct faux_device *dev;
-+	struct device *dev;
- 	struct io_pgtable_cfg cfg = {
- 		.tlb = &dummy_tlb_ops,
- 		.coherent_walk = true,
- 		.quirks = IO_PGTABLE_QUIRK_NO_WARN,
- 	};
- 
--	dev = faux_device_create("io-pgtable-test", NULL, 0);
--	if (!dev)
--		return -ENOMEM;
-+	dev = kunit_device_register(test, "io-pgtable-test");
-+	KUNIT_EXPECT_NOT_ERR_OR_NULL(test, dev);
-+	if (IS_ERR_OR_NULL(dev))
-+		return;
- 
--	cfg.iommu_dev = &dev->dev;
-+	cfg.iommu_dev = dev;
- 
- 	for (i = 0; i < ARRAY_SIZE(pgsize); ++i) {
- 		for (j = 0; j < ARRAY_SIZE(address_size); ++j) {
-@@ -183,9 +185,9 @@ static int arm_lpae_do_selftests(void)
- 				cfg.pgsize_bitmap = pgsize[i];
- 				cfg.ias = address_size[k];
- 				cfg.oas = address_size[j];
--				pr_info("selftest: pgsize_bitmap 0x%08lx, IAS %u OAS %u\n",
--					pgsize[i], cfg.ias, cfg.oas);
--				if (arm_lpae_run_tests(&cfg))
-+				kunit_info(test, "pgsize_bitmap 0x%08lx, IAS %u OAS %u\n",
-+					   pgsize[i], cfg.ias, cfg.oas);
-+				if (arm_lpae_run_tests(test, &cfg))
- 					fail++;
- 				else
- 					pass++;
-@@ -193,17 +195,20 @@ static int arm_lpae_do_selftests(void)
- 		}
- 	}
- 
--	pr_info("selftest: completed with %d PASS %d FAIL\n", pass, fail);
--	faux_device_destroy(dev);
--
--	return fail ? -EFAULT : 0;
-+	kunit_info(test, "completed with %d PASS %d FAIL\n", pass, fail);
- }
- 
--static void arm_lpae_exit_selftests(void)
--{
--}
-+static struct kunit_case io_pgtable_arm_test_cases[] = {
-+	KUNIT_CASE(arm_lpae_do_selftests),
-+	{},
-+};
-+
-+static struct kunit_suite io_pgtable_arm_test = {
-+	.name = "io-pgtable-arm-test",
-+	.test_cases = io_pgtable_arm_test_cases,
-+};
-+
-+kunit_test_suite(io_pgtable_arm_test);
- 
--subsys_initcall(arm_lpae_do_selftests);
--module_exit(arm_lpae_exit_selftests);
--MODULE_DESCRIPTION("io-pgtable-arm library selftest");
-+MODULE_DESCRIPTION("io-pgtable-arm library kunit tests");
- MODULE_LICENSE("GPL");
--- 
-2.51.1.930.gacf6e81ea2-goog
-
+Ack,  I'll fix this in next version
+> Nicolin
