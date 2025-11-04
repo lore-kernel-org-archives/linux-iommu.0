@@ -1,112 +1,141 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C008B2EDD74;
-	Tue,  4 Nov 2025 13:06:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC4302F90C4;
+	Tue,  4 Nov 2025 13:28:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762261569; cv=none; b=lZpeGy908cDB3nqyQguwMlI7Wi+PbLK4ZbivAQuw7pq8PyjUUYVHJzj2Sd9sbjxXidEZhtrn74ph4Gd6uTrMc408APGOSR07WHbjFkdFSimr3y994+VwXlPTyMJtvBdB0RiQITMXUnhN5OMPl8j98MRt9mMsKongc3envMV+8/8=
+	t=1762262920; cv=none; b=e8pI2WZFWytFNtzPc4iTXyupdTg0/+ix4BVKPqDhYPzzOcFFAn2PuoSHrQXPI6RLR73Ew6HDkNBPnd+iPfPBbvdpXSC1ElbGAWs/JesB61A0eB/PwKopAnYsgsQXsXreFc5v8aJ3Btu04CKTV6oVs2fp+dhQaqL4YpnKcVTp0no=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762261569; c=relaxed/simple;
-	bh=uM+xb4jok103os8tzQky4xYv8R0/kY5bXK9YP0mICyE=;
+	s=arc-20240116; t=1762262920; c=relaxed/simple;
+	bh=9CvQGqPY0E1C22RS/IR+Yxy6Dan0xzS9zSeM6da8C7Y=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qLdid3DBEq2qdJfSjnEqedGzu7BIpA0f6EpQDtnNFw2vRt5L9kVB3AxFGNnLreEHNXRPVXD+79c0O3OHWVD7ZsV+oNcGdUwWMAM/gKnkhQeabgUcun0dlFHf54oOhRYEHdG42lcfbzTWdYNLCEQLw+oRC8jASnbVBB5AdxvLvGs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bvDz1a42; arc=none smtp.client-ip=192.198.163.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=LWXpiYdyQ/AZuts5I4gJTewnPQA1Lgrt3ZIciKz2TRLXKoqPGasYxGTm6T7oPy9aHmypHikuQVZHhvtfBAi/PW9OpRsdKWwzfGreuPqCZjqkzD1DODohW4TQRdk/97izQIxyywaP1ZTH/CM9VlnfRVZRfUHI1Ulx7y9QNuYNtkY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XJJK7T9K; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bvDz1a42"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1762261568; x=1793797568;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=uM+xb4jok103os8tzQky4xYv8R0/kY5bXK9YP0mICyE=;
-  b=bvDz1a42Vxgpcpf8uhebjDyCm8R9WAdF0IwGbVuz1QIeP/6ejLYaO800
-   WQhpapDDZ5dMtNb7GvC46p+xBYIyfv9rPNfGsdBwMT9ckLLvn0E7dSmZj
-   0b62uaaJ+KIrpwE0NndhGjbsiuK/nsokIQdTZNUflZmMqWKOw3w70eUne
-   YzayxwgeD1J7iVZHya+OWLEgFaKujV18tBFvJdfnuEqE9fRieB1SZjMt+
-   osixfmOk/JAjC4vbQay/XlUMzSHwlDS8JYGKYhjLdQwRoXugHG24Co3d0
-   KocnZHJn/hObicRg4rxpHL/gzqI12ge/xDsfIKbHkBGVSzyuubxyqH2P4
-   g==;
-X-CSE-ConnectionGUID: HefAIo+6QCKWJNzHTyivXw==
-X-CSE-MsgGUID: aTMwak8+SMu9d+DcJMD4ew==
-X-IronPort-AV: E=McAfee;i="6800,10657,11602"; a="63365387"
-X-IronPort-AV: E=Sophos;i="6.19,279,1754982000"; 
-   d="scan'208";a="63365387"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2025 05:06:05 -0800
-X-CSE-ConnectionGUID: 33vOWdfsTgqD0OkKZjmu2A==
-X-CSE-MsgGUID: 6P7NkPMcT9a9kTAyDW6AFw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.19,279,1754982000"; 
-   d="scan'208";a="187104013"
-Received: from lkp-server02.sh.intel.com (HELO 66d7546c76b2) ([10.239.97.151])
-  by orviesa007.jf.intel.com with ESMTP; 04 Nov 2025 05:06:01 -0800
-Received: from kbuild by 66d7546c76b2 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1vGGij-000RPb-2E;
-	Tue, 04 Nov 2025 13:05:22 +0000
-Date: Tue, 4 Nov 2025 21:02:23 +0800
-From: kernel test robot <lkp@intel.com>
-To: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>, robin.murphy@arm.com,
-	will@kernel.org, joro@8bytes.org, robh@kernel.org,
-	dmitry.baryshkov@oss.qualcomm.com, konrad.dybcio@oss.qualcomm.com,
-	bjorn.andersson@oss.qualcomm.com, bod@kernel.org,
-	conor+dt@kernel.org, krzk+dt@kernel.org, saravanak@google.com,
-	prakash.gupta@oss.qualcomm.com, vikash.garodia@oss.qualcomm.com
-Cc: oe-kbuild-all@lists.linux.dev, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-	Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
-Subject: Re: [PATCH 5/6] of: add infra to parse iommu-map per IOMMU cell count
-Message-ID: <202511042005.MXfsNx3W-lkp@intel.com>
-References: <74d4ddf90c0fb485fda1feec5116dc38e5fd23cf.1762235099.git.charan.kalla@oss.qualcomm.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XJJK7T9K"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B08ABC4CEF7;
+	Tue,  4 Nov 2025 13:28:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1762262920;
+	bh=9CvQGqPY0E1C22RS/IR+Yxy6Dan0xzS9zSeM6da8C7Y=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=XJJK7T9K54xBsqZQr5dsd4VEMZACpRsO7HakgkbUqfJIJfLkI7iQdBNdlWmONsLOk
+	 qGBj8Opmm0i4OIwOcyM1SJTbqkx81shX+Ch8SAsmTj4sL68SdFtplJiY41K1+xhwRS
+	 NeCVF7x7cgcGnbETmt22SLAPuShwctTrzzVKIoGeQZYwyyu1Dx+EsAaZEQpWrzEFuj
+	 ZjxmhNcArococH+9vfHluIuBNRnm8snNrp/CYU+IZ/yegE/u5MTZXPZvtIkFvfjoQq
+	 9vWpe8EckGts5TBkhDj+drcvEzlOdM9g4HhUyW4HCKRGi4G66ZGANowSHRF+UAGzpQ
+	 AxzKRGwEhMKPw==
+Date: Tue, 4 Nov 2025 13:28:35 +0000
+From: Will Deacon <will@kernel.org>
+To: Mostafa Saleh <smostafa@google.com>
+Cc: Daniel Mentz <danielmentz@google.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Pranjal Shrivastava <praan@google.com>,
+	Liviu Dudau <liviu.dudau@arm.com>, Jason Gunthorpe <jgg@nvidia.com>,
+	Rob Clark <robin.clark@oss.qualcomm.com>
+Subject: Re: [PATCH 1/2] iommu/io-pgtable-arm: Implement .iotlb_sync_map
+ callback
+Message-ID: <aQn_g85KI_uuYpJh@willie-the-truck>
+References: <20250927223953.936562-1-danielmentz@google.com>
+ <aNp5sS7VpPirrRGE@google.com>
+ <CAE2F3rB6TYjy0a9yecW4zwBLraaj75YBafEz3DUh8zrLChnuCg@mail.gmail.com>
+ <aNuelC9K24z_Ph_G@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <74d4ddf90c0fb485fda1feec5116dc38e5fd23cf.1762235099.git.charan.kalla@oss.qualcomm.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <aNuelC9K24z_Ph_G@google.com>
 
-Hi Charan,
+On Tue, Sep 30, 2025 at 09:10:44AM +0000, Mostafa Saleh wrote:
+> On Mon, Sep 29, 2025 at 02:00:09PM -0700, Daniel Mentz wrote:
+> > On Mon, Sep 29, 2025 at 5:21 AM Mostafa Saleh <smostafa@google.com> wrote:
+> > > On Sat, Sep 27, 2025 at 10:39:52PM +0000, Daniel Mentz wrote:
+> > > > @@ -582,6 +582,69 @@ static int arm_lpae_map_pages(struct io_pgtable_ops *ops, unsigned long iova,
+> > > >       return ret;
+> > > >  }
+> > > >
+> > > > +static int __arm_lpae_iotlb_sync_map(struct arm_lpae_io_pgtable *data, unsigned long iova,
+> > > > +                           size_t size, int lvl, arm_lpae_iopte *ptep)
+> > > > +{
+> > > > +     struct io_pgtable *iop = &data->iop;
+> > > > +     size_t block_size = ARM_LPAE_BLOCK_SIZE(lvl, data);
+> > > > +     int ret = 0, num_entries, max_entries;
+> > > > +     unsigned long iova_offset, sync_idx_start, sync_idx_end;
+> > > > +     int i, shift, synced_entries = 0;
+> > > > +
+> > > > +     shift = (ARM_LPAE_LVL_SHIFT(lvl - 1, data) + ARM_LPAE_PGD_IDX(lvl - 1, data));
+> > > > +     iova_offset = iova & ((1ULL << shift) - 1);
+> > > > +     sync_idx_start = ARM_LPAE_LVL_IDX(iova, lvl, data);
+> > > > +     sync_idx_end = (iova_offset + size + block_size - ARM_LPAE_GRANULE(data)) >>
+> > > > +             ARM_LPAE_LVL_SHIFT(lvl, data);
+> > > > +     max_entries = arm_lpae_max_entries(sync_idx_start, data);
+> > > > +     num_entries = min_t(unsigned long, sync_idx_end - sync_idx_start, max_entries);
+> > > > +     ptep += sync_idx_start;
+> > > > +
+> > > > +     if (lvl < (ARM_LPAE_MAX_LEVELS - 1)) {
+> > > > +             for (i = 0; i < num_entries; i++) {
+> > > > +                     arm_lpae_iopte pte = READ_ONCE(ptep[i]);
+> > > > +                     unsigned long synced;
+> > > > +
+> > > > +                     WARN_ON(!pte);
+> > > > +
+> > > > +                     if (iopte_type(pte) == ARM_LPAE_PTE_TYPE_TABLE) {
+> > > > +                             int n = i - synced_entries;
+> > > > +
+> > > > +                             if (n) {
+> > > > +                                     __arm_lpae_sync_pte(&ptep[synced_entries], n, &iop->cfg);
+> > > > +                                     synced_entries += n;
+> > > > +                             }
+> > > > +                             ret = __arm_lpae_iotlb_sync_map(data, iova, size, lvl + 1,
+> > > > +                                                             iopte_deref(pte, data));
+> > > > +                             synced_entries++;
+> > > > +                     }
+> > > > +                     synced = block_size - (iova & (block_size - 1));
+> > > > +                     size -= synced;
+> > > > +                     iova += synced;
+> > > > +             }
+> > > > +     }
+> > > > +
+> > > > +     if (synced_entries != num_entries)
+> > > > +             __arm_lpae_sync_pte(&ptep[synced_entries], num_entries - synced_entries, &iop->cfg);
+> > > > +
+> > > > +     return ret;
+> > > > +}
+> > >
+> > > Can't we rely on the exisiting generic table walker "__arm_lpae_iopte_walk",
+> > > instead writing a new one, that is already used for iova_to_phys and dirty bit.
+> > 
+> > The performance gains of .iotlb_sync_map are achieved by performing
+> > CMOs on a range of descriptors as opposed to individually on each
+> > descriptor in isolation. The function __arm_lpae_iopte_walk is
+> > inherently incompatible with this, because it calls the .visit
+> > callback once for each descriptor it finds in the specified range. I
+> > guess I could work around this limitation by saving some state in
+> > io_pgtable_walk_data and developing a .visit function that tries to
+> > coalesce individual descriptors into contiguous ranges and delays CMOs
+> > until it finds a break in continuity. I'm afraid, though, that that
+> > might hurt performance significantly.
+> 
+> Exactly, I think that would be the way, I don’t have a strong opinion
+> though, but I’d avoid open coding a new walker unless it’s necessary.
+> Also, the current walker won’t do ranges, it needs some more changes,
+> I did that as part of (half of the patch doesn’t apply for this case):
+> https://lore.kernel.org/all/20241212180423.1578358-38-smostafa@google.com/
 
-kernel test robot noticed the following build warnings:
+I'm inclined to agree that it would be better to avoid open-coding a
+new walker here and if we're able to reuse/extend the generic walker
+then that would be cleaner.
 
-[auto build test WARNING on robh/for-next]
-[also build test WARNING on linus/master v6.18-rc4 next-20251104]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+If that's not workable (due to Daniel's performance worries), another
+option is to bring back the ->map_sg() hook (removed by d88e61faad52
+("iommu: Remove the ->map_sg indirection")) and implement an optimised
+version of that, preferably sharing as much code as possible with the
+existing map path.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Charan-Teja-Kalla/of-create-a-wrapper-for-of_map_id/20251104-170223
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git for-next
-patch link:    https://lore.kernel.org/r/74d4ddf90c0fb485fda1feec5116dc38e5fd23cf.1762235099.git.charan.kalla%40oss.qualcomm.com
-patch subject: [PATCH 5/6] of: add infra to parse iommu-map per IOMMU cell count
-config: microblaze-allnoconfig (https://download.01.org/0day-ci/archive/20251104/202511042005.MXfsNx3W-lkp@intel.com/config)
-compiler: microblaze-linux-gcc (GCC) 15.1.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20251104/202511042005.MXfsNx3W-lkp@intel.com/reproduce)
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202511042005.MXfsNx3W-lkp@intel.com/
-
-All warnings (new ones prefixed by >>):
-
->> Warning: drivers/of/base.c:2123 function parameter 'cells' not described in 'of_iommu_map_id_cell_count'
->> Warning: drivers/of/base.c:2240 function parameter 'np' not described in 'of_map_id_or_funcid'
->> Warning: drivers/of/base.c:2240 function parameter 'id' not described in 'of_map_id_or_funcid'
->> Warning: drivers/of/base.c:2240 function parameter 'map_name' not described in 'of_map_id_or_funcid'
->> Warning: drivers/of/base.c:2240 function parameter 'map_mask_name' not described in 'of_map_id_or_funcid'
->> Warning: drivers/of/base.c:2240 function parameter 'target' not described in 'of_map_id_or_funcid'
->> Warning: drivers/of/base.c:2240 function parameter 'id_out' not described in 'of_map_id_or_funcid'
->> Warning: drivers/of/base.c:2240 function parameter 'arg' not described in 'of_map_id_or_funcid'
->> Warning: drivers/of/base.c:2240 function parameter 'pargs' not described in 'of_map_id_or_funcid'
->> Warning: drivers/of/base.c:2240 function parameter 'fn' not described in 'of_map_id_or_funcid'
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Will
