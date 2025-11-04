@@ -1,130 +1,173 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7307E16DEB3;
-	Tue,  4 Nov 2025 07:00:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A63BFA41;
+	Tue,  4 Nov 2025 08:51:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762239630; cv=none; b=KcZzB1PrhujXRamZ4ExMUAF5RXN3SmYQJxqpihNqmqn+Megvz1TXD/RymTLoLMqtkZag33cLy9LG9Mbfjy6Sl35hpkwFdkeScUnGXPBHDJR3OcMujrCnGZ+XNC7UR1gunq1r2/R/hca36l9ci1s5MSpN4NH6dce6EK0E8bSzVdU=
+	t=1762246301; cv=none; b=NV3H2q85IOF4e05ca54YDlT8WTVjiXfbATUMrzifCm/vaHG559wBzF9W/AHQbElgXeEVUzncuYPEA1OgdD9X294xYBznj5AKSb9Y40Q6tIl9p10WaKuGWJ51b8/DYrJkX2avWTYhem+wKBhgUGfYNkgcDIcNwvLxdGNwv+BmAxY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762239630; c=relaxed/simple;
-	bh=4X+6t70DXpoh2T+5EieuiIaGNQ+Nx/11qPV6DRFYJmY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HRoUpwqjxD2l/ralGuUgK5Qnj7LTdtIVFMwJw2up3J3s2N8DYb5928OZHp4eUUSTIiHghhlcm6hN+cDaT4NPTJulUsFD5PrCQehS+9WRQz/vJDhnj33YcMFcKmFuI3W/nSZ1N0WgZJOa5LWRC7IgBJhJbtOkk74ckVEIH5Ue/lw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=I1UEY/F8; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1762246301; c=relaxed/simple;
+	bh=gOuIyGLZ0rbsf6nsYKEXLYFRABxPkLduPu93VheiC5Q=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=Er8tnWHF8NYRqrtC0VUBc6it2NieGzed4Yhmd4/ISzhH7XO7vS/MfySKO4Dy32jnACzCE2PlznPtTONX8q1IRjzfqlrfYQZ3ya5jXbf8AYfk7cXzMYcAn7rm+v+3p9mlJol7QXpwQma8lGOx1uQAECJEdmw5Cj9yNxvDxXelMDQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=FMOYF+0M; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="I1UEY/F8"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C40EC4CEF7;
-	Tue,  4 Nov 2025 07:00:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1762239630;
-	bh=4X+6t70DXpoh2T+5EieuiIaGNQ+Nx/11qPV6DRFYJmY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=I1UEY/F8kb6rmfO1N8znpDwknPo+zoeYokqXc5isZjuBzW2kwNIyURNneL551ILHq
-	 xB1qlT1GwIRyPrqploIY1BSnrb/M+gayul0auOGaYIzVZ5ipDhkzhnPwCHrtS0f6BC
-	 z5t1VvB9oLCq/rFMCgCk9VhSiEJuSXID8okNRaVWmbtPOK+n28WqZyhoHpfWmronvf
-	 FcGjEPq4VK6Yo+LBMfOfTVdislK0QSciIeNRcwvKA5aNqAeghvNKt/yYcDiNo2g9fQ
-	 ijAwMsISbHre8xNCfIwmhQpHnPPoDWGxgBNbI3zl0/Lwh8StDazLf/AgskMUfBm9kx
-	 ZlGWIVygzFi3w==
-Date: Tue, 4 Nov 2025 09:00:21 +0200
-From: Leon Romanovsky <leon@kernel.org>
-To: Bjorn Helgaas <bhelgaas@google.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Sumit Semwal <sumit.semwal@linaro.org>,
-	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-	Jens Axboe <axboe@kernel.dk>, Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Kees Cook <kees@kernel.org>,
-	"Gustavo A. R. Silva" <gustavoars@kernel.org>,
-	Ankit Agrawal <ankita@nvidia.com>,
-	Yishai Hadas <yishaih@nvidia.com>,
-	Shameer Kolothum <skolothumtho@nvidia.com>,
-	Kevin Tian <kevin.tian@intel.com>
-Cc: Krishnakant Jaju <kjaju@nvidia.com>, Matt Ochs <mochs@nvidia.com>,
-	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-block@vger.kernel.org, iommu@lists.linux.dev,
-	linux-mm@kvack.org, linux-doc@vger.kernel.org,
-	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
-	linaro-mm-sig@lists.linaro.org, kvm@vger.kernel.org,
-	linux-hardening@vger.kernel.org,
-	Vivek Kasireddy <vivek.kasireddy@intel.com>
-Subject: Re: [PATCH v6 00/11] vfio/pci: Allow MMIO regions to be exported
- through dma-buf
-Message-ID: <20251104070021.GC50752@unreal>
-References: <20251102-dmabuf-vfio-v6-0-d773cff0db9f@nvidia.com>
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="FMOYF+0M"
+Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 5A48gXTa1527981;
+	Tue, 4 Nov 2025 08:51:31 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:date:from:in-reply-to:message-id
+	:mime-version:references:subject:to; s=qcppdkim1; bh=Oq7jhL9Dsoo
+	0hdUeRXSucX/YZ/8jt6Z0ez9C2jRwySw=; b=FMOYF+0MpVKuVZi4kNvGvLUK5tT
+	xMhbxjtHkyn1KMHpRO2vL3Mqlrfp3OqQa9IabEs5GA+uMQsuhQveFTFSRZSjPSEB
+	jkTMZ/EjW5eMbAtkEswak4rEenZHdg8hMi+ffs4ZZBVC2HBg2kRBTyDlaCWkVlzU
+	IuKJl8Uac72XEpAEKzLVcLEVme2LEBIPBZelxHhw1MJ488NSWWm68vuN3rwlA5E3
+	H9nxk4cFAAclFqU8D9VSgwxi0FqYzdiX0WwG3b1kvxP6o16sTDaqfsTlVyLDHc+s
+	LeoWnhEbDFmenzlLkCm5rBtDY9AoX1V3SHCwJXACvl0kN7nHh57a6Cnjc/w==
+Received: from apblrppmta01.qualcomm.com (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4a70kcaawb-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 04 Nov 2025 08:51:30 +0000 (GMT)
+Received: from pps.filterd (APBLRPPMTA01.qualcomm.com [127.0.0.1])
+	by APBLRPPMTA01.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTP id 5A48pRYQ016331;
+	Tue, 4 Nov 2025 08:51:28 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+	by APBLRPPMTA01.qualcomm.com (PPS) with ESMTPS id 4a5b9m5515-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 04 Nov 2025 08:51:28 +0000
+Received: from APBLRPPMTA01.qualcomm.com (APBLRPPMTA01.qualcomm.com [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 5A48pQqe016287;
+	Tue, 4 Nov 2025 08:51:26 GMT
+Received: from hu-devc-hyd-u22-c.qualcomm.com (hu-charante-hyd.qualcomm.com [10.213.97.134])
+	by APBLRPPMTA01.qualcomm.com (PPS) with ESMTPS id 5A48pQGK016281
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 04 Nov 2025 08:51:26 +0000
+Received: by hu-devc-hyd-u22-c.qualcomm.com (Postfix, from userid 389980)
+	id E95125DC; Tue,  4 Nov 2025 14:21:25 +0530 (+0530)
+From: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
+To: robin.murphy@arm.com, will@kernel.org, joro@8bytes.org, robh@kernel.org,
+        dmitry.baryshkov@oss.qualcomm.com, konrad.dybcio@oss.qualcomm.com,
+        bjorn.andersson@oss.qualcomm.com, bod@kernel.org, conor+dt@kernel.org,
+        krzk+dt@kernel.org, saravanak@google.com,
+        prakash.gupta@oss.qualcomm.com, vikash.garodia@oss.qualcomm.com
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
+Subject: [PATCH 2/6] of: introduce wrapper function to query the cell count
+Date: Tue,  4 Nov 2025 14:21:01 +0530
+Message-Id: <47bdcf06aacc1fec791577ffd4a4a94034a4d3ed.1762235099.git.charan.kalla@oss.qualcomm.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <cover.1762235099.git.charan.kalla@oss.qualcomm.com>
+References: <cover.1762235099.git.charan.kalla@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20251102-dmabuf-vfio-v6-0-d773cff0db9f@nvidia.com>
+Content-Transfer-Encoding: 8bit
+X-QCInternal: smtphost
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMTA0MDA3MSBTYWx0ZWRfX+1vBt2H+M/UU
+ ID9AzEO28/YPq9PKXJPhWtDkt+oXwGERlbBi4EMTlJ4Ym2kE/eAvfHuG2G7mKiQM0AYkgFbM7qC
+ 3YH2acO3350kp/3CpFRuPLR75gdNtjM+k1RAGOaF2CgsPJRgaBG84nZfIQS8l8Ak/YKlxhy+QHZ
+ tSZUfaoIYVpa0RKDFVqjVWwg1LwqWt+c1h0mBzGqyDGL3YTH1/ahjkZtfeNRK61gkMYSMqtoQo6
+ M+hEgv3Luj7sXr3jWVdxeEJTByARUJ/1NIVrL5TRpOvrFfuLM3TNoI7/A1lT3RM1Qya5YOieu7s
+ Q7X820p9LsdZQlPfD8knFW66VJUV+9iIQx1z6mp40znUrBuPuKRTf1wxwItuw233Ik8N0Azwrqb
+ AvVcjb+icCEKwUDG4cp/GMo9X1Kaag==
+X-Proofpoint-GUID: DNCsy5Ha3fOIxbIBPK7z2uGPo4mgHSqK
+X-Proofpoint-ORIG-GUID: DNCsy5Ha3fOIxbIBPK7z2uGPo4mgHSqK
+X-Authority-Analysis: v=2.4 cv=TIJIilla c=1 sm=1 tr=0 ts=6909be93 cx=c_pps
+ a=Ou0eQOY4+eZoSc0qltEV5Q==:117 a=Ou0eQOY4+eZoSc0qltEV5Q==:17
+ a=6UeiqGixMTsA:10 a=VkNPw1HP01LnGYTKEx00:22 a=EUspDBNiAAAA:8
+ a=mpKIZ7k51TbimRKpb2YA:9 a=cPQSjfK2_nFv0Q5t_7PE:22
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.9,FMLib:17.12.100.49
+ definitions=2025-11-03_06,2025-11-03_03,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ phishscore=0 malwarescore=0 spamscore=0 clxscore=1015 bulkscore=0
+ adultscore=0 impostorscore=0 lowpriorityscore=0 suspectscore=0
+ priorityscore=1501 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2510240001
+ definitions=main-2511040071
 
-On Sun, Nov 02, 2025 at 10:00:48AM +0200, Leon Romanovsky wrote:
+Introduce the wrapper function, of_map_id_cell_count(), to query the
+actual cell count that need to be considered by the of_map_id() when
+used for translating the <property>-map entries. Accordingly make sure
+of_map_id_or_funcid() operates on this returned cell count.
 
-<...>
+This wrapper function returns cell count as 1 thus no functional
+changes.
 
-> ---
-> Jason Gunthorpe (2):
->       PCI/P2PDMA: Document DMABUF model
->       vfio/nvgrace: Support get_dmabuf_phys
-> 
-> Leon Romanovsky (7):
->       PCI/P2PDMA: Separate the mmap() support from the core logic
->       PCI/P2PDMA: Simplify bus address mapping API
->       PCI/P2PDMA: Refactor to separate core P2P functionality from memory allocation
->       PCI/P2PDMA: Provide an access to pci_p2pdma_map_type() function
->       dma-buf: provide phys_vec to scatter-gather mapping routine
->       vfio/pci: Enable peer-to-peer DMA transactions by default
->       vfio/pci: Add dma-buf export support for MMIO regions
-> 
-> Vivek Kasireddy (2):
->       vfio: Export vfio device get and put registration helpers
->       vfio/pci: Share the core device pointer while invoking feature functions
+The subsequent patches improve the logic in wrapper function to detect
+the proper cell count.
 
+Signed-off-by: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
+---
+ drivers/of/base.c | 19 ++++++++++++++++---
+ 1 file changed, 16 insertions(+), 3 deletions(-)
 
-Hi,
+diff --git a/drivers/of/base.c b/drivers/of/base.c
+index ac6b726cd5e3..5e76abcc7940 100644
+--- a/drivers/of/base.c
++++ b/drivers/of/base.c
+@@ -2045,6 +2045,12 @@ int of_find_last_cache_level(unsigned int cpu)
+ 	return cache_level;
+ }
+ 
++static int of_map_id_cell_count(const __be32 *map, const char *map_name,
++				int map_len)
++{
++	return 1;
++}
++
+ /*
+  * Look at the documentation of of_map_id.
+  */
+@@ -2053,6 +2059,7 @@ static int of_map_id_or_funcid(const struct device_node *np, u32 id,
+ 		struct device_node **target, u32 *id_out)
+ {
+ 	u32 map_mask, masked_id;
++	u32 cell_count, total_cells;
+ 	int map_len;
+ 	const __be32 *map = NULL;
+ 
+@@ -2068,7 +2075,13 @@ static int of_map_id_or_funcid(const struct device_node *np, u32 id,
+ 		return 0;
+ 	}
+ 
+-	if (!map_len || map_len % (4 * sizeof(*map))) {
++	cell_count = of_map_id_cell_count(map, map_name, map_len);
++	if (!cell_count)
++		return -EINVAL;
++
++	total_cells = 2 + cell_count + 1;
++
++	if (!map_len || map_len % (total_cells * sizeof(*map))) {
+ 		pr_err("%pOF: Error: Bad %s length: %d\n", np,
+ 			map_name, map_len);
+ 		return -EINVAL;
+@@ -2085,12 +2098,12 @@ static int of_map_id_or_funcid(const struct device_node *np, u32 id,
+ 		of_property_read_u32(np, map_mask_name, &map_mask);
+ 
+ 	masked_id = map_mask & id;
+-	for ( ; map_len > 0; map_len -= 4 * sizeof(*map), map += 4) {
++	for ( ; map_len > 0; map_len -= total_cells * sizeof(*map), map += total_cells) {
+ 		struct device_node *phandle_node;
+ 		u32 id_base = be32_to_cpup(map + 0);
+ 		u32 phandle = be32_to_cpup(map + 1);
+ 		u32 out_base = be32_to_cpup(map + 2);
+-		u32 id_len = be32_to_cpup(map + 3);
++		u32 id_len = be32_to_cpup(map + total_cells - 1);
+ 
+ 		if (id_base & ~map_mask) {
+ 			pr_err("%pOF: Invalid %s translation - %s-mask (0x%x) ignores id-base (0x%x)\n",
+-- 
+2.34.1
 
-Can we get Acked-by for p2pdma and DMABUF parts?
-
-Thanks
-
-> 
->  Documentation/driver-api/pci/p2pdma.rst |  95 +++++++---
->  block/blk-mq-dma.c                      |   2 +-
->  drivers/dma-buf/dma-buf.c               | 235 ++++++++++++++++++++++++
->  drivers/iommu/dma-iommu.c               |   4 +-
->  drivers/pci/p2pdma.c                    | 182 +++++++++++++-----
->  drivers/vfio/pci/Kconfig                |   3 +
->  drivers/vfio/pci/Makefile               |   1 +
->  drivers/vfio/pci/nvgrace-gpu/main.c     |  56 ++++++
->  drivers/vfio/pci/vfio_pci.c             |   5 +
->  drivers/vfio/pci/vfio_pci_config.c      |  22 ++-
->  drivers/vfio/pci/vfio_pci_core.c        |  56 ++++--
->  drivers/vfio/pci/vfio_pci_dmabuf.c      | 315 ++++++++++++++++++++++++++++++++
->  drivers/vfio/pci/vfio_pci_priv.h        |  23 +++
->  drivers/vfio/vfio_main.c                |   2 +
->  include/linux/dma-buf.h                 |  18 ++
->  include/linux/pci-p2pdma.h              | 120 +++++++-----
->  include/linux/vfio.h                    |   2 +
->  include/linux/vfio_pci_core.h           |  42 +++++
->  include/uapi/linux/vfio.h               |  27 +++
->  kernel/dma/direct.c                     |   4 +-
->  mm/hmm.c                                |   2 +-
->  21 files changed, 1077 insertions(+), 139 deletions(-)
-> ---
-> base-commit: 3a8660878839faadb4f1a6dd72c3179c1df56787
-> change-id: 20251016-dmabuf-vfio-6cef732adf5a
-> 
-> Best regards,
-> --  
-> Leon Romanovsky <leonro@nvidia.com>
-> 
-> 
