@@ -1,231 +1,207 @@
-Received: from CO1PR03CU002.outbound.protection.outlook.com (mail-westus2azon11010048.outbound.protection.outlook.com [52.101.46.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 532C4340A4D;
-	Tue,  4 Nov 2025 18:11:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.46.48
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762279914; cv=fail; b=WlzJSbpqsjfAPMCgTxZo9pt1DqjQToeMmp5uFkhuBiHb26Vn9NH02Pd2JNneQ5jYL1TWHEieaSTcjsNgKsDorVN5Ec8bsvd+sxa0eEr7VfXHR6AEcTsxe3gls1/gYSUVXe1dBQH8gYrvpWyAwdCa3eorZSFcqreNysPKG8PFr0M=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762279914; c=relaxed/simple;
-	bh=j2Y8gSroBnmwdBKWDr/yQ2+r83/Cho3/bIUCKuxFot0=;
-	h=From:To:Cc:Subject:Date:Message-ID:Content-Type:MIME-Version; b=bCo3XAfUl4fI3mAz/dVLO9F5jqV9Sw65GcBTQSzUd5vYeALUjXyuZVaG55oj6yTBBab9ZvSZPJPA4X5SD/Wo4v00d24n3nR0GywQgRBJmsxIHdo4BsIVydW28ZsM5uLqzKdMkbQHs94/oAYOYehz4VYM8ennNC3u+TQyqEG5Xtk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=P6PZFG9h; arc=fail smtp.client-ip=52.101.46.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0207C33F8A4
+	for <iommu@lists.linux.dev>; Tue,  4 Nov 2025 18:25:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1762280743; cv=none; b=pB3QR6ZrzngWHFwlrOiYRvTUh4rr9K43G0F1M8y5dgPHJIlxnxhLHVvaaCLxMyMzHCZqLBNBXUvaeA2XzE5+kn2Li7hPDgFjc8aaFwNKCidZF3y6UyGkFBaqTCLqRUl7UQPXF8mj0VtXgeCDDNqrb76/cY+PIHIQYyj5SuLh4oc=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1762280743; c=relaxed/simple;
+	bh=R0WzQZ2eAWcgFdw6UFqXxOnbz12aR8pFzKAsf70px8Y=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=B21WNOXPsFZGq9HSBJ8PfRXA+igZEaEELLYloRKjtXnILayo0lcGlPnmIOs6CxQAePkxH6QS4Xyq3v2hvXl+9FA1jX8jKhNEbMExg0w9wMoEU/jZj/BLy+CgPpuNTRuiCHvtefYXCqbP+/kp4uyULtlzyTxYtckjsr/mh2ptamU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=W/YFme5J; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="P6PZFG9h"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=TYw5TOxwk+wnrhDUHi0DG4lrU+KzFAv+paX/4mZUCX4HyCDZ5hJXPzb0Nb5P82kx1e0zxv1w90TET5ga/9OstsOtwddtKCQ/wUiIeYWt8beGkMVo53b+xFz2SuC9AaXx2II614h9s2P1SN47i0azHNLHAy1RAHf1HFRPCCAtb51JYwyq/xIIr5SEwhK8cYgQPhOkRvNATOs6BS6alSDbTMO6zrPzuBoV2SF0QitJdzM9WnMvh77S6AMNzMrPI/jsPOg0/9tN1uFGfhry4H/R97FWMkU6uU8eh/sDV1XQEZoJ2VUjZh7y9TReYejYFLXaoOAeZMqprSm+rrdhf5Ry7Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mFX5/n2DpvzyWAyAaS4dLCx5xgqRLtsw8cg0nyUJA6I=;
- b=HsYKS0HLFrDcSW37d1LvS8zZgINMiVk2R+cyKMTQW+x4OggeZZL2f5P1wvS0LRyo2iL3ttau9wVphlDnLq/Lrn+NY9nssrcRoNGE2c3ASg338Tw5LV3CKgjnLkP2s8zln8BKx3crg7VYSWog6dc8yupiXG0XGDJfv6WmePsB9RcpNeTpPUzuj72dATu0ck1YklggPhjdqVsX6uBv4oP+iJjfUAguy7DKinf+hUl/aHaq7uvtSZF106p0M0egZwBfVVer0vw1wB+X/6kHio+g83H7T2EsYqOXpfnig84knr5CYDpPuaHTdKqMF3UJQWr1V6IYmTUztlm0shxNgB0CHg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mFX5/n2DpvzyWAyAaS4dLCx5xgqRLtsw8cg0nyUJA6I=;
- b=P6PZFG9h9Kdnq5Y2JQzc0+40+GL/ZkwMaT2MPLJOStSQ3AXItNXqdY127tUFqRL1ijiLGUdnwq89FJ4KKmQn9HFE9Nzw3P+Szyi4RU5ypD8nSElJtTkINZsbF/ruC2Ks/DjqE9Axc7a/kD7PATITDt/yyttCRvnM9Y0Tu+gTXlwZY5eDGm3wt9VYEpAfqrlhkZNUPBtLSyFvwqsLSBCWU3B7ZciXObtH9euZG/+K8bHK1slIIXJEqBUU5jSzALfHf32GOtF9obH2pbcszfJ98Eogz6znTjfClHaubpd6QxbOcsvKW7kalFp/wHaasA6d1wpgUOxXRMu4C/L9kjt9uw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB3613.namprd12.prod.outlook.com (2603:10b6:208:c1::17)
- by SA3PR12MB8802.namprd12.prod.outlook.com (2603:10b6:806:314::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9275.16; Tue, 4 Nov
- 2025 18:11:50 +0000
-Received: from MN2PR12MB3613.namprd12.prod.outlook.com
- ([fe80::1b3b:64f5:9211:608b]) by MN2PR12MB3613.namprd12.prod.outlook.com
- ([fe80::1b3b:64f5:9211:608b%4]) with mapi id 15.20.9298.006; Tue, 4 Nov 2025
- 18:11:50 +0000
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: iommu@lists.linux.dev,
-	Joerg Roedel <joro@8bytes.org>,
-	linux-kselftest@vger.kernel.org,
-	Robin Murphy <robin.murphy@arm.com>,
-	Shuah Khan <shuah@kernel.org>,
-	Will Deacon <will@kernel.org>
-Cc: Alex Mastro <amastro@fb.com>,
-	Eric Auger <eric.auger@redhat.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Lixiao Yang <lixiao.yang@intel.com>,
-	Matthew Rosato <mjrosato@linux.ibm.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	patches@lists.linux.dev,
-	Yi Liu <yi.l.liu@intel.com>
-Subject: [PATCH iommufd] iommufd: Make vfio_compat's unmap succeed if the range is already empty
-Date: Tue,  4 Nov 2025 14:11:49 -0400
-Message-ID: <0-v1-76be45eff0be+5d-iommufd_unmap_compat_jgg@nvidia.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: YT4PR01CA0359.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b01:fc::23) To MN2PR12MB3613.namprd12.prod.outlook.com
- (2603:10b6:208:c1::17)
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="W/YFme5J"
+Received: from localhost (unknown [20.236.11.42])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 6150420120A5;
+	Tue,  4 Nov 2025 10:25:40 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 6150420120A5
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1762280740;
+	bh=WdskQM+QspCrSjFnE3pe3t3FXVlQNkGV5vIeU9z2J5Q=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=W/YFme5J80beBzeExVaXRS8yDspmj1/KiAMjubeXlv0FUUUeyP2ZYFmFkQMzd0Hsv
+	 /j2d063ChqDhdKLzNEU8KWXVN5yIzPf0q8BKXd1nmnWy1ry5z+6ER9lxD2t0TosYSq
+	 5Tx8JA4j05NYQv1SroRR2jFmzzgDDel/s5ExLSck=
+Date: Tue, 4 Nov 2025 10:25:39 -0800
+From: Jacob Pan <jacob.pan@linux.microsoft.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: <linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>, Will Deacon <will@kernel.org>, Joerg Roedel
+ <joro@8bytes.org>, Mostafa Saleh <smostafa@google.com>, Jason Gunthorpe
+ <jgg@nvidia.com>, Robin Murphy <robin.murphy@arm.com>, Zhang Yu
+ <zhangyu1@linux.microsoft.com>, Jean Philippe-Brucker
+ <jean-philippe@linaro.org>, Alexander Grest <Alexander.Grest@microsoft.com>
+Subject: Re: [PATCH v2 1/2] iommu/arm-smmu-v3: Fix CMDQ timeout warning
+Message-ID: <20251104102539.00001110@linux.microsoft.com>
+In-Reply-To: <aQlVjtTiqd34I+NC@Asurada-Nvidia>
+References: <20251020224353.1408-1-jacob.pan@linux.microsoft.com>
+	<20251020224353.1408-2-jacob.pan@linux.microsoft.com>
+	<aQPptXsqzt6kJS7f@Asurada-Nvidia>
+	<20251103151631.0000703a@linux.microsoft.com>
+	<aQlVjtTiqd34I+NC@Asurada-Nvidia>
+Organization: LSG
+X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MN2PR12MB3613:EE_|SA3PR12MB8802:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0ecaf354-3f37-4899-8391-08de1bcda002
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|7416014|376014|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?5tjEl9QjySru/TbadoLunUcFyNk1yx8OneWmuPn7TCruBJYx0UZQCHbYXyw9?=
- =?us-ascii?Q?EBlXXB9yatgYXkr5HFWrbBpK5VUhOOxds4e8A44YrBfmfvkFo9DX9BjtTjHQ?=
- =?us-ascii?Q?YSNqEMOwLRnYoxrugCMoxqWwMroKou4H6z/fPdnl6Gb1prmmcle+GWxsR2Yh?=
- =?us-ascii?Q?YWprB5R+VchfBNmWubGDB4/YWa3sB5vyzrBvnqX6Fxt/QZ+/WSjNfgjV8JU9?=
- =?us-ascii?Q?Y/0LVL2LL+SGOoAuYYSnFqPKlZagVNM8sSldHd6PixvW76FIAVm9GYRLOBhm?=
- =?us-ascii?Q?6sGEwA/iFolLHA23CKjsRWe0TK+rwafWn1P968Lt6OyVMyZsGyLML3BpqN96?=
- =?us-ascii?Q?w+srJAmC5ZGkm3LsK4IiqDM71ZAED3toVBLTjZMzht7z6QrwZnmLsH1cyGso?=
- =?us-ascii?Q?19tGpgHtUefb7J7VW+1sTQTWqsUpCWG7IlFmeAwR9iNdzXEm4rka32Bx8EE/?=
- =?us-ascii?Q?1IzGAk/uMoA+g9eY1z9KkjvfJg1oeJAC/nkuZq713kmE5BjqIAVKJpEiLg1d?=
- =?us-ascii?Q?PEjJVb/cKcUots0g5VwZ8oHmSTVcvfIltocYidDIKgTX61/sKvSKJbNnp9J6?=
- =?us-ascii?Q?QSzpuMMnf01He/9JDK6i2J0mvvM13lyxweLd9eQIRkVH6VRgX9/gZiC5L2pA?=
- =?us-ascii?Q?RBykBswsix2N42zGb3EMZQkCkZmIIxTXs0d63wuTpDubaqwSv6ikVkf2ZIsp?=
- =?us-ascii?Q?0wBL1Rn/c9NVJXOxO8ya0U1LZ1FUk6qgR5LBIgwQDCchsGWMpxLfg3tsn8kc?=
- =?us-ascii?Q?EqhECMw9girr9Ch/eTXJvfNLyy+1zbDSdorKz+/IQAMHbVRo3iAUsk/Q+3c3?=
- =?us-ascii?Q?F0eqLx+ozTq8DIWgg1O2zIeQ4BAfe8Jlb5zEJzRvrz3rL9Rj0S6Jz5+AwdYW?=
- =?us-ascii?Q?3zk+hWZyfHZ2JAv5InYF/zKB5nF69Jho/dsLAfOQNcf49iW+ttEPCHjDczIR?=
- =?us-ascii?Q?kgeQvkMga7Cfn8CVpzzPTG7vav5nu0TAyhYtWLC4bxgbuJRip06ErfF+1B5C?=
- =?us-ascii?Q?LzMxhWAsobaR26YPvu6kAhvkDgNl2XnOQhtqe0zsD5NdagHekVlpIJbj24i3?=
- =?us-ascii?Q?fCd2YkvRYQwHqehLzkMzvLQH6WOiD8CCkr0XZMsjPUHLT/HItCOkkHqdUBsl?=
- =?us-ascii?Q?bRYOAUxzLeZuXFqd52OfeokqrbzWazo5ZhEPltLTX+CFvCBCsWquB0ZFdYhB?=
- =?us-ascii?Q?yvghEDKeOjXh+GYplVZ7QelR3CTVz7YDZIOymZ97ntkmAhm1I+ZEtcjQrl66?=
- =?us-ascii?Q?VtLSaHH75tzcuCyiOXW45Nn/2U/fL05LLuRqEihnX/rvNj62ubMm52+jo0V+?=
- =?us-ascii?Q?1j1MHzQAmrDF9znprMIFhLmNV1yhtsH7OBZFxArAEYjaZ+66wXaOj+YwJjsK?=
- =?us-ascii?Q?w6/2qViOy34rw1O4zq/Q0+LymJDWsihZKBky6sNMwEvccUwDdE6Rsk2GMdL7?=
- =?us-ascii?Q?Tt6nyvCFDKBMX9KwGTqMhi0RgmQ5zHr2?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB3613.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(7416014)(376014)(1800799024);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?YgTnR8EY9VuI4+Ip/c+6oBNCPrGDukqo13hoMbx/kLUKMDBELQ8dA1LvXWZb?=
- =?us-ascii?Q?DOINqf/XTgh6LkQvCxx9B8nD3YW3UXp4b9WShVkASJtmCQ99B9EYaj9le6SB?=
- =?us-ascii?Q?ymp/sTNJzN7jspQF2eZHF61YHW/1Z8GxR981qrMIG+pxrvUkbLel1/tAGd5o?=
- =?us-ascii?Q?vIRX5mrqM9jDkoCk5NuGTE9PTlcfMkbfkW6PuDb3C7ROOmMLgQzF5TNoQW6Q?=
- =?us-ascii?Q?JGBEbrqRynlsGGbd92kU9yhrv9q/e/NG6U5fqsOxz0INugrz9iIsk2EbfCyX?=
- =?us-ascii?Q?fAjYUH728/srk4Ls6nTNUWtEsd8TSmHlZqrHmmq01k+nZqYe7iOMOeC2XEUe?=
- =?us-ascii?Q?9x2g1qkzyZAl/bDa8DbnD7BDW11J2yEDpxdLaal0ydAwIFEfPxAXV52+OnHO?=
- =?us-ascii?Q?PzRdhZ9L4ZOthqSUqLtDcoxNwjnXJ2qgcCfB4s8EtikMoa4jalKd1MsdY2Mz?=
- =?us-ascii?Q?vUzP9mQsau235Lx4yhZ/95Z+EYieshvZeUrkeZmHmEr1aky7chW+HSrgxhfn?=
- =?us-ascii?Q?CHpcI6rFFzi9NC3OzqxBLT+KvgZl/2+QEXClhlx+73dR0yqXfuwP3TI2u0mp?=
- =?us-ascii?Q?Ech3MG0Zwxz1A8GqT/5okKEzfLLS9EkYE9yYdPrUQtl3WCWr/JNy6cyAAbFo?=
- =?us-ascii?Q?e3ppjfdhzwWLsZiv/n88wP28EzepOHFOSyuczo86fAy+sj+RTpS1+TfxXqcH?=
- =?us-ascii?Q?1edXUATnp4FDheDgCQsAn9Nxf81i9CgqM4Hf1Px5KGmBRtx5+uLI24zy01vt?=
- =?us-ascii?Q?/N7WbpHDSsrA+MBvKhhirm0vBpJwbnk7cdoUak1TmTE+jPNGBvHpeqbXqISp?=
- =?us-ascii?Q?CJGA2S6NNbOUccnEET3FYzHH1/Tux7mzIOSHRpk9v29PXQQM9w3VHtGHIQ/k?=
- =?us-ascii?Q?b1MmYrVOeOu8/R7lmsBfP/L/7h2bzoqdVsZ5b4NrapMosAvHTXuv4zDF9QRo?=
- =?us-ascii?Q?HcSiHbOkr4ZdyWJmwRKc/xGEKjgindZGW5coziYvFaHgFY4pmm0b4uQ+8XJn?=
- =?us-ascii?Q?AmU/htnygWozrVtMakt6MCXyIp9WxxX/9Wyac4vRRmFdNAlU8cdwFaG4jDee?=
- =?us-ascii?Q?d52uUnj237mUa6F+ETd5KyV+SDf3BJQYYE/03+duGxCLFEpRG1HFsVEuooeX?=
- =?us-ascii?Q?D0rvoruFNH9JRE7Nfrn5XlfhVIK0pFgetzML8VjIBFbyQKKUkuKZBz/aZP5A?=
- =?us-ascii?Q?FX0WLmnUm0q71RFMSEw4VfZqYsdOlfYi5lAgauvU36A5HXwWpkxOrWW4hze7?=
- =?us-ascii?Q?f8WdfaArQqk62N24TzRGJbPJG+4xHQhWblTedAXMYUFejnyzpCGweMO46+q5?=
- =?us-ascii?Q?+LB9hXW4X03SNvV6/1TUbi/DEF75Cymh09x68MfNo8iRDeVR/elVsORoRYAe?=
- =?us-ascii?Q?HnDoij2N3dT8bArmQisIyB63Fyr7GZQtHO7h0IKDsqvFMDuocgPXd75349hM?=
- =?us-ascii?Q?N9UnZYlPRX8ywYQ/T5SJQCJX3QRDvBFyHYW6Dp6oJuZrOwDTi7CMtrKxQeeF?=
- =?us-ascii?Q?mI4FXoH9xQpzFEK4UqSHiYBidoCS2fHioT3ca+1vBM4l0U9uwGJoHU+kbUm1?=
- =?us-ascii?Q?NNTNjdaLFUgUrK75o8w=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0ecaf354-3f37-4899-8391-08de1bcda002
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB3613.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Nov 2025 18:11:50.1105
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Zw4/hdPPYwUtKNXB84LDjepTZ/fttTmkAMYSflH4Ii0R9ZAn7LXkKInpHJx5D9Lw
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR12MB8802
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-iommufd returns ENOENT when attempting to unmap a range that is already
-empty, while vfio type1 returns success. Fix vfio_compat to match.
+Hi Nicolin,
 
-Fixes: d624d6652a65 ("iommufd: vfio container FD ioctl compatibility")
-Reported-by: Alex Mastro <amastro@fb.com>
-Closes: https://lore.kernel.org/r/aP0S5ZF9l3sWkJ1G@devgpu012.nha5.facebook.com
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
----
- drivers/iommu/iommufd/io_pagetable.c    | 12 +++---------
- drivers/iommu/iommufd/ioas.c            |  4 ++++
- tools/testing/selftests/iommu/iommufd.c |  2 ++
- 3 files changed, 9 insertions(+), 9 deletions(-)
+On Mon, 3 Nov 2025 17:23:26 -0800
+Nicolin Chen <nicolinc@nvidia.com> wrote:
 
-diff --git a/drivers/iommu/iommufd/io_pagetable.c b/drivers/iommu/iommufd/io_pagetable.c
-index c0360c450880b8..75d60f2ad90082 100644
---- a/drivers/iommu/iommufd/io_pagetable.c
-+++ b/drivers/iommu/iommufd/io_pagetable.c
-@@ -707,7 +707,8 @@ static int iopt_unmap_iova_range(struct io_pagetable *iopt, unsigned long start,
- 	struct iopt_area *area;
- 	unsigned long unmapped_bytes = 0;
- 	unsigned int tries = 0;
--	int rc = -ENOENT;
-+	/* If there are no mapped entries then success */
-+	int rc = 0;
- 
- 	/*
- 	 * The domains_rwsem must be held in read mode any time any area->pages
-@@ -777,8 +778,6 @@ static int iopt_unmap_iova_range(struct io_pagetable *iopt, unsigned long start,
- 
- 		down_write(&iopt->iova_rwsem);
- 	}
--	if (unmapped_bytes)
--		rc = 0;
- 
- out_unlock_iova:
- 	up_write(&iopt->iova_rwsem);
-@@ -815,13 +814,8 @@ int iopt_unmap_iova(struct io_pagetable *iopt, unsigned long iova,
- 
- int iopt_unmap_all(struct io_pagetable *iopt, unsigned long *unmapped)
- {
--	int rc;
+> On Mon, Nov 03, 2025 at 03:16:31PM -0800, Jacob Pan wrote:
+> > On Thu, 30 Oct 2025 15:41:57 -0700 Nicolin Chen
+> > <nicolinc@nvidia.com> wrote:  
+> > > On Mon, Oct 20, 2025 at 03:43:52PM -0700, Jacob Pan wrote:
+> > > I still feel that we could just replace the _until_not_full()
+> > > with a _until_has_space()?  
+> 
+> > Since the current code uses three nested while loops, replacing the
+> > inner _until_not_full() function means means retaining all three
+> > nested while loops and calling queue_has_space in two places - once
+> > in the middle while loop then again in this _until_has_space()
+> > function.
+> > 
+> > I tried to extract the inner loop into a function but it requires
+> > passing in irqflags to restore. Not pretty.  
+> 
+> I think we could do:
+> 
+> -----------------------------------------------------------------
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c index
+> 2a8b46b948f05..1211e087dedca 100644 ---
+> a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c +++
+> b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c @@ -138,12 +138,6 @@
+> static bool queue_has_space(struct arm_smmu_ll_queue *q, u32 n)
+> return space >= n; }
+>  
+> -static bool queue_full(struct arm_smmu_ll_queue *q)
+> -{
+> -	return Q_IDX(q, q->prod) == Q_IDX(q, q->cons) &&
+> -	       Q_WRP(q, q->prod) != Q_WRP(q, q->cons);
+> -}
+> -
+>  static bool queue_empty(struct arm_smmu_ll_queue *q)
+>  {
+>  	return Q_IDX(q, q->prod) == Q_IDX(q, q->cons) &&
+> @@ -633,14 +627,13 @@ static void arm_smmu_cmdq_poll_valid_map(struct
+> arm_smmu_cmdq *cmdq, __arm_smmu_cmdq_poll_set_valid_map(cmdq, sprod,
+> eprod, false); }
+>  
+> -/* Wait for the command queue to become non-full */
+> -static int arm_smmu_cmdq_poll_until_not_full(struct arm_smmu_device
+> *smmu,
+> -					     struct arm_smmu_cmdq
+> *cmdq,
+> -					     struct
+> arm_smmu_ll_queue *llq) +/* Poll command queue PROD and CONS, using a
+> continued timer */ +static inline void arm_smmu_cmdq_poll(struct
+> arm_smmu_device *smmu,
+> +				      struct arm_smmu_cmdq *cmdq,
+> +				      struct arm_smmu_ll_queue *llq,
+> +				      struct arm_smmu_queue_poll *qp)
+>  {
+>  	unsigned long flags;
+> -	struct arm_smmu_queue_poll qp;
+> -	int ret = 0;
+>  
+>  	/*
+>  	 * Try to update our copy of cons by grabbing exclusive cmdq
+> access. If @@ -650,19 +643,18 @@ static int
+> arm_smmu_cmdq_poll_until_not_full(struct arm_smmu_device *smmu,
+> WRITE_ONCE(cmdq->q.llq.cons, readl_relaxed(cmdq->q.cons_reg));
+> arm_smmu_cmdq_exclusive_unlock_irqrestore(cmdq, flags); llq->val =
+> READ_ONCE(cmdq->q.llq.val);
+> -		return 0;
+> +		return;
+>  	}
+>  
+> -	queue_poll_init(smmu, &qp);
+> -	do {
+> -		llq->val = READ_ONCE(cmdq->q.llq.val);
+> -		if (!queue_full(llq))
+> -			break;
+> -
+> -		ret = queue_poll(&qp);
+> -	} while (!ret);
+> -
+> -	return ret;
+> +	/* queue_poll() returns 0 or -ETIMEDOUT only */
+> +	if (queue_poll(qp)) {
+I would still prefer more a defensive approach to prevent future change
+of queue_poll returning other error being treated as ETIMEOUT.
+
+> +		dev_err_ratelimited(smmu->dev,
+> +				    "CMDQ timeout at prod 0x%08x
+> cons 0x%08x\n",
+> +				    llq->prod, llq->cons);
+> +		/* Restart the timer */
+> +		queue_poll_init(smmu, qp);
+> +	}
+> +	llq->val = READ_ONCE(cmdq->q.llq.val);
+>  }
+>  
+>  /*
+> @@ -804,12 +796,13 @@ int arm_smmu_cmdq_issue_cmdlist(struct
+> arm_smmu_device *smmu, local_irq_save(flags);
+>  	llq.val = READ_ONCE(cmdq->q.llq.val);
+>  	do {
+> +		struct arm_smmu_queue_poll qp;
+>  		u64 old;
+>  
+> +		queue_poll_init(smmu, &qp);
+>  		while (!queue_has_space(&llq, n + sync)) {
+>  			local_irq_restore(flags);
+> -			if (arm_smmu_cmdq_poll_until_not_full(smmu,
+> cmdq, &llq))
+> -				dev_err_ratelimited(smmu->dev, "CMDQ
+> timeout\n");
+> +			arm_smmu_cmdq_poll(smmu, cmdq, &llq, &qp);
+>  			local_irq_save(flags);
+>  		}
+>  
+yeah, that should work. it is more readable than open coding.
+
+> -----------------------------------------------------------------
+> 
+> And the commit message should point out:
+> 
+> The existing arm_smmu_cmdq_poll_until_not_full() doesn't fit
+> efficiently nor ideally to the only caller
+> arm_smmu_cmdq_issue_cmdlist():
+>  - It uses a new timer at every single call, which fails to limit to
+> the preset ARM_SMMU_POLL_TIMEOUT_US per issue.
+Not following what you mean.
+The original code below does honor the timeout of
+ARM_SMMU_POLL_TIMEOUT_US
+
+-       queue_poll_init(smmu, &qp);
+-       do {
+-               llq->val = READ_ONCE(cmdq->q.llq.val);
+-               if (!queue_full(llq))
+-                       break;
 -
--	rc = iopt_unmap_iova_range(iopt, 0, ULONG_MAX, unmapped);
- 	/* If the IOVAs are empty then unmap all succeeds */
--	if (rc == -ENOENT)
--		return 0;
--	return rc;
-+	return iopt_unmap_iova_range(iopt, 0, ULONG_MAX, unmapped);
- }
- 
- /* The caller must always free all the nodes in the allowed_iova rb_root. */
-diff --git a/drivers/iommu/iommufd/ioas.c b/drivers/iommu/iommufd/ioas.c
-index 1542c5fd10a85c..459a7c5169154b 100644
---- a/drivers/iommu/iommufd/ioas.c
-+++ b/drivers/iommu/iommufd/ioas.c
-@@ -367,6 +367,10 @@ int iommufd_ioas_unmap(struct iommufd_ucmd *ucmd)
- 				     &unmapped);
- 		if (rc)
- 			goto out_put;
-+		if (!unmapped) {
-+			rc = -ENOENT;
-+			goto out_put;
-+		}
- 	}
- 
- 	cmd->length = unmapped;
-diff --git a/tools/testing/selftests/iommu/iommufd.c b/tools/testing/selftests/iommu/iommufd.c
-index 3eebf5e3b974f4..bb4d33dde3c899 100644
---- a/tools/testing/selftests/iommu/iommufd.c
-+++ b/tools/testing/selftests/iommu/iommufd.c
-@@ -2638,6 +2638,8 @@ TEST_F(vfio_compat_mock_domain, map)
- 	ASSERT_EQ(0, ioctl(self->fd, VFIO_IOMMU_MAP_DMA, &map_cmd));
- 	ASSERT_EQ(0, ioctl(self->fd, VFIO_IOMMU_UNMAP_DMA, &unmap_cmd));
- 	ASSERT_EQ(BUFFER_SIZE, unmap_cmd.size);
-+	/* Unmap of empty is success */
-+	ASSERT_EQ(0, ioctl(self->fd, VFIO_IOMMU_UNMAP_DMA, &unmap_cmd));
- 
- 	/* UNMAP_FLAG_ALL requires 0 iova/size */
- 	ASSERT_EQ(0, ioctl(self->fd, VFIO_IOMMU_MAP_DMA, &map_cmd));
+-               ret = queue_poll(&qp);
+-       } while (!ret);
 
-base-commit: b09ed52db1e688eb8205b1939ca1345179ecd515
--- 
-2.43.0
+>  - It has a redundant internal queue_full(), which doesn't detect
+> whether there is a enough space for number of n commands.
+will incorporate, though the same points already mentioned in the
+current commit message.
+ 
+> So, rework it to be an inline helper to work with the
+> queue_has_space().
+> 
+
+> Nicolin
 
