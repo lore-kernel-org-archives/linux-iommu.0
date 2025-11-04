@@ -1,122 +1,116 @@
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 813CBAD2C
-	for <iommu@lists.linux.dev>; Tue,  4 Nov 2025 23:17:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.125.188.123
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AB5372605;
+	Tue,  4 Nov 2025 23:49:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762298271; cv=none; b=PaVoZ3dg+fRMnfPtDdrKVZ5Fc4wb0yi/11rsWiVUkhJuMdLR396OQE0xapYvox9CKkVJkpCScMjcItjQakUXuJ1LKJeyqvv2sbmPqM6NKkBVhlERtcTeWZpKB2O8MMiW6hXesOqiCchWnBWNqF0O1bpUM8kS5wl8fOWQEttlyNM=
+	t=1762300149; cv=none; b=RcIfzM5svmvJnY/fAP310PsQJtem2A5N99jIG2U4Wp+/0TFssPTwOek0hpqvIQX01LqFxbCeMDgRo5aPleR7kDvofDMblsj1T/VGpUzFKIdi9+Rx22uz1cG5CroDXDmSsc0V6TkDC638vUDSFhY8NIfZvIInZ3zoQas2rHBE+qk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762298271; c=relaxed/simple;
-	bh=7fOREhmgPGHni1gljSJExDQiVXEWe4TOmHfhELJedlU=;
-	h=MIME-Version:In-Reply-To:References:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Gag8I4auu74aGfLfpUwg826Uqurjkto0/AuPfVUgen+fbGdjR+todePQ+B2REKBM9ZAMKGeitAP8LX5cjmnsmvNr2v5XTCo4oLmlEst4M+rJ92KcmLsSrKoxei6SyEnzNZizzi5A42U96qa+yvAAGh28m26tAg9Nrno3BuCbkLY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=canonical.com; spf=pass smtp.mailfrom=canonical.com; dkim=pass (4096-bit key) header.d=canonical.com header.i=@canonical.com header.b=ZPeVfzP2; arc=none smtp.client-ip=185.125.188.123
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=canonical.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=canonical.com
+	s=arc-20240116; t=1762300149; c=relaxed/simple;
+	bh=Uv2GCoeYI+xVlJW1KgNgqJt6+DR1iHLTRs5Iv9bYUac=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Y6hS4OOlXn5fa/apc/ZqjpKuRN8z0n7GWbd+1DLJtvDnBp/z5099eCQeDuGRYfhMsOYhnojXc6nyx0/ssxQ5cvSamXdzP6xN2WTU27+5CnaVCsbF4F8DTSQ8lr3OuMSSY9opYyTejyr/iT+Nsbb189zBlk6AHbBAc1sGWU9gSh8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=G3qF+QSD; arc=none smtp.client-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (4096-bit key) header.d=canonical.com header.i=@canonical.com header.b="ZPeVfzP2"
-Received: from mail-vs1-f71.google.com (mail-vs1-f71.google.com [209.85.217.71])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id D5C483F7C1
-	for <iommu@lists.linux.dev>; Tue,  4 Nov 2025 23:17:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-	s=20251003; t=1762298260;
-	bh=MieDiTn7THEoDLo56I7CJ2MsB1+PBRPE6P2QhMPLZHs=;
-	h=MIME-Version:In-Reply-To:References:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type;
-	b=ZPeVfzP2T+thGdJGcDL6AgmWD4BsTEvodsrV2ts8gy2sNHdhoj0uNe802xwANkbnu
-	 YHpP94D6aOOqoJs/jWkE5YYqv0Z2U4hEvHDEmmtweGa9yQCvnWLB7pZ0amSTjFxxA9
-	 OC4XDjSBokRTvmD0XhbRSKObH4sOQA6ipCd1VDJQKlkEP+NVFhqWDNYQ5JZo4ryT1K
-	 /i4IBZIQOBUvzgVmqOzae+vNd08XXp3tF3tVTVy6bu6Hrpax/SLI/rTyj4zKrOPsBq
-	 IDWA8OJFwbGr6ED29WBS5zTHENaBzArD/Lx4cnFCoM3v4iSBuXvKWDy7fDuFemTCTm
-	 m43kUIqbx/Av4njcUUG6+toW5r2i6vr412iI6o744g+lNHkFyeEhZKdyijp3la9+Ve
-	 5l90UiQz5/MDeBBsTtAhxylt4twzr6PYPxg0EgkzBBzCQj8lYvx1tTb3qUhCBc4/fJ
-	 npgua2sTHSyvk/dn5uj6Njyi3Ujker/cGYmYp6sFIcI2Qivfm3W/Hmkdu7S7Zt8zUi
-	 jVxCdf3EKJboIaIFrmwKRGy9mx7oWDlzVYfmyWTh4HYCDJsM4+1jMcJreST+p1bsmS
-	 Jpo77n7diT9md2YjxkWck2mR3IRZVu3p+8tKLHZWzloKPPUgfhAy2NhM7KvmHHoY0B
-	 uFZSMUFpgR4tUh5RdTB0rTSY=
-Received: by mail-vs1-f71.google.com with SMTP id ada2fe7eead31-5d5eb99cf08so14091445137.2
-        for <iommu@lists.linux.dev>; Tue, 04 Nov 2025 15:17:40 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1762298260; x=1762903060;
-        h=cc:to:subject:message-id:date:user-agent:from:references
-         :in-reply-to:mime-version:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=MieDiTn7THEoDLo56I7CJ2MsB1+PBRPE6P2QhMPLZHs=;
-        b=ds4Bz+7W+F6nLTcUBo/823SUvrtCGLFxPdpeKf4ab25MoBEpwXoSDTG7HtM+YILNiZ
-         xGC3FRmMwYASsb79mnzC8C/6ChoqC1kdou0wScen9psuv2pEFv0WWR8hAOD5Y2U38jO6
-         1uIGyKGOzULVzxpuYyRxZM6DKdfeUnyAfTISdCUSQo13HMkr9HlIko8+EzGRMvlJZcF1
-         pKvNDE5LdfvotLArDLj3/Ns108UbCAJghfzYQotBEaBOzPzJbyeeP5DZXCqNXOZbYX6N
-         RKH3SwF8uVSIvdf9DjX7cKGgUOwovt1kxYKFtyHUnuEtDgIvMqFmfQZSc2Bh7OpgZW/4
-         h8Pw==
-X-Forwarded-Encrypted: i=1; AJvYcCUofq4aOa+uRf3rmGVJGT8sDkmvFG2Eg66/QiCmWU1+zNhObNe0lL99c4tDMw+BAzcAlcnJrQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxK1yP8xWsOgQcXe0Umgu+iBliDq7sf38xUBoTxOAP6F+jRGlj0
-	G2H24CQwQN/QG8JDpdfS1RlwEGzzzUldW78FhHfS8aJ3hdPGsl+EPDycwalLMEf2bU2zNnUAZ4x
-	uXJj1SnvwawA3l5yIZiTI7gMaK03BDG6OmBCaxLGUp2wxM/6xzAZcWdySITIU7Ak6Ni/wkhMJqd
-	0qIlttHTrNCcDwjLYtZvv+5DEksmoC1soAQVDLid6l0Us0ipI=
-X-Gm-Gg: ASbGnctenX09R8oTo9xbmytgzKUIPzLnUtOYInquUYfYMIy7SI33Hs9eT/VCDRiv+Kl
-	61X9ZLyBhQi8PUMEMKAn7r1SZlWoNCOWbpFNMKV0gaYqdoYOQKABLDXumATKI4Qzf9REzR3QW15
-	Uz+UMhT6CYHjNfgJdPqfbatgVmfDIEVs3FxrQ4Pa6V+6tOUe1JNWPl/Aue9UMU+TMTj0o8loyqG
-	YhFYMdFb5dXjr4b
-X-Received: by 2002:a05:6102:cd4:b0:5db:f615:1821 with SMTP id ada2fe7eead31-5dd88eeef01mr457166137.10.1762298259789;
-        Tue, 04 Nov 2025 15:17:39 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IGoHJV28+m0O+BSg3fXLgJ4lIxTta5GR6qyYEyZXdo/8e+k0QHarJS9aGAH8XnODBhuWUXhpivbkMok0TRUXPk=
-X-Received: by 2002:a05:6102:cd4:b0:5db:f615:1821 with SMTP id
- ada2fe7eead31-5dd88eeef01mr457147137.10.1762298259304; Tue, 04 Nov 2025
- 15:17:39 -0800 (PST)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Wed, 5 Nov 2025 08:17:38 +0900
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Wed, 5 Nov 2025 08:17:38 +0900
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="G3qF+QSD"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+	Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
+	Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+	bh=i63ehnnei9rWKWA2KJKI+guZ6phgMXfdcjPHS44W+e4=; b=G3qF+QSDeoGS+uQDnZMmZyNeAE
+	dqCrbZhSh6FKZyMmmZlDSCXvAES/Azg+e+yhoGgNkuAWhwT4/bl5Qvcu0k+GQL6UCLwFzVWFyFhK1
+	sSO+nca2ORM8u+BefKCO7ursEpUI4ZlP4wE1KGkTRtiLb1nKRiYY/qC16v9k9QvSUxrcu9pV/ijwo
+	icaBxLI+7xF1CRYoOjLaKSEV9HpFG5qDNndeq+I8ejUFF/7vpnerTPu97vkAkuN0l6BeMxy0213+i
+	UCBSohVjzv4jX4Amq/POD8tK48QlWq+x4XzBsa5NSea8y0Tj1ci1aL+Y/hUZZ2pGZyZcWEhqi1Nsx
+	NdBeN8VA==;
+Received: from [50.53.43.113] (helo=[192.168.254.34])
+	by bombadil.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
+	id 1vGQls-0000000CliN-0MMY;
+	Tue, 04 Nov 2025 23:49:04 +0000
+Message-ID: <0792f0d8-0ce5-4858-baa9-c76154c9fc9b@infradead.org>
+Date: Tue, 4 Nov 2025 15:49:02 -0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <1-v1-d3317b0ee398+50-iommu_pt_riscv_jgg@nvidia.com>
-References: <1-v1-d3317b0ee398+50-iommu_pt_riscv_jgg@nvidia.com>
-From: Emil Renner Berthing <emil.renner.berthing@canonical.com>
-User-Agent: alot/0.0.0
-Date: Wed, 5 Nov 2025 08:17:38 +0900
-X-Gm-Features: AWmQ_bk2LB2NgRroD72443NwkSJ3-qzEbig-zU0asUuN_-pMFocKpMUHzSTaoCs
-Message-ID: <CAJM55Z8SyipTBG8G2wU2euvJhzcjJDp4B8fjm2Djwoonz8xf-g@mail.gmail.com>
-Subject: Re: [PATCH 1/5] iommupt: Add the RISC-V page table format
-To: Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>, 
-	Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>, Palmer Dabbelt <palmer@dabbelt.com>, 
-	Paul Walmsley <pjw@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Tomasz Jeznach <tjeznach@rivosinc.com>, Will Deacon <will@kernel.org>, iommu@lists.linux.dev, 
-	linux-riscv@lists.infradead.org
-Cc: lihangjing@bytedance.com, Xu Lu <luxu.kernel@bytedance.com>, 
-	patches@lists.linux.dev, xieyongji@bytedance.com
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v8 02/15] genpt: Add Documentation/ files
+To: Jason Gunthorpe <jgg@nvidia.com>, Alexandre Ghiti <alex@ghiti.fr>,
+ Anup Patel <anup@brainfault.org>, Albert Ou <aou@eecs.berkeley.edu>,
+ Jonathan Corbet <corbet@lwn.net>, iommu@lists.linux.dev,
+ Joerg Roedel <joro@8bytes.org>, Justin Stitt <justinstitt@google.com>,
+ linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
+ linux-riscv@lists.infradead.org, llvm@lists.linux.dev,
+ Bill Wendling <morbo@google.com>, Nathan Chancellor <nathan@kernel.org>,
+ Nick Desaulniers <nick.desaulniers+lkml@gmail.com>,
+ Miguel Ojeda <ojeda@kernel.org>, Palmer Dabbelt <palmer@dabbelt.com>,
+ Paul Walmsley <pjw@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Shuah Khan <shuah@kernel.org>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Will Deacon <will@kernel.org>
+Cc: Alexey Kardashevskiy <aik@amd.com>,
+ Alejandro Jimenez <alejandro.j.jimenez@oracle.com>,
+ James Gowans <jgowans@amazon.com>, Kevin Tian <kevin.tian@intel.com>,
+ Michael Roth <michael.roth@amd.com>,
+ Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
+ Samiullah Khawaja <skhawaja@google.com>, Vasant Hegde <vasant.hegde@amd.com>
+References: <2-v8-d50aeee4481d+55efb-iommu_pt_jgg@nvidia.com>
+Content-Language: en-US
+From: Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <2-v8-d50aeee4481d+55efb-iommu_pt_jgg@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Quoting Jason Gunthorpe (2025-11-04 20:00:40)
-> diff --git a/include/linux/generic_pt/common.h b/include/linux/generic_pt/common.h
-> index 96f8a6a7d60e10..10b8250659b98b 100644
-> --- a/include/linux/generic_pt/common.h
-> +++ b/include/linux/generic_pt/common.h
-> @@ -151,6 +151,21 @@ enum {
->         PT_FEAT_AMDV1_FORCE_COHERENCE,
->  };
->
-> +struct pt_riscv_32 {
-> +       struct pt_common common;
-> +};
+Hi Jason,
+
+On 11/4/25 10:30 AM, Jason Gunthorpe wrote:
+> Add some general description and pull in the kdoc comments from the source
+> file to index most of the useful functions.
+> 
+> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> Reviewed-by: Pasha Tatashin <pasha.tatashin@soleen.com>
+> Reviewed-by: Samiullah Khawaja <skhawaja@google.com>
+> Tested-by: Alejandro Jimenez <alejandro.j.jimenez@oracle.com>
+> Tested-by: Pasha Tatashin <pasha.tatashin@soleen.com>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>  Documentation/driver-api/generic_pt.rst | 142 ++++++++++++++++++++++++
+>  Documentation/driver-api/index.rst      |   1 +
+>  2 files changed, 143 insertions(+)
+>  create mode 100644 Documentation/driver-api/generic_pt.rst
+> 
+> diff --git a/Documentation/driver-api/generic_pt.rst b/Documentation/driver-api/generic_pt.rst
+> new file mode 100644
+> index 00000000000000..210d1229aa1c1f
+> --- /dev/null
+> +++ b/Documentation/driver-api/generic_pt.rst
+> @@ -0,0 +1,142 @@
+> +.. SPDX-License-Identifier: GPL-2.0
 > +
-> +struct pt_riscv_64 {
-> +       struct pt_common common;
-> +};
+> +========================
+> +Generic Radix Page Table
+> +========================
 > +
-> +enum {
-> +       /*
-> +        * Support the 64k contiguous page size following the Svnapot extension.
-> +        */
-> +       PT_FEAT_RSICV_SVNAPOT_64K = PT_FEAT_FMT_START,
+> +.. kernel-doc:: include/linux/generic_pt/common.h
+> +	:doc: Generic Radix Page Table
+> +
+> +.. kernel-doc:: drivers/iommu/generic_pt/pt_defs.h
+> +	:doc: Generic Page Table Language
+> +
+> +-----
+> +Usage
+> +-----
 
-Is RSICV (not RISCV) on purpose?
+See Documentations/doc-guide/sphinx.rst for the usual order
+of heading adornments. Section beginning:
 
-/Emil
+* Please stick to this order of heading adornments:
+
+-- 
+~Randy
+
