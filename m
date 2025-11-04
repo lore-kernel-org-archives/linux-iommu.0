@@ -1,92 +1,130 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8060214C5B0;
-	Tue,  4 Nov 2025 03:49:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7307E16DEB3;
+	Tue,  4 Nov 2025 07:00:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762228176; cv=none; b=k0eK4glZ0PVYClyurdnOVKcUp/uNybc3ow4+9RHtXU+gjqoW4pnBHUM3lqOu6E+hdBljVuuAYVcGMvt5l/w7AHL4zxE55vHYDfk1cKe1ClXeve70hXaoGLnQ6zXkgcvZhdOysclmMPJwQ/NUTwn3teThUejBm/Ta0pnUhIYrInU=
+	t=1762239630; cv=none; b=KcZzB1PrhujXRamZ4ExMUAF5RXN3SmYQJxqpihNqmqn+Megvz1TXD/RymTLoLMqtkZag33cLy9LG9Mbfjy6Sl35hpkwFdkeScUnGXPBHDJR3OcMujrCnGZ+XNC7UR1gunq1r2/R/hca36l9ci1s5MSpN4NH6dce6EK0E8bSzVdU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762228176; c=relaxed/simple;
-	bh=6pjQezU4iwekhElF+PBuaDe7tVtkK82fk5KyzqXZ8Cw=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=FmIpxTCsvX3GHOo0Kc0PjNeTLTyDnrN85kRn1M4sHZ5jOku/RYIghH+N44VbcO0Iz8cYu9Y3t4NbZSKm7x4HhBsdbezOIYZ14UqnupRVgwz+mFFxGyUiv3cLQ8Vx3ajfVl+nMCTTaWpr9m3EAUAEkTKILYVwal6PIdnQ3lmve6c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YCoXatok; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1762239630; c=relaxed/simple;
+	bh=4X+6t70DXpoh2T+5EieuiIaGNQ+Nx/11qPV6DRFYJmY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=HRoUpwqjxD2l/ralGuUgK5Qnj7LTdtIVFMwJw2up3J3s2N8DYb5928OZHp4eUUSTIiHghhlcm6hN+cDaT4NPTJulUsFD5PrCQehS+9WRQz/vJDhnj33YcMFcKmFuI3W/nSZ1N0WgZJOa5LWRC7IgBJhJbtOkk74ckVEIH5Ue/lw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=I1UEY/F8; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YCoXatok"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33761C4CEF7;
-	Tue,  4 Nov 2025 03:49:34 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="I1UEY/F8"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C40EC4CEF7;
+	Tue,  4 Nov 2025 07:00:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1762228176;
-	bh=6pjQezU4iwekhElF+PBuaDe7tVtkK82fk5KyzqXZ8Cw=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=YCoXatokCFxgWqIhTzyTAdEYOahZgkdImF9ovuBfWpKFctgxRRSzyE9Egag2hKZej
-	 DovnzgGxYSntC/DoKCHBW0+X8MtqT61p0TtPrh5EWor7chSFr1v5n3oUK6v2A0iSyx
-	 zcggZIw7Eu7PHzY0tCDEeT5HLORySxOGJZhPyAnplgDWFPE13JoZbmUXGVcd+Hp7Qb
-	 WtdUiywXmFq2l164tZek/Szryui98qGlgwKoeKbjVv/bP4fqru1TO8uX6QnZ+5wOZf
-	 TjS4rE3OmzY8ExnBmZR7OX6W6iw+9GCDXI6Sxspsr+Rd4+mR43VlrHdKlnQrv6UiNu
-	 V2gnxLxE5/Gjg==
-From: Bjorn Andersson <andersson@kernel.org>
-To: Rob Clark <robin.clark@oss.qualcomm.com>,
-	Konrad Dybcio <konradybcio@kernel.org>,
-	Sean Paul <sean@poorly.run>,
-	Dmitry Baryshkov <lumag@kernel.org>,
-	Abhinav Kumar <abhinav.kumar@linux.dev>,
-	Jessica Zhang <jessica.zhang@oss.qualcomm.com>,
-	Marijn Suijten <marijn.suijten@somainline.org>,
-	David Airlie <airlied@gmail.com>,
-	Simona Vetter <simona@ffwll.ch>,
-	Jonathan Marek <jonathan@marek.ca>,
-	Jordan Crouse <jordan@cosmicpenguin.net>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	Akhil P Oommen <akhilpo@oss.qualcomm.com>
-Cc: linux-arm-msm@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	dri-devel@lists.freedesktop.org,
-	freedreno@lists.freedesktop.org,
-	linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev,
-	devicetree@vger.kernel.org
-Subject: Re: (subset) [PATCH 00/17] drm/msm/adreno: Introduce Adreno 8xx family support
-Date: Mon,  3 Nov 2025 21:53:00 -0600
-Message-ID: <176222838011.1146775.11549730263195869073.b4-ty@kernel.org>
-X-Mailer: git-send-email 2.51.0
-In-Reply-To: <20250930-kaana-gpu-support-v1-0-73530b0700ed@oss.qualcomm.com>
-References: <20250930-kaana-gpu-support-v1-0-73530b0700ed@oss.qualcomm.com>
+	s=k20201202; t=1762239630;
+	bh=4X+6t70DXpoh2T+5EieuiIaGNQ+Nx/11qPV6DRFYJmY=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=I1UEY/F8kb6rmfO1N8znpDwknPo+zoeYokqXc5isZjuBzW2kwNIyURNneL551ILHq
+	 xB1qlT1GwIRyPrqploIY1BSnrb/M+gayul0auOGaYIzVZ5ipDhkzhnPwCHrtS0f6BC
+	 z5t1VvB9oLCq/rFMCgCk9VhSiEJuSXID8okNRaVWmbtPOK+n28WqZyhoHpfWmronvf
+	 FcGjEPq4VK6Yo+LBMfOfTVdislK0QSciIeNRcwvKA5aNqAeghvNKt/yYcDiNo2g9fQ
+	 ijAwMsISbHre8xNCfIwmhQpHnPPoDWGxgBNbI3zl0/Lwh8StDazLf/AgskMUfBm9kx
+	 ZlGWIVygzFi3w==
+Date: Tue, 4 Nov 2025 09:00:21 +0200
+From: Leon Romanovsky <leon@kernel.org>
+To: Bjorn Helgaas <bhelgaas@google.com>,
+	Logan Gunthorpe <logang@deltatee.com>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+	Jens Axboe <axboe@kernel.dk>, Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Kees Cook <kees@kernel.org>,
+	"Gustavo A. R. Silva" <gustavoars@kernel.org>,
+	Ankit Agrawal <ankita@nvidia.com>,
+	Yishai Hadas <yishaih@nvidia.com>,
+	Shameer Kolothum <skolothumtho@nvidia.com>,
+	Kevin Tian <kevin.tian@intel.com>
+Cc: Krishnakant Jaju <kjaju@nvidia.com>, Matt Ochs <mochs@nvidia.com>,
+	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-block@vger.kernel.org, iommu@lists.linux.dev,
+	linux-mm@kvack.org, linux-doc@vger.kernel.org,
+	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	linaro-mm-sig@lists.linaro.org, kvm@vger.kernel.org,
+	linux-hardening@vger.kernel.org,
+	Vivek Kasireddy <vivek.kasireddy@intel.com>
+Subject: Re: [PATCH v6 00/11] vfio/pci: Allow MMIO regions to be exported
+ through dma-buf
+Message-ID: <20251104070021.GC50752@unreal>
+References: <20251102-dmabuf-vfio-v6-0-d773cff0db9f@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20251102-dmabuf-vfio-v6-0-d773cff0db9f@nvidia.com>
 
+On Sun, Nov 02, 2025 at 10:00:48AM +0200, Leon Romanovsky wrote:
 
-On Tue, 30 Sep 2025 11:18:05 +0530, Akhil P Oommen wrote:
-> This series adds the A8xx HWL along with Adreno 840 GPU support to the
-> drm-msm driver. A8x is the next generation in the Adreno family,
-> featuring a significant hardware design change. A major update to the
-> design is the introduction of 'Slice' architecture. Slices are sort of
-> mini-GPUs within the GPU which are more independent in processing Graphics
-> and compute workloads. Also, in addition to the BV and BR pipe we saw in
-> A7x, CP has more concurrency with additional pipes.
+<...>
+
+> ---
+> Jason Gunthorpe (2):
+>       PCI/P2PDMA: Document DMABUF model
+>       vfio/nvgrace: Support get_dmabuf_phys
 > 
-> [...]
+> Leon Romanovsky (7):
+>       PCI/P2PDMA: Separate the mmap() support from the core logic
+>       PCI/P2PDMA: Simplify bus address mapping API
+>       PCI/P2PDMA: Refactor to separate core P2P functionality from memory allocation
+>       PCI/P2PDMA: Provide an access to pci_p2pdma_map_type() function
+>       dma-buf: provide phys_vec to scatter-gather mapping routine
+>       vfio/pci: Enable peer-to-peer DMA transactions by default
+>       vfio/pci: Add dma-buf export support for MMIO regions
+> 
+> Vivek Kasireddy (2):
+>       vfio: Export vfio device get and put registration helpers
+>       vfio/pci: Share the core device pointer while invoking feature functions
 
-Applied, thanks!
 
-[01/17] soc: qcom: ubwc: Add config for Kaanapali
-        commit: 85d55d8cc3ef7f77b249c97e9fac6a0fc5f5daa7
+Hi,
 
-Best regards,
--- 
-Bjorn Andersson <andersson@kernel.org>
+Can we get Acked-by for p2pdma and DMABUF parts?
+
+Thanks
+
+> 
+>  Documentation/driver-api/pci/p2pdma.rst |  95 +++++++---
+>  block/blk-mq-dma.c                      |   2 +-
+>  drivers/dma-buf/dma-buf.c               | 235 ++++++++++++++++++++++++
+>  drivers/iommu/dma-iommu.c               |   4 +-
+>  drivers/pci/p2pdma.c                    | 182 +++++++++++++-----
+>  drivers/vfio/pci/Kconfig                |   3 +
+>  drivers/vfio/pci/Makefile               |   1 +
+>  drivers/vfio/pci/nvgrace-gpu/main.c     |  56 ++++++
+>  drivers/vfio/pci/vfio_pci.c             |   5 +
+>  drivers/vfio/pci/vfio_pci_config.c      |  22 ++-
+>  drivers/vfio/pci/vfio_pci_core.c        |  56 ++++--
+>  drivers/vfio/pci/vfio_pci_dmabuf.c      | 315 ++++++++++++++++++++++++++++++++
+>  drivers/vfio/pci/vfio_pci_priv.h        |  23 +++
+>  drivers/vfio/vfio_main.c                |   2 +
+>  include/linux/dma-buf.h                 |  18 ++
+>  include/linux/pci-p2pdma.h              | 120 +++++++-----
+>  include/linux/vfio.h                    |   2 +
+>  include/linux/vfio_pci_core.h           |  42 +++++
+>  include/uapi/linux/vfio.h               |  27 +++
+>  kernel/dma/direct.c                     |   4 +-
+>  mm/hmm.c                                |   2 +-
+>  21 files changed, 1077 insertions(+), 139 deletions(-)
+> ---
+> base-commit: 3a8660878839faadb4f1a6dd72c3179c1df56787
+> change-id: 20251016-dmabuf-vfio-6cef732adf5a
+> 
+> Best regards,
+> --  
+> Leon Romanovsky <leonro@nvidia.com>
+> 
+> 
