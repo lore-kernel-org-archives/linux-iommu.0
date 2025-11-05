@@ -1,177 +1,170 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from DM1PR04CU001.outbound.protection.outlook.com (mail-centralusazon11010048.outbound.protection.outlook.com [52.101.61.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37398331A53
-	for <iommu@lists.linux.dev>; Wed,  5 Nov 2025 16:40:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762360834; cv=none; b=L7j2lNJvyy/x/0Y4pddngczGdYyx3G14iM6cxAq+A6Pw1w6YlXjASBzUj5Th6Yf8/Y5GXdss5kclerOp2R7eInotee+znzeYgpQU9kbJFU+MOTuFtEU+gG/RfOcfBog9d4qEww/l4Is03j5NGXPufCizYitra9e2mKZlca9JUSs=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762360834; c=relaxed/simple;
-	bh=atIZzAToir8eRpbQcVVHtDtwnLdnBANcxYeOYHDiA2g=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=AeZ+KFU7oKva211pZmd5RyLXmL+Ia8Bx3h8hiwKk+7pRj+qBXx89XiFN1ylcKZSw+ECjCwZVl2hYz8rmaeTfC5Cu6dG11c6ksD6aDgUnQwLpQGt3ny65sD4nS+JipSEYYrRlF+lUPCCJM0nlYmWlwCo7DVNNFYRg3hmWGP8SrWI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=z0DkvU36; arc=none smtp.client-ip=209.85.128.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E708B334C25;
+	Wed,  5 Nov 2025 16:57:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.61.48
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1762361859; cv=fail; b=DMqugXx9WDTJJm5Ol9FmiX+piRR5Q0dD8uSsPIce5V+xMtQKlslnxlFJDb6QMHzeS73MoWUhhwKcbY7Zi78CfYOB2nkPOSVhDSNGa8lrz+FkHJVJpRanc14OgqCSW0QShfYiJtkI9DSpXj1nM8bkMUEXnh/UI5rMAlUd+bEofSg=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1762361859; c=relaxed/simple;
+	bh=RM5TcQoloArnJYmHLnzaKbJ1CioLPwXYk/BsANpWA0U=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=AlvrSM+yMR8HouFahCRX+74x8SpL5x2oOuAbz9u7h71uP4cVHY3Vz88xKQinPziEnIPt2625Z4UeNDJo/wQC9Mqwz0yYAIXQsoEBmta8t91K21d+LpEZtBeZrq3glWHm/2fdx4CrU62YO13woltdfDYMdsMC+P90PsCCjyLE7zU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=S6wwQDoL; arc=fail smtp.client-ip=52.101.61.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="z0DkvU36"
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-47754e0a13bso33765e9.0
-        for <iommu@lists.linux.dev>; Wed, 05 Nov 2025 08:40:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1762360831; x=1762965631; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=0eEl5tuPcKQIbbiQU4HmtriawKnG+Y/aITWPg2eK/vk=;
-        b=z0DkvU36XqwPkHpms2PXgkHwYeC7Wiss5dMFwwIWavYZ/kwum/Tm308KV/GtUscYom
-         rmWDvL2sEZiKy5+ovnmwopDW1Y3UmMkdJoS1hWR9YPxGFkA5VzGch4kEFCEjIF4K0AUa
-         qX8MRN7s0yt9GjWoP7kwY9R/PEbNEWVAfltGc2n1TIpZ4dajQ+ZMf2xsm8JZgrFjRe4D
-         +7N7rGMFhD3TtXBqqZdFIMjgWyHXExobls3wPD0ZBaU5VsoBKDZ9CsBkeTRMeEuY8TKt
-         Q3S1oHnknmEhknw+XJVoZG8hJCr+x65EkMhPvtl/FHZODiMIZ+E/lQFPDimrvysAMChc
-         grKw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1762360831; x=1762965631;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=0eEl5tuPcKQIbbiQU4HmtriawKnG+Y/aITWPg2eK/vk=;
-        b=hcrkJAzMOLCNYmBlM9Q1koRnwaUvksIm4ez4b28MbkNpBlQz8OAc1qR4DCh+u65KbZ
-         txYMQeLTIObHd5U8HRY5FIDDuaOlM8cOHAvj35fqIjBUg2u00PaBP5PyR8ovaIrrzqzZ
-         M6JBjEUmy41yaEbcgfwMPsLQ2WBKYqBzuda5xUaArDFsacdRxadQA0Tn0YlnYfEiDsvx
-         trNjx1Dt+R8OuNR6QSbux7BNFWfmHNn6Vff2u451jKz5bLLyLqDICv3ocLKFdACrgNX0
-         ApG9A+/GpQ3yzAteNe7g00BOytoyCheDJCDwrcVlZlXT5oN0lo5o/k1JKVz/kincLpfr
-         YOJw==
-X-Forwarded-Encrypted: i=1; AJvYcCVWgVNLvQB6Vwm0Bgyo4mlmIg/rQHT1gv65bEgHdmHpHDkKAJLhoScx/RMHXoUd8/NGT/V7fw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyzJLlnkNj7ZPRQC5uksgV1Yk5wTMsuYz4d4tq5gtGjEZzOTZ2Z
-	qXEZkvoByWXN8KKEK6RsgKxIYwbd/ypXinYZSRpA/W26/nziinl54p2EPE6xFUZa7g==
-X-Gm-Gg: ASbGncuDOUX01JsjS+XvVclFv75EAkIhejnsoQSmoAvnp0yG9A2748Up40cSvRWB550
-	U7rXcWoDwN/wLAMQ4sif78TqgZONVBHu3GQNnDjs0XHjdnnJN2/APsYKTkinZIpX3laLXuO58c9
-	UhTsbdSFCk0N1UB6pqtNEoOq30dUGhV6kL4ZufB26wqcXmZAXCix+h2IneNEWCZhmFhfATS2Znh
-	7U8eMoRslNQx3RcJAOSOUOr+0LS9zzPCvU9MVaVQ1ZjGsZrpG03U3MzBoBmyY/d9KXWxb2RLPUB
-	zmU+FECvJ6B4zOZF8lRcMDQpgpddOSl4q9kYgmc+QNSZzi7hvm52FLxYVOTe9E7itEWS4VVI6L8
-	D5kUcfbzU07efhhiUuj+Vf99nN2r77P7Kkj8bcpwmkUytuzI8FmRDrTXoYMn3XVex0mscQ0sblV
-	ipiCoS/vNp8mm2o2tx837Zc21X91nQUVtLWPQ7L4BD/FJdWSVC/ZPPZ/vYHwOC
-X-Google-Smtp-Source: AGHT+IEy+8V+O2C0Flc9TdN/DCHlTtarKl1lxRtJWgoMhvht/+272KjjM3JvTIZWVNcKN9O18oV/xA==
-X-Received: by 2002:a05:600c:3ba3:b0:477:1afe:b962 with SMTP id 5b1f17b1804b1-4775dae9364mr3187645e9.1.1762360831358;
-        Wed, 05 Nov 2025 08:40:31 -0800 (PST)
-Received: from google.com (54.140.140.34.bc.googleusercontent.com. [34.140.140.54])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-429dc200878sm11360022f8f.45.2025.11.05.08.40.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Nov 2025 08:40:30 -0800 (PST)
-Date: Wed, 5 Nov 2025 16:40:26 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
-	kvmarm@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev, maz@kernel.org, oliver.upton@linux.dev,
-	joey.gouly@arm.com, suzuki.poulose@arm.com, yuzenghui@huawei.com,
-	catalin.marinas@arm.com, robin.murphy@arm.com,
-	jean-philippe@linaro.org, qperret@google.com, tabba@google.com,
-	mark.rutland@arm.com, praan@google.com
-Subject: Re: [PATCH v4 15/28] iommu/arm-smmu-v3: Load the driver later in KVM
- mode
-Message-ID: <aQt9-kTCe8TpuyVq@google.com>
-References: <20250819215156.2494305-1-smostafa@google.com>
- <20250819215156.2494305-16-smostafa@google.com>
- <aMQmA9cLaeYWG5_C@willie-the-truck>
- <aNKwROPzDCWgJBGQ@google.com>
- <20250923173806.GF2547959@ziepe.ca>
- <aNppE9A3PDiDg_1W@google.com>
- <20251002151308.GG3195829@ziepe.ca>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="S6wwQDoL"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=r0xtl1SM4q4yBtduRYCOTVl22Z1rTojk3hj99onByNeyIYoOkZXg8n6/sR//QPsPKz7J4hag9yn0RNovyUdPSLJzXgSn57xAmrUetxa7dqZ8SWHtuRsMKFRygPTp1mdImPF6Qj8D4JM7rlSIzJVgWL+doWaLydPM2vMtjQBN09iCBSZomXuCSk45Es/W1/GTFtZFxXgMhKDbBKugAZpv0TvgDtpveuYV2qRaZJ5q9NPfS9ydu6wKzRmqzxcdamDJ95XKT/w/B41zHJcSpujPuRBgvxjh8iJLCLbJVWFBYTRqVkqPOusghyzUCEbMMt3whXtpZnxldZkljSjtIwNDCg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=mv2s9gL4ZHKozD79D8QUvGWISwoNQ9ZUZZ7pidbngxs=;
+ b=TgD8sxk7L/NEnQvZY9YE2b3rgwPGLDonz/IlWcSGXF8p0qQrdzpuQ140a1kYGlBEBSyt9kLr6yLsXJmWuaPBqryzU8ALdbJFRBimElXblIkQ0HaNZAaT+zNzk1UXMx8nMCKdNhMY95eQFOWb9FmF8Dk1cgFntIO2YcrDn2JXB7EGhTMb+oOKq/KVfnFABA9LocHvtie7nk4HR4b88RvB6DM8E2AGZIEQ3J1PKYeDQX+pIg94XTG1ktf4PBXus3x+U/He5mYhyZqI5cPvbFcQ8szf0rAAKjSwMvuIqAUCWpWEZZPIdJsNb7rVnotDhFnpYi+zidJiwkwA6C3tkfbZYQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mv2s9gL4ZHKozD79D8QUvGWISwoNQ9ZUZZ7pidbngxs=;
+ b=S6wwQDoLaBQGFtAKp8mA7vWAHfA/56CHW67ufYQ9ZdJ+Pr0RGJaz37NKTNFrOXOHkIPjsLfAGVE3WuyK2eGyQL5bqzc0KxV/a51/H3APuok+88ZEVL9hokcMCb8miiDUv69DDV3UhTeJ9Ie4gYWdh0iF1qfFdyxp7pN2Z9IWe2y/JtkeIAkxXMCL7X0qtBMf2fEl96y/RuOqnMyFZPbeKiK+jKmEezAk58ycJjmM/TrUxpQDIR7dOocl1KmXd34IWtVc2+O1HnBx16PT9Hs3OUx21g9P4yTGa7eKVGK0ebLMHLcZ38O0OcsLdan64V5rr0Hh6sMoD76H7QWem8fMDw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB3613.namprd12.prod.outlook.com (2603:10b6:208:c1::17)
+ by DS5PPF5A66AFD1C.namprd12.prod.outlook.com (2603:10b6:f:fc00::64d) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9275.14; Wed, 5 Nov
+ 2025 16:57:34 +0000
+Received: from MN2PR12MB3613.namprd12.prod.outlook.com
+ ([fe80::1b3b:64f5:9211:608b]) by MN2PR12MB3613.namprd12.prod.outlook.com
+ ([fe80::1b3b:64f5:9211:608b%4]) with mapi id 15.20.9298.006; Wed, 5 Nov 2025
+ 16:57:34 +0000
+Date: Wed, 5 Nov 2025 12:57:33 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Ankit Soni <Ankit.Soni@amd.com>
+Cc: Alexandre Ghiti <alex@ghiti.fr>, Anup Patel <anup@brainfault.org>,
+	Albert Ou <aou@eecs.berkeley.edu>, Jonathan Corbet <corbet@lwn.net>,
+	iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+	Justin Stitt <justinstitt@google.com>, linux-doc@vger.kernel.org,
+	linux-kselftest@vger.kernel.org, linux-riscv@lists.infradead.org,
+	llvm@lists.linux.dev, Bill Wendling <morbo@google.com>,
+	Nathan Chancellor <nathan@kernel.org>,
+	Nick Desaulniers <nick.desaulniers+lkml@gmail.com>,
+	Miguel Ojeda <ojeda@kernel.org>,
+	Palmer Dabbelt <palmer@dabbelt.com>, Paul Walmsley <pjw@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, Shuah Khan <shuah@kernel.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Will Deacon <will@kernel.org>, Alexey Kardashevskiy <aik@amd.com>,
+	Alejandro Jimenez <alejandro.j.jimenez@oracle.com>,
+	James Gowans <jgowans@amazon.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Michael Roth <michael.roth@amd.com>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
+	Samiullah Khawaja <skhawaja@google.com>,
+	Vasant Hegde <vasant.hegde@amd.com>
+Subject: Re: [PATCH v8 13/15] iommu/amd: Use the generic iommu page table
+Message-ID: <20251105165733.GT1537560@nvidia.com>
+References: <0-v8-d50aeee4481d+55efb-iommu_pt_jgg@nvidia.com>
+ <13-v8-d50aeee4481d+55efb-iommu_pt_jgg@nvidia.com>
+ <lgdkkszwjsupu57kjrldslqs7wmsjozswiu7apcrsg7e7issge@xfqlnzb5omld>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <lgdkkszwjsupu57kjrldslqs7wmsjozswiu7apcrsg7e7issge@xfqlnzb5omld>
+X-ClientProxiedBy: BN0PR10CA0005.namprd10.prod.outlook.com
+ (2603:10b6:408:143::19) To MN2PR12MB3613.namprd12.prod.outlook.com
+ (2603:10b6:208:c1::17)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20251002151308.GG3195829@ziepe.ca>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MN2PR12MB3613:EE_|DS5PPF5A66AFD1C:EE_
+X-MS-Office365-Filtering-Correlation-Id: fb359647-3b2e-4819-8996-08de1c8c6a9a
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|366016|376014|7416014|1800799024|7053199007;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?QZ27rEsS5JnFhea/SQVaPfYc9i6OcBSGpBCV5jPo0YjW56uQgzYZmBvr9H5o?=
+ =?us-ascii?Q?eamSksvGQZfy4KHtrnU3Z/Y02PbYFy5O9bkW70RQllXb7hkjnlygQu4dVPxh?=
+ =?us-ascii?Q?K49G8Yr9APZFWRLGWt08eGRg8DCkvyFPOQlFQx/Yq3+NdWX7nbQZlb9RT3JD?=
+ =?us-ascii?Q?8wBgKbnSf60rrl9ygo5DcZPOhWdMH4+RprkxW+AI2k7ESbbWLBoqaWlgnQpx?=
+ =?us-ascii?Q?zq7W64tn/+bfI7+veQMGoYj3isvD+ahJRnF9ZjqJKQi2S+ZqwVy15bEbRsEf?=
+ =?us-ascii?Q?dnBWq2MBtM5JkBZz29jtLPO2lK6yxbualGpy2b2hl0I/G9jGShj/mv1e2mpW?=
+ =?us-ascii?Q?4h5qDcfsE9obbU06GmR5AJrR++bpbWdWmNGPyJC8egemUoNDwu25PDu0q0R7?=
+ =?us-ascii?Q?6uYFCVMPTi89wZfjgdO6r1a4MDAQOFEYo6tL2TsK8dHclG8G5WCLuLHLfE9f?=
+ =?us-ascii?Q?tRw8mqMcnAA14+7WdzVRi0zlD35lXoXv/jBaPhEErrfg+f/Bg9O/TpIP2jXP?=
+ =?us-ascii?Q?wfV3lO338t/JRYCb0eJQMfxNJg2Yhk0ygE6KXL1QsBBZ/zCPpAs5tJ4LHhoM?=
+ =?us-ascii?Q?qYrf1Ir88I7WNeSFI/pSvEIa1Qo+/zfxjubeLuM7UyDAwFqkpl1CE5mVUgfG?=
+ =?us-ascii?Q?wXHlp+TDzTb1sz8p2qexSl9eK0bfk+ZDpzyCk8tFwG1bA0ZVINepO/vtLPIb?=
+ =?us-ascii?Q?CND5RuuKm9+4IvHelnzdSy6/YB8VxqnDOxJE141cERmy2iq9E5Va2W5OWzwU?=
+ =?us-ascii?Q?hE9ukyk1kfLr3DKx0xBR4BS3iyIBNe71HbQXa24fWpIjoMX3o8/HsXJtSL27?=
+ =?us-ascii?Q?wn61GTTzSmxRtvVm8zlakgjyfwNi+BmMf+X5wfq1DFr6H+qjPeb4vpa/Bp+4?=
+ =?us-ascii?Q?F9RQ4GdYujYEqvkXT6LT0LPXBoI+URqntrR3CYy6Pr7v8JPwtzC2LdP5bbNI?=
+ =?us-ascii?Q?EPdeCvKRIFT8/rqFsvrD8O1dpa2epZMrM9BPfJDJIkbFpWNwxHHTn+ypmU4g?=
+ =?us-ascii?Q?Y+P/JGr6GMRT+EyJ80CljFQ5vp5SHCYNajiBdeRLZENYUIwh4uN28E0Z2B/Q?=
+ =?us-ascii?Q?kguSFiIGuQEjMns8fsuJrdQbrL1paWA9RGDgWSjkj3ewECTshr+abvkuRnKl?=
+ =?us-ascii?Q?Qb0AX6p0zkZTzwxqXDmBT9XNf5G+QlNrdFbuJEHN8da2U3jDC8HyXSGKmC0A?=
+ =?us-ascii?Q?N4HEOqgkA30v9KFUhC1bid+XG2kvLcFzKaO9VnU8RIzbYz4wl243miXtcrBy?=
+ =?us-ascii?Q?197AQegQGEriClJz8tFwGLqC4RFOMQ8P76D3JyWtJxA2URJ/Q2Q6fAIoj5FG?=
+ =?us-ascii?Q?/m6xJskxa3tBDw4HhaLrdLLlgJKM3kwsNGklxi30+v9DB+H37ZswawTyiA0n?=
+ =?us-ascii?Q?mbCtQJf5sr+AMa/8BAzt0rNDA4+b7Uqya5w0mwFpoLg/+AqRH39oHpayiEbu?=
+ =?us-ascii?Q?593EEnVw7GQEYNUS+UKaG+xd9qVs5MKC?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB3613.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(7416014)(1800799024)(7053199007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?YkPH58k97KvOAUSeCyWibkE0TdN/KuftX+ZAQ4EpUBII8uuAtyozIqrV+glQ?=
+ =?us-ascii?Q?Gvg4xMEV+2G+jdH12gPjYvOa1UU6OmPTpGczC1J3wlroaWvYJ+OXPyzMtok0?=
+ =?us-ascii?Q?VeWE8L/NkAv1grIcyF+s54byLVocOIVfZuIuvlNAe24fMPIriRKwcDj5P/I5?=
+ =?us-ascii?Q?IkennY5u/LT3ddbgL+kvpRevr0Qsid/AjBN+FFCuaoLhGcpHN5+sfcDGjSYv?=
+ =?us-ascii?Q?HiKKP1l4J+9zeUfcqcp+2M+emclF4m+/mTwj6iDItlOkI8e+kSZPt3WG5ag8?=
+ =?us-ascii?Q?9VxUpEj6vDhO+W0PgaLcobKwEA2Yl3Dph2O6wYyqo1Be8aDVbeITM11CPF6u?=
+ =?us-ascii?Q?5SBSN6MdqnLGJUYPaV2oUNZgWqZwSEJKE462usUoZXBquxz4n7TIJfFgJFi/?=
+ =?us-ascii?Q?DI0WAUC7KVzHpmevzbY8XWC8A9wG0gbh2PCOiF/oRcnIUhxyFtQNWuQx4/4J?=
+ =?us-ascii?Q?zE51pr5XA9H5gG13WgJDIA+8I5Ge64FCxL7oeDKanrZUOPY9n16KLvXxSR2s?=
+ =?us-ascii?Q?jOqc5S08BO/EY97orYI30QRAGuEoWBm+DFoFFCc72bqC1plFYklnnc+AeihW?=
+ =?us-ascii?Q?slkh3HRyg/fmFAdkJ1MO8slFPWYNBpa57Ev/YcDAEobMO6PoMxkNy3aNVBsp?=
+ =?us-ascii?Q?jqZ3/cmTPnSwkUjtVqqfNStiEf5RttYmm2N/ViCH1l0JUj0SZlJqp1rcxpUN?=
+ =?us-ascii?Q?x+c0B3UNoSt5FtghSRIatjdOXbHC2tsjggAgumu337ixaWLa6RyoVYpmdJLY?=
+ =?us-ascii?Q?YOSE7zMfyoD4uG6qgisjkjAX2PhbT8bkjicdopgwC2DqnX3cse6jWY58EuYk?=
+ =?us-ascii?Q?DDWb7gz2JkuGlmev2Eq7uiroMAdmUUr6i61lIMTsLzLSKRh0lMnHEFrsDLqy?=
+ =?us-ascii?Q?1yv1yHMeELUEUbUh5zAnIG9FQL/V8ZpVHt0cLKnyWxsv7/6RAuZrQZrIlQ/C?=
+ =?us-ascii?Q?lWBKNpZCv7WmpXPDyrQ0FYebWs9H8plqtCZ9mdHgtOemsZ+iM/AfX52txSTz?=
+ =?us-ascii?Q?/9EthZBb4pw3alJD7Di93JABkXTAMlEysBnEPUMVZM8U7z3k6/eYqbEI9HvD?=
+ =?us-ascii?Q?J2MYPuKPuuorTDoDyu58RaLuSxq/taUO7wVGq5OqLkVNBxkySMs6QXWDmcN5?=
+ =?us-ascii?Q?jrqK2Bt4hOtsKF6ZUw1jei/Odsse9DV5T/o+uDlA1qBIiP+W9OB9ukpy3pRW?=
+ =?us-ascii?Q?CEMCVGocno9pWcz2iAYDizg9hCu0m9EGvZ/vBNNXrWSGxpkFypqnuRXOXMDc?=
+ =?us-ascii?Q?rLld5MpyduLObKsACiIPFiut7skz64s1J2poHQOEsXf6R4QrT3kFdyZXypd7?=
+ =?us-ascii?Q?ikPOYsa7mq2yYr+tG7WMclOZGf7sqyFRezvJJrFxbglmsYFkhSv8PtUYS6n/?=
+ =?us-ascii?Q?ngVT/Y8W9gncQspbOpv8U6YQpDOcBCwurQH+AQFTHtGLNX+Eu1ZEV/DDAsug?=
+ =?us-ascii?Q?dngjXy1y0Jc6OCKNrOOLbmiF7IOntnAYWvzdMUHkUn5XM1uYMHO4BVMs59Zz?=
+ =?us-ascii?Q?OU7H7lGZ/ff6hdtICYEn2Mq5aUm+CC+rQoxJXc4Y6L2xeMl4bK4wvpf7eNC2?=
+ =?us-ascii?Q?POFq5bJNfP4sWXycRcM=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: fb359647-3b2e-4819-8996-08de1c8c6a9a
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB3613.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Nov 2025 16:57:34.4515
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: emkUvmaMWyRHweOS873LB9fVnGHrhiRaVke2v612ij5gaNQzWLU0+S6eVrJgy2eK
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS5PPF5A66AFD1C
 
-On Thu, Oct 02, 2025 at 12:13:08PM -0300, Jason Gunthorpe wrote:
-> On Mon, Sep 29, 2025 at 11:10:11AM +0000, Mostafa Saleh wrote:
-> > Another possible solution, to keep a device bound to the KVM driver,
-> > is to probe the SMMUs from the KVM driver, then to create child devices;
-> > possibly use something as device_set_of_node_from_dev to bind those to
-> > the main SMMUv3 or find another way to probe the main SMMUv3 without
-> > changes.
+On Wed, Nov 05, 2025 at 04:01:53PM +0000, Ankit Soni wrote:
+> Tested-by: Ankit Soni <Ankit.Soni@amd.com>
 > 
-> I do prefer something more like this one, I think it is nice that the
-> kvm specific driver will remain bound and visible so there is some
-> breadcrumbs about what happened to the system for debugging/etc.
-> 
-> Not sure how to do it, but I think it should be achievable..
-> 
-> Maybe even a simple faux/aux device and just pick up the of_node from
-> the parent..
+> I am little late, I had tested this patch series in both v1 and v2 page table 
+> modes using multiple benchmark tools (FIO, netperf, etc). The changes work as 
+> expected, and I observed no regressions.
 
-I spent some time looking into this
+Thanks alot, your testing gives me great confidence!
 
-With the approach of creating new devices as:
-
-	pdev = platform_device_alloc(dev_name(dev), PLATFORM_DEVID_AUTO);
-	pdev->dev.parent = dev;
-	device_set_node(&pdev->dev, dev->fwnode);
-	platform_device_add_resources(pdev, cur_pdev->resource,
-				      cur_pdev->num_resources);
-	platform_device_add(pdev);
-
-That is done from an init call after KVM init, where the KVM driver
-probes the SMMUs, which then does
-	bus_rescan_devices(&platform_bus_type);
-
-In the KVM driver probe, it had:
-	if (pdev->dev.parent->driver == &smmuv3_nesting_driver.driver)
-		return -ENODEV;
-
-Which causes the main SMMU driver to probe the new devices.
-
-However, that didn’t work because, as from Linux perspective the
-nested driver was bound to all the SMMUs which means that any
-device that is connected to an SMMUv3 has its dependencies met, which
-caused those drivers to start probing without IOMMU ops.
-
-Also, the approach with bind/unbind seemed to not work reliably
-because of the same reason.
-
-Looking into the probe path, it roughly does.
-1) Device / Driver matching driver_match_device
-2) Check suppliers before probe (device_links_check_suppliers)
-3) Actual probe
-
-I can’t see a way of adding dependencies in #1
-
-For #2, there 2 problems,
-i) It’s not clear how to create links, something as fwnode_link_add()
-   won’t work as one of the devices won’t have fwnode and device_link_add()
-   will need the device to be already created (and not sure how
-   to guarantee it won’t probe)
-ii) Assuming we were able to create the link, it will be set to
-    DL_STATE_AVAILABLE once the nested driver probes, which won’t prevent
-    the main driver from probing till KVM initialises.
-
-It seems device links are not the write tool to use.
-
-So far, the requirements we need to satisfy are:
-1- No driver should bind to the SMMUs before KVM initialises.
-2- Back the nested driver with devices and possibly link them
-
-The only possible solutions I see:
-1- Keep patch as is
-2- Check if KVM is initialised from the SMMUv3 driver,
-   if not -EPROBE_DEFER (as Will suggested), that will guarded by the
-   KVM driver macro and cmdline to enable protected mode.
-
-Then if needed, we can create devices from the nested driver and link
-them to the main ones in same initcall after the devices are created.
-
-I can to look into more suggestions, otherwise, I will try with #2
-with the -EPROBE_DEFER.
-
-Thanks,
-Mostafa
-
-> 
-> Jason
+Jason
