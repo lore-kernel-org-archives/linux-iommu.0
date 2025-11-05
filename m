@@ -1,116 +1,150 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+Received: from CY7PR03CU001.outbound.protection.outlook.com (mail-westcentralusazon11010048.outbound.protection.outlook.com [40.93.198.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AB5372605;
-	Tue,  4 Nov 2025 23:49:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762300149; cv=none; b=RcIfzM5svmvJnY/fAP310PsQJtem2A5N99jIG2U4Wp+/0TFssPTwOek0hpqvIQX01LqFxbCeMDgRo5aPleR7kDvofDMblsj1T/VGpUzFKIdi9+Rx22uz1cG5CroDXDmSsc0V6TkDC638vUDSFhY8NIfZvIInZ3zoQas2rHBE+qk=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762300149; c=relaxed/simple;
-	bh=Uv2GCoeYI+xVlJW1KgNgqJt6+DR1iHLTRs5Iv9bYUac=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Y6hS4OOlXn5fa/apc/ZqjpKuRN8z0n7GWbd+1DLJtvDnBp/z5099eCQeDuGRYfhMsOYhnojXc6nyx0/ssxQ5cvSamXdzP6xN2WTU27+5CnaVCsbF4F8DTSQ8lr3OuMSSY9opYyTejyr/iT+Nsbb189zBlk6AHbBAc1sGWU9gSh8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=G3qF+QSD; arc=none smtp.client-ip=198.137.202.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ACA7421C9EA;
+	Wed,  5 Nov 2025 04:47:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.198.48
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1762318071; cv=fail; b=TSxpDfhiDlDGdJYHvFqO3fIw7fOHVRAcv2ZG7TtHa/ddv/l57L8TK2QI2g135HTrQhLMTWixZR4kdM0D2dIiXrPm9HmrVu+rL/P6D1LXzrVYPCwz2c8GvIHDDSn0CcpxMLKzcltJW74zm0tZokxvObLjkiCMlR+vKGH9T3e+TXs=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1762318071; c=relaxed/simple;
+	bh=I3bOVZ1VlN73ip51OEl1k7p2VsX+iDFsTVTfnIPvCfg=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=AqEXBFvSg14zccv5iZi4vRir8y8VkkY8kC9t7v59v8sSTKruGfDGJP2DRHfMYTVyd6JITP05OMDAo5GDLo0zKAs1E3dw5g8FNr2NFc2lSjtvyBE4N0OQo5K1kOSFAQ3Ygr7inrjEohxTsnwEubnjWBxxQooGTzEQUVMHFFG/dww=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=KJo4ktLl; arc=fail smtp.client-ip=40.93.198.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="G3qF+QSD"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-	Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
-	Message-ID:Sender:Reply-To:Content-ID:Content-Description;
-	bh=i63ehnnei9rWKWA2KJKI+guZ6phgMXfdcjPHS44W+e4=; b=G3qF+QSDeoGS+uQDnZMmZyNeAE
-	dqCrbZhSh6FKZyMmmZlDSCXvAES/Azg+e+yhoGgNkuAWhwT4/bl5Qvcu0k+GQL6UCLwFzVWFyFhK1
-	sSO+nca2ORM8u+BefKCO7ursEpUI4ZlP4wE1KGkTRtiLb1nKRiYY/qC16v9k9QvSUxrcu9pV/ijwo
-	icaBxLI+7xF1CRYoOjLaKSEV9HpFG5qDNndeq+I8ejUFF/7vpnerTPu97vkAkuN0l6BeMxy0213+i
-	UCBSohVjzv4jX4Amq/POD8tK48QlWq+x4XzBsa5NSea8y0Tj1ci1aL+Y/hUZZ2pGZyZcWEhqi1Nsx
-	NdBeN8VA==;
-Received: from [50.53.43.113] (helo=[192.168.254.34])
-	by bombadil.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
-	id 1vGQls-0000000CliN-0MMY;
-	Tue, 04 Nov 2025 23:49:04 +0000
-Message-ID: <0792f0d8-0ce5-4858-baa9-c76154c9fc9b@infradead.org>
-Date: Tue, 4 Nov 2025 15:49:02 -0800
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="KJo4ktLl"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=CeguZeA28eRRnkQvex8fxcOXsKaZKTJE7i5qjkRwtVllfn7krY9Ml/PZu42DOOitx7Incte6D+8vFfSunuhU8mQG7s0NbCZe/rYEwI5OhsiELH5aZ+kaY1kFAjRpl5FNDF5V+uwE7JP9ajQcqumv3G6W9H7D6U7AJDUU4m8Y/VmUSjB8pUvIJsz7lNLvN/Jaqnak+T8zDhnP5yYdrrHEDg6mop+/6EtyBMqbwxc6z7avOrPoXUUUz9ns3KS3AlwAYjS5CK467zu1DFD7nFWav2Nc9ety/n+ZH4Yy30FbMyZHcSXscJD6s3O6nF/35UADJeZAoIqK9TA8g7qSYW48fQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=1/tYZgmkL6fhnd2uFzF7MH07EHO0i2sJa3pAirvOGF0=;
+ b=xmZehMGi5n0RI1Wn3ZTB7j//5UM0ks+CawIZk3a8ojrJTtF9+a3lvCqcXUb49R/rtw1hxSFjAuMsxF47RjGno2Ew6CfSCtSVvTtUCx76iyJDiYLzmZRwXDRV5VX9qpAHs/SCxJP+2P7IX93R9CEa/E1O6iMZ5rOn7X84Qlz/WgkIFg5eLClhNpoqgOKqbchPDCFo02aINAFDPpQZe5OWxYTf5cvFKM/yBxUKygHF39mzEp7svtH3T23jgpfpEoXm9u5ZyGQ2y+iQKaAICy5nu6fI+/DRIoK6B05xxgcxz2J8OeyP41cEUwPvfo4ur4TW1nJFJL1VuvzRWRT9RiFyFA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.232) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=1/tYZgmkL6fhnd2uFzF7MH07EHO0i2sJa3pAirvOGF0=;
+ b=KJo4ktLl2B0Y9JIfrPvOtVeEv96UYwXoLOOdhpj3BBCAHkxY8HB/1VhQctfsO5CsUbCFaCGimbHAzQQKl/7rGYJshzhW7fMdAthG78OZ1ACXq2d0dK2Sjs8pPNzmRqYSPLE/L3C68z5lRbzVkmOuhzC31gXXSPWdxLt0trWduJuuZfvi5852/evza9WQp2/CPt2ziB5vgFNJ5+GCyS7tFjQ1Oaeg6WB+7RGxjs5D+RV8mNEofiAOb4xIKZwtEuI68H5fsoxr6V45Mrim8qvUCyGosOMj0WChfL5G8IJ/hAsp06BHr8UNv40IZJ75Ev5q2MJqToK170u6b2sMvkl4Kw==
+Received: from BN9PR03CA0976.namprd03.prod.outlook.com (2603:10b6:408:109::21)
+ by SJ2PR12MB8942.namprd12.prod.outlook.com (2603:10b6:a03:53b::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9298.7; Wed, 5 Nov
+ 2025 04:47:46 +0000
+Received: from BN2PEPF000044A3.namprd02.prod.outlook.com
+ (2603:10b6:408:109:cafe::39) by BN9PR03CA0976.outlook.office365.com
+ (2603:10b6:408:109::21) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9298.7 via Frontend Transport; Wed, 5
+ Nov 2025 04:47:45 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.232) by
+ BN2PEPF000044A3.mail.protection.outlook.com (10.167.243.154) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.9298.6 via Frontend Transport; Wed, 5 Nov 2025 04:47:45 +0000
+Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
+ (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Tue, 4 Nov
+ 2025 20:47:34 -0800
+Received: from drhqmail201.nvidia.com (10.126.190.180) by
+ drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.20; Tue, 4 Nov 2025 20:47:33 -0800
+Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com
+ (10.126.190.180) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
+ Transport; Tue, 4 Nov 2025 20:47:33 -0800
+Date: Tue, 4 Nov 2025 20:47:31 -0800
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: <iommu@lists.linux.dev>, Joerg Roedel <joro@8bytes.org>,
+	<linux-kselftest@vger.kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	"Shuah Khan" <shuah@kernel.org>, Will Deacon <will@kernel.org>, Alex Mastro
+	<amastro@fb.com>, Eric Auger <eric.auger@redhat.com>, Kevin Tian
+	<kevin.tian@intel.com>, Lixiao Yang <lixiao.yang@intel.com>, Matthew Rosato
+	<mjrosato@linux.ibm.com>, <patches@lists.linux.dev>, Yi Liu
+	<yi.l.liu@intel.com>
+Subject: Re: [PATCH iommufd] iommufd: Make vfio_compat's unmap succeed if the
+ range is already empty
+Message-ID: <aQrW4wRSqHj4Jazt@Asurada-Nvidia>
+References: <0-v1-76be45eff0be+5d-iommufd_unmap_compat_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v8 02/15] genpt: Add Documentation/ files
-To: Jason Gunthorpe <jgg@nvidia.com>, Alexandre Ghiti <alex@ghiti.fr>,
- Anup Patel <anup@brainfault.org>, Albert Ou <aou@eecs.berkeley.edu>,
- Jonathan Corbet <corbet@lwn.net>, iommu@lists.linux.dev,
- Joerg Roedel <joro@8bytes.org>, Justin Stitt <justinstitt@google.com>,
- linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
- linux-riscv@lists.infradead.org, llvm@lists.linux.dev,
- Bill Wendling <morbo@google.com>, Nathan Chancellor <nathan@kernel.org>,
- Nick Desaulniers <nick.desaulniers+lkml@gmail.com>,
- Miguel Ojeda <ojeda@kernel.org>, Palmer Dabbelt <palmer@dabbelt.com>,
- Paul Walmsley <pjw@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Shuah Khan <shuah@kernel.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Will Deacon <will@kernel.org>
-Cc: Alexey Kardashevskiy <aik@amd.com>,
- Alejandro Jimenez <alejandro.j.jimenez@oracle.com>,
- James Gowans <jgowans@amazon.com>, Kevin Tian <kevin.tian@intel.com>,
- Michael Roth <michael.roth@amd.com>,
- Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
- Samiullah Khawaja <skhawaja@google.com>, Vasant Hegde <vasant.hegde@amd.com>
-References: <2-v8-d50aeee4481d+55efb-iommu_pt_jgg@nvidia.com>
-Content-Language: en-US
-From: Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <2-v8-d50aeee4481d+55efb-iommu_pt_jgg@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <0-v1-76be45eff0be+5d-iommufd_unmap_compat_jgg@nvidia.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN2PEPF000044A3:EE_|SJ2PR12MB8942:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2bee36d1-7211-46ff-3975-08de1c267665
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|36860700013|82310400026|1800799024|7416014|376014;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?8zf+CwWdu0RLjUJ7flyZMZPPTVwTMIC6ybbmR0PHKBBVjXtpz2ZRaRgnGXRI?=
+ =?us-ascii?Q?y+qTAmHlbze3cVhZqwkLm3xtebSpRoyP51+xoV29Dsn5I+l8KT6/9qRfxttg?=
+ =?us-ascii?Q?tnVYBDxmZIaEGwdu8S11imxnCqLulgbPdDmY+hCGxGo4AavuJAoiDAPAq3wi?=
+ =?us-ascii?Q?p0JuacIPDyzP/a9r1LDjj0AZVl6H0F3MlTU4yMUfH3+J80+qJkRw25XUUNhd?=
+ =?us-ascii?Q?lxycBaIKCMQ17OtdD2hdsbfiNvdmhsPddsyIIkiNs+J99I6ujqm5u1ATI7jh?=
+ =?us-ascii?Q?PNbqVnfR9dGJ0F5ieoHJc84EMKdsJhCL9+PndkcN/e2jW094hTP/lJEP6r2I?=
+ =?us-ascii?Q?BLXuqIyAxktzHnbDEhRUOaOHLqVhOaiMuyUsKnDlis5OxsFO5s5vRelSeW6j?=
+ =?us-ascii?Q?PFUGhu11ryybYQ4or82omi9KpS833mq3axokzB6PtOY47EyZJ3NaEO1E5KKc?=
+ =?us-ascii?Q?4W03X7KvbI/sg4e4L8XmXeCCAS+df3HxYLx5HaZAB7lLE21TEh/vfmSFd9VT?=
+ =?us-ascii?Q?W46aWv0FUdGoB2nd0mWLgzJlA73uclmw8nLwemf9yItxF9/L5wn5NJCeXnlx?=
+ =?us-ascii?Q?g1wdNZ0cCbIL6X4x5VFAbW97ty9Kejwv08wjamZp+vvG7EvBxnJ9hbFsNk13?=
+ =?us-ascii?Q?iPqaBZz0f3d78Q2lssn9cChX8lUxs0fl9jVEh/sF7csUEJvJUxY3Y0j7yHkL?=
+ =?us-ascii?Q?QdkUsYZIaHO3+uxc3HSTId+0M2aD3uUZbj7jR8Y69D+mU5nqfqcY2Hevmq3k?=
+ =?us-ascii?Q?zZFL3qhRjOnSI0PPatqoCKTDTHfIIAypjF2LH4J8E0UbAggkfFuUQ5ML4snB?=
+ =?us-ascii?Q?/L50VRhDolHMptCXbXrJRz1owc/dr4vl3Kb4oXUG4q+fqh3kNKSsdU0FtvsR?=
+ =?us-ascii?Q?CnkuqL7taToE4sQF1nNPXKUMj2plHifhqWhdHcqbVOOS7btXQ0y1QAXHTXcp?=
+ =?us-ascii?Q?DjOHbWaZcG6a71qnaKxbCrZpLlnruOU9WQZmOgA3LkCVJg/TvV3dSZOiEOny?=
+ =?us-ascii?Q?VPA61vAwPd2Lu5jhddbenpYrM0jUyBiz1mjgHlqPNIIvFX6byq4LCtPmIX23?=
+ =?us-ascii?Q?gDvdQY5cOw9+xbs50vVTw7ZA+pVyDZkcig0tW7hhGRSW/ABuZdszTlaN25CP?=
+ =?us-ascii?Q?voTFqvA7yjHAYh7vrnWrRQvI0B8/XHzWu7JL00UBr3oDC498FNHoAEiEM57E?=
+ =?us-ascii?Q?m7fDcN9n3IJZWz+BzU/djuEGIRErL2Ds4ywXlAURV4oU32vvSANV+62iKBZV?=
+ =?us-ascii?Q?6eJQ7F5DgUnjGuLTZCMQLUyGvLis0e+Di1B+yITW/GYWkY5a45wjUNXRvGnW?=
+ =?us-ascii?Q?ra8JarIsZ+NuFNohd3n3E96WPi+aQJMuXC8g9Feb3dplsw3k+pdAiAfHlP3C?=
+ =?us-ascii?Q?S/BtB+ygghnFuwLaUwYoi+MD3iklgZwgbllOGxrekqeEsp94VynouvJis/Tj?=
+ =?us-ascii?Q?MaHEN1wZbHHmlWVRJdj5KSJtuAn6/yj9KPanHi0VF1UtB9FRoR7cqu+ap24u?=
+ =?us-ascii?Q?RYIZbn7sK0trKbRdIdanXvXFNO9rIYE2C5eZvrHPGK3W1u3E5eTebHcJDtBz?=
+ =?us-ascii?Q?Eh6vNcb41JCKBEk4hujtA+QorwV8zN9XTp3HvO37?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230040)(36860700013)(82310400026)(1800799024)(7416014)(376014);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Nov 2025 04:47:45.2059
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2bee36d1-7211-46ff-3975-08de1c267665
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN2PEPF000044A3.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB8942
 
-Hi Jason,
-
-On 11/4/25 10:30 AM, Jason Gunthorpe wrote:
-> Add some general description and pull in the kdoc comments from the source
-> file to index most of the useful functions.
+On Tue, Nov 04, 2025 at 02:11:49PM -0400, Jason Gunthorpe wrote:
+> iommufd returns ENOENT when attempting to unmap a range that is already
+> empty, while vfio type1 returns success. Fix vfio_compat to match.
 > 
-> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-> Reviewed-by: Pasha Tatashin <pasha.tatashin@soleen.com>
-> Reviewed-by: Samiullah Khawaja <skhawaja@google.com>
-> Tested-by: Alejandro Jimenez <alejandro.j.jimenez@oracle.com>
-> Tested-by: Pasha Tatashin <pasha.tatashin@soleen.com>
+> Fixes: d624d6652a65 ("iommufd: vfio container FD ioctl compatibility")
+> Reported-by: Alex Mastro <amastro@fb.com>
+> Closes: https://lore.kernel.org/r/aP0S5ZF9l3sWkJ1G@devgpu012.nha5.facebook.com
 > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->  Documentation/driver-api/generic_pt.rst | 142 ++++++++++++++++++++++++
->  Documentation/driver-api/index.rst      |   1 +
->  2 files changed, 143 insertions(+)
->  create mode 100644 Documentation/driver-api/generic_pt.rst
-> 
-> diff --git a/Documentation/driver-api/generic_pt.rst b/Documentation/driver-api/generic_pt.rst
-> new file mode 100644
-> index 00000000000000..210d1229aa1c1f
-> --- /dev/null
-> +++ b/Documentation/driver-api/generic_pt.rst
-> @@ -0,0 +1,142 @@
-> +.. SPDX-License-Identifier: GPL-2.0
-> +
-> +========================
-> +Generic Radix Page Table
-> +========================
-> +
-> +.. kernel-doc:: include/linux/generic_pt/common.h
-> +	:doc: Generic Radix Page Table
-> +
-> +.. kernel-doc:: drivers/iommu/generic_pt/pt_defs.h
-> +	:doc: Generic Page Table Language
-> +
-> +-----
-> +Usage
-> +-----
 
-See Documentations/doc-guide/sphinx.rst for the usual order
-of heading adornments. Section beginning:
-
-* Please stick to this order of heading adornments:
-
--- 
-~Randy
-
+Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
