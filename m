@@ -1,152 +1,154 @@
-Received: from mail-qk1-f169.google.com (mail-qk1-f169.google.com [209.85.222.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74CD633CEBC
-	for <iommu@lists.linux.dev>; Wed,  5 Nov 2025 17:12:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.169
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D489A3328FF
+	for <iommu@lists.linux.dev>; Wed,  5 Nov 2025 17:29:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762362734; cv=none; b=MWRseWsenzmRyqd+qAJLapH22whonyo9/Cl6QYFJSv6m4vXNVJjoZ3LvGcostpsBF0xkYjc5c/T/WUwk5GTx5TM9Iead4ozLT189vgKU042wmDCUps/mgg8vIl3i5O65wiUFSGR74idA832vjtzakgmfOyinNZsGwXj8FvynXQU=
+	t=1762363742; cv=none; b=BElujoyeYZhbPSHx26UoNzHrigXbJJPZrkuMNrW+JSmPyQrzglhXUdDsis8CfCxsG0g0Ji/Sl0AU8s1kZo9qo9wsnJsRLeqPSjgfNLTwByvWtf66YfIZ1OKHOGKkz2Q1+Y/5vPxBqMBcHeRi2U4j9MskGaCt0XupdlBSm/oNos8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762362734; c=relaxed/simple;
-	bh=RxBxFvM3oAmYwj+WD7NzxAgbGcX4OOVwNkYZi+Tgv38=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Fa3nrBuE0uZdRvA3I2LlU1JaA4bJmWrn8LNzWdHqMfj+uPsjBuPNgnss8yRypGKlTYTUgPEl6Cm5qE/Kh0S8ctFzT1xaHcS31ReO+PuM+/9vJP4o4pJQ3kJ7KJqKdmaZnEyqmkVqsMSCxHIALz56OyvinyYgBR2i7px85fgTC/g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=eAesbtpG; arc=none smtp.client-ip=209.85.222.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="eAesbtpG"
-Received: by mail-qk1-f169.google.com with SMTP id af79cd13be357-8b1e54aefc5so3773985a.1
-        for <iommu@lists.linux.dev>; Wed, 05 Nov 2025 09:12:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1762362730; x=1762967530; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=wkO/YIgxaPM/wEK82kFqjfst+ouG4RuvuAOrJV+EoBw=;
-        b=eAesbtpGTAwnPJBKNk1mNnYIIW5cAuVcZCJXemIHNUFegKvI3t59nXH56uaPq3A76j
-         7BL91lypdZ9/otK/EtDjcA2stzhQE77eBatdK/zG7byA0iLlrEttUShLEGItp7VrTivH
-         cRxsboVUleJjSjE1/0+5GrjN2fsJbIA0vHEeSkP7d3TXW6cc1dH7szEnqeHIqBV7skot
-         NJq3W46iR7lb3E29JQ0vJQJqRyUro6e+hwIajaZp+FXbpE6X5K0prq/6yaWw4bKEDAgZ
-         OZr7BPnxwI03CT1VJMg691JUzSug8WGesqLUK7pSCRBUe7rG7XYjzrQNcvYCQ9qFw5pK
-         6vow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1762362730; x=1762967530;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=wkO/YIgxaPM/wEK82kFqjfst+ouG4RuvuAOrJV+EoBw=;
-        b=lMRWSp2+eQ6ThmLEHnN2i5eclVWQ8ycRVzvmLIaQFbohdsphGyGPmu6sn8KtDJQqmW
-         lVGhn2PIj3i7FPjgXt3SEM+XQkWguRTiYgKDcifWuTYKKEeei+9USYz5uyu0qsbzJ3jr
-         KwL0XJe9MfJ9MOJUDooCIHzarVL3XF1gKLCLzwSPn5BzmCjNBXhhZEldjVWrS0oqkDRm
-         +Pqhnwz0vDDTMvw7EM9wHn2LZG/Z//XdbaPMDan+4EPOhj1li7STm6xg0Y4FTdl+t/Bn
-         +hpYJRR0YnqWdAuxiu94NbHE64GzbnTfkovdIxtzw3ji7ElQu6IWEyzCOXeeYNwjnJf8
-         sA0w==
-X-Forwarded-Encrypted: i=1; AJvYcCW9aWx7RpO8rNnqIDJ7OztMgepYqVeVOe0NT4YTCnArIwju7tVZuoaj104p9n+d0o3CsUtlhQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw/5xnhzVtIPdL6Dwrjhzdz12DH6tXOTKfepuiEtpqxjUjjOTS2
-	cCttwPVRndgK+N6MH2Mdi/uNa5kPIsiTG0iv4cV/xsYFPH46sOcYT4qZjlw9xce8QyM=
-X-Gm-Gg: ASbGnctZUDpTfTaKHCxWfgwoAcn6UufxYIyCsbp+9yVx+bH5YZSI1/3sVSdZ9HZgwki
-	0gx2kg9T+4NFv+7VHoxIPX5nsCmlvOnZG8dMn0MPSp1GVeU+e+QdzUrIN0DQTyiNmcBfs8w6vgh
-	DakkjuplEF50I8ONzirePyCihA3BzPHA/bcyYz98qRqhS48PwZ+gSt6HuKLS8iqFFND4EkJPQfr
-	OhOQZGQuVNpIyvgQhPQm0LjHaZ1DVyk/EbgImBmQbLqvJfhz8wBBZCPkc1vuawu6iLzXUc7/+D6
-	WkrD6Jvt0PA5vVg5aMDZ1wZ91DulriGakmVQ/UqZdp+hR12a2UNC/BKsK6eMI4CCNsu6PPYzuqD
-	qPUsaapZi6FvtyD5qTd/sSlrMqj95+TCCavLuCuUUstECYbPaR6CQDToBNvBhDu347Tz8NNKvwI
-	W6lUFhh3rp/asB1nkdGdyCh0Tr9/FMicLEyf/sCE1+tsAkkA==
-X-Google-Smtp-Source: AGHT+IE+H5A+GWBd94mKAScAzkbN/plh8wCL54OtyUq33k2cpyVKMqW/YnW1kIG+WLt6H619/vMFBw==
-X-Received: by 2002:ac8:7e93:0:b0:4ed:2140:7a96 with SMTP id d75a77b69052e-4ed7262fff1mr49444101cf.58.1762362729905;
-        Wed, 05 Nov 2025 09:12:09 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-47-55-120-4.dhcp-dynamic.fibreop.ns.bellaliant.net. [47.55.120.4])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-4ed5fabbbc9sm40585631cf.6.2025.11.05.09.12.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Nov 2025 09:12:09 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1vGh3I-00000007Bqn-3NXB;
-	Wed, 05 Nov 2025 13:12:08 -0400
-Date: Wed, 5 Nov 2025 13:12:08 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Mostafa Saleh <smostafa@google.com>
-Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
-	kvmarm@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev, maz@kernel.org, oliver.upton@linux.dev,
-	joey.gouly@arm.com, suzuki.poulose@arm.com, yuzenghui@huawei.com,
-	catalin.marinas@arm.com, robin.murphy@arm.com,
-	jean-philippe@linaro.org, qperret@google.com, tabba@google.com,
-	mark.rutland@arm.com, praan@google.com
-Subject: Re: [PATCH v4 15/28] iommu/arm-smmu-v3: Load the driver later in KVM
- mode
-Message-ID: <20251105171208.GN1204670@ziepe.ca>
-References: <20250819215156.2494305-1-smostafa@google.com>
- <20250819215156.2494305-16-smostafa@google.com>
- <aMQmA9cLaeYWG5_C@willie-the-truck>
- <aNKwROPzDCWgJBGQ@google.com>
- <20250923173806.GF2547959@ziepe.ca>
- <aNppE9A3PDiDg_1W@google.com>
- <20251002151308.GG3195829@ziepe.ca>
- <aQt9-kTCe8TpuyVq@google.com>
+	s=arc-20240116; t=1762363742; c=relaxed/simple;
+	bh=k2ZM3DJwll1Max1svThLctb3ZOnNVY45eztnrBFDlek=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=I0qmxhiHC1cb+4BOuX5q3o9ILt4k185Lv1QFQ0mxnp7QYkDgPMQgqOdjabt7fSI2+/wqrF+PB6XUTpOAyb7y1iU9fIfmYeLeMensxyCiv0Q6HIAiGSkYW/2eSCbfEhki0xXk75XZyLPv3qr6SSGcK/mZXtTp+maluu0th2sYhno=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 61199169C;
+	Wed,  5 Nov 2025 09:28:52 -0800 (PST)
+Received: from [10.57.86.139] (unknown [10.57.86.139])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id F09593F63F;
+	Wed,  5 Nov 2025 09:28:54 -0800 (PST)
+Message-ID: <0319bdf5-0a46-40fc-93f8-30d74cf6475a@arm.com>
+Date: Wed, 5 Nov 2025 17:28:51 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <aQt9-kTCe8TpuyVq@google.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 0/6] of: iommu-map parsing for multi-cell IOMMU
+To: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>, will@kernel.org,
+ joro@8bytes.org, robh@kernel.org, dmitry.baryshkov@oss.qualcomm.com,
+ konrad.dybcio@oss.qualcomm.com, bjorn.andersson@oss.qualcomm.com,
+ bod@kernel.org, conor+dt@kernel.org, krzk+dt@kernel.org,
+ saravanak@google.com, prakash.gupta@oss.qualcomm.com,
+ vikash.garodia@oss.qualcomm.com
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ devicetree@vger.kernel.org
+References: <cover.1762235099.git.charan.kalla@oss.qualcomm.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <cover.1762235099.git.charan.kalla@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Nov 05, 2025 at 04:40:26PM +0000, Mostafa Saleh wrote:
-> However, that didn’t work because, as from Linux perspective the
-> nested driver was bound to all the SMMUs which means that any
-> device that is connected to an SMMUv3 has its dependencies met, which
-> caused those drivers to start probing without IOMMU ops.
+On 2025-11-04 8:50 am, Charan Teja Kalla wrote:
+> The iommu-map property has been defined for the PCIe usecase and has
+> been hardcoded to assume single cell for IOMMU specification, ignoring
+> the #iommu-cells completely. Since the initial definition the iommu-maps
+> property has been reused for other usecases and we can no longer assume
+> that the single IOMMU cell properly describes the necessary IOMMU
+> streams. Expand the iommu-map to take #iommu-cells into account, while
+> keeping the compatibility with the existing DTs, which assume single
+> argument.
+> 
+> Unlike single iommu-cell, it is complex to establish a linear relation
+> between input 'id' and output specifier for multi iommu-cells. To handle
+> such cases, rely on arch-specific drivers called through
+> of_iommu_xlate() from of_iommu layer, aswell it is expected the 'len'
+> passed is always 1. In the of_iommu layer, the below relation is
+> established before calling into vendor specific driver:
+> 
+> a) For platform devices, 'rid' defined in the iommu-map tuple indicates
+> a function, through a bit position, which is compared against passed
+> input 'id' that represents a bitmap of functions represented by the
+> device.
+> 
+> b) For others, 'rid' is compared against the input 'id' as an integer
+> value.
+> 
+> Thus the final representation when #iommu-cells=n is going to be,
+> iommu-map = <rid/functionid IOMMU_phandle cell0 .. celln len>;, where
+> len = 1.
+> 
+> The RFC for this patch set is found at [2].
+> 
+> The other motivation for this patchset is the below usecase.
+> USECASE [1]:
+> ------------
+> Video IP, 32bit, have 2 hardware sub blocks(or can be called as
+> functions) called as pixel and nonpixel blocks, that does decode and
+> encode of the video stream. These logical blocks are configured to
+> generate different stream IDs.
+> 
+> With the classical approach of representing all sids with iommus= end up
+> in using a single translation context limited to the 4GB. There are
+> video usecases which needs larger IOVA space, like higher concurrent
+> video sessions(eg: 32 session and 192MB per session) where 4GB of IOVA
+> is not sufficient.
+> 
+> For this case, each functionality is represented in the firmware(device
+> tree) by the 'rid' field of the iommu-map property and the video driver
+> creates sub platform devices for each of this functionality and call
+> into IOMMU configuration. Each rid(function id) in the dt property
+> indicates the bit that can be associated by the driver passed input id.
+> 
+> Example:
+> iommu {
+> 	#iommu-cells = 2;
+> };
+> 
+> video-codec@foobar {
+> 	compatible = "qcom,video";
+> 	iommus = <&apps_smmu 0x1234 0xca>;
+> 	iommu-map= <0x1 &iommu 0x1940 0x0 0x1>,
+>                 <0x1 &iommu 0x1941 0x0 0x1>,
+>                 <0x2 &iommu 0x1942 0x0 0x1>,
+>                 <0x4 &iommu 0x1943 0x0 0x1>,
+>                 <0x4 &iommu 0x1944 0x0 0x1>;
+> };
+> 
+> video-driver:
+> #define PIXEL_FUNC	   (1)
+> #define NON_PIXEL_FUNC	   (2)
+> #define SECURE_FUNC	   (4)
+> 
+> case1: All these functionalities requires individual contexts.
+> Create 3 subdevices for each of this function and call
+> of_dma_configure_id(..,id), id = 0x1, 0x2, 0x4.
+> 
+> Case2: Secure and non-secure functionalities require individual
+> contexts. Create 2 subdevices and call of_dma_configure_id(..,id), id =
+> 0x3(bitmap of pixel and non-pixel), 0x4 (secure).
+> 
+> Credits: to Dmitry for thorough discussions on the RFC patch and major
+> help in getting the consenus on this approach, to Konrad & Bjorn for
+> offline discussions and reviews, to Robin for his inputs on IOMMU front,
+> to Bod, Rob and Krzysztof for all valuable inputs.
+> 
+> [1] https://lore.kernel.org/all/20250627-video_cb-v3-0-51e18c0ffbce@quicinc.com/
+> [2] https://lore.kernel.org/all/20250928171718.436440-1-charan.kalla@oss.qualcomm.com/#r
+> 
+> Charan Teja Kalla (6):
+>    of: create a wrapper for of_map_id()
+>    of: introduce wrapper function to query the cell count
+>    of: parse #<name>-cells property to get the cell count
+>    of: detect and handle legacy iommu-map parsing
+>    of: add infra to parse iommu-map per IOMMU cell count
+>    of: use correct iommu-map parsing logic from of_iommu layer
+> 
+>   drivers/iommu/of_iommu.c |  59 +++++++--
+>   drivers/of/base.c        | 269 +++++++++++++++++++++++++++++++++++----
+>   include/linux/of.h       |  19 +++
+>   3 files changed, 314 insertions(+), 33 deletions(-)
 
-??
+Hmm, I did actually have a quick go at this the other week too, and 
+while I though it was a bit clunky, it was still significantly simpler 
+than this seems to be...
 
-What code is doing this?
+FWIW: https://gitlab.arm.com/linux-arm/linux-rm/-/commits/iommu-map - I 
+can give it some polish and testing to post properly if you like.
 
-If a struct device gets a fwspec attached to it then it should not
-permit any driver to probe until iommu_init_device() has
-succeeded. This broadly needs to work to support iommu drivers as
-modules that are loaded by the initrd.
-
-So the general principal of causing devices to not progress should
-already be there and work, if it doesn't then maybe it needs some
-fixing.
-
-I expect iommu_init_device() to fail on devices up until the actual
-iommu driver is loaded. iommu_fwspec_ops() should fail because
-iommu_from_fwnode() will not find fwnode in the iommu_device_list
-until the iommu subsystem driver is bound, the kvm driver cannot
-supply this.
-
-So where do things go wrong for you?
-
-> It seems device links are not the write tool to use.
-
-Yes
- 
-> So far, the requirements we need to satisfy are:
-> 1- No driver should bind to the SMMUs before KVM initialises.
-
-Using the above I'd expect a sequence where the KVM SMMU driver loads
-first, it does it's bit, then once KVM is happy it creates the actual
-SMMU driver which registers in iommu_device_list and triggers driver
-binding.
-
-This is basically an identical sequence to loading an iommu driver
-from the initrd - just the trigger for the delayed load is the kvm
-creating the device, not udev runnign.
-
-> 2- Check if KVM is initialised from the SMMUv3 driver,
->    if not -EPROBE_DEFER (as Will suggested), that will guarded by the
->    KVM driver macro and cmdline to enable protected mode.
-
-SMMUv3 driver shouldn't even be bound until KVM is ready and it is an
-actual working driver? Do this by not creating the struct device until
-it is ready.
-
-Also Greg will not like if you use platform devices here, use an aux
-device..
-
-Jason
+Thanks,
+Robin.
