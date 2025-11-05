@@ -1,210 +1,227 @@
-Received: from SN4PR2101CU001.outbound.protection.outlook.com (mail-southcentralusazon11012061.outbound.protection.outlook.com [40.93.195.61])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 665E526738B;
-	Wed,  5 Nov 2025 18:18:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.195.61
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762366710; cv=fail; b=eA20F6ATaoT+Azomb1ijeVSOH6uAA9+vQJxIJPj0wHM9SE4irNfuX46uK88qMJyLGYALM9NFYUQhBXm85rcXuQKJUOl7lu36Eq0Ku4Kr+d214mzCbHQhhNPsasehDvVTzo1oB93JCpYjYvFcMjqlnMAKAh4qRSAr5jcotYMQ3h8=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762366710; c=relaxed/simple;
-	bh=FkiM+kh2rMErygFvDRS1UOtJHOVVMoZyZuZAUTV+n5k=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dW52Azfd1Zx1Pmy+fsSB9CLkhR3YwQhkVYRV3IR2MR33+HzG+PecltpFwrehacO5h+yru6aC2qslrebuHP/9nnRZPjfR8QQ0OMOtKz9lkkUXdetptIwpxHbUOhwUIx1mBb8FWUGkU2clFZMrHaTMbD2yIQcxU/ha0X3/tBjlx9M=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=sukUT+O4; arc=fail smtp.client-ip=40.93.195.61
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="sukUT+O4"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=IKuNbrr5ooxS5PArsMEkxfRbFzaQ65qM7fznj9vRFC2eLUY5mdYTsfH1MriLNd/mmcXLiYefzxGASSU5cYZDyOvJw6MrIGa5Vf0EKUf+oql8g/t2Q3z/Pn8VaG8JF0kf14i9nwiahfcNRP2LZctjdyS2Zx8IIpZZQq3SNdU6lGm3yCedCQZ1PC8La5TVc1N5pawLSN3mq0vLPUnE2+JivYtdE6BPQrkWGgUSLBoOhT5i3p5VKVsTwJOkQ+veYcu4Wl1+MgVxHb61dV0T5xi5H0YkOUx/QOMcJoIT1ZGUSNyU1FDYvZMgs8R9Pr34iJ7F2ll4cWAku6kCzKRBgGofmw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=TVbxH8zZg/dBSjSSQnbJVnTvN0blKg05thaY9dEiC+c=;
- b=XxH/xwmmG3L+izbkVl/yKju4l0HT5aHQTtT3qPW65/9mbUGyNCtPtMVg6snwKGRHZn7TuQLxGhwUUOl8neXA9YNK3OLsTew7F+STVxE0qsWRULsRJxbtfGnAiKvRN2h2GFSv0f67kMhynxGjfNSAFyjgrBOsnNsFnW38h2LU3/JxhBKRP44q7BpHfwNefgMXsn8cO4axhjMPAtOY/Q0eaFYMlnZAmFhcN/EvIJZSH9dNUv6rPccBgT17iuUTQVb//o+9I2KXffE2IG7hWi9rscJcjLeSEsT5Lyqh73kPETdZxrScdiJRuMV+YWocBinZirWQzEKBlvkCX+FjQlJigg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TVbxH8zZg/dBSjSSQnbJVnTvN0blKg05thaY9dEiC+c=;
- b=sukUT+O4vTDXOL68jp0W6wppVHjS3HCDfExAbcnzRPnMwKZFYYmQUaapn0mE2x/LCtUwDm4Aw9guMBjGwcAWK9rf9ymZkytWLgOXHuCMvMz8JpPCVz6SqZp7cP8lOufC1tGqiA58EjpZT2jN+X4kyE5HaJU9bZNXswKiAkSGqOQIh1KOkFDA1kePW/wpu66l/7X21/0AddT0S1Yff3qCC1opCVFAelSdhQe24tmUqLQxNBOlQ144igzwAxt9J0iZe4CVrfAE+vjYzxsYjDSCAcdRVn6lCJOUc2qKOgTHBdhXFSr7TQj62yDvS9q/bq+CEt1/1Qod1lj0WMLIHhdU7g==
-Received: from SJ0PR13CA0198.namprd13.prod.outlook.com (2603:10b6:a03:2c3::23)
- by MN6PR12MB8591.namprd12.prod.outlook.com (2603:10b6:208:471::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9298.7; Wed, 5 Nov
- 2025 18:18:22 +0000
-Received: from SJ1PEPF0000231C.namprd03.prod.outlook.com
- (2603:10b6:a03:2c3:cafe::c8) by SJ0PR13CA0198.outlook.office365.com
- (2603:10b6:a03:2c3::23) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9320.5 via Frontend Transport; Wed, 5
- Nov 2025 18:18:22 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- SJ1PEPF0000231C.mail.protection.outlook.com (10.167.242.233) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9298.6 via Frontend Transport; Wed, 5 Nov 2025 18:18:22 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Wed, 5 Nov
- 2025 10:18:04 -0800
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail203.nvidia.com
- (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Wed, 5 Nov
- 2025 10:18:04 -0800
-Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com (10.129.68.9)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
- Transport; Wed, 5 Nov 2025 10:18:02 -0800
-Date: Wed, 5 Nov 2025 10:18:01 -0800
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-CC: Jason Gunthorpe <jgg@nvidia.com>, "joro@8bytes.org" <joro@8bytes.org>,
-	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
-	"will@kernel.org" <will@kernel.org>, "robin.murphy@arm.com"
-	<robin.murphy@arm.com>, "sven@kernel.org" <sven@kernel.org>, "j@jannau.net"
-	<j@jannau.net>, "jean-philippe@linaro.org" <jean-philippe@linaro.org>,
-	"robin.clark@oss.qualcomm.com" <robin.clark@oss.qualcomm.com>,
-	"dwmw2@infradead.org" <dwmw2@infradead.org>, "baolu.lu@linux.intel.com"
-	<baolu.lu@linux.intel.com>, "yong.wu@mediatek.com" <yong.wu@mediatek.com>,
-	"matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
-	"angelogioacchino.delregno@collabora.com"
-	<angelogioacchino.delregno@collabora.com>, "tjeznach@rivosinc.com"
-	<tjeznach@rivosinc.com>, "pjw@kernel.org" <pjw@kernel.org>,
-	"palmer@dabbelt.com" <palmer@dabbelt.com>, "aou@eecs.berkeley.edu"
-	<aou@eecs.berkeley.edu>, "heiko@sntech.de" <heiko@sntech.de>,
-	"schnelle@linux.ibm.com" <schnelle@linux.ibm.com>, "mjrosato@linux.ibm.com"
-	<mjrosato@linux.ibm.com>, "wens@csie.org" <wens@csie.org>,
-	"jernej.skrabec@gmail.com" <jernej.skrabec@gmail.com>, "samuel@sholland.org"
-	<samuel@sholland.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
-	"jonathanh@nvidia.com" <jonathanh@nvidia.com>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "asahi@lists.linux.dev"
-	<asahi@lists.linux.dev>, "linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, "linux-arm-msm@vger.kernel.org"
-	<linux-arm-msm@vger.kernel.org>, "linux-mediatek@lists.infradead.org"
-	<linux-mediatek@lists.infradead.org>, "linux-riscv@lists.infradead.org"
-	<linux-riscv@lists.infradead.org>, "linux-rockchip@lists.infradead.org"
-	<linux-rockchip@lists.infradead.org>, "linux-s390@vger.kernel.org"
-	<linux-s390@vger.kernel.org>, "linux-sunxi@lists.linux.dev"
-	<linux-sunxi@lists.linux.dev>, "linux-tegra@vger.kernel.org"
-	<linux-tegra@vger.kernel.org>, "virtualization@lists.linux.dev"
-	<virtualization@lists.linux.dev>, "patches@lists.linux.dev"
-	<patches@lists.linux.dev>
-Subject: Re: [PATCH v1 02/20] iommu: Introduce a test_dev domain op and an
- internal helper
-Message-ID: <aQuU2dic75VkSyjr@Asurada-Nvidia>
-References: <cover.1760312725.git.nicolinc@nvidia.com>
- <32ce256a2ece5d63e99d5858f953586859818ffc.1760312725.git.nicolinc@nvidia.com>
- <BN9PR11MB5276D10BD480FE66881870B08CFBA@BN9PR11MB5276.namprd11.prod.outlook.com>
- <aQO//+6/B/WbdK2h@Asurada-Nvidia>
- <20251103185400.GA1537560@nvidia.com>
- <BN9PR11MB527638C0E43E8AA000410B878CC5A@BN9PR11MB5276.namprd11.prod.outlook.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 61E132701C3
+	for <iommu@lists.linux.dev>; Wed,  5 Nov 2025 18:20:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1762366852; cv=none; b=tV/02NUmWptgX4wIFNV0q4wTiIN9cNvv1PMStmD7GDCHl8C+VSTUpGP5GdOaoEZ/FLuRTg5EFsRu3HfBPmLwxG+qs1PY/GKIyXg9tin/1oHhYY8ueifbZmNdhTnWOsbTY5uYmAmSdHjKS5czc9lvV3j67eLv3SmajLXoaii3f0U=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1762366852; c=relaxed/simple;
+	bh=V7ma7PxupnuLC7grOYhYd+m0IgHSWyMcIkrUXP6R5Yc=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=sEP3ohoOaDP+a8uVqI4fwpP08pouzzrdMCnLW7bIqJeu1AIQps1mtxTTrCsqRG0rn07IifPFqrnIWAAtZlFDigORMeH54iqSbMq473JrL+dAwhDnQj5fUlVhkxSovGyRkcLbGFwUvCGgNT3VJQODQUlgHIaUS/fsKvBWOK9RMH4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 134F1169C;
+	Wed,  5 Nov 2025 10:20:41 -0800 (PST)
+Received: from [10.57.86.139] (unknown [10.57.86.139])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BD4633F694;
+	Wed,  5 Nov 2025 10:20:42 -0800 (PST)
+Message-ID: <3fb55030-52d5-4e61-896f-c15a4f45ae8b@arm.com>
+Date: Wed, 5 Nov 2025 18:20:38 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <BN9PR11MB527638C0E43E8AA000410B878CC5A@BN9PR11MB5276.namprd11.prod.outlook.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ1PEPF0000231C:EE_|MN6PR12MB8591:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9ba14651-9b7d-41ac-b073-08de1c97b458
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|36860700013|1800799024|82310400026|7416014|13003099007;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?fyNu0vYIWg5Wi5i56jiDih4IKeySzyyzBaJlMhyvaIH9i1tZ5wzcB0ygDsKs?=
- =?us-ascii?Q?bAgB6SeAPmJxS34aUS9cgYK43nzigsJ4nAZ8lBchHXqG8D6O0P6lIaZV1YJp?=
- =?us-ascii?Q?1ngPK7eSr68QfkpwtdMWaS2Y+qKUfBQTdvUV/+PX7A+wuxtTDqlLuw56y0OQ?=
- =?us-ascii?Q?cOunGV7XE3dSZUzojr00xKGfNqjqPUz2Y0uU37+Npzj76ldF4vqYsjFr23Qy?=
- =?us-ascii?Q?wrDzF9VNkEJ5Nb6qF0CsGlIP5j2st7L0GvsrqnvDYq8FMyo2ViGPSb64MO/S?=
- =?us-ascii?Q?KwEsNtlik6J+UdbW2dut7LS2nFAWy9t8JiymSA95GBS6nblDE0kEvVRv4QWj?=
- =?us-ascii?Q?Xtv8io5X3exvLxXdUsppPlsfpp6hLoYSegxpzJYI3jOOIaEALUIvK8+JxgZe?=
- =?us-ascii?Q?WAxxRS9V4K24RllZ1/JKcRvXHbmQjziOqzuVYf/MjzqGIkcWDIY/xMkQz5yl?=
- =?us-ascii?Q?nWXAljB+JbuZSqAQKH3bYhiKGAvwfbeuraNAfFDhXljlumrpxXSVZmjrB+Ec?=
- =?us-ascii?Q?zvb3H1q4BSNkso1Ikv69ymWP+J4r4wROnP8Ez0mwFXqkteD+dvEjX3xlku8f?=
- =?us-ascii?Q?97gRZi6PN+8st+NLfDwbpGulfnrTinOx2BEqXzQpy1+6radCHn9ElYfR1Wwg?=
- =?us-ascii?Q?BYxj+M2VIyjL2sojXsWXW4V/Pkmb2Ncta6SJPDta+tGSxNjxGJb9nwWi+Ddv?=
- =?us-ascii?Q?WMN8Es/nGI6U1DIDuSISwhhj5lbasKVSbCLb20BXXgkJX39AEFohJoYlLqOa?=
- =?us-ascii?Q?7CnETMnS0E81igjZmbMyXN8esmWuZvhdcmFVZSU0iFrRxXBEy6Xjjx2fySvo?=
- =?us-ascii?Q?BIs1HDLxz+hpoASn0XSRQyd7BnjyvmSG85hERMITZZgoARUK2jWERAhLTm4r?=
- =?us-ascii?Q?m/cuucM6K9Qmr0WEorkx+FnfX2la/FexlZnrPqnC3KbcLC9lLCglyGPVUGyG?=
- =?us-ascii?Q?mz6Azf1RZhw5dvuRR68UZL9gQ+r4L0lFTuwY0e1rJ0VDIyRotnK9zjoEwIAw?=
- =?us-ascii?Q?xhnJTWIslLaIvACsgaVTbvp4cbo7HR4ZQTYWPo7uru1SsdzWn0KkYYV7GllG?=
- =?us-ascii?Q?eP33f7+iQpCX4cnmWW5QSJPE1kxSUMYddQ6VSG9Vnx1WgUgJ/PbBWrLy+TR7?=
- =?us-ascii?Q?zbek45sd5vm41RtvOmOjLzPFkNVnxPCzw5pIlgmXz/KWFQwF0f0nF+rqtIH0?=
- =?us-ascii?Q?lgPovybw/X+8tm9n/uIShFtmofcv57MHAt6rrwY8pxmegesjTbzFuavtFlcX?=
- =?us-ascii?Q?NIsKhOTXfXIQKMXNwLVbqpRZrsEJlNiR+qixpMrhmSpOY+Fi2fY+WmxJmPAB?=
- =?us-ascii?Q?hiGCHpbA77F/vHMt9Yu4xqXT/6kTgXaDaT1k/siuYyTvUYAj3Y5ku59ftEqd?=
- =?us-ascii?Q?7y8lOfI3tAdphTWIIh7zd1Dp+QiKF79LlB972HgUrM6Ayg5UR85ZxziUlVpV?=
- =?us-ascii?Q?JRmUVaveZgSZ7cH3Z0C0GijVaZHRNdk47a0bzIQsKtdp7Nfyww7Zpsba/t98?=
- =?us-ascii?Q?vKfXgY/In3nTLQXdMQhbcVBq5O1rNCAYfOywpZK9ZS2if0uU5hE6sgyEgXNL?=
- =?us-ascii?Q?H45fT9JVcUNlUCv9V1Ew2RC6OgA6olppabvpLIa9?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(376014)(36860700013)(1800799024)(82310400026)(7416014)(13003099007);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Nov 2025 18:18:22.3550
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9ba14651-9b7d-41ac-b073-08de1c97b458
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SJ1PEPF0000231C.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN6PR12MB8591
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 6/6] of: use correct iommu-map parsing logic from of_iommu
+ layer
+To: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>, will@kernel.org,
+ joro@8bytes.org, robh@kernel.org, dmitry.baryshkov@oss.qualcomm.com,
+ konrad.dybcio@oss.qualcomm.com, bjorn.andersson@oss.qualcomm.com,
+ bod@kernel.org, conor+dt@kernel.org, krzk+dt@kernel.org,
+ saravanak@google.com, prakash.gupta@oss.qualcomm.com,
+ vikash.garodia@oss.qualcomm.com
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ devicetree@vger.kernel.org
+References: <cover.1762235099.git.charan.kalla@oss.qualcomm.com>
+ <b1ad7bee26fc87c1b73ac18d2284ad2e10b4b4d5.1762235099.git.charan.kalla@oss.qualcomm.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <b1ad7bee26fc87c1b73ac18d2284ad2e10b4b4d5.1762235099.git.charan.kalla@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Nov 05, 2025 at 06:57:31AM +0000, Tian, Kevin wrote:
-> > From: Jason Gunthorpe <jgg@nvidia.com>
-> > Sent: Tuesday, November 4, 2025 2:54 AM
-> > 
-> > On Thu, Oct 30, 2025 at 12:43:59PM -0700, Nicolin Chen wrote:
-> > 
-> > > FWIW, I am thinking of another design based on Jason's remarks:
-> > > https://lore.kernel.org/linux-iommu/aQBopHFub8wyQh5C@Asurada-
-> > Nvidia/
-> > >
-> > > So, instead of core initiating the round trip between the blocking
-> > > domain and group->domain, it forwards dev_reset_prepare/done to the
-> > > driver where it does a low-level attachment that wouldn't fail:
-> > >   For SMMUv3, it's an STE update.
-> > >   For intel_iommu, it seems to be the context table update?
-> > 
-> > Kevin, how bad do you think the UAPI issue is if we ignore it?
-> > 
+On 2025-11-04 8:51 am, Charan Teja Kalla wrote:
+> Use of_map_id_or_funcid() that takes #iommu-cells into account, while
+> keeping the compatibility with the existing DTs, which assume single
+> argument. A callback function is used to get the of_phandle arguments,
+> that contains iommu controller and its cells, and is called into the
+> vendor specific driver through of_iommu_xlate().
 > 
-> yeah probably better to leave it. I didn't see a clean way and the
-> value didn't justify the complexity.
+> When 'args_count' passed in of_phandle_args is '1', it is expected that
+> of_map_id_or_funcid() fills the translated id into the of_phandle
+> arguments which then called into of_iommu_xlate().
 > 
-> Regarding to PF reset, it's a devastating operation while the vf user
-> is operating the vf w/o any awareness. there must be certain
-> coordination in userspace. otherwise nobody can recover the
-> registers. Comparing to that, solving the domain attach problem
-> is less important...
+> When 'args_count' > 1, as it is complex to establish a defined relation
+> between the input id and output, of_iommu layer handles through the
+> below relation:
+> For platform devices, 'rid' defined in the iommu-map tuple indicates a
+> function, through a bit position, which is compared against passed input
+> 'id' that represents a bitmap of functions represented by the device.
+> 
+> For others, 'rid' is compared against the input 'id' as an integer value.
 
-If I capture these correctly, we should go with a -EBUSY version:
- - Reject concurrent attachments during a device reset
- - Skip reset for devices having sibling group devices
- - Allow PF to stop IOMMU, ignoring VFs
-?
+Sorry, I struggle to comprehend what this is trying to achieve... 
+of_iommu doesn't have a clue what phandle arguments represent, only the 
+relevant IOMMU driver does. How are we asking the IOMMU driver to map an 
+input ID represented by an offset into a range, to an appropriate output 
+specifier, without passing all that information to a suitable driver 
+operation? Why would that have any dependency on bus types? And where 
+has this notion of Linux platform devices having some sort of inherently 
+standard bitmap suddenly sprung from?
 
-That sounds pretty much like this v4:
-https://lore.kernel.org/linux-iommu/0f6021b500c74db33af8118210dd7a2b2fd31b3c.1756682135.git.nicolinc@nvidia.com/
-by dropping the SRIOV concern.
+Thanks,
+Robin.
 
-Thanks
-Nicolin
+> When matched, of_iommu_xlate() is used to call into vendor specific
+> iommu driver.
+> 
+> Signed-off-by: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
+> ---
+>   drivers/iommu/of_iommu.c | 59 +++++++++++++++++++++++++++++++++-------
+>   drivers/of/base.c        |  4 +--
+>   include/linux/of.h       | 15 ++++++++++
+>   3 files changed, 66 insertions(+), 12 deletions(-)
+> 
+> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+> index 6b989a62def2..9575e37ad844 100644
+> --- a/drivers/iommu/of_iommu.c
+> +++ b/drivers/iommu/of_iommu.c
+> @@ -16,6 +16,7 @@
+>   #include <linux/pci.h>
+>   #include <linux/slab.h>
+>   #include <linux/fsl/mc.h>
+> +#include <linux/platform_device.h>
+>   
+>   #include "iommu-priv.h"
+>   
+> @@ -41,22 +42,60 @@ static int of_iommu_xlate(struct device *dev,
+>   	return ret;
+>   }
+>   
+> +/**
+> + * of_iommu_map_xlate - Translate IOMMU mapping and release node reference.
+> + *
+> + * @id: bitmap for function id parsing(platform devices) or base id.
+> + * @id_base: checked against @id
+> + * @arg: Device to configure.
+> + * @iommu_spec: IOMMU specifier from device tree.
+> + *
+> + * Wrapper function that calls of_iommu_xlate() to configure the IOMMU
+> + * mapping for a device, then releases the device tree node reference.
+> + * This is used as a callback function for of_map_id_or_funcid().
+> + *
+> + * When the cell_count > 1, the relation between input id(@id) and the
+> + * output specifier is complex to define, like linear case when cell_count = 1,
+> + * Handle such cases where linear relation can't be established between
+> + * the @id and the output with the below relation:
+> + * a) For platform devices, @id_base represents the function id, which is
+> + * compared against the input @id, all maintained in bitmap relation.
+> + * b) For other devices, it performs exact ID matching.
+> + *
+> + * Return: 0 on success, -EAGAIN if ID doesn't match
+> + * and standard negative error code on failure.
+> + */
+> +static int of_iommu_map_xlate(u32 id, u32 id_base,
+> +			void *arg, struct of_phandle_args *iommu_spec)
+> +{
+> +	struct device *dev = arg;
+> +	int ret;
+> +
+> +	if (iommu_spec->args_count > 1) {
+> +		if (dev_is_platform(dev)) {     /* case a. */
+> +			if (!(BIT(id_base - 1) & id))
+> +				return -EAGAIN;
+> +		} else if (id_base != id) {     /* case b. */
+> +			return -EAGAIN;
+> +		}
+> +
+> +	}
+> +
+> +	ret = of_iommu_xlate(dev, iommu_spec);
+> +	of_node_put(iommu_spec->np);
+> +	return ret;
+> +}
+> +
+>   static int of_iommu_configure_dev_id(struct device_node *master_np,
+>   				     struct device *dev,
+>   				     const u32 *id)
+>   {
+>   	struct of_phandle_args iommu_spec = { .args_count = 1 };
+> -	int err;
+>   
+> -	err = of_map_id(master_np, *id, "iommu-map",
+> -			 "iommu-map-mask", &iommu_spec.np,
+> -			 iommu_spec.args);
+> -	if (err)
+> -		return err;
+> -
+> -	err = of_iommu_xlate(dev, &iommu_spec);
+> -	of_node_put(iommu_spec.np);
+> -	return err;
+> +	return of_map_id_or_funcid(master_np, *id, "iommu-map",
+> +			"iommu-map-mask", &iommu_spec.np,
+> +			 iommu_spec.args, dev, &iommu_spec,
+> +			 of_iommu_map_xlate);
+>   }
+>   
+>   static int of_iommu_configure_dev(struct device_node *master_np,
+> diff --git a/drivers/of/base.c b/drivers/of/base.c
+> index cd221c003dd5..b5554c0b0bc5 100644
+> --- a/drivers/of/base.c
+> +++ b/drivers/of/base.c
+> @@ -2181,7 +2181,7 @@ static int of_map_id_cell_count(const __be32 *map, const char *map_name,
+>    * @id: input id that is given for translation.
+>    * @arg: argument passed to the @fn.
+>    * @pargs: filled by the contents of @map and pass to the @fn.
+> - * @fn: Callback function that operated on @dev and @fn.
+> + * @fn: Callback function that operates on @arg.
+>    *
+>    * The function populates the phandle args structure with the node and
+>    * specifier cells, then invokes the callback function. The callback is
+> @@ -2233,7 +2233,7 @@ static int of_map_id_untranslated(const __be32 *map, u32 cell_count, u32 id,
+>    *
+>    * Return: 0 on success or a standard error code on failure.
+>    */
+> -static int of_map_id_or_funcid(const struct device_node *np, u32 id,
+> +int of_map_id_or_funcid(const struct device_node *np, u32 id,
+>   		const char *map_name, const char *map_mask_name,
+>   		struct device_node **target, u32 *id_out,
+>   		void *arg, struct of_phandle_args *pargs,
+> diff --git a/include/linux/of.h b/include/linux/of.h
+> index f8d976205ff4..7935ff5ac09e 100644
+> --- a/include/linux/of.h
+> +++ b/include/linux/of.h
+> @@ -410,6 +410,12 @@ extern int of_phandle_iterator_args(struct of_phandle_iterator *it,
+>   extern int of_alias_get_id(const struct device_node *np, const char *stem);
+>   extern int of_alias_get_highest_id(const char *stem);
+>   
+> +extern int of_map_id_or_funcid(const struct device_node *np, u32 id,
+> +	       const char *map_name, const char *map_mask_name,
+> +	       struct device_node **target, u32 *id_out,
+> +	       void *arg, struct of_phandle_args *pargs,
+> +	       of_map_id_cb fn);
+> +
+>   bool of_machine_compatible_match(const char *const *compats);
+>   
+>   /**
+> @@ -909,6 +915,15 @@ static inline int of_map_id(const struct device_node *np, u32 id,
+>   	return -EINVAL;
+>   }
+>   
+> +static inline int of_map_id_or_funcid(const struct device_node *np, u32 id,
+> +	       const char *map_name, const char *map_mask_name,
+> +	       struct device_node **target, u32 *id_out,
+> +	       void *arg, struct of_phandle_args *pargs,
+> +	       of_map_id_cb fn)
+> +{
+> +	return -EINVAL;
+> +}
+> +
+>   static inline phys_addr_t of_dma_get_max_cpu_address(struct device_node *np)
+>   {
+>   	return PHYS_ADDR_MAX;
