@@ -1,157 +1,169 @@
-Received: from PH7PR06CU001.outbound.protection.outlook.com (mail-westus3azon11010002.outbound.protection.outlook.com [52.101.201.2])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9862E33EAF8
-	for <iommu@lists.linux.dev>; Wed,  5 Nov 2025 19:44:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.201.2
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762371890; cv=fail; b=sPUWBAfaZT0u9pS1y/OQnhSQsfhxq2VIaEKi+j+k+axKoKQ3pyZ4pSrTSSgziROgKggcgPYHkf76jLmwHLBXiAEdn+6filKWh3q5P6/XXdJRyQMfukC7Pv3hbHpMS3tHcWWaqt4dUlC6fDV0s8dYlChBruerd2Ktd9Ewo/B2e1Q=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762371890; c=relaxed/simple;
-	bh=hUP1rYFzhvgmxZkYTOq6F6ywnUBtfc5JyIgRyDVeJ5k=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=f25SM+6KgRDffMWhzlu94e0V9eClGPub2MliOIb3qOV/7+3TGsC2U8Z6GkEAvXUSobtMNUOP3LbR25NcESlJiMt6ek0QQXVYyKPylGK7cBc8/C3qeGM1noQVkeyA35Ol98ab23Y5E/Jj2wlJ47g7Z/7ZjvcWTs+yh7HAF8U4fxE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=urigDqYL; arc=fail smtp.client-ip=52.101.201.2
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6EB734DB51
+	for <iommu@lists.linux.dev>; Wed,  5 Nov 2025 21:14:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.174
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1762377265; cv=none; b=lDUQyX3hfYOs5Wwk48D45QQuOC+sNtsCsooIeBSAA1GS6s3mh56bIHSv1fnrndnJwACe/YGWR4HRIKS+xExuJgNLSeRpDPVlB69QH2W1dEqr9wuhzgVPli0HhaC5ficIe4ZGMKgVhTxRtce66SUzyGJ7Wfu5EHqbZrjcCh59A2Q=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1762377265; c=relaxed/simple;
+	bh=MQvsWeDQVn/3Ah+sMEwFHizhxAHJ0b7a7QFp7wzzuLI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=C27Idy64UamwtlfErjDUq43JwpWUIWTFAp6eM7O/SVHwR2j6pV6/yywfgcU7b5TgPjC78kH5Ic6SSOH9Nd4RLrk4cANIt/HyXezpHD4B7emnboHWcwgDF71qJt5rm1cqbNbzlXySTrYsrnpE++bzBTHOx5dJUtx6McmunFNS40Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=yQDvyGNK; arc=none smtp.client-ip=209.85.214.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="urigDqYL"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=owY/U5cT5rdUcBOVq5sIFQXdFrZnJXcEoPB+pfxNC33h9rsA2pP48/czl1MljgIjXOq+jkF90SZbKP0e9hIFA3CzJIEvlPMBuyIKHbeWYHFkpMrJdeWreog8hEWt0r2yePhiefLDANbNPTE2IkHZrOERjcuRmb53Y7NoORhLrgv74Ztctt0GZaxW+94RFK41FE5xwieQqnnXvmUkUFkHfxf88IOODT9yNbDiIZm6aLi2xmzYxcIVbiiR/L/K+P3FoBPvjiQ6vV7owhuNWQ1WRiirXYWf2TeLG9VNTKasK0TsKiGEG0+FSPjyqYWjGNqnyJS3hIxhtTrYPoIeHku+Yg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=YusUNB4qy8SaLqyJ0KnIW2zR3/mr6UlqnzGtt9sAYH0=;
- b=tFefNKPPkaM6tq3gnVVaUldISyi/36cxg81sK7VXgo0HG2S7vsDWZZ1uP3mCd4sqT9L9UroBd8vcZl3jnt1t3VnvN7ECoUqWniqGeTAoPiLJ/lrvL97CwBpySta6T2xhZiCFI8aMQ9oH/AN2wPOU1CzqGzdoWo6wwRW8J79szS9u5Ee1cbB37idr1yLv2b4ln4icA9sKD4YQGkHReNvNBlUehEptvll8yKrDud9Mp3Qck8H3m29igN00f3sEI0uRQ/erllnR7outmxjvId3ruv2Cy/NQ/aLTIfjJmVpFPyOMwM/XCcJ+3pXkUrdV2MkB4fT722aspmqbqWLk4vEo7w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=linux.microsoft.com
- smtp.mailfrom=nvidia.com; dmarc=pass (p=reject sp=reject pct=100) action=none
- header.from=nvidia.com; dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YusUNB4qy8SaLqyJ0KnIW2zR3/mr6UlqnzGtt9sAYH0=;
- b=urigDqYLs353ePqprYBbenSPKszu3Rjwe6TUrqE+keSndpoQqfeVOWDxStIYc1H+M8ttGNs6o6F+8TipsvvwFfwDZwn7yHTyEzf1r2nXuRlujwm6bXwNzY/I44ahka5Iaby6PITr/voryKcbJSjHEqFU0LrkMjomNusphoEKVxuMOuiQG/0DsSbxbT3wbDAZEIkVNNBWWY333cCqRBYc12M1UUAFKyc4bYsOJmqcN9dVVj25XdW9gS5FsMUArRQ8nv75S6kFhUaCJCdqd2EcveJIGJGnzmGbfD68aGxjbvGkGdIcVhsJAY7dqXM6Tiv97nsx8/BEf+R+9OwELv037g==
-Received: from SA1P222CA0142.NAMP222.PROD.OUTLOOK.COM (2603:10b6:806:3c2::24)
- by MW4PR12MB6874.namprd12.prod.outlook.com (2603:10b6:303:20b::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9298.7; Wed, 5 Nov
- 2025 19:44:43 +0000
-Received: from SA2PEPF00001506.namprd04.prod.outlook.com
- (2603:10b6:806:3c2:cafe::77) by SA1P222CA0142.outlook.office365.com
- (2603:10b6:806:3c2::24) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9298.9 via Frontend Transport; Wed, 5
- Nov 2025 19:44:41 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- SA2PEPF00001506.mail.protection.outlook.com (10.167.242.38) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9298.6 via Frontend Transport; Wed, 5 Nov 2025 19:44:42 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Wed, 5 Nov
- 2025 11:44:27 -0800
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail205.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Wed, 5 Nov
- 2025 11:44:27 -0800
-Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com (10.129.68.10)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
- Transport; Wed, 5 Nov 2025 11:44:26 -0800
-Date: Wed, 5 Nov 2025 11:44:25 -0800
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jacob Pan <jacob.pan@linux.microsoft.com>
-CC: <linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, Will Deacon <will@kernel.org>, Joerg Roedel
-	<joro@8bytes.org>, Mostafa Saleh <smostafa@google.com>, Jason Gunthorpe
-	<jgg@nvidia.com>, Robin Murphy <robin.murphy@arm.com>, Zhang Yu
-	<zhangyu1@linux.microsoft.com>, Jean Philippe-Brucker
-	<jean-philippe@linaro.org>, Alexander Grest <Alexander.Grest@microsoft.com>
-Subject: Re: [PATCH v3 1/2] iommu/arm-smmu-v3: Fix CMDQ timeout warning
-Message-ID: <aQupGR8QsS2h7xY/@Asurada-Nvidia>
-References: <20251105190638.23172-1-jacob.pan@linux.microsoft.com>
- <20251105190638.23172-2-jacob.pan@linux.microsoft.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="yQDvyGNK"
+Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-27d67abd215so38165ad.0
+        for <iommu@lists.linux.dev>; Wed, 05 Nov 2025 13:14:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1762377263; x=1762982063; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=1a4Yyw4cqtm7g2w2aJJeYA13ID9gFvTcA7MB5XSqJcE=;
+        b=yQDvyGNKJBf0tBJ3Md9GYqJw11xeYWy8ikx72S+yoOAQlUjRz3lMq+awK88o35pvtE
+         F/7WnBFbFFktFBmn8XQzH1Ts1ZljwoxWo0uHpssjY8KIMPMCJxxxXdtpSSm7pxrTz9xK
+         5/a3k3UCC6WvRl8j6kzURLxYH7R2JdKIMlDKxk6EmtXbdU/jhisfI/fb39BgAygZ5Hpl
+         pvTf28pLVK5VXjNj+hDMqWuuqmMfKRBz9GqKYagohMSXnn0z1+Z9b8u2i84EAU/zjf6I
+         /Sj9UupzwDOzBwSJQ/MxfJDyPP80CdYQ8SX6eAD6LNdsX0TYFpfEa7Om8JCDwhm3TwiT
+         9ZFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1762377263; x=1762982063;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=1a4Yyw4cqtm7g2w2aJJeYA13ID9gFvTcA7MB5XSqJcE=;
+        b=Wa4ojqc+eUs2MsiyOQ6M4kqx5RI7MuyJ3Cnh0RV5xL1p5n+5A04+cGUqFw9sWw4/5U
+         Wr/vgh3SVo/nWFBDVmVIZxLW4gP/OJ412FKvdbjwnyB/s53gH1wN1NdUgbwfQGhGAiPL
+         ZTgrplKkcMbmDmjrSMv91nYxlGex65nNWTFGEkkNEOwpfNEEVJmkahg7+F2NQnk0nN8i
+         7qLWebjJct0k0/3E/pp9xtqGKxEjYirnxb/a/npl/vgMjCKYCZkePEtcvYRNmYxhP42r
+         5CRYCQIBHZyMEqOJc7OlILOy9SBqRgMbWfLk+fkd+epPuaomm/SKiFc/tgW3TWbwKWev
+         4fxQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWsn2H9XOAYIl0Fz1oMhBJHdKyXEQZVI3BfSEXr3bAaux4qE0gYiicW0e+TkJzzKKQo2UcaVw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxNp3a4d4k5kFRxIIleirxd5fkpE65LSBh8V2RpsN6n01FvtTy5
+	2/o0RFuDn2DUVl08SuiVE+DEY1aiM7xTf3jJiTAv+SuM7mS++NmgqC2JRTLJEOiXxA==
+X-Gm-Gg: ASbGncu9z4+ybR7B4VFkujGJn+EbddcmKI6FxbixuPsXE3DGBz0yYG+snUrbyqfhPv8
+	SAJww3f0Ye4iLpj513egFOtcRqNJCse8XB4xo5oKEyTkkHuPnkgNpnoO8nAF88I9gdsHxTT+kg+
+	AadySy4Qg+SE4L5Bb/LaMH72SmUTxeng9n1VvHJXbavSktIyM4Ty7Fcw0d+XHjmHCgscN34/fqu
+	FIzqsuYisIwtPS0NvpFvoROy8geyIkTmzXvAdOZHEAG0T7+srZGEWyjROHev7cOcdFV3nVrUYby
+	NuJEoUnTuesxrLJcdykk3G8ELrjG7e7JCFJgeVl9+WovihAFftsFtu0XGYvjL8qf11LVvMntMOP
+	lIbS2PUTJh7XfEIPIJ3gNS6OagliRBiIHXI2qXqzr2ltOOfJQGjvx1JOrCPNoiMsuazYmlE894R
+	eDVmClS8fWpqQISm42JMDrtn1QyEp+7NstgBxqnOeNYCN99LMT
+X-Google-Smtp-Source: AGHT+IFP1YxRkoxKG9m5uY31RvKem02MIvxx/qMo4X6r12qFFAqsYxQUQt6ctZOzHEsowBEgNB2RGA==
+X-Received: by 2002:a17:902:e74b:b0:290:8ecf:e9f9 with SMTP id d9443c01a7336-2965b17e891mr190525ad.7.1762377262520;
+        Wed, 05 Nov 2025 13:14:22 -0800 (PST)
+Received: from google.com (164.210.142.34.bc.googleusercontent.com. [34.142.210.164])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-341d121cf9fsm21677a91.10.2025.11.05.13.14.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 05 Nov 2025 13:14:21 -0800 (PST)
+Date: Wed, 5 Nov 2025 21:14:15 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: jgg@nvidia.com, will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
+	kevin.tian@intel.com, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	skolothumtho@nvidia.com
+Subject: Re: [PATCH v2] iommu/arm-smmu-v3-iommufd: Allow attaching nested
+ domain for GBPA cases
+Message-ID: <aQu-Jy27_PzxqVvt@google.com>
+References: <20251103172755.2026145-1-nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20251105190638.23172-2-jacob.pan@linux.microsoft.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SA2PEPF00001506:EE_|MW4PR12MB6874:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1e124a88-e922-40b6-2657-08de1ca3c43b
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|82310400026|376014|7416014|36860700013;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?Y0hU+0pUIJi4nTc5HFifqhAyoPj7NpRYAP1+Wg3FhidhQJNR9wpCIihyfvtM?=
- =?us-ascii?Q?Y8HwZN6YhZ/9NrQMBCqvxU6LjuGTjIPd/K4Vpk+19X33lWNjj5mlmTkD7+rs?=
- =?us-ascii?Q?26ss1K6oi7dYSKFanzfjGZtUajjBZtuEUrOYgYrLdS47ySWWJ14cmpjtSA6t?=
- =?us-ascii?Q?HF4iOlX9fEFpn1s/vMwBGjWMibC0TI/Gw37D24BvX4QAHL4m1aZO28qV29Kv?=
- =?us-ascii?Q?5Jpn2/I5lV9MElU6hsDFQX0PLCNQIrkAg72lPsjB9EXAy+5oX3sz4VQzuXcK?=
- =?us-ascii?Q?uIzXtxRLyGVY6iQUEkqYIl1yfkEe+UQyVDMDeP3YTmk7uenTKgsQql7mAE+w?=
- =?us-ascii?Q?Tn34w25RIkYGAeyPQQ/bAddUOpOCTZqDFY+FHa09T59eRx3savmDDr1GbIJp?=
- =?us-ascii?Q?+41D8aJAnwdBF/RlNTPrbZxYf188JDaAKz92JsTIWQvRhb71ohS8VREnyCO7?=
- =?us-ascii?Q?2ckSyVa1SPxqEPBGczzt5oU5GxYy2pCWaPmr8b0gK6KHrJ+Od16cDKHEXrol?=
- =?us-ascii?Q?YeE3ssKwq0CDkU4ufzUK4YSWc8uOSreTHzoOoTuIU03WPYUTebyYwT1G3r5d?=
- =?us-ascii?Q?4/0RDoAs8KF0ws3oSvRr2fwRo93iQ3kRDxjHMGJPyZwqGTmJks1/DeDXLXuF?=
- =?us-ascii?Q?plLMC5mk/lJOtnAEf4q9/YUrAmHyvzug3JvSIqfcKFCrjzQrv/UKH30xtO8L?=
- =?us-ascii?Q?zYK3mKrgCmBuWGYng7BtxWgDnZZKRURYLAHzC7R6QihYKtGvdMiPRu+rUFXz?=
- =?us-ascii?Q?8dmvfQ3wLnpQoXQjR9YTum4uFZt+mCMwBFccCz/iwt+3XgLeQnlp5hSThuO3?=
- =?us-ascii?Q?WVBSVIZ9778VoGhabTRzHKNa2Aci7oqM0pJMPYAt1uE8GnG+MyorzuHNxHtQ?=
- =?us-ascii?Q?A5txjt3JX3byfStzhfe5oTouW+eup2BwdBHCuwK/a1MRdIKggDYWMVUv61+a?=
- =?us-ascii?Q?nBHYNLsmFtvKuptQ7WeA9v5zMrwR+btaukVf8I88GyqqKAoA638qZfqyl9rP?=
- =?us-ascii?Q?74FfMINGnfTcrNRwGNxjN4cN5mxWyKnsR1dO9CZBSPs2R5O8LLKlsOsUGlov?=
- =?us-ascii?Q?evpW73ZJ7InFXMxynAllSEXIVHPSCigk5d9pZoc6onh/9lK1oWVnJpTGl7WJ?=
- =?us-ascii?Q?QswEUk+sifimpfkiSTi2wyebShH+o9dCFrB6ex1ISFhDoN6JwfGNXuoV9NnV?=
- =?us-ascii?Q?zrOllXjfFTcKyDUJ/g+PN6fM3ga01PfC2qNVVndCnxFKRU5LZ9ilmHJCZPa6?=
- =?us-ascii?Q?xlSqJtszVyZE5OOCiKy3x782lOGLq4h/jJpH0PoEFNRdFzUxgttxWGGdxB3U?=
- =?us-ascii?Q?GQgh2ySC9hgqkCKhn8BvNVus7FFD2zpjG5ub1PiTcO0aIEWdtf61ppM594SN?=
- =?us-ascii?Q?+agrEtD2FVL2AP580afDP70ex9xN2MrVXG4UaMrPnmCY87koFwJ5StXBozcZ?=
- =?us-ascii?Q?5FRfcBezMi3DC8n444tXa9Nl4ZS1eb/9k7K2skxsc8w/ev27xtBw2De6lTi9?=
- =?us-ascii?Q?zb9CS4Upp2FlrbT0xYCZEJw+2KHtqOyq0cdtbWO+C1MqlzfmV+74DRISnnRk?=
- =?us-ascii?Q?7beBq5xcePWab7qEIQ4=3D?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(82310400026)(376014)(7416014)(36860700013);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Nov 2025 19:44:42.9130
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1e124a88-e922-40b6-2657-08de1ca3c43b
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SA2PEPF00001506.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB6874
+In-Reply-To: <20251103172755.2026145-1-nicolinc@nvidia.com>
 
-On Wed, Nov 05, 2025 at 11:06:37AM -0800, Jacob Pan wrote:
-> +	ret = queue_poll(qp);
-> +	if (ret == -ETIMEDOUT) {
-> +		dev_err_ratelimited(smmu->dev, "CMDQ timed out, cons: %08x, prod: 0x%08x\n",
-> +				    llq->cons, llq->prod);
-> +		/* Restart the timer */
-> +		queue_poll_init(smmu, qp);
-> +	} else if (ret) {
-> +		dev_err_ratelimited(smmu->dev, "CMDQ poll error %d\n", ret);
+On Mon, Nov 03, 2025 at 09:27:55AM -0800, Nicolin Chen wrote:
+> A vDEVICE has been a hard requirement for attaching a nested domain to the
+> device. This makes sense when installing a guest STE, since a vSID must be
+> present and given to the kernel during the vDEVICE allocation.
+> 
+> But, when CR0.SMMUEN is disabled, VM doesn't really need a vSID to program
+> the vSMMU behavior as GBPA will take effect, in which case the vSTE in the
+> nested domain could have carried the bypass or abort configuration in GBPA
+> register. Thus, having such a hard requirement doesn't work well for GBPA.
+> 
+> Skip vmaster allocation in arm_smmu_attach_prepare_vmaster() for an abort
+> or bypass vSTE. Note that device on this attachment won't report vevents.
+> 
+> Update the uAPI doc accordingly.
+> 
+> Tested-by: Shameer Kolothum <skolothumtho@nvidia.com>
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> ---
+> 
+> Changelog
+> v2
+>  * Add Tested-by from Shameer
+>  * Skip vmaster allocation instead of bypassing vsid=0
+>  * Revise the uAPI doc to note a corner case when CR0.SMMUEN=1
+> 
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c | 13 ++++++++++++-
+>  include/uapi/linux/iommufd.h                        |  9 +++++++++
+>  2 files changed, 21 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
+> index 8cd8929bbfdf8..e5fbbdbdea242 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
+> @@ -99,6 +99,8 @@ static void arm_smmu_make_nested_domain_ste(
+>  int arm_smmu_attach_prepare_vmaster(struct arm_smmu_attach_state *state,
+>  				    struct arm_smmu_nested_domain *nested_domain)
+>  {
+> +	unsigned int cfg =
+> +		FIELD_GET(STRTAB_STE_0_CFG, le64_to_cpu(nested_domain->ste[0]));
+>  	struct arm_smmu_vmaster *vmaster;
+>  	unsigned long vsid;
+>  	int ret;
+> @@ -107,8 +109,17 @@ int arm_smmu_attach_prepare_vmaster(struct arm_smmu_attach_state *state,
+>  
+>  	ret = iommufd_viommu_get_vdev_id(&nested_domain->vsmmu->core,
+>  					 state->master->dev, &vsid);
+> -	if (ret)
+> +	/*
+> +	 * Attaching to a translate nested domain must allocate a vDEVICE prior,
+> +	 * as CD/ATS invalidations and vevents require a vSID to work properly.
+> +	 * A abort/bypass domain is allowed to attach w/o vmaster for GBPA case.
+> +	 */
+> +	if (ret) {
+> +		if (cfg == STRTAB_STE_0_CFG_ABORT ||
+> +		    cfg == STRTAB_STE_0_CFG_BYPASS)
+> +			return 0;
+>  		return ret;
+> +	}
+>
 
-I don't think you need this "if (ret)", as queue_poll() returns
-either 0 or -ETIMEOUT. And the patch that I shared with you has
-this noted clearly.
+Skipping the vmaster allocation entirely for the GBPA-only case (when no
+vdevice is found) is much cleaner. Thanks!
 
-The other caller arm_smmu_cmdq_poll_until_sync() treats the ret
-simply as -ETIMEOUT as well. So, let's just keep it in this way.
+>  	vmaster = kzalloc(sizeof(*vmaster), GFP_KERNEL);
+>  	if (!vmaster)
+> diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
+> index c218c89e0e2eb..225671603ade6 100644
+> --- a/include/uapi/linux/iommufd.h
+> +++ b/include/uapi/linux/iommufd.h
+> @@ -450,6 +450,15 @@ struct iommu_hwpt_vtd_s1 {
+>   * nested domain will translate the same as the nesting parent. The S1 will
+>   * install a Context Descriptor Table pointing at userspace memory translated
+>   * by the nesting parent.
+> + *
+> + * It's suggested to allocate a vDEVICE object carrying vSID and then re-attach
+> + * the nested domain, as soon as the vSID is available in the VMM level:
+> + * - when Cfg=translate, a vDEVICE must be allocated prior to attaching to the
+> + *   allocated nested domain, as CD/ATS invalidations and vevents need a vSID.
+> + * - when Cfg=bypass/abort, a vDEVICE is not enforced during the nested domain
+> + *   attachment, to support a GBPA case where VM sets CR0.SMMUEN=0. However, if
+> + *   VM sets CR0.SMMUEN=1 while missing a vDEVICE object, kernel would fail to
+> + *   report events to the VM. E.g. F_TRANSLATION when guest STE.Cfg=abort.
+>   */
 
-Nicolin
+Reviewed-by: Pranjal Shrivastava <praan@google.com>
+
+Thanks,
+Praan
