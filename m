@@ -1,80 +1,76 @@
-Received: from mail-qv1-f54.google.com (mail-qv1-f54.google.com [209.85.219.54])
+Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B437D3016E1
-	for <iommu@lists.linux.dev>; Fri,  7 Nov 2025 19:16:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 583BA2DEA80
+	for <iommu@lists.linux.dev>; Fri,  7 Nov 2025 19:30:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762543013; cv=none; b=AAWiqlLr+cR4mLc5vCXtb9xy0YGwM5+G0SyaonwA7JO4ZgdjE7aevhW+ZI9rt0Zi3nGf+pkc+IL7CQaTSnkPkIHORliXmskcsy73ICyzmHPtjkrO8fDnfFOaWRPpSyssy4szbNP/StDK9mruNm4MjjMoy81o8fH+VAOjQz8s7CA=
+	t=1762543837; cv=none; b=LWo9ZEgxHnupZt8ahorGklkR73hz6GGMgwI8VA/WpKy8jCE3ULTHjn2d+k7/4r1GKPjMBGnJRZ7qMzMjBN88Yideu5K47t/wL8EYfj3SpJcGO8j2mh+KSbwwV47bNg66HUNX2bb95BaT/wUuYOL1KQDvSuIEZnq1ESa0SIjj0KA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762543013; c=relaxed/simple;
-	bh=VOdPNLzT1eZ1NEB09xe83HjehWmI3iXz/M9xFWPtPBQ=;
+	s=arc-20240116; t=1762543837; c=relaxed/simple;
+	bh=XygVhSD3HlTOEAa9BQJmws4+jogICxDOzJiVToEZzsA=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=i6QFDfUjodvYrZevOpJXu6T/grW9r+o+CcauN2Snw5+Ckt5b+kIkBwrheMoOHs2YIr0XQExnqw/UKCkZIoKJjBji1yYpwsO7arPAhB2u6EuVHeQWb042HKb4yeOOCVVLSOMVHfzxmwbKN0G4WeARkqcrM8Tg15clvmFSne8w7Rc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Dr7jLLCJ; arc=none smtp.client-ip=209.85.219.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	 Content-Type:Content-Disposition:In-Reply-To; b=JwTo0Ili1UtfgDd3/g2Yu+8XC+NbQgl2RtuQHLz6vubGjXjtX1TZmQqPJ85aCW21fms3gmAJQ7iS3EcMaeow8MfRJTWtjL4tSdZXNe4r+sosu3lmcJZFS1cZ9NWOrjdRqeinYzsHQOo2S+fS4sLFsf9gINxQB9Di64ThmaZssDk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=E9LmNs0o; arc=none smtp.client-ip=209.85.214.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Dr7jLLCJ"
-Received: by mail-qv1-f54.google.com with SMTP id 6a1803df08f44-882379c0b14so1601196d6.1
-        for <iommu@lists.linux.dev>; Fri, 07 Nov 2025 11:16:49 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="E9LmNs0o"
+Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-2959197b68eso22665ad.1
+        for <iommu@lists.linux.dev>; Fri, 07 Nov 2025 11:30:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1762543008; x=1763147808; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1762543836; x=1763148636; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=uecw5GuJ6xKMR/52t0KK0j/pRrv42h6jWvdNot4nYIc=;
-        b=Dr7jLLCJTOzDcV9lcnXTt1PlC2fogkPauEC/wKafKTmSl/C8MBN/jqij0k2H4qTgSz
-         EuLQVJ7Xgs3xZEpIajQ1dH9U1RxwspwME/jl4wMDrVhDm9EzjubrTtipvAocqtVaiFl3
-         37qANDQlMvDfKvkUhYVtXQueKr2XuYMk1LVqbCFloPldFgcPmq6hWFWwB8+ZSlTen2mT
-         mACI1gUBjDSwrYINJXGIX2h+G0f5fKjqegTCSDcTZEDZ7Xtay5qvyV3vKm+h1z2xLHOo
-         TjowRqPoZKhyHcpAaZdvjZPZ0AlTYPyigNKbu9j2+QtPvQ37/XZVCzMVU+38MLzxGojX
-         7v5A==
+        bh=Ii2K5/lD+aBTxicdOXZF0Rxje4qtvj62/HMAMykB+YY=;
+        b=E9LmNs0otLNsIcVq/z9VACWQciHziipAwIGyN1xma2c9lRHE8LWJ8C1VJARMc/akTI
+         UhObIkwUm4elb2ft673nyfq9eXoI3hX9MY2zbAVYmAOKQGcmU0e3Ol1PzbMKf850qgmY
+         P8fGoFOFHne7POIYShhMfma8w4f2TgVvSbeYfkWmXYfpwdKF7mIIEL+IVUXGQsf3tLeD
+         A8NVTL8Ikcs4uEk/dQncy0V08RAf2yzyFDiNFputJYNXQ3p+y7j/QI7EdV0goyja1+Bn
+         9jcxhH3M/YKPE6AbSDzfEuY0rDtt4Nm6Vn8X//x2JBFzKj1CsY2mITlNLK/53CQDDvcJ
+         XoGQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1762543008; x=1763147808;
+        d=1e100.net; s=20230601; t=1762543836; x=1763148636;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=uecw5GuJ6xKMR/52t0KK0j/pRrv42h6jWvdNot4nYIc=;
-        b=QjjTQIzbs58bRDU1NJB/0yFTtLttZYKLRO+WXnfsYcFMdWm3GdJlQFcIR7iTHfB657
-         oDQCPe5jfDHmLEQ6Z59DQfLo60Vwu5HDYmzkCmRfzIKSKIsleg3GZ1HQfQBZ8CnVH5Mq
-         2QpjQd65vHG9TYN3f07CZLows3g+iUw1opija/KBBDvqkyaL65YnQ++E/ng18CwyX1NX
-         cOFiHMd95SZzHMnV5tnIcde63nSgg2jAqaGvBE4ctECaeGLYU2razLCXTNTC4TZuQ375
-         R1x23rE61QtEmYI4UfgQDFJF+P+DR7efg7CSmt39OYWrqMAQFup1Bb2uXcs8v9QuOemv
-         UjrA==
-X-Forwarded-Encrypted: i=1; AJvYcCU4gfGOOlKAnvV1viZqW5KnsqekgFnPMc1MbW73qHKr0dsTqEU3wzerAX5oLjVBwo4l5X5yiA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzgdvHM5wTk+48c4UMYignBRfI9wxXBT2icsTH7oF3IbqA6/ope
-	pNuAjwacDEnJGp6Ug1mv1aPNNgLscTtO5tUnukTtoEfBIbwLHsm6eaV4E68CH6SNCMc=
-X-Gm-Gg: ASbGncto9bBMFeZKY6s9uxE/XC3q7TVocylip5q7Xhs+2RaHLjxSMPewcUq5E8wrxBO
-	Xrp+Gx0RECthi2WzVJefci9YghxGpeUw2bNsN1Yn8Sw9FACBssfzZn0YTa/mC01jw4h9AkFST2J
-	HMIuF4bm3E9XWsTwtsIHnsf0tbvfN8RgiRjJSU2ONR3gLjIBrhfXcocQfNfFMrNBIvUoLuLG3Cg
-	kLLkuU4cwCvnVN8smOaGOmN4RBK7+vo7XxMQsBUNMM3j84KWMdDkcAqy4jLo4wmTM4GbXc95LOz
-	CseSu7vvuGczVNOxxVp8FYX5299q2dI1UDjHLhVruBnDD7Sbw6MhhaakEh25ekL1UtUldD4Pt/j
-	DJsVqClCz1e8vqX6tyd2A9xS+U+7kxzymyGrVQqi0VCTFomrWU1//YHl8p6r9nFijp6RqXwZ+3C
-	B5ReO/Ozq1KRs1W/AGHYPP8c7Ubzk7Hr3MA4J3seDFdWBZFQ==
-X-Google-Smtp-Source: AGHT+IFuKO535u2kiOv/DIfBewHOhom5AEVBkvPZuA5a9xJpNKB2nCPzp+ZUXTed1YvzsoYZhtcP/A==
-X-Received: by 2002:ad4:5c66:0:b0:880:224e:aab1 with SMTP id 6a1803df08f44-8823871af07mr2487486d6.66.1762543007674;
-        Fri, 07 Nov 2025 11:16:47 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-47-55-120-4.dhcp-dynamic.fibreop.ns.bellaliant.net. [47.55.120.4])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8823896a8d9sm593576d6.17.2025.11.07.11.16.47
+        bh=Ii2K5/lD+aBTxicdOXZF0Rxje4qtvj62/HMAMykB+YY=;
+        b=UjFrNLeTP4wl5BYjZFV1sE3MscVm/s12BYaD7V0yWDCU2n8tB57fv8+WQ1W26DFeBp
+         20JS8rw4R92JprT629lJooyxYX2ZZt8pKIUXLBFfShHFhbmxOAoje1Wi8ESuzMg9oWwm
+         LWRLOEl5geQDS3G05QDIrL6pAPfnAxBZ9ts2oHIHORChWAWHQxwyc9HB9cwRgGvkjKuV
+         EBkoeBpWGoBuoJ7MeAMTp7QtshgUCTCo+7grdNuBiOimfOgd4pvPi5+Dmwim+sYr/M6/
+         noAkAFvLKb3qXV632rONk4ivMh/a5yFzJ4PE06bSA/r4NS9qvix7pESwozDXjA97LRbf
+         pfRA==
+X-Forwarded-Encrypted: i=1; AJvYcCURkTgUR7qhbOqCafwyi7yX/yR76R84Ov2Ch89SZVq8A6SPSt67NrfZuTL+N12lm/KrsalaMQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzsY5nr1WiCjipcvTxZ46igTcgLpazNEfcQ14rTM470SZyM8NZR
+	4TGMgutQJU/Zfog/zUKUzvdB7um46X/bHHm3RZDntxvUJ+oE/d60eBKtpdzPB0hv4A==
+X-Gm-Gg: ASbGnctpvPRU1U/A/UlhCUe5qCEvjgAfgiw3LY0uqJkujFyETFzopcKorGmR7yjhCZF
+	gn6stX6wJVybcql/xcqL5p82sNjxU0303YIQghck37GZF0hY8z4CkShmMF9B/olB4E4EFJ7GYFf
+	G3wxX9d31QYpY2L1V1OFqqbrgJDvv1rLNw6M6ftD1DV0u4VDKsAdE1XRnaJ2VbrNiQhsfTbEZyF
+	vLKCsb+Qaf1I7QbAiy/byugRBST289wp+ZIrXLNCkVCv4zCuLgeNvfD9YekDpObYa5/bm3g8HNg
+	2s+BzLfh+RhOaZp55p46N7ngUIwH0ScPU6jpS1yybiX/UuYTqBRmGOaLtg73+jTmkWsygdX09YE
+	PMmxs48QQMDy8pwQPjsg5bez/whP06c+mMGSVLn7hXp4mO/2LZQ0jyPAXPbuKvBy4B1SPD4Pt2Y
+	DWjYZ5vprM0QnB6zcx9eGmT6lprOua5A0YOIVrtsffMCkUYESu
+X-Google-Smtp-Source: AGHT+IGrZxEpsvavP2SSGDlxEEDNvgmombMxNJOrhRHYLBt6v8Cu6925mPYDaXVNFvL+7VqE7SGZkQ==
+X-Received: by 2002:a17:903:32c1:b0:297:d83c:9c37 with SMTP id d9443c01a7336-297e56624e7mr492925ad.12.1762543834993;
+        Fri, 07 Nov 2025 11:30:34 -0800 (PST)
+Received: from google.com (164.210.142.34.bc.googleusercontent.com. [34.142.210.164])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-341a68aa1edsm10072092a91.1.2025.11.07.11.30.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Nov 2025 11:16:47 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1vHRx0-00000008LqN-30pE;
-	Fri, 07 Nov 2025 15:16:46 -0400
-Date: Fri, 7 Nov 2025 15:16:46 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
+        Fri, 07 Nov 2025 11:30:34 -0800 (PST)
+Date: Fri, 7 Nov 2025 19:30:28 +0000
+From: Pranjal Shrivastava <praan@google.com>
 To: Ryan Huang <tzukui@google.com>
 Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>, Nicolin Chen <nicolinc@nvidia.com>,
-	Pranjal Shrivastava <praan@google.com>,
+	Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Nicolin Chen <nicolinc@nvidia.com>,
 	Kevin Tian <kevin.tian@intel.com>,
 	Lu Baolu <baolu.lu@linux.intel.com>,
 	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org, Daniel Mentz <danielmentz@google.com>
 Subject: Re: [PATCH] iommu/arm-smmu-v3: Fix error check in
  arm_smmu_alloc_cd_tables
-Message-ID: <20251107191646.GB1859178@ziepe.ca>
+Message-ID: <aQ5I1OYwWbfbA95X@google.com>
 References: <20251107190917.2858684-1-tzukui@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -102,7 +98,9 @@ On Fri, Nov 07, 2025 at 11:09:17AM -0800, Ryan Huang wrote:
 > ---
 >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 2 +-
 >  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Reviewed-by: Pranjal Shrivastava <praan@google.com>
 
-Jason
+Thanks for the fix!
+-Praan
