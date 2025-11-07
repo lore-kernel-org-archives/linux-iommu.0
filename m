@@ -1,78 +1,83 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 93D8026ED59;
-	Fri,  7 Nov 2025 10:13:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 258F31A9F96
+	for <iommu@lists.linux.dev>; Fri,  7 Nov 2025 10:47:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762510396; cv=none; b=rl8wkyiqUknkrs5Y3nNjd7eDZYBL+Ub/UN/iU0lyIbR/6AJKMOhrx2IlPRtURURcxThhIOgRWqt8J6WnkovmmDGzNOwbX2CUB+qtJxoArFyEUATZkrkftp3lgwoRHt3DQbRQb/lo0NuReT0aTDLKahezADjBoP75ry7LTmrCWhY=
+	t=1762512435; cv=none; b=uHs71chLQG4tfE2c9GewvRvt4+T0sPN5WJDAa6y3r9Q4rGfPHniloC5Z3HInGaiBQMj/WCmvYjCcTpJCKsFJWb8M/fFfVM+OmCgXMlY8+2V5u+J63iMjDcTJTxNimICm/wBjI7ZvhC0T97hIlrPtf090M/xBGf6bSHX0WaFbkyI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762510396; c=relaxed/simple;
-	bh=vLz/CdZhy4yPzvcG3fbR2UjsnU7P4O7qwXunThdZQJ8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=MCtijj3eapv7AYFv1KM1RMAGPIT5kQ4tTsdQoVd+vmFxGAeywErvhvp6zhKS0lJC0ZZGWibo2MCc37J2vgH6zQCOE5hK9RtA+wZvX3E8XZDSfWAIW9vtZ1E9aGsErjzAVZtkml+SstdtTIkrM4cP0cz1ELlaHw/3lztvUOuBJBU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=Fin9RFL2; arc=none smtp.client-ip=85.214.250.239
+	s=arc-20240116; t=1762512435; c=relaxed/simple;
+	bh=VgVMadMFagLBq0AEYJS0vuHVw/vbdQVZdPfcW/G0XbY=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=CnoEMWsuavtvVEKjL8+7FMMYr5X8KSbJk7bWhcwBNgB0e0/Ef4jWBUK8WeNnOacaTocDM7BVDhEU0aFlaLi8gKE48BQ2QKJdBHAhJ3iLiPXnbQoCfCBBt2WC8ZrJN/7SJwfmdpsNJ+hbtmp1diO/N8x4Cu+QrOAYBjEvBBJRQZA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=YGXLpCKK; arc=none smtp.client-ip=85.214.250.239
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="Fin9RFL2"
-Received: from 8bytes.org (p549214ac.dip0.t-ipconnect.de [84.146.20.172])
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="YGXLpCKK"
+Received: from io.home.8bytes.org (p549214ac.dip0.t-ipconnect.de [84.146.20.172])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 3AC505AB91;
-	Fri,  7 Nov 2025 11:13:11 +0100 (CET)
+	by mail.8bytes.org (Postfix) with ESMTPSA id AFCE95ABAF;
+	Fri,  7 Nov 2025 11:47:10 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1762510391;
-	bh=vLz/CdZhy4yPzvcG3fbR2UjsnU7P4O7qwXunThdZQJ8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Fin9RFL20Z9paI9GOD7nUNYhJnlVwA/S9m6W5zUdd5PfM7RfAdK4ATSNBeB+wTCXG
-	 gyCBqlElO7dHOgLDQ6VT/yLNXWmXrOh/AWi4YAnJxJNwNPTOlnhID91kJBhAYvPRHj
-	 a4vsbUlclffCMhWVGY9cMdIh16Xjmjkbns1/ji4po0NnHmzYMXbNkZuKN00S1AVaXn
-	 Ck0ThSdvyPM7n+8g09hBj6+dGtaJEtNfKomH7YIYE3xT3e2THCObCHlkZdDDZxbsN4
-	 h+aWjlqiiLxfn0nhQLyuqlcigIaQfcv0Du9k3KlVWCPQSSWfyekbfh2bULpE5u5a4Z
-	 mLqxcfBEHayuQ==
-Date: Fri, 7 Nov 2025 11:13:10 +0100
+	s=default; t=1762512430;
+	bh=VgVMadMFagLBq0AEYJS0vuHVw/vbdQVZdPfcW/G0XbY=;
+	h=From:To:Cc:Subject:Date:From;
+	b=YGXLpCKKiYBP3U4A/8OFYvuQoR3pL3oT3/9L30FbsnloyRM4nS1P5xFqTkYIavZQQ
+	 O//7/Vs6wYcrAe6hZzSbi4GkWPek/KKO0RN+66WvJ9Y2cRd6aYqg1DvyUjuKbKbyjs
+	 ei7VWZX9Xvokgo20tBESGE1jQaYxQjZ/8StZVB0jfiqK5UEiduWbS6Hs7kI1GPD8qV
+	 g6UdxyTttR4HJf2PC30gYPUi+Ay5seGfXU4UEAkkd5HRuTV2BE6nlho1Ojfs8ObZaS
+	 SCXJM0IpoEdfTcxievR8U/k6ZyI3/6uIDIHEvSFclATWTP4TIsYYJ9hpCAPC8PM8Mw
+	 sE/+qARei7zCw==
 From: Joerg Roedel <joro@8bytes.org>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Jonathan Corbet <corbet@lwn.net>, iommu@lists.linux.dev, 
-	linux-doc@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>, 
-	Will Deacon <will@kernel.org>, Alejandro Jimenez <alejandro.j.jimenez@oracle.com>, 
-	Kevin Tian <kevin.tian@intel.com>, Pasha Tatashin <pasha.tatashin@soleen.com>, 
-	patches@lists.linux.dev, Randy Dunlap <rdunlap@infradead.org>, 
-	Samiullah Khawaja <skhawaja@google.com>, Vasant Hegde <vasant.hegde@amd.com>
-Subject: Re: [PATCH] iommupt: Documentation fixes
-Message-ID: <ydduatsgexjutnhm4wexmwbnl2x72p6346edy3dc5c4ctpl5am@r3d3kbbff7ji>
-References: <0-v1-e93135a62eee+1e4d-iommupt_docs_jgg@nvidia.com>
+To: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Cc: Jason Gunthorpe <jgg@ziepe.ca>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Will Deacon <will@kernel.org>,
+	Joerg Roedel <joro@8bytes.org>,
+	Joerg Roedel <joerg.roedel@amd.com>,
+	Thorsten Leemhuis <linux@leemhuis.info>
+Subject: [PATCH] iommu/iommupt: Fix build error in genericpt unit-tests
+Date: Fri,  7 Nov 2025 11:47:01 +0100
+Message-ID: <20251107104701.237041-1-joro@8bytes.org>
+X-Mailer: git-send-email 2.51.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0-v1-e93135a62eee+1e4d-iommupt_docs_jgg@nvidia.com>
+Content-Transfer-Encoding: 8bit
 
-On Thu, Nov 06, 2025 at 03:02:14PM -0400, Jason Gunthorpe wrote:
-> Some adjustments pointed out by Randy:
-> 
->  "decodes an full 64-bit" -> "decodes the full 64 bit"
-> 
->  Correct the function parameter name for iova_to_phys()
-> 
->  Use the recommended section heading style.
-> 
-> Suggested-by: Randy Dunlap <rdunlap@infradead.org>
-> Fixes: 2c8b644f3901 ("genpt: Add Documentation/ files")
-> Fixes: ac7ffd8e805c ("iommupt: Add the AMD IOMMU v1 page table format")
-> Fixes: e530a2c3a098 ("iommupt: Add iova_to_phys op")
+From: Joerg Roedel <joerg.roedel@amd.com>
 
-Grm, had to fix up these commit-ids. Please be more careful next time.
+Fix the include of iommu-pages.h in the KUnit tests for the IOMMU
+generic page-table code to make the tests compile again.
 
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->  Documentation/driver-api/generic_pt.rst | 11 +++--------
->  drivers/iommu/generic_pt/Kconfig        |  2 +-
->  drivers/iommu/generic_pt/iommu_pt.h     |  2 +-
->  3 files changed, 5 insertions(+), 10 deletions(-)
+Reported-by: Thorsten Leemhuis <linux@leemhuis.info>
+Closes: https://lore.kernel.org/all/9844d4cb-f517-478b-9911-b6dc1a963b8e@leemhuis.info/
+Fixes: 1dd4187f53c3 ("iommupt: Add a kunit test for Generic Page Table")
+Signed-off-by: Joerg Roedel <joerg.roedel@amd.com>
+---
+ drivers/iommu/generic_pt/kunit_iommu.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Nevertheless applied, thanks.
+diff --git a/drivers/iommu/generic_pt/kunit_iommu.h b/drivers/iommu/generic_pt/kunit_iommu.h
+index 5d4f269627d5..22c9e4c4dd97 100644
+--- a/drivers/iommu/generic_pt/kunit_iommu.h
++++ b/drivers/iommu/generic_pt/kunit_iommu.h
+@@ -8,7 +8,7 @@
+ #define GENERIC_PT_KUNIT 1
+ #include <kunit/device.h>
+ #include <kunit/test.h>
+-#include <../../iommu-pages.h>
++#include "../iommu-pages.h"
+ #include "pt_iter.h"
+ 
+ #define pt_iommu_table_cfg CONCATENATE(pt_iommu_table, _cfg)
+-- 
+2.51.0
+
