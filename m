@@ -1,108 +1,107 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f174.google.com (mail-pf1-f174.google.com [209.85.210.174])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECF0B749C;
-	Sat,  8 Nov 2025 00:19:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 432AC1F8691
+	for <iommu@lists.linux.dev>; Sat,  8 Nov 2025 00:28:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762561194; cv=none; b=tz8kuBw2l5hqZFmAKxtsbgjPrPzHz+bVFoWXlfRdia3VnLqdCVyocoWt2RtXG2zxSMKF7iXZXlG7g6zdOH+70Oz9Ff8vXDvc/5pd433HUI8EJXn/Urk+vQQkHDgFtbXO2UauZGpoTYjpTrRMQumTlAe9rDOI2ZUgv/mZVas62J0=
+	t=1762561696; cv=none; b=OyNAwEYhY14Vc27P1/ASAOl3cHOV6bR2OdjQqdrCJQLcKlV4ZVLm7CujhV0TzJ/VbUiixeQEOn7DvvyY1fcutDQ0nAtxmQQ0XNEKpiSF82hxM5ILOIXVyRl4BaJ3aT9033JHlAOKrfgS9kpzpWQlm/nlh2sHgM+KBc4dXNHi5nk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762561194; c=relaxed/simple;
-	bh=XgJLKtNjkVJsQfZ71ITg8fCOF/3ehIqbxHwquqIIEIo=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=DiOtGQce8ubHEouRA1iUVr+8S6+xG+M/WOb5xzzNVpgQfSqFAz7D/N6aTSQpFd89qysKvha6fTAqEFg7JgPNOJgrYDDfIrrw6LmnU/cpXKPKJ/GHd6hT0NBZO4M488TsN5FkIBl6blqMS50Ep/E5AwXNR8quWy4nIWrSvhGVTZ0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=jIvmnpH5; arc=none smtp.client-ip=198.137.202.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
+	s=arc-20240116; t=1762561696; c=relaxed/simple;
+	bh=xAjaHvMSmn7zlTOcpY7YxpGaPXDu9AQfS98dU4FaJHg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=vCOqYW7TX4vkz48J3whkvUNZW65P9YMK/A1urNuwLaNae7VQhPOReffvqYowyQFUjztoPqGgieaZt1oScGlA5kFkVSHEYlfs5ZQ1n/DQexw7zZJXSiOFIf/YK/kM7OOgkhSSlZ8iI/VO6TywD5eIDt+WMjW1Qy0Sxkl2sU8LWyc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=NecZlZyK; arc=none smtp.client-ip=209.85.210.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="jIvmnpH5"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-	Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
-	Message-ID:Sender:Reply-To:Content-ID:Content-Description;
-	bh=zeMR2YavB+3/5YeBgJN8gTKdNLaP+0wt7Aw1q8B1wGM=; b=jIvmnpH5VbUSLxLHYcQkr8xMUc
-	wE4knEnG91KgrKAp/Mw2LHSWcCcJs19s0H7/g78GandkZ4SxEJ6+CUZG/SfI2mDlvB/G7vuwKhey4
-	ItulBD/W+WNf205AZ+2Zjl38RtuoE1939HTC2FkURTTloDzeyGFc+TxHIpkIHZTZHmxDJ456cQHXn
-	U2N4GcXA1j5g/IGhmqNgxWnE1yQ5KxbdZ0eLsfpOAg4+iXIs2803y/yysuqx9zXNHoJbEeBDlUR76
-	mjU+Z9WpWxHfre8EsEKDL6XXAaOZMo7mv/6/xR+VHORu73kRqmqQuxWFj1FZfTvbeJgpCrSyMulEa
-	hZ4t3x2A==;
-Received: from [50.53.43.113] (helo=[192.168.254.34])
-	by bombadil.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
-	id 1vHWgI-00000001i1B-27wB;
-	Sat, 08 Nov 2025 00:19:50 +0000
-Message-ID: <a304ad66-6ab5-44ba-8454-23cd01f7854f@infradead.org>
-Date: Fri, 7 Nov 2025 16:19:49 -0800
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="NecZlZyK"
+Received: by mail-pf1-f174.google.com with SMTP id d2e1a72fcca58-7ae4656d6e4so1584596b3a.1
+        for <iommu@lists.linux.dev>; Fri, 07 Nov 2025 16:28:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1762561690; x=1763166490; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=vfGsS2MH5xd9qjAA7YCJrfBqaEDAdeU1QGJHQOuJbsg=;
+        b=NecZlZyK6GPk1mJOfDTvI515XwPvskpLLXTh7I5rdEh40SMppu8Avqb/H3c51nS211
+         mb2erGZRaiqgAGpkLbyBYyduz+yDiNnfOl3TEKAYhukcv/YCkcfDu1zsThQ8HOXIuMZ4
+         9w6N2SSBsC70t3MFl7vUdht8YYHl6nBMK7jnyGSD3dQRsSW+IuaXZNj3RaPS9u0y8Bli
+         10sinT2C/SGPw1A/QKEbDMBC5gXnaJMuszd+OsJY4hZaR3Sh3q+2O+/NcRFkluoNKywX
+         Q7tIUbkXLHKnoRQISRtUHmLafXu8O74a+y/2z6Lmlbwk+My8HoALL1OWOaI5b0Jq1ayr
+         nEKg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1762561690; x=1763166490;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=vfGsS2MH5xd9qjAA7YCJrfBqaEDAdeU1QGJHQOuJbsg=;
+        b=Cln3mtcignu0qEf3GcJ7n4K/qmnd1FHcuqgM7PneLah4wAtIG1GHg3PgpRsuzvVS8+
+         FaxZsZ1hw1VeU3zNXYl0fQAiHRHPMutSD7t85CmRqpNsF8kA4EY8BYAffKMbnB27OyE0
+         NHtjA3ij6EVg1RXV+KiHf4ggkcLzhHwUbexPUCqTS6HFTUDzBYuAqUgcFi0OKxihVCsK
+         LScSni7qHX010v+i8G0bIDBeQCo1+ye40DLJ78WHiqgJ6PpkMRGr9zun3FNe906DpU1i
+         tl4Y3PJqeX9Lw5ArZ6oyn76b1Rz5SuU2KNd4VaKxGmm4HTa++WstYWQrYhGBCAt80Fqo
+         VXGA==
+X-Forwarded-Encrypted: i=1; AJvYcCWtsCYOhZ7IgROjrIOIvOckxri+TydLs/jHhcw6pQpTYXIkDje+8fd13reHEXMBBubI2ox7Jw==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy7fOinfSMy7Zs8n+l5Wbd3j/zwp9grkQMFUVBDbIJYg9mOkWXE
+	QQmTSUb4YCYt+PlmTiZJXu1cHzQqNb7vIzCHXlmI5iJ28imZDxBGfwvbhx77RaHkZw==
+X-Gm-Gg: ASbGncu6pA2iSY+9ksFqUDdUWpagjNHqSaRqdy/jPe7ejKjzd2NNiQrDTgaZsLR0JiA
+	zjlvlYmR0lOAfsG1aJJ6KrBGuCsDhvZJYw+NnyqCqFV3+tAAmFgUZy2NJfDNpXPKrPIFBjOugiw
+	KimJhJizVUGSQ27Qgx5MrI8El+GcrgnEUsQjz7wKJ79+zvRMzoDL2o6K1KY++s5QZkS8kEqzKIG
+	yFgL3JRycyexfnHl9u1L3Hk6pPQyBBvFHAwE1KTu0eBs51KtD528yZ00DEQWk+t/RLDgn92NNaq
+	nrCEeMYG4oi7O0LutedSFOgHDNU/IkNnDHXk782TZeDVnuVLmSYSZQizHOF4DNwPE1JLUDKE9CN
+	uOvKtTV+8VTqj2tfhPxiDo4sxYGMwDxcZwi+pUiOl7GweOaE5VdoG57s7kin5VBACdMoMmueupa
+	s9C1DVtgq5+vbiNqR9wSWq6EBcPyIousDqoyFbN/DfyH3We3wS+5Qs
+X-Google-Smtp-Source: AGHT+IFUSovrDS+0WRVHBlbfPfLVHwv6BMRG+QTXHnDZ4UgWakNZf0zOP9bb4qcXnqDQvHke8MZjEg==
+X-Received: by 2002:a05:6a00:2e08:b0:7ac:1444:6777 with SMTP id d2e1a72fcca58-7b225b8db54mr1368536b3a.12.1762561690242;
+        Fri, 07 Nov 2025 16:28:10 -0800 (PST)
+Received: from google.com (132.200.185.35.bc.googleusercontent.com. [35.185.200.132])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-7b0c953d103sm4148113b3a.5.2025.11.07.16.28.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 07 Nov 2025 16:28:09 -0800 (PST)
+Date: Sat, 8 Nov 2025 00:28:04 +0000
+From: David Matlack <dmatlack@google.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux.dev,
+	Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
+	Will Deacon <will@kernel.org>, Lu Baolu <baolu.lu@linux.intel.com>,
+	Kevin Tian <kevin.tian@intel.com>, patches@lists.linux.dev,
+	Tina Zhang <tina.zhang@intel.com>, Wei Wang <wei.w.wang@intel.com>
+Subject: Re: [PATCH v3 00/10] Convert Intel VT-d to use the generic iommu
+ page table
+Message-ID: <aQ6OlHhq4TBM6sF8@google.com>
+References: <0-v3-634ccd3efce0+16d38-iommu_pt_vtd_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommupt: Actually correct
- pt_test_sw_bit_{acquire_release}() parameter description
-To: Bagas Sanjaya <bagasdotme@gmail.com>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- Linux IOMMU <iommu@lists.linux.dev>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
- Kevin Tian <kevin.tian@intel.com>, Lu Baolu <baolu.lu@linux.intel.com>
-References: <20251107233316.7256-2-bagasdotme@gmail.com>
-Content-Language: en-US
-From: Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20251107233316.7256-2-bagasdotme@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0-v3-634ccd3efce0+16d38-iommu_pt_vtd_jgg@nvidia.com>
 
-
-
-On 11/7/25 3:33 PM, Bagas Sanjaya wrote:
-> In review comment for v1 of genpt documentation fixes [1], Randy
-> suggested that pt_test_sw_bit_acquire() parameters description
-> should be written using "to read". Commit e4dfaf25df1210 ("iommupt:
-> Describe @bitnr parameter"), however, misunderstood the review by
-> instead using "to read" on @bitnr parameter on both
-> pt_test_sw_bit_acquire() and pt_test_sw_bit_release().
+On 2025-10-23 03:22 PM, Jason Gunthorpe wrote:
+> Replace the VT-d iommu_domain implementation of the VT-d second stage and
+> first stage page tables with the iommupt VTDSS and x86_64
+> pagetables. x86_64 is shared with the AMD driver.
 > 
-> Actually correct the description.
+> VT-d has HW that requires an incoherent page table walker, the majority of
+> the patches are adding generic support for the required cache flushing to
+> iommupt. This is modeled after the existing ARM64 version and is intended
+> to be re-used there.
 > 
-> [1]: https://lore.kernel.org/linux-doc/9dba0eb7-6f32-41b7-b70b-12379364585f@infradead.org/
+> Applies on top of the AMD conversion:
+>   https://patch.msgid.link/r/0-v2-5c26bde5c22d+58b-iommu_pt_jgg@nvidia.com
 > 
-> Fixes: e4dfaf25df1210 ("iommupt: Describe @bitnr parameter")
-> Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
+> This is on github: https://github.com/jgunthorpe/linux/commits/iommu_pt_vtd
 
-Looks good. Thanks.
+I ran VFIO selftests against this series and did not detect any
+regressions.
 
-Reviewed-by: Randy Dunlap <rdunlap@infradead.org>
+Notably, vfio_dma_mapping_test confirmed that this series did not
+regress VFIO's or IOMMUFD's ability to map 2MB and 1GB HugeTLB pages
+as 2MB and 1GB entries in the I/O page tables as expected.  And
+vfio_pci_driver_test validates that a device (Intel DSA in this case)
+can do DMA, and exercises I/O faulting handling.
 
-> ---
->  drivers/iommu/generic_pt/pt_common.h | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iommu/generic_pt/pt_common.h b/drivers/iommu/generic_pt/pt_common.h
-> index 3b4e371089140a..e1123d35c90765 100644
-> --- a/drivers/iommu/generic_pt/pt_common.h
-> +++ b/drivers/iommu/generic_pt/pt_common.h
-> @@ -353,7 +353,7 @@ static inline unsigned int pt_max_sw_bit(struct pt_common *common);
->  
->  /**
->   * pt_test_sw_bit_acquire() - Read a software bit in an item
-> - * @pts: Entry to set
-> + * @pts: Entry to read
->   * @bitnr: Bit to read
->   *
->   * Software bits are ignored by HW and can be used for any purpose by the
-> @@ -365,7 +365,7 @@ static inline bool pt_test_sw_bit_acquire(struct pt_state *pts,
->  /**
->   * pt_set_sw_bit_release() - Set a software bit in an item
->   * @pts: Entry to set
-> - * @bitnr: Bit to read
-> + * @bitnr: Bit to set
->   *
->   * Software bits are ignored by HW and can be used for any purpose by the
->   * software. This does a set bit and release operation.
-> 
-> base-commit: 91920a9d87f5192c56ba5bf3e133aeb3576b705d
-
--- 
-~Randy
+Tested-by: David Matlack <dmatlack@google.com>
