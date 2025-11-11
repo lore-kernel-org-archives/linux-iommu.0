@@ -1,81 +1,233 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53F472586E8;
-	Tue, 11 Nov 2025 09:01:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B87F22E8B83;
+	Tue, 11 Nov 2025 09:58:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762851691; cv=none; b=phaonOojzFG/FkwXWesmsKRcG3ytC07CFxFlmGC3PpI+Q2u9LLnxa31eok6mDr6uSfC8atKXX9gtfGuw3ZntjsdgSjTHTGBcbn5aEDKkwUloSPQgTD2X+8hffZjnHQ2OXKmvHqVxdEmVswMCCIWDmuJyz7+TZZOnCFJtnJQyUuc=
+	t=1762855082; cv=none; b=KCarpnTvp45lXoTCu3R3DpICvBOIMTXWuovqs38Ds7GuWdyKd/VDVru6lWX2Q0P+gO2zoDvZVqycU1xpApE0hv3KXE6lbPbaj5/b3gBLkMaXcaFN1zwxnpcjuDS9Qmx3RTOMw2oexhMjRGsc6kRn8E+BHU+lHYcMRF3im+OIWBo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762851691; c=relaxed/simple;
-	bh=dq1fXebEfLPZ9JYiGMLa08Zj9icQgwOccT2MhXCSiyQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=oIQC4iACz4N9I4ieEIITZ0OM4/xL7WeUZVJ10vSxZPGyU/DOfT++MIAXqtDKYxu8ljxzPK7BeWv737dqSvLb4g1ns5g1oeDFp3DyaLPMRe15fPfIfJ998nx94OC9dVC4pwUrsH5n1UoPT6yO4hrnZEbLrfEkt2IxT8Ex/RpikCA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YKjaLazv; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1762855082; c=relaxed/simple;
+	bh=wRqC9BBU7AK8hlNM/MuZzbx4CSE/qfPFFz8/AqwN1y8=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=HjXLyJh0MCdEtGwbwo4EdPrUVaHwzMBqoDX+Dmh8FN5nyTRv5W/0uuYWffYGMuM7fQyNK6qoREDi6/bp9PyZBvmmhM+YV25af0t04fNwzMOV3TiRWEFu3t8a41XxGzzyeE9JdvYbpFM+9IG4py9nXtA5rRO/BbPMurtlVQWmbQY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LoGvYxIS; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YKjaLazv"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5F2CC16AAE;
-	Tue, 11 Nov 2025 09:01:27 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LoGvYxIS"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F142C116B1;
+	Tue, 11 Nov 2025 09:58:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1762851690;
-	bh=dq1fXebEfLPZ9JYiGMLa08Zj9icQgwOccT2MhXCSiyQ=;
-	h=Date:From:To:Cc:Subject:From;
-	b=YKjaLazvJ3FBnYh/zpz6t/RRw2xhLl0oI67wkDJBuqQqCAOEVlxsJEyftpxChxeAs
-	 k0Sp1bJlp1NYNbhSUz70WztnTgGqxfGLBvmDYe+s0D8hCFogKzu8UVAqS4xTb7hxIE
-	 bu9O9CM4yv84lbGispEB/b1JX5dNdMtEjTzqr34DiOQsD2ROK3ciFAMxaO0+b1PrcT
-	 dqYW/8WObwZyy9mWQ9/whk5JlQ47+VZc+/sGsm7b5ioo+uTooEmwjzN3tLaVRU2/t1
-	 u6JIKlpaylICigtBZc7dJ5Mzclb5yi8gecRCLwWA3m51dzCiFYKNXqivm/GWGNW4Ei
-	 Npqxxdm0vuhZg==
-Date: Tue, 11 Nov 2025 18:01:24 +0900
-From: "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To: Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	s=k20201202; t=1762855082;
+	bh=wRqC9BBU7AK8hlNM/MuZzbx4CSE/qfPFFz8/AqwN1y8=;
+	h=From:To:Cc:Subject:Date:From;
+	b=LoGvYxISSsbWSJpLSqoMmA8ayVVoAMBqC33CwOv+ST2WvWqOPENKtInN3CtWQUbq4
+	 HEVtxnuQ09/GPb58NWlgbsmtR4dG7E1L3mHeysOkRl8qsSY0YgbXAlkn4GidI9s1iH
+	 kjd+1j1fT+KsBaPKI2RCeHvOYOvACu63NIeBrlm8rLU0twScUJgCE6zFSrF04c2qKE
+	 kf0eJrz9bSHASxpdosWmkT9sSCYIgyk+gCRDOkaUuCB/54JpdyXuSzkBjKl7u4i+7S
+	 MUgJjp1vmLLeKKAsgz5c8TACT2i42q1X1EAWZcC1P5NvukX2U0R9f/TzlJHBDZ+OYD
+	 kRdSc68o9dneA==
+From: Leon Romanovsky <leon@kernel.org>
+To: Bjorn Helgaas <bhelgaas@google.com>,
+	Logan Gunthorpe <logang@deltatee.com>,
+	Jens Axboe <axboe@kernel.dk>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Nicolin Chen <nicolinc@nvidia.com>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Leon Romanovsky <leon@kernel.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	=?utf-8?q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+	Kees Cook <kees@kernel.org>,
 	"Gustavo A. R. Silva" <gustavoars@kernel.org>,
-	linux-hardening@vger.kernel.org
-Subject: [PATCH] iommufd/driver: Fix counter initialization for counted_by
- annotation
-Message-ID: <aRL7ZFFqM5bRTd2D@kspp>
+	Ankit Agrawal <ankita@nvidia.com>,
+	Yishai Hadas <yishaih@nvidia.com>,
+	Shameer Kolothum <skolothumtho@nvidia.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Alex Williamson <alex@shazbot.org>
+Cc: Krishnakant Jaju <kjaju@nvidia.com>,
+	Matt Ochs <mochs@nvidia.com>,
+	linux-pci@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-block@vger.kernel.org,
+	iommu@lists.linux.dev,
+	linux-mm@kvack.org,
+	linux-doc@vger.kernel.org,
+	linux-media@vger.kernel.org,
+	dri-devel@lists.freedesktop.org,
+	linaro-mm-sig@lists.linaro.org,
+	kvm@vger.kernel.org,
+	linux-hardening@vger.kernel.org,
+	Alex Mastro <amastro@fb.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Vivek Kasireddy <vivek.kasireddy@intel.com>
+Subject: [PATCH v8 00/11] vfio/pci: Allow MMIO regions to be exported through dma-buf
+Date: Tue, 11 Nov 2025 11:57:42 +0200
+Message-ID: <20251111-dmabuf-vfio-v8-0-fd9aa5df478f@nvidia.com>
+X-Mailer: git-send-email 2.51.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset="utf-8"
+X-Change-ID: 20251016-dmabuf-vfio-6cef732adf5a
+X-Mailer: b4 0.15-dev-3ae27
+Content-Transfer-Encoding: 8bit
 
-One of the requirements for counted_by annotations is that the counter
-member must be initialized before the first reference to the
-flexible-array member.
+Changelog:
+v8:
+ * Fixed spelling errors in p2pdma documentation file.
+ * Added vdev->pci_ops check for NULL in vfio_pci_core_feature_dma_buf().
+ * Simplified the nvgrace_get_dmabuf_phys() function.
+ * Added extra check in pcim_p2pdma_provider() to catch missing call
+   to pcim_p2pdma_init().
+v7: https://patch.msgid.link/20251106-dmabuf-vfio-v7-0-2503bf390699@nvidia.com
+ * Dropped restore_revoke flag and added vfio_pci_dma_buf_move
+   to reverse loop.
+ * Fixed spelling errors in documentation patch.
+ * Rebased on top of v6.18-rc3.
+ * Added include to stddef.h to vfio.h, to keep uapi header file independent.
+v6: https://patch.msgid.link/20251102-dmabuf-vfio-v6-0-d773cff0db9f@nvidia.com
+ * Fixed wrong error check from pcim_p2pdma_init().
+ * Documented pcim_p2pdma_provider() function.
+ * Improved commit messages.
+ * Added VFIO DMA-BUF selftest, not sent yet.
+ * Added __counted_by(nr_ranges) annotation to struct vfio_device_feature_dma_buf.
+ * Fixed error unwind when dma_buf_fd() fails.
+ * Document latest changes to p2pmem.
+ * Removed EXPORT_SYMBOL_GPL from pci_p2pdma_map_type.
+ * Moved DMA mapping logic to DMA-BUF.
+ * Removed types patch to avoid dependencies between subsystems.
+ * Moved vfio_pci_dma_buf_move() in err_undo block.
+ * Added nvgrace patch.
+v5: https://lore.kernel.org/all/cover.1760368250.git.leon@kernel.org
+ * Rebased on top of v6.18-rc1.
+ * Added more validation logic to make sure that DMA-BUF length doesn't
+   overflow in various scenarios.
+ * Hide kernel config from the users.
+ * Fixed type conversion issue. DMA ranges are exposed with u64 length,
+   but DMA-BUF uses "unsigned int" as a length for SG entries.
+ * Added check to prevent from VFIO drivers which reports BAR size
+   different from PCI, do not use DMA-BUF functionality.
+v4: https://lore.kernel.org/all/cover.1759070796.git.leon@kernel.org
+ * Split pcim_p2pdma_provider() to two functions, one that initializes
+   array of providers and another to return right provider pointer.
+v3: https://lore.kernel.org/all/cover.1758804980.git.leon@kernel.org
+ * Changed pcim_p2pdma_enable() to be pcim_p2pdma_provider().
+ * Cache provider in vfio_pci_dma_buf struct instead of BAR index.
+ * Removed misleading comment from pcim_p2pdma_provider().
+ * Moved MMIO check to be in pcim_p2pdma_provider().
+v2: https://lore.kernel.org/all/cover.1757589589.git.leon@kernel.org/
+ * Added extra patch which adds new CONFIG, so next patches can reuse
+ * it.
+ * Squashed "PCI/P2PDMA: Remove redundant bus_offset from map state"
+   into the other patch.
+ * Fixed revoke calls to be aligned with true->false semantics.
+ * Extended p2pdma_providers to be per-BAR and not global to whole
+ * device.
+ * Fixed possible race between dmabuf states and revoke.
+ * Moved revoke to PCI BAR zap block.
+v1: https://lore.kernel.org/all/cover.1754311439.git.leon@kernel.org
+ * Changed commit messages.
+ * Reused DMA_ATTR_MMIO attribute.
+ * Returned support for multiple DMA ranges per-dMABUF.
+v0: https://lore.kernel.org/all/cover.1753274085.git.leonro@nvidia.com
 
-Move the vevent->data_len = data_len; initialization to before the
-first access to flexible array vevent->event_data.
+---------------------------------------------------------------------------
+Based on "[PATCH v6 00/16] dma-mapping: migrate to physical address-based API"
+https://lore.kernel.org/all/cover.1757423202.git.leonro@nvidia.com/ series.
+---------------------------------------------------------------------------
 
-Cc: stable@vger.kernel.org
-Fixes: e8e1ef9b77a7 ("iommufd/viommu: Add iommufd_viommu_report_event helper")
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+This series extends the VFIO PCI subsystem to support exporting MMIO
+regions from PCI device BARs as dma-buf objects, enabling safe sharing of
+non-struct page memory with controlled lifetime management. This allows RDMA
+and other subsystems to import dma-buf FDs and build them into memory regions
+for PCI P2P operations.
+
+The series supports a use case for SPDK where a NVMe device will be
+owned by SPDK through VFIO but interacting with a RDMA device. The RDMA
+device may directly access the NVMe CMB or directly manipulate the NVMe
+device's doorbell using PCI P2P.
+
+However, as a general mechanism, it can support many other scenarios with
+VFIO. This dmabuf approach can be usable by iommufd as well for generic
+and safe P2P mappings.
+
+In addition to the SPDK use-case mentioned above, the capability added
+in this patch series can also be useful when a buffer (located in device
+memory such as VRAM) needs to be shared between any two dGPU devices or
+instances (assuming one of them is bound to VFIO PCI) as long as they
+are P2P DMA compatible.
+
+The implementation provides a revocable attachment mechanism using dma-buf
+move operations. MMIO regions are normally pinned as BARs don't change
+physical addresses, but access is revoked when the VFIO device is closed
+or a PCI reset is issued. This ensures kernel self-defense against
+potentially hostile userspace.
+
+The series includes significant refactoring of the PCI P2PDMA subsystem
+to separate core P2P functionality from memory allocation features,
+making it more modular and suitable for VFIO use cases that don't need
+struct page support.
+
+-----------------------------------------------------------------------
+The series is based originally on
+https://lore.kernel.org/all/20250307052248.405803-1-vivek.kasireddy@intel.com/
+but heavily rewritten to be based on DMA physical API.
+-----------------------------------------------------------------------
+The WIP branch can be found here:
+https://git.kernel.org/pub/scm/linux/kernel/git/leon/linux-rdma.git/log/?h=dmabuf-vfio-v8
+
+Thanks
+
 ---
- drivers/iommu/iommufd/driver.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Jason Gunthorpe (2):
+      PCI/P2PDMA: Document DMABUF model
+      vfio/nvgrace: Support get_dmabuf_phys
 
-diff --git a/drivers/iommu/iommufd/driver.c b/drivers/iommu/iommufd/driver.c
-index 6f1010da221c..21d4a35538f6 100644
---- a/drivers/iommu/iommufd/driver.c
-+++ b/drivers/iommu/iommufd/driver.c
-@@ -161,8 +161,8 @@ int iommufd_viommu_report_event(struct iommufd_viommu *viommu,
- 		vevent = &veventq->lost_events_header;
- 		goto out_set_header;
- 	}
--	memcpy(vevent->event_data, event_data, data_len);
- 	vevent->data_len = data_len;
-+	memcpy(vevent->event_data, event_data, data_len);
- 	veventq->num_events++;
- 
- out_set_header:
--- 
-2.43.0
+Leon Romanovsky (7):
+      PCI/P2PDMA: Separate the mmap() support from the core logic
+      PCI/P2PDMA: Simplify bus address mapping API
+      PCI/P2PDMA: Refactor to separate core P2P functionality from memory allocation
+      PCI/P2PDMA: Provide an access to pci_p2pdma_map_type() function
+      dma-buf: provide phys_vec to scatter-gather mapping routine
+      vfio/pci: Enable peer-to-peer DMA transactions by default
+      vfio/pci: Add dma-buf export support for MMIO regions
+
+Vivek Kasireddy (2):
+      vfio: Export vfio device get and put registration helpers
+      vfio/pci: Share the core device pointer while invoking feature functions
+
+ Documentation/driver-api/pci/p2pdma.rst |  95 +++++++---
+ block/blk-mq-dma.c                      |   2 +-
+ drivers/dma-buf/dma-buf.c               | 235 ++++++++++++++++++++++++
+ drivers/iommu/dma-iommu.c               |   4 +-
+ drivers/pci/p2pdma.c                    | 186 ++++++++++++++-----
+ drivers/vfio/pci/Kconfig                |   3 +
+ drivers/vfio/pci/Makefile               |   1 +
+ drivers/vfio/pci/nvgrace-gpu/main.c     |  56 ++++++
+ drivers/vfio/pci/vfio_pci.c             |   5 +
+ drivers/vfio/pci/vfio_pci_config.c      |  22 ++-
+ drivers/vfio/pci/vfio_pci_core.c        |  53 ++++--
+ drivers/vfio/pci/vfio_pci_dmabuf.c      | 315 ++++++++++++++++++++++++++++++++
+ drivers/vfio/pci/vfio_pci_priv.h        |  23 +++
+ drivers/vfio/vfio_main.c                |   2 +
+ include/linux/dma-buf.h                 |  18 ++
+ include/linux/pci-p2pdma.h              | 120 +++++++-----
+ include/linux/vfio.h                    |   2 +
+ include/linux/vfio_pci_core.h           |  42 +++++
+ include/uapi/linux/vfio.h               |  28 +++
+ kernel/dma/direct.c                     |   4 +-
+ mm/hmm.c                                |   2 +-
+ 21 files changed, 1078 insertions(+), 140 deletions(-)
+---
+base-commit: dcb6fa37fd7bc9c3d2b066329b0d27dedf8becaa
+change-id: 20251016-dmabuf-vfio-6cef732adf5a
+
+Best regards,
+--  
+Leon Romanovsky <leonro@nvidia.com>
 
