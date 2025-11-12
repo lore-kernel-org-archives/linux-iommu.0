@@ -1,87 +1,87 @@
 Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CCCF2F39D4
-	for <iommu@lists.linux.dev>; Wed, 12 Nov 2025 10:37:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4645A2ED86E
+	for <iommu@lists.linux.dev>; Wed, 12 Nov 2025 10:56:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762943856; cv=none; b=gaJMtc4nFacI/S8wHjoVYk1zhMMtOFrUOZHAFnpeaPK2fSUuBNTFUFwyrmSJxTOzjbk/HOtV20OpWhRIvqpOIpUTwh7vISXS2X6NWEEFdLzuUnnLD7mTLSfRxQoyCI/tAGw8ms1eXoTj52Z0PuQiaJc9eYjkVvNMdfZ7PoLMU5o=
+	t=1762944968; cv=none; b=OGu05vH7OaHdFqUauGVM+nUa6SiGykLD1hhJItcyVupvliojZA+gzXbDad0X3INZAnvD0Jf1M+kD2ZjgRWzd2G3F4xb4h7zusmG0p6ZdodAXTxjM/7WKs2ksSmOC74jvAEbwEKnRLYxVuHQCHOj2/LTyf92beoX+OoYQqqqTFMg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762943856; c=relaxed/simple;
-	bh=dx6zm7iYDFsu+uW4HxvS1RA6sCHD+I68rch7mq06/pw=;
+	s=arc-20240116; t=1762944968; c=relaxed/simple;
+	bh=ZzpEI9WgfiZ5kliVes5Y9Jfc8V8uQhcrISym6yczJ2I=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=UmYwPtMtWDSbN5heU+To8YR332r3V+sI9T2cw0WqHVSpDuwUsYytRJiUajNsB5oaWJT5ZzLr6zqJjc3O1UDiQWWa+uHRUrejzGQfb4SZ7g3SQlUljxTnM7KEVCN2UuqtjsNzYZe271KV2QIIcJi9ZWktn14SIQdkQDxU5QIiGbg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=p0Oz30K3; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=Hs7YgN8+; arc=none smtp.client-ip=205.220.180.131
+	 In-Reply-To:Content-Type; b=ubPCWoDgZMQ29GHqgwzZHHnvH/qbkKKb9dAKjbxwrUYi6MeY6SfYNWCGSVoliRLEQz6SslYOvukjOkpl26qKN0CpJai7aE0zncBZoYLA1olF0Xm4xYp6srxMA6h5u6FL2q1FvponNuhnqKd9nWQOgYGl+qpdCWTjKvQycRs3miQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=YlTfbT+T; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=bm4wMV5m; arc=none smtp.client-ip=205.220.180.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="p0Oz30K3";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="Hs7YgN8+"
-Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 5AC9csAP4077274
-	for <iommu@lists.linux.dev>; Wed, 12 Nov 2025 10:37:33 GMT
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="YlTfbT+T";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="bm4wMV5m"
+Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 5AC9hVeM907661
+	for <iommu@lists.linux.dev>; Wed, 12 Nov 2025 10:56:06 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
 	cc:content-transfer-encoding:content-type:date:from:in-reply-to
 	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	yEvEVaysBiDJvqu7zSpO/ven4wuPjiUA9FzLjPjO1Lk=; b=p0Oz30K3ZkEWwuzp
-	iqiim70ICP+vQQno+zYJnXP3FiLNW/NqOujPtIY2anc++sqN5gaDBPycS0NGFyFX
-	dpaoAHlUUwgvFGRmEFlte6Q8mA+lKrD9UJkcg1RWWZA4pZpilpZt69WCHX9kZaoz
-	3iG3mxKT/mv/TWO1givhucRFRitwKYp92KbL6yeP7RnsGST1HSYK6DeJ8D2z78pf
-	fLH8OFRFwugXCRlNnTYSgmUaLMsZMHKuIBbKB7GCEQEYfqshTC+LviPVOOA7SKdX
-	CXobtf7q7JlojXQJW4Mn8oAhLcQ+baKjrmDIsLWcCpZC6lJXo78vrDERvDKQ13HS
-	/bV64Q==
-Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com [209.85.222.197])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4acguahgu3-1
+	q7J8baXgxyTkhN2ZdMYqtwC3Hhdgc0z63es0iUEKVbE=; b=YlTfbT+TpP6Q//J2
+	88dZBFYjCM7mJWQbvLvCgNBnt79B1djKmdfOGuzl/+iuS3qaHSbgt8nZm9geeWJM
+	EwucGUm3IpaplnqdDfeWTdrpoCVvJeAa0SlphjJx/CipbmbNbfOWCvoG9sMatwTH
+	tHQ/dxIhZuY1GhAaGECAtuO+JzvLQACttntfzqIZC7a19Cw7Bzvqfd0Re5N1viYa
+	OGTENQuDwMfZhdelpH3rWa43UBIvTuMqKThNYEGIjsZjkllXWb++ZOtls0/VL7U2
+	NUr1jhbOIGY/esw833NUGvru2Hdy5K62Xkeftl/wTpZSV2SxrX/ssMhfqEsxgAec
+	VRvoBA==
+Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com [209.85.160.197])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4acqur879j-1
 	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Wed, 12 Nov 2025 10:37:33 +0000 (GMT)
-Received: by mail-qk1-f197.google.com with SMTP id af79cd13be357-8b25c5dc2c3so20175285a.3
-        for <iommu@lists.linux.dev>; Wed, 12 Nov 2025 02:37:32 -0800 (PST)
+	for <iommu@lists.linux.dev>; Wed, 12 Nov 2025 10:56:06 +0000 (GMT)
+Received: by mail-qt1-f197.google.com with SMTP id d75a77b69052e-4edaa289e0dso2606221cf.3
+        for <iommu@lists.linux.dev>; Wed, 12 Nov 2025 02:56:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1762943852; x=1763548652; darn=lists.linux.dev;
+        d=oss.qualcomm.com; s=google; t=1762944965; x=1763549765; darn=lists.linux.dev;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=yEvEVaysBiDJvqu7zSpO/ven4wuPjiUA9FzLjPjO1Lk=;
-        b=Hs7YgN8+4GqBAEzqq09zcQXV2Y77pCdFIT1ezyqsIUiVdoxuJGr7OUTcMk4ZNYg47T
-         MC1Zdm6VDa7CS5UMfPUwV7Ekqj1km7jOxoxzOeqVeKq/m/Y5InHRVGUclW94iqDMS6wY
-         qFB1Gq+aP3Ozo3IJp/sE+uOnLzqnqgCyNKVWa80e4RcZXCy1vtBiB0BfSIpJlDMvHb1i
-         EH/6pA73exXZ6BThJiP6in5w9QJClBRPi241bZPhLsQyo8lsA3h4lS6rmv2IVxY7R0l1
-         m4VG5Y1FGEuCFBHILVuHXbqkTA/v90CAJNbKlFfgsnCyx5q2L46htivtx3VbIKLVQt6o
-         WfTA==
+        bh=q7J8baXgxyTkhN2ZdMYqtwC3Hhdgc0z63es0iUEKVbE=;
+        b=bm4wMV5m4ehuff9rCAVqV63H8wkBW7Ku9rEC2LafDNX9Mb5y+XfaecTkbRDNDpItlO
+         FHeZuz2uCafBHmzFZ+nM3/wsBMkZizqp4lL0UD3hg8uykbGbyMKKRuONn/NhkVGSX/be
+         nYD7Tr1tuSjoNalCtf2kwZofp2qvGz6+L1ywJGID2lgNANW+5HLk5tMvOPYYrV45UvdI
+         OmMoWQaMpeSFU04oe4xaBgGywewQv8LculyiWff3EOjprdGMe0+0VNXjqG0IlmEhQ+TX
+         JKA2BQ84H7O2TzUZcPtFZxEbDLkSAhbhGK7lMSHlm5sGpkzTuuYcFWSEInua3DVL71II
+         fEKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1762943852; x=1763548652;
+        d=1e100.net; s=20230601; t=1762944965; x=1763549765;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=yEvEVaysBiDJvqu7zSpO/ven4wuPjiUA9FzLjPjO1Lk=;
-        b=gyoWCFL3mNSStdr0W3GYmask+Q1WL3y/u/9aBmeluk9X2HXvcos5C9cTvtZjpS48De
-         09VRM87rNXdS65OqV3qIVFY574QHo+hfTY2SwDX/6k2Z7n5rB4V1T6R+N4LQjxlMMR4m
-         3q3FOL8kDPy7HkXSCoxbnkc3C7blZY2akYdEnTVWZL0y4ZOESuwEe/Ej6JCNwPhafSh+
-         69++LtjDVgFRF8WLrX4eWHO43CZEiRgs4FVjQKPMW0LeP2G9VhXXB6xvMPjCKg5D7qFn
-         Ygieg0fLJb7e59clH6f4v/2RfdUJbeU6sTOcKVckah0Hcwdk9i+2tH4QRhhdJNZinBKj
-         0KNw==
-X-Forwarded-Encrypted: i=1; AJvYcCUvvtSU/Z3OIl9vLDbOn2OFA+97J3NedQeiJIc6cxzy4CP/Srv4DpyZB2J3FtX+XJaEu9JiIw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyeHJhGf9+3B+tvD3toR844QTh+hrnOyBQQd607+ltEVRXbqokO
-	h6+dNd4gOzN99zNvEjcX34TOxH5y5foR2lyFeMxTrEK9xYmGNU5eQb49eOfsKv2j1pZ2KWD+bx0
-	5CXLFTym13yTr7pKBoGN3W36zltTUiwgLSSO8opKbw0KM2edzMt6W+wcfwQ==
-X-Gm-Gg: ASbGncuKUPdonSRQACBDhpodYUgDVBPwXyUH+equRMLDauqCmHUYWDU3D3SLP/zqWZH
-	Mq8Giv3vQ19B8iVCPm1Tz1OtgcnuWnCO8A09Wu1nmYZVOvi1SZUMfCw6SgcoZFFx16Qz4qHd2jB
-	IZ1Nnu7SMV3uYc7BQLMvZZuHQxqAIn5QrUpmvs2qz5iWXLYtEuhKlfL4D6RsvNpYK9+9Wf2Gy49
-	lC5OuOdQdcYBvJXHWa8zym78e6GollgDKxELuQMDbXcsALKMNzZyNxp9XyFKPGdz4jCbRVWS12D
-	nv64p/hEIOf0xJUV+fcfV0yRPwXNZ8ars1Yyz/a2+6Xzk+KvM6qyHMu5qBuOX5O+daa7mGnPqH9
-	99rwE4tY092fIvguuAfJPD8mdO9/iYa0VJtKdJbgPmOSz8o7/+/++6lFX
-X-Received: by 2002:a05:620a:c44:b0:8a2:eb35:8df9 with SMTP id af79cd13be357-8b29b96bfacmr174328485a.11.1762943852360;
-        Wed, 12 Nov 2025 02:37:32 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IHnodYPH8G4uSHNNb8nQWE1cE1kx1PmZfPb6CE/gBIDzIV9Um7jRFbvxAfRziignE7KgxTdXA==
-X-Received: by 2002:a05:620a:c44:b0:8a2:eb35:8df9 with SMTP id af79cd13be357-8b29b96bfacmr174327385a.11.1762943851866;
-        Wed, 12 Nov 2025 02:37:31 -0800 (PST)
+        bh=q7J8baXgxyTkhN2ZdMYqtwC3Hhdgc0z63es0iUEKVbE=;
+        b=fL2a139svJqb/LcJ797Pdx1BaWk4O66aJMiOEuzJeY670sFQoSuqXlNpdGUzOPHObG
+         Q09vYhmvKPU7bwq76u04njIXFQf/G/u8m5cMQHxmczTkgsloLVBYX90R5NSg6cjN7qJo
+         MQqdLnOTceoUqeHjRZIQy8yvwUV4wca1CKPSoE1C1QEN7CGbm7mNELx8tP+ZgK5Yos2q
+         9+Qtv1jeraUBy52mvdM3sleGQVcrt/GO+rFFTn0W+cqNBlW92snqWiaTPVjl6hVHEElj
+         Km5PQN/gFeJBx7KVCuzCOFQp7CSnRogmV1p8tUlDF+CsuKkNv5SPYy9TK3dIWttVckjb
+         tVHA==
+X-Forwarded-Encrypted: i=1; AJvYcCX5DecAFLDEzczMA6D2NJYeVisMNnEcw9n/e8HG0MQFURoI4JwLpLPENx5DPo+7yDgb9FXfmQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzVhWmU2IlH3GdOBA7i4KMBhEradagLMRKooV4dKYM/1Ir4Lkfy
+	4G89eLMm4fXjLiYi2ZK6DbhCDw/2mp31b7Vty60XjBm+lYPLnHEABXhJnbdtJi7rreq/1A+80Nf
+	GLXHprDGVk9kQOABlVvyG3R+YooiMjx2Uszs0FkXAkNLgvSkukKqRht65Iw==
+X-Gm-Gg: ASbGncvif/h7RQvB2fHW7w+gREUShpzgzA/5mhIn2qF3GriyLmXt0w3pB+AActvj9w2
+	PX3ZX3wdMrjJOPycPx1R6BqQHey5nJ9JSwJcv98eiIw+LcNgjuq+gUEN1TdR/tobMYlrCO1+UTx
+	+F9BGQLPIcGcjfBc2jU8JDjt7sjWLwFBWn54o3qr7g2cXBqan6per8VZx3Kf9fNJh5C7NqC3Kp3
+	ahfh3FwqoyWsLKnTI6UvRPv1E+SszKh8yiNqkvAbYuB1lSE/gVBVzYFc0yN+vs19ntqMtBTH4a/
+	seHzhTgRTgkH2u/uQ4fS73HaxJs+apeenSiGUfBvcIubNJQSIdN38eKdjhUZGTBJ7nG3bl8kQqd
+	sXz+9aPlH5J+BxeekhobFF3qOecEim9AxJbf1KibeYutyEmw16onwvCqj
+X-Received: by 2002:a05:622a:5d12:b0:4ed:de8b:4436 with SMTP id d75a77b69052e-4edde8b4640mr9664771cf.12.1762944965475;
+        Wed, 12 Nov 2025 02:56:05 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IHehnHC4uvc/Oy+HlpbxtFmbNd/Io3lA6JdYlICTyBqU+FS0kyknsLAZ4U0LhGMGqz+5Q6+5A==
+X-Received: by 2002:a05:622a:5d12:b0:4ed:de8b:4436 with SMTP id d75a77b69052e-4edde8b4640mr9664541cf.12.1762944965047;
+        Wed, 12 Nov 2025 02:56:05 -0800 (PST)
 Received: from [192.168.119.202] (078088045245.garwolin.vectranet.pl. [78.88.45.245])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b72bfa0f37csm1559184066b.64.2025.11.12.02.37.28
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b73381dd3besm103142666b.43.2025.11.12.02.56.01
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 12 Nov 2025 02:37:31 -0800 (PST)
-Message-ID: <ae21a963-696a-48f3-af91-ee72aef4b60d@oss.qualcomm.com>
-Date: Wed, 12 Nov 2025 11:37:27 +0100
+        Wed, 12 Nov 2025 02:56:04 -0800 (PST)
+Message-ID: <8f1caccc-8a49-4c26-aeb4-f46f81593a30@oss.qualcomm.com>
+Date: Wed, 12 Nov 2025 11:56:00 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -89,8 +89,7 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 16/21] drm/msm/adreno: Do CX GBIF config before GMU
- start
+Subject: Re: [PATCH v2 09/21] drm/msm/a6xx: Rebase GMU register offsets
 To: Akhil P Oommen <akhilpo@oss.qualcomm.com>,
         Rob Clark <robin.clark@oss.qualcomm.com>,
         Bjorn Andersson <andersson@kernel.org>,
@@ -117,133 +116,70 @@ Cc: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
         devicetree@vger.kernel.org
 References: <20251110-kaana-gpu-support-v2-0-bef18acd5e94@oss.qualcomm.com>
- <20251110-kaana-gpu-support-v2-16-bef18acd5e94@oss.qualcomm.com>
+ <20251110-kaana-gpu-support-v2-9-bef18acd5e94@oss.qualcomm.com>
 Content-Language: en-US
 From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-In-Reply-To: <20251110-kaana-gpu-support-v2-16-bef18acd5e94@oss.qualcomm.com>
+In-Reply-To: <20251110-kaana-gpu-support-v2-9-bef18acd5e94@oss.qualcomm.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Proofpoint-GUID: GOZZQALLsTPPNZVApxFzhYUvr3F8eIm1
-X-Authority-Analysis: v=2.4 cv=ao2/yCZV c=1 sm=1 tr=0 ts=6914636d cx=c_pps
- a=50t2pK5VMbmlHzFWWp8p/g==:117 a=FpWmc02/iXfjRdCD7H54yg==:17
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMTEyMDA4NyBTYWx0ZWRfX1FbhEc3t2Lsc
+ I7UhxvEyTB/GED0QNHUg3VH00Zoy/kkl7XQ6b0xpMfKMkQoX7VhxMu4dxJdkYHrdjPl7wMerhah
+ Oe1K/1N5devUO45pwIU5nmu8tsK9T/j7WGgTxZsCPs0vmzSZHZwK4dyZGDm7f5f5emE5X9Wa9RD
+ hLa38Zs9HqhHFKKNgTysEmBXJFOA9A040NxJrrnkYv4zma7RaNoQIvxMIzzsRsJlm6UIkgUkny5
+ S8wFDr8R71zZNiHonJKoZ1PU2O1sC1k7QW5x9YbBuhwrXsIH7o2Bz7qGS/zlJK+dQ2oce6LutQt
+ NdMBBL9kx2lKGcsmhRXltpGizffmnvGtw4aNvqwwPxEDcyLrf/rEP/yzu1Pyn3TGTVZ3hAdqV/d
+ 3Zh7bjSsoHFu4/yTP6WCAnVJ8Y+2tQ==
+X-Proofpoint-GUID: 7lDRgssU5tBSAh0afJc4ivvDfAFpI-1-
+X-Authority-Analysis: v=2.4 cv=bbBmkePB c=1 sm=1 tr=0 ts=691467c6 cx=c_pps
+ a=EVbN6Ke/fEF3bsl7X48z0g==:117 a=FpWmc02/iXfjRdCD7H54yg==:17
  a=IkcTkHD0fZMA:10 a=6UeiqGixMTsA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=EUspDBNiAAAA:8 a=XltbfQAJAwjtl7jyp1EA:9
- a=QEXdDO2ut3YA:10 a=IoWCM6iH3mJn3m4BftBB:22
-X-Proofpoint-ORIG-GUID: GOZZQALLsTPPNZVApxFzhYUvr3F8eIm1
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMTEyMDA4NSBTYWx0ZWRfX67NcWWjKbpo+
- Hr4ZSB+h1NOQVVsQsGvB+Ki9svan2UoD1OCaaBvEIVK5zg2I9wEsTWxqdY3TiAh0WIRF/+gVlkR
- reNR+ljfJ3ZA1YplCUW6Ce5ftYfpv1e2tFQyUzbxtH4y7CgDY6g/9Z4lHC0JBidyHT32JC5LcXB
- Zls5U5JnYRot4FEzt0kUNaYl0Cvs7igQdN2hxbjDLQomi0q1W7HdfA8V9Q+EVX+3zhc7krw9Eci
- 3a2j8/kzjfTdSL1cxyioM95OvVucfXxIsXKDZ9g8Oxm0I3sNBuL5h/dl1hih9ytwwiihXUOjBwz
- BjpkKfDVO06Mt8rJrMGWdxjJjFDKqhNcav9V3lGKuttBO1NA8OjYHj0jxnKJ4MTmim7sMNnPsfK
- HWVwGqIVS+RucSd+/yd6kD52+X9i6A==
+ a=VkNPw1HP01LnGYTKEx00:22 a=EUspDBNiAAAA:8 a=LTedVN9yYKzQwah-PCsA:9
+ a=QEXdDO2ut3YA:10 a=a_PwQJl-kcHnX1M80qC6:22
+X-Proofpoint-ORIG-GUID: 7lDRgssU5tBSAh0afJc4ivvDfAFpI-1-
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.9,FMLib:17.12.100.49
  definitions=2025-11-12_03,2025-11-11_03,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- lowpriorityscore=0 clxscore=1015 spamscore=0 phishscore=0 adultscore=0
- priorityscore=1501 impostorscore=0 malwarescore=0 suspectscore=0 bulkscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2510240001 definitions=main-2511120085
+ suspectscore=0 bulkscore=0 impostorscore=0 lowpriorityscore=0
+ priorityscore=1501 malwarescore=0 phishscore=0 spamscore=0 clxscore=1015
+ adultscore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2510240001
+ definitions=main-2511120087
 
 On 11/10/25 5:37 PM, Akhil P Oommen wrote:
-> GMU lies on the CX domain and accesses CX GBIF. So do CX GBIF
-> configurations before GMU wakes up. This was not a problem so far, but
-> A840 GPU is very sensitive to this requirement. Also, move these
-> registers to the catalog.
+> GMU registers are always at a fixed offset from the GPU base address,
+> a consistency maintained at least within a given architecture generation.
+> In A8x family, the base address of the GMU has changed, but the offsets
+> of the gmu registers remain largely the same. To enable reuse of the gmu
+> code for A8x chipsets, update the gmu register offsets to be relative
+> to the GPU's base address instead of GMU's.
 > 
 > Signed-off-by: Akhil P Oommen <akhilpo@oss.qualcomm.com>
 > ---
 
+The resulting diff is a little convoluted, but I think it generally
+does the right thing
+
 [...]
 
-> +	/* For A7x and newer, do the CX GBIF configurations before GMU wake up */
-> +	for (int i = 0; (gbif_cx && gbif_cx[i].offset); i++)
-> +		gpu_write(gpu, gbif_cx[i].offset, gbif_cx[i].value);
-
-We haven't been doing this a lot in the GPU driver, but adding a
-.num_entries-like field is both more memory efficient and less error-prone
-
+> +static void __iomem *a6xx_gmu_get_mmio(struct platform_device *pdev,
+> +		const char *name, resource_size_t *start)
+> +{
+> +	void __iomem *ret;
+> +	struct resource *res = platform_get_resource_byname(pdev,
+> +			IORESOURCE_MEM, name);
 > +
-> +	/* For A7x and newer, do the CX GBIF configurations before GMU wake up */
-
-duplicate comment
-
-> +	if (adreno_is_a8xx(adreno_gpu)) {
-> +		gpu_write(gpu, REG_A8XX_GBIF_CX_CONFIG, 0x20023000);
-> +		gmu_write(gmu, REG_A6XX_GMU_MRC_GBIF_QOS_CTRL, 0x33);
-
-Either set this prio value here, or in a8xx_gpu.c
-
+> +	if (!res) {
+> +		DRM_DEV_ERROR(&pdev->dev, "Unable to find the %s registers\n", name);
+> +		return ERR_PTR(-EINVAL);
 > +	}
 > +
->  	/* Set up the lowest idle level on the GMU */
->  	a6xx_gmu_power_config(gmu);
->  
-> diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-> index 029f7bd25baf..66771958edb2 100644
-> --- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-> +++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-> @@ -1265,17 +1265,20 @@ static int hw_init(struct msm_gpu *gpu)
->  	/* enable hardware clockgating */
->  	a6xx_set_hwcg(gpu, true);
->  
-> -	/* VBIF/GBIF start*/
-> -	if (adreno_is_a610_family(adreno_gpu) ||
-> -	    adreno_is_a640_family(adreno_gpu) ||
-> -	    adreno_is_a650_family(adreno_gpu) ||
-> -	    adreno_is_a7xx(adreno_gpu)) {
-> +	/* For gmuwrapper implementations, do the VBIF/GBIF CX configuration here */
-> +	if (adreno_is_a610_family(adreno_gpu)) {
->  		gpu_write(gpu, REG_A6XX_GBIF_QSB_SIDE0, 0x00071620);
-
-a640/650 family GPUs didn't receive a .gbif_cx addition in the catalog to match
-
->  		gpu_write(gpu, REG_A6XX_GBIF_QSB_SIDE1, 0x00071620);
->  		gpu_write(gpu, REG_A6XX_GBIF_QSB_SIDE2, 0x00071620);
->  		gpu_write(gpu, REG_A6XX_GBIF_QSB_SIDE3, 0x00071620);
-> -		gpu_write(gpu, REG_A6XX_RBBM_GBIF_CLIENT_QOS_CNTL,
-> -			  adreno_is_a7xx(adreno_gpu) ? 0x2120212 : 0x3);
+> +	ret = ioremap(res->start, resource_size(res));
+> +	if (!ret) {
+> +		DRM_DEV_ERROR(&pdev->dev, "Unable to map the %s registers\n", name);
+> +		return ERR_PTR(-EINVAL);
 > +	}
-> +
-> +	if (adreno_is_a610_family(adreno_gpu) ||
-> +	    adreno_is_a640_family(adreno_gpu) ||
-> +	    adreno_is_a650_family(adreno_gpu)) {
-> +		gpu_write(gpu, REG_A6XX_RBBM_GBIF_CLIENT_QOS_CNTL, 0x3);
-> +	} else if (adreno_is_a7xx(adreno_gpu)) {
-> +		gpu_write(gpu, REG_A6XX_RBBM_GBIF_CLIENT_QOS_CNTL, 0x2120212);
->  	} else {
->  		gpu_write(gpu, REG_A6XX_RBBM_VBIF_CLIENT_QOS_CNTL, 0x3);
 
-Downstream seems to set QOS_CNTL at the same time as QSB_SIDEn for
-these targets
-
-
->  	}
-> diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.h b/drivers/gpu/drm/msm/adreno/a6xx_gpu.h
-> index 031ca0e4b689..cf700f7de09b 100644
-> --- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.h
-> +++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.h
-> @@ -46,6 +46,7 @@ struct a6xx_info {
->  	const struct adreno_protect *protect;
->  	const struct adreno_reglist_list *pwrup_reglist;
->  	const struct adreno_reglist_list *ifpc_reglist;
-> +	const struct adreno_reglist *gbif_cx;
->  	const struct adreno_reglist_pipe *nonctxt_reglist;
->  	u32 gmu_chipid;
->  	u32 gmu_cgc_mode;
-> diff --git a/drivers/gpu/drm/msm/adreno/a8xx_gpu.c b/drivers/gpu/drm/msm/adreno/a8xx_gpu.c
-> index 2ef69161f1d0..ad140b0d641d 100644
-> --- a/drivers/gpu/drm/msm/adreno/a8xx_gpu.c
-> +++ b/drivers/gpu/drm/msm/adreno/a8xx_gpu.c
-> @@ -500,6 +500,9 @@ static int hw_init(struct msm_gpu *gpu)
->  
->  	gpu_write(gpu, REG_A6XX_RBBM_SECVID_TSB_CNTL, 0);
->  
-> +	/* Increase priority of GMU traffic over GPU traffic */
-> +	gmu_write(gmu, REG_A6XX_GMU_MRC_GBIF_QOS_CTRL, 0x33);
-
-Kgsl (later) added this for A740 too - would it be beneficial to enable
-unconditionally on gen7+?
+You can use devres here too, devm_platform_get_and_ioremap_resource()
 
 Konrad
