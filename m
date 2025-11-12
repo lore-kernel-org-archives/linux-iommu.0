@@ -1,108 +1,97 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CB202F7AD0;
-	Wed, 12 Nov 2025 08:53:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 653742FE579
+	for <iommu@lists.linux.dev>; Wed, 12 Nov 2025 09:59:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762937618; cv=none; b=Z2S9ySr5YczBg6MQ0B8idOwwLTtiHeziV9UhQqvhnWuDnLazE0pObAmUfwmSdwEDX2cOjxzWeboR5OHNaYVKtX2HTgj0+PnVng8XFBxs/kLjV42Vh9iHToG0NQ8oab0VkBB4iCeUxZquN/TnRfSxG4kgAseP3ozCTiHGoyNQSBs=
+	t=1762941585; cv=none; b=R6ZUUjdcGXHM//wqv/wx8iqE5nrmzIAgnL3idM1kA7VriCl5K0go7mil/avzAboo+6FlhUzlBgwBxjA3yN+5AnM3psdefatcIDEZDHtmGj2ITeR1WZ2nqGSRJQ9W7iPWTvHrpY8OT44uPWbgufNjimKo42Fw4aVPn+3DJGK0KQw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762937618; c=relaxed/simple;
-	bh=pjxiwBubEaNKJ/nTiFrobQwVMbkHpsPzm4BgKDwGVKU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=avYLzg7iFMeLNnvRyWFp+p2SFkhA8djyRdq+2wWlCZO7701CNxSA+E5q7OGk0mOfIYoCHUinuorm+7E1BS6nfugNvdrdMbGF8GJ5jHUkjOH/e5F1VH45ZWshuRVSm5mqb2czRKuT5YIaCKRN24h0BllRg0WsNV9rtSWl51MDpAo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jcH30y2b; arc=none smtp.client-ip=198.175.65.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1762941585; c=relaxed/simple;
+	bh=IB0BDay0zBQmT+faxjzruvanmhRRELmbRKCgqLjkN9U=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type:
+	 References; b=Oqm3GrPvhY5fUi7PZuVkfbPWP2IxCmbH3flPv6MrODJtJEhjuYf2UPYyIB17NCxJC3Az66b8Fi08UJ6zLeNP+4xt46xQe7w5kBFU+o5klcP6Gor/bPSnFI5x9gpvwXl8DXbCEPkAu3HiDfstaN+nKOlsIc3rba4rY6k2A/XoSak=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=TPzg+0qn; arc=none smtp.client-ip=210.118.77.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jcH30y2b"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1762937616; x=1794473616;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=pjxiwBubEaNKJ/nTiFrobQwVMbkHpsPzm4BgKDwGVKU=;
-  b=jcH30y2bU+/AroLaPL94zlPhhwBWGyuotdOjNfVIn9jQB8jjMr33IIMC
-   VtMt98LWZDzPcpbbaY+Ip/bJkPOF0BYRtoskc+QElBKswJ7OTXzWdLR9P
-   Md1x8k+wRKZxyB6JWkq/cjjnfRPGEQ5eSC0L0F4u1UvH6LWOcfK6ByeHa
-   E3ZI4RhFhUNGglKhqNBYfmsRnVQMS+hR7z7kLZ8RkO83ZJwpJvrf9YAFk
-   /SBkMusZH/qb/j8QzsigCo5ax6eT1nciAxvdHJ+Fu6FQtyGDiuwG3oA1B
-   N/oxvic9fE9Cs/XPRF6OgXZcofS1Wm614zWhhmbiTg256UmVIbx+V+gXV
-   Q==;
-X-CSE-ConnectionGUID: 9KR5L2FtS/GR32PXDShvBA==
-X-CSE-MsgGUID: 7VXsoQMFRDaY17A1yCysiw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11610"; a="82392758"
-X-IronPort-AV: E=Sophos;i="6.19,299,1754982000"; 
-   d="scan'208";a="82392758"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Nov 2025 00:53:35 -0800
-X-CSE-ConnectionGUID: Ow3E/Gl7QD2RmMHthFmdWw==
-X-CSE-MsgGUID: UDf+sN02Raek9Ap4NdIqig==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.19,299,1754982000"; 
-   d="scan'208";a="189011973"
-Received: from lkp-server01.sh.intel.com (HELO 7b01c990427b) ([10.239.97.150])
-  by fmviesa006.fm.intel.com with ESMTP; 12 Nov 2025 00:53:29 -0800
-Received: from kbuild by 7b01c990427b with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1vJ6bW-000434-1M;
-	Wed, 12 Nov 2025 08:53:26 +0000
-Date: Wed, 12 Nov 2025 16:52:42 +0800
-From: kernel test robot <lkp@intel.com>
-To: Nicolin Chen <nicolinc@nvidia.com>, joro@8bytes.org, afael@kernel.org,
-	bhelgaas@google.com, alex@shazbot.org, jgg@nvidia.com,
-	kevin.tian@intel.com
-Cc: oe-kbuild-all@lists.linux.dev, will@kernel.org, robin.murphy@arm.com,
-	lenb@kernel.org, baolu.lu@linux.intel.com,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-	linux-pci@vger.kernel.org, kvm@vger.kernel.org,
-	patches@lists.linux.dev, pjaroszynski@nvidia.com, vsethi@nvidia.com,
-	helgaas@kernel.org, etzhao1900@gmail.com
-Subject: Re: [PATCH v5 3/5] iommu: Add iommu_driver_get_domain_for_dev()
- helper
-Message-ID: <202511121645.Oi9e0lrt-lkp@intel.com>
-References: <0303739735f3f49bcebc244804e9eeb82b1c41dc.1762835355.git.nicolinc@nvidia.com>
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="TPzg+0qn"
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20251112095941euoutp01f7d0a3f899cfe93479e1ff090414af2e~3OgcgLF9r3183431834euoutp01N
+	for <iommu@lists.linux.dev>; Wed, 12 Nov 2025 09:59:41 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20251112095941euoutp01f7d0a3f899cfe93479e1ff090414af2e~3OgcgLF9r3183431834euoutp01N
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1762941581;
+	bh=thLoqzL6EhsQKoVfFajezgLWEwlk5OOypk7k33hMFwE=;
+	h=From:To:Cc:Subject:Date:References:From;
+	b=TPzg+0qnhE+xO8IsidkkrzEWX61AJOiJ+iko+qNqyailofTc+8IecuM1JaXk/wKSR
+	 iua4q1aGUbbOdvDTVbZvSZZSuCf4FuvDOi/pKZwiLluiRCsSYM0lG4AL1JNTUanEkS
+	 4ktnopUHn2uR6lIOgoXToyCXPtoAuTpCJdBGpLS4=
+Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20251112095941eucas1p2e0efc01a697cac1a9d51f5a2ae92b5ae~3OgcLnv192708827088eucas1p2R;
+	Wed, 12 Nov 2025 09:59:41 +0000 (GMT)
+Received: from AMDC4653.digital.local (unknown [106.120.51.32]) by
+	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+	20251112095940eusmtip1a1e320c4c4df1645194d7530bdc9da80~3Ogb3wgbK2550625506eusmtip1O;
+	Wed, 12 Nov 2025 09:59:40 +0000 (GMT)
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, Marek Szyprowski
+	<m.szyprowski@samsung.com>, Christoph Hellwig <hch@lst.de>, Robin Murphy
+	<robin.murphy@arm.com>
+Subject: [GIT PULL] dma-mapping fixes for Linux 6.18
+Date: Wed, 12 Nov 2025 10:59:20 +0100
+Message-Id: <20251112095920.5802-1-m.szyprowski@samsung.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0303739735f3f49bcebc244804e9eeb82b1c41dc.1762835355.git.nicolinc@nvidia.com>
+Content-Transfer-Encoding: 8bit
+X-CMS-MailID: 20251112095941eucas1p2e0efc01a697cac1a9d51f5a2ae92b5ae
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20251112095941eucas1p2e0efc01a697cac1a9d51f5a2ae92b5ae
+X-EPHeader: CA
+X-CMS-RootMailID: 20251112095941eucas1p2e0efc01a697cac1a9d51f5a2ae92b5ae
+References: <CGME20251112095941eucas1p2e0efc01a697cac1a9d51f5a2ae92b5ae@eucas1p2.samsung.com>
 
-Hi Nicolin,
+The following changes since commit 3a8660878839faadb4f1a6dd72c3179c1df56787:
 
-kernel test robot noticed the following build warnings:
+  Linux 6.18-rc1 (2025-10-12 13:42:36 -0700)
 
-[auto build test WARNING on next-20251110]
-[cannot apply to pci/next pci/for-linus awilliam-vfio/next awilliam-vfio/for-linus rafael-pm/linux-next rafael-pm/bleeding-edge linus/master v6.18-rc5 v6.18-rc4 v6.18-rc3 v6.18-rc5]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+are available in the Git repository at:
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Nicolin-Chen/iommu-Lock-group-mutex-in-iommu_deferred_attach/20251111-131520
-base:   next-20251110
-patch link:    https://lore.kernel.org/r/0303739735f3f49bcebc244804e9eeb82b1c41dc.1762835355.git.nicolinc%40nvidia.com
-patch subject: [PATCH v5 3/5] iommu: Add iommu_driver_get_domain_for_dev() helper
-config: microblaze-randconfig-r072-20251112 (https://download.01.org/0day-ci/archive/20251112/202511121645.Oi9e0lrt-lkp@intel.com/config)
-compiler: microblaze-linux-gcc (GCC) 8.5.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20251112/202511121645.Oi9e0lrt-lkp@intel.com/reproduce)
+  https://git.kernel.org/pub/scm/linux/kernel/git/mszyprowski/linux.git tags/dma-mapping-6.18-2025-11-12
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202511121645.Oi9e0lrt-lkp@intel.com/
+for you to fetch changes up to a50f7456f853ec3a6f07cbe1d16ad8a8b2501320:
 
-All warnings (new ones prefixed by >>):
+  dma-mapping: Allow use of DMA_BIT_MASK(64) in global scope (2025-11-05 13:43:41 +0100)
 
->> Warning: drivers/iommu/iommu.c:2229 function parameter 'dev' not described in 'iommu_get_domain_for_dev'
->> Warning: drivers/iommu/iommu.c:2250 function parameter 'dev' not described in 'iommu_driver_get_domain_for_dev'
->> Warning: drivers/iommu/iommu.c:2229 function parameter 'dev' not described in 'iommu_get_domain_for_dev'
->> Warning: drivers/iommu/iommu.c:2250 function parameter 'dev' not described in 'iommu_driver_get_domain_for_dev'
+----------------------------------------------------------------
+dma-mapping fixes for Linux 6.18
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+- two minor fixes for DMA API infrastructure: restoring proper structure
+padding used in benchmark tests (Qinxin Xia) and global DMA_BIT_MASK
+macro rework to make it a bit more clang friendly (James Clark)
+
+----------------------------------------------------------------
+James Clark (1):
+      dma-mapping: Allow use of DMA_BIT_MASK(64) in global scope
+
+Qinxin Xia (1):
+      dma-mapping: benchmark: Restore padding to ensure uABI remained consistent
+
+ include/linux/dma-mapping.h   | 2 +-
+ include/linux/map_benchmark.h | 1 +
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+----------------------------------------------------------------
+
+Thanks!
+
+Best regards
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
