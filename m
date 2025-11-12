@@ -1,217 +1,226 @@
-Received: from CO1PR03CU002.outbound.protection.outlook.com (mail-westus2azon11010013.outbound.protection.outlook.com [52.101.46.13])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89EB32DCBF7
-	for <iommu@lists.linux.dev>; Wed, 12 Nov 2025 21:14:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.46.13
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762982062; cv=fail; b=G6VBjhylI0dsuCg9foJN+SfA+pJTlzuCqonk3QU75UICMC7B3d0xUqiMDuJtEBpIKY1ifAxxAh2P5VvJRZs8e7WaeQ5tbhIlE0wkKZL1ZMSsswTZZIWHa/cXYGoZ27wZheAOV97MWNwFQisanSWuBaL8B8Z1wawTxl8D4hWGZyI=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762982062; c=relaxed/simple;
-	bh=sdYzJ8YLtMFJFMrLaZQaL7fnGkmDwpGluwf5JiaSD3o=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=tpenpWSWB4jM15DEsIdAOSwsz3fBMs7O1NCvaPOt1793JvPmkphUjAIfzW9KD7DXyvwoUFGmjnP8S6V1/h3wmwI9eiYCHx3DtPwTTnP364PZH8ThwsdXH5jHsBbGYOsKoDcAmS1TW53RnsgX/aJbNYQmRSs5PjIwErv0S5i34f0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=qNL/slCP; arc=fail smtp.client-ip=52.101.46.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B51F82A1CF
+	for <iommu@lists.linux.dev>; Wed, 12 Nov 2025 21:16:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1762982218; cv=none; b=JiTgAfJ3tO2D5ISQ23QW2+w0XyVT84QDvbe6/FVstIwj6SrM7ohYdNZnB53BqbKczPK6uCqwM4cDZAU9s7W9wisxBSMp/4iFJ9pDCb36Zk6hydg7Ivi4Dahy+wGJv/jEV9GNp8/+1bHSqn5Nlpt1KjYRvfpeN/i6l8iz/KEX5Iw=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1762982218; c=relaxed/simple;
+	bh=uoYVhExYnbof9LSxnCeZcfCxSRtSH4o3C+hFXV3ob/c=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ZkLH9rEuk2xD8cfYQ+fB+8HqgkFK6foHGqYB7/eZZpM+A5cRsodtNeXFTD/0LxA0mw257dD3nEi+B3AyNTZrG2nlT7DTjiGfmQbWHzceJBadm8DcS3QUQxQvfCmKJthQZxKJ3ZrN1r5q/xh9PmPsi1l4om/hItb4J+g6zCaE0wc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=Keh42dv6; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=ZZp/MK38; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="qNL/slCP"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=jmeml/MPrWqVzFQMCU+I+/QiVneW0Whp4RamcBI78py3CJVbheJDv6S5Tlc0X2CKgyRc3lHTAxfdC9AwCKgmMArHCBQ8udCH5fh/ByYtR96ZJb5R/xK2LX2bePBpNk5VX4q9h5wWsXDEsfIeWwUzQlRNPPZKOl4EjsKTwJGrRcGYndu/uY0A2DHEbJWkeNWJeyDvOxDHMkK9xMgSvm0Krg2f/l3/QfxJdiBkZdLLZexZ86Ho+Fw618LDG2Fk7y34LehoYGlCtqRejfOsq7pLD96fJHDmQ5sPQZJt9uL3rPedJ7UG/u7M11zB2Mpiyfks8wFI+B1t/CHi8X27oIa+1Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=28gKj/7c0YNaNX2BY3OWEkWUjuJccSOUyAahqOymQlw=;
- b=w1qbrUWcuHRehK/TAmxg03yQ06f1IEtwwTkXfZu0teq4rbrwQhO/66ypZhnEpwz7ShEygwBeR2+mj7j4QcUMQNr+jngBo0DoQcNHXjlHgp1TZudH+ZNUw7cK6PxHieUYvyfhrb2EFqIU3lHDblUtTRKk32g9UbkrdNa9JEp+F+/Qnk2zmmT9TqXDqQnbAYpDqZlYhj43srMy234G14E+MYjGvkzNGKHKHbmOGfaZ0I4Nr92Qtowj7hMRcW3zXzv3Wppw5/MeXHsTHbPOKvN6c9Ag1QusgbWOFe6lKzRLlq/Kp9XG/tUHLOh/sojVGs7yqlB35WqPMZLjDXFoc3y28Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=8bytes.org smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=28gKj/7c0YNaNX2BY3OWEkWUjuJccSOUyAahqOymQlw=;
- b=qNL/slCPWlJ64chWK+1DTGg0eHamWh6Z3Nqp2Q8MCV3p2SD/wJy6Rvv26Ba6ij58RALrNIGaEQfqwRaFwXuzMw44zfQJtSrgjfnlgk+rVfCYixgRPQHiMd6LRyGNMGPDPMl+XVaurcfFeXYd/hL1b8irvZ9tFy3QTt0ysyRi5zw=
-Received: from SA1P222CA0165.NAMP222.PROD.OUTLOOK.COM (2603:10b6:806:3c3::11)
- by IA0PR12MB8327.namprd12.prod.outlook.com (2603:10b6:208:40e::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9320.15; Wed, 12 Nov
- 2025 21:14:11 +0000
-Received: from SA2PEPF00001507.namprd04.prod.outlook.com
- (2603:10b6:806:3c3:cafe::16) by SA1P222CA0165.outlook.office365.com
- (2603:10b6:806:3c3::11) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9320.16 via Frontend Transport; Wed,
- 12 Nov 2025 21:14:09 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
-Received: from satlexmb07.amd.com (165.204.84.17) by
- SA2PEPF00001507.mail.protection.outlook.com (10.167.242.39) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9320.13 via Frontend Transport; Wed, 12 Nov 2025 21:14:10 +0000
-Received: from BLRDHSRIVAS.amd.com (10.180.168.240) by satlexmb07.amd.com
- (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.17; Wed, 12 Nov
- 2025 13:14:06 -0800
-From: Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>
-To: <joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
-CC: <suravee.suthikulpanit@amd.com>, <Vasant.Hegde@amd.com>,
-	<Santosh.Shukla@amd.com>, Dheeraj Kumar Srivastava
-	<dheerajkumar.srivastava@amd.com>, Ankit Soni <Ankit.Soni@amd.com>
-Subject: [PATCH v5] iommu/amd: Enhance "Completion-wait Time-out" error message
-Date: Thu, 13 Nov 2025 02:43:50 +0530
-Message-ID: <20251112211350.894-1-dheerajkumar.srivastava@amd.com>
-X-Mailer: git-send-email 2.25.1
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="Keh42dv6";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="ZZp/MK38"
+Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 5ACEJ7ZT1382178
+	for <iommu@lists.linux.dev>; Wed, 12 Nov 2025 21:16:56 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	4KLUxP1A+fJKIGmw2pZNAAkuORqzlask/BowKwIFvtA=; b=Keh42dv6DiOMyBbz
+	5Tbb1I2a55SDATcKLk323qMBe+6ZMJPIQLAMr1FFEzCZuoxZQzPUigsaBfmTl6OC
+	LlcCJOFwX5oZ9HGoUA1JbcLVzd939kWrEogRs16f7lciqkrjMxDELr1QebNgRrga
+	ctmGxyu0pLDW5RIUhCHdTPbuceAJ+je8pQ68eam4KBjvxOrUrGM+BDBdv82cNtj8
+	Juakh5ix88e9JCvbkO0gU3USEDzkWklSVR8UQAxNXLc7tO2H+OzxkI4V5t55llu/
+	fIt0cUV8F18JwwIvRHdlkkkT6Kpv5Bb/xaLctPAYXZzhk/yfhdzUQ0AayOS6I/Ga
+	oRQLOg==
+Received: from mail-pl1-f197.google.com (mail-pl1-f197.google.com [209.85.214.197])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4acuw49auc-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Wed, 12 Nov 2025 21:16:55 +0000 (GMT)
+Received: by mail-pl1-f197.google.com with SMTP id d9443c01a7336-2955f0b8895so15579005ad.0
+        for <iommu@lists.linux.dev>; Wed, 12 Nov 2025 13:16:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1762982215; x=1763587015; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=4KLUxP1A+fJKIGmw2pZNAAkuORqzlask/BowKwIFvtA=;
+        b=ZZp/MK38c5IFJl7+R+X/2VrKKS+Um8o84jZaHK8OxHRlBlzQ1HRpT9AlDDNnFHi5i2
+         C43qvaa4ZmpwBgYjhC7KKgYxG3FrgUOm5yykKOgGBJgvPJVPagBfghtF1LscTkqJzERy
+         /AeHaTkoUYlI0Uy2jhd2ho4Bo4RuJ9WLPVjwi5r5jYcDHg1akeIZ31s2ZytKA3HnXfy1
+         Om4OyCA9oTQILtq9ulZYL1GLexsvJUBlLIiJgS+qEQh7GWyuqdtBvjVIJdxVTvs2o8T5
+         hRZNAlR41IVt2JNlq6Yxb+pweltJ1O79EitZzurdX7lTWJXHqgV8UobUQBSRroq2DaLj
+         jxoQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1762982215; x=1763587015;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=4KLUxP1A+fJKIGmw2pZNAAkuORqzlask/BowKwIFvtA=;
+        b=oDuM/PTAdPYDvf7x93XhmiHlYiUf+gBZS8vF//5KEM/TeJl70q5zcTIslHEIIYUb5e
+         qajelqqR8Lhfhv3bH/3Vx+DDSTHaobId4SczCDBTUS9Ev7mwxBT87fzfHawmsgNzq+f/
+         sgqDV5AREifeo5RyAewKfq2uyjf8aF4ST3CTtaTgJ++kTImimIByZtAvDGXEv4ijgu2y
+         RsmCscVS0y4svJ70OnQTDohZT8QrH8RXOT6ppPntcjZpyjDPpbHmQe7BYD4vVBZZL1E9
+         XKeC565O+zs6s9eAJbnu7ED7G6lhsx+Srb8BA6nAsefsdp+V78/DnUG7eP6t9fvE8YWo
+         x1yg==
+X-Forwarded-Encrypted: i=1; AJvYcCUcNRSJQWI7hO6xf8kGqf1NQZgC56XaargFk4pBqOLqU8SgnqaiesV2FomGZ++ttXexthhBig==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy7jI+lZNNe4j36gbLF6KdSqgpu8YisJQujRyl0uaV+rL0Ru85V
+	ShEMM7KN8Y+4uMggpJO4cgk9uOPlFBMVEQCDUm+hWuWEdnOPL9eQuGIKP7wGFf7nYYstvfyRvTT
+	NnaM2jY508aLCRALNFU9FCOaPRSO/2dQoRVwgqigZ5jr3y9JZLQFCj+xoQg==
+X-Gm-Gg: ASbGncvqL7IT8XuF6ihElK8xpEv2fDYYFW0Q1KinkgEFSAic6EP3CUOt4abM8D4lJke
+	G3EPyvkrY4DLy23PkHQM/gDciLzzO1BuIOvnv+tvNW9TlDLbHN9SUChnbQjkINRnotBrsZfOaJN
+	kDSUuRZ8RwmZiE9E2+jo1rHMoXTm6pXjfutq1gqwjdL8F8J9TP7qMxiWl1jGlPV4l0mZ52n1dlP
+	SmCvgNvj9CI31K3iDVFOsFK9ND1a7iWYIW6Fzg4N1H4PNFToE1GOSLlZgqpwRNZxT5zPGwNtsdS
+	iPId7xwHYII2+flGi2JoUzT/c76KkQKKCsU/1lzQ5ktN2flkXURJx6e3u4ACtdpTkASrXv6NnUh
+	lmtm0pJigRq1d1IpL6o9ePQ==
+X-Received: by 2002:a17:902:e951:b0:298:88:c006 with SMTP id d9443c01a7336-2985a4b366emr11200955ad.4.1762982214698;
+        Wed, 12 Nov 2025 13:16:54 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IGfYCKhd6MQEsF06e3F32Ghk4Zj+VCRoijQ1Gh0yc34lnyP12H7UORYvh0CdBd1dlZ6GUpfaA==
+X-Received: by 2002:a17:902:e951:b0:298:88:c006 with SMTP id d9443c01a7336-2985a4b366emr11200475ad.4.1762982214157;
+        Wed, 12 Nov 2025 13:16:54 -0800 (PST)
+Received: from [192.168.1.5] ([106.222.234.47])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2985c2c16a1sm916005ad.95.2025.11.12.13.16.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 12 Nov 2025 13:16:53 -0800 (PST)
+Message-ID: <cc4ff1c7-3158-402d-b746-5aa57b4a855f@oss.qualcomm.com>
+Date: Thu, 13 Nov 2025 02:46:43 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: satlexmb08.amd.com (10.181.42.217) To satlexmb07.amd.com
- (10.181.42.216)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SA2PEPF00001507:EE_|IA0PR12MB8327:EE_
-X-MS-Office365-Filtering-Correlation-Id: 488d8f33-425a-4285-211c-08de22306c7e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|36860700013|376014|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?DKhtE9G+KIqiD8CgaVNJSQj9iLSHh3JpANwjI1rMak6qnlTvVBPm555ELsj6?=
- =?us-ascii?Q?0l4r+lLHwxDaQFcuTbJ6nGbXj7VxJVyrP6RM0eEbcyeQcrazntWXmQeB+ZMz?=
- =?us-ascii?Q?pVwwelu4C8BgPMLBB8oMu7jouUTZd5Z2z6LvyU2G6kd0UnJlOULCrnE+JfHT?=
- =?us-ascii?Q?hxSa4EAFLelZWPuP60jDPNsnzX+Um+LM3bGGVgsJRCtutqsjy7QjPsoiCzUE?=
- =?us-ascii?Q?sMd0rH9fpUjoQXbP5jPIE3uGMSuU87/FfjWdj9nXKidDNAhujqNeR3RRomgv?=
- =?us-ascii?Q?uAOhJOmVfdsquD80q0RmjNMuZwHtvuJ9DfRUvV2uzRGj6fuuVDwRwMN/JDBC?=
- =?us-ascii?Q?7pQs7V4fn/cDFzHFZ1q6tO9V6eLEQ67RhBfAb+IIEeY607MEQLLolZOCMaJf?=
- =?us-ascii?Q?Gb2BTztdJL9mbAU0n+jszzt6jZKnxFPhLWmvvnJmx0BcVhosHCa2P97/DKp3?=
- =?us-ascii?Q?2/kfIVc9ggArvY0n3TKXxylG3fC/4Y3RjtE422TKsQ4gxeIjfY4n2Lwlu8Ff?=
- =?us-ascii?Q?+D/sLhyb4cIzEhSmdnFj4IUC0r2B+mTVVHSPZ9485/N+F3OkWedcd718jNIi?=
- =?us-ascii?Q?QDJa14fbXol73A5pLeES2MA/9Y02yo6SlRrQdoqKUjvcsYr4CKbSOLTPh4/M?=
- =?us-ascii?Q?L3V1XIJdArhtZAmyO7F/vkRn2t++GgQpzbhs9SEFjd4nx1mVmfYjUwWvED8f?=
- =?us-ascii?Q?KZ1GNV1cDUwX8cgscnOyhZ2eTb2zbsXkyoTQRjJhGFTkaU75dQ4Vj/4WSGsv?=
- =?us-ascii?Q?lqYxbi9RURug6nAapLxNHMKmbCNgQ7jXcd5zbBSci2+7qC/EmMKSitk2gw3t?=
- =?us-ascii?Q?IWjRFA62UCZ6PO7FrEE/llURPugG9GblUNP8AfwnrrRYf/mLd2Efl/TCR1u7?=
- =?us-ascii?Q?J08aTjIdYPqWdaXqKLzSHkCAZaDHcwmupEBaupsxTtnUP9ExMUXbcpZY1FRy?=
- =?us-ascii?Q?JJKr7ABZ8M5EfPpVTXjK0WSbEfY9b2QFIjS9YG3SMLJ+2mowaidsHtQgu6Ff?=
- =?us-ascii?Q?TmCUrus6pyTWn00CZXzLhpOxQNT9yxhk7Cmy/ljfpBRcX5DrKSfLk3EReLjt?=
- =?us-ascii?Q?9pOD5nnlShUhvfEJtD7QQKjEhiiu+lPs+F+X9Km9hEQ+YEFlh8ArLu4Hue+y?=
- =?us-ascii?Q?vHRMc7bLQfcO1DrmhEoeRALrpabpLi8ckgQs8BjikRHx4QpO6a84n2jrE+9u?=
- =?us-ascii?Q?cIVpo4Zu2DAh9gwosoRE0wuX9jY+Du/+OeGnQ21wa+to4iF8wRbnrju0CsiH?=
- =?us-ascii?Q?hUXRmJs+ReV4m0PBfpj/DwtLFktz3bcofL5q9CGoMZIzriJyFRN06s585tQQ?=
- =?us-ascii?Q?Bcx/atCjzpkPCdpnj2ZNxzVZb/7IEOPwo8K+bbLbPPvCGaUjJ9hVddEosfjk?=
- =?us-ascii?Q?2qSCyoVtZzbhbSLKSNRtJ0UIytrer0bohuJ7hAlRYBd6wwsfc87yfhbQmtBg?=
- =?us-ascii?Q?dCr7vo7N6KfH6rcUd17hi1xPk/c03PDo38qpt8e0bhZYPsaFL7XAKEMSY2rf?=
- =?us-ascii?Q?MnHvG2QgX0V64vG1YQkwaGAFqRd6aLLizkCn+YuOdiz9AYLvelEJxFvi3Wlq?=
- =?us-ascii?Q?YiFW1AjNCtKNUgikIRI=3D?=
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(36860700013)(376014)(1800799024);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Nov 2025 21:14:10.6515
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 488d8f33-425a-4285-211c-08de22306c7e
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SA2PEPF00001507.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB8327
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 14/21] drm/msm/adreno: Support AQE engine
+To: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
+        Rob Clark <robin.clark@oss.qualcomm.com>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>, Sean Paul <sean@poorly.run>,
+        Dmitry Baryshkov <lumag@kernel.org>,
+        Abhinav Kumar
+ <abhinav.kumar@linux.dev>,
+        Jessica Zhang <jesszhan0024@gmail.com>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Jordan Crouse
+ <jordan@cosmicpenguin.net>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Connor Abbott <cwabbott0@gmail.com>
+Cc: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+        devicetree@vger.kernel.org
+References: <20251110-kaana-gpu-support-v2-0-bef18acd5e94@oss.qualcomm.com>
+ <20251110-kaana-gpu-support-v2-14-bef18acd5e94@oss.qualcomm.com>
+ <1202b66c-6d4f-4909-a010-7e5e3ec7f0c7@oss.qualcomm.com>
+Content-Language: en-US
+From: Akhil P Oommen <akhilpo@oss.qualcomm.com>
+In-Reply-To: <1202b66c-6d4f-4909-a010-7e5e3ec7f0c7@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-ORIG-GUID: XBsAM_8O46btGoxwbiEJWGBb_TvLSsHI
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMTEyMDE3MiBTYWx0ZWRfX8OHrnTSBxIkU
+ HAITdw6huxsoiPGIg1dTfaOJ34YuH0MhSTml26y7qIf86mXUJ/WnjJKhTFdm+7YP/iET2+39KoT
+ aLJukA2QzO7Nxbn81qw8MXyAhcX2PwMNSejXMwy4T27Qd5JGWaTI6Sggf1pcvaOTNWLP8SthTOf
+ MAPjLnyx+cbvcz+rnd5J6oE385fBjuWfCyJfKBmaHJ+DSU57iHweVsqYSwNrIY3qFc+qFX8Xoc3
+ cRMuP+3LVFnKCV83mh3YYHw0loRDGbcrZUzNX7RhCw8rGnVucx9zUTg+fpvdXOCg/U1StUrDCkB
+ rXxmK478a+TjA0flcT/Lh+DL2gpwOsKJqRowp8NbNC/khOf/BEgQb5kSyO7u6yngr9u5zeyW/sT
+ vUVVNgRgivqWLtv51aY/UfOnwXx3sg==
+X-Authority-Analysis: v=2.4 cv=F+Bat6hN c=1 sm=1 tr=0 ts=6914f947 cx=c_pps
+ a=cmESyDAEBpBGqyK7t0alAg==:117 a=2IP1oaZ8+KUWsYovLW0HHw==:17
+ a=IkcTkHD0fZMA:10 a=6UeiqGixMTsA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=EUspDBNiAAAA:8 a=1HEVVvjKVHWHBA54g4IA:9
+ a=QEXdDO2ut3YA:10 a=1OuFwYUASf3TG4hYMiVC:22
+X-Proofpoint-GUID: XBsAM_8O46btGoxwbiEJWGBb_TvLSsHI
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.9,FMLib:17.12.100.49
+ definitions=2025-11-12_06,2025-11-12_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ clxscore=1015 spamscore=0 malwarescore=0 phishscore=0 bulkscore=0
+ adultscore=0 priorityscore=1501 impostorscore=0 lowpriorityscore=0
+ suspectscore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2510240001
+ definitions=main-2511120172
 
-Current IOMMU driver prints "Completion-wait Time-out" error message with
-insufficient information to further debug the issue.
+On 11/12/2025 4:37 PM, Konrad Dybcio wrote:
+> On 11/10/25 5:37 PM, Akhil P Oommen wrote:
+>> AQE (Applicaton Qrisc Engine) is a dedicated core inside CP which aides
+>> in Raytracing related workloads. Add support for loading the AQE firmware
+>> and initialize the necessary registers.
+>>
+>> Since AQE engine has dependency on preemption context records, expose
+>> Raytracing support to userspace only when preemption is enabled.
+>>
+>> Signed-off-by: Akhil P Oommen <akhilpo@oss.qualcomm.com>
+>> ---
+> 
+> Side question: is the AQE fully functional on any gen7 targets?
+> A750?
 
-Enhancing the error message as following:
-1. Log IOMMU PCI device ID in the error message.
-2. With "amd_iommu_dump=1" kernel command line option, dump entire
-   command buffer entries including Head and Tail offset.
+Yes. Only A750 has it in the A7x family.
 
-Dump the entire command buffer only on the first 'Completion-wait Time-out'
-to avoid dmesg spam.
+> 
+> [...]
+> 
+>> -		adreno_gpu->has_ray_tracing =
+>> -			!!(fuse_val & A7XX_CX_MISC_SW_FUSE_VALUE_RAYTRACING);
+>> +		/*
+>> +		 * AQE requires preemption records, so disable raytracing
+>> +		 * if preemption is not supported
+>> +		 */
+>> +		if (gpu->nr_rings == 1)
+> 
+> "nr_rings > 1"?
 
-Signed-off-by: Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>
-Reviewed-by: Ankit Soni <Ankit.Soni@amd.com>
----
-Changes since v4:
--> Changed head and tail variables from int to u32 in dump_command_buffer()
-   to match readl() return type and updated pr_err() format specifiers from
-   %d to %u accordingly for head and tail. (Ankit)
+Ack.
 
-Changes since v3:
--> Dump the entire command buffer only on the first 'Completion-wait Time-out'
-   when amd_iommu_dump=1, instead of dumping it on every occurrence.
+> 
+>> +			adreno_gpu->has_ray_tracing =
+>> +				!!(fuse_val & A7XX_CX_MISC_SW_FUSE_VALUE_RAYTRACING);
+>>  	} else if (adreno_is_a740(adreno_gpu)) {
+>>  		/* Raytracing is always enabled on a740 */
+>>  		adreno_gpu->has_ray_tracing = true;
+>> diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.h b/drivers/gpu/drm/msm/adreno/a6xx_gpu.h
+>> index b507ff4e1756..7921b4a68937 100644
+>> --- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.h
+>> +++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.h
+>> @@ -58,6 +58,8 @@ struct a6xx_gpu {
+>>  
+>>  	struct drm_gem_object *sqe_bo;
+>>  	uint64_t sqe_iova;
+>> +	struct drm_gem_object *aqe_bo;
+>> +	uint64_t aqe_iova;
+>>  
+>>  	struct msm_ringbuffer *cur_ring;
+>>  	struct msm_ringbuffer *next_ring;
+>> diff --git a/drivers/gpu/drm/msm/adreno/a8xx_gpu.c b/drivers/gpu/drm/msm/adreno/a8xx_gpu.c
+>> index 78dcb9bc3377..2ef69161f1d0 100644
+>> --- a/drivers/gpu/drm/msm/adreno/a8xx_gpu.c
+>> +++ b/drivers/gpu/drm/msm/adreno/a8xx_gpu.c
+>> @@ -616,6 +616,9 @@ static int hw_init(struct msm_gpu *gpu)
+>>  		goto out;
+>>  
+>>  	gpu_write64(gpu, REG_A8XX_CP_SQE_INSTR_BASE, a6xx_gpu->sqe_iova);
+>> +	if (a6xx_gpu->aqe_iova)
+>> +		gpu_write64(gpu, REG_A8XX_CP_AQE_INSTR_BASE_0, a6xx_gpu->aqe_iova);
+> 
+> I believe you should also set CP_AQE_APRIV_CNTL per-pipe
 
- drivers/iommu/amd/amd_iommu_types.h |  4 ++++
- drivers/iommu/amd/iommu.c           | 28 +++++++++++++++++++++++++++-
- 2 files changed, 31 insertions(+), 1 deletion(-)
+We already configure CP_APRIV_CNTL_PIPE for this.
 
-diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index 95f63c5f6159..c20798fc644d 100644
---- a/drivers/iommu/amd/amd_iommu_types.h
-+++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -247,6 +247,10 @@
- #define CMD_BUFFER_ENTRIES 512
- #define MMIO_CMD_SIZE_SHIFT 56
- #define MMIO_CMD_SIZE_512 (0x9ULL << MMIO_CMD_SIZE_SHIFT)
-+#define MMIO_CMD_HEAD_MASK	GENMASK_ULL(18, 4)	/* Command buffer head ptr field [18:4] */
-+#define MMIO_CMD_BUFFER_HEAD(x) FIELD_GET(MMIO_CMD_HEAD_MASK, (x))
-+#define MMIO_CMD_TAIL_MASK	GENMASK_ULL(18, 4)	/* Command buffer tail ptr field [18:4] */
-+#define MMIO_CMD_BUFFER_TAIL(x) FIELD_GET(MMIO_CMD_TAIL_MASK, (x))
- 
- /* constants for event buffer handling */
- #define EVT_BUFFER_SIZE		8192 /* 512 entries */
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index eb348c63a8d0..c68b0fdc5433 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -1156,6 +1156,25 @@ irqreturn_t amd_iommu_int_handler(int irq, void *data)
-  *
-  ****************************************************************************/
- 
-+static void dump_command_buffer(struct amd_iommu *iommu)
-+{
-+	struct iommu_cmd *cmd;
-+	u32 head, tail;
-+	int i;
-+
-+	head = readl(iommu->mmio_base + MMIO_CMD_HEAD_OFFSET);
-+	tail = readl(iommu->mmio_base + MMIO_CMD_TAIL_OFFSET);
-+
-+	pr_err("CMD Buffer head=%llu tail=%llu\n", MMIO_CMD_BUFFER_HEAD(head),
-+	       MMIO_CMD_BUFFER_TAIL(tail));
-+
-+	for (i = 0; i < CMD_BUFFER_ENTRIES; i++) {
-+		cmd = (struct iommu_cmd *)(iommu->cmd_buf + i * sizeof(*cmd));
-+		pr_err("%3d: %08x %08x %08x %08x\n", i, cmd->data[0], cmd->data[1], cmd->data[2],
-+		       cmd->data[3]);
-+	}
-+}
-+
- static int wait_on_sem(struct amd_iommu *iommu, u64 data)
- {
- 	int i = 0;
-@@ -1166,7 +1185,14 @@ static int wait_on_sem(struct amd_iommu *iommu, u64 data)
- 	}
- 
- 	if (i == LOOP_TIMEOUT) {
--		pr_alert("Completion-Wait loop timed out\n");
-+
-+		pr_alert("IOMMU %04x:%02x:%02x.%01x: Completion-Wait loop timed out\n",
-+			 iommu->pci_seg->id, PCI_BUS_NUM(iommu->devid),
-+			 PCI_SLOT(iommu->devid), PCI_FUNC(iommu->devid));
-+
-+		if (amd_iommu_dump)
-+			DO_ONCE_LITE(dump_command_buffer, iommu);
-+
- 		return -EIO;
- 	}
- 
--- 
-2.25.1
+> 
+> Should we also enable AQE1 while at it, to reduce potential backwards
+> compatibility issues? Would that require solving the iommu woes?
+Yeah, AQE1 is strictly for LPAC workloads. So lets wait for LPAC support
+first.
+
+-Akhil
+
+> 
+> Konrad
 
