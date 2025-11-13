@@ -1,87 +1,87 @@
 Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F286832938B
-	for <iommu@lists.linux.dev>; Thu, 13 Nov 2025 23:30:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DFF9D329382
+	for <iommu@lists.linux.dev>; Thu, 13 Nov 2025 23:30:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763076610; cv=none; b=l6xK3NwenxdNxIN97tuMKyjabBtCeBM/tKzPlBoCVf15TQc2vkSSOwf0GNo49OfCc4GXxmgKFp26lMyVkcowRGShb0dhJwRiT+Uvw20O262gzf7t6cwxeB4bChwN3f28Kk9Q/u8fPWiBrEjOkOmjrkxZX1XFYhYjY0Ba1N3/1H8=
+	t=1763076627; cv=none; b=LUg5kjzyScDzmNFyTOKPOoaqR0OG4EzEKX9R/0XPRx3orBN1We5nRj2fuRfNtjkEsw3+pH607rdXodGlD+LVOfrqbxZAXs27D+pQ0rcAZKoRQZGlGa9HaXT4Xtfgrk06LAU+fSQID4QA2EiMHptggNhxThymuJnjSx1rXNxRVEE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763076610; c=relaxed/simple;
-	bh=dtSwkU/2MTVLwCFlRqqTYMozfSVMz5AGTKvrJ9IlCNw=;
+	s=arc-20240116; t=1763076627; c=relaxed/simple;
+	bh=5IaguxYaqbD6PYA1KDlVNdHxKZhKutZ0CMhjYb3En5o=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=FhhdW7nX+Cs57kNDsV2+2wF5vEw/h70D1u1h7Da1nY/QgXp+NeZZT0yvya4aQo4Vv9fLeJCFF7PMUosBJ1RXPYl176Wov3Eg12bRu5W+0TKvDXsWXhMZ4qo61y8V0T7uRyPLBMDD58i7pfTDmiBBijJb5QJvJPy/oYIx5zNEBNo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=meHSHRFk; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=hrRIqdr7; arc=none smtp.client-ip=205.220.180.131
+	 In-Reply-To:To:Cc; b=vGHevuC5TkEr9FjookNj4IzEK18sYaYXyueur+N5rBgBW761TMCyHxBlAXQRrjqKH/p7FubIl3DqbV/sWHRaPOogKtAFj+M34d0SrkGxBZs8Qhudndhzcn1tgcWHXTzafbyI9J4eJDArpJ6mTuNaa8UMs8fQg1VLCefJCP44jQg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=YmM4a/PC; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=LrEiedU/; arc=none smtp.client-ip=205.220.180.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="meHSHRFk";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="hrRIqdr7"
-Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 5ADMafvs1477479
-	for <iommu@lists.linux.dev>; Thu, 13 Nov 2025 23:30:08 GMT
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="YmM4a/PC";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="LrEiedU/"
+Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 5ADMarU91609784
+	for <iommu@lists.linux.dev>; Thu, 13 Nov 2025 23:30:19 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
 	cc:content-transfer-encoding:content-type:date:from:in-reply-to
 	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	jGGfQ+tgLcU0SwBwQco9Wli6+1VrBRCLwj6tuxnqYmQ=; b=meHSHRFkwINJu9p2
-	ci1j8tDXOJnxz328kucGEK7PVSr+WtvS3Ls1Y2H3KmMsWr7+W3zpw1QIz2N0OTdr
-	+z7yxCX/wL+2k62V9hwW/bCAHDn+vKNWjKgxmYsAvWEhLEHGgxNl+vQcO6f2sciL
-	Nh/DZWJtBIgU5BwhFEo9wil/v4Wiy6o4Dm6VqptQHBml6gGMtIItlShm7z8hlJQ3
-	WWYdQfDEMKGRvqkMv2Fu0C3oEULwKVxT9qmeyueuYRWOwPDfU5ci+6uydHqoM+ej
-	vCuBEpqBYyjJVW2wMPwv015i1ROtDlAzmgCDd46qgtEvHu3SE/x+JQ5cjc7fc6P1
-	rpBc6A==
-Received: from mail-pf1-f197.google.com (mail-pf1-f197.google.com [209.85.210.197])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4adr9dr41r-1
+	1R8nfY6V5GV8tiqWGT/OdoAsKAZCP1AEd9LYyTc+98Y=; b=YmM4a/PCtMFlj754
+	mWObB/MXRbcWNeqaULasSl4MP9xVoL6wQSfsbc33qUGYGim0IyyrnjbfPJUZohVN
+	TcSY/IX+HsNOVCDC61+Y3BHSTWZ400dfj/1Lz9VHaCNRBPpRiCE6yv3NG/ZCbx5T
+	g2U0+hg5aC8KGzBcJBdh49lVFAa6WdZRhmEOMCA2jZp9vVQ3cTa5mMAbl8af+4Jx
+	FFLAHdrJwHFsVTzwqnYfJhQqx3jJ+imv6l5qiu1Jj0fc6zCmWr+sKK7tEsCXbB2I
+	qN5wny7mTQbm/o4bANfjdUH8VRDW6t4FsZyD12PVu8EUfzlvH0sdei/yiSY9QawT
+	StAp3g==
+Received: from mail-pf1-f198.google.com (mail-pf1-f198.google.com [209.85.210.198])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4adr9h03y9-1
 	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Thu, 13 Nov 2025 23:30:07 +0000 (GMT)
-Received: by mail-pf1-f197.google.com with SMTP id d2e1a72fcca58-7b82c2c2ca2so1542984b3a.1
-        for <iommu@lists.linux.dev>; Thu, 13 Nov 2025 15:30:07 -0800 (PST)
+	for <iommu@lists.linux.dev>; Thu, 13 Nov 2025 23:30:18 +0000 (GMT)
+Received: by mail-pf1-f198.google.com with SMTP id d2e1a72fcca58-7b82c2c2ca2so1543256b3a.1
+        for <iommu@lists.linux.dev>; Thu, 13 Nov 2025 15:30:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1763076607; x=1763681407; darn=lists.linux.dev;
+        d=oss.qualcomm.com; s=google; t=1763076617; x=1763681417; darn=lists.linux.dev;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=jGGfQ+tgLcU0SwBwQco9Wli6+1VrBRCLwj6tuxnqYmQ=;
-        b=hrRIqdr7Q4oV+/r4ptnSXxjaCluTdTsCB26aJu7lJPHIM0VnCPdKR2n3h7mpiHTwbm
-         DL+XNRhs3i64YiAJYF0IqZqX6JpPTEH6ST3zvDqO4bPDPlwPtsFE3FyMK5p7+rPJ5ppn
-         QAaFtkLj+UFcvXUUq6+rZAF05trvfdO70m3qfLjO0yDEGuTpE39Si2CsFrB6a9QubNW5
-         9gbFaqFvNt86qC6PdfLVCA0ijfhyAjCo/QSvrfkBkpBdyHVycu7a+pSS+sdHwSwYLgyy
-         U8Wnsv+GtU2PVluSHTD+Mhxp/8m4KKt03vz/0FuoCSaP/RX6JmhxCAKmVuGDbOqNCnEr
-         oUOQ==
+        bh=1R8nfY6V5GV8tiqWGT/OdoAsKAZCP1AEd9LYyTc+98Y=;
+        b=LrEiedU/h1VhwJgtwJZ6+7+c4ibX1UxlYvYwWllyqKigFlujU1lilIc+3C6ZKFSSa+
+         V+W1CRqv961sVOJWbiMHwQ+KxthC09kHlw/lll1gUniqEZ3SeBTvpBwYnT9o9/TOgwce
+         n0fDyMzOcH3ptbIpj3x8BYLaBGnCk52a791rWUUotDXRrK0nyod6P/H/6A/0GVWSScuN
+         rkfQ9ix7o9F22p2rmmLpedOu0cAaB5Sqgx/H8qq0wesn8N6/swhtvX/sqEKyXJd33+yG
+         onHUHP2opqdAeZEcSs+i3n1Ay+IalbejehgLWgg/aa9Xg2itRNQ/+Ql/mShOHvJ4EBck
+         0ptA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1763076607; x=1763681407;
+        d=1e100.net; s=20230601; t=1763076617; x=1763681417;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=jGGfQ+tgLcU0SwBwQco9Wli6+1VrBRCLwj6tuxnqYmQ=;
-        b=l3HZW512g8z0MLhY/3ER/X49h0PPbdiw4MHk7uyN/lwm+/TEtL3hgLe6f6lvoF0F/v
-         OlTDuNXkhEwTOAyVst+COELGZdEngH7BQLHe8iWhGCRu9czHs8hRPhkyTtcgJlN2PfLZ
-         Lw00C9VFxiFRl9bdYHELZtmxXiTsxl7tVP2FqnUQWUkASjLLKMqed++GafEn/7B6z3xI
-         HI5naqLuB/9E+REGx3Rj5eYutI8jxvSQAR/lx0yIu5PDZ49wFewtPzmIFO6DgjrArD9e
-         I/xcZQv25CyHUK0oRaMf5b9esKc4/vaejj+XkQSCJHM2qj57RtHBdXdo+KybMPMufMvM
-         SpkA==
-X-Forwarded-Encrypted: i=1; AJvYcCUQumIpjdHQL39TSUoWrQ6/GQyJ4l8fVzRdHb3K6yD35Ut0PlGwSQBrOTsrEcAy217duajqew==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzmCsPlnZGoG9gHLop5nLn0jYYF+c0v3aTk4pN5wAIYAoSNABtE
-	Vt96O8hjGmJ3NQbtCjEVOub3c8BF2wXwwiAacu9o1dzJYcEaWPcQ61lkPHdiej2udXhTyryeI6V
-	WWSQpndhXI6cP6nLZHksAPkRYFBX3Sz7sV9cYTHr+5zYz3JH4OfVyQAhYeA==
-X-Gm-Gg: ASbGncsgV7tgKrolTvdpYgljHlZJMHR4HdDGM+MxYHRkk+n+EoXBRHWzB99wX/VEpOp
-	fRq+Gp2fVjWXuBgfKMYCeLyhHl8LiD/e6ZckWViGhgF6cUavPVPn1NJ+P+wXKH8puqyo/bifmnX
-	AseAQjuuUzWXQpF1kA8ThDxN5DKPverWhAxrAPW7oV+XADp0TZ5Z3G+sOlPPbqdejoGo4KYApB1
-	zZ1yrKurkQCpD+ei2JX0B4AVeEs71SQ+D4WRm9dFWP2OWrrxIQDvy2p9MaWoTPNrY6LqBiBIF1z
-	6OT0+cm91FCoFUQruMVpKOXt8haF4iAi+YLZi7HsVRzgfKPfQQz+wijA3dzNVozgZYRS9PEg7w0
-	9neCRHW8Yc6qvTq/Tnl2OaWA=
-X-Received: by 2002:a05:6a20:7d9f:b0:351:d6ff:dd0a with SMTP id adf61e73a8af0-35ba259dd93mr1575449637.49.1763076606604;
-        Thu, 13 Nov 2025 15:30:06 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IGqb9xTf/1RdUkSb0wiuQ/LducqEzVd/Avvst0tIrciZXoTqPCwdrblFiddRcVRxAW8PRxnIw==
-X-Received: by 2002:a05:6a20:7d9f:b0:351:d6ff:dd0a with SMTP id adf61e73a8af0-35ba259dd93mr1575387637.49.1763076606061;
-        Thu, 13 Nov 2025 15:30:06 -0800 (PST)
+        bh=1R8nfY6V5GV8tiqWGT/OdoAsKAZCP1AEd9LYyTc+98Y=;
+        b=cVNHPGsnqDNc0Z54k50qkm2M6/GuYO0ZaQhDAyLXpXrYeNyaZdd3sH77QLELZ9H/kc
+         J5s4ffISRFjo0hNmGD4ixwTT+IsbtmMVW5Hl/kda8hPDqfXDTxatuwJx45yD0JB7sZVH
+         wr3xNyr6Hq0Ldpq9lFlsKbn25pJtqBNujX6KYuHR1NL4zvi29lDrgIKNccsTrEp67rrt
+         nXKkmDZtegp0wxzCOybzk5WWG3q9MuOgcvvm/TlcfdBUaBXzjqk93rPtSkjq3GBhoVYf
+         3ICpjetoKuyUJZFqhJ/S7iIrfjqpm4Y4nnORSmvNHJeTQnz8edDXAfs0sHUplNi30WDE
+         im1g==
+X-Forwarded-Encrypted: i=1; AJvYcCXsD/QN0x0BMQsyD4ewxLhBjaD/ZuTYoae3raJWu4If5Agg8mj+QmmpZ47DnHPjodOOIPKEPA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwMyOL+yHqAeryOmRuRhNvsx/pXLPUpTtz9PcxQfCva+5YGmzFD
+	l1A2eWV583WBG6aJskquy5oB8wVIEpMSRSnVhfhRRGLCIEQlaDeL27N7X0wBU11HOj+GYtIGRdT
+	usFi+/N01vuxrSYtMvfdWE73OYC/ovBVQnEjCQ2td8q357PsNj4czn/FbtQ==
+X-Gm-Gg: ASbGncvAqizDEuvY6lWCGdgIOwNkBtBKJUy30/VAFe1ZAt0BPMEoHmLDVVegwMaMMRm
+	qbsnLZVPj8I0EXS8jFz2wQ1B+9z8EABrwRrH5qn+6epkKcWyyyzLPtGzAm0/xx5hrHyczfd+aGS
+	vIs9mIbppp7YgUHJmnayEyJ0ZI6mllCGnG/ClevXFoxDTUWD7H7ztnMBTTbp/rRpC58EITL2Ys0
+	3D5GvyAvrVY0NfNHOFl+ShCX4wA60ht552DMJLHNli2EGbh+qgxcygNqPSEBCJDOyiNtWa/w9js
+	0baSaONFPo+8BGjqaDis01/ai5GuTxjAyV1uH6873MB2G0ltUaHo7uGwyisQQFpI6r/t4AMmjyi
+	/3C7O8iTNCgSaqazWYrlcdYU=
+X-Received: by 2002:a05:6a20:a10a:b0:344:97a7:8c5c with SMTP id adf61e73a8af0-35ba2692141mr1451722637.48.1763076615600;
+        Thu, 13 Nov 2025 15:30:15 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IGb6BYpu/JJTkjfO25MYo4mRNxrm20s4yipfwYeNmJ9biiX5PRn+D1SP1vbIWYD5KgarFT2aQ==
+X-Received: by 2002:a05:6a20:a10a:b0:344:97a7:8c5c with SMTP id adf61e73a8af0-35ba2692141mr1451607637.48.1763076614217;
+        Thu, 13 Nov 2025 15:30:14 -0800 (PST)
 Received: from hu-akhilpo-hyd.qualcomm.com ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-bc36ed72cd1sm3049486a12.11.2025.11.13.15.29.58
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-bc36ed72cd1sm3049486a12.11.2025.11.13.15.30.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Nov 2025 15:30:05 -0800 (PST)
+        Thu, 13 Nov 2025 15:30:13 -0800 (PST)
 From: Akhil P Oommen <akhilpo@oss.qualcomm.com>
-Date: Fri, 14 Nov 2025 04:59:00 +0530
-Subject: [PATCH v3 03/20] drm/msm/a6xx: Skip dumping SCRATCH registers
+Date: Fri, 14 Nov 2025 04:59:01 +0530
+Subject: [PATCH v3 04/20] drm/msm/adreno: Common-ize PIPE definitions
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -90,7 +90,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20251114-kaana-gpu-support-v3-3-92300c7ec8ff@oss.qualcomm.com>
+Message-Id: <20251114-kaana-gpu-support-v3-4-92300c7ec8ff@oss.qualcomm.com>
 References: <20251114-kaana-gpu-support-v3-0-92300c7ec8ff@oss.qualcomm.com>
 In-Reply-To: <20251114-kaana-gpu-support-v3-0-92300c7ec8ff@oss.qualcomm.com>
 To: Rob Clark <robin.clark@oss.qualcomm.com>,
@@ -115,71 +115,2322 @@ Cc: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
         dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
         linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
         devicetree@vger.kernel.org, Akhil P Oommen <akhilpo@oss.qualcomm.com>,
-        Rob Clark <rob.clark@oss.qualcomm.com>
+        Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1763076573; l=1280;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1763076574; l=131443;
  i=akhilpo@oss.qualcomm.com; s=20240726; h=from:subject:message-id;
- bh=dtSwkU/2MTVLwCFlRqqTYMozfSVMz5AGTKvrJ9IlCNw=;
- b=pSCBNHippoLHyPBaZa3ZDzn8ibiYCS5gdO400/t3T9Sn9xouKFOuo4y+vrWWiMmy+E3FJYp4X
- 6WqXbKsGI6MDNSnLjrTIELBXTdLWZs4mQyMQrKTDeLZ2O1KboBgdl9V
+ bh=5IaguxYaqbD6PYA1KDlVNdHxKZhKutZ0CMhjYb3En5o=;
+ b=aEHtIfBXASd/hHQf5o3lsrm3RyIZA6iGm51YdPDfE6gRvHS/WG7FB0y1xd/mUpmX33AdWeCPT
+ HVxbxkJegM0ArSdAIuHZIAcTf0CWyUZIM1L5lt11jg+vdIKJMtjwNBz
 X-Developer-Key: i=akhilpo@oss.qualcomm.com; a=ed25519;
  pk=lmVtttSHmAUYFnJsQHX80IIRmYmXA4+CzpGcWOOsfKA=
-X-Authority-Analysis: v=2.4 cv=IaiKmGqa c=1 sm=1 tr=0 ts=691669ff cx=c_pps
- a=rEQLjTOiSrHUhVqRoksmgQ==:117 a=ZePRamnt/+rB5gQjfz0u9A==:17
+X-Proofpoint-ORIG-GUID: jksaW7XFN0crkbi2P9UyNx6Mi7T-luwa
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMTEzMDE4NSBTYWx0ZWRfX3tamgG/sUAn8
+ VTpABbfkk6qSzP/oV2yxoVlgX3HtWkmGAMPs2edgHkmlcfPP3Ot/JMoy6zy6c30DsRnmRM5jlcl
+ wSE1Rf2wKEF7UknnnsXcRZPe3lPPYCJaYK+J8grOXItUHwl6jhT3tVzfcjjR4MEXG4p376YeVDl
+ WaD9rlD+z+PYPfJ3/xwdUlC8CdPRdJ5yqQSAi6cLuOup4KFmOpvlM2km6OYCn18yd0D+HonKawB
+ oEE9AX8v5eb2bhtMLH8zUFbaWQC8T8Nk5t6Vh1lx0YSDJ6zDfSIG4vgFM1NYVtjnvF7HhmwXCwn
+ VdjLzB5FyI62MPdvulXZGuthDEMx9YUXXyAgXM7ZRmV2A6IV14lNhXlKFM8pR7GK9XRtZ0ZPzPq
+ oKoPazt+0+O9yGoAIdLXjY6vYWXLeQ==
+X-Proofpoint-GUID: jksaW7XFN0crkbi2P9UyNx6Mi7T-luwa
+X-Authority-Analysis: v=2.4 cv=V+1wEOni c=1 sm=1 tr=0 ts=69166a0a cx=c_pps
+ a=m5Vt/hrsBiPMCU0y4gIsQw==:117 a=ZePRamnt/+rB5gQjfz0u9A==:17
  a=IkcTkHD0fZMA:10 a=6UeiqGixMTsA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=EUspDBNiAAAA:8 a=rH6QHmREy2P50qlKy74A:9
- a=QEXdDO2ut3YA:10 a=2VI0MkxyNR6bbpdq8BZq:22
-X-Proofpoint-ORIG-GUID: hYgY7867D7IJ6Eu_Y3DtQqSO3xc3mZ3Y
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMTEzMDE4NSBTYWx0ZWRfX1noSRQzuVAII
- KE19r4hmTEFp+Y+JpQQfqqDapu0wIbpjSpyHcNcyQMYQl9KPA0d5lJKjkXNscUsCujwWlOrR3/S
- 80r+Hl7jsGNM9lRn1z2dHcHuJAOw3FGgpni3xnmQ5sNaM5EsxC2H6aqSqQKDyH1fkCLi1iC4NbB
- ZzRMNtYF+Zjyi0MY0B1khQ8h0qjliUivIouQz+vRudvWERD+82rlBUlk9CT2GKU7E1aMBluyayH
- P9bph1HIqIK8U3MaXb5vixDukxQtcqqHAeuhvWheRWLHLJykGbVe7aa8H9U2qe2j0DC/rmgWwFf
- 7EM5iRVCpLBbb734861fw6ljW5hMGwSaBWtLgQrJWhAFWBU5Lz9VVuZ52sy8hqBuzGYuADVJOjJ
- WoUsJAEXT43IwDAbjiDmXisR8ZViXA==
-X-Proofpoint-GUID: hYgY7867D7IJ6Eu_Y3DtQqSO3xc3mZ3Y
+ a=VkNPw1HP01LnGYTKEx00:22 a=e5mUnYsNAAAA:8 a=EUspDBNiAAAA:8
+ a=Ver-QhWlg-VMwr2Uht0A:9 a=QEXdDO2ut3YA:10 a=IoOABgeZipijB_acs4fv:22
+ a=Vxmtnl_E_bksehYqCbjh:22
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.9,FMLib:17.12.100.49
  definitions=2025-11-13_06,2025-11-13_02,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- impostorscore=0 priorityscore=1501 adultscore=0 bulkscore=0 phishscore=0
- clxscore=1015 spamscore=0 malwarescore=0 lowpriorityscore=0 suspectscore=0
+ lowpriorityscore=0 bulkscore=0 suspectscore=0 phishscore=0 clxscore=1015
+ spamscore=0 priorityscore=1501 impostorscore=0 adultscore=0 malwarescore=0
  classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
  reason=mlx scancount=1 engine=8.22.0-2510240001 definitions=main-2511130185
 
-Crashdec doesn't require SCRATCH registers anymore for a6xx and newer
-architectures. So skip dumping them during recovery.
+Newer gen's introduce pipe enums which do not exist on older gens, but
+the numeric values do not conflict. IOW, they are backward compatible.
+So move its definition to adreno_common.xml.
 
-Suggested-by: Rob Clark <rob.clark@oss.qualcomm.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
 Signed-off-by: Akhil P Oommen <akhilpo@oss.qualcomm.com>
 ---
- drivers/gpu/drm/msm/adreno/a6xx_gpu.c | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+ drivers/gpu/drm/msm/adreno/a6xx_gpu_state.h        |  10 +-
+ .../gpu/drm/msm/adreno/adreno_gen7_0_0_snapshot.h  | 412 +++++++++---------
+ .../gpu/drm/msm/adreno/adreno_gen7_2_0_snapshot.h  | 324 +++++++--------
+ .../gpu/drm/msm/adreno/adreno_gen7_9_0_snapshot.h  | 462 ++++++++++-----------
+ drivers/gpu/drm/msm/registers/adreno/a6xx.xml      |   4 +-
+ .../gpu/drm/msm/registers/adreno/a7xx_enums.xml    |   7 -
+ .../gpu/drm/msm/registers/adreno/adreno_common.xml |  11 +
+ 7 files changed, 617 insertions(+), 613 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-index 6f7ed07670b1..0995aa1f7286 100644
---- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-+++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-@@ -1546,7 +1546,7 @@ static void a6xx_recover(struct msm_gpu *gpu)
- 	struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
- 	struct a6xx_gpu *a6xx_gpu = to_a6xx_gpu(adreno_gpu);
- 	struct a6xx_gmu *gmu = &a6xx_gpu->gmu;
--	int i, active_submits;
-+	int active_submits;
+diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu_state.h b/drivers/gpu/drm/msm/adreno/a6xx_gpu_state.h
+index 1c18499b60bb..4c5fe627d368 100644
+--- a/drivers/gpu/drm/msm/adreno/a6xx_gpu_state.h
++++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu_state.h
+@@ -575,7 +575,7 @@ struct gen7_sptp_cluster_registers {
+ 	/* statetype: SP block state type for the cluster */
+ 	enum a7xx_statetype_id statetype;
+ 	/* pipe_id: Pipe identifier */
+-	enum a7xx_pipe pipe_id;
++	enum adreno_pipe pipe_id;
+ 	/* context_id: Context identifier */
+ 	int context_id;
+ 	/* location_id: Location identifier */
+@@ -801,10 +801,10 @@ static const char *a7xx_statetype_names[] = {
+ };
  
- 	adreno_dump_info(gpu);
+ static const char *a7xx_pipe_names[] = {
+-	A7XX_NAME(A7XX_PIPE_NONE),
+-	A7XX_NAME(A7XX_PIPE_BR),
+-	A7XX_NAME(A7XX_PIPE_BV),
+-	A7XX_NAME(A7XX_PIPE_LPAC),
++	A7XX_NAME(PIPE_NONE),
++	A7XX_NAME(PIPE_BR),
++	A7XX_NAME(PIPE_BV),
++	A7XX_NAME(PIPE_LPAC),
+ };
  
-@@ -1554,10 +1554,6 @@ static void a6xx_recover(struct msm_gpu *gpu)
- 		/* Sometimes crashstate capture is skipped, so SQE should be halted here again */
- 		gpu_write(gpu, REG_A6XX_CP_SQE_CNTL, 3);
+ static const char *a7xx_cluster_names[] = {
+diff --git a/drivers/gpu/drm/msm/adreno/adreno_gen7_0_0_snapshot.h b/drivers/gpu/drm/msm/adreno/adreno_gen7_0_0_snapshot.h
+index 04b49d385f9d..087473679893 100644
+--- a/drivers/gpu/drm/msm/adreno/adreno_gen7_0_0_snapshot.h
++++ b/drivers/gpu/drm/msm/adreno/adreno_gen7_0_0_snapshot.h
+@@ -82,85 +82,85 @@ static const u32 gen7_0_0_debugbus_blocks[] = {
+ };
  
--		for (i = 0; i < 8; i++)
--			DRM_DEV_INFO(&gpu->pdev->dev, "CP_SCRATCH_REG%d: %u\n", i,
--				gpu_read(gpu, REG_A6XX_CP_SCRATCH_REG(i)));
+ static const struct gen7_shader_block gen7_0_0_shader_blocks[] = {
+-	{A7XX_TP0_TMO_DATA,                 0x200, 4, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_TP0_SMO_DATA,                  0x80, 4, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_TP0_MIPMAP_BASE_DATA,         0x3c0, 4, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_INST_DATA,                 0x800, 4, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_INST_DATA_1,               0x800, 4, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_LB_0_DATA,                 0x800, 4, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_LB_1_DATA,                 0x800, 4, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_LB_2_DATA,                 0x800, 4, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_LB_3_DATA,                 0x800, 4, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_LB_4_DATA,                 0x800, 4, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_LB_5_DATA,                 0x800, 4, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_LB_6_DATA,                 0x800, 4, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_LB_7_DATA,                 0x800, 4, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_CB_RAM,                    0x390, 4, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_INST_TAG,                   0x90, 4, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_INST_DATA_2,               0x200, 4, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_TMO_TAG,                    0x80, 4, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_SMO_TAG,                    0x80, 4, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_STATE_DATA,                 0x40, 4, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_HWAVE_RAM,                 0x100, 4, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_L0_INST_BUF,                0x50, 4, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_LB_8_DATA,                 0x800, 4, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_LB_9_DATA,                 0x800, 4, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_LB_10_DATA,                0x800, 4, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_LB_11_DATA,                0x800, 4, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_LB_12_DATA,                0x200, 4, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_HLSQ_CVS_BE_CTXT_BUF_RAM_TAG,  0x10, 1, 1, A7XX_PIPE_BV, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_CVS_BE_CTXT_BUF_RAM_TAG,  0x10, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_CPS_BE_CTXT_BUF_RAM_TAG,  0x10, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_GFX_CVS_BE_CTXT_BUF_RAM, 0x300, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_GFX_CVS_BE_CTXT_BUF_RAM, 0x300, 1, 1, A7XX_PIPE_BV, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_GFX_CPS_BE_CTXT_BUF_RAM, 0x300, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_CHUNK_CVS_RAM,           0x1c0, 1, 1, A7XX_PIPE_BV, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_CHUNK_CVS_RAM,           0x1c0, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_CHUNK_CPS_RAM,           0x300, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_CHUNK_CPS_RAM,           0x300, 1, 1, A7XX_PIPE_LPAC, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_CHUNK_CVS_RAM_TAG,        0x40, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_CHUNK_CVS_RAM_TAG,        0x40, 1, 1, A7XX_PIPE_BV, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_CHUNK_CPS_RAM_TAG,        0x40, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_CHUNK_CPS_RAM_TAG,        0x40, 1, 1, A7XX_PIPE_LPAC, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_ICB_CVS_CB_BASE_TAG,      0x10, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_ICB_CVS_CB_BASE_TAG,      0x10, 1, 1, A7XX_PIPE_BV, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_ICB_CPS_CB_BASE_TAG,      0x10, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_ICB_CPS_CB_BASE_TAG,      0x10, 1, 1, A7XX_PIPE_LPAC, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_CVS_MISC_RAM,            0x280, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_CVS_MISC_RAM,            0x280, 1, 1, A7XX_PIPE_BV, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_CPS_MISC_RAM,            0x800, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_CPS_MISC_RAM,            0x800, 1, 1, A7XX_PIPE_LPAC, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_CPS_MISC_RAM_1,          0x200, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_INST_RAM,                0x800, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_INST_RAM,                0x800, 1, 1, A7XX_PIPE_BV, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_INST_RAM,                0x800, 1, 1, A7XX_PIPE_LPAC, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_GFX_CVS_CONST_RAM,       0x800, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_GFX_CVS_CONST_RAM,       0x800, 1, 1, A7XX_PIPE_BV, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_GFX_CPS_CONST_RAM,       0x800, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_GFX_CPS_CONST_RAM,       0x800, 1, 1, A7XX_PIPE_LPAC, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_CVS_MISC_RAM_TAG,         0x10, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_CVS_MISC_RAM_TAG,         0x10, 1, 1, A7XX_PIPE_BV, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_CPS_MISC_RAM_TAG,         0x10, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_CPS_MISC_RAM_TAG,         0x10, 1, 1, A7XX_PIPE_LPAC, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_INST_RAM_TAG,             0x80, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_INST_RAM_TAG,             0x80, 1, 1, A7XX_PIPE_BV, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_INST_RAM_TAG,             0x80, 1, 1, A7XX_PIPE_LPAC, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_GFX_CVS_CONST_RAM_TAG,    0x64, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_GFX_CVS_CONST_RAM_TAG,    0x64, 1, 1, A7XX_PIPE_BV, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_GFX_CPS_CONST_RAM_TAG,    0x64, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_GFX_CPS_CONST_RAM_TAG,    0x64, 1, 1, A7XX_PIPE_LPAC, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_INST_RAM_1,              0x800, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_STPROC_META,              0x10, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_BV_BE_META,               0x10, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_BV_BE_META,               0x10, 1, 1, A7XX_PIPE_BV, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_DATAPATH_META,            0x20, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_FRONTEND_META,            0x40, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_FRONTEND_META,            0x40, 1, 1, A7XX_PIPE_BV, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_FRONTEND_META,            0x40, 1, 1, A7XX_PIPE_LPAC, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_INDIRECT_META,            0x10, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_BACKEND_META,             0x40, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_BACKEND_META,             0x40, 1, 1, A7XX_PIPE_BV, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_BACKEND_META,             0x40, 1, 1, A7XX_PIPE_LPAC, A7XX_HLSQ_STATE},
++	{A7XX_TP0_TMO_DATA,                 0x200, 4, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_TP0_SMO_DATA,                  0x80, 4, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_TP0_MIPMAP_BASE_DATA,         0x3c0, 4, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_INST_DATA,                 0x800, 4, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_INST_DATA_1,               0x800, 4, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_LB_0_DATA,                 0x800, 4, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_LB_1_DATA,                 0x800, 4, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_LB_2_DATA,                 0x800, 4, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_LB_3_DATA,                 0x800, 4, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_LB_4_DATA,                 0x800, 4, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_LB_5_DATA,                 0x800, 4, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_LB_6_DATA,                 0x800, 4, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_LB_7_DATA,                 0x800, 4, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_CB_RAM,                    0x390, 4, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_INST_TAG,                   0x90, 4, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_INST_DATA_2,               0x200, 4, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_TMO_TAG,                    0x80, 4, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_SMO_TAG,                    0x80, 4, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_STATE_DATA,                 0x40, 4, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_HWAVE_RAM,                 0x100, 4, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_L0_INST_BUF,                0x50, 4, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_LB_8_DATA,                 0x800, 4, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_LB_9_DATA,                 0x800, 4, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_LB_10_DATA,                0x800, 4, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_LB_11_DATA,                0x800, 4, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_LB_12_DATA,                0x200, 4, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_HLSQ_CVS_BE_CTXT_BUF_RAM_TAG,  0x10, 1, 1, PIPE_BV, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_CVS_BE_CTXT_BUF_RAM_TAG,  0x10, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_CPS_BE_CTXT_BUF_RAM_TAG,  0x10, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_GFX_CVS_BE_CTXT_BUF_RAM, 0x300, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_GFX_CVS_BE_CTXT_BUF_RAM, 0x300, 1, 1, PIPE_BV, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_GFX_CPS_BE_CTXT_BUF_RAM, 0x300, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_CHUNK_CVS_RAM,           0x1c0, 1, 1, PIPE_BV, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_CHUNK_CVS_RAM,           0x1c0, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_CHUNK_CPS_RAM,           0x300, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_CHUNK_CPS_RAM,           0x300, 1, 1, PIPE_LPAC, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_CHUNK_CVS_RAM_TAG,        0x40, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_CHUNK_CVS_RAM_TAG,        0x40, 1, 1, PIPE_BV, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_CHUNK_CPS_RAM_TAG,        0x40, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_CHUNK_CPS_RAM_TAG,        0x40, 1, 1, PIPE_LPAC, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_ICB_CVS_CB_BASE_TAG,      0x10, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_ICB_CVS_CB_BASE_TAG,      0x10, 1, 1, PIPE_BV, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_ICB_CPS_CB_BASE_TAG,      0x10, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_ICB_CPS_CB_BASE_TAG,      0x10, 1, 1, PIPE_LPAC, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_CVS_MISC_RAM,            0x280, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_CVS_MISC_RAM,            0x280, 1, 1, PIPE_BV, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_CPS_MISC_RAM,            0x800, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_CPS_MISC_RAM,            0x800, 1, 1, PIPE_LPAC, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_CPS_MISC_RAM_1,          0x200, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_INST_RAM,                0x800, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_INST_RAM,                0x800, 1, 1, PIPE_BV, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_INST_RAM,                0x800, 1, 1, PIPE_LPAC, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_GFX_CVS_CONST_RAM,       0x800, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_GFX_CVS_CONST_RAM,       0x800, 1, 1, PIPE_BV, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_GFX_CPS_CONST_RAM,       0x800, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_GFX_CPS_CONST_RAM,       0x800, 1, 1, PIPE_LPAC, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_CVS_MISC_RAM_TAG,         0x10, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_CVS_MISC_RAM_TAG,         0x10, 1, 1, PIPE_BV, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_CPS_MISC_RAM_TAG,         0x10, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_CPS_MISC_RAM_TAG,         0x10, 1, 1, PIPE_LPAC, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_INST_RAM_TAG,             0x80, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_INST_RAM_TAG,             0x80, 1, 1, PIPE_BV, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_INST_RAM_TAG,             0x80, 1, 1, PIPE_LPAC, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_GFX_CVS_CONST_RAM_TAG,    0x64, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_GFX_CVS_CONST_RAM_TAG,    0x64, 1, 1, PIPE_BV, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_GFX_CPS_CONST_RAM_TAG,    0x64, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_GFX_CPS_CONST_RAM_TAG,    0x64, 1, 1, PIPE_LPAC, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_INST_RAM_1,              0x800, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_STPROC_META,              0x10, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_BV_BE_META,               0x10, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_BV_BE_META,               0x10, 1, 1, PIPE_BV, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_DATAPATH_META,            0x20, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_FRONTEND_META,            0x40, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_FRONTEND_META,            0x40, 1, 1, PIPE_BV, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_FRONTEND_META,            0x40, 1, 1, PIPE_LPAC, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_INDIRECT_META,            0x10, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_BACKEND_META,             0x40, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_BACKEND_META,             0x40, 1, 1, PIPE_BV, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_BACKEND_META,             0x40, 1, 1, PIPE_LPAC, A7XX_HLSQ_STATE},
+ };
+ 
+ static const u32 gen7_0_0_pre_crashdumper_gpu_registers[] = {
+@@ -303,7 +303,7 @@ static const u32 gen7_0_0_noncontext_rb_rbp_pipe_br_registers[] = {
+ };
+ static_assert(IS_ALIGNED(sizeof(gen7_0_0_noncontext_rb_rbp_pipe_br_registers), 8));
+ 
+-/* Block: GRAS Cluster: A7XX_CLUSTER_GRAS Pipeline: A7XX_PIPE_BR */
++/* Block: GRAS Cluster: A7XX_CLUSTER_GRAS Pipeline: PIPE_BR */
+ static const u32 gen7_0_0_gras_cluster_gras_pipe_br_registers[] = {
+ 	0x08000, 0x08008, 0x08010, 0x08092, 0x08094, 0x08099, 0x0809b, 0x0809d,
+ 	0x080a0, 0x080a7, 0x080af, 0x080f1, 0x080f4, 0x080f6, 0x080f8, 0x080fa,
+@@ -313,7 +313,7 @@ static const u32 gen7_0_0_gras_cluster_gras_pipe_br_registers[] = {
+ };
+ static_assert(IS_ALIGNED(sizeof(gen7_0_0_gras_cluster_gras_pipe_br_registers), 8));
+ 
+-/* Block: GRAS Cluster: A7XX_CLUSTER_GRAS Pipeline: A7XX_PIPE_BV */
++/* Block: GRAS Cluster: A7XX_CLUSTER_GRAS Pipeline: PIPE_BV */
+ static const u32 gen7_0_0_gras_cluster_gras_pipe_bv_registers[] = {
+ 	0x08000, 0x08008, 0x08010, 0x08092, 0x08094, 0x08099, 0x0809b, 0x0809d,
+ 	0x080a0, 0x080a7, 0x080af, 0x080f1, 0x080f4, 0x080f6, 0x080f8, 0x080fa,
+@@ -323,7 +323,7 @@ static const u32 gen7_0_0_gras_cluster_gras_pipe_bv_registers[] = {
+ };
+ static_assert(IS_ALIGNED(sizeof(gen7_0_0_gras_cluster_gras_pipe_bv_registers), 8));
+ 
+-/* Block: PC Cluster: A7XX_CLUSTER_FE Pipeline: A7XX_PIPE_BR */
++/* Block: PC Cluster: A7XX_CLUSTER_FE Pipeline: PIPE_BR */
+ static const u32 gen7_0_0_pc_cluster_fe_pipe_br_registers[] = {
+ 	0x09800, 0x09804, 0x09806, 0x0980a, 0x09810, 0x09811, 0x09884, 0x09886,
+ 	0x09b00, 0x09b08,
+@@ -331,7 +331,7 @@ static const u32 gen7_0_0_pc_cluster_fe_pipe_br_registers[] = {
+ };
+ static_assert(IS_ALIGNED(sizeof(gen7_0_0_pc_cluster_fe_pipe_br_registers), 8));
+ 
+-/* Block: PC Cluster: A7XX_CLUSTER_FE Pipeline: A7XX_PIPE_BV */
++/* Block: PC Cluster: A7XX_CLUSTER_FE Pipeline: PIPE_BV */
+ static const u32 gen7_0_0_pc_cluster_fe_pipe_bv_registers[] = {
+ 	0x09800, 0x09804, 0x09806, 0x0980a, 0x09810, 0x09811, 0x09884, 0x09886,
+ 	0x09b00, 0x09b08,
+@@ -339,7 +339,7 @@ static const u32 gen7_0_0_pc_cluster_fe_pipe_bv_registers[] = {
+ };
+ static_assert(IS_ALIGNED(sizeof(gen7_0_0_pc_cluster_fe_pipe_bv_registers), 8));
+ 
+-/* Block: RB_RAC Cluster: A7XX_CLUSTER_PS Pipeline: A7XX_PIPE_BR */
++/* Block: RB_RAC Cluster: A7XX_CLUSTER_PS Pipeline: PIPE_BR */
+ static const u32 gen7_0_0_rb_rac_cluster_ps_pipe_br_registers[] = {
+ 	0x08802, 0x08802, 0x08804, 0x08806, 0x08809, 0x0880a, 0x0880e, 0x08811,
+ 	0x08818, 0x0881e, 0x08821, 0x08821, 0x08823, 0x08826, 0x08829, 0x08829,
+@@ -355,7 +355,7 @@ static const u32 gen7_0_0_rb_rac_cluster_ps_pipe_br_registers[] = {
+ };
+ static_assert(IS_ALIGNED(sizeof(gen7_0_0_rb_rac_cluster_ps_pipe_br_registers), 8));
+ 
+-/* Block: RB_RBP Cluster: A7XX_CLUSTER_PS Pipeline: A7XX_PIPE_BR */
++/* Block: RB_RBP Cluster: A7XX_CLUSTER_PS Pipeline: PIPE_BR */
+ static const u32 gen7_0_0_rb_rbp_cluster_ps_pipe_br_registers[] = {
+ 	0x08800, 0x08801, 0x08803, 0x08803, 0x0880b, 0x0880d, 0x08812, 0x08812,
+ 	0x08820, 0x08820, 0x08822, 0x08822, 0x08827, 0x08828, 0x0882a, 0x0882a,
+@@ -370,7 +370,7 @@ static const u32 gen7_0_0_rb_rbp_cluster_ps_pipe_br_registers[] = {
+ };
+ static_assert(IS_ALIGNED(sizeof(gen7_0_0_rb_rbp_cluster_ps_pipe_br_registers), 8));
+ 
+-/* Block: SP Cluster: A7XX_CLUSTER_SP_PS Pipeline: A7XX_PIPE_BR Location: HLSQ_STATE */
++/* Block: SP Cluster: A7XX_CLUSTER_SP_PS Pipeline: PIPE_BR Location: HLSQ_STATE */
+ static const u32 gen7_0_0_sp_cluster_sp_ps_pipe_br_hlsq_state_registers[] = {
+ 	0x0a980, 0x0a980, 0x0a982, 0x0a984, 0x0a99e, 0x0a99e, 0x0a9a7, 0x0a9a7,
+ 	0x0a9aa, 0x0a9aa, 0x0a9ae, 0x0a9b0, 0x0a9b3, 0x0a9b5, 0x0a9ba, 0x0a9ba,
+@@ -381,7 +381,7 @@ static const u32 gen7_0_0_sp_cluster_sp_ps_pipe_br_hlsq_state_registers[] = {
+ };
+ static_assert(IS_ALIGNED(sizeof(gen7_0_0_sp_cluster_sp_ps_pipe_br_hlsq_state_registers), 8));
+ 
+-/* Block: SP Cluster: A7XX_CLUSTER_SP_PS Pipeline: A7XX_PIPE_LPAC Location: HLSQ_STATE */
++/* Block: SP Cluster: A7XX_CLUSTER_SP_PS Pipeline: PIPE_LPAC Location: HLSQ_STATE */
+ static const u32 gen7_0_0_sp_cluster_sp_ps_pipe_lpac_hlsq_state_registers[] = {
+ 	0x0a9b0, 0x0a9b0, 0x0a9b3, 0x0a9b5, 0x0a9ba, 0x0a9ba, 0x0a9bc, 0x0a9bc,
+ 	0x0a9c4, 0x0a9c4, 0x0a9cd, 0x0a9cd, 0x0a9e2, 0x0a9e3, 0x0a9e6, 0x0a9fc,
+@@ -390,21 +390,21 @@ static const u32 gen7_0_0_sp_cluster_sp_ps_pipe_lpac_hlsq_state_registers[] = {
+ };
+ static_assert(IS_ALIGNED(sizeof(gen7_0_0_sp_cluster_sp_ps_pipe_lpac_hlsq_state_registers), 8));
+ 
+-/* Block: SP Cluster: A7XX_CLUSTER_SP_PS Pipeline: A7XX_PIPE_BR Location: HLSQ_DP */
++/* Block: SP Cluster: A7XX_CLUSTER_SP_PS Pipeline: PIPE_BR Location: HLSQ_DP */
+ static const u32 gen7_0_0_sp_cluster_sp_ps_pipe_br_hlsq_dp_registers[] = {
+ 	0x0a9b1, 0x0a9b1, 0x0a9c6, 0x0a9cb, 0x0a9d4, 0x0a9df,
+ 	UINT_MAX, UINT_MAX,
+ };
+ static_assert(IS_ALIGNED(sizeof(gen7_0_0_sp_cluster_sp_ps_pipe_br_hlsq_dp_registers), 8));
+ 
+-/* Block: SP Cluster: A7XX_CLUSTER_SP_PS Pipeline: A7XX_PIPE_LPAC Location: HLSQ_DP */
++/* Block: SP Cluster: A7XX_CLUSTER_SP_PS Pipeline: PIPE_LPAC Location: HLSQ_DP */
+ static const u32 gen7_0_0_sp_cluster_sp_ps_pipe_lpac_hlsq_dp_registers[] = {
+ 	0x0a9b1, 0x0a9b1, 0x0a9d4, 0x0a9df,
+ 	UINT_MAX, UINT_MAX,
+ };
+ static_assert(IS_ALIGNED(sizeof(gen7_0_0_sp_cluster_sp_ps_pipe_lpac_hlsq_dp_registers), 8));
+ 
+-/* Block: SP Cluster: A7XX_CLUSTER_SP_PS Pipeline: A7XX_PIPE_BR Location: SP_TOP */
++/* Block: SP Cluster: A7XX_CLUSTER_SP_PS Pipeline: PIPE_BR Location: SP_TOP */
+ static const u32 gen7_0_0_sp_cluster_sp_ps_pipe_br_sp_top_registers[] = {
+ 	0x0a980, 0x0a980, 0x0a982, 0x0a984, 0x0a99e, 0x0a9a2, 0x0a9a7, 0x0a9a8,
+ 	0x0a9aa, 0x0a9aa, 0x0a9ae, 0x0a9ae, 0x0a9b0, 0x0a9b1, 0x0a9b3, 0x0a9b5,
+@@ -414,7 +414,7 @@ static const u32 gen7_0_0_sp_cluster_sp_ps_pipe_br_sp_top_registers[] = {
+ };
+ static_assert(IS_ALIGNED(sizeof(gen7_0_0_sp_cluster_sp_ps_pipe_br_sp_top_registers), 8));
+ 
+-/* Block: SP Cluster: A7XX_CLUSTER_SP_PS Pipeline: A7XX_PIPE_LPAC Location: SP_TOP */
++/* Block: SP Cluster: A7XX_CLUSTER_SP_PS Pipeline: PIPE_LPAC Location: SP_TOP */
+ static const u32 gen7_0_0_sp_cluster_sp_ps_pipe_lpac_sp_top_registers[] = {
+ 	0x0a9b0, 0x0a9b1, 0x0a9b3, 0x0a9b5, 0x0a9ba, 0x0a9bc, 0x0a9e2, 0x0a9e3,
+ 	0x0a9e6, 0x0a9f9, 0x0aa00, 0x0aa00, 0x0ab00, 0x0ab00,
+@@ -422,7 +422,7 @@ static const u32 gen7_0_0_sp_cluster_sp_ps_pipe_lpac_sp_top_registers[] = {
+ };
+ static_assert(IS_ALIGNED(sizeof(gen7_0_0_sp_cluster_sp_ps_pipe_lpac_sp_top_registers), 8));
+ 
+-/* Block: SP Cluster: A7XX_CLUSTER_SP_PS Pipeline: A7XX_PIPE_BR Location: uSPTP */
++/* Block: SP Cluster: A7XX_CLUSTER_SP_PS Pipeline: PIPE_BR Location: uSPTP */
+ static const u32 gen7_0_0_sp_cluster_sp_ps_pipe_br_usptp_registers[] = {
+ 	0x0a980, 0x0a982, 0x0a985, 0x0a9a6, 0x0a9a8, 0x0a9a9, 0x0a9ab, 0x0a9ae,
+ 	0x0a9b0, 0x0a9b3, 0x0a9b6, 0x0a9b9, 0x0a9bb, 0x0a9bf, 0x0a9c2, 0x0a9c3,
+@@ -432,7 +432,7 @@ static const u32 gen7_0_0_sp_cluster_sp_ps_pipe_br_usptp_registers[] = {
+ };
+ static_assert(IS_ALIGNED(sizeof(gen7_0_0_sp_cluster_sp_ps_pipe_br_usptp_registers), 8));
+ 
+-/* Block: SP Cluster: A7XX_CLUSTER_SP_PS Pipeline: A7XX_PIPE_LPAC Location: uSPTP */
++/* Block: SP Cluster: A7XX_CLUSTER_SP_PS Pipeline: PIPE_LPAC Location: uSPTP */
+ static const u32 gen7_0_0_sp_cluster_sp_ps_pipe_lpac_usptp_registers[] = {
+ 	0x0a9b0, 0x0a9b3, 0x0a9b6, 0x0a9b9, 0x0a9bb, 0x0a9be, 0x0a9c2, 0x0a9c3,
+ 	0x0a9cd, 0x0a9cd, 0x0a9d0, 0x0a9d3, 0x0aa31, 0x0aa31, 0x0ab00, 0x0ab01,
+@@ -440,7 +440,7 @@ static const u32 gen7_0_0_sp_cluster_sp_ps_pipe_lpac_usptp_registers[] = {
+ };
+ static_assert(IS_ALIGNED(sizeof(gen7_0_0_sp_cluster_sp_ps_pipe_lpac_usptp_registers), 8));
+ 
+-/* Block: SP Cluster: A7XX_CLUSTER_SP_VS Pipeline: A7XX_PIPE_BR Location: HLSQ_STATE */
++/* Block: SP Cluster: A7XX_CLUSTER_SP_VS Pipeline: PIPE_BR Location: HLSQ_STATE */
+ static const u32 gen7_0_0_sp_cluster_sp_vs_pipe_br_hlsq_state_registers[] = {
+ 	0x0a800, 0x0a800, 0x0a81b, 0x0a81d, 0x0a822, 0x0a822, 0x0a824, 0x0a824,
+ 	0x0a827, 0x0a82a, 0x0a830, 0x0a830, 0x0a833, 0x0a835, 0x0a83a, 0x0a83a,
+@@ -453,7 +453,7 @@ static const u32 gen7_0_0_sp_cluster_sp_vs_pipe_br_hlsq_state_registers[] = {
+ };
+ static_assert(IS_ALIGNED(sizeof(gen7_0_0_sp_cluster_sp_vs_pipe_br_hlsq_state_registers), 8));
+ 
+-/* Block: SP Cluster: A7XX_CLUSTER_SP_VS Pipeline: A7XX_PIPE_BV Location: HLSQ_STATE */
++/* Block: SP Cluster: A7XX_CLUSTER_SP_VS Pipeline: PIPE_BV Location: HLSQ_STATE */
+ static const u32 gen7_0_0_sp_cluster_sp_vs_pipe_bv_hlsq_state_registers[] = {
+ 	0x0a800, 0x0a800, 0x0a81b, 0x0a81d, 0x0a822, 0x0a822, 0x0a824, 0x0a824,
+ 	0x0a827, 0x0a82a, 0x0a830, 0x0a830, 0x0a833, 0x0a835, 0x0a83a, 0x0a83a,
+@@ -466,7 +466,7 @@ static const u32 gen7_0_0_sp_cluster_sp_vs_pipe_bv_hlsq_state_registers[] = {
+ };
+ static_assert(IS_ALIGNED(sizeof(gen7_0_0_sp_cluster_sp_vs_pipe_bv_hlsq_state_registers), 8));
+ 
+-/* Block: SP Cluster: A7XX_CLUSTER_SP_VS Pipeline: A7XX_PIPE_BR Location: SP_TOP */
++/* Block: SP Cluster: A7XX_CLUSTER_SP_VS Pipeline: PIPE_BR Location: SP_TOP */
+ static const u32 gen7_0_0_sp_cluster_sp_vs_pipe_br_sp_top_registers[] = {
+ 	0x0a800, 0x0a800, 0x0a81c, 0x0a81d, 0x0a822, 0x0a824, 0x0a830, 0x0a831,
+ 	0x0a834, 0x0a835, 0x0a83a, 0x0a83c, 0x0a840, 0x0a840, 0x0a85c, 0x0a85d,
+@@ -477,7 +477,7 @@ static const u32 gen7_0_0_sp_cluster_sp_vs_pipe_br_sp_top_registers[] = {
+ };
+ static_assert(IS_ALIGNED(sizeof(gen7_0_0_sp_cluster_sp_vs_pipe_br_sp_top_registers), 8));
+ 
+-/* Block: SP Cluster: A7XX_CLUSTER_SP_VS Pipeline: A7XX_PIPE_BV Location: SP_TOP */
++/* Block: SP Cluster: A7XX_CLUSTER_SP_VS Pipeline: PIPE_BV Location: SP_TOP */
+ static const u32 gen7_0_0_sp_cluster_sp_vs_pipe_bv_sp_top_registers[] = {
+ 	0x0a800, 0x0a800, 0x0a81c, 0x0a81d, 0x0a822, 0x0a824, 0x0a830, 0x0a831,
+ 	0x0a834, 0x0a835, 0x0a83a, 0x0a83c, 0x0a840, 0x0a840, 0x0a85c, 0x0a85d,
+@@ -488,7 +488,7 @@ static const u32 gen7_0_0_sp_cluster_sp_vs_pipe_bv_sp_top_registers[] = {
+ };
+ static_assert(IS_ALIGNED(sizeof(gen7_0_0_sp_cluster_sp_vs_pipe_bv_sp_top_registers), 8));
+ 
+-/* Block: SP Cluster: A7XX_CLUSTER_SP_VS Pipeline: A7XX_PIPE_BR Location: uSPTP */
++/* Block: SP Cluster: A7XX_CLUSTER_SP_VS Pipeline: PIPE_BR Location: uSPTP */
+ static const u32 gen7_0_0_sp_cluster_sp_vs_pipe_br_usptp_registers[] = {
+ 	0x0a800, 0x0a81b, 0x0a81e, 0x0a821, 0x0a823, 0x0a827, 0x0a830, 0x0a833,
+ 	0x0a836, 0x0a839, 0x0a83b, 0x0a85b, 0x0a85e, 0x0a861, 0x0a863, 0x0a867,
+@@ -498,7 +498,7 @@ static const u32 gen7_0_0_sp_cluster_sp_vs_pipe_br_usptp_registers[] = {
+ };
+ static_assert(IS_ALIGNED(sizeof(gen7_0_0_sp_cluster_sp_vs_pipe_br_usptp_registers), 8));
+ 
+-/* Block: SP Cluster: A7XX_CLUSTER_SP_VS Pipeline: A7XX_PIPE_BV Location: uSPTP */
++/* Block: SP Cluster: A7XX_CLUSTER_SP_VS Pipeline: PIPE_BV Location: uSPTP */
+ static const u32 gen7_0_0_sp_cluster_sp_vs_pipe_bv_usptp_registers[] = {
+ 	0x0a800, 0x0a81b, 0x0a81e, 0x0a821, 0x0a823, 0x0a827, 0x0a830, 0x0a833,
+ 	0x0a836, 0x0a839, 0x0a83b, 0x0a85b, 0x0a85e, 0x0a861, 0x0a863, 0x0a867,
+@@ -508,7 +508,7 @@ static const u32 gen7_0_0_sp_cluster_sp_vs_pipe_bv_usptp_registers[] = {
+ };
+ static_assert(IS_ALIGNED(sizeof(gen7_0_0_sp_cluster_sp_vs_pipe_bv_usptp_registers), 8));
+ 
+-/* Block: TPL1 Cluster: A7XX_CLUSTER_SP_PS Pipeline: A7XX_PIPE_BR */
++/* Block: TPL1 Cluster: A7XX_CLUSTER_SP_PS Pipeline: PIPE_BR */
+ static const u32 gen7_0_0_tpl1_cluster_sp_ps_pipe_br_registers[] = {
+ 	0x0b180, 0x0b183, 0x0b190, 0x0b195, 0x0b2c0, 0x0b2d5, 0x0b300, 0x0b307,
+ 	0x0b309, 0x0b309, 0x0b310, 0x0b310,
+@@ -516,35 +516,35 @@ static const u32 gen7_0_0_tpl1_cluster_sp_ps_pipe_br_registers[] = {
+ };
+ static_assert(IS_ALIGNED(sizeof(gen7_0_0_tpl1_cluster_sp_ps_pipe_br_registers), 8));
+ 
+-/* Block: SP Cluster: A7XX_CLUSTER_SP_PS Pipeline: A7XX_PIPE_BV Location: HLSQ_STATE */
++/* Block: SP Cluster: A7XX_CLUSTER_SP_PS Pipeline: PIPE_BV Location: HLSQ_STATE */
+ static const u32 gen7_0_0_sp_cluster_sp_ps_pipe_bv_hlsq_state_registers[] = {
+ 	0x0ab00, 0x0ab02, 0x0ab0a, 0x0ab1b, 0x0ab20, 0x0ab20, 0x0ab40, 0x0abbf,
+ 	UINT_MAX, UINT_MAX,
+ };
+ static_assert(IS_ALIGNED(sizeof(gen7_0_0_sp_cluster_sp_ps_pipe_bv_hlsq_state_registers), 8));
+ 
+-/* Block: SP Cluster: A7XX_CLUSTER_SP_PS Pipeline: A7XX_PIPE_BV Location: SP_TOP */
++/* Block: SP Cluster: A7XX_CLUSTER_SP_PS Pipeline: PIPE_BV Location: SP_TOP */
+ static const u32 gen7_0_0_sp_cluster_sp_ps_pipe_bv_sp_top_registers[] = {
+ 	0x0ab00, 0x0ab00, 0x0ab02, 0x0ab02, 0x0ab0a, 0x0ab1b, 0x0ab20, 0x0ab20,
+ 	UINT_MAX, UINT_MAX,
+ };
+ static_assert(IS_ALIGNED(sizeof(gen7_0_0_sp_cluster_sp_ps_pipe_bv_sp_top_registers), 8));
+ 
+-/* Block: SP Cluster: A7XX_CLUSTER_SP_PS Pipeline: A7XX_PIPE_BV Location: uSPTP */
++/* Block: SP Cluster: A7XX_CLUSTER_SP_PS Pipeline: PIPE_BV Location: uSPTP */
+ static const u32 gen7_0_0_sp_cluster_sp_ps_pipe_bv_usptp_registers[] = {
+ 	0x0ab00, 0x0ab02, 0x0ab21, 0x0ab22, 0x0ab40, 0x0abbf,
+ 	UINT_MAX, UINT_MAX,
+ };
+ static_assert(IS_ALIGNED(sizeof(gen7_0_0_sp_cluster_sp_ps_pipe_bv_usptp_registers), 8));
+ 
+-/* Block: TPL1 Cluster: A7XX_CLUSTER_SP_PS Pipeline: A7XX_PIPE_BV */
++/* Block: TPL1 Cluster: A7XX_CLUSTER_SP_PS Pipeline: PIPE_BV */
+ static const u32 gen7_0_0_tpl1_cluster_sp_ps_pipe_bv_registers[] = {
+ 	0x0b300, 0x0b307, 0x0b309, 0x0b309, 0x0b310, 0x0b310,
+ 	UINT_MAX, UINT_MAX,
+ };
+ static_assert(IS_ALIGNED(sizeof(gen7_0_0_tpl1_cluster_sp_ps_pipe_bv_registers), 8));
+ 
+-/* Block: TPL1 Cluster: A7XX_CLUSTER_SP_PS Pipeline: A7XX_PIPE_LPAC */
++/* Block: TPL1 Cluster: A7XX_CLUSTER_SP_PS Pipeline: PIPE_LPAC */
+ static const u32 gen7_0_0_tpl1_cluster_sp_ps_pipe_lpac_registers[] = {
+ 	0x0b180, 0x0b181, 0x0b300, 0x0b301, 0x0b307, 0x0b307, 0x0b309, 0x0b309,
+ 	0x0b310, 0x0b310,
+@@ -552,84 +552,84 @@ static const u32 gen7_0_0_tpl1_cluster_sp_ps_pipe_lpac_registers[] = {
+ };
+ static_assert(IS_ALIGNED(sizeof(gen7_0_0_tpl1_cluster_sp_ps_pipe_lpac_registers), 8));
+ 
+-/* Block: TPL1 Cluster: A7XX_CLUSTER_SP_VS Pipeline: A7XX_PIPE_BR */
++/* Block: TPL1 Cluster: A7XX_CLUSTER_SP_VS Pipeline: PIPE_BR */
+ static const u32 gen7_0_0_tpl1_cluster_sp_vs_pipe_br_registers[] = {
+ 	0x0b300, 0x0b307, 0x0b309, 0x0b309, 0x0b310, 0x0b310,
+ 	UINT_MAX, UINT_MAX,
+ };
+ static_assert(IS_ALIGNED(sizeof(gen7_0_0_tpl1_cluster_sp_vs_pipe_br_registers), 8));
+ 
+-/* Block: TPL1 Cluster: A7XX_CLUSTER_SP_VS Pipeline: A7XX_PIPE_BV */
++/* Block: TPL1 Cluster: A7XX_CLUSTER_SP_VS Pipeline: PIPE_BV */
+ static const u32 gen7_0_0_tpl1_cluster_sp_vs_pipe_bv_registers[] = {
+ 	0x0b300, 0x0b307, 0x0b309, 0x0b309, 0x0b310, 0x0b310,
+ 	UINT_MAX, UINT_MAX,
+ };
+ static_assert(IS_ALIGNED(sizeof(gen7_0_0_tpl1_cluster_sp_vs_pipe_bv_registers), 8));
+ 
+-/* Block: VFD Cluster: A7XX_CLUSTER_FE Pipeline: A7XX_PIPE_BR */
++/* Block: VFD Cluster: A7XX_CLUSTER_FE Pipeline: PIPE_BR */
+ static const u32 gen7_0_0_vfd_cluster_fe_pipe_br_registers[] = {
+ 	0x0a000, 0x0a009, 0x0a00e, 0x0a0ef,
+ 	UINT_MAX, UINT_MAX,
+ };
+ static_assert(IS_ALIGNED(sizeof(gen7_0_0_vfd_cluster_fe_pipe_br_registers), 8));
+ 
+-/* Block: VFD Cluster: A7XX_CLUSTER_FE Pipeline: A7XX_PIPE_BV */
++/* Block: VFD Cluster: A7XX_CLUSTER_FE Pipeline: PIPE_BV */
+ static const u32 gen7_0_0_vfd_cluster_fe_pipe_bv_registers[] = {
+ 	0x0a000, 0x0a009, 0x0a00e, 0x0a0ef,
+ 	UINT_MAX, UINT_MAX,
+ };
+ static_assert(IS_ALIGNED(sizeof(gen7_0_0_vfd_cluster_fe_pipe_bv_registers), 8));
+ 
+-/* Block: VPC Cluster: A7XX_CLUSTER_FE Pipeline: A7XX_PIPE_BR */
++/* Block: VPC Cluster: A7XX_CLUSTER_FE Pipeline: PIPE_BR */
+ static const u32 gen7_0_0_vpc_cluster_fe_pipe_br_registers[] = {
+ 	0x09300, 0x09307,
+ 	UINT_MAX, UINT_MAX,
+ };
+ static_assert(IS_ALIGNED(sizeof(gen7_0_0_vpc_cluster_fe_pipe_br_registers), 8));
+ 
+-/* Block: VPC Cluster: A7XX_CLUSTER_FE Pipeline: A7XX_PIPE_BV */
++/* Block: VPC Cluster: A7XX_CLUSTER_FE Pipeline: PIPE_BV */
+ static const u32 gen7_0_0_vpc_cluster_fe_pipe_bv_registers[] = {
+ 	0x09300, 0x09307,
+ 	UINT_MAX, UINT_MAX,
+ };
+ static_assert(IS_ALIGNED(sizeof(gen7_0_0_vpc_cluster_fe_pipe_bv_registers), 8));
+ 
+-/* Block: VPC Cluster: A7XX_CLUSTER_PC_VS Pipeline: A7XX_PIPE_BR */
++/* Block: VPC Cluster: A7XX_CLUSTER_PC_VS Pipeline: PIPE_BR */
+ static const u32 gen7_0_0_vpc_cluster_pc_vs_pipe_br_registers[] = {
+ 	0x09101, 0x0910c, 0x09300, 0x09307,
+ 	UINT_MAX, UINT_MAX,
+ };
+ static_assert(IS_ALIGNED(sizeof(gen7_0_0_vpc_cluster_pc_vs_pipe_br_registers), 8));
+ 
+-/* Block: VPC Cluster: A7XX_CLUSTER_PC_VS Pipeline: A7XX_PIPE_BV */
++/* Block: VPC Cluster: A7XX_CLUSTER_PC_VS Pipeline: PIPE_BV */
+ static const u32 gen7_0_0_vpc_cluster_pc_vs_pipe_bv_registers[] = {
+ 	0x09101, 0x0910c, 0x09300, 0x09307,
+ 	UINT_MAX, UINT_MAX,
+ };
+ static_assert(IS_ALIGNED(sizeof(gen7_0_0_vpc_cluster_pc_vs_pipe_bv_registers), 8));
+ 
+-/* Block: VPC Cluster: A7XX_CLUSTER_VPC_PS Pipeline: A7XX_PIPE_BR */
++/* Block: VPC Cluster: A7XX_CLUSTER_VPC_PS Pipeline: PIPE_BR */
+ static const u32 gen7_0_0_vpc_cluster_vpc_ps_pipe_br_registers[] = {
+ 	0x09200, 0x0920f, 0x09212, 0x09216, 0x09218, 0x09236, 0x09300, 0x09307,
+ 	UINT_MAX, UINT_MAX,
+ };
+ static_assert(IS_ALIGNED(sizeof(gen7_0_0_vpc_cluster_vpc_ps_pipe_br_registers), 8));
+ 
+-/* Block: VPC Cluster: A7XX_CLUSTER_VPC_PS Pipeline: A7XX_PIPE_BV */
++/* Block: VPC Cluster: A7XX_CLUSTER_VPC_PS Pipeline: PIPE_BV */
+ static const u32 gen7_0_0_vpc_cluster_vpc_ps_pipe_bv_registers[] = {
+ 	0x09200, 0x0920f, 0x09212, 0x09216, 0x09218, 0x09236, 0x09300, 0x09307,
+ 	UINT_MAX, UINT_MAX,
+ };
+ static_assert(IS_ALIGNED(sizeof(gen7_0_0_vpc_cluster_vpc_ps_pipe_bv_registers), 8));
+ 
+-/* Block: SP Cluster: noncontext Pipeline: A7XX_PIPE_BR Location: HLSQ_STATE */
++/* Block: SP Cluster: noncontext Pipeline: PIPE_BR Location: HLSQ_STATE */
+ static const u32 gen7_0_0_sp_noncontext_pipe_br_hlsq_state_registers[] = {
+ 	0x0ae52, 0x0ae52, 0x0ae60, 0x0ae67, 0x0ae69, 0x0ae73,
+ 	UINT_MAX, UINT_MAX,
+ };
+ static_assert(IS_ALIGNED(sizeof(gen7_0_0_sp_noncontext_pipe_br_hlsq_state_registers), 8));
+ 
+-/* Block: SP Cluster: noncontext Pipeline: A7XX_PIPE_BR Location: SP_TOP */
++/* Block: SP Cluster: noncontext Pipeline: PIPE_BR Location: SP_TOP */
+ static const u32 gen7_0_0_sp_noncontext_pipe_br_sp_top_registers[] = {
+ 	0x0ae00, 0x0ae00, 0x0ae02, 0x0ae04, 0x0ae06, 0x0ae09, 0x0ae0c, 0x0ae0c,
+ 	0x0ae0f, 0x0ae0f, 0x0ae28, 0x0ae2b, 0x0ae35, 0x0ae35, 0x0ae3a, 0x0ae3f,
+@@ -638,7 +638,7 @@ static const u32 gen7_0_0_sp_noncontext_pipe_br_sp_top_registers[] = {
+ };
+ static_assert(IS_ALIGNED(sizeof(gen7_0_0_sp_noncontext_pipe_br_sp_top_registers), 8));
+ 
+-/* Block: SP Cluster: noncontext Pipeline: A7XX_PIPE_BR Location: uSPTP */
++/* Block: SP Cluster: noncontext Pipeline: PIPE_BR Location: uSPTP */
+ static const u32 gen7_0_0_sp_noncontext_pipe_br_usptp_registers[] = {
+ 	0x0ae00, 0x0ae00, 0x0ae02, 0x0ae04, 0x0ae06, 0x0ae09, 0x0ae0c, 0x0ae0c,
+ 	0x0ae0f, 0x0ae0f, 0x0ae30, 0x0ae32, 0x0ae35, 0x0ae35, 0x0ae3a, 0x0ae3b,
+@@ -647,28 +647,28 @@ static const u32 gen7_0_0_sp_noncontext_pipe_br_usptp_registers[] = {
+ };
+ static_assert(IS_ALIGNED(sizeof(gen7_0_0_sp_noncontext_pipe_br_usptp_registers), 8));
+ 
+-/* Block: SP Cluster: noncontext Pipeline: A7XX_PIPE_LPAC Location: HLSQ_STATE */
++/* Block: SP Cluster: noncontext Pipeline: PIPE_LPAC Location: HLSQ_STATE */
+ static const u32 gen7_0_0_sp_noncontext_pipe_lpac_hlsq_state_registers[] = {
+ 	0x0af88, 0x0af8a,
+ 	UINT_MAX, UINT_MAX,
+ };
+ static_assert(IS_ALIGNED(sizeof(gen7_0_0_sp_noncontext_pipe_lpac_hlsq_state_registers), 8));
+ 
+-/* Block: SP Cluster: noncontext Pipeline: A7XX_PIPE_LPAC Location: SP_TOP */
++/* Block: SP Cluster: noncontext Pipeline: PIPE_LPAC Location: SP_TOP */
+ static const u32 gen7_0_0_sp_noncontext_pipe_lpac_sp_top_registers[] = {
+ 	0x0af80, 0x0af84,
+ 	UINT_MAX, UINT_MAX,
+ };
+ static_assert(IS_ALIGNED(sizeof(gen7_0_0_sp_noncontext_pipe_lpac_sp_top_registers), 8));
+ 
+-/* Block: SP Cluster: noncontext Pipeline: A7XX_PIPE_LPAC Location: uSPTP */
++/* Block: SP Cluster: noncontext Pipeline: PIPE_LPAC Location: uSPTP */
+ static const u32 gen7_0_0_sp_noncontext_pipe_lpac_usptp_registers[] = {
+ 	0x0af80, 0x0af84, 0x0af90, 0x0af92,
+ 	UINT_MAX, UINT_MAX,
+ };
+ static_assert(IS_ALIGNED(sizeof(gen7_0_0_sp_noncontext_pipe_lpac_usptp_registers), 8));
+ 
+-/* Block: TPl1 Cluster: noncontext Pipeline: A7XX_PIPE_NONE */
++/* Block: TPl1 Cluster: noncontext Pipeline: PIPE_NONE */
+ static const u32 gen7_0_0_tpl1_noncontext_pipe_none_registers[] = {
+ 	0x0b600, 0x0b600, 0x0b602, 0x0b602, 0x0b604, 0x0b604, 0x0b608, 0x0b60c,
+ 	0x0b60f, 0x0b621, 0x0b630, 0x0b633,
+@@ -676,14 +676,14 @@ static const u32 gen7_0_0_tpl1_noncontext_pipe_none_registers[] = {
+ };
+ static_assert(IS_ALIGNED(sizeof(gen7_0_0_tpl1_noncontext_pipe_none_registers), 8));
+ 
+-/* Block: TPl1 Cluster: noncontext Pipeline: A7XX_PIPE_BR */
++/* Block: TPl1 Cluster: noncontext Pipeline: PIPE_BR */
+ static const u32 gen7_0_0_tpl1_noncontext_pipe_br_registers[] = {
+ 	 0x0b600, 0x0b600,
+ 	 UINT_MAX, UINT_MAX,
+ };
+ static_assert(IS_ALIGNED(sizeof(gen7_0_0_tpl1_noncontext_pipe_br_registers), 8));
+ 
+-/* Block: TPl1 Cluster: noncontext Pipeline: A7XX_PIPE_LPAC */
++/* Block: TPl1 Cluster: noncontext Pipeline: PIPE_LPAC */
+ static const u32 gen7_0_0_tpl1_noncontext_pipe_lpac_registers[] = {
+ 	0x0b780, 0x0b780,
+ 	UINT_MAX, UINT_MAX,
+@@ -703,172 +703,172 @@ static const struct gen7_sel_reg gen7_0_0_rb_rbp_sel = {
+ };
+ 
+ static const struct gen7_cluster_registers gen7_0_0_clusters[] = {
+-	{ A7XX_CLUSTER_NONE, A7XX_PIPE_BR, STATE_NON_CONTEXT,
++	{ A7XX_CLUSTER_NONE, PIPE_BR, STATE_NON_CONTEXT,
+ 		gen7_0_0_noncontext_pipe_br_registers, },
+-	{ A7XX_CLUSTER_NONE, A7XX_PIPE_BV, STATE_NON_CONTEXT,
++	{ A7XX_CLUSTER_NONE, PIPE_BV, STATE_NON_CONTEXT,
+ 		gen7_0_0_noncontext_pipe_bv_registers, },
+-	{ A7XX_CLUSTER_NONE, A7XX_PIPE_LPAC, STATE_NON_CONTEXT,
++	{ A7XX_CLUSTER_NONE, PIPE_LPAC, STATE_NON_CONTEXT,
+ 		gen7_0_0_noncontext_pipe_lpac_registers, },
+-	{ A7XX_CLUSTER_NONE, A7XX_PIPE_BR, STATE_NON_CONTEXT,
++	{ A7XX_CLUSTER_NONE, PIPE_BR, STATE_NON_CONTEXT,
+ 		gen7_0_0_noncontext_rb_rac_pipe_br_registers, &gen7_0_0_rb_rac_sel, },
+-	{ A7XX_CLUSTER_NONE, A7XX_PIPE_BR, STATE_NON_CONTEXT,
++	{ A7XX_CLUSTER_NONE, PIPE_BR, STATE_NON_CONTEXT,
+ 		gen7_0_0_noncontext_rb_rbp_pipe_br_registers, &gen7_0_0_rb_rbp_sel, },
+-	{ A7XX_CLUSTER_GRAS, A7XX_PIPE_BR, STATE_FORCE_CTXT_0,
++	{ A7XX_CLUSTER_GRAS, PIPE_BR, STATE_FORCE_CTXT_0,
+ 		gen7_0_0_gras_cluster_gras_pipe_br_registers, },
+-	{ A7XX_CLUSTER_GRAS, A7XX_PIPE_BV, STATE_FORCE_CTXT_0,
++	{ A7XX_CLUSTER_GRAS, PIPE_BV, STATE_FORCE_CTXT_0,
+ 		gen7_0_0_gras_cluster_gras_pipe_bv_registers, },
+-	{ A7XX_CLUSTER_GRAS, A7XX_PIPE_BR, STATE_FORCE_CTXT_1,
++	{ A7XX_CLUSTER_GRAS, PIPE_BR, STATE_FORCE_CTXT_1,
+ 		gen7_0_0_gras_cluster_gras_pipe_br_registers, },
+-	{ A7XX_CLUSTER_GRAS, A7XX_PIPE_BV, STATE_FORCE_CTXT_1,
++	{ A7XX_CLUSTER_GRAS, PIPE_BV, STATE_FORCE_CTXT_1,
+ 		gen7_0_0_gras_cluster_gras_pipe_bv_registers, },
+-	{ A7XX_CLUSTER_FE, A7XX_PIPE_BR, STATE_FORCE_CTXT_0,
++	{ A7XX_CLUSTER_FE, PIPE_BR, STATE_FORCE_CTXT_0,
+ 		gen7_0_0_pc_cluster_fe_pipe_br_registers, },
+-	{ A7XX_CLUSTER_FE, A7XX_PIPE_BV, STATE_FORCE_CTXT_0,
++	{ A7XX_CLUSTER_FE, PIPE_BV, STATE_FORCE_CTXT_0,
+ 		gen7_0_0_pc_cluster_fe_pipe_bv_registers, },
+-	{ A7XX_CLUSTER_FE, A7XX_PIPE_BR, STATE_FORCE_CTXT_1,
++	{ A7XX_CLUSTER_FE, PIPE_BR, STATE_FORCE_CTXT_1,
+ 		gen7_0_0_pc_cluster_fe_pipe_br_registers, },
+-	{ A7XX_CLUSTER_FE, A7XX_PIPE_BV, STATE_FORCE_CTXT_1,
++	{ A7XX_CLUSTER_FE, PIPE_BV, STATE_FORCE_CTXT_1,
+ 		gen7_0_0_pc_cluster_fe_pipe_bv_registers, },
+-	{ A7XX_CLUSTER_PS, A7XX_PIPE_BR, STATE_FORCE_CTXT_0,
++	{ A7XX_CLUSTER_PS, PIPE_BR, STATE_FORCE_CTXT_0,
+ 		gen7_0_0_rb_rac_cluster_ps_pipe_br_registers, &gen7_0_0_rb_rac_sel, },
+-	{ A7XX_CLUSTER_PS, A7XX_PIPE_BR, STATE_FORCE_CTXT_1,
++	{ A7XX_CLUSTER_PS, PIPE_BR, STATE_FORCE_CTXT_1,
+ 		gen7_0_0_rb_rac_cluster_ps_pipe_br_registers, &gen7_0_0_rb_rac_sel, },
+-	{ A7XX_CLUSTER_PS, A7XX_PIPE_BR, STATE_FORCE_CTXT_0,
++	{ A7XX_CLUSTER_PS, PIPE_BR, STATE_FORCE_CTXT_0,
+ 		gen7_0_0_rb_rbp_cluster_ps_pipe_br_registers, &gen7_0_0_rb_rbp_sel, },
+-	{ A7XX_CLUSTER_PS, A7XX_PIPE_BR, STATE_FORCE_CTXT_1,
++	{ A7XX_CLUSTER_PS, PIPE_BR, STATE_FORCE_CTXT_1,
+ 		gen7_0_0_rb_rbp_cluster_ps_pipe_br_registers, &gen7_0_0_rb_rbp_sel, },
+-	{ A7XX_CLUSTER_FE, A7XX_PIPE_BR, STATE_FORCE_CTXT_0,
++	{ A7XX_CLUSTER_FE, PIPE_BR, STATE_FORCE_CTXT_0,
+ 		gen7_0_0_vfd_cluster_fe_pipe_br_registers, },
+-	{ A7XX_CLUSTER_FE, A7XX_PIPE_BV, STATE_FORCE_CTXT_0,
++	{ A7XX_CLUSTER_FE, PIPE_BV, STATE_FORCE_CTXT_0,
+ 		gen7_0_0_vfd_cluster_fe_pipe_bv_registers, },
+-	{ A7XX_CLUSTER_FE, A7XX_PIPE_BR, STATE_FORCE_CTXT_1,
++	{ A7XX_CLUSTER_FE, PIPE_BR, STATE_FORCE_CTXT_1,
+ 		gen7_0_0_vfd_cluster_fe_pipe_br_registers, },
+-	{ A7XX_CLUSTER_FE, A7XX_PIPE_BV, STATE_FORCE_CTXT_1,
++	{ A7XX_CLUSTER_FE, PIPE_BV, STATE_FORCE_CTXT_1,
+ 		gen7_0_0_vfd_cluster_fe_pipe_bv_registers, },
+-	{ A7XX_CLUSTER_FE, A7XX_PIPE_BR, STATE_FORCE_CTXT_0,
++	{ A7XX_CLUSTER_FE, PIPE_BR, STATE_FORCE_CTXT_0,
+ 		gen7_0_0_vpc_cluster_fe_pipe_br_registers, },
+-	{ A7XX_CLUSTER_FE, A7XX_PIPE_BV, STATE_FORCE_CTXT_0,
++	{ A7XX_CLUSTER_FE, PIPE_BV, STATE_FORCE_CTXT_0,
+ 		gen7_0_0_vpc_cluster_fe_pipe_bv_registers, },
+-	{ A7XX_CLUSTER_FE, A7XX_PIPE_BR, STATE_FORCE_CTXT_1,
++	{ A7XX_CLUSTER_FE, PIPE_BR, STATE_FORCE_CTXT_1,
+ 		gen7_0_0_vpc_cluster_fe_pipe_br_registers, },
+-	{ A7XX_CLUSTER_FE, A7XX_PIPE_BV, STATE_FORCE_CTXT_1,
++	{ A7XX_CLUSTER_FE, PIPE_BV, STATE_FORCE_CTXT_1,
+ 		gen7_0_0_vpc_cluster_fe_pipe_bv_registers, },
+-	{ A7XX_CLUSTER_PC_VS, A7XX_PIPE_BR, STATE_FORCE_CTXT_0,
++	{ A7XX_CLUSTER_PC_VS, PIPE_BR, STATE_FORCE_CTXT_0,
+ 		gen7_0_0_vpc_cluster_pc_vs_pipe_br_registers, },
+-	{ A7XX_CLUSTER_PC_VS, A7XX_PIPE_BV, STATE_FORCE_CTXT_0,
++	{ A7XX_CLUSTER_PC_VS, PIPE_BV, STATE_FORCE_CTXT_0,
+ 		gen7_0_0_vpc_cluster_pc_vs_pipe_bv_registers, },
+-	{ A7XX_CLUSTER_PC_VS, A7XX_PIPE_BR, STATE_FORCE_CTXT_1,
++	{ A7XX_CLUSTER_PC_VS, PIPE_BR, STATE_FORCE_CTXT_1,
+ 		gen7_0_0_vpc_cluster_pc_vs_pipe_br_registers, },
+-	{ A7XX_CLUSTER_PC_VS, A7XX_PIPE_BV, STATE_FORCE_CTXT_1,
++	{ A7XX_CLUSTER_PC_VS, PIPE_BV, STATE_FORCE_CTXT_1,
+ 		gen7_0_0_vpc_cluster_pc_vs_pipe_bv_registers, },
+-	{ A7XX_CLUSTER_VPC_PS, A7XX_PIPE_BR, STATE_FORCE_CTXT_0,
++	{ A7XX_CLUSTER_VPC_PS, PIPE_BR, STATE_FORCE_CTXT_0,
+ 		gen7_0_0_vpc_cluster_vpc_ps_pipe_br_registers, },
+-	{ A7XX_CLUSTER_VPC_PS, A7XX_PIPE_BV, STATE_FORCE_CTXT_0,
++	{ A7XX_CLUSTER_VPC_PS, PIPE_BV, STATE_FORCE_CTXT_0,
+ 		gen7_0_0_vpc_cluster_vpc_ps_pipe_bv_registers, },
+-	{ A7XX_CLUSTER_VPC_PS, A7XX_PIPE_BR, STATE_FORCE_CTXT_1,
++	{ A7XX_CLUSTER_VPC_PS, PIPE_BR, STATE_FORCE_CTXT_1,
+ 		gen7_0_0_vpc_cluster_vpc_ps_pipe_br_registers, },
+-	{ A7XX_CLUSTER_VPC_PS, A7XX_PIPE_BV, STATE_FORCE_CTXT_1,
++	{ A7XX_CLUSTER_VPC_PS, PIPE_BV, STATE_FORCE_CTXT_1,
+ 		gen7_0_0_vpc_cluster_vpc_ps_pipe_bv_registers, },
+ };
+ 
+ static const struct gen7_sptp_cluster_registers gen7_0_0_sptp_clusters[] = {
+-	{ A7XX_CLUSTER_NONE, A7XX_SP_NCTX_REG, A7XX_PIPE_BR, 0, A7XX_HLSQ_STATE,
++	{ A7XX_CLUSTER_NONE, A7XX_SP_NCTX_REG, PIPE_BR, 0, A7XX_HLSQ_STATE,
+ 		gen7_0_0_sp_noncontext_pipe_br_hlsq_state_registers, 0xae00 },
+-	{ A7XX_CLUSTER_NONE, A7XX_SP_NCTX_REG, A7XX_PIPE_BR, 0, A7XX_SP_TOP,
++	{ A7XX_CLUSTER_NONE, A7XX_SP_NCTX_REG, PIPE_BR, 0, A7XX_SP_TOP,
+ 		gen7_0_0_sp_noncontext_pipe_br_sp_top_registers, 0xae00 },
+-	{ A7XX_CLUSTER_NONE, A7XX_SP_NCTX_REG, A7XX_PIPE_BR, 0, A7XX_USPTP,
++	{ A7XX_CLUSTER_NONE, A7XX_SP_NCTX_REG, PIPE_BR, 0, A7XX_USPTP,
+ 		gen7_0_0_sp_noncontext_pipe_br_usptp_registers, 0xae00 },
+-	{ A7XX_CLUSTER_NONE, A7XX_SP_NCTX_REG, A7XX_PIPE_LPAC, 0, A7XX_HLSQ_STATE,
++	{ A7XX_CLUSTER_NONE, A7XX_SP_NCTX_REG, PIPE_LPAC, 0, A7XX_HLSQ_STATE,
+ 		gen7_0_0_sp_noncontext_pipe_lpac_hlsq_state_registers, 0xaf80 },
+-	{ A7XX_CLUSTER_NONE, A7XX_SP_NCTX_REG, A7XX_PIPE_LPAC, 0, A7XX_SP_TOP,
++	{ A7XX_CLUSTER_NONE, A7XX_SP_NCTX_REG, PIPE_LPAC, 0, A7XX_SP_TOP,
+ 		gen7_0_0_sp_noncontext_pipe_lpac_sp_top_registers, 0xaf80 },
+-	{ A7XX_CLUSTER_NONE, A7XX_SP_NCTX_REG, A7XX_PIPE_LPAC, 0, A7XX_USPTP,
++	{ A7XX_CLUSTER_NONE, A7XX_SP_NCTX_REG, PIPE_LPAC, 0, A7XX_USPTP,
+ 		gen7_0_0_sp_noncontext_pipe_lpac_usptp_registers, 0xaf80 },
+-	{ A7XX_CLUSTER_NONE, A7XX_TP0_NCTX_REG, A7XX_PIPE_BR, 0, A7XX_USPTP,
++	{ A7XX_CLUSTER_NONE, A7XX_TP0_NCTX_REG, PIPE_BR, 0, A7XX_USPTP,
+ 		gen7_0_0_tpl1_noncontext_pipe_br_registers, 0xb600 },
+-	{ A7XX_CLUSTER_NONE, A7XX_TP0_NCTX_REG, A7XX_PIPE_LPAC, 0, A7XX_USPTP,
++	{ A7XX_CLUSTER_NONE, A7XX_TP0_NCTX_REG, PIPE_LPAC, 0, A7XX_USPTP,
+ 		gen7_0_0_tpl1_noncontext_pipe_lpac_registers, 0xb780 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, A7XX_PIPE_BR, 0, A7XX_HLSQ_STATE,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, PIPE_BR, 0, A7XX_HLSQ_STATE,
+ 		gen7_0_0_sp_cluster_sp_ps_pipe_br_hlsq_state_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, A7XX_PIPE_BR, 0, A7XX_HLSQ_DP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, PIPE_BR, 0, A7XX_HLSQ_DP,
+ 		gen7_0_0_sp_cluster_sp_ps_pipe_br_hlsq_dp_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, A7XX_PIPE_BR, 0, A7XX_SP_TOP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, PIPE_BR, 0, A7XX_SP_TOP,
+ 		gen7_0_0_sp_cluster_sp_ps_pipe_br_sp_top_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, A7XX_PIPE_BR, 0, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, PIPE_BR, 0, A7XX_USPTP,
+ 		gen7_0_0_sp_cluster_sp_ps_pipe_br_usptp_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX1_3D_CPS_REG, A7XX_PIPE_BR, 1, A7XX_HLSQ_STATE,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX1_3D_CPS_REG, PIPE_BR, 1, A7XX_HLSQ_STATE,
+ 		gen7_0_0_sp_cluster_sp_ps_pipe_br_hlsq_state_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX1_3D_CPS_REG, A7XX_PIPE_BR, 1, A7XX_HLSQ_DP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX1_3D_CPS_REG, PIPE_BR, 1, A7XX_HLSQ_DP,
+ 		gen7_0_0_sp_cluster_sp_ps_pipe_br_hlsq_dp_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX1_3D_CPS_REG, A7XX_PIPE_BR, 1, A7XX_SP_TOP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX1_3D_CPS_REG, PIPE_BR, 1, A7XX_SP_TOP,
+ 		gen7_0_0_sp_cluster_sp_ps_pipe_br_sp_top_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX1_3D_CPS_REG, A7XX_PIPE_BR, 1, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX1_3D_CPS_REG, PIPE_BR, 1, A7XX_USPTP,
+ 		gen7_0_0_sp_cluster_sp_ps_pipe_br_usptp_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX2_3D_CPS_REG, A7XX_PIPE_BR, 2, A7XX_HLSQ_STATE,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX2_3D_CPS_REG, PIPE_BR, 2, A7XX_HLSQ_STATE,
+ 		gen7_0_0_sp_cluster_sp_ps_pipe_br_hlsq_state_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX2_3D_CPS_REG, A7XX_PIPE_BR, 2, A7XX_HLSQ_DP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX2_3D_CPS_REG, PIPE_BR, 2, A7XX_HLSQ_DP,
+ 		gen7_0_0_sp_cluster_sp_ps_pipe_br_hlsq_dp_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX2_3D_CPS_REG, A7XX_PIPE_BR, 2, A7XX_SP_TOP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX2_3D_CPS_REG, PIPE_BR, 2, A7XX_SP_TOP,
+ 		gen7_0_0_sp_cluster_sp_ps_pipe_br_sp_top_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX2_3D_CPS_REG, A7XX_PIPE_BR, 2, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX2_3D_CPS_REG, PIPE_BR, 2, A7XX_USPTP,
+ 		gen7_0_0_sp_cluster_sp_ps_pipe_br_usptp_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX3_3D_CPS_REG, A7XX_PIPE_BR, 3, A7XX_HLSQ_STATE,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX3_3D_CPS_REG, PIPE_BR, 3, A7XX_HLSQ_STATE,
+ 		gen7_0_0_sp_cluster_sp_ps_pipe_br_hlsq_state_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX3_3D_CPS_REG, A7XX_PIPE_BR, 3, A7XX_HLSQ_DP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX3_3D_CPS_REG, PIPE_BR, 3, A7XX_HLSQ_DP,
+ 		gen7_0_0_sp_cluster_sp_ps_pipe_br_hlsq_dp_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX3_3D_CPS_REG, A7XX_PIPE_BR, 3, A7XX_SP_TOP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX3_3D_CPS_REG, PIPE_BR, 3, A7XX_SP_TOP,
+ 		gen7_0_0_sp_cluster_sp_ps_pipe_br_sp_top_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX3_3D_CPS_REG, A7XX_PIPE_BR, 3, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX3_3D_CPS_REG, PIPE_BR, 3, A7XX_USPTP,
+ 		gen7_0_0_sp_cluster_sp_ps_pipe_br_usptp_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, A7XX_PIPE_LPAC, 0, A7XX_HLSQ_STATE,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, PIPE_LPAC, 0, A7XX_HLSQ_STATE,
+ 		gen7_0_0_sp_cluster_sp_ps_pipe_lpac_hlsq_state_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, A7XX_PIPE_LPAC, 0, A7XX_HLSQ_DP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, PIPE_LPAC, 0, A7XX_HLSQ_DP,
+ 		gen7_0_0_sp_cluster_sp_ps_pipe_lpac_hlsq_dp_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, A7XX_PIPE_LPAC, 0, A7XX_SP_TOP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, PIPE_LPAC, 0, A7XX_SP_TOP,
+ 		gen7_0_0_sp_cluster_sp_ps_pipe_lpac_sp_top_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, A7XX_PIPE_LPAC, 0, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, PIPE_LPAC, 0, A7XX_USPTP,
+ 		gen7_0_0_sp_cluster_sp_ps_pipe_lpac_usptp_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX0_3D_CVS_REG, A7XX_PIPE_BR, 0, A7XX_HLSQ_STATE,
++	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX0_3D_CVS_REG, PIPE_BR, 0, A7XX_HLSQ_STATE,
+ 		gen7_0_0_sp_cluster_sp_vs_pipe_br_hlsq_state_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX0_3D_CVS_REG, A7XX_PIPE_BV, 0, A7XX_HLSQ_STATE,
++	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX0_3D_CVS_REG, PIPE_BV, 0, A7XX_HLSQ_STATE,
+ 		gen7_0_0_sp_cluster_sp_vs_pipe_bv_hlsq_state_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX0_3D_CVS_REG, A7XX_PIPE_BR, 0, A7XX_SP_TOP,
++	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX0_3D_CVS_REG, PIPE_BR, 0, A7XX_SP_TOP,
+ 		gen7_0_0_sp_cluster_sp_vs_pipe_br_sp_top_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX0_3D_CVS_REG, A7XX_PIPE_BV, 0, A7XX_SP_TOP,
++	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX0_3D_CVS_REG, PIPE_BV, 0, A7XX_SP_TOP,
+ 		gen7_0_0_sp_cluster_sp_vs_pipe_bv_sp_top_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX0_3D_CVS_REG, A7XX_PIPE_BR, 0, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX0_3D_CVS_REG, PIPE_BR, 0, A7XX_USPTP,
+ 		gen7_0_0_sp_cluster_sp_vs_pipe_br_usptp_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX0_3D_CVS_REG, A7XX_PIPE_BV, 0, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX0_3D_CVS_REG, PIPE_BV, 0, A7XX_USPTP,
+ 		gen7_0_0_sp_cluster_sp_vs_pipe_bv_usptp_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX1_3D_CVS_REG, A7XX_PIPE_BR, 1, A7XX_HLSQ_STATE,
++	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX1_3D_CVS_REG, PIPE_BR, 1, A7XX_HLSQ_STATE,
+ 		gen7_0_0_sp_cluster_sp_vs_pipe_br_hlsq_state_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX1_3D_CVS_REG, A7XX_PIPE_BV, 1, A7XX_HLSQ_STATE,
++	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX1_3D_CVS_REG, PIPE_BV, 1, A7XX_HLSQ_STATE,
+ 		gen7_0_0_sp_cluster_sp_vs_pipe_bv_hlsq_state_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX1_3D_CVS_REG, A7XX_PIPE_BR, 1, A7XX_SP_TOP,
++	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX1_3D_CVS_REG, PIPE_BR, 1, A7XX_SP_TOP,
+ 		gen7_0_0_sp_cluster_sp_vs_pipe_br_sp_top_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX1_3D_CVS_REG, A7XX_PIPE_BV, 1, A7XX_SP_TOP,
++	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX1_3D_CVS_REG, PIPE_BV, 1, A7XX_SP_TOP,
+ 		gen7_0_0_sp_cluster_sp_vs_pipe_bv_sp_top_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX1_3D_CVS_REG, A7XX_PIPE_BR, 1, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX1_3D_CVS_REG, PIPE_BR, 1, A7XX_USPTP,
+ 		gen7_0_0_sp_cluster_sp_vs_pipe_br_usptp_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX1_3D_CVS_REG, A7XX_PIPE_BV, 1, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX1_3D_CVS_REG, PIPE_BV, 1, A7XX_USPTP,
+ 		gen7_0_0_sp_cluster_sp_vs_pipe_bv_usptp_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_TP0_CTX0_3D_CPS_REG, A7XX_PIPE_BR, 0, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_TP0_CTX0_3D_CPS_REG, PIPE_BR, 0, A7XX_USPTP,
+ 		gen7_0_0_tpl1_cluster_sp_ps_pipe_br_registers, 0xb000 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_TP0_CTX1_3D_CPS_REG, A7XX_PIPE_BR, 1, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_TP0_CTX1_3D_CPS_REG, PIPE_BR, 1, A7XX_USPTP,
+ 		gen7_0_0_tpl1_cluster_sp_ps_pipe_br_registers, 0xb000 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_TP0_CTX2_3D_CPS_REG, A7XX_PIPE_BR, 2, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_TP0_CTX2_3D_CPS_REG, PIPE_BR, 2, A7XX_USPTP,
+ 		gen7_0_0_tpl1_cluster_sp_ps_pipe_br_registers, 0xb000 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_TP0_CTX3_3D_CPS_REG, A7XX_PIPE_BR, 3, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_TP0_CTX3_3D_CPS_REG, PIPE_BR, 3, A7XX_USPTP,
+ 		gen7_0_0_tpl1_cluster_sp_ps_pipe_br_registers, 0xb000 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_TP0_CTX0_3D_CPS_REG, A7XX_PIPE_LPAC, 0, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_TP0_CTX0_3D_CPS_REG, PIPE_LPAC, 0, A7XX_USPTP,
+ 		gen7_0_0_tpl1_cluster_sp_ps_pipe_lpac_registers, 0xb000 },
+-	{ A7XX_CLUSTER_SP_VS, A7XX_TP0_CTX0_3D_CVS_REG, A7XX_PIPE_BR, 0, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_VS, A7XX_TP0_CTX0_3D_CVS_REG, PIPE_BR, 0, A7XX_USPTP,
+ 		gen7_0_0_tpl1_cluster_sp_vs_pipe_br_registers, 0xb000 },
+-	{ A7XX_CLUSTER_SP_VS, A7XX_TP0_CTX0_3D_CVS_REG, A7XX_PIPE_BV, 0, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_VS, A7XX_TP0_CTX0_3D_CVS_REG, PIPE_BV, 0, A7XX_USPTP,
+ 		gen7_0_0_tpl1_cluster_sp_vs_pipe_bv_registers, 0xb000 },
+-	{ A7XX_CLUSTER_SP_VS, A7XX_TP0_CTX1_3D_CVS_REG, A7XX_PIPE_BR, 1, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_VS, A7XX_TP0_CTX1_3D_CVS_REG, PIPE_BR, 1, A7XX_USPTP,
+ 		gen7_0_0_tpl1_cluster_sp_vs_pipe_br_registers, 0xb000 },
+-	{ A7XX_CLUSTER_SP_VS, A7XX_TP0_CTX1_3D_CVS_REG, A7XX_PIPE_BV, 1, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_VS, A7XX_TP0_CTX1_3D_CVS_REG, PIPE_BV, 1, A7XX_USPTP,
+ 		gen7_0_0_tpl1_cluster_sp_vs_pipe_bv_registers, 0xb000 },
+ };
+ 
+diff --git a/drivers/gpu/drm/msm/adreno/adreno_gen7_2_0_snapshot.h b/drivers/gpu/drm/msm/adreno/adreno_gen7_2_0_snapshot.h
+index 772652eb61f3..9bec75e830a3 100644
+--- a/drivers/gpu/drm/msm/adreno/adreno_gen7_2_0_snapshot.h
++++ b/drivers/gpu/drm/msm/adreno/adreno_gen7_2_0_snapshot.h
+@@ -96,87 +96,87 @@ static const u32 gen7_2_0_debugbus_blocks[] = {
+ };
+ 
+ static const struct gen7_shader_block gen7_2_0_shader_blocks[] = {
+-	{A7XX_TP0_TMO_DATA,                 0x200, 6, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_TP0_SMO_DATA,                  0x80, 6, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_TP0_MIPMAP_BASE_DATA,         0x3c0, 6, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_INST_DATA,                 0x800, 6, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_INST_DATA_1,               0x800, 6, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_LB_0_DATA,                 0x800, 6, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_LB_1_DATA,                 0x800, 6, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_LB_2_DATA,                 0x800, 6, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_LB_3_DATA,                 0x800, 6, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_LB_4_DATA,                 0x800, 6, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_LB_5_DATA,                 0x800, 6, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_LB_6_DATA,                 0x800, 6, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_LB_7_DATA,                 0x800, 6, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_CB_RAM,                    0x390, 6, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_LB_13_DATA,                0x800, 6, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_LB_14_DATA,                0x800, 6, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_INST_TAG,                   0xc0, 6, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_INST_DATA_2,               0x800, 6, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_TMO_TAG,                    0x80, 6, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_SMO_TAG,                    0x80, 6, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_STATE_DATA,                 0x40, 6, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_HWAVE_RAM,                 0x100, 6, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_L0_INST_BUF,                0x50, 6, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_LB_8_DATA,                 0x800, 6, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_LB_9_DATA,                 0x800, 6, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_LB_10_DATA,                0x800, 6, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_LB_11_DATA,                0x800, 6, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_SP_LB_12_DATA,                0x800, 6, 2, A7XX_PIPE_BR, A7XX_USPTP},
+-	{A7XX_HLSQ_CVS_BE_CTXT_BUF_RAM_TAG,  0x10, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_CVS_BE_CTXT_BUF_RAM_TAG,  0x10, 1, 1, A7XX_PIPE_BV, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_CPS_BE_CTXT_BUF_RAM_TAG,  0x10, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_GFX_CVS_BE_CTXT_BUF_RAM, 0x300, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_GFX_CVS_BE_CTXT_BUF_RAM, 0x300, 1, 1, A7XX_PIPE_BV, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_GFX_CPS_BE_CTXT_BUF_RAM, 0x300, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_CHUNK_CVS_RAM,           0x1c0, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_CHUNK_CVS_RAM,           0x1c0, 1, 1, A7XX_PIPE_BV, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_CHUNK_CPS_RAM,           0x300, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_CHUNK_CPS_RAM,           0x180, 1, 1, A7XX_PIPE_LPAC, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_CHUNK_CVS_RAM_TAG,        0x40, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_CHUNK_CVS_RAM_TAG,        0x40, 1, 1, A7XX_PIPE_BV, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_CHUNK_CPS_RAM_TAG,        0x40, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_CHUNK_CPS_RAM_TAG,        0x40, 1, 1, A7XX_PIPE_LPAC, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_ICB_CVS_CB_BASE_TAG,      0x10, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_ICB_CVS_CB_BASE_TAG,      0x10, 1, 1, A7XX_PIPE_BV, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_ICB_CPS_CB_BASE_TAG,      0x10, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_ICB_CPS_CB_BASE_TAG,      0x10, 1, 1, A7XX_PIPE_LPAC, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_CVS_MISC_RAM,            0x280, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_CVS_MISC_RAM,            0x280, 1, 1, A7XX_PIPE_BV, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_CPS_MISC_RAM,            0x800, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_CPS_MISC_RAM,            0x200, 1, 1, A7XX_PIPE_LPAC, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_CPS_MISC_RAM_1,          0x1c0, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_INST_RAM,                0x800, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_INST_RAM,                0x800, 1, 1, A7XX_PIPE_BV, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_INST_RAM,                0x200, 1, 1, A7XX_PIPE_LPAC, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_CVS_MISC_RAM_TAG,         0x10, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_CVS_MISC_RAM_TAG,         0x10, 1, 1, A7XX_PIPE_BV, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_CPS_MISC_RAM_TAG,         0x10, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_CPS_MISC_RAM_TAG,         0x10, 1, 1, A7XX_PIPE_LPAC, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_INST_RAM_TAG,             0x80, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_INST_RAM_TAG,             0x80, 1, 1, A7XX_PIPE_BV, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_INST_RAM_TAG,             0x80, 1, 1, A7XX_PIPE_LPAC, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_GFX_CVS_CONST_RAM_TAG,    0x64, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_GFX_CVS_CONST_RAM_TAG,    0x38, 1, 1, A7XX_PIPE_BV, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_GFX_CPS_CONST_RAM_TAG,    0x64, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_GFX_CPS_CONST_RAM_TAG,    0x10, 1, 1, A7XX_PIPE_LPAC, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_GFX_CVS_CONST_RAM,       0x800, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_GFX_CVS_CONST_RAM,       0x800, 1, 1, A7XX_PIPE_BV, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_GFX_CPS_CONST_RAM,       0x800, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_GFX_CPS_CONST_RAM,       0x800, 1, 1, A7XX_PIPE_LPAC, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_INST_RAM_1,              0x800, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_STPROC_META,              0x10, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_BV_BE_META,               0x10, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_BV_BE_META,               0x10, 1, 1, A7XX_PIPE_BV, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_DATAPATH_META,            0x20, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_FRONTEND_META,            0x80, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_FRONTEND_META,            0x80, 1, 1, A7XX_PIPE_BV, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_FRONTEND_META,            0x80, 1, 1, A7XX_PIPE_LPAC, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_INDIRECT_META,            0x10, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_BACKEND_META,             0x40, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_BACKEND_META,             0x40, 1, 1, A7XX_PIPE_BV, A7XX_HLSQ_STATE},
+-	{A7XX_HLSQ_BACKEND_META,             0x40, 1, 1, A7XX_PIPE_LPAC, A7XX_HLSQ_STATE},
++	{A7XX_TP0_TMO_DATA,                 0x200, 6, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_TP0_SMO_DATA,                  0x80, 6, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_TP0_MIPMAP_BASE_DATA,         0x3c0, 6, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_INST_DATA,                 0x800, 6, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_INST_DATA_1,               0x800, 6, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_LB_0_DATA,                 0x800, 6, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_LB_1_DATA,                 0x800, 6, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_LB_2_DATA,                 0x800, 6, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_LB_3_DATA,                 0x800, 6, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_LB_4_DATA,                 0x800, 6, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_LB_5_DATA,                 0x800, 6, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_LB_6_DATA,                 0x800, 6, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_LB_7_DATA,                 0x800, 6, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_CB_RAM,                    0x390, 6, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_LB_13_DATA,                0x800, 6, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_LB_14_DATA,                0x800, 6, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_INST_TAG,                   0xc0, 6, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_INST_DATA_2,               0x800, 6, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_TMO_TAG,                    0x80, 6, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_SMO_TAG,                    0x80, 6, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_STATE_DATA,                 0x40, 6, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_HWAVE_RAM,                 0x100, 6, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_L0_INST_BUF,                0x50, 6, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_LB_8_DATA,                 0x800, 6, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_LB_9_DATA,                 0x800, 6, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_LB_10_DATA,                0x800, 6, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_LB_11_DATA,                0x800, 6, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_SP_LB_12_DATA,                0x800, 6, 2, PIPE_BR, A7XX_USPTP},
++	{A7XX_HLSQ_CVS_BE_CTXT_BUF_RAM_TAG,  0x10, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_CVS_BE_CTXT_BUF_RAM_TAG,  0x10, 1, 1, PIPE_BV, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_CPS_BE_CTXT_BUF_RAM_TAG,  0x10, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_GFX_CVS_BE_CTXT_BUF_RAM, 0x300, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_GFX_CVS_BE_CTXT_BUF_RAM, 0x300, 1, 1, PIPE_BV, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_GFX_CPS_BE_CTXT_BUF_RAM, 0x300, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_CHUNK_CVS_RAM,           0x1c0, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_CHUNK_CVS_RAM,           0x1c0, 1, 1, PIPE_BV, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_CHUNK_CPS_RAM,           0x300, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_CHUNK_CPS_RAM,           0x180, 1, 1, PIPE_LPAC, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_CHUNK_CVS_RAM_TAG,        0x40, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_CHUNK_CVS_RAM_TAG,        0x40, 1, 1, PIPE_BV, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_CHUNK_CPS_RAM_TAG,        0x40, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_CHUNK_CPS_RAM_TAG,        0x40, 1, 1, PIPE_LPAC, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_ICB_CVS_CB_BASE_TAG,      0x10, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_ICB_CVS_CB_BASE_TAG,      0x10, 1, 1, PIPE_BV, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_ICB_CPS_CB_BASE_TAG,      0x10, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_ICB_CPS_CB_BASE_TAG,      0x10, 1, 1, PIPE_LPAC, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_CVS_MISC_RAM,            0x280, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_CVS_MISC_RAM,            0x280, 1, 1, PIPE_BV, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_CPS_MISC_RAM,            0x800, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_CPS_MISC_RAM,            0x200, 1, 1, PIPE_LPAC, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_CPS_MISC_RAM_1,          0x1c0, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_INST_RAM,                0x800, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_INST_RAM,                0x800, 1, 1, PIPE_BV, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_INST_RAM,                0x200, 1, 1, PIPE_LPAC, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_CVS_MISC_RAM_TAG,         0x10, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_CVS_MISC_RAM_TAG,         0x10, 1, 1, PIPE_BV, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_CPS_MISC_RAM_TAG,         0x10, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_CPS_MISC_RAM_TAG,         0x10, 1, 1, PIPE_LPAC, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_INST_RAM_TAG,             0x80, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_INST_RAM_TAG,             0x80, 1, 1, PIPE_BV, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_INST_RAM_TAG,             0x80, 1, 1, PIPE_LPAC, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_GFX_CVS_CONST_RAM_TAG,    0x64, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_GFX_CVS_CONST_RAM_TAG,    0x38, 1, 1, PIPE_BV, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_GFX_CPS_CONST_RAM_TAG,    0x64, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_GFX_CPS_CONST_RAM_TAG,    0x10, 1, 1, PIPE_LPAC, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_GFX_CVS_CONST_RAM,       0x800, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_GFX_CVS_CONST_RAM,       0x800, 1, 1, PIPE_BV, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_GFX_CPS_CONST_RAM,       0x800, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_GFX_CPS_CONST_RAM,       0x800, 1, 1, PIPE_LPAC, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_INST_RAM_1,              0x800, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_STPROC_META,              0x10, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_BV_BE_META,               0x10, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_BV_BE_META,               0x10, 1, 1, PIPE_BV, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_DATAPATH_META,            0x20, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_FRONTEND_META,            0x80, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_FRONTEND_META,            0x80, 1, 1, PIPE_BV, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_FRONTEND_META,            0x80, 1, 1, PIPE_LPAC, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_INDIRECT_META,            0x10, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_BACKEND_META,             0x40, 1, 1, PIPE_BR, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_BACKEND_META,             0x40, 1, 1, PIPE_BV, A7XX_HLSQ_STATE},
++	{A7XX_HLSQ_BACKEND_META,             0x40, 1, 1, PIPE_LPAC, A7XX_HLSQ_STATE},
+ };
+ 
+ static const u32 gen7_2_0_gpu_registers[] = {
+@@ -490,170 +490,170 @@ static const struct gen7_sel_reg gen7_2_0_rb_rbp_sel = {
+ };
+ 
+ static const struct gen7_cluster_registers gen7_2_0_clusters[] = {
+-	{ A7XX_CLUSTER_NONE, A7XX_PIPE_BR, STATE_NON_CONTEXT,
++	{ A7XX_CLUSTER_NONE, PIPE_BR, STATE_NON_CONTEXT,
+ 		gen7_2_0_noncontext_pipe_br_registers, },
+-	{ A7XX_CLUSTER_NONE, A7XX_PIPE_BV, STATE_NON_CONTEXT,
++	{ A7XX_CLUSTER_NONE, PIPE_BV, STATE_NON_CONTEXT,
+ 		gen7_2_0_noncontext_pipe_bv_registers, },
+-	{ A7XX_CLUSTER_NONE, A7XX_PIPE_LPAC, STATE_NON_CONTEXT,
++	{ A7XX_CLUSTER_NONE, PIPE_LPAC, STATE_NON_CONTEXT,
+ 		gen7_0_0_noncontext_pipe_lpac_registers, },
+-	{ A7XX_CLUSTER_NONE, A7XX_PIPE_BR, STATE_NON_CONTEXT,
++	{ A7XX_CLUSTER_NONE, PIPE_BR, STATE_NON_CONTEXT,
+ 		gen7_2_0_noncontext_rb_rac_pipe_br_registers, &gen7_2_0_rb_rac_sel, },
+-	{ A7XX_CLUSTER_NONE, A7XX_PIPE_BR, STATE_NON_CONTEXT,
++	{ A7XX_CLUSTER_NONE, PIPE_BR, STATE_NON_CONTEXT,
+ 		gen7_2_0_noncontext_rb_rbp_pipe_br_registers, &gen7_2_0_rb_rbp_sel, },
+-	{ A7XX_CLUSTER_GRAS, A7XX_PIPE_BR, STATE_FORCE_CTXT_0,
++	{ A7XX_CLUSTER_GRAS, PIPE_BR, STATE_FORCE_CTXT_0,
+ 		gen7_2_0_gras_cluster_gras_pipe_br_registers, },
+-	{ A7XX_CLUSTER_GRAS, A7XX_PIPE_BV, STATE_FORCE_CTXT_0,
++	{ A7XX_CLUSTER_GRAS, PIPE_BV, STATE_FORCE_CTXT_0,
+ 		gen7_2_0_gras_cluster_gras_pipe_bv_registers, },
+-	{ A7XX_CLUSTER_GRAS, A7XX_PIPE_BR, STATE_FORCE_CTXT_1,
++	{ A7XX_CLUSTER_GRAS, PIPE_BR, STATE_FORCE_CTXT_1,
+ 		gen7_2_0_gras_cluster_gras_pipe_br_registers, },
+-	{ A7XX_CLUSTER_GRAS, A7XX_PIPE_BV, STATE_FORCE_CTXT_1,
++	{ A7XX_CLUSTER_GRAS, PIPE_BV, STATE_FORCE_CTXT_1,
+ 		gen7_2_0_gras_cluster_gras_pipe_bv_registers, },
+-	{ A7XX_CLUSTER_FE, A7XX_PIPE_BR, STATE_FORCE_CTXT_0,
++	{ A7XX_CLUSTER_FE, PIPE_BR, STATE_FORCE_CTXT_0,
+ 		gen7_0_0_pc_cluster_fe_pipe_br_registers, },
+-	{ A7XX_CLUSTER_FE, A7XX_PIPE_BV, STATE_FORCE_CTXT_0,
++	{ A7XX_CLUSTER_FE, PIPE_BV, STATE_FORCE_CTXT_0,
+ 		gen7_0_0_pc_cluster_fe_pipe_bv_registers, },
+-	{ A7XX_CLUSTER_FE, A7XX_PIPE_BR, STATE_FORCE_CTXT_1,
++	{ A7XX_CLUSTER_FE, PIPE_BR, STATE_FORCE_CTXT_1,
+ 		gen7_0_0_pc_cluster_fe_pipe_br_registers, },
+-	{ A7XX_CLUSTER_FE, A7XX_PIPE_BV, STATE_FORCE_CTXT_1,
++	{ A7XX_CLUSTER_FE, PIPE_BV, STATE_FORCE_CTXT_1,
+ 		gen7_0_0_pc_cluster_fe_pipe_bv_registers, },
+-	{ A7XX_CLUSTER_PS, A7XX_PIPE_BR, STATE_FORCE_CTXT_0,
++	{ A7XX_CLUSTER_PS, PIPE_BR, STATE_FORCE_CTXT_0,
+ 		gen7_2_0_rb_rac_cluster_ps_pipe_br_registers, &gen7_2_0_rb_rac_sel, },
+-	{ A7XX_CLUSTER_PS, A7XX_PIPE_BR, STATE_FORCE_CTXT_1,
++	{ A7XX_CLUSTER_PS, PIPE_BR, STATE_FORCE_CTXT_1,
+ 		gen7_2_0_rb_rac_cluster_ps_pipe_br_registers, &gen7_2_0_rb_rac_sel, },
+-	{ A7XX_CLUSTER_PS, A7XX_PIPE_BR, STATE_FORCE_CTXT_0,
++	{ A7XX_CLUSTER_PS, PIPE_BR, STATE_FORCE_CTXT_0,
+ 		gen7_0_0_rb_rbp_cluster_ps_pipe_br_registers, &gen7_2_0_rb_rbp_sel, },
+-	{ A7XX_CLUSTER_PS, A7XX_PIPE_BR, STATE_FORCE_CTXT_1,
++	{ A7XX_CLUSTER_PS, PIPE_BR, STATE_FORCE_CTXT_1,
+ 		gen7_0_0_rb_rbp_cluster_ps_pipe_br_registers, &gen7_2_0_rb_rbp_sel, },
+-	{ A7XX_CLUSTER_FE, A7XX_PIPE_BR, STATE_FORCE_CTXT_0,
++	{ A7XX_CLUSTER_FE, PIPE_BR, STATE_FORCE_CTXT_0,
+ 		gen7_0_0_vfd_cluster_fe_pipe_br_registers, },
+-	{ A7XX_CLUSTER_FE, A7XX_PIPE_BV, STATE_FORCE_CTXT_0,
++	{ A7XX_CLUSTER_FE, PIPE_BV, STATE_FORCE_CTXT_0,
+ 		gen7_0_0_vfd_cluster_fe_pipe_bv_registers, },
+-	{ A7XX_CLUSTER_FE, A7XX_PIPE_BR, STATE_FORCE_CTXT_1,
++	{ A7XX_CLUSTER_FE, PIPE_BR, STATE_FORCE_CTXT_1,
+ 		gen7_0_0_vfd_cluster_fe_pipe_br_registers, },
+-	{ A7XX_CLUSTER_FE, A7XX_PIPE_BV, STATE_FORCE_CTXT_1,
++	{ A7XX_CLUSTER_FE, PIPE_BV, STATE_FORCE_CTXT_1,
+ 		gen7_0_0_vfd_cluster_fe_pipe_bv_registers, },
+-	{ A7XX_CLUSTER_FE, A7XX_PIPE_BR, STATE_FORCE_CTXT_0,
++	{ A7XX_CLUSTER_FE, PIPE_BR, STATE_FORCE_CTXT_0,
+ 		gen7_0_0_vpc_cluster_fe_pipe_br_registers, },
+-	{ A7XX_CLUSTER_FE, A7XX_PIPE_BV, STATE_FORCE_CTXT_0,
++	{ A7XX_CLUSTER_FE, PIPE_BV, STATE_FORCE_CTXT_0,
+ 		gen7_0_0_vpc_cluster_fe_pipe_bv_registers, },
+-	{ A7XX_CLUSTER_FE, A7XX_PIPE_BR, STATE_FORCE_CTXT_1,
++	{ A7XX_CLUSTER_FE, PIPE_BR, STATE_FORCE_CTXT_1,
+ 		gen7_0_0_vpc_cluster_fe_pipe_br_registers, },
+-	{ A7XX_CLUSTER_FE, A7XX_PIPE_BV, STATE_FORCE_CTXT_1,
++	{ A7XX_CLUSTER_FE, PIPE_BV, STATE_FORCE_CTXT_1,
+ 		gen7_0_0_vpc_cluster_fe_pipe_bv_registers, },
+-	{ A7XX_CLUSTER_PC_VS, A7XX_PIPE_BR, STATE_FORCE_CTXT_0,
++	{ A7XX_CLUSTER_PC_VS, PIPE_BR, STATE_FORCE_CTXT_0,
+ 		gen7_0_0_vpc_cluster_pc_vs_pipe_br_registers, },
+-	{ A7XX_CLUSTER_PC_VS, A7XX_PIPE_BV, STATE_FORCE_CTXT_0,
++	{ A7XX_CLUSTER_PC_VS, PIPE_BV, STATE_FORCE_CTXT_0,
+ 		gen7_0_0_vpc_cluster_pc_vs_pipe_bv_registers, },
+-	{ A7XX_CLUSTER_PC_VS, A7XX_PIPE_BR, STATE_FORCE_CTXT_1,
++	{ A7XX_CLUSTER_PC_VS, PIPE_BR, STATE_FORCE_CTXT_1,
+ 		gen7_0_0_vpc_cluster_pc_vs_pipe_br_registers, },
+-	{ A7XX_CLUSTER_PC_VS, A7XX_PIPE_BV, STATE_FORCE_CTXT_1,
++	{ A7XX_CLUSTER_PC_VS, PIPE_BV, STATE_FORCE_CTXT_1,
+ 		gen7_0_0_vpc_cluster_pc_vs_pipe_bv_registers, },
+-	{ A7XX_CLUSTER_VPC_PS, A7XX_PIPE_BR, STATE_FORCE_CTXT_0,
++	{ A7XX_CLUSTER_VPC_PS, PIPE_BR, STATE_FORCE_CTXT_0,
+ 		gen7_0_0_vpc_cluster_vpc_ps_pipe_br_registers, },
+-	{ A7XX_CLUSTER_VPC_PS, A7XX_PIPE_BV, STATE_FORCE_CTXT_0,
++	{ A7XX_CLUSTER_VPC_PS, PIPE_BV, STATE_FORCE_CTXT_0,
+ 		gen7_0_0_vpc_cluster_vpc_ps_pipe_bv_registers, },
+-	{ A7XX_CLUSTER_VPC_PS, A7XX_PIPE_BR, STATE_FORCE_CTXT_1,
++	{ A7XX_CLUSTER_VPC_PS, PIPE_BR, STATE_FORCE_CTXT_1,
+ 		gen7_0_0_vpc_cluster_vpc_ps_pipe_br_registers, },
+-	{ A7XX_CLUSTER_VPC_PS, A7XX_PIPE_BV, STATE_FORCE_CTXT_1,
++	{ A7XX_CLUSTER_VPC_PS, PIPE_BV, STATE_FORCE_CTXT_1,
+ 		gen7_0_0_vpc_cluster_vpc_ps_pipe_bv_registers, },
+ };
+ 
+ static const struct gen7_sptp_cluster_registers gen7_2_0_sptp_clusters[] = {
+-	{ A7XX_CLUSTER_NONE, A7XX_SP_NCTX_REG, A7XX_PIPE_BR, 0, A7XX_HLSQ_STATE,
++	{ A7XX_CLUSTER_NONE, A7XX_SP_NCTX_REG, PIPE_BR, 0, A7XX_HLSQ_STATE,
+ 		gen7_0_0_sp_noncontext_pipe_br_hlsq_state_registers, 0xae00 },
+-	{ A7XX_CLUSTER_NONE, A7XX_SP_NCTX_REG, A7XX_PIPE_BR, 0, A7XX_SP_TOP,
++	{ A7XX_CLUSTER_NONE, A7XX_SP_NCTX_REG, PIPE_BR, 0, A7XX_SP_TOP,
+ 		gen7_0_0_sp_noncontext_pipe_br_sp_top_registers, 0xae00 },
+-	{ A7XX_CLUSTER_NONE, A7XX_SP_NCTX_REG, A7XX_PIPE_BR, 0, A7XX_USPTP,
++	{ A7XX_CLUSTER_NONE, A7XX_SP_NCTX_REG, PIPE_BR, 0, A7XX_USPTP,
+ 		gen7_0_0_sp_noncontext_pipe_br_usptp_registers, 0xae00 },
+-	{ A7XX_CLUSTER_NONE, A7XX_SP_NCTX_REG, A7XX_PIPE_LPAC, 0, A7XX_HLSQ_STATE,
++	{ A7XX_CLUSTER_NONE, A7XX_SP_NCTX_REG, PIPE_LPAC, 0, A7XX_HLSQ_STATE,
+ 		gen7_2_0_sp_noncontext_pipe_lpac_hlsq_state_registers, 0xaf80 },
+-	{ A7XX_CLUSTER_NONE, A7XX_SP_NCTX_REG, A7XX_PIPE_LPAC, 0, A7XX_SP_TOP,
++	{ A7XX_CLUSTER_NONE, A7XX_SP_NCTX_REG, PIPE_LPAC, 0, A7XX_SP_TOP,
+ 		gen7_0_0_sp_noncontext_pipe_lpac_sp_top_registers, 0xaf80 },
+-	{ A7XX_CLUSTER_NONE, A7XX_SP_NCTX_REG, A7XX_PIPE_LPAC, 0, A7XX_USPTP,
++	{ A7XX_CLUSTER_NONE, A7XX_SP_NCTX_REG, PIPE_LPAC, 0, A7XX_USPTP,
+ 		gen7_0_0_sp_noncontext_pipe_lpac_usptp_registers, 0xaf80 },
+-	{ A7XX_CLUSTER_NONE, A7XX_TP0_NCTX_REG, A7XX_PIPE_BR, 0, A7XX_USPTP,
++	{ A7XX_CLUSTER_NONE, A7XX_TP0_NCTX_REG, PIPE_BR, 0, A7XX_USPTP,
+ 		gen7_0_0_tpl1_noncontext_pipe_br_registers, 0xb600 },
+-	{ A7XX_CLUSTER_NONE, A7XX_TP0_NCTX_REG, A7XX_PIPE_NONE, 0, A7XX_USPTP,
++	{ A7XX_CLUSTER_NONE, A7XX_TP0_NCTX_REG, PIPE_NONE, 0, A7XX_USPTP,
+ 		gen7_0_0_tpl1_noncontext_pipe_none_registers, 0xb600 },
+-	{ A7XX_CLUSTER_NONE, A7XX_TP0_NCTX_REG, A7XX_PIPE_LPAC, 0, A7XX_USPTP,
++	{ A7XX_CLUSTER_NONE, A7XX_TP0_NCTX_REG, PIPE_LPAC, 0, A7XX_USPTP,
+ 		gen7_0_0_tpl1_noncontext_pipe_lpac_registers, 0xb780 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, A7XX_PIPE_BR, 0, A7XX_HLSQ_STATE,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, PIPE_BR, 0, A7XX_HLSQ_STATE,
+ 		gen7_2_0_sp_cluster_sp_ps_pipe_br_hlsq_state_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, A7XX_PIPE_BR, 0, A7XX_HLSQ_DP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, PIPE_BR, 0, A7XX_HLSQ_DP,
+ 		gen7_0_0_sp_cluster_sp_ps_pipe_br_hlsq_dp_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, A7XX_PIPE_BR, 0, A7XX_SP_TOP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, PIPE_BR, 0, A7XX_SP_TOP,
+ 		gen7_2_0_sp_cluster_sp_ps_pipe_br_sp_top_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, A7XX_PIPE_BR, 0, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, PIPE_BR, 0, A7XX_USPTP,
+ 		gen7_2_0_sp_cluster_sp_ps_pipe_br_usptp_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX1_3D_CPS_REG, A7XX_PIPE_BR, 1, A7XX_HLSQ_STATE,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX1_3D_CPS_REG, PIPE_BR, 1, A7XX_HLSQ_STATE,
+ 		gen7_2_0_sp_cluster_sp_ps_pipe_br_hlsq_state_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX1_3D_CPS_REG, A7XX_PIPE_BR, 1, A7XX_HLSQ_DP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX1_3D_CPS_REG, PIPE_BR, 1, A7XX_HLSQ_DP,
+ 		gen7_0_0_sp_cluster_sp_ps_pipe_br_hlsq_dp_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX1_3D_CPS_REG, A7XX_PIPE_BR, 1, A7XX_SP_TOP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX1_3D_CPS_REG, PIPE_BR, 1, A7XX_SP_TOP,
+ 		gen7_2_0_sp_cluster_sp_ps_pipe_br_sp_top_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX1_3D_CPS_REG, A7XX_PIPE_BR, 1, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX1_3D_CPS_REG, PIPE_BR, 1, A7XX_USPTP,
+ 		gen7_2_0_sp_cluster_sp_ps_pipe_br_usptp_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX2_3D_CPS_REG, A7XX_PIPE_BR, 2, A7XX_HLSQ_DP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX2_3D_CPS_REG, PIPE_BR, 2, A7XX_HLSQ_DP,
+ 		gen7_0_0_sp_cluster_sp_ps_pipe_br_hlsq_dp_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX3_3D_CPS_REG, A7XX_PIPE_BR, 3, A7XX_HLSQ_DP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX3_3D_CPS_REG, PIPE_BR, 3, A7XX_HLSQ_DP,
+ 		gen7_0_0_sp_cluster_sp_ps_pipe_br_hlsq_dp_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX2_3D_CPS_REG, A7XX_PIPE_BR, 2, A7XX_SP_TOP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX2_3D_CPS_REG, PIPE_BR, 2, A7XX_SP_TOP,
+ 		gen7_2_0_sp_cluster_sp_ps_pipe_br_sp_top_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX2_3D_CPS_REG, A7XX_PIPE_BR, 2, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX2_3D_CPS_REG, PIPE_BR, 2, A7XX_USPTP,
+ 		gen7_2_0_sp_cluster_sp_ps_pipe_br_usptp_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX3_3D_CPS_REG, A7XX_PIPE_BR, 3, A7XX_SP_TOP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX3_3D_CPS_REG, PIPE_BR, 3, A7XX_SP_TOP,
+ 		gen7_2_0_sp_cluster_sp_ps_pipe_br_sp_top_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX3_3D_CPS_REG, A7XX_PIPE_BR, 3, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX3_3D_CPS_REG, PIPE_BR, 3, A7XX_USPTP,
+ 		gen7_2_0_sp_cluster_sp_ps_pipe_br_usptp_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, A7XX_PIPE_LPAC, 0, A7XX_HLSQ_STATE,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, PIPE_LPAC, 0, A7XX_HLSQ_STATE,
+ 		gen7_2_0_sp_cluster_sp_ps_pipe_lpac_hlsq_state_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, A7XX_PIPE_LPAC, 0, A7XX_HLSQ_DP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, PIPE_LPAC, 0, A7XX_HLSQ_DP,
+ 		gen7_0_0_sp_cluster_sp_ps_pipe_lpac_hlsq_dp_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, A7XX_PIPE_LPAC, 0, A7XX_SP_TOP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, PIPE_LPAC, 0, A7XX_SP_TOP,
+ 		gen7_2_0_sp_cluster_sp_ps_pipe_lpac_sp_top_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, A7XX_PIPE_LPAC, 0, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, PIPE_LPAC, 0, A7XX_USPTP,
+ 		gen7_2_0_sp_cluster_sp_ps_pipe_lpac_usptp_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX0_3D_CVS_REG, A7XX_PIPE_BR, 0, A7XX_HLSQ_STATE,
++	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX0_3D_CVS_REG, PIPE_BR, 0, A7XX_HLSQ_STATE,
+ 		gen7_2_0_sp_cluster_sp_vs_pipe_br_hlsq_state_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX0_3D_CVS_REG, A7XX_PIPE_BV, 0, A7XX_HLSQ_STATE,
++	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX0_3D_CVS_REG, PIPE_BV, 0, A7XX_HLSQ_STATE,
+ 		gen7_2_0_sp_cluster_sp_vs_pipe_bv_hlsq_state_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX0_3D_CVS_REG, A7XX_PIPE_BR, 0, A7XX_SP_TOP,
++	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX0_3D_CVS_REG, PIPE_BR, 0, A7XX_SP_TOP,
+ 		gen7_2_0_sp_cluster_sp_vs_pipe_br_sp_top_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX0_3D_CVS_REG, A7XX_PIPE_BV, 0, A7XX_SP_TOP,
++	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX0_3D_CVS_REG, PIPE_BV, 0, A7XX_SP_TOP,
+ 		gen7_2_0_sp_cluster_sp_vs_pipe_bv_sp_top_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX0_3D_CVS_REG, A7XX_PIPE_BR, 0, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX0_3D_CVS_REG, PIPE_BR, 0, A7XX_USPTP,
+ 		gen7_2_0_sp_cluster_sp_vs_pipe_br_usptp_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX0_3D_CVS_REG, A7XX_PIPE_BV, 0, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX0_3D_CVS_REG, PIPE_BV, 0, A7XX_USPTP,
+ 		gen7_2_0_sp_cluster_sp_vs_pipe_bv_usptp_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX1_3D_CVS_REG, A7XX_PIPE_BR, 1, A7XX_HLSQ_STATE,
++	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX1_3D_CVS_REG, PIPE_BR, 1, A7XX_HLSQ_STATE,
+ 		gen7_2_0_sp_cluster_sp_vs_pipe_br_hlsq_state_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX1_3D_CVS_REG, A7XX_PIPE_BV, 1, A7XX_HLSQ_STATE,
++	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX1_3D_CVS_REG, PIPE_BV, 1, A7XX_HLSQ_STATE,
+ 		gen7_2_0_sp_cluster_sp_vs_pipe_bv_hlsq_state_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX1_3D_CVS_REG, A7XX_PIPE_BR, 1, A7XX_SP_TOP,
++	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX1_3D_CVS_REG, PIPE_BR, 1, A7XX_SP_TOP,
+ 		gen7_2_0_sp_cluster_sp_vs_pipe_br_sp_top_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX1_3D_CVS_REG, A7XX_PIPE_BV, 1, A7XX_SP_TOP,
++	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX1_3D_CVS_REG, PIPE_BV, 1, A7XX_SP_TOP,
+ 		gen7_2_0_sp_cluster_sp_vs_pipe_bv_sp_top_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX1_3D_CVS_REG, A7XX_PIPE_BR, 1, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX1_3D_CVS_REG, PIPE_BR, 1, A7XX_USPTP,
+ 		gen7_2_0_sp_cluster_sp_vs_pipe_br_usptp_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX1_3D_CVS_REG, A7XX_PIPE_BV, 1, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX1_3D_CVS_REG, PIPE_BV, 1, A7XX_USPTP,
+ 		gen7_2_0_sp_cluster_sp_vs_pipe_bv_usptp_registers, 0xa800 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_TP0_CTX0_3D_CPS_REG, A7XX_PIPE_BR, 0, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_TP0_CTX0_3D_CPS_REG, PIPE_BR, 0, A7XX_USPTP,
+ 		gen7_0_0_tpl1_cluster_sp_ps_pipe_br_registers, 0xb000 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_TP0_CTX1_3D_CPS_REG, A7XX_PIPE_BR, 1, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_TP0_CTX1_3D_CPS_REG, PIPE_BR, 1, A7XX_USPTP,
+ 		gen7_0_0_tpl1_cluster_sp_ps_pipe_br_registers, 0xb000 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_TP0_CTX2_3D_CPS_REG, A7XX_PIPE_BR, 2, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_TP0_CTX2_3D_CPS_REG, PIPE_BR, 2, A7XX_USPTP,
+ 		gen7_0_0_tpl1_cluster_sp_ps_pipe_br_registers, 0xb000 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_TP0_CTX3_3D_CPS_REG, A7XX_PIPE_BR, 3, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_TP0_CTX3_3D_CPS_REG, PIPE_BR, 3, A7XX_USPTP,
+ 		gen7_0_0_tpl1_cluster_sp_ps_pipe_br_registers, 0xb000 },
+-	{ A7XX_CLUSTER_SP_PS, A7XX_TP0_CTX0_3D_CPS_REG, A7XX_PIPE_LPAC, 0, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_TP0_CTX0_3D_CPS_REG, PIPE_LPAC, 0, A7XX_USPTP,
+ 		gen7_0_0_tpl1_cluster_sp_ps_pipe_lpac_registers, 0xb000 },
+-	{ A7XX_CLUSTER_SP_VS, A7XX_TP0_CTX0_3D_CVS_REG, A7XX_PIPE_BR, 0, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_VS, A7XX_TP0_CTX0_3D_CVS_REG, PIPE_BR, 0, A7XX_USPTP,
+ 		gen7_0_0_tpl1_cluster_sp_vs_pipe_br_registers, 0xb000 },
+-	{ A7XX_CLUSTER_SP_VS, A7XX_TP0_CTX0_3D_CVS_REG, A7XX_PIPE_BV, 0, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_VS, A7XX_TP0_CTX0_3D_CVS_REG, PIPE_BV, 0, A7XX_USPTP,
+ 		gen7_0_0_tpl1_cluster_sp_vs_pipe_bv_registers, 0xb000 },
+-	{ A7XX_CLUSTER_SP_VS, A7XX_TP0_CTX1_3D_CVS_REG, A7XX_PIPE_BR, 1, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_VS, A7XX_TP0_CTX1_3D_CVS_REG, PIPE_BR, 1, A7XX_USPTP,
+ 		gen7_0_0_tpl1_cluster_sp_vs_pipe_br_registers, 0xb000 },
+-	{ A7XX_CLUSTER_SP_VS, A7XX_TP0_CTX1_3D_CVS_REG, A7XX_PIPE_BV, 1, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_VS, A7XX_TP0_CTX1_3D_CVS_REG, PIPE_BV, 1, A7XX_USPTP,
+ 		gen7_0_0_tpl1_cluster_sp_vs_pipe_bv_registers, 0xb000 },
+ };
+ 
+diff --git a/drivers/gpu/drm/msm/adreno/adreno_gen7_9_0_snapshot.h b/drivers/gpu/drm/msm/adreno/adreno_gen7_9_0_snapshot.h
+index 0956dfca1f05..70805a5121be 100644
+--- a/drivers/gpu/drm/msm/adreno/adreno_gen7_9_0_snapshot.h
++++ b/drivers/gpu/drm/msm/adreno/adreno_gen7_9_0_snapshot.h
+@@ -118,97 +118,97 @@ static const u32 gen7_9_0_cx_debugbus_blocks[] = {
+ };
+ 
+ static const struct gen7_shader_block gen7_9_0_shader_blocks[] = {
+-	{ A7XX_TP0_TMO_DATA, 0x0200, 6, 2, A7XX_PIPE_BR, A7XX_USPTP },
+-	{ A7XX_TP0_SMO_DATA, 0x0080, 6, 2, A7XX_PIPE_BR, A7XX_USPTP },
+-	{ A7XX_TP0_MIPMAP_BASE_DATA, 0x03C0, 6, 2, A7XX_PIPE_BR, A7XX_USPTP },
+-	{ A7XX_SP_INST_DATA, 0x0800, 6, 2, A7XX_PIPE_BR, A7XX_USPTP },
+-	{ A7XX_SP_INST_DATA_1, 0x0800, 6, 2, A7XX_PIPE_BR, A7XX_USPTP },
+-	{ A7XX_SP_LB_0_DATA, 0x0800, 6, 2, A7XX_PIPE_BR, A7XX_USPTP },
+-	{ A7XX_SP_LB_1_DATA, 0x0800, 6, 2, A7XX_PIPE_BR, A7XX_USPTP },
+-	{ A7XX_SP_LB_2_DATA, 0x0800, 6, 2, A7XX_PIPE_BR, A7XX_USPTP },
+-	{ A7XX_SP_LB_3_DATA, 0x0800, 6, 2, A7XX_PIPE_BR, A7XX_USPTP },
+-	{ A7XX_SP_LB_4_DATA, 0x0800, 6, 2, A7XX_PIPE_BR, A7XX_USPTP },
+-	{ A7XX_SP_LB_5_DATA, 0x0800, 6, 2, A7XX_PIPE_BR, A7XX_USPTP },
+-	{ A7XX_SP_LB_6_DATA, 0x0800, 6, 2, A7XX_PIPE_BR, A7XX_USPTP },
+-	{ A7XX_SP_LB_7_DATA, 0x0800, 6, 2, A7XX_PIPE_BR, A7XX_USPTP },
+-	{ A7XX_SP_CB_RAM, 0x0390, 6, 2, A7XX_PIPE_BR, A7XX_USPTP },
+-	{ A7XX_SP_LB_13_DATA, 0x0800, 6, 2, A7XX_PIPE_BR, A7XX_USPTP },
+-	{ A7XX_SP_LB_14_DATA, 0x0800, 6, 2, A7XX_PIPE_BR, A7XX_USPTP },
+-	{ A7XX_SP_INST_TAG, 0x00C0, 6, 2, A7XX_PIPE_BR, A7XX_USPTP },
+-	{ A7XX_SP_INST_DATA_2, 0x0800, 6, 2, A7XX_PIPE_BR, A7XX_USPTP },
+-	{ A7XX_SP_TMO_TAG, 0x0080, 6, 2, A7XX_PIPE_BR, A7XX_USPTP },
+-	{ A7XX_SP_SMO_TAG, 0x0080, 6, 2, A7XX_PIPE_BR, A7XX_USPTP },
+-	{ A7XX_SP_STATE_DATA, 0x0040, 6, 2, A7XX_PIPE_BR, A7XX_USPTP },
+-	{ A7XX_SP_HWAVE_RAM, 0x0100, 6, 2, A7XX_PIPE_BR, A7XX_USPTP },
+-	{ A7XX_SP_L0_INST_BUF, 0x0050, 6, 2, A7XX_PIPE_BR, A7XX_USPTP },
+-	{ A7XX_SP_LB_8_DATA, 0x0800, 6, 2, A7XX_PIPE_BR, A7XX_USPTP },
+-	{ A7XX_SP_LB_9_DATA, 0x0800, 6, 2, A7XX_PIPE_BR, A7XX_USPTP },
+-	{ A7XX_SP_LB_10_DATA, 0x0800, 6, 2, A7XX_PIPE_BR, A7XX_USPTP },
+-	{ A7XX_SP_LB_11_DATA, 0x0800, 6, 2, A7XX_PIPE_BR, A7XX_USPTP },
+-	{ A7XX_SP_LB_12_DATA, 0x0800, 6, 2, A7XX_PIPE_BR, A7XX_USPTP },
+-	{ A7XX_HLSQ_DATAPATH_DSTR_META, 0x0010, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_DATAPATH_DSTR_META, 0x0010, 1, 1, A7XX_PIPE_BV, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_L2STC_TAG_RAM, 0x0200, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_L2STC_INFO_CMD, 0x0474, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_CVS_BE_CTXT_BUF_RAM_TAG, 0x0080, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_CVS_BE_CTXT_BUF_RAM_TAG, 0x0080, 1, 1, A7XX_PIPE_BV, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_CPS_BE_CTXT_BUF_RAM_TAG, 0x0080, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_GFX_CVS_BE_CTXT_BUF_RAM, 0x0400, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_GFX_CVS_BE_CTXT_BUF_RAM, 0x0400, 1, 1, A7XX_PIPE_BV, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_GFX_CPS_BE_CTXT_BUF_RAM, 0x0400, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_CHUNK_CVS_RAM, 0x01C0, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_CHUNK_CVS_RAM, 0x01C0, 1, 1, A7XX_PIPE_BV, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_CHUNK_CPS_RAM, 0x0300, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_CHUNK_CPS_RAM, 0x0180, 1, 1, A7XX_PIPE_LPAC, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_CHUNK_CVS_RAM_TAG, 0x0040, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_CHUNK_CVS_RAM_TAG, 0x0040, 1, 1, A7XX_PIPE_BV, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_CHUNK_CPS_RAM_TAG, 0x0040, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_CHUNK_CPS_RAM_TAG, 0x0040, 1, 1, A7XX_PIPE_LPAC, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_ICB_CVS_CB_BASE_TAG, 0x0010, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_ICB_CVS_CB_BASE_TAG, 0x0010, 1, 1, A7XX_PIPE_BV, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_ICB_CPS_CB_BASE_TAG, 0x0010, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_ICB_CPS_CB_BASE_TAG, 0x0010, 1, 1, A7XX_PIPE_LPAC, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_CVS_MISC_RAM, 0x0540, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_CVS_MISC_RAM, 0x0540, 1, 1, A7XX_PIPE_BV, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_CPS_MISC_RAM, 0x0640, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_CPS_MISC_RAM, 0x00B0, 1, 1, A7XX_PIPE_LPAC, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_CPS_MISC_RAM_1, 0x0800, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_INST_RAM, 0x0800, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_INST_RAM, 0x0800, 1, 1, A7XX_PIPE_BV, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_INST_RAM, 0x0200, 1, 1, A7XX_PIPE_LPAC, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_GFX_CVS_CONST_RAM, 0x0800, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_GFX_CVS_CONST_RAM, 0x0800, 1, 1, A7XX_PIPE_BV, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_GFX_CPS_CONST_RAM, 0x0800, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_GFX_CPS_CONST_RAM, 0x0800, 1, 1, A7XX_PIPE_LPAC, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_CVS_MISC_RAM_TAG, 0x0050, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_CVS_MISC_RAM_TAG, 0x0050, 1, 1, A7XX_PIPE_BV, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_CPS_MISC_RAM_TAG, 0x0050, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_CPS_MISC_RAM_TAG, 0x0008, 1, 1, A7XX_PIPE_LPAC, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_INST_RAM_TAG, 0x0014, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_INST_RAM_TAG, 0x0010, 1, 1, A7XX_PIPE_BV, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_INST_RAM_TAG, 0x0004, 1, 1, A7XX_PIPE_LPAC, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_GFX_CVS_CONST_RAM_TAG, 0x0040, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_GFX_CVS_CONST_RAM_TAG, 0x0040, 1, 1, A7XX_PIPE_BV, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_GFX_CPS_CONST_RAM_TAG, 0x0040, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_GFX_CPS_CONST_RAM_TAG, 0x0020, 1, 1, A7XX_PIPE_LPAC, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_GFX_LOCAL_MISC_RAM, 0x03C0, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_GFX_LOCAL_MISC_RAM, 0x0280, 1, 1, A7XX_PIPE_BV, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_GFX_LOCAL_MISC_RAM, 0x0050, 1, 1, A7XX_PIPE_LPAC, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_GFX_LOCAL_MISC_RAM_TAG, 0x0010, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_GFX_LOCAL_MISC_RAM_TAG, 0x0008, 1, 1, A7XX_PIPE_BV, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_INST_RAM_1, 0x0800, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_STPROC_META, 0x0010, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_BV_BE_META, 0x0018, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_BV_BE_META, 0x0018, 1, 1, A7XX_PIPE_BV, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_INST_RAM_2, 0x0800, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_DATAPATH_META, 0x0020, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_FRONTEND_META, 0x0080, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_FRONTEND_META, 0x0080, 1, 1, A7XX_PIPE_BV, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_FRONTEND_META, 0x0080, 1, 1, A7XX_PIPE_LPAC, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_INDIRECT_META, 0x0010, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_BACKEND_META, 0x0040, 1, 1, A7XX_PIPE_BR, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_BACKEND_META, 0x0040, 1, 1, A7XX_PIPE_BV, A7XX_HLSQ_STATE },
+-	{ A7XX_HLSQ_BACKEND_META, 0x0040, 1, 1, A7XX_PIPE_LPAC, A7XX_HLSQ_STATE },
++	{ A7XX_TP0_TMO_DATA, 0x0200, 6, 2, PIPE_BR, A7XX_USPTP },
++	{ A7XX_TP0_SMO_DATA, 0x0080, 6, 2, PIPE_BR, A7XX_USPTP },
++	{ A7XX_TP0_MIPMAP_BASE_DATA, 0x03C0, 6, 2, PIPE_BR, A7XX_USPTP },
++	{ A7XX_SP_INST_DATA, 0x0800, 6, 2, PIPE_BR, A7XX_USPTP },
++	{ A7XX_SP_INST_DATA_1, 0x0800, 6, 2, PIPE_BR, A7XX_USPTP },
++	{ A7XX_SP_LB_0_DATA, 0x0800, 6, 2, PIPE_BR, A7XX_USPTP },
++	{ A7XX_SP_LB_1_DATA, 0x0800, 6, 2, PIPE_BR, A7XX_USPTP },
++	{ A7XX_SP_LB_2_DATA, 0x0800, 6, 2, PIPE_BR, A7XX_USPTP },
++	{ A7XX_SP_LB_3_DATA, 0x0800, 6, 2, PIPE_BR, A7XX_USPTP },
++	{ A7XX_SP_LB_4_DATA, 0x0800, 6, 2, PIPE_BR, A7XX_USPTP },
++	{ A7XX_SP_LB_5_DATA, 0x0800, 6, 2, PIPE_BR, A7XX_USPTP },
++	{ A7XX_SP_LB_6_DATA, 0x0800, 6, 2, PIPE_BR, A7XX_USPTP },
++	{ A7XX_SP_LB_7_DATA, 0x0800, 6, 2, PIPE_BR, A7XX_USPTP },
++	{ A7XX_SP_CB_RAM, 0x0390, 6, 2, PIPE_BR, A7XX_USPTP },
++	{ A7XX_SP_LB_13_DATA, 0x0800, 6, 2, PIPE_BR, A7XX_USPTP },
++	{ A7XX_SP_LB_14_DATA, 0x0800, 6, 2, PIPE_BR, A7XX_USPTP },
++	{ A7XX_SP_INST_TAG, 0x00C0, 6, 2, PIPE_BR, A7XX_USPTP },
++	{ A7XX_SP_INST_DATA_2, 0x0800, 6, 2, PIPE_BR, A7XX_USPTP },
++	{ A7XX_SP_TMO_TAG, 0x0080, 6, 2, PIPE_BR, A7XX_USPTP },
++	{ A7XX_SP_SMO_TAG, 0x0080, 6, 2, PIPE_BR, A7XX_USPTP },
++	{ A7XX_SP_STATE_DATA, 0x0040, 6, 2, PIPE_BR, A7XX_USPTP },
++	{ A7XX_SP_HWAVE_RAM, 0x0100, 6, 2, PIPE_BR, A7XX_USPTP },
++	{ A7XX_SP_L0_INST_BUF, 0x0050, 6, 2, PIPE_BR, A7XX_USPTP },
++	{ A7XX_SP_LB_8_DATA, 0x0800, 6, 2, PIPE_BR, A7XX_USPTP },
++	{ A7XX_SP_LB_9_DATA, 0x0800, 6, 2, PIPE_BR, A7XX_USPTP },
++	{ A7XX_SP_LB_10_DATA, 0x0800, 6, 2, PIPE_BR, A7XX_USPTP },
++	{ A7XX_SP_LB_11_DATA, 0x0800, 6, 2, PIPE_BR, A7XX_USPTP },
++	{ A7XX_SP_LB_12_DATA, 0x0800, 6, 2, PIPE_BR, A7XX_USPTP },
++	{ A7XX_HLSQ_DATAPATH_DSTR_META, 0x0010, 1, 1, PIPE_BR, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_DATAPATH_DSTR_META, 0x0010, 1, 1, PIPE_BV, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_L2STC_TAG_RAM, 0x0200, 1, 1, PIPE_BR, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_L2STC_INFO_CMD, 0x0474, 1, 1, PIPE_BR, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_CVS_BE_CTXT_BUF_RAM_TAG, 0x0080, 1, 1, PIPE_BR, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_CVS_BE_CTXT_BUF_RAM_TAG, 0x0080, 1, 1, PIPE_BV, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_CPS_BE_CTXT_BUF_RAM_TAG, 0x0080, 1, 1, PIPE_BR, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_GFX_CVS_BE_CTXT_BUF_RAM, 0x0400, 1, 1, PIPE_BR, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_GFX_CVS_BE_CTXT_BUF_RAM, 0x0400, 1, 1, PIPE_BV, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_GFX_CPS_BE_CTXT_BUF_RAM, 0x0400, 1, 1, PIPE_BR, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_CHUNK_CVS_RAM, 0x01C0, 1, 1, PIPE_BR, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_CHUNK_CVS_RAM, 0x01C0, 1, 1, PIPE_BV, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_CHUNK_CPS_RAM, 0x0300, 1, 1, PIPE_BR, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_CHUNK_CPS_RAM, 0x0180, 1, 1, PIPE_LPAC, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_CHUNK_CVS_RAM_TAG, 0x0040, 1, 1, PIPE_BR, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_CHUNK_CVS_RAM_TAG, 0x0040, 1, 1, PIPE_BV, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_CHUNK_CPS_RAM_TAG, 0x0040, 1, 1, PIPE_BR, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_CHUNK_CPS_RAM_TAG, 0x0040, 1, 1, PIPE_LPAC, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_ICB_CVS_CB_BASE_TAG, 0x0010, 1, 1, PIPE_BR, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_ICB_CVS_CB_BASE_TAG, 0x0010, 1, 1, PIPE_BV, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_ICB_CPS_CB_BASE_TAG, 0x0010, 1, 1, PIPE_BR, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_ICB_CPS_CB_BASE_TAG, 0x0010, 1, 1, PIPE_LPAC, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_CVS_MISC_RAM, 0x0540, 1, 1, PIPE_BR, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_CVS_MISC_RAM, 0x0540, 1, 1, PIPE_BV, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_CPS_MISC_RAM, 0x0640, 1, 1, PIPE_BR, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_CPS_MISC_RAM, 0x00B0, 1, 1, PIPE_LPAC, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_CPS_MISC_RAM_1, 0x0800, 1, 1, PIPE_BR, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_INST_RAM, 0x0800, 1, 1, PIPE_BR, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_INST_RAM, 0x0800, 1, 1, PIPE_BV, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_INST_RAM, 0x0200, 1, 1, PIPE_LPAC, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_GFX_CVS_CONST_RAM, 0x0800, 1, 1, PIPE_BR, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_GFX_CVS_CONST_RAM, 0x0800, 1, 1, PIPE_BV, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_GFX_CPS_CONST_RAM, 0x0800, 1, 1, PIPE_BR, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_GFX_CPS_CONST_RAM, 0x0800, 1, 1, PIPE_LPAC, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_CVS_MISC_RAM_TAG, 0x0050, 1, 1, PIPE_BR, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_CVS_MISC_RAM_TAG, 0x0050, 1, 1, PIPE_BV, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_CPS_MISC_RAM_TAG, 0x0050, 1, 1, PIPE_BR, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_CPS_MISC_RAM_TAG, 0x0008, 1, 1, PIPE_LPAC, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_INST_RAM_TAG, 0x0014, 1, 1, PIPE_BR, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_INST_RAM_TAG, 0x0010, 1, 1, PIPE_BV, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_INST_RAM_TAG, 0x0004, 1, 1, PIPE_LPAC, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_GFX_CVS_CONST_RAM_TAG, 0x0040, 1, 1, PIPE_BR, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_GFX_CVS_CONST_RAM_TAG, 0x0040, 1, 1, PIPE_BV, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_GFX_CPS_CONST_RAM_TAG, 0x0040, 1, 1, PIPE_BR, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_GFX_CPS_CONST_RAM_TAG, 0x0020, 1, 1, PIPE_LPAC, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_GFX_LOCAL_MISC_RAM, 0x03C0, 1, 1, PIPE_BR, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_GFX_LOCAL_MISC_RAM, 0x0280, 1, 1, PIPE_BV, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_GFX_LOCAL_MISC_RAM, 0x0050, 1, 1, PIPE_LPAC, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_GFX_LOCAL_MISC_RAM_TAG, 0x0010, 1, 1, PIPE_BR, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_GFX_LOCAL_MISC_RAM_TAG, 0x0008, 1, 1, PIPE_BV, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_INST_RAM_1, 0x0800, 1, 1, PIPE_BR, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_STPROC_META, 0x0010, 1, 1, PIPE_BR, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_BV_BE_META, 0x0018, 1, 1, PIPE_BR, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_BV_BE_META, 0x0018, 1, 1, PIPE_BV, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_INST_RAM_2, 0x0800, 1, 1, PIPE_BR, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_DATAPATH_META, 0x0020, 1, 1, PIPE_BR, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_FRONTEND_META, 0x0080, 1, 1, PIPE_BR, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_FRONTEND_META, 0x0080, 1, 1, PIPE_BV, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_FRONTEND_META, 0x0080, 1, 1, PIPE_LPAC, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_INDIRECT_META, 0x0010, 1, 1, PIPE_BR, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_BACKEND_META, 0x0040, 1, 1, PIPE_BR, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_BACKEND_META, 0x0040, 1, 1, PIPE_BV, A7XX_HLSQ_STATE },
++	{ A7XX_HLSQ_BACKEND_META, 0x0040, 1, 1, PIPE_LPAC, A7XX_HLSQ_STATE },
+ };
+ 
+ /*
+@@ -226,7 +226,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_pre_crashdumper_gpu_registers), 8));
+  * Block   : ['BROADCAST', 'CP', 'GRAS', 'GXCLKCTL']
+  * Block   : ['PC', 'RBBM', 'RDVM', 'UCHE']
+  * Block   : ['VFD', 'VPC', 'VSC']
+- * Pipeline: A7XX_PIPE_NONE
++ * Pipeline: PIPE_NONE
+  * pairs   : 196 (Regs:1778)
+  */
+ static const u32 gen7_9_0_gpu_registers[] = {
+@@ -290,7 +290,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_gxclkctl_registers), 8));
+ 
+ /*
+  * Block   : ['GMUAO', 'GMUCX', 'GMUCX_RAM']
+- * Pipeline: A7XX_PIPE_NONE
++ * Pipeline: PIPE_NONE
+  * pairs   : 134 (Regs:429)
+  */
+ static const u32 gen7_9_0_gmu_registers[] = {
+@@ -334,7 +334,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_gmu_registers), 8));
+ 
+ /*
+  * Block   : ['GMUGX']
+- * Pipeline: A7XX_PIPE_NONE
++ * Pipeline: PIPE_NONE
+  * pairs   : 44 (Regs:454)
+  */
+ static const u32 gen7_9_0_gmugx_registers[] = {
+@@ -355,7 +355,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_gmugx_registers), 8));
+ 
+ /*
+  * Block   : ['CX_MISC']
+- * Pipeline: A7XX_PIPE_NONE
++ * Pipeline: PIPE_NONE
+  * pairs   : 7 (Regs:56)
+  */
+ static const u32 gen7_9_0_cx_misc_registers[] = {
+@@ -367,7 +367,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_cx_misc_registers), 8));
+ 
+ /*
+  * Block   : ['DBGC']
+- * Pipeline: A7XX_PIPE_NONE
++ * Pipeline: PIPE_NONE
+  * pairs   : 19 (Regs:155)
+  */
+ static const u32 gen7_9_0_dbgc_registers[] = {
+@@ -382,7 +382,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_dbgc_registers), 8));
+ 
+ /*
+  * Block   : ['CX_DBGC']
+- * Pipeline: A7XX_PIPE_NONE
++ * Pipeline: PIPE_NONE
+  * pairs   : 7 (Regs:75)
+  */
+ static const u32 gen7_9_0_cx_dbgc_registers[] = {
+@@ -396,7 +396,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_cx_dbgc_registers), 8));
+  * Block   : ['BROADCAST', 'CP', 'CX_DBGC', 'CX_MISC', 'DBGC', 'GBIF']
+  * Block   : ['GMUAO', 'GMUCX', 'GMUGX', 'GRAS', 'GXCLKCTL', 'PC']
+  * Block   : ['RBBM', 'RDVM', 'UCHE', 'VFD', 'VPC', 'VSC']
+- * Pipeline: A7XX_PIPE_BR
++ * Pipeline: PIPE_BR
+  * Cluster : A7XX_CLUSTER_NONE
+  * pairs   : 29 (Regs:573)
+  */
+@@ -417,7 +417,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_non_context_pipe_br_registers), 8));
+  * Block   : ['BROADCAST', 'CP', 'CX_DBGC', 'CX_MISC', 'DBGC', 'GBIF']
+  * Block   : ['GMUAO', 'GMUCX', 'GMUGX', 'GRAS', 'GXCLKCTL', 'PC']
+  * Block   : ['RBBM', 'RDVM', 'UCHE', 'VFD', 'VPC', 'VSC']
+- * Pipeline: A7XX_PIPE_BV
++ * Pipeline: PIPE_BV
+  * Cluster : A7XX_CLUSTER_NONE
+  * pairs   : 29 (Regs:573)
+  */
+@@ -438,7 +438,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_non_context_pipe_bv_registers), 8));
+  * Block   : ['BROADCAST', 'CP', 'CX_DBGC', 'CX_MISC', 'DBGC', 'GBIF']
+  * Block   : ['GMUAO', 'GMUCX', 'GMUGX', 'GRAS', 'GXCLKCTL', 'PC']
+  * Block   : ['RBBM', 'RDVM', 'UCHE', 'VFD', 'VPC', 'VSC']
+- * Pipeline: A7XX_PIPE_LPAC
++ * Pipeline: PIPE_LPAC
+  * Cluster : A7XX_CLUSTER_NONE
+  * pairs   : 2 (Regs:7)
+  */
+@@ -450,7 +450,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_non_context_pipe_lpac_registers), 8));
+ 
+ /*
+  * Block   : ['RB']
+- * Pipeline: A7XX_PIPE_BR
++ * Pipeline: PIPE_BR
+  * Cluster : A7XX_CLUSTER_NONE
+  * pairs   : 5 (Regs:37)
+  */
+@@ -463,7 +463,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_non_context_rb_pipe_br_rac_registers),
+ 
+ /*
+  * Block   : ['RB']
+- * Pipeline: A7XX_PIPE_BR
++ * Pipeline: PIPE_BR
+  * Cluster : A7XX_CLUSTER_NONE
+  * pairs   : 15 (Regs:66)
+  */
+@@ -478,7 +478,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_non_context_rb_pipe_br_rbp_registers),
+ 
+ /*
+  * Block   : ['SP']
+- * Pipeline: A7XX_PIPE_BR
++ * Pipeline: PIPE_BR
+  * Cluster : A7XX_CLUSTER_NONE
+  * Location: A7XX_HLSQ_STATE
+  * pairs   : 4 (Regs:28)
+@@ -491,7 +491,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_non_context_sp_pipe_br_hlsq_state_regis
+ 
+ /*
+  * Block   : ['SP']
+- * Pipeline: A7XX_PIPE_BR
++ * Pipeline: PIPE_BR
+  * Cluster : A7XX_CLUSTER_NONE
+  * Location: A7XX_SP_TOP
+  * pairs   : 10 (Regs:61)
+@@ -506,7 +506,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_non_context_sp_pipe_br_sp_top_registers
+ 
+ /*
+  * Block   : ['SP']
+- * Pipeline: A7XX_PIPE_BR
++ * Pipeline: PIPE_BR
+  * Cluster : A7XX_CLUSTER_NONE
+  * Location: A7XX_USPTP
+  * pairs   : 12 (Regs:62)
+@@ -521,7 +521,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_non_context_sp_pipe_br_usptp_registers)
+ 
+ /*
+  * Block   : ['SP']
+- * Pipeline: A7XX_PIPE_BR
++ * Pipeline: PIPE_BR
+  * Cluster : A7XX_CLUSTER_NONE
+  * Location: A7XX_HLSQ_DP_STR
+  * pairs   : 2 (Regs:5)
+@@ -534,7 +534,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_non_context_sp_pipe_br_hlsq_dp_str_regi
+ 
+ /*
+  * Block   : ['SP']
+- * Pipeline: A7XX_PIPE_LPAC
++ * Pipeline: PIPE_LPAC
+  * Cluster : A7XX_CLUSTER_NONE
+  * Location: A7XX_HLSQ_STATE
+  * pairs   : 1 (Regs:5)
+@@ -547,7 +547,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_non_context_sp_pipe_lpac_hlsq_state_reg
+ 
+ /*
+  * Block   : ['SP']
+- * Pipeline: A7XX_PIPE_LPAC
++ * Pipeline: PIPE_LPAC
+  * Cluster : A7XX_CLUSTER_NONE
+  * Location: A7XX_SP_TOP
+  * pairs   : 1 (Regs:6)
+@@ -560,7 +560,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_non_context_sp_pipe_lpac_sp_top_registe
+ 
+ /*
+  * Block   : ['SP']
+- * Pipeline: A7XX_PIPE_LPAC
++ * Pipeline: PIPE_LPAC
+  * Cluster : A7XX_CLUSTER_NONE
+  * Location: A7XX_USPTP
+  * pairs   : 2 (Regs:9)
+@@ -573,7 +573,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_non_context_sp_pipe_lpac_usptp_register
+ 
+ /*
+  * Block   : ['TPL1']
+- * Pipeline: A7XX_PIPE_NONE
++ * Pipeline: PIPE_NONE
+  * Cluster : A7XX_CLUSTER_NONE
+  * Location: A7XX_USPTP
+  * pairs   : 5 (Regs:29)
+@@ -587,7 +587,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_non_context_tpl1_pipe_none_usptp_regist
+ 
+ /*
+  * Block   : ['TPL1']
+- * Pipeline: A7XX_PIPE_BR
++ * Pipeline: PIPE_BR
+  * Cluster : A7XX_CLUSTER_NONE
+  * Location: A7XX_USPTP
+  * pairs   : 1 (Regs:1)
+@@ -600,7 +600,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_non_context_tpl1_pipe_br_usptp_register
+ 
+ /*
+  * Block   : ['TPL1']
+- * Pipeline: A7XX_PIPE_LPAC
++ * Pipeline: PIPE_LPAC
+  * Cluster : A7XX_CLUSTER_NONE
+  * Location: A7XX_USPTP
+  * pairs   : 1 (Regs:1)
+@@ -613,7 +613,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_non_context_tpl1_pipe_lpac_usptp_regist
+ 
+ /*
+  * Block   : ['GRAS']
+- * Pipeline: A7XX_PIPE_BR
++ * Pipeline: PIPE_BR
+  * Cluster : A7XX_CLUSTER_GRAS
+  * pairs   : 14 (Regs:293)
+  */
+@@ -628,7 +628,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_gras_pipe_br_cluster_gras_registers), 8
+ 
+ /*
+  * Block   : ['GRAS']
+- * Pipeline: A7XX_PIPE_BV
++ * Pipeline: PIPE_BV
+  * Cluster : A7XX_CLUSTER_GRAS
+  * pairs   : 14 (Regs:293)
+  */
+@@ -643,7 +643,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_gras_pipe_bv_cluster_gras_registers), 8
+ 
+ /*
+  * Block   : ['PC']
+- * Pipeline: A7XX_PIPE_BR
++ * Pipeline: PIPE_BR
+  * Cluster : A7XX_CLUSTER_FE
+  * pairs   : 6 (Regs:31)
+  */
+@@ -656,7 +656,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_pc_pipe_br_cluster_fe_registers), 8));
+ 
+ /*
+  * Block   : ['PC']
+- * Pipeline: A7XX_PIPE_BV
++ * Pipeline: PIPE_BV
+  * Cluster : A7XX_CLUSTER_FE
+  * pairs   : 6 (Regs:31)
+  */
+@@ -669,7 +669,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_pc_pipe_bv_cluster_fe_registers), 8));
+ 
+ /*
+  * Block   : ['VFD']
+- * Pipeline: A7XX_PIPE_BR
++ * Pipeline: PIPE_BR
+  * Cluster : A7XX_CLUSTER_FE
+  * pairs   : 2 (Regs:236)
+  */
+@@ -681,7 +681,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_vfd_pipe_br_cluster_fe_registers), 8));
+ 
+ /*
+  * Block   : ['VFD']
+- * Pipeline: A7XX_PIPE_BV
++ * Pipeline: PIPE_BV
+  * Cluster : A7XX_CLUSTER_FE
+  * pairs   : 2 (Regs:236)
+  */
+@@ -693,7 +693,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_vfd_pipe_bv_cluster_fe_registers), 8));
+ 
+ /*
+  * Block   : ['VPC']
+- * Pipeline: A7XX_PIPE_BR
++ * Pipeline: PIPE_BR
+  * Cluster : A7XX_CLUSTER_FE
+  * pairs   : 2 (Regs:18)
+  */
+@@ -705,7 +705,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_vpc_pipe_br_cluster_fe_registers), 8));
+ 
+ /*
+  * Block   : ['VPC']
+- * Pipeline: A7XX_PIPE_BR
++ * Pipeline: PIPE_BR
+  * Cluster : A7XX_CLUSTER_PC_VS
+  * pairs   : 3 (Regs:30)
+  */
+@@ -717,7 +717,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_vpc_pipe_br_cluster_pc_vs_registers), 8
+ 
+ /*
+  * Block   : ['VPC']
+- * Pipeline: A7XX_PIPE_BR
++ * Pipeline: PIPE_BR
+  * Cluster : A7XX_CLUSTER_VPC_PS
+  * pairs   : 5 (Regs:76)
+  */
+@@ -730,7 +730,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_vpc_pipe_br_cluster_vpc_ps_registers),
+ 
+ /*
+  * Block   : ['VPC']
+- * Pipeline: A7XX_PIPE_BV
++ * Pipeline: PIPE_BV
+  * Cluster : A7XX_CLUSTER_FE
+  * pairs   : 2 (Regs:18)
+  */
+@@ -742,7 +742,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_vpc_pipe_bv_cluster_fe_registers), 8));
+ 
+ /*
+  * Block   : ['VPC']
+- * Pipeline: A7XX_PIPE_BV
++ * Pipeline: PIPE_BV
+  * Cluster : A7XX_CLUSTER_PC_VS
+  * pairs   : 3 (Regs:30)
+  */
+@@ -754,7 +754,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_vpc_pipe_bv_cluster_pc_vs_registers), 8
+ 
+ /*
+  * Block   : ['VPC']
+- * Pipeline: A7XX_PIPE_BV
++ * Pipeline: PIPE_BV
+  * Cluster : A7XX_CLUSTER_VPC_PS
+  * pairs   : 5 (Regs:76)
+  */
+@@ -767,7 +767,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_vpc_pipe_bv_cluster_vpc_ps_registers),
+ 
+ /*
+  * Block   : ['RB']
+- * Pipeline: A7XX_PIPE_BR
++ * Pipeline: PIPE_BR
+  * Cluster : A7XX_CLUSTER_PS
+  * pairs   : 39 (Regs:133)
+  */
+@@ -788,7 +788,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_rb_pipe_br_cluster_ps_rac_registers), 8
+ 
+ /*
+  * Block   : ['RB']
+- * Pipeline: A7XX_PIPE_BR
++ * Pipeline: PIPE_BR
+  * Cluster : A7XX_CLUSTER_PS
+  * pairs   : 34 (Regs:100)
+  */
+@@ -808,7 +808,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_rb_pipe_br_cluster_ps_rbp_registers), 8
+ 
+ /*
+  * Block   : ['SP']
+- * Pipeline: A7XX_PIPE_BR
++ * Pipeline: PIPE_BR
+  * Cluster : A7XX_CLUSTER_SP_VS
+  * Location: A7XX_HLSQ_STATE
+  * pairs   : 29 (Regs:215)
+@@ -828,7 +828,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_sp_pipe_br_cluster_sp_vs_hlsq_state_reg
+ 
+ /*
+  * Block   : ['SP']
+- * Pipeline: A7XX_PIPE_BR
++ * Pipeline: PIPE_BR
+  * Cluster : A7XX_CLUSTER_SP_VS
+  * Location: A7XX_SP_TOP
+  * pairs   : 22 (Regs:73)
+@@ -846,7 +846,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_sp_pipe_br_cluster_sp_vs_sp_top_registe
+ 
+ /*
+  * Block   : ['SP']
+- * Pipeline: A7XX_PIPE_BR
++ * Pipeline: PIPE_BR
+  * Cluster : A7XX_CLUSTER_SP_VS
+  * Location: A7XX_USPTP
+  * pairs   : 16 (Regs:269)
+@@ -862,7 +862,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_sp_pipe_br_cluster_sp_vs_usptp_register
+ 
+ /*
+  * Block   : ['SP']
+- * Pipeline: A7XX_PIPE_BR
++ * Pipeline: PIPE_BR
+  * Cluster : A7XX_CLUSTER_SP_PS
+  * Location: A7XX_HLSQ_STATE
+  * pairs   : 21 (Regs:334)
+@@ -880,7 +880,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_sp_pipe_br_cluster_sp_ps_hlsq_state_reg
+ 
+ /*
+  * Block   : ['SP']
+- * Pipeline: A7XX_PIPE_BR
++ * Pipeline: PIPE_BR
+  * Cluster : A7XX_CLUSTER_SP_PS
+  * Location: A7XX_HLSQ_DP
+  * pairs   : 3 (Regs:19)
+@@ -893,7 +893,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_sp_pipe_br_cluster_sp_ps_hlsq_dp_regist
+ 
+ /*
+  * Block   : ['SP']
+- * Pipeline: A7XX_PIPE_BR
++ * Pipeline: PIPE_BR
+  * Cluster : A7XX_CLUSTER_SP_PS
+  * Location: A7XX_SP_TOP
+  * pairs   : 18 (Regs:77)
+@@ -910,7 +910,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_sp_pipe_br_cluster_sp_ps_sp_top_registe
+ 
+ /*
+  * Block   : ['SP']
+- * Pipeline: A7XX_PIPE_BR
++ * Pipeline: PIPE_BR
+  * Cluster : A7XX_CLUSTER_SP_PS
+  * Location: A7XX_USPTP
+  * pairs   : 17 (Regs:333)
+@@ -927,7 +927,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_sp_pipe_br_cluster_sp_ps_usptp_register
+ 
+ /*
+  * Block   : ['SP']
+- * Pipeline: A7XX_PIPE_BR
++ * Pipeline: PIPE_BR
+  * Cluster : A7XX_CLUSTER_SP_PS
+  * Location: A7XX_HLSQ_DP_STR
+  * pairs   : 1 (Regs:6)
+@@ -940,7 +940,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_sp_pipe_br_cluster_sp_ps_hlsq_dp_str_re
+ 
+ /*
+  * Block   : ['SP']
+- * Pipeline: A7XX_PIPE_BV
++ * Pipeline: PIPE_BV
+  * Cluster : A7XX_CLUSTER_SP_VS
+  * Location: A7XX_HLSQ_STATE
+  * pairs   : 28 (Regs:213)
+@@ -959,7 +959,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_sp_pipe_bv_cluster_sp_vs_hlsq_state_reg
+ 
+ /*
+  * Block   : ['SP']
+- * Pipeline: A7XX_PIPE_BV
++ * Pipeline: PIPE_BV
+  * Cluster : A7XX_CLUSTER_SP_VS
+  * Location: A7XX_SP_TOP
+  * pairs   : 21 (Regs:71)
+@@ -977,7 +977,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_sp_pipe_bv_cluster_sp_vs_sp_top_registe
+ 
+ /*
+  * Block   : ['SP']
+- * Pipeline: A7XX_PIPE_BV
++ * Pipeline: PIPE_BV
+  * Cluster : A7XX_CLUSTER_SP_VS
+  * Location: A7XX_USPTP
+  * pairs   : 16 (Regs:266)
+@@ -993,7 +993,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_sp_pipe_bv_cluster_sp_vs_usptp_register
+ 
+ /*
+  * Block   : ['SP']
+- * Pipeline: A7XX_PIPE_LPAC
++ * Pipeline: PIPE_LPAC
+  * Cluster : A7XX_CLUSTER_SP_PS
+  * Location: A7XX_HLSQ_STATE
+  * pairs   : 14 (Regs:299)
+@@ -1009,7 +1009,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_sp_pipe_lpac_cluster_sp_ps_hlsq_state_r
+ 
+ /*
+  * Block   : ['SP']
+- * Pipeline: A7XX_PIPE_LPAC
++ * Pipeline: PIPE_LPAC
+  * Cluster : A7XX_CLUSTER_SP_PS
+  * Location: A7XX_HLSQ_DP
+  * pairs   : 2 (Regs:13)
+@@ -1022,7 +1022,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_sp_pipe_lpac_cluster_sp_ps_hlsq_dp_regi
+ 
+ /*
+  * Block   : ['SP']
+- * Pipeline: A7XX_PIPE_LPAC
++ * Pipeline: PIPE_LPAC
+  * Cluster : A7XX_CLUSTER_SP_PS
+  * Location: A7XX_SP_TOP
+  * pairs   : 9 (Regs:34)
+@@ -1037,7 +1037,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_sp_pipe_lpac_cluster_sp_ps_sp_top_regis
+ 
+ /*
+  * Block   : ['SP']
+- * Pipeline: A7XX_PIPE_LPAC
++ * Pipeline: PIPE_LPAC
+  * Cluster : A7XX_CLUSTER_SP_PS
+  * Location: A7XX_USPTP
+  * pairs   : 11 (Regs:279)
+@@ -1052,7 +1052,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_sp_pipe_lpac_cluster_sp_ps_usptp_regist
+ 
+ /*
+  * Block   : ['TPL1']
+- * Pipeline: A7XX_PIPE_BR
++ * Pipeline: PIPE_BR
+  * Cluster : A7XX_CLUSTER_SP_VS
+  * Location: A7XX_USPTP
+  * pairs   : 3 (Regs:10)
+@@ -1065,7 +1065,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_tpl1_pipe_br_cluster_sp_vs_usptp_regist
+ 
+ /*
+  * Block   : ['TPL1']
+- * Pipeline: A7XX_PIPE_BR
++ * Pipeline: PIPE_BR
+  * Cluster : A7XX_CLUSTER_SP_PS
+  * Location: A7XX_USPTP
+  * pairs   : 6 (Regs:42)
+@@ -1079,7 +1079,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_tpl1_pipe_br_cluster_sp_ps_usptp_regist
+ 
+ /*
+  * Block   : ['TPL1']
+- * Pipeline: A7XX_PIPE_BV
++ * Pipeline: PIPE_BV
+  * Cluster : A7XX_CLUSTER_SP_VS
+  * Location: A7XX_USPTP
+  * pairs   : 3 (Regs:10)
+@@ -1092,7 +1092,7 @@ static_assert(IS_ALIGNED(sizeof(gen7_9_0_tpl1_pipe_bv_cluster_sp_vs_usptp_regist
+ 
+ /*
+  * Block   : ['TPL1']
+- * Pipeline: A7XX_PIPE_LPAC
++ * Pipeline: PIPE_LPAC
+  * Cluster : A7XX_CLUSTER_SP_PS
+  * Location: A7XX_USPTP
+  * pairs   : 5 (Regs:7)
+@@ -1117,180 +1117,180 @@ static const struct gen7_sel_reg gen7_9_0_rb_rbp_sel = {
+ };
+ 
+ static const struct gen7_cluster_registers gen7_9_0_clusters[] = {
+-	{ A7XX_CLUSTER_NONE, A7XX_PIPE_BR, STATE_NON_CONTEXT,
++	{ A7XX_CLUSTER_NONE, PIPE_BR, STATE_NON_CONTEXT,
+ 		gen7_9_0_non_context_pipe_br_registers,  },
+-	{ A7XX_CLUSTER_NONE, A7XX_PIPE_BV, STATE_NON_CONTEXT,
++	{ A7XX_CLUSTER_NONE, PIPE_BV, STATE_NON_CONTEXT,
+ 		gen7_9_0_non_context_pipe_bv_registers,  },
+-	{ A7XX_CLUSTER_NONE, A7XX_PIPE_LPAC, STATE_NON_CONTEXT,
++	{ A7XX_CLUSTER_NONE, PIPE_LPAC, STATE_NON_CONTEXT,
+ 		gen7_9_0_non_context_pipe_lpac_registers,  },
+-	{ A7XX_CLUSTER_NONE, A7XX_PIPE_BR, STATE_NON_CONTEXT,
++	{ A7XX_CLUSTER_NONE, PIPE_BR, STATE_NON_CONTEXT,
+ 		gen7_9_0_non_context_rb_pipe_br_rac_registers, &gen7_9_0_rb_rac_sel, },
+-	{ A7XX_CLUSTER_NONE, A7XX_PIPE_BR, STATE_NON_CONTEXT,
++	{ A7XX_CLUSTER_NONE, PIPE_BR, STATE_NON_CONTEXT,
+ 		gen7_9_0_non_context_rb_pipe_br_rbp_registers, &gen7_9_0_rb_rbp_sel, },
+-	{ A7XX_CLUSTER_PS, A7XX_PIPE_BR, STATE_FORCE_CTXT_0,
++	{ A7XX_CLUSTER_PS, PIPE_BR, STATE_FORCE_CTXT_0,
+ 		gen7_9_0_rb_pipe_br_cluster_ps_rac_registers, &gen7_9_0_rb_rac_sel, },
+-	{ A7XX_CLUSTER_PS, A7XX_PIPE_BR, STATE_FORCE_CTXT_1,
++	{ A7XX_CLUSTER_PS, PIPE_BR, STATE_FORCE_CTXT_1,
+ 		gen7_9_0_rb_pipe_br_cluster_ps_rac_registers, &gen7_9_0_rb_rac_sel, },
+-	{ A7XX_CLUSTER_PS, A7XX_PIPE_BR, STATE_FORCE_CTXT_0,
++	{ A7XX_CLUSTER_PS, PIPE_BR, STATE_FORCE_CTXT_0,
+ 		gen7_9_0_rb_pipe_br_cluster_ps_rbp_registers, &gen7_9_0_rb_rbp_sel, },
+-	{ A7XX_CLUSTER_PS, A7XX_PIPE_BR, STATE_FORCE_CTXT_1,
++	{ A7XX_CLUSTER_PS, PIPE_BR, STATE_FORCE_CTXT_1,
+ 		gen7_9_0_rb_pipe_br_cluster_ps_rbp_registers, &gen7_9_0_rb_rbp_sel, },
+-	{ A7XX_CLUSTER_GRAS, A7XX_PIPE_BR, STATE_FORCE_CTXT_0,
++	{ A7XX_CLUSTER_GRAS, PIPE_BR, STATE_FORCE_CTXT_0,
+ 		gen7_9_0_gras_pipe_br_cluster_gras_registers,  },
+-	{ A7XX_CLUSTER_GRAS, A7XX_PIPE_BR, STATE_FORCE_CTXT_1,
++	{ A7XX_CLUSTER_GRAS, PIPE_BR, STATE_FORCE_CTXT_1,
+ 		gen7_9_0_gras_pipe_br_cluster_gras_registers,  },
+-	{ A7XX_CLUSTER_GRAS, A7XX_PIPE_BV, STATE_FORCE_CTXT_0,
++	{ A7XX_CLUSTER_GRAS, PIPE_BV, STATE_FORCE_CTXT_0,
+ 		gen7_9_0_gras_pipe_bv_cluster_gras_registers,  },
+-	{ A7XX_CLUSTER_GRAS, A7XX_PIPE_BV, STATE_FORCE_CTXT_1,
++	{ A7XX_CLUSTER_GRAS, PIPE_BV, STATE_FORCE_CTXT_1,
+ 		gen7_9_0_gras_pipe_bv_cluster_gras_registers,  },
+-	{ A7XX_CLUSTER_FE, A7XX_PIPE_BR, STATE_FORCE_CTXT_0,
++	{ A7XX_CLUSTER_FE, PIPE_BR, STATE_FORCE_CTXT_0,
+ 		gen7_9_0_pc_pipe_br_cluster_fe_registers,  },
+-	{ A7XX_CLUSTER_FE, A7XX_PIPE_BR, STATE_FORCE_CTXT_1,
++	{ A7XX_CLUSTER_FE, PIPE_BR, STATE_FORCE_CTXT_1,
+ 		gen7_9_0_pc_pipe_br_cluster_fe_registers,  },
+-	{ A7XX_CLUSTER_FE, A7XX_PIPE_BV, STATE_FORCE_CTXT_0,
++	{ A7XX_CLUSTER_FE, PIPE_BV, STATE_FORCE_CTXT_0,
+ 		gen7_9_0_pc_pipe_bv_cluster_fe_registers,  },
+-	{ A7XX_CLUSTER_FE, A7XX_PIPE_BV, STATE_FORCE_CTXT_1,
++	{ A7XX_CLUSTER_FE, PIPE_BV, STATE_FORCE_CTXT_1,
+ 		gen7_9_0_pc_pipe_bv_cluster_fe_registers,  },
+-	{ A7XX_CLUSTER_FE, A7XX_PIPE_BR, STATE_FORCE_CTXT_0,
++	{ A7XX_CLUSTER_FE, PIPE_BR, STATE_FORCE_CTXT_0,
+ 		gen7_9_0_vfd_pipe_br_cluster_fe_registers,  },
+-	{ A7XX_CLUSTER_FE, A7XX_PIPE_BR, STATE_FORCE_CTXT_1,
++	{ A7XX_CLUSTER_FE, PIPE_BR, STATE_FORCE_CTXT_1,
+ 		gen7_9_0_vfd_pipe_br_cluster_fe_registers,  },
+-	{ A7XX_CLUSTER_FE, A7XX_PIPE_BV, STATE_FORCE_CTXT_0,
++	{ A7XX_CLUSTER_FE, PIPE_BV, STATE_FORCE_CTXT_0,
+ 		gen7_9_0_vfd_pipe_bv_cluster_fe_registers,  },
+-	{ A7XX_CLUSTER_FE, A7XX_PIPE_BV, STATE_FORCE_CTXT_1,
++	{ A7XX_CLUSTER_FE, PIPE_BV, STATE_FORCE_CTXT_1,
+ 		gen7_9_0_vfd_pipe_bv_cluster_fe_registers,  },
+-	{ A7XX_CLUSTER_FE, A7XX_PIPE_BR, STATE_FORCE_CTXT_0,
++	{ A7XX_CLUSTER_FE, PIPE_BR, STATE_FORCE_CTXT_0,
+ 		gen7_9_0_vpc_pipe_br_cluster_fe_registers,  },
+-	{ A7XX_CLUSTER_FE, A7XX_PIPE_BR, STATE_FORCE_CTXT_1,
++	{ A7XX_CLUSTER_FE, PIPE_BR, STATE_FORCE_CTXT_1,
+ 		gen7_9_0_vpc_pipe_br_cluster_fe_registers,  },
+-	{ A7XX_CLUSTER_PC_VS, A7XX_PIPE_BR, STATE_FORCE_CTXT_0,
++	{ A7XX_CLUSTER_PC_VS, PIPE_BR, STATE_FORCE_CTXT_0,
+ 		gen7_9_0_vpc_pipe_br_cluster_pc_vs_registers,  },
+-	{ A7XX_CLUSTER_PC_VS, A7XX_PIPE_BR, STATE_FORCE_CTXT_1,
++	{ A7XX_CLUSTER_PC_VS, PIPE_BR, STATE_FORCE_CTXT_1,
+ 		gen7_9_0_vpc_pipe_br_cluster_pc_vs_registers,  },
+-	{ A7XX_CLUSTER_VPC_PS, A7XX_PIPE_BR, STATE_FORCE_CTXT_0,
++	{ A7XX_CLUSTER_VPC_PS, PIPE_BR, STATE_FORCE_CTXT_0,
+ 		gen7_9_0_vpc_pipe_br_cluster_vpc_ps_registers,  },
+-	{ A7XX_CLUSTER_VPC_PS, A7XX_PIPE_BR, STATE_FORCE_CTXT_1,
++	{ A7XX_CLUSTER_VPC_PS, PIPE_BR, STATE_FORCE_CTXT_1,
+ 		gen7_9_0_vpc_pipe_br_cluster_vpc_ps_registers,  },
+-	{ A7XX_CLUSTER_FE, A7XX_PIPE_BV, STATE_FORCE_CTXT_0,
++	{ A7XX_CLUSTER_FE, PIPE_BV, STATE_FORCE_CTXT_0,
+ 		gen7_9_0_vpc_pipe_bv_cluster_fe_registers,  },
+-	{ A7XX_CLUSTER_FE, A7XX_PIPE_BV, STATE_FORCE_CTXT_1,
++	{ A7XX_CLUSTER_FE, PIPE_BV, STATE_FORCE_CTXT_1,
+ 		gen7_9_0_vpc_pipe_bv_cluster_fe_registers,  },
+-	{ A7XX_CLUSTER_PC_VS, A7XX_PIPE_BV, STATE_FORCE_CTXT_0,
++	{ A7XX_CLUSTER_PC_VS, PIPE_BV, STATE_FORCE_CTXT_0,
+ 		gen7_9_0_vpc_pipe_bv_cluster_pc_vs_registers,  },
+-	{ A7XX_CLUSTER_PC_VS, A7XX_PIPE_BV, STATE_FORCE_CTXT_1,
++	{ A7XX_CLUSTER_PC_VS, PIPE_BV, STATE_FORCE_CTXT_1,
+ 		gen7_9_0_vpc_pipe_bv_cluster_pc_vs_registers,  },
+-	{ A7XX_CLUSTER_VPC_PS, A7XX_PIPE_BV, STATE_FORCE_CTXT_0,
++	{ A7XX_CLUSTER_VPC_PS, PIPE_BV, STATE_FORCE_CTXT_0,
+ 		gen7_9_0_vpc_pipe_bv_cluster_vpc_ps_registers,  },
+-	{ A7XX_CLUSTER_VPC_PS, A7XX_PIPE_BV, STATE_FORCE_CTXT_1,
++	{ A7XX_CLUSTER_VPC_PS, PIPE_BV, STATE_FORCE_CTXT_1,
+ 		gen7_9_0_vpc_pipe_bv_cluster_vpc_ps_registers,  },
+ };
+ 
+ static const struct gen7_sptp_cluster_registers gen7_9_0_sptp_clusters[] = {
+-	{ A7XX_CLUSTER_NONE, A7XX_SP_NCTX_REG, A7XX_PIPE_BR, 0, A7XX_HLSQ_STATE,
++	{ A7XX_CLUSTER_NONE, A7XX_SP_NCTX_REG, PIPE_BR, 0, A7XX_HLSQ_STATE,
+ 		gen7_9_0_non_context_sp_pipe_br_hlsq_state_registers, 0xae00},
+-	{ A7XX_CLUSTER_NONE, A7XX_SP_NCTX_REG, A7XX_PIPE_BR, 0, A7XX_SP_TOP,
++	{ A7XX_CLUSTER_NONE, A7XX_SP_NCTX_REG, PIPE_BR, 0, A7XX_SP_TOP,
+ 		gen7_9_0_non_context_sp_pipe_br_sp_top_registers, 0xae00},
+-	{ A7XX_CLUSTER_NONE, A7XX_SP_NCTX_REG, A7XX_PIPE_BR, 0, A7XX_USPTP,
++	{ A7XX_CLUSTER_NONE, A7XX_SP_NCTX_REG, PIPE_BR, 0, A7XX_USPTP,
+ 		gen7_9_0_non_context_sp_pipe_br_usptp_registers, 0xae00},
+-	{ A7XX_CLUSTER_NONE, A7XX_SP_NCTX_REG, A7XX_PIPE_BR, 0, A7XX_HLSQ_DP_STR,
++	{ A7XX_CLUSTER_NONE, A7XX_SP_NCTX_REG, PIPE_BR, 0, A7XX_HLSQ_DP_STR,
+ 		gen7_9_0_non_context_sp_pipe_br_hlsq_dp_str_registers, 0xae00},
+-	{ A7XX_CLUSTER_NONE, A7XX_SP_NCTX_REG, A7XX_PIPE_LPAC, 0, A7XX_HLSQ_STATE,
++	{ A7XX_CLUSTER_NONE, A7XX_SP_NCTX_REG, PIPE_LPAC, 0, A7XX_HLSQ_STATE,
+ 		gen7_9_0_non_context_sp_pipe_lpac_hlsq_state_registers, 0xaf80},
+-	{ A7XX_CLUSTER_NONE, A7XX_SP_NCTX_REG, A7XX_PIPE_LPAC, 0, A7XX_SP_TOP,
++	{ A7XX_CLUSTER_NONE, A7XX_SP_NCTX_REG, PIPE_LPAC, 0, A7XX_SP_TOP,
+ 		gen7_9_0_non_context_sp_pipe_lpac_sp_top_registers, 0xaf80},
+-	{ A7XX_CLUSTER_NONE, A7XX_SP_NCTX_REG, A7XX_PIPE_LPAC, 0, A7XX_USPTP,
++	{ A7XX_CLUSTER_NONE, A7XX_SP_NCTX_REG, PIPE_LPAC, 0, A7XX_USPTP,
+ 		gen7_9_0_non_context_sp_pipe_lpac_usptp_registers, 0xaf80},
+-	{ A7XX_CLUSTER_NONE, A7XX_TP0_NCTX_REG, A7XX_PIPE_NONE, 0, A7XX_USPTP,
++	{ A7XX_CLUSTER_NONE, A7XX_TP0_NCTX_REG, PIPE_NONE, 0, A7XX_USPTP,
+ 		gen7_9_0_non_context_tpl1_pipe_none_usptp_registers, 0xb600},
+-	{ A7XX_CLUSTER_NONE, A7XX_TP0_NCTX_REG, A7XX_PIPE_BR, 0, A7XX_USPTP,
++	{ A7XX_CLUSTER_NONE, A7XX_TP0_NCTX_REG, PIPE_BR, 0, A7XX_USPTP,
+ 		gen7_9_0_non_context_tpl1_pipe_br_usptp_registers, 0xb600},
+-	{ A7XX_CLUSTER_NONE, A7XX_TP0_NCTX_REG, A7XX_PIPE_LPAC, 0, A7XX_USPTP,
++	{ A7XX_CLUSTER_NONE, A7XX_TP0_NCTX_REG, PIPE_LPAC, 0, A7XX_USPTP,
+ 		gen7_9_0_non_context_tpl1_pipe_lpac_usptp_registers, 0xb780},
+-	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX0_3D_CVS_REG, A7XX_PIPE_BR, 0, A7XX_HLSQ_STATE,
++	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX0_3D_CVS_REG, PIPE_BR, 0, A7XX_HLSQ_STATE,
+ 		gen7_9_0_sp_pipe_br_cluster_sp_vs_hlsq_state_registers, 0xa800},
+-	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX0_3D_CVS_REG, A7XX_PIPE_BR, 0, A7XX_SP_TOP,
++	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX0_3D_CVS_REG, PIPE_BR, 0, A7XX_SP_TOP,
+ 		gen7_9_0_sp_pipe_br_cluster_sp_vs_sp_top_registers, 0xa800},
+-	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX0_3D_CVS_REG, A7XX_PIPE_BR, 0, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX0_3D_CVS_REG, PIPE_BR, 0, A7XX_USPTP,
+ 		gen7_9_0_sp_pipe_br_cluster_sp_vs_usptp_registers, 0xa800},
+-	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX0_3D_CVS_REG, A7XX_PIPE_BV, 0, A7XX_HLSQ_STATE,
++	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX0_3D_CVS_REG, PIPE_BV, 0, A7XX_HLSQ_STATE,
+ 		gen7_9_0_sp_pipe_bv_cluster_sp_vs_hlsq_state_registers, 0xa800},
+-	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX0_3D_CVS_REG, A7XX_PIPE_BV, 0, A7XX_SP_TOP,
++	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX0_3D_CVS_REG, PIPE_BV, 0, A7XX_SP_TOP,
+ 		gen7_9_0_sp_pipe_bv_cluster_sp_vs_sp_top_registers, 0xa800},
+-	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX0_3D_CVS_REG, A7XX_PIPE_BV, 0, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX0_3D_CVS_REG, PIPE_BV, 0, A7XX_USPTP,
+ 		gen7_9_0_sp_pipe_bv_cluster_sp_vs_usptp_registers, 0xa800},
+-	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX1_3D_CVS_REG, A7XX_PIPE_BR, 1, A7XX_HLSQ_STATE,
++	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX1_3D_CVS_REG, PIPE_BR, 1, A7XX_HLSQ_STATE,
+ 		gen7_9_0_sp_pipe_br_cluster_sp_vs_hlsq_state_registers, 0xa800},
+-	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX1_3D_CVS_REG, A7XX_PIPE_BR, 1, A7XX_SP_TOP,
++	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX1_3D_CVS_REG, PIPE_BR, 1, A7XX_SP_TOP,
+ 		gen7_9_0_sp_pipe_br_cluster_sp_vs_sp_top_registers, 0xa800},
+-	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX1_3D_CVS_REG, A7XX_PIPE_BR, 1, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX1_3D_CVS_REG, PIPE_BR, 1, A7XX_USPTP,
+ 		gen7_9_0_sp_pipe_br_cluster_sp_vs_usptp_registers, 0xa800},
+-	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX1_3D_CVS_REG, A7XX_PIPE_BV, 1, A7XX_HLSQ_STATE,
++	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX1_3D_CVS_REG, PIPE_BV, 1, A7XX_HLSQ_STATE,
+ 		gen7_9_0_sp_pipe_bv_cluster_sp_vs_hlsq_state_registers, 0xa800},
+-	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX1_3D_CVS_REG, A7XX_PIPE_BV, 1, A7XX_SP_TOP,
++	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX1_3D_CVS_REG, PIPE_BV, 1, A7XX_SP_TOP,
+ 		gen7_9_0_sp_pipe_bv_cluster_sp_vs_sp_top_registers, 0xa800},
+-	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX1_3D_CVS_REG, A7XX_PIPE_BV, 1, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX1_3D_CVS_REG, PIPE_BV, 1, A7XX_USPTP,
+ 		gen7_9_0_sp_pipe_bv_cluster_sp_vs_usptp_registers, 0xa800},
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, A7XX_PIPE_BR, 0, A7XX_HLSQ_STATE,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, PIPE_BR, 0, A7XX_HLSQ_STATE,
+ 		gen7_9_0_sp_pipe_br_cluster_sp_ps_hlsq_state_registers, 0xa800},
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, A7XX_PIPE_BR, 0, A7XX_HLSQ_DP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, PIPE_BR, 0, A7XX_HLSQ_DP,
+ 		gen7_9_0_sp_pipe_br_cluster_sp_ps_hlsq_dp_registers, 0xa800},
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, A7XX_PIPE_BR, 0, A7XX_SP_TOP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, PIPE_BR, 0, A7XX_SP_TOP,
+ 		gen7_9_0_sp_pipe_br_cluster_sp_ps_sp_top_registers, 0xa800},
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, A7XX_PIPE_BR, 0, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, PIPE_BR, 0, A7XX_USPTP,
+ 		gen7_9_0_sp_pipe_br_cluster_sp_ps_usptp_registers, 0xa800},
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, A7XX_PIPE_BR, 0, A7XX_HLSQ_DP_STR,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, PIPE_BR, 0, A7XX_HLSQ_DP_STR,
+ 		gen7_9_0_sp_pipe_br_cluster_sp_ps_hlsq_dp_str_registers, 0xa800},
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, A7XX_PIPE_LPAC, 0, A7XX_HLSQ_STATE,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, PIPE_LPAC, 0, A7XX_HLSQ_STATE,
+ 		gen7_9_0_sp_pipe_lpac_cluster_sp_ps_hlsq_state_registers, 0xa800},
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, A7XX_PIPE_LPAC, 0, A7XX_HLSQ_DP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, PIPE_LPAC, 0, A7XX_HLSQ_DP,
+ 		gen7_9_0_sp_pipe_lpac_cluster_sp_ps_hlsq_dp_registers, 0xa800},
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, A7XX_PIPE_LPAC, 0, A7XX_SP_TOP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, PIPE_LPAC, 0, A7XX_SP_TOP,
+ 		gen7_9_0_sp_pipe_lpac_cluster_sp_ps_sp_top_registers, 0xa800},
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, A7XX_PIPE_LPAC, 0, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, PIPE_LPAC, 0, A7XX_USPTP,
+ 		gen7_9_0_sp_pipe_lpac_cluster_sp_ps_usptp_registers, 0xa800},
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX1_3D_CPS_REG, A7XX_PIPE_BR, 1, A7XX_HLSQ_STATE,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX1_3D_CPS_REG, PIPE_BR, 1, A7XX_HLSQ_STATE,
+ 		gen7_9_0_sp_pipe_br_cluster_sp_ps_hlsq_state_registers, 0xa800},
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX1_3D_CPS_REG, A7XX_PIPE_BR, 1, A7XX_HLSQ_DP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX1_3D_CPS_REG, PIPE_BR, 1, A7XX_HLSQ_DP,
+ 		gen7_9_0_sp_pipe_br_cluster_sp_ps_hlsq_dp_registers, 0xa800},
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX1_3D_CPS_REG, A7XX_PIPE_BR, 1, A7XX_SP_TOP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX1_3D_CPS_REG, PIPE_BR, 1, A7XX_SP_TOP,
+ 		gen7_9_0_sp_pipe_br_cluster_sp_ps_sp_top_registers, 0xa800},
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX1_3D_CPS_REG, A7XX_PIPE_BR, 1, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX1_3D_CPS_REG, PIPE_BR, 1, A7XX_USPTP,
+ 		gen7_9_0_sp_pipe_br_cluster_sp_ps_usptp_registers, 0xa800},
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX1_3D_CPS_REG, A7XX_PIPE_BR, 1, A7XX_HLSQ_DP_STR,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX1_3D_CPS_REG, PIPE_BR, 1, A7XX_HLSQ_DP_STR,
+ 		gen7_9_0_sp_pipe_br_cluster_sp_ps_hlsq_dp_str_registers, 0xa800},
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX2_3D_CPS_REG, A7XX_PIPE_BR, 2, A7XX_HLSQ_DP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX2_3D_CPS_REG, PIPE_BR, 2, A7XX_HLSQ_DP,
+ 		gen7_9_0_sp_pipe_br_cluster_sp_ps_hlsq_dp_registers, 0xa800},
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX2_3D_CPS_REG, A7XX_PIPE_BR, 2, A7XX_SP_TOP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX2_3D_CPS_REG, PIPE_BR, 2, A7XX_SP_TOP,
+ 		gen7_9_0_sp_pipe_br_cluster_sp_ps_sp_top_registers, 0xa800},
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX2_3D_CPS_REG, A7XX_PIPE_BR, 2, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX2_3D_CPS_REG, PIPE_BR, 2, A7XX_USPTP,
+ 		gen7_9_0_sp_pipe_br_cluster_sp_ps_usptp_registers, 0xa800},
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX2_3D_CPS_REG, A7XX_PIPE_BR, 2, A7XX_HLSQ_DP_STR,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX2_3D_CPS_REG, PIPE_BR, 2, A7XX_HLSQ_DP_STR,
+ 		gen7_9_0_sp_pipe_br_cluster_sp_ps_hlsq_dp_str_registers, 0xa800},
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX3_3D_CPS_REG, A7XX_PIPE_BR, 3, A7XX_HLSQ_DP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX3_3D_CPS_REG, PIPE_BR, 3, A7XX_HLSQ_DP,
+ 		gen7_9_0_sp_pipe_br_cluster_sp_ps_hlsq_dp_registers, 0xa800},
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX3_3D_CPS_REG, A7XX_PIPE_BR, 3, A7XX_SP_TOP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX3_3D_CPS_REG, PIPE_BR, 3, A7XX_SP_TOP,
+ 		gen7_9_0_sp_pipe_br_cluster_sp_ps_sp_top_registers, 0xa800},
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX3_3D_CPS_REG, A7XX_PIPE_BR, 3, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX3_3D_CPS_REG, PIPE_BR, 3, A7XX_USPTP,
+ 		gen7_9_0_sp_pipe_br_cluster_sp_ps_usptp_registers, 0xa800},
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX3_3D_CPS_REG, A7XX_PIPE_BR, 3, A7XX_HLSQ_DP_STR,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX3_3D_CPS_REG, PIPE_BR, 3, A7XX_HLSQ_DP_STR,
+ 		gen7_9_0_sp_pipe_br_cluster_sp_ps_hlsq_dp_str_registers, 0xa800},
+-	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX0_3D_CVS_REG, A7XX_PIPE_BR, 0, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX0_3D_CVS_REG, PIPE_BR, 0, A7XX_USPTP,
+ 		gen7_9_0_tpl1_pipe_br_cluster_sp_vs_usptp_registers, 0xb000},
+-	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX0_3D_CVS_REG, A7XX_PIPE_BV, 0, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX0_3D_CVS_REG, PIPE_BV, 0, A7XX_USPTP,
+ 		gen7_9_0_tpl1_pipe_bv_cluster_sp_vs_usptp_registers, 0xb000},
+-	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX1_3D_CVS_REG, A7XX_PIPE_BR, 1, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX1_3D_CVS_REG, PIPE_BR, 1, A7XX_USPTP,
+ 		gen7_9_0_tpl1_pipe_br_cluster_sp_vs_usptp_registers, 0xb000},
+-	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX1_3D_CVS_REG, A7XX_PIPE_BV, 1, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_VS, A7XX_SP_CTX1_3D_CVS_REG, PIPE_BV, 1, A7XX_USPTP,
+ 		gen7_9_0_tpl1_pipe_bv_cluster_sp_vs_usptp_registers, 0xb000},
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, A7XX_PIPE_BR, 0, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, PIPE_BR, 0, A7XX_USPTP,
+ 		gen7_9_0_tpl1_pipe_br_cluster_sp_ps_usptp_registers, 0xb000},
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, A7XX_PIPE_LPAC, 0, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX0_3D_CPS_REG, PIPE_LPAC, 0, A7XX_USPTP,
+ 		gen7_9_0_tpl1_pipe_lpac_cluster_sp_ps_usptp_registers, 0xb000},
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX1_3D_CPS_REG, A7XX_PIPE_BR, 1, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX1_3D_CPS_REG, PIPE_BR, 1, A7XX_USPTP,
+ 		gen7_9_0_tpl1_pipe_br_cluster_sp_ps_usptp_registers, 0xb000},
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX2_3D_CPS_REG, A7XX_PIPE_BR, 2, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX2_3D_CPS_REG, PIPE_BR, 2, A7XX_USPTP,
+ 		gen7_9_0_tpl1_pipe_br_cluster_sp_ps_usptp_registers, 0xb000},
+-	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX3_3D_CPS_REG, A7XX_PIPE_BR, 3, A7XX_USPTP,
++	{ A7XX_CLUSTER_SP_PS, A7XX_SP_CTX3_3D_CPS_REG, PIPE_BR, 3, A7XX_USPTP,
+ 		gen7_9_0_tpl1_pipe_br_cluster_sp_ps_usptp_registers, 0xb000},
+ };
+ 
+diff --git a/drivers/gpu/drm/msm/registers/adreno/a6xx.xml b/drivers/gpu/drm/msm/registers/adreno/a6xx.xml
+index 9459b6038217..369b96d7f7c9 100644
+--- a/drivers/gpu/drm/msm/registers/adreno/a6xx.xml
++++ b/drivers/gpu/drm/msm/registers/adreno/a6xx.xml
+@@ -249,7 +249,7 @@ by a particular renderpass/blit.
+ 	</reg32>
+ 
+ 	<bitset name="a7xx_aperture_cntl" inline="yes">
+-		<bitfield name="PIPE" low="12" high="13" type="a7xx_pipe"/>
++		<bitfield name="PIPE" low="12" high="13" type="adreno_pipe"/>
+ 		<bitfield name="CLUSTER" low="8" high="10" type="a7xx_cluster"/>
+ 		<bitfield name="CONTEXT" low="4" high="5"/>
+ 	</bitset>
+@@ -3267,7 +3267,7 @@ by a particular renderpass/blit.
+ 	<reg32 offset="0xae6c" name="SP_HLSQ_DBG_ECO_CNTL" variants="A7XX-" usage="cmd"/>
+ 	<reg32 offset="0xae6d" name="SP_READ_SEL" variants="A7XX-">
+ 		<bitfield name="LOCATION" low="18" high="20" type="a7xx_state_location"/>
+-		<bitfield name="PIPE" low="16" high="17" type="a7xx_pipe"/>
++		<bitfield name="PIPE" low="16" high="17" type="adreno_pipe"/>
+ 		<bitfield name="STATETYPE" low="8" high="15" type="a7xx_statetype_id"/>
+ 		<bitfield name="USPTP" low="4" high="7"/>
+ 		<bitfield name="SPTP" low="0" high="3"/>
+diff --git a/drivers/gpu/drm/msm/registers/adreno/a7xx_enums.xml b/drivers/gpu/drm/msm/registers/adreno/a7xx_enums.xml
+index 661b0dd0f675..8d195ee5d284 100644
+--- a/drivers/gpu/drm/msm/registers/adreno/a7xx_enums.xml
++++ b/drivers/gpu/drm/msm/registers/adreno/a7xx_enums.xml
+@@ -93,13 +93,6 @@ xsi:schemaLocation="https://gitlab.freedesktop.org/freedreno/ rules-fd.xsd">
+ 	<value value="4" name="A7XX_HLSQ_DP_STR"/>
+ </enum>
+ 
+-<enum name="a7xx_pipe">
+-	<value value="0" name="A7XX_PIPE_NONE"/>
+-	<value value="1" name="A7XX_PIPE_BR"/>
+-	<value value="2" name="A7XX_PIPE_BV"/>
+-	<value value="3" name="A7XX_PIPE_LPAC"/>
+-</enum>
 -
- 		if (hang_debug)
- 			a6xx_dump(gpu);
+ <enum name="a7xx_cluster">
+ 	<value value="0" name="A7XX_CLUSTER_NONE"/>
+ 	<value value="1" name="A7XX_CLUSTER_FE"/>
+diff --git a/drivers/gpu/drm/msm/registers/adreno/adreno_common.xml b/drivers/gpu/drm/msm/registers/adreno/adreno_common.xml
+index 218ec8bb966e..06020dc1df44 100644
+--- a/drivers/gpu/drm/msm/registers/adreno/adreno_common.xml
++++ b/drivers/gpu/drm/msm/registers/adreno/adreno_common.xml
+@@ -397,4 +397,15 @@ xsi:schemaLocation="https://gitlab.freedesktop.org/freedreno/ rules-fd.xsd">
+ 	<value value="0x7" name="TEX_PREFETCH_UNK7"/>
+ </enum>
  
++<enum name="adreno_pipe">
++	<value value="0" name="PIPE_NONE"/>
++	<value value="1" name="PIPE_BR"/>
++	<value value="2" name="PIPE_BV"/>
++	<value value="3" name="PIPE_LPAC"/>
++	<value value="4" name="PIPE_AQE0"/>
++	<value value="5" name="PIPE_AQE1"/>
++	<value value="6" name="PIPE_DDE_BR"/>
++	<value value="7" name="PIPE_DDE_BV"/>
++</enum>
++
+ </database>
 
 -- 
 2.51.0
