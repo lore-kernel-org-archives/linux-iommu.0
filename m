@@ -1,161 +1,109 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-vk1-f171.google.com (mail-vk1-f171.google.com [209.85.221.171])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C6C72857FC;
-	Thu, 13 Nov 2025 08:21:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E5283321C2
+	for <iommu@lists.linux.dev>; Thu, 13 Nov 2025 08:57:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763022084; cv=none; b=fjgm9KxAJIaZ/mvtihx/K0TLRH7sLhcHMh15aQkUyzJt4LZyOXi3uyzWXA1hQsmZfUrwflEu5XAYt6ZIyksstgi5jNCwKIfQBGBinirf4Zll0uZFAr4S7TnHXIU1cbKKX7LEs/GQAX8Xz1X4ajr/V7rn6yBVhZBZVD4F/9QToBE=
+	t=1763024223; cv=none; b=pWWERu0Fj5AZJHiVRAmJg5A1q8qt51jnkFAJlcpFMKLnu3ef0k82qyRRvEU3HY3wILzA2XS75wh2TK3v/RhQ7y8/QSrLlok6gtR+HjvSxt4gCAeZNVzGTm3HSoZ0y7eo4YDAq9xh4eXz8NuHOeDopLOr/OnLRefTnjRyhvBzyGk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763022084; c=relaxed/simple;
-	bh=sPYSbQvPupMVgvrfp8PsoPS3LuSvamSx4HJCHd3l/0o=;
-	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
-	 In-Reply-To:Content-Type; b=sXfkBCsEvhoOp2nLDXJdgoppvjZFlZSTIBm5bM7XmwgakeMSzC7tfSdOGtAyvH22R1Geha4mhvnw/YVE3x1epg4LmCU/6yPyGjgVKM3O5gMGgR/YUcM+y/R3kyu7MY6QdsQodQhk1U/FG3ZYALQSvgCQ2oNVlYdhfpRnEHaE1D4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RLlKPzD0; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RLlKPzD0"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3AFBC116D0;
-	Thu, 13 Nov 2025 08:21:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1763022083;
-	bh=sPYSbQvPupMVgvrfp8PsoPS3LuSvamSx4HJCHd3l/0o=;
-	h=Date:Subject:From:To:Cc:References:In-Reply-To:From;
-	b=RLlKPzD02zmhLWozdmVtZ7kX2lsLpnvdRHCTB5QCTGd8AgKhlFLf57L+Ek4fpYf2w
-	 0RK8qajMuzWKQnQlG2paJyKzvBnJgkBGXxj9lX4a4YQRhuJKGnQhjPvbipj+KzkyUe
-	 x9R7UiY5rtqDsOFLL47CM1HXcvjgl86paXg8i12+f5bzP/w9SOGnfzlSjkdV/nWgWp
-	 cMgk/Mqi3DAtEq9fdpOwsonLnArWty7QyBufPRz/4Rw6FwMvdtT9XRouuxq4givdTT
-	 G/VetndQLYFmSKkXLs9oHYonlV1532DBoophH7WkH5d3JJseRZLE2YHlirlpRZjmv7
-	 lvz3Vrwj10NQQ==
-Message-ID: <58176e8c-a4f0-496e-aad8-83698986ec4b@kernel.org>
-Date: Thu, 13 Nov 2025 09:21:15 +0100
+	s=arc-20240116; t=1763024223; c=relaxed/simple;
+	bh=as2Wl3WHy5m/K3oRgwuzwjXnWFg0R2hmfkUngFuxVnk=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=SM+uyNR1eONkUrmybWo8k0pDmtjS6tOXaX5G2pVrZEc5qilH3MqUHtxaAcsBcYrRmLnvjf8gTOdpTPNZkpwQ5OTlC5/dy4bezsVFnSW+hwkzTxIpkC4N8iJ/oMItEH1SfVxOkpL3f+Xeh63WYiEH5CJ6T5zXKSmjTYhInCB+u68=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-vk1-f171.google.com with SMTP id 71dfb90a1353d-5597a426807so364242e0c.2
+        for <iommu@lists.linux.dev>; Thu, 13 Nov 2025 00:57:02 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1763024221; x=1763629021;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=HNPad0IM0QP877Z/XWUvdL3MC286xcTm4p5JIGRP0vI=;
+        b=v+dh1+4FNVuipBdUlaz4hAuRZ7YeyppGN5LKhfvy8aLXouVTolD/eopHnh3BWwwYgt
+         XAXgPJ9BxNeBAjyOnm8e60ysdDLzC2PMpygZ8gyJb24sspCC0xCKOBFZGxTgtj7fN8Rz
+         bJlMp2p3Ll6C7Dt4u3P2mjIRYpIPS/A6N07x47FOE9jgnGMRP63ODBVZypuXABiK7qCM
+         83o/tbSwLHCilRErqxLnVUxFLUHbhrc+UuognM4pPwSLopNS5GUGLFYA+MhmoN8wzY50
+         6ghorrEgGek3Dh1gPg0A3VLk1hLc+MwfC1NgXuV0xA/6G9peekfKZWa8cG0NnKzKWDZc
+         c/dQ==
+X-Forwarded-Encrypted: i=1; AJvYcCW+WkjJvLfoWlDVIvbtJs8vkQi+WKWQO1Y5tet3rtjROhDo/PuyPqKS85VZy9B9zflk067mAw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyiHKcZczpBGywmufztgXNorVkBfeYtvMARBDLJju5ixShigyN+
+	6eyxWQ+w/Q6Tbf47BBixv1vFAnKqma0zIs+18Fr3aK3WA95KxI6/rGXrRwx2kez/S6E=
+X-Gm-Gg: ASbGnctheeHO5BwDnrUyBKsUmmdAIiZpSY7HSM/S0YRm8WCQTCA2VOCanbEy2zt5t7f
+	NjmGww4dVjKLq0ogtFa4jG5VYj304T3GlgXXOwAaMc9pB0oCkMRfGqpJVKc4o6Bjh8HYEppM4Uu
+	frkv84QBUCCxFJD1a0isJOh5qCMmLoVapo9QMbUbN74zIVibsgXL2lLqWubtnDN3NF4WmI+9lQe
+	VibjW8+uVDbJslqD+8nE3ANsztVey2+SyL8eGpKjFV/8IBnlu7TFbLSiug1O8L6EAuDyOUAAF1f
+	M8G5r5dTCSyzbLAhaB9HY7/Cs4GFPtdKMLSUvYINqhMb9bVdllk1Sx25q60gQ+FaCBhKYuf/zZ5
+	HK6VYmTa3Bi6DLgAJ4v7SBABIMHDxBf0QUIDaRRYQEWxOUPDGq5IJnW3eHHPE1ys6AnzBMDRSju
+	fUjM4kNqLGi6BfqdIep8RDPH1z336pDNakMPs1BQ==
+X-Google-Smtp-Source: AGHT+IE/cYQqKpVk96JisrZ7jSWZmovHH0w2kvuXDdG3cty57PZHbkPtsVu+UARHmpzCAXS4+8PIKQ==
+X-Received: by 2002:a05:6122:4b85:b0:559:6960:be0d with SMTP id 71dfb90a1353d-559e7d62252mr2546017e0c.13.1763024220871;
+        Thu, 13 Nov 2025 00:57:00 -0800 (PST)
+Received: from mail-vs1-f53.google.com (mail-vs1-f53.google.com. [209.85.217.53])
+        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-55b0f46234fsm497422e0c.18.2025.11.13.00.56.59
+        for <iommu@lists.linux.dev>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 13 Nov 2025 00:56:59 -0800 (PST)
+Received: by mail-vs1-f53.google.com with SMTP id ada2fe7eead31-5dfa9bfa9c7so368738137.1
+        for <iommu@lists.linux.dev>; Thu, 13 Nov 2025 00:56:59 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCUmVatxsWzuiy2IYZxatHT5kZWYN8IuJFF+89Hw9s/d5iqyuyQIrntgIJ7KFKXcK7Epgs5dlA==@lists.linux.dev
+X-Received: by 2002:a05:6102:374e:b0:5d5:f766:75f1 with SMTP id
+ ada2fe7eead31-5de07d598c3mr2559230137.11.1763024219221; Thu, 13 Nov 2025
+ 00:56:59 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 20/21] dt-bindings: display/msm/gmu: Add Adreno X2-85
- GMU
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Akhil P Oommen <akhilpo@oss.qualcomm.com>
-Cc: Rob Clark <robin.clark@oss.qualcomm.com>,
- Bjorn Andersson <andersson@kernel.org>,
- Konrad Dybcio <konradybcio@kernel.org>, Sean Paul <sean@poorly.run>,
- Dmitry Baryshkov <lumag@kernel.org>, Abhinav Kumar
- <abhinav.kumar@linux.dev>, Jessica Zhang <jesszhan0024@gmail.com>,
- Marijn Suijten <marijn.suijten@somainline.org>,
- David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
- Jonathan Marek <jonathan@marek.ca>, Jordan Crouse
- <jordan@cosmicpenguin.net>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
- Connor Abbott <cwabbott0@gmail.com>, linux-arm-msm@vger.kernel.org,
- linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
- freedreno@lists.freedesktop.org, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev, devicetree@vger.kernel.org
-References: <20251110-kaana-gpu-support-v2-0-bef18acd5e94@oss.qualcomm.com>
- <20251110-kaana-gpu-support-v2-20-bef18acd5e94@oss.qualcomm.com>
- <20251111-magnetic-jasper-slug-3abc3e@kuoka>
- <ad372979-adab-4486-ac69-90a9df1ae512@oss.qualcomm.com>
- <c5b028e4-3bc4-424c-ab02-5fb6d379c801@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 a/A=
-In-Reply-To: <c5b028e4-3bc4-424c-ab02-5fb6d379c801@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <48381c47930d98380871458ca471ea5a7a89aafc.1762956447.git.geert+renesas@glider.be>
+ <aRULf65eNaRIVEHN@ziepe.ca>
+In-Reply-To: <aRULf65eNaRIVEHN@ziepe.ca>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Thu, 13 Nov 2025 09:56:48 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdU3rY8iyxJWdNFA0whOFv6WV-AgndnoA-QPjNLrLOjw2A@mail.gmail.com>
+X-Gm-Features: AWmQ_bkeganA7aM_P2ei0wcLl7_i_OWoRrr5SIFHNN0iTfxFCurm_-NlINuIdn0
+Message-ID: <CAMuHMdU3rY8iyxJWdNFA0whOFv6WV-AgndnoA-QPjNLrLOjw2A@mail.gmail.com>
+Subject: Re: [PATCH] genpt: Make GENERIC_PT invisible
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On 13/11/2025 09:14, Krzysztof Kozlowski wrote:
-> On 11/11/2025 15:25, Akhil P Oommen wrote:
->> On 11/11/2025 1:19 PM, Krzysztof Kozlowski wrote:
->>> On Mon, Nov 10, 2025 at 10:07:26PM +0530, Akhil P Oommen wrote:
->>>> Document Adreno X2-85 GMU found in Glymur chipsets in the
->>>> dt-binding specification. It is very similar to Adreno 840
->>>> GMU with the additional requirement of RSCC HUB clock.
->>>>
->>>> Signed-off-by: Akhil P Oommen <akhilpo@oss.qualcomm.com>
->>>> ---
->>>
->>> <form letter>
->>> This is a friendly reminder during the review process.
->>>
->>> It looks like you received a tag and forgot to add it.
->>>
->>> If you do not know the process, here is a short explanation:
->>> Please add Acked-by/Reviewed-by/Tested-by tags when posting new
->>> versions of patchset, under or above your Signed-off-by tag, unless
->>> patch changed significantly (e.g. new properties added to the DT
->>> bindings). Tag is "received", when provided in a message replied to you
->>> on the mailing list. Tools like b4 can help here. However, there's no
->>> need to repost patches *only* to add the tags. The upstream maintainer
->>> will do that for tags received on the version they apply.
->>>
->>> Please read:
->>> https://elixir.bootlin.com/linux/v6.12-rc3/source/Documentation/process/submitting-patches.rst#L577
->>>
->>> If a tag was not added on purpose, please state why and what changed.
->>> </form letter>
->>>
->>
->> I think you got confused. These are new patches I have included for
->> Glymur support in Rev 2 (as mentioned in the cover letter). Did you
->> confuse with the other patch for Kaanapali?
-> 
-> I did check in the changelog and there is nothing about new bindings
-> patch, so you expect me to keep guessing what is happening here.
-> 
-> Squash this with previous patch then. It's really churn to deal with one
-> single liner per patch and commit msg has absoutely ZERO content to be
-> useful on its own.
+Hi Jason,
 
-I meant, squash the second patch with one liner. This one is fine.
+On Wed, 12 Nov 2025 at 23:34, Jason Gunthorpe <jgg@ziepe.ca> wrote:
+> On Wed, Nov 12, 2025 at 03:08:05PM +0100, Geert Uytterhoeven wrote:
+> > There is no point in asking the user about the Generic Radix Page
+> > Table API:
+> >   - All IOMMU drivers that use this API already select GENERIC_PT when
+> >     needed,
+> >   - Most users probably do not know what to answer anyway.
+> >
+> > Fixes: 7c5b184db7145fd4 ("genpt: Generic Page Table base API")
+> > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> > ---
+> >  drivers/iommu/generic_pt/Kconfig | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> I can't check this right now but I do recall trying to do this from
+> the start and it was not working out, it ended up not being
+> automatically turned on?
+>
+> Did you test something like menuconfig and the IOMMU drivers are still
+> presented starting from an allnoconfig?
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Yes, that still works.
 
-Best regards,
-Krzysztof
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
