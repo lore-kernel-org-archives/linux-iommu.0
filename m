@@ -1,44 +1,44 @@
 Received: from TYDPR03CU002.outbound.protection.outlook.com (mail-japaneastazolkn19013086.outbound.protection.outlook.com [52.103.43.86])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81AEE2FC00D
-	for <iommu@lists.linux.dev>; Thu, 13 Nov 2025 15:54:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A479F2FC895
+	for <iommu@lists.linux.dev>; Thu, 13 Nov 2025 15:54:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.103.43.86
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763049277; cv=fail; b=F0XucjGgOyAwWD5Z3D+Y20PGrvetnTtTJr9uQS56pbPpYHCjqNDTDtuEidfxrTw88/KsTLZy3G7wa6FA5fIC9HDZGFBdCX/feRAaTHF0ZuHnKemw0g+vd8wB9Lg3uIjE6RSkBz1vml4QxzhLvmFhoFazv0PQTYygMSYausL44KU=
+	t=1763049279; cv=fail; b=nnihpUhTCtpu7STFrDLRIVXUeNaqIyNZHimlzZjkwNKae58HR0u0H9V70mECWWe/dFvUlViS6lrHKygf4E6tSKV87DBd1LfdzA+HHqj2rbulXiqWp232fqR4OwA2p8kkmQJVfY5Iza2Wa58vbf45GZEwmIhy2gwK7SbTQGgXFxk=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763049277; c=relaxed/simple;
-	bh=XtlMF/22Y4JY6fSNxYx+dLlxvXvty5F+0k9n50wkfnw=;
+	s=arc-20240116; t=1763049279; c=relaxed/simple;
+	bh=3e5gkbyuedpTO/yNFkzFPTa5V04Nmb+J7X31ZRFK3To=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=Mpo9r9OaMZ+Cc87O3d0N+Wvp6ghEkZJpg5niqKUN0g/sQvayOwHCRf92YD6WpN+QPStKs0EI0WnWkvOmPD3/3rCVNsxCIWYQxRx9hLDMwl5TpPYQL5bWKVGQeG5fYeRyEfTtmjQDNAmFvhXW/4DsVEiR6TOVFyz4DsvfypGik24=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hotmail.com; spf=pass smtp.mailfrom=hotmail.com; dkim=pass (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b=mud0u9Vz; arc=fail smtp.client-ip=52.103.43.86
+	 Content-Type:MIME-Version; b=suSnYCbuVbQF+laZxI0IE+vOFeQPLf35/QwVuuL0vquXpQth36++PBv6PKdLWniafSovZl4thBn6LHBqdt6npB6JlSBK1fl094LhgXBj7ynN/CH5YqelrXtXR27NE4nTuFCZxfcA4rVNxiZjyTQ61WuDR1K+0wTX4PKvRR4Sl/8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hotmail.com; spf=pass smtp.mailfrom=hotmail.com; dkim=pass (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b=uW+Ljf6j; arc=fail smtp.client-ip=52.103.43.86
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hotmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b="mud0u9Vz"
+	dkim=pass (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b="uW+Ljf6j"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=UsADzWfmL7hn5vYzUj6Px6GNv4Gl3rf7MbNXHuzjZbDO57gTBi+tCSJfHSPkaOjrHvQMmZEdTSeUbdRr4/qPU7nCo1r26OHMBdyvsKom9FZttpbIcxkMpTO+swqbu/1fO/UDN9vTgABTXWBZ95XjMEwSPhpPPBerbfNjEiVRm0/Fr9FBXUmR2xt1D+zU5OCXWsMepAdhok3y6IG5591w46RcwNvJNE73kL9L/DKU3F/ueKIcvaLYXI9NH+uEbb1Nst0NDUeonSr9iDBqN93yAdtSzf5n9BbApPxWm0o5TZbM+BC2Ys48ht0SLxJ8rX4k18vDpdkZeskeTIbqbA4OSQ==
+ b=B8HibYT8L7Zyd5T1/NY7yiJUPBF0VqXrriQzNxNneceYneO4pvD39vujm8+ksGR/+k8z6uTgMS9SkIo4BLljnD+crJNBIFYDWz3RrIbArGu6ZD6e7pHjQcrkwvp6VNkD4VtBYECHxsrsQx7BB4KvNodzvqJuFJJpIbJGKx0fNXThWUHzAoE5M4bsjsO9D0KTJWnzmP9YongUbMtNkKTvtjowEci4lmb2vSyC5kGi+lRSsKRARWvvHxUefbY+gK0ccIGYRwXAfiQb6ikouTuGVuHBgP7GVeduuL3RkfX6wBv4lkdaJzqgLpMtUlORupxo6Rhuq5dor9tzA7kYwb72lQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+lhnji02kQqE3ZE4lPBpk6EgxLCHhM+7jfNFg12BxbU=;
- b=EI3hFvqOHR8rwJ2AwVa7jaMmObBsH4Tu6P8LFa5fGf3rgBL0mqpzSpfHueneVFoO690n/GWsl6mvYUaOGN6zdIpnrr0Wd0+WtFexXflgnEDiRRQ6Mx8jT70uyk+6270usInMuqde4i/nkuzN5YFUmgsOc3BM5FmEqgu7EBg6/FA8dh0fKw1Y3YlTY/gJ7ZFAHMUH6z2R9TQ+9meJUaJhQnG57sbwNo1jiv/IVwl9O/zENJNbt8UWn897aNwKG93Mgt4o6emWMEkagvotbum2CrP80OPeOsy7u/qpxDaL1iXFidXB/cqQtJf2PcaxTw5De7U++jg+5TwaPI0+ko82Qw==
+ bh=/xtQk2s6OehG0qYwDMreCMlenM3Jl3eaaajcvgYIbt4=;
+ b=gUpPyBxvx2F/cRXQo9S2nPgLZLwWuCDHoP7UcwaL4TQEs2rbMAmZiKIrYZG0sCMAE8IlL+J0Chz/F4xYuYEoghOfKIHf7b+6od5a2joo1OyNbswPt4n14W7hAVPj5PMVx+lJTzM01kCxefoXA3+t5vm6vHzJdDP1HbgpKxVEtZY35a6uMJZy6y7ByqlEjflwHu8GqV5WK9KncRKX0uVX78E+gifA3GtvinFN3j8xBZro8aneyhZYMRHrP0WOVripAz/NMsC5ZojKLYW8lbKngQuBr5Yyqr9hQ5Ifz+ryP+KIJIxhqucyQtOD8dH/u2H84ZiH4ktyPuRnlTA1z2insw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
  dkim=none; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hotmail.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+lhnji02kQqE3ZE4lPBpk6EgxLCHhM+7jfNFg12BxbU=;
- b=mud0u9VzMxRWw32fMi2Q8qELF10fXgxesvhirYF99W15QwuI6/Eo+zAsDhHvwnsRey3R0PHHWgfinpxRHj7zEUdL2iwGh6NatWRkVOOZOMi+lAF7CZsgQZVWS0wJG+WvS9iZLX7cNTaXnWat1/24/Cph3n0cBSs02w/wETF7y8WC+Pq8egav4yat9iJE0pGuKnqnubQ8CEvEqYVvmdKbii58+A8IBPXNPrIna3G8uIvzUMo0tQgBE8eaR1/j6qtVWcxXnOnoxb4wz0HmY2ZJcHwCA9ByXPA/0W8yb8P1NSm+PNtnLvFllKpqm+T94LXUqO5qjMK6rDJv5xU4JV6+/g==
+ bh=/xtQk2s6OehG0qYwDMreCMlenM3Jl3eaaajcvgYIbt4=;
+ b=uW+Ljf6jdlkVjtoWCZpbRvAbX3mRXsdsCsEkyBEOYuRjJJzHHYPyrFias9EGeiPmCVuv0aQZ21TTFDYDwGf9EF0hBK3I/RvIWeIIQ1eyV9oTXO1nATxBgPSwwlJ2NlVfbI3B+OvR70AcYYsp8yaumNJ/72gHMOTGFTGhGINULrPFuYSed+dDMYFw79yI+ixRBU04OT/FPav81xu+eac4kyozqHdHbjm05HOVjJ2XqN0oMVmpACNQpLHtZvdcGlttSuZPOHLUnUhT4GuUUkSlaEKCU69ABkVabTIEvJT0i6kcCdsicDASAwjRRA9+IxFm7K8OT7P+KakRXJEF2MGHKQ==
 Received: from SI2PR01MB4393.apcprd01.prod.exchangelabs.com
  (2603:1096:4:1b0::7) by SG2PR01MB4170.apcprd01.prod.exchangelabs.com
  (2603:1096:4:1c9::6) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9320.16; Thu, 13 Nov
- 2025 15:54:31 +0000
+ 2025 15:54:33 +0000
 Received: from SI2PR01MB4393.apcprd01.prod.exchangelabs.com
  ([fe80::5e86:f04a:37e5:64f1]) by SI2PR01MB4393.apcprd01.prod.exchangelabs.com
  ([fe80::5e86:f04a:37e5:64f1%5]) with mapi id 15.20.9320.013; Thu, 13 Nov 2025
- 15:54:31 +0000
+ 15:54:33 +0000
 From: Wei Wang <wei.w.wang@hotmail.com>
 To: alex@shazbot.org,
 	jgg@nvidia.com,
@@ -51,10 +51,10 @@ Cc: aik@amd.com,
 	wei.w.wang@hotmail.com,
 	linux-kernel@vger.kernel.org,
 	iommu@lists.linux.dev
-Subject: [PATCH v3 1/2] iommupt: Do not set C-bit on MMIO backed PTEs
-Date: Thu, 13 Nov 2025 23:54:06 +0800
+Subject: [PATCH v3 2/2] vfio/type1: Set IOMMU_MMIO in dma->prot for MMIO-backed addresses
+Date: Thu, 13 Nov 2025 23:54:07 +0800
 Message-ID:
- <SI2PR01MB4393D642190C5C04A0543236DCCDA@SI2PR01MB4393.apcprd01.prod.exchangelabs.com>
+ <SI2PR01MB4393BFD04F698501F19013B4DCCDA@SI2PR01MB4393.apcprd01.prod.exchangelabs.com>
 X-Mailer: git-send-email 2.51.1
 In-Reply-To: <SI2PR01MB439337D5513729BAC122F526DCCDA@SI2PR01MB4393.apcprd01.prod.exchangelabs.com>
 References: <SI2PR01MB439337D5513729BAC122F526DCCDA@SI2PR01MB4393.apcprd01.prod.exchangelabs.com>
@@ -63,7 +63,7 @@ Content-Type: text/plain
 X-ClientProxiedBy: TYCPR01CA0004.jpnprd01.prod.outlook.com (2603:1096:405::16)
  To SI2PR01MB4393.apcprd01.prod.exchangelabs.com (2603:1096:4:1b0::7)
 X-Microsoft-Original-Message-ID:
- <20251113155407.1183804-2-wei.w.wang@hotmail.com>
+ <20251113155407.1183804-3-wei.w.wang@hotmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -73,63 +73,64 @@ MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: SI2PR01MB4393:EE_|SG2PR01MB4170:EE_
-X-MS-Office365-Filtering-Correlation-Id: e184fe7e-bfb4-4115-121a-08de22cceea5
+X-MS-Office365-Filtering-Correlation-Id: c905f470-847e-4947-4444-08de22ccefff
 X-MS-Exchange-SLBlob-MailProps:
-	znQPCv1HvwUykhYCLh9DY9coCVULpTnX39YAd6DgWNivPHQ6ZhVZafONE1h0nmGktF2Rr8EpamV+rX60GsDFAarnb869ThodfJrHWkx1Lnt+iNjNz+X0x33LctOCNsyH2An/5JkjS7MXXelzdKn88V6kl7HbENQJaa8VuDY/PkgcUclAWmhb11Eb9/RMn/PBMRJwP/fUyeD4CP3eoITH3FPh3eHLWNFNSOLZWtdnctyIFnPUf4g1W+pRQ6TPBPmBzKu0ZpBytVQ1SNemyKPtqKhEa536Ot/+t3NPwWo9b/5uRLAWvhlKxfOEX/mQLLUQoq/la/hd4wspuCqcR+WNZF5s7htcIs8b7u/bYbHtDOJwigMQPYEFRI/+6bAe0ux2SR70lhlSikTbuWo2ymIQNe30IRJYbcjBeFZMIGevI7bvGuvmtOtUPyDqejovx0TEOx/vi6sVdS5A5eCBy+ERcHVvDZ9OnBtPvDAwAnfjEqnG0WBSjZ5TwdI28B27ISO15mp1wqG/hBET+Tc0GswTb7flMpz4HcFGrQt+vbOdaUL5/iwfI8lSDnH1RJkJIIXks7sk6IsT9sg5g747sNAVhOvRV6i6eJDd6X2nDhONsWlD5pHCnc64kOlK6lyT5m+djG6F7Ut0M1w9rKlkDga8RW49BuruMFKIB9dphSTcmJ3BMWJAYQEoer0t6cw0kYkUv9q9ErR5G7Cne1FxutnMPp7ZcoWpEXoJkF4VckP+S55OYbES3IFHt8LYIGlK4GFHDzXX8sN1N84=
+	qdrM8TqeFBtg1x3yx1r6QKZAk6LGeuzaKyVfLBFadWQsdG4QSKsGXBXN50aluAqpGx6eYqevoF4Ud6ASkRmCdrxalhav0X4f7zJR/W7seRxZLgcLzXF+X5Y2jSYvjL3QpJsJw6Lnrc+pqcagS5fscyb/eb0aQrbGRhGqk9cWJKfOvADs+Q1zO50G6ZQZ73L9ZXSRpFWA0zQUjBcxj6ZKosb8GGDUyPD397X5W5k9qwF/R2Ppf3/NCFjv37159psCCslHNf20VGXcAa+UP9xpyUsI/7UoflnrLAxhuSgIOoQmABpCxhPg26iAK+dDDmD4J1aEm/1FYeMB9Da5V7fJh7WOqGj2On9A2J1TgNJmB+mva7tbsw2c8a7zXcilniHwpwR3mxrIWtdzci1ZFWGtK+KJoe87ZnF5R394sjnJhPY21dhe5IMmPK0b+w7JAUpG5uIRdWOzMdBgzPWDCjlf23HlCJpAc0TfEazLI5mzB4VD58XtjsVITcWR4gehrP1hI+LK4pZFzMWeU+q7JrxKW/QP1k52izafRPdkHbnWwLk+Jxs3cfzGeiQhljHXrcEB9HxqTEZLfzXyvGydHJaQFcoxQkRU7S0Imvav80Nfl8XhABGv4XfunUZGTD1Tz2rhTdHfWiB0vONB1Pt4KYGbOm1NTB1VXR4YLRbPmjevelu09deIdxosE7IRbbaJWzgO3yofQnHn1q081oazfAU+YeJwhosGO7xy2kIzUeZyFSwIhW0Krtz3dZ5/tWyEYUqpinqtEjPV6neMZSaZcp+AxNXovfk7zdYS
 X-Microsoft-Antispam:
-	BCL:0;ARA:14566002|23021999003|5072599009|8060799015|10112599003|15080799012|51005399006|19110799012|461199028|56899033|40105399003|3412199025|440099028|1710799026;
+	BCL:0;ARA:14566002|23021999003|5072599009|8060799015|41001999006|10112599003|15080799012|51005399006|19110799012|461199028|13041999003|40105399003|3412199025|440099028|1710799026;
 X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?NOIL70mb+qDrcMSnFlWTfgIuaBe5K6ZI2Spv3K1dFSY91Kp3yJ+OWc71mlwO?=
- =?us-ascii?Q?dhIAbi/uwThIrb8U6ZReEAqtxeXmV9hMBZFizTdcq1OL4MYBrNiYUdr5/wgr?=
- =?us-ascii?Q?bE0a9Kl5KJYygTFXb00mZkGs48qoDUuiTJwrRYfhG05qk79qtzsP3Y0Jm+RT?=
- =?us-ascii?Q?Hto7Jzq1gpK4h/PJCkK+YOTSlItOjA5lHUXuqFnSEkMhSxqqoyrzB+cNufwp?=
- =?us-ascii?Q?lzUkPIU7/OEFKLUuf9qL2I1q+EdC7/iAqI81nu9Ky5CSfcDWjIAQDSPJwb4A?=
- =?us-ascii?Q?uXbf5CBdSkvFYrELfaYVOxanrI7o1DqDlFwy8hTi+5jDhdPAjg1h5d9fIRMO?=
- =?us-ascii?Q?+CRzEEYrFHVS4htjkzpdJeCckZSmxq/UD1vwV95/iDaC3PMLqT74w6nU8TU9?=
- =?us-ascii?Q?16J62q7rA5KlVZuXRNp3ziJnA8hK8OdtShqf2zPW5MXEkrM+x5kcPVxcXcBR?=
- =?us-ascii?Q?OxUuCTvG3dV8+DCiLIM5d8BJ0/UY+V+5QDzsVjptkt5hKRQezdOoeIJ99yVp?=
- =?us-ascii?Q?d7/YpTiEBzgclxTEsZkSTxxRKIetpKrVODwFrdbIasPCKkE4+zKmcuM9eNok?=
- =?us-ascii?Q?+UjI9OQCAI3+uT7I3wj2Gwrkn+aOPBaxfx4HffJ/W7QOWAAKIV33xY3JC+Lr?=
- =?us-ascii?Q?9JB6+c6ZSxRUVN5CS2Pu+azgXtwlOl9DUjVvB5mpORkWl9BqDokNOjV8ttrc?=
- =?us-ascii?Q?mmqJ1S5OHIYOgHoeXX7zkiKtSNXeMAzJ4qETbdGAG6EtmgktTvRmfZl9xDNt?=
- =?us-ascii?Q?7P6R2yZ2O86YGV/QKoVg5H7hMOIW5IgIB/3dYgnV5OXbAsAB+r1yC413tioa?=
- =?us-ascii?Q?NjXMAqs5ighnPFmVw/SGyp91NcVkRmCStVoSKhvyzMU2o0QNu5kOh6usVp1K?=
- =?us-ascii?Q?4oa4jpGeX/U5b2DQiyo6dWzSrd5bAAYToW6e7jqDh9L7ntbxyIcaA1+XTT/Q?=
- =?us-ascii?Q?G7k9R7qZugTk6FpAXFJSxJs013R/4+Ac25WhI0/iMo7RVw+DOoh5me5Cos/W?=
- =?us-ascii?Q?dcSQs+abAaGwu+d+JQj7seTRJ7WpQH6xSQMOmRPVHnGeLoCvJMEIxwD0LzQI?=
- =?us-ascii?Q?iytY6seeTk5+m6XXl3olrYWfzyRAPDNxHEevHBqXTQ1sQa+cWrJTrZxftIwD?=
- =?us-ascii?Q?LKFW1g62/+a9CXLBBMinCP8/te/lkYifT5DHmoPU+B6M9ZWtv01S1GchpBAv?=
- =?us-ascii?Q?+H6kTxFwK8Yku9GRGqd0jqmh2c0xliqgoI0doEKCBAZyWRPukuTEI32nFJE?=
- =?us-ascii?Q?=3D?=
+	=?us-ascii?Q?3vKRotDIbxAiuU3HOBsO1JMl3IFHjknyu4G1JA14ocP1efem8WP3nXNrm/ql?=
+ =?us-ascii?Q?ZQTqvQH/VoEnJI63FmKSnPGt/ffh0ac5MpLHNBe0bMbO9urwI+zwWfezsQvE?=
+ =?us-ascii?Q?0WZNhU5vsf9hSvAfP1q4iivpCOl0V9byalxSy+XDZ9WaS9JA0hFgSDapwWNI?=
+ =?us-ascii?Q?j7IaW5MvPikKhS6qHhjTg3v+let8l31oXx3o1UWlyykavpzYC0zmWTfEmyrw?=
+ =?us-ascii?Q?WWV1TVON+nXiaTX83QGRSRSKYdr1c3VNRLr2MSQBtFmngaYnuWUerw3lnvH8?=
+ =?us-ascii?Q?zPw4Bf2wjDZYLUm0UafNtDa2rTsFzVJXimiRbtu6VFw2oEyrN0IDObVhSfrK?=
+ =?us-ascii?Q?JPS2fqkEUuwN0KSU/bw+oF3BXDeJ9guna3qOyu3fqwFuozuX0U2DyP0mLV4s?=
+ =?us-ascii?Q?GKSheCPAgfqO2j+R9P2OVmealbAGyngzi6i5dpo/+pfmpqjq6KQfH6y4H2B1?=
+ =?us-ascii?Q?8J5tirSFFwL9uAkm/1R7dUdsTi3XOXTwI5nQD+JB9yiXu4799dETZ5HNgbwU?=
+ =?us-ascii?Q?HXGyBt1co8Qg85knd48TI4nc1Df9gClY/Mm/rVKW1JPDYRhe/kUdJXsgPgFg?=
+ =?us-ascii?Q?KS2PxNeooMLu7HdP9RMhprfkcKDY3QLoClusX0rZC0lP2GTA1HHmMxSZ+fHg?=
+ =?us-ascii?Q?445cRocl8v/2qg6heuGCsgbjJTz09IhROGLYNo0BUOq3gGK8KDeIf5Zp9G7d?=
+ =?us-ascii?Q?8yN2qg7XGIYxRDRzJ7cJckLQS+AxEiWrZGMyutL0zNsLI40w28Bl0owvNd9M?=
+ =?us-ascii?Q?WI2Q/SXqxGwhXDtAzoN4khvE6gYF1UL6PBbTmOrgIhnwLr5EuLBQjvq8zBNm?=
+ =?us-ascii?Q?2rzP08N51t+nT2Q3c2RiX4yK6ZFH3KlfRjQFaj5WRj41byj33+LGbIqrPdvd?=
+ =?us-ascii?Q?jEfxHImxFFp8LnZam09JnXvTiP6Qg5VerhHTJS98Yk9M/TtaOHJx2kT4CEZm?=
+ =?us-ascii?Q?OqaP3DfGKrJRPNuxcKEByy5WgKvwi0R7DB75e72Otk+OU/4oizeWFRKR5W70?=
+ =?us-ascii?Q?zBxFw04leiNW50AMhywzHham76eZ0waPM1FlBI7VMSjN7qsAl+SCQrmxOBFa?=
+ =?us-ascii?Q?4o6X5dxglPvs9rNXZ9jpPW5i7yt+IkpIUf1vp2aUpf1k7JFNSXSNn5VneAh4?=
+ =?us-ascii?Q?7SZqbdEux4aoTpySA5w9ppqk2QI2JpzeBE9G46m0xbu7Hss9Nexsag6J4W6j?=
+ =?us-ascii?Q?4zNpUY2PnvTMhg3geU4JpUz5jwdu8SDT3GCbwxWgbNBLr/QDJIhUN2m6uSQj?=
+ =?us-ascii?Q?IE64DmAXd0Cfaj/v9qOi1Vs+6sGQTAgaJ6TMQf+Z2gqm8CVCyp+ZFxGlmcRM?=
+ =?us-ascii?Q?J6M=3D?=
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?1qdpmW/dIlp58T8pETnvvYzecDAMY9G62+KvO8Nb0vtCp8Fg9OG1F8fyjAmQ?=
- =?us-ascii?Q?6HQ+3U1xystnDqzLVvCNTNqJLjf+iOfImdCE7l+RgSwo2HNWhZuDRn90+d+U?=
- =?us-ascii?Q?ySyRz9XeD4hp850FEJ5p43IARxUIRRCG+b8gjBnzprj4mscqJCLL+Qcz01Q8?=
- =?us-ascii?Q?zhxLvwIMQNizOwy7JpEoM2Brdr7g1e3J+8IyQPTGdrA6ph7rz+9+LRSbqBoq?=
- =?us-ascii?Q?hXcHOCpTQMWHxE7p2Uk5hU2LJVTgJf1pTBac0ggRZUG1Yqd4FsGYw0Jkr7lp?=
- =?us-ascii?Q?TSdg0EPAU6/K1ixkaY8gsgxT0hPidCzt4YdbeVMnDZQ1a7aY0r7F7ezvQE1U?=
- =?us-ascii?Q?0K1yCeBmBCEL4qAQMhVdlNwvKRH0XOu5z4ICfd6kKfRZ0nN4miXcHsjcCQ0D?=
- =?us-ascii?Q?4IsnHeD1D34BSqBKVzG2tdObplNJ14Ckj0O2Z+wsX5LlEHCtX8xLHw+va38D?=
- =?us-ascii?Q?/VwkcpfOG3yNP+DSNLsnKnncOlO6NJCUGWwL4gS4YB56hu25fc6q/INkrTjf?=
- =?us-ascii?Q?AKRQ+knjdM/ChBro+CV6Zij4946lR+F+2dK8fZgtcdwN8lAnQIti5TlJNQOP?=
- =?us-ascii?Q?O+b8FI1oLa+vw/QHZvzjzLbhSdXI6Zbg+OtkYxWTi7+LJVucQMEWCtRBjJcr?=
- =?us-ascii?Q?DRjPco4EdOXToOM0zX6ABYslqOUkD+lTURsdFqvjuBdnt17APdf2zTP/c6YV?=
- =?us-ascii?Q?f3++mYa9AbQMZo9lvwHhd9PxCs/Tw3qkOR0NPBUP+vuUdwNq+E8qsxsBovl+?=
- =?us-ascii?Q?6wdz5oN3jj2fGhFV/chKUhBdhN17ynLXK91I6Jsr3gZoMci/jSbWideZusjF?=
- =?us-ascii?Q?XorOHoT7LlqdGF0DjmEH6uwKN1YbVUrGgtHIq/oKgG16FF0uHtsiIc/piu4I?=
- =?us-ascii?Q?OSmWaxFjudFYY/uHjiV92wyCOp00D+AfutidwMRzzy0oxmQCwcUKxsuMNMvJ?=
- =?us-ascii?Q?7mDdFMBkhZLh4l4EL+I2Ezt31BmkUijp4JxuEms9C09R2wXcdf7xqQQpFNYk?=
- =?us-ascii?Q?aVB3SBmhzgZJjrzBPbp6bUy9Blxfem2lLwJjcOSMvYhML6kks/hHekGzEU9l?=
- =?us-ascii?Q?WsBtL6Vn/fd4eIpUVQnASFf0Q9JYEDuLKw04weTIKf6yLtb6UNfY+hSLQs2H?=
- =?us-ascii?Q?Y2ia9Uqqa7uzZPcmlI0kR3d49ZZM5qGcaJYtHjTspeo8A/GIbcJKCCpCBN+9?=
- =?us-ascii?Q?vY+wcPePyk3VxRuQRvTLtPKIdXkS8AITPMdoFQq0/GFa2di6hk7paXKVK4s?=
+	=?us-ascii?Q?719ibmsv0D32Nbr0m1tiXCN2ojQjokTHcPXndcJ/oYS07C/hPTuKVLNz0dwT?=
+ =?us-ascii?Q?Muj3x7tk4GQAUnugLVoBxhHUTbHMSHIFWYHZGeUVvPX7vXxkdcf4/B6l3+x3?=
+ =?us-ascii?Q?9KQmZOjUFDjRqv5DsyY+BwH99HQxrIC4NfHj9AJdCGMXHkNHaM2C2+Q48Lwf?=
+ =?us-ascii?Q?HpH7tXhB0uOPwaAcdQ+lxgEl82JiFdva1HmmxlRWFKIsehuxS7jrsIMpjcY8?=
+ =?us-ascii?Q?DH5UpC44v0zRqxmHXTWDLwGsxA57DsuA8j8dQDy6k0ueTRPi9ckpI+/+SZ+1?=
+ =?us-ascii?Q?k6WvobidPUrEsD+VHrLam8kI+PyMSwXCTdQUpATELzINi1GlSf7fPsbIWLp1?=
+ =?us-ascii?Q?fBN64FjyAV+5PVRoUiu4uCy4J4V4W0Cd+bQqenet+A7xtsPg7+kRETYSIOMf?=
+ =?us-ascii?Q?f50qPEkO6qZXWQQ6WvN+vP2lBTfc7t16Tv2kHqVvCbLcR17Kpsf/8wjuCoJb?=
+ =?us-ascii?Q?L3WnmaManzUTRUPfaHZZDISfh/aSLrBozGelmLkUAgjrQ2+FsjMgYEzJcY4I?=
+ =?us-ascii?Q?o+okRPWEKnhU1On7nBzwY9waVV87o7DGVPhDg08+PSyqAf7WtDg2Xpe2brX1?=
+ =?us-ascii?Q?/DiNa3w359rZOyltOWwHgA9ddoBIVgjLafosRiClChUYCMP0FZiRnXlYB2Or?=
+ =?us-ascii?Q?7+zcdCIJ6L8Ub2nutA1z1bFgNjrn/8nOW3Idsavj+XiIHaUbhZOWWmGqyLXn?=
+ =?us-ascii?Q?f38IAM2vj9MbqgHnJlrQpL0hmOKosb4y0vhAdzJpQqbj9YE7DhZZz2tTFrz2?=
+ =?us-ascii?Q?n459/cax7si0W5theo4WrXe344dsr6OXGuxvzKT/yPEsn2Un6MQ2LIafmsv4?=
+ =?us-ascii?Q?73MqISF9V1ViKtYvB46H/IDiNYrD+Qw6+XxqHq9+HoLfOg6kFw9E/F2PAK7F?=
+ =?us-ascii?Q?Ha8S39vEI1wTQJ1h+G3mNozE65wvHiDLgoKUW1nEGwuDw4dSRovdMDZFc3XC?=
+ =?us-ascii?Q?9Z3H8ClDn97zKvtkk5MvFTQ5CcNf0Lw8ZYZZS8M8YocdrCyor2xTWxKGmd7a?=
+ =?us-ascii?Q?tuFXxo0+tKDpdAkGBp7NK8mc5kwBvZruUAu+WrW9MffGPfErAoy46n2+9lV/?=
+ =?us-ascii?Q?h2HPKrnFLh7WhTeDNeGS2noup4At93ERuaNOMoFBEdTqrIeQXXJ+UQHH0MaM?=
+ =?us-ascii?Q?yCHkiPYXuJYDn5fj4HiKcBWw9qukkrSxmuMx8aTrj0SIS4TaP4oyiXipuz3O?=
+ =?us-ascii?Q?dwhFOMZOMHGUwnrTQtzUHr6VuMOKxRnGm9LG40MdVVRSJ93CzI6yQLuQJSI?=
  =?us-ascii?Q?=3D?=
 X-OriginatorOrg: sct-15-20-9052-0-msonline-outlook-827b9.templateTenant
-X-MS-Exchange-CrossTenant-Network-Message-Id: e184fe7e-bfb4-4115-121a-08de22cceea5
+X-MS-Exchange-CrossTenant-Network-Message-Id: c905f470-847e-4947-4444-08de22ccefff
 X-MS-Exchange-CrossTenant-AuthSource: SI2PR01MB4393.apcprd01.prod.exchangelabs.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Nov 2025 15:54:30.9742
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Nov 2025 15:54:33.2328
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
@@ -137,59 +138,84 @@ X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
 	00000000-0000-0000-0000-000000000000
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: SG2PR01MB4170
 
-AMD Secure Memory Encryption (SME) marks individual memory pages as
-encrypted by setting the C-bit in page table entries. According to the
-AMD APM,any pages corresponding to MMIO addresses must be configured
-with the C-bit clear.
+Before requesting the IOMMU driver to map an IOVA to a physical address,
+set the IOMMU_MMIO flag in dma->prot when the physical address corresponds
+to MMIO. This allows the IOMMU driver to handle MMIO mappings specially.
+For example, on AMD CPUs with SME enabled, the IOMMU driver avoids setting
+the C-bit if iommu_map() is called with IOMMU_MMIO set in prot. This
+prevents issues with PCIe P2P communication when IOVA is used.
 
-The current *_iommu_set_prot() implementation sets the C-bit on all PTEs
-in the IOMMU page tables. This is incorrect for PTEs backed by MMIO, and
-can break PCIe peer-to-peer communication when IOVA is used. Fix this by
-avoiding the C-bit for MMIO-backed mappings.
-
-For amdv2 IOMMU page tables, there is a usage scenario for GVA->GPA
-mappings, and for the trusted MMIO in the TEE-IO case, the C-bit will need
-to be added to GPA. However, SNP guests do not yet support vIOMMU, and the
-trusted MMIO support is not ready in upstream. Adding the C-bit for trusted
-MMIO can be considered once those features land.
-
-Fixes: 879ced2bab1b ("iommupt: Add the AMD IOMMU v1 page table format")
-Fixes: aef5de756ea8 ("iommupt: Add the x86 64 bit page table format")
-Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Wei Wang <wei.w.wang@hotmail.com>
 ---
- drivers/iommu/generic_pt/fmt/amdv1.h  | 3 ++-
- drivers/iommu/generic_pt/fmt/x86_64.h | 3 ++-
- 2 files changed, 4 insertions(+), 2 deletions(-)
+ drivers/vfio/vfio_iommu_type1.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iommu/generic_pt/fmt/amdv1.h b/drivers/iommu/generic_pt/fmt/amdv1.h
-index aa8e1a8ec95f..3b2c41d9654d 100644
---- a/drivers/iommu/generic_pt/fmt/amdv1.h
-+++ b/drivers/iommu/generic_pt/fmt/amdv1.h
-@@ -354,7 +354,8 @@ static inline int amdv1pt_iommu_set_prot(struct pt_common *common,
- 	 * Ideally we'd have an IOMMU_ENCRYPTED flag set by higher levels to
- 	 * control this. For now if the tables use sme_set then so do the ptes.
- 	 */
--	if (pt_feature(common, PT_FEAT_AMDV1_ENCRYPT_TABLES))
-+	if (pt_feature(common, PT_FEAT_AMDV1_ENCRYPT_TABLES) &&
-+	    !(iommu_prot & IOMMU_MMIO))
- 		pte = __sme_set(pte);
+diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+index 5167bec14e36..cde7cfcfd61e 100644
+--- a/drivers/vfio/vfio_iommu_type1.c
++++ b/drivers/vfio/vfio_iommu_type1.c
+@@ -583,7 +583,7 @@ static int follow_fault_pfn(struct vm_area_struct *vma, struct mm_struct *mm,
+  * returned initial pfn are provided; subsequent pfns are contiguous.
+  */
+ static long vaddr_get_pfns(struct mm_struct *mm, unsigned long vaddr,
+-			   unsigned long npages, int prot, unsigned long *pfn,
++			   unsigned long npages, int *prot, unsigned long *pfn,
+ 			   struct vfio_batch *batch)
+ {
+ 	unsigned long pin_pages = min_t(unsigned long, npages, batch->capacity);
+@@ -591,7 +591,7 @@ static long vaddr_get_pfns(struct mm_struct *mm, unsigned long vaddr,
+ 	unsigned int flags = 0;
+ 	long ret;
  
- 	attrs->descriptor_bits = pte;
-diff --git a/drivers/iommu/generic_pt/fmt/x86_64.h b/drivers/iommu/generic_pt/fmt/x86_64.h
-index a86353f1481e..ec2143488e8b 100644
---- a/drivers/iommu/generic_pt/fmt/x86_64.h
-+++ b/drivers/iommu/generic_pt/fmt/x86_64.h
-@@ -227,7 +227,8 @@ static inline int x86_64_pt_iommu_set_prot(struct pt_common *common,
- 	 * Ideally we'd have an IOMMU_ENCRYPTED flag set by higher levels to
- 	 * control this. For now if the tables use sme_set then so do the ptes.
- 	 */
--	if (pt_feature(common, PT_FEAT_X86_64_AMD_ENCRYPT_TABLES))
-+	if (pt_feature(common, PT_FEAT_X86_64_AMD_ENCRYPT_TABLES) &&
-+	    !(iommu_prot & IOMMU_MMIO))
- 		pte = __sme_set(pte);
+-	if (prot & IOMMU_WRITE)
++	if (*prot & IOMMU_WRITE)
+ 		flags |= FOLL_WRITE;
  
- 	attrs->descriptor_bits = pte;
+ 	mmap_read_lock(mm);
+@@ -601,6 +601,7 @@ static long vaddr_get_pfns(struct mm_struct *mm, unsigned long vaddr,
+ 		*pfn = page_to_pfn(batch->pages[0]);
+ 		batch->size = ret;
+ 		batch->offset = 0;
++		*prot &= ~IOMMU_MMIO;
+ 		goto done;
+ 	} else if (!ret) {
+ 		ret = -EFAULT;
+@@ -615,7 +616,7 @@ static long vaddr_get_pfns(struct mm_struct *mm, unsigned long vaddr,
+ 		unsigned long addr_mask;
+ 
+ 		ret = follow_fault_pfn(vma, mm, vaddr, pfn, &addr_mask,
+-				       prot & IOMMU_WRITE);
++				       *prot & IOMMU_WRITE);
+ 		if (ret == -EAGAIN)
+ 			goto retry;
+ 
+@@ -629,6 +630,8 @@ static long vaddr_get_pfns(struct mm_struct *mm, unsigned long vaddr,
+ 				ret = -EFAULT;
+ 			}
+ 		}
++		if (vma->vm_flags & VM_IO)
++			*prot |= IOMMU_MMIO;
+ 	}
+ done:
+ 	mmap_read_unlock(mm);
+@@ -709,7 +712,7 @@ static long vfio_pin_pages_remote(struct vfio_dma *dma, unsigned long vaddr,
+ 			cond_resched();
+ 
+ 			/* Empty batch, so refill it. */
+-			ret = vaddr_get_pfns(mm, vaddr, npage, dma->prot,
++			ret = vaddr_get_pfns(mm, vaddr, npage, &dma->prot,
+ 					     &pfn, batch);
+ 			if (ret < 0)
+ 				goto unpin_out;
+@@ -850,7 +853,7 @@ static int vfio_pin_page_external(struct vfio_dma *dma, unsigned long vaddr,
+ 
+ 	vfio_batch_init_single(&batch);
+ 
+-	ret = vaddr_get_pfns(mm, vaddr, 1, dma->prot, pfn_base, &batch);
++	ret = vaddr_get_pfns(mm, vaddr, 1, &dma->prot, pfn_base, &batch);
+ 	if (ret != 1)
+ 		goto out;
+ 
 -- 
 2.51.1
 
