@@ -1,432 +1,255 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from SN4PR2101CU001.outbound.protection.outlook.com (mail-southcentralusazon11012006.outbound.protection.outlook.com [40.93.195.6])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4398B2EA490
-	for <iommu@lists.linux.dev>; Thu, 13 Nov 2025 20:10:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763064608; cv=none; b=gbGJmE5N7/aoK4sgU7+ptEwnLUGSZDi0YFOmLVmsJFPhH55RmtGEskyaLJvu8tJQGBOSvpNdc17X/vst0DpEJB/Tv5SrZz/S87g2MQteMf/c9X+kHlcPF0il8TM7teePPp2+BWmvdnfAlajzOI1ynmYab4+zn8qZoEhwnmuS5Ao=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763064608; c=relaxed/simple;
-	bh=EBHCvOjhq4ypRbbHuMgmE9YiEOZDb5Z2mRmWCl8wBkE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=P3XmjDd2SOhDuJ2vZaCArauPbf1jt3DI4zxR8PelTaQJjbRK7J/y7o2wKLyHHN0vrncLABuQX1vTDVqDSdg9u7uyf4yFUQwGMVYAaWYGj7SZD9f5nTLOAbyy6Ys/iPErP9AGx/ESHYNMZxcD0WBkNivGDk0IwNOZa+T+WBAY94I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=oBXyI0gw; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=MayOO5i+; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9149D30AADA
+	for <iommu@lists.linux.dev>; Thu, 13 Nov 2025 20:36:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.195.6
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1763066202; cv=fail; b=IRyvCKzznosqIFgZnbUODbwZyFMoOU+DBZGjkntUlKExk7BRHUEevQCMIAb3pjwgKIPJvkovvg5QhIoQcVzfNLRRFRv/oBt/HoXrwPJ1ioEAJYxPfxUKbodqdArqdt2OxIXOTL/oXp4u0yKB/4B0wm/9taDpbYXQ7Gz/YE8mBNc=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1763066202; c=relaxed/simple;
+	bh=WXPBuxTjCqdlxcDZIfXkH99XA50WOct9kYnT9xTEvO0=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ri2cSwwzAbg2vcICdWVZY4hEL6BINQHt6FsJ8SiOzsd/1fIZklg6wx0ET491W50bhVYDy0jHp1h9WGEBzQHSumRkq0hyw0ChcWdy99Io3WXhLGhw+hyLqpcPG+U1wV6dGqdOLpAK1t68btMxW+TJy3APC44Dar93WoVnHoe9XCs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=jpqXAZqm; arc=fail smtp.client-ip=40.93.195.6
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="oBXyI0gw";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="MayOO5i+"
-Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 5ADGnXAA2993658
-	for <iommu@lists.linux.dev>; Thu, 13 Nov 2025 20:10:05 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	muO9LZ6kEmosm3Ges2kz3Rxg8kQYhqoJRKbnsDIH6Ac=; b=oBXyI0gwG2mzWFPb
-	YLePrDX9GYEoRrOR05DxjZbPT55KcIzhujqTdpUg2R5vrrBa96yTX3gmie+BPUC8
-	rclPgOmmc0RHKknAodh9cYAEDO6o2LcSLLWqaNNvtY8Y53c6d2tE3x9t5gKItNrK
-	LJ3K08GgCBaCJ2N9gfUiP9EGwVx3h3ZmZMx8RjjKB8mNV6/AfDZvLJeieKn3J0yQ
-	0TOiYYT0ckAKVQErNFW7zyu/+l3lVoGrl5Teqpj5874jr/BmDKQLG4iMunAWFCuG
-	ySmI7Tj+Yvyqc4/VVvdxloQeexx8kftl+PMqAiQp+M6a7J07mw1gJG4H/QKXCqhc
-	xPI7eQ==
-Received: from mail-pf1-f197.google.com (mail-pf1-f197.google.com [209.85.210.197])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4ad47jknvh-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Thu, 13 Nov 2025 20:10:04 +0000 (GMT)
-Received: by mail-pf1-f197.google.com with SMTP id d2e1a72fcca58-7b895b520a2so1404939b3a.0
-        for <iommu@lists.linux.dev>; Thu, 13 Nov 2025 12:10:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1763064604; x=1763669404; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=muO9LZ6kEmosm3Ges2kz3Rxg8kQYhqoJRKbnsDIH6Ac=;
-        b=MayOO5i+jnR/dP9dwWwq22z2uNtsuKNJIccZdxHRgHOeQEnzhm7zeX8jqkCOdcrEnn
-         8gzOVLMUOW6UUIor6ro28PQMIkAK0PF/hKJtrbYNQmM1xgovJ2+KHxFBvgSNWzA6rgdG
-         qyKoxs7Ba6QNZOZNIxZS+CGitZ0NMiHcJ+OSBPosFiK64uOzRX2PWDzmhMYHfP+fWtth
-         aSCTzfWLj1/fbnKoEBDBAZbvPgZOjuo4ed75wohgIDrRtF7wsXGyKWGhGdHVqNGQb0eq
-         hSQx2S5PZT5pwO0W06JIUWVtxk6Jsk/27ntjA37aMOqdsl5bj304PGa41T5J84Yi7tJ3
-         1syg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1763064604; x=1763669404;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=muO9LZ6kEmosm3Ges2kz3Rxg8kQYhqoJRKbnsDIH6Ac=;
-        b=RQOce7yxVERAs5vk5pup6KrrLL+IjDaIFBQv3EEx4AO9v9rIg2cUaFAVTOW1qPoBX2
-         hEsbYqdxL6TleycZR//dttjHbH0VkB7F2/nb5C/0K3ztOUWjp3Ha1i+E9kduLCbAZqk6
-         WouLiUvHHZQ5U3g/T1TL3hOOO0ZqeWORXkxOkAqHrrFcKxws+8hg6nlCKRqPHwCa15Zx
-         BRCOgKIVJN3O6QtOWRIxk6dUqdNNvN5K6VfGgWqfEMqLqRRgVUDQYaJnnsezpRycsaI8
-         t38yVtXpcD8hIC0opy4BzaKlL0NNNJ/8fEd41LijQuRZlv8npCE9KDH1XH79cACG6ygf
-         7GcQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWSqDAnvsbmXcDtaFp0ycnYqVyqGpOiQpaVMIvME92Djrr54U/HVaqmyzCFnoDRYUSW3Fk1IQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yzv4YM7jD0BcWWrqVPR8KpTTlVdGBWE4zhq4eKnz5xeZtaZpJeI
-	evvliournLw37YRdi9EQnIegg49tqOh8I2KhXZ58a3n6ZcW0Uiidbi3uTEuDEwJ69iaYCoNX11s
-	YRkXNE4JkuMDhI2PjI/FEW8t66nhl35gTH+rZpLYq2sTHuQ9ZCv4xcu7b1A==
-X-Gm-Gg: ASbGncty40eBO/OzVfcm844tvvE0GfSi6BXDJl2zq2U6dKstXXTxt0BLR4dBA9jIckQ
-	121tlLR+2YAvgm5oWIkoMlZCHYPsgAI278Cc0AAUeHyw7ilrePmuPEEb4ZpiYGcDi/s8zQ9W4UH
-	Qpb3PPNeHJxp5JLBtKTquS+WSVKLy9J+qNy5bxtwCui7/3rPsMfBkYqMzbdOFnhx/OJfDM5VUWK
-	Pw/0WihsA+7lAn2om1hPGzfulx0KUZDOzwmSqqndNfIkBuHK9/TuehasEYek/3fRpVms2eCKiPT
-	29d35SP1IaYVdES75zDDywr5k5A2rGaBhAZAwVYKbRDolaM+seWqdrAOr/ePYqZ1OtLkWrG/mB7
-	MroTseQH4v2iHtO+VVRTbgA==
-X-Received: by 2002:a05:6a00:18a9:b0:7a2:7c48:e394 with SMTP id d2e1a72fcca58-7ba379a7b0cmr708766b3a.0.1763064603696;
-        Thu, 13 Nov 2025 12:10:03 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IGXw02RGuW9FGIDBukM/HjJLOOcWHafS/kj+OCLzdcZqwqyZ3wk2YYJnz5mKp+Dfeu3fQ0m6A==
-X-Received: by 2002:a05:6a00:18a9:b0:7a2:7c48:e394 with SMTP id d2e1a72fcca58-7ba379a7b0cmr708721b3a.0.1763064602969;
-        Thu, 13 Nov 2025 12:10:02 -0800 (PST)
-Received: from [10.204.104.20] ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-7b924aea005sm3129109b3a.3.2025.11.13.12.09.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 13 Nov 2025 12:10:02 -0800 (PST)
-Message-ID: <5b841c60-cac9-4def-928c-33cbf3d908f5@oss.qualcomm.com>
-Date: Fri, 14 Nov 2025 01:39:54 +0530
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="jpqXAZqm"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=Mfx8bkrbxufQo8GZLbSh9/wfzpuABp5H9B+9FBLrCjZWgBbVI/HGtrl/DuIr0cNG5N+8j07t2j7VMOem3Yh5XEOjrxF+LruvNfwG2ghpszhtSmTswrKuUJxc9eJzjg0A/5o9z5UDkpgTVJjsCLdlDAgGtyg2fX5kKVFzsl/vLcQP6oU/fAooDf3ZNNFK5eN5qKJF6StKZhth8vUy3AZrV6cRCVAN4Q8PTpckYGA6nDygu9DKCD7/RfB/7vkTMMIPbupo/1LWo9xpv0eqI9WpQ/XJqlrSYKkCtRKJe9t4tqdG+kQv+j50DOGT03El3zzvC5uMbI35UuF0/yflWM/aFw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=wYk66kpLmRzSAuYk0qWdguW/BxyKuUBxsex0O4Re+zs=;
+ b=EGNiQOcIj6h5NbxohoBadNTvMUuGfzYek7RFFi7+Cyk/j2aDdd50yER5VMzVWonQBicicRTG3nu88cgqJKB/1US/vjoUR2mSoWRnvfkoJuSe9XrxwJ7UFQrqyUnSj3o7kQ5HwHS2qGj51yBetgFglXInqz+y45XjZZYyrkNb0fAChAhdPHeHh0J20uj6V0wDdR4JYpNBEwWUsJ9D8piM9dPXv/i5s5DROf5U1Io9R/vq6O9yS/iUsF706Q7r0dfvmx21IprSF3XvxQFzOhjg7+p6Llg/jDtmlKmKhC9ju/Cyo+mTSyS+oW70zmVHvl+H7aZICMpsFtdVGMDisbUuag==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=amd.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wYk66kpLmRzSAuYk0qWdguW/BxyKuUBxsex0O4Re+zs=;
+ b=jpqXAZqm4ypQNs7gjluWGk1qVJfy/DWrgUhpMDZ7qmHMgAkcFGUe6VQdb9aT3w0lmF5a9P46CA0/zutELi3qG2VNcEW9NPgrh2hfyWjkgc8zZv6/Zp704OjEOocfc2+B2DRn5NizhKjooP4F58OYB9UnyRzXT2QJcAvZ5TRlCvhm2/uBVt1zyAJrJ63IFbW8C1Gy6K3ddP1kgz0l5KwJOAR/4sk3fGbr89rqTWTjSE1UsPs2mOE8y67iI+jkuJno9YqxQsM9AqPWoUBioNDZeMR08bt+X6fmCQLQcfoVapg2hXRFawhUih62vNoGj5xsKGZdEQ92fEMUh54u8+B5Dw==
+Received: from BY3PR03CA0024.namprd03.prod.outlook.com (2603:10b6:a03:39a::29)
+ by SN7PR12MB7452.namprd12.prod.outlook.com (2603:10b6:806:299::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9298.16; Thu, 13 Nov
+ 2025 20:36:32 +0000
+Received: from MWH0EPF000971E4.namprd02.prod.outlook.com
+ (2603:10b6:a03:39a:cafe::61) by BY3PR03CA0024.outlook.office365.com
+ (2603:10b6:a03:39a::29) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9320.15 via Frontend Transport; Thu,
+ 13 Nov 2025 20:36:17 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ MWH0EPF000971E4.mail.protection.outlook.com (10.167.243.72) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.9320.13 via Frontend Transport; Thu, 13 Nov 2025 20:36:31 +0000
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Thu, 13 Nov
+ 2025 12:36:10 -0800
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail205.nvidia.com
+ (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Thu, 13 Nov
+ 2025 12:36:10 -0800
+Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com (10.129.68.6)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
+ Transport; Thu, 13 Nov 2025 12:36:08 -0800
+Date: Thu, 13 Nov 2025 12:36:07 -0800
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+CC: <jgg@nvidia.com>, <linux-kernel@vger.kernel.org>, <robin.murphy@arm.com>,
+	<will@kernel.org>, <joro@8bytes.org>, <kevin.tian@intel.com>,
+	<jsnitsel@redhat.com>, <vasant.hegde@amd.com>, <iommu@lists.linux.dev>,
+	<santosh.shukla@amd.com>, <sairaj.arunkodilkar@amd.com>, <jon.grimm@amd.com>,
+	<prashanthpra@google.com>, <wvw@google.com>, <wnliu@google.com>,
+	<gptran@google.com>, <kpsingh@google.com>, <joao.m.martins@oracle.com>,
+	<alejandro.j.jimenez@oracle.com>
+Subject: Re: [PATCH v5 11/14] iommu/amd: Introduce gDomID-to-hDomID Mapping
+ and handle parent domain invalidation
+Message-ID: <aRZBN/nBz6lqTzmt@Asurada-Nvidia>
+References: <20251112182506.7165-1-suravee.suthikulpanit@amd.com>
+ <20251112182506.7165-12-suravee.suthikulpanit@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 13/21] drm/msm/adreno: Introduce A8x GPU Support
-To: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-Cc: Rob Clark <robin.clark@oss.qualcomm.com>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>, Sean Paul <sean@poorly.run>,
-        Dmitry Baryshkov <lumag@kernel.org>,
-        Abhinav Kumar
- <abhinav.kumar@linux.dev>,
-        Jessica Zhang <jesszhan0024@gmail.com>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Jordan Crouse
- <jordan@cosmicpenguin.net>,
-        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Connor Abbott <cwabbott0@gmail.com>, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        freedreno@lists.freedesktop.org, linux-arm-kernel@lists.infradead.org,
-        iommu@lists.linux.dev, devicetree@vger.kernel.org
-References: <20251110-kaana-gpu-support-v2-0-bef18acd5e94@oss.qualcomm.com>
- <20251110-kaana-gpu-support-v2-13-bef18acd5e94@oss.qualcomm.com>
- <aff7043c-0029-433c-9340-22718909e583@oss.qualcomm.com>
-Content-Language: en-US
-From: Akhil P Oommen <akhilpo@oss.qualcomm.com>
-In-Reply-To: <aff7043c-0029-433c-9340-22718909e583@oss.qualcomm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMTEzMDE1NyBTYWx0ZWRfX8GgXNvYn9WKZ
- y47Ax0oDlwQqG2D4pOpSPZmFwddpMrBZDEjdPuqAJB/VNtntkcLLHqpVEAQ+mijWWFI6RSxUCzt
- jxlqQJRikEusJExeU6nIRHQoZJf61RYEMic0QCGo3NvXsL4qrUtZiHmWnwO6HtEDALG5UlsedYi
- IPctklWRxtcfp1mQiXGto27wa8vlESGYutC0VdYnbs51sitvkeSSw+lBIyByX/SHYk18MstX4r5
- Ygg2lWC2i4cIw/WDNcKU3GCjncIFyPr//LECWKEwH5BFm0u4p9CR41VEI4sEie8enDfdsLZAfmv
- hhIFZutmNOpxAnrIoe5XhWUccCRCyWRptM+0zqBP6oDIUCvTOqEb/UuztLrgpZ4zcQ4iF/kS3UO
- h0/Cb2J2Yj4pCzkfd3V0d5Zo3HQ/mQ==
-X-Proofpoint-GUID: wnGN-1ATDP_8XcDjUgjSKovLxB2kdFss
-X-Authority-Analysis: v=2.4 cv=A5Fh/qWG c=1 sm=1 tr=0 ts=69163b1c cx=c_pps
- a=rEQLjTOiSrHUhVqRoksmgQ==:117 a=ZePRamnt/+rB5gQjfz0u9A==:17
- a=IkcTkHD0fZMA:10 a=6UeiqGixMTsA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=EUspDBNiAAAA:8 a=53R2tzsCfDe74MVAKjgA:9
- a=QEXdDO2ut3YA:10 a=2VI0MkxyNR6bbpdq8BZq:22
-X-Proofpoint-ORIG-GUID: wnGN-1ATDP_8XcDjUgjSKovLxB2kdFss
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.9,FMLib:17.12.100.49
- definitions=2025-11-13_05,2025-11-13_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- suspectscore=0 priorityscore=1501 clxscore=1015 spamscore=0 phishscore=0
- adultscore=0 impostorscore=0 lowpriorityscore=0 malwarescore=0 bulkscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2510240001 definitions=main-2511130157
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20251112182506.7165-12-suravee.suthikulpanit@amd.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MWH0EPF000971E4:EE_|SN7PR12MB7452:EE_
+X-MS-Office365-Filtering-Correlation-Id: 201851a1-1f7f-4156-528b-08de22f454a7
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|7416014|36860700013|376014|1800799024|82310400026;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?mXtMV5/UCkdOdvrMLjaFNHQZWbrXpGwXi7UgtIP3Nl/1uYh6sCTcPP7YWUgE?=
+ =?us-ascii?Q?2iBtVF5wkiw+N70NewNHurdSp5jaVdI5eJ98HUV1+7yTgt8TwQi+cgBizRWj?=
+ =?us-ascii?Q?m02gu1qayQtVtyGDiJ3y8jzv9tallz8KsjLTAH30KDYNBCTaStl2flnapjLd?=
+ =?us-ascii?Q?lSYWNG4SSoG0ilpxRrGnLn6OXtjlbNo7KZaeJcVO3uyvAV6+Rhe1F6mW+XGB?=
+ =?us-ascii?Q?pQjo8hedmvjUm/fhjAFeFY0caEjbw/4nu8TBVuOCAqKkIBKmsez1Xy9svOV5?=
+ =?us-ascii?Q?PyyXTW1ZaN7d9dddzkHQGu7pj4DV2fCK1b2tKIVtR6JlgTonAM34X0ANLi0T?=
+ =?us-ascii?Q?Y3HMJ39QQh14Ys9WYhRW0hSTzuB6Xz7EV/JyhG8G3BlJis545laGvDK+3Oqz?=
+ =?us-ascii?Q?ccNgjqZo9L5IAwNiKB9YOOnsNIcHzsFVJEEJhbn6KxoRrIp0i2xWU69uiYbO?=
+ =?us-ascii?Q?8GygGJuOVRrDTNA/hsCjJAHM3iyri6px4ByQ9+SmTya/C+rVPkc4rnCDZX34?=
+ =?us-ascii?Q?ni5XwNAL2m70f2Bl2qvNEZBC5uR8Ydg78v1TOW6lQXUNeJYq+GexLRGaUCPi?=
+ =?us-ascii?Q?Q0jGKCkkVdSczbjZovdJwex5lExBl4J7Jt2ph0oOfdAIuzOc+LhskQ98SzGV?=
+ =?us-ascii?Q?+I4UPfQDqjZq024tcFGpa5DPebpuc2X/hLzijREMSkJ5xrEB+z77nCDp3WZl?=
+ =?us-ascii?Q?RZohFJ8AkuIcuZIigdQmvW6SZ7UKMj4IGs4ZDBdYyQ55oYwAom7z8KNMttDa?=
+ =?us-ascii?Q?N+DvDns07c1yzsi3mBtq/IOsvvbRiZTKgErs2KDUL2PKvAmNDGhMN0O2Y/Hc?=
+ =?us-ascii?Q?6KazNwwYoYDxKITOrYISamV3Al7J/BjPzN/lgX8FZpzmGjpNfLEBN5+njCq0?=
+ =?us-ascii?Q?0GAi+Ewzgfx5NbIC9DCeA/hStQyEcESI8DNyhj9Byzoowgy6gOyQ8k98TDNf?=
+ =?us-ascii?Q?PJy/YlCD2gBpaOgH9O5y3ahYLXyYdcRG1xcU1g6ilPHtYYvy4JHIP7HzFav3?=
+ =?us-ascii?Q?CG2rhE+wfhMsNr9AAbzlSK8YsEwGACTby2gDByYkBZrffw3ma7WQJ5AJDBRg?=
+ =?us-ascii?Q?j2oC2g4ZOO9DQDGhiqAvRvRyJOR4bhFcKVxDJBmf+1XQv/RCojRJJjsgMu/j?=
+ =?us-ascii?Q?c5ipbA9E/X6CAJHdQsgjtJg++9lpzHzGSdnLRw5N7cn41rTJdBcQoKlOBrvO?=
+ =?us-ascii?Q?4G5eSJUcfRHW6jj+cZdS4rgDOJ9M42WYgNNdKkK2eqDWinSMwbvgh2rGQp3U?=
+ =?us-ascii?Q?kSh/rREuMLIM17R3rephJ8aazMaTvmfEbK/jxYdGBKyDstJ+oq/ve1X2GzwE?=
+ =?us-ascii?Q?ebXUDxxV0lb4ZDm9s3uKFhkZEa1BDeWWPbzRyiFkmp5s1clRiNq4A+qHHfdV?=
+ =?us-ascii?Q?i7KPFGxNmUj8B9zcTXyuRIJke41jIX7XaY+ATEHgwlD+Nva9pTQSvlyzBqra?=
+ =?us-ascii?Q?qlhVBxMSZwFfuYsW3OG5yyBybkQbtnYKmcysl1Yoc6Hrr2xt6YkHRDRP1nPJ?=
+ =?us-ascii?Q?YNHTTvbgRwExmZR3/MVXI+sdi+S8AlxuiWuX5cxonTjhzBIk/pacikYhCaUt?=
+ =?us-ascii?Q?fhrNmfh72UmX5RxXhdw=3D?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(7416014)(36860700013)(376014)(1800799024)(82310400026);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Nov 2025 20:36:31.9358
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 201851a1-1f7f-4156-528b-08de22f454a7
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	MWH0EPF000971E4.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB7452
 
-On 11/13/2025 3:45 PM, Konrad Dybcio wrote:
-> On 11/10/25 5:37 PM, Akhil P Oommen wrote:
->> A8x is the next generation of Adreno GPUs, featuring a significant
->> hardware design change. A major update to the design is the introduction
->> of Slice architecture. Slices are sort of mini-GPUs within the GPU which
->> are more independent in processing Graphics and compute workloads. Also,
->> in addition to the BV and BR pipe we saw in A7x, CP has more concurrency
->> with additional pipes.
->>
->> From a software interface perspective, these changes have a significant
->> impact on the KMD side. First, the GPU register space has been extensively
->> reorganized. Second, to avoid  a register space explosion caused by the
->> new slice architecture and additional pipes, many registers are now
->> virtualized, instead of duplicated as in A7x. KMD must configure an
->> aperture register with the appropriate slice and pipe ID before accessing
->> these virtualized registers.
->>
->> This patch adds only a skeleton support for the A8x family. An A8x GPU
->> support will be added in an upcoming patch.
->>
->> Signed-off-by: Akhil P Oommen <akhilpo@oss.qualcomm.com>
->> ---
-> 
-> [...]
-> 
->> +static void a8xx_aperture_slice_set(struct msm_gpu *gpu, enum adreno_pipe pipe, u32 slice)
->> +{
->> +	struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
->> +	struct a6xx_gpu *a6xx_gpu = to_a6xx_gpu(adreno_gpu);
->> +	u32 val;
->> +
->> +	val = A8XX_CP_APERTURE_CNTL_HOST_PIPEID(pipe) | A8XX_CP_APERTURE_CNTL_HOST_SLICEID(slice);
-> 
-> There's also a BIT(23) value here which is seemingly never set, but
-> perhaps may come in useful for the bigger GPU
-> 
->> +
->> +	if (a6xx_gpu->cached_aperture == val)
->> +		return;
->> +
->> +	gpu_write(gpu, REG_A8XX_CP_APERTURE_CNTL_HOST, val);
->> +
->> +	a6xx_gpu->cached_aperture = val;
->> +}
->> +
->> +static void a8xx_aperture_aquire(struct msm_gpu *gpu, enum adreno_pipe pipe, unsigned long *flags)
-> 
-> "acquire"
+On Wed, Nov 12, 2025 at 06:25:03PM +0000, Suravee Suthikulpanit wrote:
+> @@ -38,10 +40,42 @@ size_t amd_iommufd_get_viommu_size(struct device *dev, enum iommu_viommu_type vi
+>  int amd_iommufd_viommu_init(struct iommufd_viommu *viommu, struct iommu_domain *parent,
+>  			    const struct iommu_user_data *user_data)
+>  {
+> +	unsigned long flags;
+>  	struct protection_domain *pdom = to_pdomain(parent);
+>  	struct amd_iommu_viommu *aviommu = container_of(viommu, struct amd_iommu_viommu, core);
+>  
+> +	xa_init(&aviommu->gdomid_array);
 
-Oops!
+Perhaps init with XA_FLAGS_ALLOC1 since domid can't be 0?
 
-> 
->> +{
->> +	struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
->> +	struct a6xx_gpu *a6xx_gpu = to_a6xx_gpu(adreno_gpu);
->> +
->> +	spin_lock_irqsave(&a6xx_gpu->aperture_lock, *flags);
->> +
->> +	a8xx_aperture_slice_set(gpu, pipe, 0);
-> 
-> Maybe we can add "unsigned long flags[MAX_NUM_SLICES]" to a6xx_gpu
-> to make the API a little more ergonomic.. but maybe that's too much
-> IDK
-> 
-> [...]
-> 
->> +	a6xx_gpu->slice_mask = a6xx_llc_read(a6xx_gpu,
->> +			REG_A8XX_CX_MISC_SLICE_ENABLE_FINAL) & GENMASK(3, 0);
-> 
-> Please define that field in the XML
-This should be more clear in the next rev
+> +static void amd_iommufd_viommu_destroy(struct iommufd_viommu *viommu)
+> +{
+> +	unsigned long flags;
+> +	struct amd_iommu_viommu *entry, *next;
+> +	struct amd_iommu_viommu *aviommu = container_of(viommu, struct amd_iommu_viommu, core);
+> +	struct protection_domain *pdom = aviommu->parent;
+> +
+> +	spin_lock_irqsave(&pdom->lock, flags);
+> +	list_for_each_entry_safe(entry, next, &pdom->viommu_list, pdom_list) {
+> +		if (entry == aviommu)
+> +			list_del(&entry->pdom_list);
+> +	}
 
-> 
-> [...]
-> 
->> +}
->> +
->> +static u32 a8xx_get_first_slice(struct a6xx_gpu *a6xx_gpu)
->> +{
->> +	return ffs(a6xx_gpu->slice_mask) - 1;
->> +}
->> +
->> +static inline bool _a8xx_check_idle(struct msm_gpu *gpu)
->> +{
->> +	struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
->> +	struct a6xx_gpu *a6xx_gpu = to_a6xx_gpu(adreno_gpu);
->> +
->> +	/* Check that the GMU is idle */
->> +	if (!a6xx_gmu_isidle(&a6xx_gpu->gmu))
->> +		return false;
->> +
->> +	/* Check that the CX master is idle */
->> +	if (gpu_read(gpu, REG_A8XX_RBBM_STATUS) &
->> +			~A8XX_RBBM_STATUS_CP_AHB_BUSY_CX_MASTER)
->> +		return false;
->> +
->> +	return !(gpu_read(gpu, REG_A8XX_RBBM_INT_0_STATUS) &
->> +		A6XX_RBBM_INT_0_MASK_RBBM_HANG_DETECT);
-> 
-> Odd parenthesis-alignment (couple times in the file), checkpatch
-> usually mumbles at that
-Not sure about the issue here, but I do run b4 prep --check and didn't
-see any complaints.
+Do we really need the loop? Why not simply do list_del()?
 
-> 
-> [...]
-> 
->> +
->> +void a8xx_flush(struct msm_gpu *gpu, struct msm_ringbuffer *ring)
->> +{
->> +	struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
->> +	struct a6xx_gpu *a6xx_gpu = to_a6xx_gpu(adreno_gpu);
->> +	uint32_t wptr;
->> +	unsigned long flags;
->> +
->> +	spin_lock_irqsave(&ring->preempt_lock, flags);
->> +
->> +	/* Copy the shadow to the actual register */
->> +	ring->cur = ring->next;
->> +
->> +	/* Make sure to wrap wptr if we need to */
->> +	wptr = get_wptr(ring);
->> +
->> +	/* Update HW if this is the current ring and we are not in preempt*/
->> +	if (!a6xx_in_preempt(a6xx_gpu)) {
->> +		if (a6xx_gpu->cur_ring == ring)
->> +			gpu_write(gpu, REG_A6XX_CP_RB_WPTR, wptr);
-> 
-> I think this should use _fenced too, but I guess the preempt detail
-> is just a harmless copypasta
-I have reused a6xx_flush here in next rev.
+> +	spin_unlock_irqrestore(&pdom->lock, flags);
+> +
+> +}
 
-> 
-> [...]
-> 
->> +static void a8xx_set_hwcg(struct msm_gpu *gpu, bool state)
->> +{
->> +	struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
->> +	struct a6xx_gpu *a6xx_gpu = to_a6xx_gpu(adreno_gpu);
->> +	struct a6xx_gmu *gmu = &a6xx_gpu->gmu;
->> +	u32 val;
->> +
->> +	gmu_write(gmu, REG_A6XX_GPU_GMU_AO_GMU_CGC_MODE_CNTL,
->> +			state ? adreno_gpu->info->a6xx->gmu_cgc_mode : 0);
->> +	gmu_write(gmu, REG_A6XX_GPU_GMU_AO_GMU_CGC_DELAY_CNTL,
->> +			state ? 0x110111 : 0);
-> 
-> a840 sets this, a830 sets 0x10111, please confirm which way x2 skews
-This is correct for X2.
+No need of the extra line at the end of the function.
 
-> 
->> +	gmu_write(gmu, REG_A6XX_GPU_GMU_AO_GMU_CGC_HYST_CNTL,
->> +			state ? 0x55555 : 0);
->> +
->> +	gpu_write(gpu, REG_A8XX_RBBM_CLOCK_CNTL_GLOBAL, 1);
->> +	gpu_write(gpu, REG_A8XX_RBBM_CGC_GLOBAL_LOAD_CMD, state ? 1 : 0);
-> 
-> !!state
-> 
-> [...]
-> 
->> +static void a8xx_nonctxt_config(struct msm_gpu *gpu, u32 *gmem_protect)
->> +{
->> +	struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
->> +	const struct a6xx_info *info = adreno_gpu->info->a6xx;
->> +	const struct adreno_reglist_pipe *regs = info->nonctxt_reglist;
->> +	unsigned int pipe_id, i;
->> +	unsigned long flags;
->> +
->> +	for (pipe_id = PIPE_NONE; pipe_id <= PIPE_DDE_BV; pipe_id++) {
->> +		/* We don't have support for LPAC yet */
->> +		if (pipe_id == PIPE_LPAC)
->> +			continue;
-> 
-> This seems arbitrary - one because there are no defines targetting PIPE_LPAC
-> specifcally in the reg lists you shared and two because it would almost
-> certainly not hurt to configure these registers and otherwise not power up
-> the LPAC pipeline
-> 
->> +
->> +		a8xx_aperture_aquire(gpu, pipe_id, &flags);
->> +
->> +		for (i = 0; regs[i].offset; i++) {
->> +			if (!(BIT(pipe_id) & regs[i].pipe))
->> +				continue;
->> +
->> +			if (regs[i].offset == REG_A8XX_RB_GC_GMEM_PROTECT)
->> +				*gmem_protect = regs[i].value;
->> +
->> +			gpu_write(gpu, regs[i].offset, regs[i].value);
->> +		}
->> +
->> +		a8xx_aperture_release(gpu, flags);
->> +	}
->> +
->> +	a8xx_aperture_clear(gpu);
->> +}
->> +
->> +static int a8xx_cp_init(struct msm_gpu *gpu)
->> +{
->> +	struct msm_ringbuffer *ring = gpu->rb[0];
->> +	u32 mask;
->> +
->> +	/* Disable concurrent binning before sending CP init */
->> +	OUT_PKT7(ring, CP_THREAD_CONTROL, 1);
->> +	OUT_RING(ring, BIT(27));
->> +
->> +	OUT_PKT7(ring, CP_ME_INIT, 4);
->> +
->> +	/* Use multiple HW contexts */
->> +	mask = BIT(0);
->> +
->> +	/* Enable error detection */
->> +	mask |= BIT(1);
->> +
->> +	/* Set default reset state */
->> +	mask |= BIT(3);
->> +
->> +	/* Disable save/restore of performance counters across preemption */
->> +	mask |= BIT(6);
->> +
->> +	OUT_RING(ring, mask);
->> +
->> +	/* Enable multiple hardware contexts */
->> +	OUT_RING(ring, 0x00000003);
->> +
->> +	/* Enable error detection */
->> +	OUT_RING(ring, 0x20000000);
->> +
->> +	/* Operation mode mask */
->> +	OUT_RING(ring, 0x00000002);
-> 
-> Should we include the pwrup reglist from the get-go too? I don't think
-> you used the ones you declared in patch 15 (or at least my ctrl-f can't
-> find the use of it)
+> @@ -92,7 +94,60 @@ amd_iommu_alloc_domain_nested(struct iommufd_viommu *viommu, u32 flags,
+>  	ndom->domain.type = IOMMU_DOMAIN_NESTED;
+>  	ndom->viommu = aviommu;
+>  
+> +	gdom_info = kzalloc(sizeof(*gdom_info), GFP_KERNEL);
+> +	if (!gdom_info)
+> +		goto out_err;
 
-yeah. I should remove that for now.
+Missing:
+	ret = -ENOMEM;
 
-> 
-> [...]
-> 
->> +#define A8XX_CP_INTERRUPT_STATUS_MASK_PIPE \
->> +	(A8XX_CP_INTERRUPT_STATUS_MASK_PIPE_CSFRBWRAP | \
->> +	 A8XX_CP_INTERRUPT_STATUS_MASK_PIPE_CSFIB1WRAP | \
->> +	 A8XX_CP_INTERRUPT_STATUS_MASK_PIPE_CSFIB2WRAP | \
->> +	 A8XX_CP_INTERRUPT_STATUS_MASK_PIPE_CSFIB3WRAP | \
->> +	 A8XX_CP_INTERRUPT_STATUS_MASK_PIPE_CSFSDSWRAP | \
->> +	 A8XX_CP_INTERRUPT_STATUS_MASK_PIPE_CSFMRBWRAP | \
->> +	 A8XX_CP_INTERRUPT_STATUS_MASK_PIPE_CSFVSDWRAP | \
->> +	 A8XX_CP_INTERRUPT_STATUS_MASK_PIPE_OPCODEERROR | \
->> +	 A8XX_CP_INTERRUPT_STATUS_MASK_PIPE_VSDPARITYERROR | \
->> +	 A8XX_CP_INTERRUPT_STATUS_MASK_PIPE_REGISTERPROTECTIONERROR | \
->> +	 A8XX_CP_INTERRUPT_STATUS_MASK_PIPE_ILLEGALINSTRUCTION | \
->> +	 A8XX_CP_INTERRUPT_STATUS_MASK_PIPE_SMMUFAULT | \
->> +	 A8XX_CP_INTERRUPT_STATUS_MASK_PIPE_VBIFRESP | \
-> 
-> kgsl also enables VBIFRESTP(TYPE/READ/LIENT)
+> +
+> +	/*
+> +	 * Normally, when a guest has multiple pass-through devices,
+> +	 * the IOMMU driver setup DTEs with the same stage-2 table and
+> +	 * use the same host domain ID (hDomId). In case of nested translation,
+> +	 * if the guest setup different stage-1 tables with same PASID,
+> +	 * IOMMU would use the same TLB tag. This will results in TLB
+> +	 * aliasing issue.
+> +	 *
+> +	 * The guest is assigning gDomIDs based on its own algorithm for managing
+> +	 * cache tags of (DomID, PASID). Within a single viommu, the nest parent domain
+> +	 * (w/ S2 table) is used by all DTEs. But we need to consistently map the gDomID
+> +	 * to a single hDomID. This is done using an xarray in the vIOMMU to
+> +	 * keep track of the gDomID mapping. When the S2 is changed, the INVALIDATE_IOMMU_PAGES
+> +	 * command must be issued for each hDomID in the xarray.
+> +	 */
+> +	curr = xa_cmpxchg(&aviommu->gdomid_array,
+> +			  ndom->gdom_id, NULL, gdom_info, GFP_ATOMIC);
+> +	if (curr) {
+> +		if (xa_err(curr)) {
+> +			ret = -EINVAL;
+> +			goto out_err_gdom_info;
+> +		} else {
+> +			/* The gDomID already exist */
+> +			pr_debug("%s: Found gdom_id=%#x, hdom_id=%#x\n",
+> +				 __func__, ndom->gdom_id, curr->hdom_id);
+> +			refcount_inc(&curr->users);
+> +			ndom->gdom_info = curr;
 
-Ack
+This looks racy..
 
-> 
-> [...]
-> 
->> +	/* Setup GMEM Range in UCHE */
->> +	gmem_range_min = SZ_64M;
-> 
-> this doesn't seem to ever change, you can inline it
+When a gDomID is shared between two nested domains, a concurrent
+nested_domain_free() could enter before refcount_inc(), and call
+refcount_dec_and_test() or even free the curr and ndom.
 
-fwiw, this documents the magic number. ;)
+Then, this refcount_inc() will blow up, or curr/ndom will UAF.
 
--Akhil
+Actually, I don't see where amd_iommu_alloc_domain_nested() gets
+used in this series.. I assume AMD will use the iommufd's vIOMMU
+infrastructure directly which doesn't mutex across nested domain
+allocation/free calls.
 
-> 
-> [...]
-> 
->> +static void a8xx_dump(struct msm_gpu *gpu)
->> +{
->> +	DRM_DEV_INFO(&gpu->pdev->dev, "status:   %08x\n",
->> +			gpu_read(gpu, REG_A8XX_RBBM_STATUS));
-> 
-> This can be a single line
-> 
-> Konrad
+So, the entire thing here should hold xa_lock(), use xas_load()
+for the existing curr and use xas_store() to store gdom_info if
+!curr, and xa_unlock() after gdom_info is fully initialized.
 
+> +			kfree(gdom_info);
+> +			return &ndom->domain;
+> +		}
+> +	}
+> +
+> +	/* The gDomID does not exist. We allocate new hdom_id */
+> +	gdom_info->hdom_id = amd_iommu_pdom_id_alloc();
+> +	if (gdom_info->hdom_id <= 0) {
+> +		xa_cmpxchg(&aviommu->gdomid_array,
+> +			   ndom->gdom_id, gdom_info, NULL, GFP_ATOMIC);
+> +		ret = -ENOSPC;
+> +		goto out_err_gdom_info;
+> +	}
+> +
+> +	refcount_set(&gdom_info->users, 1);
 
+Similar risk here. gdom_info is stored to the xarray before this
+line. A concurrent amd_iommu_alloc_domain_nested() could get the
+stored gdom_info and blow up at refcount_inc().
+
+Make sure the entire thing is locked and safe.
+
+Nicolin
