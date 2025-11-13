@@ -1,87 +1,87 @@
 Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D923432C930
-	for <iommu@lists.linux.dev>; Thu, 13 Nov 2025 23:30:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 870C132A3CC
+	for <iommu@lists.linux.dev>; Thu, 13 Nov 2025 23:30:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763076635; cv=none; b=M3cRtaWF6nL/yqljOgWZHlIa3qo06Km5RwoQaJCFA6m1BmsRj4jK17e3oXPtH/dj2GgTx00AelNKqqlCHEVgATdmwJnPqyFnm8dXm3IQEZVQjTem1RjWMCsI1w5C37BwH+DqWufjjkgo1WuvNH3mw0CHZDpEB4hyIE/TSXyluFw=
+	t=1763076641; cv=none; b=hc93qen7o3Dk4FAciSzpI4Y0X3h/elU0+acumSfTDLRFmTtwTocFGQfJRvxKujIY+/iqDcwocPDTMixIWH5wtnoUMITsndsrK77xYYxjjs4EmiMaVNzyXgnby8vaQv/YvKVLKK9Hmb/977pI94BUpnFgZzfKqa6KV0DxYvyagrI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763076635; c=relaxed/simple;
-	bh=IGpokplXYyShZVLotE0neZI18HJLZ3KUnvDyUGOCvso=;
+	s=arc-20240116; t=1763076641; c=relaxed/simple;
+	bh=aLTgU8jaf8pYFojJF1knRYGUYls1un+XUkalxDsrrq0=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=FLGIhfVAE2EMrfL7RZNeLL+tdtKGSJWw2bhFZxYy0ya6NHZjxdbEur+cUJJ2yny8bTQCrQlK+kx5tVbcNI34cWCkHpqCDb18yZbxjZl3rQKWF54kJnMVjQyjoLTjrGl77CKJWirqZtbW7asUENKFqM+rOQsEQFXnV64O6xhbLLw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=ImtBloQj; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=e4IaDfb7; arc=none smtp.client-ip=205.220.168.131
+	 In-Reply-To:To:Cc; b=ls51UP3YYYn556bL+A7yHFGGWMkYP8cmIAEOP9GM7UJnqYNBjMCzIMs+9UNCLmYDM2ksWPIeN0MfsFXYfBlICzcfPDgbHeYOcSDFXU04cW9vF+sTEGQLy9+y/5dLdUw9DC6xb1C93s6gF0742PcGrXcMGo4OsZvMoW1KiW3dryo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=BfMAHJwY; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=Tux9TbHP; arc=none smtp.client-ip=205.220.168.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="ImtBloQj";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="e4IaDfb7"
-Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 5ADMar0D1484923
-	for <iommu@lists.linux.dev>; Thu, 13 Nov 2025 23:30:31 GMT
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="BfMAHJwY";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="Tux9TbHP"
+Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 5ADMakbX1703675
+	for <iommu@lists.linux.dev>; Thu, 13 Nov 2025 23:30:38 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
 	cc:content-transfer-encoding:content-type:date:from:in-reply-to
 	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	gcf5l/K/LPI1X3Fga8TbV7X9VmsrDisI7kJ0hOFQ884=; b=ImtBloQjs3VbC6QK
-	+PNa3ucCYR4LChcWkDL/0pay7FCkI0Fitv0oEgepxh7a/E3b6ekwOE+DGRXVibez
-	X7soR84lC1lKKXaCC2LPLCF9klr0oQeh7LByi5aTu6q+Ism8XJZPw2J/w9lWfy6S
-	dQsLilzzvYJ7gnyNxXYr6Y180sB04B6Psjr94kBYn1woDUMeaG+bqj8l3LJ8kGs6
-	Aai/RoKT1uX97Gqtp4lvZVVW2tE3qAUjybkZz3hWqpP9cIhgNMcxdbY+LKtoliYT
-	aI93A+BVCxjvtZMd46+GH/lXu9lnC4+DJO58L1Is55xfTOpguZfkgGeG75LJI0DO
-	+gSemw==
-Received: from mail-pf1-f200.google.com (mail-pf1-f200.google.com [209.85.210.200])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4adr9cg45c-1
+	hhSbfQfsXDYo5k86Qy1lI4a/r5FL2WPHyWoclA524Ig=; b=BfMAHJwY5fxflr8P
+	IXw0KyTixDRZMxONIjC8C5SVj9SF0YbfculQH5Q4xUy5qHHqli1kA7y5jhD20O/c
+	pUG5GfnGViNRoG4LxV/HVdrwP8NKJvlgoN9gT6S0ZmHxCETGdfmjQquvxqaeWJm6
+	us0rc7eUJM7sSh+2yEuhjeu+nOYohKRDFDS5kttL58rDPgbqdgEo5lJk/HUCCqvR
+	iMBfrQWPMspWTEx+O//AyKxez+HIvs6zB1eHQsAs3vzGZ6KeXVIHNv+aB1NZRqY1
+	0BdPBPDkMx/HsPhy93CyflRAd4f2rNqtLfjHQDqNY2Sd5WH/l7N14hm5rau/zu7A
+	jSkYbQ==
+Received: from mail-pf1-f199.google.com (mail-pf1-f199.google.com [209.85.210.199])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4adr9e83xu-1
 	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Thu, 13 Nov 2025 23:30:31 +0000 (GMT)
-Received: by mail-pf1-f200.google.com with SMTP id d2e1a72fcca58-78117fbda6eso1271534b3a.3
-        for <iommu@lists.linux.dev>; Thu, 13 Nov 2025 15:30:31 -0800 (PST)
+	for <iommu@lists.linux.dev>; Thu, 13 Nov 2025 23:30:38 +0000 (GMT)
+Received: by mail-pf1-f199.google.com with SMTP id d2e1a72fcca58-7b8ed43cd00so1720237b3a.2
+        for <iommu@lists.linux.dev>; Thu, 13 Nov 2025 15:30:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1763076631; x=1763681431; darn=lists.linux.dev;
+        d=oss.qualcomm.com; s=google; t=1763076638; x=1763681438; darn=lists.linux.dev;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=gcf5l/K/LPI1X3Fga8TbV7X9VmsrDisI7kJ0hOFQ884=;
-        b=e4IaDfb7ssQ1VAng4Si/KnfBFg4pEzbAUKxcKVAfedMDVZX7ztMk9AurP69pmy2oOe
-         9n+CAPXABWI3MqFpOl7/wQHkcU1sG/WK/oB0ybMZTr8XKn/EgGZeTSjQYDJPkdIE2528
-         cjRa6LhQc3tZaCdYJ7MONyeTfvyxi/rvSxU08Y6K9GGwzKVdBmbUEVKl/x8oTZ59oOCw
-         FJ2lcw44MHOkruVPVm0t0JUU4NL1t7ubk1t4l8IRPXtmq8tr9+Jp8c1lmCFt+9XF38lA
-         A6UaSQQljM6x0xiqlzHJFOpDVAgj2VgXVVAOIj6sMj7NJcAxc9LH0d8+HUwxLelvKBS7
-         baWw==
+        bh=hhSbfQfsXDYo5k86Qy1lI4a/r5FL2WPHyWoclA524Ig=;
+        b=Tux9TbHPoGQac82rnwAgY7dei3w6qpuVUSrthTkXFh7hwNq6VRyI+htDSXiRwCW6Js
+         6CJSHbg8JTtl90s5YYBzxypxqcYjFh/JCJRCq/LsOHVwmLwnEDptK+annd2FK79CO8RW
+         5e/f2a59TYyTp0Me36JlH6ahYZ+KVwt9TV957k6SVwtzHkjBwueYP8zn3Yn57bo68JSj
+         aNpMr0NrY1O4ftLq8uKS41eamuNZFux6UZFhF9dr2+EB1UcFHa08uM2RH0p537eWhLWf
+         aQJZqVlVeKqpYmaMMQGjxE/M5NLG7GdbDDHlYiZs2sRp7Nkh7WXUyGAUV/BOHdkfABdm
+         4r9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1763076631; x=1763681431;
+        d=1e100.net; s=20230601; t=1763076638; x=1763681438;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=gcf5l/K/LPI1X3Fga8TbV7X9VmsrDisI7kJ0hOFQ884=;
-        b=jXas6Hpoh4wYsH5vYbWyG7h9B0SMvndHgqUsWf2ITR08JlrEIDri20EGNebFJa9jM+
-         lihYSr/Vo9ECFnfq1dKUSJk9hD5Pw7A4Lam+XjoQSL7bWFx8kkrEGCjmrON5kNNYJ2it
-         FwSbzBOovK/4upKGSYJva5GY43ddJ5qAWojgAY3XR0dOxkSLP9m6zh+YxXAcJK+ccycb
-         ty9LinWhFCcDEu8pRHFil0yfagK3/E5SUDy9RzxTm+K88SL1YBAt+9QSkvGC0dYxgPkm
-         s/6KNNbWAWASjSRww1WXvg+e9xr8dFSGvo6intU4VtGY+okU6UUFlm1YqIiaLh8gK5ho
-         h8fw==
-X-Forwarded-Encrypted: i=1; AJvYcCWAHjGc3qapeQCGfpYIfDEnTPhVQZ1lCMM8zBEN//ZQXaOD4mpx8thbX7tGythignIKAcKPfw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxB7PFTODNepNC5xjm7slhAdD6rOiUJCMWdc9qEzXMErRaGoCES
-	St7KIzlzjnx5XnulS3TUzZgL7O2eXeiXlA01xyDRf9kkchHO/z01zuNCjmI8bRq3HqAUUS0WaBi
-	p3DJ5lholMAb6yJw4w91tsUusoSRfIDHT8KRDJDhuN3NA6Yku1pkfe8kEmQ==
-X-Gm-Gg: ASbGncvmXU4iuefA6RRkxujGOsfGOBNYEMau3P7s3jOWXW+g8LEVVHsyNDhx8M0yV+d
-	9J8SEPtHlP5fj0L1HSv7VQ+gjGXw+VhpC8ZtYEyEhu8oNea28YFQ6xPSDlVuORa77IqSCCZu8wQ
-	cnCizNOPqlwEIucNYCGq9blKb5JP0A5mI3+oaZzLtF6UlksO12GTEQD/ikQmmOkR2JeBow1lEOm
-	wjFNPBe8NiFlJzytXrIannASIEDCp/h+QUQ2u2fTpgf2+TfbSiPEo7PHzbMFB7SiW20NQU4+A8Q
-	OMEqGCB9FpRPqldRPLV231wXTmzMtb6ns+5bowiHg9omODZNYabJleraEX+tQjOivCz0H7mYnFp
-	MxJIhvcXQ7cap2GuaVDU8Xso=
-X-Received: by 2002:a05:6a20:7f81:b0:334:7bce:8394 with SMTP id adf61e73a8af0-35ba2c7f49fmr1558601637.51.1763076630336;
-        Thu, 13 Nov 2025 15:30:30 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IFF7D8yPEUPkp+NbY22BN0Y1kfgJd40q6G3P0giPrxIE2bqHGm6311EF07g9YkzAqUjbYGJXQ==
-X-Received: by 2002:a05:6a20:7f81:b0:334:7bce:8394 with SMTP id adf61e73a8af0-35ba2c7f49fmr1558536637.51.1763076629730;
-        Thu, 13 Nov 2025 15:30:29 -0800 (PST)
+        bh=hhSbfQfsXDYo5k86Qy1lI4a/r5FL2WPHyWoclA524Ig=;
+        b=hMwtrexZv2d6pxdrXnloEwWlR7kslDTd1tvKdXbHFje/gP8l0t7DH2agnFAfz1RjrO
+         hJfastwNio2IbwKjHWQw/vIqGocFOXfhJnWmV+7ll/MRCgmlS6NHkfqLGFECQ0BrMt/K
+         pTDQCErjg/4AWm0UyCvXNv7S0fUV8SBqDso41aD+DLJFk+B0YpRn2StgqNxIGMu5olwQ
+         tMrz2G+Fl0Dj1b8zKKakx+hHUHNRdT2/N07goPfqe+zkjLQkFYAsA79Y7SzqZQRPh+O4
+         eN6Bl6BjS5R8Uk3lS7onCKz1ylrEW/cBp/VNznmM4TJ0YDo5VSs4v8TtaE38NtSTfKQe
+         Ld2w==
+X-Forwarded-Encrypted: i=1; AJvYcCUvkbheGSxoz+LXb2YG2vhDPk3qJM2N30TGETiE5zrM7WPq8EfdMw7fL1PTZigSEz04jhxb/g==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzhD3kNNDUaA+V+Jr9y5WWeF6c6UgQAYwDKY6213QdLX1XKBZNy
+	/qCPYi2ZXPfP0n1doX+CjiEicbklNUTsAUS6Dgx1evhLLnXkR+7DDhp1gO2LEiCP/oK0NVvb2rr
+	fpfZ3CwIB/PmMO5weZr8HAK7Er5+UZXOCpxMZCaG2/McTIgrTo1oKN2GAuA==
+X-Gm-Gg: ASbGncvC2K2yc+KM6GpoKK9P9mpJK2kCZD6Penen0uL5UAC2T35pER+APUG4O+MPrKK
+	3ZfQREmS+1i6gCGjClT9El1dTcu+3M4L1bMiXJq1aBEkrMVwtzhQ2Vp44brEfTVkS1wLf6EovGV
+	oPmxnGBSYJKUiFTWIba66mGtgMlGRb1e9Aw6yhUvvun1eoFW9TKiVZ41+S/bSAIf4b7hLUyYZQZ
+	/FLd+OFmIZUnBbgLhPKARx81ukUt5CohNBcwyIQIrfl1mBIjZOMJBxz9StkLziQf+WcQzC2CGRx
+	Yd/y1TpDhQO3wAHG8+BNCa0Stpo2bR1xikPUV7/pGPV0aizFiFvMc5NHymkBhKM2ERbND4ucOUh
+	qkVB2wdbKISh1ekyH/h5H9Ss=
+X-Received: by 2002:a05:6a21:6d85:b0:334:95d7:3305 with SMTP id adf61e73a8af0-35ba22a4e5cmr1764926637.28.1763076637807;
+        Thu, 13 Nov 2025 15:30:37 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IHEn2fDftnkPr0EHpOpGMZQLIPAqXnlxWXCkdgBWD+7nx4rt/A++vHmEwuulwWe68hN+6xKeg==
+X-Received: by 2002:a05:6a21:6d85:b0:334:95d7:3305 with SMTP id adf61e73a8af0-35ba22a4e5cmr1764869637.28.1763076637246;
+        Thu, 13 Nov 2025 15:30:37 -0800 (PST)
 Received: from hu-akhilpo-hyd.qualcomm.com ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-bc36ed72cd1sm3049486a12.11.2025.11.13.15.30.22
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-bc36ed72cd1sm3049486a12.11.2025.11.13.15.30.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Nov 2025 15:30:29 -0800 (PST)
+        Thu, 13 Nov 2025 15:30:37 -0800 (PST)
 From: Akhil P Oommen <akhilpo@oss.qualcomm.com>
-Date: Fri, 14 Nov 2025 04:59:03 +0530
-Subject: [PATCH v3 06/20] drm/msm/adreno: Move gbif_halt() to
+Date: Fri, 14 Nov 2025 04:59:04 +0530
+Subject: [PATCH v3 07/20] drm/msm/adreno: Add MMU fault handler to
  adreno_gpu_func
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -91,7 +91,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20251114-kaana-gpu-support-v3-6-92300c7ec8ff@oss.qualcomm.com>
+Message-Id: <20251114-kaana-gpu-support-v3-7-92300c7ec8ff@oss.qualcomm.com>
 References: <20251114-kaana-gpu-support-v3-0-92300c7ec8ff@oss.qualcomm.com>
 In-Reply-To: <20251114-kaana-gpu-support-v3-0-92300c7ec8ff@oss.qualcomm.com>
 To: Rob Clark <robin.clark@oss.qualcomm.com>,
@@ -118,123 +118,91 @@ Cc: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
         devicetree@vger.kernel.org, Akhil P Oommen <akhilpo@oss.qualcomm.com>,
         Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1763076574; l=3572;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1763076574; l=2452;
  i=akhilpo@oss.qualcomm.com; s=20240726; h=from:subject:message-id;
- bh=IGpokplXYyShZVLotE0neZI18HJLZ3KUnvDyUGOCvso=;
- b=NVUVcDEzAp6sPGf+/YDVc97AOPQtMk6i7AKTEir8UVywiJ16mJrlqBXgy1BYJHHWn73Ng1nrJ
- TotY0EkaIRQAalvppoalIedeEivFRiO8/utpOvZ946ECcbG8esPdnuq
+ bh=aLTgU8jaf8pYFojJF1knRYGUYls1un+XUkalxDsrrq0=;
+ b=Tk4URntM++zmLSb6MOWmkLrsE9HFNdTk7nCYDUKwhHi9SospA9oJhyJsDSjF4eU3RjzsTrddk
+ U5TuaRXL3yADupie5aIE/4U2SHV05LRHE+SWVpJw7MFgF3uJWO4lapH
 X-Developer-Key: i=akhilpo@oss.qualcomm.com; a=ed25519;
  pk=lmVtttSHmAUYFnJsQHX80IIRmYmXA4+CzpGcWOOsfKA=
-X-Proofpoint-GUID: 3UGQ18HxBHyxi3VVRbmLnpl3SfhQH6qd
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMTEzMDE4NSBTYWx0ZWRfX5wxT7fpMfAEj
- 3dLZsajAOOJ4VuYC69kUisAQqF0VrizKw5tJ2tZOwVRSleVj2+Z5bHo/DkApdeBL/JdoN9CqXo9
- gzriUBg0tsywWbMmaUhP0a2X1Zwxh7cKGxH68s7xM6f3Cyk9JIo9A/udDb1b6AZ5jMBuJ0FvybF
- eQ23X3gwb65IDYVQrUQ2gxvMuuwhae6w25KTTdFCfPsMfrQTf5g9QaWxegcyKUF1EhsJOenYHuH
- t5D8NAMPsKWj24D2HJXuaqHsQJrkngjLaZNaQ+GWtYGoFWnoIm7IMtxA7NhGJabNb4cC7A5K4dc
- ImJML4x6wkBiiQQlNin4aawKHRzL1nyMxKm/JZ81TB6A+g1QTtUbAuclbrkjOW+iL/Toe8FZOk4
- wZk7XlM+ysBjBKSsnhi0tmwyzOGuMg==
-X-Authority-Analysis: v=2.4 cv=MNdtWcZl c=1 sm=1 tr=0 ts=69166a17 cx=c_pps
- a=mDZGXZTwRPZaeRUbqKGCBw==:117 a=ZePRamnt/+rB5gQjfz0u9A==:17
+X-Authority-Analysis: v=2.4 cv=ccPfb3DM c=1 sm=1 tr=0 ts=69166a1e cx=c_pps
+ a=WW5sKcV1LcKqjgzy2JUPuA==:117 a=ZePRamnt/+rB5gQjfz0u9A==:17
  a=IkcTkHD0fZMA:10 a=6UeiqGixMTsA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=EUspDBNiAAAA:8 a=W_sW28Yvd0frASqVc48A:9
- a=+jEqtf1s3R9VXZ0wqowq2kgwd+I=:19 a=QEXdDO2ut3YA:10 a=zc0IvFSfCIW2DFIPzwfm:22
-X-Proofpoint-ORIG-GUID: 3UGQ18HxBHyxi3VVRbmLnpl3SfhQH6qd
+ a=VkNPw1HP01LnGYTKEx00:22 a=EUspDBNiAAAA:8 a=i9YFFn0sWQDpYGFnbDoA:9
+ a=QEXdDO2ut3YA:10 a=OpyuDcXvxspvyRM73sMx:22
+X-Proofpoint-GUID: 3DokNy_-4Lfudv2SxEx3GX1AOMyo3Cdk
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMTEzMDE4NSBTYWx0ZWRfX4F0sLmuA3zMx
+ iHeOk/b62UTCOnDfY6wpFIElrMWX1F4oBUDDmGhp0/ZES7YRrx7uJraI5cNDt4H/bpU0zNdamdl
+ iEa3LN729v2FesBN5cwFtSidIm8aAMvW2tFsFluVgC/t7EvOyc38UTCx2uHeZXleC9wGEmQexyQ
+ r59DCHmoPVTYQR0UrFOlbSyP3LlE9lmoK9XY9YXrzgj8dhD1xejelArvKINdgL2NEnM4vDrI4JZ
+ DKGv6knizHmvu7nY7w3ddRIqLEBEh6PShamHUYIIK981fKtyjSxwF3/MZ0Y29hYsf2An75bEcjM
+ zsYwe1RU8sckTqVMX8W8oVCqh9yfOe744DDfCUee244VLkPVCfzDe1X87S69enFKXNqxrzr1kBL
+ WWwUJ+8ciDb8Fp2NRcLPcS8MusPxRA==
+X-Proofpoint-ORIG-GUID: 3DokNy_-4Lfudv2SxEx3GX1AOMyo3Cdk
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.9,FMLib:17.12.100.49
  definitions=2025-11-13_06,2025-11-13_02,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- impostorscore=0 suspectscore=0 priorityscore=1501 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 adultscore=0 malwarescore=0 phishscore=0
+ bulkscore=0 suspectscore=0 priorityscore=1501 phishscore=0 impostorscore=0
+ malwarescore=0 spamscore=0 lowpriorityscore=0 adultscore=0 clxscore=1015
  classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
  reason=mlx scancount=1 engine=8.22.0-2510240001 definitions=main-2511130185
 
-Move the gbif halt fn to adreno_gpu_func so that we can call different
-implementation from common code. This will come handy when we implement
-A8x layer.
+Move MMU fault handler for each generation to adreno function list. This
+will help to use common code for mmu pagefault handler registration between
+a6x/a7x and a8x layer.
 
 Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
 Signed-off-by: Akhil P Oommen <akhilpo@oss.qualcomm.com>
 ---
- drivers/gpu/drm/msm/adreno/a6xx_gmu.c   | 4 ++--
- drivers/gpu/drm/msm/adreno/a6xx_gpu.c   | 7 +++++--
+ drivers/gpu/drm/msm/adreno/a6xx_gpu.c   | 5 ++++-
  drivers/gpu/drm/msm/adreno/adreno_gpu.h | 1 +
- 3 files changed, 8 insertions(+), 4 deletions(-)
+ 2 files changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gmu.c b/drivers/gpu/drm/msm/adreno/a6xx_gmu.c
-index 605bb55de8d5..306fc08492e4 100644
---- a/drivers/gpu/drm/msm/adreno/a6xx_gmu.c
-+++ b/drivers/gpu/drm/msm/adreno/a6xx_gmu.c
-@@ -1053,7 +1053,7 @@ static void a6xx_gmu_force_off(struct a6xx_gmu *gmu)
- 	/* Halt the gmu cm3 core */
- 	gmu_write(gmu, REG_A6XX_GMU_CM3_SYSRESET, 1);
- 
--	a6xx_bus_clear_pending_transactions(adreno_gpu, true);
-+	adreno_gpu->funcs->bus_halt(adreno_gpu, true);
- 
- 	/* Reset GPU core blocks */
- 	a6xx_gpu_sw_reset(gpu, true);
-@@ -1225,7 +1225,7 @@ static void a6xx_gmu_shutdown(struct a6xx_gmu *gmu)
- 	if (ret)
- 		goto force_off;
- 
--	a6xx_bus_clear_pending_transactions(adreno_gpu, a6xx_gpu->hung);
-+	adreno_gpu->funcs->bus_halt(adreno_gpu, a6xx_gpu->hung);
- 
- 	/* tell the GMU we want to slumber */
- 	ret = a6xx_gmu_notify_slumber(gmu);
 diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-index e9a0ee1262cc..9c6af226b076 100644
+index 9c6af226b076..685763c12690 100644
 --- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
 +++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-@@ -1580,7 +1580,7 @@ static void a6xx_recover(struct msm_gpu *gpu)
+@@ -2615,7 +2615,7 @@ static struct msm_gpu *a6xx_gpu_init(struct drm_device *dev)
+ 	adreno_gpu->uche_trap_base = 0x1fffffffff000ull;
  
- 	if (adreno_has_gmu_wrapper(adreno_gpu)) {
- 		/* Drain the outstanding traffic on memory buses */
--		a6xx_bus_clear_pending_transactions(adreno_gpu, true);
-+		adreno_gpu->funcs->bus_halt(adreno_gpu, true);
+ 	msm_mmu_set_fault_handler(to_msm_vm(gpu->vm)->mmu, gpu,
+-				  a6xx_fault_handler);
++				  adreno_gpu->funcs->mmu_fault_handler);
  
- 		/* Reset the GPU to a clean state */
- 		a6xx_gpu_sw_reset(gpu, true);
-@@ -2291,7 +2291,7 @@ static int a6xx_pm_suspend(struct msm_gpu *gpu)
- 	mutex_lock(&a6xx_gpu->gmu.lock);
- 
- 	/* Drain the outstanding traffic on memory buses */
--	a6xx_bus_clear_pending_transactions(adreno_gpu, true);
-+	adreno_gpu->funcs->bus_halt(adreno_gpu, true);
- 
- 	if (adreno_is_a619_holi(adreno_gpu))
- 		a6xx_sptprac_disable(gmu);
-@@ -2659,6 +2659,7 @@ const struct adreno_gpu_funcs a6xx_gpu_funcs = {
- 	},
+ 	ret = a6xx_calc_ubwc_config(adreno_gpu);
+ 	if (ret) {
+@@ -2660,6 +2660,7 @@ const struct adreno_gpu_funcs a6xx_gpu_funcs = {
  	.init = a6xx_gpu_init,
  	.get_timestamp = a6xx_gmu_get_timestamp,
-+	.bus_halt = a6xx_bus_clear_pending_transactions,
+ 	.bus_halt = a6xx_bus_clear_pending_transactions,
++	.mmu_fault_handler = a6xx_fault_handler,
  };
  
  const struct adreno_gpu_funcs a6xx_gmuwrapper_funcs = {
-@@ -2689,6 +2690,7 @@ const struct adreno_gpu_funcs a6xx_gmuwrapper_funcs = {
- 	},
+@@ -2691,6 +2692,7 @@ const struct adreno_gpu_funcs a6xx_gmuwrapper_funcs = {
  	.init = a6xx_gpu_init,
  	.get_timestamp = a6xx_get_timestamp,
-+	.bus_halt = a6xx_bus_clear_pending_transactions,
+ 	.bus_halt = a6xx_bus_clear_pending_transactions,
++	.mmu_fault_handler = a6xx_fault_handler,
  };
  
  const struct adreno_gpu_funcs a7xx_gpu_funcs = {
-@@ -2721,4 +2723,5 @@ const struct adreno_gpu_funcs a7xx_gpu_funcs = {
- 	},
+@@ -2724,4 +2726,5 @@ const struct adreno_gpu_funcs a7xx_gpu_funcs = {
  	.init = a6xx_gpu_init,
  	.get_timestamp = a6xx_gmu_get_timestamp,
-+	.bus_halt = a6xx_bus_clear_pending_transactions,
+ 	.bus_halt = a6xx_bus_clear_pending_transactions,
++	.mmu_fault_handler = a6xx_fault_handler,
  };
 diff --git a/drivers/gpu/drm/msm/adreno/adreno_gpu.h b/drivers/gpu/drm/msm/adreno/adreno_gpu.h
-index 2c8b38eae7b6..19a1a1f699bc 100644
+index 19a1a1f699bc..34b09cb127ed 100644
 --- a/drivers/gpu/drm/msm/adreno/adreno_gpu.h
 +++ b/drivers/gpu/drm/msm/adreno/adreno_gpu.h
-@@ -77,6 +77,7 @@ struct adreno_gpu_funcs {
- 	struct msm_gpu_funcs base;
+@@ -78,6 +78,7 @@ struct adreno_gpu_funcs {
  	struct msm_gpu *(*init)(struct drm_device *dev);
  	int (*get_timestamp)(struct msm_gpu *gpu, uint64_t *value);
-+	void (*bus_halt)(struct adreno_gpu *adreno_gpu, bool gx_off);
+ 	void (*bus_halt)(struct adreno_gpu *adreno_gpu, bool gx_off);
++	int (*mmu_fault_handler)(void *arg, unsigned long iova, int flags, void *data);
  };
  
  struct adreno_reglist {
