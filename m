@@ -1,155 +1,300 @@
-Received: from BYAPR05CU005.outbound.protection.outlook.com (mail-westusazon11010032.outbound.protection.outlook.com [52.101.85.32])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB1E3328B57;
-	Thu, 13 Nov 2025 23:29:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.85.32
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763076544; cv=fail; b=Twv+vg+aKDO7J3skBy6AFBu8SPsclIYTxS7M9aowWxtHZdclboHlCFlUyOY1OTs75cR0mdfTXUl53eAv57pXYTFHtx2k2eZsEGKp7WivHAplJWj+CpEFBBWYhi8gI3sPj83nlIkLHZU7WSHyuK79jJUgdXJwv3m1E4RSAJok4fc=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763076544; c=relaxed/simple;
-	bh=3xCt7NBw5VJCjX8U8s3WQndogEyhFMbeUhivJEweqvQ=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=IIgVwaO9//5DbI//R4KZuWgpiM40eff41ac/Db5JcFrzxjQO/1h2i5kb/fu/pA8RmMvPv1TqBsvDp82A9xUYVHITTULXQtlgusg4bUPf97iWN5P8ETnDbQfR24w1z9TqCYkLw2Zg51mfQ6X8bK8oxNwyOm6S85wJ5tY4BD6gHIc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=CtkifwCj; arc=fail smtp.client-ip=52.101.85.32
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FF63328B50
+	for <iommu@lists.linux.dev>; Thu, 13 Nov 2025 23:29:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1763076587; cv=none; b=f/qQK9KxhsoCHqIpPkR0Gj5RIim85cBYHN17rGmbo61FCmtsAR5IBoyhyfDZVwiDldDaKJM7KXIvc9WiYG9BvO8cqU/gJ/9vxm2hkuacIJjYytEqbrN9XehXrKgTaOfiDTsuQfS6x56xHrOxAk+hIDFH6gITSheNT0GhTdepTI8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1763076587; c=relaxed/simple;
+	bh=J+VkJjrkoaNRlDaKnTG93cqZ7QXfLD1gOTCZPhZm8Z4=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=n5RL1NQTTc1Yl2aDQOm6HHcuS6936pEc9Zy3L1P5dcQJmdfofuFjhblKYkLIrDATk4BJNuynN7v+QUH4V1diZhU8hLwP5SuPiPp+vkpN3x/dMy5uOc4TRqbx5qh9xqKoTH3Wor7nimMu6HNzVKV0DHnhnJ6a2KW5xdI2NaYA3iE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=HZtJVv3J; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=Z2mKo1XV; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="CtkifwCj"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=w3FsTNDy1CckLk2d62tMZp8PacgqqlTIwHk7MFi+qQBS9JLwZlZNxXTUcFHmxmYTHeJZAz0k/4pgbiN1Q4wDdVt6uxf88jkGUlzOXGS0TlcXV6opikaqIVNe9oniXkGtn4xiLoUuMEG/641B/46MJ0Q6wM7GkXK6QFua8mBKZnPZOhLG7uQbkb8iUgE2may6ZildP8aDTbVSY9nwFNPsihGe1IP7XGIhQwQDhjDyGoMfYlfhZ4SLzf4Ht57AUUIkaB4LnYQv2nUGrjxJCnxOyRFvEoThZS3YrOUER+ZRpDYipt8HpuZhyYdOUT4w4dVw6YKdbyvU1Rs8yKva2CB+tw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9WmMZWL8CXvh2Bb/VvJrY0DIjLzzelgHlIEeavOKrhw=;
- b=WVXI1Kqv/g5Gy0k9mrO7RNv9vGbbNZaV7X/+fgV+G5+vrVkCc5hjbdGiUQrxr8AtdzHgeExkh3VP3HjCtVYjwdYGIAXQvWzQJrBUMDRpInYEyDZTnxEtl2fdAfAOKWyO9slvTyQrzbKyE9Vzg6Z5Pq5+b2OwHwR7CPYg04OxV/WEPcD+slKkALxkzJ5JSPS9JAd/+n4f/KtXvNd2Ex9C4UIRfIaXL13hBe2ie4/lyl3hXpBjASk7WJ1NDL3qHRcNMgfsR4rPIGJjcObMEYUYnNSw8lucsCaK3Jz4AVUn5gqF3FmQzaO+xXFndxH7R37DphRVZDz3UTtO5Pe/kmPdkw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=ffwll.ch smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9WmMZWL8CXvh2Bb/VvJrY0DIjLzzelgHlIEeavOKrhw=;
- b=CtkifwCjBv+YEjyXJoniq6JQE1dqEf8NF0AY1mvstGI6gVXg+2mim7AWosqd0F+GcfMD1NIsYl3tQyNDIUAXhOZEwOe0mkippynbQfZa6yCoEh48VWtqhIg7TUrUg2OjDJyQ1O2WIi3dDHlMnXgngX8ToPLfYROUy1sk2Rx0V+M+5Be+2jios+FYP8NmjzKVOwQpNnxikUg2QYttLzzK4YL/1HwGYs3edH85p+CAbPFngTV9QVb6cRnaCBzryHgjyRN5rGlnD54uSVRolSWY+5ks/WzZm1WTy2zaGFhoLeAmjGmnDi8wwB0x7wTzXWODPRDdfMKdhwNZFUo/inAnEA==
-Received: from PH8P221CA0063.NAMP221.PROD.OUTLOOK.COM (2603:10b6:510:349::15)
- by MW4PR12MB7261.namprd12.prod.outlook.com (2603:10b6:303:229::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9320.16; Thu, 13 Nov
- 2025 23:28:59 +0000
-Received: from CY4PEPF0000E9DC.namprd05.prod.outlook.com
- (2603:10b6:510:349:cafe::97) by PH8P221CA0063.outlook.office365.com
- (2603:10b6:510:349::15) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9320.17 via Frontend Transport; Thu,
- 13 Nov 2025 23:29:10 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- CY4PEPF0000E9DC.mail.protection.outlook.com (10.167.241.75) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9320.13 via Frontend Transport; Thu, 13 Nov 2025 23:28:57 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Thu, 13 Nov
- 2025 15:28:45 -0800
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Thu, 13 Nov
- 2025 15:28:44 -0800
-Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com (10.129.68.8)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
- Transport; Thu, 13 Nov 2025 15:28:43 -0800
-Date: Thu, 13 Nov 2025 15:28:41 -0800
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: Alex Williamson <alex@shazbot.org>, Christian =?iso-8859-1?Q?K=F6nig?=
-	<christian.koenig@amd.com>, <dri-devel@lists.freedesktop.org>,
-	<iommu@lists.linux.dev>, Joerg Roedel <joro@8bytes.org>, Kevin Tian
-	<kevin.tian@intel.com>, <kvm@vger.kernel.org>,
-	<linaro-mm-sig@lists.linaro.org>, <linux-kselftest@vger.kernel.org>,
-	<linux-media@vger.kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Shuah
- Khan" <shuah@kernel.org>, Sumit Semwal <sumit.semwal@linaro.org>, Will Deacon
-	<will@kernel.org>, Krishnakant Jaju <kjaju@nvidia.com>, Leon Romanovsky
-	<leon@kernel.org>, Matt Ochs <mochs@nvidia.com>, <patches@lists.linux.dev>,
-	Simona Vetter <simona.vetter@ffwll.ch>, Vivek Kasireddy
-	<vivek.kasireddy@intel.com>, Xu Yilun <yilun.xu@linux.intel.com>
-Subject: Re: [PATCH 5/9] iommufd: Allow MMIO pages in a batch
-Message-ID: <aRZpqbBHUYKNwRJT@Asurada-Nvidia>
-References: <0-v1-af84a3ab44f5+f68-iommufd_buf_jgg@nvidia.com>
- <5-v1-af84a3ab44f5+f68-iommufd_buf_jgg@nvidia.com>
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="HZtJVv3J";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="Z2mKo1XV"
+Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 5ADMaoGJ1629664
+	for <iommu@lists.linux.dev>; Thu, 13 Nov 2025 23:29:45 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=qcppdkim1; bh=SyFk5zcqS7Ph8XKnWlZh2u
+	bVnnsYVplPvWIOQ6aWBiU=; b=HZtJVv3Jh1HkaZRkLJlJberqZysyyYId0dCyI8
+	rAlx1V3ZNjax9rPJO4yOImknFW86sBWiQMNT6Q0XiKiwtgHutZKzxkiNeWnjFkrE
+	wAB0AOBl4eB712bD0nL2bsBFmLr9SQE3f1R1ekxK/nh5BqwFRzIyVeToHgfn4Um6
+	8RPf5V1PcrlWiJrAM8ehSsly5gFIZe8Ej/laEL+VGNozs9/VG0zdxqj35lPlzAov
+	6lI5alCvJK9i5ClfVZRNGLQKtjso+4/iobMiFYMiiSKIcajtD6oaShrwOK6UkMD7
+	hf8RZDIB/AlXcegl19UON30vLIp157rQql+irVbUlDUsSprQ==
+Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com [209.85.214.198])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4adr9d83uu-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Thu, 13 Nov 2025 23:29:44 +0000 (GMT)
+Received: by mail-pl1-f198.google.com with SMTP id d9443c01a7336-2956f09f382so12593405ad.1
+        for <iommu@lists.linux.dev>; Thu, 13 Nov 2025 15:29:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1763076584; x=1763681384; darn=lists.linux.dev;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=SyFk5zcqS7Ph8XKnWlZh2ubVnnsYVplPvWIOQ6aWBiU=;
+        b=Z2mKo1XVq6TbE4mr7uIi/tuIL/9uiLiaVWHQ5KOUXdEj6yY17R2HykMHvXVAMrL1R0
+         XJT7WlILTcuhuT7ySVONLoJTM+V5eIRqbJZNsdQwgsYh8HI53+kGPSzL4gBe8tz1fsE3
+         hVOTL8wKBQXv+w7lR7fgjxLomHOLkYVVY8QMJA4acWIusd25zZuw5xenxl1/cyeiBaOH
+         PmeQcOLsWbA2KU741D6EJotPNMhSrCIhJ70k8Gma12quNeEyeiQPOhEiBeawy4YA0ptu
+         5JWeuz3YKvgQyUvj9BUYMnUb9hPd0hb6W/QdrnoWHSkN8ByxlR4lSWJaTrMV2HpLgteT
+         WOPA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1763076584; x=1763681384;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=SyFk5zcqS7Ph8XKnWlZh2ubVnnsYVplPvWIOQ6aWBiU=;
+        b=tFVvJwkT4wO+Oaz7adlF2VYBm+1RC4g6wrGGz6IV5ZL/cqwrbELqyjXXmUmUKiYDGB
+         1/4co+2srhXuc83ExgXy7WLgXl5FzMH9VjK5kphYNQmZLQ39285yHUCSEBJhsYeUql0+
+         2BIdnrnyHFAg/6KXj4j9M0ePvd1Ey5AZ7aE4ArzpMzyDHx46PIyS020DLY4ATRmxCOXs
+         lkdbIb5fpJSTo3wdOH/iGJzUSxMg5+QlGeD3lyJMIwsbcdq9J7S8cvPjKKocIOetz/hr
+         jX1w1szOnvTP/1PLEEoJ0+dt0z2k4qq84CUXth2Ek8vogZvxgefkWheejz5swqfxlYxH
+         C1UQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXW6ZoXNEd1RA7g17+Qwp3Ahf2Hqh8LhRfMqF2DQvZAVkK5E0gmCQvMivhVSxuY4EFflezNbg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwOi6qnnbc8vTMjOSldwU3BUuGj4zXD8WYoQBX/GE/VvMVs1fRN
+	LwLrHcYf5LzjOiCA2UaIBCYH+bocdEkP1S+3HrFMwirUPaKn64GtF9dssDDeYlMHlcTVOoYoFvh
+	LIMYG3X2QQLoN9104vakAxwv2tFcjj+OIYIQWKGQUkN0vx8Hh0Vblxvdy5Q==
+X-Gm-Gg: ASbGncvSCSlPQFGLUfnpZx+Z9///7eQHClcv9Po+fRLrm0b76bDrxkjttzUi+5oVloN
+	Doyz87uWuGv9sOUNwrIuCDwX3xNs9BFKtvij4V/yuUB+R/XI/tECEXJSz0R4cEUAM4fvLsxPblG
+	DS5bvYJhDnl9isZ/4pjWKjU0Y9rop/JAIW7wkRa8wxsXxRrWwb7fssE0ctWb9PEx+iSqji0XvCj
+	6oXsrE0PTkaHoXGxGI9eKfchEfHok5lvz9L+lWkI6dIsCCSm08O7VWW5+9qJhTOoHLAO8u1x5Yo
+	iEI3wiOLgMUe02MPKazLSHbmzYv4lkN8cK1CO3wZiaOProd0EmxnF/yQ+aDUNyxHbbjF8HNatOq
+	LeJpy9kjTxG0AWusLegfie9s=
+X-Received: by 2002:a17:903:11c7:b0:281:fd60:807d with SMTP id d9443c01a7336-29867ec97d1mr13571565ad.2.1763076583727;
+        Thu, 13 Nov 2025 15:29:43 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IH0JoKSqTMESiDKuWUM4M75A1GvjOSZKSKBeYjatr/BGas5j9pizj/bo7phZeFbq/ZDKNvORg==
+X-Received: by 2002:a17:903:11c7:b0:281:fd60:807d with SMTP id d9443c01a7336-29867ec97d1mr13571265ad.2.1763076583020;
+        Thu, 13 Nov 2025 15:29:43 -0800 (PST)
+Received: from hu-akhilpo-hyd.qualcomm.com ([202.46.23.25])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-bc36ed72cd1sm3049486a12.11.2025.11.13.15.29.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 13 Nov 2025 15:29:41 -0800 (PST)
+From: Akhil P Oommen <akhilpo@oss.qualcomm.com>
+Subject: [PATCH v3 00/20] drm/msm/adreno: Introduce Adreno 8xx family
+ support
+Date: Fri, 14 Nov 2025 04:58:57 +0530
+Message-Id: <20251114-kaana-gpu-support-v3-0-92300c7ec8ff@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <5-v1-af84a3ab44f5+f68-iommufd_buf_jgg@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000E9DC:EE_|MW4PR12MB7261:EE_
-X-MS-Office365-Filtering-Correlation-Id: d25a23e7-4b13-41df-fc73-08de230c6b41
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|7416014|82310400026|376014|1800799024|36860700013;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?9Xj7sPplIyhjLSsmg/znM4V43WSyaJilkD5r84qZG9RFh66PqWLTU2wQNhJt?=
- =?us-ascii?Q?JE/I8Zj/GWRpHn2Eml9TF/mwUlfp49jab/Uh39/pT9bwQTe/DJlT6XHuGQdY?=
- =?us-ascii?Q?59rgSUTFCTT0G6bWKKo1NW6upW61p3o0ss9bSRr6TArtUPx1pHmy23GI/wkq?=
- =?us-ascii?Q?0CqvUPZziraKAhVW8/gK3Hsr15OBvWkxQD/vYYhvefngVdF7njRVTUJNsMmY?=
- =?us-ascii?Q?OR8QuU04LFiyGGEcE4Ub85vWxr4lddj3KAcBClYoRJ5N00ITfAK2ncvpMu/6?=
- =?us-ascii?Q?03pGmTDAm1rP4Zw7l76r/UBOBkVS+2DCFjwNDk1yGPXbGVKjNYSj8O7+67um?=
- =?us-ascii?Q?QvgVsrmmRImWsW/l1Bc06TF+CCKifplMF2BavC+D1LkvcG5FLQOhwN6hViqL?=
- =?us-ascii?Q?hChokEO8Gxg/2jXYQiPkruG2jYXtIdZcuM+na0WBDIDNGDGyoEXDWp3itV1B?=
- =?us-ascii?Q?J7nJgHmSTGkxTzFguhRiHDQvKpTUEL9+62DkE1m+TLI/MkJV/YZTrKURjVwx?=
- =?us-ascii?Q?gRY1NjpRRzAIx9i+zZmFxgmKAMS+sWiEibwTM+3evrMDPWt2gZIPrPZgM2II?=
- =?us-ascii?Q?9VYDu/R8JQq0ahUjuS2FPdAn7GD2AJCohUab35nHV4Qo3rBVzUx/tJCJsB1m?=
- =?us-ascii?Q?SGXm0zGsF7fIzSQc+KMbMqg2XWxt4hgI0ONUr9xIgA5gVYcBVp/0+X1C3lf2?=
- =?us-ascii?Q?ANrFIDQ3qbl0ln6123fQNwFVzjAKT2qqawrFmxk5Dal40CG687JuX4hq+mUQ?=
- =?us-ascii?Q?fz2gpQBrvQtJNh5zVIKYvCXEbTYvLVvyDJuxH/84/SpMlKJx5GY322UqpReS?=
- =?us-ascii?Q?pg4WU2Ie4jtZityaHs2Aeau5MeoNt+Sll8Ip/eaej5ZMTx97zdDA3Oz0BXjZ?=
- =?us-ascii?Q?oE5cd+pNcsgG5/54eaaef1u6Q7l00bNuPeA6aArzy2CIQxHzx10gzHDTJHM/?=
- =?us-ascii?Q?w+NbkTqhCLnueCVbhsrgT46fLEElOhdPESxUVP8FHfBZdJAKs3B3vIBGK6EL?=
- =?us-ascii?Q?5blFsEGl+xnJzQiCMBkcLqtitE2VX96EkiJpjedG2IYy9p0R/7tTpPthyV+n?=
- =?us-ascii?Q?vRCpw2el/cXJ1cGd/4tKm2gbGFKLGXVPTngioUpF5OWbgd/0AboK/0+Lbd45?=
- =?us-ascii?Q?tf6cSOATWPDSyYxstGXjoiyNO6dxA+P0zt+5BtOF11UI8n8n4APSo9rZu3E9?=
- =?us-ascii?Q?if01QK/KZcOVySNesXZaZ80W4dBFQ/aXcljIwvwV1p8LrH97TpVP2RusyOBT?=
- =?us-ascii?Q?25615mR1B/idJLywnsWFhZsD4fYwK1fQHfcnN972dNwdshaHADcaH8d2y6/V?=
- =?us-ascii?Q?J4YjdLC4cdnYEja2IiFaXG8vC7Y+KVuGsfblNo1w6FotQiV/gNbLvVq7YTyL?=
- =?us-ascii?Q?RB0CUn1vHL+FnxuDMOKavRMttyheomnrAYXTm7iKLhxASFNieuCV2OVLc5go?=
- =?us-ascii?Q?1fNLNgNMOsiDng0xiagu4Sd4hWtw6kzMgE2gElWwPhm6BpdMYoV8adODyx3j?=
- =?us-ascii?Q?/44CnRpsNbLT70N99Oppj3GXVV8qZrtwj3NjpKjKu+AwmFHsGYL3jGW/vDMd?=
- =?us-ascii?Q?doRPXRKkyS3BmtTxD/s=3D?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(7416014)(82310400026)(376014)(1800799024)(36860700013);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Nov 2025 23:28:57.8172
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: d25a23e7-4b13-41df-fc73-08de230c6b41
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CY4PEPF0000E9DC.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB7261
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIALlpFmkC/23OQQ6CMBAF0KuQrh0yUySKK+9hXJR20Eal2BaiI
+ dzdAokrNk3+JP/9jiKwtxzEKRuF58EG69oUil0m9F21NwZrUhYSZYmVrOChVKvg1vUQ+q5zPgK
+ RkaSPjSKjRep1nhv7WczLdc2e332i43oUtQoM2r1eNp6ylj8RZp6IUMyFuw3R+e/yp4GWxjpf4
+ Mb8QIBwKMoCazwgsjm7EPJ3r57zQp6eBR3kH5qHtiCZoJobOiptSq72G9A0TT/Bv30cMwEAAA=
+ =
+X-Change-ID: 20250929-kaana-gpu-support-11d21c8fa1dc
+To: Rob Clark <robin.clark@oss.qualcomm.com>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>, Sean Paul <sean@poorly.run>,
+        Dmitry Baryshkov <lumag@kernel.org>,
+        Abhinav Kumar <abhinav.kumar@linux.dev>,
+        Jessica Zhang <jesszhan0024@gmail.com>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Jordan Crouse <jordan@cosmicpenguin.net>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Connor Abbott <cwabbott0@gmail.com>
+Cc: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+        devicetree@vger.kernel.org, Akhil P Oommen <akhilpo@oss.qualcomm.com>,
+        Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
+        Rob Clark <rob.clark@oss.qualcomm.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1763076573; l=7615;
+ i=akhilpo@oss.qualcomm.com; s=20240726; h=from:subject:message-id;
+ bh=J+VkJjrkoaNRlDaKnTG93cqZ7QXfLD1gOTCZPhZm8Z4=;
+ b=8p7XjN3Y1LQcpmECcDL5FAlQrwIXhy+O+Jxm62gGRbKGs6Mgoe2vlW3Mos1mEnGrJBx0avjHI
+ PotaQrfxNXSAUUHFflb3gEMXobClbU70XJydWwa0baHKjJF+/oYLlR4
+X-Developer-Key: i=akhilpo@oss.qualcomm.com; a=ed25519;
+ pk=lmVtttSHmAUYFnJsQHX80IIRmYmXA4+CzpGcWOOsfKA=
+X-Proofpoint-GUID: 6DJsGLt7JedpCKN9Ys0fVF0RtKx0QON4
+X-Authority-Analysis: v=2.4 cv=Rdidyltv c=1 sm=1 tr=0 ts=691669e8 cx=c_pps
+ a=MTSHoo12Qbhz2p7MsH1ifg==:117 a=ZePRamnt/+rB5gQjfz0u9A==:17
+ a=IkcTkHD0fZMA:10 a=6UeiqGixMTsA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=EUspDBNiAAAA:8 a=qC_FGOx9AAAA:8 a=VwQbUJbxAAAA:8
+ a=XQ7dgq76HTNx6dD4gTwA:9 a=QEXdDO2ut3YA:10 a=GvdueXVYPmCkWapjIL-Q:22
+ a=fsdK_YakeE02zTmptMdW:22
+X-Proofpoint-ORIG-GUID: 6DJsGLt7JedpCKN9Ys0fVF0RtKx0QON4
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMTEzMDE4NSBTYWx0ZWRfX5Y302AiCC30J
+ 16N+cYC6Lw/3PUAg8R4rl3Az46w5e6zznrWfoDk9DyKzHL/KrJAWQYXkjoMZJpTp7N9xZthjQpi
+ YGW3PT7s4PAaxZGptCn49ErDVPE4s+A2InTpbbB8NtqqMJYHqe4ZlH8eQa/4moz5e/8qxTG2ahl
+ gjgP+gerH3ckfOaeJSaxme9h9/cc7Kn2CtuFHq3fZztNopahUSNugG/CkqoXzefeoO29dpjKmuO
+ k8nCIh5xSBo0twcCu9fIMZqBiQQyS92R6R7TTOIhX5Gww6umVzbEBQtbA325R4hNIGmNHlQLrEF
+ xEgs8NMEBw1QDv2urz/90UNtPxnXGIJChTHKCqEz+2Im8lkCx4cKVvkotvRBlNufSb2ewZXHCnj
+ PItPjgg7vagqUqJFgUNxatoqe2H0NA==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.9,FMLib:17.12.100.49
+ definitions=2025-11-13_06,2025-11-13_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ malwarescore=0 clxscore=1015 adultscore=0 impostorscore=0 bulkscore=0
+ spamscore=0 priorityscore=1501 phishscore=0 lowpriorityscore=0 suspectscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2510240001 definitions=main-2511130185
 
-On Fri, Nov 07, 2025 at 12:49:37PM -0400, Jason Gunthorpe wrote:
-> Addresses intended for MMIO should be propagated through to the iommu with
-> the IOMMU_MMIO flag set.
-> 
-> Keep track in the batch if all the pfns are cachable or mmio and flush the
-> batch out of it ever needs to be changed. Switch to IOMMU_MMIO if the
-> batch is MMIO when mapping the iommu.
-> 
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+This series adds the A8xx HWL along with Adreno 840 GPU support to the
+drm-msm driver. A8x is the next generation in the Adreno family,
+featuring a significant hardware design change. A major update to the
+design is the introduction of 'Slice' architecture. Slices are sort of
+mini-GPUs within the GPU which are more independent in processing Graphics
+and compute workloads. Also, in addition to the BV and BR pipe we saw in
+A7x, CP has more concurrency with additional pipes.
 
-Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
+From KMD-HW SWI perspective, there is significant register shuffling in
+some of the blocks. For slice or aperture related registers which are
+virtualized now, KMD/crashdumper has to configure an aperture register
+to access them. On the GMU front, there are some shuffling in register
+offsets, but it is manageable as of now. There is a new HFI message to
+transfer data tables and new power related features to support higher
+peak currents and thermal mitigations.
+
+Adreno 840 GPU is the second generation architecture in the A8x family
+present in Kaanapali (a.k.a Snapdragon 8 Elite Gen 5) chipset [1]. It
+has a maximum of 3 slices with 2 SPs per slice. Along with the 3-slice
+configuration, there is also another 2-slice SKU (Partial Slice SKU).
+A840 GPU has a bigger 18MB of GMEM which can be utilized for graphics
+and compute workload. It also features improved Concurrent binning
+support, UBWC v6 etc.
+
+Adreno X2-85 GPU present in Glymur chipset is very similar to A840
+architecturally. So adding initial support for it requires just an
+additional entry in the catalog with the necessary register lists.
+
+This series adds only the driver side support along with a few dt bindings
+updates. Devicetree patches will be sent separately, but those who
+are interested can take look at it from the Qualcomm's public tree [2].
+Features like coredump, gmu power features, ifpc, preemption etc will be
+added in a future series.
+
+Initial few patches are for improving code sharing between a6xx/a7xx and
+a8x routines. Then there is a patch to rebase GMU register offsets from
+GPU's base. Rest of the patches add A8x HWL and Adreno 840/X2-85 GPU
+support.
+
+Mesa support for A8x/A840 GPU is WIP and will be posted in the near
+future.
+
+[1] https://www.qualcomm.com/products/mobile/snapdragon/smartphones/snapdragon-8-series-mobile-platforms/snapdragon-8-elite-gen-5
+[2] https://git.codelinaro.org/clo/linux-kernel/kernel-qcom/-/commit/5fb72c27909d56660db6afe8e3e08a09bd83a284
+
+Signed-off-by: Akhil P Oommen <akhilpo@oss.qualcomm.com>
+---
+Changes in v3:
+- Squash gpu smmu bindings patches for Kaana and Glymur (Krzysztof)
+- Reuse a6xx_flush() and drop the patch that added submit_flush callback
+- Fix GBIF configs for a640 and a650 family (Konrad)
+- Add partial SKU detection support
+- Correct Chipids in the catalog
+- Add a new patch to drop SCRATCH reg dumps (Rob)
+- Read slice info right after CX gdsc is up
+- Don't drop raytracing support if preemption is unsupported
+- Drop the unused A840 pwrup list (Konrad)
+- Updates to A840 nonctxt list (Rob)
+- Capture trailers
+- Link to v2: https://lore.kernel.org/r/20251110-kaana-gpu-support-v2-0-bef18acd5e94@oss.qualcomm.com
+
+Changes in v2:
+- Rebase on top of next-20251110 tag
+- Include support for Glymur chipset
+- Drop the ubwc_config driver patch as it is picked up
+- Sync the latest a6xx register definitions from Rob's tree
+- New patch to do LRZ flush to fix pagefaults
+- Reuse a7xx_cx_mem_init(). Dropped related patch (Connor)
+- Few changes around cp protect configuration to align it with downstream
+- Fix the incorrect register usage at few places
+- Updates to non-ctxt register list
+- Serialize aperture updates (Rob)
+- More helpful cp error irq logging
+- Split A8x GMU support patch (Dmitry)
+- Use devm_platform_get_and_ioremap_resource in GMU init (Konrad)
+- Link to v1: https://lore.kernel.org/r/20250930-kaana-gpu-support-v1-0-73530b0700ed@oss.qualcomm.com
+
+---
+Akhil P Oommen (20):
+      drm/msm/a6xx: Flush LRZ cache before PT switch
+      drm/msm/a6xx: Fix the gemnoc workaround
+      drm/msm/a6xx: Skip dumping SCRATCH registers
+      drm/msm/adreno: Common-ize PIPE definitions
+      drm/msm/adreno: Move adreno_gpu_func to catalogue
+      drm/msm/adreno: Move gbif_halt() to adreno_gpu_func
+      drm/msm/adreno: Add MMU fault handler to adreno_gpu_func
+      drm/msm/a6xx: Sync latest register definitions
+      drm/msm/a6xx: Rebase GMU register offsets
+      drm/msm/a8xx: Add support for A8x GMU
+      drm/msm/a6xx: Improve MX rail fallback in RPMH vote init
+      drm/msm/a6xx: Share dependency vote table with GMU
+      drm/msm/adreno: Introduce A8x GPU Support
+      drm/msm/adreno: Support AQE engine
+      drm/msm/a8xx: Add support for Adreno 840 GPU
+      drm/msm/adreno: Do CX GBIF config before GMU start
+      drm/msm/a8xx: Add support for Adreno X2-85 GPU
+      dt-bindings: arm-smmu: Add Kaanapali and Glymur GPU SMMU
+      dt-bindings: display/msm/gmu: Add Adreno 840 GMU
+      dt-bindings: display/msm/gmu: Add Adreno X2-85 GMU
+
+ .../devicetree/bindings/display/msm/gmu.yaml       |   60 +-
+ .../devicetree/bindings/iommu/arm,smmu.yaml        |    2 +
+ drivers/gpu/drm/msm/Makefile                       |    2 +
+ drivers/gpu/drm/msm/adreno/a2xx_catalog.c          |    7 +-
+ drivers/gpu/drm/msm/adreno/a2xx_gpu.c              |   50 +-
+ drivers/gpu/drm/msm/adreno/a2xx_gpu.h              |    2 +
+ drivers/gpu/drm/msm/adreno/a3xx_catalog.c          |   13 +-
+ drivers/gpu/drm/msm/adreno/a3xx_gpu.c              |   52 +-
+ drivers/gpu/drm/msm/adreno/a3xx_gpu.h              |    2 +
+ drivers/gpu/drm/msm/adreno/a4xx_catalog.c          |    7 +-
+ drivers/gpu/drm/msm/adreno/a4xx_gpu.c              |   54 +-
+ drivers/gpu/drm/msm/adreno/a4xx_gpu.h              |    2 +
+ drivers/gpu/drm/msm/adreno/a5xx_catalog.c          |   17 +-
+ drivers/gpu/drm/msm/adreno/a5xx_gpu.c              |   61 +-
+ drivers/gpu/drm/msm/adreno/a5xx_gpu.h              |    1 +
+ drivers/gpu/drm/msm/adreno/a6xx_catalog.c          |  369 +++-
+ drivers/gpu/drm/msm/adreno/a6xx_gmu.c              |  287 ++-
+ drivers/gpu/drm/msm/adreno/a6xx_gmu.h              |   25 +-
+ drivers/gpu/drm/msm/adreno/a6xx_gpu.c              |  393 ++--
+ drivers/gpu/drm/msm/adreno/a6xx_gpu.h              |   31 +-
+ drivers/gpu/drm/msm/adreno/a6xx_gpu_state.h        |   18 +-
+ drivers/gpu/drm/msm/adreno/a6xx_hfi.c              |   53 +
+ drivers/gpu/drm/msm/adreno/a6xx_hfi.h              |   17 +
+ drivers/gpu/drm/msm/adreno/a8xx_gpu.c              | 1205 ++++++++++++
+ drivers/gpu/drm/msm/adreno/adreno_device.c         |    4 +-
+ .../gpu/drm/msm/adreno/adreno_gen7_0_0_snapshot.h  |  420 ++---
+ .../gpu/drm/msm/adreno/adreno_gen7_2_0_snapshot.h  |  332 ++--
+ .../gpu/drm/msm/adreno/adreno_gen7_9_0_snapshot.h  |  470 ++---
+ drivers/gpu/drm/msm/adreno/adreno_gpu.h            |   38 +-
+ drivers/gpu/drm/msm/registers/adreno/a6xx.xml      | 1954 +++++++++++++++-----
+ .../gpu/drm/msm/registers/adreno/a6xx_enums.xml    |    2 +-
+ drivers/gpu/drm/msm/registers/adreno/a6xx_gmu.xml  |  283 +--
+ .../gpu/drm/msm/registers/adreno/a7xx_enums.xml    |    7 -
+ .../drm/msm/registers/adreno/a8xx_descriptors.xml  |  120 ++
+ .../gpu/drm/msm/registers/adreno/a8xx_enums.xml    |  289 +++
+ .../gpu/drm/msm/registers/adreno/adreno_common.xml |   12 +
+ 36 files changed, 5008 insertions(+), 1653 deletions(-)
+---
+base-commit: edf57d8dafc63f9298a209e518ea6a2e0df78ed0
+change-id: 20250929-kaana-gpu-support-11d21c8fa1dc
+
+Best regards,
+-- 
+Akhil P Oommen <akhilpo@oss.qualcomm.com>
+
