@@ -1,31 +1,31 @@
-Received: from out30-124.freemail.mail.aliyun.com (out30-124.freemail.mail.aliyun.com [115.124.30.124])
+Received: from out30-100.freemail.mail.aliyun.com (out30-100.freemail.mail.aliyun.com [115.124.30.100])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFA22302148
-	for <iommu@lists.linux.dev>; Thu, 13 Nov 2025 04:58:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72A1126981E;
+	Thu, 13 Nov 2025 06:33:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.100
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763009901; cv=none; b=pk8D21aPOfzDkYR6TY7z7OFKUv0hMhBXiGqXGhm6lVW3wN/Ys/xUvlXfIdfKjM077wMRekIdO3H/V2uDWcG3qgaqPm/EUoPryRfYEgrmLrL20ezmUgat3nhQAbt6v+m3FBvXxyVKVW+rTJ12SHPF611EKVXklIs62v5upx2vfHI=
+	t=1763015597; cv=none; b=K46S1Hb0DwhQ3ULsaCL9/1tBkedYZ4kbrA8kEcvNuEfzP3h3j+YPq42Pl/LmyXv8G87pa/C9YeMcQvAJCAJxtLmXsa1d9t8WZ1d3oV2EdNbJraja0VOX48JDxkxhdqGb7ulzzGP+jSDafrKv3m0UCRhF6hWSWHBKOXgQVt6hh58=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763009901; c=relaxed/simple;
-	bh=JXEQ94gC8AKcwEqd0xnmXVsYbCNVVJOdtzUbRtiW0OQ=;
+	s=arc-20240116; t=1763015597; c=relaxed/simple;
+	bh=JRE5O1yMNNL/CZUeguYYy4lWsXBrifxaneBRsQyfAHo=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=PYw23lH01m4o5bt5KHp3C+/zi8iWOzUrqiDMYFVkjCrZbvP2jG4b/trAywlkKp15fbhlZqtXzogKOGoQ83ZMUXdQbRvtR7K2tjrhWm5er9YRkO2R9U+aGiEOvE8MTKx6TsG5yx81F0hvB1ZvF1swI+XfGmvtvpLhChWaJFhZCN0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=e67dzyug; arc=none smtp.client-ip=115.124.30.124
+	 In-Reply-To:Content-Type; b=na3Y/IAXWHXrnT9wEXPTSJXxhPFvIPusQcvgiLKGjnK6c1Ae9xpH8yS7HnQ2oCDJM9Wy9fmw++AbH/+V+wFJsc8QsuDOPTETevST92fgZAgm+iEuzd1yOF/UfwvHUU4+b6Qz4G/Gy4hvCHCP0DqSZb4/D8+WDVFn0ak4/QHquG8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=Akc8B5P2; arc=none smtp.client-ip=115.124.30.100
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="e67dzyug"
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="Akc8B5P2"
 DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=linux.alibaba.com; s=default;
-	t=1763009896; h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
-	bh=+MkJwqqWw91q4/ackBiFDAnwT9h6GJR0xtDRL8ERyWE=;
-	b=e67dzyugKcrLE3EW6aN7XC0zAzFdeKwWW4qfhRvs3Zj3PjDArxPhjrIZvz4L/UnlUtgyATY1/N89ZZtLM6j5K+LYDllkO5UvBBSA1yuqJCh74QKEWDfuWSPceccrBEZ3Fimj3JAoCz9/MlSSJ0QaRyYU3pUuh+aZIqObhdpXzVw=
-Received: from 30.246.165.27(mailfrom:xueshuai@linux.alibaba.com fp:SMTPD_---0WsIBh2L_1763009894 cluster:ay36)
+	t=1763015586; h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
+	bh=Nm8/08dZj5jahSzMqOZOKZcwHuLbQSEhvJSn1qCuYaw=;
+	b=Akc8B5P2l+C/lBVrFed+LQPhz1CiZ50QjQpJAEvOv2T4OOR0vAFwKbT3tSTzY9wZ1wQ64E1jkOdcvNxOmBmHmUF+kWYqNnUxxXVvNPo30VbN5FGNiKlA85FmKd+t7XK+BI6cLB2cyx4hXOwh/jQGU8wYZwj9NzpnQI3BEvRh+Yk=
+Received: from 30.247.129.79(mailfrom:xueshuai@linux.alibaba.com fp:SMTPD_---0WsIgOJQ_1763015582 cluster:ay36)
           by smtp.aliyun-inc.com;
-          Thu, 13 Nov 2025 12:58:15 +0800
-Message-ID: <f4a17ceb-06cc-4ef9-93cf-430b60cb7599@linux.alibaba.com>
-Date: Thu, 13 Nov 2025 12:58:13 +0800
+          Thu, 13 Nov 2025 14:33:04 +0800
+Message-ID: <29f0cddc-3c23-4ab1-92d9-8c9918ddc187@linux.alibaba.com>
+Date: Thu, 13 Nov 2025 14:33:01 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -33,59 +33,128 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] iommu/arm-smmu-v3-iommufd: Allow attaching nested
- domain for GBPA cases
-To: Nicolin Chen <nicolinc@nvidia.com>, jgg@nvidia.com, will@kernel.org
-Cc: robin.murphy@arm.com, joro@8bytes.org, kevin.tian@intel.com,
- praan@google.com, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org, skolothumtho@nvidia.com
-References: <20251103172755.2026145-1-nicolinc@nvidia.com>
+Subject: Re: [PATCH 0/9] Initial DMABUF support for iommufd
+To: Nicolin Chen <nicolinc@nvidia.com>, Jason Gunthorpe <jgg@nvidia.com>
+Cc: Alex Williamson <alex@shazbot.org>,
+ =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+ dri-devel@lists.freedesktop.org, iommu@lists.linux.dev,
+ Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
+ kvm@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
+ linux-kselftest@vger.kernel.org, linux-media@vger.kernel.org,
+ Robin Murphy <robin.murphy@arm.com>, Shuah Khan <shuah@kernel.org>,
+ Sumit Semwal <sumit.semwal@linaro.org>, Will Deacon <will@kernel.org>,
+ Krishnakant Jaju <kjaju@nvidia.com>, Leon Romanovsky <leon@kernel.org>,
+ Matt Ochs <mochs@nvidia.com>, patches@lists.linux.dev,
+ Simona Vetter <simona.vetter@ffwll.ch>,
+ Vivek Kasireddy <vivek.kasireddy@intel.com>,
+ Xu Yilun <yilun.xu@linux.intel.com>
+References: <0-v1-af84a3ab44f5+f68-iommufd_buf_jgg@nvidia.com>
+ <aQ4x7UiMMCB0m0dH@Asurada-Nvidia>
 From: Shuai Xue <xueshuai@linux.alibaba.com>
-In-Reply-To: <20251103172755.2026145-1-nicolinc@nvidia.com>
+In-Reply-To: <aQ4x7UiMMCB0m0dH@Asurada-Nvidia>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
+Hi, Nicolin
 
-
-在 2025/11/4 01:27, Nicolin Chen 写道:
-> A vDEVICE has been a hard requirement for attaching a nested domain to the
-> device. This makes sense when installing a guest STE, since a vSID must be
-> present and given to the kernel during the vDEVICE allocation.
+在 2025/11/8 01:52, Nicolin Chen 写道:
+> On Fri, Nov 07, 2025 at 12:49:32PM -0400, Jason Gunthorpe wrote:
+>> This is on github: https://github.com/jgunthorpe/linux/commits/iommufd_dmabuf
+>>
+>> v2:
+>>   - Rebase on Leon's v7
+>>   - Fix mislocking in an iopt_fill_domain() error path
 > 
-> But, when CR0.SMMUEN is disabled, VM doesn't really need a vSID to program
-> the vSMMU behavior as GBPA will take effect, in which case the vSTE in the
-> nested domain could have carried the bypass or abort configuration in GBPA
-> register. Thus, having such a hard requirement doesn't work well for GBPA.
+> I have verified this v2 using the branch above, by drafting a QEMU
+> patch for dmabuf on top of Shameer's vSMMU v5 series:
+> https://github.com/nicolinc/qemu/commits/wip/iommufd_dmabuf/
 > 
-> Skip vmaster allocation in arm_smmu_attach_prepare_vmaster() for an abort
-> or bypass vSTE. Note that device on this attachment won't report vevents.
+> With that, I see GPU BAR memory be correctly fetched in the QEMU:
+> vfio_region_dmabuf Device 0009:01:00.0, region "0009:01:00.0 BAR 0", offset: 0x0, size: 0x1000000
+> vfio_region_dmabuf Device 0009:01:00.0, region "0009:01:00.0 BAR 2", offset: 0x0, size: 0x44f00000
+> vfio_region_dmabuf Device 0009:01:00.0, region "0009:01:00.0 BAR 4", offset: 0x0, size: 0x17a0000000
 > 
-> Update the uAPI doc accordingly.
-> 
-> Tested-by: Shameer Kolothum <skolothumtho@nvidia.com>
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> ---
+> Tested-by: Nicolin Chen <nicolinc@nvidia.com>
 
-I've tested this patch and can confirm it resolves the GBPA hwpt
-attachment issue.
+I tested with your QEMU branch and this v2 branch, and observed
+the following:
 
-Without this patch, IOMMUFD fails to attach bypass hwpt with the
-following error:
+**QEMU successfully maps the BAR regions via dmabuf:**
 
-   smmu_reset_exit
-   qemu-system-aarch64: [iommufd=303] error attach 0008:01:00.0 (304) to id=6: No such file or directory
-   Failed to attach GBPA hwpt id 6 for dev id 1
+vfio_region_mmap Region 0008:01:00.0 BAR 0 mmaps[0] [0x0 - 0x3ffffff]
+vfio_region_dmabuf Device 0008:01:00.0, region "0008:01:00.0 BAR 0", offset: 0x0, size: 0x4000000
+vfio_region_mmap Region 0008:01:00.0 BAR 2 mmaps[0] [0x0 - 0x3fffffffff]
+vfio_region_dmabuf Device 0008:01:00.0, region "0008:01:00.0 BAR 2", offset: 0x0, size: 0x4000000000
+vfio_region_mmap Region 0008:01:00.0 BAR 4 mmaps[0] [0x0 - 0x2e41efffff]
+vfio_region_dmabuf Device 0008:01:00.0, region "0008:01:00.0 BAR 4", offset: 0x0, size: 0x2e41f00000
 
-With this patch applied, the attachment succeeds:
+**IOMMUFD backend successfully maps the DMA regions:**
 
-   smmu_reset_exit
-   iommufd_cdev_attach_ioas_hwpt  [iommufd=303] Successfully attached device 0008:01:00.0 (304) to id=6
+iommufd_backend_map_file_dma  iommufd=303 ioas=2 iova=0x30000000000 size=0xb90000 fd=306 start=0 readonly=0 (0)
+vfio_listener_region_add_ram region_add [ram] 0x30000b91000 - 0x30003ffffff [0xffcae8b91000]
+iommufd_backend_map_file_dma  iommufd=303 ioas=2 iova=0x30000b91000 size=0x346f000 fd=306 start=12128256 readonly=0 (0)
+vfio_listener_region_add_ram region_add [ram] 0x2c000000000 - 0x2ffffffffff [0xff8ac0000000]
+iommufd_backend_map_file_dma  iommufd=303 ioas=2 iova=0x2c000000000 size=0x4000000000 fd=307 start=0 readonly=0 (0)
+vfio_listener_region_add_ram region_add [ram] 0x28000000000 - 0x2ae41efffff [0xff5c7e000000]
+iommufd_backend_map_file_dma  iommufd=303 ioas=2 iova=0x28000000000 size=0x2e41f00000 fd=308 start=0 readonly=0 (0)
 
-Testing was performed on top of Shameer's vSMMU v5 series:
+**However, the guest kernel crashes during PCI initialization:**
 
-   https://patchew.org/QEMU/20251031105005.24618-1-skolothumtho@nvidia.com/
+[    1.422280] acpi PNP0A08:01: ECAM area [mem 0x4010100000-0x40102fffff] reserved by PNP0C02:00^M
+[    1.422907] acpi PNP0A08:01: ECAM at [mem 0x4010100000-0x40102fffff] for [bus 01-02]^M
+[    1.423541] ------------[ cut here ]------------^M
+[    1.423905] kernel BUG at mm/vmalloc.c:109!^M
+[    1.424240] Internal error: Oops - BUG: 00000000f2000800 [#1] SMP^M
+[    1.424724] Modules linked in:^M
+[    1.424972] CPU: 19 PID: 1 Comm: swapper/0 Not tainted 6.6.102-5.100_rc1.1.al8.aarch64+64k #1^M
+[    1.425647] Hardware name: QEMU KVM Virtual Machine, BIOS 0.0.0 02/06/2015^M
+[    1.426201] pstate: 01401005 (nzcv daif +PAN -UAO -TCO +DIT +SSBS BTYPE=--)^M
+[    1.426751] pc : vmap_pte_range+0x158/0x2b8^M
+[    1.427101] lr : vmap_pte_range+0x178/0x2b8^M
+[    1.427455] sp : ffff800083fcf6d0^M
+[    1.427758] x29: ffff800083fcf6d0 x28: 0068000040820713 x27: 0000000000004083^M
+[    1.428328] x26: ffff800083fcf7d4 x25: 0068000040820713 x24: 000000000000003f^M
+[    1.428895] x23: 0068000000000713 x22: 0010000000000001 x21: ffffffbffe801000^M
+[    1.429460] x20: ffffffc000040000 x19: ffff0018f9010020 x18: ffffffffffffffff^M
+[    1.430034] x17: 75625b20726f6620 x16: 5d66666666663230 x15: 0000000000000002^M
+[    1.430599] x14: 0000000000000000 x13: ffff0000c96ccf36 x12: 75625b20726f6620^M
+[    1.431189] x11: 000000000000002e x10: 000003bffe800000 x9 : ffff800080341544^M
+[    1.431802] x8 : ffff0000c96b8b80 x7 : ffff0018f9000000 x6 : ffff800083fcf7d4^M
+[    1.432376] x5 : 000000000000003f x4 : 0068000000000713 x3 : 0000000000000000^M
+[    1.432936] x2 : fffffffffe7d1000 x1 : ffff0031fff81380 x0 : 0000000000000008^M
+[    1.433495] Call trace:^M
+[    1.433689]  vmap_pte_range+0x158/0x2b8^M
+[    1.433996]  vmap_range_noflush+0x19c/0x260^M
+[    1.434323]  ioremap_page_range+0x20/0x30^M
+[    1.434636]  pci_remap_iospace+0x78/0x90^M
+[    1.434960]  acpi_pci_probe_root_resources+0x124/0x260^M
+[    1.435378]  pci_acpi_root_prepare_resources+0x20/0xd0^M
+[    1.435814]  acpi_pci_root_create+0x94/0x2e8^M
+[    1.436154]  pci_acpi_scan_root+0x98/0x130^M
+[    1.436474]  acpi_pci_root_add+0x15c/0x2f8^M
+[    1.436795]  acpi_bus_attach+0x1bc/0x338^M
+[    1.437104]  acpi_dev_for_one_check+0x38/0x48^M
+[    1.437444]  device_for_each_child+0x60/0xb8^M
+[    1.437799]  acpi_dev_for_each_child+0x40/0x70^M
+[    1.438148]  acpi_bus_attach+0x234/0x338^M
+[    1.438454]  acpi_dev_for_one_check+0x38/0x48^M
+[    1.438796]  device_for_each_child+0x60/0xb8^M
+[    1.439148]  acpi_dev_for_each_child+0x40/0x70^M
+[    1.439531]  acpi_bus_attach+0x234/0x338^M
+[    1.439854]  acpi_bus_scan+0x68/0x208^M
+[    1.440142]  acpi_scan_init+0xd0/0x2b8^M
+[    1.440445]  acpi_init+0x80/0x140^M
+[    1.440704]  do_one_initcall+0x48/0x348^M
+[    1.441010]  do_initcalls+0x104/0x200^M
+[    1.441305]  kernel_init_freeable+0x128/0x2a0^M
+[    1.441645]  kernel_init+0x28/0x1e8^M
+[    1.441943]  ret_from_fork+0x10/0x20^M
+[    1.442231] Code: 97f3ddf6 aa0003e1 b4fffa41 d503201f (d4210000) ^M
 
-Tested-by: Shuai Xue  <xueshuai@linux.alibaba.com>
+Could you share more details for testing?, e.g. QEMU cmdline,
+Guest kernel version.
+
+I'd like to compare with my setup to identify the difference.
 
 Thanks.
 Shuai
