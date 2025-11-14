@@ -1,165 +1,135 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD5ED2FB624
-	for <iommu@lists.linux.dev>; Fri, 14 Nov 2025 11:26:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB78723B627;
+	Fri, 14 Nov 2025 14:12:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763119619; cv=none; b=PDUoS/OOzp7VLzVOXC8LDLFp0FchtTk3SX4VUItJoMESU266GWXl71aELlamdnBS0VfvurtmCRHQXKcNrSon5lGdM73Wr1uzNG9Or1PpPnHwxhr0Ik3p1m0rqYiC3mK1T0Ds89EGa3+XjAHHukhYRGoYNoD+WoxCbRZQATrLCmQ=
+	t=1763129576; cv=none; b=pcKjUit926oC7DhuhBEDwWcoA/c4XcgB6LkYqN+qJ6WE8XhtZ0rWtiELuoqCh8HBsAkTxKREWLz4VrdnTzPf2ocYDgok+neTzGBJsdqSuMdYq2D11gqZCpOC8ryxtlfJMkEV7ylCBKYr0lIxjSsN5VXJdaogqoMaDaSCDfNkyas=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763119619; c=relaxed/simple;
-	bh=FjgcuY6SxnUFbFV//lcFGoEp8mOCm8RF0YZOkQurjI0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=NLAX9gC0jGxN0i4PBsWwLigjoKdW6syN0QM7Nho+/NHUSq8lEOSaQbrLRZ0abJrwQTf+wkvCHV4EXk5xJ/2rISs8tmVPery/JU5wI0AiLVJCwbbTQABw//Zhb3rHtWxrNXUe47TqGpPE7veMnmCCiZnofyTGlx34agaWL/w39HY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=YvmEGhHa; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=AgVhbFs8; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1763129576; c=relaxed/simple;
+	bh=E1D9hm5bO8N8kbex64sVlG1YZDBmIdI/KickLssrJGk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=GqXOEiIuwuPmnM+wk9d4D6v3YHypGEw0+2VRzvNWzRowXglxAxWhqQhsvh00fBnOPxIxP2e6afI7q2TKzJu0a6EsUqo4bZZvQbZHDYtigv2UbA7eJYmt8LDBRmEK2Dlc5vpm1ck88OHpUXC9axmHc1IbAvx6H6Y6xnoCaHvSD4E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HL3ellPq; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="YvmEGhHa";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="AgVhbFs8"
-Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 5AE8VgDG1488265
-	for <iommu@lists.linux.dev>; Fri, 14 Nov 2025 11:26:57 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	xj6btczQP9EttHmyg9oi/yzZG5tH5YacuDZXJnwTFdA=; b=YvmEGhHayMHB5uzm
-	enctitrc46sCoSYts4Pd9jZjRcyEUid2Ik/mbTzm8syTdh4h4lXKq37hSw8lTm8u
-	Yhy8xu/xdQxTek7UznfSUHnt7Unsi24CjmQHL3RP0QBVu7uPEq+iTY6nQGTFN45Q
-	GGAap7UTFISWYeA7ukX5CUosV266vxpbLt6zcavgnyczJO7ANnJaxrfLwRCxQq9R
-	u8ZYGBePYg0IyQ/Zzu1PDGTHB74DtlwOFi90Kv4Dh8PSZHso9CgSO+WOGtPeU+Rt
-	3iD78ZHcicHcJHs4x6j/DiT6z8TlLjfXAuNPUfpaZR9anLgM/rs1mo1BsMjgydUc
-	JJgxmg==
-Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com [209.85.216.69])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4adr9hsyqe-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Fri, 14 Nov 2025 11:26:56 +0000 (GMT)
-Received: by mail-pj1-f69.google.com with SMTP id 98e67ed59e1d1-3418ad76023so4569309a91.0
-        for <iommu@lists.linux.dev>; Fri, 14 Nov 2025 03:26:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1763119616; x=1763724416; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=xj6btczQP9EttHmyg9oi/yzZG5tH5YacuDZXJnwTFdA=;
-        b=AgVhbFs8obNxIlhXHT6/H1LRfkbMQjeTsiiu9sM2zSR6TpkJMrc9DVIDsXYbmQSxBT
-         Nj+wBSPlBR2eBkx9iamPO6Ig7WUkAZp+EO+9gVLhFHSieB82Zwz217TwybBVaOAsg0BM
-         /S3p4WSJPZY/KCvYueQzMEjrIhC96oQeqBWY6bjP/MLVm95l4s8qvSji52KMpYaUqN9r
-         gayiRRRxXU89eORE5T4qJDeaLQnpBVxS0SS3b3pdY+bSdv+BNw6IQmzaQPXJ+iO/z/X2
-         D6SZ3iS04zCDr7KWziIUZyRplDYDNg4pFg2amlIDsoC2cck4fKvWuxI5q9f8xzi4d7/Y
-         1jHA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1763119616; x=1763724416;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=xj6btczQP9EttHmyg9oi/yzZG5tH5YacuDZXJnwTFdA=;
-        b=SgiY09LW4cvXt1RPxIfiC1Tz/IfDVhFLiDp5o1Gv6fGs9vRIAlrjNkbAocTPcTuLC6
-         XmnloisTGpWYXgXLGH77Slg+aU9QWN52KeJttyS7m90b1YQwYw8yD485JsCoMDbtI9Ub
-         zz6QpbI3Dmbo7XzJQLU45TeN/nrmcLaYClvbhn0H9pWtR9I4Er4mI48kZxLMyIyo0la7
-         wW1Kg0GguygHHLI5sNWaCl/rGgcXwoCsKB1pTI8LDjPJ2UtlhtWtNwPw7LEGD3d7IRXq
-         XFQQ3zR6LJmKtIwjLU2U+pHgH6PD5SsbH7V1s7AaSWYTAyu57qKbMJ7OIa3UEG240UkY
-         fxtA==
-X-Forwarded-Encrypted: i=1; AJvYcCXQ+wSrwqT00fouWk0o9O72jaAciZr6+bi1n6Crk1yvWTJ+4bEdyl1vZYIAbw77kuDloUVz7w==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyO5CIJl9U2e5VEs9bfFUdridJVy0JpSN4bmLr/jNHpT551Pd03
-	Onw0t93pnt5/oKO4JFvUx5Md67Maue0fWPKBBXN6XS3Qf6Xn3HMCzOEE+MlDvQm2uLtN4/fQeKA
-	nLGaCQA643ME5YSAKpSCEkGZBLHYscNTD+x7wx5myahSc93at5tuudRbQnA==
-X-Gm-Gg: ASbGncsKf/P9JfMVAU/Z2ppzhhfBdhIKPqW+0XbK3Ng2ftuAxoTjrRIwfX9YRe6qWCz
-	ivL7qnfIkipifEweNkpPDbyuoLG1rhLrV8sE6jqP8dIMGvDm+ZsPxAfqj531/nVOpiXp2zqlvZv
-	ou7JkK4xCDSVLScRYZCEYfV3BxqfpSMxoLnliIWb+9CHXBpmb8CVbFPC18G075uWTvPg+5mgg71
-	Mv7fGfbWl0Ww/yJ6VD66yts5fhZmCrTIwrseZKxJAW+9+++lcKI4t8oRFax/ET+Yna8etfGqOOj
-	Q83++CbG975LocjR+wOE4LPjSERMTO1vGzATBerjaW8bDhDWn9yLA6uiTcSUcjFr8nhtyZLQIGt
-	lmWQ3WHPmwha9hIlb/oocUq0=
-X-Received: by 2002:a17:90a:d408:b0:33b:b020:597a with SMTP id 98e67ed59e1d1-343f99c1cc3mr3251182a91.0.1763119615949;
-        Fri, 14 Nov 2025 03:26:55 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IFgKCyHJGBBYPB4qZv+EAl4Tx88PJN32VSjZcg29sFOWP5dg9DS3lwkBEwjYg2dmQ/BXtGF2A==
-X-Received: by 2002:a17:90a:d408:b0:33b:b020:597a with SMTP id 98e67ed59e1d1-343f99c1cc3mr3251153a91.0.1763119615473;
-        Fri, 14 Nov 2025 03:26:55 -0800 (PST)
-Received: from [192.168.1.8] ([106.222.229.203])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3456516c622sm167599a91.9.2025.11.14.03.26.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 14 Nov 2025 03:26:55 -0800 (PST)
-Message-ID: <76523142-b337-4a31-90d2-c8477ef0b270@oss.qualcomm.com>
-Date: Fri, 14 Nov 2025 16:56:45 +0530
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HL3ellPq"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0327C4CEF5;
+	Fri, 14 Nov 2025 14:12:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1763129576;
+	bh=E1D9hm5bO8N8kbex64sVlG1YZDBmIdI/KickLssrJGk=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=HL3ellPqvQsBNvvHF7IfDNJxNlTHpagm2GH2q4/uTD6uW07e47h8hLfW0VNvqbPL3
+	 3dYBCW794fUe+xZ1IKDkW7oplRi2C0dWN9ExALHmbsfWylW1PpL1NdvszGUV3RDM+p
+	 FXxjC/gZyrlLC6ocgA9qv1JL43wNM8BxWcnEGwRqipEswsr77gmsfoKSxS9aBNIhre
+	 kf9mXiCiJoJ64HDoEledkzmn+evWkK4Xu1jOHqxZFeGey7W15B1qkVNHK6boV+F+kw
+	 QHX+yhxQUMpopYeBrp41cKDt0ozeKKYDw2y2Lwkr++ATV9CzfNCPdHZxytH+J8mrx7
+	 d3aog2aSpyXZA==
+Date: Fri, 14 Nov 2025 14:12:50 +0000
+From: Will Deacon <will@kernel.org>
+To: Wang Wensheng <wangwensheng4@huawei.com>
+Cc: robin.murphy@arm.com, joro@8bytes.org, jgg@ziepe.ca,
+	nicolinc@nvidia.com, kevin.tian@intel.com, praan@google.com,
+	baolu.lu@linux.intel.com, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	chenjun102@huawei.com
+Subject: Re: [RFC PATCH] iommu/arm-smmu-v3: Defer shutdown to syscore_ops
+Message-ID: <aRc44pvWsWdmNnQx@willie-the-truck>
+References: <20251013063529.108949-1-wangwensheng4@huawei.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 11/21] drm/msm/a6xx: Improve MX rail fallback in RPMH
- vote init
-To: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-Cc: Rob Clark <robin.clark@oss.qualcomm.com>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>, Sean Paul <sean@poorly.run>,
-        Dmitry Baryshkov <lumag@kernel.org>,
-        Abhinav Kumar
- <abhinav.kumar@linux.dev>,
-        Jessica Zhang <jesszhan0024@gmail.com>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Jordan Crouse
- <jordan@cosmicpenguin.net>,
-        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Connor Abbott <cwabbott0@gmail.com>, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        freedreno@lists.freedesktop.org, linux-arm-kernel@lists.infradead.org,
-        iommu@lists.linux.dev, devicetree@vger.kernel.org
-References: <20251110-kaana-gpu-support-v2-0-bef18acd5e94@oss.qualcomm.com>
- <20251110-kaana-gpu-support-v2-11-bef18acd5e94@oss.qualcomm.com>
- <dd32a5e0-1dd1-484d-8fb7-8f6c506c8c83@oss.qualcomm.com>
-Content-Language: en-US
-From: Akhil P Oommen <akhilpo@oss.qualcomm.com>
-In-Reply-To: <dd32a5e0-1dd1-484d-8fb7-8f6c506c8c83@oss.qualcomm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-GUID: P7YueG2YH1v6ddvf15l4jPprSl98C33I
-X-Proofpoint-ORIG-GUID: P7YueG2YH1v6ddvf15l4jPprSl98C33I
-X-Authority-Analysis: v=2.4 cv=N+Qk1m9B c=1 sm=1 tr=0 ts=69171200 cx=c_pps
- a=vVfyC5vLCtgYJKYeQD43oA==:117 a=UUXEStRZTiKyGgBwSCQbmw==:17
- a=IkcTkHD0fZMA:10 a=6UeiqGixMTsA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=lZFDvItL9zSOf8gjBGIA:9 a=QEXdDO2ut3YA:10
- a=rl5im9kqc5Lf4LNbBjHf:22
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMTE0MDA5MSBTYWx0ZWRfX/g0BqoJhVd62
- 736C/52xGDxCGeJkRG8DUOOlzJ8jabqn9xfBaGjBRxxKG3jLzGEa9sBchOBBmr0z66PkJo9pV85
- AasYVEKqK/+DgZi9G+iJCs2D52XBSBSzJYGGV6JvCFmK3zrxDotZrJkAMn20yU7ZF3W+QBIVY2r
- 7Y4KjOWBgVwAutb4g27pN6nAggmkhnBYuhEKyTFYaQ/BBOmlXOR9qqGQvKfiYSqob2FajNfp1YZ
- E0WPl6qSYDddd4/J9AcZCncwBA2RzKxLpZyUVkUZhZMw400xdnwRB1JZ/KjLjTT3RtwyFk06Sx4
- GYZU1b+AZRIUSn5rL2rzhU7Kw/dQY3/yCtQCTPBhdkn55bAydXkcS+KhbBc5rdLoItI+XLkHdNh
- bKTjy4/XVTNVWJN1Q1P2/BzQCHOuDA==
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.9,FMLib:17.12.100.49
- definitions=2025-11-14_03,2025-11-13_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- adultscore=0 priorityscore=1501 spamscore=0 suspectscore=0 impostorscore=0
- clxscore=1015 malwarescore=0 bulkscore=0 lowpriorityscore=0 phishscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2510240001 definitions=main-2511140091
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20251013063529.108949-1-wangwensheng4@huawei.com>
 
-On 11/12/2025 4:29 PM, Konrad Dybcio wrote:
-> On 11/10/25 5:37 PM, Akhil P Oommen wrote:
->> Current logic assumes that the voltage corners in both MxG and MxA are
->> always same. This is not true for recent targets. So, rework the rpmh init
->> sequence to probe and calculate the votes with the respective rails, ie,
->> GX rails should use MxG as secondary rail and Cx rail should use MxA as
->> the secondary rail.
+On Mon, Oct 13, 2025 at 02:35:29PM +0800, Wang Wensheng wrote:
+> We meet several softlockup while shutdown or reboot the system. The
+> kernel log is here:
 > 
-> Is GMU always on Mx*A* and never Mx*C*?
-
-I believe the GMUs we have so far are always on MxA when it is available.
-
--Akhil.
-
+> [  126.487508] arm-smmu-v3 a8000000.camera_smmu_controller0: CMD_SYNC timeout at 0x000001a3 [hwprod 0x000001a4, hwcons 0x00000016]
+> [  126.487675] (4375,3191)[drv_camera][hicam_buf] isp_smmu_cleanup_iova_dom cluster_id=0 unmap, key=0x0000000000000000, iova=0x0000000000000000, size=49152
+> [  127.300458] rcu: INFO: rcu_sched detected stalls on CPUs/tasks:
+> [  127.300464] rcu: 	3-...0: (8 ticks this GP) idle=086/1/0x4000000000000000 softirq=25646/25646 fqs=2475
+> [  127.300466] rcu: 	(detected by 0, t=5252 jiffies, g=30897, q=752)
+> [  127.300470] Sending NMI from CPU 0 to CPUs 3:
+> [  127.556735] arm-smmu-v3 a8000000.camera_smmu_controller0: CMD_SYNC timeout at 0x000001b0 [hwprod 0x000001b1, hwcons 0x00000016]
+> [  127.556966] (4375,3191)[drv_camera][hicam_buf] isp_smmu_cleanup_iova_dom cluster_id=0 unmap, key=0x0000000000000000, iova=0x0000000000000000, size=49152
+> [  128.626066] arm-smmu-v3 a8000000.camera_smmu_controller0: CMD_SYNC timeout at 0x000001bd [hwprod 0x000001be, hwcons 0x00000016]
+> [  128.626232] (4375,3191)[drv_camera][hicam_buf] isp_smmu_cleanup_iova_dom cluster_id=0 unmap, key=0x0000000000000000, iova=0x0000000000000000, size=49152
+> ...
+> [  132.903350] watchdog: BUG: soft lockup - CPU#7 stuck for 23s! [dds_discovery:3191]
+> ...
+> [  132.903564] Call trace:
+> [  132.903566]  arm_smmu_cmdq_issue_cmdlist+0x560/0x6c8
+> [  132.903568]  __arm_smmu_tlb_inv_range.isra.41+0x160/0x20c
+> [  132.903570]  arm_smmu_tlb_inv_range_domain+0x90/0x164
+> [  132.903572]  arm_smmu_iotlb_sync+0x3c/0x50
+> [  132.903576]  iommu_unmap+0x88/0xc0
+> [  132.903589]  isp_smmu_do_iommu_unmap.isra.6+0x5c/0x128 [drv_hicam_buf]
+> [  132.903594]  isp_smmu_unmap_iova+0x128/0x2f4 [drv_hicam_buf]
+> [  132.903598]  isp_smmu_cleanup_iova_dom+0xf0/0x1c8 [drv_hicam_buf]
+> [  132.903602]  hicambuf_check_and_ummap_remain_buffer+0x90/0xa0 [drv_hicam_buf]
+> [  132.903609]  himdcisp_release+0x1d0/0x228 [drv_himdcisp]
+> [  132.903615]  __fput+0xa4/0x2cc
+> [  132.903617]  ____fput+0x20/0x30
+> [  132.903620]  task_work_run+0x120/0x198
+> [  132.903623]  do_exit+0x444/0xd20
+> [  132.903625]  do_group_exit+0x40/0x140
+> [  132.903628]  get_signal+0x21c/0xab0
+> [  132.903630]  do_notify_resume+0x380/0x4a8
 > 
-> Konrad
+> The direct reason for this softlockup is that the driver want to access
+> the smmu device after it has been shutdown. Here the driver call the
+> iommu_unmap() a few times and get CMD_SYNC timeout, cost one second a
+> time, then the cpu where the driver runs on get stuck. There is another
+> case where a process that was bound to several smmu devices is exiting,
+> then the process would access the smmu devices through mmu_notifer
+> callbacks and get the similar stuck.
+> 
+> [   93.161307] Call trace:
+> [   93.161309]  arm_smmu_cmdq_issue_cmdlist+0x58c/0x948
+> [   93.161313]  __arm_smmu_cmdq_issue_cmd+0x60/0xb0
+> [   93.161316]  arm_smmu_tlb_inv_asid+0x6c/0x98
+> [   93.161321]  arm_smmu_mm_release+0x70/0xd4
+> [   93.161325]  __mmu_notifier_release+0x88/0x268
+> [   93.161332]  exit_mmap+0x374/0x4b4
+> [   93.161339]  mmput+0x7c/0x1c4
+> [   93.161346]  xsmem_release+0x6a8/0x91c [xsmem]
+> [   93.161364]  __fput+0x21c/0x340
+> [   93.161369]  ____fput+0x20/0x30
+> [   93.161371]  task_work_run+0x104/0x1a0
+> [   93.161377]  do_exit+0x4c0/0xe60
+> [   93.161382]  do_group_exit+0x38/0x138
+> 
+> Normally the reboot/shutdown command would kill all the process before
+> calling into kernel. But the user process may not exit in time, so the
+> process could run on the reboot_cpu while the reboot/shutdown command
+> running on another cpu run into kernel and shutdown smmu devices. Then
+> the process runs on the reboot_cpu would get stcuk and block the
+> reboot/shutdown command in migrate_to_reboot_cpu(). Move the shutdown
+> for smmu to syscore_ops to solve the issue. Because syscore_ops
+> would be called after migrate_to_reboot_cpu() and even another process
+> would access smmu device in other cpus after smmu shutdown, it cannot
+> block the reboot process.
+> 
+> Signed-off-by: Wang Wensheng <wangwensheng4@huawei.com>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 39 ++++++++++++++++-----
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  2 ++
 
+It looks to me like devices are shutdown in the reverse order from which
+they probed (modulo adjustments to device links). So in this case, I
+would expect the probe-deferrals from dma_configure() to ensure that
+the IOMMU is only shutdown after its clients. If you're using the IOMMU
+API directly then you'll need to find some other way to ensure this
+ordering.
+
+In any case, it looks like you're using some out-of-tree drivers and
+we shouldn't be hacking around this in the SMMUv3 driver.
+
+Will
