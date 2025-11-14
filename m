@@ -1,188 +1,214 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EF3EE2D2489
-	for <iommu@lists.linux.dev>; Fri, 14 Nov 2025 17:17:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763140644; cv=none; b=G8OuXeCei3d7TAiKhCdqP2VYl8ELA/P9p6UjBbtVtnONFBxCdinT2rr8KWcIvAe8ng5BDGZiJusrRkVG6KpNJQZqymyIQ+TUo+gHPthttw3xhCwdf2I0dbNaRybp65UMbsesgHs8i9UG9O2rVK8BcydzP1RBSv/fnUaw1PSl8xQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763140644; c=relaxed/simple;
-	bh=US9L1Trvmn0y+VvGXnKCRNDYcC9DuULSJtfAd/MuljA=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=NTHhojqRg/U9adpN5cv7NKCLP4wT5rMDRJi3swGSPuV7YpBsvVaNIDGiuudqvW+dZgyDyROUC0I9V9GeHYfpCA2b5x45jrK+ApADbSITtwvL/GkhKcBdXIt5rXNhehJsZq7UyXtuE+KpMy7KRAgRoVOsLPBho5uCI5MfdUqiOZs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=S8UabaxV; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+Received: from SJ2PR03CU001.outbound.protection.outlook.com (mail-westusazon11012030.outbound.protection.outlook.com [52.101.43.30])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0EEF42D060C;
+	Fri, 14 Nov 2025 18:01:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.43.30
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1763143275; cv=fail; b=OaHi8QNX84MpGIon87U8M6j87SGI4OqJEGViULouokycXS86Cvc/3q8lFWFCgJaKuDvk3YbwyP0foqiOtt3xT6dLLrabLwYHwRbu5Kxy5EFxJRFB2ChCv53s5YU/JBMOr3cmk+WLU/+wy6nXxvCA4TjTA8RmLqX9g1PYLCTMd6U=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1763143275; c=relaxed/simple;
+	bh=dtth237SYBtmUoIOqVIaWBRtIhZ3TLKL5zBUYaI7H2Y=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=PlFOiOQDGKfSkbFsAefIYsuI1xqN485I2nyGHU25+GM/SiEDgYty5Y/x1vGessAiH2ikrxTcbJpE9EPojbo/llPDYt/Ss/L7PolaV9VXxApOk88gEnyxfou+gtzhkXF2zsPn8dGv0N6yo7URq4lysYv3K94Iwc19VQiGrFBuR3A=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=UmIXN1Id; arc=fail smtp.client-ip=52.101.43.30
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="S8UabaxV"
-Received: from DESKTOP-0403QTC.corp.microsoft.com (unknown [20.236.11.102])
-	by linux.microsoft.com (Postfix) with ESMTPSA id E0C3A201AE63;
-	Fri, 14 Nov 2025 09:17:21 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com E0C3A201AE63
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1763140642;
-	bh=RjcuJ/qP9GinAATaCyR9e9OAlSGZ4KstXw1n3mi6ex4=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=S8UabaxVUGYyBcJCNVJ7vazZJPCqmtEru8Soh2Zw+p/c//PCufq3zZo2zQeGy6E4e
-	 aOhZibHqQmfw8xdxjBi1WhzmhQfLakQ4Vi3LbnzPjxW7YD1fUhqRhRv6+w+IgiBEWO
-	 FTHqC2eJoXBc2RyevzNsTUdFQmPcok0yvge4pQ7g=
-From: Jacob Pan <jacob.pan@linux.microsoft.com>
-To: linux-kernel@vger.kernel.org,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	Will Deacon <will@kernel.org>,
-	Joerg Roedel <joro@8bytes.org>,
-	Mostafa Saleh <smostafa@google.com>,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Nicolin Chen <nicolinc@nvidia.com>
-Cc: Jacob Pan <jacob.pan@linux.microsoft.com>,
-	Zhang Yu <zhangyu1@linux.microsoft.com>,
-	Jean Philippe-Brucker <jean-philippe@linaro.org>,
-	Alexander Grest <Alexander.Grest@microsoft.com>
-Subject: [PATCH v4 2/2] iommu/arm-smmu-v3: Improve CMDQ lock fairness and efficiency
-Date: Fri, 14 Nov 2025 09:17:18 -0800
-Message-Id: <20251114171718.42215-3-jacob.pan@linux.microsoft.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20251114171718.42215-1-jacob.pan@linux.microsoft.com>
-References: <20251114171718.42215-1-jacob.pan@linux.microsoft.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="UmIXN1Id"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=g5Vg0WOlLO9QnVvpNoVyzBb5Q2LZMhi1DZBd/dmCysjgW+wjXPA87RjwCXPC4bd693t1CpiVaqfq+Nd1aIAv+ddfRdX/VXdbSwo5tIux3MJ4tl766XKqrVbhVUKEWlv75yXcLS0N1QP5qwjt4qnlYCFLBLzd/YbOGUcw41YbM9GMPcsl/QBF1YJxEuiWhpkcQFPAN12DEQiHf8qn2m40Zpdhj0sg3FsUOZu0kRQ5SCcIp7EuH0lk4X9jLLBYsnIdgcUqI3xWcZiH/epNe2rMNYq2i5U4w+80lxwDwpLryCRVBCy+eSpqe5whunGPOVOUGzddLTB4ClKRej3W2zixFA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Fei2MTGWh2LdRoR3ef1akYdXBQVwcktqvwyxc7Hwx4s=;
+ b=aMeF44ozu1YYvO2gsRPmVtmTkOpEwie8nJQthCAowLBsvT/m2+DeHFIqJYgIpVfgUqK8Z6VUxjPhA7xDuNR2/bjvg++asfjIZlCQqBiQJYsKTiuLysNdiTK5BEp6/rdVtCaBzy3D72Psg+0r31xMESMayHo5J6ppwTXoQQfv0sU3Am0sJWQSMsneeTaOjEhH85EnomonEWeexm8ztqd/G/Ah7wKHMapIwIvs0ZOxxQV2lo6YtDKNprZZGL7ANYSSyirkNdZTsL7ouF3z3NNoU+sYsiWsJuksd6B4rkusJYA1BXUsuN3PSyTZ1ctUbGSMnYii+w+5Q7mkvNpcO6MY4A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Fei2MTGWh2LdRoR3ef1akYdXBQVwcktqvwyxc7Hwx4s=;
+ b=UmIXN1Idh+MN1dHulHjI7RvMaAfEK500+LPrU+88FeSI1JSoamIo/7mD+o3fRjAAnMb1Vqvm6IGDnn5eY/mGsm9A6q40FgAMs88v4+MyNTX7Yw7o0R6LJK2lF0B6++0HBwZVHCN8pxO/EBgX6+lcd1ux/KbidigQso/AgM7ri5nIMMuDNdxVHJEV+01LilNOjkbvnp88hc8g1us3Rb9YQ2dw4EmcC9lNE2FEkl3GKSvRiQjNa8NnCtXdQ+vJbhtaQn/bTRt/yDO5SUp1Wu7cRknpfk7AoXISytMCnCSF7/4aK9nuCn7ZUzGE/QA44v2MGd4WNCiT2eFCfGKde9HE2w==
+Received: from SA9PR13CA0072.namprd13.prod.outlook.com (2603:10b6:806:23::17)
+ by MW3PR12MB4412.namprd12.prod.outlook.com (2603:10b6:303:58::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9320.18; Fri, 14 Nov
+ 2025 18:01:06 +0000
+Received: from SA2PEPF00001507.namprd04.prod.outlook.com
+ (2603:10b6:806:23:cafe::46) by SA9PR13CA0072.outlook.office365.com
+ (2603:10b6:806:23::17) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9343.6 via Frontend Transport; Fri,
+ 14 Nov 2025 18:01:06 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ SA2PEPF00001507.mail.protection.outlook.com (10.167.242.39) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.9320.13 via Frontend Transport; Fri, 14 Nov 2025 18:01:05 +0000
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Fri, 14 Nov
+ 2025 10:00:42 -0800
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail204.nvidia.com
+ (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Fri, 14 Nov
+ 2025 10:00:41 -0800
+Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com (10.129.68.10)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
+ Transport; Fri, 14 Nov 2025 10:00:40 -0800
+Date: Fri, 14 Nov 2025 10:00:38 -0800
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+CC: "joro@8bytes.org" <joro@8bytes.org>, "afael@kernel.org"
+	<afael@kernel.org>, "bhelgaas@google.com" <bhelgaas@google.com>,
+	"alex@shazbot.org" <alex@shazbot.org>, "jgg@nvidia.com" <jgg@nvidia.com>,
+	"will@kernel.org" <will@kernel.org>, "robin.murphy@arm.com"
+	<robin.murphy@arm.com>, "lenb@kernel.org" <lenb@kernel.org>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "linux-acpi@vger.kernel.org"
+	<linux-acpi@vger.kernel.org>, "linux-pci@vger.kernel.org"
+	<linux-pci@vger.kernel.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	"patches@lists.linux.dev" <patches@lists.linux.dev>, "Jaroszynski, Piotr"
+	<pjaroszynski@nvidia.com>, "Sethi, Vikram" <vsethi@nvidia.com>,
+	"helgaas@kernel.org" <helgaas@kernel.org>, "etzhao1900@gmail.com"
+	<etzhao1900@gmail.com>
+Subject: Re: [PATCH v5 5/5] pci: Suspend iommu function prior to resetting a
+ device
+Message-ID: <aRduRi8zBHdUe4KO@Asurada-Nvidia>
+References: <cover.1762835355.git.nicolinc@nvidia.com>
+ <a166b07a254d3becfcb0f86e4911af556acbe2a9.1762835355.git.nicolinc@nvidia.com>
+ <BN9PR11MB52762516D6259BBD8C3740518CCAA@BN9PR11MB5276.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <BN9PR11MB52762516D6259BBD8C3740518CCAA@BN9PR11MB5276.namprd11.prod.outlook.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SA2PEPF00001507:EE_|MW3PR12MB4412:EE_
+X-MS-Office365-Filtering-Correlation-Id: 79b01a55-7513-4668-6b8b-08de23a7c85b
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|36860700013|7416014|376014|82310400026;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?GC06iAck6zBl1Sz+YupLcRx2MHbSkkaxyu9R3/ugVzyDesKYrQfjLmYiUdcE?=
+ =?us-ascii?Q?lhydIqSkPT6k5iRjsw8+gXbjasOUqkzpNterO9C88gBTbsOWv0JxIj4/z+qM?=
+ =?us-ascii?Q?1UnPru33+nbO8uc6EaxsQNsIVvUP9c78J2IrMMVORQQhjVQmzqtPm6fcyzWZ?=
+ =?us-ascii?Q?zksGe1dZEmojjUEWIlXD5gl5rP1S9aliKYiz7qmJqk+jMr0PcWpa4fxL2BEY?=
+ =?us-ascii?Q?WZoMuCKncFgEkzMX9b3Pz8Syb2FmRIyvCgBsoJ3YuLvddEYXxtKPJlKK4BYA?=
+ =?us-ascii?Q?MAlS1y/QgHOpcrzrfhcYMYlGQbCFM0pB3/2rqmHptsEwqCqYgpbbCC8dT8zb?=
+ =?us-ascii?Q?/k0DEwebbjnuw6DPjXZPL+vZN6v6qJfy5/fKho7pWnfNpNu6wCUmBYlzb+vT?=
+ =?us-ascii?Q?kzDaez9oVvK1WApjdCEhisNj3fkKcau7pcc5QPnl8DRJZ7SZCkMAnqVYilGX?=
+ =?us-ascii?Q?8wPI1oc7Y+VcGl9WHN9SACN0eouAvtWMzG0NhzDdOPH5GQQIRhFMDR7mzXNE?=
+ =?us-ascii?Q?QrfzSVpKkjyHwW37oE2HbND2llFFCJ9xI7+JyFRy5s4Ow+6G9cdk62yr42zL?=
+ =?us-ascii?Q?B6A81AKApKS9KGLiXMd+Wbk1Z/dbbU6sRFGKvrGupj8WBO2RHegbtIl6825t?=
+ =?us-ascii?Q?oCzP2qR92z5x39lQ8101sroCpoimZZTlJEi89rIweHnBMrRm5tXdWGfwmeSd?=
+ =?us-ascii?Q?x8GUYYZ2MwRvsWkv1mLoN56YQkIJdZ95WQLz5RmCsnvLCfp+GJJ+a3v7RhbD?=
+ =?us-ascii?Q?XMnSPBhyZnvIPS5atVKYvGjhKJbxvVFrwHtl1UiWG6AiwqTmwiqbHz3XM+B0?=
+ =?us-ascii?Q?8A25VPdweIkX8qI9OUfrWL1p3E1YRQEfgZF7Kh11VTEsllR1lBkBfgIuZ1rG?=
+ =?us-ascii?Q?d6QG827lFpAbai7qU7CbcyvdWeEuu/ypzpfclyudZ83zoBDPyapz+cNmnjqe?=
+ =?us-ascii?Q?gFPJKH6vO6ybwCevln175/GoUfriscVW8F9+9Hr7JiE0O6JVWmlG6TlycCru?=
+ =?us-ascii?Q?Ne0Xu6uTJv6Jwrml4zQSxSkZsQ0tGJ62peYs9TK8LGV3tqW1tVLFxpvDngNn?=
+ =?us-ascii?Q?lHHQE35DpsIC/lGUXPClPhHgTZh95+v+eV4baWQPUCRNJld7TM342BaHJrmP?=
+ =?us-ascii?Q?ANJCvGFkXIiYvKmxP1mjFBuO0B21hrNEMVfR0T1wJoTjW8dIF5Xwy9KUg8eG?=
+ =?us-ascii?Q?n1zOqQyMV9CKS/WJx5FjrVtxegPFDI0igZZAFx4dHDTDGwjo1trhBPPS6tdU?=
+ =?us-ascii?Q?wkx2mFsEnAgMhLPuvRpRtuY+fsKk8uo8lbNWrBS5yTRTbmvjCxZWl9U4jZiU?=
+ =?us-ascii?Q?voYOjlhRHYYMJu7B7DbOBg0aU/TXFaf7BwFFj2LcCJBCPZ7uhMQQpC8WXagS?=
+ =?us-ascii?Q?uwX+o4HerEo/i+QTYAOk+xqJj/MkAvb2hEKsbWHV3SqRZdWMChwNk4zKcbNV?=
+ =?us-ascii?Q?GIoZAsX/5Ue19Ao+21eQCRO5T6bIs1m5mi/qzBkA/bJe7ZoE3MzaGVEiZ4sz?=
+ =?us-ascii?Q?ou0p2PJSGc3OL2N+dLmTxqKtoaV+Gh1gct+gLXV4Q2BJmYYiAvFqdzC+vgpx?=
+ =?us-ascii?Q?m69wpYNK75zt/K5ZGiw=3D?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(36860700013)(7416014)(376014)(82310400026);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Nov 2025 18:01:05.9688
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 79b01a55-7513-4668-6b8b-08de23a7c85b
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SA2PEPF00001507.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR12MB4412
 
-From: Alexander Grest <Alexander.Grest@microsoft.com>
+On Fri, Nov 14, 2025 at 09:45:31AM +0000, Tian, Kevin wrote:
+> > From: Nicolin Chen <nicolinc@nvidia.com>
+> > Sent: Tuesday, November 11, 2025 1:13 PM
+> > 
+> > PCIe permits a device to ignore ATS invalidation TLPs, while processing a
+> > reset. This creates a problem visible to the OS where an ATS invalidation
+> > command will time out: e.g. an SVA domain will have no coordination with a
+> > reset event and can racily issue ATS invalidations to a resetting device.
+> > 
+> > The PCIe spec in sec 10.3.1 IMPLEMENTATION NOTE recommends to disable
+> > and
+> > block ATS before initiating a Function Level Reset. It also mentions that
+> > other reset methods could have the same vulnerability as well.
+> > 
+> > Now iommu_dev_reset_prepare/done() helpers are introduced for this
+> > matter.
+> > Use them in all the existing reset functions, which will attach the device
+> 
+> looks pci_reset_bus_function() was missed?
 
-The SMMU CMDQ lock is highly contentious when there are multiple CPUs
-issuing commands and the queue is nearly full.
+Will add that.
 
-The lock has the following states:
- - 0:		Unlocked
- - >0:		Shared lock held with count
- - INT_MIN+N:	Exclusive lock held, where N is the # of shared waiters
- - INT_MIN:	Exclusive lock held, no shared waiters
+> > @@ -971,6 +971,7 @@ void pci_set_acpi_fwnode(struct pci_dev *dev)
+> >  int pci_dev_acpi_reset(struct pci_dev *dev, bool probe)
+> >  {
+> >  	acpi_handle handle = ACPI_HANDLE(&dev->dev);
+> > +	int ret = 0;
+> 
+> no need to initialize it. ditto for other reset functions.
 
-When multiple CPUs are polling for space in the queue, they attempt to
-grab the exclusive lock to update the cons pointer from the hardware. If
-they fail to get the lock, they will spin until either the cons pointer
-is updated by another CPU.
+Ack.
 
-The current code allows the possibility of shared lock starvation
-if there is a constant stream of CPUs trying to grab the exclusive lock.
-This leads to severe latency issues and soft lockups.
+> > +/*
+> > + * Per PCIe r6.3, sec 10.3.1 IMPLEMENTATION NOTE, software disables ATS
+> > before
+> > + * initiating a reset. Notify the iommu driver that enabled ATS.
+> > + */
+> > +int pci_reset_iommu_prepare(struct pci_dev *dev)
+> > +{
+> > +	if (pci_ats_supported(dev))
+> > +		return iommu_dev_reset_prepare(&dev->dev);
+> > +	return 0;
+> > +}
+> 
+> the comment says "driver that enabled ATS", but the code checks
+> whether ATS is supported.
+> 
+> which one is desired?
 
-Consider the following scenario where CPU1's attempt to acquire the
-shared lock is starved by CPU2 and CPU0 contending for the exclusive
-lock.
+The comments says "the iommu driver that enabled ATS". It doesn't
+conflict with what the PCI core checks here?
 
-CPU0 (exclusive)  | CPU1 (shared)     | CPU2 (exclusive)    | `cmdq->lock`
---------------------------------------------------------------------------
-trylock() //takes |                   |                     | 0
-                  | shared_lock()     |                     | INT_MIN
-                  | fetch_inc()       |                     | INT_MIN
-                  | no return         |                     | INT_MIN + 1
-                  | spins // VAL >= 0 |                     | INT_MIN + 1
-unlock()          | spins...          |                     | INT_MIN + 1
-set_release(0)    | spins...          |                     | 0 see[NOTE]
-(done)            | (sees 0)          | trylock() // takes  | 0
-                  | *exits loop*      | cmpxchg(0, INT_MIN) | 0
-                  |                   | *cuts in*           | INT_MIN
-                  | cmpxchg(0, 1)     |                     | INT_MIN
-                  | fails // != 0     |                     | INT_MIN
-                  | spins // VAL >= 0 |                     | INT_MIN
-                  | *starved*         |                     | INT_MIN
+> > +	/* Have to call it after waiting for pending DMA transaction */
+> > +	ret = pci_reset_iommu_prepare(dev);
+> > +	if (ret) {
+> > +		pci_err(dev, "failed to stop IOMMU\n");
+> 
+> the error message could be more informative.
 
-[NOTE] The current code resets the exclusive lock to 0 regardless of the
-state of the lock. This causes two problems:
-1. It opens the possibility of back-to-back exclusive locks and the
-   downstream effect of starving shared lock.
-2. The count of shared lock waiters are lost.
+OK. Perhaps print the ret value.
 
-To mitigate this, we release the exclusive lock by only clearing the sign
-bit while retaining the shared lock waiter count as a way to avoid
-starving the shared lock waiters.
-
-Also deleted cmpxchg loop while trying to acquire the shared lock as it
-is not needed. The waiters can see the positive lock count and proceed
-immediately after the exclusive lock is released.
-
-Exclusive lock is not starved in that submitters will try exclusive lock
-first when new spaces become available.
-
-Reviewed-by: Mostafa Saleh <smostafa@google.com>
-Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
-Signed-off-by: Alexander Grest <Alexander.Grest@microsoft.com>
-Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
----
-v4:	- No change
-v3:
-	- Add flow chart for example starvation case (Nicolin)
-	  no code change.
-v2:
-	- Changed shared lock acquire condition from VAL>=0 to VAL>0
-	  (Mostafa)
-	- Added more comments to explain shared lock change (Nicolin)
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 31 ++++++++++++++-------
- 1 file changed, 21 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 9824bd808725..0b62b3b0f994 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -481,20 +481,26 @@ static void arm_smmu_cmdq_skip_err(struct arm_smmu_device *smmu)
-  */
- static void arm_smmu_cmdq_shared_lock(struct arm_smmu_cmdq *cmdq)
- {
--	int val;
--
- 	/*
--	 * We can try to avoid the cmpxchg() loop by simply incrementing the
--	 * lock counter. When held in exclusive state, the lock counter is set
--	 * to INT_MIN so these increments won't hurt as the value will remain
--	 * negative.
-+	 * When held in exclusive state, the lock counter is set to INT_MIN
-+	 * so these increments won't hurt as the value will remain negative.
-+	 * The increment will also signal the exclusive locker that there are
-+	 * shared waiters.
- 	 */
- 	if (atomic_fetch_inc_relaxed(&cmdq->lock) >= 0)
- 		return;
- 
--	do {
--		val = atomic_cond_read_relaxed(&cmdq->lock, VAL >= 0);
--	} while (atomic_cmpxchg_relaxed(&cmdq->lock, val, val + 1) != val);
-+	/*
-+	 * Someone else is holding the lock in exclusive state, so wait
-+	 * for them to finish. Since we already incremented the lock counter,
-+	 * no exclusive lock can be acquired until we finish. We don't need
-+	 * the return value since we only care that the exclusive lock is
-+	 * released (i.e. the lock counter is non-negative).
-+	 * Once the exclusive locker releases the lock, the sign bit will
-+	 * be cleared and our increment will make the lock counter positive,
-+	 * allowing us to proceed.
-+	 */
-+	atomic_cond_read_relaxed(&cmdq->lock, VAL > 0);
- }
- 
- static void arm_smmu_cmdq_shared_unlock(struct arm_smmu_cmdq *cmdq)
-@@ -521,9 +527,14 @@ static bool arm_smmu_cmdq_shared_tryunlock(struct arm_smmu_cmdq *cmdq)
- 	__ret;								\
- })
- 
-+/*
-+ * Only clear the sign bit when releasing the exclusive lock this will
-+ * allow any shared_lock() waiters to proceed without the possibility
-+ * of entering the exclusive lock in a tight loop.
-+ */
- #define arm_smmu_cmdq_exclusive_unlock_irqrestore(cmdq, flags)		\
- ({									\
--	atomic_set_release(&cmdq->lock, 0);				\
-+	atomic_fetch_and_release(~INT_MIN, &cmdq->lock);		\
- 	local_irq_restore(flags);					\
- })
- 
--- 
-2.43.0
-
+Thanks!
+Nicolin
