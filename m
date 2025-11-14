@@ -1,440 +1,303 @@
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AFCF12F6567
-	for <iommu@lists.linux.dev>; Fri, 14 Nov 2025 09:20:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=93.17.235.10
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763112037; cv=none; b=IYzxlWQoh/slgf8TbTyGjMisWf218W6HBffPY1xFvev3rVH8EkARzKsAmrEjAbTOM7SDldnsuhQuZoRPqS/pJMuyCH0sChFIgk0u4ldw0DslyOPCOSXdX0juLCuv9jMH4XCnM0WhGsEyFS/L6f4AQS8QCRmMw1y80OGI0hMUoo4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763112037; c=relaxed/simple;
-	bh=kimqotKOowC9YnAuCm2hSc6coYV+4UC/hx4MUTohuDY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=jqZm6ZJqc44kojebQEoYmblEDGqXktT7wuUOhhrkCjmKTdySKrj6UBvUM5cRXQdqkRj8JhXyKl6YGRmK3HnP5xDP4v02ExW2sEMXu3vWrI5/CWc4nzMw2leCXJi9wQCLka7lk91RTze9R03SW0P0A0K/1DfhX9B9y8xYDaks1HM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=csgroup.eu; spf=pass smtp.mailfrom=csgroup.eu; arc=none smtp.client-ip=93.17.235.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=csgroup.eu
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=csgroup.eu
-Received: from localhost (mailhub4.si.c-s.fr [172.26.127.67])
-	by localhost (Postfix) with ESMTP id 4d7B3S6g5lz9sSm;
-	Fri, 14 Nov 2025 10:02:12 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-	by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Jh3Mqk4UdkM3; Fri, 14 Nov 2025 10:02:12 +0100 (CET)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-	by pegase2.c-s.fr (Postfix) with ESMTP id 4d7B3P5h7Hz9sSt;
-	Fri, 14 Nov 2025 10:02:09 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-	by messagerie.si.c-s.fr (Postfix) with ESMTP id 940058B770;
-	Fri, 14 Nov 2025 10:02:09 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-	by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-	with ESMTP id WOt_dcMEhEst; Fri, 14 Nov 2025 10:02:09 +0100 (CET)
-Received: from [192.168.235.99] (unknown [192.168.235.99])
-	by messagerie.si.c-s.fr (Postfix) with ESMTP id DCFEA8B76E;
-	Fri, 14 Nov 2025 10:02:07 +0100 (CET)
-Message-ID: <83cdd7e8-51a7-4989-b270-93cec301cde7@csgroup.eu>
-Date: Fri, 14 Nov 2025 10:02:07 +0100
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48D433081A7;
+	Fri, 14 Nov 2025 09:37:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.15
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1763113054; cv=fail; b=WxNr1KULcJAaKtGMT+302hFauKtXtmo1KaAhtYLZSPcXhCkvM6UvDSS6M/9tfVS9uyjzhspHnYVztKDGTcm97PU22ozhLHC3EZR0OHi1z4Aswa92KBl5c6VmG0moG7KcvenFK29I4rEP1uXEC1zrXf+3MRPsiR7LCQpFzanjaV8=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1763113054; c=relaxed/simple;
+	bh=or9OURCyKBIfsrymq7LrjHS9fQDVAcipBzCFHSDbTi0=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=AXRCY05POkTpIEpQ2wWIPCFQFM5OazMbxrZAtlWwsxB9oPAcboUm7LNIniMJFepaiyRpvAO67Sf0JVsucMi8vbHsFUcIam6iYanw9HQliPCqWYsg4XSEaOpXVkqO0LrlMtmYrXBr5d4qCRtFrPxpifl0hic8nrE1wYyEPd3o50U=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BkXLJ2kS; arc=fail smtp.client-ip=198.175.65.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BkXLJ2kS"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1763113052; x=1794649052;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=or9OURCyKBIfsrymq7LrjHS9fQDVAcipBzCFHSDbTi0=;
+  b=BkXLJ2kSjlR7o804cu5kFFew3TJz3PeG/x7NNQ8In0DdemYJqZ9/QUiC
+   +hhfaIb0ScALiZZ3VJrqBSoIO27GVsmpiYbdAvtx+10DPWqVN0LbUyVef
+   Qakkh/qfJ8z5z6Cag51fbYcLWnFBVHUgwOsNRQyDCQcxIVgqWBGrHlW1W
+   jSwUIMLNh4pbuh1I+gcSoD9S00QW9w2g3ocEbMlkl/omKPda6LlDIp+Cg
+   NSlFN09TkrejMTyc9PiW+oZ1/0XgaC51uH+9vLFqINkRJ469s851EXsrD
+   AIThRivu5M7+igB9/KCJJQE8eOKPOAn4dBq/wrBvv8qaDBovsApIplLQI
+   A==;
+X-CSE-ConnectionGUID: Jk4iW2ovRAy30PTS5RCXzA==
+X-CSE-MsgGUID: tnixKLLsSeWuqCk9qdKL1w==
+X-IronPort-AV: E=McAfee;i="6800,10657,11612"; a="68830043"
+X-IronPort-AV: E=Sophos;i="6.19,304,1754982000"; 
+   d="scan'208";a="68830043"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Nov 2025 01:37:31 -0800
+X-CSE-ConnectionGUID: jkIj32u4SUCqe4ZBk+1Pbg==
+X-CSE-MsgGUID: PE6UW2LyQ0uEPKljE6Bu+Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.19,304,1754982000"; 
+   d="scan'208";a="194885134"
+Received: from orsmsx902.amr.corp.intel.com ([10.22.229.24])
+  by orviesa005.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Nov 2025 01:37:32 -0800
+Received: from ORSMSX902.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.27; Fri, 14 Nov 2025 01:37:31 -0800
+Received: from ORSEDG902.ED.cps.intel.com (10.7.248.12) by
+ ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.27 via Frontend Transport; Fri, 14 Nov 2025 01:37:31 -0800
+Received: from BN1PR04CU002.outbound.protection.outlook.com (52.101.56.55) by
+ edgegateway.intel.com (134.134.137.112) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.27; Fri, 14 Nov 2025 01:37:31 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=DbsXQ6GBF+gdkamu6uJrZ6JD+bsNGvPkTxPNtDIFaVcdUj7hTNToYhSuQiUAsA3G09FamCBBJ2Guyrhs8q4yooZORFNPCKrgMEC/4YJCFyrlcoKBYyHy/zwKFc6QO6SQ7+JZRAga3P6jTzlI6RPz30w2ESDAve6ahxxoYKH2hthipSyPjza74W2QB3dnUBnqbCemPmduDd0IvJdHMH61++KvoxyvMa9sOTAWEhpWkKI2smiVGLU7a2sfVOdv9yAEmwsOgqqMTA+0sxELeHF6zUUuCuGNezPEp9IkiVEPEoavBmdObsiLt2O7o6N5Cz9AxPa0lgcBs9L4iZqPqNsfOw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=QsOxgr77rFQBUvvEG3xJx5uvsS7toJIM3cLS645qJ0w=;
+ b=olIDRKZcSNHHVR7Q4ZeDRlWKEokNRH6JKBvHoSlWTWl17490m1h18PvBPNFxYx+82HZTzw1UdIUNibSYamUpeGFjr511GAbz0pkzXMIGrxfvZ5GoAPT6L06CifQ9TIHsdf0GGWR0sVVl7yvoMJmJ3kM5iMHevOAQ6j+YtQiQvSpgIba4cqAmBlmNRffjVpodRNL5aGgqf/pLAhAZZcmOkTKxaAmf25T7ss3XK8UJ6OT09VhdBPdxbFjD/ERfWkk+G0fjvS3vX9baN18h5ySz9RztydJKLUizlECYZQxHnkbY1m2qq65jbtTk2/l0zICn6aM/UOiKSjHJtQuJ6EN1HA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by MW3PR11MB4731.namprd11.prod.outlook.com (2603:10b6:303:2f::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9320.18; Fri, 14 Nov
+ 2025 09:37:28 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::b576:d3bd:c8e0:4bc1]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::b576:d3bd:c8e0:4bc1%5]) with mapi id 15.20.9320.013; Fri, 14 Nov 2025
+ 09:37:28 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Nicolin Chen <nicolinc@nvidia.com>, "joro@8bytes.org" <joro@8bytes.org>,
+	"afael@kernel.org" <afael@kernel.org>, "bhelgaas@google.com"
+	<bhelgaas@google.com>, "alex@shazbot.org" <alex@shazbot.org>,
+	"jgg@nvidia.com" <jgg@nvidia.com>
+CC: "will@kernel.org" <will@kernel.org>, "robin.murphy@arm.com"
+	<robin.murphy@arm.com>, "lenb@kernel.org" <lenb@kernel.org>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "linux-acpi@vger.kernel.org"
+	<linux-acpi@vger.kernel.org>, "linux-pci@vger.kernel.org"
+	<linux-pci@vger.kernel.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	"patches@lists.linux.dev" <patches@lists.linux.dev>, "Jaroszynski, Piotr"
+	<pjaroszynski@nvidia.com>, "Sethi, Vikram" <vsethi@nvidia.com>,
+	"helgaas@kernel.org" <helgaas@kernel.org>, "etzhao1900@gmail.com"
+	<etzhao1900@gmail.com>
+Subject: RE: [PATCH v5 4/5] iommu: Introduce iommu_dev_reset_prepare() and
+ iommu_dev_reset_done()
+Thread-Topic: [PATCH v5 4/5] iommu: Introduce iommu_dev_reset_prepare() and
+ iommu_dev_reset_done()
+Thread-Index: AQHcUsn0U4OK+eFVREizq+Vz85UbGLTx6dhA
+Date: Fri, 14 Nov 2025 09:37:27 +0000
+Message-ID: <BN9PR11MB527683978D304128441125C68CCAA@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <cover.1762835355.git.nicolinc@nvidia.com>
+ <28af027371a981a2b4154633e12cdb1e5a11da4a.1762835355.git.nicolinc@nvidia.com>
+In-Reply-To: <28af027371a981a2b4154633e12cdb1e5a11da4a.1762835355.git.nicolinc@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|MW3PR11MB4731:EE_
+x-ms-office365-filtering-correlation-id: 578341e4-d1be-4df6-53e9-08de23616ce5
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;ARA:13230040|1800799024|376014|7416014|366016|38070700021;
+x-microsoft-antispam-message-info: =?us-ascii?Q?3EnnFjypX7AXcO5B0gxquMpxRKIUfgQ2vF7Zzwm7qPEip4I+dJMmL7sdQhrV?=
+ =?us-ascii?Q?CG6rUPg7/j/JG/ZPa2AylcXhq/Qy5udIWxv8vT8ee2Yh8NlygBdQyyxHtegt?=
+ =?us-ascii?Q?iL6pTpUIpD4ntEg48EkGazZ9aBl4ZK8XB/OwbmldsxEjSgq4QTcGun+aNKDH?=
+ =?us-ascii?Q?yyYBXT4Lwl3ljj7YjiReU9WcHmi/Ku7xz77Vl4Yf//z5d+AqOTOvLeNW/TFx?=
+ =?us-ascii?Q?WLQeTnXIpgR2/u18uu+bK9xt92XfvqPLL1TL5YVVAM4tzKWHvng0kxhmU2lG?=
+ =?us-ascii?Q?YM4lSRb8owNFEasfZrVs1EY1Pg5DzREDnXP3A7PiZInpgcE4wV4500zlSMhM?=
+ =?us-ascii?Q?tSQcK63/5mpSGL3jKzpXTlPpeahFOebTUgoaOfCvJ6p6BVvEA50cg9seZZUe?=
+ =?us-ascii?Q?IqmRb7KxeJ5lonfoIGvilPQaHh3urvWUREQ8PW9VHQmkMJUvuDj9LpAGffhJ?=
+ =?us-ascii?Q?cKbUbnBLFuWmplW+a/5bGF3kRgnzNEFvUWcFyryHnv64c7ty0Y2vmBEOpWnJ?=
+ =?us-ascii?Q?Fdh5/qSm6KeYmya0STIlK2CVsocP2hmNWj9ub+SVsT3OETGc5gJlb9luDFod?=
+ =?us-ascii?Q?KxUWPJMFWVJDvewdCQRddygMIi7ddm1kNaw1AVQBwo1EbRWNPIYKCOI+q3q7?=
+ =?us-ascii?Q?PQmFXB0bcMzjeO4rb9CCJJvDZdhKoFRKQh327lQgSJ8jqGHoZErVbtkUe+65?=
+ =?us-ascii?Q?0IicxlDHXATf7rNy8iqpeRyq+TjGyI0bh0tORlCvnXUYaeK9is0Pg2Oo0u8t?=
+ =?us-ascii?Q?aP2XZ662VXIyJFqcrGUJvMoXYv0GTpYK9FRc3EZu8w+dFLN59189ZxtmZge2?=
+ =?us-ascii?Q?sBToNYbm5L1giD2eKsiHWBGPx/u48LH50ZSh3Ljnb/7wDn6Z5JWiZNr67M0X?=
+ =?us-ascii?Q?y9rft6doA0Yb2rMI7Py6mHeCgTPLKnrLEeENg6kdUkPQzMzDqDXbkBKXe16Y?=
+ =?us-ascii?Q?8HZxpxoNIEqQXjVrvhEUPYFLmUszZkvDO36TlE0Hps0Cd3Hh85nnc48B0HyD?=
+ =?us-ascii?Q?/oEKSdyyL0gfQ2xXkO9X0I4gZTfyQC+7xXNCMjR1pMfze7Jh+t2O0stRYZew?=
+ =?us-ascii?Q?vOf/K3L1IzdLmYJzakB7NimXTognVGMx0dczFX0sNKydU4/Yej4xXkw0OnHn?=
+ =?us-ascii?Q?XgTU8ZpfBq2x9uR8rsyGeRJeBryig09rbPHrFDpSKLRKihPKVQD1lrXGFQgS?=
+ =?us-ascii?Q?PBTWXD8z7WS9K5rAu9LtG5QRZaPUiNgD3PQP2r76dAqeC2+BC2uFQbstXPl3?=
+ =?us-ascii?Q?shBTEuyCtJCACcqYnO++l+oECLFsB59BSZPAuAr7gA9vgiUCh3X5EQrcqdJn?=
+ =?us-ascii?Q?UrMhPOKaAtkLB9Nt1Vn9ZrqrSdK9YiE/3z8Be+ebWFONFOlr2AZlkLKC7TV4?=
+ =?us-ascii?Q?M0MD3TFZcXP60LuTmF+930LI9DoZIJNqj2TRwikdk+Xrxe2//OYxK5RUnBDY?=
+ =?us-ascii?Q?okI5zDhlzrFM1SB61o+pnuZTERHV6R/xXB9pZma62P3K9LsaQx99p3wBmq4p?=
+ =?us-ascii?Q?9TDyGiBQdHfAHokx3zY2a8gs5QjgrkIV5uoy?=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(7416014)(366016)(38070700021);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?QRNE3hzO7Xw8LxEIGNZcGVpoZNXsUNmuN416nMaMWq0qBR/5lPxXdYVHln3O?=
+ =?us-ascii?Q?yMva1Ljr4LrUmARhc15m0UIWPfUCSRS3IEVfUL8TiUTR1C9moRROGi7MU2Dl?=
+ =?us-ascii?Q?cmRd7tR1OSTQpqIF9hB8fLJ6sJT/RzlA1BfmoiqzxzuBx2GiHfKK2vP8vgN+?=
+ =?us-ascii?Q?bkNbwEleWJDbZz0zBvZxWw6XJdzD17O59dcZ0C9zXMO7y72Sk80bVO1Tpr77?=
+ =?us-ascii?Q?3HJZCTk92IkXaiibAb7c5rQQejQdlCNlSHgXqA53L0R57yYMkiSqYLvVjCGc?=
+ =?us-ascii?Q?ZHc1cAcXlwoP26GTN783yWYqKoLkUR7nP8rb0HjyC2eZWuT4YNKQslDj0wwM?=
+ =?us-ascii?Q?zaPUAlIc6GW0tkTI7qd5VrfZikLk+uCL2q6BGelwTUpQfzS2qflQk7HbzZdf?=
+ =?us-ascii?Q?YizM5BMUG4WZ/wuX9p5RIWPo9BA6ZAw9/HmdHcv+DxdsWATvptqlW8/kRC5q?=
+ =?us-ascii?Q?CLfsCaICaaD1BhXYN+ebWMl1ghwOaRnxKp6qyueZ9pPvlp2aKU+4RpnSvjhj?=
+ =?us-ascii?Q?vxnWFtlkxXD0IcOBqfawSOKXgXfuIjBgmB4a9GI+otFyt4gI4L//19NZdClO?=
+ =?us-ascii?Q?UB3Ha9VnrK0JUP2bDQSSsjvabllWcPwNg94yE6RiNhYc9aeIWWURSm5Yevlo?=
+ =?us-ascii?Q?bNFLadEpy4UKn0bOd7ilWJ6WD/G9JGn35ec3Q9OWqADPIfRkCINBT2yyqDgI?=
+ =?us-ascii?Q?kRBYP5IdtrWA46K9LhAItIAriVv/21rS4nt4ltZ9ckNCyyw9PSstBtPtVWbl?=
+ =?us-ascii?Q?kL2bhcldTTVh1AZoZjzIoylqM2VHdkd5hagV3Be1p8BNPGVyA4vS90UhqszP?=
+ =?us-ascii?Q?yUbJdll91WO8dPEC75FyBLixCKVWACB2wJ3Oaq6xFllPNdKayOy7ZaC2ic+d?=
+ =?us-ascii?Q?Z9OpWxdpteBEUZSI+JxLCBWefGyVA8OM7wwMlWR8xWaot4cZl3SXzKc22jwG?=
+ =?us-ascii?Q?/2JgL2Mxctpn0NAXK4Ma1+j55uvnEGs2TufkqZzVoI1ppfJTOP2SOfhwgWaI?=
+ =?us-ascii?Q?s16h67cuHot/gf3srd3wJYab2/qYPjivtkljrwxGVhbP+AQ24L8/KGN0szaW?=
+ =?us-ascii?Q?D7AYNGSQB7I5OSsbKF3hnx74RGwtrqjQbntQDTBfMIkqksCII6l2s/CS6yI7?=
+ =?us-ascii?Q?SABEsx3EATvrgOeAUaiM9yA7kL/u9XPn/JogDxIOKneXJl1U8ob7bNGavGSW?=
+ =?us-ascii?Q?IAWlUiiXPcvoH+3Z0zSzuPulE+S9ZVhQfD05HLLsaye4tcLkv/yHrNPcwqtG?=
+ =?us-ascii?Q?u3gvPEIyfMZjbnQc+mS5+YRe7xalbkmCNz4Hamzq88Qe9Yo/TDZCypWJsjfv?=
+ =?us-ascii?Q?ZSmHxr4G4ul8W4TtSba6VU5+1dfDEHkIf9sFUdlEGptSoi+MoKIaXpPe3+iJ?=
+ =?us-ascii?Q?GJ0YK07maLSrhZlIS18MzxSkDGh3GTqybcHEGaGtJsOS77oS3+IVvf011TQc?=
+ =?us-ascii?Q?mewcN7jKwSNfsGLGGGUVLDSQ4Z7Y1dtWlFGZxNNSHINNnnUsPIhqmXB5Iued?=
+ =?us-ascii?Q?sofsQnUD9nRyYHdJS6FZOeXZYCo/vys/4s/p5nKiJhAMgF0JQn6x/QjlEG5x?=
+ =?us-ascii?Q?hUbh0wHHq1EX5fzN3twLRvJsmrukTgYnl8e5lBSc?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 10/14] powerpc: Convert to physical address DMA mapping
-To: Leon Romanovsky <leon@kernel.org>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Robin Murphy <robin.murphy@arm.com>, Russell King <linux@armlinux.org.uk>,
- Juergen Gross <jgross@suse.com>, Stefano Stabellini
- <sstabellini@kernel.org>,
- Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
- Richard Henderson <richard.henderson@linaro.org>,
- Matt Turner <mattst88@gmail.com>,
- Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
- "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
- Helge Deller <deller@gmx.de>, Madhavan Srinivasan <maddy@linux.ibm.com>,
- Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
- Geoff Levand <geoff@infradead.org>, "David S. Miller" <davem@davemloft.net>,
- Andreas Larsson <andreas@gaisler.com>, Thomas Gleixner <tglx@linutronix.de>,
- Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
- Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
- "H. Peter Anvin" <hpa@zytor.com>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, xen-devel@lists.xenproject.org,
- linux-alpha@vger.kernel.org, linux-mips@vger.kernel.org,
- linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
- sparclinux@vger.kernel.org
-References: <20251015-remove-map-page-v5-0-3bbfe3a25cdf@kernel.org>
- <20251015-remove-map-page-v5-10-3bbfe3a25cdf@kernel.org>
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
-Content-Language: fr-FR
-In-Reply-To: <20251015-remove-map-page-v5-10-3bbfe3a25cdf@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 578341e4-d1be-4df6-53e9-08de23616ce5
+X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Nov 2025 09:37:27.8093
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: wpo3c21aFNPmji0XU9IvD1LYiz1GXm2xPzsb7KMf8nDL8yMSJyY56hAD5flOctP+JLTyM3gkTXjVSC6bH2a+0w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR11MB4731
+X-OriginatorOrg: intel.com
+
+> From: Nicolin Chen <nicolinc@nvidia.com>
+> Sent: Tuesday, November 11, 2025 1:13 PM
+>=20
+> Note that there are two corner cases:
+>  1. Devices in the same iommu_group
+>     Since an attachment is always per iommu_group, disallowing one device
+>     to switch domains (or HWPTs in iommufd) would have to disallow others
+>     in the same iommu_group to switch domains as well. So, play safe by
+>     preventing a shared iommu_group from going through the iommu reset.
+
+It'd be good to make clear that 'preventing' means that the racing problem
+is not addressed.
+
+> +	/*
+> +	 * During a group device reset, @resetting_domain points to the
+> physical
+> +	 * domain, while @domain points to the attached domain before the
+> reset.
+> +	 */
+> +	struct iommu_domain *resetting_domain;
+
+'a group device' is a bit confusing. Just remove 'group'?
+
+> @@ -2195,6 +2200,12 @@ int iommu_deferred_attach(struct device *dev,
+> struct iommu_domain *domain)
+>=20
+>  	guard(mutex)(&dev->iommu_group->mutex);
+>=20
+> +	/*
+> +	 * This is a concurrent attach while a group device is resetting. Rejec=
+t
+> +	 * it until iommu_dev_reset_done() attaches the device to group-
+> >domain.
+> +	 */
+> +	if (dev->iommu_group->resetting_domain)
+> +		return -EBUSY;
+
+It might be worth noting that failing a deferred attach leads to failing
+the dma map operation. It's different from other explicit attaching paths,
+but there is nothing more we can do here.
 
 
+> @@ -2253,6 +2264,16 @@ struct iommu_domain
+> *iommu_driver_get_domain_for_dev(struct device *dev)
+>=20
+>  	lockdep_assert_held(&group->mutex);
+>=20
+> +	/*
+> +	 * Driver handles the low-level __iommu_attach_device(), including
+> the
+> +	 * one invoked by iommu_dev_reset_done(), in which case the driver
+> must
+> +	 * get the resetting_domain over group->domain caching the one
+> prior to
+> +	 * iommu_dev_reset_prepare(), so that it wouldn't end up with
+> attaching
+> +	 * the device from group->domain (old) to group->domain (new).
+> +	 */
+> +	if (group->resetting_domain)
+> +		return group->resetting_domain;
 
-Le 15/10/2025 à 11:12, Leon Romanovsky a écrit :
-> From: Leon Romanovsky <leonro@nvidia.com>
-> 
-> Adapt PowerPC DMA to use physical addresses in order to prepare code
-> to removal .map_page and .unmap_page.
-> 
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+It's a pretty long sentence. Let's break it.
 
-Reviewed-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+> +int iommu_dev_reset_prepare(struct device *dev)
 
-Non fatal comments below.
+If this is intended to be used by pci for now, it's clearer to have a 'pci'
+word in the name. Later when there is a demand calling it from other
+buses, discussion will catch eyes to ensure no racy of UAF etc.
 
-> ---
->   arch/powerpc/include/asm/iommu.h         |  8 ++++----
->   arch/powerpc/kernel/dma-iommu.c          | 22 ++++++++++-----------
->   arch/powerpc/kernel/iommu.c              | 14 +++++++-------
->   arch/powerpc/platforms/ps3/system-bus.c  | 33 ++++++++++++++++++--------------
->   arch/powerpc/platforms/pseries/ibmebus.c | 15 ++++++++-------
->   arch/powerpc/platforms/pseries/vio.c     | 21 +++++++++++---------
->   6 files changed, 60 insertions(+), 53 deletions(-)
-> 
-> diff --git a/arch/powerpc/include/asm/iommu.h b/arch/powerpc/include/asm/iommu.h
-> index b410021ad4c6..eafdd63cd6c4 100644
-> --- a/arch/powerpc/include/asm/iommu.h
-> +++ b/arch/powerpc/include/asm/iommu.h
-> @@ -274,12 +274,12 @@ extern void *iommu_alloc_coherent(struct device *dev, struct iommu_table *tbl,
->   				  unsigned long mask, gfp_t flag, int node);
->   extern void iommu_free_coherent(struct iommu_table *tbl, size_t size,
->   				void *vaddr, dma_addr_t dma_handle);
-> -extern dma_addr_t iommu_map_page(struct device *dev, struct iommu_table *tbl,
-> -				 struct page *page, unsigned long offset,
-> -				 size_t size, unsigned long mask,
-> +extern dma_addr_t iommu_map_phys(struct device *dev, struct iommu_table *tbl,
-> +				 phys_addr_t phys, size_t size,
-> +				 unsigned long mask,
->   				 enum dma_data_direction direction,
->   				 unsigned long attrs);
-
-'extern' is pointless for function prototypes.
-
-Report from checkpatch:
-
-CHECK: extern prototypes should be avoided in .h files
-#31: FILE: arch/powerpc/include/asm/iommu.h:277:
-+extern dma_addr_t iommu_map_phys(struct device *dev, struct iommu_table 
-*tbl,
-
-
-> -extern void iommu_unmap_page(struct iommu_table *tbl, dma_addr_t dma_handle,
-> +extern void iommu_unmap_phys(struct iommu_table *tbl, dma_addr_t dma_handle,
->   			     size_t size, enum dma_data_direction direction,
->   			     unsigned long attrs);
-
-Same:
-
-CHECK: extern prototypes should be avoided in .h files
-#37: FILE: arch/powerpc/include/asm/iommu.h:282:
-+extern void iommu_unmap_phys(struct iommu_table *tbl, dma_addr_t 
-dma_handle,
-
-
-
->   
-> diff --git a/arch/powerpc/kernel/dma-iommu.c b/arch/powerpc/kernel/dma-iommu.c
-> index 0359ab72cd3b..aa3689d61917 100644
-> --- a/arch/powerpc/kernel/dma-iommu.c
-> +++ b/arch/powerpc/kernel/dma-iommu.c
-> @@ -93,28 +93,26 @@ static void dma_iommu_free_coherent(struct device *dev, size_t size,
->   
->   /* Creates TCEs for a user provided buffer.  The user buffer must be
->    * contiguous real kernel storage (not vmalloc).  The address passed here
-> - * comprises a page address and offset into that page. The dma_addr_t
-> - * returned will point to the same byte within the page as was passed in.
-> + * is a physical address to that page. The dma_addr_t returned will point
-> + * to the same byte within the page as was passed in.
->    */
-> -static dma_addr_t dma_iommu_map_page(struct device *dev, struct page *page,
-> -				     unsigned long offset, size_t size,
-> +static dma_addr_t dma_iommu_map_phys(struct device *dev, phys_addr_t phys,
-> +				     size_t size,
->   				     enum dma_data_direction direction,
->   				     unsigned long attrs)
->   {
-> -	return iommu_map_page(dev, get_iommu_table_base(dev), page, offset,
-> -			      size, dma_get_mask(dev), direction, attrs);
-> +	return iommu_map_phys(dev, get_iommu_table_base(dev), phys, size,
-> +			      dma_get_mask(dev), direction, attrs);
->   }
->   
-> -
-> -static void dma_iommu_unmap_page(struct device *dev, dma_addr_t dma_handle,
-> +static void dma_iommu_unmap_phys(struct device *dev, dma_addr_t dma_handle,
->   				 size_t size, enum dma_data_direction direction,
->   				 unsigned long attrs)
->   {
-> -	iommu_unmap_page(get_iommu_table_base(dev), dma_handle, size, direction,
-> +	iommu_unmap_phys(get_iommu_table_base(dev), dma_handle, size, direction,
->   			 attrs);
->   }
->   
-> -
->   static int dma_iommu_map_sg(struct device *dev, struct scatterlist *sglist,
->   			    int nelems, enum dma_data_direction direction,
->   			    unsigned long attrs)
-> @@ -211,8 +209,8 @@ const struct dma_map_ops dma_iommu_ops = {
->   	.map_sg			= dma_iommu_map_sg,
->   	.unmap_sg		= dma_iommu_unmap_sg,
->   	.dma_supported		= dma_iommu_dma_supported,
-> -	.map_page		= dma_iommu_map_page,
-> -	.unmap_page		= dma_iommu_unmap_page,
-> +	.map_phys		= dma_iommu_map_phys,
-> +	.unmap_phys		= dma_iommu_unmap_phys,
->   	.get_required_mask	= dma_iommu_get_required_mask,
->   	.mmap			= dma_common_mmap,
->   	.get_sgtable		= dma_common_get_sgtable,
-> diff --git a/arch/powerpc/kernel/iommu.c b/arch/powerpc/kernel/iommu.c
-> index 244eb4857e7f..6b5f4b72ce97 100644
-> --- a/arch/powerpc/kernel/iommu.c
-> +++ b/arch/powerpc/kernel/iommu.c
-> @@ -848,12 +848,12 @@ EXPORT_SYMBOL_GPL(iommu_tce_table_put);
->   
->   /* Creates TCEs for a user provided buffer.  The user buffer must be
->    * contiguous real kernel storage (not vmalloc).  The address passed here
-> - * comprises a page address and offset into that page. The dma_addr_t
-> - * returned will point to the same byte within the page as was passed in.
-> + * is physical address into that page. The dma_addr_t returned will point
-> + * to the same byte within the page as was passed in.
->    */
-> -dma_addr_t iommu_map_page(struct device *dev, struct iommu_table *tbl,
-> -			  struct page *page, unsigned long offset, size_t size,
-> -			  unsigned long mask, enum dma_data_direction direction,
-> +dma_addr_t iommu_map_phys(struct device *dev, struct iommu_table *tbl,
-> +			  phys_addr_t phys, size_t size, unsigned long mask,
-> +			  enum dma_data_direction direction,
->   			  unsigned long attrs)
->   {
->   	dma_addr_t dma_handle = DMA_MAPPING_ERROR;
-> @@ -863,7 +863,7 @@ dma_addr_t iommu_map_page(struct device *dev, struct iommu_table *tbl,
->   
->   	BUG_ON(direction == DMA_NONE);
->   
-> -	vaddr = page_address(page) + offset;
-> +	vaddr = phys_to_virt(phys);
->   	uaddr = (unsigned long)vaddr;
->   
->   	if (tbl) {
-> @@ -890,7 +890,7 @@ dma_addr_t iommu_map_page(struct device *dev, struct iommu_table *tbl,
->   	return dma_handle;
->   }
->   
-> -void iommu_unmap_page(struct iommu_table *tbl, dma_addr_t dma_handle,
-> +void iommu_unmap_phys(struct iommu_table *tbl, dma_addr_t dma_handle,
->   		      size_t size, enum dma_data_direction direction,
->   		      unsigned long attrs)
->   {
-> diff --git a/arch/powerpc/platforms/ps3/system-bus.c b/arch/powerpc/platforms/ps3/system-bus.c
-> index afbaabf182d0..f4f3477d3a23 100644
-> --- a/arch/powerpc/platforms/ps3/system-bus.c
-> +++ b/arch/powerpc/platforms/ps3/system-bus.c
-> @@ -551,18 +551,20 @@ static void ps3_free_coherent(struct device *_dev, size_t size, void *vaddr,
->   
->   /* Creates TCEs for a user provided buffer.  The user buffer must be
->    * contiguous real kernel storage (not vmalloc).  The address passed here
-> - * comprises a page address and offset into that page. The dma_addr_t
-> - * returned will point to the same byte within the page as was passed in.
-> + * is physical address to that hat page. The dma_addr_t returned will point
-> + * to the same byte within the page as was passed in.
->    */
->   
-> -static dma_addr_t ps3_sb_map_page(struct device *_dev, struct page *page,
-> -	unsigned long offset, size_t size, enum dma_data_direction direction,
-> -	unsigned long attrs)
-> +static dma_addr_t ps3_sb_map_phys(struct device *_dev, phys_addr_t phys,
-> +	size_t size, enum dma_data_direction direction, unsigned long attrs)
-
-CHECK: Alignment should match open parenthesis
-#151: FILE: arch/powerpc/platforms/ps3/system-bus.c:559:
-+static dma_addr_t ps3_sb_map_phys(struct device *_dev, phys_addr_t phys,
-+	size_t size, enum dma_data_direction direction, unsigned long attrs)
-
-
-
->   {
->   	struct ps3_system_bus_device *dev = ps3_dev_to_system_bus_dev(_dev);
->   	int result;
->   	dma_addr_t bus_addr;
-> -	void *ptr = page_address(page) + offset;
-> +	void *ptr = phys_to_virt(phys);
+> +	/*
+> +	 * Once the resetting_domain is set, any concurrent attachment to
+> this
+> +	 * iommu_group will be rejected, which would break the attach
+> routines
+> +	 * of the sibling devices in the same iommu_group. So, skip this case.
+> +	 */
+> +	if (dev_is_pci(dev)) {
+> +		struct group_device *gdev;
 > +
-> +	if (unlikely(attrs & DMA_ATTR_MMIO))
-> +		return DMA_MAPPING_ERROR;
->   
->   	result = ps3_dma_map(dev->d_region, (unsigned long)ptr, size,
->   			     &bus_addr,
-> @@ -577,8 +579,8 @@ static dma_addr_t ps3_sb_map_page(struct device *_dev, struct page *page,
->   	return bus_addr;
->   }
->   
-> -static dma_addr_t ps3_ioc0_map_page(struct device *_dev, struct page *page,
-> -				    unsigned long offset, size_t size,
-> +static dma_addr_t ps3_ioc0_map_phys(struct device *_dev, phys_addr_t phys,
-> +				    size_t size,
->   				    enum dma_data_direction direction,
->   				    unsigned long attrs)
->   {
-> @@ -586,7 +588,10 @@ static dma_addr_t ps3_ioc0_map_page(struct device *_dev, struct page *page,
->   	int result;
->   	dma_addr_t bus_addr;
->   	u64 iopte_flag;
-> -	void *ptr = page_address(page) + offset;
-> +	void *ptr = phys_to_virt(phys);
-> +
-> +	if (unlikely(attrs & DMA_ATTR_MMIO))
-> +		return DMA_MAPPING_ERROR;
->   
->   	iopte_flag = CBE_IOPTE_M;
->   	switch (direction) {
-> @@ -613,7 +618,7 @@ static dma_addr_t ps3_ioc0_map_page(struct device *_dev, struct page *page,
->   	return bus_addr;
->   }
->   
-> -static void ps3_unmap_page(struct device *_dev, dma_addr_t dma_addr,
-> +static void ps3_unmap_phys(struct device *_dev, dma_addr_t dma_addr,
->   	size_t size, enum dma_data_direction direction, unsigned long attrs)
+> +		for_each_group_device(group, gdev) {
+> +			if (gdev->dev !=3D dev)
+> +				return 0;
+> +		}
+> +	}
 
-CHECK: Alignment should match open parenthesis
-#193: FILE: arch/powerpc/platforms/ps3/system-bus.c:622:
-+static void ps3_unmap_phys(struct device *_dev, dma_addr_t dma_addr,
-  	size_t size, enum dma_data_direction direction, unsigned long attrs)
+btw what'd be a real impact to reject concurrent attachment for sibling
+devices? This series already documents the impact in uAPI for the device
+under attachment, and the userspace already knows the restriction=20
+of devices in the group which must be attached to a same hwpt.
 
+Combining those knowledge I don't think there is a problem for=20
+userspace to be aware of that resetting a device in a multi-dev
+group affects concurrent attachment of sibling devices...
 
+> +	/* Re-attach RID domain back to group->domain */
+> +	if (group->domain !=3D group->blocking_domain) {
+> +		WARN_ON(__iommu_attach_device(group->domain, dev,
+> +					      group->blocking_domain));
+> +	}
 
->   {
->   	struct ps3_system_bus_device *dev = ps3_dev_to_system_bus_dev(_dev);
-> @@ -690,8 +695,8 @@ static const struct dma_map_ops ps3_sb_dma_ops = {
->   	.map_sg = ps3_sb_map_sg,
->   	.unmap_sg = ps3_sb_unmap_sg,
->   	.dma_supported = ps3_dma_supported,
-> -	.map_page = ps3_sb_map_page,
-> -	.unmap_page = ps3_unmap_page,
-> +	.map_phys = ps3_sb_map_phys,
-> +	.unmap_phys = ps3_unmap_phys,
->   	.mmap = dma_common_mmap,
->   	.get_sgtable = dma_common_get_sgtable,
->   	.alloc_pages_op = dma_common_alloc_pages,
-> @@ -704,8 +709,8 @@ static const struct dma_map_ops ps3_ioc0_dma_ops = {
->   	.map_sg = ps3_ioc0_map_sg,
->   	.unmap_sg = ps3_ioc0_unmap_sg,
->   	.dma_supported = ps3_dma_supported,
-> -	.map_page = ps3_ioc0_map_page,
-> -	.unmap_page = ps3_unmap_page,
-> +	.map_phys = ps3_ioc0_map_phys,
-> +	.unmap_phys = ps3_unmap_phys,
->   	.mmap = dma_common_mmap,
->   	.get_sgtable = dma_common_get_sgtable,
->   	.alloc_pages_op = dma_common_alloc_pages,
-> diff --git a/arch/powerpc/platforms/pseries/ibmebus.c b/arch/powerpc/platforms/pseries/ibmebus.c
-> index 3436b0af795e..cad2deb7e70d 100644
-> --- a/arch/powerpc/platforms/pseries/ibmebus.c
-> +++ b/arch/powerpc/platforms/pseries/ibmebus.c
-> @@ -86,17 +86,18 @@ static void ibmebus_free_coherent(struct device *dev,
->   	kfree(vaddr);
->   }
->   
-> -static dma_addr_t ibmebus_map_page(struct device *dev,
-> -				   struct page *page,
-> -				   unsigned long offset,
-> +static dma_addr_t ibmebus_map_phys(struct device *dev, phys_addr_t phys,
->   				   size_t size,
->   				   enum dma_data_direction direction,
->   				   unsigned long attrs)
->   {
-> -	return (dma_addr_t)(page_address(page) + offset);
-> +	if (attrs & DMA_ATTR_MMIO)
-> +		return DMA_MAPPING_ERROR;
-> +
-> +	return (dma_addr_t)(phys_to_virt(phys));
->   }
->   
-> -static void ibmebus_unmap_page(struct device *dev,
-> +static void ibmebus_unmap_phys(struct device *dev,
->   			       dma_addr_t dma_addr,
->   			       size_t size,
->   			       enum dma_data_direction direction,
-> @@ -146,8 +147,8 @@ static const struct dma_map_ops ibmebus_dma_ops = {
->   	.unmap_sg           = ibmebus_unmap_sg,
->   	.dma_supported      = ibmebus_dma_supported,
->   	.get_required_mask  = ibmebus_dma_get_required_mask,
-> -	.map_page           = ibmebus_map_page,
-> -	.unmap_page         = ibmebus_unmap_page,
-> +	.map_phys           = ibmebus_map_phys,
-> +	.unmap_phys         = ibmebus_unmap_phys,
->   };
->   
->   static int ibmebus_match_path(struct device *dev, const void *data)
-> diff --git a/arch/powerpc/platforms/pseries/vio.c b/arch/powerpc/platforms/pseries/vio.c
-> index ac1d2d2c9a88..18cffac5468f 100644
-> --- a/arch/powerpc/platforms/pseries/vio.c
-> +++ b/arch/powerpc/platforms/pseries/vio.c
-> @@ -512,18 +512,21 @@ static void vio_dma_iommu_free_coherent(struct device *dev, size_t size,
->   	vio_cmo_dealloc(viodev, roundup(size, PAGE_SIZE));
->   }
->   
-> -static dma_addr_t vio_dma_iommu_map_page(struct device *dev, struct page *page,
-> -                                         unsigned long offset, size_t size,
-> -                                         enum dma_data_direction direction,
-> -                                         unsigned long attrs)
-> +static dma_addr_t vio_dma_iommu_map_phys(struct device *dev, phys_addr_t phys,
-> +					 size_t size,
-> +					 enum dma_data_direction direction,
-> +					 unsigned long attrs)
->   {
->   	struct vio_dev *viodev = to_vio_dev(dev);
->   	struct iommu_table *tbl = get_iommu_table_base(dev);
->   	dma_addr_t ret = DMA_MAPPING_ERROR;
->   
-> +	if (unlikely(attrs & DMA_ATTR_MMIO))
-> +		return ret;
-> +
->   	if (vio_cmo_alloc(viodev, roundup(size, IOMMU_PAGE_SIZE(tbl))))
->   		goto out_fail;
-> -	ret = iommu_map_page(dev, tbl, page, offset, size, dma_get_mask(dev),
-> +	ret = iommu_map_phys(dev, tbl, phys, size, dma_get_mask(dev),
->   			direction, attrs);
+Even if we disallow resetting on a multi-dev group, there is still a
+corner case not taken care here.
 
-CHECK: Alignment should match open parenthesis
-#285: FILE: arch/powerpc/platforms/pseries/vio.c:530:
-+	ret = iommu_map_phys(dev, tbl, phys, size, dma_get_mask(dev),
-  			direction, attrs);
+It's possible that there is only one device in the group at prepare,
+coming with a device hotplug added to the group in the middle,
+then doing reset_done.
 
+In this case the newly-added device will inherit the blocking domain.
 
->   	if (unlikely(ret == DMA_MAPPING_ERROR))
->   		goto out_deallocate;
-> @@ -536,7 +539,7 @@ static dma_addr_t vio_dma_iommu_map_page(struct device *dev, struct page *page,
->   	return DMA_MAPPING_ERROR;
->   }
->   
-> -static void vio_dma_iommu_unmap_page(struct device *dev, dma_addr_t dma_handle,
-> +static void vio_dma_iommu_unmap_phys(struct device *dev, dma_addr_t dma_handle,
->   				     size_t size,
->   				     enum dma_data_direction direction,
->   				     unsigned long attrs)
-> @@ -544,7 +547,7 @@ static void vio_dma_iommu_unmap_page(struct device *dev, dma_addr_t dma_handle,
->   	struct vio_dev *viodev = to_vio_dev(dev);
->   	struct iommu_table *tbl = get_iommu_table_base(dev);
->   
-> -	iommu_unmap_page(tbl, dma_handle, size, direction, attrs);
-> +	iommu_unmap_phys(tbl, dma_handle, size, direction, attrs);
->   	vio_cmo_dealloc(viodev, roundup(size, IOMMU_PAGE_SIZE(tbl)));
->   }
->   
-> @@ -605,8 +608,8 @@ static const struct dma_map_ops vio_dma_mapping_ops = {
->   	.free              = vio_dma_iommu_free_coherent,
->   	.map_sg            = vio_dma_iommu_map_sg,
->   	.unmap_sg          = vio_dma_iommu_unmap_sg,
-> -	.map_page          = vio_dma_iommu_map_page,
-> -	.unmap_page        = vio_dma_iommu_unmap_page,
-> +	.map_phys          = vio_dma_iommu_map_phys,
-> +	.unmap_phys        = vio_dma_iommu_unmap_phys,
->   	.dma_supported     = dma_iommu_dma_supported,
->   	.get_required_mask = dma_iommu_get_required_mask,
->   	.mmap		   = dma_common_mmap,
-> 
-
+Then reset_done should loop all devices in the group and re-attach
+all of them to the cached domain.
