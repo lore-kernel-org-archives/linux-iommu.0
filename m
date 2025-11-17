@@ -1,289 +1,155 @@
-Received: from CH5PR02CU005.outbound.protection.outlook.com (mail-northcentralusazon11012025.outbound.protection.outlook.com [40.107.200.25])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from cstnet.cn (smtp81.cstnet.cn [159.226.251.81])
+	(using TLSv1.2 with cipher DHE-RSA-AES256-SHA (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82F81208AD;
-	Mon, 17 Nov 2025 01:49:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.200.25
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763344191; cv=fail; b=AO5uQZWauWv5t3uEylAPazsjiYEfPBhspydAneiCgeHWKe+Uek7t8CyXSrYJpG5ODkqSyie1jMoB6MCmnNPsRND9KqAtVqqau7M9B5Oy0MR4ivCCnw2mTXZNYJuR3o5/Iw9uTYub7VgIuTIOvF8V0PKZP2N6gjMqt1b8sXZ5lwk=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763344191; c=relaxed/simple;
-	bh=1N2FOF68QDv6UBCNU6IOcBD4XJFjPOCryh8AzF617Tc=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=u8dKOBUPBzKM86I6aC21xT9TBKrtWcw9MKE4vJjql2gpEsrHrEdTGQVIY1lSSVuxsHOvkp8vPvp1iJvg6bGIx5jiQaC1dGmtEwuLqegFAk/2QuWqhQL7sjsSyyeJlwljjvwMZt347vs71uf6nM7g/ylKI0v3nI3clCCeGxiywV0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=AemkWRwq; arc=fail smtp.client-ip=40.107.200.25
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="AemkWRwq"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=JJC3FAIXFmK1uFO3NSyR8IGEucbiLESKza5obxkBFAAD8QymQQc8kGYy65HJh9Z11RxmY+esz1suPCjQUc9YfG2J6y4IuZjo8i4jx8lHLSdm+MGycm9OitaN90pSkGBU52xCnJsQloTrAea9pH1lCqgbB4ma+Wrmz1wKWr+0yLP4K7BiLD/jn5qs917/Gl70A+NNOiGVHIW+fM6n2Rdm5/nvExIa0qh70E2Vtmj3a48FsrqoSRD5UgOwFSrUywpijQeHaFuP6ugtPLc2nieSdt+qnVOwj4ohyhRWuDuWAlxWoDWF0IX66qLCHGVfnsn9kjhY9tMKmETuRJ+radOk5Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9OyfJsFJ5xfkh9BncQsyToH4mFsr5PVKrYFyPwUExoI=;
- b=Q/g8b6wyzjr7TtUKo6T174xSXk49laxPCqVOf9iwVO9pjH3sTZYVZwCtw1036DWxql37jfREMIDd6VRuXueC0h9ZJDth8FRrtGqETOm38UCnzuJRjqfF4IRgzMpOQANRM5NjcI4vE0mKD7UlIsa4cRoQ+Jbu2EiTqzJONg+NCWQQ2RAiwxe7JAoNa7q3d67MK1T37Suf5V1Mbjr8CmDJDcZTaSEfwikT6RE5N3tGn53vI4rN/+WEjtJk9wTl13gkgZiqRCv213/jPtN/U9iu8VFA6qXK+9GqJTQ05D+8duUC0LSewN0RYhgMefmj68XmPIS5mgP+qNsglPqSiG7rEQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9OyfJsFJ5xfkh9BncQsyToH4mFsr5PVKrYFyPwUExoI=;
- b=AemkWRwqklmRfKdh1LRdXNPEVV1x1nXF5x0LnDHBSepSlJDjCjoLdePqInM8OUmJNsxbmAJKG2DvIoXDuZwu3jZKe7scrzuMzxuXRKtZNudayFBM580M9HBiPP9w3MGFumMtHWI3BfoW+q5k3AkZ0/L187fOa2OdGfzfzf9vYJU=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from CH3PR12MB9194.namprd12.prod.outlook.com (2603:10b6:610:19f::7)
- by DS4PR12MB9817.namprd12.prod.outlook.com (2603:10b6:8:2ab::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9320.21; Mon, 17 Nov
- 2025 01:49:45 +0000
-Received: from CH3PR12MB9194.namprd12.prod.outlook.com
- ([fe80::53fb:bf76:727f:d00f]) by CH3PR12MB9194.namprd12.prod.outlook.com
- ([fe80::53fb:bf76:727f:d00f%7]) with mapi id 15.20.9320.021; Mon, 17 Nov 2025
- 01:49:45 +0000
-Message-ID: <87e060b9-73d3-419a-834c-8c903f2d42c4@amd.com>
-Date: Mon, 17 Nov 2025 12:49:27 +1100
-User-Agent: Mozilla Thunderbird Beta
-Subject: Re: [PATCH kernel 1/6] PCI/TSM: Add secure SPDM DOE mailbox
-To: dan.j.williams@intel.com, linux-kernel@vger.kernel.org
-Cc: linux-crypto@vger.kernel.org, linux-pci@vger.kernel.org,
- Tom Lendacky <thomas.lendacky@amd.com>, John Allen <john.allen@amd.com>,
- Herbert Xu <herbert@gondor.apana.org.au>,
- "David S. Miller" <davem@davemloft.net>, Ashish Kalra
- <ashish.kalra@amd.com>, Joerg Roedel <joro@8bytes.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Bjorn Helgaas <bhelgaas@google.com>, Eric Biggers <ebiggers@google.com>,
- Brijesh Singh <brijesh.singh@amd.com>, Gary R Hook <gary.hook@amd.com>,
- "Borislav Petkov (AMD)" <bp@alien8.de>, Kim Phillips <kim.phillips@amd.com>,
- Vasant Hegde <vasant.hegde@amd.com>, Jason Gunthorpe <jgg@ziepe.ca>,
- Michael Roth <michael.roth@amd.com>,
- Jonathan Cameron <jonathan.cameron@huawei.com>,
- Xu Yilun <yilun.xu@linux.intel.com>, Gao Shiyuan <gaoshiyuan@baidu.com>,
- Sean Christopherson <seanjc@google.com>, Nikunj A Dadhania <nikunj@amd.com>,
- Dionna Glaze <dionnaglaze@google.com>, iommu@lists.linux.dev,
- linux-coco@lists.linux.dev
-References: <20251111063819.4098701-1-aik@amd.com>
- <20251111063819.4098701-2-aik@amd.com>
- <69168b145da7f_10154100fd@dwillia2-mobl4.notmuch>
-From: Alexey Kardashevskiy <aik@amd.com>
-Content-Language: en-US
-In-Reply-To: <69168b145da7f_10154100fd@dwillia2-mobl4.notmuch>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SY6PR01CA0154.ausprd01.prod.outlook.com
- (2603:10c6:10:1ba::13) To CH3PR12MB9194.namprd12.prod.outlook.com
- (2603:10b6:610:19f::7)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10DE11531C8
+	for <iommu@lists.linux.dev>; Mon, 17 Nov 2025 03:40:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=159.226.251.81
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1763350805; cv=none; b=cQIPOmyBOyuMVWvbD1GIAliV2rGdMhw9egZzgW9Fo3w+p92Y7PYq8XO1GxgICTOzeJ1CKoBY3agqWCZnev1U503i/LSwZipOobK14/GxeZlD5RXnMDKeCM1Pu66Ja0lA9N7XQuvYOME4NfwBQpCto96fcir/Tr4FhApcw4GXY9g=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1763350805; c=relaxed/simple;
+	bh=K1/lrENhSmcO8zZyjLiIhv7kiq479ofCN3Yedf8t91g=;
+	h=From:To:Cc:Subject:Date:Message-Id; b=oKcHSsEbqIT7HOZxB0X1WFegSyxg7vUyqGz3EhZkcfF3RPCKk9QEw2iNgBOnpTf7YwKA5is3xGlbH8e7Zz5Emb6RlN+1RvZ83uqc8fvrZJr1PShFyxAGR9Zm2BWp4oHXtCfJRxKw0PLhcqASMLdYLCNOO0kb0wSDB1d5+iiBOS0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn; spf=pass smtp.mailfrom=iscas.ac.cn; arc=none smtp.client-ip=159.226.251.81
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=iscas.ac.cn
+Received: from localhost.localdomain (unknown [202.112.113.212])
+	by APP-03 (Coremail) with SMTP id rQCowAAXpNYAmRpp_40HAQ--.23411S2;
+	Mon, 17 Nov 2025 11:39:53 +0800 (CST)
+From: Ma Ke <make24@iscas.ac.cn>
+To: joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	t-kristo@ti.com,
+	s-anna@ti.com
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	akpm@linux-foundation.org,
+	Ma Ke <make24@iscas.ac.cn>,
+	stable@vger.kernel.org
+Subject: [PATCH] iommu/omap: Fix error handling in omap_iommu_probe_device
+Date: Mon, 17 Nov 2025 11:39:43 +0800
+Message-Id: <20251117033943.40749-1-make24@iscas.ac.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID:rQCowAAXpNYAmRpp_40HAQ--.23411S2
+X-Coremail-Antispam: 1UD129KBjvJXoWxXr4kur4DKF45AFW3Jw1rXrb_yoW5Gw48pF
+	98GFWY9rW8Grn7KFZ7Zw1UZFyagr4vv3WYvF13Kws7Krn8tryrtFyxXa40vw1FyrWkCa13
+	J3W5tF48uF95Jr7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDU0xBIdaVrnRJUUUPY14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+	rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+	1l84ACjcxK6xIIjxv20xvE14v26ryj6F1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j
+	6r4UJwA2z4x0Y4vEx4A2jsIE14v26F4UJVW0owA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Cr
+	1j6rxdM2vYz4IE04k24VAvwVAKI4IrM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVAC
+	Y4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJV
+	W8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI2
+	0VAGYxC7M4IIrI8v6xkF7I0E8cxan2IY04v7MxkF7I0En4kS14v26r1q6r43MxkIecxEwV
+	AFwVW8GwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E
+	14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIx
+	kGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAF
+	wI0_Jr0_Gr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r
+	4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JU3kucU
+	UUUU=
+X-CM-SenderInfo: ppdnvj2u6l2u1dvotugofq/
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB9194:EE_|DS4PR12MB9817:EE_
-X-MS-Office365-Filtering-Correlation-Id: 059fd07c-185d-4654-c6a8-08de257b95b5
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|366016|7416014|376014|7053199007;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?aC9ZQ3Y4OWJERWlWYXUzT2owMHhQaW5Ob1NiSFF0RExZTm5BY0FXODlPVUJw?=
- =?utf-8?B?MzA2dng5bU5jYkRiT1RiL1BpTzJTRll0UlJYbloxcENxZENkYVV5bThOcS9t?=
- =?utf-8?B?aWZoVWd4Zm94VnlLOC9LVnlyNU83TUF1Mkg2dXBOaERzWTU1TUFMYURPUUhE?=
- =?utf-8?B?K1pFUHMxNVJKcFdMYzZBVHFQY1g2V3A2ZnhXOEZlUVJ3U3RuYmFMWmVNREV6?=
- =?utf-8?B?TVg1WFZwSVNNWlVkU3ZDQU1NUUdvbHJGTTdNR2h3Sk9CNkJiVnVBWmNFUFNB?=
- =?utf-8?B?UVJqeW9WRC9semtKbWhMZ25uY2l1eTBMUXM3azVlRmtEakppWjlLSkJQeEVS?=
- =?utf-8?B?ZGdwWS8waXo5U1VoOHFRSnRHcnRDZzAvYnE2VFpXUVlHMXpLYjlMaUpCSFMv?=
- =?utf-8?B?QjNNdWJmUHhoa1hVMFkwZ1RENjhWeENhSGVRQXNDdTBDa29Cb1hRUVFUN05s?=
- =?utf-8?B?WjF0V1ZoQ3crUkkzS3M0NS91SWRqdGhiQVBJVjNzRUhxNFdWOXY2WDRFY1h5?=
- =?utf-8?B?a2g0VklRcE55YjVHNW1peWY3ZC9mWkY3SUFqajJVa3lldGhjNDZ1Q0hkb0NK?=
- =?utf-8?B?Y1lRZDljWjNXYWtLN0wyRFJmcmlZSm9CY3hZWllOcFZTaFkzMlMyeG5Ubm1B?=
- =?utf-8?B?MkJrZ2pJZ2xnNG5xMENobjJyQUxJSk5CdTBNVHd4QVVMWVRvbEkwemFCaGsw?=
- =?utf-8?B?L0RXUW1acWdUc2NPcFg1ZS84NG01VDIyTVhuakR0a0dzbTA4Y2grQVgzUE44?=
- =?utf-8?B?UFFsbnZLem5wQWtmV3liZnErR29KYU9yQmVLQ3Ayc2ZBOWg3MlE1THNiRS8y?=
- =?utf-8?B?eXBNLzU1bmxjNG1XODdmVGZrRXE3dXZoeXpxUDRLcWtBVWFGLzZBTXpQUWFC?=
- =?utf-8?B?M1dHaldjVi9pcUdpVzJCaU5WMlpGTXB5TkRGRHl3QjIvYVQ0STBuUHFTaXJs?=
- =?utf-8?B?K3FzYnp0cmxYMnF1aTc1Ly9WZ1hsK0c1bEh1bklyazVkRllmc3ozbVF6WHpG?=
- =?utf-8?B?UER4aEQ0VkJWUmZHMXpIMUZUTytmdXZZclBFb0dOWERZLzlvbkFRWUs2Y3U1?=
- =?utf-8?B?aUVadlRoN2ZweTI2bitlUHhRQmRHZExQODVWRkpIajVGcnpMR3JQdzVmZmhq?=
- =?utf-8?B?Z29EUU9KU3RpUFEyeWRPZ3pQbytLR2JPMlp5c2ozM0FYbWtINmNxMSs0aUda?=
- =?utf-8?B?dFN0cXBNOGVmMHpWdkZFK3pXeExQYVdKNjh6STJnNlNaNzcrbnN1cjFLVjc2?=
- =?utf-8?B?T1o0TzFJNU93RXArNkFqRldVeDZMZDJIRlBIRnZGU0tkWmpVM3E4eVQyTklD?=
- =?utf-8?B?Smx5ZUp0V2xRYnorUDFVMWxYaTBGUWt1ZStqdFM3ZUZPcDF2czNxVjdHdElT?=
- =?utf-8?B?ZHRubncwaWZFTVI0dStoOVBIK3dXSkxMTloyQjViTDlKSWl1enVuNHlWREhP?=
- =?utf-8?B?WWR3c0U1eWVLdGdsYWNiMDVFbjZCRXB1dFFEN3A2azgyOElBVTFSVURLcXNa?=
- =?utf-8?B?MzZ5bmM2QzFEdXBvNjhVUDJoK3BRdXAxdlFQQUNSRkZNU05zcHVoampqNDFD?=
- =?utf-8?B?V29PM0tCT3pLdVlCTVFoRWNadU1lODRscW9iRG8vZkVEakJVWGNFMXhzdWt1?=
- =?utf-8?B?Sis3MXhFazJJMXJhcGlFL1c2NGs5a3E4NXBIYVdHR0hsUGpPNlp0Qm9teFc4?=
- =?utf-8?B?Ujg0Z3hHN25BN09HdU40cEJCRUlONDFGY0grY3YrSmVQalpUbmNHWDZKcWFl?=
- =?utf-8?B?ZXJvT0MwZE93am8vSUFab0R5c2J2R0pxcEw1Y09wR1poa2RFY0pTTGJEcS9j?=
- =?utf-8?B?dnJFdW1NLytLcE1yRGRLTDJLaDJzMm9uektCZTJQcnBTUlRFQWFQek5IMFdt?=
- =?utf-8?B?anZsaEliK1lIWnpyUmt6OFVvenNIUjBnV2JJZFpPdjdWeDZwa2lTbGJyYlVM?=
- =?utf-8?Q?3MOSp5D6llvR9noVOHWpD0cnkbdafnhf?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB9194.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(7416014)(376014)(7053199007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?Uk5yMTFLWWxrWW1ycjE2WWFNL1VXOCtkRHpDUEp6b0FkR2FqRWpZNHN6V3dC?=
- =?utf-8?B?bXZSeS9vY3hoU3MyMU8yWlEyb1pZOWtEOUYxUjljZ3pMS2MzcUVEeStmU3hQ?=
- =?utf-8?B?VWNRSzBkTkdOTTJCL2t0d0dsc1BxbjUxTkJUWTBZUkNoYlVSVVplUjljWWtY?=
- =?utf-8?B?dEJoT3I0U2haWHlkdW5FdzFEZXpHUnY5UllpRWF3MmxjMC83bGI1ZDJLYWxF?=
- =?utf-8?B?WHFlWnBlZ1pqWkJGOE9pMC8wbm9XbUpyNFh6M1ZVNjNLRElHNXU4bDJYaWRi?=
- =?utf-8?B?a1U2Z3BJalFlZUp1ZEJxaW5XRm5xVTlQdTczN0hVakY1QitMOGErNTNMN3E2?=
- =?utf-8?B?YUJkd3lSaGhNU1Zwb2JQeHRLTHg2cEFHdEFGMU5Nb1czWVVjSCtWeTBENDRu?=
- =?utf-8?B?L09PelFCaWwvTmRtRDZQRHJPTWF2Qnp4VkhRWmk1c2R0TmwyVTJiK0lCbG11?=
- =?utf-8?B?aEV6aXl3TXBpWHpLVFlWOFV6RUtpMjlEc3g3K05CNmg1VlIxcXVKR0FzMFdl?=
- =?utf-8?B?aG1UMjZoSDVvdXdEUnF1dlkzalBVbElPVlVVS2tvS28rbXc4WFAwSVNpU0xD?=
- =?utf-8?B?TkFiYjFEc3RqNUtNandlSmRvKy9ZU050VXRyazI1WjZURHN0LyszeFdwUjM1?=
- =?utf-8?B?blRnYmk3QmRkVnFJajVWaUlNSWJoQzFqclRqS3N1RDM2UGRsd0NhQ3JLcm5R?=
- =?utf-8?B?ZlhpUHNtNUEvekNPRklmelBCVHl5SFk0YkF0MnM2NHcyTmRJWVpPWkN4UHE2?=
- =?utf-8?B?R3o4WERxOWNiZjRseGNUNVM1QVl5Z2ZXZVBOTHordHRsTGFET3VURFY4SHBM?=
- =?utf-8?B?N0xxNGloaG1abWxFbXdtVGFrclN1M3NYM0ZmRXk4T1VHalZRUlQzQWpSSk9p?=
- =?utf-8?B?dnJqRE1ydFprdkF4TkhUSFZpdHZJVThVZlhsVVk2UUloV3lncXR1SVVJaHlq?=
- =?utf-8?B?U2UyMmdXd0NmMHFJR1ZZUWVHQi93ZXM0dlVtM2l3VHYyQnQvNGI0NEE1WXUv?=
- =?utf-8?B?QVlUSkVKM0NBN2dSbzBUK0J4Y3dGWGw0QjBFSmxneHFDUXdnZVZqM242ZXZI?=
- =?utf-8?B?ZGFkV1dnVjByUnJ1SkoydlBVQnZkYzVodytqMlVITXdIQjZ4bFNjNnpMem92?=
- =?utf-8?B?ME5WdkRuRlZHUkw2NW5WY3hJYm9BQ0dBQkF4MmM1VHBiWElId3dHSGJsMFp0?=
- =?utf-8?B?MmwvQ0NUWHhTOEEzVC9xVElRYUNIU1BzM2w4bG1kbXpCMFB4eFY0bm9UL0VC?=
- =?utf-8?B?a2hmVHhoMzQyTDh3Z0VsRVdIOGpkRGNSYjJmZUdKWVNHQWJTYi9BOGtRYVZ5?=
- =?utf-8?B?TU1pbEdRRk4yS0F5b1hFUGlpN0U0eDlOWm9IQU1aVkZZcEhYaC8zYUZwNHBl?=
- =?utf-8?B?M1JUeUxHZ1FDUkpEN3c2UXVWTjlvdmxFUnZlQjMyTHd1UkZ4V0dmbFNWVFNJ?=
- =?utf-8?B?WGU4aW5iakhMQlFMNmZJM3B4T2tHZTZiUTMzblIyd1VDRGs2a2JGNk5KV3FV?=
- =?utf-8?B?aDNva2hvTU81aXM0OXIxZWNOTmpPZmMxbVZwRGdhTGxmbHlpQ1lrb3ZvRG9W?=
- =?utf-8?B?UG01alZZMm83S3lGWWlBK1NocVRwQVZnZ1NUQ2FFU015RTBFWFV6SWRETS9h?=
- =?utf-8?B?UVNEM1R1SkJTRTk4aXVMc2FFZGg1QWJSbXZTTnB2Y2hGQzE3NU5aOHVUcEpx?=
- =?utf-8?B?eklmTmcxQWdob243T1pMYk0zM29OK2NEdm5KbDhqdXFvQVBFL0dreU41YlVZ?=
- =?utf-8?B?bG9yaXVJd0ZCV2hIK1RyY1NvdE1WUFBRN0k1MW5xYTJ0NEl4NXpPaUFjelJV?=
- =?utf-8?B?cmtzd3pjMHN5MDVza1FNS2ZUbS9iSnRtUzRRUElHWnloUCtyV3pxU2RBQzJk?=
- =?utf-8?B?OUFwS1FUZ1grbUMwaEgrMzQwOE1ZRkFMRmtaRFJtMDNMdkZZa2poaGhyQUEz?=
- =?utf-8?B?MTk4d1B5VGVxdmNmT01lU2d0OHlwdlQwRHJYWGlvclNQM1MrbXVhV0VSNlcy?=
- =?utf-8?B?V2QxcUNIWEJtNUVvRFBsb0U3eDVab1JCLzNVL3ZneFQxcEJ2YWpoU3p6WFlX?=
- =?utf-8?B?VE1jUXFybHFpT2VzU3RZMU1WdzhJekJPTGVsRGpoVkhvb2RXVXVxVUpBSkpx?=
- =?utf-8?Q?Zu5uUYuI6mOC12+GBzoWm07rT?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 059fd07c-185d-4654-c6a8-08de257b95b5
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB9194.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Nov 2025 01:49:45.7503
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: hsZvMxj+zvAaX4ae7UqK5bgef5yKJxSKnx7H6Syz22LHln8ld3DCoGqz7pP5wzvV+VajdHi5KOXjrRoGELO2Wg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS4PR12MB9817
 
+omap_iommu_probe_device() calls of_find_device_by_node() which
+increments the reference count of the platform device, but fails to
+decrement the reference count in both success and error paths. This
+could lead to resource leakage and prevent proper device cleanup when
+the IOMMU is unbound or the device is removed.
 
+Found by code review.
 
-On 14/11/25 12:51, dan.j.williams@intel.com wrote:
-> Alexey Kardashevskiy wrote:
->> The IDE key programming happens via Secure SPDM channel, initialise it
->> at the PF0 probing.
->>
->> Add the SPDM certificate slot (up to 8 are allowed by SPDM), the platform
->> is expected to select one.
->>
->> While at this, add a common struct for SPDM request/response as these
->> are going to needed by every platform.
->>
->> Signed-off-by: Alexey Kardashevskiy <aik@amd.com>
->> ---
->>
->> (!tsm->doe_mb_sec) is definitely an error on AMD SEV-TIO, is not it on other platforms?
-> 
-> I think you just happen to have a multi-DOE test device, or a device
-> that has a PCI_DOE_FEATURE_SSESSION DOE and not a PCI_DOE_FEATURE_CMA
-> DOE.
-> 
->> ---
->>   include/linux/pci-tsm.h | 14 ++++++++++++++
->>   drivers/pci/tsm.c       |  4 ++++
->>   2 files changed, 18 insertions(+)
->>
->> diff --git a/include/linux/pci-tsm.h b/include/linux/pci-tsm.h
->> index 40c5e4c31a3f..b6866f7c14b4 100644
->> --- a/include/linux/pci-tsm.h
->> +++ b/include/linux/pci-tsm.h
->> @@ -10,6 +10,14 @@ struct tsm_dev;
->>   struct kvm;
->>   enum pci_tsm_req_scope;
->>   
->> +/* SPDM control structure for DOE */
->> +struct tsm_spdm {
->> +	unsigned long req_len;
->> +	void *req;
->> +	unsigned long rsp_len;
->> +	void *rsp;
->> +};
-> 
-> I would only add things to the core that the core needs, or all
-> implementations can unify. You can see that tdx_spdm_msg_exchange() can
-> not use this common definition for example.
+Cc: stable@vger.kernel.org
+Fixes: 9d5018deec86 ("iommu/omap: Add support to program multiple iommus")
+Signed-off-by: Ma Ke <make24@iscas.ac.cn>
+---
+ drivers/iommu/omap-iommu.c | 32 +++++++++++++++++++++-----------
+ 1 file changed, 21 insertions(+), 11 deletions(-)
 
-
-Oh I missed that we have tdx_spdm_msg_exchange() now, cool :)
-
->> +
->>   /*
->>    * struct pci_tsm_ops - manage confidential links and security state
->>    * @link_ops: Coordinate PCIe SPDM and IDE establishment via a platform TSM.
->> @@ -130,11 +138,17 @@ struct pci_tsm {
->>    * @base_tsm: generic core "tsm" context
->>    * @lock: mutual exclustion for pci_tsm_ops invocation
->>    * @doe_mb: PCIe Data Object Exchange mailbox
->> + * @doe_mb_sec: DOE mailbox used when secured SPDM is requested
->> + * @spdm: cached SPDM request/response buffers for the link
->> + * @cert_slot: SPDM certificate slot
->>    */
->>   struct pci_tsm_pf0 {
->>   	struct pci_tsm base_tsm;
->>   	struct mutex lock;
->>   	struct pci_doe_mb *doe_mb;
->> +	struct pci_doe_mb *doe_mb_sec;
-> 
-> See below, pci_tsm_pf0 should only ever need one doe_mb instance.
-> 
->> +	struct tsm_spdm spdm;
-> 
-> Per above, just move @tsm_spdm into the TIO object that wraps
-> pci_tsm_pf0.
-
-Sure, can do that.
-
->> +	u8 cert_slot;
->>   };
->>   
->>   struct pci_tsm_mmio {
->> diff --git a/drivers/pci/tsm.c b/drivers/pci/tsm.c
->> index ed8a280a2cf4..378748b15825 100644
->> --- a/drivers/pci/tsm.c
->> +++ b/drivers/pci/tsm.c
->> @@ -1067,6 +1067,10 @@ int pci_tsm_pf0_constructor(struct pci_dev *pdev, struct pci_tsm_pf0 *tsm,
->>   		pci_warn(pdev, "TSM init failure, no CMA mailbox\n");
->>   		return -ENODEV;
->>   	}
->> +	tsm->doe_mb_sec = pci_find_doe_mailbox(pdev, PCI_VENDOR_ID_PCI_SIG,
->> +					       PCI_DOE_FEATURE_SSESSION);
->> +	if (!tsm->doe_mb_sec)
->> +		pci_warn(pdev, "TSM init failed to init SSESSION mailbox\n");
-> 
-> So it is surprising to find that a device supports PCI_DOE_FEATURE_CMA,
-> but requires the TSM to also use the PCI_DOE_FEATURE_SSESSION mailbox?
-> A PCI_DOE_FEATURE_CMA mailbox is capable of supporting secure sessions
-> and IDE.
-
-What does guarantee that CMA supports SSESSION?
-
-> When a device supports multiple DOE, the VMM does need to pick one, but the
-> hope was that "first CMA DOE" would work, but apparently you have a
-> device that wants to violate this simple heuristic?
-> 
-> What happens on this device if you use the CMA mailbox for IDE
-> establishment and secure sessions?
-
-Nah, my devices have one DOE cap with 3 protocols supported, I just did not see any good reason to limit ourselves to one DOE MB. We will either have to BUG_ON on DOE MB which does CMA but does not do SSESSION, or just have 2 struct doe_mb pointers. Thanks,
-
-
+diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+index 5c6f5943f44b..4df06cb09623 100644
+--- a/drivers/iommu/omap-iommu.c
++++ b/drivers/iommu/omap-iommu.c
+@@ -1637,6 +1637,7 @@ static struct iommu_device *omap_iommu_probe_device(struct device *dev)
+ 	struct omap_iommu *oiommu;
+ 	struct device_node *np;
+ 	int num_iommus, i;
++	int ret = 0;
+ 
+ 	/*
+ 	 * Allocate the per-device iommu structure for DT-based devices.
+@@ -1663,28 +1664,26 @@ static struct iommu_device *omap_iommu_probe_device(struct device *dev)
+ 	for (i = 0, tmp = arch_data; i < num_iommus; i++, tmp++) {
+ 		np = of_parse_phandle(dev->of_node, "iommus", i);
+ 		if (!np) {
+-			kfree(arch_data);
+-			return ERR_PTR(-EINVAL);
++			ret = -EINVAL;
++			goto err_cleanup;
+ 		}
+ 
+ 		pdev = of_find_device_by_node(np);
++		of_node_put(np);
+ 		if (!pdev) {
+-			of_node_put(np);
+-			kfree(arch_data);
+-			return ERR_PTR(-ENODEV);
++			ret = -ENODEV;
++			goto err_cleanup;
+ 		}
+ 
+ 		oiommu = platform_get_drvdata(pdev);
+ 		if (!oiommu) {
+-			of_node_put(np);
+-			kfree(arch_data);
+-			return ERR_PTR(-EINVAL);
++			put_device(&pdev->dev);
++			ret = -EINVAL;
++			goto err_cleanup;
+ 		}
+ 
+ 		tmp->iommu_dev = oiommu;
+ 		tmp->dev = &pdev->dev;
+-
+-		of_node_put(np);
+ 	}
+ 
+ 	dev_iommu_priv_set(dev, arch_data);
+@@ -1697,17 +1696,28 @@ static struct iommu_device *omap_iommu_probe_device(struct device *dev)
+ 	oiommu = arch_data->iommu_dev;
+ 
+ 	return &oiommu->iommu;
++
++err_cleanup:
++	for (tmp = arch_data; tmp < arch_data + i; tmp++) {
++		if (tmp->dev)
++			put_device(tmp->dev);
++	}
++	kfree(arch_data);
++	return ERR_PTR(ret);
+ }
+ 
+ static void omap_iommu_release_device(struct device *dev)
+ {
+ 	struct omap_iommu_arch_data *arch_data = dev_iommu_priv_get(dev);
++	struct omap_iommu_arch_data *tmp;
+ 
+ 	if (!dev->of_node || !arch_data)
+ 		return;
+ 
+-	kfree(arch_data);
++	for (tmp = arch_data; tmp->dev; tmp++)
++		put_device(tmp->dev);
+ 
++	kfree(arch_data);
+ }
+ 
+ static int omap_iommu_of_xlate(struct device *dev, const struct of_phandle_args *args)
 -- 
-Alexey
+2.17.1
 
