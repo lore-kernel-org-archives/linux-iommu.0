@@ -1,64 +1,68 @@
-Received: from mail-wr1-f74.google.com (mail-wr1-f74.google.com [209.85.221.74])
+Received: from mail-wm1-f74.google.com (mail-wm1-f74.google.com [209.85.128.74])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A13832C30A
-	for <iommu@lists.linux.dev>; Mon, 17 Nov 2025 18:48:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.74
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3EC432C932
+	for <iommu@lists.linux.dev>; Mon, 17 Nov 2025 18:48:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.74
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763405309; cv=none; b=ZeJ5HOwV/134XaDFLNzAqu3KPW8GZA1j37h/soFATVvSGhV9SeddI6L4wre562wtAMg69ALI2PDSW+EejDOxUnHR1hQatzB+feGSDDaqqWv9oTOMmAac5E0zLamu+8wjdqxPuBBvbNBOewIKyKgiRmC5LLnOCY3wlnRyEHNvWDQ=
+	t=1763405311; cv=none; b=DJPb4AFDjy2AMHguqmDlPjs+vqCFi00ZUdBbnIcHONSD9ExbhMSoUrfEdAvf4DnryhKvh6Jp3utCG8eldLi9kGyn9sFO4s+fUcl5MzXq75/0gYZO/DNy7uOZgUBjv7xEbQ2DkH7TpznHBxYEnYoPrjFh3PUtuooJG1qZth42nFs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763405309; c=relaxed/simple;
-	bh=RUJIGMKmFkkqnphzr4kemMR5y3/FyUV6BCm2ZQa4An0=;
-	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=Zp0bxEQpRu8xTlDMswFgfEtANtdRZCmaZu59YY0dRcDk52VuNhGuWxCeQd3YFk4dFemsC8FZmO7JrYJhfM0dKekiTncUXe1BIJ28tjZ4KGGVMZKQo+R5dTcpMLgce3jecu8ZiNUutswdzCyV+4A5c3TMqx8hrrvlQ7WWAMj5/HE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=IsqOmh+L; arc=none smtp.client-ip=209.85.221.74
+	s=arc-20240116; t=1763405311; c=relaxed/simple;
+	bh=2Y9643ZngljQl47Ad+xEoXXZjIjmeGyFMzazpt4UT+Y=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=aJhky5zMxPpNAEjzooiMgmYX8Ljmy7hP2yZLZ3PO1d0dfohoKArqVtHRZBxCaiAzzM5rdHbzIHrCdU519UYmgn7RWTw34CinUzAwr7H2JNhXJQiGPR9WdqwNXL2ET8cJD3987+IzIt7AtJHAz+I+SDlesqOtAU39SFsOjU2R2AY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=PI5dLT8b; arc=none smtp.client-ip=209.85.128.74
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="IsqOmh+L"
-Received: by mail-wr1-f74.google.com with SMTP id ffacd0b85a97d-42b2ad29140so2137405f8f.0
-        for <iommu@lists.linux.dev>; Mon, 17 Nov 2025 10:48:27 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="PI5dLT8b"
+Received: by mail-wm1-f74.google.com with SMTP id 5b1f17b1804b1-477212937eeso26657965e9.2
+        for <iommu@lists.linux.dev>; Mon, 17 Nov 2025 10:48:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1763405306; x=1764010106; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:from:subject:message-id
-         :mime-version:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=mQPdbRFOlFRQV2M3CnpwjihoUC+ROTyADJUsM+cRT4o=;
-        b=IsqOmh+L4hDoh5GpwUICBuQKwaDS2ZNrbQdMsxrp73je33mZeC4W2TW8ZMYGNJlIIX
-         GOVH5fFvuSvijurRPbSvdyq9f81DJlxF40CjIffCrbSd3wr0dDitkQLVRhCbkUWiok7M
-         FzGoILnPTt0zo5dYBI5n0WZOge3MwAvxEPq7O1Fj/dfVGTBvqopdu1cICKG9DZ0GjmQC
-         /Eu9H+tbhwvMXehqNSkk4m5PeaVInVmSTkvnouJtYM0NeLE7GYM1XQvOlkoKUqLyWewJ
-         IrNoGNroZDA+vLC8Nx4VmiYBtgbyi4GrNxPCJy1juzS7VBV6rtgmSCapX/60bvlGsnJ8
-         2arg==
+        d=google.com; s=20230601; t=1763405308; x=1764010108; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:references
+         :mime-version:in-reply-to:date:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ud78eB0arPLfokP7b6+iOXM9DvD6Lviy96UJdE9HiHk=;
+        b=PI5dLT8bIVN+DY8NxJlLUGsflrCH8gAl1R+KNKE/phDlvkd2E5gkcZFSgeeonK9IUy
+         FYcZtUfXG0s4eXwft+lmlcEtAbQ6WM7aSGlkGLHFbTfacR0cNFtQLg/r5EZqZ0TRe9x3
+         VNk17LPOSSm6Vb1JgX+1Q7gvFUQPzeMqeyj4oUdraXt2tQSQeaSUJl+MOnbLqTrh6TqE
+         ahx66/GlcWSt+AvTV2C+zqoGK6CMcgTqw6OU9U4P+P//NvUyjk7Y7FdTpek6AuSISNhg
+         U0wZC366z6lXGtyznO00gYAvwZy4BulhM30ZoiAyRMe5iYfpwN54KOMb3jHRnqg/GgqF
+         WH7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1763405306; x=1764010106;
-        h=content-transfer-encoding:cc:to:from:subject:message-id
-         :mime-version:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=mQPdbRFOlFRQV2M3CnpwjihoUC+ROTyADJUsM+cRT4o=;
-        b=N6uYeyA0+0Y5LFJIA6AVbTN3WYnL0q5Xbhmvt38JWq7NkMeBGNiynXUaYEYnwLgTbs
-         0fKnLpS8Plwt5fiWUEFohaaaA228BcLVq42wm/K7UdIrBayzpEOlEAYfF4ENgEe3qLOn
-         1DXuuNEOgk3+sjMshTC1Ar+iBayck5wHIcArPWxoIec46hjrbuphtMcsnn4n/WJXIc7S
-         rJe6j3xg4FLthkjx/Zbyc1h32ROzX3C8Ccj15ShokssiXC/8+F0RTPTJSfIDA2jnQQg4
-         PV4X4FtBAiJPcw66PFmcjb8FDsnIOzThL5jFNIUjWEGsmCd+bssGb3rf200NMynI0BcH
-         xhUw==
-X-Forwarded-Encrypted: i=1; AJvYcCV/LLmwm/6w6wsghz89JZ3aHqOcHft0OlSbZKfIIbkVLMCsgCQldTtMm0S5cOe/nAw8yDzv1A==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx1QQgDEsmaDUhidNCwGBbjT2FepJkCWEhE1Yok27SvcbuNUa0N
-	8nqBYBDv5qWHb6BADUCHiDMpDb8r71oP+7b7aTj9QkPXNlzg7kvzEQHVAulhOrcloTK9g35M2f+
-	Zot3IWFN3uwom5A==
-X-Google-Smtp-Source: AGHT+IH6k0Kpp/PjB+jSzNj/xVrwaT5fMRtpFc9z29ENKIOcBKsGRq+08bxuJJ/JrJdhKeQ4q392SvELM4Y4YA==
-X-Received: from wrbee10.prod.google.com ([2002:a05:6000:210a:b0:429:de3f:827d])
+        d=1e100.net; s=20230601; t=1763405308; x=1764010108;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:references
+         :mime-version:in-reply-to:date:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=ud78eB0arPLfokP7b6+iOXM9DvD6Lviy96UJdE9HiHk=;
+        b=aRuf9EOIkITo0ep6icKLD+uf6FugSxvBmSisWz3YHzxRegbEflqxUNZDyDaz4LCBBj
+         AcDhjtSwNg2O8x2uGRv/TPhp8PTEGK4NuIehS+t9CpBIqFDhEyNWkC6Fj7o+kW37TyWr
+         0tlcJ9RWWIpnYr9dSQO5b47iCj2VW1GzbrxB841qoP0uSvggxczSY9o2A54AY6Diqys7
+         1OQrJtgRJvA5IDr2P0PYIcdAHPW+ovb54e9ZOk8wj2EtnHb2Y84HefLvufymj98wL7/7
+         zjagsjIJ8aNoROM1R8j3tp9foACgzmiFQv7i5fEhCK5vcJ+pw+YhDa1JZ8+7cqnhWgUm
+         8NAg==
+X-Forwarded-Encrypted: i=1; AJvYcCWZlNV0oKeKFAlQCiAqRMsrlHXuYJYwm/ZGWnGrPAOV2e5+zj8yA1dKBcuXe/BG4OFOkf8F0g==@lists.linux.dev
+X-Gm-Message-State: AOJu0Ywdhw6OzfLwtpZyBcjBCsZhg1YU3RKUCwdCOhFRK/o5hU7twF/2
+	C0Nox9tkdr7fhl+Qb16M6hbc8uuFxBPmMIYTgOtko8E4BuKVS71+VO1NrTNcrjEErAZo/R6d+ot
+	earYMZISXzIrjTw==
+X-Google-Smtp-Source: AGHT+IFtQM3E60fdG09G4db3NhGt1PCpbNSce99vQEOknynP4HtzybGxEOyhlaEXa2/I2J7fKVIRDAwQImwldQ==
+X-Received: from wmbgx25.prod.google.com ([2002:a05:600c:8599:b0:477:a338:214b])
  (user=smostafa job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:6000:2f83:b0:42b:3c3e:5d2e with SMTP id ffacd0b85a97d-42b5932345dmr12287897f8f.1.1763405305694;
- Mon, 17 Nov 2025 10:48:25 -0800 (PST)
-Date: Mon, 17 Nov 2025 18:47:47 +0000
+ 2002:a05:600c:4513:b0:477:2f7c:314f with SMTP id 5b1f17b1804b1-4778fe5c820mr145661085e9.10.1763405307962;
+ Mon, 17 Nov 2025 10:48:27 -0800 (PST)
+Date: Mon, 17 Nov 2025 18:47:49 +0000
+In-Reply-To: <20251117184815.1027271-1-smostafa@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
+References: <20251117184815.1027271-1-smostafa@google.com>
 X-Mailer: git-send-email 2.52.0.rc1.455.g30608eb744-goog
-Message-ID: <20251117184815.1027271-1-smostafa@google.com>
-Subject: [PATCH v5 00/27] KVM: arm64: SMMUv3 driver for pKVM (trap and emulate)
+Message-ID: <20251117184815.1027271-3-smostafa@google.com>
+Subject: [PATCH v5 02/27] KVM: arm64: Donate MMIO to the hypervisor
 From: Mostafa Saleh <smostafa@google.com>
 To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
 	kvmarm@lists.linux.dev, iommu@lists.linux.dev
@@ -70,258 +74,181 @@ Cc: catalin.marinas@arm.com, will@kernel.org, maz@kernel.org,
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-This is v5 of pKVM SMMUv3 support with trap and emulate
+Add a function to donate MMIO to the hypervisor so IOMMU hypervisor
+drivers can use that to protect the MMIO of IOMMU.
+The initial attempt to implement this was to have a new flag to
+"___pkvm_host_donate_hyp" to accept MMIO. However that had many problems,
+it was quite intrusive for host/hyp to check/set page state to make it
+aware of MMIO and to encode the state in the page table in that case.
+Which is called in paths that can be sensitive to performance (FFA, VMs..)
 
-v1: Implements full fledged pv interface
-https://lore.kernel.org/kvmarm/20230201125328.2186498-1-jean-philippe@linar=
-o.org/
+As donating MMIO is very rare, and we don=E2=80=99t need to encode the full=
+ state,
+it=E2=80=99s reasonable to have a separate function to do this.
+It will init the host s2 page table with an invalid leaf with the owner ID
+to prevent the host from mapping the page on faults.
 
-v2:  Implements full fledged pv interface (+ more features as evtq and s1)
-https://lore.kernel.org/kvmarm/20241212180423.1578358-1-smostafa@google.com=
-/
+Also, prevent kvm_pgtable_stage2_unmap() from removing owner ID from
+stage-2 PTEs, as this can be triggered from recycle logic under memory
+pressure. There is no code relying on this, as all ownership changes is
+done via kvm_pgtable_stage2_set_owner()
 
-v3: Only DMA isolation (using pv)
-https://lore.kernel.org/kvmarm/20250728175316.3706196-1-smostafa@google.com=
-/
+For error path in IOMMU drivers, add a function to donate MMIO back
+from hyp to host.
 
-v4: trap and emulate
-https://lore.kernel.org/all/20250819215156.2494305-1-smostafa@google.com/
+Signed-off-by: Mostafa Saleh <smostafa@google.com>
+---
+ arch/arm64/kvm/hyp/include/nvhe/mem_protect.h |  2 +
+ arch/arm64/kvm/hyp/nvhe/mem_protect.c         | 90 +++++++++++++++++++
+ arch/arm64/kvm/hyp/pgtable.c                  |  9 +-
+ 3 files changed, 94 insertions(+), 7 deletions(-)
 
-This series is based on the review feedback on v4 + some other
-improvements, most notably:
-- Add hardening checks in MMIO donation [Will]
-- Add missing CMOs for non-coherent SMMU emulation [Will]
-- Rely on aux bus to probe the emulated SMMUs, and make the KVM
-  driver a platform driver [Jason]
-- Replace TLB invalidation macro with inline function [Will]
-- Set carevout size from KConfig and cmdline instead of hooks [Will]
-- Fix S2 TLB invalidation if SMMUs where disabled
-- Re-work command queue emulation to avoid unnecessary MMIO writes to
-  make it more efficient.
-- Update GBPA emulation to reflect HW state
-- Minor cleanups, file renames and rewording of commits
-
-This series applies on iommu-next (includes recent kunit rework)
-
-Design:
-=3D=3D=3D=3D=3D=3D=3D
-
-Assumptions:
-------------
-One of the important points, is that this doesn=E2=80=99t emulate the full
-SMMUv3 architecture, but only the parts used by Linux kernel,
-that=E2=80=99s why enablement of this (ARM_SMMU_V3_PKVM) depends on
-(ARM_SMMU_V3=3Dy) so we are sure of the driver behaviour.
-
-Any new change in the driver will likely trigger a WARN_ON ending up
-in panic.
-
-Most notable assumptions:
-- Changing of stream table format/size or l2 pointers is not allowed
-  after initialization.
-- leaf=3D0 CFGI is not allowed
-- CFGI_ALL with any value but 31 is not allowed
-- Some commands which are not used are not allowed (ex CMD_TLBI_NH_ALL)
-- Values set in ARM_SMMU_CR1 are hardcoded and don't change.
-
-Emulation logic mainly targets:
-
-1) Command Queue
-----------------
-At boot time, the hypervisor will allocate a shadow command queue
-(doesn=E2=80=99t need to match the host size) which then sets up in HW, the=
-n
-it will trap access to
-
-i) ARM_SMMU_CMDQ_BASE
-That can only be written when the cmdq is disabled. Then on enable,
-the hypervisor will put the host command queue in a shared state to
-avoid transition into the hypervisor or VMs. It will be unshared with
-the cmdq is disabled
-
-ii) ARM_SMMU_CMDQ_PROD
-Trigger emulation code, where the hypervisor will copy the commands
-between cons and prod, of the host queue and sanitise them (mostly
-WARNs if the host is malicious and issuing commands it shouldn=E2=80=99t)
-then eagerly consume them, updating the host cons.
-
-iii) ARM_SMMU_CMDQ_CONS
-No much logic, just return the emulated cons + error bits.
-
-2) Stream table
----------------
-Similar to the command queue, the first level is allocated at boot
-with max possible size, then the hypervisor  will trap access to:
-i) ARM_SMMU_STRTAB_BASE/ARM_SMMU_STRTAB_BASE_CFG: Keep track of
-   the stream table to put it in a shared state.
-
-On CFGI_STE, the hypervisor will read the STE in scope from the host
-copy, shadow L2 pointers if needed and attach stage-2.
-
-3) GBPA
--------
-The hypervisor will set GBPA to abort at boot, then any read from the
-host will return ABORT and writes are ignored.
-If the host tries to clear GBPA, it will look like GBPA is refusing
-to update and time out.
-
-Dealing with timers
--------------------
-In another series Vincent adds some timer abstractions for tracing in
-the hypervisor, after checking and having a discussion with him, it
-seems there isn=E2=80=99t enough common base to justify having a dependency
-between the 2 series, but it=E2=80=99s possible which ever series lands fir=
-st,
-the other one might need to adapt to it.
-https://lore.kernel.org/all/20250821081412.1008261-17-vdonnefort@google.com=
-/
-
-Bisectibility:
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-I wrote the patches where most of them are bisectable at run time (so
-we can run with a prefix of the series till MMIO emulation, cmdq
-emulation, STE or full nested) that was very helpful in debugging,
-and I kept it like this to make debugging easier.
-
-Constraints:
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-1) Discovery:
--------------
-Only device trees are supported at the moment.
-I don=E2=80=99t usually use ACPI, but I can look into adding that later.
-(not make this series bigger)
-
-2) Errata:
-----------
-Some HW with both stage-1 and stage-2 but can=E2=80=99t run nested
-translation due to some errata, which makes the driver remove
-nesting for MMU_700, I believe this is too restrictive.
-At the moment KVM will use nesting if advertised. (Or we need
-other mechanism to exclude only the affected HW)
-
-3) Shadow page table
---------------------
-Uses page granularity (leaf) for memory, that=E2=80=99s because of the lack
-of split_block_unmap() logic. I am currently looking into the
-possibility of sharing page tables, if that turned complicated (as
-expected) it might be worth to re-add this logic
-
-Boot and Probe ordering:
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-The main SMMUv3 MUST be only bound/probed after KVM fully initialises
-so it can set up the MMIO emulation.
-
-The KVM SMMUv3 driver is loaded early before KVM init so it can
-register itself, during that point it will probe all the SMMUs from the
-platform bus and bind them to the driver.
-
-Then at a later init call it will create an auxiliary device per SMMU,
-that the main driver will probe. The main driver still relies on this
-device(parent) for all driver activity. (Check comment in patch 14.
-
-Future work
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-1) Sharing page tables will be an interesting optimization, but
-   requires dealing with stage-2 page faults (which are handled
-   by the kernel), BBM and possibly more complexity.
-
-2) There is currently ongoing work to enable RPM, that will possibly
-   enable/disable the SMMU frequently, we might need some optimizations
-   to avoid re-shadowing the CMDQ/STE unnecessarily.
-
-3) Look into ACPI support.
-
-4) Some optimizations (as using block mappings for memory)
-
-Patches overview
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-The patches are split as follows:
-
-Patches 01-03: Core hypervisor: Add donation for NC, dealing with
-               MMIO and arch timer abstraction.
-Patches 04-07: Refactoring of io-pgtable-arm and SMMUv3 driver
-Patches 09-11: Hypervisor IOMMU core: pagetable management, dabts..
-Patches 12-27: KVM SMMUv3 code
-
-Tested on Qemu(S1 only, S2 only and nested)  and Morello board.
-Also tested with PAGE_SIZE 4k,16k, and 64k.
-
-A development branch can be found in:
-https://android-kvm.googlesource.com/linux/+/refs/heads/pkvm-smmu-v5
-
-Jean-Philippe Brucker (1):
-  iommu/arm-smmu-v3-kvm: Add SMMUv3 driver
-
-Mostafa Saleh (26):
-  KVM: arm64: Add a new function to donate memory with prot
-  KVM: arm64: Donate MMIO to the hypervisor
-  KVM: arm64: pkvm: Add pkvm_time_get()
-  iommu/io-pgtable-arm: Factor kernel specific code out
-  iommu/arm-smmu-v3: Split code with hyp
-  iommu/arm-smmu-v3: Move TLB range invalidation into common code
-  iommu/arm-smmu-v3: Move IDR parsing to common functions
-  KVM: arm64: iommu: Introduce IOMMU driver infrastructure
-  KVM: arm64: iommu: Shadow host stage-2 page table
-  KVM: arm64: iommu: Add memory pool
-  KVM: arm64: iommu: Support DABT for IOMMU
-  iommu/arm-smmu-v3-kvm: Add the kernel driver
-  iommu/arm-smmu-v3: Support probing KVM emulated devices
-  iommu/arm-smmu-v3-kvm: Create array for hyp SMMUv3
-  iommu/arm-smmu-v3-kvm: Take over SMMUs
-  iommu/arm-smmu-v3-kvm: Probe SMMU HW
-  iommu/arm-smmu-v3-kvm: Add MMIO emulation
-  iommu/arm-smmu-v3-kvm: Shadow the command queue
-  iommu/arm-smmu-v3-kvm: Add CMDQ functions
-  iommu/arm-smmu-v3-kvm: Emulate CMDQ for host
-  iommu/arm-smmu-v3-kvm: Shadow stream table
-  iommu/arm-smmu-v3-kvm: Shadow STEs
-  iommu/arm-smmu-v3-kvm: Emulate GBPA
-  iommu/arm-smmu-v3-kvm: Support io-pgtable
-  iommu/arm-smmu-v3-kvm: Shadow the CPU stage-2 page table
-  iommu/arm-smmu-v3-kvm: Enable nesting
-
- .../admin-guide/kernel-parameters.txt         |    4 +
- arch/arm64/include/asm/kvm_arm.h              |    2 +
- arch/arm64/include/asm/kvm_host.h             |    6 +
- arch/arm64/kvm/Kconfig                        |    7 +
- arch/arm64/kvm/Makefile                       |    2 +-
- arch/arm64/kvm/hyp/include/nvhe/iommu.h       |   21 +
- arch/arm64/kvm/hyp/include/nvhe/mem_protect.h |    3 +
- arch/arm64/kvm/hyp/include/nvhe/pkvm.h        |    2 +
- arch/arm64/kvm/hyp/nvhe/Makefile              |   10 +-
- arch/arm64/kvm/hyp/nvhe/iommu/iommu.c         |  130 ++
- arch/arm64/kvm/hyp/nvhe/mem_protect.c         |  116 +-
- arch/arm64/kvm/hyp/nvhe/setup.c               |   23 +
- arch/arm64/kvm/hyp/nvhe/timer-sr.c            |   32 +
- arch/arm64/kvm/hyp/pgtable.c                  |    9 +-
- arch/arm64/kvm/iommu.c                        |   44 +
- arch/arm64/kvm/pkvm.c                         |    1 +
- drivers/iommu/Makefile                        |    2 +-
- drivers/iommu/arm/Kconfig                     |    9 +
- drivers/iommu/arm/arm-smmu-v3/Makefile        |    3 +-
- .../arm/arm-smmu-v3/arm-smmu-v3-common-lib.c  |  114 ++
- .../iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c   |  190 +++
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  400 ++----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  254 ++++
- .../iommu/arm/arm-smmu-v3/pkvm/arm-smmu-v3.c  | 1068 +++++++++++++++++
- .../iommu/arm/arm-smmu-v3/pkvm/arm_smmu_v3.h  |   65 +
- .../arm/arm-smmu-v3/pkvm/io-pgtable-arm-hyp.c |   68 ++
- drivers/iommu/io-pgtable-arm-kernel.c         |  103 ++
- drivers/iommu/io-pgtable-arm.c                |  103 +-
- drivers/iommu/io-pgtable-arm.h                |   30 +
- 29 files changed, 2402 insertions(+), 419 deletions(-)
- create mode 100644 arch/arm64/kvm/hyp/include/nvhe/iommu.h
- create mode 100644 arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
- create mode 100644 arch/arm64/kvm/iommu.c
- create mode 100644 drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-common-lib.c
- create mode 100644 drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c
- create mode 100644 drivers/iommu/arm/arm-smmu-v3/pkvm/arm-smmu-v3.c
- create mode 100644 drivers/iommu/arm/arm-smmu-v3/pkvm/arm_smmu_v3.h
- create mode 100644 drivers/iommu/arm/arm-smmu-v3/pkvm/io-pgtable-arm-hyp.c
- create mode 100644 drivers/iommu/io-pgtable-arm-kernel.c
-
-
-base-commit: 3ee8acab4e5038a261a72ea2e6035cff89168010
+diff --git a/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h b/arch/arm64/kvm=
+/hyp/include/nvhe/mem_protect.h
+index 52d7ee91e18c..98e173da0f9b 100644
+--- a/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h
++++ b/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h
+@@ -37,6 +37,8 @@ int __pkvm_host_share_hyp(u64 pfn);
+ int __pkvm_host_unshare_hyp(u64 pfn);
+ int __pkvm_host_donate_hyp(u64 pfn, u64 nr_pages);
+ int ___pkvm_host_donate_hyp(u64 pfn, u64 nr_pages, enum kvm_pgtable_prot p=
+rot);
++int __pkvm_host_donate_hyp_mmio(u64 pfn);
++int __pkvm_hyp_donate_host_mmio(u64 pfn);
+ int __pkvm_hyp_donate_host(u64 pfn, u64 nr_pages);
+ int __pkvm_host_share_ffa(u64 pfn, u64 nr_pages);
+ int __pkvm_host_unshare_ffa(u64 pfn, u64 nr_pages);
+diff --git a/arch/arm64/kvm/hyp/nvhe/mem_protect.c b/arch/arm64/kvm/hyp/nvh=
+e/mem_protect.c
+index 434b1d6aa49e..c3eac0da7cbe 100644
+--- a/arch/arm64/kvm/hyp/nvhe/mem_protect.c
++++ b/arch/arm64/kvm/hyp/nvhe/mem_protect.c
+@@ -799,6 +799,96 @@ int ___pkvm_host_donate_hyp(u64 pfn, u64 nr_pages, enu=
+m kvm_pgtable_prot prot)
+ 	return ret;
+ }
+=20
++int __pkvm_host_donate_hyp_mmio(u64 pfn)
++{
++	u64 phys =3D hyp_pfn_to_phys(pfn);
++	void *virt =3D __hyp_va(phys);
++	int ret;
++	kvm_pte_t pte;
++
++	if (addr_is_memory(phys))
++		return -EINVAL;
++
++	host_lock_component();
++	hyp_lock_component();
++
++	ret =3D kvm_pgtable_get_leaf(&host_mmu.pgt, phys, &pte, NULL);
++	if (ret)
++		goto unlock;
++
++	if (pte && !kvm_pte_valid(pte)) {
++		ret =3D -EPERM;
++		goto unlock;
++	}
++
++	ret =3D kvm_pgtable_get_leaf(&pkvm_pgtable, (u64)virt, &pte, NULL);
++	if (ret)
++		goto unlock;
++	if (pte) {
++		ret =3D -EBUSY;
++		goto unlock;
++	}
++
++	ret =3D pkvm_create_mappings_locked(virt, virt + PAGE_SIZE, PAGE_HYP_DEVI=
+CE);
++	if (ret)
++		goto unlock;
++	/*
++	 * We set HYP as the owner of the MMIO pages in the host stage-2, for:
++	 * - host aborts: host_stage2_adjust_range() would fail for invalid non z=
+ero PTEs.
++	 * - recycle under memory pressure: host_stage2_unmap_dev_all() would cal=
+l
++	 *   kvm_pgtable_stage2_unmap() which will not clear non zero invalid pte=
+s (counted).
++	 * - other MMIO donation: Would fail as we check that the PTE is valid or=
+ empty.
++	 */
++	WARN_ON(host_stage2_try(kvm_pgtable_stage2_set_owner, &host_mmu.pgt, phys=
+,
++				PAGE_SIZE, &host_s2_pool, PKVM_ID_HYP));
++unlock:
++	hyp_unlock_component();
++	host_unlock_component();
++
++	return ret;
++}
++
++int __pkvm_hyp_donate_host_mmio(u64 pfn)
++{
++	u64 phys =3D hyp_pfn_to_phys(pfn);
++	u64 virt =3D (u64)__hyp_va(phys);
++	size_t size =3D PAGE_SIZE;
++	int ret;
++	kvm_pte_t pte;
++
++	if (addr_is_memory(phys))
++		return -EINVAL;
++
++	host_lock_component();
++	hyp_lock_component();
++
++	ret =3D kvm_pgtable_get_leaf(&pkvm_pgtable, (u64)virt, &pte, NULL);
++	if (ret)
++		goto unlock;
++	if (!kvm_pte_valid(pte)) {
++		ret =3D -ENOENT;
++		goto unlock;
++	}
++
++	ret =3D kvm_pgtable_get_leaf(&host_mmu.pgt, phys, &pte, NULL);
++	if (ret)
++		goto unlock;
++
++	if (FIELD_GET(KVM_INVALID_PTE_OWNER_MASK, pte) !=3D PKVM_ID_HYP) {
++		ret =3D -EPERM;
++		goto unlock;
++	}
++
++	WARN_ON(kvm_pgtable_hyp_unmap(&pkvm_pgtable, virt, size) !=3D size);
++	WARN_ON(host_stage2_try(kvm_pgtable_stage2_set_owner, &host_mmu.pgt, phys=
+,
++				PAGE_SIZE, &host_s2_pool, PKVM_ID_HOST));
++unlock:
++	hyp_unlock_component();
++	host_unlock_component();
++
++	return ret;
++}
++
+ int __pkvm_host_donate_hyp(u64 pfn, u64 nr_pages)
+ {
+ 	return ___pkvm_host_donate_hyp(pfn, nr_pages, PAGE_HYP);
+diff --git a/arch/arm64/kvm/hyp/pgtable.c b/arch/arm64/kvm/hyp/pgtable.c
+index c351b4abd5db..ba06b0c21d5a 100644
+--- a/arch/arm64/kvm/hyp/pgtable.c
++++ b/arch/arm64/kvm/hyp/pgtable.c
+@@ -1095,13 +1095,8 @@ static int stage2_unmap_walker(const struct kvm_pgta=
+ble_visit_ctx *ctx,
+ 	kvm_pte_t *childp =3D NULL;
+ 	bool need_flush =3D false;
+=20
+-	if (!kvm_pte_valid(ctx->old)) {
+-		if (stage2_pte_is_counted(ctx->old)) {
+-			kvm_clear_pte(ctx->ptep);
+-			mm_ops->put_page(ctx->ptep);
+-		}
+-		return 0;
+-	}
++	if (!kvm_pte_valid(ctx->old))
++		return stage2_pte_is_counted(ctx->old) ? -EPERM : 0;
+=20
+ 	if (kvm_pte_table(ctx->old, ctx->level)) {
+ 		childp =3D kvm_pte_follow(ctx->old, mm_ops);
 --=20
 2.52.0.rc1.455.g30608eb744-goog
 
