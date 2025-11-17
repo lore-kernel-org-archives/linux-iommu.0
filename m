@@ -1,50 +1,87 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7F2B32F778
-	for <iommu@lists.linux.dev>; Mon, 17 Nov 2025 12:55:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 426E6334371
+	for <iommu@lists.linux.dev>; Mon, 17 Nov 2025 13:53:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763384108; cv=none; b=OfnGWWVC+Uv6ytr03o+qwiOv9YRyB3ikjgbWuQnoN8NGlplKewkvKaS1my6tT3jbv/SKdOwG5292oX7HLepg7kKqQDfkDSdDKi4OQXl+jM3UspQYpB0+hvUkWl6MWwFGChVr8wRsKcnx0/+Cn9KJB2fm2QASmUNbPInldwt6+E4=
+	t=1763387588; cv=none; b=FK9JIHdBpK7yuvrkccInuqpO04aCIeP3YXBHPIdWichvRr7PC4lgtPjHOP5EazacvLmx3YpJsKbcd2qamqTH2rEBzZdUbBuR0zhvQ9Mc6HY3dI1mDM8rePVzWVHclNMviBNn4Yv7jPFcRHhtZHzTteplVwoSKgbnl/wff0cD5QI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763384108; c=relaxed/simple;
-	bh=rgFkKHH11qVMhMqSBcSWzBvpo3MTJaH2NetAY/TypaY=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=kfTivqIqeEo0o6scTMiI1rJDL56cNpThIG0is3FuHpRYft4jYmS5cK+g5AJoyZjqkrcvkzaedSpG7JB97xsF2azB38wJPfYVnN3D1WEs4iY87zj63cKJq+Xa9u/ax6NiJiDp+Fui5lFoIrVJK9tlAQZLCFlMDINKHvrkOI7wXFo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BvLKKRBW; arc=none smtp.client-ip=192.198.163.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1763387588; c=relaxed/simple;
+	bh=CksVbEKpF9SAjJut1xXJbBDF9TPaRuhoGlNshSKhwtQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=JSdrc0QKzsvq5V/k2Anz+ZQgqUMRdaiP7t6GFCn21fNnzjng3pZv/WXLkD4UDfWxrqm6UqvTy7mwtcRZ2zXDsN6HeIgqslySSjRoALc5wwX7u1OFTDSgfIHP9o+qvkQXA/ctGsiZZpqBuSeMv9kWaw2l/YM9SoNt0LwNvzkcr4I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=mFtFuGK1; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=fqq3kZp8; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BvLKKRBW"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1763384106; x=1794920106;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=rgFkKHH11qVMhMqSBcSWzBvpo3MTJaH2NetAY/TypaY=;
-  b=BvLKKRBWfAQyPH7o3FIKcyONlQDVhy6H6oyKm0aj0Dhge3Ncj011QhZi
-   m/4R8lGe3cCdUNZZRqRRvE5jXIzox6RddRaiVC+WNxH8Yx6/lZPUOy/FC
-   fpxDwVwpXXscZjJ1fuX2aMKdy9TOPLq2oYjmvlb53WA9xWx69JQlMyNis
-   d7Oqi5IYZZaZdSEJ0ufA34RKRFzaTARDWkegfyZzxQ724w63stBvE0Wn+
-   ShGeedEXHF3L1iGYQm/PqxKU/BBg/80M9PyCBLHaF0ve03tp+/diGc3P/
-   k0kZUmaNhHIbXpP4Xg6ZCbQjtIwROfRYHtaKFrGuw3vh1mj3E3MOJr1Lp
-   w==;
-X-CSE-ConnectionGUID: BgUvmHYIQjmhCzaZb05+sw==
-X-CSE-MsgGUID: he9/1B0rSDSEsKMCki77Ew==
-X-IronPort-AV: E=McAfee;i="6800,10657,11615"; a="64382902"
-X-IronPort-AV: E=Sophos;i="6.19,311,1754982000"; 
-   d="scan'208";a="64382902"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2025 04:55:05 -0800
-X-CSE-ConnectionGUID: /oEv5M5FTo++8/L2GF8YUQ==
-X-CSE-MsgGUID: ibLS56sBQAGikFZdceUqgg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.19,311,1754982000"; 
-   d="scan'208";a="221087043"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.246.21]) ([10.124.246.21])
-  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2025 04:55:02 -0800
-Message-ID: <c0f614d6-cf41-4585-963f-bb6081c3f39f@linux.intel.com>
-Date: Mon, 17 Nov 2025 20:54:59 +0800
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="mFtFuGK1";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="fqq3kZp8"
+Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 5AHB3Wxm3517167
+	for <iommu@lists.linux.dev>; Mon, 17 Nov 2025 13:53:04 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	Yi+BdGPgnrk+oNWxD1uiFb+dRMmL82ThS7ds7IVksSw=; b=mFtFuGK1MCuVmr12
+	f9haVzaVKOz32O1RSgy/Q2GSQLp0IWB6W1rgvDBTRR86RSit5e/+gL7U9Xf4xY8P
+	PpvZb8gQE910myLphQRL2OWHai4slaABAa+akYYX6cdEGm0iZinbzoeouP3lFqwB
+	FiE7ADx79zOF4EWoLQio/1MMQ/F9Ipft88DUbf8M2q+dpOgrluXfim46yIfXD+Vl
+	LGgURcg40mLjKu/qRRbcCHsAuhQRpz/dcSqa8Vl0cBZ6skK2SqI7rHe9TqHvZr9m
+	RYZdThUlTtssyPSjrI4YTIolsb6e73tn3hD+UU+sLtYBVCq7O/CxnI8efXt0ataz
+	og8aZw==
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com [209.85.160.200])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4ag2gg8eus-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Mon, 17 Nov 2025 13:53:04 +0000 (GMT)
+Received: by mail-qt1-f200.google.com with SMTP id d75a77b69052e-4ed767bf637so4326821cf.1
+        for <iommu@lists.linux.dev>; Mon, 17 Nov 2025 05:53:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1763387583; x=1763992383; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Yi+BdGPgnrk+oNWxD1uiFb+dRMmL82ThS7ds7IVksSw=;
+        b=fqq3kZp8Mv/jgmsESNJDuFwdA1zJhxpbHSNO4LdwmhjMlYRXYoWSTA6o1j4xPmXdfV
+         ya3GtpuMRt6UkyFKR7QElGJMZi7g6fQgdX3iMgAzpyA2jG024hBBe69l7OHO2/Y1UkgC
+         zObSMPC9B4ozjK/66o1vIZf1P80mnwNrTJFVmIN73Ji2g5xy3BTrRS7phQzcedMxkQRB
+         atuW07Px4Ws1vN52+9jKxAZ0T50rt2bRKsuNwlwTtXDPbtxrVZyJS5DPklrU0DfKgPXd
+         f/+UQsguJgZhwKIra46UYQ+BRODAZyty+BS/XluOCkjt3ZKQdW5a/SglnDmzF3uCz0iJ
+         bJ3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1763387583; x=1763992383;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Yi+BdGPgnrk+oNWxD1uiFb+dRMmL82ThS7ds7IVksSw=;
+        b=pm4HjN87+rHJBwG77A3elmEc0uqIUtCSqwe9m6mEoXtd9xezVrWf9M04NpQVYHo1UV
+         IrBbtYF3wNPqddBaBjD7xGonck7keiiNoy3rmlMd6+n1ZzCus3UECqGYrp4pK3KPEM6i
+         /Vi/H0pMsWgSGc0wdKoxt3A9Jddvqz/0qfywB4K3pqtztJKkzTbtNYdl1dri+UeYKb6R
+         QGJh4zsPI1eixO61ZEwnFFzz9MeT7kIdkzVnhwoLGiOB9KBLPzSAgzINAkYCZEY8xuiL
+         6DA3Jz1CcB3LjgVmdI3DDvfXMXvqY7k/u6SFrDVsizLJajWUk4xWeYWrCM/5lqjiQQ5N
+         6D6A==
+X-Forwarded-Encrypted: i=1; AJvYcCX0/QQofK9FW2brplItjqK1Oat6GpzNBCzGYK/f1U133ymu0ES2FWxurcNGQ0wOBaIPMgy33w==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzSWPSPbQyUvGXOZfMLhQidmEwsMAnCvBC6bAHpA6xjSJ1czHTZ
+	NjOQIyYaLTODcjmzFJx/Cj6OqgpnGU1u3J0+GTZNQM0NLoUIKFkNPLtp+XGtyoX85rA332GBAZc
+	h3D2lChNvmLmQjlNsKay57er1LGh3Fl5TdLcZ40m931gpxKVUCgEaXsiQiQ==
+X-Gm-Gg: ASbGncuFDGrvjV7YJeeI7wJydEWoiixfbeXW6bK+Dd5KisxiqYw+lDT09w4APj+p7qY
+	Q6sdFvMkBSu9+uzDrS/AvOuMVLSLnNO7oqWwu3nLybgV/Z15L+6ez/0kU8yiWwEPc3a3frFK3rX
+	ZqJXl0ukf2hyEmFVtTkjppoHqCZV28FRcmReD+Esh2UePjqAsBXqQvvLMjCE9QTgnSiPVtI2CrN
+	zpj2Ir215DO3Iee60MjWIIfRr2irivEMrOsqnXAKGgBv637tw1DDW5cXbkkXNB/bMljcx+Q5uwS
+	4qKVvwdB69npSNJzgYAjuuy97N5n/gr6oZ+dflSUrrBZ/j2+iJhu1kI+BOQbTF/EVZ3u/MCHRyR
+	+dYkvaTaEEvZgig3QSlxUaOCFSZdhqSDMVHhIpPlSCR+3q6NuEtArnD6k
+X-Received: by 2002:ac8:6f08:0:b0:4ee:1063:d0f3 with SMTP id d75a77b69052e-4ee1063d7d8mr73608621cf.11.1763387583355;
+        Mon, 17 Nov 2025 05:53:03 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IFP6/ieJt0wbfNJVaOx0h7m7+0k3hS0h1MhOub3nCOiBuEQbZ7V+KAM8rQUI0q8j+iY7BfrDw==
+X-Received: by 2002:ac8:6f08:0:b0:4ee:1063:d0f3 with SMTP id d75a77b69052e-4ee1063d7d8mr73608341cf.11.1763387582843;
+        Mon, 17 Nov 2025 05:53:02 -0800 (PST)
+Received: from [192.168.119.202] (078088045245.garwolin.vectranet.pl. [78.88.45.245])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b734fad43dfsm1089481766b.20.2025.11.17.05.52.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 17 Nov 2025 05:53:02 -0800 (PST)
+Message-ID: <73c3de56-5c60-492f-8b1a-209b5b06e7e1@oss.qualcomm.com>
+Date: Mon, 17 Nov 2025 14:52:58 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,117 +89,72 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com,
- "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
- "intel-xe@lists.freedesktop.org" <intel-xe@lists.freedesktop.org>,
- Lucas De Marchi <lucas.demarchi@intel.com>,
- "Kurmi, Suresh Kumar" <suresh.kumar.kurmi@intel.com>,
- "Saarinen, Jani" <jani.saarinen@intel.com>, matthew.auld@intel.com,
- iommu@lists.linux.dev
-Subject: Re: REGRESSION on linux-next (next-20251106)
-To: Jason Gunthorpe <jgg@nvidia.com>,
- "Borah, Chaitanya Kumar" <chaitanya.kumar.borah@intel.com>,
- Kevin Tian <kevin.tian@intel.com>
-References: <4f15cf3b-6fad-4cd8-87e5-6d86c0082673@intel.com>
- <aRUK8vDZ3dE1zNxL@nvidia.com>
+Subject: Re: [PATCH v3 02/20] drm/msm/a6xx: Fix the gemnoc workaround
+To: Akhil P Oommen <akhilpo@oss.qualcomm.com>,
+        Rob Clark <robin.clark@oss.qualcomm.com>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>, Sean Paul <sean@poorly.run>,
+        Dmitry Baryshkov <lumag@kernel.org>,
+        Abhinav Kumar
+ <abhinav.kumar@linux.dev>,
+        Jessica Zhang <jesszhan0024@gmail.com>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Jordan Crouse
+ <jordan@cosmicpenguin.net>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Connor Abbott <cwabbott0@gmail.com>
+Cc: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+        devicetree@vger.kernel.org
+References: <20251114-kaana-gpu-support-v3-0-92300c7ec8ff@oss.qualcomm.com>
+ <20251114-kaana-gpu-support-v3-2-92300c7ec8ff@oss.qualcomm.com>
 Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <aRUK8vDZ3dE1zNxL@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+In-Reply-To: <20251114-kaana-gpu-support-v3-2-92300c7ec8ff@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-GUID: ybHetuWqRbqcne_vPJHYWMcjoWyckbOn
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMTE3MDExOCBTYWx0ZWRfXwUEf9Q5n80w2
+ /2a4Kr3pDMhTJh6U9odTuyqHzCKuIeuWJYpONm7GC/BDDx6i7ITdBuebuVNgZNfTnDKDlB5/ggk
+ tg3OOGDG8eLJHL3rVl/z62dMJGr5KIiRq1YfTcOm5gd3zxdbiBqRPMooZGBTZFCR6npDsuDyULj
+ mpVmvSFbjcrlAuy8y0YV/eu/7C1tfwjgZMz6WvRIimBkp2njhUbFL2HwaDdnT8nSEyWGaSkLukw
+ 9cRgxxEy2kTqzUYsu9XvHQrsUG2fkBG+SZU7+fqdlYKpPAs1HFLz3ehGNL5czCt+MP0TldB8RLK
+ ifrSw0mFWJFcxp37hVEZyf06jaKFE100BBFJUpF7y+QjUV8aDBNbAavZWdjKgZh/xPFHAD6ff9G
+ 4kcNmcYAqdrPIHOcMXMLWJPS4qGzCg==
+X-Authority-Analysis: v=2.4 cv=Cryys34D c=1 sm=1 tr=0 ts=691b28c0 cx=c_pps
+ a=JbAStetqSzwMeJznSMzCyw==:117 a=FpWmc02/iXfjRdCD7H54yg==:17
+ a=IkcTkHD0fZMA:10 a=6UeiqGixMTsA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=EUspDBNiAAAA:8 a=ws8SwQwlQu7ULn3ZA60A:9
+ a=QEXdDO2ut3YA:10 a=uxP6HrT_eTzRwkO_Te1X:22
+X-Proofpoint-ORIG-GUID: ybHetuWqRbqcne_vPJHYWMcjoWyckbOn
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.9,FMLib:17.12.100.49
+ definitions=2025-11-17_03,2025-11-13_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ lowpriorityscore=0 spamscore=0 clxscore=1015 suspectscore=0
+ priorityscore=1501 malwarescore=0 bulkscore=0 adultscore=0 phishscore=0
+ impostorscore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2510240001
+ definitions=main-2511170118
 
-On 11/13/2025 6:32 AM, Jason Gunthorpe wrote:
-> On Mon, Nov 10, 2025 at 12:06:30PM +0530, Borah, Chaitanya Kumar wrote:
->> Hello Jason,
->>
->> Hope you are doing well. I am Chaitanya from the linux graphics team in
->> Intel.
->>
->> This mail is regarding a regression we are seeing in our CI runs[1] on
->> linux-next repository.
->>
->> Since the version next-20251106 [2], we are seeing our tests timing out
->> presumably caused by a GPU Hang.
+On 11/14/25 12:28 AM, Akhil P Oommen wrote:
+> Correct the register offset and enable this workaround for all A7x
+> and newer GPUs to match the recommendation. Also, downstream does this
+> w/a after moving the fence to allow mode. So do the same.
 > 
-> Thank you for reporting this.
-> 
-> I don't have any immediate theory, so I think it will need some
-> debug. Maybe Kevin or Lu have some idea?
-> 
-> Some general thoughts to check
-> 
-> 1) Is there an iommu fault report? I did not see one in your dmesg,
->     but maybe it was truncated? It is more puzzling to see an iommu
->     related error and not see a fault report..
-> 
-> 2) Could it be one of the special iommu behaviors to support iGPU that
->     is not working? Maybe we missed one?
-> 
-> 3) I seem to recall Lu tested the coherent cache flushing, but that
->     would also be a good question, is this iGPU cache incoherent with
->     the CPU? Could this be a cache flushing bug? It is very hard to
->     test that so it would not be such a surprise if it has a bug..
+> Fixes: dbfbb376b50c ("drm/msm/a6xx: Add A621 support")
+> Signed-off-by: Akhil P Oommen <akhilpo@oss.qualcomm.com>
+> ---
 
-I had the chance to remotely access the test machine. The test device is
-00:02.0. It has a dedicated IOMMU with the capabilities listed below:
+Reviewed-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
 
-CAP                     0x08            0xc9de008cee690462
-ECAP                    0x10            0x0012ca9a00f0ef5e
-
-ECAP.SMPWC=0, which means this IOMMU unit hardware has a non-coherent
-page walker. Kernel v6.18-rc5 works, but when merge the changes in the
-iommu/next branch, the test case failed with GPU hang.
-
-The PASID table entry with v6.18-rc5 kernel:
-0x00000001067fc000:0x0000000000000002:0x0000000000000049
-The PASID table entry with iommu-next kernel:
-0x0000000105a86000:0x0000000000000002:0x0000000000000049
-
-They are the same, except for the page table pointer.
-
-On another machine, I opt-out of the ECAP.SMPWC capability and find that
-the clflush works for an idxd device as shown below:
-
-# dmesg | grep clflush_cache_range | grep "idxd 0000:00:02.0"
-[   45.199811] idxd 0000:00:02.0: DMAR: clflush_cache_range: 
-0xffff9ff04eaaf000, 1000
-[   45.200923] idxd 0000:00:02.0: DMAR: clflush_cache_range: 
-0xffff9ff046352000, 8
-[   45.202082] idxd 0000:00:02.0: DMAR: clflush_cache_range: 
-0xffff9ff052bd3000, 1000
-[   45.203184] idxd 0000:00:02.0: DMAR: clflush_cache_range: 
-0xffff9ff04eaaf000, 8
-[   45.204236] idxd 0000:00:02.0: DMAR: clflush_cache_range: 
-0xffff9ff052bd2000, 1000
-[   45.205318] idxd 0000:00:02.0: DMAR: clflush_cache_range: 
-0xffff9ff052bd3018, 8
-[   45.206370] idxd 0000:00:02.0: DMAR: clflush_cache_range: 
-0xffff9ff052bd1000, 1000
-[   45.207451] idxd 0000:00:02.0: DMAR: clflush_cache_range: 
-0xffff9ff052bd2ff8, 8
-[   45.208503] idxd 0000:00:02.0: DMAR: clflush_cache_range: 
-0xffff9ff052bd1ff0, 8
-[   45.209555] idxd 0000:00:02.0: DMAR: clflush_cache_range: 
-0xffff9ff052bd1ff8, 8
-
-It appears that new page table allocation, page table entry modification
-are all followed by a clflush_cache_range().
-
-> 
-> 4) Nobody has reported any other problems so far, so I'm inclined to
->     think the map/unmap is working - but maybe there is some edge case
->     the gpu driver is tripping up on?
-> 
-> The lack of a fault report is very puzzling, even if it was #3 I would
-> think a fault would be the most likely outcome of missing
-> flushing.. The lack of a fault report suggests the wrong physical
-> address was mapped as present which points to #4.
-> 
-> Can you investigate a bit further and maybe see if we can get a bit
-> more detail what that GPU thinks went wrong?
-> 
-> Jason
-> 
-
-Thanks,
-baolu
+Konrad
