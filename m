@@ -1,186 +1,186 @@
-Received: from mail-wm1-f74.google.com (mail-wm1-f74.google.com [209.85.128.74])
+Received: from mail-pj1-f74.google.com (mail-pj1-f74.google.com [209.85.216.74])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A226634251C
-	for <iommu@lists.linux.dev>; Mon, 17 Nov 2025 18:48:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.74
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3472C32E135
+	for <iommu@lists.linux.dev>; Mon, 17 Nov 2025 19:14:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.74
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763405338; cv=none; b=eZWfYYlKUv2YTBmmzNUXSHH+Zewlc50tiJw9V0M5GRqHNoWvkfV+hBY24RWEYB7vJEvLsRyhboqSoi+JEKwWyD+eR9TSUKHwG9ARhEZ8Q5lXMSxkuJ+pzcyswS62Mbp8FayZHzPPmb001aiOrnedFpFQ3iwyXkMBIO5UfWPGwgA=
+	t=1763406893; cv=none; b=OBGpSpoeh49cLXwPyrLizeuTUy9SScXm351vPx5DNPMGap6p6D5KmfsY7xMequFGRJGMf7vV2ib3qXlSq2VV3bjKeCVgPDi+JrG6/URCCkzTDu93PqJTqfKujnm0FVe+p/eBJEko+hZX5s8uH+jnYMXXktDFfaPd0jFI3gxU/ns=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763405338; c=relaxed/simple;
-	bh=U01zuPmHBR4NpjwfbFt/lTc1f2okLAeIr+T5ztn4mi4=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=rFFzxHzkPksYze0xNMSbhZ7hoz0lBxPVEmpzSOERlFp6h6iu6YZDxrCyCmZ6GxLeI1ur/NK3GME6dd3YQ7VpwU+X0RiOnRLvG0MW3A1AZ50CgH1biFJv8y/oCYEu0KFg4A4Y4fiyS/c55rmKB16GfXJls3cMUtgxE5JRRxiN4RU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=rzcwYY5p; arc=none smtp.client-ip=209.85.128.74
+	s=arc-20240116; t=1763406893; c=relaxed/simple;
+	bh=oDfBUmVw9evXwpom/vZbyIzesKFWZwG5tLFcAEnbmZE=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=NAjzIDqw33vYX8gfkL7t7wH+v/ovW6MlfS5wAaVK757TvtrhAJfUIZXc9TLXu1H2JT2MZTkBPQJHKOzbd8ADmMQ410fgaZn3GlOfx7lrDEv9P6+M5AEJicWwjh1pe+jjhA/v9i9rjaJYxkPqnR2lV7GDiCWpDKCzj65m0aNIAKs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--praan.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=VlfMnVka; arc=none smtp.client-ip=209.85.216.74
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--praan.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="rzcwYY5p"
-Received: by mail-wm1-f74.google.com with SMTP id 5b1f17b1804b1-4779981523fso18862135e9.2
-        for <iommu@lists.linux.dev>; Mon, 17 Nov 2025 10:48:54 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="VlfMnVka"
+Received: by mail-pj1-f74.google.com with SMTP id 98e67ed59e1d1-34176460924so4567208a91.3
+        for <iommu@lists.linux.dev>; Mon, 17 Nov 2025 11:14:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1763405333; x=1764010133; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Yqv9vt6rYdUcUmbSADKPrtDVgWOjgzH7G7qmk1O24d8=;
-        b=rzcwYY5pHRshkvIXAlSGrPjV+hyD6CzPxuUHw9NvB9+WKYiVX5ceO+2zAAu3/WraIY
-         LpZAQe1C+Erf/oCWYApSRriwJR/AfsDHFSOodH4+oDNFhLSu89aLW1jyIbnm1d0IolR6
-         tIiPg04WFspOqwJlDn5T1/jYskGOsziXPxrwqtcFvUY9R+x6iuaGkV+rl47j3C6QN5oE
-         Q86oF6vfR+G1ZHvV7X6ZlH2p7YyG8FEN3OjGrhN2f+8U58jbBwRF93MH++ZrH4dRmTPG
-         VRBz978FPbp5N2QlIVZU71UWyEevujIFw2ipj+FoYDwka/o2lB99eqAYylPcBYszT6T8
-         ac/g==
+        d=google.com; s=20230601; t=1763406891; x=1764011691; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=jSflE4BxYgz/vwt2s+QgBlV+FOHHoCRFFbgdkZalb6E=;
+        b=VlfMnVkalYZhIB5Mi7/Tzd7Pjqkn93R09uFq16767h8bYfMoLQCkUrtQ9NlxL5rW/R
+         hCqBInclCxHHsIoK/13VCRqIXpXYUNMR4hpb5NCY5H/v5bkNuO89HAkMRbilmiYHYnEa
+         eYeX8efRBudjDMlG9mHS6snc8iDUfD9SvbxN2pmecHk0aVJf5chDCGTT1mna1lBD3mxb
+         9NQUcqb+z9JO8536bFsX65gLwuYtfSPVwkcwvhc3RQbI8uKjcNG/31OLqxNjSvfPiq+O
+         /J2H5bnNGuXP9OsLjxnVXhxhoYBv/qYRT9DrCta6xI9Fnmcp9CLB8rZXUV+6AD+n3etQ
+         D+Gg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1763405333; x=1764010133;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Yqv9vt6rYdUcUmbSADKPrtDVgWOjgzH7G7qmk1O24d8=;
-        b=KfD9rYva6oBrvicQCEMO1IDIzAk7DN6RL7s7QN4kY4REu2LTnkcZzoZVK19lcQptft
-         WChTxBH8J7nFfNCrGOzxI0XGf8Lbw3REXwHc60eFSKQICqJvG/fqmiLESEkC+hM7SYyV
-         slUaX8V4RCcpnqxjwZtALwp6oqKQA/RblMqM3mWy2qzlZixn7l3DG0yCkQvL84fXeqZM
-         OTtIszqXTqErx396kHlY525sOigY/UHf6JUp5Q7eCpTx/U0ju0P0lGUItm0jNo8jskmx
-         oBpcXcWEyFMbYWT8kIl0x/hOPFvSJaAq/0AdQpvj2VaeFdUD+Z0U3xrEAd8aWpX2wBZ+
-         xTXQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWOvlquet++3BpHMTnCLDHCXAsdeajm2VDbF5qAMgk0YetbJfTb7I0Lj7zRfBdzEFypEoh81g==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxP1s1NDm3nQZdXCxHrb0tvceaRWFHR+W9xVx5GlIHD50JdAHX1
-	Sf8LEcZaQPkDc/agklKH/ZRkMbKsabemTnjjfMHjzOYoXCfy3FdAfDFjB31tCiGvJl/8tLsPGDL
-	iBftYvHE8LPkflA==
-X-Google-Smtp-Source: AGHT+IFKuKQmQwETqVMo5V4rZDWAjfD2WAPxG29C33FYX0labdGr2WvGuWsAPiA9DtRuNjEGIDoqy8Foar2wTg==
-X-Received: from wmqy12.prod.google.com ([2002:a05:600c:364c:b0:477:9aa2:7d50])
- (user=smostafa job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:600c:1d15:b0:477:9bfc:dcb6 with SMTP id 5b1f17b1804b1-4779bfcde09mr72288665e9.14.1763405333101;
- Mon, 17 Nov 2025 10:48:53 -0800 (PST)
-Date: Mon, 17 Nov 2025 18:48:14 +0000
-In-Reply-To: <20251117184815.1027271-1-smostafa@google.com>
+        d=1e100.net; s=20230601; t=1763406891; x=1764011691;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=jSflE4BxYgz/vwt2s+QgBlV+FOHHoCRFFbgdkZalb6E=;
+        b=hHigkg2j+nowO6TqIjC/YVmmm1cmrhCXFIhoeCyM+EsJYaN9GjNOrPxRzG8DmQsdWI
+         ln0KsLyWA/Dri4UvqVWdx/VDmMY9gax83aMDdfemgUapgY1D5rDBjaU/ROpOnSxbgLk7
+         /3pyZqJhZEfZj99LWk6dJWtAj19idLA8sxr3D5WCtZYKuv0IeX8M41B8Y2ZKL5KZORR0
+         AtVaBkA8eHum0D++wfi/1kEhksjjiW5vdQeD5UGqTjfzIggdjc+rWcMRAUFYDsGnqJ7e
+         eiHu+WUMBSsdWZyWDc8B5Zan5hnVfNSuwWV3s0dUCHK83rLDo/s+MGIs0+zxNTnvnYC+
+         ltuQ==
+X-Gm-Message-State: AOJu0YxfN9mMV12YhkRYCRnnjdZIMiViET0zr5mNQJel/kPrBOUOT28s
+	By4c29KVC1bZos3wAMYzbU+LuikrWiQxikgwSpVuUjPWRbhn87tamzlNjpp/JJt9v71EbAPnspo
+	qM54sDZ1JXVj6pxle3ifWKS2luTqNrFA1yivr83mLoGo2DomtwvZ5LHSn4fPByh10V6+eHp19Jr
+	vy+1iTQSYGgetAjRrc1SCuTtUa0/mAdw==
+X-Google-Smtp-Source: AGHT+IGiHlkDc70eEyTUVuNLFcHLLhpHD7h+bpiZo08RLxh5zwYoq6D6kjgKAVlLrAt3+5DhojazPHe8gA==
+X-Received: from pjbbr14.prod.google.com ([2002:a17:90b:f0e:b0:33b:52d6:e13e])
+ (user=praan job=prod-delivery.src-stubby-dispatcher) by 2002:a17:90b:280d:b0:341:2141:df76
+ with SMTP id 98e67ed59e1d1-343f9e9fee6mr13978460a91.13.1763406891201; Mon, 17
+ Nov 2025 11:14:51 -0800 (PST)
+Date: Mon, 17 Nov 2025 19:14:25 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
-References: <20251117184815.1027271-1-smostafa@google.com>
 X-Mailer: git-send-email 2.52.0.rc1.455.g30608eb744-goog
-Message-ID: <20251117184815.1027271-28-smostafa@google.com>
-Subject: [PATCH v5 27/27] iommu/arm-smmu-v3-kvm: Enable nesting
-From: Mostafa Saleh <smostafa@google.com>
-To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
-	kvmarm@lists.linux.dev, iommu@lists.linux.dev
-Cc: catalin.marinas@arm.com, will@kernel.org, maz@kernel.org, 
-	oliver.upton@linux.dev, joey.gouly@arm.com, suzuki.poulose@arm.com, 
-	yuzenghui@huawei.com, joro@8bytes.org, jean-philippe@linaro.org, jgg@ziepe.ca, 
-	praan@google.com, danielmentz@google.com, mark.rutland@arm.com, 
-	qperret@google.com, tabba@google.com, Mostafa Saleh <smostafa@google.com>
+Message-ID: <20251117191433.3360130-1-praan@google.com>
+Subject: [RFC PATCH v4 0/8] iommu/arm-smmu-v3: Implement Runtime/System Sleep ops
+From: Pranjal Shrivastava <praan@google.com>
+To: iommu@lists.linux.dev
+Cc: Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>, 
+	Nicolin Chen <nicolinc@nvidia.com>, Daniel Mentz <danielmentz@google.com>, 
+	Pranjal Shrivastava <praan@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-Now, as the hypervisor controls the command queue, stream table,
-and shadows the stage-2 page table.
-Enable stage-2 in case the host puts an STE in bypass or stage-1.
+As arm-smmu-v3 rapidly finds its way into SoCs designed for hand-held
+devices, power management capabilities, similar to its predecessors, are
+crucial for these applications. This series introduces power management
+support for the arm-smmu-v3 driver.
 
-Signed-off-by: Mostafa Saleh <smostafa@google.com>
----
- .../iommu/arm/arm-smmu-v3/pkvm/arm-smmu-v3.c  | 75 ++++++++++++++++++-
- 1 file changed, 74 insertions(+), 1 deletion(-)
+Design
+=======
+The arm-smmu-v3 primarily operates with in-memory data structures
+through HW registers pointing to these data structures. The proposed design
+makes use of this fact for implementing suspend and resume ops, centered
+around a driver-specific biased usage counter.
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/pkvm/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/pkvm/arm-smmu-v3.c
-index f0075f9a0947..3e451cef937c 100644
---- a/drivers/iommu/arm/arm-smmu-v3/pkvm/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/pkvm/arm-smmu-v3.c
-@@ -371,6 +371,46 @@ static int smmu_init_cmdq(struct hyp_arm_smmu_v3_device *smmu)
- 	return 0;
- }
- 
-+static void smmu_attach_stage_2(struct arm_smmu_ste *ste)
-+{
-+	unsigned long vttbr;
-+	unsigned long ts, sl, ic, oc, sh, tg, ps;
-+	unsigned long cfg;
-+	struct io_pgtable_cfg *pgt_cfg =  &idmap_pgtable->cfg;
-+
-+	cfg = FIELD_GET(STRTAB_STE_0_CFG, ste->data[0]);
-+	if (!FIELD_GET(STRTAB_STE_0_V, ste->data[0]) ||
-+	    (cfg == STRTAB_STE_0_CFG_ABORT))
-+		return;
-+	/* S2 is not advertised, that should never be attempted. */
-+	if (WARN_ON(cfg == STRTAB_STE_0_CFG_NESTED))
-+		return;
-+	vttbr = pgt_cfg->arm_lpae_s2_cfg.vttbr;
-+	ps = pgt_cfg->arm_lpae_s2_cfg.vtcr.ps;
-+	tg = pgt_cfg->arm_lpae_s2_cfg.vtcr.tg;
-+	sh = pgt_cfg->arm_lpae_s2_cfg.vtcr.sh;
-+	oc = pgt_cfg->arm_lpae_s2_cfg.vtcr.orgn;
-+	ic = pgt_cfg->arm_lpae_s2_cfg.vtcr.irgn;
-+	sl = pgt_cfg->arm_lpae_s2_cfg.vtcr.sl;
-+	ts = pgt_cfg->arm_lpae_s2_cfg.vtcr.tsz;
-+
-+	ste->data[1] |= FIELD_PREP(STRTAB_STE_1_SHCFG, STRTAB_STE_1_SHCFG_INCOMING);
-+	/* The host shouldn't write dwords 2 and 3, overwrite them. */
-+	ste->data[2] = FIELD_PREP(STRTAB_STE_2_VTCR,
-+				  FIELD_PREP(STRTAB_STE_2_VTCR_S2PS, ps) |
-+				  FIELD_PREP(STRTAB_STE_2_VTCR_S2TG, tg) |
-+				  FIELD_PREP(STRTAB_STE_2_VTCR_S2SH0, sh) |
-+				  FIELD_PREP(STRTAB_STE_2_VTCR_S2OR0, oc) |
-+				  FIELD_PREP(STRTAB_STE_2_VTCR_S2IR0, ic) |
-+				  FIELD_PREP(STRTAB_STE_2_VTCR_S2SL0, sl) |
-+				  FIELD_PREP(STRTAB_STE_2_VTCR_S2T0SZ, ts)) |
-+		 FIELD_PREP(STRTAB_STE_2_S2VMID, 0) |
-+		 STRTAB_STE_2_S2AA64 | STRTAB_STE_2_S2R;
-+	ste->data[3] = vttbr & STRTAB_STE_3_S2TTB_MASK;
-+	/* Convert S1 => nested and bypass => S2 */
-+	ste->data[0] |= FIELD_PREP(STRTAB_STE_0_CFG, cfg | BIT(1));
-+}
-+
- /* Get an STE for a stream table base. */
- static struct arm_smmu_ste *smmu_get_ste_ptr(struct hyp_arm_smmu_v3_device *smmu,
- 					     u32 sid, u64 *strtab)
-@@ -426,6 +466,15 @@ static void smmu_reshadow_ste(struct hyp_arm_smmu_v3_device *smmu, u32 sid, bool
- 	u64 *hyp_ste_base = strtab_hyp_base(smmu);
- 	struct arm_smmu_ste *host_ste_ptr = smmu_get_ste_ptr(smmu, sid, host_ste_base);
- 	struct arm_smmu_ste *hyp_ste_ptr = smmu_get_ste_ptr(smmu, sid, hyp_ste_base);
-+	struct arm_smmu_ste target = {};
-+	struct arm_smmu_cmdq_ent cfgi_cmd = {
-+		.opcode	= CMDQ_OP_CFGI_STE,
-+		.cfgi	= {
-+			.sid	= sid,
-+			.leaf	= true,
-+		},
-+	};
-+	int i;
- 
- 	/*
- 	 * Linux only uses leaf = 1, when leaf is 0, we need to verify that this
-@@ -441,8 +490,32 @@ static void smmu_reshadow_ste(struct hyp_arm_smmu_v3_device *smmu, u32 sid, bool
- 		hyp_ste_ptr = smmu_get_ste_ptr(smmu, sid, hyp_ste_base);
- 	}
- 
--	smmu_copy_from_host(smmu, hyp_ste_ptr->data, host_ste_ptr->data,
-+	smmu_copy_from_host(smmu, target.data, host_ste_ptr->data,
- 			    STRTAB_STE_DWORDS << 3);
-+	/*
-+	 * Typically, STE update is done as the following
-+	 * 1- Write last 7 dwords, while STE is invalid
-+	 * 2- CFGI
-+	 * 3- Write first dword, making STE valid
-+	 * 4- CFGI
-+	 * As the SMMU MUST at least load 64 bits atomically
-+	 * that gurantees that there is no race between writing
-+	 * the STE and the CFGI where the SMMU observes parts
-+	 * of the STE.
-+	 * In the shadow we update the STE to enable nested translation,
-+	 * which requires updating first 4 dwords.
-+	 * That is only done if the STE is valid and not in abort.
-+	 * Which means it happens at step 4)
-+	 * So we need to also write the last 7 dwords and send CFGI
-+	 * before writing the first dword.
-+	 * There is no need for last CFGI as it's done next.
-+	 */
-+	smmu_attach_stage_2(&target);
-+	for (i = 1; i < STRTAB_STE_DWORDS; i++)
-+		WRITE_ONCE(hyp_ste_ptr->data[i], target.data[i]);
-+
-+	WARN_ON(smmu_send_cmd(smmu, &cfgi_cmd));
-+	WRITE_ONCE(hyp_ste_ptr->data[0], target.data[0]);
- }
- 
- static int smmu_init_strtab(struct hyp_arm_smmu_v3_device *smmu)
+1. Biased Usage Counter
+To safely manage runtime PM state, this series introduces an atomic
+`nr_cmdq_users` counter. This counter is "biased" by being initialized to
+1, representing an "idle but active" state.
+
+The suspend callback waits for this counter to be exactly 1 and then
+atomically transitions it to 0, signifying a "suspended" state. Any
+other value indicates that the command queue is in use, and the suspend
+operation is aborted.
+
+Code paths that submit commands to the hardware (the "fast path") use
+`atomic_inc_not_zero()` to acquire a reference. This operation only
+succeeds if the counter is not zero (i.e., not suspended), effectively
+gating hardware access. The reference is dropped using
+`atomic_dec_return_release()` after the hardware interaction is
+complete.
+
+2. Suspend / Resume Flow
+The "suspend" op now polls for a short period (100us) for the usage
+counter to become 1. Once successful, it configures the GBPA register
+to abort new transactions and disables the SMMU, EVTQ, and PRIQ, leaving
+only the CMDQ enabled to drain any in-flight commands.
+
+The "resume" operation uses the `arm_smmu_device_reset` function, which
+re-initializes the HW using the SW-copies maintained by the driver
+(e.g., prod/cons pointers, queue base addresses) and clears all cached
+configurations.
+
+3. Guarding Hardware Access
+Instead of eliding operations, the driver now ensures the SMMU is active
+before any hardware access. This is managed by `arm_smmu_rpm_get()` and
+`arm_smmu_rpm_put()` helpers, which wrap the standard runtime PM calls. 
+These wrappers are now used throughout the driver in interrupt handlers,
+TLB invalidation paths, and any other function that touches hardware
+registers. This ensures that operations are implicitly queued until the
+device resumes.
+
+4. Interrupt Re-config
+a. Wired irqs: The series refactors the `arm_smmu_setup_irqs` to be
+able to enable/disable irqs and install their handlers separately to
+help with the re-initialization of the interrupts correctly.
+
+b. MSIs: The series relies on caching the `msi_msg` and retrieving it
+through a newly introduced helper `arm_smmu_resume_msis()` which
+re-configures the *_IRQ_CFGn registers by writing back the cached `msi_msg`.
+
+Call for review
+Any insights/comments on the proposed changes are appreciated,
+especially in areas related to locking, atomic contexts, and potential
+optimizations.
+
+Note: The series isn't tested with MSIs and is weakly tested for PCIe
+clients. The same holds true for tegra241_cmdv changes. Any help in
+reviewing and testing these parts is much appreciated.
+
+[v4]
+ - Dropped the `pm_runtime_get_if_not_suspended()` API in favor of a
+   simpler, driver-specific biased counter (`nr_cmdq_users`) to manage
+   runtime PM state.
+ - Reworked the suspend callback to poll on the biased counter before
+   disabling the SMMU.
+ - Addressed comments for the MSI refactor.
+
+[v3]
+ - https://lore.kernel.org/all/20250616203149.2649118-1-praan@google.com/
+ - Introduced `pm_runtime_get_if_not_suspended` API to avoid races due
+   to bouncing RPM states while eliding TLBIs as pointed out by Daniel.
+ - Addressed Nicolin's comments regarding msi_resume and CMDQV flush
+ - Addressed Daniel's comments about CMDQ locking and draining
+ - Addressed issues related to draining the evtq and priq
+ - Dropped the code to identify and track user-space attachments
+
+[v2]
+ - https://lore.kernel.org/all/20250418233409.3926715-1-praan@google.com/
+ - Introduced `arm_smmu_rpm_get_if_active` for eliding TLBIs & CFGIs
+ - Updated the rpm helper invocation strategy.
+ - Drained all queues in suspend callback (including tegra241-cmdv)
+ - Cache and restore msi_msg instead of free-ing realloc-ing on resume
+ - Added support to identify and track user-space attachments
+ - Fixed the setup_irqs as per Nicolin & Mostafa's suggestions
+ - Used force_runtime_suspend/resume instead as per Mostafa's suggestion.
+ - Added "Reviewed-by" line from Mostafa on an unchanged patch
+
+[v1]
+ - https://lore.kernel.org/all/20250319004254.2547950-1-praan@google.com/
+
+
+Pranjal Shrivastava (8):
+  iommu/arm-smmu-v3: Refactor arm_smmu_setup_irqs
+  iommu/arm-smmu-v3: Add a helper to drain cmd queues
+  iommu/tegra241-cmdqv: Add a helper to drain VCMDQs
+  iommu/arm-smmu-v3: Cache and restore MSI config
+  iommu/arm-smmu-v3: Add a usage counter for cmdq
+  iommu/arm-smmu-v3: Implement pm_runtime & system sleep ops
+  iommu/arm-smmu-v3: Enable pm_runtime and setup devlinks
+  iommu/arm-smmu-v3: Invoke pm_runtime before hw access
+
+ .../arm/arm-smmu-v3/arm-smmu-v3-iommufd.c     |  10 +-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 411 ++++++++++++++++--
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  13 +
+ .../iommu/arm/arm-smmu-v3/tegra241-cmdqv.c    |  27 ++
+ 4 files changed, 417 insertions(+), 44 deletions(-)
+
 -- 
 2.52.0.rc1.455.g30608eb744-goog
 
