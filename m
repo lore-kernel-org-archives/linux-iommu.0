@@ -1,69 +1,99 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f173.google.com (mail-qk1-f173.google.com [209.85.222.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 675F22F5A09;
-	Tue, 18 Nov 2025 20:18:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9403A2E36F8
+	for <iommu@lists.linux.dev>; Tue, 18 Nov 2025 23:02:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763497133; cv=none; b=PrcQYKssrnp0xvulveCyYeXju5TZSATElKZJVtAnFngskku1KB4I5yCRo67jAeFsDJH3Zq9j4sFnzCfksC+6B/W1kd9JOCB50tvPSEuPn24l95e0uH1gx/woB6btgfBsa+EDyXW6vV93hhjVAKRMbs54HwEVjy6O3VboXP4edek=
+	t=1763506980; cv=none; b=R/zudZM1J3KZ4uZaz0tz+aR4nTtSpuy9Qt9CUz8iQI3FckiwLH66eEdENI2CA2V45R44PbPPmdiqTw/X3AR2hhT/lKOx0Osh1IIzjVcP6u8ccvZtCdkhAK96cFVhlI/G9cshi8yb7oq0+gbT8EeAhpcJLkpOpEoRUoqaVEhClDs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763497133; c=relaxed/simple;
-	bh=1gK/eOl0lFoJx/Qsgws6pSF6IokRCQEg1Ra5CF1IxTY=;
+	s=arc-20240116; t=1763506980; c=relaxed/simple;
+	bh=scFNZX9ag0i6pgwb7zn5W5v2rOxL4+aniwaNGa7QpTE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=DyAz4EJaMZTVcVlGGJXT/6+F/txgIqLpC1ZCNYwhnEU9DwE7kXmDCsJkJCDnU61Lt9zstkg9koojiD0cAanBHByamiCI1lSnj8zcguY/4RP1CIfDx+zppuIJpMXZqouZr1+QJVbY8PhFkBvtasPswJdnlT5DPefrgauuC0+ABTA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jQfDsn61; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=KADKcV6pP3s9DecWPI9W3Ufgs4OvI9+W89s+LcbGqjh4UEugEmVfoMfkTwpF8UI1BDgu06LcG00YDVv2A/BRgyVPToCNXcHCl3BBE0qJKM/cqxhDvfoXKQmByzSU5jA9Hha8wNM83k6Q1KYV3l0SMabJcWO4UhDDQ/pz7QTe5bw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=ny0mbUF8; arc=none smtp.client-ip=209.85.222.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jQfDsn61"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D6C3C19423;
-	Tue, 18 Nov 2025 20:18:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1763497133;
-	bh=1gK/eOl0lFoJx/Qsgws6pSF6IokRCQEg1Ra5CF1IxTY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=jQfDsn61vufo6YOfQo79y+Ndb5/49pM+Kzub8NVaHCny22FBzQnFTrSLg2XdPo1s4
-	 q4Q7m4B585DTvH5HVWQ0DO/E2wa7u3fFCYB85WskqwPYKBTtnUrrPrWPRE5C2Ymwu9
-	 XI6NikQcB+qyFCqrr5w+MjHt0GyCFcaWHiNnpAZuQe+VtouSDZ9qJ1I29igbCkZOyV
-	 6JDMlf1DxIGJwl0KrKoWkLUy0geHXeEkVLKutwvuAT1n5/hnFBjFl+IVPa8640+D5j
-	 uK0n9LGxWeIjzuFUFMy16vZC128qAY115S6xdY8r0buoE9dRHyEPS8qfYYbszF8xDd
-	 vw0kkKc8fqFoQ==
-Date: Tue, 18 Nov 2025 13:18:46 -0700
-From: Keith Busch <kbusch@kernel.org>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: Leon Romanovsky <leon@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="ny0mbUF8"
+Received: by mail-qk1-f173.google.com with SMTP id af79cd13be357-8b2dcdde698so502966185a.3
+        for <iommu@lists.linux.dev>; Tue, 18 Nov 2025 15:02:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1763506975; x=1764111775; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=V9774m00qC+l22EqhxH404c/5WuwECoHlv+7tMAloKg=;
+        b=ny0mbUF8wagyaQUF4F1Y8hRcjOF85hRO+MjASpAzgK6g7RzSqlV/crJ3SIkwqmyDqi
+         GKcsvWySpjojL7exHFumCcChOBcnsIWdzNpNefCdXoc1z+De6MkuR83pFGqeOAz8Ygf6
+         Y9nx1c0Abn5rJS7QrdPEN5VAabsN0hmCBAOJ9QG+wPHlTY3cAG61oR3nsF+hctIHOM1p
+         /bGYcXB/iHGbIu3VC+VtFckhkMZ12qgTpD1mjsVUCGfZQKnB4t3CbVBLUIsnJE+ALwT3
+         Wk3OlpNurvgcvLH3JOjN7kZY19agRWAmgN3X+kLlH0mhCcLixvfyndO9oeA8LavT67oZ
+         EZ5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1763506975; x=1764111775;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=V9774m00qC+l22EqhxH404c/5WuwECoHlv+7tMAloKg=;
+        b=wmJrhfpABCV5gkOgGXkBlqyTjX0as3PGGlGPe2w2MWxVbG1lEPB7Coox8ztdbgtoSA
+         qgd+qQRNtGGejLl9Hs87r50262ptMTg2xpA12TNyzSSepQdliXLLHGGnwHxWUYR+LT7p
+         kw7ZtCvoWRc22JRvz1K+iPknBCKEj+20iceErEm2mKavPdCVWq4JPzt1Z5QOMf6ZJDY+
+         VNnkbNI/nAjhBQI+2GgXAMATh/tN29W673cvugc+ndlbNBbfRV+PvJGyzb1mgFzMqdkx
+         MP5ini4N66o9ia7B/BKp8ldZaDX2RIiXMFuKuAYhxqynxcyUTkqrKsfydZAR7Oefvd4o
+         j9Ew==
+X-Forwarded-Encrypted: i=1; AJvYcCVfS0FaAGmX+IrRd2jSEpu6UpCikFsnJDw9c6DWxjaLEhAKuTlqr/qnXV/BMW2iBCWQxs6WAw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwZy7VoK63t/AM8LsNY7FkiphQAndfcCXGiV+Toe2Q8W6amyAq+
+	OtBeNwFhM1LF9H7O/qMmIqdjniYSAh6D5obPrLvx5866Ovgfgmg1+kSjgCMAO6Ptu4k=
+X-Gm-Gg: ASbGncs7j5tM8uQhazlro3pGXfC8Qnycu1dmROeLZPnkRRqwdoIr8dmEeeAvG5OZsat
+	nxBF3Vc2vrnBUBhGpzOiaGiMv/Vaz3CKdRYvr4A3EdjqRflJX33iP2tw17NfNrA1kKeRfljDeko
+	UQkhOraPCrh/2t3jpFwuOd0nCTd4Z1teB1Y/ZRH0Rlko5Wj8Ekn2WCttmosNHOBtmp76C7rIrrg
+	PEduoGvcu0j0C4i+UNvTmgu0SmQS70mDbL116Ti64uIKcbUIUKAkc6qqDtBgulVYaW/j8PUd7rn
+	pbue3DhLa93IOIwkOtNTckcrjpCc/kHG/PKuGbIbnthZ8bZVyXCuZAeST5Mp9cZwkrkSr/phDqb
+	hTsMLU5eOrmzBkFl/jdIL4KjiDlxM8x5i8RlFwWFshYMYVoudobx1vQRhg/OozDvCMNC4Vl7wCI
+	3xBLXNTWbwwvX2RZ5VFFsOYVUDgKtiFyWkgacCWS+gVf/VMOhCgBmWNY7f
+X-Google-Smtp-Source: AGHT+IE7qxNdGTB3O4Cyd9l/l5kqP+7hVSaobWOJQOGThUG/TNMz01RlkEIy242KlmPT6y0A+36Y2Q==
+X-Received: by 2002:a05:620a:4454:b0:8b2:eab0:629a with SMTP id af79cd13be357-8b2eab06506mr1265910785a.70.1763506975311;
+        Tue, 18 Nov 2025 15:02:55 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-47-55-120-4.dhcp-dynamic.fibreop.ns.bellaliant.net. [47.55.120.4])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-8b2da3e4cf4sm883665285a.10.2025.11.18.15.02.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 18 Nov 2025 15:02:54 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1vLUiq-00000000W6g-43N6;
+	Tue, 18 Nov 2025 19:02:52 -0400
+Date: Tue, 18 Nov 2025 19:02:52 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Leon Romanovsky <leon@kernel.org>
+Cc: Bjorn Helgaas <bhelgaas@google.com>,
 	Logan Gunthorpe <logang@deltatee.com>, Jens Axboe <axboe@kernel.dk>,
 	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>,
 	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
 	Andrew Morton <akpm@linux-foundation.org>,
 	Jonathan Corbet <corbet@lwn.net>,
 	Sumit Semwal <sumit.semwal@linaro.org>,
-	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
 	Kees Cook <kees@kernel.org>,
 	"Gustavo A. R. Silva" <gustavoars@kernel.org>,
 	Ankit Agrawal <ankita@nvidia.com>,
 	Yishai Hadas <yishaih@nvidia.com>,
 	Shameer Kolothum <skolothumtho@nvidia.com>,
+	Kevin Tian <kevin.tian@intel.com>,
 	Alex Williamson <alex@shazbot.org>,
 	Krishnakant Jaju <kjaju@nvidia.com>, Matt Ochs <mochs@nvidia.com>,
-	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-mm@kvack.org" <linux-mm@kvack.org>,
-	"linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-	"linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
-	"dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-	"linaro-mm-sig@lists.linaro.org" <linaro-mm-sig@lists.linaro.org>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"linux-hardening@vger.kernel.org" <linux-hardening@vger.kernel.org>,
-	Alex Mastro <amastro@fb.com>, Nicolin Chen <nicolinc@nvidia.com>
-Subject: Re: [PATCH v8 09/11] vfio/pci: Enable peer-to-peer DMA transactions
- by default
-Message-ID: <aRzUpmUkDy-qN5c1@kbusch-mbp>
+	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-block@vger.kernel.org, iommu@lists.linux.dev,
+	linux-mm@kvack.org, linux-doc@vger.kernel.org,
+	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	linaro-mm-sig@lists.linaro.org, kvm@vger.kernel.org,
+	linux-hardening@vger.kernel.org, Alex Mastro <amastro@fb.com>,
+	Nicolin Chen <nicolinc@nvidia.com>
+Subject: Re: [PATCH v8 06/11] dma-buf: provide phys_vec to scatter-gather
+ mapping routine
+Message-ID: <20251118230252.GJ17968@ziepe.ca>
 References: <20251111-dmabuf-vfio-v8-0-fd9aa5df478f@nvidia.com>
- <20251111-dmabuf-vfio-v8-9-fd9aa5df478f@nvidia.com>
- <BN9PR11MB52767F78317AF3AB94A5B7D38CD6A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20251111-dmabuf-vfio-v8-6-fd9aa5df478f@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -72,16 +102,67 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <BN9PR11MB52767F78317AF3AB94A5B7D38CD6A@BN9PR11MB5276.namprd11.prod.outlook.com>
+In-Reply-To: <20251111-dmabuf-vfio-v8-6-fd9aa5df478f@nvidia.com>
 
-On Tue, Nov 18, 2025 at 07:18:36AM +0000, Tian, Kevin wrote:
-> > From: Leon Romanovsky <leon@kernel.org>
-> > Sent: Tuesday, November 11, 2025 5:58 PM
-> > 
-> > From: Leon Romanovsky <leonro@nvidia.com>
+On Tue, Nov 11, 2025 at 11:57:48AM +0200, Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@nvidia.com>
 > 
-> not required with only your own s-o-b
+> Add dma_buf_map() and dma_buf_unmap() helpers to convert an array of
+> MMIO physical address ranges into scatter-gather tables with proper
+> DMA mapping.
+> 
+> These common functions are a starting point and support any PCI
+> drivers creating mappings from their BAR's MMIO addresses. VFIO is one
+> case, as shortly will be RDMA. We can review existing DRM drivers to
+> refactor them separately. We hope this will evolve into routines to
+> help common DRM that include mixed CPU and MMIO mappings.
+> 
+> Compared to the dma_map_resource() abuse this implementation handles
+> the complicated PCI P2P scenarios properly, especially when an IOMMU
+> is enabled:
+> 
+>  - Direct bus address mapping without IOVA allocation for
+>    PCI_P2PDMA_MAP_BUS_ADDR, using pci_p2pdma_bus_addr_map(). This
+>    happens if the IOMMU is enabled but the PCIe switch ACS flags allow
+>    transactions to avoid the host bridge.
+> 
+>    Further, this handles the slightly obscure, case of MMIO with a
+>    phys_addr_t that is different from the physical BAR programming
+>    (bus offset). The phys_addr_t is converted to a dma_addr_t and
+>    accommodates this effect. This enables certain real systems to
+>    work, especially on ARM platforms.
+> 
+>  - Mapping through host bridge with IOVA allocation and DMA_ATTR_MMIO
+>    attribute for MMIO memory regions (PCI_P2PDMA_MAP_THRU_HOST_BRIDGE).
+>    This happens when the IOMMU is enabled and the ACS flags are forcing
+>    all traffic to the IOMMU - ie for virtualization systems.
+> 
+>  - Cases where P2P is not supported through the host bridge/CPU. The
+>    P2P subsystem is the proper place to detect this and block it.
+> 
+> Helper functions fill_sg_entry() and calc_sg_nents() handle the
+> scatter-gather table construction, splitting large regions into
+> UINT_MAX-sized chunks to fit within sg->length field limits.
+> 
+> Since the physical address based DMA API forbids use of the CPU list
+> of the scatterlist this will produce a mangled scatterlist that has
+> a fully zero-length and NULL'd CPU list. The list is 0 length,
+> all the struct page pointers are NULL and zero sized. This is stronger
+> and more robust than the existing mangle_sg_table() technique. It is
+> a future project to migrate DMABUF as a subsystem away from using
+> scatterlist for this data structure.
+> 
+> Tested-by: Alex Mastro <amastro@fb.com>
+> Tested-by: Nicolin Chen <nicolinc@nvidia.com>
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> ---
+>  drivers/dma-buf/dma-buf.c | 235 ++++++++++++++++++++++++++++++++++++++++++++++
+>  include/linux/dma-buf.h   |  18 ++++
+>  2 files changed, 253 insertions(+)
 
-That's automatically appended when the sender and signer don't match.
-It's not uncommon for developers to send from a kernel.org email but
-sign off with a corporate account, or the other way around.
+I've looked at this enough times now, the logic for DMA mapping and
+the construction of the scatterlist is good:
+
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+
+Jason
