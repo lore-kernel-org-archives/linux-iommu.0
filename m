@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8886E27E1D5
-	for <iommu@lists.linux.dev>; Tue, 18 Nov 2025 10:30:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52509352F8D
+	for <iommu@lists.linux.dev>; Tue, 18 Nov 2025 11:29:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763461830; cv=none; b=hq/c8GuU1Xqc6TSFVtZ1if9fuF1B1lnYzyw9SW5dHuzgY4lNo/L36PBPqEjssVnNGBEuz9QMegcalUcBey5hBFn4aZ5meMOiQvdtpYQEm6M4PuhsEpsdfnzJ7Pk/ZUHneWVmxqQ257DtnApRtcmJsjNeJRECnml7/rXolevhxes=
+	t=1763465369; cv=none; b=DLJZkCSonTr5pmxI014trxiNBbSMlT99321dZ9u5hLvemdJjf6ilVWANIY7yYULxGZTBoOo6wHTgFpJT6GWl35XT+bJqwGVGzvsGzlc3yNhhrvRozdLRD0W6Dthn34j78fIC/bPHYj8Mo1u5xdFuBwVmAjNQQHma/FAm8yPEfn4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763461830; c=relaxed/simple;
-	bh=DTg8HSKzYhYc0UtMmYZCJi3aMiMc+Fd+bbHdFH316qI=;
+	s=arc-20240116; t=1763465369; c=relaxed/simple;
+	bh=xtuwQKGAk/ErGNA8uIe3gd8aTR9BG9uT/nLd0C3TKSg=;
 	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=LK0KRuKtD+HA9yQncJVO6Tv7vo3W9efmznEpa4AYKuKjtfwCcMVNd3WVFw4FA2gqPJTtX0YVFfk99UAmQICH426rUzs/Ethe5qBV2IjM+MMvOXqYnXXcxazC/cnEmmazgfIVJmpvdUmsVxVn3p+zBgw1OstqyZQghO2QoHsjqOo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=AxNytdSz; arc=none smtp.client-ip=198.175.65.9
+	 In-Reply-To:Content-Type; b=MCod0Rw0XCZuNC1AjsZZm7J3fMd+hGSfcROh7qA5soDZuYrfWp0khAQBTkqcUrAqEou+tju/YPlcE8jF9wvybsk38v9f+BmzZW06VDiFL7MZMrHRWmXwbdUgp+lGPDHdHSvLUpHpGtVsNKP4R6gB/Xpp33qbdpOfM/EE3c2Vufc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IzIkJYGc; arc=none smtp.client-ip=192.198.163.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AxNytdSz"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IzIkJYGc"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1763461827; x=1794997827;
+  t=1763465367; x=1795001367;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=DTg8HSKzYhYc0UtMmYZCJi3aMiMc+Fd+bbHdFH316qI=;
-  b=AxNytdSz3ALqbGKyAHvDbSBt8NdoaoBgRQN3Q1N5w0rrZTyanUtJvnMg
-   7/ZTlJgdYyWB5+omlQo+dd7QVB65cGAnDe4hHVKGZv/m0RzyoycBQ48ch
-   nPpTwO1IzivzqQbO3ti7SZkTSHfhlhVIaTo/AaJfyu6iHeEbdIs6aiNTx
-   D4ipXXlUf6BH1gibpEQnJOSnuhcE0w42bkG6Rup5qIG3tIidfs0OxB6ZW
-   rKSIm/sqVwZatkp1EnPCElYf8po/Msj5YSXlJbaMUS/g6Cj0g0/vRdwR9
-   6N4bMRH29GNMtOHrZnLNXUX4P1v1Jm24Ra+99eYmDuEYSdCK1LwLKDPJ0
-   g==;
-X-CSE-ConnectionGUID: qc30/wnOS8GXYuKjL0jN+g==
-X-CSE-MsgGUID: uNPpnVg7SzqF46/j8ktX7Q==
-X-IronPort-AV: E=McAfee;i="6800,10657,11616"; a="88128948"
+  bh=xtuwQKGAk/ErGNA8uIe3gd8aTR9BG9uT/nLd0C3TKSg=;
+  b=IzIkJYGclEM1fqh4c97iNiQS1XvvEs50c/LJ8oWhKD2ZUF+mZ72hBV54
+   2NTkuonqgxfiGFCMWbV+gjK9+0sZ6MktdJYTYHwEOgt0EMuPTxgkBUm/1
+   wCyQgNk93ZvMF399B9vwHjDXCF1Ou7Kxcj/0g9jcl5VO/pQKwY3PXCLvh
+   rEo2jIBPAc0dJFXygoz5oaxracnXvcpybdLBBP/Yp7trdD8H0ULTsqKIe
+   6yaVh025HHpqpfiFk0HlgTO7W/2K62nVpnVUAR8rxtt8XFCJGTC8zOfi4
+   HmGrCZnSOzDFMTTPWrWwjLN574kK8/jZve2E97y7x4PQAgCY5tpCc2ITl
+   Q==;
+X-CSE-ConnectionGUID: xLyUZlVCSUW22idQs+lsNg==
+X-CSE-MsgGUID: VA3O8KbRSaqgBSxSJ0Honw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11616"; a="65574713"
 X-IronPort-AV: E=Sophos;i="6.19,314,1754982000"; 
-   d="scan'208";a="88128948"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Nov 2025 02:30:26 -0800
-X-CSE-ConnectionGUID: 2KIIYLXgTnO3OAIN6h0/kw==
-X-CSE-MsgGUID: H6wIoaj/Rs2vN/Qk3Ug+wQ==
+   d="scan'208";a="65574713"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Nov 2025 03:29:26 -0800
+X-CSE-ConnectionGUID: mKoK09e0QHSWwSAPWPKSog==
+X-CSE-MsgGUID: VzUCmTUTR/CF2B6XCP69hA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.19,314,1754982000"; 
-   d="scan'208";a="190947256"
+   d="scan'208";a="221637088"
 Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.246.21]) ([10.124.246.21])
-  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Nov 2025 02:30:24 -0800
-Message-ID: <da9af809-9248-4cc4-ae4a-e64a03e43c13@linux.intel.com>
-Date: Tue, 18 Nov 2025 18:30:22 +0800
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Nov 2025 03:29:24 -0800
+Message-ID: <1843821d-c3ca-480d-909c-2331521f6932@linux.intel.com>
+Date: Tue, 18 Nov 2025 19:29:22 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -55,85 +55,58 @@ User-Agent: Mozilla Thunderbird
 Cc: baolu.lu@linux.intel.com,
  "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
  "intel-xe@lists.freedesktop.org" <intel-xe@lists.freedesktop.org>,
- Lucas De Marchi <lucas.demarchi@intel.com>,
+ "De Marchi, Lucas" <lucas.demarchi@intel.com>,
  "Kurmi, Suresh Kumar" <suresh.kumar.kurmi@intel.com>,
- "Saarinen, Jani" <jani.saarinen@intel.com>, matthew.auld@intel.com,
- iommu@lists.linux.dev
+ "Saarinen, Jani" <jani.saarinen@intel.com>,
+ "Auld, Matthew" <matthew.auld@intel.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>
 Subject: Re: REGRESSION on linux-next (next-20251106)
-To: Jason Gunthorpe <jgg@nvidia.com>,
+To: "Tian, Kevin" <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
  "Borah, Chaitanya Kumar" <chaitanya.kumar.borah@intel.com>
 References: <4f15cf3b-6fad-4cd8-87e5-6d86c0082673@intel.com>
  <20251118012944.GA60885@nvidia.com>
+ <BN9PR11MB5276C5F6D952CFFEC7CBF0D68CD6A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <5ec170fa-d5e1-473d-a7b8-8d1737efb241@linux.intel.com>
+ <BN9PR11MB5276323D350AEB5C5C3308228CD6A@BN9PR11MB5276.namprd11.prod.outlook.com>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20251118012944.GA60885@nvidia.com>
+In-Reply-To: <BN9PR11MB5276323D350AEB5C5C3308228CD6A@BN9PR11MB5276.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-On 11/18/2025 9:29 AM, Jason Gunthorpe wrote:
-> On Mon, Nov 10, 2025 at 12:06:30PM +0530, Borah, Chaitanya Kumar wrote:
->> Hello Jason,
+On 11/18/2025 3:47 PM, Tian, Kevin wrote:
+>> From: Baolu Lu <baolu.lu@linux.intel.com>
+>> Sent: Tuesday, November 18, 2025 2:24 PM
 >>
->> Hope you are doing well. I am Chaitanya from the linux graphics team in
->> Intel.
+>> On 11/18/25 12:04, Tian, Kevin wrote:
+>>>> 46 bits is not particularly big... Hmm, I wonder if we have some issue
+>>>> with the sign-extend? iommupt does that properly and IIRC the old code
+>>>> did not. Which of the page table formats is this using second stage or
+>>>> first stage?
+>>> Assume it's first stage for kernel IOVA, if available in hw
 >>
->> This mail is regarding a regression we are seeing in our CI runs[1] on
->> linux-next repository.
+>> It's the first stage (x86_64 fmt) according to the PASID entry setup:
 >>
->> Since the version next-20251106 [2], we are seeing our tests timing out
->> presumably caused by a GPU Hang.
+>> IOMMU dmar0: Root Table Address: 0x105a82000
+>> B.D.F	Root_entry				Context_entry
+>> 		PASID	PASID_table_entry
+>> 00:02.0	0x0000000000000000:0x0000000105a85001
+>> 0x0000000000000000:0x0000000105a84405	0
+>> 0x0000000105a86000:0x0000000000000002:0x0000000000000049
 >>
->> `````````````````````````````````````````````````````````````````````````````````
->> <6> [490.872058] i915 0000:00:02.0: [drm] Got hung context on vcs0 with
->> active request 939:2 [0x1004] not yet started
->> <6> [490.875244] i915 0000:00:02.0: [drm] GPU HANG: ecode 12:4:baffffff
->> <7> [496.424189] i915 0000:00:02.0: [drm:intel_guc_context_reset_process_msg
->> [i915]] GT1: GUC: Got context reset notification: 0x1004 on vcs0, exiting =
->> no, banned = no
->> <6> [496.921551] i915 0000:00:02.0: [drm] Got hung context on vcs0 with
->> active request 939:2 [0x1004] not yet started
->> <6> [496.924799] i915 0000:00:02.0: [drm] GPU HANG: ecode 12:4:baffffff
->> <4> [499.946641] [IGT] Per-test timeout exceeded. Killing the current test
->> with SIGQUIT.
->> `````````````````````````````````````````````````````````````````````````````````
->> Details log can be found in [3].
-> Chaitanya, can you check these two debugging patches:
 > 
-> https://github.com/jgunthorpe/linux/commits/for-borah
-> 
-> 10635ad3ff26a0 DEBUGGING: Force flush the whole cpu cache for the page table on every map operation
-> 2789602b882499 DEBUGGING: Force flush the whole iotlb on every map operation
-> 
-> Please run a test with each of them applied*individually* and report
-> back what changes in the test. The "cpu cache" one may oops or
-> something, we are just looking to see if it gets past the error Kevin
-> pointed to:
-> 
-> <7>[   67.231149] [IGT] gem_exec_gttfill: starting subtest basic
-> [..]
-> <5>[   68.824598] i915 0000:00:02.0: Using 46-bit DMA addresses
-> <3>[   68.825482] i915 0000:00:02.0: [drm]*ERROR* GT0: GUC: CT: Failed to process request 6000 (-EOPNOTSUPP)
-> 
-> I could not test these patches so they may not work at all..
+> so the 3rd experiment (if the former two doesn't show difference) is
+> to force using second stage to see whether it's caused by the
+> sign-extend logic.
 
-I applied and tested both debugging patches separately, but the failures
-persist. And I also tried to flush all TLB caches by adding
-flush_tlb_all() in the iommu mapping path. It doesn't help either.
+I hardcoded the driver to always use the second stage for paging domain
+translation, and it works now.
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 2d2f64ce2bc6..59a00235032b 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -3484,6 +3484,8 @@ static int intel_iommu_iotlb_sync_map(struct 
-iommu_domain *domain,
-  {
-         struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-
-+       flush_tlb_all();
-+
-         if (dmar_domain->iotlb_sync_map)
-                 cache_tag_flush_range_np(dmar_domain, iova, iova + size 
-- 1);
+IOMMU dmar0: Root Table Address: 0x1049b6000
+B.D.F	Root_entry				Context_entry				PASID	PASID_table_entry
+00:02.0	0x0000000000000000:0x00000001049ba001 
+0x0000000000000000:0x00000001049b9405	0 
+0x0000000000000000:0x0000000000000002:0x00000001049bb089
 
 Thanks,
 baolu
