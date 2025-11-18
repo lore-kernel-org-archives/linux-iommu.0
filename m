@@ -1,62 +1,50 @@
-Received: from CH4PR04CU002.outbound.protection.outlook.com (mail-northcentralusazon11013041.outbound.protection.outlook.com [40.107.201.41])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4159B2D9487
-	for <iommu@lists.linux.dev>; Tue, 18 Nov 2025 06:05:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.201.41
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763445917; cv=fail; b=shjjB7+8A+oGssgL6eI8ycz/RWvkfxf0YAnVMLHatg7ck3q4Cfc1h8RWXrgb5Ueu6Pqckgo/YqdYfZlZYPeW/G//hnZ0jxJxVXu16y7+85dBoXhLUxEQVJK5fWiYoP5HBmwaL6Q5jUR1pgaoYKOS/mumX7LV5Cl0i9rhTJfMBiw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763445917; c=relaxed/simple;
-	bh=Dc8KWejCHxPja6O8P84psVW30+Cj46EMSWlV/8i2AI8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=HHJvPYXxCBWMWILzZVrC1TbuFJtFY6zH7A1IClolafsLsTXAXYMomWdt1SomsWfnOPuV+y9EGhSVsF9rKtMk9sC1wW5+75t2UyJlNLlEpWyO1TcvgbPF9bxPQKGJ7iFEgulj410DWPiLmmFgBgLUDZIzQjjwyPkwrlzTSRlTWcg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=0+LPM/W/; arc=fail smtp.client-ip=40.107.201.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 377BE29E10F
+	for <iommu@lists.linux.dev>; Tue, 18 Nov 2025 06:23:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1763447022; cv=none; b=sH6f/hV8luP8mCdwSllQ77qJ3OOKtj6lG2Yc1suUw5goOASsVfvbJmbYpVBmgzVRpgsVreRVqc3aqEwpUdV7x8GY60BogZm9BJYnoIuG9N/0xsv1P2eOlIv5PsvLSNPw58DRtn4thXyOe868HBVI/mzKYLXwZ34j9Wq+Sxqcl24=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1763447022; c=relaxed/simple;
+	bh=o0Os0yCWoDXKZYizKvM7nchHjT3IMt9PymQ9wsTSCAU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=WxUJmyLUNNxMbtqn+FrWu48MrsVv9GYAP7eSt55BDQ7rEsBFx1JKQ/gyC2xEiCjKAFDOQavPJwfe3zTN2ducQ1Q+mYoFY9xo5iFGMor8xkSTPy9F2nMkxbVmBcCJojJAvyUZgZKCuTSxS0fRlB+DcqGKMpzBuClg5GuVs3T/RCI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gvHWM6gw; arc=none smtp.client-ip=192.198.163.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="0+LPM/W/"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=rp5tV5h2HNC9ogtoOZQK/sTckz1H0ikeXWFAgp+IeMf/kcOIB7zuO1D9ScedFcI5fOnuQpSInWnl4rjbGhtM6AXyFkqvtcp5m7nrnbDrhvqeUdzWlRjXIF2CEXzghyhPJ7EnN2gO6PzAfO+qIUTL4NICQ9/uAR64K5Y28Ms7O/GZo9DLjJZIVDd6oj4ylmrIqs0ZMFWn3nOcHfb0JkxxD/K/vtfElS3mGZqz/CfGcncBEwRz6G8IkVSFNppBnDLvox1jqujZAJ0wf0xI1vra899bIPE4UKnybNggoFE+AbmlM2s69xEVO+qfq0HfaYrKkNg9zBV7OcS7pR+9x3BG4A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=SMflpH945qeD7aLpYepHVErn63qkgxGOoOtjRieiGd0=;
- b=D9OcPtaQPv+m3RCk7mARUyl2IhYqF6EWGEOj3KgM14drziEkFK6fgF+NNuDqnSOnjE4G9sYTSpzZy8vCS7FjRXWOH/oEXvV3e48u8s6Fc2QFFewKJyBVucXiwNh/HTFtYmgYcAg746IVP4ofnIeByWcqw5CduA7uRWqmrxOoQT5pW291RQXghvK/qBZcdZCfHqckCT5DbpgyQB9ZtYQXlOXOik6IXBCu1l0VsZMqUoSZPj3VQKd55KSphpjQ5w6jJUjp3976XZHxKZ+Aar12i1orEzCr3dMWH2Zze0MfGmTy1l4utRBvaAyc/dbSGxm5dkfbqRYTG2kKLOhFFHEm3Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=google.com smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SMflpH945qeD7aLpYepHVErn63qkgxGOoOtjRieiGd0=;
- b=0+LPM/W/kemwLsmu90Cp0XANyy5xKY/fpEOiJqawFK6dWKHLC2pkl1mb12hXCeDtRnQXT5SotNWx4rvhLQ1ax5c7jcZrifknxQrQy+nCWoDGGdYk+8+XElYddXEPU3mGKeclu7XXtX38qxaxCsmFlSRRKnCSYzHAOzOgQdDqOts=
-Received: from CH0PR03CA0406.namprd03.prod.outlook.com (2603:10b6:610:11b::14)
- by MN2PR12MB4301.namprd12.prod.outlook.com (2603:10b6:208:1d4::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9320.22; Tue, 18 Nov
- 2025 06:05:12 +0000
-Received: from CH3PEPF00000018.namprd21.prod.outlook.com
- (2603:10b6:610:11b:cafe::2) by CH0PR03CA0406.outlook.office365.com
- (2603:10b6:610:11b::14) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9320.22 via Frontend Transport; Tue,
- 18 Nov 2025 06:05:11 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
-Received: from satlexmb07.amd.com (165.204.84.17) by
- CH3PEPF00000018.mail.protection.outlook.com (10.167.244.123) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9366.1 via Frontend Transport; Tue, 18 Nov 2025 06:05:11 +0000
-Received: from [10.136.43.114] (10.180.168.240) by satlexmb07.amd.com
- (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.17; Mon, 17 Nov
- 2025 22:05:09 -0800
-Message-ID: <ff23e8d8-180a-434e-a198-b00d16884abd@amd.com>
-Date: Tue, 18 Nov 2025 11:35:01 +0530
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gvHWM6gw"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1763447020; x=1794983020;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=o0Os0yCWoDXKZYizKvM7nchHjT3IMt9PymQ9wsTSCAU=;
+  b=gvHWM6gwKcpCLofRSeY36K5v2j8cK7V8kQxHY42yQ0Pu4IXXeYHkiER5
+   Zpl3ZSzrBsyAs/TZt7XCl2itggTFwcHEtcH157R6rw3g+1WSLKWAWaOJf
+   GcKtl/QS0Eki1dAs16BiG8AMCN/Vwk5Q5QnOSN5dzf55eHCAga/E/Vi+T
+   jI8++r/XwvBSjhCSdp7JrhNtHj+Hv0KQRzlHqNAQshBpGNPOaznhzcosU
+   jYcF7K9cHA2vRFaTdKSCCk0+hy26fp/KtX8mxbwuvz3/1BUi6s0TKUm9e
+   rZ4yz4PSaJJXFtdjEBWzXKQQaF7acqZn53PYuloqk5vtXIUr3BiOsLE5o
+   g==;
+X-CSE-ConnectionGUID: d1EkkbTISJiuxO0YtO57Wg==
+X-CSE-MsgGUID: dx2msSEuRjWySVyZzbCzoQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11616"; a="76811710"
+X-IronPort-AV: E=Sophos;i="6.19,314,1754982000"; 
+   d="scan'208";a="76811710"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2025 22:23:39 -0800
+X-CSE-ConnectionGUID: yS5W5kFpQVySZliJZaBRyw==
+X-CSE-MsgGUID: WPRLsngoQ3Gsm6IB1j1V4w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.19,314,1754982000"; 
+   d="scan'208";a="214064899"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2025 22:23:37 -0800
+Message-ID: <bf5de414-ef1a-42bb-8d20-c14d8d1dc037@linux.intel.com>
+Date: Tue, 18 Nov 2025 14:19:24 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -64,197 +52,39 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 5/8] iommu/arm-smmu-v3: Add a usage counter for cmdq
+Subject: Re: REGRESSION on linux-next (next-20251106)
+To: "Tian, Kevin" <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
+ "Borah, Chaitanya Kumar" <chaitanya.kumar.borah@intel.com>
+Cc: "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
+ "intel-xe@lists.freedesktop.org" <intel-xe@lists.freedesktop.org>,
+ "De Marchi, Lucas" <lucas.demarchi@intel.com>,
+ "Kurmi, Suresh Kumar" <suresh.kumar.kurmi@intel.com>,
+ "Saarinen, Jani" <jani.saarinen@intel.com>,
+ "Auld, Matthew" <matthew.auld@intel.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+References: <4f15cf3b-6fad-4cd8-87e5-6d86c0082673@intel.com>
+ <20251118012944.GA60885@nvidia.com>
+ <BN9PR11MB5276C5F6D952CFFEC7CBF0D68CD6A@BN9PR11MB5276.namprd11.prod.outlook.com>
 Content-Language: en-US
-To: Pranjal Shrivastava <praan@google.com>, <iommu@lists.linux.dev>
-CC: Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>, Robin
- Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, Mostafa Saleh
-	<smostafa@google.com>, Nicolin Chen <nicolinc@nvidia.com>, Daniel Mentz
-	<danielmentz@google.com>
-References: <20251117191433.3360130-1-praan@google.com>
- <20251117191433.3360130-6-praan@google.com>
-From: Sairaj Kodilkar <sarunkod@amd.com>
-In-Reply-To: <20251117191433.3360130-6-praan@google.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB5276C5F6D952CFFEC7CBF0D68CD6A@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: satlexmb07.amd.com (10.181.42.216) To satlexmb07.amd.com
- (10.181.42.216)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PEPF00000018:EE_|MN2PR12MB4301:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8d5627dd-dcfb-44d3-1946-08de26686f4b
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|376014|36860700013|1800799024|7053199007;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?Q1lMaHdiOTNpdVlOSDI1OTVpVWZudEtOZkMwdmU3Vk5VYTBJUlJNNmNmd1hj?=
- =?utf-8?B?VndoZTVsUkNacWJvRklCZmFhOWlEOWw2a3RXQ0VxVXF5T3BYSDNHeitCdk93?=
- =?utf-8?B?SGhBNnpyVzZYM05wcXRYNU5jcmwwSGFwc0NEdW53bEV1WndYSDdFYlNBZ2tI?=
- =?utf-8?B?UHBJMkI4TkF1YW9tSE1iakhpc2JOZkZTRkxMdzZoS1FoWklSbEpodzViVmFI?=
- =?utf-8?B?SG1IUDZvc0VNQkRTZW9zbkRITkRNdUtTeVJQV1kvdERjMEsvamJpUE9zWWhZ?=
- =?utf-8?B?anRMZG8xdW92dlVuZUJCRDJabit1RE8xbE81ZEtyVlQxMUc4UGpvWmxsWlRX?=
- =?utf-8?B?bmFzUEl3N0wwNmxIZXM3bzNHS2lDZjY1SG5UOTFrZEVOZWttVk0xNzJDd3Fo?=
- =?utf-8?B?d3NGOUt5MlV3ZlR6QnArQXExekNVbVNsb1hlS3VYN2hGN2VVUGg3SmhUWkND?=
- =?utf-8?B?bzBUc1JJUUdtVDRnWFNVa2o5VkxCK05sU1I3b2swQW1Wd0lPQ2t3OFZCNlB5?=
- =?utf-8?B?U2p4SjIzZFpxbmZFQUFnTUgxZTQzQ1VXY21YV1hiQnVSTlQ0N2lmbEJzdWFF?=
- =?utf-8?B?WjFobmVhbnJKbzBBTUptU3phT3NkdGlVWFNLYVlRUDBXeUUrVm9LQ1VHWnpr?=
- =?utf-8?B?c3ViMERIVWJPNklPWGo5VmZqNDR5Sit2aHBxTnA0K2g5ZUNqK1FkdXE3MkMy?=
- =?utf-8?B?eUltSUtSWkVwVEMwYjJUeExwaUZYc1Y0ckVjZUJzM00rSEdLcnJVb0VWZ2Y1?=
- =?utf-8?B?UWZ3NTNadXAwSHpIdG53VE9oY05TTGo2SjFNZW42NDhqa1pBNE1OWFgrV1Q3?=
- =?utf-8?B?amxvYmtjRG00Q055cjhpcW9TWEcvZHR6UU16UXdxY2J4SGU0WXphTW8xazRB?=
- =?utf-8?B?ZFZSOXFSdkVJaWh0cGtCSVhPeWIxd0NaS0gvTnd0RVFhQ3plWGg4R3lsbkxv?=
- =?utf-8?B?RUlzV015NlhIZ3ZoY0x0Ni9zT1lkUmY5U0E5amt1THVPUW5INFJtS0NScFRu?=
- =?utf-8?B?aHJ6dmd4NVVHSS81bDRuQU1VQVFtVGVqVnRNSSsvSDVXYkxIV1hwSXBBVXdv?=
- =?utf-8?B?d0hpZWdWOElPUG9zaFZKWlArMUZ1RzZ6cnpKU0hsamhMQ2pDVjA4ODRoRHln?=
- =?utf-8?B?T2VORkFsZEFsMG03VnREbjU0ajY4cWQ3TFpCSS9DVzVlV28xZEhyZ3k3NHMx?=
- =?utf-8?B?QXNDRnhXWU81SjBNeHBqQW9EckNVSUN6R20xcG1BeThOUkYvUmgwYlFQQkFT?=
- =?utf-8?B?ckFNcTZGT2NnamJFSUdtRUh1bDYzQjlsZ1p2NGsxS0FNMXJzQmNRTnFiV1hR?=
- =?utf-8?B?RkFjYU1xaEg5alNtcTFXczJsOWZlbXFDZUREU013UjhPc2lWamNiS0dqNHFp?=
- =?utf-8?B?Vlc2YWlHcm84Z0JWbSs1bk1LeWhGOThpb1dzVnhpdFpJdUNxSnB0R1JtbFpI?=
- =?utf-8?B?Ukw1R0hqUkx6MHJ4czlIcUlmV2U1OVRXcFlHZklCOFpGaVJ2Mnl4NkZRMlFP?=
- =?utf-8?B?aHJIQ0J2c2VUOFo5aXdPN2Y5SWFKZVFLK2RKZFN1RFlwZUN5RkxZRmlUYVFE?=
- =?utf-8?B?T0o3dk4wTHErUktTNk56YkVxMFVZZ1pqdEt0NFBaRFBBWFhiaytpKzlaNHVK?=
- =?utf-8?B?WHVNdUIvYk9BUG9DVGpMaXQxRXhUNmZ1UnBSTnVCL1Vib201WW5oSlgxUmFr?=
- =?utf-8?B?NmszeWwwRVNpWXh5T2F6blNIMGFkcG9KakVKTURFUDdydmpyNlZDdTFmbUZ3?=
- =?utf-8?B?elVvSWp2TThqSmhZczl5ZnRYc2ZqZVJyWFRiKzlDUDV2ZGdsdTFCd2JMWUZP?=
- =?utf-8?B?MmdDKy9nbUEzZ2VlK0VCQTBHcnVCdTNNTUJ4ZHpWRnY1cURzK202aHhyWlJk?=
- =?utf-8?B?Q1VFZElGQUJEL3BNZWFZUVFtcGg4OHB3Ym9IUDhNMTU4TktIT3FUS2U2ZWl2?=
- =?utf-8?B?bXNmN1kwRmRUNXM2UlNMWEo4U0Zlb1ZXUTRHRHVKaTErV29PeXBqVWNpSjIw?=
- =?utf-8?B?YTU4R2F3UVNFVmdZRUJZbzBFUk5lOFZCZkwveTFxYUZEUzNRYXltUXVheU9q?=
- =?utf-8?B?OTFiWHJ3OTlUemc1ZURYVW5GaDRoRjN5M3A1dnV0eFB4Njl0MHZmMHZDTjE3?=
- =?utf-8?Q?5Pzk=3D?=
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(376014)(36860700013)(1800799024)(7053199007);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Nov 2025 06:05:11.8296
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8d5627dd-dcfb-44d3-1946-08de26686f4b
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CH3PEPF00000018.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4301
 
-On 11/18/2025 12:44 AM, Pranjal Shrivastava wrote:
-> Introduce a biased counter to track the number of active cmdq owners as
-> a preparatory step for the runtime PM implementation.
+On 11/18/25 12:04, Tian, Kevin wrote:
+>> I'm still interested to know if there is an iommu error that is
+>> somehow not getting into the log?
+> Just re-checked the code:
 > 
-> The counter will be used to gate command submission, preventing the
-> submission of new commands while the device is suspended and deferring
-> suspend while the command submissions are in-flight.
+> dmar_fault() -> dmar_fault_do_one() -> dmar_fault_dump_ptes():
 > 
-> The counter is biased to a value of 1 during device reset. A cmdq owner
-> or a thread issuing cmds with sync, increment it before accessing HW
-> registers and decrements it with release semantics afterwards.
+>          pr_info("Dump %s table entries for IOVA 0x%llx\n", iommu->name, addr);
 > 
-> A value of 1 represents an idle (but active) state. A suspend operation
-> will set it to from 1 -> 0 representing the suspended state.
+> before reaching that point, there are several early exits:
 > 
-> Signed-off-by: Pranjal Shrivastava <praan@google.com>
-> ---
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 69 +++++++++++++++++----
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  3 +
->   2 files changed, 61 insertions(+), 11 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 1d6c60bee7dd..d6e75d1646d6 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -794,7 +794,7 @@ int arm_smmu_cmdq_issue_cmdlist(struct arm_smmu_device *smmu,
->   	u64 cmd_sync[CMDQ_ENT_DWORDS];
->   	u32 prod;
->   	unsigned long flags;
-> -	bool owner;
-> +	bool owner, has_ref = false;
->   	struct arm_smmu_ll_queue llq, head;
->   	int ret = 0;
->   
-> @@ -808,8 +808,15 @@ int arm_smmu_cmdq_issue_cmdlist(struct arm_smmu_device *smmu,
->   
->   		while (!queue_has_space(&llq, n + sync)) {
->   			local_irq_restore(flags);
-> +
-> +			if (!atomic_inc_not_zero(&smmu->nr_cmdq_users))
-> +				/* Device is suspended, don't wait for space */
-> +				return 0;
-> +
->   			if (arm_smmu_cmdq_poll_until_not_full(smmu, cmdq, &llq))
->   				dev_err_ratelimited(smmu->dev, "CMDQ timeout\n");
-> +
-> +			atomic_dec_return_release(&smmu->nr_cmdq_users);
->   			local_irq_save(flags);
->   		}
->   
-> @@ -868,10 +875,35 @@ int arm_smmu_cmdq_issue_cmdlist(struct arm_smmu_device *smmu,
->   		arm_smmu_cmdq_poll_valid_map(cmdq, llq.prod, prod);
->   
->   		/*
-> -		 * d. Advance the hardware prod pointer
-> +		 * d. Advance the hardware prod pointer (if smmu is still active)
->   		 * Control dependency ordering from the entries becoming valid.
->   		 */
-> -		writel_relaxed(prod, cmdq->q.prod_reg);
-> +		if (atomic_inc_not_zero(&smmu->nr_cmdq_users)) {
-> +			writel_relaxed(prod, cmdq->q.prod_reg);
-> +
-> +			if (sync) {
-> +				has_ref = true;
-> +			} else {
-> +				/*
-> +				 * Use release semantics to enforce ordering without a full barrier.
-> +				 * This ensures the prior writel_relaxed() is ordered/visible
-> +				 * before the refcount decrement, avoiding the heavy pipeline
-> +				 * stall of a full wmb().
-> +				 *
-> +				 * We need the atomic_dec_return_release() below and the
-> +				 * atomic_set_release() in step (e) below doesn't suffice.
-> +				 *
-> +				 * Specifically, without release semantics on the decrement,
-> +				 * the CPU is free to reorder the independent atomic_dec_relaxed()
-> +				 * before the writel_relaxed().
-> +				 *
-> +				 * If this happens, the refcount could drop to zero, allowing the PM
-> +				 * suspend path (running on another CPU) to disable the SMMU before
-> +				 * the register write completes, resulting in a bus fault.
-> +				 */
-> +				atomic_dec_return_release(&smmu->nr_cmdq_users);
-> +			}
-> +		}
->   
->   		/*
->   		 * e. Tell the next owner we're done
-> @@ -883,14 +915,23 @@ int arm_smmu_cmdq_issue_cmdlist(struct arm_smmu_device *smmu,
->   
->   	/* 5. If we are inserting a CMD_SYNC, we must wait for it to complete */
->   	if (sync) {
-> -		llq.prod = queue_inc_prod_n(&llq, n);
-> -		ret = arm_smmu_cmdq_poll_until_sync(smmu, cmdq, &llq);
-> -		if (ret) {
-> -			dev_err_ratelimited(smmu->dev,
-> -					    "CMD_SYNC timeout at 0x%08x [hwprod 0x%08x, hwcons 0x%08x]\n",
-> -					    llq.prod,
-> -					    readl_relaxed(cmdq->q.prod_reg),
-> -					    readl_relaxed(cmdq->q.cons_reg));
-> +
-> +		/* If we are not the owner, check if we're suspended */
-> +		if (!has_ref) {
-> +			if (atomic_inc_not_zero(&smmu->nr_cmdq_users))
-> +				has_ref = true;
-> +		}
-> +
-> +		if (has_ref) {
+> - advanced fault log, which I don't think will happen (Baolu?)
 
-You can merge  above two if condition as follow
+Advanced fault log is not used in the VT-d driver.
 
-if (has_ref || atomic_inc_not_zero(&smmu->nr_cmdq_users)) {
-	has_ref = true;
-	....
-}
-
-Thanks
-Sairaj
-
-
+Thanks,
+baolu
