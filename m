@@ -1,69 +1,70 @@
-Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
+Received: from mail-qk1-f176.google.com (mail-qk1-f176.google.com [209.85.222.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD4E736C0B8
-	for <iommu@lists.linux.dev>; Wed, 19 Nov 2025 19:31:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 349A0364032
+	for <iommu@lists.linux.dev>; Wed, 19 Nov 2025 19:36:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763580691; cv=none; b=eG9VBBOH7imSMTGRcm1a3VU9LNrpAhPHX7JOf4IqPZXZqFm0JQwX4ZHQimk0dbv307WJ0ZhuIfqbVuExZTfiq4/sspUC6nnQyWIAPzQp6ykNX4sBhM2vR411ezEdcIAZFEqBcH8cG6dd327nR3zGs4LSBaaih7bdAqtu96r0J/8=
+	t=1763581004; cv=none; b=OOrnY2y07R42xqh7u3HKvAEXwICfq54oIJLqJW48a09yPK4/2wrbA/1YZV397bbhAve0y0YI/JcS62d4xSFN28gmuMKj/4UAHVumySFmfSc7pGhwuPouzURlAanQb/R9DM+WzV9Chu/TGFO3g5UbPgCNOV9PNQYEOWyiV/84z0E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763580691; c=relaxed/simple;
-	bh=31o43Jiq7+42iBKuCHD0EJijctYU11Xzmoh7F9+p7aA=;
+	s=arc-20240116; t=1763581004; c=relaxed/simple;
+	bh=sztelLlBrONBmM282viGyh6kz65i94yYxCWrYWozdqM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=RQAuLcsdABiBLvnW20fZQ+yxT4lGpvjm1ewd/rzTs0rY8IqAGMnHUEwAc8RoQ1XzWIueWABMhyQV4K/Q3de6s1Ek5QFQscnbOUACgYzNvakMaO8dIJSZ0Dnq0dVOEB35Q5dUttDoze/UT0lBvpu5BPmDDbqzw1E7s8NtOGCnsuM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=igCVGap4; arc=none smtp.client-ip=209.85.160.173
+	 Content-Type:Content-Disposition:In-Reply-To; b=E03fG0Ub8CKCd22rSRqwJHPv7r8Fby/hn3E/99/z8ti723u55hsv66n/v0wjdBbdAs43CYcY1bMekAC6uaRtAgrRWX8RMcObMsjS3N2CfRcP6TQ1nIrP2iquzEw6jnqvN+W6YaRm9nW9FO8WDqt2uznY+FovO/dJpb5dXCk9Mr8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=ZNWQmgvj; arc=none smtp.client-ip=209.85.222.176
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="igCVGap4"
-Received: by mail-qt1-f173.google.com with SMTP id d75a77b69052e-4eddfb8c7f5so806841cf.1
-        for <iommu@lists.linux.dev>; Wed, 19 Nov 2025 11:31:18 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="ZNWQmgvj"
+Received: by mail-qk1-f176.google.com with SMTP id af79cd13be357-8b144ec3aa8so9395885a.2
+        for <iommu@lists.linux.dev>; Wed, 19 Nov 2025 11:36:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1763580676; x=1764185476; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1763580999; x=1764185799; darn=lists.linux.dev;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=h7MnLKcAx1SQL4BtR2OdhLpsdZ14wJj1fNMBVXMaHpI=;
-        b=igCVGap4mapaaFdixylPH/b9qixgTzXiITQGazx/GU68o4utkfnVCXpc7eEFwS/VOZ
-         lqZlQQCTi1uOGHInBCYQQLHVS9T2RPcqqdZLFo6So9gHX+riiEs7y9a5oYyxfgO3+qY/
-         xNnZKH4rDu/zqTGLtxd8WzoIfMyAOWDT0iF3p43cTss/gefmZQ0aXbr3IHlpMbdNSrBd
-         fY9BF8w6cx/qDAO8IBCn4V06Gm1ZTRVjHWY7ahpgqH0FjB0FCanm4qKhceAOJMQRZdKi
-         sIkRAg1MNLkcCj2BN6LhiYDKbnQNMnJbjmQvK3H3Hf7yxs2sBimRPMHOmaH6tZ5tTqBj
-         aYCw==
+        bh=sztelLlBrONBmM282viGyh6kz65i94yYxCWrYWozdqM=;
+        b=ZNWQmgvjE+qdi0eOhdzGWsUTd7F/75nMm4aVJiuhzCSD4tBAptPMnqwLxTgnuBecxa
+         I2mBp1nhEkg1x2tN0eDQUEhUilmROLPPAgADlRI0sKZK3zsqmZ8jxgE3Mfxdj2wEIXib
+         8zILyT2FzVwibVDaAjGscU6zg6xdZHTsuMEsd5D0PMJEb05pzlTaiwIg9dOQ6AfLEgau
+         cvP9qD0faAojTH2JqVkCIKOtx3rhLv6lJeZzLETM0uIPWE1FsXgCVJxVpxRMl2OqmT9l
+         x5n03dk+GWwHPMJhA74HOBb/rcl+DCM8xJkWvdv25VrcS+MtrrNjIu3GqQ3ElS+CJB71
+         wqLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1763580676; x=1764185476;
+        d=1e100.net; s=20230601; t=1763580999; x=1764185799;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=h7MnLKcAx1SQL4BtR2OdhLpsdZ14wJj1fNMBVXMaHpI=;
-        b=GWUQmlQKlQXbViiA5kByqnqyFidE5rU5o241g6x4taYhKGAPyV7goGc+YPM+DnoP3w
-         5DVP+BkS/3b0uylBGvuYASEYXQVmkIC4HloCmvPPnTBYWSUVyFfKKtsQ2BNblULm31CL
-         ANSx1nKbrdG78PloQYdGxmvO46tmomuML0Gesc52MFbqdGeVNOnPt2QM7y4IwzjGZhUZ
-         8G3qXA3wru+bWZnd2M45yJozESSI7/xnVbg4gMmW7cs0njPK6H7fvlYPJVm/TD+JZyVL
-         qtmzrVYYf/mXJ6ilB40+1P5H2xBqtdm/pNoHd3yg+62SCh9QwInDwOycF/QKuIUEFniZ
-         YzzA==
-X-Forwarded-Encrypted: i=1; AJvYcCVoZKIfmoz7PuPLVjN8aB9ctORJEWcuGmkZjN/pwZrfJSzg87s0KDMXxx/A6ZNfHesAKQ3M4Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yzx9yAi1EK5FKTPbIaeHhMvyP56PemVLDd48/w4mbKUDJyyWWYC
-	aagKnmRwxMrHsR/gozOExry+3DBuaILavr0x7Y7Rg7pAy/oE44jBNZFoGHduKZJDuN0=
-X-Gm-Gg: ASbGnctTc65X8f3lTnLR8GcPuxfrAg/1uorhQOCe4Scn3IkMDOo0vA3NvN7iTBfHM7Q
-	tR+49sdzD2OzrepDQVr97buCSDC+TrRVZnUiqvAsZ8cBIAO80Zdf04p+mAOjHcPOOBZWh1864Ma
-	sa6gZv6BuPTqoOrJ5U1hwDbC6qYIh6S1z80v9m5Lh5ubzNOysEdKs780budyE/UQV48S/VEXwmY
-	6kU7obN6DJKR3CYZDcgoNpz3Jpps/bUqwzk0dtQTQxu55IXQqhKlCSV9wY9eI64CwsCds5emmqm
-	qQjJbLuEeHIAzcO5TRaCBmRn/tByfvrrHzFwJ2yA4+Xg5Q9QIZ2SePC8Cs87oUI6wSBMfjdh5Th
-	/GKw5vnA8eucUdqtlPbL77Bw5StF37yodJlDBZDACX3Z8Nd7yuEcc1k2d+v0R0+fLqhPqcZcrXf
-	krRQ9iwgdQB0UfSoU68g8GYtyjETEmw5hO5T8tbN159V+tKBXp/RjMzN3SUp1Y2djZaV0=
-X-Google-Smtp-Source: AGHT+IH0hpvR5twkqRmVGMRtAcrCxesRIOb4Xizv2z5I0TXHRJV8nSPA0Y9PLt873fJAl178vHWixw==
-X-Received: by 2002:ac8:7e4c:0:b0:4ee:4a3a:bd18 with SMTP id d75a77b69052e-4ee4a3abe64mr1136891cf.76.1763580675980;
-        Wed, 19 Nov 2025 11:31:15 -0800 (PST)
+        bh=sztelLlBrONBmM282viGyh6kz65i94yYxCWrYWozdqM=;
+        b=uO/DkGcZ2mQgJpT6ROOvnqu9OcQsrn+GgPBohkLnHKLS4t6AcEtD1M2SFfQN4ba7GM
+         j1J5AzoXxhTM4nkUSx0h7EAOEzPoXPWJBasUmKUORbqVMJV3YsbGOydN1ICbzqgUsf+6
+         R0FrN/VHZ+WMT+LOaXInDA+/8U7fbjenZDI8lPKYt/Nn0WgE02Tzbcx5VsOdHLxag1LS
+         +0XOTOQqj6HExlmHNkFasjHrbGmYmk+M+K1t0AtRLJa/Df2NmUdGx8JMwQzky9dxdnCZ
+         NZ7FwBXNrMfw9dj4cdEdcO9uPxnCjV52rDRI6djKFagMWxEQhkwY7iayhQDT9ZtmAWHQ
+         mBGQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVV0zVb4hjF9jczO4e7a2a9qAFum9cmgZHPcBmXVr3AQiX9Ox/7d0tdIHjA0N/4JddHC6GOGA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxdFWopvSTnGxRutvn5wXQScBpxzNdfgWxeQ9Nmf65HhI0pT+ny
+	5dylZXySv5vHBq1Xy3obkFQUhX1kYwaS6P3gxi/RYFEcmwScDOOaGQmtADePtwyqnH3NLW6zhH4
+	8WBGL
+X-Gm-Gg: ASbGnctNtU9X5/sKPgwdrlGOWB0CNlhn/EzPlUguSOZ8pC0u3USr8z2LaNQrnY4Xtt4
+	qMtSu81o47BY6R7Sh7yE64dAyOnWdgr9L0oAyqZPIqBJfM5Br10+rkYbPsFlTO5VQ6ukrEoKVhm
+	stK4W4B98EGqxxm100srCnBa1qzNFugaOcQBq+rUl2XwgsN56hBZq3AgR+S2+b15rmT3iaHyS0A
+	7SkBoz0LlZYgKZfA/1pb6HFwEXx/8vxlNT8PbW/t4JlgmtfTtzTIExDKY+wZNa7XmJblUwrwFGW
+	WCVa08W9J3Ibl/536qogrxb/G/2KHYhNq1L0obx/XAOeBs/UWL+J6QVCOAvUgDvxNhtvpvQjb9Y
+	tpVYsCGjPSGmium6CpAuDftQFHtjT6aUMzgnsi/hNH3x3BuTTgGZbaK2QVDKAVIZqweWmH62DZR
+	8x5y7E16F3wSoGNQdcbF0Bq75tW+U/EHG3lSt9E2IysQ5ZvBrEXpEi6pGh
+X-Google-Smtp-Source: AGHT+IEogkhlTHFcyAE9/u1UuBQV+X3tukog/nHIoHavB/ndnYOWZGPWrkYoYNh/EOln2cA+Kp4KoA==
+X-Received: by 2002:a05:622a:310:b0:4ee:1d84:3068 with SMTP id d75a77b69052e-4ee4971a985mr8236121cf.76.1763580999342;
+        Wed, 19 Nov 2025 11:36:39 -0800 (PST)
 Received: from ziepe.ca (hlfxns017vw-47-55-120-4.dhcp-dynamic.fibreop.ns.bellaliant.net. [47.55.120.4])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-4ee48e46ed0sm2807721cf.20.2025.11.19.11.31.15
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-4ee48d64503sm3117901cf.13.2025.11.19.11.36.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Nov 2025 11:31:15 -0800 (PST)
+        Wed, 19 Nov 2025 11:36:38 -0800 (PST)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1vLnta-00000000bWq-3r3x;
-	Wed, 19 Nov 2025 15:31:14 -0400
-Date: Wed, 19 Nov 2025 15:31:14 -0400
+	id 1vLnyo-00000000bYz-0lQx;
+	Wed, 19 Nov 2025 15:36:38 -0400
+Date: Wed, 19 Nov 2025 15:36:38 -0400
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>
 Cc: Leon Romanovsky <leon@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
@@ -90,12 +91,12 @@ Cc: Leon Romanovsky <leon@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
 	Nicolin Chen <nicolinc@nvidia.com>
 Subject: Re: [Linaro-mm-sig] [PATCH v8 06/11] dma-buf: provide phys_vec to
  scatter-gather mapping routine
-Message-ID: <20251119193114.GP17968@ziepe.ca>
+Message-ID: <20251119193638.GQ17968@ziepe.ca>
 References: <20251111-dmabuf-vfio-v8-0-fd9aa5df478f@nvidia.com>
  <20251111-dmabuf-vfio-v8-6-fd9aa5df478f@nvidia.com>
  <8a11b605-6ac7-48ac-8f27-22df7072e4ad@amd.com>
- <20251119132511.GK17968@ziepe.ca>
- <69436b2a-108d-4a5a-8025-c94348b74db6@amd.com>
+ <20251119134245.GD18335@unreal>
+ <6714dc49-6b5c-4d58-9a43-95bb95873a97@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -105,51 +106,28 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <69436b2a-108d-4a5a-8025-c94348b74db6@amd.com>
+In-Reply-To: <6714dc49-6b5c-4d58-9a43-95bb95873a97@amd.com>
 
-On Wed, Nov 19, 2025 at 02:42:18PM +0100, Christian König wrote:
+On Wed, Nov 19, 2025 at 03:11:01PM +0100, Christian König wrote:
 
-> >>> +	case PCI_P2PDMA_MAP_THRU_HOST_BRIDGE:
-> >>> +		dma->state = kzalloc(sizeof(*dma->state), GFP_KERNEL);
-> >>> +		if (!dma->state) {
-> >>> +			ret = -ENOMEM;
-> >>> +			goto err_free_dma;
-> >>> +		}
-> >>> +
-> >>> +		dma_iova_try_alloc(attach->dev, dma->state, 0, size);
-> >>
-> >> Oh, that is a clear no-go for the core DMA-buf code.
-> >>
-> >> It's intentionally up to the exporter how to create the DMA
-> >> addresses the importer can work with.
-> > 
-> > I can't fully understand this remark?
-> 
-> The exporter should be able to decide if it actually wants to use
-> P2P when the transfer has to go through the host bridge (e.g. when
-> IOMMU/bridge routing bits are enabled).
+> I miss interpreted the call to pci_p2pdma_map_type() here in that
+> now the DMA-buf code decides if transactions go over the root
+> complex or not.
 
-Sure, but this is a simplified helper for exporters that don't have
-choices where the memory comes from.
+Oh, that's not it at all. I think you get it, but just to be really
+clear:
 
-I fully expet to see changes to this to support more use cases,
-including the one above. We should do those changes along with users
-making use of them so we can evaluate what works best.
+This code is taking a physical address from the exporter and
+determining how it MUST route inside the fabric. There is only one
+single choice with no optionality.
 
-> But only take that as Acked-by, I would need at least a day (or
-> week) of free time to wrap my head around all the technical details
-> again. And that is something I won't have before January or even
-> later.
+The exporter already decided if it will go over the host bridge by
+providing an address that must use a host bridge path.
 
-Sure, it is alot, and I think DRM community in general should come up
-to speed on the new DMA API and how we are pushing to see P2P work
-within Linux.
+> But the exporter can call pci_p2pdma_map_type() even before calling
+> this function, so that looks fine to me.
 
-So thanks, we can take the Acked-by and progress here. Interested
-parties can pick it up from this point when time allows.
+Yes, the exporter needs to decide where the data is placed before it
+tries to map it into the SGT.
 
-We can also have a mini-community call to give a summary/etc on these
-topics.
-
-Thanks,
 Jason
