@@ -1,70 +1,71 @@
-Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
+Received: from mail-qk1-f176.google.com (mail-qk1-f176.google.com [209.85.222.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D14835BDA6
-	for <iommu@lists.linux.dev>; Wed, 19 Nov 2025 19:41:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2D1A36C0CE
+	for <iommu@lists.linux.dev>; Wed, 19 Nov 2025 19:45:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763581286; cv=none; b=IwmlThw7W5spCFCtbWosDy1aqjKHFl1G+hAFQx/NUeCDOD/4JK/QKzr82Thtd4prQVoTVgwVJFlUUsF7wu1I1d84gCi+JTD5FdWjuhnuvCC4OwQQ5AgWANY1PGfBITyjLx/v6ZOtwq8kyZFQMhyuWz2yQSdpiO+m4rwQy0zRqmg=
+	t=1763581514; cv=none; b=IMrPjyUJkFJnjy8YyPKtCJkYoHNEem5bsSXTrgqOZGhoyK9BwLCEnkZXYZ8pfXOVcCAGyefQvNMa2f9Pr8jt7xhoq2ekd5ODqW9TUmGJpa1b95AECAo8HH7o0wrhmmlI/MZejEsEVxloeHtgDufx08sSP80hfIx643P8NEfop30=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763581286; c=relaxed/simple;
-	bh=McLj5MkyXM/EMQB5rQ6xp2qJjBV3WgZDPtIMlF++SQ4=;
+	s=arc-20240116; t=1763581514; c=relaxed/simple;
+	bh=ez/Kk64Qkn4faxtP6x8udD23BDfPOJ9+UM/Y/c2urgE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=TPJvDXFnL/Oqb/YlqmXbr9nPPafcHKdT5gSBOwdaUMJ0b64wMLxQcJ1dUBIbkUeFDyd1qazVMiL/+sBGukPK748Yt+SM9hmCZNfjSsLRjYue65z30EzIfr+7vr82wltYJjL2EFnGVjWnOUw6JzvT3YO1t9syFjkU4yxOZ13+C+M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=ArhKTPmd; arc=none smtp.client-ip=209.85.219.42
+	 Content-Type:Content-Disposition:In-Reply-To; b=nO3udr41vnR2tYjwy97IlGFq5k2ns41+/7vOBOVn0llikLujlMce0LhVEa3e2w/txi15fFcmO6/fBD+JXHmggEVPD+RrFMzF0puwQ8GYrDoD06SEd1R5qk6RZ5wt7gUyJtElV7ZC2cL2yg/RuxYrdj+CEIop48rUo95CVL+NXdQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=BNnP1OTm; arc=none smtp.client-ip=209.85.222.176
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="ArhKTPmd"
-Received: by mail-qv1-f42.google.com with SMTP id 6a1803df08f44-88249766055so1403086d6.1
-        for <iommu@lists.linux.dev>; Wed, 19 Nov 2025 11:41:23 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="BNnP1OTm"
+Received: by mail-qk1-f176.google.com with SMTP id af79cd13be357-8b0f54370ecso9306485a.2
+        for <iommu@lists.linux.dev>; Wed, 19 Nov 2025 11:45:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1763581282; x=1764186082; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=1xvMcuBzJSIcfclCVWQ2hNnnKt+oezBHS+z89ygHsa4=;
-        b=ArhKTPmde9H2zMX15rVzzbw2aRaqNRlyEnCyHfy4nzPMurPTVfCguOZ4vhtCSf5uNP
-         gR3wmmZgB1/OODGQlHjFp/qVBE58y4FCqet+orB3TK+6tjjQ0nwDIi8owC30TxeDh9MT
-         VJ0J0THImcti0pLNeK9dYCyul4fxYGlNwdT7bwTARKBgLNmKjuRb1wabu0DtCAWJPF+W
-         gBXAFKWqQTewxSulWJBlQBuDEOs8l4cQ/Te4qLzgqkoupphrvcuqkGKgWk3u65o57IEE
-         uO1HK6S6ILwFhghLUd49jLWWglCYkXPSGuSow4LDX1lbkKnIPODmKs+GZKJBHFyDsnj6
-         I7wA==
+        d=ziepe.ca; s=google; t=1763581508; x=1764186308; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=ngigizqFoW1/n7l/UtYTJcb/TxX1OBEkHcoOUDKA/VA=;
+        b=BNnP1OTmYZalUfBe0fD/r6rFFgjjyYTxYpnNh7O3cUyP9ipFGurdbzZMhRE/4+OwIe
+         9yEDbahwApL1bUEiT8d7L+32zKzE9kpvsaUWLz1t6UG1LO/H67fUQjyiEpIXXseq6Nvp
+         3+qRjnfjO2U/06oXiEirmJPXShgtBtbIj1c/RGiwiYTUU/dC9myHP6pozuSw2eTlrHgQ
+         ue/kd8kmUNE23i4t6UCQwTVm6Wbxv6dYtFS9/gu/dDd2cJzfBFsj5oCcUGtAw7tOKyZR
+         Za0GkIGXkLvci2frZD1BCg0pHQUujY1M/vLL8BVCk0HzG1p1cpt6DXNlXUUs4wLdHgWo
+         stRQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1763581282; x=1764186082;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=1xvMcuBzJSIcfclCVWQ2hNnnKt+oezBHS+z89ygHsa4=;
-        b=lmwwmUuaim6JUTzgDzCw8w9Z+gb1ofLc54Pm0Al2bIIHwfKI7gfBe39zywHCA2s+qU
-         kPKNnOd/qnJ/ICKwgJik1nfxK5VcXcEpbqpFeeKWKiAD77fiunNBhyKmDihJcbWd3rXF
-         6msk6alF8ckoApAdTg6gt8d+eXuWNTefx83zvGoBt3nFOXs4Z7x/PTOUS29hsesVIYku
-         iHQGijGygR5Og1x5d7NOGhyEfiIzo2Br5KbLH14QQ1kNuB8R8TVRnSCMSlYukS5p95jr
-         ji8BebcgHu/etEYGtIhYGrfsUThmXt0ggdG3YurhmXsBmU80I7whbqtsHkxpTkMS40uN
-         qLsQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWK7jTJ6l1Z96CDIznv7IoRh8OQpMBNZAE4Ra3bzN4Tw1tm4g0NTurlIF0lL21pazkbGtE+bw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxDa+zuDg5qjMJdvxVLAnxcmpiCQmEwcQLuXA/RVPMdPndATc2l
-	XaM79qHxQDQO9J96Gem5qP4JAkCpxQNbfWWyeomtcFDHpwuefb5bZSKJFOsWA69IXPE=
-X-Gm-Gg: ASbGnct69XBaXhfRIeRfEghgt2cOEf/ht6M9ofqnzx5MDQz7wi+yYkizmTTut9Svmz8
-	hvGClKmx/JRxBc8wCmrHNj5sDJZYbUOE6ulWg7TQeQRzAk1J5xm1bdlzCB7KrKy64JnudJypYxy
-	f57lFQUvY3Rz075Ru+Rl1VmBkx7daGVxMRsMM1UL2tsRqUET91fXMyYmM9wA9Kbnq44upRWCb3l
-	XY07koCsKGA5cmJCTnkjzY2YH/vR0wg0P5FF9BPyfH3B8c19vKGqLr+x45bNXhmEB5qg2mJwG8M
-	GZcKpJgISPCDQT8yMntg6HJ1M4a/CGDJoDNei/BUaFu5kIT2WgwACMSn84c91GDC6mdlqKnjIbV
-	aKroL5eCEnHlXYNFet3EzbIMfC66vBVN9Wg1p+YvnKGzMTK+7itWDlVIp22wWmEqT/yqZwD1iBA
-	3MTrGuhLYRtc8ose+hahALx8DTpiir5rQgRTJ4t4oLvRmwPm/Ufru/aVrT
-X-Google-Smtp-Source: AGHT+IEkkwKLlD7bgArhzanqcgyJXrNkTCLmX/zPs7UZp1FVMILPKD98FXvYwEVi1NAfBqdDip+8Dg==
-X-Received: by 2002:a05:6214:4a84:b0:7d2:f787:1978 with SMTP id 6a1803df08f44-8846ed7f961mr1725046d6.3.1763581281958;
-        Wed, 19 Nov 2025 11:41:21 -0800 (PST)
+        d=1e100.net; s=20230601; t=1763581508; x=1764186308;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=ngigizqFoW1/n7l/UtYTJcb/TxX1OBEkHcoOUDKA/VA=;
+        b=D7RhjWZ8omwP9hvyGQPLkpP3DX1uyz+q5cYofsSBJz9an19axxBDyqKPurIShaVmyo
+         fcc0PLe2gzLgxljlDs26O2lphmzx1R7fjVjUhnjkqONXlqQiyrG+JKit+I8p/3gxKgf5
+         f8C7YqmL7/tPRsJ+Y2NrjRSbdcn2TIfRv8nfxm3vaRlk1Gd8OlV31E1h0ivrXQxXeMoI
+         tUMqIZIp4k09QmE+79EDnil+XeN0XJVWg5MCW8/fC5aBKYkSxfH0f0SwSPOyWv4F0vXh
+         91kWUPUv4/P0FwjJsiG/id9MW/fo8U4AnFnLnbK6Ylx2zgzz6PktRNdyI0Qmg261m4C3
+         FJqA==
+X-Forwarded-Encrypted: i=1; AJvYcCWqyywmp1SHxnCl+1dRXD0WuYYAkMzewMPrgkMui3TmXZmjgOjfshJbD8jjy25HEJi4aWg0lw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxQhWYlxr0wVJFYHXtANGj1KhWMVkEbsbRHRtHGJtqFGG/ASJoq
+	EaJOMRo4W9H7vOiMrfnNeApmtccqJLNBi5+koNRw0ovOYj1ApoLNxTZnjBlH63kEHLI=
+X-Gm-Gg: ASbGnct1jD79KB29jY1i0HvK2Sllx9RxW/fHBu1Exn72azphmwwAwHHhu9QGJV6QNlZ
+	qaplb0OeseJ+MmQ6P1DMHiEkdbVYFN5mxrV9w6tLqujQZv05oalDvrzYT7s0/k5g4pKnSLkapGs
+	YtAWjMrX1sj1UG+CXNDGq+IT1e8wRnY9MkNVhK+yp/gQE8b6v4kUptJE1OHSb37LXss0hGhuI+9
+	TDyWfySL+d3+DhrS21DPQoKn08tYqSwrR/3N19sPS7KQx8LHmMS/xoxfQGxdLaXwMqyWM9mqgXf
+	GtSeJ1BOF1JwrThzK4+TVaX6DscY6h6JjFLZU91YQbpML5hJSb/vwoyljoGMYP7C3kBnS0LhBW5
+	Fv7709lL/QT26s5PUzY26LJJZjKb9UwSk/IyTYSjw9NANDTpKQ9SCfpV4cbpoCw3jR7616HrOpc
+	tAT0LLHtbYkQr2sx4CAwXZAWDufCvJzJ/g4Dmtx7m4TGjvjKXOq5ZyYFCi
+X-Google-Smtp-Source: AGHT+IHM2All3T5KCtKB0YCjHC7VAw8938Pjcsqc0YyXScERh5oSqA8kZNdUfx1RTYUHZ+fIhtYAoA==
+X-Received: by 2002:a05:620a:44d4:b0:893:31da:1028 with SMTP id af79cd13be357-8b3274b5313mr86654885a.90.1763581507903;
+        Wed, 19 Nov 2025 11:45:07 -0800 (PST)
 Received: from ziepe.ca (hlfxns017vw-47-55-120-4.dhcp-dynamic.fibreop.ns.bellaliant.net. [47.55.120.4])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8846e47115bsm1948696d6.21.2025.11.19.11.41.21
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8846e447272sm1944186d6.5.2025.11.19.11.45.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Nov 2025 11:41:21 -0800 (PST)
+        Wed, 19 Nov 2025 11:45:07 -0800 (PST)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1vLo3M-00000000bbB-3imG;
-	Wed, 19 Nov 2025 15:41:20 -0400
-Date: Wed, 19 Nov 2025 15:41:20 -0400
+	id 1vLo70-00000000bcb-3TE0;
+	Wed, 19 Nov 2025 15:45:06 -0400
+Date: Wed, 19 Nov 2025 15:45:06 -0400
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: "Tian, Kevin" <kevin.tian@intel.com>
+To: Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>
 Cc: Leon Romanovsky <leon@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
 	Logan Gunthorpe <logang@deltatee.com>, Jens Axboe <axboe@kernel.dk>,
 	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
@@ -72,76 +73,84 @@ Cc: Leon Romanovsky <leon@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
 	Marek Szyprowski <m.szyprowski@samsung.com>,
 	Andrew Morton <akpm@linux-foundation.org>,
 	Jonathan Corbet <corbet@lwn.net>,
-	Sumit Semwal <sumit.semwal@linaro.org>,
-	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
-	Kees Cook <kees@kernel.org>,
+	Sumit Semwal <sumit.semwal@linaro.org>, Kees Cook <kees@kernel.org>,
 	"Gustavo A. R. Silva" <gustavoars@kernel.org>,
 	Ankit Agrawal <ankita@nvidia.com>,
 	Yishai Hadas <yishaih@nvidia.com>,
 	Shameer Kolothum <skolothumtho@nvidia.com>,
+	Kevin Tian <kevin.tian@intel.com>,
 	Alex Williamson <alex@shazbot.org>,
 	Krishnakant Jaju <kjaju@nvidia.com>, Matt Ochs <mochs@nvidia.com>,
-	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-mm@kvack.org" <linux-mm@kvack.org>,
-	"linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-	"linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
-	"dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-	"linaro-mm-sig@lists.linaro.org" <linaro-mm-sig@lists.linaro.org>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"linux-hardening@vger.kernel.org" <linux-hardening@vger.kernel.org>,
-	"Kasireddy, Vivek" <vivek.kasireddy@intel.com>
-Subject: Re: [PATCH v8 10/11] vfio/pci: Add dma-buf export support for MMIO
- regions
-Message-ID: <20251119194120.GR17968@ziepe.ca>
+	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-block@vger.kernel.org, iommu@lists.linux.dev,
+	linux-mm@kvack.org, linux-doc@vger.kernel.org,
+	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	linaro-mm-sig@lists.linaro.org, kvm@vger.kernel.org,
+	linux-hardening@vger.kernel.org
+Subject: Re: [PATCH v8 05/11] PCI/P2PDMA: Document DMABUF model
+Message-ID: <20251119194506.GS17968@ziepe.ca>
 References: <20251111-dmabuf-vfio-v8-0-fd9aa5df478f@nvidia.com>
- <20251111-dmabuf-vfio-v8-10-fd9aa5df478f@nvidia.com>
- <BN9PR11MB527610F3240E677BE9720C2B8CD6A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20251118142849.GG17968@ziepe.ca>
- <BN9PR11MB5276EF47D26AB55B2CD456EE8CD6A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20251111-dmabuf-vfio-v8-5-fd9aa5df478f@nvidia.com>
+ <9798b34c-618b-4e89-82b0-803bc655c82b@amd.com>
+ <20251119133529.GL17968@ziepe.ca>
+ <ad36ef4e-a485-4bbf-aaa9-67cd517ca018@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <BN9PR11MB5276EF47D26AB55B2CD456EE8CD6A@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <ad36ef4e-a485-4bbf-aaa9-67cd517ca018@amd.com>
 
-On Tue, Nov 18, 2025 at 11:56:14PM +0000, Tian, Kevin wrote:
-> > > > +	down_write(&vdev->memory_lock);
-> > > > +	list_for_each_entry_safe(priv, tmp, &vdev->dmabufs, dmabufs_elm)
-> > > > {
-> > > > +		if (!get_file_active(&priv->dmabuf->file))
-> > > > +			continue;
-> > > > +
-> > > > +		dma_resv_lock(priv->dmabuf->resv, NULL);
-> > > > +		list_del_init(&priv->dmabufs_elm);
-> > > > +		priv->vdev = NULL;
-> > > > +		priv->revoked = true;
-> > > > +		dma_buf_move_notify(priv->dmabuf);
-> > > > +		dma_resv_unlock(priv->dmabuf->resv);
-> > > > +		vfio_device_put_registration(&vdev->vdev);
-> > > > +		fput(priv->dmabuf->file);
-> > >
-> > > dma_buf_put(priv->dmabuf), consistent with other places.
+On Wed, Nov 19, 2025 at 03:06:18PM +0100, Christian König wrote:
+> On 11/19/25 14:35, Jason Gunthorpe wrote:
+> > On Wed, Nov 19, 2025 at 10:18:08AM +0100, Christian König wrote:
+> >>> +As this is not well-defined or well-supported in real HW the kernel defaults to
+> >>> +blocking such routing. There is an allow list to allow detecting known-good HW,
+> >>> +in which case P2P between any two PCIe devices will be permitted.
+> >>
+> >> That section sounds not correct to me. 
 > > 
-> > Someone else said this, I don't agree, the above got the get via
+> > It is correct in that it describes what the kernel does right now.
 > > 
-> > get_file_active() instead of a dma_buf version..
-> > 
-> > So we should pair with get_file_active() vs fput().
-> > 
-> > Christian rejected the idea of adding a dmabuf wrapper for
-> > get_file_active(), oh well.
+> > See calc_map_type_and_dist(), host_bridge_whitelist(), cpu_supports_p2pdma().
 > 
-> Okay then vfio_pci_dma_buf_move() should be changed. It uses
-> get_file_active() to pair dma_buf_put().
+> Well I'm the one who originally suggested that whitelist and the description still doesn't sound correct to me.
+> 
+> I would write something like "The PCIe specification doesn't define the forwarding of transactions between hierarchy domains...."
 
-Makes sense, Leon can you fix it?
+Ok
 
-Thanks,
-Jason 
+> The previous text was actually much better than this summary since
+> now it leaves out the important information where all of this is
+> comes from.
+
+Well, IMHO, it doesn't "come from" anywhere, this is all
+implementation specific behaviors..
+
+> > ARM SOCs are frequently not supporting even on server CPUs.
+>
+> IIRC ARM actually has a validation program for this, but I've forgotten the name of it again.
+
+I suspect you mean SBSA, and I know at least one new SBSA approved
+chip that doesn't have working P2P through the host bridge.. :(
+ 
+> Randy should know the name of it and I think mentioning the status
+> of the vendors here would be a good idea.
+
+I think refer to the kernel code is best for what is currently permitted..
+
+> The documentation makes it sound like DMA-buf is limited to not
+> using struct pages and direct I/O, but that is not true.
+
+Okay, I see what you mean, the intention was to be very strong and say
+if you are not using struct pages then you must using DMABUF or
+something like it to control lifetime. Not to say that was the only
+way how DMABUF can be used.
+
+Leon let's try to clarify that a bit more
+
+Jason
