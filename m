@@ -1,326 +1,145 @@
-Received: from CH4PR04CU002.outbound.protection.outlook.com (mail-northcentralusazon11013050.outbound.protection.outlook.com [40.107.201.50])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A3DA33B6C1
-	for <iommu@lists.linux.dev>; Wed, 19 Nov 2025 09:18:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.201.50
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763543904; cv=fail; b=PeNo6lIXCbbN8xq3lUe0nMP9njAu6ia38oV7pImLgGlWOXilFnyMHyrWjCk9YdbVks+JR8vS5Tco2t/jlhe4hS2Tw22ATGdEmo0ZD2DrfGgE3djdXPQ+gJTOeTvWPde2YkVTZdQRpKHg3BBthnBBr4krIPfkwRkDgv4Ismjm5fg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763543904; c=relaxed/simple;
-	bh=do+TMXgLDdUArxU6vLKk5hu513SfpU70NdJvj3/bhuo=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=XuIHmMZ4gGQyn4p/Xn83ifrkPanP8LkIUTMukrcLeKOkCjuidZzli5tLZhGEO0RiAS2WQg1edwhi9nwg9Vy0qOhGfNu1WCPxBPbkCv4kxjAt2thBxzUfqRoifGYW9y1PDveZeLCP95n1y7aslpuBUlwt1AKETmq8o29gRdLYqX8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=5q2wLnOj; arc=fail smtp.client-ip=40.107.201.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D94C12E9ECE
+	for <iommu@lists.linux.dev>; Wed, 19 Nov 2025 09:29:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1763544569; cv=none; b=sb2QxbPsL1OKrpHWQmyvM1Z4Wldp0RCzclMJbCHxI/DmSQa+h6qy0R61PUv6LsILCzB9z8LwvlmYGe7oSCGzT8h8cPccHKnTkml9/Fieg1PSRQQ/ziGP/qXGVinGaUUN9f25lGFj/TSvGR5tXW0xeNVh3etLmta64Vo2AF9NSnY=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1763544569; c=relaxed/simple;
+	bh=HYhU1UvsaMo23P6j6sR6QJircnjXsWgiOTeLBE3hddE=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=EcPcmlosyZGpAcNPZbwIzVhTDElrkXq3hPKmHe+YzRHKVqLCIVjIB1CIf03T99p1Y5eW3rxtUc9Wt0cRjMgL2zHmMGvjLLIfKvlS62gUbA8Ih9/pESGfAXLlWURUcn2ygyJAjzfBoHTuphCZac9mvIY8yTF7OgKhjxUuh75aHx4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ZCkV7Z5/; arc=none smtp.client-ip=198.175.65.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="5q2wLnOj"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=ek9QUknVnS8p2TFDmCp3S8WogOQGRAvwM0NwWq6g6vyF4fw8LBcB5fZNri8rA/10ik7hhk9fduEhE9YeLgsXdV0fyib3jplHufaihThz85lz4suxIKQgi3gXlubM2FmKz7o018UxdxRjw8sztwQh7DMhlYc7NpZzlaIF9zR6zeOW8g75C1GGffwtB2n6kiK9rxTf/ajvEnDdIto0lgg4QzSg9iCSunraQLNWbUPmcR86ZOCLFf7Hn6B8qUX+qDXLLQFULe7ujak3Z76vQpPaQvoHt+a0nMnKC1K7eZdZ6PkLuDnSUo0L/gFbZWiAKLXx9Y1uJvktIdfGmjaVm8SPVg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=wuvBF4Dq9FvtFnke+tgXeNA0BH6QY6fGLiaaZqA8Loc=;
- b=w8sCWn8v2A/yYomI0bsuDti16ks28dWnMk6d1by9MTXNFTWRLC1hMjI+YelceT3fY5RsDgbaM6WGLZwro7a3G3pdnFHgAWGqevvJT+VFsD0dqk5QrZB8e/d4mb6QvE63vayGIPgyDdtkmk6RSsU/BvlakZhLcfE6vX3zlbJpHmLiamZimY+VlNaAhaW0xTNkKQ3TInwkPuSrfceszFLGyBebFerhFJcGQC17J8UoEa2REYLNTXY2TgSqp72+ihPs3MHgmKc0LsMqoOkr7C4e57u5pmPS2TH4ESce/j/80KTR0B5O//hee10QcxIhz+J/9PL/BjwbTBlXAwVeiS5QNw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wuvBF4Dq9FvtFnke+tgXeNA0BH6QY6fGLiaaZqA8Loc=;
- b=5q2wLnOj8nRpnE+/QtB40amzWDv4a0uAn6GA7+IHF2p6blHolik1fzv710W9cFTL/dZ5qNsxMecPcjELYlLnKJI1SsIsejscgeCwComGzaDZiFjbN44m9+6XfsQKQa90lPqdNbdHjuZl0nR+iBfJXwALrA5BdRPshA0JmsvQBPg=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from PH7PR12MB5685.namprd12.prod.outlook.com (2603:10b6:510:13c::22)
- by CH3PR12MB7714.namprd12.prod.outlook.com (2603:10b6:610:14e::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9320.22; Wed, 19 Nov
- 2025 09:18:16 +0000
-Received: from PH7PR12MB5685.namprd12.prod.outlook.com
- ([fe80::46fb:96f2:7667:7ca5]) by PH7PR12MB5685.namprd12.prod.outlook.com
- ([fe80::46fb:96f2:7667:7ca5%4]) with mapi id 15.20.9320.021; Wed, 19 Nov 2025
- 09:18:16 +0000
-Message-ID: <9798b34c-618b-4e89-82b0-803bc655c82b@amd.com>
-Date: Wed, 19 Nov 2025 10:18:08 +0100
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v8 05/11] PCI/P2PDMA: Document DMABUF model
-To: Leon Romanovsky <leon@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
- Logan Gunthorpe <logang@deltatee.com>, Jens Axboe <axboe@kernel.dk>,
- Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>,
- Jason Gunthorpe <jgg@ziepe.ca>, Andrew Morton <akpm@linux-foundation.org>,
- Jonathan Corbet <corbet@lwn.net>, Sumit Semwal <sumit.semwal@linaro.org>,
- Kees Cook <kees@kernel.org>, "Gustavo A. R. Silva" <gustavoars@kernel.org>,
- Ankit Agrawal <ankita@nvidia.com>, Yishai Hadas <yishaih@nvidia.com>,
- Shameer Kolothum <skolothumtho@nvidia.com>, Kevin Tian
- <kevin.tian@intel.com>, Alex Williamson <alex@shazbot.org>
-Cc: Krishnakant Jaju <kjaju@nvidia.com>, Matt Ochs <mochs@nvidia.com>,
- linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-block@vger.kernel.org, iommu@lists.linux.dev, linux-mm@kvack.org,
- linux-doc@vger.kernel.org, linux-media@vger.kernel.org,
- dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
- kvm@vger.kernel.org, linux-hardening@vger.kernel.org
-References: <20251111-dmabuf-vfio-v8-0-fd9aa5df478f@nvidia.com>
- <20251111-dmabuf-vfio-v8-5-fd9aa5df478f@nvidia.com>
-Content-Language: en-US
-From: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
-In-Reply-To: <20251111-dmabuf-vfio-v8-5-fd9aa5df478f@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FRYP281CA0002.DEUP281.PROD.OUTLOOK.COM (2603:10a6:d10::12)
- To PH7PR12MB5685.namprd12.prod.outlook.com (2603:10b6:510:13c::22)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ZCkV7Z5/"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1763544567; x=1795080567;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=HYhU1UvsaMo23P6j6sR6QJircnjXsWgiOTeLBE3hddE=;
+  b=ZCkV7Z5/nQMHXJg5XtpXcJMySblPV0/wjglarLbLKUlD/96FOV6dmite
+   TuUKbshatMhy0DHj+Yel7QGTpX/td8RRTggiNzmJGaQp4HQ8aSwPGAAiV
+   fhiJa0YP0lHPWZLELNfjX2mre8n7UovvjaoyRX4XUwuPlPNPOdwi5xiBS
+   x4l/OEHpIRAbZUX+gW/OmR2ChatY/4F/6QwkLnjh9w/ARfHSIs0+cap76
+   rQ8+uFKs3bRuS+l+yjxKDTYplDwB/7pezLJut+IQYAeDU/5AKkFyDPHQc
+   IH6IlhHOy0Q8ZOSg3UoyHRuPHF7jpRZMz9dS/3vPEY7QNw3h3CRxhPsFq
+   w==;
+X-CSE-ConnectionGUID: 9JbvYIkeRQWicdLxk3gubg==
+X-CSE-MsgGUID: QQCmsv42Qky6K05J4+gzLQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11617"; a="65520104"
+X-IronPort-AV: E=Sophos;i="6.19,315,1754982000"; 
+   d="scan'208";a="65520104"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Nov 2025 01:29:27 -0800
+X-CSE-ConnectionGUID: PLsjaoNyQVqLBN2WDdjcJQ==
+X-CSE-MsgGUID: Qoc75SQWQNueevvM4f8ctg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.19,315,1754982000"; 
+   d="scan'208";a="196136897"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.246.21]) ([10.124.246.21])
+  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Nov 2025 01:29:24 -0800
+Message-ID: <8648735e-324d-4951-96a8-6276503fc8c9@linux.intel.com>
+Date: Wed, 19 Nov 2025 17:29:21 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH7PR12MB5685:EE_|CH3PR12MB7714:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5a0ed3c5-cb15-4639-aeae-08de274c922b
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|7416014|376014|1800799024|366016|921020;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?WWF0SGR4SHhuM05kRWtQZGd5Yks4NGtDNWVKK2EvVGhWcnZ2ZjU5cTUrUERK?=
- =?utf-8?B?WkI1U1pXUzAzZDlmaGQxT1Y3aU8wazVxWTlIblY5MnlQVnllRnloWm9raDNa?=
- =?utf-8?B?elJadkZWNUdOWjNISWtzT0V0UlpuWHFhYUtlR1YrQzBKekl4enRWZERqZzRM?=
- =?utf-8?B?U014amJxNmh2cUpPTG5YNFZlUWNCTXdERVc1ekRSYml0TVhmSGNFQ3ZTcnU4?=
- =?utf-8?B?akcxM0VEZEhZTjNmVFl5aHBvQ1lvcXRsNnk5ZUNHKy96ZEZDZ0xGcnZqS1pX?=
- =?utf-8?B?TFdkTnh3U0VPSjZaZFNPWElSNytkS1MzL0ptbnArUUxIZkZQOERPSkZTWFUr?=
- =?utf-8?B?T21haGJGUzVWYXc3WDYvY1pVeFZ3YVp0Q3l6a1JGTUNEbTF4dlVYOHR0aWli?=
- =?utf-8?B?SlM2QmxKdjlOekZaOG95dEI3SkZBQnRGeDA2SGxEL1psc1gvbkloZUN0UjFt?=
- =?utf-8?B?MGpjWDVvMFhLYnJkNEtINWwwN2FVbk9MVEhXWG53K3RzTTRsTmNPTkF4a1ln?=
- =?utf-8?B?WkxaOHBieG9UV3R1a0tFYU9reldDV3RMRHZDQ3lhdWo1b3psSlovN0d2VTZC?=
- =?utf-8?B?Smgxbm1ET1RuQ0tXZ09zRTJQenlvZWdXU3NUWGFVSThpV3pGL2xpRWRCZU9K?=
- =?utf-8?B?NUo0MVlVZERhVDVMV2hnRjlEQ0p5N2EvNDYrWnBwWkJwdkhUSVVFcnUrNzky?=
- =?utf-8?B?OEVuMjJRdUNoelprNjFwQXBHblhCUWsraEx6UWRod3NyOTBtQ0ViV0xLZmRH?=
- =?utf-8?B?ZXF6S084eWl0RWE3ckRQTDJLbXBIeTFNcWtteGcvK0RYWFE0NVNrVk1xbisy?=
- =?utf-8?B?ZERlUmc2RFhhaDdkdHMzaHlNQVhtcndjb1BNdkdYVmIrM2x4OHJ1M3ZSclBu?=
- =?utf-8?B?ak1xUCtFa1pqNjhZKzNFYlBoWlRrZTk3WVIzck9PM3F0UG1UOEczSmdKYTdn?=
- =?utf-8?B?Y0NsaUdFQjd5RVZka2xsLzRSSGQ2RTBoTHAxeHZSMUp0UTZCcUNyU201bGFi?=
- =?utf-8?B?R242a1ZBelVoQ1ZiRU5taEhrY3V5andoSWo2UXZveXllQWxBNVFlVWFPRzZX?=
- =?utf-8?B?cUEySXptd0tLTExMdnBRcm9BOElWZkRuUjhFT2phcHRmdXlOV01FNERPNENI?=
- =?utf-8?B?QStoVkdob294VnNJN29laG9UVmNDN0VMMW0xa0l5UzY4VEF1YS9VVjNRU0tS?=
- =?utf-8?B?N1dDT3pabmEwSHRLb1VuSXRIN2oxSUhZMS9jZVlrcFpPOGtZWkpxYStIUVV4?=
- =?utf-8?B?SlpHcDV2NXgza2o4WVZnVzJCc3RxSXpnZS8vS3JXM0lWY0NrRlFETFBjcHVE?=
- =?utf-8?B?aHFqbjZPK21sWmJ2OHY1YWdjQktyYXF1bW1rekVMVFd2N1djL0VmNTd6WWpI?=
- =?utf-8?B?WjNMQ216NDEyUGc1SnBodkcyMFQ0NC8zMDN2RmxLcmd5S3lVMmQrVmpxQk9Q?=
- =?utf-8?B?SnhYc0phc3VUV05FOGJSM2s2cjRlN1MwYWdiUys0NXpJalUyVHRsNmF5ZmlK?=
- =?utf-8?B?SWtKdENPL1YycW16ZlloSDVNMEY1ZFU0MGtjTHhjcmtabVdYNmtZRDlBbkhl?=
- =?utf-8?B?N2IzcTFiK3RHbU0xd3BUYlJRWFEyaGhocEx3YjdtaUpUZHQ4bDlFeVEyNURj?=
- =?utf-8?B?YVdvZWxyVDBxcCtOdTg3TlBIdWIrMWtkRVJwQVFnbjB0RzI1Ujc3U2xjS0lZ?=
- =?utf-8?B?eThsR2E3MUx1cVJIcERyZGlvYXRWMFpCazA2dkIzd2M2ZGVmcEdkR0RvM0NB?=
- =?utf-8?B?L1MydkRWQ2orNUZGN1N1dUh3bDdZNDNpZ3VITWdiL0RSdXNOV2hYOE1zYXow?=
- =?utf-8?B?QUx3YUo0QXJkYnZzUHNWZWVIYk4vclV6RFp2WmJCK053dGN6WWF5clRtQW93?=
- =?utf-8?B?cWhteFIvTW5WcVFTcnBFb3ZrcUcrTGEva1dudlpBNFhNNVBQM2crSUFGQXc2?=
- =?utf-8?B?U3I1KzhwNzhJZmhnYmRxRjhSK2ZwRkZiSy94SmFkaFdibXJaSUc1ckt0U2d6?=
- =?utf-8?Q?TNmoie+eGNaOgkAmOrpLjki3WgUGdE=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5685.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(1800799024)(366016)(921020);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?WmRhbkpiVDZEWE1JMjFJdGtFK1NXakNzWUd1OWRobnBtWVYwRDk1b2xxQjg4?=
- =?utf-8?B?bW9FRHI1bUlWWHZ4ZGtZajR1QTYvNzZZellDWndxMDc3M2s3Zk1Kc0t6VExv?=
- =?utf-8?B?WDBOdWRQTWFHaUUraGszS0hZK1p3WVk4ODRGSk4zc2kyUW9jWHBLbjZScXBt?=
- =?utf-8?B?eGZQeWE3ZUxqZGFGeE10MHI2bG1XTktud0tCMlhwZmdvZWFUNEpGY1pZY1BG?=
- =?utf-8?B?OVg3Zm5TL3JBQU5GdWs4aEJrMTFHZFJGaU85MU11T2REMkFjZTlqY0NLdU9Z?=
- =?utf-8?B?VXhlalJVSWxHbFc4TndYZjFQUk9oenZJU1hxUWhVUU5xNlVqU25RMjR3NVJZ?=
- =?utf-8?B?NjRZTXA1dm54Y3BrTXVxdStWNG84TFE5dGRpVXI0b0RnSitzWlNnZjRwTTUr?=
- =?utf-8?B?dThwbktvRWplYVFxRmtCN0NsMk1HNjY3Q3hFZkY0NkxRWFdHNFYxWWVPVUxB?=
- =?utf-8?B?WU5yS0ZLN0VxTHBuQ0o0YmZpamllUCtMOTZHeUNvOU80QThRMXIrTGpTNTZR?=
- =?utf-8?B?SG5JdjY3eWE5dmQ3RzlKdFdjUktsblFhcnE3ellHdzJCN0RGdjNkRHpuamZ6?=
- =?utf-8?B?eUUxYnVIa3BJZmJzVHlHS0pDcGVXY1ZNb0NvWTg2YmV2eEg2UXBtV3lYWVVp?=
- =?utf-8?B?M0s0RVprMlVMNW8xTEJldkV5UVFLcGd3OTF2SEFSUlNKb1p0eGFtUUdtZzds?=
- =?utf-8?B?SFU4YkZmckE0dTRCOXdqSmpUNmFQTzJMRnRVNkVlQllNbU43eHNKR2tCb1Uw?=
- =?utf-8?B?MGdNSWV3akdkUDl2aWkxOHk4RHdJS2pkMG5mUkZkU1I4UXo0Rm1OSkc4dVJI?=
- =?utf-8?B?WGJOdk45Mi9NZ1VjeGUrT2VNRWdEVHdRTDJaalJlVDVPdFdBTWNqOUl3VEtw?=
- =?utf-8?B?S2NBcjVZZzZ5TmVxQ2FyblJMYkJpQWdjeUIwRVJXcEUzakZ6ajRSVHE2dmd5?=
- =?utf-8?B?MENsUnUzQzlqb2tPWWtoOEVBc3NVd1FKN2cvWEdkL0pValh1bEh3dXR5WGor?=
- =?utf-8?B?K0dSajFZMDlkMlE2amlvbkxoSlllbDhaL3dWYzhTWXVORzJ4bVd1QWlvNmIx?=
- =?utf-8?B?bmVqMERDRis3LzJSVE12cWEyNGFEKzBUdWJ2QWFjUVpBanVYL2toV21MQmJR?=
- =?utf-8?B?UDBJYi9pVUxjcVBhb0dEdHE2c2Y4ZndUU1RDUVptcFJiWmlWa2VraHRiMnpy?=
- =?utf-8?B?bDNycCs0dU5VL29SR05takxsa0JXSGo3bEZPZEhyeEFjYld3QkExVmNqeHFm?=
- =?utf-8?B?cTh5UHFqazVzb2RQS0NOcVp3bzNCRmtYTXJ2cWw3RjZJT2hJOEdFY054Q1dW?=
- =?utf-8?B?ZHRSV0lhMUgwUWUwTTVtSTNudW5wQmhVdDlSSkNlWnVja1BiY2VrR3dTSDl5?=
- =?utf-8?B?U1RlcjdKSkJ2YkZENEo3eGcwdHBnOWJDV3pFSzNzb2g3OXo1NGk0UEpvS1FR?=
- =?utf-8?B?SHUrQWhDZzVHQk40N29jK2VYSEJiQUtYNitMK284MDZQd2F0LzZpdFRVRlVk?=
- =?utf-8?B?RkZnNk5wNUF1UUtxdTJIVURWTnZoVkk0ZEJrekdhZEViMXlUc3FUUGlTSEZL?=
- =?utf-8?B?L3dudmNxODJ3YlB0WW44ditOby91VC9ZQmxzUUVoSUkwNFN3aG1yZUdza3hv?=
- =?utf-8?B?K3o1RzVSRFB3VlhmUEhRTy9tNVBDYUFwUDFUNnV3REJnOTN4OCszMWhqZUJE?=
- =?utf-8?B?Nnh5Y3QrT1pKSGkzeXZKVFpIUDVDNlNOT1BYMVRpK0x1NGJnVFBJR2xheHhH?=
- =?utf-8?B?d2l5VXNEWk53V2ZLN0I3bmNlUm9YTkpZR0NRekI3YXQ0RjU4cEtScERhQkpv?=
- =?utf-8?B?U3VFUFlwQ0g3UThTNDQwVDF0a1lhVGQzTWpaZkNOVnFyMzg0QXkrbmVvUXc3?=
- =?utf-8?B?ekdxWFg1Zmk5UDBkQnNPMTN5bXptSWM4Q2FpRUlnY0RQS2lkZjUrSGY1SWJ3?=
- =?utf-8?B?d0FNMllXcUhUZ1Ftemx0ZXBxWk5taXNVK1VXNk9FMzU4eWI4UHpnUzdXSkZ3?=
- =?utf-8?B?WGg5Q2JLdWZqUVFZR0JqZVB6STBWV1dXTDM1YUt1Nm9hNVJsYTlhMDdRSFZo?=
- =?utf-8?B?ZlBPUTlRUSt1LzdFMW93UzZlaXl0aVlsY09FZWQ1RFZFekdtK0lRQlNOSE9m?=
- =?utf-8?Q?H1Vl6A4X7p65TvS83YMAu0yuP?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5a0ed3c5-cb15-4639-aeae-08de274c922b
-X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5685.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Nov 2025 09:18:15.9792
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: TjOsscU9slSYMzvnN5LiBJ2zbWekpts7dViPI0tOmMvliHlarI7J7lrugUBwQRZr
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB7714
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com,
+ "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
+ "intel-xe@lists.freedesktop.org" <intel-xe@lists.freedesktop.org>,
+ Lucas De Marchi <lucas.demarchi@intel.com>,
+ "Kurmi, Suresh Kumar" <suresh.kumar.kurmi@intel.com>,
+ "Saarinen, Jani" <jani.saarinen@intel.com>, matthew.auld@intel.com,
+ iommu@lists.linux.dev
+Subject: Re: REGRESSION on linux-next (next-20251106)
+To: Jason Gunthorpe <jgg@nvidia.com>,
+ "Borah, Chaitanya Kumar" <chaitanya.kumar.borah@intel.com>
+References: <4f15cf3b-6fad-4cd8-87e5-6d86c0082673@intel.com>
+ <20251118012944.GA60885@nvidia.com>
+ <a79fe616-52c7-4fa5-906c-382b5ff2226c@intel.com>
+ <20251118161341.GC90703@nvidia.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20251118161341.GC90703@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-
-
-On 11/11/25 10:57, Leon Romanovsky wrote:
-> From: Jason Gunthorpe <jgg@nvidia.com>
+On 11/19/2025 12:13 AM, Jason Gunthorpe wrote:
+>> Also, the tests fail consistently and are not sporadic.
+>  From these logs I see the below fragment, noting this:
 > 
-> Reflect latest changes in p2p implementation to support DMABUF lifecycle.
+>   gem_exec_gttfil-1010    [004] .N...    50.126420: map: IOMMU: iova=0x00003fffffc00000 - 0x0000400000000000 paddr=0x00000001b9400000 size=4194304
+>                                                                      ^^^^^^^^^^^^^^^^^^^
+> Which is the high IOVA.. It has bit 45 set. I fed this mapping into
+> the kunit and it does map successfully.
 > 
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->  Documentation/driver-api/pci/p2pdma.rst | 95 +++++++++++++++++++++++++--------
->  1 file changed, 72 insertions(+), 23 deletions(-)
+> It is not high enough to get into anything special about sign extend,
+> the driver sets:
 > 
-> diff --git a/Documentation/driver-api/pci/p2pdma.rst b/Documentation/driver-api/pci/p2pdma.rst
-> index d0b241628cf1..77e310596955 100644
-> --- a/Documentation/driver-api/pci/p2pdma.rst
-> +++ b/Documentation/driver-api/pci/p2pdma.rst
-> @@ -9,22 +9,47 @@ between two devices on the bus. This type of transaction is henceforth
->  called Peer-to-Peer (or P2P). However, there are a number of issues that
->  make P2P transactions tricky to do in a perfectly safe way.
->  
-> -One of the biggest issues is that PCI doesn't require forwarding
-> -transactions between hierarchy domains, and in PCIe, each Root Port
-> -defines a separate hierarchy domain. To make things worse, there is no
-> -simple way to determine if a given Root Complex supports this or not.
-> -(See PCIe r4.0, sec 1.3.1). Therefore, as of this writing, the kernel
-> -only supports doing P2P when the endpoints involved are all behind the
-> -same PCI bridge, as such devices are all in the same PCI hierarchy
-> -domain, and the spec guarantees that all transactions within the
-> -hierarchy will be routable, but it does not require routing
-> -between hierarchies.
-> -
-> -The second issue is that to make use of existing interfaces in Linux,
-> -memory that is used for P2P transactions needs to be backed by struct
-> -pages. However, PCI BARs are not typically cache coherent so there are
-> -a few corner case gotchas with these pages so developers need to
-> -be careful about what they do with them.
-> +For PCIe the routing of Transaction Layer Packets (TLPs) is well-defined up
-> +until they reach a host bridge or root port. If the path includes PCIe switches
-> +then based on the ACS settings the transaction can route entirely within
-> +the PCIe hierarchy and never reach the root port. The kernel will evaluate
-> +the PCIe topology and always permit P2P in these well-defined cases.
-> +
-> +However, if the P2P transaction reaches the host bridge then it might have to
-> +hairpin back out the same root port, be routed inside the CPU SOC to another
-> +PCIe root port, or routed internally to the SOC.
-
-Please keep the reference to the PCIe specification where that behavior is defined somewhere here. E.g. "See PCIe r4.0, sec 1.3.1".
-
-> +
-> +As this is not well-defined or well-supported in real HW the kernel defaults to
-> +blocking such routing. There is an allow list to allow detecting known-good HW,
-> +in which case P2P between any two PCIe devices will be permitted.
-
-That section sounds not correct to me. This is well supported in current HW, it's just not defined in some official specification.
-
-> +
-> +Since P2P inherently is doing transactions between two devices it requires two
-> +drivers to be co-operating inside the kernel. The providing driver has to convey
-> +its MMIO to the consuming driver. To meet the driver model lifecycle rules the
-> +MMIO must have all DMA mapping removed, all CPU accesses prevented, all page
-> +table mappings undone before the providing driver completes remove().
-> +
-> +This requires the providing and consuming driver to actively work together to
-> +guarantee that the consuming driver has stopped using the MMIO during a removal
-> +cycle. This is done by either a synchronous invalidation shutdown or waiting
-> +for all usage refcounts to reach zero.
-> +
-> +At the lowest level the P2P subsystem offers a naked struct p2p_provider that
-> +delegates lifecycle management to the providing driver. It is expected that
-> +drivers using this option will wrap their MMIO memory in DMABUF and use DMABUF
-> +to provide an invalidation shutdown.
-
-> These MMIO pages have no struct page, and
-
-Well please drop "pages" here. Just say MMIO addresses.
-
-> +if used with mmap() must create special PTEs. As such there are very few
-> +kernel uAPIs that can accept pointers to them; in particular they cannot be used
-> +with read()/write(), including O_DIRECT.
-
-> +
-> +Building on this, the subsystem offers a layer to wrap the MMIO in a ZONE_DEVICE
-> +pgmap of MEMORY_DEVICE_PCI_P2PDMA to create struct pages. The lifecycle of
-> +pgmap ensures that when the pgmap is destroyed all other drivers have stopped
-> +using the MMIO. This option works with O_DIRECT flows, in some cases, if the
-> +underlying subsystem supports handling MEMORY_DEVICE_PCI_P2PDMA through
-> +FOLL_PCI_P2PDMA. The use of FOLL_LONGTERM is prevented. As this relies on pgmap
-> +it also relies on architecture support along with alignment and minimum size
-> +limitations.
-
-Actually that is up to the exporter of the DMA-buf what approach is used.
-
-For the P2PDMA API it should be irrelevant if struct pages are used or not.
-
-So I think you should potentially completely drop that description here.
-
->  
->  
->  Driver Writer's Guide
-> @@ -114,14 +139,38 @@ allocating scatter-gather lists with P2P memory.
->  Struct Page Caveats
->  -------------------
->  
-> -Driver writers should be very careful about not passing these special
-> -struct pages to code that isn't prepared for it. At this time, the kernel
-> -interfaces do not have any checks for ensuring this. This obviously
-> -precludes passing these pages to userspace.
-> +While the MEMORY_DEVICE_PCI_P2PDMA pages can be installed in VMAs,
-> +pin_user_pages() and related will not return them unless FOLL_PCI_P2PDMA is set.
->  
-> -P2P memory is also technically IO memory but should never have any side
-> -effects behind it. Thus, the order of loads and stores should not be important
-> -and ioreadX(), iowriteX() and friends should not be necessary.
-> +The MEMORY_DEVICE_PCI_P2PDMA pages require care to support in the kernel. The
-> +KVA is still MMIO and must still be accessed through the normal
-> +readX()/writeX()/etc helpers. Direct CPU access (e.g. memcpy) is forbidden, just
-> +like any other MMIO mapping. While this will actually work on some
-> +architectures, others will experience corruption or just crash in the kernel.
-> +Supporting FOLL_PCI_P2PDMA in a subsystem requires scrubbing it to ensure no CPU
-> +access happens.
-> +
-> +
-> +Usage With DMABUF
-> +=================
-> +
-> +DMABUF provides an alternative to the above struct page-based
-> +client/provider/orchestrator system. In this mode the exporting driver will wrap
-> +some of its MMIO in a DMABUF and give the DMABUF FD to userspace.
-> +
-> +Userspace can then pass the FD to an importing driver which will ask the
-> +exporting driver to map it.
-
-"to map it to the importer".
-
-Regards,
-Christian.
-
-> +
-> +In this case the initiator and target pci_devices are known and the P2P subsystem
-> +is used to determine the mapping type. The phys_addr_t-based DMA API is used to
-> +establish the dma_addr_t.
-> +
-> +Lifecycle is controlled by DMABUF move_notify(). When the exporting driver wants
-> +to remove() it must deliver an invalidation shutdown to all DMABUF importing
-> +drivers through move_notify() and synchronously DMA unmap all the MMIO.
-> +
-> +No importing driver can continue to have a DMA map to the MMIO after the
-> +exporting driver has destroyed its p2p_provider.
->  
->  
->  P2P DMA Support Library
+> 	if (cap_fl5lp_support(iommu->cap))
+> 		cfg.common.hw_max_vasz_lg2 = 57;
+> 	else
+> 		cfg.common.hw_max_vasz_lg2 = 48;
 > 
+> Maybe this code is wrong? Baolu what did you get for this log:
+> 
+>   [   50.126166] i915 0000:00:02.0: Using 46-bit DMA addresses
+> 
+> In your force second stage test? Is it 46? Second stage uses different
+> code to compute vasz_lg2 and is sensitive to magw:
+> 
+> 	if (mgaw >= 48 && (sagaw & BIT(3)))
+> 		return min(57, mgaw);
+> 	else if (mgaw >= 39 && (sagaw & BIT(2)))
+> 		return min(48, mgaw);
+> 	else if (mgaw >= 30 && (sagaw & BIT(1)))
+> 		return min(39, mgaw);
+> 
+> Maybe this is the issue?
 
+When first stage translation is used,
+
+	cfg.common.hw_max_vasz_lg2 = 48
+
+When second stage translation is used,
+
+	cfg.common.hw_max_vasz_lg2 = 42
+
+Interesting thing is if I hardcode
+
+	cfg.common.hw_max_vasz_lg2 = 42
+
+for the first stage translation, it works.
+
+The only change that I have made to achieve this likes below:
+
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 2d2f64ce2bc6..a505bba8dcc7 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -2813,10 +2813,13 @@ intel_iommu_domain_alloc_first_stage(struct 
+device *dev,
+         if (IS_ERR(dmar_domain))
+                 return ERR_CAST(dmar_domain);
+
++#if 0
+         if (cap_fl5lp_support(iommu->cap))
+                 cfg.common.hw_max_vasz_lg2 = 57;
+         else
+                 cfg.common.hw_max_vasz_lg2 = 48;
++#endif
++       cfg.common.hw_max_vasz_lg2 = 42;
+         cfg.common.hw_max_oasz_lg2 = 52;
+         cfg.common.features = BIT(PT_FEAT_SIGN_EXTEND) |
+                               BIT(PT_FEAT_FLUSH_RANGE);
+
+Thanks,
+baolu
