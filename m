@@ -1,210 +1,75 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B880526B2DA
-	for <iommu@lists.linux.dev>; Thu, 20 Nov 2025 10:23:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3A865284B25
+	for <iommu@lists.linux.dev>; Thu, 20 Nov 2025 10:33:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763634227; cv=none; b=moE0hK88KSoOjciho3CzJ5tziUHnG11es8B7QUVJhXD3rhrl5Kcfv/aMopp89pa2yLMAzNQLXtmlOWS0TOyJ/gW2J1QMYWEyH10Kp/X1kJJ64S4jMFZdCZHMEQMpbIn0pxrcA9eTjpMXwN5LOXbU1yQEhB5XX9ufQPCJWU0pLyE=
+	t=1763634822; cv=none; b=dDFiH5CSAzHFH9rN5vOvKrL4+Lg1JF2m4V4jpyW3+lHVRZsxpanavEyeSY3mKY/BjzQkXVQcRAaCijztU76AKW2PNA0EW0Rx285vqJDUoTWmqe08tMhR1tlRyb1mHAuXFVIexYlMsiXIjCqC2vp2b1aORGtVtd+ecrMRuVutbVQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763634227; c=relaxed/simple;
-	bh=KjvXAbH7/GZFMTiVaSj8oMiOI6hItZY5jHsJJofH2pM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=LyUz9+iaM4arMN8R723xM9kkrRgl+N4fm1qRiFcPdMJpM7ii9CkXsIv1F5++ZM0EYTsGiOGP/w/NDfBF+93tCYGzVrErcT9wOxv/I62Bnbyzh1UKXW+D5EBU0CrhzGF3m4I2fghs9asTH/icAu6smGYz/H4cJ1q0oL8o2EjQUJs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 930E9339;
-	Thu, 20 Nov 2025 02:23:34 -0800 (PST)
-Received: from [10.57.87.140] (unknown [10.57.87.140])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 51E7B3F740;
-	Thu, 20 Nov 2025 02:23:39 -0800 (PST)
-Message-ID: <c23f72a6-24a4-41c4-b5f5-70a8589f1199@arm.com>
-Date: Thu, 20 Nov 2025 10:23:36 +0000
+	s=arc-20240116; t=1763634822; c=relaxed/simple;
+	bh=AjdaPxI6DEG5+1vMsB/JPo1TIa0f6QgVT+d3jCjWQ7g=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=m/B0LHPWqBODmwgfzf/HoRPP1MWqpWRKrWtqugSTuhQ4OYiGumuQczNa7W9gZt2JCKSouAvycAY8ltPiMCNfAXR7gGzar0/CT2kLqzSug52f3kESXjEasgc4Yxqzeiq4w0upjt6f4lq4Ix68t/UtKuBEoLNrHKSIV4Wo0vfuRsc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=Xz9a+ZyU; arc=none smtp.client-ip=85.214.250.239
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="Xz9a+ZyU"
+Received: from 8bytes.org (p549214ac.dip0.t-ipconnect.de [84.146.20.172])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 2CD1C5BB50;
+	Thu, 20 Nov 2025 11:33:38 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1763634819;
+	bh=AjdaPxI6DEG5+1vMsB/JPo1TIa0f6QgVT+d3jCjWQ7g=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=Xz9a+ZyUQV+pslaVD0DmrkL+v/tpgTnj7+m7SLHgZsbJQAw2lY/1ycJzFrEBuNGeq
+	 cj9C8EzzXYPbvC+OA6hzIHxZQGCcveb82OfOITkLopPdY0eQ/z7F4PbB9cLuH3Azrz
+	 iQZmjS1vnaNe/vMOIw983sJmvUFKSVwvjVR4s6F4UKvxoY66e59IkBQqXnPjHi1txP
+	 65/0Hg2ov60GA6GZaov2e7+utviAG8lKcKnJLnysCnbAb+GyBqdxjSXNDWJ/9Q1S19
+	 5W1YEbtqcqSIOs95MVFpqXCSsvM1JxCscsqck4+GgP47KP4+tEMky4KtVHLhNuVRmx
+	 H49lZAYJYGvhg==
+Date: Thu, 20 Nov 2025 11:33:37 +0100
+From: Joerg Roedel <joro@8bytes.org>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/2] [PULL REQUEST] Intel IOMMU updates for v6.19
+Message-ID: <u2z3cx3kzfxpmlyn5t4ayreqacnhbwu5sdwkaut4oyfxmipoux@otixjk6iv542>
+References: <20251119051613.2604261-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/3] dt-bindings: iommu: Add NVIDIA Tegra CMDQV support
-To: Ashish Mhetre <amhetre@nvidia.com>, Krzysztof Kozlowski
- <krzk@kernel.org>, will@kernel.org
-Cc: joro@8bytes.org, robh@kernel.org, krzk+dt@kernel.org,
- conor+dt@kernel.org, thierry.reding@gmail.com, jonathanh@nvidia.com,
- jgg@ziepe.ca, nicolinc@nvidia.com, linux-tegra@nvidia.com,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-tegra@vger.kernel.org
-References: <20251031062959.1521704-1-amhetre@nvidia.com>
- <20251031062959.1521704-3-amhetre@nvidia.com>
- <20251031-witty-sociable-chachalaca-b73dbc@kuoka>
- <4f6496de-d3c8-4701-a9b4-6f695018eb5e@nvidia.com>
- <ef5bcd93-c88b-4242-be31-a3a4765fe5d8@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <ef5bcd93-c88b-4242-be31-a3a4765fe5d8@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20251119051613.2604261-1-baolu.lu@linux.intel.com>
 
-On 2025-11-20 6:07 am, Ashish Mhetre wrote:
+On Wed, Nov 19, 2025 at 01:16:11PM +0800, Lu Baolu wrote:
+> Hi Joerg,
 > 
-> On 11/3/2025 7:24 PM, Ashish Mhetre wrote:
->>
->> On 10/31/2025 1:44 PM, Krzysztof Kozlowski wrote:
->>> External email: Use caution opening links or attachments
->>>
->>>
->>> On Fri, Oct 31, 2025 at 06:29:58AM +0000, Ashish Mhetre wrote:
->>>> The Command Queue Virtualization (CMDQV) hardware is part of the
->>>> SMMUv3 implementation on NVIDIA Tegra SoCs. It assists in
->>>> virtualizing the command queue for the SMMU.
->>> If this is specific to Nvidia, then I think you need specific front
->>> compatible and disallow it for other vendors.
->>
->> Yes, CMDQV is specific to Nvidia. There isn't currently a vendor-specific
->> compatible for Nvidia's arm,smmu-v3 implementation. Would it be 
->> acceptable
->> to document this as Nvidia-specific in the description? Or can we add a
->> new Nvidia-specific compatible string like "nvidia,smmu-v3" if that's
->> preferred and use conditional schema to restrict the property?
+> The following changes have been queued for v6.19-rc1. They are about two
+> small and non-critical fixes, including:
 > 
-> Hi Will, Robin,
+>  - Use right invalidation hint in qi_desc_iotlb()
+>  - Reduce the scope of INTEL_IOMMU_FLOPPY_WA
 > 
-> Do you have any suggestions on this? I have followed existing ACPI approach
-> for implementing DT support.
-
-No, the way the ACPI binding is implemented has the lookup going *from* 
-the CMDQV node back to the SMMU instance (via the matching identifier) - 
-this is entirely the opposite. The literal DT equivalent would be to use 
-for_each_matching_node/for_each_compatible_node to scan the CMDQV nodes 
-for a property indicating the relevant SMMU.
-
-I'm not hugely fussed either way though - since the fact is the Tegra234 
-SMMU does have this custom modification, a specific 
-"nvidia,tegra234-smmu", "arm,smmu-v3" compatible isn't inappropriate, 
-even if it really doesn't make any difference to architectural SMMU 
-operation without awareness of the other CMDQV nodes.
-
-Thanks,
-Robin.
-
-> Will it be fine to add separate compatible 
-> string
-> for Nvidia Tegra264 SMMU to restrict the usage of CMDQV?
+> These patches are based on v6.18-rc6. Please consider them for the
+> iommu/vt-d branch.
 > 
->>>> Add a new device tree binding document for nvidia,tegra264-cmdqv.
->>>>
->>>> Also update the arm,smmu-v3 binding to include an optional nvidia,cmdqv
->>>> property. This property is a phandle to the CMDQV device node, allowing
->>>> the SMMU driver to associate with its corresponding CMDQV instance.
->>>>
->>>> Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
->>>> ---
->>>>   .../bindings/iommu/arm,smmu-v3.yaml           | 10 ++++
->>>>   .../bindings/iommu/nvidia,tegra264-cmdqv.yaml | 46 +++++++++++++++ 
->>>> ++++
->>>>   2 files changed, 56 insertions(+)
->>>>   create mode 100644 Documentation/devicetree/bindings/iommu/ 
->>>> nvidia,tegra264-cmdqv.yaml
->>>>
->>>> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu- 
->>>> v3.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml
->>>> index 75fcf4cb52d9..edc0c20a0c80 100644
->>>> --- a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml
->>>> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml
->>>> @@ -58,6 +58,15 @@ properties:
->>>>
->>>>     msi-parent: true
->>>>
->>>> +  nvidia,cmdqv:
->>>> +    description: |
->>>> +      A phandle to its pairing CMDQV extension for an 
->>>> implementation on NVIDIA
->>>> +      Tegra SoC.
->>>> +
->>>> +      If this property is absent, CMDQ-Virtualization won't be used 
->>>> and SMMU
->>>> +      will only use its own CMDQ.
->>>> +    $ref: /schemas/types.yaml#/definitions/phandle
->>>> +
->>>>     hisilicon,broken-prefetch-cmd:
->>>>       type: boolean
->>>>       description: Avoid sending CMD_PREFETCH_* commands to the SMMU.
->>>> @@ -92,4 +101,5 @@ examples:
->>>>               dma-coherent;
->>>>               #iommu-cells = <1>;
->>>>               msi-parent = <&its 0xff0000>;
->>>> +            nvidia,cmdqv = <&cmdqv>;
->>>>       };
->>>> diff --git a/Documentation/devicetree/bindings/iommu/ 
->>>> nvidia,tegra264-cmdqv.yaml b/Documentation/devicetree/bindings/ 
->>>> iommu/nvidia,tegra264-cmdqv.yaml
->>>> new file mode 100644
->>>> index 000000000000..f22c370278a3
->>>> --- /dev/null
->>>> +++ b/Documentation/devicetree/bindings/iommu/nvidia,tegra264- 
->>>> cmdqv.yaml
->>>> @@ -0,0 +1,46 @@
->>>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->>>> +%YAML 1.2
->>>> +---
->>>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->>>> +
->>>> +title: NVIDIA Tegra264 CMDQV
->>> Missing blank line
->>
->> Ack, I will correct this in V2.
->>>> +description: |
->>> Do not need '|' unless you need to preserve formatting.
->>
->> Okay, I'll remove this in next version.
->>>> +  The CMDQ-Virtualization hardware block is part of the SMMUv3 
->>>> implementation
->>>> +  on Tegra264 SoCs. It assists in virtualizing the command queue 
->>>> for the SMMU.
->>>> +
->>>> +maintainers:
->>>> +  - NVIDIA Corporation <linux-tegra@nvidia.com>
->>> No. It should be a person. If entire Nvidia cannot find a person, I
->>> don't think we are interested in having this in the kernel.
->>
->> Okay, I'll add Nicolin as maintainer.
->>>> +
->>>> +properties:
->>>> +  compatible:
->>>> +    const: nvidia,tegra264-cmdqv
->>>> +
->>>> +  reg:
->>>> +    maxItems: 1
->>>> +
->>>> +  interrupts:
->>>> +    maxItems: 1
->>>> +
->>>> +  interrupt-names:
->>>> +    items:
->>>> +      - const: cmdqv
->>> Drop interript names, obvious.
->>
->> Sure, I will update in V2.
->>>> +
->>>> +required:
->>>> +  - compatible
->>>> +  - reg
->>>> +  - interrupts
->>>> +  - interrupt-names
->>>> +
->>>> +additionalProperties: false
->>>> +
->>>> +examples:
->>>> +  - |
->>>> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
->>>> +    #include <dt-bindings/interrupt-controller/irq.h>
->>>> +
->>>> +    cmdqv: cmdqv@8105200000 {
->>> Drop unused label
->>
->> Okay, I will remove the label.
->>> Best regards,
->>> Krzysztof
->>>
+> Best regards,
+> baolu
+> 
+> Aashish Sharma (1):
+>   iommu/vt-d: Fix unused invalidation hint in qi_desc_iotlb
+> 
+> Vineeth Pillai (Google) (1):
+>   iommu/vt-d: Set INTEL_IOMMU_FLOPPY_WA depend on BLK_DEV_FD
+> 
+>  drivers/iommu/intel/Kconfig | 2 +-
+>  drivers/iommu/intel/iommu.h | 2 +-
+>  2 files changed, 2 insertions(+), 2 deletions(-)
+
+Applied, thanks Baolu.
