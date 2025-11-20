@@ -1,123 +1,121 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24726305946
-	for <iommu@lists.linux.dev>; Thu, 20 Nov 2025 07:27:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B35842D3221
+	for <iommu@lists.linux.dev>; Thu, 20 Nov 2025 07:32:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763623667; cv=none; b=EmqIq/YQjS+2sSyqm3bdoqlUBwPA0z1GC0yZeRCNxzZXg/I+i/OW9zufHMB20Sxp9Z2EgMFC79njOXg984ma+CwiGwRsdvdY4fKSaeKYIqXgu3La1Tvch1SssBz+4L7nvf2myMW+4QHCD64jx6PW4kY5HA59x4YcxYQwcc/a3oQ=
+	t=1763623929; cv=none; b=ttcPSvcCF//8KHhvuz1GewI2Z2esDurUN+1NhSGcnwFUeEEb0POJPaYW9cHtUYB2yqmw01rhl0m0ibV0tx23yW0lReUBXAdaSRwGf2u0IKLxyas34BxWfHeAocveDm14+JLYqjQaQpF/kFWTnLdWR8lcZknz3u7Bjm9OqDmhXpM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763623667; c=relaxed/simple;
-	bh=ptjORu0u50L+Ut1e+sehWPAN+mFtSJgBawvfq1MVrtk=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=lVDI8kHZ58hk7/ZIClK3Y4QcthZ/GGN85oHeO7BBdkAhAkO0qeeNYURvqvUgk92S3u4eNbM8rXesfRbDcKiPri17VwN1IH5Cy0fklbjhSYEmAv3THC7xV4i56HrSEZQZTYSk1LcHiIBi9bBHRrCM6J24jLfJn+fIKaR+A8KPrvw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lDX+OHk2; arc=none smtp.client-ip=192.198.163.14
+	s=arc-20240116; t=1763623929; c=relaxed/simple;
+	bh=Hpo3HhsoWTrb0YC201I01MRv6sZ+Tu37Hx3+TmRShLw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=eCQ/XKqaYuo4Mzp7QYcDmZtICQjiX77gt8eleHMPru7cEnh33AEG1UxdWxgReglBF6DRWJtOnDR1kIm/W62D28Ykf4BwfEgb8ehG6vWYONctxTpeVTBRcsWD7pXONlpCtidvY+YdlLVUFYh7iaiwhrZf8CJI2ovRIqNhb1VmxCI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ADzr0Lh/; arc=none smtp.client-ip=192.198.163.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lDX+OHk2"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ADzr0Lh/"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1763623664; x=1795159664;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=ptjORu0u50L+Ut1e+sehWPAN+mFtSJgBawvfq1MVrtk=;
-  b=lDX+OHk2TF9YT4lWGrxS9L3RhJA/gQuMFR39pSyd/Hh5iIauMhgs13pI
-   ualjOu6j40jT2XvO5iM0WLyI5yQEG/UcAKxO6vSPPzQ4cnxn+klcwnQxb
-   cejfYZuX+FwTVEqheQIg2k6a3jdRlINgTmgHS1jRQJu8y92L+tIFZ5ABJ
-   ERhktK/OffKpkYon9lCkE3A9GFVw4KCwW2jIJQ6wfPwhIRWt+cPtxY1+v
-   6+X/JNxOWaDeb4GF4OW28Rgm4FAhabUX6HXvxI7kpy+yNHj20lFKFUdkV
-   afcqd5XgssLSt/JbIKqlSwomuw42LnncSBH6zymsSsSQED/oAfvJCmskq
-   Q==;
-X-CSE-ConnectionGUID: cqf/ha1eR9GlvIE4ZCjiQg==
-X-CSE-MsgGUID: euYRC1r4QTSAqBUKP88XpA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11618"; a="65720151"
+  t=1763623928; x=1795159928;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=Hpo3HhsoWTrb0YC201I01MRv6sZ+Tu37Hx3+TmRShLw=;
+  b=ADzr0Lh/9GL0uHcXRHv4hRLE+yajevYsZrQbYQKtKdCwXia7XT1U7FL5
+   S0+D4gLS+sg+9d4fwOKTqTiWF1DM/qLq11QfRH5m/UXLjqc5tFg5jB5J4
+   c7JNWSb/mQz0yzAlr16TuE7CLZEAfUG1MlWdcjb5YhowbA2vfYxCinFuK
+   NKwaQ8EOMSORN6ZMMj+HLG82uXD+KQgjkWbfZ6/mcBW6zqbNdpv75V3us
+   1XO3ACfHpTCjftzYOhNlUmGwUR9Hf81P3wnh/2UrGYfyZzA3vxBcR94nb
+   JwzN/xu20HNSJEvWbpbztm4zSzsH/PvpNPfOOE4sp1oWesbNByY0c+jB0
+   A==;
+X-CSE-ConnectionGUID: pkkcl0PmSsOK25MqdwaYqA==
+X-CSE-MsgGUID: 7mAJWvNdQvumWHo5rN1xjQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11618"; a="77041403"
 X-IronPort-AV: E=Sophos;i="6.19,317,1754982000"; 
-   d="scan'208";a="65720151"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Nov 2025 23:27:43 -0800
-X-CSE-ConnectionGUID: w+8tDen+RMKnirUCF72U5w==
-X-CSE-MsgGUID: /H5rQ/yZSI2Oud6/KaMUiQ==
+   d="scan'208";a="77041403"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Nov 2025 23:32:06 -0800
+X-CSE-ConnectionGUID: KQk7NUhxTjSlh1kCpSrWtQ==
+X-CSE-MsgGUID: KE0ZSN6oQV2vXkzIZUVMyg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.19,317,1754982000"; 
-   d="scan'208";a="191085137"
-Received: from allen-box.sh.intel.com ([10.239.159.52])
-  by fmviesa006.fm.intel.com with ESMTP; 19 Nov 2025 23:27:41 -0800
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	Chaitanya Kumar Borah <chaitanya.kumar.borah@intel.com>
-Cc: iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH 1/1] iommu/vt-d: Restore previous domain::aperture_end calculation
-Date: Thu, 20 Nov 2025 15:25:24 +0800
-Message-ID: <20251120072524.3218282-1-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.43.0
+   d="scan'208";a="191414338"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Nov 2025 23:32:03 -0800
+Message-ID: <94ae0210-734b-41cb-b8a8-657b76324aba@linux.intel.com>
+Date: Thu, 20 Nov 2025 15:27:58 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: REGRESSION on linux-next (next-20251106)
+To: Jason Gunthorpe <jgg@nvidia.com>, "Tian, Kevin" <kevin.tian@intel.com>
+Cc: "Borah, Chaitanya Kumar" <chaitanya.kumar.borah@intel.com>,
+ "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
+ "intel-xe@lists.freedesktop.org" <intel-xe@lists.freedesktop.org>,
+ "De Marchi, Lucas" <lucas.demarchi@intel.com>,
+ "Kurmi, Suresh Kumar" <suresh.kumar.kurmi@intel.com>,
+ "Saarinen, Jani" <jani.saarinen@intel.com>,
+ "Auld, Matthew" <matthew.auld@intel.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+References: <4f15cf3b-6fad-4cd8-87e5-6d86c0082673@intel.com>
+ <20251118012944.GA60885@nvidia.com>
+ <a79fe616-52c7-4fa5-906c-382b5ff2226c@intel.com>
+ <20251118161341.GC90703@nvidia.com>
+ <0c3cd494-e42a-4607-896c-4c341f90c270@intel.com>
+ <BN9PR11MB52760A6BE22F89D29685690F8CD7A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20251119185119.GP120075@nvidia.com>
+ <BN9PR11MB52764557ECAEF2200054070D8CD7A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20251120021831.GT120075@nvidia.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20251120021831.GT120075@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Commit d373449d8e97 ("iommu/vt-d: Use the generic iommu page table")
-changed the calculation of domain::aperture_end. Previously, it was
-calculated as:
+On 11/20/25 10:18, Jason Gunthorpe wrote:
+> On Wed, Nov 19, 2025 at 11:56:16PM +0000, Tian, Kevin wrote:
+>>> So we should be using dmar->width to constrain the first stage and
+>>> expect that mgaw is less than dmar->width ?
+>>>
+>> dmar->width is the host address width, i.e. for OA. so it's irrelevant
+>> to the input iova here.
+> Oh that makes sense!
+> 
+> In that case we should probably pedantically have:
+> 
+> 	cfg.common.hw_max_oasz_lg2 = dmar->width;
+> 
+> ?
+> 
+> However we get dmar into that function?
+> 
+>> "
+>> 3.6 First-Stage Translation
+>>
+>> First-stage translation restricts the input-address to a canonical address
+>> (i.e., address bits 63:N have the same value as address bit [N-1], where
+>> N is 48 bits with 4-level paging and 57 bits with 5-level paging). Requests
+>> subject to first-stage translation by remapping hardware are subject to
+>> canonical address checking as a pre-condition for first-stage translation,
+>> and a violation is treated as a translation-fault.
+>>
+>> Software using first-stage translation structures to translate an IO Virtual
+>> Address (IOVA) must use canonical addresses. Additionally, software
+>> must limit addresses to less than the minimum of MGAW and the lower
+>> canonical address width implied by FSPM (i.e., 47-bit when FSPM is 4-level
+>> and 56-bit when FSPM is 5-level)
+>> "
+> That seems very clear, indeed. OK! Easy to fix then! Balou can you
+> take it? I think something like this?
 
-    domain->domain.geometry.aperture_end =
-            __DOMAIN_MAX_ADDR(domain->gaw - 1);
+A fix patch was posted here:
 
-where domain->gaw was limited to less than MGAW.
+https://lore.kernel.org/linux-iommu/20251120072524.3218282-1-baolu.lu@linux.intel.com/
 
-Currently, it is calculated purely based on the max level of the page
-table that the hardware supports. This is incorrect as stated in Section
-3.6 of the VT-d spec:
-
-  "Software using first-stage translation structures to translate an IO
-   Virtual Address (IOVA) must use canonical addresses. Additionally,
-   software must limit addresses to less than the minimum of MGAW and the
-   lower canonical address width implied by FSPM (i.e., 47-bit when FSPM
-   is 4-level and 56-bit when FSPM is 5-level)."
-
-Restore the previous calculation method for domain::aperture_end to avoid
-violating the spec. Incorrect aperture calculation causes GPU hangs
-without generating VT-d faults on some Intel client platforms.
-
-Fixes: d373449d8e97 ("iommu/vt-d: Use the generic iommu page table")
-Reported-by: Chaitanya Kumar Borah <chaitanya.kumar.borah@intel.com>
-Closes: https://lore.kernel.org/r/4f15cf3b-6fad-4cd8-87e5-6d86c0082673@intel.com
-Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
-Suggested-by: Kevin Tian <kevin.tian@intel.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel/iommu.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
-
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 2d2f64ce2bc6..7b3016491ca5 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -2817,6 +2817,16 @@ intel_iommu_domain_alloc_first_stage(struct device *dev,
- 		cfg.common.hw_max_vasz_lg2 = 57;
- 	else
- 		cfg.common.hw_max_vasz_lg2 = 48;
-+
-+	/*
-+	 * Spec 3.6 First-Stage Translation:
-+	 *
-+	 * Software must limit addresses to less than the minimum of MGAW
-+	 * and the lower canonical address width implied by FSPM (i.e.,
-+	 * 47-bit when FSPM is 4-level and 56-bit when FSPM is 5-level).
-+	 */
-+	cfg.common.hw_max_vasz_lg2 = min(cap_mgaw(iommu->cap),
-+					 cfg.common.hw_max_vasz_lg2);
- 	cfg.common.hw_max_oasz_lg2 = 52;
- 	cfg.common.features = BIT(PT_FEAT_SIGN_EXTEND) |
- 			      BIT(PT_FEAT_FLUSH_RANGE);
--- 
-2.43.0
-
+Thanks,
+baolu
