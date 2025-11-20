@@ -1,241 +1,159 @@
-Received: from mail-pl1-f176.google.com (mail-pl1-f176.google.com [209.85.214.176])
+Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B616926ED53
-	for <iommu@lists.linux.dev>; Thu, 20 Nov 2025 20:26:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 624D4BA3D
+	for <iommu@lists.linux.dev>; Thu, 20 Nov 2025 20:45:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763670388; cv=none; b=f+0n6R6TAyVtqpox8IJmagzpBGmDosNWI5Nm4FfYkacdAcxh0IuCnbNdKVVNXrENEsxNvJnrOgzayhSw2A63SMk/jfV4QbEN5Pz0jJMvxCnSCIuGbWpBlaFzCqO5EdUbkdO8EVXJucLpSLF6FLUyC8o16LdzxPLFutYlzC4//pk=
+	t=1763671552; cv=none; b=mgpO73KNLKZZTRtuFm3urEWV7cEga4YhF/l+6ZgGgsNuElVzosuw64++N3ZQOIj6CrtwSpEfkWiSSaGCUp/VhWwego70IG1vx8qw7SRKrfd5VW5BtEG0Ttp73gxPCRQlOFzk8nOkCWrAsq0+nxT/uHTw3UHSu7pCucgaRqaWNqA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763670388; c=relaxed/simple;
-	bh=SOhWuiZaDYS9utBno1RyPxrQi1nmDaUm1EumeRWQcd0=;
+	s=arc-20240116; t=1763671552; c=relaxed/simple;
+	bh=qoz6qigfTzsFDvTgSOCytL2T7X9SOv6py47DJ8WlMgA=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JnCuYS4l4+kB8RWMz9OqL0cscXe6yYmUOIuT7Uu6kQwyD8HPPESWCsFCQQuaIUUxfzkMJ5nyOluNesMKFBYHcOVBz4WMx5Y5Q49ffhyQobTjZLDmEnGKJh4JrCoSdag0ZcaTltJU5oqI6MTo0errvkZy3hN8X+Oo+guuBSRNVm8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=FqzyujJK; arc=none smtp.client-ip=209.85.214.176
+	 Content-Type:Content-Disposition:In-Reply-To; b=G5qbdzcSUwe6Hvvu6Kl+Dh2jlE1xzuJ9bQD7fR9Jc/vOa0Xc9toDSvc7qlu98KNiOJsWONAZLr6P4Ghio3Cpy5JlMdRydtSspgavdJZtLaOdPdZDNrcgVmQqllK1og3pOoIqK33E/LGkCMMyWcS4nh7ZYcUZcoj0xQnNlTv4lIQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=b3OReT6z; arc=none smtp.client-ip=209.85.214.174
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="FqzyujJK"
-Received: by mail-pl1-f176.google.com with SMTP id d9443c01a7336-295c64cb951so42385ad.0
-        for <iommu@lists.linux.dev>; Thu, 20 Nov 2025 12:26:26 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="b3OReT6z"
+Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-297e13bf404so44945ad.0
+        for <iommu@lists.linux.dev>; Thu, 20 Nov 2025 12:45:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1763670386; x=1764275186; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ei+IMWTJdIi7sfHmeYbW5wAKDLr0zA2TA75JePGt5G8=;
-        b=FqzyujJKxIcwmmW7eTexzdzJmeRK8vGbxq9M0C365kyMrRxvdIgjAVZca4DZiYGWQf
-         6yqwoHo5xoW9CcbiE6aEULfKSQYFbkOHp7SWdPkjWmy5stzWW5Jv/og8MjbYi8MRL2nY
-         pL36uGiBWVztIZGyeXJk2BqJjDf/66zxnMtfoYKBSEcLrDTeUgJjSbrjbLjhuAwhzIuz
-         2edbS7a2Dkh+XW+J5LETs8oUG1h3GCgkIg0HKVEB+vp0kIvxDsR49nYI5on7ux8xphCP
-         4hX2sD0jmEHrpZ51ZZTnOZe2x3iS5Iad9MF/hyOKVUuf/WCEEhhKZKeNZoSx9UlTAPJP
-         ZCoA==
+        d=google.com; s=20230601; t=1763671551; x=1764276351; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=xOG3g31fEmS9rGAG7HpiZTqSQ9WhXCj+DMF3prNowSU=;
+        b=b3OReT6zh/69AAPctdN2TaqNe1P/VJBrB2k3yENgGmXUGFNYqbC+kMN/I8np/QOM8R
+         RDBju72mRJkiFRlRgfnDHVs21x020eLHFgK49d8BBKo+6ecIYLWG8xuJtlwC64LyF1b5
+         2gOEfNo6nMIZXmDLdUTq0p4umbMSU6o0WMtJbbfgrcq/YVpbCeWx4Wuh4tpiWF8J+qLB
+         NmkqnZyK3fqFsjTsZrN2XvXcPruDrWy1sFQz3J0pKpjyU9ngQep9MqZPDqygmRMiL/qt
+         a85WEQZyRJMbxIuU7jsgoqd9JuwpJ1Tn07YXmLXvfP/23QtNM+qv8/gPJGqbpdYJi5vb
+         ZuRA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1763670386; x=1764275186;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ei+IMWTJdIi7sfHmeYbW5wAKDLr0zA2TA75JePGt5G8=;
-        b=VVX86MdSq0ZQ/NbGazZ6OjmHmDMui4PxAPH0HXOlNNl8oaJRsXPDheERw4dWarTGGK
-         GLmq/Pvd+Fxc0RexaBQuNk7YFs4E6bRW83XBguHr8Hq2qIkgkZ8/tkgYIlYmiBaReYes
-         LL7diCUTeq70f4PNswHrt9cHzH/whOYNuUeX11DUUhLLWLl3y/4hOFYQWU3Y6ibFOmW+
-         f3xD2WJrCLwx3dQUEt7/wyVMqmNTWl+mOj3udEUyq5wkCLBT5nvADf/42C+WH59DsFL0
-         fpKmvRGPrlT6nkzHo9e2+jL/kt2Jqvit2W0uLnJdzY24qVc6Hgp/oxQpf6qagLE75fzK
-         PY+g==
-X-Gm-Message-State: AOJu0YwNbYLVaoZw0tFIu0ltRbctkvIi96JjNKyv4tN9l6Jl5bz1wQtS
-	fncWRwzlR2ijXPVFGB0UiYG1ln3hQfKR/URhKtW0+6SesHrAQoraULWVFXGHs2mKDg==
-X-Gm-Gg: ASbGncsfgzLhjuFPG4Jh4RAw5NCFtyrKLxvgT//pxU7l0VHcKjFVDOrSGDNyI/IogRB
-	rJtqm87myr4QSsP2OsMt95ZAHk/scnnkKOFMLjbb3la2icuj0g6gfnYIEPGkjoi5OimDejx0Ygl
-	9tWKdoguX3qnb3Kq/Geg2mPO8AXRedYKDHHzqFX+0YmGpvIqJ0Del8uEpb4i29tkithovdN/8ZH
-	kzfIyvvnXdwQ0XaUitk7ig0lpzg1bgSgcBxppEBf+o7Eew21szjuZ85KzdThwTLaB9ttAZevZts
-	kRAAJWIHSPuC33rZb9Oi/klMsICyTv35di5TwJ+E8mjb8Jv/B3my2JOd5wrLuZAZDMImqI0GsaR
-	r2ghg08Mj+eF6FzPDe/k1G1kommEYr4GM9AbC7Hyu4FWHKv0o6vVmkCzwbZSkOVifpGnRi3Oyi2
-	5Rew+kbQVGVFint2L3N1ccNjFnNWac9mqeI6MhUoMzpVd/DUkR
-X-Google-Smtp-Source: AGHT+IE7x4xZ5mGBfgyUfKt39HYzlwSIKyIPjw+CM5sXb3/1Ra4vMIYBbEqEgeNtS2CdDZtpld1I7Q==
-X-Received: by 2002:a17:902:f691:b0:295:5138:10f2 with SMTP id d9443c01a7336-29b6a437f68mr490105ad.11.1763670385639;
-        Thu, 20 Nov 2025 12:26:25 -0800 (PST)
+        d=1e100.net; s=20230601; t=1763671551; x=1764276351;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=xOG3g31fEmS9rGAG7HpiZTqSQ9WhXCj+DMF3prNowSU=;
+        b=JniIM8jWvFf9krpN9dKOB1SMS4KEMAZ+yIyPPgPDP1CvFA81pho0O1wM3FHBBcDEb0
+         s3LyyKxxQu2GOKvHYSYIb6BBcQd20QsENe1IC/28do4czzw+4eSajArzikMs0ceDmECs
+         ABfeeTj3rAYcY4Gnn7eCd9qhDd8n+IxKvPCOqoDRIKqR6xNPZnBqw3d/+7VuB2jnpj7G
+         fZHH5lx+Zoj8ft3RUPAH+vi3C57tm1wkDO3gh6wQWNBQ1r8OAC5RgviYllELPkEne2nd
+         cordXwd18CYphgMGukvzrJN6p9xWfU1SIs/96RGNUH2HfYYVpgL+epDX/aTWSlppjTqp
+         47tQ==
+X-Gm-Message-State: AOJu0Yw4VZK7yr4PQp12l4muebjLNZdt0+PzsJk7V8RDOujUWVA4f+Nq
+	+94ms5VzSA51H+y6EyzyWogkcv2NlxTvUfn3uQqrBeHasNEl7eWglpeXTNtHVfVUkQ==
+X-Gm-Gg: ASbGncv55aLtaFm8K8sZi03FNF51U3HLzzH2oMljoiyZ6aNfW9nw67aqHglDVY0DxwV
+	sD9N9XcsW347ldyQRK0VPHKWpYmXXwanA+lThuaRU1NV9tRQvjPL5+Bcc71VAQkKxvzL90XZyg+
+	lDFiZ48rxDqHzxYeCGp/wQRUQeMqBzL9mluwM6jXIqegwH7S1Dy4oJZw3DkuP4cDrb9yN5DPW+t
+	Fve3wl0ppi7iXt9f89rWof6hovippeGL9BIcxvmQaay1jYv5mS93NqnfgnP7rnYd9yboQtNmQGG
+	MevTZnUJiLbrML7BOBPpwHp+o9OdmDlYaKbuU1NyKpst330AWEqbxf7rms41PlfaKGR1UkK5bNY
+	nQRayP0J+uiLrdZ1ICkZj93t2r9sT7rf0vXx633lEEZlYHoBsf0S/tq87V9U0QhiLXRe2UHtta/
+	SklG01SI5DTsXZ5X5dW92MErVomyG4GS8AVNZpw9ray7cHHKoK
+X-Google-Smtp-Source: AGHT+IHb2m49poOQo20ud9BjyOzNQATEcetaU+PIb4dUv1DtrFlosjpOMUKruGmDNho1dlrLUmaWuQ==
+X-Received: by 2002:a17:902:ce8c:b0:294:ecba:c8e with SMTP id d9443c01a7336-29b6bcef60amr47515ad.3.1763671550560;
+        Thu, 20 Nov 2025 12:45:50 -0800 (PST)
 Received: from google.com (164.210.142.34.bc.googleusercontent.com. [34.142.210.164])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-7c3f0a67a4csm3713827b3a.48.2025.11.20.12.26.23
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-29b5b138bfdsm34637315ad.22.2025.11.20.12.45.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Nov 2025 12:26:24 -0800 (PST)
-Date: Thu, 20 Nov 2025 20:26:20 +0000
+        Thu, 20 Nov 2025 12:45:50 -0800 (PST)
+Date: Thu, 20 Nov 2025 20:45:46 +0000
 From: Pranjal Shrivastava <praan@google.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
+To: Daniel Mentz <danielmentz@google.com>
 Cc: iommu@lists.linux.dev, Will Deacon <will@kernel.org>,
 	Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
-	Mostafa Saleh <smostafa@google.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Daniel Mentz <danielmentz@google.com>
-Subject: Re: [PATCH v4 8/8] iommu/arm-smmu-v3: Invoke pm_runtime before hw
- access
-Message-ID: <aR95bHwPMyW3U5hd@google.com>
+	Jason Gunthorpe <jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>,
+	Nicolin Chen <nicolinc@nvidia.com>
+Subject: Re: [PATCH v4 2/8] iommu/arm-smmu-v3: Add a helper to drain cmd
+ queues
+Message-ID: <aR99-oihNS8kLaDX@google.com>
 References: <20251117191433.3360130-1-praan@google.com>
- <20251117191433.3360130-9-praan@google.com>
- <20251118001439.GF17968@ziepe.ca>
+ <20251117191433.3360130-3-praan@google.com>
+ <CAE2F3rD_HnZZz9XZTtpoWFfAsP-Rkiq2sAtmUR7xaH5_igYP0Q@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20251118001439.GF17968@ziepe.ca>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAE2F3rD_HnZZz9XZTtpoWFfAsP-Rkiq2sAtmUR7xaH5_igYP0Q@mail.gmail.com>
 
-On Mon, Nov 17, 2025 at 08:14:39PM -0400, Jason Gunthorpe wrote:
-> On Mon, Nov 17, 2025 at 07:14:33PM +0000, Pranjal Shrivastava wrote:
-> > Invoke the pm_runtime helpers at all places before accessing the hw.
-> > The idea is to invoke runtime_pm helpers at common points which are
-> > used by exposed ops or interrupt handlers. Elide all TLB and CFG
-> > invalidations if the smmu is suspended but not  ATC invalidations.
-> > 
-> > Signed-off-by: Pranjal Shrivastava <praan@google.com>
-> > ---
-> >  .../arm/arm-smmu-v3/arm-smmu-v3-iommufd.c     | 10 +-
-> >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 95 +++++++++++++++----
-> >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  3 +
-> >  3 files changed, 91 insertions(+), 17 deletions(-)
+On Mon, Nov 17, 2025 at 07:48:12PM -0800, Daniel Mentz wrote:
+> On Mon, Nov 17, 2025 at 11:15 AM Pranjal Shrivastava <praan@google.com> wrote:
+> > +int arm_smmu_queue_poll_until_empty(struct arm_smmu_device *smmu,
+> > +                                   struct arm_smmu_queue *q)
 > 
-> I wonder if the cleanup.h macros would improve this?
+> Since this function is only ever used with the Command Queue (cmdq),
+> could you simplify the signature by obtaining the queue pointer
+> directly from &smmu->cmdq.q within the function?
 > 
-> > @@ -1122,6 +1124,10 @@ static void arm_smmu_page_response(struct device *dev, struct iopf_fault *unused
-> >  		break;
-> >  	}
-> >  
-> > +	ret = arm_smmu_rpm_get(smmu);
-> > +	if (ret < 0)
-> > +		return;
+
+Ack. I'll pick up the cmdq from the smmu ptr.
+
+> > +{
+> > +       struct arm_smmu_queue_poll qp;
+> > +       struct arm_smmu_ll_queue *llq = &q->llq;
+> > +       int ret = 0;
+> 
+> I believe you don't need to initialize this to 0. It won't be used
+> uninitialized.
+> 
+
+Ack.
+
 > > +
-> >  	arm_smmu_cmdq_issue_cmd(master->smmu, &cmd);
-> >  	/*
-> >  	 * Don't send a SYNC, it doesn't do anything for RESUME or PRI_RESP.
-> > @@ -1129,6 +1135,7 @@ static void arm_smmu_page_response(struct device *dev, struct iopf_fault *unused
-> >  	 * terminated... at some point in the future. PRI_RESP is fire and
-> >  	 * forget.
-> >  	 */
-> > +	arm_smmu_rpm_put(smmu);
-> >  }
-> 
-> What are the rules for power managemnt? If the SMMU sleeps and GBPA is
-> set to abort all then how can we have an outstanding concurrent DMA that
-> needs page fault handling? 
-> 
-> ie if we resume the fault and the racily power down the SMMU isn't
-> there a good chance the transaction will blow up anyhow?
-> 
-> Isn't that a bug we should detect?
-> 
-> Basically, shouldn't some of these be more like 'if not powered up
-> then something is very wrong so log and fail' ?
-> 
-
-Yes, I think I assumed that this thread won't run while we're powered
-off which was wrong. I'll add a check to confirm we're powered up. The
-RPM calls are just to ensure that we don't suspend while issuing the
-resume.
-
-> > @@ -2152,13 +2171,24 @@ static irqreturn_t arm_smmu_gerror_handler(int irq, void *dev)
-> >  {
-> >  	u32 gerror, gerrorn, active;
-> >  	struct arm_smmu_device *smmu = dev;
-> > +	int ret;
+> > +       queue_poll_init(smmu, &qp);
+> > +       do {
+> > +               if (queue_empty(llq))
+> > +                       break;
 > > +
-> > +	if (pm_runtime_enabled(smmu->dev)) {
-> > +		ret = pm_runtime_get_if_active(smmu->dev);
-> > +		if (ret == 0) {
-> > +			dev_err(smmu->dev, "Ignoring gerror interrupt because device isn't rpm active\n");
-> > +			return IRQ_NONE;
-> > +		}
-> > +	}
-> 
-> This looks troubled too, if powering down looses the gerror register,
-> then this scheme is racily going to loose gerror events?
-> 
-> Seems like it should be checking that gerror is indeed 0 before
-> powering down? Under the assumption there is no concurrent activity
-> this should be race free? If it is not zero then it should be handled
-> before it is lost.
-
-Yes, I believe we can check it after disabling the CMDQ and log the
-events.
-> 
-> >  /* IO_PGTABLE API */
-> > @@ -2377,6 +2422,7 @@ static void arm_smmu_tlb_inv_context(void *cookie)
-> >  	} else {
-> >  		cmd.opcode	= CMDQ_OP_TLBI_S12_VMALL;
-> >  		cmd.tlbi.vmid	= smmu_domain->s2_cfg.vmid;
+> > +               ret = queue_poll(&qp);
+> > +               WRITE_ONCE(llq->cons, readl_relaxed(q->cons_reg));
 > > +
-> >  		arm_smmu_cmdq_issue_cmd_with_sync(smmu, &cmd);> >  	}
-> >  	arm_smmu_atc_inv_domain(smmu_domain, 0, 0);
-> > @@ -2471,6 +2517,7 @@ static void arm_smmu_tlb_inv_range_domain(unsigned long iova, size_t size,
-> >  		cmd.opcode	= CMDQ_OP_TLBI_S2_IPA;
-> >  		cmd.tlbi.vmid	= smmu_domain->s2_cfg.vmid;
-> >  	}
+> > +       } while (!ret);
 > > +
-> >  	__arm_smmu_tlb_inv_range(&cmd, iova, size, granule, smmu_domain);
-> >  
-> >  	if (smmu_domain->nest_parent) {
-> > @@ -3312,13 +3359,14 @@ static int arm_smmu_blocking_set_dev_pasid(struct iommu_domain *new_domain,
-> >  		    sid_domain->type == IOMMU_DOMAIN_BLOCKED)
-> >  			sid_domain->ops->attach_dev(sid_domain, dev);
-> >  	}
+> > +       return ret;
+> > +}
 > > +
-> >  	return 0;
+> > +static int arm_smmu_drain_queues(struct arm_smmu_device *smmu)
+> > +{
+> > +       struct arm_smmu_cmdq *cmdq = &smmu->cmdq;
+> > +       unsigned long flags;
+> > +       int ret;
+> > +
+> > +       /*
+> > +        * Since this is only called from the suspend callback, we
+> > +        * should be able to acquire the exclusive lock without failing.
+> > +        */
+> > +       arm_smmu_cmdq_exclusive_trylock_irqsave(cmdq, flags);
 > 
-> extra new lines??
-> 
-
-Ughh, my bad, I'll fix this, all of these are just some rebase-remnants
-
-> > -static void arm_smmu_attach_dev_ste(struct iommu_domain *domain,
-> > -				    struct device *dev,
-> > -				    struct arm_smmu_ste *ste,
-> > -				    unsigned int s1dss)
-> > +static int arm_smmu_attach_dev_ste(struct iommu_domain *domain,
-> > +				   struct device *dev,
-> > +				   struct arm_smmu_ste *ste,
-> > +				   unsigned int s1dss)
-> >  {
-> >  	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
-> >  	struct arm_smmu_attach_state state = {
-> > @@ -3361,6 +3409,7 @@ static void arm_smmu_attach_dev_ste(struct iommu_domain *domain,
-> >  	 * descriptor from arm_smmu_share_asid().
-> >  	 */
-> >  	arm_smmu_clear_cd(master, IOMMU_NO_PASID);
-> > +	return 0;
-> >  }
-> 
-> ??
-> 
-> >  
-> >  static int arm_smmu_attach_dev_identity(struct iommu_domain *domain,
-> > @@ -3371,8 +3420,8 @@ static int arm_smmu_attach_dev_identity(struct iommu_domain *domain,
-> >  
-> >  	arm_smmu_master_clear_vmaster(master);
-> >  	arm_smmu_make_bypass_ste(master->smmu, &ste);
-> > -	arm_smmu_attach_dev_ste(domain, dev, &ste, STRTAB_STE_1_S1DSS_BYPASS);
-> > -	return 0;
-> > +	return arm_smmu_attach_dev_ste(domain, dev, &ste,
-> > +				       STRTAB_STE_1_S1DSS_BYPASS);
-> >  }
-> 
-> These things are not allowed to fail, please be careful not to
-> propogate errors beyond where they should be. This is the biggest
-> thing I don't like about this series, we already have no error
-> recovery and now we are adding more cases where errors can't be
-> propogated. 
-> 
-> For instance this call really cannot fail and propogating an error is
-> nonsense.
-> 
-> If you really couldn't power it up then you are better to keep it
-> powered down and update the in memory structures knowing that a
-> powered down device cannot cache them.
+> If you assume that we're the exclusive user and then ignore the return
+> value of arm_smmu_cmdq_exclusive_trylock_irqsave, I'm wondering if you
+> can just skip the locking entirely.
 > 
 
-Ughh, sorry, these are just some rebase-remnants. I'll fix them.
+Correct, with this approach we can be sure that we are the only owner as
+we'll be executing this much after setting the nr_users = 0;
 
-> Jason
+> > +       ret = arm_smmu_queue_poll_until_empty(smmu, &smmu->cmdq.q);
+> > +       arm_smmu_cmdq_exclusive_unlock_irqrestore(cmdq, flags);
+> > +
+> > +       if (ret)
+> > +               return ret;
+> > +
+> > +       return 0;
+> 
+> Can you just always "return ret;". Wouldn't that be the same?
 > 
 
-Thanks!
+We can, since we're suspending anyway even if this times out.
+
+> > +}
+> > +
+
+Thanks,
 Praan
