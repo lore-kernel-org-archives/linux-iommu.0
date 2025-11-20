@@ -1,240 +1,123 @@
-Received: from CH1PR05CU001.outbound.protection.outlook.com (mail-northcentralusazon11010006.outbound.protection.outlook.com [52.101.193.6])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E4EE29A9CD
-	for <iommu@lists.linux.dev>; Thu, 20 Nov 2025 07:08:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.193.6
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763622520; cv=fail; b=BudrDq9MWCdKP+VlH8Gd6i89EqvT6D8NLRuNmzeTJ+NVoM/5Ni6EJiKqn+5/5OqK9cXIs3LONABn+3klMo9GzCXE6LrsW9hEQ1p+cTd6aDWqikqiQIi45rct6SR4D2pOrVTMorkiI6hUPoMXfnHF/3SeTBZhT+4aLDUO2oZklYc=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763622520; c=relaxed/simple;
-	bh=ac4ImsMXg+ybRUQcW32lVRMsRt4W1dskBMeJQPirN9U=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=FfwkTIfiKtrSOvOzkF7q54jVy45tVK7Vl5k6XRTVrXtYBwezlUuX89+BP4fLszLiTyIMcXSaOx4t1B/gpaRyp17cBsU7Ns4ArvCfX8CR/T11tLR8r33XA7fHBBRxXyswu1QrNp1HCT29Q1MrD8UGyoM/8XOxDoeWHhKXroSRy9w=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=f1btIFPV; arc=fail smtp.client-ip=52.101.193.6
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24726305946
+	for <iommu@lists.linux.dev>; Thu, 20 Nov 2025 07:27:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1763623667; cv=none; b=EmqIq/YQjS+2sSyqm3bdoqlUBwPA0z1GC0yZeRCNxzZXg/I+i/OW9zufHMB20Sxp9Z2EgMFC79njOXg984ma+CwiGwRsdvdY4fKSaeKYIqXgu3La1Tvch1SssBz+4L7nvf2myMW+4QHCD64jx6PW4kY5HA59x4YcxYQwcc/a3oQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1763623667; c=relaxed/simple;
+	bh=ptjORu0u50L+Ut1e+sehWPAN+mFtSJgBawvfq1MVrtk=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=lVDI8kHZ58hk7/ZIClK3Y4QcthZ/GGN85oHeO7BBdkAhAkO0qeeNYURvqvUgk92S3u4eNbM8rXesfRbDcKiPri17VwN1IH5Cy0fklbjhSYEmAv3THC7xV4i56HrSEZQZTYSk1LcHiIBi9bBHRrCM6J24jLfJn+fIKaR+A8KPrvw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lDX+OHk2; arc=none smtp.client-ip=192.198.163.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="f1btIFPV"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Mja4SxtEqX8XhF9gnj0pedobt/9sX0qzYMVgFKlyRWDhZKDV1ylwXezS6gasbyTcBGLCtURRq0wqeFT/N8OAbIofRQwnCMdNBtq4QjYXyE5QzwX7EVdwji9DAWH9QW9J4IQ/VDlSwf8TZouA6ZPZfZey1nyzbbFVX7tVJGWOjir5pCUiGhsQn1mJegnu+b0KiKKjkXKsyp8wrjYmGfCilakMQKSxQF24lFJ2MA7TvxLzMTDAXN74w4Ac/07K9y4KfhBNMQ17q2FhEwx8O1CXmpKznRDH81dM1AW0rdiiGpQCZBX+xfSB2+y7JLFo8aXcsqqgbWjllxse6nhXcxmUgQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0BqwNh0CMDN4tREUEZSXBR4jlSvz2FIn8iZxWVxqI0g=;
- b=f4GvykrX9LMftlNxpfA9LiPFu1oSPDNdKfwOYW62AfQGlN8DCWWdhn3sMBwC1jtA22WGNK53+TL/607Ov0OKqNyebrwguu3YN/ZlZVgRh3P83QdfSPaAlWEA4/Ph30EcgY7HiDDaEBRWRKni+1Uhmht+HVWjp9gTWvdcTsNkwtzMe1KAw8QP9zsGypu4w1o2x4R5YQgLjK1dqe31qXFtocaW0s01l4wh+neDSGVj0mOw93ZHOh3M1wlf5tKedQ0LKcUJn04+1EwwdZg+SMzUWNxSzJdm5QrtkRYrvzi7UnpLXrNuyC3iWBPQXmcNQB+PeofAtYlHHsK5M/rg5kfHow==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0BqwNh0CMDN4tREUEZSXBR4jlSvz2FIn8iZxWVxqI0g=;
- b=f1btIFPVyxehKaZYtXYE+WaEt+JmwXfXrgE7VJTQ6TPuQ+9ng9Wl/Mv/v+P2Twk7XZTtnXtb1YMu5FhXDA5C8ToOohHgjD9WFpwxzPLLqGxJttDuYGMDqlWhMblPfewLW56bTb2tENnxi3Xl7yajiRjMQPiAuUYI6qS9Lmm/ekg=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from PH7PR12MB5685.namprd12.prod.outlook.com (2603:10b6:510:13c::22)
- by CH3PR12MB8850.namprd12.prod.outlook.com (2603:10b6:610:167::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9343.10; Thu, 20 Nov
- 2025 07:08:37 +0000
-Received: from PH7PR12MB5685.namprd12.prod.outlook.com
- ([fe80::46fb:96f2:7667:7ca5]) by PH7PR12MB5685.namprd12.prod.outlook.com
- ([fe80::46fb:96f2:7667:7ca5%4]) with mapi id 15.20.9320.021; Thu, 20 Nov 2025
- 07:08:36 +0000
-Message-ID: <c115432c-b63d-4b99-be18-0bf96398e153@amd.com>
-Date: Thu, 20 Nov 2025 08:08:27 +0100
-User-Agent: Mozilla Thunderbird
-Subject: Re: [Linaro-mm-sig] [PATCH v8 06/11] dma-buf: provide phys_vec to
- scatter-gather mapping routine
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Leon Romanovsky <leon@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
- Logan Gunthorpe <logang@deltatee.com>, Jens Axboe <axboe@kernel.dk>,
- Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>,
- Andrew Morton <akpm@linux-foundation.org>, Jonathan Corbet <corbet@lwn.net>,
- Sumit Semwal <sumit.semwal@linaro.org>, Kees Cook <kees@kernel.org>,
- "Gustavo A. R. Silva" <gustavoars@kernel.org>,
- Ankit Agrawal <ankita@nvidia.com>, Yishai Hadas <yishaih@nvidia.com>,
- Shameer Kolothum <skolothumtho@nvidia.com>, Kevin Tian
- <kevin.tian@intel.com>, Alex Williamson <alex@shazbot.org>,
- Krishnakant Jaju <kjaju@nvidia.com>, Matt Ochs <mochs@nvidia.com>,
- linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-block@vger.kernel.org, iommu@lists.linux.dev, linux-mm@kvack.org,
- linux-doc@vger.kernel.org, linux-media@vger.kernel.org,
- dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
- kvm@vger.kernel.org, linux-hardening@vger.kernel.org,
- Alex Mastro <amastro@fb.com>, Nicolin Chen <nicolinc@nvidia.com>
-References: <20251111-dmabuf-vfio-v8-0-fd9aa5df478f@nvidia.com>
- <20251111-dmabuf-vfio-v8-6-fd9aa5df478f@nvidia.com>
- <8a11b605-6ac7-48ac-8f27-22df7072e4ad@amd.com>
- <20251119132511.GK17968@ziepe.ca>
- <69436b2a-108d-4a5a-8025-c94348b74db6@amd.com>
- <20251119193114.GP17968@ziepe.ca>
-Content-Language: en-US
-From: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
-In-Reply-To: <20251119193114.GP17968@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: FR4P281CA0178.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:b7::6) To PH7PR12MB5685.namprd12.prod.outlook.com
- (2603:10b6:510:13c::22)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lDX+OHk2"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1763623664; x=1795159664;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=ptjORu0u50L+Ut1e+sehWPAN+mFtSJgBawvfq1MVrtk=;
+  b=lDX+OHk2TF9YT4lWGrxS9L3RhJA/gQuMFR39pSyd/Hh5iIauMhgs13pI
+   ualjOu6j40jT2XvO5iM0WLyI5yQEG/UcAKxO6vSPPzQ4cnxn+klcwnQxb
+   cejfYZuX+FwTVEqheQIg2k6a3jdRlINgTmgHS1jRQJu8y92L+tIFZ5ABJ
+   ERhktK/OffKpkYon9lCkE3A9GFVw4KCwW2jIJQ6wfPwhIRWt+cPtxY1+v
+   6+X/JNxOWaDeb4GF4OW28Rgm4FAhabUX6HXvxI7kpy+yNHj20lFKFUdkV
+   afcqd5XgssLSt/JbIKqlSwomuw42LnncSBH6zymsSsSQED/oAfvJCmskq
+   Q==;
+X-CSE-ConnectionGUID: cqf/ha1eR9GlvIE4ZCjiQg==
+X-CSE-MsgGUID: euYRC1r4QTSAqBUKP88XpA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11618"; a="65720151"
+X-IronPort-AV: E=Sophos;i="6.19,317,1754982000"; 
+   d="scan'208";a="65720151"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Nov 2025 23:27:43 -0800
+X-CSE-ConnectionGUID: w+8tDen+RMKnirUCF72U5w==
+X-CSE-MsgGUID: /H5rQ/yZSI2Oud6/KaMUiQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.19,317,1754982000"; 
+   d="scan'208";a="191085137"
+Received: from allen-box.sh.intel.com ([10.239.159.52])
+  by fmviesa006.fm.intel.com with ESMTP; 19 Nov 2025 23:27:41 -0800
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Jason Gunthorpe <jgg@nvidia.com>,
+	Chaitanya Kumar Borah <chaitanya.kumar.borah@intel.com>
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH 1/1] iommu/vt-d: Restore previous domain::aperture_end calculation
+Date: Thu, 20 Nov 2025 15:25:24 +0800
+Message-ID: <20251120072524.3218282-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH7PR12MB5685:EE_|CH3PR12MB8850:EE_
-X-MS-Office365-Filtering-Correlation-Id: 65b461c9-e10f-4c57-ddb4-08de28039fd7
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|7416014|376014;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?SWYyMnpFL2c0aVRnL2Yxdmp4TFpWa0dMYzBtUmFKb0Q1TWNtQ1BFSGFQWm5w?=
- =?utf-8?B?MGNoajBUS0pPdnJMTDZjcVlvVTc3dXpWS0pMbnk2S3NNMlp0TjhXU0ZYK0Rs?=
- =?utf-8?B?NHE2NkZBK0pvOHlNZHh0eWY5a3d5dk0wdlpWTkxwdDFoTDUxckNBcjdMQVl6?=
- =?utf-8?B?MFI1VlVBL2xFRXY5d2dVUW1EdjFBQW01anBmM0FDUWRQbUFMKzl2Vis0R2VN?=
- =?utf-8?B?RjFjcTVSTEsxSWtiTi9lZjdub3YydkhWQ25OSCtadVBIYUExdEFKSjhuNVpp?=
- =?utf-8?B?RTVKdGs1a3hvOEF6N3FHOG12QlpvWDY3MGs3c1Z2dnNTUjBOU3lHTFVEVkRr?=
- =?utf-8?B?enFZa3N5WklNUmlkL1JmemtOV0VkdUFPRmQrbUI5Ym1TQ2hzclFCOXc1cGt2?=
- =?utf-8?B?eHlPS0FWWGhsbUowaEZLRkJkK3k3MHNtZ0JwZXNpZFJ6cGhPVjZrNEdrY3lU?=
- =?utf-8?B?bStlRllqVWJFbDhhSkw5bUVkUVN1cm5zeFdPNDlCU0s5QkpnZkNVTXpuTlNt?=
- =?utf-8?B?RWsydUVaR3Q2Z2d0VVdvUGFwWUYrT1FSY09hOU0xVHNTOUtDUUh3Z3U1R1p0?=
- =?utf-8?B?SURXV0x3VzhWTWVqTllEbFBWQ1o5NU1oczR1SEVUQkJSeXlZWFVpeGJjVHhV?=
- =?utf-8?B?U2MzU001NE56OHlxaWRucUYvWUxpNGVUWm84cDJVS1hwWmcwSzFNRmpNVTVz?=
- =?utf-8?B?U3ZTY3J3MkpXWkdnb0ZMdDA1SndHMCtseU5JY3QrcUtnOURGSGRFK1ltWWRn?=
- =?utf-8?B?VUM5QUxucStMVWpZelNDdXB3WHR6U2RSWlN3dWswNFl4L0g5ZXR5UFQwWjAv?=
- =?utf-8?B?MjNSSEttRWlUWUpKRmdoa1hBNy80ZHZmK3hpaVIxU1ZxTFJqU01qblpqbDVS?=
- =?utf-8?B?dTRXYXA3d2g3Vk5xRC9BYjlnaDd2eGRDSmNZWWE5QU5MTHo4M1VqcU5GbzBs?=
- =?utf-8?B?KzgzMnJTQ1ljVDZweXp1ckloYk0yL3JOT01vLzM5NkpVMTEvcHQyclo5VDdS?=
- =?utf-8?B?VHE4TFJoVnhVdEZ1RWE2aVZTcVpuVEJmd005SXNBNERzaEU0dHJDb0kxSWZ0?=
- =?utf-8?B?L2RIU3pvMFJGbUR3NGt6bi9vZElweTA4b0lZaGtrWkM3LzRva3NiaGRoOG00?=
- =?utf-8?B?bElvOUN2SVJKNmJTR1FrcURjTGR0VXBkTU9SQzkxbnlMbVpnQXdONDMrbmd4?=
- =?utf-8?B?d1lZcWhkampnelpkMVF2K3NjU3ovRFF6R09tSWY1MGV0dE4zQTFOeDZ5WWFQ?=
- =?utf-8?B?UU8yaUtXK0llZ01ncXlpQjk3VnYzVVpPa3hxRm9sNGxKTVEyRm9YYVVaeWN1?=
- =?utf-8?B?U3Boem9IUkFXVVdyeHRNVkh6ZmNIU1I2SFpVSUg4Y1VHaWtMYkJOOWh0aGtl?=
- =?utf-8?B?aTVnZ1ArVlF2M1VleVRCWnA5alpQMmpYMnRtRDMyM3BYYmNzU0JpUmJBZGlF?=
- =?utf-8?B?bW93a2ZVUEpuU3F5dlIrci9SRU8zN1NFRURyaDg3ZFJ0dTVkNlI4MGw1c1U3?=
- =?utf-8?B?LzN4LzkydWZXRVJRd3Z3RWhoY1FDc2tsa0RadjIvcW4rQ2s0VjFHN0Y4MHc0?=
- =?utf-8?B?RzRGMDhTQUttV1d4OHF3RnB5bUZ0KzVLalVLNG5qeUN5QTBNd05LU3FRei9r?=
- =?utf-8?B?NFB5SXBWZFErSkdkVlNsbnF2VERjTVV6ZVYvbHpDalRvOHp0cUx2SWpGM3RK?=
- =?utf-8?B?R3BTTVZQTC8yOEJlN05Mc0xnVEwyOE1lamNoalI5bUFpN3k0b3o1ekw0UExm?=
- =?utf-8?B?TThFc2V6NGxOOVp0SjFwY1l6Vjk1VUk3ZDhMRkFKRytzUEpSS2F6eDEyeW5q?=
- =?utf-8?B?ZTRKVnJXcXRFY2g4MmFwKzRoaXlXRWNJYkswTkd3aERVanFqTVFpRmQ5RHM0?=
- =?utf-8?B?NHZGbE5sQ21Wc0pjU0ZEUkwvc1cxTGF0N2RjRGFSZ3U0VEtaZFowa3BJZG9F?=
- =?utf-8?Q?mVZksCQ2XDqonEV1wvkJaXdVZot5RvHh?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5685.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(7416014)(376014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?K1FXQzBqdmc5ZGZXc3ZIVDErR2JqUTRmdmJVUnlENjhLMVJ5Qkl6MW1seDZU?=
- =?utf-8?B?RG52bTNXdDNCUGZuYStwaUQyeWhEczZMdThBdWRWRSttdnhTNXM1d0xHaFI2?=
- =?utf-8?B?YS8wR2k0eHRadnFrWkcyTEFDM045NjYvVlJNR0dlaENDenRpRHpwankrVXhT?=
- =?utf-8?B?cEpLUE00TXhnSUpnVHV4bHhsRlBObmFLQ0ZRb295TkNJa0VzRmRTRzZRQUZl?=
- =?utf-8?B?RDhLRWxUbldnckM4UjZWTjVHZG44cjBzN3k4RlJBdzFSVVp4b1ZDeWs3T0NX?=
- =?utf-8?B?c2lrMWpyN1grRE04YTNTVXVGK0Z6NFlRdUQ2c2FnUzg1Vi9tV3VMVVo4NU4v?=
- =?utf-8?B?a1VXODNvcWVCSnJSaHFmcG1TRG9XWnFNb3RSN2VBT0FPSHNVRUFXeEVKaWJy?=
- =?utf-8?B?VktDdFFtQTY3SXl2MnJZcnlxZ0xQbitQTEhDSVdsMktrUy9IajB5OHhrdVA5?=
- =?utf-8?B?ZDNQK29GSmIxQmQyWjhER0k1K1RSdWdiNjdLNkE1S00yMFZSWE5rbVprL1Qy?=
- =?utf-8?B?bGI3VGhjUUxsSXRTRmdadmxIUU1tc1VJZnlmSjYzVEFUbkFIZTVTTDNTdHM5?=
- =?utf-8?B?NVI1NEJsaWcyMyt2K2o4NVJpTlFtWU52UVUwbndNVnVidVR2RDhQeFkzMjdN?=
- =?utf-8?B?bmNYQXd5UG94aFE2dnpaM1V1SUtsR2VibFpmWWx2WVlQRTFMZEVLVzVBd2xY?=
- =?utf-8?B?U2w2eEtCVFgyRTRIYXRzZGhUY1RjeTBIZDhlU2xKRzhxbU94YnhDSGY0MWt2?=
- =?utf-8?B?OVpHb0tMVmtOeTVKcytqZjJZRkpXQkcrSisyV2F6c1dUL0NYaVRCcmNTeGFF?=
- =?utf-8?B?VCtwc3ZZRUVLcVlKYWdLY0dOamdhZEFlNnBRNmdMOS8zcnNYMHIrRHlaMVI1?=
- =?utf-8?B?NzRmWFp5aWRyQzlzaVJOWXBzNDlFRWFaQkl4NE13cjNTWVIrd3dINTVVc0Jo?=
- =?utf-8?B?am5qWHc0cEkxWnZQakZxNFl3SkgvcHJkQmhEYUZoWnBhcHlVVkJucXpqUldP?=
- =?utf-8?B?QUovS3pEb3V1VmpFbHcvSkR3OE90cGFqdVZFaEdQandWa3NTS0VFb3pGM1Nw?=
- =?utf-8?B?cGVIQTRUak1WQXNBcVU3QWtCTWx2bzRQUnRyL21EcjlvYnFIU1A2OWFobUND?=
- =?utf-8?B?RENSRWRkMnpsaDdaV0hqdHYvRGlNVzZhaHJocERtdU5TUVRZa0N2WFVqZjhK?=
- =?utf-8?B?Nnl5eVd4Wm5OSWN0aEQ3cnpnbzVxQW84MXNXWm5Xa01USFpHRFV6N2RPaWFn?=
- =?utf-8?B?Qm0zdUs3MUJTSXI4NUd6anNjbGtMNjdTTU9QbHczdWhkaG1mODFteWl4QTAy?=
- =?utf-8?B?VElJZk05Z3NPWEZPL2Y5czBObVR6a2pHK3lRNkk4OHhMMEtxT0RuaFYvZWdz?=
- =?utf-8?B?aytWQVAvZHF1K3luUkhwOWp1bldKSGk5ZEdsVklDdjBHaE1nREZsb3BEMWFJ?=
- =?utf-8?B?Y2d1QlQ5QkNRSElUOFpyKy9mU2FueEw3YlZmVjRlMDRJSFMrT2lTK0tpQU5R?=
- =?utf-8?B?YjFZM2tMZmtHQkc5eUx1MnNIRzNyVTVpTnU3TDdiQ2NlcVZQWHpEa1JaRVFB?=
- =?utf-8?B?R0pjME1HMmFDeVB4ZGhGN0tzUE5KTzc4SDhkUFdpRzNLVjN4a0k3Qi9wT01X?=
- =?utf-8?B?UUxJMkFSdDhjRzUzb0lCQnFaaDhwTFp2aXF2a3NuTjIzL0RrV09ydDl2YkhC?=
- =?utf-8?B?T0lvQStVbmNmYzBiVWFSdGpjZnNiZytWVDYxZmJ2clFuYTA4d3pKejZMY1NG?=
- =?utf-8?B?N0VqWVlkaWRmVEYxdmJ0MlArMXpxTTJnZlBkbmhrR2lDNU45WnRCZkF0Yjh5?=
- =?utf-8?B?NHdqWkJLMkEwd3lNMk51M3pPaDM3d3F1OUY1bXhSZ1hCdVlHeTAydW5SV3JY?=
- =?utf-8?B?WkJ2VW9NRkUyUTNGK1dCOEw5cm56YnhJbjRhT05mSm50WjUvc1BkdFBZbVA4?=
- =?utf-8?B?cTJWNkduN3lkWE52Y1dkMWNSWDBRbjhsQWt4RHlHWmJRZ1pTcWQyTC9HU016?=
- =?utf-8?B?K1cwdW45UUJyREYwNDFiVlBIek9NNUhqOW5XVHQ3UDFBRXdWSHhIRzdLYTdN?=
- =?utf-8?B?VXdqaDNNN3RIaUFzMitKYXc4N3VBaERCSFdyQ2pQR29kWEFSSEhLU08xbm5r?=
- =?utf-8?Q?VEjcGMmJFesxxmX26bIYFI/9W?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 65b461c9-e10f-4c57-ddb4-08de28039fd7
-X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5685.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Nov 2025 07:08:36.7427
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: nPLTc9lfo7pkt18Hd09ayYMLoygIREgU/2354NRtNPs4Jmxaj/r4/gbluVYsfTJK
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB8850
+Content-Transfer-Encoding: 8bit
 
-On 11/19/25 20:31, Jason Gunthorpe wrote:
-> On Wed, Nov 19, 2025 at 02:42:18PM +0100, Christian König wrote:
-> 
->>>>> +	case PCI_P2PDMA_MAP_THRU_HOST_BRIDGE:
->>>>> +		dma->state = kzalloc(sizeof(*dma->state), GFP_KERNEL);
->>>>> +		if (!dma->state) {
->>>>> +			ret = -ENOMEM;
->>>>> +			goto err_free_dma;
->>>>> +		}
->>>>> +
->>>>> +		dma_iova_try_alloc(attach->dev, dma->state, 0, size);
->>>>
->>>> Oh, that is a clear no-go for the core DMA-buf code.
->>>>
->>>> It's intentionally up to the exporter how to create the DMA
->>>> addresses the importer can work with.
->>>
->>> I can't fully understand this remark?
->>
->> The exporter should be able to decide if it actually wants to use
->> P2P when the transfer has to go through the host bridge (e.g. when
->> IOMMU/bridge routing bits are enabled).
-> 
-> Sure, but this is a simplified helper for exporters that don't have
-> choices where the memory comes from.
+Commit d373449d8e97 ("iommu/vt-d: Use the generic iommu page table")
+changed the calculation of domain::aperture_end. Previously, it was
+calculated as:
 
-That is extremely questionable as justification to put that in common DMA-buf code.
+    domain->domain.geometry.aperture_end =
+            __DOMAIN_MAX_ADDR(domain->gaw - 1);
 
-> I fully expet to see changes to this to support more use cases,
-> including the one above. We should do those changes along with users
-> making use of them so we can evaluate what works best.
+where domain->gaw was limited to less than MGAW.
 
-Yeah, exactly that's my concern.
+Currently, it is calculated purely based on the max level of the page
+table that the hardware supports. This is incorrect as stated in Section
+3.6 of the VT-d spec:
 
->> But only take that as Acked-by, I would need at least a day (or
->> week) of free time to wrap my head around all the technical details
->> again. And that is something I won't have before January or even
->> later.
-> 
-> Sure, it is alot, and I think DRM community in general should come up
-> to speed on the new DMA API and how we are pushing to see P2P work
-> within Linux.
-> 
-> So thanks, we can take the Acked-by and progress here. Interested
-> parties can pick it up from this point when time allows.
+  "Software using first-stage translation structures to translate an IO
+   Virtual Address (IOVA) must use canonical addresses. Additionally,
+   software must limit addresses to less than the minimum of MGAW and the
+   lower canonical address width implied by FSPM (i.e., 47-bit when FSPM
+   is 4-level and 56-bit when FSPM is 5-level)."
 
-Wait a second. After sleeping a night over it I think my initial take that we really should not put that into common DMA-buf code seems to hold true.
+Restore the previous calculation method for domain::aperture_end to avoid
+violating the spec. Incorrect aperture calculation causes GPU hangs
+without generating VT-d faults on some Intel client platforms.
 
-This is the use case for VFIO, but I absolutely want to avoid other drivers from re-using this code until be have more experience with that.
+Fixes: d373449d8e97 ("iommu/vt-d: Use the generic iommu page table")
+Reported-by: Chaitanya Kumar Borah <chaitanya.kumar.borah@intel.com>
+Closes: https://lore.kernel.org/r/4f15cf3b-6fad-4cd8-87e5-6d86c0082673@intel.com
+Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
+Suggested-by: Kevin Tian <kevin.tian@intel.com>
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ drivers/iommu/intel/iommu.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-So to move forward I now strongly think we should keep that in VFIO until somebody else comes along and needs that helper.
-
-Regards,
-Christian.
-
-> 
-> We can also have a mini-community call to give a summary/etc on these
-> topics.
-> 
-> Thanks,
-> Jason
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 2d2f64ce2bc6..7b3016491ca5 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -2817,6 +2817,16 @@ intel_iommu_domain_alloc_first_stage(struct device *dev,
+ 		cfg.common.hw_max_vasz_lg2 = 57;
+ 	else
+ 		cfg.common.hw_max_vasz_lg2 = 48;
++
++	/*
++	 * Spec 3.6 First-Stage Translation:
++	 *
++	 * Software must limit addresses to less than the minimum of MGAW
++	 * and the lower canonical address width implied by FSPM (i.e.,
++	 * 47-bit when FSPM is 4-level and 56-bit when FSPM is 5-level).
++	 */
++	cfg.common.hw_max_vasz_lg2 = min(cap_mgaw(iommu->cap),
++					 cfg.common.hw_max_vasz_lg2);
+ 	cfg.common.hw_max_oasz_lg2 = 52;
+ 	cfg.common.features = BIT(PT_FEAT_SIGN_EXTEND) |
+ 			      BIT(PT_FEAT_FLUSH_RANGE);
+-- 
+2.43.0
 
