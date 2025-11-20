@@ -1,121 +1,119 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B35842D3221
-	for <iommu@lists.linux.dev>; Thu, 20 Nov 2025 07:32:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49CC63043D3;
+	Thu, 20 Nov 2025 07:38:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763623929; cv=none; b=ttcPSvcCF//8KHhvuz1GewI2Z2esDurUN+1NhSGcnwFUeEEb0POJPaYW9cHtUYB2yqmw01rhl0m0ibV0tx23yW0lReUBXAdaSRwGf2u0IKLxyas34BxWfHeAocveDm14+JLYqjQaQpF/kFWTnLdWR8lcZknz3u7Bjm9OqDmhXpM=
+	t=1763624295; cv=none; b=CWciEAI5lDlPaxfaZtG5g//iTiyd8FQkItW7tsKRr923/q2fPW4WsFX9kX+/whIuyNqdaV4aXh2+x/Uslt71uw4VX8HHix1eX8oXfzavZoWS/JQOLc+Pg2QPvztbnFrQENHCL0+0gVKI/bT6AF3fHOWleQf1dpIbCOBnAmkrJDE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763623929; c=relaxed/simple;
-	bh=Hpo3HhsoWTrb0YC201I01MRv6sZ+Tu37Hx3+TmRShLw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=eCQ/XKqaYuo4Mzp7QYcDmZtICQjiX77gt8eleHMPru7cEnh33AEG1UxdWxgReglBF6DRWJtOnDR1kIm/W62D28Ykf4BwfEgb8ehG6vWYONctxTpeVTBRcsWD7pXONlpCtidvY+YdlLVUFYh7iaiwhrZf8CJI2ovRIqNhb1VmxCI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ADzr0Lh/; arc=none smtp.client-ip=192.198.163.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1763624295; c=relaxed/simple;
+	bh=TBmcKl0VoEim/6SAhgGNXn7s3ldHbwABAdg4lb6XQUg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=qvNN6Bjd5xcS+nG7QiqFHlcPGPCX9i18BDxTW9ANPLt/emeXNaV/WmKnFFGFkTBIs6tVUGiYd5Ob57Xh2ZSVfRzsZ5d/Li++CvQioXVzN49OyAB3Xni0Saj4htdhwGY24RL5Hsi2bsbm1pFYHiKK4lx4kcl2O2CCoJp1HKOhCRE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Fk1GOwXX; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ADzr0Lh/"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1763623928; x=1795159928;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=Hpo3HhsoWTrb0YC201I01MRv6sZ+Tu37Hx3+TmRShLw=;
-  b=ADzr0Lh/9GL0uHcXRHv4hRLE+yajevYsZrQbYQKtKdCwXia7XT1U7FL5
-   S0+D4gLS+sg+9d4fwOKTqTiWF1DM/qLq11QfRH5m/UXLjqc5tFg5jB5J4
-   c7JNWSb/mQz0yzAlr16TuE7CLZEAfUG1MlWdcjb5YhowbA2vfYxCinFuK
-   NKwaQ8EOMSORN6ZMMj+HLG82uXD+KQgjkWbfZ6/mcBW6zqbNdpv75V3us
-   1XO3ACfHpTCjftzYOhNlUmGwUR9Hf81P3wnh/2UrGYfyZzA3vxBcR94nb
-   JwzN/xu20HNSJEvWbpbztm4zSzsH/PvpNPfOOE4sp1oWesbNByY0c+jB0
-   A==;
-X-CSE-ConnectionGUID: pkkcl0PmSsOK25MqdwaYqA==
-X-CSE-MsgGUID: 7mAJWvNdQvumWHo5rN1xjQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11618"; a="77041403"
-X-IronPort-AV: E=Sophos;i="6.19,317,1754982000"; 
-   d="scan'208";a="77041403"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Nov 2025 23:32:06 -0800
-X-CSE-ConnectionGUID: KQk7NUhxTjSlh1kCpSrWtQ==
-X-CSE-MsgGUID: KE0ZSN6oQV2vXkzIZUVMyg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.19,317,1754982000"; 
-   d="scan'208";a="191414338"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Nov 2025 23:32:03 -0800
-Message-ID: <94ae0210-734b-41cb-b8a8-657b76324aba@linux.intel.com>
-Date: Thu, 20 Nov 2025 15:27:58 +0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Fk1GOwXX"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B2CDC4CEF1;
+	Thu, 20 Nov 2025 07:38:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1763624294;
+	bh=TBmcKl0VoEim/6SAhgGNXn7s3ldHbwABAdg4lb6XQUg=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=Fk1GOwXX+8I2wrjVFUFCs8eOHzSYMIpbSRNsybaaYnqmR1hvk8o1qyzeHekcACEa7
+	 0yEVvvcB58TVkvjvuQ+g/DQOgZnEaPJs34D8Vdf/e9Zwg/WSSr8nANTFzZTxu1EY4w
+	 f+G77YPyofCyVfOqnqhJ1EEumdeOwl1cYYCiSj7kjTatwWqUljRJ6vu6RxqRHEAEU8
+	 HRAo+V91htNpmPP70IHNTW6yrAz7B8PMq5q1hNDWdzinzbtY3bxLpPYfEP2VVI+Xgm
+	 NiTNPnC07XH/GYQn22i+8qeLjGe/j0I0H3GmLnYmVwrnbgDp8dKA8f5MMMocC3fZuC
+	 Xf3HRBvJIpyCw==
+Date: Thu, 20 Nov 2025 09:38:10 +0200
+From: Leon Romanovsky <leon@kernel.org>
+To: Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>,
+	Logan Gunthorpe <logang@deltatee.com>, Jens Axboe <axboe@kernel.dk>,
+	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Sumit Semwal <sumit.semwal@linaro.org>, Kees Cook <kees@kernel.org>,
+	"Gustavo A. R. Silva" <gustavoars@kernel.org>,
+	Ankit Agrawal <ankita@nvidia.com>,
+	Yishai Hadas <yishaih@nvidia.com>,
+	Shameer Kolothum <skolothumtho@nvidia.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Alex Williamson <alex@shazbot.org>,
+	Krishnakant Jaju <kjaju@nvidia.com>, Matt Ochs <mochs@nvidia.com>,
+	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-block@vger.kernel.org, iommu@lists.linux.dev,
+	linux-mm@kvack.org, linux-doc@vger.kernel.org,
+	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	linaro-mm-sig@lists.linaro.org, kvm@vger.kernel.org,
+	linux-hardening@vger.kernel.org, Alex Mastro <amastro@fb.com>,
+	Nicolin Chen <nicolinc@nvidia.com>
+Subject: Re: [Linaro-mm-sig] [PATCH v8 06/11] dma-buf: provide phys_vec to
+ scatter-gather mapping routine
+Message-ID: <20251120073810.GQ18335@unreal>
+References: <20251111-dmabuf-vfio-v8-0-fd9aa5df478f@nvidia.com>
+ <20251111-dmabuf-vfio-v8-6-fd9aa5df478f@nvidia.com>
+ <8a11b605-6ac7-48ac-8f27-22df7072e4ad@amd.com>
+ <20251119134245.GD18335@unreal>
+ <6714dc49-6b5c-4d58-9a43-95bb95873a97@amd.com>
+ <20251119145007.GJ18335@unreal>
+ <26d7ecab-33ed-4aab-82d5-954b0d1d1718@amd.com>
+ <20251119163326.GL18335@unreal>
+ <3053398d-94d8-42fa-aedc-927746375521@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: REGRESSION on linux-next (next-20251106)
-To: Jason Gunthorpe <jgg@nvidia.com>, "Tian, Kevin" <kevin.tian@intel.com>
-Cc: "Borah, Chaitanya Kumar" <chaitanya.kumar.borah@intel.com>,
- "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
- "intel-xe@lists.freedesktop.org" <intel-xe@lists.freedesktop.org>,
- "De Marchi, Lucas" <lucas.demarchi@intel.com>,
- "Kurmi, Suresh Kumar" <suresh.kumar.kurmi@intel.com>,
- "Saarinen, Jani" <jani.saarinen@intel.com>,
- "Auld, Matthew" <matthew.auld@intel.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-References: <4f15cf3b-6fad-4cd8-87e5-6d86c0082673@intel.com>
- <20251118012944.GA60885@nvidia.com>
- <a79fe616-52c7-4fa5-906c-382b5ff2226c@intel.com>
- <20251118161341.GC90703@nvidia.com>
- <0c3cd494-e42a-4607-896c-4c341f90c270@intel.com>
- <BN9PR11MB52760A6BE22F89D29685690F8CD7A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20251119185119.GP120075@nvidia.com>
- <BN9PR11MB52764557ECAEF2200054070D8CD7A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20251120021831.GT120075@nvidia.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20251120021831.GT120075@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <3053398d-94d8-42fa-aedc-927746375521@amd.com>
 
-On 11/20/25 10:18, Jason Gunthorpe wrote:
-> On Wed, Nov 19, 2025 at 11:56:16PM +0000, Tian, Kevin wrote:
->>> So we should be using dmar->width to constrain the first stage and
->>> expect that mgaw is less than dmar->width ?
->>>
->> dmar->width is the host address width, i.e. for OA. so it's irrelevant
->> to the input iova here.
-> Oh that makes sense!
+On Thu, Nov 20, 2025 at 08:03:09AM +0100, Christian König wrote:
+> On 11/19/25 17:33, Leon Romanovsky wrote:
+> > On Wed, Nov 19, 2025 at 03:53:30PM +0100, Christian König wrote:
+> > 
+> > <...>
+> > 
+> >>>>>>> +struct sg_table *dma_buf_map(struct dma_buf_attachment *attach,
+> >>>>>>
+> >>>>>> That is clearly not a good name for this function. We already have overloaded the term *mapping* with something completely different.
+> >>>>>
+> >>>>> This function performs DMA mapping, so what name do you suggest instead of dma_buf_map()?
+> >>>>
+> >>>> Something like dma_buf_phys_vec_to_sg_table(). I'm not good at naming either.
+> >>>
+> >>> Can I call it simply dma_buf_mapping() as I plan to put that function in dma_buf_mapping.c
+> >>> file per-your request.
+> >>
+> >> No, just completely drop the term "mapping" here. This is about phys_vector to sg_table conversion and nothing else.
+> > 
+> > In order to progress, I renamed these functions to be
+> > dma_buf_phys_vec_to_sgt() and dma_buf_free_sgt(), and put everything in dma_buf_mapping.c file.
 > 
-> In that case we should probably pedantically have:
+> Yeah, the problem is I even thought more about it and came to the conclusion that this is still not sufficient for an rb or an Ack-by.
 > 
-> 	cfg.common.hw_max_oasz_lg2 = dmar->width;
+> A core concept of DMA-buf is that the exporter takes care of all the mappings and not the framework.
 > 
-> ?
+> Calling pci_p2pdma_bus_addr_map(), dma_map_phys() or dma_map_phys() from DMA-buf code is extremely questionable.
 > 
-> However we get dmar into that function?
-> 
->> "
->> 3.6 First-Stage Translation
->>
->> First-stage translation restricts the input-address to a canonical address
->> (i.e., address bits 63:N have the same value as address bit [N-1], where
->> N is 48 bits with 4-level paging and 57 bits with 5-level paging). Requests
->> subject to first-stage translation by remapping hardware are subject to
->> canonical address checking as a pre-condition for first-stage translation,
->> and a violation is treated as a translation-fault.
->>
->> Software using first-stage translation structures to translate an IO Virtual
->> Address (IOVA) must use canonical addresses. Additionally, software
->> must limit addresses to less than the minimum of MGAW and the lower
->> canonical address width implied by FSPM (i.e., 47-bit when FSPM is 4-level
->> and 56-bit when FSPM is 5-level)
->> "
-> That seems very clear, indeed. OK! Easy to fix then! Balou can you
-> take it? I think something like this?
+> That should really be inside VFIO and not DMA-buf code, so to move forward I strongly suggest to either move that into VFIO or the DMA API directly.
 
-A fix patch was posted here:
+We got the request to move to DMABUF and agreement a long time ago, in v5.
+https://lore.kernel.org/all/aPYrEroyWVOvAu-5@infradead.org/
 
-https://lore.kernel.org/linux-iommu/20251120072524.3218282-1-baolu.lu@linux.intel.com/
+Thanks
 
-Thanks,
-baolu
+> 
+> Regards,
+> Christian.
+> 
+> > 
+> > Thanks
+> 
