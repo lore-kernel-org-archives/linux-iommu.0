@@ -1,79 +1,80 @@
 Received: from mail-qv1-f45.google.com (mail-qv1-f45.google.com [209.85.219.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B66B2BE05F
-	for <iommu@lists.linux.dev>; Fri, 21 Nov 2025 19:41:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77D5C27A12B
+	for <iommu@lists.linux.dev>; Fri, 21 Nov 2025 19:43:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763754101; cv=none; b=Q1Eq7JtxT7espaJIxkRwTPxoM7oQ9vgipe4g2nu/iM+Ck5bcdxXGh2X5+hd/jCRwHJ871QAZ+OZ2lcJU9u9RHLPNMUqspPsR4KdWXN7fVXg1qycIaFAk61l6+wB71gVU9syGJ+f13CK5yrmh6oLoC+454HufIoDvOjR5rYw1cI8=
+	t=1763754232; cv=none; b=cGc2P40lqpgadS/pCye3nwMopPJOz6OWChzyG+c669NQSaUtVN3brP/0xZmdmCCQ27tTJaGsYZO0jjUPGUjMDabmXKk0AXBtLE9Bmmq8bsbOyt3d/64Ec1/OOTeJW9b02Cy3rQpKLn0KtMKSkPi6ikQYscFZr2SMJ7J6HKCmHQA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763754101; c=relaxed/simple;
-	bh=/xngWsAkOy9HobrmWI3BC7n9/5gjXHqZsjIulE6+O9Q=;
+	s=arc-20240116; t=1763754232; c=relaxed/simple;
+	bh=Vasgf9iDnOBSzRsjeFpKd6WXdPHbFWwhpiKUPv24uSQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WLkPezlPDA6/y2geFq5EEFEaPkB4n3hWw20qAiSA+BUYc9QGCvkBfVLhTj4/gfiR5Nn5RunaHOZ7dJ5OR1UaAzpvRV0YL3/FaMPuTgpfE11N9y2X2FNG/NFWbE8Q2RQTQW98E3+RN5DH4w2tqY4fgsC9/Su2C0ZzR0ouRs8Xovs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=opqrMpHn; arc=none smtp.client-ip=209.85.219.45
+	 Content-Type:Content-Disposition:In-Reply-To; b=ry9ED2CIbg5rq60yoWDiNKE1j0BMr9S66aQ9wjoqdD3zqSC8negiizUiNcTBtIGJRdPM8tqWAeN8B55vZLUVdb/61loAdR42Dca6FvvXQ/RrWNTJMzo29XJESbbj50jCYeSNgRgyXK44I8Y+N/pNDMpVVgQhKvNBRINKfLi8FxI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=cJBMc5HQ; arc=none smtp.client-ip=209.85.219.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="opqrMpHn"
-Received: by mail-qv1-f45.google.com with SMTP id 6a1803df08f44-880570bdef8so27143356d6.3
-        for <iommu@lists.linux.dev>; Fri, 21 Nov 2025 11:41:39 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="cJBMc5HQ"
+Received: by mail-qv1-f45.google.com with SMTP id 6a1803df08f44-88043139c35so22622906d6.0
+        for <iommu@lists.linux.dev>; Fri, 21 Nov 2025 11:43:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1763754099; x=1764358899; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1763754229; x=1764359029; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=leQSmYI6CaqvqUUCRW9PtNRuz9kC54AWbM2rvpXiyIU=;
-        b=opqrMpHnrLcwyek0kfHPCVdBqcMH7T/HRmpJwykllF5GGLZ7gOLzlS7iDtMBltYYF0
-         qAQ+dWlQ6N8gEVo0bpmnYgJakWJcWZiMbESTPQpwd+kmA0bxvVcEGMuyxqdXonc0Fm2V
-         ZaRR/+B/UvzkF6SA9X0Uz2dXQZmsFFkeSy4OlIOg19Y1R/on0JkRxbAo5dTstRjYJI25
-         vc3DmPDMlLDUiCnR2VU5JqUVUGyf7VqRcEMU6cRj9OAejV62xFSsspXS13rXy+CWiwLj
-         x6QW/oJyCTpw7FePsXk5kV+Fywrjav7gMxfdJxsKh5Yx1Q6zreX+XK5btagvEGsYJ8TC
-         tKkA==
+        bh=+QgWiw8/91FDKWyOytQdo9DdOX1N/C2KE/jXm9rwyZI=;
+        b=cJBMc5HQsoAajqXCNMdlHO3kxAOtYGk4On8a/7y33zFcmH7vv/iFUd33mJ7+OSzfA6
+         gXQ3tUY7t8whioVQEMPxLEWbP6St69rxYIOam4inODMerDVlBe05+gMbiCuxKDbt9JMG
+         K/0stC8jumT5hn2PWc/i06ggIBjTV7JvyOZaSEOtMC51aGvKTVHKJEDg9vLgMSxB+yps
+         q86TRlR2CaZvBYXMs4BFekgZe3kFXqKDKMkF0k8pdZSfRk7/xAln0cWCvfbX09kr5yZF
+         IennqBHJ0Rjoq38vwicI71gwTk+1sHuSC7kqBT+zqZp5YAQcXyS37gH3xjV2r33oFCB3
+         6EcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1763754099; x=1764358899;
+        d=1e100.net; s=20230601; t=1763754229; x=1764359029;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=leQSmYI6CaqvqUUCRW9PtNRuz9kC54AWbM2rvpXiyIU=;
-        b=lumABbWBkjFnznFme+5fTJawwb7foltt/K43Zozj2Q0mbJGUDLs6H63aY10Hz5kyll
-         nzisR5C6jcFEZT9ltQPBno1Zsyez2VCgpgP8lHfX7EdiY+WCXzeZSiMXFsru6Se1Ck1q
-         a0jqrMNVIIc0uB1awII5DKfYtFc0IWl/mffO5mruG36f0PqhWJygRfJwIFi9O6JKFm/S
-         EeNoDlxCXsem8qCXKU4egUtpqRK2AzVu8dFd91BVfR0w1UqEGR7pIkgznlHZT7AdFuEb
-         3OFB2D69mjvkO0MuCdX6r0orYPJztqR+RL/jCCwDLYNJXjMTW+fLzjBZo+vpPYXJipt7
-         9Xbg==
-X-Forwarded-Encrypted: i=1; AJvYcCVuHIZ3b+17jwCJ2/B/C4ixOBAsAoOkI4rNpq/l7k+9C/iKEUHUsuesud+iDNlCgk4fmx385w==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzuWoaTvys4FGWhN3bywBq+J/nVw1WYcd6sU+/rhAhKt1Z+whcz
-	K7s5wPST+y9D53GMKJYSJHGD/hzlCQIVxa1+IHqXnCw+zzq4XImVgfBYL4jsq742Qq4cgxFI3xI
-	1yPlX
-X-Gm-Gg: ASbGncskQlUf2tkt2+3lfE4IO/Z2MAG3xpFy7Ggt8Aw6QE3qx/V5rgJ8StAiHfESw6D
-	hLJjsDjuqAbCCNP/mVo551GN/MWS0GCSa14jpASVtEcDOD43svuGORFYE76lfQUudTvx7Px9Mwe
-	RXWgzx7craa+Yrm2pWB5Vwono7lmjPgPNQAtd+nvghDgwFyR8CTxgbxRRuwSxw5VARJiZ7y10pR
-	D/iWPKntO2xmLRvRVmVXDCGhnrEzQltXkI/Ig3qEokypd5IGokHAxZnTyVQ6s6BxApyv1CJxDho
-	sHUHXd7ShMchehuj0oCu1urIT19dUQI5khOPuN+FOLj580xD7+Qbur85zgtLlpFLK4sqqQu7dZC
-	2U8mX8LzZTs1cTax7vSub/g9bbCc/7UL/IGShiJvXsjKfheFvAg6cwvsSSLTDVVDZVnuABg6//K
-	u0ULNOpLFBYxpClGnRTdnGN1hjj5acyBAMZNZl60EoTeT25edJBuD8fms6
-X-Google-Smtp-Source: AGHT+IFYiwlmP6Q1uBxpUaEOynP+GjSDM52BYOjVNB9E2WPwnPj4mnle0F2KVfZAXkj9LJWK5a3vYA==
-X-Received: by 2002:ad4:5aae:0:b0:78d:be82:fffa with SMTP id 6a1803df08f44-8847c5482e6mr65937506d6.33.1763754098808;
-        Fri, 21 Nov 2025 11:41:38 -0800 (PST)
+        bh=+QgWiw8/91FDKWyOytQdo9DdOX1N/C2KE/jXm9rwyZI=;
+        b=eSi3cu9a6UUU77Y4WLhV+iSarsX24aEHf2FITRDh0NYLDvkcWV7uHDF4K5rktdIHAF
+         v1qBPrK6I+q15uLTGNDz8BINBB1JsqYZ/YaS0aWiTzebOTRQ2wIPnfYZyIcXVbyXU/Cw
+         Mz5NKP6H7dXHkEucmGxbZJ3KCouYPQGaBx/NtlgfV5HJIdxOGKGIxA4Yh/+LiROLiwOC
+         bNTTRZUDAERKVJy3Epuur+skFUmSirR131ojNStA9i/2xYR6ELq6ZK0FF23TzzSq3/6b
+         Qsg2X/0DlIhTRGf1cT6qsafAnoA6fw92VHzSPnbSv7eWTcz6RC66JzV1+pCtfiwtUOZP
+         wmdQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXjxoMu3kBRVJzDEOo3ZPPuBz4kSYgZK0tgFv69sgLopTCqemvkJiiyg3EpxLCnkZPq69rwmA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Ywi3OYQfgdRHeDwjxWc6CS28f128EwdxZNCXS7PJ/jSSmoXiBFh
+	lE9TPdVTD2b2qr0Rq4zVQbSOXfyOiL8lcCka5bBBb9rnL5l2ujC7n2PEHMwd1acswb+jLLvTSaf
+	8IELs
+X-Gm-Gg: ASbGncvtzQdB/pbHnSW62uWYozXalaLUB0FEd/Xcd+VgUNOBOWu8q8G82TC0lHbJphp
+	5qn9dJ2wusovg60kjeCExGUFZ0cWQ60VAcS722uKgz7upBdoJLcFDOzRUEcjCZwv/I88kFs0DEl
+	N9JZjsQV2i+HHsE9AXEi88HOohNxRRdK0DYySO47uQDXK/BBX8gCowoZZ+QuZrR75quuJNtsXet
+	AiCDaS69OS5q0vPMXdph5VaKMKkN6BaiXI+o/oRM7wWw09YsAD4dXRZxzWGnsgErt1hZKnA6SqY
+	sXw6Pc/86vftpiOWMQlcWkzhpEUbJSN/cHqqyHL/4u7gq9RE3F4iDdpuPIvKLu38L02Te3tBziE
+	GOSnTaDOygpRjsnebOIZRtDd2n+KQsYU5/lCkV+UYm+jP/BCfVgpEI2OlKGYjxxv9IVeS0rIxtU
+	QgDcoewv3JyCPLDKzlzOzj/sDLnsAitZ4+wFEt7C4RLf3HtgihtuHMNOG+
+X-Google-Smtp-Source: AGHT+IGqc8b5OqtPTf0L+qTFhxqvDfLDQaT2MVNMs6H0B2nCSGrUCWV8rdwz0XmyTkzH+nMbULjcjA==
+X-Received: by 2002:ad4:5cad:0:b0:880:52d3:9c03 with SMTP id 6a1803df08f44-8847c520c97mr64807786d6.33.1763754229556;
+        Fri, 21 Nov 2025 11:43:49 -0800 (PST)
 Received: from ziepe.ca (hlfxns017vw-47-55-120-4.dhcp-dynamic.fibreop.ns.bellaliant.net. [47.55.120.4])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8846e469825sm44534696d6.15.2025.11.21.11.41.38
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8846e5735a8sm45639656d6.41.2025.11.21.11.43.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Nov 2025 11:41:38 -0800 (PST)
+        Fri, 21 Nov 2025 11:43:49 -0800 (PST)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1vMX0j-00000001aQ0-2Qqw;
-	Fri, 21 Nov 2025 15:41:37 -0400
-Date: Fri, 21 Nov 2025 15:41:37 -0400
+	id 1vMX2q-00000001aRf-2Fb9;
+	Fri, 21 Nov 2025 15:43:48 -0400
+Date: Fri, 21 Nov 2025 15:43:48 -0400
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: "Gustavo A. R. Silva" <gustavoars@kernel.org>
 Cc: Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	linux-hardening@vger.kernel.org
-Subject: Re: [PATCH][next] iommufd/iommufd_private.h: Avoid
- -Wflex-array-member-not-at-end warning
-Message-ID: <20251121194137.GE233636@ziepe.ca>
-References: <aRHOAwpATIE0oajj@kspp>
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Nicolin Chen <nicolinc@nvidia.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH] iommufd/driver: Fix counter initialization for
+ counted_by annotation
+Message-ID: <20251121194348.GF233636@ziepe.ca>
+References: <aRL7ZFFqM5bRTd2D@kspp>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -82,26 +83,23 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <aRHOAwpATIE0oajj@kspp>
+In-Reply-To: <aRL7ZFFqM5bRTd2D@kspp>
 
-On Mon, Nov 10, 2025 at 08:35:31PM +0900, Gustavo A. R. Silva wrote:
-> -Wflex-array-member-not-at-end was introduced in GCC-14, and we are
-> getting ready to enable it, globally.
+On Tue, Nov 11, 2025 at 06:01:24PM +0900, Gustavo A. R. Silva wrote:
+> One of the requirements for counted_by annotations is that the counter
+> member must be initialized before the first reference to the
+> flexible-array member.
 > 
-> Move the conflicting declaration to the end of the corresponding
-> structure. Notice that struct iommufd_vevent is a flexible
-> structure, this is a structure that contains a flexible-array
-> member.
+> Move the vevent->data_len = data_len; initialization to before the
+> first access to flexible array vevent->event_data.
 > 
-> Fix the following warning:
-> 
-> drivers/iommu/iommufd/iommufd_private.h:621:31: warning: structure containing a flexible array member is not at the end of another structure [-Wflex-array-member-not-at-end]
-> 
+> Cc: stable@vger.kernel.org
+> Fixes: e8e1ef9b77a7 ("iommufd/viommu: Add iommufd_viommu_report_event helper")
 > Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 > ---
->  drivers/iommu/iommufd/iommufd_private.h | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
+>  drivers/iommu/iommufd/driver.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-Applied thanks
+Applied, thanks
 
 Jason
