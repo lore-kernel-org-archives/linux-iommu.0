@@ -1,133 +1,109 @@
-Received: from mail-pf1-f178.google.com (mail-pf1-f178.google.com [209.85.210.178])
+Received: from mail-qt1-f176.google.com (mail-qt1-f176.google.com [209.85.160.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67C112FE06C
-	for <iommu@lists.linux.dev>; Fri, 21 Nov 2025 23:28:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB243299950
+	for <iommu@lists.linux.dev>; Fri, 21 Nov 2025 23:35:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763767707; cv=none; b=Qb3CAJVSTRcZrqDe52jiIq75QY6qhnYvMiJ4SGl+9Q2/eaOBFE4n2j+IiE+mQm0QWbVdggtnu7KQB4VfzKgP+J0dBEaWBvuRt2pihOeck4P1vUn2znf/Q+rjkI1yYA3shVt8nbGiajb9LcjKx3XQY2Lt7yZUy1bPtW6106A2hm4=
+	t=1763768155; cv=none; b=gj9FxzVB2/bkhKLSQuF0AaYO0w9F2m6tyLDeBTWjbMuvgYVgvUYPA0467L8WePIkLT/q7Y1woULLgO3D/lFsG15lHQVNYCB0Cn1IZ8zOqnX+WpbWmRaXmoEmq4VpynAXFV/asZG2G4nieRtxjGoDxNsE+W+QKhhF4BJCxpp8308=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763767707; c=relaxed/simple;
-	bh=hsdIHNHsZF9T1sX7+gGYutcVt+aySGlsfoBk3lYQa0I=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=iYjXp1gsSLFRHXO/RAsb2ATK8mnVbHptN5GspQCVY6YzdgR9INC08nOaoZqEQC7dxUt6cpLydzIEPl2B+2FrvYbiVxzJ6yIJbYJ10ymkFt/yYJDWDpwOYHYCAyrLngYGX2/ddfABDJV8iFOYV40GFNkv07lR6D2ZqP2meRTuBR0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=cD9n0J/K; arc=none smtp.client-ip=209.85.210.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1763768155; c=relaxed/simple;
+	bh=ZIKkMjQ5byam2kBpHOWaWCeEfS0EnddLlBVtwgj/LaY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Z0G00SY4cmnJ7lgiSfCXJUzr5Y+nB3IX+RFAlQH7B4XMNJV1MDxpE9LPXYtylQtO5FAqTD91NJAXetv/OMgHnD0hC73gRe5lBZmNjT5W4hxX+rSCPhZ/Bcfadr2sCugLSLd91RW8+3UPQm3nuvtdOMNgsVePVtr4yeHugmHMZYI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=JXAwlEGR; arc=none smtp.client-ip=209.85.160.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cD9n0J/K"
-Received: by mail-pf1-f178.google.com with SMTP id d2e1a72fcca58-7b89c1ce9easo2914054b3a.2
-        for <iommu@lists.linux.dev>; Fri, 21 Nov 2025 15:28:21 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="JXAwlEGR"
+Received: by mail-qt1-f176.google.com with SMTP id d75a77b69052e-4ee1879e6d9so30444991cf.1
+        for <iommu@lists.linux.dev>; Fri, 21 Nov 2025 15:35:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1763767697; x=1764372497; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=UxtDpSmTs7mL/tjhVCGhuXCnOSYOMYknzMq2xwvzpN0=;
-        b=cD9n0J/KwYap0GMseoKDKZdVK2B/PGoqxuwfKtJQtxBLMLMxO2yCyC84fQ68k9UcQW
-         X5vvkTtFLuMbLbNJcjTLkY4W78fn2Jmq4Ve1yEs++8bjZOTlKJQ4+aukPZ6FqYEpGSRe
-         gHicyL7/rgQPVBD534Eb82iTTPKtNdulDbujwFlugE0ImztcEK5V9Ml5dPXTenIqMicE
-         Sv+Os5RPIa1afe/e15wutZ+fgeFeRrEm2N2QBe7mRFQaovHUqyfXaKNVYP8JzFsKaLBl
-         pjsVmrtDO5YcnSX2DnCwua8+N4wpQRL0Qd5pmy0pBBTuY0kB49bPI3TUKAiSXS9l/3ym
-         RwjA==
+        d=ziepe.ca; s=google; t=1763768147; x=1764372947; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=JbW3/sONqxixSsA0BLfTyZim/TwfutVjhBk5sAO/3O4=;
+        b=JXAwlEGRESGLFMfMA2XcRVTld9DCbqUeDAk1iwDXPDeJxGxATppoGdGvJjZZ0RHJQi
+         EPx2VHWerAB6y2KoAA73unymulE2t3WMVW3holyHM4cKwOy1Mv4dAB17IMMdEhuq1v8a
+         I6D0oE6P9bVyF5IwahUObLA5Q8/6NjexrRcPO6r6czP2viwt3AzH+xrgz8x1xm65qYtN
+         3Pj+uXWZ23eAiiQl/RcuS1VFwd6BrPtlsOErxLVqRLRb+CaCG1vJqjaeSkUWPNUxn8z6
+         EsW0RkoKfYektyD3G+StXiMT+b7au0XDgI9XsiVeiTkU6dccFYW52NI4pTE37f0urEiw
+         BrMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1763767697; x=1764372497;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=UxtDpSmTs7mL/tjhVCGhuXCnOSYOMYknzMq2xwvzpN0=;
-        b=wAVNwbq3IRSXTx1c1lbJMJQQgqwhtuZjmmaEJjKnrpOXAgzNyQV1tP5StEiWrlXzDZ
-         S8c1+mn5TvJMWhzEiZeDhyuRMGdINR6dXT/A8MRkxEI1TH5NzaMkXbuGBsPu/TmvxCWZ
-         VGVV+JwCKAiX0amca0xi0ABBnnHCfeD1gR2kyi1zT/00BCJoo3Thjm82RYzTDW5xVevB
-         RqquedOjh9+bNh9ON+H+Zh434ufZ+nk4L0a9l3fd9ySA4h/azWpI/EbodWEBUEZibKxH
-         yR8KrxeXYmGZi4o1y1I3acHonSgaLFu4REY9NeRjfyoLZ9YQA/zNNDeBf2fFyqnx/abe
-         QBUA==
-X-Forwarded-Encrypted: i=1; AJvYcCU1sscfcST+lqKuZBvxvtJbp3HBRk2mVeneLjxxPlZhB8ybyueRy/boH2RPWZ8NJ6zPiTgInA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yyu1jBviUjsyNWwiwYw0+Dm7jcAr4RHFaq8dcGMqTbpfANDCe7P
-	SdhJeK+URTOutb5z2gUwz/h8SOIOBXQkesPe7YXUoyp+GnlTAOllFE2R
-X-Gm-Gg: ASbGncuxwSlBvsHltxeNG0h3r6u4WtF0YX55l5E0Oar8aq/LrJQzvT5c8XIQmFG4qh8
-	14YxwW4J+0h14dLgTBxh9Blyb8LLoBRAZDi1WQbnC4lNRdCCH4UH0HBXagX39RWoYLeBDbTvvw8
-	wQno+TpMQzU2D5Lb+LS2dlKtiVE07sok3xqzldkScP76phjf3gy3eYUzNd3RAHwvtcpvN16Nols
-	UIoJlne5HtiYNYV50PnSu217eb8GaJgAULT+GIb1N4JToLSEzonI7reXpCh1eAmSoihh1A7wGYK
-	pEpknsiLmEfXMDf8O/uroWRABEFffQlcP1h+M/lQNe4zAHaW5lvv1nUVZZ8sqAwtdIzaTFVv1n0
-	UeWQk2SsMcDnBaZj2wbM2lsRgrXF8NKJQh41hR1BPHAan+k0F4HWOFwEX9MHvey9MMyge09udAB
-	OsTx1CA8yC5HF0UeZI5AK/LOl+
-X-Google-Smtp-Source: AGHT+IHQzwceccuSE+ynV0dbTPoBKwMThY8XryTam2V+oxreq4oB+F/urlJ+SII61jfTJsuQO/UmrQ==
-X-Received: by 2002:a05:6a20:729a:b0:35e:d74:e4b6 with SMTP id adf61e73a8af0-36150e2be9amr4501844637.7.1763767696784;
-        Fri, 21 Nov 2025 15:28:16 -0800 (PST)
-Received: from Barrys-MBP.hub ([47.72.129.29])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-7c3f095c237sm7226947b3a.45.2025.11.21.15.28.10
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Fri, 21 Nov 2025 15:28:16 -0800 (PST)
-From: Barry Song <21cnbao@gmail.com>
-To: m.szyprowski@samsung.com
-Cc: 21cnbao@gmail.com,
-	ada.coupriediaz@arm.com,
-	anshuman.khandual@arm.com,
-	ardb@kernel.org,
-	catalin.marinas@arm.com,
-	iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	maz@kernel.org,
-	robin.murphy@arm.com,
-	ryan.roberts@arm.com,
-	surenb@google.com,
-	v-songbaohua@oppo.com,
-	will@kernel.org,
-	zhengtangquan@oppo.com
-Subject: Re: [RFC PATCH 5/5] dma-mapping: Allow batched DMA sync operations if supported by the arch
-Date: Sat, 22 Nov 2025 07:28:07 +0800
-Message-Id: <20251121232807.40491-1-21cnbao@gmail.com>
-X-Mailer: git-send-email 2.39.3 (Apple Git-146)
-In-Reply-To: <253c870f-770b-4102-be47-f8c06e9e6c31@samsung.com>
-References: <253c870f-770b-4102-be47-f8c06e9e6c31@samsung.com>
+        d=1e100.net; s=20230601; t=1763768147; x=1764372947;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=JbW3/sONqxixSsA0BLfTyZim/TwfutVjhBk5sAO/3O4=;
+        b=wFuQwYH5vN+seRjPnKsQm4B2iKHJcQqh5sjpeJ4ecAxHghwse65q3dq93UBWOb4uXT
+         Z5Yq67lh1slAhFeZWfrR28jTL28f/2OLn8TmWwr7qCy9Gw/+GrNnXqXJA+AeCzH2k4FF
+         T8B38dwrPUThlvfaiP3RCWvH7cqUjywrNZ6RRV7jfcmsrJHAUfC3Qrw2qeBIGIzqYLYS
+         fg2hFZ8+pqKbkJhh4RP/fGkBmRJPhzA+pYQvgi37q9BBOg4zBetHd8twGeYnNn/ZFI0l
+         mSnteV2hvEhj2RjlOBrnQupW6wj/D/Med4m+WwH92V8knh8A35rq9d0qitlDzmyYzLZu
+         JBRg==
+X-Forwarded-Encrypted: i=1; AJvYcCWn6n5QUJcBmVAJoG81jDPp2G5c3FIthoh7cZFel4Ee3nvlmCN96UT8JEDwVmu2wtnEWHlM/A==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yzop6KK+PZfaUaV9zQ1sNsrHJomUsfocx49BYXgZ5uQnmy+5er3
+	hvV92YLm1JQuhxoIR8NVTGYULaouqucRUSmm3xQR93qHJhq+E/CHrOPlP5wCPfoUk84=
+X-Gm-Gg: ASbGncsfps9KDNCCznEHXfujJ/+GSXir4Sl71qBb819SxSuq5vV9rltwYiw0HFTDXNu
+	epQabxv/dQLanRI59d6cGRDGhSRJFpkPmJ/JhamEtwO5RCpGCZTuJ14/nLWPuxXELT88e0U3y3J
+	BFRt3RgGDMwZVmKPpr0T++sjpTSjoAyhWsZuq2MR6+Sd0OI13nMh+m78uh15bJO7a0sbUfF7Ge1
+	A7pU+umeKFal3bsVTqPeoEAu1LbqFiVzy223w2ZGMrE/ZaUEAoZ1cViMbjk42FXwb0W10rmJl/i
+	V99SmxLLeIZrlyQbtMwa31RWU7soVeEkvhmwcoyVukfpr2OkAGdqGTp4bolKkZbVgtK8HgxjbU/
+	HN5PisgYxbI7vBjHX2TgjIe8Ia3Bww3cgo4WSMQn32xugw6k089OGwqF5gXSoCZD5VDOhWSCv0o
+	bOV+9OtmtnsbEp7JiMYKNkBv1ROcIXlto+1/6TqG/DSMfvML0COWcT7XVt
+X-Google-Smtp-Source: AGHT+IHAgZb6cWOpFsRzOf05vRyMCQqUNUfh+Djg/nFpMJErQPOjCq7BzfzVrRR8QE9gGUyLmyT7qw==
+X-Received: by 2002:a05:622a:4d:b0:4ed:68b:c73b with SMTP id d75a77b69052e-4ee58a7f137mr62412831cf.20.1763768146814;
+        Fri, 21 Nov 2025 15:35:46 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-47-55-120-4.dhcp-dynamic.fibreop.ns.bellaliant.net. [47.55.120.4])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8846e54c9d0sm47151386d6.26.2025.11.21.15.35.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 21 Nov 2025 15:35:46 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1vMafJ-00000001bdi-3fWH;
+	Fri, 21 Nov 2025 19:35:45 -0400
+Date: Fri, 21 Nov 2025 19:35:45 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Sairaj Kodilkar <sarunkod@amd.com>
+Cc: joro@8bytes.org, suravee.suthikulpanit@amd.com, will@kernel.org,
+	robin.murphy@arm.com, kevin.tian@intel.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, vasant.hegde@amd.com
+Subject: Re: [RFC PATCH] iommu/amd: Add control register in `struct
+ iommu_hw_info_amd`
+Message-ID: <20251121233545.GJ233636@ziepe.ca>
+References: <20251029095846.4486-1-sarunkod@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20251029095846.4486-1-sarunkod@amd.com>
 
-On Sat, Nov 22, 2025 at 12:09 AM Marek Szyprowski <m.szyprowski@samsung.com> wrote:
->
-> Hi Barry,
->
-[...]
-> This version looks a bit better to me. Similar batching could be added
-> also to dma_iova_link()/dma_iova_sync() paths.
+On Wed, Oct 29, 2025 at 03:28:46PM +0530, Sairaj Kodilkar wrote:
+> When user does IOMMU_GET_HW_INFO ioctl, read the IOMMU control
+> register (MMIO offset 0x0018) and return it as part of
+> `struct iommu_hw_info_amd`.
+> 
+> Userspace can use this information to determine the features
+> supported by the underlying host kernel.
+> 
+> Signed-off-by: Sairaj Kodilkar <sarunkod@amd.com>
+> ---
+> 
+> The patch exposes the control register to the user space so that QEMU
+> can determine the list of features enabled by the host IOMMU driver
+> when there are passthrough devices. QEMU can use this information to
+> selectively enable the guest feature. One example of such feature is
+> enabling upto 2048 MSIs for passthrough devices. QEMU must not enable
+> this feature for passthrough devices when host IOMMU driver has not
+> enabled it.
 
-Thanks, Marek. I will respin a new version. For dma_iova, I assume you meant
-something like the following?
+Please document in the uapi header what bits are meaningful and
+userspace can safely access..
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 7944a3af4545..7bb6ed663236 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -1837,7 +1837,7 @@ static int __dma_iova_link(struct device *dev, dma_addr_t addr,
- 	int prot = dma_info_to_prot(dir, coherent, attrs);
- 
- 	if (!coherent && !(attrs & (DMA_ATTR_SKIP_CPU_SYNC | DMA_ATTR_MMIO)))
--		arch_sync_dma_for_device(phys, size, dir);
-+		arch_sync_dma_for_device_batch_add(phys, size, dir);
- 
- 	return iommu_map_nosync(iommu_get_dma_domain(dev), addr, phys, size,
- 			prot, GFP_ATOMIC);
-@@ -1980,6 +1980,8 @@ int dma_iova_sync(struct device *dev, struct dma_iova_state *state,
- 	dma_addr_t addr = state->addr + offset;
- 	size_t iova_start_pad = iova_offset(iovad, addr);
- 
-+	if (!dev_is_dma_coherent(dev))
-+		arch_sync_dma_batch_flush();
- 	return iommu_sync_map(domain, addr - iova_start_pad,
- 		      iova_align(iovad, size + iova_start_pad));
- }
+You are OK that a 0 register means the kernel is old?
 
-If so, I don't really have such hardware to test. I wonder if I can make it as
-patch 6/6 when respinning, and still mark it as RFC v2. Or should I leave it as
-is and expect someone with the hardware to test and send it?
-
-Thanks
-Barry
+Jason
