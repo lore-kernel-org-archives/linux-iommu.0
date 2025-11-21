@@ -1,193 +1,189 @@
-Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from PH7PR06CU001.outbound.protection.outlook.com (mail-westus3azon11010003.outbound.protection.outlook.com [52.101.201.3])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6BA3436D502
-	for <iommu@lists.linux.dev>; Fri, 21 Nov 2025 09:22:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.42
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763716931; cv=none; b=WmpxqFOwLF5jga1cWnitC3DrYRdhgNKNWRZgyaAJXwTy7m12QkRXfY8dZecY4Pfd1udIa84YRoky8spsdRHux5nb8OJ7UN3bb9vci0Kwo+I7c5JleAVzGYwZHjR8KlNOJJri1wCmCqAUiM1J99QFc0v5RrlbtlnBBWB9zHJiv7E=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763716931; c=relaxed/simple;
-	bh=I0Bv4gnqy6lfo71k0UiPvPPB9o4hXkmDsca3zjfsDUM=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=hgvXaPBdPdIc/KnhrZuVMUaXMT95fst5ju1EWPOXh3iWuWJ+6sTO6aXmVpbgKhZU9yXBlMp8cVw3as4jC6XTF0LLkBPWa0YZLPIuTQy0EQs50EHFWLRVEKm5Ks/+vWSyYM3vENT8frr2rlJZnMfIjepKP0gNyBHwVpA/TVQ+Fmg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=RTkoXwGQ; arc=none smtp.client-ip=209.85.218.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB30B1CDFCA;
+	Fri, 21 Nov 2025 09:42:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.201.3
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1763718125; cv=fail; b=EXH9AMqWgDcYLC79Y8JkRHlHFTwWj2FqsiIJxRakOjBdpOfLIATxjcqfvfffY0ti+jx+fd6MXih87H3XUWQ6OOhueEiH7BKQsjOM16qFSO+EZZf30AHHKYj67dsoUKoh2tkIGB3C03ZAXuA3RZcAaJPb0pVfT/4T17FfDrE3nYU=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1763718125; c=relaxed/simple;
+	bh=YA9rtcIo1FMciVKieY2LNNKyYXPbUkiuidoTVh7p1gE=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=I3ZyQHhn41vwYSBpGEKR+KmBaxcyjzXXe2o9Yvq7EOq6XtkRwgyhV8KxPLKiWUZZVjkJhNzUOSEYeE3L/x+rZXXezcb+LCK4QtmpVogC89ThxqrJP25zJeWrwGmjSEyWKnviQEI91rwy+IhBaCrdUAW+vKVYVmEK4WGk2T7R4UY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=z4JBWwYi; arc=fail smtp.client-ip=52.101.201.3
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="RTkoXwGQ"
-Received: by mail-ej1-f42.google.com with SMTP id a640c23a62f3a-b72cbc24637so319533466b.0
-        for <iommu@lists.linux.dev>; Fri, 21 Nov 2025 01:22:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1763716925; x=1764321725; darn=lists.linux.dev;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=fc4Yy5Q4jGdfB/k2hW8Vi7yiCJn266doHTkByIQ2hDY=;
-        b=RTkoXwGQJ3C5l2vX8sRSZWlCDesn2eR6VjDb4HoiiiUwZkUp5KnJRNYHt+RmN30SHd
-         5/DDNaR9qpp5VCpcm7HiyWTV8acLS14g7NZid+1ASS7pVHRgFvHgKYXTWYfnvTDrverd
-         /1S3Y1L3aedbuBBgOeZS2E3uAQ4qHsoF5Lv1Tg/yz3AtEhlMHxzYQf3zZ9AbKzuHncML
-         r1GJGvcWRN6BpTSjHBo6fjR5VIwfG+puSW2e7aNNzP+P1wJZ6beInPorIUvC2eunt3Ag
-         EjMJV7/fUArPhDH7ARZv225bmz/w+QneNmvYmfkF6CMWGlYQs5L0Cvgpj9u5w2ABjE1P
-         iKqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1763716925; x=1764321725;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=fc4Yy5Q4jGdfB/k2hW8Vi7yiCJn266doHTkByIQ2hDY=;
-        b=dvz5ccQEF3uNk0mL1Pay4Si15JQ09FYf9G3Q1uizcbNrcOx/sO1AznDqlj62ZW6DxJ
-         +YBZBR9C6L0W3Sgjtz8DULUfKKMZ5JFNnTOqAyFf5kA/l//UFxm4wU9WJD26/uarh7av
-         79+RoHm1PuL4Gbytn9OMBooHmxCw2J1yznZBdX7epIqHJMcGEYp+LYolzVqjHnLwWA2y
-         Mz7BkGKTKvEjYlXDwq+s5fuY4DJJ1nhbWCYykFhq4jJL+BVx71DH9KFMc7Qwh0yCITe2
-         kH54aJg0BVOwwSwA42BC0wrPZ+EpnwDTyoamAIj0Gb6t4/7tjdx/Va2MN+XdPNf4Seer
-         tg4w==
-X-Gm-Message-State: AOJu0YzgXy+XkeUEsi+CYfkCMrOk9GBVbYa2nIrpycibx5s4QYdOC66A
-	gDZwpmgUe4vpRhISaaR5Xe76HUoi9jzLPmq6GcHZd2ovda2CjK88BOAfUliPzmELuFZT7gtkeZW
-	rw/O+
-X-Gm-Gg: ASbGncvA8s/GHP8ORxRGE3SfZZASwl8H0UgnYWD1mTiDG/cQs3I0K6eyX0rZ+H/h4B9
-	kQlmqILpf/bKMfQVSXEqaPsmvrFbrR1HONpYn6UgIYC4/MDhsQ/l02HGI+OwaNs6TUvlzbA5zwi
-	elVidOTERWpNWezDttt85sPHHKP3IZyigOGCF+PoPYYBfHIWZHcNm1Ba3IX4JXGxmD8qarisRDu
-	ff6XiJJXmQm3xJOGs4zyCnDGGENxrhE/szZ0XralDENe8lsOADpwknFqxaqU0GbAoZBPbbaPi4v
-	KHD3YzpRhPSrIfo7qUxHvwwfgkev3F4WYMdMQnNz7PCbZ5d7rb9UgxgQA+ba6SrNm56kC/bkehB
-	/JFWOPurr1AJK2v0c67a+GW+r6Sm9R4R/7KKTnxe6xnrCENS7empqO5oQpkluW0Y69teJwq+hsj
-	KR1aRXcv67hCj5LT/b
-X-Google-Smtp-Source: AGHT+IFEtolwjZ4NXU5zUgP7qtE1sFSHAtqzBIYj5YQo85DRGFS3ekZdDQHsiMhuDDgnyn+syGLeOg==
-X-Received: by 2002:a17:907:7292:b0:b70:b077:b94b with SMTP id a640c23a62f3a-b7671a7c4a8mr167202066b.43.1763716925485;
-        Fri, 21 Nov 2025 01:22:05 -0800 (PST)
-Received: from localhost ([196.207.164.177])
-        by smtp.gmail.com with UTF8SMTPSA id a640c23a62f3a-b7654cf0435sm414260066b.4.2025.11.21.01.22.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Nov 2025 01:22:05 -0800 (PST)
-Date: Fri, 21 Nov 2025 12:22:02 +0300
-From: Dan Carpenter <dan.carpenter@linaro.org>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: iommu@lists.linux.dev
-Subject: [bug report] iommupt: Add map_pages op
-Message-ID: <aSAvOn2fgvmF0WYD@stanley.mountain>
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="z4JBWwYi"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=JiLRWI79XRSmyd622crp6JLpA6y7boqQk3WwFIpGMiwufTRet4FA1TpP3FUGHZDeHccaOKKFI8GvoqcIrbvEWA5wDamXEHKnUC21gBEC8KQO6/nZvLXGsuiqU1vTLAbX0tdsL0K8T2DcQ8nCxs7eOpPIixuWf8kgtTUV+wkMne7we9s6O5sN+bJetnaE0sIHlF3jQzll4ONkHDJ1i74YBYRcyul23FQdIdvfdvt9vXpX4LMBrxSErh2IcLHQ9YBLpYLErFX67KCP0H+GKu197rWt4/IcWRpQnhp2qVgVn7d6ruh4nrvqqOCc+2q8Rku5mU09sivHNYDwlkYIJWKjYA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=B4BmiEv7ifXsHiFF/UjvEUg+nuIeBomtzoSNt5UjoyI=;
+ b=Xc8VCFo41AJziYIJrTZAzEHDwEax22jyFXTNtLHesKNvkqgUpv6tOP0E2rwH5Ll7U3okJsjVk3zrRpN3F7Nd227p5k06cbZK/EQTV49e8ifHvAlZJfZGD9EeILh2pQnGEWtFcUojW2WCoIiRFqxEK0swRtf5UOoNFje6bQoVrCJ9udGy/cHsVDVQyY3Dgsik9wdzH4QXJR6XiCrt/LEBXXoA8/gkimRaU7AcaCBU/WAfMlVKvclDDXNgvOw5k1FtC9fkctXoD801epLjM46iHWiePnveOyHoK0TCY9P7jMpPwMsYeKKF4FIyJUXzn1pL9nhn0z3aQHSUh5J8iFKMWg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=B4BmiEv7ifXsHiFF/UjvEUg+nuIeBomtzoSNt5UjoyI=;
+ b=z4JBWwYikJOFn50GpTUp7eRGS0nKzYBjs7ZJcjhzKl5rVLVEphx4CwWo7MeKW8oev6R5qtG/w8ylI92IPjJ+HyfskXcy9PbqQGYqH2Y4tProXhngK9MY16v+PZ2JrHUUyd01/c0IND6Hawg6tdGYvkX5WUMbeVjVHVBNNNclfmc=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
+ MN0PR12MB6152.namprd12.prod.outlook.com (2603:10b6:208:3c4::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9343.10; Fri, 21 Nov
+ 2025 09:42:01 +0000
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::a5e0:9d7e:d941:c74d]) by DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::a5e0:9d7e:d941:c74d%7]) with mapi id 15.20.9343.011; Fri, 21 Nov 2025
+ 09:42:01 +0000
+Message-ID: <690aa990-0bee-46ad-aa32-d4a380b56527@amd.com>
+Date: Fri, 21 Nov 2025 15:11:53 +0530
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommupt: Fix unlikely flows in increase_top()
+To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
+ Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
+ Will Deacon <will@kernel.org>
+Cc: Alejandro Jimenez <alejandro.j.jimenez@oracle.com>,
+ Dan Carpenter <dan.carpenter@linaro.org>, Joerg Roedel
+ <joerg.roedel@amd.com>, Kevin Tian <kevin.tian@intel.com>,
+ Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
+ Samiullah Khawaja <skhawaja@google.com>
+References: <0-v1-93d0836a0e54+aee-iommupt_increase_fix_jgg@nvidia.com>
+Content-Language: en-US
+From: Vasant Hegde <vasant.hegde@amd.com>
+In-Reply-To: <0-v1-93d0836a0e54+aee-iommupt_increase_fix_jgg@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MA0P287CA0014.INDP287.PROD.OUTLOOK.COM
+ (2603:1096:a01:d9::16) To DS7PR12MB6048.namprd12.prod.outlook.com
+ (2603:10b6:8:9f::5)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|MN0PR12MB6152:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7f15a9ca-4042-422e-5e0e-08de28e23876
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|376014|7416014|366016|7053199007;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?Y0ZTRTROKzZUcnhHN0pBdnNwR0pqdFJwRHlPQndFb2NQaUtzZHFlUkVYU3Zy?=
+ =?utf-8?B?cEhFUGZ2Mjl2cjZOZDd0a2ZTZEVMVDhSWk52ODNvVDB0d3RRcnYzQmVJd1pu?=
+ =?utf-8?B?MkQzRENHSmFjU2kwdjlkMFFmenNkN3RqUEEwVUZVRlkzMHJpWkxLQU0wTUhx?=
+ =?utf-8?B?TnMrUXNDM2dMMHlVMDI4NVVJMTQrOXp3bkd4VWt2Q1NNL2ZVdUZVeEhvWHNP?=
+ =?utf-8?B?S1ozQyt0ZUFnakE5bjNES2dvY0NBSDFPN0crMS9PQnRySzBXalp6NWk5RmlV?=
+ =?utf-8?B?QVVTRXJvWVk4ZzJhb3VMakZFZTRkcGgzZWlUR3FXMkdjcnVWRXVJeFgwM2ho?=
+ =?utf-8?B?czcxUjR3MkhOTjFFR0pkSEhEODNibmprQ3dQdTRMUkJ4ZXhVK20zMkZ3Vkdr?=
+ =?utf-8?B?bTcrTlM2VlNZbmRFcnBHWnZrcG9hL201bzI3S3VkWmJyWmxLVFdIWTlQY3Bj?=
+ =?utf-8?B?K0ttSDAvNndxS0xYOXpTeWMvZnhhOXI3a1g3RzJaeDA3Y1BxdVlxWXpmeVJj?=
+ =?utf-8?B?emgybHo3RmlqdHI4V2xMenpzOXl2eWFNMld4alhacEtwR3BpMjRqQTVIcW9Z?=
+ =?utf-8?B?RzArRTZCRXdwUjRSZVp4b0FpOXczNnlaclRicStGL2tkMVpObnVTbmhYQkVo?=
+ =?utf-8?B?c0xOOUxETCtWZTBJV21GdDNPOHYzRG9XSVEwT1hkTUdYVmI0bkhGc2VWVmlY?=
+ =?utf-8?B?N20wd01WSCs5RVdmdUtxVWpsUnJkSDd5NUQwNWFhejZWaEpraUd2OS9FaW15?=
+ =?utf-8?B?bU1QL3BpUGJUeDNNWDVBTkhETndZZXR3WGV1d0FUdjRyeUFBREl2VUdKcnJu?=
+ =?utf-8?B?dkhGcG9vaEcxQXpya2xSb29TRmJDSUZoeHJ4NlIwN3R0dnhwOXZDZng4dmJB?=
+ =?utf-8?B?NEtFVVI4dStRNXRYRmlMMVNsVXU2TjZjQ09RV3dSZFpiZHFGRnExenU1VDc1?=
+ =?utf-8?B?eFUwOEZmUnlXZk1ZUzM2ZERtSnJGdFl0SlBLeWp3U2wyUW9iWndERUhZVzd6?=
+ =?utf-8?B?SnJJT0M0ME5sR1V4cExtZkhSbmRMa2NJcVNNRXBBby9wMVpsdkdWZFo1Wnpt?=
+ =?utf-8?B?ZWhUOGFnK1dDUUVJSjZxbU50T2c2MW9LZUxpaXRxbVZNbFhhcXprY0RLaC85?=
+ =?utf-8?B?cFVNZm5TNlgzTU9WMkwwcmVoUkpxTEx3cWtGTUtwUFdqNjVrT3RxNUZxTlVn?=
+ =?utf-8?B?R1RuTXNRRFFOSlRFSjNKdktjclJwOUJaOHRUWTRxZXRQTUlpcmQ4cGY4dTZn?=
+ =?utf-8?B?K29saWdCZkhPcWl2UFI3NlJPYU1qUDZjNk42ZEhZNUdqb1hmN043KzlBQUZy?=
+ =?utf-8?B?S3A3V0NnWFRiMmcyU2dHd1FOTkM3OHdoZ2tpdURFQnpDUFF2N1lyY20rSzYw?=
+ =?utf-8?B?RS8rUTV1ZmZTRFJCMC84djBaNzllQll1UUJseXd1QWt1bEttK1hmakc2TzRh?=
+ =?utf-8?B?NVZFQmtsbDVoczVha3pNVGc5anRva0NMOE5WTzlYbzR1cGdNRndWZkpsVHZO?=
+ =?utf-8?B?R3RETFY3WEFEc3dhR3VBcGpqT3M4OFhUdG44eXF0T0JEbGhzVlV6MXZ3eDV5?=
+ =?utf-8?B?UkI4ZE91TWRjdWdueXdpNTM1aTNzOWVMK1lZTkFHMFp1UG9INE9nbkVvKzF2?=
+ =?utf-8?B?TndSWDFjb1pWVFU5ZGx1bmdjQmNqVTN3cVlEZVp4d09hZ2g3a1h1SVh0TXlP?=
+ =?utf-8?B?MFNySWpWcWRyaU9uTHpaVE1LU0pBR1lFLzk5a2RDVERvckt2WlZxMjNOZStH?=
+ =?utf-8?B?L1NzWXVSbnQxVGtqWks4Y3VqTHdwM1NXSUpYTUNHTEJ1NlRNbWp5YW80MzNL?=
+ =?utf-8?B?dFU5cW1IR0ZXODZpNDRCQ2wrZ2RMbk9QTCtTVkNjZUdBcWJoTFZBUSt1cU1y?=
+ =?utf-8?B?VXJrUytpQWRHU2lESHd2S0duc0VSTHYvOVhWam1HYmhLV2grTG9BM3p1Rk85?=
+ =?utf-8?B?UW5jUDhobUNqK0Qyb0Y1QjlYSE1ISGNUeW1FOS9iaHRjOW5lbnBWVFluRjBN?=
+ =?utf-8?B?cnZhcTlqR1FnPT0=?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(7416014)(366016)(7053199007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?a3JpbzZSWVJWU1d6eWtabnZhMVVPUjhaS3NaZmozQmdtUHRBZTMrbVBha1Vr?=
+ =?utf-8?B?TkE1R2psdHFKUGduSE9qaXR4OGUzRUIrSnN2RTkwQ1ozYUJ2QXVtQ3F1K1NM?=
+ =?utf-8?B?L0VkNXZPTElsYnlqVmxWY25LSVN1YzJVWWhNU1FwbGlBenJKZCs2MXRTTGp2?=
+ =?utf-8?B?QUtTNVg5RTgycVhyRjlnNGtyNmp4dWtKOE50dHpCK1NYNXIrMGF2Ykt3T0dp?=
+ =?utf-8?B?Qm5zeWpRamZQa2ZEa0paajc5Sjc5N3JPQ1g2UjMrNjBvQ0tPKzErZVNlSHl3?=
+ =?utf-8?B?d1RFdnNZc3kwRWo2SXZTdmMvUmYzTTBMQW13SGJsYUpqSllJWHlVVGV2aEdV?=
+ =?utf-8?B?SzlBVXRWekI1cTQ0NHBsYnB1Nnpwa2RlRGxzNVJhT0tKUzZtOUdwbVptNkds?=
+ =?utf-8?B?dEMyMjZyT29vbkl2MVZkN0tzc1VFbCtYNy8xNlluSE4rUVNVN1pUeERqYmRK?=
+ =?utf-8?B?a1owSTNJWlhwdk9MYk9NSkVta2tLNE9tSGh4ekZwanVxR0hHdUljelRnRnFE?=
+ =?utf-8?B?OXFROFh2OWNnWDBXdmI5WkU4L085cnBHVHJuelJrcU10SE03MVlKQ0xleDk5?=
+ =?utf-8?B?MVlURGRVMWlObEJzRjVtbDRERDUzbXdLTjBQRTk0aCs4UEhOV2tkU1JMbVJ4?=
+ =?utf-8?B?TC9tQyt2K2NNSmlhM0FpQ0FsOElwQ1FVOEx1RXBFK29IMmZSRFRwQ0VEVHJL?=
+ =?utf-8?B?YUVyZ2ZQcm5oUk1OaDJzaUkwbEJsQW9tSXQ5Ny94UCtldi9VNWNSa0RSc0Ru?=
+ =?utf-8?B?akFiYWNqMWdMWXllVmtMUFZhZktNY3Bab1Z4Z2xvWkxKaXBRWXBsSi95S1dP?=
+ =?utf-8?B?QzAxanhMRWR1Qjg4SHcwbUh4Tlg2TEI2RE1qOEpOTHVIb0R1Rnp4Mkl6SnEv?=
+ =?utf-8?B?YnVMQVAvMDUzTyszZVNPV3R6WnlFWFI3QTkzZ0gxK2xzWG5ZYzNieHJNOVVP?=
+ =?utf-8?B?L0xhVDFEYk5UZXhDTWhLWHJsN3M2QzllUk40N1FlN3J3alptS2tyTCt3dGZJ?=
+ =?utf-8?B?dUxlYmZqWnlTa2syQmkwNnQ1bFRhOVZveitQUXlxVERzWUJCcDgzUzgzME1E?=
+ =?utf-8?B?elIvZzlLZDhFQ1BLS1JRakFoTkMyN2V5UHhncWNtQTVkb3JuVmQ3R01zYjNR?=
+ =?utf-8?B?ckxubXNkU1M3cFRlRm5qWUliVGQ5VUFuS0NzdUk4SGIwMWhIeDFMVUZOL3FP?=
+ =?utf-8?B?Z3dZOFZjaG5FckRXcGhSTVQ1TjVzT1poekFOSFpFSG9DcjM5ZWNXbHhKY2FN?=
+ =?utf-8?B?MDNlSEFVTktDN2hNalllYXJySC9OUGIyM2FsQjZzLyswNU52czhoTkRMYzQz?=
+ =?utf-8?B?RW9yNVpEaUVRTCtQcnVpK2tOY2FOQlArZjg4cWJwNmJ4c1FBbW5qalhRRW5R?=
+ =?utf-8?B?KzRvdXdCdjFkd1lCNGtNQ3p5R2V0eFNhY0tEVFc0V2JhelM3N1c0QVVhS2R0?=
+ =?utf-8?B?R1huOXZDTzlqV3lFQk5mQmtvZ0M4dEdzRkpDczNRMUpoMWY5T0lXdWhRTm1w?=
+ =?utf-8?B?eWxMVWNWc0taVzJNbnFRUDdYMWxmQ2dvcFRNU3l0MnpzQVZvMmVodDhCc0tr?=
+ =?utf-8?B?MjlnM1hrdUVkN2YxWU1wSE5WSFpmM2NZMkc2Sndqd25NVEVDRDJjampXMWRj?=
+ =?utf-8?B?cm1Ea1NMdFVxUUQ0LzhCY25tOWh0cjJMMjJPMkk0QXQxRSs1Q2xwemVGWlc1?=
+ =?utf-8?B?T3lNMlhjL3lXdlFQMXRLajNVcGlUeE1FUkdyeEhBcEU5cVp4RzhIamRQNWlI?=
+ =?utf-8?B?cjlRU3ZtNFVBSSt0V3JsNnBiWlprcmVtSlRmZ0wxbTkrV1FDaHZ5bUhHcExt?=
+ =?utf-8?B?TlNMcGJiUWloQkYxNzNhczlFODY1RE1xVi9KVmFEblFmaUl1UnNpWU9pYmZJ?=
+ =?utf-8?B?Z3IxeStGTGZlZVplU3BLNTgyVTZsQUJvSEZraHlsZG9Fa1VYd25xK1NLQ1VW?=
+ =?utf-8?B?dHBDaUJKclhCRVl4UzlWY21reTRYeE5oSldNUnZxOVlqUHJIVmtKV2xWWUdL?=
+ =?utf-8?B?Sm5pUm1wYnFBOHcvaXlEVFJBMWp3OGVtUTVBUGlnYjA4Z05ZdWYvQ2xYS050?=
+ =?utf-8?B?VGJZQW1vYzdzYXJVNHFGWWNMV3p6ajUyeGQ4RU1BelpkQWJtdTBhS0RJVS9K?=
+ =?utf-8?Q?F58ZaXKnsRe/ZUQQJFq5CjXYp?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7f15a9ca-4042-422e-5e0e-08de28e23876
+X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Nov 2025 09:42:01.1816
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6Av4OKAURTRfiDTcwwbTWWlFEljBNY29upE8DsRBxuZY16wZGzh2amWiyLosCBjdQiAnFzj4naMc7FD3fGZZXA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB6152
 
-Hello Jason Gunthorpe,
+On 11/21/2025 12:17 AM, Jason Gunthorpe wrote:
+> Since increase_top() does it's own READ_ONCE() on top_of_table, the
+> caller's prior READ_ONCE() could be inconsistent and the first time
+> through the loop we may actually already have the right level if two
+> threads are racing map.
+> 
+> In this case new_level will be left uninitialized.
+> 
+> Further all the exits from the loop have to either commit to the new top
+> or free any memory allocated so the early return must be a goto err_free.
+> 
+> Make it so the only break from the loop always sets new_level to the right
+> value and all other exits go to err_free. Use pts.level (the pts
+> represents the top we are stacking) within the loop instead of new_level.
+> 
+> Fixes: dcd6a011a8d5 ("iommupt: Add map_pages op")
+> Reported-by: Dan Carpenter <dan.carpenter@linaro.org>
+> Closes: https://lore.kernel.org/r/aRwgNW9PiW2j-Qwo@stanley.mountain
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 
-Commit dcd6a011a8d5 ("iommupt: Add map_pages op") from Nov 4, 2025
-(linux-next), leads to the following Smatch static checker warning:
 
-	drivers/iommu/generic_pt/fmt/../iommu_pt.h:701 increase_top()
-	warn: missing unwind goto?
+Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
 
-drivers/iommu/generic_pt/fmt/../iommu_pt.h
-    665 static int increase_top(struct pt_iommu *iommu_table, struct pt_range *range,
-    666                         struct pt_iommu_map_args *map)
-    667 {
-    668         struct iommu_pages_list free_list = IOMMU_PAGES_LIST_INIT(free_list);
-    669         struct pt_common *common = common_from_iommu(iommu_table);
-    670         uintptr_t top_of_table = READ_ONCE(common->top_of_table);
-    671         uintptr_t new_top_of_table = top_of_table;
-    672         struct pt_table_p *table_mem;
-    673         unsigned int new_level;
-    674         spinlock_t *domain_lock;
-    675         unsigned long flags;
-    676         int ret;
-    677 
-    678         while (true) {
-    679                 struct pt_range top_range =
-    680                         _pt_top_range(common, new_top_of_table);
-    681                 struct pt_state pts = pt_init_top(&top_range);
-    682 
-    683                 top_range.va = range->va;
-    684                 top_range.last_va = range->last_va;
-    685 
-    686                 if (!pt_check_range(&top_range) && map->leaf_level <= pts.level)
-    687                         break;
-    688 
-    689                 pts.level++;
-    690                 if (pts.level > PT_MAX_TOP_LEVEL ||
-    691                     pt_table_item_lg2sz(&pts) >= common->max_vasz_lg2) {
-    692                         ret = -ERANGE;
-    693                         goto err_free;
-    694                 }
-    695 
-    696                 new_level = pts.level;
-    697                 table_mem =
-    698                         table_alloc_top(common, _pt_top_set(NULL, pts.level),
-    699                                         map->attrs.gfp, ALLOC_DEFER_COHERENT_FLUSH);
-    700                 if (IS_ERR(table_mem))
---> 701                         return PTR_ERR(table_mem);
+-Vasant
 
-goto err_free?  Although, why do we need to call
-iommu_pages_stop_incoherent_list() when that isn't started
-
-    702                 iommu_pages_list_add(&free_list, table_mem);
-    703 
-    704                 /* The new table links to the lower table always at index 0 */
-    705                 top_range.va = 0;
-    706                 top_range.top_level = new_level;
-    707                 pts.table_lower = pts.table;
-    708                 pts.table = table_mem;
-    709                 pt_load_single_entry(&pts);
-    710                 PT_WARN_ON(pts.index != 0);
-    711                 pt_install_table(&pts, virt_to_phys(pts.table_lower),
-    712                                  &map->attrs);
-    713                 new_top_of_table = _pt_top_set(pts.table, pts.level);
-    714         }
-    715 
-    716         /*
-    717          * Avoid double flushing, flush it once after all pt_install_table()
-    718          */
-    719         if (pt_feature(common, PT_FEAT_DMA_INCOHERENT)) {
-    720                 ret = iommu_pages_start_incoherent_list(
-    721                         &free_list, iommu_table->iommu_device);
-
-until here.
-
-    722                 if (ret)
-    723                         goto err_free;
-    724         }
-    725 
-    726         /*
-    727          * top_of_table is write locked by the spinlock, but readers can use
-    728          * READ_ONCE() to get the value. Since we encode both the level and the
-    729          * pointer in one quanta the lockless reader will always see something
-    730          * valid. The HW must be updated to the new level under the spinlock
-    731          * before top_of_table is updated so that concurrent readers don't map
-    732          * into the new level until it is fully functional. If another thread
-    733          * already updated it while we were working then throw everything away
-    734          * and try again.
-    735          */
-    736         domain_lock = iommu_table->driver_ops->get_top_lock(iommu_table);
-    737         spin_lock_irqsave(domain_lock, flags);
-    738         if (common->top_of_table != top_of_table) {
-    739                 spin_unlock_irqrestore(domain_lock, flags);
-    740                 ret = -EAGAIN;
-    741                 goto err_free;
-    742         }
-    743 
-    744         /*
-    745          * We do not issue any flushes for change_top on the expectation that
-    746          * any walk cache will not become a problem by adding another layer to
-    747          * the tree. Misses will rewalk from the updated top pointer, hits
-    748          * continue to be correct. Negative caching is fine too since all the
-    749          * new IOVA added by the new top is non-present.
-    750          */
-    751         iommu_table->driver_ops->change_top(
-    752                 iommu_table, virt_to_phys(table_mem), new_level);
-    753         WRITE_ONCE(common->top_of_table, new_top_of_table);
-    754         spin_unlock_irqrestore(domain_lock, flags);
-    755         return 0;
-    756 
-    757 err_free:
-    758         if (pt_feature(common, PT_FEAT_DMA_INCOHERENT))
-    759                 iommu_pages_stop_incoherent_list(&free_list,
-    760                                                  iommu_table->iommu_device);
-    761         iommu_put_pages_list(&free_list);
-    762         return ret;
-    763 }
-
-regards,
-dan carpenter
