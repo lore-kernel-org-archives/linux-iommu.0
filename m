@@ -1,135 +1,128 @@
-Received: from mail-ej1-f74.google.com (mail-ej1-f74.google.com [209.85.218.74])
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA3A4261B9D
-	for <iommu@lists.linux.dev>; Mon, 24 Nov 2025 10:48:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.74
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FC1327A130
+	for <iommu@lists.linux.dev>; Mon, 24 Nov 2025 11:04:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763981323; cv=none; b=DXK84hSjwPi2teqRQLx91vBP3Vqr/9TTOj4/TwTJ/2sJSmBoHv9ABigtTFrIHkaa+/7Vxb4+bChHOsQKwiQ4WcBWwpKd7P4f1SjwxH3ajIrn7xDCWM/Mof+g97EV2JnkG2Az1l+2xBQ4WJBtWomSY5D7nBztD/2HipcvhRCfwnw=
+	t=1763982285; cv=none; b=FnJy2fNhEp1kgfuCIIdwwT03bDiAFXstL2PD2ULs6Pe7dx2xdACZfkxxkzKPUYK6mWFuh7W5GVSPBdTHdnP5zWTm51yXmk/4rn340AFheTW/d+HAWOoASiGWpUaHiXFqQdvqecLLb1XxSep0TzgYufEFb3qmNAIgRXycnLG6kSQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763981323; c=relaxed/simple;
-	bh=MHYfe8bGDtNpXB2soBddZZBCJYpkG+5RTuO0JL8Lr+Q=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=acy4gZXwkuDdLn9cn6vUZfMTGKr9w2BHxJNWiMt4bfEFrjjOMhXQQtnIL4e66EgLV1S0eyGe4s/60ZfkK2YdDOIOZFtffMZuPCZojg5Q9650kx/65QvJ/5d1LymyJK0F0CcGZ+KNAYo7ymaVTFk7kQzeCfy4H5lHuYbWIctuNFQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--lrizzo.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=4oyrBbV+; arc=none smtp.client-ip=209.85.218.74
+	s=arc-20240116; t=1763982285; c=relaxed/simple;
+	bh=yGGtQ01i6ULcnlphEJ3YP5AEFLU+uu4BCrDMhyrpMes=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=lkvxJS0H6wyLxlRcYYN7JyymZ+7Dz/W1cE9qdTGL2AukpFS+XJ4Zz3XCQOBdhrM7CS+tbuozwjNx6TT29icTOqxu08JLODFl+HkXuWVE+2qZCD7D/CR3JXOwcIm53DOvlWSY2XvtWpwPoK74bhd41IFQDrmb2AIQ5hQfH2UFZRU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=shLHuXwT; arc=none smtp.client-ip=209.85.128.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--lrizzo.bounces.google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="4oyrBbV+"
-Received: by mail-ej1-f74.google.com with SMTP id a640c23a62f3a-b73599315adso309485066b.2
-        for <iommu@lists.linux.dev>; Mon, 24 Nov 2025 02:48:41 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="shLHuXwT"
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-4779e2ac121so93815e9.1
+        for <iommu@lists.linux.dev>; Mon, 24 Nov 2025 03:04:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1763981320; x=1764586120; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=lX+jdToFx/xjPzdH2tpm4CYF/HvbIMVX0oD+xboE4lA=;
-        b=4oyrBbV+HRZgJyZExEW60WkMI3gLMHyycRVmVsepha60Rar7/D8JgY3Dgw4QKzpFIh
-         4ghLSXwA8qnFrsItFcBoWrcU7vOayW/xR2OmOIEQnbydYRwG9mBKbMSOdijNTXDtUNbX
-         Vpk28AuBhCaHZvjPg0kGLPvxNMr9ddvvTa68L9B0/3ODyGPdXvzp4msPPcvt2xVyUm/k
-         +CZEUnX/G2YHasV8u5GWvYhAqKZlB2SwRG0woezrLcPK4/MqqMI7zkVCTuxzfCSuK1qx
-         DJjwQmtYcCcOvrYBjiMz7L9y1fGxWBNMSSlcaoZyLdHutuKT1p2uRvNU9CuRXW0bCg6W
-         L/PA==
+        d=google.com; s=20230601; t=1763982281; x=1764587081; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=IxY0zFsSsb4UvWV8JkswEu93uViR5DhGzNdHTRi5eEs=;
+        b=shLHuXwTvkKlS9Iwd3ENIQvzPAO6BgY8NHKkWTAEiNNCHB0+zs1qEtiNgWzzw4uqXM
+         gbvjXapxrKn+RzeQClIKXr4ztpPCNrWjcXTwKxvCSY3fUrfqjhOHfAVXg0yFlzGOGD+z
+         SPFhM5HrIG0cUAKxdj57YG65Q9SdIv8AO6TuzTKRZxRdd7ZRe/Tzn/JfrUrGokIJZj6E
+         z2oo0PgVmkTrKOfUxPwj68+Z08yavPDtwKHu51IMsUUjH/atY0jGToRtxCLK1CPP6idE
+         8OtvifLPbnDwAaCGXoFYDcV6chmKqqtkpvgR441cHIHiQUbXs5YVSuF2wE37Ouq8M2wk
+         mrEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1763981320; x=1764586120;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=lX+jdToFx/xjPzdH2tpm4CYF/HvbIMVX0oD+xboE4lA=;
-        b=X/aq42rEjBZzq7FbTgz2TogtZ9yi1JQidb8scIGW2nbVq07mC8RvOiAW2kB5x/vBIv
-         00Wn/zdr/+jO3H9dHYe6msLRuNIPtLtKL1zbAm5fdg4gY/7e352KaO9cxT355NKMOI3a
-         mUdKAOE6Cm7Wj2PhqXMG5NML7Na3QLFXWgF0xdi2CgZImfI7odIqEpKRycOaFZsHJ/cH
-         kMJW42Zpc3kZnG8Fsp3yOVD1hirdFIPbyTnBCYimSNFIaaMGbx4c60mwM0p5KOl6lScm
-         bEa3Es7lJGjn2OHCrefh0UBHwc6WfhQnvRCq8M4o3EcUoIhnFTrKGpZr7Yoz+XNMNEpV
-         jeEw==
-X-Forwarded-Encrypted: i=1; AJvYcCVuL15YO8EzKkV/giiHVnSnxWlx42yIZ/qFB/t8R1xOJ29rmQ4MMsL9XFQu7imVdg9TP2/p0g==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyB7S/QOslbiaqp2zAh3gWVIar6Y2tIxnRnNGb/tJTi8ke0JyVU
-	OufcPbdwHSElXYZw4KbhHIQVJBG5v1M3yekpvTWqAZ5MxiodWFsjwWqwYVVTkqIEETcztYQLMYe
-	JEu/kyQ==
-X-Google-Smtp-Source: AGHT+IFoktae1A0BdrqpkwJD+MWHUxshGOT+nbpyXrTVzweW/1e+RqyV/RiSfy7EG3W/P8GjNhl7vPPfcAk=
-X-Received: from ejcst14.prod.google.com ([2002:a17:907:c08e:b0:b73:724e:575e])
- (user=lrizzo job=prod-delivery.src-stubby-dispatcher) by 2002:a17:906:4fce:b0:b73:a319:e8be
- with SMTP id a640c23a62f3a-b7671a221cfmr1351585866b.57.1763981320135; Mon, 24
- Nov 2025 02:48:40 -0800 (PST)
-Date: Mon, 24 Nov 2025 10:48:36 +0000
-In-Reply-To: <20240423174114.526704-1-jacob.jun.pan@linux.intel.com>
+        d=1e100.net; s=20230601; t=1763982281; x=1764587081;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=IxY0zFsSsb4UvWV8JkswEu93uViR5DhGzNdHTRi5eEs=;
+        b=B6CdTw3Ij2zZP1qjNYm//643LuZ5RYOnb9evOUKjoOzWtxTgM4LTvszJQYhBujoaLg
+         smpZu7HeR27iWtreggoyKhZ4J7dlcNY9Weh3QYcAgFoHbe4HUwI30wgmgGWWu+sLTuaM
+         TscWQiY1wHtXpmhcnOHF/xmS8SGzb2Wff83xjgtr6TLQqEIMmv9CRep2eLjsCWplJL16
+         1dYRmVvay8pRSGVP9OMRU84aciZpeOdqOG7TnxHyd6DM3loa0M4PMv12uXrcYb9MHx5N
+         8ioo64d40sqdT/2LbaMKmSkTMhWdIiMbdsTGEWH6hQfmDPAn0CLKMPBvIxR0ZvOnoCe1
+         rCAw==
+X-Forwarded-Encrypted: i=1; AJvYcCXv4DkcyDWb84Ysnf9s5N0XS3dfzLRpw+SRNFJOfgPYC4DuOnTWTS3CewkLa1Xwy8lWHR9iJQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxOgFEiAiddHwzQuU9feY0vtda9GTdnCfak/XRUnxhxwZm0o7Z2
+	oEugGdH6kuMII4Ssny+/NMa63FFWg9XuX0s2rXdgsGss/wZSb03PYGKX3B7hXofQNA==
+X-Gm-Gg: ASbGncuWmn2TglBp54joVnSbqJCYstlBFUqUz1z2xtVBkqXzOdcxKxf1/VLn8eA7jOZ
+	5dn43WIJuLSmGOGTbOdBNnDRrX2L+gxxwj1L2ios0kiOccO+arhcXX8co8wRRkm1uTKykGT6dRs
+	MeIOoYXpi8lEy/wqqTjVc3mm/B/x3RRNi9x5IUn6cLKZ8gZ4+NrtfS9ihomMkKDgDvu9wTLUZbE
+	kY6TDTzCa03SDYgj0/BgTL+JoZzwPUBpJHYnkdWCBLqls/ggarZDsqT8MhLL7bq8TXI/V3cnjj+
+	9Rd5uWp1+14hwnbQPf3Fs6pTj/5lkaPQz261q7CnLoaly2nEXQ5KnsFNPH1ab0OhrToAgQNCO8A
+	3QPxrK0pOPKgm+eUz6n8uLKzyktX/T09PQ7JTAElN25ztUpDvAYXKLXKvNdCkzmc7DR0sA4vfjI
+	6CxkgiZoRPpYxAdqdgVrdn/yiqY8DbGSVvR7gqVjpItHlYvyTB5g==
+X-Google-Smtp-Source: AGHT+IHfC/zx3CtUqS+QNQEXWjnlvj8ok2cj2JsEBQqJZIsdvVIDhcfsaBV55OT3BOjTGNisyGw1Aw==
+X-Received: by 2002:a05:600c:a402:b0:477:2f6f:44db with SMTP id 5b1f17b1804b1-477c5ea4a1fmr1591355e9.5.1763982281333;
+        Mon, 24 Nov 2025 03:04:41 -0800 (PST)
+Received: from google.com (54.140.140.34.bc.googleusercontent.com. [34.140.140.54])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-477bf226c2asm188677715e9.10.2025.11.24.03.04.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Nov 2025 03:04:40 -0800 (PST)
+Date: Mon, 24 Nov 2025 11:04:37 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: Randy Dunlap <rdunlap@infradead.org>
+Cc: linux-mm@kvack.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	linux-doc@vger.kernel.org, corbet@lwn.net, joro@8bytes.org,
+	will@kernel.org, robin.murphy@arm.com, akpm@linux-foundation.org,
+	vbabka@suse.cz, surenb@google.com, mhocko@suse.com,
+	jackmanb@google.com, hannes@cmpxchg.org, ziy@nvidia.com,
+	david@redhat.com, lorenzo.stoakes@oracle.com,
+	Liam.Howlett@oracle.com, rppt@kernel.org,
+	Qinxin Xia <xiaqinxin@huawei.com>
+Subject: Re: [PATCH v2 1/4] drivers/iommu: Add page_ext for
+ IOMMU_DEBUG_PAGEALLOC
+Message-ID: <aSQ7xfQjkeAMHiLC@google.com>
+References: <20251106163953.1971067-1-smostafa@google.com>
+ <20251106163953.1971067-2-smostafa@google.com>
+ <55391dad-339b-47f8-8996-afe337b238e0@infradead.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20240423174114.526704-1-jacob.jun.pan@linux.intel.com>
-X-Mailer: git-send-email 2.52.0.rc2.455.g230fcf2819-goog
-Message-ID: <20251124104836.3685533-1-lrizzo@google.com>
-Subject: Re: [PATCH v3  00/12] Coalesced Interrupt Delivery with posted MSI
-From: Luigi Rizzo <lrizzo@google.com>
-To: jacob.jun.pan@linux.intel.com, lrizzo@google.com, rizzo.unipi@gmail.com, 
-	seanjc@google.com, tglx@linutronix.de
-Cc: a.manzanares@samsung.com, acme@kernel.org, ashok.raj@intel.com, 
-	axboe@kernel.dk, baolu.lu@linux.intel.com, bp@alien8.de, 
-	dan.j.williams@intel.com, dave.hansen@intel.com, guang.zeng@intel.com, 
-	helgaas@kernel.org, hpa@zytor.com, iommu@lists.linux.dev, 
-	jim.harris@samsung.com, joro@8bytes.org, kevin.tian@intel.com, 
-	kvm@vger.kernel.org, linux-kernel@vger.kernel.org, maz@kernel.org, 
-	mingo@redhat.com, oliver.sang@intel.com, paul.e.luse@intel.com, 
-	peterz@infradead.org, robert.hoo.linux@gmail.com, robin.murphy@arm.com, 
-	x86@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <55391dad-339b-47f8-8996-afe337b238e0@infradead.org>
 
-I think there is an inherent race condition when intremap=posted_msi
-and the IRQ subsystem resends pending interrupts via __apic_send_IPI().
+On Thu, Nov 06, 2025 at 11:50:11AM -0800, Randy Dunlap wrote:
+> 
+> 
+> > diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> > index 70d29b14d851..6b5e9a2d936a 100644
+> > --- a/drivers/iommu/Kconfig
+> > +++ b/drivers/iommu/Kconfig
+> > @@ -383,4 +383,19 @@ config SPRD_IOMMU
+> >  
+> >  	  Say Y here if you want to use the multimedia devices listed above.
+> >  
+> > +config IOMMU_DEBUG_PAGEALLOC
+> > +	bool "Debug page memory allocations against IOMMU"
+> > +	depends on DEBUG_PAGEALLOC && IOMMU_API && PAGE_EXTENSION
+> > +	help
+> > +	  This config checks that a page is freed(unmapped) or mapped by the
+> > +	  kernel is not mapped in any IOMMU domain. It can help with debugging
+> > +	  use-after-free or out-of-bound maps from drivers doing DMA through
+> > +	  the IOMMU API.
+> > +	  This santaizer can have false-negative cases where some problems
+> 
+> 	       sanitizer
 
-In detail:
-intremap=posted_msi does not process vectors for which the
-corresponding bit in the PIR register is set.
+I will fix it.
 
-Now say that, for whatever reason, the IRQ infrastructure intercepts
-an interrupt marking it as PENDING. . handle_edge_irq() and many other
-places in kernel/irq have sections of code like this:
+Thanks,
+Mostafa
 
-    if (!irq_may_run(desc)) {
-        desc->istate |= IRQS_PENDING;
-	mask_ack_irq(desc);
-	goto out_unlock;
-    }
-
-Then eventually check_irq_resend() will try to resend pending interrupts
-
-    desc->istate &= ~IRQS_PENDING;
-    if (!try_retrigger(desc))
-        err = irq_sw_resend(desc);
-
-try_retrigger() on x86 eventually calls apic_retrigger_irq() which
-uses __apic_send_IPI(). Unfortunately the latter does not seem to
-set the 'vector' bit in the PIR (nor sends the POSTED_MSI interrupt)
-thus potentially causing a lost interrupt unless there is some other
-spontaneous interrupt coming from the device.
-
-I could verify the stall (forcing the path that sets IRQS_PENDING),
-and could verify that the patch below fixes the problem
-
- static int apic_retrigger_irq(struct irq_data *irqd)
- {
-        struct apic_chip_data *apicd = apic_chip_data(irqd);
-        unsigned long flags;
-+       uint vec;
-
-        raw_spin_lock_irqsave(&vector_lock, flags);
-+       vec = apicd->vector;
-+       if (posted_msi_supported() &&
-+           vec >= FIRST_EXTERNAL_VECTOR && vec < FIRST_SYSTEM_VECTOR) {
-+               struct pi_desc *pid = per_cpu_ptr(&posted_msi_pi_desc, apicd->cpu);
-
-+               set_bit(vec, (unsigned long *)pid->pir64);
-+               __apic_send_IPI(apicd->cpu, POSTED_MSI_NOTIFICATION_VECTOR);
-+       } else {
-                __apic_send_IPI(apicd->cpu, apicd->vector);
-+       }
-        raw_spin_unlock_irqrestore(&vector_lock, flags);
-
-        return 1;
-}
-
-Am I missing something ? any better fix ?
-
-cheers
-luigi
+> 
+> > +	  won't be detected.
+> > +	  Expect overhead when enabling this and enabling the kernel command
+> > +	  line iommu.debug_pagealloc.
+> > +
+> > +	  If unsure, say N here.
+> > +
+> >  endif # IOMMU_SUPPORT
+> 
+> 
+> -- 
+> ~Randy
+> 
