@@ -1,50 +1,62 @@
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A85AE2C21C4
-	for <iommu@lists.linux.dev>; Mon, 24 Nov 2025 17:10:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8E713148AF;
+	Mon, 24 Nov 2025 17:11:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764004224; cv=none; b=uJzJDAYqgIOHM9NBTBBxLGS4RQJ5pvwdheErR0ae9JXxfAUtd1sdgg+sz3QlFAcR5wxzp8oA5/peEfJ/gIq+VT/ykbNbqn67OEPB/re9LZZTmh3rEQkZU3kikfzX9GDNxPMi3Af9C3WEWn4d0+Tg5UV7P0GZJkj3l+VgBnIiB7A=
+	t=1764004304; cv=none; b=owJQ8/SkCAA7A1do6GesLKRxQiS+qXn1eZG9HJnzYDb7BfWaZD2Yuwz5MjlbN9y8FYhl8cAFneNHk2oq5X14WwJQ3ir390rtABQMWXwdhywIrJKo/WUFnMaHL0p3igZ4FS20Ayi7sWPcb8VOO2XnVD816vpCKPoCJ8Wjs2UE830=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764004224; c=relaxed/simple;
-	bh=TvGQEPehomkhpMiEMdWeXwbg9bARrQ64w7tg479QubU=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type:
-	 References; b=hbwWgO2Yrc8+BaCPZkCJSsUMwBbDbTzMMnHC7XZdVRC5ebKd23uaZwwX4GJ1iiOqEla63Zq18PbWl1gxzqYzaZFlIO1G6/UXgFYilPzgQpOpYvE0/Vr/qoHVv48K4gn5nLzRyZAk5LGFXTg6KzT366+2GauZ5stWF0FPW1bLUpw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=bunUVwGO; arc=none smtp.client-ip=210.118.77.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1764004304; c=relaxed/simple;
+	bh=U/HZ0cTTEIVztVskAEtH0DRboFwjWqo4nfv9fToMia0=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=WTawpkQxxeoePZQU9xr0gRiG0Sl8wD87tQNO4nVvhvx/CTET7ysoBK5VXg6+iBk2QgmALoGTocM7bQPXgkF/6Begk3HLTtu+y1iYWbZGeAcrGW54JK7xu7a/RS7VhC305fN2cOzv1DQVp3qAJyfGq61ZyAof2d+yjOM0O137+6I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=E/5MMTPq; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="bunUVwGO"
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20251124171014euoutp01c8d2ae4d6e9f3c485fc5b42688f8ff2d~7AHyokrRa2284522845euoutp01C
-	for <iommu@lists.linux.dev>; Mon, 24 Nov 2025 17:10:14 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20251124171014euoutp01c8d2ae4d6e9f3c485fc5b42688f8ff2d~7AHyokrRa2284522845euoutp01C
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1764004214;
-	bh=GuOlQwatLAHwLUXbJGT0mX7CgwjO6mRY7JNcewUFvkI=;
-	h=From:To:Cc:Subject:Date:References:From;
-	b=bunUVwGOT+BuAD0GEkNQ5DGbhCero7md8fLrVskQdk6PNdht2i4noQhJi9U7W0+j4
-	 gkURzblOqlK98TE260KtWx85uFVwsI2oT0z4skpW7bwb+qrNXsi2Ol5p2lUiFXhxc1
-	 2Ja9Ake5qiUeTNZCHPiw6CKM/mQWzsTVp/Kn1qdk=
-Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20251124171014eucas1p21d3a0f2c10b43bfdb7861ee804f09951~7AHyYB02T0903309033eucas1p24;
-	Mon, 24 Nov 2025 17:10:14 +0000 (GMT)
-Received: from AMDC4653.digital.local (unknown [106.120.51.32]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20251124171013eusmtip1c9e573668ca8a10d4f391c71b45692c7~7AHx_GDoU1613916139eusmtip1B;
-	Mon, 24 Nov 2025 17:10:13 +0000 (GMT)
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-To: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy
-	<robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
-	<will@kernel.org>, Leon Romanovsky <leon@kernel.org>, Jason Gunthorpe
-	<jgg@ziepe.ca>
-Subject: [PATCH] iommu/dma: add missing support for DMA_ATTR_MMIO for
- dma_iova_unlink()
-Date: Mon, 24 Nov 2025 18:09:55 +0100
-Message-Id: <20251124170955.3884351-1-m.szyprowski@samsung.com>
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="E/5MMTPq"
+Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 5AOFuKEa776425;
+	Mon, 24 Nov 2025 17:11:24 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:date:from:message-id:mime-version
+	:subject:to; s=qcppdkim1; bh=MEAZ+s7oSiGGfdL5l2JcoHJfpVSigWIAdB2
+	fV9O9CG0=; b=E/5MMTPqEDmfq6ryTUYL63jD6c/tKq9PRhh2pIF5tNBopuIxKQ3
+	BNi+Xck2IY540ouLWD5nDo+kHAbcUjpWzzXmSBiOcic2ocWrZL5CqS2CQHSoUhsv
+	Cktj0fXM4jp8Kvl3ww+pT+wHeKejAiOGR8vrnlk0fY2eVFrpfbvxSzGg1OiXBNgi
+	dtqVQ5wcJQl/viyfnrdPG30+xDEd1e52OlX0j4wgJqEnEH7VfQbsXmDiBa09e7aU
+	ShwXBBbvFVkL0IsmGs+Ktfdj91AWNQP+Of3iRrrnTkzSVjswWgn/Qk9ENxqw17iH
+	Zw/gy8vkasqskp/wuLC7Y+M507xuceovuYw==
+Received: from apblrppmta02.qualcomm.com (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4amr8s8p65-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 24 Nov 2025 17:11:23 +0000 (GMT)
+Received: from pps.filterd (APBLRPPMTA02.qualcomm.com [127.0.0.1])
+	by APBLRPPMTA02.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTP id 5AOHBKN0009720;
+	Mon, 24 Nov 2025 17:11:20 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+	by APBLRPPMTA02.qualcomm.com (PPS) with ESMTPS id 4ak68mp3jf-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 24 Nov 2025 17:11:20 +0000
+Received: from APBLRPPMTA02.qualcomm.com (APBLRPPMTA02.qualcomm.com [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 5AOHBKi0009706;
+	Mon, 24 Nov 2025 17:11:20 GMT
+Received: from hu-devc-hyd-u22-c.qualcomm.com (hu-charante-hyd.qualcomm.com [10.213.97.134])
+	by APBLRPPMTA02.qualcomm.com (PPS) with ESMTPS id 5AOHBJJt009692
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 24 Nov 2025 17:11:20 +0000
+Received: by hu-devc-hyd-u22-c.qualcomm.com (Postfix, from userid 389980)
+	id 03B065CE; Mon, 24 Nov 2025 22:41:19 +0530 (+0530)
+From: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
+To: konrad.dybcio@oss.qualcomm.com, robin.clark@oss.qualcomm.com,
+        will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
+        dmitry.baryshkov@oss.qualcomm.com
+Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
+Subject: [PATCH V3] iommu/arm-smmu: add actlr settings for mdss on Qualcomm platforms
+Date: Mon, 24 Nov 2025 22:40:30 +0530
+Message-Id: <20251124171030.323989-1-charan.kalla@oss.qualcomm.com>
 X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -53,47 +65,95 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CMS-MailID: 20251124171014eucas1p21d3a0f2c10b43bfdb7861ee804f09951
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20251124171014eucas1p21d3a0f2c10b43bfdb7861ee804f09951
-X-EPHeader: CA
-X-CMS-RootMailID: 20251124171014eucas1p21d3a0f2c10b43bfdb7861ee804f09951
-References: <CGME20251124171014eucas1p21d3a0f2c10b43bfdb7861ee804f09951@eucas1p2.samsung.com>
+X-QCInternal: smtphost
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: zhEoXNapgT-dT2HT6KIXUnkKzQbZfBZg
+X-Authority-Analysis: v=2.4 cv=KP5XzVFo c=1 sm=1 tr=0 ts=692491bb cx=c_pps
+ a=Ou0eQOY4+eZoSc0qltEV5Q==:117 a=Ou0eQOY4+eZoSc0qltEV5Q==:17
+ a=6UeiqGixMTsA:10 a=VkNPw1HP01LnGYTKEx00:22 a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8
+ a=9jHMADLK-yuNcm8qUCkA:9
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMTI0MDE1MCBTYWx0ZWRfX5+9mBA7RbRKH
+ rV/GX26iziPG5dGVd/nqYxfqb4CA6iES8k3CUb+hCijnWYAMg11TVOL380zMiHkX8qylb+HXJuZ
+ TBq4Z6OL5CVi/1IbiwaW9klGy9JiJCE5M+U+NuqcmgVPtseYZ3yYZV+Q6WcB9F8CoCHm37E2y61
+ hZHKVVx7xno5fqfN0RWxjwPQGLTICmxMsNJQ2gGhbTZARDRagaJix+Aqg15GaDmQnINLXwf35m8
+ 8zzZr4zytZsOYylajQZAQHpJ4yDIlF1qe5L/N/KqhEg65GkVFkq40zAE1rz1fEVkzwSLksry1X2
+ A0gVQJn45qTZupXZTYePhybabeX2mCZ2HSRuL4QuT1JrIVoh895Bb1RCm09Fmdgfw7bewu2YxPB
+ 3db084beeIx9st7bfvLJk/GPyjItZw==
+X-Proofpoint-GUID: zhEoXNapgT-dT2HT6KIXUnkKzQbZfBZg
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.9,FMLib:17.12.100.49
+ definitions=2025-11-24_06,2025-11-24_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ malwarescore=0 impostorscore=0 clxscore=1015 lowpriorityscore=0 phishscore=0
+ bulkscore=0 spamscore=0 priorityscore=1501 suspectscore=0 adultscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2510240001 definitions=main-2511240150
 
-Commit c288d657dd51 added support for DMA_ATTR_MMIO attribute in the
-dma_iova_link() code path, but missed that the CPU cache is being also
-touched in the dma_iova_unlink() path. Fix this.
+Add ACTLR settings for missing MDSS devices on Qualcomm platforms.
 
-Fixes: c288d657dd51 ("iommu/dma: implement DMA_ATTR_MMIO for dma_iova_link().")
-Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+These are QoS settings and are specific to per SoC thus different
+settings, eg: some have shallow prefetch while others have no
+prefetch.
+
+Signed-off-by: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
 ---
- drivers/iommu/dma-iommu.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+Changes from V2:
+ 1) Add actlr settings for all the mdss devices on Qualcomm platforms.
+ 2) Improved the commit message that explain why different ACTLR
+    settings
+https://lore.kernel.org/lkml/20251118171822.3539062-1-charan.kalla@oss.qualcomm.com/#t
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index e52d19d2e833..c92088855450 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -2008,7 +2008,7 @@ static void iommu_dma_iova_unlink_range_slow(struct device *dev,
- 			end - addr, iovad->granule - iova_start_pad);
+Changes from V1:
+  1) Added actlr setting only for MDSS and dropped for fastrpc. --
+konrad
+  2) ACTLR table is updated per alphanumeric order -- konrad 
+  https://lore.kernel.org/all/20251105075307.1658329-1-charan.kalla@oss.qualcomm.com/
+
+
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
+
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+index c21a401c71eb..ead1a59d40ae 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+@@ -41,12 +41,34 @@ static const struct of_device_id qcom_smmu_actlr_client_of_match[] = {
+ 			.data = (const void *) (PREFETCH_DEEP | CPRE | CMTLB) },
+ 	{ .compatible = "qcom,fastrpc",
+ 			.data = (const void *) (PREFETCH_DEEP | CPRE | CMTLB) },
++	{ .compatible = "qcom,qcm2290-mdss",
++			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
+ 	{ .compatible = "qcom,sc7280-mdss",
+ 			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
+ 	{ .compatible = "qcom,sc7280-venus",
+ 			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
++	{ .compatible = "qcom,sc8180x-mdss",
++			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
++	{ .compatible = "qcom,sm6125-mdss",
++			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
++	{ .compatible = "qcom,sm6350-mdss",
++			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
++	{ .compatible = "qcom,sm8150-mdss",
++			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
++	{ .compatible = "qcom,sm8250-mdss",
++			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
++	{ .compatible = "qcom,sm8350-mdss",
++			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
++	{ .compatible = "qcom,sm8450-mdss",
++			.data = (const void *) (PREFETCH_DEFAULT | CMTLB) },
+ 	{ .compatible = "qcom,sm8550-mdss",
+ 			.data = (const void *) (PREFETCH_DEFAULT | CMTLB) },
++	{ .compatible = "qcom,sm8650-mdss",
++			.data = (const void *) (PREFETCH_DEFAULT | CMTLB) },
++	{ .compatible = "qcom,sm8750-mdss",
++			.data = (const void *) (PREFETCH_DEFAULT | CMTLB) },
++	{ .compatible = "qcom,x1e80100-mdss",
++			.data = (const void *) (PREFETCH_DEFAULT | CMTLB) },
+ 	{ }
+ };
  
- 		if (!dev_is_dma_coherent(dev) &&
--		    !(attrs & DMA_ATTR_SKIP_CPU_SYNC))
-+		    !(attrs & (DMA_ATTR_SKIP_CPU_SYNC | DMA_ATTR_MMIO)))
- 			arch_sync_dma_for_cpu(phys, len, dir);
- 
- 		swiotlb_tbl_unmap_single(dev, phys, len, dir, attrs);
-@@ -2032,7 +2032,8 @@ static void __iommu_dma_iova_unlink(struct device *dev,
- 	size_t unmapped;
- 
- 	if ((state->__size & DMA_IOVA_USE_SWIOTLB) ||
--	    (!dev_is_dma_coherent(dev) && !(attrs & DMA_ATTR_SKIP_CPU_SYNC)))
-+	    (!dev_is_dma_coherent(dev) &&
-+	     !(attrs & (DMA_ATTR_SKIP_CPU_SYNC | DMA_ATTR_MMIO))))
- 		iommu_dma_iova_unlink_range_slow(dev, addr, size, dir, attrs);
- 
- 	iommu_iotlb_gather_init(&iotlb_gather);
 -- 
 2.34.1
 
