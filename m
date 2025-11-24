@@ -1,63 +1,86 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27A13339A8;
-	Mon, 24 Nov 2025 17:26:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E515C23C4FA
+	for <iommu@lists.linux.dev>; Mon, 24 Nov 2025 17:40:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764005193; cv=none; b=azpGG1y8j2h2CXvt7sSCiVhjcYic6Pq44b1cNZwIxdJSs8gsW5Iprb1EcCmgwnyKSdijlgbtOL4n9UaWETi+yEQ9YwIMYO/6tkhghe+n+xSOcADkyfDWPXCdOFMPHwDHQrmgcR6v9gnYH2qNjtUhLZj/UFC1cuM0wnwmmONLqKo=
+	t=1764006030; cv=none; b=YNStzUgyCOhgAbEzuJ0f69u6IVXq7SQMZvc6yCzpemBXb3y7hhxcfD43mQaSLinal5Iu0yXCvEbzDvlj/DyFRBxE4xq8W7H/9JdibqKe6D7qMrADYuP8DKqOz/y4Jwt/W13YHGwwaX/6sXD0fkhl90uRfAmOxF7hS5pJ37oDJiI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764005193; c=relaxed/simple;
-	bh=aVrqKcWMLvnBW7SymhxnWtPBjLUHnuszbbFYOp0e8pU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=eexV5U9OxwIhFpSZjY1S3Isq8HZQmsjFdNzCQ+j9ZXa5cElyN9Rdiqakj/heIimHu5egmJDIInNyFGKSOlWW49RFIaCXFkh75gk3ph1Cxfz/wND/zQ9xG6vaCrFAA366S26ImmN6CpPJH9PVX8UcrXXcoxZGJSWAJfCVxlLEo8o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HBcQlI83; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HBcQlI83"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BA1DC4CEF1;
-	Mon, 24 Nov 2025 17:26:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1764005191;
-	bh=aVrqKcWMLvnBW7SymhxnWtPBjLUHnuszbbFYOp0e8pU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=HBcQlI83IxUAzs9WJKfOTAkKHNmcpjD+DPQEKRpWVlky3kMb0GRG3RiAoe6GUhxe/
-	 InlTIWWAhLZgwbqLkMbg4t+1HL56FxrkKDd9AdK4HfS8RDMIN/ZgZ/0SGmBGbJH6lJ
-	 ZuXqJKlLABE2eExlvH2e4rV4PG1OaZQZ9/9+hVkn7Y1TSuBMuCti3dnxvj384pSXTT
-	 qN0Zow9uH5V2+fj+vU3HMOwrpTWF8uI5P1o4fIz+r1R+T5/6D3Y3f+VaR775apBfub
-	 LyBGoyjbT0JRdr3CMFdII3XtkRgu6qC2E68rYusRP/M9Q/D6106JhxwtubLqpSASkA
-	 ZRJTs/W2t1+0w==
-Date: Mon, 24 Nov 2025 19:26:27 +0200
-From: Leon Romanovsky <leon@kernel.org>
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>
-Subject: Re: [PATCH] iommu/dma: add missing support for DMA_ATTR_MMIO for
- dma_iova_unlink()
-Message-ID: <20251124172627.GE12483@unreal>
-References: <CGME20251124171014eucas1p21d3a0f2c10b43bfdb7861ee804f09951@eucas1p2.samsung.com>
- <20251124170955.3884351-1-m.szyprowski@samsung.com>
+	s=arc-20240116; t=1764006030; c=relaxed/simple;
+	bh=BDB2cqeHqPwKjG3ryPJDUTgMkInG2F42LthsZM5l+EE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=fKShjJYk3+pi3sa8oeV630iODPg4PlxIllyAgxH05ya2kNRxJIZS/yqAgWPrbk3rwfuM8aEmWii2o+5mc/UQcgcb+Hg7hXIpq5sIcvr5WVPXru9GwXG70u28Jia9RT9dfHbyVfWHKfGSxJUjIQyfQS0enHBg5/vqcI3RFw2o5fI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B7D3E1477;
+	Mon, 24 Nov 2025 09:40:19 -0800 (PST)
+Received: from [10.1.30.67] (unknown [10.1.30.67])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 064833F73B;
+	Mon, 24 Nov 2025 09:40:25 -0800 (PST)
+Message-ID: <fed2bf95-4edd-4517-9e00-4252595d0eb9@arm.com>
+Date: Mon, 24 Nov 2025 17:40:24 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20251124170955.3884351-1-m.szyprowski@samsung.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu/dma: add missing support for DMA_ATTR_MMIO for
+ dma_iova_unlink()
+To: Leon Romanovsky <leon@kernel.org>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>
+References: <CGME20251124171014eucas1p21d3a0f2c10b43bfdb7861ee804f09951@eucas1p2.samsung.com>
+ <20251124170955.3884351-1-m.szyprowski@samsung.com>
+ <0b214028-299b-46aa-8d98-0f789153c612@arm.com>
+ <20251124172038.GD12483@unreal>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20251124172038.GD12483@unreal>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Mon, Nov 24, 2025 at 06:09:55PM +0100, Marek Szyprowski wrote:
-> Commit c288d657dd51 added support for DMA_ATTR_MMIO attribute in the
-> dma_iova_link() code path, but missed that the CPU cache is being also
-> touched in the dma_iova_unlink() path. Fix this.
+On 2025-11-24 5:20 pm, Leon Romanovsky wrote:
+> On Mon, Nov 24, 2025 at 05:15:48PM +0000, Robin Murphy wrote:
+>> On 2025-11-24 5:09 pm, Marek Szyprowski wrote:
+>>> Commit c288d657dd51 added support for DMA_ATTR_MMIO attribute in the
+>>> dma_iova_link() code path, but missed that the CPU cache is being also
+>>> touched in the dma_iova_unlink() path. Fix this.
+>>>
+>>> Fixes: c288d657dd51 ("iommu/dma: implement DMA_ATTR_MMIO for dma_iova_link().")
+>>> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+>>> ---
+>>>    drivers/iommu/dma-iommu.c | 5 +++--
+>>>    1 file changed, 3 insertions(+), 2 deletions(-)
+>>>
+>>> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+>>> index e52d19d2e833..c92088855450 100644
+>>> --- a/drivers/iommu/dma-iommu.c
+>>> +++ b/drivers/iommu/dma-iommu.c
+>>> @@ -2008,7 +2008,7 @@ static void iommu_dma_iova_unlink_range_slow(struct device *dev,
+>>>    			end - addr, iovad->granule - iova_start_pad);
+>>>    		if (!dev_is_dma_coherent(dev) &&
+>>> -		    !(attrs & DMA_ATTR_SKIP_CPU_SYNC))
+>>> +		    !(attrs & (DMA_ATTR_SKIP_CPU_SYNC | DMA_ATTR_MMIO)))
+>>>    			arch_sync_dma_for_cpu(phys, len, dir);
+>>>    		swiotlb_tbl_unmap_single(dev, phys, len, dir, attrs);
+>>> @@ -2032,7 +2032,8 @@ static void __iommu_dma_iova_unlink(struct device *dev,
+>>>    	size_t unmapped;
+>>>    	if ((state->__size & DMA_IOVA_USE_SWIOTLB) ||
+>>> -	    (!dev_is_dma_coherent(dev) && !(attrs & DMA_ATTR_SKIP_CPU_SYNC)))
+>>> +	    (!dev_is_dma_coherent(dev) &&
+>>> +	     !(attrs & (DMA_ATTR_SKIP_CPU_SYNC | DMA_ATTR_MMIO))))
+>>
+>> This isn't needed, since there's no way an MMIO mapping could have used
+>> SWIOTLB.
 > 
-> Fixes: c288d657dd51 ("iommu/dma: implement DMA_ATTR_MMIO for dma_iova_link().")
-> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> ---
->  drivers/iommu/dma-iommu.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
-> 
+> This "if" is taken even for non-SWIOTLB path, because of "||" operator
+> in line above.
+
+Oof, clearly it's already time to stop trying to read code and go home... :)
 
 Thanks,
-Reviewed-by: Leon Romanovsky <leon@kernel.org>
+Robin.
