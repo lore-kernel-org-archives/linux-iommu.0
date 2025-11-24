@@ -1,86 +1,117 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E515C23C4FA
-	for <iommu@lists.linux.dev>; Mon, 24 Nov 2025 17:40:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F21802C21EB
+	for <iommu@lists.linux.dev>; Mon, 24 Nov 2025 18:11:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764006030; cv=none; b=YNStzUgyCOhgAbEzuJ0f69u6IVXq7SQMZvc6yCzpemBXb3y7hhxcfD43mQaSLinal5Iu0yXCvEbzDvlj/DyFRBxE4xq8W7H/9JdibqKe6D7qMrADYuP8DKqOz/y4Jwt/W13YHGwwaX/6sXD0fkhl90uRfAmOxF7hS5pJ37oDJiI=
+	t=1764007880; cv=none; b=iXnJc9RbXlEGGJZJHpE2ZZX+xOT68kKXG+/6u4raQKoKdqL5R6c4ec9xHHDdbT8wwkY+FBxhhu7vc7SzOZk4vnMnPc1FgpVs/4knzFsDUIu4HHbZ3GJd09/jQNJKCdh5edAAavAizm79jwrOxCE9TiY27MihTT/UANKCHgdMbxE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764006030; c=relaxed/simple;
-	bh=BDB2cqeHqPwKjG3ryPJDUTgMkInG2F42LthsZM5l+EE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=fKShjJYk3+pi3sa8oeV630iODPg4PlxIllyAgxH05ya2kNRxJIZS/yqAgWPrbk3rwfuM8aEmWii2o+5mc/UQcgcb+Hg7hXIpq5sIcvr5WVPXru9GwXG70u28Jia9RT9dfHbyVfWHKfGSxJUjIQyfQS0enHBg5/vqcI3RFw2o5fI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B7D3E1477;
-	Mon, 24 Nov 2025 09:40:19 -0800 (PST)
-Received: from [10.1.30.67] (unknown [10.1.30.67])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 064833F73B;
-	Mon, 24 Nov 2025 09:40:25 -0800 (PST)
-Message-ID: <fed2bf95-4edd-4517-9e00-4252595d0eb9@arm.com>
-Date: Mon, 24 Nov 2025 17:40:24 +0000
+	s=arc-20240116; t=1764007880; c=relaxed/simple;
+	bh=V3lKiCOqTmuSyHMCBiRRzu0/4INcRYOmWSJXw1oQ7xY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
+	 Content-Type:References; b=WfsbY4nEoFqlcSIfcWi2/2tDo3xCEcYDowzGoud7UnEJmryyWrVUoeu1pn4zrTndCgtPuf0haxy1ERMIYOIPXHOGu1cazTdcsF0ZN/WoH+7TDL9PRLe5R3J6m3fQORKXga9MSbw3eBrST1CrJqM+dcDNJit4m4n55w1Y12MkgT0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=MoVOKuxN; arc=none smtp.client-ip=210.118.77.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="MoVOKuxN"
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20251124181116euoutp0232e8b692f0fb4e5cd7a35b297f3b8aa9~7A9Evot2T2497124971euoutp02J
+	for <iommu@lists.linux.dev>; Mon, 24 Nov 2025 18:11:16 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20251124181116euoutp0232e8b692f0fb4e5cd7a35b297f3b8aa9~7A9Evot2T2497124971euoutp02J
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1764007876;
+	bh=mAKEXc7Po5ZcQ8NHiJ/6YgIjS+LUifyXpnXyqV/E/2I=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=MoVOKuxNGqVDeVT0yIHn45anwe5rIfm5oBvd0Acai2JzB0E7TmmbJ5TsMrz6n/mHm
+	 mHz0iuvdGe8j28YB5ykYU9GPrewVcVVX1gca64ezZGlspj2oz6wKr6cKC5Q8tbHRM+
+	 w/9zfZjRlrVgXWZ1qf32pCj26qfg8HMxviOMO3uo=
+Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+	20251124181115eucas1p194eb1fe47ad6b90c5e22bd8ed2e0bfbb~7A9EJtcS63164331643eucas1p1C;
+	Mon, 24 Nov 2025 18:11:15 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+	20251124181113eusmtip137fc2398eb412a7d397c6aee5961bac6~7A9Cu-DoB1470614706eusmtip1-;
+	Mon, 24 Nov 2025 18:11:13 +0000 (GMT)
+Message-ID: <f8a0b873-b93c-4a91-b47d-2d11bfcf36b4@samsung.com>
+Date: Mon, 24 Nov 2025 19:11:13 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommu/dma: add missing support for DMA_ATTR_MMIO for
- dma_iova_unlink()
-To: Leon Romanovsky <leon@kernel.org>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>
-References: <CGME20251124171014eucas1p21d3a0f2c10b43bfdb7861ee804f09951@eucas1p2.samsung.com>
- <20251124170955.3884351-1-m.szyprowski@samsung.com>
- <0b214028-299b-46aa-8d98-0f789153c612@arm.com>
- <20251124172038.GD12483@unreal>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20251124172038.GD12483@unreal>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+User-Agent: Betterbird (Windows)
+Subject: Re: [RFC PATCH 5/5] dma-mapping: Allow batched DMA sync operations
+ if supported by the arch
+To: Barry Song <21cnbao@gmail.com>
+Cc: ada.coupriediaz@arm.com, anshuman.khandual@arm.com, ardb@kernel.org,
+	catalin.marinas@arm.com, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	maz@kernel.org, robin.murphy@arm.com, ryan.roberts@arm.com,
+	surenb@google.com, v-songbaohua@oppo.com, will@kernel.org,
+	zhengtangquan@oppo.com
+Content-Language: en-US
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <20251121232807.40491-1-21cnbao@gmail.com>
+Content-Transfer-Encoding: 8bit
+X-CMS-MailID: 20251124181115eucas1p194eb1fe47ad6b90c5e22bd8ed2e0bfbb
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20251121232820eucas1p13f5798a2d8c5049ae7cadc62cce63df7
+X-EPHeader: CA
+X-CMS-RootMailID: 20251121232820eucas1p13f5798a2d8c5049ae7cadc62cce63df7
+References: <253c870f-770b-4102-be47-f8c06e9e6c31@samsung.com>
+	<CGME20251121232820eucas1p13f5798a2d8c5049ae7cadc62cce63df7@eucas1p1.samsung.com>
+	<20251121232807.40491-1-21cnbao@gmail.com>
 
-On 2025-11-24 5:20 pm, Leon Romanovsky wrote:
-> On Mon, Nov 24, 2025 at 05:15:48PM +0000, Robin Murphy wrote:
->> On 2025-11-24 5:09 pm, Marek Szyprowski wrote:
->>> Commit c288d657dd51 added support for DMA_ATTR_MMIO attribute in the
->>> dma_iova_link() code path, but missed that the CPU cache is being also
->>> touched in the dma_iova_unlink() path. Fix this.
->>>
->>> Fixes: c288d657dd51 ("iommu/dma: implement DMA_ATTR_MMIO for dma_iova_link().")
->>> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
->>> ---
->>>    drivers/iommu/dma-iommu.c | 5 +++--
->>>    1 file changed, 3 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
->>> index e52d19d2e833..c92088855450 100644
->>> --- a/drivers/iommu/dma-iommu.c
->>> +++ b/drivers/iommu/dma-iommu.c
->>> @@ -2008,7 +2008,7 @@ static void iommu_dma_iova_unlink_range_slow(struct device *dev,
->>>    			end - addr, iovad->granule - iova_start_pad);
->>>    		if (!dev_is_dma_coherent(dev) &&
->>> -		    !(attrs & DMA_ATTR_SKIP_CPU_SYNC))
->>> +		    !(attrs & (DMA_ATTR_SKIP_CPU_SYNC | DMA_ATTR_MMIO)))
->>>    			arch_sync_dma_for_cpu(phys, len, dir);
->>>    		swiotlb_tbl_unmap_single(dev, phys, len, dir, attrs);
->>> @@ -2032,7 +2032,8 @@ static void __iommu_dma_iova_unlink(struct device *dev,
->>>    	size_t unmapped;
->>>    	if ((state->__size & DMA_IOVA_USE_SWIOTLB) ||
->>> -	    (!dev_is_dma_coherent(dev) && !(attrs & DMA_ATTR_SKIP_CPU_SYNC)))
->>> +	    (!dev_is_dma_coherent(dev) &&
->>> +	     !(attrs & (DMA_ATTR_SKIP_CPU_SYNC | DMA_ATTR_MMIO))))
->>
->> This isn't needed, since there's no way an MMIO mapping could have used
->> SWIOTLB.
-> 
-> This "if" is taken even for non-SWIOTLB path, because of "||" operator
-> in line above.
+On 22.11.2025 00:28, Barry Song wrote:
+> On Sat, Nov 22, 2025 at 12:09 AM Marek Szyprowski <m.szyprowski@samsung.com> wrote:
+> [...]
+>> This version looks a bit better to me. Similar batching could be added
+>> also to dma_iova_link()/dma_iova_sync() paths.
+> Thanks, Marek. I will respin a new version. For dma_iova, I assume you meant
+> something like the following?
+>
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index 7944a3af4545..7bb6ed663236 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -1837,7 +1837,7 @@ static int __dma_iova_link(struct device *dev, dma_addr_t addr,
+>   	int prot = dma_info_to_prot(dir, coherent, attrs);
+>   
+>   	if (!coherent && !(attrs & (DMA_ATTR_SKIP_CPU_SYNC | DMA_ATTR_MMIO)))
+> -		arch_sync_dma_for_device(phys, size, dir);
+> +		arch_sync_dma_for_device_batch_add(phys, size, dir);
+>   
+>   	return iommu_map_nosync(iommu_get_dma_domain(dev), addr, phys, size,
+>   			prot, GFP_ATOMIC);
+> @@ -1980,6 +1980,8 @@ int dma_iova_sync(struct device *dev, struct dma_iova_state *state,
+>   	dma_addr_t addr = state->addr + offset;
+>   	size_t iova_start_pad = iova_offset(iovad, addr);
+>   
+> +	if (!dev_is_dma_coherent(dev))
+> +		arch_sync_dma_batch_flush();
+>   	return iommu_sync_map(domain, addr - iova_start_pad,
+>   		      iova_align(iovad, size + iova_start_pad));
+>   }
+>
+> If so, I don't really have such hardware to test. I wonder if I can make it as
+> patch 6/6 when respinning, and still mark it as RFC v2. Or should I leave it as
+> is and expect someone with the hardware to test and send it?
 
-Oof, clearly it's already time to stop trying to read code and go home... :)
+Yes, I meant something like the above diff, also for dma_iova_unlink(). 
+It can be an additional, 6th patch with RFC tag, assuming You have no 
+way to test it.
 
-Thanks,
-Robin.
+Please notice that I've just sent a patch touching the similar code paths:
+
+https://lore.kernel.org/all/20251124170955.3884351-1-m.szyprowski@samsung.com/
+
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
+
