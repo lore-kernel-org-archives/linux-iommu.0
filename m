@@ -1,161 +1,227 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1AC123128B5
-	for <iommu@lists.linux.dev>; Mon, 24 Nov 2025 16:02:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 15EFC280331
+	for <iommu@lists.linux.dev>; Mon, 24 Nov 2025 16:42:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764000125; cv=none; b=eiDlJ1GkANsyvL9/UVUqVSqF8iYvDXC6qQ++0Di23WTuLdWpvqe9fZoQTItmkjr1XogduKQY7/l5run1Xqyf275Fdl+arjL5vU+AQWPmMkalqhtQTP/EIL7G30rlp95avA+Zj14KGvbaE0KwgtIFJqjmyl+KbQ8+uBJsui1Bd1E=
+	t=1764002560; cv=none; b=gvvOBB2JbrLKNI02OcVWdBjTTgRj3TZNSHOAE7jofrPvQ3zs3rO+eg3QJOrLSIFjhJlfmV8C/uxBEg/BiwbqzMmtEillD9phttIA3SbZL1+JqNZyKWVA1VTToTziAPZcsNmK1102T3GebFooFGwcl04ezR+9fbIv352G7tyw/bg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764000125; c=relaxed/simple;
-	bh=uHrLKA9wKl7gy2YAVA3r41woIoGizB3IbJZXarj74XI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=gzovp6zzYnKk9mcL0uHOWdnSdEGHS5eYlKZkECp02+Hf8aeH2qzrF47FGWJYAEDcWSfymErT/NFRjSCf3Yb0xQcfO74zTQgcqoHbqq8DWc0VvmkGAkfuhoKH4BQjKaVxdklNePhfan3ADKopZY6szxJvH39WUDbe1wK1B03t92U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Ijym/4eg; arc=none smtp.client-ip=209.85.128.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Ijym/4eg"
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-477a1c8cc47so112535e9.0
-        for <iommu@lists.linux.dev>; Mon, 24 Nov 2025 08:02:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1764000122; x=1764604922; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=bLdELsThxmeB5YvfJC736dRFpSpC/jFiigw/6IO1T6A=;
-        b=Ijym/4eg89ZVT3WbC0gVrD0BBt0lFq0WVjjjwX74gJV64DRSRC2StrDYeAZtIWIeIA
-         D4TETYLfhKG2KoSJOWu+k0y1Cccq9zlRNiQUfQHb3GqMIlL54xpFfyle9MJdqhahC4KI
-         uFiEB94GB2ux8oRppGmMzDzr67MEZsSBdUNUcjlnIvKDn9TzFJtm4fQNRvfbzxJfCxde
-         7onKARyaeYirzEspm+MYbQWqqbhIsYfjuS+XVWLAfdklQphoVPqmHZQU/FbSebzNnHAA
-         w92Ri4bbpnLNdHeR6NMqPPdV1ja5UioXXXEemZ5n169LTDtrWShcTsXgpBN4Snj4dBS1
-         9kVQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1764000122; x=1764604922;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=bLdELsThxmeB5YvfJC736dRFpSpC/jFiigw/6IO1T6A=;
-        b=tsgQozYzUONRmqoHrvgrkNXklx8Yx3cUw2RJIZnD8DAgxnghqiC5lpWd1auuS6+T3G
-         Ga8R+O0TH1fnxCyfKNMCRzwx3pVd3KiXR0Z9A8i96ljneAWTl6lMXuwmawJVUL/U+xm+
-         jLKbHn+/wNmAnRtLCQEbWt+7pu9XN0hGJ+ojWa0wTi3DaIrrYmfiRKKZtwgGgsnJBbUj
-         7KDaYFyoAcfsBwVCfY4q9VAbXusyYBjBQpqGyJiWWilmjBB23fu+rxnADf/ofOeCQbOe
-         skGu4HuKXWvQgpKZo8J60Q+ZI8ShBNrAC2KTyjrBezcNEgA7QFPFjU/Tk9Bf1579ktm3
-         NTiA==
-X-Forwarded-Encrypted: i=1; AJvYcCXuAOHmiC2e/7KLfJ4cuI4iwgJWYaw7WEWoy62Spju4tXSX2Nm3otQAzcxNY6Dg3FE40Ie3Pw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzHdqTAFEiLqmCNT5I7Gzsa+I5LNB97EyM1QU/DGZekE8IanqYZ
-	a9iY1eKBk3Emk/PMWAh4pnDZVphrpYDzgDg/eAIYlMFyu3b+/K/UONcxyo3ljr/clA==
-X-Gm-Gg: ASbGncuBrZItv3CRkPd1NeJqboYuouFWDi+OcvazDtfC8WHKMxbTLtAs2WHCYpm/ATD
-	3L4z495e4Ux8mW7fLFH9JGulUGV1GvNd3/Nna6V/I5X1sqxJ6EQmSNt4mzKuRJ7S08wEb9bK7P0
-	VVnSJ5rIQ9fVKtjHJoIc4MQJQcL2T22FBp4Ku6LMOEW1qkj2SJ0Z6CK/W2vg5RZ63hp3ap77g6V
-	hrTpT53SIPgXK73V2Sx8yAit14DWuBhM+KDHgwH6EVwaUzE6JuhP0Z3NYx5HFH1Xh/44vf1Gb6I
-	KpgfeS0cwIRCvEzaQSO5gDkRTejAP50ICC5dBPfQmD8N2AZkmpIBVvVg0IS19PsFmJqLGTwuslh
-	jOCzqkxnNvxE8SD2h9IWTI0nXly5RoCoHIFZVIn39YTfggu+2nXJo0Q/wr9LBBXOczKrzRnWJ8W
-	otQ3iZnKX8BEBtP+npLHFTCOglG+iJ3qMCwdFUMyOuadj+XMZLYA==
-X-Google-Smtp-Source: AGHT+IF87Of2xq3NRiXHoW9YLLU17xS9MSG7Pyejbfo/XW5RRV/9hA3ItGRGycpv5nRxS4fk6hR8OA==
-X-Received: by 2002:a05:600c:888b:b0:477:73f4:26b with SMTP id 5b1f17b1804b1-477c5e8f119mr2244225e9.3.1764000122272;
-        Mon, 24 Nov 2025 08:02:02 -0800 (PST)
-Received: from google.com (54.140.140.34.bc.googleusercontent.com. [34.140.140.54])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-477bf1e86b3sm239817465e9.6.2025.11.24.08.02.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Nov 2025 08:02:01 -0800 (PST)
-Date: Mon, 24 Nov 2025 16:01:58 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Will Deacon <will@kernel.org>
-Cc: linux-mm@kvack.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	linux-doc@vger.kernel.org, corbet@lwn.net, joro@8bytes.org,
-	robin.murphy@arm.com, akpm@linux-foundation.org, vbabka@suse.cz,
-	surenb@google.com, mhocko@suse.com, jackmanb@google.com,
-	hannes@cmpxchg.org, ziy@nvidia.com, david@redhat.com,
-	lorenzo.stoakes@oracle.com, Liam.Howlett@oracle.com,
-	rppt@kernel.org, Qinxin Xia <xiaqinxin@huawei.com>
-Subject: Re: [PATCH v2 3/4] drivers/iommu-debug-pagealloc: Track IOMMU pages
-Message-ID: <aSSBdu-P-E75-_iY@google.com>
-References: <20251106163953.1971067-1-smostafa@google.com>
- <20251106163953.1971067-4-smostafa@google.com>
- <aRW6Tf_G2ObR__vE@willie-the-truck>
- <aSRRizzS39jI3BjH@google.com>
- <aSR7U4pI_mYryFzh@willie-the-truck>
+	s=arc-20240116; t=1764002560; c=relaxed/simple;
+	bh=H0ncnTSzYytCrbvjVRDd2BGKpV1SzfN0pmfGFDE9gJQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=b4gCJo99Y063y4koZEqaYSI9OHh/bUEZT08T7oVeF5NmkuRobZq4UpekFjm99g63r1j3UsGc9smrydDYB32zpUYcpkXLpdclYTFrWDkbuDGQYmBgCRllz+pK+IJNGHLiyurxeCskCpepJRKhHcyXcJ+Lqd/gZvjVAWBMbxziBVc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EE1121477;
+	Mon, 24 Nov 2025 08:42:30 -0800 (PST)
+Received: from [10.1.30.67] (unknown [10.1.30.67])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E69F93F86F;
+	Mon, 24 Nov 2025 08:42:35 -0800 (PST)
+Message-ID: <0a82c5bb-40c0-4c4b-90dc-9ce4e7caf12a@arm.com>
+Date: Mon, 24 Nov 2025 16:42:34 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <aSR7U4pI_mYryFzh@willie-the-truck>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 0/6] of: iommu-map parsing for multi-cell IOMMU
+To: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>, will@kernel.org,
+ joro@8bytes.org, robh@kernel.org, dmitry.baryshkov@oss.qualcomm.com,
+ konrad.dybcio@oss.qualcomm.com, bjorn.andersson@oss.qualcomm.com,
+ bod@kernel.org, conor+dt@kernel.org, krzk+dt@kernel.org,
+ saravanak@google.com, prakash.gupta@oss.qualcomm.com,
+ vikash.garodia@oss.qualcomm.com
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ devicetree@vger.kernel.org
+References: <cover.1762235099.git.charan.kalla@oss.qualcomm.com>
+ <0319bdf5-0a46-40fc-93f8-30d74cf6475a@arm.com>
+ <351373ed-c699-4945-a978-cb35412918bc@oss.qualcomm.com>
+ <e6fb7000-7aac-45b6-b4f9-c9efa2a98d57@oss.qualcomm.com>
+ <74c2bdbe-1346-4229-b9dd-694b3063b1bb@oss.qualcomm.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <74c2bdbe-1346-4229-b9dd-694b3063b1bb@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Mon, Nov 24, 2025 at 03:35:47PM +0000, Will Deacon wrote:
-> On Mon, Nov 24, 2025 at 12:37:31PM +0000, Mostafa Saleh wrote:
-> > On Thu, Nov 13, 2025 at 11:00:29AM +0000, Will Deacon wrote:
-> > > On Thu, Nov 06, 2025 at 04:39:52PM +0000, Mostafa Saleh wrote:
-> > > > Using the new calls, use an atomic refcount to track how many times
-> > > > a page is mapped in any of the IOMMUs.
-> > > > 
-> > > > For unmap we need to use iova_to_phys() to get the physical address
-> > > > of the pages.
-> > > > 
-> > > > We use the smallest supported page size as the granularity of tracking
-> > > > per domain.
-> > > > This is important as it possible to map pages and unmap them with
-> > > > larger sizes (as in map_sg()) cases.
-> > > > 
-> > > > Signed-off-by: Mostafa Saleh <smostafa@google.com>
-> > > > Tested-by: Qinxin Xia <xiaqinxin@huawei.com>
-> > > > ---
-> > > >  drivers/iommu/iommu-debug-pagealloc.c | 74 +++++++++++++++++++++++++++
-> > > >  1 file changed, 74 insertions(+)
-> > > > 
-> > > > diff --git a/drivers/iommu/iommu-debug-pagealloc.c b/drivers/iommu/iommu-debug-pagealloc.c
-> > > > index a6a2f844b09d..0e14104b971c 100644
-> > > > --- a/drivers/iommu/iommu-debug-pagealloc.c
-> > > > +++ b/drivers/iommu/iommu-debug-pagealloc.c
-> > > > @@ -27,16 +27,90 @@ struct page_ext_operations page_iommu_debug_ops = {
-> > > >  	.need = need_iommu_debug,
-> > > >  };
-> > > >  
-> > > > +static struct page_ext *get_iommu_page_ext(phys_addr_t phys)
-> > > > +{
-> > > > +	struct page *page = phys_to_page(phys);
-> > > > +	struct page_ext *page_ext = page_ext_get(page);
-> > > > +
-> > > > +	return page_ext;
-> > > > +}
-> > > > +
-> > > > +static struct iommu_debug_metadate *get_iommu_data(struct page_ext *page_ext)
-> > > > +{
-> > > > +	return page_ext_data(page_ext, &page_iommu_debug_ops);
-> > > > +}
-> > > > +
-> > > > +static void iommu_debug_inc_page(phys_addr_t phys)
-> > > > +{
-> > > > +	struct page_ext *page_ext = get_iommu_page_ext(phys);
-> > > > +	struct iommu_debug_metadate *d = get_iommu_data(page_ext);
-> > > > +
-> > > > +	WARN_ON(atomic_inc_return(&d->ref) <= 0);
-> > > 
-> > > Is it worth dumping some information about the page in addition to the
-> > > WARN_ON()? That way, you might be able to benefit from other debug
-> > > options (e.g. PAGE_OWNER) if they are enabled.
-> > 
-> > These WARN_ON are for overflows, which should never happen.
-> > I initially thought about using the refcount_t, but it didn’t seem
-> > suitable as refcount_add() expects that the refcount is already “1”
-> > indicating that an object was already created which doesn’t fit
-> > in the semantics of what this is. Similar for refcount_dec().
-> > 
-> > In the next patch there is a WARN_ON for the refcount check
-> > to capture the mis-behaving context, I will add a debug print with
-> > the leaked physical address in that case as this is the important one.
+On 2025-11-21 5:54 am, Charan Teja Kalla wrote:
 > 
-> I was thinking specifically about calling dump_page_owner().
+> On 11/12/2025 8:12 PM, Charan Teja Kalla wrote:
+>> Hi Robin,
+>>
+>> Don't want to bother you with my ideas, but I can't think of other ways
+>> to handle such cases of multi-map than the below. I just tried this code on
+>> Qemu on top of your patches(with some nit compilation fixes) and just checked
+>> if devices are added to the iommu groups.
+>>
+> 
+> Hello Robin,
+> Not sure If this is early to ask for feedback, but waiting for your
+> valuable inputs here.  Thanks in advance.
 
-I see, that makes sense.
+Argh, sorry, I had written a whole reply, but apparently I never hit 
+send, and I've been swamped with other stuff lately. Let me see if I can 
+dig that out...
 
-Thanks,
-Mostafa
+Robin.
 
 > 
-> Will
+>> ----------------------8888---------------------------------------------
+>>
+>> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+>> index a511ecf21fcd..ac005e70de7d 100644
+>> --- a/drivers/iommu/of_iommu.c
+>> +++ b/drivers/iommu/of_iommu.c
+>> @@ -16,6 +16,7 @@
+>>   #include <linux/pci.h>
+>>   #include <linux/slab.h>
+>>   #include <linux/fsl/mc.h>
+>> +#include <linux/platform_device.h>
+>>   
+>>   #include "iommu-priv.h"
+>>   
+>> @@ -41,6 +42,18 @@ static int of_iommu_xlate(struct device *dev,
+>>   	return ret;
+>>   }
+>>   
+>> +static int of_iommu_configure_cb(void *arg, u32 *id_out)
+>> +{
+>> +	struct of_phandle_args *iommu_spec =
+>> +		(struct of_phandle_args *)((void *)id_out - offsetof(struct of_phandle_args, args));
+>> +	struct device *dev = arg;
+>> +	int err;
+>> +
+>> +	err = of_iommu_xlate(dev, iommu_spec);
+>> +	of_node_put(iommu_spec->np);
+>> +	return err;
+>> +}
+>> +
+>>   static int of_iommu_configure_dev_id(struct device_node *master_np,
+>>   				     struct device *dev,
+>>   				     const u32 *id)
+>> @@ -48,12 +61,10 @@ static int of_iommu_configure_dev_id(struct device_node *master_np,
+>>   	struct of_phandle_args iommu_spec = { .args_count = 1 };
+>>   	int err;
+>>   
+>> -	err = of_map_iommu_id(master_np, *id, &iommu_spec.np, iommu_spec.args);
+>> +	err = of_map_iommu_id(master_np, *id, &iommu_spec.np, iommu_spec.args,
+>> +			dev_is_platform(dev) ? true : false, dev, of_iommu_configure_cb);
+>> - 	if (err)
+>> - 		return err;
+>> -
+>> -	err = of_iommu_xlate(dev, &iommu_spec);
+>> -	of_node_put(iommu_spec.np);
+>>   	return err;
+>>   }
+>>   
+>> diff --git a/drivers/of/base.c b/drivers/of/base.c
+>> index a4fd4a4f720b..8abe36c17309 100644
+>> --- a/drivers/of/base.c
+>> +++ b/drivers/of/base.c
+>> @@ -2085,16 +2085,21 @@ static bool of_check_bad_map(const __be32 *map, int len)
+>>    */
+>>   int of_map_id(const struct device_node *np, u32 id, const char *map_name,
+>>   	      const char *cells_name, const char *map_mask_name,
+>> -	      struct device_node **target, u32 *id_out)
+>> +	      struct device_node **target, u32 *id_out, bool multi_map,
+>> +	      void *arg, of_map_id_cb cb)
+>>   {
+>>   	u32 map_mask, masked_id;
+>>   	int map_bytes, map_len, offset = 0;
+>>   	bool bad_map = false;
+>>   	const __be32 *map = NULL;
+>> +	bool mapped_multi_id = false;
+>>   
+>>   	if (!np || !map_name || !cells_name || (!target && !id_out))
+>>   		return -EINVAL;
+>>   
+>> +	if (multi_map && !cb)
+>> +		return -EINVAL;
+>> +
+>>   	map = of_get_property(np, map_name, &map_bytes);
+>>   	if (!map) {
+>>   		if (target)
+>> @@ -2189,16 +2194,29 @@ int of_map_id(const struct device_node *np, u32 id, const char *map_name,
+>>   		pr_debug("%pOF: %s, using mask %08x, id-base: %08x, out-base: %08x, length: %08x, id: %08x -> %08x\n",
+>>   			np, map_name, map_mask, id_base, be32_to_cpup(out_base),
+>>   			id_len, id, id_off + be32_to_cpup(out_base));
+>> -		return 0;
+>> +
+>> +		if (multi_map) {
+>> +			if (cb(arg, id_out))
+>> +				return -EINVAL;
+>> +
+>> +			mapped_multi_id = true;
+>> +			continue;
+>> +		}
+>> +
+>> +		goto translated;
+>>   	}
+>>   
+>> +	if (mapped_multi_id)
+>> +		return 0;
+>> +
+>>   	pr_info("%pOF: no %s translation for id 0x%x on %pOF\n", np, map_name,
+>>   		id, target && *target ? *target : NULL);
+>>   
+>>   	/* Bypasses translation */
+>>   	if (id_out)
+>>   		*id_out = id;
+>> -	return 0;
+>> +translated:
+>> +	return cb ? cb(arg, id_out) : 0;
+>>   
+>>   err_map_len:
+>>   	pr_err("%pOF: Error: Bad %s length: %d\n", np, map_name, map_bytes);
+>> diff --git a/include/linux/of.h b/include/linux/of.h
+>> index 183be897b088..84a24c2a1041 100644
+>> --- a/include/linux/of.h
+>> +++ b/include/linux/of.h
+>> @@ -24,6 +24,7 @@
+>>   
+>>   typedef u32 phandle;
+>>   typedef u32 ihandle;
+>> +typedef int (*of_map_id_cb)(void *arg, u32 *id_out);
+>>   
+>>   struct property {
+>>   	char	*name;
+>> @@ -458,7 +459,8 @@ bool of_console_check(const struct device_node *dn, char *name, int index);
+>>   
+>>   int of_map_id(const struct device_node *np, u32 id, const char *map_name,
+>>   	      const char *cells_name, const char *map_mask_name,
+>> -	      struct device_node **target, u32 *id_out);
+>> +	      struct device_node **target, u32 *id_out,
+>> +	      bool multi_map, void *arg, of_map_id_cb cb);
+>>   
+>>   phys_addr_t of_dma_get_max_cpu_address(struct device_node *np);
+>>   
+>> @@ -1436,17 +1438,18 @@ static inline int of_property_read_s32(const struct device_node *np,
+>>   }
+>>   
+>>   static inline int of_map_iommu_id(const struct device_node *np, u32 id,
+>> -				  struct device_node **target, u32 *id_out)
+>> +				  struct device_node **target, u32 *id_out,
+>> +				  bool multi_map, void *arg, of_map_id_cb cb)
+>>   {
+>>   	return of_map_id(np, id, "iommu-map", "#iommu-cells", "iommu-map-mask",
+>> -			 target, id_out);
+>> +			 target, id_out, multi_map, arg, cb);
+>>   }
+>>   
+>>   static inline int of_map_msi_id(const struct device_node *np, u32 id,
+>>   				struct device_node **target, u32 *id_out)
+>>   {
+>>   	return of_map_id(np, id, "msi-map", "#msi-cells", "msi-map-mask",
+>> -			 target, id_out);
+>> +			 target, id_out, false, NULL, NULL);
+>>   }
+>>   
+>>   #define of_for_each_phandle(it, err, np, ln, cn, cc)			
+>> -----------------------------------------------------------------------
+>>
+>> full patch is at: https://github.com/charan-kalla-oss/linux-next/commits/refs/for/iommu_map
+> 
+
