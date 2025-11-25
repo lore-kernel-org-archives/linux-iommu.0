@@ -1,96 +1,227 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A82EC329E46;
-	Tue, 25 Nov 2025 17:19:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 36D6B329E5E
+	for <iommu@lists.linux.dev>; Tue, 25 Nov 2025 17:25:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764091163; cv=none; b=rv1vg9tICdFuAH+1pf4gwCOjS8APp6qm/vBeITwfTbk/Ns9QiSbel0d9W5POpGCta9et3IpOWaAVySzALIma758p05sp71waIzPiZ0gnrD7lFfjEUUc6Z/a0YSaXqtrrGT3f+xHZZtDXwFkbqVP8gLDRTk+/2LpzvlOvOpAooh8=
+	t=1764091525; cv=none; b=BdfVuUWGnLW03dOUX8iBooZgrua49aY6TNbwvt8drNccJxUa+mWmAO4m1AnusFpF5Em6gVUvKADMyO1AOne2bzw9VH16esbGLxZ/WFqbZTVWDPI9iE6FYeyavpaBNEAr5+qNVAKK5lp4ZMS2rOFM99aCYJ/uW5L+Y7qeaKJDQ8s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764091163; c=relaxed/simple;
-	bh=I/rnwL1VDr4DIy5Ix/ic4bCcTptHKDL4s7lH93si388=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JhtYF/2Tqvul20ULfDZn820BiffgAhe+X5h8bOusnoGmjAmj+R6QvEsZQkBPeiLjjTLIpdhiogLMoUBlSLgOEUeCll7yqSlxmHIoCxK6RkGX2lM8VOSP4HgAnvLFshRt/2kDBO+Z8z8+fwCqY8V+EIAIEThNG1kZPutDZPxYhb8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jnEEYzyL; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jnEEYzyL"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FA0AC4CEF1;
-	Tue, 25 Nov 2025 17:19:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1764091162;
-	bh=I/rnwL1VDr4DIy5Ix/ic4bCcTptHKDL4s7lH93si388=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=jnEEYzyLVpJFKF25uIqfERa0uAEBY0qYBPPYT7n5xY9rSMZVwKLxfRhmqk1WOqvN2
-	 p4W/e5JMk1HdoKPWIV6/nBkZFTTlxJ0/rW5grLt9kpgdVo5i3mEbzcwEe4v/5tHfP9
-	 t0l0/dPYNtdrUcMwB1pcMGq1tZGGmnn1NlYNmsxhncOlgMpCI8wUawR936oeUuJVHk
-	 yDeCV5D4gKCy49/yCnwyzJrEJhZNSl+5zgnMrEQZnQbEcWmtDriwCB1KHCgw8dCOsp
-	 UHu9shttpqWRPDg0Qc8Ywoe4cDx5AV4cJifiawdyPlab2WYpv1t/RHh26tfXIZOrKs
-	 AQE5xIv/FgyjA==
-Date: Tue, 25 Nov 2025 17:19:16 +0000
-From: Will Deacon <will@kernel.org>
-To: Jacob Pan <jacob.pan@linux.microsoft.com>
-Cc: linux-kernel@vger.kernel.org,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	Joerg Roedel <joro@8bytes.org>, Mostafa Saleh <smostafa@google.com>,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Zhang Yu <zhangyu1@linux.microsoft.com>,
-	Jean Philippe-Brucker <jean-philippe@linaro.org>,
-	Alexander Grest <Alexander.Grest@microsoft.com>
-Subject: Re: [PATCH v4 1/2] iommu/arm-smmu-v3: Fix CMDQ timeout warning
-Message-ID: <aSXlFDAa672dZGVm@willie-the-truck>
-References: <20251114171718.42215-1-jacob.pan@linux.microsoft.com>
- <20251114171718.42215-2-jacob.pan@linux.microsoft.com>
+	s=arc-20240116; t=1764091525; c=relaxed/simple;
+	bh=DvYmfyjj8fQaNpi+ymHXI8GpnYw08ABWDPWbyFR1ioI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=IKA+VcqF468rcpTLJYCS5da4qyXGO6nMyT56Pg4ELiSmx1ae7edLMznXGUx/61AcPTWz02WNdbf+V4XZinDJFDSKZpP/R1kGVAfzyeKpfIs2f3Dny97CtBRZeJ8VhZdfureODT1oLdKvGPydjPUpi7tNqjAmOA/4+IVXvR3LUbc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id F3365168F;
+	Tue, 25 Nov 2025 09:25:14 -0800 (PST)
+Received: from [10.1.30.102] (unknown [10.1.30.102])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id DED8B3F73B;
+	Tue, 25 Nov 2025 09:25:19 -0800 (PST)
+Message-ID: <b0f94951-2896-49a2-ac19-b885903067ad@arm.com>
+Date: Tue, 25 Nov 2025 17:25:16 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20251114171718.42215-2-jacob.pan@linux.microsoft.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH V2 1/3] iommu/arm-smmu-v3: Add device-tree support for
+ CMDQV driver
+To: Ashish Mhetre <amhetre@nvidia.com>, will@kernel.org, joro@8bytes.org,
+ robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, nicolinc@nvidia.com
+Cc: thierry.reding@gmail.com, jonathanh@nvidia.com, vdumpa@nvidia.com,
+ jgg@ziepe.ca, linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-tegra@vger.kernel.org
+References: <20251125071659.3048659-1-amhetre@nvidia.com>
+ <20251125071659.3048659-2-amhetre@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20251125071659.3048659-2-amhetre@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, Nov 14, 2025 at 09:17:17AM -0800, Jacob Pan wrote:
-> While polling for n spaces in the cmdq, the current code instead checks
-> if the queue is full. If the queue is almost full but not enough space
-> (<n), then the CMDQ timeout warning is never triggered even if the
-> polling has exceeded timeout limit.
+On 2025-11-25 7:16 am, Ashish Mhetre wrote:
+> Add device tree support to the CMDQV driver to enable usage on Tegra264
+> SoCs. The implementation parses the nvidia,cmdqv phandle from the SMMU
+> device tree node to associate each SMMU with its corresponding CMDQV
+> instance.
 > 
-> The existing arm_smmu_cmdq_poll_until_not_full() doesn't fit efficiently
-> nor ideally to the only caller arm_smmu_cmdq_issue_cmdlist():
->  - It uses a new timer at every single call, which fails to limit to the
->    preset ARM_SMMU_POLL_TIMEOUT_US per issue.
-> - It has a redundant internal queue_full(), which doesn't detect whether
->    there is a enough space for number of n commands.
+> Update the dependency from Kconfig as the driver now supports both
+> ACPI and device tree initialization through conditional compilation.
 > 
-> This patch polls for the availability of exact space instead of full and
-> emit timeout warning accordingly.
+> Add nvidia,tegra264-smmu to the arm-smmu-v3 device tree match table to
+> enable device tree based probing on Nvidia Tegra264 platforms and
+> restrict CMDQV usage to other vendors.
 > 
-> Fixes: 587e6c10a7ce ("iommu/arm-smmu-v3: Reduce contention during command-queue insertion")
-> Co-developed-by: Yu Zhang <zhangyu1@linux.microsoft.com>
-> Signed-off-by: Yu Zhang <zhangyu1@linux.microsoft.com>
-> Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
+> Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
+> Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
+> ---
+>   drivers/iommu/arm/Kconfig                     |  2 +-
+>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 32 ++++++++++++++
+>   .../iommu/arm/arm-smmu-v3/tegra241-cmdqv.c    | 43 ++++++++++++++++++-
+>   3 files changed, 75 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm/Kconfig b/drivers/iommu/arm/Kconfig
+> index ef42bbe07dbe..168ada9c3d68 100644
+> --- a/drivers/iommu/arm/Kconfig
+> +++ b/drivers/iommu/arm/Kconfig
+> @@ -121,7 +121,7 @@ config ARM_SMMU_V3_KUNIT_TEST
+>   
+>   config TEGRA241_CMDQV
+>   	bool "NVIDIA Tegra241 CMDQ-V extension support for ARM SMMUv3"
+> -	depends on ACPI
+> +	depends on OF || ACPI
 
-I'm assuming you're seeing problems with an emulated command queue? Any
-chance you could make that bigger?
+This now does nothing, since ARM_SMMU_V3 depends on ARM64 which already 
+implies at least OF anyway.
 
-> @@ -804,12 +794,13 @@ int arm_smmu_cmdq_issue_cmdlist(struct arm_smmu_device *smmu,
->  	local_irq_save(flags);
->  	llq.val = READ_ONCE(cmdq->q.llq.val);
->  	do {
-> +		struct arm_smmu_queue_poll qp;
->  		u64 old;
->  
-> +		queue_poll_init(smmu, &qp);
->  		while (!queue_has_space(&llq, n + sync)) {
->  			local_irq_restore(flags);
-> -			if (arm_smmu_cmdq_poll_until_not_full(smmu, cmdq, &llq))
-> -				dev_err_ratelimited(smmu->dev, "CMDQ timeout\n");
-> +			arm_smmu_cmdq_poll(smmu, cmdq, &llq, &qp);
+>   	help
+>   	  Support for NVIDIA CMDQ-Virtualization extension for ARM SMMUv3. The
+>   	  CMDQ-V extension is similar to v3.3 ECMDQ for multi command queues
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index a33fbd12a0dd..2eec7cd4f3de 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -4530,6 +4530,34 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+>   	return 0;
+>   }
+>   
+> +#ifdef CONFIG_TEGRA241_CMDQV
+> +static void tegra_cmdqv_dt_probe(struct device_node *smmu_node,
+> +				 struct arm_smmu_device *smmu)
+> +{
+> +	struct platform_device *pdev;
+> +	struct device_node *np;
+> +
+> +	np = of_parse_phandle(smmu_node, "nvidia,cmdqv", 0);
+> +	if (!np)
+> +		return;
+> +
+> +	pdev = of_find_device_by_node(np);
+> +	of_node_put(np);
+> +	if (!pdev)
+> +		return;
+> +
 
-Isn't this broken for wfe-based polling? The SMMU only generates the
-wake-up event when the queue becomes non-full.
+You need to drop the reference on the platform device too.
 
-Will
+> +	smmu->impl_dev = &pdev->dev;
+> +	smmu->options |= ARM_SMMU_OPT_TEGRA241_CMDQV;
+> +	dev_info(smmu->dev, "found companion CMDQV device: %s\n",
+> +		 dev_name(smmu->impl_dev));
+> +}
+> +#else
+> +static void tegra_cmdqv_dt_probe(struct device_node *smmu_node,
+> +				 struct arm_smmu_device *smmu)
+> +{
+> +}
+> +#endif
+> +
+>   #ifdef CONFIG_ACPI
+>   #ifdef CONFIG_TEGRA241_CMDQV
+>   static void acpi_smmu_dsdt_probe_tegra241_cmdqv(struct acpi_iort_node *node,
+> @@ -4634,6 +4662,9 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev,
+>   	if (of_dma_is_coherent(dev->of_node))
+>   		smmu->features |= ARM_SMMU_FEAT_COHERENCY;
+>   
+> +	if (of_device_is_compatible(dev->of_node, "nvidia,tegra264-smmu"))
+> +		tegra_cmdqv_dt_probe(dev->of_node, smmu);
+> +
+>   	return ret;
+>   }
+>   
+> @@ -4867,6 +4898,7 @@ static void arm_smmu_device_shutdown(struct platform_device *pdev)
+>   
+>   static const struct of_device_id arm_smmu_of_match[] = {
+>   	{ .compatible = "arm,smmu-v3", },
+> +	{ .compatible = "nvidia,tegra264-smmu", },
+
+Since you're not using match data, this is pointless, as anything with 
+this compatible must still also match the generic compatible anyway.
+
+Thanks,
+Robin.
+
+>   	{ },
+>   };
+>   MODULE_DEVICE_TABLE(of, arm_smmu_of_match);
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c b/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
+> index 378104cd395e..2608bf6518b4 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
+> @@ -11,6 +11,8 @@
+>   #include <linux/iommufd.h>
+>   #include <linux/iopoll.h>
+>   #include <uapi/linux/iommufd.h>
+> +#include <linux/of_platform.h>
+> +#include <linux/platform_device.h>
+>   
+>   #include <acpi/acpixf.h>
+>   
+> @@ -917,6 +919,26 @@ tegra241_cmdqv_find_acpi_resource(struct device *dev, int *irq)
+>   	return res;
+>   }
+>   
+> +static struct resource *
+> +tegra241_cmdqv_find_dt_resource(struct device *dev, int *irq)
+> +{
+> +	struct platform_device *pdev = to_platform_device(dev);
+> +	struct resource *res;
+> +
+> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +	if (!res) {
+> +		dev_err(dev, "no memory resource found for CMDQV\n");
+> +		return NULL;
+> +	}
+> +
+> +	if (irq)
+> +		*irq = platform_get_irq_optional(pdev, 0);
+> +	if (!irq || *irq <= 0)
+> +		dev_warn(dev, "no interrupt. errors will not be reported\n");
+> +
+> +	return res;
+> +}
+> +
+>   static int tegra241_cmdqv_init_structures(struct arm_smmu_device *smmu)
+>   {
+>   	struct tegra241_cmdqv *cmdqv =
+> @@ -1048,11 +1070,14 @@ struct arm_smmu_device *tegra241_cmdqv_probe(struct arm_smmu_device *smmu)
+>   
+>   	if (!smmu->dev->of_node)
+>   		res = tegra241_cmdqv_find_acpi_resource(smmu->impl_dev, &irq);
+> +	else
+> +		res = tegra241_cmdqv_find_dt_resource(smmu->impl_dev, &irq);
+>   	if (!res)
+>   		goto out_fallback;
+>   
+>   	new_smmu = __tegra241_cmdqv_probe(smmu, res, irq);
+> -	kfree(res);
+> +	if (!smmu->dev->of_node)
+> +		kfree(res);
+>   
+>   	if (new_smmu)
+>   		return new_smmu;
+> @@ -1346,4 +1371,20 @@ tegra241_cmdqv_init_vintf_user(struct arm_vsmmu *vsmmu,
+>   	return ret;
+>   }
+>   
+> +static const struct of_device_id tegra241_cmdqv_of_match[] = {
+> +	{ .compatible = "nvidia,tegra264-cmdqv" },
+> +	{ /* sentinel */ }
+> +};
+> +MODULE_DEVICE_TABLE(of, tegra241_cmdqv_of_match);
+> +
+> +static struct platform_driver tegra241_cmdqv_driver = {
+> +	.driver = {
+> +		.name = "tegra241-cmdqv",
+> +		.of_match_table = tegra241_cmdqv_of_match,
+> +	},
+> +};
+> +module_platform_driver(tegra241_cmdqv_driver);
+> +
+> +MODULE_DESCRIPTION("NVIDIA Tegra241 Command Queue Virtualization Driver");
+> +MODULE_LICENSE("GPL");
+>   MODULE_IMPORT_NS("IOMMUFD");
