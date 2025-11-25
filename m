@@ -1,136 +1,160 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA0792D9492
-	for <iommu@lists.linux.dev>; Tue, 25 Nov 2025 08:52:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B601C2E265A
+	for <iommu@lists.linux.dev>; Tue, 25 Nov 2025 09:42:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764060732; cv=none; b=s8sNhsAglwmKzU151sjJ2W5mvCY19iRn5wVj4c321LeKAk7mTISloXqbFN5YJ8AR+h4tvys9QO9vgxXzjvsTKTzLXcRbkU6TCjGq+QV75iVM5lSJ2rYsg9tFI+P9a2UghgkIs5lHyaCw2HvRHrHvyQxfo6ysXWGSOUBxtlaVp7c=
+	t=1764063771; cv=none; b=kNZ+IdpZ41oXnv+zGOX0v7NSKbXw/qEuDUyz7GyNO00WxIQvcQvpFR823tdQpnFzvBERcj84ptn9rrQM6jVRr3nTX70FY+dvezjblXyqTRXcEGqGpo7JN2guRAKlWF+mTgs5CsxJxaZQW8YdxlQkWLHbV8gdgXAPReg8LSDu19w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764060732; c=relaxed/simple;
-	bh=gy0IUVcK/WcJRueX4elWQ1y7TPxdmjElnsSuLqMGYBU=;
-	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=nHXUn8A1ngYm55XxXysEZ2ZVapq471qLpzUf3/U3Ech8eQZxx4Gel+CVXWb+h4Y1zimVVXFybJENdosN2n1I83VwxOY4w9bGgXix9VTu3QP5yASbMPzGzBo383CkeJ6P35mdUYCWnDOaVfcuUB4NwH5F5c4ZKhTpCQZYIXsqxOc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=iXj4Tveu; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=AXvQcssv; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1764063771; c=relaxed/simple;
+	bh=pYU70KDOQGpxoP29DuTiODNRi+qhfpeRaagOh+suD7s=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=s25aloL8wt3op+8NmrMOAGPITZqQwOo7Ckp7OuXRCS4R+8gWi97MQ8SDYAqUupV6Kv9irRbIvvutTFWIK5kpuo26AQE+OOCabHpB1XoIoUaatI9NzzTUTdQLp1feEtIX9xcEZlzn23evJ1m774Mjber48UoATBk37guVgJeYPYE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=djSOpOsD; arc=none smtp.client-ip=209.85.128.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="iXj4Tveu";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="AXvQcssv"
-Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 5AP2gic61820780
-	for <iommu@lists.linux.dev>; Tue, 25 Nov 2025 08:52:10 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	content-type:date:from:message-id:mime-version:subject:to; s=
-	qcppdkim1; bh=gSauOwJJuNnjyPBbUyUtrFBoFmJO4GXnpVHS0oMoaj8=; b=iX
-	j4TveuWpA5coXgr0M0TbC+V0Zo5MHtRXOBP37sjII5XjbKOYZ6ZEbzAfWO9M5KHo
-	YduYESNZyBmpr9WSZl00qfsKxLwHsJ11pkiVdy/89e//SI0bZErQEWV9lImxPEME
-	Apil+h+ckzGQTsoBY8BoF/FLRvgJsgaYpI87PZ8jWwQUqt4txsHfP5JcOwooAXXK
-	LnaTdBHQr5V2Hp8ErRFpbR9aLnunA5GwsXvLeQsD6sbLNSXAaDNsh06mN80EBGzb
-	fuJ4d9fe82m4Jfl56VZnt74ajgMogdNuD/AJg81VrtbGn9rC16wKq6OJkgDx0s//
-	WRr8RGSCs223guPGki+w==
-Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com [209.85.216.71])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4amp6h3ef8-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Tue, 25 Nov 2025 08:52:10 +0000 (GMT)
-Received: by mail-pj1-f71.google.com with SMTP id 98e67ed59e1d1-3438b1220bcso5684725a91.2
-        for <iommu@lists.linux.dev>; Tue, 25 Nov 2025 00:52:10 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="djSOpOsD"
+Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-4779a4fb9bfso47665e9.0
+        for <iommu@lists.linux.dev>; Tue, 25 Nov 2025 01:42:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1764060729; x=1764665529; darn=lists.linux.dev;
-        h=content-disposition:mime-version:message-id:subject:to:from:date
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=gSauOwJJuNnjyPBbUyUtrFBoFmJO4GXnpVHS0oMoaj8=;
-        b=AXvQcssvaBRDT2/ii22tbXgcM2GTYFHX60sQ3KuHqr9komwkn98QAx0kSzF1Pe5xqK
-         rQw5i45+E+YABqfxc+fwBJeTEQN+YF6eXZmJn9zZjUJ3rlb95LBqf28+stoUjamkl00c
-         3mVAuJAyA6D5tqrCplMPBpwmy4h5wTlgjDukMTwim1cVtsDpFQztWx4G5fKPrqsR/k1Q
-         q1YwnFdjC8e6h5AecbXvtu246MX4B5P6jU4IhL9mVFF0kXK8nrKjXo8JgPcfDtXL7OYC
-         vXcHdYwlHqqaqB3DiMiz+lWfxwpIXgZnHF3ihHqs/urao4O80EDNzQyscJ8gcyYsF3PJ
-         IDfw==
+        d=google.com; s=20230601; t=1764063768; x=1764668568; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=gCXHGSoCQLbBnbJkgfyqXAP9QKSn53WdyAoVSewwZH8=;
+        b=djSOpOsDdlYkJIIQX/bDQZAFMV4V0ShQ0D0/mYFAZqodhi3dA6sGE68PMz4GfRqN+w
+         RjXOk0BoP1hLscBJi+sRH4UGn5mhvX9bv8FHGFUFRtMSy1xITlRK1RGNbDsf2C6sqs3N
+         oQ0Vnby2GOJBI/HxEvHd6g1aBtpcWu3jEycB0SZL9ZpZOM2j4d6NyP66nnYPTCUEKyJC
+         s/hu1SxQNQBsQKUBAesAuLpfC9TiG3QWhkePYuG29mHN+QrOI7gNj2Pnc7o6tU7TVe/5
+         bEtrxdOd+CZbfjJGmwvuZe2SbPIPlhN0B2fHZOfza4Evytd6b9fBTkLzU5h4OoTPqpWU
+         jwtA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1764060729; x=1764665529;
-        h=content-disposition:mime-version:message-id:subject:to:from:date
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=gSauOwJJuNnjyPBbUyUtrFBoFmJO4GXnpVHS0oMoaj8=;
-        b=faivbb1d0DXZ0yamO9RtBOFaL93JVZkzkH2NGB3xz1r6zOmzyB7FX9dXM6tchqr6vl
-         ZqswkM3G+3gahKm4mi6dJlO8ySzFCsNH4ApvnpmhcwuSNm2h3JNZd71NEoNleEXFCsdl
-         qnyWtzuuzAuyLmPllz2nEsp86lUucheH61cvjOo7U5ujJPbAiUlfuhUQPnAtPNxRwpZr
-         jQNblskJ1Engfxw5c49DviE+y8Pl5pB0O5SWBjf+nZKi+DkGA5F9qvVRCdyH1KPHr1tG
-         QGh8vFyRHjsL+kGg1eGXzcJjcfFW9KrVxm8zWx69PW7kHWK6WZ+xpqOAo7BYAzfUQjEm
-         VUgg==
-X-Forwarded-Encrypted: i=1; AJvYcCVBtl3cMFAD7SVwb0MI3GkOvCcOY/L50LcdvND9SE20gPQru27S2Ktp7+xIGieS6GUeyjYQIg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyKmI72M3PVX8j5pjMSIhRFkFp0Jo7ocBXnzIvh/bXJvybWGsFm
-	wZu+Wz8BXeKUx3WH/wmvMhNuOq/gFWtCbPGz2OR1+J1atRoEuL9C9EqF+B3ayH4qXm2uX2p+lrf
-	t5KNBzllQny1jF+8HLrcBqjDX+L0bC16pPaU72EeE4B41szCWSxa/xTB95Q==
-X-Gm-Gg: ASbGncs8Z6cTBLdL2+Ud3hFw2icj93mFQJ+OFhlWRkMRoscvbc75IEyq8tIExHxSnGo
-	HSg4k9dAYPFdOnJ8MGJ4gz5S/ps0nsqtac3g2vn8YUMkMs78+HX5UwKQ/+785zxAAqRNhF8USds
-	COkajmLXSg5frnqCj3i12eENtZPUwlYruw5DvD8PmNBStCfBP0f+biiuuBhC3eegzDYMz2V15/M
-	IE7aGsg6oXI44n6u8oBC/ln9J7O4N8pHfcWWRAXYCGDLuYXcd+1Fk6DDw10xqvYMvhHSWZvdJtE
-	NEkqtCo1YPUt1/uDvPgojmelb4cJyzZYJUInGtr29q6ID/8aBEWiR3O7L5kDtBuPYGnE0dZ3z2O
-	azDOuXw50ApuuIvw09yT0NruTCcufZHj1wSvgWQAkDm4=
-X-Received: by 2002:a17:90b:2587:b0:340:f7d6:dc70 with SMTP id 98e67ed59e1d1-3475ebfa0d3mr1890900a91.13.1764060729407;
-        Tue, 25 Nov 2025 00:52:09 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IHqlg2GTH+sdvTW/Lfp7+v37BUjIzLIPd+XyOx92rIomrTFQY1YmOb+Absubbcv1hwpDBnbrQ==
-X-Received: by 2002:a17:90b:2587:b0:340:f7d6:dc70 with SMTP id 98e67ed59e1d1-3475ebfa0d3mr1890883a91.13.1764060728893;
-        Tue, 25 Nov 2025 00:52:08 -0800 (PST)
-Received: from hu-pkondeti-hyd.qualcomm.com ([202.46.22.19])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-34727a36bbfsm15991068a91.0.2025.11.25.00.52.07
+        d=1e100.net; s=20230601; t=1764063768; x=1764668568;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=gCXHGSoCQLbBnbJkgfyqXAP9QKSn53WdyAoVSewwZH8=;
+        b=nx9mZBlGeEWOJPhzwKfF+tJQF/CR9G5VWCxvJzptzCCg+q+8hHBH+PZwBJZ+OrSX9H
+         0SWfPbzBdIYBLZMz98NynnmliiqTCdbq9BFc+9m6HpTFZkmYHdZ/SETXLxfiorez0G7s
+         dLg2aBTz79udGRPveRBw5PM0dJdBnDUQyq4JEmt/CTyge7Ok1qx0SGrJoF5hxoqGzHON
+         ATZRqxTEhaYiumSfAKIZGSRsOavHxnSUWz38KBGfoM4q6Xi3zTpm478Y8wOgNDPPQ2Vq
+         cHZYf2UMHsK+lzClRZ8kpWfs3XrEzabzjbMczzoS0/OHyZzwMMPcaY+5jLhfE9Vekp5p
+         Ejog==
+X-Forwarded-Encrypted: i=1; AJvYcCXIEHo11Gf98jO0VkwRJMccQt7+iJLDAOkK3wildUmSGBy5yKCCAcYYnfzPI864BPwONgfCrA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyAjKUWwALBtHrXMjaLBv/D9VhNvHvHt+ZO5m//w6Mc/I6dzOUJ
+	2FMIJzmeYAMl7kHhSXPgTO++IXYB6PVjlxDPuBYGOhtmrs7ewPGg7tSSNvghBHbMUw==
+X-Gm-Gg: ASbGncs1vmFQWvS6fnU7Yh6hc0uPpzw+d4lPPmJpW2fau7fDX3NcrCoK+70kPiJQFa9
+	MPsHTjJ63eNnBtMPtTmtk5Hoi+PK/X9AiL4RoLuamKGmmkVZ6S9MBH3w3JlShohmIe/kWc2yT/N
+	mnva1Wu4+eHXHAjB0bPVjkDzqNegv7L/5/72LJZEKNM+bTDhNtC/xVjjYG/Tv2pkGg46uaIxO5U
+	gfdNvyK3AfL4HHqr4dHJAYf/N8L+9g6PEQ4x/+E/STSaj1B1QMdZXQe7xpPJ0BPCzkIpYB6OsLC
+	NOx/nfromPBmet8Wnv9yh9QqHuhgqF1qsT8PfSgyTv5ZsWmm3svQie3tpz0tvyZGXvf3kkwiLqW
+	HjaZfZ3AIjaZyJRzbxy+b/p8SKitc5UsxkMzJRTMaytuWdpCkbtHSBRBW0sY47TuMQdOLLslnvx
+	vmp6bvnsFcyR+6DY6izOc6W//jkeSWl7j89PAIJHCKfWeL3wZ9hBy4lh6/aWHP
+X-Google-Smtp-Source: AGHT+IEnhOrLJGeXT6QUokA3QYFoyH54rP3priqnpDd397EAHhk3ibEBNXSKphd8QyA5DX/xXbjC9w==
+X-Received: by 2002:a05:600c:3582:b0:477:95a8:2562 with SMTP id 5b1f17b1804b1-479068fa210mr331535e9.13.1764063767841;
+        Tue, 25 Nov 2025 01:42:47 -0800 (PST)
+Received: from google.com (54.140.140.34.bc.googleusercontent.com. [34.140.140.54])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-479052d95absm11951115e9.5.2025.11.25.01.42.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Nov 2025 00:52:08 -0800 (PST)
-Date: Tue, 25 Nov 2025 14:22:05 +0530
-From: Pavan Kondeti <pavan.kondeti@oss.qualcomm.com>
-To: linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-        jean-philippe@linaro.org
-Subject: PRI support in arm-smmu-v3 driver
-Message-ID: <1256faaa-e9cd-46a6-9a42-25aa74b984a8@quicinc.com>
+        Tue, 25 Nov 2025 01:42:46 -0800 (PST)
+Date: Tue, 25 Nov 2025 09:42:43 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: Randy Dunlap <rdunlap@infradead.org>
+Cc: linux-mm@kvack.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	linux-doc@vger.kernel.org, corbet@lwn.net, joro@8bytes.org,
+	will@kernel.org, robin.murphy@arm.com, akpm@linux-foundation.org,
+	vbabka@suse.cz, surenb@google.com, mhocko@suse.com,
+	jackmanb@google.com, hannes@cmpxchg.org, ziy@nvidia.com,
+	david@redhat.com, lorenzo.stoakes@oracle.com,
+	Liam.Howlett@oracle.com, rppt@kernel.org, xiaqinxin@huawei.com
+Subject: Re: [PATCH v3 1/4] drivers/iommu: Add page_ext for
+ IOMMU_DEBUG_PAGEALLOC
+Message-ID: <aSV6E1a4tL_Vt8cz@google.com>
+References: <20251124200811.2942432-1-smostafa@google.com>
+ <20251124200811.2942432-2-smostafa@google.com>
+ <7854489b-bc9e-4bb9-a19d-cff96badc180@infradead.org>
+ <5d7a305e-d6b6-49dc-ab1d-bddd1339d4a7@infradead.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMTI1MDA3MSBTYWx0ZWRfXwo6+YQhUCPdc
- UCVikYvPA+24lG2NpbOJu+uHJqagB//yhnZ9FMan9RbxWdmWhPmYcIOC0Q6Ug+7BFC9x6+GrY/p
- +DvyNFkrkU1/qaOFOeRVAnjffE2gx0eqND9jL8OydPmxD883VdGlCAPlgCVCYcfODxLwjlh0h6v
- 3LyDzqMFVLSukvEEX1seYwl+CPS+iwDalzI02xMNulAgN3FVA6qbmVmSLsZ4gOCfs+E7PjjuLWd
- LTi19Kgr0vB/q5AvHZDYJm9nQ2DvR05GyQQpRrz6OUgGlDPQNhF87mkDMGrz4rTGArNotXbo663
- 6UrVsvIK2GcdkOb0I5ibAse0sKezeMgqjqzf/1F4AcFv+Nu52YvGG5BjDVOrgbS3E0nzetN7r+W
- 1qp8QyAAOvHEbUxv7wKkikYRZbzXEQ==
-X-Proofpoint-GUID: 7Es_rnzp404u6zVNVcZO64_cQGOy4OuQ
-X-Proofpoint-ORIG-GUID: 7Es_rnzp404u6zVNVcZO64_cQGOy4OuQ
-X-Authority-Analysis: v=2.4 cv=GoFPO01C c=1 sm=1 tr=0 ts=69256e3a cx=c_pps
- a=UNFcQwm+pnOIJct1K4W+Mw==:117 a=fChuTYTh2wq5r3m49p7fHw==:17
- a=kj9zAlcOel0A:10 a=6UeiqGixMTsA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=VwQbUJbxAAAA:8 a=KKAkSRfTAAAA:8
- a=Gpj13mTOjE8SKnWQHpIA:9 a=CjuIK1q_8ugA:10 a=uKXjsCUrEbL0IQVhDsJ9:22
- a=cvBusfyB2V15izCimMoJ:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.9,FMLib:17.12.100.49
- definitions=2025-11-25_02,2025-11-24_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- malwarescore=0 suspectscore=0 impostorscore=0 bulkscore=0 adultscore=0
- phishscore=0 clxscore=1011 lowpriorityscore=0 priorityscore=1501 spamscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2510240001 definitions=main-2511250071
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <5d7a305e-d6b6-49dc-ab1d-bddd1339d4a7@infradead.org>
 
-Hi
+On Mon, Nov 24, 2025 at 05:31:12PM -0800, Randy Dunlap wrote:
+> I missed one other thing:
+> 
+> On 11/24/25 3:13 PM, Randy Dunlap wrote:
+> > 
+> > 
+> > On 11/24/25 12:08 PM, Mostafa Saleh wrote:
+> >> Add a new config IOMMU_DEBUG_PAGEALLOC, which registers new data to
+> >> page_ext.
+> >>
+> >> This config will be used by the IOMMU API to track pages mapped in
+> >> the IOMMU to catch drivers trying to free kernel memory that they
+> >> still map in their domains, causing all types of memory corruption.
+> >>
+> >> This behaviour is disabled by default and can be enabled using
+> >> kernel cmdline iommu.debug_pagealloc.
+> >>
+> >> Signed-off-by: Mostafa Saleh <smostafa@google.com>
+> >> ---
+> >>  .../admin-guide/kernel-parameters.txt         |  6 ++++
+> >>  drivers/iommu/Kconfig                         | 19 +++++++++++
+> >>  drivers/iommu/Makefile                        |  1 +
+> >>  drivers/iommu/iommu-debug-pagealloc.c         | 32 +++++++++++++++++++
+> >>  include/linux/iommu-debug-pagealloc.h         | 17 ++++++++++
+> >>  mm/page_ext.c                                 |  4 +++
+> >>  6 files changed, 79 insertions(+)
+> >>  create mode 100644 drivers/iommu/iommu-debug-pagealloc.c
+> >>  create mode 100644 include/linux/iommu-debug-pagealloc.h
+> >>
+> >> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+> >> index 6c42061ca20e..dddf435a1c11 100644
+> >> --- a/Documentation/admin-guide/kernel-parameters.txt
+> >> +++ b/Documentation/admin-guide/kernel-parameters.txt
+> >> @@ -2557,6 +2557,12 @@
+> >>  			1 - Bypass the IOMMU for DMA.
+> >>  			unset - Use value of CONFIG_IOMMU_DEFAULT_PASSTHROUGH.
+> >>  
+> >> +	iommu.debug_pagealloc=
+> 
+> Please note what format the option parameter value takes and possible values,
+> like iommu.passthrough above here in the kernel-parameters.txt file.
 
-I am trying to understand IO fault handling in Linux w/ SMMUv3. While reading
-the code, I understand that SVA domain creation allows taking IO pagefaults.
-arm_smmu_enable_iopf() checks if the master support stall upon fault
-feature or not. How do we handle page faults for PCIe devices, for which 
-transactions cannot safely be stalled? IIUC, The PRI handling in the
-driver i.e arm_smmu_priq_thread()->arm_smmu_handle_ppr() is not doing
-anything. In the SVA support for SMMUv3 series v7, I see the support for
-PRI via "Add support for PRI" patch [1] but it is not merged. 
+I see, I was following the kernel's “debug_pagealloc”. Although, the
+implementation understands “={0,1}”, I can add something as:
+	Format: { "0" | "1" }
+	0 - Sanitizer disabled.
+	1 - Sanitizer enabled, expect run-time overhead.
 
-Can you please clarify if we can support SVA with PCIe devices w/o
-pinning the memory?
+To make it more clear.
 
-[1]
-https://lore.kernel.org/all/20200519175502.2504091-25-jean-philippe@linaro.org/
+Thanks,
+Mostafa
 
-Thansk,
-Pavan
+> 
+> >> +			[KNL,EARLY] When CONFIG_IOMMU_DEBUG_PAGEALLOC is set, this
+> >> +			parameter enables the feature at boot time. By default, it
+> >> +			is disabled and the system behave the same way as a kernel
+> > 
+> > 			                           behaves
+> > 
+> >> +			built without CONFIG_IOMMU_DEBUG_PAGEALLOC.
+> >> +
+> >>  	io7=		[HW] IO7 for Marvel-based Alpha systems
+> >>  			See comment before marvel_specify_io7 in
+> >>  			arch/alpha/kernel/core_marvel.c.
+> > 
+> > 
+> 
+> -- 
+> ~Randy
+> 
