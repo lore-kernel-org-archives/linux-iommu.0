@@ -1,268 +1,202 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DE1C2DC33F
-	for <iommu@lists.linux.dev>; Tue, 25 Nov 2025 20:39:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.11
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764103147; cv=fail; b=cvRRBplUPE78nPQKpjWqokRz+UIoUQxQzJi8zlXUXJrdBS+78DFSlmOWMcjXFWpu/Dubr3SDinGVcac/zksA/XdQ5Ono8zSX5DyA8ibUi1mAhH5mABZvTl4qSgMRMw3VTIqWlxO2+jjGhWav46rb7C78tY30ig0X66s5ABUVbp0=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764103147; c=relaxed/simple;
-	bh=EYSxP5p9ffcypHR2mSzDaALfSqKNDXnpaYtEEJSQ2aQ=;
-	h=From:Date:To:CC:Message-ID:In-Reply-To:References:Subject:
-	 Content-Type:MIME-Version; b=kGGcy8qTHeM3ipAmA3a6+xj4V6+0QrixbmRqWWj6iKejnUyMb/3h+bg0H99AFRy536DboM7+LGAE6DPg9zHWHXh28oR6a+l4jHgq073i0FVkLyJRQeDQ/sPEyCNrwsuf1lAjBnMnCbS2RLdZxcEJVh0pN1tGxqUpkDpo8+wWq54=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=JQdFOlaL; arc=fail smtp.client-ip=198.175.65.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BDC703595D
+	for <iommu@lists.linux.dev>; Wed, 26 Nov 2025 00:18:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=67.231.145.42
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1764116328; cv=none; b=g5BvLdQ4nQ5evnpmS04MO4z1/IaDSo7ua2XZizVuQppJ0TFwQ7iWwA56jKglIzOIypXNquM0NdB1RSiZ0R/mF24x3P+F1IzPM+J95WoiSeLzZ0uRyoH5m+oqOPH4QZN7CSYolKw/ftk7xkQwVoUqSqO+gMGDq0b+bfUf/5fe8kM=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1764116328; c=relaxed/simple;
+	bh=gwii+iVdBVKbWCyCdr/+zthLuTAXebNs8mhXSw/5DRY=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=X7/evAV7cJLOeulIW7NQm4o3LKzur2KyYvYmKKhIHJWas1jz+FYkXSqreqMFNpV5dyIbBWiGTqbch44wiBwz61vbSI3TBl3W36TmP5kFhBoxdnQgayF057uS2lG4jTETKh71C3q3m7crCRUkt0uoATGgKUnnNSockub9KVH/IB0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=fb.com; spf=pass smtp.mailfrom=meta.com; dkim=pass (2048-bit key) header.d=fb.com header.i=@fb.com header.b=W+AKvPIc; arc=none smtp.client-ip=67.231.145.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=fb.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=meta.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="JQdFOlaL"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1764103143; x=1795639143;
-  h=from:date:to:cc:message-id:in-reply-to:references:
-   subject:content-transfer-encoding:mime-version;
-  bh=EYSxP5p9ffcypHR2mSzDaALfSqKNDXnpaYtEEJSQ2aQ=;
-  b=JQdFOlaLU8x497ye3gryrIaSJI9Y0zBBkypubghZSYNtSwMKoDqo1Tzx
-   Q/oCPXQsxufDDTEMKsC39Mvx7UFfpQy7Rja6DeUttw48UmHYvQDuycRWo
-   rvlRoNe4HIovvmzRzeoThkjOaca8GjopaMvDRDfe/MrIfVzVq+Y9Gk7gs
-   qZOWA6a/Qv1+6RfSwKV0uCGfUkqS906rxHNhtKfrxvb+gfLnI77y0t036
-   8IzXNqV+aHGo9VytFZXiBvBf5snbnugNlO+5UTR/LyZWDajnXXFRRC5U6
-   4/B4zqTIIsQI/3JXSBTUItX/A0kOwz0tvEQ+2uYl8d0u9rgPwU1Iz64B7
-   g==;
-X-CSE-ConnectionGUID: c75QEPqRQcKNkgFtn00/qw==
-X-CSE-MsgGUID: cYFenG4jRIqN57Rvjx5NsA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11624"; a="76455122"
-X-IronPort-AV: E=Sophos;i="6.20,226,1758610800"; 
-   d="scan'208";a="76455122"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Nov 2025 12:39:02 -0800
-X-CSE-ConnectionGUID: kPK1ffzdRlyuSh+zX2rzqQ==
-X-CSE-MsgGUID: XO/apZObTeG/Cw2R+Us2zA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.20,226,1758610800"; 
-   d="scan'208";a="197059868"
-Received: from fmsmsx901.amr.corp.intel.com ([10.18.126.90])
-  by fmviesa005.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Nov 2025 12:39:01 -0800
-Received: from FMSMSX902.amr.corp.intel.com (10.18.126.91) by
- fmsmsx901.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.29; Tue, 25 Nov 2025 12:39:01 -0800
-Received: from fmsedg903.ED.cps.intel.com (10.1.192.145) by
- FMSMSX902.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.29 via Frontend Transport; Tue, 25 Nov 2025 12:39:01 -0800
-Received: from CY3PR05CU001.outbound.protection.outlook.com (40.93.201.0) by
- edgegateway.intel.com (192.55.55.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.29; Tue, 25 Nov 2025 12:39:00 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=WrGGKCAumeGCN/cTiRWPu8k06ETB0OknTphVAtC2iXUl6d3Bwzopm0SGogrG0Onfc+WBVAsFD2N+/41yROhe25Z0smxWkgzuheOASP93rWow09Y86Vl9xHKz4IUN+XEAAyf735+wsg0Zwy7XpgK6JWuQfu8sCjY/x0W1VJ/Ih+Sj/Z6VgJEnqRtZS5/TVqr6WR1CE8FjKPDD0D9vN3P/fkjI4DouFMY0rjMNq+EqOl+m3+zcRZCq51lW8iQfkHBje3iRlIIxrStG35/zJeJBrNfx53DwB4WI898s+4Osu8KdLrrSy6gFDNgXtz3yu7Mtfcel/g8spi77koRek3sWBw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=kmlP6j3dgkJOyzfOWAsVdvqbFhSPVzq6GPB9L5TsIRk=;
- b=On8D5QmQgwGYt4MNIuz9SMjR9xNdpdpywgslDKVqeEWv9eOHBpGHZzULCKEZG0Gi9lVvLEPkf/dUaUu9ikcaVSLVk08GWa1jNZR7h8vi2g1gaqD2ug0YArLAA3CBjt0KDVSSvQV5ydC4PCEZ4U5/A/MOB+IF5BOR1AJuTN/Iq/1V6AtlOCmOpiWuKsJ5I+zxPiTVGtoFUIZwwwwjlUl7Z1H1ZQH1RxO/BAvd2r9b3CgCPlL6ATUDIaEDBIdEQlEeJ2VkH+TVlJ2aaT03wmMVTnZU8+4tXi1qJOOezNvDB71sZhoVS4iLfppqmG37mONVQAvYVPfXZ1JVxngAVKy0vQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from PH8PR11MB8107.namprd11.prod.outlook.com (2603:10b6:510:256::6)
- by DS0PR11MB8231.namprd11.prod.outlook.com (2603:10b6:8:15c::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9343.14; Tue, 25 Nov
- 2025 20:38:58 +0000
-Received: from PH8PR11MB8107.namprd11.prod.outlook.com
- ([fe80::1ff:1e09:994b:21ff]) by PH8PR11MB8107.namprd11.prod.outlook.com
- ([fe80::1ff:1e09:994b:21ff%4]) with mapi id 15.20.9343.016; Tue, 25 Nov 2025
- 20:38:58 +0000
-From: <dan.j.williams@intel.com>
-Date: Tue, 25 Nov 2025 12:38:56 -0800
-To: Alexey Kardashevskiy <aik@amd.com>, <linux-kernel@vger.kernel.org>
-CC: <linux-crypto@vger.kernel.org>, Tom Lendacky <thomas.lendacky@amd.com>,
-	John Allen <john.allen@amd.com>, Herbert Xu <herbert@gondor.apana.org.au>,
-	"David S. Miller" <davem@davemloft.net>, Ashish Kalra <ashish.kalra@amd.com>,
-	Joerg Roedel <joro@8bytes.org>, Suravee Suthikulpanit
-	<suravee.suthikulpanit@amd.com>, Will Deacon <will@kernel.org>, Robin Murphy
-	<robin.murphy@arm.com>, "Borislav Petkov (AMD)" <bp@alien8.de>, Kim Phillips
-	<kim.phillips@amd.com>, Jerry Snitselaar <jsnitsel@redhat.com>, Vasant Hegde
-	<vasant.hegde@amd.com>, Jason Gunthorpe <jgg@ziepe.ca>, Gao Shiyuan
-	<gaoshiyuan@baidu.com>, Sean Christopherson <seanjc@google.com>, "Nikunj A
- Dadhania" <nikunj@amd.com>, Michael Roth <michael.roth@amd.com>, Amit Shah
-	<amit.shah@amd.com>, Peter Gonda <pgonda@google.com>,
-	<iommu@lists.linux.dev>, Alexey Kardashevskiy <aik@amd.com>
-Message-ID: <692613e0e0680_1981100d3@dwillia2-mobl4.notmuch>
-In-Reply-To: <20251121080629.444992-1-aik@amd.com>
-References: <20251121080629.444992-1-aik@amd.com>
-Subject: Re: [PATCH kernel v2 0/5] PCI/TSM: Enabling core infrastructure on
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BYAPR08CA0012.namprd08.prod.outlook.com
- (2603:10b6:a03:100::25) To PH8PR11MB8107.namprd11.prod.outlook.com
- (2603:10b6:510:256::6)
+	dkim=pass (2048-bit key) header.d=fb.com header.i=@fb.com header.b="W+AKvPIc"
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+	by mx0a-00082601.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 5APKA97n1087396;
+	Tue, 25 Nov 2025 16:18:10 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=s2048-2025-q2;
+	 bh=qGBFfom64ubwAcHLmi0kGY4idgptPgMMsGDiFpmxSnI=; b=W+AKvPIcq+Gs
+	i3tYYc6MNSXntK0NmrX6mDMiJh2f1He+waI1tJUFw9eep8toqFOiXcXgv1d9N8HG
+	PGdbn6/fGl6qS46R20vtpCyrMHLj0wH4JK9pXWvIXkrNgijhiczlYtlomrwOthSj
+	zml1ieuFYLYIUzuWZ91PR3D7DWCyaUSc0LCurvPCQxAzzat402xRMP4oyeWdz0ty
+	1EYyma4UMfnDB7SWN7UNyv49rng7qo94JM/vlLrbdULgh6NjCeHD1lakMZtk49rg
+	EGdIyMsuzoL8EN2ERVeIEmaZ0+aXHHcjPKQINfA5NEORkyA0TfReyUgtpSsOkjBL
+	M3cSvkYsxQ==
+Received: from mail.thefacebook.com ([163.114.134.16])
+	by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 4ank8qsk46-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+	Tue, 25 Nov 2025 16:18:10 -0800 (PST)
+Received: from devgpu015.cco6.facebook.com (2620:10d:c085:108::4) by
+ mail.thefacebook.com (2620:10d:c08b:78::2ac9) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.2.2562.29; Wed, 26 Nov 2025 00:18:08 +0000
+Date: Tue, 25 Nov 2025 16:18:03 -0800
+From: Alex Mastro <amastro@fb.com>
+To: Leon Romanovsky <leon@kernel.org>
+CC: Bjorn Helgaas <bhelgaas@google.com>,
+        Logan Gunthorpe
+	<logang@deltatee.com>, Jens Axboe <axboe@kernel.dk>,
+        Robin Murphy
+	<robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon
+	<will@kernel.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Jason
+ Gunthorpe <jgg@ziepe.ca>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jonathan
+ Corbet <corbet@lwn.net>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Christian
+ =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        Kees Cook
+	<kees@kernel.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Ankit
+ Agrawal <ankita@nvidia.com>, Yishai Hadas <yishaih@nvidia.com>,
+        Shameer
+ Kolothum <skolothumtho@nvidia.com>,
+        Kevin Tian <kevin.tian@intel.com>, Alex
+ Williamson <alex@shazbot.org>,
+        Krishnakant Jaju <kjaju@nvidia.com>, Matt Ochs
+	<mochs@nvidia.com>,
+        <linux-pci@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-block@vger.kernel.org>, <iommu@lists.linux.dev>,
+        <linux-mm@kvack.org>, <linux-doc@vger.kernel.org>,
+        <linux-media@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
+        <linaro-mm-sig@lists.linaro.org>, <kvm@vger.kernel.org>,
+        <linux-hardening@vger.kernel.org>, Nicolin Chen <nicolinc@nvidia.com>,
+        Jason
+ Gunthorpe <jgg@nvidia.com>
+Subject: Re: [PATCH v9 06/11] dma-buf: provide phys_vec to scatter-gather
+ mapping routine
+Message-ID: <aSZHO6otK0Heh+Qj@devgpu015.cco6.facebook.com>
+References: <20251120-dmabuf-vfio-v9-0-d7f71607f371@nvidia.com>
+ <20251120-dmabuf-vfio-v9-6-d7f71607f371@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH8PR11MB8107:EE_|DS0PR11MB8231:EE_
-X-MS-Office365-Filtering-Correlation-Id: 629df09c-79b3-496e-e931-08de2c62a860
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|7416014|366016|1800799024|376014|7053199007;
-X-Microsoft-Antispam-Message-Info: =?utf-8?B?cjlobmtzSFlQSFZ3Um5PTEFHWWlTUHNxaXZMK2JDODN2ZnFMY2hMY1F5a082?=
- =?utf-8?B?RzFCV0RUZ3hZRDR2SUhlNG04ZGlGT1JDeUs4Ykt3WmxWUDRSMlU2Q2ZGYmRp?=
- =?utf-8?B?T0t0bk1sbXZKSnR2YkcyVGdvTEV2bTB1cllQQ3pCZk1nd29nZjZFRHhLSmp2?=
- =?utf-8?B?UlNGS0JwbCtXVjU2d2xITXdvNVBIUG05VkEzd3RBN05jbmJWWnkyZHMxMDYv?=
- =?utf-8?B?OWtBL0V5SGRyU1pKME1EK241MmxkbjMyYWRpaDI2ZmxyMUNpeUlBWlN6b3Bj?=
- =?utf-8?B?V0VjRlVxckVJNlMvNEE0UHVTbmRsdG5wSjcyVThqTUdsdUlObURDS3dwSnVR?=
- =?utf-8?B?RjlTN1V6ekswT0FwN1Q2ZXhGaFVIWHE3WXVEUEJCdEw3Wmt5OWRIdDNQTWlO?=
- =?utf-8?B?Ny9wNVFxM3FVRitiSEt3b0dOODBNZEhNQmlzeFZqY0RNVWQySFlwSXhUWFZz?=
- =?utf-8?B?eksvM1dBdElUWmRtekNnaWlWZUxLTHZmeGlQeXNkWFF5NllPUWZvbXZ2N1NX?=
- =?utf-8?B?bHQ0SzY3YTZLaXJsVGt1RVlpM3VwVGt0UCtBeFF5SGtnZ2RkWGlrSGpCbXB5?=
- =?utf-8?B?dEhXY2ZEdjFWZmozVE5COTlXV24yd2J6WnVaZ1FWNkY2enlKU1FJd3NkMzJ5?=
- =?utf-8?B?MXdjU3BtVXQxc2Y4ak1KbFBPUmRSU3VNczNaaFp2UVF1NVltcXRDYVpSbXV4?=
- =?utf-8?B?ajNHNnBzc2xoZ2REWEYyREtKSWhWdUlnaHRMQWUzSFduN3QwbGZDcXB1QkZq?=
- =?utf-8?B?MlRXMEtVaHhPMVZuWXRTczRTRWF6YlhlYjQ0Si9rNzJOUHBNUVkrRUx5djRq?=
- =?utf-8?B?RWdLK0JhSGgzbFpsVHRWaml6emtaYkRMT0FBcC81MGNCamg1dXVHWFdkU2h2?=
- =?utf-8?B?SW16aUtMTzhzQ2JuOGU3V0JLNllSL29MTVpHQVY3YXN4QjZBSHNWS1dYVDR1?=
- =?utf-8?B?TEozTVBVZUpPeTVuUHp2dk1lWEFRaVNtQ0RUbkRTZ0xCTVJJdzBZelh0MXVT?=
- =?utf-8?B?WjA1YWRvYXBqVnpBcnNlVmVnNlFranhtZXZrc3FoNHoxR3dBYVJnZ3pDdmZr?=
- =?utf-8?B?ekVRKzdHWEdkRWg4QzYrNlZRRDNGaDFzRzN1WHNDYVdFTzFUOVJoMks5Nldv?=
- =?utf-8?B?dWFZdHhXeDcvYWwwWFFyaVNOcDRCYTA4SkRrQ0JwbkhKOWpSSnZlOVJwWFNU?=
- =?utf-8?B?WCs0eXVaWWRBclZ0V0cxemNvanJhd3F3SS8zaFA1WVdXdEpTSVNBMEQrRTNB?=
- =?utf-8?B?Wjg2WTZVS3NKd3hGdVJpUlFrTFFGeTB4dWcvVG1rdW1ZTHkxY2pJMHBRMUho?=
- =?utf-8?B?cnhNUnVaKy9YNUFGbXhoQmVsOXcvU0p4UlJGWHFuVjJCclp2cEt0VXZEdmRF?=
- =?utf-8?B?MXNzWjZwclRKR3lieXRZM25aV0phMnA1MXZtTC9SWmZTR0I1Qyt5dEdRSlJP?=
- =?utf-8?B?Ni9VN01ZcXA0aTNPdnlWQlFRRDlsa3Z0Z0gvK3BoSVJEMFd6K29NcXEzeGRh?=
- =?utf-8?B?RXIybis2T0NoYjFsa1ZEZ3BNclVtclRNQjlXR2VOZ1pqcUdWQjdWZ0NXc0ls?=
- =?utf-8?B?a3V4TnVydmlJWjdmYVlwODAySXhtQnRXcUo0R011R25SV09EalBYSmFMWmlP?=
- =?utf-8?B?MzVLYXlob1ZqM2xOL1k3ZGhhM0pZZlhnNUhKV001OHlNNjhJSUdVa3JXb3BM?=
- =?utf-8?B?OVVzbHUzSXU2dUlJck5vck5mbUVnYjhBNlNyb3pxUmlENjhCOGJLbXByV29E?=
- =?utf-8?B?VFdrNG9uN2FZWDF5c2U1WGxHUzRJRzlvWmN3QStVYjI1eWxqSDdQNlFlMkMv?=
- =?utf-8?B?RUlLK3hTaHFobXp0U0xPMXN2bUkydHJvU0tOa29FTEJwdHFTMHlLNGhybTRq?=
- =?utf-8?B?MEg4c2dZMitQZzVmaVhUYUVZVzFadXFyYlhIaHEwQXpEYlpGQUl6aHRFa0dQ?=
- =?utf-8?B?MU1vNW5EdmM2R1FvSlorOXRzdVBQTjM1d2c0a2dpOXJFM3hYdmo5YTRIaGx5?=
- =?utf-8?B?MU0yZ1FLZE53PT0=?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB8107.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(366016)(1800799024)(376014)(7053199007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?eS9WNmoxd3lWVUNaRjA4Y2RPaWJaS013OWFiQXRwSTJwNlNFU3FTNnNBZDV6?=
- =?utf-8?B?K29uT3VtcVVHazBmc1ZWM2haUDZUY3VKMUVFK1Y5ZTc5dHhZZ1l2ZGxralRC?=
- =?utf-8?B?RU80T1psVzgvelAzR0NKR0xwLzZzV0o0aEdkUTFJT3IxdkF1SzdDZ3N4Q2lF?=
- =?utf-8?B?endQOGRDd0t0NlM4M09hMVdFc0pNKzdrQ1NaYVBSaXpQekE2bmdpNTFET1F0?=
- =?utf-8?B?cUFHMzB2c1FXV0Y1c3k5WFlVWDB3TnVwc3pZTmFDcnpuVWNFcDBOcktmcXBz?=
- =?utf-8?B?SlVMRG5KalVQb1VId3VrMitwdFNjYm10WkJKV1NYLzJSSUtjTFRpcWpWc0NG?=
- =?utf-8?B?SkM0RjUxSXVpVmtjWXFCZ01XaWlrN2NNZE5WQnF0UkJoQ25pV3RhRXJDVnI1?=
- =?utf-8?B?bkhBMlJTYjVvZTFycmQ0MlBBZUdPY1NyeFU5L2JjbUlwb1FyaitkR2ZEcG9r?=
- =?utf-8?B?LzRud3p3VlVjSjB5STdaUEpIQmhQSkJvTUl4Rkt4dm5nbFI1ek96UmRVNFky?=
- =?utf-8?B?alp0eHgvekZLYitrVEMzdFNpSlRCdW1qUnpkSzRoSXB6WG10dEg4MDRoVVJk?=
- =?utf-8?B?ZGdFN3VqWkg3dDhLKytaZWY3YU42MnNzc3hwSHpNMXdHalIvYU8xcXpjUDVr?=
- =?utf-8?B?bHNPeWR3R1BVelZZYTNuNjZ5NjJTMnphdGFqT2dBSEZSNjQ2bG9ycVdObFZh?=
- =?utf-8?B?NDVZbWU4L29lbU1KdE1Da1p0bE56VC9kaWlWMVNhWVVMQ2Ryays0eURkdDIv?=
- =?utf-8?B?WE5DY2drUDA1SkE1c1NKeG9lbjY2cG9YdVlMcktwcENGSkxqU2N5V3oxWVRl?=
- =?utf-8?B?WFU2U3ZaQ2E0TElDRXE2OVFZR0RmaWtxam0rd3BxZ2VwbzloUTNKT09jVndw?=
- =?utf-8?B?aTE0KzBsejZCaGZGV1Mxc0Z4YkRhS056K2hSTERUbHNFTGNFb25WYUh3WEsw?=
- =?utf-8?B?WHc2Q09aZHBuNk9VUEp3aFBpNmxLMFBBdlJRMThHSElLZTFyMWpGeUtHZWVY?=
- =?utf-8?B?T0FnWjFFVkRUZXVWUnl1WHJjYi9CSmNGVHFyMDRNMHNtKzBSMlZNRkRDN2hn?=
- =?utf-8?B?NmpNMEF2elZaVGVHVkVmMStsOTRDbzJIZnl5RUJWQmlaTzMzeURMdFdnZXJU?=
- =?utf-8?B?WlhiTHlSZ3ZKTHlFS294Y3ZrVm9mM3RYbEJidkVvWWdxZFJrY3E1NWNzd3N5?=
- =?utf-8?B?blZ1N2Y0ME9rYUNpZS9wd21DMnVjc01LVGd1ZGFlblNSS0FsbFRheE4rVTdM?=
- =?utf-8?B?cGRTSk1wM29EN2c2OW5uVEpXa3MxU0tIbldEemZwdVgwd3l5aEYwRnV1Q01T?=
- =?utf-8?B?ZDNkN1FUQ1VNV2pKWTlTWkZiVjhxWjhIeTZxWG9yVEdGSzE2NFFwN2tGU2VN?=
- =?utf-8?B?c2ovUHMraXcwSkpLckV1VE03NFF4MGpWRkZtNFBrUFpydXVKY3gvMFY3a0Jx?=
- =?utf-8?B?ZE5oSUJKaWJSVDVpYTFwNzJXTXByVVlnZEhVa2R3a0ZhTGZaVi84MjRyYjdm?=
- =?utf-8?B?RGp4RjlLdHBNNHV1VTJZNnVaSkU5cFF3cUsvVm5CMUF5T2RsNTN1M0pidSto?=
- =?utf-8?B?cjVwN0ptbTJjWm1WUk5odk1jNDVMNXM3UkxsRklpVkhCMjFwRnk3aFpqVHRh?=
- =?utf-8?B?VzJ4L0ZUQkllY2tOQTlvajVpOXYvM0JCcjQ1Y1NmMEZsY2xwblNZaDdpRTFZ?=
- =?utf-8?B?ekt6UjhVSVR0a1Q1bzZ4b0ZFdnZCVTQ4TTZENmV3d1VlTVY5amVvUDBYOGRx?=
- =?utf-8?B?VWtXeWIzQmkyUjBxWVZhR3Q2UjE0OG5UZnJYcGpESUJRSndCVExNdk1SKzg1?=
- =?utf-8?B?SDB1R2pGN1BQckZNRGdVa3lzN01RWHRNQXRkdmFuWFBWZVo2dmVLRFBETmp6?=
- =?utf-8?B?QlZseXRUaVFkKzM4clYwTTFLQVprRktodDA3R0dpL0FZTTFSNm9VRmNnaTln?=
- =?utf-8?B?L2VTbzVKYjdPVVowdVREVENkaXRXMUY0ejg2VERQWmUySDRabDJya1oyZWdC?=
- =?utf-8?B?am9jOElBNDVTYi9scVZQSEd6bjVzcUZKUWRRY0hrajAyVDJnRW1uWkVoNnAx?=
- =?utf-8?B?d25XNWpxV3kyeFAvbmM5cG9jUDBMT0Q4cFZNU3VaSHlxTUY4Y1gyVEFyMThC?=
- =?utf-8?B?Nkpab0hnSGRTRjR3Q1grbThsV2hBWXhwS1E3bnNIR1dOTVJhK2JuRk5sM3VC?=
- =?utf-8?B?cnc9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 629df09c-79b3-496e-e931-08de2c62a860
-X-MS-Exchange-CrossTenant-AuthSource: PH8PR11MB8107.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Nov 2025 20:38:58.1945
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: +dk8ikqQKQ9uohcHXdM+BxxEDJniWV6+ERnw7crms9mqr5eTFv7rhZlJrlFMevpgnIxgSFr1/Gue+ZRw25y3equBJQ9oQpxqK4O63ph7WVE=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR11MB8231
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20251120-dmabuf-vfio-v9-6-d7f71607f371@nvidia.com>
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMTI2MDAwMCBTYWx0ZWRfX4aU+4yoxvGRI
+ fn5uIgo4phoyJLcsXRpkIiEbPHjmDvXjee+0hL5hZTnMf7KiIbVFpuPgNNxmzJnPoXlqYrYFVCb
+ EPyFD9HoNuq9bFWOWGD9jm+tH6jYX1bWvVVFfP7wmtxUCfM6nyWp9RhEW4F3WyT2gvOl06d0Lit
+ II5EZrklZ4kZ6ZccZ6uI5fnA2fhf1sXF7BU/xkJ1DrQkkrbuth2BkU2ET85sZ92FJE5mmeSgTwT
+ 8QOBncjhE4/DUMlusLJDyljY4I1YOkD69BDnY6LZhPAqbK1Ws3OXJ/OhGSqPOvK63g6mktQG9A/
+ 4TjZvhvYG6pYNypXlNsc0JrFDrM/97nZlDYVEtn7wlUXLxFDOXnHdS+vQBslO6M76Dlb+/Whxi6
+ 97TQYdVHP7oL0xprhG3cL4XfcOc0nA==
+X-Proofpoint-ORIG-GUID: 5DCeEKEPh0Lq0c0QeLIVINEpDK6-Nmfl
+X-Proofpoint-GUID: 5DCeEKEPh0Lq0c0QeLIVINEpDK6-Nmfl
+X-Authority-Analysis: v=2.4 cv=VfT6/Vp9 c=1 sm=1 tr=0 ts=69264742 cx=c_pps
+ a=CB4LiSf2rd0gKozIdrpkBw==:117 a=CB4LiSf2rd0gKozIdrpkBw==:17
+ a=IkcTkHD0fZMA:10 a=6UeiqGixMTsA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=VwQbUJbxAAAA:8 a=3j4BkbkPAAAA:8 a=qThf3vN7FU90BnacfoAA:9 a=3ZKOabzyN94A:10
+ a=QEXdDO2ut3YA:10
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.9,FMLib:17.12.100.49
+ definitions=2025-11-25_02,2025-11-25_01,2025-10-01_01
 
-Alexey Kardashevskiy wrote:
-> Here are some patches to begin enabling SEV-TIO on AMD.
-> 
-> SEV-TIO allows guests to establish trust in a device that supports TEE
-> Device Interface Security Protocol (TDISP, defined in PCIe r6.0+) and
-> then interact with the device via private memory.
-> 
-> In order to streamline upstreaming process, a common TSM infrastructure
-> is being developed in collaboration with Intel+ARM+RiscV. There is
-> Documentation/driver-api/pci/tsm.rst with proposed phases:
-> 1. IDE: encrypt PCI, host only
-> 2. TDISP: lock + accept flow, host and guest, interface report
-> 3. Enable secure MMIO + DMA: IOMMUFD, KVM changes
-> 4. Device attestation: certificates, measurements
-> 
-> This is phase1 == IDE only.
-> 
-> SEV TIO spec:
-> https://www.amd.com/content/dam/amd/en/documents/epyc-technical-docs/specifications/58271.pdf
-> 
-> Acronyms:
-> TEE - Trusted Execution Environments, a concept of managing trust
-> between the host and devices
-> TSM - TEE Security Manager (TSM), an entity which ensures security on
-> the host
-> PSP - AMD platform secure processor (also "ASP", "AMD-SP"), acts as TSM
-> on AMD.
-> SEV TIO - the TIO protocol implemented by the PSP and used by the host
-> GHCB - guest/host communication block - a protocol for guest-to-host
-> communication via a shared page
-> TDISP - TEE Device Interface Security Protocol (PCIe).
-> 
-> 
-> Flow:
-> - Boot host OS, load CCP which registers itself as a TSM
-> - PCI TSM creates sysfs nodes under "tsm" subdirectory in for all
->   TDISP-capable devices
-> - Enable IDE via "echo tsm0 >
->     /sys/bus/pci/devices/0000:e1:00.0/tsm/connect"
-> - observe "secure" in stream states in "lspci" for the rootport and endpoint
-> 
-> 
-> This is pushed out to
-> https://github.com/AMDESE/linux-kvm/commits/tsm-staging
-> 
-> The full "WIP" trees and configs are here:
-> https://github.com/AMDESE/AMDSEV/blob/tsm/stable-commits
-> 
-> 
-> The previous conversation is here:
-> https://lore.kernel.org/r/20251111063819.4098701-1-aik@amd.com
-> https://lore.kernel.org/r/20250218111017.491719-1-aik@amd.com
-> 
-> This is based on sha1
-> f7ae6d4ec652 Dan Williams "PCI/TSM: Add 'dsm' and 'bound' attributes for dependent functions".
-> 
-> Please comment. Thanks.
+On Thu, Nov 20, 2025 at 11:28:25AM +0200, Leon Romanovsky wrote:
+> +static struct scatterlist *fill_sg_entry(struct scatterlist *sgl, size_t length,
+> +					 dma_addr_t addr)
+> +{
+> +	unsigned int len, nents;
+> +	int i;
+> +
+> +	nents = DIV_ROUND_UP(length, UINT_MAX);
+> +	for (i = 0; i < nents; i++) {
+> +		len = min_t(size_t, length, UINT_MAX);
+> +		length -= len;
+> +		/*
+> +		 * DMABUF abuses scatterlist to create a scatterlist
+> +		 * that does not have any CPU list, only the DMA list.
+> +		 * Always set the page related values to NULL to ensure
+> +		 * importers can't use it. The phys_addr based DMA API
+> +		 * does not require the CPU list for mapping or unmapping.
+> +		 */
+> +		sg_set_page(sgl, NULL, 0, 0);
+> +		sg_dma_address(sgl) = addr + i * UINT_MAX;
 
-This looks ok to me. If the AMD IOMMU and CCP maintainers can give it an
-ack I can queue this for v6.19, but let me know if the timing is too
-tight and this needs to circle around for v6.20.
+(i * UINT_MAX) happens in 32-bit before being promoted to dma_addr_t for
+addition with addr. Overflows for i >=2 when length >= 8 GiB. Needs a cast:
 
-Note that if this is deferred then the PCI/TSM core, that has been
-soaking in linux-next [1], will also be deferred as at least one
-consumer needs to go in with the core infrastructure. It is already the
-case that TEE I/O for CCA and TDX have dependencies that will not
-resolve in time for v6.19 merge.
+		sg_dma_address(sgl) = addr + (dma_addr_t)i * UINT_MAX;
 
-[1]: https://git.kernel.org/pub/scm/linux/kernel/git/devsec/tsm.git/log/?h=next
+Discovered this while debugging why dma-buf import was failing for
+an 8 GiB dma-buf using my earlier toy program [1]. It was surfaced by
+ib_umem_find_best_pgsz() returning 0 due to malformed scatterlist, which bubbles
+up as an EINVAL.
+
+$ ./test_dmabuf 0000:05:00.0 3 4 0 0x200000000
+opening 0000:05:00.0 via /dev/vfio/56
+allocating dma_buf bar_idx=4, bar_offset=0x0, size=0x200000000
+allocated dma_buf fd=6
+discovered 4 ibv devices: mlx5_0 mlx5_1 mlx5_2 mlx5_3
+opened ibv device 3: mlx5_3
+test_dmabuf.c:154 Condition failed: 'mr' (errno=22: Invalid argument)
+
+$ sudo retsnoop -e mlx5_ib_reg_user_mr_dmabuf -a 'mlx5*' -a 'ib_umem*' -a '*umr*' -a 'vfio_pci*' -a 'dma_buf_*' -x EINVAL -T
+Receiving data...
+13:56:22.257907 -> 13:56:22.258275 TID/PID 948895/948895 (test_dmabuf/test_dmabuf):
+FUNCTION CALLS                                 RESULT                 DURATION
+--------------------------------------------   --------------------  ---------
+→ mlx5_ib_reg_user_mr_dmabuf
+    ↔ mlx5r_umr_resource_init                  [0]                     2.224us
+    → ib_umem_dmabuf_get
+        → ib_umem_dmabuf_get_with_dma_device
+            ↔ dma_buf_get                      [0xff11012a6a098c00]    0.972us
+            → dma_buf_dynamic_attach
+                ↔ vfio_pci_dma_buf_attach      [0]                     2.003us
+            ← dma_buf_dynamic_attach           [0xff1100012793e400]   10.566us
+        ← ib_umem_dmabuf_get_with_dma_device   [0xff110127a6c74480]   15.794us
+    ← ib_umem_dmabuf_get                       [0xff110127a6c74480]   25.258us
+    → mlx5_ib_init_dmabuf_mr
+        → ib_umem_dmabuf_map_pages
+            → dma_buf_map_attachment
+                → vfio_pci_dma_buf_map
+                    ↔ dma_buf_map              [0xff1100012977f700]    4.918us
+                ← vfio_pci_dma_buf_map         [0xff1100012977f700]    8.362us
+            ← dma_buf_map_attachment           [0xff1100012977f700]   10.956us
+        ← ib_umem_dmabuf_map_pages             [0]                    17.336us
+        ↔ ib_umem_find_best_pgsz               [0]                     6.280us
+        → ib_umem_dmabuf_unmap_pages
+            → dma_buf_unmap_attachment
+                → vfio_pci_dma_buf_unmap
+                    ↔ dma_buf_unmap            [void]                  2.023us
+                ← vfio_pci_dma_buf_unmap       [void]                  6.700us
+            ← dma_buf_unmap_attachment         [void]                  8.142us
+        ← ib_umem_dmabuf_unmap_pages           [void]                 14.953us
+    ← mlx5_ib_init_dmabuf_mr                   [-EINVAL]              67.272us
+    → mlx5r_umr_revoke_mr
+        → mlx5r_umr_post_send_wait
+            → mlx5r_umr_post_send
+                ↔ mlx5r_begin_wqe              [0]                     1.703us
+                ↔ mlx5r_finish_wqe             [void]                  1.633us
+                ↔ mlx5r_ring_db                [void]                  1.312us
+            ← mlx5r_umr_post_send              [0]                    27.451us
+        ← mlx5r_umr_post_send_wait             [0]                   126.541us
+    ← mlx5r_umr_revoke_mr                      [0]                   141.925us
+    → ib_umem_release
+        → ib_umem_dmabuf_release
+            ↔ ib_umem_dmabuf_revoke            [void]                  1.582us
+            ↔ dma_buf_detach                   [void]                  3.765us
+            ↔ dma_buf_put                      [void]                  0.531us
+        ← ib_umem_dmabuf_release               [void]                 23.315us
+    ← ib_umem_release                          [void]                 40.301us
+← mlx5_ib_reg_user_mr_dmabuf                   [-EINVAL]             363.280us
+
+[1] https://lore.kernel.org/all/aQkLcAxEn4qmF3c4@devgpu015.cco6.facebook.com/
+
+Alex
