@@ -1,117 +1,69 @@
-Received: from smtpbgsg2.qq.com (smtpbgsg2.qq.com [54.254.200.128])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48823313542
-	for <iommu@lists.linux.dev>; Wed, 26 Nov 2025 08:34:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=54.254.200.128
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 39A53308F3E
+	for <iommu@lists.linux.dev>; Wed, 26 Nov 2025 08:38:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764146098; cv=none; b=BF9hRrOThEUb1BtZ0J6/cwFhwP6Cr3qLcexKpRS2N/NYmqfyWJEjhEejOdC5lYsFVToeVbN/FMNbkTrWcll+h1L/UYqEZgDno1bJZ9HfPZ08WFjeCkI823ue59U+/Kryj6PMo7CBQlX9CulYJTsuWVt4qLe4FqqMh9C+Xdv63S4=
+	t=1764146324; cv=none; b=c2SQM0h6P2fCfItvDE62RjFIo50SQQmiMSbpcoucOoXStY+MvsRcTMWMtkUs6QiwDE8eDkthDhvY3e6MMrjDDMp+i3YYEe1SxKDufGC/TCXS1JZv94w8HE13164/UZt4DJL4zIjFS2j7DbS1tV6CU+zXG/IveSmcN2D/oFjcHZU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764146098; c=relaxed/simple;
-	bh=dr4SOm92jHcnGXQ/thNFLXAMyQSt3snfzz493W109ww=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References; b=iQCyICI/dRO9x2zWriteTq3X2omz9GlNERluvTGXkmGZ8en/nsMNNt+buxWYlJ13jhUYWLcb1FFUYVYYk/dMsGrVsmcAkQHznhU8eCFagkGMy8TnJz58aZCwtEQNZ0Hp1ZvtFicnxiVnnvXPVoNuKqkTs8Og7y4Ud51vV0tsH6Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=airkyi.com; spf=pass smtp.mailfrom=airkyi.com; dkim=pass (1024-bit key) header.d=airkyi.com header.i=@airkyi.com header.b=cmZAmiYd; arc=none smtp.client-ip=54.254.200.128
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=airkyi.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=airkyi.com
+	s=arc-20240116; t=1764146324; c=relaxed/simple;
+	bh=uSB15mBgdtedYCIi4Tln5fcQp1Yto607yFcD4qgc1nI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=bYYL6xk3l+VXF3EXObPrNAgJdcLH7uxGb/cFY6SZWNHj8Pb0V4sVX70t4d/7VV6QSFF2xyNPm2qm4lRGGwU56sUBeHWPdCw1OSGyEIEbSxCg3qEnxXHMUPbImdNbeEQwGNm5LYnoFYhDxr6GTBYxGi3bflFznXSbTYRZgNGwKgc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=VPpBGfn0; arc=none smtp.client-ip=85.214.250.239
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=airkyi.com header.i=@airkyi.com header.b="cmZAmiYd"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=airkyi.com;
-	s=altu2504; t=1764146042;
-	bh=lW1MabH8TwyvbabLyjolWKrj+twdSqiGH4BPvNSLuws=;
-	h=From:To:Subject:Date:Message-Id;
-	b=cmZAmiYdgkZ0t0LFMAoENMuyc7GJVG8+HxxG2lkqM69RPyDPjahXyab/kuY5BYWwL
-	 35r+tfZb48ELh2Hw0CXf4bW/QleL262SiLD/kqf47dsc6rffSbVbsbbDHQyA9hrm3P
-	 U3VUkCHvoXFlDJVsn9mLPd1wYSWmJTvukjPLJi3o=
-X-QQ-mid: zesmtpgz4t1764146033t0aba92f9
-X-QQ-Originating-IP: bmKFoRbntIb+LrnhcHZ68Pi2yQdiUGGadX6Gt3Q2ucY=
-Received: from DESKTOP-8BT1A2O.localdomain ( [58.22.7.114])
-	by bizesmtp.qq.com (ESMTP) with 
-	id ; Wed, 26 Nov 2025 16:33:52 +0800 (CST)
-X-QQ-SSF: 0000000000000000000000000000000
-X-QQ-GoodBg: 0
-X-BIZMAIL-ID: 18429734964785922997
-From: Chaoyi Chen <kernel@airkyi.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Heiko Stuebner <heiko@sntech.de>
-Cc: iommu@lists.linux.dev,
-	devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-rockchip@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	Chaoyi Chen <chaoyi.chen@rock-chips.com>
-Subject: [PATCH 1/2] dt-bindings: iommu: rockchip: Add support for multiple interface clocks
-Date: Wed, 26 Nov 2025 16:33:44 +0800
-Message-Id: <20251126083345.88-2-kernel@airkyi.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20251126083345.88-1-kernel@airkyi.com>
-References: <20251126083345.88-1-kernel@airkyi.com>
-X-QQ-SENDSIZE: 520
-Feedback-ID: zesmtpgz:airkyi.com:qybglogicsvrgz:qybglogicsvrgz6b-0
-X-QQ-XMAILINFO: OUC5DGN0mB58EiYTCXLwCx4O6Mt2SNu9yYmtvI/GNU6dmKmYVAG44rvI
-	APUIwVqZbLikZD1oUnGUuMFMvtDvdt2+nhXc8G+tbkgp3uxDs+zoEKwRlAccI4yXE5jHg+8
-	hkF8WLgf3vzPiVRgvqDy7Dh4li6Fiulj9XACDqvNLHmPTsYyFafpvk8fnlYbUipQHi3Q7j6
-	+fIkQF4DvDbMGr5Irep/GCIDbL5ZwDnNt36q7uPMj1Cwa9NHuDq1vapLKwIhfPIU9LDYR2E
-	93zs5yoNHF1Fb18UzTYkIFyU5NsU4HvaiPXR3MnkTM9PQgiJ7BPLMbEwrFakB9BpIkQ+fWC
-	XYrDDkWub1S2AE4bJWl4xmL6UgjZUiDtrBrc6f1i2HwpRLquXUupBhGWrzFe/X4PUBxoeV6
-	HgavrR1WSO4HheBsnuyIYkZuiNgQNYCZK0nq5IYjLdp7041syLSNSVARLFaRobviut7OEiP
-	JKATcAHh7Maqmdm+ToWb2/X5cW9FKWDrK+BvOtwv0Hk6nm5y8JXzJuhJQRNt2mhaB/3FNKL
-	HXrWW1LI1kphB7H1z9JcAIrZkP6veYgpd4B9vDm7AI73bvf4UCDXl0whWax6OFwFIrilAtA
-	oaI47R/38pcDR9qEmC3/0n509ROYs5VjgoKxoaVoqm32qMCslN+VX23GozGwvedgGZzh5A1
-	cKesyFR1obi/d41vuGS8qxhVkQAQyb1lFDlQR6JoauwXAsruE7ochikUGsYEVcgfxAePMz6
-	QN4ucblvLBxjy1oH1HfKePvw5MY79I/y/rvGtSs38ijcj43Qfx+Ac1iZ+uyYAbJTIioIHLD
-	5g7ulcgiuAqDuEn3LQA8OynxA+WsPpsiUM/oSyzLrdLoyJ3QXxz/xgm0/OIN33tF1JlKYcN
-	ZSFfh/i/oiPSNuQYHp+ZC2BQS8GliJw1nqyQyFxtgVD62XWS78CbH9FQHgfIh5Uafs9vZMt
-	2x9OVuWg8q3T88hsSfbSAR2u0AGRaFIFOQAKU2lQs6BwrHA==
-X-QQ-XMRINFO: OD9hHCdaPRBwq3WW+NvGbIU=
-X-QQ-RECHKSPAM: 0
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="VPpBGfn0"
+Received: from 8bytes.org (p549214ac.dip0.t-ipconnect.de [84.146.20.172])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.8bytes.org (Postfix) with ESMTPSA id B8A9A5BE7F;
+	Wed, 26 Nov 2025 09:38:40 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1764146320;
+	bh=uSB15mBgdtedYCIi4Tln5fcQp1Yto607yFcD4qgc1nI=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=VPpBGfn08CttZZhQCELHrXC6E1DQkGVsc+GlLDDobn3/njSAR1okVXlwDSvNW9dbt
+	 94XpOuyvvs+wJqXn2vNWD7sjoQlbha9rIZN/2uBV7p7i+8uzLZYo/mojjbqjZ1g8Op
+	 94okBTqL2AiIt33iBGOY2wMBE05/JLpZI5NzVF4IGI3kMaF1DijbNhIibNzb/09LsG
+	 sVCOBraD2WVbZNDjn9DgOfx8an8gZZbnN4sRVK/X/m+VnuF2QAoIZZpLRk7gtAD5KA
+	 1+AhA2symh6vCQovDVR/QeIjbgN0Hnn242c4+YCkDzxLUYRPA0OkcTLcuxo1sHHku+
+	 HxCpF/e+bXvyQ==
+Date: Wed, 26 Nov 2025 09:38:39 +0100
+From: Joerg Roedel <joro@8bytes.org>
+To: dan.j.williams@intel.com
+Cc: Alexey Kardashevskiy <aik@amd.com>, linux-kernel@vger.kernel.org, 
+	linux-crypto@vger.kernel.org, Tom Lendacky <thomas.lendacky@amd.com>, 
+	John Allen <john.allen@amd.com>, Herbert Xu <herbert@gondor.apana.org.au>, 
+	"David S. Miller" <davem@davemloft.net>, Ashish Kalra <ashish.kalra@amd.com>, 
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, "Borislav Petkov (AMD)" <bp@alien8.de>, 
+	Kim Phillips <kim.phillips@amd.com>, Jerry Snitselaar <jsnitsel@redhat.com>, 
+	Vasant Hegde <vasant.hegde@amd.com>, Jason Gunthorpe <jgg@ziepe.ca>, 
+	Gao Shiyuan <gaoshiyuan@baidu.com>, Sean Christopherson <seanjc@google.com>, 
+	Nikunj A Dadhania <nikunj@amd.com>, Michael Roth <michael.roth@amd.com>, 
+	Amit Shah <amit.shah@amd.com>, Peter Gonda <pgonda@google.com>, iommu@lists.linux.dev
+Subject: Re: [PATCH kernel v2 0/5] PCI/TSM: Enabling core infrastructure on
+Message-ID: <hq6gtiznik5nfwd2bg7gtvm5qw3x5hc4a72s432snotfqyxmsk@jmfit3s6sxa4>
+References: <20251121080629.444992-1-aik@amd.com>
+ <692613e0e0680_1981100d3@dwillia2-mobl4.notmuch>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <692613e0e0680_1981100d3@dwillia2-mobl4.notmuch>
 
-From: Chaoyi Chen <chaoyi.chen@rock-chips.com>
+On Tue, Nov 25, 2025 at 12:38:56PM -0800, dan.j.williams@intel.com wrote:
+> This looks ok to me. If the AMD IOMMU and CCP maintainers can give it an
+> ack I can queue this for v6.19, but let me know if the timing is too
+> tight and this needs to circle around for v6.20.
 
-The iommu found on RK3576 NPU/RKVDEC may contains more than one
-interface clock.
+For the IOMMU parts:
 
-Signed-off-by: Chaoyi Chen <chaoyi.chen@rock-chips.com>
----
- .../devicetree/bindings/iommu/rockchip,iommu.yaml         | 8 ++++++++
- 1 file changed, 8 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml b/Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml
-index 6ce41d11ff5e..11cc22a0b1d3 100644
---- a/Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml
-+++ b/Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml
-@@ -42,14 +42,22 @@ properties:
-     minItems: 1
- 
-   clocks:
-+    minItems: 2
-     items:
-       - description: Core clock
-       - description: Interface clock
-+      - description: Interface clock 1
-+      - description: Interface clock 2
-+      - description: Interface clock 3
- 
-   clock-names:
-+    minItems: 2
-     items:
-       - const: aclk
-       - const: iface
-+      - const: iface_1
-+      - const: iface_2
-+      - const: iface_3
- 
-   "#iommu-cells":
-     const: 0
--- 
-2.51.1
+Acked-by: Joerg Roedel <joerg.roedel@amd.com>
 
