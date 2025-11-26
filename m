@@ -1,202 +1,352 @@
-Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
+Received: from SN4PR0501CU005.outbound.protection.outlook.com (mail-southcentralusazon11011023.outbound.protection.outlook.com [40.93.194.23])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BDC703595D
-	for <iommu@lists.linux.dev>; Wed, 26 Nov 2025 00:18:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=67.231.145.42
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764116328; cv=none; b=g5BvLdQ4nQ5evnpmS04MO4z1/IaDSo7ua2XZizVuQppJ0TFwQ7iWwA56jKglIzOIypXNquM0NdB1RSiZ0R/mF24x3P+F1IzPM+J95WoiSeLzZ0uRyoH5m+oqOPH4QZN7CSYolKw/ftk7xkQwVoUqSqO+gMGDq0b+bfUf/5fe8kM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764116328; c=relaxed/simple;
-	bh=gwii+iVdBVKbWCyCdr/+zthLuTAXebNs8mhXSw/5DRY=;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C49BC2EA72A
+	for <iommu@lists.linux.dev>; Wed, 26 Nov 2025 00:57:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.194.23
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1764118629; cv=fail; b=l2o6z0QAteZP0ID9pJtK03ZoZYHrF4hten2hC0x5tE1ImhKZBezdtXyeeRA/+8O1xAXwvpswqm/IoedKzmoRNNSpdfRIMMsX8WS/D0pV7eXbg8x3ncJIamhJWNIbUTxk4Y/dPdCy4L9BgW40uFdqYtM6xY1FZdILvefbKsw2tlM=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1764118629; c=relaxed/simple;
+	bh=TgV+eWdkHKdHGnPqleUNklxorHLGO8+E6Nb8P0+ryxQ=;
 	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=X7/evAV7cJLOeulIW7NQm4o3LKzur2KyYvYmKKhIHJWas1jz+FYkXSqreqMFNpV5dyIbBWiGTqbch44wiBwz61vbSI3TBl3W36TmP5kFhBoxdnQgayF057uS2lG4jTETKh71C3q3m7crCRUkt0uoATGgKUnnNSockub9KVH/IB0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=fb.com; spf=pass smtp.mailfrom=meta.com; dkim=pass (2048-bit key) header.d=fb.com header.i=@fb.com header.b=W+AKvPIc; arc=none smtp.client-ip=67.231.145.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=fb.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=meta.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=GiudptipIFMhqMB/uQ5DI/apBH2yoeNsAH4ifaGdyNCQrjkGjQVTmYDkMNBFnbR2iqeGWerjgTh46YUTjZ67etl+Z+w/cZd9CT2Ik1vG31CgoXI9HAdrQkcNtk9PdWIckVnC5pWPplFV1gjRibHjTGVh28xH3DM2OWE8RfNf6bk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=YUSr1vQw; arc=fail smtp.client-ip=40.93.194.23
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=fb.com header.i=@fb.com header.b="W+AKvPIc"
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-	by mx0a-00082601.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 5APKA97n1087396;
-	Tue, 25 Nov 2025 16:18:10 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=s2048-2025-q2;
-	 bh=qGBFfom64ubwAcHLmi0kGY4idgptPgMMsGDiFpmxSnI=; b=W+AKvPIcq+Gs
-	i3tYYc6MNSXntK0NmrX6mDMiJh2f1He+waI1tJUFw9eep8toqFOiXcXgv1d9N8HG
-	PGdbn6/fGl6qS46R20vtpCyrMHLj0wH4JK9pXWvIXkrNgijhiczlYtlomrwOthSj
-	zml1ieuFYLYIUzuWZ91PR3D7DWCyaUSc0LCurvPCQxAzzat402xRMP4oyeWdz0ty
-	1EYyma4UMfnDB7SWN7UNyv49rng7qo94JM/vlLrbdULgh6NjCeHD1lakMZtk49rg
-	EGdIyMsuzoL8EN2ERVeIEmaZ0+aXHHcjPKQINfA5NEORkyA0TfReyUgtpSsOkjBL
-	M3cSvkYsxQ==
-Received: from mail.thefacebook.com ([163.114.134.16])
-	by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 4ank8qsk46-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-	Tue, 25 Nov 2025 16:18:10 -0800 (PST)
-Received: from devgpu015.cco6.facebook.com (2620:10d:c085:108::4) by
- mail.thefacebook.com (2620:10d:c08b:78::2ac9) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.2.2562.29; Wed, 26 Nov 2025 00:18:08 +0000
-Date: Tue, 25 Nov 2025 16:18:03 -0800
-From: Alex Mastro <amastro@fb.com>
-To: Leon Romanovsky <leon@kernel.org>
-CC: Bjorn Helgaas <bhelgaas@google.com>,
-        Logan Gunthorpe
-	<logang@deltatee.com>, Jens Axboe <axboe@kernel.dk>,
-        Robin Murphy
-	<robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-        Will Deacon
-	<will@kernel.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Jason
- Gunthorpe <jgg@ziepe.ca>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jonathan
- Corbet <corbet@lwn.net>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Christian
- =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-        Kees Cook
-	<kees@kernel.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Ankit
- Agrawal <ankita@nvidia.com>, Yishai Hadas <yishaih@nvidia.com>,
-        Shameer
- Kolothum <skolothumtho@nvidia.com>,
-        Kevin Tian <kevin.tian@intel.com>, Alex
- Williamson <alex@shazbot.org>,
-        Krishnakant Jaju <kjaju@nvidia.com>, Matt Ochs
-	<mochs@nvidia.com>,
-        <linux-pci@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-block@vger.kernel.org>, <iommu@lists.linux.dev>,
-        <linux-mm@kvack.org>, <linux-doc@vger.kernel.org>,
-        <linux-media@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
-        <linaro-mm-sig@lists.linaro.org>, <kvm@vger.kernel.org>,
-        <linux-hardening@vger.kernel.org>, Nicolin Chen <nicolinc@nvidia.com>,
-        Jason
- Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH v9 06/11] dma-buf: provide phys_vec to scatter-gather
- mapping routine
-Message-ID: <aSZHO6otK0Heh+Qj@devgpu015.cco6.facebook.com>
-References: <20251120-dmabuf-vfio-v9-0-d7f71607f371@nvidia.com>
- <20251120-dmabuf-vfio-v9-6-d7f71607f371@nvidia.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="YUSr1vQw"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=ndyOZ2b+lR25NNDi3p19JLcDqzGAfavUXFuXSBqvAKt0CeFwiROrPyxlWtJaOkEWAvqZwIODmIpleofXoCeVa5pA5rAkJfHfDRehNxtzCIUROASEw5uxRsPTOB8brZG/WaYuJsxg64q2VLNO93DeipktW1fMpmEOr5qeQK22fTmDIJhNiZTtgGS4htHQG6jBymUZh739V/m0To1iUrOR1rEcd+xkEAe69k43Ra9xi+hJjGoJl21eugWh1BLESHfzWL5jj6yI12W7yTR9hJj6YPvzHgu9Z31/frl/rtdFiHxeYxLPTNEC4lh6NOVX2cyaJeFss1i0RH36bv/dkR4k/A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=unHHh0NLbpnnPNI7bBp35AJ1/bCWYR9F7f3PwCfNM7M=;
+ b=uEAiIfzUdWCoCwmwl8dF/W3SQPtT/a87QD0eeffsFbw3R7M1QYEB8bNjDOpxJz4bLDgdax4AWJ2LgC0M4dk+AyKwkHojEn1ZY5lcLGXQ4UL7PwlCXNUjKeEx7N9viK+M2SJvkWH4X0akvF2/koBl+FRMd32BXrJbVJJ4SIciAKAGmxni/s1/wVH8xd73jCPk+FutInBd3LHXpxLlzudxdCymGLLiQ83KzfH6+FOhd8DqUO8iNHNjKtG2xsoZ6MkzA5XC2hv1JpwYj/ROb2uhwVhzVIuLTmPuCy5K8j4jDK17fDp0+V/olDhnbX1VVhvWaTx8Pvoj0Gwrm47ZiDii7g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=unHHh0NLbpnnPNI7bBp35AJ1/bCWYR9F7f3PwCfNM7M=;
+ b=YUSr1vQwMnUpg8ZV2RO757MJBWE1b+fQ84GwApVmxgRbr+x4FVDv4nwIv/MQ+ItYLK9LXWzPgl3xRRlytUviLHOz22CiPX96Hn4ZRivHikEZy+Erfq8ax3qGp9DFN9jZa2+Vjj2yEwTbNS45NVCi7TdvZ1XtdAUhXfEE1wZREb8H1F8EjWZcm/qsXZrdQjTVlnb0LjP53l4QQdN4tEOSI5yxIpbvt+GsMCz/VhdaiXszZSFr0LJG4AQAzDlx1Bjx5qVqLrv1QZm3BJJdmGSxxo5Y7u/Yo3A39z+cc/bYwL2gQpMm7fsnO4dwv/FyhX+h1a8LWsvHdEiMQM208nnA1g==
+Received: from MN2PR05CA0055.namprd05.prod.outlook.com (2603:10b6:208:236::24)
+ by DS0PR12MB8042.namprd12.prod.outlook.com (2603:10b6:8:141::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9366.11; Wed, 26 Nov
+ 2025 00:56:59 +0000
+Received: from MN1PEPF0000ECD9.namprd02.prod.outlook.com
+ (2603:10b6:208:236:cafe::ad) by MN2PR05CA0055.outlook.office365.com
+ (2603:10b6:208:236::24) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9366.12 via Frontend Transport; Wed,
+ 26 Nov 2025 00:56:55 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ MN1PEPF0000ECD9.mail.protection.outlook.com (10.167.242.138) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.9366.7 via Frontend Transport; Wed, 26 Nov 2025 00:56:59 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Tue, 25 Nov
+ 2025 16:56:45 -0800
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Tue, 25 Nov
+ 2025 16:56:44 -0800
+Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com (10.129.68.10)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
+ Transport; Tue, 25 Nov 2025 16:56:43 -0800
+Date: Tue, 25 Nov 2025 16:56:42 -0800
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: Will Deacon <will@kernel.org>, <jean-philippe@linaro.org>,
+	<robin.murphy@arm.com>, <joro@8bytes.org>, <balbirs@nvidia.com>,
+	<miko.lenczewski@arm.com>, <peterz@infradead.org>, <kevin.tian@intel.com>,
+	<praan@google.com>, <linux-arm-kernel@lists.infradead.org>,
+	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v5 5/7] iommu/arm-smmu-v3: Populate smmu_domain->invs
+ when attaching masters
+Message-ID: <aSZQSsP9t0nyfNkx@Asurada-Nvidia>
+References: <cover.1762588839.git.nicolinc@nvidia.com>
+ <ebf35fa1b2025be736475950503f0dc0612371f4.1762588839.git.nicolinc@nvidia.com>
+ <aSTRdltJpMeFLDN8@willie-the-truck>
+ <20251124231341.GO153257@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20251120-dmabuf-vfio-v9-6-d7f71607f371@nvidia.com>
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMTI2MDAwMCBTYWx0ZWRfX4aU+4yoxvGRI
- fn5uIgo4phoyJLcsXRpkIiEbPHjmDvXjee+0hL5hZTnMf7KiIbVFpuPgNNxmzJnPoXlqYrYFVCb
- EPyFD9HoNuq9bFWOWGD9jm+tH6jYX1bWvVVFfP7wmtxUCfM6nyWp9RhEW4F3WyT2gvOl06d0Lit
- II5EZrklZ4kZ6ZccZ6uI5fnA2fhf1sXF7BU/xkJ1DrQkkrbuth2BkU2ET85sZ92FJE5mmeSgTwT
- 8QOBncjhE4/DUMlusLJDyljY4I1YOkD69BDnY6LZhPAqbK1Ws3OXJ/OhGSqPOvK63g6mktQG9A/
- 4TjZvhvYG6pYNypXlNsc0JrFDrM/97nZlDYVEtn7wlUXLxFDOXnHdS+vQBslO6M76Dlb+/Whxi6
- 97TQYdVHP7oL0xprhG3cL4XfcOc0nA==
-X-Proofpoint-ORIG-GUID: 5DCeEKEPh0Lq0c0QeLIVINEpDK6-Nmfl
-X-Proofpoint-GUID: 5DCeEKEPh0Lq0c0QeLIVINEpDK6-Nmfl
-X-Authority-Analysis: v=2.4 cv=VfT6/Vp9 c=1 sm=1 tr=0 ts=69264742 cx=c_pps
- a=CB4LiSf2rd0gKozIdrpkBw==:117 a=CB4LiSf2rd0gKozIdrpkBw==:17
- a=IkcTkHD0fZMA:10 a=6UeiqGixMTsA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=VwQbUJbxAAAA:8 a=3j4BkbkPAAAA:8 a=qThf3vN7FU90BnacfoAA:9 a=3ZKOabzyN94A:10
- a=QEXdDO2ut3YA:10
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.9,FMLib:17.12.100.49
- definitions=2025-11-25_02,2025-11-25_01,2025-10-01_01
+In-Reply-To: <20251124231341.GO153257@nvidia.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MN1PEPF0000ECD9:EE_|DS0PR12MB8042:EE_
+X-MS-Office365-Filtering-Correlation-Id: f3883b56-68f9-44c8-0d9d-08de2c86b466
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|7416014|82310400026|1800799024|36860700013;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?Y8+XLWgFKX1qWHn7VroElFXpgdu05RvHBoKoFU5ZN7fy6793YZXnFa4UgwOj?=
+ =?us-ascii?Q?AYiWV6aqhhfO6l3KnnNjg59G5bODbYzKIG4moEbSexjtpxODexZAE5SPfcs9?=
+ =?us-ascii?Q?yDWLWB3QLz3nQwbZteCtcm0r0Rw1cqXzUK6ru5E0eJvHdXjG3JoG0kRIdWVI?=
+ =?us-ascii?Q?tRy0VhmMCbr6zDAD41SBha6hSbHBJIroEsxMKVa1wQGh46CgNO6bVpEGrk8n?=
+ =?us-ascii?Q?GfFG+qjRCXMVKWAXjo7Wv+Lu/S4LXEXYjOpyY91Zr9TnwKev4qzZRNOBseSf?=
+ =?us-ascii?Q?K8sZl/1do3RtfzGaV08XDddjtjIKWQvMyBVNlEZvKNClEvSnZfH53HWVabzs?=
+ =?us-ascii?Q?pQPziPVwRoJuCLrFl5NtPifKWcO7DGLWVwip/pTg3SkRDQ9LKNvT4dprKvcv?=
+ =?us-ascii?Q?RQy82C9L/QZ2iwTKlXkFtBoSN5061OWJIsCA8Mdw9FJE+Ynm7CHyDF9kzscN?=
+ =?us-ascii?Q?T2unCSv9LcUYLZwS+XZ/dKWr+vLfhAzRmzdBAkPGYFANzvYiz6gx++kUEoYK?=
+ =?us-ascii?Q?7tEQJungR3tGtciYSsD/fOaduT/GQ3JezCzok8mit6JGbO7eNTsrbrb8Vivh?=
+ =?us-ascii?Q?5QAIZNFUlQPXwIX1egk0eKpdVdQh+TqtpMUQTAsmpLak+o6Mu30LJ9siJTdG?=
+ =?us-ascii?Q?MMup2J+EV61ADSqDJ6v1n4wzq1Bc7LakyYxcbLb2PCPaqLdPKrny77+IGoiG?=
+ =?us-ascii?Q?iaZM4l/U4vfX3137sWWlE3Slv4uLr0K4pU5H2Bn/h6py0IqK+g6Tk8z5TsMY?=
+ =?us-ascii?Q?US7hhHZA+9Kk8j002GLBsdEZ2KUDJYLR4q6DBRe/65IUqQUy/cSBjEAzptfc?=
+ =?us-ascii?Q?VGB3xCa6Askbet+JNPacgn/tAjtw4N1uBcwzxTba7B/+0YET8UWy3wvOYtk1?=
+ =?us-ascii?Q?BHoQvM0ewy3KFpkkHSIGF2tVP7y2pPScPqcB4oL2b1SdcGbkc+kkyi5lDmHB?=
+ =?us-ascii?Q?3ZIQgJOfl6Org4DMqTtjmakqdbL1cxi84fNI5RXWNcdviDZRPebsMTdPPCXx?=
+ =?us-ascii?Q?EcSisZ3Skjcx2AkluUVex/W5Qzq5mzsFfw1t3g7doa5sXC9ys373NYsqSE0K?=
+ =?us-ascii?Q?+OQ+ixeePzP2K5YivW/It+1NMqztBs56bOrdpU6rH3Y8+oQpLNDQw6SULecZ?=
+ =?us-ascii?Q?YM9Sy19S79QgWEmfdNQUPLIsOiiO/2hwnM1I+3acrlqXPRz4DG+zTjhB6RY7?=
+ =?us-ascii?Q?Z45iDmIMYR2oKyLlJf4doXEdTM6n+uDqdUVDkHBGJnaH44gcGQGqZAhSYRvC?=
+ =?us-ascii?Q?b4nMrF+L/ccX7bvRRH8/PhfkOBiAvcfd+qMX4HjAVe3P0LiBTnCTdgtAxBg3?=
+ =?us-ascii?Q?rWvfi0gnt8+ORFm5vSP2eEYqUPswyiOFrj2mqWfq8QoVpyHl69pcoBnPX5Cy?=
+ =?us-ascii?Q?o/p17R1ZKs4qOBscvohUUv590Bk9g+v2+ml8rNqvOetFkeaTMzDnv8oM4S5J?=
+ =?us-ascii?Q?t6E8vnHS/0ytOdxdkommonojGhXmEgf2VW/id13kB3DyDQIFZ+kSPMH8K+78?=
+ =?us-ascii?Q?X9FL7zQb3fOY2prQ/hJg2h5m0PMKoMuQtOxd6aE1PIz7hFcVv9D0MTzY2cRm?=
+ =?us-ascii?Q?U/uKHbhs8hvvrHtQmRM=3D?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(376014)(7416014)(82310400026)(1800799024)(36860700013);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Nov 2025 00:56:59.5170
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: f3883b56-68f9-44c8-0d9d-08de2c86b466
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	MN1PEPF0000ECD9.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB8042
 
-On Thu, Nov 20, 2025 at 11:28:25AM +0200, Leon Romanovsky wrote:
-> +static struct scatterlist *fill_sg_entry(struct scatterlist *sgl, size_t length,
-> +					 dma_addr_t addr)
-> +{
-> +	unsigned int len, nents;
-> +	int i;
-> +
-> +	nents = DIV_ROUND_UP(length, UINT_MAX);
-> +	for (i = 0; i < nents; i++) {
-> +		len = min_t(size_t, length, UINT_MAX);
-> +		length -= len;
-> +		/*
-> +		 * DMABUF abuses scatterlist to create a scatterlist
-> +		 * that does not have any CPU list, only the DMA list.
-> +		 * Always set the page related values to NULL to ensure
-> +		 * importers can't use it. The phys_addr based DMA API
-> +		 * does not require the CPU list for mapping or unmapping.
-> +		 */
-> +		sg_set_page(sgl, NULL, 0, 0);
-> +		sg_dma_address(sgl) = addr + i * UINT_MAX;
+On Mon, Nov 24, 2025 at 07:13:41PM -0400, Jason Gunthorpe wrote:
+> On Mon, Nov 24, 2025 at 09:43:18PM +0000, Will Deacon wrote:
+> > > +	switch (smmu_domain->stage) {
+> > > +	case ARM_SMMU_DOMAIN_SVA:
+> > > +	case ARM_SMMU_DOMAIN_S1:
+> > > +		*cur = (struct arm_smmu_inv){
+> > > +			.smmu = master->smmu,
+> > > +			.type = INV_TYPE_S1_ASID,
+> > > +			.id = smmu_domain->cd.asid,
+> > > +			.size_opcode = e2h ? CMDQ_OP_TLBI_EL2_VA :
+> > > +					     CMDQ_OP_TLBI_NH_VA,
+> > > +			.nsize_opcode = e2h ? CMDQ_OP_TLBI_EL2_ASID :
+> > > +					      CMDQ_OP_TLBI_NH_ASID
+> > > +		};
+> > > +		break;
+> > > +	case ARM_SMMU_DOMAIN_S2:
+> > > +		*cur = (struct arm_smmu_inv){
+> > > +			.smmu = master->smmu,
+> > > +			.type = INV_TYPE_S2_VMID,
+> > > +			.id = smmu_domain->s2_cfg.vmid,
+> > > +			.size_opcode = CMDQ_OP_TLBI_S2_IPA,
+> > > +			.nsize_opcode = CMDQ_OP_TLBI_S12_VMALL,
+> > > +		};
+> > > +		break;
+> > 
+> > Having a helper to add an invalidation command would make this a little
+> > more compact and you could also check against the size of the array.
+> 
+> Yeah but it makes all the parameters positional instead of nicely
+> named..
 
-(i * UINT_MAX) happens in 32-bit before being promoted to dma_addr_t for
-addition with addr. Overflows for i >=2 when length >= 8 GiB. Needs a cast:
+Will's remarks did raise an issue that __counted_by() requires a
+max_invs v.s. num_invs that can be smaller due to the removal of
+tailing trash entries.
 
-		sg_dma_address(sgl) = addr + (dma_addr_t)i * UINT_MAX;
+Then, it's probably nicer to add a check against the max_invs.
 
-Discovered this while debugging why dma-buf import was failing for
-an 8 GiB dma-buf using my earlier toy program [1]. It was surfaced by
-ib_umem_find_best_pgsz() returning 0 due to malformed scatterlist, which bubbles
-up as an EINVAL.
+I did the following, which doesn't look too bad to me:
 
-$ ./test_dmabuf 0000:05:00.0 3 4 0 0x200000000
-opening 0000:05:00.0 via /dev/vfio/56
-allocating dma_buf bar_idx=4, bar_offset=0x0, size=0x200000000
-allocated dma_buf fd=6
-discovered 4 ibv devices: mlx5_0 mlx5_1 mlx5_2 mlx5_3
-opened ibv device 3: mlx5_3
-test_dmabuf.c:154 Condition failed: 'mr' (errno=22: Invalid argument)
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index b04936e76cfd..28765febf99f 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -3066,6 +3066,51 @@ static void arm_smmu_disable_iopf(struct arm_smmu_master *master,
+ 		iopf_queue_remove_device(master->smmu->evtq.iopf, master->dev);
+ }
+ 
++static struct arm_smmu_inv *
++arm_smmu_master_build_inv(struct arm_smmu_master *master,
++			  enum arm_smmu_inv_type type, u32 id, ioasid_t ssid,
++			  size_t pgsize)
++{
++	struct arm_smmu_invs *build_invs = master->build_invs;
++	struct arm_smmu_inv *cur, inv = {
++		.smmu = master->smmu,
++		.type = type,
++		.id = id,
++		.pgsize = pgsize,
++	};
++
++	if (WARN_ON(build_invs->num_invs >= build_invs->max_invs))
++		return NULL;
++	cur = &build_invs->inv[build_invs->num_invs];
++	build_invs->num_invs++;
++
++	*cur = inv;
++	switch (type) {
++	case INV_TYPE_S1_ASID:
++		if (master->smmu->features & ARM_SMMU_FEAT_E2H) {
++			cur->size_opcode = CMDQ_OP_TLBI_EL2_VA;
++			cur->nsize_opcode = CMDQ_OP_TLBI_EL2_ASID;
++		} else {
++			cur->size_opcode = CMDQ_OP_TLBI_NH_VA;
++			cur->nsize_opcode = CMDQ_OP_TLBI_NH_ASID;
++		}
++		break;
++	case INV_TYPE_S2_VMID:
++		cur->size_opcode = CMDQ_OP_TLBI_S2_IPA;
++		cur->nsize_opcode = CMDQ_OP_TLBI_S12_VMALL;
++		break;
++	case INV_TYPE_S2_VMID_S1_CLEAR:
++		cur->size_opcode = cur->nsize_opcode = CMDQ_OP_TLBI_NH_ALL;
++		break;
++	case INV_TYPE_ATS:
++	case INV_TYPE_ATS_FULL:
++		cur->size_opcode = cur->nsize_opcode = CMDQ_OP_ATC_INV;
++		break;
++	}
++
++	return cur;
++}
++
+ /*
+  * Use the preallocated scratch array at master->build_invs, to build a to_merge
+  * or to_unref array, to pass into a following arm_smmu_invs_merge/unref() call.
+@@ -3077,84 +3122,58 @@ static struct arm_smmu_invs *
+ arm_smmu_master_build_invs(struct arm_smmu_master *master, bool ats_enabled,
+ 			   ioasid_t ssid, struct arm_smmu_domain *smmu_domain)
+ {
+-	const bool e2h = master->smmu->features & ARM_SMMU_FEAT_E2H;
+-	struct arm_smmu_invs *build_invs = master->build_invs;
+ 	const bool nesting = smmu_domain->nest_parent;
+-	struct arm_smmu_inv *cur;
++	size_t pgsize = 0, i;
+ 
+ 	iommu_group_mutex_assert(master->dev);
+ 
+-	cur = build_invs->inv;
++	master->build_invs->num_invs = 0;
++
++	/* Range-based invalidation requires the leaf pgsize for calculation */
++	if (master->smmu->features & ARM_SMMU_FEAT_RANGE_INV)
++		pgsize = __ffs(smmu_domain->domain.pgsize_bitmap);
+ 
+ 	switch (smmu_domain->stage) {
+ 	case ARM_SMMU_DOMAIN_SVA:
+ 	case ARM_SMMU_DOMAIN_S1:
+-		*cur = (struct arm_smmu_inv){
+-			.smmu = master->smmu,
+-			.type = INV_TYPE_S1_ASID,
+-			.id = smmu_domain->cd.asid,
+-			.size_opcode = e2h ? CMDQ_OP_TLBI_EL2_VA :
+-					     CMDQ_OP_TLBI_NH_VA,
+-			.nsize_opcode = e2h ? CMDQ_OP_TLBI_EL2_ASID :
+-					      CMDQ_OP_TLBI_NH_ASID
+-		};
++		if (!arm_smmu_master_build_inv(master, INV_TYPE_S1_ASID,
++					       smmu_domain->cd.asid,
++					       IOMMU_NO_PASID, pgsize))
++			return NULL;
+ 		break;
+ 	case ARM_SMMU_DOMAIN_S2:
+-		*cur = (struct arm_smmu_inv){
+-			.smmu = master->smmu,
+-			.type = INV_TYPE_S2_VMID,
+-			.id = smmu_domain->s2_cfg.vmid,
+-			.size_opcode = CMDQ_OP_TLBI_S2_IPA,
+-			.nsize_opcode = CMDQ_OP_TLBI_S12_VMALL,
+-		};
++		if (!arm_smmu_master_build_inv(master, INV_TYPE_S2_VMID,
++					       smmu_domain->s2_cfg.vmid,
++					       IOMMU_NO_PASID, pgsize))
++			return NULL;
+ 		break;
+ 	default:
+ 		WARN_ON(true);
+ 		return NULL;
+ 	}
+ 
+-	/* Range-based invalidation requires the leaf pgsize for calculation */
+-	if (master->smmu->features & ARM_SMMU_FEAT_RANGE_INV)
+-		cur->pgsize = __ffs(smmu_domain->domain.pgsize_bitmap);
+-	cur++;
+-
+ 	/* All the nested S1 ASIDs have to be flushed when S2 parent changes */
+ 	if (nesting) {
+-		*cur = (struct arm_smmu_inv){
+-			.smmu = master->smmu,
+-			.type = INV_TYPE_S2_VMID_S1_CLEAR,
+-			.id = smmu_domain->s2_cfg.vmid,
+-			.size_opcode = CMDQ_OP_TLBI_NH_ALL,
+-			.nsize_opcode = CMDQ_OP_TLBI_NH_ALL,
+-		};
+-		cur++;
++		if (!arm_smmu_master_build_inv(
++			    master, INV_TYPE_S2_VMID_S1_CLEAR,
++			    smmu_domain->s2_cfg.vmid, IOMMU_NO_PASID, 0))
++			return NULL;
+ 	}
+ 
+-	if (ats_enabled) {
+-		size_t i;
+-
+-		for (i = 0; i < master->num_streams; i++) {
+-			/*
+-			 * If an S2 used as a nesting parent is changed we have
+-			 * no option but to completely flush the ATC.
+-			 */
+-			*cur = (struct arm_smmu_inv){
+-				.smmu = master->smmu,
+-				.type = nesting ? INV_TYPE_ATS_FULL :
+-						  INV_TYPE_ATS,
+-				.id = master->streams[i].id,
+-				.ssid = ssid,
+-				.size_opcode = CMDQ_OP_ATC_INV,
+-				.nsize_opcode = CMDQ_OP_ATC_INV,
+-			};
+-			cur++;
+-		}
++	for (i = 0; ats_enabled && i < master->num_streams; i++) {
++		/*
++		 * If an S2 used as a nesting parent is changed we have no
++		 * option but to completely flush the ATC.
++		 */
++		if (!arm_smmu_master_build_inv(
++			    master, nesting ? INV_TYPE_ATS_FULL : INV_TYPE_ATS,
++			    master->streams[i].id, ssid, 0))
++			return NULL;
+ 	}
+ 
+ 	/* Note this build_invs must have been sorted */
+ 
+-	build_invs->num_invs = cur - build_invs->inv;
+-	return build_invs;
++	return master->build_invs;
+ }
+ 
+ static void arm_smmu_remove_master_domain(struct arm_smmu_master *master,
 
-$ sudo retsnoop -e mlx5_ib_reg_user_mr_dmabuf -a 'mlx5*' -a 'ib_umem*' -a '*umr*' -a 'vfio_pci*' -a 'dma_buf_*' -x EINVAL -T
-Receiving data...
-13:56:22.257907 -> 13:56:22.258275 TID/PID 948895/948895 (test_dmabuf/test_dmabuf):
-FUNCTION CALLS                                 RESULT                 DURATION
---------------------------------------------   --------------------  ---------
-→ mlx5_ib_reg_user_mr_dmabuf
-    ↔ mlx5r_umr_resource_init                  [0]                     2.224us
-    → ib_umem_dmabuf_get
-        → ib_umem_dmabuf_get_with_dma_device
-            ↔ dma_buf_get                      [0xff11012a6a098c00]    0.972us
-            → dma_buf_dynamic_attach
-                ↔ vfio_pci_dma_buf_attach      [0]                     2.003us
-            ← dma_buf_dynamic_attach           [0xff1100012793e400]   10.566us
-        ← ib_umem_dmabuf_get_with_dma_device   [0xff110127a6c74480]   15.794us
-    ← ib_umem_dmabuf_get                       [0xff110127a6c74480]   25.258us
-    → mlx5_ib_init_dmabuf_mr
-        → ib_umem_dmabuf_map_pages
-            → dma_buf_map_attachment
-                → vfio_pci_dma_buf_map
-                    ↔ dma_buf_map              [0xff1100012977f700]    4.918us
-                ← vfio_pci_dma_buf_map         [0xff1100012977f700]    8.362us
-            ← dma_buf_map_attachment           [0xff1100012977f700]   10.956us
-        ← ib_umem_dmabuf_map_pages             [0]                    17.336us
-        ↔ ib_umem_find_best_pgsz               [0]                     6.280us
-        → ib_umem_dmabuf_unmap_pages
-            → dma_buf_unmap_attachment
-                → vfio_pci_dma_buf_unmap
-                    ↔ dma_buf_unmap            [void]                  2.023us
-                ← vfio_pci_dma_buf_unmap       [void]                  6.700us
-            ← dma_buf_unmap_attachment         [void]                  8.142us
-        ← ib_umem_dmabuf_unmap_pages           [void]                 14.953us
-    ← mlx5_ib_init_dmabuf_mr                   [-EINVAL]              67.272us
-    → mlx5r_umr_revoke_mr
-        → mlx5r_umr_post_send_wait
-            → mlx5r_umr_post_send
-                ↔ mlx5r_begin_wqe              [0]                     1.703us
-                ↔ mlx5r_finish_wqe             [void]                  1.633us
-                ↔ mlx5r_ring_db                [void]                  1.312us
-            ← mlx5r_umr_post_send              [0]                    27.451us
-        ← mlx5r_umr_post_send_wait             [0]                   126.541us
-    ← mlx5r_umr_revoke_mr                      [0]                   141.925us
-    → ib_umem_release
-        → ib_umem_dmabuf_release
-            ↔ ib_umem_dmabuf_revoke            [void]                  1.582us
-            ↔ dma_buf_detach                   [void]                  3.765us
-            ↔ dma_buf_put                      [void]                  0.531us
-        ← ib_umem_dmabuf_release               [void]                 23.315us
-    ← ib_umem_release                          [void]                 40.301us
-← mlx5_ib_reg_user_mr_dmabuf                   [-EINVAL]             363.280us
-
-[1] https://lore.kernel.org/all/aQkLcAxEn4qmF3c4@devgpu015.cco6.facebook.com/
-
-Alex
+Thanks
+Nicolin
