@@ -1,154 +1,206 @@
-Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
+Received: from CH4PR04CU002.outbound.protection.outlook.com (mail-northcentralusazon11013070.outbound.protection.outlook.com [40.107.201.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79D8A12B94
-	for <iommu@lists.linux.dev>; Wed, 26 Nov 2025 11:45:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764157547; cv=none; b=jUpY8IFtRw2NOve+ydr1xpiwVHmC9TnFdOdh7RFspANyI6llmF5HYgwXbt90ussB8myx4+mW6LCYrndbEnouPIvV3gQVNwnmDw74fe6A+mdM0q4Zj3KGIHi55Xnl2qNZCEcWYBq0BrX+vh5oPE91bV6fycbkeu/SVmW6eCfcs2g=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764157547; c=relaxed/simple;
-	bh=Lr3iECgT1tWKLaYscMdTeJw4ZzWBi+ILRaLLoZykvQo=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=LksSeR1tNGbAugv00JZ5Lr8Xj1rsKfDhsSdpZciTnLCmERh0TpApX2nemIXoeQC/r7Ph65HkQ1pjcQTjXrCXcQnaDJcF6YKYZ9KNA6FTyPzBEH+rzeDUUN00fIqF4PmnltH8SGX6NntlwbZMQ8SkZk29/T+PGLckRvJPs28yG1Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
-Received: from ptz.office.stw.pengutronix.de ([2a0a:edc0:0:900:1d::77] helo=peter.mobile.pengutronix.de)
-	by metis.whiteo.stw.pengutronix.de with esmtp (Exim 4.92)
-	(envelope-from <s.pueschel@pengutronix.de>)
-	id 1vODxm-0003Bo-Up; Wed, 26 Nov 2025 12:45:34 +0100
-From: =?utf-8?q?Sven_P=C3=BCschel?= <s.pueschel@pengutronix.de>
-Date: Wed, 26 Nov 2025 12:45:08 +0100
-Subject: [PATCH] iommu/rockchip: disable fetch dte time limit
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95595328B69;
+	Wed, 26 Nov 2025 12:55:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.201.70
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1764161748; cv=fail; b=CDCrNcVpsrCtWkLig8ofEa8ddtHVDihdRgqSjZAVLG2YmYWIE8QKHeB1mZ/0/TIjqVTXLcxIg26uFA9pMaGEoDryItgxelk3gtaHGklTSu2MW9lUKmBvFEHdJakwv+daXJFNOcVxWcOV4xc0A02bV4BYjnu/GjvAxxGipz1773U=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1764161748; c=relaxed/simple;
+	bh=VCtlqcnHQLbKsZTS/w3g0Azg1oIMjc8zUiG6lqqQyIY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=f19EJRWJMtI7uTGsHupZozG70kInEoccqb3m+OMbwMMQf1WDMoYjn+Uskx1YusnUpEbNwLNTelFm+9SA6m2rvNw9PXuVbLvuNVrrYAOEdCFCNOXk5eaApY67zpGxtFmNlvvs02ctdxHetrTGa1XecqRjFRd7ULyZO1KCC9MjK2w=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=BMYuePZR; arc=fail smtp.client-ip=40.107.201.70
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="BMYuePZR"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=yEogWjZXqSXsNWuVqgRu29Y0+TKJmRdTrimnZuyKRO8x2F02gWXZB2hgugjAyd48KfjXE002dFgtrCp5NrSE3qUjUhN+KyLoO82Ag5OFs8kv9yWyYRK53TjpEgjxEAqi2JqktKtI0fepPYR6GhJDVMTowjpgdIbto26Y02SGyaIHwuI7jSdZAdwDgAQA0k15LqSvqGCXBT7vBs26Y6awGNO3nmUUt20lFik1P2ro07Ar9ZFT58Jhb7McFMTVTGy+9ULXgh/Qf2ZfhAvkNmnvETBo/hmtHU11YdGUa0PrNhNE6sDvx8cZ9DPpAuZ/LqaDXy9vQIhDHkvk2z4urg2/6A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=OOLbz5T6j9f0/FMeiqQGZRnFda1JEt/ver6zFmLEIHI=;
+ b=ngk6Ilz4zFP/55Xp6b0MT2iJQAzHFhkYixsTAwB0qQGxRW+ZZF9NItlzqX6TIxGPvT/+WgIrdgV+FyFobtKBZbHS/Q+O/BUFvGFn9hjer3oEAUeEk7+kDkc2bW9UjMWbQeUil6aWx9HBpbP9LIbz954VUZwNup0Qk4CxBz6jfowliX26CgQWK4s9hpG8RzMg9/2SorOoVIRi/QXoXMuRDime9atzgIJYLS0iOOvZuRt9p6NdBrVDwp5C1zla9RhvuL57WWqcrPpqH/S/4SYsksYjvDWUCMhuLnojoowcumzhE3TQJcsDLjq7WTPwOxNSNyn99HvIAerVpaizx1BRjw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=nvidia.com smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=OOLbz5T6j9f0/FMeiqQGZRnFda1JEt/ver6zFmLEIHI=;
+ b=BMYuePZR4M6LFsU+hgQN1T0bUORVbyt19mMLgDnw/nDFr3by+LEfTW5CwffB5J8TvHSEaBn6RqSp+lr5Csf+a1KNJqooowVkQYRM+iIRQ4PurwEx/8bRHqWZajOdGEaI73YzaZJjZ18ejdIp7dyDTmcVmiqVvaPiQWKfjkyoByw=
+Received: from SJ0PR03CA0204.namprd03.prod.outlook.com (2603:10b6:a03:2ef::29)
+ by DM6PR12MB4300.namprd12.prod.outlook.com (2603:10b6:5:21a::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9366.12; Wed, 26 Nov
+ 2025 12:55:41 +0000
+Received: from SJ1PEPF00001CE1.namprd05.prod.outlook.com
+ (2603:10b6:a03:2ef:cafe::5d) by SJ0PR03CA0204.outlook.office365.com
+ (2603:10b6:a03:2ef::29) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9366.11 via Frontend Transport; Wed,
+ 26 Nov 2025 12:55:39 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
+Received: from satlexmb07.amd.com (165.204.84.17) by
+ SJ1PEPF00001CE1.mail.protection.outlook.com (10.167.242.9) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.9366.7 via Frontend Transport; Wed, 26 Nov 2025 12:55:40 +0000
+Received: from satlexmb08.amd.com (10.181.42.217) by satlexmb07.amd.com
+ (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.17; Wed, 26 Nov
+ 2025 06:55:40 -0600
+Received: from [10.252.200.251] (10.180.168.240) by satlexmb08.amd.com
+ (10.181.42.217) with Microsoft SMTP Server id 15.2.2562.17 via Frontend
+ Transport; Wed, 26 Nov 2025 04:55:34 -0800
+Message-ID: <1f65de37-db9f-4807-a3ff-6cd377c855a5@amd.com>
+Date: Wed, 26 Nov 2025 18:25:34 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Message-Id: <20251126-spu-iommudtefix-v1-1-f90003dbfcc4@pengutronix.de>
-X-B4-Tracking: v=1; b=H4sIAEPoJmkC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
- vPSU3UzU4B8JSMDI1NDQyMz3eKCUt3M/Nzc0pSS1LTMCt3kFINkUyMTk2Rzk0QloK6CIpAw2MT
- o2NpaALjeWhBhAAAA
-X-Change-ID: 20251126-spu-iommudtefix-cd0c5244c74a
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
- Robin Murphy <robin.murphy@arm.com>, Heiko Stuebner <heiko@sntech.de>
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
- linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org, 
- Simon Xue <xxm@rock-chips.com>, kernel@pengutronix.de, 
- =?utf-8?q?Sven_P=C3=BCschel?= <s.pueschel@pengutronix.de>
-X-Mailer: b4 0.14.3
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:900:1d::77
-X-SA-Exim-Mail-From: s.pueschel@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: iommu@lists.linux.dev
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v7 1/5] iommu: Lock group->mutex in
+ iommu_deferred_attach()
+To: Nicolin Chen <nicolinc@nvidia.com>, <joro@8bytes.org>, <afael@kernel.org>,
+	<bhelgaas@google.com>, <alex@shazbot.org>, <jgg@nvidia.com>
+CC: <will@kernel.org>, <robin.murphy@arm.com>, <lenb@kernel.org>,
+	<kevin.tian@intel.com>, <baolu.lu@linux.intel.com>,
+	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, <linux-acpi@vger.kernel.org>,
+	<linux-pci@vger.kernel.org>, <kvm@vger.kernel.org>,
+	<patches@lists.linux.dev>, <pjaroszynski@nvidia.com>, <vsethi@nvidia.com>,
+	<helgaas@kernel.org>, <etzhao1900@gmail.com>
+References: <cover.1763775108.git.nicolinc@nvidia.com>
+ <a7ebae88c78e81e7ff0d14788ddff2e6a9fcecd3.1763775108.git.nicolinc@nvidia.com>
+Content-Language: en-US
+From: "Srivastava, Dheeraj Kumar" <dhsrivas@amd.com>
+In-Reply-To: <a7ebae88c78e81e7ff0d14788ddff2e6a9fcecd3.1763775108.git.nicolinc@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SJ1PEPF00001CE1:EE_|DM6PR12MB4300:EE_
+X-MS-Office365-Filtering-Correlation-Id: 25291961-492c-4892-72e5-08de2ceb1ab3
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|7416014|82310400026|36860700013|1800799024|7053199007;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?Zm1hSWY2S0w2ejhWT1NHOFZMdXJWdC94S041c1VBS3lLWGJ3a2lodXhuc2tu?=
+ =?utf-8?B?anNNSndzN0N0T3ZIZVV5NWY0eU1oVURrSUZkR0JkVWtxOGpsdHlsTjZxcy9V?=
+ =?utf-8?B?dWp2YlJtN1Y3bVZwcWVSRlUwcEYvek1BM0d3Y09JY0RPREwzQWQwbHhudWVm?=
+ =?utf-8?B?RExUckFjL0tjREhTTjY5ZUNlYUl0WGFMcVdUdXpRMDN6TURoaGtMN2p5cmNi?=
+ =?utf-8?B?THVQRTJJNEV4Y3VPbTdkdDVDZFZWdkN3dkJWWEszWUlyM3N5bG1yTURhdnFh?=
+ =?utf-8?B?endRNjAyU3NWUXlzcFV5b1Rhb0JrRDdadUxlN1dzMkJZUDNKUkpzVjZsa3JK?=
+ =?utf-8?B?ZFZ5d3poZmRDN0pIa0lBaTVMdm91VFFsNXFydFZBcXRuVlc5b2dvU3NNQ3gz?=
+ =?utf-8?B?RUNIdUFwR29MaGlQc3U2T2llWGtFVEZDd1NLUHVKYW5sWHRIS2VsTTJORjdy?=
+ =?utf-8?B?NVN5UWloZFlKVkRqNnl1MGhMU3gyc1BNM3JxZjlKY3VUZ0VOblUvelNtTkJL?=
+ =?utf-8?B?Ukw4ejgvVmNYQ3dhaXphL3ZEai9vbmdhaDg1eGFPSklHbzBibEJaeWhZd01I?=
+ =?utf-8?B?anlML0dMMnVocTAvckNvZzQzY1VjQmxPaVNEd1V2OERvWmxja3JHZWo0dDVv?=
+ =?utf-8?B?bVRTRFg4Qkx3VnhQclBsQk9adEt1R1ZYdmt5Y2ZHVUpSTnhQT2dyZ3QvRVht?=
+ =?utf-8?B?Z1FKSkJPTXRUWElzTlZ0MzhoVjYvblNHVkdaczZIcGNBQUJIS1puamJRdVRP?=
+ =?utf-8?B?VERYamVlTkdNRzI2MjVuckhMczI3UWFQVFlxOElFRzlsMVJQcHcvcitmTnp5?=
+ =?utf-8?B?MzVqbS9uNHBRUzFMZ0M1SVF0cndxUERvdTltenpxNWdZNDV5NU8wTURPSHJk?=
+ =?utf-8?B?SFBEVHorMFA2MWlpSmQ2dkJyMVg5Y1dyV0lXbXhVcUYvOEF5ODlTc0NlRHVH?=
+ =?utf-8?B?QjFYdk5zdWV2U1EvOW5vVTRCMkIzS0drN2huZkVBbkw0QW02WTE4YjNSUU5O?=
+ =?utf-8?B?QXZXSVhoVSsvR0xZTDgvV1RoZDY1NDVTZGk3b1NXaVRoZDI0UEM2RzZMZ1E5?=
+ =?utf-8?B?Q0lIWVVsS3BtSFdKalFia2tVR0xyVHRXY1NFT01aaldsQUNxbWhCZEZvcElV?=
+ =?utf-8?B?MlpQazdlazhkRlhScWlKekt6QTZ0RXZSWTFEbEJZRFprclMwdThhUmJ6dTkr?=
+ =?utf-8?B?VllHMlhGRmxCK01sT205am5tM01ab2VpYzhDbFhuS0ppdTY2R01oYlJWSUxR?=
+ =?utf-8?B?eFJGZ2lLWmg0NG95dzRNalRHY2xCWFd3QjIwd0R1dUhpckZvUEFJRk1MQ0hH?=
+ =?utf-8?B?c09GTnNHcmpuWWV0TWVlVlFOcVl6VllGM013NGcwcHB2UU5ZUk5MQXA0UnNu?=
+ =?utf-8?B?YlFVRUQ3QXhDT2JXSm93RnlXd0tLeC9KMWE4cmpmWU1waWVJV1BrN0xkcldq?=
+ =?utf-8?B?VUpFTWh0MG45eEkyQ1NIVkNvRkI1alRnQXB0NDNkaWo3OWZod3hOT2xwTjdD?=
+ =?utf-8?B?V3BMZU81T2ZLZGhockVRbmJEOHU3QVp1MDVvREhwZ1J2VXdxM21JNGhuNXdn?=
+ =?utf-8?B?Q2JZWWNSSm5XQ2owZEJwM3ZlWjJneVp2cDdPZjJXa2Rpak1qSUUwK3htZU5Y?=
+ =?utf-8?B?TCt1NkFMN3h3U01nRDQvRU5FOXJNZkFSemNKSlpZcTdaVWk3WWVIc2lRTWpH?=
+ =?utf-8?B?TUFnWXRNUk1LZGRnMGdESjJEdCt1VUdXeTZ3ZktDMnoxTFNpMDM5cHU5c3Bq?=
+ =?utf-8?B?TU1ka2R1LzZZNVhna244R1c2V01iY2M5M1ExMGFkTU9pZHpBOXI4SHlLS3JC?=
+ =?utf-8?B?azdtMHBsdUlaVXVTeUF0enFrQldHS2tlUVVza3gvVDE1K09uNHRDVkM1TE84?=
+ =?utf-8?B?cDdKd2I5MGFOdEFkeS9PeEZzQ0RJeThUUDg3UW5ScXlDOVRrVFBDSHE1Tktv?=
+ =?utf-8?B?LzlaVjVrQTdOYmo4NFJjb1h5OHlpUjNsSXhnZG15b05acWtwWEJqQ1BIK1hI?=
+ =?utf-8?B?YnJvMDdIczJ3bk42T0Y3STRaNWxnbzBjSHRRU1AzNXYvdVdLYU9id29kUkNj?=
+ =?utf-8?B?OVdWMjBpZWdJZjI4VERkeGMvTG1GUStuK3dyZWRicmlEdmZBOHMrQklMWUQ4?=
+ =?utf-8?Q?7QbY=3D?=
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(376014)(7416014)(82310400026)(36860700013)(1800799024)(7053199007);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Nov 2025 12:55:40.8724
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 25291961-492c-4892-72e5-08de2ceb1ab3
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SJ1PEPF00001CE1.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4300
 
-From: Simon Xue <xxm@rock-chips.com>
+Hi,
 
-Disable the Bit 31 of the AUTO_GATING iommu register, as it causes
-hangups with the RGA3 (Raster Graphics Acceleration 3) peripheral.
-The RGA3 register description of the TRM already states that the bit
-must be set to 1. The vendor kernel sets the bit unconditionally to
-1 to fix VOP (Video Output Processor) screen black issues. This patch
-squashes the 2 vendor kernel commits with the following commit messages:
+On 11/22/2025 7:27 AM, Nicolin Chen wrote:
+> The iommu_deferred_attach() function invokes __iommu_attach_device(), but
+> doesn't hold the group->mutex like other __iommu_attach_device() callers.
+> 
+> Though there is no pratical bug being triggered so far, it would be better
+> to apply the same locking to this __iommu_attach_device(), since the IOMMU
+> drivers nowaday are more aware of the group->mutex -- some of them use the
+> iommu_group_mutex_assert() function that could be potentially in the path
+> of an attach_dev callback function invoked by the __iommu_attach_device().
+> 
+> Worth mentioning that the iommu_deferred_attach() will soon need to check
+> group->resetting_domain that must be locked also.
+> 
+> Thus, grab the mutex to guard __iommu_attach_device() like other callers.
+> 
 
-Master fetch data and cpu update page table may work in parallel, may
-have the following procedure:
+Tested the series with PCI reset on PFs and VFs, including device 
+pass-through to a Linux guest. All scenarios worked as expected.
 
-	master                  cpu
-	fetch dte               update page tabl
-	        |                       |
-	(make dte invalid)  <-  zap iotlb entry
-	        |                       |
-	fetch dte again
-	(make dte invalid)  <-  zap iotlb entry
-	        |                       |
-	fetch dte again
-	(make dte invalid)  <-  zap iotlb entry
-	        |                       |
-	fetch dte again
-	(make iommu block)  <-  zap iotlb entry
+Tested-by: Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>
 
-New iommu version has the above bug, if fetch dte consecutively four
-times, then it will be blocked. Fortunately, we can set bit 31 of
-register MMU_AUTO_GATING to 1 to make it work as old version which does
-not have this issue.
+Thanks
+Dheeraj
 
-This issue only appears on RV1126 so far, so make a workaround dedicated
-to "rockchip,rv1126" machine type.
-
-iommu/rockchip: fix vop blocked and screen black on RK356X and RK3588
-
-RK3568 and RK3588 has the same issue as RV1126/RV1109 that caused by
-dte fetch time limit, So we can set BIT(31) of register 0x24 default
-to 1 as a workaround.
-
-Signed-off-by: Simon Xue <xxm@rock-chips.com>
-Signed-off-by: Sven Püschel <s.pueschel@pengutronix.de>
----
-During testing of a newly developed driver for the RGA3 peripheral [1]
-(Raster Graphic Acceleration 3) of the RK3588 some sporadic hangs
-have been observed. The upstream rockchip-iommu driver is used to handle
-the RGA3 IOMMU register space.
-
-After a closer look at the TRM for the RK3588, the RGA3 iommu register
-description of the RGA3_MMU_AUTO_GATING register (offset 0x24) mentions
-a mmu_bug_fixed_disable bit, which must be set to 1 but defaults to 0.
-
-Looking at the commits in the vendor kernel, the bit is unconditionally
-set to 1 and mentions that it fixes a blocked VOP (Video Output
-Processor) [3]. Therefore squash the relevant vendor commits
-[2] and [3] into a single patch, combine the commit messages and keep
-the Signed-off-by line from the original author.
-
-[1] https://lore.kernel.org/all/20251007-spu-rga3-v1-0-36ad85570402@pengutronix.de/
-[2] https://github.com/rockchip-linux/kernel/commit/7f8158fb41b5cc8e738aaeebc3637c50ebd74cae
-[3] https://github.com/rockchip-linux/kernel/commit/6a355e5f9a2069a2309e240791bc3aad63b7324e
----
- drivers/iommu/rockchip-iommu.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
-
-diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-index 0861dd469bd86..2d0dabb0d101a 100644
---- a/drivers/iommu/rockchip-iommu.c
-+++ b/drivers/iommu/rockchip-iommu.c
-@@ -76,6 +76,8 @@
- #define SPAGE_ORDER 12
- #define SPAGE_SIZE (1 << SPAGE_ORDER)
- 
-+#define DISABLE_FETCH_DTE_TIME_LIMIT BIT(31)
-+
-  /*
-   * Support mapping any size that fits in one page table:
-   *   4 KiB to 4 MiB
-@@ -930,6 +932,7 @@ static int rk_iommu_enable(struct rk_iommu *iommu)
- 	struct iommu_domain *domain = iommu->domain;
- 	struct rk_iommu_domain *rk_domain = to_rk_domain(domain);
- 	int ret, i;
-+	u32 auto_gate;
- 
- 	ret = clk_bulk_enable(iommu->num_clocks, iommu->clocks);
- 	if (ret)
-@@ -948,6 +951,11 @@ static int rk_iommu_enable(struct rk_iommu *iommu)
- 			       rk_ops->mk_dtentries(rk_domain->dt_dma));
- 		rk_iommu_base_command(iommu->bases[i], RK_MMU_CMD_ZAP_CACHE);
- 		rk_iommu_write(iommu->bases[i], RK_MMU_INT_MASK, RK_MMU_IRQ_MASK);
-+
-+		/* Workaround for iommu blocked, BIT(31) default to 1 */
-+		auto_gate = rk_iommu_read(iommu->bases[i], RK_MMU_AUTO_GATING);
-+		auto_gate |= DISABLE_FETCH_DTE_TIME_LIMIT;
-+		rk_iommu_write(iommu->bases[i], RK_MMU_AUTO_GATING, auto_gate);
- 	}
- 
- 	ret = rk_iommu_enable_paging(iommu);
-
----
-base-commit: 30f09200cc4aefbd8385b01e41bde2e4565a6f0e
-change-id: 20251126-spu-iommudtefix-cd0c5244c74a
-
-Best regards,
--- 
-Sven Püschel <s.pueschel@pengutronix.de>
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> ---
+>   drivers/iommu/iommu.c | 13 ++++++++++---
+>   1 file changed, 10 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 2ca990dfbb884..170e522b5bda4 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -2185,10 +2185,17 @@ EXPORT_SYMBOL_GPL(iommu_attach_device);
+>   
+>   int iommu_deferred_attach(struct device *dev, struct iommu_domain *domain)
+>   {
+> -	if (dev->iommu && dev->iommu->attach_deferred)
+> -		return __iommu_attach_device(domain, dev, NULL);
+> +	/*
+> +	 * This is called on the dma mapping fast path so avoid locking. This is
+> +	 * racy, but we have an expectation that the driver will setup its DMAs
+> +	 * inside probe while being single threaded to avoid racing.
+> +	 */
+> +	if (!dev->iommu || !dev->iommu->attach_deferred)
+> +		return 0;
+>   
+> -	return 0;
+> +	guard(mutex)(&dev->iommu_group->mutex);
+> +
+> +	return __iommu_attach_device(domain, dev, NULL);
+>   }
+>   
+>   void iommu_detach_device(struct iommu_domain *domain, struct device *dev)
 
