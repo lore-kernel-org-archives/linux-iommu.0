@@ -1,163 +1,186 @@
-Received: from mail-m49211.qiye.163.com (mail-m49211.qiye.163.com [45.254.49.211])
+Received: from CY7PR03CU001.outbound.protection.outlook.com (mail-westcentralusazon11010034.outbound.protection.outlook.com [40.93.198.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE60B277C9A
-	for <iommu@lists.linux.dev>; Thu, 27 Nov 2025 04:32:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.254.49.211
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764217980; cv=none; b=cupfqLj8IcBu47/qph0y+wEllTkxEnm+vsxi0l8iqq71ykA+hb+GquolFWW2ULMwCfJn/nmPwjvf9pEGz1eS2yiXdWBsSxCVZIIZrb7fkxUuxAI1ZUrmnyx+B2AcRXENRG5e0q5i6MIyYC9jaMdrY/uTu0IJNKHr7ojr9wU0sAQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764217980; c=relaxed/simple;
-	bh=JbfetfP2qgU8a3tj2eCqJLpLpSq0Oc45eJ9tIKTlTJc=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=TZ9CJja3SKurCWRobCWoUlip3iqw5oPEXlSLoH13M4Iov2T+kcN54tVvHLd5ClJcCUYDzSOJoYUMuFHu8OjIx1SfxYCjdYcLHJeqstpwZTVsmW+iwIZSXqhUWCtOfcWjba8wVpl34D9Vc8bv3MJo8aPoV5r6FBAa1J83q64V+dc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com; spf=pass smtp.mailfrom=rock-chips.com; dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b=eQP9SGLq; arc=none smtp.client-ip=45.254.49.211
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rock-chips.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76347DF49
+	for <iommu@lists.linux.dev>; Thu, 27 Nov 2025 05:15:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.198.34
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1764220538; cv=fail; b=OkJUnNN5y2iVYYp+qpbBI/wwlrwcW5UU8y6/aDrnpepsj5r7vfL/w5HdJgx2eq4Aay1iQJ4xfzWbwgkMbeFwuKl7N23Z0fGlbjAgVnGMrokKGaH6w6HD2Lq+1wiuifG7srALFMwCKX+0qH/lOv3zNAs0CoQYJFljICDencMhpPI=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1764220538; c=relaxed/simple;
+	bh=x6PUBtpgqXKSURYGQPDWTgdGkk83GNUMo8Z0t+tTbP4=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=DQr+0FtJjdvS8vjuTbv9rNBUndixXXuD/dK8lSfJ2f+9VyBg71sUQg/ZGTKDOVC7p700YJGoBEC7hpv9qRJAhhB1en5Nd7M5NeRsg/xbFynyncPnl1F3LlYPWLz3ABbCA4+NbuvGhtUlxIC3CKHveI4416KSj32CrYlM5lm96aQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=IbYYw4ra; arc=fail smtp.client-ip=40.93.198.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b="eQP9SGLq"
-Received: from [192.168.61.151] (unknown [110.83.51.2])
-	by smtp.qiye.163.com (Hmail) with ESMTP id 2b1179e84;
-	Thu, 27 Nov 2025 12:32:45 +0800 (GMT+08:00)
-Message-ID: <075100c0-b4af-4077-bd3c-dd9407524671@rock-chips.com>
-Date: Thu, 27 Nov 2025 12:32:44 +0800
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="IbYYw4ra"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=AoHHsvi7/7FIzHeIoO9gAPoZ6QC/p6+ibnVtIiIiKditgSkTARX89JtEs3Xc+3RtDzCIpLtknVowlxSa6zK9xHRQUbQcMResxinh/+kOYAClWEJAEhxB0dbb2ZTs8en3ViYUS3rIOv2Zy3Y9nGiwbag0fdGuKfVlW3vovJDQ46VaeI8zssU4RjQkDmatxVYvVdEQq/N28IunN7aQQtcCzEz/INQtXJRGU3QlZmW2TuT9MkwKik0u1gF9ap4LjiDXZVZs3DchtN2vob82r5qjhEuzClXD9lVfMMgSEChb+vUIb7BejKxgUj8BWI/RMP/DNe4eKn3kgbxKY0w6vefISA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=yzMpnQxYWDzLVQQoapAdayEnJzs/frcnch18ufFqdTU=;
+ b=NepUXPXUA/mKsmFwqaThys6+0feunQpwp3p1Yp6xYUYGCaxLxsbcQmsvVeVLEU8Geam5W7yQZqnTIFgrhJuVf6w3KuqpqmxzUM7Haa6J2jHILLmu/FjwDGNuwYSXt1bDuc8mm3sxaOSbRDwMoMmiSGCWlZpGaAxwtMn2F8lcBgXnzvTQKwpQG0zQ6+Ya4EffnjdnlhCFeYY0mBriKL8mwmmVlUNfJ9STNzvGDCRoMpSZ3xz5Vw5Q1HzmH4Tjg5LvMXRcqzChEGaJZkCBCUGJSgUlGGovC9JE4IAEV9mXFGSoN5A45ljXVtz8VffTTVkYJh+kOH+VdTakfUmZpQhzjg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yzMpnQxYWDzLVQQoapAdayEnJzs/frcnch18ufFqdTU=;
+ b=IbYYw4racZ+8EtWpi2+6llBnm86lFh6YmUqE6pl/5Dq1pQrRHJHSiBbHlYmaIS6UzD5xtxMz3bJQaLbVeILRWaDhhn21ZGLkluQPgIvTyXSbboExoA4S9/5PGhtUWtF4eOj9/Zm3WTou+OSmaenpNWve7+cohHG/Nm24NCmAnc4=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
+ MN2PR12MB4111.namprd12.prod.outlook.com (2603:10b6:208:1de::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9366.13; Thu, 27 Nov
+ 2025 05:15:35 +0000
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::a5e0:9d7e:d941:c74d]) by DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::a5e0:9d7e:d941:c74d%7]) with mapi id 15.20.9366.009; Thu, 27 Nov 2025
+ 05:15:34 +0000
+Message-ID: <499db877-2587-46cf-96cc-486ec66db3df@amd.com>
+Date: Thu, 27 Nov 2025 10:45:28 +0530
+User-Agent: Mozilla Thunderbird
+Subject: Re: amd iommu: rcu: INFO: rcu_preempt detected expedited stalls on
+ CPUs/tasks: { 0-.... } 8 jiffies s: 113 root: 0x1/.
+To: Borislav Petkov <bp@alien8.de>, iommu@lists.linux.dev
+Cc: Joerg Roedel <joro@8bytes.org>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ linux-kernel@vger.kernel.org, Jason Gunthorpe <jgg@nvidia.com>
+References: <20251126143219.GBaScPc1b6RAC9ZfCv@fat_crate.local>
+ <20251126160031.GGaSckH3SHrC8ckPa7@fat_crate.local>
+Content-Language: en-US
+From: Vasant Hegde <vasant.hegde@amd.com>
+In-Reply-To: <20251126160031.GGaSckH3SHrC8ckPa7@fat_crate.local>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: PN3PR01CA0109.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:c01:96::22) To DS7PR12MB6048.namprd12.prod.outlook.com
+ (2603:10b6:8:9f::5)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: shawn.lin@rock-chips.com, iommu@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org,
- linux-kernel@vger.kernel.org, Simon Xue <xxm@rock-chips.com>,
- kernel@pengutronix.de
-Subject: Re: [PATCH] iommu/rockchip: disable fetch dte time limit
-To: =?UTF-8?Q?Sven_P=C3=BCschel?= <s.pueschel@pengutronix.de>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Heiko Stuebner <heiko@sntech.de>
-References: <20251126-spu-iommudtefix-v1-1-f90003dbfcc4@pengutronix.de>
-From: Shawn Lin <shawn.lin@rock-chips.com>
-In-Reply-To: <20251126-spu-iommudtefix-v1-1-f90003dbfcc4@pengutronix.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-HM-Tid: 0a9ac395cbcb09cckunm7f6f53a15f3a0c
-X-HM-MType: 1
-X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-	tZV1koWUFITzdXWS1ZQUlXWQ8JGhUIEh9ZQVlDSE9CVkIYQhpNTkkfSUtDHlYVFAkWGhdVEwETFh
-	oSFyQUDg9ZV1kYEgtZQVlKSktVQ0hVTkpVSVlXWRYaDxIVHRRZQVlPS0hVSktJT09PSFVKS0tVSk
-	JLS1kG
-DKIM-Signature: a=rsa-sha256;
-	b=eQP9SGLqV2ppZ/YwPz3e2r8dHL9TDguKTD8HJIs+TWpIAeYRQE4xRVZf8ErbAJ+F/vUCPNZ2DzNq5pG/r11S0Se3XvEI7had5VkA3lz9lbuGkNG1AQqx4C0MFBna63eggrBNyRALz4GyVMUTK+kRjQCNm+TQNuRwjl48SDNwMAI=; c=relaxed/relaxed; s=default; d=rock-chips.com; v=1;
-	bh=CPMwb3T+SE4qsqbo/CfyQHn/8u+JJB3BBnhM5wlyZok=;
-	h=date:mime-version:subject:message-id:from;
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|MN2PR12MB4111:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7387718b-b1ae-4c1c-d197-08de2d73fe55
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?YXY2Q3Y0dXB5a0FvQkdRVng0K2VLZFloaWlnaW9tTDUyVmsvVU12Vlk3aFJM?=
+ =?utf-8?B?ZEtCVmZxcVNTM1g2cG4zTlJoRGdzM0RZam91bkJXdTY3TnI2UlhGbUVjb1d2?=
+ =?utf-8?B?Wjd1MTNDbnZ5ak9zY2ZCTVBaeVNaYkFNeDBmQnJhd0ZuenVxeHZzM1lEaU55?=
+ =?utf-8?B?Q2FPMWxCRitoMVJ4UTFVZHRhbEs5YzBEcGt5SnF5ZnhtcmlhOHFndUJSLzk4?=
+ =?utf-8?B?NW8rd3VmMFJuaXNjbndnMGlKTEtkWkNrQUU5dmQveTRBQzAzejdLeFJ2YmR2?=
+ =?utf-8?B?N1FDUlVBaGJBQldjUjY5Y1kvbUVLM09KUVhQcHVJOWhEL1QyOXdNR2IxNlZR?=
+ =?utf-8?B?a0M3czY0TzZFVFBXRlhYYURwbDNHdHdDS2JOczd5TCtvbTNwVlRDZGhtWW5G?=
+ =?utf-8?B?eExDNlBlQ0ZOYXZCZU9PWmxyUEVZMkNUTzl5QzBYVGNEZ1NQMUJPSVFUYWlr?=
+ =?utf-8?B?MVJjR1FWTXR3VFBHd0FCaFo4Z1JLWUovNGNCd1BkMGlYT2Z5MFBBejNFRFk5?=
+ =?utf-8?B?NFByMUVhVktRaXNvUVlYa2VQZ25xd2pqT2VjUlRtVlg1alk2MkQxKzl3MDNh?=
+ =?utf-8?B?NEVWdFB0L25zd2JPNkZMRWdpK1VtNWU2dFVwMTdCamFVRzNjdUtzY0lnZGlZ?=
+ =?utf-8?B?QU9zdzRpSCtIUGFwbVlJNzVRVzVSYXpoekMrL3MxSDcya1dTQnBOSTRKTU41?=
+ =?utf-8?B?Tmp6akY4VVRNdE03aWRSOERPa2QzS1F4RGZONkVIVHlUNVFsVnRFR013RUM1?=
+ =?utf-8?B?NVRVdWtBVGlsdGlIakFxNVFDMUxHdnJWZDNoS3F6UFFQNVhDQ09XM3Y4VS9i?=
+ =?utf-8?B?WFhNWW44cFQydWJqYkRoL2VXODBpWWRCQmZaenRZazVFaENUZTBjYjBYV3Jq?=
+ =?utf-8?B?ZXBDMWlmc3hEZjJQWUhQQXZQbWU3cCtOemU4TXE4TUYvK0tHQW9HYURWTU04?=
+ =?utf-8?B?T1JPNXE1aDNrbEF1alA5MkZNZUd3WHVsY3p0aVVYVmE4SjFtSjNNQXpnekg5?=
+ =?utf-8?B?UEhnMXlHcUdncXd4c1NCOWdzL1kwS0NseUM2d1FxcnY4TGFMTWZuNzZXMElu?=
+ =?utf-8?B?akVEWSt1d0xTdnM5dEZGcXNYVmJxTDRhbEIrUnkzU3ZVTVZrbTdXelRtNmhI?=
+ =?utf-8?B?WGg3ZFFmNFRrUkNRZ2JGWjZieFFBVWVpb0d4M0RDMFNUY1FyeGRtRW5IT3Bq?=
+ =?utf-8?B?WDRGNXlSQy93bE96anUzQXlhT0RVS2JZRi93UXpteVdRdmp1TnpwcEtpWEVq?=
+ =?utf-8?B?bGIrZWZvR2dzemdLUkZyYUxLdjVZNGtmc04ydzBlOU1GdllLZ1grVkFCQ1BQ?=
+ =?utf-8?B?N2Y0RVJHWWJvM1FuSi82TnFqd1VqK3MvTGRoVGs3WUlJeHFkR1pBUU15Z1Zy?=
+ =?utf-8?B?QUxNYmdoQ29WWHdQQ3B6WmlhR2tUYTVJY0dRckFRam1vbk55REx6MW9RelZN?=
+ =?utf-8?B?U3pubGkrVklFcmh4RzFVemRMNGFYZkhQc1ZQSy9TMXNwbW5EMEVrOFFzeVlF?=
+ =?utf-8?B?QlA1OEYxZzhMaFcyUHQxNGZGeDQzL2Zsd1VJSzFjdys0SGpxMnRqVlFEVTZ5?=
+ =?utf-8?B?ekFDZjJFZnFLNDBwSlBzaFl0TjlDYmUwcTZUN2dUK2cyTUYvb2hYSkQ5dnVZ?=
+ =?utf-8?B?WTdESUwxclYwQXhsWVh6MXAyeG9JTHZOOE9SNHpHZjlRV3lKNitJRTFCTWpW?=
+ =?utf-8?B?T3ZvVkNrT1A3NDgvUVJIUWZNVGhqTHl6STUrZThMR2p1ZjJVZjVKUHYxZ05W?=
+ =?utf-8?B?SkZEcTJlSkxVaUlCU3Rxa3NzcEIyOVdFSHBYbEhRR3dwWFJZUUdKa1VFRnpt?=
+ =?utf-8?B?YnV0UnpORnBjUk9KZ0J0SEZMWVo4c0ttTEV0cGordnllTDNkNFF3blkyR1dV?=
+ =?utf-8?B?ZDY4TkFPV0dEMjZWb3pRS3hkdVErRUl3NWNzcm5QT2t4cElBVExwRnRNdGNP?=
+ =?utf-8?Q?Eqb3OISvjlp5IKeqGsTOvS0XA1Lzj2k3?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?cWVJRUJGRHZpRUZBem1CZTN2MSt6THJyWmZLd2hIQnY0d25YZWJOazFBTGNN?=
+ =?utf-8?B?cHZyd3YvZ2ZKTWhPRE9sSXF4SlppSGFzcXVhWHFQRzZteXc1bWtqbWtsMjZD?=
+ =?utf-8?B?YXduYVFrY3VVeUZYaFhodnU1b3VETWJ2ZnBuejRFSHJqMnF2R1grSWI2MTYr?=
+ =?utf-8?B?alFZallRalhST1Yvc2Y4SC8vbUYza25JOTNRZU4zRy9pUU5aeVBxanpnREp1?=
+ =?utf-8?B?NWpEekJsM0ZkSVczZFQrMlF3TThpb3laWjFXVHBVTzhqVEZHNjR4YVd2NVBF?=
+ =?utf-8?B?MVVRMmR3SGUzQmVrcEFMaVN4MytNaWx0R0ovYTV4R3h5SmYwdkUyYkpHUlNx?=
+ =?utf-8?B?QTN2bjVyOFRsd2N4TFB2MWhOMkVvVGYrMC80a2NSeW93dWhoM1k4VnhROS9i?=
+ =?utf-8?B?dFpUZ0hLcVRPaUJXbTJRNGpjL094SzVmeFFMb3htc2lLampySjNJWEdsQTBM?=
+ =?utf-8?B?KzcwZmlqU0F6OGk1VDV1bHZnWkhnZ3A2a0dkRitURGpVcGVCdDYxUVVndWlM?=
+ =?utf-8?B?S2pSOXo5SlRTZVJPT045QnQzdzdUN1dzSnkvWlNRY3o1b2NvTzFOTmxwZ2g1?=
+ =?utf-8?B?bG1Zb1V5QXpnUkFmWHdMR1NOa1h0eGlLMFcxandIWXhsb2c0bVRrd2hvTERK?=
+ =?utf-8?B?aDA3am5naGVKUVZibjB6R0o4Q2VnYUNqclRwUy85cHAyYnJGVVB2ZUpRaG1J?=
+ =?utf-8?B?R1NPdzFYNUowb3lRL2pCd205UHJHUlpoT2cvVDNZaG9HZlBNazl3N0kzUjc5?=
+ =?utf-8?B?WkRFc0dOeXNFTEhEa1Vsb2hPNkVucEdkeW1zNGZiR3VCZE5IWmNkM1hoSy9t?=
+ =?utf-8?B?VXlxSWNGRUo0Y1ZrSlV3ZEVXVHFGb3F4akdGMEdCS0dxaUo3RytBRmd1ZlRk?=
+ =?utf-8?B?VzVsVTY3ZWllTUJBKzI1UzV6b1QvWmUwazZBcHRKdmhoeHF3UmYvYWVkNjZO?=
+ =?utf-8?B?Y2ZWeE5LdTZiZFNNUDc4Z3NkZksxSXZSQVBYRGsrUUc4bHNNakd4ZzVUOXBW?=
+ =?utf-8?B?REc0TlBpU0xLdXpNb2FDdnhDcEg1K0REUldMajBWTnY1TkQweDNhY0wwYkJS?=
+ =?utf-8?B?bysyelQ1WDh5UWk2cXY4VkpUdGVlZjZOaUxnMkR0dEo5TnRpVlI2bFRDb1Vp?=
+ =?utf-8?B?eU9rS3kzWk45djViU0tlblpCTEM2TUk3d3AwTDVrbm8wRFVhaWw2bFF2bmNP?=
+ =?utf-8?B?d2l6RFFIbjRJdmI4WHhXYTlJazU4MWc4NVpvNDlxaGJNR2R2UkZ1MXF2c2VW?=
+ =?utf-8?B?UzRzekNlQUwvUnlCWTYxRk56RVFqRTNFYnJYYXlDVzdoRGx3S0swUDlkaE9m?=
+ =?utf-8?B?VU5hUHJqdnV4T0NCWjBka1BlWkdnVEs3dFFXZ2NCYzJqdEpPNmxua2Z2SHhR?=
+ =?utf-8?B?RDdrRWxJTS9obGh2Q2VXZHh3N0Y5emJQcHZnSUdYOUU3OXRyQWJjdUROYis3?=
+ =?utf-8?B?TmFSWjRIZDJiTlh5MWlXR05URzk2amlQMHhROXUvT1hFYUhvZmM1WEJHazhI?=
+ =?utf-8?B?cExYY3RsZ3pjelNVM1YzdGxsdkdzVHFkb3N3ajJtWWIrVnB2LzBvb0NkZnFY?=
+ =?utf-8?B?YW1FLzhLcU5MM2swb3FNa1lRMkRxRXA0cmNMTTJFN2krVjlJVWl3NXRlM3F6?=
+ =?utf-8?B?Y3M3bXFBK2taMzloQmRsakJpRWxMclZmeEtjYTR5N2p1VEw2ZHZIUW1xL3kx?=
+ =?utf-8?B?RWlHbnVMSUE1eVpObkRtTENvMWkwdklBa2FNUGtBR2hvZk1kYjlyeERzRzJa?=
+ =?utf-8?B?aFdoOW9hZmNvanVKc1Q4RmVCWkpWUlQ2SFdKMkxRN3FNcy9QdkpITDFOK29x?=
+ =?utf-8?B?M3djbzBFeEE1YnZNMUNPbGltSUxZV0I3ZHhXOTFnT1kzbzQyMUJuTHVHaGdu?=
+ =?utf-8?B?MmQ0b0luTWh0dVhhQ01CUFlXREJKclJvQXd4KzNjc3J6RjdvQkF2dEVjcXJy?=
+ =?utf-8?B?Sm9EM0ZvTDB1TEJnbTFOL2dFUlFIWXJnbkFVbDlGSWlQckc4SWVIMkNzQkln?=
+ =?utf-8?B?WldDNU5SWU01L1BPWkVPY0k1UmllaWdsb1ZER3daYk1wc1ZLWDR2V1VuakUr?=
+ =?utf-8?B?Vm10ZUJXY0FiMWIwSVBqSTRod3NtZVZ2VzFLMWZiT0U5M1k5cFZBeVc4SStX?=
+ =?utf-8?Q?sHSZJ9JeUBw+wcBuMwbWvUzd1?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7387718b-b1ae-4c1c-d197-08de2d73fe55
+X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Nov 2025 05:15:34.8402
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: x4GfIqQtPo3TJwWvVCLAYsnrTEMVDTViH5jA5VWUbIy7dKECHdS7UwduPP7uPZCryyhDBGIvMEefCHXUdNknxQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4111
 
-在 2025/11/26 星期三 19:45, Sven Püschel 写道:
-> From: Simon Xue <xxm@rock-chips.com>
-> 
-> Disable the Bit 31 of the AUTO_GATING iommu register, as it causes
-> hangups with the RGA3 (Raster Graphics Acceleration 3) peripheral.
-> The RGA3 register description of the TRM already states that the bit
-> must be set to 1. The vendor kernel sets the bit unconditionally to
-> 1 to fix VOP (Video Output Processor) screen black issues. This patch
-> squashes the 2 vendor kernel commits with the following commit messages:
-> 
-> Master fetch data and cpu update page table may work in parallel, may
-> have the following procedure:
-> 
-> 	master                  cpu
-> 	fetch dte               update page tabl
-> 	        |                       |
-> 	(make dte invalid)  <-  zap iotlb entry
-> 	        |                       |
-> 	fetch dte again
-> 	(make dte invalid)  <-  zap iotlb entry
-> 	        |                       |
-> 	fetch dte again
-> 	(make dte invalid)  <-  zap iotlb entry
-> 	        |                       |
-> 	fetch dte again
-> 	(make iommu block)  <-  zap iotlb entry
-> 
-> New iommu version has the above bug, if fetch dte consecutively four
-> times, then it will be blocked. Fortunately, we can set bit 31 of
-> register MMU_AUTO_GATING to 1 to make it work as old version which does
-> not have this issue.
-> 
-> This issue only appears on RV1126 so far, so make a workaround dedicated
-> to "rockchip,rv1126" machine type.
-> 
-> iommu/rockchip: fix vop blocked and screen black on RK356X and RK3588
-> 
-> RK3568 and RK3588 has the same issue as RV1126/RV1109 that caused by
-> dte fetch time limit, So we can set BIT(31) of register 0x24 default
-> to 1 as a workaround.
-> 
-> Signed-off-by: Simon Xue <xxm@rock-chips.com>
-> Signed-off-by: Sven Püschel <s.pueschel@pengutronix.de>
-> ---
-> During testing of a newly developed driver for the RGA3 peripheral [1]
-> (Raster Graphic Acceleration 3) of the RK3588 some sporadic hangs
-> have been observed. The upstream rockchip-iommu driver is used to handle
-> the RGA3 IOMMU register space.
-> 
-> After a closer look at the TRM for the RK3588, the RGA3 iommu register
-> description of the RGA3_MMU_AUTO_GATING register (offset 0x24) mentions
+Hi Boris,
 
-It's 0xF24 per RGA3 chapter.
+On 11/26/2025 9:30 PM, Borislav Petkov wrote:
+> + Vasant.
+> 
+> On Wed, Nov 26, 2025 at 03:32:19PM +0100, Borislav Petkov wrote:
+>> Hi,
+>>
+>> this is latest Linus + latest tip/master. Box is Zen3. CCing AMD IOMMU folks
+>> because the backtrace points to it.
 
-> a mmu_bug_fixed_disable bit, which must be set to 1 but defaults to 0.
-> 
-> Looking at the commits in the vendor kernel, the bit is unconditionally
-> set to 1 and mentions that it fixes a blocked VOP (Video Output
-> Processor) [3]. Therefore squash the relevant vendor commits
-> [2] and [3] into a single patch, combine the commit messages and keep
-> the Signed-off-by line from the original author.
-> 
-> [1] https://lore.kernel.org/all/20251007-spu-rga3-v1-0-36ad85570402@pengutronix.de/
-> [2] https://github.com/rockchip-linux/kernel/commit/7f8158fb41b5cc8e738aaeebc3637c50ebd74cae
-> [3] https://github.com/rockchip-linux/kernel/commit/6a355e5f9a2069a2309e240791bc3aad63b7324e
-> ---
->   drivers/iommu/rockchip-iommu.c | 8 ++++++++
->   1 file changed, 8 insertions(+)
-> 
-> diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-> index 0861dd469bd86..2d0dabb0d101a 100644
-> --- a/drivers/iommu/rockchip-iommu.c
-> +++ b/drivers/iommu/rockchip-iommu.c
-> @@ -76,6 +76,8 @@
->   #define SPAGE_ORDER 12
->   #define SPAGE_SIZE (1 << SPAGE_ORDER)
->   
-> +#define DISABLE_FETCH_DTE_TIME_LIMIT BIT(31)
-> +
->    /*
->     * Support mapping any size that fits in one page table:
->     *   4 KiB to 4 MiB
-> @@ -930,6 +932,7 @@ static int rk_iommu_enable(struct rk_iommu *iommu)
->   	struct iommu_domain *domain = iommu->domain;
->   	struct rk_iommu_domain *rk_domain = to_rk_domain(domain);
->   	int ret, i;
-> +	u32 auto_gate;
->   
->   	ret = clk_bulk_enable(iommu->num_clocks, iommu->clocks);
->   	if (ret)
-> @@ -948,6 +951,11 @@ static int rk_iommu_enable(struct rk_iommu *iommu)
->   			       rk_ops->mk_dtentries(rk_domain->dt_dma));
->   		rk_iommu_base_command(iommu->bases[i], RK_MMU_CMD_ZAP_CACHE);
->   		rk_iommu_write(iommu->bases[i], RK_MMU_INT_MASK, RK_MMU_IRQ_MASK);
-> +
-> +		/* Workaround for iommu blocked, BIT(31) default to 1 */
-> +		auto_gate = rk_iommu_read(iommu->bases[i], RK_MMU_AUTO_GATING);
-> +		auto_gate |= DISABLE_FETCH_DTE_TIME_LIMIT;
-> +		rk_iommu_write(iommu->bases[i], RK_MMU_AUTO_GATING, auto_gate);
->   	}
->   
->   	ret = rk_iommu_enable_paging(iommu);
-> 
-> ---
-> base-commit: 30f09200cc4aefbd8385b01e41bde2e4565a6f0e
-> change-id: 20251126-spu-iommudtefix-cd0c5244c74a
-> 
-> Best regards,
+I have tried tip/master on my Zen3 and I didn't hit this issue. Can you pass
+your config file?
+
+We haven't touched that code path recently and generally it should work fine. At
+least we shouldn't hit issues under normal condition.
+
+Having said that recently we observed that under really stressed environment we
+hit softlock in the culprit code path. We are working on moving wait_on_sem()
+out of spinlock.
+
+
+-Vasant
+
 
