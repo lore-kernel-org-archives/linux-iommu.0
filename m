@@ -1,141 +1,110 @@
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f54.google.com (mail-qv1-f54.google.com [209.85.219.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61F00329368
-	for <iommu@lists.linux.dev>; Fri, 28 Nov 2025 12:43:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27701288C27
+	for <iommu@lists.linux.dev>; Fri, 28 Nov 2025 16:45:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764333816; cv=none; b=IrIv36oDjuaa3+K5nhU1xDw3N0CK9WkdljsDH9XoKwcdgk1o3o0tNmtu51JpMawfa6HkhFfdRPhZPh7DrEn+7HJQV3YZzWCwerjvduYk9c3NnQed+xM6S7AxKcXMaQsjzQ+M6OYwgAvyEgQusgYAjJupaR/ldbJgsrXLSvhT3fE=
+	t=1764348345; cv=none; b=YKV2RmtHQ7g2FZk5W4TlGft7RpUJ3inv/O0TSFXtHNKfcoxg7fjq8HqwXOblLlBvMnQscMVQgCBoj012YMxTiBUzdAWemhjVPDroUGBdiZG8xyQXWAvGfVyRMt3fBFgsWc3lfwL7wajK7ye5OLsDhT5CRuHcj7IKcKDPiRIzrlg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764333816; c=relaxed/simple;
-	bh=G7QL9dFT71EWGLcsbPNOPq6FF43YQ6/rMkM8cKTBaH8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
-	 Content-Type:References; b=hncnL6kV11uIszHb/0guR3w3azTiLCRi0fuuVtIgESnU9mrFvq+GP095dpQqTiknbtIsKHutYI7vPpmCcCl52S42pUv4rLqBVqwnVSC/pUpWALgxAroJz+Q0Z8nAvn3T1inE0W5E+rL3ySqwhFyy5IZe0EBdEHDbnVrXtD/JG7Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=BftbEkhU; arc=none smtp.client-ip=210.118.77.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1764348345; c=relaxed/simple;
+	bh=Cpzk7bcGRWcSKZ2pCJVSu0NktIw2AZpfODjcTJoI7zU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=S0nj42awfFXa9CEm8kazuE7bXXYDmxib2wfsKsLwPLs6zUupgyi65/H1NvUL6SHHxSz63EIOr5vv22vnfcsIz5BmgElsegM6VNNNPirpEBE3VT+NI5Vt+dcwSuBZQOAFLplPNEzRyyvl5vXkmK9/UsFb01mkLNEHAwqXbMVir5k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=HVuQ0GVZ; arc=none smtp.client-ip=209.85.219.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="BftbEkhU"
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20251128124331euoutp01b1b73a32622b71fcf2d072c6598eea5b~8LEDrFYK42971929719euoutp01u
-	for <iommu@lists.linux.dev>; Fri, 28 Nov 2025 12:43:31 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20251128124331euoutp01b1b73a32622b71fcf2d072c6598eea5b~8LEDrFYK42971929719euoutp01u
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1764333811;
-	bh=b83AlmXsfZAj1dj+if7CjsYvhF1KdJ1x8hLV/CVmPug=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=BftbEkhUSeb5N4iFJNmdu8HZkdP/dbu8IpIFs3CQiGkPR0aGLZyWRJhi3b/sdE/F8
-	 bgqZVgiBHerEyjw4TnKAR0RWXgiLT094+1Ks9esMvQVHM68NFXjtr73OKutDZc7bry
-	 DGxlkWk7PWPbxUmmPtrQ8NBahecReoeHdDi+iyZc=
-Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20251128124330eucas1p2e1a512efa1726e1e68b4c98f8d24aafa~8LEDL0mgB1512015120eucas1p2G;
-	Fri, 28 Nov 2025 12:43:30 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20251128124329eusmtip2c89b212d02d7f69fbf67e99177e28990~8LEBgLH1G2432824328eusmtip2Q;
-	Fri, 28 Nov 2025 12:43:28 +0000 (GMT)
-Message-ID: <3b0cc36d-0f7e-4d07-949f-fce670170247@samsung.com>
-Date: Fri, 28 Nov 2025 13:43:28 +0100
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="HVuQ0GVZ"
+Received: by mail-qv1-f54.google.com with SMTP id 6a1803df08f44-880576ebe38so21009846d6.2
+        for <iommu@lists.linux.dev>; Fri, 28 Nov 2025 08:45:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1764348343; x=1764953143; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=Cpzk7bcGRWcSKZ2pCJVSu0NktIw2AZpfODjcTJoI7zU=;
+        b=HVuQ0GVZIgymALTv3FCZt7+syL/n6iojjfjqw/QRiPpqrdElJJg2MMRcqskvr7a/YF
+         VbAeExN0RBFYn7JA/ltdstG+pdjlI9jGvENj61+ndd0rVtG2QtJbiw5gwbbbripl/dbR
+         eCFke1d05gYPt7wOfakBnWsXZHeI7AR2z9OBg6QTzX2gTeWlUSpB6jBEIPNRrhVwfTOF
+         xbwyh11YYxz1fa+sSEX485Umb1PNG5qgOYdVcCFKPG+EwdnuXtc7GjG1rHCiz3fsfaI9
+         UA3UTZYLP1R1Q8rfLgg2xXzrQChIPmxq7LRjCZl1eE3WtHBFmeOYo3YN8vo8hSPcc/Wp
+         Siew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1764348343; x=1764953143;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Cpzk7bcGRWcSKZ2pCJVSu0NktIw2AZpfODjcTJoI7zU=;
+        b=kFnI7BUCDb6J0Xhx5NsahBQ72vEdLljhvwiJ3TnRYduakgzQM+wtN+fYaDmk11smF4
+         VZYhsqCC1PSNlw9X+DgGnJ+uEAGtS5UZxqKOJcyf41xACuhT9bguQ3n8wEHU9iq2r4EV
+         RG8KftsPDAwnqYN8ZOqBbDDMoJYprzCRrnnuo6xJ8KebQr1pZBn7I7CvUQRk7Gq5O/N9
+         mvbrV6dErk7LlmnI6XaXvzjxi/eqlBRFz6SXKebp/d9J8sy/FJEz6EUS6UVGDfik/RUP
+         /ijn3M9M2WXCxdY5tOle73hniaRqX9FYLH4s45z6DPLWpGwNO0Y+oM//OCX8wzKndZfK
+         Hlcg==
+X-Forwarded-Encrypted: i=1; AJvYcCXsCD8c/GQrC192cTPrOS7cMa+qJlZXTB7cr0QeDLMTtkJMfSI7m4K2koM7wS7BqKRsAu4ZlA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyGBOe7w0PbTIWzlgEZuXNwhl9W3rfHSN/OQdK1b+k/qNbTEoMf
+	6Gs/g1NMHl3/aUu76PfTc5IYKC35nxXpdVn27Xmemm0YXoBM0WaYTR8LmSQY0/a/y4c=
+X-Gm-Gg: ASbGncs+T3pMZTEn/57KDbSqT8i4sbr4CJaejpP24WqEPhLLHTJ/846f2kFFKdxwP7s
+	l+CMkKsVFdW52s2P/t13/DnomT4s7qyeIfEsWCGE3TRPVwufkiqed7l+c+fpkWHiSGtMVm6Pw0a
+	S+tjIC0LMn+miafXzdKi/gMIi8PTa0jicRwzfcr8XCgCtneTj/gaVqsgjLZ95JJGaaHFP11d4yg
+	9dyfuhXO8t3QpAK7TJ0EEEQqBuhB1r0+t9BSaKfE2AwI4K0uQ4io3hSK98f/RRZSawJ8Rx+u880
+	L0PvuCmObRjDos/2kg1uXwRovSc/tIDaoLZs9hvbwJrKzrHWRB7NoMay3p8gatpevbmaX+R7J3X
+	rC1CTgYLx1qu2GhgTmzcU7e2CQKSb5LtNqikqP/9Nzu8ot1A2SjlEQI3Ge7e/NyD/qnQ5SNxs2T
+	+ATJxcH/WVZKgzmz+uJZtcbJy565cYwqxUPoKw61OFaOhdWg3rQmudTFAp
+X-Google-Smtp-Source: AGHT+IEQdKc+IcKw3qnpBrSVmQlkpj+jbCLM52rDH21kCOY0Js9AqiEVYv/dkHvCwjTpPv/UNBoquA==
+X-Received: by 2002:ad4:5be2:0:b0:880:53e3:3a2 with SMTP id 6a1803df08f44-8863ae61a58mr231831966d6.11.1764348342896;
+        Fri, 28 Nov 2025 08:45:42 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-47-55-120-4.dhcp-dynamic.fibreop.ns.bellaliant.net. [47.55.120.4])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-88652b6851dsm31384526d6.42.2025.11.28.08.45.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 28 Nov 2025 08:45:42 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1vP1bJ-00000003Puv-2JnU;
+	Fri, 28 Nov 2025 12:45:41 -0400
+Date: Fri, 28 Nov 2025 12:45:41 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Mostafa Saleh <smostafa@google.com>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	kvmarm@lists.linux.dev, iommu@lists.linux.dev,
+	catalin.marinas@arm.com, will@kernel.org, maz@kernel.org,
+	oliver.upton@linux.dev, joey.gouly@arm.com, suzuki.poulose@arm.com,
+	yuzenghui@huawei.com, joro@8bytes.org, jean-philippe@linaro.org,
+	praan@google.com, danielmentz@google.com, mark.rutland@arm.com,
+	qperret@google.com, tabba@google.com
+Subject: Re: [PATCH v5 04/27] iommu/io-pgtable-arm: Factor kernel specific
+ code out
+Message-ID: <20251128164541.GA812105@ziepe.ca>
+References: <20251117184815.1027271-1-smostafa@google.com>
+ <20251117184815.1027271-5-smostafa@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH v4] of: reserved_mem: Restructure call site for
- dma_contiguous_early_fixup()
-To: Ye Li <ye.li@oss.nxp.com>, Oreoluwa Babatunde
-	<oreoluwa.babatunde@oss.qualcomm.com>, robh@kernel.org, robin.murphy@arm.com
-Cc: saravanak@google.com, quic_obabatun@quicinc.com,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, william.zhang@broadcom.com, kernel@oss.qualcomm.com,
-	will@kernel.org, djakov@kernel.org, aisheng.dong@nxp.com, joy.zou@nxp.com,
-	frank.li@nxp.com, jason.hui.liu@nxp.com
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <cef8f9eb-88aa-4771-b25b-2cfd1ac2c387@oss.nxp.com>
-Content-Transfer-Encoding: 8bit
-X-CMS-MailID: 20251128124330eucas1p2e1a512efa1726e1e68b4c98f8d24aafa
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20250806172503eucas1p264d6731c73592fcc380b0dcc21cdeadf
-X-EPHeader: CA
-X-CMS-RootMailID: 20250806172503eucas1p264d6731c73592fcc380b0dcc21cdeadf
-References: <CGME20250806172503eucas1p264d6731c73592fcc380b0dcc21cdeadf@eucas1p2.samsung.com>
-	<20250806172421.2748302-1-oreoluwa.babatunde@oss.qualcomm.com>
-	<416dbaed-a68f-4edb-a20c-94cb4c53c748@samsung.com>
-	<cef8f9eb-88aa-4771-b25b-2cfd1ac2c387@oss.nxp.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20251117184815.1027271-5-smostafa@google.com>
 
-On 26.11.2025 02:37, Ye Li wrote:
-> On 8/11/2025 7:07 PM, Marek Szyprowski wrote:
->> On 06.08.2025 19:24, Oreoluwa Babatunde wrote:
->>> Restructure the call site for dma_contiguous_early_fixup() to
->>> where the reserved_mem nodes are being parsed from the DT so that
->>> dma_mmu_remap[] is populated before dma_contiguous_remap() is called.
->>>
->>> Fixes: 8a6e02d0c00e ("of: reserved_mem: Restructure how the reserved 
->>> memory regions are processed")
->>> Signed-off-by: Oreoluwa Babatunde <oreoluwa.babatunde@oss.qualcomm.com>
->>> Tested-by: William Zhang <william.zhang@broadcom.com>
->>
->> Thanks, applied to dma-mapping-fixes branch.
->>
->> Best regards
->
-> Hi Oreoluwa,
->
-> We observed this patch causing kernel boot hang on iMX6 (armv7) 
-> platforms if using "cma=" kernel parameter. It only happens when the 
-> size assigned in
-> "cma=" parameter is smaller than cma default size in dts.
->
-> For example, we use "cma=96M" in command line and below reserved 
-> memory node (160M) in dts.
->
->         reserved-memory {
->                 #address-cells = <1>;
->                 #size-cells = <1>;
->                 ranges;
->
->                 linux,cma {
->                         compatible = "shared-dma-pool";
->                         reusable;
->                         size = <0xa000000>;
->                         linux,cma-default;
->                 };
->         };
->
-> The root cause is this patch moving the dma_contiguous_early_fixup 
-> from rmem_cma_setup to __reserved_mem_alloc_size. rmem_cma_setup can 
-> skip the cma reserved memory if command line has cma parameter. 
-> However, the __reserved_mem_alloc_size won't do it. So this leads to 
-> have two cma regions added to dma_mmu_remap, one from dts, the other 
-> from command line. But the reserved memory of memblock that only 
-> records the cma from command line is inconsistent with dma_mmu_remap.
-> The dma_contiguous_remap clears the MMU paging for the region of 
-> dma_mmu_remap firstly, then create a new mapping by iotable_init. For 
-> the cma from dts, this causes incorrect memory mapping cleared. Then 
-> any allocation from memblock in iotable_init hitting to the area will 
-> meet MMU mapping issue.
->
-> From commit, I don't understand what issue does this patch fix. Can 
-> you look into the regression and provide a fix patch.
+On Mon, Nov 17, 2025 at 06:47:51PM +0000, Mostafa Saleh wrote:
+> Some of the used APIs are only part of the kernel and are not
+> available in the hypervisor, factor those out:
+> - alloc/free memory
 
+Why not provide the iommu-pages API for the hypervisor environment?
 
-I confirm that there is an issue with CMA area initialized from "cma=" 
-kernel parameter. The $subject patch in turn fixed the issue observed on 
-ARM 32bit machines with cma regions initizalized from dt static qnode 
-(area described by the 'reg' property) introduced earlied by the commit 
-8a6e02d0c00e ("of: reserved_mem: Restructure how the reserved memory 
-regions are processed").
+Same for virt_to_phys, that could be moved into an iommu-pages wrapper
+too..
 
-I will check how to fix this case too.
+I want to change other parts of the driver to use iommu-pages in the
+long run as well, so putting the abstraction there is probably more
+valuable than this.
 
+Also the genericpt stuff is merged, should you (eventually?) be making
+a pKVM hypervisor specific set of page table functions? Eg if all you
+are doing is mirroring the host stage 2 I think you can build
+something much more efficient...
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+Jason
 
