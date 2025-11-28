@@ -1,428 +1,222 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D4DD1326D5F
-	for <iommu@lists.linux.dev>; Fri, 28 Nov 2025 11:56:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-wr1-f74.google.com (mail-wr1-f74.google.com [209.85.221.74])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA452328267
+	for <iommu@lists.linux.dev>; Fri, 28 Nov 2025 12:27:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.74
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764330997; cv=none; b=H1F6MOrC+RxYRgGolCn4qiJ6ykdYIiR/VRJtym1+9Jbx03HgPQq22nPV+HdgQ4LW/0zhzzIAqlPU0AG2Lt1LouykIqPvn8jkr9IfVBzYTuB6aryPzCrjiPigreXJy9pAlHyDqnukPoQU+SIHnXe5M4yqPKJJ9JXrCVEJGo3Tabk=
+	t=1764332868; cv=none; b=g9RIAmBhZNaj6OnklnrJ4YwApL3PuTx4GBTELvx7oZyWlxoM9UPdRHkyQ0smgejJdPVO2/mCXvp5kZPtZJxANNcH3PFve1D09hoW7qdPIyXzwnD43Sn4LelQ66oV0omfTBB46YdsjrWMJ03sxdQVohCRwdDKw2ntBl23tTnzcaU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764330997; c=relaxed/simple;
-	bh=lXhQSAN9+KpQcCiNTRWYXrUrUc3/38KyPsd93I1U8vU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=oF9+b+legF0PTGXTuCgj1qzEDBQvKCHMBsvH5ft6hbOc+gb9MrWqEEg/ljk7Q5MW/MJ0L8GfChvgWDwLoyH0jIiqGBJUmyuPSiMk8lCy4l3RQJpmhWkZFciDuOEE1eoXY3pcklh6CPEmbZyAZ9yt/dYX9wD417HOtVbZrWoCEoc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B7E11175A;
-	Fri, 28 Nov 2025 03:56:26 -0800 (PST)
-Received: from [10.57.89.189] (unknown [10.57.89.189])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3EE653F73B;
-	Fri, 28 Nov 2025 03:56:30 -0800 (PST)
-Message-ID: <12d99a54-e111-4877-b8cd-cb1e58cd6d30@arm.com>
-Date: Fri, 28 Nov 2025 11:56:17 +0000
+	s=arc-20240116; t=1764332868; c=relaxed/simple;
+	bh=7CxlEtFNw6Z9MWHmL142nU6wGKtsXjNk6kzJMyfvIVM=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=DyJVWoeRHVdo/pEAnlowR43Jd4An0WNeRuvIB7gIRtuTDd7Ofp11KwIBsTjAqXj+prASeZE4l6RAhh/5XYsrjndB4w7489uqMP/BY3K/Xm8LvBOIlcCTV8KhXE0gJiUj9kZkP4l4xc8JlxV2ffq+EDqYc1CzGIyJa9FiLB8UzGg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--aliceryhl.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=aUVyYgXr; arc=none smtp.client-ip=209.85.221.74
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--aliceryhl.bounces.google.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="aUVyYgXr"
+Received: by mail-wr1-f74.google.com with SMTP id ffacd0b85a97d-42b3b5ed793so1286610f8f.2
+        for <iommu@lists.linux.dev>; Fri, 28 Nov 2025 04:27:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1764332865; x=1764937665; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=2GrxI73IH1zb/tqoEbLnFEuvsfEsSAbtldPLm3aL+m8=;
+        b=aUVyYgXrB8t/EfWA/rhfCESHjK+V8g8zw/xud009ETr4Vt7dRNnDeif/IxgRK+Gc4s
+         FBLIFFcdnoE+QmfMEZJU06iTmVw6xYsP1qyBwUJfUQo3E4yh4lY9nl6lXLki4NaJOwSq
+         lclso6dagt/bLYJoUK7syqmVA5ZdaRXnUVW01U0RjGeCUAaDG5HGCDtOkGAKI/n1gLkj
+         B/v9TG/0ED/FhoZq0bI0zDUgx0pC6KO1Ky6QNqpHdR/xKh4W9Yovumc41giQZ2kW5Ppf
+         Ul+i1ODXwf3Jw90K8gSKM/dQt72eRbBeAxpAjQSqvMSzqiyuM3LzxSL/02GbG4ySOLsT
+         O3kg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1764332865; x=1764937665;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=2GrxI73IH1zb/tqoEbLnFEuvsfEsSAbtldPLm3aL+m8=;
+        b=eIa0gQSiLjR2ZkFzf7kNMAk30HIZhO5cEdnOh5x+CO8/tZyNCcLQgKtE2MUo544XUs
+         fCbr2Z8et/oIcpYGXu28nPZKpy3A3yGzG0IJc6adsyQbwAkFVOVRp+r9veBfX1uvVGrZ
+         GOSvsRRPv69TPo3a0bXWnEDoMeY1hUdHdmji7iUTVQZrEliLMhrOIuLWuvJ763mOf+6w
+         kEoFtAzBPrivjcSyKEyoR7LeyTcUJpxL6KXj25dy075nsp3T+BFd0N4jrKcOvh/Bfpwr
+         RWZd+rN82hWX0doYsmCkN3p9nwvNDGwFuwqPpQc1HR+H6huJiTpqwk9ddIEX9ZIm7Ksx
+         n8tg==
+X-Forwarded-Encrypted: i=1; AJvYcCUC8QOuY6mpHCiGcBHLrZbArJ0Qv9+P/gnvVSFKScdxy14Uf10UU4DYOb+IDsVn858vherMJw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwfOoaMqDyu2UJfulLtSIQySIWklwTecpmxdDnHhbfJx3ni7S6N
+	gCIqzFprBUYzFqqDuJUsrR0e7keemtJqbUcbdZqwteoaUQJeLsfQ2+6j0Bjey0b3H/IZRohWL3M
+	nf+/GyUQwk7xyB6uWUQ==
+X-Google-Smtp-Source: AGHT+IFrzQE9ShhEH+O/A+uGYvOpMCgB1tV6y31i20Qgk7dHyiQa17sa62hxuRWbws3zq/cXPMCUdX8VRnAvG8o=
+X-Received: from wrqj16.prod.google.com ([2002:a5d:4490:0:b0:42b:b28a:6747])
+ (user=aliceryhl job=prod-delivery.src-stubby-dispatcher) by
+ 2002:a05:6000:2410:b0:42b:396e:2817 with SMTP id ffacd0b85a97d-42cc1d199cdmr28747644f8f.40.1764332865299;
+ Fri, 28 Nov 2025 04:27:45 -0800 (PST)
+Date: Fri, 28 Nov 2025 12:27:44 +0000
+In-Reply-To: <12d99a54-e111-4877-b8cd-cb1e58cd6d30@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
+Mime-Version: 1.0
+References: <20251112-io-pgtable-v3-1-b00c2e6b951a@google.com> <12d99a54-e111-4877-b8cd-cb1e58cd6d30@arm.com>
+Message-ID: <aSmVQDMXqwc8ctDf@google.com>
 Subject: Re: [PATCH v3] io: add io_pgtable abstraction
-To: Alice Ryhl <aliceryhl@google.com>, Miguel Ojeda <ojeda@kernel.org>,
- Will Deacon <will@kernel.org>, Daniel Almeida
- <daniel.almeida@collabora.com>,
- Boris Brezillon <boris.brezillon@collabora.com>
-Cc: Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
- =?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>,
- Benno Lossin <lossin@kernel.org>, Andreas Hindborg <a.hindborg@kernel.org>,
- Trevor Gross <tmgross@umich.edu>, Danilo Krummrich <dakr@kernel.org>,
- Joerg Roedel <joro@8bytes.org>, Lorenzo Stoakes
- <lorenzo.stoakes@oracle.com>, "Liam R. Howlett" <Liam.Howlett@oracle.com>,
- Asahi Lina <lina+kernel@asahilina.net>, linux-kernel@vger.kernel.org,
- rust-for-linux@vger.kernel.org, iommu@lists.linux.dev, linux-mm@kvack.org
-References: <20251112-io-pgtable-v3-1-b00c2e6b951a@google.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20251112-io-pgtable-v3-1-b00c2e6b951a@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+From: Alice Ryhl <aliceryhl@google.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Miguel Ojeda <ojeda@kernel.org>, Will Deacon <will@kernel.org>, 
+	Daniel Almeida <daniel.almeida@collabora.com>, 
+	Boris Brezillon <boris.brezillon@collabora.com>, Boqun Feng <boqun.feng@gmail.com>, 
+	Gary Guo <gary@garyguo.net>, 
+	"=?utf-8?B?QmrDtnJu?= Roy Baron" <bjorn3_gh@protonmail.com>, Benno Lossin <lossin@kernel.org>, 
+	Andreas Hindborg <a.hindborg@kernel.org>, Trevor Gross <tmgross@umich.edu>, 
+	Danilo Krummrich <dakr@kernel.org>, Joerg Roedel <joro@8bytes.org>, 
+	Lorenzo Stoakes <lorenzo.stoakes@oracle.com>, "Liam R. Howlett" <Liam.Howlett@oracle.com>, 
+	Asahi Lina <lina+kernel@asahilina.net>, linux-kernel@vger.kernel.org, 
+	rust-for-linux@vger.kernel.org, iommu@lists.linux.dev, linux-mm@kvack.org
+Content-Type: text/plain; charset="utf-8"
 
-On 2025-11-12 10:15 am, Alice Ryhl wrote:
-> From: Asahi Lina <lina+kernel@asahilina.net>
+On Fri, Nov 28, 2025 at 11:56:17AM +0000, Robin Murphy wrote:
+> On 2025-11-12 10:15 am, Alice Ryhl wrote:
+> > From: Asahi Lina <lina+kernel@asahilina.net>
+> > 
+> > This will be used by the Tyr driver to create and modify the page table
+> > of each address space on the GPU. Each time a mapping gets created or
+> > removed by userspace, Tyr will call into GPUVM, which will figure out
+> > which calls to map_pages and unmap_pages are required to map the data in
+> > question in the page table so that the GPU may access those pages when
+> > using that address space.
+> > 
+> > The Rust type wraps the struct using a raw pointer rather than the usual
+> > Opaque+ARef approach because Opaque+ARef requires the target type to be
+> > refcounted.
+> > 
+> > Signed-off-by: Asahi Lina <lina+kernel@asahilina.net>
+> > Co-Developed-by: Alice Ryhl <aliceryhl@google.com>
+> > Signed-off-by: Alice Ryhl <aliceryhl@google.com>
+
+> > +/// Protection flags used with IOMMU mappings.
+> > +pub mod prot {
+> > +    /// Read access.
+> > +    pub const READ: u32 = bindings::IOMMU_READ;
+> > +    /// Write access.
+> > +    pub const WRITE: u32 = bindings::IOMMU_WRITE;
+> > +    /// Request cache coherency.
+> > +    pub const CACHE: u32 = bindings::IOMMU_CACHE;
+> > +    /// Request no-execute permission.
+> > +    pub const NOEXEC: u32 = bindings::IOMMU_NOEXEC;
+> > +    /// MMIO peripheral mapping.
+> > +    pub const MMIO: u32 = bindings::IOMMU_MMIO;
+> > +    /// Privileged mapping.
+> > +    pub const PRIV: u32 = bindings::IOMMU_PRIV;
 > 
-> This will be used by the Tyr driver to create and modify the page table
-> of each address space on the GPU. Each time a mapping gets created or
-> removed by userspace, Tyr will call into GPUVM, which will figure out
-> which calls to map_pages and unmap_pages are required to map the data in
-> question in the page table so that the GPU may access those pages when
-> using that address space.
+> Nit: probably best to call this PRIVILEGED from day 1 for clarity - some day
+> we may eventually get round to renaming the C symbol too, especially if we
+> revisit the notion of "private" mappings (that's still on my ideas list...)
+
+Sure, will rename.
+
+> > +    /// Map a physically contiguous range of pages of the same size.
+> > +    ///
+> > +    /// # Safety
+> > +    ///
+> > +    /// * This page table must not contain any mapping that overlaps with the mapping created by
+> > +    ///   this call.
 > 
-> The Rust type wraps the struct using a raw pointer rather than the usual
-> Opaque+ARef approach because Opaque+ARef requires the target type to be
-> refcounted.
+> As mentioned this isn't necessarily true of io-pgtable itself, but since
+> you've not included QUIRK_NO_WARN in the abstraction then it's fair if this
+> layer wants to be a little stricter toward Rust users.
+
+Assuming that we don't allow QUICK_NO_WARN, would you say that it's
+precise as-is?
+
+> > +    /// * If this page table is live, then the caller must ensure that it's okay to access the
+> > +    ///   physical address being mapped for the duration in which it is mapped.
+> > +    #[inline]
+> > +    pub unsafe fn map_pages(
+> > +        &self,
+> > +        iova: usize,
+> > +        paddr: PhysAddr,
+> > +        pgsize: usize,
+> > +        pgcount: usize,
+> > +        prot: u32,
+> > +        flags: alloc::Flags,
+> > +    ) -> Result<usize> {
+> > +        let mut mapped: usize = 0;
+> > +
+> > +        // SAFETY: The `map_pages` function in `io_pgtable_ops` is never null.
+> > +        let map_pages = unsafe { (*self.raw_ops()).map_pages.unwrap_unchecked() };
+> > +
+> > +        // SAFETY: The safety requirements of this method are sufficient to call `map_pages`.
+> > +        to_result(unsafe {
+> > +            (map_pages)(
+> > +                self.raw_ops(),
+> > +                iova,
+> > +                paddr,
+> > +                pgsize,
+> > +                pgcount,
+> > +                prot as i32,
+> > +                flags.as_raw(),
+> > +                &mut mapped,
+> > +            )
+> > +        })?;
+> > +
+> > +        Ok(mapped)
 > 
-> Signed-off-by: Asahi Lina <lina+kernel@asahilina.net>
-> Co-Developed-by: Alice Ryhl <aliceryhl@google.com>
-> Signed-off-by: Alice Ryhl <aliceryhl@google.com>
-> ---
-> This patch is based on [1] but I have rewritten and simplified large
-> parts of it. The Asahi driver no longer uses the io-pgtable abstraction,
-> and Nova never planned to (since NVIDIA has its own separate memory).
-> Therefore, I have simplified these abstractions to fit the needs of the
-> Tyr GPU driver.
+> Just to double-check since I'm a bit unclear on the Rust semantics, this can
+> correctly reflect all 4 outcomes back to the caller, right? I.e.:
 > 
-> This series depends on the PhysAddr typedef [2].
+> - no error, mapped == pgcount * pgsize (success)
+> - no error, mapped < pgcount * pgsize (call again with the remainder)
+> - error, mapped > 0 (probably unmap that bit, unless clever trickery where
+> an error was expected)
+> - error, mapped == 0 (nothing was done, straightforward failure)
 > 
-> [1]: https://lore.kernel.org/all/20250623-io_pgtable-v2-1-fd72daac75f1@collabora.com/
-> [2]: https://lore.kernel.org/all/20251112-resource-phys-typedefs-v2-0-538307384f82@google.com/
-> ---
->   rust/bindings/bindings_helper.h |   3 +-
->   rust/kernel/io.rs               |   1 +
->   rust/kernel/io/pgtable.rs       | 254 ++++++++++++++++++++++++++++++++++++++++
->   3 files changed, 257 insertions(+), 1 deletion(-)
+> (the only case not permitted is "no error, mapped == 0" - failure to make
+> any progress must always be an error)
 > 
-> diff --git a/rust/bindings/bindings_helper.h b/rust/bindings/bindings_helper.h
-> index 2e43c66635a2c9f31bd99b9817bd2d6ab89fbcf2..faab6bc9463321c092a8bbcb6281175e490caccd 100644
-> --- a/rust/bindings/bindings_helper.h
-> +++ b/rust/bindings/bindings_helper.h
-> @@ -56,8 +56,9 @@
->   #include <linux/fdtable.h>
->   #include <linux/file.h>
->   #include <linux/firmware.h>
-> -#include <linux/interrupt.h>
->   #include <linux/fs.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/io-pgtable.h>
->   #include <linux/ioport.h>
->   #include <linux/jiffies.h>
->   #include <linux/jump_label.h>
-> diff --git a/rust/kernel/io.rs b/rust/kernel/io.rs
-> index 56a435eb14e3a1ce72dd58b88cbf296041f1703e..5913e240d5a9814ceed52c6dc1a798e64158d567 100644
-> --- a/rust/kernel/io.rs
-> +++ b/rust/kernel/io.rs
-> @@ -8,6 +8,7 @@
->   use crate::{bindings, build_assert, ffi::c_void};
->   
->   pub mod mem;
-> +pub mod pgtable;
->   pub mod poll;
->   pub mod resource;
->   
-> diff --git a/rust/kernel/io/pgtable.rs b/rust/kernel/io/pgtable.rs
-> new file mode 100644
-> index 0000000000000000000000000000000000000000..fe05bc1673f9a7741a887a3c9bbad866dd17a2b5
-> --- /dev/null
-> +++ b/rust/kernel/io/pgtable.rs
-> @@ -0,0 +1,254 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +
-> +//! IOMMU page table management.
-> +//!
-> +//! C header: [`include/io-pgtable.h`](srctree/include/io-pgtable.h)
-> +
-> +use core::{
-> +    marker::PhantomData,
-> +    ptr::NonNull, //
-> +};
-> +
-> +use crate::{
-> +    alloc,
-> +    bindings,
-> +    device::{Bound, Device},
-> +    devres::Devres,
-> +    error::to_result,
-> +    io::PhysAddr,
-> +    prelude::*, //
-> +};
-> +
-> +use bindings::io_pgtable_fmt;
-> +
-> +/// Protection flags used with IOMMU mappings.
-> +pub mod prot {
-> +    /// Read access.
-> +    pub const READ: u32 = bindings::IOMMU_READ;
-> +    /// Write access.
-> +    pub const WRITE: u32 = bindings::IOMMU_WRITE;
-> +    /// Request cache coherency.
-> +    pub const CACHE: u32 = bindings::IOMMU_CACHE;
-> +    /// Request no-execute permission.
-> +    pub const NOEXEC: u32 = bindings::IOMMU_NOEXEC;
-> +    /// MMIO peripheral mapping.
-> +    pub const MMIO: u32 = bindings::IOMMU_MMIO;
-> +    /// Privileged mapping.
-> +    pub const PRIV: u32 = bindings::IOMMU_PRIV;
+> Alternatively you might want to consider encapsulating the partial-mapping
+> handling in this layer as well - in the C code that's done at the level of
+> the IOMMU API calls that io-pgtable-using IOMMU drivers are merely passing
+> through, hence why panfrost/panthor have to open-code their own equivalents,
+> but there's no particular reason to follow the *exact* same pattern here.
 
-Nit: probably best to call this PRIVILEGED from day 1 for clarity - some 
-day we may eventually get round to renaming the C symbol too, especially 
-if we revisit the notion of "private" mappings (that's still on my ideas 
-list...)
+Ah, no this signature does not reflect all of those cases. The return
+type is Result<usize>, which corresponds to:
 
-> +}
-> +
-> +/// Represents a requested `io_pgtable` configuration.
-> +pub struct Config {
-> +    /// Quirk bitmask (type-specific).
-> +    pub quirks: usize,
-> +    /// Valid page sizes, as a bitmask of powers of two.
-> +    pub pgsize_bitmap: usize,
-> +    /// Input address space size in bits.
-> +    pub ias: u32,
-> +    /// Output address space size in bits.
-> +    pub oas: u32,
-> +    /// IOMMU uses coherent accesses for page table walks.
-> +    pub coherent_walk: bool,
-> +}
-> +
-> +/// An io page table using a specific format.
-> +///
-> +/// # Invariants
-> +///
-> +/// The pointer references a valid io page table.
-> +pub struct IoPageTable<F> {
-> +    ptr: NonNull<bindings::io_pgtable_ops>,
-> +    _marker: PhantomData<F>,
-> +}
-> +
-> +// SAFETY: `struct io_pgtable_ops` is not restricted to a single thread.
-> +unsafe impl<F> Send for IoPageTable<F> {}
-> +// SAFETY: `struct io_pgtable_ops` may be accessed concurrently.
-> +unsafe impl<F> Sync for IoPageTable<F> {}
-> +
-> +/// The format used by this page table.
-> +pub trait IoPageTableFmt: 'static {
-> +    /// The value representing this format.
-> +    const FORMAT: io_pgtable_fmt;
-> +}
-> +
-> +impl<F: IoPageTableFmt> IoPageTable<F> {
-> +    /// Create a new `IoPageTable` as a device resource.
-> +    #[inline]
-> +    pub fn new(
-> +        dev: &Device<Bound>,
-> +        config: Config,
-> +    ) -> impl PinInit<Devres<IoPageTable<F>>, Error> + '_ {
-> +        // SAFETY: Devres ensures that the value is dropped during device unbind.
-> +        Devres::new(dev, unsafe { Self::new_raw(dev, config) })
-> +    }
-> +
-> +    /// Create a new `IoPageTable`.
-> +    ///
-> +    /// # Safety
-> +    ///
-> +    /// If successful, then the returned value must be dropped before the device is unbound.
-> +    #[inline]
-> +    pub unsafe fn new_raw(dev: &Device<Bound>, config: Config) -> Result<IoPageTable<F>> {
-> +        let mut raw_cfg = bindings::io_pgtable_cfg {
-> +            quirks: config.quirks,
-> +            pgsize_bitmap: config.pgsize_bitmap,
-> +            ias: config.ias,
-> +            oas: config.oas,
-> +            coherent_walk: config.coherent_walk,
-> +            tlb: &raw const NOOP_FLUSH_OPS,
-> +            iommu_dev: dev.as_raw(),
-> +            // SAFETY: All zeroes is a valid value for `struct io_pgtable_cfg`.
-> +            ..unsafe { core::mem::zeroed() }
-> +        };
-> +
-> +        // SAFETY:
-> +        // * The raw_cfg pointer is valid for the duration of this call.
-> +        // * The provided `FLUSH_OPS` contains valid function pointers that accept a null pointer
-> +        //   as cookie.
-> +        // * The caller ensures that the io pgtable does not outlive the device.
-> +        let ops = unsafe {
-> +            bindings::alloc_io_pgtable_ops(F::FORMAT, &mut raw_cfg, core::ptr::null_mut())
-> +        };
-> +        // INVARIANT: We successfully created a valid page table.
-> +        Ok(IoPageTable {
-> +            ptr: NonNull::new(ops).ok_or(ENOMEM)?,
-> +            _marker: PhantomData,
-> +        })
-> +    }
-> +
-> +    /// Obtain a raw pointer to the underlying `struct io_pgtable_ops`.
-> +    #[inline]
-> +    pub fn raw_ops(&self) -> *mut bindings::io_pgtable_ops {
-> +        self.ptr.as_ptr()
-> +    }
-> +
-> +    /// Obtain a raw pointer to the underlying `struct io_pgtable`.
-> +    #[inline]
-> +    pub fn raw_pgtable(&self) -> *mut bindings::io_pgtable {
-> +        // SAFETY: The io_pgtable_ops of an io-pgtable is always the ops field of a io_pgtable.
-> +        unsafe { kernel::container_of!(self.raw_ops(), bindings::io_pgtable, ops) }
-> +    }
-> +
-> +    /// Obtain a raw pointer to the underlying `struct io_pgtable_cfg`.
-> +    #[inline]
-> +    pub fn raw_cfg(&self) -> *mut bindings::io_pgtable_cfg {
-> +        // SAFETY: The `raw_pgtable()` method returns a valid pointer.
-> +        unsafe { &raw mut (*self.raw_pgtable()).cfg }
-> +    }
-> +
-> +    /// Map a physically contiguous range of pages of the same size.
-> +    ///
-> +    /// # Safety
-> +    ///
-> +    /// * This page table must not contain any mapping that overlaps with the mapping created by
-> +    ///   this call.
+struct my_return_type {
+    bool success;
+    union {
+        size_t ok;
+	int err; // an errno
+    }
+};
 
-As mentioned this isn't necessarily true of io-pgtable itself, but since 
-you've not included QUIRK_NO_WARN in the abstraction then it's fair if 
-this layer wants to be a little stricter toward Rust users.
+We need a different signature if it's possible to have mapped != 0 when
+returning an error.
 
-> +    /// * If this page table is live, then the caller must ensure that it's okay to access the
-> +    ///   physical address being mapped for the duration in which it is mapped.
-> +    #[inline]
-> +    pub unsafe fn map_pages(
-> +        &self,
-> +        iova: usize,
-> +        paddr: PhysAddr,
-> +        pgsize: usize,
-> +        pgcount: usize,
-> +        prot: u32,
-> +        flags: alloc::Flags,
-> +    ) -> Result<usize> {
-> +        let mut mapped: usize = 0;
-> +
-> +        // SAFETY: The `map_pages` function in `io_pgtable_ops` is never null.
-> +        let map_pages = unsafe { (*self.raw_ops()).map_pages.unwrap_unchecked() };
-> +
-> +        // SAFETY: The safety requirements of this method are sufficient to call `map_pages`.
-> +        to_result(unsafe {
-> +            (map_pages)(
-> +                self.raw_ops(),
-> +                iova,
-> +                paddr,
-> +                pgsize,
-> +                pgcount,
-> +                prot as i32,
-> +                flags.as_raw(),
-> +                &mut mapped,
-> +            )
-> +        })?;
-> +
-> +        Ok(mapped)
-
-Just to double-check since I'm a bit unclear on the Rust semantics, this 
-can correctly reflect all 4 outcomes back to the caller, right? I.e.:
-
-- no error, mapped == pgcount * pgsize (success)
-- no error, mapped < pgcount * pgsize (call again with the remainder)
-- error, mapped > 0 (probably unmap that bit, unless clever trickery 
-where an error was expected)
-- error, mapped == 0 (nothing was done, straightforward failure)
-
-(the only case not permitted is "no error, mapped == 0" - failure to 
-make any progress must always be an error)
-
-Alternatively you might want to consider encapsulating the 
-partial-mapping handling in this layer as well - in the C code that's 
-done at the level of the IOMMU API calls that io-pgtable-using IOMMU 
-drivers are merely passing through, hence why panfrost/panthor have to 
-open-code their own equivalents, but there's no particular reason to 
-follow the *exact* same pattern here.
-
-> +    }
-> +
-> +    /// Unmap a range of virtually contiguous pages of the same size.
-> +    ///
-> +    /// # Safety
-> +    ///
-> +    /// This page table must contain a mapping at `iova` that consists of exactly `pgcount` pages
-> +    /// of size `pgsize`.
-
-Again, the underlying requirement here is only that pgsize * pgcount 
-represents the IOVA range of one or more consecutive ranges previously 
-mapped, i.e.:
-
-map(0, 4KB * 256);
-map(1MB, 4KB * 256);
-unmap(0, 2MB * 1);
-
-is legal, since it's generally impractical for callers to know and keep 
-track of the *exact* structure of a given pagetable. In this case there 
-isn't really any good reason to try to be stricter.
-
-Thanks,
-Robin.
-
-> +    #[inline]
-> +    pub unsafe fn unmap_pages(&self, iova: usize, pgsize: usize, pgcount: usize) -> usize {
-> +        // SAFETY: The `unmap_pages` function in `io_pgtable_ops` is never null.
-> +        let unmap_pages = unsafe { (*self.raw_ops()).unmap_pages.unwrap_unchecked() };
-> +
-> +        // SAFETY: The safety requirements of this method are sufficient to call `unmap_pages`.
-> +        unsafe { (unmap_pages)(self.raw_ops(), iova, pgsize, pgcount, core::ptr::null_mut()) }
-> +    }
-> +}
-> +
-> +// These bindings are currently designed for use by GPU drivers, which use this page table together
-> +// with GPUVM. When using GPUVM, a single mapping operation may be translated into many operations
-> +// on the page table, and in that case you generally want to flush the TLB only once per GPUVM
-> +// operation. Thus, do not use these callbacks as they would flush more often than needed.
-> +static NOOP_FLUSH_OPS: bindings::iommu_flush_ops = bindings::iommu_flush_ops {
-> +    tlb_flush_all: Some(rust_tlb_flush_all_noop),
-> +    tlb_flush_walk: Some(rust_tlb_flush_walk_noop),
-> +    tlb_add_page: None,
-> +};
-> +
-> +#[no_mangle]
-> +extern "C" fn rust_tlb_flush_all_noop(_cookie: *mut core::ffi::c_void) {}
-> +
-> +#[no_mangle]
-> +extern "C" fn rust_tlb_flush_walk_noop(
-> +    _iova: usize,
-> +    _size: usize,
-> +    _granule: usize,
-> +    _cookie: *mut core::ffi::c_void,
-> +) {
-> +}
-> +
-> +impl<F> Drop for IoPageTable<F> {
-> +    fn drop(&mut self) {
-> +        // SAFETY: The caller of `ttbr` promised that the page table is not live when this
-> +        // destructor runs.
-> +        unsafe { bindings::free_io_pgtable_ops(self.0.ops) };
-> +    }
-> +}
-> +
-> +/// The `ARM_64_LPAE_S1` page table format.
-> +pub enum ARM64LPAES1 {}
-> +
-> +impl IoPageTableFmt for ARM64LPAES1 {
-> +    const FORMAT: io_pgtable_fmt = bindings::io_pgtable_fmt_ARM_64_LPAE_S1 as io_pgtable_fmt;
-> +}
-> +
-> +impl IoPageTable<ARM64LPAES1> {
-> +    /// Access the `ttbr` field of the configuration.
-> +    ///
-> +    /// This is the physical address of the page table, which may be passed to the device that
-> +    /// needs to use it.
-> +    ///
-> +    /// # Safety
-> +    ///
-> +    /// The caller must ensure that the device stops using the page table before dropping it.
-> +    #[inline]
-> +    pub unsafe fn ttbr(&self) -> u64 {
-> +        // SAFETY: `arm_lpae_s1_cfg` is the right cfg type for `ARM64LPAES1`.
-> +        unsafe { (*self.raw_cfg()).__bindgen_anon_1.arm_lpae_s1_cfg.ttbr }
-> +    }
-> +
-> +    /// Access the `mair` field of the configuration.
-> +    #[inline]
-> +    pub fn mair(&self) -> u64 {
-> +        // SAFETY: `arm_lpae_s1_cfg` is the right cfg type for `ARM64LPAES1`.
-> +        unsafe { (*self.raw_cfg()).__bindgen_anon_1.arm_lpae_s1_cfg.mair }
-> +    }
-> +}
+> > +    }
+> > +
+> > +    /// Unmap a range of virtually contiguous pages of the same size.
+> > +    ///
+> > +    /// # Safety
+> > +    ///
+> > +    /// This page table must contain a mapping at `iova` that consists of exactly `pgcount` pages
+> > +    /// of size `pgsize`.
 > 
-> ---
-> base-commit: ffee675aceb9f44b0502a8bec912abb0c4f4af62
-> change-id: 20251111-io-pgtable-fe0822b4ebdd
-> prerequisite-change-id: 20251106-resource-phys-typedefs-6db37927d159:v2
-> prerequisite-patch-id: 350421d8dbaf3db51b1243d82077c5eb88f54db5
-> prerequisite-patch-id: ac0166fb3cd235de76841789173051191a4d2434
-> prerequisite-patch-id: f4bca02c77c40093690b66cdf477f928784bdbf4
-> prerequisite-patch-id: 083d1c22b1a7eb0dcae37052b926362543c68e8a
+> Again, the underlying requirement here is only that pgsize * pgcount
+> represents the IOVA range of one or more consecutive ranges previously
+> mapped, i.e.:
 > 
-> Best regards,
+> map(0, 4KB * 256);
+> map(1MB, 4KB * 256);
+> unmap(0, 2MB * 1);
+> 
+> is legal, since it's generally impractical for callers to know and keep
+> track of the *exact* structure of a given pagetable. In this case there
+> isn't really any good reason to try to be stricter.
+
+How about this wording?
+
+This page table must contain one or more consecutive mappings starting
+at `iova` whose total size is `pgcount*pgsize`.
+
+Alice
