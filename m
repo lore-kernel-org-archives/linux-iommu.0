@@ -1,87 +1,176 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+Received: from smtpbgjp3.qq.com (smtpbgjp3.qq.com [54.92.39.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 304EF1C861A;
-	Fri, 28 Nov 2025 07:08:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7EC852D3733
+	for <iommu@lists.linux.dev>; Fri, 28 Nov 2025 07:14:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=54.92.39.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764313684; cv=none; b=tJUrN2t9SjuGS88e+wJ/+8rTlfG0fP8AAdZGeUzXeKbFmH2mctneBSzjXrcOci3TCU8sqdxXLRlpinbET+cFWT6EEAFV37nbEx1z/csuwqvE39xsSR7payqd7mqwAzNJbMFZeaJf6Nsw7GBXhfTzsfGs35IKFIPACwwsyuLMceA=
+	t=1764314073; cv=none; b=i2DxNQ74RQtjug6GjIsZTxhx9emUn3Lx91m6Cm9KjiDpEuG196w8zQPeTWg1jSsfEgM7ni5HNw5J0YLucuno0bQK4oXY2MxGS08SIGpAGVOnHOCZIVAuxSI9JDn8X7ALsWAxZ/CSR59D7v6fHD3vG6skAHI2zksz0PGFJ3EMdGg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764313684; c=relaxed/simple;
-	bh=T++g3m6cPjDTLLJerjU2fxFPb0a86ksGFOPVw8xZ8X4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=QGiCIDsnEy1XtoDN80v9mEyOiSrpDWJGSjPUqx21qngwnYvuQcWUwQ8fLpeq5syohQFSZf9ADKSF3KKJoXz2wI0ukd3WdAkbSElRq3uzZyFjIykwOxKEIVpFuz6SdfjODTZ54o2LfFu7EC5gGRXG4HxV6r/NySaUnZPED+zZM2I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hO8mmT7N; arc=none smtp.client-ip=192.198.163.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1764314073; c=relaxed/simple;
+	bh=z5IYYD2iKeBiEBmaHaDXbK7g31OzfjRBlEiS3Ct/UuU=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References; b=NyHrTUsLOSYAgNf8899AtMWbTVGB42m0pe9Vmu9ArrZTnvn6h00dnDJvUyRU1mpWGnJ0Nxi9WmhnOqg8t1wQn8q+qtSsc4J/zbtTFj+9n2VZEvUVeJquEKRyejAwOCIuXoUwnpS93SXYXwU8w7GE9/VLE8u2Ds9V+8k8fxqt+1k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=airkyi.com; spf=pass smtp.mailfrom=airkyi.com; dkim=pass (1024-bit key) header.d=airkyi.com header.i=@airkyi.com header.b=psLeKOCB; arc=none smtp.client-ip=54.92.39.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=airkyi.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=airkyi.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hO8mmT7N"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1764313682; x=1795849682;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=T++g3m6cPjDTLLJerjU2fxFPb0a86ksGFOPVw8xZ8X4=;
-  b=hO8mmT7N/oqANEd0JEqMYdvLf0nZqDcXPLvZdV6urQxiSPR65MxEc0ny
-   +39FzTLixBP/OhnW5b+Qq/sWpPTU/dLE5hIiwgwTu7wMg1g/IkR/2K/rs
-   6h7+q9CXhbhgVX71Yq3Zt4nlQ7Cfo/iYwrx/lxiCzLk6PASoaBn1TnC50
-   lXiFsIRxREqyUIby3bjDUvhaNlpNfsnwZzygthjVjv0o6xKLlvLcEztjs
-   2JpPdi8NuTS4dxG4DoXfqoT7GH4mbK42w+ZirpxCXkJwvVQ1PTk8HhZth
-   LUGfa6pPCJ4sjpI+xEreC86ZDJspcy2UZV9Fn9n3mr+CQ/tnU2W6k7aVr
-   g==;
-X-CSE-ConnectionGUID: edB094FRRpaIJiRB9B4HyA==
-X-CSE-MsgGUID: dmDVq5CjTI2VFXTnA6r2nA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11626"; a="66244270"
-X-IronPort-AV: E=Sophos;i="6.20,232,1758610800"; 
-   d="scan'208";a="66244270"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2025 23:08:01 -0800
-X-CSE-ConnectionGUID: X18cSd4xRdCZENDubEt2Aw==
-X-CSE-MsgGUID: mxiQin66QQasQJgfm0lNkw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.20,232,1758610800"; 
-   d="scan'208";a="230676120"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2025 23:07:57 -0800
-Message-ID: <d225d060-c9e5-4e65-a695-b565802dd76f@linux.intel.com>
-Date: Fri, 28 Nov 2025 15:03:35 +0800
+	dkim=pass (1024-bit key) header.d=airkyi.com header.i=@airkyi.com header.b="psLeKOCB"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=airkyi.com;
+	s=altu2504; t=1764314017;
+	bh=fb8KGAEKVYZnPu6e+o9GR6NcQ9hYiKO7SzU59n9Pv4A=;
+	h=From:To:Subject:Date:Message-Id;
+	b=psLeKOCBRG2Q7VVcKH6Nt9ocyG0TVPyxoAdd3oI5bvbuR/qDonVLn5MX8lBWsn6+6
+	 U6t+5u0rsifNe6gxIq4b1MToXXX+nuwL2Z9BxH8JhPeZfB5COA+STLBGR4TYouB08F
+	 0FpS0iw/WweAdKPb8cta+eATMEOSAAzJp9i58WpA=
+X-QQ-mid: zesmtpsz7t1764314009t30004287
+X-QQ-Originating-IP: cthJK7YnRP6ioMEHxol02BgS/hX9CBmdVTpAFbkHym0=
+Received: from DESKTOP-8BT1A2O.localdomain ( [58.22.7.114])
+	by bizesmtp.qq.com (ESMTP) with 
+	id ; Fri, 28 Nov 2025 15:13:28 +0800 (CST)
+X-QQ-SSF: 0000000000000000000000000000000
+X-QQ-GoodBg: 0
+X-BIZMAIL-ID: 2606932567877476135
+From: Chaoyi Chen <kernel@airkyi.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Heiko Stuebner <heiko@sntech.de>
+Cc: iommu@lists.linux.dev,
+	devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	Chaoyi Chen <chaoyi.chen@rock-chips.com>
+Subject: [PATCH v2 1/2] dt-bindings: iommu: rockchip: Add support for multiple interface clocks
+Date: Fri, 28 Nov 2025 15:13:21 +0800
+Message-Id: <20251128071322.92-2-kernel@airkyi.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20251128071322.92-1-kernel@airkyi.com>
+References: <20251128071322.92-1-kernel@airkyi.com>
+X-QQ-SENDSIZE: 520
+Feedback-ID: zesmtpsz:airkyi.com:qybglogicsvrgz:qybglogicsvrgz6b-0
+X-QQ-XMAILINFO: MoXwTY6T4qpUZUqmSovu0AcaMc3ZJLxzPli3CY8NwPj5Kek3JAUx/Ba0
+	ktG1lWrNEEwWeE3WjF+U8N/mCyQCW+hvN0SyxbTnTnD291WG2vLOqIpne2K48vcYYgMnZtC
+	yiloC3ooe5aT1/vXQ/wMkAJSefVC2qrcj7jl3s5d64pCa0SSYG+mD/bp/GoygxjMIQQmyzB
+	iAjttU4nlSZJDOX/fD8r2GlBPLHp0D4G4XayAUNgmrvJurP/oUIDQHisY7xH5N3XnsY3Zf7
+	DCb2MV4By4UyYQkvGbzzhXwqHPB75hJMv36flMMS4LPtlgORI1GbDyS2gpDDfpAVZre6XQc
+	S14JMbYSNm8Ac2pWwI13oZNP6TrXurA7TWhYZ886VmWTc/cLTPi6bs7qZ+xMEK2u/52tXl+
+	YGMGClL/ihQGELspEDMYvQBA4WrDSJknv8N/IP5UJy2ncetLHbWrFUahU04sy6p7/9npEkT
+	StK7uyVGJRoDGiubeOcxvGientVpdVJYL6gHBxieEOtm5rjfQ02l3arJ3im+blq95GPA6W7
+	LA3Ai7HTpby8zOklQWHoikD7p/HOd+x9K5kbYOhPEJmdjl9jwTnUXMAUiajY3QGM73zau/u
+	iYsa6hFwriXcPqU8yKs5sy5O+AtyEe9J9vXre/LEKEvN/PbvjD9r7delTB6SZrkYAaAsz2c
+	MqXq9IhBcsxiFfJjZYaXzwx4ZOcm3f+W5bS4ECfINuXG64e2KjBawDLkcy6Zb2+96k6inV3
+	JgXYURYJZKwzklROorO3Q4IYTFD8SBlLw9K3eYNjGh8L4yuV95qEpNlYothPt60JUgdEVSA
+	8nzvAAp2T/kNTquM4w54YjVtzV6z4EFJZzOQCBJfSg1L6VYcInV5IHz6TInAx7g7/K/HaGs
+	Jb8EjoQU/aOo6caFi9RnkqEabSwzkRBSM2IYeGxFvttl5x3IPknGkIo9stRlkBOYNAmzq99
+	bGG4eB4uaeR2vQPbaBT3yEQT12UDYFwtIX6b8gvddeXil0M4jqVmNn3rgcJ/Uv/Bld6E=
+X-QQ-XMRINFO: Mp0Kj//9VHAxr69bL5MkOOs=
+X-QQ-RECHKSPAM: 0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/2] iommupt/vtd: Support mgaw's less than a 4 level walk
- for first stage
-To: Jason Gunthorpe <jgg@nvidia.com>, David Woodhouse <dwmw2@infradead.org>,
- iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Will Deacon <will@kernel.org>
-Cc: Calvin Owens <calvin@wbinvd.org>,
- Chaitanya Kumar Borah <chaitanya.kumar.borah@intel.com>,
- Joerg Roedel <joerg.roedel@amd.com>, Kevin Tian <kevin.tian@intel.com>,
- patches@lists.linux.dev, Tina Zhang <tina.zhang@intel.com>
-References: <2-v1-ae5d7f0f2620+13b-vtd_mgaw_jgg@nvidia.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <2-v1-ae5d7f0f2620+13b-vtd_mgaw_jgg@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
 
-On 11/28/25 07:54, Jason Gunthorpe wrote:
-> If the IOVA is limited to less than 48 the page table will be constructed
-> with a 3 level configuration which is unsupported by hardware.
-> 
-> Like the second stage the caller needs to pass in both the top_level an
-> the vasz to specify a table that has more levels than required to hold the
-> IOVA range.
-> 
-> Fixes: 6cbc09b7719e ("iommu/vt-d: Restore previousdomain::aperture_end calculation")
-> Reported-by: Calvin Owens<calvin@wbinvd.org>
-> Closes:https://lore.kernel.org/ 
-> r/8f257d2651eb8a4358fcbd47b0145002e5f1d638.1764237717.git.calvin@wbinvd.org
-> Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
+From: Chaoyi Chen <chaoyi.chen@rock-chips.com>
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+The iommu found on RK3576 NPU and RK3576 RKVDEC have 4 clock instead of
+2 clock. Their clock names might differ, but I don't think that matters
+much.
+
+Add support for them.
+
+Signed-off-by: Chaoyi Chen <chaoyi.chen@rock-chips.com>
+---
+
+Changes in v2:
+- Rewrite dt binding.
+
+ .../bindings/iommu/rockchip,iommu.yaml        | 52 ++++++++++++++++---
+ 1 file changed, 46 insertions(+), 6 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml b/Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml
+index 6ce41d11ff5e..dfa5e25476d9 100644
+--- a/Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml
++++ b/Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml
+@@ -27,6 +27,8 @@ properties:
+           - enum:
+               - rockchip,rk3576-iommu
+               - rockchip,rk3588-iommu
++              - rockchip,rk3576-npu-iommu
++              - rockchip,rk3576-rkvdec-iommu
+           - const: rockchip,rk3568-iommu
+ 
+   reg:
+@@ -42,14 +44,12 @@ properties:
+     minItems: 1
+ 
+   clocks:
+-    items:
+-      - description: Core clock
+-      - description: Interface clock
++    minItems: 2
++    maxItems: 4
+ 
+   clock-names:
+-    items:
+-      - const: aclk
+-      - const: iface
++    minItems: 2
++    maxItems: 4
+ 
+   "#iommu-cells":
+     const: 0
+@@ -64,6 +64,46 @@ properties:
+       Some mmu instances may produce unexpected results
+       when the reset operation is used.
+ 
++allOf:
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - rockchip,rk3576-npu-iommu
++              - rockchip,rk3576-rkvdec-iommu
++    then:
++      properties:
++        clocks:
++          minItems: 4
++        clock-names:
++          minItems: 4
++  - if:
++      properties:
++        compatible:
++          items:
++            - const: rockchip,iommu
++            - const: rockchip,rk3568-iommu
++    then:
++      properties:
++        clocks:
++          maxItems: 2
++        clock-names:
++          maxItems: 2
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - rockchip,rk3576-iommu
++              - rockchip,rk3588-iommu
++    then:
++      properties:
++        clocks:
++          maxItems: 2
++        clock-names:
++          maxItems: 2
++
+ required:
+   - compatible
+   - reg
+-- 
+2.51.1
+
