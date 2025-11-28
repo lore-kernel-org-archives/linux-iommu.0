@@ -1,105 +1,186 @@
-Received: from mail-qk1-f180.google.com (mail-qk1-f180.google.com [209.85.222.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF591261B9B
-	for <iommu@lists.linux.dev>; Fri, 28 Nov 2025 16:46:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.180
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 91BF3261B9B
+	for <iommu@lists.linux.dev>; Fri, 28 Nov 2025 16:48:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764348420; cv=none; b=Ugys/LTnVZ3KFd7Xgr7sISs9I7ocYAuVEjZ8+ZSrXtfjVlUgtaVsh9PxApD0kD+4pv/nBbkFxoWNvoS6r1fK3oVo/2VTaadOoFrZetx/nCYGIZdq64HZr/zqe4o6cJYomFjbyhWmGGOBipgOFFoTagR8Tc6p28kWiERRyRV8CRU=
+	t=1764348487; cv=none; b=Mnu6Is9h9JVlq0rrJzEOBcjbm7Q9IrIcd2RzQPcFGWbPH16KVCt+73ORPqEP4q33674B0rNg76eFbk6eJcSax0oFxPcCYwPX7j0R59Xd5ohxzSpyu8ofOD07QFzDZcc0D3/RpYJfKglujsOyuj7BivssrdeIHU3/CpnvK3LbwxI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764348420; c=relaxed/simple;
-	bh=WX4pc9BQeZW3s5krELSMAl7NSmtfwDPPbwwaGWHKB0w=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HlJAiyROwTACyEenAjTi29UsMVt/+eiJApBp5QIDSIcXxPkUIZo9k7/x2jv/5XOwQr9IacCJaue8x+Y0Zdd6OdCeYSwO1X19ohgVt6PFxwOsVRl3japw9d7Pzu9y9VitKcNz363ETmjIlKCTPn+8UKeoUqGrTD5sNT46cSvrRSo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=a5ii2/uT; arc=none smtp.client-ip=209.85.222.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="a5ii2/uT"
-Received: by mail-qk1-f180.google.com with SMTP id af79cd13be357-8b29ff9d18cso185366585a.3
-        for <iommu@lists.linux.dev>; Fri, 28 Nov 2025 08:46:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1764348417; x=1764953217; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=WyDxOQ8Lw5prQGezJfzgyKDZ5+VnUcEleF9/ih+sij8=;
-        b=a5ii2/uTFeh/03May8Y/XQYhHflaXJfDqQIs4b9SL/abSXtcUKrFKAyXElj9pF3mBY
-         RXiYrOXuSCcldKY19VCRW2Fi/uv/M/vI6kw3lg/NyzGfjyCD6cotaMDyd27nQSpJF7sT
-         Wrm+01PvdsnRaZkRt83+9DblpIiAz4L4nJk+Wq34/P3ElGZYPZvOJKiKXxLkemhrXKHx
-         dfwdikuAnfJBXGW3/viKx+9D8bXu8iwdENkWqpqmFAqjlaX4pCu/Vj7hr5ccDj4f+951
-         IdKHru8TAdJpr3NR8kZ4WWXe9bW8l9qS/78Lk6Xfo1DyOjhrl1h5occt99bmP8U2BDI/
-         OgKw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1764348417; x=1764953217;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=WyDxOQ8Lw5prQGezJfzgyKDZ5+VnUcEleF9/ih+sij8=;
-        b=N7xrGLYViDoh1+NvE9Z+SdVEVinhrMXJERLwck33nGz2DOkpilTuVsRn4WBv8LOamI
-         dNleg6T1Y6FHo8fY0HHslt4WU6K2Qzdg6A/5M3yDvziExiySUzC1MGkM5qZR+63NQfsQ
-         qqlfpjuNyrh+AyYTQlBLoVG2pWgZH5mktdpbzKHubB3fkwignI2DN+BFJ61eWeR84x1E
-         aAKDB3HllHrkR3vt70G0RE2nwbpzYqHSuA1NQEkSaH9CH6oOljjDOJuHPoHEonzjhUtf
-         42ZGZldNXNRdPkpYBTRbhdmn6P4vahV/HDRkZeTf05vDndVkYIbkQ0n5hxtkGtqtT3WF
-         SdFQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUb1Wg5RIHOSJ5dSdMIFXJOMiDV04CdU7Fqc1WRJuuTAXBfXu+eTz22QZ35N+Q+sL3G3Z16Rg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzT+Aq2bPy/JmLwBwKsIC0O9kToH8OJeoQPk96wJGXLzuAmSeQs
-	k2oZoBSwu8uUY9QZTvgO945mH3/B5mkOQ2BgesF1HQ8xCXeO2QuhPq+CEKec62XsmHM=
-X-Gm-Gg: ASbGncuw4uHsTvL/wcp7fhl+2g0HnM5hGLmaF5PcicAyXCP8Aq4djyyQ4nxRWpIRxUC
-	/1//8GUjYeDpkyqC7blH58N29Ot4O/op3tZyr4geA6Gbzhnh/gldq4Yzfwss4PCya5pgNA71K+4
-	t0HgZ42jAL9uVsccuag5/ALkkZwLM19Wv3H8kdvGXuClxvnWKkYd+Ea+q5ZJ7id/SZpLCZiizvJ
-	VVzbudr4MaX+34sjU4Ip8Qec4KQkLYiY3lLQ9Z0EIzgNhjHHm2NmY37FnVG0JUyzE02AGE7Lstc
-	utcQJ4xUMesoQrsf1Drvcvj6Jt35+XXB940L1XhUfcLQoiIsb9mzSeFKabVgVDvP2ifU2OM9OWF
-	9CyzKBkqfi1uVB7opNWEhuKeYs6+TCtpdPaCojAwf3cTIIZ+/xFTCcch3MJjXU6wqr4jJ1BC91m
-	Lq/qzLV9QiteldWP5LDrUyjtNZnr82Fcs0Q04r7cdksvVRaeWZNnf/NcmVV5TqoQYVhWA=
-X-Google-Smtp-Source: AGHT+IEp5YYm0eW3jhapM8OVullA+b9CRrzLXKAGXQfH68FS3XEeNccrfEDUvP/XIE+WOdxNSzgv+g==
-X-Received: by 2002:a05:620a:4694:b0:8b2:e986:26ff with SMTP id af79cd13be357-8b33d469db8mr3847315685a.66.1764348416499;
-        Fri, 28 Nov 2025 08:46:56 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-47-55-120-4.dhcp-dynamic.fibreop.ns.bellaliant.net. [47.55.120.4])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-8b52a1b6591sm338772785a.30.2025.11.28.08.46.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 Nov 2025 08:46:55 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1vP1cV-00000003Pw0-0IzM;
-	Fri, 28 Nov 2025 12:46:55 -0400
-Date: Fri, 28 Nov 2025 12:46:55 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Mostafa Saleh <smostafa@google.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	kvmarm@lists.linux.dev, iommu@lists.linux.dev,
-	catalin.marinas@arm.com, will@kernel.org, maz@kernel.org,
-	oliver.upton@linux.dev, joey.gouly@arm.com, suzuki.poulose@arm.com,
-	yuzenghui@huawei.com, joro@8bytes.org, jean-philippe@linaro.org,
-	praan@google.com, danielmentz@google.com, mark.rutland@arm.com,
-	qperret@google.com, tabba@google.com
-Subject: Re: [PATCH v5 05/27] iommu/arm-smmu-v3: Split code with hyp
-Message-ID: <20251128164655.GB812105@ziepe.ca>
-References: <20251117184815.1027271-1-smostafa@google.com>
- <20251117184815.1027271-6-smostafa@google.com>
+	s=arc-20240116; t=1764348487; c=relaxed/simple;
+	bh=yhqyFj9IjCjd45jA0GmNd2OPcFWbGwSFUuAzV/OuujU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=fupwM4rAbDrERaM9iPxHuLhSSALN5M92ZqsjyCsiTwF2khb+MZtOhZEbvSItF4hrB9FhjoyGlLrlRMmtb/MPnKchPHxIDmBXnnsPKxUJzOKMCsME0FQXtULZzZuKDkDwZL7uMgDXQ/7gfvdXiYkb87WMcrpxYWPsM2cAFPFR+10=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BD438176A;
+	Fri, 28 Nov 2025 08:47:51 -0800 (PST)
+Received: from [10.57.89.189] (unknown [10.57.89.189])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9FBA33F73B;
+	Fri, 28 Nov 2025 08:47:55 -0800 (PST)
+Message-ID: <c8229530-ab87-4b51-8f2b-6199a01095b3@arm.com>
+Date: Fri, 28 Nov 2025 16:47:52 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20251117184815.1027271-6-smostafa@google.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3] io: add io_pgtable abstraction
+To: Alice Ryhl <aliceryhl@google.com>
+Cc: Miguel Ojeda <ojeda@kernel.org>, Will Deacon <will@kernel.org>,
+ Daniel Almeida <daniel.almeida@collabora.com>,
+ Boris Brezillon <boris.brezillon@collabora.com>,
+ Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
+ =?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>,
+ Benno Lossin <lossin@kernel.org>, Andreas Hindborg <a.hindborg@kernel.org>,
+ Trevor Gross <tmgross@umich.edu>, Danilo Krummrich <dakr@kernel.org>,
+ Joerg Roedel <joro@8bytes.org>, Lorenzo Stoakes
+ <lorenzo.stoakes@oracle.com>, "Liam R. Howlett" <Liam.Howlett@oracle.com>,
+ Asahi Lina <lina+kernel@asahilina.net>, linux-kernel@vger.kernel.org,
+ rust-for-linux@vger.kernel.org, iommu@lists.linux.dev, linux-mm@kvack.org
+References: <20251112-io-pgtable-v3-1-b00c2e6b951a@google.com>
+ <12d99a54-e111-4877-b8cd-cb1e58cd6d30@arm.com> <aSmVQDMXqwc8ctDf@google.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <aSmVQDMXqwc8ctDf@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Mon, Nov 17, 2025 at 06:47:52PM +0000, Mostafa Saleh wrote:
-> The KVM SMMUv3 driver would re-use some of the cmdq code inside
-> the hypervisor, move these functions to a new common c file that
-> is shared between the host kernel and the hypervisor.
+On 2025-11-28 12:27 pm, Alice Ryhl wrote:
+[...]
+>>> +    /// Map a physically contiguous range of pages of the same size.
+>>> +    ///
+>>> +    /// # Safety
+>>> +    ///
+>>> +    /// * This page table must not contain any mapping that overlaps with the mapping created by
+>>> +    ///   this call.
+>>
+>> As mentioned this isn't necessarily true of io-pgtable itself, but since
+>> you've not included QUIRK_NO_WARN in the abstraction then it's fair if this
+>> layer wants to be a little stricter toward Rust users.
 > 
-> Signed-off-by: Mostafa Saleh <smostafa@google.com>
-> ---
->  drivers/iommu/arm/arm-smmu-v3/Makefile        |   2 +-
->  .../arm/arm-smmu-v3/arm-smmu-v3-common-lib.c  | 114 +++++++++++++
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 161 ------------------
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  61 +++++++
+> Assuming that we don't allow QUICK_NO_WARN, would you say that it's
+> precise as-is?
 
-I would think these inlines should go in some -common.h instead of
-arm-smmu-v3.h for better clarity, and ideally pkvm stuff does not
-include arm-smmu-v3.h at all?
+As an assumption of use for the Rust API, like I say it's fine - it's 
+still not really "unsafe" if a caller did try an overlapping mapping; 
+the call will still fail gracefully and accurately, it's just it will 
+also fire a WARN_ON() since ARM_64_LPAE_S1 without 
+IO_PGTABLE_QUIRK_NO_WARN considers this indicative of a usage error or 
+race in the caller.
 
-Jason
+If we do end up wanting to support more opportunistic and/or 
+userspace-controlled mappings by Rust drivers in future then we can 
+relax this expectation as appropriate.
+
+>>> +    /// * If this page table is live, then the caller must ensure that it's okay to access the
+>>> +    ///   physical address being mapped for the duration in which it is mapped.
+>>> +    #[inline]
+>>> +    pub unsafe fn map_pages(
+>>> +        &self,
+>>> +        iova: usize,
+>>> +        paddr: PhysAddr,
+>>> +        pgsize: usize,
+>>> +        pgcount: usize,
+>>> +        prot: u32,
+>>> +        flags: alloc::Flags,
+>>> +    ) -> Result<usize> {
+>>> +        let mut mapped: usize = 0;
+>>> +
+>>> +        // SAFETY: The `map_pages` function in `io_pgtable_ops` is never null.
+>>> +        let map_pages = unsafe { (*self.raw_ops()).map_pages.unwrap_unchecked() };
+>>> +
+>>> +        // SAFETY: The safety requirements of this method are sufficient to call `map_pages`.
+>>> +        to_result(unsafe {
+>>> +            (map_pages)(
+>>> +                self.raw_ops(),
+>>> +                iova,
+>>> +                paddr,
+>>> +                pgsize,
+>>> +                pgcount,
+>>> +                prot as i32,
+>>> +                flags.as_raw(),
+>>> +                &mut mapped,
+>>> +            )
+>>> +        })?;
+>>> +
+>>> +        Ok(mapped)
+>>
+>> Just to double-check since I'm a bit unclear on the Rust semantics, this can
+>> correctly reflect all 4 outcomes back to the caller, right? I.e.:
+>>
+>> - no error, mapped == pgcount * pgsize (success)
+>> - no error, mapped < pgcount * pgsize (call again with the remainder)
+>> - error, mapped > 0 (probably unmap that bit, unless clever trickery where
+>> an error was expected)
+>> - error, mapped == 0 (nothing was done, straightforward failure)
+>>
+>> (the only case not permitted is "no error, mapped == 0" - failure to make
+>> any progress must always be an error)
+>>
+>> Alternatively you might want to consider encapsulating the partial-mapping
+>> handling in this layer as well - in the C code that's done at the level of
+>> the IOMMU API calls that io-pgtable-using IOMMU drivers are merely passing
+>> through, hence why panfrost/panthor have to open-code their own equivalents,
+>> but there's no particular reason to follow the *exact* same pattern here.
+> 
+> Ah, no this signature does not reflect all of those cases. The return
+> type is Result<usize>, which corresponds to:
+> 
+> struct my_return_type {
+>      bool success;
+>      union {
+>          size_t ok;
+> 	int err; // an errno
+>      }
+> };
+> 
+> We need a different signature if it's possible to have mapped != 0 when
+> returning an error.
+
+Aha, thanks for clarifying - indeed this is not the common "value or 
+error" case, it is two (almost) orthogonal return values. However if 
+we're not permitting callers to try to do anything clever with -EEXIST 
+then it might make sense to just embed the inevitable cleanup-on-failure 
+boilerplate here anyway (even if we still leave retry-on-partial-success 
+to the caller).
+
+Note that it does appear to be the case that io-pgtable-arm in its 
+current state won't actually do this, since it happens to handle all its 
+error return cases before any leaf PTEs are touched and "mapped" is 
+updated, but the abstraction layer shouldn't assume that in general 
+since other implementations like io-pgtable-arm-v7s definitely *can* 
+fail with a partial mapping.
+
+>>> +    }
+>>> +
+>>> +    /// Unmap a range of virtually contiguous pages of the same size.
+>>> +    ///
+>>> +    /// # Safety
+>>> +    ///
+>>> +    /// This page table must contain a mapping at `iova` that consists of exactly `pgcount` pages
+>>> +    /// of size `pgsize`.
+>>
+>> Again, the underlying requirement here is only that pgsize * pgcount
+>> represents the IOVA range of one or more consecutive ranges previously
+>> mapped, i.e.:
+>>
+>> map(0, 4KB * 256);
+>> map(1MB, 4KB * 256);
+>> unmap(0, 2MB * 1);
+>>
+>> is legal, since it's generally impractical for callers to know and keep
+>> track of the *exact* structure of a given pagetable. In this case there
+>> isn't really any good reason to try to be stricter.
+> 
+> How about this wording?
+> 
+> This page table must contain one or more consecutive mappings starting
+> at `iova` whose total size is `pgcount*pgsize`.
+
+Yes, that's a nice way to put it.
+
+Thanks,
+Robin.
