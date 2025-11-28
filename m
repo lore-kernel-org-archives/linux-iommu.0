@@ -1,123 +1,69 @@
-Received: from mail-m15574.qiye.163.com (mail-m15574.qiye.163.com [101.71.155.74])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4DF31D88D0
-	for <iommu@lists.linux.dev>; Fri, 28 Nov 2025 07:31:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=101.71.155.74
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 948EF272E51;
+	Fri, 28 Nov 2025 07:48:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764315083; cv=none; b=ksHjXKTpzJ7fw9wb/4TchpAtTIjd+Z7QD9QGTr4hdVeU943j4VE04RK/e02thrmBlplwMF2h9gh66Vt5xh08TEylnKBre3IQJPuDhqpA+lEmRRO6VAAcCMpSYKsbku6zCmnC0UOjjTWyycxMAAQG743kW/3HPgrHN+QX6yCKpUA=
+	t=1764316114; cv=none; b=eA3BiYGmyPBRH+N2fL4hNBhcY92neTh5NWOg2ZCulhgVTU65rnxR3wKfABPn0i1CETTQ6mXQLwfDNljk9GpVVhSxU2ATRi7mkLhPrmUxBLRH+zDnkbFVfwxADdfJ4bcVgympTqQblXO6ISOA2AC1P80x3d+unGoSZAnbP/Utvpg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764315083; c=relaxed/simple;
-	bh=7iv4p8/MnmN787ZlveUgRAuKwTOuKiaDg0evFqoMIxs=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=Q0rVusZF9Snnl+v6jWG2KfaGFPPZzrX6r1ojYPTXcMg4iudp6fyVncG2Y6HEV6EIpCzlOZW+LGT8GZYPqq8SHm48YpXsA0CXp+cdV7/wrXZo8PwMjWg0dPzfg/1J1HVLftLwKgNXfhIs1o/fSiXfV1dALQK1THAR3zFREQMMSdg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com; spf=pass smtp.mailfrom=rock-chips.com; dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b=Hah5/jGe; arc=none smtp.client-ip=101.71.155.74
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rock-chips.com
+	s=arc-20240116; t=1764316114; c=relaxed/simple;
+	bh=WU8GRXCH+cTmIKuvWs+WdALBqqiLJHS7leE0isADJqU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=n4EcIutVUYc581EldxmgUFgQEo1CcGy0FF4lQH5SF3cBrOgpyKs2jsSBO7iXUsCt1NETolraJvJOz+KqRwubcqHKsqESpylVVjxVMOq+PiLCBu6pM/ZdrqV+gjdXQzA9jgT4D/EPB1w823kQL61j5L/Y8nj8O6kSfYzWnduRNqk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=DGI1dLxp; arc=none smtp.client-ip=85.214.250.239
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b="Hah5/jGe"
-Received: from [172.16.12.14] (unknown [58.22.7.114])
-	by smtp.qiye.163.com (Hmail) with ESMTP id 2b3cd4919;
-	Fri, 28 Nov 2025 15:31:08 +0800 (GMT+08:00)
-Message-ID: <7797ac67-6f57-409a-83c8-0ca21a2d2475@rock-chips.com>
-Date: Fri, 28 Nov 2025 15:31:04 +0800
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="DGI1dLxp"
+Received: from 8bytes.org (p549214ac.dip0.t-ipconnect.de [84.146.20.172])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 272835C786;
+	Fri, 28 Nov 2025 08:48:31 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1764316111;
+	bh=WU8GRXCH+cTmIKuvWs+WdALBqqiLJHS7leE0isADJqU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=DGI1dLxpeZxNBrefTLhNZLAazT+nNO0/N1jM2b8wpynRS4Q1r23JfMnbBUZ/3rPGN
+	 aOnVTrwu9eslfrsMbvxoorSbuKrzSvQ8LVQtQ7C4tMb4Bh2FvRyWlcCv1B7okkkumS
+	 k3b+LUafl4VxjReqny76xa2erCZTcg7enH4bFB/IazOhhai7rgHL3fMpJNxD8m3OFG
+	 R4UP+VNvi+9avJlankQKoF3isEMVWJyPEgDi1RVtAOKI7NYlllsAghdGtH6xPx0jnw
+	 uF8B1glI1PPexzYByTAbuv/GZ6SQMDkvzKAb0UwSjbfaNGuOvTHjgdwWMqhQcn+I6y
+	 Z5pd1HkOC1goA==
+Date: Fri, 28 Nov 2025 08:48:30 +0100
+From: Joerg Roedel <joro@8bytes.org>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux.dev, 
+	Robin Murphy <robin.murphy@arm.com>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, 
+	Will Deacon <will@kernel.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
+	Calvin Owens <calvin@wbinvd.org>, Chaitanya Kumar Borah <chaitanya.kumar.borah@intel.com>, 
+	Joerg Roedel <joerg.roedel@amd.com>, Kevin Tian <kevin.tian@intel.com>, patches@lists.linux.dev, 
+	Tina Zhang <tina.zhang@intel.com>
+Subject: Re: [PATCH 0/2] Fix VT-d when the IOVA limit is small
+Message-ID: <6sjloezxl5e5owo4ym6u6vf225fp2izmgsrnloowap37ugj3y2@nnza6myja6cq>
+References: <0-v1-ae5d7f0f2620+13b-vtd_mgaw_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: shawn.lin@rock-chips.com, iommu@lists.linux.dev,
- devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
- Chaoyi Chen <chaoyi.chen@rock-chips.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>
-Subject: Re: [PATCH v2 2/2] iommu/rockchip: Use devm_clk_bulk_get_all() to get
- multiple iface clock
-To: Chaoyi Chen <kernel@airkyi.com>
-References: <20251128071322.92-1-kernel@airkyi.com>
- <20251128071322.92-3-kernel@airkyi.com>
-From: Shawn Lin <shawn.lin@rock-chips.com>
-In-Reply-To: <20251128071322.92-3-kernel@airkyi.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-HM-Tid: 0a9ac95f769b09cckunmc7305c7c6e1258
-X-HM-MType: 1
-X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-	tZV1koWUFDSUNOT01LS0k3V1ktWUFJV1kPCRoVCBIfWUFZGUJDQ1ZIGkMfHkxJHh5PThlWFRQJFh
-	oXVRMBExYaEhckFA4PWVdZGBILWUFZTkNVSUlVTFVKSk9ZV1kWGg8SFR0UWUFZT0tIVUpLSU9PT0
-	hVSktLVUpCS0tZBg++
-DKIM-Signature: a=rsa-sha256;
-	b=Hah5/jGePtDDELU7fuGQKBjUJX4Xv8n9cmCZg6hdNhAIQyy4LLFccBZd+upwrE+eU0toqzG4hi1Li9+AkKdYVQ3r7vxE/4B3rbCMwOnMuKQz9GblxsL/s9SZTJlMMnlV1yCZdLWSHPdgXtjLc1xVs/94ztH64ZshQpxgWDfH+z0=; c=relaxed/relaxed; s=default; d=rock-chips.com; v=1;
-	bh=YhlZQtQGGH+o1PC9FG1bXh4bzpsQsyhDPSlIK1P1gUw=;
-	h=date:mime-version:subject:message-id:from;
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0-v1-ae5d7f0f2620+13b-vtd_mgaw_jgg@nvidia.com>
 
-在 2025/11/28 星期五 15:13, Chaoyi Chen 写道:
-> From: Chaoyi Chen <chaoyi.chen@rock-chips.com>
+On Thu, Nov 27, 2025 at 07:54:06PM -0400, Jason Gunthorpe wrote:
+> Jason Gunthorpe (2):
+>   iommupt/vtd: Allow VT-d to have a larger table top than the vasz
+>     requires
+>   iommupt/vtd: Support mgaw's less than a 4 level walk for first stage
 > 
-> The iommu found on RK3576 NPU and RK3576 RKVDEC contain 4 clock.
-> 
-> Just use devm_clk_bulk_get_all() to get all the clocks and use them.
-> 
+>  drivers/iommu/amd/iommu.c             |  7 +++-
+>  drivers/iommu/generic_pt/fmt/vtdss.h  | 19 +++------
+>  drivers/iommu/generic_pt/fmt/x86_64.h | 17 ++++----
+>  drivers/iommu/generic_pt/iommu_pt.h   | 14 +++++++
+>  drivers/iommu/intel/iommu.c           | 58 +++++++++++++++++----------
+>  include/linux/generic_pt/iommu.h      |  4 ++
+>  6 files changed, 73 insertions(+), 46 deletions(-)
 
-Reviewed-by: Shawn Lin <shawn.lin@rock-chips.com>
-
-> Signed-off-by: Chaoyi Chen <chaoyi.chen@rock-chips.com>
-> ---
-> 
-> Changes in v2:
-> - Change comment.
-> 
->   drivers/iommu/rockchip-iommu.c | 20 ++++----------------
->   1 file changed, 4 insertions(+), 16 deletions(-)
-> 
-> diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-> index 0861dd469bd8..76f71fb679f8 100644
-> --- a/drivers/iommu/rockchip-iommu.c
-> +++ b/drivers/iommu/rockchip-iommu.c
-> @@ -93,11 +93,6 @@ struct rk_iommu_domain {
->   	struct iommu_domain domain;
->   };
->   
-> -/* list of clocks required by IOMMU */
-> -static const char * const rk_iommu_clocks[] = {
-> -	"aclk", "iface",
-> -};
-> -
->   struct rk_iommu_ops {
->   	phys_addr_t (*pt_address)(u32 dte);
->   	u32 (*mk_dtentries)(dma_addr_t pt_dma);
-> @@ -1236,25 +1231,18 @@ static int rk_iommu_probe(struct platform_device *pdev)
->   	iommu->reset_disabled = device_property_read_bool(dev,
->   					"rockchip,disable-mmu-reset");
->   
-> -	iommu->num_clocks = ARRAY_SIZE(rk_iommu_clocks);
-> -	iommu->clocks = devm_kcalloc(iommu->dev, iommu->num_clocks,
-> -				     sizeof(*iommu->clocks), GFP_KERNEL);
-> -	if (!iommu->clocks)
-> -		return -ENOMEM;
-> -
-> -	for (i = 0; i < iommu->num_clocks; ++i)
-> -		iommu->clocks[i].id = rk_iommu_clocks[i];
-> -
->   	/*
->   	 * iommu clocks should be present for all new devices and devicetrees
->   	 * but there are older devicetrees without clocks out in the wild.
->   	 * So clocks as optional for the time being.
->   	 */
-> -	err = devm_clk_bulk_get(iommu->dev, iommu->num_clocks, iommu->clocks);
-> +	err = devm_clk_bulk_get_all(dev, &iommu->clocks);
->   	if (err == -ENOENT)
->   		iommu->num_clocks = 0;
-> -	else if (err)
-> +	else if (err < 0)
->   		return err;
-> +	else
-> +		iommu->num_clocks = err;
->   
->   	err = clk_bulk_prepare(iommu->num_clocks, iommu->clocks);
->   	if (err)
-
+Applied, thanks.
