@@ -1,25 +1,26 @@
-Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
+Received: from mail-m15574.qiye.163.com (mail-m15574.qiye.163.com [101.71.155.74])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98082134CF
-	for <iommu@lists.linux.dev>; Fri, 28 Nov 2025 07:27:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4DF31D88D0
+	for <iommu@lists.linux.dev>; Fri, 28 Nov 2025 07:31:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=101.71.155.74
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764314840; cv=none; b=eFxJkgn3TjmMJYXGBrcsKH4TOjAXgNoA+4pnomKpe/L40ew1CAS7ETglBicHvbbQTTzZHa7dEfQVDZz1mWyRH4Vlr/wPJ5C21WWMnrObRqO8Su94csakfQiE6e+JrOokdVe71vVyHTGdgXGz2hOceZAamfXS29DwjO3OvSSXqU8=
+	t=1764315083; cv=none; b=ksHjXKTpzJ7fw9wb/4TchpAtTIjd+Z7QD9QGTr4hdVeU943j4VE04RK/e02thrmBlplwMF2h9gh66Vt5xh08TEylnKBre3IQJPuDhqpA+lEmRRO6VAAcCMpSYKsbku6zCmnC0UOjjTWyycxMAAQG743kW/3HPgrHN+QX6yCKpUA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764314840; c=relaxed/simple;
-	bh=1phZalzMOMzvhJk+/Zxj1oLv61WAMvs3iBRcwH61vbI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=P70EPRkr4kiJQac5fdGfR5rFBIIQAzvLyFjz6CnO6gP+bD4a87cQVM47APAgdz6LK+T4EXmh2abs1PbgfQenbiP+IldzWGfKCLRUEZxlLvltwKeJ4i8zavk4b0SdLkuaz7CXctP+zkpMe+GmwuFKNrL9WmUYlOSlUoH3//HcWmQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
-Received: from ptz.office.stw.pengutronix.de ([2a0a:edc0:0:900:1d::77] helo=[127.0.0.1])
-	by metis.whiteo.stw.pengutronix.de with esmtp (Exim 4.92)
-	(envelope-from <s.pueschel@pengutronix.de>)
-	id 1vOssm-0005Lu-Ba; Fri, 28 Nov 2025 08:27:08 +0100
-Message-ID: <cea54dcb-6236-4363-8b46-e2213a190894@pengutronix.de>
-Date: Fri, 28 Nov 2025 08:26:55 +0100
+	s=arc-20240116; t=1764315083; c=relaxed/simple;
+	bh=7iv4p8/MnmN787ZlveUgRAuKwTOuKiaDg0evFqoMIxs=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=Q0rVusZF9Snnl+v6jWG2KfaGFPPZzrX6r1ojYPTXcMg4iudp6fyVncG2Y6HEV6EIpCzlOZW+LGT8GZYPqq8SHm48YpXsA0CXp+cdV7/wrXZo8PwMjWg0dPzfg/1J1HVLftLwKgNXfhIs1o/fSiXfV1dALQK1THAR3zFREQMMSdg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com; spf=pass smtp.mailfrom=rock-chips.com; dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b=Hah5/jGe; arc=none smtp.client-ip=101.71.155.74
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rock-chips.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b="Hah5/jGe"
+Received: from [172.16.12.14] (unknown [58.22.7.114])
+	by smtp.qiye.163.com (Hmail) with ESMTP id 2b3cd4919;
+	Fri, 28 Nov 2025 15:31:08 +0800 (GMT+08:00)
+Message-ID: <7797ac67-6f57-409a-83c8-0ca21a2d2475@rock-chips.com>
+Date: Fri, 28 Nov 2025 15:31:04 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -27,144 +28,96 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommu/rockchip: disable fetch dte time limit
-To: Shawn Lin <shawn.lin@rock-chips.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Heiko Stuebner <heiko@sntech.de>
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+Cc: shawn.lin@rock-chips.com, iommu@lists.linux.dev,
+ devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
  linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
- Simon Xue <xxm@rock-chips.com>, kernel@pengutronix.de
-References: <20251126-spu-iommudtefix-v1-1-f90003dbfcc4@pengutronix.de>
- <075100c0-b4af-4077-bd3c-dd9407524671@rock-chips.com>
-Content-Language: en-US
-From: =?UTF-8?Q?Sven_P=C3=BCschel?= <s.pueschel@pengutronix.de>
-In-Reply-To: <075100c0-b4af-4077-bd3c-dd9407524671@rock-chips.com>
+ Chaoyi Chen <chaoyi.chen@rock-chips.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>
+Subject: Re: [PATCH v2 2/2] iommu/rockchip: Use devm_clk_bulk_get_all() to get
+ multiple iface clock
+To: Chaoyi Chen <kernel@airkyi.com>
+References: <20251128071322.92-1-kernel@airkyi.com>
+ <20251128071322.92-3-kernel@airkyi.com>
+From: Shawn Lin <shawn.lin@rock-chips.com>
+In-Reply-To: <20251128071322.92-3-kernel@airkyi.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:900:1d::77
-X-SA-Exim-Mail-From: s.pueschel@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: iommu@lists.linux.dev
+X-HM-Tid: 0a9ac95f769b09cckunmc7305c7c6e1258
+X-HM-MType: 1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
+	tZV1koWUFDSUNOT01LS0k3V1ktWUFJV1kPCRoVCBIfWUFZGUJDQ1ZIGkMfHkxJHh5PThlWFRQJFh
+	oXVRMBExYaEhckFA4PWVdZGBILWUFZTkNVSUlVTFVKSk9ZV1kWGg8SFR0UWUFZT0tIVUpLSU9PT0
+	hVSktLVUpCS0tZBg++
+DKIM-Signature: a=rsa-sha256;
+	b=Hah5/jGePtDDELU7fuGQKBjUJX4Xv8n9cmCZg6hdNhAIQyy4LLFccBZd+upwrE+eU0toqzG4hi1Li9+AkKdYVQ3r7vxE/4B3rbCMwOnMuKQz9GblxsL/s9SZTJlMMnlV1yCZdLWSHPdgXtjLc1xVs/94ztH64ZshQpxgWDfH+z0=; c=relaxed/relaxed; s=default; d=rock-chips.com; v=1;
+	bh=YhlZQtQGGH+o1PC9FG1bXh4bzpsQsyhDPSlIK1P1gUw=;
+	h=date:mime-version:subject:message-id:from;
 
+在 2025/11/28 星期五 15:13, Chaoyi Chen 写道:
+> From: Chaoyi Chen <chaoyi.chen@rock-chips.com>
+> 
+> The iommu found on RK3576 NPU and RK3576 RKVDEC contain 4 clock.
+> 
+> Just use devm_clk_bulk_get_all() to get all the clocks and use them.
+> 
 
-On 11/27/25 5:32 AM, Shawn Lin wrote:
-> 在 2025/11/26 星期三 19:45, Sven Püschel 写道:
->> From: Simon Xue <xxm@rock-chips.com>
->>
->> Disable the Bit 31 of the AUTO_GATING iommu register, as it causes
->> hangups with the RGA3 (Raster Graphics Acceleration 3) peripheral.
->> The RGA3 register description of the TRM already states that the bit
->> must be set to 1. The vendor kernel sets the bit unconditionally to
->> 1 to fix VOP (Video Output Processor) screen black issues. This patch
->> squashes the 2 vendor kernel commits with the following commit messages:
->>
->> Master fetch data and cpu update page table may work in parallel, may
->> have the following procedure:
->>
->>     master                  cpu
->>     fetch dte               update page tabl
->>             |                       |
->>     (make dte invalid)  <-  zap iotlb entry
->>             |                       |
->>     fetch dte again
->>     (make dte invalid)  <-  zap iotlb entry
->>             |                       |
->>     fetch dte again
->>     (make dte invalid)  <-  zap iotlb entry
->>             |                       |
->>     fetch dte again
->>     (make iommu block)  <-  zap iotlb entry
->>
->> New iommu version has the above bug, if fetch dte consecutively four
->> times, then it will be blocked. Fortunately, we can set bit 31 of
->> register MMU_AUTO_GATING to 1 to make it work as old version which does
->> not have this issue.
->>
->> This issue only appears on RV1126 so far, so make a workaround dedicated
->> to "rockchip,rv1126" machine type.
->>
->> iommu/rockchip: fix vop blocked and screen black on RK356X and RK3588
->>
->> RK3568 and RK3588 has the same issue as RV1126/RV1109 that caused by
->> dte fetch time limit, So we can set BIT(31) of register 0x24 default
->> to 1 as a workaround.
->>
->> Signed-off-by: Simon Xue <xxm@rock-chips.com>
->> Signed-off-by: Sven Püschel <s.pueschel@pengutronix.de>
->> ---
->> During testing of a newly developed driver for the RGA3 peripheral [1]
->> (Raster Graphic Acceleration 3) of the RK3588 some sporadic hangs
->> have been observed. The upstream rockchip-iommu driver is used to handle
->> the RGA3 IOMMU register space.
->>
->> After a closer look at the TRM for the RK3588, the RGA3 iommu register
->> description of the RGA3_MMU_AUTO_GATING register (offset 0x24) mentions
->
-> It's 0xF24 per RGA3 chapter.
+Reviewed-by: Shawn Lin <shawn.lin@rock-chips.com>
 
-yeah, sorry. I was already thinking relative to the rga3 iommu address 
-space in my head, but didn't really mention that the chapter says 0xF24 
-with the iommu related registers starting at 0xF00.
+> Signed-off-by: Chaoyi Chen <chaoyi.chen@rock-chips.com>
+> ---
+> 
+> Changes in v2:
+> - Change comment.
+> 
+>   drivers/iommu/rockchip-iommu.c | 20 ++++----------------
+>   1 file changed, 4 insertions(+), 16 deletions(-)
+> 
+> diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+> index 0861dd469bd8..76f71fb679f8 100644
+> --- a/drivers/iommu/rockchip-iommu.c
+> +++ b/drivers/iommu/rockchip-iommu.c
+> @@ -93,11 +93,6 @@ struct rk_iommu_domain {
+>   	struct iommu_domain domain;
+>   };
+>   
+> -/* list of clocks required by IOMMU */
+> -static const char * const rk_iommu_clocks[] = {
+> -	"aclk", "iface",
+> -};
+> -
+>   struct rk_iommu_ops {
+>   	phys_addr_t (*pt_address)(u32 dte);
+>   	u32 (*mk_dtentries)(dma_addr_t pt_dma);
+> @@ -1236,25 +1231,18 @@ static int rk_iommu_probe(struct platform_device *pdev)
+>   	iommu->reset_disabled = device_property_read_bool(dev,
+>   					"rockchip,disable-mmu-reset");
+>   
+> -	iommu->num_clocks = ARRAY_SIZE(rk_iommu_clocks);
+> -	iommu->clocks = devm_kcalloc(iommu->dev, iommu->num_clocks,
+> -				     sizeof(*iommu->clocks), GFP_KERNEL);
+> -	if (!iommu->clocks)
+> -		return -ENOMEM;
+> -
+> -	for (i = 0; i < iommu->num_clocks; ++i)
+> -		iommu->clocks[i].id = rk_iommu_clocks[i];
+> -
+>   	/*
+>   	 * iommu clocks should be present for all new devices and devicetrees
+>   	 * but there are older devicetrees without clocks out in the wild.
+>   	 * So clocks as optional for the time being.
+>   	 */
+> -	err = devm_clk_bulk_get(iommu->dev, iommu->num_clocks, iommu->clocks);
+> +	err = devm_clk_bulk_get_all(dev, &iommu->clocks);
+>   	if (err == -ENOENT)
+>   		iommu->num_clocks = 0;
+> -	else if (err)
+> +	else if (err < 0)
+>   		return err;
+> +	else
+> +		iommu->num_clocks = err;
+>   
+>   	err = clk_bulk_prepare(iommu->num_clocks, iommu->clocks);
+>   	if (err)
 
-Sincerely
-     Sven
-
->
->> a mmu_bug_fixed_disable bit, which must be set to 1 but defaults to 0.
->>
->> Looking at the commits in the vendor kernel, the bit is unconditionally
->> set to 1 and mentions that it fixes a blocked VOP (Video Output
->> Processor) [3]. Therefore squash the relevant vendor commits
->> [2] and [3] into a single patch, combine the commit messages and keep
->> the Signed-off-by line from the original author.
->>
->> [1] 
->> https://lore.kernel.org/all/20251007-spu-rga3-v1-0-36ad85570402@pengutronix.de/
->> [2] 
->> https://github.com/rockchip-linux/kernel/commit/7f8158fb41b5cc8e738aaeebc3637c50ebd74cae
->> [3] 
->> https://github.com/rockchip-linux/kernel/commit/6a355e5f9a2069a2309e240791bc3aad63b7324e
->> ---
->>   drivers/iommu/rockchip-iommu.c | 8 ++++++++
->>   1 file changed, 8 insertions(+)
->>
->> diff --git a/drivers/iommu/rockchip-iommu.c 
->> b/drivers/iommu/rockchip-iommu.c
->> index 0861dd469bd86..2d0dabb0d101a 100644
->> --- a/drivers/iommu/rockchip-iommu.c
->> +++ b/drivers/iommu/rockchip-iommu.c
->> @@ -76,6 +76,8 @@
->>   #define SPAGE_ORDER 12
->>   #define SPAGE_SIZE (1 << SPAGE_ORDER)
->>   +#define DISABLE_FETCH_DTE_TIME_LIMIT BIT(31)
->> +
->>    /*
->>     * Support mapping any size that fits in one page table:
->>     *   4 KiB to 4 MiB
->> @@ -930,6 +932,7 @@ static int rk_iommu_enable(struct rk_iommu *iommu)
->>       struct iommu_domain *domain = iommu->domain;
->>       struct rk_iommu_domain *rk_domain = to_rk_domain(domain);
->>       int ret, i;
->> +    u32 auto_gate;
->>         ret = clk_bulk_enable(iommu->num_clocks, iommu->clocks);
->>       if (ret)
->> @@ -948,6 +951,11 @@ static int rk_iommu_enable(struct rk_iommu *iommu)
->> rk_ops->mk_dtentries(rk_domain->dt_dma));
->>           rk_iommu_base_command(iommu->bases[i], RK_MMU_CMD_ZAP_CACHE);
->>           rk_iommu_write(iommu->bases[i], RK_MMU_INT_MASK, 
->> RK_MMU_IRQ_MASK);
->> +
->> +        /* Workaround for iommu blocked, BIT(31) default to 1 */
->> +        auto_gate = rk_iommu_read(iommu->bases[i], RK_MMU_AUTO_GATING);
->> +        auto_gate |= DISABLE_FETCH_DTE_TIME_LIMIT;
->> +        rk_iommu_write(iommu->bases[i], RK_MMU_AUTO_GATING, auto_gate);
->>       }
->>         ret = rk_iommu_enable_paging(iommu);
->>
->> ---
->> base-commit: 30f09200cc4aefbd8385b01e41bde2e4565a6f0e
->> change-id: 20251126-spu-iommudtefix-cd0c5244c74a
->>
->> Best regards,
->
->
