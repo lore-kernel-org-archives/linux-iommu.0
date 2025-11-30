@@ -1,129 +1,119 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f74.google.com (mail-wm1-f74.google.com [209.85.128.74])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FDFD27F18B;
-	Fri, 28 Nov 2025 20:28:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7124E296BCF
+	for <iommu@lists.linux.dev>; Sun, 30 Nov 2025 19:45:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.74
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764361715; cv=none; b=CH2aIjKOUEc796mKpA/w0LasbOFphCo7uqHBRay0OpD4f11SuXziqDiKyATAq8SgLzVJ8qxAKf5eRBkBa+n6RUQx7LL464kllGSsQHrQzsw5lv4dMvcugWtcyyefkoBiyX/4jsqyw2FE+OgREv7ZOMkNhF1b7wIrVEL4j/qR1s4=
+	t=1764531924; cv=none; b=WSOAxo/GYxQiVFk1xe2+s5pSA9KFLEXZoxbgMUICGfHfCOE2oFoR01dU+Xr8CNhNC0be5z6JW34M4Dd79EHMfwy0vQwSCP+7bh0AbShvkkM+HoTBpKt6/f4mVXblZnM6pl75LQWNlRcrkhJstkoaV/WB4Bd9kgKVVgaijRrmSu8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764361715; c=relaxed/simple;
-	bh=Ec6Ru+ibCJqELuZNYW5RHW7NnYSrbG4/PL8CejcvskM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=jAi5mqBKNBBNDuPVgso5xm+DE7574PqbLQm/PqU5Gryn5QYjvzpzw1bwMcV/x/SxMyoM4mxbbmrJ03c8y2dy69OTltYHMygS52PEwoQQy6QJRn77j0p2YaaZRTk7Ynu9otujyPqgMHXe0ckMc32EQNWLXPkGqGfZWJrAcP3xPuc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=C6DWruu+; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1764531924; c=relaxed/simple;
+	bh=WfVkj8pEntebpBsg4mVtXPLRxLG+3qfn6UXm3jIrd0U=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=tO6LB3g0ivMXbklha4Ova+Uu/1y1i6sJYdUK07D26IcLavWnweqWqtapxDz+VXLPOBq9Cvpp3KebbMPwOCYN+dCU/AVFQ+Gzsmu4cgf6tDkRratshy+VYRcCyvSuJPrmPeNaFc8fka0DFq5drADEvp/wUcKDdrjgPpor9bs0+Ek=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=yuMk5GHc; arc=none smtp.client-ip=209.85.128.74
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="C6DWruu+"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4943C4CEF1;
-	Fri, 28 Nov 2025 20:28:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1764361714;
-	bh=Ec6Ru+ibCJqELuZNYW5RHW7NnYSrbG4/PL8CejcvskM=;
-	h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-	b=C6DWruu+CeqFqXWaBoMXuohgJFdlD3X5z9TL9aQceKpvMGjWYj8gBn3nlmymZld4V
-	 pVr0fLGFbhwOSNey3VVeUSZSM6B8PxKgQ3geaYzH/0nhWtWMkNpJHf/ob2jZ0znSIH
-	 yTGmRS/inUXqlhJzxWSfQWSXkEptxmBR7iPFzAlUWoYiCeeiNAuHSUMNPouhlh23tJ
-	 GCpKw2G8jh++fLKGa2xs1377V3qL4ovB1krqXoXWk69Hq9z4FUztIKMf9WDT6COahV
-	 cfetzvKW4W9Px0U9ZhwbKIIAtDEAfUFpXjNJyBo8UOVUQ53YV/3HYwRyShroLfY611
-	 NVmMf58rFIftg==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-	id 51546CE0B1F; Fri, 28 Nov 2025 12:28:34 -0800 (PST)
-Date: Fri, 28 Nov 2025 12:28:34 -0800
-From: "Paul E. McKenney" <paulmck@kernel.org>
-To: Borislav Petkov <bp@alien8.de>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	linux-kernel@vger.kernel.org
-Subject: Re: amd iommu: rcu: INFO: rcu_preempt detected expedited stalls on
- CPUs/tasks: { 0-.... } 8 jiffies s: 113 root: 0x1/.
-Message-ID: <17147c98-9f0d-45d0-9593-3ede27ba6135@paulmck-laptop>
-Reply-To: paulmck@kernel.org
-References: <20251126143219.GBaScPc1b6RAC9ZfCv@fat_crate.local>
- <20251126152637.GDaSccLZVBEOs20n6T@fat_crate.local>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="yuMk5GHc"
+Received: by mail-wm1-f74.google.com with SMTP id 5b1f17b1804b1-477c49f273fso39343745e9.3
+        for <iommu@lists.linux.dev>; Sun, 30 Nov 2025 11:45:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1764531921; x=1765136721; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=VpKzwW+DrSxITLrqVUpcZpbwlWPuuva1N93VFVuU3gQ=;
+        b=yuMk5GHcaLme5EkWB33glrd4qDbrp0Hs7vVHOkY75wolMJgPFy2cAFkZUSSgMl0QFa
+         guOBBeh9ZyIP/6u6QMzoHmIWvjX99zpIxcuPsnd2v5TJlQgxKw0ZnOtGSrd35XBxqaFI
+         Y9LTg/tEHa7D7lWTqgX/wNrqZZEm/I63wcDnZaRQCCsqyCPRBMdOER1tWIT3BrNVCd+G
+         5PuQEP3yS5BxbLUP+QNjkASgie3OMFDyPFSeTB6Q/G/oULtL8/5kD1VxJFNhUqTvsg1D
+         8CjY3Ggkv0hdX78uBfZHcdpFqb+JN7PfgcMXp6t82qgyTNy+lgSw3sbg24qmIzRakQeC
+         B45g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1764531921; x=1765136721;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=VpKzwW+DrSxITLrqVUpcZpbwlWPuuva1N93VFVuU3gQ=;
+        b=mSm/4QUujIwItKUQ9N4Foqu+157GheicuCIqRflpriAh42L+xhdtJ0kLUxAHwjrdhC
+         YjMTXeNKgsb+p6kmPjgzXZb55jUtD3vBypn65uxEFQLfxg8Ct4OFrYWyrMqJ+bTkC64H
+         ChaZMZmGIizCoq2DGia4Lm72mi7nMzMTXJk4hyXbv2Yt5Ycr6RBK19FVn8yF/CWfRrjc
+         0qyj6FwnegnOdrTrAKs2j1QyX9JQ1JU6h1r14IWyPV6wFmYNgfeA+Xak44JyOi+SheDf
+         nYqouva91oQMs+ePTIXmOOGvPIWNzoe4AYe89/dYMci9uq7qXBdxlOcTchHXg9paF0WL
+         GgcQ==
+X-Gm-Message-State: AOJu0YxRCzAbPMjgMVmZnt3OxKHOdufrhxUC6tiE8Z+8FQXk/ADESD04
+	dGK+/hfMt/chZhDhXAlOQr0zmc7yD3IX/mA6M5VNwbvOiAvbQn7pZ7rPbHpr7PPf5f0aa/172Y4
+	WvRZRNUP5mxbLL8boSl1VFX8I2q6HeDBfOs903U3tVO5h8vyuYMO0xu/buG3k2rp8dYQt2O3Le3
+	WgQzMxH8LpPfO138nozcPMczKXMXcKO9LQRXzoIAJ/aM37MA==
+X-Google-Smtp-Source: AGHT+IGX+La27FykkneboKedWl3FbPZ7fIp0DKL/wu8LaMWfDRdIsROXD63+Az5xZoHNsgdO2DB82IvlLgkaUQ==
+X-Received: from wmom17.prod.google.com ([2002:a05:600c:4611:b0:477:40c1:3e61])
+ (user=smostafa job=prod-delivery.src-stubby-dispatcher) by
+ 2002:a05:600c:354b:b0:46f:b327:ecfb with SMTP id 5b1f17b1804b1-477c0184c45mr341232415e9.9.1764531920917;
+ Sun, 30 Nov 2025 11:45:20 -0800 (PST)
+Date: Sun, 30 Nov 2025 19:45:06 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20251126152637.GDaSccLZVBEOs20n6T@fat_crate.local>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.52.0.487.g5c8c507ade-goog
+Message-ID: <20251130194506.593700-1-smostafa@google.com>
+Subject: [PATCH] iommu/io-pgtable-arm: Add misisng concatenated PGD cases
+From: Mostafa Saleh <smostafa@google.com>
+To: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+	linux-kernel@vger.kernel.org
+Cc: robin.murphy@arm.com, will@kernel.org, joro@8bytes.org, 
+	Mostafa Saleh <smostafa@google.com>, Tomasz Nowicki <tnowicki@google.com>
+Content-Type: text/plain; charset="UTF-8"
 
-Sorry to be slow, USA Turkey Day and all that...
+arm_lpae_concat_mandatory() assumes that OAS >= IAS which is not
+correct for SMMUs supporting AArch32, and have OAS = 32/36 bits,
+as IAS would be 40 bits.
 
-On Wed, Nov 26, 2025 at 04:26:37PM +0100, Borislav Petkov wrote:
-> On Wed, Nov 26, 2025 at 03:32:19PM +0100, Borislav Petkov wrote:
-> > Hi,
-> > 
-> > this is latest Linus + latest tip/master. Box is Zen3. CCing AMD IOMMU folks
-> > because the backtrace points to it.
-> > 
-> > Ideas?
-> > 
-> > [   12.946913] (journald)[506]: Found cgroup2 on /sys/fs/cgroup/, full unified hierarchy
-> > [   12.948083] (journald)[506]: Successfully forked off '(sd-mkuserns)' as PID 507.
-> > [   12.977579] rcu: INFO: rcu_preempt detected expedited stalls on CPUs/tasks: { 0-.... } 8 jiffies s: 113 root: 0x1/.
-> > [   12.983638] rcu: blocking rcu_node structures (internal RCU debug): l=1:0-15:0x1/.
+In that case, concatenation is mandatory in some cases.
+Document those and add the checks, this can be simplified; instead
+of adding extra checks we can say that concatenation is mandatory for:
+- 4K, start level = 0 and OAS <= 42 bits.
+- 16K, start level = 1 and OAS <= 40 bits.
+Which cover all the missing cases.
 
-This one of course is a stall on CPU 0.  But you knew that already.
+Reported-by: Tomasz Nowicki <tnowicki@google.com>
+Fixes: 4dcac8407fe1 ("iommu/io-pgtable-arm: Fix stage-2 concatenation with 16K")
+Signed-off-by: Mostafa Saleh <smostafa@google.com>
+---
+ drivers/iommu/io-pgtable-arm.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-Also, it looks like you have CONFIG_RCU_EXP_CPU_STALL_TIMEOUT=20 or maybe
-booted with rcupdate.rcu_exp_cpu_stall_timeout=20 on a system with HZ=250?
-Or set rcu_exp_cpu_stall_timeout=20 via sysfs?
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+index e6626004b323..ecf27e86b429 100644
+--- a/drivers/iommu/io-pgtable-arm.c
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -223,6 +223,8 @@ static inline int arm_lpae_max_entries(int i, struct arm_lpae_io_pgtable *data)
+  *   b) 40 bits PA size with 16K: use level 2 instead of level 1 (16 tables for ias = oas)
+  *   c) 42 bits PA size with 4K: use level 1 instead of level 0 (8 tables for ias = oas)
+  *   d) 48 bits PA size with 16K: use level 1 instead of level 0 (2 tables for ias = oas)
++ *   f) 32/36 bits PA size with 4K and 40 bits IAS: use level 1 instead of level 0
++ *   g) 32/36 bits PA size with 16K and 40 bits IAS: use level 2 instead of level 1
+  */
+ static inline bool arm_lpae_concat_mandatory(struct io_pgtable_cfg *cfg,
+ 					     struct arm_lpae_io_pgtable *data)
+@@ -234,13 +236,13 @@ static inline bool arm_lpae_concat_mandatory(struct io_pgtable_cfg *cfg,
+ 	if ((ARM_LPAE_GRANULE(data) == SZ_16K) && (data->start_level == 0))
+ 		return (oas == 48) || (ias == 48);
+ 
+-	/* Covers 2.a and 2.c */
++	/* Covers 2.a, 2.c and 2.f */
+ 	if ((ARM_LPAE_GRANULE(data) == SZ_4K) && (data->start_level == 0))
+-		return (oas == 40) || (oas == 42);
++		return (oas <= 42);
+ 
+-	/* Case 2.b */
++	/* Case 2.b and 2.g */
+ 	return (ARM_LPAE_GRANULE(data) == SZ_16K) &&
+-	       (data->start_level == 1) && (oas == 40);
++	       (data->start_level == 1) && (oas <= 40);
+ }
+ 
+ static dma_addr_t __arm_lpae_dma_addr(void *pages)
+-- 
+2.52.0.487.g5c8c507ade-goog
 
-> And as suspected, booting in it again, it doesn't trigger anymore. But there's
-> something new in dmesg which looks weird and makes me want to Cc Paul:
-> 
-> [    6.965526] rcu: INFO: rcu_preempt detected expedited stalls on CPUs/tasks: {
-
-This is the beginning of the message.
-
-> [    6.971581] Key type fscrypt-provisioning registered
-> [    6.975191] PM: Image not found (code -6)
-> [    6.975631]  } 8 jiffies s: 89 root: 0x0/.
-
-And this is the end.  This looks like the stall ended just as the
-stall-warning message started printing.
-
-> and
-> 
-> [   12.549532] rcu: INFO: rcu_preempt detected expedited stalls on CPUs/tasks: { 2-.... } 8 jiffies s: 113 root: 0x1/.
-> [   12.550863] rcu: blocking rcu_node structures (internal RCU debug):
-
-This is a stall on CPU 2.
-
-> 
-> [   12.817601] rcu: INFO: rcu_preempt detected expedited stalls on CPUs/tasks: {
-> [   12.819773] (sd-mkdcre[520]: Credential search path is: /etc/credstore:/run/credstore:/usr/local/lib/credstore:/usr/lib/credstore
-> [   12.827074]  } 8 jiffies s: 129 root: 0x0/.
-> 
-> [   12.881508] rcu: INFO: rcu_preempt detected expedited stalls on CPUs/tasks: {
-> [   12.892854] (sd-mkdcr[522]: Credential search path is: /etc/credstore.encrypted:/run/credstore.encrypted:/usr/local/lib/credstore.encrypted:/usr/lib/credstore.encrypted
-> [   12.905244]  } 8 jiffies s: 133 root: 0x0/.
-> 
-> Paul, this looks weird.
-> 
-> Why is that issuing empty lists between the { }?
-
-Again, my guess is that the stall is ending just as the print starts.
-
-It also looks like you have the expedited stall warning set to 20
-milliseconds, which as far as I know is used only on constrained systems
-such as smartphones.  If you set this value on a typical large server,
-you will get very large numbers of expedited RCU CPU stall warnings.
-
-Oh, and if you are running with HZ=1000 and the expedited RCU CPU stall
-warning set to 20 milliseconds (let alone 8!), then as far as I know,
-you are a pioneer breaking new ground.  ;-)
-
-							Thanx, Paul
-
-> Thx.
-> 
-> -- 
-> Regards/Gruss,
->     Boris.
-> 
-> https://people.kernel.org/tglx/notes-about-netiquette
