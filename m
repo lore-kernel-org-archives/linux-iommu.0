@@ -1,119 +1,91 @@
-Received: from mail-wm1-f74.google.com (mail-wm1-f74.google.com [209.85.128.74])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7124E296BCF
-	for <iommu@lists.linux.dev>; Sun, 30 Nov 2025 19:45:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.74
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B44C0242935
+	for <iommu@lists.linux.dev>; Sun, 30 Nov 2025 22:52:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764531924; cv=none; b=WSOAxo/GYxQiVFk1xe2+s5pSA9KFLEXZoxbgMUICGfHfCOE2oFoR01dU+Xr8CNhNC0be5z6JW34M4Dd79EHMfwy0vQwSCP+7bh0AbShvkkM+HoTBpKt6/f4mVXblZnM6pl75LQWNlRcrkhJstkoaV/WB4Bd9kgKVVgaijRrmSu8=
+	t=1764543166; cv=none; b=NktLwMVlCNFzM75WSjpm2YW8VjnamqZkKSRDg6h280Z7P2nQRxhf6RGu53VGMgArSgSbM/tQcT2/7zs5zh0joLyWwtkt4fhVNaiqYJNpK6NEf+NFbB9qW26x3nJzMukXvdBebBUdyPqt5EnIIAoERhLbuSudCXbm9eReUq9rVlc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764531924; c=relaxed/simple;
-	bh=WfVkj8pEntebpBsg4mVtXPLRxLG+3qfn6UXm3jIrd0U=;
-	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=tO6LB3g0ivMXbklha4Ova+Uu/1y1i6sJYdUK07D26IcLavWnweqWqtapxDz+VXLPOBq9Cvpp3KebbMPwOCYN+dCU/AVFQ+Gzsmu4cgf6tDkRratshy+VYRcCyvSuJPrmPeNaFc8fka0DFq5drADEvp/wUcKDdrjgPpor9bs0+Ek=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=yuMk5GHc; arc=none smtp.client-ip=209.85.128.74
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com
+	s=arc-20240116; t=1764543166; c=relaxed/simple;
+	bh=SOPNcceROgpE+NOElZey38Ee4jplu6+nurjD9UwV744=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=c3mGpkpqmgcO1adI5Nc/aYmSiAtCdSqBd2pTX8vpmIPqxXZJ5SisP8HZQqW6Gn3JUcqPjxBSdLnF4u+1JrYAJup08zcJcUWFKOK5UD6UYa9OrB2fA5P+FLevHOLbFIsOjxDNDGQZOpv5IzXKGUkuePuvCM+l48EocOs4ne6Jf+w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=XB7U3xtD; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="yuMk5GHc"
-Received: by mail-wm1-f74.google.com with SMTP id 5b1f17b1804b1-477c49f273fso39343745e9.3
-        for <iommu@lists.linux.dev>; Sun, 30 Nov 2025 11:45:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1764531921; x=1765136721; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=VpKzwW+DrSxITLrqVUpcZpbwlWPuuva1N93VFVuU3gQ=;
-        b=yuMk5GHcaLme5EkWB33glrd4qDbrp0Hs7vVHOkY75wolMJgPFy2cAFkZUSSgMl0QFa
-         guOBBeh9ZyIP/6u6QMzoHmIWvjX99zpIxcuPsnd2v5TJlQgxKw0ZnOtGSrd35XBxqaFI
-         Y9LTg/tEHa7D7lWTqgX/wNrqZZEm/I63wcDnZaRQCCsqyCPRBMdOER1tWIT3BrNVCd+G
-         5PuQEP3yS5BxbLUP+QNjkASgie3OMFDyPFSeTB6Q/G/oULtL8/5kD1VxJFNhUqTvsg1D
-         8CjY3Ggkv0hdX78uBfZHcdpFqb+JN7PfgcMXp6t82qgyTNy+lgSw3sbg24qmIzRakQeC
-         B45g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1764531921; x=1765136721;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=VpKzwW+DrSxITLrqVUpcZpbwlWPuuva1N93VFVuU3gQ=;
-        b=mSm/4QUujIwItKUQ9N4Foqu+157GheicuCIqRflpriAh42L+xhdtJ0kLUxAHwjrdhC
-         YjMTXeNKgsb+p6kmPjgzXZb55jUtD3vBypn65uxEFQLfxg8Ct4OFrYWyrMqJ+bTkC64H
-         ChaZMZmGIizCoq2DGia4Lm72mi7nMzMTXJk4hyXbv2Yt5Ycr6RBK19FVn8yF/CWfRrjc
-         0qyj6FwnegnOdrTrAKs2j1QyX9JQ1JU6h1r14IWyPV6wFmYNgfeA+Xak44JyOi+SheDf
-         nYqouva91oQMs+ePTIXmOOGvPIWNzoe4AYe89/dYMci9uq7qXBdxlOcTchHXg9paF0WL
-         GgcQ==
-X-Gm-Message-State: AOJu0YxRCzAbPMjgMVmZnt3OxKHOdufrhxUC6tiE8Z+8FQXk/ADESD04
-	dGK+/hfMt/chZhDhXAlOQr0zmc7yD3IX/mA6M5VNwbvOiAvbQn7pZ7rPbHpr7PPf5f0aa/172Y4
-	WvRZRNUP5mxbLL8boSl1VFX8I2q6HeDBfOs903U3tVO5h8vyuYMO0xu/buG3k2rp8dYQt2O3Le3
-	WgQzMxH8LpPfO138nozcPMczKXMXcKO9LQRXzoIAJ/aM37MA==
-X-Google-Smtp-Source: AGHT+IGX+La27FykkneboKedWl3FbPZ7fIp0DKL/wu8LaMWfDRdIsROXD63+Az5xZoHNsgdO2DB82IvlLgkaUQ==
-X-Received: from wmom17.prod.google.com ([2002:a05:600c:4611:b0:477:40c1:3e61])
- (user=smostafa job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:600c:354b:b0:46f:b327:ecfb with SMTP id 5b1f17b1804b1-477c0184c45mr341232415e9.9.1764531920917;
- Sun, 30 Nov 2025 11:45:20 -0800 (PST)
-Date: Sun, 30 Nov 2025 19:45:06 +0000
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="XB7U3xtD"
+Received: from localhost (unknown [40.65.108.177])
+	by linux.microsoft.com (Postfix) with ESMTPSA id EEBCC200DFDB;
+	Sun, 30 Nov 2025 14:52:37 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com EEBCC200DFDB
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1764543158;
+	bh=gCfSE1SpLmMXqUf2ooGYc7zAwj8Zix/sXTyz5dV9dPA=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=XB7U3xtDB2SBNBhuvthy0YOrJTAYhD44hlTUvhP4nivL2jYcdI0aE5+qs3oCWmtkL
+	 tsKZvNoLp+9N/6QgBvMHslSThESYbRNzhkZT8LgKJzTwflSxc4/KRsFxhlenT1lUl7
+	 5yt4BviUW1b7Ksl3I7CWw5iMRrH8OUKqxqKm8sBc=
+Date: Sun, 30 Nov 2025 14:52:36 -0800
+From: Jacob Pan <jacob.pan@linux.microsoft.com>
+To: Will Deacon <will@kernel.org>
+Cc: linux-kernel@vger.kernel.org, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>, Joerg Roedel <joro@8bytes.org>, Mostafa Saleh
+ <smostafa@google.com>, Jason Gunthorpe <jgg@nvidia.com>, Robin Murphy
+ <robin.murphy@arm.com>, Nicolin Chen <nicolinc@nvidia.com>, Zhang Yu
+ <zhangyu1@linux.microsoft.com>, Jean Philippe-Brucker
+ <jean-philippe@linaro.org>, Alexander Grest <Alexander.Grest@microsoft.com>
+Subject: Re: [PATCH v4 2/2] iommu/arm-smmu-v3: Improve CMDQ lock fairness
+ and efficiency
+Message-ID: <20251130145236.0000009d@linux.microsoft.com>
+In-Reply-To: <aSXlAT00HVCGBaNY@willie-the-truck>
+References: <20251114171718.42215-1-jacob.pan@linux.microsoft.com>
+	<20251114171718.42215-3-jacob.pan@linux.microsoft.com>
+	<aSXlAT00HVCGBaNY@willie-the-truck>
+Organization: LSG
+X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.52.0.487.g5c8c507ade-goog
-Message-ID: <20251130194506.593700-1-smostafa@google.com>
-Subject: [PATCH] iommu/io-pgtable-arm: Add misisng concatenated PGD cases
-From: Mostafa Saleh <smostafa@google.com>
-To: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
-	linux-kernel@vger.kernel.org
-Cc: robin.murphy@arm.com, will@kernel.org, joro@8bytes.org, 
-	Mostafa Saleh <smostafa@google.com>, Tomasz Nowicki <tnowicki@google.com>
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-arm_lpae_concat_mandatory() assumes that OAS >= IAS which is not
-correct for SMMUs supporting AArch32, and have OAS = 32/36 bits,
-as IAS would be 40 bits.
+Hi Will,
 
-In that case, concatenation is mandatory in some cases.
-Document those and add the checks, this can be simplified; instead
-of adding extra checks we can say that concatenation is mandatory for:
-- 4K, start level = 0 and OAS <= 42 bits.
-- 16K, start level = 1 and OAS <= 40 bits.
-Which cover all the missing cases.
+On Tue, 25 Nov 2025 17:18:57 +0000
+Will Deacon <will@kernel.org> wrote:
 
-Reported-by: Tomasz Nowicki <tnowicki@google.com>
-Fixes: 4dcac8407fe1 ("iommu/io-pgtable-arm: Fix stage-2 concatenation with 16K")
-Signed-off-by: Mostafa Saleh <smostafa@google.com>
----
- drivers/iommu/io-pgtable-arm.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+> On Fri, Nov 14, 2025 at 09:17:18AM -0800, Jacob Pan wrote:
+> > @@ -521,9 +527,14 @@ static bool
+> > arm_smmu_cmdq_shared_tryunlock(struct arm_smmu_cmdq *cmdq)
+> > __ret;
+> > 	\ }) 
+> > +/*
+> > + * Only clear the sign bit when releasing the exclusive lock this
+> > will
+> > + * allow any shared_lock() waiters to proceed without the
+> > possibility
+> > + * of entering the exclusive lock in a tight loop.
+> > + */
+> >  #define arm_smmu_cmdq_exclusive_unlock_irqrestore(cmdq,
+> > flags)		\ ({
+> > 				\
+> > -	atomic_set_release(&cmdq->lock, 0);
+> > 	\
+> > +	atomic_fetch_and_release(~INT_MIN, &cmdq->lock);
+> > 	\  
+> 
+> nit: you can use atomic_fetch_andnot_release(INT_MIN)
+> 
+Good point, will do.
 
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index e6626004b323..ecf27e86b429 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -223,6 +223,8 @@ static inline int arm_lpae_max_entries(int i, struct arm_lpae_io_pgtable *data)
-  *   b) 40 bits PA size with 16K: use level 2 instead of level 1 (16 tables for ias = oas)
-  *   c) 42 bits PA size with 4K: use level 1 instead of level 0 (8 tables for ias = oas)
-  *   d) 48 bits PA size with 16K: use level 1 instead of level 0 (2 tables for ias = oas)
-+ *   f) 32/36 bits PA size with 4K and 40 bits IAS: use level 1 instead of level 0
-+ *   g) 32/36 bits PA size with 16K and 40 bits IAS: use level 2 instead of level 1
-  */
- static inline bool arm_lpae_concat_mandatory(struct io_pgtable_cfg *cfg,
- 					     struct arm_lpae_io_pgtable *data)
-@@ -234,13 +236,13 @@ static inline bool arm_lpae_concat_mandatory(struct io_pgtable_cfg *cfg,
- 	if ((ARM_LPAE_GRANULE(data) == SZ_16K) && (data->start_level == 0))
- 		return (oas == 48) || (ias == 48);
- 
--	/* Covers 2.a and 2.c */
-+	/* Covers 2.a, 2.c and 2.f */
- 	if ((ARM_LPAE_GRANULE(data) == SZ_4K) && (data->start_level == 0))
--		return (oas == 40) || (oas == 42);
-+		return (oas <= 42);
- 
--	/* Case 2.b */
-+	/* Case 2.b and 2.g */
- 	return (ARM_LPAE_GRANULE(data) == SZ_16K) &&
--	       (data->start_level == 1) && (oas == 40);
-+	       (data->start_level == 1) && (oas <= 40);
- }
- 
- static dma_addr_t __arm_lpae_dma_addr(void *pages)
--- 
-2.52.0.487.g5c8c507ade-goog
+> That aside, doesn't this introduce a new fairness issue in that a
+> steady stream of shared lockers will starve somebody trying to take
+> the lock in exclusive state?
+> 
+I don't think this change will starve exclusive lockers in the
+current code flow since new shared locker must acquire exclusive locker
+first while polling for available queue spaces.
 
