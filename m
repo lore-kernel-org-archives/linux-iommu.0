@@ -1,31 +1,31 @@
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B44C0242935
-	for <iommu@lists.linux.dev>; Sun, 30 Nov 2025 22:52:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F0E7E2E174B
+	for <iommu@lists.linux.dev>; Sun, 30 Nov 2025 23:06:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764543166; cv=none; b=NktLwMVlCNFzM75WSjpm2YW8VjnamqZkKSRDg6h280Z7P2nQRxhf6RGu53VGMgArSgSbM/tQcT2/7zs5zh0joLyWwtkt4fhVNaiqYJNpK6NEf+NFbB9qW26x3nJzMukXvdBebBUdyPqt5EnIIAoERhLbuSudCXbm9eReUq9rVlc=
+	t=1764543989; cv=none; b=FPxJkv05O5eEepzTZ3eC3Dn6+dULcv46iC45fCfbqvMEIxWtTF+LT+8BdF9IdR3zbFMnLSDziq75Va15eAB45AdaqEVtA0JvXw9HRq8VNCiYm8vOi20bnPAPBpnRIK+RE9vwXqxdcZ/zYe4tBnK9lce7ZQoohVNHYVHfGkb9qpc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764543166; c=relaxed/simple;
-	bh=SOPNcceROgpE+NOElZey38Ee4jplu6+nurjD9UwV744=;
+	s=arc-20240116; t=1764543989; c=relaxed/simple;
+	bh=g5yvOzo7c6xX6rYopnZszTcS5wvfEhudD5Qk2af7SaA=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=c3mGpkpqmgcO1adI5Nc/aYmSiAtCdSqBd2pTX8vpmIPqxXZJ5SisP8HZQqW6Gn3JUcqPjxBSdLnF4u+1JrYAJup08zcJcUWFKOK5UD6UYa9OrB2fA5P+FLevHOLbFIsOjxDNDGQZOpv5IzXKGUkuePuvCM+l48EocOs4ne6Jf+w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=XB7U3xtD; arc=none smtp.client-ip=13.77.154.182
+	 MIME-Version:Content-Type; b=Z0qH/So9IjaT9aFcY+8lqAtxBvPhYAWcm+ecr99UyEKKvV9r2hSrwUbeTQdtuzJG4cIlU6378140K4BwBopxrE1ZM6KFwMsQl++wO+dBI3AHh/a84YTdnJkoJOk4PHZ5ZylFhBsfHKWDU0KxNoQLnuYvS4akr+PM3OalKkKqYhs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=XBU5NBBF; arc=none smtp.client-ip=13.77.154.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="XB7U3xtD"
-Received: from localhost (unknown [40.65.108.177])
-	by linux.microsoft.com (Postfix) with ESMTPSA id EEBCC200DFDB;
-	Sun, 30 Nov 2025 14:52:37 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com EEBCC200DFDB
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="XBU5NBBF"
+Received: from localhost (unknown [52.148.138.235])
+	by linux.microsoft.com (Postfix) with ESMTPSA id EE149200DFD7;
+	Sun, 30 Nov 2025 15:06:25 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com EE149200DFD7
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1764543158;
-	bh=gCfSE1SpLmMXqUf2ooGYc7zAwj8Zix/sXTyz5dV9dPA=;
+	s=default; t=1764543986;
+	bh=RnUpxN1N4KtYTM7ucfVIdft/DvXqIYr8m/DVjMFJWjw=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=XB7U3xtDB2SBNBhuvthy0YOrJTAYhD44hlTUvhP4nivL2jYcdI0aE5+qs3oCWmtkL
-	 tsKZvNoLp+9N/6QgBvMHslSThESYbRNzhkZT8LgKJzTwflSxc4/KRsFxhlenT1lUl7
-	 5yt4BviUW1b7Ksl3I7CWw5iMRrH8OUKqxqKm8sBc=
-Date: Sun, 30 Nov 2025 14:52:36 -0800
+	b=XBU5NBBFy6mc6MZK1lrNzAGwIV8cz5wl+jqCgLKaLjFjg1k+WLcFKDnpi38Nx7p+k
+	 Xm8f3bqETJGYM2/FD6XxHALXkWASQ1u9OufyFp0nCtfyM6q5tZjWPtVOYZhu5vsgmz
+	 MFSkJ4j8oZmpw0j148nYRagEZzNI6MGkn0RmYhYs=
+Date: Sun, 30 Nov 2025 15:06:24 -0800
 From: Jacob Pan <jacob.pan@linux.microsoft.com>
 To: Will Deacon <will@kernel.org>
 Cc: linux-kernel@vger.kernel.org, "iommu@lists.linux.dev"
@@ -34,13 +34,12 @@ Cc: linux-kernel@vger.kernel.org, "iommu@lists.linux.dev"
  <robin.murphy@arm.com>, Nicolin Chen <nicolinc@nvidia.com>, Zhang Yu
  <zhangyu1@linux.microsoft.com>, Jean Philippe-Brucker
  <jean-philippe@linaro.org>, Alexander Grest <Alexander.Grest@microsoft.com>
-Subject: Re: [PATCH v4 2/2] iommu/arm-smmu-v3: Improve CMDQ lock fairness
- and efficiency
-Message-ID: <20251130145236.0000009d@linux.microsoft.com>
-In-Reply-To: <aSXlAT00HVCGBaNY@willie-the-truck>
+Subject: Re: [PATCH v4 1/2] iommu/arm-smmu-v3: Fix CMDQ timeout warning
+Message-ID: <20251130150624.000053e7@linux.microsoft.com>
+In-Reply-To: <aSXlFDAa672dZGVm@willie-the-truck>
 References: <20251114171718.42215-1-jacob.pan@linux.microsoft.com>
-	<20251114171718.42215-3-jacob.pan@linux.microsoft.com>
-	<aSXlAT00HVCGBaNY@willie-the-truck>
+	<20251114171718.42215-2-jacob.pan@linux.microsoft.com>
+	<aSXlFDAa672dZGVm@willie-the-truck>
 Organization: LSG
 X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
 Precedence: bulk
@@ -54,38 +53,60 @@ Content-Transfer-Encoding: 7bit
 
 Hi Will,
 
-On Tue, 25 Nov 2025 17:18:57 +0000
+On Tue, 25 Nov 2025 17:19:16 +0000
 Will Deacon <will@kernel.org> wrote:
 
-> On Fri, Nov 14, 2025 at 09:17:18AM -0800, Jacob Pan wrote:
-> > @@ -521,9 +527,14 @@ static bool
-> > arm_smmu_cmdq_shared_tryunlock(struct arm_smmu_cmdq *cmdq)
-> > __ret;
-> > 	\ }) 
-> > +/*
-> > + * Only clear the sign bit when releasing the exclusive lock this
-> > will
-> > + * allow any shared_lock() waiters to proceed without the
-> > possibility
-> > + * of entering the exclusive lock in a tight loop.
-> > + */
-> >  #define arm_smmu_cmdq_exclusive_unlock_irqrestore(cmdq,
-> > flags)		\ ({
-> > 				\
-> > -	atomic_set_release(&cmdq->lock, 0);
-> > 	\
-> > +	atomic_fetch_and_release(~INT_MIN, &cmdq->lock);
-> > 	\  
+> On Fri, Nov 14, 2025 at 09:17:17AM -0800, Jacob Pan wrote:
+> > While polling for n spaces in the cmdq, the current code instead
+> > checks if the queue is full. If the queue is almost full but not
+> > enough space (<n), then the CMDQ timeout warning is never triggered
+> > even if the polling has exceeded timeout limit.
+> > 
+> > The existing arm_smmu_cmdq_poll_until_not_full() doesn't fit
+> > efficiently nor ideally to the only caller
+> > arm_smmu_cmdq_issue_cmdlist():
+> >  - It uses a new timer at every single call, which fails to limit
+> > to the preset ARM_SMMU_POLL_TIMEOUT_US per issue.
+> > - It has a redundant internal queue_full(), which doesn't detect
+> > whether there is a enough space for number of n commands.
+> > 
+> > This patch polls for the availability of exact space instead of
+> > full and emit timeout warning accordingly.
+> > 
+> > Fixes: 587e6c10a7ce ("iommu/arm-smmu-v3: Reduce contention during
+> > command-queue insertion") Co-developed-by: Yu Zhang
+> > <zhangyu1@linux.microsoft.com> Signed-off-by: Yu Zhang
+> > <zhangyu1@linux.microsoft.com> Signed-off-by: Jacob Pan
+> > <jacob.pan@linux.microsoft.com>  
 > 
-> nit: you can use atomic_fetch_andnot_release(INT_MIN)
+> I'm assuming you're seeing problems with an emulated command queue?
+> Any chance you could make that bigger?
 > 
-Good point, will do.
+This is not related to queue size, but rather a logic issue when
+anytime queue is nearly full.
 
-> That aside, doesn't this introduce a new fairness issue in that a
-> steady stream of shared lockers will starve somebody trying to take
-> the lock in exclusive state?
+> > @@ -804,12 +794,13 @@ int arm_smmu_cmdq_issue_cmdlist(struct
+> > arm_smmu_device *smmu, local_irq_save(flags);
+> >  	llq.val = READ_ONCE(cmdq->q.llq.val);
+> >  	do {
+> > +		struct arm_smmu_queue_poll qp;
+> >  		u64 old;
+> >  
+> > +		queue_poll_init(smmu, &qp);
+> >  		while (!queue_has_space(&llq, n + sync)) {
+> >  			local_irq_restore(flags);
+> > -			if
+> > (arm_smmu_cmdq_poll_until_not_full(smmu, cmdq, &llq))
+> > -				dev_err_ratelimited(smmu->dev,
+> > "CMDQ timeout\n");
+> > +			arm_smmu_cmdq_poll(smmu, cmdq, &llq, &qp);
+> >  
 > 
-I don't think this change will starve exclusive lockers in the
-current code flow since new shared locker must acquire exclusive locker
-first while polling for available queue spaces.
+> Isn't this broken for wfe-based polling? The SMMU only generates the
+> wake-up event when the queue becomes non-full.
+I don't see this is a problem since any interrupts such as scheduler
+tick can be a break evnt for WFE, no?
+
+I have also tested this with WFE on BM with no issues. HyperV VM does
+not support WFE.
 
