@@ -1,30 +1,30 @@
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 488FF336EEE
-	for <iommu@lists.linux.dev>; Mon,  1 Dec 2025 17:30:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C5FE0337BBD
+	for <iommu@lists.linux.dev>; Mon,  1 Dec 2025 17:30:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764610219; cv=none; b=C8mKialEf6FLIHHbBX5bSVBYo8yLTfNDmRSO3Lx/ImEHP9ksm/uwZrytXlSS1gIuRGxh2TnhiN9oGxAl9mFVvFmhYt6sXqXeUzY7gVbmhB9mBXH5yrcHHwtah5MiJrfUuEoimz/sY2NJGzZfQNe8/nMImdjt3K2IG5lpg3rj1Bw=
+	t=1764610219; cv=none; b=YazT+nlqXmGSAT+s0GO1L71OkIZlXdI2eovRFhdQwCPxyd6inKA4hppzposaTf4MVePAAY75o9der9u2UNPixkhlveptrKhldkTnmclfB48A7DfBqJDoDdMeCKI/oq3C1BWEYoVgIfRg6Om9xtyCU9dxNAifjzpJigAx06VQaMM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1764610219; c=relaxed/simple;
-	bh=bImSNgi4dZkdOMPK57Dv6OP6ggJxli6qP7lZJCYcKMs=;
+	bh=ch1iG4+rbAwhyHGFHyNeUh174auZewU/c2vFBb8DVF0=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=LkMq+Z+PAwzXkk/XINxJVCJdz87hOuVYiEZNRbeTJ2505dslaOSIxiQ05vZ7HXUHMKXb8eq6Q5Ixer4ztaKKjRf7IGl7Vicz3r/iU7EOneT/l0XdgtTal61eEi9mVTZ8MMzkjgpH0dH/1LYq6Y0TD9ESeHfG6mA3+ib11cuN860=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=PRBuLpQD; arc=none smtp.client-ip=13.77.154.182
+	 MIME-Version; b=Yx8tPfZw0+1PixffMmUEmcV36t/w2XzE8OMBgYz8kLoCe8NQ6XKHj3DIkPinHMCMcWYPJBQZiG2uiVwAKeTkvrzN8HJK3ZL4R5FtytSdfpb6KYgwSzywJP47GbDd+rQN09Nae52F4DqUBWcGvkQDGejwS6dNvFTVR2aZ+khYiEE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=ekutGR0M; arc=none smtp.client-ip=13.77.154.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="PRBuLpQD"
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="ekutGR0M"
 Received: from DESKTOP-0403QTC.corp.microsoft.com (unknown [40.65.108.177])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 4B8B3201C97E;
-	Mon,  1 Dec 2025 09:30:16 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 4B8B3201C97E
+	by linux.microsoft.com (Postfix) with ESMTPSA id 66C02201551D;
+	Mon,  1 Dec 2025 09:30:15 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 66C02201551D
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1764610216;
-	bh=o0BfdJb6BWCVT/mCZ8zsVVH2PslD3N+9Dsx1+f0fKdY=;
+	s=default; t=1764610215;
+	bh=HsIcBiKk6OaLkg7+LF8HSq/9kvaT/CtZxs5ppRMC5DU=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=PRBuLpQD0ljwyecFTBLZRNz3dNOuNyGwNQmCIJXq5x+GaseE3KWgewZopsSHrib7y
-	 dACPGaB25Gf5E4kr9I46UQ7tLntpzGhn8bXxvkg/rUc9RWqy4t54alT8MCUt0z46ZZ
-	 eeRr/4lwGvZXfU01muMvA42GB8Wnm5CX9OxVhG2s=
+	b=ekutGR0MQpcrKN5c27xT/f/M2vYEjOGl5Fu2wJprZNQm6PazP/ZZxv3pw4vybXXMM
+	 zIh1BEQ2QblsDwe/rFygpazh+qUZduCTkT6oX47iLQmCmwdeeuFTQ/tioX4yWNHECw
+	 06lHBnUWfmui84tQziipU8F5tiy+a7loK3oTPyO8=
 From: Jacob Pan <jacob.pan@linux.microsoft.com>
 To: linux-kernel@vger.kernel.org,
 	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
@@ -42,9 +42,9 @@ Cc: skhawaja@google.com,
 	Zhang Yu <zhangyu1@linux.microsoft.com>,
 	Jean Philippe-Brucker <jean-philippe@linaro.org>,
 	David Matlack <dmatlack@google.com>
-Subject: [RFC 2/8] iommu: Add a helper to check if any iommu device is registered
-Date: Mon,  1 Dec 2025 09:30:06 -0800
-Message-Id: <20251201173012.18371-3-jacob.pan@linux.microsoft.com>
+Subject: [RFC 1/8] iommu: Make iommu_device_register_bus available beyond selftest
+Date: Mon,  1 Dec 2025 09:30:05 -0800
+Message-Id: <20251201173012.18371-2-jacob.pan@linux.microsoft.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20251201173012.18371-1-jacob.pan@linux.microsoft.com>
 References: <20251201173012.18371-1-jacob.pan@linux.microsoft.com>
@@ -56,50 +56,34 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The dummy IOMMU driver for No-IOMMU mode should only be active when
-no real IOMMU devices are present in the system. Introduce a helper
-to check this condition, ensuring that the dummy driver does not
-interfere when hardware-backed IOMMU support is available.
+Bus type specific registeration can be used beyond selfttest mock IOMMU
+driver, move it outside CONFIG_IOMMUFD_TEST.
 
 Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
 ---
- drivers/iommu/iommu.c | 10 ++++++++++
- include/linux/iommu.h |  1 +
- 2 files changed, 11 insertions(+)
+ drivers/iommu/iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 0df914a04064..958f612bf176 100644
+index 59244c744eab..0df914a04064 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
-@@ -2895,6 +2895,16 @@ static const struct iommu_device *iommu_from_fwnode(const struct fwnode_handle *
- 	return ret;
+@@ -298,7 +298,6 @@ void iommu_device_unregister(struct iommu_device *iommu)
  }
+ EXPORT_SYMBOL_GPL(iommu_device_unregister);
  
-+bool iommu_is_registered(void)
-+{
-+	bool registered;
-+
-+	spin_lock(&iommu_device_lock);
-+	registered = !list_empty(&iommu_device_list);
-+	spin_unlock(&iommu_device_lock);
-+	return registered;
-+}
-+
- const struct iommu_ops *iommu_ops_from_fwnode(const struct fwnode_handle *fwnode)
+-#if IS_ENABLED(CONFIG_IOMMUFD_TEST)
+ void iommu_device_unregister_bus(struct iommu_device *iommu,
+ 				 const struct bus_type *bus,
+ 				 struct notifier_block *nb)
+@@ -347,6 +346,7 @@ int iommu_device_register_bus(struct iommu_device *iommu,
+ }
+ EXPORT_SYMBOL_GPL(iommu_device_register_bus);
+ 
++#if IS_ENABLED(CONFIG_IOMMUFD_TEST)
+ int iommu_mock_device_add(struct device *dev, struct iommu_device *iommu)
  {
- 	const struct iommu_device *iommu = iommu_from_fwnode(fwnode);
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index c30d12e16473..4191ae7312dd 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -933,6 +933,7 @@ extern void iommu_put_resv_regions(struct device *dev, struct list_head *list);
- extern void iommu_set_default_passthrough(bool cmd_line);
- extern void iommu_set_default_translated(bool cmd_line);
- extern bool iommu_default_passthrough(void);
-+extern bool iommu_is_registered(void);
- extern struct iommu_resv_region *
- iommu_alloc_resv_region(phys_addr_t start, size_t length, int prot,
- 			enum iommu_resv_type type, gfp_t gfp);
+ 	int rc;
 -- 
 2.34.1
 
