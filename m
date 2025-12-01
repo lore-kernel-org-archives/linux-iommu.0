@@ -1,254 +1,210 @@
-Received: from TYVP286CU001.outbound.protection.outlook.com (mail-japaneastazon11011052.outbound.protection.outlook.com [52.101.125.52])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7081B7E110
-	for <iommu@lists.linux.dev>; Mon,  1 Dec 2025 05:14:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.125.52
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764566086; cv=fail; b=A6zXjIHJ+hFbIl3xco4z+jazIBS3z9i9ahMajm1MGx106AzW3uTVQhYwYVp2jUNovtznil2JK6ZJEeuRNc0QjXsHjNSQf0hsJx2FT9/V+ZTCA22fd+V97HH9iKqwTfjWo9POCg4O8NGr/dEHpZrxoI6IP4yqwVlzDXOiEBhRW+k=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764566086; c=relaxed/simple;
-	bh=u0fH5DPGpF3R7ADivhUZjUMRJVr2Zib3vwLinENtqYc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=f8L/92MRbNBukw3uJ8IXt/XN0zRpI4eGYRx12fYkZYf56HGKlKf+LmHNmieHsgapSeuvOuqNjFWMhaHlaa4QjdjOFARbtrhehK63VGgjiDCWq7N/CQrQ9YLK2R2szyT5RzDeYBTvDRPhJ6GbQs3tF9Pm/8uISESPhbHitURO150=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=valinux.co.jp; spf=pass smtp.mailfrom=valinux.co.jp; dkim=pass (1024-bit key) header.d=valinux.co.jp header.i=@valinux.co.jp header.b=WH9RBTW+; arc=fail smtp.client-ip=52.101.125.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=valinux.co.jp
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=valinux.co.jp
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53F6D23F422
+	for <iommu@lists.linux.dev>; Mon,  1 Dec 2025 06:31:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1764570698; cv=none; b=rk7E2qG84W70MzONxFSBV1kBqRR2mG5jw9tt9J0ZEbZ6wWayDtzA8yT1MxaU/L24C8y44tPUI5Zp1HwCGEk5qp0xdYTBNHyhXFkXkxz4e0mWdeJdtT84jdK+nnH61DSDKHWYvJmJLbIAJMgndc4v1nXHKBrgt1NndUesIWARn8Y=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1764570698; c=relaxed/simple;
+	bh=CKrfcpTP+RSWd/fvl3u3MIbrTp9/5nNjgOwlMIgeCSk=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Mg4ICxlEfuYMvHkzBeG10hN2cgNqU/AswbMbyhNmaln2W58HGyO7sNRY5mSSXIm53p02N+WeE/HjIqQCyHxaR9rqGjed96e7WkcFaPNsDq9a3AY2J8/JNcIhVzUbhQiEzFgvkSLmxcOh6J+K5qfOPVK/eovzTMWRNWB7sUwR3l4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=keHPIo8S; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=P4Bm2C2o; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=valinux.co.jp header.i=@valinux.co.jp header.b="WH9RBTW+"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=cCfkxrmoupvrWVXZD/v+yml5sAZNLwnaEwQwLonc91JuEuzCiuBz6qfWZqIM7SkuLg/Ko+Mq07TLoqrh+R3y7qZDQX5kLMIZZH6JBCjMj+XZtsWO+OszUBwt4M5yUdGr2q+0sgZJbKFzOXc2s+q7nH6pK68taLUD2tG7YM+nxhFscTX/wATrV9AyJoQmjYm4om3Ik29LgnhBsV1lsurmqZnxpMK4k+mB8EliyKKuFWRIUrYnbd4i9tw2CahYkktlKsa8J17SLEj9WVhuTCLjavGowTkGyF3uSS8dg95I3eHseF9mJz0UiBfZ7tWU+DnFFGJtiUjoDIpoYeVvs0qXCw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vRgUdfrxy0T3zK9sGy4pNiI6LrO6TLcsojqApvGFV1A=;
- b=fZDtLiwOdOIhK7zr6GSEy15URgJSVIHioBPfWG/9p0j6jexQ8tjgCJO5Z3PvJGY1TJn6F6NPtuszFOCL0O4kSkd0oW0xT/rYlgdRKS+6Ko0uFVikf6rOOlK4JRmISUaAG+4P3wjVeCOmv5shlRBSpY8Wx4Z3uQRN/hWPMNzIqKQF6D+TrgIZP7yTbX2zCJgN57SBiS2Y14Zp9+CzP4ACa6ECBgPNFEm7fMmF1sQioOY/HOBQpNp9ozYoHu4q6L9A33kQIeG35SgwAXIWHJzEZ3+nNSUahqOFGAiouN3lt1Mgmk0+HfoVlmVLm5hesCER95RVROYUoGsjsbpfg2Qjvg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=valinux.co.jp; dmarc=pass action=none
- header.from=valinux.co.jp; dkim=pass header.d=valinux.co.jp; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=valinux.co.jp;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vRgUdfrxy0T3zK9sGy4pNiI6LrO6TLcsojqApvGFV1A=;
- b=WH9RBTW+IUOM+GEqcsLTUeXXLxMBsAmTITcUe3h29ylJH+LDaBGjh6LuilJ8g667DBEok6u5tf4akcB3YQnwi8v55Pnpnvo5hxZpy07zwAW8fyd3zHnRFYGy+gLsUzqfQj7+05sHKcBGGj7NHZdnboNxQSBDSQWE8MaJCoWvOUQ=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=valinux.co.jp;
-Received: from TYWP286MB2697.JPNP286.PROD.OUTLOOK.COM (2603:1096:400:24c::11)
- by TY4P286MB7232.JPNP286.PROD.OUTLOOK.COM (2603:1096:405:368::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9366.17; Mon, 1 Dec
- 2025 05:14:41 +0000
-Received: from TYWP286MB2697.JPNP286.PROD.OUTLOOK.COM
- ([fe80::fb7e:f4ed:a580:9d03]) by TYWP286MB2697.JPNP286.PROD.OUTLOOK.COM
- ([fe80::fb7e:f4ed:a580:9d03%5]) with mapi id 15.20.9366.012; Mon, 1 Dec 2025
- 05:14:41 +0000
-Date: Mon, 1 Dec 2025 14:14:39 +0900
-From: Koichiro Den <den@valinux.co.jp>
-To: Ryo Takakura <ryotkkr98@gmail.com>
-Cc: geert@linux-m68k.org, iommu@lists.linux.dev, joro@8bytes.org, 
-	linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, robin.murphy@arm.com, 
-	will@kernel.org
-Subject: Re: [PATCH] iommu: ipmmu-vmsa: Add DMA controllers to
- devices_allowlist
-Message-ID: <7sdiaf6svneam6svxu2htqsofswjyiia5kt2pu76anp4ppblhd@i3qbt2fn6amq>
-References: <CAMuHMdVtR_8OZG2XrD5PHY+ybaH4dudya4VXNXD3iHktdDyF8w@mail.gmail.com>
- <20251103085612.42134-1-ryotkkr98@gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20251103085612.42134-1-ryotkkr98@gmail.com>
-X-ClientProxiedBy: TYCP301CA0037.JPNP301.PROD.OUTLOOK.COM
- (2603:1096:400:380::9) To TYWP286MB2697.JPNP286.PROD.OUTLOOK.COM
- (2603:1096:400:24c::11)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="keHPIo8S";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="P4Bm2C2o"
+Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 5AULl5kh2876980
+	for <iommu@lists.linux.dev>; Mon, 1 Dec 2025 06:31:34 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	STmhNXFTBwG+hnEDAKZ8sPKTo1Pq34YKzzGNKO+nYBw=; b=keHPIo8Smn1LOD+I
+	9RmpnCfXaBrdhqNKDfVbY2H9omNp2NuDOt0fsX11rb0+J+LySaBsSOdC2jo2GvCZ
+	61Vsnp28wN7wYIVihAg4GZTBkTF0N3S1yhNIvxkfIzJoVtV200pn/maaelL2CCeV
+	HzVTt57iHKv8uDs5lKotwzgW7YWeSofGv99Nhh9WhU031GvV3QbEO3/FpLQaGzTK
+	n73COUXETZL2b268Fu6tDSWD+RSOlWc1hB9BvmgVIDK5CFo38OzTpFKbRT1E75Oz
+	JUXGybXJX7500aSjeWrKBhqd5BS1iE0/6mqSUPN2Ah8CO8LMRCTKbLJ0/KKBmmIw
+	XV2dbA==
+Received: from mail-pg1-f198.google.com (mail-pg1-f198.google.com [209.85.215.198])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4aqrwsunr1-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Mon, 01 Dec 2025 06:31:34 +0000 (GMT)
+Received: by mail-pg1-f198.google.com with SMTP id 41be03b00d2f7-bb27b422cf2so5451931a12.1
+        for <iommu@lists.linux.dev>; Sun, 30 Nov 2025 22:31:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1764570693; x=1765175493; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=STmhNXFTBwG+hnEDAKZ8sPKTo1Pq34YKzzGNKO+nYBw=;
+        b=P4Bm2C2ohjaAATeZLjzGrrzc9XDU2KJSjZ70xdbiciud9HOu6NpC6ITk2d14JPbvef
+         0cybrCJBwjkrVHf/pb7YE9zbdRhwt1K6OIrqdJ8ygbomCjSx6LX1LCpmkSXg3Tjcl4aj
+         6gx/k06Lxqz0P2ZoS9AE7CGgp7E7OInA+hTdV8f5brJIzjukgXFW3R0j4ISWTMX9isCM
+         EwFOA4Sv4FalqRdQr0DOkAGZUeqYC2fggsgUf2aXTUY0NM5f3MnxOE9YQCBTzQWE+9Tk
+         8Kalwtii9UYzSwif0kz54mi7KPBRhHV84AachrIL34kwlhpWtxXLr/CRbZiqMHrc8erT
+         11Pw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1764570693; x=1765175493;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=STmhNXFTBwG+hnEDAKZ8sPKTo1Pq34YKzzGNKO+nYBw=;
+        b=eiiEDEDy8pjCJZne/qeJ9w+UO9Mek93CB0tqWxLmoTfiwYYBbBaftMg+IDLXUizh8I
+         xiRqZYbhYh4s2YO55pewSpWymfaB6A/X3l/WY4dykWZYXvwT/4RZNeGLvi0KTA4FIFiB
+         /uKHl/gOiLOarBi0paYNM1XjDObKlpSIOI+QU3XawYAeun+Ceym0zwSpiKwJESZ26bf6
+         FlpPNgm4CuoFDY4I94jQZL/+5QjkUvJ7F/yZDj/0UScfNxwFL07eIfXBBjdetMGvZzVe
+         /diZQ7TdKe/rZMkkU7/5NyCv3QBwPTUWgUL0MRKBCd3SjArP/qdHvT8dVc6rdmMw2l5E
+         +KUg==
+X-Forwarded-Encrypted: i=1; AJvYcCVl91/dqWxz6MyxjnCYm05ilo3JGNYzbTjrEpKVxv0GYcOcnjpuvNhKOdndw/g94h/DPQfkFQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzUTCHnygumd/ovWxO8MOihnskug3DwFo/946YPTu4uSysa4q/9
+	OSCfY0NKR9GKpSUGRSsOqGl1QauUnQZ17E3pHRrZJIPA+n4Y6PLfTrupBdFLy9wzhG7oYSXdVFn
+	ujjvfW/VA6wytgGH6Cry85HkxaHsCFGwyQXXwisWnHujxxJlFqzZGOjszjg==
+X-Gm-Gg: ASbGnctkT0U4nE8Rq0ifWCXrxFJbPEw/5FY5lrGYzX/Kvh5UvsFbRKYKWZRbJeN19kO
+	VZBDj90lzJMRr71tSC6NuyUSG1HesLBefa2kgmcYweG1w1sHT6NYwQSrc2hlh0nXUbmTgaF4EQ5
+	Q7C69xX8WgDD5EZZPTtWapI4SNHQ3C3N9kACDwJDNdldHrxGMfZLULR67xV5/QvFtTxb3uZ6GIP
+	PwZz9IITjJDTiesi3r4uo0hR8EDV2mvjlaN84AHaopoRd0YVyxkEoUVoxnDn0xNjkra/99IPY2x
+	OwuMdGv7HOFKFvi9+4Mta/pbroJmHMcQaUCx9O6s/Ixfn9Qg2Hkzr+zG66tNKZTyHjkT4WXwWjv
+	BQm0nAWME2zP+P2wvPvThfY2yLpcOSkKiXMz6lacGlBr+MTY=
+X-Received: by 2002:a05:693c:401a:b0:2a4:3593:969a with SMTP id 5a478bee46e88-2a719279e30mr21303241eec.23.1764570693134;
+        Sun, 30 Nov 2025 22:31:33 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IHq25E9R36CuT3AgjBKOaRQJujlghzIDuiLwY3y65LSvd45sTEgzm6NR9GN/sTVrOwajY87Rg==
+X-Received: by 2002:a05:693c:401a:b0:2a4:3593:969a with SMTP id 5a478bee46e88-2a719279e30mr21303218eec.23.1764570692586;
+        Sun, 30 Nov 2025 22:31:32 -0800 (PST)
+Received: from [192.168.1.12] ([70.95.198.110])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2a965aafd17sm43254443eec.3.2025.11.30.22.31.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 30 Nov 2025 22:31:32 -0800 (PST)
+Message-ID: <306596c4-cc91-4500-b705-50e619e9f38e@oss.qualcomm.com>
+Date: Sun, 30 Nov 2025 22:31:16 -0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: TYWP286MB2697:EE_|TY4P286MB7232:EE_
-X-MS-Office365-Filtering-Correlation-Id: ac011d9f-e89f-4a10-7c7b-08de309887ed
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|10070799003|1800799024|376014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?TDloeRVv6MNtiqkMYtpCPGKwOnjcw8RZlsvi9P30VM66TIOYa8pbLHQZJZIM?=
- =?us-ascii?Q?bfW3HacGK3ICVmWoBSTjH8+Mwepsnn75A8FwaMCbEqCOr0eWU4i2ZhGmVUdt?=
- =?us-ascii?Q?ftwkyNAcyod/galDn3K/D9O4Brf0msbpWhxVdPe21tMJXnU38cEYxWX8PQyR?=
- =?us-ascii?Q?jkEsAZaSNqYIJXTF0h2glhx8AQMzw5wo7uGawm3c868YQZKBWvmcZIhPBUVt?=
- =?us-ascii?Q?RLPCeEj45oYFA2LkiHa4w51VWsTGFJ6HwnE6jCNZlRyt80LHzU/OhAQnFQ8g?=
- =?us-ascii?Q?imHfT8XKDkuusKzOQNQRv4X7cHl+mIolJ7ZENipxImdD59Oz+RnLNU7n+iuU?=
- =?us-ascii?Q?Rz1XMZVw2HuaAgnZSEPiHvaoW77GOXYOw6sbys/MP5Qq4stqkiOvNh5WV/kd?=
- =?us-ascii?Q?BtGErZiVy0qo5T2YSVwAl0sr2oe6Lu6jhkGXCpXpemdhgPeuJnufD+e5HV+G?=
- =?us-ascii?Q?wqLp2dyHIgimJvvRrMlknP/Cnk/HRNO9oUyBjdVxcbulBCHXm/3fqwrqmGiT?=
- =?us-ascii?Q?c6z7OLoIrO3HwUlHa6ocYxx6HREalba1NZmWqn7QgdF6V9uzgIOlFzGzCnCY?=
- =?us-ascii?Q?orZVwAe3YYpPYmecmAWHIoKsiS8K7YoQiWzVFoNRn9GZC2PEN0v6gO9wqYPu?=
- =?us-ascii?Q?qDBTMLzzL+7wBGXRoVH/9wxjK0MNoTBeVcwuLVQMCo1nDZEqMAiqVlx2w2t3?=
- =?us-ascii?Q?L61rlEzQhTX7n2o2Xbd8BLSKXuBPYcVuSCGkPVxH1y2YvDn6GXGn5C60sjfx?=
- =?us-ascii?Q?Ze0r1BOhhZ1h53I3zSDpRtnROUQJmqjrU+h3Z3ABUKM7Fmklx1pEKpt1Hyj7?=
- =?us-ascii?Q?ovAHnNAKK2LJZW3IjS6aS7Q9bUBC0/3ugcf+bEi7BcltjhXFwHSANx9+TZFU?=
- =?us-ascii?Q?UtRuE7LmYkRTKwPsl+4BWC7ety0VWL3wURqOMw58K9TACPoibsdexwYtQrlD?=
- =?us-ascii?Q?N3P/REIqct/6XgfWYWdvqO0/frhsM1ehOeHlmE8wwEbZlT2mTKvT9FYDIPQ3?=
- =?us-ascii?Q?IFyrXFOgFqBvZKnsxWUIRxAXcl9jjDN97Bvaf0Q9NCiLr8YVM4MFXwCYIirY?=
- =?us-ascii?Q?48k7hBJYrPmG9FBu1qknQY21GPZlZWrJqLtZjR9P9Td0W/WXekH6KwcWQPU5?=
- =?us-ascii?Q?jSQ3p8FllCLSuvM1MYs83TWhQMeyIWO++AOHr3PxjOLl8C+XtfxdiZ2DY+JH?=
- =?us-ascii?Q?WGIdfRt98NJAdYq3GDEVlm4g8rwDEOoSWfKqWH51IHv+akgZmqSkF+KwDBtB?=
- =?us-ascii?Q?YgX96TsuWBVvd7riwqY6IP45zN/rAALCFKEHbPZQSkTs+os7+axhRMdEU0wt?=
- =?us-ascii?Q?UuD3HRZe+DTaoINnfqUUC66lXTuy4shWqfGTJOjTGZ+PGFoC+Vc5pqxM0I+H?=
- =?us-ascii?Q?v3BwGdwqBm/MmllJhxOhvvE/ng+QTxOyLndhZReL9lRwRYs9dmGjvwEsA3KK?=
- =?us-ascii?Q?0NGQyOKlGVc1IQMnFx2DhbuNMVISCHGAq55VYxQJ8/PwX+1zTLBWdA=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYWP286MB2697.JPNP286.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(10070799003)(1800799024)(376014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?adxOxlB+KmbzcMyIzs3lJ7NIsn79WYB8ztw/HFdibSoT+R+ZEQBpVG4oOwq0?=
- =?us-ascii?Q?zAXO7Gk4Q8wraJ9dwMpcXRP3CcycWVp0RRsrwcJCy+wfL1AgZVebvQZetdH5?=
- =?us-ascii?Q?cf9QZTpDEFsFf0wGoJn796bhbZjsaj+DLOHwF5m8XOyri5NWclkLkWpxzE12?=
- =?us-ascii?Q?QD6Iy32UptpZqBbzBqp2/ZvNHkJwZgqXBD4hIWIAbnknvvVhpe7gM+KyX4yB?=
- =?us-ascii?Q?dL0OX/vDhqZmUvtQt0sEq5FEciMIqomZ2krhPJgKaywCH4nKxi1gJkU0ShRu?=
- =?us-ascii?Q?Maj5t1u1JdvM5FXsUdysvisoSu8R7xufUUbnt0f/8iKyCsw5wRSz/R/X9LzR?=
- =?us-ascii?Q?OTZJ5kPHutaahmubbb0nU0Df3F/llnhy1eQG5WR/cNj/Tll7qzbE7iQmHNhq?=
- =?us-ascii?Q?OemDJjJZb5kzL5Wdtt6RdH0cL1NBK7fN5Fm0ueJ4CqXjIAdl0dYpIJt4yG5k?=
- =?us-ascii?Q?rbAMEtKx+tDXIvOkiGuu32X39AdRysoSFmpDkRv5tsw9STsY0URKhOqPvfAx?=
- =?us-ascii?Q?2w/Dl+f3iiaA898k/n4+LBNpJjUJ/xewXYfhyKVyZEJXHIKD1BTJxPfmi9hK?=
- =?us-ascii?Q?6UrbyVxmUk7aP5qEF1CK7aqBa7RPhM15oW0E8eFNq2yUtW//Z6m89uuwAqlP?=
- =?us-ascii?Q?C+MpvZ2QsJprmwV/QYQNIk7RSw+kCERfl1AwdHVHEXwKceZ5ysWC7TtffKNj?=
- =?us-ascii?Q?4qQcsKmUhkgwSGFQbTJB9p/ojNYKwJ7O/XRziH64NAH/WXeocxvopI1wrpv0?=
- =?us-ascii?Q?wGrbXZFw5IYyYfbk0+OVWGNH2LHhCMCjB7oqLY/t/WnJIqlP6ZXwLP+sCfFB?=
- =?us-ascii?Q?y48BllUCmRjUYp0yzJixWqgDGIvgxW3MMxfTKQVtu0up5jOHeUdnwQNnzpxN?=
- =?us-ascii?Q?wzPORMEVO22Eqpr/c6B5+OUm8zAe2Rfus+lpLYCGRr9GzbbSydSIEhtYX1+y?=
- =?us-ascii?Q?fiWZyA3tAO6k2d8HJ2w9hj0+gACUeXuKcOELHVCmeywaEO9DWTbQHvvaUSuo?=
- =?us-ascii?Q?oIU2YuwxYDEMCOKgwj2yW3H8YKcnLsbufyOppJNpvGBYYCzOYyz0IG7g85UX?=
- =?us-ascii?Q?4TMauojD2vEtSQVcOZqj+VbReeiSqkkIUWD0jI0gpdmI6yoF4RcAfZ5YuRPe?=
- =?us-ascii?Q?NPSuCxxvm1ngjCcgtV/9JmkpCEkgB3WfzNam+w1VIapt3S1e3dh1jtkMMyoj?=
- =?us-ascii?Q?Rrz2T8CY7rfcp5bYfHsX31YsyzuBwv085OUSoIiO5jlH9uuotDH0ApdwSonu?=
- =?us-ascii?Q?0AHeI+Pzy207K/nlZBMYc/KlAY9wPd3AzC4KylTrSzLX8eosuwnqyfBeFui5?=
- =?us-ascii?Q?FXyybiqc5mz3jbr/Ro1OEyeFCPDbmrHS/c48ZUYfhKYQXA4tl/PEw06DskFm?=
- =?us-ascii?Q?YJZ1/aiL4SzeQTEwkmrtl1AvO5L8LAcV8xR65IjteAzwgGXA2KScJpOFM6ch?=
- =?us-ascii?Q?leIbpntQfDS+OErCN/taTqyIlAUDGI0+55ShRtGOn65vVCiN965WakkvwpqS?=
- =?us-ascii?Q?v6XG3ivlse7e0MnCRdRxB0IUaUmFwbPFWLZQtFQPfadRzJuUpNtSwmiuwVgh?=
- =?us-ascii?Q?rXfypr3M/ZiU9jgSww7r5DjNNUzaPcifkd8YCP0gWnRrnx0RQzCPHR0j1cWk?=
- =?us-ascii?Q?hRNtaeFu+XPH2ETdaVDl8zA=3D?=
-X-OriginatorOrg: valinux.co.jp
-X-MS-Exchange-CrossTenant-Network-Message-Id: ac011d9f-e89f-4a10-7c7b-08de309887ed
-X-MS-Exchange-CrossTenant-AuthSource: TYWP286MB2697.JPNP286.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Dec 2025 05:14:41.0306
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 7a57bee8-f73d-4c5f-a4f7-d72c91c8c111
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: uQMCBWSHPey59lbgSvBHOKHaLZstB7sQ5dUn9DekuuiKB2O0ymcwiStuCkBWzlDaER5fnCocootRzH+o8Z8gqA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY4P286MB7232
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4] of: reserved_mem: Restructure call site for
+ dma_contiguous_early_fixup()
+To: Marek Szyprowski <m.szyprowski@samsung.com>, Ye Li <ye.li@oss.nxp.com>,
+        robh@kernel.org, robin.murphy@arm.com
+Cc: saravanak@google.com, quic_obabatun@quicinc.com,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        iommu@lists.linux.dev, william.zhang@broadcom.com,
+        kernel@oss.qualcomm.com, will@kernel.org, djakov@kernel.org,
+        aisheng.dong@nxp.com, joy.zou@nxp.com, frank.li@nxp.com,
+        jason.hui.liu@nxp.com
+References: <CGME20250806172503eucas1p264d6731c73592fcc380b0dcc21cdeadf@eucas1p2.samsung.com>
+ <20250806172421.2748302-1-oreoluwa.babatunde@oss.qualcomm.com>
+ <416dbaed-a68f-4edb-a20c-94cb4c53c748@samsung.com>
+ <cef8f9eb-88aa-4771-b25b-2cfd1ac2c387@oss.nxp.com>
+ <3b0cc36d-0f7e-4d07-949f-fce670170247@samsung.com>
+Content-Language: en-US
+From: Oreoluwa Babatunde <oreoluwa.babatunde@oss.qualcomm.com>
+In-Reply-To: <3b0cc36d-0f7e-4d07-949f-fce670170247@samsung.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMjAxMDA1MSBTYWx0ZWRfX8quH/qRmdaIz
+ 4a32Z+moA2QJszr3vlmEJ4z1AnrKzgcyLGZm7ZPmF8QpqpAfXE77JL94XoweUqZAjXluiskY1cO
+ dClehQ4d6d5hNHn09PnsK1lcdcV0IjzzHLZrtjsRvcsNHLdBdRkzj7PH1y27nkeoEG72fJdMOPH
+ hBIeCK+4wrixuKyXY8gcdBZzbMdGNCd91WgRhPOVbl3qceOwcCltL1wt+sAW/WS6hhIW0W0yhZM
+ bUuZALjapILMfucYklUoXnnmRzJJnEp9TIxym8Gd/U9amizZEiyg/X6L5J9K02OJ3vfhKylmL0a
+ Q1An9ZnpJl7MEjoCYYUi/8JIoh8zV2zYskDU0ODOVRUzCXaC49sLAEDaW/Xs3Z0wbym0gDnVvxQ
+ M97HztHxSr8e5rtMu45fKvvjjCV+hA==
+X-Proofpoint-ORIG-GUID: bpjWfauxL2Tr2BToIS2LKXUq0p5DK6kP
+X-Authority-Analysis: v=2.4 cv=WONyn3sR c=1 sm=1 tr=0 ts=692d3646 cx=c_pps
+ a=Qgeoaf8Lrialg5Z894R3/Q==:117 a=46YzWcEg/N/3maUrm97V4A==:17
+ a=IkcTkHD0fZMA:10 a=wP3pNCr1ah4A:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=VwQbUJbxAAAA:8 a=Q-fNiiVtAAAA:8 a=EUspDBNiAAAA:8
+ a=dCyIEBchpJQOD_9XQmUA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+ a=x9snwWr2DeNwDh03kgHS:22
+X-Proofpoint-GUID: bpjWfauxL2Tr2BToIS2LKXUq0p5DK6kP
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.9,FMLib:17.12.100.49
+ definitions=2025-11-28_08,2025-11-27_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ phishscore=0 priorityscore=1501 malwarescore=0 clxscore=1011
+ lowpriorityscore=0 bulkscore=0 suspectscore=0 impostorscore=0 spamscore=0
+ adultscore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2510240001
+ definitions=main-2512010051
 
-On Mon, Nov 03, 2025 at 05:56:12PM +0900, Ryo Takakura wrote:
-> Hi, Geert!
-> 
-> I'm helping out Den-san a bit on the issue.
-> 
-> On Wed, 29 Oct 2025 17:08:07 +0100, Geert Uytterhoeven wrote:
-> >On Mon, 27 Oct 2025 at 02:26, Koichiro Den <den@valinux.co.jp> wrote:
-> >> Add Renesas DMA controller devices to the devices_allowlist to enable
-> >> their use with the IPMMU. This allows DMA channels to operate through
-> >> the IOMMU when enabled.
-> >>
-> >> Signed-off-by: Koichiro Den <den@valinux.co.jp>
-> >
-> >Thanks for your patch!
-> >
-> >> --- a/drivers/iommu/ipmmu-vmsa.c
-> >> +++ b/drivers/iommu/ipmmu-vmsa.c
-> >> @@ -741,7 +741,9 @@ static const char * const devices_allowlist[] = {
-> >>         "ee100000.mmc",
-> >>         "ee120000.mmc",
-> >>         "ee140000.mmc",
-> >> -       "ee160000.mmc"
-> >> +       "ee160000.mmc",
-> >> +       "e7350000.dma-controller",
-> >> +       "e7351000.dma-controller"
-> >
-> >While your change looks correct to me, it causes DMA mapping failures on
-> >Gray Hawk Single and Sparrow Hawk when IPMMU support is enabled
-> >(on renesas-drivers-2025-10-28-v6.18-rc3 with renesas_defconfig
-> >+ CONFIG_IPMMU_VMSA=y):
-> >
-> >    rcar-dmac e7351000.dma-controller: chan1: failed to map 1@0x00000000e656000c
-> >    sh-sci e6560000.serial: Failed preparing Tx DMA descriptor
-> >
-> >0xe656000c = HSCIF2 Transmit FIFO data register.
-> 
-> Thank you for sharing.
-> I was able to reproduce the issue on Gray Hawk Single(r8a779h2).
-> 
-> >With "#define DEBUG" added to drivers/dma/sh/rcar-dmac.c:
-> >
-> >    rcar-dmac e7351000.dma-controller: chan1: failed to map 1@0x00000000e656000c
-> >    sh-sci e6560000.serial: Failed preparing Tx DMA descriptor
-> >    rcar-dmac e7351000.dma-controller: chan2: map 1@0x00000000e6560014
-> >to 0x00000000fff82014 dir: DMA_TO_DEVICE
-> >    rcar-dmac e7351000.dma-controller: chan2: chunk
-> >00000000e5110c20/000000005e0ede90 sgl 0@000000000d8c5440, 256/256
-> >0x00000000fff82014 -> 0x00000000ffed6000
-> >    rcar-dmac e7351000.dma-controller: chan2: submit #2@000000005e0ede90
-> >    rcar-dmac e7351000.dma-controller: chan2: chunk
-> >0000000025f2f66c/00000000e5f0dd15 sgl 0@0000000064f1067f, 256/256
-> >0x00000000fff82014 -> 0x00000000ffed6100
-> >    rcar-dmac e7351000.dma-controller: chan2: submit #3@00000000e5f0dd15
-> >    rcar-dmac e7351000.dma-controller: chan2: queue chunk
-> >00000000e5110c20: 256@0x00000000fff82014 -> 0x00000000ffed6000
-> >
-> >0xe6560014 = HSCIF2 Receive FIFO data register
-> 
-> Does IPMMU support handling FIFO registers?
-> (Forgive me the question... I'm still trying to learn how it works.)
-> 
-> If not, with now dma-controller backed with IPMMU, maybe what
-> we need is to map FIFO register directly like it used to do?
-> 
-> >Comparing to the CONFIG_IPMMU_VMSA=n case:
-> >
-> >    rcar-dmac e7351000.dma-controller: chan1: map 1@0x00000000e656000c
-> >to 0x00000000e656000c dir: DMA_FROM_DEVICE
-> >    rcar-dmac e7351000.dma-controller: chan1: chunk
-> >0000000096396eb4/00000000f35357b6 sgl 0@0000000013546bf6, 74/74
-> >0x0000000489ab5000 -> 0x00000000e656000c
-> >    rcar-dmac e7351000.dma-controller: chan1: submit #2@00000000f35357b6
-> >    rcar-dmac e7351000.dma-controller: chan1: queue chunk
-> >0000000096396eb4: 74@0x0000000489ab5000 -> 0x00000000e656000c
-> >
-> >This confuses me even more: why no DMA_TO_DEVICE mapping in the
-> >latter case?
-> 
-> I believe the DEVICE being reffered in DMA_FROM_DEVICE is
-> DMAC rather than FIFO TX register.
-> So from DMAC's point of view, the dma of DMAC->FIFO TX register
-> should be think of it as DMA_FROM_DEVICE. 
-> 
-> >>  };
-> >>
-> >>  static bool ipmmu_device_is_allowed(struct device *dev)
-> >
-> >Gr{oetje,eeting}s,
-> >
-> >                        Geert
-> 
-> Sincerely,
-> Ryo Takakura
 
-Hi Geert and Takakura-san,
 
-My sincere apologies for the very late follow-up email. Unfortunately, I
-don't have access to Gray Hawk Single / Sparrow Hawk boards myself, so I
-have not been able to reproduce the issue locally. Takakura-san does have
-access to them and was able to reproduce the problem, thanks, Takakura-san.
+On 11/28/2025 4:43 AM, Marek Szyprowski wrote:
+> On 26.11.2025 02:37, Ye Li wrote:
+>> On 8/11/2025 7:07 PM, Marek Szyprowski wrote:
+>>> On 06.08.2025 19:24, Oreoluwa Babatunde wrote:
+>>>> Restructure the call site for dma_contiguous_early_fixup() to
+>>>> where the reserved_mem nodes are being parsed from the DT so that
+>>>> dma_mmu_remap[] is populated before dma_contiguous_remap() is called.
+>>>>
+>>>> Fixes: 8a6e02d0c00e ("of: reserved_mem: Restructure how the reserved 
+>>>> memory regions are processed")
+>>>> Signed-off-by: Oreoluwa Babatunde <oreoluwa.babatunde@oss.qualcomm.com>
+>>>> Tested-by: William Zhang <william.zhang@broadcom.com>
+>>>
+>>> Thanks, applied to dma-mapping-fixes branch.
+>>>
+>>> Best regards
+>>
+>> Hi Oreoluwa,
+>>
+>> We observed this patch causing kernel boot hang on iMX6 (armv7) 
+>> platforms if using "cma=" kernel parameter. It only happens when the 
+>> size assigned in
+>> "cma=" parameter is smaller than cma default size in dts.
+>>
+>> For example, we use "cma=96M" in command line and below reserved 
+>> memory node (160M) in dts.
+>>
+>>         reserved-memory {
+>>                 #address-cells = <1>;
+>>                 #size-cells = <1>;
+>>                 ranges;
+>>
+>>                 linux,cma {
+>>                         compatible = "shared-dma-pool";
+>>                         reusable;
+>>                         size = <0xa000000>;
+>>                         linux,cma-default;
+>>                 };
+>>         };
+>>
+>> The root cause is this patch moving the dma_contiguous_early_fixup 
+>> from rmem_cma_setup to __reserved_mem_alloc_size. rmem_cma_setup can 
+>> skip the cma reserved memory if command line has cma parameter. 
+>> However, the __reserved_mem_alloc_size won't do it. So this leads to 
+>> have two cma regions added to dma_mmu_remap, one from dts, the other 
+>> from command line. But the reserved memory of memblock that only 
+>> records the cma from command line is inconsistent with dma_mmu_remap.
+>> The dma_contiguous_remap clears the MMU paging for the region of 
+>> dma_mmu_remap firstly, then create a new mapping by iotable_init. For 
+>> the cma from dts, this causes incorrect memory mapping cleared. Then 
+>> any allocation from memblock in iotable_init hitting to the area will 
+>> meet MMU mapping issue.
+>>
+Hi Ye Li,
 
-As an update, at least for me, this patch will no longer be necessary due
-to another ongoing work, "NTB transport backed by remote DW eDMA":
-https://lore.kernel.org/all/20251129160405.2568284-1-den@valinux.co.jp/
+Thanks for pointing this out. From what I see in the code, if "cma="
+kernel parameter is being used to configure the default cma region, then we
+should skip adding the DT defined region to dma_mmu_remap array.
 
-Given that, I'm rather inclined to keep this on hold for now, unless you
-have any objections.
+I will work on a fix which does this and share here when it is done.
 
-Thank you both for your time and support.
+>> From commit, I don't understand what issue does this patch fix. Can 
+>> you look into the regression and provide a fix patch.
 
-Koichiro
+Please see below conversation for details on the original issue this patch fixes:
+https://lore.kernel.org/all/5aa94f41-c689-443b-8665-c6913ff5ba8f@broadcom.com/
+
+Thanks,
+Oreoluwa
+
+
+
