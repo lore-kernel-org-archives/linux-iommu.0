@@ -1,87 +1,172 @@
-Received: from mx9.didiglobal.com (mx9.didiglobal.com [111.202.70.124])
-	by smtp.subspace.kernel.org (Postfix) with SMTP id DCC7E30FC31
-	for <iommu@lists.linux.dev>; Tue,  2 Dec 2025 11:34:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=111.202.70.124
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6A22313540;
+	Tue,  2 Dec 2025 12:55:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764675289; cv=none; b=QhcMXQJLQVdVI8megNS8kqunyHLjsWA08g5kvKJIbZgquNRQdCIRa4kzJBtVRy6ioDLjrnDwOw3wcKFSIID7TTpjlCjQhW5s+THFOo1ju/8BRDyYNXhgpa0XvMjMn5ZaWaRoTlYGWGtJKDcubZG3ram8B1Quq525D56KgegI2U4=
+	t=1764680113; cv=none; b=qDQ2WC9aKuBhZFFpVwbCdIZA5k2iBDeFXy4laozXR5tdVSmSjFFpb+KkzSAg/7XpttqsLq8mYDTKCSVWtjXTEd+mh5A+gm5D6wRpCmk2TCMFCIPCuw83432pTElK0YDysXVvZMhINW/4B4jdgkkDOruB+LYVyXoX1erDFIjYLsM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764675289; c=relaxed/simple;
-	bh=HGMJzs2PTvlSKpT6P8f7+CBnwvGjZVuQLGyJtCTYP4Q=;
-	h=From:To:CC:Subject:Date:Message-ID:Content-Type:MIME-Version; b=jmICkPVKNG2Z/XzfQ9Kgqsbnh5v70pd/lNNO5cuWGCcZQHoxaO9+5QyALrD5iKe8kyIdFlS0BhnkIHL2jDSeUtni/b7MolQujYKPtYeVdhM6TJbnFf2lZjr5/812B0YX9LdGgUrDZWwthQxzo1UdTslMSco4DzajotnmsZdLieY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=didiglobal.com; spf=pass smtp.mailfrom=didiglobal.com; dkim=pass (1024-bit key) header.d=didiglobal.com header.i=@didiglobal.com header.b=DF4FlaNE; arc=none smtp.client-ip=111.202.70.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=didiglobal.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=didiglobal.com
+	s=arc-20240116; t=1764680113; c=relaxed/simple;
+	bh=qHOWzvja4DWMO+NjB9uq5+3BgXQaxJRfF1R7Huay3Bg=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=qrLtvyGFyznRAMv89SdpI/0yFYYIN6TsUVJPlT20dN+iRDE2kRvrFmKF4TZFglaL3gWsTA/ULFeTV5WmA5wG9cq/oKnqSpalxQczEm40EGwkoPpWVKLdu2aZSrr4G662RhqoS35DLTXP0TNayp4LxRBk5eH9yFdELatAQEE7g2o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=HphkWmwj; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=didiglobal.com header.i=@didiglobal.com header.b="DF4FlaNE"
-Received: from mail.didiglobal.com (unknown [10.79.65.19])
-	by mx9.didiglobal.com (MailData Gateway V2.8.8) with ESMTPS id D7261191C96A8D;
-	Tue,  2 Dec 2025 19:28:30 +0800 (CST)
-Received: from BJ02-ACTMBX-01.didichuxing.com (10.79.65.19) by
- BJ02-ACTMBX-01.didichuxing.com (10.79.65.19) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.10; Tue, 2 Dec 2025 19:31:26 +0800
-Received: from BJ02-ACTMBX-01.didichuxing.com ([fe80::3bf1:97df:b93f:7b9a]) by
- BJ02-ACTMBX-01.didichuxing.com ([fe80::3bf1:97df:b93f:7b9a%7]) with mapi id
- 15.02.1748.010; Tue, 2 Dec 2025 19:31:26 +0800
-X-MD-Sfrom: tiozhang@didiglobal.com
-X-MD-SrcIP: 10.79.65.19
-From: =?utf-8?B?5byg5YWD54CaIFRpbyBaaGFuZw==?= <tiozhang@didiglobal.com>
-To: "vasant.hegde@amd.com" <vasant.hegde@amd.com>
-CC: "iommu@lists.linux.dev" <iommu@lists.linux.dev>, "zyhtheonly@gmail.com"
-	<zyhtheonly@gmail.com>
-Subject: Seeking help on AMD IOMMU unmap logic
-Thread-Topic: Seeking help on AMD IOMMU unmap logic
-Thread-Index: AQHcY38xL9sWGDOSgk6XxNzb3tMdug==
-Date: Tue, 2 Dec 2025 11:31:26 +0000
-Message-ID: <E16714B0-F380-4AA3-9F71-944C83FD7E45@didiglobal.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <5C7E10BE797E2942978304BC9CB47200@didichuxing.com>
-Content-Transfer-Encoding: base64
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="HphkWmwj"
+Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 5B28FR2q1491741;
+	Tue, 2 Dec 2025 12:54:57 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:date:from:message-id:mime-version
+	:subject:to; s=qcppdkim1; bh=NOi1IpLT3hqt7Yhp0snhhK4gc9WWC6VmIKv
+	2Z30g4Sc=; b=HphkWmwjyk2yeALGiPfZz19OXjKibs38o1AY5J3nUbIjF6Kgy1I
+	fVys66etNUVCUd9A0ETXPaN+sCmtWqcOaxOSBu+ivGz+SxY18P+SJw0r0OshMAnp
+	/hp2EMY+G1xumxTGADAOWDtPocRefs1sg7sQxURvZvk1iznUWrRjZ7IjlSqZxTE0
+	72sEuWDwVN7YoLiR52TchFlvTVjE+PG/Dh1P1l4OOY0NQcvHY+5F1g+GIOi0THz4
+	JLn/39r9M/qvXOf3kMa4zmyPqOpcuDywiloC0ba5Z4O2nCODi6QwRo9HbYtgnjur
+	0uF+MUW28llcFqV0rsqvLpBLJ/JMRA0In4Q==
+Received: from apblrppmta01.qualcomm.com (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4askbd2dtf-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 02 Dec 2025 12:54:56 +0000 (GMT)
+Received: from pps.filterd (APBLRPPMTA01.qualcomm.com [127.0.0.1])
+	by APBLRPPMTA01.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTP id 5B2Csq8E023265;
+	Tue, 2 Dec 2025 12:54:53 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+	by APBLRPPMTA01.qualcomm.com (PPS) with ESMTPS id 4aqswkpyra-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 02 Dec 2025 12:54:52 +0000
+Received: from APBLRPPMTA01.qualcomm.com (APBLRPPMTA01.qualcomm.com [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 5B2Csqfg023259;
+	Tue, 2 Dec 2025 12:54:52 GMT
+Received: from hu-devc-hyd-u22-c.qualcomm.com (hu-charante-hyd.qualcomm.com [10.213.97.134])
+	by APBLRPPMTA01.qualcomm.com (PPS) with ESMTPS id 5B2Csqhv023256
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 02 Dec 2025 12:54:52 +0000
+Received: by hu-devc-hyd-u22-c.qualcomm.com (Postfix, from userid 389980)
+	id 7C66E5D8; Tue,  2 Dec 2025 18:24:51 +0530 (+0530)
+From: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
+To: konrad.dybcio@oss.qualcomm.com, robin.clark@oss.qualcomm.com,
+        dmitry.baryshkov@oss.qualcomm.com, will@kernel.org,
+        robin.murphy@arm.com, joro@8bytes.org
+Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
+Subject: [PATCH V4] iommu/arm-smmu: add actlr settings for mdss on Qualcomm platforms
+Date: Tue,  2 Dec 2025 18:24:47 +0530
+Message-Id: <20251202125447.2102658-1-charan.kalla@oss.qualcomm.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=didiglobal.com;
-	s=2025; t=1764674913;
-	bh=HGMJzs2PTvlSKpT6P8f7+CBnwvGjZVuQLGyJtCTYP4Q=;
-	h=From:To:CC:Subject:Date:Message-ID:Content-Type;
-	b=DF4FlaNEnDl/Gen+LV8rFs2SKCgOYPZX77ZDiB1Az2nt6g87eOzzYlMzwwIAGhRUV
-	 sq5qYfGlblWeOzfqwQYbzb37IbSs9Jpd8FLtx82rrfmfw8F0ov4Sy3xnJNjhCsSyQJ
-	 EkCGiVYHMw7ulTpm+wS7mGqsGVkOcrRD2SrL2mrk=
+Content-Transfer-Encoding: 8bit
+X-QCInternal: smtphost
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: bYQVAJBa3iekCjcoUw7S9foE0baYEL4H
+X-Proofpoint-GUID: bYQVAJBa3iekCjcoUw7S9foE0baYEL4H
+X-Authority-Analysis: v=2.4 cv=fLg0HJae c=1 sm=1 tr=0 ts=692ee1a1 cx=c_pps
+ a=Ou0eQOY4+eZoSc0qltEV5Q==:117 a=Ou0eQOY4+eZoSc0qltEV5Q==:17
+ a=wP3pNCr1ah4A:10 a=VkNPw1HP01LnGYTKEx00:22 a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8
+ a=LWYvQZVa8uIfhQNUIroA:9
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMjAyMDEwMyBTYWx0ZWRfX/4ZhITIdLEfI
+ BTKQVALJOWL5RjZNo17aZzfmnIrCs8+CmoXQlwU8KiyX2YiQXzy5GG4dPbXV1HHWF2xLXUJKN2j
+ HsFfgUzhY2VqvLWEpGMB2ZYN6SCzQaZkQ+nZET64lvRIIAQWPUwknr+shpTcbP7d9s16EyRWZj8
+ rZGm/ahU/Xcc4Xip20+9pDWImcEIbiraVqXrJDSrkHotYpwaWCv/YYL/bdbsiuajlvBjv7FtV/p
+ wLnc84/+EjI62SYPF+ffXLOwFgCA4PsYsa33pJzfIpDuwreyppnx/XSEGvca09A7uh3ENpv8CkD
+ QPrtNxUQNHTJgMyM2DFG8rJfggDbVAtsTGlgv8ZOZvrARwW+KEvGJ3lYxo5jzm5nm4WpnKZbIGZ
+ khKeKMLKfbyX/RmlJfi16cezWPkFqA==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.9,FMLib:17.12.100.49
+ definitions=2025-12-01_01,2025-11-27_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ spamscore=0 clxscore=1015 phishscore=0 adultscore=0 malwarescore=0
+ suspectscore=0 lowpriorityscore=0 impostorscore=0 bulkscore=0
+ priorityscore=1501 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2510240001
+ definitions=main-2512020103
 
-SGkgVmFzYW50LA0KICBIb3BlIGFsbCBpcyB3ZWxsIQ0KDQogIE15IG1hY2hpbmVzIGNyYXNoIGF0
-ICJCVUdfT04odW5tYXBwZWQgJiYgIWlzX3Bvd2VyX29mXzIodW5tYXBwZWQpKTsiIGluIGlvbW11
-X3YxX3VubWFwX3BhZ2UoKSwNCmZyb20gdm1jb3JlIEkgbGVhcm4gdGhhdCBpdCBpcyBwcm9iYWJs
-eSBjYXVzZWQgYnkgYWRkaW5nIHVubWFwcGVkIHRvIGFuIHVuZXhwZWN0ZWQgdmFsdWUgYWZ0ZXIg
-YSBOVUxMIHB0ZSBmb3VuZC4NCg0KICAyNTFjNGRiNjk5Y2E3Yjk2NmRiN2U1OWU4NjYzYTIzMWM5
-NmJhNDU0IHNlZW1zIGZpeGVkIHRoaXMsIHdpdGggdGhlIGNvbW1pdCBtZXNzYWdlDQoiQWxzbyBp
-ZiBmZXRjaF9wdGUoKSByZXR1cm5zIE5VTEwgdGhlbiByZXR1cm4gZnJvbSB1bm1hcF9tYXBhZ2Vz
-KCkNCmluc3RlYWQgb2YgdHJ5aW5nIHRvIGNvbnRpbnVlIHRvIHVubWFwIHJlbWFpbmluZyBwYWdl
-cy4iDQogIENvdWxkIEkgZml4IHRoZSBjcmFzaCBieSBvbmx5IGFwcGx5aW5nIHRoaXMgcGFydCAo
-cmV0dXJuIHdoZW4gZmV0Y2hfcHRlKCkgcmV0dXJucyBOVUxMKSBvZiB0aGUgcGF0Y2g/DQoNCiAg
-VHJhY2tpbmcgdGhlIG1haWwgbGlzdCwgSSBmaW5kDQpJbiBvcmlnaW5hbCBwYXRjaHNldCBWMiwg
-dGhpcyBCVUdfT04gcmVtYWluZWQNCmh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL2xpbnV4LWlvbW11
-LzIwMjIwNzEzMDUzMDM0LjEyMDYxLTQtdmFzYW50LmhlZ2RlQGFtZC5jb20gPG1haWx0bzoyMDIy
-MDcxMzA1MzAzNC4xMjA2MS00LXZhc2FudC5oZWdkZUBhbWQuY29tPiA8bWFpbHRvOjIwMjIwNzEz
-MDUzMDM0LjEyMDYxLTQtdmFzYW50LmhlZ2RlQGFtZC5jb20gPG1haWx0bzoyMDIyMDcxMzA1MzAz
-NC4xMjA2MS00LXZhc2FudC5oZWdkZUBhbWQuY29tPj4vDQogIFRoZW4gaW4gcGF0Y2hzZXQgVjMs
-IHRoaXMgQlVHX09OIHJlbW92ZWQgd2l0aCAiYW5kIG1pbm9yIGZpeGVzIHRvIHVubWFwIHBhdGgu
-IiBkZXNjcmliZWQgb24gc3VtbWFyeQ0KaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvYWxsLzIwMjIw
-ODI1MDYzOTM5LjgzNjAtNC12YXNhbnQuaGVnZGVAYW1kLmNvbSA8bWFpbHRvOjIwMjIwODI1MDYz
-OTM5LjgzNjAtNC12YXNhbnQuaGVnZGVAYW1kLmNvbT4gPG1haWx0bzoyMDIyMDgyNTA2MzkzOS44
-MzYwLTQtdmFzYW50LmhlZ2RlQGFtZC5jb20gPG1haWx0bzoyMDIyMDgyNTA2MzkzOS44MzYwLTQt
-dmFzYW50LmhlZ2RlQGFtZC5jb20+Pi8NCmh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL2FsbC8yMDIy
-MDgyNTA2MzkzOS44MzYwLTctdmFzYW50LmhlZ2RlQGFtZC5jb20gPG1haWx0bzoyMDIyMDgyNTA2
-MzkzOS44MzYwLTctdmFzYW50LmhlZ2RlQGFtZC5jb20+IDxtYWlsdG86MjAyMjA4MjUwNjM5Mzku
-ODM2MC03LXZhc2FudC5oZWdkZUBhbWQuY29tIDxtYWlsdG86MjAyMjA4MjUwNjM5MzkuODM2MC03
-LXZhc2FudC5oZWdkZUBhbWQuY29tPj4vDQogIEknbSBhbHNvIGN1cmlvdXMgYWJvdXQgdGhlIGRl
-dGFpbHMgb2Ygd2h5IHRoaXMgc2hvdWxkIGJlIGZpeGVkPyAoSSBrbm93IGxpdHRsZSBhYm91dCBJ
-T01NVSwgZnJvbSBteSB1bmRlcnN0YW5kaW5nDQpJZiB3ZSBkbyBub3QgY29udGludWUgdW5tYXAg
-cmVtYWluaW5nIHBhZ2VzLCB3b3VsZCBpb3ZhIHJlbWFpbnMgaW5jb25zaXN0ZW50IHdpdGggR1BB
-PykNCg0KVGhhbmtzIGEgbG90IGZvciB5b3VyIHRpbWUhDQoNCg0KDQoNCg0KDQoNCg0K
+Add ACTLR settings for missing MDSS devices on Qualcomm platforms.
+
+These are QoS settings and are specific to per SoC thus different
+settings, eg: some have shallow prefetch while others have no
+prefetch.
+
+Aswell, this prefetch feature is not implemented for all the
+platforms, capturing to those are implemented to the best of my
+knowledge.
+
+Signed-off-by: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
+---
+Changes from V3:
+ 1) Add actlr setting for missing sc8180x & sm6115.
+ 2) Improved commit message.
+https://lore.kernel.org/all/20251124171030.323989-1-charan.kalla@oss.qualcomm.com/
+
+Changes from V2:
+ 1) Add actlr settings for all the mdss devices on Qualcomm platforms.
+ 2) Improved the commit message that explain why different ACTLR
+    settings
+https://lore.kernel.org/lkml/20251118171822.3539062-1-charan.kalla@oss.qualcomm.com/#t
+
+Changes from V1:
+  1) Added actlr setting only for MDSS and dropped for fastrpc. --
+konrad
+  2) ACTLR table is updated per alphanumeric order -- konrad 
+  https://lore.kernel.org/all/20251105075307.1658329-1-charan.kalla@oss.qualcomm.com/
+
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 26 ++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
+
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+index c21a401c71eb..149da53091de 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+@@ -41,12 +41,38 @@ static const struct of_device_id qcom_smmu_actlr_client_of_match[] = {
+ 			.data = (const void *) (PREFETCH_DEEP | CPRE | CMTLB) },
+ 	{ .compatible = "qcom,fastrpc",
+ 			.data = (const void *) (PREFETCH_DEEP | CPRE | CMTLB) },
++	{ .compatible = "qcom,qcm2290-mdss",
++			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
+ 	{ .compatible = "qcom,sc7280-mdss",
+ 			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
+ 	{ .compatible = "qcom,sc7280-venus",
+ 			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
++	{ .compatible = "qcom,sc8180x-mdss",
++			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
++	{ .compatible = "qcom,sc8280xp-mdss",
++			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
++	{ .compatible = "qcom,sm6115-mdss",
++			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
++	{ .compatible = "qcom,sm6125-mdss",
++			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
++	{ .compatible = "qcom,sm6350-mdss",
++			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
++	{ .compatible = "qcom,sm8150-mdss",
++			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
++	{ .compatible = "qcom,sm8250-mdss",
++			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
++	{ .compatible = "qcom,sm8350-mdss",
++			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
++	{ .compatible = "qcom,sm8450-mdss",
++			.data = (const void *) (PREFETCH_DEFAULT | CMTLB) },
+ 	{ .compatible = "qcom,sm8550-mdss",
+ 			.data = (const void *) (PREFETCH_DEFAULT | CMTLB) },
++	{ .compatible = "qcom,sm8650-mdss",
++			.data = (const void *) (PREFETCH_DEFAULT | CMTLB) },
++	{ .compatible = "qcom,sm8750-mdss",
++			.data = (const void *) (PREFETCH_DEFAULT | CMTLB) },
++	{ .compatible = "qcom,x1e80100-mdss",
++			.data = (const void *) (PREFETCH_DEFAULT | CMTLB) },
+ 	{ }
+ };
+ 
+-- 
+2.34.1
+
