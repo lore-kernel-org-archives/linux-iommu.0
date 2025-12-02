@@ -1,380 +1,435 @@
-Received: from DM1PR04CU001.outbound.protection.outlook.com (mail-centralusazon11010019.outbound.protection.outlook.com [52.101.61.19])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f201.google.com (mail-pg1-f201.google.com [209.85.215.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 623812F9DAB;
-	Tue,  2 Dec 2025 22:39:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.61.19
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764715201; cv=fail; b=TTfSqpG0FGBnKyrh28DfsFOThOaAaq1JuDqYD8CyaQ497qSF78GQkXXw/LupD3pTsY/gz32YwTsJEGAipkdlfUHAQHC8+U1nY7GsXUxdNxScTvc9HJ9BjUVrGuAe5avboguzGtab1HOe9UA1fnKZUZn/OmSMCCZD2DSO9aIs4ko=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764715201; c=relaxed/simple;
-	bh=1oHsA+846kXfAyFBCb3PCU0qqaH0cIHmO92llbdGkIU=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=PqsMS5z5tNtCFMqOVo8AdO3MHG+eY7tbx5efCJE8cOlbo5TOWqj0tW6d72N7ECSxqCG2PcLCRxxtKuSwK13+vd6bvgS1PzGr+0vwaNmHtE7HrFZZvvY7ICPYpYODQnCIbUC8O/5QxXJPoezIkdSRvVd4koRD0SesYZjApNQvMT8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=S/BwuIHN; arc=fail smtp.client-ip=52.101.61.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE70C190462
+	for <iommu@lists.linux.dev>; Tue,  2 Dec 2025 23:03:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1764716587; cv=none; b=Q+BIYfNIcznbdYaY/rXITgRjF9XHRsqW6FZ8M1YO5F1U23l4+1KwcAeOUAJL4pheMs3tbnSAQ6f5k5VawHMinCcd/V9zN9X8Q3q0lYrFa+kozkMp1D36054pz3q9bbcJqsocjQEU1K1UdU8r/iLz1qxUfoAUdANgCCR7+52d+M4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1764716587; c=relaxed/simple;
+	bh=9Gsv6oakUWVIyaD0ipG7SsZ8duV1yyO1pG8NESidX40=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=KEB/Ya+ZjSZf1j4UMQMI/FFymFK0fm3B/drLV7HJprGU08hdthXkaPb9BDJOG5BX56irXPk5MrslqKUnKSFYNx5VE0LY501QUH3WFt4w95V4L2Hb/Qm2nc3k7vTRnEaLzYP7Q6leTp0ME5+VvocQsJw1NZfGoEZYUhy0+t576wk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=1n00LHEo; arc=none smtp.client-ip=209.85.215.201
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="S/BwuIHN"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=hD6v/opEifOD2VkwR05hDX7/yqa8p14a3jQNCZOG6IQDzeyFup9oUYkErkKo1JZ3RnNm+T2LnczgMdUQBaEFXBzhTahyZHV8n3O0EX+ymTTMvpdeyG79UvT83sFlISn1yamCZA4BUJwh0qxRV/x1K3O6TcVmfPUkgjhWOvYkRoMI+bINCHBvx7IWSCAgsK5/c/V7ksgXhUfF+DtviB7QuX8BhosIfCDuMQjyLEC6HeRidKn0yCRiHIUZuMsblHMrNtIxl0pULBL3J5GQd9AQg093DQrCLCYaz6V/FvGk6LrtyDYteFmAZp2Mwze/t5K6mAo71Vgo1XkZuX82FuhIfA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=47TLtDslAH0tYyEXYKOCgBiIEjKTcRdffhOXSAjLc50=;
- b=qUbXXOvG43TKmTwPdA19Z2EN9wAeerdSXDGsE2DuZ8yZ6shrkkCymIDmrgfiPmIC5CyKOcPOMvRZ8FeE5b7h+upfUENZZ9/NIsgUmTgr/BQpNGNQVy3b4ZjSBW87oh95WZooux5OmFBIJ7gQVCYwtqYka671N/cL/w2ttnpjDjAV8wOaJXtJnk4gyeXvN4qLkYBGNIhgsfq3blKPcCiwMKMXjKsQE2m8ooxTfKRJAfUeNOFDRxaR2wP9VPFnUbV3ryFwqQkcmw918eYfAFwWXnIJce0L/vdIgfAqvsm8y4/0y/H8VGhkgfdM5oNWvIayWMfuH5dr9OFWESLKUJuosA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=47TLtDslAH0tYyEXYKOCgBiIEjKTcRdffhOXSAjLc50=;
- b=S/BwuIHNbio49XslJYDR94emAaY1UMarypnjRM06r3pVjs5hKrU4aoPBZei45FVFhMRyTXIyJuF/v7PVSDgD1fwxT0H/ZslY6TKNDRjdV6krMpO3s39d4+8V5X5Gl6n1lWGykly0mGb75MXYDqSYGYuGYYzrg8cfSg+rpRE7Y3E=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from BL3PR12MB9049.namprd12.prod.outlook.com (2603:10b6:208:3b8::21)
- by DS0PR12MB7656.namprd12.prod.outlook.com (2603:10b6:8:11f::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9366.17; Tue, 2 Dec
- 2025 22:39:56 +0000
-Received: from BL3PR12MB9049.namprd12.prod.outlook.com
- ([fe80::ae6a:9bdd:af5b:e9ad]) by BL3PR12MB9049.namprd12.prod.outlook.com
- ([fe80::ae6a:9bdd:af5b:e9ad%5]) with mapi id 15.20.9366.012; Tue, 2 Dec 2025
- 22:39:56 +0000
-Message-ID: <e98582db-39d6-4a09-8f9c-88b0aa0c4676@amd.com>
-Date: Tue, 2 Dec 2025 16:39:50 -0600
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH kernel v3 4/4] crypto/ccp: Implement SEV-TIO PCIe IDE
- (phase1)
-To: Alexey Kardashevskiy <aik@amd.com>, Tom Lendacky
- <thomas.lendacky@amd.com>, linux-kernel@vger.kernel.org
-Cc: linux-crypto@vger.kernel.org, John Allen <john.allen@amd.com>,
- Herbert Xu <herbert@gondor.apana.org.au>,
- "David S. Miller" <davem@davemloft.net>, Joerg Roedel <joro@8bytes.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Borislav Petkov <bp@suse.de>, "Borislav Petkov (AMD)" <bp@alien8.de>,
- Dan Williams <dan.j.williams@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
- Jerry Snitselaar <jsnitsel@redhat.com>, Vasant Hegde <vasant.hegde@amd.com>,
- Gao Shiyuan <gaoshiyuan@baidu.com>, Sean Christopherson <seanjc@google.com>,
- Kim Phillips <kim.phillips@amd.com>, Nikunj A Dadhania <nikunj@amd.com>,
- Michael Roth <michael.roth@amd.com>, Paolo Bonzini <pbonzini@redhat.com>,
- iommu@lists.linux.dev, x86@kernel.org, linux-coco@lists.linux.dev
-References: <20251202024449.542361-1-aik@amd.com>
- <20251202024449.542361-5-aik@amd.com>
- <b6d45b8e-3eeb-4b96-b781-e0ad28861a2c@amd.com>
- <36929d3e-b56c-4e65-9ec1-42fc52fdd962@amd.com>
-Content-Language: en-US
-From: "Kalra, Ashish" <ashish.kalra@amd.com>
-In-Reply-To: <36929d3e-b56c-4e65-9ec1-42fc52fdd962@amd.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: SN6PR16CA0070.namprd16.prod.outlook.com
- (2603:10b6:805:ca::47) To BL3PR12MB9049.namprd12.prod.outlook.com
- (2603:10b6:208:3b8::21)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="1n00LHEo"
+Received: by mail-pg1-f201.google.com with SMTP id 41be03b00d2f7-b630753cc38so7824173a12.1
+        for <iommu@lists.linux.dev>; Tue, 02 Dec 2025 15:03:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1764716585; x=1765321385; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=9KUOgD4n38xlwmLnnaQRMn+qGCOFSQ93ow41X3xe4pU=;
+        b=1n00LHEoFWkVzX6tdWfhzSIotIKT+cYRe65x+bAr6B7B4qadPi7nFOEEiqJnPnTR63
+         0lcrH9OEc5vWnMZGTCujNk60EwPKorpQwm0bk4LRZU6lf64AwmdjK73XtaUP1EIn2Glv
+         Q9s0qdA5eVWhHWWvUxM/W7XukJtUoyl0QGd4XY4kom8G3417zj8OE+br6gXCTUQetgUt
+         5jfouXLBb+MfJblxVKw0pSo3bOwX6TJBquCXgb3f7CtepwiAdHTPPAfMsd8TA1X0o3Z1
+         5EC9zmKDdHo1YRWNMLx+0uaht6iAz37HUYQbYSUByFSTH9VHZqiB2IfwPX9JT1JL2g1Z
+         ohJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1764716585; x=1765321385;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=9KUOgD4n38xlwmLnnaQRMn+qGCOFSQ93ow41X3xe4pU=;
+        b=D7g3oJ+qKNp8JEVTqS+EEVhM5G/RYQEUa+LYpRx0mTBkrGQwiySCHTXvaEqu8i3fQI
+         3snBSeOLayEBCm48pa7WcWJhQRFNrB3/ILywhYlqk5oxcpKHFMnR+rIwvhc7jJwSPBg8
+         QncYP73oZs/4n+9nymBq0F1JvwfhqGDUi828IQdSEPWxxgP+qhi0OcYQfryKVDXxZ2b/
+         HE7lOERiTbV63PuPn6spH4AcInjm64l77rJ51pQKcEdviQ5nOc80c85pcwAnYdfdmtFN
+         a0LkFXVCI1QbYf1qnWAj4yOFbEW2OSNphs8wyJ8RKOFgmvFZE/N49qOaFzSWGDo12rqT
+         2WkA==
+X-Forwarded-Encrypted: i=1; AJvYcCVxwtxH0/QPcN8E6ujZRXWK3IZPvjTFLV6+lQwCKARVxmDE5yHDKKiCkJbd6mR6pLP796sYpA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxD6YTjhVSfaBF79KhX+MTefZUsC6VwY4wgH3LU1ftFK4hzZbQC
+	Eg82v35TnJfAkT6kSlKpMLilBeyFET7GEAZ5n6z/52YHJBvL/mD947eF8qwE275OPJRvGnEtFw7
+	BbUqPAdF3zNV3/Q==
+X-Google-Smtp-Source: AGHT+IH7M3gnhr7XpldBdwjSyiIkr/vfyO3/RfYaMdhMRTjVRihE9olZyl3rCq2Fury6twe90Dm0apJXlyfYrg==
+X-Received: from pfbga5.prod.google.com ([2002:a05:6a00:6205:b0:7ba:f1ee:f7a])
+ (user=skhawaja job=prod-delivery.src-stubby-dispatcher) by
+ 2002:a05:6a20:7d9f:b0:35d:8881:e6ce with SMTP id adf61e73a8af0-363f5d738bamr484556637.26.1764716584850;
+ Tue, 02 Dec 2025 15:03:04 -0800 (PST)
+Date: Tue,  2 Dec 2025 23:02:30 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL3PR12MB9049:EE_|DS0PR12MB7656:EE_
-X-MS-Office365-Filtering-Correlation-Id: 13c3ebfe-7b66-4420-b503-08de31f3b778
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|7416014|376014|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?QTVmZFREd0paTFFGWG1VWWFnRGpPVldqUHZhd0VsU0lIV1l5SHVRbktRSExL?=
- =?utf-8?B?QUxSNTJKSjFIRnU5QzRsUGxGVHNmMkNyV01kQjkvTjRIRlJFVGpkRmNUbkZh?=
- =?utf-8?B?ZzByKzhUVlk3VCs5SjZvR2V3TDM5akRnSXlIYzE2WDZ0bjJQQ0VPc0Y5TjQ1?=
- =?utf-8?B?Ry8zWHMyV1BzVW9tbXRPY2FzQXZEUHpwWnRuMHc1bm8rdFJXWUFqNUswanB0?=
- =?utf-8?B?R2xzOWN3ZmpValE2NFNhUE9oMC9yTkFBY3l2L0FZV2hmRDdZdk5wZzFSSHJk?=
- =?utf-8?B?TlZJMVpKQ3p1a0FMbUtsdGhzYXIza3hDWVVmUWJaZzhiVHNJbGpnUUFKcTZW?=
- =?utf-8?B?aHBEWWRoYVkvTS93SkwrMlh3SFQ4TUYwczMvMjZkRGRiUjVCcGoxRVlFdkhn?=
- =?utf-8?B?VFZveUNWSGZnd0IzOHo4alJCZTBsQktLVnZSdXBTVFdWb2piaGJzd1lQeTBp?=
- =?utf-8?B?cEpwYjFzYWF4dDNDemRncFhpSHdFLzMyTVVMSksyUWo3Y3Q0SVVpcUsrYU5P?=
- =?utf-8?B?NVRaUWc5bTI0dXgwOFNDTmNRcnBIU2NCamdQazg4UmNhaHptbHJybUFFYmpt?=
- =?utf-8?B?UmdXSmIzV2ltNzltRXBsdkhWckh0djZSSU1LR3FGNmdnVzl5SFFoNVZYb1g3?=
- =?utf-8?B?WVpxZGtyQ1E2MGZWWWVlNWJlc3FOSUFhaVRoYm8vTk9uVkFCUUFpaVJNNHNa?=
- =?utf-8?B?bVNGcXZBMDN5ckRkeUt5ZGhzVUdrM09YS2RPVmNxMFl5aWJ1amxBZ0I3OXNw?=
- =?utf-8?B?aENjVmRyTGNGaURMUEE1My9UR0dOZ3VCelNyNFhPekRHWHhwSVdzUCs3TCtD?=
- =?utf-8?B?WWZCRWhLbVFNdHZtais4aXFYell4RnBVUkt3QkNiZ1h5QWN6ZEpOdlVBNWY3?=
- =?utf-8?B?aGt4elVDWXVIcm9wQ084NWxXSHBjWkd6UzdJUzNaUENjM1Q2QTEwWElEZFFk?=
- =?utf-8?B?TjFYcFF1YkhYREd6cTZMM21nS0pCVVloTk9RRmVpN3c3OHdJd1YxMHVrK1BX?=
- =?utf-8?B?Tm9vZWk4SnRGM0FhWFFsaDhoQXhiTHhmNUcxMlg2RWZWVERNaW1zOFZYSkVZ?=
- =?utf-8?B?b1dZWjlQZGNqRjZ5M2U1Znk1TW9meGRNblh1RURGekRPNm4vN2F5VGVjRktI?=
- =?utf-8?B?ZFVLQ1VSVnBsVC9yK1cvTWYxN2pib2xmQ1ZWTHBpOWEySWZYdlNOODVJaUlJ?=
- =?utf-8?B?OUZqY2pYUXF3VGtHZDlsMkR6bysvTWI3ZjZ4b1JydC9KTzRRdkVmZ1FCNjRE?=
- =?utf-8?B?Y3lBaXoyV1M2c3RKUDViY1E1VzIyYnVHSSs5bDFFSlgrY1o4SS9MWCtQcW4x?=
- =?utf-8?B?Ym9XaGlFK0dDdnlETGR2dzIvMnNvSHk2Rk1zNnNrUndDM01VeFJ5eGdPMkhV?=
- =?utf-8?B?emdIUW1qOGRRUmpuM1g3OGNINndZL1VFbWJRVDVSQ0wvcXFIbnVmTmlGNkM3?=
- =?utf-8?B?eHZWL1N5QXR5ODRnK0ZWbFJsbE9QTVZNWTVzaWJ4eFhJMkhHNHdTYXFoRHVU?=
- =?utf-8?B?NmhiVWdEL25GS3BUcHROVld3cTh4ODdENzM3SW15REJ3U3duc0hIV201d29P?=
- =?utf-8?B?NzVNSkhQQmcwVjdKeGlvUGlxZHlZNVB0TW1ZZ0Y5aTBVL1pRL21yK3NUeUY1?=
- =?utf-8?B?NVBCMk9KMVd1US9GWDBYbHYvUzZEbmdPWVdScExvMUsrSkoyVHUvSklWRUg2?=
- =?utf-8?B?S0RFZjl3VzNWNVZUNU1sb3BHYUU1djFKZkdaTnNFa0RVZnlyS2hTb1VhV0tI?=
- =?utf-8?B?VmhienhnaitpNGV3emUzbHR3cm1LcTMyZGlDV1h2cGZGQzFXTG1JdGV3VTJH?=
- =?utf-8?B?VE5Uc2pmaUo3MFBBMDRVZnQ0L3RYbWdhazFiT3hvcFgvSm5kS2I3WnBmOWxS?=
- =?utf-8?B?Mjd2aU5wbXAwb2VlN3FOTzkrN2RScC9rMTFlYzZxU0tEeEhNRjIxYVRNZkl0?=
- =?utf-8?Q?aigRPpuPolV/NimcWYUX5ItvOfZVZLpQ?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL3PR12MB9049.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(7416014)(376014)(1800799024);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?b1ZBaDJ6Z3poQ0ZrYmpkTS9NbU1PQ1dkRnRlNTlYaWNuNStMZlBpamplUklq?=
- =?utf-8?B?ZnliWUM4dUx5bmYxNklMcksxU0h6S1VoS2tHMisxZVhaRGg4R1lHM3Z0N1FI?=
- =?utf-8?B?NnQ1MVNSTTU1eXJEeFFjODVST2NaUHBTM09ybmVJZG42SVhmQ1p6U1NFNkRn?=
- =?utf-8?B?bExiZ2czZk9vQ1dDVjc3YXZUTnVIQmlrbWMxeEh3aVI4dnlBM3h3MlRtVDB3?=
- =?utf-8?B?Mmh5WFFHeFpvajdkREhpMWJ6QnIyeHdxbk9NRS9tOUJsd1pCL1lwTXRFcmI5?=
- =?utf-8?B?c2c1TlZWcFJTRWRHaEFOL0Z3ZUVPRnJsWlV3WkZYMFJCejJ5MkhRUDYvZWpI?=
- =?utf-8?B?MHdmT3BhSmhpRUMrZWg3UC82MHlrdEMxak5oVHMxSjVQbTNOZlZnTE5hTHli?=
- =?utf-8?B?ZWE5bjBuellnVy9UMFpyMndkdWZFT3VyV0ltZjlVSUJSNTN3TXRORUhzc0Vo?=
- =?utf-8?B?T0l0TWlnZWRiTHIveG9EZWxxb0h3aGFyc0RxalhLejhHV0FiNWd3Mk51SllO?=
- =?utf-8?B?SC9lTFlERVlvZWlBUTlvWFB1RlpWZ1E2Y0dsMUVUZGsxUWNvelVqN2Z3cnNC?=
- =?utf-8?B?ckZLNXkwbnI4RXBESDREZHNiWnQrU1pVNFhYcHpFam9DR296cDBmSVJXNlVT?=
- =?utf-8?B?LzQ5ZFUvTHFsSmcwcXA2RXdaVUxBaytpdjVBWXFZOFBaNXpNUFZ1djNBYzZ5?=
- =?utf-8?B?RDV5eEF3dGJyb09qakV4cW9CVjRnY2twV3VDZHU1RkVIWi9LR09ZTHB4VTU3?=
- =?utf-8?B?YUZsL215WlZLMnlDQW9BNUZ2RWpFdG1mMzBXVWxVOE5NY2lkOTdiSGI1UGRD?=
- =?utf-8?B?ZVpJdFVYYStiVXhVU0JHK3orVWNYellFdm0xRHhnN1J0cTQ2RnlrTzg4Slc5?=
- =?utf-8?B?VkJ2Vmt5YVhYZTNOMzY0c3hIQXFvTkgrdmw2NHhFeXFleWR2QnBaN1ZzblFr?=
- =?utf-8?B?Y2x0Z2w4NG1vSGthZmgyMm1hT1RmTnRxYXpvUm1SY3dOdXRlZjh3RGg3Uk9s?=
- =?utf-8?B?em5tbE9nSjltR08vVHBFU0t2K2x3NUI0NjF2R0pxbytBOHFTTzNpTm1KeEJI?=
- =?utf-8?B?ZlN3eUlPVEY4L3ova29HL3Nocjh2TG9GY3Z3N3RSa1R3TUNqZWpKTTkwZE5l?=
- =?utf-8?B?TDZZR29IZ0tzdUkyOE5xanlnbk5WaG5CK2RDZG9DQmNkYnMzYUhxUU5xTmxL?=
- =?utf-8?B?VGJyT25jODNxeml2QXBhbW5Od0FabzA0U3NXSFFOQ2Y5cGJEMFFZbUFEcklG?=
- =?utf-8?B?S1loZ1RJVGRsamk1SjcrejlBTFhHMDMvZXp4Yk5LTC9VaVV4clFpckVhTG5K?=
- =?utf-8?B?SHlLOHBDK0FLRXhZUm9sL1FkaUhtQVl4MU5ORlJCUS9IVkFjZ3IzK2ZnWVpk?=
- =?utf-8?B?QStwMWRrdU04SWNDbG8yanVqYXlIbDVGY1BoMHF4WTBhK2MxZ0RMNVA3TmUr?=
- =?utf-8?B?OU95eWIxZzFhZDlNUTA2a09kb2trV24yajN4Mk5BZnFxR1V1THlBT0RXZzFO?=
- =?utf-8?B?Wms4Q3JyRmUyU0sweTlrZzN6bUo1aURMRThoM3BVUEIvVFM4YnJxNkZjSXhu?=
- =?utf-8?B?VUVtMU00UWxsem5MYjJBMkdya0xBVGNKbEwwV1RaNUFTWUZWc0krY1R1OWpT?=
- =?utf-8?B?aXp1ejF4UVVCdVVpU0kvVHc5T1VaaU1TZVNyTjZ0a1VhL3ZRZi9nWEU0cmNF?=
- =?utf-8?B?QklBOFBkNW9uL3hMUVpubFNYUU43dzVFMWMzemh6cFE4ZGFKV1B4eFlUTXNV?=
- =?utf-8?B?N2Jqc21jWm5WT3pDV05iNDJUWXBhb2xnakgzQUhpdEs5V3ZaLzRRLzFUd1BM?=
- =?utf-8?B?RXQ5UDZUd0lDWG1lamNQUDhxOUJJQXYzV0pMcFFEQ0t5RUs4NW4vS01SOG9W?=
- =?utf-8?B?ME53MEIvVU9TTk8xNU9XOUxsallJSTU3OFQvUXczWEtjSXYwZkYzdUVFTTEv?=
- =?utf-8?B?WjNJZW10THVQV3QzTlg1bGRNc3pYeVo4K3B4UXVCRkE4dDNTalB5WTJGN2Zl?=
- =?utf-8?B?RTRTRzRjU3QrZ3FKeDAvOTNYTDlYWU5NSWRPeW1WNUxzcjJkSlA5ZHVTT3FC?=
- =?utf-8?B?bnFWblZwdkxyclJjb2ZTUElUeWttMldJOGZBalU1ZTZTeFV0aEVmbm80YlRu?=
- =?utf-8?Q?DQY6zLCg8ueT6FS5Xuc3GAhDv?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 13c3ebfe-7b66-4420-b503-08de31f3b778
-X-MS-Exchange-CrossTenant-AuthSource: BL3PR12MB9049.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Dec 2025 22:39:56.0904
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 6DWstLvI0WEX89BQmo6ZgkdZ2YJKLaAPzq7H0iNGrtK/r/bhM6T4Xb7nL8G14oI8x3KogRtiVSQx1GO+dQthnw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB7656
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.52.0.158.g65b55ccf14-goog
+Message-ID: <20251202230303.1017519-1-skhawaja@google.com>
+Subject: [RFC PATCH v2 00/32] Add live update state preservation
+From: Samiullah Khawaja <skhawaja@google.com>
+To: David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Pasha Tatashin <pasha.tatashin@soleen.com>, Jason Gunthorpe <jgg@ziepe.ca>, iommu@lists.linux.dev
+Cc: Samiullah Khawaja <skhawaja@google.com>, Robin Murphy <robin.murphy@arm.com>, 
+	Pratyush Yadav <pratyush@kernel.org>, Kevin Tian <kevin.tian@intel.com>, 
+	Alex Williamson <alex@shazbot.org>, linux-kernel@vger.kernel.org, 
+	Saeed Mahameed <saeedm@nvidia.com>, Adithya Jayachandran <ajayachandra@nvidia.com>, 
+	Parav Pandit <parav@nvidia.com>, Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>, 
+	Vipin Sharma <vipinsh@google.com>, dmatlack@google.com, YiFei Zhu <zhuyifei@google.com>, 
+	Chris Li <chrisl@kernel.org>, praan@google.com
+Content-Type: text/plain; charset="UTF-8"
+
+Hi,
+
+This RFC patch series introduces a mechanism for IOMMU state
+preservation across live update, using the Intel VT-d driver as the
+initial example implementation and demonstration platform.
+
+Please take a look at the following LWN article to learn about KHO and
+Live Update Orchestrator:
+
+https://lwn.net/Articles/1033364/
+
+This work is based on the LUOv8 that is in linux-next. Please find the
+details of various LUO sessions, file handlers and FLB preservation
+callbacks, and memory preservation mechanisms in the LUOv8 series.
+
+https://lore.kernel.org/linux-mm/20251125165850.3389713-1-pasha.tatashin@soleen.com/
+
+This series also uses the VFIO cdev preservation support series v2 that
+is sent out for review separately:
+
+https://lore.kernel.org/all/20251126193608.2678510-1-dmatlack@google.com/
+
+The kernel tree with all dependencies is uploaded to the following
+Github location:
+
+https://github.com/samikhawaja/linux/tree/iommu/rfc-v2
+
+Overall Goals:
+
+The goal of this effort is to preserve the IOMMU domains, managed by
+iommufd, attached to preserved VFIO. This allows DMA mappings and IOMMU
+context of a device assigned to a VM to be maintained across a live
+update.
+
+This is achieved by preserving IOMMU page tables using Generic Page
+Table support, IOMMU root table and the relevant context entries across
+live update.
+
+Current Implementation, Scope and Limitations:
+
+This RFC is using the newer LUO as compared to the previous version and
+has major rework related to lifecycle management.
+
+It includes preservation and restoration of the following states,
+
+ - IOMMUFD and its HWPTs that are marked by user for preservation.
+ - Iommu domain that is associated with the preserved HWPTs.
+ - Iommu domain page tables associated with the iommu domain.
+ - VFIO cdev preserved device context and domain IDs.
+ - IOMMU translation units associated with the preserved devices.
+
+It also includes a selftest to validate the end-to-end preservation and
+restoration of an iommufd and vfio cdev file descriptor.
+
+This version does not implement hotswap of the iommu domain in the IOMMU
+driver. That will be done as a separate patch series.
+
+The series also does not yet include a versioning scheme for the
+persisted state; this will be added later. Currently the structs are
+used and defined in include/linux/kho/abi/iommu.h and
+include/linux/kho/abi/iommufd.h
+
+Architectural Overview:
+
+The target architecture for IOMMU state preservation across a live
+update involves coordination between the Live Update Orchestrator,
+iommufd, and the IOMMU drivers.
+
+The core design uses the Live Update Orchestrator's file descriptor
+preservation mechanism to preserve iommufd file descriptors. The user
+marks the iommufd HWPTs for preservation using a new ioctl added in this
+series. Once done, the preservation of iommufd inside an LUO sessions is
+triggered using LUO ioctls. During preservation, the LUO preserve
+callback for an iommufd walks through the HWPTs it manages to identify
+the ones that need to be preserved. Once identified, a new IOMMU core
+API is used to preserve the iommu domain. The IOMMU core uses Generic
+Page Table to preserve the page tables of these domains. The domains are
+then marked as preserved.
+
+When the user triggers the preservation of a VFIO cdev that is attached
+to an iommufd that is preserved, the device attachment state of that
+VFIO cdev is also preserved using an API exported by iommufd. IOMMUFD
+fetches all the information that needs to be preserved and calls the
+IOMMU core API to preserve the device state. The IOMMU core also
+preserves state of IOMMU that is associated with this device.
+
+The IOMMU core has LUO FLB registered with the iommufd LUO file handler
+so the presered iommu domain and iommu hardware unit state is available
+during boot for early restore in the next kernel.
+
+During boot the driver fetches the preserved state from the IOMMU core
+and restores the state of preserved IOMMUs. Later when IOMMU core goes
+through the devices and probes them, the iommu domains of preserved
+devices are restored and the preserved devices are attached to them.
+
+Later during iommufd retrieval, the preserved HWPTs are restored and
+associated with restored iommu domains. The preserved iommufd does not
+finish (returns error from can_finish) until all of the following
+statements are true,
+
+- The iommufd is retrieved.
+- The preserved HWPTs are restored.
+- The restored iommu domains still have attachments.
+
+Hotswap:
+
+The userspace restores the iommufd, creates a new HWPT and setup DMA
+mappings on it. Once the HWPT is fully setup the device can be attached
+to the new HWPT to do a hotswap. That is the underlying iommu domains
+are replaced. Once done, the restored HWPT and the associated restored
+iommu domain can be destroyed using the HWPT ID.
+
+In this series IOMMU core allows replacement of restored iommu domains,
+this way attaching a new HWPT doesn't return -EBUSY.
+This can maybe be avoided by using the existing hwpt replace logic in
+iommufd by,
+
+- Using the replace code path if the vfio_device is restored.
+- Reconstructing the vfio_device<->hwpt association during vfio-cdev
+  restore. During vfio-cdev restore when it autobinds with the iommufd,
+  it also re-attaches itself to the restored hwpts that it was attached
+  to before. The new attachment is immutable and can only be replaced by
+  a new HWPT.
+
+Tested:
+
+This series was tested using QEMU with virtual IOMMU (VT-d) support. The
+workflow was validated using a guest with virtio-net device bound to the
+vfio-pci driver.
+
+The new iommufd_liveupdate selftest was used to verify the end-to-end
+preservation and restore logic.
+
+Future Work:
+
+- Implement IOMMU domain replacement for Intel IOMMU Driver.
+- Add support for preserving PASID tables for devices that use them.
+- Auto bind VFIO cdev during retrieve using preserved iommufd token
+  fetched from LUO using internal API.
+- Implement a versioning scheme for serialized data to ensure
+  compatibility across kernel versions.
+- Extend support to other IOMMU architectures (e.g., AMD-Vi, Arm SMMUv3).
+- Only accept memfds that are SEAL'd for iommufd preservation..
+- Keep preserved memfd immutable after retrieve.
+- Make HWPTs immutable after iommufd is preserved.
+
+High-Level Sequence Flow:
+
+The following diagrams illustrate the high-level interactions during the
+preservation phase.
+
+Prepare:
+
+Before live update the PREPARE event of Liveupdate Orchestrator invokes
+callbacks of the registered file and subsystem handlers.
+
+ Userspace (VMM) | LUO Core |    iommufd    |  IOMMU Core   | IOMMU Driver
+-----------------|----------|---------------|---------------|-------------
+                 |          |               |               |
+MARK_HWPT        |          |               |               |
+--------------------------->                |               |
+                 |          | Mark HWPT as  |               |
+                 |          | lu_preserved  |               |
+                 |          |               |               |
+PRESERVE         |          |               |               |
+ iommufd_fd      |          |               |               |
+----------------->          |               |               |
+                 | preserve |               |               |
+                 |---------->               |               |
+                 |          | For each HWPT |               |
+                 |          |-------------->                |
+                 |          |               | domain_presrv |
+                 |          |               |-------------->
+                 |          |               |               | gpt(preserve)
+                 |          |               |<--------------|
+                 |          |<--------------|               |
+                 |<---------|               |               |
+                 |          |               |               |
+...              |          |               |               |
+                 |          |               |               |
+PRESERVE,        |          |               |               |
+ vfio_cdev_fd    |          |               |               |
+----------------->          |               |               |
+                 | preserve |               |               |
+                 |---------->               |               |
+                 |          |               |               |
+                 |          | Get domain    |               |
+                 |          | iommu_preserv |               |
+                 |          | _device()     |               |
+                 |          |-------------->                |
+                 |          |               | preserve      |
+                 |          |               | (iommu_hw)    |
+                 |          |               |-------------->
+                 |          |               |               | preserve(root)
+                 |          |               |<--------------|
+                 |          |               |               |
+                 |          |               | preserve      |
+                 |          |               | _device(dev)  |
+                 |          |               |-------------->
+                 |          |               |               |
+                 |          |               |<--------------|
+                 |          |<--------------|               |
+                 |<---------|               |               |
+
+Restore:
+
+After a live update, the preserved state is restored during boot and
+when userspace retrieves the preserved FDs.
+
+ Userspace (VMM) | LUO Core |    iommufd    |  IOMMU Core   | IOMMU Driver
+-----------------|----------|---------------|---------------|-------------
+                 |          |               |               |
+                 |          |               |               | Restore
+                 |          |               |               | Root, DIDs
+                 |          |               |               |
+                 |          |               |               | Register
+                 |          |               | probe devices |
+                 |          |               |               |
+                 |          |               | restore       |
+                 |          |               | domain        |
+                 |          |               |-------------->
+                 |          |               |               | restore
+                 |          |               | reattach      |
+                 |          |               | domain        |
+                 |          |               |-------------->
+                 |          |               |               |
+RETRIEVE         |          |               |               |
+ iommufd_fd      |          |               |               |
+----------------->          |               |               |
+                 | retrieve |               |               |
+                 |---------->               |               |
+                 |          |               |               |
+RETRIEVE         |          |               |               |
+ HWPT            |          |               |               |
+--------------------------->                |               |
+                 |          | get domain    |               |
+                 |          |-------------->                |
+                 |          |               |               |
+                 |          |<--------------|               |
+                 |<---------|               |               |
+                 |          |               |               |
+                 | ... (create new HWPT, map) ...           |
+                 |          |               |               |
+ATTACH PT        |          |               |               |
+--------------------------->                |               |
+                 |          | replace hwpt  |               |
+                 |          |-------------->                |
+                 |          |               | replace domain|
+                 |          |<--------------|               |
+                 |<---------|               |               |
+FINISH session   |          |               |               |
+----------------->          |               |               |
+                 | can      |               |               |
+                 | finish   |               |               |
+                 |---------->               |               |
+                 |          | has           |               |
+                 |          | attachments   |               |
+                 |          |-------------->                |
+                 |          |               | return false  |
+                 |          |<--------------|               |
+                 | finish   |               |               |
+                 |---------->               |               |
+                 |          | finish        |               |
+                 |          |-------------->                |
+                 |          |               |               |
+                 |          |<--------------|               |
+
+Looking forward to your feedback on this.
+
+v2:
+ - Reworked for LUOv8
+ - HWPTs are marked for preservation by user.
+ - Use GPT to preserve iommu domain page tables.
+ - iommufd file handler cannot finish until domains are replaced.
+ - Device iommu context preservation is triggered through VFIO cdev
+   preservation.
+ - Use LUO FLB instead of subsystems and preserve state synchronously
+   instead of staging it.
+
+Samiullah Khawaja (26):
+  iommu: Add liveupdate FLB for IOMMU state preservation
+  iommu: Register IOMMU FLB with iommufd file handler
+  iommu: Implement IOMMU LU FLB preserve/unpreserve callbacks
+  iommu: Add iommu_domain ops to preserve, unpreserve and restore
+  iommu/pages: Add APIs to preserve/unpreserve/restore iommu pages
+  iommupt: Implement preserve/unpreserve/restore callbacks
+  iommu: Add APIs to preserve/unpreserve iommu domains
+  iommufd: Use the iommu_domain_preserve/unpreserve APIs
+  iommu: Add API to keep track of iommu domain attachments
+  iommu: Add API to preserve/unpreserve a device
+  iommu/vt-d: Implement device and iommu preserve/unpreserve ops
+  iommufd: Add APIs to preserve/unpreserve a vfio cdev
+  vfio/pci: Preserve the iommufd state of the vfio cdev
+  iommu: Add APIs to get preserved state of a device
+  iommu/vt-d: Clean the context entries of unpreserved devices
+  iommu: Implement IOMMU FLB retrieve and finish ops
+  iommu: Add an API get the preserved state of an IOMMU
+  iommu/vt-d: restore state of the preserved IOMMU
+  iommu: Add helper APIs to fetch preserved device state
+  iommu/vt-d: reclaim domain ids of the preserved devices
+  iommu: restore preserved domain and reattach
+  iommu/vt-d: reuse the preserved domain id for preserved devices
+  iommufd: Handle the iommufd can_finish properly
+  iommu: Transfer device ownership after liveupdate
+  iommu: Allow replacing restored domain
+  iommufd/selftest: Add test to verify iommufd preservation
+
+YiFei Zhu (6):
+  iommufd: Allow HWPTs to have a NULL IOAS
+  iommufd: split alloc and domain assign from iommufd_hwpt_paging_alloc
+  iommufd: Add basic skeleton based on liveupdate_file_handler
+  iommufd-lu: Implement basic prepare/cancel/finish/retrieve using
+    folios
+  iommufd-lu: Implement ioctl to let userspace mark an HWPT to be
+    preserved
+  iommufd-lu: Persist iommu hardware pagetables for live update
+
+ MAINTAINERS                                   |   1 +
+ drivers/iommu/Makefile                        |   1 +
+ drivers/iommu/generic_pt/iommu_pt.h           | 100 ++++
+ drivers/iommu/intel/Makefile                  |   1 +
+ drivers/iommu/intel/iommu.c                   | 111 +++-
+ drivers/iommu/intel/iommu.h                   |  15 +-
+ drivers/iommu/intel/liveupdate.c              | 168 ++++++
+ drivers/iommu/intel/nested.c                  |   2 +-
+ drivers/iommu/iommu-pages.c                   |  70 +++
+ drivers/iommu/iommu-pages.h                   |   8 +
+ drivers/iommu/iommu.c                         |  88 ++-
+ drivers/iommu/iommufd/Makefile                |   1 +
+ drivers/iommu/iommufd/device.c                |  56 +-
+ drivers/iommu/iommufd/hw_pagetable.c          |  89 ++--
+ drivers/iommu/iommufd/iommufd_private.h       |  44 ++
+ drivers/iommu/iommufd/liveupdate.c            | 424 +++++++++++++++
+ drivers/iommu/iommufd/main.c                  |  39 +-
+ drivers/iommu/liveupdate.c                    | 500 ++++++++++++++++++
+ drivers/vfio/iommufd.c                        |   7 +-
+ drivers/vfio/pci/vfio_pci_liveupdate.c        |  24 +-
+ include/linux/generic_pt/iommu.h              |  10 +
+ include/linux/iommu-lu.h                      |  92 ++++
+ include/linux/iommu.h                         |  36 +-
+ include/linux/iommufd.h                       |   9 +-
+ include/linux/kho/abi/iommu.h                 | 119 +++++
+ include/linux/kho/abi/iommufd.h               |  39 ++
+ include/linux/kho/abi/vfio_pci.h              |  10 +
+ include/linux/vfio.h                          |   4 +
+ include/uapi/linux/iommufd.h                  |  41 ++
+ tools/testing/selftests/iommu/Makefile        |   1 +
+ .../selftests/iommu/iommufd_liveupdate.c      | 291 ++++++++++
+ 31 files changed, 2318 insertions(+), 83 deletions(-)
+ create mode 100644 drivers/iommu/intel/liveupdate.c
+ create mode 100644 drivers/iommu/iommufd/liveupdate.c
+ create mode 100644 drivers/iommu/liveupdate.c
+ create mode 100644 include/linux/iommu-lu.h
+ create mode 100644 include/linux/kho/abi/iommu.h
+ create mode 100644 include/linux/kho/abi/iommufd.h
+ create mode 100644 tools/testing/selftests/iommu/iommufd_liveupdate.c
 
 
+base-commit: ef68bf704646690aba5e81c2f7be8d6ef13d7ad8
+-- 
+2.52.0.158.g65b55ccf14-goog
 
-On 12/2/2025 4:30 PM, Alexey Kardashevskiy wrote:
-> 
-> 
-> On 3/12/25 01:52, Tom Lendacky wrote:
->> On 12/1/25 20:44, Alexey Kardashevskiy wrote:
->>> Implement the SEV-TIO (Trusted I/O) firmware interface for PCIe TDISP
->>> (Trust Domain In-Socket Protocol). This enables secure communication
->>> between trusted domains and PCIe devices through the PSP (Platform
->>> Security Processor).
->>>
->>> The implementation includes:
->>> - Device Security Manager (DSM) operations for establishing secure links
->>> - SPDM (Security Protocol and Data Model) over DOE (Data Object Exchange)
->>> - IDE (Integrity Data Encryption) stream management for secure PCIe
->>>
->>> This module bridges the SEV firmware stack with the generic PCIe TSM
->>> framework.
->>>
->>> This is phase1 as described in Documentation/driver-api/pci/tsm.rst.
->>>
->>> On AMD SEV, the AMD PSP firmware acts as TSM (manages the security/trust).
->>> The CCP driver provides the interface to it and registers in the TSM
->>> subsystem.
->>>
->>> Detect the PSP support (reported via FEATURE_INFO + SNP_PLATFORM_STATUS)
->>> and enable SEV-TIO in the SNP_INIT_EX call if the hardware supports TIO.
->>>
->>> Implement SEV TIO PSP command wrappers in sev-dev-tio.c and store
->>> the data in the SEV-TIO-specific structs.
->>>
->>> Implement TSM hooks and IDE setup in sev-dev-tsm.c.
->>>
->>> Signed-off-by: Alexey Kardashevskiy <aik@amd.com>
->>
->> Just some minor comments below. After those are addressed:
->>
->> For the ccp related changes in the whole series:
->>
->> Acked-by: Tom Lendacky <thomas.lendacky@amd.com>
-> 
-> Dan did it right (thanks Dan!).
-> 
-> 
->>
->>> ---
->>> Changes:
->>> v2:
->>> * moved declarations from sev-dev-tio.h to sev-dev.h
->>> * removed include "sev-dev-tio.h" from sev-dev.c to fight errors when TSM is disabled
->>> * converted /** to /* as these are part of any external API and trigger unwanted kerneldoc warnings
->>> * got rid of ifdefs
->>> * "select PCI_TSM" moved under CRYPTO_DEV_SP_PSP
->>> * open coded SNP_SEV_TIO_SUPPORTED
->>> * renamed tio_present to tio_supp to match the flag name
->>> * merged "crypto: ccp: Enable SEV-TIO feature in the PSP when supported" to this one
->>> ---
->>>   drivers/crypto/ccp/Kconfig       |   1 +
->>>   drivers/crypto/ccp/Makefile      |   4 +
->>>   drivers/crypto/ccp/sev-dev-tio.h | 123 +++
->>>   drivers/crypto/ccp/sev-dev.h     |   9 +
->>>   include/linux/psp-sev.h          |  11 +-
->>>   drivers/crypto/ccp/sev-dev-tio.c | 864 ++++++++++++++++++++
->>>   drivers/crypto/ccp/sev-dev-tsm.c | 405 +++++++++
->>>   drivers/crypto/ccp/sev-dev.c     |  51 +-
->>>   8 files changed, 1465 insertions(+), 3 deletions(-)
->>>
->>
->>> diff --git a/drivers/crypto/ccp/sev-dev.c b/drivers/crypto/ccp/sev-dev.c
->>> index 9e0c16b36f9c..d6095d1467b3 100644
->>> --- a/drivers/crypto/ccp/sev-dev.c
->>> +++ b/drivers/crypto/ccp/sev-dev.c
->>> @@ -75,6 +75,10 @@ static bool psp_init_on_probe = true;
->>>   module_param(psp_init_on_probe, bool, 0444);
->>>   MODULE_PARM_DESC(psp_init_on_probe, "  if true, the PSP will be initialized on module init. Else the PSP will be initialized on the first command requiring it");
->>>   +static bool sev_tio_enabled = IS_ENABLED(CONFIG_PCI_TSM);
->>> +module_param_named(tio, sev_tio_enabled, bool, 0444);
->>> +MODULE_PARM_DESC(tio, "Enables TIO in SNP_INIT_EX");
->>
->> Hmmm... I thought you said you wanted to hide the module parameter if
->> CONFIG_PCI_TSM isn't enabled. Either way, it's fine.
-> 
-> I did but you did not and I do not care that much :)
-> 
->>
->>> +
->>>   MODULE_FIRMWARE("amd/amd_sev_fam17h_model0xh.sbin"); /* 1st gen EPYC */
->>>   MODULE_FIRMWARE("amd/amd_sev_fam17h_model3xh.sbin"); /* 2nd gen EPYC */
->>>   MODULE_FIRMWARE("amd/amd_sev_fam19h_model0xh.sbin"); /* 3rd gen EPYC */
->>> @@ -251,7 +255,7 @@ static int sev_cmd_buffer_len(int cmd)
->>>       case SEV_CMD_SNP_COMMIT:        return sizeof(struct sev_data_snp_commit);
->>>       case SEV_CMD_SNP_FEATURE_INFO:        return sizeof(struct sev_data_snp_feature_info);
->>>       case SEV_CMD_SNP_VLEK_LOAD:        return sizeof(struct sev_user_data_snp_vlek_load);
->>> -    default:                return 0;
->>> +    default:                return sev_tio_cmd_buffer_len(cmd);
->>>       }
->>>         return 0;
->>> @@ -1434,6 +1438,19 @@ static int __sev_snp_init_locked(int *error, unsigned int max_snp_asid)
->>>           data.init_rmp = 1;
->>>           data.list_paddr_en = 1;
->>>           data.list_paddr = __psp_pa(snp_range_list);
->>> +
->>> +        bool tio_supp = !!(sev->snp_feat_info_0.ebx & SNP_SEV_TIO_SUPPORTED);
->>
->> Please put the variable definition at the top of the "if" block instead
->> of in the middle of the code.
->>> +
->>> +        data.tio_en = tio_supp && sev_tio_enabled && amd_iommu_sev_tio_supported();
->>
->> Don't you still want to take CONFIG_PCI_TSM into account?
->>
->>     data.tio_en = IS_ENABLED(CONFIG_PCI_TSM) && tio_supp && sev_tio_enabled && amd_iommu_sev_tio_supported();
->>
->> or
->>     if (IS_ENABLED(CONFIG_PCI_TSM)
->>         data.tio_en = tio_supp && sev_tio_enabled && amd_iommu_sev_tio_supported();
->>
->> But if you change back to #ifdef the module parameter, then you won't
->> need the IS_ENABLED() check here because sev_tio_enabled will be set
->> based on CONFIG_PCI_TSM and will be false and not changeable if
->> CONFIG_PCI_TSM is not y.
-> 
-> 
-> Ah true. I thought sev_tio_enabled=IS_ENABLED(CONFIG_PCI_TSM) does it but missed that sev_tio_enabled is exported as a parameter so not a constant at compile time.
-> 
-> 
->>> +
->>> +        /*
->>> +         * When psp_init_on_probe is disabled, the userspace calling
->>> +         * SEV ioctl can inadvertently shut down SNP and SEV-TIO causing
->>> +         * unexpected state loss.
->>> +         */
->>
->> After this is merged, lets see if sev_move_to_init_state() can be
->> cleaned up to avoid this situation.
-> 
-> Do we want to keep psp_init_on_probe, why? Thanks,
-> 
-
-I think we still need to support "psp_init_on_probe" to support deferred SEV initialization and continue supporting SEV INIT_EX.
-
-Thanks,
-Ashish
-
-> 
->>
->> Thanks,
->> Tom
->>
->>> +        if (data.tio_en && !psp_init_on_probe)
->>> +            dev_warn(sev->dev, "SEV-TIO as incompatible with psp_init_on_probe=0\n");
->>> +
->>>           cmd = SEV_CMD_SNP_INIT_EX;
->>>       } else {
->>>           cmd = SEV_CMD_SNP_INIT;
->>> @@ -1471,7 +1488,8 @@ static int __sev_snp_init_locked(int *error, unsigned int max_snp_asid)
->>>         snp_hv_fixed_pages_state_update(sev, HV_FIXED);
->>>       sev->snp_initialized = true;
->>> -    dev_dbg(sev->dev, "SEV-SNP firmware initialized\n");
->>> +    dev_dbg(sev->dev, "SEV-SNP firmware initialized, SEV-TIO is %s\n",
->>> +        data.tio_en ? "enabled" : "disabled");
->>>         dev_info(sev->dev, "SEV-SNP API:%d.%d build:%d\n", sev->api_major,
->>>            sev->api_minor, sev->build);
->>> @@ -1479,6 +1497,23 @@ static int __sev_snp_init_locked(int *error, unsigned int max_snp_asid)
->>>       atomic_notifier_chain_register(&panic_notifier_list,
->>>                          &snp_panic_notifier);
->>>   +    if (data.tio_en) {
->>> +        /*
->>> +         * This executes with the sev_cmd_mutex held so down the stack
->>> +         * snp_reclaim_pages(locked=false) might be needed (which is extremely
->>> +         * unlikely) but will cause a deadlock.
->>> +         * Instead of exporting __snp_alloc_firmware_pages(), allocate a page
->>> +         * for this one call here.
->>> +         */
->>> +        void *tio_status = page_address(__snp_alloc_firmware_pages(
->>> +            GFP_KERNEL_ACCOUNT | __GFP_ZERO, 0, true));
->>> +
->>> +        if (tio_status) {
->>> +            sev_tsm_init_locked(sev, tio_status);
->>> +            __snp_free_firmware_pages(virt_to_page(tio_status), 0, true);
->>> +        }
->>> +    }
->>> +
->>>       sev_es_tmr_size = SNP_TMR_SIZE;
->>>         return 0;
->>> @@ -2758,8 +2793,20 @@ static void __sev_firmware_shutdown(struct sev_device *sev, bool panic)
->>>     static void sev_firmware_shutdown(struct sev_device *sev)
->>>   {
->>> +    /*
->>> +     * Calling without sev_cmd_mutex held as TSM will likely try disconnecting
->>> +     * IDE and this ends up calling sev_do_cmd() which locks sev_cmd_mutex.
->>> +     */
->>> +    if (sev->tio_status)
->>> +        sev_tsm_uninit(sev);
->>> +
->>>       mutex_lock(&sev_cmd_mutex);
->>> +
->>>       __sev_firmware_shutdown(sev, false);
->>> +
->>> +    kfree(sev->tio_status);
->>> +    sev->tio_status = NULL;
->>> +
->>>       mutex_unlock(&sev_cmd_mutex);
->>>   }
->>>   
->>
-> 
