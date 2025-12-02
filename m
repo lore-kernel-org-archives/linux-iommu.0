@@ -1,55 +1,55 @@
-Received: from mail-pf1-f202.google.com (mail-pf1-f202.google.com [209.85.210.202])
+Received: from mail-pl1-f202.google.com (mail-pl1-f202.google.com [209.85.214.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E9033009D4
-	for <iommu@lists.linux.dev>; Tue,  2 Dec 2025 23:03:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.202
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22E813019D9
+	for <iommu@lists.linux.dev>; Tue,  2 Dec 2025 23:03:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.202
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764716608; cv=none; b=gN00E3tsz8HpDH099MKM6Ox3hPisgT2aVTcXcB8HmjbpaxhjUgdryk7Ud4j32m32GTzpng4uknrSoD9588p7SpmUgIP8L2FI6WXe4Xz1gMW+7QoWmzjhp7pANgfmkIBGpSB09y9nb50Xe78s63151cJ9JSbWAoQkQ0zsa9gDUi8=
+	t=1764716608; cv=none; b=YJPN4xYBp791n7pMZA/lWxLYosBUe4zZ4sZI9DUyvkBF88baBuTlBgkGsTpKHSqKz8ZbRgO4I0ggCVYqn5EbG4ayfhgx1cCzkTxHsSjuYQOPnKWvh5kR0pP/EHyeveCiJ73v55sboessjRUaQwBdGSBEmM1CCyfsgeyo8RsJFlc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1764716608; c=relaxed/simple;
-	bh=+wJGUPW+DGR0+eE6ainbStfGk+YSOiY3wmspBdRDkGc=;
+	bh=5EO4h0IYIljW6ybeUHco/uMBEgrKfuEgFW6VwP6trU8=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=UlaefLw34KuOeucVlwcUQMQAIv7Cs3nxZ5BEUlgB9LATN85cBAchWGTl5jJJo4CHzE1D2zwB2Uk23BvBNzT2kEtERr2uzdPUYTBs/bC5M8GYlz+N8FQ9riIt+mQT6Tgxyt7kWp67O0OZrasf/jDsJpB2LF253SrlqttWl9qZ3qY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=yQtFuBAi; arc=none smtp.client-ip=209.85.210.202
+	 To:Cc:Content-Type; b=dbgKDr3QSITjjX7Ed/vIGsxjjXHwCz8T1zMcQD/7NDMsxgOY+KqhGv21ioaTNuxOnAlb2QwtAr8M0kld1M/H4vtDxvIcCTAKv/D2p/jM+83LeGjiMXoDQfDFFicCbBos1gV2VxyxksC+tZZrTPHhV2649jljUL6HzgId4r8Lghs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=exNVXGA3; arc=none smtp.client-ip=209.85.214.202
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="yQtFuBAi"
-Received: by mail-pf1-f202.google.com with SMTP id d2e1a72fcca58-7b96038aa68so262554b3a.0
-        for <iommu@lists.linux.dev>; Tue, 02 Dec 2025 15:03:25 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="exNVXGA3"
+Received: by mail-pl1-f202.google.com with SMTP id d9443c01a7336-29846a9efa5so111382335ad.0
+        for <iommu@lists.linux.dev>; Tue, 02 Dec 2025 15:03:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1764716605; x=1765321405; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1764716606; x=1765321406; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=DwNkBuTOYxcz9fcP4mex7+raXbrBc4r0h1CS3B8eZyw=;
-        b=yQtFuBAiT3L4n7YmozhtdqylGSBN3pCUaPEXAbwAs/Xrwt2NtfHKq4C1jXupGSk8Xf
-         bK4mmF+yPtHljMErA8q8NIfkgCIWSP23X9rtWJGs6M2biSCmwzU9jqzlnKw2YrNTVBz+
-         AVmwp+dWiSuAk3r79FcyzVyKF2CLI++Q9xrZogeP0DYsSJ0nR9dXiq/dcGhvW+jXuDNM
-         y15k173lJScYJ8VV4Grxfso5n6Af2aPBXZ2bMT+FbQaaui8nkQR5p8agPx9I5LhCrGLd
-         ho0FgMOov+rA/naxXwkePcUME8WpohEISVWyw03LgKuE70kUxMpt3Bhw4m9PROfLd3V3
-         kzUA==
+        bh=F231xQfOrNMI7yp4iMcUXD0NMzWVqJGC997u+Z4FZI0=;
+        b=exNVXGA3cjI0m8+cRgfIqqaarhseV3dwcAJDHzp0bjnokD05vRJUXAyIwbzBgLNG/t
+         rPlgXW3z9LU+c3y3mZ2mNdntdw7NqOPSuuCIkHx3fCJepwFabYezLUMzI/mCEagKcS1o
+         jRy1Z6eOEDOsi7GJFe90WY2K01pP6tooH7pRaENDtKSp5HD/erRCjQThnCW2Sdi93z0A
+         IDD9ztFaaYt4dXmFNj/fZiyrS6ag0n3SRTkb2JqnGOfHK2LDS7jGIYRPaJqYOHeZoP/n
+         4HezXJQR9u0h5BZlUU/SeK+Cdm1OZzfTUoL6w7LJ5xm0t/d0ehIy+lRECF8QdyM7QVZW
+         ubeg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1764716605; x=1765321405;
+        d=1e100.net; s=20230601; t=1764716606; x=1765321406;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=DwNkBuTOYxcz9fcP4mex7+raXbrBc4r0h1CS3B8eZyw=;
-        b=XmwSLk96+lO3RQHgVUF2WhnP0OeIfXb2I6bvTxZLlI+LxltdhJ/IbHBhW10QLQSTt4
-         h7muAC3NwCP64MVKiB+d7wz3XU34lwxsf5kV+DzIn1Er5GpZdDogQBR2HhwAC+W1p4pf
-         9qOAsTM0M/eujlFUTp/4lD7tID3xD1lO/F9VsICOuYiinZrSVmm8B1dUSjsIsZ3gGLbG
-         UORWHYKz0LCjoVfBKNM5iENCHWKjulvc43QygJ8LSTUM3Uyq17TZ4CGx60dGa6ork2jw
-         ydFXNavpU9NkdAZnwXqKGkEYufh9AOS8XHMY0RAo8jqTKmr9aWbJ2G690T1a2OBWfo0u
-         DHlQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWqbeUyEWyLbN3LvheAMHimukMhBkXUo8ZjHoar4yHKeuGNi/aJsr3UlOu1wnHYY6L3iZymEg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxCGGHBflRqUU7XyECEXkl5sIFKDsiI6XTIaXZ3sduXJ/FR9agG
-	vfRXCl7GXs3rOv8xuDO9mMTQme1BMYMYQDUGMPWr1vKw0jvTrBbonaUdpUOERyFKo0XSJ/pahkT
-	nxPwVbT1QCjOvLA==
-X-Google-Smtp-Source: AGHT+IEral7Kt58UysjsBZjUzARRPkNEdR/sgcAZVZv8DXV6nL3lw2H7AE/s2MPYUc46xQvCS+YJsoRQcXAieA==
-X-Received: from pfld4.prod.google.com ([2002:a05:6a00:1984:b0:7dd:8bba:6393])
+        bh=F231xQfOrNMI7yp4iMcUXD0NMzWVqJGC997u+Z4FZI0=;
+        b=JWnpiKEUtd1NoSKsGSLHr6zFj69Y1oAU5sE6xbymyxfvm/n/iwEuCZzcelmgm8BGNF
+         4rm/F9Ypj4z2bx6p8TRP/mY5H4FO828FPx5VH0VIOpk/bdwEAM2skOFKtuOuTRJNfhzB
+         v18dOnMhw3bLLegP4alwdMtbuox4UVnaNMH5C/14uYCbOxqEPEJG+h/PXh2O5gFUUuP/
+         yrqXvNV9rgPb24OjTcYktxP2PcZqB78getsPD4BC5kSUHVZPjKC7y+z+85GW3y0Z8I8j
+         s7272qW4ZLfY79hCzAWQONWUptrkQJv0mDe8idXC51Pi9z8p7JX8ZYjQkwJ8Nh42EAPV
+         5uoQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWZ5OjW4BeZWNn2H09BSm0bDT8/DD2MvsGZ7yA1eTvHrcvYnTyaejTlxb7dFQkmxgri+ng3gQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyS+t8H9CSLr4nr8O499c7s5O+6iPss636pXfgtIVJxGFnmfxLU
+	W6tepPswpACry5nQ1WAC4HCG05hSjGwsuCuNikbV4Gh9aVQopPwb53Bmq/NWeaBiAmA0Y0+5uum
+	ntTEFbTKyGGrrGA==
+X-Google-Smtp-Source: AGHT+IGUqs3cxHowTWSyeAdbJPGHuWbTlSkfFr0dgRLiy4bDIBar36BxyW52CazeICFSdn7wFC5FQWW+Axy82w==
+X-Received: from plmn10.prod.google.com ([2002:a17:903:188a:b0:297:ec3d:d08b])
  (user=skhawaja job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:6a00:1a8d:b0:7b0:1d84:8634 with SMTP id d2e1a72fcca58-7dff408dc23mr318972b3a.15.1764716604926;
- Tue, 02 Dec 2025 15:03:24 -0800 (PST)
-Date: Tue,  2 Dec 2025 23:02:43 +0000
+ 2002:a17:903:234d:b0:295:9b3a:16b7 with SMTP id d9443c01a7336-29d6833a7efmr2477995ad.4.1764716606410;
+ Tue, 02 Dec 2025 15:03:26 -0800 (PST)
+Date: Tue,  2 Dec 2025 23:02:44 +0000
 In-Reply-To: <20251202230303.1017519-1-skhawaja@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -59,8 +59,9 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20251202230303.1017519-1-skhawaja@google.com>
 X-Mailer: git-send-email 2.52.0.158.g65b55ccf14-goog
-Message-ID: <20251202230303.1017519-14-skhawaja@google.com>
-Subject: [RFC PATCH v2 13/32] iommu: Add APIs to preserve/unpreserve iommu domains
+Message-ID: <20251202230303.1017519-15-skhawaja@google.com>
+Subject: [RFC PATCH v2 14/32] iommufd: Use the iommu_domain_preserve/unpreserve
+ APIs
 From: Samiullah Khawaja <skhawaja@google.com>
 To: David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
 	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
@@ -74,134 +75,86 @@ Cc: Samiullah Khawaja <skhawaja@google.com>, Robin Murphy <robin.murphy@arm.com>
 	Chris Li <chrisl@kernel.org>, praan@google.com
 Content-Type: text/plain; charset="UTF-8"
 
-These APIs will be used by iommufd LU handler to preserve and unpreserve
-a domain for live update.
+Remove the stub implementation of iommufd_domain_preserve and unpreserve
+APIs and use the APIs exported by the IOMMU core.
 
 Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
 ---
- drivers/iommu/liveupdate.c | 82 ++++++++++++++++++++++++++++++++++++++
- include/linux/iommu-lu.h   |  2 +
- include/linux/iommu.h      |  4 ++
- 3 files changed, 88 insertions(+)
+ drivers/iommu/iommufd/iommufd_private.h |  2 --
+ drivers/iommu/iommufd/liveupdate.c      | 19 ++++++++++++-------
+ 2 files changed, 12 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/iommu/liveupdate.c b/drivers/iommu/liveupdate.c
-index 21ce7be9b87e..25a943e5e1e3 100644
---- a/drivers/iommu/liveupdate.c
-+++ b/drivers/iommu/liveupdate.c
-@@ -127,3 +127,85 @@ int iommu_liveupdate_unregister_flb(struct liveupdate_file_handler *handler)
- 	return liveupdate_unregister_flb(handler, &iommu_flb);
- }
- EXPORT_SYMBOL(iommu_liveupdate_unregister_flb);
-+
-+static int reserve_obj_ser(struct iommu_objs_ser **objs_ptr, u64 max_objs)
-+{
-+	struct iommu_objs_ser *next_objs, *objs = *objs_ptr;
-+	int idx;
-+
-+	if (objs->nr_objs == max_objs) {
-+		next_objs = kho_alloc_preserve(PAGE_SIZE);
-+		if (!next_objs)
-+			return -ENOMEM;
-+
-+		objs->next_objs = virt_to_phys(next_objs);
-+		objs = next_objs;
-+		*objs_ptr = objs;
-+		objs->nr_objs = 0;
-+	}
-+
-+	idx = objs->nr_objs++;
-+	return idx;
-+}
-+
-+int iommu_domain_preserve(struct iommu_domain *domain, struct iommu_domain_ser **ser)
-+{
+diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
+index 15afff6ba0ea..0d358e5486d0 100644
+--- a/drivers/iommu/iommufd/iommufd_private.h
++++ b/drivers/iommu/iommufd/iommufd_private.h
+@@ -730,8 +730,6 @@ int iommufd_hwpt_lu_set_preserved(struct iommufd_ucmd *ucmd);
+ int iommufd_hwpt_lu_restore(struct iommufd_ucmd *ucmd);
+ 
+ /* TODO */
+-#define iommu_domain_restore(x) ERR_PTR(-EOPNOTSUPP)
+-#define iommu_domain_preserve(x, y) (-EOPNOTSUPP)
+ #define iommu_domain_has_attachments(x) (false)
+ #else
+ static inline int iommufd_liveupdate_register_lufs(void)
+diff --git a/drivers/iommu/iommufd/liveupdate.c b/drivers/iommu/iommufd/liveupdate.c
+index 782585aff44a..5b45071d7dd2 100644
+--- a/drivers/iommu/iommufd/liveupdate.c
++++ b/drivers/iommu/iommufd/liveupdate.c
+@@ -59,6 +59,7 @@ static int iommufd_save_hwpts(struct iommufd_ctx *ictx,
+ 			      struct iommufd_lu *iommufd_lu)
+ {
+ 	struct iommufd_hwpt_paging *hwpt, **hwpts = NULL;
 +	struct iommu_domain_ser *domain_ser;
-+	struct iommu_lu_flb_obj *flb_obj;
-+	int idx, ret;
+ 	struct iommufd_hwpt_lu *hwpt_lu;
+ 	struct iommufd_object *obj;
+ 	unsigned int nr_hwpts = 0;
+@@ -119,8 +120,11 @@ static int iommufd_save_hwpts(struct iommufd_ctx *ictx,
+ 			hwpt = hwpts[i];
+ 			hwpt_lu = &iommufd_lu->hwpts[i];
+ 
+-			rc = iommu_domain_preserve(hwpt->common.domain, &hwpt_lu->domain_data);
+-			goto out;
++			rc = iommu_domain_preserve(hwpt->common.domain, &domain_ser);
++			if (rc < 0)
++				goto out;
 +
-+	if (!domain->ops->preserve)
-+		return -EOPNOTSUPP;
-+
-+	ret = liveupdate_flb_get_outgoing(&iommu_flb, (void **)&flb_obj);
-+	if (ret)
-+		return ret;
-+
-+	guard(mutex)(&flb_obj->lock);
-+	idx = reserve_obj_ser((struct iommu_objs_ser **)&flb_obj->iommu_domains,
-+			      MAX_IOMMU_DOMAIN_SERS);
-+	if (idx < 0)
-+		return idx;
-+
-+	domain_ser = &flb_obj->iommu_domains->iommu_domains[idx];
-+	idx = flb_obj->ser->nr_domains++;
-+	domain_ser->obj.idx = idx;
-+	domain_ser->obj.ref_count = 1;
-+
-+	ret = domain->ops->preserve(domain, domain_ser);
-+	if (ret) {
-+		domain_ser->obj.deleted = true;
-+		return ret;
-+	}
-+
-+	domain->preserved_state = domain_ser;
-+	*ser = domain_ser;
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(iommu_domain_preserve);
-+
-+int iommu_domain_unpreserve(struct iommu_domain *domain)
-+{
++			hwpt_lu->domain_data = __pa(domain_ser);
+ 		}
+ 	}
+ 
+@@ -201,7 +205,7 @@ static void iommufd_liveupdate_unpreserve(struct liveupdate_file_op_args *args)
+ 		if (!hwpt->common.domain)
+ 			continue;
+ 
+-		/* TODO: WARN_ON(iommu_domain_unpreserve(hwpt->common.domain)); */
++		WARN_ON(iommu_domain_unpreserve(hwpt->common.domain));
+ 	}
+ 	xa_unlock(&ictx->objects);
+ 
+@@ -276,6 +280,7 @@ int iommufd_hwpt_lu_restore(struct iommufd_ucmd *ucmd)
+ 	struct iommu_hwpt_lu_restore *cmd = ucmd->cmd;
+ 	struct iommufd_hwpt_paging *hwpt = NULL;
+ 	struct iommufd_ctx *ictx = ucmd->ictx;
 +	struct iommu_domain_ser *domain_ser;
-+	struct iommu_lu_flb_obj *flb_obj;
-+	int ret;
-+
-+	if (!domain->ops->unpreserve)
-+		return -EOPNOTSUPP;
-+
-+	ret = liveupdate_flb_get_outgoing(&iommu_flb, (void **)&flb_obj);
-+	if (ret)
-+		return ret;
-+
-+	guard(mutex)(&flb_obj->lock);
-+	domain_ser = domain->preserved_state;
-+	if (domain_ser->attach_count)
-+		ret = -EBUSY;
-+
-+	domain->ops->unpreserve(domain, domain_ser);
-+	domain_ser->obj.deleted = true;
-+	domain->preserved_state = NULL;
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(iommu_domain_unpreserve);
-diff --git a/include/linux/iommu-lu.h b/include/linux/iommu-lu.h
-index 59095d2f1bb2..2c8e5ac746ad 100644
---- a/include/linux/iommu-lu.h
-+++ b/include/linux/iommu-lu.h
-@@ -11,6 +11,8 @@
- #include <linux/liveupdate.h>
- #include <linux/kho/abi/iommu.h>
+ 	struct iommufd_hwpt_lu *hwpt_lu;
+ 	struct iommufd_lu *iommufd_lu;
+ 	struct iommu_domain *domain;
+@@ -303,10 +308,10 @@ int iommufd_hwpt_lu_restore(struct iommufd_ucmd *ucmd)
+ 	if (IS_ERR(hwpt))
+ 		return PTR_ERR(hwpt);
  
-+int iommu_domain_preserve(struct iommu_domain *domain, struct iommu_domain_ser **ser);
-+int iommu_domain_unpreserve(struct iommu_domain *domain);
- int iommu_liveupdate_register_flb(struct liveupdate_file_handler *handler);
- int iommu_liveupdate_unregister_flb(struct liveupdate_file_handler *handler);
+-	/* a successful iommu_domain_restore mars the point of no return */
+-	domain = iommu_domain_restore(hwpt_lu->domain_data);
+-	if (IS_ERR(domain)) {
+-		rc = PTR_ERR(domain);
++	domain_ser = __va(hwpt_lu->domain_data);
++	domain = domain_ser->restored_domain;
++	if (!domain) {
++		rc = -ENOENT;
+ 		goto err_destroy;
+ 	}
  
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index f681d4d27d6e..17e1f3c29958 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -249,6 +249,10 @@ struct iommu_domain {
- 			struct list_head next;
- 		};
- 	};
-+
-+#ifdef CONFIG_LIVEUPDATE
-+	struct iommu_domain_ser *preserved_state;
-+#endif
- };
- 
- static inline bool iommu_is_dma_domain(struct iommu_domain *domain)
 -- 
 2.52.0.158.g65b55ccf14-goog
 
