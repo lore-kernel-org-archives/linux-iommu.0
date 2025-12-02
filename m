@@ -1,172 +1,239 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6A22313540;
-	Tue,  2 Dec 2025 12:55:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D926212550
+	for <iommu@lists.linux.dev>; Tue,  2 Dec 2025 14:23:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764680113; cv=none; b=qDQ2WC9aKuBhZFFpVwbCdIZA5k2iBDeFXy4laozXR5tdVSmSjFFpb+KkzSAg/7XpttqsLq8mYDTKCSVWtjXTEd+mh5A+gm5D6wRpCmk2TCMFCIPCuw83432pTElK0YDysXVvZMhINW/4B4jdgkkDOruB+LYVyXoX1erDFIjYLsM=
+	t=1764685386; cv=none; b=pyOp7wy85r2qJUeSfIuo4p9JbbHrdvd2LSb/JvSQDQItaoYeWyXOsFqLm2ZbL9LC/AjDyoomCaIKuln9KnnQDql3Ap+NFmCybe5lMgiRe+KmOgqGxT2oitOU9j/Z2RAT/wEdmWf8AO9oCUjxgNL+yl+hGCcOTEz/hfbNufPBTO4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764680113; c=relaxed/simple;
-	bh=qHOWzvja4DWMO+NjB9uq5+3BgXQaxJRfF1R7Huay3Bg=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=qrLtvyGFyznRAMv89SdpI/0yFYYIN6TsUVJPlT20dN+iRDE2kRvrFmKF4TZFglaL3gWsTA/ULFeTV5WmA5wG9cq/oKnqSpalxQczEm40EGwkoPpWVKLdu2aZSrr4G662RhqoS35DLTXP0TNayp4LxRBk5eH9yFdELatAQEE7g2o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=HphkWmwj; arc=none smtp.client-ip=205.220.168.131
+	s=arc-20240116; t=1764685386; c=relaxed/simple;
+	bh=eA6BaU3akT3wnKeZNsD4pLHCgDMpkqhtg9BGK+xv3bk=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=aXt+nh+G6ZQLFN6uxkXj/E8ez8Jf6ss9S22Mtl4mKvBEh6weIZNEVOVeqw1uS5V+33MqTjrTt+8Olt8vUVcSvws0M9S4mUFwLz6GhwkaFijls8VMiGu5reNYzedODZPhUsTalt4f7+2rDP+tDqMlnGTyv2I177RrHl2ULAzZXx4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=meaYjznM; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=KQ/9FOtd; arc=none smtp.client-ip=205.220.180.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="HphkWmwj"
-Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 5B28FR2q1491741;
-	Tue, 2 Dec 2025 12:54:57 GMT
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="meaYjznM";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="KQ/9FOtd"
+Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 5B2DdQ4r2821200
+	for <iommu@lists.linux.dev>; Tue, 2 Dec 2025 14:23:02 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:date:from:message-id:mime-version
-	:subject:to; s=qcppdkim1; bh=NOi1IpLT3hqt7Yhp0snhhK4gc9WWC6VmIKv
-	2Z30g4Sc=; b=HphkWmwjyk2yeALGiPfZz19OXjKibs38o1AY5J3nUbIjF6Kgy1I
-	fVys66etNUVCUd9A0ETXPaN+sCmtWqcOaxOSBu+ivGz+SxY18P+SJw0r0OshMAnp
-	/hp2EMY+G1xumxTGADAOWDtPocRefs1sg7sQxURvZvk1iznUWrRjZ7IjlSqZxTE0
-	72sEuWDwVN7YoLiR52TchFlvTVjE+PG/Dh1P1l4OOY0NQcvHY+5F1g+GIOi0THz4
-	JLn/39r9M/qvXOf3kMa4zmyPqOpcuDywiloC0ba5Z4O2nCODi6QwRo9HbYtgnjur
-	0uF+MUW28llcFqV0rsqvLpBLJ/JMRA0In4Q==
-Received: from apblrppmta01.qualcomm.com (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4askbd2dtf-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 02 Dec 2025 12:54:56 +0000 (GMT)
-Received: from pps.filterd (APBLRPPMTA01.qualcomm.com [127.0.0.1])
-	by APBLRPPMTA01.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTP id 5B2Csq8E023265;
-	Tue, 2 Dec 2025 12:54:53 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-	by APBLRPPMTA01.qualcomm.com (PPS) with ESMTPS id 4aqswkpyra-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 02 Dec 2025 12:54:52 +0000
-Received: from APBLRPPMTA01.qualcomm.com (APBLRPPMTA01.qualcomm.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 5B2Csqfg023259;
-	Tue, 2 Dec 2025 12:54:52 GMT
-Received: from hu-devc-hyd-u22-c.qualcomm.com (hu-charante-hyd.qualcomm.com [10.213.97.134])
-	by APBLRPPMTA01.qualcomm.com (PPS) with ESMTPS id 5B2Csqhv023256
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 02 Dec 2025 12:54:52 +0000
-Received: by hu-devc-hyd-u22-c.qualcomm.com (Postfix, from userid 389980)
-	id 7C66E5D8; Tue,  2 Dec 2025 18:24:51 +0530 (+0530)
-From: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
-To: konrad.dybcio@oss.qualcomm.com, robin.clark@oss.qualcomm.com,
-        dmitry.baryshkov@oss.qualcomm.com, will@kernel.org,
-        robin.murphy@arm.com, joro@8bytes.org
-Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
-Subject: [PATCH V4] iommu/arm-smmu: add actlr settings for mdss on Qualcomm platforms
-Date: Tue,  2 Dec 2025 18:24:47 +0530
-Message-Id: <20251202125447.2102658-1-charan.kalla@oss.qualcomm.com>
-X-Mailer: git-send-email 2.34.1
+	cc:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=qcppdkim1; bh=gt9061e9Zzb5snnDuta68b
+	5d/6B+BS6Pl0XDPKQZm0w=; b=meaYjznMvsh+gVwTDbAvzqohuueOLLbbyHHQna
+	Q+ib67jsgOJ0/khNaN15jIysiwwLxWpoSMx4msSHw+OXpSHC+mpfiuR/80RW2Io9
+	NpwnIPpQ1WPPcnRQr6Lxynw7UE+WF6FCM13qx05P3nHNtCbJqQelOxCpRDuiUl5Y
+	S0anfuPmVgXXlUaPwiNNo0otgOgjfkkQPHdPUmC37SfscKxTIcn+XUqwiZ8sGWz9
+	bPJjl0WS+rOI1xoFn23PQLsLtV8Tv8LGUnB/9ZRWRwFnZnFs23tanAklj3YewLj/
+	YL6y/04NJt4bgi3N259GcgwAsK4QvKhvz4Hy1gcYQ663SLxA==
+Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com [209.85.214.198])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4astjghfrx-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Tue, 02 Dec 2025 14:23:02 +0000 (GMT)
+Received: by mail-pl1-f198.google.com with SMTP id d9443c01a7336-297f8a2ba9eso96839705ad.3
+        for <iommu@lists.linux.dev>; Tue, 02 Dec 2025 06:23:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1764685381; x=1765290181; darn=lists.linux.dev;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=gt9061e9Zzb5snnDuta68b5d/6B+BS6Pl0XDPKQZm0w=;
+        b=KQ/9FOtdMgoA30aFwOb+Ool4+EXI2e/pjDDvmGl4tDVHQPc628kg4x2EIr3UuOqoZv
+         /6HznelKzVvSumgPbXZ+giD9u8YO8x0O2nfM16FhhTxSz01bSgQnlSHzIRDNIrxtMycO
+         AkHEfmJ2vqwrv7Fodrpqp5lLmE8bK2VQzSlL/iYdjeHbc9zghk3m/d3r40Abj0BW8vgN
+         YgKE42liVEPAzC9SOR8SjRhqIVjmRp+TAVjFQGFE2i51kJYUkuZ4v5xoSMTkMtkNVNAM
+         TedAHSi3XfjlJyqOMy4O+0HKo2yI0FAg6c8ZIqXcBCeF/4tOIYN35KCYdSrx4bNH/APO
+         raaA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1764685381; x=1765290181;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=gt9061e9Zzb5snnDuta68b5d/6B+BS6Pl0XDPKQZm0w=;
+        b=aUFGqZlDs5wSWlFoTRJlN6RBs8AiE7W2MwWSwGP6g6iNj6ZTq7xHTYWp9fb7+sH+vq
+         IhuIZnah+4yCM/GyWSNfpnvnY4v11LWaDIYwCjs3qXZWSk6/hP+l261L2jr8giw3PoNZ
+         jBfJ2Agv8vj8Tt3+yzzdruVdCp0Cjf8NDobUgWNRU6ZpWq10CFeCpblo5lF1QWzYTMVW
+         6HX4O1QMYad1KC7uqvVJoB3l8DvbKsplREXmVv2lMCUGi7x2+dqYrxY+3w1tRjknjYd6
+         qmTi5vQ2yJys7iNb33VtGGEG51hHw/ieo0xMQ8XdbkoVFxRQww2r671eMl/+/5dpLAM2
+         0jwQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUDhjgrkyOPn51SjdZ4GxDtjaEp/pg4mewxTtOKovOE0vAdnK9EMRXl/cGXIb33dWHqbYF0dw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwH8FWwy15NvkkMKaGij6qHthBflOqDzysxZm6ZmIjGXFN49bYN
+	gYpnn1othlUq4KJjkHWLpSrql9SaXBaHdxtGTUFKb8W+mQT1rg96J9KQIruCFAxbqU1Q2St6Lpi
+	Et+ZqBB8YqMlyOhBgFtHtzNiGF4GGb1P+lrjfd9goEli+jWtOvvuGd2JwOA==
+X-Gm-Gg: ASbGnctoPjPvWFAUL0RNAIaUKIVF4dQRjwCsLGnm47KgBOBfIdZrX2YQTrVSeNI113H
+	wkvcJabP9Ba3Kut6ElpztfPYxjd0jDnBK974rGk2LMpWKr+W2qOJ5cVWZZRkfow4IPRbBFp37bk
+	7iU0y5jOK6EDpn/owVqWJ+kEAIZqZfIdpvbzac0ZTKiXXfH0dxwRjeWEBPkK4OF71uKEnlCLcDu
+	PA3TskLPIABVpR/E0YSi7kdQGgJYetMN/diG1WGvwT4YwfKr7/FgWeggvyijfc1TZTlH3+oAR3F
+	n6mATdOLnRel70ZiP6EImpnlxQgBSmcGvRBabPlJvKWvNLwj9iK3WLTd6MEPfqVliv+G3e8HjHt
+	vYOhOIMQZpWvcIaZWBJfLmpZX4lrFzOkmTESkwFY=
+X-Received: by 2002:a17:903:38c4:b0:297:df17:54cd with SMTP id d9443c01a7336-29b6becd454mr555446365ad.27.1764685381157;
+        Tue, 02 Dec 2025 06:23:01 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IHYGeGusbs/g+jO0YEX3EENp9TaG3F7EKKdp50YdySHdKRFLyNGCxjWLZ57TlxhUWCgvPPUTw==
+X-Received: by 2002:a17:903:38c4:b0:297:df17:54cd with SMTP id d9443c01a7336-29b6becd454mr555445975ad.27.1764685380605;
+        Tue, 02 Dec 2025 06:23:00 -0800 (PST)
+Received: from [192.168.1.102] ([120.60.68.196])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-be5095a4821sm15659084a12.29.2025.12.02.06.22.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Dec 2025 06:22:59 -0800 (PST)
+From: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+Subject: [PATCH v2 0/4] PCI: Fix ACS enablement for Root Ports in OF
+ platforms
+Date: Tue, 02 Dec 2025 19:52:47 +0530
+Message-Id: <20251202-pci_acs-v2-0-5d2759a71489@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QCInternal: smtphost
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: bYQVAJBa3iekCjcoUw7S9foE0baYEL4H
-X-Proofpoint-GUID: bYQVAJBa3iekCjcoUw7S9foE0baYEL4H
-X-Authority-Analysis: v=2.4 cv=fLg0HJae c=1 sm=1 tr=0 ts=692ee1a1 cx=c_pps
- a=Ou0eQOY4+eZoSc0qltEV5Q==:117 a=Ou0eQOY4+eZoSc0qltEV5Q==:17
- a=wP3pNCr1ah4A:10 a=VkNPw1HP01LnGYTKEx00:22 a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8
- a=LWYvQZVa8uIfhQNUIroA:9
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMjAyMDEwMyBTYWx0ZWRfX/4ZhITIdLEfI
- BTKQVALJOWL5RjZNo17aZzfmnIrCs8+CmoXQlwU8KiyX2YiQXzy5GG4dPbXV1HHWF2xLXUJKN2j
- HsFfgUzhY2VqvLWEpGMB2ZYN6SCzQaZkQ+nZET64lvRIIAQWPUwknr+shpTcbP7d9s16EyRWZj8
- rZGm/ahU/Xcc4Xip20+9pDWImcEIbiraVqXrJDSrkHotYpwaWCv/YYL/bdbsiuajlvBjv7FtV/p
- wLnc84/+EjI62SYPF+ffXLOwFgCA4PsYsa33pJzfIpDuwreyppnx/XSEGvca09A7uh3ENpv8CkD
- QPrtNxUQNHTJgMyM2DFG8rJfggDbVAtsTGlgv8ZOZvrARwW+KEvGJ3lYxo5jzm5nm4WpnKZbIGZ
- khKeKMLKfbyX/RmlJfi16cezWPkFqA==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIADf2LmkC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyjHQUlJIzE
+ vPSU3UzU4B8JSMDI1NDIwND3YLkzPjE5GLdJEPTxERjSxNzIwtLJaDqgqLUtMwKsEnRsbW1ANT
+ fqndZAAAA
+X-Change-ID: 20251201-pci_acs-b15aa3947289
+To: Bjorn Helgaas <bhelgaas@google.com>
+Cc: linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+        iommu@lists.linux.dev, Naresh Kamboju <naresh.kamboju@linaro.org>,
+        Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
+        Xingang Wang <wangxingang5@huawei.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=openpgp-sha256; l=4906;
+ i=manivannan.sadhasivam@oss.qualcomm.com; h=from:subject:message-id;
+ bh=eA6BaU3akT3wnKeZNsD4pLHCgDMpkqhtg9BGK+xv3bk=;
+ b=owEBbQGS/pANAwAKAVWfEeb+kc71AcsmYgBpLvZAsgKRW+ABF3om7Yt/tr9BwOU+D3+JukHRy
+ AUokbng5rGJATMEAAEKAB0WIQRnpUMqgUjL2KRYJ5dVnxHm/pHO9QUCaS72QAAKCRBVnxHm/pHO
+ 9fN5B/988yBuq8P3aWdrLMwmZq2znSuNO4gh7x8a4u8iBnTZhMGZb8zXMQPj7tfYyNxQ4nbdyIg
+ rZ4F7L344Kj3VeQq7RgJnwjZ471ERtXG6RqiwLD+C7sFlytP5zyc7PLPG1oigJlDNAuaEM8rfOG
+ dQ+eQRKy2fs4eTNNe7ftDC903xveyO/8FJeii5IbhEY5zSOAx9TF7KZSPe8K/k0w1lIoh3fis1q
+ 9toVpP2QOusvKp/bpremIpSAeHoKn+a6/EmRrr2wQZmYxpO+eqQcA03HaqYtUGdjjXOxOr7bBM2
+ sk88PqVsmrptpAFAFf0N4yY/RCi+Llx9aDnMrEHxDtofzPL0
+X-Developer-Key: i=manivannan.sadhasivam@oss.qualcomm.com; a=openpgp;
+ fpr=C668AEC3C3188E4C611465E7488550E901166008
+X-Proofpoint-ORIG-GUID: k_NPxaQ0JHkAz7fqqwh-tkQpg-6KdUN4
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMjAyMDExNSBTYWx0ZWRfXwEogerCpIp9h
+ j3X2UGBfngIHuL9J3nFkzyUO2xwGSKC+YBaHn0Ezk2Ze4n47SoHhVRAawPr7Y5B0Ke+czlk8Cu6
+ FGSe9PAtwW+NTnOxVTuNVmUfjXwNVvKS2yJJkTjTHWS/zJzaqAXHQRM05be4Dh4SFMBz8ndnj4X
+ KWW/1ijlbPNIElBh2Q1aA64McMSH3BukJpXgCj5myztXRxgBMqUtpFtgzrNjGsTuUzfOwdkGcOk
+ zZYAGhsCs9gdUH/2QsR+7zi13086Ex/f6SlT1pBgUUgMedWVMSHnvvQLCG3jTpNI2tfPA7uUg+u
+ dqVJvOMcSzB2VwySDoQfr5UwYsLDVwCVWy7BAjOwCkhmujqoOuuuORk8gvLrmilXaj1nlTXPFwN
+ igTJ0os4+UjxCcBTuPZeqnoACxXlDg==
+X-Proofpoint-GUID: k_NPxaQ0JHkAz7fqqwh-tkQpg-6KdUN4
+X-Authority-Analysis: v=2.4 cv=EbfFgfmC c=1 sm=1 tr=0 ts=692ef646 cx=c_pps
+ a=MTSHoo12Qbhz2p7MsH1ifg==:117 a=8ziBJk15IZ5r+wOU3RLduA==:17
+ a=IkcTkHD0fZMA:10 a=wP3pNCr1ah4A:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=VwQbUJbxAAAA:8 a=i0EeH86SAAAA:8 a=hD80L64hAAAA:8
+ a=pGLkceISAAAA:8 a=COk6AnOGAAAA:8 a=EUspDBNiAAAA:8 a=IdX4pC80JRwBxN0NBHEA:9
+ a=QEXdDO2ut3YA:10 a=GvdueXVYPmCkWapjIL-Q:22 a=TjNXssC_j7lpFel5tvFf:22
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.9,FMLib:17.12.100.49
  definitions=2025-12-01_01,2025-11-27_02,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- spamscore=0 clxscore=1015 phishscore=0 adultscore=0 malwarescore=0
- suspectscore=0 lowpriorityscore=0 impostorscore=0 bulkscore=0
- priorityscore=1501 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2510240001
- definitions=main-2512020103
+ priorityscore=1501 adultscore=0 lowpriorityscore=0 spamscore=0 bulkscore=0
+ phishscore=0 impostorscore=0 malwarescore=0 clxscore=1015 suspectscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2510240001 definitions=main-2512020115
 
-Add ACTLR settings for missing MDSS devices on Qualcomm platforms.
+Hi,
 
-These are QoS settings and are specific to per SoC thus different
-settings, eg: some have shallow prefetch while others have no
-prefetch.
+This series fixes the long standing issue with ACS in OF platforms. There are
+two fixes in this series, both fixing independent issues on their own, but both
+are needed to properly enable ACS on OF platforms.
 
-Aswell, this prefetch feature is not implemented for all the
-platforms, capturing to those are implemented to the best of my
-knowledge.
+Issue(s) background
+===================
 
-Signed-off-by: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
+Back in 2021, Xingang Wang first noted a failure in attaching the HiSilicon SEC
+device to QEMU ARM64 pci-root-port device [1]. He then tracked down the issue to
+ACS not being enabled for the QEMU Root Port device and he proposed a patch to
+fix it [2].
+
+Once the patch got applied, people reported PCIe issues with linux-next on the
+ARM Juno Development boards, where they saw failure in enumerating the endpoint
+devices [3][4]. So soon, the patch got dropped, but the actual issue with the
+ARM Juno boards was left behind.
+
+Fast forward to 2024, Pavan resubmitted the same fix [5] for his own usecase,
+hoping that someone in the community would fix the issue with ARM Juno boards.
+But the patch was rightly rejected, as a patch that was known to cause issues
+should not be merged to the kernel. But again, no one investigated the Juno
+issue and it was left behind again.
+
+Now it ended up in my plate and I managed to track down the issue with the help
+of Naresh who got access to the Juno boards in LKFT. The Juno issue was with the
+PCIe switch from Microsemi/IDT, which triggers ACS Source Validation error on
+Completions received for the Configuration Read Request from a device connected
+to the downstream port that has not yet captured the PCIe bus number. As per the
+PCIe spec r6.0 sec 2.2.6.2, "Functions must capture the Bus and Device Numbers
+supplied with all Type 0 Configuration Write Requests completed by the Function
+and supply these numbers in the Bus and Device Number fields of the Requester ID
+for all Requests". So during the first Configuration Read Request issued by the
+switch downstream port during enumeration (for reading Vendor ID), Bus and
+Device numbers will be unknown to the device. So it responds to the Read Request
+with Completion having Bus and Device number as 0. The switch interprets the
+Completion as an ACS Source Validation error and drops the completion, leading
+to the failure in detecting the endpoint device. Though the PCIe spec r6.0, sec
+6.12.1.1, states that "Completions are never affected by ACS Source Validation".
+This behavior is in violation of the spec.
+
+Solution
+========
+
+In September, I submitted a series [6] to fix both issues. For the IDT issue,
+I reused the existing quirk in the PCI core which does a dummy config write
+before issuing the first config read to the device. And for the ACS enablement
+issue, I just resubmitted the original patch from Xingang which called
+pci_request_acs() from devm_of_pci_bridge_init().
+
+But during the review of the series, several comments were received and they
+required the series to be reworked completely. Hence, in this version, I've
+incorported the comments as below:
+
+1. For the ACS enablement issue, I've moved the pci_enable_acs() call from
+pci_acs_init() to pci_dma_configure().
+
+2. For the IDT issue, I've cached the ACS capabilities (RO) in 'pci_dev',
+collected the broken capability for the IDT switches in the quirk and used it to
+disable the capability in the cache. This also allowed me to get rid of the
+earlier workaround for the switch.
+
+[1] https://lore.kernel.org/all/038397a6-57e2-b6fc-6e1c-7c03b7be9d96@huawei.com
+[2] https://lore.kernel.org/all/1621566204-37456-1-git-send-email-wangxingang5@huawei.com
+[3] https://lore.kernel.org/all/01314d70-41e6-70f9-e496-84091948701a@samsung.com
+[4] https://lore.kernel.org/all/CADYN=9JWU3CMLzMEcD5MSQGnaLyDRSKc5SofBFHUax6YuTRaJA@mail.gmail.com
+[5] https://lore.kernel.org/linux-pci/20241107-pci_acs_fix-v1-1-185a2462a571@quicinc.com
+[6] https://lore.kernel.org/linux-pci/20250910-pci-acs-v1-0-fe9adb65ad7d@oss.qualcomm.com
+
+Changes in v2:
+
+* Reworked the patches completely as mentioned above.
+* Rebased on top of v6.18-rc7
+
+Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
 ---
-Changes from V3:
- 1) Add actlr setting for missing sc8180x & sm6115.
- 2) Improved commit message.
-https://lore.kernel.org/all/20251124171030.323989-1-charan.kalla@oss.qualcomm.com/
+Manivannan Sadhasivam (4):
+      PCI: Enable ACS only after configuring IOMMU for OF platforms
+      PCI: Cache ACS capabilities
+      PCI: Disable ACS SV capability for the broken IDT switches
+      PCI: Extend the pci_disable_acs_sv quirk for one more IDT switch
 
-Changes from V2:
- 1) Add actlr settings for all the mdss devices on Qualcomm platforms.
- 2) Improved the commit message that explain why different ACTLR
-    settings
-https://lore.kernel.org/lkml/20251118171822.3539062-1-charan.kalla@oss.qualcomm.com/#t
+ drivers/pci/pci-driver.c |  8 +++++++
+ drivers/pci/pci.c        | 33 ++++++++++++--------------
+ drivers/pci/pci.h        |  2 +-
+ drivers/pci/probe.c      | 12 ----------
+ drivers/pci/quirks.c     | 62 ++++++++++++------------------------------------
+ include/linux/pci.h      |  2 ++
+ 6 files changed, 41 insertions(+), 78 deletions(-)
+---
+base-commit: ac3fd01e4c1efce8f2c054cdeb2ddd2fc0fb150d
+change-id: 20251201-pci_acs-b15aa3947289
 
-Changes from V1:
-  1) Added actlr setting only for MDSS and dropped for fastrpc. --
-konrad
-  2) ACTLR table is updated per alphanumeric order -- konrad 
-  https://lore.kernel.org/all/20251105075307.1658329-1-charan.kalla@oss.qualcomm.com/
-
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 26 ++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
-
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-index c21a401c71eb..149da53091de 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-@@ -41,12 +41,38 @@ static const struct of_device_id qcom_smmu_actlr_client_of_match[] = {
- 			.data = (const void *) (PREFETCH_DEEP | CPRE | CMTLB) },
- 	{ .compatible = "qcom,fastrpc",
- 			.data = (const void *) (PREFETCH_DEEP | CPRE | CMTLB) },
-+	{ .compatible = "qcom,qcm2290-mdss",
-+			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
- 	{ .compatible = "qcom,sc7280-mdss",
- 			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
- 	{ .compatible = "qcom,sc7280-venus",
- 			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
-+	{ .compatible = "qcom,sc8180x-mdss",
-+			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
-+	{ .compatible = "qcom,sc8280xp-mdss",
-+			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
-+	{ .compatible = "qcom,sm6115-mdss",
-+			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
-+	{ .compatible = "qcom,sm6125-mdss",
-+			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
-+	{ .compatible = "qcom,sm6350-mdss",
-+			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
-+	{ .compatible = "qcom,sm8150-mdss",
-+			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
-+	{ .compatible = "qcom,sm8250-mdss",
-+			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
-+	{ .compatible = "qcom,sm8350-mdss",
-+			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
-+	{ .compatible = "qcom,sm8450-mdss",
-+			.data = (const void *) (PREFETCH_DEFAULT | CMTLB) },
- 	{ .compatible = "qcom,sm8550-mdss",
- 			.data = (const void *) (PREFETCH_DEFAULT | CMTLB) },
-+	{ .compatible = "qcom,sm8650-mdss",
-+			.data = (const void *) (PREFETCH_DEFAULT | CMTLB) },
-+	{ .compatible = "qcom,sm8750-mdss",
-+			.data = (const void *) (PREFETCH_DEFAULT | CMTLB) },
-+	{ .compatible = "qcom,x1e80100-mdss",
-+			.data = (const void *) (PREFETCH_DEFAULT | CMTLB) },
- 	{ }
- };
- 
+Best regards,
 -- 
-2.34.1
+Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
 
