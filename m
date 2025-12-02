@@ -1,55 +1,55 @@
-Received: from mail-pf1-f201.google.com (mail-pf1-f201.google.com [209.85.210.201])
+Received: from mail-pl1-f202.google.com (mail-pl1-f202.google.com [209.85.214.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F089C3093B5
-	for <iommu@lists.linux.dev>; Tue,  2 Dec 2025 23:03:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56D4930AAB3
+	for <iommu@lists.linux.dev>; Tue,  2 Dec 2025 23:03:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.202
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764716620; cv=none; b=pNdaMsvph+JsaT7xBPoWtXRhlHuTC8xsuBdlphMu1whorg1e1DXYlAinQdi37mrhMyJXT0HIFcRDCBVtmv25MzUmkLD0ntATg899jh8PCWkJUBWyd5l9dcR6AQ/O8SVVIl0y0rx5/ultci07stqkykJklrrmv/UKLStKZl42njg=
+	t=1764716621; cv=none; b=QI1+Q19DUHMgk2J7dEgQ1hSN/oX72N28OP8GDaGX60U2fey+o+/l0Hq0IEnvqPSoGzYz8HmE921eg5Pkh0v08nilpBLGUqwTuBDVrVt3sAIjfy01+nBY5D15cBqhbdfNMI9TUWYU3E0/JOfBffbSPlZY74UKzwBZST3lYcGYZ+s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764716620; c=relaxed/simple;
-	bh=pvBux9MrnlAMWMFa4Uh7+3qgqbfiM2xGpKsmVCsmNyM=;
+	s=arc-20240116; t=1764716621; c=relaxed/simple;
+	bh=4cnW5iGvgdtIxwmRjvO4oUOd9FdqD+Hg5A+UkjG79FI=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=dggBuDtkhu/bkrAVs3pDhOo+nU1N1+t4ivBXg/QYPWay1pTJ02tfC4DJOciYHepXU2gjY3tb3lhy+w/Q61woO57KeffiRyZdTtDqbIlpDT2a1riDTnuNyCuMxgOfBHmFTB07znRFwrGdEvTgPH/kIONzXU4qNPuV54F9sJvjkpY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Zk3NlXqZ; arc=none smtp.client-ip=209.85.210.201
+	 To:Cc:Content-Type; b=ltHuf01b9jshKBbe2hgws34lbEH6iIiF8zARuKxrx72kHEX7Dj98vKuy8/H//KC7m2jVxEZq2M3fd3OebvFks0hOeO4vWUAcLzZ4D6Le+U0dLShJstV4SWAFtOu4XpcSniWYZhxy1yc1DbaPa82gRsNaZH7FKbaVkIie74dFxGA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=bj+SvhEU; arc=none smtp.client-ip=209.85.214.202
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Zk3NlXqZ"
-Received: by mail-pf1-f201.google.com with SMTP id d2e1a72fcca58-7b9090d9f2eso9927131b3a.0
-        for <iommu@lists.linux.dev>; Tue, 02 Dec 2025 15:03:38 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="bj+SvhEU"
+Received: by mail-pl1-f202.google.com with SMTP id d9443c01a7336-295915934bfso73652235ad.0
+        for <iommu@lists.linux.dev>; Tue, 02 Dec 2025 15:03:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1764716618; x=1765321418; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1764716620; x=1765321420; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=0rRMYSJaIx0qr3vb82dfybhkCQZzRoj8+W9ZBsbF5AQ=;
-        b=Zk3NlXqZQp4H4Jya9fA/mJ1kvmI3WvO/JgLqGTsiDHlUqoHvfyyNF5pfy5iX+mxLZi
-         3WTQLCYxZooXoDewSH9M5nExf5+aEUw4b7IfCqQuU43icdKrTnyqFhjFgn7Y0hp9jKGz
-         h5eTxhW2dQ+P/cCFvJVQpvOhrDsLeb+Ph7hEFIaxn3EDJUiFQYPHHAxdF6ZA3Is0la6M
-         o2gpAJH6QI9JGgpsvVDiDfD5E5gIPuknRsrbg9IyutJGl23o5f6r1PynO4J6H/wwRBKo
-         evqyMX4zRReHsx1J5NOypDll67uBqcsgDrvvqTuQXG3OqPflRkmCgmHTIe3LJuOgGdWW
-         JgEw==
+        bh=J6atgyECODfuH/pey6ac2Fk1KY/d0Gl+LFeR6KszcGM=;
+        b=bj+SvhEUb2nMWOAbsYsgOdrmMuSWcvWjibzNCtEaV8nOiWvy0FS9zVzFKgXGm9jRwq
+         5NEyGNeUl3usFAvayqdJsMrSGrPH5Lm6qEnWcwy6cvKx96YL0c+pd+wWzycakNPaFs/2
+         NwIz/ne67aaeVoj85FhRi5L/C4Tkaa2iYLKnmC66FLYkOggFSBhMnAGPWBL+gVE6rI1N
+         IiS3tPYdCxycT81IW85eCcCYzvfxxXA9FVecWnqIxEuA1MFuHGrlm0kxE5Edygc/HP6s
+         VQ78NzT9YoqSCacwzCksp/oyXZgPDQBL8rbymS0p4fxUMmQYR33McFpqx9SPvF92a7mB
+         wJmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1764716618; x=1765321418;
+        d=1e100.net; s=20230601; t=1764716620; x=1765321420;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=0rRMYSJaIx0qr3vb82dfybhkCQZzRoj8+W9ZBsbF5AQ=;
-        b=K4fLBITlDI7T5zmdgpECh8PZMcrb64iEqeRsQRlAX2slTvZhbRXidcC2pLBfl5s9FN
-         hiczY6CtUadiX+wIXOBFT8NhcNt3WnHP12g1zakKqYGAbddNHaf3Pjit+g993vwqKMyV
-         D1F8butvvW7Uokthr+cKPYwpFVSrBrWwB+9ZZYu2oqqds03amryrF2Z55C7TzMqoItmr
-         IwkzkMi1mruQOwHfYozQifCpD425bfp2omsklwLkt9uydBNoYh/3qySxh16zWUegQffW
-         qo2e4JnEsOM8/+P9besLmeCy6yAJR4+mBNXd4qgMkDuGd3YaKxXTlwk3nOwVdGTr4q2S
-         JH5A==
-X-Forwarded-Encrypted: i=1; AJvYcCWJQOrbKcVtbT5EDhjMMTj41EM9CS2H2EBY6aBCLa6VYxQNJsHZbxn1POS6yyRf6v2FQ+I27g==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyF8QriBx5TpXxHj3fyB16/VlXF5Q9j3QpOvK4BY6MkCf2Sk+KC
-	plLT49lXZWVqhijldNOHh62vNoEkg7CEDYTOsMELCJjDDLA1bWfz65hLGdb9UQkhNid4QKvYg8B
-	FrGiH3M5MIQjzPA==
-X-Google-Smtp-Source: AGHT+IESTY8l5ddrDwVhJ/K1t5B3qZeQchQ/+iFaGXMixSxBU4Vhr8vdBuXurh0T7DhxTKKU+YN22LfKABc7gQ==
-X-Received: from pfbfc31.prod.google.com ([2002:a05:6a00:2e1f:b0:7b7:8636:7b21])
+        bh=J6atgyECODfuH/pey6ac2Fk1KY/d0Gl+LFeR6KszcGM=;
+        b=q/z3XLjh+fmQG9MLlRq6oGixWDKvoRW3lh/HWhnO64FSZAiRwj4pCghn4cN8/SBfCe
+         wf7j6kHc/JrC8iRTeh5LUAgf9VrzhlvGviatkjJKBKpFoDo3mtCVR41MRWGaEmc8A8JP
+         R5sKJY25rJRgBxbjXnCKyej3FAIKCDmtkoIE8Drtf5t47gQcbxG80zev0XXBTiDMgH9A
+         UVL0OWCq8Xtuztgy3XdTVVrUXzHC4+g0frUbM5TbpxAygQKpE/eUNMSYYjuptYeFhtHT
+         DJWl5c4jurLZx2UYe7yHJs/4LOmQVNb9+cBh/IfwH37wuOuQeyxJw8opzn/L9icP7V5x
+         Nt5w==
+X-Forwarded-Encrypted: i=1; AJvYcCXyxv7JNF/oisPk7waXrd4lYm0+oErDrPA1HLEa71mShZh1e4wBsitp/bcPQ8oV6nENnf8kqg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzDHqkx1F8x43GOa5rDtyVvITj3E57pmMGtmzzDfzeE5qZ5jaWt
+	XdcaGXHDHwVogV6cTBqR4NeQiAHz7nFOaLjqbKMJFD5bCKmbe35HjDztNDTsOK22tcxNgsRDbs1
+	5q1CctHfYFNQWQA==
+X-Google-Smtp-Source: AGHT+IGxdJGTKjpFRs4VBozxyCOqfLHFZCdARJsI5cF6LF6J0BSmgS5pC8M1FIgAl44COPI/zmBCzgRvSdjQ3A==
+X-Received: from plbbf12.prod.google.com ([2002:a17:902:b90c:b0:290:28e2:ce59])
  (user=skhawaja job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:6a00:a24:b0:7b9:ea7a:9cbb with SMTP id d2e1a72fcca58-7e00dfd6852mr173441b3a.19.1764716618194;
- Tue, 02 Dec 2025 15:03:38 -0800 (PST)
-Date: Tue,  2 Dec 2025 23:02:52 +0000
+ 2002:a17:903:4b0c:b0:295:50cd:e759 with SMTP id d9443c01a7336-29d683de6fcmr2373885ad.58.1764716619737;
+ Tue, 02 Dec 2025 15:03:39 -0800 (PST)
+Date: Tue,  2 Dec 2025 23:02:53 +0000
 In-Reply-To: <20251202230303.1017519-1-skhawaja@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -59,8 +59,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20251202230303.1017519-1-skhawaja@google.com>
 X-Mailer: git-send-email 2.52.0.158.g65b55ccf14-goog
-Message-ID: <20251202230303.1017519-23-skhawaja@google.com>
-Subject: [RFC PATCH v2 22/32] iommu: Implement IOMMU FLB retrieve and finish ops
+Message-ID: <20251202230303.1017519-24-skhawaja@google.com>
+Subject: [RFC PATCH v2 23/32] iommu: Add an API get the preserved state of an IOMMU
 From: Samiullah Khawaja <skhawaja@google.com>
 To: David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
 	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
@@ -74,85 +74,69 @@ Cc: Samiullah Khawaja <skhawaja@google.com>, Robin Murphy <robin.murphy@arm.com>
 	Chris Li <chrisl@kernel.org>, praan@google.com
 Content-Type: text/plain; charset="UTF-8"
 
-Add implementation of the IOMMU LU FLB retrieve and finish ops. During
-retrieve walk through the preserved objs nodes and restore each folio.
-Also recreate the FLB obj.
+After liveupdate kexec during boot, the state of the preserved IOMMU
+needs to be restored. Since the state needs to be restored by the IOMMU
+drivers during initialization/registration with the IOMMU core, add an
+API that can be used by the IOMMU drivers to fetch the preserved state.
 
 Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
 ---
- drivers/iommu/liveupdate.c | 48 +++++++++++++++++++++++++++++++++++++-
- 1 file changed, 47 insertions(+), 1 deletion(-)
+ drivers/iommu/liveupdate.c | 29 +++++++++++++++++++++++++++++
+ include/linux/iommu-lu.h   |  1 +
+ 2 files changed, 30 insertions(+)
 
 diff --git a/drivers/iommu/liveupdate.c b/drivers/iommu/liveupdate.c
-index 5780761a7024..0dfa03673178 100644
+index 0dfa03673178..e7ecf2e9aa4e 100644
 --- a/drivers/iommu/liveupdate.c
 +++ b/drivers/iommu/liveupdate.c
-@@ -14,6 +14,17 @@
- #include <linux/pci.h>
- #include <linux/errno.h>
+@@ -175,6 +175,35 @@ int iommu_liveupdate_unregister_flb(struct liveupdate_file_handler *handler)
+ }
+ EXPORT_SYMBOL(iommu_liveupdate_unregister_flb);
  
-+static void iommu_liveupdate_restore_objs(u64 next)
++struct iommu_ser *iommu_get_preserved_data(u64 token, enum iommu_lu_type type)
 +{
-+	struct iommu_objs_ser *objs;
-+
-+	while (next) {
-+		BUG_ON(!kho_restore_folio(next));
-+		objs = __va(next);
-+		next = objs->next_objs;
-+	}
-+}
-+
- static void iommu_liveupdate_free_objs(u64 next, bool incoming)
- {
- 	struct iommu_objs_ser *objs;
-@@ -98,11 +109,46 @@ static void iommu_liveupdate_flb_unpreserve(struct liveupdate_flb_op_args *argp)
- 
- static void iommu_liveupdate_flb_finish(struct liveupdate_flb_op_args *argp)
- {
-+	struct iommu_lu_flb_obj *obj = argp->obj;
-+
-+	if (obj->iommu_domains)
-+		iommu_liveupdate_free_objs(obj->ser->iommu_domains_phys, true);
-+
-+	if (obj->devices)
-+		iommu_liveupdate_free_objs(obj->ser->devices_phys, true);
-+
-+	if (obj->iommus)
-+		iommu_liveupdate_free_objs(obj->ser->iommus_phys, true);
-+
-+	folio_put(virt_to_folio(obj->ser));
- }
- 
- static int iommu_liveupdate_flb_retrieve(struct liveupdate_flb_op_args *argp)
- {
--	return -EOPNOTSUPP;
 +	struct iommu_lu_flb_obj *obj;
-+	struct iommu_lu_flb_ser *ser;
++	struct iommus_ser *iommus;
++	int ret, i, idx;
 +
-+	obj = kzalloc(sizeof(*obj), GFP_ATOMIC);
-+	if (!obj)
-+		return -ENOMEM;
++	ret = liveupdate_flb_get_incoming(&iommu_flb, (void **)&obj);
++	if (ret)
++		return NULL;
 +
-+	mutex_init(&obj->lock);
-+	BUG_ON(!kho_restore_folio(argp->data));
-+	ser = phys_to_virt(argp->data);
-+	obj->ser = ser;
++	iommus = __va(obj->ser->iommus_phys);
++	for (i = 0, idx = 0; i < obj->ser->nr_iommus; ++i, ++idx) {
++		if (idx >= MAX_IOMMU_SERS) {
++			iommus = __va(iommus->objs.next_objs);
++			idx = 0;
++		}
 +
-+	iommu_liveupdate_restore_objs(ser->iommu_domains_phys);
-+	obj->iommu_domains = phys_to_virt(ser->iommu_domains_phys);
++		if (iommus->iommus[idx].obj.deleted)
++			continue;
 +
-+	iommu_liveupdate_restore_objs(ser->devices_phys);
-+	obj->devices = phys_to_virt(ser->devices_phys);
++		if (iommus->iommus[idx].token == token &&
++		    iommus->iommus[idx].type == type)
++			return &iommus->iommus[idx];
++	}
 +
-+	iommu_liveupdate_restore_objs(ser->iommus_phys);
-+	obj->iommus = phys_to_virt(ser->iommus_phys);
++	return NULL;
++}
++EXPORT_SYMBOL(iommu_get_preserved_data);
 +
-+	argp->obj = obj;
-+
-+	return 0;
+ static int reserve_obj_ser(struct iommu_objs_ser **objs_ptr, u64 max_objs)
+ {
+ 	struct iommu_objs_ser *next_objs, *objs = *objs_ptr;
+diff --git a/include/linux/iommu-lu.h b/include/linux/iommu-lu.h
+index 08a659de8553..ffce7043e997 100644
+--- a/include/linux/iommu-lu.h
++++ b/include/linux/iommu-lu.h
+@@ -78,6 +78,7 @@ static inline void *iommu_domain_restored_state(struct iommu_domain *domain)
  }
+ #endif
  
- static struct liveupdate_flb_ops iommu_flb_ops = {
++struct iommu_ser *iommu_get_preserved_data(u64 token, enum iommu_lu_type type);
+ int iommu_domain_preserve(struct iommu_domain *domain, struct iommu_domain_ser **ser);
+ int iommu_domain_unpreserve(struct iommu_domain *domain);
+ int iommu_preserve_device(struct iommu_domain *domain, struct device *dev);
 -- 
 2.52.0.158.g65b55ccf14-goog
 
