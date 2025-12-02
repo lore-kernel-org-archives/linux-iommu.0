@@ -1,86 +1,88 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D926212550
-	for <iommu@lists.linux.dev>; Tue,  2 Dec 2025 14:23:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1F9228CF6F
+	for <iommu@lists.linux.dev>; Tue,  2 Dec 2025 14:23:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764685386; cv=none; b=pyOp7wy85r2qJUeSfIuo4p9JbbHrdvd2LSb/JvSQDQItaoYeWyXOsFqLm2ZbL9LC/AjDyoomCaIKuln9KnnQDql3Ap+NFmCybe5lMgiRe+KmOgqGxT2oitOU9j/Z2RAT/wEdmWf8AO9oCUjxgNL+yl+hGCcOTEz/hfbNufPBTO4=
+	t=1764685389; cv=none; b=Um1MngVWb7rSWMUPvwTcMWu0bDUhI0CYXmsrZkqg8nCS9lhdBSqHsR/jcFYqlSFR4QsoLdju037f8o3UPKXZHcmEh4ufEYOj/a9Th/Bmdzoh1LZ8v9CkPcNeaYtomW9kDSAlQ7MItqPP7BbLEFes0ytmKTNCt1oC4WZXXMdk2vU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764685386; c=relaxed/simple;
-	bh=eA6BaU3akT3wnKeZNsD4pLHCgDMpkqhtg9BGK+xv3bk=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=aXt+nh+G6ZQLFN6uxkXj/E8ez8Jf6ss9S22Mtl4mKvBEh6weIZNEVOVeqw1uS5V+33MqTjrTt+8Olt8vUVcSvws0M9S4mUFwLz6GhwkaFijls8VMiGu5reNYzedODZPhUsTalt4f7+2rDP+tDqMlnGTyv2I177RrHl2ULAzZXx4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=meaYjznM; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=KQ/9FOtd; arc=none smtp.client-ip=205.220.180.131
+	s=arc-20240116; t=1764685389; c=relaxed/simple;
+	bh=5z1ouJ38EhP2+fHSIKbzZu23IGvzKgpnENHaWvqW/bk=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=Meaf38p7HK08WsFj9oFou2jWPbracwLabDsquWmTWD4wqfCvJjtjG6as9fG7b6OSZ+cvEKQ95W0xeLZvQPBrbwFtn6ukWM/59Mk2ExTWWDetCop+hhIvf6+DEdhp6nPEtWgQQLE5nC9KT384bb4Kq+F59+j7F9TENSErhCwijFs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=dfYzBASd; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=QBMqTyHT; arc=none smtp.client-ip=205.220.168.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="meaYjznM";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="KQ/9FOtd"
-Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 5B2DdQ4r2821200
-	for <iommu@lists.linux.dev>; Tue, 2 Dec 2025 14:23:02 GMT
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="dfYzBASd";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="QBMqTyHT"
+Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 5B282WMa1492403
+	for <iommu@lists.linux.dev>; Tue, 2 Dec 2025 14:23:06 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=qcppdkim1; bh=gt9061e9Zzb5snnDuta68b
-	5d/6B+BS6Pl0XDPKQZm0w=; b=meaYjznMvsh+gVwTDbAvzqohuueOLLbbyHHQna
-	Q+ib67jsgOJ0/khNaN15jIysiwwLxWpoSMx4msSHw+OXpSHC+mpfiuR/80RW2Io9
-	NpwnIPpQ1WPPcnRQr6Lxynw7UE+WF6FCM13qx05P3nHNtCbJqQelOxCpRDuiUl5Y
-	S0anfuPmVgXXlUaPwiNNo0otgOgjfkkQPHdPUmC37SfscKxTIcn+XUqwiZ8sGWz9
-	bPJjl0WS+rOI1xoFn23PQLsLtV8Tv8LGUnB/9ZRWRwFnZnFs23tanAklj3YewLj/
-	YL6y/04NJt4bgi3N259GcgwAsK4QvKhvz4Hy1gcYQ663SLxA==
-Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com [209.85.214.198])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4astjghfrx-1
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	pvDGlE0S/6XgEh4WV9txDwLAXqVJ3Idv7+GFUaC/Ruo=; b=dfYzBASdItj2/N5g
+	0VnEqjooYOUbN8kLHVQkeLPtWK67g4wWObSjH8kw8MlGDqBwxECuOXMp146ATx5S
+	9dmgdEazvUCvGPzV4O8ImZXhy2KKgiNz8b37DCE5ZUiCd442ejhSGI+WtgrHtVdi
+	ekiUpF5fb7gdwFR4gMvZDXai2bEdkPnIzPk/kaohiCLbXzt3lszqz3R2vg+HnIT9
+	bDve1x0RxRYJbjUyEJ6OD7VTQ49LU0ozA4LxSGMGcITqc6W4w+CKLi44JhFIzQxA
+	SFEsWuETF8bv8x1OPidO9G+1lGOEE2+XkJqA4Jb/m3tkyLTQnpjVTm8OU+IyscY7
+	uiYLdQ==
+Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com [209.85.216.71])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4askbd2p3g-1
 	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Tue, 02 Dec 2025 14:23:02 +0000 (GMT)
-Received: by mail-pl1-f198.google.com with SMTP id d9443c01a7336-297f8a2ba9eso96839705ad.3
-        for <iommu@lists.linux.dev>; Tue, 02 Dec 2025 06:23:02 -0800 (PST)
+	for <iommu@lists.linux.dev>; Tue, 02 Dec 2025 14:23:05 +0000 (GMT)
+Received: by mail-pj1-f71.google.com with SMTP id 98e67ed59e1d1-342701608e2so5601368a91.1
+        for <iommu@lists.linux.dev>; Tue, 02 Dec 2025 06:23:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1764685381; x=1765290181; darn=lists.linux.dev;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=gt9061e9Zzb5snnDuta68b5d/6B+BS6Pl0XDPKQZm0w=;
-        b=KQ/9FOtdMgoA30aFwOb+Ool4+EXI2e/pjDDvmGl4tDVHQPc628kg4x2EIr3UuOqoZv
-         /6HznelKzVvSumgPbXZ+giD9u8YO8x0O2nfM16FhhTxSz01bSgQnlSHzIRDNIrxtMycO
-         AkHEfmJ2vqwrv7Fodrpqp5lLmE8bK2VQzSlL/iYdjeHbc9zghk3m/d3r40Abj0BW8vgN
-         YgKE42liVEPAzC9SOR8SjRhqIVjmRp+TAVjFQGFE2i51kJYUkuZ4v5xoSMTkMtkNVNAM
-         TedAHSi3XfjlJyqOMy4O+0HKo2yI0FAg6c8ZIqXcBCeF/4tOIYN35KCYdSrx4bNH/APO
-         raaA==
+        d=oss.qualcomm.com; s=google; t=1764685385; x=1765290185; darn=lists.linux.dev;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=pvDGlE0S/6XgEh4WV9txDwLAXqVJ3Idv7+GFUaC/Ruo=;
+        b=QBMqTyHT3Fl3OJkGMl93Ydwa2Ufwpu25U8XOMWhf3YWct6lmAC+OVxXtLnqaEL/bTe
+         1bdar4W9klrUyL0vXfn8fDMaMIa3xddTRCNtxMaOclG7qFY5hWRCgcf+XurdWBdObgO5
+         rGltAmx9pARIRn+SRcdFByibdml/RkpiEB3QdAaOtDH0j2gx+142rYZFaqszCPWr1bUB
+         6OH59mitsPcJVBQLMGjOsnSPb2ogMaApD2Ibazf6C6rqqRROqzMRF14AGnGun5oKwYYA
+         U18L0Wgz8Ub/JbVsmdndhqGCVWoQ6r3GDnIN5jpYwaXpJ9atlvmLHNGb7wWXe0efm0Cz
+         3BVg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1764685381; x=1765290181;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=gt9061e9Zzb5snnDuta68b5d/6B+BS6Pl0XDPKQZm0w=;
-        b=aUFGqZlDs5wSWlFoTRJlN6RBs8AiE7W2MwWSwGP6g6iNj6ZTq7xHTYWp9fb7+sH+vq
-         IhuIZnah+4yCM/GyWSNfpnvnY4v11LWaDIYwCjs3qXZWSk6/hP+l261L2jr8giw3PoNZ
-         jBfJ2Agv8vj8Tt3+yzzdruVdCp0Cjf8NDobUgWNRU6ZpWq10CFeCpblo5lF1QWzYTMVW
-         6HX4O1QMYad1KC7uqvVJoB3l8DvbKsplREXmVv2lMCUGi7x2+dqYrxY+3w1tRjknjYd6
-         qmTi5vQ2yJys7iNb33VtGGEG51hHw/ieo0xMQ8XdbkoVFxRQww2r671eMl/+/5dpLAM2
-         0jwQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUDhjgrkyOPn51SjdZ4GxDtjaEp/pg4mewxTtOKovOE0vAdnK9EMRXl/cGXIb33dWHqbYF0dw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwH8FWwy15NvkkMKaGij6qHthBflOqDzysxZm6ZmIjGXFN49bYN
-	gYpnn1othlUq4KJjkHWLpSrql9SaXBaHdxtGTUFKb8W+mQT1rg96J9KQIruCFAxbqU1Q2St6Lpi
-	Et+ZqBB8YqMlyOhBgFtHtzNiGF4GGb1P+lrjfd9goEli+jWtOvvuGd2JwOA==
-X-Gm-Gg: ASbGnctoPjPvWFAUL0RNAIaUKIVF4dQRjwCsLGnm47KgBOBfIdZrX2YQTrVSeNI113H
-	wkvcJabP9Ba3Kut6ElpztfPYxjd0jDnBK974rGk2LMpWKr+W2qOJ5cVWZZRkfow4IPRbBFp37bk
-	7iU0y5jOK6EDpn/owVqWJ+kEAIZqZfIdpvbzac0ZTKiXXfH0dxwRjeWEBPkK4OF71uKEnlCLcDu
-	PA3TskLPIABVpR/E0YSi7kdQGgJYetMN/diG1WGvwT4YwfKr7/FgWeggvyijfc1TZTlH3+oAR3F
-	n6mATdOLnRel70ZiP6EImpnlxQgBSmcGvRBabPlJvKWvNLwj9iK3WLTd6MEPfqVliv+G3e8HjHt
-	vYOhOIMQZpWvcIaZWBJfLmpZX4lrFzOkmTESkwFY=
-X-Received: by 2002:a17:903:38c4:b0:297:df17:54cd with SMTP id d9443c01a7336-29b6becd454mr555446365ad.27.1764685381157;
-        Tue, 02 Dec 2025 06:23:01 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IHYGeGusbs/g+jO0YEX3EENp9TaG3F7EKKdp50YdySHdKRFLyNGCxjWLZ57TlxhUWCgvPPUTw==
-X-Received: by 2002:a17:903:38c4:b0:297:df17:54cd with SMTP id d9443c01a7336-29b6becd454mr555445975ad.27.1764685380605;
-        Tue, 02 Dec 2025 06:23:00 -0800 (PST)
+        d=1e100.net; s=20230601; t=1764685385; x=1765290185;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=pvDGlE0S/6XgEh4WV9txDwLAXqVJ3Idv7+GFUaC/Ruo=;
+        b=GwJyTqY03bUeMm5f4DX+ovZRk0chlsdeST4z+n8H/eE2fWM0O21Vg2k17LdyHbR/Rt
+         Cgh33EHdppbddUDmfJQWxKgMahuILFaexovkVL0q1YYWqifOUEJNiKLGBc5UWMP3hRwd
+         H6qh85KkUaaPlf+aovzjR3pcj4v56cI0hrr4Gd3Ugvpwxh/6Y8xZcm1phAifp1jfuiE9
+         ay3ART+exjqYthe+KCOP/cvGnCEdLBhKaCdeZvp2uJNmwexgFNfPoi3n0fIEcUjiDJ7x
+         xlHFu/riNoaTLgvg+7p1wkNHvk2aR519KosuwrzLYkB9hGMpWxyxWd8pH024Gcc/Knjv
+         1jUQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXPK5vR08YCiWc6xmNQjGL/u28J4DlKdLByqxFsrHSZdoDq1VN53D5SwtIJyEB9iQMJmsFoRQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yyj9fNv72ddP7ajdU2YnLT+ad1xPliEBioKWNOSsEayEIezyNeE
+	YJK31WUFSOns/9i2BYV4iiehb6Dk8zebsm4TP3dsWAzDHE9cMValBE9xLO5O+jcyhfc4XHm2WUW
+	jIiAbsTCx3jJcuFpSaI0uvMFMhjlWfZUa7KUEZztYAwm7cpbGrJbrgVEzyw==
+X-Gm-Gg: ASbGncvmrvYK5gHC63d7OE1/nTtyNk8RUSZTPTXj7cMToW6Adthj1RFGjypmHvw2iE6
+	sCBMNfpoW8rFQqEw1S82FRyhBJcxsz/h11RiDtPjtD5HjrcRL7BA28hJ3S1TJ+QJEA4jFYxRqgW
+	Gy97Z1gXn031Vo328/sJElff2b2d2LEmA05fhiamIOo1Gh0Fzx5RW6haagd5YfkzT7+6LggjUD5
+	VHqBNw5gVFKeJvEffr70g/569xjUXZJ8vYgZIBKIU5JB97e/xJJcgI+QE0AcedfVTIsbSgPsKYh
+	iqwfZu0e/hZmpyvLje4/ml4ba+RCKSob0Kpfg7PyDJGzkPPME3Q8K9lCUY1akSCCYvyfVS0CXi6
+	1R6qN1ROpwbm7FonDmVDlYpCOpKmU6tajU3PeEQk=
+X-Received: by 2002:a17:90b:4c45:b0:341:3ea2:b625 with SMTP id 98e67ed59e1d1-3475ebfa712mr32702725a91.12.1764685384950;
+        Tue, 02 Dec 2025 06:23:04 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IFcAutCfpDdRSSnk5MniXuwtr5pZ1zGjMgaerjI8XmJ3h8BcgaKPJR/IPoENuE65rkpJv7/dQ==
+X-Received: by 2002:a17:90b:4c45:b0:341:3ea2:b625 with SMTP id 98e67ed59e1d1-3475ebfa712mr32702678a91.12.1764685384366;
+        Tue, 02 Dec 2025 06:23:04 -0800 (PST)
 Received: from [192.168.1.102] ([120.60.68.196])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-be5095a4821sm15659084a12.29.2025.12.02.06.22.56
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-be5095a4821sm15659084a12.29.2025.12.02.06.23.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Dec 2025 06:22:59 -0800 (PST)
+        Tue, 02 Dec 2025 06:23:03 -0800 (PST)
 From: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
-Subject: [PATCH v2 0/4] PCI: Fix ACS enablement for Root Ports in OF
+Date: Tue, 02 Dec 2025 19:52:48 +0530
+Subject: [PATCH v2 1/4] PCI: Enable ACS only after configuring IOMMU for OF
  platforms
-Date: Tue, 02 Dec 2025 19:52:47 +0530
-Message-Id: <20251202-pci_acs-v2-0-5d2759a71489@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -89,10 +91,9 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIADf2LmkC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyjHQUlJIzE
- vPSU3UzU4B8JSMDI1NDIwND3YLkzPjE5GLdJEPTxERjSxNzIwtLJaDqgqLUtMwKsEnRsbW1ANT
- fqndZAAAA
-X-Change-ID: 20251201-pci_acs-b15aa3947289
+Message-Id: <20251202-pci_acs-v2-1-5d2759a71489@oss.qualcomm.com>
+References: <20251202-pci_acs-v2-0-5d2759a71489@oss.qualcomm.com>
+In-Reply-To: <20251202-pci_acs-v2-0-5d2759a71489@oss.qualcomm.com>
 To: Bjorn Helgaas <bhelgaas@google.com>
 Cc: linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
         iommu@lists.linux.dev, Naresh Kamboju <naresh.kamboju@linaro.org>,
@@ -103,137 +104,150 @@ Cc: linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
         Manivannan Sadhasivam <mani@kernel.org>,
         Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=openpgp-sha256; l=4906;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3924;
  i=manivannan.sadhasivam@oss.qualcomm.com; h=from:subject:message-id;
- bh=eA6BaU3akT3wnKeZNsD4pLHCgDMpkqhtg9BGK+xv3bk=;
- b=owEBbQGS/pANAwAKAVWfEeb+kc71AcsmYgBpLvZAsgKRW+ABF3om7Yt/tr9BwOU+D3+JukHRy
- AUokbng5rGJATMEAAEKAB0WIQRnpUMqgUjL2KRYJ5dVnxHm/pHO9QUCaS72QAAKCRBVnxHm/pHO
- 9fN5B/988yBuq8P3aWdrLMwmZq2znSuNO4gh7x8a4u8iBnTZhMGZb8zXMQPj7tfYyNxQ4nbdyIg
- rZ4F7L344Kj3VeQq7RgJnwjZ471ERtXG6RqiwLD+C7sFlytP5zyc7PLPG1oigJlDNAuaEM8rfOG
- dQ+eQRKy2fs4eTNNe7ftDC903xveyO/8FJeii5IbhEY5zSOAx9TF7KZSPe8K/k0w1lIoh3fis1q
- 9toVpP2QOusvKp/bpremIpSAeHoKn+a6/EmRrr2wQZmYxpO+eqQcA03HaqYtUGdjjXOxOr7bBM2
- sk88PqVsmrptpAFAFf0N4yY/RCi+Llx9aDnMrEHxDtofzPL0
+ bh=5z1ouJ38EhP2+fHSIKbzZu23IGvzKgpnENHaWvqW/bk=;
+ b=owEBbQGS/pANAwAKAVWfEeb+kc71AcsmYgBpLvZAK0KxrEsmvfHKka+ak4tP+Htq2wuvd6IOD
+ Gb94sH+n1eJATMEAAEKAB0WIQRnpUMqgUjL2KRYJ5dVnxHm/pHO9QUCaS72QAAKCRBVnxHm/pHO
+ 9TfPCACbwfeix1zhTrWBa2NPzMJrnW85zmPWFT/Qmgjv3jGIXa9W0UdmVZwtwyn5nzAQ94sdyrH
+ zA7N3Wps46qw3ZGtdl1fwzu+dZNkBZnD+3Kdx2l9texP7AIR+FWTZMg9mtxABxxAf9JGLpwJSz5
+ hezCe0rymO+HB8nl9ehmsnUT6WSnkFoJ2JFixPOCg1X42VOyv5XibQE+X+j1rZ7OQLL0lXcghQl
+ b9M7RvD2fs+Qil4L0S0QkZS+5VLJQq4+2dMy6gMWXiTZQ+IgifVXwv6sPk1sVXzpFDf4vDQGN34
+ TA7JCsA5LTM0oCeKOSGAKgwvOIhdnVAZ+I1cMv8WWSgV3N8I
 X-Developer-Key: i=manivannan.sadhasivam@oss.qualcomm.com; a=openpgp;
  fpr=C668AEC3C3188E4C611465E7488550E901166008
-X-Proofpoint-ORIG-GUID: k_NPxaQ0JHkAz7fqqwh-tkQpg-6KdUN4
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMjAyMDExNSBTYWx0ZWRfXwEogerCpIp9h
- j3X2UGBfngIHuL9J3nFkzyUO2xwGSKC+YBaHn0Ezk2Ze4n47SoHhVRAawPr7Y5B0Ke+czlk8Cu6
- FGSe9PAtwW+NTnOxVTuNVmUfjXwNVvKS2yJJkTjTHWS/zJzaqAXHQRM05be4Dh4SFMBz8ndnj4X
- KWW/1ijlbPNIElBh2Q1aA64McMSH3BukJpXgCj5myztXRxgBMqUtpFtgzrNjGsTuUzfOwdkGcOk
- zZYAGhsCs9gdUH/2QsR+7zi13086Ex/f6SlT1pBgUUgMedWVMSHnvvQLCG3jTpNI2tfPA7uUg+u
- dqVJvOMcSzB2VwySDoQfr5UwYsLDVwCVWy7BAjOwCkhmujqoOuuuORk8gvLrmilXaj1nlTXPFwN
- igTJ0os4+UjxCcBTuPZeqnoACxXlDg==
-X-Proofpoint-GUID: k_NPxaQ0JHkAz7fqqwh-tkQpg-6KdUN4
-X-Authority-Analysis: v=2.4 cv=EbfFgfmC c=1 sm=1 tr=0 ts=692ef646 cx=c_pps
- a=MTSHoo12Qbhz2p7MsH1ifg==:117 a=8ziBJk15IZ5r+wOU3RLduA==:17
+X-Proofpoint-ORIG-GUID: zFB-XggOovc6XzZD-Gnf7orFWnZTItG6
+X-Proofpoint-GUID: zFB-XggOovc6XzZD-Gnf7orFWnZTItG6
+X-Authority-Analysis: v=2.4 cv=fLg0HJae c=1 sm=1 tr=0 ts=692ef649 cx=c_pps
+ a=UNFcQwm+pnOIJct1K4W+Mw==:117 a=8ziBJk15IZ5r+wOU3RLduA==:17
  a=IkcTkHD0fZMA:10 a=wP3pNCr1ah4A:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=VwQbUJbxAAAA:8 a=i0EeH86SAAAA:8 a=hD80L64hAAAA:8
- a=pGLkceISAAAA:8 a=COk6AnOGAAAA:8 a=EUspDBNiAAAA:8 a=IdX4pC80JRwBxN0NBHEA:9
- a=QEXdDO2ut3YA:10 a=GvdueXVYPmCkWapjIL-Q:22 a=TjNXssC_j7lpFel5tvFf:22
+ a=VkNPw1HP01LnGYTKEx00:22 a=EUspDBNiAAAA:8 a=8jBi6dqPNo5Cx3X94iEA:9
+ a=QEXdDO2ut3YA:10 a=uKXjsCUrEbL0IQVhDsJ9:22
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMjAyMDExNSBTYWx0ZWRfXyXYZgRaf3dCm
+ SriOQeVVZzN6ePnhEmuFm/Ud6YCZo2dEIbsprfOG5r7S9D8xXO8CY8pi7rlgPgrYL7URBO+3WTG
+ leDzc8i89nzJrPjpTo3470fh/F91VnTN6lSD0USxP+8/N6glS6wNspxOY7OKdTKJbhuc05eYN0X
+ 6u2+p73eQOFLgRwFFONzELzmpiUQ+wKE8V7eGYb8Hf+n5xJNBeZtfzGaRI2OPeyQc3NQhIzmR9T
+ zqNRVwYSI7n5tEMIynsFHb0TNIB+pt25ZiySMmzyuF4EKrPabPdVnORQtF4p8aLyodK0li2vrQx
+ NGD44/RBu7aYDAN7tmxO+yF2gtJ8Mp0rAODgzyUkAgFYX0nEwcfmKS84WPcpMAOrQPb0L1iC1iM
+ Kl+eJ2H9WR58DcJj965Vi+c65cSzxQ==
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.9,FMLib:17.12.100.49
  definitions=2025-12-01_01,2025-11-27_02,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- priorityscore=1501 adultscore=0 lowpriorityscore=0 spamscore=0 bulkscore=0
- phishscore=0 impostorscore=0 malwarescore=0 clxscore=1015 suspectscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2510240001 definitions=main-2512020115
+ spamscore=0 clxscore=1015 phishscore=0 adultscore=0 malwarescore=0
+ suspectscore=0 lowpriorityscore=0 impostorscore=0 bulkscore=0
+ priorityscore=1501 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2510240001
+ definitions=main-2512020115
 
-Hi,
+For enabling ACS without the cmdline params, the platform drivers are
+expected to call pci_request_acs() API which sets a static flag,
+'pci_acs_enable' in drivers/pci/pci.c. And this flag is used to enable ACS
+in pci_enable_acs() helper, which gets called during pci_acs_init(), as per
+this call stack:
 
-This series fixes the long standing issue with ACS in OF platforms. There are
-two fixes in this series, both fixing independent issues on their own, but both
-are needed to properly enable ACS on OF platforms.
+-> pci_device_add()
+	-> pci_init_capabilities()
+		-> pci_acs_init()
+			/* check for pci_acs_enable */
+			-> pci_enable_acs()
 
-Issue(s) background
-===================
+For the OF platforms, pci_request_acs() is called during
+of_iommu_configure() during device_add(), as per this call stack:
 
-Back in 2021, Xingang Wang first noted a failure in attaching the HiSilicon SEC
-device to QEMU ARM64 pci-root-port device [1]. He then tracked down the issue to
-ACS not being enabled for the QEMU Root Port device and he proposed a patch to
-fix it [2].
+-> device_add()
+	-> iommu_bus_notifier()
+		-> iommu_probe_device()
+			-> pci_dma_configure()
+				-> of_dma_configure()
+					-> of_iommu_configure()
+						/* set pci_acs_enable */
+						-> pci_request_acs()
 
-Once the patch got applied, people reported PCIe issues with linux-next on the
-ARM Juno Development boards, where they saw failure in enumerating the endpoint
-devices [3][4]. So soon, the patch got dropped, but the actual issue with the
-ARM Juno boards was left behind.
+As seen from both call stacks, pci_enable_acs() is called way before the
+invocation of pci_request_acs() for the OF platforms. This means,
+pci_enable_acs() will not enable ACS for the first device that gets
+enumerated, which is usally the Root Port device. But since the static
+flag, 'pci_acs_enable' is set *afterwards*, ACS will be enabled for the
+ACS capable devices enumerated later.
 
-Fast forward to 2024, Pavan resubmitted the same fix [5] for his own usecase,
-hoping that someone in the community would fix the issue with ARM Juno boards.
-But the patch was rightly rejected, as a patch that was known to cause issues
-should not be merged to the kernel. But again, no one investigated the Juno
-issue and it was left behind again.
+To fix this issue, do not call pci_enable_acs() from pci_acs_init(), but
+only from pci_dma_configure() after calling of_dma_configure(). This makes
+sure that pci_enable_acs() only gets called after the IOMMU framework has
+called pci_request_acs(). The ACS enablement flow now looks like:
 
-Now it ended up in my plate and I managed to track down the issue with the help
-of Naresh who got access to the Juno boards in LKFT. The Juno issue was with the
-PCIe switch from Microsemi/IDT, which triggers ACS Source Validation error on
-Completions received for the Configuration Read Request from a device connected
-to the downstream port that has not yet captured the PCIe bus number. As per the
-PCIe spec r6.0 sec 2.2.6.2, "Functions must capture the Bus and Device Numbers
-supplied with all Type 0 Configuration Write Requests completed by the Function
-and supply these numbers in the Bus and Device Number fields of the Requester ID
-for all Requests". So during the first Configuration Read Request issued by the
-switch downstream port during enumeration (for reading Vendor ID), Bus and
-Device numbers will be unknown to the device. So it responds to the Read Request
-with Completion having Bus and Device number as 0. The switch interprets the
-Completion as an ACS Source Validation error and drops the completion, leading
-to the failure in detecting the endpoint device. Though the PCIe spec r6.0, sec
-6.12.1.1, states that "Completions are never affected by ACS Source Validation".
-This behavior is in violation of the spec.
+-> pci_device_add()
+	-> pci_init_capabilities()
+		/* Just store the ACS cap */
+		-> pci_acs_init()
+	-> device_add()
+		...
+		-> pci_dma_configure()
+			-> of_dma_configure()
+				-> pci_request_acs()
+			-> pci_enable_acs()
 
-Solution
-========
-
-In September, I submitted a series [6] to fix both issues. For the IDT issue,
-I reused the existing quirk in the PCI core which does a dummy config write
-before issuing the first config read to the device. And for the ACS enablement
-issue, I just resubmitted the original patch from Xingang which called
-pci_request_acs() from devm_of_pci_bridge_init().
-
-But during the review of the series, several comments were received and they
-required the series to be reworked completely. Hence, in this version, I've
-incorported the comments as below:
-
-1. For the ACS enablement issue, I've moved the pci_enable_acs() call from
-pci_acs_init() to pci_dma_configure().
-
-2. For the IDT issue, I've cached the ACS capabilities (RO) in 'pci_dev',
-collected the broken capability for the IDT switches in the quirk and used it to
-disable the capability in the cache. This also allowed me to get rid of the
-earlier workaround for the switch.
-
-[1] https://lore.kernel.org/all/038397a6-57e2-b6fc-6e1c-7c03b7be9d96@huawei.com
-[2] https://lore.kernel.org/all/1621566204-37456-1-git-send-email-wangxingang5@huawei.com
-[3] https://lore.kernel.org/all/01314d70-41e6-70f9-e496-84091948701a@samsung.com
-[4] https://lore.kernel.org/all/CADYN=9JWU3CMLzMEcD5MSQGnaLyDRSKc5SofBFHUax6YuTRaJA@mail.gmail.com
-[5] https://lore.kernel.org/linux-pci/20241107-pci_acs_fix-v1-1-185a2462a571@quicinc.com
-[6] https://lore.kernel.org/linux-pci/20250910-pci-acs-v1-0-fe9adb65ad7d@oss.qualcomm.com
-
-Changes in v2:
-
-* Reworked the patches completely as mentioned above.
-* Rebased on top of v6.18-rc7
+For the ACPI platforms, pci_request_acs() is called during ACPI
+initialization time itself, independent of the IOMMU framework.
 
 Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
 ---
-Manivannan Sadhasivam (4):
-      PCI: Enable ACS only after configuring IOMMU for OF platforms
-      PCI: Cache ACS capabilities
-      PCI: Disable ACS SV capability for the broken IDT switches
-      PCI: Extend the pci_disable_acs_sv quirk for one more IDT switch
+ drivers/pci/pci-driver.c | 8 ++++++++
+ drivers/pci/pci.c        | 8 --------
+ drivers/pci/pci.h        | 1 +
+ 3 files changed, 9 insertions(+), 8 deletions(-)
 
- drivers/pci/pci-driver.c |  8 +++++++
- drivers/pci/pci.c        | 33 ++++++++++++--------------
- drivers/pci/pci.h        |  2 +-
- drivers/pci/probe.c      | 12 ----------
- drivers/pci/quirks.c     | 62 ++++++++++++------------------------------------
- include/linux/pci.h      |  2 ++
- 6 files changed, 41 insertions(+), 78 deletions(-)
----
-base-commit: ac3fd01e4c1efce8f2c054cdeb2ddd2fc0fb150d
-change-id: 20251201-pci_acs-b15aa3947289
+diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
+index 302d61783f6c..a4ee93497a06 100644
+--- a/drivers/pci/pci-driver.c
++++ b/drivers/pci/pci-driver.c
+@@ -1648,6 +1648,14 @@ static int pci_dma_configure(struct device *dev)
+ 		ret = acpi_dma_configure(dev, acpi_get_dma_attr(adev));
+ 	}
+ 
++	/*
++	 * Attempt to enable ACS regardless of capability because some Root
++	 * Ports (e.g. those quirked with *_intel_pch_acs_*) do not have
++	 * the standard ACS capability but still support ACS via those
++	 * quirks.
++	 */
++	pci_enable_acs(to_pci_dev(dev));
++
+ 	pci_put_host_bridge_device(bridge);
+ 
+ 	/* @drv may not be valid when we're called from the IOMMU layer */
+diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+index b14dd064006c..9f594fc6dade 100644
+--- a/drivers/pci/pci.c
++++ b/drivers/pci/pci.c
+@@ -3677,14 +3677,6 @@ bool pci_acs_path_enabled(struct pci_dev *start,
+ void pci_acs_init(struct pci_dev *dev)
+ {
+ 	dev->acs_cap = pci_find_ext_capability(dev, PCI_EXT_CAP_ID_ACS);
+-
+-	/*
+-	 * Attempt to enable ACS regardless of capability because some Root
+-	 * Ports (e.g. those quirked with *_intel_pch_acs_*) do not have
+-	 * the standard ACS capability but still support ACS via those
+-	 * quirks.
+-	 */
+-	pci_enable_acs(dev);
+ }
+ 
+ void pci_rebar_init(struct pci_dev *pdev)
+diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
+index 36f8c0985430..972b28fc5455 100644
+--- a/drivers/pci/pci.h
++++ b/drivers/pci/pci.h
+@@ -917,6 +917,7 @@ static inline resource_size_t pci_resource_alignment(struct pci_dev *dev,
+ }
+ 
+ void pci_acs_init(struct pci_dev *dev);
++void pci_enable_acs(struct pci_dev *dev);
+ #ifdef CONFIG_PCI_QUIRKS
+ int pci_dev_specific_acs_enabled(struct pci_dev *dev, u16 acs_flags);
+ int pci_dev_specific_enable_acs(struct pci_dev *dev);
 
-Best regards,
 -- 
-Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+2.48.1
 
