@@ -1,55 +1,55 @@
-Received: from mail-pf1-f201.google.com (mail-pf1-f201.google.com [209.85.210.201])
+Received: from mail-pj1-f73.google.com (mail-pj1-f73.google.com [209.85.216.73])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D5E61E8332
-	for <iommu@lists.linux.dev>; Tue,  2 Dec 2025 23:03:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCDC02C0F6F
+	for <iommu@lists.linux.dev>; Tue,  2 Dec 2025 23:03:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.73
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764716588; cv=none; b=exdnKQOWuKEpCbXVLN0MtI8N+bRNUR9c5KMt0+gNiWhDmoSHkt9/FjvmkSExhWxxb2DH9AECd+QnJC401qmxw6M2ABlqZwru232NKCb5FDLh+oLOm7BdCPs2A+K93eUyiApPNGwf+KheeZQkSIhNLQhJiUogG/h3QYyBaO0+II4=
+	t=1764716590; cv=none; b=MlxvauIBnlxapmCQNyUWoXUCMtYv5pR2Zx6pid+YE7jHtGgf5j2MzXPA+FaZWnv4SpB16O9Apg+lOtg5GRSU/vZgYn+txh2+catktdPJ/z50pNb7+QREV9IwaoLicJUFGgwUJVE1U4JS5HqHR5RD9C4/61UDewKd59moipiScDo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764716588; c=relaxed/simple;
-	bh=3dpv2T/KPouo6biL8naEZoBVqMmu70tshpBj6mjBqss=;
+	s=arc-20240116; t=1764716590; c=relaxed/simple;
+	bh=0fxXWpcTi40PtPWPrvxIElA/HVJyWzHgXtAh/9+B2ok=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=AEUMgDt3+4CcVZxdEvOghSIeGYagPQz9594ssWdupFmu56WLYOOZQ2RE3wxfYDnewd+jx7cJ29zH26PvFSlvYHls3vdTXUgiJF6pHrg2b1HOa9v6n5u5wI6cO9WpyqF+VF0XUveblDuXrn8YBh64cgliuiKUlU21PVIpHagnxFM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=cogIYNJd; arc=none smtp.client-ip=209.85.210.201
+	 To:Cc:Content-Type; b=tG3fjrGBk9JOcPov09qOQoXReC7WpMUccOPy/DPJS/w6xQ+0TnZDLzLUNbp1oQEG901LjmXXtPUX2IVHZ/UEvH0rzT5AblbhPpD3hr/pRX6bFfgJo51wAgdJBrE9CGZu+80BEsJZCBoHW8cZvvHk72FWIiuBtVU7gwHIO8BS1mE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=IDa6hQLw; arc=none smtp.client-ip=209.85.216.73
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="cogIYNJd"
-Received: by mail-pf1-f201.google.com with SMTP id d2e1a72fcca58-7aa148105a2so5424501b3a.1
-        for <iommu@lists.linux.dev>; Tue, 02 Dec 2025 15:03:07 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="IDa6hQLw"
+Received: by mail-pj1-f73.google.com with SMTP id 98e67ed59e1d1-343daf0f38aso6236067a91.3
+        for <iommu@lists.linux.dev>; Tue, 02 Dec 2025 15:03:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1764716586; x=1765321386; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1764716588; x=1765321388; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=fBZlFP/EB2P+WVJQqIikPs/rswuiFST1UO20sqZFKaw=;
-        b=cogIYNJdYwS9gUhJfIAIRNXAHX0ftTVp42AiZTZZkQ1CudUW9iaAUj2mxh48hS4pX7
-         Qlre1FxFFWncaTldh+4PrtJ6ixbwXeyaO949lVvl+8mKCAMlBVE6n/3ERfPIvSZS02Td
-         hUMmbyFYDjgWUEiCBg8/WbTS5Drah3sFLsX9e10VnLrhUczZYWSg0lzJ9x/3dHZw6r+P
-         zWWU+xJogXrRupgQg5oVCq3fTQGSBXYcf/NwYLdA3IQvrM9vF3z3ug1eEsR3gKsPqqZ7
-         ya2OrA9t8fio2OI/1OrK08jmUj3jvY37WzQNAg0f1Q3jspNCOqPH+eL/PU0HAORIAeFL
-         6KOw==
+        bh=uOyS1+oE/MZnMqUYcDqZHpivnjj1VqEXH4ijUgP4GxM=;
+        b=IDa6hQLwrHuENJa2RF+KvH3xtX7C76zdX/xFLFkmXt7jBM8MYMCKXBz6K5Zdv9G8uR
+         SKcjefARywSTe/Tg46viaQbFFtQR+UDwJK49P4xgKMpu0/I5GxJ1zLCIi+GXQxDcG5bI
+         4QKt15I8bB/0EwAqlqSj7zgLmFOHTirqMRFB0twi0yBDYNr1HFCkLSHyOD6z3GEeMaTG
+         hDns7j7t8hdds8pb/w+QZJoyIA1/8yhWHtLO2TYUcabO9oq6M3X/y8i1G6T3vQd86FER
+         5HPK/+FZoxoGmJqF+wlTbBVABHyO6wMrrmmg3medqTSxlTUaUOOek133auHZ11XRP8Bu
+         NIFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1764716586; x=1765321386;
+        d=1e100.net; s=20230601; t=1764716588; x=1765321388;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=fBZlFP/EB2P+WVJQqIikPs/rswuiFST1UO20sqZFKaw=;
-        b=G5NIyrPO0uqmdYwt8zwnspM4KBTwne2PEvEBJQIMsRu/jzIdteRo3rJLwS9u03ax/Y
-         0fJ/kVdzYUnfPw2DE4/OslAW/i8BjVnAjyfcdbL0oV34mq9yXnpdUUHIb/68iEnA4Z6F
-         TfQ5+P1pFBpePxVeKOKN7m7gX4Jzie5Z3Glc9tc4z+t/6R0YM+rJ76hSUI4HPf6ghLAO
-         QyKijtdq49CFETmGsdQRxv8PkxX7fVyRxZN2yqfcBWudiSe5W5c3SyABy1/l2jkG9ZMj
-         55fV5FPIgm2kFhtW42ZTd5iNtmvWWVnip2HWpxKR8nsWzHP9ZiAc+DLOYI7dwYFSR1qC
-         db9Q==
-X-Forwarded-Encrypted: i=1; AJvYcCXCTnuAHb312ub8rpl03DxvxFjCBp6mXxlUyygJC0gqNLCnBJCFd5lDhEj+d/WuULeOAZyk3w==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzX9ydo6CoOTewCxjhGGxubEJ3gStdzbIu0IgOLzkvenDcudOew
-	EXfuUgQjBlFTUUiJGXtKxkkH8X2A1ShZ8qU9V+90NOxG9DouhmB0UvcdODUJ1e0cHpQtWPEXsuZ
-	WJDeSFg4TFSQfHA==
-X-Google-Smtp-Source: AGHT+IGwm2qNuoclKb/WRJ/9e/2T50mKMClCoHj5CFtiQtnpImqfROZN2V64QnmfFa0SmkASiofdI1wDFOJAOA==
-X-Received: from pfbg6.prod.google.com ([2002:a05:6a00:ae06:b0:7b8:fc17:3960])
+        bh=uOyS1+oE/MZnMqUYcDqZHpivnjj1VqEXH4ijUgP4GxM=;
+        b=UBEXAvnsB0SxSIPv3uOF/hTQV0EE9y/ncRsMyo5dRGA8G4nXk53vDCpPfbIo644pZg
+         CwQd11ftPZOMeJexawyX3YYeXrz8DAE4g8AObmEygv+RSehSw1HRBp/ARVjjgPO8Qw+c
+         fz2T9h3wc0QU95rarSKkLJ+Y/PbndKc9owUBMsewNJTo9zeIF8Us6fPuOog02f/Lbcz6
+         PFbNgWEIAYDPXV0InM4MZztqzTXA1GsUVrlX+a+Vibi7Yngmi9S+gTtPwSCjOe3A0XOA
+         vsauHB0xMH2LI0L5v89z1H5XOVOWz0+cmwsdiyfVEt44hFAYy/7rEXEcI3s3OdHhgtal
+         XWyg==
+X-Forwarded-Encrypted: i=1; AJvYcCWNUoMc8XX/FAWFzu/KWvHpC4+iZY8RdN8Xo77Pb6YEAmHLoQMs15pZp3T7opTzXg2hCRxtRQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwFGf+CkoJalY5b9YEzEr01ZrB8zId2EmenQ9lZCmP8HagbLN0L
+	czCpEKtVvYOAcemUqA6vQP3jVWYTzrpB3FxB0V9kbxya99Vp/OyCt7MlIVC3OoFhvHo+itY/f7I
+	zmIvhDuXlt5NJPQ==
+X-Google-Smtp-Source: AGHT+IHGoMvFSNvSZtwMI7okBiN+CBcfRAk016csbZkp2Vku+dbv1pl50jnpk9FRa05GjdU15tbIjV0aFJnMaQ==
+X-Received: from pjsd11.prod.google.com ([2002:a17:90a:bf8b:b0:340:e523:10dd])
  (user=skhawaja job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:6a00:3a24:b0:7ab:e007:deec with SMTP id d2e1a72fcca58-7e00eb6dc8cmr178184b3a.32.1764716586477;
- Tue, 02 Dec 2025 15:03:06 -0800 (PST)
-Date: Tue,  2 Dec 2025 23:02:31 +0000
+ 2002:a17:90b:5745:b0:340:b572:3b7f with SMTP id 98e67ed59e1d1-349127441e8mr331295a91.20.1764716588128;
+ Tue, 02 Dec 2025 15:03:08 -0800 (PST)
+Date: Tue,  2 Dec 2025 23:02:32 +0000
 In-Reply-To: <20251202230303.1017519-1-skhawaja@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -59,8 +59,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20251202230303.1017519-1-skhawaja@google.com>
 X-Mailer: git-send-email 2.52.0.158.g65b55ccf14-goog
-Message-ID: <20251202230303.1017519-2-skhawaja@google.com>
-Subject: [RFC PATCH v2 01/32] iommufd: Allow HWPTs to have a NULL IOAS
+Message-ID: <20251202230303.1017519-3-skhawaja@google.com>
+Subject: [RFC PATCH v2 02/32] iommufd: split alloc and domain assign from iommufd_hwpt_paging_alloc
 From: Samiullah Khawaja <skhawaja@google.com>
 To: David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
 	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
@@ -76,130 +76,182 @@ Content-Type: text/plain; charset="UTF-8"
 
 From: YiFei Zhu <zhuyifei@google.com>
 
-Normally HWPTs are created with a parent IOAS to allow the mappings
-to be modified. For liveupdate we want an immutable HWPT upon restore,
-so no IOAS is needed. This patch prepares iommufd so it would not
-crash on a NULL hwpt_paging->ioas.
+To avoid code duplication, these code are split off into smaller
+functions that may also be called by liveupdate.
 
 Signed-off-by: YiFei Zhu <zhuyifei@google.com>
 ---
- drivers/iommu/iommufd/device.c       | 11 ++++++++---
- drivers/iommu/iommufd/hw_pagetable.c | 15 +++++++++++++--
- 2 files changed, 21 insertions(+), 5 deletions(-)
+ drivers/iommu/iommufd/hw_pagetable.c    | 74 +++++++++++++++----------
+ drivers/iommu/iommufd/iommufd_private.h |  4 ++
+ 2 files changed, 50 insertions(+), 28 deletions(-)
 
-diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
-index 4c842368289f..ba4d9c3cfa8b 100644
---- a/drivers/iommu/iommufd/device.c
-+++ b/drivers/iommu/iommufd/device.c
-@@ -418,6 +418,7 @@ iommufd_device_attach_reserved_iova(struct iommufd_device *idev,
- 
- 	lockdep_assert_held(&igroup->lock);
- 
-+	/* unreachable if !hwpt_paging->ioas */
- 	rc = iopt_table_enforce_dev_resv_regions(&hwpt_paging->ioas->iopt,
- 						 idev->dev,
- 						 &igroup->sw_msi_start);
-@@ -603,7 +604,7 @@ int iommufd_hw_pagetable_attach(struct iommufd_hw_pagetable *hwpt,
- 				struct iommufd_device *idev, ioasid_t pasid)
- {
- 	struct iommufd_hwpt_paging *hwpt_paging = find_hwpt_paging(hwpt);
--	bool attach_resv = hwpt_paging && pasid == IOMMU_NO_PASID;
-+	bool attach_resv = hwpt_paging && pasid == IOMMU_NO_PASID && hwpt_paging->ioas;
- 	struct iommufd_group *igroup = idev->igroup;
- 	struct iommufd_hw_pagetable *old_hwpt;
- 	struct iommufd_attach *attach;
-@@ -707,7 +708,7 @@ iommufd_hw_pagetable_detach(struct iommufd_device *idev, ioasid_t pasid)
- 		xa_erase(&igroup->pasid_attach, pasid);
- 		kfree(attach);
- 	}
--	if (hwpt_paging && pasid == IOMMU_NO_PASID)
-+	if (hwpt_paging && pasid == IOMMU_NO_PASID && hwpt_paging->ioas)
- 		iopt_remove_reserved_iova(&hwpt_paging->ioas->iopt, idev->dev);
- 	mutex_unlock(&igroup->lock);
- 
-@@ -739,6 +740,9 @@ iommufd_group_remove_reserved_iova(struct iommufd_group *igroup,
- 
- 	lockdep_assert_held(&igroup->lock);
- 
-+	if (!hwpt_paging->ioas)
-+		return;
-+
- 	attach = xa_load(&igroup->pasid_attach, IOMMU_NO_PASID);
- 	xa_for_each(&attach->device_array, index, cur)
- 		iopt_remove_reserved_iova(&hwpt_paging->ioas->iopt, cur->dev);
-@@ -756,6 +760,7 @@ iommufd_group_do_replace_reserved_iova(struct iommufd_group *igroup,
- 
- 	lockdep_assert_held(&igroup->lock);
- 
-+	/* unreachable if !hwpt_paging->ioas */
- 	attach = xa_load(&igroup->pasid_attach, IOMMU_NO_PASID);
- 	old_hwpt_paging = find_hwpt_paging(attach->hwpt);
- 	if (!old_hwpt_paging || hwpt_paging->ioas != old_hwpt_paging->ioas) {
-@@ -782,7 +787,7 @@ iommufd_device_do_replace(struct iommufd_device *idev, ioasid_t pasid,
- 			  struct iommufd_hw_pagetable *hwpt)
- {
- 	struct iommufd_hwpt_paging *hwpt_paging = find_hwpt_paging(hwpt);
--	bool attach_resv = hwpt_paging && pasid == IOMMU_NO_PASID;
-+	bool attach_resv = hwpt_paging && pasid == IOMMU_NO_PASID && hwpt_paging->ioas;
- 	struct iommufd_hwpt_paging *old_hwpt_paging;
- 	struct iommufd_group *igroup = idev->igroup;
- 	struct iommufd_hw_pagetable *old_hwpt;
 diff --git a/drivers/iommu/iommufd/hw_pagetable.c b/drivers/iommu/iommufd/hw_pagetable.c
-index fe789c2dc0c9..78d2130e0061 100644
+index 78d2130e0061..a528f84ad429 100644
 --- a/drivers/iommu/iommufd/hw_pagetable.c
 +++ b/drivers/iommu/iommufd/hw_pagetable.c
-@@ -23,6 +23,7 @@ void iommufd_hwpt_paging_destroy(struct iommufd_object *obj)
- 		container_of(obj, struct iommufd_hwpt_paging, common.obj);
- 
- 	if (!list_empty(&hwpt_paging->hwpt_item)) {
-+		/* unreachable if !hwpt_paging->ioas */
- 		mutex_lock(&hwpt_paging->ioas->mutex);
- 		list_del(&hwpt_paging->hwpt_item);
- 		mutex_unlock(&hwpt_paging->ioas->mutex);
-@@ -32,7 +33,9 @@ void iommufd_hwpt_paging_destroy(struct iommufd_object *obj)
- 	}
- 
- 	__iommufd_hwpt_destroy(&hwpt_paging->common);
--	refcount_dec(&hwpt_paging->ioas->obj.users);
-+
-+	if (hwpt_paging->ioas)
-+		refcount_dec(&hwpt_paging->ioas->obj.users);
+@@ -90,6 +90,29 @@ iommufd_hwpt_paging_enforce_cc(struct iommufd_hwpt_paging *hwpt_paging)
+ 	return 0;
  }
  
- void iommufd_hwpt_paging_abort(struct iommufd_object *obj)
-@@ -41,9 +44,11 @@ void iommufd_hwpt_paging_abort(struct iommufd_object *obj)
- 		container_of(obj, struct iommufd_hwpt_paging, common.obj);
- 
- 	/* The ioas->mutex must be held until finalize is called. */
--	lockdep_assert_held(&hwpt_paging->ioas->mutex);
-+	if (hwpt_paging->ioas)
-+		lockdep_assert_held(&hwpt_paging->ioas->mutex);
- 
- 	if (!list_empty(&hwpt_paging->hwpt_item)) {
-+		/* unreachable if !hwpt_paging->ioas */
- 		list_del_init(&hwpt_paging->hwpt_item);
- 		iopt_table_remove_domain(&hwpt_paging->ioas->iopt,
- 					 hwpt_paging->common.domain);
-@@ -457,6 +462,9 @@ int iommufd_hwpt_set_dirty_tracking(struct iommufd_ucmd *ucmd)
- 		return PTR_ERR(hwpt_paging);
- 
- 	ioas = hwpt_paging->ioas;
-+	if (!ioas)
-+		return -EINVAL;
++struct iommufd_hwpt_paging *
++_iommufd_hwpt_paging_alloc(struct iommufd_ctx *ictx)
++{
++	struct iommufd_hwpt_paging *hwpt_paging;
 +
- 	enable = cmd->flags & IOMMU_HWPT_DIRTY_TRACKING_ENABLE;
- 
- 	rc = iopt_set_dirty_tracking(&ioas->iopt, hwpt_paging->common.domain,
-@@ -482,6 +490,9 @@ int iommufd_hwpt_get_dirty_bitmap(struct iommufd_ucmd *ucmd)
- 		return PTR_ERR(hwpt_paging);
- 
- 	ioas = hwpt_paging->ioas;
-+	if (!ioas)
-+		return -EINVAL;
++	hwpt_paging = __iommufd_object_alloc(
++		ictx, hwpt_paging, IOMMUFD_OBJ_HWPT_PAGING, common.obj);
++	if (IS_ERR(hwpt_paging))
++		return ERR_CAST(hwpt_paging);
 +
- 	rc = iopt_read_and_clear_dirty_data(
- 		&ioas->iopt, hwpt_paging->common.domain, cmd->flags, cmd);
++	INIT_LIST_HEAD(&hwpt_paging->hwpt_item);
++
++	return hwpt_paging;
++}
++
++void iommufd_hwpt_init_from_domain(struct iommufd_hw_pagetable *hwpt,
++				   struct iommu_domain *domain)
++{
++	hwpt->domain = domain;
++	domain->iommufd_hwpt = hwpt;
++	domain->cookie_type = IOMMU_COOKIE_IOMMUFD;
++}
++
+ /**
+  * iommufd_hwpt_paging_alloc() - Get a PAGING iommu_domain for a device
+  * @ictx: iommufd context
+@@ -122,6 +145,7 @@ iommufd_hwpt_paging_alloc(struct iommufd_ctx *ictx, struct iommufd_ioas *ioas,
+ 	const struct iommu_ops *ops = dev_iommu_ops(idev->dev);
+ 	struct iommufd_hwpt_paging *hwpt_paging;
+ 	struct iommufd_hw_pagetable *hwpt;
++	struct iommu_domain *domain;
+ 	int rc;
  
+ 	lockdep_assert_held(&ioas->mutex);
+@@ -137,38 +161,34 @@ iommufd_hwpt_paging_alloc(struct iommufd_ctx *ictx, struct iommufd_ioas *ioas,
+ 	    (flags & IOMMU_HWPT_ALLOC_NEST_PARENT))
+ 		return ERR_PTR(-EOPNOTSUPP);
+ 
+-	hwpt_paging = __iommufd_object_alloc(
+-		ictx, hwpt_paging, IOMMUFD_OBJ_HWPT_PAGING, common.obj);
++	hwpt_paging = _iommufd_hwpt_paging_alloc(ictx);
+ 	if (IS_ERR(hwpt_paging))
+ 		return ERR_CAST(hwpt_paging);
++
+ 	hwpt = &hwpt_paging->common;
+ 	hwpt->pasid_compat = flags & IOMMU_HWPT_ALLOC_PASID;
+ 
+-	INIT_LIST_HEAD(&hwpt_paging->hwpt_item);
+ 	/* Pairs with iommufd_hw_pagetable_destroy() */
+ 	refcount_inc(&ioas->obj.users);
+ 	hwpt_paging->ioas = ioas;
+ 	hwpt_paging->nest_parent = flags & IOMMU_HWPT_ALLOC_NEST_PARENT;
+ 
+ 	if (ops->domain_alloc_paging_flags) {
+-		hwpt->domain = ops->domain_alloc_paging_flags(idev->dev,
++		domain = ops->domain_alloc_paging_flags(idev->dev,
+ 				flags & ~IOMMU_HWPT_FAULT_ID_VALID, user_data);
+-		if (IS_ERR(hwpt->domain)) {
+-			rc = PTR_ERR(hwpt->domain);
+-			hwpt->domain = NULL;
++		if (IS_ERR(domain)) {
++			rc = PTR_ERR(domain);
+ 			goto out_abort;
+ 		}
+-		hwpt->domain->owner = ops;
++		domain->owner = ops;
+ 	} else {
+-		hwpt->domain = iommu_paging_domain_alloc(idev->dev);
+-		if (IS_ERR(hwpt->domain)) {
+-			rc = PTR_ERR(hwpt->domain);
+-			hwpt->domain = NULL;
++		domain = iommu_paging_domain_alloc(idev->dev);
++		if (IS_ERR(domain)) {
++			rc = PTR_ERR(domain);
+ 			goto out_abort;
+ 		}
+ 	}
+-	hwpt->domain->iommufd_hwpt = hwpt;
+-	hwpt->domain->cookie_type = IOMMU_COOKIE_IOMMUFD;
++	iommufd_hwpt_init_from_domain(hwpt, domain);
+ 
+ 	/*
+ 	 * Set the coherency mode before we do iopt_table_add_domain() as some
+@@ -237,6 +257,7 @@ iommufd_hwpt_nested_alloc(struct iommufd_ctx *ictx,
+ 	const struct iommu_ops *ops = dev_iommu_ops(idev->dev);
+ 	struct iommufd_hwpt_nested *hwpt_nested;
+ 	struct iommufd_hw_pagetable *hwpt;
++	struct iommu_domain *domain;
+ 	int rc;
+ 
+ 	if ((flags & ~(IOMMU_HWPT_FAULT_ID_VALID | IOMMU_HWPT_ALLOC_PASID)) ||
+@@ -256,17 +277,15 @@ iommufd_hwpt_nested_alloc(struct iommufd_ctx *ictx,
+ 	refcount_inc(&parent->common.obj.users);
+ 	hwpt_nested->parent = parent;
+ 
+-	hwpt->domain = ops->domain_alloc_nested(
++	domain = ops->domain_alloc_nested(
+ 		idev->dev, parent->common.domain,
+ 		flags & ~IOMMU_HWPT_FAULT_ID_VALID, user_data);
+-	if (IS_ERR(hwpt->domain)) {
+-		rc = PTR_ERR(hwpt->domain);
+-		hwpt->domain = NULL;
++	if (IS_ERR(domain)) {
++		rc = PTR_ERR(domain);
+ 		goto out_abort;
+ 	}
+-	hwpt->domain->owner = ops;
+-	hwpt->domain->iommufd_hwpt = hwpt;
+-	hwpt->domain->cookie_type = IOMMU_COOKIE_IOMMUFD;
++	iommufd_hwpt_init_from_domain(hwpt, domain);
++	domain->owner = ops;
+ 
+ 	if (WARN_ON_ONCE(hwpt->domain->type != IOMMU_DOMAIN_NESTED)) {
+ 		rc = -EOPNOTSUPP;
+@@ -294,6 +313,7 @@ iommufd_viommu_alloc_hwpt_nested(struct iommufd_viommu *viommu, u32 flags,
+ {
+ 	struct iommufd_hwpt_nested *hwpt_nested;
+ 	struct iommufd_hw_pagetable *hwpt;
++	struct iommu_domain *domain;
+ 	int rc;
+ 
+ 	if (flags & ~(IOMMU_HWPT_FAULT_ID_VALID | IOMMU_HWPT_ALLOC_PASID))
+@@ -314,16 +334,14 @@ iommufd_viommu_alloc_hwpt_nested(struct iommufd_viommu *viommu, u32 flags,
+ 	refcount_inc(&viommu->obj.users);
+ 	hwpt_nested->parent = viommu->hwpt;
+ 
+-	hwpt->domain = viommu->ops->alloc_domain_nested(
++	domain = viommu->ops->alloc_domain_nested(
+ 		viommu, flags & ~IOMMU_HWPT_FAULT_ID_VALID, user_data);
+-	if (IS_ERR(hwpt->domain)) {
+-		rc = PTR_ERR(hwpt->domain);
+-		hwpt->domain = NULL;
++	if (IS_ERR(domain)) {
++		rc = PTR_ERR(domain);
+ 		goto out_abort;
+ 	}
+-	hwpt->domain->iommufd_hwpt = hwpt;
+-	hwpt->domain->owner = viommu->iommu_dev->ops;
+-	hwpt->domain->cookie_type = IOMMU_COOKIE_IOMMUFD;
++	iommufd_hwpt_init_from_domain(hwpt, domain);
++	domain->owner = viommu->iommu_dev->ops;
+ 
+ 	if (WARN_ON_ONCE(hwpt->domain->type != IOMMU_DOMAIN_NESTED)) {
+ 		rc = -EOPNOTSUPP;
+diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
+index eb6d1a70f673..e43da269ab80 100644
+--- a/drivers/iommu/iommufd/iommufd_private.h
++++ b/drivers/iommu/iommufd/iommufd_private.h
+@@ -434,6 +434,10 @@ iommufd_get_hwpt_nested(struct iommufd_ucmd *ucmd, u32 id)
+ int iommufd_hwpt_set_dirty_tracking(struct iommufd_ucmd *ucmd);
+ int iommufd_hwpt_get_dirty_bitmap(struct iommufd_ucmd *ucmd);
+ 
++struct iommufd_hwpt_paging *
++_iommufd_hwpt_paging_alloc(struct iommufd_ctx *ictx);
++void iommufd_hwpt_init_from_domain(struct iommufd_hw_pagetable *hwpt,
++				   struct iommu_domain *domain);
+ struct iommufd_hwpt_paging *
+ iommufd_hwpt_paging_alloc(struct iommufd_ctx *ictx, struct iommufd_ioas *ioas,
+ 			  struct iommufd_device *idev, ioasid_t pasid,
 -- 
 2.52.0.158.g65b55ccf14-goog
 
