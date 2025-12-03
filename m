@@ -1,247 +1,254 @@
-Received: from PH7PR06CU001.outbound.protection.outlook.com (mail-westus3azon11010042.outbound.protection.outlook.com [52.101.201.42])
+Received: from exactco.de (exactco.de [176.9.10.151])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A740C2E3B15
-	for <iommu@lists.linux.dev>; Wed,  3 Dec 2025 11:07:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.201.42
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764760026; cv=fail; b=ZMbr9dGEVKIirhSqyM7nwdvZ8iKZfF0p9UCM4axbILcxxUH+1Mw6u0YN4VSQYFvzliRx12Amah9ky6DKcofVhBOEMRNk2kXIkwCchUbHNY6TiO6+MxvPDAqQ0eYVyCsZpT+GCzikjWYpOqu1gOLWFhZsOzjfUSEDTdJVJzuXLTo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764760026; c=relaxed/simple;
-	bh=P37uhpKVPCxNLgwwRTnBg2IKP5pHAjPhU3uUXAZu7kI=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=O9GfC1BWdS5vRnVHhFI1oVq4CElRuus0AW7iVU+6mekMrup3+17bt0s/5RrV8V4UR4q19a0RPcKVR+jggzP9HgC7gAow/JroJVqRX68GuFwWXzlcdvy6RZqP5r/+49H98C78XagMQK0F4BSnJdHR8OzEkxOP2RtUE653QKMOUTg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=nJwGb9mo; arc=fail smtp.client-ip=52.101.201.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD71C2F3C0A
+	for <iommu@lists.linux.dev>; Wed,  3 Dec 2025 11:21:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=176.9.10.151
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1764760907; cv=none; b=KRbpAAbRj3eBja+j3C5qA8xCkRejLdSy3W8X/qbZPLu/FWnhYPwZb4qNcpv+EaMDBn6d0JBPCOQ+UOqCLBBWMKEaMDQwksD8pOCPql1VWLexlD1rVyr0jwz3JdeERI3m6W1BWb6MZ4rCldTr+n3SPg0l21+1RIOwpylw0bZPGb8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1764760907; c=relaxed/simple;
+	bh=iZqnU3WseH4Z4TcClRhCb4JWpw/grTH9Kw5mvFrrLCc=;
+	h=Date:Message-Id:Cc:To:Subject:From:Mime-Version:Content-Type; b=kaaxHYMkl61pTKMx7zi1gXmP3pJcB/sA7qQ0MCZGb+NwXDuUAREpPXYWGbZWrHts99X04sJ12xhI3U4upi2exPsKo7YqlqzmDav4jWG8As2HxCiTc0pV/qm9V6Q10Vb1+zqnBsG0+Akdh0M8TrAZ9rnbewJHaDZ4G4yzRqvjamM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=exactco.de; spf=pass smtp.mailfrom=exactco.de; dkim=pass (2048-bit key) header.d=exactco.de header.i=@exactco.de header.b=HOdvCGYI; arc=none smtp.client-ip=176.9.10.151
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=exactco.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=exactco.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="nJwGb9mo"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=kXaWqoFZ20bPrhbGGvW2I7CkiMajafPsuhlTPdf2haeIR5JZEPs6QK00T+J0tdrMzZ6WI3cYY7Ci1ISkIU0rbROtnX18V8gWglo1VZLMAMIhWa34q9HnGG4jRWKw1lAzkUbrGph1eozNqv/X6KVLNSbTjTiMw/vgFXgC9DrSHuNyIIesLy2NUeuTpPxLksRr3MmHszMIJYy0P4k0Y3C14NGMJrYwCM6RiRBuQhOLGfjdE9PdXZlS37NqitW+Dz9e6iHLDFLzSFMXcYzXIZ0TaGb7Bb1rEa5dHpyFqDjwYeebNI5lqVzEEjq4WFdDjLxQoQwTFlt9HNvH/WDD81to9g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=KWiZJyT2FyHNj0cXTvfR4D3QuxS/gv9+l4n9+P3YC7Q=;
- b=Qw/Bh6BSFuRmu70xfzTO2MO6uoeh0AT6AITPIDRv+dK5bacBg3ulV2dxTb5pxtUAP2rhukXDAVBa3eRyMeru//dohthrVYgemcA3/2fZgPLhk9fU6ouBhfVVSEqWvUo6dqefmZsflvO2vZEFEX/4EZbBxckaELmpW0ji8ojONCOJya0rWnhULV2Hpxi4HONO6kEXVw0gDLy4x+XTtFNxYJQ0lfAsZxqnnZgT86iMWtdj+/UkObzNTWy15P3XV+YTdb2Zg6XgpP3KTR4xEpTqiy5rrCx82l93lb3agKt7hONJ+UPNOZ+tRcN4F5WMb6F/2HgnvVmP/i5rWVXcE0dmPw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KWiZJyT2FyHNj0cXTvfR4D3QuxS/gv9+l4n9+P3YC7Q=;
- b=nJwGb9moKEeE228YIK5gQt3FC8CdD8YvMaFtDVYbRAiBm5+6dsR5i9kdM9wfoAMqENappfoPOtjiqTTIr/EYLt2I4nWovoYID1b+ms7fInkV5cmB1fm4aQPsoOsnddLYS/SOnHIq0efCSJQkbU8JpVXmnpH4CtdmZho1m6Y6FqP7408wdHvPu8F+/KxOjbfPcerBgA9lmouhszGRbm3cG/ER2GwKBKEdpAW9r28wHB6K/wsCKwdOZb0KUyCdaCH5Ksrp2N2dOy0ainl0ljesz5tXYrpsmVNwrZ5t9rzjDGFPr/nazkq8nxrcUGXAVZhIR6xQPOeHkn5UX9VvoLKHAg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from BN5PR12MB9511.namprd12.prod.outlook.com (2603:10b6:408:2a9::14)
- by PH7PR12MB7793.namprd12.prod.outlook.com (2603:10b6:510:270::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9388.9; Wed, 3 Dec
- 2025 11:07:00 +0000
-Received: from BN5PR12MB9511.namprd12.prod.outlook.com
- ([fe80::4d8d:5f91:6c3c:dc8c]) by BN5PR12MB9511.namprd12.prod.outlook.com
- ([fe80::4d8d:5f91:6c3c:dc8c%4]) with mapi id 15.20.9388.003; Wed, 3 Dec 2025
- 11:07:00 +0000
-Message-ID: <8e742787-c60d-4f88-9de6-adfce31f7b27@nvidia.com>
-Date: Wed, 3 Dec 2025 16:36:53 +0530
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH V3 3/3] arm64: dts: nvidia: Add nodes for CMDQV
-To: Jon Hunter <jonathanh@nvidia.com>, will@kernel.org, robin.murphy@arm.com,
- joro@8bytes.org, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
- nicolinc@nvidia.com
-Cc: thierry.reding@gmail.com, vdumpa@nvidia.com, jgg@ziepe.ca,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-tegra@vger.kernel.org
-References: <20251201163219.3237266-1-amhetre@nvidia.com>
- <20251201163219.3237266-4-amhetre@nvidia.com>
- <516f57b2-cdf1-435c-8de4-978ac8b03f62@nvidia.com>
-Content-Language: en-US
-From: Ashish Mhetre <amhetre@nvidia.com>
-In-Reply-To: <516f57b2-cdf1-435c-8de4-978ac8b03f62@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: BMXPR01CA0093.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:b00:54::33) To BN5PR12MB9511.namprd12.prod.outlook.com
- (2603:10b6:408:2a9::14)
+	dkim=pass (2048-bit key) header.d=exactco.de header.i=@exactco.de header.b="HOdvCGYI"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=exactco.de;
+	s=x; h=Content-Transfer-Encoding:Content-Type:Mime-Version:From:Subject:To:Cc
+	:Message-Id:Date:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
+	References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
+	List-Owner:List-Archive; bh=qOoZW5buOxeIwWfYI63xT2dOu2nvI+ucK76qAlbSBbU=; b=H
+	OdvCGYI/6YxJc5IxmkMiO7Smiy3KRNAeiLOjqlqFLeLLWgA6p9zlEqMEFyJtC6zJXNpvx3/laBwfn
+	lYJnCHSC3wPzQgozm3RJVsGDzlFbv+FPthYoM5xp3Dcx9k0IG/0ZvJsyvT6X7nRnzvhslT1q/6OKP
+	YKgwrPde32iXt+mj+R4j6LlT0uRtwRKFdUOK/Y2YZLs1WAo4HXWs0RjE3qD9WxvzYHo+O1Uo5lxEM
+	asusFDAKi15L3KuPc0DoC07MySWosMCPZr6zm5OP5gSiZNGjE/EmpMWeqWdH+TejVk71Bb5UPLkPq
+	s7/Nxx4cXco0DhtiHstnK0+Oe3CmiV6PQ==;
+Date: Wed, 03 Dec 2025 12:21:39 +0100 (CET)
+Message-Id: <20251203.122139.262836288998583119.rene@exactco.de>
+Cc: Joerg Roedel <joro@8bytes.org>, Suravee Suthikulpanit
+ <suravee.suthikulpanit@amd.com>, Borislav Petkov <bp@alien8.de>, Thomas
+ Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>
+To: x86@kernel.org, iommu@lists.linux.dev
+Subject: amd_iommu x2apic irq_remap broken on consumer AM5 X670/X870?
+From: =?iso-8859-1?Q?Ren=E9?= Rebe <rene@exactco.de>
+X-Mailer: Mew version 6.10 on Emacs 30.2
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN5PR12MB9511:EE_|PH7PR12MB7793:EE_
-X-MS-Office365-Filtering-Correlation-Id: e2c9d6c3-528c-4c69-0747-08de325c14c1
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|7416014|376014|366016;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?QXA0QVQ5NWwzNUtwSjNsRjd0bW1nNzhOb3k1djJWQktkNENtSGpWVGUrekVP?=
- =?utf-8?B?WFp1SkJMbkVDZmwyS2x0M2dOYkhyL0tMV2Z1OFcwaDAxUk9aMExLL1BIck5a?=
- =?utf-8?B?eW5nWEdUVW5oQS9IdE9wZXRhMkJWbVduQzArZUtkVHdybzdpNUNDUitaV3dn?=
- =?utf-8?B?MEhRN2RPWWxYRE5qT2dQKzRrYXBOQmdSZCtEU1NJM1ZzbThLeWRobVo0NFRy?=
- =?utf-8?B?TjNqUGpDa0djSW9ZaWl4QVBZMjNwSm1nUlpDc0x5ZEFIcFBsVVBUZ2xaVURN?=
- =?utf-8?B?RjRtUXp0T1o2ZTZiNlRNbEMrd096QThtU1dVeVpkbjUrMjU1YXZvaE1IcVdF?=
- =?utf-8?B?OHJpRGRIcThVMVRCYlFPUmNCY0ZaYmNsdVlaMjdJZ2o4aE9wZEREU21HN0RD?=
- =?utf-8?B?OVFwLzMzZjVqUmRkRTI4cTJyYnMyTEFNdFJ0N1B0MkRHak91VzdkUWVsUnRG?=
- =?utf-8?B?WWswM2tIQy9EQWVrMXdSamJUYzh5MlJzSXNDUUhYNTZtRVVKcCtvK2ZnQTk4?=
- =?utf-8?B?TnNnejZXeVhBSzhjMWx0Yi94NlZCY28wcE1KR2lHTnljUkxMczFSSXI5TFRh?=
- =?utf-8?B?bWZwN2ppdUsxc1ZkOFIzZWFjdjRnb2l0WnVkZlNweDRGUitUOE85dlB5QlE4?=
- =?utf-8?B?eGg5MEdWd0NiN1NiOHU3ZUlrZGJtQ3FEeDJsOHY4RU1GTUN5OEZqNldyT1RX?=
- =?utf-8?B?Wm8rSTlLOUU5ME9pMzlBQUJDK2JJbjVPQ1ZDVzJ3NzFxdXZCN2hPY1JkdVRj?=
- =?utf-8?B?azNjWFpxMkN2KzRGcVU4Wk5KUUdRSU51cGZiQ0V3YXdDcFEvREhVV1JZcUR5?=
- =?utf-8?B?MVphUmtvOHJOOWZqZEVjcFpMNnpZdERLWGs0K0d1WFZkazNaMjBXR0xLcS9t?=
- =?utf-8?B?bG1KM0RlWHlRVTNCZlg5QVR3bEFGSGUwSEhNVkxDeUxKdHd3T3NDTmx1YW9P?=
- =?utf-8?B?dEpYeFVZOWRUTStFS3JyRUNiTXo4WnF3NlVablovc3ZqZUxlQU5BTmpNSndj?=
- =?utf-8?B?QTIvZmdiVG5WZXFVOW5xcVBCK3BGTDNpYnlXRzBYNDdMY2pjMTFhd1Ywa1Q2?=
- =?utf-8?B?Z1pUOThybWJJZ29ZVjU3Skt0Y2dHU280NkRia0NPV2F3eXlHUTg4NTZmQkZG?=
- =?utf-8?B?N3JVK0ovU0Z0MVJ3d0x4cHJEUFpNTjk5TU5zQTlNWWFsZVBWUStwVWw3Qldn?=
- =?utf-8?B?NFJkODQ4MHpBelBDaHJ2VFJFdkZ6Snh4ODF6c0haSDJHVWk1dHpQdE9zRkhE?=
- =?utf-8?B?ajZmZ0lUUHN6WHNqV29LN0piMHNQQkVxM2s3T28yNFB2N2JLaXU3WG1YZVdL?=
- =?utf-8?B?WVBob1ovdktkYzBXTlVPdDI2bW5GaHFSYjFBRFg2ZDFiR2I1c20yVmpVV1Ns?=
- =?utf-8?B?R29wTnRJbjB0YlNXZFdmVjYxaFRsSlRTWjdiK3ZwNVF5Q0lSM1dwQzhhMGU3?=
- =?utf-8?B?SGhOalJ4bWhYZHFITERhQ3Z0dlV1YXZ2VjZ2VDlxMXR1Q01lazAxT1BqY3Vw?=
- =?utf-8?B?QWFZbFFKVElFLzdpRjNOZ0NIUUpNRmQ2YWlZVS9aQW4yNDZBbHI4dzhuSHFQ?=
- =?utf-8?B?azZ4ZXUrYVFRZ1NJdTI5MHVGMjRSbmoxVGF2MjN1Rk9iVWJnVjF6VDZXVnRD?=
- =?utf-8?B?TGdvNjl5YzY2SEJlWTlqTXlBZ3pMZzdlTzdxajJ1R1VKM2tBeFBlak5rVXJo?=
- =?utf-8?B?K0dIVElzV2lCMHQrTnd6MTNsTVBtVDVyWTY4eTlrWnNsa1FIcjkwdDY0YVZP?=
- =?utf-8?B?M01CNjltRUVQeGo1UnFXWFEyMUh3bGd6RDRlS0pSc0FQc2JjQTBDODgvNXhD?=
- =?utf-8?B?Mjc3d1lxZDhmTllacFJTeTRKMzI4R2NIZmN2SXZLZ09VaGVLRk1nemxjMTRN?=
- =?utf-8?B?dEd6VU52UlRDSFU0cGp4OW8wWVMyTExxM2hzekJuOG1TZDFpc1ZIYzBWVWU5?=
- =?utf-8?Q?74qqhIcNpNJscxcuLopgr5SKZlUQso9r?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN5PR12MB9511.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(376014)(366016);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?bkdrRVFiSVVxQ0JJNVdBeGRITGd6bmRXUmRadFJMaU5ObGVKL0FkcHpOMTlX?=
- =?utf-8?B?Y1NQdnFTZ2xOZ1F6YVhQNUxuMU5peGFVSVYyUGpDRFhESHhFOWtzdFRiWWMw?=
- =?utf-8?B?bmg5dGNOdUo1WUY3ekhDYlg5SExOWlBXM3d4emJsT2RSc3RGU2twODgxaklk?=
- =?utf-8?B?TVp6b294MjZDZDRqSTZ0V0d5alZYcjZDZUlLMWdWVnA0R0loK21yK0ZBVmRK?=
- =?utf-8?B?bTNaUG1rLy9CRTN0VlRIMVl6Wkd2cDRFejVhV2ZjR044aE5HMk5qczRRL1ZI?=
- =?utf-8?B?SGZMRzgzZXd6UEV0Rkp5VHBDcHY0VXpiM2xzK296eE04dERXTVRsakl3NGNI?=
- =?utf-8?B?dVQ4WE5leVZBQkNaUkFtUDJUU3c2QlBzTHhlcjdxdC8rNEVIZXAwVTdoTUdt?=
- =?utf-8?B?czloS3d0MVdXQmd3SVNXMEoxMzM2MUoyU0NFLzVlcjZ1L1ppVUt5NWVkTUU1?=
- =?utf-8?B?MmNxdjg3bFVZQ3Y2Mk4yZHkrS1BnWXJKc0o1UDlqeWd2dHM4dDVKOUJBQW94?=
- =?utf-8?B?RG1iUlhLdWJBZVpwRnpta3QwVktmQW9LbXk0RVlTclBuVmY3Uk53LzBndGIv?=
- =?utf-8?B?Yk9KKzcvWVg0d0tVQURGUHk5RGk5Y3ZiclRsSWQvNmdmVnNreEtzbm9rYTl6?=
- =?utf-8?B?cWpFUVVoMGo0M0tiQVlXR1hzS0ErV09UZEdNbHFqSkxHZlRsVm82bFFLa3Va?=
- =?utf-8?B?YjdZcXBrSHlJSk8yU3h5d1d5Q0FIRkt2WlZ5eTk2bEtkYkNIdENGZ2t1S3Yx?=
- =?utf-8?B?ZytyWFNXcXlickVjYW9rd3IyaE00NE55MWlWQVZlUE9SQ1Z2dXVPZC9LcGlO?=
- =?utf-8?B?ekNTQmZhQmRkNjUrKzU0bjhCTWN3c0pVcVliS2JKaWlKcitqaDBvd2VvT3JX?=
- =?utf-8?B?d1lyYTMzaFZSVmI3dHdhVTJUOHFNSXc2WkRFTmFQR2RjRTY5UGx5Rit4S1pv?=
- =?utf-8?B?Q0lLWjUxdzJXWGxBTjB2T0poUW9GYkd2VklJS0I5N2p4TjhOQXFDRk51T3VT?=
- =?utf-8?B?YTdPbk5JM1dsSTBDdFpnYk1pUURVK2NTb2FHRExiVFdUQmN3T1dKcktaWTl6?=
- =?utf-8?B?QVRRY1JNT1JvUkF1Ti91enAzYldrRXBkSFJDUTZBMXYvVk9BVVhNeDdESUl4?=
- =?utf-8?B?a1hJTG1YVStQRkp3d0dIZENRa3RneFhmTkV5TE5MQzZGQ1dvUEdGVnRxeUZN?=
- =?utf-8?B?THgwallFV1BnNUNUU2tBR1dIejYwK1FGbXRPbGJIRHF4SlBidUZaTGc1ZjA0?=
- =?utf-8?B?dUo2NWJkcDNsMG5LY0dXQVVVQ1RpVVl5dEZQR29RaE5QQjhSM1gyNFBoNnEw?=
- =?utf-8?B?ZG4yZGhjK2l5RnphU0JkSnFIUW1IOS9FRUJFZFZneUQ2SW9YMU94R3ZZaTJP?=
- =?utf-8?B?eXFGZkhkbkx5cnpuWGpteTJ0RGppRHZ6M3NLYWZUTDk3RGp0L2NuS2E3Wjh4?=
- =?utf-8?B?Q3hULzlhVUg5b1dQWktQcWpiUFZqSHFQOTY2ajNFa2NEVTloNFZZRjh5clJX?=
- =?utf-8?B?WWtXSUhEK1VIOC9FOXdmKzhwYmhvcnJ0dHQ5Wk5HOFRxYkI5QzEzQ1l4Q0di?=
- =?utf-8?B?VUtGU1hUVURiS21jZGRZNHFtTFVPZkV3NlZ0UllOVVZpWDk2b1FmZTBBSHlx?=
- =?utf-8?B?UWVxTGZncGZFWjRmRi84RHlzUGxtWWRqSlB3TDZtUTRRNXovUUVqN3JoWFl3?=
- =?utf-8?B?U0Fvdjl2VUExWDQ2YlVpS2NXLytXQ2EvU2QyK2JzMEhqdnBKdklkRytDY3NV?=
- =?utf-8?B?eHJUYXU4cHhadCtJQW5NMjJ3RVFOQTBTMTl2V3dnczhhN3drTU16VktGVHBG?=
- =?utf-8?B?djcrZTl5NGFqbTEvanE0bmgvYjJteW8vK2dzR210eUg0aDY2eURJSDRjT29M?=
- =?utf-8?B?Yy90MUVrWU1JM1gzVThhSzZNN1dvb2FWK2lVM3d2eEZoWjlJbllQOUo3VEl5?=
- =?utf-8?B?NFUvUVpZNUFwM1N1b0hzbHRpYXc3ZG9iZ1hyL21uaUd2RHNjeUd5dTBIWXJr?=
- =?utf-8?B?TGE0bWRWVTJZM1ptaUJhSy9zRTR0MTVBZGdvLzVlSDBQL3Y1cVdlM3hhR2Vu?=
- =?utf-8?B?UnV6TEtld3RFVFl1ZytKOTdlMis2a2RBRHdzN3BiMHF5enFiL3BpOExQR244?=
- =?utf-8?Q?NiaM0ZmToW1rluJIDCHI7cNht?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e2c9d6c3-528c-4c69-0747-08de325c14c1
-X-MS-Exchange-CrossTenant-AuthSource: BN5PR12MB9511.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Dec 2025 11:07:00.2538
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: nIOfnf1p38SwUF7dF7syGt5noflowvwlWNCVsBWGMv58cdw35XZ0KOECNLdwjwXGh30gPd8mjxaa+3LFti8JVg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB7793
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 
+Hi,
 
-On 12/3/2025 4:14 PM, Jon Hunter wrote:
->
->
-> On 01/12/2025 16:32, Ashish Mhetre wrote:
->> The Command Queue Virtualization (CMDQV) hardware is part of the
->> SMMUv3 implementation on NVIDIA Tegra SoCs. It assists in
->> virtualizing the command queue for the SMMU.
->>
->> Update SMMU compatible strings to use nvidia,tegra264-smmu to enable
->> CMDQV support. Add device tree nodes for the CMDQV hardware and enable
->> them on the tegra264-p3834 platform where SMMUs are enabled. Each SMMU
->> instance is paired with its corresponding CMDQV instance via the
->> nvidia,cmdqv property.
->>
->> Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
->> ---
->>   .../arm64/boot/dts/nvidia/tegra264-p3834.dtsi |  8 +++
->>   arch/arm64/boot/dts/nvidia/tegra264.dtsi      | 55 +++++++++++++++++--
->>   2 files changed, 58 insertions(+), 5 deletions(-)
->>
->> diff --git a/arch/arm64/boot/dts/nvidia/tegra264-p3834.dtsi 
->> b/arch/arm64/boot/dts/nvidia/tegra264-p3834.dtsi
->> index 06795c82427a..7e2c3e66c2ab 100644
->> --- a/arch/arm64/boot/dts/nvidia/tegra264-p3834.dtsi
->> +++ b/arch/arm64/boot/dts/nvidia/tegra264-p3834.dtsi
->> @@ -23,8 +23,16 @@ iommu@5000000 {
->>               status = "okay";
->>           };
->>   +        cmdqv@5200000 {
->> +            status = "okay";
->> +        };
->> +
->>           iommu@6000000 {
->>               status = "okay";
->>           };
->> +
->> +        cmdqv@6200000 {
->> +            status = "okay";
->> +        };
->>       };
->>   };
->> diff --git a/arch/arm64/boot/dts/nvidia/tegra264.dtsi 
->> b/arch/arm64/boot/dts/nvidia/tegra264.dtsi
->> index f137565da804..5124715caeb3 100644
->> --- a/arch/arm64/boot/dts/nvidia/tegra264.dtsi
->> +++ b/arch/arm64/boot/dts/nvidia/tegra264.dtsi
->> @@ -3361,7 +3361,7 @@ bus@8100000000 {
->>                <0x02 0x00000000 0xd0 0x00000000 0x08 0x80000000>; /* 
->> ECAM, prefetchable memory, I/O */
->>             smmu1: iommu@5000000 {
->> -            compatible = "arm,smmu-v3";
->> +            compatible = "nvidia,tegra264-smmu", "arm,smmu-v3";
->>               reg = <0x00 0x5000000 0x0 0x200000>;
->>               interrupts = <GIC_SPI 12 IRQ_TYPE_EDGE_RISING>,
->>                        <GIC_SPI 13 IRQ_TYPE_EDGE_RISING>;
->> @@ -3370,10 +3370,19 @@ smmu1: iommu@5000000 {
->>                 #iommu-cells = <1>;
->>               dma-coherent;
->> +            nvidia,cmdqv = <&cmdqv1>;
->> +        };
->> +
->> +        cmdqv1: cmdqv@5200000 {
->> +            compatible = "nvidia,tegra264-cmdqv";
->> +            status = "disabled";
->> +
->> +            reg = <0x00 0x5200000 0x0 0x830000>;
->> +            interrupts = <GIC_SPI 19 IRQ_TYPE_LEVEL_HIGH>;
->
-> Like for other devices, the typical ordering is ...
->
->  compatible = "nvidia,tegra264-cmdqv";
->  reg = <0x00 0x5200000 0x0 0x830000>;
->  interrupts = <GIC_SPI 19 IRQ_TYPE_LEVEL_HIGH>;
->  status = "disabled";
->
-> So let's follow the same approach here.
->
-> Jon
->
+since I got my Gigabyte Technology Co., Ltd. X670E AORUS MASTER/X670E
+AORUS MASTER on AM5 launch day with an 7950x the amd_iommu w/ x2apic
+irq_remap never has worked for me. Namely many devices not getting
+interrupts, no matter what strict, passthrough mode I specify. The
+only way to have all pci devices working with without irq_remap or
+iommu disabled. Sometimes, however, I would like to pass some to a
+Qemu VM though:
 
-Sure, I'll update the ordering in next version. Thanks.
+nvme nvme0: I/O tag 768 (8300) QID 21 timeout, completion polled
+nvme nvme1: I/O tag 384 (8180) QID 7 timeout, completion polled
+nvme nvme0: I/O tag 832 (f340) QID 22 timeout, completion polled
+nvme nvme1: I/O tag 704 (c2c0) QID 21 timeout, completion polled
+nvme nvme1: I/O tag 0 (4000) QID 5 timeout, completion polled
+nvme nvme1: I/O tag 832 (d340) QID 22 timeout, completion polled
+nvme nvme0: I/O tag 769 (9301) QID 21 timeout, completion polled
+amdgpu 0000:13:00.0: [drm] REG_WAIT timeout 1us * 100000 tries - optc31_disable_crtc line:147
+nvme nvme0: I/O tag 64 (f040) QID 24 timeout, completion polled
 
+Mostly my two nvme drives, but amdgpu also appears to be a bit
+glitchy. A friend recently reported smillar issues on an brand new
+Asus X870 board w/ 9950x where even more does not work for them
+(OCR'ed from screenshot):
+
+hub 10-0:1.0: config failed, hub doesn't have any ports! (err -19)
+sd 6:0:0:0: [sda] Asking for cache data failed
+/dev/nvme0n1p2: clean, 997496/124696678 files, 2340087590/499823872 blocks
+snd_hda_intel 0000:01:00.1: azx_get_response timeout, switching to polling mode: last cmd=0x000f0002
+snd_hda_intel 0000:73:00.6: azx_get_response timeout, switching to polling mode: last cmd=0x004f0009
+Bluetooth: hci0: HCI Enhanced Setup Synchronous Connection command is advertised, but not supported.
+xhci_hcd 0000:73:00.3: xHCI host not responding to stop endpoint command
+xhci_hcd 0000:73:00.3: xHCI host controller not responding, assume dead
+xhci_hcd 0000:73:00.3: HC died; cleaning up
+usb 5-2.3: Failed to query (GET_INFO) UVC control on unit 2: -108 (exp. 1)
+usb 5-2.3: Failed to query (GET_INFO) UVC control on unit 2: -19 (exp. 1)
+usb 5-2.3: Failed to query (GET_INFO) UVC control on unit 2: -19 (exp. 1)
+usb 5-2.3: Failed to query (GET_INFO) UVC control on unit 2: -19 (exp. 1)
+usb 5-2.3: Failed to query (GET_INFO) UVC control on unit 2: -19 (exp. 1)
+usb 5-2.3: Failed to query (GET_INFO) UVC control on unit 2: -19 (exp. 1)
+usb 5-2.3: Failed to query (GET_INFO) UVC control on unit 2: -19 (exp. 1)
+usb 5-2.3: Failed to query (GET_INFO) UVC control on unit 2: -19 (exp. 1)
+uvcvideo 5-2.3:1.1: Failed to query (GET_CUR) UVC probe control : -19 (exp. 26).
+usb 5-2.3:1.1: cannot set freq 16000 to ep 0x86
+Buffer I/O error on dev sda, sector 64 op 0x0:(READ) flags 0x0 phys_seg 1 prio class 2
+Buffer I/O error on dev sda, sector 64 op 0x0:(READ) flags 0x0 phys_seg 1 prio class 2
+usb 5-2.3:1.2: failed to get current value for 0x80700 (id 5)
+Buffer I/O error on dev sda, logical block 8 read
+Buffer I/O error on dev sda, logical block 8 read
+Buffer I/O error on dev sda, logical block 8 read
+Buffer I/O error on dev sda, logical block 8 read
+nvme nvme0: I/O tag 37 (8214) QID 13 timeout, completion polled
+nvme nvme0: I/O tag 512 (e200) QID 25 timeout, completion polled
+nvme nvme0: I/O tag 704 (22c0) QID 31 timeout, completion polled
+
+For years I hoped an BIOS updates or kernel changes would eventually
+fix this, but two years later nothing did improve.
+
+I started to debug this last weekend, with various iommu_dump, debugfs
+and printk but did not yet found any real clue why this does not
+work. The same kernel build works on my am4/5950x w/ iommu and x2apic
+just fine. My friend is on some official Ubuntu release.
+
+Are there known consumer silicon limitations? Any help what is needed
+to narrow this down and finally fix would be highly appreciated. See
+below some initial iommu_dump and lspci details. One major difference
+I noticed between my working x570 and not working x670 is the former
+iommu not having an irq itself?
+
+Thank you so much,
+      René
+
+00:00.2 IOMMU: Advanced Micro Devices, Inc. [AMD] Starship/Matisse IOMMU
+        Subsystem: ASUSTeK Computer Inc. Device 8808
+        Control: I/O- Mem- BusMaster- SpecCycle- MemWINV- VGASnoop- ParErr+ Stepping- SERR- FastB2B- DisINTx-
+        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Capabilities: [40] Secure device <?>
+        Capabilities: [64] MSI: Enable- Count=1/4 Maskable- 64bit+
+                Address: 0000000000000000  Data: 0000
+        Capabilities: [74] HyperTransport: MSI Mapping Enable+ Fixed+
+        Capabilities: [c8] Vendor Specific Information: Len=18 <?>
+
+00:00.2 IOMMU: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Ridge IOMMU
+        Subsystem: Gigabyte Technology Co., Ltd Device d000
+        Control: I/O- Mem- BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR- FastB2B- DisINTx-
+        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
+        Latency: 0
+        Interrupt: pin A routed to IRQ 255
+        Capabilities: [40] Secure device <?>
+        Capabilities: [64] MSI: Enable- Count=1/4 Maskable- 64bit+
+                Address: 0000000000000000  Data: 0000
+        Capabilities: [74] HyperTransport: MSI Mapping Enable+ Fixed+
+
+amd_iommu_dump=1
+
+APIC: Switch to symmetric I/O mode setup
+AMD-Vi: Using IVHD type 0x40
+AMD-Vi: device: 0000:00:00.2 cap: 0040 flags: 30 info 0000
+AMD-Vi:        mmio-addr: 00000000f7700000
+AMD-Vi: PCI segment : 0x0, last bdf : 0xffff
+AMD-Vi:   DEV_SELECT_RANGE_START\x09devid: 0000:00:00.3 flags: 0x0
+AMD-Vi:   DEV_RANGE_END\x09\x09devid: 0000:ff:1f.6
+AMD-Vi:   DEV_ALIAS_RANGE\x09\x09devid: 0000:ff:00.0 flags: 0x0 devid_to: 0000:00:14.5
+AMD-Vi:   DEV_RANGE_END\x09\x09devid: 0000:ff:1f.7
+AMD-Vi:   DEV_SPECIAL(HPET[0])\x09\x09devid: 0000:00:14.0, flags: 0x0
+AMD-Vi:   DEV_SPECIAL(IOAPIC[32])\x09\x09devid: 0000:00:14.0, flags: 0xd7
+AMD-Vi:   DEV_SPECIAL(IOAPIC[33])\x09\x09devid: 0000:00:00.1, flags: 0x0
+AMD-Vi:   DEV_ACPI_HID(AMDI0020[ID00])\x09\x09devid: 0000:00:14.5, flags: 0x40
+AMD-Vi: ivrs, add hid:AMDI0020, uid:ID00, rdevid:0xa0
+AMD-Vi:   DEV_ACPI_HID(AMDI0020[ID01])\x09\x09devid: 0000:00:14.5, flags: 0x40
+AMD-Vi: ivrs, add hid:AMDI0020, uid:ID01, rdevid:0xa0
+AMD-Vi:   DEV_ACPI_HID(AMDI0020[ID02])\x09\x09devid: 0000:00:14.5, flags: 0x40
+AMD-Vi: ivrs, add hid:AMDI0020, uid:ID02, rdevid:0xa0
+AMD-Vi:   DEV_ACPI_HID(AMDI0020[ID03])\x09\x09devid: 0000:00:14.5, flags: 0x40
+AMD-Vi: ivrs, add hid:AMDI0020, uid:ID03, rdevid:0xa0
+AMD-Vi: Using global IVHD EFR:0x246577efa2254afe, EFR2:0x0
+
+lspci -vvv | grep '^[^[:space:]]\|Interr'
+00:00.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Ridge Root Complex
+00:00.2 IOMMU: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Ridge IOMMU
+	Interrupt: pin A routed to IRQ 255
+00:01.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Ridge Dummy Host Bridge
+00:01.2 PCI bridge: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Ridge GPP Bridge (prog-if 00 [Normal decode])
+	Interrupt: pin ? routed to IRQ 30
+00:02.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Ridge Dummy Host Bridge
+00:02.1 PCI bridge: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Ridge GPP Bridge (prog-if 00 [Normal decode])
+	Interrupt: pin ? routed to IRQ 31
+00:02.2 PCI bridge: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Ridge GPP Bridge (prog-if 00 [Normal decode])
+	Interrupt: pin ? routed to IRQ 32
+00:03.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Ridge Dummy Host Bridge
+00:04.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Ridge Dummy Host Bridge
+00:08.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Ridge Dummy Host Bridge
+00:08.1 PCI bridge: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Ridge Internal GPP Bridge to Bus [C:A] (prog-if 00 [Normal decode])
+	Interrupt: pin A routed to IRQ 33
+00:08.3 PCI bridge: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Ridge Internal GPP Bridge to Bus [C:A] (prog-if 00 [Normal decode])
+	Interrupt: pin A routed to IRQ 34
+00:14.0 SMBus: Advanced Micro Devices, Inc. [AMD] FCH SMBus Controller (rev 71)
+00:14.3 ISA bridge: Advanced Micro Devices, Inc. [AMD] FCH LPC Bridge (rev 51)
+00:18.0 Host bridge: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Ridge Data Fabric; Function 0
+00:18.1 Host bridge: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Ridge Data Fabric; Function 1
+00:18.2 Host bridge: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Ridge Data Fabric; Function 2
+00:18.3 Host bridge: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Ridge Data Fabric; Function 3
+00:18.4 Host bridge: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Ridge Data Fabric; Function 4
+00:18.5 Host bridge: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Ridge Data Fabric; Function 5
+00:18.6 Host bridge: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Ridge Data Fabric; Function 6
+00:18.7 Host bridge: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Ridge Data Fabric; Function 7
+01:00.0 Non-Volatile memory controller: Sandisk Corp WD Black SN850X NVMe SSD (rev 01) (prog-if 02 [NVM Express])
+	Interrupt: pin A routed to IRQ 46
+02:00.0 PCI bridge: Advanced Micro Devices, Inc. [AMD] 600 Series Chipset PCIe Switch Upstream Port (rev 01) (prog-if 00 [Normal decode])
+	Interrupt: pin A routed to IRQ 24
+03:00.0 PCI bridge: Advanced Micro Devices, Inc. [AMD] 600 Series Chipset PCIe Switch Downstream Port (rev 01) (prog-if 00 [Normal decode])
+	Interrupt: pin A routed to IRQ 35
+03:04.0 PCI bridge: Advanced Micro Devices, Inc. [AMD] 600 Series Chipset PCIe Switch Downstream Port (rev 01) (prog-if 00 [Normal decode])
+	Interrupt: pin A routed to IRQ 36
+03:05.0 PCI bridge: Advanced Micro Devices, Inc. [AMD] 600 Series Chipset PCIe Switch Downstream Port (rev 01) (prog-if 00 [Normal decode])
+	Interrupt: pin A routed to IRQ 38
+03:06.0 PCI bridge: Advanced Micro Devices, Inc. [AMD] 600 Series Chipset PCIe Switch Downstream Port (rev 01) (prog-if 00 [Normal decode])
+	Interrupt: pin A routed to IRQ 40
+03:08.0 PCI bridge: Advanced Micro Devices, Inc. [AMD] 600 Series Chipset PCIe Switch Downstream Port (rev 01) (prog-if 00 [Normal decode])
+	Interrupt: pin A routed to IRQ 41
+03:0c.0 PCI bridge: Advanced Micro Devices, Inc. [AMD] 600 Series Chipset PCIe Switch Downstream Port (rev 01) (prog-if 00 [Normal decode])
+	Interrupt: pin A routed to IRQ 24
+03:0d.0 PCI bridge: Advanced Micro Devices, Inc. [AMD] 600 Series Chipset PCIe Switch Downstream Port (rev 01) (prog-if 00 [Normal decode])
+	Interrupt: pin A routed to IRQ 37
+08:00.0 PCI bridge: Advanced Micro Devices, Inc. [AMD] 600 Series Chipset PCIe Switch Upstream Port (rev 01) (prog-if 00 [Normal decode])
+	Interrupt: pin A routed to IRQ 24
+09:00.0 PCI bridge: Advanced Micro Devices, Inc. [AMD] 600 Series Chipset PCIe Switch Downstream Port (rev 01) (prog-if 00 [Normal decode])
+	Interrupt: pin A routed to IRQ 42
+09:04.0 PCI bridge: Advanced Micro Devices, Inc. [AMD] 600 Series Chipset PCIe Switch Downstream Port (rev 01) (prog-if 00 [Normal decode])
+	Interrupt: pin A routed to IRQ 43
+09:06.0 PCI bridge: Advanced Micro Devices, Inc. [AMD] 600 Series Chipset PCIe Switch Downstream Port (rev 01) (prog-if 00 [Normal decode])
+	Interrupt: pin A routed to IRQ 44
+09:08.0 PCI bridge: Advanced Micro Devices, Inc. [AMD] 600 Series Chipset PCIe Switch Downstream Port (rev 01) (prog-if 00 [Normal decode])
+	Interrupt: pin A routed to IRQ 45
+09:0c.0 PCI bridge: Advanced Micro Devices, Inc. [AMD] 600 Series Chipset PCIe Switch Downstream Port (rev 01) (prog-if 00 [Normal decode])
+	Interrupt: pin A routed to IRQ 24
+09:0d.0 PCI bridge: Advanced Micro Devices, Inc. [AMD] 600 Series Chipset PCIe Switch Downstream Port (rev 01) (prog-if 00 [Normal decode])
+	Interrupt: pin A routed to IRQ 37
+0c:00.0 Ethernet controller: Intel Corporation Ethernet Controller I225-V (rev 03)
+	Interrupt: pin A routed to IRQ 39
+0e:00.0 USB controller: Advanced Micro Devices, Inc. [AMD] 600 Series Chipset USB 3.2 Controller (rev 01) (prog-if 30 [XHCI])
+	Interrupt: pin A routed to IRQ 24
+0f:00.0 SATA controller: Advanced Micro Devices, Inc. [AMD] 600 Series Chipset SATA Controller (rev 01) (prog-if 01 [AHCI 1.0])
+	Interrupt: pin A routed to IRQ 160
+10:00.0 USB controller: Advanced Micro Devices, Inc. [AMD] 600 Series Chipset USB 3.2 Controller (rev 01) (prog-if 30 [XHCI])
+	Interrupt: pin A routed to IRQ 24
+11:00.0 SATA controller: Advanced Micro Devices, Inc. [AMD] 600 Series Chipset SATA Controller (rev 01) (prog-if 01 [AHCI 1.0])
+	Interrupt: pin A routed to IRQ 161
+12:00.0 Non-Volatile memory controller: Sandisk Corp WD Black SN850X NVMe SSD (rev 01) (prog-if 02 [NVM Express])
+	Interrupt: pin A routed to IRQ 24
+13:00.0 VGA compatible controller: Advanced Micro Devices, Inc. [AMD/ATI] Raphael (rev c1) (prog-if 00 [VGA controller])
+	Interrupt: pin A routed to IRQ 79
+13:00.1 Audio device: Advanced Micro Devices, Inc. [AMD/ATI] Radeon High Definition Audio Controller [Rembrandt/Strix]
+	Interrupt: pin B routed to IRQ 164
+13:00.2 Encryption controller: Advanced Micro Devices, Inc. [AMD] Family 19h PSP/CCP
+	Interrupt: pin C routed to IRQ 255
+13:00.3 USB controller: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Ridge USB 3.1 xHCI (prog-if 30 [XHCI])
+	Interrupt: pin D routed to IRQ 70
+13:00.4 USB controller: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Ridge USB 3.1 xHCI (prog-if 30 [XHCI])
+	Interrupt: pin A routed to IRQ 79
+13:00.6 Audio device: Advanced Micro Devices, Inc. [AMD] Family 17h/19h/1ah HD Audio Controller
+	Interrupt: pin C routed to IRQ 165
+14:00.0 USB controller: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Ridge USB 2.0 xHCI (prog-if 30 [XHCI])
+	Interrupt: pin A routed to IRQ 24
+
+-- 
+René Rebe, ExactCODE GmbH, Berlin, Germany
+https://exactco.de • https://t2linux.com • https://patreon.com/renerebe
