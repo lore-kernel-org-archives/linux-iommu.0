@@ -1,50 +1,48 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 457202FB63A
-	for <iommu@lists.linux.dev>; Thu,  4 Dec 2025 06:24:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C27FA30F953
+	for <iommu@lists.linux.dev>; Thu,  4 Dec 2025 06:32:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764829471; cv=none; b=D70eHcsbfI2GK+vMR3esrxYgoJjS9kU5iBg6z37pIGKE3hRhsoqc++QmWgd6rQ/OTtyAYq6Dv/HUEEKG0KEmqW5pyiVzu0HLKy/hs3EXHwfMN80ZguZSdpe7CTbo+P/jYOb6T2TCJXDsyIDLnvaNNajNOBRx0Ok45Pfc/YIH15U=
+	t=1764829980; cv=none; b=o10ieitMawq0XkcKkXXsZOAMJUykZPEGdRyZmCd7++iAvtZlgjeNvxW3YeD60xvW5abnLZwtMPWh7jijUbzcbKvUU/jc4ObSXTqBNFvPRTPFv/yUE2I6BWpaJL+yl9KFScjmg9Pvy1NJT1ZjY39wqsERdIVwqsjXC+vj0UvVOfw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764829471; c=relaxed/simple;
-	bh=sJ0IwWHawIkgw3yjLjXtiQZqQ41/FLPLhj7cR8Hk0Uw=;
+	s=arc-20240116; t=1764829980; c=relaxed/simple;
+	bh=1p+/fz7COk6YR2U8Td8TsknOTEwoVT0zwYKmV2R53cM=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=mvPANkTW3B5APewMxCxGbo0W5hWCp+ueBvSjlH8M1XmImcpfOrMuG0QoEb0AWx7sr+00nNuhKCKOXbVfBC1SSTpvYKVjfbQMrA9GfRaKEY5IvIYgRqY0VonDvEiGyeMm8+cGLMq9dnpz7OMmwcjzWG01Lk3RPIW8r0EJL5mM1Yk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Go4X4D8B; arc=none smtp.client-ip=192.198.163.9
+	 In-Reply-To:Content-Type; b=QcXtfZFeCnnxD8V0cbjI5Y3ndKASV9+JZkxMBjOt87RRxzl5E1i0rjSd92f+E5YxPoPCFJjRpgxU6SEc140wzYfBSlGb6USwXzdgRaSQXwzYqyK6jx4Ety7y7TUqwxWsvYi0yp7+xFJubPXhoIT7PHJ6q0XHlZ3BE6uRRwe8S7U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gH9VBGcd; arc=none smtp.client-ip=198.175.65.11
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Go4X4D8B"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gH9VBGcd"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1764829469; x=1796365469;
+  t=1764829979; x=1796365979;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=sJ0IwWHawIkgw3yjLjXtiQZqQ41/FLPLhj7cR8Hk0Uw=;
-  b=Go4X4D8BSWk6b6x3mms5fwtz52Fx4HYaFWIibsvMEfSXZNeQbnRTsque
-   a3psRhO26HNRteVFnjeHZkXRJbkNRhQJVRlbSxfAdaOOoBoc7RJaRtQra
-   laA/ehRY0QWtEYsh7yXhKTxR85mL5+L0ovv5DZZoJ2pY/6eMMFcO8+MI7
-   VujAqzhrz95h3IfY54lZrcsnqdKfYnh9n7R4NFoWWv+7+BPAdBtNwLCYN
-   Rc/Bavs2z7Kjh0/QJzNtgXGd+Fy0Dy7xrNUcE90lsiV5WusA0fGv7JuwS
-   24rQq0YnFa1M1c9f0MUBvWTqg9OVi4mMudsFsE1QdKtepso5zYSjCrXEs
+  bh=1p+/fz7COk6YR2U8Td8TsknOTEwoVT0zwYKmV2R53cM=;
+  b=gH9VBGcdj2hNHIGYviIluCX9wvBiL9ouCEcjtkOeZGJKTkkURXDZ9h9M
+   tPzSlGGiBXsPFsWm3gmoFj+LDelSe21RnQ4NNhwNLd5FnXR0qXnkhBYPd
+   IVqHLIrAVicPCdnla3+2fA4coATx5KpG1oJ4idsy4AWAT35J6vB2skdZl
+   Yj10N4FT9aBIt7Scj3p3G4x/FOVAfCgY7dX8f0KfsE5JRwzTxADhcZnS7
+   a2i6jUijGaQ32lNArcW6nMSrqr7TMvMxqwIRnAWply4UFMs3YvotXGE8M
+   PVrLCk4SOermSPYGr/OTGcJ+7+Ss8oVN4SLFmQTz4kjK3j9sQfHVp2jjT
    w==;
-X-CSE-ConnectionGUID: XZKip0SDRu6iDAkOOIWK8Q==
-X-CSE-MsgGUID: 63OLDQdfRXO3Tdx1C8e6oA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11631"; a="77521643"
+X-CSE-ConnectionGUID: X2eb1sHHRl2zsQDUticM5A==
+X-CSE-MsgGUID: UZxu3SHuQhq5FsZaFoOk/A==
+X-IronPort-AV: E=McAfee;i="6800,10657,11631"; a="77163616"
 X-IronPort-AV: E=Sophos;i="6.20,248,1758610800"; 
-   d="scan'208";a="77521643"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Dec 2025 22:24:28 -0800
-X-CSE-ConnectionGUID: ayqOopcKQqmrjBWRPlnc9w==
-X-CSE-MsgGUID: VgO6nuZsQkSGXTU9hnLcYA==
+   d="scan'208";a="77163616"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Dec 2025 22:32:58 -0800
+X-CSE-ConnectionGUID: 5jxM0go4TS2xaL3yq2dK/w==
+X-CSE-MsgGUID: 7o92s46JQ9qE536O7ZAfiw==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.20,248,1758610800"; 
-   d="scan'208";a="232218964"
 Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Dec 2025 22:24:24 -0800
-Message-ID: <9236c22e-f931-43a0-aafc-2179f53a0afa@linux.intel.com>
-Date: Thu, 4 Dec 2025 14:19:54 +0800
+  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Dec 2025 22:32:54 -0800
+Message-ID: <52bed033-fa16-4429-a1c6-d8f24961b5ef@linux.intel.com>
+Date: Thu, 4 Dec 2025 14:28:25 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,8 +50,8 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC PATCH v2 20/32] iommu: Add APIs to get preserved state of a
- device
+Subject: Re: [RFC PATCH v2 21/32] iommu/vt-d: Clean the context entries of
+ unpreserved devices
 To: Samiullah Khawaja <skhawaja@google.com>,
  David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>,
  Will Deacon <will@kernel.org>, Pasha Tatashin <pasha.tatashin@soleen.com>,
@@ -68,55 +66,91 @@ Cc: Robin Murphy <robin.murphy@arm.com>, Pratyush Yadav
  dmatlack@google.com, YiFei Zhu <zhuyifei@google.com>,
  Chris Li <chrisl@kernel.org>, praan@google.com
 References: <20251202230303.1017519-1-skhawaja@google.com>
- <20251202230303.1017519-21-skhawaja@google.com>
+ <20251202230303.1017519-22-skhawaja@google.com>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20251202230303.1017519-21-skhawaja@google.com>
+In-Reply-To: <20251202230303.1017519-22-skhawaja@google.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 12/3/25 07:02, Samiullah Khawaja wrote:
-> The preserved state of the device needs to be fetched at various places
-> during liveupdate. The added API can also be used to check if a device
-> is preserved or not. The API is only used during shutdown and after
-> liveupdate so no locking needed.
+> During normal shutdown the iommu translation is disabled. Since the root
+> table is preserved during live update, it needs to be cleaned up and the
+> context entries of the unpreserved devices need to be cleared.
 > 
 > Signed-off-by: Samiullah Khawaja<skhawaja@google.com>
 > ---
->   include/linux/iommu-lu.h | 67 ++++++++++++++++++++++++++++++++++++++++
->   1 file changed, 67 insertions(+)
+>   drivers/iommu/intel/iommu.c      | 33 ++++++++++++++++++++++++++++++--
+>   drivers/iommu/intel/iommu.h      |  1 +
+>   drivers/iommu/intel/liveupdate.c |  1 +
+>   3 files changed, 33 insertions(+), 2 deletions(-)
 > 
-> diff --git a/include/linux/iommu-lu.h b/include/linux/iommu-lu.h
-> index 95375530b7be..08a659de8553 100644
-> --- a/include/linux/iommu-lu.h
-> +++ b/include/linux/iommu-lu.h
-> @@ -8,9 +8,76 @@
->   #ifndef _LINUX_IOMMU_LU_H
->   #define _LINUX_IOMMU_LU_H
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index 3f69a073b2d8..84fef81ecf4d 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -16,6 +16,7 @@
+>   #include <linux/crash_dump.h>
+>   #include <linux/dma-direct.h>
+>   #include <linux/dmi.h>
+> +#include <linux/iommu-lu.h>
+>   #include <linux/memory.h>
+>   #include <linux/pci.h>
+>   #include <linux/pci-ats.h>
+> @@ -52,6 +53,10 @@ static int rwbf_quirk;
 >   
-> +#include <linux/device.h>
-> +#include <linux/iommu.h>
->   #include <linux/liveupdate.h>
->   #include <linux/kho/abi/iommu.h>
+>   #define rwbf_required(iommu)	(rwbf_quirk || cap_rwbf((iommu)->cap))
 >   
 > +#ifdef CONFIG_LIVEUPDATE
-> +static inline void *dev_iommu_preserved_state(struct device *dev)
+> +static void __clean_unpreserved_context_entries(struct intel_iommu *iommu);
+> +#endif
+> +
+>   /*
+>    * set to 1 to panic kernel if can't successfully enable VT-d
+>    * (used when kernel is launched w/ TXT)
+> @@ -2376,8 +2381,12 @@ void intel_iommu_shutdown(void)
+>   		/* Disable PMRs explicitly here. */
+>   		iommu_disable_protect_mem_regions(iommu);
+>   
+> -		/* Make sure the IOMMUs are switched off */
+> -		iommu_disable_translation(iommu);
+> +		if (iommu->iommu.outgoing_preserved_state) {
+> +			__clean_unpreserved_context_entries(iommu);
+> +		} else {
+> +			/* Make sure the IOMMUs are switched off */
+> +			iommu_disable_translation(iommu);
+> +		}
+>   	}
+>   }
+>   
+> @@ -2884,6 +2893,26 @@ static const struct iommu_dirty_ops intel_second_stage_dirty_ops = {
+>   	.set_dirty_tracking = intel_iommu_set_dirty_tracking,
+>   };
+>   
+> +static void __clean_unpreserved_context_entries(struct intel_iommu *iommu)
 > +{
-> +	struct device_ser *ser;
+> +	struct device_domain_info *info;
+> +	struct pci_dev *pdev = NULL;
 > +
-> +	ser = dev->iommu->device_ser;
+> +	for_each_pci_dev(pdev) {
+> +		info = dev_iommu_priv_get(&pdev->dev);
+> +		if (!info)
+> +			continue;
 
-This might cause "NULL pointer dereference" issue if the device is not
-iommu probed.
+I assume the per-device iommu private data is freed in the
+release_device path, which runs before intel_iommu_shutdown(). If that
+is the case, "info" would always be NULL here, resulting the subsequent
+code dead code. Or not?
 
-	if (!dev->iommu)
-		return NULL;
-	ser = dev->iommu->device_ser;
-
-> +	if (ser && !ser->obj.incoming)
-> +		return ser;
 > +
-> +	return NULL;
+> +		if (info->iommu != iommu)
+> +			continue;
+> +
+> +		if (dev_iommu_preserved_state(&pdev->dev))
+> +			continue;
+> +
+> +		domain_context_clear(info);
+> +	}
 > +}
 
 Thanks,
