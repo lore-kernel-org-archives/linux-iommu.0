@@ -1,95 +1,123 @@
-Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
+Received: from mail-qt1-f179.google.com (mail-qt1-f179.google.com [209.85.160.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3AED33491C7
-	for <iommu@lists.linux.dev>; Thu,  4 Dec 2025 16:49:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFC1C74C14
+	for <iommu@lists.linux.dev>; Thu,  4 Dec 2025 17:39:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764866959; cv=none; b=Cm5/4x3zxq9KM1UH64qQvgbW6YXivR59RAH7Mkex3j/koIwzDMeHYQVBC9M3fQYMCCp2SzsHvvyZYS1nXNU+ESi6KueMiHUqafuzDvVeEipTGVlMhAySCFZOVrKWrw6lqUmnu7WN2PK61kTPHVJVJLeAsu333uA3olusR6LmM1Q=
+	t=1764870001; cv=none; b=e4t1AHOT3H66RpBpCH6lWvf4qbXYcO2MkbzXLVqOfsbh/63TGKwJGG8msZGQsgcWNJAuBJfP84HDHG9ZFZyQhNVIJ2W7wtiKYKGZrraff2bvbsKSDodl+jglERNdpJGcflVcTzVPdvMVWW0f/QZ2PkM25/k0iT9Q3/z3HUAIVoU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764866959; c=relaxed/simple;
-	bh=pNTWl/c3lerxkSw0rL3hvq6mNtAB1BGv+e0Xp9fi6gU=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=DR/9nTsIxuGlGlvUY4vCOfNYUvdmnPM/s0aBKIZUx3yad1QcRQFaaoWNuwWdUgv5nTh0OphVfTI3ZNyH6CZ0z36v5MYOBtffKF+zM2hP+GTbGeb93ME52nmA7dGHZcXusb1pOI5a50RFi2lcNDWruT9nSEHLFNTCO0Asiv5cJ2A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=BIeST+DU; arc=none smtp.client-ip=209.85.218.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
+	s=arc-20240116; t=1764870001; c=relaxed/simple;
+	bh=lWqOivKiM8YwclLe0wpLXkznfn7oWAcsJolNToRP6qs=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=KgP9KvvjBzfPy5aiKsbyRmI3ls25R36SV3LsRML5nl0QL3Fyx/KjH8EDx6DK7L3NNFhHHftR8iteFkKzsJA+gj8ae8Lnaj0dgw+rbjmfpHceBcPA9l9OKr28AvwbLiI0t8uikEOSrLHGc6sQ6GECYiCprhtzNjFJQUcPj5whs3Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Ipy1oM0O; arc=none smtp.client-ip=209.85.160.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="BIeST+DU"
-Received: by mail-ej1-f45.google.com with SMTP id a640c23a62f3a-b79e7112398so210569566b.3
-        for <iommu@lists.linux.dev>; Thu, 04 Dec 2025 08:49:15 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Ipy1oM0O"
+Received: by mail-qt1-f179.google.com with SMTP id d75a77b69052e-4ee243b98caso457761cf.1
+        for <iommu@lists.linux.dev>; Thu, 04 Dec 2025 09:39:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1764866954; x=1765471754; darn=lists.linux.dev;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=KYdlDUMxTJfLAfjf8j4z/ZZ18s/2EWT4Q/SIqp5BkQg=;
-        b=BIeST+DUW4/8DoXVkHWZOu4+lZ8miMR7O0sqw6KbiEdeTJqE4YLNiGkP3QtVMLnaXF
-         FODSm7XdgPkwMBcknsRl6t8bh5d80lgB5Odgyo9TCz2r9TE8uOKa5ByNa1mfavpvMst/
-         rZx6+dGKIdOaZnw1mg56OcJi7r8xFJrjZ+pJs=
+        d=google.com; s=20230601; t=1764869997; x=1765474797; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=xEkJ3Ls4YdvhkyZtPoV9AUwtj0PZk1MF7CQ9DS4hvnE=;
+        b=Ipy1oM0O9RQbSeMx+IMLznOIUUx6loSqv7fWzCQK8aar1ch9pOLQHI4geqSB6ljpNQ
+         XlUN0fqvSN1t5t1thMVyABrhnOFw98mnDeL0r2YU55qDAVLpGV9KKp3StXeTWCZCRV6e
+         jXg4QW91szrf6XQFH3lLo6aXJ8UHekcCQi73c+OgRyRQsFYirMCYsnBkbqaK2y04CZbj
+         1fz9O5t7LiBo/BQu3DMRNv5VemSPOOviSz3GQ+FJ+gZ2UNW+O87N654aP8LYAltrtGGU
+         Nya/0/Uj+oXi6bBDD/+ThXJzakM9uRkEiXZz48hvTiVRfgsDkqg7gQDNtBwe/NIJko4m
+         DDzQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1764866954; x=1765471754;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=KYdlDUMxTJfLAfjf8j4z/ZZ18s/2EWT4Q/SIqp5BkQg=;
-        b=WmySEEhdQt7PB4DlPs9bw/aTO5n6AdTeoUyz7y1HzirXGfbNQI0KqtYi9svKh3He8n
-         LZ3STs2PwlDZWP5z7nRrShuYrbkK4eMjs+N+0oZZmMpMauzmUknlEAa24UU+P2I7HmiQ
-         5u9ZuaLf5U7ISZ5/I3XfeRLb+q6YBcRbiZmcwCORo9RexA0vJenJwVf+N0BGuF1XBEhn
-         XDTsu4+qRAMyasrttTb22gQ696pUCzJ11N7+NHmIDkG4lqr8KasvFxzvJQijZiRzELx8
-         0Ms43L8jhQds1NSmAa6uRY7Ex9zAFbm8g163tvQAq41x9XIMm1NEfkRxgHOG8xIAFwxC
-         o6qA==
-X-Gm-Message-State: AOJu0YyuLus/K5dhKbbeyBzZbj4DuSDscJ4ZPmk9SjDVtD6+98C+9ela
-	8kLPJwU5Z7qWqLDZv3zzv6QyH6xpJ61rjuSx0JU7H+tjnBMAOvRqf8PoCdZAdqMPfvARM99qFcL
-	edKStsA==
-X-Gm-Gg: ASbGncuL8l76MqTjekE4GQPR455BNO4g18/yM3F8ErdevVD8JiQ2C3ttCce3dCT4oM/
-	YP3pWhH+qKD2a/VptiuoWDYW90cbMt1URDWrNyW8p1cBRLFRlB7y+14UWW7aEU+eSjeZnNznDyh
-	QaVHcXj5yFm+XVQI3C0wzvb+RDI3g741E4v/37XC1OXTdhAoH5KtorYBkF8e8MS1Rh0b47iKE6N
-	W+K2X86qActO9Bs081COHtSGV2kj7RdThkxoIionzNGt+117XFJtDT6BHcd+v+s2JP37+jmGfgp
-	MOCQUZ3WlDgBrVhHkgKUONxKpp780upVgUszilLIPa1zZYG54Jd9x10g9ZPN3TtlU6ddFdX8lvK
-	+F+yzduLGlwsHJw1aHI2ElDJ7S6UJAfNdqKVOF0cjXmD6tFkeHbjK3zAnQPZRb3g6Ik6gXsGX3s
-	VWwA+/CCinsPwuNxoiNA==
-X-Google-Smtp-Source: AGHT+IHL3Lk4ovmtUaC18/bNreinF4rQWWNt2Ce9nIYmH/BV4lkFDDnS5spnyobtUb9L29gVvFju9g==
-X-Received: by 2002:a17:906:f850:b0:b79:f753:6910 with SMTP id a640c23a62f3a-b79f7537d59mr158746566b.40.1764866954111;
-        Thu, 04 Dec 2025 08:49:14 -0800 (PST)
-Received: from google.com ([2a00:79e0:a:200:1264:2fc0:4e66:3ac])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-647b368dcebsm1741211a12.21.2025.12.04.08.49.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Dec 2025 08:49:13 -0800 (PST)
-Date: Thu, 4 Dec 2025 17:49:05 +0100
-From: Dmytro Maluka <dmaluka@chromium.org>
-To: iommu@lists.linux.dev
-Cc: David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	"Vineeth Pillai (Google)" <vineeth@bitbyteword.org>,
-	Aashish Sharma <aashish@aashishsharma.net>,
-	Grzegorz Jaszczyk <jaszczyk@chromium.org>,
-	Chuanxiao Dong <chuanxiao.dong@intel.com>,
-	Kevin Tian <kevin.tian@intel.com>
-Subject: [Intel IOMMU] Question about memory ordering in context/PASID entry
- updates
-Message-ID: <aTG7gc7I5wExai3S@google.com>
+        d=1e100.net; s=20230601; t=1764869997; x=1765474797;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=xEkJ3Ls4YdvhkyZtPoV9AUwtj0PZk1MF7CQ9DS4hvnE=;
+        b=DSAk29bvoJEV+baOJZtX1HGoIBUrcBqx8TkfzxH/joYQwmDwCR1i4EynluD5NWJEWA
+         JyL42vyqS2/RyX0hFpPcpi4n5Ufj8MTKDP+ydo3232z6Fz9++NGMqBe594TpW+IcDpzD
+         qaF0ouQH+R345mhAJHr6DUQ457UAwi/ZVdFwfay8cRwXwaT9rxecnxaOpjslzx2zRSs3
+         Np7hQZlvSiLFRv8tD5VuqDZjiBrJAc+nHiJjP5m1CBngCs6DMHWnyDYxn904TGu8dKVx
+         19AkmCL6yKJ+iZTWlL9H2fVDASlbJa7OUIMsvXBE7X7Gha7KVsYnMllmEtBb0hlnMgb2
+         k6MQ==
+X-Forwarded-Encrypted: i=1; AJvYcCX6Sz1DuKIbt6zUC9LWso8HUAxHJLK5nDlcj6c9sZTQPctXVS0zaxIIOUMQTq3qT5X02yyg8A==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzE28asscGh66EOBfdS1nWal2t5epte5qqaHUnrHf1U5yaG3Z69
+	o0bPxQd8pgSbE5ewwPFBs2uqwaPSVi8bMiIGd3CTnum0r33UxcrqL2NPMwBeAskcQBN21V+Hy0p
+	RInjVv7qUIIQ+oTuVyouZhjZT31/gK5GnI1GO+mPT
+X-Gm-Gg: ASbGncutOru/+DUM4WRsQ0vYctmeopjfsZjPPIkoe03ujAovThZPkJqr+4zyo9mxy9D
+	uITEDlq1aIHwFCYhlqIfo/kydJtQll2K1Kzm1CIUOSQzibdWUt9rbAVp/SUNcImIqOQehXfzLH8
+	f86H1gvXVzWDILA6IBmDNWazLD7ygoYCyWsG6EybDGD8PvIzinXKGRKL/C9y3DeUVlAfO8IlsJA
+	OLZvY4FJmoXNtjuhn5QagQZd3AkFjQE37cOEgb2CDi510MnOLWZadhMUZh6BMJQIxBC7vFeAV0N
+	GbDShjK1ao8TDgdXqyG/sKPlbfg=
+X-Google-Smtp-Source: AGHT+IHiF6qF03HSNGOxrJ382JZ2j9Kn5YMuGYeSN6TAKnyptQ4xchJZqWblg8nGkx8SvcL4NrQN6UzliRDwY9xgUwY=
+X-Received: by 2002:ac8:5f50:0:b0:4b7:aa51:116a with SMTP id
+ d75a77b69052e-4f02cb81987mr4080441cf.4.1764869997221; Thu, 04 Dec 2025
+ 09:39:57 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20251202230303.1017519-1-skhawaja@google.com> <20251202230303.1017519-12-skhawaja@google.com>
+ <fc6632e7-f0eb-437c-b687-c31c019f3d1f@linux.intel.com>
+In-Reply-To: <fc6632e7-f0eb-437c-b687-c31c019f3d1f@linux.intel.com>
+From: Samiullah Khawaja <skhawaja@google.com>
+Date: Thu, 4 Dec 2025 09:39:46 -0800
+X-Gm-Features: AWmQ_bkSqjyaarzJGbiFKH6x2EpQi5FFL6mZ3NXJW-L-mVkTwb3R9MHFbcUqGF4
+Message-ID: <CAAywjhSTn6hnzVDSpPGTD2=F2vweRc17e1Fd0vJVL-awpd_dcA@mail.gmail.com>
+Subject: Re: [RFC PATCH v2 11/32] iommu/pages: Add APIs to preserve/unpreserve/restore
+ iommu pages
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Pasha Tatashin <pasha.tatashin@soleen.com>, Jason Gunthorpe <jgg@ziepe.ca>, iommu@lists.linux.dev, 
+	Robin Murphy <robin.murphy@arm.com>, Pratyush Yadav <pratyush@kernel.org>, 
+	Kevin Tian <kevin.tian@intel.com>, Alex Williamson <alex@shazbot.org>, linux-kernel@vger.kernel.org, 
+	Saeed Mahameed <saeedm@nvidia.com>, Adithya Jayachandran <ajayachandra@nvidia.com>, 
+	Parav Pandit <parav@nvidia.com>, Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>, 
+	Vipin Sharma <vipinsh@google.com>, dmatlack@google.com, YiFei Zhu <zhuyifei@google.com>, 
+	Chris Li <chrisl@kernel.org>, praan@google.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-When updating a context or PASID entry, we'd better make sure we set the
-present bit after setting up other bits, not before, right? And indeed,
-for example, in domain_context_mapping_one() we are doing it in the
-following order:
+On Wed, Dec 3, 2025 at 6:30=E2=80=AFPM Baolu Lu <baolu.lu@linux.intel.com> =
+wrote:
+>
+> On 12/3/25 07:02, Samiullah Khawaja wrote:
+> > +int iommu_preserve_pages(struct iommu_pages_list *list)
+> > +{
+> > +     struct ioptdesc *iopt;
+> > +     int count =3D 0;
+> > +     int ret;
+> > +
+> > +     list_for_each_entry(iopt, &list->pages, iopt_freelist_elm) {
+> > +             ret =3D kho_preserve_folio(ioptdesc_folio(iopt));
+> > +             if (ret) {
+> > +                     iommu_unpreserve_pages(list, count);
+> > +                     return ret;
+> > +             }
+> > +
+> > +             ++count;
+> > +     }
+> > +
+> > +     return 0;
+> > +}
+> > +EXPORT_SYMBOL_GPL(iommu_preserve_pages);
+>
+> What is the purpose of "count"?
 
-	context_clear_entry(context);
-	<set other bits>
-	context_set_present(context);
+Thanks for reviewing.
 
-But it doesn't look like we have any compiler barriers to actually
-ensure this order? (And in case of context entries, there is even no
-WRITE_ONCE or anything like that.)
+The count is there to unpreserve only the preserved pages if an error
+occurs during preservation. For example if 4 pages (from the start of
+the list) were preserved out of 10 pages in the list, the unpreserve
+function will unpreserve the first 4 pages from the start of the list.
+Please take a look at the implementation of iommu_unpreserve_pages for
+details.
+>
+> Thanks,
+> baolu
 
-So, are we just hoping that the compiler will not reorder it?
-
-What am I missing?
+Sami
