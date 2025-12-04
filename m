@@ -1,74 +1,144 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E4CA3093AB;
-	Thu,  4 Dec 2025 21:28:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3F40727A12B
+	for <iommu@lists.linux.dev>; Thu,  4 Dec 2025 22:07:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764883709; cv=none; b=aZo3Y0OaVS8JK77kl/nN/zs9NrQizuhpH98PClkYIakCk11dKbmFcQaDGMd6Sx/FfUD/qJYXnDDE6+F81ZH9/zwYaQvACLLVcawoLbWNrn6J2XcxKR3prjgJBCkuK2WH0zZslCkuUQ++sgvLhvlpUz9cGP0zaP7McZruFb9a32I=
+	t=1764886030; cv=none; b=UhfafQAQSNGet05uyhJLF31bZWyMXY/jc4esBd2YNBd9lYBpWKtKs8z4+wMBApTwcdpw3XPdjXfTsqVl3vRJmMzpdSUYued3TqYAlksd8KAheOY10NPWfPuQ3UZZbgNJmpUJ9OaUYx4sfDq9B2+1mVEqOOA2abijxtRvJUS+4o0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764883709; c=relaxed/simple;
-	bh=X8tPs9E6uh+VtgXU41XCn/OUQj8VPbapViZgvzXZmqg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=c8UCAToenLVilt3Hs2SUHoMHYCydF4EZlB6VrLE+8DfcCaeEd5rSq5uCHIKIpasqOXw4ODrnCpsJDFKVi6mUpfVw9Do7aC2fPny6Ji5B9s1XPgPL0//wLKlLatqoAct2jqV4mapplduHELxM0puvT3DyJeiEQYbTr3WA9hwXmkE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oL8AMU1H; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1764886030; c=relaxed/simple;
+	bh=n+WE1rkvruRWBwuylHCmnNbgdwSAUFW6rtoIp0bkEPE=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=fTJWv6XGaxZrFqjtFUSIZ0+1VtFFxgwvS1e0zgq1jL/dhzZRDXx895U/nKRK9sP7YWUpDZ1UZ+o1GqFywmWESy28wPk3P4HMQsYGKodbroscPdnQo8D8jlp6MGQ67H1SuVie5aQz7U2S5TaxXcXKpof6YmOpEpl082Q5+c+I1Do=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=sefvg76P; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oL8AMU1H"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71998C4CEFB;
-	Thu,  4 Dec 2025 21:28:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1764883708;
-	bh=X8tPs9E6uh+VtgXU41XCn/OUQj8VPbapViZgvzXZmqg=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=oL8AMU1H9u/kQnCLhQPiR/4W7X8gevJNJMq9MHRESr5Uh3iMs3dMulOAWxAGbCajN
-	 iUrgGj349WZ+JwTd5AoFpVrv17YrLe3K9ObpzkoULntZCzfHVaKCDUNZGD8pZdXj1P
-	 CP42WR2GRGoCXpOgI5VX6RlzVkO3eAOZGVEnNhwfy/CkQiNhW7rADRoVbg2fQscMQD
-	 JOoF+kqXoHX1Y2jN6+83sUV/tjcJLRpFq/hvgQQRE0jpf0M2x1lbFB8xTdswPc2i3l
-	 1Zd2X9E0L6bckUM9WaNeEdkaa1IHMYYKBXtCzue/OWQPIUXTlBBtLuEu/I5r1WdJGP
-	 BWf0N7K/D+05Q==
-Date: Thu, 4 Dec 2025 15:28:25 -0600
-From: "Rob Herring (Arm)" <robh@kernel.org>
-To: Ashish Mhetre <amhetre@nvidia.com>
-Cc: nicolinc@nvidia.com, jgg@ziepe.ca, linux-arm-kernel@lists.infradead.org,
-	krzk+dt@kernel.org, devicetree@vger.kernel.org,
-	jonathanh@nvidia.com, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, will@kernel.org, conor+dt@kernel.org,
-	vdumpa@nvidia.com, joro@8bytes.org, robin.murphy@arm.com,
-	linux-tegra@vger.kernel.org, thierry.reding@gmail.com
-Subject: Re: [PATCH V3 2/3] dt-bindings: iommu: Add NVIDIA Tegra CMDQV support
-Message-ID: <176488370517.2196325.5157844880170253515.robh@kernel.org>
-References: <20251201163219.3237266-1-amhetre@nvidia.com>
- <20251201163219.3237266-3-amhetre@nvidia.com>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="sefvg76P"
+Received: from localhost (unknown [52.148.138.235])
+	by linux.microsoft.com (Postfix) with ESMTPSA id A5CE9211C28C;
+	Thu,  4 Dec 2025 14:07:05 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com A5CE9211C28C
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1764886026;
+	bh=OgHYpvFT9iWC3AugjVPHeYq63t/rKQ7He91qwnYSCJw=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=sefvg76PfK6brKFGExXFISzZmSLFmeJk3V2bAAbknoqnrbrJokbAVR6ARTDYHzKjT
+	 yDQRyiEGZEodwAKSgUPd4YgqwqC/aYccM1Axomj/1FXHAIrhFoLNfCk08BxyV+OPfC
+	 bu78+EFqgWTtoCF4HTySkaEe6/4crWrJTCt4uGjw=
+Date: Thu, 4 Dec 2025 14:07:04 -0800
+From: Jacob Pan <jacob.pan@linux.microsoft.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Jason Gunthorpe <jgg@nvidia.com>, Baolu Lu <baolu.lu@linux.intel.com>,
+ linux-kernel@vger.kernel.org, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>, Alex Williamson <alex.williamson@redhat.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Nicolin Chen
+ <nicolinc@nvidia.com>, "Tian, Kevin" <kevin.tian@intel.com>, "Liu, Yi L"
+ <yi.l.liu@intel.com>, skhawaja@google.com, pasha.tatashin@soleen.com, Zhang
+ Yu <zhangyu1@linux.microsoft.com>, Jean Philippe-Brucker
+ <jean-philippe@linaro.org>, David Matlack <dmatlack@google.com>, Alex
+ Williamson <alex@shazbot.org>
+Subject: Re: [RFC 2/8] iommu: Add a helper to check if any iommu device is
+ registered
+Message-ID: <20251204140704.000043b1@linux.microsoft.com>
+In-Reply-To: <0f3dad6d-b320-4d6d-a0b2-8919f3fca5e3@arm.com>
+References: <20251201173012.18371-1-jacob.pan@linux.microsoft.com>
+	<20251201173012.18371-3-jacob.pan@linux.microsoft.com>
+	<f88707d4-bd04-4e9b-8d4b-ccb679d70dae@linux.intel.com>
+	<20251202160635.0000433e@linux.microsoft.com>
+	<20251203131129.GD1109247@nvidia.com>
+	<20251203143609.00006b72@linux.microsoft.com>
+	<0f3dad6d-b320-4d6d-a0b2-8919f3fca5e3@arm.com>
+Organization: LSG
+X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20251201163219.3237266-3-amhetre@nvidia.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
+Hi Robin,
 
-On Mon, 01 Dec 2025 16:32:18 +0000, Ashish Mhetre wrote:
-> The Command Queue Virtualization (CMDQV) hardware is part of the
-> SMMUv3 implementation on NVIDIA Tegra SoCs. It assists in
-> virtualizing the command queue for the SMMU.
-> 
-> Add a new device tree binding document for nvidia,tegra264-cmdqv.
-> 
-> Also update the arm,smmu-v3 binding to include an optional nvidia,cmdqv
-> property. This property is a phandle to the CMDQV device node, allowing
-> the SMMU driver to associate with its corresponding CMDQV instance.
-> Restrict this property usage to Nvidia Tegra264 only.
-> 
-> Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
-> ---
->  .../bindings/iommu/arm,smmu-v3.yaml           | 30 ++++++++++++-
->  .../bindings/iommu/nvidia,tegra264-cmdqv.yaml | 42 +++++++++++++++++++
->  2 files changed, 70 insertions(+), 2 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/iommu/nvidia,tegra264-cmdqv.yaml
-> 
+On Thu, 4 Dec 2025 10:53:36 +0000
+Robin Murphy <robin.murphy@arm.com> wrote:
 
-Reviewed-by: Rob Herring (Arm) <robh@kernel.org>
+> On 2025-12-03 10:36 pm, Jacob Pan wrote:
+> > Hi Jason,
+> > 
+> > On Wed, 3 Dec 2025 09:11:29 -0400
+> > Jason Gunthorpe <jgg@nvidia.com> wrote:
+> >   
+> >> On Tue, Dec 02, 2025 at 04:06:35PM -0800, Jacob Pan wrote:  
+> >>> However, as you pointed out there seems to be no standard ordering
+> >>> for iommu device registration across platforms. e.g. VT-d hooks up
+> >>> with x86_init, smmuv3 does that in platform driver probe. This
+> >>> patchset puts dummy driver under early_initcall which is after
+> >>> both but not a guarantee for all platforms. Any suggestions?  
+> >>
+> >> I think we need to do something more like the sefltest does and
+> >> manually bind a driver to a device so this init time ordering
+> >> shouldn't matter.  
+> > I have moved this dummy iommu driver init under iommufd_init(),
+> > which aligns well since it runs after all physical IOMMU drivers
+> > have registered. This dummy driver is intended for iommufd after
+> > all. But I don't see a need to bind to a platform device as the
+> > selttest does.  
+> 
+> There is no "after all physical IOMMU drivers have registered", there
+> is only "after we've given up waiting to see if one might be loaded
+> as a module", but even that may be indefinite depending on
+> build/runtime configuration.
+OK, how about we make loading the dummy driver an explicit user opt-in,
+the same way as /sys/module/iommufd/parameters/allow_unsafe_interrupt?
 
+In addition, make sure once noiommu driver is loaded, no other iommu
+device can be registered.
+
+diff --git a/drivers/iommu/iommufd/device.c
+b/drivers/iommu/iommufd/device.c index 4c842368289f..233e2a8a59b9 100644
+--- a/drivers/iommu/iommufd/device.c
++++ b/drivers/iommu/iommufd/device.c
+@@ -18,6 +18,41 @@ MODULE_PARM_DESC(
+        "Allow IOMMUFD to bind to devices even if the platform cannot
+isolate " "the MSI interrupt window. Enabling this is a security
+weakness."); 
++static bool allow_unsafe_dma;
++
++static int allow_unsafe_dma_set(const char *val, const struct
+kernel_param *kp) +{
++       int ret;
++       bool newv;
++
++       ret = kstrtobool(val, &newv);
++       if (ret)
++               return ret;
++       /* If set, call noiommu_init() to load dummy noiommu driver */
++       if (newv && !allow_unsafe_dma) {
++               /* Will fail if HW IOMMU is present */
++               ret = noiommu_init();
++               if (ret)
++                       return ret;
++               allow_unsafe_dma = newv;
++       }
++
++       return 0;
++}
++
++static int allow_unsafe_dma_get(char *buf, const struct kernel_param
+*kp) +{
++    return param_get_bool(buf, kp);
++}
++
++static const struct kernel_param_ops allow_unsafe_dma_ops = {
++    .set = allow_unsafe_dma_set,
++    .get = allow_unsafe_dma_get,
++};
++
++module_param_cb(allow_unsafe_dma, &allow_unsafe_dma_ops,
+&allow_unsafe_dma, 0644); +MODULE_PARM_DESC(allow_unsafe_dma, "Enable
+unsafe DMA no-IOMMU mode"); +
+ struct iommufd_attach {
+        struct iommufd_hw_pagetable *hwpt;
+        struct xarray device_array;
