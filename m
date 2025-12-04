@@ -1,50 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60ED0281341;
-	Thu,  4 Dec 2025 20:42:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E4CA3093AB;
+	Thu,  4 Dec 2025 21:28:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764880978; cv=none; b=oDmOsYNQ8KmTp3/rtkp+V0r4ea0G1bmaXqkA3VXPoEqJqZip6Z60ddiPThwdPxM4vujjpsYfV9nXroGkHjajNZSUUBoTiqUKSfVF8P+VkcjtT0SCCwDMVN54TQCyANTTmMbiIYtlNcDqRMJA6XmPWCQLf4TfvYsU/2tEGggfgVw=
+	t=1764883709; cv=none; b=aZo3Y0OaVS8JK77kl/nN/zs9NrQizuhpH98PClkYIakCk11dKbmFcQaDGMd6Sx/FfUD/qJYXnDDE6+F81ZH9/zwYaQvACLLVcawoLbWNrn6J2XcxKR3prjgJBCkuK2WH0zZslCkuUQ++sgvLhvlpUz9cGP0zaP7McZruFb9a32I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764880978; c=relaxed/simple;
-	bh=L7d1qiM8xYz9QN18vNQm2ZFkGv4gdjDPj0W/v44zrYc=;
+	s=arc-20240116; t=1764883709; c=relaxed/simple;
+	bh=X8tPs9E6uh+VtgXU41XCn/OUQj8VPbapViZgvzXZmqg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VQquy2/FBnhaOLpe/2A6IlEEbJ5YXT5VT8gCn5sr2K9qZRDZ5J5gxJBVJFBKuqNtpRIswBxLDk6tkg5xsqZRnMmgFEqIl1kq8RKVERN0sOI3oJoRDSNksRDwXIsV8yhkDk0anuJIKHREAlj0AUuCnnH/koXfyQyegph7I8V4fIY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=E49xcUFr; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=c8UCAToenLVilt3Hs2SUHoMHYCydF4EZlB6VrLE+8DfcCaeEd5rSq5uCHIKIpasqOXw4ODrnCpsJDFKVi6mUpfVw9Do7aC2fPny6Ji5B9s1XPgPL0//wLKlLatqoAct2jqV4mapplduHELxM0puvT3DyJeiEQYbTr3WA9hwXmkE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oL8AMU1H; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="E49xcUFr"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63AF0C4CEFB;
-	Thu,  4 Dec 2025 20:42:57 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oL8AMU1H"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71998C4CEFB;
+	Thu,  4 Dec 2025 21:28:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1764880977;
-	bh=L7d1qiM8xYz9QN18vNQm2ZFkGv4gdjDPj0W/v44zrYc=;
-	h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-	b=E49xcUFrUYpc6YCgzn86tmUuUfbaibTxEmI2IJLx73nGpi4hj3uihtwNwev1fDz5l
-	 TYRl5dhm9c4SzPPNeNxeIROryGXc7mO88PPpto7MEwPNkZk5Ap9SIKgqxJXDoymj7m
-	 8f2uX+S1hxDVEEEQ2oYgSYb0jxUIXlhngOGwgPDGJt+rbYOUYnks3dx/Udm/Ta0FjM
-	 Y/9qh9nv+mQj78jde6qpu+ICfznOJLcvdfyV0w/+BMvdDWmRjMrh14xk18aU7C7c7B
-	 4n4z1JwpOPmqBaz/9dHKJihqfPNdEzudEm+KutRk9gGT6ZJHcVyzNshg0R1siuvxbT
-	 EdT1TyIS3nUFw==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-	id 4B616CE0E8C; Thu,  4 Dec 2025 12:42:52 -0800 (PST)
-Date: Thu, 4 Dec 2025 12:42:52 -0800
-From: "Paul E. McKenney" <paulmck@kernel.org>
-To: Borislav Petkov <bp@alien8.de>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	linux-kernel@vger.kernel.org
-Subject: Re: amd iommu: rcu: INFO: rcu_preempt detected expedited stalls on
- CPUs/tasks: { 0-.... } 8 jiffies s: 113 root: 0x1/.
-Message-ID: <d90a3959-eacd-495e-99cd-836d07955912@paulmck-laptop>
-Reply-To: paulmck@kernel.org
-References: <20251126143219.GBaScPc1b6RAC9ZfCv@fat_crate.local>
- <20251126152637.GDaSccLZVBEOs20n6T@fat_crate.local>
- <17147c98-9f0d-45d0-9593-3ede27ba6135@paulmck-laptop>
- <20251203124422.GBaTAwpmOzChS2MDhX@fat_crate.local>
- <cb2785d6-ee19-4277-9906-d287341c7698@paulmck-laptop>
- <20251204144505.GCaTGecavu-E56OR8V@fat_crate.local>
+	s=k20201202; t=1764883708;
+	bh=X8tPs9E6uh+VtgXU41XCn/OUQj8VPbapViZgvzXZmqg=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=oL8AMU1H9u/kQnCLhQPiR/4W7X8gevJNJMq9MHRESr5Uh3iMs3dMulOAWxAGbCajN
+	 iUrgGj349WZ+JwTd5AoFpVrv17YrLe3K9ObpzkoULntZCzfHVaKCDUNZGD8pZdXj1P
+	 CP42WR2GRGoCXpOgI5VX6RlzVkO3eAOZGVEnNhwfy/CkQiNhW7rADRoVbg2fQscMQD
+	 JOoF+kqXoHX1Y2jN6+83sUV/tjcJLRpFq/hvgQQRE0jpf0M2x1lbFB8xTdswPc2i3l
+	 1Zd2X9E0L6bckUM9WaNeEdkaa1IHMYYKBXtCzue/OWQPIUXTlBBtLuEu/I5r1WdJGP
+	 BWf0N7K/D+05Q==
+Date: Thu, 4 Dec 2025 15:28:25 -0600
+From: "Rob Herring (Arm)" <robh@kernel.org>
+To: Ashish Mhetre <amhetre@nvidia.com>
+Cc: nicolinc@nvidia.com, jgg@ziepe.ca, linux-arm-kernel@lists.infradead.org,
+	krzk+dt@kernel.org, devicetree@vger.kernel.org,
+	jonathanh@nvidia.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, will@kernel.org, conor+dt@kernel.org,
+	vdumpa@nvidia.com, joro@8bytes.org, robin.murphy@arm.com,
+	linux-tegra@vger.kernel.org, thierry.reding@gmail.com
+Subject: Re: [PATCH V3 2/3] dt-bindings: iommu: Add NVIDIA Tegra CMDQV support
+Message-ID: <176488370517.2196325.5157844880170253515.robh@kernel.org>
+References: <20251201163219.3237266-1-amhetre@nvidia.com>
+ <20251201163219.3237266-3-amhetre@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -53,36 +47,28 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20251204144505.GCaTGecavu-E56OR8V@fat_crate.local>
+In-Reply-To: <20251201163219.3237266-3-amhetre@nvidia.com>
 
-On Thu, Dec 04, 2025 at 03:45:05PM +0100, Borislav Petkov wrote:
-> On Wed, Dec 03, 2025 at 09:16:37AM -0800, Paul E. McKenney wrote:
-> > Or to some value that works for you.  But if you are not looking to be
-> > an expedited RCU CPU stall-warning pioneer, yes, setting it to zero is
-> > a good approach.
-> > 
-> > If you would like to be a more sane pioneer, setting it to (say) 11000
-> > (or 11 seconds) could be appropriate.  But what fun is sanity?  ;-)
+
+On Mon, 01 Dec 2025 16:32:18 +0000, Ashish Mhetre wrote:
+> The Command Queue Virtualization (CMDQV) hardware is part of the
+> SMMUv3 implementation on NVIDIA Tegra SoCs. It assists in
+> virtualizing the command queue for the SMMU.
 > 
-> Oh, I have a lot of excitement even without RCU experiments. :-P
-
-;-) ;-) ;-)
-
-> But if you need me to try things, lemme know.
+> Add a new device tree binding document for nvidia,tegra264-cmdqv.
 > 
-> For now I've simply reset the values as to what defconfig sets them to:
+> Also update the arm,smmu-v3 binding to include an optional nvidia,cmdqv
+> property. This property is a phandle to the CMDQV device node, allowing
+> the SMMU driver to associate with its corresponding CMDQV instance.
+> Restrict this property usage to Nvidia Tegra264 only.
 > 
-> CONFIG_RCU_CPU_STALL_TIMEOUT=21
-> CONFIG_RCU_EXP_CPU_STALL_TIMEOUT=0
-
-Sounds good, and thank you!
-
-							Thanx, Paul
-
-> Thx.
+> Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
+> ---
+>  .../bindings/iommu/arm,smmu-v3.yaml           | 30 ++++++++++++-
+>  .../bindings/iommu/nvidia,tegra264-cmdqv.yaml | 42 +++++++++++++++++++
+>  2 files changed, 70 insertions(+), 2 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/iommu/nvidia,tegra264-cmdqv.yaml
 > 
-> -- 
-> Regards/Gruss,
->     Boris.
-> 
-> https://people.kernel.org/tglx/notes-about-netiquette
+
+Reviewed-by: Rob Herring (Arm) <robh@kernel.org>
+
