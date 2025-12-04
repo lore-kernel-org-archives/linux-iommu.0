@@ -1,118 +1,236 @@
-Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com [209.85.160.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 21AA42FFFBF
-	for <iommu@lists.linux.dev>; Thu,  4 Dec 2025 13:12:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC38B342538
+	for <iommu@lists.linux.dev>; Thu,  4 Dec 2025 13:13:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764853929; cv=none; b=KvKtfZ53V/DTaXDIJAYsdgO5yVYzezMQW985jpFlQAe7KHsV3pFhLaXY/8L1VmCSLuUWnH7cq8rH6FwqdNU/cgPI+6YrhGEVzXah6WNPClbUTtJ6vs7GzlCO4vkWf2aFY4S9NZFaPJeNEaxY5bKVnQ3aodBDwhSeznwrCwZ6zqY=
+	t=1764854039; cv=none; b=K1wCbMvnoN9uik8N5EQbPwdPHUj9okMZXyvCMb3a7wTmQpZK9UKLQv/eEmVYNodfFsPDrXhoUnG8SvInufrzt1PBd20tHhMkVpjHNCVwt1uoLdbnuLlSqf3BPymS7uqSOtCjEIUg9B+MvI39hsOvzgSKUhS6bsiKKNGjVPGHyPk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764853929; c=relaxed/simple;
-	bh=4XeIo1j6UgtNocdjhGhmFLM+uOk06qOz3ttN8u8DDFE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ucYNsjthRLr1j8BznBA4MPEhgYCFH73o5pVy1PnnbuSFblh4f8MWltpulX+vHykOUEK83zPqJTtUcyNpF+Oz3joVbxZPguh88Zd9chVY6iYLa6jULtT6Kpfhsu88QvHb+4OKYN0fHpu9I6iv33EUQieetajSi2PUoGPBTkiSiZo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=hp9yX85S; arc=none smtp.client-ip=209.85.160.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1764854039; c=relaxed/simple;
+	bh=t3Bnpz+avM0HDsIK2c6aRt7hjY3/SE76r3tU+199wfM=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:In-Reply-To:
+	 Content-Type:References; b=R+r693wyETCSi06BYg69VW9w7pUf8PeYOr+8nKmCUTS74P/1CNUBN6j3RpncCL3R85LloFQ4hhD8zgv2IHZZHkiaGIGfvQgHgYFl2BPkMc2/4kcABOv1IGcWa/9wiKeovBtozEQ5kdxnrfJiPz11msI5BlMtaU9r/bQlfJYWb9I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=pFAixUks; arc=none smtp.client-ip=210.118.77.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="hp9yX85S"
-Received: by mail-qt1-f171.google.com with SMTP id d75a77b69052e-4ede6b5cad7so3434941cf.2
-        for <iommu@lists.linux.dev>; Thu, 04 Dec 2025 05:12:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1764853927; x=1765458727; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=5AgEOOnvz05cFH+HJjEiBkLkjMN/F+6OlzBuG6akvn0=;
-        b=hp9yX85Sjq12Cw6PSwmklNW8ebTlzxGLXx4O1pnidses54Ngh5uDwi32GGYl36tkMM
-         P1traUnvE2W9tf1hu44A7Aqmc2kqIxbqINJEK14TsM6UbIr+2uHhTZxC9fWUHC3rig6O
-         QQsSZr2TurxmRhXTJog7i0K6mUOBLIR7R/OgCXLyk4kK/AmIGK6psnQNcIyHB3R/89Y5
-         NLQc6QyqeiiKKNCoC45XVrpyPAJZ67EsNXvVg5LSiRzHkZNqB+nbwx7gD38A4yt47fMS
-         oha2iHFQ31qCOhkRyRJ37PXBBRrlCkOsTCjZig/pM1iAHf3JljWxxm+eDn0wcA4xoj4I
-         Lnbw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1764853927; x=1765458727;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=5AgEOOnvz05cFH+HJjEiBkLkjMN/F+6OlzBuG6akvn0=;
-        b=OnfsfPvnd7cdB588wVSnmj+cHEovz1skrA5nPvAh5QMO0jR5BTIae44ksFbWkCHdxv
-         UMQ/UeDgcXZSpnUCRc9X7oGKmdWJM5+Pe8Fyf8Z07lK8uJ9Yg5M2dRgKwgRKUTxU+ppB
-         k24+zP+9JRKLtR8yxXEYdBopB1lLbjLzFl9+zGQVf2lBkjC73+QGFsffZOI9eCZKrad0
-         5hn+Zoq1PEQCvwKbEZHN2Gz5AKDRbgOB+8s39rYJ84Kvj9eVt6hJpqY+sWpm/yK9EGnc
-         mdL54363lCtqo1zWldNRhFZHv3np63psWi9kbY7F601DkOf5pt8B9dCWN2JlMZjczvFY
-         aZyA==
-X-Forwarded-Encrypted: i=1; AJvYcCUHXeYjTcnEXEQNbdQ0Mu8pRpLDRXOyfe1PgHbxzDToFFOrm0AP39ZiiiozBzvrwdlOU3/DHg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yy2pgaFnTa5UuwkkUiyyUQWlFKRiRdVoMrNEcbnLy3PsqC/zMbl
-	WcqvmLgrjtWlJYC8UclD/uSdxKWLUMXMU3B6ldqKjU+S3tFixBwH6sFrUG95nQbackc=
-X-Gm-Gg: ASbGncs8L8k7FXPWbNsYoJhmCzcuCrtdD7khRUDm+AwaNEtfYFEBIvtJcWC9ij0i/6/
-	gxCgVAR8POh8Ly6UgACJFU6u8+cKI7hvdxsSyKSOIdFYP1fLlyf2fv3HPaoDOsbgMgBMbonLvdp
-	YttSZjR6N17EIkXa5xsIQCc5WVuk8myp7Fa+u5ERZpMScMqs/21lQiVKdoNnwgmRbY5x6xEpt9R
-	R52863c0nHgCW6KowzzgJIaJrNf/Vw4qDz1PAmc5vc0UOYs3ReocuVgMr6PiOIhdHdSXVZet/Ns
-	d5T9aZq5BvlRw6rLAYvT5TXkUMhmyHhIE3ujRFOouI5cHglPcOxTfcja8tsSpvytGo9EnbK0n7t
-	zAv8GTc4d6AZntHeiem5AuYA2eQBBj3aI2jwLVeUtiBMG0NEZTCEi0EZVeMTO74MsiSB218Sk1V
-	/UUDWPApeglK+vY6PAHJoRvKBHy9xwcXSfAcirNMru7NXjPqr0ERxrogKb
-X-Google-Smtp-Source: AGHT+IGbf2POGGp83vOpbLTZgUpb+1qNJF1IH2HsPf0pbehut04M+P62HA1t/m2xT+835/Xz6BBdWg==
-X-Received: by 2002:a05:622a:64c:b0:4d8:531e:f896 with SMTP id d75a77b69052e-4f023a12e7amr40334061cf.27.1764853926790;
-        Thu, 04 Dec 2025 05:12:06 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-47-55-120-4.dhcp-dynamic.fibreop.ns.bellaliant.net. [47.55.120.4])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-88827f34168sm10719626d6.1.2025.12.04.05.12.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Dec 2025 05:12:06 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1vR97t-00000005FjT-2I8y;
-	Thu, 04 Dec 2025 09:12:05 -0400
-Date: Thu, 4 Dec 2025 09:12:05 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Arnd Bergmann <arnd@kernel.org>
-Cc: Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Nicolin Chen <nicolinc@nvidia.com>,
-	Arnd Bergmann <arnd@arndb.de>, Robin Murphy <robin.murphy@arm.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>, Alex Mastro <amastro@fb.com>,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommufd: fix building without dmabuf
-Message-ID: <20251204131205.GM812105@ziepe.ca>
-References: <20251204100333.1034767-1-arnd@kernel.org>
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="pFAixUks"
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20251204131348euoutp02f36a242db6f63dc60f6c59c2b4ad3144~_BWN48HCG2668226682euoutp02B
+	for <iommu@lists.linux.dev>; Thu,  4 Dec 2025 13:13:48 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20251204131348euoutp02f36a242db6f63dc60f6c59c2b4ad3144~_BWN48HCG2668226682euoutp02B
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1764854028;
+	bh=Gy5jTRlG1BOYeQhQOMMh3NCOscTG3v7BR1Xhg1G1ERU=;
+	h=Date:Subject:From:To:Cc:In-Reply-To:References:From;
+	b=pFAixUksRC2Wdoz8LmLhVOPqgFcvzR/pVJFofqaBd0/qroFWSRkVRApnglKilhBs9
+	 YdG4DOVQdX7jMQVkDcz3pZD6nPZ4ub3UiPPpPds+jLhmvmTAbbs5vLe723rLYKaEtI
+	 beG0RPRuwYdWPaKhEDst57IG9Go0cDevD4eC1PoY=
+Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20251204131348eucas1p25ae62f3b5284465e01fccd48040b0e78~_BWNqJoKD1811618116eucas1p2Z;
+	Thu,  4 Dec 2025 13:13:48 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+	20251204131347eusmtip1a586babc772de7476d6c338c6efce3e4~_BWMlcNB01787117871eusmtip1N;
+	Thu,  4 Dec 2025 13:13:47 +0000 (GMT)
+Message-ID: <de80df44-f797-4e8c-a411-09ed3c1286a3@samsung.com>
+Date: Thu, 4 Dec 2025 14:13:45 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20251204100333.1034767-1-arnd@kernel.org>
+User-Agent: Betterbird (Windows)
+Subject: Re: [PATCH v2 0/4] PCI: Fix ACS enablement for Root Ports in OF
+ platforms
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+To: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>, Bjorn
+	Helgaas <bhelgaas@google.com>
+Cc: linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, Naresh Kamboju <naresh.kamboju@linaro.org>,
+	Pavankumar Kondeti <quic_pkondeti@quicinc.com>, Xingang Wang
+	<wangxingang5@huawei.com>, Robin Murphy <robin.murphy@arm.com>, Jason
+	Gunthorpe <jgg@ziepe.ca>, Manivannan Sadhasivam <mani@kernel.org>
+Content-Language: en-US
+In-Reply-To: <b63ec0aa-7a4a-4f8d-9b93-e724f3f2a9d1@samsung.com>
+Content-Transfer-Encoding: 8bit
+X-CMS-MailID: 20251204131348eucas1p25ae62f3b5284465e01fccd48040b0e78
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20251202142307eucas1p12a15e5656bb53f48f445c3056d4e3166
+X-EPHeader: CA
+X-CMS-RootMailID: 20251202142307eucas1p12a15e5656bb53f48f445c3056d4e3166
+References: <CGME20251202142307eucas1p12a15e5656bb53f48f445c3056d4e3166@eucas1p1.samsung.com>
+	<20251202-pci_acs-v2-0-5d2759a71489@oss.qualcomm.com>
+	<b63ec0aa-7a4a-4f8d-9b93-e724f3f2a9d1@samsung.com>
 
-On Thu, Dec 04, 2025 at 11:03:29AM +0100, Arnd Bergmann wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
-> 
-> When DMABUF is disabled, trying to use it causes a link failure:
-> 
-> x86_64-linux-ld: drivers/iommu/iommufd/io_pagetable.o: in function `iopt_map_file_pages':
-> io_pagetable.c:(.text+0x1735): undefined reference to `dma_buf_get'
-> x86_64-linux-ld: io_pagetable.c:(.text+0x1775): undefined reference to `dma_buf_put'
-> 
-> Fixes: 44ebaa1744fd ("iommufd: Accept a DMABUF through IOMMU_IOAS_MAP_FILE")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
->  drivers/iommu/iommufd/io_pagetable.c | 6 +++++-
->  1 file changed, 5 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/iommufd/io_pagetable.c b/drivers/iommu/iommufd/io_pagetable.c
-> index 54cf4d856179..d22e86de03e9 100644
-> --- a/drivers/iommu/iommufd/io_pagetable.c
-> +++ b/drivers/iommu/iommufd/io_pagetable.c
-> @@ -495,7 +495,11 @@ int iopt_map_file_pages(struct iommufd_ctx *ictx, struct io_pagetable *iopt,
->  		return -EOVERFLOW;
->  
->  	start_byte = start - ALIGN_DOWN(start, PAGE_SIZE);
-> -	dmabuf = dma_buf_get(fd);
-> +	if (IS_ENABLED(CONFIG_DMABUF_HEAPS))
-> +		dmabuf = dma_buf_get(fd);
-> +	else
-> +		dmabuf = ERR_PTR(-ENXIO);
+On 03.12.2025 13:04, Marek Szyprowski wrote:
+> On 02.12.2025 15:22, Manivannan Sadhasivam wrote:
+>> This series fixes the long standing issue with ACS in OF platforms. 
+>> There are
+>> two fixes in this series, both fixing independent issues on their 
+>> own, but both
+>> are needed to properly enable ACS on OF platforms.
+>>
+>> Issue(s) background
+>> ===================
+>>
+>> Back in 2021, Xingang Wang first noted a failure in attaching the 
+>> HiSilicon SEC
+>> device to QEMU ARM64 pci-root-port device [1]. He then tracked down 
+>> the issue to
+>> ACS not being enabled for the QEMU Root Port device and he proposed a 
+>> patch to
+>> fix it [2].
+>>
+>> Once the patch got applied, people reported PCIe issues with 
+>> linux-next on the
+>> ARM Juno Development boards, where they saw failure in enumerating 
+>> the endpoint
+>> devices [3][4]. So soon, the patch got dropped, but the actual issue 
+>> with the
+>> ARM Juno boards was left behind.
+>>
+>> Fast forward to 2024, Pavan resubmitted the same fix [5] for his own 
+>> usecase,
+>> hoping that someone in the community would fix the issue with ARM 
+>> Juno boards.
+>> But the patch was rightly rejected, as a patch that was known to 
+>> cause issues
+>> should not be merged to the kernel. But again, no one investigated 
+>> the Juno
+>> issue and it was left behind again.
+>>
+>> Now it ended up in my plate and I managed to track down the issue 
+>> with the help
+>> of Naresh who got access to the Juno boards in LKFT. The Juno issue 
+>> was with the
+>> PCIe switch from Microsemi/IDT, which triggers ACS Source Validation 
+>> error on
+>> Completions received for the Configuration Read Request from a device 
+>> connected
+>> to the downstream port that has not yet captured the PCIe bus number. 
+>> As per the
+>> PCIe spec r6.0 sec 2.2.6.2, "Functions must capture the Bus and 
+>> Device Numbers
+>> supplied with all Type 0 Configuration Write Requests completed by 
+>> the Function
+>> and supply these numbers in the Bus and Device Number fields of the 
+>> Requester ID
+>> for all Requests". So during the first Configuration Read Request 
+>> issued by the
+>> switch downstream port during enumeration (for reading Vendor ID), 
+>> Bus and
+>> Device numbers will be unknown to the device. So it responds to the 
+>> Read Request
+>> with Completion having Bus and Device number as 0. The switch 
+>> interprets the
+>> Completion as an ACS Source Validation error and drops the 
+>> completion, leading
+>> to the failure in detecting the endpoint device. Though the PCIe spec 
+>> r6.0, sec
+>> 6.12.1.1, states that "Completions are never affected by ACS Source 
+>> Validation".
+>> This behavior is in violation of the spec.
+>>
+>> Solution
+>> ========
+>>
+>> In September, I submitted a series [6] to fix both issues. For the 
+>> IDT issue,
+>> I reused the existing quirk in the PCI core which does a dummy config 
+>> write
+>> before issuing the first config read to the device. And for the ACS 
+>> enablement
+>> issue, I just resubmitted the original patch from Xingang which called
+>> pci_request_acs() from devm_of_pci_bridge_init().
+>>
+>> But during the review of the series, several comments were received 
+>> and they
+>> required the series to be reworked completely. Hence, in this 
+>> version, I've
+>> incorported the comments as below:
+>>
+>> 1. For the ACS enablement issue, I've moved the pci_enable_acs() call 
+>> from
+>> pci_acs_init() to pci_dma_configure().
+>>
+>> 2. For the IDT issue, I've cached the ACS capabilities (RO) in 
+>> 'pci_dev',
+>> collected the broken capability for the IDT switches in the quirk and 
+>> used it to
+>> disable the capability in the cache. This also allowed me to get rid 
+>> of the
+>> earlier workaround for the switch.
+>>
+>> [1] 
+>> https://lore.kernel.org/all/038397a6-57e2-b6fc-6e1c-7c03b7be9d96@huawei.com
+>> [2] 
+>> https://lore.kernel.org/all/1621566204-37456-1-git-send-email-wangxingang5@huawei.com
+>> [3] 
+>> https://lore.kernel.org/all/01314d70-41e6-70f9-e496-84091948701a@samsung.com
+>> [4] 
+>> https://lore.kernel.org/all/CADYN=9JWU3CMLzMEcD5MSQGnaLyDRSKc5SofBFHUax6YuTRaJA@mail.gmail.com
+>> [5] 
+>> https://lore.kernel.org/linux-pci/20241107-pci_acs_fix-v1-1-185a2462a571@quicinc.com
+>> [6] 
+>> https://lore.kernel.org/linux-pci/20250910-pci-acs-v1-0-fe9adb65ad7d@oss.qualcomm.com
+>>
+> Thanks for this patchset! I've tested it on my ARM Juno R1 and it 
+> looks that it almost works fine. This patchset even fixed some issues 
+> with PCI devices probe, as I again see SATA and GBit ethernet devices, 
+> which were missing since Linux v6.14 (it looks that I've also missed 
+> this in my tests).
+>
+> # lspci
+> 00:00.0 PCI bridge: PLDA PCI Express Core Reference Design (rev 01)
+> 01:00.0 PCI bridge: Integrated Device Technology, Inc. [IDT] Device 
+> 8090 (rev 02)
+> 02:01.0 PCI bridge: Integrated Device Technology, Inc. [IDT] Device 
+> 8090 (rev 02)
+> 02:02.0 PCI bridge: Integrated Device Technology, Inc. [IDT] Device 
+> 8090 (rev 02)
+> 02:03.0 PCI bridge: Integrated Device Technology, Inc. [IDT] Device 
+> 8090 (rev 02)
+> 02:0c.0 PCI bridge: Integrated Device Technology, Inc. [IDT] Device 
+> 8090 (rev 02)
+> 02:10.0 PCI bridge: Integrated Device Technology, Inc. [IDT] Device 
+> 8090 (rev 02)
+> 02:1f.0 PCI bridge: Integrated Device Technology, Inc. [IDT] Device 
+> 8090 (rev 02)
+> 03:00.0 Mass storage controller: Silicon Image, Inc. SiI 3132 Serial 
+> ATA Raid II Controller (rev 01)
+> 08:00.0 Ethernet controller: Marvell Technology Group Ltd. 88E8057 
+> PCI-E Gigabit Ethernet Controller
+>
+> However there is also a regression. After applying this patchset 
+> system suspend/resume stopped working. This is probably related to 
+> this message:
+>
+> pcieport 0000:02:1f.0: Unable to change power state from D0 to D3hot, 
+> device inaccessible
+>
+> which appears after calling 'rtcwake -s10 -mmem'. This might not be 
+> related to this patchset, so I probably need to apply it on older 
+> kernel releases and check.
 
-Shouldn't this be fixed in include/linux/dma-buf.h with a stub always
-fail inline?
 
-Jason
+Just one more information - I've applied this patchset on top of v6.16 
+and it works perfectly on ARM Juno R1. SATA and GBit ethernet are 
+visible again and system suspend/resume works too, so the issue with the 
+latter on top of v6.18 seems not to be directly related to $subject 
+patchset. I will try to bisect this issue when I have some spare time.
+
+Feel free to add:
+
+Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+
+
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
+
