@@ -1,94 +1,95 @@
-Received: from mail.alien8.de (mail.alien8.de [65.109.113.108])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4CD40271A71
-	for <iommu@lists.linux.dev>; Thu,  4 Dec 2025 14:51:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=65.109.113.108
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3AED33491C7
+	for <iommu@lists.linux.dev>; Thu,  4 Dec 2025 16:49:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764859872; cv=none; b=oa/iKJ8tdiMiHLOdYohFdgCcKlz3p12244b+ssM/bkpd2cY3YlQ6WaDq2x1dfNR8ocGUkCqjABEf1N6JSeTCdj6dYgXa7ysVe7YWc5UZR1N91E0W/a3x5hrTHPBHCo894pfiH/1ySIrINuuMx/98ZSGMifpwbnPKoQSEcA/bdB8=
+	t=1764866959; cv=none; b=Cm5/4x3zxq9KM1UH64qQvgbW6YXivR59RAH7Mkex3j/koIwzDMeHYQVBC9M3fQYMCCp2SzsHvvyZYS1nXNU+ESi6KueMiHUqafuzDvVeEipTGVlMhAySCFZOVrKWrw6lqUmnu7WN2PK61kTPHVJVJLeAsu333uA3olusR6LmM1Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764859872; c=relaxed/simple;
-	bh=l8wUC/nZJMjQ3sxtatxAwV7Pqgh0hZVgyeAgCKKyY5o=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=SHwVuDUbvCsaul3k0MaSLosF99oFkcmFNx9hIE+IZU5bBRKEFQZ2ASoRCEI0Qu/mH6zBGESYBLweoZAPouLxKnhq4UHuDVzufNY5AXbASgu4LhHTJ8+MybE0y6MtbRuV7RHN/yRgmIenW3RTjb+yfrr8s73G6sAhO+KcgonkLx0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de; spf=pass smtp.mailfrom=alien8.de; dkim=pass (4096-bit key) header.d=alien8.de header.i=@alien8.de header.b=ev6KF3oT; arc=none smtp.client-ip=65.109.113.108
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=alien8.de
+	s=arc-20240116; t=1764866959; c=relaxed/simple;
+	bh=pNTWl/c3lerxkSw0rL3hvq6mNtAB1BGv+e0Xp9fi6gU=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=DR/9nTsIxuGlGlvUY4vCOfNYUvdmnPM/s0aBKIZUx3yad1QcRQFaaoWNuwWdUgv5nTh0OphVfTI3ZNyH6CZ0z36v5MYOBtffKF+zM2hP+GTbGeb93ME52nmA7dGHZcXusb1pOI5a50RFi2lcNDWruT9nSEHLFNTCO0Asiv5cJ2A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=BIeST+DU; arc=none smtp.client-ip=209.85.218.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (4096-bit key) header.d=alien8.de header.i=@alien8.de header.b="ev6KF3oT"
-Received: from localhost (localhost.localdomain [127.0.0.1])
-	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTP id 6CCE040E026C;
-	Thu,  4 Dec 2025 14:45:24 +0000 (UTC)
-X-Virus-Scanned: Debian amavisd-new at mail.alien8.de
-Received: from mail.alien8.de ([127.0.0.1])
-	by localhost (mail.alien8.de [127.0.0.1]) (amavisd-new, port 10026)
-	with ESMTP id lE-gp5OrXyax; Thu,  4 Dec 2025 14:45:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=alien8;
-	t=1764859518; bh=ESMFFQB/4P5C90flXNuqKDoiOo4KxHPdE4iFY7v2RZQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=ev6KF3oTu47FXgrXCVN1V6wc/TD5Sq8FeR0i37mUXn1nZCuL854pRvMB7QAcsCnRJ
-	 u7GDqLu9D4FkBRt1QPnH0Pq2IB7x4Alxy+3fhjpKWQd6r2E+70RAz7QjrG8FEzMBcK
-	 6QAd+ZFwMRLWCKZc44hdkDNvUb5Yd/QqZlQGQL16F1P7mJrgxCrv2biK/vUVvJt3no
-	 hAUMSfC1+AQUxhPRXXHrtIjF0jstu2NBywMVYE0SfyrKKvPFux2LC7Kw7L6USQ42ZF
-	 F3hEKT23QmmDuSEmVDydMUy2nfX5PFUsjhguT3jIymNHBFwErZo6LWO/a/XuDjrtiE
-	 odRh0x558YdQKO7FUBFxOV6kdUz8788/a4+NIzhg6bDKgYQ59cR9PvLReKuLHiiQvE
-	 oQ+UgF+6rZXIG93IAfeKHddRD5KP8ue6S0ZQIgR5E+1SyQTBTBZhxqSHtUHH4rx0qp
-	 ALUB9AN6loPBXGkmdw3ba17cGyWBVKmLZT9BNW4oCGBVxap2bBzFJVYtzHwoH42i7S
-	 4DMLVmc262EU1hjxgTrPs6hv+nQ4Oc3JtRKF7Y1EW92XjtL2CfAzVkwknfPAQHpAoa
-	 NAHh7ZXB5E+1igWr5oplJnIww286MZA455N07qTClI3FtCZbr4oSrylJkfVARzr8zN
-	 qs80AWOwLTZkHy1VdqIdzxtU=
-Received: from zn.tnic (pd953023b.dip0.t-ipconnect.de [217.83.2.59])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature ECDSA (P-256) server-digest SHA256)
-	(No client certificate requested)
-	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with UTF8SMTPSA id 8990140E00DE;
-	Thu,  4 Dec 2025 14:45:11 +0000 (UTC)
-Date: Thu, 4 Dec 2025 15:45:05 +0100
-From: Borislav Petkov <bp@alien8.de>
-To: "Paul E. McKenney" <paulmck@kernel.org>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	linux-kernel@vger.kernel.org
-Subject: Re: amd iommu: rcu: INFO: rcu_preempt detected expedited stalls on
- CPUs/tasks: { 0-.... } 8 jiffies s: 113 root: 0x1/.
-Message-ID: <20251204144505.GCaTGecavu-E56OR8V@fat_crate.local>
-References: <20251126143219.GBaScPc1b6RAC9ZfCv@fat_crate.local>
- <20251126152637.GDaSccLZVBEOs20n6T@fat_crate.local>
- <17147c98-9f0d-45d0-9593-3ede27ba6135@paulmck-laptop>
- <20251203124422.GBaTAwpmOzChS2MDhX@fat_crate.local>
- <cb2785d6-ee19-4277-9906-d287341c7698@paulmck-laptop>
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="BIeST+DU"
+Received: by mail-ej1-f45.google.com with SMTP id a640c23a62f3a-b79e7112398so210569566b.3
+        for <iommu@lists.linux.dev>; Thu, 04 Dec 2025 08:49:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google; t=1764866954; x=1765471754; darn=lists.linux.dev;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=KYdlDUMxTJfLAfjf8j4z/ZZ18s/2EWT4Q/SIqp5BkQg=;
+        b=BIeST+DUW4/8DoXVkHWZOu4+lZ8miMR7O0sqw6KbiEdeTJqE4YLNiGkP3QtVMLnaXF
+         FODSm7XdgPkwMBcknsRl6t8bh5d80lgB5Odgyo9TCz2r9TE8uOKa5ByNa1mfavpvMst/
+         rZx6+dGKIdOaZnw1mg56OcJi7r8xFJrjZ+pJs=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1764866954; x=1765471754;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=KYdlDUMxTJfLAfjf8j4z/ZZ18s/2EWT4Q/SIqp5BkQg=;
+        b=WmySEEhdQt7PB4DlPs9bw/aTO5n6AdTeoUyz7y1HzirXGfbNQI0KqtYi9svKh3He8n
+         LZ3STs2PwlDZWP5z7nRrShuYrbkK4eMjs+N+0oZZmMpMauzmUknlEAa24UU+P2I7HmiQ
+         5u9ZuaLf5U7ISZ5/I3XfeRLb+q6YBcRbiZmcwCORo9RexA0vJenJwVf+N0BGuF1XBEhn
+         XDTsu4+qRAMyasrttTb22gQ696pUCzJ11N7+NHmIDkG4lqr8KasvFxzvJQijZiRzELx8
+         0Ms43L8jhQds1NSmAa6uRY7Ex9zAFbm8g163tvQAq41x9XIMm1NEfkRxgHOG8xIAFwxC
+         o6qA==
+X-Gm-Message-State: AOJu0YyuLus/K5dhKbbeyBzZbj4DuSDscJ4ZPmk9SjDVtD6+98C+9ela
+	8kLPJwU5Z7qWqLDZv3zzv6QyH6xpJ61rjuSx0JU7H+tjnBMAOvRqf8PoCdZAdqMPfvARM99qFcL
+	edKStsA==
+X-Gm-Gg: ASbGncuL8l76MqTjekE4GQPR455BNO4g18/yM3F8ErdevVD8JiQ2C3ttCce3dCT4oM/
+	YP3pWhH+qKD2a/VptiuoWDYW90cbMt1URDWrNyW8p1cBRLFRlB7y+14UWW7aEU+eSjeZnNznDyh
+	QaVHcXj5yFm+XVQI3C0wzvb+RDI3g741E4v/37XC1OXTdhAoH5KtorYBkF8e8MS1Rh0b47iKE6N
+	W+K2X86qActO9Bs081COHtSGV2kj7RdThkxoIionzNGt+117XFJtDT6BHcd+v+s2JP37+jmGfgp
+	MOCQUZ3WlDgBrVhHkgKUONxKpp780upVgUszilLIPa1zZYG54Jd9x10g9ZPN3TtlU6ddFdX8lvK
+	+F+yzduLGlwsHJw1aHI2ElDJ7S6UJAfNdqKVOF0cjXmD6tFkeHbjK3zAnQPZRb3g6Ik6gXsGX3s
+	VWwA+/CCinsPwuNxoiNA==
+X-Google-Smtp-Source: AGHT+IHL3Lk4ovmtUaC18/bNreinF4rQWWNt2Ce9nIYmH/BV4lkFDDnS5spnyobtUb9L29gVvFju9g==
+X-Received: by 2002:a17:906:f850:b0:b79:f753:6910 with SMTP id a640c23a62f3a-b79f7537d59mr158746566b.40.1764866954111;
+        Thu, 04 Dec 2025 08:49:14 -0800 (PST)
+Received: from google.com ([2a00:79e0:a:200:1264:2fc0:4e66:3ac])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-647b368dcebsm1741211a12.21.2025.12.04.08.49.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 04 Dec 2025 08:49:13 -0800 (PST)
+Date: Thu, 4 Dec 2025 17:49:05 +0100
+From: Dmytro Maluka <dmaluka@chromium.org>
+To: iommu@lists.linux.dev
+Cc: David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	"Vineeth Pillai (Google)" <vineeth@bitbyteword.org>,
+	Aashish Sharma <aashish@aashishsharma.net>,
+	Grzegorz Jaszczyk <jaszczyk@chromium.org>,
+	Chuanxiao Dong <chuanxiao.dong@intel.com>,
+	Kevin Tian <kevin.tian@intel.com>
+Subject: [Intel IOMMU] Question about memory ordering in context/PASID entry
+ updates
+Message-ID: <aTG7gc7I5wExai3S@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <cb2785d6-ee19-4277-9906-d287341c7698@paulmck-laptop>
 
-On Wed, Dec 03, 2025 at 09:16:37AM -0800, Paul E. McKenney wrote:
-> Or to some value that works for you.  But if you are not looking to be
-> an expedited RCU CPU stall-warning pioneer, yes, setting it to zero is
-> a good approach.
-> 
-> If you would like to be a more sane pioneer, setting it to (say) 11000
-> (or 11 seconds) could be appropriate.  But what fun is sanity?  ;-)
+When updating a context or PASID entry, we'd better make sure we set the
+present bit after setting up other bits, not before, right? And indeed,
+for example, in domain_context_mapping_one() we are doing it in the
+following order:
 
-Oh, I have a lot of excitement even without RCU experiments. :-P
+	context_clear_entry(context);
+	<set other bits>
+	context_set_present(context);
 
-But if you need me to try things, lemme know.
+But it doesn't look like we have any compiler barriers to actually
+ensure this order? (And in case of context entries, there is even no
+WRITE_ONCE or anything like that.)
 
-For now I've simply reset the values as to what defconfig sets them to:
+So, are we just hoping that the compiler will not reorder it?
 
-CONFIG_RCU_CPU_STALL_TIMEOUT=21
-CONFIG_RCU_EXP_CPU_STALL_TIMEOUT=0
-
-Thx.
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+What am I missing?
