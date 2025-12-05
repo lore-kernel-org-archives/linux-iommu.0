@@ -1,144 +1,220 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3F40727A12B
-	for <iommu@lists.linux.dev>; Thu,  4 Dec 2025 22:07:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D39331FCF41;
+	Fri,  5 Dec 2025 02:40:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764886030; cv=none; b=UhfafQAQSNGet05uyhJLF31bZWyMXY/jc4esBd2YNBd9lYBpWKtKs8z4+wMBApTwcdpw3XPdjXfTsqVl3vRJmMzpdSUYued3TqYAlksd8KAheOY10NPWfPuQ3UZZbgNJmpUJ9OaUYx4sfDq9B2+1mVEqOOA2abijxtRvJUS+4o0=
+	t=1764902463; cv=none; b=FnvXsKu6N+nQ/EyDfRzTTcQu/WUrU4aoZNAJc1X2hrF28uD5Kr1bJv4fmuaaj1AE33Szp0UvmUySZ0XNHwCnKuoIDyNkpG79oFvMnnrnn0HDWDemXYoCrIMvxFrPWaZt6WM/lJjPdB1jcdWQS6Vtbd9sOHSz+fu78NABk5lYa7Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764886030; c=relaxed/simple;
-	bh=n+WE1rkvruRWBwuylHCmnNbgdwSAUFW6rtoIp0bkEPE=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=fTJWv6XGaxZrFqjtFUSIZ0+1VtFFxgwvS1e0zgq1jL/dhzZRDXx895U/nKRK9sP7YWUpDZ1UZ+o1GqFywmWESy28wPk3P4HMQsYGKodbroscPdnQo8D8jlp6MGQ67H1SuVie5aQz7U2S5TaxXcXKpof6YmOpEpl082Q5+c+I1Do=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=sefvg76P; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1764902463; c=relaxed/simple;
+	bh=YWPgp6ETHw0rQCvXyVjOuRlG44uPU13fK/UDjtrYeoA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=tw7gqm5RxRU5reVrODK6gHO3CchOQu2WtuJ7IAsfaHcm+8YRrQI6tseyPheoXWHSTHMBGDrS0W4DsvBFHesw5jikgF4T0ivEdjqDX1jI9qWvc4BX+HuSVxIqAxaXnAKQ6GwJ9cmAzooVLx+lSpB8idKsZz3PLKJv/+KZW/ZYp2I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=NqexNUvC; arc=none smtp.client-ip=198.175.65.20
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="sefvg76P"
-Received: from localhost (unknown [52.148.138.235])
-	by linux.microsoft.com (Postfix) with ESMTPSA id A5CE9211C28C;
-	Thu,  4 Dec 2025 14:07:05 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com A5CE9211C28C
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1764886026;
-	bh=OgHYpvFT9iWC3AugjVPHeYq63t/rKQ7He91qwnYSCJw=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=sefvg76PfK6brKFGExXFISzZmSLFmeJk3V2bAAbknoqnrbrJokbAVR6ARTDYHzKjT
-	 yDQRyiEGZEodwAKSgUPd4YgqwqC/aYccM1Axomj/1FXHAIrhFoLNfCk08BxyV+OPfC
-	 bu78+EFqgWTtoCF4HTySkaEe6/4crWrJTCt4uGjw=
-Date: Thu, 4 Dec 2025 14:07:04 -0800
-From: Jacob Pan <jacob.pan@linux.microsoft.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Jason Gunthorpe <jgg@nvidia.com>, Baolu Lu <baolu.lu@linux.intel.com>,
- linux-kernel@vger.kernel.org, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>, Alex Williamson <alex.williamson@redhat.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Nicolin Chen
- <nicolinc@nvidia.com>, "Tian, Kevin" <kevin.tian@intel.com>, "Liu, Yi L"
- <yi.l.liu@intel.com>, skhawaja@google.com, pasha.tatashin@soleen.com, Zhang
- Yu <zhangyu1@linux.microsoft.com>, Jean Philippe-Brucker
- <jean-philippe@linaro.org>, David Matlack <dmatlack@google.com>, Alex
- Williamson <alex@shazbot.org>
-Subject: Re: [RFC 2/8] iommu: Add a helper to check if any iommu device is
- registered
-Message-ID: <20251204140704.000043b1@linux.microsoft.com>
-In-Reply-To: <0f3dad6d-b320-4d6d-a0b2-8919f3fca5e3@arm.com>
-References: <20251201173012.18371-1-jacob.pan@linux.microsoft.com>
-	<20251201173012.18371-3-jacob.pan@linux.microsoft.com>
-	<f88707d4-bd04-4e9b-8d4b-ccb679d70dae@linux.intel.com>
-	<20251202160635.0000433e@linux.microsoft.com>
-	<20251203131129.GD1109247@nvidia.com>
-	<20251203143609.00006b72@linux.microsoft.com>
-	<0f3dad6d-b320-4d6d-a0b2-8919f3fca5e3@arm.com>
-Organization: LSG
-X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="NqexNUvC"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1764902460; x=1796438460;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=YWPgp6ETHw0rQCvXyVjOuRlG44uPU13fK/UDjtrYeoA=;
+  b=NqexNUvCln6nDFVXaRLP9dr5mCusGVhqCYQVMRXqvwvJsIh7wCFItpMy
+   iLuq56ZpbY6prQiYOBj4s1jLZ+rSnL1XCrGEPnX37YTXZ31d0zYDuq4kM
+   T11+lLd/PtJvnQ3AhgyzFF2dhqo8ShNOyO6VSp/97DZt3F+V+bvxnn5UR
+   o5Fv5Ur1+XsaRLI/+fYaCPY2e1Ue26/HXMNKEfNQa6mwdaQbHDuzZlsdS
+   aSVyW9OyS+tNbT5KMeJPNRYVNwPV88Bngemhj7HC1Yf0U9RDmAbwIA7nM
+   fnpNOQGapR+5BDNDfB6v2Rx4I8eXcWizeyBGMyJLRggDwIPihkjkkcA18
+   w==;
+X-CSE-ConnectionGUID: ZGBnDRNiQ/yhyYpJ8TNAgw==
+X-CSE-MsgGUID: hOCmtWKRTKGoD4+y64tiGA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11632"; a="66657812"
+X-IronPort-AV: E=Sophos;i="6.20,250,1758610800"; 
+   d="scan'208";a="66657812"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Dec 2025 18:40:59 -0800
+X-CSE-ConnectionGUID: xyVrV1D0SiCC7UIVyZgz1w==
+X-CSE-MsgGUID: tBlcxB12S5qF4sHuSv34lg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.20,250,1758610800"; 
+   d="scan'208";a="199590264"
+Received: from ly-workstation.sh.intel.com (HELO ly-workstation) ([10.239.182.64])
+  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Dec 2025 18:40:52 -0800
+Date: Fri, 5 Dec 2025 10:40:49 +0800
+From: "Lai, Yi" <yi1.lai@linux.intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Alexandre Ghiti <alex@ghiti.fr>, Anup Patel <anup@brainfault.org>,
+	Albert Ou <aou@eecs.berkeley.edu>, Jonathan Corbet <corbet@lwn.net>,
+	iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+	Justin Stitt <justinstitt@google.com>, linux-doc@vger.kernel.org,
+	linux-kselftest@vger.kernel.org, linux-riscv@lists.infradead.org,
+	llvm@lists.linux.dev, Bill Wendling <morbo@google.com>,
+	Nathan Chancellor <nathan@kernel.org>,
+	Nick Desaulniers <nick.desaulniers+lkml@gmail.com>,
+	Miguel Ojeda <ojeda@kernel.org>,
+	Palmer Dabbelt <palmer@dabbelt.com>, Paul Walmsley <pjw@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, Shuah Khan <shuah@kernel.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Will Deacon <will@kernel.org>, Alexey Kardashevskiy <aik@amd.com>,
+	Alejandro Jimenez <alejandro.j.jimenez@oracle.com>,
+	James Gowans <jgowans@amazon.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Michael Roth <michael.roth@amd.com>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
+	Samiullah Khawaja <skhawaja@google.com>,
+	Vasant Hegde <vasant.hegde@amd.com>, yi1.lai@intel.com,
+	syzkaller-bugs@googlegroups.com
+Subject: Re: [PATCH v8 13/15] iommu/amd: Use the generic iommu page table
+Message-ID: <aTJGMaqwQK0ASj0G@ly-workstation>
+References: <0-v8-d50aeee4481d+55efb-iommu_pt_jgg@nvidia.com>
+ <13-v8-d50aeee4481d+55efb-iommu_pt_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <13-v8-d50aeee4481d+55efb-iommu_pt_jgg@nvidia.com>
 
-Hi Robin,
+Hi Alejandro Jimenez,
 
-On Thu, 4 Dec 2025 10:53:36 +0000
-Robin Murphy <robin.murphy@arm.com> wrote:
+Greetings!
 
-> On 2025-12-03 10:36 pm, Jacob Pan wrote:
-> > Hi Jason,
-> > 
-> > On Wed, 3 Dec 2025 09:11:29 -0400
-> > Jason Gunthorpe <jgg@nvidia.com> wrote:
-> >   
-> >> On Tue, Dec 02, 2025 at 04:06:35PM -0800, Jacob Pan wrote:  
-> >>> However, as you pointed out there seems to be no standard ordering
-> >>> for iommu device registration across platforms. e.g. VT-d hooks up
-> >>> with x86_init, smmuv3 does that in platform driver probe. This
-> >>> patchset puts dummy driver under early_initcall which is after
-> >>> both but not a guarantee for all platforms. Any suggestions?  
-> >>
-> >> I think we need to do something more like the sefltest does and
-> >> manually bind a driver to a device so this init time ordering
-> >> shouldn't matter.  
-> > I have moved this dummy iommu driver init under iommufd_init(),
-> > which aligns well since it runs after all physical IOMMU drivers
-> > have registered. This dummy driver is intended for iommufd after
-> > all. But I don't see a need to bind to a platform device as the
-> > selttest does.  
-> 
-> There is no "after all physical IOMMU drivers have registered", there
-> is only "after we've given up waiting to see if one might be loaded
-> as a module", but even that may be indefinite depending on
-> build/runtime configuration.
-OK, how about we make loading the dummy driver an explicit user opt-in,
-the same way as /sys/module/iommufd/parameters/allow_unsafe_interrupt?
+I used Syzkaller and found that there is WARNING in iommufd_fops_release in linux-next next-20251203.
 
-In addition, make sure once noiommu driver is loaded, no other iommu
-device can be registered.
+After bisection and the first bad commit is:
+"
+789a5913b29c iommu/amd: Use the generic iommu page table
+"
 
-diff --git a/drivers/iommu/iommufd/device.c
-b/drivers/iommu/iommufd/device.c index 4c842368289f..233e2a8a59b9 100644
---- a/drivers/iommu/iommufd/device.c
-+++ b/drivers/iommu/iommufd/device.c
-@@ -18,6 +18,41 @@ MODULE_PARM_DESC(
-        "Allow IOMMUFD to bind to devices even if the platform cannot
-isolate " "the MSI interrupt window. Enabling this is a security
-weakness."); 
-+static bool allow_unsafe_dma;
-+
-+static int allow_unsafe_dma_set(const char *val, const struct
-kernel_param *kp) +{
-+       int ret;
-+       bool newv;
-+
-+       ret = kstrtobool(val, &newv);
-+       if (ret)
-+               return ret;
-+       /* If set, call noiommu_init() to load dummy noiommu driver */
-+       if (newv && !allow_unsafe_dma) {
-+               /* Will fail if HW IOMMU is present */
-+               ret = noiommu_init();
-+               if (ret)
-+                       return ret;
-+               allow_unsafe_dma = newv;
-+       }
-+
-+       return 0;
-+}
-+
-+static int allow_unsafe_dma_get(char *buf, const struct kernel_param
-*kp) +{
-+    return param_get_bool(buf, kp);
-+}
-+
-+static const struct kernel_param_ops allow_unsafe_dma_ops = {
-+    .set = allow_unsafe_dma_set,
-+    .get = allow_unsafe_dma_get,
-+};
-+
-+module_param_cb(allow_unsafe_dma, &allow_unsafe_dma_ops,
-&allow_unsafe_dma, 0644); +MODULE_PARM_DESC(allow_unsafe_dma, "Enable
-unsafe DMA no-IOMMU mode"); +
- struct iommufd_attach {
-        struct iommufd_hw_pagetable *hwpt;
-        struct xarray device_array;
+All detailed into can be found at:
+https://github.com/laifryiee/syzkaller_logs/tree/main/251204_120805_iommufd_fops_release
+Syzkaller repro code:
+https://github.com/laifryiee/syzkaller_logs/tree/main/251204_120805_iommufd_fops_release/repro.c
+Syzkaller repro syscall steps:
+https://github.com/laifryiee/syzkaller_logs/tree/main/251204_120805_iommufd_fops_release/repro.prog
+Syzkaller report:
+https://github.com/laifryiee/syzkaller_logs/tree/main/251204_120805_iommufd_fops_release/repro.report
+Kconfig(make olddefconfig):
+https://github.com/laifryiee/syzkaller_logs/tree/main/251204_120805_iommufd_fops_release/kconfig_origin
+Bisect info:
+https://github.com/laifryiee/syzkaller_logs/tree/main/251204_120805_iommufd_fops_release/bisect_info.log
+bzImage:
+https://github.com/laifryiee/syzkaller_logs/raw/refs/heads/main/251204_120805_iommufd_fops_release/bzImage_b2c27842ba853508b0da00187a7508eb3a96c8f7
+Issue dmesg:
+https://github.com/laifryiee/syzkaller_logs/blob/main/251204_120805_iommufd_fops_release/b2c27842ba853508b0da00187a7508eb3a96c8f7_dmesg.log
+
+"
+[   26.277988] ------------[ cut here ]------------
+[   26.278641] WARNING: drivers/iommu/iommufd/main.c:369 at iommufd_fops_release+0x385/0x430, CPU#1: repro/724
+[   26.280106] Modules linked in:
+[   26.280581] CPU: 1 UID: 0 PID: 724 Comm: repro Not tainted 6.18.0-next-20251203-b2c27842ba85 #1 PREEMPT(volun
+[   26.281901] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.16.0-0-gd239552ce722-prebuilt.q4
+[   26.283453] RIP: 0010:iommufd_fops_release+0x385/0x430
+[   26.284150] Code: 8b 45 d0 65 48 2b 05 82 16 78 05 75 7b 48 81 c4 88 00 00 00 31 c0 5b 41 5c 41 5d 41 5e 41 5e
+[   26.286461] RSP: 0018:ffff8880202efba8 EFLAGS: 00010293
+[   26.287290] RAX: 0000000000000000 RBX: 0000000000000000 RCX: ffffffff83be6832
+[   26.288207] RDX: ffff888019104b00 RSI: ffffffff83be69a5 RDI: 0000000000000005
+[   26.289136] RBP: ffff8880202efc58 R08: 0000000000000001 R09: 0000000000000001
+[   26.290045] R10: 0000000000000000 R11: ffff888019105998 R12: 0000000000000000
+[   26.291071] R13: ffff888022d49008 R14: ffff8880202efbf0 R15: 0000000000000000
+[   26.292002] FS:  0000000000000000(0000) GS:ffff8880e31c0000(0000) knlGS:0000000000000000
+[   26.293036] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   26.293787] CR2: 00007fa6ab957000 CR3: 00000000138bb001 CR4: 0000000000770ef0
+[   26.294815] PKRU: 55555554
+[   26.295192] Call Trace:
+[   26.295539]  <TASK>
+[   26.295843]  ? locks_remove_file+0x3b4/0x5d0
+[   26.296451]  ? __pfx_iommufd_fops_release+0x10/0x10
+[   26.297104]  ? __sanitizer_cov_trace_const_cmp2+0x1c/0x30
+[   26.297841]  ? evm_file_release+0x140/0x220
+[   26.298439]  ? __pfx_iommufd_fops_release+0x10/0x10
+[   26.299193]  __fput+0x41f/0xb70
+[   26.299670]  ____fput+0x22/0x30
+[   26.300113]  task_work_run+0x19e/0x2b0
+[   26.300644]  ? __pfx_task_work_run+0x10/0x10
+[   26.301229]  ? __sanitizer_cov_trace_const_cmp4+0x1a/0x20
+[   26.301938]  ? switch_task_namespaces+0xdd/0x130
+[   26.302579]  do_exit+0x8a3/0x28a0
+[   26.303205]  ? do_group_exit+0x1d8/0x2c0
+[   26.303745]  ? __pfx_do_exit+0x10/0x10
+[   26.304256]  ? __this_cpu_preempt_check+0x21/0x30
+[   26.304915]  ? _raw_spin_unlock_irq+0x2c/0x60
+[   26.305515]  ? lockdep_hardirqs_on+0x85/0x110
+[   26.306099]  ? _raw_spin_unlock_irq+0x2c/0x60
+[   26.306796]  ? trace_hardirqs_on+0x26/0x130
+[   26.307388]  do_group_exit+0xe4/0x2c0
+[   26.307892]  __x64_sys_exit_group+0x4d/0x60
+[   26.308460]  x64_sys_call+0x21a2/0x21b0
+[   26.308993]  do_syscall_64+0x6d/0x1180
+[   26.309509]  entry_SYSCALL_64_after_hwframe+0x76/0x7e
+[   26.310174] RIP: 0033:0x7fa6ab718a4d
+[   26.310680] Code: Unable to access opcode bytes at 0x7fa6ab718a23.
+[   26.311595] RSP: 002b:00007ffdeee343f8 EFLAGS: 00000246 ORIG_RAX: 00000000000000e7
+[   26.312569] RAX: ffffffffffffffda RBX: 00007fa6ab7f69e0 RCX: 00007fa6ab718a4d
+[   26.313498] RDX: 00000000000000e7 RSI: ffffffffffffff80 RDI: 0000000000000000
+[   26.314442] RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000020
+[   26.315466] R10: 00007ffdeee342a0 R11: 0000000000000246 R12: 00007fa6ab7f69e0
+[   26.316385] R13: 00007fa6ab7fbf00 R14: 0000000000000001 R15: 00007fa6ab7fbee8
+[   26.317323]  </TASK>
+[   26.317642] irq event stamp: 2083
+[   26.318092] hardirqs last  enabled at (2091): [<ffffffff81666d75>] __up_console_sem+0x95/0xb0
+[   26.319467] hardirqs last disabled at (2214): [<ffffffff81666d5a>] __up_console_sem+0x7a/0xb0
+[   26.320566] softirqs last  enabled at (2212): [<ffffffff8148a2fe>] __irq_exit_rcu+0x10e/0x170
+[   26.321679] softirqs last disabled at (2099): [<ffffffff8148a2fe>] __irq_exit_rcu+0x10e/0x170
+[   26.322880] ---[ end trace 0000000000000000 ]---
+"
+
+Hope this cound be insightful to you.
+
+Regards,
+Yi Lai
+
+---
+
+If you don't need the following environment to reproduce the problem or if you
+already have one reproduced environment, please ignore the following information.
+
+How to reproduce:
+git clone https://gitlab.com/xupengfe/repro_vm_env.git
+cd repro_vm_env
+tar -xvf repro_vm_env.tar.gz
+cd repro_vm_env; ./start3.sh  // it needs qemu-system-x86_64 and I used v7.1.0
+  // start3.sh will load bzImage_2241ab53cbb5cdb08a6b2d4688feb13971058f65 v6.2-rc5 kernel
+  // You could change the bzImage_xxx as you want
+  // Maybe you need to remove line "-drive if=pflash,format=raw,readonly=on,file=./OVMF_CODE.fd \" for different qemu version
+You could use below command to log in, there is no password for root.
+ssh -p 10023 root@localhost
+
+After login vm(virtual machine) successfully, you could transfer reproduced
+binary to the vm by below way, and reproduce the problem in vm:
+gcc -pthread -o repro repro.c
+scp -P 10023 repro root@localhost:/root/
+
+Get the bzImage for target kernel:
+Please use target kconfig and copy it to kernel_src/.config
+make olddefconfig
+make -jx bzImage           //x should equal or less than cpu num your pc has
+
+Fill the bzImage file into above start3.sh to load the target kernel in vm.
+
+
+Tips:
+If you already have qemu-system-x86_64, please ignore below info.
+If you want to install qemu v7.1.0 version:
+git clone https://github.com/qemu/qemu.git
+cd qemu
+git checkout -f v7.1.0
+mkdir build
+cd build
+yum install -y ninja-build.x86_64
+yum -y install libslirp-devel.x86_64
+../configure --target-list=x86_64-softmmu --enable-kvm --enable-vnc --enable-gtk --enable-sdl --enable-usb-redir --enable-slirp
+make
+make install 
+
