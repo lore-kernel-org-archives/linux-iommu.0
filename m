@@ -1,122 +1,141 @@
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96CC0277C9E
-	for <iommu@lists.linux.dev>; Mon,  8 Dec 2025 08:42:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F5F31EDA03
+	for <iommu@lists.linux.dev>; Mon,  8 Dec 2025 09:19:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765183378; cv=none; b=rVs5AgT36I9FQv9WPDpbRFs2n5XPZml/it3hJWvCsPCBcZeVpYV/XZZYqdwETFkb8lMMGO6mG0IvKBe/caEU/55O7Rs4cIbP+/eGh1rKkpEIX8mFDB+YPYiqA2QYhDbJ5x2S3bkTBMmxqdssFfNlmlMNoRMZw7cQC9zxlQv84SY=
+	t=1765185551; cv=none; b=MvnXZvqLaOfI8q+oaGvWzmv5qogp9ewIi8mPDtFJsPMc/RTpI53dBha/jZVKmGvVLijJHhlaPQqZxwLD0Sgaiuruy595bkkO1yVeyH77uPEUBwMGJ3JzMIjTScMIwgSF/NOPyKNGNpheV+uZL2CfhQVdBdMGewKoIjiR3CnaPqI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765183378; c=relaxed/simple;
-	bh=tV4SU9e0hH8WeXPApeSJRL6kAWexD+Z7sjM80xpJdtY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
-	 Content-Type:References; b=CVEExkkSyyTxTAZmZDUMAIiNXrSLm3b9wtH9q9sxJyovaIpLrdwhfznsXjtpT0TEXyEHCeW2pHPh8e55FD5DEg0B8okOP0mT9d1lJkwpcDFeGK74qhIKcWfDW3eNjhnRQLkSSlORWYBDN1esT7L3VATa4S3pMPzT37vInLb0G5g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=sokPQbvy; arc=none smtp.client-ip=210.118.77.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1765185551; c=relaxed/simple;
+	bh=GeZc+JbeoBfQkr1X46S+38EEUrtPPrHmuVsh+DemyCc=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=iKj+Wjo0acmYSVrKSu1/VRICrvVghMztUgNeVKlk57BsUXhHB4uH88plM02HYHeCzHPtNSKzjODjNTbrh66brGDq5+lE8pf0KwIg2vDVuR872L+pNNYc2fTf515t+zL35yNVT8mScZ2PwEjZ8q/ZyHJEQtTben3FC8qB6/1hqb4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=EbZ42QRB; arc=none smtp.client-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="sokPQbvy"
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20251208084254euoutp01453174bc27a81f715c71ad69a0abb3ce~-MO1MVqZs1609816098euoutp01j
-	for <iommu@lists.linux.dev>; Mon,  8 Dec 2025 08:42:54 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20251208084254euoutp01453174bc27a81f715c71ad69a0abb3ce~-MO1MVqZs1609816098euoutp01j
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1765183374;
-	bh=T6fMj6wQdFxoPUUn1ui66kl2k9P9jKCOqLNa+VtcJJY=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=sokPQbvyTRtiwz597c+7YwJWoR7Z2XfH/M0FTZ8EfwBAfuHJkgs8q7iLztVNQ/wiA
-	 Vu48EGbdXAS9cxngxWusjhAfcqijNmpdl1dGvSZKlNv0mJoYwaEMVadZ8J32ua1aIi
-	 niWo97H3Qt7oTed1ZWWT43hBHiliAEqn4Wmdf2X4=
-Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20251208084254eucas1p1e9ccc5b773207bdb23c67fcfa4966f0b~-MO090TkX2957329573eucas1p1N;
-	Mon,  8 Dec 2025 08:42:54 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20251208084253eusmtip160ec3c0f7073bb5840ab3236c0a88620~-MO0cPnxH1395513955eusmtip1g;
-	Mon,  8 Dec 2025 08:42:53 +0000 (GMT)
-Message-ID: <5e5ad7e3-583e-4329-be7a-391b5ddeff08@samsung.com>
-Date: Mon, 8 Dec 2025 09:42:52 +0100
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="EbZ42QRB"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1765185550; x=1796721550;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=GeZc+JbeoBfQkr1X46S+38EEUrtPPrHmuVsh+DemyCc=;
+  b=EbZ42QRBCK2cPXSil77Ar8OPNRWgp5Ecg4Q4k1VOwoRkbJ+nQp8lzXbv
+   VYmWxwuYNmcfvAZUEvKawmdRU/v68OnNlPTpVcEecykqtyBuiPcvhkEs0
+   QVg4DpHGqAuQE+mXwmGTesUzhqSu++K1NFpQANyOKqud1waEeLzBmVLxB
+   uvkTRkehJN8IiQ8q5pkT+iPoSYs569tNF9esqPXoUYgN9VyAOOBmCdtxE
+   YYMO1q7zbK9BTyqlpNocjDUWTg1sSuYyI7ZplLmHxT8C1lt9GqII5m0ZM
+   Z+X30Ch8ywzHsyVl6j0kL91tPwGIB3xvrxsvGS6Al4C9jvr0N9cvU3rPK
+   w==;
+X-CSE-ConnectionGUID: JYJfHZhrTiyPbethtKimgg==
+X-CSE-MsgGUID: 2ePQ8KD8T36B9BrrO/JEHA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11635"; a="84531037"
+X-IronPort-AV: E=Sophos;i="6.20,258,1758610800"; 
+   d="scan'208";a="84531037"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Dec 2025 01:19:09 -0800
+X-CSE-ConnectionGUID: bVF+sbCOTbiTvkwsYfXnAA==
+X-CSE-MsgGUID: CQad03VbTTiGV9wq0ZwfwA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.20,258,1758610800"; 
+   d="scan'208";a="226547347"
+Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
+  by orviesa002.jf.intel.com with ESMTP; 08 Dec 2025 01:19:09 -0800
+From: Yi Liu <yi.l.liu@intel.com>
+To: kevin.tian@intel.com,
+	baolu.lu@linux.intel.com
+Cc: joro@8bytes.org,
+	yi.l.liu@intel.com,
+	iommu@lists.linux.dev,
+	jgg@nvidia.com
+Subject: [PATCH] iommu/vt-d: Flush piotlb for SVM and Nested domain
+Date: Mon,  8 Dec 2025 01:19:07 -0800
+Message-Id: <20251208091907.74719-1-yi.l.liu@intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH 6.18 regression fix] dma-mapping: Fix DMA_BIT_MASK()
- macro being broken
-To: Hans de Goede <johannes.goede@oss.qualcomm.com>, Robin Murphy
-	<robin.murphy@arm.com>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, Sakari Ailus
-	<sakari.ailus@linux.intel.com>, James Clark <james.clark@linaro.org>, Nathan
-	Chancellor <nathan@kernel.org>, stable@vger.kernel.org
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <20251207184756.97904-1-johannes.goede@oss.qualcomm.com>
-Content-Transfer-Encoding: 7bit
-X-CMS-MailID: 20251208084254eucas1p1e9ccc5b773207bdb23c67fcfa4966f0b
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20251207184804eucas1p239087e232b3f09f8617bf6b1daf51ea5
-X-EPHeader: CA
-X-CMS-RootMailID: 20251207184804eucas1p239087e232b3f09f8617bf6b1daf51ea5
-References: <CGME20251207184804eucas1p239087e232b3f09f8617bf6b1daf51ea5@eucas1p2.samsung.com>
-	<20251207184756.97904-1-johannes.goede@oss.qualcomm.com>
+Content-Transfer-Encoding: 8bit
 
-On 07.12.2025 19:47, Hans de Goede wrote:
-> After commit a50f7456f853 ("dma-mapping: Allow use of DMA_BIT_MASK(64) in
-> global scope"), the DMA_BIT_MASK() macro is broken when passed non trivial
-> statements for the value of 'n'. This is caused by the new version missing
-> parenthesis around 'n' when evaluating 'n'.
->
-> One example of this breakage is the IPU6 driver now crashing due to
-> it getting DMA-addresses with address bit 32 set even though it has
-> tried to set a 32 bit DMA mask.
->
-> The IPU6 CSI2 engine has a DMA mask of either 31 or 32 bits depending
-> on if it is in secure mode or not and it sets this masks like this:
->
->          mmu_info->aperture_end =
->                  (dma_addr_t)DMA_BIT_MASK(isp->secure_mode ?
->                                           IPU6_MMU_ADDR_BITS :
->                                           IPU6_MMU_ADDR_BITS_NON_SECURE);
->
-> So the 'n' argument here is "isp->secure_mode ? IPU6_MMU_ADDR_BITS :
-> IPU6_MMU_ADDR_BITS_NON_SECURE" which gets expanded into:
->
-> isp->secure_mode ? IPU6_MMU_ADDR_BITS : IPU6_MMU_ADDR_BITS_NON_SECURE - 1
->
-> With the -1 only being applied in the non secure case, causing
-> the secure mode mask to be one 1 bit too large.
->
-> Fixes: a50f7456f853 ("dma-mapping: Allow use of DMA_BIT_MASK(64) in global scope")
-> Cc: Sakari Ailus <sakari.ailus@linux.intel.com>
-> Cc: James Clark <james.clark@linaro.org>
-> Cc: Nathan Chancellor <nathan@kernel.org>
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Hans de Goede <johannes.goede@oss.qualcomm.com>
-Applied to dma-mapping-fixes branch. Thanks!
-> ---
->   include/linux/dma-mapping.h | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-> index 2ceda49c609f..aa36a0d1d9df 100644
-> --- a/include/linux/dma-mapping.h
-> +++ b/include/linux/dma-mapping.h
-> @@ -90,7 +90,7 @@
->    */
->   #define DMA_MAPPING_ERROR		(~(dma_addr_t)0)
->   
-> -#define DMA_BIT_MASK(n)	GENMASK_ULL(n - 1, 0)
-> +#define DMA_BIT_MASK(n)	GENMASK_ULL((n) - 1, 0)
->   
->   struct dma_iova_state {
->   	dma_addr_t addr;
+For SVM and Nested domain, needs to use piotlb invalidation descriptor.
 
-Best regards
+Fixes: b33125296b50 ("iommu/vt-d: Create unique domain ops for each stage")
+Signed-off-by: Yi Liu <yi.l.liu@intel.com>
+---
+ drivers/iommu/intel/cache.c  |  3 ++-
+ drivers/iommu/intel/iommu.h  | 10 +++++++++-
+ drivers/iommu/intel/nested.c |  2 +-
+ drivers/iommu/intel/svm.c    |  2 +-
+ 4 files changed, 13 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/iommu/intel/cache.c b/drivers/iommu/intel/cache.c
+index 265e7290256b..bf6ebf7c4ca5 100644
+--- a/drivers/iommu/intel/cache.c
++++ b/drivers/iommu/intel/cache.c
+@@ -370,7 +370,8 @@ static void cache_tag_flush_iotlb(struct dmar_domain *domain, struct cache_tag *
+ 	struct intel_iommu *iommu = tag->iommu;
+ 	u64 type = DMA_TLB_PSI_FLUSH;
+ 
+-	if (intel_domain_is_fs_paging(domain)) {
++	if (intel_domain_is_fs_paging(domain) ||
++	    intel_domain_is_nested_paging(domain)) {
+ 		qi_batch_add_piotlb(iommu, tag->domain_id, tag->pasid, addr,
+ 				    pages, ih, domain->qi_batch);
+ 		return;
+diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+index 3056583d7f56..3b655af211a9 100644
+--- a/drivers/iommu/intel/iommu.h
++++ b/drivers/iommu/intel/iommu.h
+@@ -1379,10 +1379,18 @@ struct context_entry *iommu_context_addr(struct intel_iommu *iommu, u8 bus,
+ extern const struct iommu_ops intel_iommu_ops;
+ extern const struct iommu_domain_ops intel_fs_paging_domain_ops;
+ extern const struct iommu_domain_ops intel_ss_paging_domain_ops;
++extern const struct iommu_domain_ops intel_svm_domain_ops;
++extern const struct iommu_domain_ops intel_nested_domain_ops;
+ 
+ static inline bool intel_domain_is_fs_paging(struct dmar_domain *domain)
+ {
+-	return domain->domain.ops == &intel_fs_paging_domain_ops;
++	return (domain->domain.ops == &intel_fs_paging_domain_ops) ||
++	       (domain->domain.ops == &intel_svm_domain_ops);
++}
++
++static inline bool intel_domain_is_nested_paging(struct dmar_domain *domain)
++{
++	return (domain->domain.ops == &intel_nested_domain_ops);
+ }
+ 
+ static inline bool intel_domain_is_ss_paging(struct dmar_domain *domain)
+diff --git a/drivers/iommu/intel/nested.c b/drivers/iommu/intel/nested.c
+index 1b6ad9c900a5..cc755af1bd6b 100644
+--- a/drivers/iommu/intel/nested.c
++++ b/drivers/iommu/intel/nested.c
+@@ -191,7 +191,7 @@ static int intel_nested_set_dev_pasid(struct iommu_domain *domain,
+ 	return ret;
+ }
+ 
+-static const struct iommu_domain_ops intel_nested_domain_ops = {
++const struct iommu_domain_ops intel_nested_domain_ops = {
+ 	.attach_dev		= intel_nested_attach_dev,
+ 	.set_dev_pasid		= intel_nested_set_dev_pasid,
+ 	.free			= intel_nested_domain_free,
+diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+index e147f71f91b7..75b9475c33dd 100644
+--- a/drivers/iommu/intel/svm.c
++++ b/drivers/iommu/intel/svm.c
+@@ -194,7 +194,7 @@ static void intel_svm_domain_free(struct iommu_domain *domain)
+ 	mmu_notifier_put(&dmar_domain->notifier);
+ }
+ 
+-static const struct iommu_domain_ops intel_svm_domain_ops = {
++const struct iommu_domain_ops intel_svm_domain_ops = {
+ 	.set_dev_pasid		= intel_svm_set_dev_pasid,
+ 	.free			= intel_svm_domain_free
+ };
 -- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+2.34.1
 
