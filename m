@@ -1,128 +1,228 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from CO1PR03CU002.outbound.protection.outlook.com (mail-westus2azon11010052.outbound.protection.outlook.com [52.101.46.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E3A818C03F;
-	Mon,  8 Dec 2025 04:57:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765169829; cv=none; b=mAxzKlsfVPj0xmo5wKI5El6SIoFMG9hkuMNWWnBacGo+eJYkRfx+es65cyKV8vLT0doTytChOvCkxAN+p+WB2EZu6MS5IzUj59kL8b4YRQhueFs0DKaSqAtRx8v43SJzP2l4O1z3EmwBUMLcI2CZhFq+Pxde1DRV045mCqVfTAw=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765169829; c=relaxed/simple;
-	bh=xuk1x3cM1pCdWbxqhMrjLzla1U2Mr1+istzyWxr1IYE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=t+ohhxJcHEDP+P1I7WMeh2CeDTokDb2mnsJhTCvKr+KD2OC46E5cVsOHsEReyYbIfpLd+3wgT/k8C+gMiZanF77jaNfHEez85Hyne/UPaV9h4DEMkWjIwhFswtwbV3b812ThVHahXpyVU477Op+GCNHVJ3+lYKRnoMbO0cQ6Jps=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=u+OtRe8B; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6ECC081ACA
+	for <iommu@lists.linux.dev>; Mon,  8 Dec 2025 05:11:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.46.52
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1765170688; cv=fail; b=NJO5EvHWFaSDEdvJShtI2YDSGXGA/5Guto7/Af+x5wDeDptGbaYADSvLEqP28R88kauIIFbp9UFw+5p5fT8T2asmEbmyifYbv+l7yv1a7aJETSO+KE+N3Cl93+oysNnP8Juv0tjUMw2uzjJMFpUdDQFgqVVdVIz4lP2ipRYMb7c=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1765170688; c=relaxed/simple;
+	bh=cpiHmnzeO+Nu8SHH/aGSgHpotDxP7bOv75tYTuw5Okk=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=A9HI2xHsD9NM5EDRmqik4bnMPVkzQGyJ3MdS5sYzPpzCfnhe5i3XUKLqf5Md4Y9Jih3sEycVRQTg4XLWTmYyrHW1VoFDAvfbyYC2z4SXohG2QGGXJV4W0ALNoVR8rMNudAZuJ80h1mSpJ2Dix/XVYOB9eGCrDTyr1qY58fNEmj0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=Is6/i3je; arc=fail smtp.client-ip=52.101.46.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="u+OtRe8B"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 794C6C4CEF1;
-	Mon,  8 Dec 2025 04:57:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1765169828;
-	bh=xuk1x3cM1pCdWbxqhMrjLzla1U2Mr1+istzyWxr1IYE=;
-	h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-	b=u+OtRe8B3EXskeWcLc7LRZhG7xojTI8PV+eJJbTiX2egQRMaSnLH12DipuhPIP1px
-	 m41sLtKM3D4MIa64PW8kCRDFLU1pigIusBA3r9QX9uD4DJWFjAYWRhfEwEo1wC+FdW
-	 8eZa0hle0WP+bnAN78JlIakxmx4FHWa1SWGgW0ha+MStlQG5zJDnaY2Bay2p7BCW9f
-	 P7cXWp2njoIRNNo2Zv3T1JEON4n/frn0OEjSWLDLiyB/+sgnjYduGe+++uHfWmXekZ
-	 hZYBT/Ay1URa7q90EIflXzL/jzJpGryiLjtnTxHpbueGEDGkOEgQHn9ow/1EoTr+m7
-	 bUvWj1J3ox9Xw==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-	id 4DB96CE0E29; Sun,  7 Dec 2025 20:57:02 -0800 (PST)
-Date: Sun, 7 Dec 2025 20:57:02 -0800
-From: "Paul E. McKenney" <paulmck@kernel.org>
-To: Borislav Petkov <bp@alien8.de>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	linux-kernel@vger.kernel.org
-Subject: Re: amd iommu: rcu: INFO: rcu_preempt detected expedited stalls on
- CPUs/tasks: { 0-.... } 8 jiffies s: 113 root: 0x1/.
-Message-ID: <de21f62b-c246-4ff7-9825-600fe19af28a@paulmck-laptop>
-Reply-To: paulmck@kernel.org
-References: <20251126143219.GBaScPc1b6RAC9ZfCv@fat_crate.local>
- <20251126152637.GDaSccLZVBEOs20n6T@fat_crate.local>
- <17147c98-9f0d-45d0-9593-3ede27ba6135@paulmck-laptop>
- <20251203124422.GBaTAwpmOzChS2MDhX@fat_crate.local>
- <cb2785d6-ee19-4277-9906-d287341c7698@paulmck-laptop>
- <20251204144505.GCaTGecavu-E56OR8V@fat_crate.local>
- <d90a3959-eacd-495e-99cd-836d07955912@paulmck-laptop>
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="Is6/i3je"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=tST1cmoKKQDe894uU3C2cXppDoH6BMQrHVnxf+sstzOUw/34YAWoDZWzCU3OSZu7XAzPJeWBzOm2HTVfDMeyVt9tOZL4NnUmRb+ddLyPzL6xs+lHahV9qK3jwnvAj1vGPHpCKLUw1fDQxInHuexb4iA9ete44fWcSsxyzC4uM2F73gphyeyrnvokjWRtSjMEh9+UXnmzPzF8sDiF/v0uTClQnvzAOyYzHxAGkAkjcLNgKioQnRrD0Nf1E+mxu0APg1pxdzNvRknx9uTDaMYMeo1T6tBtLdfZhRr7Vj/77h37Dmi6kzgYQ6HPfig1iw89Y6tzNpchQ1cu1c/0wTR20g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=8YezZs/LhDYfdftevKtQCTF0gGJpqM9+W1nY2XtHxzA=;
+ b=YpVFf00Bp3fZAvyS/TGJNKLBhRGZpgYYQYUV7vDSOxP1Zu+UXhlMJ3EVHcyHfE2OOhZ/mROGaSELod4+wY3Ww5vLmU0SmbvlZ5AeCK3y4KPgqyhcGOMpQ34c335blmysc18dbcLEf8/hOlGEvsO6zxhUgnhQ7BIoo5cgENu5K0Pip4Tq8M00i2aBMi+Fkcf1CjzGtrBXx3jRkrq2H/G5t9xohiqwKVHP4RSZ5torSf7Bz/SQTT1zstPBltcTvbKFnK540aVM++RC2u4MexhSQW1+LNfQyx14UtJr5Q4xSRcTcVyV0P2kj/Hm/YVd7i7lCNwgbepUNrvJjWfHto4wkQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8YezZs/LhDYfdftevKtQCTF0gGJpqM9+W1nY2XtHxzA=;
+ b=Is6/i3jekABRjf26F4c82PlliTET7G7/W2vQ0Ht4579t+Uruz/yAei1rJCcSXNk8OUKulhUwHIQ+fnzGbwyJqHBdU6fmEMkO5qxHRHjbR3IHH4PlOLbkC1Hu5p9g8RtwyLqkQ5e7fcoSBnliVOLYqYb98byg5bkx7abL/OIraMA=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
+ PH7PR12MB7793.namprd12.prod.outlook.com (2603:10b6:510:270::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9388.9; Mon, 8 Dec
+ 2025 05:11:23 +0000
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::a5e0:9d7e:d941:c74d]) by DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::a5e0:9d7e:d941:c74d%7]) with mapi id 15.20.9388.003; Mon, 8 Dec 2025
+ 05:11:23 +0000
+Message-ID: <1919c5c9-c8c9-45b5-9ea3-96499309c931@amd.com>
+Date: Mon, 8 Dec 2025 10:41:17 +0530
+User-Agent: Mozilla Thunderbird
+Subject: Re: Seeking help on AMD IOMMU unmap logic
+To: =?UTF-8?B?5byg5YWD54CaIFRpbyBaaGFuZw==?= <tiozhang@didiglobal.com>,
+ Alejandro Jimenez <alejandro.j.jimenez@oracle.com>
+Cc: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "zyhtheonly@gmail.com" <zyhtheonly@gmail.com>
+References: <ACD20C23-EAD7-413B-9B21-56FBC35EA5BF@didiglobal.com>
+Content-Language: en-US
+From: Vasant Hegde <vasant.hegde@amd.com>
+In-Reply-To: <ACD20C23-EAD7-413B-9B21-56FBC35EA5BF@didiglobal.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: PN3PR01CA0084.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:c01:9a::10) To DS7PR12MB6048.namprd12.prod.outlook.com
+ (2603:10b6:8:9f::5)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d90a3959-eacd-495e-99cd-836d07955912@paulmck-laptop>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|PH7PR12MB7793:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3265eda0-2bd1-4d15-53e1-08de36183acb
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?V3AvRTJhREM2TzRjQmdGVFZzNGFHc0g1bWY2dGNIakZidk1kaWV3REFlMjBD?=
+ =?utf-8?B?Qk1yR25QS3E2Yk5ORFFaTDFoa1pTaU1tUDNaVWRYdFhRYlorRGxOY2RGOEkv?=
+ =?utf-8?B?RDh1d2w2UWdSWG93NzRvTUtTR0ZZZjRyUEQwa2lWbDJlMkVlQTducTFNWG9R?=
+ =?utf-8?B?OHhzTlJuTS9GZWJudkExL2ZsYWdVNFJOK1Y4eG5DeTdLMk9UamJRdEVPVkZC?=
+ =?utf-8?B?ck4ycFhoT25FUG1sUHRuM1FpM2MzbHVjTHp2TGRadEp5dTBrSTZ2M2pMT0kx?=
+ =?utf-8?B?bE1aaXY3UmFySGpVWFFzbVJoL1BVdW9lTXBqSE5La29WNkdDZzRYSDVIUzN3?=
+ =?utf-8?B?Y1FnZUg2YnNla3Z5Zm94TmZOcmtVT3lJR08ySFRjenJnVjE4WllEbUdVbzhH?=
+ =?utf-8?B?QWhwZ05FUnlDL1BxVWVpRG95RjhJQyt5Vzg0azUwbVNGZzgxNXoxcGxQbjZo?=
+ =?utf-8?B?QXpHZXF6K04vdmRpZWJBQTVPMmtLRDNlb0RGamNndnNsemNSWXU5MG9iTkJj?=
+ =?utf-8?B?WXJ6RVZkTW90UU1EbGtQak53cUdHVTNTeHYwL0R0QnpTOG9ETUlUeDJWeHB4?=
+ =?utf-8?B?WlhFNHFlRkhvR2ZHa3FEZXlPTFZNdVpVeERwcGxURElCUDlKbnc0cWNZK2Q1?=
+ =?utf-8?B?WkV4RnpFV3UxazhpVjVOWkRNRW5HYkVhUXN2dERZbmxENTg4ZUVpaFRYSGNI?=
+ =?utf-8?B?QkxJTlNnTSs4aUNJanhBQ0tsV2FYRUhhZ1JNbm5LNFpaK3EzUG9XcHZmVHFO?=
+ =?utf-8?B?alNGSXhHZ2tqbDdNMmNGZlZxVHdUaVpYRnBwTmNVODcraDR3dlZHMTlOd2lV?=
+ =?utf-8?B?MC93Y3l4YUJmUXdSUHRIYWMyb3NjVW1aU2VqaDJ0eXJTbWE4ZHRKMm9yTEZ1?=
+ =?utf-8?B?dzdTcXJUc0plTUh3dHFuL0dneDMrc1pYbVZDem95VjlCY0FINXZtTTBHRy9R?=
+ =?utf-8?B?aWs1TlZuSU1LQnJwUVcwdGJzMHBDMlBpVWg3djNxUlo2cTcvRFk1LzBGWXh1?=
+ =?utf-8?B?WWdWa25OVGdiclVkam1SNjU3Q2NOamFDeGw4TjliYzJJNXdGSHl3ZnRoMWN0?=
+ =?utf-8?B?Nm5ZRVAwNHloRjNiVTdiZVFFVGpnVnZ1a3Zuc1BHNHF5ZVVkZmE1ODFDeHh2?=
+ =?utf-8?B?TGZ6SUcrL3Nqc2ZiRjRkdUh3YzZEQXZCemxIaVUvNXlabGtQd0tlWjQzQVRM?=
+ =?utf-8?B?YUpqcXVpUytneTFlZFVpRzN4VHc3RytyWnREOG10VVdYaTB3OGI1eHAwWEZw?=
+ =?utf-8?B?LzFpOEJsZDVxcmJQbzg1Yld2Y0ZsYXpPcGErdzBpQ0J1dDMzTUhRVjlPZ1ZQ?=
+ =?utf-8?B?WU9BWXVEaFUrMlBwbGFyZW5CNTVlUEZ1VldmQWppM3crblRqRmc1TkxTYlBk?=
+ =?utf-8?B?dC96N2xFZHRrNU8vS3hzWHF3SkJJYWRNRGRFZE1nSG84bEhITWloZTI5Zit5?=
+ =?utf-8?B?ejN0dFM3b09oTVMySXZvWXRJVG9PcGpQWDI5QzkzRlJYdWh4cUYvWnl0Y09C?=
+ =?utf-8?B?d1BneDh6dzV1QXJhMjNrb1JqTFNidys4NVkzZE9JOVNCcDVoN0w1Ly9BVmlF?=
+ =?utf-8?B?bUZ3amZJMTA4QnFBTE9DVUpTd1JBY2JIUEpMUWF0bEZpV2poeU5xc2xqUGlV?=
+ =?utf-8?B?cllaSGNZVElNM3JXYmlaSEFCUksyZjU1eWVPRUdITm1RMDdCVGE1RHg5bmR4?=
+ =?utf-8?B?WWdMK2R4ZjhRaXdHOUZFWjNNNXg3TytxRDJXd2lPNWhpSUh5WS9wNlBZK0Zl?=
+ =?utf-8?B?R0s1WkxwZEFLNFpSV0FOeERGd3Q3eXdRcDVOR2ZteWIvOHp5MEF6SFl4YXFN?=
+ =?utf-8?B?RkNRQXF3RENFWUs2bysxU3BQcXZoSE5rZmk0TVZrRVJiRkxvZ1lkc01nb2V5?=
+ =?utf-8?B?WkVhRXhObnRmMzhXVHJjMGJmeURsdmpCeWEyYjlXbzNPS2dFSTYyL2dtc3I3?=
+ =?utf-8?Q?qulZRayQkk/WsaXF9ML+N9PMCzON+jzl?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?RzdKbWZoTkRlUVhKcDdIOXZ6MlBhRDF5Zk4zTmtWU3lnS2RUNGVHNEVSbDhK?=
+ =?utf-8?B?a0ZpNWFyWmNRWTJ2b08yR0FQaHhjeHZzeDViNXgwa0ticGU0VTlNNW8xQkVZ?=
+ =?utf-8?B?L3V4U053V3g3NU5vL1hMZHVaOFQ5dmtjVWZFWklIR1FVT2NzVWNnVFFQekVW?=
+ =?utf-8?B?UGV1R0RLSlZqZ2dySDUrc3UyTDZkc3AwNjFsZnBFY3A2emx2c09hTlREc0lv?=
+ =?utf-8?B?ZkhjeWt4Rm5lZXVMcTNOeEg4V0hGT3ZraGtkMWtIcy9lK3J6bk96bmpUMC9v?=
+ =?utf-8?B?Zkdack1DbmtieUR2YTJlemNiV2QzdHA5YlpLN09yWDJNMVU3NHhKOUhJN3Nk?=
+ =?utf-8?B?SUhBSzR5Z3hVTzZJNjd0RExJZkVWaEtwd1cxeTBTTm5zR0svZzdQOEU2Yy9j?=
+ =?utf-8?B?Zm05OHUyd2dpbWJYYW14SGdYOXc1SlZtOUJwQnJxb3lCTXJRUUh1YTJSclE3?=
+ =?utf-8?B?dkRLWGppUGgyVnp1bC8yM0xoQ2ZoWngwMWhPMGlJaDY3NFMvZE1JYlA5cCt4?=
+ =?utf-8?B?eWtvVW9RVDM0NTdZdzZ0OEFTUHNVMnptSmhmZ0RxT1FxOVhFZlBRT2pwV2dS?=
+ =?utf-8?B?S0YrMGlvUy9ybHRSRmJaaW1QTWdnYWRTaWhBb1RDVUVJVHhkWHlkS3g1c2RD?=
+ =?utf-8?B?OE9wemdBekhScGhMTHBILzFGb2RLb0JpZUNaVU05UDc0TzZZR0FLNlIvNjZl?=
+ =?utf-8?B?Nmg5VGY2RzIrY2NVN2FLNWVhSU1DNjQrNExnclVXRThEbmpwalhJalIwQ05l?=
+ =?utf-8?B?SmdNTUxGRE15M1dHeU5RcFhtVWdWblh3UDJhZDZvaGI5N3RsamFnYzgwMjdo?=
+ =?utf-8?B?Z3R1VEdYRFkzYkNWZW5PVnBtemVheVErUkthWlVTZGt0VlBad0pVT1gydlNl?=
+ =?utf-8?B?UlJxQ3dSdU1PQjIzVGhjVE5FajQzMTczYmtkcXdpMyttZGFFRkVIQUFBaVRq?=
+ =?utf-8?B?Z0piUlNpK3d5akNxZ0F5Q2xTcG1WajNvTmkxU1RtNXR6NjdFeDkwUkIxeUZp?=
+ =?utf-8?B?aU9OTWZmNk5GWmROOE5ZamU5V1hMdGtBTWljcjZrSVE1S0JWTnNDZDM5ODN6?=
+ =?utf-8?B?VTBsSzZzb0VRV0drKzJLMWFKKzUvNWV1ZjNJcVhvamJaTmMrZXBnRVRwYnVY?=
+ =?utf-8?B?MjJHeDM1RDY3Q2ROM3pXODYrc0hHTmJIemZ4SHpyN3JEb0JYOHFaLzd0K0Zs?=
+ =?utf-8?B?N2hUS1c2UFJpdUhGVkNFREszb1lTRE5KaUxSQk9IbmpCYjBiN1FBUkNpWnNO?=
+ =?utf-8?B?bjRhK2JzZmh5TDU4OGZYQjhFVEhPdlN0WkVaSEhsUER2OGFlam5TaVJ2L2ZR?=
+ =?utf-8?B?WmlpMHBlREpUSzdKTTBDc1paZVh6UEk2ZlQ4UjhYUFhEZGp0ZmJBYllQQnRn?=
+ =?utf-8?B?UVlramh5RnViRlROWnBHcnVEVmFPR0RadkFjSWU3RXVuaXF1cnV1NkY5Nndz?=
+ =?utf-8?B?dGVHTk1XMzYwU2FoemFXdkNJR1dHeXRLWlJnVDNXTTZHbGRvYlFkUzYySU5F?=
+ =?utf-8?B?dlgvTWtMaHZvT2lTSWlLSlpralJUNFVtUXliL3JuRkpKQjNkZEF0WGlJS2lK?=
+ =?utf-8?B?WTJjNFVSUVVMSnVqSThaYUQyWnhhQ2NPVHNYcC9rMHBheXp1U3JSSnl5Qi9a?=
+ =?utf-8?B?TjMwWDdWZy9NYmNRV3VXbStiUnFhelJhTjFMOHczK3NJMFluOHlrL0I2K3g4?=
+ =?utf-8?B?b1lQSE9FODJ0L0RSQUhnbGlhY1BXUjdnRDY3WUtkWTZWeEZxMUV4bzZvTzB3?=
+ =?utf-8?B?Y0ZNQ1JyQUJwSDh4d2xaNXoxc1d5YUZ5VlVwYURLYjMrK1ZkTjAvWXFLQWta?=
+ =?utf-8?B?ZEI0VW8yd0VWUHBWN1lMZC9NUDVFaTdtT01MdzE5TUxBSGIvT3UzVkZHVElz?=
+ =?utf-8?B?d1g5bWZTL095bTBXWDNEbS9IMTExSEdhemtzNkhnellMeStpdkZ4MEhRRmdw?=
+ =?utf-8?B?WVB5emQwOEVYV3dqTzAwWWFEZjh3VWY5bHU3YnB4UDNzdHZULzlmK0JocjNp?=
+ =?utf-8?B?ODdNcVgvQzRROXA5Y3d1S3ZZZWtwSURwQ0Z1elY0aEQzWmp3RzMyeFJuNnNY?=
+ =?utf-8?B?NG1HbW5GaUljdFJrdVRIMlJzME5TeGNzSzh5azFob3M2OEZNTnh5K2xteVRI?=
+ =?utf-8?Q?ZZQquinrm5rPIZWogh2IWVTVa?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3265eda0-2bd1-4d15-53e1-08de36183acb
+X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Dec 2025 05:11:23.0842
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 9ccPU421qvO1eKnpD7Pefg/WPjXA6XYjmUFt6arB0cx//eGr2PHLvDjX+9VxVFALD4zJXHLYERjPzN+tiWoZ6w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB7793
 
-On Thu, Dec 04, 2025 at 12:42:52PM -0800, Paul E. McKenney wrote:
-> On Thu, Dec 04, 2025 at 03:45:05PM +0100, Borislav Petkov wrote:
-> > On Wed, Dec 03, 2025 at 09:16:37AM -0800, Paul E. McKenney wrote:
-> > > Or to some value that works for you.  But if you are not looking to be
-> > > an expedited RCU CPU stall-warning pioneer, yes, setting it to zero is
-> > > a good approach.
-> > > 
-> > > If you would like to be a more sane pioneer, setting it to (say) 11000
-> > > (or 11 seconds) could be appropriate.  But what fun is sanity?  ;-)
-> > 
-> > Oh, I have a lot of excitement even without RCU experiments. :-P
+Hi,
+
+On 12/5/2025 3:07 PM, å¼ åç Tio Zhang wrote:
+> Thank you all for replying this!
 > 
-> ;-) ;-) ;-)
+>> On 12/2/25 11:48 PM, Vasant Hegde wrote:
+>>> Hi,
+>>>
+>>>
+>>> On 12/3/2025 8:19 AM, 张元瀚 Tio Zhang wrote:
+>>>>
+>>>>
+>>>>> 在 12/3/25 上午10:25，“Vasant Hegde”<vasant.hegde@amd.com <mailto:vasant.hegde@amd.com>> 写入:
+>>>>
+>>>>
+>>>>> Hi,
+>>>>
+>>>>
+>>>>
+>>>>
+
+.../...
+
+>>>>
+>>>>> You mean BUG_ON ?
+>>>>
+>>>> BUG_ON and the logic of "Also if fetch_pte() returns NULL then return from unmap_mapages()
+>>>> instead of trying to continue to unmap remaining pages." :)
+>>>
+>>> That's because there is no point in continuing if some unmap fails.
+>>>
+>>> Wild guess, you may want to backport Commit  1e56310b40fd2e7 as well.
+>>>
+>>
+>> FWIW, recommending this backport was my initial reaction when I read
+>> that the BUG_ON() on iommu_v1_unmap_page() was being hit.
+>>
 > 
-> > But if you need me to try things, lemme know.
-> > 
-> > For now I've simply reset the values as to what defconfig sets them to:
-> > 
-> > CONFIG_RCU_CPU_STALL_TIMEOUT=21
-> > CONFIG_RCU_EXP_CPU_STALL_TIMEOUT=0
+> From my crash dumps, when the last "fetch_pte()" called in "iommu_v1_unmap_page()"
+> values of "level" are 3 or 4
+> and "pte" is NULL.
 > 
-> Sounds good, and thank you!
+> I'll give a try on this backport.
 
-But this turned out to be too simple to fail to address (famous last
-words!).  Please see below.
+Yes. Backport previously mentioned commit and test it out. It should fix the
+problem.
 
-							Thanx, Paul
+> 
+>> The original message suggests that the issue is easily reproducible ("my
+>> machines"), so I wonder what kind of workload/setup can trigger this,
+> 
+> It's our production machines, about algorithm for self-driving.
+> Like I said above, both (cpu/mem/net/disk-io) have some load but none of them is especially heavy.
+> 
+> It reproduced / 3 times on different machines / in total 100+ machines / in about 4 months
+> One is in module "usb" and the other two are in module "nvme".
+> 
+>> because the race should be quite rare given that it would only happen
+>> during a call to increase_address_space().
+> 
+> I'll edit then hook "increase_address_space()" in some of machines and find out its calling frequency
+> in returns later.
 
-------------------------------------------------------------------------
 
-commit 9776d62e236bef99859e9067f540aa6f6683b432
-Author: Paul E. McKenney <paulmck@kernel.org>
-Date:   Sun Dec 7 20:49:35 2025 -0800
+If you backport patches then I don't think you need to edit this code path. It
+should fix the issue for you. Since its 5.15.x kernel, you may have to manually
+apply the patch.
 
-    rcu: Make expedited RCU CPU stall warnings detect stall-end races
-    
-    If an expedited RCU CPU stall ends just at the stall-warning timeout,
-    the current code will print an expedited stall-warning message, but one
-    that doesn't identify any CPUs or tasks causing the stall.  This is most
-    likely to happen for short-timeout stalls, for example, the 20-millisecond
-    timeouts that are sometimes used for small embedded devices.  Needless to
-    say, these semi-empty stall-warning messages can be rather confusing.
-    
-    One option would be to suppress the stall-warning message entirely in
-    this case, but the near-miss information can be quite valuable.
-    
-    This commit therefore detects this race condition and emits a "INFO:
-    Expedited stall ended before state dump start" message to clarify matters.
-    
-    Reported-by: Borislav Petkov <bp@alien8.de>
-    Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+-Vasant
 
-diff --git a/kernel/rcu/tree_exp.h b/kernel/rcu/tree_exp.h
-index 6058a734090c1..fd02cd12b7980 100644
---- a/kernel/rcu/tree_exp.h
-+++ b/kernel/rcu/tree_exp.h
-@@ -589,7 +589,12 @@ static void synchronize_rcu_expedited_stall(unsigned long jiffies_start, unsigne
- 	pr_cont(" } %lu jiffies s: %lu root: %#lx/%c\n",
- 		j - jiffies_start, rcu_state.expedited_sequence, data_race(rnp_root->expmask),
- 		".T"[!!data_race(rnp_root->exp_tasks)]);
--	if (ndetected) {
-+	if (!ndetected) {
-+		// This is invoked from the grace-period worker, so
-+		// a new grace period cannot have started.  And if this
-+		// worker were stalled, we would not get here.  ;-)
-+		pr_err("INFO: Expedited stall ended before state dump start\n");
-+	} else {
- 		pr_err("blocking rcu_node structures (internal RCU debug):");
- 		rcu_for_each_node_breadth_first(rnp) {
- 			if (rnp == rnp_root)
