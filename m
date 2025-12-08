@@ -1,107 +1,157 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from out30-99.freemail.mail.aliyun.com (out30-99.freemail.mail.aliyun.com [115.124.30.99])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0272243954;
-	Mon,  8 Dec 2025 03:25:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4841E23D7FB
+	for <iommu@lists.linux.dev>; Mon,  8 Dec 2025 03:43:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.99
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765164350; cv=none; b=A55L1wKmxIfoNw9YiW5Zl8BEWSEVAskseUXrgyinAh4auwrcki8nkHd3x6aDTFEsfhyLyngKFXyUl0XNUlDDfRIQNaB2zOsRQY+EV0mMBmmRQWwJGu+5d78EkaO549yQXNGrl2wxhOvxwfvE/0Qt8TTBcpg+Lm2ikaJGsiJVxus=
+	t=1765165435; cv=none; b=bbZ2prq0dw5Otj0sJoKMOyYvawyR+9BYKjE0lujzYf5wk4STHF55mhp2w8ersTM7oBNq5Fl918FL3kCWR+pFvFtwWN6ur4mq8DtIgEYnrtUuutRr4upKwdQ/L4l0le4MbfTSQ6SDWZ3QJQmiYyuBcD5bOVHIN8Me/qgr7uv8qB0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765164350; c=relaxed/simple;
-	bh=JbduDDkLQ46io1rnDf0vXzxeQyYTvj1xom1cGE2Q18U=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Ryca3D+Ex0dSKf6ZCjPycb75G62Qw4WC4c8l/CKIKeDm3KWxEWKpL+JpTX9Ww4Qhm9kz8ZY8xCwoAo4tR0Gj/+70XpDyBTzI6/MjmVLeLOIKUj/1HZZnQazvxzGejlYgh47NhIBzm0l2kn+lK38XHzWpZOI8vPKe/D/yaUvYn8o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Un/IZLfQ; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1765165435; c=relaxed/simple;
+	bh=rqmI77ec8wv3IcTPEwmIm+kmXEMlDGRcVSQaweqUB6A=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=JjxPY7J5gTKseuuBgteBssNytbfNwUMi8so/CDQwOVDIClA9TUoy9p2f0fCRx0OE0kdi7xdZ3WOSdz+yGDELdT0hJnTOC7sJ2Z0VY97mYTVznTIWQhv6hxFCO+1lMlQUHVk0DfKzJ5G/Ojx07Om4jAfGAmg0HlX6/nT3thc0jn4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=pEFyCCeC; arc=none smtp.client-ip=115.124.30.99
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Un/IZLfQ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EADBEC4CEFB;
-	Mon,  8 Dec 2025 03:25:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1765164349;
-	bh=JbduDDkLQ46io1rnDf0vXzxeQyYTvj1xom1cGE2Q18U=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Un/IZLfQv9olPoJrI6TWqNgjbvpYgBOKTIBnL4oKy99jQ4uCu0eFmC6cQbk2+cBdp
-	 8XlfVRYM+9OCTO5JavQ1ZyZtvhbxjV8YeGtIJRH8XQlYrDTE0YCTbH6q0c/+xcQP/2
-	 kLTB4PDrlScRnH1Je1X8Wa3iKgWo2rzTgdXCYVeEcMuuUeViV3MjOJO+vo5GPm+SVh
-	 Eb4nI0S3+HsijkBXa1Ixq3mzDYocIxrlXXLZ2Ys3zjTGv9mAa6BTIyFf++DmsaSWDc
-	 4x/0aIZ9IBGFIoAExNbFYOEjovCdOkLgt+yIb37kao8OznttxW1xBVLXqdVCiAULp8
-	 s5A7n5F4DQPxA==
-Date: Sun, 7 Dec 2025 19:25:45 -0800
-From: Nathan Chancellor <nathan@kernel.org>
-To: Hans de Goede <johannes.goede@oss.qualcomm.com>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Sakari Ailus <sakari.ailus@linux.intel.com>,
-	James Clark <james.clark@linaro.org>, stable@vger.kernel.org
-Subject: Re: [PATCH 6.18 regression fix] dma-mapping: Fix DMA_BIT_MASK()
- macro being broken
-Message-ID: <20251208032545.GB1356249@ax162>
-References: <20251207184756.97904-1-johannes.goede@oss.qualcomm.com>
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="pEFyCCeC"
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1765165425; h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
+	bh=om5dsQvWzxASHszoSFGJ5FtUBquX+4l8f6iGkR80jFU=;
+	b=pEFyCCeC3HltJ+cA+JsFtWIlvNfwKNJRjb7Lje1OYP3ycIHE9PZphxFFuSg2CzFLiyDMtvltUqKnzPf+/DFnj4utAbnY5xhmNMi8U16SSFKC8npmHA5dzXy3xShYR6LyKQqOh1FsFvT6Uw/Cu0Pw1rP8QRzU5l0yq3HAzVEoOdA=
+Received: from 30.246.178.18(mailfrom:xueshuai@linux.alibaba.com fp:SMTPD_---0WuFEAl9_1765165423 cluster:ay36)
+          by smtp.aliyun-inc.com;
+          Mon, 08 Dec 2025 11:43:43 +0800
+Message-ID: <f52c705d-6032-4d85-b902-dd6d0a40b9ec@linux.alibaba.com>
+Date: Mon, 8 Dec 2025 11:43:41 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20251207184756.97904-1-johannes.goede@oss.qualcomm.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH rc v2 4/4] iommu/arm-smmu-v3-test: Add nested
+ s1bypass/s1dssbypass coverage
+To: Nicolin Chen <nicolinc@nvidia.com>, jgg@nvidia.com, will@kernel.org,
+ robin.murphy@arm.com
+Cc: joro@8bytes.org, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ skolothumtho@nvidia.com, praan@google.com
+References: <cover.1765140287.git.nicolinc@nvidia.com>
+ <b6d87901f89c05dd9e1d0c1e819040d205f569a7.1765140287.git.nicolinc@nvidia.com>
+From: Shuai Xue <xueshuai@linux.alibaba.com>
+In-Reply-To: <b6d87901f89c05dd9e1d0c1e819040d205f569a7.1765140287.git.nicolinc@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Sun, Dec 07, 2025 at 07:47:56PM +0100, Hans de Goede wrote:
-> After commit a50f7456f853 ("dma-mapping: Allow use of DMA_BIT_MASK(64) in
-> global scope"), the DMA_BIT_MASK() macro is broken when passed non trivial
-> statements for the value of 'n'. This is caused by the new version missing
-> parenthesis around 'n' when evaluating 'n'.
-> 
-> One example of this breakage is the IPU6 driver now crashing due to
-> it getting DMA-addresses with address bit 32 set even though it has
-> tried to set a 32 bit DMA mask.
-> 
-> The IPU6 CSI2 engine has a DMA mask of either 31 or 32 bits depending
-> on if it is in secure mode or not and it sets this masks like this:
-> 
->         mmu_info->aperture_end =
->                 (dma_addr_t)DMA_BIT_MASK(isp->secure_mode ?
->                                          IPU6_MMU_ADDR_BITS :
->                                          IPU6_MMU_ADDR_BITS_NON_SECURE);
-> 
-> So the 'n' argument here is "isp->secure_mode ? IPU6_MMU_ADDR_BITS :
-> IPU6_MMU_ADDR_BITS_NON_SECURE" which gets expanded into:
-> 
-> isp->secure_mode ? IPU6_MMU_ADDR_BITS : IPU6_MMU_ADDR_BITS_NON_SECURE - 1
-> 
-> With the -1 only being applied in the non secure case, causing
-> the secure mode mask to be one 1 bit too large.
-> 
-> Fixes: a50f7456f853 ("dma-mapping: Allow use of DMA_BIT_MASK(64) in global scope")
-> Cc: Sakari Ailus <sakari.ailus@linux.intel.com>
-> Cc: James Clark <james.clark@linaro.org>
-> Cc: Nathan Chancellor <nathan@kernel.org>
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Hans de Goede <johannes.goede@oss.qualcomm.com>
 
-Yeah, the parentheses definitely should have been kept.
 
-Reviewed-by: Nathan Chancellor <nathan@kernel.org>
-
+在 2025/12/8 04:49, Nicolin Chen 写道:
+> STE in a nested case requires both S1 and S2 fields. And this makes the use
+> case different from the existing one.
+> 
+> Add coverage for previously failed cases shifting between S2-only and S1+S2
+> STEs.
+> 
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 > ---
->  include/linux/dma-mapping.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>   .../iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c  | 61 +++++++++++++++++++
+>   1 file changed, 61 insertions(+)
 > 
-> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-> index 2ceda49c609f..aa36a0d1d9df 100644
-> --- a/include/linux/dma-mapping.h
-> +++ b/include/linux/dma-mapping.h
-> @@ -90,7 +90,7 @@
->   */
->  #define DMA_MAPPING_ERROR		(~(dma_addr_t)0)
->  
-> -#define DMA_BIT_MASK(n)	GENMASK_ULL(n - 1, 0)
-> +#define DMA_BIT_MASK(n)	GENMASK_ULL((n) - 1, 0)
->  
->  struct dma_iova_state {
->  	dma_addr_t addr;
-> -- 
-> 2.52.0
-> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c
+> index 3556e65cf9ac..1672e75ebffc 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c
+> @@ -555,6 +555,65 @@ static void arm_smmu_v3_write_ste_test_s2_to_s1_stall(struct kunit *test)
+>   						       NUM_EXPECTED_SYNCS(3));
+>   }
+>   
+> +static void arm_smmu_test_make_nested_cdtable_ste(
+> +	struct arm_smmu_ste *ste, unsigned int s1dss, const dma_addr_t dma_addr,
+> +	enum arm_smmu_test_master_feat feat)
+> +{
+> +	bool stall_enabled = feat & ARM_SMMU_MASTER_TEST_STALL;
+> +	bool ats_enabled = feat & ARM_SMMU_MASTER_TEST_ATS;
+> +	struct arm_smmu_ste s1ste;
+> +
+> +	struct arm_smmu_master master = {
+> +		.ats_enabled = ats_enabled,
+> +		.cd_table.cdtab_dma = dma_addr,
+> +		.cd_table.s1cdmax = 0xFF,
+> +		.cd_table.s1fmt = STRTAB_STE_0_S1FMT_64K_L2,
+> +		.smmu = &smmu,
+> +		.stall_enabled = stall_enabled,
+> +	};
+> +
+> +	arm_smmu_test_make_s2_ste(ste, ARM_SMMU_MASTER_TEST_ATS);
+> +	arm_smmu_make_cdtable_ste(&s1ste, &master, ats_enabled, s1dss);
+
+Hi, Nicolin,
+
+Nit. Instead of duplicating this code, we can leverage the existing
+arm_smmu_test_make_cdtable_ste() helper here.
+
+> +
+> +	ste->data[0] = cpu_to_le64(
+> +		STRTAB_STE_0_V |
+> +		FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_0_CFG_NESTED));
+> +	ste->data[0] |= s1ste.data[0] & ~cpu_to_le64(STRTAB_STE_0_CFG);
+> +	ste->data[1] |= s1ste.data[1];
+> +	/* Merge events for DoS mitigations on eventq */
+> +	ste->data[1] |= cpu_to_le64(STRTAB_STE_1_MEV);
+> +}
+> +
+> +static void
+> +arm_smmu_v3_write_ste_test_nested_s1dssbypass_to_s1bypass(struct kunit *test)
+> +{
+> +	struct arm_smmu_ste s1_ste;
+> +	struct arm_smmu_ste s2_ste;
+> +
+> +	arm_smmu_test_make_nested_cdtable_ste(&s1_ste,
+> +					      STRTAB_STE_1_S1DSS_BYPASS,
+> +					      fake_cdtab_dma_addr,
+> +					      ARM_SMMU_MASTER_TEST_ATS);
+> +	arm_smmu_test_make_s2_ste(&s2_ste, 0);
+> +	arm_smmu_v3_test_ste_expect_hitless_transition(test, &s1_ste, &s2_ste,
+> +						       NUM_EXPECTED_SYNCS(3));
+> +}
+> +
+> +static void
+> +arm_smmu_v3_write_ste_test_nested_s1bypass_to_s1dssbypass(struct kunit *test)
+> +{
+> +	struct arm_smmu_ste s1_ste;
+> +	struct arm_smmu_ste s2_ste;
+> +
+> +	arm_smmu_test_make_nested_cdtable_ste(&s1_ste,
+> +					      STRTAB_STE_1_S1DSS_BYPASS,
+> +					      fake_cdtab_dma_addr,
+> +					      ARM_SMMU_MASTER_TEST_ATS);
+> +	arm_smmu_test_make_s2_ste(&s2_ste, 0);
+> +	arm_smmu_v3_test_ste_expect_hitless_transition(test, &s2_ste, &s1_ste,
+> +						       NUM_EXPECTED_SYNCS(2));
+
+It would be better to add comments explaining why the number of syncs differs
+between the reverse transitions.
+
+> +}
+> +
+>   static void arm_smmu_v3_write_cd_test_sva_clear(struct kunit *test)
+>   {
+>   	struct arm_smmu_cd cd = {};
+> @@ -601,6 +660,8 @@ static struct kunit_case arm_smmu_v3_test_cases[] = {
+>   	KUNIT_CASE(arm_smmu_v3_write_cd_test_s1_change_asid),
+>   	KUNIT_CASE(arm_smmu_v3_write_ste_test_s1_to_s2_stall),
+>   	KUNIT_CASE(arm_smmu_v3_write_ste_test_s2_to_s1_stall),
+> +	KUNIT_CASE(arm_smmu_v3_write_ste_test_nested_s1dssbypass_to_s1bypass),
+> +	KUNIT_CASE(arm_smmu_v3_write_ste_test_nested_s1bypass_to_s1dssbypass),
+>   	KUNIT_CASE(arm_smmu_v3_write_cd_test_sva_clear),
+>   	KUNIT_CASE(arm_smmu_v3_write_cd_test_sva_release),
+>   	{},
+
+Reviewed-by: Shuai Xue <xueshuai@linux.alibaba.com>
+
+Thanks.
+Shuai
