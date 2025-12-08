@@ -1,141 +1,161 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F5F31EDA03
-	for <iommu@lists.linux.dev>; Mon,  8 Dec 2025 09:19:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 228B92D63E2
+	for <iommu@lists.linux.dev>; Mon,  8 Dec 2025 13:40:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765185551; cv=none; b=MvnXZvqLaOfI8q+oaGvWzmv5qogp9ewIi8mPDtFJsPMc/RTpI53dBha/jZVKmGvVLijJHhlaPQqZxwLD0Sgaiuruy595bkkO1yVeyH77uPEUBwMGJ3JzMIjTScMIwgSF/NOPyKNGNpheV+uZL2CfhQVdBdMGewKoIjiR3CnaPqI=
+	t=1765201249; cv=none; b=LLQtFajv+yPxSMnVxklEoL3naAq5C8t4DP4cY22JNC9vC4GmAOapRZbVLcEqmOlwMOOJdW5Tj086hwREnDhEgK8Q6YHTJm6XbFoSDJqN/5hq9bZ6SJ89Uyo1mn1rD5nFd6epmqGlzgFczT474Ybvlvrgf9M+t0kmbhOJrowfOsc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765185551; c=relaxed/simple;
-	bh=GeZc+JbeoBfQkr1X46S+38EEUrtPPrHmuVsh+DemyCc=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=iKj+Wjo0acmYSVrKSu1/VRICrvVghMztUgNeVKlk57BsUXhHB4uH88plM02HYHeCzHPtNSKzjODjNTbrh66brGDq5+lE8pf0KwIg2vDVuR872L+pNNYc2fTf515t+zL35yNVT8mScZ2PwEjZ8q/ZyHJEQtTben3FC8qB6/1hqb4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=EbZ42QRB; arc=none smtp.client-ip=198.175.65.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1765201249; c=relaxed/simple;
+	bh=c03rWGellbVHJXYhUe7LbI0Fsb1v9e2LaGoYvPo9N9Q=;
+	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
+	 In-Reply-To:Content-Type; b=SlOrByTU/Pwizudj+epDnOk4ZRzXPwkivK1YSYlDZJ+MtaSPbFU2XEF2Os9Ci5zvGzdsM1HfE9EDJvPNFkAK2B3U/koZ2o9cJvIV0P5L2nLEiqZuX1H715Ac1PEx3VkCitzUhV+fYJ9QxOLGpONHg1+Lukc6Ak9iJI+XF+T7/bQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=S2ZPVfNl; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=jypuol5e; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="EbZ42QRB"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1765185550; x=1796721550;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=GeZc+JbeoBfQkr1X46S+38EEUrtPPrHmuVsh+DemyCc=;
-  b=EbZ42QRBCK2cPXSil77Ar8OPNRWgp5Ecg4Q4k1VOwoRkbJ+nQp8lzXbv
-   VYmWxwuYNmcfvAZUEvKawmdRU/v68OnNlPTpVcEecykqtyBuiPcvhkEs0
-   QVg4DpHGqAuQE+mXwmGTesUzhqSu++K1NFpQANyOKqud1waEeLzBmVLxB
-   uvkTRkehJN8IiQ8q5pkT+iPoSYs569tNF9esqPXoUYgN9VyAOOBmCdtxE
-   YYMO1q7zbK9BTyqlpNocjDUWTg1sSuYyI7ZplLmHxT8C1lt9GqII5m0ZM
-   Z+X30Ch8ywzHsyVl6j0kL91tPwGIB3xvrxsvGS6Al4C9jvr0N9cvU3rPK
-   w==;
-X-CSE-ConnectionGUID: JYJfHZhrTiyPbethtKimgg==
-X-CSE-MsgGUID: 2ePQ8KD8T36B9BrrO/JEHA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11635"; a="84531037"
-X-IronPort-AV: E=Sophos;i="6.20,258,1758610800"; 
-   d="scan'208";a="84531037"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Dec 2025 01:19:09 -0800
-X-CSE-ConnectionGUID: bVF+sbCOTbiTvkwsYfXnAA==
-X-CSE-MsgGUID: CQad03VbTTiGV9wq0ZwfwA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.20,258,1758610800"; 
-   d="scan'208";a="226547347"
-Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by orviesa002.jf.intel.com with ESMTP; 08 Dec 2025 01:19:09 -0800
-From: Yi Liu <yi.l.liu@intel.com>
-To: kevin.tian@intel.com,
-	baolu.lu@linux.intel.com
-Cc: joro@8bytes.org,
-	yi.l.liu@intel.com,
-	iommu@lists.linux.dev,
-	jgg@nvidia.com
-Subject: [PATCH] iommu/vt-d: Flush piotlb for SVM and Nested domain
-Date: Mon,  8 Dec 2025 01:19:07 -0800
-Message-Id: <20251208091907.74719-1-yi.l.liu@intel.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="S2ZPVfNl";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="jypuol5e"
+Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 5B88PaYi2928399
+	for <iommu@lists.linux.dev>; Mon, 8 Dec 2025 13:40:46 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	Ng5jW/XFxY6TkKxsaL1XvkuCaD/iKRVXnFTAkSbhtgM=; b=S2ZPVfNlrJdqoRir
+	iGLUEyqETeeL22xKtxba25mTF4epo1abrhUb6uWju5WlmuR257GKkMSbH1lyIJ+f
+	p1QYgtd60xJrqFl58DVKR8DZdUsnkBo2IRY1HCrHDZKuKSS6+ShjR9RD2lmmeS5t
+	4iBt6oULzncVqOxoAy4IFG7slTZobB0Dmna+5JXuDzR+NH3jYWZ8IptFFU4nEWkh
+	OzH8KWJi2+tJtvUveiusfCoWnk7oSgO5T4Wv490v7f0xHmvDZQMjs2JfQkBZPLL3
+	J1xqG+QNZS2Xzkl16GOs2M8PNHjIcyz5ixsE1Kh0jMm1xH3HJdLVYzrlFvfvN/jM
+	xLwsLA==
+Received: from mail-pl1-f197.google.com (mail-pl1-f197.google.com [209.85.214.197])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4awhaqt5j1-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Mon, 08 Dec 2025 13:40:45 +0000 (GMT)
+Received: by mail-pl1-f197.google.com with SMTP id d9443c01a7336-2958c80fcabso98308855ad.0
+        for <iommu@lists.linux.dev>; Mon, 08 Dec 2025 05:40:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1765201245; x=1765806045; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:subject:from:user-agent:mime-version:date:message-id:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=Ng5jW/XFxY6TkKxsaL1XvkuCaD/iKRVXnFTAkSbhtgM=;
+        b=jypuol5evFgUz+28chzEbAB4DBZsmGXLL4GUp9roo3yYfom3SsmK32VgaiExRjiZZc
+         t4YqCQRnnLwc2WiTwvLKIfw1Dx5B+wm4g7FmGFgYeFhuhZukj3z1NuJbYuIW/ODxgrQV
+         6K3/q2foKVFj4eOf4DYRSasj4QKIBk3FQTaa+PdC0jlqp2cpZ6FrirDw3tJSbJmW8wpF
+         ++4nSPZ8gc3fyjlUQ7M53ZSugp9Gf6Vabtjbpqe4snWmaQcbDg+wDCZNDvYzY+07tSTM
+         Sv+0Lf3/YOcUIs8j7Gs5UebuTCYBEEjJjsYv6ykFXOXwL9Ym8xBJjouGJhmwXaxYuo+t
+         5gow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1765201245; x=1765806045;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:subject:from:user-agent:mime-version:date:message-id:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Ng5jW/XFxY6TkKxsaL1XvkuCaD/iKRVXnFTAkSbhtgM=;
+        b=aFYe10eRBK+PAqWhkvpqdh4ZAApn3jsEYZOa36zSTSNroWX8NMC6RCQhQ4nkjiNdEK
+         m6gvgXAUjapDBvVjDwGsmhhE33mpx2+SawCsbG2sj6x+XYuy7xEnbWi8Em9rFCcWIL4O
+         K7g/aJ1aX1cjbL5TEscnxtejcVzUneIa8Ke6+0NcfL3TLKyPU6RCHCtPjitN90fysjHz
+         B01xr7awmDNjlHhpIuT27qI3CUz4FCFHzF8eafg9XC5BjwPOk57UZPNcphTfL+2U/y4U
+         dQl5m8vE/dcVxG8YBpdWYzWm1wTDmx4N1ZBW7SFzTBJ0QCGxQ/WRjMwspuG5RFEVfiV6
+         +Zdw==
+X-Gm-Message-State: AOJu0Yy8UmggHewXqozYzN7IPMm30GFWs//6PY3MNlwBj8K/JMftVUIz
+	NcVYEokRVRhMNxY93GoxXGeJj5eIpQ4bhU4BplW2fddWbNqcRifEo8upBrkYWD/x2PWK+L52Sdg
+	tgxe+Z85TWDMF31OKGLMIGG0t9tweQoTpoPfuWQld62d9mLlEUWLo1OhUqw==
+X-Gm-Gg: ASbGncsowEhtsMc5yQEg89AIBYHI3W7WiKDVEpKpFsVpE6e695A3Yj8yXjVxMZfjrfq
+	4/vBuO/7dpMY80irsWD4cW6etOBZE2mO+uwIA1dJt8A63E1au8Ld4UJ2aY3bvT1KmgxMqEtSsRc
+	NpTW3wy3KqbBsYmAv8AyZWB64p0bz4NRgJod6B0qipPIiCoKCfPJrAw6HmVtfLavtZfMHLXuBjk
+	Cr3UZ6AjI/NTkwc4cVpvadW7pVi10ZDI0bO1JljkKz5z8VjAJzvFS93F6iXrwzBnP19+bSqz6g+
+	hB431n9dncdYb7/rF41NvTx9gHU+13SqJ2ZKsLT187EyHcXhsGE/ALxrkmD4uTpKRyylNOot0w+
+	kRvVyBX7kc+USoUUFx1qED6U7w+ZReLcRf5GExQZ7vYL4NA==
+X-Received: by 2002:a17:903:1965:b0:295:5625:7e41 with SMTP id d9443c01a7336-29df57924fbmr76806265ad.22.1765201244974;
+        Mon, 08 Dec 2025 05:40:44 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IHsFuiR54Gi4iuunMhcDxbWCnuzkSb4g0YincgSlJk3qleZrdBe8zXZT+yJe2Y4Hlr/EspoRQ==
+X-Received: by 2002:a17:903:1965:b0:295:5625:7e41 with SMTP id d9443c01a7336-29df57924fbmr76806035ad.22.1765201244432;
+        Mon, 08 Dec 2025 05:40:44 -0800 (PST)
+Received: from [192.168.1.9] ([205.254.168.129])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-29dae4cf996sm128464715ad.30.2025.12.08.05.40.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 08 Dec 2025 05:40:44 -0800 (PST)
+Message-ID: <837be315-2eca-4990-94e8-6d0765a8ba44@oss.qualcomm.com>
+Date: Mon, 8 Dec 2025 19:10:32 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+From: Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
+Subject: Re: [PATCH v2 2/3] of: factor arguments passed to of_map_id() into a
+ struct
+To: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, robin.murphy@arm.com,
+        will@kernel.org, joro@8bytes.org, robh@kernel.org,
+        konrad.dybcio@oss.qualcomm.com, bjorn.andersson@oss.qualcomm.com,
+        bod@kernel.org, conor+dt@kernel.org, krzk+dt@kernel.org,
+        charan.kalla@oss.qualcomm.com, prakash.gupta@oss.qualcomm.com,
+        vikash.garodia@oss.qualcomm.com
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+References: <20251204095530.8627-1-vijayanand.jitta@oss.qualcomm.com>
+ <20251204095530.8627-3-vijayanand.jitta@oss.qualcomm.com>
+ <75d44bf2-c518-444d-9b15-fca067e25877@oss.qualcomm.com>
+Content-Language: en-US
+In-Reply-To: <75d44bf2-c518-444d-9b15-fca067e25877@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMjA4MDExNiBTYWx0ZWRfX3IAzGMCnh8UA
+ Xg4foJqlBhu2D5Yzpw7xfvHxC6lFaiqPFTyIADzx2GZXuq/imRvK+Yvxq3QPmz2LjHZNvlSi0o8
+ nC+gZ2VnQkC2PkUo/b8J0bajXuLtP9rdoWXvh0nAIVuDM+logGA5z7tGuY0QpLw90w9WwsgBJSY
+ lS72/X6qHUlnyMOmVwW6/6rRBZ5RbWDTYfxZvmR4t8kmMB3jiQLIkAdfKD05Gpse1D4zMxrWtTc
+ zOZw7iFIdGiMzE1nptm3P/4U3wMNgDF23M/G8QBMsDBQ7NrvvI/wcbUUyYXzbV3d/f+BcnOQoxV
+ EfFH1AU3xGRZBdf6FExSAhj7ur+WiE7XuWN7adEVlizYXIC05lnuFapKRlZyVTO0k5mv88BSacA
+ VtxRcnBgvy1ri3coBl5H+CSmhJD/MQ==
+X-Proofpoint-GUID: esyDmpoC3X2IbwztJkfAvJ6TwQ65it0r
+X-Authority-Analysis: v=2.4 cv=ItUTsb/g c=1 sm=1 tr=0 ts=6936d55e cx=c_pps
+ a=cmESyDAEBpBGqyK7t0alAg==:117 a=qGVSFsv8/Tytdn00NEnLeQ==:17
+ a=IkcTkHD0fZMA:10 a=wP3pNCr1ah4A:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=EUspDBNiAAAA:8 a=GBqTS8oSEQGj30kF9o4A:9
+ a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10 a=1OuFwYUASf3TG4hYMiVC:22
+X-Proofpoint-ORIG-GUID: esyDmpoC3X2IbwztJkfAvJ6TwQ65it0r
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.9,FMLib:17.12.100.49
+ definitions=2025-12-06_02,2025-12-04_04,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ phishscore=0 impostorscore=0 bulkscore=0 malwarescore=0 spamscore=0
+ clxscore=1015 priorityscore=1501 adultscore=0 suspectscore=0
+ lowpriorityscore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2510240001
+ definitions=main-2512080116
 
-For SVM and Nested domain, needs to use piotlb invalidation descriptor.
 
-Fixes: b33125296b50 ("iommu/vt-d: Create unique domain ops for each stage")
-Signed-off-by: Yi Liu <yi.l.liu@intel.com>
----
- drivers/iommu/intel/cache.c  |  3 ++-
- drivers/iommu/intel/iommu.h  | 10 +++++++++-
- drivers/iommu/intel/nested.c |  2 +-
- drivers/iommu/intel/svm.c    |  2 +-
- 4 files changed, 13 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iommu/intel/cache.c b/drivers/iommu/intel/cache.c
-index 265e7290256b..bf6ebf7c4ca5 100644
---- a/drivers/iommu/intel/cache.c
-+++ b/drivers/iommu/intel/cache.c
-@@ -370,7 +370,8 @@ static void cache_tag_flush_iotlb(struct dmar_domain *domain, struct cache_tag *
- 	struct intel_iommu *iommu = tag->iommu;
- 	u64 type = DMA_TLB_PSI_FLUSH;
- 
--	if (intel_domain_is_fs_paging(domain)) {
-+	if (intel_domain_is_fs_paging(domain) ||
-+	    intel_domain_is_nested_paging(domain)) {
- 		qi_batch_add_piotlb(iommu, tag->domain_id, tag->pasid, addr,
- 				    pages, ih, domain->qi_batch);
- 		return;
-diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index 3056583d7f56..3b655af211a9 100644
---- a/drivers/iommu/intel/iommu.h
-+++ b/drivers/iommu/intel/iommu.h
-@@ -1379,10 +1379,18 @@ struct context_entry *iommu_context_addr(struct intel_iommu *iommu, u8 bus,
- extern const struct iommu_ops intel_iommu_ops;
- extern const struct iommu_domain_ops intel_fs_paging_domain_ops;
- extern const struct iommu_domain_ops intel_ss_paging_domain_ops;
-+extern const struct iommu_domain_ops intel_svm_domain_ops;
-+extern const struct iommu_domain_ops intel_nested_domain_ops;
- 
- static inline bool intel_domain_is_fs_paging(struct dmar_domain *domain)
- {
--	return domain->domain.ops == &intel_fs_paging_domain_ops;
-+	return (domain->domain.ops == &intel_fs_paging_domain_ops) ||
-+	       (domain->domain.ops == &intel_svm_domain_ops);
-+}
-+
-+static inline bool intel_domain_is_nested_paging(struct dmar_domain *domain)
-+{
-+	return (domain->domain.ops == &intel_nested_domain_ops);
- }
- 
- static inline bool intel_domain_is_ss_paging(struct dmar_domain *domain)
-diff --git a/drivers/iommu/intel/nested.c b/drivers/iommu/intel/nested.c
-index 1b6ad9c900a5..cc755af1bd6b 100644
---- a/drivers/iommu/intel/nested.c
-+++ b/drivers/iommu/intel/nested.c
-@@ -191,7 +191,7 @@ static int intel_nested_set_dev_pasid(struct iommu_domain *domain,
- 	return ret;
- }
- 
--static const struct iommu_domain_ops intel_nested_domain_ops = {
-+const struct iommu_domain_ops intel_nested_domain_ops = {
- 	.attach_dev		= intel_nested_attach_dev,
- 	.set_dev_pasid		= intel_nested_set_dev_pasid,
- 	.free			= intel_nested_domain_free,
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index e147f71f91b7..75b9475c33dd 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -194,7 +194,7 @@ static void intel_svm_domain_free(struct iommu_domain *domain)
- 	mmu_notifier_put(&dmar_domain->notifier);
- }
- 
--static const struct iommu_domain_ops intel_svm_domain_ops = {
-+const struct iommu_domain_ops intel_svm_domain_ops = {
- 	.set_dev_pasid		= intel_svm_set_dev_pasid,
- 	.free			= intel_svm_domain_free
- };
--- 
-2.34.1
+On 12/5/2025 10:17 PM, Dmitry Baryshkov wrote:
+> On 04/12/2025 11:55, Vijayanand Jitta wrote:
+>> From: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
+>>
+>> Introduce a new struct type where the optional arguments passed to
+>> of_map_id() are in struct. Subsequent patches add additional arguments
+>> to the struct that the caller expects to be filled of_map_id().
+> 
+> Why do we need a separate struct? Can't we use of_phandle_args instead?
+> 
+
+The idea is to use it for multi-map support mentioned in the cover letter,
+where we need to pass additional context (callback, dev etc..). Having a
+seperate structure here makes of_map_id() interface easier to extend.
+
+>>
+>> Signed-off-by: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
+>> Signed-off-by: Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
+>> ---
+>>   drivers/iommu/of_iommu.c              |  6 +++++-
+>>   drivers/of/base.c                     | 31 ++++++++++++++-------------
+>>   drivers/pci/controller/dwc/pci-imx6.c |  6 +++++-
+>>   drivers/pci/controller/pcie-apple.c   |  5 ++++-
+>>   drivers/xen/grant-dma-ops.c           |  5 ++++-
+>>   include/linux/of.h                    | 23 ++++++++++++++------
+>>   6 files changed, 50 insertions(+), 26 deletions(-)
+>>
 
