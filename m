@@ -1,31 +1,31 @@
-Received: from out30-101.freemail.mail.aliyun.com (out30-101.freemail.mail.aliyun.com [115.124.30.101])
+Received: from out30-97.freemail.mail.aliyun.com (out30-97.freemail.mail.aliyun.com [115.124.30.97])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C6922405E1
-	for <iommu@lists.linux.dev>; Mon,  8 Dec 2025 02:33:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.101
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 951951DFF0
+	for <iommu@lists.linux.dev>; Mon,  8 Dec 2025 02:33:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.97
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765161216; cv=none; b=p2za9I8RkS7+5uJmA8rIB04gmrJKpxhNpvJRA/wQZ/NzQQdVso3TMeguZBDePFCG5KenDbe2x7Vnpm89urjYvI1kjSVGFAm4XGc82lrl/hFK4mOjzJB0SkL4LwXHhV/cOWXTuOEuK5AVuTQL/SoZHhiNAzoPhI0HX00cf/MPgWU=
+	t=1765161230; cv=none; b=sHr+O94429Jhzbzgt2NK61TiNftYIsw1nWiO3ql017GWdayd48WGi6/T/Oml/jrNAXSAfFzABpDyJKQicJWnvUWrsbiGsoZH4HgWNvA+0chQGYz2Hk8z4Ib/C6cxxvnZ8VhUa1wKlyK1wfvrXzicJzf7gKYGxXJ6g0K2iiD5L8s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765161216; c=relaxed/simple;
-	bh=8K5a+vUfFQtbR5nSX1mrUPGSaE+r8g7xENEkc8+QzRY=;
+	s=arc-20240116; t=1765161230; c=relaxed/simple;
+	bh=uz1TTnr9a8FadQhJh0Q1AbLD7MCZSWWBKUYWhWijGoY=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=VRfhhdRIheMrh4+iOT1ceD0d0m7HfZ7ggG85+AYrFSpve6ZmpNjQeSBnVRCARYLnH8Gz5TqJ0t9kBhIu7LE9uuBJgYwevrrpShSLyZh8XZ/Q3JMiLwoJv26jr1ZTEWsYo5q7PkS6y8dHuYnCKo2F6ZhsKWir78wDn1myXqsZZ6M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=DkC8rsVl; arc=none smtp.client-ip=115.124.30.101
+	 In-Reply-To:Content-Type; b=HSTTnqkeQVNZ5Y2Qj23ZYU0WEhBSsX2lDHhruHAHlEkN7553M2qQKYKJ2Xa6NOgp6yo3YqrqpJ6TRASoUOXhG11xkyyuXxlTVgu5k/M/q2cm9BUm0oXAUbz9JRSEovs2JkPNKdzAKebYE1iSGrth9Ti96K8efglNrHhhZghEc7k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=nZt/qeBn; arc=none smtp.client-ip=115.124.30.97
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="DkC8rsVl"
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="nZt/qeBn"
 DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=linux.alibaba.com; s=default;
-	t=1765161206; h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
-	bh=/EX3r36Y3+GGh6sPJvDukpPQhyrwazsMSdsilDqqLyY=;
-	b=DkC8rsVlc5xa+93kZ8TF+y6sG3pzIcj/EkkkRrL4NgtPjgWu/LZQW2883VOHhc9mX71QbOk9pssekUxgDdUEw1VPz31FHs/PS0v5NbRfRtV4q3aGalTIrW/dNq3/4K/slcy72q1PxgSqE2fZRb+yYJdqLtM+/sSTkhaXwoq7hK8=
-Received: from 30.246.178.18(mailfrom:xueshuai@linux.alibaba.com fp:SMTPD_---0WuF439A_1765161203 cluster:ay36)
+	t=1765161221; h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
+	bh=C6pv5CBH40UymlBR/yM1CaDwUY0ELjdp+6nVUu/1p40=;
+	b=nZt/qeBnw0X5qHP/eVahDBdFvFJx30iqbrSAvRELfsEw0+vuo8/USmw/1NHSCbJwSv+msei/l3UkT1WfiQOhrI7GFlIQb61p4xrXRu8lbyU/KT+VV0SZXmAEiGkBgr4RtOR+aKS+NaXfJKgNjS8mEzC6EXNjxaNOq12nn7TGrt8=
+Received: from 30.246.178.18(mailfrom:xueshuai@linux.alibaba.com fp:SMTPD_---0WuF2a0v_1765161220 cluster:ay36)
           by smtp.aliyun-inc.com;
-          Mon, 08 Dec 2025 10:33:24 +0800
-Message-ID: <b4d96532-09b5-4162-8d9e-c41ca2baba0b@linux.alibaba.com>
-Date: Mon, 8 Dec 2025 10:33:23 +0800
+          Mon, 08 Dec 2025 10:33:41 +0800
+Message-ID: <0b277ac2-e454-47b8-a592-d9f57936c3fb@linux.alibaba.com>
+Date: Mon, 8 Dec 2025 10:33:40 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -33,7 +33,7 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH rc v2 2/4] iommu/arm-smmu-v3: Ignore STE MEV when
+Subject: Re: [PATCH rc v2 3/4] iommu/arm-smmu-v3: Ignore STE EATS when
  computing the update sequence
 To: Nicolin Chen <nicolinc@nvidia.com>, jgg@nvidia.com, will@kernel.org,
  robin.murphy@arm.com
@@ -41,9 +41,9 @@ Cc: joro@8bytes.org, linux-arm-kernel@lists.infradead.org,
  iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
  skolothumtho@nvidia.com, praan@google.com
 References: <cover.1765140287.git.nicolinc@nvidia.com>
- <08fd4d48e684732ad58064f690195f31a64979c4.1765140287.git.nicolinc@nvidia.com>
+ <b3586cb03317fb2362e936e4d303566851b506d4.1765140287.git.nicolinc@nvidia.com>
 From: Shuai Xue <xueshuai@linux.alibaba.com>
-In-Reply-To: <08fd4d48e684732ad58064f690195f31a64979c4.1765140287.git.nicolinc@nvidia.com>
+In-Reply-To: <b3586cb03317fb2362e936e4d303566851b506d4.1765140287.git.nicolinc@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
@@ -52,46 +52,44 @@ Content-Transfer-Encoding: 8bit
 在 2025/12/8 04:49, Nicolin Chen 写道:
 > From: Jason Gunthorpe <jgg@nvidia.com>
 > 
-> Nested CD tables set the MEV bit to try to reduce multi-fault spamming on
-> the hypervisor. Since MEV is in STE word 1 this causes a breaking update
-> sequence that is not required and impacts real workloads.
+> If a VM wants to toggle EATS off at the same time as changing the CFG, the
+> hypervisor will see EATS change to 0 and insert a V=0 breaking update into
+> the STE even though the VM did not ask for that.
 > 
-> For the purposes of STE updates the value of MEV doesn't matter, if it is
-> set/cleared early or late it just results in a change to the fault reports
-> that must be supported by the kernel anyhow. The spec says:
+> In bare metal, EATS is ignored by CFG=ABORT/BYPASS, which is why this does
+> not cause a problem until we have nested where CFG is always a variation of
+> S2 trans that does use EATS.
 > 
->   Note: Software must expect, and be able to deal with, coalesced fault
->   records even when MEV == 0.
+> Relax the rules for EATS sequencing, we don't need it to be exact because
+> the enclosing code will always disable ATS at the PCI device if we are
+> changing EATS. This ensures there are no ATS transactions that can race
+> with an EATS change so we don't need to carefully sequence these bits.
 > 
-> So ignore MEV when computing the update sequence to avoid creating a
-> breaking update.
-> 
-> Fixes: da0c56520e88 ("iommu/arm-smmu-v3: Set MEV bit in nested STE for DoS mitigations")
+> Fixes: 1e8be08d1c91 ("iommu/arm-smmu-v3: Support IOMMU_DOMAIN_NESTED")
 > Cc: stable@vger.kernel.org
 > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 > Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 > ---
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 10 ++++++++++
->   1 file changed, 10 insertions(+)
+>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 9 +++++++++
+>   1 file changed, 9 insertions(+)
 > 
 > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index e22c0890041b..3e161d8298d9 100644
+> index 3e161d8298d9..72ba41591fdb 100644
 > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
 > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -1085,6 +1085,16 @@ EXPORT_SYMBOL_IF_KUNIT(arm_smmu_get_ste_used);
->   VISIBLE_IF_KUNIT
->   void arm_smmu_get_ste_ignored(__le64 *ignored_bits)
->   {
+> @@ -1095,6 +1095,15 @@ void arm_smmu_get_ste_ignored(__le64 *ignored_bits)
+>   	 *  fault records even when MEV == 0.
+>   	 */
+>   	ignored_bits[1] |= cpu_to_le64(STRTAB_STE_1_MEV);
+> +
 > +	/*
-> +	 * MEV does not meaningfully impact the operation of the HW, it only
-> +	 * changes how many fault events are generated, thus we can ignore it
-> +	 * when computing the ordering. The spec notes the device can act like
-> +	 * MEV=1 anyhow:
-> +	 *
-> +	 *  Note: Software must expect, and be able to deal with, coalesced
-> +	 *  fault records even when MEV == 0.
+> +	 * EATS is used to reject and control the ATS behavior of the device. If
+> +	 * we are changing it away from 0 then we already trust the device to
+> +	 * use ATS properly and we have sequenced the device's ATS enable in PCI
+> +	 * config space to prevent it from issuing ATS while we are changing
+> +	 * EATS.
 > +	 */
-> +	ignored_bits[1] |= cpu_to_le64(STRTAB_STE_1_MEV);
+> +	ignored_bits[1] |= cpu_to_le64(STRTAB_STE_1_EATS);
 >   }
 >   EXPORT_SYMBOL_IF_KUNIT(arm_smmu_get_ste_ignored);
 >   
