@@ -1,176 +1,224 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com [209.85.160.171])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CC5D2EA169;
-	Mon,  8 Dec 2025 19:44:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A01A1E832A
+	for <iommu@lists.linux.dev>; Mon,  8 Dec 2025 20:09:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765223046; cv=none; b=skNWae20A3oy9/PTVBODSoI/daaUJ3NIbrQ2mekwH4ZrPerlrIscjveRxTDKTQ+4JF5xjt45yjw1HMbNS9o+69PJy20puco+4hB+5o/3WKVV2vvGrWPPI+dgm4DLMeoK7KvYl52jLDwnztaiLyhKq/2u7kUnQp9J8RrZ8uDf7I4=
+	t=1765224593; cv=none; b=SBSrgxQct6DeNctT+4ZKpyH9tFpcSXUklYmSYxWFcW+ZWNmWTT0xv2LPcK7ZxIY2l3BKSX94u09yToHYDv8uzaSPktVCquobCCW7UUa4sAYRsMJrtNZCOdlop6NzYj1VBqgjT723Iwu/0hpoBSR+P6zGH62GqaWw5RYb9sYmScA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765223046; c=relaxed/simple;
-	bh=3ipuuZGft/S8N19xrr05kuT8U40MNWLgd1x0A0Em+OA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=hgLh3KD6kInV8S2Zl2DmxI5VSiEnH1vEjhjptRSVrYY6WX3C4YwiclEMLOzBFQrRhDMXx1eqtpE5ii8WUgiMQhS1ZIVXH8/4mKkvXZBkd4aeJs0bPZ/w9LK0kirAHnYfGVl4xPRI8Ad1G7rIlHLA6m+QaLKaqbVsulVPOVWVEO8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=LRJl+H4F; arc=none smtp.client-ip=192.198.163.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1765224593; c=relaxed/simple;
+	bh=QZuXQ8i96Q6z9m6pKilLFXWT9PDI1lbYt5cMxmZBut8=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=kzOLG2pk7wpGvF+G6bGtTyvI1TNXVqcZpSS7CPkFs7C31YUQDMUfgCoY21E/OFpNGr82N+nKvtJ98L+F9gyOyC5mo0UFMLNYHUjia3SO5Zsp3ILqdzQXkCZpUn5pL3I9dvJzgMqvIb4T8QW4wy+cZOqA34vN5M7ku33WUhMUYi0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=YfQM6pGk; arc=none smtp.client-ip=209.85.160.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LRJl+H4F"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1765223045; x=1796759045;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=3ipuuZGft/S8N19xrr05kuT8U40MNWLgd1x0A0Em+OA=;
-  b=LRJl+H4F37v+q66RlJ0PyASxPHS7ml7oq6s+ZfL88A273fihsBpYHJM2
-   Iq4qoIOIOMyeDJ8AHqVFihJCtj3hvtx6TSG+EjgsdlhOzHwFu/FvYxGsh
-   Sy1WS/ObWvSaIg9GgoV0wAq2/NVI1OgBHM9JakmxDVgn/Rao7M4eMv8Ap
-   Bdyz1Zv0QZ1pIjvsdrKeM+QRjqynCx+4h7c9tCtyVtzgc33DJR6MUr3aD
-   kQRYrjSMui3UUKt1uM9CZIGQlvH999r6G6FEe5KqQyqLxFnpDzu5pBU7q
-   x2HyoFZhbw/1/0vmzgOG/fV00wY40DktdfI4twgJewUtrv/Eoeh2jIUM9
-   Q==;
-X-CSE-ConnectionGUID: pZ2XOR75RJixKKiVLu4VTA==
-X-CSE-MsgGUID: DhT4fxsbTfqGMDp38jSeWQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11636"; a="54714117"
-X-IronPort-AV: E=Sophos;i="6.20,259,1758610800"; 
-   d="scan'208";a="54714117"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Dec 2025 11:44:04 -0800
-X-CSE-ConnectionGUID: n+XSjhiORGCFX38P4L/tgg==
-X-CSE-MsgGUID: NGCiOOtnRBmB7MoDx7MLow==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.20,259,1758610800"; 
-   d="scan'208";a="195921748"
-Received: from lkp-server01.sh.intel.com (HELO d335e3c6db51) ([10.239.97.150])
-  by fmviesa006.fm.intel.com with ESMTP; 08 Dec 2025 11:44:01 -0800
-Received: from kbuild by d335e3c6db51 with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1vSh9K-000000000mj-0dfK;
-	Mon, 08 Dec 2025 19:43:58 +0000
-Date: Tue, 9 Dec 2025 03:43:42 +0800
-From: kernel test robot <lkp@intel.com>
-To: Ashish Mhetre <amhetre@nvidia.com>, will@kernel.org,
-	robin.murphy@arm.com, joro@8bytes.org, robh@kernel.org,
-	krzk+dt@kernel.org, conor+dt@kernel.org, nicolinc@nvidia.com
-Cc: oe-kbuild-all@lists.linux.dev, thierry.reding@gmail.com,
-	jonathanh@nvidia.com, vdumpa@nvidia.com, jgg@ziepe.ca,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-tegra@vger.kernel.org, Ashish Mhetre <amhetre@nvidia.com>
-Subject: Re: [PATCH V4 1/3] iommu/arm-smmu-v3: Add device-tree support for
- CMDQV driver
-Message-ID: <202512090331.QAFgb6vQ-lkp@intel.com>
-References: <20251205065850.3841834-2-amhetre@nvidia.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="YfQM6pGk"
+Received: by mail-qt1-f171.google.com with SMTP id d75a77b69052e-4ed67a143c5so108561cf.0
+        for <iommu@lists.linux.dev>; Mon, 08 Dec 2025 12:09:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1765224591; x=1765829391; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=kHtc/+z90ueo42R+9ZDR9Ppw22giUiqfAKE3wYBFhaI=;
+        b=YfQM6pGkyWwKsoTJ42q59FhxN6Cz2fqWUXTWw/vjbePbM8wD08xjqO8EATiR0zzo+b
+         EoyY33gQA+xjKb9doiD+WsKwfPN8/jk99JAzwxDkZEcevQ81tBNIl/bH5jegeANOzplX
+         mh6Rq+ClBOx7/Kv1EjV9dHSKAl8uyd/ngLEoW3GtMBW/diz4M7KP5JjSYh7BpRTvkhMh
+         dusfVK7s1eZm4bl9LvirveAoo85MaFE6pT0gBuIF0xAiNAA/5oAYaf3zYg/TyMP00IiU
+         iiKo61tgRVAnq++mBjE0SafhfLiT/UynlN3Kdc6U8OViMWvcKvOstkHbAwTbciJLalbf
+         b0Jg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1765224591; x=1765829391;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=kHtc/+z90ueo42R+9ZDR9Ppw22giUiqfAKE3wYBFhaI=;
+        b=ZdJeulaHfaiCKucFxLRuPtaLoSb5sTb7TtFMIWK5bhk3YV0fLTu7fCSzKI0fBVvksv
+         nqD3OnL169rZXI5ChHoz2F25E4sdbzoCcMNXeNXeGbStMS3VCOtUpEmMSj7me+LGNIGA
+         vyDI0lZHCVL2dBbzjOX0/tcBad1TLN1bHn8eC6nkSjFt9ZQAhznIzWw8qzBtn3GZkcO0
+         0Fzc4VQzVtxbRbW3kBn2G0al/YO4p1psttzCFVbJZD6WSYV1o7kQBVGmNF3u8X+DIgq/
+         1WtNFTQnRm64ybeOHloatl7xLCUBWAQxv/VwRNjT/yg5pgbq6gXvE6mYof3NZk2g/NrD
+         HDdw==
+X-Forwarded-Encrypted: i=1; AJvYcCWqzZ8RTKhw5huBMnKybxLOVvHCnsOMWaCB1K/QtIKMywpfG2z9u35BmmcIZ5dLzDJorE6fBw==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yytfd+Cg4fYaYs/pBakGOT6mAPPQFOltA+ELtI2cDSC965IYI62
+	OLg3FVrS4M8cSEbi2q8vs9whqEsY3PTo35U0ADK+4YQ0kg6MMKvtp5BDlSO1jToTEJHjOSGV/PE
+	DqOE3pix89WWwfJzSHrFamUQ+A8O9YN5v3kSegguS
+X-Gm-Gg: ASbGncvwKMzelka/CKv6EK7ue1Nuu9lWlMgKk3LfM0nVqvWRUp+dtnk/yQsPU2s8zEU
+	job8Sizf/+zwMa1r6DVlP3YcACjJLUmkX9hOQixYJ5Fimnj7dXRQRKwaoaR9/RsAdRP0W29iT25
+	8v6I8oP5weyE0FoTGGTt1FritvWGAdS/3IEJWF+KMYKUSmgRnLZK+/7sK7mzwRHmCICJETgMrwx
+	dbrt3JAR7/BmrSS/eylloHOnIJHcVUXYZCBN7j+OM7DJRyXb/54MTTgU7k0WQrmLyMNH/0cSVLo
+	7nWf
+X-Google-Smtp-Source: AGHT+IEpZoR/iQOyoic1B163k5XpJh88inqgJpWY7MOX9hadvYKtYDxWwg4ICG4nBzjKIlyip58I04JqGTDCPmwL53c=
+X-Received: by 2002:a05:622a:41:b0:4b7:94d7:8b4c with SMTP id
+ d75a77b69052e-4f1a4d2d82dmr2006671cf.0.1765224590828; Mon, 08 Dec 2025
+ 12:09:50 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20251205065850.3841834-2-amhetre@nvidia.com>
+References: <20251124200811.2942432-1-smostafa@google.com> <20251124200811.2942432-3-smostafa@google.com>
+ <07434771-3233-4c88-b505-ee02da72c905@linux.intel.com> <aSV-Xi5uMJcMtk1b@google.com>
+In-Reply-To: <aSV-Xi5uMJcMtk1b@google.com>
+From: Mostafa Saleh <smostafa@google.com>
+Date: Mon, 8 Dec 2025 20:09:38 +0000
+X-Gm-Features: AQt7F2rms2NfQ0fmpo7RMgd6BkOwNRHXqeaRPgLhXlJQKJwBB3kdVgcG7LFHRKY
+Message-ID: <CAFgf54qGdWNB=Oa=vbU1hRN2XOxQSESGO6K0CiG4Qizv=T3+Qw@mail.gmail.com>
+Subject: Re: [PATCH v3 2/4] drivers/iommu: Add calls for IOMMU_DEBUG_PAGEALLOC
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: linux-mm@kvack.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	linux-doc@vger.kernel.org, corbet@lwn.net, joro@8bytes.org, will@kernel.org, 
+	robin.murphy@arm.com, akpm@linux-foundation.org, vbabka@suse.cz, 
+	surenb@google.com, mhocko@suse.com, jackmanb@google.com, hannes@cmpxchg.org, 
+	ziy@nvidia.com, david@redhat.com, lorenzo.stoakes@oracle.com, 
+	Liam.Howlett@oracle.com, rppt@kernel.org, xiaqinxin@huawei.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi Ashish,
+On Tue, Nov 25, 2025 at 10:01=E2=80=AFAM Mostafa Saleh <smostafa@google.com=
+> wrote:
+>
+> On Tue, Nov 25, 2025 at 03:35:08PM +0800, Baolu Lu wrote:
+> > On 11/25/25 04:08, Mostafa Saleh wrote:
+> > > Add calls for the new iommu debug config IOMMU_DEBUG_PAGEALLOC:
+> > > - iommu_debug_init: Enable the debug mode if configured by the user.
+> > > - iommu_debug_map: Track iommu pages mapped, using physical address.
+> > > - iommu_debug_unmap_begin: Track start of iommu unmap operation, with
+> > >    IOVA and size.
+> > > - iommu_debug_unmap_end: Track the end of unmap operation, passing th=
+e
+> > >    actual unmapped size versus the tracked one at unmap_begin.
+> > >
+> > > We have to do the unmap_begin/end as once pages are unmapped we lose
+> > > the information of the physical address.
+> > > This is racy, but the API is racy by construction as it uses refcount=
+s
+> > > and doesn't attempt to lock/synchronize with the IOMMU API as that wi=
+ll
+> > > be costly, meaning that possibility of false negative exists.
+> > >
+> > > Signed-off-by: Mostafa Saleh <smostafa@google.com>
+> > > ---
+> > >   drivers/iommu/iommu-debug-pagealloc.c | 26 +++++++++++++
+> > >   drivers/iommu/iommu.c                 | 12 +++++-
+> > >   include/linux/iommu-debug-pagealloc.h | 56 ++++++++++++++++++++++++=
++++
+> > >   3 files changed, 92 insertions(+), 2 deletions(-)
+> > >
+> >
+> > Remove "drivers/" from the commit title.
+> >
+> > $ git log --oneline drivers/iommu/iommu.c
+>
+> My bad, I will fix it.
+>
+> >
+> > [...]
+> > > diff --git a/include/linux/iommu-debug-pagealloc.h b/include/linux/io=
+mmu-debug-pagealloc.h
+> > > index 83e64d70bf6c..454303ec09c2 100644
+> > > --- a/include/linux/iommu-debug-pagealloc.h
+> > > +++ b/include/linux/iommu-debug-pagealloc.h
+> > > @@ -8,10 +8,66 @@
+> > >   #ifndef __LINUX_IOMMU_DEBUG_PAGEALLOC_H
+> > >   #define __LINUX_IOMMU_DEBUG_PAGEALLOC_H
+> > > +struct iommu_domain;
+> > > +
+> > >   #ifdef CONFIG_IOMMU_DEBUG_PAGEALLOC
+> > > +DECLARE_STATIC_KEY_FALSE(iommu_debug_initialized);
+> > > +
+> > >   extern struct page_ext_operations page_iommu_debug_ops;
+> > > +void __iommu_debug_map(struct iommu_domain *domain, phys_addr_t phys=
+,
+> > > +                  size_t size);
+> > > +void __iommu_debug_unmap_begin(struct iommu_domain *domain,
+> > > +                          unsigned long iova, size_t size);
+> > > +void __iommu_debug_unmap_end(struct iommu_domain *domain,
+> > > +                        unsigned long iova, size_t size, size_t unma=
+pped);
+> > > +
+> > > +static inline void iommu_debug_map(struct iommu_domain *domain,
+> > > +                              phys_addr_t phys, size_t size)
+> > > +{
+> > > +   if (static_branch_unlikely(&iommu_debug_initialized))
+> > > +           __iommu_debug_map(domain, phys, size);
+> > > +}
+> > > +
+> > > +static inline void iommu_debug_unmap_begin(struct iommu_domain *doma=
+in,
+> > > +                                      unsigned long iova, size_t siz=
+e)
+> > > +{
+> > > +   if (static_branch_unlikely(&iommu_debug_initialized))
+> > > +           __iommu_debug_unmap_begin(domain, iova, size);
+> > > +}
+> > > +
+> > > +static inline void iommu_debug_unmap_end(struct iommu_domain *domain=
+,
+> > > +                                    unsigned long iova, size_t size,
+> > > +                                    size_t unmapped)
+> > > +{
+> > > +   if (static_branch_unlikely(&iommu_debug_initialized))
+> > > +           __iommu_debug_unmap_end(domain, iova, size, unmapped);
+> > > +}
+> > > +
+> > > +void iommu_debug_init(void);
+> > > +
+> > > +#else
+> > > +static inline void iommu_debug_map(struct iommu_domain *domain,
+> > > +                              phys_addr_t phys, size_t size)
+> > > +{
+> > > +}
+> > > +
+> > > +static inline void iommu_debug_unmap_begin(struct iommu_domain *doma=
+in,
+> > > +                                      unsigned long iova, size_t siz=
+e)
+> > > +{
+> > > +}
+> > > +
+> > > +static inline void iommu_debug_unmap_end(struct iommu_domain *domain=
+,
+> > > +                                    unsigned long iova, size_t size,
+> > > +                                    size_t unmapped)
+> > > +{
+> > > +}
+> > > +
+> > > +static inline void iommu_debug_init(void)
+> > > +{
+> > > +}
+> >
+> > I suppose that all these should go to drivers/iommu/iommu-priv.h, as
+> > they are for use in other files inside the IOMMU subsystem.
+>
+> It seemed better to have all the feature functions/declarations in one
+> isolated file, as it is included outside of the iommu susbsystem also.
+> I have no strong opinion, I can keep them in drivers/iommu/iommu-priv.h
+> if you think it's better. But then we will have to include also
+> "iommu-debug-pagealloc.h" for the static key to avoid including extra
+> files to linux/mm.h.
+>
+> Thanks,
+> Mostafa
+>
 
-kernel test robot noticed the following build warnings:
+Hi Baolu,
 
-[auto build test WARNING on next-20251204]
-[also build test WARNING on v6.18]
-[cannot apply to robh/for-next linus/master v6.18 v6.18-rc7 v6.18-rc6]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+I plan to post a new version soon. So far, I only have the commit
+subject rewrites. Do you have any opinion on the header file split or
+the unmap size part?
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Ashish-Mhetre/iommu-arm-smmu-v3-Add-device-tree-support-for-CMDQV-driver/20251205-151258
-base:   next-20251204
-patch link:    https://lore.kernel.org/r/20251205065850.3841834-2-amhetre%40nvidia.com
-patch subject: [PATCH V4 1/3] iommu/arm-smmu-v3: Add device-tree support for CMDQV driver
-config: arm64-randconfig-004-20251209 (https://download.01.org/0day-ci/archive/20251209/202512090331.QAFgb6vQ-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 11.5.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20251209/202512090331.QAFgb6vQ-lkp@intel.com/reproduce)
+Thanks,
+Mostafa
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202512090331.QAFgb6vQ-lkp@intel.com/
-
-All warnings (new ones prefixed by >>):
-
-   drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c: In function 'tegra241_cmdqv_acpi_is_memory':
-   drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c:863:17: error: implicit declaration of function 'acpi_dev_resource_address_space' [-Werror=implicit-function-declaration]
-     863 |         return !acpi_dev_resource_address_space(res, &win);
-         |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c: In function 'tegra241_cmdqv_acpi_get_irqs':
-   drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c:871:26: error: implicit declaration of function 'acpi_dev_resource_interrupt' [-Werror=implicit-function-declaration]
-     871 |         if (*irq <= 0 && acpi_dev_resource_interrupt(ares, 0, &r))
-         |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c: In function 'tegra241_cmdqv_find_acpi_resource':
-   drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c:879:36: error: implicit declaration of function 'to_acpi_device'; did you mean 'to_acpi_device_node'? [-Werror=implicit-function-declaration]
-     879 |         struct acpi_device *adev = to_acpi_device(dev);
-         |                                    ^~~~~~~~~~~~~~
-         |                                    to_acpi_device_node
->> drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c:879:36: warning: initialization of 'struct acpi_device *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-   drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c:886:15: error: implicit declaration of function 'acpi_dev_get_resources'; did you mean 'acpi_get_event_resources'? [-Werror=implicit-function-declaration]
-     886 |         ret = acpi_dev_get_resources(adev, &resource_list,
-         |               ^~~~~~~~~~~~~~~~~~~~~~
-         |               acpi_get_event_resources
-   drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c:907:9: error: implicit declaration of function 'acpi_dev_free_resource_list' [-Werror=implicit-function-declaration]
-     907 |         acpi_dev_free_resource_list(&resource_list);
-         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-   cc1: some warnings being treated as errors
-
-
-vim +879 drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
-
-918eb5c856f6ce Nate Watterson 2024-08-29  875  
-918eb5c856f6ce Nate Watterson 2024-08-29  876  static struct resource *
-918eb5c856f6ce Nate Watterson 2024-08-29  877  tegra241_cmdqv_find_acpi_resource(struct device *dev, int *irq)
-918eb5c856f6ce Nate Watterson 2024-08-29  878  {
-918eb5c856f6ce Nate Watterson 2024-08-29 @879  	struct acpi_device *adev = to_acpi_device(dev);
-918eb5c856f6ce Nate Watterson 2024-08-29  880  	struct list_head resource_list;
-918eb5c856f6ce Nate Watterson 2024-08-29  881  	struct resource_entry *rentry;
-918eb5c856f6ce Nate Watterson 2024-08-29  882  	struct resource *res = NULL;
-918eb5c856f6ce Nate Watterson 2024-08-29  883  	int ret;
-918eb5c856f6ce Nate Watterson 2024-08-29  884  
-918eb5c856f6ce Nate Watterson 2024-08-29  885  	INIT_LIST_HEAD(&resource_list);
-918eb5c856f6ce Nate Watterson 2024-08-29  886  	ret = acpi_dev_get_resources(adev, &resource_list,
-918eb5c856f6ce Nate Watterson 2024-08-29  887  				     tegra241_cmdqv_acpi_is_memory, NULL);
-918eb5c856f6ce Nate Watterson 2024-08-29  888  	if (ret < 0) {
-918eb5c856f6ce Nate Watterson 2024-08-29  889  		dev_err(dev, "failed to get memory resource: %d\n", ret);
-918eb5c856f6ce Nate Watterson 2024-08-29  890  		return NULL;
-918eb5c856f6ce Nate Watterson 2024-08-29  891  	}
-918eb5c856f6ce Nate Watterson 2024-08-29  892  
-918eb5c856f6ce Nate Watterson 2024-08-29  893  	rentry = list_first_entry_or_null(&resource_list,
-918eb5c856f6ce Nate Watterson 2024-08-29  894  					  struct resource_entry, node);
-918eb5c856f6ce Nate Watterson 2024-08-29  895  	if (!rentry) {
-918eb5c856f6ce Nate Watterson 2024-08-29  896  		dev_err(dev, "failed to get memory resource entry\n");
-918eb5c856f6ce Nate Watterson 2024-08-29  897  		goto free_list;
-918eb5c856f6ce Nate Watterson 2024-08-29  898  	}
-918eb5c856f6ce Nate Watterson 2024-08-29  899  
-918eb5c856f6ce Nate Watterson 2024-08-29  900  	/* Caller must free the res */
-918eb5c856f6ce Nate Watterson 2024-08-29  901  	res = kzalloc(sizeof(*res), GFP_KERNEL);
-918eb5c856f6ce Nate Watterson 2024-08-29  902  	if (!res)
-918eb5c856f6ce Nate Watterson 2024-08-29  903  		goto free_list;
-918eb5c856f6ce Nate Watterson 2024-08-29  904  
-918eb5c856f6ce Nate Watterson 2024-08-29  905  	*res = *rentry->res;
-918eb5c856f6ce Nate Watterson 2024-08-29  906  
-918eb5c856f6ce Nate Watterson 2024-08-29  907  	acpi_dev_free_resource_list(&resource_list);
-918eb5c856f6ce Nate Watterson 2024-08-29  908  
-918eb5c856f6ce Nate Watterson 2024-08-29  909  	INIT_LIST_HEAD(&resource_list);
-918eb5c856f6ce Nate Watterson 2024-08-29  910  
-918eb5c856f6ce Nate Watterson 2024-08-29  911  	if (irq)
-918eb5c856f6ce Nate Watterson 2024-08-29  912  		ret = acpi_dev_get_resources(adev, &resource_list,
-918eb5c856f6ce Nate Watterson 2024-08-29  913  					     tegra241_cmdqv_acpi_get_irqs, irq);
-918eb5c856f6ce Nate Watterson 2024-08-29  914  	if (ret < 0 || !irq || *irq <= 0)
-918eb5c856f6ce Nate Watterson 2024-08-29  915  		dev_warn(dev, "no interrupt. errors will not be reported\n");
-918eb5c856f6ce Nate Watterson 2024-08-29  916  
-918eb5c856f6ce Nate Watterson 2024-08-29  917  free_list:
-918eb5c856f6ce Nate Watterson 2024-08-29  918  	acpi_dev_free_resource_list(&resource_list);
-918eb5c856f6ce Nate Watterson 2024-08-29  919  	return res;
-918eb5c856f6ce Nate Watterson 2024-08-29  920  }
-918eb5c856f6ce Nate Watterson 2024-08-29  921  
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+> >
+> > > +
+> > >   #endif /* CONFIG_IOMMU_DEBUG_PAGEALLOC */
+> > >   #endif /* __LINUX_IOMMU_DEBUG_PAGEALLOC_H */
+> >
+> > Thanks,
+> > baolu
