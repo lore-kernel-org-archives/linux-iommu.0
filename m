@@ -1,157 +1,128 @@
-Received: from out30-99.freemail.mail.aliyun.com (out30-99.freemail.mail.aliyun.com [115.124.30.99])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4841E23D7FB
-	for <iommu@lists.linux.dev>; Mon,  8 Dec 2025 03:43:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.99
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E3A818C03F;
+	Mon,  8 Dec 2025 04:57:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765165435; cv=none; b=bbZ2prq0dw5Otj0sJoKMOyYvawyR+9BYKjE0lujzYf5wk4STHF55mhp2w8ersTM7oBNq5Fl918FL3kCWR+pFvFtwWN6ur4mq8DtIgEYnrtUuutRr4upKwdQ/L4l0le4MbfTSQ6SDWZ3QJQmiYyuBcD5bOVHIN8Me/qgr7uv8qB0=
+	t=1765169829; cv=none; b=mAxzKlsfVPj0xmo5wKI5El6SIoFMG9hkuMNWWnBacGo+eJYkRfx+es65cyKV8vLT0doTytChOvCkxAN+p+WB2EZu6MS5IzUj59kL8b4YRQhueFs0DKaSqAtRx8v43SJzP2l4O1z3EmwBUMLcI2CZhFq+Pxde1DRV045mCqVfTAw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765165435; c=relaxed/simple;
-	bh=rqmI77ec8wv3IcTPEwmIm+kmXEMlDGRcVSQaweqUB6A=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=JjxPY7J5gTKseuuBgteBssNytbfNwUMi8so/CDQwOVDIClA9TUoy9p2f0fCRx0OE0kdi7xdZ3WOSdz+yGDELdT0hJnTOC7sJ2Z0VY97mYTVznTIWQhv6hxFCO+1lMlQUHVk0DfKzJ5G/Ojx07Om4jAfGAmg0HlX6/nT3thc0jn4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=pEFyCCeC; arc=none smtp.client-ip=115.124.30.99
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
+	s=arc-20240116; t=1765169829; c=relaxed/simple;
+	bh=xuk1x3cM1pCdWbxqhMrjLzla1U2Mr1+istzyWxr1IYE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=t+ohhxJcHEDP+P1I7WMeh2CeDTokDb2mnsJhTCvKr+KD2OC46E5cVsOHsEReyYbIfpLd+3wgT/k8C+gMiZanF77jaNfHEez85Hyne/UPaV9h4DEMkWjIwhFswtwbV3b812ThVHahXpyVU477Op+GCNHVJ3+lYKRnoMbO0cQ6Jps=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=u+OtRe8B; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="pEFyCCeC"
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux.alibaba.com; s=default;
-	t=1765165425; h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
-	bh=om5dsQvWzxASHszoSFGJ5FtUBquX+4l8f6iGkR80jFU=;
-	b=pEFyCCeC3HltJ+cA+JsFtWIlvNfwKNJRjb7Lje1OYP3ycIHE9PZphxFFuSg2CzFLiyDMtvltUqKnzPf+/DFnj4utAbnY5xhmNMi8U16SSFKC8npmHA5dzXy3xShYR6LyKQqOh1FsFvT6Uw/Cu0Pw1rP8QRzU5l0yq3HAzVEoOdA=
-Received: from 30.246.178.18(mailfrom:xueshuai@linux.alibaba.com fp:SMTPD_---0WuFEAl9_1765165423 cluster:ay36)
-          by smtp.aliyun-inc.com;
-          Mon, 08 Dec 2025 11:43:43 +0800
-Message-ID: <f52c705d-6032-4d85-b902-dd6d0a40b9ec@linux.alibaba.com>
-Date: Mon, 8 Dec 2025 11:43:41 +0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="u+OtRe8B"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 794C6C4CEF1;
+	Mon,  8 Dec 2025 04:57:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1765169828;
+	bh=xuk1x3cM1pCdWbxqhMrjLzla1U2Mr1+istzyWxr1IYE=;
+	h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+	b=u+OtRe8B3EXskeWcLc7LRZhG7xojTI8PV+eJJbTiX2egQRMaSnLH12DipuhPIP1px
+	 m41sLtKM3D4MIa64PW8kCRDFLU1pigIusBA3r9QX9uD4DJWFjAYWRhfEwEo1wC+FdW
+	 8eZa0hle0WP+bnAN78JlIakxmx4FHWa1SWGgW0ha+MStlQG5zJDnaY2Bay2p7BCW9f
+	 P7cXWp2njoIRNNo2Zv3T1JEON4n/frn0OEjSWLDLiyB/+sgnjYduGe+++uHfWmXekZ
+	 hZYBT/Ay1URa7q90EIflXzL/jzJpGryiLjtnTxHpbueGEDGkOEgQHn9ow/1EoTr+m7
+	 bUvWj1J3ox9Xw==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+	id 4DB96CE0E29; Sun,  7 Dec 2025 20:57:02 -0800 (PST)
+Date: Sun, 7 Dec 2025 20:57:02 -0800
+From: "Paul E. McKenney" <paulmck@kernel.org>
+To: Borislav Petkov <bp@alien8.de>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	linux-kernel@vger.kernel.org
+Subject: Re: amd iommu: rcu: INFO: rcu_preempt detected expedited stalls on
+ CPUs/tasks: { 0-.... } 8 jiffies s: 113 root: 0x1/.
+Message-ID: <de21f62b-c246-4ff7-9825-600fe19af28a@paulmck-laptop>
+Reply-To: paulmck@kernel.org
+References: <20251126143219.GBaScPc1b6RAC9ZfCv@fat_crate.local>
+ <20251126152637.GDaSccLZVBEOs20n6T@fat_crate.local>
+ <17147c98-9f0d-45d0-9593-3ede27ba6135@paulmck-laptop>
+ <20251203124422.GBaTAwpmOzChS2MDhX@fat_crate.local>
+ <cb2785d6-ee19-4277-9906-d287341c7698@paulmck-laptop>
+ <20251204144505.GCaTGecavu-E56OR8V@fat_crate.local>
+ <d90a3959-eacd-495e-99cd-836d07955912@paulmck-laptop>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH rc v2 4/4] iommu/arm-smmu-v3-test: Add nested
- s1bypass/s1dssbypass coverage
-To: Nicolin Chen <nicolinc@nvidia.com>, jgg@nvidia.com, will@kernel.org,
- robin.murphy@arm.com
-Cc: joro@8bytes.org, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- skolothumtho@nvidia.com, praan@google.com
-References: <cover.1765140287.git.nicolinc@nvidia.com>
- <b6d87901f89c05dd9e1d0c1e819040d205f569a7.1765140287.git.nicolinc@nvidia.com>
-From: Shuai Xue <xueshuai@linux.alibaba.com>
-In-Reply-To: <b6d87901f89c05dd9e1d0c1e819040d205f569a7.1765140287.git.nicolinc@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d90a3959-eacd-495e-99cd-836d07955912@paulmck-laptop>
 
-
-
-在 2025/12/8 04:49, Nicolin Chen 写道:
-> STE in a nested case requires both S1 and S2 fields. And this makes the use
-> case different from the existing one.
+On Thu, Dec 04, 2025 at 12:42:52PM -0800, Paul E. McKenney wrote:
+> On Thu, Dec 04, 2025 at 03:45:05PM +0100, Borislav Petkov wrote:
+> > On Wed, Dec 03, 2025 at 09:16:37AM -0800, Paul E. McKenney wrote:
+> > > Or to some value that works for you.  But if you are not looking to be
+> > > an expedited RCU CPU stall-warning pioneer, yes, setting it to zero is
+> > > a good approach.
+> > > 
+> > > If you would like to be a more sane pioneer, setting it to (say) 11000
+> > > (or 11 seconds) could be appropriate.  But what fun is sanity?  ;-)
+> > 
+> > Oh, I have a lot of excitement even without RCU experiments. :-P
 > 
-> Add coverage for previously failed cases shifting between S2-only and S1+S2
-> STEs.
+> ;-) ;-) ;-)
 > 
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> ---
->   .../iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c  | 61 +++++++++++++++++++
->   1 file changed, 61 insertions(+)
+> > But if you need me to try things, lemme know.
+> > 
+> > For now I've simply reset the values as to what defconfig sets them to:
+> > 
+> > CONFIG_RCU_CPU_STALL_TIMEOUT=21
+> > CONFIG_RCU_EXP_CPU_STALL_TIMEOUT=0
 > 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c
-> index 3556e65cf9ac..1672e75ebffc 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c
-> @@ -555,6 +555,65 @@ static void arm_smmu_v3_write_ste_test_s2_to_s1_stall(struct kunit *test)
->   						       NUM_EXPECTED_SYNCS(3));
->   }
->   
-> +static void arm_smmu_test_make_nested_cdtable_ste(
-> +	struct arm_smmu_ste *ste, unsigned int s1dss, const dma_addr_t dma_addr,
-> +	enum arm_smmu_test_master_feat feat)
-> +{
-> +	bool stall_enabled = feat & ARM_SMMU_MASTER_TEST_STALL;
-> +	bool ats_enabled = feat & ARM_SMMU_MASTER_TEST_ATS;
-> +	struct arm_smmu_ste s1ste;
-> +
-> +	struct arm_smmu_master master = {
-> +		.ats_enabled = ats_enabled,
-> +		.cd_table.cdtab_dma = dma_addr,
-> +		.cd_table.s1cdmax = 0xFF,
-> +		.cd_table.s1fmt = STRTAB_STE_0_S1FMT_64K_L2,
-> +		.smmu = &smmu,
-> +		.stall_enabled = stall_enabled,
-> +	};
-> +
-> +	arm_smmu_test_make_s2_ste(ste, ARM_SMMU_MASTER_TEST_ATS);
-> +	arm_smmu_make_cdtable_ste(&s1ste, &master, ats_enabled, s1dss);
+> Sounds good, and thank you!
 
-Hi, Nicolin,
+But this turned out to be too simple to fail to address (famous last
+words!).  Please see below.
 
-Nit. Instead of duplicating this code, we can leverage the existing
-arm_smmu_test_make_cdtable_ste() helper here.
+							Thanx, Paul
 
-> +
-> +	ste->data[0] = cpu_to_le64(
-> +		STRTAB_STE_0_V |
-> +		FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_0_CFG_NESTED));
-> +	ste->data[0] |= s1ste.data[0] & ~cpu_to_le64(STRTAB_STE_0_CFG);
-> +	ste->data[1] |= s1ste.data[1];
-> +	/* Merge events for DoS mitigations on eventq */
-> +	ste->data[1] |= cpu_to_le64(STRTAB_STE_1_MEV);
-> +}
-> +
-> +static void
-> +arm_smmu_v3_write_ste_test_nested_s1dssbypass_to_s1bypass(struct kunit *test)
-> +{
-> +	struct arm_smmu_ste s1_ste;
-> +	struct arm_smmu_ste s2_ste;
-> +
-> +	arm_smmu_test_make_nested_cdtable_ste(&s1_ste,
-> +					      STRTAB_STE_1_S1DSS_BYPASS,
-> +					      fake_cdtab_dma_addr,
-> +					      ARM_SMMU_MASTER_TEST_ATS);
-> +	arm_smmu_test_make_s2_ste(&s2_ste, 0);
-> +	arm_smmu_v3_test_ste_expect_hitless_transition(test, &s1_ste, &s2_ste,
-> +						       NUM_EXPECTED_SYNCS(3));
-> +}
-> +
-> +static void
-> +arm_smmu_v3_write_ste_test_nested_s1bypass_to_s1dssbypass(struct kunit *test)
-> +{
-> +	struct arm_smmu_ste s1_ste;
-> +	struct arm_smmu_ste s2_ste;
-> +
-> +	arm_smmu_test_make_nested_cdtable_ste(&s1_ste,
-> +					      STRTAB_STE_1_S1DSS_BYPASS,
-> +					      fake_cdtab_dma_addr,
-> +					      ARM_SMMU_MASTER_TEST_ATS);
-> +	arm_smmu_test_make_s2_ste(&s2_ste, 0);
-> +	arm_smmu_v3_test_ste_expect_hitless_transition(test, &s2_ste, &s1_ste,
-> +						       NUM_EXPECTED_SYNCS(2));
+------------------------------------------------------------------------
 
-It would be better to add comments explaining why the number of syncs differs
-between the reverse transitions.
+commit 9776d62e236bef99859e9067f540aa6f6683b432
+Author: Paul E. McKenney <paulmck@kernel.org>
+Date:   Sun Dec 7 20:49:35 2025 -0800
 
-> +}
-> +
->   static void arm_smmu_v3_write_cd_test_sva_clear(struct kunit *test)
->   {
->   	struct arm_smmu_cd cd = {};
-> @@ -601,6 +660,8 @@ static struct kunit_case arm_smmu_v3_test_cases[] = {
->   	KUNIT_CASE(arm_smmu_v3_write_cd_test_s1_change_asid),
->   	KUNIT_CASE(arm_smmu_v3_write_ste_test_s1_to_s2_stall),
->   	KUNIT_CASE(arm_smmu_v3_write_ste_test_s2_to_s1_stall),
-> +	KUNIT_CASE(arm_smmu_v3_write_ste_test_nested_s1dssbypass_to_s1bypass),
-> +	KUNIT_CASE(arm_smmu_v3_write_ste_test_nested_s1bypass_to_s1dssbypass),
->   	KUNIT_CASE(arm_smmu_v3_write_cd_test_sva_clear),
->   	KUNIT_CASE(arm_smmu_v3_write_cd_test_sva_release),
->   	{},
+    rcu: Make expedited RCU CPU stall warnings detect stall-end races
+    
+    If an expedited RCU CPU stall ends just at the stall-warning timeout,
+    the current code will print an expedited stall-warning message, but one
+    that doesn't identify any CPUs or tasks causing the stall.  This is most
+    likely to happen for short-timeout stalls, for example, the 20-millisecond
+    timeouts that are sometimes used for small embedded devices.  Needless to
+    say, these semi-empty stall-warning messages can be rather confusing.
+    
+    One option would be to suppress the stall-warning message entirely in
+    this case, but the near-miss information can be quite valuable.
+    
+    This commit therefore detects this race condition and emits a "INFO:
+    Expedited stall ended before state dump start" message to clarify matters.
+    
+    Reported-by: Borislav Petkov <bp@alien8.de>
+    Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 
-Reviewed-by: Shuai Xue <xueshuai@linux.alibaba.com>
-
-Thanks.
-Shuai
+diff --git a/kernel/rcu/tree_exp.h b/kernel/rcu/tree_exp.h
+index 6058a734090c1..fd02cd12b7980 100644
+--- a/kernel/rcu/tree_exp.h
++++ b/kernel/rcu/tree_exp.h
+@@ -589,7 +589,12 @@ static void synchronize_rcu_expedited_stall(unsigned long jiffies_start, unsigne
+ 	pr_cont(" } %lu jiffies s: %lu root: %#lx/%c\n",
+ 		j - jiffies_start, rcu_state.expedited_sequence, data_race(rnp_root->expmask),
+ 		".T"[!!data_race(rnp_root->exp_tasks)]);
+-	if (ndetected) {
++	if (!ndetected) {
++		// This is invoked from the grace-period worker, so
++		// a new grace period cannot have started.  And if this
++		// worker were stalled, we would not get here.  ;-)
++		pr_err("INFO: Expedited stall ended before state dump start\n");
++	} else {
+ 		pr_err("blocking rcu_node structures (internal RCU debug):");
+ 		rcu_for_each_node_breadth_first(rnp) {
+ 			if (rnp == rnp_root)
