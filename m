@@ -1,30 +1,30 @@
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1D7992E0402
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 316782DF70F
 	for <iommu@lists.linux.dev>; Mon,  8 Dec 2025 21:29:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765229342; cv=none; b=WqFDCzBegRvAn7r3w5VtNezlfvbNbEPPO4UpLdhFNbjHm0ZC6PQUh2ULHmt0owyJUJfZoHkKbYVcRA34kDf8Ouf+JxJ5CFMfALJLFbgc/ersWxvT5f0DNQJQlFHPSu3KuqTSG+futKXMJPDPBHdS7BCDLCYMbZzSg3W7aLV6f7w=
+	t=1765229342; cv=none; b=S3mmzJSWdcg+v6CanWMfwg0uqMYBU8OGXa7yksJ07YZK51gF1zLWDqCxZeEd+LHXreVvB4Jiry64kjQStqFCOdTymtTFv+HV8O/q9zs+m/+DSw9ewDARcUIWNV/VdJPu5AEa3p4TETBbB0w6NmoNzRaZF9+Mo9tfvOf3xi4KEmk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1765229342; c=relaxed/simple;
-	bh=jkLNDnkRaXqCwYooZ/ixh1iiVmjDcuyCf79AWlzVh04=;
+	bh=ZWO1QudnFRSa/UfJWADrKqPlpf4gjcW/LBipSYFpdRA=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Bd1Gx/2A0uqHzCUuZFJ7s0ECNFTXUzJM8fSRVTX+ilT4DYSePEPyqdUH9tpSES91chTF6sPa4TVE4pnr3SFxe7z/r6xAj8SyHaCvtYyqn29sCkNZhvoRmX0GzSBU2YpYdrrl6xPuZ7fWxE6/VxP3xEYSB6RlagxzQ63vPYRRIvc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=KQP6nBzI; arc=none smtp.client-ip=13.77.154.182
+	 MIME-Version; b=OBnRjrIQlI2SXyOnK3jjawi6lYrInDLQ1ZD0FgLu5sAqjyiBDOBFRTsPKYZEWGFG589Xvv6secQwpbEOCHBVvklMxBBZ1f+Iifo/zB5xO08yTYVWnh8DFwmuK+LN/9rwD87QLzDKHOWmqlc5sME+h1Ia8mXb++lgVgXXvTA8ohM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=B/n8wCWT; arc=none smtp.client-ip=13.77.154.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="KQP6nBzI"
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="B/n8wCWT"
 Received: from DESKTOP-0403QTC.corp.microsoft.com (unknown [52.148.138.235])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 02F502116043;
+	by linux.microsoft.com (Postfix) with ESMTPSA id 4F3772116048;
 	Mon,  8 Dec 2025 13:28:59 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 02F502116043
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 4F3772116048
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1765229340;
-	bh=7mposCvgLsIXBQqq0/lL5X38LxRY9SCNj57FNM4//FM=;
+	s=default; t=1765229339;
+	bh=tsK3GpldGAW1/rhp32GUlYbF7U4FuS5oiQ9b0RSvaIA=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=KQP6nBzIK5rG+it4en5g69++E2gXWh5BmQdGN6mIDE1uLsMENRpJJZEcN9mdJPN2A
-	 FDMH9qdF5ytxqQWRNF2VWdTBifd0HJuIi+LVyjmOTtGt45Zq2v5chVFUK4zxWhcp/4
-	 a2LMTJMh2AHXKvLtkZy7E3OgupdBBOXlUvallZfY=
+	b=B/n8wCWThXglPw4hACGK2/bbAbgaXQngxfoYLcj9s6kh/wkRdHLCE+NtZSa8zdOWV
+	 Ut5j81lhHTPlorWHzs4BW5SSO/lq0xah7vpP7vYd9nE39UJgTaK1q8BpXn53DLt7+a
+	 SAUsM4P/Nf7BUUyj3EAzJh2TnCzAf1iyCzml5aVc=
 From: Jacob Pan <jacob.pan@linux.microsoft.com>
 To: linux-kernel@vger.kernel.org,
 	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
@@ -38,9 +38,9 @@ Cc: Jacob Pan <jacob.pan@linux.microsoft.com>,
 	Zhang Yu <zhangyu1@linux.microsoft.com>,
 	Jean Philippe-Brucker <jean-philippe@linaro.org>,
 	Alexander Grest <Alexander.Grest@microsoft.com>
-Subject: [PATCH v5 2/3] iommu/arm-smmu-v3: Fix CMDQ timeout warning
-Date: Mon,  8 Dec 2025 13:28:56 -0800
-Message-Id: <20251208212857.13101-3-jacob.pan@linux.microsoft.com>
+Subject: [PATCH v5 1/3] iommu/arm-smmu-v3: Parameterize wfe for CMDQ polling
+Date: Mon,  8 Dec 2025 13:28:55 -0800
+Message-Id: <20251208212857.13101-2-jacob.pan@linux.microsoft.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20251208212857.13101-1-jacob.pan@linux.microsoft.com>
 References: <20251208212857.13101-1-jacob.pan@linux.microsoft.com>
@@ -50,133 +50,61 @@ List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-While polling for n spaces in the cmdq, the current code instead checks
-if the queue is full. If the queue is almost full but not enough space
-(<n), then the CMDQ timeout warning is never triggered even if the
-polling has exceeded timeout limit.
+When SMMU_IDR0.SEV == 1, the SMMU triggers a WFE wake-up event when a
+Command queue becomes non-full and an agent external to the SMMU could
+have observed that the queue was previously full. However, WFE is not
+always required or available during space polling. Introduce an optional
+parameter to control WFE usage.
 
-The existing arm_smmu_cmdq_poll_until_not_full() doesn't fit efficiently
-nor ideally to the only caller arm_smmu_cmdq_issue_cmdlist():
- - It uses a new timer at every single call, which fails to limit to the
-   preset ARM_SMMU_POLL_TIMEOUT_US per issue.
-- It has a redundant internal queue_full(), which doesn't detect whether
-   there is a enough space for number of n commands.
-
-This patch polls for the availability of exact space instead of full and
-emit timeout warning accordingly.
-
-Fixes: 587e6c10a7ce ("iommu/arm-smmu-v3: Reduce contention during command-queue insertion")
-Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
-Co-developed-by: Yu Zhang <zhangyu1@linux.microsoft.com>
-Signed-off-by: Yu Zhang <zhangyu1@linux.microsoft.com>
 Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
 ---
-v5:
-    - Disable WFE for queue space polling (Robin, Will)
-v4:
-    - Deleted non-ETIMEOUT error handling for queue_poll (Nicolin)
-v3:
-    - Use a helper for cmdq poll instead of open coding (Nicolin)
-    - Add more explanation in the commit message (Nicolin)
-v2: - Reduced debug print info (Nicolin)
-    - Use a separate irq flags for exclusive lock
-    - Handle queue_poll err code other than ETIMEOUT
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 49 ++++++++++-----------
- 1 file changed, 24 insertions(+), 25 deletions(-)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index d637a5dcf48a..3467c10be0d0 100644
+index bf67d9abc901..d637a5dcf48a 100644
 --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
 +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -117,12 +117,6 @@ static bool queue_has_space(struct arm_smmu_ll_queue *q, u32 n)
- 	return space >= n;
+@@ -191,11 +191,11 @@ static u32 queue_inc_prod_n(struct arm_smmu_ll_queue *q, int n)
  }
  
--static bool queue_full(struct arm_smmu_ll_queue *q)
--{
--	return Q_IDX(q, q->prod) == Q_IDX(q, q->cons) &&
--	       Q_WRP(q, q->prod) != Q_WRP(q, q->cons);
--}
--
- static bool queue_empty(struct arm_smmu_ll_queue *q)
+ static void queue_poll_init(struct arm_smmu_device *smmu,
+-			    struct arm_smmu_queue_poll *qp)
++			    struct arm_smmu_queue_poll *qp, bool want_wfe)
  {
- 	return Q_IDX(q, q->prod) == Q_IDX(q, q->cons) &&
-@@ -612,14 +606,13 @@ static void arm_smmu_cmdq_poll_valid_map(struct arm_smmu_cmdq *cmdq,
- 	__arm_smmu_cmdq_poll_set_valid_map(cmdq, sprod, eprod, false);
+ 	qp->delay = 1;
+ 	qp->spin_cnt = 0;
+-	qp->wfe = !!(smmu->features & ARM_SMMU_FEAT_SEV);
++	qp->wfe = want_wfe && (!!(smmu->features & ARM_SMMU_FEAT_SEV));
+ 	qp->timeout = ktime_add_us(ktime_get(), ARM_SMMU_POLL_TIMEOUT_US);
  }
  
--/* Wait for the command queue to become non-full */
--static int arm_smmu_cmdq_poll_until_not_full(struct arm_smmu_device *smmu,
--					     struct arm_smmu_cmdq *cmdq,
--					     struct arm_smmu_ll_queue *llq)
-+
-+static inline void arm_smmu_cmdq_poll(struct arm_smmu_device *smmu,
-+				       struct arm_smmu_cmdq *cmdq,
-+				       struct arm_smmu_ll_queue *llq,
-+				       struct arm_smmu_queue_poll *qp)
- {
- 	unsigned long flags;
--	struct arm_smmu_queue_poll qp;
--	int ret = 0;
- 
- 	/*
- 	 * Try to update our copy of cons by grabbing exclusive cmdq access. If
-@@ -629,19 +622,16 @@ static int arm_smmu_cmdq_poll_until_not_full(struct arm_smmu_device *smmu,
- 		WRITE_ONCE(cmdq->q.llq.cons, readl_relaxed(cmdq->q.cons_reg));
- 		arm_smmu_cmdq_exclusive_unlock_irqrestore(cmdq, flags);
- 		llq->val = READ_ONCE(cmdq->q.llq.val);
--		return 0;
-+		return;
- 	}
+@@ -656,13 +656,11 @@ static int __arm_smmu_cmdq_poll_until_msi(struct arm_smmu_device *smmu,
+ 	struct arm_smmu_queue_poll qp;
+ 	u32 *cmd = (u32 *)(Q_ENT(&cmdq->q, llq->prod));
  
 -	queue_poll_init(smmu, &qp);
--	do {
--		llq->val = READ_ONCE(cmdq->q.llq.val);
--		if (!queue_full(llq))
--			break;
 -
--		ret = queue_poll(&qp);
--	} while (!ret);
--
--	return ret;
-+	if (queue_poll(qp) == -ETIMEDOUT) {
-+		dev_err_ratelimited(smmu->dev, "CMDQ timed out, cons: %08x, prod: 0x%08x\n",
-+				    llq->cons, llq->prod);
-+		/* Restart the timer */
-+		queue_poll_init(smmu, qp, false);
-+	}
-+	llq->val = READ_ONCE(cmdq->q.llq.val);
- }
+ 	/*
+ 	 * The MSI won't generate an event, since it's being written back
+ 	 * into the command queue.
+ 	 */
+-	qp.wfe = false;
++	queue_poll_init(smmu, &qp, false);
+ 	smp_cond_load_relaxed(cmd, !VAL || (ret = queue_poll(&qp)));
+ 	llq->cons = ret ? llq->prod : queue_inc_prod_n(llq, 1);
+ 	return ret;
+@@ -680,7 +678,7 @@ static int __arm_smmu_cmdq_poll_until_consumed(struct arm_smmu_device *smmu,
+ 	u32 prod = llq->prod;
+ 	int ret = 0;
  
- /*
-@@ -781,12 +771,21 @@ static int arm_smmu_cmdq_issue_cmdlist(struct arm_smmu_device *smmu,
- 	local_irq_save(flags);
- 	llq.val = READ_ONCE(cmdq->q.llq.val);
+-	queue_poll_init(smmu, &qp);
++	queue_poll_init(smmu, &qp, true);
+ 	llq->val = READ_ONCE(cmdq->q.llq.val);
  	do {
-+		struct arm_smmu_queue_poll qp;
- 		u64 old;
- 
-+		/*
-+		 * Poll without WFE because:
-+		 * 1) Running out of space should be rare. Power saving is not
-+		 *    an issue.
-+		 * 2) WFE depends on queue full break events, which occur only
-+		 *    when the queue is full, but here we’re polling for
-+		 *    sufficient space, not just queue full condition.
-+		 */
-+		queue_poll_init(smmu, &qp, false);
- 		while (!queue_has_space(&llq, n + sync)) {
- 			local_irq_restore(flags);
--			if (arm_smmu_cmdq_poll_until_not_full(smmu, cmdq, &llq))
--				dev_err_ratelimited(smmu->dev, "CMDQ timeout\n");
-+			arm_smmu_cmdq_poll(smmu, cmdq, &llq, &qp);
- 			local_irq_save(flags);
- 		}
- 
+ 		if (queue_consumed(llq, prod))
 -- 
 2.43.0
 
