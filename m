@@ -1,232 +1,193 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 299D52882A9
-	for <iommu@lists.linux.dev>; Mon,  8 Dec 2025 22:58:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9F023009FA
+	for <iommu@lists.linux.dev>; Tue,  9 Dec 2025 01:59:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765234741; cv=none; b=KuzaZODIOhyHizlf6t6D2Zxfac2RZMhyRoUchRKEsdIMaTJhSgBxygMRHUsSif0FiL6AHz/iKGcQ31ChuD/N5/eNMlNb5DOriLpQAcTVQsSCu8YkDg45KgAryWgVE3ok5In/bXn40TOpbwPi0rpYfz42ib/Y+Y45h4uQ0OlvdHw=
+	t=1765245590; cv=none; b=NIc+BibJhxXPTR2Lid9o7SK6J13A8AAd6gAFPBZYDsD8aLJiVZdRiTGyxY22KZQJPPoy5L6kONKrYEUospBwdLTjpwIOuMBKKR2n8NuxFsmzQ967U6JYlvIE47yZ0SXcVOMyZmbgFu6sA2TdQfzmh9Yz1e84qb2hBpSY4a22NIQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765234741; c=relaxed/simple;
-	bh=/ZMr0LtpedWAYtY75jAMaEvFz5FtHfhuzEZvDPDl18o=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=GdjfNB7HjAPD+oQvK6NTvzRLo54Wy6PRS4I7vgUoEJMAEEZ+UClYFGWGRgXxqA0MA/YqrFBYJHLZ/4y+FEeuGZAxfmV4/0l2qoM+gyUprfvaeR+P/kOXpiXu2b0UVX0SzPNeHXpNuljMK/658joozT4K0Zex+c9M6gZhytz62V0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=pW0VgkT1; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=B+oP+cMR; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1765245590; c=relaxed/simple;
+	bh=3VqMdSggJxrHPpmH+5FpuHZQMwjsfWTpiO2SJgzVl1E=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Jx9SCRKeUGGr40b/7zCf1eQMXi0G6ddQVCSIaYnwyjLi04+AnQuPy66vpOqJn/D8yk/UfOqPycp7IhrRQ3aNIQUkZZuhkuKeRl4KkuTmPXmdzAuSqm0gcfKgfgz0UInFoqcrILjHSBuJyczuzdBjaAnhYpbIMGRt2D/j4zrwTSc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gR4lHXjC; arc=none smtp.client-ip=198.175.65.21
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="pW0VgkT1";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="B+oP+cMR"
-Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 5B8M8OGC2445436
-	for <iommu@lists.linux.dev>; Mon, 8 Dec 2025 22:58:59 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=QKgt0p9I3O54Kz1mH4zj4pyk
-	Ax2/kdfGcwbFjdAZiZ0=; b=pW0VgkT19csft4GkapYGtQPH1xVoQ/5SnK1kKGOd
-	psj/XuYI5TUSHIcY9lbdfjplkj7z21pBmpU4fz6umAL3GifURF/BCQzQCtDSDTlr
-	fAguo4UdZ4/cqDSajFbUMd/KizyRPoXt55G+rTe+u2dznqWjALL4x8us0tlo1ecX
-	ZqY24vI9cizWyEt/E42iVlf02WA1NDTpvdxEIMsWNqkcPzF7FoZbwhK6x4gYdyZS
-	Crp0qks0w9XxRDEGso0raop4sKfrDQ2DRSAUekUe+GCSUW+0yBeXO01aa314cdSJ
-	r+cw2K8y6rmAz+U5TmwgiVMuIwZ6mPQ95l7fmuBrMyNW6Q==
-Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com [209.85.216.69])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4ax76u03e9-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Mon, 08 Dec 2025 22:58:59 +0000 (GMT)
-Received: by mail-pj1-f69.google.com with SMTP id 98e67ed59e1d1-3438b1220bcso5479747a91.2
-        for <iommu@lists.linux.dev>; Mon, 08 Dec 2025 14:58:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1765234738; x=1765839538; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=QKgt0p9I3O54Kz1mH4zj4pykAx2/kdfGcwbFjdAZiZ0=;
-        b=B+oP+cMRdaj5HjOIWWGTFBxRtUxAPchIVU/RwdYjwiVDRd/EQCsW6tOCkeX0BvKvYr
-         sELkIvYay2Owej8UnzTu+r9SZQyNAknvms3XqB4RK+2CcoSvUIfEYrB2FXYjewSI2T/c
-         3Bf3TW9k2HhDe9NUUFUseq2JR/9X/NI5Ns2db3WZpweUhIOPB1W/yv6Tmwl8yUxhQ7wU
-         OFDggsDq7w5LTI+yqEGdlnW2/kIMjB3gtQn7tkYA1didYWi5rbYWAFmRYHJjsURkGu2G
-         Sz1+QfRlFgc/a7eZSjzVelzeOyGkVAnTnWrvQNQ4qGnqX7NGbL5QLlJKRHjO1E1MBYHV
-         RErw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1765234738; x=1765839538;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=QKgt0p9I3O54Kz1mH4zj4pykAx2/kdfGcwbFjdAZiZ0=;
-        b=dexrNugrZkuRV8ImoBB6CuYluDKrJPJQQE1akwNy4VDeW/O+eiX+fdKaTgSb7aVRqs
-         kSp6vtld+/k8hmtkSixEuIoMeuzeIAc7RhEeuTFi7AEdRuTTyqlL4nKiJ6/sKFgryjuS
-         ajqnTgej9AP9mQnrjX5YWaN3dv9aY55GC/ZXCBvWiixU511Db0uSq+FoGHrIAZgJ/hDb
-         A48DnRGLbo6OH79SIV+vduyR6k1D9snhBxwH/Z+XXNhdxDREH1CIDmHj1aqs6Ee6Ij5w
-         MrxHf/Ad+TLRk55z9gMstmNGR18YHTwA/MnXrdXslL2QQlPH9eZudFeFuhM9QWpFEIn2
-         b9zw==
-X-Forwarded-Encrypted: i=1; AJvYcCUVMKp0jy/w2Ospi4IEZ7e/QCVXv9DNWt6qf0l+Te9Ce34j3LYp/AAE8DDasSGF9nGP8knNYw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyWXF4re2kTxw271zUAexEir8cdLGVhHjoKVCWzvh7DyxKqcy+0
-	i0do2RWlp8oHylfyDDD747pEuVzjp9tmyx5QseKPAuNt4qpdLeQhVm18YLshnNoKD9sympkDly5
-	MCBMsZwzKGBiX9WzUjEF9Zdd1hsWPkzRP7sAV+Z0Nv2X8TYjlej6TjEyyWeneGNhepowJZBq4Y+
-	eRM85a2tq/DMkE7HPltBcfhXeNbNgEQRPI
-X-Gm-Gg: ASbGncvuwj3gyQdPIDxvIJqGgs21/f9b9m3niSxxASQ45NmbPA8YRBhBtr5n6jVNq9m
-	ZoOfNlhGVRTimLINFaFTig/4zwlxjCcr9+420KN64Gij6mn6tQLnVIM1MY4+EQKYa2rm6An7mbS
-	HseU7BwTpk1vzVvzkWWTJmsU9qdWyYnnhCfdnho2eTxljLSJ+tqHA2BC3phyEN1t7z/CGssN+NV
-	VlbVkUb
-X-Received: by 2002:a17:90b:2691:b0:33b:bf8d:6172 with SMTP id 98e67ed59e1d1-349a26c2cadmr6800352a91.34.1765234737931;
-        Mon, 08 Dec 2025 14:58:57 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IF+R13fCWlinwEbgpGmZPHyMFonury49ULZGv3kNILl7FaYcIst8UAk1P4CrxofUscq6obPPfCKjTY63VAOxS0=
-X-Received: by 2002:a17:90b:2691:b0:33b:bf8d:6172 with SMTP id
- 98e67ed59e1d1-349a26c2cadmr6800335a91.34.1765234737428; Mon, 08 Dec 2025
- 14:58:57 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gR4lHXjC"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1765245588; x=1796781588;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=3VqMdSggJxrHPpmH+5FpuHZQMwjsfWTpiO2SJgzVl1E=;
+  b=gR4lHXjC7z6ScXQbaLDbITvVpR9fYa3O4C6+IUftiOs9X119Y8zGAmuM
+   E8tQjotcNNY+UwQ1SJgEaxuhWKG0eXkI5wJfcklmwImv5pIhHTEjVfYeG
+   BZKbM7DTnXcbFzo0MzM/VShj+2FH12AQlDNFydim1aEqDJV+O9aEpjta1
+   pJwo4ZgNmQ6aAdb0+2A9rZZkqn5t3Mra7KbjAWLt/hSQZfkjTvCUfma7q
+   YOFz/c1I4+Pfvw60Eq79VwQ2FYvwe1g/r+lKDlU68q26UKx8tXjYo3Dk0
+   E1b5HHU8bFhtLT9QZjYkjyPvJdFZ2E9TcN1zAITDM1XAJ49DF9F0/O8dM
+   Q==;
+X-CSE-ConnectionGUID: BTpdyUtWRGqIN3Uio3MSYA==
+X-CSE-MsgGUID: UWmWKAItRQ23rP+o+pj2EA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11635"; a="67129942"
+X-IronPort-AV: E=Sophos;i="6.20,256,1758610800"; 
+   d="scan'208";a="67129942"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Dec 2025 17:59:47 -0800
+X-CSE-ConnectionGUID: 5TdfkdsSS9CYHHtagBCGWQ==
+X-CSE-MsgGUID: PeCt+jUsRVKlVClJzGUIVA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.20,260,1758610800"; 
+   d="scan'208";a="201007501"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by fmviesa004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Dec 2025 17:59:43 -0800
+Message-ID: <99b3a5a1-600b-4419-8215-824e7a525f12@linux.intel.com>
+Date: Tue, 9 Dec 2025 09:55:06 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20251202125447.2102658-1-charan.kalla@oss.qualcomm.com>
- <gsjyj3arwoqcjln6nlmyhohlowyvkwqmxppdq5y7c3m4khoyq3@npzixjpibh5g> <0bcd5a92-5213-4862-9a31-8ea539b1b72c@oss.qualcomm.com>
-In-Reply-To: <0bcd5a92-5213-4862-9a31-8ea539b1b72c@oss.qualcomm.com>
-From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-Date: Tue, 9 Dec 2025 00:58:51 +0200
-X-Gm-Features: AQt7F2qiksWXfb4QJZZD1j7gIWBPQusAazA7cTt2NoYXOiNgNKUjwRXhyxvLVwY
-Message-ID: <CAO9ioeW0fafwRnxvDJ7yHGcQYbgfkfRF1BMTpXpG=8tSKRptdw@mail.gmail.com>
-Subject: Re: [PATCH V4] iommu/arm-smmu: add actlr settings for mdss on
- Qualcomm platforms
-To: Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>
-Cc: Bjorn Andersson <andersson@kernel.org>,
-        Charan Teja Kalla <charan.kalla@oss.qualcomm.com>,
-        konrad.dybcio@oss.qualcomm.com, robin.clark@oss.qualcomm.com,
-        will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
-        iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMjA4MDE5NSBTYWx0ZWRfX0r2f2KQ9wnYh
- QXxhBHAXXGdtTBS8saYqERjxjM2outjLc0moX+k2n1QdV82+yi7ZrjNrlnoJKABrsJbc/VZLvt1
- nWoKBNrrRm6yGWSAzhwkA/IbTzT6bk4w1dylXVVOix8sAQWK2HaS4sWxiN50hHR+9dOLsqKJ925
- QeDNFk8btgaRrXCY5vxgKNZnBB5rtc4Hs1yvfnsmB17FTu6hdGxGqTc1VAQLNgWli0oTlzrjfx/
- OHcQii/7XLXQOfTNZCyZgzilAejRc2D8WtL/YHCv+LLMul2/0peIyxopBtqJKQx2nnejWTsLbKZ
- WFZ/m46YjKf75rbGjI5uNAc/hHCA4yaTIwXahIFod3WnIr24BfVE7ET1C1kMn0zh68sOmSUcAJN
- rMn0YWcBRpvO4ZaVtWDdFBNFF455RA==
-X-Proofpoint-ORIG-GUID: _NFRfQrcKy7Ywh8ER18CmvJgkJ8z4SKz
-X-Authority-Analysis: v=2.4 cv=PYTyRyhd c=1 sm=1 tr=0 ts=69375833 cx=c_pps
- a=vVfyC5vLCtgYJKYeQD43oA==:117 a=IkcTkHD0fZMA:10 a=wP3pNCr1ah4A:10
- a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22 a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8
- a=jas2bIbCv71b3E4NwwIA:9 a=QEXdDO2ut3YA:10 a=rl5im9kqc5Lf4LNbBjHf:22
-X-Proofpoint-GUID: _NFRfQrcKy7Ywh8ER18CmvJgkJ8z4SKz
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.9,FMLib:17.12.100.49
- definitions=2025-12-06_02,2025-12-04_04,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- priorityscore=1501 phishscore=0 suspectscore=0 spamscore=0 impostorscore=0
- bulkscore=0 clxscore=1015 adultscore=0 malwarescore=0 lowpriorityscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2510240001 definitions=main-2512080195
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 2/4] drivers/iommu: Add calls for IOMMU_DEBUG_PAGEALLOC
+To: Mostafa Saleh <smostafa@google.com>
+Cc: linux-mm@kvack.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ linux-doc@vger.kernel.org, corbet@lwn.net, joro@8bytes.org, will@kernel.org,
+ robin.murphy@arm.com, akpm@linux-foundation.org, vbabka@suse.cz,
+ surenb@google.com, mhocko@suse.com, jackmanb@google.com, hannes@cmpxchg.org,
+ ziy@nvidia.com, david@redhat.com, lorenzo.stoakes@oracle.com,
+ Liam.Howlett@oracle.com, rppt@kernel.org, xiaqinxin@huawei.com
+References: <20251124200811.2942432-1-smostafa@google.com>
+ <20251124200811.2942432-3-smostafa@google.com>
+ <07434771-3233-4c88-b505-ee02da72c905@linux.intel.com>
+ <aSV-Xi5uMJcMtk1b@google.com>
+ <CAFgf54qGdWNB=Oa=vbU1hRN2XOxQSESGO6K0CiG4Qizv=T3+Qw@mail.gmail.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <CAFgf54qGdWNB=Oa=vbU1hRN2XOxQSESGO6K0CiG4Qizv=T3+Qw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Mon, 8 Dec 2025 at 21:28, Bibek Kumar Patro
-<bibek.patro@oss.qualcomm.com> wrote:
->
->
->
-> On 12/6/2025 2:36 AM, Bjorn Andersson wrote:
-> > On Tue, Dec 02, 2025 at 06:24:47PM +0530, Charan Teja Kalla wrote:
-> >
-> > Based on the other changes to this file, the subject prefix should be
-> > "iommu/arm-smmu-qcom:"
-> >
->
-> Sure Bjorn, I will address this in v4 RESEND and collect all reviewed-by
-> tags.
-> Let me know if you feel this change needs a revision update to v5
-> instead of v4-RESEND.
+On 12/9/25 04:09, Mostafa Saleh wrote:
+> On Tue, Nov 25, 2025 at 10:01 AM Mostafa Saleh<smostafa@google.com> wrote:
+>> On Tue, Nov 25, 2025 at 03:35:08PM +0800, Baolu Lu wrote:
+>>> On 11/25/25 04:08, Mostafa Saleh wrote:
+>>>> Add calls for the new iommu debug config IOMMU_DEBUG_PAGEALLOC:
+>>>> - iommu_debug_init: Enable the debug mode if configured by the user.
+>>>> - iommu_debug_map: Track iommu pages mapped, using physical address.
+>>>> - iommu_debug_unmap_begin: Track start of iommu unmap operation, with
+>>>>     IOVA and size.
+>>>> - iommu_debug_unmap_end: Track the end of unmap operation, passing the
+>>>>     actual unmapped size versus the tracked one at unmap_begin.
+>>>>
+>>>> We have to do the unmap_begin/end as once pages are unmapped we lose
+>>>> the information of the physical address.
+>>>> This is racy, but the API is racy by construction as it uses refcounts
+>>>> and doesn't attempt to lock/synchronize with the IOMMU API as that will
+>>>> be costly, meaning that possibility of false negative exists.
+>>>>
+>>>> Signed-off-by: Mostafa Saleh<smostafa@google.com>
+>>>> ---
+>>>>    drivers/iommu/iommu-debug-pagealloc.c | 26 +++++++++++++
+>>>>    drivers/iommu/iommu.c                 | 12 +++++-
+>>>>    include/linux/iommu-debug-pagealloc.h | 56 +++++++++++++++++++++++++++
+>>>>    3 files changed, 92 insertions(+), 2 deletions(-)
+>>>>
+>>> Remove "drivers/" from the commit title.
+>>>
+>>> $ git log --oneline drivers/iommu/iommu.c
+>> My bad, I will fix it.
+>>
+>>> [...]
+>>>> diff --git a/include/linux/iommu-debug-pagealloc.h b/include/linux/iommu-debug-pagealloc.h
+>>>> index 83e64d70bf6c..454303ec09c2 100644
+>>>> --- a/include/linux/iommu-debug-pagealloc.h
+>>>> +++ b/include/linux/iommu-debug-pagealloc.h
+>>>> @@ -8,10 +8,66 @@
+>>>>    #ifndef __LINUX_IOMMU_DEBUG_PAGEALLOC_H
+>>>>    #define __LINUX_IOMMU_DEBUG_PAGEALLOC_H
+>>>> +struct iommu_domain;
+>>>> +
+>>>>    #ifdef CONFIG_IOMMU_DEBUG_PAGEALLOC
+>>>> +DECLARE_STATIC_KEY_FALSE(iommu_debug_initialized);
+>>>> +
+>>>>    extern struct page_ext_operations page_iommu_debug_ops;
+>>>> +void __iommu_debug_map(struct iommu_domain *domain, phys_addr_t phys,
+>>>> +                  size_t size);
+>>>> +void __iommu_debug_unmap_begin(struct iommu_domain *domain,
+>>>> +                          unsigned long iova, size_t size);
+>>>> +void __iommu_debug_unmap_end(struct iommu_domain *domain,
+>>>> +                        unsigned long iova, size_t size, size_t unmapped);
+>>>> +
+>>>> +static inline void iommu_debug_map(struct iommu_domain *domain,
+>>>> +                              phys_addr_t phys, size_t size)
+>>>> +{
+>>>> +   if (static_branch_unlikely(&iommu_debug_initialized))
+>>>> +           __iommu_debug_map(domain, phys, size);
+>>>> +}
+>>>> +
+>>>> +static inline void iommu_debug_unmap_begin(struct iommu_domain *domain,
+>>>> +                                      unsigned long iova, size_t size)
+>>>> +{
+>>>> +   if (static_branch_unlikely(&iommu_debug_initialized))
+>>>> +           __iommu_debug_unmap_begin(domain, iova, size);
+>>>> +}
+>>>> +
+>>>> +static inline void iommu_debug_unmap_end(struct iommu_domain *domain,
+>>>> +                                    unsigned long iova, size_t size,
+>>>> +                                    size_t unmapped)
+>>>> +{
+>>>> +   if (static_branch_unlikely(&iommu_debug_initialized))
+>>>> +           __iommu_debug_unmap_end(domain, iova, size, unmapped);
+>>>> +}
+>>>> +
+>>>> +void iommu_debug_init(void);
+>>>> +
+>>>> +#else
+>>>> +static inline void iommu_debug_map(struct iommu_domain *domain,
+>>>> +                              phys_addr_t phys, size_t size)
+>>>> +{
+>>>> +}
+>>>> +
+>>>> +static inline void iommu_debug_unmap_begin(struct iommu_domain *domain,
+>>>> +                                      unsigned long iova, size_t size)
+>>>> +{
+>>>> +}
+>>>> +
+>>>> +static inline void iommu_debug_unmap_end(struct iommu_domain *domain,
+>>>> +                                    unsigned long iova, size_t size,
+>>>> +                                    size_t unmapped)
+>>>> +{
+>>>> +}
+>>>> +
+>>>> +static inline void iommu_debug_init(void)
+>>>> +{
+>>>> +}
+>>> I suppose that all these should go to drivers/iommu/iommu-priv.h, as
+>>> they are for use in other files inside the IOMMU subsystem.
+>> It seemed better to have all the feature functions/declarations in one
+>> isolated file, as it is included outside of the iommu susbsystem also.
+>> I have no strong opinion, I can keep them in drivers/iommu/iommu-priv.h
+>> if you think it's better. But then we will have to include also
+>> "iommu-debug-pagealloc.h" for the static key to avoid including extra
+>> files to linux/mm.h.
+>>
+>> Thanks,
+>> Mostafa
+>>
+> Hi Baolu,
+> 
+> I plan to post a new version soon. So far, I only have the commit
+> subject rewrites. Do you have any opinion on the header file split or
+> the unmap size part?
 
-RESEND means that there were no changes to the patches. If you've
-changed anything, it is a next iteration.
+I have no option regarding the unmap size part, as the comments already
+declare the possible cases. For the header file split, I feel it's
+better to put staff that is only used in the IOMMU subsystem in drivers/
+iommu in iommu-pri.h instead of the global ones under include/linux.
 
->
-> Thanks & regards,
-> Bibek
->
-> > Regards,
-> > Bjorn
-> >
-> >> Add ACTLR settings for missing MDSS devices on Qualcomm platforms.
-> >>
-> >> These are QoS settings and are specific to per SoC thus different
-> >> settings, eg: some have shallow prefetch while others have no
-> >> prefetch.
-> >>
-> >> Aswell, this prefetch feature is not implemented for all the
-> >> platforms, capturing to those are implemented to the best of my
-> >> knowledge.
-> >>
-> >> Signed-off-by: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
-> >> ---
-> >> Changes from V3:
-> >>   1) Add actlr setting for missing sc8180x & sm6115.
-> >>   2) Improved commit message.
-> >> https://lore.kernel.org/all/20251124171030.323989-1-charan.kalla@oss.qualcomm.com/
-> >>
-> >> Changes from V2:
-> >>   1) Add actlr settings for all the mdss devices on Qualcomm platforms.
-> >>   2) Improved the commit message that explain why different ACTLR
-> >>      settings
-> >> https://lore.kernel.org/lkml/20251118171822.3539062-1-charan.kalla@oss.qualcomm.com/#t
-> >>
-> >> Changes from V1:
-> >>    1) Added actlr setting only for MDSS and dropped for fastrpc. --
-> >> konrad
-> >>    2) ACTLR table is updated per alphanumeric order -- konrad
-> >>    https://lore.kernel.org/all/20251105075307.1658329-1-charan.kalla@oss.qualcomm.com/
-> >>
-> >>   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 26 ++++++++++++++++++++++
-> >>   1 file changed, 26 insertions(+)
-> >>
-> >> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> >> index c21a401c71eb..149da53091de 100644
-> >> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> >> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> >> @@ -41,12 +41,38 @@ static const struct of_device_id qcom_smmu_actlr_client_of_match[] = {
-> >>                      .data = (const void *) (PREFETCH_DEEP | CPRE | CMTLB) },
-> >>      { .compatible = "qcom,fastrpc",
-> >>                      .data = (const void *) (PREFETCH_DEEP | CPRE | CMTLB) },
-> >> +    { .compatible = "qcom,qcm2290-mdss",
-> >> +                    .data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
-> >>      { .compatible = "qcom,sc7280-mdss",
-> >>                      .data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
-> >>      { .compatible = "qcom,sc7280-venus",
-> >>                      .data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
-> >> +    { .compatible = "qcom,sc8180x-mdss",
-> >> +                    .data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
-> >> +    { .compatible = "qcom,sc8280xp-mdss",
-> >> +                    .data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
-> >> +    { .compatible = "qcom,sm6115-mdss",
-> >> +                    .data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
-> >> +    { .compatible = "qcom,sm6125-mdss",
-> >> +                    .data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
-> >> +    { .compatible = "qcom,sm6350-mdss",
-> >> +                    .data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
-> >> +    { .compatible = "qcom,sm8150-mdss",
-> >> +                    .data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
-> >> +    { .compatible = "qcom,sm8250-mdss",
-> >> +                    .data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
-> >> +    { .compatible = "qcom,sm8350-mdss",
-> >> +                    .data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
-> >> +    { .compatible = "qcom,sm8450-mdss",
-> >> +                    .data = (const void *) (PREFETCH_DEFAULT | CMTLB) },
-> >>      { .compatible = "qcom,sm8550-mdss",
-> >>                      .data = (const void *) (PREFETCH_DEFAULT | CMTLB) },
-> >> +    { .compatible = "qcom,sm8650-mdss",
-> >> +                    .data = (const void *) (PREFETCH_DEFAULT | CMTLB) },
-> >> +    { .compatible = "qcom,sm8750-mdss",
-> >> +                    .data = (const void *) (PREFETCH_DEFAULT | CMTLB) },
-> >> +    { .compatible = "qcom,x1e80100-mdss",
-> >> +                    .data = (const void *) (PREFETCH_DEFAULT | CMTLB) },
-> >>      { }
-> >>   };
-> >>
-> >> --
-> >> 2.34.1
-> >>
-> >>
->
-
-
--- 
-With best wishes
-Dmitry
+Thanks,
+baolu
