@@ -1,273 +1,181 @@
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF47D1CAA79
-	for <iommu@lists.linux.dev>; Tue,  9 Dec 2025 12:00:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0BDB632BF44
+	for <iommu@lists.linux.dev>; Tue,  9 Dec 2025 12:37:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765281662; cv=none; b=Us7VdGWPo2lof/83Ax4/FlFND1XwL7F8fIzjKKqgtBmhTO1+zycPPdo2+ljTqpQ0uu/UXKfWoTeiJahp7iGYf8ObRM95Io2yEsFg7v0yrCRsaRyXQs3ma6sJKnd8N1KsKsVAhftw52YGj+2IxFXa2TOjDFv3CvJXZT2Tlzo41mk=
+	t=1765283838; cv=none; b=taWa4nZ69O8WdL71k6MqYrn1dor/cJiGYRPPJebKYf6n3y8wbnfo8bSqlz13ycUTcVtiIdKLo4c0+dVV9JZW2E6tkNn0LhYOhhiP/XZ9bjmsKppiyXCLrBn1CC8ZCuR643SKrG7RKUjwJ+xyV9mOBwgIC1JpWcoP19zrVYM/gho=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765281662; c=relaxed/simple;
-	bh=Z3ir9BrfrPFoBFrN7J9W/xPhAtDwZfJmF1IdKC2MAnU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
-	 Content-Type:References; b=hlPTpPsiBrl+XC5s210JZHnagjFPR4lFVrJpchgh7hB+pYAjMOGS734ae8uJ8EjNa7hBo8dBbbrz7Ms3lVYN4x3+F5KuzTQNriGtn1i6/OETY0SoOWpOzmsv1rE/Am3kTfq6r0hVamnCkN8s7C72TxOnReLceOfmdqX6IRp72UE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=hC/dkx83; arc=none smtp.client-ip=210.118.77.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1765283838; c=relaxed/simple;
+	bh=Y73uYvlk1WLIgqwTbEE+iU7NSsrqKBOdoNukYczXr7o=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=hWaQqA6H2wYi7KfYCipMO1BjShN76o68e5t0o368IEEkB8klwAGv6gwumvPkhcY8iu2MNsbceu2PtqInHEQVK7zjG7s+ItnBzn2oMSRJd+T5caV/gLK7kwuGbwRoAryRUzjxNdQ+62/rcG6vE5bz6LFOU6tDRJYYykafwphniB4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=H0vzxl90; arc=none smtp.client-ip=209.85.128.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="hC/dkx83"
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20251209120058euoutp01bd08f314c9ffc70540c352f6fb3032d2~-ilCyOTj80421704217euoutp015
-	for <iommu@lists.linux.dev>; Tue,  9 Dec 2025 12:00:58 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20251209120058euoutp01bd08f314c9ffc70540c352f6fb3032d2~-ilCyOTj80421704217euoutp015
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1765281658;
-	bh=1DT6DpAjhJHOs9/zAXgFvPZvE51a0lBuc3TvJTgGTXE=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=hC/dkx83rdvS6piYbUR4x+aoI/hKEbRSKi6m3jkLjxBWkEtcT/g5Kmjs2tEGhsN3s
-	 ttuySlzTLNe8Bt3FBh6iEMMAGdRz3tLXnwZN4FQ5/QLLJuumTNOqtUTFmLTfc/c5AN
-	 okmNAdSm7QHnE/PwjdBm/moctV6lhqrZus0J+I3U=
-Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20251209120057eucas1p120cd0d9a4385b5214e7b08adbb89f01b~-ilCgtYt62628826288eucas1p1k;
-	Tue,  9 Dec 2025 12:00:57 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20251209120057eusmtip2b20b6cd3a10c76969060337d00471257~-ilByJO8S2960629606eusmtip2_;
-	Tue,  9 Dec 2025 12:00:56 +0000 (GMT)
-Message-ID: <0ee48f4a-2341-4967-aca5-3fe6b4cd5fe2@samsung.com>
-Date: Tue, 9 Dec 2025 13:00:55 +0100
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="H0vzxl90"
+Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-47a815c43baso12425e9.1
+        for <iommu@lists.linux.dev>; Tue, 09 Dec 2025 04:37:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1765283835; x=1765888635; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=vlFI2bCRqxpqLkg/AiIg8IcS+TSdYsio6x9QrT+ERVQ=;
+        b=H0vzxl90ySgIbyukIGqqhDpjDkPJX/cC6MSpi7pTMhos7G5BEVK/95RsGCqn9dYoX0
+         q6LAusPsrNKY54pxHOuhLxLA4YKYG1n41CxCwIz1SpnDMG/BKfX2ZPOmoMnlXepdDL2E
+         kXIeBjVJnKrWLXW4BJrfRQpxUT36YmPNR6VokPG1XSUr6EDLxuADBY2uviIEQ4+vFOqM
+         r1iB9OTRDGVXpDRBiJPcw4OaDlaQuRW6WXjhvJjw0x0bzQ5o+RlU7GU8ag64Js29O9/4
+         NJD3IMWSii3WdhzOTlHqyJEm/S1ziOp1H2dfc1X0GY65JwNqoc1UEx47XysNtpq7hQRh
+         xteQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1765283835; x=1765888635;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=vlFI2bCRqxpqLkg/AiIg8IcS+TSdYsio6x9QrT+ERVQ=;
+        b=nXpvUoiySECavqR6nlzas9Bo6zMfFQtKCVIjh3VAjQHQZYKvzWz/lSSBId8UCphrGA
+         DBjUmPQnztQppi7hg5uMs0rzPdhKy0v9nfrzmr8g6kmuTWfaFmCevBjyPHh5/wm84KQT
+         zMfUbieLRBqIOWSbxQayFhjJ4hRoAqDPo0bTjJQZkbrgHGJ8dctlS4B6hOxKYW4e6h6D
+         +J6HNC4dG1VEW3tQDYKEiO7bFngXka5HxJ8rvaA/ekzkii1GiFRWDE0Qgpp8WgVoNwIM
+         l3Zq8lnzEnjIUfnowQCDBvtVvjoOvHDNz6/l+Hq/DhIPr5WHNpuPv9qf+4qXu8ckzRQx
+         VkfA==
+X-Gm-Message-State: AOJu0Yyv0bfabKEaYyJeeyNkDUdjaX1DNynQbao2zZ7DCrnxl+FWSoek
+	HjqSm3OVsVRRCQy4vMzj4q2IRl8ZEYO/+EpjWvUuRttpGgYOGXUXHNzQHPRBxWSRMw==
+X-Gm-Gg: ASbGncsEVjbGs6v4sz1vs8Z7wNoBpPBLr2sDXiVhbgxeU+/iUUYHMBvYGKZuqIRzwQK
+	EOWDQtthW1Nw5LahOGXUBsuD+zx1+TisGhCQvZjcYw3fqCp9/UCHQkNtIaJmnS3w6NAuiiHJcUa
+	7w2acmBZq+cfEZg7/LxvzCKm9zPyEUls0/WVmYW82QWrOfolUJxWYn5XviYQ1jTARlKZIeaqGJm
+	bUQja4k5jdRTcEE5EODzxa3akLUd+kUyoLNzzPXN4Y+RzqXdxMknrQQk8NgC9xPOTi1ePMFMmSe
+	+ijSx3Vyiv0hrYNT2dW3waG1YK7rqRdamNDY/J2OK3hrBHEwUnoGzMohYwIziaGY4C0cZbUxrF+
+	oQ8opitG7ZUtd06bpFnSViQmm8pQmteS5ElHtMrIHRZQ2ZQyrD/gmVOkwucYRpEZ8LjxotzLkA2
+	lH6HayiMsl27ZV7csx56k1NSBa4BJ9eQyIXDds4hWd/58BgvM1WKawGsTcyUjz
+X-Google-Smtp-Source: AGHT+IFBVi6Any6314XmuF0VtSnmCugjUmteW57ZeCuI2t3TMv2bo5E7PrvrZtUvcE0omaa0J1rj/w==
+X-Received: by 2002:a05:600c:c092:b0:477:255c:bea8 with SMTP id 5b1f17b1804b1-47a7dafc8a8mr643695e9.7.1765283835141;
+        Tue, 09 Dec 2025 04:37:15 -0800 (PST)
+Received: from google.com (54.140.140.34.bc.googleusercontent.com. [34.140.140.54])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-42f7cbfee71sm31524754f8f.15.2025.12.09.04.37.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 Dec 2025 04:37:14 -0800 (PST)
+Date: Tue, 9 Dec 2025 12:37:10 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, will@kernel.org, joro@8bytes.org,
+	Tomasz Nowicki <tnowicki@google.com>
+Subject: Re: [PATCH] iommu/io-pgtable-arm: Add misisng concatenated PGD cases
+Message-ID: <aTgX9qhaLyrQ5iye@google.com>
+References: <20251130194506.593700-1-smostafa@google.com>
+ <18a39079-2285-47fb-b306-040f2bc1bbaa@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH v2 0/4] PCI: Fix ACS enablement for Root Ports in OF
- platforms
-To: Manivannan Sadhasivam <mani@kernel.org>
-Cc: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>, Bjorn
-	Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, Naresh Kamboju
-	<naresh.kamboju@linaro.org>, Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
-	Xingang Wang <wangxingang5@huawei.com>, Robin Murphy <robin.murphy@arm.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <4clyxcy5pwqaz6uguxnjei4hnxsree6k2uz5upro7khuvklfyo@nc5ebeicuqw4>
-Content-Transfer-Encoding: 8bit
-X-CMS-MailID: 20251209120057eucas1p120cd0d9a4385b5214e7b08adbb89f01b
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20251202142307eucas1p12a15e5656bb53f48f445c3056d4e3166
-X-EPHeader: CA
-X-CMS-RootMailID: 20251202142307eucas1p12a15e5656bb53f48f445c3056d4e3166
-References: <CGME20251202142307eucas1p12a15e5656bb53f48f445c3056d4e3166@eucas1p1.samsung.com>
-	<20251202-pci_acs-v2-0-5d2759a71489@oss.qualcomm.com>
-	<b63ec0aa-7a4a-4f8d-9b93-e724f3f2a9d1@samsung.com>
-	<de80df44-f797-4e8c-a411-09ed3c1286a3@samsung.com>
-	<cae5cb24-a8b0-4088-bacd-14368f32bdc5@samsung.com>
-	<26a93564-fcdd-4e90-b28d-8cc84cedeaa8@samsung.com>
-	<4clyxcy5pwqaz6uguxnjei4hnxsree6k2uz5upro7khuvklfyo@nc5ebeicuqw4>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <18a39079-2285-47fb-b306-040f2bc1bbaa@arm.com>
 
-On 09.12.2025 12:15, Manivannan Sadhasivam wrote:
-> On Tue, Dec 09, 2025 at 09:28:38AM +0100, Marek Szyprowski wrote:
->> On 09.12.2025 08:31, Marek Szyprowski wrote:
->>> On 04.12.2025 14:13, Marek Szyprowski wrote:
->>>> On 03.12.2025 13:04, Marek Szyprowski wrote:
->>>>> On 02.12.2025 15:22, Manivannan Sadhasivam wrote:
->>>>>> This series fixes the long standing issue with ACS in OF platforms.
->>>>>> There are
->>>>>> two fixes in this series, both fixing independent issues on their
->>>>>> own, but both
->>>>>> are needed to properly enable ACS on OF platforms.
->>>>>>
->>>>>> Issue(s) background
->>>>>> ===================
->>>>>>
->>>>>> Back in 2021, Xingang Wang first noted a failure in attaching the
->>>>>> HiSilicon SEC
->>>>>> device to QEMU ARM64 pci-root-port device [1]. He then tracked down
->>>>>> the issue to
->>>>>> ACS not being enabled for the QEMU Root Port device and he proposed
->>>>>> a patch to
->>>>>> fix it [2].
->>>>>>
->>>>>> Once the patch got applied, people reported PCIe issues with
->>>>>> linux-next on the
->>>>>> ARM Juno Development boards, where they saw failure in enumerating
->>>>>> the endpoint
->>>>>> devices [3][4]. So soon, the patch got dropped, but the actual
->>>>>> issue with the
->>>>>> ARM Juno boards was left behind.
->>>>>>
->>>>>> Fast forward to 2024, Pavan resubmitted the same fix [5] for his
->>>>>> own usecase,
->>>>>> hoping that someone in the community would fix the issue with ARM
->>>>>> Juno boards.
->>>>>> But the patch was rightly rejected, as a patch that was known to
->>>>>> cause issues
->>>>>> should not be merged to the kernel. But again, no one investigated
->>>>>> the Juno
->>>>>> issue and it was left behind again.
->>>>>>
->>>>>> Now it ended up in my plate and I managed to track down the issue
->>>>>> with the help
->>>>>> of Naresh who got access to the Juno boards in LKFT. The Juno issue
->>>>>> was with the
->>>>>> PCIe switch from Microsemi/IDT, which triggers ACS Source
->>>>>> Validation error on
->>>>>> Completions received for the Configuration Read Request from a
->>>>>> device connected
->>>>>> to the downstream port that has not yet captured the PCIe bus
->>>>>> number. As per the
->>>>>> PCIe spec r6.0 sec 2.2.6.2, "Functions must capture the Bus and
->>>>>> Device Numbers
->>>>>> supplied with all Type 0 Configuration Write Requests completed by
->>>>>> the Function
->>>>>> and supply these numbers in the Bus and Device Number fields of the
->>>>>> Requester ID
->>>>>> for all Requests". So during the first Configuration Read Request
->>>>>> issued by the
->>>>>> switch downstream port during enumeration (for reading Vendor ID),
->>>>>> Bus and
->>>>>> Device numbers will be unknown to the device. So it responds to the
->>>>>> Read Request
->>>>>> with Completion having Bus and Device number as 0. The switch
->>>>>> interprets the
->>>>>> Completion as an ACS Source Validation error and drops the
->>>>>> completion, leading
->>>>>> to the failure in detecting the endpoint device. Though the PCIe
->>>>>> spec r6.0, sec
->>>>>> 6.12.1.1, states that "Completions are never affected by ACS Source
->>>>>> Validation".
->>>>>> This behavior is in violation of the spec.
->>>>>>
->>>>>> Solution
->>>>>> ========
->>>>>>
->>>>>> In September, I submitted a series [6] to fix both issues. For the
->>>>>> IDT issue,
->>>>>> I reused the existing quirk in the PCI core which does a dummy
->>>>>> config write
->>>>>> before issuing the first config read to the device. And for the ACS
->>>>>> enablement
->>>>>> issue, I just resubmitted the original patch from Xingang which called
->>>>>> pci_request_acs() from devm_of_pci_bridge_init().
->>>>>>
->>>>>> But during the review of the series, several comments were received
->>>>>> and they
->>>>>> required the series to be reworked completely. Hence, in this
->>>>>> version, I've
->>>>>> incorported the comments as below:
->>>>>>
->>>>>> 1. For the ACS enablement issue, I've moved the pci_enable_acs()
->>>>>> call from
->>>>>> pci_acs_init() to pci_dma_configure().
->>>>>>
->>>>>> 2. For the IDT issue, I've cached the ACS capabilities (RO) in
->>>>>> 'pci_dev',
->>>>>> collected the broken capability for the IDT switches in the quirk
->>>>>> and used it to
->>>>>> disable the capability in the cache. This also allowed me to get
->>>>>> rid of the
->>>>>> earlier workaround for the switch.
->>>>>>
->>>>>> [1]
->>>>>> https://lore.kernel.org/all/038397a6-57e2-b6fc-6e1c-7c03b7be9d96@huawei.com
->>>>>> [2]
->>>>>> https://lore.kernel.org/all/1621566204-37456-1-git-send-email-wangxingang5@huawei.com
->>>>>> [3]
->>>>>> https://lore.kernel.org/all/01314d70-41e6-70f9-e496-84091948701a@samsung.com
->>>>>> [4]
->>>>>> https://lore.kernel.org/all/CADYN=9JWU3CMLzMEcD5MSQGnaLyDRSKc5SofBFHUax6YuTRaJA@mail.gmail.com
->>>>>> [5]
->>>>>> https://lore.kernel.org/linux-pci/20241107-pci_acs_fix-v1-1-185a2462a571@quicinc.com
->>>>>> [6]
->>>>>> https://lore.kernel.org/linux-pci/20250910-pci-acs-v1-0-fe9adb65ad7d@oss.qualcomm.com
->>>>>>
->>>>> Thanks for this patchset! I've tested it on my ARM Juno R1 and it
->>>>> looks that it almost works fine. This patchset even fixed some
->>>>> issues with PCI devices probe, as I again see SATA and GBit ethernet
->>>>> devices, which were missing since Linux v6.14 (it looks that
->>>>> I've also missed this in my tests).
->>>>>
->>>>> # lspci
->>>>> 00:00.0 PCI bridge: PLDA PCI Express Core Reference Design (rev 01)
->>>>> 01:00.0 PCI bridge: Integrated Device Technology, Inc. [IDT] Device
->>>>> 8090 (rev 02)
->>>>> 02:01.0 PCI bridge: Integrated Device Technology, Inc. [IDT] Device
->>>>> 8090 (rev 02)
->>>>> 02:02.0 PCI bridge: Integrated Device Technology, Inc. [IDT] Device
->>>>> 8090 (rev 02)
->>>>> 02:03.0 PCI bridge: Integrated Device Technology, Inc. [IDT] Device
->>>>> 8090 (rev 02)
->>>>> 02:0c.0 PCI bridge: Integrated Device Technology, Inc. [IDT] Device
->>>>> 8090 (rev 02)
->>>>> 02:10.0 PCI bridge: Integrated Device Technology, Inc. [IDT] Device
->>>>> 8090 (rev 02)
->>>>> 02:1f.0 PCI bridge: Integrated Device Technology, Inc. [IDT] Device
->>>>> 8090 (rev 02)
->>>>> 03:00.0 Mass storage controller: Silicon Image, Inc. SiI 3132 Serial
->>>>> ATA Raid II Controller (rev 01)
->>>>> 08:00.0 Ethernet controller: Marvell Technology Group Ltd. 88E8057
->>>>> PCI-E Gigabit Ethernet Controller
->>>>>
->>>>> However there is also a regression. After applying this patchset
->>>>> system suspend/resume stopped working. This is probably related to
->>>>> this message:
->>>>>
->>>>> pcieport 0000:02:1f.0: Unable to change power state from D0 to
->>>>> D3hot, device inaccessible
->>>>>
->>>>> which appears after calling 'rtcwake -s10 -mmem'. This might not be
->>>>> related to this patchset, so I probably need to apply it on older
->>>>> kernel releases and check.
->>>>
->>>> Just one more information - I've applied this patchset on top of
->>>> v6.16 and it works perfectly on ARM Juno R1. SATA and GBit ethernet
->>>> are visible again and system suspend/resume works too, so the issue
->>>> with the latter on top of v6.18 seems not to be directly related to
->>>> $subject patchset. I will try to bisect this issue when I have some
->>>> spare time.
->>>>
->>>> Feel free to add:
->>>>
->>>> Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
->>>
->>> I spent some time analyzing this regression on Juno R1 and found that:
->>>
->>> 1. SATA and GBit Ethernet stopped working after commit bcb81ac6ae3c
->>> ("iommu: Get DT/ACPI parsing into the proper probe path") merged to
->>> v6.15-rc1.
->>>
->>> 2. With $subject patch applied to enable SATA & GBit ethernet again,
->>> system suspend/resume stopped working after commit f3ac2ff14834
->>> ("PCI/ASPM: Enable all ClockPM and ASPM states for devicetree
->>> platforms") merged to v6.18-rc1.
->>>
-> Yes, this was expected as if you don't disable ACS, it will cause issues in
-> detecting the devices.
->
->>> If I got it right, according to the latter commit message, some quirks
->>> have to be added to fix the suspend/resume issue. Unfortunately I have
->>> no idea if this is the Juno R1 or the given PCI devices specific issue.
->>
->> And one more note, commit df5192d9bb0e ("PCI/ASPM: Enable only L0s and
->> L1 for devicetree platforms") doesn't fix the suspend/resume issue
->> either (with $subject patchset applied on top of it).
->>
-> Interesting. Can you do:
->
-> echo performance > /sys/module/pcie_aspm/parameters/policy
->
-> and then suspend?
+On Tue, Dec 09, 2025 at 11:34:34AM +0000, Robin Murphy wrote:
+> On 2025-11-30 7:45 pm, Mostafa Saleh wrote:
+> > arm_lpae_concat_mandatory() assumes that OAS >= IAS which is not
+> > correct for SMMUs supporting AArch32, and have OAS = 32/36 bits,
+> > as IAS would be 40 bits.
+> 
+> But that is only when *using* AArch32 format. The bit in chapter 3.4 of the
+> SMMU architecture is talking about the maximum IAS that an SMMU
+> implementation needs to be able to accommodate based on its configuration,
+> but it does then attempt to clarify that the actual IPA size in use by any
+> given context should depend on the VMSA format in use:
+> 
+> "VMSAv8-32 LPAE always supports an IPA size of 40 bits, whereas VMSAv8-64
+> and VMSAv9-128 limits the maximum IPA size to the maximum PA size."
+> 
+> Rule R_SRKBC in the Arm ARM lays out the exact T0SZ constraints with this
+> AArch32/AArch64 detail.
 
-After the above command, system suspend/resume works again.
+I see, thanks a lot for the explanation, I got confused by the this
+statement:
+Note: If AArch32 is implemented, IAS == MAX(40, OAS), otherwise IAS == OAS.
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+However, I think this is still a bug but somewere else, as at the moment
+the SMMUv3 dirver will use the SMMU IAS (40-bits) as input for AArch64
+stage-2 page tables, so we need either to limit the IAS as:
 
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index d16d35c78c06..d21153156daa 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -2561,7 +2561,7 @@ static int arm_smmu_domain_finalise(struct arm_smmu_domain *smmu_domain,
+        case ARM_SMMU_DOMAIN_S2:
+                if (enable_dirty)
+                        return -EOPNOTSUPP;
+-               pgtbl_cfg.ias = smmu->ias;
++               pgtbl_cfg.ias = min(smmu->ias, smmu->oas);
+                pgtbl_cfg.oas = smmu->oas;
+                fmt = ARM_64_LPAE_S2;
+                finalise_stage_fn = arm_smmu_domain_finalise_s2;
+
+Or, don't populate IAS depending on AArch32 support as the driver
+doesn't support it, effectively reverting:
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=f0c453dbcce7767cd868deb809ba68083c93954e
+
+> 
+> > In that case, concatenation is mandatory in some cases.
+> > Document those and add the checks, this can be simplified; instead
+> > of adding extra checks we can say that concatenation is mandatory for:
+> > - 4K, start level = 0 and OAS <= 42 bits.
+> > - 16K, start level = 1 and OAS <= 40 bits.
+> > Which cover all the missing cases.
+> 
+> AArch32 uses a fixed 4K granule, so this cannot impact 16K. Note that we
+> don't support AArch32 for SMMUv3 anyway, and while this does technically
+> apply to SMMUv1/2, Arm's MMU-400/401/500 implementations all have OAS fixed
+> at 40/40/48 bits respectively, so I'd imagine it's quite a rare case to
+> encounter in practice.
+
+Yes, I don't have access to such HW.
+
+Thanks,
+Mostafa
+> 
+> Thanks,
+> Robin.
+> 
+> > Reported-by: Tomasz Nowicki <tnowicki@google.com>
+> > Fixes: 4dcac8407fe1 ("iommu/io-pgtable-arm: Fix stage-2 concatenation with 16K")
+> > Signed-off-by: Mostafa Saleh <smostafa@google.com>
+> > ---
+> >   drivers/iommu/io-pgtable-arm.c | 10 ++++++----
+> >   1 file changed, 6 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+> > index e6626004b323..ecf27e86b429 100644
+> > --- a/drivers/iommu/io-pgtable-arm.c
+> > +++ b/drivers/iommu/io-pgtable-arm.c
+> > @@ -223,6 +223,8 @@ static inline int arm_lpae_max_entries(int i, struct arm_lpae_io_pgtable *data)
+> >    *   b) 40 bits PA size with 16K: use level 2 instead of level 1 (16 tables for ias = oas)
+> >    *   c) 42 bits PA size with 4K: use level 1 instead of level 0 (8 tables for ias = oas)
+> >    *   d) 48 bits PA size with 16K: use level 1 instead of level 0 (2 tables for ias = oas)
+> > + *   f) 32/36 bits PA size with 4K and 40 bits IAS: use level 1 instead of level 0
+> > + *   g) 32/36 bits PA size with 16K and 40 bits IAS: use level 2 instead of level 1
+> >    */
+> >   static inline bool arm_lpae_concat_mandatory(struct io_pgtable_cfg *cfg,
+> >   					     struct arm_lpae_io_pgtable *data)
+> > @@ -234,13 +236,13 @@ static inline bool arm_lpae_concat_mandatory(struct io_pgtable_cfg *cfg,
+> >   	if ((ARM_LPAE_GRANULE(data) == SZ_16K) && (data->start_level == 0))
+> >   		return (oas == 48) || (ias == 48);
+> > -	/* Covers 2.a and 2.c */
+> > +	/* Covers 2.a, 2.c and 2.f */
+> >   	if ((ARM_LPAE_GRANULE(data) == SZ_4K) && (data->start_level == 0))
+> > -		return (oas == 40) || (oas == 42);
+> > +		return (oas <= 42);
+> > -	/* Case 2.b */
+> > +	/* Case 2.b and 2.g */
+> >   	return (ARM_LPAE_GRANULE(data) == SZ_16K) &&
+> > -	       (data->start_level == 1) && (oas == 40);
+> > +	       (data->start_level == 1) && (oas <= 40);
+> >   }
+> >   static dma_addr_t __arm_lpae_dma_addr(void *pages)
+> 
