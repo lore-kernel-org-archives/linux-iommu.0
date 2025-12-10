@@ -1,169 +1,116 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2CABD326D44
-	for <iommu@lists.linux.dev>; Wed, 10 Dec 2025 17:15:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from sg-1-103.ptr.blmpb.com (sg-1-103.ptr.blmpb.com [118.26.132.103])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F36A03C465
+	for <iommu@lists.linux.dev>; Wed, 10 Dec 2025 17:15:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=118.26.132.103
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765386935; cv=none; b=qR7rla353bzX52HkbmbKkClKgwHQ2r99A0CaFYRTZ7xgRp8fNSGUXVXco4owenlRhX5CN6Z3a9oXOMIvzNy1GE+DT9M3TrV3bb17sxKWYYtvzN2Oc3eQ5JXBvu9BdT+L4kBcr3lIhZmllsOtH9/x/iMoa3h+5Kc7clZERNA4x5s=
+	t=1765386958; cv=none; b=YWAGfHiQR2KDX7Qehe2yTDMZ6mssWTJwzZUxZg3nYFnwP/FoUQJwtesOT7qcaJgS550iTULxECePulGlFMMFk8KWH4v2v9OYzgK/EEAMtjrrRXwYBElEeKBz9zwPj1A2jVlMdGIn8TCiM1/uoSPjckJu5n4146fUlYMReKJyhTg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765386935; c=relaxed/simple;
-	bh=LRNzVybuwbgBFh9YPtAbx0MGh2LsdLGYaXnP4far3EM=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=S1IIKm/6O04tGQFwo0321/hr5lJQwR5B4QYjBL5onnd6ndL9t03ArQhVqUCumqrZ0dqbPCfAza+jANZDAMbhmP9TF5obXlXgueljQNkFUfPpLyctJ7HsC7Elb0M39vX54RDhWQLknC/OTpdcBG4gifsK3tLpJQlwXNlOVDUaPIo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=oL++Hblx; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1765386958; c=relaxed/simple;
+	bh=JVpDEvrxrbWtEEQEuEUIisGJXq7Gm+HsqEypdIIT4Pk=;
+	h=From:Date:Content-Type:References:Message-Id:Mime-Version:
+	 In-Reply-To:To:Cc:Subject; b=a6mpcTWBRiKtovtRoKoKxlWNRes4ehtsJuXpikIHBf3gakUkGs/bHhULkr6kqkkAnGLkrCkr93SuvR9nJOHmYOWbyaLJfFnvXBlv3huvneG1PWokOljPXA9gJptbV+uXpWVmL5GDJshXY8TRvWzvZB14VjoN75ZeNbhgRRIdAN8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=XCJxho4V; arc=none smtp.client-ip=118.26.132.103
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="oL++Hblx"
-Received: from [192.168.201.246] (unknown [4.194.122.136])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 4FCF12116032;
-	Wed, 10 Dec 2025 09:15:21 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 4FCF12116032
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1765386932;
-	bh=naH2dhqkC83NKYwuVneGxpeuFjL7uWm/g5PqJfAwzi8=;
-	h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
-	b=oL++HblxZOe3KC+0dbwyS26fX1D4vysW+I8TvFOG8UAHeaZzn3tBtn7otA9Yep/f1
-	 39xqqimQHAr0/IdqsoA4LknRt0YA7n2CFRetNYKDJRKdghpedMCLvXq9umx51FD+Gh
-	 59tkMZ2KwY3WTMn5w1aDtmKrCFh3sopLzDubqErA=
-Message-ID: <0c34e66f-7766-4b4f-a04d-77dbc330f1fe@linux.microsoft.com>
-Date: Wed, 10 Dec 2025 09:15:18 -0800
+	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="XCJxho4V"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ s=2212171451; d=bytedance.com; t=1765386942; h=from:subject:
+ mime-version:from:date:message-id:subject:to:cc:reply-to:content-type:
+ mime-version:in-reply-to:message-id;
+ bh=CShaiNcFwFgIz00yFpNyGPher1OgtGoU+XBK8EUepuY=;
+ b=XCJxho4V0+aLWwV1VH0yP5EEuGe3YWn8U1f3rLxw10DPYBPvGrbcre3skRHV5nd8T5jsC9
+ XE73DysNn9rArFMLR+j5QCd4Wm9vtzxUsOSUIwyqX9nH0YnTHwbvvZFJ3bxP0fa2pu+VgT
+ LIRaQhloXgm7y7KeuH9+rBp2vQ57+Ir2zwb3SauRfMRPLVODmxabum9Ca7j5FYbxFKXByN
+ aN/M1GzrMUllVwpkdIRT84U6YEmY3dnLHWF6cvr6aXORKNvdBo0glPxTigdzsWMD6btRMj
+ k3T0lla1OF2o5FYjvvQN0I1QheOrq2iokm/3fJdm0RMKileuloYbYyPC/XzswA==
+From: "Jinhui Guo" <guojinhui.liam@bytedance.com>
+Date: Thu, 11 Dec 2025 01:14:31 +0800
+Content-Type: text/plain; charset=UTF-8
+X-Original-From: Jinhui Guo <guojinhui.liam@bytedance.com>
+References: <20251210171431.1589-1-guojinhui.liam@bytedance.com>
+Message-Id: <20251210171431.1589-3-guojinhui.liam@bytedance.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
- iommu@lists.linux.dev, linux-pci@vger.kernel.org,
- easwar.hariharan@linux.microsoft.com, kys@microsoft.com,
- haiyangz@microsoft.com, wei.liu@kernel.org, decui@microsoft.com,
- lpieralisi@kernel.org, kwilczynski@kernel.org, mani@kernel.org,
- robh@kernel.org, bhelgaas@google.com, arnd@arndb.de, joro@8bytes.org,
- will@kernel.org, robin.murphy@arm.com, jacob.pan@linux.microsoft.com,
- nunodasneves@linux.microsoft.com, mrathor@linux.microsoft.com,
- mhklinux@outlook.com, peterz@infradead.org, linux-arch@vger.kernel.org
-Subject: Re: [RFC v1 5/5] iommu/hyperv: Add para-virtualized IOMMU support for
- Hyper-V guest
-To: Yu Zhang <zhangyu1@linux.microsoft.com>
-References: <20251209051128.76913-1-zhangyu1@linux.microsoft.com>
- <20251209051128.76913-6-zhangyu1@linux.microsoft.com>
-From: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
-Content-Language: en-US
-In-Reply-To: <20251209051128.76913-6-zhangyu1@linux.microsoft.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Mime-Version: 1.0
+In-Reply-To: <20251210171431.1589-1-guojinhui.liam@bytedance.com>
+X-Mailer: git-send-email 2.17.1
+To: <dwmw2@infradead.org>, <baolu.lu@linux.intel.com>, <joro@8bytes.org>, 
+	<will@kernel.org>
+Cc: <haifeng.zhao@linux.intel.com>, <guojinhui.liam@bytedance.com>, 
+	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH 2/2] iommu/vt-d: Flush dev-IOTLB only when PCIe device is accessible in scalable mode
+Content-Transfer-Encoding: quoted-printable
+X-Lms-Return-Path: <lba+26939aabc+cbe56a+lists.linux.dev+guojinhui.liam@bytedance.com>
 
-On 12/8/2025 9:11 PM, Yu Zhang wrote:
-> Add a para-virtualized IOMMU driver for Linux guests running on Hyper-V.
-> This driver implements stage-1 IO translation within the guest OS.
-> It integrates with the Linux IOMMU core, utilizing Hyper-V hypercalls
-> for:
->  - Capability discovery
->  - Domain allocation, configuration, and deallocation
->  - Device attachment and detachment
->  - IOTLB invalidation
-> 
-> The driver constructs x86-compatible stage-1 IO page tables in the
-> guest memory using consolidated IO page table helpers. This allows
-> the guest to manage stage-1 translations independently of vendor-
-> specific drivers (like Intel VT-d or AMD IOMMU).
-> 
-> Hyper-v consumes this stage-1 IO page table, when a device domain is
-> created and configured, and nests it with the host's stage-2 IO page
-> tables, therefore elemenating the VM exits for guest IOMMU mapping
-> operations.
-> 
-> For guest IOMMU unmapping operations, VM exits to perform the IOTLB
-> flush(and possibly the device TLB flush) is still unavoidable. For
-> now, HVCALL_FLUSH_DEVICE_DOMAIN	is used to implement a domain-selective
-> IOTLB flush. New hypercalls for finer-grained hypercall will be provided
-> in future patches.
-> 
-> Co-developed-by: Wei Liu <wei.liu@kernel.org>
-> Signed-off-by: Wei Liu <wei.liu@kernel.org>
-> Co-developed-by: Jacob Pan <jacob.pan@linux.microsoft.com>
-> Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
-> Co-developed-by: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
-> Signed-off-by: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
-> Signed-off-by: Yu Zhang <zhangyu1@linux.microsoft.com>
-> ---
->  drivers/iommu/hyperv/Kconfig  |  14 +
->  drivers/iommu/hyperv/Makefile |   1 +
->  drivers/iommu/hyperv/iommu.c  | 608 ++++++++++++++++++++++++++++++++++
->  drivers/iommu/hyperv/iommu.h  |  53 +++
->  4 files changed, 676 insertions(+)
->  create mode 100644 drivers/iommu/hyperv/iommu.c
->  create mode 100644 drivers/iommu/hyperv/iommu.h
-> 
+Commit 4fc82cd907ac ("iommu/vt-d: Don't issue ATS Invalidation
+request when device is disconnected") relies on
+pci_dev_is_disconnected() to skip ATS invalidation for
+safely-removed devices, but it does not cover link-down caused
+by faults, which can still hard-lock the system.
 
-<snip>
+For example, if a VM fails to connect to the PCIe device,
+"virsh destroy" is executed to release resources and isolate
+the fault, but a hard-lockup occurs while releasing the group fd.
 
-> +
-> +static int __init hv_iommu_init(void)
-> +{
-> +	int ret = 0;
-> +	struct hv_iommu_dev *hv_iommu = NULL;
-> +	struct hv_output_get_iommu_capabilities hv_iommu_cap = {0};
-> +
-> +	if (no_iommu || iommu_detected)
-> +		return -ENODEV;
-> +
-> +	if (!hv_is_hyperv_initialized())
-> +		return -ENODEV;
-> +
-> +	if (hv_iommu_detect(&hv_iommu_cap) ||
-> +	    !hv_iommu_present(hv_iommu_cap.iommu_cap) ||
-> +	    !hv_iommu_s1_domain_supported(hv_iommu_cap.iommu_cap))
-> +		return -ENODEV;
-> +
-> +	iommu_detected = 1;
-> +	pci_request_acs();
-> +
-> +	hv_iommu = kzalloc(sizeof(*hv_iommu), GFP_KERNEL);
-> +	if (!hv_iommu)
-> +		return -ENOMEM;
-> +
-> +	hv_init_iommu_device(hv_iommu, &hv_iommu_cap);
-> +
-> +	ret = hv_initialize_static_domains();
-> +	if (ret) {
-> +		pr_err("hv_initialize_static_domains failed: %d\n", ret);
-> +		goto err_sysfs_remove;
+Call Trace:
+ qi_submit_sync
+ qi_flush_dev_iotlb
+ intel_pasid_tear_down_entry
+ device_block_translation
+ blocking_domain_attach_dev
+ __iommu_attach_device
+ __iommu_device_set_domain
+ __iommu_group_set_domain_internal
+ iommu_detach_group
+ vfio_iommu_type1_detach_group
+ vfio_group_detach_container
+ vfio_group_fops_release
+ __fput
 
-This should be goto err_free since we haven't done the sysfs_add yet
+Although pci_device_is_present() is slower than
+pci_dev_is_disconnected(), it still takes only ~70 =C2=B5s on a
+ConnectX-5 (8 GT/s, x2) and becomes even faster as PCIe speed
+and width increase.
 
-> +	}
-> +
-> +	ret = iommu_device_sysfs_add(&hv_iommu->iommu, NULL, NULL, "%s", "hv-iommu");
-> +	if (ret) {
-> +		pr_err("iommu_device_sysfs_add failed: %d\n", ret);
-> +		goto err_free;
+Besides, devtlb_invalidation_with_pasid() is called only in the
+paths below, which are far less frequent than memory map/unmap.
 
-And this should be probably a goto delete_static_domains that cleans up the allocated static
-domains...
+1. mm-struct release
+2. {attach,release}_dev
+3. set/remove PASID
+4. dirty-tracking setup
 
-> +	}
-> +
-> +
-> +	ret = iommu_device_register(&hv_iommu->iommu, &hv_iommu_ops, NULL);
-> +	if (ret) {
-> +		pr_err("iommu_device_register failed: %d\n", ret);
-> +		goto err_sysfs_remove;
-> +	}
-> +
-> +	register_syscore_ops(&hv_iommu_syscore_ops);
-> +
-> +	pr_info("Microsoft Hypervisor IOMMU initialized\n");
-> +	return 0;
-> +
-> +err_sysfs_remove:
-> +	iommu_device_sysfs_remove(&hv_iommu->iommu);
-> +err_free:
-> +	kfree(hv_iommu);
-> +	return ret;
-> +}
-> +
-> +device_initcall(hv_iommu_init);
+The gain in system stability far outweighs the negligible cost
+of using pci_device_is_present() instead of pci_dev_is_disconnected()
+to decide when to skip ATS invalidation, especially under GDR
+high-load conditions.
 
-<snip>
+Fixes: 4fc82cd907ac ("iommu/vt-d: Don't issue ATS Invalidation request when=
+ device is disconnected")
+Signed-off-by: Jinhui Guo <guojinhui.liam@bytedance.com>
+---
+ drivers/iommu/intel/pasid.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
+index b1e8eb6a6504..e9dea47decdb 100644
+--- a/drivers/iommu/intel/pasid.c
++++ b/drivers/iommu/intel/pasid.c
+@@ -218,7 +218,7 @@ devtlb_invalidation_with_pasid(struct intel_iommu *iomm=
+u,
+ 	if (!info || !info->ats_enabled)
+ 		return;
+=20
+-	if (pci_dev_is_disconnected(to_pci_dev(dev)))
++	if (!pci_device_is_present(to_pci_dev(dev)))
+ 		return;
+=20
+ 	sid =3D PCI_DEVID(info->bus, info->devfn);
+--=20
+2.20.1
