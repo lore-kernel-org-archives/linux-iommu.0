@@ -1,83 +1,106 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com [209.85.208.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B93C022FE0A;
-	Wed, 10 Dec 2025 05:33:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3962323BCFF
+	for <iommu@lists.linux.dev>; Wed, 10 Dec 2025 07:12:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765344799; cv=none; b=MZbYuo6SMGao7zEWDH0wcy0D+CPMfJPfE8ZwRSF7XDgsWvU68yDUGR5yK/YYlctiAc27nNgamdutF641W59W6icdkRbkNkJk/CFEpTvvVG8ZeBM/k4Oge9h11pr9lQOy98Un0Bm0vYLsS+m4UT/WI24S7ifsbb5Pss3C00JB5xU=
+	t=1765350758; cv=none; b=AYhv2fheySC9FommTSFtTN4XhrYbuZw6vbdiUeN9sRLHfqHr89yMJlmbjZkq6dqfeYgOw8vt/cJmU9/nxbzTmEFPgq9q5o1ectQCtbQw0muzXfBkZHdeJj5urfYFJlmYe/hkBNDDwQL96NWsKSXWmHGhC+gId0JEOGjdQA/ZLRA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765344799; c=relaxed/simple;
-	bh=lbwvwXWzNJQg0D0whYabQqpf4faHZKOzfUVbRO2CbTI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=QCBCSjJ282onKjFFcxBx9m1aF/minxkLpWlrwNorWGKNTfQd9xXF1LZ7iFZmucP8MvlW6cjt1SB8SXD41bQrqXI5XMiH2pIyQ37oMveQgaxlfQVE8rIzuIan1q3lrXjOnpF1WxOZeT2r2QMA47IvXZB+sjtu2J8dOtxkVlBkBzM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qdqCFQqr; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1765350758; c=relaxed/simple;
+	bh=mRZaxBGAJWcReD3YHX8AkcmR18B5zBad71ba/qD02bY=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=g8C3kCk9gUE3XCi9T56+NkelE9QoxhfeyKdOFy3HIiJ83OBoWkCKZUY3+3hEiHNS0/jYYPoJvCnfvvywz/MZq+kkg1l+aQFgNtQHQdzIi+B0bIUPW1np9jkz/uC3g64D62TzjmXjqRAh9wcZ3rvk3pPnlFq2X/l9UV3DRQzJYvo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com; spf=pass smtp.mailfrom=sifive.com; dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b=OzZ2Frb2; arc=none smtp.client-ip=209.85.208.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sifive.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qdqCFQqr"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71D61C4CEF1;
-	Wed, 10 Dec 2025 05:33:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1765344799;
-	bh=lbwvwXWzNJQg0D0whYabQqpf4faHZKOzfUVbRO2CbTI=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=qdqCFQqrqVi89XDOyo036+Bn1o40mBQGFD5AKaJFZFEk9KkxJKHw3ytUaxLKN6+u2
-	 PmK2tO9JBdxUF2Wu9L5hyRsIJQwzD0cPIGr0XwpFOzItwl5Yh06Sv7RNRXgHPLeTrt
-	 q5t6BfHFqnJEfWEn8SWt2lhfIOLIaJcP79XJ9p7n+PWeCuH2RfTrx/iDDZTTo8UYCc
-	 ExxjRqURUG7QPuv1IX/RosIKJMEpycUSR/i8wPDI2jov/bNTZBRCcJDni9MsBVwvP1
-	 Q9mzzTuKthJPk6tKz/oKRXeFNVR5/Ozco6aS9hbJ4UlVVgTF3vq+++SpzRrth5+fjF
-	 INebxkxbqRDBQ==
-Date: Wed, 10 Dec 2025 14:33:14 +0900
-From: Keith Busch <kbusch@kernel.org>
-To: Sebastian Ott <sebott@redhat.com>
-Cc: linux-nvme@lists.infradead.org, iommu@lists.linux.dev,
-	linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-xfs@vger.kernel.org, Jens Axboe <axboe@fb.com>,
-	Christoph Hellwig <hch@lst.de>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Carlos Maiolino <cem@kernel.org>
-Subject: Re: WARNING: drivers/iommu/io-pgtable-arm.c:639
-Message-ID: <aTkGGt9unmCS0r4d@kbusch-mbp>
-References: <170120f7-dd2c-4d2a-d6fc-ac4c82afefd7@redhat.com>
- <aTj-8-_tHHY7q5C0@kbusch-mbp>
+	dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b="OzZ2Frb2"
+Received: by mail-ed1-f44.google.com with SMTP id 4fb4d7f45d1cf-640e9f5951aso960813a12.1
+        for <iommu@lists.linux.dev>; Tue, 09 Dec 2025 23:12:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sifive.com; s=google; t=1765350754; x=1765955554; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=mRZaxBGAJWcReD3YHX8AkcmR18B5zBad71ba/qD02bY=;
+        b=OzZ2Frb2wlsKh4G7UJDJDm5A7FmmnRYLGspCiD76hRMDgrqe3idaex0jU+X44G8CPd
+         p6HxFfivzVNSTc61sHSeGf8/ed6yWnCjfnIGG30deEQ9YXKl0xlSlVhOtHQSZaLlTlxd
+         SyoWHl20pjepIO9uiBCgggo8HmZ0kc6x0dhD+1uKU5qBFWTdyM6MXw75P7uOUxjC/wtq
+         rZ19+/PWFnKZW/I/XtrVpon9YShycuUmgpgAFXiCp979w1hk9yr6lTHL5DttjupzLGTa
+         y9vaMiNvF3yqGT5lJUSVkF9pj0RfvUANaj7bUmj2AwLdv/0kbZQ59WLcmgEpobynBA0R
+         rL4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1765350754; x=1765955554;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=mRZaxBGAJWcReD3YHX8AkcmR18B5zBad71ba/qD02bY=;
+        b=Xf1+VJiJh2synp5oVfbCO+4dpEIm0fSJIEh7Inl/ktRKehJEFicD2aeKjLW05qevsk
+         vkAjUg9GgGqZRHrij/XiNiITwTDnfBretnJRzoxGppYnpeT5gYPmUFqIM66hhZHRD3FU
+         iLvGHlQtsJbLdLLpLELxV2RtMSG21iXzOZG8T40foM5uHXHQIHdR0YYyBRPTjMS2C38B
+         hhd3pO2gqEeaKmOXcSaEVHkoHpfWmiCLtDeYgCUy9nhYH7kob6rhBSD133+EPniffSO1
+         7PXoNPpeBmQWpIK9OkLwRhdPan3YzQy0W0qx/9EViLl29aMTvleuDrU4AEr6mR7ncd24
+         4ijA==
+X-Forwarded-Encrypted: i=1; AJvYcCWp0fA9yy4TUEBV2aB5xXyjm0/EfsCx4SALIwjLz+GS9lizjebBuFJuLydLPssWfk8Jq9//kg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YztCwSebvVANu3ww0asbw79isrQ2fHus1vq7qI7ag+ph22nfk7X
+	eykXhpSEFFwIE5wh1fM78LhRhzQPXoh1NniK8NZiwOvKhPI9qg4pDVT/K3J0to0xDuAb8/qhLg8
+	yX13IcAbOT3aILa7dk2j7d0u/nB2I7+jHnRCrDss6HA==
+X-Gm-Gg: AY/fxX7EAhKM3yec3PszXGzrADsdiGOz06R5EyMcZ3twEL8mTgNj4NN5D1sied8kFTz
+	6zDJ2oM+fYgAdz72/G79VEdi19NTcDGkXK30EdvRlJfrznPdjxhNMcOqwkhV3Hs4xNiJYKJ7/FO
+	8i98SpUnkxFbCaZhLjvZohDLAizCtdq8/tVfMz4KhXPPDm3QMc7bscFn8BfMH5Gvkmn8xNTnqlO
+	0bosnqaA0YV2GpfFIFVkoEklJMaPBgqqSu8KV4+m7+7JxR/PvkeEVEjnJcXls6k+m+bWOqc1n23
+	cKwmoLHh
+X-Google-Smtp-Source: AGHT+IE638New4MgR+fdHjtzv1v+bv2HepxoEy8lZmhUN9l3lRlFgm2ujvBWOkK+UHVIcdLbpWKJrYIdlRvuQyDMXfU=
+X-Received: by 2002:a05:6402:318e:b0:643:eae:b1b6 with SMTP id
+ 4fb4d7f45d1cf-64963fcd298mr2821476a12.12.1765350754531; Tue, 09 Dec 2025
+ 23:12:34 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aTj-8-_tHHY7q5C0@kbusch-mbp>
+References: <CAPYmKFt8bu48mi0awW7XWCiQvQqKf0VzcJbx5VR0VmcT0zYZ4Q@mail.gmail.com>
+In-Reply-To: <CAPYmKFt8bu48mi0awW7XWCiQvQqKf0VzcJbx5VR0VmcT0zYZ4Q@mail.gmail.com>
+From: Zong Li <zong.li@sifive.com>
+Date: Wed, 10 Dec 2025 15:12:22 +0800
+X-Gm-Features: AQt7F2qapH90QrmLD5cwo3YEDcVfcnFTF_GfEDCm7yLkGsvnAEOXzKZjthDpqGQ
+Message-ID: <CANXhq0qeQmDP59J3_j4H1ei3CFqofx0m6vUcX1mL3Y+it6+FXQ@mail.gmail.com>
+Subject: Re: About RISC-V IOMMU PMU
+To: Xu Lu <luxu.kernel@bytedance.com>
+Cc: guoyaxing@bosc.ac.cn, iommu@lists.linux.dev, 
+	Tomasz Jeznach <tjeznach@rivosinc.com>, joro@8bytes.org, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Paul Walmsley <paul.walmsley@sifive.com>, 
+	Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, 
+	Alexandre Ghiti <alex@ghiti.fr>, anxu@bosc.ac.cn, wangran@bosc.ac.cn
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, Dec 10, 2025 at 02:02:43PM +0900, Keith Busch wrote:
-> On Tue, Dec 09, 2025 at 12:43:31PM +0100, Sebastian Ott wrote:
-> > got the following warning after a kernel update on Thurstday, leading to a
-> > panic and fs corruption. I didn't capture the first warning but I'm pretty
-> > sure it was the same. It's reproducible but I didn't bisect since it
-> > borked my fs. The only hint I can give is that v6.18 worked. Is this a
-> > known issue? Anything I should try?
-> 
-> Could you check if your nvme device supports SGLs? There are some new
-> features in 6.19 that would allow merging IO that wouldn't have happened
-> before. You can check from command line:
+On Wed, Dec 10, 2025 at 11:23=E2=80=AFAM Xu Lu <luxu.kernel@bytedance.com> =
+wrote:
+>
+> Hi Yaxing and Zong Li,
+>
+> I noticed that Yaxing has sent a patch series about RISC-V IOMMU
+> PMU[1]. The same driver has an earlier patch series[2] from Zong Li. I
+> am wondering if Zong Li still plans to update his patch?
+>
+> [1] https://lore.kernel.org/all/20250915020911.1313-1-guoyaxing@bosc.ac.c=
+n/
+> [2] https://lore.kernel.org/all/20250115030306.29735-2-zong.li@sifive.com=
+/
+>
+> Best regards,
+> Xu Lu
 
-Actually the SGL support is probably unnecessary for ARM if your iommu
-granularity is 64k. That setup could also lead to an uninitialized
-"state" and the type of corruption you're observing. But the same patch
-below is still the proposed fix for it anyway.
- 
-> ---
-> diff --git a/block/blk-mq-dma.c b/block/blk-mq-dma.c
-> index e9108ccaf4b06..7bff480d666e2 100644
-> --- a/block/blk-mq-dma.c
-> +++ b/block/blk-mq-dma.c
-> @@ -199,6 +199,7 @@ static bool blk_dma_map_iter_start(struct request *req, struct device *dma_dev,
->  	if (blk_can_dma_map_iova(req, dma_dev) &&
->  	    dma_iova_try_alloc(dma_dev, state, vec.paddr, total_len))
->  		return blk_rq_dma_map_iova(req, dma_dev, state, iter, &vec);
-> +	state->__size = 0;
->  	return blk_dma_map_direct(req, dma_dev, iter, &vec);
->  }
-> 
-> --
-> 
+Hi Xu,
+Thanks for bringing us here. It seems to me that Yaxing=E2=80=99s
+implementation is similar to my previous version. I=E2=80=99m currently
+working on the next version to incorporate the feedback from my
+earlier series, and decouple the IOMMU perf driver from the IOMMU
+driver, and make it easier to add custom events. If Yaxing doesn=E2=80=99t
+mind, I=E2=80=99ll send it out later.
+
+Hi Yaxing,
+Please let me know if it is ok for you. Thanks
