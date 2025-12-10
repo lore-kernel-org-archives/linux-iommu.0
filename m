@@ -1,115 +1,246 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6DDDB31328F
-	for <iommu@lists.linux.dev>; Tue,  9 Dec 2025 21:05:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9930155757
+	for <iommu@lists.linux.dev>; Wed, 10 Dec 2025 00:20:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765314333; cv=none; b=i49nFIfQ2grIeqIBhfHxkfKVI3S+heklHHF9+ZPxoVzQIsxA9IaZ4PcUR/zCYkngjUf7PyWdFtjelcBBfYJVqmwJS3ntg8+jwEdNtm0DlfCBDfzJFZ8JVVixbRXrOO1aTsikoTY5aA9GVy7QWGY3kJ2eaUtZetHOj8K1qGznk7M=
+	t=1765326052; cv=none; b=mcPmUlMlnLrtW2ssC7dltMqzFgE7Xu3dnTGyGwydwf1EkDwZlgaTA9eGwW2n69V7vA0qKZAiZvtbqnYYZPXQwPgPRghWTMOFIAji2807kreIZrKnGxcbfGM6Goyz0l3+JTl5IHOGp7mseg3GgFde8XNuoLlEfiGAKNueFnmmlsQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765314333; c=relaxed/simple;
-	bh=ydHiuDxIrW5FazFjw0AZzylfnfdPPZlpeSRd2sqLG7o=;
-	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=lZTGht6QfzhySUPesmeI9mvpw6AhcFNvWsQVKIt6yrmbH81onAdIYxD+ltBra6ZEBojp53CE5y3uON9KIExgDQ7NFb0TqrfsO4tCjkCEDxsv5PJOQbvmXiffHAt6ju+3HIIs/yOequ8Rw6TihQ43tdhe/8qFK86OMP3Kv1TZhdY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=hPWoNszm; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1765326052; c=relaxed/simple;
+	bh=XUl+IMz7uUvH+MqMl2CaE7dyPDinPOet1+hqUWGDeMA=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=GpHdO/R+Tk6DVziNAc1fw1PahbydljzVBUl6ViZkRGyxK3brssUr1/Z987afP9XEptYkXfw+kgUcweAc+yqrUMGIRgg6hW+04emjc2JDqs5SG8XcA+slcg/DviFWf/MfDmOWyUTYzCzAf6WCGTnx+8kaob0lLXb/IzlYGwLmTds=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=Andc+qDx; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=DZErasJn; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="hPWoNszm"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1765314330;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=5JtO+/e6kTnIf7NZZ+Q5LHQ9Py7x/v7ASju/lUvZ3DY=;
-	b=hPWoNszmH2Rp6jS81jfBq9chRheafqXWuW0SrUcYmnqR8LyCBo3GEjlJLbVubtA3f61r6Z
-	GwBwNflrjLRrfHmNtWeRzjr8Zoh4tXtJhfBJD/uKhp6M2FphHc6psQ1NjzVqrbdCl032ca
-	7l1HW0Zmdj8cKI9+FzMi/G2lKY3iI+Q=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-689-yRueWsQzM-iYmYYYYQPKIw-1; Tue, 09 Dec 2025 16:05:29 -0500
-X-MC-Unique: yRueWsQzM-iYmYYYYQPKIw-1
-X-Mimecast-MFC-AGG-ID: yRueWsQzM-iYmYYYYQPKIw_1765314328
-Received: by mail-wm1-f71.google.com with SMTP id 5b1f17b1804b1-4776079ada3so57697275e9.1
-        for <iommu@lists.linux.dev>; Tue, 09 Dec 2025 13:05:28 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="Andc+qDx";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="DZErasJn"
+Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 5B9NIrGo362329
+	for <iommu@lists.linux.dev>; Wed, 10 Dec 2025 00:20:50 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:date:from:message-id:mime-version
+	:subject:to; s=qcppdkim1; bh=iHBwA4IfSbfg57hhtkGLsS9PBLgMplwjUcX
+	E/vuBD94=; b=Andc+qDxHSt0WG+VzJdUdL+Fg/tBG89vPh8M5YeWLUE9dxrtnQm
+	hCYQB2GhvmoyKChwoKWoL1PXDQjU3XYeGx230eVf2whf2R8R90jGAc21bmJru4ZV
+	YnZm9BwxfvxIo9uMmFzx8B0ymQhdvWtMtnaOd74HIGlZIpDF1QwYh+gLNni6pHZV
+	ah+bqFu+uCKIKCssGpAmsXyFC7/Kxtpy9Y+NN+vVVlSJP5iEFg2VUqax+Nb/NyXj
+	pHc8qnC9ZYIrM+OXr0CWPK71NkECp8NNgvsXD53pmQ2cc6qW19TKqs5OHp25u0m1
+	kQX8DtQg77Co7XKf5b1XLYOiA2ju7OL2B0w==
+Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com [209.85.216.71])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4axp4vsmdn-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Wed, 10 Dec 2025 00:20:49 +0000 (GMT)
+Received: by mail-pj1-f71.google.com with SMTP id 98e67ed59e1d1-342701608e2so7096116a91.1
+        for <iommu@lists.linux.dev>; Tue, 09 Dec 2025 16:20:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1765326046; x=1765930846; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=iHBwA4IfSbfg57hhtkGLsS9PBLgMplwjUcXE/vuBD94=;
+        b=DZErasJnTKBQ7ex7Wy5fRn31RCOEjUeaigQg9oTmBlp9vkvi13SsjBY2DKivv7F0H2
+         ZNpt07GnEp8eJ1YSjQMjPcI0LPudKrailDLkoaVvioVApOx3x7f4bqQ2UDR151aoAQe7
+         bsn9GrONqbgTBaLWrbU7S3njJYcqynZMdrIzHZcyWEqLLHkdoZQ4hTL4D7H/g/X+hxp0
+         fFfDVUvNlG++o6bylAlUb16a3tXB34cfeLeYqByYkMivgRuqLNBNgYdva/2nzEgulik6
+         J88BtkDHBSIm9YIQ16+mApcxOfC5GFtNd+nhkAqhCInn43+7suEZi//Mr1clJlMiBcTJ
+         o0lA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1765314328; x=1765919128;
-        h=mime-version:references:message-id:in-reply-to:subject:cc:to:from
-         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=5JtO+/e6kTnIf7NZZ+Q5LHQ9Py7x/v7ASju/lUvZ3DY=;
-        b=dao67Vs16rqYeqPNAUvKWo3WyQDgSazOhW8iatb3PWiQTDtlWauwbJEUgooDiv/wce
-         bnNq3Z/di+gLVzlHJpGSR+6U8lof2Dm07v6Hpn3PIQKGgauWnwOyHU5eUytAFSHeq6kI
-         oGIxfToIj3VXTYkqXZFD1T0w9xYfywriApqe+nSlHgGatFxYodkgFidokPK9DmAwGJ6O
-         b6HfLqKKG6Gk+/Xn+oT4S5SNf84+Fr9EEOwHY+3Nl3bGeMZhmp8eKBWUacAy2GGFKnLl
-         8/SeLzAUjZPadzqD9Rntk68CrpO9kpXfTYa6aYQthJ1BiDMwm7ZhUPvKrOTBs8KOyKbY
-         NLEA==
-X-Forwarded-Encrypted: i=1; AJvYcCUC6yqYOoUO/5vhhuK+9BKxLGYWjZOK03sQbgPS8JRaLEr7t0itmaSqabwyfWGr2oaT+W+BGA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxBQ98T1IhLqKPNBoDswrbKvn9pZcLXSnciLe4DFIezakxNjCOZ
-	dYX10MFGACb3aA6AnBOkWSBTQrmJkW5bPrHST4MPqGrkbAjAhmS0GSyAaE6eDEEbBLcWR6Si8Bp
-	NKaiq9BQSUDVkNDmShkr8YWPyeBdphbGFAdh8sYUMBMA/ruhdk6UCBOUq
-X-Gm-Gg: ASbGncuRPy4yI658mYTcsSzul7ZQNii7jR59AAYRgPRfP1Ltanqp7aTOw/d23FBPxna
-	A7pTYvoLXX0GhS7NlP8Pq1vgIMJm9Ex88Box4P3Y3g8mXnVfmTeWcm9W2M0AVaYsS0pqnMstQMC
-	XQct2SK+CpduOoAtcq+UOwIXgNtHpe4x5NNQmrboy6kcQ+bcpe8ySLNwi+oWPCEBrUpg4hZHTXd
-	Xg+oqdJmMj3XbkR2FqADToHUq69iMp0fFssOSlC9nzdUPtuzlEiefWWHGZWdv9dfbIDVtIprdmd
-	+xZ6LKSnvJgVMMLLK4rNwvFkMptjSRAtbx2myJ65G+JkDLpntA/p9hXRLiCCLh3h2upkUwU//0j
-	wt6L4lqPt9W1bmBw6vtbI0hfl3lFNc3jVKwKY8x6ISONPx/22xu3bKC3vm9E=
-X-Received: by 2002:a05:600c:34d1:b0:477:76c2:49c9 with SMTP id 5b1f17b1804b1-47a83744a33mr2306485e9.2.1765314327658;
-        Tue, 09 Dec 2025 13:05:27 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IEtCAFhErGwzqpGWe7IpcJT0+41Hr+cUdeizf5PIDHvpAkbhAflBzeSLnGEysOKGluXPZLr/A==
-X-Received: by 2002:a05:600c:34d1:b0:477:76c2:49c9 with SMTP id 5b1f17b1804b1-47a83744a33mr2306225e9.2.1765314327245;
-        Tue, 09 Dec 2025 13:05:27 -0800 (PST)
-Received: from rh (p200300f6af498100e5be2e2bdb5254b6.dip0.t-ipconnect.de. [2003:f6:af49:8100:e5be:2e2b:db52:54b6])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-47a82cb12fbsm10202915e9.0.2025.12.09.13.05.26
+        d=1e100.net; s=20230601; t=1765326046; x=1765930846;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=iHBwA4IfSbfg57hhtkGLsS9PBLgMplwjUcXE/vuBD94=;
+        b=c39S+2fTlJtEoN1RzHavdGlqkIsXHwG2BWsrQPiF7s5QBBdyWq/539IDTcaUsHv2tj
+         rewgsoDRRG+oG+/w1C187v5J3/rEAowNZAppReFUDv2s7xwx8uTwi7p0CDt517TxKhjK
+         oGz7NMZmxTg0lRebdHAp3pXbUYZWxtHgXvl+MrLPgCs3tG7FY5GbvX+M6sU7A/FSsMvK
+         lvOXuHnCisJsifgM17RFf+l4IltLSDbSj5gwGMOvVaSzfXWTYzTiLUnIOjy56xPtvkUK
+         Lb8PyjQBZo43dVT8XPDPJA6NjdIvLdKH+bNqUhoRMv3+rehOCKNQ+Ln2Q2njADbiD8uO
+         Ud6w==
+X-Forwarded-Encrypted: i=1; AJvYcCXk1TTXyEFNMwmEoZL5c/oyF6kffd58MeUcZ/HY6Ii4bLx9A4BLVk27VTTZx6y3KkWL+Y9PMg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yznqvu7/JY7e7yP8LrgteZI06ajwe7dmHCbyWysJtZL8CtlwwQy
+	WMue9ZLY3tO5hARK288a8+IR/mWlyeN/VLpYvrSn5D3CnvdmzEFLjUoXTAgjbu4YFa4yDMl25LO
+	81BBFfXTYJKD64rODbtUHseFRsCiOWkR5xHD/TqZgxc0fTyGbz9JmbdxkhA==
+X-Gm-Gg: ASbGncu25X/lcSovs/FbrXdqoKUWUTrvwx8cV3qKMkWWj5S3W+/vgMMWe7Ij7gkvG0j
+	zmJ2d6Ct7Suiv9yU+XpRvmBw4kfjxOcrO6JdhY/ul0U2/EVvTJ2vYvjnjTJJZqYtRr9rwlWdz9x
+	50o5bBAdiLhJcYgcDnt+KkcaRRkgEDa5CedoE6/OuY0LoHwNQyJH0+PvHbCdoy2lBsDfniTidQD
+	YKA024cxC/FAsIBiPfc/TPkwYevxUMov4XZ81jpU4ksFi9ENsZ+etoic7FIpn04R6N8UOmlnjdX
+	fSqc49rA/m6a38nbfaQrUADsA7R3wREXU9rRESCdURhzmZla5j8ZnxibBUhxuKpHoH8QpIhoBQY
+	rABiq3+u+Ms6h9PGg2/kIqARr1LNWVWBbZ2rQXHFaDxNaTIUXTcdCZaJQnFSveRc9w9aKo8cU
+X-Received: by 2002:a05:7022:62b:b0:11b:ade6:45a7 with SMTP id a92af1059eb24-11f2966a03emr425012c88.1.1765326046092;
+        Tue, 09 Dec 2025 16:20:46 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IGcLj2nkg82c0xX0uwbx/GB/IwXsGaN8dBi7OsSisu2MU6g5avYy1Et2uoitaYLu9zbKsRD9w==
+X-Received: by 2002:a05:7022:62b:b0:11b:ade6:45a7 with SMTP id a92af1059eb24-11f2966a03emr424972c88.1.1765326045477;
+        Tue, 09 Dec 2025 16:20:45 -0800 (PST)
+Received: from hu-obabatun-lv.qualcomm.com (Global_NAT1.qualcomm.com. [129.46.96.20])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-11df76e2eefsm79775745c88.6.2025.12.09.16.20.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Dec 2025 13:05:26 -0800 (PST)
-Date: Tue, 9 Dec 2025 22:05:25 +0100 (CET)
-From: Sebastian Ott <sebott@redhat.com>
-To: Robin Murphy <robin.murphy@arm.com>
-cc: linux-nvme@lists.infradead.org, iommu@lists.linux.dev, 
-    linux-block@vger.kernel.org, linux-kernel@vger.kernel.org, 
-    linux-xfs@vger.kernel.org, Jens Axboe <axboe@fb.com>, 
-    Christoph Hellwig <hch@lst.de>, Will Deacon <will@kernel.org>, 
-    Carlos Maiolino <cem@kernel.org>
-Subject: Re: WARNING: drivers/iommu/io-pgtable-arm.c:639
-In-Reply-To: <4386e0f7-9e45-41d2-8236-7133d6d00610@arm.com>
-Message-ID: <99e12a04-d23f-f9e7-b02e-770e0012a794@redhat.com>
-References: <170120f7-dd2c-4d2a-d6fc-ac4c82afefd7@redhat.com> <4386e0f7-9e45-41d2-8236-7133d6d00610@arm.com>
+        Tue, 09 Dec 2025 16:20:45 -0800 (PST)
+From: Oreoluwa Babatunde <oreoluwa.babatunde@oss.qualcomm.com>
+To: robh@kernel.org, m.szyprowski@samsung.com, ye.li@oss.nxp.com
+Cc: oreoluwa.babatunde@oss.qualcomm.com, kernel@oss.qualcomm.com,
+        saravanak@google.com, akpm@linux-foundation.org, david@redhat.com,
+        lorenzo.stoakes@oracle.com, Liam.Howlett@oracle.com, vbabka@suse.cz,
+        rppt@kernel.org, surenb@google.com, mhocko@suse.com,
+        robin.murphy@arm.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        iommu@lists.linux.dev, quic_c_gdjako@quicinc.com
+Subject: [PATCH] of: reserved_mem: Allow reserved_mem framework detect "cma=" kernel param
+Date: Tue,  9 Dec 2025 16:20:27 -0800
+Message-Id: <20251210002027.1171519-1-oreoluwa.babatunde@oss.qualcomm.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: goSYvx29rqXyabQu_P4SpMglCu_lagsOEF9W4VqC4rA_1765314328
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=US-ASCII; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-GUID: z3tDrqJhPPr_YGdSTTjsqOcROt4a4R98
+X-Proofpoint-ORIG-GUID: z3tDrqJhPPr_YGdSTTjsqOcROt4a4R98
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMjEwMDAwMSBTYWx0ZWRfX78lC7EFDlMVD
+ 6+SuqF9ZbQlFvWnpHbXS6CRu0rYjkdG/Lsz9tqcw07c9PEiTrp5Xc1iGvSUea4ulusdrDSCttLf
+ QdNoc9Ng0+qhjWyCjaDFDqX0sGfpD0hNjxelwdCYiq1lLt1WKzkv2udGWRKsO+p1ZRFWcqUS6y/
+ 1P7MKoGqaO+fk6P+soA7CXqnatyOlMJc/o0cj4QfVmcoEPGM1cfStHAg1hucrUCSAd5VDlgXLLo
+ BEcrQEaj8fX5DiCKIXhJnPSR5xkHIpeYHkTGYBhXnztvUlinb41BSon1Tz3I4sob3IVT8K385a3
+ 8bbYHcaYEqWAuNsxdeYxg6EnPaIBay9T9tx/fysE7W8gZjSCneefpyWSPh5phOZrIsNPD3zkbUv
+ 480FdhqetwxvYlyssTBRTIhILsnzfw==
+X-Authority-Analysis: v=2.4 cv=IoYTsb/g c=1 sm=1 tr=0 ts=6938bce1 cx=c_pps
+ a=UNFcQwm+pnOIJct1K4W+Mw==:117 a=ouPCqIW2jiPt+lZRy3xVPw==:17
+ a=wP3pNCr1ah4A:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=EUspDBNiAAAA:8 a=DS4snQ7NONFh9zYVhi8A:9 a=uKXjsCUrEbL0IQVhDsJ9:22
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.9,FMLib:17.12.100.49
+ definitions=2025-12-09_05,2025-12-09_03,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ adultscore=0 impostorscore=0 priorityscore=1501 spamscore=0
+ lowpriorityscore=0 malwarescore=0 bulkscore=0 phishscore=0 suspectscore=0
+ clxscore=1015 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2510240001
+ definitions=main-2512100001
 
-On Tue, 9 Dec 2025, Robin Murphy wrote:
-> On 2025-12-09 11:43 am, Sebastian Ott wrote:
->>  Hi,
->>
->>  got the following warning after a kernel update on Thurstday, leading to a
->>  panic and fs corruption. I didn't capture the first warning but I'm pretty
->>  sure it was the same. It's reproducible but I didn't bisect since it
->>  borked my fs. The only hint I can give is that v6.18 worked. Is this a
->>  known issue? Anything I should try?
->
-> nvme_unmap_data() is attempting to unmap an IOVA that was never mapped, or 
-> has already been unmapped by someone else. That's a usage bug.
+When initializing the default cma region, the "cma=" kernel parameter
+takes priority over a DT defined linux,cma-default region. Hence, give
+the reserved_mem framework the ability to detect this so that the DT
+defined cma region can skip initialization accordingly.
 
-OK, that's what I suspected - thanks for the confirmation!
+Signed-off-by: Oreoluwa Babatunde <oreoluwa.babatunde@oss.qualcomm.com>
+---
+ drivers/of/of_reserved_mem.c | 19 +++++++++++++++++--
+ include/linux/cma.h          |  1 +
+ kernel/dma/contiguous.c      | 16 ++++++++++------
+ 3 files changed, 28 insertions(+), 8 deletions(-)
 
-I did another repro and tried:
-
-good: 44fc84337b6e Merge tag 'arm64-upstream' of git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux
-bad:  cc25df3e2e22 Merge tag 'for-6.19/block-20251201' of git://git.kernel.org/pub/scm/linux/kernel/git/axboe/linux
-
-I'll start bisecting between these 2 - hoping it doesn't fork up my root
-fs again...
-
-Thanks,
-Sebastian
+diff --git a/drivers/of/of_reserved_mem.c b/drivers/of/of_reserved_mem.c
+index 2e9ea751ed2d..bef68a4916b5 100644
+--- a/drivers/of/of_reserved_mem.c
++++ b/drivers/of/of_reserved_mem.c
+@@ -158,7 +158,7 @@ static int __init __reserved_mem_reserve_reg(unsigned long node,
+ 	phys_addr_t base, size;
+ 	int len;
+ 	const __be32 *prop;
+-	bool nomap;
++	bool nomap, default_cma;
+ 
+ 	prop = of_get_flat_dt_prop(node, "reg", &len);
+ 	if (!prop)
+@@ -171,6 +171,12 @@ static int __init __reserved_mem_reserve_reg(unsigned long node,
+ 	}
+ 
+ 	nomap = of_get_flat_dt_prop(node, "no-map", NULL) != NULL;
++	default_cma = of_get_flat_dt_prop(node, "linux,cma-default", NULL);
++
++	if (default_cma && cma_skip_dt_default_reserved_mem()) {
++		pr_err("Skipping dt linux,cma-default for \"cma=\" kernel param.\n");
++		return -EINVAL;
++	}
+ 
+ 	while (len >= t_len) {
+ 		base = dt_mem_next_cell(dt_root_addr_cells, &prop);
+@@ -256,12 +262,15 @@ void __init fdt_scan_reserved_mem_reg_nodes(void)
+ 
+ 	fdt_for_each_subnode(child, fdt, node) {
+ 		const char *uname;
++		bool default_cma = of_get_flat_dt_prop(child, "linux,cma-default", NULL);
+ 
+ 		prop = of_get_flat_dt_prop(child, "reg", &len);
+ 		if (!prop)
+ 			continue;
+ 		if (!of_fdt_device_is_available(fdt, child))
+ 			continue;
++		if (default_cma && cma_skip_dt_default_reserved_mem())
++			continue;
+ 
+ 		uname = fdt_get_name(fdt, child, NULL);
+ 		if (len && len % t_len != 0) {
+@@ -406,7 +415,7 @@ static int __init __reserved_mem_alloc_size(unsigned long node, const char *unam
+ 	phys_addr_t base = 0, align = 0, size;
+ 	int len;
+ 	const __be32 *prop;
+-	bool nomap;
++	bool nomap, default_cma;
+ 	int ret;
+ 
+ 	prop = of_get_flat_dt_prop(node, "size", &len);
+@@ -430,6 +439,12 @@ static int __init __reserved_mem_alloc_size(unsigned long node, const char *unam
+ 	}
+ 
+ 	nomap = of_get_flat_dt_prop(node, "no-map", NULL) != NULL;
++	default_cma = of_get_flat_dt_prop(node, "linux,cma-default", NULL);
++
++	if (default_cma && cma_skip_dt_default_reserved_mem()) {
++		pr_err("Skipping dt linux,cma-default for \"cma=\" kernel param.\n");
++		return -EINVAL;
++	}
+ 
+ 	/* Need adjust the alignment to satisfy the CMA requirement */
+ 	if (IS_ENABLED(CONFIG_CMA)
+diff --git a/include/linux/cma.h b/include/linux/cma.h
+index 62d9c1cf6326..3d3047029950 100644
+--- a/include/linux/cma.h
++++ b/include/linux/cma.h
+@@ -47,6 +47,7 @@ extern int cma_init_reserved_mem(phys_addr_t base, phys_addr_t size,
+ 					unsigned int order_per_bit,
+ 					const char *name,
+ 					struct cma **res_cma);
++extern bool cma_skip_dt_default_reserved_mem(void);
+ extern struct page *cma_alloc(struct cma *cma, unsigned long count, unsigned int align,
+ 			      bool no_warn);
+ extern bool cma_pages_valid(struct cma *cma, const struct page *pages, unsigned long count);
+diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
+index d9b9dcba6ff7..9071c08650e3 100644
+--- a/kernel/dma/contiguous.c
++++ b/kernel/dma/contiguous.c
+@@ -90,6 +90,16 @@ static int __init early_cma(char *p)
+ }
+ early_param("cma", early_cma);
+ 
++/*
++ * cma_skip_dt_default_reserved_mem - This is called from the
++ * reserved_mem framework to detect if the default cma region is being
++ * set by the "cma=" kernel parameter.
++ */
++bool __init cma_skip_dt_default_reserved_mem(void)
++{
++	return size_cmdline != -1;
++}
++
+ #ifdef CONFIG_DMA_NUMA_CMA
+ 
+ static struct cma *dma_contiguous_numa_area[MAX_NUMNODES];
+@@ -463,12 +473,6 @@ static int __init rmem_cma_setup(struct reserved_mem *rmem)
+ 	struct cma *cma;
+ 	int err;
+ 
+-	if (size_cmdline != -1 && default_cma) {
+-		pr_info("Reserved memory: bypass %s node, using cmdline CMA params instead\n",
+-			rmem->name);
+-		return -EBUSY;
+-	}
+-
+ 	if (!of_get_flat_dt_prop(node, "reusable", NULL) ||
+ 	    of_get_flat_dt_prop(node, "no-map", NULL))
+ 		return -EINVAL;
+-- 
+2.34.1
 
