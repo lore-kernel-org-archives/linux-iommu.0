@@ -1,79 +1,99 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F85A26ED39;
-	Wed, 10 Dec 2025 11:21:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 02827286A4
+	for <iommu@lists.linux.dev>; Wed, 10 Dec 2025 12:06:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765365695; cv=none; b=BqyiHXfeq3XHkHPyFk0FeKb3EJH2RKuQjdU6FTHMo7eP3o+XUQRA5izkUfHFjyArDTFETI1r6f6SZNdt0HjgCl7FTCPmplG/+ffDrktyp+8FZKc9J/lNu1UlGpXhQBjIFZbjo5KTt687qdw0ATXFdoTzPdB5Pn75sM9PkIBCCAg=
+	t=1765368383; cv=none; b=HcsDaV2eYTC3BbSQBuK4wewlPaL2RyPA/1wKjkEXwU1cyhoQrnbTkw1bzY8Qb+kSUau/8Jsp45p4taSafZTD/DO+2zD1mh4xYFil2ELE8H94GynFrUMVasugz++99NhAyxY9RNi1y+jLtUI9vLaQMS8KvmzlOdCWOzb4bbQCIqs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765365695; c=relaxed/simple;
-	bh=02TJf16fnJk3ighp6vgdi/0FMeoZ8SlIQNCacUajNgU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=INJwcAiREKlH5qQ2+rJwp9RIZ2zujPz57T8p27Zl1JuL3oGIg0JCNmxpYAXywci9pQcm1nF9+bytgxz0A9V4YNahaQmIkj2jnvlg6KO7IijoyRPvfCL1H/ZQuGj2nN8DjeeTQnumisuSp8pJ3LkwJKYRRYFg5y0Lsg9statIm4w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qVwGVVZp; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qVwGVVZp"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 538DBC4CEF1;
-	Wed, 10 Dec 2025 11:21:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1765365695;
-	bh=02TJf16fnJk3ighp6vgdi/0FMeoZ8SlIQNCacUajNgU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=qVwGVVZpPeY58SfN5rAE+y4vep7KmrLCjyhECcDA/28CraNn3LqLDFaAtH5r2cPhV
-	 VY8i0KcS02ZfXJGzmXCxFKclwNhiZbedhrtb7GeLcF8KmNAbbIL7Z+tsTfNs2xF/hm
-	 gcTOb4e85Q7y6gl7wJjXOrd2QLggNdZ670UirSSgeBNfkMfbYWmkxTJV4/BuP4upOp
-	 drToIyNGT4CAiuR3mGqXiSsvqESoeHtNNeTD8DiuTUEwJgBGfKfuKiOAqxwE7wK9Q/
-	 nzNrN9kg2CoFgi4OFX5nwkkyJwdVd3CxxC66L9dxKsDKAPuialzI83fK7Lkh8M8L3d
-	 xgGkj+6BO8qWQ==
-Date: Wed, 10 Dec 2025 20:21:30 +0900
-From: Keith Busch <kbusch@kernel.org>
-To: Sebastian Ott <sebott@redhat.com>
-Cc: linux-nvme@lists.infradead.org, iommu@lists.linux.dev,
-	linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-xfs@vger.kernel.org, Jens Axboe <axboe@fb.com>,
-	Christoph Hellwig <hch@lst.de>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Carlos Maiolino <cem@kernel.org>
-Subject: Re: WARNING: drivers/iommu/io-pgtable-arm.c:639
-Message-ID: <aTlXuhmsil7YFKTR@kbusch-mbp>
-References: <170120f7-dd2c-4d2a-d6fc-ac4c82afefd7@redhat.com>
- <aTj-8-_tHHY7q5C0@kbusch-mbp>
- <acb053b0-fc08-91c6-c166-eebf26b5987e@redhat.com>
+	s=arc-20240116; t=1765368383; c=relaxed/simple;
+	bh=kmC9hhbaXSanbfJwRxX/To1YiW7m3Jbun3vWTww+S5M=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=tkNxGXmajvf9cvTwkMYHWfVccgNFbW0S8cw1V33rHqGpKqlkdGVoWOV3aUSMl+x1JhL+Iddwz/O9USQ2y0Im9jjH1wCTIJDKZxqY6uHkJTEC1/ytKsLanugRS6p/9Ot91ZUzPvXDxmSwc149eWGJwGCmipnfz/QFTzRZZJZlp6Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 08616153B;
+	Wed, 10 Dec 2025 04:06:14 -0800 (PST)
+Received: from [10.57.45.247] (unknown [10.57.45.247])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D648B3F73B;
+	Wed, 10 Dec 2025 04:06:19 -0800 (PST)
+Message-ID: <8e058f60-60da-47c2-9947-2ea26cca1639@arm.com>
+Date: Wed, 10 Dec 2025 12:06:10 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <acb053b0-fc08-91c6-c166-eebf26b5987e@redhat.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu/io-pgtable-arm: Add misisng concatenated PGD cases
+To: Will Deacon <will@kernel.org>
+Cc: Mostafa Saleh <smostafa@google.com>, iommu@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ joro@8bytes.org, Tomasz Nowicki <tnowicki@google.com>
+References: <20251130194506.593700-1-smostafa@google.com>
+ <18a39079-2285-47fb-b306-040f2bc1bbaa@arm.com> <aTgX9qhaLyrQ5iye@google.com>
+ <498bbad4-ea64-4a24-a63f-e131d271990a@arm.com> <aTjCDvtANr2WIv3L@google.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <aTjCDvtANr2WIv3L@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Dec 10, 2025 at 12:08:36PM +0100, Sebastian Ott wrote:
-> On Wed, 10 Dec 2025, Keith Busch wrote:
-> > On Tue, Dec 09, 2025 at 12:43:31PM +0100, Sebastian Ott wrote:
-> > > got the following warning after a kernel update on Thurstday, leading to a
-> > > panic and fs corruption. I didn't capture the first warning but I'm pretty
-> > > sure it was the same. It's reproducible but I didn't bisect since it
-> > > borked my fs. The only hint I can give is that v6.18 worked. Is this a
-> > > known issue? Anything I should try?
-> > 
-> > Could you check if your nvme device supports SGLs? There are some new
-> > features in 6.19 that would allow merging IO that wouldn't have happened
-> > before. You can check from command line:
-> > 
-> >  # nvme id-ctrl /dev/nvme0 | grep sgl
+On 2025-12-10 12:42 am, Will Deacon wrote:
+> On Tue, Dec 09, 2025 at 01:33:36PM +0000, Robin Murphy wrote:
+>> On 2025-12-09 12:37 pm, Mostafa Saleh wrote:
+>>> On Tue, Dec 09, 2025 at 11:34:34AM +0000, Robin Murphy wrote:
+>>>> On 2025-11-30 7:45 pm, Mostafa Saleh wrote:
+>>>>> arm_lpae_concat_mandatory() assumes that OAS >= IAS which is not
+>>>>> correct for SMMUs supporting AArch32, and have OAS = 32/36 bits,
+>>>>> as IAS would be 40 bits.
+>>>>
+>>>> But that is only when *using* AArch32 format. The bit in chapter 3.4 of the
+>>>> SMMU architecture is talking about the maximum IAS that an SMMU
+>>>> implementation needs to be able to accommodate based on its configuration,
+>>>> but it does then attempt to clarify that the actual IPA size in use by any
+>>>> given context should depend on the VMSA format in use:
+>>>>
+>>>> "VMSAv8-32 LPAE always supports an IPA size of 40 bits, whereas VMSAv8-64
+>>>> and VMSAv9-128 limits the maximum IPA size to the maximum PA size."
+>>>>
+>>>> Rule R_SRKBC in the Arm ARM lays out the exact T0SZ constraints with this
+>>>> AArch32/AArch64 detail.
+>>>
+>>> I see, thanks a lot for the explanation, I got confused by the this
+>>> statement:
+>>> Note: If AArch32 is implemented, IAS == MAX(40, OAS), otherwise IAS == OAS.
+>>
+>> Indeed, that appears confusingly contradictory; I've filed a bug.
 > 
-> # nvme id-ctrl /dev/nvme0n1 | grep sgl
-> sgls      : 0xf0002
+> I think the spec has always been worded like this. My reading is that, in
+> isolation:
+> 
+>    - VMSAv8-32 LPAE always uses a 40-bit IAS
+>    - VMSAv8-64 has IAS == OAS and this can be smaller than 40 bits
+> 
+> so if AArch32 is implemented, we know that the hardware supports at
+> least a 40-bit IAS and in that case the VMSAv8-64 IAS can be bigger
+> than the OAS.
 
-Oh neat, so you *do* support SGL. Not that it was required as arm64
-can support iommu granularities larger than the NVMe PRP unit, so the
-bug was possible to hit in either case for you (assuming the smmu was
-configured with 64k io page size).
+No, the VMSAv8-64 IAS can never be bigger than OAS, as that would 
+violate VMSA (see rules R_DTLMN and R_SRKBC). The SMMU spec seems mostly 
+fixated on the notional maximum IAS that an SMMU must accommodate in 
+general across all supported formats; the limitations of using any 
+particular format must still apply though (similarly, the fact that 
+AArch32 has a fixed 40-bit output doesn't mean that OAS and S2PS don't 
+still matter for AArch64 format.)
 
-Anyway, thanks for the report, and sorry for the fs trouble the bug
-caused you. I'm working on a blktest to specifically target this
-condition so we don't regress again. I just need to make sure to run it
-on a system with iommu enabled (usually it's off on my test machine).
+Note that AArch32 is still free to use less than 40 bits of IAS if it 
+wants to, by setting S2T0SZ appropriately, it's just guaranteed to 
+support a *minimum* S2T0SZ of 24 regardless of OAS, unlike AArch64.
+
+Cheers,
+Robin.
+
+> That seems consistent to me; where is the contradiction?
+> 
+> Will (jet-lagged so may well be talking rubbish!)
+
