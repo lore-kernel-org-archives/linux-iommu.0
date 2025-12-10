@@ -1,129 +1,172 @@
-Received: from va-2-112.ptr.blmpb.com (va-2-112.ptr.blmpb.com [209.127.231.112])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38D527260F
-	for <iommu@lists.linux.dev>; Wed, 10 Dec 2025 17:27:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.127.231.112
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87A0719DF62;
+	Wed, 10 Dec 2025 21:04:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765387648; cv=none; b=tM7b1cIk5jQiKHplAGhOAd80c3iOeCSgs5TO8ZkqL5AFy71NmBWEOV830Pt5ulY+K2v4qudpcQzUbbf9Y5nWMTc9mTatgQRI5m3SwunNpQ3wu8AxbDYYSDNpeS/nNL6LBa4IOIsJPl3pn4544SX8Syt7M+j3plHN9BG5mIA4D8I=
+	t=1765400658; cv=none; b=fMRsz87uCBEmCDIyf7P7Rci5FKqxrmHaonABf7Lx0rFx3siqyVL6gxMGrekniLwA0eiY6NnhloHp65dpQnhbYN6XApCLbNNi4C3SoVzH+qzXJbx3oyi6WQimXXSR4w2WzPNO+NZM7RgyfsxrNM4GRvGqS2Gy8j4rkJCqCmIzaQA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765387648; c=relaxed/simple;
-	bh=v5dfAdFg2bZ9A4uKfLuBxR1upNVSd71MOEKUSk0QLx4=;
-	h=Cc:Subject:Mime-Version:To:Date:Message-Id:Content-Type:From; b=HK7Fzat0aKlWVnwnwhk6hiF2adGSgtqom57gW01NJHLufxeU0mLQfHzXK9omnyKS1TQvzrWXiWoZNYuDVG4DLuAq7VRAFoBFrd+XPtFEqfEJim4VVV2hRH4M5OcBRNFCnmJG1z9L3E4quyJKBI9n/kiyUSj9iSGqdkO+VH39U7A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=HTVARP53; arc=none smtp.client-ip=209.127.231.112
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
+	s=arc-20240116; t=1765400658; c=relaxed/simple;
+	bh=Qs4b3z1pm0ndIdr4UcDS2LE1LcsKzBmrdvQ17Sx/6EE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=SH4HX0hX+LSZs1aFZP0yw/+YDlIZWW5U6Fhj66SMCQ6xRTpwSkVWBD7Y08iqdcd/QCQnt03p6RKTr19zixh3Xzn8giuRL+RifbQM40YKmsoXlhImGyUlbMK4N8RDm9iFuTUE8o6ToE8GhIPdQkQk+D2hezvBDqB7UjbH+xMbSgs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jP5Zfoic; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="HTVARP53"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- s=2212171451; d=bytedance.com; t=1765386917; h=from:subject:
- mime-version:from:date:message-id:subject:to:cc:reply-to:content-type:
- mime-version:in-reply-to:message-id;
- bh=gE/YvSYAf74m9e+7eGIasZfsK/u+D4wUS1SrNjLAz9c=;
- b=HTVARP53Ha0F4UXAA7SPxU5e2eUb/LqZPtzixNpoo8KrvB1XB1MPKNLqbL4L7ydTITAcg+
- TjacMbx/m/j5FFj66j6nMfEieqV3sF384EYZKGsNrpM9M+QYYgAjN0hbESFcnwGTyMGvDF
- K6yMZAPjNa7ipyZNKFMFHxdhFLU0hr6WPwRidPgRB4+Jb9UyaETj0fT8FQRrv6EYKb8dCy
- CgTb1L32GwC0Q0rQ0dAdv0XRhIRMnjaQSZFN7n8eNMpdCXTDq28AASgmyWGLjK1Pfntcw0
- RbKPjEO/mclNwfHRKEQIgZ2QFYGGhz4efQyUKa2tT7H2Ah5VmXBG1XLS0m2cqg==
-Cc: <haifeng.zhao@linux.intel.com>, <guojinhui.liam@bytedance.com>, 
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH 0/2] iommu/vt-d: Skip dev-iotlb flush for inaccessible PCIe device
-X-Original-From: Jinhui Guo <guojinhui.liam@bytedance.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jP5Zfoic"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8625C4CEF1;
+	Wed, 10 Dec 2025 21:04:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1765400658;
+	bh=Qs4b3z1pm0ndIdr4UcDS2LE1LcsKzBmrdvQ17Sx/6EE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=jP5ZfoicM9N+3tiTUpWMH9mGWtrC5oyPW81SRPOwyz/9Lj4KBEAu6yXKuQSxAuqym
+	 zFyG0F38lsblWg1Gx5DD3VzMvmeruRwBLtkhkUPkOFWwgrM7leb5yFSu7W1Cfr8JQk
+	 9UE5Z2Y3fjabVKbo9DKvnnXyYYjQ0cExmWFXqTgWItgpjr2va2cwAvz3xcOFt6ZhoI
+	 rLTyRdhCcJDa2XdFXVDaFJ2BeBN5Yz79NWuRXbgp61AFlJdXCAprEpAv2L0qE9niCU
+	 C4endY8NgKQAXP1GQ4NxutwpkNy7WweVSimARqP/gu5qUwqlwfJyVzs+W8uk7vJn/E
+	 q8O7hRqp1v9nQ==
+Date: Wed, 10 Dec 2025 15:04:14 -0600
+From: Rob Herring <robh@kernel.org>
+To: Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
+Cc: robin.murphy@arm.com, will@kernel.org, joro@8bytes.org,
+	dmitry.baryshkov@oss.qualcomm.com, konrad.dybcio@oss.qualcomm.com,
+	bjorn.andersson@oss.qualcomm.com, bod@kernel.org,
+	conor+dt@kernel.org, krzk+dt@kernel.org,
+	charan.kalla@oss.qualcomm.com, prakash.gupta@oss.qualcomm.com,
+	vikash.garodia@oss.qualcomm.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v2 3/3] of: Respect #{iommu,msi}-cells in maps
+Message-ID: <20251210210414.GA3329469-robh@kernel.org>
+References: <20251204095530.8627-1-vijayanand.jitta@oss.qualcomm.com>
+ <20251204095530.8627-4-vijayanand.jitta@oss.qualcomm.com>
+ <20251209201725.GB1015230-robh@kernel.org>
+ <a0a5cf96-70fe-4005-a100-58ae0b72b4cd@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-To: <dwmw2@infradead.org>, <baolu.lu@linux.intel.com>, <joro@8bytes.org>, 
-	<will@kernel.org>
-Date: Thu, 11 Dec 2025 01:14:29 +0800
-Message-Id: <20251210171431.1589-1-guojinhui.liam@bytedance.com>
-Content-Type: text/plain; charset=UTF-8
-X-Mailer: git-send-email 2.17.1
-From: "Jinhui Guo" <guojinhui.liam@bytedance.com>
-X-Lms-Return-Path: <lba+26939aaa3+ec406b+lists.linux.dev+guojinhui.liam@bytedance.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a0a5cf96-70fe-4005-a100-58ae0b72b4cd@oss.qualcomm.com>
 
-We hit hard-lockups when the Intel IOMMU waits indefinitely for an ATS invalidation
-that cannot complete, especially under GDR high-load conditions.
+On Wed, Dec 10, 2025 at 03:57:56PM +0530, Vijayanand Jitta wrote:
+> On 12/10/2025 1:47 AM, Rob Herring wrote:
+> > On Thu, Dec 04, 2025 at 03:25:30PM +0530, Vijayanand Jitta wrote:
+> >> From: Robin Murphy <robin.murphy@arm.com>
+> >>
+> >> So far our parsing of {iommu,msi}-map properites has always blindly
+> >> asusmed that the output specifiers will always have exactly 1 cell.
+> >> This typically does happen to be the case, but is not actually enforced
+> >> (and the PCI msi-map binding even explicitly states support for 0 or 1
+> >> cells) - as a result we've now ended up with dodgy DTs out in the field
+> >> which depend on this behaviour to map a 1-cell specifier for a 2-cell
+> >> provider, despite that being bogus per the bindings themselves.
+> >>
+> >> Since there is some potential use in being able to map at least single
+> >> input IDs to multi-cell output specifiers (and properly support 0-cell
+> >> outputs as well), add support for properly parsing and using the target
+> >> nodes' #cells values, albeit with the unfortunate complication of still
+> >> having to work around expectations of the old behaviour too.
+> >>
+> >> Since there are multi-cell output specifiers, the callers of of_map_id()
+> >> may need to get the exact cell output value for further processing.
+> >> Added support for that part --charan
+> >>
+> >> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> >> Signed-off-by: Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
+> >> ---
+> >>  drivers/iommu/of_iommu.c |   3 +-
+> >>  drivers/of/base.c        | 107 ++++++++++++++++++++++++++++++---------
+> >>  include/linux/of.h       |  17 ++++---
+> >>  3 files changed, 94 insertions(+), 33 deletions(-)
+> >>
+> >> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+> >> index eac62bc441c5..48759cf1d900 100644
+> >> --- a/drivers/iommu/of_iommu.c
+> >> +++ b/drivers/iommu/of_iommu.c
+> >> @@ -45,10 +45,11 @@ static int of_iommu_configure_dev_id(struct device_node *master_np,
+> >>  				     struct device *dev,
+> >>  				     const u32 *id)
+> >>  {
+> >> -	struct of_phandle_args iommu_spec = { .args_count = 1 };
+> >> +	struct of_phandle_args iommu_spec = {};
+> >>  	struct of_map_id_arg arg = {
+> >>  		.target = &iommu_spec.np,
+> >>  		.id_out = iommu_spec.args,
+> >> +		.map_cells = &iommu_spec.args_count,
+> >>  	};
+> >>  	int err;
+> >>  
+> >> diff --git a/drivers/of/base.c b/drivers/of/base.c
+> >> index b8f78a9e6a09..68a7d6ddba66 100644
+> >> --- a/drivers/of/base.c
+> >> +++ b/drivers/of/base.c
+> >> @@ -2045,11 +2045,30 @@ int of_find_last_cache_level(unsigned int cpu)
+> >>  	return cache_level;
+> >>  }
+> >>  
+> >> +/*
+> >> + * Some DTs have an iommu-map targeting a 2-cell IOMMU node while
+> >> + * specifying only 1 cell. Fortunately they all consist of length == 1
+> >> + * entries with the same target, so check for that pattern.
+> > 
+> > Can you show what a bad entry looks like here.
+> > 
+> 
+> Sure, will add an example in the comments. Basically it would look like below.
+> 
+> for iommu with iommu-cells  = <2>;
+> 
+> Device having below iommu-map property.
+> 
+> iommu-map = <0x0000  &smmu  0x0000  0x1>,
+>             <0x0100  &smmu  0x0100  0x1>;
+> 
+> >> + */
+> >> +static bool of_check_bad_map(const __be32 *map, int len)
+> >> +{
+> >> +	__be32 phandle = map[1];
+> >> +
+> >> +	if (len % 4)
+> >> +		return false;
+> >> +	for (int i = 0; i < len; i += 4) {
+> >> +		if (map[i + 1] != phandle || map[i + 3] != cpu_to_be32(1))
+> > 
+> > Why does the IOMMU arg cell have to be 1? The description said 'same 
+> > target', but it is just all have an IOMMU cell value of 1?
+> > 
+> 
+> Here, the check is for length argument to be 1. This is to maintain backward
+> compatibility as mentioned above, as all such bad entries right now have
+> length as 1.
 
-1. Hard-lock when a passthrough PCIe NIC with ATS enabled link-down in Intel IOMMU
-   non-scalable mode. Two scenarios exist: NIC link-down with an explicit link-down
-   event and link-down without any event.
+You say length and I think arg/cell length, not that the cell value 
+contains a length. That's because generally cell args are provider 
+defined and specific. So just say the 2nd cell has a value of 1 and 
+leave out that's a length.
 
-   a) NIC link-down with an explicit link-dow event.
-      Call Trace:
-       qi_submit_sync
-       qi_flush_dev_iotlb
-       __context_flush_dev_iotlb.part.0
-       domain_context_clear_one_cb
-       pci_for_each_dma_alias
-       device_block_translation
-       blocking_domain_attach_dev
-       iommu_deinit_device
-       __iommu_group_remove_device
-       iommu_release_device
-       iommu_bus_notifier
-       blocking_notifier_call_chain
-       bus_notify
-       device_del
-       pci_remove_bus_device
-       pci_stop_and_remove_bus_device
-       pciehp_unconfigure_device
-       pciehp_disable_slot
-       pciehp_handle_presence_or_link_change
-       pciehp_ist
+[...]
 
-   b) NIC link-down without an event - hard-lock on VM destroy.
-      Call Trace:
-       qi_submit_sync
-       qi_flush_dev_iotlb
-       __context_flush_dev_iotlb.part.0
-       domain_context_clear_one_cb
-       pci_for_each_dma_alias
-       device_block_translation
-       blocking_domain_attach_dev
-       __iommu_attach_device
-       __iommu_device_set_domain
-       __iommu_group_set_domain_internal
-       iommu_detach_group
-       vfio_iommu_type1_detach_group
-       vfio_group_detach_container
-       vfio_group_fops_release
-       __fput
+> >> @@ -1455,7 +1456,7 @@ static inline int of_map_msi_id(const struct device_node *np, u32 id,
+> >>  		.id_out = id_out,
+> >>  	};
+> >>  
+> >> -	return of_map_id(np, id, "msi-map", "msi-map-mask", &arg);
+> >> +	return of_map_id(np, id, "msi-map", "#msi-cells", "msi-map-mask", &arg);
+> > 
+> > There are cases of no #msi-cells and we default to 0 cells in that case. 
+> > Do you maintain that?
+> > 
+> > Rob
+> 
+> Thanks for pointing this, I see this case of no #msi-cells is not covered. Will
+> add it in next revision.  Also, IIUC shouldn't we set default cells to '1' to
+> maintain backward compatibility of of_map_id in this case ? No ?
 
-2. Hard-lock when a passthrough PCIe NIC with ATS enabled link-down in Intel IOMMU
-   scalable mode; NIC link-down without an event hard-locks on VM destroy.
-   Call Trace:
-    qi_submit_sync
-    qi_flush_dev_iotlb
-    intel_pasid_tear_down_entry
-    device_block_translation
-    blocking_domain_attach_dev
-    __iommu_attach_device
-    __iommu_device_set_domain
-    __iommu_group_set_domain_internal
-    iommu_detach_group
-    vfio_iommu_type1_detach_group
-    vfio_group_detach_container
-    vfio_group_fops_release
-    __fput
+The only default is 0. Perhaps msi-map is never used if there are 0 
+cells? IDK, you tell me.
 
-Fix both issues with two patches:
-1. Skip dev-IOTLB flush for inaccessible devices in __context_flush_dev_iotlb() using
-   pci_device_is_present().
-2. Use pci_device_is_present() instead of pci_dev_is_disconnected() to decide when to
-   skip ATS invalidation in devtlb_invalidation_with_pasid().
-
-Jinhui Guo (2):
-  iommu/vt-d: Skip dev-iotlb flush for inaccessible PCIe device without
-    scalable mode
-  iommu/vt-d: Flush dev-IOTLB only when PCIe device is accessible in
-    scalable mode
-
- drivers/iommu/intel/pasid.c | 13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
-
--- 
-2.20.1
+Rob
