@@ -1,151 +1,169 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9B8B2868B0
-	for <iommu@lists.linux.dev>; Wed, 10 Dec 2025 17:12:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2CABD326D44
+	for <iommu@lists.linux.dev>; Wed, 10 Dec 2025 17:15:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765386731; cv=none; b=LawGXN2uA7j03HQK8bvgE0BqHTTupg5NbYZkVvjhMVfzOjHoLYhI2rRzumQnTfYX0ntqnxJf7lG04lgniqwk0E8KRoWBnH08z66JUNDWrokgPCbi0zgfi5tVBf71JK/ViQMYIBEAoz5Pnp6pck0UGX90f4F6OtrMlAbxpHsc1e8=
+	t=1765386935; cv=none; b=qR7rla353bzX52HkbmbKkClKgwHQ2r99A0CaFYRTZ7xgRp8fNSGUXVXco4owenlRhX5CN6Z3a9oXOMIvzNy1GE+DT9M3TrV3bb17sxKWYYtvzN2Oc3eQ5JXBvu9BdT+L4kBcr3lIhZmllsOtH9/x/iMoa3h+5Kc7clZERNA4x5s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765386731; c=relaxed/simple;
-	bh=q+2G+U6BpJLX1Z/0Jsa39HPxOnPyaRSQ+Uck+sOSfns=;
-	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=UziQjuKnh76vVEdoNg0TOfqsMveXtzrMccS/u/jrYc6IPnW4RKubsfukickSxwTIY+0ftZo3T40m7hgqxtCRXimNB/mRSH0DDpOs/QtIADj/NxKCGlKr+mMlRdzn7pSDqQqKOMLFbQ6WO7xH1SxhBNLR2V60wEVRyI65OJ2//10=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=E9BSyxvI; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1765386935; c=relaxed/simple;
+	bh=LRNzVybuwbgBFh9YPtAbx0MGh2LsdLGYaXnP4far3EM=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=S1IIKm/6O04tGQFwo0321/hr5lJQwR5B4QYjBL5onnd6ndL9t03ArQhVqUCumqrZ0dqbPCfAza+jANZDAMbhmP9TF5obXlXgueljQNkFUfPpLyctJ7HsC7Elb0M39vX54RDhWQLknC/OTpdcBG4gifsK3tLpJQlwXNlOVDUaPIo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=oL++Hblx; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="E9BSyxvI"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1765386728;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=8ajtU3yfJbX06BLmikcUePQ/6Tt1KKMvvS1DqwC86HA=;
-	b=E9BSyxvIKE57pAa9MhD6fWe17rlZGFVB68tDQ7eAc0J/zHw0rxQzBc7yYihmwwNbHyvZ4l
-	TG8O2vsTdF8sU82Z9KUr0sagh2Aj6lFa+dlQMpJEPBxKx83L7tjo6WcLI3lby0Z0kide/+
-	QKFMPvqRhhmKkwO6oujyHmg5Fk4KKYY=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-439-17w8B08GNIyeHj-wXUOHjw-1; Wed, 10 Dec 2025 12:12:06 -0500
-X-MC-Unique: 17w8B08GNIyeHj-wXUOHjw-1
-X-Mimecast-MFC-AGG-ID: 17w8B08GNIyeHj-wXUOHjw_1765386725
-Received: by mail-wr1-f71.google.com with SMTP id ffacd0b85a97d-42f9ed47dd8so979398f8f.3
-        for <iommu@lists.linux.dev>; Wed, 10 Dec 2025 09:12:06 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1765386725; x=1765991525;
-        h=mime-version:references:message-id:in-reply-to:subject:cc:to:from
-         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=8ajtU3yfJbX06BLmikcUePQ/6Tt1KKMvvS1DqwC86HA=;
-        b=N9ks/C4Ar/xOB65/rMhGbTN5t173m2/UWC65toJwqDQyLJRoX+gHZGEenWp0XfTBIh
-         s7LTkcUcP7zcarfDsvv002cbWgyz+UzD/DpGdeci6+ESXX1qzv1nbPkCuWNboOL5zIAM
-         tc6exspjd0K5UlRACe/cLNNG1pTtN2zlvPXVStH0f6Nla0oui0uCFsWwyyO92G9FeUBO
-         RQZyVFCiw3tb8iTrl0jDzpO5+TuBXtKkvjSrZOb8Cnbu4upTpmyddjTOhlzQTDDPnN3J
-         Xrx7LtFYZG7bRLIGkmAEtL82nogX1YPFzU16NLx6hHr56D6TBeJa1FOaa9+xeKyEVphg
-         d09Q==
-X-Forwarded-Encrypted: i=1; AJvYcCXdJBNMviUI65kfuRxvc+1/RUM3gpbLhn9Pg7p8zsOqlyLY/jPz+AOeVrY778SzSUkitC7iaA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzFIP25Ll3jHUHJwwJeqqQ9I8gEJqUdpeOFKLC0Zl0nIQIcHK5J
-	lvLn5IZLHhYTTx/iipp24919pzvCEkPV2kYgY8IAqP/L9MuqhcfRn26Odnfd4x8aLg860WH6Pk1
-	ZjTsFSiFNn35E5nArCFFyZs/vltK04NoqgoYNgXgoE7YG+R6TB5lHPHblx3Zbrjh2
-X-Gm-Gg: AY/fxX7N9xVP1C5JYFlKwovYhc9C+4zBbn8aip0lJPg6oShNd1jrFMSeJlAkhlCGskJ
-	+djBSslclu2jz8v8y5ZeXhJ6rElQ4g/BDFKj057gj/vOqgA3BmUKBinMqdAzpJgQagHSZBC+KVB
-	xpv5Xkwnbsrk9/v+/o5zRGfUeCEaWVqBfok+vkpN68EZgLScqWcHRD60nySFKsSUAhUluLxvXpD
-	f9XsAzxYVdt7cula7Ajr17uZwJzKHPvHrHMSaXlXK8qnxtlT3qe5L5PmfP5j9HvONiAFQiqQNtp
-	pw3jnpXKlOzFE3Gf8+C99OJ/RtnLl5Zqdm9cRE8u81Xewh7Y4lSCvxJsaa0woVyKrNJ57O1MUCU
-	w0mvSNwY/PAD1kXpOEiceHQZ7dnGqCGHJv4h5y1LqNPxTc5HR2QVqHwpW1os=
-X-Received: by 2002:a5d:5f91:0:b0:429:d1a8:3fa2 with SMTP id ffacd0b85a97d-42fa3b17092mr3315979f8f.48.1765386724809;
-        Wed, 10 Dec 2025 09:12:04 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IExCXlgcWY7yBdco5ZpK1NFXlvlTRlygsYWJNZD8Qo0xz2z2qNLT3h+7nj8AJhe/t1VfpQnNg==
-X-Received: by 2002:a5d:5f91:0:b0:429:d1a8:3fa2 with SMTP id ffacd0b85a97d-42fa3b17092mr3315940f8f.48.1765386724378;
-        Wed, 10 Dec 2025 09:12:04 -0800 (PST)
-Received: from rh (p200300f6af498100e5be2e2bdb5254b6.dip0.t-ipconnect.de. [2003:f6:af49:8100:e5be:2e2b:db52:54b6])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-42fa8b9b20dsm27930f8f.38.2025.12.10.09.12.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Dec 2025 09:12:03 -0800 (PST)
-Date: Wed, 10 Dec 2025 18:12:02 +0100 (CET)
-From: Sebastian Ott <sebott@redhat.com>
-To: Chaitanya Kulkarni <chaitanyak@nvidia.com>
-cc: Keith Busch <kbusch@kernel.org>, 
-    "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>, 
-    "iommu@lists.linux.dev" <iommu@lists.linux.dev>, 
-    Robin Murphy <robin.murphy@arm.com>, 
-    "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>, 
-    "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
-    "linux-xfs@vger.kernel.org" <linux-xfs@vger.kernel.org>, 
-    Jens Axboe <axboe@fb.com>, Christoph Hellwig <hch@lst.de>, 
-    Will Deacon <will@kernel.org>, Carlos Maiolino <cem@kernel.org>, 
-    Leon Romanovsky <leon@kernel.org>
-Subject: Re: WARNING: drivers/iommu/io-pgtable-arm.c:639
-In-Reply-To: <2fcc9d30-42e8-4382-bbbc-a3f66016f368@nvidia.com>
-Message-ID: <0eec3806-c002-54d5-95a9-7fa201c6b921@redhat.com>
-References: <170120f7-dd2c-4d2a-d6fc-ac4c82afefd7@redhat.com> <4386e0f7-9e45-41d2-8236-7133d6d00610@arm.com> <99e12a04-d23f-f9e7-b02e-770e0012a794@redhat.com> <30ae8fc4-94ff-4467-835e-28b4a4dfcd8f@nvidia.com> <aTjxleV96jE3PIBh@kbusch-mbp>
- <2fcc9d30-42e8-4382-bbbc-a3f66016f368@nvidia.com>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="oL++Hblx"
+Received: from [192.168.201.246] (unknown [4.194.122.136])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 4FCF12116032;
+	Wed, 10 Dec 2025 09:15:21 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 4FCF12116032
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1765386932;
+	bh=naH2dhqkC83NKYwuVneGxpeuFjL7uWm/g5PqJfAwzi8=;
+	h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
+	b=oL++HblxZOe3KC+0dbwyS26fX1D4vysW+I8TvFOG8UAHeaZzn3tBtn7otA9Yep/f1
+	 39xqqimQHAr0/IdqsoA4LknRt0YA7n2CFRetNYKDJRKdghpedMCLvXq9umx51FD+Gh
+	 59tkMZ2KwY3WTMn5w1aDtmKrCFh3sopLzDubqErA=
+Message-ID: <0c34e66f-7766-4b4f-a04d-77dbc330f1fe@linux.microsoft.com>
+Date: Wed, 10 Dec 2025 09:15:18 -0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: jeJWNsy0ehQWOnADtC6xW025jkJteUA62VyK3gtvN-c_1765386725
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=US-ASCII; format=flowed
+User-Agent: Mozilla Thunderbird
+Cc: linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
+ iommu@lists.linux.dev, linux-pci@vger.kernel.org,
+ easwar.hariharan@linux.microsoft.com, kys@microsoft.com,
+ haiyangz@microsoft.com, wei.liu@kernel.org, decui@microsoft.com,
+ lpieralisi@kernel.org, kwilczynski@kernel.org, mani@kernel.org,
+ robh@kernel.org, bhelgaas@google.com, arnd@arndb.de, joro@8bytes.org,
+ will@kernel.org, robin.murphy@arm.com, jacob.pan@linux.microsoft.com,
+ nunodasneves@linux.microsoft.com, mrathor@linux.microsoft.com,
+ mhklinux@outlook.com, peterz@infradead.org, linux-arch@vger.kernel.org
+Subject: Re: [RFC v1 5/5] iommu/hyperv: Add para-virtualized IOMMU support for
+ Hyper-V guest
+To: Yu Zhang <zhangyu1@linux.microsoft.com>
+References: <20251209051128.76913-1-zhangyu1@linux.microsoft.com>
+ <20251209051128.76913-6-zhangyu1@linux.microsoft.com>
+From: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
+Content-Language: en-US
+In-Reply-To: <20251209051128.76913-6-zhangyu1@linux.microsoft.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Wed, 10 Dec 2025, Chaitanya Kulkarni wrote:
-> (+ Leon Romanovsky)
->
-> On 12/9/25 20:05, Keith Busch wrote:
->> On Wed, Dec 10, 2025 at 02:30:50AM +0000, Chaitanya Kulkarni wrote:
->>> @@ -126,17 +126,26 @@ static bool blk_rq_dma_map_iova(struct request *req, struct device *dma_dev,
->>>    		error = dma_iova_link(dma_dev, state, vec->paddr, mapped,
->>>    				vec->len, dir, attrs);
->>>    		if (error)
->>> -			break;
->>> +			goto out_unlink;
->>>    		mapped += vec->len;
->>>    	} while (blk_map_iter_next(req, &iter->iter, vec));
->>>
->>>    	error = dma_iova_sync(dma_dev, state, 0, mapped);
->>> -	if (error) {
->>> -		iter->status = errno_to_blk_status(error);
->>> -		return false;
->>> -	}
->>> +	if (error)
->>> +		goto out_unlink;
->>>
->>>    	return true;
->>> +
->>> +out_unlink:
->>> +	/*
->>> +	 * Unlink any partial mapping to avoid unmap mismatch later.
->>> +	 * If we mapped some bytes but not all, we must clean up now
->>> +	 * to prevent attempting to unmap more than was actually mapped.
->>> +	 */
->>> +	if (mapped)
->>> +		dma_iova_unlink(dma_dev, state, 0, mapped, dir, attrs);
->>> +	iter->status = errno_to_blk_status(error);
->>> +	return false;
->>>    }
->> It does look like a bug to continue on when dma_iova_link() fails as the
->> caller thinks the entire mapping was successful, but I think you also
->> need to call dma_iova_free() to undo the earlier dma_iova_try_alloc(),
->> otherwise iova space is leaked.
->
-> Thanks for catching that, see updated version of this patch [1].
->
->> I'm a bit doubtful this error condition was hit though: this sequence
->> is largely the same as it was in v6.18 before the regression. The only
->> difference since then should just be for handling P2P DMA across a host
->> bridge, which I don't think applies to the reported bug since that's a
->> pretty unusual thing to do.
->
-> That's why I've asked reporter to test it.
->
-> Either way, IMO both of the patches are still needed.
->
+On 12/8/2025 9:11 PM, Yu Zhang wrote:
+> Add a para-virtualized IOMMU driver for Linux guests running on Hyper-V.
+> This driver implements stage-1 IO translation within the guest OS.
+> It integrates with the Linux IOMMU core, utilizing Hyper-V hypercalls
+> for:
+>  - Capability discovery
+>  - Domain allocation, configuration, and deallocation
+>  - Device attachment and detachment
+>  - IOTLB invalidation
+> 
+> The driver constructs x86-compatible stage-1 IO page tables in the
+> guest memory using consolidated IO page table helpers. This allows
+> the guest to manage stage-1 translations independently of vendor-
+> specific drivers (like Intel VT-d or AMD IOMMU).
+> 
+> Hyper-v consumes this stage-1 IO page table, when a device domain is
+> created and configured, and nests it with the host's stage-2 IO page
+> tables, therefore elemenating the VM exits for guest IOMMU mapping
+> operations.
+> 
+> For guest IOMMU unmapping operations, VM exits to perform the IOTLB
+> flush(and possibly the device TLB flush) is still unavoidable. For
+> now, HVCALL_FLUSH_DEVICE_DOMAIN	is used to implement a domain-selective
+> IOTLB flush. New hypercalls for finer-grained hypercall will be provided
+> in future patches.
+> 
+> Co-developed-by: Wei Liu <wei.liu@kernel.org>
+> Signed-off-by: Wei Liu <wei.liu@kernel.org>
+> Co-developed-by: Jacob Pan <jacob.pan@linux.microsoft.com>
+> Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
+> Co-developed-by: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
+> Signed-off-by: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
+> Signed-off-by: Yu Zhang <zhangyu1@linux.microsoft.com>
+> ---
+>  drivers/iommu/hyperv/Kconfig  |  14 +
+>  drivers/iommu/hyperv/Makefile |   1 +
+>  drivers/iommu/hyperv/iommu.c  | 608 ++++++++++++++++++++++++++++++++++
+>  drivers/iommu/hyperv/iommu.h  |  53 +++
+>  4 files changed, 676 insertions(+)
+>  create mode 100644 drivers/iommu/hyperv/iommu.c
+>  create mode 100644 drivers/iommu/hyperv/iommu.h
+> 
 
-The patch Keith posted fixes the issue for me. Should I do another run
-with only these 2 applied?
+<snip>
 
+> +
+> +static int __init hv_iommu_init(void)
+> +{
+> +	int ret = 0;
+> +	struct hv_iommu_dev *hv_iommu = NULL;
+> +	struct hv_output_get_iommu_capabilities hv_iommu_cap = {0};
+> +
+> +	if (no_iommu || iommu_detected)
+> +		return -ENODEV;
+> +
+> +	if (!hv_is_hyperv_initialized())
+> +		return -ENODEV;
+> +
+> +	if (hv_iommu_detect(&hv_iommu_cap) ||
+> +	    !hv_iommu_present(hv_iommu_cap.iommu_cap) ||
+> +	    !hv_iommu_s1_domain_supported(hv_iommu_cap.iommu_cap))
+> +		return -ENODEV;
+> +
+> +	iommu_detected = 1;
+> +	pci_request_acs();
+> +
+> +	hv_iommu = kzalloc(sizeof(*hv_iommu), GFP_KERNEL);
+> +	if (!hv_iommu)
+> +		return -ENOMEM;
+> +
+> +	hv_init_iommu_device(hv_iommu, &hv_iommu_cap);
+> +
+> +	ret = hv_initialize_static_domains();
+> +	if (ret) {
+> +		pr_err("hv_initialize_static_domains failed: %d\n", ret);
+> +		goto err_sysfs_remove;
+
+This should be goto err_free since we haven't done the sysfs_add yet
+
+> +	}
+> +
+> +	ret = iommu_device_sysfs_add(&hv_iommu->iommu, NULL, NULL, "%s", "hv-iommu");
+> +	if (ret) {
+> +		pr_err("iommu_device_sysfs_add failed: %d\n", ret);
+> +		goto err_free;
+
+And this should be probably a goto delete_static_domains that cleans up the allocated static
+domains...
+
+> +	}
+> +
+> +
+> +	ret = iommu_device_register(&hv_iommu->iommu, &hv_iommu_ops, NULL);
+> +	if (ret) {
+> +		pr_err("iommu_device_register failed: %d\n", ret);
+> +		goto err_sysfs_remove;
+> +	}
+> +
+> +	register_syscore_ops(&hv_iommu_syscore_ops);
+> +
+> +	pr_info("Microsoft Hypervisor IOMMU initialized\n");
+> +	return 0;
+> +
+> +err_sysfs_remove:
+> +	iommu_device_sysfs_remove(&hv_iommu->iommu);
+> +err_free:
+> +	kfree(hv_iommu);
+> +	return ret;
+> +}
+> +
+> +device_initcall(hv_iommu_init);
+
+<snip>
