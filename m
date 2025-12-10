@@ -1,83 +1,98 @@
-Received: from mail-vk1-f172.google.com (mail-vk1-f172.google.com [209.85.221.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E2673009DA
-	for <iommu@lists.linux.dev>; Wed, 10 Dec 2025 03:23:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AE4C30F94D;
+	Wed, 10 Dec 2025 04:05:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765337022; cv=none; b=mjQCWrq5kKwuOQABI1F3Hz6HZWhFEI7M+GHymRIRG+GmyzxbReoksjQilsKgQGLo7POLQnXinUSpCzCf38AMLVeoZkprluJr5t7TCd28sdi4vP3Tv7PgPcx6Mb+YTkXaiJKjDKmPNAVQPowBP0Tec3wYPVHPO7X2ILXBoqPPDIg=
+	t=1765339545; cv=none; b=Dl1TO3ujez/4ifnKvryWHaEHampWenIxlMbB0kiannTWoDHP2XR5nNCsAE62vDu2q8yTCdbSDaaDZeCaB/lOCBZ/f5OYSSaTfzGhbPhxcFjT37ytNcg0EpNYlhMz31KkLbWlPNN/eP/fs0utHlekxfb46BINkZ5Zkw7qgD5mT1Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765337022; c=relaxed/simple;
-	bh=sp8r4MEnhaHgP/GsV7U/YqZG+WaVztHr56tiyAJ++VE=;
-	h=MIME-Version:From:Date:Message-ID:Subject:To:Cc:Content-Type; b=t6Tj5bFsR5/CNBymSzyLXQMXVwa4KyyWxiNfVoeR5ayGis/FEiRSQXAAKdfPCy/fiVBaNy74wWg+6EAtvTB5egHkd6NDV0Vp8V1AuzLFY846heU1j33z3cO40LBjhxpj7ueEuV0ujNoxf9LPfBjLlJjxedpIAzBfXO18VslbZbo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=jbJ7nHzC; arc=none smtp.client-ip=209.85.221.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
+	s=arc-20240116; t=1765339545; c=relaxed/simple;
+	bh=DDXeGI3PrVCWYn4HgWXYJxRFC7N8vlabUufE9+1W1hU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=qIugEN2XMmYhVMXVlrqXBog7grfEdC8zdbrX1CJh6Hv/BuTRmR5vJkQCAlrlu2QxZFHJJz/5+NnPGzBInHbOKwKDxYN3k8xDZbchIBILkiFUnGLXBg4lyHEOqFzOQTPAjtd/a3vdWL2bh1sqzWQHe69g1/+XPmqHEbX/L0ipX5s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=K3gYJbMV; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="jbJ7nHzC"
-Received: by mail-vk1-f172.google.com with SMTP id 71dfb90a1353d-55b1dde0961so4222370e0c.2
-        for <iommu@lists.linux.dev>; Tue, 09 Dec 2025 19:23:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance.com; s=google; t=1765337018; x=1765941818; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=sp8r4MEnhaHgP/GsV7U/YqZG+WaVztHr56tiyAJ++VE=;
-        b=jbJ7nHzCKW3rSWABkt9hwWYHw5HQRA5sy0kfafxBy+e1ygKJS61DSpM104nik7ozrn
-         YKtaKZ+ZpqIQMhWUYgPR2QbddLLyv6AW6G9w1yOxtNYJzcsag3sMCjO2Qtvym5ZD7Bqr
-         1FwoLtRPiCpgOMbIK5mhKbLlsGUpiuDzE39UgMNt+saIGa7dEXwu8+6qqsusbaLv4Skx
-         hX1UEYwOqUHtHVF89TgTPUwuaWvq6QI71BQAv43sbjRtwgQZKqiG5GsGP9ilI/KM4xUj
-         vPgkF2rmXio3hW4l/8eTkynQYl7dBD7mEFNLBIL8nHXrMiqnoeRgslmrCFToZt9ZjJW4
-         URcg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1765337018; x=1765941818;
-        h=cc:to:subject:message-id:date:from:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=sp8r4MEnhaHgP/GsV7U/YqZG+WaVztHr56tiyAJ++VE=;
-        b=pN/oQg7s3uqzReCmGbdhQIzicyydeaJAsY+x3TPdxvb+yqc3cUkWfXoV7TKejpveea
-         ZVtbR3R9l61Wij5kpzuXIEeaxwdnjAZIwXnqwbKTfDLhU5uHF1GRKEs4nLuficcrPf3D
-         dOnndJvU0qgQeREOD03toha/un2kivTdT6/W15O/+TTg/JuZ6o0MS1wfNwEwM2kMPW1m
-         Dg1c4M5Mq7UPKk6jbTIbWcYXG5Sm2w3wn3b9WfHhIWrjsZkK7WAJbFucQL1xO8yRHXq9
-         /OyPvYXWbYdH73N0Z4hVPANn8DofdmrOIFXdXSeTuEWkAM5jGxMXteEEbeT7/3j7k6Rj
-         X/vw==
-X-Gm-Message-State: AOJu0Yw5gE/pRrJDNeCV0UOYJHaGOvA/nowmv6XhwmbgiAKrveB8MvnI
-	34+iZmzc1CJ4gx3stIOlSD5gbzfMkXsQtni80c5/UZmDzIiM/V3oJ/bmdKePWZhm14/DVk2wxWk
-	oaYQVIBn7KakOMw3TrAPfwg4VeYpKKViMO5OjAdaVhg==
-X-Gm-Gg: AY/fxX57cEa4WtNbvAkpH+Rr0DwEHxkJE+vZD1PM4FyOsn1O5M7lsVLodom8Q9yjY4I
-	t9artf3F8UdCBF+wZgFpOYR6Ai2IPhmHosdjz6dqqWi4owwz7qgpLz65NrZGyTOj3sbNoTZvYvt
-	6UO9KpEfffVtjZnMfnFTOvL2R1NoRsTRISarsNt5+UIVAXnlEDy56H1mXBaLAqQKnVdtnfScYXx
-	h6wzh9BpHjDmSA9uxjCp/zq+sv5bT5Amtl8w5orTV51+hFH0hd1MH22EdxYWH/LqHh2u4WHw1N2
-	8vz3XZj7Y7rwsobVN5s=
-X-Google-Smtp-Source: AGHT+IEmwhMW1FyeZshD1+7NR1/UZ4ALcKJ/slV6o0DtRyQArUoOlhK6Q4gkpo2enLrP7djyqpqTN9L3jOabLqwpyvs=
-X-Received: by 2002:a05:6102:3313:b0:5db:d6dd:81c6 with SMTP id
- ada2fe7eead31-5e571b9ce14mr366028137.18.1765337018014; Tue, 09 Dec 2025
- 19:23:38 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="K3gYJbMV"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95D2CC116B1;
+	Wed, 10 Dec 2025 04:05:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1765339545;
+	bh=DDXeGI3PrVCWYn4HgWXYJxRFC7N8vlabUufE9+1W1hU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=K3gYJbMVRCC87PmUQ02vWB+jUJdMU6wSQL3EWDlwZ4hdXkL6y1EW8vSd8b3I22MwD
+	 gb/M6kjjt6Z9jA/SkjKVeTwpYzLNdGiAE9BPpVMBReng9K00FrH3PjJIyb2NM/3Lah
+	 pmCklcpqHMPc76RFgxZjYIk6WdFDg6qMOUc0bZih+0piHrJIw5UQ7ItfiGMiROwq+m
+	 tsHBinhfxt3Fz1ONr9RZTxbhlBb5TYB1s9avApO0Cm8OhTGt1VNzZBthCyKd6Rnslu
+	 Oj0Gd8RQBNPjiaZwH+Zu3Eiy59RKsabggSdbwLMy2w9vXNsHe552FCZ64BDnuX98kd
+	 NF+OXmPBOsyIQ==
+Date: Wed, 10 Dec 2025 13:05:41 +0900
+From: Keith Busch <kbusch@kernel.org>
+To: Chaitanya Kulkarni <chaitanyak@nvidia.com>
+Cc: Sebastian Ott <sebott@redhat.com>,
+	"linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	Robin Murphy <robin.murphy@arm.com>,
+	"linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-xfs@vger.kernel.org" <linux-xfs@vger.kernel.org>,
+	Jens Axboe <axboe@fb.com>, Christoph Hellwig <hch@lst.de>,
+	Will Deacon <will@kernel.org>, Carlos Maiolino <cem@kernel.org>
+Subject: Re: WARNING: drivers/iommu/io-pgtable-arm.c:639
+Message-ID: <aTjxleV96jE3PIBh@kbusch-mbp>
+References: <170120f7-dd2c-4d2a-d6fc-ac4c82afefd7@redhat.com>
+ <4386e0f7-9e45-41d2-8236-7133d6d00610@arm.com>
+ <99e12a04-d23f-f9e7-b02e-770e0012a794@redhat.com>
+ <30ae8fc4-94ff-4467-835e-28b4a4dfcd8f@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-From: Xu Lu <luxu.kernel@bytedance.com>
-Date: Wed, 10 Dec 2025 11:23:27 +0800
-X-Gm-Features: AQt7F2rejZozDc7tP8Z64uVCLp-9o0MUbwI8t4sHQoeCuyUIEEDs0pcvXIaKbH0
-Message-ID: <CAPYmKFt8bu48mi0awW7XWCiQvQqKf0VzcJbx5VR0VmcT0zYZ4Q@mail.gmail.com>
-Subject: About RISC-V IOMMU PMU
-To: guoyaxing@bosc.ac.cn, Zong Li <zong.li@sifive.com>
-Cc: iommu@lists.linux.dev, Tomasz Jeznach <tjeznach@rivosinc.com>, joro@8bytes.org, 
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Paul Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt <palmer@dabbelt.com>, 
-	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>, anxu@bosc.ac.cn, 
-	wangran@bosc.ac.cn
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <30ae8fc4-94ff-4467-835e-28b4a4dfcd8f@nvidia.com>
 
-Hi Yaxing and Zong Li,
+On Wed, Dec 10, 2025 at 02:30:50AM +0000, Chaitanya Kulkarni wrote:
+> @@ -126,17 +126,26 @@ static bool blk_rq_dma_map_iova(struct request *req, struct device *dma_dev,
+>   		error = dma_iova_link(dma_dev, state, vec->paddr, mapped,
+>   				vec->len, dir, attrs);
+>   		if (error)
+> -			break;
+> +			goto out_unlink;
+>   		mapped += vec->len;
+>   	} while (blk_map_iter_next(req, &iter->iter, vec));
+>   
+>   	error = dma_iova_sync(dma_dev, state, 0, mapped);
+> -	if (error) {
+> -		iter->status = errno_to_blk_status(error);
+> -		return false;
+> -	}
+> +	if (error)
+> +		goto out_unlink;
+>   
+>   	return true;
+> +
+> +out_unlink:
+> +	/*
+> +	 * Unlink any partial mapping to avoid unmap mismatch later.
+> +	 * If we mapped some bytes but not all, we must clean up now
+> +	 * to prevent attempting to unmap more than was actually mapped.
+> +	 */
+> +	if (mapped)
+> +		dma_iova_unlink(dma_dev, state, 0, mapped, dir, attrs);
+> +	iter->status = errno_to_blk_status(error);
+> +	return false;
+>   }
 
-I noticed that Yaxing has sent a patch series about RISC-V IOMMU
-PMU[1]. The same driver has an earlier patch series[2] from Zong Li. I
-am wondering if Zong Li still plans to update his patch?
+It does look like a bug to continue on when dma_iova_link() fails as the
+caller thinks the entire mapping was successful, but I think you also
+need to call dma_iova_free() to undo the earlier dma_iova_try_alloc(),
+otherwise iova space is leaked.
 
-[1] https://lore.kernel.org/all/20250915020911.1313-1-guoyaxing@bosc.ac.cn/
-[2] https://lore.kernel.org/all/20250115030306.29735-2-zong.li@sifive.com/
-
-Best regards,
-Xu Lu
+I'm a bit doubtful this error condition was hit though: this sequence
+is largely the same as it was in v6.18 before the regression. The only
+difference since then should just be for handling P2P DMA across a host
+bridge, which I don't think applies to the reported bug since that's a
+pretty unusual thing to do.
