@@ -1,102 +1,192 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DC49F4317D
-	for <iommu@lists.linux.dev>; Thu, 11 Dec 2025 11:05:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-wm1-f74.google.com (mail-wm1-f74.google.com [209.85.128.74])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9991310630
+	for <iommu@lists.linux.dev>; Thu, 11 Dec 2025 12:59:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.74
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765451113; cv=none; b=b82GU0ewPYRDYYp/3pZUrlE5VumNwJXGZrqOD5ofF7eiYXEMy8yJ1kVpSyL2U+TEYlWzwug3Cd1lKqj/48UYdwrbh+eGZJqGBjil4zycx3fxixsdO7FnId6kfw0C2NyGfjyYCkeqTd29pY8tJhs5/jLV0UQb/cYgM+MFfNfYUKo=
+	t=1765457977; cv=none; b=i1XBHsEKEOHyoFh2nDdzx9mLi9MdwxbJo75rdg72ZTyqz+W1cLslC8/hywtNFbsxUlC8lICDRFNgnQCXXAKQl4AwXiq3Pmt5eqybL4nu6x3DuHoa6TZvdcHddAg4pvUzZzy7kEBEGgNFjdvSRrMK8G1MhVSCd6jRTl8dvLPAtbw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765451113; c=relaxed/simple;
-	bh=xiATBxpdJp6ZaEj5YpXGm5ulnv79Dfm+n4B7qxfpqk8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=qg1hs2M2q4Hpikdt75QAck6/pvdyUuJn2KcKaJ5GyugV4tV8bQhTlQLMZcc9tHfKHXTQX7yHJInsg8epnZql45qvJuyi/EAfFghG8DylfM53hSMCmcgeTbSGyAyc/p35h7lR3Sx1ttWrhFqAGbSuntJnoVsqgQcd00P32TaEb1I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5E32C175D;
-	Thu, 11 Dec 2025 03:04:58 -0800 (PST)
-Received: from [10.57.46.197] (unknown [10.57.46.197])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7028F3F740;
-	Thu, 11 Dec 2025 03:05:04 -0800 (PST)
-Message-ID: <47689561-ed13-4525-825d-60eb8c36ae4c@arm.com>
-Date: Thu, 11 Dec 2025 11:04:29 +0000
+	s=arc-20240116; t=1765457977; c=relaxed/simple;
+	bh=rLcihtyFhSEoeTJa4t4hOIpNJcIYYd1QzG5DpHS2acY=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=Nj5ugBTmizsym6sfj+i9/F16UZsq5NPc33NUV7x5RmAXuUpqvIjuxUhGk6De5onDaQIpxpk9O4NOKBrvkx6SibRL5Wci5aqo2icDWiW89YnSamRXxPgNkSnbb52mPWsEuBeepc/gwWIxtoXnC1Zf+uOp5L5gTzkbbXOj3aMMmXs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=jyzXCe+o; arc=none smtp.client-ip=209.85.128.74
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="jyzXCe+o"
+Received: by mail-wm1-f74.google.com with SMTP id 5b1f17b1804b1-477563e531cso414945e9.1
+        for <iommu@lists.linux.dev>; Thu, 11 Dec 2025 04:59:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1765457974; x=1766062774; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:from:subject:message-id
+         :mime-version:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=1YPd4rabCA15+W0gc58X3ldTKNVJsgSl/m8TAJcDC9k=;
+        b=jyzXCe+oiRxbaWA68H/suTCtkuIt8FCRL6MwA5JUmoocDsXwN8VzLTvY+3YplABi8I
+         LK8k0pCLCGCHpgLiYSL5b+xwZo45BxnFAVt5Ba36TYXS7BrEKL/RaYcc06zk6ZN15AlE
+         kZe1DAacL+ndEApN7gVbyn6hkT90cDSuD9hfn0U0gG7Q4QdT2lCgVwoJQm+4bOp9rCCV
+         iyWidLlz2ScZqVCguVNU6bzWEORr7h08czBFaFfsjJNoZb3CW3v4XDCQIR7Fvk7zv+a8
+         uAcKBGmK7vdTlS0fV8ex2QxVQ3erZLXwxF2mTXNl8ABotPeBfm0UQqpT+8+YYthSCgRY
+         Hlww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1765457974; x=1766062774;
+        h=content-transfer-encoding:cc:to:from:subject:message-id
+         :mime-version:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=1YPd4rabCA15+W0gc58X3ldTKNVJsgSl/m8TAJcDC9k=;
+        b=G6ckMLpKsUjggpBEFLyzdyayZaYw0AtfgTeDebGmmrkf+K3E9EXmfaHzrw3gjyxOP1
+         oT1O+bR9Fs9o0kcNGrCwlzZ9FRg7DpAj6MT0DvQgd3V7LHEsaBSfA8Fp/E4+zIFoxWzA
+         B5JryC1KaeigaAf2z+Rxogoq1X77PgTqLOpfg9YagDxM5nAgnIJ9i1l38zUvDwgHykSW
+         PjcZZNaOVHPtEjI/TWnthC0dIWzErx2veu2rMdq+MV9qPXjBgInWtWHB35XrlIHy+Q/c
+         qVczmE6wm5x8PS5R/Qfb5Q+NaGAKL2H1JtFqgfKuHC/5K596fdFJtldB1x423isAoKpK
+         HjmQ==
+X-Forwarded-Encrypted: i=1; AJvYcCX9WZaKn5WRyPQlX8xxSiX93G+M33mu7UB5VCsAeAlU2XsZqx0ei88sY788DdaMrv92e3pi6A==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzsAwDa7YVz5ZQveTGm6Ivz63Vw5gESfG4/Yueb5uwp7Zhig681
+	1H+vHTzqEye7pj57CHKfoMcBl2R9ZXYU3ksrtd64/RP+UyH1Mt0ZZDvLOMmJVWHFIeoe9RQgZGx
+	u1xJIRxu8JsMbBA==
+X-Google-Smtp-Source: AGHT+IEutEw1d7HRrDvz7Uw5x03SFSXvQO6Sqwdti2F86uaAXoFjBNtSfbvmhvAiwBwLApQfmCLLxUs3FhConw==
+X-Received: from wmbhi3.prod.google.com ([2002:a05:600c:5343:b0:477:c551:bdb9])
+ (user=smostafa job=prod-delivery.src-stubby-dispatcher) by
+ 2002:a05:600c:1389:b0:46e:4a13:e6c6 with SMTP id 5b1f17b1804b1-47a83843239mr56517695e9.19.1765457973952;
+ Thu, 11 Dec 2025 04:59:33 -0800 (PST)
+Date: Thu, 11 Dec 2025 12:59:24 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommu/io-pgtable-arm: Add misisng concatenated PGD cases
-To: Will Deacon <will@kernel.org>
-Cc: Mostafa Saleh <smostafa@google.com>, iommu@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- joro@8bytes.org, Tomasz Nowicki <tnowicki@google.com>
-References: <20251130194506.593700-1-smostafa@google.com>
- <18a39079-2285-47fb-b306-040f2bc1bbaa@arm.com> <aTgX9qhaLyrQ5iye@google.com>
- <498bbad4-ea64-4a24-a63f-e131d271990a@arm.com> <aTjCDvtANr2WIv3L@google.com>
- <8e058f60-60da-47c2-9947-2ea26cca1639@arm.com> <aTonvd9_4hY4-CpS@google.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <aTonvd9_4hY4-CpS@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.52.0.223.gf5cc29aaa4-goog
+Message-ID: <20251211125928.3258905-1-smostafa@google.com>
+Subject: [PATCH v4 0/4] iommu: Add IOMMU_DEBUG_PAGEALLOC sanitizer
+From: Mostafa Saleh <smostafa@google.com>
+To: linux-mm@kvack.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	linux-doc@vger.kernel.org
+Cc: corbet@lwn.net, joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, 
+	akpm@linux-foundation.org, vbabka@suse.cz, surenb@google.com, mhocko@suse.com, 
+	jackmanb@google.com, hannes@cmpxchg.org, ziy@nvidia.com, david@redhat.com, 
+	lorenzo.stoakes@oracle.com, Liam.Howlett@oracle.com, rppt@kernel.org, 
+	xiaqinxin@huawei.com, baolu.lu@linux.intel.com, rdunlap@infradead.org, 
+	Mostafa Saleh <smostafa@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 2025-12-11 2:09 am, Will Deacon wrote:
-> On Wed, Dec 10, 2025 at 12:06:10PM +0000, Robin Murphy wrote:
->> On 2025-12-10 12:42 am, Will Deacon wrote:
->>> On Tue, Dec 09, 2025 at 01:33:36PM +0000, Robin Murphy wrote:
->>>> On 2025-12-09 12:37 pm, Mostafa Saleh wrote:
->>>>> On Tue, Dec 09, 2025 at 11:34:34AM +0000, Robin Murphy wrote:
->>>>>> On 2025-11-30 7:45 pm, Mostafa Saleh wrote:
->>>>>>> arm_lpae_concat_mandatory() assumes that OAS >= IAS which is not
->>>>>>> correct for SMMUs supporting AArch32, and have OAS = 32/36 bits,
->>>>>>> as IAS would be 40 bits.
->>>>>>
->>>>>> But that is only when *using* AArch32 format. The bit in chapter 3.4 of the
->>>>>> SMMU architecture is talking about the maximum IAS that an SMMU
->>>>>> implementation needs to be able to accommodate based on its configuration,
->>>>>> but it does then attempt to clarify that the actual IPA size in use by any
->>>>>> given context should depend on the VMSA format in use:
->>>>>>
->>>>>> "VMSAv8-32 LPAE always supports an IPA size of 40 bits, whereas VMSAv8-64
->>>>>> and VMSAv9-128 limits the maximum IPA size to the maximum PA size."
->>>>>>
->>>>>> Rule R_SRKBC in the Arm ARM lays out the exact T0SZ constraints with this
->>>>>> AArch32/AArch64 detail.
->>>>>
->>>>> I see, thanks a lot for the explanation, I got confused by the this
->>>>> statement:
->>>>> Note: If AArch32 is implemented, IAS == MAX(40, OAS), otherwise IAS == OAS.
->>>>
->>>> Indeed, that appears confusingly contradictory; I've filed a bug.
->>>
->>> I think the spec has always been worded like this. My reading is that, in
->>> isolation:
->>>
->>>     - VMSAv8-32 LPAE always uses a 40-bit IAS
->>>     - VMSAv8-64 has IAS == OAS and this can be smaller than 40 bits
->>>
->>> so if AArch32 is implemented, we know that the hardware supports at
->>> least a 40-bit IAS and in that case the VMSAv8-64 IAS can be bigger
->>> than the OAS.
->>
->> No, the VMSAv8-64 IAS can never be bigger than OAS, as that would violate
->> VMSA (see rules R_DTLMN and R_SRKBC). The SMMU spec seems mostly fixated on
->> the notional maximum IAS that an SMMU must accommodate in general across all
->> supported formats; the limitations of using any particular format must still
->> apply though (similarly, the fact that AArch32 has a fixed 40-bit output
->> doesn't mean that OAS and S2PS don't still matter for AArch64 format.)
-> 
-> A VMSAv8-32 stage-1 could still input a 40-bit IAS into a VMSAv8-64
-> stage-2 when the OAS < 40-bit though, right? If that's the only case
-> where this happens, then I agree we should ditch the complexity from the
-> driver on the grounds that we don't ever use the 32-bit formats.
+Overview
+--------
+This patch series introduces a new debugging feature,
+IOMMU_DEBUG_PAGEALLOC, designed to catch DMA use-after-free bugs
+and IOMMU mapping leaks from buggy drivers.
 
-Yes, it is perfectly possible with either format to configure the S1 
-*output* size (CD.IPS, or 40 when CD.AA64==0) to be larger than the S2 
-input size (STE.S2T0SZ), and if S1 tries to use an IPA beyond the actual 
-S2 range then it gets a S2 translation fault, per VMSA rule R_BZHGM.
+The kernel has powerful sanitizers like KASAN and DEBUG_PAGEALLOC
+for catching CPU-side memory corruption. However, there is limited
+runtime sanitization for DMA mappings managed by the IOMMU. A buggy
+driver can free a page while it is still mapped for DMA, leading to
+memory corruption or use-after-free vulnerabilities when that page is
+reallocated and used for a different purpose.
 
-Cheers,
-Robin.
+Inspired by DEBUG_PAGEALLOC, this sanitizer tracks IOMMU mappings on a
+per-page basis, as it=E2=80=99s not possible to unmap the pages, because it
+requires to lock and walk all domains on every kernel free, instead we
+rely on page_ext to add an IOMMU-specific mapping reference count for
+each page.
+And on each page allocated/freed from the kernel we simply check the
+count and WARN if it is not zero, and dumping page owner information
+if enabled.
+
+Concurrency
+-----------
+By design this check is racy where one caller can map pages just after
+the check, which can lead to false negatives.
+In my opinion this is acceptable for sanitizers (for ex KCSAN have
+that property).
+Otherwise we have to implement locks in iommu_map/unmap for all domains
+which is not favourable even for a debug feature.
+The sanitizer only guarantees that the refcount itself doesn=E2=80=99t get
+corrupted using atomics. And there are no false positives.
+
+CPU vs IOMMU Page Size
+----------------------
+IOMMUs can use different page sizes and which can be non-homogeneous;
+not even all of them have the same page size.
+
+To solve this, the refcount is always incremented and decremented in
+units of the smallest page size supported by the IOMMU domain. This
+ensures the accounting remains consistent regardless of the size of
+the map or unmap operation, otherwise double counting can happen.
+
+Testing & Performance
+---------------------
+This was tested on Morello with Arm64 + SMMUv3
+Did some tests on Qemu including different SMMUv3/CPU page size (arm64).
+
+I also ran dma_map_benchmark on Morello:
+
+echo dma_map_benchmark > /sys/bus/pci/devices/0000\:06\:00.0/driver_overrid=
+e
+echo 0000:06:00.0 >  /sys/bus/pci/devices/0000\:06\:00.0/driver/unbind
+echo 0000:06:00.0 > /sys/bus/pci/drivers/dma_map_benchmark/bind
+./dma_map_benchmark -t $threads -g $nr_pages
+
+CONFIG refers to "CONFIG_IOMMU_DEBUG_PAGEALLOC"
+cmdline refers to "iommu.debug_pagealloc"
+Numbers are (map latency)/(unmap latency), lower is better.
+
+			CONFIG=3Dn    CONFIG=3Dy    CONFIG=3Dy
+			            cmdline=3D0   cmdline=3D1
+4K - 1 thread		0.1/0.6     0.1/0.6     0.1/0.7
+4K - 4 threads		0.1/1.1     0.1/1.0     0.2/1.1
+1M - 1 thread		0.8/21.2    0.7/21.2    5.4/42.3
+1M - 4 threads		1.1/45.9    1.1/46.0    5.9/45.1
+
+Main changes in v4:
+v3: https://lore.kernel.org/all/20251124200811.2942432-1-smostafa@google.co=
+m/
+- Update the kernel parameter format in docs based on Randy feedback
+- Update commit subjects
+- Add IOMMU only functions in iommu-priv.h based on Baolu feedback
+
+Main changes in v3: (Most of them addressing Will comments)
+v2: https://lore.kernel.org/linux-iommu/20251106163953.1971067-1-smostafa@g=
+oogle.com/
+- Reword the Kconfig help
+- Use unmap_begin/end instead of unmap/remap
+- Use relaxed accessors when refcounting
+- Fix a bug with checking the returned address from iova_to_phys
+- Add more hardening checks (overflow)
+- Add more debug info on assertions (dump_page_owner())
+- Handle cases where unmap returns larger size as the core code seems
+  to tolerate that.
+- Drop Tested-by tags from Qinxin as the code logic changed
+
+Main changes in v2:
+v1: https://lore.kernel.org/linux-iommu/20251003173229.1533640-1-smostafa@g=
+oogle.com/
+- Address J=C3=B6rg comments about #ifdefs and static keys
+- Reword the Kconfig help
+- Drop RFC
+- Collect t-b from Qinxin
+- Minor cleanups
+
+
+Mostafa Saleh (4):
+  iommu: Add page_ext for IOMMU_DEBUG_PAGEALLOC
+  iommu: Add calls for IOMMU_DEBUG_PAGEALLOC
+  iommu: debug-pagealloc: Track IOMMU pages
+  iommu: debug-pagealloc: Check mapped/unmapped kernel memory
+
+ .../admin-guide/kernel-parameters.txt         |   9 +
+ drivers/iommu/Kconfig                         |  19 ++
+ drivers/iommu/Makefile                        |   1 +
+ drivers/iommu/iommu-debug-pagealloc.c         | 174 ++++++++++++++++++
+ drivers/iommu/iommu-priv.h                    |  58 ++++++
+ drivers/iommu/iommu.c                         |  11 +-
+ include/linux/iommu-debug-pagealloc.h         |  32 ++++
+ include/linux/mm.h                            |   5 +
+ mm/page_ext.c                                 |   4 +
+ 9 files changed, 311 insertions(+), 2 deletions(-)
+ create mode 100644 drivers/iommu/iommu-debug-pagealloc.c
+ create mode 100644 include/linux/iommu-debug-pagealloc.h
+
+--=20
+2.52.0.223.gf5cc29aaa4-goog
+
