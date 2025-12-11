@@ -1,273 +1,340 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from BN1PR04CU002.outbound.protection.outlook.com (mail-eastus2azon11010050.outbound.protection.outlook.com [52.101.56.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8532D28851C
-	for <iommu@lists.linux.dev>; Thu, 11 Dec 2025 05:32:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765431131; cv=none; b=VKJnzj2itRBykMvqtCFVPh5iHwp6tdBF3hRnJPIrzgU9bGF7J9MlK7KsQoZltWDI4Brt0RfjOK2vjmRETmidxg55sDPCLYytf9IgY9irpwr/a5thTtZp/CkSGyT7P7sOU7gTyiGk07oHSSc0IToFNxwp5iDmpKhxz6KIRzsZuLo=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765431131; c=relaxed/simple;
-	bh=P+lHOHWXjvAOs321BtvZyVk0mTqu/Qmb51KszHoj3Lw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=lStYnHisld3KOTTomoWpMOBF889AfMYzjrIOZkpwkxpMRPTp7ZRAZLL0LH11/0bofG/lxGr9OEHd7VdmXWdpfxl98FCvB23+ZtgWl4/6Z5OQjng8OOm6lY+7GrK6N1y4HqM8iXfyw6YyAWIAsVN4UGsaxJ1WNTNKP+R/1uUHFDU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=jPxM/3bd; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=dR0MRgOL; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A924B173;
+	Thu, 11 Dec 2025 06:09:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.56.50
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1765433377; cv=fail; b=t2tk475EH/o5auPpT1ZTPU5FstbohaXW+zCxsDegGSMA1BKWbdoWCWg/e90q5nnEoq3vYUpJ3j30I1gMW9TgTzt0E6jN2DVUMjEX9VEscofhw6woFUMxCjcA5HoBDvNW1HIofde9fzH+uWBkP3J5HbnDD2yf3Ce0Kwl5BqNFPHk=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1765433377; c=relaxed/simple;
+	bh=5EVFUUS0qb9wgei8Ng6AAtzfzq/g3vIB3kvRWgPWEvw=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=kRXKHj05ZQ7FtK19b5eIwc0cQcm8Dd6m2bDv+eMyJz4xy/Ixk1LlBzrRkzgGLwXOeYZ/d5CTHFDqwWDb+upcgmywVybGATdXDcfZFDPCox+MDJ/btv8TjidSNfup3Ts9Uy26U69X7dBy1W4BSaLobfdRYNYk0Qm473CVcEIfyzw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=fyTHI1V3; arc=fail smtp.client-ip=52.101.56.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="jPxM/3bd";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="dR0MRgOL"
-Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 5BALPN443735731
-	for <iommu@lists.linux.dev>; Thu, 11 Dec 2025 05:32:07 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	YQrszTRLCgjaFeDWRhRpgkpyhibPZUre0zeW0/meuFw=; b=jPxM/3bdQA88tER8
-	VKE/rDf13NfB/5bUalKmwCOmU6RGlmS48qBAgmThxXyutp/QzOcnSUPgEMbLvp3k
-	+3uzsNs24joaQRFK54shU1sVbu2P2VGJJAOmWN/xQZOQdD2+jVl2jQmC9JK8yXa0
-	zTM+NxdnASq0Isn2ZJ1NIo0LgVGWNCRH+jKjndP4bqeYVr9PhjJ8m3He0nmAlYq7
-	Z2NpflvzAnlCUbbnDxJbJRX8IXOx2o7zp9iZbBWs3eXq/lvJsUcu5nZZOYc98/SR
-	iT6MUvpJWa8OLOCgtlDE27nV0UjgdtwqurXX6cmRZLyRfnrXgdD3sF4xxVILNcvP
-	Qemg4w==
-Received: from mail-pf1-f200.google.com (mail-pf1-f200.google.com [209.85.210.200])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4ayg0ps7qp-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Thu, 11 Dec 2025 05:32:06 +0000 (GMT)
-Received: by mail-pf1-f200.google.com with SMTP id d2e1a72fcca58-7ae3e3e0d06so536382b3a.0
-        for <iommu@lists.linux.dev>; Wed, 10 Dec 2025 21:32:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1765431126; x=1766035926; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=YQrszTRLCgjaFeDWRhRpgkpyhibPZUre0zeW0/meuFw=;
-        b=dR0MRgOLA2xWmxfky+t1aVe0uxNZGUpGGthw7NxYD5AuRsF6VDaZPhlTrknDDUt0dC
-         TO8s77VHw7njvl0GxmXAl4nJn1TAgzvMTcZtOKhuc46gcdXxk5rCZ9CCnW/k6Sc/Ynbl
-         wXgylctJr0d8YrG1Sq8uXosZE+ZLcjXF5CS4zdzcFKfpM1VQ0rvLSQwsqgAwat6qcLrH
-         +OdvjARbMs8C7gPgJV6h3FMSvn2wGR5MV3JQcFBEyW7mEoXXv1skSdosTYY3jqWRlehM
-         qNZdkA9S3wch0YWIZOpw4nBPmPbvi6tGNrQtL9JKkqGeTiTEAZvROBVvPf7StbmdYocD
-         mrjw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1765431126; x=1766035926;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=YQrszTRLCgjaFeDWRhRpgkpyhibPZUre0zeW0/meuFw=;
-        b=wEVhf9h4JJZIeL/TVcHO4F5Qrksj908RxaBMYX7cCFGfulEDSnU2kRWQRJUoydr/vC
-         6OXRhXTCJg2vHCSgt3KF1Uv0LpUjrlmQY6a1hFeyw0jsdn5zvTXF1YnRiLRFni0R+6KM
-         itdw3oDitGMr6NZyjZe2huhhT/6hg/LPZkSNcdbUKMiuNXNHlms85XhWuL5wedq4YvLc
-         PvzWcT5FYxSCteFh/EMcwre/FSMLLwRS4dNI9YBECAS19ljemOSc0OSn6vS4HZmGDmPb
-         tGMpi0K/cV3mFLsOGqeqbL3VsdJzvjDUEdDM4LoC0uaF3IMd03/e3PjdeSgAcEErYQqJ
-         RGUA==
-X-Forwarded-Encrypted: i=1; AJvYcCWseu6TU1FjsE/pPoG43ITWtKVkWIruPsKmVILF0amyVkK6I2ZBasZ3bVBsLbTFJYXC/ATJVA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzhEWWi6HpP2X5nEETJzZfq8ylWP5tPxC8Yv/wj1HegGskm/MCa
-	T4uK03hWZ73Cz8KvrSFZhsGy4OT94MSbClNkT5YfIcqWyphTLfIz8Nq4LFXO1A8qTp/pdMfTKt3
-	pb7KqIqxPwFTau38mKFCwH7XhNCu21BxQr72mnmpgaRqz7QGzB8q6eQoNGQ==
-X-Gm-Gg: AY/fxX4KIbMj7xZ0BZxD3aMCIrJ9IRYOrKtWh9zE6m3riDxWoQpxyZ/ou6Kc+gmrpqt
-	bYGL3940RBgQsr6slmWipYetlO2DDgohvFML/XzZYZJ//kEiupaGXkjwDHqUFqGZ2ku5HrtXq+6
-	tn9Y+gC51Gq0gnof7Zsy6aJQmql6mSWh3CRv84jOM4WYMzXV11R6Uh3iA//XY9FrQ7ZV9QrdYsG
-	i3YC8nqoN0Ergt4xemp+lByzBAnWQXJzuiPgXeQNcOcDcPkeh1p6i0KsFs0SFeb3RWAxDb5a6Lg
-	d0p5Tpl+IfwCKrwbsYI9nlBOnwWEDQFZg2HGAIWqNFhTr5XdXx0Ott8DLwOSr3EI8JbYHnqEu2Y
-	1t4HOkD831oVBmJYOP3rRSCbUXDwVo1cXm3bvONjs0yAC
-X-Received: by 2002:a05:6a00:1702:b0:7e8:4471:8da with SMTP id d2e1a72fcca58-7f22ee59c42mr5058027b3a.59.1765431126277;
-        Wed, 10 Dec 2025 21:32:06 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IGdlBAenEG9k4WZXMjAKhXkXY6Hwmy7kVFGx2Dnk1gO5DRq12xQb7HoT5VYM4jytxe1KwTyBQ==
-X-Received: by 2002:a05:6a00:1702:b0:7e8:4471:8da with SMTP id d2e1a72fcca58-7f22ee59c42mr5057991b3a.59.1765431125725;
-        Wed, 10 Dec 2025 21:32:05 -0800 (PST)
-Received: from [10.219.57.109] ([202.46.23.19])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-7f4c22848a7sm1192386b3a.3.2025.12.10.21.32.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 10 Dec 2025 21:32:05 -0800 (PST)
-Message-ID: <c8fa7f92-db1d-47f9-b771-3c787a0988d3@oss.qualcomm.com>
-Date: Thu, 11 Dec 2025 11:01:58 +0530
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="fyTHI1V3"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=oqcsSAzfgPve6CetbKpVxg1+gQioUJLOj6T6qgrOb2fn43UfnT6G4R6gH4jgVDe1HIXdgitNIMvnOQKhw8xltPiCycWqw22yJpdBLWdy5OAHuGDgrTFPXS6XIub3AxULD5obtb6ow2kRK1VBko2XjPRPMpFZMOPqUw7N/aEs90L2p12ZWv5tW3dFI5cUSKx9yy+/eDW31TDvu77dk9bahfjPW1yjQ2VuozpXORy6gFb3hCvrzoN6HFmyrgtEL/YUKALfOaRIQQScvQkHs9T0/LacvwM6pvTWclwaitfh4TsfenMzAyhXZ+Dtt6MuEIevAOEBBQhxaX8kuLRjIriGng==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=oZuV8+EjHAsb9UfjPhO1rkXiZbx2xlxeI8ewygNbw7o=;
+ b=MUD/XEolpbPuFEKDQAQia1A9DEsJdu5OvwIGYbLMLFK+cPNwCsGFBCgShZPXPVE1Sz+Uy960d9d6u6JNjPkqtF1rvN4D21K+fFIm+KW4bOySo3u1Zcm4jBz0cnpbE1NFzUreV01YgrZ+2TJgJdbXskagV63RwgOc819alYLN/3nR3w4+amnSyaPCibb/ZgVYkGFnSPHZWQ8WCoEpR9xfMa0av0RWWB1/qePLe/Z/Zn7VxAMgB/XDCJZOzkGXbEcV0wMiQm64q5nItV8O19KRBLYUb6Wjdyfqk1jauTWuuEDepVAlWos6nkuGahNyr3RokJAe0ovcp8hvXHCkGaudkg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=arm.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=oZuV8+EjHAsb9UfjPhO1rkXiZbx2xlxeI8ewygNbw7o=;
+ b=fyTHI1V3aqa3shi9EeqP2jC1Q2PYsM6F3ndYXsou24mBaCx8wp66tv+xoerC0BlTrHvP6q6hlmIePK/62IBu4cn8O2UPy86k9U/Z9t2qSUeFklo8UEtvmx7lpClPx24/c/eQPP+s7o1flCxUIGlMvTo3TvkVsvshYGcWx8iycEn2cXrcjpco28trKS69g44o7dW1KrH7cIYOUOBeLxL8zEDhxv0cltxjpN4PuoHuZV6Q6jrxER6KFXrIIn/ChWsCk5gbmtj59O1DQnWVZ4rH+S8mw7c53vAR1rxEH89ZQkGrzsKe21lZ8WrJ+MI+sWYzK5ILg3cdtcwjUYp2lhBA8g==
+Received: from DM6PR17CA0023.namprd17.prod.outlook.com (2603:10b6:5:1b3::36)
+ by CH3PR12MB9194.namprd12.prod.outlook.com (2603:10b6:610:19f::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9412.9; Thu, 11 Dec
+ 2025 06:09:28 +0000
+Received: from DS2PEPF0000343B.namprd02.prod.outlook.com
+ (2603:10b6:5:1b3:cafe::76) by DM6PR17CA0023.outlook.office365.com
+ (2603:10b6:5:1b3::36) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9412.6 via Frontend Transport; Thu,
+ 11 Dec 2025 06:09:27 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ DS2PEPF0000343B.mail.protection.outlook.com (10.167.18.38) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.9412.4 via Frontend Transport; Thu, 11 Dec 2025 06:09:27 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Wed, 10 Dec
+ 2025 22:09:12 -0800
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail202.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Wed, 10 Dec
+ 2025 22:09:11 -0800
+Received: from nvidia.com (10.127.8.10) by mail.nvidia.com (10.129.68.10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
+ Transport; Wed, 10 Dec 2025 22:09:08 -0800
+Date: Wed, 10 Dec 2025 22:09:05 -0800
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Robin Murphy <robin.murphy@arm.com>, Ashish Mhetre <amhetre@nvidia.com>
+CC: <oe-kbuild-all@lists.linux.dev>, <thierry.reding@gmail.com>,
+	<jonathanh@nvidia.com>, <vdumpa@nvidia.com>, <jgg@ziepe.ca>,
+	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-tegra@vger.kernel.org>, <joro@8bytes.org>, <robh@kernel.org>,
+	<krzk+dt@kernel.org>, <conor+dt@kernel.org>, kernel test robot
+	<lkp@intel.com>, <will@kernel.org>
+Subject: Re: [PATCH V4 1/3] iommu/arm-smmu-v3: Add device-tree support for
+ CMDQV driver
+Message-ID: <aTpgAU6FjinhclQH@nvidia.com>
+References: <20251205065850.3841834-2-amhetre@nvidia.com>
+ <202512090331.QAFgb6vQ-lkp@intel.com>
+ <2bf7bb25-9a6b-42d5-b095-978f7bb81f35@nvidia.com>
+ <e7c69e9c-6af4-468a-88ed-fb8829afb92e@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 3/3] of: Respect #{iommu,msi}-cells in maps
-To: Rob Herring <robh@kernel.org>
-Cc: robin.murphy@arm.com, will@kernel.org, joro@8bytes.org,
-        dmitry.baryshkov@oss.qualcomm.com, konrad.dybcio@oss.qualcomm.com,
-        bjorn.andersson@oss.qualcomm.com, bod@kernel.org, conor+dt@kernel.org,
-        krzk+dt@kernel.org, charan.kalla@oss.qualcomm.com,
-        prakash.gupta@oss.qualcomm.com, vikash.garodia@oss.qualcomm.com,
-        iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-References: <20251204095530.8627-1-vijayanand.jitta@oss.qualcomm.com>
- <20251204095530.8627-4-vijayanand.jitta@oss.qualcomm.com>
- <20251209201725.GB1015230-robh@kernel.org>
- <a0a5cf96-70fe-4005-a100-58ae0b72b4cd@oss.qualcomm.com>
- <20251210210414.GA3329469-robh@kernel.org>
-Content-Language: en-US
-From: Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
-In-Reply-To: <20251210210414.GA3329469-robh@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-ORIG-GUID: k7dAGb1tXhptrMRdbsCmzPMaI6Zy5zkA
-X-Authority-Analysis: v=2.4 cv=b46/I9Gx c=1 sm=1 tr=0 ts=693a5757 cx=c_pps
- a=mDZGXZTwRPZaeRUbqKGCBw==:117 a=j4ogTh8yFefVWWEFDRgCtg==:17
- a=IkcTkHD0fZMA:10 a=wP3pNCr1ah4A:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=7CQSdrXTAAAA:8 a=EUspDBNiAAAA:8
- a=g5k_W2lUybaQNBh0X1UA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
- a=zc0IvFSfCIW2DFIPzwfm:22 a=a-qgeE7W1pNrGK8U0ZQC:22
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMjExMDAzNyBTYWx0ZWRfX5lKFG5nB76M6
- ZaOQELMwAEWzolJg4wUmnKnKS+UX2hg3EkokXHp/er1ZIerKd9JQdJRLbLyXZLcw3tjK/jaBmXp
- LQDTONI7H57GIUt8/m8YF+T2Mw3Ji802bZeoUR5Z5IecjfOaj4vV9sCjpOsoFoYOEBJiVFzuStp
- gBfmHb+0wJeRoyU9SgIfC+1GgmKhHM4MxbbDKIDLUyEH9raNSsBDD5b7H3r4WHArvGSAtd1g5dz
- TBrpGDRl8J5BXD1AqiShMOBFjch49h7dF1CmOnQswO4/bu0OENgif24xhQGBPIjzMrXzNDQ4EWv
- uWsSRItJnQexXu+zImp80FIUUOF5fbUY6Ava7uiBDMcnQjY5mvo85CLzXQipE+/p9m46vQDv0hY
- 1SORAmMMLFaLfZzf5Mo93ALYbdckDg==
-X-Proofpoint-GUID: k7dAGb1tXhptrMRdbsCmzPMaI6Zy5zkA
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.9,FMLib:17.12.100.49
- definitions=2025-12-10_03,2025-12-09_03,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- malwarescore=0 impostorscore=0 spamscore=0 lowpriorityscore=0 suspectscore=0
- phishscore=0 clxscore=1015 adultscore=0 priorityscore=1501 bulkscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2510240001 definitions=main-2512110037
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <e7c69e9c-6af4-468a-88ed-fb8829afb92e@arm.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS2PEPF0000343B:EE_|CH3PR12MB9194:EE_
+X-MS-Office365-Filtering-Correlation-Id: f0fcf275-8698-4646-ec6e-08de387bd785
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|7416014|376014|1800799024|82310400026|36860700013|7053199007;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?xyNu8To4a3Ytma2S2DQIDJtKp2TQrzydPsMjPt6ZhUbVDhN0i3dFzlqHYiIs?=
+ =?us-ascii?Q?wUIUVzA/2V+ztB/483RMMflqdpYWI7RJsJkSGP00nGGgV3qxFerViqfb/og3?=
+ =?us-ascii?Q?ODdMjxlADUGwYiWGJj+Fx+KrvhePMXqEIQsZC1PCK2UszrNIas1s1VBi4eMz?=
+ =?us-ascii?Q?KvaZV6CyjEYpxu/jA/0GjVmDU4wF9sbzTayfnBjvJ/xyk7iCNQ3F9Wwd8jpT?=
+ =?us-ascii?Q?5Na30+MfdtjjsbDx91TfI1mHF3zBMoveBuilTJe/SL8dNueIeSxMo8c4Ojdr?=
+ =?us-ascii?Q?I4wXBr+05tzSVD5pbyk57iZK3/fNG5OxMApDiBhPwKu2fJBjHqHW5C76SqBa?=
+ =?us-ascii?Q?ZiyRRaKLvoQmUY/iXVZeL0bogMB4wkG4tApIUwLlCLNi+FavKawWKLn/pAyd?=
+ =?us-ascii?Q?TFK9uYCphGhi0XMpVS+74FSNyCV+yFT2AIuEBow+JcxIb4B8mWaDFzHKhdJg?=
+ =?us-ascii?Q?jkSnSc3ZBGJeWJEfwJlV80FA5x1GPPBSvZ6xeJFhoSX6JBNjAyK+nkDdBx26?=
+ =?us-ascii?Q?2ZS5ne8OK7d8Thij0KeUDGoj4IeuzSqvH6UB3TeWPFGk9p0QFMYzbpQQ23fq?=
+ =?us-ascii?Q?MgnEyQcAXsi6ipAbiPqW8x+7lqhGwncdGUAuOKmnHbc04q2ldQpF0j8kFmQP?=
+ =?us-ascii?Q?3BUlNuUH7/DcnG80YmJ9ervNi6eqQ3mp11r0R1MsFXIlghOF5AmMYRlHfCcY?=
+ =?us-ascii?Q?gCz/IwuAXm6KnVnNK/OtM4EGmxWwxHMr/ifpa1Ztywnu3onjG0WuzQCS2B/8?=
+ =?us-ascii?Q?wB6eXCYr46oa47PiSjUwtbT+1dCMfFK0VHAH2lY9cYA7I0FGAmOjeRBca3/w?=
+ =?us-ascii?Q?DJ1flJAxiD8AV+/4EQ9ZjZRtpmSQnNnciAWzBvgRyUQIZgBFVTPsBHoA/p2X?=
+ =?us-ascii?Q?KiUejN2hHExqqaZ7+LrB2lzRfio6TBuRIivvdhqcB1WsgUv74RzJayTpJD87?=
+ =?us-ascii?Q?cQo8oaf9yiaHPe0HB1rVQJa+Rwf0coVxA2NiXeZfwsi4M73gkjzjbvC1DpoX?=
+ =?us-ascii?Q?8SYE5APMpYp0FvhrybSH3W9zxejqfovhR1pe5yZvjwExx7U6AnscU32nWO8H?=
+ =?us-ascii?Q?zDi+O0gNW6uv1xaEOsnTrPYpFENRwTuyuyR/2O6SUedzUC6I9DoqaiRiF63t?=
+ =?us-ascii?Q?VD/LQZDFox6qJlJGC9Tzp8XH3VImFvbOdwfk3HG8w29CuDOCGv5Xmb0ajUcs?=
+ =?us-ascii?Q?KSO9HybCLs/h4tSMVPxmqrMYQALLvW7PNK5J1m/DpRIVMCBn3z4Jf9i175SV?=
+ =?us-ascii?Q?/nuFtHwI+0Ke8i2dD9jFTWPWB2prWw6iR5AATt3AbcDu/uOQBytEnSpTtj0y?=
+ =?us-ascii?Q?N3hzVbT3KC7QhDXXI6vK1YqFT0IRZ0tCysGIeYtT1J3pkYGzpdC55nl1D+JA?=
+ =?us-ascii?Q?s0uhICnlEXwauyKGUVnYzGroBqBOC3YVAi5uY1dDcUXUbl7PmPwYhBYgTcah?=
+ =?us-ascii?Q?myRSuq3cmHkfyfMkLk1D+lbAc49DpbwESxlCvDPV93VIQ9XJAuwJaV0FN4Uk?=
+ =?us-ascii?Q?cJrk+GE+rzAlsKIADj0fNSMD7o+mlGvk7HazJuGVx/sDie7K9B3E4yXNjhjZ?=
+ =?us-ascii?Q?gNeD9EPNHtZdPj8VGgE=3D?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(7416014)(376014)(1800799024)(82310400026)(36860700013)(7053199007);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Dec 2025 06:09:27.9764
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: f0fcf275-8698-4646-ec6e-08de387bd785
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DS2PEPF0000343B.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB9194
 
-
-
-On 12/11/2025 2:34 AM, Rob Herring wrote:
-> On Wed, Dec 10, 2025 at 03:57:56PM +0530, Vijayanand Jitta wrote:
->> On 12/10/2025 1:47 AM, Rob Herring wrote:
->>> On Thu, Dec 04, 2025 at 03:25:30PM +0530, Vijayanand Jitta wrote:
->>>> From: Robin Murphy <robin.murphy@arm.com>
->>>>
->>>> So far our parsing of {iommu,msi}-map properites has always blindly
->>>> asusmed that the output specifiers will always have exactly 1 cell.
->>>> This typically does happen to be the case, but is not actually enforced
->>>> (and the PCI msi-map binding even explicitly states support for 0 or 1
->>>> cells) - as a result we've now ended up with dodgy DTs out in the field
->>>> which depend on this behaviour to map a 1-cell specifier for a 2-cell
->>>> provider, despite that being bogus per the bindings themselves.
->>>>
->>>> Since there is some potential use in being able to map at least single
->>>> input IDs to multi-cell output specifiers (and properly support 0-cell
->>>> outputs as well), add support for properly parsing and using the target
->>>> nodes' #cells values, albeit with the unfortunate complication of still
->>>> having to work around expectations of the old behaviour too.
->>>>
->>>> Since there are multi-cell output specifiers, the callers of of_map_id()
->>>> may need to get the exact cell output value for further processing.
->>>> Added support for that part --charan
->>>>
->>>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
->>>> Signed-off-by: Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
->>>> ---
->>>>  drivers/iommu/of_iommu.c |   3 +-
->>>>  drivers/of/base.c        | 107 ++++++++++++++++++++++++++++++---------
->>>>  include/linux/of.h       |  17 ++++---
->>>>  3 files changed, 94 insertions(+), 33 deletions(-)
->>>>
->>>> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
->>>> index eac62bc441c5..48759cf1d900 100644
->>>> --- a/drivers/iommu/of_iommu.c
->>>> +++ b/drivers/iommu/of_iommu.c
->>>> @@ -45,10 +45,11 @@ static int of_iommu_configure_dev_id(struct device_node *master_np,
->>>>  				     struct device *dev,
->>>>  				     const u32 *id)
->>>>  {
->>>> -	struct of_phandle_args iommu_spec = { .args_count = 1 };
->>>> +	struct of_phandle_args iommu_spec = {};
->>>>  	struct of_map_id_arg arg = {
->>>>  		.target = &iommu_spec.np,
->>>>  		.id_out = iommu_spec.args,
->>>> +		.map_cells = &iommu_spec.args_count,
->>>>  	};
->>>>  	int err;
->>>>  
->>>> diff --git a/drivers/of/base.c b/drivers/of/base.c
->>>> index b8f78a9e6a09..68a7d6ddba66 100644
->>>> --- a/drivers/of/base.c
->>>> +++ b/drivers/of/base.c
->>>> @@ -2045,11 +2045,30 @@ int of_find_last_cache_level(unsigned int cpu)
->>>>  	return cache_level;
->>>>  }
->>>>  
->>>> +/*
->>>> + * Some DTs have an iommu-map targeting a 2-cell IOMMU node while
->>>> + * specifying only 1 cell. Fortunately they all consist of length == 1
->>>> + * entries with the same target, so check for that pattern.
->>>
->>> Can you show what a bad entry looks like here.
->>>
->>
->> Sure, will add an example in the comments. Basically it would look like below.
->>
->> for iommu with iommu-cells  = <2>;
->>
->> Device having below iommu-map property.
->>
->> iommu-map = <0x0000  &smmu  0x0000  0x1>,
->>             <0x0100  &smmu  0x0100  0x1>;
->>
->>>> + */
->>>> +static bool of_check_bad_map(const __be32 *map, int len)
->>>> +{
->>>> +	__be32 phandle = map[1];
->>>> +
->>>> +	if (len % 4)
->>>> +		return false;
->>>> +	for (int i = 0; i < len; i += 4) {
->>>> +		if (map[i + 1] != phandle || map[i + 3] != cpu_to_be32(1))
->>>
->>> Why does the IOMMU arg cell have to be 1? The description said 'same 
->>> target', but it is just all have an IOMMU cell value of 1?
->>>
->>
->> Here, the check is for length argument to be 1. This is to maintain backward
->> compatibility as mentioned above, as all such bad entries right now have
->> length as 1.
-> 
-> You say length and I think arg/cell length, not that the cell value 
-> contains a length. That's because generally cell args are provider 
-> defined and specific. So just say the 2nd cell has a value of 1 and 
-> leave out that's a length.
-> 
+On Wed, Dec 10, 2025 at 12:39:49PM +0000, Robin Murphy wrote:
+> On 2025-12-10 5:19 am, Ashish Mhetre wrote:
 > [...]
+> > Hi Robin, Nic,
+> > We removed ACPI dependency in Kconfig but driver still depends
+> > on ACPI for these functions. I will be protecting ACPIspecific
+> > tegra241-cmdqv code under CONFIG_ACPI similar to what is done
+> > in arm-smmu-v3 driver. Is this the correct thing to do or do you
+> > have any other suggestions?
 > 
-
-Understood, will update the comment as suggested.
-
->>>> @@ -1455,7 +1456,7 @@ static inline int of_map_msi_id(const struct device_node *np, u32 id,
->>>>  		.id_out = id_out,
->>>>  	};
->>>>  
->>>> -	return of_map_id(np, id, "msi-map", "msi-map-mask", &arg);
->>>> +	return of_map_id(np, id, "msi-map", "#msi-cells", "msi-map-mask", &arg);
->>>
->>> There are cases of no #msi-cells and we default to 0 cells in that case. 
->>> Do you maintain that?
->>>
->>> Rob
->>
->> Thanks for pointing this, I see this case of no #msi-cells is not covered. Will
->> add it in next revision.  Also, IIUC shouldn't we set default cells to '1' to
->> maintain backward compatibility of of_map_id in this case ? No ?
+> Yes, when I commented that "depends on ACPI || OF" was functionally the same
+> as just removing "depends on ACPI", I didn't mean to suggest that wasn't
+> necessarily a genuine dependency still.
 > 
-> The only default is 0. Perhaps msi-map is never used if there are 0 
-> cells? IDK, you tell me.
-> 
-> Rob
+> I guess if you can wrap the ACPI-specific functions in a single #ifdef block
+> that's reasonable, however I do now wonder whether things couldn't be
+> factored out a bit more - if it's a standard DSDT/SSDT namespace device,
+> shouldn't there also be a corresponding platform device created for it,
+> which we could look up instead of delving directly into the _CRS of the ACPI
+> node itself? (not sure off-hand if there's a straightforward inverse of
+> ACPI_COMPANION()...)
 
-You are right, I’ve grepped through the upstream DTs that use msi-map
-(Rockchip, TI K3, HiSilicon, QCom, NXP/Freescale, etc.), and I don’t
-see any cases where provider uses msi-map while having #msi-cells = <0>
-or omitting #msi-cells entirely.
+Ah, I did a quick tracer at acpi_create_platform_device(). And I
+do see platform devices being created. So, we could have made it
+ACPI-independent from the beginning, as you expected :)
 
-All of the common MSI providers referenced by msi-map (GIC ITS, v2m,
-etc.) define #msi-cells to 1.
+Ashish, let's attach the following patch in your series:
 
-So, I think the current patch should be fine as‑is, as there are no
-upstream users of msi-map relying on a 0‑cell or missing #msi-cells
-provider.
+From 7b69a638276e66b16b923b0ce1743d3efc85a04c Mon Sep 17 00:00:00 2001
+From: Nicolin Chen <nicolinc@nvidia.com>
+Date: Thu, 11 Dec 2025 05:47:05 +0000
+Subject: [PATCH] iommu/tegra241-cmdqv: Decouple driver from ACPI
 
-Thanks,
-Vijay
+A platform device is created by acpi_create_platform_device() per CMDQV's
+adev. That means there is no point in going through _CRS of ACPI.
+
+Replace all the ACPI functions with standard platform functions. And drop
+all ACPI dependencies. This will make the driver compatible with DT also.
+
+Suggested-by: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+---
+ drivers/iommu/arm/Kconfig                     |  1 -
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  2 +-
+ .../iommu/arm/arm-smmu-v3/tegra241-cmdqv.c    | 84 +++----------------
+ 3 files changed, 13 insertions(+), 74 deletions(-)
+
+diff --git a/drivers/iommu/arm/Kconfig b/drivers/iommu/arm/Kconfig
+index ef42bbe07dbef..5fac08b89deea 100644
+--- a/drivers/iommu/arm/Kconfig
++++ b/drivers/iommu/arm/Kconfig
+@@ -121,7 +121,6 @@ config ARM_SMMU_V3_KUNIT_TEST
+ 
+ config TEGRA241_CMDQV
+ 	bool "NVIDIA Tegra241 CMDQ-V extension support for ARM SMMUv3"
+-	depends on ACPI
+ 	help
+ 	  Support for NVIDIA CMDQ-Virtualization extension for ARM SMMUv3. The
+ 	  CMDQ-V extension is similar to v3.3 ECMDQ for multi command queues
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 38028e4a52f7f..0c98be3135c63 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -5280,7 +5280,7 @@ static void acpi_smmu_dsdt_probe_tegra241_cmdqv(struct acpi_iort_node *node,
+ 	adev = acpi_dev_get_first_match_dev("NVDA200C", uid, -1);
+ 	if (adev) {
+ 		/* Tegra241 CMDQV driver is responsible for put_device() */
+-		smmu->impl_dev = &adev->dev;
++		smmu->impl_dev = acpi_get_first_physical_node(adev);
+ 		smmu->options |= ARM_SMMU_OPT_TEGRA241_CMDQV;
+ 		dev_info(smmu->dev, "found companion CMDQV device: %s\n",
+ 			 dev_name(smmu->impl_dev));
+diff --git a/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c b/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
+index 378104cd395e5..1fc03b72beb88 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
++++ b/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
+@@ -3,17 +3,15 @@
+ 
+ #define dev_fmt(fmt) "tegra241_cmdqv: " fmt
+ 
+-#include <linux/acpi.h>
+ #include <linux/debugfs.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/interrupt.h>
+ #include <linux/iommu.h>
+ #include <linux/iommufd.h>
+ #include <linux/iopoll.h>
++#include <linux/platform_device.h>
+ #include <uapi/linux/iommufd.h>
+ 
+-#include <acpi/acpixf.h>
+-
+ #include "arm-smmu-v3.h"
+ 
+ /* CMDQV register page base and size defines */
+@@ -854,69 +852,6 @@ static struct arm_smmu_impl_ops tegra241_cmdqv_impl_ops = {
+ 
+ /* Probe Functions */
+ 
+-static int tegra241_cmdqv_acpi_is_memory(struct acpi_resource *res, void *data)
+-{
+-	struct resource_win win;
+-
+-	return !acpi_dev_resource_address_space(res, &win);
+-}
+-
+-static int tegra241_cmdqv_acpi_get_irqs(struct acpi_resource *ares, void *data)
+-{
+-	struct resource r;
+-	int *irq = data;
+-
+-	if (*irq <= 0 && acpi_dev_resource_interrupt(ares, 0, &r))
+-		*irq = r.start;
+-	return 1; /* No need to add resource to the list */
+-}
+-
+-static struct resource *
+-tegra241_cmdqv_find_acpi_resource(struct device *dev, int *irq)
+-{
+-	struct acpi_device *adev = to_acpi_device(dev);
+-	struct list_head resource_list;
+-	struct resource_entry *rentry;
+-	struct resource *res = NULL;
+-	int ret;
+-
+-	INIT_LIST_HEAD(&resource_list);
+-	ret = acpi_dev_get_resources(adev, &resource_list,
+-				     tegra241_cmdqv_acpi_is_memory, NULL);
+-	if (ret < 0) {
+-		dev_err(dev, "failed to get memory resource: %d\n", ret);
+-		return NULL;
+-	}
+-
+-	rentry = list_first_entry_or_null(&resource_list,
+-					  struct resource_entry, node);
+-	if (!rentry) {
+-		dev_err(dev, "failed to get memory resource entry\n");
+-		goto free_list;
+-	}
+-
+-	/* Caller must free the res */
+-	res = kzalloc(sizeof(*res), GFP_KERNEL);
+-	if (!res)
+-		goto free_list;
+-
+-	*res = *rentry->res;
+-
+-	acpi_dev_free_resource_list(&resource_list);
+-
+-	INIT_LIST_HEAD(&resource_list);
+-
+-	if (irq)
+-		ret = acpi_dev_get_resources(adev, &resource_list,
+-					     tegra241_cmdqv_acpi_get_irqs, irq);
+-	if (ret < 0 || !irq || *irq <= 0)
+-		dev_warn(dev, "no interrupt. errors will not be reported\n");
+-
+-free_list:
+-	acpi_dev_free_resource_list(&resource_list);
+-	return res;
+-}
+-
+ static int tegra241_cmdqv_init_structures(struct arm_smmu_device *smmu)
+ {
+ 	struct tegra241_cmdqv *cmdqv =
+@@ -1042,18 +977,23 @@ __tegra241_cmdqv_probe(struct arm_smmu_device *smmu, struct resource *res,
+ 
+ struct arm_smmu_device *tegra241_cmdqv_probe(struct arm_smmu_device *smmu)
+ {
++	struct platform_device *pdev = to_platform_device(smmu->impl_dev);
+ 	struct arm_smmu_device *new_smmu;
+-	struct resource *res = NULL;
++	struct resource *res;
+ 	int irq;
+ 
+-	if (!smmu->dev->of_node)
+-		res = tegra241_cmdqv_find_acpi_resource(smmu->impl_dev, &irq);
+-	if (!res)
++	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (!res) {
++		dev_err(&pdev->dev, "no memory resource found for CMDQV\n");
+ 		goto out_fallback;
++	}
+ 
+-	new_smmu = __tegra241_cmdqv_probe(smmu, res, irq);
+-	kfree(res);
++	irq = platform_get_irq_optional(pdev, 0);
++	if (irq <= 0)
++		dev_warn(&pdev->dev,
++			 "no interrupt. errors will not be reported\n");
+ 
++	new_smmu = __tegra241_cmdqv_probe(smmu, res, irq);
+ 	if (new_smmu)
+ 		return new_smmu;
+ 
+-- 
+2.43.0
