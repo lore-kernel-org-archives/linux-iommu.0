@@ -1,147 +1,102 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7AA3329C351
-	for <iommu@lists.linux.dev>; Thu, 11 Dec 2025 08:41:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DC49F4317D
+	for <iommu@lists.linux.dev>; Thu, 11 Dec 2025 11:05:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765442486; cv=none; b=ip1VFIhY+gw8hi1YRXQVSf9FGzokeDcjnL+1B7AbRDp2Tagk0L/kLej9gFHleda1j7Qeqnmce1vuGEmYU5TpGF9zqSZtGNv6PPMvzU5PSY/cNjgh+7JS7fsBnTZBiM6TIjxyF+mqAIdY5Kj235eUSht2gnnOMvryB7inXXOh/5Y=
+	t=1765451113; cv=none; b=b82GU0ewPYRDYYp/3pZUrlE5VumNwJXGZrqOD5ofF7eiYXEMy8yJ1kVpSyL2U+TEYlWzwug3Cd1lKqj/48UYdwrbh+eGZJqGBjil4zycx3fxixsdO7FnId6kfw0C2NyGfjyYCkeqTd29pY8tJhs5/jLV0UQb/cYgM+MFfNfYUKo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765442486; c=relaxed/simple;
-	bh=qh6uoyFWCAiLpVcYSsMjXXl3mTq1SLUhBwLWV0YWqNs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=e8rkgPfspXpF430KCnfk2m0Xvn7Se2lXsbKD3xXvdoucQUMKTR2ol7NWlcvDfmh0sgMOND2TC9BOCjfwDZ5sw1RNqoMBJlYiDDN9e9FhF5ABoMqStwQES7LfIw/qSBgVJ4y2a28WRd9DHPX2/cvGPqS4y3zxxW76xTXTCCyzqpw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=S3Rb3DgF; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="S3Rb3DgF"
-Received: from localhost (fs98a57d9c.tkyc007.ap.nuro.jp [152.165.125.156])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 66014201569E;
-	Thu, 11 Dec 2025 00:41:24 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 66014201569E
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1765442484;
-	bh=8Z0I857mqII7HIw/I3XMs9wedEMJ2wEwf9oiJXhMi6E=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=S3Rb3DgFUw/FOFXU3hkFwILm0nSev31yTEBtE+pA43mwKUpJGMAhrgn7ZMNIu6xDY
-	 w9UfWY6OwloEOLkOB88VMPplUeLs/vvHLRaPZryq89kDbMdoGfXZzSMp4uX7hyTlTH
-	 yx57sS57HDJPcAZ+XEOfNSlNUsFNbCWKjADbxQ88=
-Date: Thu, 11 Dec 2025 16:41:23 +0800
-From: Yu Zhang <zhangyu1@linux.microsoft.com>
-To: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
-Cc: linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-pci@vger.kernel.org, kys@microsoft.com, 
-	haiyangz@microsoft.com, wei.liu@kernel.org, decui@microsoft.com, lpieralisi@kernel.org, 
-	kwilczynski@kernel.org, mani@kernel.org, robh@kernel.org, bhelgaas@google.com, 
-	arnd@arndb.de, joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, 
-	jacob.pan@linux.microsoft.com, nunodasneves@linux.microsoft.com, mrathor@linux.microsoft.com, 
-	mhklinux@outlook.com, peterz@infradead.org, linux-arch@vger.kernel.org
-Subject: Re: [RFC v1 5/5] iommu/hyperv: Add para-virtualized IOMMU support
- for Hyper-V guest
-Message-ID: <u7j6pq2yhbxsa76p4lyidozjrrokpb76pul7foxfrbqxyf3vgz@cfr6zmej3nhs>
-References: <20251209051128.76913-1-zhangyu1@linux.microsoft.com>
- <20251209051128.76913-6-zhangyu1@linux.microsoft.com>
- <0c34e66f-7766-4b4f-a04d-77dbc330f1fe@linux.microsoft.com>
+	s=arc-20240116; t=1765451113; c=relaxed/simple;
+	bh=xiATBxpdJp6ZaEj5YpXGm5ulnv79Dfm+n4B7qxfpqk8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=qg1hs2M2q4Hpikdt75QAck6/pvdyUuJn2KcKaJ5GyugV4tV8bQhTlQLMZcc9tHfKHXTQX7yHJInsg8epnZql45qvJuyi/EAfFghG8DylfM53hSMCmcgeTbSGyAyc/p35h7lR3Sx1ttWrhFqAGbSuntJnoVsqgQcd00P32TaEb1I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5E32C175D;
+	Thu, 11 Dec 2025 03:04:58 -0800 (PST)
+Received: from [10.57.46.197] (unknown [10.57.46.197])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7028F3F740;
+	Thu, 11 Dec 2025 03:05:04 -0800 (PST)
+Message-ID: <47689561-ed13-4525-825d-60eb8c36ae4c@arm.com>
+Date: Thu, 11 Dec 2025 11:04:29 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0c34e66f-7766-4b4f-a04d-77dbc330f1fe@linux.microsoft.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu/io-pgtable-arm: Add misisng concatenated PGD cases
+To: Will Deacon <will@kernel.org>
+Cc: Mostafa Saleh <smostafa@google.com>, iommu@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ joro@8bytes.org, Tomasz Nowicki <tnowicki@google.com>
+References: <20251130194506.593700-1-smostafa@google.com>
+ <18a39079-2285-47fb-b306-040f2bc1bbaa@arm.com> <aTgX9qhaLyrQ5iye@google.com>
+ <498bbad4-ea64-4a24-a63f-e131d271990a@arm.com> <aTjCDvtANr2WIv3L@google.com>
+ <8e058f60-60da-47c2-9947-2ea26cca1639@arm.com> <aTonvd9_4hY4-CpS@google.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <aTonvd9_4hY4-CpS@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Dec 10, 2025 at 09:15:18AM -0800, Easwar Hariharan wrote:
-> On 12/8/2025 9:11 PM, Yu Zhang wrote:
-> > Add a para-virtualized IOMMU driver for Linux guests running on Hyper-V.
-> > This driver implements stage-1 IO translation within the guest OS.
-> > It integrates with the Linux IOMMU core, utilizing Hyper-V hypercalls
-> > for:
-> >  - Capability discovery
-> >  - Domain allocation, configuration, and deallocation
-> >  - Device attachment and detachment
-> >  - IOTLB invalidation
-> > 
-> > The driver constructs x86-compatible stage-1 IO page tables in the
-> > guest memory using consolidated IO page table helpers. This allows
-> > the guest to manage stage-1 translations independently of vendor-
-> > specific drivers (like Intel VT-d or AMD IOMMU).
-> > 
-> > Hyper-v consumes this stage-1 IO page table, when a device domain is
-> > created and configured, and nests it with the host's stage-2 IO page
-> > tables, therefore elemenating the VM exits for guest IOMMU mapping
-> > operations.
-> > 
-> > For guest IOMMU unmapping operations, VM exits to perform the IOTLB
-> > flush(and possibly the device TLB flush) is still unavoidable. For
-> > now, HVCALL_FLUSH_DEVICE_DOMAIN	is used to implement a domain-selective
-> > IOTLB flush. New hypercalls for finer-grained hypercall will be provided
-> > in future patches.
-> > 
-> > Co-developed-by: Wei Liu <wei.liu@kernel.org>
-> > Signed-off-by: Wei Liu <wei.liu@kernel.org>
-> > Co-developed-by: Jacob Pan <jacob.pan@linux.microsoft.com>
-> > Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
-> > Co-developed-by: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
-> > Signed-off-by: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
-> > Signed-off-by: Yu Zhang <zhangyu1@linux.microsoft.com>
-> > ---
-> >  drivers/iommu/hyperv/Kconfig  |  14 +
-> >  drivers/iommu/hyperv/Makefile |   1 +
-> >  drivers/iommu/hyperv/iommu.c  | 608 ++++++++++++++++++++++++++++++++++
-> >  drivers/iommu/hyperv/iommu.h  |  53 +++
-> >  4 files changed, 676 insertions(+)
-> >  create mode 100644 drivers/iommu/hyperv/iommu.c
-> >  create mode 100644 drivers/iommu/hyperv/iommu.h
-> > 
+On 2025-12-11 2:09 am, Will Deacon wrote:
+> On Wed, Dec 10, 2025 at 12:06:10PM +0000, Robin Murphy wrote:
+>> On 2025-12-10 12:42 am, Will Deacon wrote:
+>>> On Tue, Dec 09, 2025 at 01:33:36PM +0000, Robin Murphy wrote:
+>>>> On 2025-12-09 12:37 pm, Mostafa Saleh wrote:
+>>>>> On Tue, Dec 09, 2025 at 11:34:34AM +0000, Robin Murphy wrote:
+>>>>>> On 2025-11-30 7:45 pm, Mostafa Saleh wrote:
+>>>>>>> arm_lpae_concat_mandatory() assumes that OAS >= IAS which is not
+>>>>>>> correct for SMMUs supporting AArch32, and have OAS = 32/36 bits,
+>>>>>>> as IAS would be 40 bits.
+>>>>>>
+>>>>>> But that is only when *using* AArch32 format. The bit in chapter 3.4 of the
+>>>>>> SMMU architecture is talking about the maximum IAS that an SMMU
+>>>>>> implementation needs to be able to accommodate based on its configuration,
+>>>>>> but it does then attempt to clarify that the actual IPA size in use by any
+>>>>>> given context should depend on the VMSA format in use:
+>>>>>>
+>>>>>> "VMSAv8-32 LPAE always supports an IPA size of 40 bits, whereas VMSAv8-64
+>>>>>> and VMSAv9-128 limits the maximum IPA size to the maximum PA size."
+>>>>>>
+>>>>>> Rule R_SRKBC in the Arm ARM lays out the exact T0SZ constraints with this
+>>>>>> AArch32/AArch64 detail.
+>>>>>
+>>>>> I see, thanks a lot for the explanation, I got confused by the this
+>>>>> statement:
+>>>>> Note: If AArch32 is implemented, IAS == MAX(40, OAS), otherwise IAS == OAS.
+>>>>
+>>>> Indeed, that appears confusingly contradictory; I've filed a bug.
+>>>
+>>> I think the spec has always been worded like this. My reading is that, in
+>>> isolation:
+>>>
+>>>     - VMSAv8-32 LPAE always uses a 40-bit IAS
+>>>     - VMSAv8-64 has IAS == OAS and this can be smaller than 40 bits
+>>>
+>>> so if AArch32 is implemented, we know that the hardware supports at
+>>> least a 40-bit IAS and in that case the VMSAv8-64 IAS can be bigger
+>>> than the OAS.
+>>
+>> No, the VMSAv8-64 IAS can never be bigger than OAS, as that would violate
+>> VMSA (see rules R_DTLMN and R_SRKBC). The SMMU spec seems mostly fixated on
+>> the notional maximum IAS that an SMMU must accommodate in general across all
+>> supported formats; the limitations of using any particular format must still
+>> apply though (similarly, the fact that AArch32 has a fixed 40-bit output
+>> doesn't mean that OAS and S2PS don't still matter for AArch64 format.)
 > 
-> <snip>
-> 
-> > +
-> > +static int __init hv_iommu_init(void)
-> > +{
-> > +	int ret = 0;
-> > +	struct hv_iommu_dev *hv_iommu = NULL;
-> > +	struct hv_output_get_iommu_capabilities hv_iommu_cap = {0};
-> > +
-> > +	if (no_iommu || iommu_detected)
-> > +		return -ENODEV;
-> > +
-> > +	if (!hv_is_hyperv_initialized())
-> > +		return -ENODEV;
-> > +
-> > +	if (hv_iommu_detect(&hv_iommu_cap) ||
-> > +	    !hv_iommu_present(hv_iommu_cap.iommu_cap) ||
-> > +	    !hv_iommu_s1_domain_supported(hv_iommu_cap.iommu_cap))
-> > +		return -ENODEV;
-> > +
-> > +	iommu_detected = 1;
-> > +	pci_request_acs();
-> > +
-> > +	hv_iommu = kzalloc(sizeof(*hv_iommu), GFP_KERNEL);
-> > +	if (!hv_iommu)
-> > +		return -ENOMEM;
-> > +
-> > +	hv_init_iommu_device(hv_iommu, &hv_iommu_cap);
-> > +
-> > +	ret = hv_initialize_static_domains();
-> > +	if (ret) {
-> > +		pr_err("hv_initialize_static_domains failed: %d\n", ret);
-> > +		goto err_sysfs_remove;
-> 
-> This should be goto err_free since we haven't done the sysfs_add yet
-> 
-> > +	}
-> > +
-> > +	ret = iommu_device_sysfs_add(&hv_iommu->iommu, NULL, NULL, "%s", "hv-iommu");
-> > +	if (ret) {
-> > +		pr_err("iommu_device_sysfs_add failed: %d\n", ret);
-> > +		goto err_free;
-> 
-> And this should be probably a goto delete_static_domains that cleans up the allocated static
-> domains...
-> 
+> A VMSAv8-32 stage-1 could still input a 40-bit IAS into a VMSAv8-64
+> stage-2 when the OAS < 40-bit though, right? If that's the only case
+> where this happens, then I agree we should ditch the complexity from the
+> driver on the grounds that we don't ever use the 32-bit formats.
 
-Nice catch. And thanks! :)
+Yes, it is perfectly possible with either format to configure the S1 
+*output* size (CD.IPS, or 40 when CD.AA64==0) to be larger than the S2 
+input size (STE.S2T0SZ), and if S1 tries to use an IPA beyond the actual 
+S2 range then it gets a S2 translation fault, per VMSA rule R_BZHGM.
 
-Yu
+Cheers,
+Robin.
