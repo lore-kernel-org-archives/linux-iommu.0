@@ -1,117 +1,120 @@
-Received: from sg-1-103.ptr.blmpb.com (sg-1-103.ptr.blmpb.com [118.26.132.103])
+Received: from sg-1-102.ptr.blmpb.com (sg-1-102.ptr.blmpb.com [118.26.132.102])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 015ED86352
-	for <iommu@lists.linux.dev>; Thu, 11 Dec 2025 04:01:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=118.26.132.103
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2E2E4400
+	for <iommu@lists.linux.dev>; Thu, 11 Dec 2025 04:18:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=118.26.132.102
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765425699; cv=none; b=FHm4iBEicL/3ZWzkiTQ7bGfZjgKEUXUZ2ntNmCFxhhQk1ajzrdt2HVzsZojzSPZTq3E4mlcB9jfmfpC3NVaSIaAaAh0R8Z7zEQTRLqnnx2vCmr6+DTfdESyIgosrt7h8GB0/wcjrIWuFt3824dsjAVZf26DVK9Ua9X638Mqat8s=
+	t=1765426684; cv=none; b=dqNRM2ceBrfEQFXdHmjONHCs8UNS8W5qhDZk5B4MBoBnMXQroLZuenZsZspZTCMSU1jjkQfbwrRZeRDlT/lomRsIE94g3nW0ltRxQI1LsSkgM7AzDJc5lIt629beBWN/KgyVMZ76VaeDgfrvDJTD/IzlX5cWiAgV6IxCZzdQys8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765425699; c=relaxed/simple;
-	bh=4Q6NgeycfZthGEeAHFhDPjP2yvbchRqZ4whFCZCWnBg=;
-	h=Cc:From:Mime-Version:Content-Type:In-Reply-To:Subject:References:
-	 To:Date:Message-Id; b=DRRB2KlsbU1J2nftPwKGU2RnadEh698CZiLwPNc2QP5Rq12J8qbbah0m6lQ4EYVkq4038nsTDo/hEmOaxECfIKDsfMzZlk805r2YPykjvhIc67Bdfl0NqkO0/uyi2I1EvfXcWILEC1F474zpzUbJKD5axFlqLI6L8wKNWwaPY4A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=j5xh8t2i; arc=none smtp.client-ip=118.26.132.103
+	s=arc-20240116; t=1765426684; c=relaxed/simple;
+	bh=hSsBqGM03RkYT6B1UfLrOyg0LwJA+TOZSMGnQCyHeGE=;
+	h=To:Cc:From:Date:Content-Type:Subject:Message-Id:Mime-Version:
+	 In-Reply-To:References; b=rTQsptOxT02h4PEem0M4ZSBNn16OoW98Qgymv8cP7GPqo45g5+Ukg6smB5fP6tudpcWInKR3mSNSgAnH34j5ss81iYVW2JKOB9JcnZSHWZbid7cffGXWsMmA3j5PoMI5zpxLPI3nuXlCvf8Ie1Fx8OuqWgvMajiRPJLD/ETVpl4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=bp4giZOC; arc=none smtp.client-ip=118.26.132.102
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="j5xh8t2i"
+	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="bp4giZOC"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- s=2212171451; d=bytedance.com; t=1765425691; h=from:subject:
+ s=2212171451; d=bytedance.com; t=1765426675; h=from:subject:
  mime-version:from:date:message-id:subject:to:cc:reply-to:content-type:
  mime-version:in-reply-to:message-id;
- bh=9UfJ9VIVOS38iGxyFptQJegd8mcO/MEORiq3nC7/r9Y=;
- b=j5xh8t2iNTYYp1IriO5eV6INcxfxegpTIEQCJ0G8/rfhyMTaZZqoXbpYR0uK1iYPAn2dAZ
- Td7NMVAdd5Jo9epajNyM5uacgDbuZNbi/ezrM/Rq4EWMP0kj0y6yZPpJNeTbbsMtMk0Jey
- ttCwiX6Ze8YGTZXEdw1P8nZtkd/JQDTD3l4XH0wbQzxA/67OTFSQHrbwAgysBbwS8G5LSk
- t1LiZR87/FhdofDjr24Qdjdm3uEidsnvNffXDJ/WdvOn+xVuenhMLNL+w+48Y0iYEYUP8p
- xTcdNBBNxXt8RIXS8x9WIJSNlyieeNIlaafxC39+QfDne2BFNKIQlrc456gurA==
-Cc: <guojinhui.liam@bytedance.com>, <iommu@lists.linux.dev>, 
-	<linux-kernel@vger.kernel.org>, <stable@vger.kernel.org>
+ bh=Cqz07PQNXLmM+OTndmKNcXhC/jyGV+A/BIxRvkrjb+M=;
+ b=bp4giZOCT/0rqBm2MbUYLdrN7nsdAfUUomlJjBlbZS1Z9GiWsoPo6kbsecdZGZtaOtmHvU
+ wkWtX0dL3iI00Ojif1uSy7fg8SGqX41hwDEIdprVPS/bg4DNKytd7/vFybFTQY/2XDGBeD
+ luPQWxU6hWG8mM3P6TfdgrezbAsE1HJGTXYOcXKQwwuUmbX/ZQXP0+4enuKW69f2zlAac9
+ JDUuInDNP8R+CneRhrnpDY4w9xtCMkDAt56bEMluoCoV0E/wQNya4sMzvH/Lb/Y+dV8zv4
+ bIovMSvLl8qyeAAOcaqNpX/gcHuUSqCvpcHN4BLLnWYPFnIpbWaihxEF5IvLjQ==
+To: <baolu.lu@linux.intel.com>
+Cc: <dwmw2@infradead.org>, <guojinhui.liam@bytedance.com>, 
+	<iommu@lists.linux.dev>, <joro@8bytes.org>, 
+	<linux-kernel@vger.kernel.org>, <will@kernel.org>
 From: "Jinhui Guo" <guojinhui.liam@bytedance.com>
+Date: Thu, 11 Dec 2025 12:17:41 +0800
+Content-Type: text/plain; charset=UTF-8
+X-Original-From: Jinhui Guo <guojinhui.liam@bytedance.com>
+Subject: Re: [PATCH 1/2] iommu/vt-d: Skip dev-iotlb flush for inaccessible PCIe device without scalable mode
+Message-Id: <20251211041741.2132-1-guojinhui.liam@bytedance.com>
+Content-Transfer-Encoding: quoted-printable
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-In-Reply-To: <20251211035946.2071-1-guojinhui.liam@bytedance.com>
-Subject: [PATCH v2 2/2] iommu/vt-d: Flush dev-IOTLB only when PCIe device is accessible in scalable mode
-Content-Transfer-Encoding: quoted-printable
-X-Lms-Return-Path: <lba+2693a4219+8234d9+lists.linux.dev+guojinhui.liam@bytedance.com>
-References: <20251211035946.2071-1-guojinhui.liam@bytedance.com>
-To: <dwmw2@infradead.org>, <baolu.lu@linux.intel.com>, <joro@8bytes.org>, 
-	<will@kernel.org>
-Date: Thu, 11 Dec 2025 11:59:46 +0800
-Message-Id: <20251211035946.2071-3-guojinhui.liam@bytedance.com>
-X-Original-From: Jinhui Guo <guojinhui.liam@bytedance.com>
-X-Mailer: git-send-email 2.17.1
+In-Reply-To: <98a2a099-0b90-4837-a20c-742c883e8eea@linux.intel.com>
+X-Lms-Return-Path: <lba+2693a45f1+548351+lists.linux.dev+guojinhui.liam@bytedance.com>
+References: <98a2a099-0b90-4837-a20c-742c883e8eea@linux.intel.com>
 
-Commit 4fc82cd907ac ("iommu/vt-d: Don't issue ATS Invalidation
-request when device is disconnected") relies on
-pci_dev_is_disconnected() to skip ATS invalidation for
-safely-removed devices, but it does not cover link-down caused
-by faults, which can still hard-lock the system.
+On Thu, Dec 11, 2025 10:10:52AM +0800, Baolu Lu wrote:
+> > Since __context_flush_dev_iotlb() is only called on
+> > {attach,release}_dev paths (not hot), add pci_device_is_present()
+> > there to skip inaccessible devices and avoid the hard-lock.
+> >=20
+> > Fixes: 37764b952e1b ("iommu/vt-d: Global devTLB flush when present cont=
+ext entry changed")
+> > Fixes: 81e921fd3216 ("iommu/vt-d: Fix NULL domain on device release")
+>
+> Cc: stable@vger.kernel.org
+>
+> > Signed-off-by: Jinhui Guo <guojinhui.liam@bytedance.com>
+> > ---
+> >   drivers/iommu/intel/pasid.c | 11 +++++++++++
+> >   1 file changed, 11 insertions(+)
+> >=20
+> > diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
+> > index 3e2255057079..b1e8eb6a6504 100644
+> > --- a/drivers/iommu/intel/pasid.c
+> > +++ b/drivers/iommu/intel/pasid.c
+> > @@ -1099,9 +1099,20 @@ int intel_pasid_setup_sm_context(struct device *=
+dev)
+> >    */
+> >   static void __context_flush_dev_iotlb(struct device_domain_info *info=
+)
+> >   {
+> > +	struct pci_dev *pdev;
+> > +
+> >   	if (!info->ats_enabled)
+> >   		return;
+> >  =20
+> > +	/*
+> > +	 * Skip dev-IOTLB flush for inaccessible PCIe devices to prevent the
+> > +	 * Intel IOMMU from waiting indefinitely for an ATS invalidation that
+> > +	 * cannot complete.
+> > +	 */
+> > +	pdev =3D dev_is_pci(info->dev) ? to_pci_dev(info->dev) : NULL;
+> > +	if (pdev && !pci_device_is_present(pdev))
+> > +		return;
+>
+> Could simply be
+>
+>	if (dev_is_pci(info->dev) &&
+>	    !pci_device_is_present(to_pci_dev(info->dev)))
+>		return;
+>
+> ?
+>
+> > +
+> >   	qi_flush_dev_iotlb(info->iommu, PCI_DEVID(info->bus, info->devfn),
+> >   			   info->pfsid, info->ats_qdep, 0, MAX_AGAW_PFN_WIDTH);
+> >  =20
 
-For example, if a VM fails to connect to the PCIe device,
-"virsh destroy" is executed to release resources and isolate
-the fault, but a hard-lockup occurs while releasing the group fd.
+> Thanks,
+> baolu
 
-Call Trace:
- qi_submit_sync
- qi_flush_dev_iotlb
- intel_pasid_tear_down_entry
- device_block_translation
- blocking_domain_attach_dev
- __iommu_attach_device
- __iommu_device_set_domain
- __iommu_group_set_domain_internal
- iommu_detach_group
- vfio_iommu_type1_detach_group
- vfio_group_detach_container
- vfio_group_fops_release
- __fput
+Hi, baolu
 
-Although pci_device_is_present() is slower than
-pci_dev_is_disconnected(), it still takes only ~70 =C2=B5s on a
-ConnectX-5 (8 GT/s, x2) and becomes even faster as PCIe speed
-and width increase.
+Thanks for your time and suggestions.
 
-Besides, devtlb_invalidation_with_pasid() is called only in the
-paths below, which are far less frequent than memory map/unmap.
+I=E2=80=99ve sent v2 (https://lore.kernel.org/all/20251211035946.2071-1-guo=
+jinhui.liam@bytedance.com/)
+with the following changes:
 
-1. mm-struct release
-2. {attach,release}_dev
-3. set/remove PASID
-4. dirty-tracking setup
+1. Simplified the pci_device_is_present() check in __context_flush_dev_iotl=
+b().
+2. Added Cc: stable@vger.kernel.org to both patches.
 
-The gain in system stability far outweighs the negligible cost
-of using pci_device_is_present() instead of pci_dev_is_disconnected()
-to decide when to skip ATS invalidation, especially under GDR
-high-load conditions.
-
-Fixes: 4fc82cd907ac ("iommu/vt-d: Don't issue ATS Invalidation request when=
- device is disconnected")
-Cc: stable@vger.kernel.org
-Signed-off-by: Jinhui Guo <guojinhui.liam@bytedance.com>
----
- drivers/iommu/intel/pasid.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
-index a369690f5926..e64d445de964 100644
---- a/drivers/iommu/intel/pasid.c
-+++ b/drivers/iommu/intel/pasid.c
-@@ -218,7 +218,7 @@ devtlb_invalidation_with_pasid(struct intel_iommu *iomm=
-u,
- 	if (!info || !info->ats_enabled)
- 		return;
-=20
--	if (pci_dev_is_disconnected(to_pci_dev(dev)))
-+	if (!pci_device_is_present(to_pci_dev(dev)))
- 		return;
-=20
- 	sid =3D PCI_DEVID(info->bus, info->devfn);
---=20
-2.20.1
+Best Regards,
+Jinhui
