@@ -1,39 +1,45 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4C05207A0B;
-	Thu, 11 Dec 2025 07:36:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 36A8029A312
+	for <iommu@lists.linux.dev>; Thu, 11 Dec 2025 08:31:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765438610; cv=none; b=r1eP+YaFaIUZrICjjsfYc9Vq1KLYLcFW+8dZDXa+yaWGbkbnwnT2ennz0um6nwkjEjjVs5igkDsBDysEMkj6HNwpJk3ImYMY0X8yyrtlTlkCKC1hhvaSgQz4y6VokUulYmbsdtpfCIxV0GTHygs53d+s13idCW4QX/knxK4n8CY=
+	t=1765441882; cv=none; b=Sz7oBTBMSytBBkhbZtoGGOEjfwW9fijYAPoK9ZGmhP78gTeXYQQuWz8FFMaMZb5fOKCqy+aKveuykGbYITjWCB57WNUtWHt5O4iFILv1SFLyG84WF0dZNObFhjVMjGpJabnjdLheWDU0N5DTdnsNK2KQT8UQojPkvGTt8F2B+XE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765438610; c=relaxed/simple;
-	bh=oHTkkQXfAGe+7pErwoq6ZNY8NvO3+FmNlnMjivgegfM=;
+	s=arc-20240116; t=1765441882; c=relaxed/simple;
+	bh=ijyecVlGRghY3cjM7gKx+/ozmDBdpqLFKBVGoxUFLL8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=YbMCGZcEL6BhDdII1WzZc+Q9cIDHxpXrCLUhXgkcc19WzewVWYCLnsyAroS0fVktIvZ1lL8GeREuQ4IzbwHjqGr3XCXtCPRXnRJkJyHP46CxO5YA3BlqcidsNqb2CobTp3z22JexiFq2p21rRmpAlU28S8kYxgEp3TmvrEGrc8o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mAdW/f2M; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=DBvMNKQNhBJIWq2c0uYSYZY8rZ4+iCIevA6LIJUUeiyAcjzFPBX4Z6z+uq6mLlq37h7vgsX3i39FkgsleNj5+kUb6XDgdXgejS7A0deWKsnrtGajobPZwKYE+AiQgtacylK0QVZAHV635Sb0Mhw4H5Oc1riBpgzsAIpgW5acufQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=NkXIZp2t; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mAdW/f2M"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0187C4CEFB;
-	Thu, 11 Dec 2025 07:36:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1765438610;
-	bh=oHTkkQXfAGe+7pErwoq6ZNY8NvO3+FmNlnMjivgegfM=;
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="NkXIZp2t"
+Received: from localhost (fs98a57d9c.tkyc007.ap.nuro.jp [152.165.125.156])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 24ACD2120EB9;
+	Thu, 11 Dec 2025 00:31:20 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 24ACD2120EB9
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1765441880;
+	bh=4uKKF6ilF0G3qsBBt++MJsscl/aBH34AhodmDMUwqI8=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=mAdW/f2MlRguvo+rLdR7RJinX//x/q28RdTY7G3cao1P45oJWtbOEgoBAZnnjBTs0
-	 RWOp+Omtidi2Tkaroji5b9mzp5QveBIL6lQX3nSLsaJPGcTYkgyr9ohBc1ELQrY2sP
-	 BLTeDWtB0v4KW0P1Hhl0R87/hx0TYnQt5tKuQd6vbZrWaYp0p+u6k/c5XKWqVkKmVj
-	 aQ/9peuG3O4Kv0MOUiiUzesloBg3LZM+DDhTN+Pa0e20dHTA6rgCe5k3/1WhXU42W/
-	 K3hQ6E3WExNdyDmlDer3qF7yVpZtbulAaZ3bdZX0pmzkP6vl3tMXQZg6V7NHLJgKYM
-	 oyluypFFwJnKg==
-Date: Thu, 11 Dec 2025 16:36:46 +0900
-From: Will Deacon <will@kernel.org>
-To: syzbot <syzbot+e06bb7478e687f235ad7@syzkaller.appspotmail.com>
-Cc: iommu@lists.linux.dev, joro@8bytes.org, linux-kernel@vger.kernel.org,
-	robin.murphy@arm.com, syzkaller-bugs@googlegroups.com, jgg@ziepe.ca
-Subject: Re: [syzbot] [iommu?] kernel BUG in iommu_pages_start_incoherent
-Message-ID: <aTp0jpmWZ49Ql-Kp@google.com>
-References: <693a39de.050a0220.4004e.02ce.GAE@google.com>
+	b=NkXIZp2tmECE4hLehiMXm+vs4En0DMNgjDcPT3CA7OPQYtwM0Ci28wXlmcLd87q8r
+	 5KMr6OajWTy3ZFLT3uO56dZlxcTNOButWe3RmHh5VSna1lDzW2lC7LW6iLvX+hMk0n
+	 BvE6gBLJiAmtfsCAwnzdlA3IZedxyKcIjVHFlLlQ=
+Date: Thu, 11 Dec 2025 16:31:18 +0800
+From: Yu Zhang <zhangyu1@linux.microsoft.com>
+To: Bjorn Helgaas <helgaas@kernel.org>
+Cc: linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org, 
+	iommu@lists.linux.dev, linux-pci@vger.kernel.org, kys@microsoft.com, 
+	haiyangz@microsoft.com, wei.liu@kernel.org, decui@microsoft.com, lpieralisi@kernel.org, 
+	kwilczynski@kernel.org, mani@kernel.org, robh@kernel.org, bhelgaas@google.com, 
+	arnd@arndb.de, joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, 
+	easwar.hariharan@linux.microsoft.com, jacob.pan@linux.microsoft.com, nunodasneves@linux.microsoft.com, 
+	mrathor@linux.microsoft.com, mhklinux@outlook.com, peterz@infradead.org, 
+	linux-arch@vger.kernel.org
+Subject: Re: [RFC v1 1/5] PCI: hv: Create and export hv_build_logical_dev_id()
+Message-ID: <oqpivhhbgcc3hcmkq3cumn6d7rxxjgqmmdwlfpejjo2ztsth6u@ejhydql5xmsx>
+References: <20251209051128.76913-2-zhangyu1@linux.microsoft.com>
+ <20251210213945.GA3541010@bhelgaas>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -42,202 +48,98 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <693a39de.050a0220.4004e.02ce.GAE@google.com>
+In-Reply-To: <20251210213945.GA3541010@bhelgaas>
 
-[+Jason]
+On Wed, Dec 10, 2025 at 03:39:45PM -0600, Bjorn Helgaas wrote:
+> On Tue, Dec 09, 2025 at 01:11:24PM +0800, Yu Zhang wrote:
+> > From: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
+> > 
+> > Hyper-V uses a logical device ID to identify a PCI endpoint device for
+> > child partitions. This ID will also be required for future hypercalls
+> > used by the Hyper-V IOMMU driver.
+> > 
+> > Refactor the logic for building this logical device ID into a standalone
+> > helper function and export the interface for wider use.
+> > 
+> > Signed-off-by: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
+> > Signed-off-by: Yu Zhang <zhangyu1@linux.microsoft.com>
+> 
+> Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+> 
+> > ---
+> >  drivers/pci/controller/pci-hyperv.c | 28 ++++++++++++++++++++--------
+> >  include/asm-generic/mshyperv.h      |  2 ++
+> >  2 files changed, 22 insertions(+), 8 deletions(-)
+> > 
+> > diff --git a/drivers/pci/controller/pci-hyperv.c b/drivers/pci/controller/pci-hyperv.c
+> > index 146b43981b27..4b82e06b5d93 100644
+> > --- a/drivers/pci/controller/pci-hyperv.c
+> > +++ b/drivers/pci/controller/pci-hyperv.c
+> > @@ -598,15 +598,31 @@ static unsigned int hv_msi_get_int_vector(struct irq_data *data)
+> >  
+> >  #define hv_msi_prepare		pci_msi_prepare
+> >  
+> > +/**
+> > + * Build a "Device Logical ID" out of this PCI bus's instance GUID and the
+> > + * function number of the device.
+> > + */
+> > +u64 hv_build_logical_dev_id(struct pci_dev *pdev)
+> > +{
+> > +	struct pci_bus *pbus = pdev->bus;
+> > +	struct hv_pcibus_device *hbus = container_of(pbus->sysdata,
+> > +						struct hv_pcibus_device, sysdata);
+> > +
+> > +	return (u64)((hbus->hdev->dev_instance.b[5] << 24) |
+> > +		     (hbus->hdev->dev_instance.b[4] << 16) |
+> > +		     (hbus->hdev->dev_instance.b[7] << 8)  |
+> > +		     (hbus->hdev->dev_instance.b[6] & 0xf8) |
+> > +		     PCI_FUNC(pdev->devfn));
+> > +}
+> > +EXPORT_SYMBOL_GPL(hv_build_logical_dev_id);
+> > +
+> >  /**
+> >   * hv_irq_retarget_interrupt() - "Unmask" the IRQ by setting its current
+> >   * affinity.
+> >   * @data:	Describes the IRQ
+> >   *
+> >   * Build new a destination for the MSI and make a hypercall to
+> > - * update the Interrupt Redirection Table. "Device Logical ID"
+> > - * is built out of this PCI bus's instance GUID and the function
+> > - * number of the device.
+> > + * update the Interrupt Redirection Table.
+> >   */
+> >  static void hv_irq_retarget_interrupt(struct irq_data *data)
+> >  {
+> > @@ -642,11 +658,7 @@ static void hv_irq_retarget_interrupt(struct irq_data *data)
+> >  	params->int_entry.source = HV_INTERRUPT_SOURCE_MSI;
+> >  	params->int_entry.msi_entry.address.as_uint32 = int_desc->address & 0xffffffff;
+> >  	params->int_entry.msi_entry.data.as_uint32 = int_desc->data;
+> > -	params->device_id = (hbus->hdev->dev_instance.b[5] << 24) |
+> > -			   (hbus->hdev->dev_instance.b[4] << 16) |
+> > -			   (hbus->hdev->dev_instance.b[7] << 8) |
+> > -			   (hbus->hdev->dev_instance.b[6] & 0xf8) |
+> > -			   PCI_FUNC(pdev->devfn);
+> > +	params->device_id = hv_build_logical_dev_id(pdev);
+> >  	params->int_target.vector = hv_msi_get_int_vector(data);
+> >  
+> >  	if (hbus->protocol_version >= PCI_PROTOCOL_VERSION_1_2) {
+> > diff --git a/include/asm-generic/mshyperv.h b/include/asm-generic/mshyperv.h
+> > index 64ba6bc807d9..1a205ed69435 100644
+> > --- a/include/asm-generic/mshyperv.h
+> > +++ b/include/asm-generic/mshyperv.h
+> > @@ -71,6 +71,8 @@ extern enum hv_partition_type hv_curr_partition_type;
+> >  extern void * __percpu *hyperv_pcpu_input_arg;
+> >  extern void * __percpu *hyperv_pcpu_output_arg;
+> >  
+> > +extern u64 hv_build_logical_dev_id(struct pci_dev *pdev);
+> 
+> Curious why you would include the "extern" in this declaration?  It's
+> not *wrong*, but it's not necessary, and other declarations in this
+> file omit it, e.g., the ones below:
+> 
 
-On Wed, Dec 10, 2025 at 07:26:22PM -0800, syzbot wrote:
-> Hello,
-> 
-> syzbot found the following issue on:
-> 
-> HEAD commit:    c06c303832ec ocfs2: fix xattr array entry __counted_by error
-> git tree:       upstream
-> console output: https://syzkaller.appspot.com/x/log.txt?x=175a2992580000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=d3ce1cfe3996fc8b
-> dashboard link: https://syzkaller.appspot.com/bug?extid=e06bb7478e687f235ad7
-> compiler:       Debian clang version 20.1.8 (++20250708063551+0c9f909b7976-1~exp1~20250708183702.136), Debian LLD 20.1.8
-> 
-> Unfortunately, I don't have any reproducer for this issue yet.
-> 
-> Downloadable assets:
-> disk image (non-bootable): https://storage.googleapis.com/syzbot-assets/d900f083ada3/non_bootable_disk-c06c3038.raw.xz
-> vmlinux: https://storage.googleapis.com/syzbot-assets/aa14148a2ef4/vmlinux-c06c3038.xz
-> kernel image: https://storage.googleapis.com/syzbot-assets/d2d5f3a106bf/bzImage-c06c3038.xz
-> 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+e06bb7478e687f235ad7@syzkaller.appspotmail.com
-> 
-> Call Trace:
->  <TASK>
->  dump_stack_lvl+0x189/0x250 lib/dump_stack.c:120
->  fail_dump lib/fault-inject.c:73 [inline]
->  should_fail_ex+0x414/0x560 lib/fault-inject.c:174
->  prepare_alloc_pages+0x22b/0x650 mm/page_alloc.c:4985
->  __alloc_frozen_pages_noprof+0x123/0x370 mm/page_alloc.c:5199
->  __alloc_pages_noprof mm/page_alloc.c:5244 [inline]
->  __folio_alloc_noprof+0x18/0x120 mm/page_alloc.c:5254
->  __folio_alloc_node_noprof include/linux/gfp.h:296 [inline]
->  iommu_alloc_pages_node_sz+0x152/0x320 drivers/iommu/iommu-pages.c:66
->  _table_alloc drivers/iommu/generic_pt/iommu_pt.h:373 [inline]
->  table_alloc drivers/iommu/generic_pt/iommu_pt.h:408 [inline]
->  pt_iommu_new_table drivers/iommu/generic_pt/iommu_pt.h:424 [inline]
->  __map_range+0x1f2/0xa80 drivers/iommu/generic_pt/iommu_pt.h:584
->  pt_descend drivers/iommu/generic_pt/pt_iter.h:391 [inline]
->  __map_range+0x511/0xa80 drivers/iommu/generic_pt/iommu_pt.h:619
->  pt_descend drivers/iommu/generic_pt/pt_iter.h:391 [inline]
->  __map_range+0x511/0xa80 drivers/iommu/generic_pt/iommu_pt.h:619
->  pt_iommu_vtdss_map_pages+0x6a3/0x960 drivers/iommu/generic_pt/iommu_pt.h:905
->  iommu_map_nosync+0x30a/0x840 drivers/iommu/iommu.c:2549
->  iommu_map_sg+0x579/0xae0 drivers/iommu/iommu.c:2721
->  iommu_dma_map_sg+0x908/0x1000 drivers/iommu/dma-iommu.c:1493
->  __dma_map_sg_attrs+0xd0/0x520 kernel/dma/mapping.c:245
->  dma_map_sg_attrs+0x32/0x50 kernel/dma/mapping.c:284
->  ata_sg_setup drivers/ata/libata-core.c:4773 [inline]
->  ata_qc_issue+0x515/0xf30 drivers/ata/libata-core.c:5085
->  ata_scsi_translate drivers/ata/libata-scsi.c:1755 [inline]
->  __ata_scsi_queuecmd+0x957/0xf60 drivers/ata/libata-scsi.c:4355
->  ata_scsi_queuecmd+0x3d4/0x5c0 drivers/ata/libata-scsi.c:4400
->  scsi_dispatch_cmd drivers/scsi/scsi_lib.c:1638 [inline]
->  scsi_queue_rq+0x18bc/0x30d0 drivers/scsi/scsi_lib.c:1895
->  blk_mq_dispatch_rq_list+0x4c0/0x1900 block/blk-mq.c:2137
->  __blk_mq_do_dispatch_sched block/blk-mq-sched.c:168 [inline]
->  blk_mq_do_dispatch_sched block/blk-mq-sched.c:182 [inline]
->  __blk_mq_sched_dispatch_requests+0xdac/0x1570 block/blk-mq-sched.c:307
->  blk_mq_sched_dispatch_requests+0xd7/0x190 block/blk-mq-sched.c:329
->  blk_mq_run_hw_queue+0x404/0x4f0 block/blk-mq.c:2375
->  blk_mq_dispatch_list+0xd0b/0xe00 include/linux/spinlock.h:-1
->  blk_mq_flush_plug_list+0x469/0x550 block/blk-mq.c:2986
->  blk_add_rq_to_plug+0x175/0x450 block/blk-mq.c:1407
->  blk_mq_submit_bio+0xd5b/0x26b0 block/blk-mq.c:3232
->  __submit_bio+0x207/0x5a0 block/blk-core.c:637
->  __submit_bio_noacct_mq block/blk-core.c:724 [inline]
->  submit_bio_noacct_nocheck+0x377/0xa30 block/blk-core.c:755
->  __blkdev_direct_IO+0x915/0xf90 block/fops.c:264
->  blkdev_direct_IO+0x1261/0x17e0 block/fops.c:441
->  blkdev_direct_write+0x7c/0x140 block/fops.c:727
->  blkdev_write_iter+0x547/0x710 block/fops.c:795
->  do_iter_readv_writev+0x623/0x8c0 fs/read_write.c:-1
->  vfs_writev+0x31a/0x960 fs/read_write.c:1057
->  do_writev+0x14d/0x2d0 fs/read_write.c:1103
->  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
->  do_syscall_64+0xfa/0xf80 arch/x86/entry/syscall_64.c:94
->  entry_SYSCALL_64_after_hwframe+0x77/0x7f
-> RIP: 0033:0x7fae01b8f7c9
-> Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 a8 ff ff ff f7 d8 64 89 01 48
-> RSP: 002b:00007fae02b02038 EFLAGS: 00000246 ORIG_RAX: 0000000000000014
-> RAX: ffffffffffffffda RBX: 00007fae01de5fa0 RCX: 00007fae01b8f7c9
-> RDX: 0000000000000021 RSI: 0000200000000a40 RDI: 0000000000000004
-> RBP: 00007fae02b02090 R08: 0000000000000000 R09: 0000000000000000
-> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000002
-> R13: 00007fae01de6038 R14: 00007fae01de5fa0 R15: 00007ffd45480c38
->  </TASK>
-> ------------[ cut here ]------------
-> kernel BUG at arch/x86/mm/physaddr.c:28!
-> Oops: invalid opcode: 0000 [#1] SMP KASAN NOPTI
-> CPU: 0 UID: 0 PID: 5336 Comm: syz.0.0 Not tainted syzkaller #0 PREEMPT(full) 
-> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.3-debian-1.16.3-2~bpo12+1 04/01/2014
-> RIP: 0010:__phys_addr+0x16b/0x180 arch/x86/mm/physaddr.c:28
-> Code: 8b b3 00 e9 45 ff ff ff e8 b2 af 4b 00 48 c7 c7 f0 33 fb 8d 48 89 de 4c 89 f2 e8 50 c0 52 03 e9 4d ff ff ff e8 96 af 4b 00 90 <0f> 0b e8 8e af 4b 00 90 0f 0b e8 86 af 4b 00 90 0f 0b 0f 1f 00 90
-> RSP: 0018:ffffc9000aae5f80 EFLAGS: 00010093
-> RAX: ffffffff817610fa RBX: 0000778000000000 RCX: ffff8880007ca4c0
-> RDX: 0000000000000000 RSI: 0000000080000000 RDI: 0000778000000000
-> RBP: ffffc9000aae6130 R08: ffffffff8e26c433 R09: 1ffffffff1c4d886
-> R10: dffffc0000000000 R11: fffffbfff1c4d887 R12: 0000000000000011
-> R13: dffffc0000000000 R14: 0000000080000000 R15: dffffc0000000000
-> FS:  00007fae02b026c0(0000) GS:ffff88808d23e000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 00007fae01d2dea0 CR3: 000000000b669000 CR4: 0000000000352ef0
-> Call Trace:
->  <TASK>
->  virt_to_folio include/linux/mm.h:1432 [inline]
->  virt_to_ioptdesc drivers/iommu/iommu-pages.h:49 [inline]
->  iommu_pages_start_incoherent+0x52/0x310 drivers/iommu/iommu-pages.c:148
->  _table_alloc drivers/iommu/generic_pt/iommu_pt.h:377 [inline]
->  table_alloc drivers/iommu/generic_pt/iommu_pt.h:408 [inline]
->  pt_iommu_new_table drivers/iommu/generic_pt/iommu_pt.h:424 [inline]
->  __map_range+0x270/0xa80 drivers/iommu/generic_pt/iommu_pt.h:584
->  pt_descend drivers/iommu/generic_pt/pt_iter.h:391 [inline]
->  __map_range+0x511/0xa80 drivers/iommu/generic_pt/iommu_pt.h:619
->  pt_descend drivers/iommu/generic_pt/pt_iter.h:391 [inline]
->  __map_range+0x511/0xa80 drivers/iommu/generic_pt/iommu_pt.h:619
->  pt_iommu_vtdss_map_pages+0x6a3/0x960 drivers/iommu/generic_pt/iommu_pt.h:905
->  iommu_map_nosync+0x30a/0x840 drivers/iommu/iommu.c:2549
->  iommu_map_sg+0x579/0xae0 drivers/iommu/iommu.c:2721
->  iommu_dma_map_sg+0x908/0x1000 drivers/iommu/dma-iommu.c:1493
->  __dma_map_sg_attrs+0xd0/0x520 kernel/dma/mapping.c:245
->  dma_map_sg_attrs+0x32/0x50 kernel/dma/mapping.c:284
->  ata_sg_setup drivers/ata/libata-core.c:4773 [inline]
->  ata_qc_issue+0x515/0xf30 drivers/ata/libata-core.c:5085
->  ata_scsi_translate drivers/ata/libata-scsi.c:1755 [inline]
->  __ata_scsi_queuecmd+0x957/0xf60 drivers/ata/libata-scsi.c:4355
->  ata_scsi_queuecmd+0x3d4/0x5c0 drivers/ata/libata-scsi.c:4400
->  scsi_dispatch_cmd drivers/scsi/scsi_lib.c:1638 [inline]
->  scsi_queue_rq+0x18bc/0x30d0 drivers/scsi/scsi_lib.c:1895
->  blk_mq_dispatch_rq_list+0x4c0/0x1900 block/blk-mq.c:2137
->  __blk_mq_do_dispatch_sched block/blk-mq-sched.c:168 [inline]
->  blk_mq_do_dispatch_sched block/blk-mq-sched.c:182 [inline]
->  __blk_mq_sched_dispatch_requests+0xdac/0x1570 block/blk-mq-sched.c:307
->  blk_mq_sched_dispatch_requests+0xd7/0x190 block/blk-mq-sched.c:329
->  blk_mq_run_hw_queue+0x404/0x4f0 block/blk-mq.c:2375
->  blk_mq_dispatch_list+0xd0b/0xe00 include/linux/spinlock.h:-1
->  blk_mq_flush_plug_list+0x469/0x550 block/blk-mq.c:2986
->  blk_add_rq_to_plug+0x175/0x450 block/blk-mq.c:1407
->  blk_mq_submit_bio+0xd5b/0x26b0 block/blk-mq.c:3232
->  __submit_bio+0x207/0x5a0 block/blk-core.c:637
->  __submit_bio_noacct_mq block/blk-core.c:724 [inline]
->  submit_bio_noacct_nocheck+0x377/0xa30 block/blk-core.c:755
->  __blkdev_direct_IO+0x915/0xf90 block/fops.c:264
->  blkdev_direct_IO+0x1261/0x17e0 block/fops.c:441
->  blkdev_direct_write+0x7c/0x140 block/fops.c:727
->  blkdev_write_iter+0x547/0x710 block/fops.c:795
->  do_iter_readv_writev+0x623/0x8c0 fs/read_write.c:-1
->  vfs_writev+0x31a/0x960 fs/read_write.c:1057
->  do_writev+0x14d/0x2d0 fs/read_write.c:1103
->  do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
->  do_syscall_64+0xfa/0xf80 arch/x86/entry/syscall_64.c:94
->  entry_SYSCALL_64_after_hwframe+0x77/0x7f
-> RIP: 0033:0x7fae01b8f7c9
-> Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 a8 ff ff ff f7 d8 64 89 01 48
-> RSP: 002b:00007fae02b02038 EFLAGS: 00000246 ORIG_RAX: 0000000000000014
-> RAX: ffffffffffffffda RBX: 00007fae01de5fa0 RCX: 00007fae01b8f7c9
-> RDX: 0000000000000021 RSI: 0000200000000a40 RDI: 0000000000000004
-> RBP: 00007fae02b02090 R08: 0000000000000000 R09: 0000000000000000
-> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000002
-> R13: 00007fae01de6038 R14: 00007fae01de5fa0 R15: 00007ffd45480c38
->  </TASK>
-> Modules linked in:
-> ---[ end trace 0000000000000000 ]---
-> RIP: 0010:__phys_addr+0x16b/0x180 arch/x86/mm/physaddr.c:28
-> Code: 8b b3 00 e9 45 ff ff ff e8 b2 af 4b 00 48 c7 c7 f0 33 fb 8d 48 89 de 4c 89 f2 e8 50 c0 52 03 e9 4d ff ff ff e8 96 af 4b 00 90 <0f> 0b e8 8e af 4b 00 90 0f 0b e8 86 af 4b 00 90 0f 0b 0f 1f 00 90
-> RSP: 0018:ffffc9000aae5f80 EFLAGS: 00010093
-> RAX: ffffffff817610fa RBX: 0000778000000000 RCX: ffff8880007ca4c0
-> RDX: 0000000000000000 RSI: 0000000080000000 RDI: 0000778000000000
-> RBP: ffffc9000aae6130 R08: ffffffff8e26c433 R09: 1ffffffff1c4d886
-> R10: dffffc0000000000 R11: fffffbfff1c4d887 R12: 0000000000000011
-> R13: dffffc0000000000 R14: 0000000080000000 R15: dffffc0000000000
-> FS:  00007fae02b026c0(0000) GS:ffff88808d23e000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 00007fae01d2dea0 CR3: 000000000b669000 CR4: 0000000000352ef0
-> 
-> 
-> ---
-> This report is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
-> 
-> syzbot will keep track of this issue. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-> 
-> If the report is already addressed, let syzbot know by replying with:
-> #syz fix: exact-commit-title
-> 
-> If you want to overwrite report's subsystems, reply with:
-> #syz set subsystems: new-subsystem
-> (See the list of subsystem names on the web dashboard)
-> 
-> If the report is a duplicate of another one, reply with:
-> #syz dup: exact-subject-of-another-report
-> 
-> If you want to undo deduplication, reply with:
-> #syz undup
+Thank you, Bjorn.
+Actually I don't think it is necessary. Will remove it in v2. :)
+
+B.R.
+Yu
