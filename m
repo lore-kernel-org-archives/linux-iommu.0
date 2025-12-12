@@ -1,77 +1,77 @@
-Received: from mail-pf1-f169.google.com (mail-pf1-f169.google.com [209.85.210.169])
+Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D3B8B640
-	for <iommu@lists.linux.dev>; Fri, 12 Dec 2025 06:31:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 057B7283FF1
+	for <iommu@lists.linux.dev>; Fri, 12 Dec 2025 06:40:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765521070; cv=none; b=WMHDQ4tS6eG9rnqpg/XmtmsLLsrDu86rRVI24R6ILhnL389+DuexpHda2x2+BUU5+DlWffvA7MuJ5GbQcgIfJoYZnK4iqqC2wiRoc87sgNiS2G9AaRaVsWMPsgeUXwDrKQnQw7/VpQiM/BrRO3QuI6zw7ChBb0rxc3qqrjTKLyw=
+	t=1765521611; cv=none; b=s5k6BNVQ+Q8ZsU0uCSbHd9b6rMGyeJMV/E6Pn1XFOAsrmpHITwDwdBNk0JjacF+VWn3uUSBm7B5emu4N02vL+DSfJ8swhxthGqTDiT7nvLnvi0W2e+r77uF6qqBAaLuR+LENKhKMiG8yq+vY/4+hlv5oHlfkLDAwa3CUAya+Ujs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765521070; c=relaxed/simple;
-	bh=WHfjJAKVkIUXIYSx6rWIPbnGvhEHiZRS2sMWHC3xBHE=;
+	s=arc-20240116; t=1765521611; c=relaxed/simple;
+	bh=/lzw2EkpraHtItx0uRIBlL+3LUqcArpC25Y7u4No+Mg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=fqVT7cG2YufKA8U6Cwl1Y1l9ppmOi+wcLfvEQFqMfnQxQQq4cQRCNd4aid2E3WJTK9iYcBZaCTmRcA0NvJ/nRd/fI2Jk7x3Kx4fRCW0fnmDhOXMj5hugf8oLWkaZ7Ue2RMxZM90BjOgs7Vx5IN0XP9JP0mhCmBZEGrR+OW7cmm4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=WbhV1Zcg; arc=none smtp.client-ip=209.85.210.169
+	 Content-Type:Content-Disposition:In-Reply-To; b=c85HYhqsFzGhJe68OKxX4irmHEpVLBnmg66nH26TVCxT9Thv3RowPntLr07iy+hGh3o3BVl5Fi6p0MFRfAL2syQKpDthKBMhw7a1XWeqqAFNCud6tkXMBvrB3C9p91oqPGWeiengt5G5hsSyGoIGU9rVe5hAQs9S4na/A8EU6zc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=J+aZXgdE; arc=none smtp.client-ip=209.85.214.180
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="WbhV1Zcg"
-Received: by mail-pf1-f169.google.com with SMTP id d2e1a72fcca58-7aad4823079so842487b3a.0
-        for <iommu@lists.linux.dev>; Thu, 11 Dec 2025 22:31:07 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="J+aZXgdE"
+Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-2956d816c10so10901365ad.1
+        for <iommu@lists.linux.dev>; Thu, 11 Dec 2025 22:40:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1765521067; x=1766125867; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1765521609; x=1766126409; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=BU9rsCRRgIidE7+HdxiRFrmvgyo9gOWJIixuizT3mjw=;
-        b=WbhV1ZcgU62RN9j1lugufU/LYlEz7JjELTEtMaSRHCsHcQaU7lv2v5bTpo+uEBbsu1
-         AQKBGzH3/I6dr8XMiIDQFg3a4cwrYixwYg1ex/080iVGSfrtnr5jKFgtWInbV8z9mslp
-         iAhb2ujE1QoXToLdbAmF4H9O/ao2oMS+CAKsf6I4a/COW3gHFLtTEh/Lyophe/NCYx9+
-         lVYhN5i8NHoBVlH5KwBYt0WDBxFKFNIGWUeh1829hVD4rnHsh44QhLVFaTh1Q7tiWKas
-         NcWa6WDiQZJ755TnS286HSyzndRiubdWYLm5LBlXKYDhdX0bxKZQleZRBPN7vu6eb1MW
-         3GRA==
+        bh=tFYcbK7L/fuI/GrrBDZKfrYBdADfjZp9qLIva811S+E=;
+        b=J+aZXgdElCMCBItGc6UAK0XkF0Rfw+bXFhIlOmCKCjCnOJ6II1RuZwJLX5Sw0Pxnpd
+         gs1C0LADJ6DuPeOisGMJN4wFn3KdKwpkzJchRu23Ohgiwy7r6z1FHLkPMwva/ZzTW5Ek
+         cy9Dy4mR01yR+LJ5MPvM/TdonkigsXk0nl5Afk/3A67LKNt8eyeubNp/AdqINWqoZJDO
+         X79Ur94k1oJGCj/EiITPIIl1+Cz15ZfvMWttrhzgwCLKN1t9hlU4M9WRcvOHnsoLjz1d
+         f2RJQm2Q1KxOCucHkSOPs6GSn+O8qj3dDxG3fKEXn9/gII8BYtHy5s1fWKYVr7yQNNuk
+         Y4kQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1765521067; x=1766125867;
+        d=1e100.net; s=20230601; t=1765521609; x=1766126409;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=BU9rsCRRgIidE7+HdxiRFrmvgyo9gOWJIixuizT3mjw=;
-        b=FaMTi753v9veiJFBpq9Hg78PCGhvkTuYDs4n7msRgREEtFlKmgulpJEGTuUwhuuaS3
-         UYDKCBZWEaaFBz4kwYIRcNUQgT8QUu7h6mn7h2JHOcCE9lsiDTMcLx2b2QH/R3Rm6Elc
-         WlPGrG06hZOTyWjO47nTm9QjJ/Bz7ZvgClZKmI6p/rVbmWxwuPWJl3B+loUhqDkqSz4D
-         W49T2B3xbYQ3c4I7a+49MXuZbmgyyy4DzaLBReKp+HOIDFxMqT2X9wTHxCumNkZZalZQ
-         ZgZ1hwoimLmknWlxvu8w1xFN086WeZVbdiIylzEWMadNsxNeE9kLwjyVuNipPJK8ANyl
-         wxyQ==
-X-Forwarded-Encrypted: i=1; AJvYcCW8LSy3cB6kTtHExW5CJem2krRx4DVdKgR2ugTx9jBgDtmXVchxWe+kt6gIq1w17Afk2SeMqw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwYlBWZeKdDdzCBGzcIVmY2HaLdhZV47CdQG4KHQuqCvRWoXlRC
-	eY74yHlig6biSSGVPtvGgpakm7nuEkpFDEwm75/HzqMJ/fAU9VpwE4CLiExHL5LcCzg=
-X-Gm-Gg: AY/fxX6dPEanMbjSLNJBEo426uXoStsaimsd1OGIbGXUrxwTiNReaHfPPZzrp74ZC2w
-	EjVO7qd59+yUcB7Msg9Y91+ACUOIINQHye5VsBE2DgDcmfsCMqjUO+hKho1xy0vYSieqWm+3mal
-	ztpf2Ce2PUigjZIMNmOklXOVlm/CNm1esUe250bmsUMO+TzdyY1ZybbA+zT10sL6so7cDdCUHmg
-	X0h+s+5Kscx8p0EUfR4R+NHaH+dxyUoEyvjlaOlUzfildMnQwAYkb3BDbUwjvyTARCcvX1IufEm
-	DgMbGnCW18DOZhxyP7veHd44gEMxGqX1aavJoXperYiLy3knFsog9hP8mv+4eIkMHOxur92r/3n
-	XFCBq6wy+ofVRK6IS9gczT0LlcKI6pI0c8klW1gDL5XT+9obuVYb/HlZL/3pexK7L4FS1sidjbG
-	BddX7K4D0x
-X-Google-Smtp-Source: AGHT+IH+qDNBAAjjvzDFg6yVuXzSvyQ8clec2E1T7VYOcntr6/9AB25tUSNDsi4QD0DIx45+xLR/mg==
-X-Received: by 2002:a05:6a20:1584:b0:361:3bda:7155 with SMTP id adf61e73a8af0-369ad3fc3eemr1099607637.7.1765521066910;
-        Thu, 11 Dec 2025 22:31:06 -0800 (PST)
+        bh=tFYcbK7L/fuI/GrrBDZKfrYBdADfjZp9qLIva811S+E=;
+        b=eFr0UnW3kpcWlBV51LCOpCgy6kB/5S2B8/C9HAfLzqjE78qYfN2V/z16judCr14j8N
+         lzKW0p1BBQgs8M6VfAORchuVauyzsq4giB0BnxN3lH0+1HaNcCCOBW9vyqMZijMVuO3U
+         ZhLsRMpQaylmTcylF/1jbkthoJl6uDMUnTu5xT3vES85M4JMJCltEhX8vmmhYUA438UP
+         FAEzT0g9tp5aFILPjx8+ZFp3z/lfXnRb1zZsEKX5siyK/6ebidXCSQNJbybcbx3R19t0
+         AeRTyArwWinH7FduK24l4forwXaT2SmE8rhXizTzUGZqmSM5n9VFBROHarPtg23yySFc
+         gYbw==
+X-Forwarded-Encrypted: i=1; AJvYcCW7diG24A1fNV0hjLiJqLs7rbW+/vwAORDWbNF/nTDW/DzGKklkJR3HYajhskKmgLvKad245Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzhOIoHHucFRMjz2iv82A1dgFm2ygwWsnMyFpLQDo+n0S78wbRB
+	t+Vn0R48vW41xzdi+ojRzbvmPiHIh3MZSrfP3Fl6vyjw1yJMt6FMyG3hQaMVSXunTpw=
+X-Gm-Gg: AY/fxX4IfbzvMMadkjFWwt2rpMyGScRg/Qrk76VKiWhw3o/V88Hli0VsFQWjei3PDcN
+	Tv2feyPcZ2F0CBXukOLL3MUaDLGeRjiqxEYsVcbelFvePnykxPeUdQrON31UaoVJZty39RdpkQU
+	yq120tjav58skX94imebQooJ6dc6XRMPhDWvOB/6eVP0w2IVFGERagkI/gtB+FG94Rpz4UXrl+G
+	Vy8cWF/Gl2CloU2cvoLJZyCBwmnf1r9JE+thTDYNACYjRVZZ1lQBu1qs7JO0WrEaFu+IkT2J31i
+	sLNB1H1sSRFAeO10E1ecEOg5sZTG73EHygWljudp0EaLvxUaVtxc8QTI/w5HNdzlLFxTwNMnYEw
+	u0Se4J4V64Jf110T3C8OPrHwPZTZnSGZrn5MB3nXneWYsx2sjmcN9W4LW5lHsgRWgMx5PdUJ6PB
+	MDtsRtWTSy
+X-Google-Smtp-Source: AGHT+IEPSya2f7Y38TleFBqEbmC5+occ+9/MQpEFnHQbgbfijsnQIDud3+WhbafaLoWO/lNjTfvRdg==
+X-Received: by 2002:a17:902:d508:b0:295:4d62:61a9 with SMTP id d9443c01a7336-29f23c677d7mr12001705ad.38.1765521609158;
+        Thu, 11 Dec 2025 22:40:09 -0800 (PST)
 Received: from ziepe.ca (p99249-ipoefx.ipoe.ocn.ne.jp. [153.246.134.248])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-7f4c2284da4sm4138329b3a.2.2025.12.11.22.31.05
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-29ee9d38adcsm43786595ad.30.2025.12.11.22.40.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Dec 2025 22:31:05 -0800 (PST)
+        Thu, 11 Dec 2025 22:40:08 -0800 (PST)
 Received: from jgg by jggl with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1vTwgA-0001rC-Tw;
-	Fri, 12 Dec 2025 02:31:02 -0400
-Date: Fri, 12 Dec 2025 02:31:02 -0400
+	id 1vTwow-0001v7-37;
+	Fri, 12 Dec 2025 02:40:06 -0400
+Date: Fri, 12 Dec 2025 02:40:06 -0400
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Kathara Sasikumar <katharasasikumar007@gmail.com>
-Cc: kevin.tian@intel.com, shuah@kernel.org, iommu@lists.linux.dev,
-	linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-	yi.l.liu@intel.com, nicolinc@nvidia.com, alex.williamson@redhat.com,
-	katharaasasikumar007@gmail.com
-Subject: Re: [PATCH] selftests: iommu: fix Warray-bounds in get_hw_info test
-Message-ID: <aTu2pgId9mRPPIRj@ziepe.ca>
-References: <20251210211342.989850-1-katharasasikumar007@gmail.com>
+To: Nirmoy Das <nirmoyd@nvidia.com>
+Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
+	nicolinc@nvidia.com, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH] iommu/arm-smmu-v3: Allow stream ID sharing for
+ devices behind PCIe-to-PCI bridges
+Message-ID: <aTu4xsAApNupRGYC@ziepe.ca>
+References: <20251211133933.4128100-1-nirmoyd@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -80,22 +80,31 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20251210211342.989850-1-katharasasikumar007@gmail.com>
+In-Reply-To: <20251211133933.4128100-1-nirmoyd@nvidia.com>
 
-On Wed, Dec 10, 2025 at 09:13:42PM +0000, Kathara Sasikumar wrote:
-> The get_hw_info uses a smaller user buffer on purpose to check how
-> the kernel updates only the fields that fit in the buffer. The test
-> created a custom smaller struct for this, but the helper function later
-> treats the buffer as struct iommu_test_hw_info. This makes the compiler
-> warn about a possible out-of-bounds access (-Warray-bounds).
+On Thu, Dec 11, 2025 at 05:39:33AM -0800, Nirmoy Das wrote:
+> ASPEED BMC controllers have VGA and USB functions behind a PCIe-to-PCI
+> bridge that causes them to share the same stream ID:
 > 
-> This keeps the test behavior the same and removes the warning.
+>   \-[0005:e0]---00.0-[e1-e2]----00.0-[e2]--+-00.0  ASPEED Graphics Family
+>                                            \-02.0  ASPEED USB Controller
 > 
-> Signed-off-by: Kathara Sasikumar <katharasasikumar007@gmail.com>
-> ---
->  tools/testing/selftests/iommu/iommufd.c | 4 +---
->  1 file changed, 1 insertion(+), 3 deletions(-)
+> Both devices get stream ID(0x5e200) due to bridge aliasing. Currently this
+> USB controller gets rejected with "Aliasing StreamID unsupported", causing
+> USB timeout errors. Allow stream ID sharing when both devices are on
+> the same bus behind a PCIe-to-PCI bridge to fix this issue.
 
-This breaks the test, I already posted a fix, it should be in linux-next.
+I don't think this is right, if you actually need stream ID sharing
+then I seem to recall the driver needs more changes. We don't want
+this in general.
+
+IMHO ASPEED has wrong PCI config space and there isn't any actual PCI
+bus here that would force RID aliasing to worry about. I suggest going
+to ASPEED to find out and confirm that they don't actually share the
+RIDs and then let's quirk the PCI devices to disable alias generation
+in the first place.
+
+Also, complain to them to fix their config space to report a PCIe bridge
+type in future devices. :)
 
 Jason
