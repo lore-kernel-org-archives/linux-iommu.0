@@ -1,154 +1,222 @@
-Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE453312831
-	for <iommu@lists.linux.dev>; Fri, 12 Dec 2025 09:41:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.251.105.195
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765532474; cv=none; b=UoHoI6ZkQ95Srm3MlR0CqsKi/fvCOFQJxeKYyvfEelg2m8WTCRNlU3xCrHllijzRyaIT2fcWTYj4zTkamP9jc5/jv82uYvzjE6m2345s7pmXsn7nyrPr+qZYiekhLPQLO7VQ7s7alDTR2SqKKd/D8PH5kkPZUOD4RNDmqU1MFDo=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765532474; c=relaxed/simple;
-	bh=/DwHOk5c2eD0Vxh7f5OQ4V+UKKui+51GMERXKOPoGK0=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=rXgJUFXyLzCEgIZeBxBh9EaD677ZmOTBHjovZM+zyun/o0qvaI8nm95+166E+fYDNg3vvtNp2ewQniYr2YZ/P5u9BaD0+2OsFRuF6CQJl3BFyIdciRS34BbxwRL+DXvEcfLykziItJgrJndQmM+F5naB7akmz9mLM5trP7hFW3M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=jKl/sZPT; arc=none smtp.client-ip=148.251.105.195
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C619311C10
+	for <iommu@lists.linux.dev>; Fri, 12 Dec 2025 10:43:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.10
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1765536183; cv=fail; b=MJeWTZgB1bx7YMut+6wOUcMRfbLV5DSTG85L1Y0Rfeo/IpQtLh3Qwows/OEHOYLUwr43DE+KUKUwPvmFs6q+ALQ2DJfqGDbN7k/MtQnwQeI1mPGKSEDJNUKldy+mwpgu5Mj/UEND4QWpGbp7y8PUn3hT8yRC1zUyQ3Gl0Va1sqc=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1765536183; c=relaxed/simple;
+	bh=TcD9TM2ezdc9YJuLuZAYWbiSy4PchtDuMla0764b2nM=;
+	h=Message-ID:Date:Subject:To:CC:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=LVCdyf2ahSzwPA0N5PYZvAZJDJTq9u9TJU+5xxQCJaxjQD7cdARdxJgGmfTAlC3cGYj/tDur/9jQESakGgynDhf4jE9+1yxEiSGyNYJdBlkIZKbEWEltnFngzDQvhDrODzctiWf5anujxTH96v4DVzUKYv+RdFwsKD3S06iP8cs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Zv4USBt8; arc=fail smtp.client-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="jKl/sZPT"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1765532471;
-	bh=/DwHOk5c2eD0Vxh7f5OQ4V+UKKui+51GMERXKOPoGK0=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=jKl/sZPT5Fq8we2J4h12wq9dhaferqqG7WYrh7c5Y1k5yBsJRMxSPvRCYDSthsFe8
-	 pRqw/bWdb5arjO4jzO0ebG7e3egbR/5HaJg3gCz1rMcvTGYH23kRmB7RO/abMhPeXv
-	 pP44WpV+iM3lP2u6jLE3rcBHt99HTvhioEdkk9vV/zsqJzhBc+WelZKtTdeIp6hRZI
-	 kmpNosTBznVu+OWO723zn0UqOjgkh4gRNzv8gubsK5YawM0ijxqLCMQ3L+hxcgdI1g
-	 HvFUydetaOLNCQ1Pm2xQnAIFIdzuv4f22nuxZ8yOhxrtVyypGcGEw32L5sKR8OKSyU
-	 Ko6IEHLDYFUQQ==
-Received: from fedora (unknown [IPv6:2a01:e0a:2c:6930:d919:a6e:5ea1:8a9f])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	(Authenticated sender: bbrezillon)
-	by bali.collaboradmins.com (Postfix) with ESMTPSA id 4DBE917E0451;
-	Fri, 12 Dec 2025 10:41:10 +0100 (CET)
-Date: Fri, 12 Dec 2025 10:41:05 +0100
-From: Boris Brezillon <boris.brezillon@collabora.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Alice Ryhl <aliceryhl@google.com>, Miguel Ojeda <ojeda@kernel.org>, Will
- Deacon <will@kernel.org>, Daniel Almeida <daniel.almeida@collabora.com>,
- Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
- =?UTF-8?B?QmrDtnJu?= Roy Baron <bjorn3_gh@protonmail.com>, Benno Lossin
- <lossin@kernel.org>, Andreas Hindborg <a.hindborg@kernel.org>, Trevor Gross
- <tmgross@umich.edu>, Danilo Krummrich <dakr@kernel.org>, Joerg Roedel
- <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, Lorenzo Stoakes
- <lorenzo.stoakes@oracle.com>, "Liam R. Howlett" <Liam.Howlett@oracle.com>,
- Asahi Lina <lina+kernel@asahilina.net>, linux-kernel@vger.kernel.org,
- rust-for-linux@vger.kernel.org, iommu@lists.linux.dev, linux-mm@kvack.org
-Subject: Re: [PATCH v3] io: add io_pgtable abstraction
-Message-ID: <20251212104105.6af97d05@fedora>
-In-Reply-To: <aTveh8c3RngvnIMp@nvidia.com>
-References: <20251112-io-pgtable-v3-1-b00c2e6b951a@google.com>
-	<20251128180255.GA836877@nvidia.com>
-	<20251212094427.2ec0b31e@fedora>
-	<aTveh8c3RngvnIMp@nvidia.com>
-Organization: Collabora
-X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-redhat-linux-gnu)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Zv4USBt8"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1765536183; x=1797072183;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=TcD9TM2ezdc9YJuLuZAYWbiSy4PchtDuMla0764b2nM=;
+  b=Zv4USBt8k/vNRecgrMWYozyRY2ncq5ffcmqO0W+1k8m+wAQTXSE6TsDf
+   K0swsftfc+a36VgbfzP2tlXhlqKVa7Jdes+96awPqEfyJMkXcqsO/B5ey
+   +xSZuz/2OtwHXsdti2L+5/RWBgw0s6Y2iGU6rxx5Myhi3WNnvlr5Snz7x
+   7wFrogKoCxHe74uNP2Gn66m5fnPnDA5lKZUWlpbi5rDRsAHzNbwgIqDb2
+   TWD/i/eToPdGvJmaOjT80D9HU39PYuHxAUGnS6KIYZwAPjeSaOxOaFp2J
+   Vx23P7pJuwredQEOutjw2twtAZmYMRaJd1fTDVmfBXDh4LcDnKPU80Igh
+   Q==;
+X-CSE-ConnectionGUID: GiXVK4SCT7O6TjLbCe0b5A==
+X-CSE-MsgGUID: q80udoqWRlyppyzKYgFqnA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11639"; a="84938079"
+X-IronPort-AV: E=Sophos;i="6.21,143,1763452800"; 
+   d="scan'208";a="84938079"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Dec 2025 02:43:02 -0800
+X-CSE-ConnectionGUID: YnY/idlrSrGWsEv6aWHi5g==
+X-CSE-MsgGUID: hVyKoNBjQt2rp3FapsuN7w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,143,1763452800"; 
+   d="scan'208";a="234456868"
+Received: from orsmsx901.amr.corp.intel.com ([10.22.229.23])
+  by orviesa001.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Dec 2025 02:43:02 -0800
+Received: from ORSMSX902.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.29; Fri, 12 Dec 2025 02:43:01 -0800
+Received: from ORSEDG903.ED.cps.intel.com (10.7.248.13) by
+ ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.29 via Frontend Transport; Fri, 12 Dec 2025 02:43:01 -0800
+Received: from DM1PR04CU001.outbound.protection.outlook.com (52.101.61.67) by
+ edgegateway.intel.com (134.134.137.113) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.29; Fri, 12 Dec 2025 02:43:01 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=COAKKgZ9G4CWwkoSwOBx23/iInU98RhxHHgTymQqmr7iIwdGIHqredrkOpAgA8IBBqjo4sjGsCGOWdl96w4ZZZ5/Ifso2Hte/ajN0RzILeN9I9QrIPJmYeKtZbNkXdhXecNZGQ9SyUwvc8D7aoug6ReTK4R4zNJ6EW0Shd3cNy0irX2cwA82qIJN/ndmRlyUdX+I6LnTvqUVVDaStKxlwZ7jSo764o/UzitmGY/iJeWF4NW27HxLA/RVmFX+95R0cEedFrxIgKr6jy1bfDamP6+qKhtKTk66OSVFghBAZl6+nwa/RExqBamcDtbjG3jYWqyyjcs7xWqxCFSx3fCpLw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=V8IpX84oPNksSV/Myr0/Cik9vTburZGbw6ubogUIp2A=;
+ b=MgGy1hQXLHa0TPBzyEwv6IedkFOimY3K0oL/EyJlYLohlzvTyZRhGUvmZPGXKGcisfzK/nHe+pqmzd4b8we2m+fHb7d8TKgwxib52NGgatPymmHhV+3lDmNlUrR/x2p8vSaQB6z60Ao6aU8bzS7g0nRQeC6Bme1086deiHzIslC8FVNi/jKijquh8oNPm1qOq1V0Dqhl8fSBiylIFu1Z6xnxjVNzkYSqOze/DJNWGiWQNxsTtc8Axbw4AqhNbHjhcPUBpuijT9X5CuJF5bwlVzSElbrbLw5rYvgLWAHfAEvmooYV+AOuQFZN1UNqv0SOWRGqKUeU0gzreq9Y0YAH/w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from SJ0PR11MB4798.namprd11.prod.outlook.com (2603:10b6:a03:2d5::12)
+ by CH0PR11MB5218.namprd11.prod.outlook.com (2603:10b6:610:e1::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9412.11; Fri, 12 Dec
+ 2025 10:42:59 +0000
+Received: from SJ0PR11MB4798.namprd11.prod.outlook.com
+ ([fe80::d946:6abf:6e7e:fd1e]) by SJ0PR11MB4798.namprd11.prod.outlook.com
+ ([fe80::d946:6abf:6e7e:fd1e%7]) with mapi id 15.20.9412.005; Fri, 12 Dec 2025
+ 10:42:59 +0000
+Message-ID: <f79abb43-269b-4315-8e69-2a15b4378da5@intel.com>
+Date: Fri, 12 Dec 2025 18:49:47 +0800
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu/vt-d: Flush piotlb for SVM and Nested domain
+To: "Tian, Kevin" <kevin.tian@intel.com>, "baolu.lu@linux.intel.com"
+	<baolu.lu@linux.intel.com>
+CC: "joro@8bytes.org" <joro@8bytes.org>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "jgg@nvidia.com" <jgg@nvidia.com>
+References: <20251208091907.74719-1-yi.l.liu@intel.com>
+ <BN9PR11MB5276A64C850D1D3C067DD1008CAEA@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Language: en-US
+From: Yi Liu <yi.l.liu@intel.com>
+In-Reply-To: <BN9PR11MB5276A64C850D1D3C067DD1008CAEA@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SG2P153CA0051.APCP153.PROD.OUTLOOK.COM (2603:1096:4:c6::20)
+ To SJ0PR11MB4798.namprd11.prod.outlook.com (2603:10b6:a03:2d5::12)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SJ0PR11MB4798:EE_|CH0PR11MB5218:EE_
+X-MS-Office365-Filtering-Correlation-Id: a322034f-2e61-4ee6-1801-08de396b3795
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|42112799006|1800799024|366016|376014;
+X-Microsoft-Antispam-Message-Info: =?utf-8?B?RjBzbFd1YU5FK3kveThkWjZaS2ttbXlES0FSUjdBQVNFMHlnNmdyZEo4Vlgv?=
+ =?utf-8?B?aTVPSUxIck11OE5uSWVqYVFzSzFMU2hRVFU1UlY3U0src0VKQU1kVjd3Yk5w?=
+ =?utf-8?B?OHA5Z2JvL3hpRGFsOU1hQmNtT1BPSTVudTNzbHRkRUdmK2JhRE9Lam0zNkpP?=
+ =?utf-8?B?dnRjOHpCejN6L2ErTTBUdEhrOUdRS0MxQTgxMUova0F1UU5oQytmS05XTUUw?=
+ =?utf-8?B?MG5yMEJpdVNoanJWWXZrWjZFR2psT2V4cXE4djMzQnFvMy9ZeVExbm14S29E?=
+ =?utf-8?B?bE1YN3dTQS9LeDRwS2dKUXA0azloUFNTdC95T3BiYnA1RWE2NHJ3ZTNlWmlp?=
+ =?utf-8?B?TnRlL3l4VnQwTjdHMHlCdkltZ2dxN00zem9nWVNOQW9LOEtSSnJGbkNvWXkv?=
+ =?utf-8?B?V3diZ2JaNUMxcHJFeEVMMlZSMFJkakMrZy85WnRyQkNjeTdmcjc5SExEdHBG?=
+ =?utf-8?B?c0NGYXQ2VTlKRnlxWkpxQ3pkSU12TE9YaFFZTTFNR2xyZUdIUHBaaFk3QnFK?=
+ =?utf-8?B?Rk0wNGdVamVGTDhPeU5qZnI0bk5ZWUZINHIwY1UvTDVxZTYxNjJBdU9EZ0FX?=
+ =?utf-8?B?bGN1RFI0ZlZkTWFObE9kRnVLUnZmazlKYTcrNnMxanBmODBpbEdzTHBCdDhU?=
+ =?utf-8?B?QjFWa0hsWG9hSENIMHRYVlRxSFBBRXR3bWdlb3FIa3dWYThBVy9aYzM0YVFZ?=
+ =?utf-8?B?ejE0c3FQR2tZQkYwWW9YL1Q4b0dseGE4T0UrT1IwR2s5OUF0SkdUQzRXaVNs?=
+ =?utf-8?B?WFE2aVIxS3hqZGVsK1Jjckdla3NYTFovWnczWWhZWExaWWttRFdaTXJBZWpI?=
+ =?utf-8?B?SFllNHBFNDhRZHEzZHFuNHg4Y2xDOHl2dlBhQTR3czQydi9DeCtteEUxTERO?=
+ =?utf-8?B?akVPTTJ5NFR2dGVUN2Q2SFVoU3pnUFVTRkNmbkdzN1Y2WnNmankxOWp2SEdF?=
+ =?utf-8?B?clNJUGJpWXVCWWtCTlpOdStpNHdKWk9xeTJadVlOQkRuV3pqaDVNZFJISExP?=
+ =?utf-8?B?Mzl4WnMycHNBb21nTkN3cVpyNGRDZklTVkwvODZjMkcySEZ6dmxJa3ZzRG5G?=
+ =?utf-8?B?SjRWZ0dBbE5RSkM4Umc0S1A4cERBN1lsaXVtaXNVZ1NiVUtCWjF6clhOTHIy?=
+ =?utf-8?B?Yk03aklwN05sRGtMcGtmNTNXVkg3b1dEWXo1djl3ZmZOODVhaEdpZnhmenM5?=
+ =?utf-8?B?OVJwcjRVNUpaRUk2NitxQzBHbUdmWmwxd1NOaTRkRXVkR2g1OW00UDBNMHQx?=
+ =?utf-8?B?WlFTQU9pd29mSVBCQ2wwRWx2cnZaRnlNVkN3Y2ovcXQyRGVaV2dJaFNFUlR2?=
+ =?utf-8?B?aWQ4a1lNMU0ra2p1QUFiMkNtd2tua2xHZXRPM3d3ZnhibUVKNW9ySEpMcGxj?=
+ =?utf-8?B?VW5Bb1picmtjdmUxdUYyYTNhTEtQTm9QQU5YT0puejI5blEwU0JlY2RLRG5I?=
+ =?utf-8?B?STY5RGM1dlRkcGtrTVAxU0NsRFpaY1RKUExlcjd4N1MzcmlsYTBxYXprV3pK?=
+ =?utf-8?B?MmRoRXdiRDhaemlWRS9keHhvdForWURpY3ZodldBdVMvaXgwTzVZT25ISVZE?=
+ =?utf-8?B?ZXgzcm9mSVZrOG5wUUtOcW5TME01VXc2UUQ3UFZWSFdWdENXbDFYS1ZKdjdl?=
+ =?utf-8?B?V2RBK3ljL2p0SUd3VU5XZUllamtzd3YrTHRVQVZiV3pKc0VWMFUrZGpld2xv?=
+ =?utf-8?B?UjV6TWNianpjMnVtWlpDWEVjTWZuZmdEeFFWQ251cTFXOXBrVWRjZXhBUjRM?=
+ =?utf-8?B?TkN4N0I1ZGhXb1kySHZDdlNTZzFjWmM5LzhOQUo2OS93MU5nUnF0cC9SZElm?=
+ =?utf-8?B?K1ZwRGZXNEdOTTdxcFBCNUVoZWtaRk9GRVMyY1BoY2xFR2VudDI0bzNYL1Bp?=
+ =?utf-8?B?b2h5U1BRSlJnS0RnTGx5NWx5RWZ5d1pvdFp5dHhlOVpReTBsSlhvdkVJY1lE?=
+ =?utf-8?Q?auhIVEe9k0LnRM9usiLJZGwgM1je7Trt?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR11MB4798.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(42112799006)(1800799024)(366016)(376014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?OGltSnFjZ1JhZGZTNG1vaHNNNk04d0lxSzdLNzNOa0tyMURsditjLytOY2Fx?=
+ =?utf-8?B?aE95WDZDcm5wSStqL0plWFd0QUtIMS9ZWXYrZ2liTk1idkVVYVhvVnA4SmR4?=
+ =?utf-8?B?MEZNUVhSaFVUV21OcjBqYlIyWVpKQ0FkWUxRcDFHMWhscHZVbUtES1FvaFQy?=
+ =?utf-8?B?Z2FhSFBQWDhia0NzRG5ZR3BvYzBwc0ZiUWxZWXRHazMwUHV1OGIyaVJndHpH?=
+ =?utf-8?B?MTkyMmRvZzQ5R3REK25UZitSVDlWODdsMUsyS2QvSENhc0RSSFVkek5jWFhO?=
+ =?utf-8?B?ZXhzY2VMdEMxRDluYitwVy9GNjhjUkxPaXRycFdjdVpGbXBXcmtxUDdoR1lD?=
+ =?utf-8?B?UWFPSm9uc2gxaVJHWmFpVnYxalhTWkZKTlB4ZCtCVGF3WnJKSTUrTkxsMHVX?=
+ =?utf-8?B?M2piWmV2c3FHUHJGNFNaUDJjc3o5SFM5Q0U2UjF2TFdtdElXR2I4c1ZISm55?=
+ =?utf-8?B?SE9HdGZWcHZNWkxNMlNYSlFweTRidWVhd05wSk92NWZWbmk5KzJpcE51VXVi?=
+ =?utf-8?B?NzNjbkVQTEk2VnYzcXk5SlhSL3EwNndseHJQbjdrSURiYk9VeEpLMWF4L2E0?=
+ =?utf-8?B?eXU4RGQzZTdHcVhqOS9ZQzduVG1sTmIvemJSb3Rua0dUeXAyUFZXL0NEYWxt?=
+ =?utf-8?B?UVBBZkpFbzR5QkxDbm52MzJST3FGV1pEcEVHY3lselRHNGdJaS9Eem9TK3Zy?=
+ =?utf-8?B?MVlIcWhMdVVuYzNJSCt5eitmWnR3RXRCM0x4ZTNBMkVhYzVmMytEUXZLS0NM?=
+ =?utf-8?B?SWJ6TnhSWjA4cHFoQjZSUEpiKzY2bnpKa3Z6aTFjWXZjOXc0RlNyd3kzb1Iz?=
+ =?utf-8?B?MWJkdnA4RUFHZlZoZ2VmUGZadlBLWTNuNTVNZEdmRTBJUi9Yd1I5bzJhOVRS?=
+ =?utf-8?B?N0k4OURoVEdIWDBzVUFhYVNJL2NjaDQ2VUZCMThJNTVxeitYZGt6eEtwVndW?=
+ =?utf-8?B?ZjVydndxeTdkY1FMcDRFUlZIL2UvMk55cFFXbHB6S1pRaUFPbSsydEVkaUJJ?=
+ =?utf-8?B?SnZUMkMyUkxOL2ZIMW5uUnBHc0xvYXdkUUo1NHZTbmJmaHcwM293OUQwbDVX?=
+ =?utf-8?B?WTZjejR6ZTNESzZ1aXVXQk5keUxQRCsrL1c5T0VMMGxiOWxBN0phYWFZVmEz?=
+ =?utf-8?B?d09aMW5CQ2xjNXU4dlRIQW9yNkYySlgwdlY1TnJiamJQVWdLSE1WM1p1dWM4?=
+ =?utf-8?B?cFRXeWcvbncyTlJyUE9SQUxSaVVkMzk2SitZVyt5ZFJYeWp6bTBpZG0wSFlJ?=
+ =?utf-8?B?Z2R2dlB2dGJ1aWM3NS9iTE1yOFE4dkhDYXpJMWhjT045OWhxbmFEUldab0Mv?=
+ =?utf-8?B?Ykh4ZHpZWEQ5NmluWDdzcWRaS0EwVitVVjl6Vm1aRzRHaUpuQmlVejJ3MFV3?=
+ =?utf-8?B?cXVSNmVxOHJMeWJmNVlKMjNBWEQrUU5rK0pqVEdXaGZoV0JVbjUrL0plZzA0?=
+ =?utf-8?B?NVFISE5SdVVrczlKdzl5Q1hpSys0T0VoaTYwSHJqV2E4cEhEekhCaWNtclBr?=
+ =?utf-8?B?UEd3MnBVRmtzTDAvVmNhTkhUeEl6bTNyN1JqeXZiNmdsVWZ0WUMxM29zMkRw?=
+ =?utf-8?B?R0ljSGpXQ1o0SFNaSlBmM1hvUVlGMUp6NzQyT09MMU9OQ1RCblBxZlUwY0hU?=
+ =?utf-8?B?dGdWNzZtdjFuVDJ5STFQVUNhc29CMjRkV3lKbjN6b3NhREtiQ2J6ZTRjYzJD?=
+ =?utf-8?B?S2U5alk4Kzl2RzZoR1M0WVExQWFNckpLZjZJdmNtaFNqVHRIRUxTTGdyWGs1?=
+ =?utf-8?B?cWZSZDRRMTBHaUd6Y1lFUlMyRFVZdU5rNU0xZFp0dCt4N2FXRU9meTZFVVZr?=
+ =?utf-8?B?d3JCUExRNmc2UWZFTDV6aWl1UjF2N09Fd2FSOG5HOTd0N1ZnVUxVeG03ay9k?=
+ =?utf-8?B?NHlaSGVFYy90SkJPZGh1TGh5VDhvaHZmNTBGNFlKRDVKSXRZd3FUMVNxbDQ0?=
+ =?utf-8?B?YnhLVWtRKzZxTDFvU2JBbjNGWmZTT25nTUV0ZTJLMnJJTHZxQXExV3pqWkVq?=
+ =?utf-8?B?Y0lXMmFxQWo3eHBOMnErMkNlbDdnRTFzSTQ2UmdnR1FKdEtoQnBidXc4dGpK?=
+ =?utf-8?B?OWRSM1pCRlZId0EzOWhGT0w0Vjh0VU5NREdRSklYOXVLU0lJTXZ5MEdaVk1H?=
+ =?utf-8?Q?inntE/VSpcYu+IVuTT35WcDhH?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: a322034f-2e61-4ee6-1801-08de396b3795
+X-MS-Exchange-CrossTenant-AuthSource: SJ0PR11MB4798.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Dec 2025 10:42:59.2942
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: phcXIzdyow5nkYzv2hN0/t0Gmd/V3RP6dA6+megj5u+hWLXN6VGTkzImASLeW7qrsmJIf4LLNuFem9yaFDgL5g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR11MB5218
+X-OriginatorOrg: intel.com
 
-On Fri, 12 Dec 2025 05:21:11 -0400
-Jason Gunthorpe <jgg@nvidia.com> wrote:
+On 2025/12/12 15:57, Tian, Kevin wrote:
+>> From: Liu, Yi L <yi.l.liu@intel.com>
+>> Sent: Monday, December 8, 2025 5:19 PM
+>>
+>>   static inline bool intel_domain_is_fs_paging(struct dmar_domain *domain)
+>>   {
+>> -	return domain->domain.ops == &intel_fs_paging_domain_ops;
+>> +	return (domain->domain.ops == &intel_fs_paging_domain_ops) ||
+>> +	       (domain->domain.ops == &intel_svm_domain_ops);
+>> +}
+>> +
+>> +static inline bool intel_domain_is_nested_paging(struct dmar_domain
+>> *domain)
+>> +{
+>> +	return (domain->domain.ops == &intel_nested_domain_ops);
+>>   }
+> 
+> hmm it's confusing to have a _paging name covering svm/nesting type.
 
-> On Fri, Dec 12, 2025 at 09:44:27AM +0100, Boris Brezillon wrote:
-> 
-> > > > +// These bindings are currently designed for use by GPU drivers, which use this page table together
-> > > > +// with GPUVM. When using GPUVM, a single mapping operation may be translated into many operations    
-> > > 
-> > > Now that we have the generic pt stuff I wonder if GPUVM should be
-> > > providing its own version of the page table implementation that
-> > > matches its semantics better.  
-> > 
-> > Not too sure what you mean here. Are you saying that we should fork
-> > io-pgtable-arm.c (or rather a subset of it), and have it all
-> > implemented in panthor?  
-> 
-> Not quite, probably next yearish some of iommu is going to stop using
-> io-pgtable-arm.c, and switch to the new stuff.
-> 
-> The new stuff has alot less duplication if you want to make your own
-> special stuff like this:
-> 
-> > against it. Now, I see good reasons to do that, like the fact we
-> > would be able to add features like batched repeat mapping updates
-> > (mapping the same page over a wide virtual range without having to
-> > duplicate the intermediate page table levels that are exactly the
-> > same),   
-> 
-> That's certainly a unique requirement and it could be implemented with
-> a gpusvm specific set of operations.
-> 
-> > or the ability to extend the mapping arguments with
-> > shareability/coherency info (that we can do by adding IOMMU_xx flags
-> > too). But there's also downsides to it, like the fact we wouldn't
-> > benefit from bugfixes materializing in io-pgtable-arm.c, if any.  
-> 
-> The new stuff is significantly modular already so this risk is a lot
-> lower, and we could further modularize things that are actually
-> duplicated.
-> 
-> But doing something like repeating page table levels will require some
-> fairly different unmaping logic already...
-> 
-> You also had the special allocator asks (and presumably optimizations
-> are possible there too) and probably optimizations like taking page
-> lists directly out of GPU structures instead of multiple calls and so
-> on.
-> 
-> When 6.19 comes out go look in drivers/iommo/generic_pt and read the
-> documentation pages that will generate under the kernel docs site.
+got it. tbh. I had a long standing impression that paging==translation.
+But I think it is incorrect.
 
-Ah, nice! I will certainly have a look when it's out. Thanks for the
-heads-up.
-
+> they are different types.
 > 
-> Then you can think about what is ideal for GPU and consider what the
-> work would be like. My uneducated feeling is with gpuvm trying to be
-> common code it could also have gpuvm provide shared common code that
-> directly builds page tables in CPU memory using the above framework.
-
-So, gpuvm is one level up (it doesn't deal at all with any HW
-representation), but I guess we could provide helpers for UMA-GPUs,
-where preparing the page table on the CPU is a thing, and it could be
-that MSM would be interested in using those helpers too.
-
+> Instead it's clearer to introduce a new helper e.g. intel_domain_use_piotlb()
+> which covers both fs_paging, svm, and nesting types together.
 > 
-> > > IOW it doesn't seem right that common code would be making decisions
-> > > like this, the nature and requirements of the flushing are entirely up
-> > > to the driver binding to HW.  
-> > 
-> > We're not saying this will work for everyone, but rather, this is a
-> > default implementation that does nothing, and if you need to do
-> > something, override it with your own. I guess if that's really
-> > problematic, we can force the user to provide one and keep the NOP
-> > implementation on Tyr's side.  
-> 
-> In my view there is no possible correct way to use this page table
-> code with HW unless you also provide flushing ops. I can't remark what
-> is more rusty to do but having a default full of NOPS should at least
-> come with a comment explaining that the driver still need to provide
-> something.
+> and for svm/nesting just check their domain types instead of referencing
+> to the domain ops.
 
-I'll let Alice decide, but I'm perfectly fine with both options
-(NOP default with a disclaimer, or no default at all).
+got it.
 
-Thanks,
-
-Boris
