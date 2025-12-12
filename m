@@ -1,65 +1,64 @@
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8965344C8F
-	for <iommu@lists.linux.dev>; Fri, 12 Dec 2025 16:07:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88D041D514E
+	for <iommu@lists.linux.dev>; Fri, 12 Dec 2025 16:15:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765555639; cv=none; b=oQKwSNGrpgH4POdwK5VJ6r182GP1TL+i/rG7bPyMh2vuzMmKa76TS8FGiQiSDJz6L7HUpLUSPnbinINb3k9KwV+wFhC9bT6IfEBBuLThgYTTJsLURxAeDnAaqV1WwWu2Z5xoSnAIYT4KfWV4PeSHKoOFM3NGMSx5/nL6oIUFxG0=
+	t=1765556141; cv=none; b=QYuVPiAxr8GIFkY/bnQzOsrCx3fHn87fEdZaZwjSkZZxb/iGbtib3WgS3FNgXdENe1ZvFk4Wxr6E6NZtquBluDYqnQDcKBJ60+3Myk3t6/JZLBKnrfdT9jT4lX6wlcNvv7uNrFDtV0TeGFeQXobwRphltbFLg6PLyONQcYkXDVw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765555639; c=relaxed/simple;
-	bh=CadN1clJTjA4RMo1uLhmMUV7CPVXKBuCrjugsR4QrFI=;
+	s=arc-20240116; t=1765556141; c=relaxed/simple;
+	bh=QpUarcAdLSnbqTnWNlECIfVH11gk7hWE6QE7JXi1JQc=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Q3mKjKK4D8WOCoxQKeN5ponKLZM048VylW4WjjY7AnR+LhNpZVaq36jjin34nYLrDgsmQC1Bk9Jhxj9LDSsgof9qX7YVllgScDt8CsQSnYToBGM+aiDXBF0M0vIcAj68uiOJrOqbdcmENCph+6PGPXByfBYG5TpZtu0Dg9N5rZk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=aIOKpbzC; arc=none smtp.client-ip=209.85.128.41
+	 Content-Type:Content-Disposition:In-Reply-To; b=Y/zTN9y1N2nRTkk4JFF8spApvew9qCkeGsvhBjIxY2uFnguyJgCG5JHox6+cjumIe7zKT0e5TfLfYyBXciJiaTwWRiYB1o6zP9sRcNTpf9qftomvTJgSmwK7K1aRBm+5d0TPN3vXNiwDZ+JlWERS+0lV/XIuf3Bil4rFPwzCB6E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=PlvjOTHt; arc=none smtp.client-ip=209.85.128.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="aIOKpbzC"
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-4779e2ac121so168535e9.1
-        for <iommu@lists.linux.dev>; Fri, 12 Dec 2025 08:07:17 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="PlvjOTHt"
+Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-47a815c43baso134915e9.1
+        for <iommu@lists.linux.dev>; Fri, 12 Dec 2025 08:15:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1765555636; x=1766160436; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=j/MUKGMtq/AZXEzw4+AUVbVepsRjCX4PBUc6yHK/8Wg=;
-        b=aIOKpbzCNl5YCsxyp0nEUuGxg1fJ4dkxmPqFtWySShgJUK9UD0MalHRKfwSsAd0zlk
-         ou8WbFsrcphW55kxSJNDvMCGLzqQolkleBID8hhQsUVZC8F8hgOQWLTgtfZkFOtHxYDs
-         0e5DTmkpNwIFzTqTE6S87ZHu5BmnGC12+Uh82sPBfdpKxXMAj68v4+nIdRNRa2/zFG7j
-         BbRlKuOw1RU0XeXZMiEUzmSraSt4TAFUDuujmuoFO87Zq6GCAM5fjU1BHYBG50h1J8xv
-         +Zy6vuwS/19fkr1n4+OhJ2hEvgL1kIoeYnj2QFV0twbbM/yOOCpmM14jfAK6NY6hGKkd
-         qjsw==
+        d=google.com; s=20230601; t=1765556138; x=1766160938; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=frjawGCw0cne3ietsxce3al/KlU0ywLGbRoWqjDTmUo=;
+        b=PlvjOTHtaMBXArJLqTmJHiI+ujgGBKYEwkWDroji64H6/14a9eLxkGSBpbfV8knvIY
+         mvw9FDhjEwKJs2R7+iRH/SI8mk7JYTEH4IFRVqzLQ4gpspX87RYPrM03ji/mKjWfrxe6
+         g7wU819PLvTC46qMWiCOLT6P+275Mojgz1KEu4bLCXL5jNoHzylp2cNC+HYqLRKSpyby
+         GS+pKbOfNyGMpkA9EegAbkn2f7QB4MfE8z4MHGDCblO2jqnsNPgcePLhZoyk0kga9DNe
+         4cGWzkLksUpMlyKMnVzgrNIhmKVfq1q+9jSf+kba2kFhVDsA4V/wCleVp//genRfo8B7
+         Dl1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1765555636; x=1766160436;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=j/MUKGMtq/AZXEzw4+AUVbVepsRjCX4PBUc6yHK/8Wg=;
-        b=RA2tvgEgaSOllpjkryRd2LWaazDREN+r6f1FhXMwR3FjHoZOJMaWPLJkU0aGixB6xD
-         dQ4cTLGeEVMd94L7fHJcGpKD73xd5i409b961qytYN582V1CJktKvr03uEJbUPb562lr
-         FXZQBQ2Log1Rjt7pO8kGGFCw74dsPplF4Fm+XzVLCDvjyl4Ua5JgO+vCH2ziNtFF8M7P
-         NLr1lwFuxrUpI5VpvkT9pSSXc2fEsoXIMtmfmvdcyT8K9J6em77DCm/xiOO6216Vxj6G
-         d0DX+r/nnM9Q3nmZ4yqKIMLhCx+3qG7C6atk+Joi6gq7wWBorFB4/0Q+18vyNk/dgF45
-         hg1A==
-X-Forwarded-Encrypted: i=1; AJvYcCXQo0jF7b4SrKgxwcFu/52+nw0ckcfAIi+pfwGjZafP37rqpwQhwBmWLPEIeIgcHvRtGLnmdw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzA8fL+T3IGLCfjF4r6LIWsmuWl124jot1K2OkPJSNsvTZXfwEq
-	JXDkdFMoNTRJBImXmcP+NoIbJc87ihn97hhvhXnDydBvMVmq6rKhq5hoTrvd6XtNlQ==
-X-Gm-Gg: AY/fxX6CRFYgsbynsC7JzUm4BtKNsWi2SmMY7IFdgS8iMXP+jE2rhbna5wvXuaMplA0
-	B9CIGA3wVxlERRyfSJ7mrPP2JqJFKy69s+BNvG8NoM1y/4jRICdHkosqI2pU5gy3ZxdOJJsSFsy
-	gOcVB9QIZaeunFUn2QVCNlVc574BMck/13opMLuwYrKDud9ryU+qTsLBFR9uEoUTAycjBnD5pT/
-	KDErEWupO8GcSosgcI/EGORLtN/1yG3/3e7U6lGDwp4bbDLB+uDv4OhlnmnbMi+pmw/zudl55eA
-	KB1ACh41VDY2KaW/IH1WxRijXSdJouRm+2eOnZyDVCjUZcQqcNaexrT5QsLRdA/7IdJKBQ45iTm
-	ChSn0dCFvRY5ASnSS+/Nxzm6i9G/WBNvEqAtohL5Qqn0EgEarsQWJNoLEQaZuf55UHUZ+LKvRnx
-	RRmdPE41Dh0dRKuDMiV/mUiHzGa1xaoQeGiUnB4fJc1VT9WodlLA==
-X-Google-Smtp-Source: AGHT+IEIDx819rvyhX5iStRqL6toam/KgB5ggWiYCL8nDHKAqrNj8ytrnyVKvwTwKQ6ON9JUhN4seg==
-X-Received: by 2002:a05:600c:4a19:b0:477:b358:c0cc with SMTP id 5b1f17b1804b1-47a8981f631mr1202285e9.17.1765555635793;
-        Fri, 12 Dec 2025 08:07:15 -0800 (PST)
+        d=1e100.net; s=20230601; t=1765556138; x=1766160938;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=frjawGCw0cne3ietsxce3al/KlU0ywLGbRoWqjDTmUo=;
+        b=R5qlgnwtqX/m5haUo0Kc5vsi16ydZuV2k4g8qc8RTcawMU+e3cZAub9OfBJVoRHt8Y
+         WBaIEzuFODetlEmhWwbs56JWnpbAev6PitqyuEFrcSVxThSoZ+fNlWgEwclw/xuP4WRF
+         gt0HuP2DSrOKSUz2DpAqSM3YYSqYScwdDWpqCZHKXy4QYgRD29MFDFKo2gcpov+lKFjj
+         /6YqiB6IqII5lBj6ykhPEjthS3yXBjkrzctybKolScsX+g7AlfLJ9RGbFDF8cmJInoQW
+         dGpgGy65gBb9dNEfEU9fxDF6D9CL03PBrmuli+B5JhTH4XnFg4f3LClbaSvv+icEKka+
+         fAPA==
+X-Forwarded-Encrypted: i=1; AJvYcCVCpqUxlJMO41fFyws6/AmjvuWl8lQF6IuP30SHsM3m1An1G4k70F/WXc+Q1IsNnBq3hzyRhQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxGpZYTVk2WZ3eBbBOyAX4xJqZ6Eifhri7+hWSjrdsTN3gzXYgZ
+	9HUCByti1pik4VE7p4bCetaQ0b4t8eziu2bH5TdrRRo5NRFkq7yQwa4NaP9jONSPew==
+X-Gm-Gg: AY/fxX7FKu6ferQb9oIZ/5sJzyvnotpSEmNJPQU4EYCBCuNR/Hxhn+sFJKodxQO85YE
+	WPTHwPTkSfnMFHufrtFgsjlH/y2rUTmPmmxUvCByxHM7eVFEwzDhFYZtGvRXpZicbImkE72eN1C
+	HFgJSh8/m+TqfcRubGUfvH+SAgmcc5ffhvZ4FRWRn54PxR8aLqd6AMgXc9zgyBjC3+N4noaeIz8
+	MFWXqMlGCYdBrcSMQZ6eiaDH6MIJmGaQQeZ6QnVVRhRMOVUOmJRNOnC3q0uhLOjrInPAAQD/m3i
+	AOoklSjkL8cDqCbX4yDsQEZ2zfQkzn2PILSQOOXENuhXqgus85z1xf0GyN1/BDorI2rfDQRVltW
+	4mmP2uAJvpiC0RInIN1Yl+e72KncK72a1D29by2dfvBoULMJpXnRc/GltIUHGTV6K3Tirgz0Pap
+	bbjsiDrYdbU+Pf6RyXFW3fNLbVqCpZ0RjZltq6FEf64TKOTfGm9g==
+X-Google-Smtp-Source: AGHT+IFLv4OTi7EK70u2qvgXNHw6cjKhs3ugO63ipp+5tWwT+3KODquOARuyX6zUO1as6i35ut2QZg==
+X-Received: by 2002:a05:600c:4a2a:b0:477:95a8:3805 with SMTP id 5b1f17b1804b1-47a8982139emr984895e9.15.1765556137476;
+        Fri, 12 Dec 2025 08:15:37 -0800 (PST)
 Received: from google.com (54.140.140.34.bc.googleusercontent.com. [34.140.140.54])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-42fb68866f3sm3708879f8f.36.2025.12.12.08.07.15
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-47a8f3352a0sm14417635e9.0.2025.12.12.08.15.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Dec 2025 08:07:15 -0800 (PST)
-Date: Fri, 12 Dec 2025 16:07:11 +0000
+        Fri, 12 Dec 2025 08:15:36 -0800 (PST)
+Date: Fri, 12 Dec 2025 16:15:33 +0000
 From: Mostafa Saleh <smostafa@google.com>
 To: Jason Gunthorpe <jgg@ziepe.ca>
 Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
@@ -69,69 +68,66 @@ Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
 	yuzenghui@huawei.com, joro@8bytes.org, jean-philippe@linaro.org,
 	praan@google.com, danielmentz@google.com, mark.rutland@arm.com,
 	qperret@google.com, tabba@google.com
-Subject: Re: [PATCH v5 17/27] iommu/arm-smmu-v3-kvm: Probe SMMU HW
-Message-ID: <aTw9r9syCwJH7hgz@google.com>
+Subject: Re: [PATCH v5 27/27] iommu/arm-smmu-v3-kvm: Enable nesting
+Message-ID: <aTw_pZ7ZyhwFW7-3@google.com>
 References: <20251117184815.1027271-1-smostafa@google.com>
- <20251117184815.1027271-18-smostafa@google.com>
- <20251128170748.GE812105@ziepe.ca>
+ <20251117184815.1027271-28-smostafa@google.com>
+ <20251128171252.GF812105@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20251128170748.GE812105@ziepe.ca>
+In-Reply-To: <20251128171252.GF812105@ziepe.ca>
 
-On Fri, Nov 28, 2025 at 01:07:48PM -0400, Jason Gunthorpe wrote:
-> On Mon, Nov 17, 2025 at 06:48:04PM +0000, Mostafa Saleh wrote:
-> 
-> > +/*
-> > + * Mini-probe and validation for the hypervisor.
-> > + */
-> > +static int smmu_probe(struct hyp_arm_smmu_v3_device *smmu)
-> > +{
-> > +	u32 reg;
-> > +
-> > +	/* IDR0 */
-> > +	reg = readl_relaxed(smmu->base + ARM_SMMU_IDR0);
-> > +	smmu->features = smmu_idr0_features(reg);
-> > +
+On Fri, Nov 28, 2025 at 01:12:52PM -0400, Jason Gunthorpe wrote:
+> On Mon, Nov 17, 2025 at 06:48:14PM +0000, Mostafa Saleh wrote:
+> > @@ -441,8 +490,32 @@ static void smmu_reshadow_ste(struct hyp_arm_smmu_v3_device *smmu, u32 sid, bool
+> >  		hyp_ste_ptr = smmu_get_ste_ptr(smmu, sid, hyp_ste_base);
+> >  	}
+> >  
+> > -	smmu_copy_from_host(smmu, hyp_ste_ptr->data, host_ste_ptr->data,
+> > +	smmu_copy_from_host(smmu, target.data, host_ste_ptr->data,
+> >  			    STRTAB_STE_DWORDS << 3);
 > > +	/*
-> > +	 * Some MMU600 and MMU700 have errata that prevent them from using nesting,
-> > +	 * not sure how can we identify those, so it's recommended not to enable this
-> > +	 * drivers on such systems.
-> > +	 * And preventing any of those will be too restrictive
+> > +	 * Typically, STE update is done as the following
+> > +	 * 1- Write last 7 dwords, while STE is invalid
+> > +	 * 2- CFGI
+> > +	 * 3- Write first dword, making STE valid
+> > +	 * 4- CFGI
+> > +	 * As the SMMU MUST at least load 64 bits atomically
+> > +	 * that gurantees that there is no race between writing
+> > +	 * the STE and the CFGI where the SMMU observes parts
+> > +	 * of the STE.
+> > +	 * In the shadow we update the STE to enable nested translation,
+> > +	 * which requires updating first 4 dwords.
+> > +	 * That is only done if the STE is valid and not in abort.
+> > +	 * Which means it happens at step 4)
+> > +	 * So we need to also write the last 7 dwords and send CFGI
+> > +	 * before writing the first dword.
+> > +	 * There is no need for last CFGI as it's done next.
 > > +	 */
 > 
-> This driver is doing nesting though ??
+> This really should share the main driver logic to do STE writes in the
+> right order and try to avoid making it non-valid if not necessary.
 > 
-> Shouldn't you detect those IPs and not support a S1 at all so there is
-> no nesting? Identity only?
+> This will not properly support all the real-world kernel flows around
+> PASID with such a simplistic implementation.
+> 
+>
 
-I can see that the errarta are fixed in r1p1, and from the MMU-700 TRM,
-we can extract this information from IIDR[1], I guess we can allow
-nesting for all SMMUs except the one affected. Actually we can do that
-at the moment from the main driver too, I can prepare a patch for that.
+I see, would it be OK to keep it as this simple now and add this later,
+as this is still early support? as I want to keep this series minimal.
 
-However nesting is still mandatroy, the fallback path for the KVM driver
-if nesting is not supported (just S2 for example) is to fail and let the
-upstream driver probe the platform devices with KVM out of the picture.
-
-The main reason for this is that the KVM driver relies on CFGI to know
-which SIDs to configure, for s2 only cases there won’t be trap and emulate
-as the hypervisor would be take control of all the SMMUs (as v3 of this
-series which requires HVCs)
-
-It might be useful to support only S2 SMMUs, but I’d like to keep this
-series simple and then we can build on top of it.
-
-[1] https://developer.arm.com/documentation/101542/0001/Functional-description/Constraints-and-limitations-of-use/SMMUv3-implementation
+I plan to have another seires with some improvements and optimizations,
+mostly about page tables (using block mappings) and I can include such
+optimization, specially that the new hitless STE stuff is relatively
+recent in the main driver.
 
 Thanks,
 Mostafa
 
-> 
-> Jason
+> Json
