@@ -1,105 +1,95 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AB61D29617D
-	for <iommu@lists.linux.dev>; Fri, 12 Dec 2025 20:05:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4403B2D47E4
+	for <iommu@lists.linux.dev>; Fri, 12 Dec 2025 20:36:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765569936; cv=none; b=r0ExutSqP7CVL6UTaQwuawmC4vr+/EWQQim1vyQakBhEeDhYegPqILVY5q3p6PlfC2tHGs6YQmUYSCYSAzzgNuheHIk/e8xkUtMGWfCRzTbx/dqKR72GsPoomMckOaURxuJkF4/e6y5DuHtS4fMsNT+NZdbyOdbxBUeM/RlGS9E=
+	t=1765571797; cv=none; b=LZzLPgNOGH05LZnlNVAjRewoSLV0gbeUIPnkE2LLhjZxoaiZe16fNlkx4eTia2Kc0Gq7rPHseKY+7Cjk5VHrp8g5zTe3Pq3KEVeOcv0tRMrlmSEcfcgm46qtue0beyjuDF9O4LculNt4mDcsC5HERSTTEoheuHnJRzrk+rZNvnQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765569936; c=relaxed/simple;
-	bh=LB9aINfzyzjgnK4VhS+BUCarj495V99Mjc4gaEZNN5Q=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=uB8HKA2bB7wW27AWYKbvUYeaC+RvSEw3ZkbzDwIyn4w5PBKCdgV4dcAnayYMGA8PszFXVLMy8+UTgaQ/do/U82xEafO8XqM+xwik+wmB7a7ebl5uPncbtaGhAkdRm17TMbl3eztCoc2CPKb0cxb/CMyQFaSd7amidC9bJw131Q8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=V18SAsRH; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="V18SAsRH"
-Received: from localhost (unknown [4.194.122.144])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 976D5201D7F9;
-	Fri, 12 Dec 2025 12:05:30 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 976D5201D7F9
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1765569934;
-	bh=um/xkKc/u/1WbAFU1WWdXZDKKUEFP85My8/oR0OPf6c=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=V18SAsRHS4m2tNhWZODqNsTfln2/+U4a7gbatiY0j64IUwplxI568aGjJBhaUFk2V
-	 K76W2akWfVzOI8BEoGCeQ3xTXo1NNmZStJkGmoglo6omd6pFvBAAqnBDWnz8xGqyNq
-	 ZjlafUO6X8yjxJRlayTS1o4BDdYPrKt2RamAnAX0=
-Date: Fri, 12 Dec 2025 12:05:26 -0800
-From: Jacob Pan <jacob.pan@linux.microsoft.com>
-To: Will Deacon <will@kernel.org>
-Cc: linux-kernel@vger.kernel.org, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>, Joerg Roedel <joro@8bytes.org>, Mostafa Saleh
- <smostafa@google.com>, Jason Gunthorpe <jgg@nvidia.com>, Robin Murphy
- <robin.murphy@arm.com>, Nicolin Chen <nicolinc@nvidia.com>, Zhang Yu
- <zhangyu1@linux.microsoft.com>, Jean Philippe-Brucker
- <jean-philippe@linaro.org>, Alexander Grest <Alexander.Grest@microsoft.com>
-Subject: Re: [PATCH v5 2/3] iommu/arm-smmu-v3: Fix CMDQ timeout warning
-Message-ID: <20251212120526.00007807@linux.microsoft.com>
-In-Reply-To: <aTjmA_juSss36e8v@google.com>
-References: <20251208212857.13101-1-jacob.pan@linux.microsoft.com>
-	<20251208212857.13101-3-jacob.pan@linux.microsoft.com>
-	<aTjmA_juSss36e8v@google.com>
-Organization: LSG
-X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
+	s=arc-20240116; t=1765571797; c=relaxed/simple;
+	bh=Wr5l93HxK6yATXbDCP7Hf/rUCIiHc/qT9612u4YlCsg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=bhMIylvTDs5IAv8ZkY/SAAFPXvcPNGpZ/7/VPW6FwIGHGPAbjHKbOdy0Yms6UIPhckW9cGcQN9MbfYxPrJexYss7qyjpYyi5Ii/1JmVQGZdVcbPIr34E/FjvoA5NNgAzVTrS/aLHKwf171xUwcidg+BHKVYlMM3utMZnVd4BQgU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3014B1063;
+	Fri, 12 Dec 2025 12:36:27 -0800 (PST)
+Received: from [10.1.196.95] (e121345-lin.cambridge.arm.com [10.1.196.95])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id DA0FD3F740;
+	Fri, 12 Dec 2025 12:36:31 -0800 (PST)
+Message-ID: <104441bd-1284-4147-873a-f94c91788609@arm.com>
+Date: Fri, 12 Dec 2025 20:36:25 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH V6 1/4] iommu/tegra241-cmdqv: Decouple driver from ACPI
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: Ashish Mhetre <amhetre@nvidia.com>, will@kernel.org, joro@8bytes.org,
+ robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
+ thierry.reding@gmail.com, jonathanh@nvidia.com, vdumpa@nvidia.com,
+ jgg@ziepe.ca, linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-tegra@vger.kernel.org
+References: <20251212060803.1712637-1-amhetre@nvidia.com>
+ <20251212060803.1712637-2-amhetre@nvidia.com>
+ <54fce1f8-7675-4351-b292-0009b2e8c599@arm.com> <aTxxBdcY4hODXcdu@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <aTxxBdcY4hODXcdu@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi Will,
+On 12/12/2025 7:46 pm, Nicolin Chen wrote:
+> On Fri, Dec 12, 2025 at 12:01:41PM +0000, Robin Murphy wrote:
+>>> @@ -4542,7 +4542,7 @@ static void acpi_smmu_dsdt_probe_tegra241_cmdqv(struct acpi_iort_node *node,
+>>>    	adev = acpi_dev_get_first_match_dev("NVDA200C", uid, -1);
+>>>    	if (adev) {
+>>>    		/* Tegra241 CMDQV driver is responsible for put_device() */
+>>
+>> Don't we need to bring the put_device(adev) out to this level, since
+>> impl_dev is now something else that AFAICS we are *not* taking a new
+>> reference on (and thus should not be putting either)?
+> 
+> Ah, right! We are using the platform device now.
+> 
+>>> -		smmu->impl_dev = &adev->dev;
+>>> +		smmu->impl_dev = acpi_get_first_physical_node(adev);
+>>>    		smmu->options |= ARM_SMMU_OPT_TEGRA241_CMDQV;
+>>>    		dev_info(smmu->dev, "found companion CMDQV device: %s\n",
+>>>    			 dev_name(smmu->impl_dev));
+> 
+> I think we should squash this:
 
-On Wed, 10 Dec 2025 12:16:19 +0900
-Will Deacon <will@kernel.org> wrote:
+Ack, it occurred to me shortly after sending that in fact it's good to 
+still hold our own reference on impl_dev itself, as we're not relying on 
+a bound driver to hold one for us.
 
-> On Mon, Dec 08, 2025 at 01:28:56PM -0800, Jacob Pan wrote:
-> > @@ -781,12 +771,21 @@ static int arm_smmu_cmdq_issue_cmdlist(struct
-> > arm_smmu_device *smmu, local_irq_save(flags);
-> >  	llq.val =3D READ_ONCE(cmdq->q.llq.val);
-> >  	do {
-> > +		struct arm_smmu_queue_poll qp;
-> >  		u64 old;
-> > =20
-> > +		/*
-> > +		 * Poll without WFE because:
-> > +		 * 1) Running out of space should be rare. Power
-> > saving is not
-> > +		 *    an issue.
-> > +		 * 2) WFE depends on queue full break events,
-> > which occur only
-> > +		 *    when the queue is full, but here we=E2=80=99re
-> > polling for
-> > +		 *    sufficient space, not just queue full
-> > condition.
-> > +		 */ =20
->=20
-> I don't think this is reasonable; we should be able to use wfe
-> instead of polling on hardware that supports it and that is an
-> important power-saving measure in mobile parts.
->=20
-After an offline discussion, I now understand that WFE essentially
-stops the CPU clock, making energy savings almost always beneficial.
-This differs from certain C-state or idle-state transitions, where the
-energy-saving break-even point depends on how long the CPU remains
-idle. Previously, I assumed power savings were not guaranteed due to
-the unpredictability of wake events (e.g., timing relative to scheduler
-ticks or queue-full conditions).
+Cheers,
+Robin.
 
-So I agree we should leverage WFE as much as we could here.
-=20
-> If this is really an issue, we could take a spinlock around the
-> command-queue allocation loop for hardware with small queue sizes
-> relative to the number of CPUs, but it's not clear to me that we need
-> to do anything at all. I'm happy with the locking change in patch 3.
->=20
-> If we apply _only_ the locking change in the next patch, does that
-> solve the reported problem for you?
-Yes, please take #3. It should take care of the functional problem.
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index 0c98be3135c63..88625e3c27a65 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -5280,10 +5280,11 @@ static void acpi_smmu_dsdt_probe_tegra241_cmdqv(struct acpi_iort_node *node,
+>   	adev = acpi_dev_get_first_match_dev("NVDA200C", uid, -1);
+>   	if (adev) {
+>   		/* Tegra241 CMDQV driver is responsible for put_device() */
+> -		smmu->impl_dev = acpi_get_first_physical_node(adev);
+> +		smmu->impl_dev = get_device(acpi_get_first_physical_node(adev));
+>   		smmu->options |= ARM_SMMU_OPT_TEGRA241_CMDQV;
+>   		dev_info(smmu->dev, "found companion CMDQV device: %s\n",
+>   			 dev_name(smmu->impl_dev));
+> +		acpi_dev_put(adev);
+>   	}
+>   	kfree(uid);
+>   }
+> 
+> Thanks
+> Nicolin
 
-Thanks,
-
-Jacob
