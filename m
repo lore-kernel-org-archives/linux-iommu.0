@@ -1,184 +1,420 @@
-Received: from SA9PR02CU001.outbound.protection.outlook.com (mail-southcentralusazon11013051.outbound.protection.outlook.com [40.93.196.51])
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3B5623B615
-	for <iommu@lists.linux.dev>; Fri, 12 Dec 2025 07:00:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.196.51
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765522827; cv=fail; b=Mn1gJKBKWMU6r3oMK9T0ndnF0AIQz6l46qaU9potRpQbvyUKwBokyKFnM8MvH574yxxXP1Bi83DMa+ml9Z3QvHoyXVJIUD6k4EvkQqhO7f0qw+CeckOhc0lS6RdTiim82Udfelc9vLaiMP6xRHZaB/bcIQLZr2SP3q9qwETSws4=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765522827; c=relaxed/simple;
-	bh=ALID8cLrS9It1wyfI04zkeQeNuByzUh8GubHJS65P0M=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=nNxB32+OpOLjkb5MwM/nCThA0P2gsalOwPHSFPfNUYBjpMNtIocuYGdAKr/37gq0dac+NHP70/26PiqN21c/dxr7hht7FVndP4GqSDjdoZe0f547GvrpI/BIIoqVZ/UoKsZMEwCPt5ELDkGuSSarIwgJ9JaYujdPpiUusmQp3KI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=crO+kPMv; arc=fail smtp.client-ip=40.93.196.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DFE81199234
+	for <iommu@lists.linux.dev>; Fri, 12 Dec 2025 07:25:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1765524351; cv=none; b=uCISMVgF506TTrtMwYNeuxri5aI7eHxoTHpLLB7J5ddmeaLt596wDoI9uGBLqKFMDrcSpQf2I76ioJ9tg31XOnp8ZrN9Mw2VEycjdZNvqeREii1kLyDKb7K/lZRESPK8KmgZqLLWzsqt9orha8QbOGjAFKJJ8UxYDE8aF48sfv0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1765524351; c=relaxed/simple;
+	bh=LW6Q/fuVmC6oHGHjuy8oANAVor27SdbSOxdqaMgAdLs=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
+	 Content-Type:References; b=kr40ZU8vzRmy3Na8n4942irrVgyPr5/G2S5AG6kC4AoxhOr7mA0j5hL9mEiWNu8mK0yPst/GwnmrmdpzfwIEIj7Vd5r/E8t4/gh4j9n1NU4e93QC9G5PfsW+74SxCZvUo1Alxv3ppSXt58Y0619COfDJ7nfANgNNTeEGOY9vFO4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=gXH+i0Tm; arc=none smtp.client-ip=210.118.77.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="crO+kPMv"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=HYHb6OR3QYWqbayuIIENFYv3FVCsVNyxrb0viox4vqDPKy/IgoN7RBNqGpJZmDpRlwPY2GIIC3BdipQPK1pwe9ZXuQ+3cu1cuFaeBKdJYiEZEwewDTaOmr+my2PK1z5p3GAP4XQTQBPBRb8SNK8oq3W7so10sGZahfGCSjRgdFH4xZJhDBOapPp2Uf2QgTvNkY+5nwYh5IiAE+ws2mAEu1L0C+MmovCDkn8dqdMkZFbXhdO+FgGHRrMuR5PdpOM9KCrHZBHYQFApiOZ1RjWLk7vJchj8GYHdUh6DWGpqWJtlZRh8iCsP/cyZxPvqUOi8X5jo+iuZq4fTBmlXP5xFfA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=v32YRboRSmozgoJrmmHy5Q/q7Jr8CUgk8LuU/6azTwU=;
- b=Y7cn++juNkNpJupSBJwILsAauyRQ/ttVxHjOBYdNWLeA2rRS9qcWj1zHnmA0C1oQPr1xSXVNvl925ACjanzair3uFAi07bzKfdu4K8SZmNcGlc8xgmdy8dyUUOhGFmKVd1YtINBqyLOBqxgADZt/SbMK2x61EEUAKoDdagOOPqYN1CVRGYFVOwEm1wlFMmBIErkgJ27zw1S6bh2rvSOZA4CgfFjDrIUluEZxu/8Mzq47N/LE644ZxWJdf3jWO8fTW6U19TWAKrcgRnQg+EE0rpQEajn87H/B2hDTth/W9abBGGfqVIUrBtkw/vRYPGCNCCwd5hR2V3Ppc4Q2BheXDw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=v32YRboRSmozgoJrmmHy5Q/q7Jr8CUgk8LuU/6azTwU=;
- b=crO+kPMv5QzLxHdFuVKHPe0LBae6AWUlmZf9RazgtiWIwdKVMRVBRDV3GPqZVgguKHEj/lo0Y4ucTSQifn4jWyOF1RrrzEiDDuqhpJETIK7Ii0+sctf1EvrG0YIDbdNuK69vfZ7wMg0U5ynl11XN2o5aGH12XkTjOlXqOrWj/97BJEddlPX7ku05TCQtE5xNkvVFAYCyEA07gYtsgX5gBD40EQSbyfY98jqvbleJuSD2iHadU8BnI/72jjpvwp/RUfcEgXcqwerrScCrS3bD7UvLBrhQkmJVT1L5LZxTWhXK4bsXw509J4CUf+hrIzmSFkiCJdkgJhzFBANaWdiCaQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
- by CH3PR12MB9021.namprd12.prod.outlook.com (2603:10b6:610:173::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9412.9; Fri, 12 Dec
- 2025 07:00:22 +0000
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::1b59:c8a2:4c00:8a2c]) by LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::1b59:c8a2:4c00:8a2c%3]) with mapi id 15.20.9412.005; Fri, 12 Dec 2025
- 07:00:21 +0000
-Date: Fri, 12 Dec 2025 03:00:17 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: Wei Wang <wei.w.wang@hotmail.com>,
-	"alex@shazbot.org" <alex@shazbot.org>,
-	"thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
-	"vasant.hegde@amd.com" <vasant.hegde@amd.com>,
-	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
-	"joro@8bytes.org" <joro@8bytes.org>, "aik@amd.com" <aik@amd.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Subject: Re: [PATCH v3 2/2] vfio/type1: Set IOMMU_MMIO in dma->prot for
- MMIO-backed addresses
-Message-ID: <aTu9gUxtvWsmG+WD@nvidia.com>
-References: <SI2PR01MB439337D5513729BAC122F526DCCDA@SI2PR01MB4393.apcprd01.prod.exchangelabs.com>
- <SI2PR01MB4393BFD04F698501F19013B4DCCDA@SI2PR01MB4393.apcprd01.prod.exchangelabs.com>
- <BN9PR11MB5276D5D7338261F48FB863188CAEA@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BN9PR11MB5276D5D7338261F48FB863188CAEA@BN9PR11MB5276.namprd11.prod.outlook.com>
-X-ClientProxiedBy: TYCP286CA0312.JPNP286.PROD.OUTLOOK.COM
- (2603:1096:400:38b::19) To LV8PR12MB9620.namprd12.prod.outlook.com
- (2603:10b6:408:2a1::19)
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="gXH+i0Tm"
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20251212072539euoutp017f67c87cf8eff9c82d574c1e0d5a3168~AZwhgeYpB1272312723euoutp01S
+	for <iommu@lists.linux.dev>; Fri, 12 Dec 2025 07:25:39 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20251212072539euoutp017f67c87cf8eff9c82d574c1e0d5a3168~AZwhgeYpB1272312723euoutp01S
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1765524339;
+	bh=HvCrwglTXOTbxVj1CL/msOBSttR8rBtMDNdjb8HbA94=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=gXH+i0TmiomuM4SGfhibFgHJe+3xhxVTAuwMXROyWPbI6RXhzjt5k3VZU3rg3a8/a
+	 7R7q/srAtz0f8htusryt/Ge5EMceXAQSpLROlGlNo/zBFkOX+b/4l2mBag733LhHa2
+	 ji3nrY/jo8mcE6s2zpwZHcUQIo/TStnhfcPjMrLg=
+Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+	20251212072539eucas1p12922196059364f1de841736ecf0ff36c~AZwhIfD-b1628216282eucas1p1y;
+	Fri, 12 Dec 2025 07:25:39 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20251212072537eusmtip25dbe7bed67d433692297dc17d0186dfa~AZwfyk1MI0282002820eusmtip2S;
+	Fri, 12 Dec 2025 07:25:37 +0000 (GMT)
+Message-ID: <772649b3-0a45-4231-af67-2d48af1a5eed@samsung.com>
+Date: Fri, 12 Dec 2025 08:25:36 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|CH3PR12MB9021:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2740e0de-aacb-4bd0-764d-08de394c1e00
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|7416014|1800799024|366016|7053199007;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?J4Cx+dNvoQrnAIii92r2SM1L4cuPEFx8ib4LnVh6d+qvfgYLB3iN5n+n0Cet?=
- =?us-ascii?Q?+fxCtEWB0InnffR66R7gUsDp6CnPZIIUI2VpFEhdkh28wQ4XQZtBhIlw/pnF?=
- =?us-ascii?Q?ikd5rcOMhVuAOEh+0f527lNEiuQ+BhMg0x+e4d5lAMAaSKa5/kYgq/oVwo1t?=
- =?us-ascii?Q?nu93n6a2tgDJrQ86okVZWjsRf4rdWUfWnt4AABKT7F9vvIHvhF6bX1TYjbfF?=
- =?us-ascii?Q?LGpfC6bumTUwkMLUaHPZvT6/4Ym9XgCIj4LTlPqzrV0j5bTVb7LMPQMaHHkv?=
- =?us-ascii?Q?lDTbWakxKxCqd2UVuVcHBT8cwsEf4/9Y6aotMof8ueF07O1cyUwoOv0kOQSc?=
- =?us-ascii?Q?3f3cCUaiT8M6Obtke9GezTbzJNjndWyER8OOP5GaRHnX7foAubBeXk0+vKoc?=
- =?us-ascii?Q?b1tUIaZK/wi9RcQx6zuforXzzBc1ioegWI287GXSy14+OjxmknL1dhErLDdd?=
- =?us-ascii?Q?sohUjrxrmD9iclrjD6BdrOY+/zP3fj0qR4PCN/nt4MhypsgXhoYuzb6zKHcn?=
- =?us-ascii?Q?bl6qR7diBSufj6RHbbR6QjjeXgpEogGXwmNuyEXuUW+JsIQKq8/5uRd07KJT?=
- =?us-ascii?Q?uTvJ8s8F8jgHtjx1fFfxGWxeh8fumvISUAOwnRz8PuVIXrNzXG4osJmk+ksK?=
- =?us-ascii?Q?VWGkE03WBotKUHlItdfuCotsBAtNYrTP5IPqc+4/pexiWewmko6MV2EaQYzU?=
- =?us-ascii?Q?YDSgrKDZAJfN2YmCW29RB1NIzHHRO8IYQ37ffLoIrVjzmmEMnRRtYZ3a3XVO?=
- =?us-ascii?Q?VYZw0GeiCdI4B5DxsEySTkKQxTmae6IOQNrgT9Pb654f+UQU8ziIG6zReJwE?=
- =?us-ascii?Q?xDKKzBXIBCX0kN+QluF0o8rkoqIiowAKjITNN3rXLIY+9GrDmz2IaepZUe5c?=
- =?us-ascii?Q?QTQL5Y20e6enccy1GY/vA4cFZTNGdpmmY9J4zWKCfjxp2vcn8hSRzPHdqgTl?=
- =?us-ascii?Q?GayC21XCulMb2mN0WqZnp3qduFe6I0cW3N5qTREky6NFKchT928T4R1jF1x8?=
- =?us-ascii?Q?lAILKQKePf4u8otPwNvOH2gnjJzEb+8akG/bs1BrVTnWysRpFsfH19hATGeY?=
- =?us-ascii?Q?4RE3nZ2rMdm5Wmxts8RklrN19hnjXj9EgVJfA6dUivJ/iUgieBlcMNuXt3eu?=
- =?us-ascii?Q?QoGpH3dZUROvcGx3RHdPRFXFwSqVRVxpMswPX+a/HiWj1+pm+ejBEBF7pNAr?=
- =?us-ascii?Q?2aX/OsxHvB0PF3Cz3RDccvcHTyHPOCODm6KSNyLZXDrzYB8NWedWGdh7cMdc?=
- =?us-ascii?Q?g1kkklFk8aO8sshx9nxFb+Znh+7tlTAN3cyB5KHYdjkOqoDpsSZJFHhHG640?=
- =?us-ascii?Q?bBulYR6AcEnDjMGJ+dGNHz8v13rZ/zs6CyxvbSeK37Qq6ygVJ8GtL95ceP01?=
- =?us-ascii?Q?FtW0euS2ZNlVTUcWvq1392cLC4LO5iU+DdBXaCJv6D9i8Eg3ExwvRzmvJFCS?=
- =?us-ascii?Q?de2RBMrKMYGAOFuQRi+JIuNRgrVB96tO?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(1800799024)(366016)(7053199007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?25pnQhS53/C1GSj9rmSeKfj/4EUPMbK/VEposlHd9NVQoehpsdx4sNijlymX?=
- =?us-ascii?Q?ZyPK5EkhoQ5cQxtA2ud5psQWqCbajh90vFuelOfcSBclcbE2JYPpYUIeg97P?=
- =?us-ascii?Q?Qa+nEe6HEq/PUhR/nJ2crzHIycZxAFooRJoaeObunj2BVqyaqKMPXii6WeE5?=
- =?us-ascii?Q?gWNkwjodJns167xQahy4/YA4l8wfgrNI3dIZT06hBs89ZSYzw2hFATYhcobZ?=
- =?us-ascii?Q?3606+F00WkbFYB2vz4kge5LDEeFLd/Id82L1AiI+VGZwHyT9WElH3JtFrJKo?=
- =?us-ascii?Q?cfu8qJO5FVVPrXBoQ2IEJkgryLefoQ0ofKoPMwEAecJG0jo7JQnHg/ibYqD8?=
- =?us-ascii?Q?H0hCvDmXj8G+eRjuuVn7JnEP3ap3aaUhAe/o3G2WEHRtf26Z0oZlMcv3cOcR?=
- =?us-ascii?Q?/0Rz9O+idQUv/YNt2rOvz/MW1jkm0vCJJS56zoOu7wtOGD3a9hJbbLaINDgV?=
- =?us-ascii?Q?v0sbQCNil9KfGM4al9zTQULH1pKpZwXmI7U8CZRXyZ8a56pFwiEh+E82pUEh?=
- =?us-ascii?Q?UiMOYNMvJ2oI6Ca29PM1gpTAoOYt1A7tvYFme69bEKz+Q8Jh8gYm6OcpeL/z?=
- =?us-ascii?Q?ymhpeRRpFnalMhSY7wL15XGgkKgGzMSS/Tny8izFBu7KNP/7CEWBmCvCYcrj?=
- =?us-ascii?Q?h7IxfsdW5KEHWXc0ocX19KoZuFW1yjUWg6EUXEuhGZCfO1EnPVP/0SN0+rjI?=
- =?us-ascii?Q?uDc8N/NwzVAA//hLlwWj6w/uUgb+zfQsNIqZmgycndntHuh0rDzBYxT6cMnj?=
- =?us-ascii?Q?2PBDHJ8Aya11ARR2X9KPlATWaLeLcCTvfPeNCKd1cLSkIPppK55RvU0gkkdP?=
- =?us-ascii?Q?M2f+1Z1LnFQ+xhHulAAMf4t+JrjyIBu+cMmODHrka8+A7TcrtsxTT3QgHw93?=
- =?us-ascii?Q?uIQoVp+/fSKbseIfJxHGE7pSjnNFfa4URoul3fd6WYmOX8Z394x60sWCvdBI?=
- =?us-ascii?Q?MrkNh3kp9YMCvRNGuDCVwbdGfFRxdFYebz9wC07bkrdRJCNDGTWwj5MunLNH?=
- =?us-ascii?Q?4Vg/Yfy5pqf0ZEEwJFK6OtqpREqDyAz5DH2n5VBVhXjF/qU6f2ZQUySg5PmR?=
- =?us-ascii?Q?ApxZjjPw8w+Is25awkExWrVVuGNWXuOpEp2XJQsijZlgcr4TNR85CwQr+DfP?=
- =?us-ascii?Q?ZK/uLQttsQARdP+zhyyaur9z0NIJtGPkEpRPPpgfiu47aZ4Crop7+nRFPYgH?=
- =?us-ascii?Q?OpT51m3Ggjh9EM6RdqE2wnz9qw+/VTGE1GCf8CMHYLdn+BYN2lJ5WEjOcqU4?=
- =?us-ascii?Q?2uCmt8KISn+RaExrBpmrhW50HY6cWB1L3fYQoyxdN+RnVugCu+eIT16gaBo7?=
- =?us-ascii?Q?oYMhpDF3l4wQh6uKTTD/SjELJ639WjRDKmN0Qa6mOnpTU6KL/kX27KiVQuvF?=
- =?us-ascii?Q?Z+y8WqNB8TDDQD5SQYgZAMP1dcbbhkRmKJ11iQS6Vqx9x+eqb6CLN1lpThsQ?=
- =?us-ascii?Q?cADg9ED3sPF9GeNaRGctG35W6QhOwRUMfbqevYxJfNqwxA6qgozNjKsCbw0s?=
- =?us-ascii?Q?XHOPxbTEwxxV3gHiWJbwSMYgSma3rnGsgcBwruiO1HVyThpxuF0F+FNb+z2l?=
- =?us-ascii?Q?eLyMq7YTkzEyUCeHdhRCgRT1GUcX5yBThIOBS4gs?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2740e0de-aacb-4bd0-764d-08de394c1e00
-X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Dec 2025 07:00:21.8481
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: PJha2PHe55kHHxmauYjN0OnNehxE9BhbgChwDbPBYaGcIwziU8y2DStiAFE6Y/xC
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB9021
+User-Agent: Betterbird (Windows)
+Subject: Re: [PATCH v2 0/4] PCI: Fix ACS enablement for Root Ports in OF
+ platforms
+To: Manivannan Sadhasivam <mani@kernel.org>
+Cc: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>, Bjorn
+	Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, Naresh Kamboju
+	<naresh.kamboju@linaro.org>, Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
+	Xingang Wang <wangxingang5@huawei.com>, Robin Murphy <robin.murphy@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>
+Content-Language: en-US
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <ahcz2vdqdvqlbsdjwg36h7z7br3f257dqob6cxh2ydg6jrbi7r@se2udnjbxlr7>
+Content-Transfer-Encoding: 8bit
+X-CMS-MailID: 20251212072539eucas1p12922196059364f1de841736ecf0ff36c
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20251202142307eucas1p12a15e5656bb53f48f445c3056d4e3166
+X-EPHeader: CA
+X-CMS-RootMailID: 20251202142307eucas1p12a15e5656bb53f48f445c3056d4e3166
+References: <CGME20251202142307eucas1p12a15e5656bb53f48f445c3056d4e3166@eucas1p1.samsung.com>
+	<20251202-pci_acs-v2-0-5d2759a71489@oss.qualcomm.com>
+	<b63ec0aa-7a4a-4f8d-9b93-e724f3f2a9d1@samsung.com>
+	<de80df44-f797-4e8c-a411-09ed3c1286a3@samsung.com>
+	<cae5cb24-a8b0-4088-bacd-14368f32bdc5@samsung.com>
+	<26a93564-fcdd-4e90-b28d-8cc84cedeaa8@samsung.com>
+	<4clyxcy5pwqaz6uguxnjei4hnxsree6k2uz5upro7khuvklfyo@nc5ebeicuqw4>
+	<0ee48f4a-2341-4967-aca5-3fe6b4cd5fe2@samsung.com>
+	<xofyj6bjbpsxjpgnw6vyfpekpvsmhxcoaqm5k26yuyc2dashux@4nro7bppnwhs>
+	<3bbb99da-416c-4102-b1a7-85250b2ca578@samsung.com>
+	<ahcz2vdqdvqlbsdjwg36h7z7br3f257dqob6cxh2ydg6jrbi7r@se2udnjbxlr7>
 
-On Fri, Dec 12, 2025 at 02:36:46AM +0000, Tian, Kevin wrote:
-> > From: Wei Wang <wei.w.wang@hotmail.com>
-> > Sent: Thursday, November 13, 2025 11:54 PM
-> > 
-> > @@ -629,6 +630,8 @@ static long vaddr_get_pfns(struct mm_struct *mm,
-> > unsigned long vaddr,
-> >  				ret = -EFAULT;
-> >  			}
-> >  		}
-> > +		if (vma->vm_flags & VM_IO)
-> > +			*prot |= IOMMU_MMIO;
-> 
-> move into "if (is_invalid_reserved_pfn(*pfn)) {}". it's pointless to set
-> it in the error path.
-> 
-> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-> 
-> btw another alternative is letting userspace set a map flag explicitly
-> e.g. introducing a new VFIO_DMA_MAP_FLAG_MMIO flag bit. It's
-> not considered because your use case requires existing VMMs to
-> work?
+On 12.12.2025 05:02, Manivannan Sadhasivam wrote:
+> On Wed, Dec 10, 2025 at 06:26:27PM +0100, Marek Szyprowski wrote:
+>> On 09.12.2025 16:04, Manivannan Sadhasivam wrote:
+>>> On Tue, Dec 09, 2025 at 01:00:55PM +0100, Marek Szyprowski wrote:
+>>>> On 09.12.2025 12:15, Manivannan Sadhasivam wrote:
+>>>>> On Tue, Dec 09, 2025 at 09:28:38AM +0100, Marek Szyprowski wrote:
+>>>>>> On 09.12.2025 08:31, Marek Szyprowski wrote:
+>>>>>>> On 04.12.2025 14:13, Marek Szyprowski wrote:
+>>>>>>>> On 03.12.2025 13:04, Marek Szyprowski wrote:
+>>>>>>>>> On 02.12.2025 15:22, Manivannan Sadhasivam wrote:
+>>>>>>>>>> This series fixes the long standing issue with ACS in OF platforms.
+>>>>>>>>>> There are
+>>>>>>>>>> two fixes in this series, both fixing independent issues on their
+>>>>>>>>>> own, but both
+>>>>>>>>>> are needed to properly enable ACS on OF platforms.
+>>>>>>>>>>
+>>>>>>>>>> Issue(s) background
+>>>>>>>>>> ===================
+>>>>>>>>>>
+>>>>>>>>>> Back in 2021, Xingang Wang first noted a failure in attaching the
+>>>>>>>>>> HiSilicon SEC
+>>>>>>>>>> device to QEMU ARM64 pci-root-port device [1]. He then tracked down
+>>>>>>>>>> the issue to
+>>>>>>>>>> ACS not being enabled for the QEMU Root Port device and he proposed
+>>>>>>>>>> a patch to
+>>>>>>>>>> fix it [2].
+>>>>>>>>>>
+>>>>>>>>>> Once the patch got applied, people reported PCIe issues with
+>>>>>>>>>> linux-next on the
+>>>>>>>>>> ARM Juno Development boards, where they saw failure in enumerating
+>>>>>>>>>> the endpoint
+>>>>>>>>>> devices [3][4]. So soon, the patch got dropped, but the actual
+>>>>>>>>>> issue with the
+>>>>>>>>>> ARM Juno boards was left behind.
+>>>>>>>>>>
+>>>>>>>>>> Fast forward to 2024, Pavan resubmitted the same fix [5] for his
+>>>>>>>>>> own usecase,
+>>>>>>>>>> hoping that someone in the community would fix the issue with ARM
+>>>>>>>>>> Juno boards.
+>>>>>>>>>> But the patch was rightly rejected, as a patch that was known to
+>>>>>>>>>> cause issues
+>>>>>>>>>> should not be merged to the kernel. But again, no one investigated
+>>>>>>>>>> the Juno
+>>>>>>>>>> issue and it was left behind again.
+>>>>>>>>>>
+>>>>>>>>>> Now it ended up in my plate and I managed to track down the issue
+>>>>>>>>>> with the help
+>>>>>>>>>> of Naresh who got access to the Juno boards in LKFT. The Juno issue
+>>>>>>>>>> was with the
+>>>>>>>>>> PCIe switch from Microsemi/IDT, which triggers ACS Source
+>>>>>>>>>> Validation error on
+>>>>>>>>>> Completions received for the Configuration Read Request from a
+>>>>>>>>>> device connected
+>>>>>>>>>> to the downstream port that has not yet captured the PCIe bus
+>>>>>>>>>> number. As per the
+>>>>>>>>>> PCIe spec r6.0 sec 2.2.6.2, "Functions must capture the Bus and
+>>>>>>>>>> Device Numbers
+>>>>>>>>>> supplied with all Type 0 Configuration Write Requests completed by
+>>>>>>>>>> the Function
+>>>>>>>>>> and supply these numbers in the Bus and Device Number fields of the
+>>>>>>>>>> Requester ID
+>>>>>>>>>> for all Requests". So during the first Configuration Read Request
+>>>>>>>>>> issued by the
+>>>>>>>>>> switch downstream port during enumeration (for reading Vendor ID),
+>>>>>>>>>> Bus and
+>>>>>>>>>> Device numbers will be unknown to the device. So it responds to the
+>>>>>>>>>> Read Request
+>>>>>>>>>> with Completion having Bus and Device number as 0. The switch
+>>>>>>>>>> interprets the
+>>>>>>>>>> Completion as an ACS Source Validation error and drops the
+>>>>>>>>>> completion, leading
+>>>>>>>>>> to the failure in detecting the endpoint device. Though the PCIe
+>>>>>>>>>> spec r6.0, sec
+>>>>>>>>>> 6.12.1.1, states that "Completions are never affected by ACS Source
+>>>>>>>>>> Validation".
+>>>>>>>>>> This behavior is in violation of the spec.
+>>>>>>>>>>
+>>>>>>>>>> Solution
+>>>>>>>>>> ========
+>>>>>>>>>>
+>>>>>>>>>> In September, I submitted a series [6] to fix both issues. For the
+>>>>>>>>>> IDT issue,
+>>>>>>>>>> I reused the existing quirk in the PCI core which does a dummy
+>>>>>>>>>> config write
+>>>>>>>>>> before issuing the first config read to the device. And for the ACS
+>>>>>>>>>> enablement
+>>>>>>>>>> issue, I just resubmitted the original patch from Xingang which called
+>>>>>>>>>> pci_request_acs() from devm_of_pci_bridge_init().
+>>>>>>>>>>
+>>>>>>>>>> But during the review of the series, several comments were received
+>>>>>>>>>> and they
+>>>>>>>>>> required the series to be reworked completely. Hence, in this
+>>>>>>>>>> version, I've
+>>>>>>>>>> incorported the comments as below:
+>>>>>>>>>>
+>>>>>>>>>> 1. For the ACS enablement issue, I've moved the pci_enable_acs()
+>>>>>>>>>> call from
+>>>>>>>>>> pci_acs_init() to pci_dma_configure().
+>>>>>>>>>>
+>>>>>>>>>> 2. For the IDT issue, I've cached the ACS capabilities (RO) in
+>>>>>>>>>> 'pci_dev',
+>>>>>>>>>> collected the broken capability for the IDT switches in the quirk
+>>>>>>>>>> and used it to
+>>>>>>>>>> disable the capability in the cache. This also allowed me to get
+>>>>>>>>>> rid of the
+>>>>>>>>>> earlier workaround for the switch.
+>>>>>>>>>>
+>>>>>>>>>> [1]
+>>>>>>>>>> https://lore.kernel.org/all/038397a6-57e2-b6fc-6e1c-7c03b7be9d96@huawei.com
+>>>>>>>>>> [2]
+>>>>>>>>>> https://lore.kernel.org/all/1621566204-37456-1-git-send-email-wangxingang5@huawei.com
+>>>>>>>>>> [3]
+>>>>>>>>>> https://lore.kernel.org/all/01314d70-41e6-70f9-e496-84091948701a@samsung.com
+>>>>>>>>>> [4]
+>>>>>>>>>> https://lore.kernel.org/all/CADYN=9JWU3CMLzMEcD5MSQGnaLyDRSKc5SofBFHUax6YuTRaJA@mail.gmail.com
+>>>>>>>>>> [5]
+>>>>>>>>>> https://lore.kernel.org/linux-pci/20241107-pci_acs_fix-v1-1-185a2462a571@quicinc.com
+>>>>>>>>>> [6]
+>>>>>>>>>> https://lore.kernel.org/linux-pci/20250910-pci-acs-v1-0-fe9adb65ad7d@oss.qualcomm.com
+>>>>>>>>>>
+>>>>>>>>> Thanks for this patchset! I've tested it on my ARM Juno R1 and it
+>>>>>>>>> looks that it almost works fine. This patchset even fixed some
+>>>>>>>>> issues with PCI devices probe, as I again see SATA and GBit ethernet
+>>>>>>>>> devices, which were missing since Linux v6.14 (it looks that
+>>>>>>>>> I've also missed this in my tests).
+>>>>>>>>>
+>>>>>>>>> # lspci
+>>>>>>>>> 00:00.0 PCI bridge: PLDA PCI Express Core Reference Design (rev 01)
+>>>>>>>>> 01:00.0 PCI bridge: Integrated Device Technology, Inc. [IDT] Device
+>>>>>>>>> 8090 (rev 02)
+>>>>>>>>> 02:01.0 PCI bridge: Integrated Device Technology, Inc. [IDT] Device
+>>>>>>>>> 8090 (rev 02)
+>>>>>>>>> 02:02.0 PCI bridge: Integrated Device Technology, Inc. [IDT] Device
+>>>>>>>>> 8090 (rev 02)
+>>>>>>>>> 02:03.0 PCI bridge: Integrated Device Technology, Inc. [IDT] Device
+>>>>>>>>> 8090 (rev 02)
+>>>>>>>>> 02:0c.0 PCI bridge: Integrated Device Technology, Inc. [IDT] Device
+>>>>>>>>> 8090 (rev 02)
+>>>>>>>>> 02:10.0 PCI bridge: Integrated Device Technology, Inc. [IDT] Device
+>>>>>>>>> 8090 (rev 02)
+>>>>>>>>> 02:1f.0 PCI bridge: Integrated Device Technology, Inc. [IDT] Device
+>>>>>>>>> 8090 (rev 02)
+>>>>>>>>> 03:00.0 Mass storage controller: Silicon Image, Inc. SiI 3132 Serial
+>>>>>>>>> ATA Raid II Controller (rev 01)
+>>>>>>>>> 08:00.0 Ethernet controller: Marvell Technology Group Ltd. 88E8057
+>>>>>>>>> PCI-E Gigabit Ethernet Controller
+>>>>>>>>>
+>>>>>>>>> However there is also a regression. After applying this patchset
+>>>>>>>>> system suspend/resume stopped working. This is probably related to
+>>>>>>>>> this message:
+>>>>>>>>>
+>>>>>>>>> pcieport 0000:02:1f.0: Unable to change power state from D0 to
+>>>>>>>>> D3hot, device inaccessible
+>>>>>>>>>
+>>>>>>>>> which appears after calling 'rtcwake -s10 -mmem'. This might not be
+>>>>>>>>> related to this patchset, so I probably need to apply it on older
+>>>>>>>>> kernel releases and check.
+>>>>>>>> Just one more information - I've applied this patchset on top of
+>>>>>>>> v6.16 and it works perfectly on ARM Juno R1. SATA and GBit ethernet
+>>>>>>>> are visible again and system suspend/resume works too, so the issue
+>>>>>>>> with the latter on top of v6.18 seems not to be directly related to
+>>>>>>>> $subject patchset. I will try to bisect this issue when I have some
+>>>>>>>> spare time.
+>>>>>>>>
+>>>>>>>> Feel free to add:
+>>>>>>>>
+>>>>>>>> Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+>>>>>>> I spent some time analyzing this regression on Juno R1 and found that:
+>>>>>>>
+>>>>>>> 1. SATA and GBit Ethernet stopped working after commit bcb81ac6ae3c
+>>>>>>> ("iommu: Get DT/ACPI parsing into the proper probe path") merged to
+>>>>>>> v6.15-rc1.
+>>>>>>>
+>>>>>>> 2. With $subject patch applied to enable SATA & GBit ethernet again,
+>>>>>>> system suspend/resume stopped working after commit f3ac2ff14834
+>>>>>>> ("PCI/ASPM: Enable all ClockPM and ASPM states for devicetree
+>>>>>>> platforms") merged to v6.18-rc1.
+>>>>>>>
+>>>>> Yes, this was expected as if you don't disable ACS, it will cause issues in
+>>>>> detecting the devices.
+>>>>>
+>>>>>>> If I got it right, according to the latter commit message, some quirks
+>>>>>>> have to be added to fix the suspend/resume issue. Unfortunately I have
+>>>>>>> no idea if this is the Juno R1 or the given PCI devices specific issue.
+>>>>>> And one more note, commit df5192d9bb0e ("PCI/ASPM: Enable only L0s and
+>>>>>> L1 for devicetree platforms") doesn't fix the suspend/resume issue
+>>>>>> either (with $subject patchset applied on top of it).
+>>>>>>
+>>>>> Interesting. Can you do:
+>>>>>
+>>>>> echo performance > /sys/module/pcie_aspm/parameters/policy
+>>>>>
+>>>>> and then suspend?
+>>>> After the above command, system suspend/resume works again.
+>>>>
+>>> Ok, so ASPM L0s/L1 seems to be the issue. But I'm not quite sure why it causes
+>>> issue during suspend/resume. If the device/controller doesn't play well with
+>>> ASPM L0s/L1, it should atleast cause the issue before entering suspend.
+>>>
+>>> I'm clueless here atm...
+>> Definitely something gets broken during suspend, after adding
+>> 'no_console_suspend' to kernel command line I see the following messages:
+>>
+>> # time rtcwake -s10 -mmem
+>> rtcwake: wakeup from "mem" using /dev/rtc0 at Wed Dec 10 17:04:12 2025
+>> PM: suspend entry (deep)
+>> Filesystems sync: 0.001 seconds
+>> Freezing user space processes
+>> Freezing user space processes completed (elapsed 0.005 seconds)
+>> OOM killer disabled.
+>> Freezing remaining freezable tasks
+>> Freezing remaining freezable tasks completed (elapsed 0.003 seconds)
+>> psmouse serio1: Failed to disable mouse on 1c070000.kmi
+>> psmouse serio0: Failed to disable mouse on 1c060000.kmi
+>> pcieport 0000:02:1f.0: Unable to change power state from D0 to D3hot,
+>> device inaccessible
+> The device just got blown off the bus at this point. But it is unclear to me why
+> it happens though if we enable ASPM L0s/L1. I don't think the firmware has
+> gotten the chance to turn off the power to devices.
+>
+> So maybe some actions that we do in the PCI core during system suspend is
+> affecting the device state. But can you try to access the device by doing:
+>
+> lspci -vvv -s 0000:02:1f.0
+>
+> before initiating system suspend. Just to make sure if the issue happens during
+> suspend or way before that.
 
-I don't think we should do that, userspace shouldn't be able to create
-a mapping inconsistent with the rest of the kernel for security
-reasons.
+Same as before:
 
-I think if we ever need a cachable mmio through to the iommu then it
-should be wired through the dmabuf mechanism the same way vfio drivers
-wire the cachability when they make the mmap.
+root@target:~# lspci -vvv -s 0000:02:1f.0
+02:1f.0 PCI bridge: Integrated Device Technology, Inc. [IDT] Device 8090 
+(rev 02) (prog-if 00 [Normal decode])
+        Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- 
+ParErr- Stepping- SERR- FastB2B- DisINTx+
+        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort- 
+<TAbort- <MAbort- >SERR- <PERR- INTx-
+        Latency: 0
+        Interrupt: pin ? routed to IRQ 50
+        Bus: primary=02, secondary=08, subordinate=08, sec-latency=0
+        I/O behind bridge: 00002000-00002fff
+        Memory behind bridge: 50100000-501fffff
+        Prefetchable memory behind bridge: 
+00000000fff00000-00000000000fffff
+        Secondary status: 66MHz- FastB2B- ParErr- DEVSEL=fast >TAbort- 
+<TAbort- <MAbort- <SERR- <PERR-
+        BridgeCtl: Parity- SERR+ NoISA- VGA- MAbort- >Reset- FastB2B-
+                PriDiscTmr- SecDiscTmr- DiscTmrStat- DiscTmrSERREn-
+        Capabilities: [40] Express (v2) Downstream Port (Slot-), MSI 00
+                DevCap: MaxPayload 2048 bytes, PhantFunc 0
+                        ExtTag+ RBE+
+                DevCtl: Report errors: Correctable+ Non-Fatal+ Fatal+ 
+Unsupported+
+                        RlxdOrd- ExtTag+ PhantFunc- AuxPwr- NoSnoop-
+                        MaxPayload 128 bytes, MaxReadReq 128 bytes
+                DevSta: CorrErr- UncorrErr- FatalErr- UnsuppReq- AuxPwr- 
+TransPend-
+                LnkCap: Port #0, Speed 5GT/s, Width x1, ASPM L0s L1, 
+Exit Latency L0s <4us, L1 <4us
+                        ClockPM- Surprise+ LLActRep+ BwNot+ ASPMOptComp-
+                LnkCtl: ASPM L0s L1 Enabled; Disabled- CommClk+
+                        ExtSynch- ClockPM- AutWidDis- BWInt+ AutBWInt+
+                LnkSta: Speed 2.5GT/s, Width x1, TrErr- Train- SlotClk+ 
+DLActive+ BWMgmt- ABWMgmt-
+                DevCap2: Completion Timeout: Not Supported, TimeoutDis-, 
+LTR-, OBFF Not Supported ARIFwd+
+                DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis-, 
+LTR-, OBFF Disabled ARIFwd-
+                LnkCtl2: Target Link Speed: 5GT/s, EnterCompliance- 
+SpeedDis-, Selectable De-emphasis: -6dB
+                         Transmit Margin: Normal Operating Range, 
+EnterModifiedCompliance- ComplianceSOS-
+                         Compliance De-emphasis: -6dB
+                LnkSta2: Current De-emphasis Level: -6dB, 
+EqualizationComplete-, EqualizationPhase1-
+                         EqualizationPhase2-, EqualizationPhase3-, 
+LinkEqualizationRequest-
+        Capabilities: [c0] Power Management version 3
+                Flags: PMEClk- DSI- D1- D2- AuxCurrent=0mA 
+PME(D0+,D1-,D2-,D3hot+,D3cold+)
+                Status: D0 NoSoftRst+ PME-Enable- DSel=0 DScale=0 PME-
+        Capabilities: [d0] MSI: Enable+ Count=1/1 Maskable- 64bit+
+                Address: 00000000fffbb040  Data: 00e7
+        Capabilities: [100 v2] Advanced Error Reporting
+                UESta:  DLP- SDES- TLP- FCP- CmpltTO- CmpltAbrt- 
+UnxCmplt- RxOF- MalfTLP- ECRC- UnsupReq- ACSViol-
+                UEMsk:  DLP- SDES- TLP- FCP- CmpltTO- CmpltAbrt- 
+UnxCmplt- RxOF- MalfTLP- ECRC- UnsupReq- ACSViol-
+                UESvrt: DLP+ SDES+ TLP- FCP+ CmpltTO- CmpltAbrt- 
+UnxCmplt- RxOF+ MalfTLP+ ECRC- UnsupReq- ACSViol-
+                CESta:  RxErr- BadTLP- BadDLLP- Rollover- Timeout- 
+NonFatalErr-
+                CEMsk:  RxErr- BadTLP- BadDLLP- Rollover- Timeout- 
+NonFatalErr+
+                AERCap: First Error Pointer: 00, GenCap+ CGenEn- ChkCap+ 
+ChkEn-
+        Capabilities: [200 v1] Virtual Channel
+                Caps:   LPEVC=0 RefClk=100ns PATEntryBits=1
+                Arb:    Fixed- WRR32- WRR64- WRR128-
+                Ctrl:   ArbSelect=Fixed
+                Status: InProgress-
+                VC0:    Caps:   PATOffset=00 MaxTimeSlots=1 RejSnoopTrans-
+                        Arb:    Fixed+ WRR32- WRR64- WRR128- TWRR128- 
+WRR256-
+                        Ctrl:   Enable+ ID=0 ArbSelect=Fixed TC/VC=ff
+                        Status: NegoPending- InProgress-
+        Capabilities: [320 v1] Access Control Services
+                ACSCap: SrcValid+ TransBlk+ ReqRedir+ CmpltRedir+ 
+UpstreamFwd+ EgressCtrl+ DirectTrans+
+                ACSCtl: SrcValid- TransBlk- ReqRedir+ CmpltRedir+ 
+UpstreamFwd+ EgressCtrl- DirectTrans-
+        Capabilities: [330 v1] #12
+        Kernel driver in use: pcieport
 
-The nvgrace is the only driver that creates a cachable mmap already,
-and it would be more correct to have a cachable IOPTE, but the only HW
-tha driver works with does not care either way so it has been left.
+root@target:~# time rtcwake -s10 -mmem
+rtcwake: wakeup from "mem" using /dev/rtc0 at Fri Dec 12 07:23:50 2025
+[  110.529810] PM: suspend entry (deep)
+[  110.532688] Filesystems sync: 0.001 seconds
+[  110.549590] Freezing user space processes
+[  110.557833] Freezing user space processes completed (elapsed 0.008 
+seconds)
+[  110.558282] OOM killer disabled.
+[  110.558296] Freezing remaining freezable tasks
+[  110.561602] Freezing remaining freezable tasks completed (elapsed 
+0.003 seconds)
+[  110.736524] psmouse serio1: Failed to disable mouse on 1c070000.kmi
+[  111.071329] psmouse serio0: Failed to disable mouse on 1c060000.kmi
+[  111.700685] pcieport 0000:02:1f.0: Unable to change power state from 
+D0 to D3hot, device inaccessible
+[  111.737951] Disabling non-boot CPUs ...
+[  111.757973] psci: CPU5 killed (polled 0 ms)
+[  111.775215] psci: CPU4 killed (polled 0 ms)
+[  111.789725] psci: CPU3 killed (polled 4 ms)
+[  111.800778] psci: CPU2 killed (polled 0 ms)
+[  111.816363] psci: CPU1 killed (polled 0 ms)
 
-Jason
+(machine never wakes up)
+
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
+
