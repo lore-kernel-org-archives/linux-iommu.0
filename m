@@ -1,141 +1,100 @@
-Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
+Received: from sender4-pp-f112.zoho.com (sender4-pp-f112.zoho.com [136.143.188.112])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 377AE255248
-	for <iommu@lists.linux.dev>; Fri, 12 Dec 2025 08:44:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.251.105.195
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765529079; cv=none; b=h4k4MP4z1WgnWz6pKEGf1MRdqgR7jeFsdTPmMfeVS612iO8r8T1diryndvOjYZYMK0lJ+ZYxyf+LSeAN3QhUO3UOpAEge2IbT8hsGKdaXDdUytI3JeAxRGiNtoHfeCF+5a75b8rRS7E+RsyABr0vhW5Fx2PXudrX8zGKYivs2qI=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765529079; c=relaxed/simple;
-	bh=YlZVG6EILJaffJguwlBqnLil+hF3zrisdr9uOMs57Ig=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=CioMgcQNyjdu/j0pBT2zLyff3+S3etC+CopT0fMRM/OnVRalKqgwnwYhfijDWaOPEYjsZHIa+LFBBqG9WI+c/ZSjRC2oldbwbTYg2Ce1AtxE8aU439dH6guD1kqe7S/tqCUNricT91UX8DR3O9QaGho859OW0e7MFXWPNTDqus0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=nXdso5e8; arc=none smtp.client-ip=148.251.105.195
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 21FB626F478
+	for <iommu@lists.linux.dev>; Fri, 12 Dec 2025 08:52:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.112
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1765529535; cv=pass; b=IDQqSj0JSWFTJPN5iWs4rEFNjiH8Kcdw8yrnXNp1y+JIZsnytuHyR1Oq0oK3C3xEynkuMFlGLrWSMpiUyLa3amrv3SQoxV0o01D6+YqdpcQLiOQe1rS2m74i1YXvE2en5OlKs3M7r9QR/FVtjCgj23zS9pVa6hDtSY167m3y3xQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1765529535; c=relaxed/simple;
+	bh=BsQ5+N82BLq7h9EPzOmGWZGFXT4FPYACHwV1bAg+AHw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=HbMVnThsGoS6FITMP3O+nQJ0QqBBG1+1XovQ4we24j0D/bav/p3D1772+BO0tblrb8QdLBzrgj5BlIp3ghIQFe3xDARRBb+pGuSrxzrcR4DuAPFXSIehxQw46uJM29R553VWTx29iqG4mH+nJS3pelc+H9gXL3yszMOJLyCiPO4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=benjamin.gaignard@collabora.com header.b=frIILijI; arc=pass smtp.client-ip=136.143.188.112
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="nXdso5e8"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1765529075;
-	bh=YlZVG6EILJaffJguwlBqnLil+hF3zrisdr9uOMs57Ig=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=nXdso5e8mTqNIXLu2cVx7wFXHiG+nieYuTSpMvTYVrQOCAy04g0RVrCJDC1jKcsf/
-	 z0TpLcINPiOgkvn89GyoInLC/fMKhhExVgksYk9kl348oFtQvU+3Xp5dCeKMTBE+7/
-	 J5t5NTqbN4TXjDrTSNl+M23Dd+nCvphe98UBxOo+xkMy6PpX4LrqTzTH5J7zEaM7sa
-	 AYDBhI+EyFH1Jftx99sWy/T5E9i1SbycuXsGD5gXCV3lGnlTA8K4lIz02YXmMgQ3qg
-	 uep/GimQQe3QQkRfMcc4QE6WqcrwRGVDTqnoCbcjYdnH5bIJoK94Dy6/mgLKAO9Cgo
-	 7K5ANLzcoUT+w==
-Received: from fedora (unknown [IPv6:2a01:e0a:2c:6930:d919:a6e:5ea1:8a9f])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	(Authenticated sender: bbrezillon)
-	by bali.collaboradmins.com (Postfix) with ESMTPSA id 6FF6317E1135;
-	Fri, 12 Dec 2025 09:44:34 +0100 (CET)
-Date: Fri, 12 Dec 2025 09:44:27 +0100
-From: Boris Brezillon <boris.brezillon@collabora.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Alice Ryhl <aliceryhl@google.com>, Miguel Ojeda <ojeda@kernel.org>, Will
- Deacon <will@kernel.org>, Daniel Almeida <daniel.almeida@collabora.com>,
- Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
- =?UTF-8?B?QmrDtnJu?= Roy Baron <bjorn3_gh@protonmail.com>, Benno Lossin
- <lossin@kernel.org>, Andreas Hindborg <a.hindborg@kernel.org>, Trevor Gross
- <tmgross@umich.edu>, Danilo Krummrich <dakr@kernel.org>, Joerg Roedel
- <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, Lorenzo Stoakes
- <lorenzo.stoakes@oracle.com>, "Liam R. Howlett" <Liam.Howlett@oracle.com>,
- Asahi Lina <lina+kernel@asahilina.net>, linux-kernel@vger.kernel.org,
- rust-for-linux@vger.kernel.org, iommu@lists.linux.dev, linux-mm@kvack.org
-Subject: Re: [PATCH v3] io: add io_pgtable abstraction
-Message-ID: <20251212094427.2ec0b31e@fedora>
-In-Reply-To: <20251128180255.GA836877@nvidia.com>
-References: <20251112-io-pgtable-v3-1-b00c2e6b951a@google.com>
-	<20251128180255.GA836877@nvidia.com>
-Organization: Collabora
-X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-redhat-linux-gnu)
+	dkim=pass (1024-bit key) header.d=collabora.com header.i=benjamin.gaignard@collabora.com header.b="frIILijI"
+ARC-Seal: i=1; a=rsa-sha256; t=1765529517; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=G2a/yMRoNYEYX32qsSh9klxJhkz42oM/Rs6xEqUkj0GCib3cTPtgakDODcACfn3fPOSdTjp5nCQ4HrmJngxT8hhyZf7P9E6vA3a5QwC4fSg7T189qetTRc0W3hnqp3yRgbsWkW2LxdAe1R679CZ3AROCYtTbM3vG2pMgTd1muF8=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1765529517; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=xnItVhoY0Lh4ZLV1sF8rYZtnMRWqPjsgUKn0khqX+aY=; 
+	b=BI76Zs6kc6v3+Stj5VlhmI+2TOP8RS8JG2lFviNZwApLZgZGTiGjkPb3B23h98BKyjHhWOwR5elzisMyHTr9GLo9tG3k6uQhHC4Zpk8IjIMrPvqVV99Ra4CWOpcZwPRvjoLuY6va0bntFhXR45YVOngOmGaOFbGTDj19AAmBGEE=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=collabora.com;
+	spf=pass  smtp.mailfrom=benjamin.gaignard@collabora.com;
+	dmarc=pass header.from=<benjamin.gaignard@collabora.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1765529517;
+	s=zohomail; d=collabora.com; i=benjamin.gaignard@collabora.com;
+	h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+	bh=xnItVhoY0Lh4ZLV1sF8rYZtnMRWqPjsgUKn0khqX+aY=;
+	b=frIILijI+V7VsU7x9gFc0FgCtswAJVCRHVYaKIzxLkHrpO68qTVpwrcmRFR3+WkL
+	mt4ffUw6Br0SsK57xAw4CqvUYtbl0gczF3m/vK4EvR/LI05DhyHqQ76aHxc/37MVr5V
+	VI/8jNg2/7GGPYhGECQCln5VIG2Jznk0GfV7S9cA=
+Received: by mx.zohomail.com with SMTPS id 1765529515530660.6512833937438;
+	Fri, 12 Dec 2025 00:51:55 -0800 (PST)
+Message-ID: <ea3241f1-14a4-44a0-9d85-3fa2a2f6f1ae@collabora.com>
+Date: Fri, 12 Dec 2025 09:51:50 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v9 3/7] iommu: Add verisilicon IOMMU driver
+To: Jianfeng Liu <liujianfeng1994@gmail.com>
+Cc: conor+dt@kernel.org, devicetree@vger.kernel.org, heiko@sntech.de,
+ iommu@lists.linux.dev, jgg@ziepe.ca, joro@8bytes.org, kernel@collabora.com,
+ krzk+dt@kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+ linux-rockchip@lists.infradead.org, mchehab@kernel.org,
+ nicolas.dufresne@collabora.com, p.zabel@pengutronix.de, robh@kernel.org,
+ robin.murphy@arm.com
+References: <20250911155720.180465-4-benjamin.gaignard@collabora.com>
+ <20251212033157.3036182-1-liujianfeng1994@gmail.com>
+Content-Language: en-US
+From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+In-Reply-To: <20251212033157.3036182-1-liujianfeng1994@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-Hi Jason,
 
-On Fri, 28 Nov 2025 14:02:55 -0400
-Jason Gunthorpe <jgg@nvidia.com> wrote:
+Le 12/12/2025 à 04:31, Jianfeng Liu a écrit :
+> Hi,
+>
+> On Thu, 11 Sep 2025 17:57:13 +0200, Benjamin Gaignard wrote:
+>> +#ifdef CONFIG_VSI_IOMMU
+>> +void vsi_iommu_restore_ctx(struct iommu_domain *domain);
+>> +#else
+>> +static inline void vsi_iommu_restore_ctx(struct iommu_domain *domain) {}
+>> +#endif
+> After applying this patch to v6.18, I get error when building this driver
+> as module:
+>
+> drivers/iommu/vsi-iommu.c:541:6: error: redefinition of 'vsi_iommu_restore_ctx'
+>    541 | void vsi_iommu_restore_ctx(struct iommu_domain *domain)
+>     |      ^~~~~~~~~~~~~~~~~~~~~
+> In file included from drivers/iommu/vsi-iommu.c:31:
+> ./include/linux/vsi-iommu.h:18:20: note: previous definition of 'vsi_iommu_restore_ctx' with type 'void(struct iommu_domain *)'
+> 18 | static inline void vsi_iommu_restore_ctx(struct iommu_domain *domain) {}
+>     |                    ^~~~~~~~~~~~~~~~~~~~~
+>
+> I have to use:
+> #if IS_ENABLED(CONFIG_VSI_IOMMU)
+> instead.
 
-> On Wed, Nov 12, 2025 at 10:15:00AM +0000, Alice Ryhl wrote:
-> > +    /// Map a physically contiguous range of pages of the same size.
-> > +    ///
-> > +    /// # Safety
-> > +    ///
-> > +    /// * This page table must not contain any mapping that overlaps with the mapping created by
-> > +    ///   this call.
-> > +    /// * If this page table is live, then the caller must ensure that it's okay to access the
-> > +    ///   physical address being mapped for the duration in which it is mapped.  
-> 
-> All the iommu page table code runs with a caller provided locking
-> regime.
-> 
-> The caller must effectively hold a range lock over the IOVA it is
-> mapping/unmapping/iova_to_phys'ing and it is illegal to race those
-> three functions with overlapping IOVA.
-> 
-> For example the caller cannot map to IOVA A-B while unmapping C-B or
-> iova_to_physing(A).
-> 
-> This locking detail should be a safety statement.
+I have fix in my internal v10 branch:
+https://gitlab.collabora.com/linux/for-upstream/-/commits/verisilicon_mmu_v10
+I don't plan to send this update because that will change nothing about code duplication remarks.
 
-Sure, adding this to the list sounds good.
-
-> 
-> > +// These bindings are currently designed for use by GPU drivers, which use this page table together
-> > +// with GPUVM. When using GPUVM, a single mapping operation may be translated into many operations  
-> 
-> Now that we have the generic pt stuff I wonder if GPUVM should be
-> providing its own version of the page table implementation that
-> matches its semantics better.
-
-Not too sure what you mean here. Are you saying that we should fork
-io-pgtable-arm.c (or rather a subset of it), and have it all
-implemented in panthor? I actually asked Rob if that was a good way to
-go when rolling out the initial panthor version, and he advised me
-against it. Now, I see good reasons to do that, like the fact we
-would be able to add features like batched repeat mapping updates
-(mapping the same page over a wide virtual range without having to
-duplicate the intermediate page table levels that are exactly the
-same), or the ability to extend the mapping arguments with
-shareability/coherency info (that we can do by adding IOMMU_xx flags
-too). But there's also downsides to it, like the fact we wouldn't
-benefit from bugfixes materializing in io-pgtable-arm.c, if any.
-
-It's a discussion I'm fine having, but it looks like even the IOMMU
-maintainers are not on the same page here ;-p.
-
-> 
-> > +// on the page table, and in that case you generally want to flush the TLB only once per GPUVM
-> > +// operation. Thus, do not use these callbacks as they would flush more often than needed.  
-> 
-> This doesn't sound quite right to me, the flushing requirements are a
-> consequence of what flushing HW is available in the xTLB that is
-> caching this. The flushes generated by the common arm code match the
-> ARM64 architecture semantics. If the GPU has different semantics then
-> it can do something else, but one must be careful not to match a GPU
-> that is expecting ARM semantics with "do not use these callbacks".
-> 
-> IOW it doesn't seem right that common code would be making decisions
-> like this, the nature and requirements of the flushing are entirely up
-> to the driver binding to HW.
-
-We're not saying this will work for everyone, but rather, this is a
-default implementation that does nothing, and if you need to do
-something, override it with your own. I guess if that's really
-problematic, we can force the user to provide one and keep the NOP
-implementation on Tyr's side.
-
+Thanks for the report.
 Regards,
+Benjamin
 
-Boris
+> Best regards,
+> Jianfeng
+>
