@@ -1,78 +1,78 @@
-Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
+Received: from mail-pf1-f175.google.com (mail-pf1-f175.google.com [209.85.210.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B8B52AD4B
-	for <iommu@lists.linux.dev>; Fri, 12 Dec 2025 06:47:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B8F52E5B0E
+	for <iommu@lists.linux.dev>; Fri, 12 Dec 2025 06:56:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765522075; cv=none; b=BT4D8VWJ2XsN81rm9x6DxmwdXnY+JpRKLaLNUN+WAiynYKE9PHJH/MQ+Dg4crpSmT6HYX10Ahg7dRvBqyi//kbgSazOOibomD4kLZ+pfLyg/1vc+sztoCa7b/9UvERKOBI9YqPAm5yb/gG1TOVHFaDSZlgGIqAvSaw56lhIFUgQ=
+	t=1765522568; cv=none; b=CntJvVKa+/qtjAusxK8L3McTzxHFe4R/3beWMlsvyfYRCG2TekQxh41LkCLSp8iqtm2MtHXfnpQ1wDCuc/lynvCcZHvT9wHOHSR0C6DB0UmzcqxsFZ4OI9ohMKIuilf2c2g3qrdMJ2x0f5O74ISypI5GpAHgrE6fDH6qALl0Ln4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765522075; c=relaxed/simple;
-	bh=mNPA0Zx5zJE0V5Ykx1kA3xRkPTgv1I96Rf9Qm9t4HXE=;
+	s=arc-20240116; t=1765522568; c=relaxed/simple;
+	bh=VZCQGudUyA/T55GBdKiVNYqeZFf6lOlSHMKZ/tg7DLE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=u2+APJps/Bjd3xzEkDuZDsngYm5bRY0g8GqTyv/y4ZqNqnvknhKDk2Fk5kOD2vZbK1DSLREI5gCljyOHXqwua89jEF7vXqsPjkLiQVIuXU2fBahePZx+xP9GDO1jfSBSn8mE1ylCta0YQoSgJquisJIuNdWNg5nQswj4+gqFOK8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=dgj72V98; arc=none smtp.client-ip=209.85.214.171
+	 Content-Type:Content-Disposition:In-Reply-To; b=SIvPbfBjIOB/TVnr3yG3ixWBPanteaK5QZsh8zpIDCUmaP6cxwRTAYUpFc0jkREnQ4Kf+zfSY1Xr2OuADfSdiFvI+ZGZ3GfGI+aCAruDWyv6Idi9ljnacILKEns12gu/PcVR9bH5eGVSS4vdDyRK3WTT+n2dRsn3pobh+cjaeIA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=J/07Odgp; arc=none smtp.client-ip=209.85.210.175
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="dgj72V98"
-Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-2984dfae0acso14374525ad.0
-        for <iommu@lists.linux.dev>; Thu, 11 Dec 2025 22:47:53 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="J/07Odgp"
+Received: by mail-pf1-f175.google.com with SMTP id d2e1a72fcca58-7b75e366866so405166b3a.2
+        for <iommu@lists.linux.dev>; Thu, 11 Dec 2025 22:56:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1765522073; x=1766126873; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1765522564; x=1766127364; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=V5UD+94K8SuhUoDTS3W7Fu40Oz07pgrXuttNFn52ITY=;
-        b=dgj72V98Ac7HGfvzZahKRmagY7iPMOqSqQtW53UNkGIIivQoLE2pM/HuLF4n2nJx32
-         bQjMW5VSPG4j7lPGB8WzJjIBeB0m8qEa1YX1K4UWbcVZ41+AaOoS6BbvHMMte7sxb03z
-         5iD4Qs+wg75FP0o3gJWwigvlI6/sckWCuMFd1qRG3y0dEsK1u5jOLOUVOUBJQKpskA16
-         sxXBVJoLnhWIe3tSt84UZimOKNQmjdIUWp8ujqkw8QAA2ImhWu6WV8m+X0zh4Tc6pvYy
-         /zAUqBwvCl+p2HOnFH5xt20LqGRk6faDsQ9DlQfXX/s8tTUk/TJoC2d4t93SK5Tz01Oo
-         sHCQ==
+        bh=CzFASRwZGVz3SXAxLj2FplBVjqBwi4oiu+piEg/XASA=;
+        b=J/07OdgpX2rY2N5Yj9ASgywNJP+NvJku+n5WRmRv4Tn9X8Lhlw4m1adrHizq2EapFB
+         18LxMIdo7Q/cBs3SzvnllGCam+RfHHXuc79NgvcMx8k55CDJOaCfByG5v4gGkfBCAKDL
+         OrCz2M9KlPWyo02dAaX/h/DFQ33t1nMl/8nPP5fdRizO8eS7igvl3qsXhNf1SNIhYDGn
+         zxqpt7R/B+015jz1Gz6aqA2LwjHJjt8/BGAccLPxiAwxqiIYc46PVl0EXuxC9R52s2nf
+         l95u70gi8SfxxzStvQwELsegbQOVE1B319/4QLB0upZVaaSYu3nXYH8UjU8ITOmzKatM
+         DwKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1765522073; x=1766126873;
+        d=1e100.net; s=20230601; t=1765522564; x=1766127364;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=V5UD+94K8SuhUoDTS3W7Fu40Oz07pgrXuttNFn52ITY=;
-        b=ZajeRKeqy1BE8HSqsQ9QktvZxKKRery6PcdJj2w8+YKNzal8n5zIPZQB5vN2c/Zymq
-         bL7Eug87Vky451oZ6Coxuukb/duiLumAhv2I0wecL0IdMQCbVunczRXrKqbFRlYOkZpd
-         gzn2Wp739GhTVd+HVU20O4lqZk9Plv+o3jiJHiWe337jEXb5DAHhJOKtiuZ4bS0SWBLn
-         MJY5NIPpqLo1ik98xXRZzT/PSztSYLnMG1v0t4SywIHq7onPysHlaeoxQnY4kF+hauLF
-         Q2LgVsRmGAz57qV5pQAD39eS4bnbgDI4RoMe+eu/PNDaqIjQ5TTx6XY0udT/4UKz9UnO
-         1iDA==
-X-Forwarded-Encrypted: i=1; AJvYcCV0PxTq9p5gxOlxvSU0Ak7pAVUC2vEKjFlJYITyX0KhWV5rjPb2YzzrKmtMqtmOS8g4g880gQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwzW6qgHj1ow9i2Z4rytQM9y10WT+mMSXduYzqZjjlc+f+DW8JE
-	Eo4CutsSmxZ9m3GEr3Si1erfovXB5jnTNH9l0wmBuZElm7mu3CPrMKGgAMvpfQCjUH0=
-X-Gm-Gg: AY/fxX6PauizAMGaM1mAPAm63z4NmGb+MqzYhPSQzOQQ8ZcQDV5O1ux6cALd1bFxTxf
-	rur9gk0vCWXWzqFbiLLORdtx1tA/HDgUC8X839eZJzcklahCXGs9NGph3DMBahPH4geHgR6IGY3
-	0qF6Lt+H19tBIAT1xq2Kdpq/3lkaiTpPQiO8N9k2A1h5oSYlxxsMrr3B47v04blQMa1ayTjkNag
-	jYETnZ0edUcSxFHCCEN+g2qYkiV2NLEq8OsgSNXkg9VVuDT5Fk1/GV+4CoDF3u14AUFt93dE2al
-	T3KIIo2sqAQnowuk0wTkBRv61VZLOPtPl1nYxGPt8NpVOCKjZGiPpECHrAkO22xz9YWWgdtHzYR
-	R0BXkFaoiLTNVsa+swwOncvsnPc85DD9oR7q1d5o6ZpBwKkdoRgpTiKuw0Qdkg7caEWKb/KPf8U
-	k0/UyBRVwU
-X-Google-Smtp-Source: AGHT+IEDr6x5lMmk7yRCk1YDxnVVbrQsihBGYKGVmuDQ6uZLA//CTjlQltsGGHAq349t4npQd0rTbA==
-X-Received: by 2002:a17:903:1d2:b0:264:70da:7a3b with SMTP id d9443c01a7336-29f23ccc747mr14213565ad.49.1765522073078;
-        Thu, 11 Dec 2025 22:47:53 -0800 (PST)
+        bh=CzFASRwZGVz3SXAxLj2FplBVjqBwi4oiu+piEg/XASA=;
+        b=SrPa+gUA7viHEbMy/oIUw7ltGSeXc2z/wFe7B7NGkgimbnPdRc2lFijD5LdoyOI8qX
+         hI+w0dmmRzhDqR4aVFr45AzCyVEiSKRQY2foDap07jfOVvcYZovMfq/NWQON+ANJaq5B
+         qqbACgdH4p12vSQ/IPDlBMx7MGF7uGjX2SB4AtZyORkCZKK0IiHW7oxl/Se4gwrYMQsT
+         QDFwxyQE9xKspb9BwtQ1q1uGhFI5/juhU2cDAeYUhxCVKGf4lNOfCUa2JHvShI/FVr13
+         y+wquMVMH5gEK5v8JvdbiCjRA+Wjgkl/VSM2oWwf+tvRMlNZ4C9JNlWUYVCrkAeXe/n0
+         kMIQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXJyk/NgEag/Zm/VCaJo3oWg6w4Ap+ycp4lWV7ms6b9e66pJnAY20AdDTXMxhpXRQNCyOt1Lg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yz4AyOIRy8kc0jwku01VrijlRYVNfYCdua0+46VMheZXTzxq6SE
+	TisuI1r8+dIWd1esS33Q7DXFqy2hceSFflZfamN3gBEEM/WNAbzmAkC/CpesJexBuOw=
+X-Gm-Gg: AY/fxX77Gd+6xX0062tM8/t09vppvXHC0JoFYyCNyCWcW0smjaXGfMCvccqHxvRskCP
+	rNYkJndKyv6V93FPK7mrtDosuLBPXsWL21gcR5M4zFZTYL76e/3caznX1fkmwMwZgdGVlR1ppbi
+	xyKpTvaDFgtfxmRiA6TFaFS3w3o7XSf20b6l/+6V/2pF+R7CvI0gcU4QvVRlDjQaBJ2nEXFOnJh
+	sfZ/UuKG6Au+Ymrny456VI5J4AIeuMw6Zwg9MClvmTwPTr5GT44f4GlIoeU5Rby6Tf1sJfNXppx
+	vRSwXtItbVWDfIz4BM0yEREBhW4GziZfHkANRu6eUAAY5EUqxgmk5JPLSV1nplzD4dkOiCK7UjN
+	19z3PAMvrk76b+CU6gu8+oK2YqjwYHnnQu87Y805jK2iGUhHCqkznuzGdlykVSr9e2BeJqlvIzE
+	YSDWO5aYpw
+X-Google-Smtp-Source: AGHT+IEOSNZUV2eIqxyCiRLpDmSAQWyIs3QOZdDuwqKtqYtpgvYOIOpo/d26+qaEsWTo4KXhhoIW/g==
+X-Received: by 2002:a05:6a00:300b:b0:7e8:43f5:bd5a with SMTP id d2e1a72fcca58-7f669c8f327mr1221847b3a.70.1765522564291;
+        Thu, 11 Dec 2025 22:56:04 -0800 (PST)
 Received: from ziepe.ca (p99249-ipoefx.ipoe.ocn.ne.jp. [153.246.134.248])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-29ee9b36a8csm43227715ad.1.2025.12.11.22.47.52
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-7f4c54812aesm4306150b3a.65.2025.12.11.22.56.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Dec 2025 22:47:52 -0800 (PST)
+        Thu, 11 Dec 2025 22:56:03 -0800 (PST)
 Received: from jgg by jggl with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1vTwwP-00025a-GH;
-	Fri, 12 Dec 2025 02:47:49 -0400
-Date: Fri, 12 Dec 2025 02:47:49 -0400
+	id 1vTx4L-0002Bn-3Q;
+	Fri, 12 Dec 2025 02:56:01 -0400
+Date: Fri, 12 Dec 2025 02:56:01 -0400
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Will Deacon <will@kernel.org>
-Cc: syzbot <syzbot+e06bb7478e687f235ad7@syzkaller.appspotmail.com>,
-	iommu@lists.linux.dev, joro@8bytes.org,
+To: Yi Liu <yi.l.liu@intel.com>
+Cc: syzbot <syzbot+57fdb0cf6a0c5d1f15a2@syzkaller.appspotmail.com>,
+	iommu@lists.linux.dev, joro@8bytes.org, kevin.tian@intel.com,
 	linux-kernel@vger.kernel.org, robin.murphy@arm.com,
-	syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot] [iommu?] kernel BUG in iommu_pages_start_incoherent
-Message-ID: <aTu6lckiUr5R7MsQ@ziepe.ca>
-References: <693a39de.050a0220.4004e.02ce.GAE@google.com>
- <aTp0jpmWZ49Ql-Kp@google.com>
+	syzkaller-bugs@googlegroups.com, will@kernel.org
+Subject: Re: [syzbot] [iommu?] WARNING in iopt_map_pages (3)
+Message-ID: <aTu8gZcXUY/aidgr@ziepe.ca>
+References: <69368129.a70a0220.38f243.008f.GAE@google.com>
+ <695e0955-0de4-4059-aa77-66c54669f1a6@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -81,49 +81,33 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <aTp0jpmWZ49Ql-Kp@google.com>
+In-Reply-To: <695e0955-0de4-4059-aa77-66c54669f1a6@intel.com>
 
-On Thu, Dec 11, 2025 at 04:36:46PM +0900, Will Deacon wrote:
+On Tue, Dec 09, 2025 at 07:57:06PM +0800, Yi Liu wrote:
 
-> > kernel BUG at arch/x86/mm/physaddr.c:28!
-> > Oops: invalid opcode: 0000 [#1] SMP KASAN NOPTI
-> > CPU: 0 UID: 0 PID: 5336 Comm: syz.0.0 Not tainted syzkaller #0 PREEMPT(full) 
-> > Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.3-debian-1.16.3-2~bpo12+1 04/01/2014
-> > RIP: 0010:__phys_addr+0x16b/0x180 arch/x86/mm/physaddr.c:28
-> > Code: 8b b3 00 e9 45 ff ff ff e8 b2 af 4b 00 48 c7 c7 f0 33 fb 8d 48 89 de 4c 89 f2 e8 50 c0 52 03 e9 4d ff ff ff e8 96 af 4b 00 90 <0f> 0b e8 8e af 4b 00 90 0f 0b e8 86 af 4b 00 90 0f 0b 0f 1f 00 90
-> > RSP: 0018:ffffc9000aae5f80 EFLAGS: 00010093
-> > RAX: ffffffff817610fa RBX: 0000778000000000 RCX: ffff8880007ca4c0
-> > RDX: 0000000000000000 RSI: 0000000080000000 RDI: 0000778000000000
-> > RBP: ffffc9000aae6130 R08: ffffffff8e26c433 R09: 1ffffffff1c4d886
-> > R10: dffffc0000000000 R11: fffffbfff1c4d887 R12: 0000000000000011
-> > R13: dffffc0000000000 R14: 0000000080000000 R15: dffffc0000000000
-> > FS:  00007fae02b026c0(0000) GS:ffff88808d23e000(0000) knlGS:0000000000000000
-> > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > CR2: 00007fae01d2dea0 CR3: 000000000b669000 CR4: 0000000000352ef0
-> > Call Trace:
-> >  <TASK>
-> >  virt_to_folio include/linux/mm.h:1432 [inline]
-> >  virt_to_ioptdesc drivers/iommu/iommu-pages.h:49 [inline]
-> >  iommu_pages_start_incoherent+0x52/0x310 drivers/iommu/iommu-pages.c:148
-> >  _table_alloc drivers/iommu/generic_pt/iommu_pt.h:377 [inline]
-> >  table_alloc drivers/iommu/generic_pt/iommu_pt.h:408 [inline]
+> It looks to be an overflow error as user gives the below arg. But
+> this should be expected. no?
+> 
+>   //        start: int64 = 0x1000005 (8 bytes)
+>   //        length: int64 = 0xffffffffffefffff (8 bytes)
 
-I think it is:
+Something probably overflowed, the test is:
 
-+++ b/drivers/iommu/generic_pt/iommu_pt.h
-@@ -372,7 +372,7 @@ static inline struct pt_table_p *_table_alloc(struct pt_common *common,
- 
-        table_mem = iommu_alloc_pages_node_sz(iommu_table->nid, gfp,
-                                              log2_to_int(lg2sz));
--       if (pt_feature(common, PT_FEAT_DMA_INCOHERENT) &&
-+       if (pt_feature(common, PT_FEAT_DMA_INCOHERENT) && table_mem &&
-            mode == ALLOC_NORMAL) {
-                int ret = iommu_pages_start_incoherent(
-                        table_mem, iommu_table->iommu_device);
+r0 = openat$iommufd(0xffffffffffffff9c, &(0x7f0000000000), 0x0, 0x0)
+ioctl$IOMMU_IOAS_ALLOC(r0, 0x3b81, &(0x7f0000000100)={0xc, 0x0, <r1=>0x0})
+ioctl$IOMMU_TEST_OP_ADD_RESERVED(r0, 0x3ba0, &(0x7f0000000040)={0x48, 0x1, r1, 0x0, 0x1000005, 0xffffffffffefffff})
+ioctl$IOMMU_TEST_OP_MOCK_DOMAIN_FLAGS(r0, 0x3ba0, &(0x7f00000003c0)={0x48, 0x2, r1})
+ioctl$IOMMU_IOAS_MAP$PAGES(r0, 0x3b85, &(0x7f0000001340)={0x28, 0x2, r1, 0x0, &(0x7f00003bd000/0x3000)=nil, 0x3000, 0x80})
 
-Fault injection triggered an allocation failure while emulating a VT-d
-iommu that uses cache flushing..
+And I'm guessing the allocator picked something that failed the
+reserved range intersection path:
 
-I will send a fix when I'm able.
+	/* No reserved IOVA intersects the range */
+	if (iopt_reserved_iter_first(iopt, iova, last))
+		return -EINVAL;
+
+Maybe due to a corrupted range or something.
+
+I'll look next week
 
 Jason
