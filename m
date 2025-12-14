@@ -1,177 +1,307 @@
-Received: from BL0PR03CU003.outbound.protection.outlook.com (mail-eastusazon11012038.outbound.protection.outlook.com [52.101.53.38])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60CC229BDB1
-	for <iommu@lists.linux.dev>; Sun, 14 Dec 2025 00:51:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.53.38
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765673492; cv=fail; b=Wmkc7BRfzwaFpT2J+AZuDa6a8yVAA6ojKfwNq89YMntT4eksuG2IWihMwGpBUr/uwb9rhmY4oN+da95O3YwzLVCdrHPKC837eJzIEL89IzuuluE/7q6l8pGIl9Y7aXuCsVNKefsajsBPC3CNC7UXZBSylFnpiAiYoBSriNKPWDY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765673492; c=relaxed/simple;
-	bh=sphFoypfA8anIm38nvPhHpwcn17/9dH+2oxmwKZokGE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=rHdC3mYXkFm+B4t+RsHyjQ6H8IfCpdJl50xLTUYTJitU9BDo5k8hXH+yuvPSsUevWnfq8ncNS4P5+rIh3sXBU5iaOoBZWRBL6VAHsbfWQBzKUm2S3FptpbdJSv4adJU1U3iOf4CDVe26dDsuzPSK4ITrFmNX5CA/yYjLMZprIT4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=CMPKzA97; arc=fail smtp.client-ip=52.101.53.38
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A13802DE70D
+	for <iommu@lists.linux.dev>; Sun, 14 Dec 2025 22:32:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1765751563; cv=none; b=cYvw4jXwMl1xuOAI4iLYmGl6SfFk0n3Kt1JsOF1aEw3G6oYm20UXmEPYuO5YD5GOOsuw+3PzhXr3A2G+JhBSIFgojxKh4x2Xg5eAhIA4IC3I7NtavbZ2oppPu01ePqBuijJl9lePXV+7Rfxdkvyl+ZhXF3qU9mO+myIDcskZmFY=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1765751563; c=relaxed/simple;
+	bh=hRO5aCgoa8UV07o3viCbY7ZAYG07ytOBFMZZzD+wX3Q=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=bs8Vggl/eiNjqWRhfz/XE108sYqM3I4ViFPh8bRLVlvJyALWFeqy7HYQHy1K6DtYp/jFh//erqkO98gNFAHDLEIwkIo2Xig9WwsdkTF4P8KZOnOCicVP3w8gzrgHX22wadV9+YEgLoem3wq0qbMVE0ty2JPBP+YzB7ZOWAA4XEU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=pcA+TfRF; arc=none smtp.client-ip=209.85.128.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="CMPKzA97"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=bIHP/nyR5gbNvbCuJGHHnTciHui1lXc8SjVCnYoR5bdeQOVlgLLCtdxrARz1Q9Ntwtj95iTfHEDqnWpWhN0ruKI3SqYfmdEo6I/ZGPojrYW17kLmo83BZIpKdzONEzsXfWjT1xt1QbtBCx9hgtAJkV7lPkfHxq5/fiBBHLkdy1PeGe0OKNyuXG3lZX6vOdcgJCcQUtYxo7Z5GBFsRBedV2/tPfEvvoJ8cs59Scu8EncESSScJXnMljr9HNTuX0XC01SpKYkGD05NPvQE9iFpeW/qD9Mk2crawiFmcZf3QD04sIZHADrRAq0xPa7+n8lV31h43c2czKM/GLNfb09xsg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=V5YduJG1IxdIWARpTchHNx4XWik22mAYe2CE452e1y4=;
- b=RS9LXASIQ9o0AdBo3g5fQRW8yaJFdLTuc21npaWkSFS8E9iPPKjp3MnnfdfKqJhWmsoi5TL3I+AL99rdvjpY6m5o1hZD/c3GXqUSOtQ5Hu+4cN33h/7wIaD4TPa2HpDxIOtrO5JIBxtYKnN0O1zGNNcx0S4X62IOY++wUKGoitsMvFWhEXS4/QoGcOobQRiOAPV2yCHiJOlvkEHOJYtolLKUiOpnbN7+/ImsEm/r8NSXq91IWAdlzLxXYizqeQ4hwRj12ohDfaJSru6SXsGIW6eYC5ouXYg0xLT00sCxiNReQDfeMOg5WVy42eD8o4o1cOo3ZEi41H3Mecm98hdlmQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=V5YduJG1IxdIWARpTchHNx4XWik22mAYe2CE452e1y4=;
- b=CMPKzA97/85Ou3oHv7NbXgW0rFIvUd4v0D8f//bov/Icev2rztTNn+DBsqI5lGJwnXzmAsaNypZ9k2iC4BIa5zuOA6OFRl/wp+3oYlCp32iGCi6glrjhRYCZzaLh+nxe2U76iSNOoXK+jiO2eB7Vv44f0QD+pvu0Z2NWxinRGp90pdgzjZPbqfkp8jzIxR5U/eRxpQYpT48flpqvBLnqe2x39y5u0pLI7BaaOSH7QrzL+3kmRaqjT1lC7n2enTBtA1qkRBLj0CtAPUwlXG4APh249juimB2CaJh3hJE88r8pyttdx/U/irW7eZsOnW2SeKsBJ5prZn5byVzC07rHdg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CY1PR12MB9601.namprd12.prod.outlook.com (2603:10b6:930:107::16)
- by SA0PR12MB4349.namprd12.prod.outlook.com (2603:10b6:806:98::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9412.13; Sun, 14 Dec
- 2025 00:51:27 +0000
-Received: from CY1PR12MB9601.namprd12.prod.outlook.com
- ([fe80::cd76:b497:475f:4de3]) by CY1PR12MB9601.namprd12.prod.outlook.com
- ([fe80::cd76:b497:475f:4de3%6]) with mapi id 15.20.9412.011; Sun, 14 Dec 2025
- 00:51:27 +0000
-Date: Sat, 13 Dec 2025 20:51:25 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Boris Brezillon <boris.brezillon@collabora.com>
-Cc: Alice Ryhl <aliceryhl@google.com>, Miguel Ojeda <ojeda@kernel.org>,
-	Will Deacon <will@kernel.org>,
-	Daniel Almeida <daniel.almeida@collabora.com>,
-	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
-	=?utf-8?B?QmrDtnJu?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Benno Lossin <lossin@kernel.org>,
-	Andreas Hindborg <a.hindborg@kernel.org>,
-	Trevor Gross <tmgross@umich.edu>,
-	Danilo Krummrich <dakr@kernel.org>, Joerg Roedel <joro@8bytes.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
-	"Liam R. Howlett" <Liam.Howlett@oracle.com>,
-	Asahi Lina <lina+kernel@asahilina.net>,
-	linux-kernel@vger.kernel.org, rust-for-linux@vger.kernel.org,
-	iommu@lists.linux.dev, linux-mm@kvack.org,
-	Alistair Popple <apopple@nvidia.com>
-Subject: Re: [PATCH v3] io: add io_pgtable abstraction
-Message-ID: <aT4KDZSWLMlKwusl@nvidia.com>
-References: <20251112-io-pgtable-v3-1-b00c2e6b951a@google.com>
- <20251128180255.GA836877@nvidia.com>
- <20251212094427.2ec0b31e@fedora>
- <aTveh8c3RngvnIMp@nvidia.com>
- <20251212104105.6af97d05@fedora>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20251212104105.6af97d05@fedora>
-X-ClientProxiedBy: SJ0PR03CA0101.namprd03.prod.outlook.com
- (2603:10b6:a03:333::16) To CY1PR12MB9601.namprd12.prod.outlook.com
- (2603:10b6:930:107::16)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="pcA+TfRF"
+Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-477a1c8cc47so243945e9.0
+        for <iommu@lists.linux.dev>; Sun, 14 Dec 2025 14:32:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1765751560; x=1766356360; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=KcFIYG8pThrquY7+bXzMj2jE6v828zltZDO7Yqjwkw8=;
+        b=pcA+TfRFn77pS7u2ca8BhT3fMvBRtC6Fdxgnu8Ha/mzSiyyAFDx/KWw3Edj8+CQZ0g
+         5G0jySVu7RMRAHwxIv4Xs5+O7xLiExkqKPhmhJcvuUYbb1ciOny9Ik5gQYEZfRsvE1eL
+         hKvAI4I0FJclO4gxfuzZcmugupCuee/IsN+aCuE0+DxFzKVP5ZejdATrLhYjcGpwZBvu
+         6j5TYTl7hamE7Et6doDNKII7IsWRQp/RfXnD7++V5SBZ9406Yd2GLpB/AwKwoIHZocNf
+         bW0f5CmDTI76LVj40h8rWOF1rqQHAUx+JR4G6fNm8MWIE3N7bZb8QF2cev1U1DAFRkIL
+         PoNg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1765751560; x=1766356360;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=KcFIYG8pThrquY7+bXzMj2jE6v828zltZDO7Yqjwkw8=;
+        b=oeiF/4cwRpte93jq4Bu8jCNB4O08HJqNPvGwap4loge5UGoBMGZ97UXBDQEEHPtYOZ
+         E7JxMf0yLYUmQJeQwBrMwKrLuVsAl9NlpkeJCPgvexDkFfL37HSAtRK6nDlp2oy8x5YI
+         O3P9tozVNZVTmug9DOTOEod1TkCcKhbUhE8YXm5BQ67BSE/4Yj2yQ1AQsgPmWKM69hoo
+         mKmOAu7fawGUy8Ddi9YDMqk5+0tZfwfUcAO8AruFkY3BMO5aiuYGF/pJAUyIsnkLXaXv
+         UF7sgwVahrxj5iDjveBXvJ1RRzcWxnQ1CoG0GkyNTQngzHYjOm9tiXxfQXc7/NZkVp09
+         TXQA==
+X-Forwarded-Encrypted: i=1; AJvYcCXIIbN7cGnK6/FsNNnz9kIjvW1PkfHG1eHQlUP1ehQLz1/bbbcERa0SY7Q+vYGB2H4c1MG3AQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzJJJRXRI08GYlMX69zP1SBBSrp97iio5ZzUqxuMLLfTVicPr4w
+	4bsfM4Q8NZRQymjbb6WjrRds9oVKY/0tRqhr7rtXDMluwC/oS2SOvSqBcGOoreei4w==
+X-Gm-Gg: AY/fxX4gsveuZ973vbwbGmgwo1Py/TUO7AV6yxeQgcUc8VRfiVHwdzq5LivViIWSCA8
+	Wgk0Zk0dCt7a/YwvyNyXatVUWw4jsg0j7stESGzUO6Ft6u08mKJYEVbw9lea2uYho/z/W5sQl9c
+	ZvoR1M/RDPrWyjxogdUu83SnSgpUbljkVjptHQpRMWnVzGTCQ5vm+RAMyW5mdF35HQLCR9bQy8d
+	C015FMM1vQeUKXTzVHgCPuk2qEby0rH8PaKrOus3pt0iujCEqUgtKLo9vsgzS2nrcmkuTQ+4ZZv
+	Q/QIXF2FAp9a+qcG1cWVflR0tex4R47hYHeSrasH4ACf3Ppn23EvmRa6FVPqY2pLlLZkJwa/Yom
+	OgjO2Qd/WDinX8xo0HWkF27QQ2X8Vm7LrNhWuUyitfdk/a6dnedwNIRr5ztcv1LfuZVkiZJFGsu
+	afvjQwsJqtZPzPl8lpsgGEtmJX0ce7KCWfQ/07qoBD9mOKL6HoMg==
+X-Google-Smtp-Source: AGHT+IE3eRhVbzGegcHa1xcNo46EdXefsnSGCiZbU0jrtHUdR0mYYs0/N/wqhHRGzTlCZ8FRslGcTw==
+X-Received: by 2002:a05:600c:c3c1:20b0:477:b358:d7aa with SMTP id 5b1f17b1804b1-47a94876b6cmr1087625e9.18.1765751559808;
+        Sun, 14 Dec 2025 14:32:39 -0800 (PST)
+Received: from google.com (54.140.140.34.bc.googleusercontent.com. [34.140.140.54])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-42fb38a977esm17818592f8f.12.2025.12.14.14.32.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 14 Dec 2025 14:32:39 -0800 (PST)
+Date: Sun, 14 Dec 2025 22:32:35 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: jgg@nvidia.com, will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, skolothumtho@nvidia.com,
+	praan@google.com, xueshuai@linux.alibaba.com
+Subject: Re: [PATCH rc v3 1/4] iommu/arm-smmu-v3: Add ignored bits to fix STE
+ update sequence
+Message-ID: <aT87A1ur4htPjM5T@google.com>
+References: <cover.1765334526.git.nicolinc@nvidia.com>
+ <cc0d4ab571e2e789ee1cddfa035379dc54f0601b.1765334526.git.nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY1PR12MB9601:EE_|SA0PR12MB4349:EE_
-X-MS-Office365-Filtering-Correlation-Id: 06593c58-7b46-4da2-aeff-08de3aaae9ca
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|7416014|376014|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?X8/9ucG1VwZm+500sykBQMuN1rmFKPVGVQMQT1wkNriln0HCSIoF4PrIs0iO?=
- =?us-ascii?Q?Jz1KL7DNI+gIHJI8DxTXTzO3RNp1T6Tvh+COtybik8KnioHDGVQHVjItqqZ8?=
- =?us-ascii?Q?uiBahjrMEEDyRxVQ41RKnNeHv4J5jrM/GRsKHdk35UgsgrHdDoTXrnC08ByG?=
- =?us-ascii?Q?VXnXr5XXj6fxvr4s3Y7QXaWqs3MbUJbP6v8LjKdIIZV1/zBlj1t1oLloqJaQ?=
- =?us-ascii?Q?J9ep98Ivi30DazXisQhKtEugywwNqUFMOAZWR1y9Iuzt5VEYmGEmSaaTjmT/?=
- =?us-ascii?Q?h9kP7MllFVXj/r1vtHqCQtGYvLCGvOtsKnovOLMfKE7M/G3YYPBO75SxQRQj?=
- =?us-ascii?Q?5E2BsP8jHg1dpepaPCx3hmM5D4vCdJHKy2ZbwWwajMt6lYnWe8mUUFSo2GH1?=
- =?us-ascii?Q?ESOl6PK3Xbpv9oNWvV2LKY66cFnwlIFjL3FYCHFSSciJt5jSD+k7bs3UnKaC?=
- =?us-ascii?Q?AIG3ilFHuHsNOZOv9SNygYBWTMBsYBDJmYdIWhnPK4bV0ZlwmavCkWyWiv6u?=
- =?us-ascii?Q?C/PyAzqy4VnwdGOUNd2u0sWtCuHg6Llc7SohJNPHY99C+uTpxzzF/5OJs73M?=
- =?us-ascii?Q?u/9i5HiAGhXlus5S2rUniNqfRQ9D2TLGZAeSUijkYXdUCTGZzvjSpkvMGOEt?=
- =?us-ascii?Q?MX7wVWb8OQFaOZ+O8VFqmSJpiwl5Zu8R9+Glft2YIGrJ7Qx/yylhiP/7hh+T?=
- =?us-ascii?Q?Tr//jqVgbY5oN4PDQemqndd0ieoNHrddkybEMUvYNo4ozUoKJ2bjZ/m30aN+?=
- =?us-ascii?Q?ex6aPqo6wO7p4Z+ssA/1bXcAPdStghSbOrvVYQgKrvZmwKWmv1RCzAZM5U4Z?=
- =?us-ascii?Q?Dyu8pjd4h5JqqS5hlbKHBiaF7DISRVvcmxwCaHXmUC4ea8Ip87szN6VdlL6T?=
- =?us-ascii?Q?aST1ryaKqtu/zbX7QU9IvHV3SqJutP/EKH0mpPos/BCIjJ204MAmiRDM+9lZ?=
- =?us-ascii?Q?wjOxfYJnAm5J8Q2b0eqYJQqVD2WukmFsDO5QF7KIgrlm9UjPllTkq28Uqby0?=
- =?us-ascii?Q?XycPofcNJgCstB4yhdhd/87DOxRkrAQ7utaRcpEu96yPi7ATPs9dF/XKKUbN?=
- =?us-ascii?Q?Hgp9wR8ks8CZy7MXlePFGFL5KPYQy2QtaN67i2dubJQSJEhJxg2rJzNx/BCv?=
- =?us-ascii?Q?yiYxA+RgiU1ywhtFZwb0ONanj7zuTCCrEZMxamvutnimpSDHEEPdQI9Mh3qd?=
- =?us-ascii?Q?ykmaxm8J4kvtsCpdSNZ9RmlOk2z/IGF5ZwjzpA3uGJizpzZByZd0LeOQv91B?=
- =?us-ascii?Q?lKsvCl8zrasa+wG4SUzPgfG7XD0Dx25s4chYRhacyGyzSgd1rav8eH4tCpiE?=
- =?us-ascii?Q?a54hicMW5iEQ4GwmoT/9OqMJlOjds9nChD+AIGOkVdqHCmbNGuRygDZU6byR?=
- =?us-ascii?Q?Qzken7xIrbRznh6PVihb/7bpFzkzgTSAw57Wvm2KMN/t0wgp0sNPEyRrRkwj?=
- =?us-ascii?Q?k3L3PME+dQzrcx3qp8pfsflkKWNzzPbG?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY1PR12MB9601.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(7416014)(376014)(1800799024);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?xFPko/JrSeWMqgSNsMoCIYGgq093fT8KlTK7FzxzG3MrRbJDReazHXFgx6oV?=
- =?us-ascii?Q?V234NXXktJZeFw2lMw55Xw/+3eSsflshbUZExHlOJkNy5tXMW3NNddT7SHw1?=
- =?us-ascii?Q?1hOooLXG7iWh8yVVqa2q/xKbp/HUiW7AVDDW9hINuZdymx4wGe12TjLsq/Jv?=
- =?us-ascii?Q?vMt4JeRIGRujbxfTvsCEpVzKVrcMr7xVziN06x5JI0u9rkLVAgAIM6mq5ZC2?=
- =?us-ascii?Q?b1E57gvCEPC8KTE2fAs2x+aBhfIEQfnTEYsobP8At2f4RvCbtdP4KD/W7Eps?=
- =?us-ascii?Q?Bw2on2hcQ5p45ddtL0zg9eXVBxyU8vC6T7rUi1yUIrhKEXKkTh1Rp+9o0Fgj?=
- =?us-ascii?Q?JCO18w8CRFsf1fH83rGo13jXAPLIXpXTFslmEfzubmW53wwKv5Gow6QOWehS?=
- =?us-ascii?Q?ZyYlvnPPRBSHJ2dfXgefv+A1EwIIvpRBXhXWIDzUempKdZ+cL4HKAyLaPqt2?=
- =?us-ascii?Q?LHp38j7K/pGsZMDi7aBOtMDXU1Gk+XLzWPRKEC3XaOS7imUwYDwrZrcz0/CO?=
- =?us-ascii?Q?k/s3O+I2Q+tQFn3x+LPgTmDt7HfCXatUW+MJ45+0SLWxutF7U6THYl3aSwAK?=
- =?us-ascii?Q?PJz5HNj6POtayxd74bnoO7cn8+5nv8C0rLoZkRVZfx2SHot/usxKX3nFY4xH?=
- =?us-ascii?Q?1xqH6oKJhxcNLKKRw8WWsaMmNwuUbCwyKqGpGNiAKlnplEyxM+rsmelucdVy?=
- =?us-ascii?Q?xd7DQPSj33nwZmjfkOwmyve4ZLWRRHuNoGPVgUhyiBPUiLLWBTmGqakkK/Pc?=
- =?us-ascii?Q?E0NRhjYW4BXKRloq0PY9+MjDcxtAYwp1j2f6mNI5lxzqnt7l1DgsY/t0ugQw?=
- =?us-ascii?Q?A+6nkfUZL9dX6qD8JjiEyvEw2QQtSbAAOIpbhT5ggJhyQ9TV5VsaFBemmrPi?=
- =?us-ascii?Q?IV7vbve9CFzHkwAgOKhTIJb7DGjcGV6lsVw3NtvWtpaj+MvnU6Ys0AXMkvX6?=
- =?us-ascii?Q?2OX5NZx3MvWxkMd1YpXXcdN13FFUt9IzOy6b8R8FZpeXb0vwxZ5mVWGncHWH?=
- =?us-ascii?Q?GvOXEbstfCeCwgMJ64/Rh7bXEbnv7iRyaVyOaLMPQ4opksaTTc6j4sx6rD0g?=
- =?us-ascii?Q?9qiw2W6sC2ZlKnlV7XOwHqFlv662NjN7ySLMAg1p8IqkawXRnCnhELzH0I7w?=
- =?us-ascii?Q?IDPdPUXzVhbTeY9fiyJT9j7OUYZB5M+EDMCD8mOIt5Gt8F01fu1wpzA4fS1/?=
- =?us-ascii?Q?lEuurgHpMDajfu7WYPUEHvMVp9mAIoTNQZYg2lPK+7FFGYX8xa8JtHmPsRpg?=
- =?us-ascii?Q?vwmee7NaqJeXjfnWYGZJLJ+dwntyL7WaLZ99DScJMZLbFicV9uECZ1KF/EHO?=
- =?us-ascii?Q?TOJa7ywLoGjE1f3YaFl+HibDy9c6Owur+6sACx8hQ/UQ67Wfi3/stKNYnYvb?=
- =?us-ascii?Q?FsHDPrKOV41KFM0BaUkJkUdtu/EXEPaog1tHrTsAmQvOJsbfY2L/CgVtoWBo?=
- =?us-ascii?Q?OSO+2nM2r8ke7Y0XnDARRWi/qeTnqZ4O/mes0d4zbHDJwyvZn8aiONwgqqn2?=
- =?us-ascii?Q?9WSUcLIVXzytJDzExY8vuANwjrevrRBTooewZfkINeru0rIaApExkDRgO6sa?=
- =?us-ascii?Q?9Rqu9UbZZYwSPmjVeuQWZucTRrPWcyyclvrQpX2E?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 06593c58-7b46-4da2-aeff-08de3aaae9ca
-X-MS-Exchange-CrossTenant-AuthSource: CY1PR12MB9601.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Dec 2025 00:51:27.7039
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 82nhS1MCPwcr+xvxbYpdOPOrZPzawCFtnGAnbBO35ffExHCutpQc11rBv6Ey1yVK
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR12MB4349
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <cc0d4ab571e2e789ee1cddfa035379dc54f0601b.1765334526.git.nicolinc@nvidia.com>
 
-On Fri, Dec 12, 2025 at 10:41:05AM +0100, Boris Brezillon wrote:
+Hi Nicolin,
 
-> > Then you can think about what is ideal for GPU and consider what the
-> > work would be like. My uneducated feeling is with gpuvm trying to be
-> > common code it could also have gpuvm provide shared common code that
-> > directly builds page tables in CPU memory using the above framework.
+On Tue, Dec 09, 2025 at 06:45:16PM -0800, Nicolin Chen wrote:
+> From: Jason Gunthorpe <jgg@nvidia.com>
 > 
-> So, gpuvm is one level up (it doesn't deal at all with any HW
-> representation), but I guess we could provide helpers for UMA-GPUs,
-> where preparing the page table on the CPU is a thing, and it could be
-> that MSM would be interested in using those helpers too.
+> C_BAD_STE was observed when updating nested STE from an S1-bypass mode to
+> an S1DSS-bypass mode. As both modes enabled S2, the used bit is slightly
+> different than the normal S1-bypass and S1DSS-bypass modes. As a result,
+> fields like MEV and EATS in S2's used list marked the word1 as a critical
+> word that requested a STE.V=0. This breaks a hitless update.
+> 
+> However, both MEV and EATS aren't critical in terms of STE update. One
+> controls the merge of the events and the other controls the ATS that is
+> managed by the driver at the same time via pci_enable_ats().
+> 
+> Add an arm_smmu_get_ste_ignored() to allow STE update algorithm to ignore
+> those fields, avoiding the STE update breakages.
+> 
+> Note that this change is required by both MEV and EATS fields, which were
+> introduced in different kernel versions. So add this get_ignored() first.
+> The MEV and EATS will be added in arm_smmu_get_ste_ignored() separately.
+> 
+> Fixes: 1e8be08d1c91 ("iommu/arm-smmu-v3: Support IOMMU_DOMAIN_NESTED")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> Reviewed-by: Shuai Xue <xueshuai@linux.alibaba.com>
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  2 ++
+>  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c  | 19 ++++++++++++---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 24 +++++++++++++++----
+>  3 files changed, 37 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> index ae23aacc3840..d5f0e5407b9f 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> @@ -900,6 +900,7 @@ struct arm_smmu_entry_writer {
+>  
+>  struct arm_smmu_entry_writer_ops {
+>  	void (*get_used)(const __le64 *entry, __le64 *used);
+> +	void (*get_ignored)(__le64 *ignored_bits);
+>  	void (*sync)(struct arm_smmu_entry_writer *writer);
+>  };
+>  
+> @@ -911,6 +912,7 @@ void arm_smmu_make_s2_domain_ste(struct arm_smmu_ste *target,
+>  
+>  #if IS_ENABLED(CONFIG_KUNIT)
+>  void arm_smmu_get_ste_used(const __le64 *ent, __le64 *used_bits);
+> +void arm_smmu_get_ste_ignored(__le64 *ignored_bits);
+>  void arm_smmu_write_entry(struct arm_smmu_entry_writer *writer, __le64 *cur,
+>  			  const __le64 *target);
+>  void arm_smmu_get_cd_used(const __le64 *ent, __le64 *used_bits);
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c
+> index d2671bfd3798..3556e65cf9ac 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c
+> @@ -38,13 +38,16 @@ enum arm_smmu_test_master_feat {
+>  static bool arm_smmu_entry_differs_in_used_bits(const __le64 *entry,
+>  						const __le64 *used_bits,
+>  						const __le64 *target,
+> +						const __le64 *ignored,
+>  						unsigned int length)
+>  {
+>  	bool differs = false;
+>  	unsigned int i;
+>  
+>  	for (i = 0; i < length; i++) {
+> -		if ((entry[i] & used_bits[i]) != target[i])
+> +		__le64 used = used_bits[i] & ~ignored[i];
+> +
+> +		if ((entry[i] & used) != (target[i] & used))
+>  			differs = true;
+>  	}
+>  	return differs;
+> @@ -56,12 +59,18 @@ arm_smmu_test_writer_record_syncs(struct arm_smmu_entry_writer *writer)
+>  	struct arm_smmu_test_writer *test_writer =
+>  		container_of(writer, struct arm_smmu_test_writer, writer);
+>  	__le64 *entry_used_bits;
+> +	__le64 *ignored;
+>  
+>  	entry_used_bits = kunit_kzalloc(
+>  		test_writer->test, sizeof(*entry_used_bits) * NUM_ENTRY_QWORDS,
+>  		GFP_KERNEL);
+>  	KUNIT_ASSERT_NOT_NULL(test_writer->test, entry_used_bits);
+>  
+> +	ignored = kunit_kzalloc(test_writer->test,
+> +				sizeof(*ignored) * NUM_ENTRY_QWORDS,
+> +				GFP_KERNEL);
+> +	KUNIT_ASSERT_NOT_NULL(test_writer->test, ignored);
+> +
+>  	pr_debug("STE value is now set to: ");
+>  	print_hex_dump_debug("    ", DUMP_PREFIX_NONE, 16, 8,
+>  			     test_writer->entry,
+> @@ -79,14 +88,17 @@ arm_smmu_test_writer_record_syncs(struct arm_smmu_entry_writer *writer)
+>  		 * configuration.
+>  		 */
+>  		writer->ops->get_used(test_writer->entry, entry_used_bits);
+> +		if (writer->ops->get_ignored)
+> +			writer->ops->get_ignored(ignored);
+>  		KUNIT_EXPECT_FALSE(
+>  			test_writer->test,
+>  			arm_smmu_entry_differs_in_used_bits(
+>  				test_writer->entry, entry_used_bits,
+> -				test_writer->init_entry, NUM_ENTRY_QWORDS) &&
+> +				test_writer->init_entry, ignored,
+> +				NUM_ENTRY_QWORDS) &&
+>  				arm_smmu_entry_differs_in_used_bits(
+>  					test_writer->entry, entry_used_bits,
+> -					test_writer->target_entry,
+> +					test_writer->target_entry, ignored,
+>  					NUM_ENTRY_QWORDS));
+>  	}
+>  }
+> @@ -106,6 +118,7 @@ arm_smmu_v3_test_debug_print_used_bits(struct arm_smmu_entry_writer *writer,
+>  static const struct arm_smmu_entry_writer_ops test_ste_ops = {
+>  	.sync = arm_smmu_test_writer_record_syncs,
+>  	.get_used = arm_smmu_get_ste_used,
+> +	.get_ignored = arm_smmu_get_ste_ignored,
+>  };
+>  
+>  static const struct arm_smmu_entry_writer_ops test_cd_ops = {
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index d16d35c78c06..e22c0890041b 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -1082,6 +1082,12 @@ void arm_smmu_get_ste_used(const __le64 *ent, __le64 *used_bits)
+>  }
+>  EXPORT_SYMBOL_IF_KUNIT(arm_smmu_get_ste_used);
+>  
+> +VISIBLE_IF_KUNIT
+> +void arm_smmu_get_ste_ignored(__le64 *ignored_bits)
+> +{
+> +}
+> +EXPORT_SYMBOL_IF_KUNIT(arm_smmu_get_ste_ignored);
+> +
+>  /*
+>   * Figure out if we can do a hitless update of entry to become target. Returns a
+>   * bit mask where 1 indicates that qword needs to be set disruptively.
+> @@ -1094,13 +1100,22 @@ static u8 arm_smmu_entry_qword_diff(struct arm_smmu_entry_writer *writer,
+>  {
+>  	__le64 target_used[NUM_ENTRY_QWORDS] = {};
+>  	__le64 cur_used[NUM_ENTRY_QWORDS] = {};
+> +	__le64 ignored[NUM_ENTRY_QWORDS] = {};
 
-You can make it work like the iommu does where gpuvm gets a "gpu
-domain" from the driver that is created by using the common code from
-gpuvm. Then most of the code is common.
+I think we can avoid extra stack allocation for another STE, if we make
+the function update cur_used directly, but no strong opinion.
 
-I think something could be built that works with the framebuffer
-resident page tables too if they are being accessed over mmio.
+>  	u8 used_qword_diff = 0;
+>  	unsigned int i;
+>  
+>  	writer->ops->get_used(entry, cur_used);
+>  	writer->ops->get_used(target, target_used);
+> +	if (writer->ops->get_ignored)
+> +		writer->ops->get_ignored(ignored);
+>  
+>  	for (i = 0; i != NUM_ENTRY_QWORDS; i++) {
+> +		/*
+> +		 * Ignored is only used for bits that are used by both entries,
+> +		 * otherwise it is sequenced according to the unused entry.
+> +		 */
+> +		ignored[i] &= target_used[i] & cur_used[i];
+> +
+>  		/*
+>  		 * Check that masks are up to date, the make functions are not
+>  		 * allowed to set a bit to 1 if the used function doesn't say it
+> @@ -1109,6 +1124,7 @@ static u8 arm_smmu_entry_qword_diff(struct arm_smmu_entry_writer *writer,
+>  		WARN_ON_ONCE(target[i] & ~target_used[i]);
+>  
+>  		/* Bits can change because they are not currently being used */
+> +		cur_used[i] &= ~ignored[i];
+>  		unused_update[i] = (entry[i] & cur_used[i]) |
+>  				   (target[i] & ~cur_used[i]);
+>  		/*
+> @@ -1207,12 +1223,9 @@ void arm_smmu_write_entry(struct arm_smmu_entry_writer *writer, __le64 *entry,
+>  		entry_set(writer, entry, target, 0, 1);
+>  	} else {
+>  		/*
+> -		 * No inuse bit changed. Sanity check that all unused bits are 0
+> -		 * in the entry. The target was already sanity checked by
+> -		 * compute_qword_diff().
+> +		 * No inuse bit changed, though ignored bits may have changed.
+>  		 */
+> -		WARN_ON_ONCE(
+> -			entry_set(writer, entry, target, 0, NUM_ENTRY_QWORDS));
+> +		entry_set(writer, entry, target, 0, NUM_ENTRY_QWORDS);
 
-Jason
+After this change, no other caller uses the entry_set() return value, so it
+can be changed to return void.
+
+>  	}
+>  }
+>  EXPORT_SYMBOL_IF_KUNIT(arm_smmu_write_entry);
+> @@ -1543,6 +1556,7 @@ static void arm_smmu_ste_writer_sync_entry(struct arm_smmu_entry_writer *writer)
+>  static const struct arm_smmu_entry_writer_ops arm_smmu_ste_writer_ops = {
+>  	.sync = arm_smmu_ste_writer_sync_entry,
+>  	.get_used = arm_smmu_get_ste_used,
+> +	.get_ignored = arm_smmu_get_ste_ignored,
+>  };
+>  
+
+I have some mixed feelings about this, having get_used(), then get_ignored()
+with the same bits set seems confusing to me, specially the get_ignored()
+loops back to update cur_used, which is set from get_used()
+
+My initial though was just to remove this bit from get_used() + some changes
+to checks setting bits that are not used would be enough, and the semantics
+of get_used() can be something as:
+“Return bits used by the updated translation regime that MUST be observed
+atomically” and in that case we can ignore things as MEV as it doesn’t
+impact the translation.
+
+However, this approach makes it a bit explicit which bits are ignored, if we
+keep this logic, I think changing the name of get_ignored() might help, to
+something as "get_allowed_break()" or "get_update_safe()"?
+
+Thanks,
+Mostafa
+
+>  static void arm_smmu_write_ste(struct arm_smmu_master *master, u32 sid,
+> -- 
+> 2.43.0
+> 
