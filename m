@@ -1,52 +1,52 @@
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0DF632BF55
-	for <iommu@lists.linux.dev>; Mon, 15 Dec 2025 23:41:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.165.32
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 172AB32B9B0
+	for <iommu@lists.linux.dev>; Mon, 15 Dec 2025 23:41:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.177.32
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765842072; cv=none; b=QFKxkmX/cX/Ka8ERaWemQzSVNQSydE3Wwq9I/U/6t2dPIPFfmNK1t+obou5/Hm5ANA0X1eI2OYTBDWFq4mpm9JiZTACS2jKvK3pT+VL1ARFa9IP1eXHqg2q0dKLjeg/1q7EjRtBOpkSksCU3wIbxYhA/HkHz0cKdSnUsjvGvKSE=
+	t=1765842080; cv=none; b=UppL3Fw9ESyz6Gfz+bhrFwl5diKiclSvoNC7yXMmfdkMdosdo2j6grH6vk7aBvBfRTbpPRf/vpycXuCykT3dLtyubP52BRVjlMrfsxCNuEEcZ9GHMdhNCUvG/DTp0g4GEunbCCAKGvgN7UBgXfvvBCzkWuOXGWwo5xp3md9/0rw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765842072; c=relaxed/simple;
-	bh=GVzFzzeNGPTsvunuacL1zcLM6PpjBnBKHmnoTAO0a+E=;
+	s=arc-20240116; t=1765842080; c=relaxed/simple;
+	bh=PvaVPdSisjOSs/XGp/XkmgqZg7NT+ubL1L3Qhwf9IrE=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=A1x6HD9zi1xCKjx6V5zNagPGpEB60gpH7tg106oaaXY1yGj0B9dobpcGXabzfzy8UkfopGeNbGqM3eYHBeCNfMSiyufhiKRRjldy6FnN8movdt/elpeu3Bsa4a3uiauDYUR+aRoXT++xinf57iTKNl+igvbDFbFgvSHSmZWctwo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=Y9DG33JE; arc=none smtp.client-ip=205.220.165.32
+	 MIME-Version; b=H4mZvchmm5XMTKAKoVcqQ4TOjGZjMS5QaiYSlDFeQxmQPUEvfBYAyaABqAozxHnCbrQtN5A6gu17IZaacpD+IbOejN9ylijO2qEV15vebJuE9lcDL5CtVbVFg/RDYb5HV/cWZ/owxMUplAy8YAg+0Dc7GzO6/vVzFiFtSdej0TY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=iWmZQ5wO; arc=none smtp.client-ip=205.220.177.32
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="Y9DG33JE"
-Received: from pps.filterd (m0333521.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 5BFJC9NN2854561;
-	Mon, 15 Dec 2025 23:40:28 GMT
+	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="iWmZQ5wO"
+Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 5BFJCIiX2859372;
+	Mon, 15 Dec 2025 23:40:39 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=cc
 	:content-transfer-encoding:date:from:in-reply-to:message-id
-	:mime-version:references:subject:to; s=corp-2025-04-25; bh=8uofc
-	bSfGlpCjUvBjSl72oxbTxOwKo5M7SgUb/feGLU=; b=Y9DG33JE+760toFIFlg1G
-	tcLdzugveQhSZPvgize0rpPGCPaoO3Kt4GPXkE6bu+b+2GNvhV3rjKwKJ+bFjjmi
-	SYd1RKA0NR4AHQK0gMHUpV6aaGyOSEM4FBx4tBoscGYs2QE7cHlFwdyWz8e44MDS
-	MQqgQB+itIuzvXiT8BZNa6jQPJGmhXhLLDajXM3oM70qjcHauaOzvWC0PJIU+AVS
-	bNyNo5ibnMNGjWOOmi4kKNTysrW1kbZ1SUWoPWqQu/83G3OFJGhqVljWTIWy/ig4
-	hpChYV4CKD87y2eZ5h3Usfs+Ukolko7yBB0mUD284i7wmehkABUflt+r4XmMPO5J
-	A==
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 4b0y28b344-1
+	:mime-version:references:subject:to; s=corp-2025-04-25; bh=CtnKm
+	jWFK9d0fuXFQyjZVsu8W5ckdGS7kancwFSdeQ0=; b=iWmZQ5wO4j6rj17QtiXfN
+	fAosH/HMC5jypzQBOiEPUKY/JCcN+bRWKVsFmqjMvh87XbHuNaF/mhpTu5w8v7it
+	Jlmdpo/kp2Ag0jCyuEtBB6DidA+so42p6W/7czbfXPboHdOM2fpCS2qfNL513AYH
+	IlAUbvlpEZVw3dyKaQC+LvrBBFcR07j1Kem/NV9vi0i4YJHK4pDX3Il8zbfkYFKn
+	2KWTOhVPxCvTUURqYeJx53cZe16AkPJwHA53CnoyaV6tGY9ggUnNMTmALDrJLlLC
+	dk2MHK2B4NRALlEQfdhRhbNxtAHI0Y1kdr9VLtQhQjRscyzjj6tnPwQebIXCsVSI
+	Q==
+Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 4b0yrujyxd-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Mon, 15 Dec 2025 23:40:28 +0000 (GMT)
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 5BFLLApL006117;
-	Mon, 15 Dec 2025 23:40:27 GMT
+	Mon, 15 Dec 2025 23:40:38 +0000 (GMT)
+Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 5BFMP3ui024537;
+	Mon, 15 Dec 2025 23:40:37 GMT
 Received: from pps.reinject (localhost [127.0.0.1])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 4b0xkck92f-1
+	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 4b0xk9t8av-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-	Mon, 15 Dec 2025 23:40:27 +0000
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 5BFNeQWt023729;
-	Mon, 15 Dec 2025 23:40:26 GMT
+	Mon, 15 Dec 2025 23:40:37 +0000
+Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 5BFNeaGf028457;
+	Mon, 15 Dec 2025 23:40:36 GMT
 Received: from bur-virt-x6-2-100.us.oracle.com (bur-virt-x6-2-100.us.oracle.com [10.153.92.40])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 4b0xkck91s-1
+	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 4b0xk9t89j-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-	Mon, 15 Dec 2025 23:40:26 +0000
+	Mon, 15 Dec 2025 23:40:36 +0000
 From: Ross Philipson <ross.philipson@oracle.com>
 To: linux-kernel@vger.kernel.org, x86@kernel.org,
         linux-integrity@vger.kernel.org, linux-doc@vger.kernel.org,
@@ -62,9 +62,9 @@ Cc: ross.philipson@oracle.com, dpsmith@apertussolutions.com,
         dwmw2@infradead.org, baolu.lu@linux.intel.com,
         kanth.ghatraju@oracle.com, andrew.cooper3@citrix.com,
         trenchboot-devel@googlegroups.com
-Subject: [PATCH v15 09/28] tpm/tpm_tis: Address positive localities in tpm_tis_request_locality()
-Date: Mon, 15 Dec 2025 15:32:57 -0800
-Message-ID: <20251215233316.1076248-10-ross.philipson@oracle.com>
+Subject: [PATCH v15 11/28] tpm/sysfs: Show locality used by kernel
+Date: Mon, 15 Dec 2025 15:32:59 -0800
+Message-ID: <20251215233316.1076248-12-ross.philipson@oracle.com>
 X-Mailer: git-send-email 2.43.7
 In-Reply-To: <20251215233316.1076248-1-ross.philipson@oracle.com>
 References: <20251215233316.1076248-1-ross.philipson@oracle.com>
@@ -78,60 +78,68 @@ Content-Transfer-Encoding: 8bit
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.9,FMLib:17.12.100.49
  definitions=2025-12-15_05,2025-12-15_03,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 bulkscore=0 malwarescore=0
- adultscore=0 mlxlogscore=999 mlxscore=0 spamscore=0 suspectscore=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 malwarescore=0 bulkscore=0
+ suspectscore=0 phishscore=0 adultscore=0 mlxlogscore=999 mlxscore=0
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2510240000
  definitions=main-2512150204
-X-Proofpoint-GUID: XQTJJ1BtKhsapMRjwsbsyetQVE9Rggam
-X-Proofpoint-ORIG-GUID: XQTJJ1BtKhsapMRjwsbsyetQVE9Rggam
-X-Authority-Analysis: v=2.4 cv=fOQ0HJae c=1 sm=1 tr=0 ts=69409c6c b=1 cx=c_pps
- a=zPCbziy225d3KhSqZt3L1A==:117 a=zPCbziy225d3KhSqZt3L1A==:17
- a=wP3pNCr1ah4A:10 a=VkNPw1HP01LnGYTKEx00:22 a=UN5060LkAAAA:8 a=yPCof4ZbAAAA:8
- a=VwQbUJbxAAAA:8 a=tOEGE3zv9T2N6F5oSXYA:9 a=E6eXv-vVeS7VqOnxGRGn:22 cc=ntf
- awl=host:12109
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMjE1MDIwMyBTYWx0ZWRfX1jCzVDnWyKQy
- GsW9pqE951xsh7GSllEg6Tc3SptJjDkQU9rAtbBbAmuxFcnnODphcuLu8AURePoTBI7stcZLdS7
- ctOg3owCz0ZtRN0rHT1fEMBt6SREK6j/Cj7zEEF7bMBPddzzUSObZyCymyQP3JL3w2g4QznIxTf
- B0ow+i5UnPpFiVO0js34nBtYa3rrIuB8i8HoXiGr3PocIK0bKaZoYjpVacCh8hI9GF+byRWSLoG
- 69nKoBvhBhpJXr0XvknvKh8/ZyeV/XmaaBZdimdQAe4Y1OoVf0ZizWTznGoSvOpRpYAOEeQPefc
- L4aT3lS9/Ie/z7wRbVc1QF1ExBK3vQWa1ulAgK5ZssCCFbg7OXsBZfpejMtF8uFenWJofnSOYdd
- YRcIa8+e2JywlOEvJnfFn6lKVx4q6iop8fQ0oLfj/d8GFjg4HMU=
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMjE1MDIwNCBTYWx0ZWRfXxUR+wT33/7GF
+ mJ+1N5qej0hiPUSWQjNM6TKkYUUS2QQ1gFbaJSXjdf95qVkX3QiofJYKyplRfkZ1qGnltXVUhc8
+ Ax86NJl5CWj8tCnXWdKX4B8bRHNDjP9p1YkdjZZmiH7MlKEyaQ3vFv7Ofxvvg2uxe0Xd/Qmjag6
+ W+WsjSQqYBSy5xAF4Lq1RfJ2DVzDe/wXYVcg1QIVMManf7HuPgFH/WyA/1XZc5/cZY67FW3VK+l
+ VDssQcExeL2oqBHtOU8i4CkSAwf9PFQHnhNKaTEL4jCA0G2D1VEoGoRu92PWXJwhvbOVB0bx76K
+ ZivHsrpV5peM8g/BH4b3kAvSWh9qGQfZKnRw1u0swlrpFf1fsvUdWu0ux0vohilZrvEvWLddrHy
+ 2nX35etVWcH+VOPvGGiO+nDBPC4D1Q==
+X-Authority-Analysis: v=2.4 cv=TL9Iilla c=1 sm=1 tr=0 ts=69409c76 cx=c_pps
+ a=XiAAW1AwiKB2Y8Wsi+sD2Q==:117 a=XiAAW1AwiKB2Y8Wsi+sD2Q==:17
+ a=wP3pNCr1ah4A:10 a=VkNPw1HP01LnGYTKEx00:22 a=yPCof4ZbAAAA:8 a=VwQbUJbxAAAA:8
+ a=l4rzuocJ5qbfFBX_5RcA:9
+X-Proofpoint-GUID: c-MKPKc_BhmYTE9HgVmHCstNqx3smh1Q
+X-Proofpoint-ORIG-GUID: c-MKPKc_BhmYTE9HgVmHCstNqx3smh1Q
 
-From: "Daniel P. Smith" <dpsmith@apertussolutions.com>
+Expose the current locality used by the kernel TPM driver via
+the sysfs interface.
 
-Validate that the input locality is within the correct range, as specified
-by TCG standards, and increase the locality count also for the positive
-localities.
-
-Signed-off-by: Daniel P. Smith <dpsmith@apertussolutions.com>
 Signed-off-by: Ross Philipson <ross.philipson@oracle.com>
 Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
 ---
- drivers/char/tpm/tpm_tis_core.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ drivers/char/tpm/tpm-sysfs.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/drivers/char/tpm/tpm_tis_core.c b/drivers/char/tpm/tpm_tis_core.c
-index 12a2340dd5e0..14a7e60bfbb8 100644
---- a/drivers/char/tpm/tpm_tis_core.c
-+++ b/drivers/char/tpm/tpm_tis_core.c
-@@ -233,10 +233,16 @@ static int tpm_tis_request_locality(struct tpm_chip *chip, int l)
- 	struct tpm_tis_data *priv = dev_get_drvdata(&chip->dev);
- 	int ret = 0;
+diff --git a/drivers/char/tpm/tpm-sysfs.c b/drivers/char/tpm/tpm-sysfs.c
+index 530037a3f4ba..375d487565c4 100644
+--- a/drivers/char/tpm/tpm-sysfs.c
++++ b/drivers/char/tpm/tpm-sysfs.c
+@@ -309,6 +309,14 @@ static ssize_t tpm_version_major_show(struct device *dev,
+ }
+ static DEVICE_ATTR_RO(tpm_version_major);
  
-+	if (l < 0 || l > TPM_MAX_LOCALITY) {
-+		dev_warn(&chip->dev, "%s: failed to request unknown locality: %d\n",
-+			 __func__, l);
-+		return -EINVAL;
-+	}
++static ssize_t locality_show(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	struct tpm_chip *chip = to_tpm_chip(dev);
 +
- 	mutex_lock(&priv->locality_count_mutex);
- 	if (priv->locality_count == 0)
- 		ret = __tpm_tis_request_locality(chip, l);
--	if (!ret)
-+	if (ret >= 0)
- 		priv->locality_count++;
- 	mutex_unlock(&priv->locality_count_mutex);
- 	return ret;
++	return sprintf(buf, "%u\n", chip->kernel_locality);
++}
++static DEVICE_ATTR_RO(locality);
++
+ #ifdef CONFIG_TCG_TPM2_HMAC
+ static ssize_t null_name_show(struct device *dev, struct device_attribute *attr,
+ 			      char *buf)
+@@ -336,6 +344,7 @@ static struct attribute *tpm1_dev_attrs[] = {
+ 	&dev_attr_durations.attr,
+ 	&dev_attr_timeouts.attr,
+ 	&dev_attr_tpm_version_major.attr,
++	&dev_attr_locality.attr,
+ 	NULL,
+ };
+ 
+@@ -344,6 +353,7 @@ static struct attribute *tpm2_dev_attrs[] = {
+ #ifdef CONFIG_TCG_TPM2_HMAC
+ 	&dev_attr_null_name.attr,
+ #endif
++	&dev_attr_locality.attr,
+ 	NULL
+ };
+ 
 -- 
 2.43.7
 
