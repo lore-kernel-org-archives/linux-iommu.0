@@ -1,84 +1,73 @@
-Received: from BL2PR02CU003.outbound.protection.outlook.com (mail-eastusazon11011063.outbound.protection.outlook.com [52.101.52.63])
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75F5932D7C8;
-	Mon, 15 Dec 2025 21:44:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.52.63
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765835054; cv=fail; b=IBvyUi8h0Hm5hI4kc9kL2de9LLOsFe4+6CGqiK4GmeL6xWXHopRbXIRDPBc6LY40hy6y+jR/RqeGfDZmJeF09Jb41CDXCcWb6KJ+RN5mK2lAq3J3ujAtHZEHL4sB/D53qeqaqb9oJZjOzBfGlGP/3cnlvaSYZinG15iowyy3C3U=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765835054; c=relaxed/simple;
-	bh=iak87dBxpjhwA5ZFdfPqn8XOtMIYt6yDIoIfAjlRmgE=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=DVNWJSWFg3hCO3gTPjLNGNB8z1GZo8yM08E4iJ+i2S5FBfLwQC+b1O+aLkDLBdtEKtp9wMTe9Q1QoayqhUDNX2dh1M8I4PmgxGlIz12Gz79tDpjc4SfT+Rsd0sW/xpkRjEs+Ql4QdBwk80oywZ9ciqdq2OUZ/qPLRULKBO9CPzE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=ag9X4KWF; arc=fail smtp.client-ip=52.101.52.63
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 642D3298987
+	for <iommu@lists.linux.dev>; Mon, 15 Dec 2025 23:40:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.165.32
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1765842034; cv=none; b=MEi4UgiYjCTYt8ZDCL5uAmhzHOGOxFjOKGofnt0wogETyZnMPZm/A6wHuhzA4RnlXMuW8THVCxudrpPVlWEuYt35HsoSi8YHWDCUGt5IIHayxbgF0ZNmHsBRlQ0nhPLZGP+cvBcP6xe4zaP3509W/4AEZZDi3Fu9idDDx3tyadU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1765842034; c=relaxed/simple;
+	bh=5glUMjNA9hYridJApKPOT+UWwsY+UAvdBOOBKjfhu6Y=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=b5B1YWXvDBGU55XBj4AZRniwJ4ekWfIo34hF/ykaRHztQUS9yeoGDCuRuVaz8a/ZTRXIHZSsh+QL9yBfuBqD09Q5eYsnfsiNkfIVgLFhXauQKqFVZL6DQFnxeUtfSHYzVTrEnRoSM0u3/XU+0SXCShhIkowDfXn6HlZkVBVEQ3c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=RzUbyLkF; arc=none smtp.client-ip=205.220.165.32
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="ag9X4KWF"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=T/B6JxspX+sgj8FK51npUav1t7+wOr3ZeXhg7Fm9JlpSIYB1zt1FlRHOb0uyJpU0wu40Rth3KfqbS4quOKQYH5KSh/4n5n0bi9D9X/kK6mHe/XNuqVfSZcEBYUjiueDnR/J1O2tHP1Dk0vwmIM3xlqvbIWfXnql2vKkLb1lBitt8NLqTYueiAxY6eb6+lhMQYF44wvCRBln2JWRs3w0ArNaIagQ2hkSwCrffVhCgPVrmZTI8sdnNGNDMMWTSxeFHkaFRQP/bUoAx7kSnBQlETbCAGai5nPu04crBNT9LxQUEF+Fn/StVEwfVHF7oxzIPD//gyVIc4A2B3+ox8q3cdw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=n24JF2OvxWwOLG1IabA28dNDNHgQHJwMPeEGPPE2g8Q=;
- b=RLMG4x9HyZKvsHxVjZdgTQhftXYdozbajFVB4xdwsULqUgqefpiqpFh8bLs/tSyaLlvu5iOeRXEWcAFjTfbLDjQM+TJ3N2EByuedmtrOz0D1x4+g8nT9vmEpMJgp37nGR8FIpH9WJLj01HFrJqFNFegpu5LPSFkFNToqYY+nGjbhRBm3PEOJcKV3+iFDIdJ5N4TryRHWIqkz2b/Iz3yyzkHyF96W6K5KdBPwDbTJNOriOVYmmzOQV76orlmxcSwUUSTjPy+yivPCLjVjgCc7W6AlUHNE7UwrfTYSI2LCI51NmmgIbkje/JI+5dRa43xH335IIn0Pr+Q7b3vZbhpzng==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=8bytes.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=n24JF2OvxWwOLG1IabA28dNDNHgQHJwMPeEGPPE2g8Q=;
- b=ag9X4KWF3M5yDiJ+dEwwNTiM8MgXEi3oAuAOJ0agoK9hzKuuLqz6LGfDeahLJ5UxT5UNnbYNedmkUssruk6S+tn3+GOU5t+0YJp9v9RqXVkKNfgB2ke0C62g/aCxaY9q4lvr1NaSu/62h3PhQSKm679V+VxTQmaCgLgtAUz2eaR/vzy2Er3KerYx/TBgm7ApnbZ/cGL7W9aWBO90d4z2QT2nv1zfVYdIxtcg3UOGo6agxHi51bQkph0kuQTUN2QBtHGFTq2750AfRTdOWD3gmwSJgdhJHybiBd2L6iS9bE1ijexLWwgLTNsig4zysnBuIcuYSTTzDWA/Lxu3PqqGQg==
-Received: from CH0PR03CA0273.namprd03.prod.outlook.com (2603:10b6:610:e6::8)
- by PH8PR12MB6770.namprd12.prod.outlook.com (2603:10b6:510:1c5::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9412.13; Mon, 15 Dec
- 2025 21:42:49 +0000
-Received: from CH1PEPF0000AD7B.namprd04.prod.outlook.com
- (2603:10b6:610:e6:cafe::9) by CH0PR03CA0273.outlook.office365.com
- (2603:10b6:610:e6::8) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9412.13 via Frontend Transport; Mon,
- 15 Dec 2025 21:42:48 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- CH1PEPF0000AD7B.mail.protection.outlook.com (10.167.244.58) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9434.6 via Frontend Transport; Mon, 15 Dec 2025 21:42:48 +0000
-Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Mon, 15 Dec
- 2025 13:42:31 -0800
-Received: from drhqmail203.nvidia.com (10.126.190.182) by
- drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.20; Mon, 15 Dec 2025 13:42:30 -0800
-Received: from Asurada-Nvidia.nvidia.com (10.127.8.12) by mail.nvidia.com
- (10.126.190.182) with Microsoft SMTP Server id 15.2.2562.20 via Frontend
- Transport; Mon, 15 Dec 2025 13:42:29 -0800
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: <joro@8bytes.org>
-CC: <will@kernel.org>, <robin.murphy@arm.com>, <afael@kernel.org>,
-	<lenb@kernel.org>, <bhelgaas@google.com>, <alex@shazbot.org>,
-	<jgg@nvidia.com>, <kevin.tian@intel.com>, <baolu.lu@linux.intel.com>,
-	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <linux-acpi@vger.kernel.org>,
-	<linux-pci@vger.kernel.org>, <kvm@vger.kernel.org>,
-	<patches@lists.linux.dev>, <pjaroszynski@nvidia.com>, <vsethi@nvidia.com>,
-	<helgaas@kernel.org>, <etzhao1900@gmail.com>
-Subject: [PATCH v8 2/5] iommu: Tidy domain for iommu_setup_dma_ops()
-Date: Mon, 15 Dec 2025 13:42:17 -0800
-Message-ID: <092a99f0b6d59237aa6a06f719f51fca59d7330a.1765834788.git.nicolinc@nvidia.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <cover.1765834788.git.nicolinc@nvidia.com>
-References: <cover.1765834788.git.nicolinc@nvidia.com>
+	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="RzUbyLkF"
+Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 5BFJCMtq2886203;
+	Mon, 15 Dec 2025 23:39:51 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=cc
+	:content-transfer-encoding:date:from:in-reply-to:message-id
+	:mime-version:references:subject:to; s=corp-2025-04-25; bh=tzLvZ
+	FhdpkTN22O4Yy3+geQe4dPo2QF0BUp01ZQMyhs=; b=RzUbyLkFpxJeSGITogeha
+	3X4KasJhKmzFuh93ZiXKz+I5DzD/rP9W4HNLj/t+08ZMDgdzMN3nqQ+y9kq32R4V
+	2phUu05d1O9DFgZbg7zh/S12sU7vXMSwT8GIl0J86Xp8IllKVtfovQsWOdLYDG9b
+	Ux4tlDOgLvietztW/nyCP12YGl04wLS2rvj9Qo/DhI76GOiQT++e0TkqFHUCyvO0
+	zu/TbPJ+JVjX422IBnoGc2z3UMXMw38Z7SGhyDTsz6diBhSb6ajFhkX6efdPSPom
+	kPUIHKQ8sl5fVqEH3h93odKlEuZppTAHlinpyJoK6FJichA0bdmAsruCWTq8g9yq
+	Q==
+Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 4b1015u17m-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Mon, 15 Dec 2025 23:39:51 +0000 (GMT)
+Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 5BFLHPPh022550;
+	Mon, 15 Dec 2025 23:39:49 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 4b0xkjkbj7-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
+	Mon, 15 Dec 2025 23:39:49 +0000
+Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 5BFNdmOW007493;
+	Mon, 15 Dec 2025 23:39:48 GMT
+Received: from bur-virt-x6-2-100.us.oracle.com (bur-virt-x6-2-100.us.oracle.com [10.153.92.40])
+	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 4b0xkjkbhr-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
+	Mon, 15 Dec 2025 23:39:48 +0000
+From: Ross Philipson <ross.philipson@oracle.com>
+To: linux-kernel@vger.kernel.org, x86@kernel.org,
+        linux-integrity@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-crypto@vger.kernel.org, kexec@lists.infradead.org,
+        linux-efi@vger.kernel.org, iommu@lists.linux.dev
+Cc: ross.philipson@oracle.com, dpsmith@apertussolutions.com,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, hpa@zytor.com,
+        dave.hansen@linux.intel.com, ardb@kernel.org, mjg59@srcf.ucam.org,
+        James.Bottomley@hansenpartnership.com, peterhuewe@gmx.de,
+        jarkko@kernel.org, jgg@ziepe.ca, luto@amacapital.net,
+        nivedita@alum.mit.edu, herbert@gondor.apana.org.au,
+        davem@davemloft.net, corbet@lwn.net, ebiederm@xmission.com,
+        dwmw2@infradead.org, baolu.lu@linux.intel.com,
+        kanth.ghatraju@oracle.com, andrew.cooper3@citrix.com,
+        trenchboot-devel@googlegroups.com
+Subject: [PATCH v15 01/28] tpm: Initial step to reorganize TPM public headers
+Date: Mon, 15 Dec 2025 15:32:49 -0800
+Message-ID: <20251215233316.1076248-2-ross.philipson@oracle.com>
+X-Mailer: git-send-email 2.43.7
+In-Reply-To: <20251215233316.1076248-1-ross.philipson@oracle.com>
+References: <20251215233316.1076248-1-ross.philipson@oracle.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -86,147 +75,314 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH1PEPF0000AD7B:EE_|PH8PR12MB6770:EE_
-X-MS-Office365-Filtering-Correlation-Id: e86b11ed-2132-4710-6180-08de3c22e43e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|7416014|376014|1800799024|82310400026|36860700013;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?h4Ox8G6v/jOxjqs8Kr8m6RF8psWJs1XFjAwklMXRwmblHFLW8N8z0hmtXVeo?=
- =?us-ascii?Q?LUu+avW1M9ShXqustEP3av3htkdGHWhvtl6uN/XYSxD+i0L08niG7kLj/mQr?=
- =?us-ascii?Q?MgfH0xKk612jmtVuIEAR8qdWSzOH0qTtlZBpgfyB5sLF8qf+XWIMJvUm1Mp6?=
- =?us-ascii?Q?Fd4ccohSAv2gpQUz2NS62YLK3PhECLOm0U/r0xzE2F424pC0RbbOIOoU/2Cu?=
- =?us-ascii?Q?CMrDaG13lFY+P+XYlf61mojPZ0vXA9N4TOcjEAmNaoAn3bAiFa0u6zfFBrp4?=
- =?us-ascii?Q?N7J82xiMwypR5dB3Atudkc90tNrLS/xLEZGZw0bK3swbRGlDBN7G688f5/k2?=
- =?us-ascii?Q?ANNu0EgSVu1er0HXmIVf+19UuDUyMinJfmvb+vQ7OoXlYTQJc+R2S0U4vKtr?=
- =?us-ascii?Q?P3HOFyIKFF5bDUDVBLRf37d6R2+NbnT2ofI4VfdWXGUC1BWB2PxrKMZFStrn?=
- =?us-ascii?Q?Vw/Nc/GsSo5RZdfBC8Z66jnwJFD53hQoXIDnWdIoameh0yOaNDnO2YRnCF9N?=
- =?us-ascii?Q?kp3xjgmhgUtLUFJEHE9Mdf4G6fvTJT3P6To3H8bMME696jeCagQHMmHbjIx3?=
- =?us-ascii?Q?Mr8233A2A8OusPIgNFC6ZoYAgyGcTsY3nO/tsviIeK7qgW+uQXinaMSnxuxv?=
- =?us-ascii?Q?QWaLzg9CKzefH2j4bDI6PY63jYwYiD6pW04Gg2VZzWO6CMJ83kN/kgQiYY4b?=
- =?us-ascii?Q?aC4vsDK44+MXmG5MNrEyDG7hmHYFXWIJ/JGBMqpfaigbMyfM/W0w3r1U/LfZ?=
- =?us-ascii?Q?BhVJoquPd0WKLmzZEj/4WglOu9DMX3FcoC9dVXqYtiUbbsgWG6s5jKRr4TYG?=
- =?us-ascii?Q?4PlK4fHzL2HeFLuQjjda3J/6m1qwniRQBrmb3aHmwxlXx1OpCk3KTc4ez9aT?=
- =?us-ascii?Q?7YcFH5BBeE1FG4qWc4WejhwLSv1hMEZ1FvsjnjvkSxeSnJYhHVkkPolLPhs1?=
- =?us-ascii?Q?vmaKV8nOxDc46jN4iXR5oKSKZbZnveLiqHFsmnYhJY5rp8u2J/GAu9HOMDon?=
- =?us-ascii?Q?0vQIhM9XGpDcgZsE6dc+huzfVweO7QBtBBpE3EzKrvI45y+82ah+IfMO2Je6?=
- =?us-ascii?Q?oHpQAvJxtM2Pszt0uFetXmZW7iAFKBYLJVEv+cJmEqoho/mgkmsyePjBuYkI?=
- =?us-ascii?Q?FNVlWj855uB2eA85XoOVpOBuWKcZ3frrubTb/GR2Zx91lW8Wkgd5UUALjwbP?=
- =?us-ascii?Q?yizMB3nAnK3xInklYs+rPcsre57dfTjOWTkmDXCsIu5QFq5jOMfbGXGqZo7h?=
- =?us-ascii?Q?Rag1flQVpBIspzl/HcepZiOYYeZTAYNyQhM3UZnBRJfbiKAXz/u06uRNNtYo?=
- =?us-ascii?Q?1MRAbWBvhZ4lzaYO1Y25K2zkfSFwqY0U8KVee1hFjE3powyhpJHnTPhOMlWf?=
- =?us-ascii?Q?Br579EBGvkKStuBH/8n3TYZT4yXjcuskhMNvLCXyLQxC3RGp3GbdkU1J3Ro1?=
- =?us-ascii?Q?/SIGAGYQcpmMLk5dbCUYVkqWR5uSW/OjtBqJVkZf5OVmwr8M1HvyGRfQ/6ni?=
- =?us-ascii?Q?UtI/X/bUleEO1gRbO7389Nb/BumgryvJJ2YQ6bkdC9wY1q7IyE+j7iML+zai?=
- =?us-ascii?Q?erauwhva3u5cuiq6cgc=3D?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230040)(7416014)(376014)(1800799024)(82310400026)(36860700013);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Dec 2025 21:42:48.7378
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: e86b11ed-2132-4710-6180-08de3c22e43e
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CH1PEPF0000AD7B.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB6770
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.9,FMLib:17.12.100.49
+ definitions=2025-12-15_05,2025-12-15_03,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 suspectscore=0 adultscore=0
+ mlxscore=0 malwarescore=0 mlxlogscore=999 phishscore=0 spamscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2510240000
+ definitions=main-2512150204
+X-Proofpoint-GUID: _xGkpnAJf8R05egiksTREaWadUM__DrT
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMjE1MDIwMyBTYWx0ZWRfX6tdjJsl1NoeB
+ DS5OSXIuY6fZf6i8Dux0u91y6pTRP4laoGgDxJVMPk2BRLqQ+hvDiS5w63nWgNRS1CJVFFUgh4Q
+ b7vE3Yyindy83M46GtVDokYtWtbgu1ntMTJ1ykikERfOE/mB3rc/xbJylxBQoasAtefEj1SWSK1
+ fL5LCqdXl4xQavpiGysVz9q6D+/xvllesNx+F5WkMl1yc4bGRzPNJFaPMpO7kFvmOhDLSP0jLYR
+ Ya3c02qYkqlCxlEKNqj21VLaabfM+OFoaMzkm9RP+jyi8FzX0t1U4OKK0H93nhqRL7kuE5E7ouf
+ GFuhhI3We8y1dQiP2uOAh0Ypf90hrZW+VzybxQYiUfEtQgVktCu8gJtiHR0rphypnU1sIy5TJNA
+ +EjQ7W0DQzKEIpoTzudqbImCusUI6lHYyCHBxzcJ7Utiz6/1X28=
+X-Authority-Analysis: v=2.4 cv=GbUaXAXL c=1 sm=1 tr=0 ts=69409c47 b=1 cx=c_pps
+ a=e1sVV491RgrpLwSTMOnk8w==:117 a=e1sVV491RgrpLwSTMOnk8w==:17
+ a=wP3pNCr1ah4A:10 a=VkNPw1HP01LnGYTKEx00:22 a=xt6ew7UTAAAA:8 a=UN5060LkAAAA:8
+ a=yPCof4ZbAAAA:8 a=VnNF1IyMAAAA:8 a=FP58Ms26AAAA:8 a=CLgDDJZMEY7syEPonIoA:9
+ a=tn93DeGZTgJ6DdWMtdD4:22 a=E6eXv-vVeS7VqOnxGRGn:22 cc=ntf awl=host:13654
+X-Proofpoint-ORIG-GUID: _xGkpnAJf8R05egiksTREaWadUM__DrT
 
-This function can only be called on the default_domain. Trivally pass it
-in. In all three existing cases, the default domain was just attached to
-the device.
+Replace the existing public header tpm_command.h with the first two
+new public headers tpm1.h and tpm_common.h. In addition, related
+definitions in tpm1_cmd.c were moved to the new tpm1.h.
 
-This avoids iommu_setup_dma_ops() calling iommu_get_domain_for_dev() that
-will be used by external callers.
-
-Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Tested-by: Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>
-Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+Signed-off-by: Daniel P. Smith <dpsmith@apertussolutions.com>
+Signed-off-by: Ross Philipson <ross.philipson@oracle.com>
 ---
- drivers/iommu/dma-iommu.h | 5 +++--
- drivers/iommu/dma-iommu.c | 4 +---
- drivers/iommu/iommu.c     | 6 +++---
- 3 files changed, 7 insertions(+), 8 deletions(-)
+ drivers/char/tpm/tpm-buf.c                |  3 +-
+ drivers/char/tpm/tpm1-cmd.c               | 13 +-----
+ include/keys/trusted_tpm.h                |  1 -
+ include/linux/tpm.h                       |  3 ++
+ include/linux/tpm1.h                      | 55 +++++++++++++++++++++++
+ include/linux/tpm_command.h               | 30 -------------
+ include/linux/tpm_common.h                | 22 +++++++++
+ security/keys/trusted-keys/trusted_tpm1.c |  1 -
+ security/keys/trusted-keys/trusted_tpm2.c |  1 -
+ 9 files changed, 82 insertions(+), 47 deletions(-)
+ create mode 100644 include/linux/tpm1.h
+ delete mode 100644 include/linux/tpm_command.h
+ create mode 100644 include/linux/tpm_common.h
 
-diff --git a/drivers/iommu/dma-iommu.h b/drivers/iommu/dma-iommu.h
-index eca201c1f963..040d00252563 100644
---- a/drivers/iommu/dma-iommu.h
-+++ b/drivers/iommu/dma-iommu.h
-@@ -9,7 +9,7 @@
+diff --git a/drivers/char/tpm/tpm-buf.c b/drivers/char/tpm/tpm-buf.c
+index 1cb649938c01..dae23e6de269 100644
+--- a/drivers/char/tpm/tpm-buf.c
++++ b/drivers/char/tpm/tpm-buf.c
+@@ -3,7 +3,6 @@
+  * Handling of TPM command and other buffers.
+  */
  
- #ifdef CONFIG_IOMMU_DMA
+-#include <linux/tpm_command.h>
+ #include <linux/module.h>
+ #include <linux/tpm.h>
  
--void iommu_setup_dma_ops(struct device *dev);
-+void iommu_setup_dma_ops(struct device *dev, struct iommu_domain *domain);
+@@ -296,7 +295,7 @@ void tpm1_buf_append_extend(struct tpm_buf *buf, u32 pcr_idx, const u8 *hash)
+ 	if (buf->flags & TPM_BUF_INVALID)
+ 		return;
  
- int iommu_get_dma_cookie(struct iommu_domain *domain);
- void iommu_put_dma_cookie(struct iommu_domain *domain);
-@@ -26,7 +26,8 @@ extern bool iommu_dma_forcedac;
+-	if (!tpm1_buf_is_command(buf, TPM_ORD_EXTEND)) {
++	if (!tpm1_buf_is_command(buf, TPM_ORD_PCR_EXTEND)) {
+ 		WARN(1, "tpm_buf: invalid TPM_Extend command\n");
+ 		buf->flags |= TPM_BUF_INVALID;
+ 		return;
+diff --git a/drivers/char/tpm/tpm1-cmd.c b/drivers/char/tpm/tpm1-cmd.c
+index bc156d7d59f2..f29827b454d2 100644
+--- a/drivers/char/tpm/tpm1-cmd.c
++++ b/drivers/char/tpm/tpm1-cmd.c
+@@ -18,12 +18,9 @@
+ #include <linux/mutex.h>
+ #include <linux/spinlock.h>
+ #include <linux/freezer.h>
+-#include <linux/tpm_command.h>
+ #include <linux/tpm_eventlog.h>
+ #include "tpm.h"
  
- #else /* CONFIG_IOMMU_DMA */
- 
--static inline void iommu_setup_dma_ops(struct device *dev)
-+static inline void iommu_setup_dma_ops(struct device *dev,
-+				       struct iommu_domain *domain)
- {
- }
- 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index c92088855450..aeaf8fad985c 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -2097,10 +2097,8 @@ void dma_iova_destroy(struct device *dev, struct dma_iova_state *state,
- }
- EXPORT_SYMBOL_GPL(dma_iova_destroy);
- 
--void iommu_setup_dma_ops(struct device *dev)
-+void iommu_setup_dma_ops(struct device *dev, struct iommu_domain *domain)
- {
--	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
+-#define TPM_MAX_ORDINAL 243
 -
- 	if (dev_is_pci(dev))
- 		dev->iommu->pci_32bit_workaround = !iommu_dma_forcedac;
+ /*
+  * Array with one entry per ordinal defining the maximum amount
+  * of time the chip could take to return the result.  The ordinal
+@@ -308,9 +305,6 @@ unsigned long tpm1_calc_ordinal_duration(struct tpm_chip *chip, u32 ordinal)
+ 		return duration;
+ }
  
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 170e522b5bda..1e322f87b171 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -661,7 +661,7 @@ static int __iommu_probe_device(struct device *dev, struct list_head *group_list
- 	}
+-#define TPM_ORD_STARTUP 153
+-#define TPM_ST_CLEAR 1
+-
+ /**
+  * tpm1_startup() - turn on the TPM
+  * @chip: TPM chip to use
+@@ -478,7 +472,6 @@ int tpm1_pcr_extend(struct tpm_chip *chip, u32 pcr_idx, const u8 *hash,
+ 	return rc;
+ }
  
- 	if (group->default_domain)
--		iommu_setup_dma_ops(dev);
-+		iommu_setup_dma_ops(dev, group->default_domain);
+-#define TPM_ORD_GET_CAP 101
+ ssize_t tpm1_getcap(struct tpm_chip *chip, u32 subcap_id, cap_t *cap,
+ 		    const char *desc, size_t min_cap_length)
+ {
+@@ -574,7 +567,6 @@ int tpm1_get_random(struct tpm_chip *chip, u8 *dest, size_t max)
+ 	return rc;
+ }
  
- 	mutex_unlock(&group->mutex);
+-#define TPM_ORD_PCRREAD 21
+ int tpm1_pcr_read(struct tpm_chip *chip, u32 pcr_idx, u8 *res_buf)
+ {
+ 	int rc;
+@@ -584,7 +576,7 @@ int tpm1_pcr_read(struct tpm_chip *chip, u32 pcr_idx, u8 *res_buf)
+ 		return -ENOMEM;
  
-@@ -1949,7 +1949,7 @@ static int bus_iommu_probe(const struct bus_type *bus)
- 			return ret;
- 		}
- 		for_each_group_device(group, gdev)
--			iommu_setup_dma_ops(gdev->dev);
-+			iommu_setup_dma_ops(gdev->dev, group->default_domain);
- 		mutex_unlock(&group->mutex);
+ 	tpm_buf_init(buf, TPM_BUFSIZE);
+-	tpm_buf_reset(buf, TPM_TAG_RQU_COMMAND, TPM_ORD_PCRREAD);
++	tpm_buf_reset(buf, TPM_TAG_RQU_COMMAND, TPM_ORD_PCR_READ);
+ 	tpm_buf_append_u32(buf, pcr_idx);
  
- 		/*
-@@ -3155,7 +3155,7 @@ static ssize_t iommu_group_store_type(struct iommu_group *group,
+ 	rc = tpm_transmit_cmd(chip, buf, TPM_DIGEST_SIZE,
+@@ -599,7 +591,6 @@ int tpm1_pcr_read(struct tpm_chip *chip, u32 pcr_idx, u8 *res_buf)
+ 	return rc;
+ }
  
- 	/* Make sure dma_ops is appropriatley set */
- 	for_each_group_device(group, gdev)
--		iommu_setup_dma_ops(gdev->dev);
-+		iommu_setup_dma_ops(gdev->dev, group->default_domain);
+-#define TPM_ORD_CONTINUE_SELFTEST 83
+ /**
+  * tpm1_continue_selftest() - run TPM's selftest
+  * @chip: TPM chip to use
+@@ -716,8 +707,6 @@ int tpm1_auto_startup(struct tpm_chip *chip)
+ 	return rc;
+ }
  
- out_unlock:
- 	mutex_unlock(&group->mutex);
+-#define TPM_ORD_SAVESTATE 152
+-
+ /**
+  * tpm1_pm_suspend() - pm suspend handler
+  * @chip: TPM chip to use.
+diff --git a/include/keys/trusted_tpm.h b/include/keys/trusted_tpm.h
+index 0fadc6a4f166..3a0fa3bc8454 100644
+--- a/include/keys/trusted_tpm.h
++++ b/include/keys/trusted_tpm.h
+@@ -3,7 +3,6 @@
+ #define __TRUSTED_TPM_H
+ 
+ #include <keys/trusted-type.h>
+-#include <linux/tpm_command.h>
+ 
+ extern struct trusted_key_ops trusted_key_tpm_ops;
+ 
+diff --git a/include/linux/tpm.h b/include/linux/tpm.h
+index 8da49e8769d5..ef81e0b59657 100644
+--- a/include/linux/tpm.h
++++ b/include/linux/tpm.h
+@@ -25,6 +25,9 @@
+ #include <crypto/hash_info.h>
+ #include <crypto/aes.h>
+ 
++#include "tpm_common.h"
++#include "tpm1.h"
++
+ #define TPM_DIGEST_SIZE		20	/* Max TPM v1.2 PCR size */
+ #define TPM_HEADER_SIZE		10
+ #define TPM_BUFSIZE		4096
+diff --git a/include/linux/tpm1.h b/include/linux/tpm1.h
+new file mode 100644
+index 000000000000..54c6c211eb9e
+--- /dev/null
++++ b/include/linux/tpm1.h
+@@ -0,0 +1,55 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/*
++ * Copyright (C) 2004,2007,2008 IBM Corporation
++ *
++ * Authors:
++ * Leendert van Doorn <leendert@watson.ibm.com>
++ * Dave Safford <safford@watson.ibm.com>
++ * Reiner Sailer <sailer@watson.ibm.com>
++ * Kylene Hall <kjhall@us.ibm.com>
++ * Debora Velarde <dvelarde@us.ibm.com>
++ *
++ * Maintained by: <tpmdd_devel@lists.sourceforge.net>
++ *
++ * Device driver for TCG/TCPA TPM (trusted platform module).
++ * Specifications at www.trustedcomputinggroup.org
++ */
++#ifndef __LINUX_TPM1_H__
++#define __LINUX_TPM1_H__
++
++/*
++ * TPM 1.2 Main Specification
++ * https://trustedcomputinggroup.org/resource/tpm-main-specification/
++ */
++
++/* Command TAGS */
++enum tpm_command_tags {
++	TPM_TAG_RQU_COMMAND		= 193,
++	TPM_TAG_RQU_AUTH1_COMMAND	= 194,
++	TPM_TAG_RQU_AUTH2_COMMAND	= 195,
++	TPM_TAG_RSP_COMMAND		= 196,
++	TPM_TAG_RSP_AUTH1_COMMAND	= 197,
++	TPM_TAG_RSP_AUTH2_COMMAND	= 198,
++};
++
++/* Command Ordinals */
++enum tpm_command_ordinals {
++	TPM_ORD_CONTINUE_SELFTEST	= 83,
++	TPM_ORD_GET_CAP			= 101,
++	TPM_ORD_GET_RANDOM		= 70,
++	TPM_ORD_PCR_EXTEND		= 20,
++	TPM_ORD_PCR_READ		= 21,
++	TPM_ORD_OSAP			= 11,
++	TPM_ORD_OIAP			= 10,
++	TPM_ORD_SAVESTATE		= 152,
++	TPM_ORD_SEAL			= 23,
++	TPM_ORD_STARTUP			= 153,
++	TPM_ORD_UNSEAL			= 24,
++};
++
++/* Other constants */
++#define SRKHANDLE                       0x40000000
++#define TPM_NONCE_SIZE                  20
++#define TPM_ST_CLEAR			1
++
++#endif
+diff --git a/include/linux/tpm_command.h b/include/linux/tpm_command.h
+deleted file mode 100644
+index 02038972a05f..000000000000
+--- a/include/linux/tpm_command.h
++++ /dev/null
+@@ -1,30 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0 */
+-#ifndef __LINUX_TPM_COMMAND_H__
+-#define __LINUX_TPM_COMMAND_H__
+-
+-/*
+- * TPM Command constants from specifications at
+- * http://www.trustedcomputinggroup.org
+- */
+-
+-/* Command TAGS */
+-#define TPM_TAG_RQU_COMMAND             193
+-#define TPM_TAG_RQU_AUTH1_COMMAND       194
+-#define TPM_TAG_RQU_AUTH2_COMMAND       195
+-#define TPM_TAG_RSP_COMMAND             196
+-#define TPM_TAG_RSP_AUTH1_COMMAND       197
+-#define TPM_TAG_RSP_AUTH2_COMMAND       198
+-
+-/* Command Ordinals */
+-#define TPM_ORD_OIAP                    10
+-#define TPM_ORD_OSAP                    11
+-#define TPM_ORD_EXTEND			20
+-#define TPM_ORD_SEAL                    23
+-#define TPM_ORD_UNSEAL                  24
+-#define TPM_ORD_GET_RANDOM              70
+-
+-/* Other constants */
+-#define SRKHANDLE                       0x40000000
+-#define TPM_NONCE_SIZE                  20
+-
+-#endif
+diff --git a/include/linux/tpm_common.h b/include/linux/tpm_common.h
+new file mode 100644
+index 000000000000..b8be669913dd
+--- /dev/null
++++ b/include/linux/tpm_common.h
+@@ -0,0 +1,22 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/*
++ * Copyright (C) 2004,2007,2008 IBM Corporation
++ *
++ * Authors:
++ * Leendert van Doorn <leendert@watson.ibm.com>
++ * Dave Safford <safford@watson.ibm.com>
++ * Reiner Sailer <sailer@watson.ibm.com>
++ * Kylene Hall <kjhall@us.ibm.com>
++ * Debora Velarde <dvelarde@us.ibm.com>
++ *
++ * Maintained by: <tpmdd_devel@lists.sourceforge.net>
++ *
++ * Device driver for TCG/TCPA TPM (trusted platform module).
++ * Specifications at www.trustedcomputinggroup.org
++ */
++#ifndef __LINUX_TPM_COMMON_H__
++#define __LINUX_TPM_COMMON_H__
++
++#define TPM_MAX_ORDINAL 243
++
++#endif
+diff --git a/security/keys/trusted-keys/trusted_tpm1.c b/security/keys/trusted-keys/trusted_tpm1.c
+index 6e6a9fb48e63..3717a06a5212 100644
+--- a/security/keys/trusted-keys/trusted_tpm1.c
++++ b/security/keys/trusted-keys/trusted_tpm1.c
+@@ -17,7 +17,6 @@
+ #include <keys/trusted-type.h>
+ #include <linux/key-type.h>
+ #include <linux/tpm.h>
+-#include <linux/tpm_command.h>
+ 
+ #include <keys/trusted_tpm.h>
+ 
+diff --git a/security/keys/trusted-keys/trusted_tpm2.c b/security/keys/trusted-keys/trusted_tpm2.c
+index 0a99bd051a25..e6000c71eeb6 100644
+--- a/security/keys/trusted-keys/trusted_tpm2.c
++++ b/security/keys/trusted-keys/trusted_tpm2.c
+@@ -9,7 +9,6 @@
+ #include <linux/string.h>
+ #include <linux/err.h>
+ #include <linux/tpm.h>
+-#include <linux/tpm_command.h>
+ 
+ #include <keys/trusted-type.h>
+ #include <keys/trusted_tpm.h>
 -- 
-2.43.0
+2.43.7
 
