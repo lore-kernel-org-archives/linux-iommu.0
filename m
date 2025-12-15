@@ -1,52 +1,52 @@
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59F3332D7F4
-	for <iommu@lists.linux.dev>; Mon, 15 Dec 2025 23:41:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.177.32
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AD2932E749
+	for <iommu@lists.linux.dev>; Mon, 15 Dec 2025 23:41:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.165.32
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765842102; cv=none; b=tQAiu64l98eheJZdZPCHv6SdP2OCk+X+oynZ2lBh0B2DNctFRgmZyHInbMzvsSJox7dd/EVxPsTG6tr6Ix+2Vuh7E0J9wegj6uUpBrsR7iaVQWG7e81jde9OToPAlMmQUJiyuv1OtkjKWcxxbBmqExDkDluObTZxs5CmpzuaVBk=
+	t=1765842111; cv=none; b=CKllyNWgEDLtjmodDTAqR8Tfl/pKIXbauSSbWFGAEYLrxfHCPyB36GV6NtIUDy1lO2oRV/EISfozHZmEl3TKeZmv3QQmQrHzUxU0hKK13BPB1XOTsGWIMhmnQI9UuhGXudNf4WqyFNxd1LuxoMQbCB+5s4fLNdYxTeEJLQbsAm4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765842102; c=relaxed/simple;
-	bh=zVX3kDIM9j26/SQc2TECyWl7kHr7nWizlyFR59IojD0=;
+	s=arc-20240116; t=1765842111; c=relaxed/simple;
+	bh=bJTd5U+FhsNucN9Z852MD38T9+haZ3NZg84Xh5XA0ZQ=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=rXO8BCODFK/3CBpb+zZ39izrSlYrnM/F/R6fU0jj4FukosFdS1LEzOgs9zeAjsvP+CGhwqvtPjiZvlqIDppcX1QY/to2UwV7nLwyogTUx0AYKDPdEubFJ3Y775LyjMWlG9nHT1hjdwh9b5iyxkFAXSim9Y79oX9d2vS8A84/oK8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=X5Tds7yc; arc=none smtp.client-ip=205.220.177.32
+	 MIME-Version; b=uxInJh+z622jCj9cNaTWBSIy98Vohzblh6TqAsJlXNbtQ+ZCJ7AnPml6UFCtOfcT0Zp/Ep99sQ6cGf43huPJ6JbcBZhuU6A63Zq+6TSe8BNqxGLnuNuxN9QI2kqcH63fBcnVBAzTkdenUDbju9PCSPZ6oR9g+8vf0O2+BCfCP2s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=cUaxa7ws; arc=none smtp.client-ip=205.220.165.32
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="X5Tds7yc"
-Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 5BFJCAoT2796180;
-	Mon, 15 Dec 2025 23:40:58 GMT
+	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="cUaxa7ws"
+Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 5BFJCNhs2886214;
+	Mon, 15 Dec 2025 23:40:54 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=cc
 	:content-transfer-encoding:date:from:in-reply-to:message-id
-	:mime-version:references:subject:to; s=corp-2025-04-25; bh=rP4/i
-	QNMLlJOyoN4SozXXkccVejXNUbkIm3B/M3I0OA=; b=X5Tds7ycktypa3YPX76Az
-	+QCN3ULTlQyf7Ar61BZUwAstqqKzOHBcVhnOJwhInEt+DAqo/AlNQrYZf+FwIeo+
-	y1EKw9OrckXMpjx2uIjnld2oAaADqIv371xRx14Je0nggX+KqgS+pHtBFiBArNTt
-	zPqYcRy3awnNxRR3KiHQ3lcmwrU0Oq1ZVxXMtlFrpguwY1k/niNoeDUCW+9Ddpd+
-	U1lnodoY7tzmNz30mXwmOj4FHYv1Pqa5V0ar5ULx44oXQ2nk1R9hkKKfP7NqJeZP
-	uDGwIXWe9JHbjHoLaJ6yZKvqneD1SGdiCjUPYuhLiZwBJUk4FiAU80zlwe9xjERU
+	:mime-version:references:subject:to; s=corp-2025-04-25; bh=sS+vs
+	cjGqo/DXtce/iWnxtIttfTP1XZi4+OILH8EuuU=; b=cUaxa7wswHSCIs7ugWRgg
+	OZK6Q3uEP31rKtnUOFyRzhiXSJSxcyzwsZefdULPaRMRZKdgQZ/bxXm9E0+6/hWM
+	Zvf9eAFOOovlInhABSvoCM/Q1FQAmQhGjIOpqwZW2OtxQc+AP0bGu62A7KhTeyV4
+	ByiqmCdYdFV+jpvd7pOKIvJKP8EkTbTPuUy43GDp+VNY4cV5qDACt+R2uflFhlzB
+	jDr3T+wOHDZok5d6htnwMID8wLd6f7O8lMhz41IvKaYO1H5STZM118H0qPWjKFEm
+	8r0MlCnV9SHOxa/JMuATXGNGifsfAS8p5+lHwGaqBRnk92H/+NDUuxDXeCT6+quz
 	g==
 Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 4b0xja318r-1
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 4b1015u18h-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Mon, 15 Dec 2025 23:40:58 +0000 (GMT)
+	Mon, 15 Dec 2025 23:40:53 +0000 (GMT)
 Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 5BFLEBS2022494;
-	Mon, 15 Dec 2025 23:40:57 GMT
+	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 5BFLBRf8022557;
+	Mon, 15 Dec 2025 23:40:52 GMT
 Received: from pps.reinject (localhost [127.0.0.1])
-	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 4b0xkjkccx-1
+	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 4b0xkjkcaj-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-	Mon, 15 Dec 2025 23:40:57 +0000
+	Mon, 15 Dec 2025 23:40:51 +0000
 Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 5BFNeu3N010824;
-	Mon, 15 Dec 2025 23:40:56 GMT
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 5BFNep5g010286;
+	Mon, 15 Dec 2025 23:40:51 GMT
 Received: from bur-virt-x6-2-100.us.oracle.com (bur-virt-x6-2-100.us.oracle.com [10.153.92.40])
-	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 4b0xkjkcc0-1
+	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 4b0xkjkc9t-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-	Mon, 15 Dec 2025 23:40:56 +0000
+	Mon, 15 Dec 2025 23:40:50 +0000
 From: Ross Philipson <ross.philipson@oracle.com>
 To: linux-kernel@vger.kernel.org, x86@kernel.org,
         linux-integrity@vger.kernel.org, linux-doc@vger.kernel.org,
@@ -62,9 +62,9 @@ Cc: ross.philipson@oracle.com, dpsmith@apertussolutions.com,
         dwmw2@infradead.org, baolu.lu@linux.intel.com,
         kanth.ghatraju@oracle.com, andrew.cooper3@citrix.com,
         trenchboot-devel@googlegroups.com
-Subject: [PATCH v15 16/28] x86/txt: Intel Trusted eXecution Technology (TXT) definitions
-Date: Mon, 15 Dec 2025 15:33:04 -0800
-Message-ID: <20251215233316.1076248-17-ross.philipson@oracle.com>
+Subject: [PATCH v15 14/28] x86: Secure Launch Resource Table header file
+Date: Mon, 15 Dec 2025 15:33:02 -0800
+Message-ID: <20251215233316.1076248-15-ross.philipson@oracle.com>
 X-Mailer: git-send-email 2.43.7
 In-Reply-To: <20251215233316.1076248-1-ross.philipson@oracle.com>
 References: <20251215233316.1076248-1-ross.philipson@oracle.com>
@@ -82,367 +82,351 @@ X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 suspe
  mlxscore=0 malwarescore=0 mlxlogscore=999 phishscore=0 spamscore=0
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2510240000
  definitions=main-2512150204
-X-Authority-Analysis: v=2.4 cv=TbWbdBQh c=1 sm=1 tr=0 ts=69409c8a b=1 cx=c_pps
+X-Proofpoint-GUID: WqCkI0G5AahtBsh5rkWFgsOLKwkOFHuJ
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMjE1MDIwNCBTYWx0ZWRfX/HzZI1sxHARY
+ 1s5pGY0DSr0vzRxcthvfnAg+nPtkev3fNfiMIyFNtaCJwYiwfdrThTX5Spv0BT0jh4oJFqcdV9b
+ 1X5tb7RqbWyyQyWjgJenZ/TVXWCmPR+S13aO4/dpyVQs8CNcTsTb4gMoHXavtoYn2J8ZFpSIVnv
+ 6TNw7H3myJBf21laC5gVzcwj077COuhf3+TzYVASyDoRJCAVXhIduCCRaQXs1rza2CKvZp2+B8e
+ kveTwlaC+XE9AZT9Za+NMbhrh67vzPsmhlSu3zw874yde/C7qEQv0UvG8P8xFSuP5RmkcZq8FvZ
+ Dcy33fFkDkMt9CHnNQdt2EVpFkvd7ER723S09ByfJLurFfVU6Bqf36vXJ83/vVZAM+7pXnevBX8
+ SHQZfkesTdfL9ZG+jN/Ccpjzcc+oahqR8cH3frIaoemex8zXEjs=
+X-Authority-Analysis: v=2.4 cv=GbUaXAXL c=1 sm=1 tr=0 ts=69409c86 b=1 cx=c_pps
  a=e1sVV491RgrpLwSTMOnk8w==:117 a=e1sVV491RgrpLwSTMOnk8w==:17
- a=wP3pNCr1ah4A:10 a=VkNPw1HP01LnGYTKEx00:22 a=QyXUC8HyAAAA:8 a=yPCof4ZbAAAA:8
- a=L368t5SSUCExVKV_nIAA:9 cc=ntf awl=host:13654
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMjE1MDIwNCBTYWx0ZWRfX5Y18mxG1FLSS
- ZwDkri3olTHJwqzfhWNjdcVK8D89wOR27kvJBcM+us4RfSec2TIiXTHngU05B4O3qNxgJcseRHd
- e2kH2U6qr6/21zIeGubrFIyltIOa7dJYSlDxVk1bgSHup4SygqQOd9RLWjzSirq3CbC3FaoyDuh
- kPohF/OYmqa7q6aTN8vqPfr5hF6qyfVfeD1w18XqCIHn9qGkTaUPdDux3wxBayphUrSHki8LLGB
- HhMOA2/BKr2SgNG62dRhv5EdM7+e67NgP0qWUvo7q+KVjrdz/OzLQPQHUtyYroctzZ+w9YJQlVP
- tHHLS/zsFykX4jyYwhqyOjWlAnwj+YAfq4k+uzVMUAiVMHB5nOKgthPPfj4qu4c76QXGgzqVgRl
- wxdWkHYLa5CueSHbD2ha5rFIpcjUWUMozQbZc+l0fQJDPZ3MTH8=
-X-Proofpoint-ORIG-GUID: CiVKv8-cdmZcqrUKMe_46y9hBg8gGC4n
-X-Proofpoint-GUID: CiVKv8-cdmZcqrUKMe_46y9hBg8gGC4n
+ a=wP3pNCr1ah4A:10 a=VkNPw1HP01LnGYTKEx00:22 a=oXTKce9TAAAA:20
+ a=UN5060LkAAAA:8 a=yPCof4ZbAAAA:8 a=eVZFrSfukqw1CmHGaWIA:9
+ a=E6eXv-vVeS7VqOnxGRGn:22 a=bA3UWDv6hWIuX7UZL3qL:22 cc=ntf awl=host:13654
+X-Proofpoint-ORIG-GUID: WqCkI0G5AahtBsh5rkWFgsOLKwkOFHuJ
 
-Intel TXT architectural specific definitions. See the specification
-for detailed information:
+The Secure Launch Specification is an architectural agnostic, software neutral
+API/ABI maintained by the TrenchBoot project. Its function is to allow any
+compliant boot loader to communicate the pre-launch configuration to any
+compliant post-launch kernel. The Secure Launch Resource Table, defined
+in the specification, presents the programmatic interface for this API/ABI.
 
-https://www.intel.com/content/dam/www/public/us/en/documents/guides/intel-txt-software-development-guide.pdf
+The specification can be found here:
+https://github.com/TrenchBoot/documentation/blob/master/specifications/secure-launch-specification.rst
 
+Signed-off-by: Daniel P. Smith <dpsmith@apertussolutions.com>
 Signed-off-by: Ross Philipson <ross.philipson@oracle.com>
 ---
- arch/x86/include/asm/txt.h | 330 +++++++++++++++++++++++++++++++++++++
- 1 file changed, 330 insertions(+)
- create mode 100644 arch/x86/include/asm/txt.h
+ include/linux/slr_table.h | 308 ++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 308 insertions(+)
+ create mode 100644 include/linux/slr_table.h
 
-diff --git a/arch/x86/include/asm/txt.h b/arch/x86/include/asm/txt.h
+diff --git a/include/linux/slr_table.h b/include/linux/slr_table.h
 new file mode 100644
-index 000000000000..3886fd7b248a
+index 000000000000..c28bc96d8814
 --- /dev/null
-+++ b/arch/x86/include/asm/txt.h
-@@ -0,0 +1,330 @@
++++ b/include/linux/slr_table.h
+@@ -0,0 +1,308 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
 +/*
-+ * Intel Trusted eXecution Technology (TXT) Definitions
++ * TrenchBoot Secure Launch Resource Table
++ *
++ * The Secure Launch Resource Table (SLRT) is a TrenchBoot project defined
++ * specification to provide a cross-platform interface/ABI between
++ * the Secure Launch components. While most of the table is platform
++ * agnostic, platform or architecture specific entries can be added.
++ *
++ * See TrenchBoot Secure Launch kernel documentation for details.
 + *
 + * Copyright (c) 2025 Apertus Solutions, LLC
 + * Copyright (c) 2025, Oracle and/or its affiliates.
 + */
 +
-+#ifndef _ASM_X86_TXT_H
-+#define _ASM_X86_TXT_H
++#ifndef _LINUX_SLR_TABLE_H
++#define _LINUX_SLR_TABLE_H
 +
-+/*
-+ * Intel Safer Mode Extensions (SMX)
-+ *
-+ * Intel SMX provides a programming interface to establish a Measured Launched
-+ * Environment (MLE). The measurement and protection mechanisms are supported by the
-+ * capabilities of an Intel Trusted Execution Technology (TXT) platform. SMX is
-+ * the processor's programming interface in an Intel TXT platform.
-+ *
-+ * See:
-+ *   Intel SDM Volume 2 - 6.1 "Safer Mode Extensions Reference"
-+ *   Intel Trusted Execution Technology - Measured Launch Environment Developer's Guide
-+ */
++/* SLR table GUID for registering as an EFI Configuration Table (put this in efi.h if it becomes a standard) */
++#define SLR_TABLE_GUID				EFI_GUID(0x877a9b2a, 0x0385, 0x45d1, 0xa0, 0x34, 0x9d, 0xac, 0x9c, 0x9e, 0x56, 0x5f)
 +
-+/*
-+ * SMX GETSEC Leaf Functions
-+ */
-+#define SMX_X86_GETSEC_SEXIT	5
-+#define SMX_X86_GETSEC_SMCTRL	7
-+#define SMX_X86_GETSEC_WAKEUP	8
++/* SLR table header values */
++#define SLR_TABLE_MAGIC		0x4452544d
++#define SLR_TABLE_REVISION	1
 +
-+/*
-+ * Intel Trusted Execution Technology MMIO Registers Banks
-+ */
-+#define TXT_PUB_CONFIG_REGS_BASE	0xfed30000
-+#define TXT_PRIV_CONFIG_REGS_BASE	0xfed20000
-+#define TXT_NR_CONFIG_PAGES     ((TXT_PUB_CONFIG_REGS_BASE - \
-+				  TXT_PRIV_CONFIG_REGS_BASE) >> PAGE_SHIFT)
++/* Current revisions for the policy and UEFI config */
++#define SLR_POLICY_REVISION		1
++#define SLR_UEFI_CONFIG_REVISION	1
 +
-+/*
-+ * Intel Trusted Execution Technology (TXT) Registers
-+ */
-+#define TXT_CR_STS			0x0000
-+#define TXT_CR_ESTS			0x0008
-+#define TXT_CR_ERRORCODE		0x0030
-+#define TXT_CR_CMD_RESET		0x0038
-+#define TXT_CR_CMD_CLOSE_PRIVATE	0x0048
-+#define TXT_CR_DIDVID			0x0110
-+#define TXT_CR_VER_EMIF			0x0200
-+#define TXT_CR_CMD_UNLOCK_MEM_CONFIG	0x0218
-+#define TXT_CR_SINIT_BASE		0x0270
-+#define TXT_CR_SINIT_SIZE		0x0278
-+#define TXT_CR_MLE_JOIN			0x0290
-+#define TXT_CR_HEAP_BASE		0x0300
-+#define TXT_CR_HEAP_SIZE		0x0308
-+#define TXT_CR_SCRATCHPAD		0x0378
-+#define TXT_CR_CMD_OPEN_LOCALITY1	0x0380
-+#define TXT_CR_CMD_CLOSE_LOCALITY1	0x0388
-+#define TXT_CR_CMD_OPEN_LOCALITY2	0x0390
-+#define TXT_CR_CMD_CLOSE_LOCALITY2	0x0398
-+#define TXT_CR_CMD_SECRETS		0x08e0
-+#define TXT_CR_CMD_NO_SECRETS		0x08e8
-+#define TXT_CR_E2STS			0x08f0
++/* SLR defined architectures */
++#define SLR_INTEL_TXT		1
++#define SLR_AMD_SKINIT		2
 +
-+/* TXT default register value */
-+#define TXT_REGVALUE_ONE		0x1ULL
++/* SLR defined bootloaders */
++#define SLR_BOOTLOADER_INVALID	0
++#define SLR_BOOTLOADER_GRUB	1
 +
-+/* TXTCR_STS status bits */
-+#define TXT_SENTER_DONE_STS		BIT(0)
-+#define TXT_SEXIT_DONE_STS		BIT(1)
++/* Log formats */
++#define SLR_DRTM_TPM12_LOG	1
++#define SLR_DRTM_TPM20_LOG	2
 +
-+/*
-+ * SINIT/MLE Capabilities Field Bit Definitions
-+ */
-+#define TXT_SINIT_MLE_CAP_RLP_WAKE_GETSEC	0
-+#define TXT_SINIT_MLE_CAP_RLP_WAKE_MONITOR	1
++/* DRTM Policy Entry Flags */
++#define SLR_POLICY_FLAG_MEASURED	0x1
++#define SLR_POLICY_IMPLICIT_SIZE	0x2
 +
-+/*
-+ * OS/MLE Secure Launch Specific Definitions
-+ */
-+#define TXT_OS_MLE_STRUCT_VERSION	1
-+#define TXT_OS_MLE_MAX_VARIABLE_MTRRS	32
++/* Array Lengths */
++#define TPM_EVENT_INFO_LENGTH		32
++#define TXT_VARIABLE_MTRRS_LENGTH	32
 +
-+/*
-+ * TXT Heap Table Enumeration
-+ */
-+#define TXT_BIOS_DATA_TABLE		1
-+#define TXT_OS_MLE_DATA_TABLE		2
-+#define TXT_OS_SINIT_DATA_TABLE		3
-+#define TXT_SINIT_MLE_DATA_TABLE	4
-+#define TXT_SINIT_TABLE_MAX		TXT_SINIT_MLE_DATA_TABLE
++/* Tags */
++#define SLR_ENTRY_INVALID	0x0000
++#define SLR_ENTRY_DL_INFO	0x0001
++#define SLR_ENTRY_LOG_INFO	0x0002
++#define SLR_ENTRY_ENTRY_POLICY	0x0003
++#define SLR_ENTRY_INTEL_INFO	0x0004
++#define SLR_ENTRY_AMD_INFO	0x0005
++#define SLR_ENTRY_ARM_INFO	0x0006
++#define SLR_ENTRY_UEFI_INFO	0x0007
++#define SLR_ENTRY_UEFI_CONFIG	0x0008
++#define SLR_ENTRY_END		0xffff
++
++/* Entity Types */
++#define SLR_ET_UNSPECIFIED	0x0000
++#define SLR_ET_SLRT		0x0001
++#define SLR_ET_BOOT_PARAMS	0x0002
++#define SLR_ET_SETUP_DATA	0x0003
++#define SLR_ET_CMDLINE		0x0004
++#define SLR_ET_UEFI_MEMMAP	0x0005
++#define SLR_ET_RAMDISK		0x0006
++#define SLR_ET_TXT_OS2MLE	0x0010
++#define SLR_ET_UNUSED		0xffff
 +
 +#ifndef __ASSEMBLER__
 +
 +/*
-+ * TXT Heap extended data elements.
++ * Primary Secure Launch Resource Table header
 + */
-+struct txt_heap_ext_data_element {
-+	u32 type;
++struct slr_table {
++	u32 magic;
++	u16 revision;
++	u16 architecture;
 +	u32 size;
-+	/* Data */
++	u32 max_size;
++	/* table entries */
 +} __packed;
 +
-+#define TXT_HEAP_EXTDATA_TYPE_END			0
-+
-+struct txt_heap_end_element {
-+	u32 type;
++/*
++ * Common SLRT entry header
++ */
++struct slr_entry_hdr {
++	u32 tag;
 +	u32 size;
 +} __packed;
 +
-+#define TXT_HEAP_EXTDATA_TYPE_TPM_EVENT_LOG_PTR		5
-+
-+struct txt_heap_event_log_element {
-+	u64 event_log_phys_addr;
-+} __packed;
-+
-+#define TXT_HEAP_EXTDATA_TYPE_EVENT_LOG_POINTER2_1	8
-+
-+struct txt_heap_event_log_pointer2_1_element {
-+	u64 phys_addr;
-+	u32 allocated_event_container_size;
-+	u32 first_record_offset;
-+	u32 next_record_offset;
-+} __packed;
-+
 +/*
-+ * TXT specification defined BIOS data TXT Heap table
++ * Boot loader context
 + */
-+struct txt_bios_data {
-+	u32 version; /* Currently 5 for TPM 1.2 and 6 for TPM 2.0 */
-+	u32 bios_sinit_size;
-+	u64 reserved1;
-+	u64 reserved2;
-+	u32 num_logical_procs;
-+	u32 sinit_flags;
-+	u32 mle_flags;
-+	/* Versions >= 5 with updates in version 6 */
-+	/* Ext Data Elements */
++struct slr_bl_context {
++	u16 bootloader;
++	u16 reserved[3];
++	u64 context;
 +} __packed;
 +
 +/*
-+ * TXT specification defined OS/SINIT TXT Heap table
++ * Dynamic Launch Callback Function type
 + */
-+struct txt_os_sinit_data {
-+	u32 version; /* Currently 6 for TPM 1.2 and 7 for TPM 2.0 */
-+	u32 flags;
-+	u64 mle_ptab;
-+	u64 mle_size;
-+	u64 mle_hdr_base;
-+	u64 vtd_pmr_lo_base;
-+	u64 vtd_pmr_lo_size;
-+	u64 vtd_pmr_hi_base;
-+	u64 vtd_pmr_hi_size;
-+	u64 lcp_po_base;
-+	u64 lcp_po_size;
-+	u32 capabilities;
-+	/* Version = 5 */
-+	u64 efi_rsdt_ptr;
-+	/* Versions >= 6 */
-+	/* Ext Data Elements */
-+} __packed;
++typedef void (*dl_handler_func)(struct slr_bl_context *bl_context);
 +
 +/*
-+ * TXT specification defined SINIT/MLE TXT Heap table
++ * DRTM Dynamic Launch Configuration
 + */
-+struct txt_sinit_mle_data {
-+	u32 version;             /* Current values are 6 through 9 */
-+	/* Versions <= 8 */
-+	u8 bios_acm_id[20];
-+	u32 edx_senter_flags;
-+	u64 mseg_valid;
-+	u8 sinit_hash[20];
-+	u8 mle_hash[20];
-+	u8 stm_hash[20];
-+	u8 lcp_policy_hash[20];
-+	u32 lcp_policy_control;
-+	/* Versions >= 7 */
-+	u32 rlp_wakeup_addr;
-+	u32 reserved;
-+	u32 num_of_sinit_mdrs;
-+	u32 sinit_mdrs_table_offset;
-+	u32 sinit_vtd_dmar_table_size;
-+	u32 sinit_vtd_dmar_table_offset;
-+	/* Versions >= 8 */
-+	u32 processor_scrtm_status;
-+	/* Versions >= 9 */
-+	/* Ext Data Elements */
++struct slr_entry_dl_info {
++	struct slr_entry_hdr hdr;
++	u64 dce_size;
++	u64 dce_base;
++	u64 dlme_size;
++	u64 dlme_base;
++	u64 dlme_entry;
++	struct slr_bl_context bl_context;
++	u64 dl_handler;
 +} __packed;
 +
 +/*
-+ * TXT data reporting structure for memory types
++ * TPM Log Information
 + */
-+struct txt_sinit_memory_descriptor_record {
-+	u64 address;
-+	u64 length;
-+	u8 type;
-+	u8 reserved[7];
++struct slr_entry_log_info {
++	struct slr_entry_hdr hdr;
++	u16 format;
++	u16 reserved;
++	u32 size;
++	u64 addr;
 +} __packed;
 +
 +/*
-+ * TXT data structure used by a responsive local processor (RLP) to start
-+ * execution in response to a GETSEC[WAKEUP].
++ * DRTM Measurement Entry
 + */
-+struct smx_rlp_mle_join {
-+	u32 rlp_gdt_limit;
-+	u32 rlp_gdt_base;
-+	u32 rlp_seg_sel;     /* cs (ds, es, ss are seg_sel+8) */
-+	u32 rlp_entry_point; /* phys addr */
++struct slr_policy_entry {
++	u16 pcr;
++	u16 entity_type;
++	u16 flags;
++	u16 reserved;
++	u64 size;
++	u64 entity;
++	char evt_info[TPM_EVENT_INFO_LENGTH];
 +} __packed;
 +
 +/*
-+ * TPM event log structures defined in both the TXT specification and
-+ * the TCG documentation.
++ * DRTM Measurement Policy
 + */
-+#define TPM_EVTLOG_SIGNATURE "TXT Event Container"
-+
-+struct tpm_event_log_header {
-+	char signature[20];
-+	char reserved[12];
-+	u8 container_ver_major;
-+	u8 container_ver_minor;
-+	u8 pcr_event_ver_major;
-+	u8 pcr_event_ver_minor;
-+	u32 container_size;
-+	u32 pcr_events_offset;
-+	u32 next_event_offset;
-+	/* PCREvents[] */
++struct slr_entry_policy {
++	struct slr_entry_hdr hdr;
++	u16 reserved[2];
++	u16 revision;
++	u16 nr_entries;
++	struct slr_policy_entry policy_entries[];
 +} __packed;
 +
 +/*
-+ * Functions to extract data from the Intel TXT Heap Memory. The layout
-+ * of the heap is as follows:
-+ *  +----------------------------+
-+ *  | Size Bios Data table (u64) |
-+ *  +----------------------------+
-+ *  | Bios Data table            |
-+ *  +----------------------------+
-+ *  | Size OS MLE table (u64)    |
-+ *  +----------------------------+
-+ *  | OS MLE table               |
-+ *  +--------------------------- +
-+ *  | Size OS SINIT table (u64)  |
-+ *  +----------------------------+
-+ *  | OS SINIT table             |
-+ *  +----------------------------+
-+ *  | Size SINIT MLE table (u64) |
-+ *  +----------------------------+
-+ *  | SINIT MLE table            |
-+ *  +----------------------------+
++ * Secure Launch defined MTRR saving structures
++ */
++struct slr_txt_mtrr_pair {
++	u64 mtrr_physbase;
++	u64 mtrr_physmask;
++} __packed;
++
++struct slr_txt_mtrr_state {
++	u64 default_mem_type;
++	u64 mtrr_vcnt;
++	struct slr_txt_mtrr_pair mtrr_pair[TXT_VARIABLE_MTRRS_LENGTH];
++} __packed;
++
++/*
++ * Intel TXT Info table
++ */
++struct slr_entry_intel_info {
++	struct slr_entry_hdr hdr;
++	u64 boot_params_addr;
++	u64 txt_heap;
++	u64 saved_misc_enable_msr;
++	struct slr_txt_mtrr_state saved_bsp_mtrrs;
++} __packed;
++
++/*
++ * UEFI config measurement entry
++ */
++struct slr_uefi_cfg_entry {
++	u16 pcr;
++	u16 reserved;
++	u32 size;
++	u64 cfg; /* address or value */
++	char evt_info[TPM_EVENT_INFO_LENGTH];
++} __packed;
++
++/*
++ * UEFI config measurements
++ */
++struct slr_entry_uefi_config {
++	struct slr_entry_hdr hdr;
++	u16 reserved[2];
++	u16 revision;
++	u16 nr_entries;
++	struct slr_uefi_cfg_entry uefi_cfg_entries[];
++} __packed;
++
++/*
++ * The SLRT is laid out as a Tag-Length-Value (TLV) data structure
++ * allowing a flexible number of entries in the table. An instance
++ * of the slr_table structure is present as a header at the beginning.
 + *
-+ *  NOTE: the table size fields include the 8 byte size field itself.
++ * The following functions help to manipulate the SLRT structure
++ * and contents.
 + */
-+static inline u64 txt_bios_data_size(void *heap)
-+{
-+	return *((u64 *)heap);
-+}
 +
-+static inline void *txt_bios_data_start(void *heap)
++/*
++ * Return the address of the end of the SLRT past the final entry.
++ */
++static inline void *slr_end_of_entries(struct slr_table *table)
 +{
-+	return heap + sizeof(u64);
-+}
-+
-+static inline u64 txt_os_mle_data_size(void *heap)
-+{
-+	return *((u64 *)(heap + txt_bios_data_size(heap)));
-+}
-+
-+static inline void *txt_os_mle_data_start(void *heap)
-+{
-+	return heap + txt_bios_data_size(heap) + sizeof(u64);
-+}
-+
-+static inline u64 txt_os_sinit_data_size(void *heap)
-+{
-+	return *((u64 *)(heap + txt_bios_data_size(heap) +
-+			txt_os_mle_data_size(heap)));
-+}
-+
-+static inline void *txt_os_sinit_data_start(void *heap)
-+{
-+	return heap + txt_bios_data_size(heap) +
-+		txt_os_mle_data_size(heap) + sizeof(u64);
-+}
-+
-+static inline u64 txt_sinit_mle_data_size(void *heap)
-+{
-+	return *((u64 *)(heap + txt_bios_data_size(heap) +
-+			txt_os_mle_data_size(heap) +
-+			txt_os_sinit_data_size(heap)));
-+}
-+
-+static inline void *txt_sinit_mle_data_start(void *heap)
-+{
-+	return heap + txt_bios_data_size(heap) +
-+		txt_os_mle_data_size(heap) +
-+		txt_os_sinit_data_size(heap) + sizeof(u64);
++	return (void *)table + table->size;
 +}
 +
 +/*
-+ * Find the TPM v2 event log element in the TXT heap. This element contains
-+ * the information about the size and location of the DRTM event log. Note
-+ * this is a TXT specific structure.
-+ *
-+ * See:
-+ *   Intel Trusted Execution Technology - Measured Launch Environment Developer's Guide - Appendix C.
++ * Return the next entry in the SLRT given the current entry passed
++ * to the function. NULL is returned if there are no entries to return.
 + */
-+static inline struct txt_heap_event_log_pointer2_1_element*
-+txt_find_log2_1_element(struct txt_os_sinit_data *os_sinit_data)
++static inline void *
++slr_next_entry(struct slr_table *table,
++	       struct slr_entry_hdr *curr)
 +{
-+	struct txt_heap_ext_data_element *ext_elem;
++	struct slr_entry_hdr *next = (struct slr_entry_hdr *)((u8 *)curr + curr->size);
 +
-+	/* The extended element array is at the end of this table */
-+	ext_elem = (struct txt_heap_ext_data_element *)
-+		((u8 *)os_sinit_data + sizeof(struct txt_os_sinit_data));
++	if ((void *)next >= slr_end_of_entries(table))
++		return NULL;
++	if (next->tag == SLR_ENTRY_END)
++		return NULL;
 +
-+	while (ext_elem->type != TXT_HEAP_EXTDATA_TYPE_END) {
-+		if (ext_elem->type == TXT_HEAP_EXTDATA_TYPE_EVENT_LOG_POINTER2_1) {
-+			return (struct txt_heap_event_log_pointer2_1_element *)
-+				((u8 *)ext_elem + sizeof(struct txt_heap_ext_data_element));
-+		}
-+		ext_elem = (struct txt_heap_ext_data_element *)
-+			    ((u8 *)ext_elem + ext_elem->size);
++	return next;
++}
++
++/*
++ * Return the next entry with the given tag in the SLRT starting at the
++ * current entry. If entry is NULL, the search begins at the beginning of
++ * table.
++ */
++static inline void *
++slr_next_entry_by_tag(struct slr_table *table,
++		      struct slr_entry_hdr *entry,
++		      u16 tag)
++{
++	if (!entry) /* Start from the beginning */
++		entry = (struct slr_entry_hdr *)(((u8 *)table) + sizeof(*table));
++
++	for ( ; ; ) {
++		if (entry->tag == tag)
++			return entry;
++
++		entry = slr_next_entry(table, entry);
++		if (!entry)
++			return NULL;
 +	}
 +
 +	return NULL;
 +}
 +
++/*
++ * Add an entry to the SLRT. Entries are placed at the end.
++ */
++static inline int
++slr_add_entry(struct slr_table *table,
++	      struct slr_entry_hdr *entry)
++{
++	struct slr_entry_hdr *end;
++
++	if ((table->size + entry->size) > table->max_size)
++		return -1;
++
++	memcpy((u8 *)table + table->size - sizeof(*end), entry, entry->size);
++	table->size += entry->size;
++
++	end = (struct slr_entry_hdr *)((u8 *)table + table->size - sizeof(*end));
++	end->tag = SLR_ENTRY_END;
++	end->size = sizeof(*end);
++
++	return 0;
++}
++
++/*
++ * Initialize the SLRT for use. This prepares the meta-data in the SLRT
++ * header section of the table and table end entry.
++ */
++static inline void
++slr_init_table(struct slr_table *slrt, u16 architecture, u32 max_size)
++{
++	struct slr_entry_hdr *end;
++
++	slrt->magic = SLR_TABLE_MAGIC;
++	slrt->revision = SLR_TABLE_REVISION;
++	slrt->architecture = architecture;
++	slrt->size = sizeof(*slrt) + sizeof(*end);
++	slrt->max_size = max_size;
++	end = (struct slr_entry_hdr *)((u8 *)slrt + sizeof(*slrt));
++	end->tag = SLR_ENTRY_END;
++	end->size = sizeof(*end);
++}
++
 +#endif /* !__ASSEMBLER__ */
 +
-+#endif /* _ASM_X86_TXT_H */
++#endif /* _LINUX_SLR_TABLE_H */
 -- 
 2.43.7
 
