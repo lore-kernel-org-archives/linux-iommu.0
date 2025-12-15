@@ -1,68 +1,67 @@
-Received: from BL2PR02CU003.outbound.protection.outlook.com (mail-eastusazon11011038.outbound.protection.outlook.com [52.101.52.38])
+Received: from SA9PR02CU001.outbound.protection.outlook.com (mail-southcentralusazon11013028.outbound.protection.outlook.com [40.93.196.28])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60B4D2FF164
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B804030DD1A
 	for <iommu@lists.linux.dev>; Mon, 15 Dec 2025 06:48:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.52.38
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.196.28
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765781328; cv=fail; b=a179QZGrk3Gem+Y9LGGy8mg/BSqORKaBKCsc+my2+SQ3gm7ZIJK8hwFpLy1pDZu6+v0y2X0tctgGsEX+6Uf0+xVqg3fkgYzcWYQqCMpQ+fahDcgkgfpUZa73vm6nCgfS0SWN4PWfOq0ag85Mfoomw6lKIkuFEwmQXZD4m4zwlU8=
+	t=1765781328; cv=fail; b=JleEAW13EJhX2vwiXtkXDwnwyoivLKJ2qNJgRhXgeL7V4wZuUhapchq8QChN1qhkXCRsxysREt5pXIfOq3fY1P9ZBHkMr4K7HD0mOeylP4yXerxwHBJ+pLv6CwEv7cwMF5arHj4HTDoozbEhcMbcg5b7JF6Mg+9MByJi8gcF5GY=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1765781328; c=relaxed/simple;
-	bh=l+B8Hlnikxp52P2wk3/eqv0Biw1KlliOMzKDfTQ/+UM=;
+	bh=mySVPBxEVT9zPWTS/gxmd+V75XGfQq2Pe2MufrRpQMA=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=niAlCOLf5iJFRPtPLuoTRw4EV6d8UuybRYJjoXvPCtKvzdpiEKE2zwzxS5J/Miej2jUgvWpr8MQq6X9V0JpXcL78iAzDt9vLd9AElEe9X0IPLrjWJ1gEuH4JasF5Ruqb8Re/SjEoUlBdCH2BkuO7CYzdEtyTsqygZJhJXILbILA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=IXYDfDi0; arc=fail smtp.client-ip=52.101.52.38
+	 MIME-Version:Content-Type; b=FDjg6Dy665rcYZdlGeDtWh+5NhGh6jwmXQ7KqF36CgFIfmmbZUsOmOrqvTjMA1ta75js+N7vx5YSnXTJthQzP7DTCgjKfEgrLgpy3PcpWwRerm8sgIRt60IJb34eU63EoUNJ0Cmd/SGVp1FQ9dWRQSVzND/cIYTHB0W0PEbY75c=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=tyOOxSMX; arc=fail smtp.client-ip=40.93.196.28
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="IXYDfDi0"
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="tyOOxSMX"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Ji6VPxAPpZSXFyET57pEV31yB8i2yoIJpVQddhZSVVjMbHJxWHWhQJkNuYBWDoFfdjJuO8VEeD7hz5cUx0TGHvA+Mnk9FM0/hgxlO1NhJu3MEoTgk9+faMpRsJdgTYwTlSDrYTl8bXhXsbZ9j8oaq/OmJHNBpP4PL/LW9NjWlJYy1VaAkK1KcilBvOpMIzDiaaPfbkc6Fu12XHyNVTHHMv/6NpGwQdmbGQSRd0Eqg8paA5PfPAzn8F+jFP7ZNZN11A8K/mMOSPovsHpvNKYiaNSZ/sEKuDiDn49cvbVFHjm8/IJoOOplOzuGiimI/I5JOCL/CQ1z+hViHP1ljGebkg==
+ b=Du5hLuED4VOq7WYPR+DMgcz8ilk6YAo3Jabfsvawn3MCfS1XvMG+MVmrUmpDgHjG93qdG7mIzCxzHLf1DK9SJVEc9HK4j13n5vhNKYZ3PBLvUFPk4n0EszqHwhjOCuwdOOYRfsE4ZCj2PPp+JjxMmXB2BmbDhtuuZXA5wXysNQDevpAmirOaML5rcTVBjbi3WlFWUWE5IKstD8xpz4djvJ3IhwZ8WE1r8Cvvhfft8T49KjV+AywDF4a6Lzf4IzoMu04fpw22s/BhfVhuzrxwiipQqYO5kp6Hs+37dXx4+zJBI56lJGZkyAEDPd6ydlv6YzdJtuzyEisDs1sCryQwyg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=tiy3wPTUxyVsZfG0Q3ol68oZmfM61ZDburHz9Hhdze0=;
- b=Mb/urfcwf+s/GyD+6qEB1oSqkkrM8CG83Tfg0AOB9S5AJDX+USFIMbWqtdgRS7rkaR+M8Vw+a4RNtMjQixxoZHuZ8hu1e10dzJHV3ciCxsKRsuT2n1G/VYnKOiWfTWgT+STtPwlxy1a5UWkJ6bbaWV865Ib8lFAp2J2Jjr9gjyUOSviyd0dK7Bm1BC4ESP1m2t4TUq/0kOmKIhbUK3FcSnwKuZiAJ3oHAWS7RU3PoanZvmyjCqRDLkgnqT3SuUM6Fe4YNpDYxZESToetEgDfuCrkzs2h8Y22Ne3Flnxr+NN/OymePsRvF8QXtT13QTbxjX7W/yk3NfaftxZrgSUUXA==
+ bh=C5C7BbNbxkCycrp6WS3b6f8CAENtqWpmuc1Dj+Qmq5A=;
+ b=zSgCWBuv7tDhQG7yEhadKt5lyqO5xCS+4+C9oI1wjK7EIO7k6a+su4WOHAWF8eELi22402VT+4X4CoeaZOfC9tjOt+4pv2SqbwsmJY8u5bvZk7bxVwL/Rk9xQjVNGGRmZh5fr5iv8QTWECghfqRkBmDfsL6r0huMgLfdTRQfokxG+48GbuStAVj8cggdVVMSbZYVBKCnZoiM91mR9a7B49ivcI6Noojnw5ooRJ3QkLrK6DikejbMg4dlJohE0pYe4SiuJI8YJbu8owh9soRD5+eUPt+sLIYpRPhFgJWWntPeeIHMNLJRLNuD4pbCNyPiB4PQNG1EcL9ZjuWMNubFmA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ 216.228.117.161) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none (0)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tiy3wPTUxyVsZfG0Q3ol68oZmfM61ZDburHz9Hhdze0=;
- b=IXYDfDi0EJZDgtdsjL7Sz2fGgShove34c30BuMnNfNtB6UYnKVah4e1RMDtKjABDrf3YwYxQwNkhHr/uxSuZci5gngXli2AA1vTvAO8FL+kx0IFK9pIdMTSiDYsv8mtTGd2nfyzp+Gx/L36MOUpKdD1EZY0Icf8k9iEnnfTaB0gxJhrrHzq5C6Z7iNDfwjJWh6frbDjqIgIkyrEMQ7/8BLCx0dMqJbrkY9hJkUZSKGCX4ZfaSMoNEVC7rEst37D9K42LM3N07+S8DLS19l2T6xoEWRNSAwAxhHKVucRtYv+xZQ6nR5q+zZvDcTsCkpheH+k771Mr65i/P+b901MzPw==
-Received: from PH8PR02CA0006.namprd02.prod.outlook.com (2603:10b6:510:2d0::23)
- by CH2PR12MB4199.namprd12.prod.outlook.com (2603:10b6:610:a7::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9412.13; Mon, 15 Dec
- 2025 06:48:42 +0000
-Received: from SN1PEPF000397B3.namprd05.prod.outlook.com
- (2603:10b6:510:2d0:cafe::92) by PH8PR02CA0006.outlook.office365.com
- (2603:10b6:510:2d0::23) with Microsoft SMTP Server (version=TLS1_3,
+ bh=C5C7BbNbxkCycrp6WS3b6f8CAENtqWpmuc1Dj+Qmq5A=;
+ b=tyOOxSMX+sV+tuFnK9aY1hNRFzPj1B+sE0Q09zVpNhVww7pu+gId1a4OdDbk5lYHZpJ+UlfkNYElTwQOjADqYo4dgUfQ38FWc2j5aTRoCV8cQNLOq8GCBhB4Bj9tdoCkzKwbzlHBkhAo9ETNDxCoOlWUeTlo7U8eEi8yIZyRK72oXq76MKI+rVOZI0G3jmbNC5X2eE+Z3xpumjnRu78IujMlBCTSZ1n325VDQ2Rs9xMvv7M/wVcv/Kyi5RdbfC5B6boby51m6hcAn5xrz7Bvdtn6mJ9bEx8eYiF8yZyVLH0jO36kGDfOnf2H+p2l0kTfXhF7ppwTBcn9tPMJd/M8VQ==
+Received: from CH0PR03CA0103.namprd03.prod.outlook.com (2603:10b6:610:cd::18)
+ by DS7PR12MB5741.namprd12.prod.outlook.com (2603:10b6:8:70::7) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.9412.13; Mon, 15 Dec 2025 06:48:42 +0000
+Received: from CH3PEPF00000017.namprd21.prod.outlook.com
+ (2603:10b6:610:cd:cafe::d1) by CH0PR03CA0103.outlook.office365.com
+ (2603:10b6:610:cd::18) with Microsoft SMTP Server (version=TLS1_3,
  cipher=TLS_AES_256_GCM_SHA384) id 15.20.9412.13 via Frontend Transport; Mon,
- 15 Dec 2025 06:48:35 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ 15 Dec 2025 06:48:42 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- SN1PEPF000397B3.mail.protection.outlook.com (10.167.248.57) with Microsoft
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ CH3PEPF00000017.mail.protection.outlook.com (10.167.244.122) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9434.6 via Frontend Transport; Mon, 15 Dec 2025 06:48:41 +0000
+ 15.20.9456.0 via Frontend Transport; Mon, 15 Dec 2025 06:48:42 +0000
 Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Sun, 14 Dec
- 2025 22:48:27 -0800
+ 2025 22:48:28 -0800
 Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail202.nvidia.com
  (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Sun, 14 Dec
- 2025 22:48:26 -0800
+ 2025 22:48:27 -0800
 Received: from build-amhetre-focal-20250825.internal (10.127.8.10) by
  mail.nvidia.com (10.129.68.10) with Microsoft SMTP Server id 15.2.2562.20 via
- Frontend Transport; Sun, 14 Dec 2025 22:48:25 -0800
+ Frontend Transport; Sun, 14 Dec 2025 22:48:26 -0800
 From: Ashish Mhetre <amhetre@nvidia.com>
 To: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
 	<robh@kernel.org>, <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
@@ -72,9 +71,9 @@ CC: <thierry.reding@gmail.com>, <jonathanh@nvidia.com>, <vdumpa@nvidia.com>,
 	<iommu@lists.linux.dev>, <devicetree@vger.kernel.org>,
 	<linux-kernel@vger.kernel.org>, <linux-tegra@vger.kernel.org>, Ashish Mhetre
 	<amhetre@nvidia.com>
-Subject: [PATCH V7 3/4] dt-bindings: iommu: Add NVIDIA Tegra CMDQV support
-Date: Mon, 15 Dec 2025 06:48:18 +0000
-Message-ID: <20251215064819.3345361-4-amhetre@nvidia.com>
+Subject: [PATCH V7 4/4] arm64: dts: nvidia: Add nodes for CMDQV
+Date: Mon, 15 Dec 2025 06:48:19 +0000
+Message-ID: <20251215064819.3345361-5-amhetre@nvidia.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20251215064819.3345361-1-amhetre@nvidia.com>
 References: <20251215064819.3345361-1-amhetre@nvidia.com>
@@ -90,188 +89,207 @@ Content-Type: text/plain
 X-NV-OnPremToCloud: ExternallySecured
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SN1PEPF000397B3:EE_|CH2PR12MB4199:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8d314d04-cb85-4187-0522-08de3ba5fc06
+X-MS-TrafficTypeDiagnostic: CH3PEPF00000017:EE_|DS7PR12MB5741:EE_
+X-MS-Office365-Filtering-Correlation-Id: 217ee11e-4919-4301-327a-08de3ba5fc9f
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|1800799024|7416014|376014|36860700013|13003099007;
+	BCL:0;ARA:13230040|1800799024|7416014|82310400026|376014|36860700013;
 X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?agRhe6PYGdDBgLwbN2+yiCIb9cgSY71VqWos8D02x1kO98BNo6wjnrxQG/bO?=
- =?us-ascii?Q?qL5gMQ/3kOyxk4Jaf5mmlvVXCuogDgHIgQxPdMTxaVdgVcdro7gL/H023YLj?=
- =?us-ascii?Q?9/76GZN/s6muOxy8M3fxcimAp2X7vqP2iUOD9CLK2Qpl0jKsSQLJOq2P1X9/?=
- =?us-ascii?Q?aslWVvCK82BfPhYGe8qggrVflygm+7pkf2MVwEfGdAv+yTld0SoHPMP2vAuS?=
- =?us-ascii?Q?3ryusVoD92wZkzKOBXDm0A5odLWnJ7aGv63nR0ZWArKOt/qbZKvD/xumHQDt?=
- =?us-ascii?Q?49X1gTZwsC23cSPezryZlESG9ebc7fCEOsH1kTJoshISjKfxtaSVLPRIPrFe?=
- =?us-ascii?Q?v0YlCkfHp6SWpfpqBZ6NePGQn9yDU9PVQdNMbF8LI0SrEJhkHBvjp/cUapM5?=
- =?us-ascii?Q?c+HwDGw2/3B1lXxsEhyWT+F1bp3TYZehmvAj4ZB1H6VtzNGqJeEn6h/VylrS?=
- =?us-ascii?Q?s1SNHIETSCJtftYMbOrm/fCNRLA6CwA5yLrS/EX4Oy2B8kK0pkcFOccl/AHK?=
- =?us-ascii?Q?k4+l3ke2pu6nq4dVSGoYN/9AmGCfdO7GIL8VEXdBjY7H/gxgDivcIg4FzStO?=
- =?us-ascii?Q?ftP3rA0OqDcl63Ls2Y0ZowWCLKvLXq5/GUx9Oqar0XUo/MlrSes9kjXcVq2V?=
- =?us-ascii?Q?UbBIbFFcGTaI1Tc0Ni7n5UUbYIzgRatdNk9c9DUZAJ5L8pjqZiQ5F8vqJyI9?=
- =?us-ascii?Q?GQH5vMqglPJyv7XxnoFCWQFVt4xHVLGM8ROXUaFY6OAIydFWsbQ6Ht1rp4dG?=
- =?us-ascii?Q?mn9u38Sv8bsb/ekPTkrPCKL9LaBFRRbeE+of4zJ44fTLT/Bi3xXv8vf/12V3?=
- =?us-ascii?Q?2P7e38QXl/VWEVKGS+J0WBbL1FMpbdmjADXLgs74MeKpy1cfrnzVDrTiTGEk?=
- =?us-ascii?Q?1PDazuXjxy8+X1H+YQMKiyAxI7CUKd76EsIfY+PlUESrYRMYenbxWTPOb5GJ?=
- =?us-ascii?Q?UYndhguhu7dKWVSVtMpF5Sn2NbXrvfHyG2knHx/aGRitHt1AH+5MC28RdULP?=
- =?us-ascii?Q?FDrn6RPD2H7m6NtpFgxGZZ1bKGBzUz5RklUXhCPBhIQGeSunxJIfT672v7kD?=
- =?us-ascii?Q?HSebBMBR2x6q2zJrEJo2WLf/O7cM08zgJpwALayAZyWXGBwgUfHkMyzwhOuF?=
- =?us-ascii?Q?brJBe1IA0+zf76a3lT2TN3+AV1QdGqnj71x+DdL2H0Rov695cT62klYYKmLx?=
- =?us-ascii?Q?k3jSYeVKFa7BAhK7Piygg4iaQlzR1Ygv3VwvY9WBZhXo1PBmYoQpLtl1zRFo?=
- =?us-ascii?Q?6rCNROLNWSjInPx7HEhrJ3ojS2zleFVJAJHrpoOD230b7e01ehNjFR98fejZ?=
- =?us-ascii?Q?LEYF1BpMLAlfaVH5vqHVKbyY0HqYo0UqZNiYYAHU+yeQ+JZhoGr5JJ4v7X/f?=
- =?us-ascii?Q?NzXWfKbXNwNUoCxULk1mga0HluOC4D5AGIyjxBGVpx5SbA0nf4GsmxdPdsPH?=
- =?us-ascii?Q?gvBQ92iqiSay2Z/tkaYP4JwNXG7SpSjM0F1STukJsJpzJTGdhzLnaKN9G5HF?=
- =?us-ascii?Q?tYtJtEKJoWzCvT91rBVExwS1c2790m2YTaNL8SwZz9cIKGo6C8lVLR3foAOp?=
- =?us-ascii?Q?jkjZwNRHxwtjgkD3R2c=3D?=
+	=?us-ascii?Q?dRMZznH6JKNu1Kjk8Xalvm99GLiSIGTCbT/29ECZLRGYyU7TzOc4/Hg0FRrw?=
+ =?us-ascii?Q?fJIwrqWgZUCABKiQxhCgTRGERoN1gOAvi2NRj2tI8WEtzK/7TbVHqhd7LTnb?=
+ =?us-ascii?Q?OLtoN7czuk01sUOYC1f4jee8fSirh4TouWDfeQCHvzrY72Jo5ihwrnClIqVV?=
+ =?us-ascii?Q?43u/C/G0a42dcc8Mf3dRGgmYcWxaQbbTdgbWG/Z1esM+jqk9LM35275FP9BR?=
+ =?us-ascii?Q?XndvV8FEhwC3GKcEQZWYuSmzIpH/PO4vFOeqNO/yKq1kG8sOhm5qDEuTeZ+2?=
+ =?us-ascii?Q?IbP01aCQE8I0XJiZwUK8Qip5Tbp1PLNPv2KMVcGrtR1+oI3LdeIIGj9iwzMM?=
+ =?us-ascii?Q?rBQhI23Y85LC7yNBAhrLjkZhUoX4iHPXmxrYsXciCKe0NcrxaCCwY0g1z2nY?=
+ =?us-ascii?Q?rl+5uHzcPJSUSQU4KlvB1GAqQpD3NnY45ASA3yJVbtKZfUNZQcyf/Gw7LCOh?=
+ =?us-ascii?Q?/su3/7KzWFlsJpqO3xYzN5fTDVPfDJt+DDl4hhoTEe7TXNX+hBkHSe6dIsEa?=
+ =?us-ascii?Q?BANAlLCPzzTZyTqR27YHX37j85X2da/Jhq7EIApjAV0hSV2pUbRrE8F9vGL7?=
+ =?us-ascii?Q?4JHkzvZf1m+MalyrWGr5sAAZOMY+x3WNoD79/MzvYQ8w9vBebxeM55KnDhNT?=
+ =?us-ascii?Q?EV/9WVFWWFg9dhNJW/f8LkW0K4nXD3QX4IiR1yQFcERbPb4l74VChxCH/pg0?=
+ =?us-ascii?Q?723zqM8AUIWNtreNb1S8wFWbW9f1gPIVOOf8NyiqMviavrvw3KywID95DUQY?=
+ =?us-ascii?Q?2OuWb1MOIgU2Dn1hnu31I4kv9ENEmS5jwFapt8nXEWMWfcU+pY2zVNfv4k8n?=
+ =?us-ascii?Q?kHs5N0mRBO0NBmRA9qH5uwh+ULhd9JlX5rJ4f7VaiseIv0ks+P27IE2bD18G?=
+ =?us-ascii?Q?iYfkgPNjzevB8bfonjDdTi//FYYudUjSd5ulMao4+4T2F6pYYy/AHKHnRsHj?=
+ =?us-ascii?Q?ttGQJ+EiM1JEBcrWfPr7DtSR05M96thCmDgd7xFAWjtLmswf60Ny0cvu7qMm?=
+ =?us-ascii?Q?CbLrq7gs8ZQ/+igQ/21fvsO2N/GlQZxWhmySdExXUS2kgRGZqfJIUO2tawhG?=
+ =?us-ascii?Q?pnr473pE/KIyazOLCRCn2OFy29VLSSvvdo7k0j39YTRIuWpnqnPP8AwS6xfG?=
+ =?us-ascii?Q?TQQ7YPVRvjM0IARRSQjmX/Ozx8nqwcC7cSfRPcB7IOyUZHdWe73/jM5h+V7v?=
+ =?us-ascii?Q?B3LA1Wgp+TD+K2ZZjpC2bl2hm3r6iphvx+8vh7IzoUKEyR/ZUoVQeeXhdBzm?=
+ =?us-ascii?Q?R+/GMOpQt70c3RhjrqtUJ8+GbrEyre/iKoAnTk4VcGnyIcQobUCxAj+SREl+?=
+ =?us-ascii?Q?Xj5mCdGR4YBI7wMa4WYorFqJKHIsh4AXlP84aGeFUJp/VM6P79LsQfYR35sl?=
+ =?us-ascii?Q?2+hBEv1Ib7E6pT8ldyBTFtGqtgq7o9RjAQTvRjnkdUutM5/GJf0E88jcwCbU?=
+ =?us-ascii?Q?el0ioVjPO8yTTW0PUohhVan1YKcO9l5v84GRGJY13JmKq/qQkdIL3VrijaMe?=
+ =?us-ascii?Q?Xbmi4nWXFeDCCbTfHhVasqHTuQZH1yZ94MlrcFv65/vW9QWHnVmBFbSFoxEF?=
+ =?us-ascii?Q?iR28bu1A0oGtQXrz+X4=3D?=
 X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(1800799024)(7416014)(376014)(36860700013)(13003099007);DIR:OUT;SFP:1101;
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(82310400026)(376014)(36860700013);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Dec 2025 06:48:41.5579
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Dec 2025 06:48:42.5498
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8d314d04-cb85-4187-0522-08de3ba5fc06
+X-MS-Exchange-CrossTenant-Network-Message-Id: 217ee11e-4919-4301-327a-08de3ba5fc9f
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	SN1PEPF000397B3.namprd05.prod.outlook.com
+	CH3PEPF00000017.namprd21.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4199
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB5741
 
 The Command Queue Virtualization (CMDQV) hardware is part of the
 SMMUv3 implementation on NVIDIA Tegra SoCs. It assists in
 virtualizing the command queue for the SMMU.
 
-Add a new device tree binding document for nvidia,tegra264-cmdqv.
+Update SMMU compatible strings to use nvidia,tegra264-smmu to enable
+CMDQV support. Add device tree nodes for the CMDQV hardware and enable
+them on the tegra264-p3834 platform where SMMUs are enabled. Each SMMU
+instance is paired with its corresponding CMDQV instance via the
+nvidia,cmdqv property.
 
-Also update the arm,smmu-v3 binding to include an optional nvidia,cmdqv
-property. This property is a phandle to the CMDQV device node, allowing
-the SMMU driver to associate with its corresponding CMDQV instance.
-Restrict this property usage to Nvidia Tegra264 only.
-
-Reviewed-by: Rob Herring (Arm) <robh@kernel.org>
 Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
 ---
- .../bindings/iommu/arm,smmu-v3.yaml           | 30 ++++++++++++-
- .../bindings/iommu/nvidia,tegra264-cmdqv.yaml | 42 +++++++++++++++++++
- 2 files changed, 70 insertions(+), 2 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/iommu/nvidia,tegra264-cmdqv.yaml
+ .../arm64/boot/dts/nvidia/tegra264-p3834.dtsi |  8 +++
+ arch/arm64/boot/dts/nvidia/tegra264.dtsi      | 50 +++++++++++++++++--
+ 2 files changed, 53 insertions(+), 5 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml
-index 75fcf4cb52d9..1c03482e4c61 100644
---- a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml
-+++ b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml
-@@ -20,7 +20,12 @@ properties:
-   $nodename:
-     pattern: "^iommu@[0-9a-f]*"
-   compatible:
--    const: arm,smmu-v3
-+    oneOf:
-+      - const: arm,smmu-v3
-+      - items:
-+          - enum:
-+              - nvidia,tegra264-smmu
-+          - const: arm,smmu-v3
+diff --git a/arch/arm64/boot/dts/nvidia/tegra264-p3834.dtsi b/arch/arm64/boot/dts/nvidia/tegra264-p3834.dtsi
+index 06795c82427a..7e2c3e66c2ab 100644
+--- a/arch/arm64/boot/dts/nvidia/tegra264-p3834.dtsi
++++ b/arch/arm64/boot/dts/nvidia/tegra264-p3834.dtsi
+@@ -23,8 +23,16 @@ iommu@5000000 {
+ 			status = "okay";
+ 		};
  
-   reg:
-     maxItems: 1
-@@ -58,6 +63,15 @@ properties:
++		cmdqv@5200000 {
++			status = "okay";
++		};
++
+ 		iommu@6000000 {
+ 			status = "okay";
+ 		};
++
++		cmdqv@6200000 {
++			status = "okay";
++		};
+ 	};
+ };
+diff --git a/arch/arm64/boot/dts/nvidia/tegra264.dtsi b/arch/arm64/boot/dts/nvidia/tegra264.dtsi
+index f137565da804..9eb7058e3149 100644
+--- a/arch/arm64/boot/dts/nvidia/tegra264.dtsi
++++ b/arch/arm64/boot/dts/nvidia/tegra264.dtsi
+@@ -3361,7 +3361,7 @@ bus@8100000000 {
+ 			 <0x02 0x00000000 0xd0 0x00000000 0x08 0x80000000>; /* ECAM, prefetchable memory, I/O */
  
-   msi-parent: true
+ 		smmu1: iommu@5000000 {
+-			compatible = "arm,smmu-v3";
++			compatible = "nvidia,tegra264-smmu", "arm,smmu-v3";
+ 			reg = <0x00 0x5000000 0x0 0x200000>;
+ 			interrupts = <GIC_SPI 12 IRQ_TYPE_EDGE_RISING>,
+ 				     <GIC_SPI 13 IRQ_TYPE_EDGE_RISING>;
+@@ -3370,10 +3370,18 @@ smmu1: iommu@5000000 {
  
-+  nvidia,cmdqv:
-+    description: |
-+      A phandle to its pairing CMDQV extension for an implementation on NVIDIA
-+      Tegra SoC.
+ 			#iommu-cells = <1>;
+ 			dma-coherent;
++			nvidia,cmdqv = <&cmdqv1>;
++		};
 +
-+      If this property is absent, CMDQ-Virtualization won't be used and SMMU
-+      will only use its own CMDQ.
-+    $ref: /schemas/types.yaml#/definitions/phandle
-+
-   hisilicon,broken-prefetch-cmd:
-     type: boolean
-     description: Avoid sending CMD_PREFETCH_* commands to the SMMU.
-@@ -69,6 +83,17 @@ properties:
-       register access with page 0 offsets. Set for Cavium ThunderX2 silicon that
-       doesn't support SMMU page1 register space.
++		cmdqv1: cmdqv@5200000 {
++			compatible = "nvidia,tegra264-cmdqv";
++			reg = <0x00 0x5200000 0x0 0x830000>;
++			interrupts = <GIC_SPI 19 IRQ_TYPE_LEVEL_HIGH>;
++			status = "disabled";
+ 		};
  
-+allOf:
-+  - if:
-+      not:
-+        properties:
-+          compatible:
-+            contains:
-+              const: nvidia,tegra264-smmu
-+    then:
-+      properties:
-+        nvidia,cmdqv: false
-+
- required:
-   - compatible
-   - reg
-@@ -82,7 +107,7 @@ examples:
-     #include <dt-bindings/interrupt-controller/irq.h>
+ 		smmu2: iommu@6000000 {
+-			compatible = "arm,smmu-v3";
++			compatible = "nvidia,tegra264-smmu", "arm,smmu-v3";
+ 			reg = <0x00 0x6000000 0x0 0x200000>;
+ 			interrupts = <GIC_SPI 1 IRQ_TYPE_EDGE_RISING>,
+ 				     <GIC_SPI 2 IRQ_TYPE_EDGE_RISING>;
+@@ -3382,6 +3390,14 @@ smmu2: iommu@6000000 {
  
-     iommu@2b400000 {
--            compatible = "arm,smmu-v3";
-+            compatible = "nvidia,tegra264-smmu", "arm,smmu-v3";
-             reg = <0x2b400000 0x20000>;
-             interrupts = <GIC_SPI 74 IRQ_TYPE_EDGE_RISING>,
-                          <GIC_SPI 75 IRQ_TYPE_EDGE_RISING>,
-@@ -92,4 +117,5 @@ examples:
-             dma-coherent;
-             #iommu-cells = <1>;
-             msi-parent = <&its 0xff0000>;
-+            nvidia,cmdqv = <&cmdqv>;
-     };
-diff --git a/Documentation/devicetree/bindings/iommu/nvidia,tegra264-cmdqv.yaml b/Documentation/devicetree/bindings/iommu/nvidia,tegra264-cmdqv.yaml
-new file mode 100644
-index 000000000000..3f5006a59805
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iommu/nvidia,tegra264-cmdqv.yaml
-@@ -0,0 +1,42 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iommu/nvidia,tegra264-cmdqv.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+ 			#iommu-cells = <1>;
+ 			dma-coherent;
++			nvidia,cmdqv = <&cmdqv2>;
++		};
 +
-+title: NVIDIA Tegra264 CMDQV
++		cmdqv2: cmdqv@6200000 {
++			compatible = "nvidia,tegra264-cmdqv";
++			reg = <0x00 0x6200000 0x0 0x830000>;
++			interrupts = <GIC_SPI 8 IRQ_TYPE_LEVEL_HIGH>;
++			status = "disabled";
+ 		};
+ 
+ 		mc: memory-controller@8020000 {
+@@ -3437,7 +3453,7 @@ emc: external-memory-controller@8800000 {
+ 		};
+ 
+ 		smmu0: iommu@a000000 {
+-			compatible = "arm,smmu-v3";
++			compatible = "nvidia,tegra264-smmu", "arm,smmu-v3";
+ 			reg = <0x00 0xa000000 0x0 0x200000>;
+ 			interrupts = <GIC_SPI 21 IRQ_TYPE_EDGE_RISING>,
+ 				     <GIC_SPI 22 IRQ_TYPE_EDGE_RISING>;
+@@ -3446,10 +3462,18 @@ smmu0: iommu@a000000 {
+ 
+ 			#iommu-cells = <1>;
+ 			dma-coherent;
++			nvidia,cmdqv = <&cmdqv0>;
++		};
 +
-+description:
-+  The CMDQ-Virtualization hardware block is part of the SMMUv3 implementation
-+  on Tegra264 SoCs. It assists in virtualizing the command queue for the SMMU.
++		cmdqv0: cmdqv@a200000 {
++			compatible = "nvidia,tegra264-cmdqv";
++			reg = <0x00 0xa200000 0x0 0x830000>;
++			interrupts = <GIC_SPI 28 IRQ_TYPE_LEVEL_HIGH>;
++			status = "disabled";
+ 		};
+ 
+ 		smmu4: iommu@b000000 {
+-			compatible = "arm,smmu-v3";
++			compatible = "nvidia,tegra264-smmu", "arm,smmu-v3";
+ 			reg = <0x00 0xb000000 0x0 0x200000>;
+ 			interrupts = <GIC_SPI 30 IRQ_TYPE_EDGE_RISING>,
+ 				     <GIC_SPI 31 IRQ_TYPE_EDGE_RISING>;
+@@ -3458,6 +3482,14 @@ smmu4: iommu@b000000 {
+ 
+ 			#iommu-cells = <1>;
+ 			dma-coherent;
++			nvidia,cmdqv = <&cmdqv4>;
++		};
 +
-+maintainers:
-+  - Nicolin Chen <nicolinc@nvidia.com>
++		cmdqv4: cmdqv@b200000 {
++			compatible = "nvidia,tegra264-cmdqv";
++			reg = <0x00 0xb200000 0x0 0x830000>;
++			interrupts = <GIC_SPI 37 IRQ_TYPE_LEVEL_HIGH>;
++			status = "disabled";
+ 		};
+ 
+ 		i2c14: i2c@c410000 {
+@@ -3690,7 +3722,7 @@ bus@8800000000 {
+ 		ranges = <0x00 0x00000000 0x88 0x00000000 0x01 0x00000000>;
+ 
+ 		smmu3: iommu@6000000 {
+-			compatible = "arm,smmu-v3";
++			compatible = "nvidia,tegra264-smmu", "arm,smmu-v3";
+ 			reg = <0x00 0x6000000 0x0 0x200000>;
+ 			interrupts = <GIC_SPI 225 IRQ_TYPE_EDGE_RISING>,
+ 				     <GIC_SPI 226 IRQ_TYPE_EDGE_RISING>;
+@@ -3699,6 +3731,14 @@ smmu3: iommu@6000000 {
+ 
+ 			#iommu-cells = <1>;
+ 			dma-coherent;
++			nvidia,cmdqv = <&cmdqv3>;
++		};
 +
-+properties:
-+  compatible:
-+    const: nvidia,tegra264-cmdqv
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    cmdqv@5200000 {
-+            compatible = "nvidia,tegra264-cmdqv";
-+            reg = <0x5200000 0x830000>;
-+            interrupts = <GIC_SPI 19 IRQ_TYPE_LEVEL_HIGH>;
-+    };
++		cmdqv3: cmdqv@6200000 {
++			compatible = "nvidia,tegra264-cmdqv";
++			reg = <0x00 0x6200000 0x0 0x830000>;
++			interrupts = <GIC_SPI 232 IRQ_TYPE_LEVEL_HIGH>;
++			status = "disabled";
+ 		};
+ 
+ 		hda@90b0000 {
 -- 
 2.25.1
 
