@@ -1,43 +1,44 @@
-Received: from OS8PR02CU002.outbound.protection.outlook.com (mail-japanwestazolkn19012052.outbound.protection.outlook.com [52.103.66.52])
+Received: from SEYPR02CU001.outbound.protection.outlook.com (mail-koreacentralazolkn19013084.outbound.protection.outlook.com [52.103.74.84])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BBD7019C566
-	for <iommu@lists.linux.dev>; Tue, 16 Dec 2025 16:14:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.103.66.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0247A1A9F9F
+	for <iommu@lists.linux.dev>; Tue, 16 Dec 2025 16:14:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.103.74.84
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765901658; cv=fail; b=PiUcySAkI9ungKGyKMfEMpXVp+rhQ9yBsj3KDFBKzkMTn+5DvpZOHxTqyXTk4YBCgR+OU/HA9eVUmruOypTKxpLcnGdm9WYZ7/BZJPUvelayAGnSWJ2N93E4Ixr+oSKc9kXKrAHnxC3pmG1UEJ8cPplLKf9RtZZwbxXQQA7jOpI=
+	t=1765901667; cv=fail; b=qz29rYFGnbODUx9yalemq8I0nZDYkhecNIZe557LMlsqjNuKy0f6qmZVkmRbSFFvgGi6ayPvyTILA2rDpHsZxg7Zm1Q0xzkBGLE5WH/5g5euPdzZ7kJqd+E5H7OWt2H0kdLlaTUcmYz1enTcx2DGN/DGSS+SlOtfsrHGkeOmAxU=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765901658; c=relaxed/simple;
-	bh=ZVCorPGYYYdC2iy4Tlv5i+61DjwEu1LSEJlcnUYkDgo=;
-	h=From:To:Cc:Subject:Date:Message-ID:Content-Type:MIME-Version; b=nbEeOoEDtMd4yyJQiAxfkVI9ArDoWKXcmDuuH5AUiYKyruOzp0qYv5Gtxr90g24Y1BsO61ZkmA0xcvlaL3xLW/liIYuOAZg4fw7cUhXV9mFUsFGHo1WbXPBcSDGmafcEIyARHAiPn6jkfdN29YNOx0WaeMtbCT98THv9R3igSVQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hotmail.com; spf=pass smtp.mailfrom=hotmail.com; dkim=pass (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b=Cld+LoZB; arc=fail smtp.client-ip=52.103.66.52
+	s=arc-20240116; t=1765901667; c=relaxed/simple;
+	bh=QXhq9jqV2Sks4rZCQxyfdMqG8KeimcFOkyzGl44wh70=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=gOxPBN/ntX0Nd22MIt8+8ZVJiszxKEjyxUec55g/wUO2H2NT/fLICsuNKVCnoSMQE1NYIXr812T2K5MKtHKotKQKwMQpiyR/P+2tVpivago7AdKosctHI0YGaZRRA5EqazBPtIv8qVB9hZCYUuVDq3XVUeVe7yV9P/vr20YwwcM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hotmail.com; spf=pass smtp.mailfrom=hotmail.com; dkim=pass (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b=ouytwdjX; arc=fail smtp.client-ip=52.103.74.84
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hotmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hotmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b="Cld+LoZB"
+	dkim=pass (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b="ouytwdjX"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=vnke7ZVTmGuK6hQqEjqS1PWXuBrWQGGSf4ozBZ3gB4oB9Amy9yXXwvoLFoOcAdLvyfA5cQMieq3iCSashoQkCV6c7qH4to5D961Ao1Va+QmwlXbza2dw9CtrXRfaGlCGbWLrpel8y9c03A0kNhRmTrKH7e3wPw4iAHxUiAcDeiiL9itddjslTUmGgTUp6Lm/TtgXKt7dYq6SYMtGU6tTDRYfoNZqt1Y4K+V7pBugdv1P8W/bu8isDnuKYAwg+1CujEOhVZarjpuLUY3dOI1sCpk8YUCGaaKqtYmQjkMP/aw93+9+HT5Q+if6tcSUg3h1z3Y3UZetMXBdO++mbHPqjw==
+ b=e2+/rST4OpVpDApgt2YY2g3zEVdh3ojqQn50SRP28pIz0iipvuKW09bWJ3/F2nyNbVp8WimIGTXDU5rRhx57zN1Hs2Zgf6B2e1B76XvM2Qrm0VoOdN8EBogy+o2uTWDJ0Rgiyz5CjCH1j90ZnmFiFXjy15u98/SOlq7vBiqsszzWOOwlvMh9KsicrsPjFgTk8jMalxgvXtIeNXxY3tiYgIitnIzpSIuBMr39LwWwPF+k7VrmIZSTR7iiQ1pnqyhCfjrMy/hHIaw/JdWTKhe5qPqMwLtEzKknITJGhP9ZVaYppR1vdwD5BrVS7+WEeL8YcbNldvnIA+yKkGEmjkp/7g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=OhLP9Izg5n+YRhW++JdsYMaMM41BMTQyqjsF+1bE2zw=;
- b=eum4rrDk1DiCluA0pcOEKyqpekPJ45mRwHrihWvXyEmpcZzq6XR3BahfI8kvs0VTBi+3dXxLYYKi4XxNHeGFK4pjyQ5CRxiVIJaaMihhV3si8m+js/PUaDFbJJMF0w6OWpo+kLNRCOaCv9c/ZCCeD554H+sEamOqbWKfDT70W+LfLBYcfhsogYRWYh9bWAsQhZhSOVMEcf+M3Vnox1jm5C48fB/+kC88TYynVJmZeuGiKbSVxZXRoWhIFWmllvmOHTu7hwTL3LjSB6MYHzkhHKR4tpl2K8BkpouWdrxPgnqoBFT3FoIl/O5jyJa+HJ2py7D058KFoyAf7rjm6dOp2A==
+ bh=KpAdFqRYNTAfIW9mKTA7oRhI12Cr2VPJMTf4Qh/mJoM=;
+ b=vUyuTCQIN+XZYFzTXGIGqEE0HnrpA6ZNKw/HqbTO2zL9rt3DAU1oW2XGRjF/3/sFcgVga0BX4yD++ODlHpen5qjFsYNuIZz4rwUt+scJovH7klfUGONEt6No5xURbKXHJflesforCqrX1pbPeDyHPKJoCqQbnnYYbPwyauJWyFdlNuGot6PbVYeakfkaxkwG26zBUovx/VWXvMPuZAau56qGKRV+UM/lOBZmyGk0GrPy08gpP6dJLEyn7n1LsT0pJtoAc0BdTlS6E/51SQrHrtEWPTNMwhjI5ZWeuWhfn6AwORgAoujB+tYTlCQas9SQ8PUnx4VpTrjUArKFCGTBCw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
  dkim=none; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hotmail.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OhLP9Izg5n+YRhW++JdsYMaMM41BMTQyqjsF+1bE2zw=;
- b=Cld+LoZBD8VRsJ1tq5EdItaOV4q7W8VyDGdILvLVaA7GINokE6Mb7ar3vnA2rsrZcVfrVlbk1Os5BHrtd5iBgfmk+CendzI1sctRGA7uha8LqTWblAVI6VE89WGxa1Vt3kbVTfhUNwbPgSqa1wQ2i54V0XL6UcFErRMavB3C9Kqp68WfcZxP7vZcJvWX5VjgBwZscyz99OzKs6w0g6fD9/vDYO3EBOoz27KAC/dM7oE5xxaFXb+tWvYgZmTK0dzHQDvSCG8x5M2rzeHAW1pBOPcOQRagC4CEMfOnKD6QuBNWoTK43SVUH0hhhrUH8pQh809mmOLK22d+qrE5cZWnDQ==
+ bh=KpAdFqRYNTAfIW9mKTA7oRhI12Cr2VPJMTf4Qh/mJoM=;
+ b=ouytwdjXQ6s7ua15H9GmH33dG//3mODgAhpsiRHjsWqm+taoKtK0kGFE0iJvz27DXlKhyMFkfEeZaMiGs5aG0GtsUVM6IxvOhEG5Z87vP/ioBUvhonMVcG1sWFrkC5qmBoqiCNPoDkhgfh+sSq0yOp00IRfQbUhntsWA/QRGHGRrnNLVm/7VCK1N3i/9CLOCkunQibT8nV+d8E9jIGTHbZUa31JusjTYUEJDyBhLdxFtOjoaNrjdq0T6CyARtDNjrSPruv/10mI1qnzuNA6svnQYeREkwSt/PVyDdGaCdHa9OBSXYZ7t305omKkLS5J2cZUdbI5niFDLjfZUwkFUxw==
 Received: from SEZPR01MB4399.apcprd01.prod.exchangelabs.com
  (2603:1096:101:4f::13) by SEYPR01MB4770.apcprd01.prod.exchangelabs.com
  (2603:1096:101:b3::7) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9434.6; Tue, 16 Dec
- 2025 16:14:11 +0000
+ 2025 16:14:18 +0000
 Received: from SEZPR01MB4399.apcprd01.prod.exchangelabs.com
  ([fe80::5145:bf70:5ca0:ee19]) by SEZPR01MB4399.apcprd01.prod.exchangelabs.com
  ([fe80::5145:bf70:5ca0:ee19%5]) with mapi id 15.20.9434.001; Tue, 16 Dec 2025
- 16:14:10 +0000
+ 16:14:18 +0000
 From: Wei Wang <wei.w.wang@hotmail.com>
 To: jgg@nvidia.com,
 	kevin.tian@intel.com,
@@ -50,18 +51,20 @@ To: jgg@nvidia.com,
 Cc: iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
 	wei.w.wang@hotmail.com
-Subject: [PATCH v4 0/2] iommu: Avoid setting C-bit for MMIO addresses
-Date: Wed, 17 Dec 2025 00:13:45 +0800
+Subject: [PATCH v4 1/2] iommupt: Do not set C-bit on MMIO backed PTEs
+Date: Wed, 17 Dec 2025 00:13:46 +0800
 Message-ID:
- <SEZPR01MB4399D06A044791DEA8BE43CBDCAAA@SEZPR01MB4399.apcprd01.prod.exchangelabs.com>
+ <SEZPR01MB4399B4DA74A3C76056881D72DCAAA@SEZPR01MB4399.apcprd01.prod.exchangelabs.com>
 X-Mailer: git-send-email 2.51.1
+In-Reply-To: <SEZPR01MB4399D06A044791DEA8BE43CBDCAAA@SEZPR01MB4399.apcprd01.prod.exchangelabs.com>
+References: <SEZPR01MB4399D06A044791DEA8BE43CBDCAAA@SEZPR01MB4399.apcprd01.prod.exchangelabs.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: TYCP286CA0244.JPNP286.PROD.OUTLOOK.COM
  (2603:1096:400:456::19) To SEZPR01MB4399.apcprd01.prod.exchangelabs.com
  (2603:1096:101:4f::13)
 X-Microsoft-Original-Message-ID:
- <20251216161347.1380195-1-wei.w.wang@hotmail.com>
+ <20251216161347.1380195-2-wei.w.wang@hotmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -71,64 +74,61 @@ MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: SEZPR01MB4399:EE_|SEYPR01MB4770:EE_
-X-MS-Office365-Filtering-Correlation-Id: 95682aba-983f-470e-496b-08de3cbe2492
+X-MS-Office365-Filtering-Correlation-Id: 1c2f1bae-a093-4936-4240-08de3cbe2a10
 X-Microsoft-Antispam:
-	BCL:0;ARA:14566002|15080799012|461199028|5072599009|5062599005|51005399006|8060799015|19110799012|23021999003|36102599003|12121999013|3412199025|4302099013|440099028|10035399007|40105399003|1602099012|13041999003|1710799026;
+	BCL:0;ARA:14566002|15080799012|461199028|5072599009|51005399006|8060799015|19110799012|23021999003|36102599003|3412199025|440099028|40105399003|56899033|1710799026;
 X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?/a5i6fomZUORpfhRaDWOTpxUm2zAG6turl0dL9pzI7Otkma8kAnXEZW4fwKd?=
- =?us-ascii?Q?N4S9Xfd6LZrHxeDbdH1gGfEnzAjDqT3BBpyKJrIz1os5sO0queC9TCZ7EE5L?=
- =?us-ascii?Q?PAvCsAdL+IQXAM49E+8LcwNcwxL8a10AcdSzvEW6KBVCP7l9FhntytIF8+e5?=
- =?us-ascii?Q?+W4V30OsJW8Lbj1lnclvySLeGnraCUcH3cg621bmDaXWHO9hWHoWRPdi7vGd?=
- =?us-ascii?Q?vXsUabkwYRvYQlApYwm5y85qP3pXprKPxXOLLMtA7uPLG1Q3vGzd/E9h/Foo?=
- =?us-ascii?Q?kJRY/g0xn6Ex1NCEMCj86HHE10yFDg30eemzEfaQvgKAf1eYY1oclouhhFP0?=
- =?us-ascii?Q?TtGP0QDH3HeQRTJMG9BQ2VPuMSM4BnDFiXJb238U+eWPKMu1agb0HvXRtffz?=
- =?us-ascii?Q?cZXV3KzqCGcbu7wcGkrv/Z2uxob6v753NXIEnGITHzmShDdc8/6pLZm43fs7?=
- =?us-ascii?Q?ArjhB38XoFLI477e4B95t+TzDarxtrhEDL8Gn48YqlCNzZZP8EdCtD8gsZ2n?=
- =?us-ascii?Q?io22S/TqJXTVUli2tPFXKATQNqsq1ytT9Qwpb8TAEh2j9hgTvmv6DNHVIQet?=
- =?us-ascii?Q?EsK3BYzWs0wtkUZ4F+uXw3aUF+s0TucZtV++aSwHmDf1MES/Ij3yIpxfgeaW?=
- =?us-ascii?Q?h7oe7MJ6XXvKiFO1t5fYpgTIPvGW/pp3VGWjRrXJmHB3CPXAcn5VAX8T8f9e?=
- =?us-ascii?Q?SRkCLDvuSdfAEk/y97ndcqVl1FeFcf4TKENeJ6VWBhBkMfrCn8Q6FyuZP9GZ?=
- =?us-ascii?Q?1qWa0h4PecxLYjuPfMJR2j6TYpNaw46ojtV8J8TQJdlCMlM9aThkBEUIXu99?=
- =?us-ascii?Q?e2iGjk9ubCDvHUZVdIsCZhgewLvYS349SN+wvuHQUCwDGRuIP+Sw6zvqHP1K?=
- =?us-ascii?Q?qrTbFw8bYay33D6qJUMSe66kPTb+2ctqOgvCJueWLvAzJRssb2jbk3dJSYUT?=
- =?us-ascii?Q?TI1/wNOLzqQ28RYKxvyrpXg3cYwSZalrRy1fvmKp8J+pP+dyutRnokODWwOz?=
- =?us-ascii?Q?AJ6c0Qs17mpEbUByy9yw9htcVm/AEnMeNenupSrAV80d+OtcIHicw812vueh?=
- =?us-ascii?Q?HGgVlfZ9xX5+KErC82j8IHbiEZ2wJtXOBmmbpGWAnwVC43VvSRHxhGW9PaJC?=
- =?us-ascii?Q?2yrzx9rOSjEDxIdeClKtYfZVZHgGH8dYbbkgT4dcXwww+LeHaLxKobIRmOS/?=
- =?us-ascii?Q?HLUOmhCx8pnwDIEScE0fcseLvtYCHwDFNjmSFVaNqK20uWJckBYyODvF9Hxb?=
- =?us-ascii?Q?m/jq7JldEo/xLaQOBn5BtWmSzRjr3tSM4vkuBOlN1prDSKwz1NAojZS8c+HW?=
- =?us-ascii?Q?ZgGs0xDH3EpP6hSTC75qe70dT5Yhx0VB+eKOHjOT/uG4oK6zy39hUwzt4iqD?=
- =?us-ascii?Q?jkxKATHvMnRuzSZcvUlh/qa2xlt4eUkIHLZlMeB4yAIV6kv3aATYTdv+R/8S?=
- =?us-ascii?Q?V8Afyl80V80FpdMMJK/bAXe57Q3jrFhOUzwjL54aWYOupmVcnsnlwg=3D=3D?=
+	=?us-ascii?Q?MB9OkGERtxRcy8Fz7PcCQ9uG/VPJQNoc7pb9o2Eb9VjQfcG/p73kLGicVwkw?=
+ =?us-ascii?Q?E8URe9C0+crx9dkeSzqae44gmsIPc9vjPx6RoSTwekCV+aRiCLOC26xyi2CR?=
+ =?us-ascii?Q?Kwu45H3zY5Dhs+GEcRzMR6M+wns2VtPTkNfPEBlOPclL0iLje81+yo6afgk5?=
+ =?us-ascii?Q?S71vvZz20mxGlEPzJmMjgrpmspwLPozjnCk+FLpRssSohdZjFw9qgviM8otj?=
+ =?us-ascii?Q?0nFe0E+vimwhO7qW8OkXSnniRdj2BWbcJ+S6JR6jcpQSqRJkMrtZmdGPPhVZ?=
+ =?us-ascii?Q?rYJSs8dsHJx9Ycu0MrBNdA0PD51NaIhTiRq1Kpg+bALVB3uSUnz0tB9mo2vg?=
+ =?us-ascii?Q?DuBvKE968/K/0RrSa/uRzQyG3ySttX8P+Nr2G1o5Iw32I6BiU5kPcyMQ4J7c?=
+ =?us-ascii?Q?26ni2DODln0TICJltJQ9NV90mhJWd0dzfkgq/G4eqOBdZp+9/95skFTkOXoa?=
+ =?us-ascii?Q?M1gV1TJJ9U0KsSNJtaLhFo9tLms7dxLxJQG0s5+4fujvwnLG52w7BO77N22E?=
+ =?us-ascii?Q?2UXLI7gpRCbSYCHvW2Y4ZJ54108+DMpwXrpusSfsK+aPvNsDiVkqRrigp0W8?=
+ =?us-ascii?Q?h9QSJhhKcn8mNFUqrJKGh+gWfXXgANgjl22z9HGiyaFJhIHn7W6ceesa5kbG?=
+ =?us-ascii?Q?0OUrSUzBCnQsduJOUIKfxOhCRvTEJ6jDoLJTw0j63dQJsT45oQuKALo+uG3c?=
+ =?us-ascii?Q?4DNalamNVo/55JMXY014naUv4mo8rGl5E1EwqZbebk7K8xcRUMegQtM/i+Ka?=
+ =?us-ascii?Q?F4bOmb/0ciYLLcU3ndl58Mna7wfPNzEGMJprrGrqOnLihq4bjeYiLXtezgN8?=
+ =?us-ascii?Q?2jc1ZHKtsylyo0I+KE68hyFVLvrCQkFWiEDSgfw4JnRraMwG3drwN13MLLze?=
+ =?us-ascii?Q?3AYoNRBl+FjhpZhhMgqAdlZgQ0QoEUMQFGpZ20DQ8IZRT537KQqadq36nkwt?=
+ =?us-ascii?Q?70eZHXMgfIAPueoXtEK7S0ixxSSvIM9EQvmVxQcwVW340Phlk4IWeHpm6L9b?=
+ =?us-ascii?Q?7vFDa2tOej/sf8Pnc26hWhWA4LGAvmj+zAuphmRX5T2vRiHkHx+f2qdm1JgT?=
+ =?us-ascii?Q?jJVlBntG1GPHIxPDhYwSd1Sk3k8bareykXAJ0THH5rt7F1rSLk04trnyQc2s?=
+ =?us-ascii?Q?QYzOgGMYrfM0GKm0W8mo6txbiBd6v+faY6mh1y+BGfVIEMvssTX2JzJ7cVxE?=
+ =?us-ascii?Q?/t6AYYZ3rxmzyXCvcwqxsdNSZTQR13KWnTt9KJ1Z/pYlz5WLXK694zQQkz8?=
+ =?us-ascii?Q?=3D?=
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?2xgSwBPszFIpLdBtnxLlzT0jZp6QKAftP7kFYZJSsuBmRFytQ7T1Tmpi2e7b?=
- =?us-ascii?Q?kktR2vbWTHTmZUB4VaNpp3zxzVkJaRYPblqDUhcxtdgbuTu+8EvYz7Y+HlvV?=
- =?us-ascii?Q?ZhsrPL+AjjyVTKHb7wno/t+mHcJ3U5Msrud+ffLzAT7+98smQ3k8vMLjo6dz?=
- =?us-ascii?Q?cWm2ieWunmkbV4BDuGEAWTtBcA53GJKRvpx4DQTuAIk+CZakmMgS0n0Awsr6?=
- =?us-ascii?Q?JM3+t030hZNMecDDiUnAlpSA/9avYULfRLcCuk7N9qqKeIFCy/rh3OZt2Txp?=
- =?us-ascii?Q?denpX7Dpjvxbc97k+h88UMzq/z+e57NHmEzdF2WVvpT+TyMbDAarrgvdXnU1?=
- =?us-ascii?Q?Onj58FCGjAQPuE5BtDjGnhWpp4+NMDGkkGNJL3GMhivK8rGWDryGgXBjmvUR?=
- =?us-ascii?Q?YOqiJVs29Hzs6/X89vIaDdHVT/fM2+n59jEp4HtV1fJIfczwHndmjEm8+QbO?=
- =?us-ascii?Q?a39R40E16OzvQZiI4uVdxkzumnW4VC6ODuOOdHvDqoRWWCM2nMMUJQFn1SQE?=
- =?us-ascii?Q?WzU+3y8CbddgC1GVFpCYgWBsJIOduhDg1KJYZvxcEoDpBvqX2z1PrgfJZ790?=
- =?us-ascii?Q?RxzR9eQGxf53dYo/89VXFGArwuYAeBRr4PxvL/DFjKgXffTC3R/zepYy0KyS?=
- =?us-ascii?Q?UCNnQtF3q7Tb0c4oBsrMHSPcAA4gPj4z3mbB7PTF/RCX681RonZUTttvteRy?=
- =?us-ascii?Q?9PIJ0Yzd/IBL0jJkAvCQl3rSSIdSIrWGFuA82A6rRSWnx7bi2DbenncoaUbH?=
- =?us-ascii?Q?ydewdcPQelil3kQWBHdnMlH7QOdZRjqOt0gJOz7evj160xlWXHGJ7YKmt4lP?=
- =?us-ascii?Q?mckgvA6nZRy8oHAsOC0JLUxidMUZvnHbCBZMkDdBEMdEcDZIoakUrMLV/oyU?=
- =?us-ascii?Q?ZEID345jtnklHQZIaamGDSaCbUpmXxqevL/lIXxQqsSLQnZ/769dHySuwBUl?=
- =?us-ascii?Q?CBrYQoR13O3/5qOzU8tnhI+QQAHUq5Bouw/Q/JGinibJvl8G+e8bGOzH8fhz?=
- =?us-ascii?Q?HrkerEJzSkJeat06RV0E6bPBIqCqrIb0uu2yU3A8SIhFs3cXCH3XrP3bPisF?=
- =?us-ascii?Q?cNPJCFYGbDtYU40/32MCIVzShs2C7h0qJdkp5lHftkQnreV7zpi2MIbJLTh5?=
- =?us-ascii?Q?2wljp+bcXeDV6QpWgQM0YVRlsdRO8YoMZhD9udBpvjoYGhXi0Imea+JkKLQK?=
- =?us-ascii?Q?G8vDFqmx8IoBFSDn+vz7NXnZnxVLJ5/0FHShdI9VHWP8GKQj7d/ZcdlPU8s?=
+	=?us-ascii?Q?hZTimjACi7d5JYcbxrsTihbUURK0qNfT69emGjAnjj08aaiTEN+q4FHws8A4?=
+ =?us-ascii?Q?HXgIxFzG/AdQ0r80hD7NedoHPdVDJvzOSSq/NzPc2prX52okJDNvSTBA1/GP?=
+ =?us-ascii?Q?Sr22PiyOhIxZ/zyttNCnb7SNeWlx8975k4EHzaexeGBZi4M6x8Fyf+j4dqNq?=
+ =?us-ascii?Q?69k+EMFfP9TsC25DMqK+9APKncJVMG080duz1YSHVP4PmaR0Nw/HFMiiraZZ?=
+ =?us-ascii?Q?+5hxwnm/3Fr04BKWOlb7UDP5I3nYdMpnONkwfqMHil/epVc6ukJM3uPSvCSN?=
+ =?us-ascii?Q?5SD0ZHlW7+lTUKhv7NorAk4ne1u0DoQwfqrIK/fmljZNRSQkWc1+aCDyXVbM?=
+ =?us-ascii?Q?h/soquIyzYjwXdazBA+8NrhYXt7hxCNc8KhlAgesqb+X9zzs++9YNXS+MWLy?=
+ =?us-ascii?Q?HPXxaibF+lZIIH74Fb3Eq/eizW0lMNxDLX+uf6t4MDWebk9WcRBJHdd0XeUO?=
+ =?us-ascii?Q?N6Cld6Pxxne6PA4mKxMddi+hRkY27yy+yHr7UpQoAOK1/yYU1qmFu0jq+gLM?=
+ =?us-ascii?Q?nVVxvd4PrWBni6jNi/zRfKPGV5KT7aibl+JaF1ivW/DgW1lil7i9klj4pJI8?=
+ =?us-ascii?Q?2xLP82a9AvNhdV1ddazUFPb9BhIiXFbHzZs7QuLe3eePLWdKOgfjxfI4RVU1?=
+ =?us-ascii?Q?Jrfm3S+FMbekfM4Zi/HnxvhYqw/BUUZijb2ipvGEDd4Q8+3VyK6BraTrK9Go?=
+ =?us-ascii?Q?3LxAIvFPvjzCbdSiJDGY/Ysm/tGz60iGfkVn2QpVDo4WcLFlofv9asIA6hp8?=
+ =?us-ascii?Q?Eb9ILXm4Gw0RqRKr0IghCHVDU2qmBsspP3a1LgNkzcgQ5VsLrJCpuYIWc6zR?=
+ =?us-ascii?Q?Wa2FH4TtaBpLQGpqA/rfbiry3y5cAveJWwKJB+K8PUATFiheH+dKZBd6LgJ7?=
+ =?us-ascii?Q?33n7I/ck3iazmwB4gXG6ccfaAME8kgX4U69vPH9ADw9MjwXBi8XRzS6KEqbY?=
+ =?us-ascii?Q?leCM4f3MHHBQ8+cTJQXBE/LrVDl7vuy3JY6T8kSFM0EXs8HUi/IOv/rROhqZ?=
+ =?us-ascii?Q?L1ep1hbWfY+ooI2sLoJFo5Jgc85V7ihsRzYKLBoVCwPsuvJqjhuCQ73kiTq4?=
+ =?us-ascii?Q?/c6ZTcL1E9wcaZW+DH1HVTA9n1yG9DXLfWKnL96KFQPUgR/2rlxnjFtPj1Lb?=
+ =?us-ascii?Q?zO5av0QTGBVsbrZ0cR+nIlPUD/+GIGYetJMiFqGAh4fDHU1lvFt5wsBxj8Cv?=
+ =?us-ascii?Q?saCsgTMfx23obaiyBZH8uVlAkBj9IUci5lbc/2mQ7rledZ+u+afHTRbRv7Y?=
  =?us-ascii?Q?=3D?=
 X-OriginatorOrg: sct-15-20-9412-4-msonline-outlook-5f51e.templateTenant
-X-MS-Exchange-CrossTenant-Network-Message-Id: 95682aba-983f-470e-496b-08de3cbe2492
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1c2f1bae-a093-4936-4240-08de3cbe2a10
 X-MS-Exchange-CrossTenant-AuthSource: SEZPR01MB4399.apcprd01.prod.exchangelabs.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Dec 2025 16:14:09.7814
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Dec 2025 16:14:18.6101
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
@@ -136,40 +136,61 @@ X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
 	00000000-0000-0000-0000-000000000000
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: SEYPR01MB4770
 
-AMD APM specifies that any pages corresponding to MMIO addresses must be
-configured with the C-bit clear. The current iommu implementation sets
-the C-bit on all PTEs in the IOMMU page tables. This is incorrect for PTEs
-backed by MMIO, and can break PCIe peer-to-peer communication when IOVA is
-used. Fix this by avoiding the C-bit for MMIO-backed mappings.
+AMD Secure Memory Encryption (SME) marks individual memory pages as
+encrypted by setting the C-bit in page table entries. According to the
+AMD APM,any pages corresponding to MMIO addresses must be configured
+with the C-bit clear.
 
-v3->v4 change:
-- In the 2nd patch, moved the VM_IO check into the
-  if (is_invalid_reserved_pfn(*pfn)) {} code block to avoid checking it on
-  error paths.
-  v3 link: https://lore.kernel.org/lkml/SI2PR01MB439337D5513729BAC122F526DCCDA@SI2PR01MB4393.apcprd01.prod.exchangelabs.com/
+The current *_iommu_set_prot() implementation sets the C-bit on all PTEs
+in the IOMMU page tables. This is incorrect for PTEs backed by MMIO, and
+can break PCIe peer-to-peer communication when IOVA is used. Fix this by
+avoiding the C-bit for MMIO-backed mappings.
 
-v2->v3 changes:
-- re-implement the iommu part based on the iommu tree which has the
-  iommupt patches merged.
-  v2 link: https://lore.kernel.org/lkml/SI2PR01MB439373CA7A023D8EC4C42040DCC7A@SI2PR01MB4393.apcprd01.prod.exchangelabs.com/
+For amdv2 IOMMU page tables, there is a usage scenario for GVA->GPA
+mappings, and for the trusted MMIO in the TEE-IO case, the C-bit will need
+to be added to GPA. However, SNP guests do not yet support vIOMMU, and the
+trusted MMIO support is not ready in upstream. Adding the C-bit for trusted
+MMIO can be considered once those features land.
 
-v1->v2 changes:
-- 1 used page_is_ram() in the AMD IOMMU driver to detect non-RAM
-  addresses, avoiding changes to upper-layer callers (vfio and iommufd).
-  v2 instead lets upper layers explicitly indicate MMIO mappings via the
-  IOMMU_MMIO prot flag. This avoids the potential overhead of
-  page_is_ram(). (suggested by Jason Gunthorpe) 
-  v1 link: https://lore.kernel.org/lkml/SI2PR01MB439358422CCAABADBEB21D7CDCF0A@SI2PR01MB4393.apcprd01.prod.exchangelabs.com/
+Fixes: 879ced2bab1b ("iommupt: Add the AMD IOMMU v1 page table format")
+Fixes: aef5de756ea8 ("iommupt: Add the x86 64 bit page table format")
+Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Wei Wang <wei.w.wang@hotmail.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+---
+ drivers/iommu/generic_pt/fmt/amdv1.h  | 3 ++-
+ drivers/iommu/generic_pt/fmt/x86_64.h | 3 ++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
-Wei Wang (2):
-  iommupt: Do not set C-bit on MMIO backed PTEs
-  vfio/type1: Set IOMMU_MMIO in dma->prot for MMIO-backed addresses
-
- drivers/iommu/generic_pt/fmt/amdv1.h  |  3 ++-
- drivers/iommu/generic_pt/fmt/x86_64.h |  3 ++-
- drivers/vfio/vfio_iommu_type1.c       | 14 +++++++++-----
- 3 files changed, 13 insertions(+), 7 deletions(-)
-
+diff --git a/drivers/iommu/generic_pt/fmt/amdv1.h b/drivers/iommu/generic_pt/fmt/amdv1.h
+index aa8e1a8ec95f..3b2c41d9654d 100644
+--- a/drivers/iommu/generic_pt/fmt/amdv1.h
++++ b/drivers/iommu/generic_pt/fmt/amdv1.h
+@@ -354,7 +354,8 @@ static inline int amdv1pt_iommu_set_prot(struct pt_common *common,
+ 	 * Ideally we'd have an IOMMU_ENCRYPTED flag set by higher levels to
+ 	 * control this. For now if the tables use sme_set then so do the ptes.
+ 	 */
+-	if (pt_feature(common, PT_FEAT_AMDV1_ENCRYPT_TABLES))
++	if (pt_feature(common, PT_FEAT_AMDV1_ENCRYPT_TABLES) &&
++	    !(iommu_prot & IOMMU_MMIO))
+ 		pte = __sme_set(pte);
+ 
+ 	attrs->descriptor_bits = pte;
+diff --git a/drivers/iommu/generic_pt/fmt/x86_64.h b/drivers/iommu/generic_pt/fmt/x86_64.h
+index 210748d9d6e8..ed9a47cbb6e0 100644
+--- a/drivers/iommu/generic_pt/fmt/x86_64.h
++++ b/drivers/iommu/generic_pt/fmt/x86_64.h
+@@ -227,7 +227,8 @@ static inline int x86_64_pt_iommu_set_prot(struct pt_common *common,
+ 	 * Ideally we'd have an IOMMU_ENCRYPTED flag set by higher levels to
+ 	 * control this. For now if the tables use sme_set then so do the ptes.
+ 	 */
+-	if (pt_feature(common, PT_FEAT_X86_64_AMD_ENCRYPT_TABLES))
++	if (pt_feature(common, PT_FEAT_X86_64_AMD_ENCRYPT_TABLES) &&
++	    !(iommu_prot & IOMMU_MMIO))
+ 		pte = __sme_set(pte);
+ 
+ 	attrs->descriptor_bits = pte;
 -- 
 2.51.0
 
