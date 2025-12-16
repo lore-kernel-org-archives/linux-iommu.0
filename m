@@ -1,206 +1,291 @@
-Received: from DM1PR04CU001.outbound.protection.outlook.com (mail-centralusazon11010040.outbound.protection.outlook.com [52.101.61.40])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8896A213254
-	for <iommu@lists.linux.dev>; Tue, 16 Dec 2025 14:15:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.61.40
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765894518; cv=fail; b=CDLevXYImWoAtG6fp49wv4jqwKt4Mew49qWmQZOgArgIdRl+RAmZRwa/JDsH76761bZuAolT5Bly8gixkbQo356IPVckHM8yHBBdGCss0PCAYtFH+3E7fqx2aiZMtLt63ZjbBknC+Q1lyFem6YiQmcC2zL/6rOXAuzAYPUIhINw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765894518; c=relaxed/simple;
-	bh=zi832yiUD+0oR9En5e81WNGnPh4aALCK5gKjgmMmv+M=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=bHn5bt0HuUWj9Kspz2SNi+hTnCqmh4glH8s3f1o8bon82a9iVXBlzP7GxB2gZvFY5HZqT+UdWN8SBXvIdyWH60Ze7LkBOuq4ghsjUjC3bRIoI9GjeznHR3vSQAF9T+K6X6K44u679IlpxRwxBciBJmwhOQh3l3wJnsUfpjacA9s=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=MLa9Wg1h; arc=fail smtp.client-ip=52.101.61.40
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCC66366DCB;
+	Tue, 16 Dec 2025 15:28:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1765898895; cv=none; b=k37R3tj/UBlcKyUZgSxsjdFfluBTTAHeeEqgxOakX0xRnll8eLEDclefK2pKFAjvCHPLXH7nDuq5K75m6sqEnFTUpZqSdKShpCkd/cZXeZpCDdE2ZTg/Viu+1UMmREB554D1dRJChjZsIhoixfebnjH+irVWePXOOP8QvWsOTX4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1765898895; c=relaxed/simple;
+	bh=OiPjy41smsg2vZ8lV6j2pL67N3Pwufmjdt5efQFRXv8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=SZyyjkDKwZGjkwTnnCVa7A/g9P0+DtCYjeW1DB53ASgmq1Us26dl3WXNjlkJQk0+6R2T+A1f9xxtDDAFoM/hbxrGbJ8WVqMXQXgvg8uGZx5bShMpuETMEAyu0lTLqHPAfmYp6JKYNw5dT+yxcpykl4+T/WvFOvXO90hl5h0Vpeg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Av8pPVjQ; arc=none smtp.client-ip=192.198.163.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="MLa9Wg1h"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=SXMWsxq6zC1aJjLq+eAl1LEodCxkUvx2MtApxA5IHg3wZTz1uR/9DsfS7ELpo37zu+NjMP4ETJmAmuT6bGlK4iIRQaA95+1IR4JtkYsvcUsrc25Eu6z3uwaK0922LsWvE88L5Id9hA9+esykKXeZmWn9mo65R1BSclO7nVl7Z9C1c5TD+vgItQ8AJgH3kwDd69qn24Ll+QVw4E9hfnGb4CtFpUy+aE8wu7xJdjaSnLbMrI4YO+iYZQBBW2lFoPt3ELtPhOfa5JCh8KTweJGheCdxrUvi+/vlFTyr1AofzHqzz+cJKucuBK3z7OmAX3VBkQWrVvxfVb4pEL4cQfgRIA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4HQNYqcrifndsbZXq0OIgnt36zz5QSPlNvAW5+nhfaE=;
- b=oYL+VD1cIvNNMtv4pRpU+XmSfx/1kU5JQSQRkRZbG/KNmtt2Pmt//EgJHoCGNVX7QSg9DuBN8n4/eEqBRmo5fHdPWBYM4dH4aSL7+4AlV2Mq+ktrWE21KvXNdOGQeXmwmx+68BT4tK8rdK3cDbrxPuhmFyjgLL1uWDYqAscvHwuruk/j8KRjgi4qvJe5kZceubR0977Cf8aMXtHLKcigjCv2F9Wo3LMjLsCyIyng2nhSCCDbR9xydDUdTXV4flOzn2nGjFSU2YswnDCnmcXWtl4JB7MhEWkr5f5DWWZpKt5HCiQX4yvcxce0WSIj7HlPft4hWBSstXvbvmKd+gmfTw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4HQNYqcrifndsbZXq0OIgnt36zz5QSPlNvAW5+nhfaE=;
- b=MLa9Wg1hfceSOq7drIFK7Mxvb6mu66529VV5J2Ci+HpVhEy8qlpjoQRqYibcWWV/jgYkkxHWsAMn4UqZa9zCKAQ8OTJAJa9owllBqcLw8u1trqXBSiec5E2CzQ2yvO2HaHcZWSef1Xw/3+mnm9Lisvek7+QH3oKdIKXOBZcdym/Fo6Y3k+sRhYG1pkcK3+1uQXHNXTqGfRpUP+xMD5juIcDuPCGd/DP6gZZkvtPIsIfxCEQK6EkMnIDxq7uaXxLm/uuTaf/HGjl6a7rKvFiAbBT5WaTW/Y5LK3uCLGRxcJt4f0KidndYtu0AUm0g3VXctl4HKvJPr2lYQq5cA3AwDQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CY1PR12MB9601.namprd12.prod.outlook.com (2603:10b6:930:107::16)
- by SA1PR12MB6749.namprd12.prod.outlook.com (2603:10b6:806:255::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9412.13; Tue, 16 Dec
- 2025 14:15:12 +0000
-Received: from CY1PR12MB9601.namprd12.prod.outlook.com
- ([fe80::cd76:b497:475f:4de3]) by CY1PR12MB9601.namprd12.prod.outlook.com
- ([fe80::cd76:b497:475f:4de3%6]) with mapi id 15.20.9412.011; Tue, 16 Dec 2025
- 14:15:12 +0000
-Date: Tue, 16 Dec 2025 10:15:11 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Peter Zijlstra <peterz@infradead.org>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, will@kernel.org,
-	jean-philippe@linaro.org, robin.murphy@arm.com, joro@8bytes.org,
-	balbirs@nvidia.com, miko.lenczewski@arm.com, kevin.tian@intel.com,
-	praan@google.com, linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v7 6/7] iommu/arm-smmu-v3: Add arm_smmu_invs based
- arm_smmu_domain_inv_range()
-Message-ID: <20251216141511.GD6079@nvidia.com>
-References: <cover.1765850465.git.nicolinc@nvidia.com>
- <f4261c5b30ce3c6942470433033d4933ec5eef3e.1765850465.git.nicolinc@nvidia.com>
- <20251216090926.GR3707837@noisy.programming.kicks-ass.net>
- <20251216135613.GB6079@nvidia.com>
- <20251216140410.GV3707837@noisy.programming.kicks-ass.net>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20251216140410.GV3707837@noisy.programming.kicks-ass.net>
-X-ClientProxiedBy: BL1PR13CA0282.namprd13.prod.outlook.com
- (2603:10b6:208:2bc::17) To CY1PR12MB9601.namprd12.prod.outlook.com
- (2603:10b6:930:107::16)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Av8pPVjQ"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1765898894; x=1797434894;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=OiPjy41smsg2vZ8lV6j2pL67N3Pwufmjdt5efQFRXv8=;
+  b=Av8pPVjQA+jMfiCoOfL38J5fggqs5D5TvHJMMt27w/dBzIEvEgvRopAa
+   YIEZtA/I/TbfslqLvtMr/70xG144fAGF03zw91gSlve5FCFMJ9jb6im/5
+   C8ut9ZDxYh1G0TJfI/rdS5Ac/g/IlAB/IBMvtJFq7rljpAEnB/Kyudt7X
+   +B9mguXbu5xQfuGJr2LRMY17M4t1tUPozXveSRz2WPNyAL4VNo6W49cIf
+   C2lmQCrwMTFNkufP7wBxELOlBb/TTutQZGhQPKebkE95RZR8CYTjQ5Ubq
+   r8dHkqoC4DwY1fYvVVIHYeSgpXpyCFadcHXn0RQ2fCIh2jSqKpv0Wwn8R
+   g==;
+X-CSE-ConnectionGUID: StCMM8mNTTe1Ha/3j8HUCQ==
+X-CSE-MsgGUID: Zxs3nreVTRqKpC6rSwHtkQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11644"; a="79187672"
+X-IronPort-AV: E=Sophos;i="6.21,153,1763452800"; 
+   d="scan'208";a="79187672"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Dec 2025 07:28:13 -0800
+X-CSE-ConnectionGUID: oLa368tfS0qHbQBAEqnyDQ==
+X-CSE-MsgGUID: +Bg9VXJkTNq1ucbZThjCCg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,153,1763452800"; 
+   d="scan'208";a="202458914"
+Received: from lkp-server02.sh.intel.com (HELO 034c7e8e53c3) ([10.239.97.151])
+  by fmviesa005.fm.intel.com with ESMTP; 16 Dec 2025 07:28:08 -0800
+Received: from kbuild by 034c7e8e53c3 with local (Exim 4.98.2)
+	(envelope-from <lkp@intel.com>)
+	id 1vVWy6-000000003RE-30Ow;
+	Tue, 16 Dec 2025 15:28:06 +0000
+Date: Tue, 16 Dec 2025 23:27:24 +0800
+From: kernel test robot <lkp@intel.com>
+To: Benjamin Gaignard <benjamin.gaignard@collabora.com>, joro@8bytes.org,
+	will@kernel.org, robin.murphy@arm.com, robh@kernel.org,
+	krzk+dt@kernel.org, conor+dt@kernel.org, heiko@sntech.de,
+	nicolas.dufresne@collabora.com, p.zabel@pengutronix.de,
+	mchehab@kernel.org
+Cc: oe-kbuild-all@lists.linux.dev, iommu@lists.linux.dev,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org, linux-media@vger.kernel.org,
+	kernel@collabora.com,
+	Benjamin Gaignard <benjamin.gaignard@collabora.com>
+Subject: Re: [PATCH v10 5/7] media: verisilicon: AV1: Restore IOMMU context
+ before decoding a frame
+Message-ID: <202512162315.lcRwm6Mr-lkp@intel.com>
+References: <20251215085349.10155-6-benjamin.gaignard@collabora.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY1PR12MB9601:EE_|SA1PR12MB6749:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8aa62a51-a82c-4d11-57cf-08de3cad86f2
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|7416014|376014|366016|1800799024|3613699012;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?povT3GWsPDZ+oXPyQ0TrC5HTk+RF7JrkVmhH5H98bR9BELVr1YND1/5tSuXE?=
- =?us-ascii?Q?EUReJ6cawiJk9pb4S7z7DavMrmM2zmCpPeWHPoCI+JvziW1CZ8sHEGTR/kpd?=
- =?us-ascii?Q?RtwNlL90u7yPda8/Iy8VnM/RDbLF3lz5pkZ9kiXeXxYybYTxuY4mIgCDcyEx?=
- =?us-ascii?Q?AuL2MIG+r3OEIGtc5aq3DpnrA0l7L3C1weHC55jOcjfnvfKCRga7K8vZxH7z?=
- =?us-ascii?Q?H2fIdnv0E76hycXagvPKlh/VV1AtKYR9Jd6Z++0AKYU86lhZuHA/UjuYsD3P?=
- =?us-ascii?Q?iKonqVvbn9aR46M1UX14m04VM67vcRyvUov+vk0hdJFYNuH4IkXaCeGdYWvd?=
- =?us-ascii?Q?MGU7F9VVeKGPh+S/wK3XZDBML9Si3BlqoC27BmhCLwvdemfdS5FFTyGGhnub?=
- =?us-ascii?Q?Ir163ZwT+80+NA9SYoL9W/y1MheOqv0Kn5oCm2daG9mOse0o/2g5axOM5yT2?=
- =?us-ascii?Q?TOyWJAxE8q2aXea5ByJFEXDoSoEYFDJTkO3mmVgkP50OyiumekmkT2m9Zqhb?=
- =?us-ascii?Q?vgVoqZ91CIFZmfsGToebSSVHty9HWcie062eVwPe0hJIn0Yt5EKtdowsNcE+?=
- =?us-ascii?Q?7RvrM2V4tA6dih6412g8iUrbWL+CWrYjM7mEehygnrVH5/TZpJZPH2Ts+vRm?=
- =?us-ascii?Q?lQ+GsvcjRzgUprndDFKExgw26eLErAbWq9UZsXFpjuFF/A/rS1bgFdsZELic?=
- =?us-ascii?Q?dEsE085ynWrNJppW+iKO++bFr732izCtFvZlauI9z/OCnnEz5uHnUoNakosT?=
- =?us-ascii?Q?5FlJweGDkFadJ65vZcXt3QBQTvJ+easVI7+ppi4zNTu7rE6MJ1S0XKHvuyHv?=
- =?us-ascii?Q?hbLjPHm4Th8pfADKw6U+h2LXJqZWiGhWSKZF11BHGbhurqmqu+luqEi+Sg3n?=
- =?us-ascii?Q?9roRsKgZm2u3wyBjZ6jbRsYB7YjGOBdExjyHEVoBvUkpUtkFqdBJKVgTwMH1?=
- =?us-ascii?Q?VVTqj86syQyLRsddNjvCN2iR0bLpItWYpFk0rcLO0b7Bn/wABqcovxW+uy0U?=
- =?us-ascii?Q?mNkomnzbKE9FqSizqS5z9WN6HpdIyMegeay2jQe8lmiyFdGMiXV8hIrkABdB?=
- =?us-ascii?Q?vfrZz5olVIPf6aAEl5KjPvLtbhFfNpIOEOPA5gTsmy+9n152Qz4CbONiuRRe?=
- =?us-ascii?Q?p1VSJ5NhBcUvzTkOLXf54aaY5PRTefKmo9GhnliAngyNInR8FEBvgRo10LsN?=
- =?us-ascii?Q?fAWmFbsOJXzjKHY4NLUN5N5T8b6aM7tw8MeOw2yww/W3NCiVUcpyfDjk2SXA?=
- =?us-ascii?Q?AKtW6A0kR6LG9FzmY28Tbjslh5XKTL+2k5clP1uq/QTSodInVJcBUUolTdBf?=
- =?us-ascii?Q?9VXECGRqRoMVdpSkWmW8gyiIf5oV/1w7HhkYTp7ALx5PyifZLSzGJGe9FZQe?=
- =?us-ascii?Q?wuOJ3BplbwapKNSv9SjFBMDl2rZx/rQeI7r8s9Tw9x+Yky78j0eE2NTlu7eL?=
- =?us-ascii?Q?vGaJnDKCupd7nzObO7ikP1zhLeu8rpPSXaD0A13jTOPwLiri7bTM9nCRQZeU?=
- =?us-ascii?Q?8l2hcj25fM3fOCFoIs6RadTEvH8D5ZUpLRF/?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY1PR12MB9601.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(366016)(1800799024)(3613699012);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?HTKQ3pwBV9b/UIgsr5+/7A9UmDYBFbhyrj8dSx1fSR4aool4eviAR6XHD+ac?=
- =?us-ascii?Q?KaNkoCBAgXnPOkwH1oK2xU3Be+RZH9Pp9wuB8qXlZHN87rmZNkKIOQDWdj/s?=
- =?us-ascii?Q?izMtbK5nGvMl3RyqCu7JpCg/n3DrmUWquVg7gUz4nnGY6R2LYlXL4AhacNsw?=
- =?us-ascii?Q?m4fhiOMoMxiBAWS8cxQiWsz+PsW7GeAQ2F4qjNOK4uPUDGVZHNX/z+jxpC0R?=
- =?us-ascii?Q?Y40yl8g5mP9jSHwKnPdoUmqkUNLuuFoLqfMOk1QHa9exfTVxiJhJnZRW4ycO?=
- =?us-ascii?Q?YStWr4C2V2noamzB1nOkOh2SDzifXcdlkO8B6j4mxojuWLG053z+IwFfcW81?=
- =?us-ascii?Q?KRt1K3zV++GQT9TJo3q7yghUFpuUONSCB77sVu4LLOCgB457Vvr7X9vWL2D0?=
- =?us-ascii?Q?TmFJdtiKw+omaOQNlh90+3WV+hC85bvwfloI9pV24kILETykkZSrg0PnqgAx?=
- =?us-ascii?Q?Xu2YXxDbG7zyBfR5VaNINl3zH1XpV1CH47XysVwglOh6RBAHpO4nMBZS3jzG?=
- =?us-ascii?Q?tm/P8UwOAjVSrIrbHx3ni/s04ZdKslcJgK8DuCxvJr+D55xv2zttRs9TWj19?=
- =?us-ascii?Q?c7UulcCx0+9pIoTGf46UST8fO48Z8DVeP2U5jFFXF6ZWIIdXjEfROCoPNpKs?=
- =?us-ascii?Q?oFJ46J0RJvfD69LzwLwVRMfvwNVEmfQOHf05hex70yKpI2JEUqaxrEiXCBf6?=
- =?us-ascii?Q?G0sU1qt5yaNex6getzvz0oZZSw/5QcaVle5kEs/GFaLdAQU1x57lPcJqGlIu?=
- =?us-ascii?Q?aJLVpCojj4M+hDyfPK4Wqg7dkyXW7btgGu7gRw7wshIJGcSNDjB8nZ/TgwTy?=
- =?us-ascii?Q?HsHKqweWgR73iuq8d40Vp45q04gd1eU1hkKUED1rUNvuiSpc3UVDdZYsKnQi?=
- =?us-ascii?Q?Aoyy75tJ2WJVMNHLps/af0rhGiFA2pBOgb4NlfZQpPz3RZX1w8cCTYxsqObN?=
- =?us-ascii?Q?ESqsr3zQbrtZbk9zSWJc7gEXkwxB8/AovWd0HHjFzVTmlEEBAzeTdQ3qpYYq?=
- =?us-ascii?Q?5V3ahBAZuj9KyQcyYo+Bur92ct26tOFdN0akMYdyDEHpFEaE2RJOJMG1yC3X?=
- =?us-ascii?Q?ibLzdhbphxL+3zDaLTgEmWm/sxzWoAsFSCV9TyB9PEKdQehcbUmiMp8sSD6w?=
- =?us-ascii?Q?72pkkrMhvXoA6iaoM50ReALKw6xdxycXLgafKDPLzVc7hTMWRuSdY0URiQ8c?=
- =?us-ascii?Q?Q2NsWXGePtQ0x0rCCVowfgZGIlRsxP+58IxjwpQZcyV3dwriFXlEcIcFRNlL?=
- =?us-ascii?Q?cc1WWxcydW7Gsh59yKkGTSIPjeNDKdpJ47iFfRQLdYu/g5u/1YO7yEtK3w89?=
- =?us-ascii?Q?CWlEmJKbf4OX8xOjTO6EHSxH/U36/V/hap6xAgEOnHh17smN4BsfarGvW8av?=
- =?us-ascii?Q?NheuPwb2E9OJW8utBtilYbtW1C+MY3glCSmGLDQOUFZlb5jQPVeg/lzqgX6+?=
- =?us-ascii?Q?WbjGG6YPHdxrsADhQG5hwWWiL1PguXmB4s7C06SRBstEH9RnvdQyUPIbsjEs?=
- =?us-ascii?Q?XzBihBv74st/+y0sVHQ3Wiglt6yvfqFZqIKEsIg8FGEbHRRCihiFkzV5PNJa?=
- =?us-ascii?Q?vGLcDQhZz6Mlre5R5kU=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8aa62a51-a82c-4d11-57cf-08de3cad86f2
-X-MS-Exchange-CrossTenant-AuthSource: CY1PR12MB9601.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Dec 2025 14:15:12.6490
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: EjUTdEaJiaXFs2EhE1iLm0OvJFD3kIrDzQyLgWlTvDRHggQgLJ66tP+n9Kie4kGN
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB6749
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20251215085349.10155-6-benjamin.gaignard@collabora.com>
 
-On Tue, Dec 16, 2025 at 03:04:10PM +0100, Peter Zijlstra wrote:
-> On Tue, Dec 16, 2025 at 09:56:13AM -0400, Jason Gunthorpe wrote:
-> > On Tue, Dec 16, 2025 at 10:09:26AM +0100, Peter Zijlstra wrote:
-> > > Anyway, if I understand the above correctly, the smb_mb() is for:
-> > > 
-> > >   arm_smmu_domain_inv_range() 		arm_smmu_install_new_domain_invs()
-> > > 
-> > >     [W] IOPTE				  [Wrel] smmu_domain->invs
-> > >     smp_mb()				  smp_mb()
-> > >     [Lacq] smmu_domain->invs		  [L] IOPTE
-> > > 
-> > > Right? But I'm not sure about your 'HW sees the new IOPTEs' claim;
-> > 
-> > Yes, the '[L] IOPTE' would be a DMA from HW.
-> > 
-> > > that very much depend on what coherency domain the relevant hardware
-> > > plays in. For smp_mb() to work, the hardware must be in the ISH
-> > > domain, while typically devices are (if I remember my arrrrgh64
-> > > correctly) in the OSH.
-> > 
-> > The '[W] IOPTE' sequence already includes a cache flush if the
-> > inner/outer sharable are not coherent. If a cache flush was required
-> > then the smp_mb() must also order it, otherwise it just has to order
-> > the store.
-> > 
-> > The page table table code has always relied on this kind of ordering
-> > with respect to DMA working, it would be completely broken if the DMA
-> > does not order with the barriers.
-> > 
-> > For example:
-> > 
-> >             CPU0                         CPU1
-> >    store PMD
-> >                                         read PMD
-> >    store PTE 1                          store PTE 2
-> >    	     				dma memory barrier
-> >                                         device reads 2
-> >    dma memory barrier
-> >    device reads 1
-> 
-> But here you have dma_mb(), which is dmb(osh).
+Hi Benjamin,
 
-This also has a pre-existing dma_wmb(), a fuller chart would be like this:
+kernel test robot noticed the following build errors:
 
-   arm_smmu_domain_inv_range() 		arm_smmu_install_new_domain_invs()
- 
-     [W] IOPTE				  [Wrel] smmu_domain->invs
-     smp_mb()				  smp_mb()  <--- arm_smmu_install_new_domain_invs()
-					  [build the STE]
-					  [post the STE]
-					  dma_wmb() <--- arm_smmu_cmdq_issue_cmdlist()
-                                          Doorbell Write to Device
-     [Lacq] smmu_domain->invs		  [L] IOPTE via DMA
+[auto build test ERROR on linus/master]
+[also build test ERROR on v6.19-rc1 next-20251216]
+[cannot apply to robh/for-next rockchip/for-next arm64/for-next/core]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-Nicolin, please elabortate more of these details in the comment.
+url:    https://github.com/intel-lab-lkp/linux/commits/Benjamin-Gaignard/dt-bindings-vendor-prefixes-Add-Verisilicon/20251215-165740
+base:   linus/master
+patch link:    https://lore.kernel.org/r/20251215085349.10155-6-benjamin.gaignard%40collabora.com
+patch subject: [PATCH v10 5/7] media: verisilicon: AV1: Restore IOMMU context before decoding a frame
+config: arm-randconfig-r063-20251216 (https://download.01.org/0day-ci/archive/20251216/202512162315.lcRwm6Mr-lkp@intel.com/config)
+compiler: clang version 22.0.0git (https://github.com/llvm/llvm-project 1335a05ab8bc8339ce24be3a9da89d8c3f4e0571)
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20251216/202512162315.lcRwm6Mr-lkp@intel.com/reproduce)
 
-Jason
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202512162315.lcRwm6Mr-lkp@intel.com/
+
+All errors (new ones prefixed by >>):
+
+>> drivers/iommu/vsi-iommu.c:231:3: error: call to undeclared function 'report_iommu_fault'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+     231 |                 report_iommu_fault(iommu->domain, iommu->dev, iova, status);
+         |                 ^
+>> drivers/iommu/vsi-iommu.c:245:21: error: no member named 'iommu_fwnode' in 'struct iommu_fwspec'
+     245 |                                                              fwspec->iommu_fwnode);
+         |                                                              ~~~~~~  ^
+>> drivers/iommu/vsi-iommu.c:254:28: error: call to undeclared function 'dev_iommu_priv_get'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+     254 |         struct vsi_iommu *iommu = dev_iommu_priv_get(dev);
+         |                                   ^
+   drivers/iommu/vsi-iommu.c:254:28: note: did you mean 'dev_iommu_fwspec_get'?
+   include/linux/iommu.h:1457:36: note: 'dev_iommu_fwspec_get' declared here
+    1457 | static inline struct iommu_fwspec *dev_iommu_fwspec_get(struct device *dev)
+         |                                    ^
+>> drivers/iommu/vsi-iommu.c:254:20: error: incompatible integer to pointer conversion initializing 'struct vsi_iommu *' with an expression of type 'int' [-Wint-conversion]
+     254 |         struct vsi_iommu *iommu = dev_iommu_priv_get(dev);
+         |                           ^       ~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/iommu/vsi-iommu.c:496:28: error: call to undeclared function 'dev_iommu_priv_get'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+     496 |         struct vsi_iommu *iommu = dev_iommu_priv_get(dev);
+         |                                   ^
+   drivers/iommu/vsi-iommu.c:496:20: error: incompatible integer to pointer conversion initializing 'struct vsi_iommu *' with an expression of type 'int' [-Wint-conversion]
+     496 |         struct vsi_iommu *iommu = dev_iommu_priv_get(dev);
+         |                           ^       ~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/iommu/vsi-iommu.c:519:38: error: variable has incomplete type 'const struct iommu_domain_ops'
+     519 | static const struct iommu_domain_ops vsi_identity_ops = {
+         |                                      ^
+   include/linux/iommu.h:40:8: note: forward declaration of 'struct iommu_domain_ops'
+      40 | struct iommu_domain_ops;
+         |        ^
+   drivers/iommu/vsi-iommu.c:571:28: error: call to undeclared function 'dev_iommu_priv_get'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+     571 |         struct vsi_iommu *iommu = dev_iommu_priv_get(dev);
+         |                                   ^
+   drivers/iommu/vsi-iommu.c:571:20: error: incompatible integer to pointer conversion initializing 'struct vsi_iommu *' with an expression of type 'int' [-Wint-conversion]
+     571 |         struct vsi_iommu *iommu = dev_iommu_priv_get(dev);
+         |                           ^       ~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/iommu/vsi-iommu.c:644:2: error: call to undeclared function 'dev_iommu_priv_set'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+     644 |         dev_iommu_priv_set(dev, iommu);
+         |         ^
+   drivers/iommu/vsi-iommu.c:650:28: error: call to undeclared function 'dev_iommu_priv_get'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+     650 |         struct vsi_iommu *iommu = dev_iommu_priv_get(dev);
+         |                                   ^
+   drivers/iommu/vsi-iommu.c:650:20: error: incompatible integer to pointer conversion initializing 'struct vsi_iommu *' with an expression of type 'int' [-Wint-conversion]
+     650 |         struct vsi_iommu *iommu = dev_iommu_priv_get(dev);
+         |                           ^       ~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/iommu/vsi-iommu.c:657:35: error: passing 'const uint32_t[16]' (aka 'const unsigned int[16]') to parameter of type 'u32 *' (aka 'unsigned int *') discards qualifiers [-Werror,-Wincompatible-pointer-types-discards-qualifiers]
+     657 |         return iommu_fwspec_add_ids(dev, args->args, 1);
+         |                                          ^~~~~~~~~~
+   include/linux/iommu.h:1451:65: note: passing argument to parameter 'ids' here
+    1451 | static inline int iommu_fwspec_add_ids(struct device *dev, u32 *ids,
+         |                                                                 ^
+>> drivers/iommu/vsi-iommu.c:667:18: error: use of undeclared identifier 'generic_single_device_group'
+     667 |         .device_group = generic_single_device_group,
+         |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/iommu/vsi-iommu.c:669:25: error: variable has incomplete type 'const struct iommu_domain_ops'
+     669 |         .default_domain_ops = &(const struct iommu_domain_ops) {
+         |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     670 |                 .attach_dev             = vsi_iommu_attach_device,
+         |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     671 |                 .map_pages              = vsi_iommu_map,
+         |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     672 |                 .unmap_pages            = vsi_iommu_unmap,
+         |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     673 |                 .flush_iotlb_all        = vsi_iommu_flush_tlb_all,
+         |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     674 |                 .iova_to_phys           = vsi_iommu_iova_to_phys,
+         |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     675 |                 .free                   = vsi_iommu_domain_free,
+         |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     676 |         }
+         |         ~
+   include/linux/iommu.h:40:8: note: forward declaration of 'struct iommu_domain_ops'
+      40 | struct iommu_domain_ops;
+         |        ^
+   15 errors generated.
+
+Kconfig warnings: (for reference only)
+   WARNING: unmet direct dependencies detected for VSI_IOMMU
+   Depends on [n]: IOMMU_SUPPORT [=n] && (ARCH_ROCKCHIP [=n] && ARM64 || COMPILE_TEST [=y])
+   Selected by [m]:
+   - VIDEO_HANTRO_ROCKCHIP [=y] && MEDIA_SUPPORT [=y] && MEDIA_PLATFORM_SUPPORT [=y] && MEDIA_PLATFORM_DRIVERS [=y] && VIDEO_HANTRO [=m] && (ARCH_ROCKCHIP [=n] || COMPILE_TEST [=y])
+
+
+vim +/report_iommu_fault +231 drivers/iommu/vsi-iommu.c
+
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  214  
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  215  static irqreturn_t vsi_iommu_irq(int irq, void *dev_id)
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  216  {
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  217  	struct vsi_iommu *iommu = dev_id;
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  218  	unsigned long flags;
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  219  	dma_addr_t iova;
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  220  	u32 status;
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  221  
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  222  	if (pm_runtime_resume_and_get(iommu->dev) < 0)
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  223  		return IRQ_NONE;
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  224  
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  225  	spin_lock_irqsave(&iommu->lock, flags);
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  226  
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  227  	status = readl(iommu->regs + VSI_MMU_STATUS_BASE);
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  228  	if (status & VSI_MMU_IRQ_MASK) {
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  229  		dev_err(iommu->dev, "unexpected int_status=%08x\n", status);
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  230  		iova = readl(iommu->regs + VSI_MMU_PAGE_FAULT_ADDR);
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15 @231  		report_iommu_fault(iommu->domain, iommu->dev, iova, status);
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  232  	}
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  233  	writel(0, iommu->regs + VSI_MMU_STATUS_BASE);
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  234  
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  235  	spin_unlock_irqrestore(&iommu->lock, flags);
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  236  	pm_runtime_put_autosuspend(iommu->dev);
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  237  
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  238  	return IRQ_HANDLED;
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  239  }
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  240  
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  241  static struct vsi_iommu *vsi_iommu_get_from_dev(struct device *dev)
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  242  {
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  243  	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  244  	struct device *iommu_dev = bus_find_device_by_fwnode(&platform_bus_type,
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15 @245  							     fwspec->iommu_fwnode);
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  246  
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  247  	put_device(iommu_dev);
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  248  
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  249  	return iommu_dev ? dev_get_drvdata(iommu_dev) : NULL;
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  250  }
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  251  
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  252  static struct iommu_domain *vsi_iommu_domain_alloc_paging(struct device *dev)
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  253  {
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15 @254  	struct vsi_iommu *iommu = dev_iommu_priv_get(dev);
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  255  	struct vsi_iommu_domain *vsi_domain;
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  256  
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  257  	vsi_domain = kzalloc(sizeof(*vsi_domain), GFP_KERNEL);
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  258  	if (!vsi_domain)
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  259  		return NULL;
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  260  
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  261  	vsi_domain->dev = iommu->dev;
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  262  	spin_lock_init(&vsi_domain->lock);
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  263  
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  264  	/*
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  265  	 * iommu use a 2 level pagetable.
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  266  	 * Each level1 (dt) and level2 (pt) table has 1024 4-byte entries.
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  267  	 * Allocate one 4 KiB page for each table.
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  268  	 */
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  269  	vsi_domain->dt = iommu_alloc_pages_sz(GFP_KERNEL | GFP_DMA32,
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  270  					      SPAGE_SIZE);
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  271  	if (!vsi_domain->dt)
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  272  		goto err_free_domain;
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  273  
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  274  	vsi_domain->dt_dma = dma_map_single(vsi_domain->dev, vsi_domain->dt,
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  275  					    SPAGE_SIZE, DMA_TO_DEVICE);
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  276  	if (dma_mapping_error(vsi_domain->dev, vsi_domain->dt_dma)) {
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  277  		dev_err(dev, "DMA map error for DT\n");
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  278  		goto err_free_dt;
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  279  	}
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  280  
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  281  	vsi_domain->pta = iommu_alloc_pages_sz(GFP_KERNEL | GFP_DMA32,
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  282  					       SPAGE_SIZE);
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  283  	if (!vsi_domain->pta)
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  284  		goto err_unmap_dt;
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  285  
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  286  	vsi_domain->pta[0] = vsi_mk_pta(vsi_domain->dt_dma);
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  287  	vsi_domain->pta_dma = dma_map_single(vsi_domain->dev, vsi_domain->pta,
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  288  					     SPAGE_SIZE, DMA_TO_DEVICE);
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  289  	if (dma_mapping_error(vsi_domain->dev, vsi_domain->pta_dma)) {
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  290  		dev_err(dev, "DMA map error for PTA\n");
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  291  		goto err_free_pta;
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  292  	}
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  293  
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  294  	INIT_LIST_HEAD(&vsi_domain->iommus);
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  295  
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  296  	vsi_domain->domain.geometry.aperture_start = 0;
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  297  	vsi_domain->domain.geometry.aperture_end   = DMA_BIT_MASK(32);
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  298  	vsi_domain->domain.geometry.force_aperture = true;
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  299  	vsi_domain->domain.pgsize_bitmap	   = SZ_4K;
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  300  
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  301  	return &vsi_domain->domain;
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  302  
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  303  err_free_pta:
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  304  	iommu_free_pages(vsi_domain->pta);
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  305  err_unmap_dt:
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  306  	dma_unmap_single(vsi_domain->dev, vsi_domain->dt_dma,
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  307  			 SPAGE_SIZE, DMA_TO_DEVICE);
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  308  err_free_dt:
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  309  	iommu_free_pages(vsi_domain->dt);
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  310  err_free_domain:
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  311  	kfree(vsi_domain);
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  312  
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  313  	return NULL;
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  314  }
+b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  315  
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
