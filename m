@@ -1,50 +1,88 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D7453B7A8
-	for <iommu@lists.linux.dev>; Tue, 16 Dec 2025 22:14:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC19032B99F
+	for <iommu@lists.linux.dev>; Tue, 16 Dec 2025 22:21:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765923300; cv=none; b=urRhkDnHPVcIOg3AxhqsmZUbvT9HhT31HF/OZtoZk7CoXzkb3KkTcJbAGgVJwRsD6qoSmaak+eTOTRWR6zLFPn0v1/GgEwDSezWBkkxT5j+EFc/FjR1QqyFYrxk+aHnJ/0f3H/5Uim33Vgbd/2k/ATb1b7W6Ywh5HYa4VlBdbFk=
+	t=1765923710; cv=none; b=DW5iEMa2QG8RiPvB3Tm8yYkONt53lmb0iEUIeEBzKLCMxVnbOgxPFLvCvqV2T0ycqQdJ87KistuGYQZzdFF9sJLgNRNLnbRoMqMUUF6jySNyGVNknh9W85zGRcg0k1PLtJGJ1FGC+5tlNYvP7K7EPPcWnQxHa8jqYHbo0nyyA2I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765923300; c=relaxed/simple;
-	bh=CKnV6C7sQb0snXwV77QbYvVGmF3VEDViWTVpf4sksU8=;
+	s=arc-20240116; t=1765923710; c=relaxed/simple;
+	bh=G9gLuhn1gYlX16Pldc7mw767XXUhwO5xnSab+bTzS+k=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=VLvwX/5ReYxyRhz3o+SpR6U+xQ4w+d3FjkCDGw7A7XBz/beXVUhHWp/TEAJqG6NP4xnNoQ7ZMzwK1tdMsQueoJnp3PZzNnRoiAgQPFuHpiQC+13zjUqPkUtfWzzSRQsiv90qjIwcMxzwtQT+C3HwCcZbQmgonbswUSK52DZdaQE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=B6SPeW1I; arc=none smtp.client-ip=192.198.163.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 In-Reply-To:Content-Type; b=pH80Q9YCW631wkMXPgAqfB0UZRoUXiw5Ju5wu0cDjccB5fJm3aCsiuqUODSO08fk1dk5CVH7huB0uIBUeIZc5l71f2dExsMNdc8eVr0/hcjghzYSW9HknD2hyk6guX5PbvCqwzziySGtpesQfCozQyrdbEAUsMbxfMGm3eAJFF8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=a8+RADNq; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=OZgKSF8q; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="B6SPeW1I"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1765923299; x=1797459299;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=CKnV6C7sQb0snXwV77QbYvVGmF3VEDViWTVpf4sksU8=;
-  b=B6SPeW1IzSoNAR0OWnSMv+KHd4UrdkvcTmpUAbYHpfLpz6L7UjbdTc61
-   yznU2sU4ts0Nq6R98px+12zRLbkwoDE1UJEKCXjPsT680Pt8fcmQnyqVy
-   PLXRDLiGneg37/qa6Z4x4caYIjY2cLZtRQM4ugaWfgwFG2UxEoeUfkKE0
-   Q5/evN/Z06vlgKbQCCh2KNMpmVQ8LGuun3ag+G0N6L2YFfGwtAMr9VwFl
-   45CgcdkuqB0OQxIju3gbZh1YQ0CTbkwn3MNxviDrgCK2nAEQMhRBZSbVQ
-   e0R3XyfIxkAo61Dzc8gJ5qwkTN5XAIAb1BcHrZdiRLT4FKtHKazgsxPHF
-   Q==;
-X-CSE-ConnectionGUID: C6wRpR8PT+S2R1kKxSiVfQ==
-X-CSE-MsgGUID: hKdI+UohR5ehCFcuXzD0EQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11644"; a="67047979"
-X-IronPort-AV: E=Sophos;i="6.21,154,1763452800"; 
-   d="scan'208";a="67047979"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Dec 2025 14:14:56 -0800
-X-CSE-ConnectionGUID: yxbySMJnQAinm/ScGKa28w==
-X-CSE-MsgGUID: HI87zTRWSlSkyXM/k5m2rg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,154,1763452800"; 
-   d="scan'208";a="198379955"
-Received: from ssimmeri-mobl2.amr.corp.intel.com (HELO [10.125.110.199]) ([10.125.110.199])
-  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Dec 2025 14:14:55 -0800
-Message-ID: <9febdd36-9c23-458a-8d7e-2bc39849e188@intel.com>
-Date: Tue, 16 Dec 2025 14:14:54 -0800
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="a8+RADNq";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="OZgKSF8q"
+Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 5BGLW3Ea567562
+	for <iommu@lists.linux.dev>; Tue, 16 Dec 2025 22:21:47 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	8HiBCIcpdMLJOIL1RNrE8wcn9Ndx6c9xmNAQz1tizXE=; b=a8+RADNquD3dbLe7
+	+bqhf0fh2DctX9R54PGcC0xDlKgryDav/GufPQFB2V7bE30tCggJx7MvypzhUxMU
+	b/9r1Y7WAGgOPKxjIiOE1XcLn44H9ljW68uJV9beA7U/kHBEyM+Ts8026k8siSHa
+	QMtexlhafmgBmWyf5dnjt36xrHB2obJM8eMNP04+Ejy1Q31uky9K/9QGfFtHVvQU
+	Fl8GFnybqvANGF1dMjy86q5/n+p3C+tEpr0NcZpk4y/rZOrWG1oXnjM4jXHNZ+Tf
+	LKMuaJS044tJvcVW81iCMh4OFEAMAsSWRhq7trDeA2OA4R04TSWHFsdTnYJ0KhWO
+	UhY3cQ==
+Received: from mail-pg1-f197.google.com (mail-pg1-f197.google.com [209.85.215.197])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4b3fe283my-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Tue, 16 Dec 2025 22:21:46 +0000 (GMT)
+Received: by mail-pg1-f197.google.com with SMTP id 41be03b00d2f7-b630b4d8d52so5353930a12.3
+        for <iommu@lists.linux.dev>; Tue, 16 Dec 2025 14:21:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1765923703; x=1766528503; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=8HiBCIcpdMLJOIL1RNrE8wcn9Ndx6c9xmNAQz1tizXE=;
+        b=OZgKSF8q2puDNzxfeT4DWmrGy34HLgUr9zIjv02O0UpyAM04uOTDhd/rqLPGcFIn9B
+         iCZMcenX4fK7JrmIx6NaZaYcDaFgtTD2wthBrQajLqZIc7R/fiBosOahtANqOympvsmJ
+         DTztNZcAMJWlsNtWKf1m6XwJfDgXcpmENYhecivotuqVIwPHZygoEu5HRXGFUwSlT91i
+         kE/RQIyEd7hdbZ9ORW+215Jp6sVynddb28D+SwBRtpQl3Km3kokyjSd8zo3X6rS6ZOFX
+         cZI4iD/OEkZXnkEnQgEXXYUYMBGHoNqw7weNbKyX40w3a4a/N0mt8XoYGpbQiq1qtV/k
+         AUXA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1765923703; x=1766528503;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=8HiBCIcpdMLJOIL1RNrE8wcn9Ndx6c9xmNAQz1tizXE=;
+        b=OZZupQ7sAVSP4vpjMdf2AgujJUCtYTZ2MmcAeIaSQavAUc3uekZeyWZZ6bBPSUBDC6
+         BKV5icW+CjapvQ7r5SMDnyc+pFbLpFcwoBExBz9rgNYpidXAli+apWkhHSsWG4bx9+cr
+         sn6+v79Qk0z6D9mLXyjoVviayEmoXD+1UHnePESy88GTNK203uVt0qQdNk/K/lOvzAAt
+         4pErE1SDka0W6nEnhbUJLwolS9N1zvAYTCSVCTddFg3c847otZMnOWOVUihcPY4ILW0Q
+         iw5N3+Ub4tj25cdkzqz3ver66CI3IRBmse8xtqfTh9HtIDVM7N9pK9sOxGPK/DDmd4fg
+         X4JA==
+X-Forwarded-Encrypted: i=1; AJvYcCXQaGqTD2qcCE2IFyMf1HSztmBPn5dKJFgDj5uOp9FXSKOdmG2cMvVnGJOPSQHc1+J5jHEM6A==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yz6WkRKssFQc5iPnadLsHJV6Lbx77nQT6aaZyERBosMZlcThK6Z
+	XTGDB6zTDqliGdveVG2YbCU0UiAY6mKrBq9yf0yiLuzI5R0WQp9uupTSxN60+xcSoxQr7J9kLi0
+	agVki+1cCPEyf9HmIafrbPC1jNFgnZeVjvaJ/hLKMseFPVbQBd91EAC2zog==
+X-Gm-Gg: AY/fxX5uN3UceJb0KVKS4XUg9pC3VTrmK5XuA6jEW49EtZIL/MY5WkWGwkNRHR49hXA
+	awSWIghQZLkKRuyZ7irpmy4HAtTVHLat4zRVPGVwpnPYcc/cqbfaJc3QlZsPrbhtHQWx2eLunSw
+	ipIQqCmlRpb/p3q+Tjw05254ZTHQGIBfij1lXRMmMct27MM8ToCK1L1q9hpfZklnHU341abihou
+	G/fm6Naexv8FA/pQycH2dqKgbYYyl3Kq/iClHjdLimi6b7489/UMHOytjuAG7/ncxijTveJBD2E
+	y5G9oaWxgkDtVh2tWlix2WCXHyxa23Ot7/AYVD+65ZnPvWVQfG9vi5hEBh6zzkBdhwyeKZqMSoD
+	QQLz3BttFNDe1gb3nHNvNSgtjxPyvDEXV2rktOXlNcUE1G84RGgYpLgwed4GFqUF5vTBtgFA0PQ
+	==
+X-Received: by 2002:a05:693c:40d0:b0:2ab:ca55:89ab with SMTP id 5a478bee46e88-2ac3014dce6mr10730965eec.42.1765923702464;
+        Tue, 16 Dec 2025 14:21:42 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IFi/A5m1zIJyuP7xZZ92DFDZYKgvLKmrGiV5FjsUQjVbjI+cenqaoY5wg0bM2r+933ZgklO/Q==
+X-Received: by 2002:a05:693c:40d0:b0:2ab:ca55:89ab with SMTP id 5a478bee46e88-2ac3014dce6mr10730925eec.42.1765923701875;
+        Tue, 16 Dec 2025 14:21:41 -0800 (PST)
+Received: from [10.71.110.87] (i-global254.qualcomm.com. [199.106.103.254])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2ae4f054476sm1665750eec.16.2025.12.16.14.21.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 16 Dec 2025 14:21:41 -0800 (PST)
+Message-ID: <61102a92-ad98-4fbd-bee8-760a758b0eb6@oss.qualcomm.com>
+Date: Tue, 16 Dec 2025 14:21:40 -0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,100 +90,199 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v15 16/28] x86/txt: Intel Trusted eXecution Technology
- (TXT) definitions
-To: Ross Philipson <ross.philipson@oracle.com>, linux-kernel@vger.kernel.org,
- x86@kernel.org, linux-integrity@vger.kernel.org, linux-doc@vger.kernel.org,
- linux-crypto@vger.kernel.org, kexec@lists.infradead.org,
- linux-efi@vger.kernel.org, iommu@lists.linux.dev
-Cc: dpsmith@apertussolutions.com, tglx@linutronix.de, mingo@redhat.com,
- bp@alien8.de, hpa@zytor.com, dave.hansen@linux.intel.com, ardb@kernel.org,
- mjg59@srcf.ucam.org, James.Bottomley@hansenpartnership.com,
- peterhuewe@gmx.de, jarkko@kernel.org, jgg@ziepe.ca, luto@amacapital.net,
- nivedita@alum.mit.edu, herbert@gondor.apana.org.au, davem@davemloft.net,
- corbet@lwn.net, ebiederm@xmission.com, dwmw2@infradead.org,
- baolu.lu@linux.intel.com, kanth.ghatraju@oracle.com,
- andrew.cooper3@citrix.com, trenchboot-devel@googlegroups.com
-References: <20251215233316.1076248-1-ross.philipson@oracle.com>
- <20251215233316.1076248-17-ross.philipson@oracle.com>
-From: Dave Hansen <dave.hansen@intel.com>
+Subject: Re: [PATCH] of: reserved_mem: Allow reserved_mem framework detect
+ "cma=" kernel param
+To: Rob Herring <robh@kernel.org>
+Cc: m.szyprowski@samsung.com, ye.li@oss.nxp.com, kernel@oss.qualcomm.com,
+        saravanak@google.com, akpm@linux-foundation.org, david@redhat.com,
+        lorenzo.stoakes@oracle.com, Liam.Howlett@oracle.com, vbabka@suse.cz,
+        rppt@kernel.org, surenb@google.com, mhocko@suse.com,
+        robin.murphy@arm.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        iommu@lists.linux.dev, quic_c_gdjako@quicinc.com
+References: <20251210002027.1171519-1-oreoluwa.babatunde@oss.qualcomm.com>
+ <CAL_JsqL6VVQ7K_ZAbHJ8Gb7ei_jusLx6wRn=AdOVgV50dX0ejQ@mail.gmail.com>
 Content-Language: en-US
-Autocrypt: addr=dave.hansen@intel.com; keydata=
- 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
-In-Reply-To: <20251215233316.1076248-17-ross.philipson@oracle.com>
+From: Oreoluwa Babatunde <oreoluwa.babatunde@oss.qualcomm.com>
+In-Reply-To: <CAL_JsqL6VVQ7K_ZAbHJ8Gb7ei_jusLx6wRn=AdOVgV50dX0ejQ@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-GUID: IAWJL93b0cXNiTlM4uzJ0bDMyh_IfK4d
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMjE2MDE5MCBTYWx0ZWRfX8SQ7hb9jx/29
+ fhhgKotAjIdc+G6ufqeFXUPLleKhN+X1pcvouaRjS6vahOOsF1OJWYXf61UV2AfXwdHvISABqN4
+ 2wctKlQnMFv4u30SiXp23NIg2HQ7snWNLwonFLD2BX+nKy4vaLqtqymLqdewG4R3gEZVcPNvk8p
+ f38mfvwrI7EmpUOMR0fktzZd9hPdnQU4XdkFY12SnPvKt2S7jfAD9a/96FX2lpHX4i01esod1yC
+ D73lJXu2iVIWPlcAKcJUAvGfJKKZANVTLQY29mSD9fiSlWZcV04/HXmSNf6eaYtBCOXZzEwcG1o
+ pKqrPNLTp+FtEPfso1aRp9030HUoaPJbUu3GjoRaTzMJC/eBgK4bZL7pFKI9mNekgGJynJGvEFV
+ E5MyPiggTra1AgfZWq1MWPPwceU6Fg==
+X-Proofpoint-ORIG-GUID: IAWJL93b0cXNiTlM4uzJ0bDMyh_IfK4d
+X-Authority-Analysis: v=2.4 cv=HpN72kTS c=1 sm=1 tr=0 ts=6941db7a cx=c_pps
+ a=rz3CxIlbcmazkYymdCej/Q==:117 a=JYp8KDb2vCoCEuGobkYCKw==:17
+ a=IkcTkHD0fZMA:10 a=wP3pNCr1ah4A:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=EUspDBNiAAAA:8 a=KYYUgL8zeczeCQrUCMoA:9
+ a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10 a=bFCP_H2QrGi7Okbo017w:22
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.9,FMLib:17.12.100.49
+ definitions=2025-12-16_02,2025-12-16_05,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ malwarescore=0 bulkscore=0 clxscore=1015 priorityscore=1501 phishscore=0
+ suspectscore=0 lowpriorityscore=0 adultscore=0 impostorscore=0 spamscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2510240001 definitions=main-2512160190
 
-On 12/15/25 15:33, Ross Philipson wrote:
-> +static inline struct txt_heap_event_log_pointer2_1_element*
-> +txt_find_log2_1_element(struct txt_os_sinit_data *os_sinit_data)
-> +{
-> +	struct txt_heap_ext_data_element *ext_elem;
-> +
-> +	/* The extended element array is at the end of this table */
-> +	ext_elem = (struct txt_heap_ext_data_element *)
-> +		((u8 *)os_sinit_data + sizeof(struct txt_os_sinit_data));
 
-I'd really honestly see a helper for this kind of thing:
 
-#define ptr_after(foo)	((void *)foo + sizeof(foo))
+Hi Rob,
 
-resulting in:
+On 12/10/2025 6:07 AM, Rob Herring wrote:
+> On Tue, Dec 9, 2025 at 6:20 PM Oreoluwa Babatunde
+> <oreoluwa.babatunde@oss.qualcomm.com> wrote:
+>>
+>> When initializing the default cma region, the "cma=" kernel parameter
+>> takes priority over a DT defined linux,cma-default region. Hence, give
+>> the reserved_mem framework the ability to detect this so that the DT
+>> defined cma region can skip initialization accordingly.
+> 
+> Please explain here why this is a new problem. Presumably the
+> RESERVEDMEM_OF_DECLARE hook after commit xxxx gets called before the
+> early_param hook. And why is it now earlier?
 
-	ext_elem = ptr_after(os_sinit_data);
+ACK. I will add more of this info in the next patch version.
 
-would be a billion times easier to read than what's there. I honestly
-don't even see why this bothers with the u8 and cast to 'struct
-txt_heap_ext_data_element *' versus just using void* and being done with it.
+> 
+> I don't really like the state/ordering having to be worried about in 2 places.
 
-There's no type safety here in the first place so why bother?
+The advantage to having the state visible to the reserved_mem code is that
+we can skip adding the DT node to the resrved_mem array since it actually
+won't be used.
 
-> +	while (ext_elem->type != TXT_HEAP_EXTDATA_TYPE_END) {
-> +		if (ext_elem->type == TXT_HEAP_EXTDATA_TYPE_EVENT_LOG_POINTER2_1) {
-> +			return (struct txt_heap_event_log_pointer2_1_element *)
-> +				((u8 *)ext_elem + sizeof(struct txt_heap_ext_data_element));
-> +		}
-> +		ext_elem = (struct txt_heap_ext_data_element *)
-> +			    ((u8 *)ext_elem + ext_elem->size);
-> +	}
+If this is still not preferred, another option would be to use a helper
+function  in contiguous.c to call dma_contiguous_early_fixup() for the
+reserved_mem code. This way, "size_cmdline" can be checked internally within
+the file and it can call dma_contiguous_early_fixup based on that.
+
+> 
+>> Signed-off-by: Oreoluwa Babatunde <oreoluwa.babatunde@oss.qualcomm.com>
+>> ---
+>>  drivers/of/of_reserved_mem.c | 19 +++++++++++++++++--
+>>  include/linux/cma.h          |  1 +
+>>  kernel/dma/contiguous.c      | 16 ++++++++++------
+>>  3 files changed, 28 insertions(+), 8 deletions(-)
+>>
+>> diff --git a/drivers/of/of_reserved_mem.c b/drivers/of/of_reserved_mem.c
+>> index 2e9ea751ed2d..bef68a4916b5 100644
+>> --- a/drivers/of/of_reserved_mem.c
+>> +++ b/drivers/of/of_reserved_mem.c
+>> @@ -158,7 +158,7 @@ static int __init __reserved_mem_reserve_reg(unsigned long node,
+>>         phys_addr_t base, size;
+>>         int len;
+>>         const __be32 *prop;
+>> -       bool nomap;
+>> +       bool nomap, default_cma;
+>>
+>>         prop = of_get_flat_dt_prop(node, "reg", &len);
+>>         if (!prop)
+>> @@ -171,6 +171,12 @@ static int __init __reserved_mem_reserve_reg(unsigned long node,
+>>         }
+>>
+>>         nomap = of_get_flat_dt_prop(node, "no-map", NULL) != NULL;
+>> +       default_cma = of_get_flat_dt_prop(node, "linux,cma-default", NULL);
+>> +
+>> +       if (default_cma && cma_skip_dt_default_reserved_mem()) {
+>> +               pr_err("Skipping dt linux,cma-default for \"cma=\" kernel param.\n");
+>> +               return -EINVAL;
+>> +       }
+>>
+>>         while (len >= t_len) {
+>>                 base = dt_mem_next_cell(dt_root_addr_cells, &prop);
+>> @@ -256,12 +262,15 @@ void __init fdt_scan_reserved_mem_reg_nodes(void)
+>>
+>>         fdt_for_each_subnode(child, fdt, node) {
+>>                 const char *uname;
+>> +               bool default_cma = of_get_flat_dt_prop(child, "linux,cma-default", NULL);
+>>
+>>                 prop = of_get_flat_dt_prop(child, "reg", &len);
+>>                 if (!prop)
+>>                         continue;
+>>                 if (!of_fdt_device_is_available(fdt, child))
+>>                         continue;
+>> +               if (default_cma && cma_skip_dt_default_reserved_mem())
+>> +                       continue;
+>>
+>>                 uname = fdt_get_name(fdt, child, NULL);
+>>                 if (len && len % t_len != 0) {
+>> @@ -406,7 +415,7 @@ static int __init __reserved_mem_alloc_size(unsigned long node, const char *unam
+>>         phys_addr_t base = 0, align = 0, size;
+>>         int len;
+>>         const __be32 *prop;
+>> -       bool nomap;
+>> +       bool nomap, default_cma;
+>>         int ret;
+>>
+>>         prop = of_get_flat_dt_prop(node, "size", &len);
+>> @@ -430,6 +439,12 @@ static int __init __reserved_mem_alloc_size(unsigned long node, const char *unam
+>>         }
+>>
+>>         nomap = of_get_flat_dt_prop(node, "no-map", NULL) != NULL;
+>> +       default_cma = of_get_flat_dt_prop(node, "linux,cma-default", NULL);
+>> +
+>> +       if (default_cma && cma_skip_dt_default_reserved_mem()) {
+>> +               pr_err("Skipping dt linux,cma-default for \"cma=\" kernel param.\n");
+>> +               return -EINVAL;
+>> +       }
+>>
+>>         /* Need adjust the alignment to satisfy the CMA requirement */
+>>         if (IS_ENABLED(CONFIG_CMA)
+>> diff --git a/include/linux/cma.h b/include/linux/cma.h
+>> index 62d9c1cf6326..3d3047029950 100644
+>> --- a/include/linux/cma.h
+>> +++ b/include/linux/cma.h
+>> @@ -47,6 +47,7 @@ extern int cma_init_reserved_mem(phys_addr_t base, phys_addr_t size,
+>>                                         unsigned int order_per_bit,
+>>                                         const char *name,
+>>                                         struct cma **res_cma);
+>> +extern bool cma_skip_dt_default_reserved_mem(void);
+>>  extern struct page *cma_alloc(struct cma *cma, unsigned long count, unsigned int align,
+>>                               bool no_warn);
+>>  extern bool cma_pages_valid(struct cma *cma, const struct page *pages, unsigned long count);
+>> diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
+>> index d9b9dcba6ff7..9071c08650e3 100644
+>> --- a/kernel/dma/contiguous.c
+>> +++ b/kernel/dma/contiguous.c
+>> @@ -90,6 +90,16 @@ static int __init early_cma(char *p)
+>>  }
+>>  early_param("cma", early_cma);
+>>
+>> +/*
+>> + * cma_skip_dt_default_reserved_mem - This is called from the
+>> + * reserved_mem framework to detect if the default cma region is being
+>> + * set by the "cma=" kernel parameter.
+>> + */
+>> +bool __init cma_skip_dt_default_reserved_mem(void)
+>> +{
+>> +       return size_cmdline != -1;
+>> +}
+>> +
+>>  #ifdef CONFIG_DMA_NUMA_CMA
+>>
+>>  static struct cma *dma_contiguous_numa_area[MAX_NUMNODES];
+>> @@ -463,12 +473,6 @@ static int __init rmem_cma_setup(struct reserved_mem *rmem)
+>>         struct cma *cma;
+>>         int err;
+>>
+>> -       if (size_cmdline != -1 && default_cma) {
+>> -               pr_info("Reserved memory: bypass %s node, using cmdline CMA params instead\n",
+>> -                       rmem->name);
+>> -               return -EBUSY;
+>> -       }
+>> -
+>>         if (!of_get_flat_dt_prop(node, "reusable", NULL) ||
+>>             of_get_flat_dt_prop(node, "no-map", NULL))
+>>                 return -EINVAL;
+>> --
+>> 2.34.1
+>>
+>>
+
+Regards,
+Oreoluwa
