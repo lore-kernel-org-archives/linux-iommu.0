@@ -1,183 +1,284 @@
-Received: from CH4PR04CU002.outbound.protection.outlook.com (mail-northcentralusazon11013067.outbound.protection.outlook.com [40.107.201.67])
+Received: from sender4-pp-f112.zoho.com (sender4-pp-f112.zoho.com [136.143.188.112])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D41B2D5926
-	for <iommu@lists.linux.dev>; Wed, 17 Dec 2025 04:26:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.201.67
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5249019D092;
+	Wed, 17 Dec 2025 09:02:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.112
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765945597; cv=fail; b=c9NE3Bflj8pNhuDmigGZZouJHmLFWvN6G8EVrJSxBlOj5+XNsbxEV4jxUkQvgAQ8QQm3hvW0sC7msXKoxmDfMjyDlYwtidm1gc8pw3UefFsXBFb92/erg1rSF6+eHvonoxdFqC0qctZ4e/9qW10DN/5hSyJDAR9myyaMk27J8Fw=
+	t=1765962134; cv=pass; b=K8RLPGI5zKgaAuyzmnXVqbZfrA8QnxPnPvULANNjmPDvw6bse2/Oi3uBnipbebJMXL3zVfRXJo4nVJJ4bg7wb2Eee/+etEcprCIpz+Rmn9wGZbFruhYeclzbDSGbP9ES5m6lzKDe6/S5/MzsorHBFV54vrDLpm+3fNrQTmslpiI=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765945597; c=relaxed/simple;
-	bh=U23+vhl90+PDa2p0w6+2fMCPAkfqVqTHtLgx6BHM0kw=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=JhgcpnBnUuv1U0cOXcBFkgoc2hn9aWs8jQG3XRdfV1sifUOk/ByJje3QlXlT+lfxemKLp9+jxB3Gi07UEycvlwlqHVc5/lg2wQRWN3WXoGCDGIg/uYvBm2Ywxsv3DP5U5Rb1X5DMThK6/LBpO6VHLezXMwC6JjXSEirvU6/5iEI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=rF+1/xQF; arc=fail smtp.client-ip=40.107.201.67
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	s=arc-20240116; t=1765962134; c=relaxed/simple;
+	bh=RVmO9lW6eehwdBNV5RAUpbB0ZvFmggl7YobpAFotihI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=QdCDcHrb97opWHbS+KfP3C+POz/6U8FINlfhka1HpDwNMHAL+FjsvjkZtPkuKX7YTda4bVOELjNe1YvgBrut4RITu0C9yCz99ZGADu41eUDdKq8WtxhAQc096j7tkBzmerN5w3pc0DdgnylsFFQa/JLcVxVT/ZE3v+lQSoVT1hg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=benjamin.gaignard@collabora.com header.b=Uo1Er425; arc=pass smtp.client-ip=136.143.188.112
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="rF+1/xQF"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Tt4zAsB1QlIq18rNuNuqkpLXdVZ2Vyx2F8MKeOISgdb8IPcZhxacKObGAvTHJCAbloBT4PiX+0CbPBM5sYsZxkaL9hr+hb4/D5QP1LJhPT5FZRqcTP0kFkIyRgXIRQ4OXGKWYShD/u/sjgskn+3/AuTD2uawlP7oOOdoinyJjYGCvXsuoSy6qDGd+EE+HYXEgcu3XGAnfW4Rj6waIW+7uWyZTxCTpOcxfFWWJMqeYnNQBdly+hv+8uUNT0G+NjHhY8HAp4vFB2bLuJXiap4ci3Pz44aFREe+vtfO7Z94LNs+NkLFriFyM8WyqyIq5Pzx7U7Zy/Fvbs7D9UB2lwbeyQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=pyUknLK10IFnRrY1t3LFmdvIDLQA+DUzE+qm0LYlouo=;
- b=C42rZwXji6RNlnstVOMwVX9bVemUtYya4KwuzLHLp5GTNX7/6F8Jb1e+aZfoVfs5psikucgTA5eIO1YLj60lvXk02AFE1FP5P07iiubz1G6GdCRm1rU15rBclRrTGfebR0dUBlmjOf9X/uyGu8vNdap5Hx8nKgXrZp7cQ/IaU8Pei07r94OLpp8v7fFyxKF2kHd/X7scfo9wpRUvynDbAC8HFxBdfE+sw4I0xDu+pmzWPlsF7x7tld6XLVGFI8gKkoQPwBaP7FR82ZdrLPRvJZDudVMdO53q1xjoWvME5faz+JxTf/t0LJY75u8//cCDs1gJ2PAMo7wNAQ87m/lRRQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pyUknLK10IFnRrY1t3LFmdvIDLQA+DUzE+qm0LYlouo=;
- b=rF+1/xQF9WUoXcx21lF4rdUr812xDrFnRlIPQP38wan1/DurkmvhcydHMYOpxId5eLLOUTN3HXqQKZk8VUSaa7blLcPRVODNl35ejJnp0AVFhMVT+i9mYDhdTM10wt1PVGRDCCpjH6W19rE+j9++A8WGSSASYdivFhYNDMzI0bNMEnkRQi+1W4KC/IWIkrSNuA+i4fgqA/eOcy9pCUIeSiiqGXpKGl5SehuydanS1hOcAwQzDaGES/sOGFsGLFUbibsIhMc2T8A9q2HlSPkBgg9RUTWTTnqJ2gmJ7QJhRdzx4ShkJIVLYE2RVPosRryEUfANbYXcEziiHfmNRNIVDw==
-Received: from SJ0PR03CA0183.namprd03.prod.outlook.com (2603:10b6:a03:2ef::8)
- by SJ5PPF665EE4E73.namprd12.prod.outlook.com (2603:10b6:a0f:fc02::996) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9412.13; Wed, 17 Dec
- 2025 04:26:29 +0000
-Received: from SJ1PEPF00001CE8.namprd03.prod.outlook.com
- (2603:10b6:a03:2ef:cafe::8b) by SJ0PR03CA0183.outlook.office365.com
- (2603:10b6:a03:2ef::8) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9434.6 via Frontend Transport; Wed,
- 17 Dec 2025 04:26:27 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- SJ1PEPF00001CE8.mail.protection.outlook.com (10.167.242.24) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9434.6 via Frontend Transport; Wed, 17 Dec 2025 04:26:29 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Tue, 16 Dec
- 2025 20:26:18 -0800
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail203.nvidia.com
- (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Tue, 16 Dec
- 2025 20:26:17 -0800
-Received: from Asurada-Nvidia.nvidia.com (10.127.8.12) by mail.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server id 15.2.2562.20 via Frontend
- Transport; Tue, 16 Dec 2025 20:26:16 -0800
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: <jgg@nvidia.com>, <will@kernel.org>, <robin.murphy@arm.com>
-CC: <smostafa@google.com>, <joro@8bytes.org>,
-	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <skolothumtho@nvidia.com>,
-	<praan@google.com>, <xueshuai@linux.alibaba.com>
-Subject: [PATCH rc v4 3/4] iommu/arm-smmu-v3: Mark STE EATS safe when computing the update sequence
-Date: Tue, 16 Dec 2025 20:26:01 -0800
-Message-ID: <adf08c3b9f289188aca4fe80e506dca7aa48aa19.1765945258.git.nicolinc@nvidia.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <cover.1765945258.git.nicolinc@nvidia.com>
-References: <cover.1765945258.git.nicolinc@nvidia.com>
+	dkim=pass (1024-bit key) header.d=collabora.com header.i=benjamin.gaignard@collabora.com header.b="Uo1Er425"
+ARC-Seal: i=1; a=rsa-sha256; t=1765962118; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=MQOr1bkaW6D53AOQOMtEz2hCoqHSLi7Z5Ma9AsaT6F9wPbbfKL0l+Zm0ZSZoNnpzd+1Ymh7JUZrd/cuPrrVw9eDlmrRb8TdauYvDcd9b8Xwn3hDoIovBlY14lQBZV8vWiDTUma6Zbvx/uTKxBOZNuZrT+BY0qH2cLoqlH1nNsys=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1765962118; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=CmX36RAUhkyAzoQriRKH2n45J/o9UqUfaBfGbZAHOVo=; 
+	b=U6d1R/IGFZY1Kwit84IuMtg8nMQtlINXU3reDKItzztfGRi31vhYJEDuc/z3gRFIaxrfI3SgrzaRGH87g9dEMl4M6EWfbLEIZwost6jnHXitEojGdmFsa+LExDdPOpsN8UOuQMsv4/GBUWaghDEmP46N9C03JICSZqkgjwd/0zU=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=collabora.com;
+	spf=pass  smtp.mailfrom=benjamin.gaignard@collabora.com;
+	dmarc=pass header.from=<benjamin.gaignard@collabora.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1765962118;
+	s=zohomail; d=collabora.com; i=benjamin.gaignard@collabora.com;
+	h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+	bh=CmX36RAUhkyAzoQriRKH2n45J/o9UqUfaBfGbZAHOVo=;
+	b=Uo1Er425ZxLLeDatB8rAg48EZeP7+XgfT02adtU+dmlYUgKN4KNFrAhTIhtmWR/A
+	GHBwUHAh1chGVPnBLCE0iQ/SXK3WOg8vDAVZvXEU4K0ZoJtnIDLhZHQYvvg/Mbsrp+R
+	DrRPSu0zMFLgz+/KM5EnFkg0QUPTxIYIUtktIync=
+Received: by mx.zohomail.com with SMTPS id 1765962115824604.2212636872432;
+	Wed, 17 Dec 2025 01:01:55 -0800 (PST)
+Message-ID: <913d3056-0619-4e05-ac5f-1a21cf0e47c9@collabora.com>
+Date: Wed, 17 Dec 2025 10:01:48 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v10 5/7] media: verisilicon: AV1: Restore IOMMU context
+ before decoding a frame
+To: kernel test robot <lkp@intel.com>, joro@8bytes.org, will@kernel.org,
+ robin.murphy@arm.com, robh@kernel.org, krzk+dt@kernel.org,
+ conor+dt@kernel.org, heiko@sntech.de, nicolas.dufresne@collabora.com,
+ p.zabel@pengutronix.de, mchehab@kernel.org
+Cc: oe-kbuild-all@lists.linux.dev, iommu@lists.linux.dev,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org,
+ linux-media@vger.kernel.org, kernel@collabora.com
+References: <20251215085349.10155-6-benjamin.gaignard@collabora.com>
+ <202512162315.lcRwm6Mr-lkp@intel.com>
+Content-Language: en-US
+From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+In-Reply-To: <202512162315.lcRwm6Mr-lkp@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ1PEPF00001CE8:EE_|SJ5PPF665EE4E73:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8a96bf26-170e-4262-1071-08de3d24731a
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700013|1800799024|82310400026|376014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?2XiA5bJnxYLLl8j3NzsvGsL5CX084CIH6ZRzEDKk4X0PwDHKzSkMjp4OjDAf?=
- =?us-ascii?Q?kXmR93eeLhJtKn7C7Ni8puPV+fQGZP1Lp3dpU0bYRbZxp5vhhRYyNnHntWUU?=
- =?us-ascii?Q?4OpfTXFiRjNyiw/Jdsof6h+Z9l1f/aMJZHlHxAbUBS8PfpbAlyy1xnk3nft4?=
- =?us-ascii?Q?dm07BplHhTpPkgQZZrd9vqnsNKv7emgwp8tFU7fjmckYLKI2yx15lkjkT+G5?=
- =?us-ascii?Q?TWcjOYGZ/Lb2opgkOb+vZ8ak076jcnM9+RgLHq3xmlQD2WnqWd40ARFIoGCP?=
- =?us-ascii?Q?saan0C+TNXvGzVh5BGEWqXB7/MLr+NNJBp9v8zDelLjAF7U9btrXOY4KRo4q?=
- =?us-ascii?Q?c0HAdNvqYDMqZjenZ+ngp02N0fbzlnEveB4lxCZRsAW9LJWYiqZf2syf3Rvp?=
- =?us-ascii?Q?qhRY85TwKGehvKhfQZSH6g+cQSP0aLRvFzZlqAiC5I7MmL0ki7zvvJIP+7CC?=
- =?us-ascii?Q?269tO5u79/SMRIbpuz67cg4EaREAgiW9rbbgR0ZofW0lc370YSjeyheVqx9g?=
- =?us-ascii?Q?KVEjkjUxdzx/go9mvfcRdkt7kFvQ+qpULWu+q/tJBliffIbLrIsmYKVNSzR2?=
- =?us-ascii?Q?kAGSx4VpqhI03+4jvSiFQYWU3Ux72zj5uawHwjdakDMuVMUfhmRVyeHC0XHz?=
- =?us-ascii?Q?bwP69KDh9ssuMYqpaV5+Ba+c4TgnG1d3L3Oc33PVHDIerdBgY6NUb4rTFBdo?=
- =?us-ascii?Q?mPvVBql86TopGTxKHUL8nrdFykWeSUscRjstjFpTc0WlqojZ/M9lIcBwXKe8?=
- =?us-ascii?Q?uoysJN5+9HDtcqp9mc8ZdpkyRwq1GNkVhJ0ugPx/J24DidEatsfBeYI85idq?=
- =?us-ascii?Q?UyZQWZcu5gB4mRsFxnVtd31garWRBllL6+1CNSzsoPc0oz9QQIwlIETNHk7K?=
- =?us-ascii?Q?K6xEdQgty5j3MuOcjXLQ3mg4Kjr+N9Isn4aT6FrbCMo+a+Ub9FyujrQ3q7Y/?=
- =?us-ascii?Q?Ge//a6ZN6x57duzSJDoZtSf4VSENFZuWlPJa8ERIU8m23Zj3TetMR/iqR8f5?=
- =?us-ascii?Q?c/eHK1xOVY5Z0Rnf6sFTYmBmAPv9Aha7dXYStGrzUMxAXmn3gfJnogjsg4BW?=
- =?us-ascii?Q?F1yCrfTyN+XzJ1YOmFZzVfryRymMlHSFVUCtzQ6/RgEQz8amqrynZzCAoNJf?=
- =?us-ascii?Q?R4ZMcL9z+emH+r5Yo2oilaU3JJy1Bb99zdvdiDMsaIkvdBNSBk6HEeSH9YMu?=
- =?us-ascii?Q?4ElPGHwYrrw0JkhxbDw2CCffHQ1diN4CfmU1dNvH24GGIt7nCR+HBoZxJs5u?=
- =?us-ascii?Q?9Wt7rfkDg6UEekHTKBUFz1SYXlUDR7sIAYEGOLsJCWbaW6HGxqiSOE73RX2j?=
- =?us-ascii?Q?oVImmUbE7h8TKx6guBdv1rXCoidVQ8niBpoqT2QRNBbt78EV8+HFs8L+mG7g?=
- =?us-ascii?Q?lmSwAievQpz9d0ImeslNSMXxabdfoeYEgbZOoqviLOgENkg+6sNmgsZJkdAm?=
- =?us-ascii?Q?YYrEb3cpHlpUYfvwBglrDRsjoTizfpdQuEt3f9IqSKi0dE1YDoCfMpuvvjt5?=
- =?us-ascii?Q?0Zk+QDm5sP9tWxjRX1kOkB7p7XPgqDY/MNGdVt1ssN4JSWEj5EXJd0TpfvgW?=
- =?us-ascii?Q?Z7JVs33yMJ2n9yrRaxI=3D?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(36860700013)(1800799024)(82310400026)(376014);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Dec 2025 04:26:29.1695
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8a96bf26-170e-4262-1071-08de3d24731a
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SJ1PEPF00001CE8.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ5PPF665EE4E73
 
-From: Jason Gunthorpe <jgg@nvidia.com>
 
-If a VM wants to toggle EATS off at the same time as changing the CFG, the
-hypervisor will see EATS change to 0 and insert a V=0 breaking update into
-the STE even though the VM did not ask for that.
+Le 16/12/2025 à 16:27, kernel test robot a écrit :
+> Hi Benjamin,
+>
+> kernel test robot noticed the following build errors:
+>
+> [auto build test ERROR on linus/master]
+> [also build test ERROR on v6.19-rc1 next-20251216]
+> [cannot apply to robh/for-next rockchip/for-next arm64/for-next/core]
+> [If your patch is applied to the wrong git tree, kindly drop us a note.
+> And when submitting patch, we suggest to use '--base' as documented in
+> https://git-scm.com/docs/git-format-patch#_base_tree_information]
+>
+> url:    https://github.com/intel-lab-lkp/linux/commits/Benjamin-Gaignard/dt-bindings-vendor-prefixes-Add-Verisilicon/20251215-165740
+> base:   linus/master
+> patch link:    https://lore.kernel.org/r/20251215085349.10155-6-benjamin.gaignard%40collabora.com
+> patch subject: [PATCH v10 5/7] media: verisilicon: AV1: Restore IOMMU context before decoding a frame
+> config: arm-randconfig-r063-20251216 (https://download.01.org/0day-ci/archive/20251216/202512162315.lcRwm6Mr-lkp@intel.com/config)
+> compiler: clang version 22.0.0git (https://github.com/llvm/llvm-project 1335a05ab8bc8339ce24be3a9da89d8c3f4e0571)
+> reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20251216/202512162315.lcRwm6Mr-lkp@intel.com/reproduce)
+>
+> If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> the same patch/commit), kindly add following tags
+> | Reported-by: kernel test robot <lkp@intel.com>
+> | Closes: https://lore.kernel.org/oe-kbuild-all/202512162315.lcRwm6Mr-lkp@intel.com/
+>
+> All errors (new ones prefixed by >>):
+>
+>>> drivers/iommu/vsi-iommu.c:231:3: error: call to undeclared function 'report_iommu_fault'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+>       231 |                 report_iommu_fault(iommu->domain, iommu->dev, iova, status);
+>           |                 ^
+>>> drivers/iommu/vsi-iommu.c:245:21: error: no member named 'iommu_fwnode' in 'struct iommu_fwspec'
+>       245 |                                                              fwspec->iommu_fwnode);
+>           |                                                              ~~~~~~  ^
+>>> drivers/iommu/vsi-iommu.c:254:28: error: call to undeclared function 'dev_iommu_priv_get'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+>       254 |         struct vsi_iommu *iommu = dev_iommu_priv_get(dev);
+>           |                                   ^
+>     drivers/iommu/vsi-iommu.c:254:28: note: did you mean 'dev_iommu_fwspec_get'?
+>     include/linux/iommu.h:1457:36: note: 'dev_iommu_fwspec_get' declared here
+>      1457 | static inline struct iommu_fwspec *dev_iommu_fwspec_get(struct device *dev)
+>           |                                    ^
+>>> drivers/iommu/vsi-iommu.c:254:20: error: incompatible integer to pointer conversion initializing 'struct vsi_iommu *' with an expression of type 'int' [-Wint-conversion]
+>       254 |         struct vsi_iommu *iommu = dev_iommu_priv_get(dev);
+>           |                           ^       ~~~~~~~~~~~~~~~~~~~~~~~
+>     drivers/iommu/vsi-iommu.c:496:28: error: call to undeclared function 'dev_iommu_priv_get'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+>       496 |         struct vsi_iommu *iommu = dev_iommu_priv_get(dev);
+>           |                                   ^
+>     drivers/iommu/vsi-iommu.c:496:20: error: incompatible integer to pointer conversion initializing 'struct vsi_iommu *' with an expression of type 'int' [-Wint-conversion]
+>       496 |         struct vsi_iommu *iommu = dev_iommu_priv_get(dev);
+>           |                           ^       ~~~~~~~~~~~~~~~~~~~~~~~
+>>> drivers/iommu/vsi-iommu.c:519:38: error: variable has incomplete type 'const struct iommu_domain_ops'
+>       519 | static const struct iommu_domain_ops vsi_identity_ops = {
+>           |                                      ^
+>     include/linux/iommu.h:40:8: note: forward declaration of 'struct iommu_domain_ops'
+>        40 | struct iommu_domain_ops;
+>           |        ^
+>     drivers/iommu/vsi-iommu.c:571:28: error: call to undeclared function 'dev_iommu_priv_get'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+>       571 |         struct vsi_iommu *iommu = dev_iommu_priv_get(dev);
+>           |                                   ^
+>     drivers/iommu/vsi-iommu.c:571:20: error: incompatible integer to pointer conversion initializing 'struct vsi_iommu *' with an expression of type 'int' [-Wint-conversion]
+>       571 |         struct vsi_iommu *iommu = dev_iommu_priv_get(dev);
+>           |                           ^       ~~~~~~~~~~~~~~~~~~~~~~~
+>>> drivers/iommu/vsi-iommu.c:644:2: error: call to undeclared function 'dev_iommu_priv_set'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+>       644 |         dev_iommu_priv_set(dev, iommu);
+>           |         ^
+>     drivers/iommu/vsi-iommu.c:650:28: error: call to undeclared function 'dev_iommu_priv_get'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+>       650 |         struct vsi_iommu *iommu = dev_iommu_priv_get(dev);
+>           |                                   ^
+>     drivers/iommu/vsi-iommu.c:650:20: error: incompatible integer to pointer conversion initializing 'struct vsi_iommu *' with an expression of type 'int' [-Wint-conversion]
+>       650 |         struct vsi_iommu *iommu = dev_iommu_priv_get(dev);
+>           |                           ^       ~~~~~~~~~~~~~~~~~~~~~~~
+>>> drivers/iommu/vsi-iommu.c:657:35: error: passing 'const uint32_t[16]' (aka 'const unsigned int[16]') to parameter of type 'u32 *' (aka 'unsigned int *') discards qualifiers [-Werror,-Wincompatible-pointer-types-discards-qualifiers]
+>       657 |         return iommu_fwspec_add_ids(dev, args->args, 1);
+>           |                                          ^~~~~~~~~~
+>     include/linux/iommu.h:1451:65: note: passing argument to parameter 'ids' here
+>      1451 | static inline int iommu_fwspec_add_ids(struct device *dev, u32 *ids,
+>           |                                                                 ^
+>>> drivers/iommu/vsi-iommu.c:667:18: error: use of undeclared identifier 'generic_single_device_group'
+>       667 |         .device_group = generic_single_device_group,
+>           |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+>     drivers/iommu/vsi-iommu.c:669:25: error: variable has incomplete type 'const struct iommu_domain_ops'
+>       669 |         .default_domain_ops = &(const struct iommu_domain_ops) {
+>           |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>       670 |                 .attach_dev             = vsi_iommu_attach_device,
+>           |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>       671 |                 .map_pages              = vsi_iommu_map,
+>           |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>       672 |                 .unmap_pages            = vsi_iommu_unmap,
+>           |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>       673 |                 .flush_iotlb_all        = vsi_iommu_flush_tlb_all,
+>           |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>       674 |                 .iova_to_phys           = vsi_iommu_iova_to_phys,
+>           |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>       675 |                 .free                   = vsi_iommu_domain_free,
+>           |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>       676 |         }
+>           |         ~
+>     include/linux/iommu.h:40:8: note: forward declaration of 'struct iommu_domain_ops'
+>        40 | struct iommu_domain_ops;
+>           |        ^
+>     15 errors generated.
+>
+> Kconfig warnings: (for reference only)
+>     WARNING: unmet direct dependencies detected for VSI_IOMMU
+>     Depends on [n]: IOMMU_SUPPORT [=n] && (ARCH_ROCKCHIP [=n] && ARM64 || COMPILE_TEST [=y])
+>     Selected by [m]:
+>     - VIDEO_HANTRO_ROCKCHIP [=y] && MEDIA_SUPPORT [=y] && MEDIA_PLATFORM_SUPPORT [=y] && MEDIA_PLATFORM_DRIVERS [=y] && VIDEO_HANTRO [=m] && (ARCH_ROCKCHIP [=n] || COMPILE_TEST [=y])VSI_IOMMU
 
-In bare metal, EATS is ignored by CFG=ABORT/BYPASS, which is why this does
-not cause a problem until we have nested where CFG is always a variation of
-S2 trans that does use EATS.
+I will make VIDEO_HANTRO_ROCKCHIP depends on VSI_IOMMU instead of select it on the next version.
+Regards,
+Benjamin
 
-Relax the rules for EATS sequencing, we don't need it to be exact because
-the enclosing code will always disable ATS at the PCI device if we are
-changing EATS. This ensures there are no ATS transactions that can race
-with an EATS change so we don't need to carefully sequence these bits.
-
-Fixes: 1e8be08d1c91 ("iommu/arm-smmu-v3: Support IOMMU_DOMAIN_NESTED")
-Cc: stable@vger.kernel.org
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: Shuai Xue <xueshuai@linux.alibaba.com>
-Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
-
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 12a9669bcc83..a3b29ad20a82 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -1095,6 +1095,15 @@ void arm_smmu_get_ste_update_safe(__le64 *safe_bits)
- 	 *  fault records even when MEV == 0.
- 	 */
- 	safe_bits[1] |= cpu_to_le64(STRTAB_STE_1_MEV);
-+
-+	/*
-+	 * EATS is used to reject and control the ATS behavior of the device. If
-+	 * we are changing it away from 0 then we already trust the device to
-+	 * use ATS properly and we have sequenced the device's ATS enable in PCI
-+	 * config space to prevent it from issuing ATS while we are changing
-+	 * EATS.
-+	 */
-+	safe_bits[1] |= cpu_to_le64(STRTAB_STE_1_EATS);
- }
- EXPORT_SYMBOL_IF_KUNIT(arm_smmu_get_ste_update_safe);
- 
--- 
-2.43.0
-
+>
+>
+> vim +/report_iommu_fault +231 drivers/iommu/vsi-iommu.c
+>
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  214
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  215  static irqreturn_t vsi_iommu_irq(int irq, void *dev_id)
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  216  {
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  217  	struct vsi_iommu *iommu = dev_id;
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  218  	unsigned long flags;
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  219  	dma_addr_t iova;
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  220  	u32 status;
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  221
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  222  	if (pm_runtime_resume_and_get(iommu->dev) < 0)
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  223  		return IRQ_NONE;
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  224
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  225  	spin_lock_irqsave(&iommu->lock, flags);
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  226
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  227  	status = readl(iommu->regs + VSI_MMU_STATUS_BASE);
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  228  	if (status & VSI_MMU_IRQ_MASK) {
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  229  		dev_err(iommu->dev, "unexpected int_status=%08x\n", status);
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  230  		iova = readl(iommu->regs + VSI_MMU_PAGE_FAULT_ADDR);
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15 @231  		report_iommu_fault(iommu->domain, iommu->dev, iova, status);
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  232  	}
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  233  	writel(0, iommu->regs + VSI_MMU_STATUS_BASE);
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  234
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  235  	spin_unlock_irqrestore(&iommu->lock, flags);
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  236  	pm_runtime_put_autosuspend(iommu->dev);
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  237
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  238  	return IRQ_HANDLED;
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  239  }
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  240
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  241  static struct vsi_iommu *vsi_iommu_get_from_dev(struct device *dev)
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  242  {
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  243  	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  244  	struct device *iommu_dev = bus_find_device_by_fwnode(&platform_bus_type,
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15 @245  							     fwspec->iommu_fwnode);
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  246
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  247  	put_device(iommu_dev);
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  248
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  249  	return iommu_dev ? dev_get_drvdata(iommu_dev) : NULL;
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  250  }
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  251
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  252  static struct iommu_domain *vsi_iommu_domain_alloc_paging(struct device *dev)
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  253  {
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15 @254  	struct vsi_iommu *iommu = dev_iommu_priv_get(dev);
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  255  	struct vsi_iommu_domain *vsi_domain;
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  256
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  257  	vsi_domain = kzalloc(sizeof(*vsi_domain), GFP_KERNEL);
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  258  	if (!vsi_domain)
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  259  		return NULL;
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  260
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  261  	vsi_domain->dev = iommu->dev;
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  262  	spin_lock_init(&vsi_domain->lock);
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  263
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  264  	/*
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  265  	 * iommu use a 2 level pagetable.
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  266  	 * Each level1 (dt) and level2 (pt) table has 1024 4-byte entries.
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  267  	 * Allocate one 4 KiB page for each table.
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  268  	 */
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  269  	vsi_domain->dt = iommu_alloc_pages_sz(GFP_KERNEL | GFP_DMA32,
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  270  					      SPAGE_SIZE);
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  271  	if (!vsi_domain->dt)
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  272  		goto err_free_domain;
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  273
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  274  	vsi_domain->dt_dma = dma_map_single(vsi_domain->dev, vsi_domain->dt,
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  275  					    SPAGE_SIZE, DMA_TO_DEVICE);
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  276  	if (dma_mapping_error(vsi_domain->dev, vsi_domain->dt_dma)) {
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  277  		dev_err(dev, "DMA map error for DT\n");
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  278  		goto err_free_dt;
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  279  	}
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  280
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  281  	vsi_domain->pta = iommu_alloc_pages_sz(GFP_KERNEL | GFP_DMA32,
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  282  					       SPAGE_SIZE);
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  283  	if (!vsi_domain->pta)
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  284  		goto err_unmap_dt;
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  285
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  286  	vsi_domain->pta[0] = vsi_mk_pta(vsi_domain->dt_dma);
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  287  	vsi_domain->pta_dma = dma_map_single(vsi_domain->dev, vsi_domain->pta,
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  288  					     SPAGE_SIZE, DMA_TO_DEVICE);
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  289  	if (dma_mapping_error(vsi_domain->dev, vsi_domain->pta_dma)) {
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  290  		dev_err(dev, "DMA map error for PTA\n");
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  291  		goto err_free_pta;
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  292  	}
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  293
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  294  	INIT_LIST_HEAD(&vsi_domain->iommus);
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  295
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  296  	vsi_domain->domain.geometry.aperture_start = 0;
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  297  	vsi_domain->domain.geometry.aperture_end   = DMA_BIT_MASK(32);
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  298  	vsi_domain->domain.geometry.force_aperture = true;
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  299  	vsi_domain->domain.pgsize_bitmap	   = SZ_4K;
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  300
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  301  	return &vsi_domain->domain;
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  302
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  303  err_free_pta:
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  304  	iommu_free_pages(vsi_domain->pta);
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  305  err_unmap_dt:
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  306  	dma_unmap_single(vsi_domain->dev, vsi_domain->dt_dma,
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  307  			 SPAGE_SIZE, DMA_TO_DEVICE);
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  308  err_free_dt:
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  309  	iommu_free_pages(vsi_domain->dt);
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  310  err_free_domain:
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  311  	kfree(vsi_domain);
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  312
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  313  	return NULL;
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  314  }
+> b9e3cd4bea55cd Benjamin Gaignard 2025-12-15  315
+>
