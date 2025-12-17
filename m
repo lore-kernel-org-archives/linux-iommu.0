@@ -1,256 +1,348 @@
-Received: from BYAPR05CU005.outbound.protection.outlook.com (mail-westusazon11010028.outbound.protection.outlook.com [52.101.85.28])
+Received: from MW6PR02CU001.outbound.protection.outlook.com (mail-westus2azon11012044.outbound.protection.outlook.com [52.101.48.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AED31EDA2C
-	for <iommu@lists.linux.dev>; Wed, 17 Dec 2025 04:25:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.85.28
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B96BF230D0F
+	for <iommu@lists.linux.dev>; Wed, 17 Dec 2025 04:26:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.48.44
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765945533; cv=fail; b=I+tP+6GoCFhzY/dFXFHYt/jn4wcgc4qZ+qBO/T6cVgjdFFJuqh/KQsMWl8x/V0G8K5yTGpCD4e2IVMsgDn/wb65opqiJ4tygbAppjkdk2OF8W6EwVea9lTPAB05m0cZeZ55j0of4j21c09FIQqjWSHjbYtUQ3ZKOEBLYfeFx71g=
+	t=1765945591; cv=fail; b=K2TSjiTkeiiZlQSQ1YcgymKEGoHl0sws9IXwcbRkHwJ+wacHg0jkBR/0emTnnp7KlR5UXUj8yfySFJ6ItcLEwBlICdGXJN1qD772mfRduqZcbBuAduSQpN385KXUDaY3lXo36pU9m8Q9vJDySPCFblHyHptf6XpRx5GULN8uIbw=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765945533; c=relaxed/simple;
-	bh=uOGb0uclIXI9TlOX4aJQ0SL21sVRxgc4YltsmvSsFkM=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=cr1da72y+5aiSe19Psw9yEojIpfJsId4T+1SrdO3WT5LWv67kEiaKIMcyMTm2ts0f74vMNAXILYbquoq37QwNd0JjtQWQAMZJB7NL8gU99x+vavRMlfyulcAN2PkARrjH8U3ecf9E1357HyNS4mASskXmT9qRy2GNrSWKGQzybA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=qc1RVJC1; arc=fail smtp.client-ip=52.101.85.28
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	s=arc-20240116; t=1765945591; c=relaxed/simple;
+	bh=PhdGwCIV00i1T7PfsbxGAR6qEzk7ekCO12PJF6jlpDI=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=Mc+Qti04Jo18WnoHOiwF6lem50o8VzWRt9NAjgZYHwfRM1fph5FNyOY94011G2+mDyRi5uVwnCMC+LNBhpjTzf4uRIaNL1qHRvrv87NbJH1FhHxbX7IObO+u9Qhe6DwqydaEd7Risi0OctJ8xwnX4H333e/sYnmz7WiGaT5uHQQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=LWdU9lt6; arc=fail smtp.client-ip=52.101.48.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="qc1RVJC1"
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="LWdU9lt6"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=LgPEZx/S18XKIEBti3arNS8YiQcB0tAiPqg1u3cq3l/i4DyI15mFYb5ewF2h7DTYYuNQUmZquXv7UnfNBkK+iTk5i3ELrUeqWhBm+TFU5Q5kVjB1/wjOXL42V3/NHT6n3ONHvsJ6SzPq7Gr+6pCHbsG1QHU0SEilzy83eA3Utx5dju5RjHMYBFQwWP/C+QXZZOSNNrx8EDwigOjee0kb1qRD/R/Js8YLqdZxeOPWTsAYpidOrVDfxkR07rbDt1CD6rMt4znFoPNRjr2w+KFG1UA0WPcHBRWBU+a+wZxj3h7Kh1cj7KVGV3w6ByAor4wsSt02+FqjlkOJZUnBCJ/lRA==
+ b=bOQhLAKBK80hFFQxbP/Bib3h5fSG1zmECulD0ROKUc/KX9VJJ2VexV7fceryuUOWro+GKMVi+xHgH6sLYHwfgc/Eg0FpjyS4wA6VT/QwhNMWv8+tWCvuQSXKiVs7ia3KHnTixanzSRR2E9/1eq/NRx+G2oNazgJxELj+c5yfY7/iIg1VXmPdZIG2hAxQSOqAXljdS0FWp7Tx3p3ZsARW0s2tjAcPvhMxmxTJDt7CYkxoUOobCmlL6K8TEPvasKVU68te2f8QeVGo3jH9LwTQzE4YKhlaXmzDfVLwv1ovjjiqq5lYkaca9eO0tMZ1vHLcMjQPwi63vJ3k6Ew+FHMmsA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=pqlNACuEhmU9kxWm62cP44IZkQdXbPMzh9RuWtXFAEg=;
- b=KzktD5ff0XcXoZd+vlUQNaYN1n+x8meBiorW/Dz6sebJIcdipqKRbsiqbVBJ7VFCVnrX+UW3rxeSfWxcQsitwXPOfKZbhmRNlcpSAPrmkrfqeNWW6zpQL1wECy8/LgAIPPI7yoAXzefcEk6SHWzMM0pmMP2FiyP7UnIgsHi4u7QEdNNWUU3I8JrsbwXEeZRjWRGUx6G/7JrQ/i2FEPNkp7izhieNflceNHGTZqcPSjAGV66ydqkHv+mT3rEicbV1bJNiAVEyxxrjGWqLWMmSLa3/cCnHCPNZ33GhXQFY8eYrkyu3ZU89faJxdNX43CmJuLJoMv8Y9ZEUIYOJw+oLWw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ bh=r5P6R43RBzsyBkSe/PsjJhJlVcbrO4PgfzUML1o5VOc=;
+ b=xCJG3pznPn2TmMiMw9/Yi8NKMiZMYQ+u97Q7PVqr3idBuLu7XNECJeoiAYSvl8a19roHsvaEvnF30mL/BJMksI9wfnvsPUeR4CSNN6CFDnWXIUHmjQ3ULB3UFxqVtM05c4SMnpKF7XU99Lka6II57Xxluw56gHHZseT5EW4FZPCYvoAmxqcTgDHRR6xVimKI4Y4mZlf/yyxz89tg/beU4xDJuW0Awwl1nuzOymOLV4uD1Ov20JTmwhyRy0zgwcgYwUXneM/qWs3prYZqIAjfj/G7dUAzpWCup4kqLprG5/M0HDcA77rlBSv6tYZ2eyh1nKMQksXpJVr3j6NNQaNqbQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pqlNACuEhmU9kxWm62cP44IZkQdXbPMzh9RuWtXFAEg=;
- b=qc1RVJC1WSOCCJDONtRqzlC7X9aigmub0rgOteewmHi6G0CVn6iPKEcD8z/WI1uB4d6cEeauX9Qf2JfThcfK1YknlP075r0Fq6wI0C4Ent9wgpIa3IV8oKHdXDHHHrUjyTk4z/dvI0W1QtIwQw6Lu2zo4YMAJdyvgKGKiCch/HQ=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from CH3PR12MB9194.namprd12.prod.outlook.com (2603:10b6:610:19f::7)
- by CH2PR12MB4120.namprd12.prod.outlook.com (2603:10b6:610:7b::13) with
+ bh=r5P6R43RBzsyBkSe/PsjJhJlVcbrO4PgfzUML1o5VOc=;
+ b=LWdU9lt6eeNaKV1JoedwKVvusX+9trBIQmyhp7dIMqEPp1j+mpn8LgDShWetHo8gJgeIXn3jy9PtOSt9KQjnM+emaQy+HqXEVrgPxMssmaGSw3Cn5+GZI5rxmlA1P9Bg2c+2z2TEv2DoOdAYSO1jL7McMkucqIBx2JBPaMTxv5U0D6PvoaLzh9qCCZY5PQ3MpDw3As42w0moRgdMHtUjkCPE3oQUsPZWAYhO+vWn5F1zqPc5kPmWzjpAl/jTSLR7UBeQNg6QlpCa25upXRSQT8R6Et8ndonB0tam7PF0QBgE4GyvU4WciQeMn1g+EoKUo8aTqiGj7tJTV6QQbGjm5A==
+Received: from CH0PR03CA0047.namprd03.prod.outlook.com (2603:10b6:610:b3::22)
+ by CH3PR12MB9249.namprd12.prod.outlook.com (2603:10b6:610:1bc::7) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9412.9; Wed, 17 Dec
- 2025 04:25:29 +0000
-Received: from CH3PR12MB9194.namprd12.prod.outlook.com
- ([fe80::1e6b:ca8b:7715:6fee]) by CH3PR12MB9194.namprd12.prod.outlook.com
- ([fe80::1e6b:ca8b:7715:6fee%4]) with mapi id 15.20.9412.011; Wed, 17 Dec 2025
- 04:25:29 +0000
-Message-ID: <10029978-31bb-4ff2-891f-564b970a41b5@amd.com>
-Date: Wed, 17 Dec 2025 15:24:54 +1100
-User-Agent: Mozilla Thunderbird Beta
-Subject: Re: [PATCH v4 2/2] vfio/type1: Set IOMMU_MMIO in dma->prot for
- MMIO-backed addresses
-To: Wei Wang <wei.w.wang@hotmail.com>, jgg@nvidia.com, kevin.tian@intel.com,
- alex@shazbot.org, joro@8bytes.org, thomas.lendacky@amd.com,
- vasant.hegde@amd.com, suravee.suthikulpanit@amd.com
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <SEZPR01MB4399D06A044791DEA8BE43CBDCAAA@SEZPR01MB4399.apcprd01.prod.exchangelabs.com>
- <SEZPR01MB4399DA27E304E8BFB3C667DEDCAAA@SEZPR01MB4399.apcprd01.prod.exchangelabs.com>
-From: Alexey Kardashevskiy <aik@amd.com>
-Content-Language: en-US
-In-Reply-To: <SEZPR01MB4399DA27E304E8BFB3C667DEDCAAA@SEZPR01MB4399.apcprd01.prod.exchangelabs.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SY5P300CA0046.AUSP300.PROD.OUTLOOK.COM
- (2603:10c6:10:1fe::8) To CH3PR12MB9194.namprd12.prod.outlook.com
- (2603:10b6:610:19f::7)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9412.13; Wed, 17 Dec
+ 2025 04:26:25 +0000
+Received: from CH1PEPF0000AD7C.namprd04.prod.outlook.com
+ (2603:10b6:610:b3:cafe::20) by CH0PR03CA0047.outlook.office365.com
+ (2603:10b6:610:b3::22) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9412.13 via Frontend Transport; Wed,
+ 17 Dec 2025 04:26:25 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ CH1PEPF0000AD7C.mail.protection.outlook.com (10.167.244.84) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.9434.6 via Frontend Transport; Wed, 17 Dec 2025 04:26:25 +0000
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Tue, 16 Dec
+ 2025 20:26:15 -0800
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail205.nvidia.com
+ (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Tue, 16 Dec
+ 2025 20:26:14 -0800
+Received: from Asurada-Nvidia.nvidia.com (10.127.8.12) by mail.nvidia.com
+ (10.129.68.10) with Microsoft SMTP Server id 15.2.2562.20 via Frontend
+ Transport; Tue, 16 Dec 2025 20:26:13 -0800
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: <jgg@nvidia.com>, <will@kernel.org>, <robin.murphy@arm.com>
+CC: <smostafa@google.com>, <joro@8bytes.org>,
+	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, <skolothumtho@nvidia.com>,
+	<praan@google.com>, <xueshuai@linux.alibaba.com>
+Subject: [PATCH rc v4 1/4] iommu/arm-smmu-v3: Add update_safe bits to fix STE update sequence
+Date: Tue, 16 Dec 2025 20:25:59 -0800
+Message-ID: <58f5af553fa7c3b5fd16f1eb13a81ae428f85678.1765945258.git.nicolinc@nvidia.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <cover.1765945258.git.nicolinc@nvidia.com>
+References: <cover.1765945258.git.nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB9194:EE_|CH2PR12MB4120:EE_
-X-MS-Office365-Filtering-Correlation-Id: fcd45d49-4762-4473-1b32-08de3d244f17
+X-MS-TrafficTypeDiagnostic: CH1PEPF0000AD7C:EE_|CH3PR12MB9249:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8317f09f-8875-436b-3a6a-08de3d2470f0
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|366016|7053199007;
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|36860700013|82310400026|1800799024;
 X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?YnJpSk1jbmZMTW5neFg2Q3RoOFpXTTQwOVRwZXh0MTNScWZxUU54TER2WWlP?=
- =?utf-8?B?SzBvaDJGSDhxZmhvRUxYSUQ0TjJzeXpLTEhWaWc1MmY2a0M2TlY4eFg4Skhz?=
- =?utf-8?B?SUwrd0RySkJjbFZHQ2JMTFp0YUZnTk40ZnFqOWpzUWN1NW8rdnd1VC9JUUxx?=
- =?utf-8?B?TTc2K2wwUDlkWXlDREIxZDJaRjJmQXVTVDZrYmVkYnlVTFhNL2FtT1ZpK05m?=
- =?utf-8?B?V3h6c2g4MG10UDdDSTh2TkloUVVSZlVaMnNIVWhwYVBsRDJwYXMyYzIwaG9U?=
- =?utf-8?B?d3NYalV5OTlVeWdXalYvbmRFbnV3aGVZeU56eVJTcDloWHhZZEY5VlRaenRB?=
- =?utf-8?B?YjVoWXhCMnovcmsxY2sxbXdtbzZxZlEzaC9uZi82dW1tNlJoUDFlVm9UenVi?=
- =?utf-8?B?QkRqNW5qSGkzY210NlMraEVsdVBZTkU0K25YQ2gzcVZXVkxaYnNTdVdZRlpU?=
- =?utf-8?B?Y3QzZzQ5NWRGWnI2SkM4Y0ROV3gxZVg3aGQ2eEhRNlYyclFwZlRaY0JkZmg5?=
- =?utf-8?B?b3pIL1JtSkpoTGQxelNRL3Z1MWtlV2ljeUhvNDJLTkRXRHZBcUJ2RjVoTkE2?=
- =?utf-8?B?TDhoNjNzWktvWmdiemFtZ3FtRkNRdHhmd3MyTUM5ZEM3aVN6STU4VjlmdWh2?=
- =?utf-8?B?UENCbk5rdVRDd3I5VFNKQWk2UzZiU3dmVEZ4SzNPQnp5M0puQllHUUlLKzhU?=
- =?utf-8?B?ZmFsdVhVVS9jZCtLY01UbnY0SW5EM00wSUxBdjd0akZyK3dDT1d5NlV6Q2Ns?=
- =?utf-8?B?RVZNek9DZUhrMmg0dE4zL1l5bjdRY1VFMnJiOVIxMGQ5UmlobWh5cmliVk5Z?=
- =?utf-8?B?aHRweUxJeS9PbzJpdFFXb05ValBSNXcyR1N3NHpzb1Y4MjljU3hjTWM5cVBT?=
- =?utf-8?B?S280ZER2M3VhTTFPcWdOU3JzdlBwY3lrNEdnOStWbkFTcDYvN3AyZzhCSFgv?=
- =?utf-8?B?ck1uMlN4VHRabzltUG5QZTZNZWVoam9WZ1JSbUtLcCtFQmVOeVJ6RFFUUFhE?=
- =?utf-8?B?S3JiTjlZaFhsWm1BMjVDTGRVNUc4TXNETHBDNUVWZ0VTeGd3eFlwcTU2MmtZ?=
- =?utf-8?B?TVo5bWwvd1NMRFA4cGZCVkpPZmptOEx2MlZpY01JcFJnQ05NWkZHVmtkMzVF?=
- =?utf-8?B?NVlRcmw2bzE4UUVtc3AwQnZ5VG5rRHd3cENzVkFYODhwbXdvbFlTNFpZdnV3?=
- =?utf-8?B?ajBWeTVIVDN6cVlWcHpxNGEwajlMbjFsRWg2Q0N0TDk0Q0pSYUNUZ0paS1Ru?=
- =?utf-8?B?c1B3S0g0a0VjMk4zR1Y4RCtxSHJzZ1NXSllYTW83Vm80dTNTRVhDMFE1RW1K?=
- =?utf-8?B?alBZR05wSGloc09KVzhPTUg5bmtPb1hTUW9GbElDZStKcmp1SU5hNk9UTWlu?=
- =?utf-8?B?VjJZVlBMVG83ZDFBaWdGeWdKL1AwVHBFeHFKTGVsd3pBcFdaWmxCYjZYRWMw?=
- =?utf-8?B?SXpiaXBNbWRucHFCelNFSWFhZ0I3TFIzTHdXTTFuTndaRWZMOXRpdE9rRWdo?=
- =?utf-8?B?TXQ2Uko1S1hSVkwrSUo3dmpZdjVGY0FZTUFmQjlNdXlFWnU0Sm9mVVB5Qytk?=
- =?utf-8?B?YWZ6TnlOcFdrU2dwU21nb0ppSE1KRDNJQmZzaFJGMEJmemNWcC9kT1Rhb1Jy?=
- =?utf-8?B?RkJobmtLLzN0em95VGUrU2NJbFVlS3ZoVk9HSEllcEdTcU9ERDJGcFdibUNK?=
- =?utf-8?B?aVZ6aGlVVk12bU0vZWN5eGw1ZG5MOUp5Ukd2M2l6ODNhL3N3QWxQdThPMDJn?=
- =?utf-8?B?ODNLQWxJNllaVjRFNkI2MWxvU1R0aDdmS2VRZ0dEdXRUblpFOThzcFQ1WHJ6?=
- =?utf-8?B?QnArNmNKd3VHQStCdXFiK3hCaTNXZ1FvMytCSVVHb1A3enhFUnplTENMNU9a?=
- =?utf-8?B?VzlPRXRyazdKN2k3SGozdG9iR3ljS2E0c2Y2SEN6K2w1NExZdmtJS3J2bkc5?=
- =?utf-8?Q?+ahIMIK1MkItTsRq/InKXHEBjlPOz3eX?=
+	=?us-ascii?Q?XrZXG50XxUEMTifmKPmqzZKdEgDJ+VlIRGbdDFacWrI/qzzYrmb62litixYf?=
+ =?us-ascii?Q?LakpRsCuFxH6E4Qnwj49/nvQWJ2feIxzr1OtnXEK1IZow1VGOd0tyv+Rgz3V?=
+ =?us-ascii?Q?A9NpzUVJA2jpo+/pTZ9lwnDXJuQi5zL5HRs/KtFXgoj8ZqIkJqEKd78vhevI?=
+ =?us-ascii?Q?+jO07h44IQSc6HER1pDKfPxZ1ItSu7Icy+F0qp7+KR0UdqxI9O+lHKnIzVxN?=
+ =?us-ascii?Q?XCWuwLegt4k/+wmLhpTEUCg7eScWuSzkS+P1H8TOf4KFPdAppFZqNrL2c00O?=
+ =?us-ascii?Q?rOMb3XY6AUsDTvAp6g+to6aFLYA+Zzf+T1OeY4O7BG1hrPsFGG1lL/3yTPl5?=
+ =?us-ascii?Q?jsNtt2pMGjridW9lAB/AeaEodbNqF3ZLyhPlvvrwLMlQIlkGbKRgRA7ClikY?=
+ =?us-ascii?Q?jijII188T2qYZdqHLA4UeUbDNZsZQzfrKlRakW8cDoPRbtatluAcU8CARs+W?=
+ =?us-ascii?Q?/DamGqj0d9KcgY+muR3M5UQXcsLR5FgYL9TnaILYdwZGBzKKVB3AK8lQ1Emp?=
+ =?us-ascii?Q?pSXvLaUChMjZd/c6oK6KxMFNJm5DYUlHIG/tf34FoAH5tq7E5rWRJ5i+VHic?=
+ =?us-ascii?Q?fws/7Yz+gebT7uR9nohZ0OvF7AUMpGu8gGe6yf6LZpsVaRx9bbIzrZyyMCQA?=
+ =?us-ascii?Q?36imqjWNNkBRysLXOo4xHAPPSByR/2w45Y6WeuqRG9jofvPs+9XKNAdPuGvZ?=
+ =?us-ascii?Q?lVGgyvzj+vsNVS4xun8yfo3ccP9spCf97N5kSupBbUh45yhIOmYF/9Jl8tXK?=
+ =?us-ascii?Q?EOFq+pNrS0X8SaVELG1vwFATB2hMbEa3eyfY4QJLMuHE6H19klCEuKdh8yRK?=
+ =?us-ascii?Q?bVhZe1naXKnj17Rt31ULxzvYXE+i3YuBcQZ3dvykXMVMsJL1gB0ntFk0TToY?=
+ =?us-ascii?Q?Zrdq9/jXFkcnRn9DLNeA6tvqYJuwxZa0t0Qx8w4ArhRVXdaatYk7azwDkhe2?=
+ =?us-ascii?Q?2+2dhW/bs63TUHAOl2OxQ5E4Jp2qtosm7dnbhq7IL6InN5BbtyeyD+YVTmtt?=
+ =?us-ascii?Q?T7aXK/RkqNPB5u7PZNKB20t05cbCNvTSlo0vrdKqEaqnoW244irNajOMm4rb?=
+ =?us-ascii?Q?13TUUz7dZKtzCS4J/kdrghEIuESlW39MDv3K1+tMARHpWAb3Y5yioIUhTbyy?=
+ =?us-ascii?Q?bHeFsV2GRMu94zyngS9MvLLHn6cDghsEblJx5TUXkdqh+zHpAVhrYjWs6ols?=
+ =?us-ascii?Q?vf0QWQGn1sD1ui62JKkOb2b3r6REIO7obdT8s1yO/pP3PEB4YeSC2zVo2i+e?=
+ =?us-ascii?Q?//RccyI54MenaEdsqs2jXjljPde7ENgeP5vK1J9xyXJ+aRurgDX4EPT9+Yuk?=
+ =?us-ascii?Q?J1g8SxAyorUvVcaCrRsHgoYI+SadqR5lN85z4FwNz/j6gx0KztgDOl7LD92E?=
+ =?us-ascii?Q?Cs7Kk1HE3wTkBz7Co0nzzNseg2alG1Vl9j96nb7OQEv1uC/M5Zh6Juk1JcPc?=
+ =?us-ascii?Q?otEAEXNGC8vZOLw5JoBiWiPdQNKXD8PopQa89+xLjWupRsSrdPeMjwctGOyi?=
+ =?us-ascii?Q?llpDHhrwzzUZQCEcitBbZBwUQr9oGNfP2L226gL5nd2Tss7koU00/oGdem+d?=
+ =?us-ascii?Q?uMwyPGhX0lH7RnoRWrg=3D?=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB9194.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016)(7053199007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?QXo1U3k5bFo5a2RJeGJGckdad3AzbHBtcDVWbFZDZytzK2ZCUjgyWXNaaXlQ?=
- =?utf-8?B?a0hQOW91enBWMlR3NjRZSEN1TkUyWTRvRzY0eXN3ajhvOHFRRmorbHM3SzVK?=
- =?utf-8?B?UitsNVAxWkFsZTlVT2QvNkRRbHNHcFg3T3Z2VWpFVlN1ZXNtTjBRbzMxZG4x?=
- =?utf-8?B?dXJPUEFnZytTSnpreUlpKy9pSnVrQ2RwL2xiVVExZ0FBTGhNZDgyMjJHMUMw?=
- =?utf-8?B?eGdzK04wdFFVcW9mRkNKR2lBYUxTM0hUaG9TcW45bllYd0hNbSt0Y2kydndz?=
- =?utf-8?B?WjVDNmRhTExwMkEyeHJIOXIzdWo4TElGUlFPV21ManJ5NW90NzluS3JweXR6?=
- =?utf-8?B?VXVobEhpTFNIQTFZOTgyQ1owaWVjZG95MjU5WDkvTFB4RlRmbVVMd2Y1YVpQ?=
- =?utf-8?B?bWR6cHZNOVo4dmJzeGVkVTZMV2dNM3dPcDdwQnk2SFc1MnpIRTRmejZOWllM?=
- =?utf-8?B?enN4ZTRsd2VBMXpwbUNqWlltbjdVc3Nhc21jeW5kUFVDMklTUU5uQkhpUDE0?=
- =?utf-8?B?dDNLNjhWWTFSUURXNzhpUlZGZDBEOWpSaGFncHFpVkZWR3dZZVZWK3duckxk?=
- =?utf-8?B?MVVhZmQ3Si9ZR0RGR0hHRkxrYVVEQzJVNVhnNndCLzFZV3A4VkZSdUlXNXR4?=
- =?utf-8?B?cWZDc1h2b0xPOTg3elBheDF5NXJuZDV4dTUyYmNFcFlyRDhIaUg2Tk1wZjZ6?=
- =?utf-8?B?Q1ZKZFlQY04rR2J2SW1JQkltYm04b0pvKzBwejNvVUtZUjNqVkZ1ZE5IdmVa?=
- =?utf-8?B?SjBXZ0Z0bGZFTmU0TzJCT1dsY3NBYzQwQTByMjA3VFZJNUhYNXhqOFJnc28w?=
- =?utf-8?B?SVRtMnBKclRnZjNtNVVFM3N4Z1JOR2NVeVAyMHpob2ZwU2R2RXI1TFhhWGlT?=
- =?utf-8?B?cytrSi9uajdMZ2Rwb2QyYjhkeTlnZUFMY2lKTWppN0xIMFNtN0pNM1lNL2J4?=
- =?utf-8?B?YVZwd2xqV3dJaG1na1NaME0vQkNkNEdZbFhDMGcwQnVSYlFBQnJYRDJITlZq?=
- =?utf-8?B?NWozWEFac011QS9sUmpZVWhrRVkrdjgvVXFSbW5zVEk0Q3ZTVmord0dMRE5D?=
- =?utf-8?B?cURIT2c2dTdZMEs0V2VHVGhpNm1nckhoME9MbjVNRGg0bHVLdWIrSmthVEFj?=
- =?utf-8?B?QjFYVG5HaFhQOTFFVDVIVXdvUDgxcHRvZzR3UkpTdmFncnErVWNUaEdHaExC?=
- =?utf-8?B?RDZ6S2lpZnVGc0IzbDJVRTMrQ2pSTVloaHVLK0NQY2ZQUjJsdURrZ3pRd3Nk?=
- =?utf-8?B?RkVsWVlWL0dWaDNCTm82VHB3enlLTzF2ZjhwWlFoRXlNdDBrbkVnb0lUSVFy?=
- =?utf-8?B?OHZhMThRejk0NUtBd0NkbEdsNWhzbnUwekNsU3JpOEI5aVVndE8yTGw0U1lu?=
- =?utf-8?B?ZGg2RnhMa0h0WXJJT1JibkJ0TkJaeERkMVJ1WEJNVHMrd2ZUYzdXYWhuQXc3?=
- =?utf-8?B?MGFXbXNXazRvWmFoMUF6QThnNENadnBrMkJUMllEam8vTmR0L0ZPQVR4Tm04?=
- =?utf-8?B?QUJ3c2NOVDRWR2NlVWpUbWIrRFZIMmMrcVEwakFtckNHUVlaZWJuTmV1SDE4?=
- =?utf-8?B?K0haaE9wUVB4a0N2eXNtVWtYN0Yxbk9LWE1nTmJtZkV4dUgyblR3d2cwSll4?=
- =?utf-8?B?bmw0dWpCTk5UODNSS1NLbkpQL1E0UFRRaXV5NHAvZG1MeTk3THdrRzJ2eUVz?=
- =?utf-8?B?aG1HQVo5WVdaRzQ0RDFNUHBvdmVvNjFKWGpNUExxU2Mrd1doOFFCQVNWUzZv?=
- =?utf-8?B?WHVOc0phZEpUVlNoRkpPV0YxTGJ3dkhyU0dUMnFnOGNzWFlvMDFKdDJqdzM1?=
- =?utf-8?B?L1dKaktjSnpJRFpJWVEvWks0Y0V0ekpndXlwQUVjd21VNTZUOUwvWEVhQ29Y?=
- =?utf-8?B?SHo1dVhFMFlPNkw4YlhkY0xKQmczclVrdzZEWjcwcm43NUtsb2xPakVaYlN4?=
- =?utf-8?B?cVZ4RXNKMWV1OUlvVkE5YnhVaENnSm5mM05uanlJRERxOFZUVk9UK0ZndkxM?=
- =?utf-8?B?UUN3VGhEbVR0Z1UraXJORlFlaWl4TTgyWFo4Ny9ETzRLYjRVTFhQTHp5QTlp?=
- =?utf-8?B?RlR2N3kyQXFZK3ZDYVV3OE1qY0VYaDBMVURCTGFDZUl3dEZJaWNBQ21NbXlM?=
- =?utf-8?Q?KLOinc5kw8TrirLpQePGKopT5?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fcd45d49-4762-4473-1b32-08de3d244f17
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB9194.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Dec 2025 04:25:29.2051
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(376014)(36860700013)(82310400026)(1800799024);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Dec 2025 04:26:25.4412
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 5uiCyYsFsLW8W2WznTpbKvGvjHvxuAbidCHAkJ3PLVOLFQKtKWOtsMHs1UCGYPkMez3Bg8y3VcmLm/N8ud2JYA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4120
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8317f09f-8875-436b-3a6a-08de3d2470f0
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CH1PEPF0000AD7C.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB9249
 
+From: Jason Gunthorpe <jgg@nvidia.com>
 
+C_BAD_STE was observed when updating nested STE from an S1-bypass mode to
+an S1DSS-bypass mode. As both modes enabled S2, the used bit is slightly
+different than the normal S1-bypass and S1DSS-bypass modes. As a result,
+fields like MEV and EATS in S2's used list marked the word1 as a critical
+word that requested a STE.V=0. This breaks a hitless update.
 
-On 17/12/25 03:13, Wei Wang wrote:
-> Before requesting the IOMMU driver to map an IOVA to a physical address,
-> set the IOMMU_MMIO flag in dma->prot when the physical address corresponds
-> to MMIO. This allows the IOMMU driver to handle MMIO mappings specially.
-> For example, on AMD CPUs with SME enabled, the IOMMU driver avoids setting
-> the C-bit if iommu_map() is called with IOMMU_MMIO set in prot. This
-> prevents issues with PCIe P2P communication when IOVA is used.
-> 
-> Signed-off-by: Wei Wang <wei.w.wang@hotmail.com>
-> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-> ---
->   drivers/vfio/vfio_iommu_type1.c | 14 +++++++++-----
->   1 file changed, 9 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-> index 5167bec14e36..dfe53da53b80 100644
-> --- a/drivers/vfio/vfio_iommu_type1.c
-> +++ b/drivers/vfio/vfio_iommu_type1.c
-> @@ -583,7 +583,7 @@ static int follow_fault_pfn(struct vm_area_struct *vma, struct mm_struct *mm,
->    * returned initial pfn are provided; subsequent pfns are contiguous.
->    */
->   static long vaddr_get_pfns(struct mm_struct *mm, unsigned long vaddr,
-> -			   unsigned long npages, int prot, unsigned long *pfn,
-> +			   unsigned long npages, int *prot, unsigned long *pfn,
->   			   struct vfio_batch *batch)
->   {
->   	unsigned long pin_pages = min_t(unsigned long, npages, batch->capacity);
-> @@ -591,7 +591,7 @@ static long vaddr_get_pfns(struct mm_struct *mm, unsigned long vaddr,
->   	unsigned int flags = 0;
->   	long ret;
->   
-> -	if (prot & IOMMU_WRITE)
-> +	if (*prot & IOMMU_WRITE)
->   		flags |= FOLL_WRITE;
->   
->   	mmap_read_lock(mm);
-> @@ -601,6 +601,7 @@ static long vaddr_get_pfns(struct mm_struct *mm, unsigned long vaddr,
->   		*pfn = page_to_pfn(batch->pages[0]);
->   		batch->size = ret;
->   		batch->offset = 0;
-> +		*prot &= ~IOMMU_MMIO;
+However, both MEV and EATS aren't critical in terms of STE update. One
+controls the merge of the events and the other controls the ATS that is
+managed by the driver at the same time via pci_enable_ats().
 
+Add an arm_smmu_get_ste_update_safe() to allow STE update algorithm to
+relax those fields, avoiding the STE update breakages.
 
-Do you expect IOMMU_MMIO here, why?
+After this change, entry_set has no caller checking its return value, so
+change it to void.
 
-Then, what if this vaddr_get_pfns() called with vaddr which is some RAM immediately followed by MMIO? The whole vfio_dma descriptor will get IOMMU_MMIO, hardly desirable (also quite unlikely though).
+Note that this change is required by both MEV and EATS fields, which were
+introduced in different kernel versions. So add get_update_safe() first.
+MEV and EATS will be added to arm_smmu_get_ste_update_safe() separately.
 
-Thanks,
+Fixes: 1e8be08d1c91 ("iommu/arm-smmu-v3: Support IOMMU_DOMAIN_NESTED")
+Cc: stable@vger.kernel.org
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Reviewed-by: Shuai Xue <xueshuai@linux.alibaba.com>
+Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  2 ++
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c  | 18 ++++++++++---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 27 ++++++++++++++-----
+ 3 files changed, 37 insertions(+), 10 deletions(-)
 
-
->   		goto done;
->   	} else if (!ret) {
->   		ret = -EFAULT;
-> @@ -615,7 +616,7 @@ static long vaddr_get_pfns(struct mm_struct *mm, unsigned long vaddr,
->   		unsigned long addr_mask;
->   
->   		ret = follow_fault_pfn(vma, mm, vaddr, pfn, &addr_mask,
-> -				       prot & IOMMU_WRITE);
-> +				       *prot & IOMMU_WRITE);
->   		if (ret == -EAGAIN)
->   			goto retry;
->   
-> @@ -623,6 +624,9 @@ static long vaddr_get_pfns(struct mm_struct *mm, unsigned long vaddr,
->   			if (is_invalid_reserved_pfn(*pfn)) {
->   				unsigned long epfn;
->   
-> +				if (vma->vm_flags & VM_IO)
-> +					*prot |= IOMMU_MMIO;
-> +
->   				epfn = (*pfn | (~addr_mask >> PAGE_SHIFT)) + 1;
->   				ret = min_t(long, npages, epfn - *pfn);
->   			} else {
-> @@ -709,7 +713,7 @@ static long vfio_pin_pages_remote(struct vfio_dma *dma, unsigned long vaddr,
->   			cond_resched();
->   
->   			/* Empty batch, so refill it. */
-> -			ret = vaddr_get_pfns(mm, vaddr, npage, dma->prot,
-> +			ret = vaddr_get_pfns(mm, vaddr, npage, &dma->prot,
->   					     &pfn, batch);
->   			if (ret < 0)
->   				goto unpin_out;
-> @@ -850,7 +854,7 @@ static int vfio_pin_page_external(struct vfio_dma *dma, unsigned long vaddr,
->   
->   	vfio_batch_init_single(&batch);
->   
-> -	ret = vaddr_get_pfns(mm, vaddr, 1, dma->prot, pfn_base, &batch);
-> +	ret = vaddr_get_pfns(mm, vaddr, 1, &dma->prot, pfn_base, &batch);
->   	if (ret != 1)
->   		goto out;
->   
-
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+index ae23aacc3840..a6c976fa9df2 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+@@ -900,6 +900,7 @@ struct arm_smmu_entry_writer {
+ 
+ struct arm_smmu_entry_writer_ops {
+ 	void (*get_used)(const __le64 *entry, __le64 *used);
++	void (*get_update_safe)(__le64 *safe_bits);
+ 	void (*sync)(struct arm_smmu_entry_writer *writer);
+ };
+ 
+@@ -911,6 +912,7 @@ void arm_smmu_make_s2_domain_ste(struct arm_smmu_ste *target,
+ 
+ #if IS_ENABLED(CONFIG_KUNIT)
+ void arm_smmu_get_ste_used(const __le64 *ent, __le64 *used_bits);
++void arm_smmu_get_ste_update_safe(__le64 *safe_bits);
+ void arm_smmu_write_entry(struct arm_smmu_entry_writer *writer, __le64 *cur,
+ 			  const __le64 *target);
+ void arm_smmu_get_cd_used(const __le64 *ent, __le64 *used_bits);
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c
+index d2671bfd3798..5db14718fdd6 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c
+@@ -38,13 +38,16 @@ enum arm_smmu_test_master_feat {
+ static bool arm_smmu_entry_differs_in_used_bits(const __le64 *entry,
+ 						const __le64 *used_bits,
+ 						const __le64 *target,
++						const __le64 *safe,
+ 						unsigned int length)
+ {
+ 	bool differs = false;
+ 	unsigned int i;
+ 
+ 	for (i = 0; i < length; i++) {
+-		if ((entry[i] & used_bits[i]) != target[i])
++		__le64 used = used_bits[i] & ~safe[i];
++
++		if ((entry[i] & used) != (target[i] & used))
+ 			differs = true;
+ 	}
+ 	return differs;
+@@ -56,12 +59,17 @@ arm_smmu_test_writer_record_syncs(struct arm_smmu_entry_writer *writer)
+ 	struct arm_smmu_test_writer *test_writer =
+ 		container_of(writer, struct arm_smmu_test_writer, writer);
+ 	__le64 *entry_used_bits;
++	__le64 *safe;
+ 
+ 	entry_used_bits = kunit_kzalloc(
+ 		test_writer->test, sizeof(*entry_used_bits) * NUM_ENTRY_QWORDS,
+ 		GFP_KERNEL);
+ 	KUNIT_ASSERT_NOT_NULL(test_writer->test, entry_used_bits);
+ 
++	safe = kunit_kzalloc(test_writer->test,
++			     sizeof(*safe) * NUM_ENTRY_QWORDS, GFP_KERNEL);
++	KUNIT_ASSERT_NOT_NULL(test_writer->test, safe);
++
+ 	pr_debug("STE value is now set to: ");
+ 	print_hex_dump_debug("    ", DUMP_PREFIX_NONE, 16, 8,
+ 			     test_writer->entry,
+@@ -79,14 +87,17 @@ arm_smmu_test_writer_record_syncs(struct arm_smmu_entry_writer *writer)
+ 		 * configuration.
+ 		 */
+ 		writer->ops->get_used(test_writer->entry, entry_used_bits);
++		if (writer->ops->get_update_safe)
++			writer->ops->get_update_safe(safe);
+ 		KUNIT_EXPECT_FALSE(
+ 			test_writer->test,
+ 			arm_smmu_entry_differs_in_used_bits(
+ 				test_writer->entry, entry_used_bits,
+-				test_writer->init_entry, NUM_ENTRY_QWORDS) &&
++				test_writer->init_entry, safe,
++				NUM_ENTRY_QWORDS) &&
+ 				arm_smmu_entry_differs_in_used_bits(
+ 					test_writer->entry, entry_used_bits,
+-					test_writer->target_entry,
++					test_writer->target_entry, safe,
+ 					NUM_ENTRY_QWORDS));
+ 	}
+ }
+@@ -106,6 +117,7 @@ arm_smmu_v3_test_debug_print_used_bits(struct arm_smmu_entry_writer *writer,
+ static const struct arm_smmu_entry_writer_ops test_ste_ops = {
+ 	.sync = arm_smmu_test_writer_record_syncs,
+ 	.get_used = arm_smmu_get_ste_used,
++	.get_update_safe = arm_smmu_get_ste_update_safe,
+ };
+ 
+ static const struct arm_smmu_entry_writer_ops test_cd_ops = {
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index d16d35c78c06..8dbf4ad5b51e 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -1082,6 +1082,12 @@ void arm_smmu_get_ste_used(const __le64 *ent, __le64 *used_bits)
+ }
+ EXPORT_SYMBOL_IF_KUNIT(arm_smmu_get_ste_used);
+ 
++VISIBLE_IF_KUNIT
++void arm_smmu_get_ste_update_safe(__le64 *safe_bits)
++{
++}
++EXPORT_SYMBOL_IF_KUNIT(arm_smmu_get_ste_update_safe);
++
+ /*
+  * Figure out if we can do a hitless update of entry to become target. Returns a
+  * bit mask where 1 indicates that qword needs to be set disruptively.
+@@ -1094,13 +1100,22 @@ static u8 arm_smmu_entry_qword_diff(struct arm_smmu_entry_writer *writer,
+ {
+ 	__le64 target_used[NUM_ENTRY_QWORDS] = {};
+ 	__le64 cur_used[NUM_ENTRY_QWORDS] = {};
++	__le64 safe[NUM_ENTRY_QWORDS] = {};
+ 	u8 used_qword_diff = 0;
+ 	unsigned int i;
+ 
+ 	writer->ops->get_used(entry, cur_used);
+ 	writer->ops->get_used(target, target_used);
++	if (writer->ops->get_update_safe)
++		writer->ops->get_update_safe(safe);
+ 
+ 	for (i = 0; i != NUM_ENTRY_QWORDS; i++) {
++		/*
++		 * Safe is only used for bits that are used by both entries,
++		 * otherwise it is sequenced according to the unused entry.
++		 */
++		safe[i] &= target_used[i] & cur_used[i];
++
+ 		/*
+ 		 * Check that masks are up to date, the make functions are not
+ 		 * allowed to set a bit to 1 if the used function doesn't say it
+@@ -1109,6 +1124,7 @@ static u8 arm_smmu_entry_qword_diff(struct arm_smmu_entry_writer *writer,
+ 		WARN_ON_ONCE(target[i] & ~target_used[i]);
+ 
+ 		/* Bits can change because they are not currently being used */
++		cur_used[i] &= ~safe[i];
+ 		unused_update[i] = (entry[i] & cur_used[i]) |
+ 				   (target[i] & ~cur_used[i]);
+ 		/*
+@@ -1121,7 +1137,7 @@ static u8 arm_smmu_entry_qword_diff(struct arm_smmu_entry_writer *writer,
+ 	return used_qword_diff;
+ }
+ 
+-static bool entry_set(struct arm_smmu_entry_writer *writer, __le64 *entry,
++static void entry_set(struct arm_smmu_entry_writer *writer, __le64 *entry,
+ 		      const __le64 *target, unsigned int start,
+ 		      unsigned int len)
+ {
+@@ -1137,7 +1153,6 @@ static bool entry_set(struct arm_smmu_entry_writer *writer, __le64 *entry,
+ 
+ 	if (changed)
+ 		writer->ops->sync(writer);
+-	return changed;
+ }
+ 
+ /*
+@@ -1207,12 +1222,9 @@ void arm_smmu_write_entry(struct arm_smmu_entry_writer *writer, __le64 *entry,
+ 		entry_set(writer, entry, target, 0, 1);
+ 	} else {
+ 		/*
+-		 * No inuse bit changed. Sanity check that all unused bits are 0
+-		 * in the entry. The target was already sanity checked by
+-		 * compute_qword_diff().
++		 * No inuse bit changed, though safe bits may have changed.
+ 		 */
+-		WARN_ON_ONCE(
+-			entry_set(writer, entry, target, 0, NUM_ENTRY_QWORDS));
++		entry_set(writer, entry, target, 0, NUM_ENTRY_QWORDS);
+ 	}
+ }
+ EXPORT_SYMBOL_IF_KUNIT(arm_smmu_write_entry);
+@@ -1543,6 +1555,7 @@ static void arm_smmu_ste_writer_sync_entry(struct arm_smmu_entry_writer *writer)
+ static const struct arm_smmu_entry_writer_ops arm_smmu_ste_writer_ops = {
+ 	.sync = arm_smmu_ste_writer_sync_entry,
+ 	.get_used = arm_smmu_get_ste_used,
++	.get_update_safe = arm_smmu_get_ste_update_safe,
+ };
+ 
+ static void arm_smmu_write_ste(struct arm_smmu_master *master, u32 sid,
 -- 
-Alexey
+2.43.0
 
