@@ -1,68 +1,69 @@
-Received: from mail-qk1-f174.google.com (mail-qk1-f174.google.com [209.85.222.174])
+Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 566CA385CD3
-	for <iommu@lists.linux.dev>; Wed, 17 Dec 2025 13:59:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42B6B34C9AF
+	for <iommu@lists.linux.dev>; Wed, 17 Dec 2025 14:00:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765979967; cv=none; b=aobOJEATNCzU5Qqf6rSs66iXXzCjGL42SbKp1jL3QHnNyYQHk6ePoX3AizxTF0uKRfGzxQlhlfk1kmMW/V68cyNtOr5W9RY2rX95CgK0N9eGSJX1CEFNdpmFdTUrztnU6liGGXBdT1F+CdS7kooEeTy+GhZsRk6zXtOzRnewoNY=
+	t=1765980051; cv=none; b=CgHlqhZCERpuzVQS6qHt505HmoDXluiWPPWIN/q5FxxWo7C186wDxiAMXvlRRPyP8arCy8WQLqLjX7g1utLIghFP6neDN5O3JLUNYt7DttHZVMUkZ8P76+jOLzO6hfFO3Cv70TFxjthSDi6rmfU/WODuiVQ6IUfpWNtA5dQHj14=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765979967; c=relaxed/simple;
-	bh=BpihFFLfYFP7NquDRCAtsdSMpFO21CfRjAdn8MUNOXM=;
+	s=arc-20240116; t=1765980051; c=relaxed/simple;
+	bh=Wa1BsId9QPfGeDLGHm5Ds6KJBFuQXBj9U+PxzlddFRk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=hBR39ruRyS+Vha1USAlmbiuXBLvCEiJsAD1zNPKMnL7cDIL2Zx3YWfkseMSwvXHAA5gLuMPmNR9aPa7XeOsXPvZOl+L0EHmnRPN4WrZuD7JQcvm8EY9C8RCOMmu2+T2Yainw12Uu1X2x0IU7McFO96BvNu9gVkpv5lsxBtyr654=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=DheoynTu; arc=none smtp.client-ip=209.85.222.174
+	 Content-Type:Content-Disposition:In-Reply-To; b=hya7hq8eL2Um/Zneay2msCd6X35f9w3lfC0p1BhRq7NZtGlyKRGexxvVMlWOlpR9PbNMHYx9cQzFeMf/gCR6C0SMRmFtYlSwNjBvsbVD3pj6K2DQQvUu+n4XOB/i5sPQ0Fgf19nst227Z55mtaoebUbjCaA71JGh2x9Njhwe7VM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=e98xMo8D; arc=none smtp.client-ip=209.85.160.178
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="DheoynTu"
-Received: by mail-qk1-f174.google.com with SMTP id af79cd13be357-8b2ed01b95dso594346985a.0
-        for <iommu@lists.linux.dev>; Wed, 17 Dec 2025 05:59:25 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="e98xMo8D"
+Received: by mail-qt1-f178.google.com with SMTP id d75a77b69052e-4edb6e678ddso80199761cf.2
+        for <iommu@lists.linux.dev>; Wed, 17 Dec 2025 06:00:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1765979964; x=1766584764; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=qNTY0Sqhk7+o+eguXb21G06qwMJTDsQYPt8jfcBPUac=;
-        b=DheoynTujK3c3QV/xF4tLEdv9rwVlLWDELQeAoNDyvxpUeXf0dpudOmTBXUgRbBv6P
-         zlHIjGpMnpYhpRddIQ+RB/1pUE494aXQ1rRLoVlO1BSVz5empR3cfXmrigKLK666MzaA
-         yA2dfjG785uG5rgq8gniP0UtglUPZpcXEw7MpYaSWnt/K2Dx0d7mhgce88jxCKLjxqNr
-         wUbq8su7KDA8dXtEN5NJ0VmPPRY+gS1ZdpxCZcVp3N92VcN4Tti69xRrCDxg4zwh7fQo
-         EGzIz1W8jax2KxeTf8QDSFONhLLF3snbycUfCslikpRjAbgqrZTEnRjGRVSB/8a3i728
-         b0kg==
+        d=ziepe.ca; s=google; t=1765980049; x=1766584849; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=mNOaMPGrnsuzc/K3PgD8W+kjT2zih8ixOp0jwu7uQa8=;
+        b=e98xMo8DAhWZ6/+/Qi6uyV2yVyOOtnNl/mzZ4Dqj3M4nYhe9W6/GPOEuFNLpgrk19/
+         IWRJ/UC51OPz+6nNb7Z+1GkJxJfkUCO0My9gRd2DG5+lktSkGs8JwpYLMDzyRtNDXdJD
+         xauwTSZcdmIbeEE06hH4Z4fWnjGwfFMvzdvPeGrldqAUubcDmMngy/ZvSRwulL/NzvQj
+         kSBuw2cebg68ulJno1XvF8goBU1w/uX7rtg3yz5NU6aG4gCxItvTX/ng1R04uCOVjIII
+         pGpbZBeyOFHiN1vNP28VCoaYjq+K8ug16d7qxUtXtW/iH5IDKkOUP/bCMIgw6yFXweES
+         OGKA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1765979964; x=1766584764;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=qNTY0Sqhk7+o+eguXb21G06qwMJTDsQYPt8jfcBPUac=;
-        b=d12XMIZ+1YjtxATGGNkiNmWnG/O82YSp8bS23ChmxFx48rlP2xCXUSa3rG2MENwak6
-         M0CWsgiLXtsmwigerRGQeAjH4iPLWBVH9VVdU9hpWSwa2btmgNlIIL49oc/dtHasrqLv
-         Mb+ox77cNV32ptGbwCEVNGwPgOkesR7Sml1nn2j509jcZcCQOVY4S7tIR2mbysBNuXoS
-         ybIQwS1fpG1RHbnEFv8OFezvlobe6wGQw79tBfPc/wwQnLVx+Xykj0WWYPSsxrARpzai
-         Q1X+6LVgEr1hm1k/huj3JpgFrxSnTxT1CucJkliUAMEXhEGoHxwHNMO4tRO9Rq1rJ96O
-         7SOw==
-X-Forwarded-Encrypted: i=1; AJvYcCXTLq6V9bMt0Egw65gcGjxPbDBcTQkopqb3AXTxxTSyr8zxbyw6edZsOgAvoqnKCQSG3HCKpQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxexNL6IDpRClyarwXEpWjr9ztxrGcx0ZeF2LTyGhOViWpEYTTI
-	9+0OoQlQuHvp9s8Nd5EbvFksAQrAKxgTQpdL8shIyKfVn5fOkaXsTi5n5sMwVTC/U+I=
-X-Gm-Gg: AY/fxX7TjzPAUV/WJonfoNhHx9s8f9jkEdhssBC6kBXExmGL3CVIfUIMjcnzjQPCSA2
-	Qq2g++Z4YHbPrHuJE4bxA4XhLn2l4vQORVT689Ar0B+wYQPGM0kOag7wEsoTMaZzAUMKvRxznSt
-	lvYjFfXwXnkac07zCA1mcJLwtpFfvDyQyJ6MC17D6KQbw0N+EPUg1hSHbofw5W93Foi97Kp+OA3
-	n4/hnv2vpKMfxv/iCKSmpCAJPFxB8cTNwxHvIfvhqBCpCp8zztqTHTncNAl6Jwu3m1MBK/8w6Lq
-	KmfAgJ8eYI0jLsTP+Lp3KLTmDKtCwF0+qC3goFxRJBppr2+xDtbfD/Svdvo+eUPZ3sK91Mwqe9r
-	ORNqF3JcENmrMSz8OXaTY4mHdnWLyXZfquEUqPbcZKfh7mrlP7YTUtaxwOB7tVPcVRkfJBc16rl
-	mkUXv150Nv5ziySCpIrcc3H8zJjyYIW6e7U2FWbsART1wCNkdwnW1I8QDWkYoKrmIWZk4=
-X-Google-Smtp-Source: AGHT+IExCGpmH3xSn76tDpf9mlwCNxEI0+dX+XnOw8fqnvLy+nODc5UF85vOKaQi2smq9F8P/d+5hQ==
-X-Received: by 2002:a05:620a:7108:b0:883:9b33:f6b6 with SMTP id af79cd13be357-8bb3a39bb23mr2288717785a.84.1765979964213;
-        Wed, 17 Dec 2025 05:59:24 -0800 (PST)
+        d=1e100.net; s=20230601; t=1765980049; x=1766584849;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=mNOaMPGrnsuzc/K3PgD8W+kjT2zih8ixOp0jwu7uQa8=;
+        b=VCAvQN14iu2jWnvBadVLPmnJ0VtPmuDZTdy7TObqLj5DYdNQgcs04u6DMJ4XfQ3SpG
+         rRivTYhISV82T09aRMvIfXYI9EDUQ5kh+3E/TsDJ3G5aVXOsDMFmeB84NkMhsg4ZNJ+m
+         ps+RBBegxyS8TVOSHED6XT23idqVix4kOCJeCJbHnpcNbXgoXGLdS6kDW6gTp/DAdYXd
+         xAMKIvt6lO5JNSolrBYsZDJugvka4mtwXL9SuTykggzPI7sQcz6poB59suyIZcWca3RJ
+         XUlBuadaBQWXi40yI7IOz7ZMseQbryg+NtJ2Sdv1M9rAQ1hxfpRKOTGYCmnPDy8Gj0fr
+         QOQg==
+X-Forwarded-Encrypted: i=1; AJvYcCVFQHUlITuxTGKlv1VfIyFRuryD+cDulRee/tzoZY0Azj9FXSzSm+BxRwQSJr1hPK6IKUfc3Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy5N3DukK4LYobSQWJhYZr6B54qpjlOsbMa1/jdQKUjvnDRSCZ9
+	+UIDkm3y75J61DDnnT8i0Zjv+DIzjWgKbZHD+ac1WwJhvqLa72vZJ8YpO9np+/IrpS0=
+X-Gm-Gg: AY/fxX4VJaO4m4T5S3uE5UkUgkm6d2IlY6MGiPUe8RbpVQBBY5yx/qs+rJAIbDKvdqo
+	FwdxspGpvZ27BMu1kneZbqM258ElJdJS8GuUuR2cWvur7lIX3pc5y5K7gFsYP01spsLNS9QWl9A
+	8sAt7m9l414ZDOHXK4/SzNjd7G+zPZcndi+VHfFyBrRmxyU8H88YFB1hRAQEbYoVTQ0nWNrwsnc
+	tnsaINE32K9f2+LzYbvoKeIlUJ2QeHDX7upNu7WN1skwOlCggDB6eDWD8A/S4lNqiKxP9yeCbVQ
+	+FMHoXsbJ67gTIYKpV3YfsneRikVIh/WxJzTXHOugLabjgRr6iDTuuWa51nYpbKlEr1FAbr2/O4
+	EB8DlRTHzSsYZuu0jrNiVN4draqBTt6ZEPdBF6eEMIcv++jUw0kWySXaG6Y/dax5aG5iZvJixg4
+	hXkLgDkVfLpHm8UesUee2R5o8eEKsUEat3xTY67o6hUmSx5DpGeLpj/1y1
+X-Google-Smtp-Source: AGHT+IEn7RK/pIYtYXrPbKMGVYlcUHkadYn8QaTKBX4Kd2HwfE2NzoNCX8QU7VpeXmpS/UZ6Pqr5SA==
+X-Received: by 2002:ac8:7515:0:b0:4f3:4c1a:4c49 with SMTP id d75a77b69052e-4f34c1a5041mr45692141cf.48.1765980048007;
+        Wed, 17 Dec 2025 06:00:48 -0800 (PST)
 Received: from ziepe.ca (hlfxns017vw-47-55-120-4.dhcp-dynamic.fibreop.ns.bellaliant.net. [47.55.120.4])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-8be31b559cdsm418416585a.30.2025.12.17.05.59.23
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-889a85eaf02sm95103076d6.40.2025.12.17.06.00.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Dec 2025 05:59:23 -0800 (PST)
+        Wed, 17 Dec 2025 06:00:47 -0800 (PST)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1vVs3m-00000000fU1-385b;
-	Wed, 17 Dec 2025 09:59:22 -0400
-Date: Wed, 17 Dec 2025 09:59:22 -0400
+	id 1vVs58-00000000fUk-3YUQ;
+	Wed, 17 Dec 2025 10:00:46 -0400
+Date: Wed, 17 Dec 2025 10:00:46 -0400
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Mostafa Saleh <smostafa@google.com>
 Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
@@ -72,43 +73,49 @@ Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
 	yuzenghui@huawei.com, joro@8bytes.org, jean-philippe@linaro.org,
 	praan@google.com, danielmentz@google.com, mark.rutland@arm.com,
 	qperret@google.com, tabba@google.com
-Subject: Re: [PATCH v5 07/27] iommu/arm-smmu-v3: Move IDR parsing to common
- functions
-Message-ID: <20251217135922.GE31492@ziepe.ca>
+Subject: Re: [PATCH v5 14/27] iommu/arm-smmu-v3: Support probing KVM emulated
+ devices
+Message-ID: <20251217140046.GF31492@ziepe.ca>
 References: <20251117184815.1027271-1-smostafa@google.com>
- <20251117184815.1027271-8-smostafa@google.com>
- <20251128164816.GC812105@ziepe.ca>
- <aTw31-mh8z81yi4Y@google.com>
+ <20251117184815.1027271-15-smostafa@google.com>
+ <20251128165616.GD812105@ziepe.ca>
+ <aTw6afum4eqr5_e7@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <aTw31-mh8z81yi4Y@google.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <aTw6afum4eqr5_e7@google.com>
 
-On Fri, Dec 12, 2025 at 03:42:15PM +0000, Mostafa Saleh wrote:
-> On Fri, Nov 28, 2025 at 12:48:16PM -0400, Jason Gunthorpe wrote:
-> > On Mon, Nov 17, 2025 at 06:47:54PM +0000, Mostafa Saleh wrote:
-> > > Move parsing of IDRs to functions so that it can be re-used
-> > > from the hypervisor.
-> > > 
-> > > Signed-off-by: Mostafa Saleh <smostafa@google.com>
-> > > ---
-> > >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 112 +++-----------------
-> > >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h | 111 +++++++++++++++++++
-> > >  2 files changed, 126 insertions(+), 97 deletions(-)
-> > 
-> > I don't see that this slow path stuff needs to be inlined?
-> > 
-> > +10 to my prior remark to not dump all the huge inlines in the main
-> > header.
+On Fri, Dec 12, 2025 at 03:53:13PM +0000, Mostafa Saleh wrote:
+> > It is OK I guess, I wouldn't insist you change it, but I think it is
+> > kind of gross. Registering the iommu driver against the platform
+> > device instead of the aux is pretty ugly and denies userspace the
+> > ability to see that the hypervisor is sitting in there through the
+> > sysfs topology.
 > 
-> They are inline as they are defined in the header file, otherwise they
-> get defined multiple times.
+> Yes, that’s why I was wondering if it’s better to keep this as a platform
+> driver and create the aux devices for the parent(KVM) but that was really
+> complicated to handle the probe ordering.
 
-Put them in a shared C file
+That sounds worse and inverts the required probe ordering.
+
+Attach it to the aux device :\
+
+> > Not sure why the commentary about built-in though, what does that have
+> > to do with anything? If the aux driver is not built in then it will
+> > just module load later and everything should be fine?
+> 
+> As at the moment the KVM driver doesn’t use drvdata(nor any device
+> resources) and the main driver(aux) does, but if that was a module, we
+> can’t know which version does what (if that changes in the future,
+> although unlikely).
+
+Kernel is monolithic, you don't need to worry about people doing silly
+games with modules.
 
 Jason
