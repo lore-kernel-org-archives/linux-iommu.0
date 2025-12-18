@@ -1,144 +1,185 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
+Received: from mail-wm1-f65.google.com (mail-wm1-f65.google.com [209.85.128.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E25DA86323
-	for <iommu@lists.linux.dev>; Thu, 18 Dec 2025 16:42:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B41C12D7DF1
+	for <iommu@lists.linux.dev>; Thu, 18 Dec 2025 16:47:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.65
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766076167; cv=none; b=JONbjS8A/ykYGkSx6k4lUdZ9Lb/wbJVU6SNQqwduH6v40/2NvLMgktJiHYz/WgpQFV6hA3+DSZD3r0/hoW+Lpc5GCmAInQukUBFvM7Jj8coPtaJ5Nj5Fx49JmRpi1jO0TQPmWNKxD7ztAzoMuRico7HCc/6jzqJT7evp+rrFotI=
+	t=1766076466; cv=none; b=pPnj0tZGbFIwKWtMMvma0QZwuuMHiJQHa81KjSiyKYk9CtWlRokiX2Au8v7keywu0Lv6fJET0Wpr0KTgo/H7RVMsa81CD9l6btrtAvO5L6xlDZnCwPMKwuDDUOrUMsX4oV9VRcTJJDOSChk7qzQPa5Ku0xTklSdcSQ5VAx/29oI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766076167; c=relaxed/simple;
-	bh=btvc2jktmF+7SAu2JcVFJ+v3fCICkZ0RXvPo9gzYvlc=;
+	s=arc-20240116; t=1766076466; c=relaxed/simple;
+	bh=gk+1cIVkTapO9VD0ARf7xDZpqBvkVnn702fQDxQmTCc=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=hBnCHGNNFU56YiPtfVCKYkQsW/SL6W35Gem0ZWB7aJXvkpEjYi12jvj90lzmHHcL99RtxWjKK6W8kL7oXSLHi2pOUNa0bAbVpkqV7JmQtjjZk/bpldxlhWnLuXagzRuenEKFwzgsRSRwKc5ueMD2rPcSedzvHSCGxaVmkvIZf9Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=bakc4y1C; arc=none smtp.client-ip=209.85.128.53
+	 Content-Type:Content-Disposition:In-Reply-To; b=bFa0gBACLfWpyIeMOQNeEf6ga2b2d9usGiIU+tViIUvHsYgxk7Kdr+k19xwgVDWyw+Vuc/zx0gjz0hGyiKJXhA3FRRWePnakxcQnBoWbS5cvuGvd53lZr10ddPw6Fn20fb0nTptciDuMRR4uqTV+G39epO53utJezWYf76Pj3GU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Uh7FdMaX; arc=none smtp.client-ip=209.85.128.65
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="bakc4y1C"
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-4779e2ac121so73465e9.1
-        for <iommu@lists.linux.dev>; Thu, 18 Dec 2025 08:42:45 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Uh7FdMaX"
+Received: by mail-wm1-f65.google.com with SMTP id 5b1f17b1804b1-477a1c8cc47so85495e9.0
+        for <iommu@lists.linux.dev>; Thu, 18 Dec 2025 08:47:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1766076164; x=1766680964; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=+IFgshQmWOBMUvxTwruPAcrC79l+n1VOqPFKCVMtLyY=;
-        b=bakc4y1Csim4WP+I31w5EnbUKGK5+gQkikq7z79p21VhnZjdoNHTzPRqBSQPiTGsKG
-         Nu9L3ZGQfuvIoAiz+RJKVHhAxii8f4awzssEJQAAtblxVqc6boAhiAGBEh1q3rySZXeV
-         NuTfE7+a/IufQ+oZVz8D0hMvdSnFFlVf2aPzb3EAJc1P9u43Z0tJyPjAFLNfIynpAshx
-         wl6LIdfFYpEgKf9/bmsV7ekBMV8L3T4wYdQ9RlQYrbilG/dZgkMbCp0BFW3Z31d0Gm3U
-         khPkwf19lOPtyX454G/B9zd3f5aOHBVnQaJRalBDPkajPhSOtrIH9mqwqp/yErSXOhUZ
-         nG4g==
+        d=google.com; s=20230601; t=1766076463; x=1766681263; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=71/t+zukONFmhteBzEJIyiLt6qukZUCn3lZ8Jl+QJWQ=;
+        b=Uh7FdMaXRhfYBbSOkIG9mhfOpOJ32ihxCTrkjhqg42GmZGqYCdHht2z14x3Hf9sHZ6
+         rv0RnmD+bbU7ESk1hmgUilpkL78WOojfYmY5HEHl4vV9ohKK07mqcrKdCyrOqB6lEpNr
+         la1aJvZsOsc6gjXSRiZSZl2SEfGGcPMcoGmaMT5f9JtC5sGZBZDBC2r3Gg5X1fie26bL
+         dIqRQRHFTFN796jMxs3+sb29jsH5P1g5n+Pb6aRrxjXpBPWMUJa3d88m30/h51K1DKBf
+         o15ofzpL9Mz1pY+7q7ApRK48o9xY2hbVbTvFG3ieUOJ2YKrC5hbMWVR/oTIbS6IX2F0u
+         lUUQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1766076164; x=1766680964;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=+IFgshQmWOBMUvxTwruPAcrC79l+n1VOqPFKCVMtLyY=;
-        b=BbWfPjng/EmSj0WGHyB3vAUjIS/hUq5+UJAJECNFUb0P8fp7D6X21IBjqeh1EkIJq0
-         460kxlygYPtXGsW1mRU1PDW989HFDVomNsKp7CPZDElsQbxUwYZwU2OyiCWVzPKK+0QG
-         s03BnF5F/x/pkCW6aCC7Y7Capt7mqi5ZON5F9Bf+1uKvhCNsdOC/1+oU3XGj125/OueQ
-         DhhAXCvm06lv9KUCv3q+ufUkYXnV7O2tekosnHzp00SezekG5Kw3eUvUczbbddJQWmnY
-         6Kmg1d4s2jSxVQ+cP6G5+XD3D/r7/RJj7jcq7M24wZnwk9LB/EhcGAzZYOfaG3YAMUKN
-         d+gQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVrNvXdXcc9DMyzViv34qv36rduGV3sOsG7cq2/lbTmzvkEG3Ppj8yKByNujYWl0iPk9jgq4w==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxgnfhyQMkMTNVe6KgT3+tqx2RZwA2ViJqSSZ69/2cUEgTNSD5r
-	lEo73TC4mkbWhqwojN1vVz2zIg2an8PY0C4AazBwbM5gUUa0HUqBtmeVM6f1SHNUiw==
-X-Gm-Gg: AY/fxX6lO0EMS1RRJpoNIeOzYGaolEumNwSx5hkUSNTmGejrwg5DcPIxVrrOzDapabi
-	1VDoRLAYvZbLXk0uVvBZvs6ofaI+YDnAAi/yz/6wDJcE0HZtycxPMvfGFe8trkrx+lz3hTP3xOe
-	ydoXIYjxIMNuPozqTNw9mrN500sNFB7zHGbtJiE65ny0r1rpC/4f4Xdqw/FbEe4iDBqS3CAsYZS
-	8Lsu0oxf2PaX69s2J9CjsL9OhvJ+JE4DytykBzj+Ygh9yMdoy9c++rieOZe0lKQpEeXcjVakvYh
-	QWFAqCePE/iTkFJ4x8UWtqtw5H8OMSodPUlYWTp2F6M00C8T5WuAI8yNZVftkvtjUDra0NCzCE5
-	VA6/R8126eazTFKvqsxqVLMCC4EQFdzNxudcbFU8SJeQGfRnSQzOtAvWL1e6cyfInD7tP6rlQHm
-	b2tKKdwwpz/1drrFXL9pkEzX2WzQ8YYfFIAUJqcMIlCKjdBaYviUpwyvElSWVs8iY=
-X-Google-Smtp-Source: AGHT+IHHeIFx2+0vxOZyFtZ+vCiLpMtmd8EAFHGp/iCDxGY1OQ+0R1arRjVNTaj9Hz0mThE+88JGgw==
-X-Received: by 2002:a05:600c:574b:b0:47a:8a6d:f4f0 with SMTP id 5b1f17b1804b1-47bf6b69182mr447195e9.1.1766076164138;
-        Thu, 18 Dec 2025 08:42:44 -0800 (PST)
+        d=1e100.net; s=20230601; t=1766076463; x=1766681263;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=71/t+zukONFmhteBzEJIyiLt6qukZUCn3lZ8Jl+QJWQ=;
+        b=FK4UCxbufrTPZtzrxiOBQ8jHZHEyfy5zWfu+7Ngu/Z4F/d720gH7sY4ThocZnY05cn
+         2MoVxBAH4Cgcv6JnWnfEMRRVABWK+oqUKNinjUh4IC1GmYE4/wNv1vTlr0DvnPUeyjnW
+         yOdCa/YRZq0gMlQwDrTIZSZMqDQmZw2ckJCp8hMayfpO6S7NeGI5OLI7Mfytc6LyZmFm
+         KWyIel27oIIpxCvn6LZWV88XYOFj/W+Emi673/QUuctSNiBOezDRrbt+ZUPzmSrBjTXZ
+         NYO17c3rk+x5fbOWwUutL24SfvYdPJewr6yaDZIR0AiY7jdlGbfO4bs8NK6TFtOx9z4W
+         ZgqA==
+X-Forwarded-Encrypted: i=1; AJvYcCXZdjDP12hmATR1MHhE7ZFRFmkHKzDZ/1xjqtpA8adBY2eVTUcx7CKLKG3b5+pqXG6sKBygeQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxZKULj7AdZsCcEptPtQojrPIxXRFqzPFqrOHezptB8bckLy3DE
+	sWQb1aeDsB0kHzn0KOZ51QnY6J4Pm0RWV5ACdz2dEuZWKTFJf56maKbMD4oPBsHbAg==
+X-Gm-Gg: AY/fxX5IP3NPnyjSmlHEFIbK1GxRIfMM+GX/KYswK5Td83tF4o9YlvLYt+aSUKU2pvP
+	UJknN3TEfeWPQ4f6+vM/2YENWRqEIqTEiBrQAAOSypsPTYK/x+5WjQ1NdsAbcl8RogUwLn+gqib
+	f5D7he94XVCIXe2aqhOBn/75Kksqkh3f8oG7ZZW2QTsq/dR5OOs5YZhz0ypxn24oFH7VxVhkFTZ
+	AcNXgaUxnjP9rDOherVpWByrAAYeRjw86HiMGJYAhlIMCenBxo3e9HAeMCcqIPoyL7WG8aCPdOh
+	KO7WdLJI6L5rGlOvM5nyVBGiNrPx0r4MqR4zHxCo60RynP15T7oxvsd6cdA81TFk1UD/N7U7dFT
+	cRKC5wlGvtYdcJ+I6rMscwURp423s/aw8frUvTtEhf7BpQqfc7zskzdm2zi6JfLoG7ROGIOLA6F
+	zCNGPLZurbgcb+xtyDw610V2DA1L4v7CkSZBtW3/LhlxvyBe8ODSX4tL1+sIU5kDQ=
+X-Google-Smtp-Source: AGHT+IEwA6XXBbBrnkNpDSyMMUjDvcXJmGq2sfYYfcaOAM4R5To9TrPd6uo2ODMIhod3ttVZXOF0Qw==
+X-Received: by 2002:a05:600c:8888:b0:45f:2940:d194 with SMTP id 5b1f17b1804b1-47c97d92b03mr513515e9.2.1766076462804;
+        Thu, 18 Dec 2025 08:47:42 -0800 (PST)
 Received: from google.com (171.85.155.104.bc.googleusercontent.com. [104.155.85.171])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-432449adac0sm6085692f8f.42.2025.12.18.08.42.43
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-47be3ac4c1esm16379985e9.14.2025.12.18.08.47.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Dec 2025 08:42:43 -0800 (PST)
-Date: Thu, 18 Dec 2025 16:42:40 +0000
+        Thu, 18 Dec 2025 08:47:41 -0800 (PST)
+Date: Thu, 18 Dec 2025 16:47:38 +0000
 From: Mostafa Saleh <smostafa@google.com>
 To: Nicolin Chen <nicolinc@nvidia.com>
 Cc: jgg@nvidia.com, will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
 	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org, skolothumtho@nvidia.com,
 	praan@google.com, xueshuai@linux.alibaba.com
-Subject: Re: [PATCH rc v4 3/4] iommu/arm-smmu-v3: Mark STE EATS safe when
- computing the update sequence
-Message-ID: <aUQvAKjVUT1L3N7j@google.com>
+Subject: Re: [PATCH rc v4 4/4] iommu/arm-smmu-v3-test: Add nested
+ s1bypass/s1dssbypass coverage
+Message-ID: <aUQwKot1Ao0lE-C1@google.com>
 References: <cover.1765945258.git.nicolinc@nvidia.com>
- <adf08c3b9f289188aca4fe80e506dca7aa48aa19.1765945258.git.nicolinc@nvidia.com>
+ <6fcdd663d62dcab4005401bac2d23d18dd28e0c4.1765945258.git.nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <adf08c3b9f289188aca4fe80e506dca7aa48aa19.1765945258.git.nicolinc@nvidia.com>
+In-Reply-To: <6fcdd663d62dcab4005401bac2d23d18dd28e0c4.1765945258.git.nicolinc@nvidia.com>
 
-On Tue, Dec 16, 2025 at 08:26:01PM -0800, Nicolin Chen wrote:
-> From: Jason Gunthorpe <jgg@nvidia.com>
+On Tue, Dec 16, 2025 at 08:26:02PM -0800, Nicolin Chen wrote:
+> STE in a nested case requires both S1 and S2 fields. And this makes the use
+> case different from the existing one.
 > 
-> If a VM wants to toggle EATS off at the same time as changing the CFG, the
-> hypervisor will see EATS change to 0 and insert a V=0 breaking update into
-> the STE even though the VM did not ask for that.
+> Add coverage for previously failed cases shifting between S2-only and S1+S2
+> STEs.
 > 
-> In bare metal, EATS is ignored by CFG=ABORT/BYPASS, which is why this does
-> not cause a problem until we have nested where CFG is always a variation of
-> S2 trans that does use EATS.
-> 
-> Relax the rules for EATS sequencing, we don't need it to be exact because
-> the enclosing code will always disable ATS at the PCI device if we are
-> changing EATS. This ensures there are no ATS transactions that can race
-> with an EATS change so we don't need to carefully sequence these bits.
-> 
-> Fixes: 1e8be08d1c91 ("iommu/arm-smmu-v3: Support IOMMU_DOMAIN_NESTED")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 > Reviewed-by: Shuai Xue <xueshuai@linux.alibaba.com>
 > Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 > ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 9 +++++++++
->  1 file changed, 9 insertions(+)
+>  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c  | 46 +++++++++++++++++++
+>  1 file changed, 46 insertions(+)
 > 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 12a9669bcc83..a3b29ad20a82 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -1095,6 +1095,15 @@ void arm_smmu_get_ste_update_safe(__le64 *safe_bits)
->  	 *  fault records even when MEV == 0.
->  	 */
->  	safe_bits[1] |= cpu_to_le64(STRTAB_STE_1_MEV);
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c
+> index 5db14718fdd6..8255a02f4efa 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c
+> @@ -33,8 +33,12 @@ static struct mm_struct sva_mm = {
+>  enum arm_smmu_test_master_feat {
+>  	ARM_SMMU_MASTER_TEST_ATS = BIT(0),
+>  	ARM_SMMU_MASTER_TEST_STALL = BIT(1),
+> +	ARM_SMMU_MASTER_TEST_NESTED = BIT(2),
+>  };
+>  
+> +static void arm_smmu_test_make_s2_ste(struct arm_smmu_ste *ste,
+> +				      enum arm_smmu_test_master_feat feat);
 > +
-> +	/*
-> +	 * EATS is used to reject and control the ATS behavior of the device. If
-> +	 * we are changing it away from 0 then we already trust the device to
-> +	 * use ATS properly and we have sequenced the device's ATS enable in PCI
-> +	 * config space to prevent it from issuing ATS while we are changing
-> +	 * EATS.
-> +	 */
+>  static bool arm_smmu_entry_differs_in_used_bits(const __le64 *entry,
+>  						const __le64 *used_bits,
+>  						const __le64 *target,
+> @@ -197,6 +201,17 @@ static void arm_smmu_test_make_cdtable_ste(struct arm_smmu_ste *ste,
+>  	};
+>  
+>  	arm_smmu_make_cdtable_ste(ste, &master, ats_enabled, s1dss);
+> +	if (feat & ARM_SMMU_MASTER_TEST_NESTED) {
+> +		struct arm_smmu_ste s2ste;
+> +		int i;
+> +
+> +		arm_smmu_test_make_s2_ste(&s2ste, ARM_SMMU_MASTER_TEST_ATS);
 
-I am not sure about this one, Is it only about trusting the device?
-
-I’d be worried about cases where we switch domains, that means that
-briefly the HW observers EATS=1 while it was not intended, especially
-that EATS is in a different DWORD from S2TTB and CDptr. With all the
-IOMMUFD/VFIO stuff it makes it harder to reason about. But I can’t
-come up with an example to break this.
+Shouldn't that be conditional on "ats_enabled", I see the callers of the
+new tests already set ARM_SMMU_MASTER_TEST_ATS.
 
 Thanks,
 Mostafa
 
-> +	safe_bits[1] |= cpu_to_le64(STRTAB_STE_1_EATS);
+> +		ste->data[0] |= cpu_to_le64(
+> +			FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_0_CFG_NESTED));
+> +		ste->data[1] |= cpu_to_le64(STRTAB_STE_1_MEV);
+> +		for (i = 2; i < NUM_ENTRY_QWORDS; i++)
+> +			ste->data[i] = s2ste.data[i];
+> +	}
 >  }
->  EXPORT_SYMBOL_IF_KUNIT(arm_smmu_get_ste_update_safe);
 >  
+>  static void arm_smmu_v3_write_ste_test_bypass_to_abort(struct kunit *test)
+> @@ -554,6 +569,35 @@ static void arm_smmu_v3_write_ste_test_s2_to_s1_stall(struct kunit *test)
+>  						       NUM_EXPECTED_SYNCS(3));
+>  }
+>  
+> +static void
+> +arm_smmu_v3_write_ste_test_nested_s1dssbypass_to_s1bypass(struct kunit *test)
+> +{
+> +	struct arm_smmu_ste s1_ste;
+> +	struct arm_smmu_ste s2_ste;
+> +
+> +	arm_smmu_test_make_cdtable_ste(
+> +		&s1_ste, STRTAB_STE_1_S1DSS_BYPASS, fake_cdtab_dma_addr,
+> +		ARM_SMMU_MASTER_TEST_ATS | ARM_SMMU_MASTER_TEST_NESTED);
+> +	arm_smmu_test_make_s2_ste(&s2_ste, 0);
+> +	/* Expect an additional sync to unset ignored bits: EATS and MEV */
+> +	arm_smmu_v3_test_ste_expect_hitless_transition(test, &s1_ste, &s2_ste,
+> +						       NUM_EXPECTED_SYNCS(3));
+> +}
+> +
+> +static void
+> +arm_smmu_v3_write_ste_test_nested_s1bypass_to_s1dssbypass(struct kunit *test)
+> +{
+> +	struct arm_smmu_ste s1_ste;
+> +	struct arm_smmu_ste s2_ste;
+> +
+> +	arm_smmu_test_make_cdtable_ste(
+> +		&s1_ste, STRTAB_STE_1_S1DSS_BYPASS, fake_cdtab_dma_addr,
+> +		ARM_SMMU_MASTER_TEST_ATS | ARM_SMMU_MASTER_TEST_NESTED);
+> +	arm_smmu_test_make_s2_ste(&s2_ste, 0);
+> +	arm_smmu_v3_test_ste_expect_hitless_transition(test, &s2_ste, &s1_ste,
+> +						       NUM_EXPECTED_SYNCS(2));
+> +}
+> +
+>  static void arm_smmu_v3_write_cd_test_sva_clear(struct kunit *test)
+>  {
+>  	struct arm_smmu_cd cd = {};
+> @@ -600,6 +644,8 @@ static struct kunit_case arm_smmu_v3_test_cases[] = {
+>  	KUNIT_CASE(arm_smmu_v3_write_cd_test_s1_change_asid),
+>  	KUNIT_CASE(arm_smmu_v3_write_ste_test_s1_to_s2_stall),
+>  	KUNIT_CASE(arm_smmu_v3_write_ste_test_s2_to_s1_stall),
+> +	KUNIT_CASE(arm_smmu_v3_write_ste_test_nested_s1dssbypass_to_s1bypass),
+> +	KUNIT_CASE(arm_smmu_v3_write_ste_test_nested_s1bypass_to_s1dssbypass),
+>  	KUNIT_CASE(arm_smmu_v3_write_cd_test_sva_clear),
+>  	KUNIT_CASE(arm_smmu_v3_write_cd_test_sva_release),
+>  	{},
 > -- 
 > 2.43.0
 > 
