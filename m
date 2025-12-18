@@ -1,124 +1,168 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C4CC2DECC5
-	for <iommu@lists.linux.dev>; Thu, 18 Dec 2025 14:42:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 540AC288535
+	for <iommu@lists.linux.dev>; Thu, 18 Dec 2025 16:34:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766068977; cv=none; b=EIV9wg2JOD/5lI24F25mxXkoe6OwwgP3lpin7k+f95oCV02JfxRvarTIc0Vs6ebSABBvtEhkJhwEHTiQdpw0bxICRih6dRx7mf7QTbMt2SkVgezc1q68c81MCR4t83PpftGkFYTWE8Zs3iMMToMdvx8CX1IbL43fvCpkzT+i8Zk=
+	t=1766075681; cv=none; b=dMoCdbhMe/x8ndwtTOZj3eK1YPtUIeUY4sX2GRUZWlQqIlqhYZQVKFxmZXCprWpPQzJt1CrGXXHwqALWG8HM/eJo50qUgNxcULEmlEL5E7XSZxgD+Wqqd1JDa2qNLld1xGKvIOxaB//NTUy+o97kIOyNe/P/YkH8qLD2l3AsUqA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766068977; c=relaxed/simple;
-	bh=slw+BosK1PsNPJpyi2TmKbuGD4RpEMMPJVH/OAf+NQM=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=CFIaAVn3YOqEKX+1xBVP/JJiIacF7LMz99fMWlkvCqeuPOfYMVuVq1SnEXAL4+kZA5kpeoJkYNWjAr19C2wJV0NDfwAfTuBkijNnw0JN3p2IzTqyRB8C9OO8cuGMENoTukBD+p4uoJwdmqBX03nXG5Hk6qH2ujHH/trpN/n7HgE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=U6ZVfUie; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1766075681; c=relaxed/simple;
+	bh=VbEZ0jE8XPrfDNLq0G7nf0a8uF3thjekVdzkvacdeeY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=MkoTT3Ubsl4nQ8hmiHac5CngZyv4H3gVWuh0rqT/d1Ik1sbPzixsOOBHynUBYQZPMJImJ7Ywyp9wDSQcYPlVXfR1hf87lrKOh+m+m6TFpG7mlDQP9TAIRUVZpnsGFPjWFPEdTpz9ypPGndBjHgjyY16uUT4umUlrcqaUYrhOOmA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=b1hQg3z/; arc=none smtp.client-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="U6ZVfUie"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2A5AC116C6
-	for <iommu@lists.linux.dev>; Thu, 18 Dec 2025 14:42:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1766068976;
-	bh=slw+BosK1PsNPJpyi2TmKbuGD4RpEMMPJVH/OAf+NQM=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=U6ZVfUieX3cwLufZBD02xIoNZ17rXxDRXramTk93AHyzo1NPQg7z6Q0hLw8P/gi6Z
-	 FCVrFTH+pOVUHA8Wo2PrWamlh3y+Y5X61fJUqZfH7ViE1errdTruUqz+Z54R+GWf5b
-	 tePNBLtUMVvTHtn0YMyY0XIjdO+mxqBINTyVbq3rpxMeMw1pL2dfPqDHWXS2c8QaY4
-	 zfrviEkK2w/qsVmMrcx5aGKnbdcgkh+ItpnwUsJJhkR8H4HSe2bTr2sNZIEZM7ywYk
-	 vpMIrNG/Ek+/kdlcv6gLxyqY79tv23Qx4R46sdFB89clfYcw9QBUoSgWw6lbBtCUCh
-	 pR+06ue4QX9+g==
-Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-b735b89501fso87934966b.0
-        for <iommu@lists.linux.dev>; Thu, 18 Dec 2025 06:42:56 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCVaUiR4L8Ps132Yk90In9bvZ/FIVJY6rlAU3m/oxKjCGCF31ACJMFlaRyJZPr6x/uSkSPj8xw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw8u+eqeevwocwTP3eYw6bfyjUVfVLhFuj8Zemzy2EnJV97NkAs
-	K//O0n0/wGpoqaXlcGrvxBMzDm8TNrd9nJb4xtkUowkA+uNgbLO8ffMIrioYlbKnejsQHmv6vLv
-	fSrFNJQ4YKuMT+083x18bpmeG/dZ8bQ==
-X-Google-Smtp-Source: AGHT+IFdmyojuTTgaWiolIibwsAa/0a3X7FzgZ+D2f7PWKjB9jlhVbGo9VOiZ0gBgTNEAMMazdnjwp3dHTDr86SBEs4=
-X-Received: by 2002:a17:907:2da0:b0:b4f:e12e:aa24 with SMTP id
- a640c23a62f3a-b7d23667b5bmr2457256466b.22.1766068974880; Thu, 18 Dec 2025
- 06:42:54 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="b1hQg3z/"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1766075679; x=1797611679;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=VbEZ0jE8XPrfDNLq0G7nf0a8uF3thjekVdzkvacdeeY=;
+  b=b1hQg3z/7zmAvzRoSxyAMUwvznF9o245u63CuStXfDFF8ZeSCAYHwyD7
+   NhKA1TRuBT99oTqi56clM2w5U+XnnI4hdGnDsCoMfLmuP1w0Cf49660TF
+   tWWqLuIk4jkGNrXLCllbwQbbDTktn3B8g10jDxQLg+HZ/iLEpOXr3uc1V
+   SnZgHHqsaq9GUleRDZd6JYA1OlAAn78CDYgB/JQ41QVG2rZ53B2VTYZQQ
+   HxgdM9tI6jYnBtCMtPNRHa2FNDUvnMUUO7m48I5Xr4BXyrXdEgMtyPOA4
+   dzZEEyF7NEHckbQ2dUvdyo50QJxmvUgbpJk/L487pKsyAoQedOM8sMXHi
+   A==;
+X-CSE-ConnectionGUID: fZS6eck5RMypinipJrcZQQ==
+X-CSE-MsgGUID: BsABNrKUQ0e+YhstU0saMg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11646"; a="93508931"
+X-IronPort-AV: E=Sophos;i="6.21,158,1763452800"; 
+   d="scan'208";a="93508931"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Dec 2025 08:34:38 -0800
+X-CSE-ConnectionGUID: km/MzlcvQMSKtMba/hbKFQ==
+X-CSE-MsgGUID: 4LrMg2ZbSVqF+gAWjo3O8g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,158,1763452800"; 
+   d="scan'208";a="203525480"
+Received: from spandruv-mobl4.amr.corp.intel.com (HELO [10.125.111.56]) ([10.125.111.56])
+  by fmviesa004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Dec 2025 08:34:37 -0800
+Message-ID: <6ddb3366-31a8-4d18-a553-908a035f7cf2@intel.com>
+Date: Thu, 18 Dec 2025 08:34:36 -0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <CGME20251210002053eucas1p1d1408ad0fb49a49bf4371687f8df7395@eucas1p1.samsung.com>
- <20251210002027.1171519-1-oreoluwa.babatunde@oss.qualcomm.com>
- <X-TH#1.CAL_JsqL6VVQ7K_ZAbHJ8Gb7ei_jusLx6wRn=AdOVgV50dX0ejQ@mail.gmail.com> <99dc91c9-59fd-47c5-b1d9-157bda86ad59@samsung.com>
-In-Reply-To: <99dc91c9-59fd-47c5-b1d9-157bda86ad59@samsung.com>
-From: Rob Herring <robh@kernel.org>
-Date: Thu, 18 Dec 2025 08:42:43 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqK5QEZfyRTDY4z88mX_eYENibea1ZM8H_bEfCCsOOwY4A@mail.gmail.com>
-X-Gm-Features: AQt7F2oHd8w0_YjnIgYXfiCaa1Lm7dC6NF9JlmrJ9TE4Ra2le7vZL1e4sdVufPM
-Message-ID: <CAL_JsqK5QEZfyRTDY4z88mX_eYENibea1ZM8H_bEfCCsOOwY4A@mail.gmail.com>
-Subject: Re: [PATCH] of: reserved_mem: Allow reserved_mem framework detect
- "cma=" kernel param
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Oreoluwa Babatunde <oreoluwa.babatunde@oss.qualcomm.com>, ye.li@oss.nxp.com, 
-	kernel@oss.qualcomm.com, saravanak@google.com, akpm@linux-foundation.org, 
-	david@redhat.com, lorenzo.stoakes@oracle.com, Liam.Howlett@oracle.com, 
-	vbabka@suse.cz, rppt@kernel.org, surenb@google.com, mhocko@suse.com, 
-	robin.murphy@arm.com, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux.dev, 
-	quic_c_gdjako@quicinc.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v15 16/28] x86/txt: Intel Trusted eXecution Technology
+ (TXT) definitions
+To: Ross Philipson <ross.philipson@oracle.com>, linux-kernel@vger.kernel.org,
+ x86@kernel.org, linux-integrity@vger.kernel.org, linux-doc@vger.kernel.org,
+ linux-crypto@vger.kernel.org, kexec@lists.infradead.org,
+ linux-efi@vger.kernel.org, iommu@lists.linux.dev
+Cc: dpsmith@apertussolutions.com, tglx@linutronix.de, mingo@redhat.com,
+ bp@alien8.de, hpa@zytor.com, dave.hansen@linux.intel.com, ardb@kernel.org,
+ mjg59@srcf.ucam.org, James.Bottomley@hansenpartnership.com,
+ peterhuewe@gmx.de, jarkko@kernel.org, jgg@ziepe.ca, luto@amacapital.net,
+ nivedita@alum.mit.edu, herbert@gondor.apana.org.au, davem@davemloft.net,
+ corbet@lwn.net, ebiederm@xmission.com, dwmw2@infradead.org,
+ baolu.lu@linux.intel.com, kanth.ghatraju@oracle.com,
+ andrew.cooper3@citrix.com, trenchboot-devel@googlegroups.com
+References: <20251215233316.1076248-1-ross.philipson@oracle.com>
+ <20251215233316.1076248-17-ross.philipson@oracle.com>
+Content-Language: en-US
+From: Dave Hansen <dave.hansen@intel.com>
+Autocrypt: addr=dave.hansen@intel.com; keydata=
+ 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
+In-Reply-To: <20251215233316.1076248-17-ross.philipson@oracle.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Thu, Dec 18, 2025 at 3:55=E2=80=AFAM Marek Szyprowski
-<m.szyprowski@samsung.com> wrote:
->
-> On 10.12.2025 15:07, Rob Herring wrote:
-> > On Tue, Dec 9, 2025 at 6:20=E2=80=AFPM Oreoluwa Babatunde
-> > <oreoluwa.babatunde@oss.qualcomm.com> wrote:
-> >> When initializing the default cma region, the "cma=3D" kernel paramete=
-r
-> >> takes priority over a DT defined linux,cma-default region. Hence, give
-> >> the reserved_mem framework the ability to detect this so that the DT
-> >> defined cma region can skip initialization accordingly.
-> > Please explain here why this is a new problem. Presumably the
-> > RESERVEDMEM_OF_DECLARE hook after commit xxxx gets called before the
-> > early_param hook. And why is it now earlier?
-> >
-> > I don't really like the state/ordering having to be worried about in 2 =
-places.
->
-> I also don't like this spaghetti, but it originates from
-> commit 8a6e02d0c00e ("of: reserved_mem: Restructure how the reserved
-> memory regions are processed") and the first fixup for it: 2c223f7239f3
-> ("of: reserved_mem: Restructure call site for
-> dma_contiguous_early_fixup()").
+On 12/15/25 15:33, Ross Philipson wrote:
+> +static inline void *txt_sinit_mle_data_start(void *heap)
+> +{
+> +	return heap + txt_bios_data_size(heap) +
+> +		txt_os_mle_data_size(heap) +
+> +		txt_os_sinit_data_size(heap) + sizeof(u64);
+> +}
 
-Honestly, this code wasn't great before. Every time it is touched it
-breaks someone.
+So each one of these walks through the entire table?
 
-> It looks that it is really hard to make reserved memory
-> initialization fully dynamic assuming that the cma related fixups have
-> to be known before populating kernel memory pages tables. I also advised
-> in
-> https://lore.kernel.org/all/be70bdc4-bddd-4afe-8574-7e0889fd381c@samsung.=
-com/
-> to simply increase the size of the static table to make it large enough f=
-or the sane use cases, but
-> it turned out that this approach was already discussed and rejected:
-> https://lore.kernel.org/all/1650488954-26662-1-git-send-email-quic_pdaly@=
-quicinc.com/
+Maybe I'm naive, but wouldn't this all be a lot more sane if it was just
+parsed *once* into a table of pointers?
 
-I guess the question is what's a sane limit? After 128, are we going
-to accept 256? I really suspect we are just enabling some further
-abuse of /reserved-memory downstream. For example, I could imagine
-there's micromanaging the location of media/graphics buffers so they
-end up in specific DRAM banks to optimize accesses. No one ever wants
-to detail why they want/need more regions.
+enum {
+	FIELD1,
+	FIELD2,
+	FIELD3,
+	MAX_NR
+};
 
-> Maybe it would make sense to revert the mentioned changes and get back
-> to such simple approach - to make the size of the static table
-> configurable in the Kconfig?
+void *parseit(u8 *heap)
+{
+	void *ptr_array[MAX_NR] = {};
+	void *place = heap;
 
-I'd rather not resort to a kconfig option.
+	for (int i = 0; i < MAX_NR; i++) {
+		// The buffer starts with the length:
+		u32 *size_ptr = place;
 
-We could go back to processing all the regions at the beginning
-(growing the static size), and then just shrinking allocation. Or
-maybe it could just be freed entirely. I don't think we really need to
-keep the state around forever.
+		// Consume the length:
+		place += sizeof(*size_ptr);
 
-Rob
+		// Point at the data:
+		ptr_array[i] = place;
+		// Consume the data:
+		place += *size_ptr;
+	}
+	// along with some sanity checks
+}
+
+Then, to access FIELDs you do:
+
+	struct field1_struct *f1s = ptr_array[FIELD1];
+	struct field2_struct *f1s = ptr_array[FIELD2];
+
+Yeah, it means keeping that pointer array around. But <shrug>. It's also
+not about performance. That ^ is a billion times easier to understand
+because it lays out the "heap" logic in one place. You don't have to
+recurse through half a dozen helpers to figure things out.
