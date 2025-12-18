@@ -1,185 +1,208 @@
-Received: from mail-wm1-f65.google.com (mail-wm1-f65.google.com [209.85.128.65])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from CH4PR04CU002.outbound.protection.outlook.com (mail-northcentralusazon11013012.outbound.protection.outlook.com [40.107.201.12])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B41C12D7DF1
-	for <iommu@lists.linux.dev>; Thu, 18 Dec 2025 16:47:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.65
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766076466; cv=none; b=pPnj0tZGbFIwKWtMMvma0QZwuuMHiJQHa81KjSiyKYk9CtWlRokiX2Au8v7keywu0Lv6fJET0Wpr0KTgo/H7RVMsa81CD9l6btrtAvO5L6xlDZnCwPMKwuDDUOrUMsX4oV9VRcTJJDOSChk7qzQPa5Ku0xTklSdcSQ5VAx/29oI=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766076466; c=relaxed/simple;
-	bh=gk+1cIVkTapO9VD0ARf7xDZpqBvkVnn702fQDxQmTCc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=bFa0gBACLfWpyIeMOQNeEf6ga2b2d9usGiIU+tViIUvHsYgxk7Kdr+k19xwgVDWyw+Vuc/zx0gjz0hGyiKJXhA3FRRWePnakxcQnBoWbS5cvuGvd53lZr10ddPw6Fn20fb0nTptciDuMRR4uqTV+G39epO53utJezWYf76Pj3GU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Uh7FdMaX; arc=none smtp.client-ip=209.85.128.65
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6E6C3009E1
+	for <iommu@lists.linux.dev>; Thu, 18 Dec 2025 17:33:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.201.12
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1766079205; cv=fail; b=idnJEOBz9TxbV9+HZTY+NO7ieIzhKKvZri+ZyirwCkDxbGBgqdYNDbI/Al6Co0AE3mRT4JAk7S9rJ++JMDUgT657Xxaz+YTFt7MGBu7JH1zpQ8ng3vxpBViHAFN4DuL7zV92kD+MlJRW+pzp98WCi89Iom8Kuv9IqwmTaJPCTw0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1766079205; c=relaxed/simple;
+	bh=o2b56pa2tQZKegPGgaXonV6gVvKNjtzr4x3+0lb2xXg=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=W2r8S/IIo60YjGp0z1ltY/Uf+S+kjFK9yA9OUp9GA2QYRXRZaV9CbTHOdGX9XlZaOKvkg8rjPuoSWzz2ZGesFLCacFRP5g3MSGwuH2K0enODNqkJJGJzigc1lMqpGHz/P32CURVlErkTejWGfVRnIexMnC91maqbwU7XLVt/y5M=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=H65+TRTY; arc=fail smtp.client-ip=40.107.201.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Uh7FdMaX"
-Received: by mail-wm1-f65.google.com with SMTP id 5b1f17b1804b1-477a1c8cc47so85495e9.0
-        for <iommu@lists.linux.dev>; Thu, 18 Dec 2025 08:47:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1766076463; x=1766681263; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=71/t+zukONFmhteBzEJIyiLt6qukZUCn3lZ8Jl+QJWQ=;
-        b=Uh7FdMaXRhfYBbSOkIG9mhfOpOJ32ihxCTrkjhqg42GmZGqYCdHht2z14x3Hf9sHZ6
-         rv0RnmD+bbU7ESk1hmgUilpkL78WOojfYmY5HEHl4vV9ohKK07mqcrKdCyrOqB6lEpNr
-         la1aJvZsOsc6gjXSRiZSZl2SEfGGcPMcoGmaMT5f9JtC5sGZBZDBC2r3Gg5X1fie26bL
-         dIqRQRHFTFN796jMxs3+sb29jsH5P1g5n+Pb6aRrxjXpBPWMUJa3d88m30/h51K1DKBf
-         o15ofzpL9Mz1pY+7q7ApRK48o9xY2hbVbTvFG3ieUOJ2YKrC5hbMWVR/oTIbS6IX2F0u
-         lUUQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1766076463; x=1766681263;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=71/t+zukONFmhteBzEJIyiLt6qukZUCn3lZ8Jl+QJWQ=;
-        b=FK4UCxbufrTPZtzrxiOBQ8jHZHEyfy5zWfu+7Ngu/Z4F/d720gH7sY4ThocZnY05cn
-         2MoVxBAH4Cgcv6JnWnfEMRRVABWK+oqUKNinjUh4IC1GmYE4/wNv1vTlr0DvnPUeyjnW
-         yOdCa/YRZq0gMlQwDrTIZSZMqDQmZw2ckJCp8hMayfpO6S7NeGI5OLI7Mfytc6LyZmFm
-         KWyIel27oIIpxCvn6LZWV88XYOFj/W+Emi673/QUuctSNiBOezDRrbt+ZUPzmSrBjTXZ
-         NYO17c3rk+x5fbOWwUutL24SfvYdPJewr6yaDZIR0AiY7jdlGbfO4bs8NK6TFtOx9z4W
-         ZgqA==
-X-Forwarded-Encrypted: i=1; AJvYcCXZdjDP12hmATR1MHhE7ZFRFmkHKzDZ/1xjqtpA8adBY2eVTUcx7CKLKG3b5+pqXG6sKBygeQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxZKULj7AdZsCcEptPtQojrPIxXRFqzPFqrOHezptB8bckLy3DE
-	sWQb1aeDsB0kHzn0KOZ51QnY6J4Pm0RWV5ACdz2dEuZWKTFJf56maKbMD4oPBsHbAg==
-X-Gm-Gg: AY/fxX5IP3NPnyjSmlHEFIbK1GxRIfMM+GX/KYswK5Td83tF4o9YlvLYt+aSUKU2pvP
-	UJknN3TEfeWPQ4f6+vM/2YENWRqEIqTEiBrQAAOSypsPTYK/x+5WjQ1NdsAbcl8RogUwLn+gqib
-	f5D7he94XVCIXe2aqhOBn/75Kksqkh3f8oG7ZZW2QTsq/dR5OOs5YZhz0ypxn24oFH7VxVhkFTZ
-	AcNXgaUxnjP9rDOherVpWByrAAYeRjw86HiMGJYAhlIMCenBxo3e9HAeMCcqIPoyL7WG8aCPdOh
-	KO7WdLJI6L5rGlOvM5nyVBGiNrPx0r4MqR4zHxCo60RynP15T7oxvsd6cdA81TFk1UD/N7U7dFT
-	cRKC5wlGvtYdcJ+I6rMscwURp423s/aw8frUvTtEhf7BpQqfc7zskzdm2zi6JfLoG7ROGIOLA6F
-	zCNGPLZurbgcb+xtyDw610V2DA1L4v7CkSZBtW3/LhlxvyBe8ODSX4tL1+sIU5kDQ=
-X-Google-Smtp-Source: AGHT+IEwA6XXBbBrnkNpDSyMMUjDvcXJmGq2sfYYfcaOAM4R5To9TrPd6uo2ODMIhod3ttVZXOF0Qw==
-X-Received: by 2002:a05:600c:8888:b0:45f:2940:d194 with SMTP id 5b1f17b1804b1-47c97d92b03mr513515e9.2.1766076462804;
-        Thu, 18 Dec 2025 08:47:42 -0800 (PST)
-Received: from google.com (171.85.155.104.bc.googleusercontent.com. [104.155.85.171])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-47be3ac4c1esm16379985e9.14.2025.12.18.08.47.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Dec 2025 08:47:41 -0800 (PST)
-Date: Thu, 18 Dec 2025 16:47:38 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: jgg@nvidia.com, will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, skolothumtho@nvidia.com,
-	praan@google.com, xueshuai@linux.alibaba.com
-Subject: Re: [PATCH rc v4 4/4] iommu/arm-smmu-v3-test: Add nested
- s1bypass/s1dssbypass coverage
-Message-ID: <aUQwKot1Ao0lE-C1@google.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="H65+TRTY"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=O5fykLUJq/07GxxT1RqLcEZz8lzI8FD2qJmaEwsPFjzQNr+yqFwmRliXvbhMDo9cxGcUW0nPMbhGQjc2QLicJYqhSXtliCUeB5pIb5U3mMiaz5E4rwmI7jA7MgQRFE5LBJtz7sQRXa0xMn6WjaQ/uBHIbJG4xMrjPsRNeWUcgT5KRg34Q9ipQsyCTaOYjkNL1Iqo6v7rabUVrss2SVaPWisBtgueQAWIsLMsjdD6xy9/dF0c3D9mWBwcxmi/V1W62+gZvi0/3BnvqjJmex/9/+Kq4Wrz/N5Ok66co19dp5Asm47x9m4xZaKP//x8SeA4rpfqt/wtz97DdM1KPTTngQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ZFjn5UhHRG6VWHOViMfg46+8hCCuJpdB0JjceEp/C1g=;
+ b=hZLE9sDSqhAWnG8u9ObwePIT58TW4C439Tg3912O+TjC4yqRuVGCojcWK9ZM+/dP7mlG96lFne6QKKtQ3PVY5iRYQn6xUBZ5Uq/YG+8XDyFS4ljr6YDB55Qzd6vdk0oa67wVwHQbTrN5GRcV8t//3+GjcNbag09iYNi4c5Cy3OX/2Bivr02tpHElpP0G/MbVy29GFOu0kqEgbfZw4raBV6T5otGKxHz86mdOc7SqQIDVMhRcNP/dp9+Kr60H+3r1DHm8zjvpnFU6tWRHcET4aDyw1PySKZyRTGlTOPlwjFRt81xPbWRoqS6C5a8PoN4nclrVWDOs8jI10WFLe2Wssg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ZFjn5UhHRG6VWHOViMfg46+8hCCuJpdB0JjceEp/C1g=;
+ b=H65+TRTY4GM8C/mlopTjEh20CW/5HFqg3DJT/wYFS54LaoyZSKTR/30zkdp5yG7Ud5GsWVTTDSADhADJxrR2mvKWflQxHTYPEn/SfQtrEhpcwhnMMfw3ON3smlE3Y/zfXO+s/QtzFKy5OF2JRETKRi1+2IHS+gLxl7SIpFFN2gEbjoDfS7YhhWPVCMAxbz4JEEERPZsxtQbdku4Lyvn0TEczmZqQ8O7tXF0F1yma5sBgmGhn2oiPDgbVDJARQQWxQFL4sCKynl195gCwm7kU6HuArHZNzL+FI7AS6F7tBVjnSUhaXDvDVftN7rwhritOMvswejaSJROb3p610I45Pw==
+Received: from CYXPR02CA0082.namprd02.prod.outlook.com (2603:10b6:930:ce::29)
+ by IA1PR12MB7661.namprd12.prod.outlook.com (2603:10b6:208:426::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9434.6; Thu, 18 Dec
+ 2025 17:33:13 +0000
+Received: from CY4PEPF0000E9D8.namprd05.prod.outlook.com
+ (2603:10b6:930:ce:cafe::8c) by CYXPR02CA0082.outlook.office365.com
+ (2603:10b6:930:ce::29) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9434.8 via Frontend Transport; Thu,
+ 18 Dec 2025 17:33:11 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ CY4PEPF0000E9D8.mail.protection.outlook.com (10.167.241.71) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.9434.6 via Frontend Transport; Thu, 18 Dec 2025 17:33:12 +0000
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Thu, 18 Dec
+ 2025 09:32:45 -0800
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail205.nvidia.com
+ (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Thu, 18 Dec
+ 2025 09:32:45 -0800
+Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com (10.129.68.7)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
+ Transport; Thu, 18 Dec 2025 09:32:44 -0800
+Date: Thu, 18 Dec 2025 09:32:43 -0800
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Mostafa Saleh <smostafa@google.com>
+CC: <jgg@nvidia.com>, <will@kernel.org>, <robin.murphy@arm.com>,
+	<joro@8bytes.org>, <linux-arm-kernel@lists.infradead.org>,
+	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+	<skolothumtho@nvidia.com>, <praan@google.com>, <xueshuai@linux.alibaba.com>
+Subject: Re: [PATCH rc v4 3/4] iommu/arm-smmu-v3: Mark STE EATS safe when
+ computing the update sequence
+Message-ID: <aUQ6u+s8YbPiLC8Z@Asurada-Nvidia>
 References: <cover.1765945258.git.nicolinc@nvidia.com>
- <6fcdd663d62dcab4005401bac2d23d18dd28e0c4.1765945258.git.nicolinc@nvidia.com>
+ <adf08c3b9f289188aca4fe80e506dca7aa48aa19.1765945258.git.nicolinc@nvidia.com>
+ <aUQvAKjVUT1L3N7j@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
-In-Reply-To: <6fcdd663d62dcab4005401bac2d23d18dd28e0c4.1765945258.git.nicolinc@nvidia.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <aUQvAKjVUT1L3N7j@google.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CY4PEPF0000E9D8:EE_|IA1PR12MB7661:EE_
+X-MS-Office365-Filtering-Correlation-Id: b7825688-bc31-4d30-7886-08de3e5b84ce
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|36860700013|376014|82310400026|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?V0YzeFplSkFCdkt6U1ZJTFBYR0MvczEwL1lxbVY2RS9ORFVKZEJkUzZ1dVdy?=
+ =?utf-8?B?aGNYM2tDMElPVm1WQUVpWWNyYjQxSEV1MmJvMGZQaEMrbDhJcys0eC9ab2ZP?=
+ =?utf-8?B?S0NiRFpKOXVIUnFISUJFRHhCUU04a0xUbnFaOEFBeDloNTRxWDZGV3VhTjZ0?=
+ =?utf-8?B?WjFIQ1haZGRUaERFd2tCcmJ2WHRPQXJBR3FEa250N1RVWlAvRlJSeUt1UFZs?=
+ =?utf-8?B?NktjL3ZSTkU1TGpDV3Q4dmZhUmd2UXVRTkRFWGpDenBPN1JDbmNVeWxoU3Vl?=
+ =?utf-8?B?dTdUV2JQaC9HUzIzUkxHTFk1ZGgxQ3BFUWc3UHpNQ0c3aHRQKzdDdkNnY3NJ?=
+ =?utf-8?B?QUNlSk14bXoxWlJiS1U3WGhrcFZCRHB2ellmWXNlNVZVQVdaOEltUXM0ZTZh?=
+ =?utf-8?B?RmJYSXN5cWNrcXNUQWhBRHdWaHk1bklvMWdCZkZSQm5aL1lwWk9CSWdMS3N0?=
+ =?utf-8?B?UGc4WHZib2VXTGx5cGlWRDZFT3d2L3YwUEsyMEhFVmtHODV2Vko4M25NeVRq?=
+ =?utf-8?B?STJFcXY2SzA4VFkwMXpOWFdUNVdobjh6bWdKNEVMZzJwNUhMTTlVS29HcGQv?=
+ =?utf-8?B?eEkvNUt2RXBQN3p0QXVuMzZhZjlYMTRIeVQrWjl2WDVic04wS3Uva0tNamhY?=
+ =?utf-8?B?TkFaV09mazY0NUE4WUlGQmUvMjZ0TFg4SVJQT0txdndKTjQxdnJFdTYzR2hv?=
+ =?utf-8?B?L3VPLzVabXNuWDY4VVZ2WDhCdVpSK0VIR2dBam84ajZGM25odHJnZUNuOWxi?=
+ =?utf-8?B?VW94M3dEYmxDdEY3VkR3Tms3T2wrSEg0VkFaOUU2MDh0T2k2dlRkMk1aRW1z?=
+ =?utf-8?B?SG5kRS8ydUxieWo3UEtoQWRCMWtjYTRCZkNmQytybjh1elpPUy92c0IrN0t5?=
+ =?utf-8?B?aUNJUitPVWl3bTJSK0Z3SXplKzJJaWdhRzE1Nm1icmFvVE5ML3loNTNVT2Ji?=
+ =?utf-8?B?NCt4NGpHaFJpRjdGRXVHaldUZ0JJUGlKcndNeHU5UWNXUzZjUFE4V2YzSWJD?=
+ =?utf-8?B?TmliNlErcmNOeUJEUDBzNWpOM1R5TllEb1JhbmN1TGt4VWs0YlRZRTMrTHJ5?=
+ =?utf-8?B?dW5zYmc4YWR0c0tlZnQ1RVpIV2t4NTZKbjc1OFVWS1ZrMkdNR0hFYWVxb0pH?=
+ =?utf-8?B?Zm50R3d3VU9IcllmcTYvbkRQWThhc2YrMFQ3a2swR3Y0VzgzSlF1MzF6RVdz?=
+ =?utf-8?B?T0U1Wjh2c0pNaWNKYitRZmxjclQwTk1leTQyYXhseDdVd3hFZ044UHl1d1JU?=
+ =?utf-8?B?azkwd2JCTFhEUHJGYk82QkF1cjZ4R0tFUU4zbDZMVVI3MmFPNm82NE9GZDhz?=
+ =?utf-8?B?M1RWUEZNa2V2ODhUSzJzY1djSHhaVFdOQjIyWThzM3dSQk9ZWUdDZmxHSGRF?=
+ =?utf-8?B?ejQ3aGZBaDlHQkpxV3R1ZjIwbnJMU3Q2NVE2MUxEcFY1Rlh4dXN4RWkvTzcw?=
+ =?utf-8?B?ZGZENG5vWXZTT2VFbTYvZ01BRi9SOHVNbEdMZWFwSTd3RVZoOGQvZFcyUFB6?=
+ =?utf-8?B?YzFzZW1jV3UwZmVxOFFFM2FDREV0YVBISm83eklMaFVYK1JkNUlERi9jMjVr?=
+ =?utf-8?B?MFJ2U1g2eE5JRkc2YmhKeU5aVWNDS29XVFRjN0M0b1hzellwOEcvR0xpN2J6?=
+ =?utf-8?B?UEV3TWFzaEZ0WFU5TGw3UUlrcURWcDZuK2I0ckc3MXBaTUhRamc5OElUaFlG?=
+ =?utf-8?B?MEUvb0FVNk9KSjNTSTNTRmhPRmJQSHZIMUwxdTZHSUt3amtzamJ1c1NTRkls?=
+ =?utf-8?B?OGJJS1JYWTZpeFFEVWUwL0Zydkd1ZWVIYTNITkFGd2NBZGx2QmQ2NkQyemJV?=
+ =?utf-8?B?bVlqQUppMzNWMTBOSEFsaUxHSmlDQk9CODIzZEIvbEcveFdwM2xSVHlsU0Rl?=
+ =?utf-8?B?RVhDWmxPdzJGejdpeWk1OE1ReGs2OGFTSTZVaTJGdmxrZ3NhQ0NDWFc5NWt2?=
+ =?utf-8?B?YW05NTgvclY0bkxxTXpJTjJDdmlSVHdva1JOdnNjN0VucGxIUDVuQjF0eWlq?=
+ =?utf-8?B?ZlVHTWpDYVBxTms4aERYZkkyZktMMUh5R2l4YXdBaEwra0REWWs5NHZRMmQw?=
+ =?utf-8?B?Tm13bTZNbkZqZ3FXbmQ3Y0ZUY1Zpbnk3TVM2Q0oxeWJiQ2gra2QxQ0Jwc25O?=
+ =?utf-8?Q?G61U=3D?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(36860700013)(376014)(82310400026)(1800799024);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Dec 2025 17:33:12.3165
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: b7825688-bc31-4d30-7886-08de3e5b84ce
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CY4PEPF0000E9D8.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB7661
 
-On Tue, Dec 16, 2025 at 08:26:02PM -0800, Nicolin Chen wrote:
-> STE in a nested case requires both S1 and S2 fields. And this makes the use
-> case different from the existing one.
+On Thu, Dec 18, 2025 at 04:42:40PM +0000, Mostafa Saleh wrote:
+> On Tue, Dec 16, 2025 at 08:26:01PM -0800, Nicolin Chen wrote:
+> > From: Jason Gunthorpe <jgg@nvidia.com>
+> > 
+> > If a VM wants to toggle EATS off at the same time as changing the CFG, the
+> > hypervisor will see EATS change to 0 and insert a V=0 breaking update into
+> > the STE even though the VM did not ask for that.
+> > 
+> > In bare metal, EATS is ignored by CFG=ABORT/BYPASS, which is why this does
+> > not cause a problem until we have nested where CFG is always a variation of
+> > S2 trans that does use EATS.
+> > 
+> > Relax the rules for EATS sequencing, we don't need it to be exact because
+> > the enclosing code will always disable ATS at the PCI device if we are
+> > changing EATS. This ensures there are no ATS transactions that can race
+> > with an EATS change so we don't need to carefully sequence these bits.
+> > 
+> > Fixes: 1e8be08d1c91 ("iommu/arm-smmu-v3: Support IOMMU_DOMAIN_NESTED")
+> > Cc: stable@vger.kernel.org
+> > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> > Reviewed-by: Shuai Xue <xueshuai@linux.alibaba.com>
+> > Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> > ---
+> >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 9 +++++++++
+> >  1 file changed, 9 insertions(+)
+> > 
+> > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> > index 12a9669bcc83..a3b29ad20a82 100644
+> > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> > @@ -1095,6 +1095,15 @@ void arm_smmu_get_ste_update_safe(__le64 *safe_bits)
+> >  	 *  fault records even when MEV == 0.
+> >  	 */
+> >  	safe_bits[1] |= cpu_to_le64(STRTAB_STE_1_MEV);
+> > +
+> > +	/*
+> > +	 * EATS is used to reject and control the ATS behavior of the device. If
+> > +	 * we are changing it away from 0 then we already trust the device to
+> > +	 * use ATS properly and we have sequenced the device's ATS enable in PCI
+> > +	 * config space to prevent it from issuing ATS while we are changing
+> > +	 * EATS.
+> > +	 */
 > 
-> Add coverage for previously failed cases shifting between S2-only and S1+S2
-> STEs.
-> 
-> Reviewed-by: Shuai Xue <xueshuai@linux.alibaba.com>
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> ---
->  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c  | 46 +++++++++++++++++++
->  1 file changed, 46 insertions(+)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c
-> index 5db14718fdd6..8255a02f4efa 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c
-> @@ -33,8 +33,12 @@ static struct mm_struct sva_mm = {
->  enum arm_smmu_test_master_feat {
->  	ARM_SMMU_MASTER_TEST_ATS = BIT(0),
->  	ARM_SMMU_MASTER_TEST_STALL = BIT(1),
-> +	ARM_SMMU_MASTER_TEST_NESTED = BIT(2),
->  };
->  
-> +static void arm_smmu_test_make_s2_ste(struct arm_smmu_ste *ste,
-> +				      enum arm_smmu_test_master_feat feat);
-> +
->  static bool arm_smmu_entry_differs_in_used_bits(const __le64 *entry,
->  						const __le64 *used_bits,
->  						const __le64 *target,
-> @@ -197,6 +201,17 @@ static void arm_smmu_test_make_cdtable_ste(struct arm_smmu_ste *ste,
->  	};
->  
->  	arm_smmu_make_cdtable_ste(ste, &master, ats_enabled, s1dss);
-> +	if (feat & ARM_SMMU_MASTER_TEST_NESTED) {
-> +		struct arm_smmu_ste s2ste;
-> +		int i;
-> +
-> +		arm_smmu_test_make_s2_ste(&s2ste, ARM_SMMU_MASTER_TEST_ATS);
+> I am not sure about this one, Is it only about trusting the device?
+>
+> I’d be worried about cases where we switch domains, that means that
+> briefly the HW observers EATS=1 while it was not intended, especially
+> that EATS is in a different DWORD from S2TTB and CDptr. With all the
+> IOMMUFD/VFIO stuff it makes it harder to reason about. But I can’t
+> come up with an example to break this.
 
-Shouldn't that be conditional on "ats_enabled", I see the callers of the
-new tests already set ARM_SMMU_MASTER_TEST_ATS.
+Hmm..
 
-Thanks,
-Mostafa
+I think the last line that driver controls pci_enable/disable_ats()
+should justify the whole thing? Are you worried about device still
+doing ATS after pci_disable_ats()?
 
-> +		ste->data[0] |= cpu_to_le64(
-> +			FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_0_CFG_NESTED));
-> +		ste->data[1] |= cpu_to_le64(STRTAB_STE_1_MEV);
-> +		for (i = 2; i < NUM_ENTRY_QWORDS; i++)
-> +			ste->data[i] = s2ste.data[i];
-> +	}
->  }
->  
->  static void arm_smmu_v3_write_ste_test_bypass_to_abort(struct kunit *test)
-> @@ -554,6 +569,35 @@ static void arm_smmu_v3_write_ste_test_s2_to_s1_stall(struct kunit *test)
->  						       NUM_EXPECTED_SYNCS(3));
->  }
->  
-> +static void
-> +arm_smmu_v3_write_ste_test_nested_s1dssbypass_to_s1bypass(struct kunit *test)
-> +{
-> +	struct arm_smmu_ste s1_ste;
-> +	struct arm_smmu_ste s2_ste;
-> +
-> +	arm_smmu_test_make_cdtable_ste(
-> +		&s1_ste, STRTAB_STE_1_S1DSS_BYPASS, fake_cdtab_dma_addr,
-> +		ARM_SMMU_MASTER_TEST_ATS | ARM_SMMU_MASTER_TEST_NESTED);
-> +	arm_smmu_test_make_s2_ste(&s2_ste, 0);
-> +	/* Expect an additional sync to unset ignored bits: EATS and MEV */
-> +	arm_smmu_v3_test_ste_expect_hitless_transition(test, &s1_ste, &s2_ste,
-> +						       NUM_EXPECTED_SYNCS(3));
-> +}
-> +
-> +static void
-> +arm_smmu_v3_write_ste_test_nested_s1bypass_to_s1dssbypass(struct kunit *test)
-> +{
-> +	struct arm_smmu_ste s1_ste;
-> +	struct arm_smmu_ste s2_ste;
-> +
-> +	arm_smmu_test_make_cdtable_ste(
-> +		&s1_ste, STRTAB_STE_1_S1DSS_BYPASS, fake_cdtab_dma_addr,
-> +		ARM_SMMU_MASTER_TEST_ATS | ARM_SMMU_MASTER_TEST_NESTED);
-> +	arm_smmu_test_make_s2_ste(&s2_ste, 0);
-> +	arm_smmu_v3_test_ste_expect_hitless_transition(test, &s2_ste, &s1_ste,
-> +						       NUM_EXPECTED_SYNCS(2));
-> +}
-> +
->  static void arm_smmu_v3_write_cd_test_sva_clear(struct kunit *test)
->  {
->  	struct arm_smmu_cd cd = {};
-> @@ -600,6 +644,8 @@ static struct kunit_case arm_smmu_v3_test_cases[] = {
->  	KUNIT_CASE(arm_smmu_v3_write_cd_test_s1_change_asid),
->  	KUNIT_CASE(arm_smmu_v3_write_ste_test_s1_to_s2_stall),
->  	KUNIT_CASE(arm_smmu_v3_write_ste_test_s2_to_s1_stall),
-> +	KUNIT_CASE(arm_smmu_v3_write_ste_test_nested_s1dssbypass_to_s1bypass),
-> +	KUNIT_CASE(arm_smmu_v3_write_ste_test_nested_s1bypass_to_s1dssbypass),
->  	KUNIT_CASE(arm_smmu_v3_write_cd_test_sva_clear),
->  	KUNIT_CASE(arm_smmu_v3_write_cd_test_sva_release),
->  	{},
-> -- 
-> 2.43.0
-> 
+Thanks
+Nicolin
