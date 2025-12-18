@@ -1,229 +1,312 @@
-Received: from PH8PR06CU001.outbound.protection.outlook.com (mail-westus3azon11012060.outbound.protection.outlook.com [40.107.209.60])
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95404231845
-	for <iommu@lists.linux.dev>; Thu, 18 Dec 2025 08:48:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.209.60
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766047725; cv=fail; b=R64ZDas3vOtzNFKoRlTdJ9VdZlz25WK7CXwe7R8CXw0s2cE7sh0zkROz3hcGt2loQ15Eu/OMVfe6cvew0AfHg/mdpgDGFo7jz4aIdvuyIIDLoxwV+0nnr3INuJRuJUTf+FXXXrsJOtMcY7M0W0LkyE7JOytjhyAfLYt9hMUUEug=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766047725; c=relaxed/simple;
-	bh=bCEemP6tZC1NZaBpi4jNiMwcUhTJ2cCNyqWrthbaCeg=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=S8R+nf0KdltnhXUgAlhDwAPaLfFx8TZc4YGu+9u5nVw21OsyPBIX7U9OlI9D6XahDaig1Ci8zT5GBb30YvUlzFC+vXblGd701LEl2FS/t09nkboaR7t7WxsGp+AfM3XgCYsX11UAoBiSqcWMFcJq+l4NUlg6sV2CUI73WrueXU4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=Ob2ubfXQ; arc=fail smtp.client-ip=40.107.209.60
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6160C2F12B3
+	for <iommu@lists.linux.dev>; Thu, 18 Dec 2025 09:16:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1766049409; cv=none; b=QyS75GD6da2fBbFt7dFopFboY69/g83jPnatT1Dg+81NvG57BuyV0XKpZZf5O8X/JSGzKP+P9iHAWIrKBGJH2h5Eu6rkXWOw0WraaESKO53Pi/MQtD69cKuFqVbpXgw33mfLk69vjWBZN05tMJ7RVDX75DDM3Ivh8yYo0DDAAgQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1766049409; c=relaxed/simple;
+	bh=/hBvBWhc1YidyRQ+v7B0mLPyKphjWN1XXxejFVR95cI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
+	 Content-Type:References; b=HwTODSMEt0kUM0t/tbvYabjVW/C+zWXyf1kSOr/KiAsKzW0A5P4oCJj6qxF9wokIuBNfsjoiDjAzlF3nElgm9zPhODYDBxpUn1P/fc181cck4oX03mbfcFfT6wodwHTgefOrTjFVXB9hGMxcSzPVmelHoIyfTS5vbXdVR2OVcKQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=NR6LwWYs; arc=none smtp.client-ip=210.118.77.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Ob2ubfXQ"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=VdJtKZGD7XrImvRTxvm2n9VMfsAW7PgcW5AbBLBcS2fkXzzeCzIjB5Fk+DHmXoe8+WNyLoch5zFhwnltbNJ+xMlCApj3qHu0qrj/xvyHtABVivkMIfHSLNXo690/wMnoh2+AepNHm/6klXy9I1Hr0wfxahi7TxBM+pRAHqJZKFf17rrkZkpV96Pgl5AokL4TVPzYjAZn3gjlfvz3WW3mpJgOYZCp+We39aVUgZE6BEYoZIPZH9/UJ70bgcgqQG+c7Ae24pDLanXJCnEpEEV/y2lubt5YW3YPKf8BaY3Pd56317r5lpeP8qqMkz1rCSz6TU8k5mDvhY+AJMjfiH0KPA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Rf9QM0p0RNDLwrA92kQQ0YbGoXRVWmUF8CmnhPnRQAw=;
- b=laWyYQXVg8cL+esOLiVgUMN6HdlvnGmqzvIBFfJbCwYqy8gVQXUMFAtUOX/oL4VCgRimJy3yeL3Euz71Kq/s9ccStH8dcX5tRaCqA95HR6Jo3PiyE10k2OeFIc9MMb/3o7WG5y7UI+5sfmSRmPGFpvy5mAGshENLM1JOb49AfkVPJhBmEQd3iiCUOC9QN1v++N8F9GZdgDMU4PebFYBEnFg0NNvlna8c4XgnOO/dfv4D8svUiCdcUNv1VnGaWsck5lVF2E8LDRtILyE9Y1xvv9F5QMRAJwzVjhe/P/LFT+p+LPQaxT9vaBf84DrXyi/mItWtNYIaVD1WzaeNeU9qCQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Rf9QM0p0RNDLwrA92kQQ0YbGoXRVWmUF8CmnhPnRQAw=;
- b=Ob2ubfXQwN7pUiq0BxWNajhWATShhJZDC7aBFN1jtcBP9cP/RocrYCgF5eNByhpbZGkICoSiBdxP4Il5IQzF+d9I+hCdvitMAYS50KmCmvS6Crx6vIr25EwDinoZbCIUQMxfClklXuH/V6AeFAHS0POObAA4XQQu0g0Jyf/ulGUJ4HQy1/q7rt7QgEbBftAtkE51UjiqYMRVb9gnlK5mT488REgT4xaz/IBP7spt1dGH9/lqQzrT6EkV9gPQ5wW38cKUbRCbUsDkmggGsUx/r0h26W4JAF41bweiJc2s2h7n2jWI14unbCcod0t1wyHmRmolV6AdadK9I351i66UEA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from SJ2PR12MB8784.namprd12.prod.outlook.com (2603:10b6:a03:4d0::11)
- by DS2PR12MB9749.namprd12.prod.outlook.com (2603:10b6:8:2b9::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9434.6; Thu, 18 Dec
- 2025 08:48:39 +0000
-Received: from SJ2PR12MB8784.namprd12.prod.outlook.com
- ([fe80::1660:3173:eef6:6cd9]) by SJ2PR12MB8784.namprd12.prod.outlook.com
- ([fe80::1660:3173:eef6:6cd9%7]) with mapi id 15.20.9434.001; Thu, 18 Dec 2025
- 08:48:38 +0000
-Message-ID: <e7d3e95f-a885-4b13-ab4d-bc82793c5396@nvidia.com>
-Date: Thu, 18 Dec 2025 08:48:32 +0000
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH V7 2/4] iommu/arm-smmu-v3: Add device-tree support for
- CMDQV driver
-To: Ashish Mhetre <amhetre@nvidia.com>, will@kernel.org,
- robin.murphy@arm.com, joro@8bytes.org, robh@kernel.org, krzk+dt@kernel.org,
- conor+dt@kernel.org, nicolinc@nvidia.com
-Cc: thierry.reding@gmail.com, vdumpa@nvidia.com, jgg@ziepe.ca,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-tegra@vger.kernel.org
-References: <20251215064819.3345361-1-amhetre@nvidia.com>
- <20251215064819.3345361-3-amhetre@nvidia.com>
- <23df682e-6d08-4827-994e-1bbd89e5c903@nvidia.com>
- <5e9a0ce1-a0ba-4a31-be95-99f349ec6028@nvidia.com>
-From: Jon Hunter <jonathanh@nvidia.com>
-Content-Language: en-US
-In-Reply-To: <5e9a0ce1-a0ba-4a31-be95-99f349ec6028@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: LO4P123CA0404.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:189::13) To SJ2PR12MB8784.namprd12.prod.outlook.com
- (2603:10b6:a03:4d0::11)
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="NR6LwWYs"
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20251218091638euoutp019c0c738c32a37ea12070c0a471cbde8e~CRJIQmRUh3159031590euoutp01I
+	for <iommu@lists.linux.dev>; Thu, 18 Dec 2025 09:16:38 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20251218091638euoutp019c0c738c32a37ea12070c0a471cbde8e~CRJIQmRUh3159031590euoutp01I
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1766049398;
+	bh=e5vJUKv4U75/EfGO08/80qRbRTueeAtV9fzJ5p+CPk8=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=NR6LwWYsUpgyzmqkbzpbKqQ0v9ZMPH2TgOFYIdl3r35zPXuDejoxYE3tCCTegpI9D
+	 ByGudS9ws4KwweH4KVG5eKC/lUllm3nLhaWSyQCxjbIXX3yNaMF9tgAXJYDStoV+1q
+	 g75g6Ig/y1Ub7/I72z+NlmxN8+Le3AhiBezGiBy4=
+Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20251218091637eucas1p215051f20c202d5c71b1b0d857d2321c4~CRJIAKeQx0890608906eucas1p2s;
+	Thu, 18 Dec 2025 09:16:37 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20251218091637eusmtip2ef1aa824980ebb5d20c01c972fac337c~CRJHWWPFZ1477814778eusmtip2b;
+	Thu, 18 Dec 2025 09:16:36 +0000 (GMT)
+Message-ID: <efd9de56-9104-4909-9321-3881f691040c@samsung.com>
+Date: Thu, 18 Dec 2025 10:16:36 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ2PR12MB8784:EE_|DS2PR12MB9749:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7523bc53-5609-4cba-1603-08de3e123cf7
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|7416014|366016;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?TWhlSUVueVorVU1HZmpJL0hoUTROVDBOWllja0RZNk9yMDJ4MVZnRE1aU2l3?=
- =?utf-8?B?dDRsSTZ6Mm9JckdGbnRhTEZRRVgxTmFLcFBqbmY2by95dEh5NW9kU29uUHgr?=
- =?utf-8?B?RE4xWktNOFpIWUJMUUI3QnUwZjc2d1JFeWtMT0FxZTFGL3hUSGdsNmtTK29w?=
- =?utf-8?B?aTUzVmRDTk14bjArWWM1VnpIZDhIcThhYXNTb0U2L3l1K1lhM2JmZDNIYWdR?=
- =?utf-8?B?ZmlUQ0wzNzQwTUhoL3YwaDJhRnIwQ2hVVDVmR0g4RzFKVmxYcWQvRzBLY3lx?=
- =?utf-8?B?K3I1UnlaVW0veXJxUWpyUjRBUUhOZ0tjM2sybzdvMWdwc2oyaEZqVmo2aFlC?=
- =?utf-8?B?TUorVitBaEE4YlNPU0lWeFphZ1YwQU9XUE1hbGh1Y2taUUU1bFdKVTVsdEVH?=
- =?utf-8?B?YzdlUFRzRUZ4QkpZUzZNZTRGNTdldjRSdmpOZnR1K0tyTjNhQUNBcEJvaUxB?=
- =?utf-8?B?K0xXKzhiSGZjVTNnQWNOdkxOOEVHZUErVnVRZlNZRFVIYzZZbkVWNGFNTW5p?=
- =?utf-8?B?RUdxNm5Db2FSd0draVdkdVAvazJ1TlJVem1sRHI1Vk9QdXJUK2Nqa3pPUWYr?=
- =?utf-8?B?V3M4NlU5ZG01THorV1lneTYwZWNKUnBDSjZ3clUwSmV4R01nTUdBUFkzM3VQ?=
- =?utf-8?B?TjIzK3crQmJLSFUwWFM0TlJodHFBRWZvZVJEd1U4YzlKK2lzbEhpNCtOaFhu?=
- =?utf-8?B?ekRlSXNXbXFtU3BZWUdWS29VUjZDaHlWT1NkQjM3c241dHlwRkFMTFRmbTMx?=
- =?utf-8?B?Z2hHRG1ORFNEKzZsVG12WlU3dUdzeDRJU1BVTjhyaUEzblAza2g4Q3hjVmZV?=
- =?utf-8?B?dG1kVUdRWi9ucS9ISk93Q3p5d3JRcFJEVFJha1ltOTNJdkhFN3BXeW5FWUJC?=
- =?utf-8?B?MDY5cSswZUdBZmFKZkVrTzRYc0U2S012Y2IvSVFDOVpSeXVGcC9RT2twbTFY?=
- =?utf-8?B?eC9OZEJZUVVzTmlqb3FYOTJQdmxqRWlZVEFnK010Z0U5YVpIUHpiYS9ScTN0?=
- =?utf-8?B?MFlDYXBPTHpHdlBON0hrZzY0bTRoMDZKSlFSanFSUzVnMU9QdVVnbmxFL25p?=
- =?utf-8?B?WmNWeVp3UGxYQTZxMjFkSlU0VU1UL0ltU1B1T29FdXZ4RlA1RXErZUZHdWJR?=
- =?utf-8?B?MTd6SC96SzM3NUxIUmY2R2JIblkxWFlxbUpoU2U2Qll1djlvTHA2K3prc0k5?=
- =?utf-8?B?UnYzYUJITUg5ek1aQlIyQjlYeWtGL21EZms5Wnc1UHBzT1c1R05nV2FsaFRQ?=
- =?utf-8?B?aUhNQU50QURRK2l4Wk1jUzRZbDllVzdGT1Z5Smx0WG1GcktveDhBT3NZSWFS?=
- =?utf-8?B?Ky9FQnBhK2NzemdaRy9KMWJ4WTlibkVGdExYNEF3cTZEU3BnZVVMbzJVL2NR?=
- =?utf-8?B?aDRaYTRSdXNOa25Jelh4L0xmWUxoMEFUMzkxampORGhUN2k2RXdyTVZSMG5l?=
- =?utf-8?B?QlUzeXZqRGxEQ1hZNmQ2Um9IYXl0b2srWnZwUnpGYTYvV3I4ZmpnL3ZtVlg3?=
- =?utf-8?B?aW0vYUVpQnVOeGw4aE1BU0NuZEdsM1doZzhDY1FqUW1lZ2R0TExxRVV0aS9m?=
- =?utf-8?B?c2NCRUszRElyQ0xSZ3UxejFDcVhnaWRtM05EeEc3QTNLVm1KTmZkNTdmcGVL?=
- =?utf-8?B?RzFDZjB2L2xYQ1BtU1hnVWZCUkNRM3hsb1RnQkRXaFU0U25JRGpSbERxYVF1?=
- =?utf-8?B?RVJ4Z0dJSG0wcDBBUmdKNXNpa1l2emk5ZGlXbXBmaXVxVmZRWTUwbEZDUlZn?=
- =?utf-8?B?SCtGWGxaNGo0dG1ZZ3ltY2ZqOW5vT3N0VzJkYlhGM2VSckNIS0VyTGZTZzMv?=
- =?utf-8?B?OE9HcEtlU2tUQTg3YWxnVXozbjQvSGFKck5ZVW0zRFRERm9PSWF2WVJ6OU5Y?=
- =?utf-8?B?eVFNZjJZZlZsVFh5elR5Nm5FUXBENjk0eVYwR2RBR1Z1cFZpTkVpVkNlNHFt?=
- =?utf-8?Q?xG4StJSdM82Cz++Zlv7GILteKajaRpgM?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ2PR12MB8784.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(7416014)(366016);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?Y1p1M2VnN3orb3FwR0p1RFlaZTVKNTJiaU90VmRmRWlEeGdmU1oxeSt4dEJs?=
- =?utf-8?B?OGhXbUtaZmViclBSTVRHeWNucFpxbTB3ZWo4R1N1SU8wSmhPN28xVE9vT3U0?=
- =?utf-8?B?MkxDbkxLKzBTMGVaNjNoU2cyRjVHSS9QVkVxNXJGTjkvY2VLMzNKa3l5SzNF?=
- =?utf-8?B?SXh1TFVmZkkzYmFXZXM0ZDB4c1Q4eFVyLzRWdDNqa1VrVFFEMEl6OUNjR2cz?=
- =?utf-8?B?bEU0blEvY3Y2UDVwMmlTUVNQNXNWTnFxeERLSUpvMXpKRWo1eDY1ZkN2YVFJ?=
- =?utf-8?B?blVSTXlhbHE5MmdEV25RZWFaSENRTW9HUTlGSFoyb0hteW1INjNjMngrdnB4?=
- =?utf-8?B?OWxuUDg5UWJSbzdiVDQ5U1ppYTFjalBtNW85NWlWbzJqSDJ0bCsxei82cS9K?=
- =?utf-8?B?SERWNEVVOExlUitMZXR3dlRWRk9jWmxiZm52b0Fpckw2Z0FQSEQreE94Nmla?=
- =?utf-8?B?Rlk0aGNESHZ6UmwyRFh6T05ZYWpEMWhoY3ZRRGUvNjV4ODE4dlRnT281d21T?=
- =?utf-8?B?TTdTSHVXTm1MVTNtcElWaFNnTFErZUxNQzZFZ0Q3MlE2VHBxY2dwckVMelBr?=
- =?utf-8?B?UVUzaGhWSmdVbGt5cXpuSEQzNEpmMENrcE8xU0JRaHU4SERaVXkwUGlPaDIy?=
- =?utf-8?B?bzBPemw3VGc0bGRBV3Q2WE9PMmZTcGlwRzBYNzIrdDhyNFJYUjlmVElPVkxt?=
- =?utf-8?B?dERTUC9oVXJFL1Z4citzcURxYXNrS05YanlhVmdCV01jSnlqNjBLc09tSWZy?=
- =?utf-8?B?cmVXZm1OTXQ3Y3JmWUxEQzlUS2VJSkEwTXVKZ0EyZ2JjVDJsU1ZSSkEzSFBU?=
- =?utf-8?B?MUFuQ20yTHlPcW1NTXZrOW9LT0tnMmxEaWhOMW9SdEt5MkNiWk50Mlc4anR1?=
- =?utf-8?B?VXNtaXNQYnlTS1lDUGd3OVk0Z0NMWTJ3NjdHWEFkTStzd0RVNHNWcUlLM0E4?=
- =?utf-8?B?SnpKbVRWaUJwd0tQVllpd2hzK0N3dm94WStWRXM2MFpkdHBXaFQ2YjFhcGFF?=
- =?utf-8?B?ZmZnWDZXclNvTEZNZEN5U3AyM05mUTdKVHFtT2xYV3REeEUzSTVZTG9FSnUr?=
- =?utf-8?B?K3dQK1Y3UXdJcjZINndzYUx3MytqNUE2eE1IVVRKU1AyZDV3aDZxd1FEVFpP?=
- =?utf-8?B?RGVNcC9VejVlTWgwK0lJWjdFUE0xdzdzL3c5WVplYkZlNDEzd3pGV2dDdDJy?=
- =?utf-8?B?WEFVb1BsUlp5K2pweWliSkswVUJGeGQvUHJpUFJoRnp5WUEzV3h5TWFoOENt?=
- =?utf-8?B?eC94dnhSSWYxRmszeTQ2K1lHdVh3VUc3QXZrdHRWYWRXSGthZ2RTbVpHUjBH?=
- =?utf-8?B?UXNOc3dibndwbWNYRmRmbjUwY3N1bUtsenAyMEZEdzVEQlBXSk96eVgyclV6?=
- =?utf-8?B?cE1qV0ZGUTlwZGVKU1JZd0JJSS83eVJ0STVEOTgzS3BPUThEVExFOWZwT0ZR?=
- =?utf-8?B?U1FuU2hhNXY2Uy9qMDIwNDZCbnlVUDlyZXJPazJIMGR5ZXRQcVBRNUlSb2hZ?=
- =?utf-8?B?TlRGOHU0ejBwbDZxVWhxZm1qUTdhU1IzR05sNFFFazZ6cENHWHFYMzZ5QjJI?=
- =?utf-8?B?S1U4eXdwSTNaeGFWcW9hbjBNMytGUDUzOWFhOWRZVlhQQmhvQkthS00xTGNR?=
- =?utf-8?B?VFcxSVdpYnNkc3MvazNxcWhtRG1nNUovd1ovMVVXUVoxVm1YVUxCbGhieGhr?=
- =?utf-8?B?azQ5cGNVbElpZDIycmY0SHI5QlhYZ0tvSjNaVFJlKzVINE5oZ1M4ekhzbE9M?=
- =?utf-8?B?c1lXWVF6UDA4c3MwUkEwSmNnQ1lhV3Q0b3JaSWV3QlVtQjc5N3NlWHRSSXBk?=
- =?utf-8?B?Z1RtUHpzMmNHWFBzSE5NU1FqVko3bGo3WkZYK0NWVDd1UVYzUEl5MnQrUWdh?=
- =?utf-8?B?Y0s4MkN4WkhZWDVyYUswdFRJV3hFSmtsU1NCQWxJcVR1REhpRkdXVmpyU2Zp?=
- =?utf-8?B?T0YyOXFRa3RoR3hnSk95UFgvSlJvMWF6R0pScFVCMW0rbkJVdFAxK09odEo2?=
- =?utf-8?B?ZEF5bWc1YmlKbklwcC9pbEZ4WkdITXo3UnpEOFFZZk1rd3l3Vkt4b3lBYlov?=
- =?utf-8?B?RGo5V1BXRmtiMitYa0xiRXRLNSt2eDJNM1EzMnhaOUZ6ZVltV2JlZGxuTnhl?=
- =?utf-8?Q?RAM9q9wUjuFOqFVEWu1udQdGc?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7523bc53-5609-4cba-1603-08de3e123cf7
-X-MS-Exchange-CrossTenant-AuthSource: SJ2PR12MB8784.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Dec 2025 08:48:38.8733
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 042zJbOVTM9RL/uw0+wWIlkVs1FSv6WlKj/Ip+6EYvbeEbvDT1x37tSVnFl0gGVYM7uqWEHDoeHPxWPRo3kpPg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS2PR12MB9749
+User-Agent: Betterbird (Windows)
+Subject: Re: Bug#1116251: linux-image-6.12.48+deb13-rpi: Raspberry Pi Zero W
+ does not boot
+To: =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>,
+	Oreoluwa Babatunde <oreoluwa.babatunde@oss.qualcomm.com>, William Zhang
+	<william.zhang@broadcom.com>
+Cc: Salvatore Bonaccorso <carnil@debian.org>, 1116251@bugs.debian.org,
+	regressions@lists.linux.dev, Sasha Levin <sashal@kernel.org>,
+	iommu@lists.linux.dev, Benjamin Drung <bdrung@debian.org>
+Content-Language: en-US
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <hnwgn7glub4klmkzabzcm76eldaa3xm5ua72eldwzesblveo2a@4xq2bxhmbsyq>
+Content-Transfer-Encoding: 8bit
+X-CMS-MailID: 20251218091637eucas1p215051f20c202d5c71b1b0d857d2321c4
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20251218083009eucas1p1a8a75fa00994c260128f8e6fd697bc85
+X-EPHeader: CA
+X-CMS-RootMailID: 20251218083009eucas1p1a8a75fa00994c260128f8e6fd697bc85
+References: <c35629054179865b770bc3bf0ed0cfe4c01f77f7.camel@debian.org>
+	<772b4ba943acec4ec24009af7db0f7ea249adc98.camel@debian.org>
+	<aSaxsQB3w61sEV90@eldamar.lan>
+	<c35629054179865b770bc3bf0ed0cfe4c01f77f7.camel@debian.org>
+	<931652ee31f88beadd45aefd972d8ea221d1e79c.camel@debian.org>
+	<c35629054179865b770bc3bf0ed0cfe4c01f77f7.camel@debian.org>
+	<aSop6N7jUJ__lhy-@eldamar.lan> <aSwN5F9UlwHUnxDt@eldamar.lan>
+	<6cd9babe311f6d5e2db0b51d04a4248377defcd3.camel@debian.org>
+	<39590b9d90825cbc83072027b742410c3576fafa.camel@debian.org>
+	<CGME20251218083009eucas1p1a8a75fa00994c260128f8e6fd697bc85@eucas1p1.samsung.com>
+	<hnwgn7glub4klmkzabzcm76eldaa3xm5ua72eldwzesblveo2a@4xq2bxhmbsyq>
 
-
-On 18/12/2025 06:32, Ashish Mhetre wrote:
-> 
-> On 12/18/2025 2:13 AM, Jon Hunter wrote:
+On 18.12.2025 09:29, Uwe Kleine-König wrote:
+> Control: forwarded -1 https://lore.kernel.org/linux-iommu/hnwgn7glub4klmkzabzcm76eldaa3xm5ua72eldwzesblveo2a@4xq2bxhmbsyq
+> Hello,
+>
+> I extended the audience to people involved in the creation of
+> 2c223f7239f376a90d71903ec474ba887cf21d94.
+>
+> On Wed, Dec 17, 2025 at 11:07:00PM +0100, Benjamin Drung wrote:
+>> On Wed, 2025-12-17 at 22:20 +0100, Benjamin Drung wrote:
+>>> On Sun, 2025-11-30 at 10:27 +0100, Salvatore Bonaccorso wrote:
+>>>> On Sat, Nov 29, 2025 at 12:02:00AM +0100, Salvatore Bonaccorso wrote:
+>>>>> On Fri, Nov 28, 2025 at 10:53:17PM +0100, Benjamin Drung wrote:
+>>>>>> On Wed, 2025-11-26 at 08:52 +0100, Salvatore Bonaccorso wrote:
+>>>>>>> On Sat, Nov 22, 2025 at 04:27:53PM +0100, Benjamin Drung wrote:
+>>>>>>>> On Fri, 2025-11-21 at 09:52 +0100, Uwe Kleine-König wrote:
+>>>>>>>>> On Thu, Nov 20, 2025 at 11:11:07AM +0100, Benjamin Drung wrote:
+>>>>>>>>>> On Thu, 2025-11-20 at 08:58 +0100, Uwe Kleine-König wrote:
+>>>>>>>>>>> On Mon, Nov 17, 2025 at 02:05:41AM +0100, Benjamin Drung wrote:
+>>>>>>>>>>>> On Wed, 2025-11-05 at 20:14 +0100, Uwe Kleine-König wrote:
+>>>>>>>>>>>>> Can you try adding
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> 	earlyprintk=serial,0x7e215040
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> to the kernel commandline. Not sure this activates the right procedures,
+>>>>>>>>>>>>> maybe try it with the working kernel first.
+>>>>>>>>>>>> I tried with the working kernel 6.12.43+deb13-rpi but these were the
+>>>>>>>>>>>> earliest lines:
+>>>>>>>>>>>>
+>>>>>>>>>>>> [    4.116565] printk: legacy console [ttyS1] enabled
+>>>>>>>>>>>> [    4.129635] printk: legacy bootconsole [earlycon0] disabled
+>>>>>>>>>>>> [    4.147050] bcm2835-power bcm2835-power: Broadcom BCM2835 power domains driver
+>>>>>>>>>>>> [    4.160972] mousedev: PS/2 mouse device common for all mice
+>>>>>>>>>>>> [    4.172622] i2c-bcm2835 20805000.i2c: Could not read clock-frequency property
+>>>>>>>>>>>> [    4.186585] bcm2835-wdt bcm2835-wdt: Broadcom BCM2835 watchdog timer
+>>>>>>>>>>>>
+>>>>>>>>>>>> I tried with 6.12.57+deb13-rpi but that failed to boot and the
+>>>>>>>>>>>> earlyprintk line did not give any additional logs.
+>>>>>>>>>>> Can you please provide a full kernel log of the working kernel?
+>>>>>>>>>> dmesg log is attached.
+>>>>>>>>>>
+>>>>>>>>>>> Also please provide the output of:
+>>>>>>>>>>>
+>>>>>>>>>>> 	for f in /proc/tty/driver/*; do echo $f; sed 's/^/  /' < $f; done
+>>>>>>>>>> /proc/tty/driver/serial
+>>>>>>>>>>    serinfo:1.0 driver revision:
+>>>>>>>>>>    0: uart:unknown port:00000000 irq:0
+>>>>>>>>>>    1: uart:16550 mmio:0x20215040 irq:53 tx:15629 rx:0 RTS|CTS|DTR
+>>>>>>>>>>    2: uart:unknown port:00000000 irq:0
+>>>>>>>>>>    3: uart:unknown port:00000000 irq:0
+>>>>>>>>>> /proc/tty/driver/ttyAMA
+>>>>>>>>>>    serinfo:1.0 driver revision:
+>>>>>>>>>>    0: uart:PL011 rev2 mmio:0x20201000 irq:81 tx:452 rx:980 RTS|CTS|DTR
+>>>>>>>>> OK, is
+>>>>>>>>>
+>>>>>>>>>   	earlyprintk=serial,0x20215040
+>>>>>>>>>
+>>>>>>>>> more communicative then?
+>>>>>>>> Nope, but I found
+>>>>>>>> https://www.raspberrypi.com/documentation/computers/configuration.html#enabling-early-console-for-linux
+>>>>>>>> and setting earlycon=uart8250,mmio32,0x20215040 worked. The kernel
+>>>>>>>> 6.12.43+deb13-rpi booted with printing the early lines as well (see
+>>>>>>>> dmesg of previous mail).
+>>>>>>>>
+>>>>>>>> With all other experiments cleaned, I tried the latest kernel:
+>>>>>>>>
+>>>>>>>> ```
+>>>>>>>> $ cat /etc/default/raspi-extra-cmdline
+>>>>>>>> earlycon=uart8250,mmio32,0x20215040
+>>>>>>>> $ update-initramfs -u
+>>>>>>>> ```
+>>>>>>>>
+>>>>>>>> I got following logs before it got stuck:
+>>>>>>>>
+>>>>>>>> ```
+>>>>>>>> [    0.000000] Booting Linux on physical CPU 0x0
+>>>>>>>> [    0.000000] Linux version 6.12.57+deb13-rpi (debian-kernel@lists.debian.org) (arm-linux-gnueabi-gcc-14 (Debian 14.2.0-19) 14.2.0, GNU ld (GNU Binutils for Debian) 2.44) #1 Debian 6.12.57-1 (2025-11-05)
+>>>>>>>> [    0.000000] CPU: ARMv6-compatible processor [410fb767] revision 7 (ARMv7), cr=00c5387d
+>>>>>>>> [    0.000000] CPU: PIPT / VIPT nonaliasing data cache, VIPT nonaliasing instruction cache
+>>>>>>>> [    0.000000] OF: fdt: Machine model: Raspberry Pi Zero W Rev 1.1
+>>>>>>>> [    0.000000] random: crng init done
+>>>>>>>> [    0.000000] earlycon: uart8250 at MMIO32 0x20215040 (options '')
+>>>>>>>> [    0.000000] printk: legacy bootconsole [uart8250] enabled
+>>>>>>>> [    0.000000] Memory policy: Data cache writeback
+>>>>>>>> [    0.000000] Reserved memory: bypass linux,cma node, using cmdline CMA params instead
+>>>>>>>> [    0.000000] OF: reserved mem: node linux,cma compatible matching fail
+>>>>>>>> [    0.000000] cma: Reserved 64 MiB at 0x17000000 on node -1
+>>>>>>>> ```
+>>>>>>>>
+>>>>>>>> It looks like being cma related and I found a cma boot option in
+>>>>>>>> /etc/default/raspi-firmware. So I modified /boot/firmware/cmdline.txt
+>>>>>>>> and changed cma=64M to cma=0. Then the system booted without problems:
+>>>>>>>>
+>>>>>>>> ```
+>>>>>>>> [...]
+>>>>>>>> [    0.000000] Reserved memory: bypass linux,cma node, using cmdline CMA params instead
+>>>>>>>> [    0.000000] OF: reserved mem: node linux,cma compatible matching fail
+>>>>>>>> [    0.000000] Zone ranges:
+>>>>>>>> [    0.000000]   Normal   [mem 0x0000000000000000-0x000000001bffffff]
+>>>>>>>> [    0.000000] Movable zone start for each node
+>>>>>>>> [    0.000000] Early memory node ranges
+>>>>>>>> [    0.000000]   node   0: [mem 0x0000000000000000-0x000000001bffffff]
+>>>>>>>> [    0.000000] Initmem setup node 0 [mem 0x0000000000000000-0x000000001bffffff]
+>>>>>>>> [    0.000000] Kernel command line:  dma.dmachans=0x7ff5 bcm2708.boardrev=0x9000c1 bcm2708.serial=0x8bb1238 bcm2708.uart_clock=48000000 bcm2708.disk_led_gpio=47 smsc95xx.macaddr=B8:27:EB:BB:12:38 vc_mem.mem_base=0x1ec00000 vc_mem.mem_size=0x20000000  console=tty0 console=ttyS1,115200 root=/dev/mmcblk0p2 rw fsck.repair=yes net.ifnames=0 cma=0 rootwait earlycon=uart8250,mmio32,0x20215040
+>>>>>>>> [...]
+>>>>>>>> ```
+>>>>>>>>
+>>>>>>>> Then I persisted this change by setting CMA=0 in
+>>>>>>>> /etc/default/raspi-firmware:
+>>>>>>>>
+>>>>>>>> ```
+>>>>>>>> $ grep -Ev '^(#|$)' /etc/default/raspi-firmware
+>>>>>>>> CMA=0
+>>>>>>>> $ update-initramfs -u
+>>>>>>>> ```
+>>>>>>>>
+>>>>>>>> This config removes the cma cmdline option completely. The system still
+>>>>>>>> boots:
+>>>>>>>>
+>>>>>>>> ```
+>>>>>>>> [...]
+>>>>>>>> [    0.000000] Memory policy: Data cache writeback
+>>>>>>>> [    0.000000] Reserved memory: created CMA memory pool at 0x17000000, size 64 MiB
+>>>>>>>> [    0.000000] OF: reserved mem: initialized node linux,cma, compatible id shared-dma-pool
+>>>>>>>> [    0.000000] OF: reserved mem: 0x17000000..0x1affffff (65536 KiB) map reusable linux,cma
+>>>>>>>> [    0.000000] Zone ranges:
+>>>>>>>> [    0.000000]   Normal   [mem 0x0000000000000000-0x000000001bffffff]
+>>>>>>>> [    0.000000] Movable zone start for each node
+>>>>>>>> [    0.000000] Early memory node ranges
+>>>>>>>> [    0.000000]   node   0: [mem 0x0000000000000000-0x000000001bffffff]
+>>>>>>>> [    0.000000] Initmem setup node 0 [mem 0x0000000000000000-0x000000001bffffff]
+>>>>>>>> [    0.000000] Kernel command line:  dma.dmachans=0x7ff5 bcm2708.boardrev=0x9000c1 bcm2708.serial=0x8bb1238 bcm2708.uart_clock=48000000 bcm2708.disk_led_gpio=47 smsc95xx.macaddr=B8:27:EB:BB:12:38 vc_mem.mem_base=0x1ec00000 vc_mem.mem_size=0x20000000  console=tty0 console=ttyS1,115200 root=/dev/mmcblk0p2 rw fsck.repair=yes net.ifnames=0  rootwait earlycon=uart8250,mmio32,0x20215040
+>>>>>>>> [...]
+>>>>>>>> ```
+>>>>>>>>
+>>>>>>>> That should hopefully narrow down the issue space.
+>>>>>>> If I'm not wrong the only cma related change between 6.12.43 and
+>>>>>>> 6.12.48 was the backport of 2c223f7239f3 ("of: reserved_mem:
+>>>>>>> Restructure call site for dma_contiguous_early_fixup()"):
+>>>>>>>
+>>>>>>> 	commit 46efab01648a04082266115a8e917c3b26b97fa8
+>>>>>>> 	Author: Oreoluwa Babatunde <oreoluwa.babatunde@oss.qualcomm.com>
+>>>>>>> 	Date:   Wed Aug 6 10:24:21 2025 -0700
+>>>>>>>
+>>>>>>> 	    of: reserved_mem: Restructure call site for dma_contiguous_early_fixup()
+>>>>>>>
+>>>>>>> 	    [ Upstream commit 2c223f7239f376a90d71903ec474ba887cf21d94 ]
+>>>>>>>
+>>>>>>> 	    Restructure the call site for dma_contiguous_early_fixup() to
+>>>>>>> 	    where the reserved_mem nodes are being parsed from the DT so that
+>>>>>>> 	    dma_mmu_remap[] is populated before dma_contiguous_remap() is called.
+>>>>>>>
+>>>>>>> 	    Fixes: 8a6e02d0c00e ("of: reserved_mem: Restructure how the reserved memory regions are processed")
+>>>>>>> 	    Signed-off-by: Oreoluwa Babatunde <oreoluwa.babatunde@oss.qualcomm.com>
+>>>>>>> 	    Tested-by: William Zhang <william.zhang@broadcom.com>
+>>>>>>> 	    Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+>>>>>>> 	    Link: https://lore.kernel.org/r/20250806172421.2748302-1-oreoluwa.babatunde@oss.qualcomm.com
+>>>>>>> 	    Signed-off-by: Sasha Levin <sashal@kernel.org>
+>>>>>>>
+>>>>>>> Uwe, would that make sense? Benjamin can you try to make a build with
+>>>>>>> that commit reverted, does it fix the problem?
+>>>>>> Building the kernel on the Pi Zero would probably take ages. I have a
+>>>>>> Raspberry Pi 5 running arm64. That should be able to build the kernel in
+>>>>>> a armel schroot, shouldn't it? Is there documentation for building the
+>>>>>> kernel?
+>>>>> I hope it is fine for Uwe that i respond here, he might have another
+>>>>> more efficient way to reach our goal.
+>>>>>
+>>>>> But we have the simple-patching guideline here:
+>>>>> https://protect2.fireeye.com/v1/url?k=6d29844b-0ca29171-6d280f04-74fe4860008a-0bd2c61b0efaf6bb&q=1&e=9d70d889-a8df-4ca7-962f-11b3a6da1b85&u=https%3A%2F%2Fkernel-team.pages.debian.net%2Fkernel-handbook%2Fch-common-tasks.html%23id-1.6.6.4
+>>>>>
+>>>>> That should work within an armel schroot work well, e.g. on a
+>>>>> porterbox amdahl.d.o i would first setup a schroot via:
+>>>>>
+>>>>> schroot -b -c chroot:trixie_armel-dchroot -n linux
+>>>>> dd-schroot-cmd -c linux apt-get update
+>>>>> dd-schroot-cmd -c linux apt-get dist-upgrade
+>>>>> dd-schroot-cmd -c linux apt-get build-dep linux
+>>>>> schroot -r -c linux
+>>>>> (see https://dsa.debian.org/doc/schroot/)
+>>>>>
+>>>>> Then download the linux/6.12.57-1 source and make the revert patch
+>>>>> available.
+>>>>>
+>>>>> apt-get source linux
+>>>>> cd linux-*
+>>>>> ./debian/bin/test-patches -f rpi ../0001-Revert-of-reserved_mem-Restructure-call-site-for-dma.patch
+>>>> In case you can/want trust unsigned packages (but I have put a
+>>>> sha256sum along signed with my key in the DD keyring), you can test
+>>>> the patch revert via the packages on:
+>>>> https://people.debian.org/~carnil/tmp/linux/1116251/
+>>> Thanks for providing the kernel. I downloaded linux-image-
+>>> 6.12+unreleased-rpi_6.12.57-1a~test_armel.deb and installed it. This
+>>> kernel hangs on boot (see attached boot.log). It hangs there
+>>> reproducible.
+>> The "Linux version 4.14.98+" in the log puzzled me and
+>> /etc/kernel/postinst.d/z50-raspi-firmware did not copy kernel
+>> 6.12.57-1a~test to /boot/firmware.
 >>
+>> I found the old kernel.img and kernel7.img that I deleted. I copied the
+>> 6.12.57-1a~test kernel manually:
 >>
->> On 15/12/2025 06:48, Ashish Mhetre wrote:
->>> Add device tree support to the CMDQV driver to enable usage on Tegra264
->>> SoCs. The implementation parses the nvidia,cmdqv phandle from the SMMU
->>> device tree node to associate each SMMU with its corresponding CMDQV
->>> instance based on compatible string.
->>>
->>> Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
->>> Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
->>> ---
->>>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 32 +++++++++++++++++++++
->>>   1 file changed, 32 insertions(+)
->>>
->>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/ 
->>> iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->>> index dad3c0cb800b..0cd0013200f3 100644
->>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->>> @@ -4530,6 +4530,35 @@ static int arm_smmu_device_hw_probe(struct 
->>> arm_smmu_device *smmu)
->>>       return 0;
->>>   }
->>>   +#ifdef CONFIG_TEGRA241_CMDQV
->>> +static void tegra_cmdqv_dt_probe(struct device_node *smmu_node,
->>> +                 struct arm_smmu_device *smmu)
->>> +{
->>> +    struct platform_device *pdev;
->>> +    struct device_node *np;
->>> +
->>> +    np = of_parse_phandle(smmu_node, "nvidia,cmdqv", 0);
->>> +    if (!np)
->>> +        return;
->>> +
->>> +    /* Tegra241 CMDQV driver is responsible for put_device() */
->>> +    pdev = of_find_device_by_node(np);
->>> +    of_node_put(np);
->>> +    if (!pdev)
->>> +        return;
->>> +
->>> +    smmu->impl_dev = &pdev->dev;
->>> +    smmu->options |= ARM_SMMU_OPT_TEGRA241_CMDQV;
->>> +    dev_info(smmu->dev, "found companion CMDQV device: %s\n",
->>> +         dev_name(smmu->impl_dev));
+>> ```
+>> update-initramfs -u -k 6.12+unreleased-rpi
+>> cd /boot/firmware/
+>> cp ../vmlinuz-6.12+unreleased-rpi .
+>> cp ../initrd.img-6.12+unreleased-rpi .
+>> vim config.txt
+>> reboot
+>> ```
 >>
->> This seems a bit noisy. dev_dbg?
+>> Then the Pi booted the correct kernel (6.12+unreleased-rpi) successfully
+>> with following cmdline configurations:
 >>
-> 
-> This info print is similar to what is there in ACPI path as well.
-> It's only a single print per SMMU at boot time. Should I still change
-> it to dev_dbg?
+>> * no cma set
+>> * cma=0
+>> * cma=64M
+> If I understood right that means that
+> 46efab01648a04082266115a8e917c3b26b97fa8 aka
+> 2c223f7239f376a90d71903ec474ba887cf21d94 broke booting on the Raspberry
+> Pi Zero W when CMA is used.
+>
+> #regzbot introduced: 2c223f7239f376a90d71903ec474ba887cf21d94
+>
+> Does this ring a bell for someone, or do you have some debugging
+> instructions? Complete context is available at
+> https://bugs.debian.org/1116251.
 
-Yes, I would.
+There is a fix posted for this case, but it needs a bit more discussion:
 
-Jon
+https://lore.kernel.org/all/20251210002027.1171519-1-oreoluwa.babatunde@oss.qualcomm.com/
 
+Best regards
 -- 
-nvpublic
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
