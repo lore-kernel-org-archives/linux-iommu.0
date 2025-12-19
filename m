@@ -1,189 +1,263 @@
-Received: from CO1PR03CU002.outbound.protection.outlook.com (mail-westus2azon11010050.outbound.protection.outlook.com [52.101.46.50])
+Received: from sender4-of-o50.zoho.com (sender4-of-o50.zoho.com [136.143.188.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6980A2DE6E6;
-	Fri, 19 Dec 2025 20:56:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.46.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F0632848A2
+	for <iommu@lists.linux.dev>; Fri, 19 Dec 2025 21:26:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.50
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766177803; cv=fail; b=ibdS8eLVVnKxYv2qAmSdE8JAwYJcpk6dZsgFZhsQVhIdCHoujiNcZnQ6FLzy22fIbAns35u3x+hcX+CWIkVG2QQknV4jUuHCSqDBz98OG9fWs4Sgg5BwvVgUbyFQtiN2Fis5jzMZqeGCJnXlGmcqwRPmuiseOUClnIAjxgwW03M=
+	t=1766179609; cv=pass; b=lBhd5ccLalt2Lt2gb2FjUQydrPmuP3ZJ1zXr4HiPv5KYsKnNH6tok43aS6D67vlBC3E8O3WdbArKp4Je63GiPQVP5lex08IkcWbHS6wPaPepwpMJ9OKttulCM//ZVBJkPE/YJhbmldlenVnM50oGvb3OVNOjfYS/2mcxqYJaohg=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766177803; c=relaxed/simple;
-	bh=DGekwPWZDUmlI6+fqbd/ny8fefvS7HZmtybgtZcXQMo=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ZxFMeqfyWdOvOYnhCvk911nbE0TZuY4F/TM0F5XTd/wTsT1T+sJL85kRNZwDwwVD+1UZsjzBIDEjOh7EVohvWszPdmg4Q0RRNcgKfwRF9L+f3dvybriXY8SHMwd4omM+nuhy2jlOHRk+tYBG9Ftz8gjUJoSva2aPiZSdnujx9fE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=RUvwPNw5; arc=fail smtp.client-ip=52.101.46.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	s=arc-20240116; t=1766179609; c=relaxed/simple;
+	bh=/KdBLu3zLIn3vMbwoWA7KwHaiELSeLp1z4W3gn1njws=;
+	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
+	 In-Reply-To:Content-Type; b=YCDlhpWp2Gbc91zQ2Ti60JuSzwQ4OTeNJ/SNK4dX3ihSF9u7tP+FSUpNSMEIFU0ATVwMEn6watz8nWkzCpNRVV3aRSX+ecUKSBtokOXETmPjdFYmTAPbxBOd+oFX9NEwfSV6lLiLwxA/sShttrxc709GjANycZ2WZqQ493JU2dU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=apertussolutions.com; spf=pass smtp.mailfrom=apertussolutions.com; dkim=pass (1024-bit key) header.d=apertussolutions.com header.i=dpsmith@apertussolutions.com header.b=EHw8A+Hx; arc=pass smtp.client-ip=136.143.188.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=apertussolutions.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=apertussolutions.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="RUvwPNw5"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=gx6vfcCmt6hZrumzoo5o5iKyqLi5YnwNP6mZr/r74x5QIjjrNPhwU+HkdvsH1PUb3Ac9UFQ2NFYx/OwhrbhywTsHnxuEBMKnWTfR21cGMtnaSkxgZT3p6toE5q9bnuV7xIfkY0O9k7tvdHZUw540OLoD4aBanNiAbiqyLJFexCUZ700bvKMGvGXAUaNGBuoJwea3zLJ0h6ARyzl6L4EZ0GVuReXx/mJ/xCw7JfHQttIz3JJjgLfXnr/gnVJDb0/2xX+TMrI/wRgcbllYuhyl/93jwLuH417dgi1UI0InHjjdX20B1zuu3Z/873H6mGUbbGFbVBCOW0t5lLsuUCGezQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4jWm8IOqguoFG1louptjk3W4WD90xrzw2qWzNqJ7hK4=;
- b=HYVjj0wRUuCh89rKmgmoGuK/MiypjqZL2HtlLMMhJ1k63mrl/2kQ4KH+sgAu9Anopcve6nsykjfXU3NeggoCw4GzFgE/X2V5nQG01WTU0KEk6wk0GwqrvPTD7s4n4kZpD+zN90ZaXe684nPsAQ6TRgb4BPhfde2JO9ch8Ujork8xceUJzpmGaGhXHG7soYa6AGK6kF2+bgo6tAkr2hgJII1x2HLzi4Oo4l3yizTJILhNK2BaDJuraJv4nSMIb8WwMTgILFnM/mtDzoqqdd7896TYDQaHDt41CizseR+w4u2CeRu+hyQPoQEOoLqO/zJIpywKbf6PFi6il620K5/1mg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4jWm8IOqguoFG1louptjk3W4WD90xrzw2qWzNqJ7hK4=;
- b=RUvwPNw5mSbNAFaZeH+ZGoK3rw29o0gz/9419IvZWWSLZ/m9PqaxaTszYF++UlGuCXU4EeP9GckYDdwHRu4jSDgm0M/Pfwh9LVYFovN8rOM7jYDFrxSlxqn4SGj/6eEChmwz1nh+4ZIfTbGhNlLk13J7GpgMH64yLKC397+X0vnofAMH9Sr6CfH7wNTfSW/137/6mRJeZpv9nGvViafaxkl6z1hojN9YVGXVwyHRmfKuHtmYJDthofm6uglqNl1nvQrrJOS+L/3ZtEXSSq3RO+uwW1zxX/dLJMoqVQbIt1HHaGJJAvzwPezH08hM5ZFzL6gADwHSSKnXDNPdcyarlw==
-Received: from SJ0PR13CA0036.namprd13.prod.outlook.com (2603:10b6:a03:2c2::11)
- by CY8PR12MB7732.namprd12.prod.outlook.com (2603:10b6:930:87::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9434.9; Fri, 19 Dec
- 2025 20:56:32 +0000
-Received: from SJ1PEPF00001CEB.namprd03.prod.outlook.com
- (2603:10b6:a03:2c2:cafe::96) by SJ0PR13CA0036.outlook.office365.com
- (2603:10b6:a03:2c2::11) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9434.6 via Frontend Transport; Fri,
- 19 Dec 2025 20:56:32 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- SJ1PEPF00001CEB.mail.protection.outlook.com (10.167.242.27) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9434.6 via Frontend Transport; Fri, 19 Dec 2025 20:56:32 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Fri, 19 Dec
- 2025 12:56:20 -0800
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail205.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Fri, 19 Dec
- 2025 12:56:19 -0800
-Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com (10.129.68.8)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
- Transport; Fri, 19 Dec 2025 12:56:19 -0800
-Date: Fri, 19 Dec 2025 12:56:17 -0800
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
-	<jpb@kernel.org>, <praan@google.com>, <miko.lenczewski@arm.com>,
-	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <patches@lists.linux.dev>
-Subject: Re: [PATCH v1 2/9] iommu/arm-smmu-v3: Add alloc_id/free_id functions
- to arm_smmu_invs
-Message-ID: <aUW78ZV2D5aM75yN@Asurada-Nvidia>
-References: <cover.1766088962.git.nicolinc@nvidia.com>
- <1541ea4a9e9c935c2f907c0c5f13a4af2bdc2114.1766088962.git.nicolinc@nvidia.com>
- <20251219170551.GF254720@nvidia.com>
+	dkim=pass (1024-bit key) header.d=apertussolutions.com header.i=dpsmith@apertussolutions.com header.b="EHw8A+Hx"
+ARC-Seal: i=1; a=rsa-sha256; t=1766179569; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=XPk0Sln3Cy5qk9DCbfpON90DRrJ6nI9A6vUs+SDznVkOPF+0/KPsmXq9b9DDLc6G7FyU9F0CJt5VdkipC61Tei3S1DepoHDKMSB/wa2v9KRUb9My7p/5zHLBW0qRwtrPr9SufQtphsiNXeZQiLxYJ9H+5FZQbYi9qJSWKunnNjw=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1766179569; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=1ksQG2W08myKpheAB5+lngG8EZBBbzC4ZDZ4Ho0k7yk=; 
+	b=HHVC7hMBfBO846ScF3bcXEHdCW2AJdpkSX1+Km6al2QM4b7oRgPtjjGMrZRAwh5WlSjVAOXmyUdSTN9Li2b/cTPSg+suLtNT0t3rwlYlwliPjw17QP4i47ZCByfWQDxeh730ZvkQm2tgepZ45g5KibgWi2FxQ/jEV0HTbDrKJTI=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=apertussolutions.com;
+	spf=pass  smtp.mailfrom=dpsmith@apertussolutions.com;
+	dmarc=pass header.from=<dpsmith@apertussolutions.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1766179569;
+	s=zoho; d=apertussolutions.com; i=dpsmith@apertussolutions.com;
+	h=Message-ID:Date:Date:MIME-Version:From:From:Subject:Subject:To:To:Cc:Cc:References:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+	bh=1ksQG2W08myKpheAB5+lngG8EZBBbzC4ZDZ4Ho0k7yk=;
+	b=EHw8A+Hx1IszIEM+SW2HJBnE2oDNbQgT9FR2t1QSNOin+e1UbG5VkGGIH85bazia
+	mcgs4w2xqMOHq6EQHfPnSgU1DLIxdXTY0aLA1V0H8NrITQ6SXGv6YwAcPw2Mt5z7DpN
+	a0wdNOlnOWMU3TV6djzu7cPpRXAjLpHsQ1z+BoW0=
+Received: by mx.zohomail.com with SMTPS id 1766179565947257.12757632667626;
+	Fri, 19 Dec 2025 13:26:05 -0800 (PST)
+Message-ID: <62227ed3-3804-4795-93c9-ce2bbad3f2a7@apertussolutions.com>
+Date: Fri, 19 Dec 2025 16:26:02 -0500
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20251219170551.GF254720@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ1PEPF00001CEB:EE_|CY8PR12MB7732:EE_
-X-MS-Office365-Filtering-Correlation-Id: 71c5fef9-cbc5-4149-3d56-08de3f41172a
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|7416014|1800799024|376014|82310400026|36860700013;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?i8B0E7jxBTFlaTvHQkrWdDS5xTa65iFXXfcl+dGgR4EGQQohDG26d5UMxpDI?=
- =?us-ascii?Q?zjK3UR7tE3E79KjGNmQWV98JzU69/XfUYg1gQfXyWpHL+AQ4VOGw64MGoKRh?=
- =?us-ascii?Q?49Hgp1VYRIX/5z9dluJaAMf0tP+Qgt2lP5uk352hKsIahXCkZPkmUBb3x0O8?=
- =?us-ascii?Q?c+ZsQf3xf8T4Q4rsjEOuQ+IwIOeiKrrlFI2UyfIm4etTPa8EHY//g4uWhSGK?=
- =?us-ascii?Q?xN0wWz3B9Ktrc3/RZp5xoWoM1uC3yUwDGub1R40tCRB+EOYP2eX01wtLf3N6?=
- =?us-ascii?Q?BNG3FymMJN6UImkHF503Dciove59ZK000lL0xd3IqsejdelveT8lPFy6665w?=
- =?us-ascii?Q?3elS6rJnoJw1ucV1E/4GMzJ7hcsQ6hJ2omVUs8Mwp9hBwP0RLNj1Hz8zkRUl?=
- =?us-ascii?Q?iSZ+lYzwh1w+ZDjJW/6s/pav3GXDslUBOiSLT7PWWtzdrodmivOqZ9yn9T8c?=
- =?us-ascii?Q?05FVfm8SS2g0sFRCnDsoOkW3lR3SueXs3NLmjnJdcJ7XilSEhftM/1emnpgw?=
- =?us-ascii?Q?TssYQHyLeKSsw2SBl+xkH48Xh5OFLn8ud3Uxr4aLVQdoZ/EXClkDxDaSy8/7?=
- =?us-ascii?Q?N2/W0dVt3u3uvXD5HCtOiuZ4lfl9PgSqY/llOzglJjgkZovORvLkrGOL43da?=
- =?us-ascii?Q?DxPNsDISLc7eBA96UGlJc6CBPKTBzpuin9P34G5OTP3MQ9jzIiz2Xu5U2vz9?=
- =?us-ascii?Q?sD0e65sEpqp2gGUabhBOU4ndaI3h83mvXBxwfLhn4XIofRGPRXkB9PDxMRX5?=
- =?us-ascii?Q?Pd55AXhCBk1Zq/qBoa2qrJkzBSyGF/102I8tnMAg+Yr79b6G0ZJ0I7sHjGKN?=
- =?us-ascii?Q?7ZrSMYoHwlYmNQmHUCHhPKLmXP01okKhhaNHOSznKzOu8ipIPM++fB8wRbRl?=
- =?us-ascii?Q?PkSL3efA550PA7hii1kw8RxF8eT6kK8F1Eu5CQMLAjPnjIWARvFhX1pdemNd?=
- =?us-ascii?Q?hGtaEC5SQmtD9+7SpurvLyH1C11UD+e5mIx3lcOKsudXsqqjuWq4f0/N8yiy?=
- =?us-ascii?Q?FXRfHs25le1JStl6Ajm68iALhj2klg61xFxjVT6R6lAuvcb+kpu21nIcVpt4?=
- =?us-ascii?Q?dsjPCt3aS6rAw21liliUOSYOr75O65Ithq+S6uQz+8qdLyPROsb8c8W7bTR9?=
- =?us-ascii?Q?fogy/MIIAExgwK6DgtDgZzEamP0+xev5QFf+MmcsWfDyhAYy0XG1+kTpU2pa?=
- =?us-ascii?Q?8HjOAdJRihUI52EbXCofXauJ2qDbylcZzWdxQyRHu+elJCYt3VCXrVps6r1s?=
- =?us-ascii?Q?XdDWTRS9H59XXB0coPd4oO12ZvfDMdOilaWoKNOKAMOcxq70MogzNx5+2kJ5?=
- =?us-ascii?Q?a/KprlzHUnEIOXUpOQi56xl+/zXTe7i+Y7++d+act8nuYO1138Fv6smBHdRd?=
- =?us-ascii?Q?e1LUPiCgj9JMF1XxGhSo+gMixymNIM5s8rdC8VtlLU9asEqJM858w45AuIiy?=
- =?us-ascii?Q?ub30rpUyZLBm67xGZlK2Buud8mkoXkHclnt9fvcqcdSqt54A2hbbkyJFU7uo?=
- =?us-ascii?Q?8ZgKlhXfOxr0u5zAcZmuI048ETby6ARC8Py/2mLyzG/BV/DVxeJSq3RjjQ8M?=
- =?us-ascii?Q?Azqz6DZxpTNv3M55Cao=3D?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(7416014)(1800799024)(376014)(82310400026)(36860700013);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Dec 2025 20:56:32.6825
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 71c5fef9-cbc5-4149-3d56-08de3f41172a
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SJ1PEPF00001CEB.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7732
+User-Agent: Mozilla Thunderbird
+From: "Daniel P. Smith" <dpsmith@apertussolutions.com>
+Subject: Re: [PATCH v15 19/28] x86/tpm: Early TPM PCR extending driver
+To: Dave Hansen <dave.hansen@intel.com>,
+ Ross Philipson <ross.philipson@oracle.com>, linux-kernel@vger.kernel.org,
+ x86@kernel.org, linux-integrity@vger.kernel.org, linux-doc@vger.kernel.org,
+ linux-crypto@vger.kernel.org, kexec@lists.infradead.org,
+ linux-efi@vger.kernel.org, iommu@lists.linux.dev
+Cc: tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, hpa@zytor.com,
+ dave.hansen@linux.intel.com, ardb@kernel.org, mjg59@srcf.ucam.org,
+ James.Bottomley@hansenpartnership.com, peterhuewe@gmx.de, jarkko@kernel.org,
+ jgg@ziepe.ca, luto@amacapital.net, nivedita@alum.mit.edu,
+ herbert@gondor.apana.org.au, davem@davemloft.net, corbet@lwn.net,
+ ebiederm@xmission.com, dwmw2@infradead.org, baolu.lu@linux.intel.com,
+ kanth.ghatraju@oracle.com, andrew.cooper3@citrix.com,
+ trenchboot-devel@googlegroups.com
+References: <20251215233316.1076248-1-ross.philipson@oracle.com>
+ <20251215233316.1076248-20-ross.philipson@oracle.com>
+ <56929e8b-a7cf-4390-b4ec-0b4c2c32b311@intel.com>
+Content-Language: en-US
+Autocrypt: addr=dpsmith@apertussolutions.com; keydata=
+ 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
+In-Reply-To: <56929e8b-a7cf-4390-b4ec-0b4c2c32b311@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ZohoMailClient: External
 
-On Fri, Dec 19, 2025 at 01:05:51PM -0400, Jason Gunthorpe wrote:
-> On Thu, Dec 18, 2025 at 12:26:48PM -0800, Nicolin Chen wrote:
-> > @@ -720,6 +723,9 @@ struct arm_smmu_invs {
-> >  	rwlock_t rwlock;
-> >  	bool has_ats;
-> >  	struct rcu_head rcu;
-> > +	struct arm_smmu_domain *smmu_domain;
-> > +	int (*alloc_id)(struct arm_smmu_inv *inv, void *data);
-> > +	void (*free_id)(struct arm_smmu_inv *inv, bool flush);
-> >  	struct arm_smmu_inv inv[] __counted_by(max_invs);
-> >  };
+Hey Dave!
+
+On 12/16/25 16:53, Dave Hansen wrote:
+> I'm mostly spot-checking this to see what kind of shape it's in and how
+> much work and diligence has been applied in the last 8 months since v14.
 > 
-> I'm not keen on this at all..
+> On 12/15/25 15:33, Ross Philipson wrote:
+> ...
+>> The driver could be extended for further operations if needed. This
+>> TPM dirver implementation relies as much as possible on existing mainline
 > 
-> On the allocation side everything should be stored inside the
-> invalidation list, we don't need function callbacks, just get the
-> information from the list in the first place.
-[...]
-> @@ -3289,8 +3422,18 @@ static int arm_smmu_attach_prepare_invs(struct arm_smmu_attach_state *state,
->  		invst->old_invs = rcu_dereference_protected(
->  			new_smmu_domain->invs,
->  			lockdep_is_held(&arm_smmu_asid_lock));
-> -		build_invs = arm_smmu_master_build_invs(
-> -			master, state->ats_enabled, ssid, new_smmu_domain);
-> +
-> +		/* Re-use or allocate an IOTLB cache tag */
-> +		ret = arm_smmu_get_tag(new_smmu_domain, master,
-> +				       to_vsmmu(new_domain), &invst->tag,
-> +				       false);
-> +		if (ret)
-> +			return ret;
-> +
-> +		build_invs = arm_smmu_master_build_invs(master,
-> +							state->ats_enabled,
-> +							ssid, new_smmu_domain,
-> +							&invst->tag);
->  		if (!build_invs)
->  			return -EINVAL;
+> <sigh>
+> 
+> v15 and no spell checking. :(
+> 
+>> --- /dev/null
+>> +++ b/arch/x86/boot/compressed/early_tpm_extend.c
+>> @@ -0,0 +1,601 @@
+>> +// SPDX-License-Identifier: GPL-2.0-only
+>> +/*
+>> + * Copyright (c) 2010-2012 United States Government, as represented by
+>> + * the Secretary of Defense.  All rights reserved.
+> 
+> IANAL, but this looks fishy.
+> 
+> It's theoretically fine to go grab random code off the Internet and
+> submit it to the kernel, given the correct license. But I do want to
+> know what its story is and where it came from.
 
-I had this when I was drafting the series in the beginning, but
-later changed to the callback functions :-/
 
-Again, my intention is to avoid iterating the array since merge
-and unref functions are already doing that in their first loops.
+Let me provide some context as to the code origin. Ross, before joining 
+Oracle, and I have a long history of working with DRTM/Intel TXT within 
+Xen. When it was requested to go back to sending the measurements to the 
+TPM in the setup kernel, we needed to find a minimal code base to 
+provide the command buffer packing until the TPM driver could be fully 
+refactored. We knew that Xen's vtpm framework provided a simple macro 
+system to provide contextual TPM command buffer packing. We decided this 
+would be a lightweight choice that would be easy to cut down to only 
+what is needed to handle the very few TPM commands we will need to send. 
+And to that extent, there have been internal reviews that have reduced 
+the amount of that original code.
 
-That being said, if this get-before-build is the preferred way,
-let's do that.
+> I also seem to remember that there are special rules around the US
+> federal government's inability to hold copyrights. This seems worth at
+> least a mention ... somewhere.
 
-Thanks
-Nicolin
+IANAL either, but in general the safest/correct approach is to retain 
+any CRs placed on the code being reused, and the above is the CR on the 
+source from the Xen tree.
+
+> This is helpful, for instance:
+> 
+>> + * based off of the original tools/vtpm_manager code base which is:
+>> + * Copyright (c) 2005, Intel Corp.
+>> + * All rights reserved.
+> 
+> so thanks for that one.
+
+That's the origin of all the code reuse, we can do an review to see if 
+any of the code that originated from the USG code is still present.
+
+>> + * Redistribution and use in source and binary forms, with or without
+>> + * modification, are permitted provided that the following conditions
+>> + * are met:
+>> + *
+>> + *   * Redistributions of source code must retain the above copyright
+>> + *     notice, this list of conditions and the following disclaimer.
+>> + *   * Redistributions in binary form must reproduce the above
+>> + *     copyright notice, this list of conditions and the following
+>> + *     disclaimer in the documentation and/or other materials provided
+>> + *     with the distribution.
+>> + *   * Neither the name of Intel Corporation nor the names of its
+>> + *     contributors may be used to endorse or promote products derived
+>> + *     from this software without specific prior written permission.
+>> + *
+>> + * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+>> + * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+>> + * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+>> + * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+>> + * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+>> + * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+>> + * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+>> + * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+>> + * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+>> + * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+>> + * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+>> + * OF THE POSSIBILITY OF SUCH DAMAGE.
+>> + */
+> 
+> Also, IANAL, but this looks BSD-ish.
+> 
+> I would have kinda expected the SPDX header to say BSD-blah-blah and not
+> GPL-2.0-only.
+> 
+> I'd really appreciate if you could go have a huddle with your corporate
+> Open Source folks and make sure this is all proper. To me, it looks
+> fishy at _best_.
+> 
+> ...
+>> +/*
+>> + * We're far too early to calibrate time.  Assume a 5GHz processor (the upper
+>> + * end of the Fam19h range), which causes us to be wrong in the safe direction
+>> + * on slower systems.
+>> + */
+> 
+> https://docs.kernel.org/process/maintainer-tip.html#changelog
+> 
+> Imperative voice please.
+> 
+> ...
+>> +static int __tis_recv_data(struct tpm_chip *chip, u8 *buf, int count)
+>> +{
+>> +	int size = 0;
+>> +	int burstcnt;
+>> +
+>> +	while (size < count && __tis_wait_for_stat(chip, TPM_STS_DATA_AVAIL | TPM_STS_VALID, chip->timeout_c) == 0) {
+>> +		burstcnt = __tis_get_burstcount(chip);
+>> +
+>> +		for ( ; burstcnt > 0 && size < count; --burstcnt)
+>> +			buf[size++] = tpm_read8(chip, TPM_DATA_FIFO(chip->locality));
+>> +	}
+>> +
+>> +	return size;
+>> +}
+>> +
+>> +/**
+>> + * tpm_tis_check_locality - Check if the given locality is the active one
+>> + * @chip:	The TPM chip instance
+>> + * @loc:	The locality to check
+>> + *
+>> + * Return: true - locality active, false - not active
+>> + */
+>> +bool tpm_tis_check_locality(struct tpm_chip *chip, int loc)
+>> +{
+>> +	if ((tpm_read8(chip, TPM_ACCESS(loc)) & (TPM_ACCESS_ACTIVE_LOCALITY | TPM_ACCESS_VALID)) == (TPM_ACCESS_ACTIVE_LOCALITY | TPM_ACCESS_VALID)) {
+>> +		chip->locality = loc;
+>> +		return true;
+>> +	}
+>> +
+>> +	return false;
+>> +}
+>> +
+>> +/**
+>> + * tpm_tis_release_locality - Release the active locality
+>> + * @chip:	The TPM chip instance
+>> + */
+>> +void tpm_tis_release_locality(struct tpm_chip *chip)
+>> +{
+>> +	if ((tpm_read8(chip, TPM_ACCESS(chip->locality)) & (TPM_ACCESS_REQUEST_PENDING | TPM_ACCESS_VALID)) == (TPM_ACCESS_REQUEST_PENDING | TPM_ACCESS_VALID))
+>> +		tpm_write8(chip, TPM_ACCESS(chip->locality), TPM_ACCESS_RELINQUISH_LOCALITY);
+>> +
+>> +	chip->locality = 0;
+>> +}
+> 
+> I guess some folks aren't enforcing the 80-column limits. But this is
+> not even close. It's almost 80x2.
+> 
+> Has there even been an attempt to make this conform to kernel coding
+> style? What other checkpatch.pl warnings are being ignored?
+
+
