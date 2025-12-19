@@ -1,25 +1,25 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BD23D33B6FF
-	for <iommu@lists.linux.dev>; Fri, 19 Dec 2025 12:20:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 76BFE346FD0
+	for <iommu@lists.linux.dev>; Fri, 19 Dec 2025 12:34:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766146827; cv=none; b=rEh1EU5aFxPz3zhAq1BeXH+2DAkSW0W5sH22SWKFdgtWDA+dhSUrWSBITFHB4vNpnYnbdmLYJNp8dDxWjWj8hgMUsHunN3qH2oimzllfIO/4jsq/qbUlIsQ/z/ehL2VBx6xaUkmyIlUhCw5L1nJm5VYEHVWwlAZpQZ1/gYLBA6U=
+	t=1766147697; cv=none; b=UtUi+X9BAYcmKLHcC95SlAOqEDnkSibjEVQaAXZdijy+few8r8VXoD0VyY4yDSnTysbx6oceKZuN25b920e6BghhY+nE4nt+ySphv7jXw5jqwbq5/s4tGGNDAmgJqkTgXG2+l9olVTaG83o81uM642/Cm9ctYMnqHO33khAcldY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766146827; c=relaxed/simple;
-	bh=C7BSrlgKQIj8finaTXILJjQlV7177cLejoNIk+xLSwE=;
+	s=arc-20240116; t=1766147697; c=relaxed/simple;
+	bh=++2XhAvqg7lrV2gvEgNbASdTMpPvXQQIZdb6cbP4z8o=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=SAXXE2aBRAqjvZb/Pt+kJJhZJg8XoBL4DWRs7MRPnXwoZn9WgGY1zjML2SsNY66WkxabyEk2zXymoyow0BT1qBTgGFtkf/0Zp9elE5kOfHuVR5bQmDYONgUXxb+4aB7CbEUgtrW3D+bjpBNP+mxX+dZzuJUdUHDY/HN/sxTJH28=
+	 In-Reply-To:Content-Type; b=cHPcaIIJ4UrwfccWaicQmfSdgMjez8N8FNitVzQS3z0T6DEE96GhYdOhqYUNrMWpaBP/1m4jqPBp5S32gxTJ29ZtMlpPb3OD1Il2pWe4V/EVRCSFHBMFr20m/Vx7oVysbiticgJD4xOZOH+RExYKMazNEWxnOcIleE6ctHL8ulk=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DAE94FEC;
-	Fri, 19 Dec 2025 04:20:16 -0800 (PST)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AA0C9FEC;
+	Fri, 19 Dec 2025 04:34:47 -0800 (PST)
 Received: from [10.57.47.58] (unknown [10.57.47.58])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9571F3F5CA;
-	Fri, 19 Dec 2025 04:20:21 -0800 (PST)
-Message-ID: <f43286ef-3dea-4637-a34e-b9b70d2741bf@arm.com>
-Date: Fri, 19 Dec 2025 12:20:13 +0000
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 13CAC3F5CA;
+	Fri, 19 Dec 2025 04:34:51 -0800 (PST)
+Message-ID: <99bb1797-06ba-440d-b173-db62d5f54e08@arm.com>
+Date: Fri, 19 Dec 2025 12:34:49 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -27,7 +27,7 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/6] arm64: Provide dcache_by_myline_op_nosync helper
+Subject: Re: [PATCH 3/6] arm64: Provide dcache_inval_poc_nosync helper
 To: Barry Song <21cnbao@gmail.com>, catalin.marinas@arm.com,
  m.szyprowski@samsung.com, will@kernel.org
 Cc: ada.coupriediaz@arm.com, anshuman.khandual@arm.com, ardb@kernel.org,
@@ -35,85 +35,120 @@ Cc: ada.coupriediaz@arm.com, anshuman.khandual@arm.com, ardb@kernel.org,
  linux-kernel@vger.kernel.org, maz@kernel.org, ryan.roberts@arm.com,
  surenb@google.com, v-songbaohua@oppo.com, zhengtangquan@oppo.com
 References: <20251219053658.84978-1-21cnbao@gmail.com>
- <20251219053658.84978-2-21cnbao@gmail.com>
+ <20251219053658.84978-4-21cnbao@gmail.com>
 From: Robin Murphy <robin.murphy@arm.com>
 Content-Language: en-GB
-In-Reply-To: <20251219053658.84978-2-21cnbao@gmail.com>
+In-Reply-To: <20251219053658.84978-4-21cnbao@gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 2025-12-19 5:36 am, Barry Song wrote:
 > From: Barry Song <v-songbaohua@oppo.com>
 > 
-> dcache_by_myline_op ensures completion of the data cache operations for a
-> region, while dcache_by_myline_op_nosync only issues them without waiting.
-> This enables deferred synchronization so completion for multiple regions
-> can be handled together later.
+> dcache_inval_poc_nosync does not wait for the data cache invalidation to
+> complete. Later, we defer the synchronization so we can wait for all SG
+> entries together.
+> 
+> Cc: Catalin Marinas <catalin.marinas@arm.com>
+> Cc: Will Deacon <will@kernel.org>
+> Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> Cc: Ada Couprie Diaz <ada.coupriediaz@arm.com>
+> Cc: Ard Biesheuvel <ardb@kernel.org>
+> Cc: Marc Zyngier <maz@kernel.org>
+> Cc: Anshuman Khandual <anshuman.khandual@arm.com>
+> Cc: Ryan Roberts <ryan.roberts@arm.com>
+> Cc: Suren Baghdasaryan <surenb@google.com>
+> Cc: Tangquan Zheng <zhengtangquan@oppo.com>
+> Signed-off-by: Barry Song <v-songbaohua@oppo.com>
+> ---
+>   arch/arm64/include/asm/cacheflush.h |  1 +
+>   arch/arm64/mm/cache.S               | 43 +++++++++++++++++++++--------
+>   2 files changed, 33 insertions(+), 11 deletions(-)
+> 
+> diff --git a/arch/arm64/include/asm/cacheflush.h b/arch/arm64/include/asm/cacheflush.h
+> index 9b6d0a62cf3d..382b4ac3734d 100644
+> --- a/arch/arm64/include/asm/cacheflush.h
+> +++ b/arch/arm64/include/asm/cacheflush.h
+> @@ -74,6 +74,7 @@ extern void icache_inval_pou(unsigned long start, unsigned long end);
+>   extern void dcache_clean_inval_poc(unsigned long start, unsigned long end);
+>   extern void dcache_inval_poc(unsigned long start, unsigned long end);
+>   extern void dcache_clean_poc(unsigned long start, unsigned long end);
+> +extern void dcache_inval_poc_nosync(unsigned long start, unsigned long end);
+>   extern void dcache_clean_poc_nosync(unsigned long start, unsigned long end);
+>   extern void dcache_clean_pop(unsigned long start, unsigned long end);
+>   extern void dcache_clean_pou(unsigned long start, unsigned long end);
+> diff --git a/arch/arm64/mm/cache.S b/arch/arm64/mm/cache.S
+> index 4a7c7e03785d..8c1043c9b9e5 100644
+> --- a/arch/arm64/mm/cache.S
+> +++ b/arch/arm64/mm/cache.S
+> @@ -132,17 +132,7 @@ alternative_else_nop_endif
+>   	ret
+>   SYM_FUNC_END(dcache_clean_pou)
+>   
+> -/*
+> - *	dcache_inval_poc(start, end)
+> - *
+> - * 	Ensure that any D-cache lines for the interval [start, end)
+> - * 	are invalidated. Any partial lines at the ends of the interval are
+> - *	also cleaned to PoC to prevent data loss.
+> - *
+> - *	- start   - kernel start address of region
+> - *	- end     - kernel end address of region
+> - */
+> -SYM_FUNC_START(__pi_dcache_inval_poc)
+> +.macro _dcache_inval_poc_impl, do_sync
+>   	dcache_line_size x2, x3
+>   	sub	x3, x2, #1
+>   	tst	x1, x3				// end cache line aligned?
+> @@ -158,11 +148,42 @@ SYM_FUNC_START(__pi_dcache_inval_poc)
+>   3:	add	x0, x0, x2
+>   	cmp	x0, x1
+>   	b.lo	2b
+> +.if \do_sync
+>   	dsb	sy
+> +.endif
 
-This is a super-low-level internal macro with only two users... Frankly I'd
-just do as below.
+Similarly, don't bother with complication like this, just put the DSB in 
+the one place it needs to be.
 
 Thanks,
 Robin.
 
------>8-----
-
-diff --git a/arch/arm64/include/asm/assembler.h b/arch/arm64/include/asm/assembler.h
-index f0ca7196f6fa..26e983c331c5 100644
---- a/arch/arm64/include/asm/assembler.h
-+++ b/arch/arm64/include/asm/assembler.h
-@@ -367,18 +367,17 @@ alternative_endif
-  	.endm
-  
-  /*
-- * Macro to perform a data cache maintenance for the interval
-- * [start, end) with dcache line size explicitly provided.
-+ * Main loop for a data cache maintenance operation. Caller to provide the
-+ * dcache line size and take care of relevant synchronisation afterwards.
-   *
-   * 	op:		operation passed to dc instruction
-- * 	domain:		domain used in dsb instruction
-   * 	start:          starting virtual address of the region
-   * 	end:            end virtual address of the region
-   *	linesz:		dcache line size
-   * 	fixup:		optional label to branch to on user fault
-   * 	Corrupts:       start, end, tmp
-   */
--	.macro dcache_by_myline_op op, domain, start, end, linesz, tmp, fixup
-+	.macro raw_dcache_by_line_op op, start, end, linesz, tmp, fixup
-  	sub	\tmp, \linesz, #1
-  	bic	\start, \start, \tmp
-  .Ldcache_op\@:
-@@ -402,7 +401,6 @@ alternative_endif
-  	add	\start, \start, \linesz
-  	cmp	\start, \end
-  	b.lo	.Ldcache_op\@
--	dsb	\domain
-  
-  	_cond_uaccess_extable .Ldcache_op\@, \fixup
-  	.endm
-@@ -420,7 +418,8 @@ alternative_endif
-   */
-  	.macro dcache_by_line_op op, domain, start, end, tmp1, tmp2, fixup
-  	dcache_line_size \tmp1, \tmp2
--	dcache_by_myline_op \op, \domain, \start, \end, \tmp1, \tmp2, \fixup
-+	raw_dcache_by_line_op \op, \start, \end, \tmp1, \tmp2, \fixup
-+	dsb \domain
-  	.endm
-  
-  /*
-diff --git a/arch/arm64/kernel/relocate_kernel.S b/arch/arm64/kernel/relocate_kernel.S
-index 413f899e4ac6..efdb6884058e 100644
---- a/arch/arm64/kernel/relocate_kernel.S
-+++ b/arch/arm64/kernel/relocate_kernel.S
-@@ -64,7 +64,8 @@ SYM_CODE_START(arm64_relocate_new_kernel)
-  	mov	x19, x13
-  	copy_page x13, x12, x1, x2, x3, x4, x5, x6, x7, x8
-  	add	x1, x19, #PAGE_SIZE
--	dcache_by_myline_op civac, sy, x19, x1, x15, x20
-+	raw_dcache_by_line_op civac, x19, x1, x15, x20
-+	dsb	sy
-  	b	.Lnext
-  .Ltest_indirection:
-  	tbz	x16, IND_INDIRECTION_BIT, .Ltest_destination
+>   	ret
+> +.endm
+> +
+> +/*
+> + *	dcache_inval_poc(start, end)
+> + *
+> + * 	Ensure that any D-cache lines for the interval [start, end)
+> + * 	are invalidated. Any partial lines at the ends of the interval are
+> + *	also cleaned to PoC to prevent data loss.
+> + *
+> + *	- start   - kernel start address of region
+> + *	- end     - kernel end address of region
+> + */
+> +SYM_FUNC_START(__pi_dcache_inval_poc)
+> +	_dcache_inval_poc_impl 1
+>   SYM_FUNC_END(__pi_dcache_inval_poc)
+>   SYM_FUNC_ALIAS(dcache_inval_poc, __pi_dcache_inval_poc)
+>   
+> +/*
+> + *	dcache_inval_poc_nosync(start, end)
+> + *
+> + * 	Issue the instructions of D-cache lines for the interval [start, end)
+> + * 	for invalidation. Not necessarily cleaned to PoC till an explicit dsb
+> + *	sy later
+> + *
+> + *	- start   - kernel start address of region
+> + *	- end     - kernel end address of region
+> + */
+> +SYM_FUNC_START(__pi_dcache_inval_poc_nosync)
+> +	_dcache_inval_poc_impl 0
+> +SYM_FUNC_END(__pi_dcache_inval_poc_nosync)
+> +SYM_FUNC_ALIAS(dcache_inval_poc_nosync, __pi_dcache_inval_poc_nosync)
+> +
+>   /*
+>    *	dcache_clean_poc(start, end)
+>    *
 
