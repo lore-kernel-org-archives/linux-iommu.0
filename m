@@ -1,202 +1,453 @@
-Received: from BL2PR02CU003.outbound.protection.outlook.com (mail-eastusazon11011005.outbound.protection.outlook.com [52.101.52.5])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f74.google.com (mail-ed1-f74.google.com [209.85.208.74])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 05C602FBE1D
-	for <iommu@lists.linux.dev>; Fri, 19 Dec 2025 10:48:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.52.5
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766141319; cv=fail; b=llpRR6OQ2qkHAh9BEyVD6JO55yc5YDo6+XwmRtnpjjvjfLYdWSAnMYKe4IZRN4zSqCDEo/sfV4pGQk795QwonJnL16DCwuquYbovlrgIPRoxP6LERUsfWpOD5VM2v7ifDTNPFMwlnaFKr23QOGdP1qgMZgwTza8Im9j12T8DFr8=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766141319; c=relaxed/simple;
-	bh=xpAovzmi4T5QBIE3rbbc0yaluD3IIXjMER7X3oh0Dug=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=XyB6ieHnk/buwuRf1eJ4u7wnNmBSQMvUhiJIfvXAeXHzh06oxR6gvc9J0TjU4aTh90oWOY/jqZtjj2P7Smg+obK8CEpnmrwkaoMHmtAN+K4ITpt71ru2LXTKVNvdQgvX83/jFW1j8iP4hKspeIwOGL2MPvOLRnPRrPukUSRzJb0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=dzkmaQmm; arc=fail smtp.client-ip=52.101.52.5
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5158030149F
+	for <iommu@lists.linux.dev>; Fri, 19 Dec 2025 10:51:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.74
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1766141466; cv=none; b=qMB+CXs2+f5s9bXL2eLwSZqxAiReoZlzz++XzLRmOWGsQqK+g5wuKdVQdcuwAFrkwpgN5Gp3JJaLb2iKY8Ds/v4XZv6Mmnpt7uPF0JfspVJK6hImRudWPfGWItZXsYIARNXkG9TjBMlRINMPWfJwT+yNMylLHTWZhweaKiQ+geM=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1766141466; c=relaxed/simple;
+	bh=dMIbPSyqjVMQ35wHjtTUedOrA8v6+L3doPVZMdxV3/M=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=Ehm8gdw7Iv8FkML44W0E2iNfJW/TdssVJsMstt6FC6hxNHt5dZNhWGRgy0R2XT0iMR0dqdA+VvlpsS6HbEt6EK0NUxl3NcFE+kGfdKoqgocnjOgYyHafxvZCEgRboo3LX6rtdxH5O8VRgT85FTrsBrnhi1wLVRbVoCn8D/ip+aE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--aliceryhl.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=e9l5v7MW; arc=none smtp.client-ip=209.85.208.74
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--aliceryhl.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="dzkmaQmm"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=BIvPoNOlepU5u5QGRB1vWIdHSCYAneYTv2JIEqt4Y86YEofj+2v74moFyb6E50KEbNu/t9yy7z0zq8fmf9Of5kCe4qm0IgfYeJ1aCPKdMJg60zuSiAL1ZZaVEsfVMZ/MkElzFFCuav1HQuF7vnKex5oxo+lNgbdXV14EiQsIVM5XjQsQv8Fcn+/L4WJwOUgw2uOa3I1Q4uc/9DrR7DvjKPy6woXQiy2Ib4nMuxFE/63CBtrC9Es7uCeApv+CIYJOp6mjzIPK4LaXggyqTgBMk7CIrOpgobOblvuNa8+bbPca/cMPqayC6odSRWS6V/AfIa5uCb/zoSWr7xgW5I/w9Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=QRNHzCgi1r95HgVOzEfRfurnR6YIVPfvaGVTFHJbGn8=;
- b=JhU+fO9ZeSB7Ec5J5zjp0HQkYyerS/7qwqGKHT7oTICUPLEkQniDW9xK6peHkiZu0KHo8XikGyvfliuKwBoz75cWlJWBCpA/YiTvmpSTFj3xCE5a6d6lzMGM2RKxaxykuLMQwP2bY9p1ChppTyqC15sCyC/cMUS80LyFTe7VPMtFNBart1xmuX4Jg2yxqEpX7yMWTCZVdgV1GDkgLeDFXiPejyzpyZD26/ufLhpu/zv5jkruoDrtfq73dxEloYnZ443qD1uNEBu5Kx/1umCAONyrsnazB9Dbd8Te01yxgX9SLLwRGnGbkbVt1ljpO7eLjMwlOUeEZc/pEWiZ3nSGeg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QRNHzCgi1r95HgVOzEfRfurnR6YIVPfvaGVTFHJbGn8=;
- b=dzkmaQmmx993ohD9xy4INqF5l49uHzQrtEApXrITCV9LMFbBla7btB16Ku8A3n7A1AuHDSE53+zdKyyxry2O0wt1Vbfj8Suly7HfNqCLQDdedE1XfSBTZNNU6ZdClSXxqYEo6XwD9VLwWiZpise374AlWafkGV0Ybs3AhfSF1vqVgXyaiJ/BsK4c/nZHAiZceuZR9FK2C9dAE79fZq+ezQE/yoCsrVlRMWFjM+JBXO8PAXcUyLI7BbfoIemSVG3jkHs40vVBLGBLryE/urNqTYecT0rrj5rflx39EYT8U45HOcB6GnS5yTf2gyG0yFAkIOhJTw1hITOfhWorrJSsCA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from SJ2PR12MB8784.namprd12.prod.outlook.com (2603:10b6:a03:4d0::11)
- by PH7PR12MB5973.namprd12.prod.outlook.com (2603:10b6:510:1d8::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9434.9; Fri, 19 Dec
- 2025 10:48:30 +0000
-Received: from SJ2PR12MB8784.namprd12.prod.outlook.com
- ([fe80::1660:3173:eef6:6cd9]) by SJ2PR12MB8784.namprd12.prod.outlook.com
- ([fe80::1660:3173:eef6:6cd9%7]) with mapi id 15.20.9434.001; Fri, 19 Dec 2025
- 10:48:30 +0000
-Message-ID: <b2df8ce6-d336-457a-8169-f2eccec3c12e@nvidia.com>
-Date: Fri, 19 Dec 2025 10:48:22 +0000
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH V7 2/4] iommu/arm-smmu-v3: Add device-tree support for
- CMDQV driver
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: Ashish Mhetre <amhetre@nvidia.com>, will@kernel.org,
- robin.murphy@arm.com, joro@8bytes.org, robh@kernel.org, krzk+dt@kernel.org,
- conor+dt@kernel.org, thierry.reding@gmail.com, vdumpa@nvidia.com,
- jgg@ziepe.ca, linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-tegra@vger.kernel.org
-References: <20251215064819.3345361-1-amhetre@nvidia.com>
- <20251215064819.3345361-3-amhetre@nvidia.com>
- <23df682e-6d08-4827-994e-1bbd89e5c903@nvidia.com>
- <5e9a0ce1-a0ba-4a31-be95-99f349ec6028@nvidia.com>
- <e7d3e95f-a885-4b13-ab4d-bc82793c5396@nvidia.com>
- <aUROk0jRQoLmBRo3@Asurada-Nvidia>
-From: Jon Hunter <jonathanh@nvidia.com>
-Content-Language: en-US
-In-Reply-To: <aUROk0jRQoLmBRo3@Asurada-Nvidia>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: LO3P123CA0029.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:388::19) To SJ2PR12MB8784.namprd12.prod.outlook.com
- (2603:10b6:a03:4d0::11)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="e9l5v7MW"
+Received: by mail-ed1-f74.google.com with SMTP id 4fb4d7f45d1cf-6495ccea18dso1749650a12.2
+        for <iommu@lists.linux.dev>; Fri, 19 Dec 2025 02:51:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1766141463; x=1766746263; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=SFDmnD/AtD5C3m0av9uWzqAF9ygVuagC6pCqVMqHXtk=;
+        b=e9l5v7MWLwPAbKgfK/Kx8kftItJLRjfACc5N1/uAsFAqtElii9M1zDwe2S2rgNSYhS
+         SQx900EwQJ1Zmmjp+p83lpkaPRwhHr93qCT/zPQ8QIfud7MOuUoSeXlRdFRjwHMi3s4m
+         Mz7XLE2sqkwxhcbpdqfq7nPL8KObX37Ggq5eaM3zU3y3f7zs6nIl/VhLm5gCw03Bfsxu
+         BIHdlH0QhtdXGEvAzSqZ3pDxhRGWmXGvqn/su7es9LWpvDlb/8SPUVEaiRwey4b+IucF
+         WON3uDZ9H2EmSl42W93+nlrjKo7Cx3lFFxye/zpXDq13KQLL1vLqc2Cio9G81RQm6f59
+         Oghg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1766141463; x=1766746263;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=SFDmnD/AtD5C3m0av9uWzqAF9ygVuagC6pCqVMqHXtk=;
+        b=lP04cJhy4AKiYpCCa1sfA0VrzkOkrEHDnTvMF2Z0RGniINSdHTu17Se49K4COBdnkf
+         4J7ISAECFW+QEFuieNsSaJ54owVKjbTbzeBgPvYEAcwyDiEBFZ6yQ0XortcTyoL8TyU4
+         u2GdEn3YwQmqRHMpdKH65hSDgcZf2b56y8+eB+EcojxGcuQkGrNj/3/CknOjUNmE92pm
+         P64TFmHQkebbzita5MhPQmhpnSWoW7946A1XFpSFIlY+mu5P1kAarhmi+8PcxBETIlfN
+         g+4P61XXxArMQxyndd6b9I8TeDBTvgiMjb+zm537sX1D3kkMHjolBmt9XYGh+Cde4BGQ
+         b7fQ==
+X-Forwarded-Encrypted: i=1; AJvYcCW0movWZebyQj5kPVwF6Www98I3FG2TYMBFbc0kgz5Mwcr941YFBWpUAvwUN6dfAHngIlklsw==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy5toDpgUCJJPg7Re4jGTBxmPHrSt/5OQU+4L+RKMS75cXZBPhg
+	bQyI9N6uqCI+/xKh5RLinO9yLCEJbvuhNtACsoi6dMjUZoDYPqeAqvr+QRsfq9gz2y+m7Qmdg0p
+	2jucN6v1YEDID7WKcNg==
+X-Google-Smtp-Source: AGHT+IFsvIMhYISekbniT1OSzrzjnmd5mPLV8E2NfHuR2lYU97/cV3bhT6AtyekwFUIJjn5ib19avNkmSSr8epA=
+X-Received: from edrz22.prod.google.com ([2002:aa7:c656:0:b0:64b:7f74:4879])
+ (user=aliceryhl job=prod-delivery.src-stubby-dispatcher) by
+ 2002:a05:6402:518b:b0:64b:a1e6:8017 with SMTP id 4fb4d7f45d1cf-64ba1e68459mr975873a12.27.1766141462593;
+ Fri, 19 Dec 2025 02:51:02 -0800 (PST)
+Date: Fri, 19 Dec 2025 10:50:52 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ2PR12MB8784:EE_|PH7PR12MB5973:EE_
-X-MS-Office365-Filtering-Correlation-Id: 60ea24a3-df90-42b4-dac6-08de3eec25c3
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|10070799003|376014|7416014|366016|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?N3Vzc2hRckxGajZ6MmN6WlpHM204ZTRQWlZiVGJNMUt1VE5jRUxVVWdZcVJN?=
- =?utf-8?B?Ujhtc2Y3b3FQRE5ZVDVya3RTSUhud1FoSXFUVlRsYWhaWGVzeVpzUVB0ZDZU?=
- =?utf-8?B?RGh3WWpVUXNLMklKZVU4S0IzcCtsTWdkUVpIUkNKaUJVeDlEaGRGUXNrZWwv?=
- =?utf-8?B?VnFoN2UzRXdZN2Rjd1A2WFJ2bEFmb2VmRXZoRjRZQmtha013b1ZaT3Eybnd1?=
- =?utf-8?B?WmlGdDh0R2cwckxjSUd5WXVBc3N6Y0FONGxoOElOWjR1cjFQWjFocll6MzdJ?=
- =?utf-8?B?R2FTbm9xSS85UDJGZjZNSStiWkhUQ3BYUEg2ZnpuMDlOcEpUM00zVFFWSHpn?=
- =?utf-8?B?RWUrYkRPZSs5OG9NdUljVnZsRXhzZUlVYzFEb2E3R0Vsb2dlT3d2dHdFa3l0?=
- =?utf-8?B?YXJ6MStSUjJpV3B3L0I4ZUdOT2lyczF0QlY1elhlWmJoajY3bTUzUjltZTZB?=
- =?utf-8?B?K0xLMTBzL0ZsNVpaS29PTTEvN3dUL1lNaU80dll1YWQyKzc2djFOUjUzalRI?=
- =?utf-8?B?TEVSZUdHc1BNVFV3K1hPdkpjYmdmUldKN0xpbmF3QnNZS0NWTTlHNDhzY1Nr?=
- =?utf-8?B?N1U0U0owREVTQ1ZFT002bnpVRFNyNDlEYWtoWXhUOWprZGdDanFyeUFSY2hO?=
- =?utf-8?B?NjFhb1RFUlM1Y1Z6UUVEUVczZTU5c1R3VFRKNDU0U1dtWWEvZGVtRTk3VytZ?=
- =?utf-8?B?VDNxOEQ0cGhzT2drdS9ySjJzOGZ4YlNqZGlXVkpwZFFiVUZYRk1pQ0hEMElM?=
- =?utf-8?B?TnFHV1hvQkNjQUtjVHpmUnlPV2V2VE50NCtxeGNIcUp6Y25mODJTZWVtRWt0?=
- =?utf-8?B?dktEMDNoUW81ZEdrNEFuYVBRTndtY2thSHoybUFqUjdrZFJGM0didWlQdlU0?=
- =?utf-8?B?aC8vUTdOYkEzVW15cXNYN3JCWTJsL0dEby83b2JjbTZkeS9mNkVlbzBYdnMz?=
- =?utf-8?B?OUVKbnp4VWZnVURJOGhpUnBxM1BVWFgzcGpnZkxvRDI3T2ZOTmJ0cEFPODQr?=
- =?utf-8?B?RGRLMTVZdyt0Y1BIVnVmOHNzd3Vqc2tkWktXMmxGOFAxOER4bHpBZlVRUll2?=
- =?utf-8?B?MW1OOTBYSEtPUnI2VjRWd1grbCtnY1FJbEYvN255YW90aGd1cldDVDlBK1Vu?=
- =?utf-8?B?ckpEcVpKUnFSRDBDNURVb3FGZmxDRHBmVkFOdTV1N0FtQVZVUk95LzYvS2d5?=
- =?utf-8?B?Q09iVUpmVHBTQXc4dW8za1Q3bTRYMUFvMElTWXgwZVRodEhWdnc1SVUyQWl0?=
- =?utf-8?B?U1RscGtIcWlaRXdRSVMxVEgwZThkcUxDKzh1MFlzYUNpTlRydWMvVTM1K01S?=
- =?utf-8?B?eDBhSHNCZ3R6TzdNaTJrY3BmWjNjUzFVMFcxRWJZbEtDSzQzcWtCZFZRM1FU?=
- =?utf-8?B?MW43cm54MVliWmErZkc2TlVxYW9VQXZjUis0bk9zbGtsREF2bGxsZlk5dUxQ?=
- =?utf-8?B?RFNZOVd4WlF3NGNKa1QyeU1DRTJLY2NnbmJuZ2VvQ0RGQzZTcmxEa2ZENE5r?=
- =?utf-8?B?ajJDeGswZDFpRkJOMjJpU0Z2c2szUjRWUjRZWlh5clBZdko1ZktETThqVE8z?=
- =?utf-8?B?eWkrS1FDZ0JCTnZOK0UyRlROeWdQemxsc1FiY3F6SDBIakJRSWxtVG1uOXVD?=
- =?utf-8?B?NnZBNnVzRTNJSTdHcnN3UDdLWWV1d0dpWFRsYW5ZZmNDWit0NWt1Nk9NZ0V5?=
- =?utf-8?B?R25uN0E1UGNMODczTVZsamtkR1M4aGFtOE0xNTMrZzZVaXV3ZWQ3d2dXM0xq?=
- =?utf-8?B?OFAwUk1zS2ZSaWc5YU51enphSkhmbERtNmRzMlgxbE9ONG9WZTVKZFNXNDhv?=
- =?utf-8?B?ZmZJc0tlWU9lQTZJQ2hQZVlrV1JGN3N0ekRKeUlLOUZjQmNWREg4UVd1WEky?=
- =?utf-8?B?VGdaMDJKYitSODRMaE95byt4czJkOVg0bFd1eElsbmp4V3FQemt0Qks0WDdq?=
- =?utf-8?Q?C/oLM0Vi/ce0oZ5qS2dycnNo2zMbDi/3?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ2PR12MB8784.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(10070799003)(376014)(7416014)(366016)(1800799024);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?QmpCRWtuZG9KSHpPSEZaRmQwVUdHY2FVaXBmckVkRVI1RTh2TWkzV0t5NjVO?=
- =?utf-8?B?VGxlYVkyUVFHcDBrRnAzb1EwblU2c3o1WUthWFd6NlBwbVliaklvbVR2QVpC?=
- =?utf-8?B?UmpjZ25OUE40NllTZnE0ejRMZHNudXZTMVdMVEIxZk9Na0k5SWVIMWNpUklY?=
- =?utf-8?B?ak9WNDZRY1pHeHpHUC81eGFUaTl2dTRXeDVlbTZzbGNQbHZPRmtFWEI5YnFN?=
- =?utf-8?B?ZTBjQ2hQellIOTZ2TXE1NW5aSmRYd09tU1NpT2xDRUwyd1NkcTg0RVpvZjlu?=
- =?utf-8?B?NkVKU0lQNFlwbTVkSkpzMlc5amZ2cG81ZGpDSDNoOUd4VVU5eEhmUjNsRmxV?=
- =?utf-8?B?Z0NqcjlYYTl3dTJKYW9NVDdDdHI4ckdFQzJCTzNrUUhUUkp4NXdyUWQxMG9h?=
- =?utf-8?B?VG5Qb05lK0ljRmlsSjFVS29iYTVFYjhTc2FFTGNtSnNrS1F4M21HcFF2ai8r?=
- =?utf-8?B?YmlNUEdNZlM3NDBiWTdiZTdVRDhKOWNGanoxbTQySy9wRFJlbHlZeGs2Wkc1?=
- =?utf-8?B?b3JyUno0RGs1TjVKeDQzWEtxOWRFZld5SUJLTW5JSEpoK05xUVFuTy8xV2c2?=
- =?utf-8?B?QUtLYTU3blZ3a1Zzd0hFaG9CeWRrQzVpbURMSzdkWFR1OG1vNXVjejRsaUFG?=
- =?utf-8?B?SkVCb1pBSENVS05PSzE3TmE2RG9PTlFqbStsQ1ZMd1lCbks4SjVUdlQrdGpC?=
- =?utf-8?B?Um1CWVJKYXZreGdCZmhadk5UYVE5VWRRNmVsZmVwOC9BN3dRcnU4UTVRRXBH?=
- =?utf-8?B?ZXdIclU4eGdCaHJJakxjRjJEK0p6S0hzS1o0WkpzMGhDOEYyc2RRZngwRW5l?=
- =?utf-8?B?T2w4YmlWNDBDcXBNaUdMbDhaTkFGMXNsR3ZveUZEM0dKQkJVTlk1M08rS3lQ?=
- =?utf-8?B?MmRFT2tNZStEUmhkUDRWWk9tTERkUjdQa0RLMERTRkRrbXpCU0tJeUFEWENZ?=
- =?utf-8?B?My8wQUtrRGV1dVdMRzJTQUxrNmRIMndPVXl2SHhvN3pZS0Y2b2ZzU3ZDa2ND?=
- =?utf-8?B?QWREdVdPVlJVcUN0c01xRVprWVVPUkxBcU9acDJuLzhBZlRTd0N1aW5sUzZH?=
- =?utf-8?B?WE5ISUpTeDh1SzV1SVpXckszQ0NpVXZiRk16Q011ejdLSWRDR0RMeVUzcG95?=
- =?utf-8?B?eGd5Q0JVWFRod0JONjFWenJabDJMTWZOV3VVbXBLaENKZ1libGhkU2xRVzZY?=
- =?utf-8?B?ajUzVnd2OVZISDdTU21lMzFpU0lpNlc2L1NwKzFacStTQTRmVWU5ZTVERzY5?=
- =?utf-8?B?aWJWY3BkYytLZ0pxV3ZpbDc3QTFJSEtNTGNuUHJYU241dVJzbEwvR1hpa2Zh?=
- =?utf-8?B?SGxlQ0EvVDRBL2hpVUVTZ1hFTmQxTEFHelFUbFpZZGRqK3BNZVNrWUJWTmNS?=
- =?utf-8?B?OGlvd3ZtblQvdnlTMTc4NHc2cjZWWFJGb041UnRzRFpxUStxKzRRdnpKQnFC?=
- =?utf-8?B?MEFxS1hKRVFCOVlrYTdEalhZbUNXNklDdHFhcXo2QjhJbysvcGhjUkZyVkFB?=
- =?utf-8?B?V2RsYWFMV0ZqZGtXSk9HWVo4c2RRcHRQU3Y1U3UzNVNmYzBNaERTV1ZkNnM2?=
- =?utf-8?B?ZDFXdlpHajk1MmFza0hjK2RraFREZDE0Z1FkelYyOFlRQ0JLR0w0TGRscjhw?=
- =?utf-8?B?Vko0VWdZQURyTksyaC9PVzFKa0ZNNEVwc1l0N0l2RFhrbGgzeExOdU5ua3hB?=
- =?utf-8?B?V09tZ2JKMkNhMGhhcnQrbHFXSGRkVjRoSU5qaW4zMTdNWVovL2hxU0R0R0JS?=
- =?utf-8?B?N1BSQi9KQU9zYWJnU2YxdDFEMXBzZHYvdmRnck82RC8yaE5mVlVwUUsvTVRF?=
- =?utf-8?B?bXJuNFdzQkUvUVFuME1RUGxLOFJZUnVNNnNNd3U3UHU1Q2VQNldQUTE4MUU3?=
- =?utf-8?B?Q0YyL2Ywc24rZzNZMmF0Q1VlRXZ2UXQyU3RLVDgveFhiNmtJaUtpYkE1bEdO?=
- =?utf-8?B?UEpUcUlaUzI2ejE4MU9qMVNxL2RSclJ5aC9vV1FhbkJUY0RwTG1LMnU3ZEto?=
- =?utf-8?B?c1BtMGsxMm13bTZ3ZWhTQm5leWNwOUNzNTVQYU9WaW5rOFlZcUx3VlowY0JF?=
- =?utf-8?B?MXZRbEV3L3NWeXRSVm5vRkZIelNLTEJxSWxlTk5JOUhYTGVqaWNIMk8wT0d1?=
- =?utf-8?B?VmYydXByQzZ5Tm5TcXJTaGZsb2NPVldIYmp4OGxQNnZJYUdIUVZBSVlmZm1p?=
- =?utf-8?Q?pR9xy9sT4UNkT+Y0Ee4zp7bpmtcFuuuuxVeuQi9rtzid?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 60ea24a3-df90-42b4-dac6-08de3eec25c3
-X-MS-Exchange-CrossTenant-AuthSource: SJ2PR12MB8784.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Dec 2025 10:48:30.2429
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: EV7gj4w5Kn6/nyru0Nv4C3InPSQrWs7+DQGLG/9mAVghRE0bbOtRGjsmNgkDi0F4bQYBtHJ3TID0d56LBMjR9A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB5973
+Mime-Version: 1.0
+X-B4-Tracking: v=1; b=H4sIAAsuRWkC/02Oyw6DIBBFf8XMuhjAR6qr/kfjAnBEEhULlLQx/
+ nupdtHZncmdc2cDj86ghzbbwGE03tglQXnJQI1i0UhMnxg45RVLQ4wlqw5CTkgGpFfOZYmy7yE
+ drA4H8zpk9+5kh49ncoZzCVJ4JMrOswltFuucNcQpBt/waHyw7n08Eosj/evk/52xIIxIShXHW jYVEzdtrZ4wT1bo9n3/ALIK0x7SAAAA
+X-Change-Id: 20251111-io-pgtable-fe0822b4ebdd
+X-Developer-Key: i=aliceryhl@google.com; a=openpgp; fpr=49F6C1FAA74960F43A5B86A1EE7A392FDE96209F
+X-Developer-Signature: v=1; a=openpgp-sha256; l=13538; i=aliceryhl@google.com;
+ h=from:subject:message-id; bh=uJYCNjJzEYtBk/2iSJnBj1R9WDR2GzMN4fV/t+4RXcY=;
+ b=owEBbQKS/ZANAwAKAQRYvu5YxjlGAcsmYgBpRS4RncHCV4nyS//y4EAx+bwRMSgTWZLk3H0zY
+ of/WRAd/OWJAjMEAAEKAB0WIQSDkqKUTWQHCvFIvbIEWL7uWMY5RgUCaUUuEQAKCRAEWL7uWMY5
+ RtMKEAC6EBqe0yNbvKxSik8ZGeRpxMHrK4icFxX/DE/flKsK+rF6gcXEMnGCo4DJ8Me8RcHPdzn
+ KD6njKVO9AB9ewjx/iC9dPVJkKAwrYJloVv6DbBcBFULOfxuyafoPXV5nFlSoDo4D/pVRVEoZiU
+ Hl0NGVLsYEvOgQ9ifWdNqXF31WtvQ5mMFzK7qpA86xYRKFkH6TEZkxGk7Vb10wHj2ahbjBsK1Y8
+ JWpLgu9/Hx1IRttjhBjHqNvnnktOVwyzuLr2VLQ1UA6SXqoOu1vfEThdH/vvlLIvOR6a6h0jH6K
+ breiZA2kdB0+1A8uzQFqJAqfC6wksrgjsHqRUQmRspta5WjKEENBuoB/1jwBP7y6t6ovgQcrJqS
+ RlLYbLKKCOaqvuLKbHV2hD5qbvlA14sQAXLilTeZl73v4gbLcxBxTZHbC2tkcFWB3lscqFz5i/H
+ 1iGviEq/qenzMz88SSDev8C12/UhQ4IayJRWI+r41hS288PtA6ch2Dwk3Q8OvjxsnZjYNgOqRBr
+ +1fkIINIVU4a0jETQhEBAn2zAHP667lHUAXkqIBXzXMNpMLd1bdtHeRXHmNlqUFJIzxDwCx5twL
+ NebLAoc93N0D+PlrUap4jNl1LndvIU1aO02vNu9+bfGf8FACSs5IgtNbzzrLBDn1eB3DU1ZmSwh gpc9YvUiqVHMuVQ==
+X-Mailer: b4 0.14.2
+Message-ID: <20251219-io-pgtable-v4-1-68aaa7a40380@google.com>
+Subject: [PATCH v4] io: add io_pgtable abstraction
+From: Alice Ryhl <aliceryhl@google.com>
+To: Miguel Ojeda <ojeda@kernel.org>, Will Deacon <will@kernel.org>, 
+	Daniel Almeida <daniel.almeida@collabora.com>, 
+	Boris Brezillon <boris.brezillon@collabora.com>, Robin Murphy <robin.murphy@arm.com>, 
+	Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>, 
+	"=?utf-8?q?Bj=C3=B6rn_Roy_Baron?=" <bjorn3_gh@protonmail.com>, Benno Lossin <lossin@kernel.org>, 
+	Andreas Hindborg <a.hindborg@kernel.org>, Trevor Gross <tmgross@umich.edu>, 
+	Danilo Krummrich <dakr@kernel.org>, Joerg Roedel <joro@8bytes.org>, 
+	Lorenzo Stoakes <lorenzo.stoakes@oracle.com>, "Liam R. Howlett" <Liam.Howlett@oracle.com>, 
+	Asahi Lina <lina+kernel@asahilina.net>, linux-kernel@vger.kernel.org, 
+	rust-for-linux@vger.kernel.org, iommu@lists.linux.dev, linux-mm@kvack.org, 
+	Alice Ryhl <aliceryhl@google.com>
+Content-Type: text/plain; charset="utf-8"
 
+From: Asahi Lina <lina+kernel@asahilina.net>
 
-On 18/12/2025 18:57, Nicolin Chen wrote:
-> On Thu, Dec 18, 2025 at 08:48:32AM +0000, Jon Hunter wrote:
->> On 18/12/2025 06:32, Ashish Mhetre wrote:
->>> On 12/18/2025 2:13 AM, Jon Hunter wrote:
->>>>> +    smmu->impl_dev = &pdev->dev;
->>>>> +    smmu->options |= ARM_SMMU_OPT_TEGRA241_CMDQV;
->>>>> +    dev_info(smmu->dev, "found companion CMDQV device: %s\n",
->>>>> +         dev_name(smmu->impl_dev));
->>>>
->>>> This seems a bit noisy. dev_dbg?
->>>>
->>>
->>> This info print is similar to what is there in ACPI path as well.
->>> It's only a single print per SMMU at boot time. Should I still change
->>> it to dev_dbg?
->>
->> Yes, I would.
-> 
-> It's really not that bad IMHO, I am not against that though..
-> 
-> If we have to change that, we'd need another patch changing the
-> one in the ACPI path as well to keep things aligned.
+This will be used by the Tyr driver to create and modify the page table
+of each address space on the GPU. Each time a mapping gets created or
+removed by userspace, Tyr will call into GPUVM, which will figure out
+which calls to map_pages and unmap_pages are required to map the data in
+question in the page table so that the GPU may access those pages when
+using that address space.
 
-Regardless of what is already present, does not mean we need add more 
-prints to just say everything is OK.
+The Rust type wraps the struct using a raw pointer rather than the usual
+Opaque+ARef approach because Opaque+ARef requires the target type to be
+refcounted.
 
-Jon
+Signed-off-by: Asahi Lina <lina+kernel@asahilina.net>
+Acked-by: Boris Brezillon <boris.brezillon@collabora.com>
+Co-developed-by: Alice Ryhl <aliceryhl@google.com>
+Signed-off-by: Alice Ryhl <aliceryhl@google.com>
+---
+Changes in v4:
+- Rename prot::PRIV to prot::PRIVILEGED
+- Adjust map_pages to return the length even on error.
+- Explain return value in docs of map_pages and unmap_pages.
+- Explain in map_pages that the caller must explicitly flush the TLB
+  before accessing the resulting mapping.
+- Add a safety requirement that access to a given range is required to
+  be exclusive.
+- Reword comment on NOOP_FLUSH_OPS.
+- Rebase on v6.19-rc1 and pick up tags.
+- Link to v3: https://lore.kernel.org/r/20251112-io-pgtable-v3-1-b00c2e6b951a@google.com
 
+Changes in v3:
+- Almost entirely rewritten from scratch.
+- Link to v2: https://lore.kernel.org/all/20250623-io_pgtable-v2-1-fd72daac75f1@collabora.com/
+---
+ rust/bindings/bindings_helper.h |   3 +-
+ rust/kernel/io.rs               |   1 +
+ rust/kernel/io/pgtable.rs       | 278 ++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 281 insertions(+), 1 deletion(-)
+
+diff --git a/rust/bindings/bindings_helper.h b/rust/bindings/bindings_helper.h
+index a067038b4b422b4256f4a2b75fe644d47e6e82c8..1b05a5e4cfb4780fdc27813d708a8f1a6a2d9913 100644
+--- a/rust/bindings/bindings_helper.h
++++ b/rust/bindings/bindings_helper.h
+@@ -56,9 +56,10 @@
+ #include <linux/fdtable.h>
+ #include <linux/file.h>
+ #include <linux/firmware.h>
+-#include <linux/interrupt.h>
+ #include <linux/fs.h>
+ #include <linux/i2c.h>
++#include <linux/interrupt.h>
++#include <linux/io-pgtable.h>
+ #include <linux/ioport.h>
+ #include <linux/jiffies.h>
+ #include <linux/jump_label.h>
+diff --git a/rust/kernel/io.rs b/rust/kernel/io.rs
+index 98e8b84e68d11ef74b2026d8c3d847a127f4672d..88253158448cbf493ca200a87ef9ba958255e761 100644
+--- a/rust/kernel/io.rs
++++ b/rust/kernel/io.rs
+@@ -10,6 +10,7 @@
+ };
+ 
+ pub mod mem;
++pub mod pgtable;
+ pub mod poll;
+ pub mod resource;
+ 
+diff --git a/rust/kernel/io/pgtable.rs b/rust/kernel/io/pgtable.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..11096acfa41d45125e866876e41459a347e9afe6
+--- /dev/null
++++ b/rust/kernel/io/pgtable.rs
+@@ -0,0 +1,278 @@
++// SPDX-License-Identifier: GPL-2.0
++
++//! IOMMU page table management.
++//!
++//! C header: [`include/io-pgtable.h`](srctree/include/io-pgtable.h)
++
++use core::{
++    marker::PhantomData,
++    ptr::NonNull, //
++};
++
++use crate::{
++    alloc,
++    bindings,
++    device::{Bound, Device},
++    devres::Devres,
++    error::to_result,
++    io::PhysAddr,
++    prelude::*, //
++};
++
++use bindings::io_pgtable_fmt;
++
++/// Protection flags used with IOMMU mappings.
++pub mod prot {
++    /// Read access.
++    pub const READ: u32 = bindings::IOMMU_READ;
++    /// Write access.
++    pub const WRITE: u32 = bindings::IOMMU_WRITE;
++    /// Request cache coherency.
++    pub const CACHE: u32 = bindings::IOMMU_CACHE;
++    /// Request no-execute permission.
++    pub const NOEXEC: u32 = bindings::IOMMU_NOEXEC;
++    /// MMIO peripheral mapping.
++    pub const MMIO: u32 = bindings::IOMMU_MMIO;
++    /// Privileged mapping.
++    pub const PRIVILEGED: u32 = bindings::IOMMU_PRIV;
++}
++
++/// Represents a requested `io_pgtable` configuration.
++pub struct Config {
++    /// Quirk bitmask (type-specific).
++    pub quirks: usize,
++    /// Valid page sizes, as a bitmask of powers of two.
++    pub pgsize_bitmap: usize,
++    /// Input address space size in bits.
++    pub ias: u32,
++    /// Output address space size in bits.
++    pub oas: u32,
++    /// IOMMU uses coherent accesses for page table walks.
++    pub coherent_walk: bool,
++}
++
++/// An io page table using a specific format.
++///
++/// # Invariants
++///
++/// The pointer references a valid io page table.
++pub struct IoPageTable<F: IoPageTableFmt> {
++    ptr: NonNull<bindings::io_pgtable_ops>,
++    _marker: PhantomData<F>,
++}
++
++// SAFETY: `struct io_pgtable_ops` is not restricted to a single thread.
++unsafe impl<F: IoPageTableFmt> Send for IoPageTable<F> {}
++// SAFETY: `struct io_pgtable_ops` may be accessed concurrently.
++unsafe impl<F: IoPageTableFmt> Sync for IoPageTable<F> {}
++
++/// The format used by this page table.
++pub trait IoPageTableFmt: 'static {
++    /// The value representing this format.
++    const FORMAT: io_pgtable_fmt;
++}
++
++impl<F: IoPageTableFmt> IoPageTable<F> {
++    /// Create a new `IoPageTable` as a device resource.
++    #[inline]
++    pub fn new(
++        dev: &Device<Bound>,
++        config: Config,
++    ) -> impl PinInit<Devres<IoPageTable<F>>, Error> + '_ {
++        // SAFETY: Devres ensures that the value is dropped during device unbind.
++        Devres::new(dev, unsafe { Self::new_raw(dev, config) })
++    }
++
++    /// Create a new `IoPageTable`.
++    ///
++    /// # Safety
++    ///
++    /// If successful, then the returned value must be dropped before the device is unbound.
++    #[inline]
++    pub unsafe fn new_raw(dev: &Device<Bound>, config: Config) -> Result<IoPageTable<F>> {
++        let mut raw_cfg = bindings::io_pgtable_cfg {
++            quirks: config.quirks,
++            pgsize_bitmap: config.pgsize_bitmap,
++            ias: config.ias,
++            oas: config.oas,
++            coherent_walk: config.coherent_walk,
++            tlb: &raw const NOOP_FLUSH_OPS,
++            iommu_dev: dev.as_raw(),
++            // SAFETY: All zeroes is a valid value for `struct io_pgtable_cfg`.
++            ..unsafe { core::mem::zeroed() }
++        };
++
++        // SAFETY:
++        // * The raw_cfg pointer is valid for the duration of this call.
++        // * The provided `FLUSH_OPS` contains valid function pointers that accept a null pointer
++        //   as cookie.
++        // * The caller ensures that the io pgtable does not outlive the device.
++        let ops = unsafe {
++            bindings::alloc_io_pgtable_ops(F::FORMAT, &mut raw_cfg, core::ptr::null_mut())
++        };
++        // INVARIANT: We successfully created a valid page table.
++        Ok(IoPageTable {
++            ptr: NonNull::new(ops).ok_or(ENOMEM)?,
++            _marker: PhantomData,
++        })
++    }
++
++    /// Obtain a raw pointer to the underlying `struct io_pgtable_ops`.
++    #[inline]
++    pub fn raw_ops(&self) -> *mut bindings::io_pgtable_ops {
++        self.ptr.as_ptr()
++    }
++
++    /// Obtain a raw pointer to the underlying `struct io_pgtable`.
++    #[inline]
++    pub fn raw_pgtable(&self) -> *mut bindings::io_pgtable {
++        // SAFETY: The io_pgtable_ops of an io-pgtable is always the ops field of a io_pgtable.
++        unsafe { kernel::container_of!(self.raw_ops(), bindings::io_pgtable, ops) }
++    }
++
++    /// Obtain a raw pointer to the underlying `struct io_pgtable_cfg`.
++    #[inline]
++    pub fn raw_cfg(&self) -> *mut bindings::io_pgtable_cfg {
++        // SAFETY: The `raw_pgtable()` method returns a valid pointer.
++        unsafe { &raw mut (*self.raw_pgtable()).cfg }
++    }
++
++    /// Map a physically contiguous range of pages of the same size.
++    ///
++    /// Even if successful, this operation may not map the entire range. In that case, only a
++    /// prefix of the range is mapped, and the returned integer indicates its length in bytes. In
++    /// this case, the caller will usually call `map_pages` again for the remaining range.
++    ///
++    /// The returned [`Result`] indicates whether an error was encountered while mapping pages.
++    /// Note that this may return a non-zero length even if an error was encountered. The caller
++    /// will usually [unmap the relevant pages](Self::unmap_pages) on error.
++    ///
++    /// The caller must flush the TLB before using the pgtable to access the newly created mapping.
++    ///
++    /// # Safety
++    ///
++    /// * No other io-pgtable operation may access the range `iova .. iova+pgsize*pgcount` while
++    ///   this `map_pages` operation executes.
++    /// * This page table must not contain any mapping that overlaps with the mapping created by
++    ///   this call.
++    /// * If this page table is live, then the caller must ensure that it's okay to access the
++    ///   physical address being mapped for the duration in which it is mapped.
++    #[inline]
++    #[must_use]
++    pub unsafe fn map_pages(
++        &self,
++        iova: usize,
++        paddr: PhysAddr,
++        pgsize: usize,
++        pgcount: usize,
++        prot: u32,
++        flags: alloc::Flags,
++    ) -> (usize, Result) {
++        let mut mapped: usize = 0;
++
++        // SAFETY: The `map_pages` function in `io_pgtable_ops` is never null.
++        let map_pages = unsafe { (*self.raw_ops()).map_pages.unwrap_unchecked() };
++
++        // SAFETY: The safety requirements of this method are sufficient to call `map_pages`.
++        let ret = to_result(unsafe {
++            (map_pages)(
++                self.raw_ops(),
++                iova,
++                paddr,
++                pgsize,
++                pgcount,
++                prot as i32,
++                flags.as_raw(),
++                &mut mapped,
++            )
++        });
++
++        (mapped, ret)
++    }
++
++    /// Unmap a range of virtually contiguous pages of the same size.
++    ///
++    /// This may not unmap the entire range, and returns the length of the unmapped prefix in
++    /// bytes.
++    ///
++    /// # Safety
++    ///
++    /// * No other io-pgtable operation may access the range `iova .. iova+pgsize*pgcount` while
++    ///   this `unmap_pages` operation executes.
++    /// * This page table must contain one or more consecutive mappings starting at `iova` whose
++    ///   total size is `pgcount * pgsize`.
++    #[inline]
++    #[must_use]
++    pub unsafe fn unmap_pages(&self, iova: usize, pgsize: usize, pgcount: usize) -> usize {
++        // SAFETY: The `unmap_pages` function in `io_pgtable_ops` is never null.
++        let unmap_pages = unsafe { (*self.raw_ops()).unmap_pages.unwrap_unchecked() };
++
++        // SAFETY: The safety requirements of this method are sufficient to call `unmap_pages`.
++        unsafe { (unmap_pages)(self.raw_ops(), iova, pgsize, pgcount, core::ptr::null_mut()) }
++    }
++}
++
++// For now, we do not provide the ability to flush the TLB via the built-in callback mechanism.
++// Instead, the `map_pages` function requires the caller to explicitly flush the TLB before the
++// pgtable is used to access the newly created range.
++//
++// This is done because the initial user of this abstraction may perform many calls to `map_pages`
++// in a single batched operation, and wishes to only flush the TLB once after performing the entire
++// batch of mappings. These callbacks would flush too often for that use-case.
++//
++// Support for flushing the TLB in these callbacks may be added in the future.
++static NOOP_FLUSH_OPS: bindings::iommu_flush_ops = bindings::iommu_flush_ops {
++    tlb_flush_all: Some(rust_tlb_flush_all_noop),
++    tlb_flush_walk: Some(rust_tlb_flush_walk_noop),
++    tlb_add_page: None,
++};
++
++#[no_mangle]
++extern "C" fn rust_tlb_flush_all_noop(_cookie: *mut core::ffi::c_void) {}
++
++#[no_mangle]
++extern "C" fn rust_tlb_flush_walk_noop(
++    _iova: usize,
++    _size: usize,
++    _granule: usize,
++    _cookie: *mut core::ffi::c_void,
++) {
++}
++
++impl<F: IoPageTableFmt> Drop for IoPageTable<F> {
++    fn drop(&mut self) {
++        // SAFETY: The caller of `ttbr` promised that the page table is not live when this
++        // destructor runs.
++        unsafe { bindings::free_io_pgtable_ops(self.raw_ops()) };
++    }
++}
++
++/// The `ARM_64_LPAE_S1` page table format.
++pub enum ARM64LPAES1 {}
++
++impl IoPageTableFmt for ARM64LPAES1 {
++    const FORMAT: io_pgtable_fmt = bindings::io_pgtable_fmt_ARM_64_LPAE_S1 as io_pgtable_fmt;
++}
++
++impl IoPageTable<ARM64LPAES1> {
++    /// Access the `ttbr` field of the configuration.
++    ///
++    /// This is the physical address of the page table, which may be passed to the device that
++    /// needs to use it.
++    ///
++    /// # Safety
++    ///
++    /// The caller must ensure that the device stops using the page table before dropping it.
++    #[inline]
++    pub unsafe fn ttbr(&self) -> u64 {
++        // SAFETY: `arm_lpae_s1_cfg` is the right cfg type for `ARM64LPAES1`.
++        unsafe { (*self.raw_cfg()).__bindgen_anon_1.arm_lpae_s1_cfg.ttbr }
++    }
++
++    /// Access the `mair` field of the configuration.
++    #[inline]
++    pub fn mair(&self) -> u64 {
++        // SAFETY: `arm_lpae_s1_cfg` is the right cfg type for `ARM64LPAES1`.
++        unsafe { (*self.raw_cfg()).__bindgen_anon_1.arm_lpae_s1_cfg.mair }
++    }
++}
+
+---
+base-commit: 3e7f562e20ee87a25e104ef4fce557d39d62fa85
+change-id: 20251111-io-pgtable-fe0822b4ebdd
+
+Best regards,
 -- 
-nvpublic
+Alice Ryhl <aliceryhl@google.com>
 
