@@ -1,219 +1,191 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ACADD3B19F
-	for <iommu@lists.linux.dev>; Sat, 20 Dec 2025 02:37:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 219C628CF41;
+	Sat, 20 Dec 2025 17:37:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766198264; cv=none; b=bP7OX5idLqkcsSfF00qgC0fNUbhF6lpm4lo4M5F6tORRIGaUTDn6G5mY3L/jO1eqnR9DAtA3xByBkoe/r9FCCLu37UwfQp8UehpwPpr7gR8GMGjlu6OZiF+iQPPRo0K7Qeuf4l4wAlAJft0Mttc1H3nvu/t5YXOCrvbA/Wr7Wb4=
+	t=1766252271; cv=none; b=WEkyeKsEBQIjOFJSWTjh5LpMEHbzRAiq3mOYHoKAVwmAXxvd7Oq2et1Mluebs2sIqFbPht6pkAGYv6vZgL17AuDNVDAQkytwh3cLIBS7nDam8vseLIWeWQxdK5eamsVjFQ0ZweEJJHvWsnvPQ2NDMScmtAWVfLV8nzQ7vFX1KyI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766198264; c=relaxed/simple;
-	bh=6tcZDP34K/Fphfh/cEJn5CAXZIzMsbzrxwqkyQaf6mg=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=pobeQb7q+QorucNCNbh8Atwqql9DsNskOzZsqj/bfE3tmw4/7kPi5kkfitlTHh+rNhrEXOUPBwKD0zgcTGCIFx3s5MQeby7xoB8HoTLY/D8FhdUr+NBRDNKWDb7jSVA10NS5RQ0+wrucQR0oU9WTkcoNRkzSjrazI515U96604g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=QkCRL64s; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=qualcomm.com
+	s=arc-20240116; t=1766252271; c=relaxed/simple;
+	bh=ZjJ3WshKbqsummQRbdCDiWBW16+8R9IjNscHTzIFoZY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=L6IJSPv/d2XjPggnzbTUuZh39nov/gl+/25DOCTM2cvY8ADWszYBs376Q/Fq0VOTao8x5Tvjh+HEmoVCiH8qm09PHAabVLSqXp2zwV/VA2Q8ndKJKzXtViWoFNKY1tWp/B2benptGjXabPlU4IAE/xrSoYC4i9viwQHprGv4q9s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Vw+klBMK; arc=none smtp.client-ip=192.198.163.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="QkCRL64s"
-Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 5BJNNBIA2702425;
-	Sat, 20 Dec 2025 02:37:28 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:date:from:message-id:mime-version
-	:subject:to; s=qcppdkim1; bh=yhJ44J6wwoHw5J0H8UeBAMbgQll9zeeCNxS
-	SrKzr55o=; b=QkCRL64sUKmVdLCqEopmZCMlbIwAd7KMng4N/NkYnMWs6N1QdQm
-	FzjTAZXenVDzgbK0cJxHKzAJiyQ2lR/i9JaWU+lsityMnqjNF0Yjp2HvmUqWP9NQ
-	ipLC2BkfYM7IXnUtuvLQ43CLlHg5l10XQdZ1DE/1jOlCGmcvH+CiJUH3V6I/4lCJ
-	OAZ3drN7yFOMhmYxtMEnQCzX1iJzxBhNY9eSw6MfBUaP5IsAdbhw1QTv0dwdc/Dt
-	eX4y88eAi9oE/LL8no42N55bUJVmNJC0tm5gQ0oYsdWm2EwnzV77YKiOoV2sC608
-	hOcTvNGdqfcYwOkWu8Uz/AfceYeh+eptWyg==
-Received: from apblrppmta02.qualcomm.com (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4b5frq8c5e-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Sat, 20 Dec 2025 02:37:28 +0000 (GMT)
-Received: from pps.filterd (APBLRPPMTA02.qualcomm.com [127.0.0.1])
-	by APBLRPPMTA02.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTP id 5BK2bOx0012619;
-	Sat, 20 Dec 2025 02:37:24 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-	by APBLRPPMTA02.qualcomm.com (PPS) with ESMTPS id 4b3t8d2c83-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Sat, 20 Dec 2025 02:37:24 +0000
-Received: from APBLRPPMTA02.qualcomm.com (APBLRPPMTA02.qualcomm.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 5BK2bODQ012613;
-	Sat, 20 Dec 2025 02:37:24 GMT
-Received: from hu-devc-hyd-u22-c.qualcomm.com (hu-bvisredd-hyd.qualcomm.com [10.147.240.98])
-	by APBLRPPMTA02.qualcomm.com (PPS) with ESMTPS id 5BK2bOvU012612
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Sat, 20 Dec 2025 02:37:24 +0000
-Received: by hu-devc-hyd-u22-c.qualcomm.com (Postfix, from userid 4559132)
-	id 799295AA; Sat, 20 Dec 2025 08:07:23 +0530 (+0530)
-From: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-To: robin.murphy@arm.com, joro@8bytes.org, will@kernel.org,
-        m.szyprowski@samsung.com
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-        vikash.garodia@oss.qualcomm.com, dikshita.agarwal@oss.qualcomm.com,
-        Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-Subject: [RFC PATCH] dma-iommu: Introduce API to reserve IOVA regions for dynamically created devices
-Date: Sat, 20 Dec 2025 08:05:55 +0530
-Message-Id: <20251220023555.3017456-1-busanna.reddy@oss.qualcomm.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Vw+klBMK"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1766252270; x=1797788270;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ZjJ3WshKbqsummQRbdCDiWBW16+8R9IjNscHTzIFoZY=;
+  b=Vw+klBMK2yWE0VAs0cz6XF1NEFo0X0+BaFfqjZFCny4n/Nxxz0ev2TH9
+   Ne2XIscIYa/zsPRgBdiA3I36j3iyE+U5K7yWXQZFcyg0bNf9z7VBAoj+m
+   AqKwcCLkrvLnN6vOxbGWxd5YrmW7uf7ztxqMJ6OFB98LILNaoOwzCR2MX
+   SFuENRyr01jDaOwf/mvWV3npEmX8jVUFAgOJrhrIRkMeEV9OCipKsQHOc
+   G+EAJ+4vk4AlOfAn4w7xtRs/cRo+2ifqBWDFOj/CcURQubWXbEVImuP5W
+   pNWkwLEUj3sukbTSe9UNrSD/qshGeScO3fg3vJmIxYOczCUGve6ovBVne
+   w==;
+X-CSE-ConnectionGUID: 5YKxq+edR4+ICkvo+9nvUA==
+X-CSE-MsgGUID: EDSVQu/cTDuJlQgP0Baj0g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11648"; a="79547261"
+X-IronPort-AV: E=Sophos;i="6.21,164,1763452800"; 
+   d="scan'208";a="79547261"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Dec 2025 09:37:49 -0800
+X-CSE-ConnectionGUID: AH5DQBOtSTG8o5r+GG6cOg==
+X-CSE-MsgGUID: DgFt65WaRCGsdZWvZrV8rA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,164,1763452800"; 
+   d="scan'208";a="199123719"
+Received: from igk-lkp-server01.igk.intel.com (HELO 8a0c053bdd2a) ([10.211.93.152])
+  by orviesa007.jf.intel.com with ESMTP; 20 Dec 2025 09:37:45 -0800
+Received: from kbuild by 8a0c053bdd2a with local (Exim 4.98.2)
+	(envelope-from <lkp@intel.com>)
+	id 1vX0ti-000000004iu-23hx;
+	Sat, 20 Dec 2025 17:37:42 +0000
+Date: Sat, 20 Dec 2025 18:37:38 +0100
+From: kernel test robot <lkp@intel.com>
+To: Barry Song <21cnbao@gmail.com>, catalin.marinas@arm.com,
+	m.szyprowski@samsung.com, robin.murphy@arm.com, will@kernel.org
+Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+	ada.coupriediaz@arm.com, anshuman.khandual@arm.com, ardb@kernel.org,
+	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, maz@kernel.org, ryan.roberts@arm.com,
+	surenb@google.com, v-songbaohua@oppo.com, zhengtangquan@oppo.com
+Subject: Re: [PATCH 5/6] dma-mapping: Allow batched DMA sync operations if
+ supported by the arch
+Message-ID: <202512201836.f6KX6WMH-lkp@intel.com>
+References: <20251219053658.84978-6-21cnbao@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QCInternal: smtphost
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: 9y9Ih05kc91ndsAggI_COoMTj3zSCIuR
-X-Proofpoint-ORIG-GUID: 9y9Ih05kc91ndsAggI_COoMTj3zSCIuR
-X-Authority-Analysis: v=2.4 cv=Mu9fKmae c=1 sm=1 tr=0 ts=69460be8 cx=c_pps
- a=Ou0eQOY4+eZoSc0qltEV5Q==:117 a=Ou0eQOY4+eZoSc0qltEV5Q==:17
- a=wP3pNCr1ah4A:10 a=VkNPw1HP01LnGYTKEx00:22 a=EUspDBNiAAAA:8
- a=QMkpMWH4AvK_Fj9H1hwA:9
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMjIwMDAyMCBTYWx0ZWRfX2qY9tOEks8rQ
- MyI9h/JeOO6LRBr67Dulr+eBURXKKw/ZjTEna2wRxgi2zCQBobSY8NuIq+zN2S2OcDXt/gcFZSL
- hs9cenC/ylUdGr6OfYkprCwYKR9TotlcbIFawvGEXaaF9bOqUYjDJXXEMk0LihqbLpYh4VUwacf
- sv4vtBf0eZsoJzzKHA2vBedra3Al7AQYC6umaESktLgCTX4Ic6F7X89osTP3CaNNkHoYUpbOPhJ
- +Y17XHm9GKGps/x0aTMHKDEoE9SYRLnFP2ckGsyWHGN0fCuy4k+Ci09KZTgwekD/E+lE6s0RMZB
- 4hZ7dqGm6ZDTNjPx9J2UuhLjF44zMUiTW9Fa18CsF6H5BSN2o3kbjT8RN2IeDXy7NCkwgIss/ob
- 3oa7OqMaW/lsWCg6RIYNJEJrLpQLVaNBDbhxTIsC6dzTX9xEJfKh3ERZRzQuj6mCRysude/DFKf
- yOxvvUPbivcvLeE3GKA==
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.9,FMLib:17.12.100.49
- definitions=2025-12-19_08,2025-12-19_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- impostorscore=0 lowpriorityscore=0 clxscore=1011 bulkscore=0
- priorityscore=1501 spamscore=0 adultscore=0 suspectscore=0 malwarescore=0
- phishscore=0 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2512120000
- definitions=main-2512200020
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20251219053658.84978-6-21cnbao@gmail.com>
 
-Drivers can create child devices dynamically. These child devices often
-inherit parent device tree node, including its reserved iommu-address
-ranges. While device tree can declare the multiple iommu-address ranges,
-they still apply uniformly to any child inheriting the parent OF node.
+Hi Barry,
 
-This creates a limitation when child requires a different iommu-address
-range than its parent, as device tree cannot express the reservation per
-child.
+kernel test robot noticed the following build errors:
 
-Example layout and use case:
-----------------------------
-A multimedia subsystem with multiple child devices and distinct ranges:
+[auto build test ERROR on linus/master]
+[also build test ERROR on next-20251219]
+[cannot apply to arm64/for-next/core v6.16-rc1]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-    +-----------------------------------------------------------+
-    | Device A reserved region (256 MB)                         |
-    | 0x00000000 - 0x10000000                                   |
-    +-----------------------------------------------------------+
-    | Device B reserved region (512 MB)                         |
-    | 0x00000000 - 0x20000000                                   |
-    +-----------------------------------------------------------+
-    | Device C reserved region (600 MB)                         |
-    | 0x00000000 - 0x25800000                                   |
-    +-----------------------------------------------------------+
-    | Other reserved regions                                    |
-    +-----------------------------------------------------------+
+url:    https://github.com/intel-lab-lkp/linux/commits/Barry-Song/arm64-Provide-dcache_by_myline_op_nosync-helper/20251219-195810
+base:   linus/master
+patch link:    https://lore.kernel.org/r/20251219053658.84978-6-21cnbao%40gmail.com
+patch subject: [PATCH 5/6] dma-mapping: Allow batched DMA sync operations if supported by the arch
+config: x86_64-kexec (https://download.01.org/0day-ci/archive/20251220/202512201836.f6KX6WMH-lkp@intel.com/config)
+compiler: clang version 20.1.8 (https://github.com/llvm/llvm-project 87f0227cb60147a26a1eeb4fb06e3b505e9c7261)
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20251220/202512201836.f6KX6WMH-lkp@intel.com/reproduce)
 
-If we add Device C's reserved range (0x0 to 0x025800000) into iommu
-address range into device tree and assign that OF node to Device B
-and C, it wastes memory:
-- Device A wastes ~344 MB
-- Device B wastes ~88 MB
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202512201836.f6KX6WMH-lkp@intel.com/
 
-To avoid this, drivers can use the introduced API to set their device
-specific IOVA region at runtime, ensuring the DMA mapping without
-unnecessary address space reservation.
+All errors (new ones prefixed by >>):
 
-Signed-off-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
----
- drivers/iommu/dma-iommu.c   | 44 +++++++++++++++++++++++++++++++++++++
- include/linux/dma-mapping.h |  7 ++++++
- 2 files changed, 51 insertions(+)
+>> kernel/dma/direct.c:456:4: error: call to undeclared function 'dma_direct_unmap_phys_batch_add'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+     456 |                         dma_direct_unmap_phys_batch_add(dev, sg->dma_address,
+         |                         ^
+   kernel/dma/direct.c:456:4: note: did you mean 'dma_direct_unmap_phys'?
+   kernel/dma/direct.h:188:20: note: 'dma_direct_unmap_phys' declared here
+     188 | static inline void dma_direct_unmap_phys(struct device *dev, dma_addr_t addr,
+         |                    ^
+>> kernel/dma/direct.c:484:22: error: call to undeclared function 'dma_direct_map_phys_batch_add'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+     484 |                         sg->dma_address = dma_direct_map_phys_batch_add(dev, sg_phys(sg),
+         |                                           ^
+   2 errors generated.
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index c92088855450a..02c54cddf9417 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -1743,6 +1743,50 @@ size_t iommu_dma_max_mapping_size(struct device *dev)
- 	return SIZE_MAX;
- }
- 
-+/**
-+ * dma_iova_set_resv_region - Set a reserved region in the IOVA space
-+ * @dev: Device to set the reserved region for
-+ * @start: Start of the reserved region
-+ * @length: Length of the reserved region
-+ *
-+ * This function enables drivers to set device specific reservations at
-+ * runtime, which is particularly useful for dynamically created child
-+ * devices that requires distinct IOVA ranges than parent.
-+ *
-+ * Returns:
-+ *  0        - Success
-+ *  -ENODEV  - No valid IOMMU DMA domain for the device
-+ *  -EINVAL  - Invalid domain or cookie type for this operation
-+ *  -ENOMEM  - Failed to reserve the requested range
-+ */
-+int dma_iova_set_resv_region(struct device *dev, unsigned long start,
-+			     unsigned long length)
-+{
-+	struct iommu_dma_cookie *cookie;
-+	struct iommu_domain *domain;
-+	struct iova_domain *iovad;
-+	unsigned long lo, hi;
-+
-+	domain = iommu_get_dma_domain(dev);
-+	if (!domain || domain->type != IOMMU_DOMAIN_DMA)
-+		return -ENODEV;
-+
-+	cookie = domain->iova_cookie;
-+	if (!cookie || domain->cookie_type != IOMMU_COOKIE_DMA_IOVA)
-+		return -EINVAL;
-+
-+	iovad = &cookie->iovad;
-+
-+	lo = iova_pfn(iovad, start);
-+	hi = iova_pfn(iovad, start + length - 1);
-+
-+	if (!reserve_iova(iovad, lo, hi))
-+		return -ENOMEM;
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(dma_iova_set_resv_region);
-+
- /**
-  * dma_iova_try_alloc - Try to allocate an IOVA space
-  * @dev: Device to allocate the IOVA space for
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index aa36a0d1d9df6..c89147cf92231 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -339,6 +339,8 @@ static inline bool dma_use_iova(struct dma_iova_state *state)
- 	return state->__size != 0;
- }
- 
-+int dma_iova_set_resv_region(struct device *dev, unsigned long start,
-+			     unsigned long length);
- bool dma_iova_try_alloc(struct device *dev, struct dma_iova_state *state,
- 		phys_addr_t phys, size_t size);
- void dma_iova_free(struct device *dev, struct dma_iova_state *state);
-@@ -358,6 +360,11 @@ static inline bool dma_use_iova(struct dma_iova_state *state)
- {
- 	return false;
- }
-+static inline int dma_iova_set_resv_region(struct device *dev, unsigned long start,
-+					   unsigned long length)
-+{
-+	return -ENODEV;
-+}
- static inline bool dma_iova_try_alloc(struct device *dev,
- 		struct dma_iova_state *state, phys_addr_t phys, size_t size)
- {
+
+vim +/dma_direct_unmap_phys_batch_add +456 kernel/dma/direct.c
+
+   439	
+   440	/*
+   441	 * Unmaps segments, except for ones marked as pci_p2pdma which do not
+   442	 * require any further action as they contain a bus address.
+   443	 */
+   444	void dma_direct_unmap_sg(struct device *dev, struct scatterlist *sgl,
+   445			int nents, enum dma_data_direction dir, unsigned long attrs)
+   446	{
+   447		struct scatterlist *sg;
+   448		int i;
+   449		bool need_sync = false;
+   450	
+   451		for_each_sg(sgl,  sg, nents, i) {
+   452			if (sg_dma_is_bus_address(sg)) {
+   453				sg_dma_unmark_bus_address(sg);
+   454			} else {
+   455				need_sync = true;
+ > 456				dma_direct_unmap_phys_batch_add(dev, sg->dma_address,
+   457						      sg_dma_len(sg), dir, attrs);
+   458			}
+   459		}
+   460		if (need_sync && !dev_is_dma_coherent(dev))
+   461			arch_sync_dma_batch_flush();
+   462	}
+   463	#endif
+   464	
+   465	int dma_direct_map_sg(struct device *dev, struct scatterlist *sgl, int nents,
+   466			enum dma_data_direction dir, unsigned long attrs)
+   467	{
+   468		struct pci_p2pdma_map_state p2pdma_state = {};
+   469		struct scatterlist *sg;
+   470		int i, ret;
+   471		bool need_sync = false;
+   472	
+   473		for_each_sg(sgl, sg, nents, i) {
+   474			switch (pci_p2pdma_state(&p2pdma_state, dev, sg_page(sg))) {
+   475			case PCI_P2PDMA_MAP_THRU_HOST_BRIDGE:
+   476				/*
+   477				 * Any P2P mapping that traverses the PCI host bridge
+   478				 * must be mapped with CPU physical address and not PCI
+   479				 * bus addresses.
+   480				 */
+   481				break;
+   482			case PCI_P2PDMA_MAP_NONE:
+   483				need_sync = true;
+ > 484				sg->dma_address = dma_direct_map_phys_batch_add(dev, sg_phys(sg),
+   485						sg->length, dir, attrs);
+   486				if (sg->dma_address == DMA_MAPPING_ERROR) {
+   487					ret = -EIO;
+   488					goto out_unmap;
+   489				}
+   490				break;
+   491			case PCI_P2PDMA_MAP_BUS_ADDR:
+   492				sg->dma_address = pci_p2pdma_bus_addr_map(
+   493					p2pdma_state.mem, sg_phys(sg));
+   494				sg_dma_len(sg) = sg->length;
+   495				sg_dma_mark_bus_address(sg);
+   496				continue;
+   497			default:
+   498				ret = -EREMOTEIO;
+   499				goto out_unmap;
+   500			}
+   501			sg_dma_len(sg) = sg->length;
+   502		}
+   503	
+   504		if (need_sync && !dev_is_dma_coherent(dev))
+   505			arch_sync_dma_batch_flush();
+   506		return nents;
+   507	
+   508	out_unmap:
+   509		dma_direct_unmap_sg(dev, sgl, i, dir, attrs | DMA_ATTR_SKIP_CPU_SYNC);
+   510		return ret;
+   511	}
+   512	
+
 -- 
-2.34.1
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
