@@ -1,263 +1,219 @@
-Received: from sender4-of-o50.zoho.com (sender4-of-o50.zoho.com [136.143.188.50])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F0632848A2
-	for <iommu@lists.linux.dev>; Fri, 19 Dec 2025 21:26:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.50
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766179609; cv=pass; b=lBhd5ccLalt2Lt2gb2FjUQydrPmuP3ZJ1zXr4HiPv5KYsKnNH6tok43aS6D67vlBC3E8O3WdbArKp4Je63GiPQVP5lex08IkcWbHS6wPaPepwpMJ9OKttulCM//ZVBJkPE/YJhbmldlenVnM50oGvb3OVNOjfYS/2mcxqYJaohg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766179609; c=relaxed/simple;
-	bh=/KdBLu3zLIn3vMbwoWA7KwHaiELSeLp1z4W3gn1njws=;
-	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
-	 In-Reply-To:Content-Type; b=YCDlhpWp2Gbc91zQ2Ti60JuSzwQ4OTeNJ/SNK4dX3ihSF9u7tP+FSUpNSMEIFU0ATVwMEn6watz8nWkzCpNRVV3aRSX+ecUKSBtokOXETmPjdFYmTAPbxBOd+oFX9NEwfSV6lLiLwxA/sShttrxc709GjANycZ2WZqQ493JU2dU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=apertussolutions.com; spf=pass smtp.mailfrom=apertussolutions.com; dkim=pass (1024-bit key) header.d=apertussolutions.com header.i=dpsmith@apertussolutions.com header.b=EHw8A+Hx; arc=pass smtp.client-ip=136.143.188.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=apertussolutions.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=apertussolutions.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ACADD3B19F
+	for <iommu@lists.linux.dev>; Sat, 20 Dec 2025 02:37:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1766198264; cv=none; b=bP7OX5idLqkcsSfF00qgC0fNUbhF6lpm4lo4M5F6tORRIGaUTDn6G5mY3L/jO1eqnR9DAtA3xByBkoe/r9FCCLu37UwfQp8UehpwPpr7gR8GMGjlu6OZiF+iQPPRo0K7Qeuf4l4wAlAJft0Mttc1H3nvu/t5YXOCrvbA/Wr7Wb4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1766198264; c=relaxed/simple;
+	bh=6tcZDP34K/Fphfh/cEJn5CAXZIzMsbzrxwqkyQaf6mg=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=pobeQb7q+QorucNCNbh8Atwqql9DsNskOzZsqj/bfE3tmw4/7kPi5kkfitlTHh+rNhrEXOUPBwKD0zgcTGCIFx3s5MQeby7xoB8HoTLY/D8FhdUr+NBRDNKWDb7jSVA10NS5RQ0+wrucQR0oU9WTkcoNRkzSjrazI515U96604g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=QkCRL64s; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=apertussolutions.com header.i=dpsmith@apertussolutions.com header.b="EHw8A+Hx"
-ARC-Seal: i=1; a=rsa-sha256; t=1766179569; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=XPk0Sln3Cy5qk9DCbfpON90DRrJ6nI9A6vUs+SDznVkOPF+0/KPsmXq9b9DDLc6G7FyU9F0CJt5VdkipC61Tei3S1DepoHDKMSB/wa2v9KRUb9My7p/5zHLBW0qRwtrPr9SufQtphsiNXeZQiLxYJ9H+5FZQbYi9qJSWKunnNjw=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1766179569; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=1ksQG2W08myKpheAB5+lngG8EZBBbzC4ZDZ4Ho0k7yk=; 
-	b=HHVC7hMBfBO846ScF3bcXEHdCW2AJdpkSX1+Km6al2QM4b7oRgPtjjGMrZRAwh5WlSjVAOXmyUdSTN9Li2b/cTPSg+suLtNT0t3rwlYlwliPjw17QP4i47ZCByfWQDxeh730ZvkQm2tgepZ45g5KibgWi2FxQ/jEV0HTbDrKJTI=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=apertussolutions.com;
-	spf=pass  smtp.mailfrom=dpsmith@apertussolutions.com;
-	dmarc=pass header.from=<dpsmith@apertussolutions.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1766179569;
-	s=zoho; d=apertussolutions.com; i=dpsmith@apertussolutions.com;
-	h=Message-ID:Date:Date:MIME-Version:From:From:Subject:Subject:To:To:Cc:Cc:References:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-	bh=1ksQG2W08myKpheAB5+lngG8EZBBbzC4ZDZ4Ho0k7yk=;
-	b=EHw8A+Hx1IszIEM+SW2HJBnE2oDNbQgT9FR2t1QSNOin+e1UbG5VkGGIH85bazia
-	mcgs4w2xqMOHq6EQHfPnSgU1DLIxdXTY0aLA1V0H8NrITQ6SXGv6YwAcPw2Mt5z7DpN
-	a0wdNOlnOWMU3TV6djzu7cPpRXAjLpHsQ1z+BoW0=
-Received: by mx.zohomail.com with SMTPS id 1766179565947257.12757632667626;
-	Fri, 19 Dec 2025 13:26:05 -0800 (PST)
-Message-ID: <62227ed3-3804-4795-93c9-ce2bbad3f2a7@apertussolutions.com>
-Date: Fri, 19 Dec 2025 16:26:02 -0500
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="QkCRL64s"
+Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 5BJNNBIA2702425;
+	Sat, 20 Dec 2025 02:37:28 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:date:from:message-id:mime-version
+	:subject:to; s=qcppdkim1; bh=yhJ44J6wwoHw5J0H8UeBAMbgQll9zeeCNxS
+	SrKzr55o=; b=QkCRL64sUKmVdLCqEopmZCMlbIwAd7KMng4N/NkYnMWs6N1QdQm
+	FzjTAZXenVDzgbK0cJxHKzAJiyQ2lR/i9JaWU+lsityMnqjNF0Yjp2HvmUqWP9NQ
+	ipLC2BkfYM7IXnUtuvLQ43CLlHg5l10XQdZ1DE/1jOlCGmcvH+CiJUH3V6I/4lCJ
+	OAZ3drN7yFOMhmYxtMEnQCzX1iJzxBhNY9eSw6MfBUaP5IsAdbhw1QTv0dwdc/Dt
+	eX4y88eAi9oE/LL8no42N55bUJVmNJC0tm5gQ0oYsdWm2EwnzV77YKiOoV2sC608
+	hOcTvNGdqfcYwOkWu8Uz/AfceYeh+eptWyg==
+Received: from apblrppmta02.qualcomm.com (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4b5frq8c5e-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Sat, 20 Dec 2025 02:37:28 +0000 (GMT)
+Received: from pps.filterd (APBLRPPMTA02.qualcomm.com [127.0.0.1])
+	by APBLRPPMTA02.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTP id 5BK2bOx0012619;
+	Sat, 20 Dec 2025 02:37:24 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+	by APBLRPPMTA02.qualcomm.com (PPS) with ESMTPS id 4b3t8d2c83-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Sat, 20 Dec 2025 02:37:24 +0000
+Received: from APBLRPPMTA02.qualcomm.com (APBLRPPMTA02.qualcomm.com [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 5BK2bODQ012613;
+	Sat, 20 Dec 2025 02:37:24 GMT
+Received: from hu-devc-hyd-u22-c.qualcomm.com (hu-bvisredd-hyd.qualcomm.com [10.147.240.98])
+	by APBLRPPMTA02.qualcomm.com (PPS) with ESMTPS id 5BK2bOvU012612
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Sat, 20 Dec 2025 02:37:24 +0000
+Received: by hu-devc-hyd-u22-c.qualcomm.com (Postfix, from userid 4559132)
+	id 799295AA; Sat, 20 Dec 2025 08:07:23 +0530 (+0530)
+From: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+To: robin.murphy@arm.com, joro@8bytes.org, will@kernel.org,
+        m.szyprowski@samsung.com
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+        vikash.garodia@oss.qualcomm.com, dikshita.agarwal@oss.qualcomm.com,
+        Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+Subject: [RFC PATCH] dma-iommu: Introduce API to reserve IOVA regions for dynamically created devices
+Date: Sat, 20 Dec 2025 08:05:55 +0530
+Message-Id: <20251220023555.3017456-1-busanna.reddy@oss.qualcomm.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-From: "Daniel P. Smith" <dpsmith@apertussolutions.com>
-Subject: Re: [PATCH v15 19/28] x86/tpm: Early TPM PCR extending driver
-To: Dave Hansen <dave.hansen@intel.com>,
- Ross Philipson <ross.philipson@oracle.com>, linux-kernel@vger.kernel.org,
- x86@kernel.org, linux-integrity@vger.kernel.org, linux-doc@vger.kernel.org,
- linux-crypto@vger.kernel.org, kexec@lists.infradead.org,
- linux-efi@vger.kernel.org, iommu@lists.linux.dev
-Cc: tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, hpa@zytor.com,
- dave.hansen@linux.intel.com, ardb@kernel.org, mjg59@srcf.ucam.org,
- James.Bottomley@hansenpartnership.com, peterhuewe@gmx.de, jarkko@kernel.org,
- jgg@ziepe.ca, luto@amacapital.net, nivedita@alum.mit.edu,
- herbert@gondor.apana.org.au, davem@davemloft.net, corbet@lwn.net,
- ebiederm@xmission.com, dwmw2@infradead.org, baolu.lu@linux.intel.com,
- kanth.ghatraju@oracle.com, andrew.cooper3@citrix.com,
- trenchboot-devel@googlegroups.com
-References: <20251215233316.1076248-1-ross.philipson@oracle.com>
- <20251215233316.1076248-20-ross.philipson@oracle.com>
- <56929e8b-a7cf-4390-b4ec-0b4c2c32b311@intel.com>
-Content-Language: en-US
-Autocrypt: addr=dpsmith@apertussolutions.com; keydata=
- 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
-In-Reply-To: <56929e8b-a7cf-4390-b4ec-0b4c2c32b311@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ZohoMailClient: External
+Content-Transfer-Encoding: 8bit
+X-QCInternal: smtphost
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: 9y9Ih05kc91ndsAggI_COoMTj3zSCIuR
+X-Proofpoint-ORIG-GUID: 9y9Ih05kc91ndsAggI_COoMTj3zSCIuR
+X-Authority-Analysis: v=2.4 cv=Mu9fKmae c=1 sm=1 tr=0 ts=69460be8 cx=c_pps
+ a=Ou0eQOY4+eZoSc0qltEV5Q==:117 a=Ou0eQOY4+eZoSc0qltEV5Q==:17
+ a=wP3pNCr1ah4A:10 a=VkNPw1HP01LnGYTKEx00:22 a=EUspDBNiAAAA:8
+ a=QMkpMWH4AvK_Fj9H1hwA:9
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMjIwMDAyMCBTYWx0ZWRfX2qY9tOEks8rQ
+ MyI9h/JeOO6LRBr67Dulr+eBURXKKw/ZjTEna2wRxgi2zCQBobSY8NuIq+zN2S2OcDXt/gcFZSL
+ hs9cenC/ylUdGr6OfYkprCwYKR9TotlcbIFawvGEXaaF9bOqUYjDJXXEMk0LihqbLpYh4VUwacf
+ sv4vtBf0eZsoJzzKHA2vBedra3Al7AQYC6umaESktLgCTX4Ic6F7X89osTP3CaNNkHoYUpbOPhJ
+ +Y17XHm9GKGps/x0aTMHKDEoE9SYRLnFP2ckGsyWHGN0fCuy4k+Ci09KZTgwekD/E+lE6s0RMZB
+ 4hZ7dqGm6ZDTNjPx9J2UuhLjF44zMUiTW9Fa18CsF6H5BSN2o3kbjT8RN2IeDXy7NCkwgIss/ob
+ 3oa7OqMaW/lsWCg6RIYNJEJrLpQLVaNBDbhxTIsC6dzTX9xEJfKh3ERZRzQuj6mCRysude/DFKf
+ yOxvvUPbivcvLeE3GKA==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.9,FMLib:17.12.100.49
+ definitions=2025-12-19_08,2025-12-19_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ impostorscore=0 lowpriorityscore=0 clxscore=1011 bulkscore=0
+ priorityscore=1501 spamscore=0 adultscore=0 suspectscore=0 malwarescore=0
+ phishscore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2512120000
+ definitions=main-2512200020
 
-Hey Dave!
+Drivers can create child devices dynamically. These child devices often
+inherit parent device tree node, including its reserved iommu-address
+ranges. While device tree can declare the multiple iommu-address ranges,
+they still apply uniformly to any child inheriting the parent OF node.
 
-On 12/16/25 16:53, Dave Hansen wrote:
-> I'm mostly spot-checking this to see what kind of shape it's in and how
-> much work and diligence has been applied in the last 8 months since v14.
-> 
-> On 12/15/25 15:33, Ross Philipson wrote:
-> ...
->> The driver could be extended for further operations if needed. This
->> TPM dirver implementation relies as much as possible on existing mainline
-> 
-> <sigh>
-> 
-> v15 and no spell checking. :(
-> 
->> --- /dev/null
->> +++ b/arch/x86/boot/compressed/early_tpm_extend.c
->> @@ -0,0 +1,601 @@
->> +// SPDX-License-Identifier: GPL-2.0-only
->> +/*
->> + * Copyright (c) 2010-2012 United States Government, as represented by
->> + * the Secretary of Defense.  All rights reserved.
-> 
-> IANAL, but this looks fishy.
-> 
-> It's theoretically fine to go grab random code off the Internet and
-> submit it to the kernel, given the correct license. But I do want to
-> know what its story is and where it came from.
+This creates a limitation when child requires a different iommu-address
+range than its parent, as device tree cannot express the reservation per
+child.
 
+Example layout and use case:
+----------------------------
+A multimedia subsystem with multiple child devices and distinct ranges:
 
-Let me provide some context as to the code origin. Ross, before joining 
-Oracle, and I have a long history of working with DRTM/Intel TXT within 
-Xen. When it was requested to go back to sending the measurements to the 
-TPM in the setup kernel, we needed to find a minimal code base to 
-provide the command buffer packing until the TPM driver could be fully 
-refactored. We knew that Xen's vtpm framework provided a simple macro 
-system to provide contextual TPM command buffer packing. We decided this 
-would be a lightweight choice that would be easy to cut down to only 
-what is needed to handle the very few TPM commands we will need to send. 
-And to that extent, there have been internal reviews that have reduced 
-the amount of that original code.
+    +-----------------------------------------------------------+
+    | Device A reserved region (256 MB)                         |
+    | 0x00000000 - 0x10000000                                   |
+    +-----------------------------------------------------------+
+    | Device B reserved region (512 MB)                         |
+    | 0x00000000 - 0x20000000                                   |
+    +-----------------------------------------------------------+
+    | Device C reserved region (600 MB)                         |
+    | 0x00000000 - 0x25800000                                   |
+    +-----------------------------------------------------------+
+    | Other reserved regions                                    |
+    +-----------------------------------------------------------+
 
-> I also seem to remember that there are special rules around the US
-> federal government's inability to hold copyrights. This seems worth at
-> least a mention ... somewhere.
+If we add Device C's reserved range (0x0 to 0x025800000) into iommu
+address range into device tree and assign that OF node to Device B
+and C, it wastes memory:
+- Device A wastes ~344 MB
+- Device B wastes ~88 MB
 
-IANAL either, but in general the safest/correct approach is to retain 
-any CRs placed on the code being reused, and the above is the CR on the 
-source from the Xen tree.
+To avoid this, drivers can use the introduced API to set their device
+specific IOVA region at runtime, ensuring the DMA mapping without
+unnecessary address space reservation.
 
-> This is helpful, for instance:
-> 
->> + * based off of the original tools/vtpm_manager code base which is:
->> + * Copyright (c) 2005, Intel Corp.
->> + * All rights reserved.
-> 
-> so thanks for that one.
+Signed-off-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+---
+ drivers/iommu/dma-iommu.c   | 44 +++++++++++++++++++++++++++++++++++++
+ include/linux/dma-mapping.h |  7 ++++++
+ 2 files changed, 51 insertions(+)
 
-That's the origin of all the code reuse, we can do an review to see if 
-any of the code that originated from the USG code is still present.
-
->> + * Redistribution and use in source and binary forms, with or without
->> + * modification, are permitted provided that the following conditions
->> + * are met:
->> + *
->> + *   * Redistributions of source code must retain the above copyright
->> + *     notice, this list of conditions and the following disclaimer.
->> + *   * Redistributions in binary form must reproduce the above
->> + *     copyright notice, this list of conditions and the following
->> + *     disclaimer in the documentation and/or other materials provided
->> + *     with the distribution.
->> + *   * Neither the name of Intel Corporation nor the names of its
->> + *     contributors may be used to endorse or promote products derived
->> + *     from this software without specific prior written permission.
->> + *
->> + * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
->> + * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
->> + * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
->> + * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
->> + * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
->> + * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
->> + * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
->> + * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
->> + * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
->> + * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
->> + * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
->> + * OF THE POSSIBILITY OF SUCH DAMAGE.
->> + */
-> 
-> Also, IANAL, but this looks BSD-ish.
-> 
-> I would have kinda expected the SPDX header to say BSD-blah-blah and not
-> GPL-2.0-only.
-> 
-> I'd really appreciate if you could go have a huddle with your corporate
-> Open Source folks and make sure this is all proper. To me, it looks
-> fishy at _best_.
-> 
-> ...
->> +/*
->> + * We're far too early to calibrate time.  Assume a 5GHz processor (the upper
->> + * end of the Fam19h range), which causes us to be wrong in the safe direction
->> + * on slower systems.
->> + */
-> 
-> https://docs.kernel.org/process/maintainer-tip.html#changelog
-> 
-> Imperative voice please.
-> 
-> ...
->> +static int __tis_recv_data(struct tpm_chip *chip, u8 *buf, int count)
->> +{
->> +	int size = 0;
->> +	int burstcnt;
->> +
->> +	while (size < count && __tis_wait_for_stat(chip, TPM_STS_DATA_AVAIL | TPM_STS_VALID, chip->timeout_c) == 0) {
->> +		burstcnt = __tis_get_burstcount(chip);
->> +
->> +		for ( ; burstcnt > 0 && size < count; --burstcnt)
->> +			buf[size++] = tpm_read8(chip, TPM_DATA_FIFO(chip->locality));
->> +	}
->> +
->> +	return size;
->> +}
->> +
->> +/**
->> + * tpm_tis_check_locality - Check if the given locality is the active one
->> + * @chip:	The TPM chip instance
->> + * @loc:	The locality to check
->> + *
->> + * Return: true - locality active, false - not active
->> + */
->> +bool tpm_tis_check_locality(struct tpm_chip *chip, int loc)
->> +{
->> +	if ((tpm_read8(chip, TPM_ACCESS(loc)) & (TPM_ACCESS_ACTIVE_LOCALITY | TPM_ACCESS_VALID)) == (TPM_ACCESS_ACTIVE_LOCALITY | TPM_ACCESS_VALID)) {
->> +		chip->locality = loc;
->> +		return true;
->> +	}
->> +
->> +	return false;
->> +}
->> +
->> +/**
->> + * tpm_tis_release_locality - Release the active locality
->> + * @chip:	The TPM chip instance
->> + */
->> +void tpm_tis_release_locality(struct tpm_chip *chip)
->> +{
->> +	if ((tpm_read8(chip, TPM_ACCESS(chip->locality)) & (TPM_ACCESS_REQUEST_PENDING | TPM_ACCESS_VALID)) == (TPM_ACCESS_REQUEST_PENDING | TPM_ACCESS_VALID))
->> +		tpm_write8(chip, TPM_ACCESS(chip->locality), TPM_ACCESS_RELINQUISH_LOCALITY);
->> +
->> +	chip->locality = 0;
->> +}
-> 
-> I guess some folks aren't enforcing the 80-column limits. But this is
-> not even close. It's almost 80x2.
-> 
-> Has there even been an attempt to make this conform to kernel coding
-> style? What other checkpatch.pl warnings are being ignored?
-
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index c92088855450a..02c54cddf9417 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -1743,6 +1743,50 @@ size_t iommu_dma_max_mapping_size(struct device *dev)
+ 	return SIZE_MAX;
+ }
+ 
++/**
++ * dma_iova_set_resv_region - Set a reserved region in the IOVA space
++ * @dev: Device to set the reserved region for
++ * @start: Start of the reserved region
++ * @length: Length of the reserved region
++ *
++ * This function enables drivers to set device specific reservations at
++ * runtime, which is particularly useful for dynamically created child
++ * devices that requires distinct IOVA ranges than parent.
++ *
++ * Returns:
++ *  0        - Success
++ *  -ENODEV  - No valid IOMMU DMA domain for the device
++ *  -EINVAL  - Invalid domain or cookie type for this operation
++ *  -ENOMEM  - Failed to reserve the requested range
++ */
++int dma_iova_set_resv_region(struct device *dev, unsigned long start,
++			     unsigned long length)
++{
++	struct iommu_dma_cookie *cookie;
++	struct iommu_domain *domain;
++	struct iova_domain *iovad;
++	unsigned long lo, hi;
++
++	domain = iommu_get_dma_domain(dev);
++	if (!domain || domain->type != IOMMU_DOMAIN_DMA)
++		return -ENODEV;
++
++	cookie = domain->iova_cookie;
++	if (!cookie || domain->cookie_type != IOMMU_COOKIE_DMA_IOVA)
++		return -EINVAL;
++
++	iovad = &cookie->iovad;
++
++	lo = iova_pfn(iovad, start);
++	hi = iova_pfn(iovad, start + length - 1);
++
++	if (!reserve_iova(iovad, lo, hi))
++		return -ENOMEM;
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(dma_iova_set_resv_region);
++
+ /**
+  * dma_iova_try_alloc - Try to allocate an IOVA space
+  * @dev: Device to allocate the IOVA space for
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index aa36a0d1d9df6..c89147cf92231 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -339,6 +339,8 @@ static inline bool dma_use_iova(struct dma_iova_state *state)
+ 	return state->__size != 0;
+ }
+ 
++int dma_iova_set_resv_region(struct device *dev, unsigned long start,
++			     unsigned long length);
+ bool dma_iova_try_alloc(struct device *dev, struct dma_iova_state *state,
+ 		phys_addr_t phys, size_t size);
+ void dma_iova_free(struct device *dev, struct dma_iova_state *state);
+@@ -358,6 +360,11 @@ static inline bool dma_use_iova(struct dma_iova_state *state)
+ {
+ 	return false;
+ }
++static inline int dma_iova_set_resv_region(struct device *dev, unsigned long start,
++					   unsigned long length)
++{
++	return -ENODEV;
++}
+ static inline bool dma_iova_try_alloc(struct device *dev,
+ 		struct dma_iova_state *state, phys_addr_t phys, size_t size)
+ {
+-- 
+2.34.1
 
