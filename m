@@ -1,59 +1,59 @@
-Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
+Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A48CD126BF7
-	for <iommu@lists.linux.dev>; Sun, 21 Dec 2025 00:17:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 189231F17E8
+	for <iommu@lists.linux.dev>; Sun, 21 Dec 2025 01:43:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766276234; cv=none; b=rTWd+9hd56YNOEQKKyqbkM9xRxteprXEpVcxKRgvBQWDhrFpYQ0/3uO0YRA1+YFQAveHB3x6gRU0tyTkvDT3MZtMQP7lrYHkn77zqriuect5OM5AQtbsEOHO4LQkvclbGUGz60qB0mdkNW+VcYOocOe+v9xIslxodLZmnJma5xA=
+	t=1766281390; cv=none; b=pTyeq4L+Jmw3t0soBPHw0VEqt0jf822t+6wuHdKQNMqGDrnHt63BFAeMrkigAbnq9b+8EY9TaOdcqX6GI4R39EmpTl/GBR05SNszW/cAzx7xLX6T55+TBZGcGOS9poFYeLE1HWNBY7NuP+8k2vtKbyEXI23lJRBDQbEaUOdDCcI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766276234; c=relaxed/simple;
-	bh=zXE7ExR3jFutkunUuO/rZjPsY//fUF8LwQEkLzUTJTk=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=eQsUp9+t7wXjoHUZCOLB4EPw83HBLr3vQweXosV7W/mhlDy/uAo/qgy8cqq//JGtl1kR/kMwMb1ailCuml0gW+df9qFUdhMRrm8szRJq7E/sQASWciRSAk2wNAErJJ5Zgt3LU6xSDPxC+QFxPtGM3cG5LB0FvYTmK+SIdr2QyxA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=evIn68bB; arc=none smtp.client-ip=209.85.208.47
+	s=arc-20240116; t=1766281390; c=relaxed/simple;
+	bh=zDutoCUcJC5KUV1zaO2F8pH53d/mYymyKDL8EVxDtN4=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=o/0ysrrjQ7FSWUi43jLRDxA/QJZAfQleSF4SEQVNMOAO2f7AlS8vvnKztfzLokHpZJwr+VyVXHkPpGfNSttc6GbLJalUx6rPedGavKUCWaJbH1IzVAhzoJqjsh/wJZrWGlUtRb+1LtULmgW5QtqdrpTVQv1k8jyZ3SFKXE9UTbM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=bumBIeAP; arc=none smtp.client-ip=209.85.208.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="evIn68bB"
-Received: by mail-ed1-f47.google.com with SMTP id 4fb4d7f45d1cf-64b8e5d1611so2833377a12.3
-        for <iommu@lists.linux.dev>; Sat, 20 Dec 2025 16:17:12 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="bumBIeAP"
+Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-64b608ffca7so3498882a12.3
+        for <iommu@lists.linux.dev>; Sat, 20 Dec 2025 17:43:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1766276231; x=1766881031; darn=lists.linux.dev;
+        d=chromium.org; s=google; t=1766281387; x=1766886187; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=ju1r0eD783g5JEzeASvcYbt/dKDQzzQquJmGnwZ1sKc=;
-        b=evIn68bBkUj+B6JLkquKg7cR64PgbQXptdrkIHmGvagnppgjJM8MWPlv0ZeYJbWiIx
-         QGHy0BBzwbeLuWEjtismWodrANcRtVSZg5H6snWZ9PNkJjyPSQAl5AAXjmINvV2DesJD
-         H2Km8dzmkCp9OaukqdV6u2UiuKfVzJ8n6NE5w=
+        bh=GXP2AYUno/m9zOnTlGzVwAr7evEHTglaPCKMGi0tEos=;
+        b=bumBIeAPuSM9dVUjgDMYDD4P37lOzqp4YIdbEJ1kEZprUEzwg6+Nk7M7fgSUqwBhtd
+         oyGNejziiQCbEfpAMfkzGZiHblOAUuF7LAmpd4s6G/myBVM9nzhbQ3qndcSDcSr4Osnx
+         NZsaXXYhKJaJCBEHdmu58/5RJs5Icoz9wL/tE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1766276231; x=1766881031;
+        d=1e100.net; s=20230601; t=1766281387; x=1766886187;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=ju1r0eD783g5JEzeASvcYbt/dKDQzzQquJmGnwZ1sKc=;
-        b=Mx6uMe5LlnsRyoVS96PenJguAGLvrf7DudN+CzQ1SqsmCB679P2WFhY8yApE/Xz0Mz
-         L8q0goh28B74eJqzZBVlAe4E7bwFxJRNgBo1hHsN0/7Q3iA2L7RmG6p/T3RYAYv+tanN
-         ADfJOjrcXjGSwoOEn/h5oHyg1HeJh11hUWq9OtQIaawTwuP29qomAbFikCJHeuypbrV4
-         wK1/VkrbrboKFbbFVIO7p1EVsh0014FEFfc9BsYfHynS3AwLiFun/0dGZjluowfTF0hl
-         oBxlN2KVtvEAifIkcKzbVuvB6N71q6UgFjhb4Yr2OQDaygc1zehZqejgLVifaxgldZ4/
-         NkRA==
-X-Forwarded-Encrypted: i=1; AJvYcCWZZDU3suy3pHndFi4h+fzxa4OsHkl1XSwR9OLpjxOb6qGaLZrNWW4SBDD5ARSALfPIs0gVMA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwuCweXRnhX9iWqyqPbrQc4jy9wjeGEBMSMvYp5mTSxWrmKzW58
-	kiGbpcq/giBEtE7XEC8HuI6UNtIzDvvFP7RtR2Lw6rICyCvRiRpSg7yd4GoypSiOUw==
-X-Gm-Gg: AY/fxX6JOGzyH8vi5Ihv3YFkbogdkiTmNyiB9A36pfDzM65U5M+5Cp1h/6wyCXS9HCg
-	P30DEwtTQL61WYgfNpdL9yLkUa6tZS8DLkPb6fi5IdWWHSXowwRmiWDy2Vfw/3PlJwktOUGXflS
-	I57v7hEbA9XNgBV2FVlCU8PeV3Wlvzft13A0F6ubMK5u17uHROykd/Bil/M70gngv71+RQA2dvk
-	CynNQ4nE3UsdZruJdHTmRTeJ2CAQusMsa0IImceBts3QECBmeUfoUnH8HbFgZyeFyLLko89BLHZ
-	1FWKlWEkOgMkXq7Zag3u751ZQk7VVrhU7wGXueFJ2EcU+NybHXazbF6pbbWyna2xN+gHM8PzrCS
-	2vZdgX5F1Xa2aRsGx9ytTDMHBp3tTguk+BiIau5wj0Mvn93sWRse2MHf7JBHedlN6wgUTL3Q1LB
-	+ssYEQAQQerW8xtowELTenqQzprEFdzw==
-X-Google-Smtp-Source: AGHT+IGXJqIQJJJwuEv6xZ2w2hVrsRqr1hd+Pfi6a9Atd1O2E5eFY8oFHbAaYTZD1A37I0gAV2SEFQ==
-X-Received: by 2002:a17:907:d8c:b0:b72:6143:60c2 with SMTP id a640c23a62f3a-b803722fd2dmr731511866b.51.1766276231024;
-        Sat, 20 Dec 2025 16:17:11 -0800 (PST)
+        bh=GXP2AYUno/m9zOnTlGzVwAr7evEHTglaPCKMGi0tEos=;
+        b=qzZX0ESP7Sj5W//2+1WJ9OrA8GX+G2QI+SgNSOQcl2XucyDKP8vwCUh+mR4QLnOfdk
+         0+euohd4mMNF4Rixvsmdr940deO9BKI4AIKA88foKCPYQk2iYal4CIloY+O3FhaTn3iZ
+         o/67Xdpz0UNbGUH9lFVoanIohmOzOeLNU8suXLlcjLagFZhA2eufmOGDWREaRbn8+l7F
+         dor/Ytibw+XGpSs3LkdAzI3+69/e01J99mTh4I52b9+mfOrf2AYahKq1z54EtfJHjS8/
+         RkgQAa5xEzPDWBpixUrVlErYsqIZK18U5YRqQn/qFNsUjpV60frHK3VBRi7hJjIFJpts
+         w+Gg==
+X-Forwarded-Encrypted: i=1; AJvYcCU87YD94OYrg+/2T3y+ofC/BaWd4p9iEKmCNNNYnenAJN4FXJvrVS3pS2r+yGXmjNn9a0HRyw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxaihA/2LL7wUO+9591EwuQez/xbkG3tRAVKB7f5GqqA2YqLls4
+	hRiv6516kesKoFUdktKCMs8FX+tvrO1Gq4bNnMboaVHPC2uPhGLKqolPG00SzEUP2A==
+X-Gm-Gg: AY/fxX5tkRwkqhCfEM48e18Rnk0mHdap5TJVhDtSAl7xgzi7ZOXSJcO+Xet03hgH2xH
+	WipCT6Jh6KsJqDeRn8Cj43WdeSvCbqtPfvjUUxDKkTd4IQEvr8Gru2AeYth/0ehpgHiy9YTw0Ys
+	FHhenY0munbn0hg48CFVVMxi5c2s2kz5rIVqM1jmjBpZx/EK5u+PlomegiVgl95/Un+KbH9aYHk
+	RbnnXxzgpX59/zqBIq9QY+/hXfD1yZtfxz/u9n02i/vKpKnIgLdEoCL7igCfepv0SQa29MQYG5Z
+	cjNc8UqGtgeAT1COIm+yKI3IfekcAjeGf0szkbzNcmQuNbeLI9JGOh660gA3NbHMYVzZPBiHB1s
+	MBr2cNonfXZewjIEmMsBloPVzTV3kjzOq5vIrh/iyxF+855fMynbrNSsXmmh/R4KR6n7A2JUb8+
+	oT0eZ6ODH4b92LwWpJNSDq7sqGsy5iBRjyzNlcGYYc
+X-Google-Smtp-Source: AGHT+IESK5mMwY1zy0Db+6R63Cf832kYS2WIorg+x5Tr6gnz07sfYPFNBr5QFMDqRL4FQ86hnjpA4g==
+X-Received: by 2002:a05:6402:2343:b0:641:3492:723d with SMTP id 4fb4d7f45d1cf-64b8eb73c83mr6940048a12.11.1766281387522;
+        Sat, 20 Dec 2025 17:43:07 -0800 (PST)
 Received: from localhost.localdomain ([2a02:a31b:20c3:6680:4cc9:1698:dce5:4976])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b8037f512e3sm624321866b.67.2025.12.20.16.17.08
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-64b91494cd7sm6035057a12.16.2025.12.20.17.43.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 20 Dec 2025 16:17:10 -0800 (PST)
+        Sat, 20 Dec 2025 17:43:07 -0800 (PST)
 From: Dmytro Maluka <dmaluka@chromium.org>
 To: David Woodhouse <dwmw2@infradead.org>,
 	Lu Baolu <baolu.lu@linux.intel.com>,
@@ -68,9 +68,9 @@ Cc: Joerg Roedel <joro@8bytes.org>,
 	Chuanxiao Dong <chuanxiao.dong@intel.com>,
 	Kevin Tian <kevin.tian@intel.com>,
 	Dmytro Maluka <dmaluka@chromium.org>
-Subject: [PATCH] iommu/vt-d: Flush cache for PASID table before using it
-Date: Sun, 21 Dec 2025 01:17:01 +0100
-Message-ID: <20251221001701.3626-1-dmaluka@chromium.org>
+Subject: [PATCH 0/2] iommu/vt-d: Ensure memory ordering in context & root entry updates
+Date: Sun, 21 Dec 2025 02:43:00 +0100
+Message-ID: <20251221014302.17738-1-dmaluka@chromium.org>
 X-Mailer: git-send-email 2.47.3
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -80,43 +80,34 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-When writing the address of a freshly allocated zero-initialized PASID
-table to a PASID directory entry, do that after the CPU cache flush for
-this PASID table, not before it, to avoid the time window when this
-PASID table may be already used by non-coherent IOMMU hardware while
-its contents in RAM is still some random old data, not zero-initialized.
+As discussed in [1], we don't currently prevent the compiler from
+reordering memory writes when updating context entries, which is
+potentially dangerous, as it may cause setting the present bit (i.e.
+enabling DMA translation for the given device) before finishing setting
+up other bits in the context entry (and thus creating a time window when
+a DMA from the device may result in an unpredicted behavior).
 
-Signed-off-by: Dmytro Maluka <dmaluka@chromium.org>
----
- drivers/iommu/intel/pasid.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+Fix this in the same way as how this is already addressed for PASID
+entries, i.e. by using READ_ONCE/WRITE_ONCE in the helpers used for
+setting individual bits in context entries, so that memory writes done
+by those helpers are ordered in relation to each other (plus, prevent
+load/store tearing and so on).
 
-diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
-index 3e2255057079..77b9b147ab50 100644
---- a/drivers/iommu/intel/pasid.c
-+++ b/drivers/iommu/intel/pasid.c
-@@ -153,6 +153,9 @@ static struct pasid_entry *intel_pasid_get_entry(struct device *dev, u32 pasid)
- 		if (!entries)
- 			return NULL;
- 
-+		if (!ecap_coherent(info->iommu->ecap))
-+			clflush_cache_range(entries, VTD_PAGE_SIZE);
-+
- 		/*
- 		 * The pasid directory table entry won't be freed after
- 		 * allocation. No worry about the race with free and
-@@ -165,10 +168,8 @@ static struct pasid_entry *intel_pasid_get_entry(struct device *dev, u32 pasid)
- 			iommu_free_pages(entries);
- 			goto retry;
- 		}
--		if (!ecap_coherent(info->iommu->ecap)) {
--			clflush_cache_range(entries, VTD_PAGE_SIZE);
-+		if (!ecap_coherent(info->iommu->ecap))
- 			clflush_cache_range(&dir[dir_index].val, sizeof(*dir));
--		}
- 	}
- 
- 	return &entries[index];
+While at it, similarly paranoidally fix updating root entries as well:
+use WRITE_ONCE to make sure that the present bit is set atomically
+together with the context table address bits, not before them.
+
+[1] https://lore.kernel.org/all/aTG7gc7I5wExai3S@google.com/
+
+Dmytro Maluka (2):
+  iommu/vt-d: Ensure memory ordering in context entry updates
+  iommu/vt-d: Use WRITE_ONCE for setting root table entries
+
+ drivers/iommu/intel/iommu.c |  2 +-
+ drivers/iommu/intel/iommu.h | 37 +++++++++++++++++++++----------------
+ drivers/iommu/intel/pasid.c |  3 ++-
+ 3 files changed, 24 insertions(+), 18 deletions(-)
+
 -- 
-2.47.2
+2.47.3
 
