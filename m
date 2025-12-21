@@ -1,190 +1,203 @@
-Received: from mail-qv1-f41.google.com (mail-qv1-f41.google.com [209.85.219.41])
+Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D646F1F099C
-	for <iommu@lists.linux.dev>; Sun, 21 Dec 2025 07:22:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9EB223E330
+	for <iommu@lists.linux.dev>; Sun, 21 Dec 2025 07:59:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766301737; cv=none; b=igw+NYlaQ4YKr4Sk6yRZszp5uAk0Et+xnF6+EnJ+rN9erKCmsaJMnoNUfYXfB68q0FMmG3SsPHyr38GWhO/jniIGGJdrfqsDlHqkwVYkoBBhRQ06v6eL8obKa0iE4yJnyomMhvc1H9O5hMsPmpp7KdCXNlha/da55GTwla5WrBE=
+	t=1766303977; cv=none; b=EKJJedhh/muVO6RC8OczXZNPG4+fiMZZqwx/cjfCZLL2i1zJWmnZFm+60iVaKMy6zUDIpffJ+HDwrolKJrJLukmpzY4P+Qh3SIIfukAXuvAW29ibd4jUft4iGPSWkF58P/zY7My2olHnRSlMmm1y3R+XpNcF+5wRQ2GspAgLJvE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766301737; c=relaxed/simple;
-	bh=v+YkRd/jXpBKYHrzpEXM1PhwDngKS9XeLVOCCIeyuug=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=k5dvzMAwt59g470pd86gtJuw5PFqrZCnIYIoGgTMLqOId5bglAcgMGZqq9wZTCtQk6NKa7SoPHbhLURHOaKBtxqFX7O/q9sMErnFNJ1vKJkSKKor1oMlplyBCRqv1pAkdyzjzmyiOzkM4zG+/XJC08P+kyXnyyGSdXvZ9wF9jAA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=W3UKabnP; arc=none smtp.client-ip=209.85.219.41
+	s=arc-20240116; t=1766303977; c=relaxed/simple;
+	bh=9iqU47HwUFw+q8Ryl8E6TxFaeg1hA6ZdUv9syUfDYnY=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=EImCeMwJ0kNWLQcYUBP7NJ7ake2FmsWGKNYqcb47e7p5KbxP14AbVSKJRBEPrYHrrotmRCkx6BKetqi+pDZSv9y9GRYoQeokcaoyRkCceQLjGpUkU5Aur/kx67MpZxaKQh9ShPwnsSmPb602m8rMAwiQRdLdWJETi5DUlMptpHs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MjT2m28I; arc=none smtp.client-ip=209.85.214.180
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="W3UKabnP"
-Received: by mail-qv1-f41.google.com with SMTP id 6a1803df08f44-88a34450f19so34913966d6.1
-        for <iommu@lists.linux.dev>; Sat, 20 Dec 2025 23:22:15 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MjT2m28I"
+Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-2a0d0788adaso26698305ad.3
+        for <iommu@lists.linux.dev>; Sat, 20 Dec 2025 23:59:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1766301735; x=1766906535; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
+        d=gmail.com; s=20230601; t=1766303975; x=1766908775; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=tl4mkGbQLsnipS5FyUPdNmw6cyVPTQR2eYfkSIQkcNA=;
-        b=W3UKabnPeCjIXkAzgu91g0BuchcFxkdGLW0LFr4R75qkyWFaTGsnGF7+4kbu0M1CkU
-         4vXrbxhx7X7IaV4mCdqwB7h9A9xWPI7V2JHymwrs4hWg5j2+CrnfioxNWyK+6gelYtUw
-         zqXNbi7JGQjPeOCfLcCc9uZ6KHiy97M8Cpral5Lyn3Jf7NZy7aryIwTH5CJmJV3eEo+a
-         Y1xjy/q/JazdZlJfbooehkXV8aqhHcHldS34UbfiCn7W/n2U5bMRPYGYPa6yRGPguE0m
-         t1YMZfG9b5HsumHwj/qRnRoPUF021RJcp+ika5Qmdwl+ZhwnELFZtO+6R4aCoYTrwDZH
-         uo7g==
+        bh=AQ/i3gg2RhHrVi7oTjeMCjSkh1TUB3W9zVzP6Ymc1nU=;
+        b=MjT2m28IYx9lWUdVOtIhDBZTClE8E5Dhk7pUAsZ2rDhLo7bSaIebDyYDUZk5D/GCXj
+         klvE+JSlNLGpjsWd/L2Yidg7e2a2o7SUclZBgNAxNikZviBJIcB4CxIlxJ/hyyJWubhJ
+         WWV/B23w2ba02/yqMKeN8d+qcRrUQz6rOQHPxJprhQDAz0yTTyLN5y1SJomrVZDNmPHO
+         wOyBMHaCdgkjDbGaIJLnOLK1NpjpgSVKgtH7iLqDBTr2EbVzm9sC/xPjndreNEkjPNCm
+         s7v0KdRd/6oiFo/sdWz+waxb/voVu37Cy+l8rdv15EyX6sfNZlz4a9Gk4JmsxtJzVMRz
+         r8Ug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1766301735; x=1766906535;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+        d=1e100.net; s=20230601; t=1766303975; x=1766908775;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=tl4mkGbQLsnipS5FyUPdNmw6cyVPTQR2eYfkSIQkcNA=;
-        b=czmYkggjfqnk+ZbqQOuSwF4B7sXNEqZiB4Z78spTUtu7pSvqki7YnPxu0kkabybFvv
-         fuya6mQ9mbAMZWpUfPsy8jVi0zk9aJA3p2DH4GtOfXqTMpp3k2GidGazTwbHk0WvrILW
-         BiZ2gG5A5ih0OxkHBiKtlwKMbjbQPfu/RcJ7gEDlhpj5gGtjdwkzvhqg180CAVNMSj7Z
-         zOZYIqWehmm3s8hH1k84BdUbG+TmjEd5NHOpG2zm997t5kmjpZvb/AOYpR3lq//9RSdy
-         vUahmvcKM3BKzMeV0b28dj6ksBg3/y1Y11bK6BKdh95kv93QcIJWkqLceclPUg02r59b
-         N86Q==
-X-Forwarded-Encrypted: i=1; AJvYcCVrPl9U4gN8f8j/ieyo5eICM9jEp0pYGomXcrjIlpKfqa9anMLSZnoCYxrROGaC2GwiHy+LFA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxgczyDXfFR66tLyDqyEdpDE7dPamRDjChRonBc3cSaw6Uy3AX5
-	T5NKLCasvrmp/0y71VDIxCizizm1k28tvcDoSv0WiN93Og8RnUaanO//DEfk+wn9zu9qabFcpq9
-	1Gd/+mL1yXhCjQhRBXVut5Fnvrwaod2k=
-X-Gm-Gg: AY/fxX6rBwpA0DpGTvkKZtp9wy6IGRItAhKYXRP/M+njKHEZ6YJ43qs5a9k2DBhsx7t
-	33XnpFkw15lbZCARzFwLbf7mOx4hpBd75p1h8nk5FRavrmJwEDv/J5XsIu+yW8xBFRKpMwWK2lb
-	liaIBc4oNhHaAEI3mV2rV7N6uOMU1a3oJ7ZQZb+WMxZEXCvbj89VQDhGK9Z1xlYUyWFc76rbTDx
-	dS3+xbnXE8WlYeeToXBuZmIkqJRFpNBvd40FOt8AX7ki0GBs7LePlQOeX74SxsjG5J4LyjOSREH
-	75nW
-X-Google-Smtp-Source: AGHT+IF5k8r/mShv/0migvR7/wlLppEjH9Dd7nKs+LQlOF6mkB6DvnezWl4bJLuuz9SFUgw2YrS3VPtDITiGCTNjb6w=
-X-Received: by 2002:a05:6214:20c1:b0:882:5078:8da1 with SMTP id
- 6a1803df08f44-88d8442fe3bmr128194326d6.64.1766301734461; Sat, 20 Dec 2025
- 23:22:14 -0800 (PST)
+        bh=AQ/i3gg2RhHrVi7oTjeMCjSkh1TUB3W9zVzP6Ymc1nU=;
+        b=D0M8ejKBR4WqNq27mqrpHV1LhTl5dwe1GFT5oVpyBfVZ0+MjZpBgDcfuSXgFFgAt8+
+         osnx6xggwSXDaE/Am5lln6VRN0h2VwTbPrsqb8vsgoYv82D7/HhOQLuBUyrjEd9AVmwa
+         SJ/pPfT9A7Da6yUjY+LFqgO/XxHhYmH4MyMm+gnQe80GWF+ylf7GqSrd+beraGbpJaZ8
+         ecNmCpj5uLvN34yivVpJXpKtZ43cNn5PBrKqWhCcL3zhW88mg+PHXchau+KLFMPATXP4
+         i/o5+jhgwEF8wLz/Gfi4rXnZfS2ffOnu1Xp4Iv+35XuCUqPmEHYPrP3vucPGm9X/cV1O
+         LvKQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUbLack6BkMS2ZpWaV2a/dIapc5fDhHV+yhpMiXljaoLHR5Mp4PCWl7ShDOBsDa7xpaKHfIhg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzkgO8xSEhGrKivTe3BeRrp5FxZplCGEgs4S0njZqIwWjAfKHn8
+	xboJLiXfF8uYJkndCNeISkUrfZTxEdp39O8BWSM6kWAHkJHn8D2NxL22
+X-Gm-Gg: AY/fxX62TARX8S+TcnCWs3PWLoFDGWzIraS+9mRGa7bh8Q/WTazcUkzEEiqkd7sbii4
+	/PlyrZqj/s1kHFp7DYO1dz0q6YA8GOD9wtSOzi3n68uWo2YStBSwpERveBXEuCDT3iU/diSyDJK
+	AAo7arzP0L5AZ56g3EfV7TbOoGMmXSwvGhAmH6FEXoXYJs0GnatwhC/SCweRdZZBAltto8N2xAD
+	UAjIOcDQkoeL9kXqhJY+1SscJhA4gmoIWPyKOuSIyOOcHEtZiV9Z7pOYKvWnN2iPdXTSJNdADkU
+	TlUF6hpJpNdW1s8AyJ/0v6raADzY0xR0LNmtAmwC+E/R0GhWsO7cbJLf96JHo3Cw1VFehfLDdlW
+	HxQyX9fQaLSJsrBpfyI0BGvjma0b+r/HAaQep8nR9+uu/GOdd0xg9fS27gDYcBPzMnHS43D/deM
+	sNG7G4gDBNOzYnv3B5UBQEh/Cn
+X-Google-Smtp-Source: AGHT+IGvott4j8QweZbGuwsDW70w3ULSK0vaWfXBfaowVt0tvY9dm8J5MiuZ3H4ez82g05E/xhvWJw==
+X-Received: by 2002:a17:903:b83:b0:2a1:388d:8ef3 with SMTP id d9443c01a7336-2a2f222bc6amr78335135ad.18.1766303974903;
+        Sat, 20 Dec 2025 23:59:34 -0800 (PST)
+Received: from Barrys-MBP.hub ([47.72.129.29])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c1e79a17fdesm6226424a12.8.2025.12.20.23.59.29
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Sat, 20 Dec 2025 23:59:34 -0800 (PST)
+From: Barry Song <21cnbao@gmail.com>
+To: robin.murphy@arm.com
+Cc: 21cnbao@gmail.com,
+	ada.coupriediaz@arm.com,
+	anshuman.khandual@arm.com,
+	ardb@kernel.org,
+	catalin.marinas@arm.com,
+	iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	m.szyprowski@samsung.com,
+	maz@kernel.org,
+	ryan.roberts@arm.com,
+	surenb@google.com,
+	v-songbaohua@oppo.com,
+	will@kernel.org,
+	zhengtangquan@oppo.com
+Subject: [PATCH 3/6] arm64: Provide dcache_inval_poc_nosync helper
+Date: Sun, 21 Dec 2025 15:59:25 +0800
+Message-Id: <20251221075925.65445-1-21cnbao@gmail.com>
+X-Mailer: git-send-email 2.39.3 (Apple Git-146)
+In-Reply-To: <99bb1797-06ba-440d-b173-db62d5f54e08@arm.com>
+References: <99bb1797-06ba-440d-b173-db62d5f54e08@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20251219053658.84978-1-21cnbao@gmail.com> <20251219053658.84978-2-21cnbao@gmail.com>
- <f43286ef-3dea-4637-a34e-b9b70d2741bf@arm.com>
-In-Reply-To: <f43286ef-3dea-4637-a34e-b9b70d2741bf@arm.com>
-From: Barry Song <21cnbao@gmail.com>
-Date: Sun, 21 Dec 2025 15:22:03 +0800
-X-Gm-Features: AQt7F2qjYoKebl5Qs_kCNYwvrfXsZT3gRENKM98Dct0ak1uw7wvLRqtXCYWtXmM
-Message-ID: <CAGsJ_4wRcz7NFw2PiBCb54gmJwTt7=UG1fn2UEJ9_gR687Y4Uw@mail.gmail.com>
-Subject: Re: [PATCH 1/6] arm64: Provide dcache_by_myline_op_nosync helper
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: catalin.marinas@arm.com, m.szyprowski@samsung.com, will@kernel.org, 
-	ada.coupriediaz@arm.com, anshuman.khandual@arm.com, ardb@kernel.org, 
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
-	linux-kernel@vger.kernel.org, maz@kernel.org, ryan.roberts@arm.com, 
-	surenb@google.com, v-songbaohua@oppo.com, zhengtangquan@oppo.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Fri, Dec 19, 2025 at 8:20=E2=80=AFPM Robin Murphy <robin.murphy@arm.com>=
- wrote:
+On Fri, Dec 19, 2025 at 8:50 PM Robin Murphy <robin.murphy@arm.com> wrote:
+[...]
+> > diff --git a/arch/arm64/mm/cache.S b/arch/arm64/mm/cache.S
+> > index 4a7c7e03785d..8c1043c9b9e5 100644
+> > --- a/arch/arm64/mm/cache.S
+> > +++ b/arch/arm64/mm/cache.S
+> > @@ -132,17 +132,7 @@ alternative_else_nop_endif
+> >       ret
+> >   SYM_FUNC_END(dcache_clean_pou)
+> >  
+> > -/*
+> > - *   dcache_inval_poc(start, end)
+> > - *
+> > - *   Ensure that any D-cache lines for the interval [start, end)
+> > - *   are invalidated. Any partial lines at the ends of the interval are
+> > - *   also cleaned to PoC to prevent data loss.
+> > - *
+> > - *   - start   - kernel start address of region
+> > - *   - end     - kernel end address of region
+> > - */
+> > -SYM_FUNC_START(__pi_dcache_inval_poc)
+> > +.macro _dcache_inval_poc_impl, do_sync
+> >       dcache_line_size x2, x3
+> >       sub     x3, x2, #1
+> >       tst     x1, x3                          // end cache line aligned?
+> > @@ -158,11 +148,42 @@ SYM_FUNC_START(__pi_dcache_inval_poc)
+> >   3:  add     x0, x0, x2
+> >       cmp     x0, x1
+> >       b.lo    2b
+> > +.if \do_sync
+> >       dsb     sy
+> > +.endif
 >
-> On 2025-12-19 5:36 am, Barry Song wrote:
-> > From: Barry Song <v-songbaohua@oppo.com>
-> >
-> > dcache_by_myline_op ensures completion of the data cache operations for=
- a
-> > region, while dcache_by_myline_op_nosync only issues them without waiti=
-ng.
-> > This enables deferred synchronization so completion for multiple region=
-s
-> > can be handled together later.
->
-> This is a super-low-level internal macro with only two users... Frankly I=
-'d
-> just do as below.
->
-> Thanks,
-> Robin.
->
-> ----->8-----
->
-> diff --git a/arch/arm64/include/asm/assembler.h b/arch/arm64/include/asm/=
-assembler.h
-> index f0ca7196f6fa..26e983c331c5 100644
-> --- a/arch/arm64/include/asm/assembler.h
-> +++ b/arch/arm64/include/asm/assembler.h
-> @@ -367,18 +367,17 @@ alternative_endif
->         .endm
->
->   /*
-> - * Macro to perform a data cache maintenance for the interval
-> - * [start, end) with dcache line size explicitly provided.
-> + * Main loop for a data cache maintenance operation. Caller to provide t=
-he
-> + * dcache line size and take care of relevant synchronisation afterwards=
-.
->    *
->    *    op:             operation passed to dc instruction
-> - *     domain:         domain used in dsb instruction
->    *    start:          starting virtual address of the region
->    *    end:            end virtual address of the region
->    *    linesz:         dcache line size
->    *    fixup:          optional label to branch to on user fault
->    *    Corrupts:       start, end, tmp
->    */
-> -       .macro dcache_by_myline_op op, domain, start, end, linesz, tmp, f=
-ixup
-> +       .macro raw_dcache_by_line_op op, start, end, linesz, tmp, fixup
->         sub     \tmp, \linesz, #1
->         bic     \start, \start, \tmp
->   .Ldcache_op\@:
-> @@ -402,7 +401,6 @@ alternative_endif
->         add     \start, \start, \linesz
->         cmp     \start, \end
->         b.lo    .Ldcache_op\@
-> -       dsb     \domain
->
->         _cond_uaccess_extable .Ldcache_op\@, \fixup
->         .endm
-> @@ -420,7 +418,8 @@ alternative_endif
->    */
->         .macro dcache_by_line_op op, domain, start, end, tmp1, tmp2, fixu=
-p
->         dcache_line_size \tmp1, \tmp2
-> -       dcache_by_myline_op \op, \domain, \start, \end, \tmp1, \tmp2, \fi=
-xup
-> +       raw_dcache_by_line_op \op, \start, \end, \tmp1, \tmp2, \fixup
-> +       dsb \domain
->         .endm
->
->   /*
-> diff --git a/arch/arm64/kernel/relocate_kernel.S b/arch/arm64/kernel/relo=
-cate_kernel.S
-> index 413f899e4ac6..efdb6884058e 100644
-> --- a/arch/arm64/kernel/relocate_kernel.S
-> +++ b/arch/arm64/kernel/relocate_kernel.S
-> @@ -64,7 +64,8 @@ SYM_CODE_START(arm64_relocate_new_kernel)
->         mov     x19, x13
->         copy_page x13, x12, x1, x2, x3, x4, x5, x6, x7, x8
->         add     x1, x19, #PAGE_SIZE
-> -       dcache_by_myline_op civac, sy, x19, x1, x15, x20
-> +       raw_dcache_by_line_op civac, x19, x1, x15, x20
-> +       dsb     sy
->         b       .Lnext
->   .Ltest_indirection:
->         tbz     x16, IND_INDIRECTION_BIT, .Ltest_destination
+> Similarly, don't bother with complication like this, just put the DSB in
+> the one place it needs to be.
 >
 
-Thanks, Robin.  Really much better!
-dcache_by_line_op_nosync could be:
+Thanks, Robin — great suggestion. I assume it can be:
 
-/*
- * Macro to perform a data cache maintenance for the interval
- * [start, end) without waiting for completion
- *
- *      op:             operation passed to dc instruction
- *      start:          starting virtual address of the region
- *      end:            end virtual address of the region
- *      fixup:          optional label to branch to on user fault
- *      Corrupts:       start, end, tmp1, tmp2
- */
-        .macro dcache_by_line_op_nosync op, start, end, tmp1, tmp2, fixup
-        dcache_line_size \tmp1, \tmp2
-        raw_dcache_by_myline_op \op, \start, \end, \tmp1, \tmp2, \fixup
-        .endm
+diff --git a/arch/arm64/mm/cache.S b/arch/arm64/mm/cache.S
+index 4a7c7e03785d..99a093d3aecb 100644
+--- a/arch/arm64/mm/cache.S
++++ b/arch/arm64/mm/cache.S
+@@ -132,17 +132,7 @@ alternative_else_nop_endif
+ 	ret
+ SYM_FUNC_END(dcache_clean_pou)
+ 
+-/*
+- *	dcache_inval_poc(start, end)
+- *
+- * 	Ensure that any D-cache lines for the interval [start, end)
+- * 	are invalidated. Any partial lines at the ends of the interval are
+- *	also cleaned to PoC to prevent data loss.
+- *
+- *	- start   - kernel start address of region
+- *	- end     - kernel end address of region
+- */
+-SYM_FUNC_START(__pi_dcache_inval_poc)
++.macro raw_dcache_inval_poc_macro
+ 	dcache_line_size x2, x3
+ 	sub	x3, x2, #1
+ 	tst	x1, x3				// end cache line aligned?
+@@ -158,11 +148,41 @@ SYM_FUNC_START(__pi_dcache_inval_poc)
+ 3:	add	x0, x0, x2
+ 	cmp	x0, x1
+ 	b.lo	2b
++.endm
++
++/*
++ *	dcache_inval_poc(start, end)
++ *
++ * 	Ensure that any D-cache lines for the interval [start, end)
++ * 	are invalidated. Any partial lines at the ends of the interval are
++ *	also cleaned to PoC to prevent data loss.
++ *
++ *	- start   - kernel start address of region
++ *	- end     - kernel end address of region
++ */
++SYM_FUNC_START(__pi_dcache_inval_poc)
++	raw_dcache_inval_poc_macro
+ 	dsb	sy
+ 	ret
+ SYM_FUNC_END(__pi_dcache_inval_poc)
+ SYM_FUNC_ALIAS(dcache_inval_poc, __pi_dcache_inval_poc)
+ 
++/*
++ *	dcache_inval_poc_nosync(start, end)
++ *
++ * 	Issue the instructions of D-cache lines for the interval [start, end)
++ * 	for invalidation. Not necessarily cleaned to PoC till an explicit dsb
++ *	sy is issued later
++ *
++ *	- start   - kernel start address of region
++ *	- end     - kernel end address of region
++ */
++SYM_FUNC_START(__pi_dcache_inval_poc_nosync)
++	raw_dcache_inval_poc_macro
++	ret
++SYM_FUNC_END(__pi_dcache_inval_poc_nosync)
++SYM_FUNC_ALIAS(dcache_inval_poc_nosync, __pi_dcache_inval_poc_nosync)
++
+ /*
+  *	dcache_clean_poc(start, end)
+  *
+-- 
+
+Does it look good to you?
 
 Thanks
 Barry
