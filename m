@@ -1,127 +1,188 @@
-Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5A702367CF
-	for <iommu@lists.linux.dev>; Sun, 21 Dec 2025 12:35:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABBE12236FC;
+	Sun, 21 Dec 2025 12:37:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766320522; cv=none; b=e0i0r8T7N9FOecFhS1jEDZROMxKTMMLqUZVlzUNV/pqoLXVBVBuUgQ6ziG/wZmU8GjD/WfwplbqBIrRAknWIZmQw2lZQQvV0d4quGDAIrID2y6H7NL3DrQSPmD2OZQOITmI/jpNNX7/07RlyKPBup2YqPOkhtqg9sMjfqI7Pigc=
+	t=1766320625; cv=none; b=K3gqRbkblJ3k+OJY5ZX9NLeKEveYANYtWCiseeZ5tV5SiUabiCXACVhdFg8KIeA/HPfloHw0kKziZnPcdrTVKOPkHmiQ3+YVk5SEiSP7kmkZffNjbK3FhWkPOLapT6lTy2Wer5Eg5bhmcg3o73Oznxjjlqd47nvKtDmSuVAhHgc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766320522; c=relaxed/simple;
-	bh=imY9m+27lOPX/d2NlS3wpd62JpvY1Xeq/cUzqWIBgG0=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=eDObyeBNbjvgDsUFVaDEBrsE97A8M9dX/uzvYALaVGHguLDFbhU1zD7gD/doN9dsUrNQCzobM9ebgp1wFN1Whal4B04hnKKTUw5c8ZDByKzXlAkXnT5Fj89hSqe/PasN90AAiT8apoDGWUIMsCBiQQCJ7qGsp2/S0Jv+2DYfQnY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=gg4uHoUY; arc=none smtp.client-ip=209.85.208.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
+	s=arc-20240116; t=1766320625; c=relaxed/simple;
+	bh=iNUfmfk98vLZL6nr6qLf0jwKDEdudVCE8M1mCWujMMM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=GEuIP9G03g00fvulbZXltl3SuMaVE0EJe3YKC0Swt4KbzXlzC8ks60ydYLUGWXGw/HdIMjCPt9bPS97bqpdwoyrzDFGsW8z+CfNF1YxKnzzOjPQ88iZEjuiaupQgnoAHacKt6Ev3klxAbczG6yBMfy8uF4Ka2A6uGSNT/kgaq3M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=TUtNpz0H; arc=none smtp.client-ip=192.198.163.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="gg4uHoUY"
-Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-64b4f730a02so4946787a12.0
-        for <iommu@lists.linux.dev>; Sun, 21 Dec 2025 04:35:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1766320519; x=1766925319; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=KgMTUrq17GdZ6a6fk/pQ7/28KGon25vKkSeBtxD4m+M=;
-        b=gg4uHoUYmuFv9xrkeSEjzQ+r5RwNYfmG6zcMz34mqEtwwOBEWqToyViEj7eA2P/xY1
-         WISU/KKREIAH+HPj1ibj0Yl1zifUv0BGDLJx10Z6lwqsVBm5cf6jmjv4QW1ZKvxDjD9y
-         ISlpO6ygdPfnrPL7fSFFXlK4lJfDAAQgCfey4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1766320519; x=1766925319;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=KgMTUrq17GdZ6a6fk/pQ7/28KGon25vKkSeBtxD4m+M=;
-        b=H95yXK6yhrcwTOdnABpaqtW+9q/XIs2mvyGJ2wMGUSOaX3xzuCJ9vmE2GW9pr7xzfP
-         Uqa2oriY6fCY9ED+3G9F/DFun3pdLxha91ngugwz+h5HF455cprj64BcpeXHa+VcAokE
-         sfNmzgGMK+8RqEtfeydXvd84+fihs+IA2GTYPMw5bP+CLa/VS+T0SjmaI5ckYNld/gl3
-         6Ad3rz3VVlOiYquiD3Bdfs2dXPfVyLdPaNn0NXUCrCMH9BjqbTy/zB9bCYLAsl5qRV9S
-         cDPOdf7D6pUFP9qDbAOQ/s5qhOrTiDHAhHo2tQCv3UmVo2JKinIZNp4c+RkGS+pX0TVO
-         SB4w==
-X-Forwarded-Encrypted: i=1; AJvYcCXx5Z2b95mBLxvymrN3cILsIzn+tE9WPDmFqLygU2keaE0OMOmkPIQzvLwGFl2GBNnXhB9Hbg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxY5u+UVx+6XrE30OJc2o7/tRCGg95+l/KCTWRQ7pU7PSL4UiHo
-	jSBJW7I+top4v1nRScwz14HXtiuQAVr+2wTgrn8PtAMmAsTpgmUFAgjaFL8aUoPPfOtO1s3F9p1
-	aQHw=
-X-Gm-Gg: AY/fxX7xX0B6guTzj/6KqVzEye2KOHoMcaY7XVL/Te4NmDu1B2CmQ3Q1ls073Jw8ECv
-	LGi51PPkHBVaKbXy1dVnCajy8bIN+tT/+sKyYPvvQB6FPDu0SWBKeCDWhrgRaH9BDSu1YiUwsdg
-	yHD69ouXTVrdsBCkoOJm+6jvMuMkYXtb2LcJ4i7u+LAocMDNKdgcVSOTwHdwMj3JaAXqBLwl76a
-	0woPbKk/qGJ5/dUEp7R5xEdDdzZujnacy0cWr6uweevVi30p6yhDuuvufMozYEsWnMTvH/N5TFj
-	ncSwdDr31NVZISct708rUdCDG6Hq2TvnzBJc3bSrzTvrX+axpZnTbayFpaao8taTQq2xfXsv3WU
-	AwRb3iQGknnotCS49cxA1letlk95UizvE27VixxIoP2fk4KjNzKzC2wOef8J65vlnoZOaNJ+6mm
-	5BETqa2d96M9Sw+m07q8I9SEQxRZceeQ==
-X-Google-Smtp-Source: AGHT+IH/N+aVMoko0Ljwne1G9ZENkLSuGyOYI3i6mt3tOjPQLbGKcHMrOSVqM6rtfcLFr+1EcXdrUA==
-X-Received: by 2002:a17:907:3e0e:b0:b73:2b08:ac70 with SMTP id a640c23a62f3a-b80371ad2eamr767096266b.49.1766320518923;
-        Sun, 21 Dec 2025 04:35:18 -0800 (PST)
-Received: from localhost.localdomain ([2a02:a31b:20c3:6680:4cc9:1698:dce5:4976])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b8037f13847sm736591666b.57.2025.12.21.04.35.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 21 Dec 2025 04:35:18 -0800 (PST)
-From: Dmytro Maluka <dmaluka@chromium.org>
-To: David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	iommu@lists.linux.dev
-Cc: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	linux-kernel@vger.kernel.org,
-	"Vineeth Pillai (Google)" <vineeth@bitbyteword.org>,
-	Aashish Sharma <aashish@aashishsharma.net>,
-	Grzegorz Jaszczyk <jaszczyk@chromium.org>,
-	Chuanxiao Dong <chuanxiao.dong@intel.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Dmytro Maluka <dmaluka@chromium.org>
-Subject: [PATCH v2] iommu/vt-d: Flush cache for PASID table before using it
-Date: Sun, 21 Dec 2025 13:35:08 +0100
-Message-ID: <20251221123508.37495-1-dmaluka@chromium.org>
-X-Mailer: git-send-email 2.47.3
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="TUtNpz0H"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1766320623; x=1797856623;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=iNUfmfk98vLZL6nr6qLf0jwKDEdudVCE8M1mCWujMMM=;
+  b=TUtNpz0HAJ3IXxWtpbOyYJdqpQordvHh+yGLa3PbdR4YAl87JjLN9ywF
+   0O6DrBGP41Mr89YOFZOEQ5odPAjAhtU0Hxkmu1VDBHRdIMqQXZbKbH+C6
+   TlWxyVBtOG0Ta6V/jicaS1zadSMnRLwdk9qEVR4HKZeZ/wrHWPzBVt+It
+   aTcEEEIqjHT5RAVWyT/+jOfN0FAldYi288BA8ylm3LIryG89kkqVfiMxx
+   2gztNIHT3Lm9lrKepXEQLB697h84FBIj5pRrXfhqvQhsPUucpP1r+mOIh
+   gZiHM69FEgrGLJOGyqwwwf2ZtqwMAdUXYhFz649l/y17qsQE+W1Nllzev
+   g==;
+X-CSE-ConnectionGUID: Cvc5+FpcRaGVrke0QFRFcg==
+X-CSE-MsgGUID: UIe0OhuUTJ63zKmzxDULyg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11648"; a="78842815"
+X-IronPort-AV: E=Sophos;i="6.21,164,1763452800"; 
+   d="scan'208";a="78842815"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Dec 2025 04:37:03 -0800
+X-CSE-ConnectionGUID: aJuz4+Q5S6alXnVWm1dHbA==
+X-CSE-MsgGUID: Og8hOjH2RgOk5R83AY9a6A==
+X-ExtLoop1: 1
+Received: from igk-lkp-server01.igk.intel.com (HELO 8a0c053bdd2a) ([10.211.93.152])
+  by fmviesa003.fm.intel.com with ESMTP; 21 Dec 2025 04:37:00 -0800
+Received: from kbuild by 8a0c053bdd2a with local (Exim 4.98.2)
+	(envelope-from <lkp@intel.com>)
+	id 1vXIgD-0000000053I-2pUu;
+	Sun, 21 Dec 2025 12:36:57 +0000
+Date: Sun, 21 Dec 2025 13:36:16 +0100
+From: kernel test robot <lkp@intel.com>
+To: Barry Song <21cnbao@gmail.com>, catalin.marinas@arm.com,
+	m.szyprowski@samsung.com, robin.murphy@arm.com, will@kernel.org
+Cc: oe-kbuild-all@lists.linux.dev, ada.coupriediaz@arm.com,
+	anshuman.khandual@arm.com, ardb@kernel.org, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	maz@kernel.org, ryan.roberts@arm.com, surenb@google.com,
+	v-songbaohua@oppo.com, zhengtangquan@oppo.com
+Subject: Re: [PATCH 5/6] dma-mapping: Allow batched DMA sync operations if
+ supported by the arch
+Message-ID: <202512211320.LaiSSLAc-lkp@intel.com>
+References: <20251219053658.84978-6-21cnbao@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20251219053658.84978-6-21cnbao@gmail.com>
 
-When writing the address of a freshly allocated zero-initialized PASID
-table to a PASID directory entry, do that after the CPU cache flush for
-this PASID table, not before it, to avoid the time window when this
-PASID table may be already used by non-coherent IOMMU hardware while
-its contents in RAM is still some random old data, not zero-initialized.
+Hi Barry,
 
-v1 -> v2:
-Add Fixes: tag.
+kernel test robot noticed the following build errors:
 
-Fixes: 194b3348bdbb ("iommu/vt-d: Fix PASID directory pointer coherency")
-Signed-off-by: Dmytro Maluka <dmaluka@chromium.org>
----
- drivers/iommu/intel/pasid.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+[auto build test ERROR on linus/master]
+[also build test ERROR on v6.19-rc1 next-20251219]
+[cannot apply to arm64/for-next/core]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
-index 3e2255057079..77b9b147ab50 100644
---- a/drivers/iommu/intel/pasid.c
-+++ b/drivers/iommu/intel/pasid.c
-@@ -153,6 +153,9 @@ static struct pasid_entry *intel_pasid_get_entry(struct device *dev, u32 pasid)
- 		if (!entries)
- 			return NULL;
- 
-+		if (!ecap_coherent(info->iommu->ecap))
-+			clflush_cache_range(entries, VTD_PAGE_SIZE);
-+
- 		/*
- 		 * The pasid directory table entry won't be freed after
- 		 * allocation. No worry about the race with free and
-@@ -165,10 +168,8 @@ static struct pasid_entry *intel_pasid_get_entry(struct device *dev, u32 pasid)
- 			iommu_free_pages(entries);
- 			goto retry;
- 		}
--		if (!ecap_coherent(info->iommu->ecap)) {
--			clflush_cache_range(entries, VTD_PAGE_SIZE);
-+		if (!ecap_coherent(info->iommu->ecap))
- 			clflush_cache_range(&dir[dir_index].val, sizeof(*dir));
--		}
- 	}
- 
- 	return &entries[index];
+url:    https://github.com/intel-lab-lkp/linux/commits/Barry-Song/arm64-Provide-dcache_by_myline_op_nosync-helper/20251219-195810
+base:   linus/master
+patch link:    https://lore.kernel.org/r/20251219053658.84978-6-21cnbao%40gmail.com
+patch subject: [PATCH 5/6] dma-mapping: Allow batched DMA sync operations if supported by the arch
+config: x86_64-rhel-9.4 (https://download.01.org/0day-ci/archive/20251221/202512211320.LaiSSLAc-lkp@intel.com/config)
+compiler: gcc-14 (Debian 14.2.0-19) 14.2.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20251221/202512211320.LaiSSLAc-lkp@intel.com/reproduce)
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202512211320.LaiSSLAc-lkp@intel.com/
+
+All errors (new ones prefixed by >>):
+
+   kernel/dma/direct.c: In function 'dma_direct_unmap_sg':
+>> kernel/dma/direct.c:456:25: error: implicit declaration of function 'dma_direct_unmap_phys_batch_add'; did you mean 'dma_direct_unmap_phys'? [-Wimplicit-function-declaration]
+     456 |                         dma_direct_unmap_phys_batch_add(dev, sg->dma_address,
+         |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+         |                         dma_direct_unmap_phys
+   kernel/dma/direct.c: In function 'dma_direct_map_sg':
+>> kernel/dma/direct.c:484:43: error: implicit declaration of function 'dma_direct_map_phys_batch_add'; did you mean 'dma_direct_map_phys'? [-Wimplicit-function-declaration]
+     484 |                         sg->dma_address = dma_direct_map_phys_batch_add(dev, sg_phys(sg),
+         |                                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+         |                                           dma_direct_map_phys
+
+
+vim +456 kernel/dma/direct.c
+
+   439	
+   440	/*
+   441	 * Unmaps segments, except for ones marked as pci_p2pdma which do not
+   442	 * require any further action as they contain a bus address.
+   443	 */
+   444	void dma_direct_unmap_sg(struct device *dev, struct scatterlist *sgl,
+   445			int nents, enum dma_data_direction dir, unsigned long attrs)
+   446	{
+   447		struct scatterlist *sg;
+   448		int i;
+   449		bool need_sync = false;
+   450	
+   451		for_each_sg(sgl,  sg, nents, i) {
+   452			if (sg_dma_is_bus_address(sg)) {
+   453				sg_dma_unmark_bus_address(sg);
+   454			} else {
+   455				need_sync = true;
+ > 456				dma_direct_unmap_phys_batch_add(dev, sg->dma_address,
+   457						      sg_dma_len(sg), dir, attrs);
+   458			}
+   459		}
+   460		if (need_sync && !dev_is_dma_coherent(dev))
+   461			arch_sync_dma_batch_flush();
+   462	}
+   463	#endif
+   464	
+   465	int dma_direct_map_sg(struct device *dev, struct scatterlist *sgl, int nents,
+   466			enum dma_data_direction dir, unsigned long attrs)
+   467	{
+   468		struct pci_p2pdma_map_state p2pdma_state = {};
+   469		struct scatterlist *sg;
+   470		int i, ret;
+   471		bool need_sync = false;
+   472	
+   473		for_each_sg(sgl, sg, nents, i) {
+   474			switch (pci_p2pdma_state(&p2pdma_state, dev, sg_page(sg))) {
+   475			case PCI_P2PDMA_MAP_THRU_HOST_BRIDGE:
+   476				/*
+   477				 * Any P2P mapping that traverses the PCI host bridge
+   478				 * must be mapped with CPU physical address and not PCI
+   479				 * bus addresses.
+   480				 */
+   481				break;
+   482			case PCI_P2PDMA_MAP_NONE:
+   483				need_sync = true;
+ > 484				sg->dma_address = dma_direct_map_phys_batch_add(dev, sg_phys(sg),
+   485						sg->length, dir, attrs);
+   486				if (sg->dma_address == DMA_MAPPING_ERROR) {
+   487					ret = -EIO;
+   488					goto out_unmap;
+   489				}
+   490				break;
+   491			case PCI_P2PDMA_MAP_BUS_ADDR:
+   492				sg->dma_address = pci_p2pdma_bus_addr_map(
+   493					p2pdma_state.mem, sg_phys(sg));
+   494				sg_dma_len(sg) = sg->length;
+   495				sg_dma_mark_bus_address(sg);
+   496				continue;
+   497			default:
+   498				ret = -EREMOTEIO;
+   499				goto out_unmap;
+   500			}
+   501			sg_dma_len(sg) = sg->length;
+   502		}
+   503	
+   504		if (need_sync && !dev_is_dma_coherent(dev))
+   505			arch_sync_dma_batch_flush();
+   506		return nents;
+   507	
+   508	out_unmap:
+   509		dma_direct_unmap_sg(dev, sgl, i, dir, attrs | DMA_ATTR_SKIP_CPU_SYNC);
+   510		return ret;
+   511	}
+   512	
+
 -- 
-2.47.3
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
