@@ -1,128 +1,124 @@
-Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
+Received: from mail-ed1-f51.google.com (mail-ed1-f51.google.com [209.85.208.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2354634D4CC
-	for <iommu@lists.linux.dev>; Mon, 22 Dec 2025 17:10:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77860482EB
+	for <iommu@lists.linux.dev>; Mon, 22 Dec 2025 18:04:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766423424; cv=none; b=gPwWYLYIplClegqPJ/8zG3Tku7D9HZaBB/nzNjXbHDEQP4Z9Fv8NooTbPXI/VEd4jdmLFTZL/u2anguatWPkIidVZHeh3EjyTdo9qlIcpDaYWn/shxzxGBig3ovE2QowB80bsGtoboGJiavR8gFfI1twpL0hjiHKxmKfXcUiGlQ=
+	t=1766426644; cv=none; b=IkAJsECRc5iMS3BsLNVEgdFVMMYfv8Q/TcSxmE/HyqvAwuOyJ2f/4q0iT6F2DEaUpG6BASA8s3epIZ/L3dFziJSwQHS6N86mjcwwuwwKda6AVVlohXE0YHaHHd0gPSqykgrbyJjjWIWhEQwmtKtk5KhuP1EaffX3ea7NwjgU8e8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766423424; c=relaxed/simple;
-	bh=YzHI4G0+hRrgBsdVGircsVPa5FNf/xrUmMBxU/P9OYY=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=EdS3dc0OZUdzVVviSDBEiC0y5UHPWgrdy8N95EnSpn/7/NPiET/CqBXJmgzC2+2v6fAQYSPj8E39VJ5295f6utWyqOW48RWRZ+/7N7tmMRjFut5G2UGQRxtBobOp72NYsFCMjseLGNSyt7MM0QLfOk/3yAlbkJObKnisGlUy+CI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XfRk97Q/; arc=none smtp.client-ip=209.85.214.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1766426644; c=relaxed/simple;
+	bh=qW1PBGCN9dgQd9kUUxLQm6/2UTFLawAFRozXf6u5Bp0=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=uzhZhVUX3Xlrkd2OFNHHbNslVgaPN0GYYUH28xM1LSMT6rROXSMwS4I22syBJDZ/IdvW7Wf1uPuwrshkjvupaXAmCA19ZDS8U+MBY0KwumrFgiYFC702+2FtbPFkO5vQcF2zDTVwB8eGiAMBRgRLf/xbwEKhG5CMKcz63rmRAL0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org; spf=pass smtp.mailfrom=linuxfoundation.org; dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b=fH6Gx+qu; arc=none smtp.client-ip=209.85.208.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XfRk97Q/"
-Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-2a0833b5aeeso57253175ad.1
-        for <iommu@lists.linux.dev>; Mon, 22 Dec 2025 09:10:22 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="fH6Gx+qu"
+Received: by mail-ed1-f51.google.com with SMTP id 4fb4d7f45d1cf-64b81ec3701so6148884a12.1
+        for <iommu@lists.linux.dev>; Mon, 22 Dec 2025 10:04:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1766423422; x=1767028222; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=Twwl3eXQOJJG8t6zXbxVANRhPz0XPO3mVRHYXpjMWBk=;
-        b=XfRk97Q/0lAas36dFGuKd8rboosW1DYX21vfoUkdAZ3J/788QDwXuH/YWhrSOspZH+
-         h98KUDgjj/9Y7tq8Mv14H/CyWkLPJQXUtlVQtZ4DReXitXxcXn1OWLcy9IbSOGZa3KbA
-         4Y7czmAboLi4iZD1kvREHwx3tPIIrfJouEwsf1CEKi74sIlYDXuk58cZhKj0j0+swnKR
-         6FsfeiF4LObZreU1QlwDfFPxjVu3vWjl/Wdmc5Yda25llZPfP/rU91q6f7oHeK9AO5iB
-         /E5aiLD/qsDJkgHIbkjMCosoMe4IGcoLuJ2Hz0QeCDSIYIHjdpZEne2ljP7leQSQsUmj
-         C9Rw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1766423422; x=1767028222;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=linux-foundation.org; s=google; t=1766426641; x=1767031441; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Twwl3eXQOJJG8t6zXbxVANRhPz0XPO3mVRHYXpjMWBk=;
-        b=oumVW86njNZ1s/SMchap/AHSQCUMOhOTCL8egEsNRNWhhvh11Qbs58DFnNoFXp9ejR
-         gyAntcB0jsQ39pHmo3vVdiN8s2F/vfS8le4SUFL4UDzRc1q4NGXzrVPJN1x2cG2WSNOP
-         mHqOm8xVKWiAM+4Ik3jibVR1KpDguyy4V+1zy8RxXakAq2Tfh0KSZy+GvfareU4nOWXI
-         rqa8czvoGw6bC9KU4YsZ7bM6xs4ZU8DYM7rNMR5WRvyiZ99NC7oQlpHJ9XITx4wSaOZ0
-         ZcxmgU8kB8TSPgjqhnPsdhorsvD3e/qXh3fX9TIbReogI5eW/M26Df7a8v04Lvpzc/0Y
-         fQKg==
-X-Forwarded-Encrypted: i=1; AJvYcCXtFqrZElo1/7EtcXPFGPV9TzNhBWZIq2vSFWYwP3VHNTYswSp0nlkiQ1S3jQF6g4GHLxn0pQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxKBYk0MR4WrCuRnc0WJ9lQDK2NUPZ1S9wSrU5sy3JCCMickKb/
-	xYZaD+S464/7Z3MadoMpV6ujXtTK45hOFcIUt+Ky5Uus3DbscXowjWgX
-X-Gm-Gg: AY/fxX6aE4I99mVmNnOd3fpFiytQQWh/murO/pXdrH262EG9+LoVZSGk/c6txmYCoWL
-	D9RxBuBJliRcsvF2/yA5Oj3MFQzbWqFc/nQuWFus00zR/HIe66H0ViiE0K7QsJwjkA7CMa6IGIV
-	v/hs895i8tyyVtFec4XarvEQNmyy8olT/uzj8ZdeYRXnZ/pdY+7eSJODcbKFM4WLslYQ68gwwQP
-	6W6rjE/xBSqj8YuYO3qQTPONkUAm6suOnZohsAs+JIi8kPe3N9X/IbNCTWgjyeTn6XiNWkiPMiC
-	7Lph+lz6PYLQvUfvr70mRjejw4nPVK3PThQlOIS74ryeOPXW0C/04ajeUEGi+IU6SKCwdeEVV/Y
-	REzH1OoKdTqTvOzIhnJmFPCQ4h4ZjQ/txGywf4zDCwsvnANuLYSpafb7yQ6un6UyMXyEHuuHjIK
-	/6BNPDdyCPoLsKHCbWBw==
-X-Google-Smtp-Source: AGHT+IFGwoIvh/LClRN4uv8g8aCVZAOzLpRcs94hUY6IVuWUkgSsBL0HmTW1Es/wVhGveE4O22vjUw==
-X-Received: by 2002:a17:902:cf08:b0:2a0:f488:24e with SMTP id d9443c01a7336-2a2f2836817mr121946555ad.28.1766423422153;
-        Mon, 22 Dec 2025 09:10:22 -0800 (PST)
-Received: from rakuram-MSI ([2401:4900:67c6:fbd5:bf35:e32b:9520:be9e])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2a2f3d4cb25sm104508575ad.56.2025.12.22.09.10.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Dec 2025 09:10:21 -0800 (PST)
-From: Rakuram Eswaran <rakuram.e96@gmail.com>
-To: joro@8bytes.org,
-	will@kernel.org,
-	suravee.suthikulpanit@amd.com,
-	robin.murphy@arm.com,
-	iommu@lists.linux.dev
-Cc: dan.carpenter@linaro.org,
-	lkp@intel.com,
-	linux-kernel@vger.kernel.org,
-	rakuram.e96@gmail.com
-Subject: [PATCH] iommu/amd: Drop incorrect NULL check for iommu in alloc_irq_table()
-Date: Mon, 22 Dec 2025 22:40:08 +0530
-Message-ID: <20251222171009.44670-1-rakuram.e96@gmail.com>
-X-Mailer: git-send-email 2.51.0
+        bh=KZCjQyh2/n37I6DOYRVdJimhupluxrLcKg6nqkNe62k=;
+        b=fH6Gx+quDfeIl1XzYhARLH+P/5g6oS6gaTsEa26f/h3xIwB88tQP3TtEVZbbJ6/Aw6
+         tb3v/Yuvm/sUkfNz3wzrvn44tdriFwlmsWRhm0GdmhZR7D5eln1fy9S63PNN4KlTJTMe
+         qPY0F0iiRMllQb9uYB0Tg9zZKeo+tdrARlINk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1766426641; x=1767031441;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=KZCjQyh2/n37I6DOYRVdJimhupluxrLcKg6nqkNe62k=;
+        b=dAVGLb3LQsMx03h/lnP2TtXAhC9pK3edCchPk1BXwrlEf86bsRA5pvZSFlkARlpjc3
+         I+XmFfty9o7RXnoDcuYfpgc64AoJf0xzuiFx+QTvhE1La1M4YzJSCoy4sFjm+03MNreq
+         0TDlKVer3JOdPiOeXEfAZ2gvGss9AgUg4DpdO3wgW9sItjQSe2g5AkGVx/I+HNbHJpRH
+         J7RNnUxKMsSIig5LFuyCYtWpaEOx9WskwyUodPstnK/9sBaDNf8Knw1d5jymhrou6Rgg
+         51Yp622/wSaNNRIOWQnNdlIY1uZURuP5lS3MS6VJsf4Syz0qbAFfz4mZnZxV1rA9THgW
+         PLjw==
+X-Forwarded-Encrypted: i=1; AJvYcCUasXJwcYibDlyVgXuFiStcAzbR+UCzToGDaYMlG8vfECW07ig3EPp1rLU4xZ9pb3RID73VRQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwCEGVI4uWElXH9U/xGSdccU9vGtMSCDZsIscaxOcSGG9JtjUZr
+	SVz7QzoobL04SOK2CfSWNwah3k4hRC+2wfe4N+IhkxHqcflZVZTl5yP5wRStxkYsyAV7w/B87G2
+	cq9UNQ1g=
+X-Gm-Gg: AY/fxX6R0nRJnDNjq/m7ycBZGzcxeU/4qJU+irlWNP/770soDUIYQ9+6ZGjDs4+Bwtg
+	S/6DuwrypMdq8KZbaBY6eJe7xvdg9DcjvOU4DKd1hAAEy7dQlb2IkNMnIIDgZzRU6Ll8Kfxlq99
+	P0xB+3JAKGMTtKAvcH7HnAC5lXDbi1T8F6z1IOhY0aaGr3qjIn8c10QUXaSINOF10Sl4mlYzIL9
+	36mTAqj2/XFjgGTG7gC6pEuudpwjq0mKqeZerrVM7Bp21RBt1pMBWSPlOUTTZsKIIDT4IjeFdsv
+	A9R5vdiYqYP6FltcjSx8T5Oi55JAvFuufHseV/8GQKzgdy8mzV717nZwRu80CvUp8VFVk5jVAKu
+	4bcvzqDCqKSUZcEkHR9ryzT/Z6oYtEwUFawOGO46Eo0lcw8zgxqY5xT19/YtkZ+IBbgOMtLgmI0
+	OrDbahGAaVxjfmbBXATLECt1gGhZT1UUGgxIYdazPsvuUXn7ShqxqWlLSAI+q7
+X-Google-Smtp-Source: AGHT+IEeOHz8lUrpOvFqWmpF0XRuVekn+jW/p2VSalZ/CZBkk1DGDPo4MPZ8MzpHIwIzf8iwoOfPZQ==
+X-Received: by 2002:a05:6402:1e92:b0:64d:589a:572b with SMTP id 4fb4d7f45d1cf-64d589a59f3mr4684169a12.17.1766426640587;
+        Mon, 22 Dec 2025 10:04:00 -0800 (PST)
+Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com. [209.85.208.54])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-64b916b372esm11146634a12.32.2025.12.22.10.03.59
+        for <iommu@lists.linux.dev>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 22 Dec 2025 10:03:59 -0800 (PST)
+Received: by mail-ed1-f54.google.com with SMTP id 4fb4d7f45d1cf-649e28dccadso6839285a12.3
+        for <iommu@lists.linux.dev>; Mon, 22 Dec 2025 10:03:59 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCUgrGHa0OCtyjj7CiFKyDsqwGEUWsHxjWBY3X3TpBm/wIMWhWwEI60ZeUbFsFR/hJC8T+XmPw==@lists.linux.dev
+X-Received: by 2002:a17:907:9810:b0:b70:be84:5186 with SMTP id
+ a640c23a62f3a-b80371d66camr1271984166b.44.1766426639355; Mon, 22 Dec 2025
+ 10:03:59 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CGME20251222160344eucas1p12182e7b47456263b0b67309f6c674ac4@eucas1p1.samsung.com>
+ <20251222160328.2523773-1-m.szyprowski@samsung.com>
+In-Reply-To: <20251222160328.2523773-1-m.szyprowski@samsung.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Mon, 22 Dec 2025 10:03:42 -0800
+X-Gmail-Original-Message-ID: <CAHk-=wgpWEoW1VKZv-7YC_oftbqWXh3xERYBsjfv5dc-MO-Lmg@mail.gmail.com>
+X-Gm-Features: AQt7F2rymZbl7OoJEn6SzyoIEusFWez7C5Yy9L06OHfhgnxCEnKgACQ9SWJ5GM8
+Message-ID: <CAHk-=wgpWEoW1VKZv-7YC_oftbqWXh3xERYBsjfv5dc-MO-Lmg@mail.gmail.com>
+Subject: Re: [GIT PULL] dma-mapping fix for Linux 6.19
+To: Marek Szyprowski <m.szyprowski@samsung.com>, 
+	Konstantin Ryabitsev <konstantin@linuxfoundation.org>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
+	Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>, Leon Romanovsky <leon@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-alloc_irq_table() contains a conditional check for a NULL iommu pointer
-when computing the NUMA node, but the function dereferences iommu
-in multiple places afterwards.
+On Mon, 22 Dec 2025 at 08:03, Marek Szyprowski <m.szyprowski@samsung.com> w=
+rote:
+>
+> Leon Romanovsky (1):
+>       parisc: Set valid bit in high byte of 64=E2=80=91bit physical addre=
+ss
 
-All callers ensure that a valid iommu pointer is passed in, and a NULL
-iommu is not expected by the current callers. Remove the incorrect
-NULL check to make the assumptions consistent and address the Smatch
-warning.
+Heh. Pulled and pushed out, but in the process it triggered a
+mis-feature in the kernel.org hooks.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@linaro.org>
-Closes: https://lore.kernel.org/r/202512191724.meqJENXe-lkp@intel.com/
-Signed-off-by: Rakuram Eswaran <rakuram.e96@gmail.com>
----
-Testing note:
-Compile tested only.
+That commit message uses the UTF8 character U+2011 for 'Non-Breaking
+Hyphen' in that "64=E2=80=91bit" thing (and then the same character is also=
+ in
+the commit message when it talks about 32=E2=80=91bit systems).
 
-Build and Analysis:
-This patch was compiled against the configuration file reported by
-0day CI in the above link (config: x86_64-randconfig-r073-20251215)
-using gcc version 15.2.0 (Ubuntu 15.2.0-4ubuntu4).
+Which is all good and correct, and I'm not complaining about your pull
+request. A NB hyphen is certainly not incorrect here.
 
-Static analysis was performed with Smatch to ensure the reported warning
-no longer reproduces after applying this fix.
+But it's apparently unusual enough that some of our infrastructure for
+the activity feed on kernel.org goes all wonky, and that scripting
+then complains about
 
-Command using for Smatch testing:
-~/project/smatch/smatch_scripts/kchecker ./drivers/iommu/amd/iommu.c
+   remote: UnicodeEncodeError: 'ascii' codec can't encode character
+'\u2011' in position 90: ordinal not in range(128)
 
- drivers/iommu/amd/iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+and I wonder if that's why I also haven't seen a pr-tracker-bot reply
+to your email yet (but it might also be that I'm just too quick to
+blame things, and it's just delayed a bit).
 
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 075125f0f52b..611e3ccc93d1 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -3240,7 +3240,7 @@ static struct irq_remap_table *alloc_irq_table(struct amd_iommu *iommu,
- 	struct irq_remap_table *new_table = NULL;
- 	struct amd_iommu_pci_seg *pci_seg;
- 	unsigned long flags;
--	int nid = iommu && iommu->dev ? dev_to_node(&iommu->dev->dev) : NUMA_NO_NODE;
-+	int nid = iommu->dev ? dev_to_node(&iommu->dev->dev) : NUMA_NO_NODE;
- 	u16 alias;
- 
- 	spin_lock_irqsave(&iommu_table_lock, flags);
--- 
-2.51.0
+Konstantin - I think it's only the subject line that matters here,
+because if it reacted to non-ASCII characters in commit messages, I'd
+have seen this issue many times before. I'll send you the whole
+traceback separately, although I suspect you can easily just re-create
+this issue locally.
 
+                 Linus
