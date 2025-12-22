@@ -1,64 +1,64 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C721C2E975E;
-	Mon, 22 Dec 2025 12:43:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1AB0228643D;
+	Mon, 22 Dec 2025 14:01:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766407436; cv=none; b=IawR474OOxkiUGttt5WvzXvVqSu1JmbSt2XNgyBCDvCssPYzu9vrEVvkr5gSTR9nDUbcyMDzhwzJRkBLAjIb/Be0vptcgMhzReqUHR3m8+IjvO/s4CGLox31Ygw1rMozEiaxUmCno0TZajJaJFB2BOFSAQcNLZMSEVnXEljTxzg=
+	t=1766412095; cv=none; b=pqzQrmBpQTqAIDZF0oVfpZHfjz4aamO4kQIOi1CkfM/M+0AJSBrRdMn/+m65r//+0GjVLe5hwoNRCJEBgWHevhpabB+xNOUwC4i73YMS4GpG5x3xC1iLMgTakjG27PK2vinO7OyN2SmxD5QlpXrbk29hYRFA2GBgEmcUzhD9K9g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766407436; c=relaxed/simple;
-	bh=TVTiqEhNLbSr7eIJZANPXzjzTaIA/EUuM3L2baWqaEE=;
+	s=arc-20240116; t=1766412095; c=relaxed/simple;
+	bh=wp17uf/NJabCfUCLc1IpO5wTok9bWrA7bqCVHm4elRk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=I30VLS7xC4NoLBJHWcpnvSoE/fCaTx1jtBCZrUZBmpLCNlFiQ2Vqx2cPFzny/R6fcgrO4M3id+F80i8P/tNdm6QHWHK9aNems0+PXMH+Z7cf9vNtJIx1TQ0bboXXpEL79XlAnsPhYE5N79BQtKWJXzIYLDULlsCCp/I2REMwktA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=nCCAY8be; arc=none smtp.client-ip=192.198.163.12
+	 Content-Type:Content-Disposition:In-Reply-To; b=S0m3sFMLHD+AYy/GhCQaqLWObFqFF/MLtQukslMCPXTFmHhUdy5Wir7Ag6l/gwxRgdpVg14aS/XIZw1NYUzvnbNKh6ezXXwHPBURdkdCJWNGtXguvzsFGbQRXJSz3I9njU9yxeHGaaUMIR3H3b/pPkPak1a9vTXqcFXt8oTiLR4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=kHbajbOY; arc=none smtp.client-ip=198.175.65.9
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="nCCAY8be"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kHbajbOY"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1766407435; x=1797943435;
+  t=1766412095; x=1797948095;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=TVTiqEhNLbSr7eIJZANPXzjzTaIA/EUuM3L2baWqaEE=;
-  b=nCCAY8bekRi8+TRECM6YnOGyl4gZm1njh1/A5ZcG6iExgSSd9E4zoHuE
-   G9yYjlSvYlI3nY4SV+Wj6isgVMdvvBIh3aY33wwy6xp+xvrPo3AA2ONoI
-   8DN8ij+UUtkVOn0TPdIF+FmjTGEWMw2Qj6epScyGeQaTGlVKOfBZIaRAB
-   8qdYDpgGEU1Tv57oaB85SOALkpmnWXSjuLBRvSCSWFcR8SbUHnJqXfyAU
-   n62nUNlrk0O31n5SYxADEw7AphywWO2cz/fXM0ixP9pcnXHyXSa1om5zO
-   /rEA1nqu8d/ZtdqYeWFhGbTI3bRSWkuzdydrnIUDh/qW51NB+jx+jqfH5
-   g==;
-X-CSE-ConnectionGUID: YdeBPMpuQpyKXWz4EKAXUA==
-X-CSE-MsgGUID: N0WzA6gURsGZNOnqARC3Mg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11649"; a="72122696"
+  bh=wp17uf/NJabCfUCLc1IpO5wTok9bWrA7bqCVHm4elRk=;
+  b=kHbajbOYGzf8Uv139zDBtK4gycNYUmf6lwsGhHH+p6q9MQjRwn2E88Xn
+   6aUOTuJDEWYp2zg7oRrClkg75u6MAyXaZPAiN2N4/WGPtABEidIvOt1XD
+   OqcsgG8th0I0VZrM8DizJKs0vZNuY0rqPiJ4tFKEFG70FA5wAm+c7TP/o
+   +Qi+SLWpgH8oeI0LeuAKmRrPJADwlfyEYvmSNezOYKOzGRbVNrb7zwxwa
+   Pua88BZTKIes6pIpr4e4+6JxlPfwLOEdRTf5e/e5yiCDRvFvPZ85QT9QR
+   UZJFOjGxitDR9e0HOvBGsq9m3DzH8hg/dq+IIRFd322ZlAfGnemyEs8sL
+   Q==;
+X-CSE-ConnectionGUID: P/+EuNauTMueLrVkzsIq2A==
+X-CSE-MsgGUID: vu6OsIhvT3KyHWLg6rmOYw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11650"; a="90925832"
 X-IronPort-AV: E=Sophos;i="6.21,168,1763452800"; 
-   d="scan'208";a="72122696"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Dec 2025 04:43:54 -0800
-X-CSE-ConnectionGUID: H6BU1IhTTNKKLUFCQPYXrw==
-X-CSE-MsgGUID: iAvp99FRR4eUbI/njFg6aA==
+   d="scan'208";a="90925832"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Dec 2025 06:01:34 -0800
+X-CSE-ConnectionGUID: TgGs18ijTVOcAHCpEOwJZw==
+X-CSE-MsgGUID: EmaKGdW/SW2cz0rq7A1G/w==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,168,1763452800"; 
-   d="scan'208";a="199492274"
+   d="scan'208";a="204054521"
 Received: from lkp-server02.sh.intel.com (HELO dd3453e2b682) ([10.239.97.151])
-  by orviesa007.jf.intel.com with ESMTP; 22 Dec 2025 04:43:49 -0800
+  by orviesa004.jf.intel.com with ESMTP; 22 Dec 2025 06:01:29 -0800
 Received: from kbuild by dd3453e2b682 with local (Exim 4.98.2)
 	(envelope-from <lkp@intel.com>)
-	id 1vXfGM-000000000aH-32aX;
-	Mon, 22 Dec 2025 12:43:46 +0000
-Date: Mon, 22 Dec 2025 20:43:24 +0800
+	id 1vXgTX-000000000er-0Umd;
+	Mon, 22 Dec 2025 14:01:27 +0000
+Date: Mon, 22 Dec 2025 22:00:46 +0800
 From: kernel test robot <lkp@intel.com>
 To: Barry Song <21cnbao@gmail.com>, catalin.marinas@arm.com,
 	m.szyprowski@samsung.com, robin.murphy@arm.com, will@kernel.org
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-	ada.coupriediaz@arm.com, anshuman.khandual@arm.com, ardb@kernel.org,
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, maz@kernel.org, ryan.roberts@arm.com,
-	surenb@google.com, v-songbaohua@oppo.com, zhengtangquan@oppo.com
+Cc: oe-kbuild-all@lists.linux.dev, ada.coupriediaz@arm.com,
+	anshuman.khandual@arm.com, ardb@kernel.org, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	maz@kernel.org, ryan.roberts@arm.com, surenb@google.com,
+	v-songbaohua@oppo.com, zhengtangquan@oppo.com
 Subject: Re: [PATCH 5/6] dma-mapping: Allow batched DMA sync operations if
  supported by the arch
-Message-ID: <202512222029.Dd6Vs1Eg-lkp@intel.com>
+Message-ID: <202512222137.rpXOEE5p-lkp@intel.com>
 References: <20251219053658.84978-6-21cnbao@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -85,31 +85,30 @@ url:    https://github.com/intel-lab-lkp/linux/commits/Barry-Song/arm64-Provide-
 base:   linus/master
 patch link:    https://lore.kernel.org/r/20251219053658.84978-6-21cnbao%40gmail.com
 patch subject: [PATCH 5/6] dma-mapping: Allow batched DMA sync operations if supported by the arch
-config: i386-buildonly-randconfig-006-20251222 (https://download.01.org/0day-ci/archive/20251222/202512222029.Dd6Vs1Eg-lkp@intel.com/config)
-compiler: clang version 20.1.8 (https://github.com/llvm/llvm-project 87f0227cb60147a26a1eeb4fb06e3b505e9c7261)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20251222/202512222029.Dd6Vs1Eg-lkp@intel.com/reproduce)
+config: x86_64-randconfig-161-20251222 (https://download.01.org/0day-ci/archive/20251222/202512222137.rpXOEE5p-lkp@intel.com/config)
+compiler: gcc-14 (Debian 14.2.0-19) 14.2.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20251222/202512222137.rpXOEE5p-lkp@intel.com/reproduce)
 
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202512222029.Dd6Vs1Eg-lkp@intel.com/
+| Closes: https://lore.kernel.org/oe-kbuild-all/202512222137.rpXOEE5p-lkp@intel.com/
 
 All errors (new ones prefixed by >>):
 
->> kernel/dma/direct.c:456:4: error: call to undeclared function 'dma_direct_unmap_phys_batch_add'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+   kernel/dma/direct.c: In function 'dma_direct_unmap_sg':
+>> kernel/dma/direct.c:456:25: error: implicit declaration of function 'dma_direct_unmap_phys_batch_add'; did you mean 'dma_direct_unmap_phys'? [-Wimplicit-function-declaration]
      456 |                         dma_direct_unmap_phys_batch_add(dev, sg->dma_address,
-         |                         ^
-   kernel/dma/direct.c:456:4: note: did you mean 'dma_direct_unmap_phys'?
-   kernel/dma/direct.h:188:20: note: 'dma_direct_unmap_phys' declared here
-     188 | static inline void dma_direct_unmap_phys(struct device *dev, dma_addr_t addr,
-         |                    ^
->> kernel/dma/direct.c:484:22: error: call to undeclared function 'dma_direct_map_phys_batch_add'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+         |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+         |                         dma_direct_unmap_phys
+   kernel/dma/direct.c: In function 'dma_direct_map_sg':
+>> kernel/dma/direct.c:484:43: error: implicit declaration of function 'dma_direct_map_phys_batch_add'; did you mean 'dma_direct_map_phys'? [-Wimplicit-function-declaration]
      484 |                         sg->dma_address = dma_direct_map_phys_batch_add(dev, sg_phys(sg),
-         |                                           ^
-   2 errors generated.
+         |                                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+         |                                           dma_direct_map_phys
 
 
-vim +/dma_direct_unmap_phys_batch_add +456 kernel/dma/direct.c
+vim +456 kernel/dma/direct.c
 
    439	
    440	/*
