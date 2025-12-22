@@ -1,190 +1,225 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1AB0228643D;
-	Mon, 22 Dec 2025 14:01:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8409C2D12F1
+	for <iommu@lists.linux.dev>; Mon, 22 Dec 2025 14:09:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766412095; cv=none; b=pqzQrmBpQTqAIDZF0oVfpZHfjz4aamO4kQIOi1CkfM/M+0AJSBrRdMn/+m65r//+0GjVLe5hwoNRCJEBgWHevhpabB+xNOUwC4i73YMS4GpG5x3xC1iLMgTakjG27PK2vinO7OyN2SmxD5QlpXrbk29hYRFA2GBgEmcUzhD9K9g=
+	t=1766412567; cv=none; b=nN8BStBEcCZyEJ+OBBtcEq/uhidegMgoBX+JpAwsnrpxIF61OLlEw8UAANY4bgtDE3vAMmH6IWndHHm19GJbHN43cJltXSfOkSkL2716qxPkSPDvQa8WCj9OULFvMzJ5UeLTJ9DdLTh6h8JYTfK8dvD7F1N7Yorf+EZE0bZjGj8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766412095; c=relaxed/simple;
-	bh=wp17uf/NJabCfUCLc1IpO5wTok9bWrA7bqCVHm4elRk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=S0m3sFMLHD+AYy/GhCQaqLWObFqFF/MLtQukslMCPXTFmHhUdy5Wir7Ag6l/gwxRgdpVg14aS/XIZw1NYUzvnbNKh6ezXXwHPBURdkdCJWNGtXguvzsFGbQRXJSz3I9njU9yxeHGaaUMIR3H3b/pPkPak1a9vTXqcFXt8oTiLR4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=kHbajbOY; arc=none smtp.client-ip=198.175.65.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1766412567; c=relaxed/simple;
+	bh=p/i6kMwISrCPM6iQXn0HaSNUzgsyoLTxQlFLGZ2uzQ8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ra139EUixjSUKU6ov/Ce1+M+1wam1/wBWAxK4pC23Jjcsi86vDi24YrIeiWde0bPX/YRMKopePI2EP3MntNoOnoY473KZcSi4PyrdGLI+S8XatrVjLz9aNf0LvPKQwAu3LotZaaTVQ5jAmgBAEAOXzAG4EV0caehtzWK1N5SNno=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=NqLrQ/gp; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kHbajbOY"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1766412095; x=1797948095;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=wp17uf/NJabCfUCLc1IpO5wTok9bWrA7bqCVHm4elRk=;
-  b=kHbajbOYGzf8Uv139zDBtK4gycNYUmf6lwsGhHH+p6q9MQjRwn2E88Xn
-   6aUOTuJDEWYp2zg7oRrClkg75u6MAyXaZPAiN2N4/WGPtABEidIvOt1XD
-   OqcsgG8th0I0VZrM8DizJKs0vZNuY0rqPiJ4tFKEFG70FA5wAm+c7TP/o
-   +Qi+SLWpgH8oeI0LeuAKmRrPJADwlfyEYvmSNezOYKOzGRbVNrb7zwxwa
-   Pua88BZTKIes6pIpr4e4+6JxlPfwLOEdRTf5e/e5yiCDRvFvPZ85QT9QR
-   UZJFOjGxitDR9e0HOvBGsq9m3DzH8hg/dq+IIRFd322ZlAfGnemyEs8sL
-   Q==;
-X-CSE-ConnectionGUID: P/+EuNauTMueLrVkzsIq2A==
-X-CSE-MsgGUID: vu6OsIhvT3KyHWLg6rmOYw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11650"; a="90925832"
-X-IronPort-AV: E=Sophos;i="6.21,168,1763452800"; 
-   d="scan'208";a="90925832"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Dec 2025 06:01:34 -0800
-X-CSE-ConnectionGUID: TgGs18ijTVOcAHCpEOwJZw==
-X-CSE-MsgGUID: EmaKGdW/SW2cz0rq7A1G/w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,168,1763452800"; 
-   d="scan'208";a="204054521"
-Received: from lkp-server02.sh.intel.com (HELO dd3453e2b682) ([10.239.97.151])
-  by orviesa004.jf.intel.com with ESMTP; 22 Dec 2025 06:01:29 -0800
-Received: from kbuild by dd3453e2b682 with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1vXgTX-000000000er-0Umd;
-	Mon, 22 Dec 2025 14:01:27 +0000
-Date: Mon, 22 Dec 2025 22:00:46 +0800
-From: kernel test robot <lkp@intel.com>
-To: Barry Song <21cnbao@gmail.com>, catalin.marinas@arm.com,
-	m.szyprowski@samsung.com, robin.murphy@arm.com, will@kernel.org
-Cc: oe-kbuild-all@lists.linux.dev, ada.coupriediaz@arm.com,
-	anshuman.khandual@arm.com, ardb@kernel.org, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	maz@kernel.org, ryan.roberts@arm.com, surenb@google.com,
-	v-songbaohua@oppo.com, zhengtangquan@oppo.com
-Subject: Re: [PATCH 5/6] dma-mapping: Allow batched DMA sync operations if
- supported by the arch
-Message-ID: <202512222137.rpXOEE5p-lkp@intel.com>
-References: <20251219053658.84978-6-21cnbao@gmail.com>
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="NqLrQ/gp"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1766412564;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=k1FE0+YEZR+tBzsGFvPzgiyYjR1CkUcfeInMhZI6Of8=;
+	b=NqLrQ/gp4dvpugfX/v8wHvmzXsAlBMwHALMmaeyE0NvG+agx1L9TTv5cbmt17j1ZyN7QiD
+	peVb5bx5i0Fjoi4LvxMxv+qSX8oSuboYgZ+seIdnph0A3jQt32sUxRqFgcO1aTPvsdB2l/
+	bRUuMoTgRMRtXOJVjL1pH4AELhy7lf8=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-589-prR7XFAbOA6RSlEysMTPqA-1; Mon, 22 Dec 2025 09:09:23 -0500
+X-MC-Unique: prR7XFAbOA6RSlEysMTPqA-1
+X-Mimecast-MFC-AGG-ID: prR7XFAbOA6RSlEysMTPqA_1766412562
+Received: by mail-wr1-f70.google.com with SMTP id ffacd0b85a97d-432488a0ce8so3205775f8f.2
+        for <iommu@lists.linux.dev>; Mon, 22 Dec 2025 06:09:23 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1766412562; x=1767017362;
+        h=content-transfer-encoding:in-reply-to:autocrypt:content-language
+         :from:references:cc:to:subject:user-agent:mime-version:date
+         :message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=k1FE0+YEZR+tBzsGFvPzgiyYjR1CkUcfeInMhZI6Of8=;
+        b=TEln8JkIqNUQg42DvRdx1KQdreSa3CjHYHdaiIpoRGBU8bZsv3kFfB2+xlU35Mr+yd
+         8MDEODaYttiww2X3jzquZLAVy+EeMaQf8XsizjfSmc4qmZiKuFaLNeuIzJaQhYiLQd1c
+         ktFe9pyZv4GKwkTIOr5AK4Wz8WPlW/gFX1GXXfhhvLRqTmylm5HTq5lTokIhgLraO0mC
+         81BZA4dc+SRzUqK86+06nCG7kxeEDCDEXTUvcLfK36PNOCTAMB4U5PW5cYCmt5+o+Jbc
+         DGZOpZDvII5pHk7hbwZqKdcsoqWxooukwbXZZh1Fxe6z1Z8bZj3qRtxlcUFvAntKvJ9c
+         teyQ==
+X-Forwarded-Encrypted: i=1; AJvYcCU9p5VnXjqk087fy0TD53vza4KHvJ4o+YNXZCcs/sJeq6jRtPRlSjKC0plwFfl/Qf+D1/AtHQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yx61pJ+xDMuYgIEtgdgOqClmcFohkWOa0mtyFxS/07+2hgQmuwQ
+	2EwLbTum/RE12i8A2gcge/J+SN0JPaKnhjBbdlS05RAyz7wwkkqMae93opo+w7ZwGrADTidXdHi
+	2ahqb9udCp2lFb6c6eeQQe1PM2PCzk2w8REkJdJa/me+zgIqSLSSXag2N
+X-Gm-Gg: AY/fxX6k25z507wU+iOsl5bCvumgpq7lWs8RMu3wo09B/AxaLbqFC0D9zVt44k+vHya
+	zbe4VXXQ3mzf8ZrzV66+1KkSLC9yBycXC4hg1WAWiEN3jALWBqxAsY09OUj2MtO7lkEPoElNu+d
+	tayXpSbBJPuYQXriTWA3HV9SAlEzOJiaIhJRtp9uTVEpSyIk9pMP4I73TjBY8Ed6t/pWbqYK8+6
+	SlrUmAhdeSIs5vLswBXHTYRbgCI7GVwpL+5+Q595Z0kAe5SqhPxj2cjEVsux5FmJT6DYvADFkeh
+	jhgbEZ8kICk+Dsglt3rwpBH1Cu7PY/cgkTKydH0rhiiQC14+X6Y882DnmYWD6BjzqolO5Wfc7wO
+	pftjWGKA2de9Xg/uyWnPTi+mdV8T6KahkPuz0HJGwyw6NXHzbUXg85mxlxAJJDa7oYFwaaeXzIm
+	Qyl5FAkiNAEruu5RM=
+X-Received: by 2002:a05:6000:290b:b0:42f:f627:3a99 with SMTP id ffacd0b85a97d-4324e4fd929mr14060414f8f.38.1766412561915;
+        Mon, 22 Dec 2025 06:09:21 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IGP6HMp+dW+4S6ThYyhC4Zp8b5zu9Tx+uPg89UKRyiU9jj0V1LJEfNM5y7cCeqmYyTSzw3qRw==
+X-Received: by 2002:a05:6000:290b:b0:42f:f627:3a99 with SMTP id ffacd0b85a97d-4324e4fd929mr14060358f8f.38.1766412561414;
+        Mon, 22 Dec 2025 06:09:21 -0800 (PST)
+Received: from [192.168.10.48] ([151.95.145.106])
+        by smtp.googlemail.com with ESMTPSA id ffacd0b85a97d-4324eaa2beasm21799471f8f.33.2025.12.22.06.09.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 22 Dec 2025 06:09:20 -0800 (PST)
+Message-ID: <42513cb3-3c2e-4aa8-b748-23b6656a5096@redhat.com>
+Date: Mon, 22 Dec 2025 15:09:13 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20251219053658.84978-6-21cnbao@gmail.com>
+User-Agent: Mozilla Thunderbird
+Subject: possible deadlock due to irq_set_thread_affinity() calling into the
+ scheduler (was Re: [PATCH v3 38/62] KVM: SVM: Take and hold ir_list_lock
+ across IRTE updates in IOMMU)
+To: Ankit Soni <Ankit.Soni@amd.com>, Sean Christopherson <seanjc@google.com>,
+ Marc Zyngier <maz@kernel.org>
+Cc: Oliver Upton <oliver.upton@linux.dev>, Joerg Roedel <joro@8bytes.org>,
+ David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
+ linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev,
+ kvm@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ Sairaj Kodilkar <sarunkod@amd.com>, Vasant Hegde <vasant.hegde@amd.com>,
+ Maxim Levitsky <mlevitsk@redhat.com>,
+ Joao Martins <joao.m.martins@oracle.com>,
+ Francesco Lavra <francescolavra.fl@gmail.com>,
+ David Matlack <dmatlack@google.com>, Naveen Rao <Naveen.Rao@amd.com>
+References: <20250611224604.313496-2-seanjc@google.com>
+ <20250611224604.313496-40-seanjc@google.com>
+ <njhjud3e6wbdftzr3ziyuh5bhyvc5ndt5qvmg7rlvh5isoop2l@f2uxctws2c7d>
+From: Paolo Bonzini <pbonzini@redhat.com>
+Autocrypt: addr=pbonzini@redhat.com; keydata=
+ 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
+In-Reply-To: <njhjud3e6wbdftzr3ziyuh5bhyvc5ndt5qvmg7rlvh5isoop2l@f2uxctws2c7d>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: QRbr4bWUWo4b80XTn2gkcdqH9oXChAXKGIWHvRicjEY_1766412562
+X-Mimecast-Originator: redhat.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi Barry,
+On 12/22/25 10:16, Ankit Soni wrote:
+>    ======================================================
+>    WARNING: possible circular locking dependency detected
+>    6.19.0-rc2 #20 Tainted: G            E
+>    ------------------------------------------------------
+>    CPU 58/KVM/28597 is trying to acquire lock:
+>      ff12c47d4b1f34c0 (&irq_desc_lock_class){-.-.}-{2:2}, at: __irq_get_desc_lock+0x58/0xa0
+> 
+>      but task is already holding lock:
+>      ff12c49b28552110 (&svm->ir_list_lock){....}-{2:2}, at: avic_pi_update_irte+0x147/0x270 [kvm_amd]
+> 
+>      which lock already depends on the new lock.
+> 
+>    Chain exists of:
+>      &irq_desc_lock_class --> &rq->__lock --> &svm->ir_list_lock
+> 
+>    Possible unsafe locking scenario:
+> 
+>          CPU0                            CPU1
+>          ----                            ----
+>     lock(&svm->ir_list_lock);
+>                                        lock(&rq->__lock);
+>                                        lock(&svm->ir_list_lock);
+>     lock(&irq_desc_lock_class);
+> 
+>          *** DEADLOCK ***
+> 
+> So lockdep sees:
+> 
+>    &irq_desc_lock_class -> &rq->__lock -> &svm->ir_list_lock
+> 
+> while avic_pi_update_irte() currently holds svm->ir_list_lock and then
+> takes irq_desc_lock via irq_set_vcpu_affinity(), which creates the
+> potential inversion.
+> 
+>    - Is this lockdep warning expected/benign in this code path, or does it
+>      indicate a real potential deadlock between svm->ir_list_lock and
+>      irq_desc_lock with AVIC + irq_bypass + VFIO?
 
-kernel test robot noticed the following build errors:
+I'd treat it as a potential (if unlikely) deadlock:
 
-[auto build test ERROR on linus/master]
-[also build test ERROR on v6.19-rc2 next-20251219]
-[cannot apply to arm64/for-next/core]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+(a) irq_set_thread_affinity triggers the scheduler via wake_up_process,
+while irq_desc->lock is taken
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Barry-Song/arm64-Provide-dcache_by_myline_op_nosync-helper/20251219-195810
-base:   linus/master
-patch link:    https://lore.kernel.org/r/20251219053658.84978-6-21cnbao%40gmail.com
-patch subject: [PATCH 5/6] dma-mapping: Allow batched DMA sync operations if supported by the arch
-config: x86_64-randconfig-161-20251222 (https://download.01.org/0day-ci/archive/20251222/202512222137.rpXOEE5p-lkp@intel.com/config)
-compiler: gcc-14 (Debian 14.2.0-19) 14.2.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20251222/202512222137.rpXOEE5p-lkp@intel.com/reproduce)
+(b) the scheduler calls into KVM with rq_lock taken, and KVM uses
+ir_list_lock within __avic_vcpu_load/__avic_vcpu_put
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202512222137.rpXOEE5p-lkp@intel.com/
+(c) KVM wants to block scheduling for a while and uses ir_list_lock for
+that purpose, but then takes irq_set_vcpu_affinity takes irq_desc->lock.
 
-All errors (new ones prefixed by >>):
+I don't think there's an alternative choice of lock for (c); and there's
+no easy way to pull the irq_desc->lock out of the IRQ subsystem--in fact
+the stickiness of the situation comes from rq->rq_lock and
+irq_desc->lock being both internal and not leaf.
 
-   kernel/dma/direct.c: In function 'dma_direct_unmap_sg':
->> kernel/dma/direct.c:456:25: error: implicit declaration of function 'dma_direct_unmap_phys_batch_add'; did you mean 'dma_direct_unmap_phys'? [-Wimplicit-function-declaration]
-     456 |                         dma_direct_unmap_phys_batch_add(dev, sg->dma_address,
-         |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-         |                         dma_direct_unmap_phys
-   kernel/dma/direct.c: In function 'dma_direct_map_sg':
->> kernel/dma/direct.c:484:43: error: implicit declaration of function 'dma_direct_map_phys_batch_add'; did you mean 'dma_direct_map_phys'? [-Wimplicit-function-declaration]
-     484 |                         sg->dma_address = dma_direct_map_phys_batch_add(dev, sg_phys(sg),
-         |                                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-         |                                           dma_direct_map_phys
+Of the three, the most sketchy is (a); notably, __setup_irq() calls
+wake_up_process outside desc->lock.  Therefore I'd like so much to treat
+it as a kernel/irq/ bug; and the simplest (perhaps too simple...) fix is
+to drop the wake_up_process().  The only cost is extra latency on the
+next interrupt after an affinity change.
 
+diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
+index 8b1b4c8a4f54..fc135bd079a4 100644
+--- a/kernel/irq/manage.c
++++ b/kernel/irq/manage.c
+@@ -189,14 +189,10 @@ static void irq_set_thread_affinity(struct irq_desc *desc)
+  	struct irqaction *action;
+  
+  	for_each_action_of_desc(desc, action) {
+-		if (action->thread) {
++		if (action->thread)
+  			set_bit(IRQTF_AFFINITY, &action->thread_flags);
+-			wake_up_process(action->thread);
+-		}
+-		if (action->secondary && action->secondary->thread) {
++		if (action->secondary && action->secondary->thread)
+  			set_bit(IRQTF_AFFINITY, &action->secondary->thread_flags);
+-			wake_up_process(action->secondary->thread);
+-		}
+  	}
+  }
+  
+Marc, what do you think?
 
-vim +456 kernel/dma/direct.c
+Paolo
 
-   439	
-   440	/*
-   441	 * Unmaps segments, except for ones marked as pci_p2pdma which do not
-   442	 * require any further action as they contain a bus address.
-   443	 */
-   444	void dma_direct_unmap_sg(struct device *dev, struct scatterlist *sgl,
-   445			int nents, enum dma_data_direction dir, unsigned long attrs)
-   446	{
-   447		struct scatterlist *sg;
-   448		int i;
-   449		bool need_sync = false;
-   450	
-   451		for_each_sg(sgl,  sg, nents, i) {
-   452			if (sg_dma_is_bus_address(sg)) {
-   453				sg_dma_unmark_bus_address(sg);
-   454			} else {
-   455				need_sync = true;
- > 456				dma_direct_unmap_phys_batch_add(dev, sg->dma_address,
-   457						      sg_dma_len(sg), dir, attrs);
-   458			}
-   459		}
-   460		if (need_sync && !dev_is_dma_coherent(dev))
-   461			arch_sync_dma_batch_flush();
-   462	}
-   463	#endif
-   464	
-   465	int dma_direct_map_sg(struct device *dev, struct scatterlist *sgl, int nents,
-   466			enum dma_data_direction dir, unsigned long attrs)
-   467	{
-   468		struct pci_p2pdma_map_state p2pdma_state = {};
-   469		struct scatterlist *sg;
-   470		int i, ret;
-   471		bool need_sync = false;
-   472	
-   473		for_each_sg(sgl, sg, nents, i) {
-   474			switch (pci_p2pdma_state(&p2pdma_state, dev, sg_page(sg))) {
-   475			case PCI_P2PDMA_MAP_THRU_HOST_BRIDGE:
-   476				/*
-   477				 * Any P2P mapping that traverses the PCI host bridge
-   478				 * must be mapped with CPU physical address and not PCI
-   479				 * bus addresses.
-   480				 */
-   481				break;
-   482			case PCI_P2PDMA_MAP_NONE:
-   483				need_sync = true;
- > 484				sg->dma_address = dma_direct_map_phys_batch_add(dev, sg_phys(sg),
-   485						sg->length, dir, attrs);
-   486				if (sg->dma_address == DMA_MAPPING_ERROR) {
-   487					ret = -EIO;
-   488					goto out_unmap;
-   489				}
-   490				break;
-   491			case PCI_P2PDMA_MAP_BUS_ADDR:
-   492				sg->dma_address = pci_p2pdma_bus_addr_map(
-   493					p2pdma_state.mem, sg_phys(sg));
-   494				sg_dma_len(sg) = sg->length;
-   495				sg_dma_mark_bus_address(sg);
-   496				continue;
-   497			default:
-   498				ret = -EREMOTEIO;
-   499				goto out_unmap;
-   500			}
-   501			sg_dma_len(sg) = sg->length;
-   502		}
-   503	
-   504		if (need_sync && !dev_is_dma_coherent(dev))
-   505			arch_sync_dma_batch_flush();
-   506		return nents;
-   507	
-   508	out_unmap:
-   509		dma_direct_unmap_sg(dev, sgl, i, dir, attrs | DMA_ATTR_SKIP_CPU_SYNC);
-   510		return ret;
-   511	}
-   512	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
