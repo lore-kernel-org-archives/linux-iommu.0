@@ -1,345 +1,191 @@
-Received: from sg-1-103.ptr.blmpb.com (sg-1-103.ptr.blmpb.com [118.26.132.103])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35C7B314B63
-	for <iommu@lists.linux.dev>; Mon, 22 Dec 2025 11:22:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=118.26.132.103
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C721C2E975E;
+	Mon, 22 Dec 2025 12:43:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766402539; cv=none; b=r8ldibNS8MobRphPg/HPzNbsUHV3cSA52vxwa+RYh9X3h/cOtGOenBOvEey9gqSrXb87KeaqKJJMZj3GX+1Xs8Famj+PaVlNVqUJ3rgXQym3O7+N7S/HOxKn7WxtQyzJq83U0EWuZ+RZhpkOXsKpo2GTymAiZeT7wPWsAW1tHBM=
+	t=1766407436; cv=none; b=IawR474OOxkiUGttt5WvzXvVqSu1JmbSt2XNgyBCDvCssPYzu9vrEVvkr5gSTR9nDUbcyMDzhwzJRkBLAjIb/Be0vptcgMhzReqUHR3m8+IjvO/s4CGLox31Ygw1rMozEiaxUmCno0TZajJaJFB2BOFSAQcNLZMSEVnXEljTxzg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766402539; c=relaxed/simple;
-	bh=mHQthMzxJu3E+atsEgJQh4T/uxmRDuUn+84ljSm4FT0=;
-	h=Content-Type:In-Reply-To:From:Cc:Subject:References:To:Message-Id:
-	 Mime-Version:Date; b=l9bnD4J8VnymHDa+RubZ4rMp4bC0vRMD6ujo6eouyH/ejzleYJGviNhtEd60+jhSxbhOHIoxGkW7Rk5wwTEYBIyiDGLLnfUzwKsHV1CLRTMEWAb429PtUY+Nw6Doums18yVYJFIKkt5M6HIh9Od2OXcpX4K8n+ZYNRnyUbjrOkc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=ANCqLoFS; arc=none smtp.client-ip=118.26.132.103
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
+	s=arc-20240116; t=1766407436; c=relaxed/simple;
+	bh=TVTiqEhNLbSr7eIJZANPXzjzTaIA/EUuM3L2baWqaEE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=I30VLS7xC4NoLBJHWcpnvSoE/fCaTx1jtBCZrUZBmpLCNlFiQ2Vqx2cPFzny/R6fcgrO4M3id+F80i8P/tNdm6QHWHK9aNems0+PXMH+Z7cf9vNtJIx1TQ0bboXXpEL79XlAnsPhYE5N79BQtKWJXzIYLDULlsCCp/I2REMwktA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=nCCAY8be; arc=none smtp.client-ip=192.198.163.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="ANCqLoFS"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- s=2212171451; d=bytedance.com; t=1766402410; h=from:subject:
- mime-version:from:date:message-id:subject:to:cc:reply-to:content-type:
- mime-version:in-reply-to:message-id;
- bh=gzAcAzeaZxzdmZKFrZ4lKUOQGmGL9jeDaLQFRn4XriE=;
- b=ANCqLoFSx2z4KuqQ0/r6FGum5/NGTaxaoFMdo/ohNdBNb0pqvAZIYf2+OYGpLv3NXfg1Gj
- CfuWa6fs5Il5jL78qWiV+//tYZczkngnWNiT1PtVeVrMLFBR5A8SbLLf/u4wfUXpRbAfJC
- h6+rZ5ttoi9rpYhkENMpgDtS0HL6gRUeu0k6bxDHcMzsN7MxOE0FUYB3Bcmw0XrECwJZ4F
- eNb4jo95Qcnq4ynQRvD2RH4pQrnKvSN0T6852wYKJyfdAjAVgwmJPO6uf99CRV47jQbHL8
- y8Vf8/kxO2wQacYFNMkm7MJyIp+qe2vFIsXoFsBPm+/9re1n8yga934C+jnNdg==
-Content-Type: text/plain; charset=UTF-8
-X-Original-From: Jinhui Guo <guojinhui.liam@bytedance.com>
-In-Reply-To: <BN9PR11MB52763E38B4C8B59C9A9AD9E18CA8A@BN9PR11MB5276.namprd11.prod.outlook.com>
-From: "Jinhui Guo" <guojinhui.liam@bytedance.com>
-Cc: <baolu.lu@linux.intel.com>, <dwmw2@infradead.org>, 
-	<guojinhui.liam@bytedance.com>, <iommu@lists.linux.dev>, 
-	<joro@8bytes.org>, <linux-kernel@vger.kernel.org>, 
-	<stable@vger.kernel.org>, <will@kernel.org>
-Subject: Re: [PATCH v2 2/2] iommu/vt-d: Flush dev-IOTLB only when PCIe device is accessible in scalable mode
-References: <BN9PR11MB52763E38B4C8B59C9A9AD9E18CA8A@BN9PR11MB5276.namprd11.prod.outlook.com>
-X-Lms-Return-Path: <lba+269492968+635480+lists.linux.dev+guojinhui.liam@bytedance.com>
-X-Mailer: git-send-email 2.17.1
-To: <kevin.tian@intel.com>
-Message-Id: <20251222111935.489-1-guojinhui.liam@bytedance.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="nCCAY8be"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1766407435; x=1797943435;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=TVTiqEhNLbSr7eIJZANPXzjzTaIA/EUuM3L2baWqaEE=;
+  b=nCCAY8bekRi8+TRECM6YnOGyl4gZm1njh1/A5ZcG6iExgSSd9E4zoHuE
+   G9yYjlSvYlI3nY4SV+Wj6isgVMdvvBIh3aY33wwy6xp+xvrPo3AA2ONoI
+   8DN8ij+UUtkVOn0TPdIF+FmjTGEWMw2Qj6epScyGeQaTGlVKOfBZIaRAB
+   8qdYDpgGEU1Tv57oaB85SOALkpmnWXSjuLBRvSCSWFcR8SbUHnJqXfyAU
+   n62nUNlrk0O31n5SYxADEw7AphywWO2cz/fXM0ixP9pcnXHyXSa1om5zO
+   /rEA1nqu8d/ZtdqYeWFhGbTI3bRSWkuzdydrnIUDh/qW51NB+jx+jqfH5
+   g==;
+X-CSE-ConnectionGUID: YdeBPMpuQpyKXWz4EKAXUA==
+X-CSE-MsgGUID: N0WzA6gURsGZNOnqARC3Mg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11649"; a="72122696"
+X-IronPort-AV: E=Sophos;i="6.21,168,1763452800"; 
+   d="scan'208";a="72122696"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Dec 2025 04:43:54 -0800
+X-CSE-ConnectionGUID: H6BU1IhTTNKKLUFCQPYXrw==
+X-CSE-MsgGUID: iAvp99FRR4eUbI/njFg6aA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,168,1763452800"; 
+   d="scan'208";a="199492274"
+Received: from lkp-server02.sh.intel.com (HELO dd3453e2b682) ([10.239.97.151])
+  by orviesa007.jf.intel.com with ESMTP; 22 Dec 2025 04:43:49 -0800
+Received: from kbuild by dd3453e2b682 with local (Exim 4.98.2)
+	(envelope-from <lkp@intel.com>)
+	id 1vXfGM-000000000aH-32aX;
+	Mon, 22 Dec 2025 12:43:46 +0000
+Date: Mon, 22 Dec 2025 20:43:24 +0800
+From: kernel test robot <lkp@intel.com>
+To: Barry Song <21cnbao@gmail.com>, catalin.marinas@arm.com,
+	m.szyprowski@samsung.com, robin.murphy@arm.com, will@kernel.org
+Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+	ada.coupriediaz@arm.com, anshuman.khandual@arm.com, ardb@kernel.org,
+	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, maz@kernel.org, ryan.roberts@arm.com,
+	surenb@google.com, v-songbaohua@oppo.com, zhengtangquan@oppo.com
+Subject: Re: [PATCH 5/6] dma-mapping: Allow batched DMA sync operations if
+ supported by the arch
+Message-ID: <202512222029.Dd6Vs1Eg-lkp@intel.com>
+References: <20251219053658.84978-6-21cnbao@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Date: Mon, 22 Dec 2025 19:19:35 +0800
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20251219053658.84978-6-21cnbao@gmail.com>
 
-On Thu, Dec 18, 2025 08:04:20AM +0000, Tian, Kevin wrote:
-> > From: Jinhui Guo <guojinhui.liam@bytedance.com>
-> > Sent: Thursday, December 11, 2025 12:00 PM
-> >=20
-> > Commit 4fc82cd907ac ("iommu/vt-d: Don't issue ATS Invalidation
-> > request when device is disconnected") relies on
-> > pci_dev_is_disconnected() to skip ATS invalidation for
-> > safely-removed devices, but it does not cover link-down caused
-> > by faults, which can still hard-lock the system.
->=20
-> According to the commit msg it actually tries to fix the hard lockup
-> with surprise removal. For safe removal the device is not removed
-> before invalidation is done:
->=20
-> "
->     For safe removal, device wouldn't be removed until the whole software
->     handling process is done, it wouldn't trigger the hard lock up issue
->     caused by too long ATS Invalidation timeout wait.
-> "
->=20
-> Can you help articulate the problem especially about the part
-> 'link-down caused by faults"? What are those faults? How are
-> they different from the said surprise removal in the commit
-> msg to not set pci_dev_is_disconnected()?
->=20
+Hi Barry,
 
-Hi, kevin, sorry for the delayed reply.
+kernel test robot noticed the following build errors:
 
-A normal or surprise removal of a PCIe device on a hot-plug port normally
-triggers an interrupt from the PCIe switch.
+[auto build test ERROR on linus/master]
+[also build test ERROR on v6.19-rc2 next-20251219]
+[cannot apply to arm64/for-next/core]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-We have, however, observed cases where no interrupt is generated when the
-device suddenly loses its link; the behaviour is identical to setting the
-Link Disable bit in the switch=E2=80=99s Link Control register (offset 10h)=
-. Exactly
-what goes wrong in the LTSSM between the PCIe switch and the endpoint remai=
-ns
-unknown.
+url:    https://github.com/intel-lab-lkp/linux/commits/Barry-Song/arm64-Provide-dcache_by_myline_op_nosync-helper/20251219-195810
+base:   linus/master
+patch link:    https://lore.kernel.org/r/20251219053658.84978-6-21cnbao%40gmail.com
+patch subject: [PATCH 5/6] dma-mapping: Allow batched DMA sync operations if supported by the arch
+config: i386-buildonly-randconfig-006-20251222 (https://download.01.org/0day-ci/archive/20251222/202512222029.Dd6Vs1Eg-lkp@intel.com/config)
+compiler: clang version 20.1.8 (https://github.com/llvm/llvm-project 87f0227cb60147a26a1eeb4fb06e3b505e9c7261)
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20251222/202512222029.Dd6Vs1Eg-lkp@intel.com/reproduce)
 
-> >=20
-> > For example, if a VM fails to connect to the PCIe device,
->=20
-> 'failed' for what reason?
->=20
-> > "virsh destroy" is executed to release resources and isolate
-> > the fault, but a hard-lockup occurs while releasing the group fd.
-> >=20
-> > Call Trace:
-> >  qi_submit_sync
-> >  qi_flush_dev_iotlb
-> >  intel_pasid_tear_down_entry
-> >  device_block_translation
-> >  blocking_domain_attach_dev
-> >  __iommu_attach_device
-> >  __iommu_device_set_domain
-> >  __iommu_group_set_domain_internal
-> >  iommu_detach_group
-> >  vfio_iommu_type1_detach_group
-> >  vfio_group_detach_container
-> >  vfio_group_fops_release
-> >  __fput
-> >=20
-> > Although pci_device_is_present() is slower than
-> > pci_dev_is_disconnected(), it still takes only ~70 =C2=B5s on a
-> > ConnectX-5 (8 GT/s, x2) and becomes even faster as PCIe speed
-> > and width increase.
-> >=20
-> > Besides, devtlb_invalidation_with_pasid() is called only in the
-> > paths below, which are far less frequent than memory map/unmap.
-> >=20
-> > 1. mm-struct release
-> > 2. {attach,release}_dev
-> > 3. set/remove PASID
-> > 4. dirty-tracking setup
-> >=20
->=20
-> surprise removal can happen at any time, e.g. after the check of
-> pci_device_is_present(). In the end we need the logic in
-> qi_check_fault() to check the presence upon ITE timeout error
-> received to break the infinite loop. So in your case even with
-> that logici in place you still observe lockup (probably due to
-> hardware ITE timeout is longer than the lockup detection on=20
-> the CPU?
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202512222029.Dd6Vs1Eg-lkp@intel.com/
 
-Are you referring to the timeout added in patch
-https://lore.kernel.org/all/20240222090251.2849702-4-haifeng.zhao@linux.int=
-el.com/ ?
+All errors (new ones prefixed by >>):
 
-Our lockup-detection timeout is the default 10 s.
+>> kernel/dma/direct.c:456:4: error: call to undeclared function 'dma_direct_unmap_phys_batch_add'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+     456 |                         dma_direct_unmap_phys_batch_add(dev, sg->dma_address,
+         |                         ^
+   kernel/dma/direct.c:456:4: note: did you mean 'dma_direct_unmap_phys'?
+   kernel/dma/direct.h:188:20: note: 'dma_direct_unmap_phys' declared here
+     188 | static inline void dma_direct_unmap_phys(struct device *dev, dma_addr_t addr,
+         |                    ^
+>> kernel/dma/direct.c:484:22: error: call to undeclared function 'dma_direct_map_phys_batch_add'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+     484 |                         sg->dma_address = dma_direct_map_phys_batch_add(dev, sg_phys(sg),
+         |                                           ^
+   2 errors generated.
 
-We see ITE-timeout messages in the kernel log. Yet the system still
-hard-locks=E2=80=94probably because, as you mentioned, the hardware ITE tim=
-eout
-is longer than the CPU=E2=80=99s lockup-detection window. I=E2=80=99ll repr=
-oduce the
-case and follow up with a deeper analysis.
 
-kernel: [ 2402.642685][  T607] vfio-pci 0000:3f:00.0: Unable to change powe=
-r state from D0 to D3hot, device inaccessible
-kernel: [ 2403.441828][T49880] DMAR: VT-d detected Invalidation Time-out Er=
-ror: SID 0
-kernel: [ 2403.441830][    C0] DMAR: DRHD: handling fault status reg 40
-kernel: [ 2403.441831][T49880] DMAR: QI HEAD: Invalidation Wait qw0 =3D 0x2=
-00000025, qw1 =3D 0x1003a07fc
-kernel: [ 2403.441833][T49880] DMAR: QI PRIOR: Invalidation Wait qw0 =3D 0x=
-200000025, qw1 =3D 0x1003a07f8
-kernel: [ 2403.441879][T49880] DMAR: Invalidation Time-out Error (ITE) clea=
-red
-kernel: [ 2423.643527][    C7] rcu: INFO: rcu_preempt detected stalls on CP=
-Us/tasks:
-kernel: [ 2423.643551][    C7] rcu:        8-...0: (0 ticks this GP) idle=
-=3D198c/1/0x4000000000000000 softirq=3D19450/19450 fqs=3D4403
-kernel: [ 2423.643567][    C7] rcu:        (detected by 7, t=3D21002 jiffie=
-s, g=3D238909, q=3D4932 ncpus=3D96)
-kernel: [ 2423.643578][    C7] Sending NMI from CPU 7 to CPUs 8:
-kernel: [ 2423.643581][    C8] NMI backtrace for cpu 8
-kernel: [ 2423.643585][    C8] CPU: 8 UID: 0 PID: 49880 Comm: vfio_test Kdu=
-mp: loaded Tainted: G S          E       6.18.0 #5 PREEMPT(voluntary)
-kernel: [ 2423.643588][    C8] Tainted: [S]=3DCPU_OUT_OF_SPEC, [E]=3DUNSIGN=
-ED_MODULE
-kernel: [ 2423.643589][    C8] Hardware name: Inspur NF5468M5/YZMB-01130-10=
-5, BIOS 4.2.0 04/28/2021
-kernel: [ 2423.643590][    C8] RIP: 0010:qi_submit_sync+0x6cf/0x8d0
-kernel: [ 2423.643597][    C8] Code: 89 4c 24 50 89 70 34 48 c7 c7 f0 f5 4a=
- a5 e8 48 15 89 ff 48 8b 4c 24 50 8b 54 24 58 49 8b 76 10 49 63 c7 48 8d 04=
- 86 83 38 01 <75> 06 c7 00 03 00 00 00 41 81 c7 fe 00 00 00 44 89 f8 c1 f8 =
-1f c1
-kernel: [ 2423.643598][    C8] RSP: 0018:ffffb5a3bd0a7a30 EFLAGS: 00000097
-kernel: [ 2423.643600][    C8] RAX: ffff9dac803a06bc RBX: 0000000000000000 =
-RCX: 0000000000000000
-kernel: [ 2423.643601][    C8] RDX: 00000000000000fe RSI: ffff9dac803a0400 =
-RDI: ffff9ddb0081d480
-kernel: [ 2423.643602][    C8] RBP: ffff9dac8037fe00 R08: 0000000000000000 =
-R09: 0000000000000003
-kernel: [ 2423.643603][    C8] R10: ffffb5a3bd0a78e0 R11: ffff9e0bbff3c068 =
-R12: 0000000000000040
-kernel: [ 2423.643605][    C8] R13: ffff9dac80314600 R14: ffff9dac8037fe00 =
-R15: 00000000000000af
-kernel: [ 2423.643606][    C8] FS:  0000000000000000(0000) GS:ffff9ddb5a262=
-000(0000) knlGS:0000000000000000
-kernel: [ 2423.643607][    C8] CS:  0010 DS: 0000 ES: 0000 CR0: 00000000800=
-50033
-kernel: [ 2423.643608][    C8] CR2: 000000002aee3000 CR3: 000000024a27b002 =
-CR4: 00000000007726f0
-kernel: [ 2423.643610][    C8] PKRU: 55555554
-kernel: [ 2423.643611][    C8] Call Trace:
-kernel: [ 2423.643613][    C8]  <TASK>
-kernel: [ 2423.643616][    C8]  ? __pfx_domain_context_clear_one_cb+0x10/0x=
-10
-kernel: [ 2423.643620][    C8]  qi_flush_dev_iotlb+0xd5/0xe0
-kernel: [ 2423.643622][    C8]  __context_flush_dev_iotlb.part.0+0x3c/0x80
-kernel: [ 2423.643625][    C8]  domain_context_clear_one_cb+0x16/0x20
-kernel: [ 2423.643626][    C8]  pci_for_each_dma_alias+0x3b/0x140
-kernel: [ 2423.643631][    C8]  device_block_translation+0x122/0x180
-kernel: [ 2423.643634][    C8]  blocking_domain_attach_dev+0x39/0x50
-kernel: [ 2423.643636][    C8]  __iommu_attach_device+0x1b/0x90
-kernel: [ 2423.643639][    C8]  __iommu_device_set_domain+0x5d/0xb0
-kernel: [ 2423.643642][    C8]  __iommu_group_set_domain_internal+0x60/0x11=
-0
-kernel: [ 2423.643644][    C8]  iommu_detach_group+0x3a/0x60
-kernel: [ 2423.643650][    C8]  vfio_iommu_type1_detach_group+0x106/0x610 [=
-vfio_iommu_type1]
-kernel: [ 2423.643654][    C8]  ? __dentry_kill+0x12a/0x180
-kernel: [ 2423.643660][    C8]  ? __pm_runtime_idle+0x44/0xe0
-kernel: [ 2423.643666][    C8]  vfio_group_detach_container+0x4f/0x160 [vfi=
-o]
-kernel: [ 2423.643672][    C8]  vfio_group_fops_release+0x3e/0x80 [vfio]
-kernel: [ 2423.643677][    C8]  __fput+0xe6/0x2b0
-kernel: [ 2423.643682][    C8]  task_work_run+0x58/0x90
-kernel: [ 2423.643688][    C8]  do_exit+0x29b/0xa80
-kernel: [ 2423.643694][    C8]  do_group_exit+0x2c/0x80
-kernel: [ 2423.643696][    C8]  get_signal+0x8f9/0x900
-kernel: [ 2423.643700][    C8]  arch_do_signal_or_restart+0x29/0x210
-kernel: [ 2423.643704][    C8]  ? __schedule+0x582/0xe80
-kernel: [ 2423.643708][    C8]  exit_to_user_mode_loop+0x8e/0x4f0
-kernel: [ 2423.643712][    C8]  do_syscall_64+0x262/0x630
-kernel: [ 2423.643717][    C8]  entry_SYSCALL_64_after_hwframe+0x76/0x7e
-kernel: [ 2423.643720][    C8] RIP: 0033:0x7fde19078514
-kernel: [ 2423.643722][    C8] Code: Unable to access opcode bytes at 0x7fd=
-e190784ea.
-kernel: [ 2423.643723][    C8] RSP: 002b:00007ffd0e1dc7e8 EFLAGS: 00000246 =
-ORIG_RAX: 0000000000000022
-kernel: [ 2423.643724][    C8] RAX: fffffffffffffdfe RBX: 0000000000000000 =
-RCX: 00007fde19078514
-kernel: [ 2423.643726][    C8] RDX: 00007fde1916e8c0 RSI: 000055b217303260 =
-RDI: 0000000000000000
-kernel: [ 2423.643727][    C8] RBP: 00007ffd0e1dc8a0 R08: 00007fde19173500 =
-R09: 0000000000000000
-kernel: [ 2423.643728][    C8] R10: fffffffffffffbea R11: 0000000000000246 =
-R12: 000055b1f8d8d0b0
-kernel: [ 2423.643729][    C8] R13: 00007ffd0e1dc980 R14: 0000000000000000 =
-R15: 0000000000000000
-kernel: [ 2423.643731][    C8]  </TASK>
-kernel: [ 2424.375254][T81463] vfio-pci 0000:3f:00.0: Unable to change powe=
-r state from D3cold to D0, device inaccessible
-...
-kernel: [ 2448.327929][    C8] watchdog: CPU8: Watchdog detected hard LOCKU=
-P on cpu 8
-kernel: [ 2448.327932][    C8] Modules linked in: vfio_pci(E) vfio_pci_core=
-(E) vfio_iommu_type1(E) vfio(E) udp_diag(E) tcp_diag(E) inet_diag(E) binfmt=
-_misc(E) ip_set_hash_net(E) nft_compat(E) x_tables(E) ip_set(E) msr(E) nf_t=
-ables(E) ...
-kernel: [ 2448.327963][    C8]  ib_core(E) hid_generic(E) usbhid(E) hid(E) =
-ahci(E) libahci(E) xhci_pci(E) libata(E) nvme(E) xhci_hcd(E) i2c_i801(E) nv=
-me_core(E) usbcore(E) scsi_mod(E) mlx5_core(E) i2c_smbus(E) lpc_ich(E) usb_=
-common(E) scsi_common(E) wmi(E)
-kernel: [ 2448.327972][    C8] CPU: 8 UID: 0 PID: 49880 Comm: vfio_test Kdu=
-mp: loaded Tainted: G S          EL      6.18.0 #5 PREEMPT(voluntary)
-kernel: [ 2448.327975][    C8] Tainted: [S]=3DCPU_OUT_OF_SPEC, [E]=3DUNSIGN=
-ED_MODULE, [L]=3DSOFTLOCKUP
-kernel: [ 2448.327976][    C8] Hardware name: Inspur NF5468M5/YZMB-01130-10=
-5, BIOS 4.2.0 04/28/2021
-kernel: [ 2448.327977][    C8] RIP: 0010:qi_submit_sync+0x6e7/0x8d0
-kernel: [ 2448.327981][    C8] Code: 8b 54 24 58 49 8b 76 10 49 63 c7 48 8d=
- 04 86 83 38 01 75 06 c7 00 03 00 00 00 41 81 c7 fe 00 00 00 44 89 f8 c1 f8=
- 1f c1 e8 18 <41> 01 c7 45 0f b6 ff 41 29 c7 44 39 fa 75 cb 48 85 c9 0f 85 =
-05 01
-kernel: [ 2448.327983][    C8] RSP: 0018:ffffb5a3bd0a7a30 EFLAGS: 00000046
-kernel: [ 2448.327984][    C8] RAX: 0000000000000000 RBX: 0000000000000000 =
-RCX: 0000000000000000
-kernel: [ 2448.327985][    C8] RDX: 00000000000000fe RSI: ffff9dac803a0400 =
-RDI: ffff9ddb0081d480
-kernel: [ 2448.327986][    C8] RBP: ffff9dac8037fe00 R08: 0000000000000000 =
-R09: 0000000000000003
-kernel: [ 2448.327987][    C8] R10: ffffb5a3bd0a78e0 R11: ffff9e0bbff3c068 =
-R12: 0000000000000040
-kernel: [ 2448.327988][    C8] R13: ffff9dac80314600 R14: ffff9dac8037fe00 =
-R15: 00000000000001b3
-kernel: [ 2448.327989][    C8] FS:  0000000000000000(0000) GS:ffff9ddb5a262=
-000(0000) knlGS:0000000000000000
-kernel: [ 2448.327990][    C8] CS:  0010 DS: 0000 ES: 0000 CR0: 00000000800=
-50033
-kernel: [ 2448.327991][    C8] CR2: 000000002aee3000 CR3: 000000024a27b002 =
-CR4: 00000000007726f0
-kernel: [ 2448.327992][    C8] PKRU: 55555554
-kernel: [ 2448.327993][    C8] Call Trace:
-kernel: [ 2448.327995][    C8]  <TASK>
-kernel: [ 2448.327997][    C8]  ? __pfx_domain_context_clear_one_cb+0x10/0x=
-10
-kernel: [ 2448.328000][    C8]  qi_flush_dev_iotlb+0xd5/0xe0
-kernel: [ 2448.328002][    C8]  __context_flush_dev_iotlb.part.0+0x3c/0x80
-kernel: [ 2448.328004][    C8]  domain_context_clear_one_cb+0x16/0x20
-kernel: [ 2448.328006][    C8]  pci_for_each_dma_alias+0x3b/0x140
-kernel: [ 2448.328010][    C8]  device_block_translation+0x122/0x180
-kernel: [ 2448.328012][    C8]  blocking_domain_attach_dev+0x39/0x50
-kernel: [ 2448.328014][    C8]  __iommu_attach_device+0x1b/0x90
-kernel: [ 2448.328017][    C8]  __iommu_device_set_domain+0x5d/0xb0
-kernel: [ 2448.328019][    C8]  __iommu_group_set_domain_internal+0x60/0x11=
-0
-kernel: [ 2448.328021][    C8]  iommu_detach_group+0x3a/0x60
-kernel: [ 2448.328023][    C8]  vfio_iommu_type1_detach_group+0x106/0x610 [=
-vfio_iommu_type1]
-kernel: [ 2448.328026][    C8]  ? __dentry_kill+0x12a/0x180
-kernel: [ 2448.328030][    C8]  ? __pm_runtime_idle+0x44/0xe0
-kernel: [ 2448.328035][    C8]  vfio_group_detach_container+0x4f/0x160 [vfi=
-o]
-kernel: [ 2448.328041][    C8]  vfio_group_fops_release+0x3e/0x80 [vfio]
-kernel: [ 2448.328046][    C8]  __fput+0xe6/0x2b0
-kernel: [ 2448.328049][    C8]  task_work_run+0x58/0x90
-kernel: [ 2448.328053][    C8]  do_exit+0x29b/0xa80
-kernel: [ 2448.328057][    C8]  do_group_exit+0x2c/0x80
-kernel: [ 2448.328060][    C8]  get_signal+0x8f9/0x900
-kernel: [ 2448.328064][    C8]  arch_do_signal_or_restart+0x29/0x210
-kernel: [ 2448.328068][    C8]  ? __schedule+0x582/0xe80
-kernel: [ 2448.328070][    C8]  exit_to_user_mode_loop+0x8e/0x4f0
-kernel: [ 2448.328074][    C8]  do_syscall_64+0x262/0x630
-kernel: [ 2448.328076][    C8]  entry_SYSCALL_64_after_hwframe+0x76/0x7e
-kernel: [ 2448.328078][    C8] RIP: 0033:0x7fde19078514
-kernel: [ 2448.328080][    C8] Code: Unable to access opcode bytes at 0x7fd=
-e190784ea.
-kernel: [ 2448.328081][    C8] RSP: 002b:00007ffd0e1dc7e8 EFLAGS: 00000246 =
-ORIG_RAX: 0000000000000022
-kernel: [ 2448.328082][    C8] RAX: fffffffffffffdfe RBX: 0000000000000000 =
-RCX: 00007fde19078514
-kernel: [ 2448.328083][    C8] RDX: 00007fde1916e8c0 RSI: 000055b217303260 =
-RDI: 0000000000000000
-kernel: [ 2448.328085][    C8] RBP: 00007ffd0e1dc8a0 R08: 00007fde19173500 =
-R09: 0000000000000000
-kernel: [ 2448.328085][    C8] R10: fffffffffffffbea R11: 0000000000000246 =
-R12: 000055b1f8d8d0b0
-kernel: [ 2448.328086][    C8] R13: 00007ffd0e1dc980 R14: 0000000000000000 =
-R15: 0000000000000000
-kernel: [ 2448.328088][    C8]  </TASK>
-kernel: [ 2450.245901][    C7] watchdog: BUG: soft lockup - CPU#7 stuck for=
- 41s! [mongoosev3-agen:4727]
+vim +/dma_direct_unmap_phys_batch_add +456 kernel/dma/direct.c
 
->=20
-> In any case this change cannot 100% fix the lockup. It just
-> reduces the possibility which should be made clear.
+   439	
+   440	/*
+   441	 * Unmaps segments, except for ones marked as pci_p2pdma which do not
+   442	 * require any further action as they contain a bus address.
+   443	 */
+   444	void dma_direct_unmap_sg(struct device *dev, struct scatterlist *sgl,
+   445			int nents, enum dma_data_direction dir, unsigned long attrs)
+   446	{
+   447		struct scatterlist *sg;
+   448		int i;
+   449		bool need_sync = false;
+   450	
+   451		for_each_sg(sgl,  sg, nents, i) {
+   452			if (sg_dma_is_bus_address(sg)) {
+   453				sg_dma_unmark_bus_address(sg);
+   454			} else {
+   455				need_sync = true;
+ > 456				dma_direct_unmap_phys_batch_add(dev, sg->dma_address,
+   457						      sg_dma_len(sg), dir, attrs);
+   458			}
+   459		}
+   460		if (need_sync && !dev_is_dma_coherent(dev))
+   461			arch_sync_dma_batch_flush();
+   462	}
+   463	#endif
+   464	
+   465	int dma_direct_map_sg(struct device *dev, struct scatterlist *sgl, int nents,
+   466			enum dma_data_direction dir, unsigned long attrs)
+   467	{
+   468		struct pci_p2pdma_map_state p2pdma_state = {};
+   469		struct scatterlist *sg;
+   470		int i, ret;
+   471		bool need_sync = false;
+   472	
+   473		for_each_sg(sgl, sg, nents, i) {
+   474			switch (pci_p2pdma_state(&p2pdma_state, dev, sg_page(sg))) {
+   475			case PCI_P2PDMA_MAP_THRU_HOST_BRIDGE:
+   476				/*
+   477				 * Any P2P mapping that traverses the PCI host bridge
+   478				 * must be mapped with CPU physical address and not PCI
+   479				 * bus addresses.
+   480				 */
+   481				break;
+   482			case PCI_P2PDMA_MAP_NONE:
+   483				need_sync = true;
+ > 484				sg->dma_address = dma_direct_map_phys_batch_add(dev, sg_phys(sg),
+   485						sg->length, dir, attrs);
+   486				if (sg->dma_address == DMA_MAPPING_ERROR) {
+   487					ret = -EIO;
+   488					goto out_unmap;
+   489				}
+   490				break;
+   491			case PCI_P2PDMA_MAP_BUS_ADDR:
+   492				sg->dma_address = pci_p2pdma_bus_addr_map(
+   493					p2pdma_state.mem, sg_phys(sg));
+   494				sg_dma_len(sg) = sg->length;
+   495				sg_dma_mark_bus_address(sg);
+   496				continue;
+   497			default:
+   498				ret = -EREMOTEIO;
+   499				goto out_unmap;
+   500			}
+   501			sg_dma_len(sg) = sg->length;
+   502		}
+   503	
+   504		if (need_sync && !dev_is_dma_coherent(dev))
+   505			arch_sync_dma_batch_flush();
+   506		return nents;
+   507	
+   508	out_unmap:
+   509		dma_direct_unmap_sg(dev, sgl, i, dir, attrs | DMA_ATTR_SKIP_CPU_SYNC);
+   510		return ret;
+   511	}
+   512	
 
-I agree with the above, but it's better to cover more corner cases.
-
-Best Regards,
-Jinhui
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
