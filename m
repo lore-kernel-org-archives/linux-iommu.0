@@ -1,397 +1,345 @@
-Received: from SA9PR02CU001.outbound.protection.outlook.com (mail-southcentralusazon11013011.outbound.protection.outlook.com [40.93.196.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from sg-1-103.ptr.blmpb.com (sg-1-103.ptr.blmpb.com [118.26.132.103])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADA6830BF64;
-	Mon, 22 Dec 2025 09:17:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.196.11
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766395034; cv=fail; b=quYGxLOkFPqISrDK4gS1yk+9Ju3wlB0fkSLZDH+Xn73sCfu51xFMOjz4SgDapK793mfu+pHbambvSIk8d24rWvManBSjnTdtC6U9yNA11uCK1B7u3DYWStDsVFJl8u8HSR+VlioZwOBdNgXZ/1CbuEdMDxUfn4Q4gUL6KrHVGGs=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766395034; c=relaxed/simple;
-	bh=15ATssXtSkUgkDkIa6QUlMx9IxjQhzgH+8TCp2fY3tM=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Y620+DwIS+I2Z1+LFkZMsuDhv1ce+/Uc+UQqa03iwOsbZI6CoIO/LqlakqwqFfJJ/5SkNcWhkbyhRdJLV2zFISEX8IQ6eXF0QXEWWRLzxDawyGuDDvcbb3XSQlXNsxFpKKvtqLB0yWTec1Qe/V42EO/yZxaGCgJtxc0L0BUGOyE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=ygbxbL7P; arc=fail smtp.client-ip=40.93.196.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35C7B314B63
+	for <iommu@lists.linux.dev>; Mon, 22 Dec 2025 11:22:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=118.26.132.103
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1766402539; cv=none; b=r8ldibNS8MobRphPg/HPzNbsUHV3cSA52vxwa+RYh9X3h/cOtGOenBOvEey9gqSrXb87KeaqKJJMZj3GX+1Xs8Famj+PaVlNVqUJ3rgXQym3O7+N7S/HOxKn7WxtQyzJq83U0EWuZ+RZhpkOXsKpo2GTymAiZeT7wPWsAW1tHBM=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1766402539; c=relaxed/simple;
+	bh=mHQthMzxJu3E+atsEgJQh4T/uxmRDuUn+84ljSm4FT0=;
+	h=Content-Type:In-Reply-To:From:Cc:Subject:References:To:Message-Id:
+	 Mime-Version:Date; b=l9bnD4J8VnymHDa+RubZ4rMp4bC0vRMD6ujo6eouyH/ejzleYJGviNhtEd60+jhSxbhOHIoxGkW7Rk5wwTEYBIyiDGLLnfUzwKsHV1CLRTMEWAb429PtUY+Nw6Doums18yVYJFIKkt5M6HIh9Od2OXcpX4K8n+ZYNRnyUbjrOkc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=ANCqLoFS; arc=none smtp.client-ip=118.26.132.103
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="ygbxbL7P"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=qjXTx53TBLaF+kU0zAxryZRNZ3uQhNHKbc/5H+HjqpD1sFhz5Uekhif/fNl8ufuVBfHvUd1FoSaXTRxVbDVIuOQ5ntQ9hsog7VWi5ffKJ9CzWjs+PLxLnyS845V7yxqWE6pkG4iZvbe1zs/HIfBmjZ+DTNZxSRoxKBmw2CSGjaUThluPPmCuV1hJP93K6A6WShczOVSNMGhhV/JSAcnNF/TpXo6DpIg/l3oz/lQaZFN5kdDm6xdVqw9wSBqPDyVnbI63lEG0OlcS8KosX14trrbQN9xUNmpEYaMMjhNxc5qHlQFKiFaIDPjCMVJtw6LMyaJ3pv/v8xSwBxG7GDS6cA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gEttamuP59dkMhpfbDzlvMFEqXSf8qpVnYodQGfdzkw=;
- b=MSVQJd+sODtoCBS1xOvPLNwy/lpuMsaEGdlWtm+DUKPBjFOLAlUiajJ5QrwXREqb6Ks0lstFgcSGbJ+cWJIugPAFyoHMcfWNFIIknefrRLZN3D5sPj8d7OMjQWK5MypwfbEUCPTJCwgAmAmI8LomEnGrWaCxSU3z4kGe0ImWctel08IQfPPHsGcmtdQ0Z3Uy5NK5jpO7ejf2w7C2nEoiYA54TaRebePidDNaSu0mBf+99SJTfDPzgqK/sS6LQVZGgMaOy4xuBfy1o24oJj6etywRfge/2gERNhhtmaZ1f6pifkdhspmKdEg4KfsDoEM4NVoDD1pWmVw7FC5zd1Ol8A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=google.com smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gEttamuP59dkMhpfbDzlvMFEqXSf8qpVnYodQGfdzkw=;
- b=ygbxbL7PFuh2yzNOwnEk60DP+8II1jlzoyJ+aXojwauOJ+POZNpsnngCpfjlbHIqOygwXxn+exqEwMSfW2n15DqDvu+GjwccOQRSLRMXOi4oywJ7QW49B511NKP2CiEFCXrc075H18f9r1FvKa36Gg/RSlV5oRbTq5taskktlNU=
-Received: from BL1PR13CA0171.namprd13.prod.outlook.com (2603:10b6:208:2bd::26)
- by DS0PR12MB7852.namprd12.prod.outlook.com (2603:10b6:8:147::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9434.11; Mon, 22 Dec
- 2025 09:17:06 +0000
-Received: from BL02EPF0001A101.namprd05.prod.outlook.com
- (2603:10b6:208:2bd:cafe::f7) by BL1PR13CA0171.outlook.office365.com
- (2603:10b6:208:2bd::26) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9456.10 via Frontend Transport; Mon,
- 22 Dec 2025 09:17:03 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=satlexmb08.amd.com; pr=C
-Received: from satlexmb08.amd.com (165.204.84.17) by
- BL02EPF0001A101.mail.protection.outlook.com (10.167.241.132) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9456.9 via Frontend Transport; Mon, 22 Dec 2025 09:17:06 +0000
-Received: from SATLEXMB04.amd.com (10.181.40.145) by satlexmb08.amd.com
- (10.181.42.217) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.2.2562.17; Mon, 22 Dec
- 2025 03:17:06 -0600
-Received: from satlexmb07.amd.com (10.181.42.216) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Mon, 22 Dec
- 2025 03:17:05 -0600
-Received: from amd.com (10.180.168.240) by satlexmb07.amd.com (10.181.42.216)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.17 via Frontend
- Transport; Mon, 22 Dec 2025 01:17:00 -0800
-Date: Mon, 22 Dec 2025 09:16:55 +0000
-From: Ankit Soni <Ankit.Soni@amd.com>
-To: Sean Christopherson <seanjc@google.com>
-CC: Marc Zyngier <maz@kernel.org>, Oliver Upton <oliver.upton@linux.dev>,
-	Paolo Bonzini <pbonzini@redhat.com>, Joerg Roedel <joro@8bytes.org>, "David
- Woodhouse" <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
-	<linux-arm-kernel@lists.infradead.org>, <kvmarm@lists.linux.dev>,
-	<kvm@vger.kernel.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, Sairaj Kodilkar <sarunkod@amd.com>, "Vasant
- Hegde" <vasant.hegde@amd.com>, Maxim Levitsky <mlevitsk@redhat.com>, "Joao
- Martins" <joao.m.martins@oracle.com>, Francesco Lavra
-	<francescolavra.fl@gmail.com>, David Matlack <dmatlack@google.com>, "Naveen
- Rao" <Naveen.Rao@amd.com>
-Subject: Re: [PATCH v3 38/62] KVM: SVM: Take and hold ir_list_lock across
- IRTE updates in IOMMU
-Message-ID: <njhjud3e6wbdftzr3ziyuh5bhyvc5ndt5qvmg7rlvh5isoop2l@f2uxctws2c7d>
-References: <20250611224604.313496-2-seanjc@google.com>
- <20250611224604.313496-40-seanjc@google.com>
+	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="ANCqLoFS"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ s=2212171451; d=bytedance.com; t=1766402410; h=from:subject:
+ mime-version:from:date:message-id:subject:to:cc:reply-to:content-type:
+ mime-version:in-reply-to:message-id;
+ bh=gzAcAzeaZxzdmZKFrZ4lKUOQGmGL9jeDaLQFRn4XriE=;
+ b=ANCqLoFSx2z4KuqQ0/r6FGum5/NGTaxaoFMdo/ohNdBNb0pqvAZIYf2+OYGpLv3NXfg1Gj
+ CfuWa6fs5Il5jL78qWiV+//tYZczkngnWNiT1PtVeVrMLFBR5A8SbLLf/u4wfUXpRbAfJC
+ h6+rZ5ttoi9rpYhkENMpgDtS0HL6gRUeu0k6bxDHcMzsN7MxOE0FUYB3Bcmw0XrECwJZ4F
+ eNb4jo95Qcnq4ynQRvD2RH4pQrnKvSN0T6852wYKJyfdAjAVgwmJPO6uf99CRV47jQbHL8
+ y8Vf8/kxO2wQacYFNMkm7MJyIp+qe2vFIsXoFsBPm+/9re1n8yga934C+jnNdg==
+Content-Type: text/plain; charset=UTF-8
+X-Original-From: Jinhui Guo <guojinhui.liam@bytedance.com>
+In-Reply-To: <BN9PR11MB52763E38B4C8B59C9A9AD9E18CA8A@BN9PR11MB5276.namprd11.prod.outlook.com>
+From: "Jinhui Guo" <guojinhui.liam@bytedance.com>
+Cc: <baolu.lu@linux.intel.com>, <dwmw2@infradead.org>, 
+	<guojinhui.liam@bytedance.com>, <iommu@lists.linux.dev>, 
+	<joro@8bytes.org>, <linux-kernel@vger.kernel.org>, 
+	<stable@vger.kernel.org>, <will@kernel.org>
+Subject: Re: [PATCH v2 2/2] iommu/vt-d: Flush dev-IOTLB only when PCIe device is accessible in scalable mode
+References: <BN9PR11MB52763E38B4C8B59C9A9AD9E18CA8A@BN9PR11MB5276.namprd11.prod.outlook.com>
+X-Lms-Return-Path: <lba+269492968+635480+lists.linux.dev+guojinhui.liam@bytedance.com>
+X-Mailer: git-send-email 2.17.1
+To: <kevin.tian@intel.com>
+Message-Id: <20251222111935.489-1-guojinhui.liam@bytedance.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20250611224604.313496-40-seanjc@google.com>
-Received-SPF: None (SATLEXMB04.amd.com: Ankit.Soni@amd.com does not designate
- permitted sender hosts)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL02EPF0001A101:EE_|DS0PR12MB7852:EE_
-X-MS-Office365-Filtering-Correlation-Id: a7d36328-7e40-43b2-b9d9-08de413ae09b
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700013|376014|7416014|1800799024|82310400026|7053199007;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?OERFbDZCL3FWT1huNDJjd255ZC9BSkRUOGFoeWtMTy92V0RWRFg0eThoQzlX?=
- =?utf-8?B?aW9SNGxTWkN2bjYyU2pjUG12UVIyRzNwVnIyaU5qVGFnVEdsTTN3MGRRM1BD?=
- =?utf-8?B?WjY1UXAvMnVtWjJsV1ZETWJWR2tnWFVsVWJTSkdrSlNsemR2NkxpOXZvSTZO?=
- =?utf-8?B?YkloWEtiLy93UTY5VVhmY0pFQlNjZG5TVEs1aWZyN3N5R3pBNWxTWDBST0Vz?=
- =?utf-8?B?RENOK3Nla3ladUtML09wRTRPQVNJYkxhUk5aL01ZOE5LM0FDdzdvOGtSL2VK?=
- =?utf-8?B?QWNMUXVIeFBTL21FU0ZJbXlBcTdLZml2QmZsdkh4SkVXUVJOU0RkcWhGV2tP?=
- =?utf-8?B?MmVCTjFtY3FlUmRjeDlkSmhoSDlPMGtzS2NxMi9YemhoaExXNzhTZFV4YlQy?=
- =?utf-8?B?emJmYkdvcVVWTTlBdGhNa24zMUE5NUVuNFBLRWYxRWxsZWRqV29ENHlidy94?=
- =?utf-8?B?NFdsdjZNaEJBZEtpenhkRC82S2p1enlkWXNqTGsxZ2tRcUZ3aDdadUhPRjdZ?=
- =?utf-8?B?ZHNhUENPY3ovZ0h5UlRTZUpWUklLRkIyMlA5NWJFdFJhOStIV0NlVkFDZ2th?=
- =?utf-8?B?d3FqYTZTVTE5M3NLdzJEZHJzSS9hbW9sb0JXVGtOWUVaTWdIVlF4ekZUNFNn?=
- =?utf-8?B?NTFXbmNnSkFtZUw5V2VYVHV4c2E5bFFmWG8xNnhSTko1ajNiQnN5WHlkeUta?=
- =?utf-8?B?U1ZjSU1ZSUtrQTltQ0M0QXJpMTc4WHFlMkk3eDl5SXVNUzBhckM4UlUxTlBV?=
- =?utf-8?B?d1JRaWlMTTA4SExySnFkWHBCK0RtbFJyczhSNk9xNDFpQW0yRStSMUhmeWxQ?=
- =?utf-8?B?cXFOcENtNUd4dkwvYS9lYVRCMDYwOWZ0UFZMMndUeUNPSGwwcHh6OEtuRElr?=
- =?utf-8?B?US9TdFR3Y2QzMW50TTJpSUlkcVZtM3ZYd21NOGJ2MlNhVHFlRUZ2bnJ0ZVcy?=
- =?utf-8?B?RFZRTWp6dUdmR3ZnYmlFbFN2NFVOazl6cThHL0xkSmlBdUkvMy9NVFZCRno2?=
- =?utf-8?B?SVhNWlR6M2hRNnpCbU1NdzZRL1dBWVdJWTFqZUIxUnU0MDcrRUhJZ2xjaDEy?=
- =?utf-8?B?UXEwKzlEenVpSHNDeTNMNWtRVlhLeFdlM0dIalZieXVqeHFjSWtIZDZQcDJw?=
- =?utf-8?B?MUloYmg2MSt1bW14MHdyZTZkREVZT3RRcmpiQjJMUnRGUGhMb05UUUxXRHN3?=
- =?utf-8?B?Z3NYc0hSSUZzaTlSUEkyREJXWjlhVE5BMHdGUUk3QkdsT3JDeVY4Wm8zV2Zm?=
- =?utf-8?B?MzVKSTd3cTZTZThVZUJjYjFhV09TTTZNZHNITlVqSGhDOGRXelViWmVVMVB4?=
- =?utf-8?B?ZWJoYjlBaWtLazhRZ2QxMTJ1dkdFYkM2cG0yTzZnZ1dZNjQyL2ticVR2TGxp?=
- =?utf-8?B?MjllaGwyZWJKWW8zdlo5V1oyRStlRWtEcmhwdHF5MUZxWlBQWnZmODQrYy9v?=
- =?utf-8?B?ZDZ4enBUVTZwUmpsNE4vNWo4OExrdDJWQmovcnJnSEpja1d6TDNZalZUWm1V?=
- =?utf-8?B?NFEzWFRJT0tGazdWczlKSTRaRCtnTDJ0VHBJYURrdjBIdmRLZWsvR1JtVTdv?=
- =?utf-8?B?TEVoRmdUbTRIR0tNc3JhRWlqYUtwYlFGbmo2TThKYU9JY1hBQmYzM1pnZ0c4?=
- =?utf-8?B?N012MHhrWlJkUEtrSEE4c0d5dTRmbjBqVC8wRmhpMXJPT1N5SE8wenZOMFpz?=
- =?utf-8?B?UVZaOSs1V1paUDdyTkkzRjNWcjhJcnFJNzdHMUF6OVNXVnFIM1VnYmZoeElF?=
- =?utf-8?B?V1R4b3ZkOXpGM3c0alRTa2xXMmlXN3RLTWxWbUJhN2ljMlg1MlFqdzZzVk83?=
- =?utf-8?B?ZDcyTEJvY1BvTXh1czNEQmh1M00zM3Nsa1JFalQ1ZFlieWROdC94UDk5Zmpo?=
- =?utf-8?B?M2l4U3p1L1M1TjkzWU9JWEZVUThxcWhPd0NSaTFuYndmRTFteVJxQ0hGck9F?=
- =?utf-8?B?NHBkT2VrN3FaQWg3UzBLSWtRNHQ4d1l6ZEJvWUlaMnM5YkpRaU41Z2piQUp2?=
- =?utf-8?B?bC9XSnk4STNCc0N0WXlOdWFQMG1sb3QrSXlNZllBUUtHc0IzQzlzdlRWSDF0?=
- =?utf-8?B?N3NkY0RDQnVtZlhhVU9XRlZJNENDbzFXNitCdz09?=
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb08.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(36860700013)(376014)(7416014)(1800799024)(82310400026)(7053199007);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Dec 2025 09:17:06.4946
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: a7d36328-7e40-43b2-b9d9-08de413ae09b
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb08.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BL02EPF0001A101.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB7852
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Date: Mon, 22 Dec 2025 19:19:35 +0800
 
-On Wed, Jun 11, 2025 at 03:45:41PM -0700, Sean Christopherson wrote:
-> Now that svm_ir_list_add() isn't overloaded with all manner of weird
-> things, fold it into avic_pi_update_irte(), and more importantly take
-> ir_list_lock across the irq_set_vcpu_affinity() calls to ensure the info
-> that's shoved into the IRTE is fresh.  While preemption (and IRQs) is
-> disabled on the task performing the IRTE update, thanks to irqfds.lock,
-> that task doesn't hold the vCPU's mutex, i.e. preemption being disabled
-> is irrelevant.
-> 
-> Signed-off-by: Sean Christopherson <seanjc@google.com>
-> ---
->  arch/x86/kvm/svm/avic.c | 55 +++++++++++++++++------------------------
->  1 file changed, 22 insertions(+), 33 deletions(-)
-> 
-> diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-> index f1e9f0dd43e8..4747fb09aca4 100644
-> --- a/arch/x86/kvm/svm/avic.c
-> +++ b/arch/x86/kvm/svm/avic.c
->  
->  int avic_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
->  			unsigned int host_irq, uint32_t guest_irq,
->  			struct kvm_vcpu *vcpu, u32 vector)
-> @@ -823,8 +797,18 @@ int avic_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
->  			.vapic_addr = avic_get_backing_page_address(to_svm(vcpu)),
->  			.vector = vector,
->  		};
-> +		struct vcpu_svm *svm = to_svm(vcpu);
-> +		u64 entry;
->  		int ret;
->  
-> +		/*
-> +		 * Prevent the vCPU from being scheduled out or migrated until
-> +		 * the IRTE is updated and its metadata has been added to the
-> +		 * list of IRQs being posted to the vCPU, to ensure the IRTE
-> +		 * isn't programmed with stale pCPU/IsRunning information.
-> +		 */
-> +		guard(spinlock_irqsave)(&svm->ir_list_lock);
-> +
+On Thu, Dec 18, 2025 08:04:20AM +0000, Tian, Kevin wrote:
+> > From: Jinhui Guo <guojinhui.liam@bytedance.com>
+> > Sent: Thursday, December 11, 2025 12:00 PM
+> >=20
+> > Commit 4fc82cd907ac ("iommu/vt-d: Don't issue ATS Invalidation
+> > request when device is disconnected") relies on
+> > pci_dev_is_disconnected() to skip ATS invalidation for
+> > safely-removed devices, but it does not cover link-down caused
+> > by faults, which can still hard-lock the system.
+>=20
+> According to the commit msg it actually tries to fix the hard lockup
+> with surprise removal. For safe removal the device is not removed
+> before invalidation is done:
+>=20
+> "
+>     For safe removal, device wouldn't be removed until the whole software
+>     handling process is done, it wouldn't trigger the hard lock up issue
+>     caused by too long ATS Invalidation timeout wait.
+> "
+>=20
+> Can you help articulate the problem especially about the part
+> 'link-down caused by faults"? What are those faults? How are
+> they different from the said surprise removal in the commit
+> msg to not set pci_dev_is_disconnected()?
+>=20
 
-Hi,
+Hi, kevin, sorry for the delayed reply.
 
-I’m seeing a lockdep warning about a possible circular locking dependency
-involving svm->ir_list_lock and irq_desc_lock when using AMD SVM with AVIC
-enabled and a VFIO passthrough device, on 6.19-rc2.
+A normal or surprise removal of a PCIe device on a hot-plug port normally
+triggers an interrupt from the PCIe switch.
 
-Environment
-===========
+We have, however, observed cases where no interrupt is generated when the
+device suddenly loses its link; the behaviour is identical to setting the
+Link Disable bit in the switch=E2=80=99s Link Control register (offset 10h)=
+. Exactly
+what goes wrong in the LTSSM between the PCIe switch and the endpoint remai=
+ns
+unknown.
 
-  - Kernel: 6.19.0-rc2
-  - QEMU: 10.1.94
-  - CPU: AMD EPYC 9965
-  - Modules involved: kvm_amd, kvm, vfio_pci, vfio, irqbypass, mlx5_core
-  - Workload: QEMU guest with an mlx5 PCI device passed through.
+> >=20
+> > For example, if a VM fails to connect to the PCIe device,
+>=20
+> 'failed' for what reason?
+>=20
+> > "virsh destroy" is executed to release resources and isolate
+> > the fault, but a hard-lockup occurs while releasing the group fd.
+> >=20
+> > Call Trace:
+> >  qi_submit_sync
+> >  qi_flush_dev_iotlb
+> >  intel_pasid_tear_down_entry
+> >  device_block_translation
+> >  blocking_domain_attach_dev
+> >  __iommu_attach_device
+> >  __iommu_device_set_domain
+> >  __iommu_group_set_domain_internal
+> >  iommu_detach_group
+> >  vfio_iommu_type1_detach_group
+> >  vfio_group_detach_container
+> >  vfio_group_fops_release
+> >  __fput
+> >=20
+> > Although pci_device_is_present() is slower than
+> > pci_dev_is_disconnected(), it still takes only ~70 =C2=B5s on a
+> > ConnectX-5 (8 GT/s, x2) and becomes even faster as PCIe speed
+> > and width increase.
+> >=20
+> > Besides, devtlb_invalidation_with_pasid() is called only in the
+> > paths below, which are far less frequent than memory map/unmap.
+> >=20
+> > 1. mm-struct release
+> > 2. {attach,release}_dev
+> > 3. set/remove PASID
+> > 4. dirty-tracking setup
+> >=20
+>=20
+> surprise removal can happen at any time, e.g. after the check of
+> pci_device_is_present(). In the end we need the logic in
+> qi_check_fault() to check the presence upon ITE timeout error
+> received to break the infinite loop. So in your case even with
+> that logici in place you still observe lockup (probably due to
+> hardware ITE timeout is longer than the lockup detection on=20
+> the CPU?
 
-Lockdep warning
-===============
+Are you referring to the timeout added in patch
+https://lore.kernel.org/all/20240222090251.2849702-4-haifeng.zhao@linux.int=
+el.com/ ?
 
-The warning is:
+Our lockup-detection timeout is the default 10 s.
 
-  ======================================================
-  WARNING: possible circular locking dependency detected
-  6.19.0-rc2 #20 Tainted: G            E
-  ------------------------------------------------------
-  CPU 58/KVM/28597 is trying to acquire lock:
-    ff12c47d4b1f34c0 (&irq_desc_lock_class){-.-.}-{2:2}, at: __irq_get_desc_lock+0x58/0xa0
+We see ITE-timeout messages in the kernel log. Yet the system still
+hard-locks=E2=80=94probably because, as you mentioned, the hardware ITE tim=
+eout
+is longer than the CPU=E2=80=99s lockup-detection window. I=E2=80=99ll repr=
+oduce the
+case and follow up with a deeper analysis.
 
-    but task is already holding lock:
-    ff12c49b28552110 (&svm->ir_list_lock){....}-{2:2}, at: avic_pi_update_irte+0x147/0x270 [kvm_amd]
+kernel: [ 2402.642685][  T607] vfio-pci 0000:3f:00.0: Unable to change powe=
+r state from D0 to D3hot, device inaccessible
+kernel: [ 2403.441828][T49880] DMAR: VT-d detected Invalidation Time-out Er=
+ror: SID 0
+kernel: [ 2403.441830][    C0] DMAR: DRHD: handling fault status reg 40
+kernel: [ 2403.441831][T49880] DMAR: QI HEAD: Invalidation Wait qw0 =3D 0x2=
+00000025, qw1 =3D 0x1003a07fc
+kernel: [ 2403.441833][T49880] DMAR: QI PRIOR: Invalidation Wait qw0 =3D 0x=
+200000025, qw1 =3D 0x1003a07f8
+kernel: [ 2403.441879][T49880] DMAR: Invalidation Time-out Error (ITE) clea=
+red
+kernel: [ 2423.643527][    C7] rcu: INFO: rcu_preempt detected stalls on CP=
+Us/tasks:
+kernel: [ 2423.643551][    C7] rcu:        8-...0: (0 ticks this GP) idle=
+=3D198c/1/0x4000000000000000 softirq=3D19450/19450 fqs=3D4403
+kernel: [ 2423.643567][    C7] rcu:        (detected by 7, t=3D21002 jiffie=
+s, g=3D238909, q=3D4932 ncpus=3D96)
+kernel: [ 2423.643578][    C7] Sending NMI from CPU 7 to CPUs 8:
+kernel: [ 2423.643581][    C8] NMI backtrace for cpu 8
+kernel: [ 2423.643585][    C8] CPU: 8 UID: 0 PID: 49880 Comm: vfio_test Kdu=
+mp: loaded Tainted: G S          E       6.18.0 #5 PREEMPT(voluntary)
+kernel: [ 2423.643588][    C8] Tainted: [S]=3DCPU_OUT_OF_SPEC, [E]=3DUNSIGN=
+ED_MODULE
+kernel: [ 2423.643589][    C8] Hardware name: Inspur NF5468M5/YZMB-01130-10=
+5, BIOS 4.2.0 04/28/2021
+kernel: [ 2423.643590][    C8] RIP: 0010:qi_submit_sync+0x6cf/0x8d0
+kernel: [ 2423.643597][    C8] Code: 89 4c 24 50 89 70 34 48 c7 c7 f0 f5 4a=
+ a5 e8 48 15 89 ff 48 8b 4c 24 50 8b 54 24 58 49 8b 76 10 49 63 c7 48 8d 04=
+ 86 83 38 01 <75> 06 c7 00 03 00 00 00 41 81 c7 fe 00 00 00 44 89 f8 c1 f8 =
+1f c1
+kernel: [ 2423.643598][    C8] RSP: 0018:ffffb5a3bd0a7a30 EFLAGS: 00000097
+kernel: [ 2423.643600][    C8] RAX: ffff9dac803a06bc RBX: 0000000000000000 =
+RCX: 0000000000000000
+kernel: [ 2423.643601][    C8] RDX: 00000000000000fe RSI: ffff9dac803a0400 =
+RDI: ffff9ddb0081d480
+kernel: [ 2423.643602][    C8] RBP: ffff9dac8037fe00 R08: 0000000000000000 =
+R09: 0000000000000003
+kernel: [ 2423.643603][    C8] R10: ffffb5a3bd0a78e0 R11: ffff9e0bbff3c068 =
+R12: 0000000000000040
+kernel: [ 2423.643605][    C8] R13: ffff9dac80314600 R14: ffff9dac8037fe00 =
+R15: 00000000000000af
+kernel: [ 2423.643606][    C8] FS:  0000000000000000(0000) GS:ffff9ddb5a262=
+000(0000) knlGS:0000000000000000
+kernel: [ 2423.643607][    C8] CS:  0010 DS: 0000 ES: 0000 CR0: 00000000800=
+50033
+kernel: [ 2423.643608][    C8] CR2: 000000002aee3000 CR3: 000000024a27b002 =
+CR4: 00000000007726f0
+kernel: [ 2423.643610][    C8] PKRU: 55555554
+kernel: [ 2423.643611][    C8] Call Trace:
+kernel: [ 2423.643613][    C8]  <TASK>
+kernel: [ 2423.643616][    C8]  ? __pfx_domain_context_clear_one_cb+0x10/0x=
+10
+kernel: [ 2423.643620][    C8]  qi_flush_dev_iotlb+0xd5/0xe0
+kernel: [ 2423.643622][    C8]  __context_flush_dev_iotlb.part.0+0x3c/0x80
+kernel: [ 2423.643625][    C8]  domain_context_clear_one_cb+0x16/0x20
+kernel: [ 2423.643626][    C8]  pci_for_each_dma_alias+0x3b/0x140
+kernel: [ 2423.643631][    C8]  device_block_translation+0x122/0x180
+kernel: [ 2423.643634][    C8]  blocking_domain_attach_dev+0x39/0x50
+kernel: [ 2423.643636][    C8]  __iommu_attach_device+0x1b/0x90
+kernel: [ 2423.643639][    C8]  __iommu_device_set_domain+0x5d/0xb0
+kernel: [ 2423.643642][    C8]  __iommu_group_set_domain_internal+0x60/0x11=
+0
+kernel: [ 2423.643644][    C8]  iommu_detach_group+0x3a/0x60
+kernel: [ 2423.643650][    C8]  vfio_iommu_type1_detach_group+0x106/0x610 [=
+vfio_iommu_type1]
+kernel: [ 2423.643654][    C8]  ? __dentry_kill+0x12a/0x180
+kernel: [ 2423.643660][    C8]  ? __pm_runtime_idle+0x44/0xe0
+kernel: [ 2423.643666][    C8]  vfio_group_detach_container+0x4f/0x160 [vfi=
+o]
+kernel: [ 2423.643672][    C8]  vfio_group_fops_release+0x3e/0x80 [vfio]
+kernel: [ 2423.643677][    C8]  __fput+0xe6/0x2b0
+kernel: [ 2423.643682][    C8]  task_work_run+0x58/0x90
+kernel: [ 2423.643688][    C8]  do_exit+0x29b/0xa80
+kernel: [ 2423.643694][    C8]  do_group_exit+0x2c/0x80
+kernel: [ 2423.643696][    C8]  get_signal+0x8f9/0x900
+kernel: [ 2423.643700][    C8]  arch_do_signal_or_restart+0x29/0x210
+kernel: [ 2423.643704][    C8]  ? __schedule+0x582/0xe80
+kernel: [ 2423.643708][    C8]  exit_to_user_mode_loop+0x8e/0x4f0
+kernel: [ 2423.643712][    C8]  do_syscall_64+0x262/0x630
+kernel: [ 2423.643717][    C8]  entry_SYSCALL_64_after_hwframe+0x76/0x7e
+kernel: [ 2423.643720][    C8] RIP: 0033:0x7fde19078514
+kernel: [ 2423.643722][    C8] Code: Unable to access opcode bytes at 0x7fd=
+e190784ea.
+kernel: [ 2423.643723][    C8] RSP: 002b:00007ffd0e1dc7e8 EFLAGS: 00000246 =
+ORIG_RAX: 0000000000000022
+kernel: [ 2423.643724][    C8] RAX: fffffffffffffdfe RBX: 0000000000000000 =
+RCX: 00007fde19078514
+kernel: [ 2423.643726][    C8] RDX: 00007fde1916e8c0 RSI: 000055b217303260 =
+RDI: 0000000000000000
+kernel: [ 2423.643727][    C8] RBP: 00007ffd0e1dc8a0 R08: 00007fde19173500 =
+R09: 0000000000000000
+kernel: [ 2423.643728][    C8] R10: fffffffffffffbea R11: 0000000000000246 =
+R12: 000055b1f8d8d0b0
+kernel: [ 2423.643729][    C8] R13: 00007ffd0e1dc980 R14: 0000000000000000 =
+R15: 0000000000000000
+kernel: [ 2423.643731][    C8]  </TASK>
+kernel: [ 2424.375254][T81463] vfio-pci 0000:3f:00.0: Unable to change powe=
+r state from D3cold to D0, device inaccessible
+...
+kernel: [ 2448.327929][    C8] watchdog: CPU8: Watchdog detected hard LOCKU=
+P on cpu 8
+kernel: [ 2448.327932][    C8] Modules linked in: vfio_pci(E) vfio_pci_core=
+(E) vfio_iommu_type1(E) vfio(E) udp_diag(E) tcp_diag(E) inet_diag(E) binfmt=
+_misc(E) ip_set_hash_net(E) nft_compat(E) x_tables(E) ip_set(E) msr(E) nf_t=
+ables(E) ...
+kernel: [ 2448.327963][    C8]  ib_core(E) hid_generic(E) usbhid(E) hid(E) =
+ahci(E) libahci(E) xhci_pci(E) libata(E) nvme(E) xhci_hcd(E) i2c_i801(E) nv=
+me_core(E) usbcore(E) scsi_mod(E) mlx5_core(E) i2c_smbus(E) lpc_ich(E) usb_=
+common(E) scsi_common(E) wmi(E)
+kernel: [ 2448.327972][    C8] CPU: 8 UID: 0 PID: 49880 Comm: vfio_test Kdu=
+mp: loaded Tainted: G S          EL      6.18.0 #5 PREEMPT(voluntary)
+kernel: [ 2448.327975][    C8] Tainted: [S]=3DCPU_OUT_OF_SPEC, [E]=3DUNSIGN=
+ED_MODULE, [L]=3DSOFTLOCKUP
+kernel: [ 2448.327976][    C8] Hardware name: Inspur NF5468M5/YZMB-01130-10=
+5, BIOS 4.2.0 04/28/2021
+kernel: [ 2448.327977][    C8] RIP: 0010:qi_submit_sync+0x6e7/0x8d0
+kernel: [ 2448.327981][    C8] Code: 8b 54 24 58 49 8b 76 10 49 63 c7 48 8d=
+ 04 86 83 38 01 75 06 c7 00 03 00 00 00 41 81 c7 fe 00 00 00 44 89 f8 c1 f8=
+ 1f c1 e8 18 <41> 01 c7 45 0f b6 ff 41 29 c7 44 39 fa 75 cb 48 85 c9 0f 85 =
+05 01
+kernel: [ 2448.327983][    C8] RSP: 0018:ffffb5a3bd0a7a30 EFLAGS: 00000046
+kernel: [ 2448.327984][    C8] RAX: 0000000000000000 RBX: 0000000000000000 =
+RCX: 0000000000000000
+kernel: [ 2448.327985][    C8] RDX: 00000000000000fe RSI: ffff9dac803a0400 =
+RDI: ffff9ddb0081d480
+kernel: [ 2448.327986][    C8] RBP: ffff9dac8037fe00 R08: 0000000000000000 =
+R09: 0000000000000003
+kernel: [ 2448.327987][    C8] R10: ffffb5a3bd0a78e0 R11: ffff9e0bbff3c068 =
+R12: 0000000000000040
+kernel: [ 2448.327988][    C8] R13: ffff9dac80314600 R14: ffff9dac8037fe00 =
+R15: 00000000000001b3
+kernel: [ 2448.327989][    C8] FS:  0000000000000000(0000) GS:ffff9ddb5a262=
+000(0000) knlGS:0000000000000000
+kernel: [ 2448.327990][    C8] CS:  0010 DS: 0000 ES: 0000 CR0: 00000000800=
+50033
+kernel: [ 2448.327991][    C8] CR2: 000000002aee3000 CR3: 000000024a27b002 =
+CR4: 00000000007726f0
+kernel: [ 2448.327992][    C8] PKRU: 55555554
+kernel: [ 2448.327993][    C8] Call Trace:
+kernel: [ 2448.327995][    C8]  <TASK>
+kernel: [ 2448.327997][    C8]  ? __pfx_domain_context_clear_one_cb+0x10/0x=
+10
+kernel: [ 2448.328000][    C8]  qi_flush_dev_iotlb+0xd5/0xe0
+kernel: [ 2448.328002][    C8]  __context_flush_dev_iotlb.part.0+0x3c/0x80
+kernel: [ 2448.328004][    C8]  domain_context_clear_one_cb+0x16/0x20
+kernel: [ 2448.328006][    C8]  pci_for_each_dma_alias+0x3b/0x140
+kernel: [ 2448.328010][    C8]  device_block_translation+0x122/0x180
+kernel: [ 2448.328012][    C8]  blocking_domain_attach_dev+0x39/0x50
+kernel: [ 2448.328014][    C8]  __iommu_attach_device+0x1b/0x90
+kernel: [ 2448.328017][    C8]  __iommu_device_set_domain+0x5d/0xb0
+kernel: [ 2448.328019][    C8]  __iommu_group_set_domain_internal+0x60/0x11=
+0
+kernel: [ 2448.328021][    C8]  iommu_detach_group+0x3a/0x60
+kernel: [ 2448.328023][    C8]  vfio_iommu_type1_detach_group+0x106/0x610 [=
+vfio_iommu_type1]
+kernel: [ 2448.328026][    C8]  ? __dentry_kill+0x12a/0x180
+kernel: [ 2448.328030][    C8]  ? __pm_runtime_idle+0x44/0xe0
+kernel: [ 2448.328035][    C8]  vfio_group_detach_container+0x4f/0x160 [vfi=
+o]
+kernel: [ 2448.328041][    C8]  vfio_group_fops_release+0x3e/0x80 [vfio]
+kernel: [ 2448.328046][    C8]  __fput+0xe6/0x2b0
+kernel: [ 2448.328049][    C8]  task_work_run+0x58/0x90
+kernel: [ 2448.328053][    C8]  do_exit+0x29b/0xa80
+kernel: [ 2448.328057][    C8]  do_group_exit+0x2c/0x80
+kernel: [ 2448.328060][    C8]  get_signal+0x8f9/0x900
+kernel: [ 2448.328064][    C8]  arch_do_signal_or_restart+0x29/0x210
+kernel: [ 2448.328068][    C8]  ? __schedule+0x582/0xe80
+kernel: [ 2448.328070][    C8]  exit_to_user_mode_loop+0x8e/0x4f0
+kernel: [ 2448.328074][    C8]  do_syscall_64+0x262/0x630
+kernel: [ 2448.328076][    C8]  entry_SYSCALL_64_after_hwframe+0x76/0x7e
+kernel: [ 2448.328078][    C8] RIP: 0033:0x7fde19078514
+kernel: [ 2448.328080][    C8] Code: Unable to access opcode bytes at 0x7fd=
+e190784ea.
+kernel: [ 2448.328081][    C8] RSP: 002b:00007ffd0e1dc7e8 EFLAGS: 00000246 =
+ORIG_RAX: 0000000000000022
+kernel: [ 2448.328082][    C8] RAX: fffffffffffffdfe RBX: 0000000000000000 =
+RCX: 00007fde19078514
+kernel: [ 2448.328083][    C8] RDX: 00007fde1916e8c0 RSI: 000055b217303260 =
+RDI: 0000000000000000
+kernel: [ 2448.328085][    C8] RBP: 00007ffd0e1dc8a0 R08: 00007fde19173500 =
+R09: 0000000000000000
+kernel: [ 2448.328085][    C8] R10: fffffffffffffbea R11: 0000000000000246 =
+R12: 000055b1f8d8d0b0
+kernel: [ 2448.328086][    C8] R13: 00007ffd0e1dc980 R14: 0000000000000000 =
+R15: 0000000000000000
+kernel: [ 2448.328088][    C8]  </TASK>
+kernel: [ 2450.245901][    C7] watchdog: BUG: soft lockup - CPU#7 stuck for=
+ 41s! [mongoosev3-agen:4727]
 
-    which lock already depends on the new lock.
+>=20
+> In any case this change cannot 100% fix the lockup. It just
+> reduces the possibility which should be made clear.
 
-  the existing dependency chain (in reverse order) is:
+I agree with the above, but it's better to cover more corner cases.
 
-    -> #3 (&svm->ir_list_lock){....}-{2:2}:
-         _raw_spin_lock_irqsave+0x4e/0xb0
-         __avic_vcpu_put+0x7a/0x150 [kvm_amd]
-         avic_vcpu_put+0x50/0x70 [kvm_amd]
-         svm_vcpu_put+0x38/0x70 [kvm_amd]
-         kvm_arch_vcpu_put+0x21b/0x330 [kvm]
-         kvm_sched_out+0x62/0x90 [kvm]
-         __schedule+0x8d3/0x1d10
-         __cond_resched+0x5c/0x80
-         __mutex_lock+0x83/0x10b0
-         mutex_lock_nested+0x1b/0x30
-         kvm_hv_set_msr_common+0x199/0x12a0 [kvm]
-         kvm_set_msr_common+0x468/0x1310 [kvm]
-         svm_set_msr+0x645/0x730 [kvm_amd]
-         __kvm_set_msr+0xa3/0x2f0 [kvm]
-         kvm_set_msr_ignored_check+0x23/0x1b0 [kvm]
-         do_set_msr+0x76/0xd0 [kvm]
-         msr_io+0xbe/0x1c0 [kvm]
-         kvm_arch_vcpu_ioctl+0x700/0x2090 [kvm]
-         kvm_vcpu_ioctl+0x632/0xc60 [kvm]
-         __x64_sys_ioctl+0xa5/0x100
-         x64_sys_call+0x1243/0x26b0
-         do_syscall_64+0x93/0x1470
-         entry_SYSCALL_64_after_hwframe+0x76/0x7e
-
-    -> #2 (&rq->__lock){-.-.}-{2:2}:
-         _raw_spin_lock_nested+0x32/0x80
-         raw_spin_rq_lock_nested+0x22/0xa0
-         task_rq_lock+0x5f/0x150
-         cgroup_move_task+0x46/0x110
-         css_set_move_task+0xe1/0x240
-         cgroup_post_fork+0x98/0x2d0
-         copy_process+0x1ea8/0x2330
-         kernel_clone+0xa7/0x440
-         user_mode_thread+0x63/0x90
-         rest_init+0x28/0x200
-         start_kernel+0xae0/0xcd0
-         x86_64_start_reservations+0x18/0x30
-         x86_64_start_kernel+0xfd/0x150
-         common_startup_64+0x13e/0x141
-
-    -> #1 (&p->pi_lock){-.-.}-{2:2}:
-         _raw_spin_lock_irqsave+0x4e/0xb0
-         try_to_wake_up+0x59/0xaa0
-         wake_up_process+0x15/0x30
-         irq_do_set_affinity+0x145/0x270
-         irq_set_affinity_locked+0x172/0x250
-         irq_set_affinity+0x47/0x80
-         write_irq_affinity.isra.0+0xfe/0x120
-         irq_affinity_proc_write+0x1d/0x30
-         proc_reg_write+0x69/0xa0
-         vfs_write+0x110/0x560
-         ksys_write+0x77/0x100
-         __x64_sys_write+0x19/0x30
-         x64_sys_call+0x79/0x26b0
-         do_syscall_64+0x93/0x1470
-         entry_SYSCALL_64_after_hwframe+0x76/0x7e
-
-    -> #0 (&irq_desc_lock_class){-.-.}-{2:2}:
-         __lock_acquire+0x1595/0x2640
-         lock_acquire+0xc4/0x2c0
-         _raw_spin_lock_irqsave+0x4e/0xb0
-         __irq_get_desc_lock+0x58/0xa0
-         irq_set_vcpu_affinity+0x4a/0x100
-         avic_pi_update_irte+0x170/0x270 [kvm_amd]
-         kvm_pi_update_irte+0xea/0x220 [kvm]
-         kvm_arch_irq_bypass_add_producer+0x9b/0xb0 [kvm]
-         __connect+0x5f/0x100 [irqbypass]
-         irq_bypass_register_producer+0xe4/0xb90 [irqbypass]
-         vfio_msi_set_vector_signal+0x1b0/0x330 [vfio_pci_core]
-         vfio_msi_set_block+0x5a/0xd0 [vfio_pci_core]
-         vfio_pci_set_msi_trigger+0x19e/0x260 [vfio_pci_core]
-         vfio_pci_set_irqs_ioctl+0x46/0x140 [vfio_pci_core]
-         vfio_pci_core_ioctl+0x6ea/0xc20 [vfio_pci_core]
-         vfio_device_fops_unl_ioctl+0xb1/0x9d0 [vfio]
-         __x64_sys_ioctl+0xa5/0x100
-         x64_sys_call+0x1243/0x26b0
-         do_syscall_64+0x93/0x1470
-         entry_SYSCALL_64_after_hwframe+0x76/0x7e
-
-  Chain exists of:
-    &irq_desc_lock_class --> &rq->__lock --> &svm->ir_list_lock
-
-  Possible unsafe locking scenario:
-
-        CPU0                            CPU1
-        ----                            ----
-   lock(&svm->ir_list_lock);
-                                      lock(&rq->__lock);
-                                      lock(&svm->ir_list_lock);
-   lock(&irq_desc_lock_class);
-
-        *** DEADLOCK ***
-
-At the point of the warning, the following locks are held:
-
-  #0: &vdev->igate           (vfio_pci_core)
-  #1: lock#10                (irqbypass)
-  #2: &kvm->irqfds.lock      (kvm)
-  #3: &svm->ir_list_lock     (kvm_amd)
-
-and the stack backtrace has:
-
-  __irq_get_desc_lock
-  irq_set_vcpu_affinity
-  avic_pi_update_irte               [kvm_amd]
-  kvm_pi_update_irte                [kvm]
-  kvm_arch_irq_bypass_add_producer  [kvm]
-  __connect                         [irqbypass]
-  irq_bypass_register_producer      [irqbypass]
-  vfio_msi_set_vector_signal        [vfio_pci_core]
-  vfio_pci_set_irqs_ioctl           [vfio_pci_core]
-  vfio_pci_core_ioctl               [vfio_pci_core]
-  vfio_device_fops_unl_ioctl        [vfio]
-  __x64_sys_ioctl
-  x64_sys_call
-  do_syscall_64
-  entry_SYSCALL_64_after_hwframe
-
-So lockdep sees:
-
-  &irq_desc_lock_class -> &rq->__lock -> &svm->ir_list_lock
-
-while avic_pi_update_irte() currently holds svm->ir_list_lock and then
-takes irq_desc_lock via irq_set_vcpu_affinity(), which creates the
-potential inversion.
-
-Reproduction
-============
-
-Host:
-
-  - AMD EPYC + AVIC enabled
-  - Kernel 6.19-rc2 with lockdep
-  - VFIO passthrough of an mlx5 device (mlx5_core loaded)
-
-Launch command with Passthrough device, with AVIC mode.
-
-The warning triggers when enabling MSI/MSI-X for the passthrough device
-from the guest, i.e. via VFIO ioctl on the host that goes through
-irq_bypass and eventually calls avic_pi_update_irte().
-
-I can reproduce this reliably when starting the guest with the VFIO
-device assigned after every host reboot.
-
-Questions
-=========
-
-  - Is this lockdep warning expected/benign in this code path, or does it
-    indicate a real potential deadlock between svm->ir_list_lock and
-    irq_desc_lock with AVIC + irq_bypass + VFIO?
-
-  - If this is considered a real issue, is the expected direction to:
-      * change the locking around avic_pi_update_irte()/svm->ir_list_lock, or
-      * adjust how irq_bypass / VFIO interacts with vCPU affinity updates
-        on AMD/AVIC, or
-      * annotate the locking somehow if lockdep is over-reporting here?
-
-I’m happy to:
-
-  - Provide my full .config
-  - Share the exact QEMU command line
-  - Test any proposed patches or instrumentation
-
-Thanks,
-Ankit Soni
-Ankit.Soni@amd.com
-
-> -- 
-> 2.50.0.rc1.591.g9c95f17f64-goog
-> 
+Best Regards,
+Jinhui
