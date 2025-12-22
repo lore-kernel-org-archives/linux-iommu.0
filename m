@@ -1,225 +1,166 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8409C2D12F1
-	for <iommu@lists.linux.dev>; Mon, 22 Dec 2025 14:09:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BC642F6191;
+	Mon, 22 Dec 2025 14:37:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766412567; cv=none; b=nN8BStBEcCZyEJ+OBBtcEq/uhidegMgoBX+JpAwsnrpxIF61OLlEw8UAANY4bgtDE3vAMmH6IWndHHm19GJbHN43cJltXSfOkSkL2716qxPkSPDvQa8WCj9OULFvMzJ5UeLTJ9DdLTh6h8JYTfK8dvD7F1N7Yorf+EZE0bZjGj8=
+	t=1766414237; cv=none; b=az9n4djOGuYJTkHfIjYASJ3OGOLsEN07EFuTNn9VAd/WnQqe3MdX6EEpoTP7Q8Oqz0MAY8fG50gFHymDtQTrFoDph9eCnGuVxDo7piS9rp1KvNo087VyHT2Tn8M+2a+5tQW+EYx2f+vUBzmaZjZPfg/fzmupSjb3Pm8YMrYyweQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766412567; c=relaxed/simple;
-	bh=p/i6kMwISrCPM6iQXn0HaSNUzgsyoLTxQlFLGZ2uzQ8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ra139EUixjSUKU6ov/Ce1+M+1wam1/wBWAxK4pC23Jjcsi86vDi24YrIeiWde0bPX/YRMKopePI2EP3MntNoOnoY473KZcSi4PyrdGLI+S8XatrVjLz9aNf0LvPKQwAu3LotZaaTVQ5jAmgBAEAOXzAG4EV0caehtzWK1N5SNno=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=NqLrQ/gp; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1766414237; c=relaxed/simple;
+	bh=SZAm6zJ37Q2ZZv5+muaWfz5RqEM3fSD2IIVjceAvlJI=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=Y1wZ1vo1zpcHWrnMb/LK+t38lWrf+50ZVY9kRJBDsbMT2NmV1d8soHbkZOxq4R8e3PNPJWDkRbePuUVoAF7rZFOrY1q+DDH/W4zKg3HASE4q441M6esFi/eu2rWUj4VyHSc9ZSca7QWLL74KnHTExgAvlg4sVwMsmMkns+r9GTM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qt3TN6x8; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="NqLrQ/gp"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1766412564;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=k1FE0+YEZR+tBzsGFvPzgiyYjR1CkUcfeInMhZI6Of8=;
-	b=NqLrQ/gp4dvpugfX/v8wHvmzXsAlBMwHALMmaeyE0NvG+agx1L9TTv5cbmt17j1ZyN7QiD
-	peVb5bx5i0Fjoi4LvxMxv+qSX8oSuboYgZ+seIdnph0A3jQt32sUxRqFgcO1aTPvsdB2l/
-	bRUuMoTgRMRtXOJVjL1pH4AELhy7lf8=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-589-prR7XFAbOA6RSlEysMTPqA-1; Mon, 22 Dec 2025 09:09:23 -0500
-X-MC-Unique: prR7XFAbOA6RSlEysMTPqA-1
-X-Mimecast-MFC-AGG-ID: prR7XFAbOA6RSlEysMTPqA_1766412562
-Received: by mail-wr1-f70.google.com with SMTP id ffacd0b85a97d-432488a0ce8so3205775f8f.2
-        for <iommu@lists.linux.dev>; Mon, 22 Dec 2025 06:09:23 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1766412562; x=1767017362;
-        h=content-transfer-encoding:in-reply-to:autocrypt:content-language
-         :from:references:cc:to:subject:user-agent:mime-version:date
-         :message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=k1FE0+YEZR+tBzsGFvPzgiyYjR1CkUcfeInMhZI6Of8=;
-        b=TEln8JkIqNUQg42DvRdx1KQdreSa3CjHYHdaiIpoRGBU8bZsv3kFfB2+xlU35Mr+yd
-         8MDEODaYttiww2X3jzquZLAVy+EeMaQf8XsizjfSmc4qmZiKuFaLNeuIzJaQhYiLQd1c
-         ktFe9pyZv4GKwkTIOr5AK4Wz8WPlW/gFX1GXXfhhvLRqTmylm5HTq5lTokIhgLraO0mC
-         81BZA4dc+SRzUqK86+06nCG7kxeEDCDEXTUvcLfK36PNOCTAMB4U5PW5cYCmt5+o+Jbc
-         DGZOpZDvII5pHk7hbwZqKdcsoqWxooukwbXZZh1Fxe6z1Z8bZj3qRtxlcUFvAntKvJ9c
-         teyQ==
-X-Forwarded-Encrypted: i=1; AJvYcCU9p5VnXjqk087fy0TD53vza4KHvJ4o+YNXZCcs/sJeq6jRtPRlSjKC0plwFfl/Qf+D1/AtHQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx61pJ+xDMuYgIEtgdgOqClmcFohkWOa0mtyFxS/07+2hgQmuwQ
-	2EwLbTum/RE12i8A2gcge/J+SN0JPaKnhjBbdlS05RAyz7wwkkqMae93opo+w7ZwGrADTidXdHi
-	2ahqb9udCp2lFb6c6eeQQe1PM2PCzk2w8REkJdJa/me+zgIqSLSSXag2N
-X-Gm-Gg: AY/fxX6k25z507wU+iOsl5bCvumgpq7lWs8RMu3wo09B/AxaLbqFC0D9zVt44k+vHya
-	zbe4VXXQ3mzf8ZrzV66+1KkSLC9yBycXC4hg1WAWiEN3jALWBqxAsY09OUj2MtO7lkEPoElNu+d
-	tayXpSbBJPuYQXriTWA3HV9SAlEzOJiaIhJRtp9uTVEpSyIk9pMP4I73TjBY8Ed6t/pWbqYK8+6
-	SlrUmAhdeSIs5vLswBXHTYRbgCI7GVwpL+5+Q595Z0kAe5SqhPxj2cjEVsux5FmJT6DYvADFkeh
-	jhgbEZ8kICk+Dsglt3rwpBH1Cu7PY/cgkTKydH0rhiiQC14+X6Y882DnmYWD6BjzqolO5Wfc7wO
-	pftjWGKA2de9Xg/uyWnPTi+mdV8T6KahkPuz0HJGwyw6NXHzbUXg85mxlxAJJDa7oYFwaaeXzIm
-	Qyl5FAkiNAEruu5RM=
-X-Received: by 2002:a05:6000:290b:b0:42f:f627:3a99 with SMTP id ffacd0b85a97d-4324e4fd929mr14060414f8f.38.1766412561915;
-        Mon, 22 Dec 2025 06:09:21 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IGP6HMp+dW+4S6ThYyhC4Zp8b5zu9Tx+uPg89UKRyiU9jj0V1LJEfNM5y7cCeqmYyTSzw3qRw==
-X-Received: by 2002:a05:6000:290b:b0:42f:f627:3a99 with SMTP id ffacd0b85a97d-4324e4fd929mr14060358f8f.38.1766412561414;
-        Mon, 22 Dec 2025 06:09:21 -0800 (PST)
-Received: from [192.168.10.48] ([151.95.145.106])
-        by smtp.googlemail.com with ESMTPSA id ffacd0b85a97d-4324eaa2beasm21799471f8f.33.2025.12.22.06.09.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 22 Dec 2025 06:09:20 -0800 (PST)
-Message-ID: <42513cb3-3c2e-4aa8-b748-23b6656a5096@redhat.com>
-Date: Mon, 22 Dec 2025 15:09:13 +0100
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qt3TN6x8"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEBA2C4CEF1;
+	Mon, 22 Dec 2025 14:37:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1766414236;
+	bh=SZAm6zJ37Q2ZZv5+muaWfz5RqEM3fSD2IIVjceAvlJI=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+	b=qt3TN6x8ZQV1g5ges+vWN1E5qT30zPvn5wSLwaVNCYv5CaE7v2scphPfC78SHmZFu
+	 mkzALcOFJ+V5rf78zsbkLicFTam0yM8lp2Abfub0UfvwwzH7Ss5WgxTLuUcWhQH9kG
+	 9IOErza6afnba4FQdGMaJCnw7W9aqR/uiKioePYuJch5nigBFgCyLxkbNgCsRfB5G+
+	 iw3add+Q8/oNt7xTRtK7MPlWTUqeZCHTE8eOdiYQFsHayBU22SrFaR2UIgNw8xEEkL
+	 nm5DYQjZfes261dUuMNO6bP8x75F1dCbBLv4mR1bqnweOD51HlIAh6a5PZ6zMrdOlg
+	 R2z/4AzU2TMWg==
+X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: Suzuki K Poulose <suzuki.poulose@arm.com>, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, linux-coco@lists.linux.dev
+Cc: Catalin Marinas <catalin.marinas@arm.com>, will@kernel.org,
+	maz@kernel.org, tglx@linutronix.de, robin.murphy@arm.com,
+	akpm@linux-foundation.org, jgg@ziepe.ca, steven.price@arm.com
+Subject: Re: [PATCH v2 3/4] coco: host: arm64: Handle hostconf RHI calls in
+ kernel
+In-Reply-To: <c40414b5-ade9-4d2f-bd73-2167e923b3d6@arm.com>
+References: <20251221160920.297689-1-aneesh.kumar@kernel.org>
+ <20251221160920.297689-4-aneesh.kumar@kernel.org>
+ <c40414b5-ade9-4d2f-bd73-2167e923b3d6@arm.com>
+Date: Mon, 22 Dec 2025 20:07:06 +0530
+Message-ID: <yq5ased2twfh.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: possible deadlock due to irq_set_thread_affinity() calling into the
- scheduler (was Re: [PATCH v3 38/62] KVM: SVM: Take and hold ir_list_lock
- across IRTE updates in IOMMU)
-To: Ankit Soni <Ankit.Soni@amd.com>, Sean Christopherson <seanjc@google.com>,
- Marc Zyngier <maz@kernel.org>
-Cc: Oliver Upton <oliver.upton@linux.dev>, Joerg Roedel <joro@8bytes.org>,
- David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
- linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev,
- kvm@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- Sairaj Kodilkar <sarunkod@amd.com>, Vasant Hegde <vasant.hegde@amd.com>,
- Maxim Levitsky <mlevitsk@redhat.com>,
- Joao Martins <joao.m.martins@oracle.com>,
- Francesco Lavra <francescolavra.fl@gmail.com>,
- David Matlack <dmatlack@google.com>, Naveen Rao <Naveen.Rao@amd.com>
-References: <20250611224604.313496-2-seanjc@google.com>
- <20250611224604.313496-40-seanjc@google.com>
- <njhjud3e6wbdftzr3ziyuh5bhyvc5ndt5qvmg7rlvh5isoop2l@f2uxctws2c7d>
-From: Paolo Bonzini <pbonzini@redhat.com>
-Autocrypt: addr=pbonzini@redhat.com; keydata=
- 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
-In-Reply-To: <njhjud3e6wbdftzr3ziyuh5bhyvc5ndt5qvmg7rlvh5isoop2l@f2uxctws2c7d>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: QRbr4bWUWo4b80XTn2gkcdqH9oXChAXKGIWHvRicjEY_1766412562
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 
-On 12/22/25 10:16, Ankit Soni wrote:
->    ======================================================
->    WARNING: possible circular locking dependency detected
->    6.19.0-rc2 #20 Tainted: G            E
->    ------------------------------------------------------
->    CPU 58/KVM/28597 is trying to acquire lock:
->      ff12c47d4b1f34c0 (&irq_desc_lock_class){-.-.}-{2:2}, at: __irq_get_desc_lock+0x58/0xa0
-> 
->      but task is already holding lock:
->      ff12c49b28552110 (&svm->ir_list_lock){....}-{2:2}, at: avic_pi_update_irte+0x147/0x270 [kvm_amd]
-> 
->      which lock already depends on the new lock.
-> 
->    Chain exists of:
->      &irq_desc_lock_class --> &rq->__lock --> &svm->ir_list_lock
-> 
->    Possible unsafe locking scenario:
-> 
->          CPU0                            CPU1
->          ----                            ----
->     lock(&svm->ir_list_lock);
->                                        lock(&rq->__lock);
->                                        lock(&svm->ir_list_lock);
->     lock(&irq_desc_lock_class);
-> 
->          *** DEADLOCK ***
-> 
-> So lockdep sees:
-> 
->    &irq_desc_lock_class -> &rq->__lock -> &svm->ir_list_lock
-> 
-> while avic_pi_update_irte() currently holds svm->ir_list_lock and then
-> takes irq_desc_lock via irq_set_vcpu_affinity(), which creates the
-> potential inversion.
-> 
->    - Is this lockdep warning expected/benign in this code path, or does it
->      indicate a real potential deadlock between svm->ir_list_lock and
->      irq_desc_lock with AVIC + irq_bypass + VFIO?
+Suzuki K Poulose <suzuki.poulose@arm.com> writes:
 
-I'd treat it as a potential (if unlikely) deadlock:
+> On 21/12/2025 16:09, Aneesh Kumar K.V (Arm) wrote:
+>>   - Mark hostconf RHI SMC IDs as handled in the SMCCC filter.
+>>   - Return version/features plus PAGE_SIZE alignment for guest queries.
+>>   - Drop the 4K page-size guard in RMI init now that realm can query IPA
+>>     change alignment size via the hostconf RHI
+>> 
+>> Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
+>> ---
+>>   arch/arm64/kvm/hypercalls.c | 23 ++++++++++++++++++++++-
+>>   arch/arm64/kvm/rmi.c        |  4 ----
+>>   2 files changed, 22 insertions(+), 5 deletions(-)
+>> 
+>> diff --git a/arch/arm64/kvm/hypercalls.c b/arch/arm64/kvm/hypercalls.c
+>> index 70ac7971416c..2861ca9063dd 100644
+>> --- a/arch/arm64/kvm/hypercalls.c
+>> +++ b/arch/arm64/kvm/hypercalls.c
+>> @@ -8,6 +8,7 @@
+>>   
+>>   #include <kvm/arm_hypercalls.h>
+>>   #include <kvm/arm_psci.h>
+>> +#include <asm/rhi.h>
+>>   
+>>   #define KVM_ARM_SMCCC_STD_FEATURES				\
+>>   	GENMASK(KVM_REG_ARM_STD_BMAP_BIT_COUNT - 1, 0)
+>> @@ -77,6 +78,9 @@ static bool kvm_smccc_default_allowed(u32 func_id)
+>>   	 */
+>>   	case ARM_SMCCC_VERSION_FUNC_ID:
+>>   	case ARM_SMCCC_ARCH_FEATURES_FUNC_ID:
+>> +	case RHI_HOSTCONF_VERSION:
+>> +	case RHI_HOSTCONF_FEATURES:
+>> +	case RHI_HOSTCONF_GET_IPA_CHANGE_ALIGNMENT:
+>>   		return true;
+>>   	default:
+>>   		/* PSCI 0.2 and up is in the 0:0x1f range */
+>> @@ -157,7 +161,15 @@ static int kvm_smccc_filter_insert_reserved(struct kvm *kvm)
+>>   			       GFP_KERNEL_ACCOUNT);
+>>   	if (r)
+>>   		goto out_destroy;
+>> -
+>> +	/*
+>> +	 * Don't forward RHI_HOST_CONF related RHI calls
+>> +	 */
+>> +	r = mtree_insert_range(&kvm->arch.smccc_filter,
+>> +			       RHI_HOSTCONF_VERSION, RHI_HOSTCONF_GET_IPA_CHANGE_ALIGNMENT,
+>> +			       xa_mk_value(KVM_SMCCC_FILTER_HANDLE),
+>> +			       GFP_KERNEL_ACCOUNT);
+>
+> minor nit: this is needed only for the Realms ?
+>
 
-(a) irq_set_thread_affinity triggers the scheduler via wake_up_process,
-while irq_desc->lock is taken
 
-(b) the scheduler calls into KVM with rq_lock taken, and KVM uses
-ir_list_lock within __avic_vcpu_load/__avic_vcpu_put
+That is the kvm forwarding of the RHI hostcalls to VMM. We are updating
+smccc filter that the SMCCC FID range [RHI_HOSTCONF_VERSION, RHI_HOSTCONF_GET_IPA_CHANGE_ALIGNMENT]
+will be handled by the kernel. This is needed because it is the kernel
+that is dropping the below check in kvm_init_rmi().
 
-(c) KVM wants to block scheduling for a while and uses ir_list_lock for
-that purpose, but then takes irq_set_vcpu_affinity takes irq_desc->lock.
+ 	/* Only 4k page size on the host is supported */
+	if (PAGE_SIZE != SZ_4K)
+ 		return;
 
-I don't think there's an alternative choice of lock for (c); and there's
-no easy way to pull the irq_desc->lock out of the IRQ subsystem--in fact
-the stickiness of the situation comes from rq->rq_lock and
-irq_desc->lock being both internal and not leaf.
+We want to make sure RHI support and dropping of the above check happens
+in the same patch and is part of the kernel. 
 
-Of the three, the most sketchy is (a); notably, __setup_irq() calls
-wake_up_process outside desc->lock.  Therefore I'd like so much to treat
-it as a kernel/irq/ bug; and the simplest (perhaps too simple...) fix is
-to drop the wake_up_process().  The only cost is extra latency on the
-next interrupt after an affinity change.
+>
+>> +	if (r)
+>> +		goto out_destroy;
+>>   	return 0;
+>>   out_destroy:
+>>   	mtree_destroy(&kvm->arch.smccc_filter);
+>> @@ -376,6 +388,15 @@ int kvm_smccc_call_handler(struct kvm_vcpu *vcpu)
+>>   	case ARM_SMCCC_TRNG_RND32:
+>>   	case ARM_SMCCC_TRNG_RND64:
+>>   		return kvm_trng_call(vcpu);
+>> +	case RHI_HOSTCONF_VERSION:
+>> +		val[0] = RHI_HOSTCONF_VER_1_0;
+>> +		break;
+>> +	case RHI_HOSTCONF_FEATURES:
+>> +		val[0] = __RHI_HOSTCONF_GET_IPA_CHANGE_ALIGNMENT;
+>> +		break;
+>> +	case RHI_HOSTCONF_GET_IPA_CHANGE_ALIGNMENT:
+>> +		val[0] = PAGE_SIZE;
+>> +		break;
+>>   	default:
+>>   		return kvm_psci_call(vcpu);
+>>   	}
+>> diff --git a/arch/arm64/kvm/rmi.c b/arch/arm64/kvm/rmi.c
+>> index 9957a71d21b1..bd345e051a24 100644
+>> --- a/arch/arm64/kvm/rmi.c
+>> +++ b/arch/arm64/kvm/rmi.c
+>> @@ -1935,10 +1935,6 @@ EXPORT_SYMBOL_GPL(kvm_has_da_feature);
+>>   
+>>   void kvm_init_rmi(void)
+>>   {
+>> -	/* Only 4k page size on the host is supported */
+>> -	if (PAGE_SIZE != SZ_4K)
+>> -		return;
+>
+> For the record, these patches doesn't necessarily solve the Host support
+> fully. The KVM still needs to support splitting pages for RMM's 4K.
+>
 
-diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
-index 8b1b4c8a4f54..fc135bd079a4 100644
---- a/kernel/irq/manage.c
-+++ b/kernel/irq/manage.c
-@@ -189,14 +189,10 @@ static void irq_set_thread_affinity(struct irq_desc *desc)
-  	struct irqaction *action;
-  
-  	for_each_action_of_desc(desc, action) {
--		if (action->thread) {
-+		if (action->thread)
-  			set_bit(IRQTF_AFFINITY, &action->thread_flags);
--			wake_up_process(action->thread);
--		}
--		if (action->secondary && action->secondary->thread) {
-+		if (action->secondary && action->secondary->thread)
-  			set_bit(IRQTF_AFFINITY, &action->secondary->thread_flags);
--			wake_up_process(action->secondary->thread);
--		}
-  	}
-  }
-  
-Marc, what do you think?
+We already delegate RMM granules and setup stage 2 in rmm with
+RMM_PAGE_SIZE. ie, the shared patchset can be used to setup a 64K host
+with 4K Realm running on a RMM using 4K RMM granule size.
 
-Paolo
+>
+> That said, this can be ignored as we rebase the KVM to only support
+> RMM v2.0, where the Host can set the RMM's Stage2 page size.
+>
+> Suzuki
+>
 
+-aneesh
