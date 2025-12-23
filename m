@@ -1,154 +1,111 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF0462F747D
-	for <iommu@lists.linux.dev>; Tue, 23 Dec 2025 06:10:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0101F2D23A8
+	for <iommu@lists.linux.dev>; Tue, 23 Dec 2025 06:58:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766470207; cv=none; b=UARUnw47J8deyYoE03ROy0XGdn6LxF4QSvW4kp10mq/U9AL5axYUhAaj08VtEYZvKN2qFbB2TYfD27Zpml0aUfjjKwzfHDE9J/O/Njvsbryj7AYg65tu+pAEQxwbPuvI05AcriDPMUnemB/yKUX42B1oN+fT1xzwYYPAW2Oqzm4=
+	t=1766473108; cv=none; b=Oxoh9LfTEyGZxv84tUetcsrF2uu/GnzNKqb21l66ZHC1mP0r5zzHMDu4pAVbZDmipkKZFTO9XTYXcMQnr9zYs/QPAUytmapuyQFf/Gp7xopcT7vQ+egXepg1+tjgrATA1Im6z9O7rQB0x99QRpIQ6Gv4t5DTCc/XpoEXNTtCTZQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766470207; c=relaxed/simple;
-	bh=DqR+KdVb0t7eRqlh+OYruOHh2BtW/jxc95nRExD4+vw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=hkx0lTqJffg7IZW24bTwu/8Av4P6Qk2XQmYueDFABNJUte2mzB1kcrOeR34xu03ia0FhmX5JiJNSQcjc6Vuo4/PkGdgXwH0zkhbSKMqpIQ5Xt8Vxjok6GVpICLKxBR5IgE3hCQGdBqLIwANchj6wC8BoB1FTna7ksL51H6nti/I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=fEDi8Fic; arc=none smtp.client-ip=192.198.163.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1766473108; c=relaxed/simple;
+	bh=zpaVwFbUivXP/cI2W4vCV3Tja5yvYCmqgql3KIFE9k8=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=OrmSd6QukRdfM0iiiCGD+N69TnBwhGCfbB61UiiW8XgYz89Mz7DyHmW53JixNAI8jp/ekAqcHGK5h+ZbUtBzQSlZaGQwfZEEIPeKcuzk+sM57tvfls92bF8YRUMVDvXMfhGfOt/vnb4Ef97F/cHMGlOno/evKtEN/kNmXBcoR1Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lUWCpe5c; arc=none smtp.client-ip=192.198.163.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="fEDi8Fic"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lUWCpe5c"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1766470205; x=1798006205;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=DqR+KdVb0t7eRqlh+OYruOHh2BtW/jxc95nRExD4+vw=;
-  b=fEDi8FicYdrLzCLk628H/OXE7ptvvCTi1Ht7JgMmA/Ddtw01dO6jJ8nE
-   KGQnV6cVIhttCUKZP0YKYH+xtX8wi6FXfBpU+KymEIl7FTDMUDTEi0CLE
-   sgom1OR0mWAmkOOfadk04yfkVGFWbKasJIkWOhjOiuTJ3e014CWZHbBiT
-   sFzJHF83kGwKRbLKiMoyfznLhE8UuNz5aeAWzaeOqy/kh1DHDdhQaN/rx
-   acs7hN9DBOPI+0jsxAXJEwwI23qL+6uUy2VBPI8DfrOh22DJ3mZRxVM5Y
-   /HrlsGBMLTjoFoEh/OTatkDRu+PBntcfEWPmCRjIaQvVmkMLGiroisqlG
-   w==;
-X-CSE-ConnectionGUID: NY0ms3+ZSqubL5tl606ySQ==
-X-CSE-MsgGUID: IYrqAHBtTpGxQUh5GEPWDA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11650"; a="67316024"
+  t=1766473106; x=1798009106;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=zpaVwFbUivXP/cI2W4vCV3Tja5yvYCmqgql3KIFE9k8=;
+  b=lUWCpe5ciSuEL4QFTi59f67aQfZ9ny/1dkWyEt2iBwTcwYIMsCJtNwMv
+   boK9lsczXGRhB2R0L0/BbCxD3u0VRFOv6DMOO1GPeR8d6HmPtxBif0OZV
+   ZyMbcsweHwGCeMBNP4UcRi2Zj2NAe4y//rjs1w0nO/5/Hfe7VUaULx8zg
+   a6LSQtuSKOfivspMgUDKbEeeYbvh4T8rI6Lo3XAC29Fcs4PJP+3YC3RwY
+   xbTHE8asf8L8IX8S0fwkqJ74xE04jLhkuR6/DPPXRJjH6/HtsPPUK0pPi
+   /1OhBkHE/470OfM4YhXqLm49o2GYlRcnF9vyoPyFQMg/+OsUHpKlM0o2E
+   g==;
+X-CSE-ConnectionGUID: sGQF5likTwaD24tvSFgjSg==
+X-CSE-MsgGUID: t38QhK1DRhOUwqecb9akQw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11650"; a="79684170"
 X-IronPort-AV: E=Sophos;i="6.21,170,1763452800"; 
-   d="scan'208";a="67316024"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Dec 2025 22:10:04 -0800
-X-CSE-ConnectionGUID: v91pPK8PQnCCk76wwgSGlw==
-X-CSE-MsgGUID: uTg91cIzSFuiIo1xaBVH9Q==
+   d="scan'208";a="79684170"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Dec 2025 22:58:25 -0800
+X-CSE-ConnectionGUID: NU4vTuCCQS2nMPWT+rxpnQ==
+X-CSE-MsgGUID: oahmy5jcQpyeMo0vKOt1mg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,170,1763452800"; 
-   d="scan'208";a="204757248"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Dec 2025 22:10:02 -0800
-Message-ID: <e63edcfe-0ee9-4582-b29e-5beb549904ce@linux.intel.com>
-Date: Tue, 23 Dec 2025 14:10:45 +0800
+   d="scan'208";a="237121402"
+Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
+  by orviesa001.jf.intel.com with ESMTP; 22 Dec 2025 22:58:25 -0800
+From: Yi Liu <yi.l.liu@intel.com>
+To: kevin.tian@intel.com,
+	baolu.lu@linux.intel.com
+Cc: joro@8bytes.org,
+	yi.l.liu@intel.com,
+	iommu@lists.linux.dev,
+	jgg@nvidia.com
+Subject: [PATCH v2] iommu/vt-d: Flush piotlb for SVM and Nested domain
+Date: Mon, 22 Dec 2025 22:58:24 -0800
+Message-ID: <20251223065824.6164-1-yi.l.liu@intel.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/2] iommu/vt-d: Ensure memory ordering in context entry
- updates
-To: Dmytro Maluka <dmaluka@chromium.org>
-Cc: David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux.dev,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
- "Vineeth Pillai (Google)" <vineeth@bitbyteword.org>,
- Aashish Sharma <aashish@aashishsharma.net>,
- Grzegorz Jaszczyk <jaszczyk@chromium.org>,
- Chuanxiao Dong <chuanxiao.dong@intel.com>, Kevin Tian <kevin.tian@intel.com>
-References: <20251221014302.17738-1-dmaluka@chromium.org>
- <20251221014302.17738-2-dmaluka@chromium.org>
- <e51dbe16-49a1-4925-8b2b-56beb66de520@linux.intel.com>
- <aUfyBmPQfosuCDab@mitya-t14-2025>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <aUfyBmPQfosuCDab@mitya-t14-2025>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 12/21/25 21:11, Dmytro Maluka wrote:
-> On Sun, Dec 21, 2025 at 05:04:27PM +0800, Baolu Lu wrote:
->> On 12/21/25 09:43, Dmytro Maluka wrote:
->>> +static inline void context_set_bits(u64 *ptr, u64 mask, u64 bits)
->>> +{
->>> +	u64 old;
->>> +
->>> +	old = READ_ONCE(*ptr);
->>> +	WRITE_ONCE(*ptr, (old & ~mask) | bits);
->>> +}
->>
->> Add a line to ensures that the input "bits" cannot overflow the assigned
->> "mask".
->>
->> static inline void context_set_bits(u64 *ptr, u64 mask, u64 bits)
->> {
->> 	u64 val;
->>
->> 	val = READ_ONCE(*ptr);
->> 	val &= ~mask;
->> 	val |= (bits & mask);
->> 	WRITE_ONCE(*ptr, val);
->> }
-> 
-> Makes sense. And then worth doing the same in pasid_set_bits() as well?
-> 
-> Actually we can use the same helper for both context and pasid entries
-> (rename it e.g. to entry_set_bits()).
+Besides the paging domains that use FS, SVM and Nested domains need to
+use piotlb invalidation descriptor as well.
 
-Yeah, that sounds better.
+Fixes: b33125296b50 ("iommu/vt-d: Create unique domain ops for each stage")
+Signed-off-by: Yi Liu <yi.l.liu@intel.com>
+---
+Change log:
+v2:
+- Use domain.type to filter nested and SVA type domain. This eliminates
+  the SVA domain ops reference issue when SVM is compiled out. (Kevin)
+- Add a intel_domain_use_piotlb() helper to cover the three cases which
+  need to flush piotlb. (Kevin)
 
-> 
->>>    static inline void context_set_present(struct context_entry *context)
->>>    {
->>> -	context->lo |= 1;
->>> +	context_set_bits(&context->lo, 1 << 0, 1);
->>>    }
->>
->> How about adding a smp_wmb() before setting the present bit? Maybe it's
->> unnecessary for x86 architecture, but at least it's harmless and more
->> readable. Or not?
->>
->> static inline void context_set_present(struct context_entry *context)
->> {
->> 	smp_wmb();
->> 	context_set_bits(&context->lo, 1ULL << 0, 1ULL);
->> }
-> 
-> Maybe... And if so, then in pasid_set_present() as well?
-> 
-> Actually this would make a slight behavioral difference even on x86:
-> right now this patch only provides ordering of context entry updates
-> between each other, while smp_wmb() would add a full compiler barrier
-> here.
-> 
-> So this barrier may be redundant as long as we always use these
-> context_*() helpers (and thus always use WRITE_ONCE) for any updates of
-> context entries. On the other hand, it might make it more robust if we
-> still occasionally do that without WRITE_ONCE, for example in
-> context_entry_set_pasid_table() which I also changed to use WRITE_ONCE
-> in this patch.
+v1: https://lore.kernel.org/linux-iommu/20251208091907.74719-1-yi.l.liu@intel.com/
+---
+ drivers/iommu/intel/cache.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-Fair point. It is somewhat redundant. However, I would suggest adding a
-comment there. For example:
+diff --git a/drivers/iommu/intel/cache.c b/drivers/iommu/intel/cache.c
+index 265e7290256b..385ae5cfb30d 100644
+--- a/drivers/iommu/intel/cache.c
++++ b/drivers/iommu/intel/cache.c
+@@ -363,6 +363,13 @@ static void qi_batch_add_pasid_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16
+ 	qi_batch_increment_index(iommu, batch);
+ }
+ 
++static bool intel_domain_use_piotlb(struct dmar_domain *domain)
++{
++	return domain->domain.type == IOMMU_DOMAIN_SVA ||
++			domain->domain.type == IOMMU_DOMAIN_NESTED ||
++			intel_domain_is_fs_paging(domain);
++}
++
+ static void cache_tag_flush_iotlb(struct dmar_domain *domain, struct cache_tag *tag,
+ 				  unsigned long addr, unsigned long pages,
+ 				  unsigned long mask, int ih)
+@@ -370,7 +377,7 @@ static void cache_tag_flush_iotlb(struct dmar_domain *domain, struct cache_tag *
+ 	struct intel_iommu *iommu = tag->iommu;
+ 	u64 type = DMA_TLB_PSI_FLUSH;
+ 
+-	if (intel_domain_is_fs_paging(domain)) {
++	if (intel_domain_use_piotlb(domain)) {
+ 		qi_batch_add_piotlb(iommu, tag->domain_id, tag->pasid, addr,
+ 				    pages, ih, domain->qi_batch);
+ 		return;
+-- 
+2.43.0
 
-static inline void context_set_present(struct context_entry *context)
-{
-  	/*
-	 * smp_wmb() is unnecessary here because x86 hardware naturally
-	 * keeps writes in order and all context entry modifications
-	 * use WRITE_ONCE().
-	 */
-  	context_set_bits(&context->lo, 1ULL << 0, 1ULL);
-}
-
-So that people are still aware of this when porting this driver to
-platforms with a weak memory model.
-
-Thanks,
-baolu
