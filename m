@@ -1,190 +1,123 @@
-Received: from mail-qv1-f43.google.com (mail-qv1-f43.google.com [209.85.219.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9792139D
-	for <iommu@lists.linux.dev>; Tue, 23 Dec 2025 00:03:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CDCB717BB21
+	for <iommu@lists.linux.dev>; Tue, 23 Dec 2025 02:26:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766448190; cv=none; b=Q9pgOOtptpw/EgsPtqxkB/mFDf7JDqM2+RKoq7wjJphz0VZmoAVct+ufBJuKomd3BO5LAbd7N6c16s5CWJ7bLK599usDs4cLkAwyIVRmlkQbXiqXrFmMyvfTdP00NpME5o46ygnJyNLGXRrXY8QB9wN4D8fNV2x5N7LdVDdiAPI=
+	t=1766456775; cv=none; b=bRSMa9JI/+Lf+RPiUZoyB3LdGkP9JJ7yisQ+ntnLFWwdGSiHt9HFs73hBB1G4NybmT3twJjNSgK15E4I7eWejxfq4vciJwWKmHVT6qmDb7F4VyRI7jEcSDcU8nrW2ifd7ie2fjED0hEQ0Ez4fMoi06MDUMFpHOXFkCpHLNJpJRk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766448190; c=relaxed/simple;
-	bh=juAIOmILzQG+So2+STFQKwLHKHJ4nfNa2seKYSN0cmg=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=b4nHSTS597NpJTIajSWEcN5jry1OKVdW+4NhM998tbcJdopTEuG01AR7bGQX0jyhApi+B0qO/zXamZYUKj0m2Ml7t72Px9MVjXQKcHkqBOHenNf8i6T97yfeqw9gQhlkPIHKqt84RBUTJa8qM5WDrqe8zir2uSC4SksqRpmEJaw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=EQy/38H+; arc=none smtp.client-ip=209.85.219.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1766456775; c=relaxed/simple;
+	bh=sgkeM8X8WN2YXeHC3V9W5+XFVXkwhzLs2jKrJZRqNa4=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=BYAhrMuaBMfYYaKs5NUMLmjPAbPQ/pGkmgMkHZEzcjLGCv4bRhpyhhOs1OyOcWl6kXu3/2/pFysSG9aemHy5Ygk0T3W0sCi13D/ieZDZc6io6ePSsdWvHCB05kAdeReyycHsC7PpgI4MMhAuxON7dDp1HoBfkUb3Zo3MpYzDiqY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=JOW2bzNn; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EQy/38H+"
-Received: by mail-qv1-f43.google.com with SMTP id 6a1803df08f44-88a288811a4so50541696d6.3
-        for <iommu@lists.linux.dev>; Mon, 22 Dec 2025 16:03:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1766448186; x=1767052986; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=3LOicgErNhTFYQEd3WH4kuv3Qzd96akWti2P2bwjKXg=;
-        b=EQy/38H+fHNqxCxYWKD1spsIS9E2HSkxjURamVjRhN5QOMnczq7UaGT1zPC/oe2D9k
-         4pbXQLAfbW2ET3ECf8c97pZYI436cpNLRRIgkWVbDIsS85Dgx2yr0ap8JUYVWt8d0EJc
-         zX+GY0jh08+Po/u/AJJMVS23jIw3cRi+UEN5XDo1RQg9mvEjfQ9XlUnmIZsMyTZ3Wph9
-         2d6jhWCqtIEERJU8lXrZUN9hsrTZT2ethYOGrM67TI2B4WR+bzP73CU8Z6CcDzuWq2V9
-         a0kV6pjfpceTVFEJGzDnFrWLAwShyT2PvnmecMVuPlJGvZGTBJjENOJPNXIcwzLA/mki
-         nXMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1766448186; x=1767052986;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=3LOicgErNhTFYQEd3WH4kuv3Qzd96akWti2P2bwjKXg=;
-        b=wsc2FdNu9XghiexUZkSR9MnXG+6v4FEope6kNGVTyabVCfNejQrChjXn0//FdrKTyk
-         xdWl/9QkILo0oxJ20s0zSmqQSW8J7gHFEKLen7zHaUBZuapQUCZoiHoOYNSFrhWUpL1p
-         Tjj/KbgqAyKIZwt748vRLdYUId5ibTEpgIsRqEx2H6nq5BWAu5MUANxBBqu/cQ7aIPj4
-         hcz9PzRfy6v7k4kDpFUD4F+e5VLZizOWs1f/f5cm2FpXsAto/MhkChYov214ErtPBqIK
-         3uECC8Amygw+DUlHvOMXDJSdjazDmBDET2zofXDRX0Gomsx2/OvtYbaO/Ul8t6d4fKnJ
-         BN5g==
-X-Forwarded-Encrypted: i=1; AJvYcCUWsmFU7hu36PNnEYZILznVhjzkh3pTeB9MJlcZj53VATbCmqXhFGqCPbIJR0YNz8gYQMzADg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Ywy1W1j4u0PO2jfrLaVZpANwxls+fSRHZngsl0HdN35/euC75aQ
-	pIsHgycodwkEXBAFixk+br7y80CQ8PVxAiYxU8aRfRzGTUsjjTpWRfLUb7Fzef08lhTHeZsWFmx
-	79/odFzZbWSntM/ARi9RxwwY+CWHJJwE=
-X-Gm-Gg: AY/fxX7fMttw6j99bTeDEIjvykyeEfArhTONPqvhnu1nKRk3D1h880mfDlZEwQIjhZa
-	FwPThNC1g+C7ZVuDpdtXroXgpOeiGOmmylx1Vjv/KXPpz/h4LQVLTGbo2nr1noVcwIQeY9BipEp
-	yCFc89sE2grfyhrBQ3y6/hrHL31GoORV0X4dPMdnQf2bt7Hd/WlXBB+LaQlmUZLG5PazLgpDoc0
-	31lHghJdegD0pCiBJlcAxGwHHIoZ3c2tjiLXQLUGmuXAprNY9C8Zd6nggS2wTGhE0IA4A==
-X-Google-Smtp-Source: AGHT+IEZZVrQZ0i2FOsWBMrA37EgStlHwxoujL9L1Fx4NStIdzIudBmVYo0v/NHWIETz9sf+Dm3aWxP2ut/+MfFNKiE=
-X-Received: by 2002:ad4:414c:0:b0:880:4310:7e02 with SMTP id
- 6a1803df08f44-88d81d42e4bmr152858826d6.21.1766448186339; Mon, 22 Dec 2025
- 16:03:06 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="JOW2bzNn"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1766456772;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=zi4oyCc5/0xxSx6mN99a28+uzJNnasIcIl0Y9zet9JM=;
+	b=JOW2bzNnNxri5KRr3FQHQe6CGhxIHUMaA9395zsaQ1FsB+eqD1e7VzUVPlL2ssrFXtvOBh
+	Dc/QMJKYoRnto+O2wiyTWU1v+5ZvlqTRmayR8ahVrRcJmZIdJFvByFhtJDFO6wsvVpoCp6
+	944+dKArvybtOEa3djPn+WxAeGAUvJo=
+Received: from mx-prod-mc-03.mail-002.prod.us-west-2.aws.redhat.com
+ (ec2-54-186-198-63.us-west-2.compute.amazonaws.com [54.186.198.63]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
+ cipher=TLS_AES_256_GCM_SHA384) id us-mta-556-XQCB8_ptOAai97cvo69YSg-1; Mon,
+ 22 Dec 2025 21:26:08 -0500
+X-MC-Unique: XQCB8_ptOAai97cvo69YSg-1
+X-Mimecast-MFC-AGG-ID: XQCB8_ptOAai97cvo69YSg_1766456767
+Received: from mx-prod-int-01.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-01.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.4])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mx-prod-mc-03.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 9676F195605A;
+	Tue, 23 Dec 2025 02:26:07 +0000 (UTC)
+Received: from gmail.com (unknown [10.72.112.13])
+	by mx-prod-int-01.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 7012530001A2;
+	Tue, 23 Dec 2025 02:26:05 +0000 (UTC)
+Date: Tue, 23 Dec 2025 10:26:00 +0800
+From: Chunyu Hu <chuhu@redhat.com>
+To: Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux.dev
+Subject: Question: AMD IOMMU v1 contiguous PTE OA encoding triggers
+ FIELD_PREP overflow
+Message-ID: <aUn9uGPCooqB-RIF@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20251221115523.GI13030@unreal> <20251221192458.1320-1-21cnbao@gmail.com>
- <20251222084921.GA13529@unreal>
-In-Reply-To: <20251222084921.GA13529@unreal>
-From: Barry Song <21cnbao@gmail.com>
-Date: Tue, 23 Dec 2025 13:02:55 +1300
-X-Gm-Features: AQt7F2rid0y3y0Yd9WtXER6TR3yir1jQ4ns4ZMhe7WurwhJeM4kREFYEM2znxW0
-Message-ID: <CAGsJ_4yuvHNqHDi8eN-8UoY2McoXUeCMmbjFAr=jSdv8GpGKeg@mail.gmail.com>
-Subject: Re: [PATCH 5/6] dma-mapping: Allow batched DMA sync operations if
- supported by the arch
-To: Leon Romanovsky <leon@kernel.org>
-Cc: ada.coupriediaz@arm.com, anshuman.khandual@arm.com, ardb@kernel.org, 
-	catalin.marinas@arm.com, iommu@lists.linux.dev, 
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
-	m.szyprowski@samsung.com, maz@kernel.org, robin.murphy@arm.com, 
-	ryan.roberts@arm.com, surenb@google.com, v-songbaohua@oppo.com, 
-	will@kernel.org, zhengtangquan@oppo.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-Scanned-By: MIMEDefang 3.4.1 on 10.30.177.4
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: OMKXEOCI0HfhyOTQIM2PGXNfATit3uDESWZI5APfqTE_1766456767
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 
-On Mon, Dec 22, 2025 at 9:49=E2=80=AFPM Leon Romanovsky <leon@kernel.org> w=
-rote:
->
-> On Mon, Dec 22, 2025 at 03:24:58AM +0800, Barry Song wrote:
-> > On Sun, Dec 21, 2025 at 7:55=E2=80=AFPM Leon Romanovsky <leon@kernel.or=
-g> wrote:
-> > [...]
-> > > > +
-> > >
-> > > I'm wondering why you don't implement this batch=E2=80=91sync support=
- inside the
-> > > arch_sync_dma_*() functions. Doing so would minimize changes to the g=
-eneric
-> > > kernel/dma/* code and reduce the amount of #ifdef=E2=80=91based spagh=
-etti.
-> > >
-> >
-> > There are two cases: mapping an sg list and mapping a single
-> > buffer. The former can be batched with
-> > arch_sync_dma_*_batch_add() and flushed via
-> > arch_sync_dma_batch_flush(), while the latter requires all work to
-> > be done inside arch_sync_dma_*(). Therefore,
-> > arch_sync_dma_*() cannot always batch and flush.
->
-> Probably in all cases you can call the _batch_ variant, followed by _flus=
-h_,
-> even when handling a single page. This keeps the code consistent across a=
-ll
-> paths. On platforms that do not support _batch_, the _flush_ operation wi=
-ll be
-> a NOP anyway.
+While enabling CONFIG_CONSTRUCTORS + GCOV, I ran into a build-time
+FIELD_PREP() overflow in amdv1pt_install_leaf_entry() for the
+contiguous (NEXT_LEVEL = SIZE) mapping path.
 
-We have a lot of code outside kernel/dma that also calls
-arch_sync_dma_for_* such as arch/arm, arch/mips, drivers/xen,
-I guess we don=E2=80=99t want to modify so many things?
+Specifically, this block:
 
-for kernel/dma, we have two "single" callers only:
-kernel/dma/direct.h, kernel/dma/swiotlb.c.  and they looks quite
-straightforward:
+entry |= FIELD_PREP(AMDV1PT_FMT_NEXT_LEVEL,
+                    AMDV1PT_FMT_NL_SIZE) |
+         FIELD_PREP(AMDV1PT_FMT_OA,
+            oalog2_to_int(oasz_lg2 - PT_GRANULE_LG2SZ - 1) - 1);
 
-static inline void dma_direct_sync_single_for_device(struct device *dev,
-                dma_addr_t addr, size_t size, enum dma_data_direction dir)
-{
-        phys_addr_t paddr =3D dma_to_phys(dev, addr);
+ends up producing a value that exceeds the width of AMDV1PT_FMT_OA
+(GENMASK_ULL(51, 12)), which compiler detect and reject at build time.
 
-        swiotlb_sync_single_for_device(dev, paddr, size, dir);
+However, I’m not familiar with the AMD IOMMU internals, so I wanted
+to ask the list: is OA supposed to be re-encoded for SIZE mappings, or
+is this overflow indicating that the OA field should be left unchanged
+in this case?
 
-        if (!dev_is_dma_coherent(dev))
-                arch_sync_dma_for_device(paddr, size, dir);
-}
+Any guidance or correction would be greatly appreciated.
 
-I guess moving to arch_sync_dma_for_device_batch + flush
-doesn=E2=80=99t really look much better, does it?
+Thanks,
+Chunyu Hu
 
->
-> I would also rename arch_sync_dma_batch_flush() to arch_sync_dma_flush().
+--<
+"""
+In file included from <command-line>:
+In function ‘amdv1pt_install_leaf_entry’,
+    inlined from ‘__do_map_single_page’ at drivers/iommu/generic_pt/fmt/../iommu_pt.h:651:3,
+    inlined from ‘__map_single_page0’ at drivers/iommu/generic_pt/fmt/../iommu_pt.h:662:1,
+    inlined from ‘pt_descend’ at drivers/iommu/generic_pt/fmt/../pt_iter.h:391:9,
+    inlined from ‘__do_map_single_page’ at drivers/iommu/generic_pt/fmt/../iommu_pt.h:658:10,
+    inlined from ‘__map_single_page1.constprop’ at drivers/iommu/generic_pt/fmt/../iommu_pt.h:662:1:
+././include/linux/compiler_types.h:631:45: error: call to ‘__compiletime_assert_251’ declared with attribute error: FIELD_PREP: value too large for the field
+  631 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+      |                                             ^
+././include/linux/compiler_types.h:612:25: note: in definition of macro ‘__compiletime_assert’
+  612 |                         prefix ## suffix();                             \
+      |                         ^~~~~~
+././include/linux/compiler_types.h:631:9: note: in expansion of macro ‘_compiletime_assert’
+  631 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+      |         ^~~~~~~~~~~~~~~~~~~
+./include/linux/build_bug.h:39:37: note: in expansion of macro ‘compiletime_assert’
+   39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
+      |                                     ^~~~~~~~~~~~~~~~~~
+./include/linux/bitfield.h:69:17: note: in expansion of macro ‘BUILD_BUG_ON_MSG’
+   69 |                 BUILD_BUG_ON_MSG(__builtin_constant_p(_val) ?           \
+      |                 ^~~~~~~~~~~~~~~~
+./include/linux/bitfield.h:90:17: note: in expansion of macro ‘__BF_FIELD_CHECK_MASK’
+   90 |                 __BF_FIELD_CHECK_MASK(mask, val, pfx);                  \
+      |                 ^~~~~~~~~~~~~~~~~~~~~
+./include/linux/bitfield.h:137:17: note: in expansion of macro ‘__FIELD_PREP’
+  137 |                 __FIELD_PREP(_mask, _val, "FIELD_PREP: ");              \
+      |                 ^~~~~~~~~~~~
+drivers/iommu/generic_pt/fmt/amdv1.h:220:26: note: in expansion of macro ‘FIELD_PREP’
+  220 |                          FIELD_PREP(AMDV1PT_FMT_OA,
+      |                          ^~~~~~~~~~
+"""
 
-Sure.
-
->
-> You can also minimize changes in dma_direct_map_phys() too, by extending
-> it's signature to provide if flush is needed or not.
-
-Yes. I have
-
-static inline dma_addr_t __dma_direct_map_phys(struct device *dev,
-                phys_addr_t phys, size_t size, enum dma_data_direction dir,
-                unsigned long attrs, bool flush)
-
-and two wrappers:
-static inline dma_addr_t dma_direct_map_phys(struct device *dev,
-                phys_addr_t phys, size_t size, enum dma_data_direction dir,
-                unsigned long attrs)
-{
-        return __dma_direct_map_phys(dev, phys, size, dir, attrs, true);
-}
-
-static inline dma_addr_t dma_direct_map_phys_batch_add(struct device *dev,
-                phys_addr_t phys, size_t size, enum dma_data_direction dir,
-                unsigned long attrs)
-{
-        return __dma_direct_map_phys(dev, phys, size, dir, attrs, false);
-}
-
-If you prefer exposing "flush" directly in dma_direct_map_phys()
-and updating its callers with flush=3Dtrue, I think that=E2=80=99s fine.
-
-It could be also true for dma_direct_sync_single_for_device().
-
->
-> dma_direct_map_phys(....) -> dma_direct_map_phys(...., bool flush):
->
-> static inline dma_addr_t dma_direct_map_phys(...., bool flush)
-> {
->         ....
->
->         if (dma_addr !=3D DMA_MAPPING_ERROR && !dev_is_dma_coherent(dev) =
-&&
->             !(attrs & (DMA_ATTR_SKIP_CPU_SYNC | DMA_ATTR_MMIO)))
->         {
->                 arch_sync_dma_for_device(phys, size, dir);
->                 if (flush)
->                         arch_sync_dma_flush();
->         }
-> }
->
-
-Thanks
-Barry
