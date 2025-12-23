@@ -1,50 +1,24 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
+Received: from out28-2.mail.aliyun.com (out28-2.mail.aliyun.com [115.124.28.2])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3DA3A381AF
-	for <iommu@lists.linux.dev>; Tue, 23 Dec 2025 04:05:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D061D883F
+	for <iommu@lists.linux.dev>; Tue, 23 Dec 2025 05:03:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.28.2
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766462745; cv=none; b=jKObOjdEKftmZjTfSU1jzGoP/r0z5mzGn8MW9sTm0LtkUZD5KiflqYv6tdJpK3ZvKO9NIIWhIJizDMgaMsE+JBjiEkZhooQRgunTzy4AzeRlVuHV4fKzwGSWh9Zmqju/VultVGfMS7tOmaJtdVOEDZKCikD5wNj0LhYoyMRuLrw=
+	t=1766466191; cv=none; b=q/gakyNtVwXgkG6wEwYZ744xxW/WoUZ+OtBDa1t2WXQ7Pyjl/Rq8EyHUai+1GwAJS4/F9nj69M4AI81O3e+BANDoDvuQ1/wENdAki+Pd+faWuJf/3lyg9dLfHFKMqF0+JJJLAqqFTZI5XfVWCknXCH7OuUxjyDCwGFx63sDOung=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766462745; c=relaxed/simple;
-	bh=XGpM1Fdl3pIWzFbZw0bYmRLO6aLVsRVc990n/X0l9l8=;
+	s=arc-20240116; t=1766466191; c=relaxed/simple;
+	bh=3bGyVD9V4kdQ/2hmVX1tNTqF720SdxaMUiB5CbziAQw=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=YoKXY+oPNKtpV/b0EW4gWu6msRqqkVURjRps70e6vlCb5Iz/TpzZ+r9Z+YP/GNhj9eERTu6qWQUc53pV54C3t7vPmvAG8codwUFJwo2wRkVKel+59vhgbrip3LrNA7AmBkQ4ZiEnnnvH2I8/Y8bnxG1DpFMxDLi8tu5u9yxcmq4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IzObc+2B; arc=none smtp.client-ip=198.175.65.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IzObc+2B"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1766462744; x=1797998744;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=XGpM1Fdl3pIWzFbZw0bYmRLO6aLVsRVc990n/X0l9l8=;
-  b=IzObc+2BJAu24Of44UXCwXEr3YQNgtRRXc+xq0AY2lOYxad02b1N1nOi
-   a+malGfny7lnlfxIldOZU0TjqlckTOkY7s8H1XMHhrStV5oxSXPH5dVV/
-   gfuCzUywmoouIHMVedd8udddd4REZS4/7XOJTjAqLNzb2ui1KE/nmGqzG
-   TsVg7+AM5rLWP9YVjMJ3DyZG/+awvqjAeUpkmOGu8KolaxZgI6Fn2nsbL
-   Z7nS4Ox5PIAJdoYdG7RQ//IfET7b5+gO5sNPgpuTE8zX3Qm4K/S3xCJkM
-   WY89TMp7kER73ecfcoLel4AaBXjBD1sBh+1hvIgJip5sqfnpK5UkDTFl1
-   Q==;
-X-CSE-ConnectionGUID: r67SF42uRXmXjnMnSYoRqQ==
-X-CSE-MsgGUID: 88BjkdrdT7eHboNxJXTtcw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11650"; a="79431608"
-X-IronPort-AV: E=Sophos;i="6.21,170,1763452800"; 
-   d="scan'208";a="79431608"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Dec 2025 20:05:43 -0800
-X-CSE-ConnectionGUID: uA9OKgalSb6SWaiqyajz+w==
-X-CSE-MsgGUID: evQAdVrEQ5y2J3/29RhcHQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,170,1763452800"; 
-   d="scan'208";a="200590632"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Dec 2025 20:05:41 -0800
-Message-ID: <aa1eda8a-4463-467a-b157-c6155882f293@linux.intel.com>
-Date: Tue, 23 Dec 2025 12:06:24 +0800
+	 In-Reply-To:Content-Type; b=awJXrTEaTcRvhNj4a1ec6H4vnfGpDxfLo3M59GdYaAOrdRwBeReq0V2W4U0cTDRLi/ADf8+RNKg5ioa+K6TEYzUJQ4EGl4Tg/57GYaUfvn5YgcR7fiHX/Kj8kZJovbzaz/vBW2h0YOQgifBqBkmyPHFNsnMconoNQuP9xWAHJPQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bosc.ac.cn; spf=pass smtp.mailfrom=bosc.ac.cn; arc=none smtp.client-ip=115.124.28.2
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bosc.ac.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bosc.ac.cn
+Received: from 172.38.31.119(mailfrom:guoyaxing@bosc.ac.cn fp:SMTPD_---.fqufVW6_1766466176 cluster:ay29)
+          by smtp.aliyun-inc.com;
+          Tue, 23 Dec 2025 13:02:57 +0800
+Message-ID: <2ce9d8be-10b3-48dd-b99e-7358347fc171@bosc.ac.cn>
+Date: Tue, 23 Dec 2025 13:02:56 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,123 +26,53 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/2] iommu/vt-d: Flush dev-IOTLB only when PCIe device
- is accessible in scalable mode
-To: Jinhui Guo <guojinhui.liam@bytedance.com>, kevin.tian@intel.com
-Cc: dwmw2@infradead.org, iommu@lists.linux.dev, joro@8bytes.org,
- linux-kernel@vger.kernel.org, stable@vger.kernel.org, will@kernel.org,
- Bjorn Helgaas <bhelgaas@google.com>
-References: <BN9PR11MB52763E38B4C8B59C9A9AD9E18CA8A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20251222111935.489-1-guojinhui.liam@bytedance.com>
+Subject: Re: About RISC-V IOMMU PMU
 Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20251222111935.489-1-guojinhui.liam@bytedance.com>
+To: Zong Li <zong.li@sifive.com>, Xu Lu <luxu.kernel@bytedance.com>
+Cc: iommu@lists.linux.dev, Tomasz Jeznach <tjeznach@rivosinc.com>,
+ joro@8bytes.org, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Paul Walmsley
+ <paul.walmsley@sifive.com>, Palmer Dabbelt <palmer@dabbelt.com>,
+ Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>,
+ anxu@bosc.ac.cn, wangran@bosc.ac.cn
+References: <CAPYmKFt8bu48mi0awW7XWCiQvQqKf0VzcJbx5VR0VmcT0zYZ4Q@mail.gmail.com>
+ <CANXhq0qeQmDP59J3_j4H1ei3CFqofx0m6vUcX1mL3Y+it6+FXQ@mail.gmail.com>
+From: yaxing guo <guoyaxing@bosc.ac.cn>
+In-Reply-To: <CANXhq0qeQmDP59J3_j4H1ei3CFqofx0m6vUcX1mL3Y+it6+FXQ@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-On 12/22/25 19:19, Jinhui Guo wrote:
-> On Thu, Dec 18, 2025 08:04:20AM +0000, Tian, Kevin wrote:
->>> From: Jinhui Guo<guojinhui.liam@bytedance.com>
->>> Sent: Thursday, December 11, 2025 12:00 PM
->>>
->>> Commit 4fc82cd907ac ("iommu/vt-d: Don't issue ATS Invalidation
->>> request when device is disconnected") relies on
->>> pci_dev_is_disconnected() to skip ATS invalidation for
->>> safely-removed devices, but it does not cover link-down caused
->>> by faults, which can still hard-lock the system.
->> According to the commit msg it actually tries to fix the hard lockup
->> with surprise removal. For safe removal the device is not removed
->> before invalidation is done:
+
+
+On 2025/12/10 15:12, Zong Li wrote:
+> On Wed, Dec 10, 2025 at 11:23 AM Xu Lu <luxu.kernel@bytedance.com> wrote:
 >>
->> "
->>      For safe removal, device wouldn't be removed until the whole software
->>      handling process is done, it wouldn't trigger the hard lock up issue
->>      caused by too long ATS Invalidation timeout wait.
->> "
+>> Hi Yaxing and Zong Li,
 >>
->> Can you help articulate the problem especially about the part
->> 'link-down caused by faults"? What are those faults? How are
->> they different from the said surprise removal in the commit
->> msg to not set pci_dev_is_disconnected()?
+>> I noticed that Yaxing has sent a patch series about RISC-V IOMMU
+>> PMU[1]. The same driver has an earlier patch series[2] from Zong Li. I
+>> am wondering if Zong Li still plans to update his patch?
 >>
-> Hi, kevin, sorry for the delayed reply.
-> 
-> A normal or surprise removal of a PCIe device on a hot-plug port normally
-> triggers an interrupt from the PCIe switch.
-> 
-> We have, however, observed cases where no interrupt is generated when the
-> device suddenly loses its link; the behaviour is identical to setting the
-> Link Disable bit in the switch’s Link Control register (offset 10h). Exactly
-> what goes wrong in the LTSSM between the PCIe switch and the endpoint remains
-> unknown.
-
-In this scenario, the hardware has effectively vanished, yet the device
-driver remains bound and the IOMMU resources haven't been released. I’m
-just curious if this stale state could trigger issues in other places
-before the kernel fully realizes the device is gone? I’m not objecting
-to the fix. I'm just interested in whether this 'zombie' state creates
-risks elsewhere.
-
-> 
->>> For example, if a VM fails to connect to the PCIe device,
->> 'failed' for what reason?
+>> [1] https://lore.kernel.org/all/20250915020911.1313-1-guoyaxing@bosc.ac.cn/
+>> [2] https://lore.kernel.org/all/20250115030306.29735-2-zong.li@sifive.com/
 >>
->>> "virsh destroy" is executed to release resources and isolate
->>> the fault, but a hard-lockup occurs while releasing the group fd.
->>>
->>> Call Trace:
->>>   qi_submit_sync
->>>   qi_flush_dev_iotlb
->>>   intel_pasid_tear_down_entry
->>>   device_block_translation
->>>   blocking_domain_attach_dev
->>>   __iommu_attach_device
->>>   __iommu_device_set_domain
->>>   __iommu_group_set_domain_internal
->>>   iommu_detach_group
->>>   vfio_iommu_type1_detach_group
->>>   vfio_group_detach_container
->>>   vfio_group_fops_release
->>>   __fput
->>>
->>> Although pci_device_is_present() is slower than
->>> pci_dev_is_disconnected(), it still takes only ~70 µs on a
->>> ConnectX-5 (8 GT/s, x2) and becomes even faster as PCIe speed
->>> and width increase.
->>>
->>> Besides, devtlb_invalidation_with_pasid() is called only in the
->>> paths below, which are far less frequent than memory map/unmap.
->>>
->>> 1. mm-struct release
->>> 2. {attach,release}_dev
->>> 3. set/remove PASID
->>> 4. dirty-tracking setup
->>>
->> surprise removal can happen at any time, e.g. after the check of
->> pci_device_is_present(). In the end we need the logic in
->> qi_check_fault() to check the presence upon ITE timeout error
->> received to break the infinite loop. So in your case even with
->> that logici in place you still observe lockup (probably due to
->> hardware ITE timeout is longer than the lockup detection on
->> the CPU?
-> Are you referring to the timeout added in patch
-> https://lore.kernel.org/all/20240222090251.2849702-4- 
-> haifeng.zhao@linux.intel.com/ ?
-
-This doesn't appear to be a deterministic solution, because ...
-
-> Our lockup-detection timeout is the default 10 s.
+>> Best regards,
+>> Xu Lu
 > 
-> We see ITE-timeout messages in the kernel log. Yet the system still
-> hard-locks—probably because, as you mentioned, the hardware ITE timeout
-> is longer than the CPU’s lockup-detection window. I’ll reproduce the
-> case and follow up with a deeper analysis.
+> Hi Xu,
+> Thanks for bringing us here. It seems to me that Yaxing’s
+> implementation is similar to my previous version. I’m currently
+> working on the next version to incorporate the feedback from my
+> earlier series, and decouple the IOMMU perf driver from the IOMMU
+> driver, and make it easier to add custom events. If Yaxing doesn’t
+> mind, I’ll send it out later.
+> 
+> Hi Yaxing,
+> Please let me know if it is ok for you. Thanks
 
-... as you see, neither the PCI nor the VT-d specifications mandate a
-specific device-TLB invalidation timeout value for hardware
-implementations. Consequently, the ITE timeout value may exceed the CPU
-watchdog threshold, meaning a hard lockup will be detected before the
-ITE even occurs.
+Hi Zong Li,
+Of course yes, absolutely — I wasn’t aware of your earlier submission.
+Please go ahead with your version.
 
-Thanks,
-baolu
+Best regards,
+Yaxing Guo
