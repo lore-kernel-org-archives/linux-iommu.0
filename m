@@ -1,108 +1,128 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4AE073161BA
-	for <iommu@lists.linux.dev>; Thu, 25 Dec 2025 09:07:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB7AF227E83;
+	Thu, 25 Dec 2025 12:36:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766653673; cv=none; b=bcvyzIiHsto9Dx+5os5b2EJOET5vfOpUNIP7JRrMtaTFlPNK58J+AxsgP0so5SdOjIbAkMK0XJFFp1OD6V/QTNt20j40pJ3ZWWPF7ulCIPCTkE2BPvusadGq/kkFTRLJxHJlOpVrdaJDqGBeQrzNSyLSwn90I1TSj80OnEoIH6k=
+	t=1766666216; cv=none; b=aExmCFB9uTdlGVDxFK4r9UWleIgAVLMKDwZiK8wqKteXTVTDwzpecnzYw12SOBU+lD1M+7DEk4Tj3IX5Ioca8R2XOuBbTa3Sl6rZtgkxIJbA8JBpvRHwwIdm0vG8EnYghTpkbyIbM/5zJ9Bx0/qiPzPh0Vz59rEE8Nie1nWxJpM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766653673; c=relaxed/simple;
-	bh=hZc1+DU7BxaZ0pHjHw8/tfR/Nq71rMC9Z07diFqHTEw=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Ve67gorMuUtf0nT/SbW5ePt6h0IEAeZ07yId74XRpeamZANFROrBVLJ9PKGvw9ID8+dRll/lSEST3Spl1Z57HWSDxR0evTb3VX5aYo9Uvym1KmkcfAWrIgNQ+F+NQnF2jr/Pk7YBN2ezXTmeNdQXpp80NdBF+RvKoX46CzYUv14=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=caBCnPSr; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1766666216; c=relaxed/simple;
+	bh=WzoONx4GwRY0HIt+QGBq0NrV6ZYzdLYx41h6bExqSyo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=EKA7q3jB5iwZjGPYtvpdv0LL5hNenMFjTWgU2Uwh5HypsLoQmh+RrDjt3UQfm30G0jYzKcAZwIWl2pIzYu3ZMyojD/zAPKjsCnbGgYDXXD0W6hk9cQicBcBu0l88PE+nF/35hqEIxo4Qu8I4HYVmbEyptUMT49HyNHc3x6gvvnc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GH64681e; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="caBCnPSr"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9EB4C19422
-	for <iommu@lists.linux.dev>; Thu, 25 Dec 2025 09:07:52 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GH64681e"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADC11C4CEF1;
+	Thu, 25 Dec 2025 12:36:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1766653673;
-	bh=hZc1+DU7BxaZ0pHjHw8/tfR/Nq71rMC9Z07diFqHTEw=;
-	h=References:In-Reply-To:Reply-To:From:Date:Subject:To:Cc:From;
-	b=caBCnPSrtJ32X2296HO3meZX1otJPRMu2wMIRegIwALIMzO0rNIdKPF9/ll5/fGfg
-	 tdXLDY+eqDWvJEz4PEMpSgGR/LTyGW4Bg5vpmT4YiHvXXbnCyvH1qNtxtcKqGz++a9
-	 7GuohHuJFJjudgAvRuYY2Bn9x+b8Lhv++VAjYpRDCUle403KSZ78am4pZGBOqIjBHg
-	 ZP9xYPwyZC2O7hqDmuqmXGC3FRtQTxvHiCfEyKERyxJKu9BKhFFk+tKVuXk8thcXYs
-	 Emsb6rG/ENWpdN1jfpFWFZ8sqf8XIyUwjb5HgUQ3OH1IBjFyuzsTjWyriCG+U/yvnc
-	 dLt/Ge4Mx12yA==
-Received: by mail-lf1-f49.google.com with SMTP id 2adb3069b0e04-5957d7e0bf3so6632815e87.0
-        for <iommu@lists.linux.dev>; Thu, 25 Dec 2025 01:07:52 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCVvEp8TligqlLWIZS+Vs5fqgqn9daWsyqFb34Yw/YyeMrv+Gxn+DX4JMDqcfyv+AXMGT+E6pA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyugY8us4x6OhyOcsmxjR+0HbxWxX8qBdlbd5iS7v/IUopbEChP
-	oJqV0VjP9QpAKF3RjlDEe3e3Jr+MUugWqfcaHVHXjcf4Chpv+O3PZnS7mZx/HHAus+4mx7eMlbd
-	28adqcIeZgJ+HMOJZZbET2Ue7ODiMtr4=
-X-Google-Smtp-Source: AGHT+IHfPWz1heWtm82AOh8ny5sgT9kzx+lyzDjyJcBgqVf6WZJpwpmEyZeQVabkjvt5oV4xlzU03UcKE5H1xk8UgF0=
-X-Received: by 2002:a05:651c:1470:b0:378:e0f3:53c1 with SMTP id
- 38308e7fff4ca-38113275820mr72648701fa.18.1766653671109; Thu, 25 Dec 2025
- 01:07:51 -0800 (PST)
+	s=k20201202; t=1766666215;
+	bh=WzoONx4GwRY0HIt+QGBq0NrV6ZYzdLYx41h6bExqSyo=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=GH64681eyxF/5e2195mhPnPO3YGodiwCuyr6x+WjMJS2vhlRlwCZ0KBL5qyx0ZzZN
+	 uMqLbqEY7wyKIKJ34IM/sKcD2GND2sPGJqtihi1U7olo/bB6RcVON7wqml+zGVjX+f
+	 FMRgavhp0mrbhVKMf7UEdZxhcwWx5RkcaBa01Dgzdj+8Yb1IbV0q2ED/F3s5wSAWhx
+	 la9VBLsEhLqKRATnzaYYi4QGqE+tIcoKnJzW/bXb0hAZR1/SRFYgy35lUZo/AK6sLi
+	 SO3MQstr7qy5yT4mBaNueQTsVGINVdFwy92Vmkzk/tJO0dLya093ww8C3lErecBdMf
+	 4twp/pZ1CFIug==
+Date: Thu, 25 Dec 2025 14:36:50 +0200
+From: Leon Romanovsky <leon@kernel.org>
+To: Barry Song <21cnbao@gmail.com>
+Cc: ada.coupriediaz@arm.com, anshuman.khandual@arm.com, ardb@kernel.org,
+	catalin.marinas@arm.com, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	m.szyprowski@samsung.com, maz@kernel.org, robin.murphy@arm.com,
+	ryan.roberts@arm.com, surenb@google.com, v-songbaohua@oppo.com,
+	will@kernel.org, zhengtangquan@oppo.com
+Subject: Re: [PATCH 5/6] dma-mapping: Allow batched DMA sync operations if
+ supported by the arch
+Message-ID: <20251225123650.GJ11869@unreal>
+References: <20251224085145.GF11869@unreal>
+ <20251225054509.39917-1-21cnbao@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20251212231203.727227-1-robh@kernel.org>
-In-Reply-To: <20251212231203.727227-1-robh@kernel.org>
-Reply-To: wens@kernel.org
-From: Chen-Yu Tsai <wens@kernel.org>
-Date: Thu, 25 Dec 2025 17:07:38 +0800
-X-Gmail-Original-Message-ID: <CAGb2v65Pt=c7rNtE-u7j_=SbT4DLw03iOw=PFchbisPQenhOtg@mail.gmail.com>
-X-Gm-Features: AQt7F2qwpZzDsTD1g9DqdU3xoJFe0KlIMNtkshCEa1nlt61s05fF43c85tHciK8
-Message-ID: <CAGb2v65Pt=c7rNtE-u7j_=SbT4DLw03iOw=PFchbisPQenhOtg@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: Remove unused includes
-To: "Rob Herring (Arm)" <robh@kernel.org>
-Cc: Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Bjorn Andersson <andersson@kernel.org>, Michal Simek <michal.simek@amd.com>, 
-	Vinod Koul <vkoul@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>, 
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, 
-	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Yong Wu <yong.wu@mediatek.com>, Peter Rosin <peda@axentia.se>, 
-	Linus Walleij <linusw@kernel.org>, Jernej Skrabec <jernej.skrabec@gmail.com>, 
-	Samuel Holland <samuel@sholland.org>, Philipp Zabel <p.zabel@pengutronix.de>, 
-	Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, 
-	Pengutronix Kernel Team <kernel@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, 
-	Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org, 
-	linux-clk@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	dmaengine@vger.kernel.org, linux-mediatek@lists.infradead.org, 
-	linux-iio@vger.kernel.org, iommu@lists.linux.dev, linux-gpio@vger.kernel.org, 
-	linux-sunxi@lists.linux.dev, imx@lists.linux.dev, linux-sound@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20251225054509.39917-1-21cnbao@gmail.com>
 
-On Sat, Dec 13, 2025 at 7:12=E2=80=AFAM Rob Herring (Arm) <robh@kernel.org>=
- wrote:
->
-> Remove includes which are not referenced by either DTS files or drivers.
->
-> There's a few more which are new, so they are excluded for now.
->
-> Signed-off-by: Rob Herring (Arm) <robh@kernel.org>
-> ---
->  include/dt-bindings/clock/oxsemi,ox810se.h    |  19 --
->  include/dt-bindings/clock/oxsemi,ox820.h      |  29 --
->  include/dt-bindings/clock/qcom,mss-sc7180.h   |  12 -
->  include/dt-bindings/clock/xlnx-versal-clk.h   | 123 ---------
->  include/dt-bindings/clock/xlnx-zynqmp-clk.h   | 133 ---------
->  include/dt-bindings/dma/jz4775-dma.h          |  44 ---
->  include/dt-bindings/dma/x2000-dma.h           |  54 ----
->  include/dt-bindings/gce/mt6779-gce.h          | 222 ---------------
->  .../dt-bindings/iio/qcom,spmi-adc7-pmr735b.h  |  30 --
->  .../dt-bindings/iio/qcom,spmi-adc7-smb139x.h  |  19 --
->  include/dt-bindings/memory/mt6779-larb-port.h | 206 --------------
->  include/dt-bindings/mux/ti-serdes.h           | 190 -------------
->  include/dt-bindings/pinctrl/mt6397-pinfunc.h  | 257 ------------------
->  .../power/allwinner,sun20i-d1-ppu.h           |  10 -
+On Thu, Dec 25, 2025 at 06:45:09PM +1300, Barry Song wrote:
+> > > >
+> > >
+> > > OK. Could you take a look at [1] and see if any further
+> > > improvements are needed before I send v2?
+> >
+> > Everything looks ok, except these renames:
+> > -                       arch_sync_dma_for_cpu(paddr, sg->length, dir);
+> > +                       arch_sync_dma_for_cpu_batch_add(paddr, sg->length, dir);
+> 
+> Thanks!
+> I'm happy to drop the rename as outlined below-feedback welcome :-)
+> 
+> diff --git a/arch/arm64/include/asm/cache.h b/arch/arm64/include/asm/cache.h
+> index dd2c8586a725..487fb7c355ed 100644
+> --- a/arch/arm64/include/asm/cache.h
+> +++ b/arch/arm64/include/asm/cache.h
+> @@ -87,6 +87,12 @@ int cache_line_size(void);
+>  
+>  #define dma_get_cache_alignment	cache_line_size
+>  
+> +static inline void arch_sync_dma_flush(void)
+> +{
+> +	dsb(sy);
+> +}
+> +#define arch_sync_dma_flush arch_sync_dma_flush
+> +
+>  /* Compress a u64 MPIDR value into 32 bits. */
+>  static inline u64 arch_compact_of_hwid(u64 id)
+>  {
+> diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
+> index b2b5792b2caa..ae1ae0280eef 100644
+> --- a/arch/arm64/mm/dma-mapping.c
+> +++ b/arch/arm64/mm/dma-mapping.c
+> @@ -17,7 +17,7 @@ void arch_sync_dma_for_device(phys_addr_t paddr, size_t size,
+>  {
+>  	unsigned long start = (unsigned long)phys_to_virt(paddr);
+>  
+> -	dcache_clean_poc(start, start + size);
+> +	dcache_clean_poc_nosync(start, start + size);
+>  }
+>  
+>  void arch_sync_dma_for_cpu(phys_addr_t paddr, size_t size,
+> @@ -28,7 +28,7 @@ void arch_sync_dma_for_cpu(phys_addr_t paddr, size_t size,
+>  	if (dir == DMA_TO_DEVICE)
+>  		return;
+>  
+> -	dcache_inval_poc(start, start + size);
+> +	dcache_inval_poc_nosync(start, start + size);
+>  }
+>  
+>  void arch_dma_prep_coherent(struct page *page, size_t size)
+> diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
+> index 4809204c674c..e7dd8a63b40e 100644
+> --- a/include/linux/dma-map-ops.h
+> +++ b/include/linux/dma-map-ops.h
+> @@ -361,6 +361,12 @@ static inline void arch_sync_dma_for_cpu(phys_addr_t paddr, size_t size,
+>  }
+>  #endif /* ARCH_HAS_SYNC_DMA_FOR_CPU */
+>  
+> +#ifndef arch_sync_dma_flush
 
-For this one, a node is present in the DT, but there are currently no
-references to it, and thus no users of the header.
+You likely need to wrap this in "#ifdef CONFIG_ARCH_HAS_SYNC_DMA_FLUSH"
+as done in the surrounding code.
 
-Also this chip hasn't seen a lot of interest after it was initially
-brought up. None of the peripherals that have a separate power
-domain have been enabled.
+Thanks
 
-
-ChenYu
+> +static inline void arch_sync_dma_flush(void)
+> +{
+> +}
+> +#endif
+> +
+>  #ifdef CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL
+>  void arch_sync_dma_for_cpu_all(void);
+>  #else
+> 
