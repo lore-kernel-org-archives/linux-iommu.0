@@ -1,79 +1,52 @@
-Received: from mail-ed1-f51.google.com (mail-ed1-f51.google.com [209.85.208.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 563A31DC997
-	for <iommu@lists.linux.dev>; Sat, 27 Dec 2025 18:06:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E7C61DA23;
+	Sat, 27 Dec 2025 20:07:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766858770; cv=none; b=gbWhmKvXtoS4czCD1LfAOQh1DIVxVEa/B9HBGkgCQH7+VPkziQ4ggJEj5ucthnFxd3QKhQw2emx00yy3bGtYcX7++XJx5k5DhBRp/y5ag1irPbde/9v2IGqH4CZ9ZvN3iyHbRRSihMc+ubK5tcCetMuM1ewz0v5/4//j0zvPjOk=
+	t=1766866032; cv=none; b=Xhh+jp76oAQOLu80HveUY435dv+Vsx30yfAkW6rTI1D9++B6I7ICo5VI9DmnOAPOyRYbcV8nYMgRBT0fbU4WCWRnNP9n5jnMYTS4TRxiPARhYf3PNBKTUl8teZmQqW3SNumLXjIPrKSSGV6JQE1zLnVu3VUAXx7TAnN3F0i3/J8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766858770; c=relaxed/simple;
-	bh=LeUb9b87hO3JYnam6vyZxs7ADNv5kA5A/VeH/0XCy50=;
+	s=arc-20240116; t=1766866032; c=relaxed/simple;
+	bh=lH6Wqea3wfifSQZGhdMqsJ7bOl+AJwlkVM2iS90xz1k=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=CVVep/QpYF4Ot17y6y2IMtPhLle9QdYmvXgz7KlQCAsmtK+dmQipcq9Zgke9Nje5t29dGdqKpM8yrbzRREfHNCuoU0IfK2Q8iNtVCtCzTHyrG2rfCgS8WWk4A2KoFCf9jSDYmpM6rh19vvlOT3aknRQARrWIJLPtx3jgfLuvNeI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=SXIjSkOt; arc=none smtp.client-ip=209.85.208.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
+	 Content-Type:Content-Disposition:In-Reply-To; b=FUVEHOBNsR2WyD5HfsQ49DScXPqzdNirA9MEWND52SFeHrx2UhO8Lmi9WbJz/ofo8ylBItGBEFFV4fk0rha0LskQ85ciA+3eRm8UObfbKwjlu74CACwBLnVNmk7ayueVNlO2hhpGW6OOXc2dOk/jXVwNARk1bMuAduFgxtBJ3dE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=S07xCoEA; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="SXIjSkOt"
-Received: by mail-ed1-f51.google.com with SMTP id 4fb4d7f45d1cf-64c893f3a94so8699620a12.0
-        for <iommu@lists.linux.dev>; Sat, 27 Dec 2025 10:06:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1766858767; x=1767463567; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=JrCO1sgoIm4eBTYLvvypdWXDZ87M9Cpcmd2K9vmntjw=;
-        b=SXIjSkOtwsNoXFs4Z0wRTiuffiH2A6NSK0z1HjYJmDcCtbAyanb7cWwpn6eVr9aaBO
-         D5XFBrAgca+xiMS3F84IHeukgjPJjqpcIRs7VFSu1QrrKgq9fCXpazjby9rE/7Wy16oG
-         aOOuQUyVD7hn/dubxx1RTl114UaRvT/37ghNo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1766858767; x=1767463567;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=JrCO1sgoIm4eBTYLvvypdWXDZ87M9Cpcmd2K9vmntjw=;
-        b=dzf+t7pHkLLdbkB49b92LE2YyyY0zqgNzO+wJbnHIrH7Z4v9qP4q+CzCBIrR15tJCb
-         UScrtab4W7FjVsNCoOocFTv8OqpVRv16GOmfzeLsj7jceQ/ERYtaRBz3YE/a+JjKaQuv
-         NPCjOHl62T4fn72FrSNIRLOscSbwgoslrJt1OQeTIEqajpMsIQRvH1+WoJA2nPfKxnS4
-         yH2lSd1XSbX9uGByFxKlrrlaSgcc3WY2LxfoWI/wSRLSrvvAiPdZm2KYJinvboNdRJLl
-         3EY6Imk8tLPg2m48sDpUhzBVO+TBsvLa5f6pmG5HXa1l/NlsMyv/uJO2hHf6XsrS31WW
-         sExA==
-X-Forwarded-Encrypted: i=1; AJvYcCWDDGyjA1E7YMbU8M47FPXsPeoG4EWMauRTrRFPfe3uFkyBAGV/PBPv5s5pYtAAH+zUfbtRhw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxMJsRrC6cW50dwKGxg1xR5Yn/7QQhedzZ1hx0a30thvwRNqaoE
-	XxUqJ5MNtfNuEdzurSihIdXmSBH0YwuznodgpPk67FsCyVuAYP+KcphnxlXJnAiPBg==
-X-Gm-Gg: AY/fxX7BXvF/C+eH50yxZ7+8eQ8oV9q2orVJzpxa9qLihJhGdNbDheZDBWfPepHi+6m
-	JyP8mfwoPcJTP6N2ie3lW9cvjlQuOXRdMz8X49GlXNShjXoDlLjHeOySdTYMU/771Nz5WaYMQLW
-	GTwVjXLvJNfjVfb0liv5FWkaZ85dOtCaXvPbMkX/mK+vMAT2OUfvEF9k+QHeU0LDx7ireUwVJ/D
-	riLUyLF7qLONMjKWUwmhxsO6zlHEKWK0m0wKIKzm+pp30m61Q4LseAOuHjDrUqtrpMs/5Rrz40A
-	9nMEihsGC3PHkGnbjjgqu07I8qwCymoJe67DvnPbom8s0rz4fIn60DCkqCm5Jdy7wSmgGdO8pbg
-	JJM0+ygcpPFKLbsxgezLeASWBXRU0VC0UqREUglfJoKWfRXfsi5hYZ7wLRFGG7PwIo/q9iLvey+
-	rKd2XijEpXhRNCCvkG5IkB
-X-Google-Smtp-Source: AGHT+IH/5QF76dST+qUgMVrwgOvWi+w3BTNe4avm4/XQxOoN/xj1mZO4lOmC/OH/RU/a7R7ECgkHJA==
-X-Received: by 2002:a17:907:940e:b0:b72:d577:11cc with SMTP id a640c23a62f3a-b8035641f7dmr3115325066b.12.1766858766594;
-        Sat, 27 Dec 2025 10:06:06 -0800 (PST)
-Received: from mitya-t14-2025 ([2a02:a31b:20c3:6680:3d12:d2ea:4ee0:347a])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b8037a60569sm2796394566b.4.2025.12.27.10.06.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 27 Dec 2025 10:06:06 -0800 (PST)
-Date: Sat, 27 Dec 2025 19:06:03 +0100
-From: Dmytro Maluka <dmaluka@chromium.org>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux.dev,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
-	"Vineeth Pillai (Google)" <vineeth@bitbyteword.org>,
-	Aashish Sharma <aashish@aashishsharma.net>,
-	Grzegorz Jaszczyk <jaszczyk@chromium.org>,
-	Chuanxiao Dong <chuanxiao.dong@intel.com>,
-	Kevin Tian <kevin.tian@intel.com>
-Subject: Re: [PATCH 1/2] iommu/vt-d: Ensure memory ordering in context entry
- updates
-Message-ID: <aVAgC81PMN0gA32r@mitya-t14-2025>
-References: <20251221014302.17738-1-dmaluka@chromium.org>
- <20251221014302.17738-2-dmaluka@chromium.org>
- <e51dbe16-49a1-4925-8b2b-56beb66de520@linux.intel.com>
- <aUfyBmPQfosuCDab@mitya-t14-2025>
- <e63edcfe-0ee9-4582-b29e-5beb549904ce@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="S07xCoEA"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8DB3C4CEF1;
+	Sat, 27 Dec 2025 20:07:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1766866031;
+	bh=lH6Wqea3wfifSQZGhdMqsJ7bOl+AJwlkVM2iS90xz1k=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=S07xCoEAxobIYaBiV02L02bERdk0nmuGN+hFMXu5vrWuTP0EPXqj8aOiLirY/XSdI
+	 hUxIfJKJxQwjEDf0cGJIE06esOvlyDzQZ6VVCU/XpJsQ+cPWzdco1dnfE+T0l6+FTy
+	 Z2/1CSf3BiRqj8dt9aICAM5XJ05mm2CcfJWEP0XBNvwwasMfQqxa7wnz+aNmb4d5in
+	 BrpW1mFFc8LnJZ2BxbHSkZt6MmcWRZfo9YGSkyb+kpl/KFt04NW0Tpiwp6VdFNnp6U
+	 FdejPb3ayq/IL4kPtLQVDuEHA5EEs/rnzDON++8ec2joqb9vADZmaIG04lvTKhRmDr
+	 059bfB7LX6s1A==
+Date: Sat, 27 Dec 2025 22:07:06 +0200
+From: Leon Romanovsky <leon@kernel.org>
+To: Barry Song <21cnbao@gmail.com>
+Cc: catalin.marinas@arm.com, m.szyprowski@samsung.com, robin.murphy@arm.com,
+	will@kernel.org, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	xen-devel@lists.xenproject.org, Barry Song <baohua@kernel.org>,
+	Ada Couprie Diaz <ada.coupriediaz@arm.com>,
+	Ard Biesheuvel <ardb@kernel.org>, Marc Zyngier <maz@kernel.org>,
+	Anshuman Khandual <anshuman.khandual@arm.com>,
+	Ryan Roberts <ryan.roberts@arm.com>,
+	Suren Baghdasaryan <surenb@google.com>,
+	Joerg Roedel <joro@8bytes.org>, Juergen Gross <jgross@suse.com>,
+	Stefano Stabellini <sstabellini@kernel.org>,
+	Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+	Tangquan Zheng <zhengtangquan@oppo.com>
+Subject: Re: [PATCH v2 4/8] dma-mapping: Separate DMA sync issuing and
+ completion waiting
+Message-ID: <20251227200706.GN11869@unreal>
+References: <20251226225254.46197-1-21cnbao@gmail.com>
+ <20251226225254.46197-5-21cnbao@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -82,59 +55,71 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <e63edcfe-0ee9-4582-b29e-5beb549904ce@linux.intel.com>
+In-Reply-To: <20251226225254.46197-5-21cnbao@gmail.com>
 
-On Tue, Dec 23, 2025 at 02:10:45PM +0800, Baolu Lu wrote:
-> On 12/21/25 21:11, Dmytro Maluka wrote:
-> > On Sun, Dec 21, 2025 at 05:04:27PM +0800, Baolu Lu wrote:
-> > > On 12/21/25 09:43, Dmytro Maluka wrote:
-> > > >    static inline void context_set_present(struct context_entry *context)
-> > > >    {
-> > > > -	context->lo |= 1;
-> > > > +	context_set_bits(&context->lo, 1 << 0, 1);
-> > > >    }
-> > > 
-> > > How about adding a smp_wmb() before setting the present bit? Maybe it's
-> > > unnecessary for x86 architecture, but at least it's harmless and more
-> > > readable. Or not?
-> > > 
-> > > static inline void context_set_present(struct context_entry *context)
-> > > {
-> > > 	smp_wmb();
-> > > 	context_set_bits(&context->lo, 1ULL << 0, 1ULL);
-> > > }
-> > 
-> > Maybe... And if so, then in pasid_set_present() as well?
-> > 
-> > Actually this would make a slight behavioral difference even on x86:
-> > right now this patch only provides ordering of context entry updates
-> > between each other, while smp_wmb() would add a full compiler barrier
-> > here.
-> > 
-> > So this barrier may be redundant as long as we always use these
-> > context_*() helpers (and thus always use WRITE_ONCE) for any updates of
-> > context entries. On the other hand, it might make it more robust if we
-> > still occasionally do that without WRITE_ONCE, for example in
-> > context_entry_set_pasid_table() which I also changed to use WRITE_ONCE
-> > in this patch.
+On Sat, Dec 27, 2025 at 11:52:44AM +1300, Barry Song wrote:
+> From: Barry Song <baohua@kernel.org>
 > 
-> Fair point. It is somewhat redundant. However, I would suggest adding a
-> comment there. For example:
+> Currently, arch_sync_dma_for_cpu and arch_sync_dma_for_device
+> always wait for the completion of each DMA buffer. That is,
+> issuing the DMA sync and waiting for completion is done in a
+> single API call.
 > 
-> static inline void context_set_present(struct context_entry *context)
-> {
->  	/*
-> 	 * smp_wmb() is unnecessary here because x86 hardware naturally
-> 	 * keeps writes in order and all context entry modifications
-> 	 * use WRITE_ONCE().
-> 	 */
->  	context_set_bits(&context->lo, 1ULL << 0, 1ULL);
-> }
+> For scatter-gather lists with multiple entries, this means
+> issuing and waiting is repeated for each entry, which can hurt
+> performance. Architectures like ARM64 may be able to issue all
+> DMA sync operations for all entries first and then wait for
+> completion together.
 > 
-> So that people are still aware of this when porting this driver to
-> platforms with a weak memory model.
+> To address this, arch_sync_dma_for_* now issues DMA operations in
+> batch, followed by a flush. On ARM64, the flush is implemented
+> using a dsb instruction within arch_sync_dma_flush().
+> 
+> For now, add arch_sync_dma_flush() after each
+> arch_sync_dma_for_*() call. arch_sync_dma_flush() is defined as a
+> no-op on all architectures except arm64, so this patch does not
+> change existing behavior. Subsequent patches will introduce true
+> batching for SG DMA buffers.
+> 
+> Cc: Leon Romanovsky <leon@kernel.org>
+> Cc: Catalin Marinas <catalin.marinas@arm.com>
+> Cc: Will Deacon <will@kernel.org>
+> Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> Cc: Ada Couprie Diaz <ada.coupriediaz@arm.com>
+> Cc: Ard Biesheuvel <ardb@kernel.org>
+> Cc: Marc Zyngier <maz@kernel.org>
+> Cc: Anshuman Khandual <anshuman.khandual@arm.com>
+> Cc: Ryan Roberts <ryan.roberts@arm.com>
+> Cc: Suren Baghdasaryan <surenb@google.com>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: Juergen Gross <jgross@suse.com>
+> Cc: Stefano Stabellini <sstabellini@kernel.org>
+> Cc: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+> Cc: Tangquan Zheng <zhengtangquan@oppo.com>
+> Signed-off-by: Barry Song <baohua@kernel.org>
+> ---
+>  arch/arm64/include/asm/cache.h |  6 ++++++
+>  arch/arm64/mm/dma-mapping.c    |  4 ++--
+>  drivers/iommu/dma-iommu.c      | 37 +++++++++++++++++++++++++---------
+>  drivers/xen/swiotlb-xen.c      | 24 ++++++++++++++--------
+>  include/linux/dma-map-ops.h    |  6 ++++++
+>  kernel/dma/direct.c            |  8 ++++++--
+>  kernel/dma/direct.h            |  9 +++++++--
+>  kernel/dma/swiotlb.c           |  4 +++-
+>  8 files changed, 73 insertions(+), 25 deletions(-)
 
-What I actually had in mind was to add smp_wmb() here anyway. It might
-be useful as an extra safety measure in case we still forget to use
-WRITE_ONCE in some cases, and its performance cost would be virtually
-non-existent, I guess. Done in v2.
+<...>
+
+> +#ifndef arch_sync_dma_flush
+> +static inline void arch_sync_dma_flush(void)
+> +{
+> +}
+> +#endif
+
+Over the weekend I realized a useful advantage of the ARCH_HAVE_* config
+options: they make it straightforward to inspect the entire DMA path simply
+by looking at the .config.
+
+Thanks,
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
