@@ -1,182 +1,205 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27A7C27465C
-	for <iommu@lists.linux.dev>; Wed, 31 Dec 2025 14:42:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BDA2C195811
+	for <iommu@lists.linux.dev>; Wed, 31 Dec 2025 14:43:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767192171; cv=none; b=BOdTIBuqgyl+JzTInb8W9MMvCzL5lyGmzqh5ceDWT3ATuizBVPOUdP2vZr9+h3aGaefBVR+o22etM5iy2wBepTVjr8c6+1ZM/UcC7bhOAxOxwzEbnDNJcNPaWG1KMqSX5SSVpMdxwMhhJ/CKk8RvEiE0FB85Hd6vp5mKl+jmlgo=
+	t=1767192215; cv=none; b=Z8Zf2f3JN6313BZzMv7PGRgnnwaCdjYWsEDmdr2rr/oPUMPJ391ilNH3jw6/u10OQ7q2dmqK3AuZwo+9Ig0we1sUFJM8s2F4zRRGlVSrDzds+Cbga7BPRCOYO6R/NHF7Z9fxN2vadCoCA/AVqYiKIJCwc/SYggGd9tuOslJyxVw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767192171; c=relaxed/simple;
-	bh=7yEDDnq5O6nyMipRBT3oeW2l7NFO4JF7mnRHmsBSRLM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 In-Reply-To:Content-Type:Content-Disposition; b=ozwohS9PKkudLjr/w1Cqm5K8pmoc8zUpvZbm4XNFHLKQ/9lP/8n3A1keFon8wXMDLXgGmGsBVYBainE5Ll1AYHMjx6YR1UEbGhJHhkurGKmS6QOhY6Q58erFhSr3Wj/aiCQHgWnZK3lIzTWDVNvrmd9SEOVfMdQgvcBDLPfGlww=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=Hiy1nehM; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1767192215; c=relaxed/simple;
+	bh=CORJa2hWRPCw7V6XJ5AzrmzgJF/ZVsBswJmIiQ3hcDo=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
+	 Content-Type:References; b=tSz5gl1lixyzfsxfUnRKiUqvBngLa24Ao+qSCYS634+zjYJGXbEZmvIeO49F2WBqOe80nMDGh8Lnaaz65m6qpZ3ViNTALOrFhPNrqo9Sr8g/C8iiaK2QDoX9MTLs91jeMEOJZnpuczSqq7M11ta4utj1PiZwrgw+hnJKsIsLDOY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=Alom80Qx; arc=none smtp.client-ip=210.118.77.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Hiy1nehM"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1767192169;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=g4mmJIWspy2eeK4ehzqbWNIMKVXq0BnPvs75MDLcYu0=;
-	b=Hiy1nehMQyFAupyVX6y6SeHjDgF2jPBYOR+Mr5lsqPmuTygZsNEOaLVb67PxafU/5pEH22
-	VIK/8ZI38TZv6QGSPunjQgXZo4eZUl3nuUxHdHxsGOtXiUgrblz2WCo20Rux1COLLn5Ql7
-	985ieuaI+3DyFaQAfyTaaK3lszml+Nc=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-614-W6JNJnByNl2I0v2U4oCihA-1; Wed, 31 Dec 2025 09:42:48 -0500
-X-MC-Unique: W6JNJnByNl2I0v2U4oCihA-1
-X-Mimecast-MFC-AGG-ID: W6JNJnByNl2I0v2U4oCihA_1767192166
-Received: by mail-wr1-f70.google.com with SMTP id ffacd0b85a97d-432586f2c82so5596281f8f.0
-        for <iommu@lists.linux.dev>; Wed, 31 Dec 2025 06:42:47 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1767192166; x=1767796966;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=g4mmJIWspy2eeK4ehzqbWNIMKVXq0BnPvs75MDLcYu0=;
-        b=riHemC9ApvQO4cD3Hi8V6JDglbo7m07E720nikOAWoGwsD0vit0DdCbCrlFo0qL++B
-         VOQQ1QW0+SlSuX4BsDSyMRuwI/SauOxsz6jFlyuJeduNCkcGgoEQH7pabv037U+n+A3G
-         LLf2wP7yc9D4Zh/CRL/ATkM5J6j52g7JsCd+HuXI9/ZFA3eupz1PO6/XgehowqwOdk9B
-         JgyV8/1G3EC0moqfrDM/6+49290wW9Zxcbt472N7BAb8nUa91yjgEQkdnRojDNHLlgKe
-         GLomzTdcxVNq6+8OMa+YDrvCzw9jBUKRpJZI+J4PsJjfKqKY2pDlR/63LfFFasidXMa6
-         MxRA==
-X-Forwarded-Encrypted: i=1; AJvYcCUXOBQ9T4UUlqY7ZwB3Eq5SNCze/EuOExpXCkeVzmjrXS5It3ssSV0CbTcLZuUiZMFuCCKTEQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzsSwqedBBrxZ/MTYjl7dZb0Cv4ivx/T1Gbe7ujmrdBrYhblyO3
-	+7HmlcocjBhHndS7Q0zCMqoH//TOIfRcVKFFa5LHfoW2f9FgShIbg6jY2WGXdf2+jYlJWAijzWU
-	4pFaA8M3vPcUDbJfEBO6jkzojIJoXO3enzu6HxboWTGj2hGbngz2Hyent
-X-Gm-Gg: AY/fxX5NszJQ6UkW8IAGjn9BfSAdFc0LK+d/ZDVPvhMhtBP9CfHtK6nbR4sMhIE0WuS
-	zXe24avs2xS+0OSz6NM0z/+yaNv0mB19o2unV31daZkgeYiGey88+qZsP84Kp5KH7VHn5Wj6R0L
-	e+Oki/a31QxM/bqnNhp7liaf7+A6pmztG33+12jSFl9TiA2OdpAFCZ3nDof1zikqvZOf4nP4oqj
-	CV2mHNKe3mGLUZwxoMkkEUBCFWIUIe78oCx6J6oUqgXBsS23R05vsk6e6wgbEkeYTZPh6EcH0Vm
-	gO7/BxwUMp4UBUPREcL6FUfMo0/QT9m1L2d/GUWbfKAHa5xRDiMf+OzgQoowOfuV9SmWqQ0aIbf
-	LLymmm5vcA2OT4gabVhD1ettGbAhZva316Q==
-X-Received: by 2002:a05:6000:2005:b0:430:2773:84d6 with SMTP id ffacd0b85a97d-4324e42eb06mr50147700f8f.24.1767192166365;
-        Wed, 31 Dec 2025 06:42:46 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IGF5p3yqPt+kPdPb7TGA5JeM+zegz4+9TsD6bOekShro6ixOnDhxT1ci9gV1aizVZntyxUQBg==
-X-Received: by 2002:a05:6000:2005:b0:430:2773:84d6 with SMTP id ffacd0b85a97d-4324e42eb06mr50147651f8f.24.1767192165832;
-        Wed, 31 Dec 2025 06:42:45 -0800 (PST)
-Received: from redhat.com (IGLD-80-230-31-118.inter.net.il. [80.230.31.118])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4324eaa64cesm74610221f8f.35.2025.12.31.06.42.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 31 Dec 2025 06:42:45 -0800 (PST)
-Date: Wed, 31 Dec 2025 09:42:41 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Petr Tesarik <ptesarik@suse.com>
-Cc: linux-kernel@vger.kernel.org, Cong Wang <xiyou.wangcong@gmail.com>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Olivia Mackall <olivia@selenic.com>,
-	Herbert Xu <herbert@gondor.apana.org.au>,
-	Jason Wang <jasowang@redhat.com>,
-	Paolo Bonzini <pbonzini@redhat.com>,
-	Stefan Hajnoczi <stefanha@redhat.com>,
-	Eugenio =?iso-8859-1?Q?P=E9rez?= <eperezma@redhat.com>,
-	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-	"Martin K. Petersen" <martin.petersen@oracle.com>,
-	Gerd Hoffmann <kraxel@redhat.com>,
-	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Stefano Garzarella <sgarzare@redhat.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Simon Horman <horms@kernel.org>, Leon Romanovsky <leon@kernel.org>,
-	Jason Gunthorpe <jgg@ziepe.ca>, linux-doc@vger.kernel.org,
-	linux-crypto@vger.kernel.org, virtualization@lists.linux.dev,
-	linux-scsi@vger.kernel.org, iommu@lists.linux.dev,
-	kvm@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH RFC 00/13] fix DMA aligment issues around virtio
-Message-ID: <20251231094052-mutt-send-email-mst@kernel.org>
-References: <cover.1767089672.git.mst@redhat.com>
- <20251231141224.56d4ce56@mordecai>
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="Alom80Qx"
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20251231144330euoutp01fa5183d67e860e5153198fd2d7683f8d~GU-PoDO842943829438euoutp01K
+	for <iommu@lists.linux.dev>; Wed, 31 Dec 2025 14:43:30 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20251231144330euoutp01fa5183d67e860e5153198fd2d7683f8d~GU-PoDO842943829438euoutp01K
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1767192210;
+	bh=M8aPWywfPFOyTSGu0q6hhPXyHxVoa1F4hqfQwCmIl58=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=Alom80QxoG+L7ICMesd3Euki0jWEh5m9WrDQOO82KpT3M8GlUii6jb4NC/BUwrtla
+	 x3F2P1lkvxBq8MsCMGMLR2GRCZGVZ1OzbjGOF4McE9zgsSSTUJqP6FtdiWlME5ilT5
+	 BOXZctdYokjY0BnnWLe9y+syt3f3BRIA9KcPecjg=
+Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20251231144330eucas1p2e45e514c58572acda6dc94e809f9d2ee~GU-PNyoET1215412154eucas1p27;
+	Wed, 31 Dec 2025 14:43:30 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20251231144321eusmtip23facba6ecea740b65bcbedd64e01dd62~GU-GtmYe61784117841eusmtip2B;
+	Wed, 31 Dec 2025 14:43:21 +0000 (GMT)
+Message-ID: <d19c559e-c93b-4a4d-9a0d-ec289ed4c2e6@samsung.com>
+Date: Wed, 31 Dec 2025 15:43:19 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <20251231141224.56d4ce56@mordecai>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: 5FHGufQWWKKfcbbs1HKoBr7Pf4LOEA7Z6Y7raygvENc_1767192166
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Betterbird (Windows)
+Subject: Re: [PATCH v2 4/8] dma-mapping: Separate DMA sync issuing and
+ completion waiting
+To: Barry Song <21cnbao@gmail.com>, Leon Romanovsky <leon@kernel.org>
+Cc: catalin.marinas@arm.com, robin.murphy@arm.com, will@kernel.org,
+	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, xen-devel@lists.xenproject.org, Ada Couprie
+	Diaz <ada.coupriediaz@arm.com>, Ard Biesheuvel <ardb@kernel.org>, Marc
+	Zyngier <maz@kernel.org>, Anshuman Khandual <anshuman.khandual@arm.com>,
+	Ryan Roberts <ryan.roberts@arm.com>, Suren Baghdasaryan <surenb@google.com>,
+	Joerg Roedel <joro@8bytes.org>, Juergen Gross <jgross@suse.com>, Stefano
+	Stabellini <sstabellini@kernel.org>, Oleksandr Tyshchenko
+	<oleksandr_tyshchenko@epam.com>, Tangquan Zheng <zhengtangquan@oppo.com>
+Content-Language: en-US
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <CAGsJ_4y=yoYZn+_ztdfuOCj_dS-M0h8YWO51AXubPbeR1FH6uQ@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+X-CMS-MailID: 20251231144330eucas1p2e45e514c58572acda6dc94e809f9d2ee
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20251228213843eucas1p298280bb01abe59739cd6e0482f570455
+X-EPHeader: CA
+X-CMS-RootMailID: 20251228213843eucas1p298280bb01abe59739cd6e0482f570455
+References: <20251226225254.46197-1-21cnbao@gmail.com>
+	<20251226225254.46197-5-21cnbao@gmail.com> <20251227200706.GN11869@unreal>
+	<CAGsJ_4zyascnpQ1cB-BMO9PDeeRZTBAh8Z-j-ip=RcxApa4zSg@mail.gmail.com>
+	<20251228144909.GR11869@unreal>
+	<CGME20251228213843eucas1p298280bb01abe59739cd6e0482f570455@eucas1p2.samsung.com>
+	<CAGsJ_4y=yoYZn+_ztdfuOCj_dS-M0h8YWO51AXubPbeR1FH6uQ@mail.gmail.com>
 
-On Wed, Dec 31, 2025 at 02:12:24PM +0100, Petr Tesarik wrote:
-> On Tue, 30 Dec 2025 05:15:42 -0500
-> "Michael S. Tsirkin" <mst@redhat.com> wrote:
-> 
-> > Cong Wang reported dma debug warnings with virtio-vsock
-> > and proposed a patch, see:
-> > 
-> > https://lore.kernel.org/all/20251228015451.1253271-1-xiyou.wangcong@gmail.com/
-> > 
-> > however, the issue is more widespread.
-> > This is an attempt to fix it systematically.
-> > Note: i2c and gio might also be affected, I am still looking
-> > into it. Help from maintainers welcome.
-> > 
-> > Early RFC, compile tested only. Sending for early feedback/flames.
-> > Cursor/claude used liberally mostly for refactoring, and english.
-> > 
-> > DMA maintainers, could you please confirm the DMA core changes
-> > are ok with you?
-> 
-> Before anyone else runs into the same issue as I did: This patch series
-> does not apply cleanly unless you first apply commit b148e85c918a
-> ("virtio_ring: switch to use vring_virtqueue for virtqueue_add
-> variants") from the mst/vhost/vhost branch.
+On 28.12.2025 22:38, Barry Song wrote:
+> On Mon, Dec 29, 2025 at 3:49 AM Leon Romanovsky <leon@kernel.org> wrote:
+>> On Sun, Dec 28, 2025 at 10:45:13AM +1300, Barry Song wrote:
+>>> On Sun, Dec 28, 2025 at 9:07 AM Leon Romanovsky <leon@kernel.org> wrote:
+>>>> On Sat, Dec 27, 2025 at 11:52:44AM +1300, Barry Song wrote:
+>>>>> From: Barry Song <baohua@kernel.org>
+>>>>>
+>>>>> Currently, arch_sync_dma_for_cpu and arch_sync_dma_for_device
+>>>>> always wait for the completion of each DMA buffer. That is,
+>>>>> issuing the DMA sync and waiting for completion is done in a
+>>>>> single API call.
+>>>>>
+>>>>> For scatter-gather lists with multiple entries, this means
+>>>>> issuing and waiting is repeated for each entry, which can hurt
+>>>>> performance. Architectures like ARM64 may be able to issue all
+>>>>> DMA sync operations for all entries first and then wait for
+>>>>> completion together.
+>>>>>
+>>>>> To address this, arch_sync_dma_for_* now issues DMA operations in
+>>>>> batch, followed by a flush. On ARM64, the flush is implemented
+>>>>> using a dsb instruction within arch_sync_dma_flush().
+>>>>>
+>>>>> For now, add arch_sync_dma_flush() after each
+>>>>> arch_sync_dma_for_*() call. arch_sync_dma_flush() is defined as a
+>>>>> no-op on all architectures except arm64, so this patch does not
+>>>>> change existing behavior. Subsequent patches will introduce true
+>>>>> batching for SG DMA buffers.
+>>>>>
+>>>>> Cc: Leon Romanovsky <leon@kernel.org>
+>>>>> Cc: Catalin Marinas <catalin.marinas@arm.com>
+>>>>> Cc: Will Deacon <will@kernel.org>
+>>>>> Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+>>>>> Cc: Robin Murphy <robin.murphy@arm.com>
+>>>>> Cc: Ada Couprie Diaz <ada.coupriediaz@arm.com>
+>>>>> Cc: Ard Biesheuvel <ardb@kernel.org>
+>>>>> Cc: Marc Zyngier <maz@kernel.org>
+>>>>> Cc: Anshuman Khandual <anshuman.khandual@arm.com>
+>>>>> Cc: Ryan Roberts <ryan.roberts@arm.com>
+>>>>> Cc: Suren Baghdasaryan <surenb@google.com>
+>>>>> Cc: Joerg Roedel <joro@8bytes.org>
+>>>>> Cc: Juergen Gross <jgross@suse.com>
+>>>>> Cc: Stefano Stabellini <sstabellini@kernel.org>
+>>>>> Cc: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+>>>>> Cc: Tangquan Zheng <zhengtangquan@oppo.com>
+>>>>> Signed-off-by: Barry Song <baohua@kernel.org>
+>>>>> ---
+>>>>>   arch/arm64/include/asm/cache.h |  6 ++++++
+>>>>>   arch/arm64/mm/dma-mapping.c    |  4 ++--
+>>>>>   drivers/iommu/dma-iommu.c      | 37 +++++++++++++++++++++++++---------
+>>>>>   drivers/xen/swiotlb-xen.c      | 24 ++++++++++++++--------
+>>>>>   include/linux/dma-map-ops.h    |  6 ++++++
+>>>>>   kernel/dma/direct.c            |  8 ++++++--
+>>>>>   kernel/dma/direct.h            |  9 +++++++--
+>>>>>   kernel/dma/swiotlb.c           |  4 +++-
+>>>>>   8 files changed, 73 insertions(+), 25 deletions(-)
+>>>> <...>
+>>>>
+>>>>> +#ifndef arch_sync_dma_flush
+>>>>> +static inline void arch_sync_dma_flush(void)
+>>>>> +{
+>>>>> +}
+>>>>> +#endif
+>>>> Over the weekend I realized a useful advantage of the ARCH_HAVE_* config
+>>>> options: they make it straightforward to inspect the entire DMA path simply
+>>>> by looking at the .config.
+>>> I am not quite sure how much this benefits users, as the same
+>>> information could also be obtained by grepping for
+>>> #define arch_sync_dma_flush in the source code.
+>> It differs slightly. Users no longer need to grep around or guess whether this
+>> platform used the arch_sync_dma_flush path. A simple grep for ARCH_HAVE_ in
+>> /proc/config.gz provides the answer.
+> In any case, it is only two or three lines of code, so I am fine with
+> either approach. Perhaps Marek, Robin, and others have a point here?
 
-Oh right sorry I forgot to mention it.  It's this one:
+If possible I would suggest to follow the already used style in the 
+given code even if it means a bit larger patch.
 
-https://lore.kernel.org/all/20251230064649.55597-8-jasowang@redhat.com/
+>>>> Thanks,
+>>>> Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+>>> Thanks very much, Leon, for reviewing this over the weekend. One thing
+>>> you might have missed is that I place arch_sync_dma_flush() after all
+>>> arch_sync_dma_for_*() calls, for both single and sg cases. I also
+>>> used a Python script to scan the code and verify that every
+>>> arch_sync_dma_for_*() is followed by arch_sync_dma_flush(), to ensure
+>>> that no call is left out.
+>>>
+>>> In the subsequent patches, for sg cases, the per-entry flush is
+>>> replaced by a single flush of the entire sg. Each sg case has
+>>> different characteristics: some are straightforward, while others
+>>> can be tricky and involve additional contexts.
+>> I didn't overlook it, and I understand your rationale. However, this is
+>> not how kernel patches should be structured. You should not introduce
+>> code in patch X and then move it elsewhere in patch X + Y.
+> I am not quite convinced by this concern. This patch only
+> separates DMA sync issuing from completion waiting, and it
+> reflects that the development is done step by step.
+>
+>> Place the code in the correct location from the start. Your patches are
+>> small enough to review as is.
+> My point is that this patch places the code in the correct locations
+> from the start. It splits arch_sync_dma_for_*() into
+> arch_sync_dma_for_*() plus arch_sync_dma_flush() everywhere, without
+> introducing any functional changes from the outset.
+> The subsequent patches clearly show which parts are truly batched.
+>
+> In the meantime, I do not have a strong preference here. If you think
+> it is better to move some of the straightforward batching code here,
+> I can follow that approach. Perhaps I could move patch 5, patch 8,
+> and the iommu_dma_iova_unlink_range_slow change from patch 7 here,
+> while keeping
+>
+>    [PATCH 6] dma-mapping: Support batch mode for
+>    dma_direct_{map,unmap}_sg
+>
+> and the IOVA link part from patch 7 as separate patches, since that
+> part is not straightforward. The IOVA link changes affect both
+> __dma_iova_link() and dma_iova_sync(), which are two separate
+> functions and require a deeper understanding of the contexts to
+> determine correctness. That part also lacks testing.
+>
+> Would that be okay with you?
 
-one can just do
+Yes, this will be okay. The changes are easy to understand, so we don't 
+need to go there with such very small steps.
 
-b4 shazam 20251230064649.55597-8-jasowang@redhat.com
-
-
-> But if you go to the trouble of adding the mst/vhost remote, then the
-> above-mentioned branch also contains this patch series, and it's
-> probably the best place to find the patched code...
-> 
-> Now, let me set out for review.
-> 
-> Petr T
-> 
-> > Thanks!
-> > 
-> > 
-> > Michael S. Tsirkin (13):
-> >   dma-mapping: add __dma_from_device_align_begin/end
-> >   docs: dma-api: document __dma_align_begin/end
-> >   dma-mapping: add DMA_ATTR_CPU_CACHE_CLEAN
-> >   docs: dma-api: document DMA_ATTR_CPU_CACHE_CLEAN
-> >   dma-debug: track cache clean flag in entries
-> >   virtio: add virtqueue_add_inbuf_cache_clean API
-> >   vsock/virtio: fix DMA alignment for event_list
-> >   vsock/virtio: use virtqueue_add_inbuf_cache_clean for events
-> >   virtio_input: fix DMA alignment for evts
-> >   virtio_scsi: fix DMA cacheline issues for events
-> >   virtio-rng: fix DMA alignment for data buffer
-> >   virtio_input: use virtqueue_add_inbuf_cache_clean for events
-> >   vsock/virtio: reorder fields to reduce struct padding
-> > 
-> >  Documentation/core-api/dma-api-howto.rst  | 42 +++++++++++++
-> >  Documentation/core-api/dma-attributes.rst |  9 +++
-> >  drivers/char/hw_random/virtio-rng.c       |  2 +
-> >  drivers/scsi/virtio_scsi.c                | 18 ++++--
-> >  drivers/virtio/virtio_input.c             |  5 +-
-> >  drivers/virtio/virtio_ring.c              | 72 +++++++++++++++++------
-> >  include/linux/dma-mapping.h               | 17 ++++++
-> >  include/linux/virtio.h                    |  5 ++
-> >  kernel/dma/debug.c                        | 26 ++++++--
-> >  net/vmw_vsock/virtio_transport.c          |  8 ++-
-> >  10 files changed, 172 insertions(+), 32 deletions(-)
-> > 
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
