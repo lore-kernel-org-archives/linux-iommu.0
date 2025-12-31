@@ -1,205 +1,177 @@
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+Received: from PH0PR06CU001.outbound.protection.outlook.com (mail-westus3azon11011031.outbound.protection.outlook.com [40.107.208.31])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BDA2C195811
-	for <iommu@lists.linux.dev>; Wed, 31 Dec 2025 14:43:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767192215; cv=none; b=Z8Zf2f3JN6313BZzMv7PGRgnnwaCdjYWsEDmdr2rr/oPUMPJ391ilNH3jw6/u10OQ7q2dmqK3AuZwo+9Ig0we1sUFJM8s2F4zRRGlVSrDzds+Cbga7BPRCOYO6R/NHF7Z9fxN2vadCoCA/AVqYiKIJCwc/SYggGd9tuOslJyxVw=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767192215; c=relaxed/simple;
-	bh=CORJa2hWRPCw7V6XJ5AzrmzgJF/ZVsBswJmIiQ3hcDo=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
-	 Content-Type:References; b=tSz5gl1lixyzfsxfUnRKiUqvBngLa24Ao+qSCYS634+zjYJGXbEZmvIeO49F2WBqOe80nMDGh8Lnaaz65m6qpZ3ViNTALOrFhPNrqo9Sr8g/C8iiaK2QDoX9MTLs91jeMEOJZnpuczSqq7M11ta4utj1PiZwrgw+hnJKsIsLDOY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=Alom80Qx; arc=none smtp.client-ip=210.118.77.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23F6C2FFDCA;
+	Wed, 31 Dec 2025 19:49:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.208.31
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1767210561; cv=fail; b=gpcjHF0IEL969djwjOrA+gkcX4hs39QjT3FEwggx4HzR37I130rqgh7+opwG4RO1jzJz09HHpKKJw7mHu/CjZqY1omQASS8nBSkNQOXXfFi8yO1UmYcB5ZDZS2jHH4qeVAILvSQg7N3uDfQ0aecHzTq7+vc/BZuOwsQj2sR3+xk=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1767210561; c=relaxed/simple;
+	bh=maDrgXLqe5VmJhifOtRzynCrt0AGl9GYX+n18UC22S4=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=RtRCVjxSDrDmwZyyuaZchjUXhx0CJ7xYBgDAoy9PQgUckXbnFnCqimCtw5gKzC3o+a9juWUu/z0Nj73n1h2xPDVe2NYW6A48sI6RAwWo6dUCdJHmQvQnT6KAOfmYr7gVXQskeSwOb6bHI9zFPtZFJJz+5wYFK4w8P9uh3m/Z2mc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=qEgqR/gb; arc=fail smtp.client-ip=40.107.208.31
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="Alom80Qx"
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20251231144330euoutp01fa5183d67e860e5153198fd2d7683f8d~GU-PoDO842943829438euoutp01K
-	for <iommu@lists.linux.dev>; Wed, 31 Dec 2025 14:43:30 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20251231144330euoutp01fa5183d67e860e5153198fd2d7683f8d~GU-PoDO842943829438euoutp01K
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1767192210;
-	bh=M8aPWywfPFOyTSGu0q6hhPXyHxVoa1F4hqfQwCmIl58=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=Alom80QxoG+L7ICMesd3Euki0jWEh5m9WrDQOO82KpT3M8GlUii6jb4NC/BUwrtla
-	 x3F2P1lkvxBq8MsCMGMLR2GRCZGVZ1OzbjGOF4McE9zgsSSTUJqP6FtdiWlME5ilT5
-	 BOXZctdYokjY0BnnWLe9y+syt3f3BRIA9KcPecjg=
-Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20251231144330eucas1p2e45e514c58572acda6dc94e809f9d2ee~GU-PNyoET1215412154eucas1p27;
-	Wed, 31 Dec 2025 14:43:30 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20251231144321eusmtip23facba6ecea740b65bcbedd64e01dd62~GU-GtmYe61784117841eusmtip2B;
-	Wed, 31 Dec 2025 14:43:21 +0000 (GMT)
-Message-ID: <d19c559e-c93b-4a4d-9a0d-ec289ed4c2e6@samsung.com>
-Date: Wed, 31 Dec 2025 15:43:19 +0100
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="qEgqR/gb"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=vU5eghumTzu69FN6AmqfXkWprAczeRLU17UdJpRgI3mwkrfaj0ctgl4tqo6V35r1mdWgT1yZuZ3InAcU2/4rRNMyyrfSSbX8kfp08TYjLSDdB+owcTakBbsiCTvjfEPkhhV0+bvVFK+2RWJuoW6fUSW9WFRoDC9sD2Z2vj7t7Fry2hkjyRCVvSPvN91fRpiv4uCBYwzdPpoC9+5YG2opf3H322c5qqguUq8uymuoxjsANnx7yPw/FTEiGOJBhw/vq2XHnuY1LdM57WIu2eS8hHnP23McirtzcfqVhB1nm69nCJYz/His5jsNMeCKank98m+pn/p6EOa/E304GObomw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Z+xpTGCc2+wtCHsHGpLPyY+dLbrZGBUUuBYP+PIY8MY=;
+ b=klvhcyDaguDwjBkPNVCHLBZzPcTvNvC502mkMjdE4Nl1KmrZnJK+Jp/0bSHrkBS5r0E2ayFdpXI0Tc6pHjoY+suTn1A6bZDeKDMS+lteEusdEDH/2xTlWWOO2rdbYYEkXYwNORAN2sxb4x0RUhgRnmZcuEzTB/8V7d8fwmihxs5xhneYXfHJ7pBCSqTDYWGksw9JywzvNoO/18jgFXBsRXlNx4mNTMvf1dpKDkf2FtiayHKoQ8KJ8pmV8Nr+qDYhqn50ix5rNOl5KCQfiYkA4VuQrl5urXRFBkRqHtpzycKOKnAHicS2D24GB7ryu35uCZa6K5sq65RLrqyqnHR8nw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Z+xpTGCc2+wtCHsHGpLPyY+dLbrZGBUUuBYP+PIY8MY=;
+ b=qEgqR/gbVicz3HWhwds1O0Wn3+5DVqomydYD104oGcCp47GflbGGIDJHtDnIAxvM7FWNtqXUOtPuGjdrDgvCztDG5b/7uVS1vgjTqC8VQg6FbONQRmmdGD6RXqLXaqFcNyEsITHofI1y9WnUBiFTbA5JfPRDQTGVQuWtUu9jWZDp1sIB+NlY7izm58Cptpk35EsNFfhJEWNOr6omLCeoVlvJUhbaoc49USpLWXPzZ8UVt3GLEz//3HFexVh1IfyRNTL4n7uKqt7NBPFKsBibvDkVaUtbIvoMh0xG33WBxwHG1bGEIbT4tWDWyr26YuaqN1Ot8ynudG4h12Tw6TUuNw==
+Received: from BYAPR07CA0049.namprd07.prod.outlook.com (2603:10b6:a03:60::26)
+ by SJ0PR12MB8139.namprd12.prod.outlook.com (2603:10b6:a03:4e8::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9478.4; Wed, 31 Dec
+ 2025 19:49:15 +0000
+Received: from SJ1PEPF0000231C.namprd03.prod.outlook.com
+ (2603:10b6:a03:60:cafe::84) by BYAPR07CA0049.outlook.office365.com
+ (2603:10b6:a03:60::26) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9478.4 via Frontend Transport; Wed,
+ 31 Dec 2025 19:49:14 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ SJ1PEPF0000231C.mail.protection.outlook.com (10.167.242.233) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.9478.4 via Frontend Transport; Wed, 31 Dec 2025 19:49:15 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Wed, 31 Dec
+ 2025 11:49:00 -0800
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Wed, 31 Dec
+ 2025 11:48:59 -0800
+Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.129.68.7)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
+ Transport; Wed, 31 Dec 2025 11:48:58 -0800
+Date: Wed, 31 Dec 2025 11:48:57 -0800
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
+	<jpb@kernel.org>, <praan@google.com>, <miko.lenczewski@arm.com>,
+	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, <patches@lists.linux.dev>
+Subject: Re: [PATCH v1 2/9] iommu/arm-smmu-v3: Add alloc_id/free_id functions
+ to arm_smmu_invs
+Message-ID: <aVV+KWzpxPPfaNw4@Asurada-Nvidia>
+References: <cover.1766088962.git.nicolinc@nvidia.com>
+ <1541ea4a9e9c935c2f907c0c5f13a4af2bdc2114.1766088962.git.nicolinc@nvidia.com>
+ <20251219170551.GF254720@nvidia.com>
+ <aVQfhaqfvfLFNZqe@Asurada-Nvidia>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH v2 4/8] dma-mapping: Separate DMA sync issuing and
- completion waiting
-To: Barry Song <21cnbao@gmail.com>, Leon Romanovsky <leon@kernel.org>
-Cc: catalin.marinas@arm.com, robin.murphy@arm.com, will@kernel.org,
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, xen-devel@lists.xenproject.org, Ada Couprie
-	Diaz <ada.coupriediaz@arm.com>, Ard Biesheuvel <ardb@kernel.org>, Marc
-	Zyngier <maz@kernel.org>, Anshuman Khandual <anshuman.khandual@arm.com>,
-	Ryan Roberts <ryan.roberts@arm.com>, Suren Baghdasaryan <surenb@google.com>,
-	Joerg Roedel <joro@8bytes.org>, Juergen Gross <jgross@suse.com>, Stefano
-	Stabellini <sstabellini@kernel.org>, Oleksandr Tyshchenko
-	<oleksandr_tyshchenko@epam.com>, Tangquan Zheng <zhengtangquan@oppo.com>
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <CAGsJ_4y=yoYZn+_ztdfuOCj_dS-M0h8YWO51AXubPbeR1FH6uQ@mail.gmail.com>
-Content-Transfer-Encoding: 8bit
-X-CMS-MailID: 20251231144330eucas1p2e45e514c58572acda6dc94e809f9d2ee
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20251228213843eucas1p298280bb01abe59739cd6e0482f570455
-X-EPHeader: CA
-X-CMS-RootMailID: 20251228213843eucas1p298280bb01abe59739cd6e0482f570455
-References: <20251226225254.46197-1-21cnbao@gmail.com>
-	<20251226225254.46197-5-21cnbao@gmail.com> <20251227200706.GN11869@unreal>
-	<CAGsJ_4zyascnpQ1cB-BMO9PDeeRZTBAh8Z-j-ip=RcxApa4zSg@mail.gmail.com>
-	<20251228144909.GR11869@unreal>
-	<CGME20251228213843eucas1p298280bb01abe59739cd6e0482f570455@eucas1p2.samsung.com>
-	<CAGsJ_4y=yoYZn+_ztdfuOCj_dS-M0h8YWO51AXubPbeR1FH6uQ@mail.gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <aVQfhaqfvfLFNZqe@Asurada-Nvidia>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SJ1PEPF0000231C:EE_|SJ0PR12MB8139:EE_
+X-MS-Office365-Filtering-Correlation-Id: 46d12573-053b-4436-c6ff-08de48a5ad9f
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|7416014|376014|82310400026|36860700013|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?tOAhkeX3IgMOEaLeSyhAxb+Ypv4wfe1M1R5tqflvIRMN1rNlaaast5QQ53fh?=
+ =?us-ascii?Q?YJEq7u83uhtXcgAnlKWrJQI8edJJZLWudYnfTmrK+GKinHXqKRtEusmq6Ark?=
+ =?us-ascii?Q?bricUjh0QcwDvjMpzgww75qV+hgYmnvSqiz9kRZnHW7iE0zBvy8wRXZ143TA?=
+ =?us-ascii?Q?34hyK+iryRyHxQIMIX5bqW+9qNVtm81BJw2V7iMMBB/n77HVEfEkNsCzliT9?=
+ =?us-ascii?Q?qQMR0JmQV7ejFCsq5jJ35JS3M8ta+ci2DdHgY2F3WdHQn52/GS0pt50Jdpps?=
+ =?us-ascii?Q?FvR6azrrg4vrNS9Bty5vvYWkp56H6KN6w+LZEKQPFEZclIcfi4+HWFfnTyjJ?=
+ =?us-ascii?Q?ZisRHJ7ggLJN0WGw2r1hltrGafSqm7eVJ9vfgYFbr0abWrJk1hCZbdhhDaov?=
+ =?us-ascii?Q?f4qvmx/b10CRFjGgmX5thstdle7sy/WqZVvtgqvcukhOgrQ/t10uBVSS6K5b?=
+ =?us-ascii?Q?KUUTQf1YHl4Pzx9EgCiL+tSP+dfjHLsJGOoDH4Hy6TrMMPSMSf+zWCWyCYck?=
+ =?us-ascii?Q?O3Egl+ykdMxzpq9+dG+D/U4pGRa8O01w8DgT06ziLv0c/92F7RLW+vtwEVF4?=
+ =?us-ascii?Q?CZpzXSrmziPqdYpxOChvx4p4GZNsRQZRovFAElqn34otsI9FNYAvARMBDWTN?=
+ =?us-ascii?Q?tE4Yo3FXC3dLQCV/qwQhp+35mhMAlSiRjzRciHcLAibzjHAaWzoZtEvRsuhd?=
+ =?us-ascii?Q?Uj8K7Q4qE+IxB+XyB5Hxb41lnnLXfeZHJ0DPGsIF5uBcrzQqR+VAVh7PVWXf?=
+ =?us-ascii?Q?OA2Y1tW24v67J4QDhhnfsB4RKTB32genDhfNiNib4zWWblchGDn5VPR4x3h6?=
+ =?us-ascii?Q?ustvIu7kQeNbPurXhaXT55chiVbAU47rfJRztBTl8bEDVwsCm1+hxIOXeWg9?=
+ =?us-ascii?Q?bkEfBXdj/Y+GSYHhAX+a8N+B0kY/6SZkojldShP8JaP3b5iFHMp7AI2Uu+c0?=
+ =?us-ascii?Q?Ovnuf0eNG5miZacu/y5u2Ag4yJ3HOfmJ61wJHA5JN5dBvjw5H7r8jjPeKcc+?=
+ =?us-ascii?Q?C0jjqviBdPcsb87+FCuXyoDzstA0cZGM+Dfi0maPNLv60W5612P2ThL6sCOq?=
+ =?us-ascii?Q?yDpu6yGOTsusuI4wIOdChwL1c0Txo8c6iZXML7W1RtTW1OkPC2hjtSCiS3b6?=
+ =?us-ascii?Q?Dyq5NOGFD1swoQz0BZr+bjzo88lzGg2WKufh542IFNY3swMEnLsW33BGgfDq?=
+ =?us-ascii?Q?VppX1N0xFYkZfYA5J2ecgbBTC8xUse/xF9Ebpf/vgeXwn6Fo395FGj/kI4+i?=
+ =?us-ascii?Q?8G/5HRXH1ewPaO99LPyF5yz8gYypLot8SVsJdmQ4TxaYd9Yklg7dBuZh7afs?=
+ =?us-ascii?Q?9kCP2CAKFsUEHMHl+qfRsZpDVz1MydsbwXcJlEc1Qgw2Sm/wh6jRbze25XJP?=
+ =?us-ascii?Q?jLQXuoPr3MF8AvMD17I1/IYq8QyXpXDoWGxKO6Sega3eWBLfpXmtfNzKURB7?=
+ =?us-ascii?Q?PzrfyoE1mYQggLyPfk28u7ckzPJrjekAMqKnfj41trNikIQ+mw0OyShjWozv?=
+ =?us-ascii?Q?ZZ6E1/PzSmb1g+Rk/4SeBjS7ctZcjjdj2WdVrVuM841LDCOkEWxXlmxwYqJO?=
+ =?us-ascii?Q?Kj6LIuMFgZB0gCmyFp0=3D?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(7416014)(376014)(82310400026)(36860700013)(1800799024);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Dec 2025 19:49:15.1677
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 46d12573-053b-4436-c6ff-08de48a5ad9f
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SJ1PEPF0000231C.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB8139
 
-On 28.12.2025 22:38, Barry Song wrote:
-> On Mon, Dec 29, 2025 at 3:49 AM Leon Romanovsky <leon@kernel.org> wrote:
->> On Sun, Dec 28, 2025 at 10:45:13AM +1300, Barry Song wrote:
->>> On Sun, Dec 28, 2025 at 9:07 AM Leon Romanovsky <leon@kernel.org> wrote:
->>>> On Sat, Dec 27, 2025 at 11:52:44AM +1300, Barry Song wrote:
->>>>> From: Barry Song <baohua@kernel.org>
->>>>>
->>>>> Currently, arch_sync_dma_for_cpu and arch_sync_dma_for_device
->>>>> always wait for the completion of each DMA buffer. That is,
->>>>> issuing the DMA sync and waiting for completion is done in a
->>>>> single API call.
->>>>>
->>>>> For scatter-gather lists with multiple entries, this means
->>>>> issuing and waiting is repeated for each entry, which can hurt
->>>>> performance. Architectures like ARM64 may be able to issue all
->>>>> DMA sync operations for all entries first and then wait for
->>>>> completion together.
->>>>>
->>>>> To address this, arch_sync_dma_for_* now issues DMA operations in
->>>>> batch, followed by a flush. On ARM64, the flush is implemented
->>>>> using a dsb instruction within arch_sync_dma_flush().
->>>>>
->>>>> For now, add arch_sync_dma_flush() after each
->>>>> arch_sync_dma_for_*() call. arch_sync_dma_flush() is defined as a
->>>>> no-op on all architectures except arm64, so this patch does not
->>>>> change existing behavior. Subsequent patches will introduce true
->>>>> batching for SG DMA buffers.
->>>>>
->>>>> Cc: Leon Romanovsky <leon@kernel.org>
->>>>> Cc: Catalin Marinas <catalin.marinas@arm.com>
->>>>> Cc: Will Deacon <will@kernel.org>
->>>>> Cc: Marek Szyprowski <m.szyprowski@samsung.com>
->>>>> Cc: Robin Murphy <robin.murphy@arm.com>
->>>>> Cc: Ada Couprie Diaz <ada.coupriediaz@arm.com>
->>>>> Cc: Ard Biesheuvel <ardb@kernel.org>
->>>>> Cc: Marc Zyngier <maz@kernel.org>
->>>>> Cc: Anshuman Khandual <anshuman.khandual@arm.com>
->>>>> Cc: Ryan Roberts <ryan.roberts@arm.com>
->>>>> Cc: Suren Baghdasaryan <surenb@google.com>
->>>>> Cc: Joerg Roedel <joro@8bytes.org>
->>>>> Cc: Juergen Gross <jgross@suse.com>
->>>>> Cc: Stefano Stabellini <sstabellini@kernel.org>
->>>>> Cc: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
->>>>> Cc: Tangquan Zheng <zhengtangquan@oppo.com>
->>>>> Signed-off-by: Barry Song <baohua@kernel.org>
->>>>> ---
->>>>>   arch/arm64/include/asm/cache.h |  6 ++++++
->>>>>   arch/arm64/mm/dma-mapping.c    |  4 ++--
->>>>>   drivers/iommu/dma-iommu.c      | 37 +++++++++++++++++++++++++---------
->>>>>   drivers/xen/swiotlb-xen.c      | 24 ++++++++++++++--------
->>>>>   include/linux/dma-map-ops.h    |  6 ++++++
->>>>>   kernel/dma/direct.c            |  8 ++++++--
->>>>>   kernel/dma/direct.h            |  9 +++++++--
->>>>>   kernel/dma/swiotlb.c           |  4 +++-
->>>>>   8 files changed, 73 insertions(+), 25 deletions(-)
->>>> <...>
->>>>
->>>>> +#ifndef arch_sync_dma_flush
->>>>> +static inline void arch_sync_dma_flush(void)
->>>>> +{
->>>>> +}
->>>>> +#endif
->>>> Over the weekend I realized a useful advantage of the ARCH_HAVE_* config
->>>> options: they make it straightforward to inspect the entire DMA path simply
->>>> by looking at the .config.
->>> I am not quite sure how much this benefits users, as the same
->>> information could also be obtained by grepping for
->>> #define arch_sync_dma_flush in the source code.
->> It differs slightly. Users no longer need to grep around or guess whether this
->> platform used the arch_sync_dma_flush path. A simple grep for ARCH_HAVE_ in
->> /proc/config.gz provides the answer.
-> In any case, it is only two or three lines of code, so I am fine with
-> either approach. Perhaps Marek, Robin, and others have a point here?
+On Tue, Dec 30, 2025 at 10:52:55AM -0800, Nicolin Chen wrote:
+> Hi Jason,
+> 
+> On Fri, Dec 19, 2025 at 01:05:51PM -0400, Jason Gunthorpe wrote:
+> > +static int arm_smmu_get_tag(struct arm_smmu_domain *smmu_domain,
+> > +			    struct arm_smmu_master *master,
+> > +			    struct arm_vsmmu *vsmmu,
+> > +			    struct arm_smmu_iotlb_tag *tag, bool no_alloc)
+> [...]
+> > +	case ARM_SMMU_DOMAIN_S2:
+> > +		if (smmu_domain->nest_parent) {
+> > +			/* FIXME we can support attaching a nest_parent without
+> > +			 * a vsmmu, but to do that we need to fix
+> > +			 * arm_smmu_get_id_from_invs() to never return the vmid
+> > +			 * of a vsmmu. Probably by making a
+> > +			 * INV_TYPE_S2_VMID_VSMMU */
+> > +			id = vsmmu->vmid;
+> > +			return 0;
+> > +		}
+> 
+> Would you mind elaborating why arm_smmu_get_id_from_invs() can't
+> return vsmmu->vmid to share with a naked S2 STE?
+> 
+> I'm having a bit trouble justifying this INV_TYPE_S2_VMID_VSMMU.
+> 
+> Since it's the same S2 domain/iopt, if anything that is attached
+> (whether nested or naked) changes the S2 iopt, we should always
+> flush the nested S1 domain too, right?
+> 
+> If so, a naked S2 STE should refer to the same VMID in order to
+> allow its following INV_TYPE_S2_VMID_S1_CLEAR to work properly?
 
-If possible I would suggest to follow the already used style in the 
-given code even if it means a bit larger patch.
+I figured that having separate VMIDs on a nest_parent S2 isn't
+a problem since invalidation will go through all the VMIDs. And
+having an INV_TYPE_S2_VMID_VSMMU is for its unique lifecycle.
 
->>>> Thanks,
->>>> Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
->>> Thanks very much, Leon, for reviewing this over the weekend. One thing
->>> you might have missed is that I place arch_sync_dma_flush() after all
->>> arch_sync_dma_for_*() calls, for both single and sg cases. I also
->>> used a Python script to scan the code and verify that every
->>> arch_sync_dma_for_*() is followed by arch_sync_dma_flush(), to ensure
->>> that no call is left out.
->>>
->>> In the subsequent patches, for sg cases, the per-entry flush is
->>> replaced by a single flush of the entire sg. Each sg case has
->>> different characteristics: some are straightforward, while others
->>> can be tricky and involve additional contexts.
->> I didn't overlook it, and I understand your rationale. However, this is
->> not how kernel patches should be structured. You should not introduce
->> code in patch X and then move it elsewhere in patch X + Y.
-> I am not quite convinced by this concern. This patch only
-> separates DMA sync issuing from completion waiting, and it
-> reflects that the development is done step by step.
->
->> Place the code in the correct location from the start. Your patches are
->> small enough to review as is.
-> My point is that this patch places the code in the correct locations
-> from the start. It splits arch_sync_dma_for_*() into
-> arch_sync_dma_for_*() plus arch_sync_dma_flush() everywhere, without
-> introducing any functional changes from the outset.
-> The subsequent patches clearly show which parts are truly batched.
->
-> In the meantime, I do not have a strong preference here. If you think
-> it is better to move some of the straightforward batching code here,
-> I can follow that approach. Perhaps I could move patch 5, patch 8,
-> and the iommu_dma_iova_unlink_range_slow change from patch 7 here,
-> while keeping
->
->    [PATCH 6] dma-mapping: Support batch mode for
->    dma_direct_{map,unmap}_sg
->
-> and the IOVA link part from patch 7 as separate patches, since that
-> part is not straightforward. The IOVA link changes affect both
-> __dma_iova_link() and dma_iova_sync(), which are two separate
-> functions and require a deeper understanding of the contexts to
-> determine correctness. That part also lacks testing.
->
-> Would that be okay with you?
-
-Yes, this will be okay. The changes are easy to understand, so we don't 
-need to go there with such very small steps.
-
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
-
+Nicolin
