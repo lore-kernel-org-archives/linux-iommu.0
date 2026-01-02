@@ -1,164 +1,164 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BB393191BC
-	for <iommu@lists.linux.dev>; Fri,  2 Jan 2026 12:50:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B69802D878D
+	for <iommu@lists.linux.dev>; Fri,  2 Jan 2026 13:02:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767358217; cv=none; b=l1TlBz0B0q1+lD4mKyod0TZPbzBAMqAl44YhQbh64+cP6fivSajygsZ+oM2zTPh6FJlgDVDPFHE6EMiFfTtBPGaS0O2PjdrikPM+Q32KrD3EAUj6bdXr8BOqs8suzt8L7cgyqqW+dpwWnkRqeWnO4zpGpbtFvvm69OV/eLi2RGk=
+	t=1767358969; cv=none; b=s3U62okxGgMDALfibFJ00yqKMls2GFXVqvbm7isRbzO4kFGRQSfSLwnmdT1ibXSttm69ZWzXIg5esFMmlJB76veFvLekX2a4z+3clmx1Znb1Nwei4NqxgO2PmfEyRFEmtO52Q7hgu9xiN5MXSWfuQbLBKyMDqW/yGqz3Jp0+/To=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767358217; c=relaxed/simple;
-	bh=f0tamSSSQFETd/BZgOeOBR45ekM+X1VWM1B3+8zR7G4=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=M7HTyTzrORuJ8oF85bN3zPXHPJ02ku1rNasH1C7moGbGtzZNKFq96udxqQtftHjS1GLgjbGGa6fcB6Qcw9/GZ1ajWjfsmd2UwBpbeiXon8/1L+xxvKjccHe/gHLK8Hgrl3lnILiD8LdjY6JQ97/Lb31ZtpmOoCfMVin/Yy+CjXc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=G7ZPQnui; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=QjSNC8XU; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1767358969; c=relaxed/simple;
+	bh=MzslOykd8x14UYRASjqMHG8WwlyrJUbVhQ0wOUaMEeA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 In-Reply-To:Content-Type:Content-Disposition; b=JlXXzdlTU0A41azKIxlt+bOgjK6iJO8MI9iU4gFF2TvOwz0BMIanj/9LY2MT3aypQQYJtZf5+XilY97fQua3By5HOpbAyfJSwIptzlCF0izIN3yGyJ11u7Z1PCssvoi3oH5vuoXkueFS50Mib9ugo56UxGeuIUqTGnrEOFlnc/g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=Y06vawIW; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="G7ZPQnui";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="QjSNC8XU"
-Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6029W2Qk3961084
-	for <iommu@lists.linux.dev>; Fri, 2 Jan 2026 12:50:09 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:date:from:message-id:mime-version
-	:subject:to; s=qcppdkim1; bh=DZfhIgqMaihcSk7F0bvXWQ7mJhxuzZv9ZWK
-	aeLwNCbY=; b=G7ZPQnuicD7TCrqX+36FFvKDSA1U0y0gZh8PDVrBhL3xj/yJhyh
-	zNEveQq40Q0qXl+BMsePEER2txjQXHImPe7Gm9JqZDc1Sp2LAz18LlqrwVRt9fdE
-	xFAuypL4FPALAt7forQPXjeYP1gCdCS+VUTGaTZpFiOdF15WHpqYOo+h8VFTBNOk
-	Ryyea6PvnsgfdhvB0dqpwVEEMsO5djqZlSNOwhMQerQ78UryonDu93xPVihufoM6
-	9TaFGIDaqJL9Fl6pgjOBO10BdEFSujvd9SxWkuNRfkRMJdOk+rTnA1DEMXyYesqO
-	ar1OxCtc2rCCaxHF7P2ztwHchXjIikwm3Sw==
-Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com [209.85.160.197])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4bd77v3ff1-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Fri, 02 Jan 2026 12:50:09 +0000 (GMT)
-Received: by mail-qt1-f197.google.com with SMTP id d75a77b69052e-4ee16731ceaso237578761cf.2
-        for <iommu@lists.linux.dev>; Fri, 02 Jan 2026 04:50:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1767358209; x=1767963009; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=DZfhIgqMaihcSk7F0bvXWQ7mJhxuzZv9ZWKaeLwNCbY=;
-        b=QjSNC8XUqzJzMq/Mz2CEtbBXnXwkCg3hrAooEdkUkdQY3cn1RpcTz6YW+67j8VXp7Q
-         8dU4kynlM5v5EXBZpWaDOVfveAlFhnbSZA01m4xLgW+kF6n5x+Cv6LYy4Og2VaCnGKno
-         IcweM/VrA8+3SumCc6eZXP57cAvcfrlcwk9JZlOT4nlDK/Huzv/uQUBwIk1NDfFVzq1F
-         ihc0Cx450g/REvYBs7G+kR8lk+9r8ehtXNrahCyrijlYFvRJTt+G3hCgWNx9eadg+cTn
-         AU8v4LIiqkhLl4xWMsyeTVkMfZWK9rqw1IMcsKbJ8iRbgt1NPJ9gbfZdOZ2ghxEnEe5z
-         UOMA==
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Y06vawIW"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1767358964;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=WmDmlKfsEAT3FFZsP/TiPm94jNR+IqB/SohCa4X10es=;
+	b=Y06vawIWBnbKDzI2gaRETBnHIbrgy6y5/pCIkANcKyzqiSl+5oyDSeQt/2VIuzE22+AP+e
+	WWCfB85rSIy2LBTgIDGJTofUcl8H1Iqa4E9cAFfX3LQjKqMvBljvsZV57l9hvnpzbLgtQP
+	SR1/eBMt5382jEX2inMjIOa5NxEbMCQ=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-456-fijKEpUrMhKz4eydc_qoBw-1; Fri, 02 Jan 2026 08:02:43 -0500
+X-MC-Unique: fijKEpUrMhKz4eydc_qoBw-1
+X-Mimecast-MFC-AGG-ID: fijKEpUrMhKz4eydc_qoBw_1767358963
+Received: by mail-wm1-f71.google.com with SMTP id 5b1f17b1804b1-47788165c97so66993005e9.0
+        for <iommu@lists.linux.dev>; Fri, 02 Jan 2026 05:02:43 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1767358209; x=1767963009;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=DZfhIgqMaihcSk7F0bvXWQ7mJhxuzZv9ZWKaeLwNCbY=;
-        b=GcqD3FxCJuRbXQoL6eHcHOZReqhqUD0G8FMe60020NhNq7P6KYsuXyE+MUK4MJp6t5
-         DQI8esw5TmNLoWDDwewWo2PxBUrLd5pGaTaijsnjtqn074n9E3jtLEqKHwrMq9V/wrhh
-         SaTuwX4iKraFz6erJfdjy9/pk7KQ85iNw6wmyxypJotPDM28DnypmORJNYjGKHgNMZe+
-         I3La0vxJZIHmE4x3T1SXKNbC3yrvEzGD/a5PJNGBztAcCTDiuvau6orX2eBLdO2CJvcR
-         tLtlxlkG3k1JcOWsUrUykxhzy9wKzD21dN8CzDy4m3bcZ/4qBZrkYCqaC9BIloib86Zo
-         7QLQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUQ2JQ6k2ZEwuxUTBKVOM9M+mozMDgmVf8PIRVxPNcoHXs0bYELibUc4tNlbsHsqEO4GMicZA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzfaJO2hr0494LdfeEeJbmaiiXzdzP2I34Ocm+RwtRpnGEuqund
-	MhVogAVl4VRRyPFgLmhy90sjIPjDcRCF4Pe0gi82/sGbO4Jj0THeFzllQRD4b0t13MSWwXcv1j2
-	7DxBxgqeUghMFz7/xlOrk1ovT5DoazhWNd/O5twFQvrEjk1uAZlOWqTgkhA==
-X-Gm-Gg: AY/fxX5Qa9X3UZIdxI8Uq9ec6NmG5igbfwujhH/pLdxCE0AmnwXAXKA6yxQogvNkcB4
-	OdLFHFHhsoFaM47czGtyXs5rh6IWpUJLsXviTsTj2AAtIENzzqSWRiYGvm+VYPeUWOQ+0N9d4XB
-	UyYURJa94+GyU0Hy+R/k+HEJvkJ7M5xVDcRd4UE7iGTE9gU+14Tsz9zhJ0NeXNeKCVSneDgn9ZA
-	UMZmymJ6dUAni0QiSt2u1Ig8QJSmYRnpQntiOpnHJOnrLnVDwwPmRXEZZ6H5GE9kEDUgyGaqBpL
-	cvxmvOZYhyeGyDt3nIP7luea0KNWbFtlbJCsdydaKK8omgvM69EVB+c+5+yskvgZp73ZBEimot7
-	jx1y/LKMyh1QGLIAhJIKp3Ih6uA==
-X-Received: by 2002:ac8:46c8:0:b0:4f4:c7c0:bd15 with SMTP id d75a77b69052e-4f4c7c0c07bmr435981901cf.12.1767358208824;
-        Fri, 02 Jan 2026 04:50:08 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IGaibJGKRcufVQsFtoFkkLusGl1EteIcRijgF1eum1S0BpyBUz176ZDnEeSiz3Y7Vi4Imr58w==
-X-Received: by 2002:ac8:46c8:0:b0:4f4:c7c0:bd15 with SMTP id d75a77b69052e-4f4c7c0c07bmr435981571cf.12.1767358208430;
-        Fri, 02 Jan 2026 04:50:08 -0800 (PST)
-Received: from quoll ([178.197.218.229])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-47be3964226sm340423585e9.0.2026.01.02.04.50.07
+        d=1e100.net; s=20230601; t=1767358962; x=1767963762;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=WmDmlKfsEAT3FFZsP/TiPm94jNR+IqB/SohCa4X10es=;
+        b=c0ZYMPHvxuxB8g0It4dxLly2CSsJkQzMSawsvYVY1x8VGw4l9iZxARUHT1zGaZdbrn
+         JQ8/4LHale/JtFNljO5tBbAhDSNrC4eWkWY8g6mox7Bfk3ol/SuzCC87II+OTs4e53B4
+         EX/gh8ZeVbRrD18lGNKSSpxRXGNvsz4bzSjpSbuXLMXK3oMq1DLowhSMmoZLY0ErjcAv
+         CT70SyjT374n2FynfKxzs0xke6JMiDUkXwP2RJP8BZP9a7KjHW/si2h6mzq4/j8X43EU
+         Fog1SIVic1NllBm/vgPkdyN/oyITkXoc4KuSv/OiOAZyiEV1qKzC5l9+ga7BOsLqbyBC
+         m0qA==
+X-Forwarded-Encrypted: i=1; AJvYcCXeyxD/0wUWK8kSiktBbCVmBi9SF4mL0UCrcrvAM5Kk59aQP4ymflzEdGdFytiBCRbn6pZUYQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyTuS0KIdS2IXq5XkmYLRcoh+qKLJV6+bJvP1xPEQGNZlzRtpoI
+	hIqtPQvOof4SOrtfv78MApbDusm2/6EIxW7VWaVQFYbsqGrUIbEdMyUgxMwlrdcr+wKkFfoKBF7
+	rIflfBIPmF+2p5TBnc4bmdVoLKDF4sKezMhbKTXmfoaWm07F6GkUALhhH
+X-Gm-Gg: AY/fxX4Pl86vv6+eYPuaI+J9gHwQTGwZvVN6CKwnrfQHT7++iChwjOqd1lyC8Bh8I3U
+	50ybY1Qt1A8tOv0e4QQpAwcYZ4hojII8e+SN5/fS+fS/ItmSF8qwmSZU73DwcpgU8vMYWnVagZH
+	M3C/fa2KgJ6OUFXDjyVwbi+GEewgcbgsaooAGKkxRWen330RSf3y/2aSYDD2+V5Tr0FZ3FrpZv/
+	hmPFi0FgUk6HrUALjLdVJ7js6vvI2cT/Vf7m4cxX4e+hy6pIxwtvt/iFr7P3oH0N1HxGhoPmkZt
+	Wahgnyk+U1aFzQwZYfMVGdWOXErPKQAmVMSfSAjf0xxk8TpfhkLeie0fUFxKHnUlbOVVy6pEaPj
+	0iTmZGh0qXydUh3diIUCZBcYFp3K8ln+cxw==
+X-Received: by 2002:a05:600c:3508:b0:477:1bb6:17de with SMTP id 5b1f17b1804b1-47d19590bbemr512375365e9.30.1767358962204;
+        Fri, 02 Jan 2026 05:02:42 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IFBPpH0ihQmD8Y4wAGqUXdjbUDmUwQhrGC4bvR7Khhg9b0D8Nv1fILL/X18iGX7aRdaW+Lc0w==
+X-Received: by 2002:a05:600c:3508:b0:477:1bb6:17de with SMTP id 5b1f17b1804b1-47d19590bbemr512374585e9.30.1767358961687;
+        Fri, 02 Jan 2026 05:02:41 -0800 (PST)
+Received: from redhat.com (IGLD-80-230-31-118.inter.net.il. [80.230.31.118])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-47d193d4e91sm720685835e9.13.2026.01.02.05.02.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Jan 2026 04:50:07 -0800 (PST)
-From: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-To: Rob Clark <robin.clark@oss.qualcomm.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-        iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-Subject: [PATCH] iommu: arm-smmu: Simplify with scoped for each OF child loop
-Date: Fri,  2 Jan 2026 13:50:04 +0100
-Message-ID: <20260102125003.64962-2-krzysztof.kozlowski@oss.qualcomm.com>
-X-Mailer: git-send-email 2.51.0
+        Fri, 02 Jan 2026 05:02:40 -0800 (PST)
+Date: Fri, 2 Jan 2026 08:02:36 -0500
+From: "Michael S. Tsirkin" <mst@redhat.com>
+To: Bartosz Golaszewski <brgl@kernel.org>
+Cc: linux-kernel@vger.kernel.org, Cong Wang <xiyou.wangcong@gmail.com>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Olivia Mackall <olivia@selenic.com>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	Jason Wang <jasowang@redhat.com>,
+	Paolo Bonzini <pbonzini@redhat.com>,
+	Stefan Hajnoczi <stefanha@redhat.com>,
+	Eugenio =?iso-8859-1?Q?P=E9rez?= <eperezma@redhat.com>,
+	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+	"Martin K. Petersen" <martin.petersen@oracle.com>,
+	Gerd Hoffmann <kraxel@redhat.com>,
+	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Stefano Garzarella <sgarzare@redhat.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Simon Horman <horms@kernel.org>, Petr Tesarik <ptesarik@suse.com>,
+	Leon Romanovsky <leon@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
+	linux-doc@vger.kernel.org, linux-crypto@vger.kernel.org,
+	virtualization@lists.linux.dev, linux-scsi@vger.kernel.org,
+	iommu@lists.linux.dev, kvm@vger.kernel.org, netdev@vger.kernel.org,
+	"Enrico Weigelt, metux IT consult" <info@metux.net>,
+	Viresh Kumar <vireshk@kernel.org>,
+	Linus Walleij <linusw@kernel.org>, linux-gpio@vger.kernel.org
+Subject: Re: [PATCH RFC 15/13] gpio: virtio: reorder fields to reduce struct
+ padding
+Message-ID: <20260102080135-mutt-send-email-mst@kernel.org>
+References: <cover.1767089672.git.mst@redhat.com>
+ <55e9351282f530e2302e11497c6339c4a2e74471.1767112757.git.mst@redhat.com>
+ <CAMRc=MfWX5CZ6GL0ph1g-KupBS3gaztk=VxTnfC1QwUvQmuZrg@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1121; i=krzysztof.kozlowski@oss.qualcomm.com;
- h=from:subject; bh=f0tamSSSQFETd/BZgOeOBR45ekM+X1VWM1B3+8zR7G4=;
- b=owEBbQKS/ZANAwAKAcE3ZuaGi4PXAcsmYgBpV777jI8tCOET4TbjC+HPZB2dgMi2DF44wcwnd
- 7brPjPkQ0+JAjMEAAEKAB0WIQTd0mIoPREbIztuuKjBN2bmhouD1wUCaVe++wAKCRDBN2bmhouD
- 14dLD/9dX7/M267GN7byFB1WBkxv5LFfVDmSjqOu8wDOq/vbys5RDZBtmo7t46mLBieqJl4ivae
- j+2eaRVbXnSe//gLWSK12TcZ96tvCg5QVi3itFmmv7/acBweHB60ZQn2xje0chv70QcD5BbCAfJ
- zU/N9NWfFipg19oPKvJUB5jwbUDk8B5pc8rK8ay1Wv2SuoDsz8HRki+Y38RBiZjyotJ+wJRVqXZ
- n8AIApW0sJFoNNZ18SCw4LH9qZ+ZpjBBdVdrrOrKdqMDz+iZkvK2QZEQVr6q7SbL52N8Hd0Jxj4
- EPkUfezX2iSykBXPwLjA+CQZx4WmeMXZKzgTjfQj4QrD10fA189YWUriQ8D2llQFQO3Kw6RyZRc
- WaqU9VKpNglcQsSdb0NRzAhS2kPyHwnDhHQSxqHsdYuFPO/L0xhF30LV/lz1p17D71jwUWC4O5L
- lXSZDRw3YyWJc3mQ81kGEt+eTZccennc/rXx5fnoV8xqO4fbEjwXqzV0+I5OFiJjthjEGMNrUdB
- X+Om0XFx3BVsxiYBaIxkjJJ1YJDlgH94hbRz7z5x8Kxh0RiIV3isDQjU9pxsJkzpvfreP2mHeuB
- pxNuMg7fIBfqDLiY+4JEM/r8LPajA58BR27l0SpqoglqsnsnIPtQqa7JljTi2jwiZzQ7ioYFUgi sbGPVJLBsihEYiw==
-X-Developer-Key: i=krzysztof.kozlowski@oss.qualcomm.com; a=openpgp; fpr=9BD07E0E0C51F8D59677B7541B93437D3B41629B
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: 5i5l6Hi3XOMuGAuNNB4e0PhtUts2CST2
-X-Proofpoint-ORIG-GUID: 5i5l6Hi3XOMuGAuNNB4e0PhtUts2CST2
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMTAyMDExMyBTYWx0ZWRfX/kmvMo2P9l8d
- +HOCRH8kb0MMMOXUlTLkF7RdXt4PQKv18djBjdeDrYXHYzII4ci+AaRqcrRlPg4oTzw1SwBo/3j
- 60/qIu7bpOSZLBI0NADSnkp1o8q7e7nGUlQMWl8xV+1EZR54eCOToJ2dQnFTGJJhB94aQLV7b3c
- YstXZoSc3GhCZgNvSK/UTo8YgEYz5lOaOEF9wm0SnIlSudz+5ozKZ9w0k+UDMxLD7/VxJj7TikB
- KCImEYqWdNCD592t1/MlkGTdzcsl5vIWJEUaBgW68fbIbVFAnivdPps/Lch1Nx5bg6Itj6dfppn
- vmib15QT2DaX8Iz2Wn6P7uh+s3k2Hq7Zv8hMeU33//5WJZDkjPcrCHD1dqlMeCiw1TbBTZL6a/k
- /VfsUyTvMUxcSn2i++7bK2DgEsdhMl+MbBjtAU5ecFVuzWqb2t5TqxDMP6uUcSTlZOwc2czfL5L
- hNqEdf8EzG5jIpgA2Gg==
-X-Authority-Analysis: v=2.4 cv=ev7SD4pX c=1 sm=1 tr=0 ts=6957bf01 cx=c_pps
- a=EVbN6Ke/fEF3bsl7X48z0g==:117 a=Eb9f15NH/cHKzfGOmZSO4Q==:17
- a=vUbySO9Y5rIA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=EUspDBNiAAAA:8 a=DNxOUMVqX5WKlv-K9SsA:9 a=a_PwQJl-kcHnX1M80qC6:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.9,FMLib:17.12.100.49
- definitions=2026-01-02_01,2025-12-31_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- priorityscore=1501 bulkscore=0 malwarescore=0 clxscore=1011 adultscore=0
- phishscore=0 impostorscore=0 lowpriorityscore=0 spamscore=0 suspectscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2512120000 definitions=main-2601020113
+In-Reply-To: <CAMRc=MfWX5CZ6GL0ph1g-KupBS3gaztk=VxTnfC1QwUvQmuZrg@mail.gmail.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: TklufRf38u0bIwUNeyCU4Atyw0ji0VPgQYXgJ7cVXXQ_1767358963
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Use scoped for-each loop when iterating over device nodes to make code a
-bit simpler.
+On Fri, Jan 02, 2026 at 12:47:04PM +0000, Bartosz Golaszewski wrote:
+> On Tue, 30 Dec 2025 17:40:33 +0100, "Michael S. Tsirkin" <mst@redhat.com> said:
+> > Reorder struct virtio_gpio_line fields to place the DMA buffers (req/res)
+> > last. This eliminates the need for __dma_from_device_aligned_end padding
+> > after the DMA buffer, since struct tail padding naturally protects it,
+> > making the struct a bit smaller.
+> >
+> > Size reduction estimation when ARCH_DMA_MINALIGN=128:
+> > - request is 8 bytes
+> > - response is 2 bytes
+> > - removing _end saves up to 128-6=122 bytes padding to align rxlen field
+> >
+> > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> > ---
+> >  drivers/gpio/gpio-virtio.c | 5 ++---
+> >  1 file changed, 2 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/drivers/gpio/gpio-virtio.c b/drivers/gpio/gpio-virtio.c
+> > index 32b578b46df8..8b30a94e4625 100644
+> > --- a/drivers/gpio/gpio-virtio.c
+> > +++ b/drivers/gpio/gpio-virtio.c
+> > @@ -26,12 +26,11 @@ struct virtio_gpio_line {
+> >  	struct mutex lock; /* Protects line operation */
+> >  	struct completion completion;
+> >
+> > +	unsigned int rxlen;
+> > +
+> >  	__dma_from_device_aligned_begin
+> >  	struct virtio_gpio_request req;
+> >  	struct virtio_gpio_response res;
+> > -
+> > -	__dma_from_device_aligned_end
+> > -	unsigned int rxlen;
+> >  };
+> >
+> >  struct vgpio_irq_line {
+> > --
+> > MST
+> >
+> >
+> 
+> Acked-by: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
----
- drivers/iommu/arm/arm-smmu/qcom_iommu.c | 8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+Thanks! There's a new API as suggested by Petr so these patches got changed,
+but the same idea. Do you want me to carry your ack or you prefer to
+re-review?
 
-diff --git a/drivers/iommu/arm/arm-smmu/qcom_iommu.c b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-index f69d9276dc55..c98bed38c58a 100644
---- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-+++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-@@ -761,14 +761,10 @@ static struct platform_driver qcom_iommu_ctx_driver = {
- 
- static bool qcom_iommu_has_secure_context(struct qcom_iommu_dev *qcom_iommu)
- {
--	struct device_node *child;
--
--	for_each_child_of_node(qcom_iommu->dev->of_node, child) {
-+	for_each_child_of_node_scoped(qcom_iommu->dev->of_node, child) {
- 		if (of_device_is_compatible(child, "qcom,msm-iommu-v1-sec") ||
--		    of_device_is_compatible(child, "qcom,msm-iommu-v2-sec")) {
--			of_node_put(child);
-+		    of_device_is_compatible(child, "qcom,msm-iommu-v2-sec"))
- 			return true;
--		}
- 	}
- 
- 	return false;
 -- 
-2.51.0
+MST
 
