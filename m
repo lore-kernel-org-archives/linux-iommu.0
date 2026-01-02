@@ -1,66 +1,66 @@
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C5FF2D3EE3
-	for <iommu@lists.linux.dev>; Fri,  2 Jan 2026 07:59:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 652422D5A19
+	for <iommu@lists.linux.dev>; Fri,  2 Jan 2026 08:15:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767340781; cv=none; b=dpTbnIp4ZmWNgg5buBzpQLi/aqVc5OE4Qti8iSytUpdsf/b59xkeJ467Kohe0U5hn21/cSX32c4JYSEksmXoK2/i6hR4Y6gl+HM4xFUoZWmGN/6By3IWrKnxg4MpOYx3UyeHixntveGVMJB6MSE45vSl+lLzi2+wL2/omrzeDNw=
+	t=1767341707; cv=none; b=auO0+5Y+QUtZAWaxpURus5GyoUYYgS6H3LhYwFfJcbnnGCPw5kn0UnrGZcaI/9XiDb6N0FciqVIwbNZsDCpfpMrhIUxZR/HSUPL5F8DxtLY4NmeF1vxsy9paxvEx/3gWjdJzIfdF0mUST092Gm/HcffMXC7yzfLIKJFWKhlb+BY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767340781; c=relaxed/simple;
-	bh=UD0nX92LmX0AHSDMj1Aw7fSctz7TIO+ioQ0bAnsD9YM=;
+	s=arc-20240116; t=1767341707; c=relaxed/simple;
+	bh=pR9J2JcpyuSslYDA7lsLX4ZhILZRZva1Jx7LQCRL2xc=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=TbOmR+gwLWXqzlWgimSh55CikX38GST+AZ1l86rDwr6VfgthlJwTtPGCbtE1mjYum8AU+Wp+Vc3NkyjRTXSdW/3pLHUXK7OWIwdGExZzTLXajg1zWDyTocVry1DoecyjcQpo3hMbIulsRiy9azfOHXhYtIxmZxRsVRtCAM5eB6A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=CIKcKR6I; arc=none smtp.client-ip=209.85.128.50
+	 MIME-Version:Content-Type; b=bo9VcTY6+fiQVK43tNWQVbJp54c6p/3D6i8gQ16FcTQP4pcOy4J/qkuNbJGYAJl5Q7TM1j/B8YKTB2PPeXpo7Np/Z6HR2Ml8G/LEKb77pDsg1VID6Q5HkOlUzS2Nzf9kTtBBIXvggrFPIQk83FWGRqRGKBXfXtYD3eJZjpcDNJU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=Q0uwNX9I; arc=none smtp.client-ip=209.85.128.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="CIKcKR6I"
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-47a9567bcd9so9683615e9.2
-        for <iommu@lists.linux.dev>; Thu, 01 Jan 2026 23:59:38 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="Q0uwNX9I"
+Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-4779c9109ceso9989715e9.1
+        for <iommu@lists.linux.dev>; Fri, 02 Jan 2026 00:15:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1767340777; x=1767945577; darn=lists.linux.dev;
+        d=suse.com; s=google; t=1767341702; x=1767946502; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:subject:cc:to:from:date:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=fIhwYQ0S620I5qazfGkJGP1Z1tDhQZ9HETsO3rBfl20=;
-        b=CIKcKR6I4IF2NUtCLmd0lBoZYPr0anBtxqGjHK4fOMEV3j0U/y2eMHuNC6o4oVLGY+
-         yOHOJNIXzLLq3i951qIPwXcZiIGNxOHUjgEDKe5nrnZYpk25kXGyguLyv+VcarKY82Zn
-         0wSG0ep0FwA8Z2JM97SHFZ/CyFvUkJ8NgkamR7okMo1zpxchvnmi1qn2JNRIrR0ILDwe
-         J00h2EvDYLKNejyAJerQKvm273hu6okO+hN/mYl4x88rYyjwR7elqfcdczR0CGwfcvem
-         /Gw+XlqqFFeC12xEfjW+hHAs5qpqRIvuLXmthXT+IA39gm9p+IA7kAC8O+PRls8s0ssX
-         HFag==
+        bh=7B5OROvqw/DgiaRfLYZJf4GjF/wj6CLJOtpsQ8Z+Uq0=;
+        b=Q0uwNX9IlV/kORm8jgAs+Q1ETb6NYhTb9wSaDWfef4NJ/nWrAnH1julBwuPqwmv5ip
+         yDBbRdl5cmjrAMa1hRvahM2hqQFUcQQQzSpYb0DxP6nnGw05MBvQV887ZJrO/oqU4vC5
+         L7CE6nx4GWFlkcwe+TxTIeQfnW8TuCle2yAbi2Mzk9Mu46b+LYD4VgaGLW8Yd7RyNLSD
+         k7DCUyHhaOck1DZR62qWUmqkx3cVGVUw4HJaWEBf8LW1WBgxvOoRPAJMzYk5PLieftuh
+         Gvpxiv4Cx0obZV+JYoAYZkv1EL8PQ8A+EMaq6z+UaEaDSFLW96P0TGIv1dykmTg9CIXZ
+         kcbg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1767340777; x=1767945577;
+        d=1e100.net; s=20230601; t=1767341702; x=1767946502;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=fIhwYQ0S620I5qazfGkJGP1Z1tDhQZ9HETsO3rBfl20=;
-        b=qLX5ouKzVc3fpoPrXkZ+914VTmYrs/VlkAZdKO0lMSK/waXfmt4DkOflMSlT3Yr0/d
-         6uZYStA5XnZVxcCsfbkGtE/Hk1q0Lyl6NGZfBQgpPivyE3y9AuSMQTF0joJLeTRR+kFR
-         9f2DlxzOgYpp+r+CQL1CoVJTUy4E/r94Rx9o3LTwmyppXLge1d+ow5hHm9ZM1OTfoX2d
-         U9IspooTS2N3622WAH+ULNfX8ZFS5LWi2NIAZwgxn9sAn2qs+NCImBAHpGY8GX5kOdJj
-         vSBrcArQNJUdF1ByQHOgDAVT3wc4ob8VV9kwgbtuxHaOyKX1BxfdMgk1QlfnGykDrye4
-         iSGw==
-X-Forwarded-Encrypted: i=1; AJvYcCUvdObRcznYQvxHRjP0qiIIdaZcCJ4yse/3m2A6HOShMRZDEktvlyZL2Y1m7Tk4qJLh5SZk3w==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwAc5pGMVAos/AHGc94ukNFZ2QPn5mLdSxELjASBgiBTX5jMpZC
-	d+vYFvuumcq607dt36YCKJOJb0hoB9urJVsi56R4ggMea6CE5YO3gCsmfj19M3AV7xE=
-X-Gm-Gg: AY/fxX7VVlvcqqgUeYFnFZ2G8BgBRiomWTaCWfJxh7J4xUh1xnvV0CzOsTUIlAgga/m
-	xhfT4zBMUJ6cKANEKZ2u6S9hBSG17mD2eyeAi0GetAYuDCXUxmL8RFSK/DOvMyiA6+p24rc/I/Q
-	P2b0L9KOLGTyg3n+02cHRLNFRWNWR6nGhRUcfkHD/Z8aR+2fIUvXGTX2fcIjYfNdaTwaO6o+Fww
-	VkLh289uOjfLhLN9p23S3YnbzX6BiYohR5yv+rzOpfH1iOrymliYf7FY8rri89FMQ2rk0Yx27K9
-	ObXI94XM+zv317jI0w8jVi45Pog2925Ke6sABPhTH0pcSdMZtJxn8+zTf7RwP2OsWsexVABGKlG
-	kILqgz0JTkIB092xPfdke0J4fIfRrOow0Jmg4w6bAohQV+AQPjJlj6+j3YFsJDr6KweE+sosIWQ
-	Mjmsk/SbR53oSKlXB0wtYh6Ry5itde/IKmdthRkbM3mu0Qrd0qEhz/VTB0rxmZcP3yvjl+Btb3z
-	F3sXGe/bf1QBJM=
-X-Google-Smtp-Source: AGHT+IGPmW2Otkj8FnNc/KvSgCnn85RbpVPA2pWTb5toeH0C7mqfw399DBVUSTCo8Ruk60hhUTeL4g==
-X-Received: by 2002:a05:600c:310e:b0:477:7a78:3000 with SMTP id 5b1f17b1804b1-47d195815b0mr307920935e9.6.1767340776886;
-        Thu, 01 Jan 2026 23:59:36 -0800 (PST)
+        bh=7B5OROvqw/DgiaRfLYZJf4GjF/wj6CLJOtpsQ8Z+Uq0=;
+        b=nDHY+IPKjRjg98uiRuiV7BY3R5Obx99DJIvH03KPkOCv7cLTg+mXMQax4WwjU38DdT
+         6B+AGrdn94NLasJTAVR+UT+G+767m18sG6VwF942O+tZIVkQ2JRQoavCURprnOogp9Wx
+         64Fd9Y7DD5Y91uy03BqLS3DEhNNf/5qdfUlbWqPZ+MVbqZL0UybEoQ0fJuKE9HW6m7pl
+         JzxbY1ERMXbOr3+nqHFfYS5dRzyz6ljn4jlcZjXAAMxR8fAZW3dQ/+hDzBh2Gfd5U67l
+         fpP6W9Y1CYbbGkuBv8/HvVUOYZJZPUG6WhgeulbYhjHOgQLvh378iNKEJatFDl89gzc1
+         0EQA==
+X-Forwarded-Encrypted: i=1; AJvYcCUfOMvrG04pjxihBBV4tYHSQU3Xl/YmdnM6v2/sJ9rqRvBuvqhtt9g8NJeW0qv0DdfuB2hYhw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxdsA6H519HbLG5FaAGFu6ncl0fu7n/eBX6lXNEYZmxF7TDYnq0
+	W18KAQ0yscQ/S+igeGTkvyPYkqc8gmsp2Une7cGmP6JFyGo3F+flRHbFEsF8JZt6ZiA=
+X-Gm-Gg: AY/fxX6shNuSocdjXyoN0NuDZXDXh8TbQS408b8o7Gzui1YWSeyigCAJSebDcs8WR0k
+	Yu/SVQFGhWQetYNf5Ja+MbDZrzqgUuDRWywzosUAZvlwUVO5LYn3uKrgqSJrGh3Eqiy/e+NY52Y
+	cBcvY3ayg8d2qZwjyRJr6QovoWmjtYBHD2iQwcjSjlzzK3eQxbiffzqBp+S7AUdwYhnykbMrkIw
+	m+q1b3wvpsntYDKR23jVo0eD06XFS675X3jChJU6LZLCQ5L+C6KHRZ9LjrcPG0eK9r+lpbtQNUP
+	JWVHsxP5TDBKOH//u4jbe2IKgm4GrNAhbMRNDq67LEp/yDvb0JIu4pgb2VT8eQ4jz6aIe1+YdPb
+	f3rcL8RnZKNYnG0InprYYj/SJOqOrMfTW+DlT7xJqZa2/lYsU4crkKHpxhnDPL8O8T834KO9D9C
+	Tb0rfXRW/VJqvO/LVgodO/VY6bWL9wlfkFT3Xzmra/lV4hH67Ycgb5GdpIIQz0DNibEXBEIsqxQ
+	wqw
+X-Google-Smtp-Source: AGHT+IEG7/UqWg/6ELIcyq0mVb3xfMQn4RI8cpiRrR5W4zXnA35xM+TJgjTRoe1XllkShxIti5fDKg==
+X-Received: by 2002:a05:600c:3151:b0:477:a203:66dd with SMTP id 5b1f17b1804b1-47d197f69demr322547935e9.2.1767341702410;
+        Fri, 02 Jan 2026 00:15:02 -0800 (PST)
 Received: from mordecai (dynamic-2a00-1028-83b8-1e7a-3010-3bd6-8521-caf1.ipv6.o2.cz. [2a00:1028:83b8:1e7a:3010:3bd6:8521:caf1])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-47be3af6dbdsm314869295e9.19.2026.01.01.23.59.34
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-47be27b0d5asm792930555e9.13.2026.01.02.00.15.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Jan 2026 23:59:36 -0800 (PST)
-Date: Fri, 2 Jan 2026 08:59:33 +0100
+        Fri, 02 Jan 2026 00:15:01 -0800 (PST)
+Date: Fri, 2 Jan 2026 09:14:59 +0100
 From: Petr Tesarik <ptesarik@suse.com>
 To: "Michael S. Tsirkin" <mst@redhat.com>
 Cc: linux-kernel@vger.kernel.org, Cong Wang <xiyou.wangcong@gmail.com>,
@@ -79,11 +79,14 @@ Cc: linux-kernel@vger.kernel.org, Cong Wang <xiyou.wangcong@gmail.com>,
  linux-doc@vger.kernel.org, linux-crypto@vger.kernel.org,
  virtualization@lists.linux.dev, linux-scsi@vger.kernel.org,
  iommu@lists.linux.dev, kvm@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH RFC 05/13] dma-debug: track cache clean flag in entries
-Message-ID: <20260102085933.2f78123b@mordecai>
-In-Reply-To: <c0df5d43759202733ccff045f834bd214977945f.1767089672.git.mst@redhat.com>
+Subject: Re: [PATCH RFC 01/13] dma-mapping: add
+ __dma_from_device_align_begin/end
+Message-ID: <20260102091459.6bec60c2@mordecai>
+In-Reply-To: <20251231154722-mutt-send-email-mst@kernel.org>
 References: <cover.1767089672.git.mst@redhat.com>
-	<c0df5d43759202733ccff045f834bd214977945f.1767089672.git.mst@redhat.com>
+	<ca12c790f6dee2ca0e24f16c0ebf3591867ddc4a.1767089672.git.mst@redhat.com>
+	<20251231150159.1779b585@mordecai>
+	<20251231154722-mutt-send-email-mst@kernel.org>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -94,138 +97,71 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 30 Dec 2025 05:16:00 -0500
+On Wed, 31 Dec 2025 15:48:26 -0500
 "Michael S. Tsirkin" <mst@redhat.com> wrote:
 
-> If a driver is bugy and has 2 overlapping mappings but only
-> sets cache clean flag on the 1st one of them, we warn.
-> But if it only does it for the 2nd one, we don't.
+> On Wed, Dec 31, 2025 at 03:01:59PM +0100, Petr Tesarik wrote:
+> > On Tue, 30 Dec 2025 05:15:46 -0500
+> > "Michael S. Tsirkin" <mst@redhat.com> wrote:
+> >   
+> > > When a structure contains a buffer that DMA writes to alongside fields
+> > > that the CPU writes to, cache line sharing between the DMA buffer and
+> > > CPU-written fields can cause data corruption on non-cache-coherent
+> > > platforms.
+> > > 
+> > > Add __dma_from_device_aligned_begin/__dma_from_device_aligned_end
+> > > annotations to ensure proper alignment to prevent this:
+> > > 
+> > > struct my_device {
+> > > 	spinlock_t lock1;
+> > > 	__dma_from_device_aligned_begin char dma_buffer1[16];
+> > > 	char dma_buffer2[16];
+> > > 	__dma_from_device_aligned_end spinlock_t lock2;
+> > > };
+> > > 
+> > > When the DMA buffer is the last field in the structure, just
+> > > __dma_from_device_aligned_begin is enough - the compiler's struct
+> > > padding protects the tail:
+> > > 
+> > > struct my_device {
+> > > 	spinlock_t lock;
+> > > 	struct mutex mlock;
+> > > 	__dma_from_device_aligned_begin char dma_buffer1[16];
+> > > 	char dma_buffer2[16];
+> > > };  
+> > 
+> > This works, but it's a bit hard to read. Can we reuse the
+> > __cacheline_group_{begin, end}() macros from <linux/cache.h>?
+> > Something like this:
+> > 
+> > #define __dma_from_device_group_begin(GROUP)			\
+> > 	__cacheline_group_begin(GROUP)				\
+> > 	____dma_from_device_aligned
+> > #define __dma_from_device_group_end(GROUP)			\
+> > 	__cacheline_group_end(GROUP)				\
+> > 	____dma_from_device_aligned
+> > 
+> > And used like this (the "rxbuf" group id was chosen arbitrarily):
+> > 
+> > struct my_device {
+> > 	spinlock_t lock1;
+> > 	__dma_from_device_group_begin(rxbuf);
+> > 	char dma_buffer1[16];
+> > 	char dma_buffer2[16];
+> > 	__dma_from_device_group_end(rxbuf);
+> > 	spinlock_t lock2;
+> > };
+> > 
+> > Petr T  
 > 
-> Fix by tracking cache clean flag in the entry.
-> Shrink map_err_type to u8 to avoid bloating up the struct.
+> Made this change, and pushed out to my tree.
 > 
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> ---
->  kernel/dma/debug.c | 25 ++++++++++++++++++++-----
->  1 file changed, 20 insertions(+), 5 deletions(-)
-> 
-> diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-> index 7e66d863d573..9bd14fd4c51b 100644
-> --- a/kernel/dma/debug.c
-> +++ b/kernel/dma/debug.c
-> @@ -63,6 +63,7 @@ enum map_err_types {
->   * @sg_mapped_ents: 'mapped_ents' from dma_map_sg
->   * @paddr: physical start address of the mapping
->   * @map_err_type: track whether dma_mapping_error() was checked
-> + * @is_cache_clean: driver promises not to write to buffer while mapped
->   * @stack_len: number of backtrace entries in @stack_entries
->   * @stack_entries: stack of backtrace history
->   */
-> @@ -76,7 +77,8 @@ struct dma_debug_entry {
->  	int		 sg_call_ents;
->  	int		 sg_mapped_ents;
->  	phys_addr_t	 paddr;
-> -	enum map_err_types  map_err_type;
-> +	u8		 map_err_type;
+> I'll post the new version in a couple of days, if no other issues
+> surface.
 
-Where exactly is the bloat? With my configuration, the size of struct
-dma_debug_entry is 128 bytes, with enough padding bytes at the end to
-keep it at 128 even if I keep this member an enum...
+FTR except my (non-critical) suggestions for PATCH 5/13, the updated
+series looks good to me.
 
-Anyway, if there is a reason to keep this member small, I prefer to
-pack enum map_err_types instead:
-
-@@ -46,9 +46,9 @@ enum {
- enum map_err_types {
- 	MAP_ERR_CHECK_NOT_APPLICABLE,
- 	MAP_ERR_NOT_CHECKED,
- 	MAP_ERR_CHECKED,
--};
-+} __packed;
- 
- #define DMA_DEBUG_STACKTRACE_ENTRIES 5
- 
- /**
-
-This will shrink it to a single byte but it will also keep the type
-information.
-
-> +	bool		 is_cache_clean;
->  #ifdef CONFIG_STACKTRACE
->  	unsigned int	stack_len;
->  	unsigned long	stack_entries[DMA_DEBUG_STACKTRACE_ENTRIES];
-> @@ -472,12 +474,15 @@ static int active_cacheline_dec_overlap(phys_addr_t cln)
->  	return active_cacheline_set_overlap(cln, --overlap);
->  }
->  
-> -static int active_cacheline_insert(struct dma_debug_entry *entry)
-> +static int active_cacheline_insert(struct dma_debug_entry *entry,
-> +				   bool *overlap_cache_clean)
->  {
->  	phys_addr_t cln = to_cacheline_number(entry);
->  	unsigned long flags;
->  	int rc;
->  
-> +	*overlap_cache_clean = false;
-> +
->  	/* If the device is not writing memory then we don't have any
->  	 * concerns about the cpu consuming stale data.  This mitigates
->  	 * legitimate usages of overlapping mappings.
-> @@ -487,8 +492,14 @@ static int active_cacheline_insert(struct dma_debug_entry *entry)
->  
->  	spin_lock_irqsave(&radix_lock, flags);
->  	rc = radix_tree_insert(&dma_active_cacheline, cln, entry);
-> -	if (rc == -EEXIST)
-> +	if (rc == -EEXIST) {
-> +		struct dma_debug_entry *existing;
-> +
->  		active_cacheline_inc_overlap(cln);
-> +		existing = radix_tree_lookup(&dma_active_cacheline, cln);
-> +		if (existing)
-> +			*overlap_cache_clean = existing->is_cache_clean;
-
-*nitpick*
-
-IIUC radix_tree_insert() returns -EEXIST only if the key is already
-present in the tree. Since radix_lock is not released between the
-insert attempt and this lookup, I don't see how this lookup could
-possibly fail. If it's not expected to fail, I would add a WARN_ON().
-
-Please, do correct me if I'm missing something.
-
-Other than that, LGTM.
+Thank you!
 
 Petr T
-
-> +	}
->  	spin_unlock_irqrestore(&radix_lock, flags);
->  
->  	return rc;
-> @@ -583,20 +594,24 @@ DEFINE_SHOW_ATTRIBUTE(dump);
->   */
->  static void add_dma_entry(struct dma_debug_entry *entry, unsigned long attrs)
->  {
-> +	bool overlap_cache_clean;
->  	struct hash_bucket *bucket;
->  	unsigned long flags;
->  	int rc;
->  
-> +	entry->is_cache_clean = !!(attrs & DMA_ATTR_CPU_CACHE_CLEAN);
-> +
->  	bucket = get_hash_bucket(entry, &flags);
->  	hash_bucket_add(bucket, entry);
->  	put_hash_bucket(bucket, flags);
->  
-> -	rc = active_cacheline_insert(entry);
-> +	rc = active_cacheline_insert(entry, &overlap_cache_clean);
->  	if (rc == -ENOMEM) {
->  		pr_err_once("cacheline tracking ENOMEM, dma-debug disabled\n");
->  		global_disable = true;
->  	} else if (rc == -EEXIST &&
-> -		   !(attrs & (DMA_ATTR_SKIP_CPU_SYNC | DMA_ATTR_CPU_CACHE_CLEAN)) &&
-> +		   !(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
-> +		   !(entry->is_cache_clean && overlap_cache_clean) &&
->  		   !(IS_ENABLED(CONFIG_DMA_BOUNCE_UNALIGNED_KMALLOC) &&
->  		     is_swiotlb_active(entry->dev))) {
->  		err_printk(entry->dev, entry,
-
