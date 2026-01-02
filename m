@@ -1,75 +1,78 @@
-Received: from mail-wm1-f67.google.com (mail-wm1-f67.google.com [209.85.128.67])
+Received: from mail-qk1-f178.google.com (mail-qk1-f178.google.com [209.85.222.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A03D1A9FA4
-	for <iommu@lists.linux.dev>; Fri,  2 Jan 2026 18:27:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.67
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BBFBC4A21
+	for <iommu@lists.linux.dev>; Fri,  2 Jan 2026 18:41:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767378473; cv=none; b=CldeThFFHOiqqIT08LgtzCe357QYkBKL52o5sCrkYBeE2kWj8fN9jh4KHrOyl12pEZ51Q6pflUmKDVYWOYGa+3Gju+DXtJ+lN8W0w6dPJFiNKGPVfOvd78q8tiR9Fa7796Aj4TPft+g4QRDM8Td/KZSEGcWcuFnEKxdMkDh+z3E=
+	t=1767379278; cv=none; b=geSg6Wu4QQrFusrfj8ZgM1eIZa4ob1UrFRSDUr0dsQx2uhHHG2p16UVB4HgFBzmu+ZKP75lq4hhMkDYPskb9ajOkHzSIr2OPNQtw2nR7wKWW86grH8scbOlO23OPKZ4Zxr1TWiyWv+I+XHVdQFAAm5rF99DYq/way5fvsw20Yew=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767378473; c=relaxed/simple;
-	bh=5C8UwB9QZ7O+Mrj6n2zJugT9nynkIHNO+mInG9SkFXo=;
+	s=arc-20240116; t=1767379278; c=relaxed/simple;
+	bh=bXmVqZi5/XxGwHoRNC2qo8trHPL/JUWYt6dxPjrbbI4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Eg02xiweD3hzKBalerwOcRLZ2m/JdQeE/i0pwmSFRNVqg4sRoC8CMl08EUtZz5cKaoJyvQjHfFRWHhgawZxXP+r1dJIazVj0QZeWuLMbMJUedyUDBGboccEINO96BBiX5JHYCWGeP5ZmcRPRZGaXl7Irk2UQqqYxt8HIjlyhYuc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=KU/rfZzH; arc=none smtp.client-ip=209.85.128.67
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=Lvzi89+aVdg104llDMjsl52RhGGSJ+3f1Y/N1DIKW/zebZxkwuaL2T/xy3xRKqvtyavs6Mz4Ek3Ye3kpAIxB9RXUGo/hNtRoQTbWkXHAp2GuwXB5NwwyFxiwwDcRYRNHAYGjXxswXJqKkmT1TG6iIiWcGeoIfmtJ/+fBBKjeg6Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=inm+Urue; arc=none smtp.client-ip=209.85.222.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="KU/rfZzH"
-Received: by mail-wm1-f67.google.com with SMTP id 5b1f17b1804b1-4779a4fb9bfso2525e9.0
-        for <iommu@lists.linux.dev>; Fri, 02 Jan 2026 10:27:51 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="inm+Urue"
+Received: by mail-qk1-f178.google.com with SMTP id af79cd13be357-8be92e393f8so18055185a.1
+        for <iommu@lists.linux.dev>; Fri, 02 Jan 2026 10:41:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1767378470; x=1767983270; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1767379276; x=1767984076; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=UdgCAqNkZh5ZPsycE8zm74NWIwUscD6iQ05BC6RkYo4=;
-        b=KU/rfZzHIZ9kvTMVLC16nto8EN5zZNzsRF8vVOz12ZyLgLWl1n2C1fRplnIJoo308q
-         91gLkQgcHXTzFa//bwGBWyJExjVc4O1YBwNO9GDJpbo0bedCB/1eD6WYuqCMnuYgysxA
-         oTU2P82Rk7tRvL94UDYU8fVU4DJWVRytAoyplLeDH5biKhQUnAKfw06wSZ2y6TUwcKUm
-         /EJ+qBUJKAxGESD8b8gJEtXxCt5jGV11yWYHMJfsvYrmZvpCFa0LXDsZAVst+a7I6G6P
-         gRcph5JdtUJMCPA1aKeQcg2xQHHGFQgrWe9b/BhmgyqweGoNBKElOkuRNEIE3PjEkDg7
-         lX1Q==
+        bh=ZbKNq3OzvNgOXwfOYEfmEuaPS05vXN54NlE6TZcUdp4=;
+        b=inm+UrueNIvp340/VDhkTVrtjxkkd3mjdlOa/kBkiQ7cY6R32lUq2w+j8pnr3qfkiE
+         7QaKbIv9ygjvYpNQX/jL7lZ5CejP+r/UcJBGYfY1mM+wHeDE5dgSoMCbBJw/u4A+xcA0
+         4VfIYhdEmz/0GIcMx753KVzYgmdQqKWUoRAUkU2yI5D9cRx7qn65ghjzpw0avumCrMbI
+         1ifS2LEYCoCYMDuZrDC7qPl61yXdWdG/f5IrjKIuTAMOevORaM4YJtE1q4U4GxGfbSg5
+         yZCLjxIl4Zxk5u445rE1nHqOQZ4gXPELKthEVazDKEcJO1opiZe4/YO6Qzqad05T5VlL
+         s/Mg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1767378470; x=1767983270;
+        d=1e100.net; s=20230601; t=1767379276; x=1767984076;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=UdgCAqNkZh5ZPsycE8zm74NWIwUscD6iQ05BC6RkYo4=;
-        b=db7AewiSU/cVzP3jlJ4d1G09I/Zi+HAv9c27+AWJWrQe4DiQ9Gf+I/LPvjORF1Knp2
-         Ss6eFNOuTi/xUdXzaz5/4LpFf8gp3FUKbj7n4TuAdehlYApqqeI89RWDEyq8RlVSiV9o
-         yJ3bljz5rQn0U0TXCFZFaiFKMgRmERYhaNoG8ANyxwaLoE2PfulpRo/7LnFQReQEFjkH
-         HVzWEqvCRgggqrNP9P6NWeb2wLaUFoIzAaFFM1gtS/ml0H0X22MGbPcxEdzr+6k3fxKa
-         CG8HJ3z3rZvDvZtGYf9MSht7v5SI/H9Xpw9x3B1BwOMPluox5E+6bQCcnh7hQSs/pgPt
-         A0fQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVZZjn+NMhx13F1cHj17qUEhuO5GDKVtm2QgiV5S5sbn+bEfXGimZJYb+A4x4e2V4o6fIWoFw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyIIAo4i3XlorltjYdqYCulYM/GR1Cll4OTA6A/KKOOMGFnzEXa
-	1A/fZdjCsP3d8nYN5b6BOjnxvANsVFK0swe5ULeA6r8zQ9lpNB3yq6z7a2g3Lxn4TA==
-X-Gm-Gg: AY/fxX4ehYoFVxskzv0aS2W4WqOjVczBzZI/Ks4IAn3BlqpxNsEtOudNqNMHVBJ4g2W
-	V07IN6+1ZvNTscd2ng7pF7xrophPLrmmctotc/JViYZ+UWU7qtNes5crLMc9R6P6T5wLlXUQW5A
-	aZ0wBUUCo9I4UjDiWS80Z+D1G5Zvtjv1vnP961B3dSOhwKm8dEn+UvobfX5dGg6iDO6doblVENx
-	f1D7qeaYpcJVEjQWWV+0m4eNDzjxi3dJyoy/s3fiFIloGsMksIsq4iJNd4MLFQ4HiDz7wsi0O5A
-	sBAShP/pHaQeyM8QInNhE1qY2qo5A/Sq4zawDEumh8ddqq/5EHqJf6rrjih8310fyDRwBsbuPur
-	RpvIo4svexCgfIZRTNmazgMMZAKLWqygFD6K41k0sZ2XEiE5A71ohZyGI9DDba2rKiu8+6BJ9GP
-	ox3zxOkCc8jfYUS2C7K8WoKjfbpmTrShYvzgPvaM9ZMf97VtFBq2K+
-X-Google-Smtp-Source: AGHT+IEx91EhhV8c0GunswPgms6CpKa884g+uF8BO4bQNAeeUoTI6cnVz5taHMhdrNBCz6Dt0KZDDw==
-X-Received: by 2002:a7b:cd82:0:b0:453:672b:5b64 with SMTP id 5b1f17b1804b1-47d6c328d28mr15475e9.2.1767378470275;
-        Fri, 02 Jan 2026 10:27:50 -0800 (PST)
-Received: from google.com (171.85.155.104.bc.googleusercontent.com. [104.155.85.171])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4324ea227casm85164260f8f.15.2026.01.02.10.27.49
+        bh=ZbKNq3OzvNgOXwfOYEfmEuaPS05vXN54NlE6TZcUdp4=;
+        b=n2a27wtpUbfua45JaBhRDL/xyhIKTOvPEuoLzo8ILBstDRFmlocDqJwmkShUBUKRtB
+         Evnf8uQZSGqM1L2rseipUaPv9vMj9ST7hcoc+MTgXE8x3XU/gm1ISTtHO0hBXMDab1wV
+         8kfPVcpUV0ZtQh4ToJXjm1msR3BK95+nsuDBLUJrvCcMfRNkxPK4vnj9MkUrIyWp+lNe
+         hdDnNIsirc33KwY2xLEX4Vah6GNbyG8EL6h10jHY8usQCwSv8mDppq3iOj2BG9JvE4qZ
+         n1ZuheyKzPBS1w6qtPQIPNJKHKKgWyBS0PpvhO7YhSgMwrfvlqy2iI2DAEQ6+mtflYlM
+         yywQ==
+X-Forwarded-Encrypted: i=1; AJvYcCX1XZOLdcnl3xcME57hMtiJuR1ZIZm10ujaMlwABQBj7xXz5J0CFDJ/5Iiifm1Y3Aq1F0ZYhA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzrNsMU8/8nIvgve1o+mlJxNQ6WSTk5udJJHV8eXEQi5OWBUwCn
+	LZnU9C+CZ4q7YBIwIG4+XXQuuRr+goP3IXloAvYYjlpoDxwTmWqbQOhzewtv3piGerI=
+X-Gm-Gg: AY/fxX7V6CpEL+TTfYV4pn+5YtR56PIjrJAB53tlkh2XUkTFor1UzbE4Gy7r5QuQOkW
+	sTfeF1V8LZCYKV8SyJSLmcN/W6GzjO3JQZM6VBIlaIzHeX3XJrUwvhhGXljQYBezyK9uA9AiEMK
+	1r8bE481Mj6BQ4F8i/sp/Dp7mnS6kRF3T9hVmfVCNEEVnW9Q2WOvJXYdd3FPJFI5ybTFdp9qki8
+	lUEtWNBM1bkzr0KMjp7CMVR42pPhz2ciNIzH+6AiMadVa+ayy5Yq3fCpcQnAxZ5SB6qpjOcDs34
+	W6Cv1Sb5cmF/W7lq0ZpTg01+HIiPO24RStEHXSncK+h8BgG0Gakql5lWk6TEyq/Dg9FckG8mF+5
+	PfvdSzSsHtmsDF7B38kt2Iuikk3kvinGDzjMv1Me4Orz9/Bmp7dKarGa1u1E0wJ/Gr1FZl6095P
+	Bi27Xqt04IW0611eE4e6XZZaLjdb0W1aFXgsXmd2HMByNpK6lupCMFgS3I8Wsrrvc6ZYk=
+X-Google-Smtp-Source: AGHT+IFf1uKGIwRHqgDuPoJHVm8is9Z+z+ElqpNBRFLqGHyGLWLw+ECPqzKaTxkx0tZNT3guYluMgA==
+X-Received: by 2002:a05:620a:7111:b0:8a3:90cb:9224 with SMTP id af79cd13be357-8c3568a0131mr102879985a.2.1767379274814;
+        Fri, 02 Jan 2026 10:41:14 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-162-112-119.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.112.119])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-8c09678afa6sm3293504685a.2.2026.01.02.10.41.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Jan 2026 10:27:49 -0800 (PST)
-Date: Fri, 2 Jan 2026 18:27:46 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: will@kernel.org, robin.murphy@arm.com, jgg@nvidia.com, joro@8bytes.org,
+        Fri, 02 Jan 2026 10:41:14 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1vbk5J-00000000neJ-2b6O;
+	Fri, 02 Jan 2026 14:41:13 -0400
+Date: Fri, 2 Jan 2026 14:41:13 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Dawei Li <dawei.li@linux.dev>
+Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
 	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, skolothumtho@nvidia.com,
-	praan@google.com, xueshuai@linux.alibaba.com
-Subject: Re: [PATCH rc v5 4/4] iommu/arm-smmu-v3-test: Add nested
- s1bypass/s1dssbypass coverage
-Message-ID: <aVgOImSnVorozaJH@google.com>
-References: <cover.1766093909.git.nicolinc@nvidia.com>
- <68d48a88a64223a1d9b76b59c05f4743f1953c9c.1766093909.git.nicolinc@nvidia.com>
+	linux-kernel@vger.kernel.org, set_pte_at@outlook.com,
+	stable@vger.kernel.org
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Maintain valid access attributes for
+ non-coherent SMMU
+Message-ID: <20260102184113.GA125261@ziepe.ca>
+References: <20251229002354.162872-1-dawei.li@linux.dev>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -78,108 +81,124 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <68d48a88a64223a1d9b76b59c05f4743f1953c9c.1766093909.git.nicolinc@nvidia.com>
+In-Reply-To: <20251229002354.162872-1-dawei.li@linux.dev>
 
-On Thu, Dec 18, 2025 at 01:41:59PM -0800, Nicolin Chen wrote:
-> STE in a nested case requires both S1 and S2 fields. And this makes the use
-> case different from the existing one.
-> 
-> Add coverage for previously failed cases shifting between S2-only and S1+S2
-> STEs.
-> 
-> Reviewed-by: Shuai Xue <xueshuai@linux.alibaba.com>
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+On Mon, Dec 29, 2025 at 08:23:54AM +0800, Dawei Li wrote:
+> According to SMMUv3 architecture specification, IO-coherent access for
+> SMMU is supported for:
+> - Translation table walks.
+> - Fetches of L1STD, STE, L1CD and CD.
+> - Command queue, Event queue and PRI queue access.
+> - GERROR, CMD_SYNC, Event queue and PRI queue MSIs, if supported
 
-Reviewed-by: Mostafa Saleh <smostafa@google.com>
+I was recently looking at this too..  IMHO this is not really a clean
+description of what this patch is doing.
 
-Thanks,
-Mostafa
+I would write this description as:
 
-> ---
->  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c  | 47 +++++++++++++++++++
->  1 file changed, 47 insertions(+)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c
-> index 5db14718fdd6..4a072c2c367c 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c
-> @@ -33,8 +33,12 @@ static struct mm_struct sva_mm = {
->  enum arm_smmu_test_master_feat {
->  	ARM_SMMU_MASTER_TEST_ATS = BIT(0),
->  	ARM_SMMU_MASTER_TEST_STALL = BIT(1),
-> +	ARM_SMMU_MASTER_TEST_NESTED = BIT(2),
->  };
->  
-> +static void arm_smmu_test_make_s2_ste(struct arm_smmu_ste *ste,
-> +				      enum arm_smmu_test_master_feat feat);
-> +
->  static bool arm_smmu_entry_differs_in_used_bits(const __le64 *entry,
->  						const __le64 *used_bits,
->  						const __le64 *target,
-> @@ -197,6 +201,18 @@ static void arm_smmu_test_make_cdtable_ste(struct arm_smmu_ste *ste,
->  	};
->  
->  	arm_smmu_make_cdtable_ste(ste, &master, ats_enabled, s1dss);
-> +	if (feat & ARM_SMMU_MASTER_TEST_NESTED) {
-> +		struct arm_smmu_ste s2ste;
-> +		int i;
-> +
-> +		arm_smmu_test_make_s2_ste(&s2ste,
-> +					  feat & ~ARM_SMMU_MASTER_TEST_NESTED);
-> +		ste->data[0] |= cpu_to_le64(
-> +			FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_0_CFG_NESTED));
-> +		ste->data[1] |= cpu_to_le64(STRTAB_STE_1_MEV);
-> +		for (i = 2; i < NUM_ENTRY_QWORDS; i++)
-> +			ste->data[i] = s2ste.data[i];
-> +	}
->  }
->  
->  static void arm_smmu_v3_write_ste_test_bypass_to_abort(struct kunit *test)
-> @@ -554,6 +570,35 @@ static void arm_smmu_v3_write_ste_test_s2_to_s1_stall(struct kunit *test)
->  						       NUM_EXPECTED_SYNCS(3));
->  }
->  
-> +static void
-> +arm_smmu_v3_write_ste_test_nested_s1dssbypass_to_s1bypass(struct kunit *test)
+When the SMMU does a DMA for itself it can set various memory access
+attributes which control how the interconnect should execute the
+DMA. Linux uses these to differentiate DMA that must snoop the cache
+and DMA that must bypass it because Linux has allocated non-coherent
+on the CPU.
+
+In Table "13.8 Attributes for SMMU-originated accesses" each of the
+different types of DMA is categorized and the specific bits
+controlling the memory attribute for the fetch are identified.
+
+Make this consisent globally. If Linux has cache flushed the buffer,
+or allocated a DMA incoherenet buffer, then it should set the
+non-caching memory attribute so the DMA matches.
+
+This is important for some of the allocations where Linux is currently
+allocating DMA coherent memory, meaning nothing has made the CPU cache
+coherent and doing any coherent access to that memory may result in
+cache inconsistencies.
+
+This may solve problems in systems where the SMMU driver thinks the
+SMMU is non-coherent, but in fact, the SMMU and the interconnect
+selectively supports coherence and setting the wrong memory attributes
+will cause non-working cached access.
+
+[and then if you have a specific SOC that shows an issue please
+describe the HW]
+
+> +static __always_inline bool smmu_coherent(struct arm_smmu_device *smmu)
 > +{
-> +	struct arm_smmu_ste s1_ste;
-> +	struct arm_smmu_ste s2_ste;
-> +
-> +	arm_smmu_test_make_cdtable_ste(
-> +		&s1_ste, STRTAB_STE_1_S1DSS_BYPASS, fake_cdtab_dma_addr,
-> +		ARM_SMMU_MASTER_TEST_ATS | ARM_SMMU_MASTER_TEST_NESTED);
-> +	arm_smmu_test_make_s2_ste(&s2_ste, 0);
-> +	/* Expect an additional sync to unset ignored bits: EATS and MEV */
-> +	arm_smmu_v3_test_ste_expect_hitless_transition(test, &s1_ste, &s2_ste,
-> +						       NUM_EXPECTED_SYNCS(3));
+> +	return !!(smmu->features & ARM_SMMU_FEAT_COHERENCY);
 > +}
 > +
-> +static void
-> +arm_smmu_v3_write_ste_test_nested_s1bypass_to_s1dssbypass(struct kunit *test)
-> +{
-> +	struct arm_smmu_ste s1_ste;
-> +	struct arm_smmu_ste s2_ste;
-> +
-> +	arm_smmu_test_make_cdtable_ste(
-> +		&s1_ste, STRTAB_STE_1_S1DSS_BYPASS, fake_cdtab_dma_addr,
-> +		ARM_SMMU_MASTER_TEST_ATS | ARM_SMMU_MASTER_TEST_NESTED);
-> +	arm_smmu_test_make_s2_ste(&s2_ste, 0);
-> +	arm_smmu_v3_test_ste_expect_hitless_transition(test, &s2_ste, &s1_ste,
-> +						       NUM_EXPECTED_SYNCS(2));
-> +}
-> +
->  static void arm_smmu_v3_write_cd_test_sva_clear(struct kunit *test)
+>  /* High-level queue accessors */
+> -static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
+> +static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent,
+> +				   struct arm_smmu_device *smmu)
 >  {
->  	struct arm_smmu_cd cd = {};
-> @@ -600,6 +645,8 @@ static struct kunit_case arm_smmu_v3_test_cases[] = {
->  	KUNIT_CASE(arm_smmu_v3_write_cd_test_s1_change_asid),
->  	KUNIT_CASE(arm_smmu_v3_write_ste_test_s1_to_s2_stall),
->  	KUNIT_CASE(arm_smmu_v3_write_ste_test_s2_to_s1_stall),
-> +	KUNIT_CASE(arm_smmu_v3_write_ste_test_nested_s1dssbypass_to_s1bypass),
-> +	KUNIT_CASE(arm_smmu_v3_write_ste_test_nested_s1bypass_to_s1dssbypass),
->  	KUNIT_CASE(arm_smmu_v3_write_cd_test_sva_clear),
->  	KUNIT_CASE(arm_smmu_v3_write_cd_test_sva_release),
->  	{},
-> -- 
-> 2.43.0
-> 
+>  	memset(cmd, 0, 1 << CMDQ_ENT_SZ_SHIFT);
+>  	cmd[0] |= FIELD_PREP(CMDQ_0_OP, ent->opcode);
+> @@ -358,8 +364,13 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
+>  		} else {
+>  			cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_CS, CMDQ_SYNC_0_CS_SEV);
+>  		}
+> -		cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSH, ARM_SMMU_SH_ISH);
+> -		cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSIATTR, ARM_SMMU_MEMATTR_OIWB);
+> +		if (smmu_coherent(smmu)) {
+> +			cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSH, ARM_SMMU_SH_ISH);
+> +			cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSIATTR, ARM_SMMU_MEMATTR_OIWB);
+> +		} else {
+> +			cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSH, ARM_SMMU_SH_OSH);
+> +			cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSIATTR, ARM_SMMU_MEMATTR_OINC);
+> +		}
+
+And then please go through your patch and add comments actually
+explaining what the DMA is and what memory is being reached by it -
+since it is not always very clear from the ARM mnemonics
+
+For instance, this is:
+ /* DMA for "CMDQ MSI" which targets q->base_dma allocated by arm_smmu_init_one_queue() */
+
+> @@ -1612,11 +1624,18 @@ void arm_smmu_make_cdtable_ste(struct arm_smmu_ste *target,
+>  		(cd_table->cdtab_dma & STRTAB_STE_0_S1CTXPTR_MASK) |
+>  		FIELD_PREP(STRTAB_STE_0_S1CDMAX, cd_table->s1cdmax));
+>  
+> +	if (smmu_coherent(smmu)) {
+> +		val = FIELD_PREP(STRTAB_STE_1_S1CIR, STRTAB_STE_1_S1C_CACHE_WBRA) |
+> +		      FIELD_PREP(STRTAB_STE_1_S1COR, STRTAB_STE_1_S1C_CACHE_WBRA) |
+> +		      FIELD_PREP(STRTAB_STE_1_S1CSH, ARM_SMMU_SH_ISH);
+> +	} else {
+> +		val = FIELD_PREP(STRTAB_STE_1_S1CIR, STRTAB_STE_1_S1C_CACHE_NC) |
+> +		      FIELD_PREP(STRTAB_STE_1_S1COR, STRTAB_STE_1_S1C_CACHE_NC) |
+> +		      FIELD_PREP(STRTAB_STE_1_S1CSH, ARM_SMMU_SH_OSH);
+> +	}
+
+This one is "CD fetch" allocated by arm_smmu_alloc_cd_ptr()
+
+etc
+
+And note that the above will need this hunk too:
+
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
+@@ -432,6 +432,14 @@ size_t arm_smmu_get_viommu_size(struct device *dev,
+            !(smmu->features & ARM_SMMU_FEAT_S2FWB))
+                return 0;
+ 
++       /*
++        * When running non-coherent we can't suppot S2FWB since it will also
++        * force a coherent CD fetch, aside from the question of what
++        * S2FWB/CANWBS even does with non-coherent SMMUs.
++        */
++       if (!smmu_coherent(smmu))
++               return 0;
+
+> @@ -3746,7 +3765,7 @@ int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
+>  	q->cons_reg	= page + cons_off;
+>  	q->ent_dwords	= dwords;
+>  
+> -	q->q_base  = Q_BASE_RWA;
+> +	q->q_base  = smmu_coherent(smmu) ? Q_BASE_RWA : 0;
+
+CMDQ fetch, though do we even need to manage RWA? Isn't it ignored if
+IC/OC/SH are set to their non-cachable values?
+
+etc..
+
+Jason
