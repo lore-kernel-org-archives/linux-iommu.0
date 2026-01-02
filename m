@@ -1,164 +1,164 @@
-Received: from mail-qk1-f173.google.com (mail-qk1-f173.google.com [209.85.222.173])
+Received: from mail-wr1-f73.google.com (mail-wr1-f73.google.com [209.85.221.73])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E96BB27145F
-	for <iommu@lists.linux.dev>; Fri,  2 Jan 2026 19:36:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 346082BE646
+	for <iommu@lists.linux.dev>; Fri,  2 Jan 2026 20:54:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.73
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767382605; cv=none; b=MOcx55Cu5zNh25fzHXHjVQxF263X8z/Vx2UcxOQiWx03A9aP7V9ePiSJSohr+eE9NPA9kVznxitL9TIGd0N8fZGNk+TyLpHrYoQNBSalggPhs3oquh0ivCcgNrzGYsF0IIeL0x5xwb9g5SoroMHJUjQTPns/aAZB8aUD5hTRl50=
+	t=1767387245; cv=none; b=ZeY/aPHBse8w5uV+s46pPAZ5/E7vu4VTkrCfb2tTc1nmModMe3Q+8QseyUHvhMvKfuACajHv/ftf0e7heNFr9uDh07dVfF573+/eFO9ZNSGHgBvQf7HQBrSKPve4czi/4yMdCPEDVDkn7gQSJ73T6/IeLvnZaRw3N8GALV+5gUs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767382605; c=relaxed/simple;
-	bh=S7xBrxw6PAq9JT4DAcabRoijg9yUSwH4F7wpviulOwE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rs5dQb5EKXWzSh18BUWuQgT/joKNJxl/w4A3gQG6ZJsSBAbnorKvFoKfyiz60pY7oSbzcpqN/YA9AY3HtJ/re5Jzeszt75hTU1S1dzyY727ZfuNwYaF3YyW4Inydeh9/KZ9oybHbgPToAEqe2wyt6YwMZ6jZBWDDuFeNgqX15XA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Zj1ilR+c; arc=none smtp.client-ip=209.85.222.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1767387245; c=relaxed/simple;
+	bh=XmoopGdAZcGgVQUGdaq6sywxmAcnCwUnv1l2+kwt/1s=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=SXYnA8KXghBPzL/boQp3Ow1jkvq54bp1QLSa8f59iG04F0xvCSGtkFeDaoKwFG1Grbpyimtct8PynBa7xHF+/9v+BDyjJy5qr59uAf8DyLKDVPM7pxLIAnnTeMiKbgeF95S2sqMKt1CvX8P7u4Rxtz+uOyjrC9uCbEv7BeF1JqU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=lYLvL2Br; arc=none smtp.client-ip=209.85.221.73
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Zj1ilR+c"
-Received: by mail-qk1-f173.google.com with SMTP id af79cd13be357-8c24f867b75so482293785a.2
-        for <iommu@lists.linux.dev>; Fri, 02 Jan 2026 11:36:42 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="lYLvL2Br"
+Received: by mail-wr1-f73.google.com with SMTP id ffacd0b85a97d-4325cc15176so5928991f8f.1
+        for <iommu@lists.linux.dev>; Fri, 02 Jan 2026 12:54:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1767382601; x=1767987401; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=GyxeyUuUNajnc3zJOlyDv0WvsNhoQVpXnpgGVnl/NOA=;
-        b=Zj1ilR+c6c4jMibI2oXiTH9gSzOPzjblfGdGw4Ko88Y/K6IUThnog1tUvMAetZuZ6P
-         LUdG2IFzX2pOsx3UPP3vIzpsL5UCUaKGB9x6gCrvDF074UBNOIUewgjpmeUNLRg9P0Ba
-         GqUBU4+TRLqR0QZdmgA91b7SLBmCa4pmbe3BmB3g+wu2u4KNb0L7lfhV147drWO115nY
-         qSlSKzr9TnuxVPo90UaSm5tsaq+1r7HC3DpDteoOEVqEqN2DCdiEntImyad8YT4aN44j
-         nlPa0mRBZiBAmRXQOHVkArBs5xUVLDDHiWGNVm8R3hoRMq/UW4Sr+ZlZFNK7UXfntCzz
-         wrPQ==
+        d=google.com; s=20230601; t=1767387241; x=1767992041; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=QAiES4ydkx/sE81xhOe/Mnr1MZ9dy5PjroYTENfcCYY=;
+        b=lYLvL2BrF5dCQKP0aLS0a1nt2kwG5Nwwmtrt7AewOzBAB+d3CAshUXu3AbUKZib4ct
+         HXJwE+Kx7rUXiAGC+h+jT8XbRJ9MO7OZvh6+C0zD+X2sVLMaIgcy8qgapr5rO9vhbxGF
+         kpbJPIpAWkm4H7KQQqnHRR/T4OLkNWC803XFX+jZbB6RkNd6+3juhmHdG6KV51CDxM/z
+         ir6d0MgdOY4RSvsmJpP7BTHGl75pMu3VTwll7i8mqX30bmhRe4JEKPQ84N/h7IDnDXgL
+         609BYByDW/baio+96aLnvMfk772Znx1xkk6oYjfcTq3/Kp0ywHcJnsmf62yhrvhT71s8
+         29lQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1767382601; x=1767987401;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=GyxeyUuUNajnc3zJOlyDv0WvsNhoQVpXnpgGVnl/NOA=;
-        b=UFBflGfd7wV29b3myT2uEfak5HbC2CdCvTk8pjsdcb3KcDw+X1QJYTp+cylhItMdkP
-         57AP/LVc0JcNtUQMj9cltbPUCUZYdkBCETT9v+wgv+h4CpSWg8ODPsM1wPHXcUFqF0sl
-         +uH3so9ATcUEVEyod/yqOX8gzU2a3ImTSm/YuMvPniRCOOedgG2H6kCF283tztR5mQyR
-         T6aPdhHPbSNA0gH7YSEEoOomOOfHrVx0aPJ3HXAnPCCtdhaQjeB91863E1X+Us9yA4Uk
-         Wjy+as4PsWejOpataBKGC/V61Nm5KsnJNv9dwL3Xyly4WLNNLuBTHLdPUQT2aZUYQRpM
-         isXQ==
-X-Forwarded-Encrypted: i=1; AJvYcCV+TssyWAqSCedB1a1QFKRaU7zeUHKZMWGpUc2GIHaWhoi9bfkBIvl21eh98na1cmMthMq4UA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yzq2JR6bKAAjM4F2TF6sxVAVmkdfR7bRkrGHBG6Q2GwoauhQYPr
-	iL3QRij4cOvsxrRl8P1x2C8v1sHCQ9kZ0udiVygaJZfs6z3ecO7WsCPI9VNt2diaJVY=
-X-Gm-Gg: AY/fxX51dbaSI64bElkWT8qj3ciEpdS2qFA8Uw4/S6xetcm6TxtcezbTdck1ctcji2d
-	+IdEiUFZqaRpQMQ3ocOKJdoYNd/bnFseQM5NQgQTl4qjB9oUTL36SMboXQOzG/XLDz6aC5Q2P6Y
-	hFg5BXOFb6aawEzk1BykdVKy9qPna8wBiXn9oEgVUhqTL/mWvlYXk8yedsXjbbyouY7pbLuest1
-	7RVpYQazSIKwYjmmQLP5eYfMD2VUa5RrjIs38IRErqH3RcerrL3v1GrBTBkw6SrJmzxkVOMfpK6
-	44Q9Qd685vEjASrMc50HgAMK63KP2D8s2P2vcAVnUCn53M/hgGmUbA+oQQ1tGHYX1Yi3m1cK1Rq
-	Vdro/kDWYmDimNe1pMxqv86k3n9k12cP0shkai357MBGBexD1d4PsMwGoJsyf6unCfNSEhTdKCR
-	AOthGkt+c4ZV14JoK3yE6gqFyAvdxolAEK0X+yt6vSGjfi4tZZyWUIoUy45HhMtVF6/YbNPHRmw
-	JXpzg==
-X-Google-Smtp-Source: AGHT+IEVRW8SRr0/+EA+FBx4hyl3IYlD4yKjGYpIKlWnEFf3x2j/o3tABg0ljBozlOxqvraqax+FMw==
-X-Received: by 2002:a05:622a:5985:b0:4ec:f791:738f with SMTP id d75a77b69052e-4f4abd753b4mr612505561cf.49.1767382601412;
-        Fri, 02 Jan 2026 11:36:41 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-162-112-119.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.112.119])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-4f4ad519939sm304877161cf.2.2026.01.02.11.36.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Jan 2026 11:36:40 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1vbkwx-00000000oWI-3K6q;
-	Fri, 02 Jan 2026 15:36:39 -0400
-Date: Fri, 2 Jan 2026 15:36:39 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Arnd Bergmann <arnd@kernel.org>, Kevin Tian <kevin.tian@intel.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Samiullah Khawaja <skhawaja@google.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Baolu Lu <baolu.lu@linux.intel.com>,
-	Pranjal Shrivastava <praan@google.com>, Yi Liu <yi.l.liu@intel.com>,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommufd: fix selftest link dependency on amdv1 driver
-Message-ID: <20260102193639.GB125261@ziepe.ca>
-References: <20251223215127.603969-1-arnd@kernel.org>
- <aUtHZ1KHTJjW7SPP@ziepe.ca>
- <beb85629-4912-4279-b025-a7debd1dfc6a@app.fastmail.com>
+        d=1e100.net; s=20230601; t=1767387241; x=1767992041;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=QAiES4ydkx/sE81xhOe/Mnr1MZ9dy5PjroYTENfcCYY=;
+        b=CkQZtRT+fuFjs7FciXldleMHPwO4IYusPiv8rNVBrjowOHjPZHivA6I+LHa9Qo+j+K
+         unIaB8HWqJN/U5AAFqZs7mOUL69h6SnIHMnVbjpraExeljnpf4ynmqmlJ4ujPt5/6bLV
+         QUGK0khtajCXdd3jjq8KYbwPZPT6i3WZCbtJBdIFFx9rP0BuLi1ijbmOiCj/9AYZIwQB
+         E7SJ2GQXDcGkL00rjj5Ifekf6i5KRLwiUnVnEgBvHmiJ0ZgBgFAVrJz1Ea2Rhsyag1pL
+         TY1/j+HXKk9GnLMX4qDYo8bSkIipexnzTHxhjItZ5PhEfBr1c4u+lRNdvC0dOJ6lw66h
+         s//g==
+X-Gm-Message-State: AOJu0YxnrPzoEPb2z3UPn9knwgrVe6o7zyRwBTNgM2KQy+lzBhf5ruEr
+	OY70gh2mDt8slLPJvM69bPzwWvPfs9YALXm9+LnuZ/7g9IaH2PO/u5xrftJ5esVsp0nhRUHP2YU
+	7Q1k6xK1Kv+h2KV7rgxupvBNnE1eQZyapOa6EVbidwijOCDlp6pIaZN6SHhD1Jv7xhpQ2EMiwQr
+	vAGyF+QJkI3l7vrXPnFHv3kFJu2VA5P6jAKfvBAaGkprMjLA==
+X-Google-Smtp-Source: AGHT+IFCfqRVI6Uhl1ADxzrnaLqH6bdZb69W6Eaty3oAr+lEqEgaoNlylt3n+Pn7rT0RzZhlQc+mMngowh5RnA==
+X-Received: from wrgb4.prod.google.com ([2002:a05:6000:3c4:b0:432:88c1:541b])
+ (user=smostafa job=prod-delivery.src-stubby-dispatcher) by
+ 2002:a05:6000:430b:b0:431:808:2d32 with SMTP id ffacd0b85a97d-4324e4c716dmr50567943f8f.7.1767387241484;
+ Fri, 02 Jan 2026 12:54:01 -0800 (PST)
+Date: Fri,  2 Jan 2026 20:53:52 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <beb85629-4912-4279-b025-a7debd1dfc6a@app.fastmail.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.52.0.351.gbe84eed79e-goog
+Message-ID: <20260102205353.2725509-1-smostafa@google.com>
+Subject: [PATCH RESEND] iommu/arm-smmu-v3: Remove IAS
+From: Mostafa Saleh <smostafa@google.com>
+To: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+	linux-kernel@vger.kernel.org
+Cc: robin.murphy@arm.com, will@kernel.org, joro@8bytes.org, 
+	Mostafa Saleh <smostafa@google.com>, Tomasz Nowicki <tnowicki@google.com>
+Content-Type: text/plain; charset="UTF-8"
 
-On Wed, Dec 24, 2025 at 11:17:13AM +0100, Arnd Bergmann wrote:
-> On Wed, Dec 24, 2025, at 02:52, Jason Gunthorpe wrote:
-> > On Tue, Dec 23, 2025 at 10:51:22PM +0100, Arnd Bergmann wrote:
-> >> From: Arnd Bergmann <arnd@arndb.de>
-> >> 
-> >> When CONFIG_AMD_IOMMU is disabled, the selftest runs into a link failure:
-> >> 
-> >> aarch64-linux-ld: drivers/iommu/iommufd/selftest.o: in function `mock_domain_alloc_pgtable.isra.0':
-> >> selftest.c:(.text+0x1590): undefined reference to `pt_iommu_amdv1_init'
-> >> aarch64-linux-ld: drivers/iommu/iommufd/selftest.o:(.rodata+0x280): undefined reference to `pt_iommu_amdv1_map_pages'
-> >> aarch64-linux-ld: drivers/iommu/iommufd/selftest.o:(.rodata+0x288): undefined reference to `pt_iommu_amdv1_unmap_pages'
-> >> aarch64-linux-ld: drivers/iommu/iommufd/selftest.o:(.rodata+0x2b0): undefined reference to `pt_iommu_amdv1_iova_to_phys'
-> >> aarch64-linux-ld: drivers/iommu/iommufd/selftest.o:(.rodata+0x2d8): undefined reference to `pt_iommu_amdv1_read_and_clear_dirty'
-> >> 
-> >> Change the top-level function to skip all the amdv1 tests in this
-> >> configuration.
-> >
-> > kconfig shouldn't let this build happen:
-> >
-> > config IOMMUFD_TEST
-> >         bool "IOMMU Userspace API Test support"
-> >         depends on DEBUG_KERNEL
-> >         depends on FAULT_INJECTION
-> >         depends on RUNTIME_TESTING_MENU
-> >         depends on IOMMU_PT_AMDV1
-> >         select IOMMUFD_DRIVER
-> >
-> > I think this is more fall out from Geert's change to make GENERIC_PT 
-> > unselectable, the 'depends on' is no longer enough??
-> >
-> > I guess the right fix is to add a "select GENERIC_PT" above, does that
-> > work for you?
-> 
-> No, it's already set.
-> 
-> The configuration that had the build failure contains
-> 
-> CONFIG_ARM64=y
-> # CONFIG_AMD_IOMMU is not set
-> CONFIG_GENERIC_PT=y
-> CONFIG_IOMMU_PT=m
-> CONFIG_IOMMU_PT_AMDV1=m
-> CONFIG_IOMMUFD=y
-> CONFIG_IOMMUFD_TEST=y
-> 
-> I suspect this is because IOMMUFD_TEST is 'bool' and can be enabled
-> even when its dependencies are =m, but if the test code is built-in,
-> it can't actually link.
+The driver only supports AArch64 page tables where OAS == IAS.
 
-Okay, that makes more sense..
+Remove the extra IAS tracking for AArch32 as this feature was
+never implemented and that was creating BAD_STEs for SMMUv3
+with stage-2 and OAS < 40.
 
-> This should be fixable using
-> 
->        depends on IOMMU_PT_AMDV1=y || IOMMUFD=IOMMU_PT_AMDV1
+Further discussion on this in:
+https://lore.kernel.org/linux-iommu/20251130194506.593700-1-smostafa@google.com/
 
-This is probably the best option, can you check it with the
-problematic .config?
+Reported-by: Tomasz Nowicki <tnowicki@google.com>
+Fixes: f0c453dbcce7 ("iommu/arm-smmu: Ensure IAS is set correctly for AArch32-capable SMMUs")
+Signed-off-by: Mostafa Saleh <smostafa@google.com>
+---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 18 +++++-------------
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  2 --
+ 2 files changed, 5 insertions(+), 15 deletions(-)
 
-> or by forcing the iommufd code to be a loadable module when
-> IOMMU_PT_AMDV=m, e.g. through
-> 
-> config IOMMUFD
->       depends on IOMMU_PT_AMDV1 || !IOMMU_PT_AMDV1 || !RUNTIME_TESTING_MENU
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index d16d35c78c06..019211db621d 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -2551,7 +2551,7 @@ static int arm_smmu_domain_finalise(struct arm_smmu_domain *smmu_domain,
+ 				     ARM_SMMU_FEAT_VAX) ? 52 : 48;
+ 
+ 		pgtbl_cfg.ias = min_t(unsigned long, ias, VA_BITS);
+-		pgtbl_cfg.oas = smmu->ias;
++		pgtbl_cfg.oas = smmu->oas;
+ 		if (enable_dirty)
+ 			pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_ARM_HD;
+ 		fmt = ARM_64_LPAE_S1;
+@@ -2561,7 +2561,7 @@ static int arm_smmu_domain_finalise(struct arm_smmu_domain *smmu_domain,
+ 	case ARM_SMMU_DOMAIN_S2:
+ 		if (enable_dirty)
+ 			return -EOPNOTSUPP;
+-		pgtbl_cfg.ias = smmu->ias;
++		pgtbl_cfg.ias = smmu->oas;
+ 		pgtbl_cfg.oas = smmu->oas;
+ 		fmt = ARM_64_LPAE_S2;
+ 		finalise_stage_fn = arm_smmu_domain_finalise_s2;
+@@ -4395,13 +4395,7 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+ 	}
+ 
+ 	/* We only support the AArch64 table format at present */
+-	switch (FIELD_GET(IDR0_TTF, reg)) {
+-	case IDR0_TTF_AARCH32_64:
+-		smmu->ias = 40;
+-		fallthrough;
+-	case IDR0_TTF_AARCH64:
+-		break;
+-	default:
++	if (!(FIELD_GET(IDR0_TTF, reg) & IDR0_TTF_AARCH64)) {
+ 		dev_err(smmu->dev, "AArch64 table format not supported!\n");
+ 		return -ENXIO;
+ 	}
+@@ -4514,8 +4508,6 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+ 		dev_warn(smmu->dev,
+ 			 "failed to set DMA mask for table walker\n");
+ 
+-	smmu->ias = max(smmu->ias, smmu->oas);
+-
+ 	if ((smmu->features & ARM_SMMU_FEAT_TRANS_S1) &&
+ 	    (smmu->features & ARM_SMMU_FEAT_TRANS_S2))
+ 		smmu->features |= ARM_SMMU_FEAT_NESTING;
+@@ -4525,8 +4517,8 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+ 	if (arm_smmu_sva_supported(smmu))
+ 		smmu->features |= ARM_SMMU_FEAT_SVA;
+ 
+-	dev_info(smmu->dev, "ias %lu-bit, oas %lu-bit (features 0x%08x)\n",
+-		 smmu->ias, smmu->oas, smmu->features);
++	dev_info(smmu->dev, "oas %lu-bit (features 0x%08x)\n",
++		 smmu->oas, smmu->features);
+ 	return 0;
+ }
+ 
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+index ae23aacc3840..0a5bb57dbdfe 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+@@ -43,7 +43,6 @@ struct arm_vsmmu;
+ #define IDR0_COHACC			(1 << 4)
+ #define IDR0_TTF			GENMASK(3, 2)
+ #define IDR0_TTF_AARCH64		2
+-#define IDR0_TTF_AARCH32_64		3
+ #define IDR0_S1P			(1 << 1)
+ #define IDR0_S2P			(1 << 0)
+ 
+@@ -784,7 +783,6 @@ struct arm_smmu_device {
+ 	int				gerr_irq;
+ 	int				combined_irq;
+ 
+-	unsigned long			ias; /* IPA */
+ 	unsigned long			oas; /* PA */
+ 	unsigned long			pgsize_bitmap;
+ 
+-- 
+2.52.0.351.gbe84eed79e-goog
 
-Because we don't want this restriction for production builds..
-
-> A cleaner approach might be to split out IOMMUFD_TEST into a separate
-> module rather than including it inside of the IOMMUFD module,
-> but that is likely much more work.
-
-I think there are cross calls that would make that difficult :\
-
-Jason
