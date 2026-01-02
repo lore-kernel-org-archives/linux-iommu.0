@@ -1,140 +1,191 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6763F2D97A5
-	for <iommu@lists.linux.dev>; Fri,  2 Jan 2026 14:05:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58B801E521A;
+	Fri,  2 Jan 2026 15:35:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767362754; cv=none; b=u4Pfxr0hjEsamVBhbh3ySNflJCCoQSZYuwjR//L96SbjxYkBIUkRPAo71d24p8OfkWlF9Sf2HhtAQzy1nFkOJrbNJbxt5Pm5QTdMnC9iK6gHoFuwkw8sDiFkvyXDtZN448VcY4ytQ5nXtIMAPpdN5txafcCVxQraYMz2KMsUP78=
+	t=1767368105; cv=none; b=mkzFW0a4B0keMPzR/haiLOMsQgK31yvsr7aw/CB/8MCwbE4snI9aqvu62w81VY81ulIvjAF195+B8S0qRwBXmrJpOvdNBfOtQAtUOpGNJAwNClzeoEst61z9ih7vH8GdQfsNO61vE7I6kUJDhJScifAbqDyJptv6ikk+ayna8fE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767362754; c=relaxed/simple;
-	bh=fIAsJm88rdZT+4c/pwiqrmBcXCTPv4zP0IARgBg/i40=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=p+4PeV2Ay8kjHBS0I1NExFFrdNB8Q5piFe3HK+X4SrDhQAg/m0OHG1OvAnzuivJLMjEo6OaSG+Owsx9hMY5YVY5S0VQV9HkHz8R/nppXOyJu3flchChO0ui7wb4lYMl/Y+chdA2leElgiTY5xwHGfgxuWnIV4A68Oa63TcaM3LE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=gp/t4rNJ; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=HCvFhKR/; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1767368105; c=relaxed/simple;
+	bh=eR051mZ0G1/+9HNcTwUzIjk/vzoiK3DNwMo+UKelgUw=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=jEcAxj9RgUOwMi7gnoQlNC1Y5t7Lbm60ytBxcTI6izNbKbouu7l7jz2Ct4FB92ffLejJ6RdSsSe7Eixt7EHtqcO6dJH04v29Otx4RlVXz1Dsx3aT07sgMrh9GAsR2jsgw4wkixmoi2Y2N90obxS11cvV0b9bb3mTzyn+Rhs1SBg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=E8FzHFsH; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="gp/t4rNJ";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="HCvFhKR/"
-Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6029Wc8T824910
-	for <iommu@lists.linux.dev>; Fri, 2 Jan 2026 14:05:52 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	Zcdn/7Q48JsxusxJpdZxfM0eNzXVTYp1I4zI3xtwG7Y=; b=gp/t4rNJTeHYaLXS
-	r/aON5l/KJXOfgVUHGel9MdiD77nu3z75PPbsamCbsTKqaYOKHcXsLjxo17ptTEO
-	IsTZgkcmPuGgbvOYefHQNctgxKTogYy5wUZnSHm56XwfPiz/KPv2/ykCWQ65iF0C
-	Y1JxlTqFreKr0qy4ioVzeOToPkVf0XwAZx/tCigtYgNm96kdI9G2IhcB1dk0kGo7
-	CODVjPpFHC99wiClNOUDGGa/ij/PFvp9t2ve5dQW6KUOh+D95MxhtPtErbZNWcjV
-	Mp8WTJSOn3l+99fuCBXnZIO5s5RtBABehHAog7yfHgjpxWwtKC3ix8K3WY1xl/o1
-	BENKng==
-Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com [209.85.219.71])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4bd8533gd1-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Fri, 02 Jan 2026 14:05:52 +0000 (GMT)
-Received: by mail-qv1-f71.google.com with SMTP id 6a1803df08f44-88882c9b4d0so39467846d6.0
-        for <iommu@lists.linux.dev>; Fri, 02 Jan 2026 06:05:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1767362752; x=1767967552; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:to:subject:user-agent:mime-version:date:message-id:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=Zcdn/7Q48JsxusxJpdZxfM0eNzXVTYp1I4zI3xtwG7Y=;
-        b=HCvFhKR/+UbAWaAF1KqFc+BVeH94thxAFbWfqnppOElXF2V5iayrswC8uAG5gp0YII
-         gN9ylkjk8kGk6VHGTPGpG4EFCMp+Rre52DcRh0F/v0kCvfKnI8LVeFTpBPNIeq9bmYKj
-         6IejsIRCba6yk2ZmbsULXEAuE6kC4zIhS7lMBM2U2+IpUg2j9P5x6vmftAnelDNLNsPy
-         Ms8D4keEP2SHz2fWmdoCBxyzo/f4wypjvKZO0GQTROsFoj6vLiB+lpOq1Voc1WqAdknG
-         X+9dWdk/IZiN23Z0PPxyTQ0F0XCmMik+LH0diVVww1RGdtbYe8FY6sJTfCrf5g7kSoAg
-         /LDQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1767362752; x=1767967552;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Zcdn/7Q48JsxusxJpdZxfM0eNzXVTYp1I4zI3xtwG7Y=;
-        b=Xq++AOk/54m1dnz8igDauu0oFio2+vuMZjP6Hwh4HE5CrGT2vCAkkOn9ogZGpVXqMf
-         flWiPgVOFh9H9M72+LUZUrq8x1k4yYQKvJY2zz2MTLQlyqBfJjFeHLmQwWNvWn3/IrmR
-         C6IHqlZhnEMRhjB1eCobDBIC2uk4C/GPY7Ov3n1YodrQ23LymoMqTA3LxgGFgAKXVz5Y
-         g8jAiRF2JkyXH9KzWGaABde8yegR4sa9qJqq6Bo0DwpG30/gcw7AIms8rLjgu2LXl5mk
-         T8WORZzAn8D+ScjalVrgtLdJwHHdy7yteNHq/vdyXbY3llHGgdohz1Fe45wPa6pP3GUG
-         9RLw==
-X-Forwarded-Encrypted: i=1; AJvYcCU2+AB8/p0AkAYhvnxg1rKerqXRwNGMeAq5lqubpg05pJIzSmKt5+DJyKwO/wMypl/kMYeLog==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzLtKsBZD8npNgWLj09I5IN/iX59vRmUydPNRzMjl7SmofYGfGr
-	y02aX64kjrYVAEqkWLaOyvxIs4bLXTGew77L+H5V4p37u/x2AUm/jw3aEo6dPOYd71U3hy3xeRT
-	LrGdyF2YjwZeCbetF78xxiTcFs1LXSNJvMIZ60FlGdJnfybjVdq0qdmfPUQ==
-X-Gm-Gg: AY/fxX6QluOV+7xzrudDhKivSOrHu+vR55BNVgB67behRblrUP4KPx/KR/TfqhmaZt2
-	/EE6niXM0Vly+qsuioqUAL8bkroV2T9sX/v8+el1ddM/kU0NU2Ehroq9mPq7gTROVUk+FzS+I1+
-	6uMyVkorPDgzbptncXE3hGfxJrUD/6IeHfhgZuNc9Wfx44GLfeUxF5co3UpnxfYUK9yhF3m2h1b
-	mlBinWIRmpXPNew+9QJwJiM5hQirxEyAeCgdVaUcE8V1+a3N/TVGk61okFWbgeqNlNHSKIPJnGY
-	7UBaicTakJkHi4iu7YHNTB5LsvZBAxzGz7DiIQlB7BYhfLr9Rfpk5//FvwtfX0Pmt3jyojlCftb
-	oXeroR6rwACGU0gjIRDJRGh1RZo6Rz8Tktt65ECBK6KMFCL3K1z14Mx/QfI68N2uA3g==
-X-Received: by 2002:a05:622a:28c:b0:4ee:1fbe:80dd with SMTP id d75a77b69052e-4f4d620461emr392952791cf.5.1767362751610;
-        Fri, 02 Jan 2026 06:05:51 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IGvPcr+EyW78LnxZztu6gmFgyoAOWuar2cL8fl5R9dQjwJN8gd7F8C+4SSN+nYk+ChCz+Yvow==
-X-Received: by 2002:a05:622a:28c:b0:4ee:1fbe:80dd with SMTP id d75a77b69052e-4f4d620461emr392952151cf.5.1767362751086;
-        Fri, 02 Jan 2026 06:05:51 -0800 (PST)
-Received: from [192.168.119.72] (078088045245.garwolin.vectranet.pl. [78.88.45.245])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b8037f13847sm4429125666b.57.2026.01.02.06.05.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 02 Jan 2026 06:05:50 -0800 (PST)
-Message-ID: <237b8ced-7d93-4229-b1bf-f6993c25dd5c@oss.qualcomm.com>
-Date: Fri, 2 Jan 2026 15:05:48 +0100
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="E8FzHFsH"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8DD50C19423;
+	Fri,  2 Jan 2026 15:35:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1767368104;
+	bh=eR051mZ0G1/+9HNcTwUzIjk/vzoiK3DNwMo+UKelgUw=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=E8FzHFsH/dTEbP8X2pEhVMLo41MbcXUvGBM55W/6ZFy73f+BPBs1Cs8ttMgNDiW71
+	 PhTmIuFs8D314wDt81F9labAP3mnrDJIDwvV7GEjUYjRO1wHHCXaaqMLZYeuY39w/G
+	 GeCzG/aVjONTcQYm0MKlGsruf5Ro6jEm0q8iqKeyr0lD/sPjw8J7+JNuSwVROHDOtX
+	 QeQpKtcFFGtxyyYvjYrautKk8DsU0SCjkvKWA133DKZFxWJSVTOEh+Mz9FTvovGijS
+	 2RtABPk2o1OobvyyQEnVaX9fSxrKsZF14bi2uw2U0qPbWvyWRYCQMJtnrE+YlTDrDA
+	 F3H6kzJu2As7w==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A241FA374F;
+	Fri,  2 Jan 2026 15:35:04 +0000 (UTC)
+From: Manivannan Sadhasivam via B4 Relay <devnull+manivannan.sadhasivam.oss.qualcomm.com@kernel.org>
+Date: Fri, 02 Jan 2026 21:04:48 +0530
+Subject: [PATCH v3 2/4] PCI: Cache ACS capabilities
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommu: arm-smmu: Simplify with scoped for each OF child
- loop
-To: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>,
-        Rob Clark <robin.clark@oss.qualcomm.com>,
-        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Joerg Roedel <joro@8bytes.org>, iommu@lists.linux.dev,
-        linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-References: <20260102125003.64962-2-krzysztof.kozlowski@oss.qualcomm.com>
-Content-Language: en-US
-From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-In-Reply-To: <20260102125003.64962-2-krzysztof.kozlowski@oss.qualcomm.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Proofpoint-GUID: xn9End79VG3tUAE5VOo-zDYTiDxY210S
-X-Authority-Analysis: v=2.4 cv=fL80HJae c=1 sm=1 tr=0 ts=6957d0c0 cx=c_pps
- a=UgVkIMxJMSkC9lv97toC5g==:117 a=FpWmc02/iXfjRdCD7H54yg==:17
- a=IkcTkHD0fZMA:10 a=vUbySO9Y5rIA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=EUspDBNiAAAA:8 a=9ra_KJl88v3tURVkoeQA:9
- a=QEXdDO2ut3YA:10 a=1HOtulTD9v-eNWfpl4qZ:22
-X-Proofpoint-ORIG-GUID: xn9End79VG3tUAE5VOo-zDYTiDxY210S
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMTAyMDEyNiBTYWx0ZWRfX0QIlsVPzsldI
- svH+GVQ0psQduqgIbiST6Y7T3KGqtx6LB6Y/MZmhcTzAl7kYBHjQZXpMow1Lh8KMEHfVJhj4IGp
- ecvaipXz/HlgJyG9JJGKHSXZLKZheZZX/cEhlvcP/N6vAllvWM37rdCCNxaIy6Fx3rhwX3R73Mp
- jqRE2LC5eXKhfJvv5yW3pzIkJxXGmO8z8oCBW8sGfA6eNWZAaWlqDnFCSWWK0k4+gO46jo8/U65
- mhc0w6UDwS+mTZjIOSYVsPF4sd+ozRIuaGnD0iOU3QTa9xUXMTAEKuqKFhBsKMG/vH7c/F0gPsQ
- YvYQr/D6JIvmL0lxZlJA5vmWIeoX072tfb8iMPKCMN4O6iaoIy9kV6CY2Ewm+Z160j0YkwDaTir
- q85Gh9DDQI3SCrxZ1L0bW2xlBFvJeBBZhD6T99pQCGWRnoyKpz/jpR/gMA6SylOycsAL/PfOsFu
- naE65P5UQBSRuxfKP+A==
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.9,FMLib:17.12.100.49
- definitions=2026-01-02_02,2025-12-31_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1015 malwarescore=0 lowpriorityscore=0 suspectscore=0
- priorityscore=1501 phishscore=0 spamscore=0 impostorscore=0 adultscore=0
- bulkscore=0 classifier=typeunknown authscore=0 authtc= authcc= route=outbound
- adjust=0 reason=mlx scancount=1 engine=8.22.0-2512120000
- definitions=main-2601020126
+Message-Id: <20260102-pci_acs-v3-2-72280b94d288@oss.qualcomm.com>
+References: <20260102-pci_acs-v3-0-72280b94d288@oss.qualcomm.com>
+In-Reply-To: <20260102-pci_acs-v3-0-72280b94d288@oss.qualcomm.com>
+To: Bjorn Helgaas <bhelgaas@google.com>
+Cc: linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ iommu@lists.linux.dev, Naresh Kamboju <naresh.kamboju@linaro.org>, 
+ Pavankumar Kondeti <quic_pkondeti@quicinc.com>, 
+ Xingang Wang <wangxingang5@huawei.com>, 
+ Marek Szyprowski <m.szyprowski@samsung.com>, 
+ Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, 
+ Manivannan Sadhasivam <mani@kernel.org>, 
+ Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3840;
+ i=manivannan.sadhasivam@oss.qualcomm.com; h=from:subject:message-id;
+ bh=WNlj98gnBzP8GjtkwGPs6wt/sfHp/QN3NSkkvAVIXtQ=;
+ b=owEBbQGS/pANAwAKAVWfEeb+kc71AcsmYgBpV+Wm0uuebZ0Bh1aSfHkMGH9dvwjaLhS2WLos/
+ KSkWbsN2gGJATMEAAEKAB0WIQRnpUMqgUjL2KRYJ5dVnxHm/pHO9QUCaVflpgAKCRBVnxHm/pHO
+ 9YEYCACMjcDP3uQy0Rj+omfbOFgbTz9mNX1Y7XE/+f9xXOBH62vc22vblxpTSfhMSx02s0p6qyg
+ WflootAkgPcpAHnDnd0buKCGWFaJojNQRNnznfPCPXqs+gQ+P8EuHsXl86dt2QGDdabPjq9kXqv
+ eY95BzcfEWzCczMSWsre8o0ApDv9PYjcPe0hkmhxI1RfI9OSX8JRRMkaXHyX4o+crl0NrGJieK7
+ v6bOx7gG1Dk1Y0E6lIkqNI2SKZz1/ggKgEfJh8MZCRRsFtft9s9zzeHP0YUFpwhs5b9RHwSjMxI
+ eeMXMyQQMTVOqykGwdF7ZTE1jOwK2uoihGk1gLonxQfuaUAS
+X-Developer-Key: i=manivannan.sadhasivam@oss.qualcomm.com; a=openpgp;
+ fpr=C668AEC3C3188E4C611465E7488550E901166008
+X-Endpoint-Received: by B4 Relay for
+ manivannan.sadhasivam@oss.qualcomm.com/default with auth_id=461
+X-Original-From: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+Reply-To: manivannan.sadhasivam@oss.qualcomm.com
 
-On 1/2/26 1:50 PM, Krzysztof Kozlowski wrote:
-> Use scoped for-each loop when iterating over device nodes to make code a
-> bit simpler.
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-> ---
+From: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
 
-Reviewed-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+ACS capabilities are the RO values set by the hardware. Cache them to avoid
+reading it all the time when required and also to override any capability
+in quirks.
 
-Konrad
+Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Tested-by: Naresh Kamboju <naresh.kamboju@linaro.org>
+Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+---
+ drivers/pci/pci.c   | 26 +++++++++++++++-----------
+ include/linux/pci.h |  1 +
+ 2 files changed, 16 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+index 2c3d0a2d6973..d89b04451aea 100644
+--- a/drivers/pci/pci.c
++++ b/drivers/pci/pci.c
+@@ -892,7 +892,6 @@ static const char *disable_acs_redir_param;
+ static const char *config_acs_param;
+ 
+ struct pci_acs {
+-	u16 cap;
+ 	u16 ctrl;
+ 	u16 fw_ctrl;
+ };
+@@ -995,27 +994,27 @@ static void __pci_config_acs(struct pci_dev *dev, struct pci_acs *caps,
+ static void pci_std_enable_acs(struct pci_dev *dev, struct pci_acs *caps)
+ {
+ 	/* Source Validation */
+-	caps->ctrl |= (caps->cap & PCI_ACS_SV);
++	caps->ctrl |= (dev->acs_capabilities & PCI_ACS_SV);
+ 
+ 	/* P2P Request Redirect */
+-	caps->ctrl |= (caps->cap & PCI_ACS_RR);
++	caps->ctrl |= (dev->acs_capabilities & PCI_ACS_RR);
+ 
+ 	/* P2P Completion Redirect */
+-	caps->ctrl |= (caps->cap & PCI_ACS_CR);
++	caps->ctrl |= (dev->acs_capabilities & PCI_ACS_CR);
+ 
+ 	/* Upstream Forwarding */
+-	caps->ctrl |= (caps->cap & PCI_ACS_UF);
++	caps->ctrl |= (dev->acs_capabilities & PCI_ACS_UF);
+ 
+ 	/* Enable Translation Blocking for external devices and noats */
+ 	if (pci_ats_disabled() || dev->external_facing || dev->untrusted)
+-		caps->ctrl |= (caps->cap & PCI_ACS_TB);
++		caps->ctrl |= (dev->acs_capabilities & PCI_ACS_TB);
+ }
+ 
+ /**
+  * pci_enable_acs - enable ACS if hardware support it
+  * @dev: the PCI device
+  */
+-static void pci_enable_acs(struct pci_dev *dev)
++void pci_enable_acs(struct pci_dev *dev)
+ {
+ 	struct pci_acs caps;
+ 	bool enable_acs = false;
+@@ -1031,7 +1030,6 @@ static void pci_enable_acs(struct pci_dev *dev)
+ 	if (!pos)
+ 		return;
+ 
+-	pci_read_config_word(dev, pos + PCI_ACS_CAP, &caps.cap);
+ 	pci_read_config_word(dev, pos + PCI_ACS_CTRL, &caps.ctrl);
+ 	caps.fw_ctrl = caps.ctrl;
+ 
+@@ -3514,7 +3512,7 @@ void pci_configure_ari(struct pci_dev *dev)
+ static bool pci_acs_flags_enabled(struct pci_dev *pdev, u16 acs_flags)
+ {
+ 	int pos;
+-	u16 cap, ctrl;
++	u16 ctrl;
+ 
+ 	pos = pdev->acs_cap;
+ 	if (!pos)
+@@ -3525,8 +3523,7 @@ static bool pci_acs_flags_enabled(struct pci_dev *pdev, u16 acs_flags)
+ 	 * or only required if controllable.  Features missing from the
+ 	 * capability field can therefore be assumed as hard-wired enabled.
+ 	 */
+-	pci_read_config_word(pdev, pos + PCI_ACS_CAP, &cap);
+-	acs_flags &= (cap | PCI_ACS_EC);
++	acs_flags &= (pdev->acs_capabilities | PCI_ACS_EC);
+ 
+ 	pci_read_config_word(pdev, pos + PCI_ACS_CTRL, &ctrl);
+ 	return (ctrl & acs_flags) == acs_flags;
+@@ -3647,7 +3644,14 @@ bool pci_acs_path_enabled(struct pci_dev *start,
+  */
+ void pci_acs_init(struct pci_dev *dev)
+ {
++	int pos;
++
+ 	dev->acs_cap = pci_find_ext_capability(dev, PCI_EXT_CAP_ID_ACS);
++	pos = dev->acs_cap;
++	if (!pos)
++		return;
++
++	pci_read_config_word(dev, pos + PCI_ACS_CAP, &dev->acs_capabilities);
+ }
+ 
+ /**
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index 864775651c6f..6195e040b29c 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -558,6 +558,7 @@ struct pci_dev {
+ 	struct pci_tsm *tsm;		/* TSM operation state */
+ #endif
+ 	u16		acs_cap;	/* ACS Capability offset */
++	u16		acs_capabilities; /* ACS Capabilities */
+ 	u8		supported_speeds; /* Supported Link Speeds Vector */
+ 	phys_addr_t	rom;		/* Physical address if not from BAR */
+ 	size_t		romlen;		/* Length if not from BAR */
+
+-- 
+2.48.1
+
+
