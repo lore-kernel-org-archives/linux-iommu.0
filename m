@@ -1,142 +1,88 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4199F2459FD
-	for <iommu@lists.linux.dev>; Sat,  3 Jan 2026 20:44:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32412286D5C
+	for <iommu@lists.linux.dev>; Sun,  4 Jan 2026 11:38:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767473089; cv=none; b=Sc3Totall8LdBNE3uPmiQvGWSPIiY5IbQcLgkN9q7P3+kRh8HCTpiy2RubQ+CDBxaZox51A6diq8i+lcQcF8wASGeXW5AAZ6igbd1++/6+XlmFHywFrWeOKP6AOQnq3ntMbJXbi3HNNTDnq9VPsyg8dNz1xrQfScOMUWU+3yo1Y=
+	t=1767526687; cv=none; b=l0XZ1lwrtmygFF7IN0yAXbcHRI0Hut9mHgYMlDWwRUL82KpZ0L3fo9bG8G7gJoQgcJLcQvkV+CMhH5wA7E43/9i5isJ2FpkJ0fb27tMxNhfCrs22LUL6IjaBdhKwy7FP+JjOliyDE3S3Ss5Ayz9RspxUp/8jcDUxx6fzNwY7nDA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767473089; c=relaxed/simple;
-	bh=5kuczirHcQe4+fkJcH9poXFd9BRfZSEssKljSuVqDJ8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=smuPW+11TmDi4tZkaNti2bBngAHCe6dXA4O4mxx9THw61plC6zzpGOsDyc+I25v9VrtdTBUZ6agy9T1pVyDpuYsYEawrS3IcDUyGnwNz3mcGEFgAA+HnbkJ9PKjtVmE2l+fnkgPk/QYsxqfL1cV/4xBehuqfy0e0yCPA6x9nDOs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=CF4E5Elq; arc=none smtp.client-ip=192.198.163.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1767526687; c=relaxed/simple;
+	bh=zzt8nsTReCOrFFimHSYnuwYVhyLibD7TXrGiySpB+f0=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=TYLDmR7NJ/gkqOIUHaftt6XDnaUmaExwVcKJ6m+O7tSZn4Hus0VjnXE9nGqqknEV5LnK3WQEyYQy3wE2k3UoFLKmNmfT/ukZJ2K8rSJ0b3ltCiZXSKW9vETMMaAbq8L2J5J1wRT6iLFx2MtfjWSB7vJBXzJFW+L1tKtRA1UWlVM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lSrmBejJ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="CF4E5Elq"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1767473088; x=1799009088;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=5kuczirHcQe4+fkJcH9poXFd9BRfZSEssKljSuVqDJ8=;
-  b=CF4E5ElqxmvMavON7nlqaYx/jqOq6xgVh3Q4rjCH40laLwCHGMSpOHzG
-   I9B7pvmWDh5LHjdiOsPIXtayCM+IpwQ9s0dKxa3E1c0011uQvsIcgDe5P
-   r1gcE7y2HKbj/IhWEG7nDYXRSjvPoumiMONkRlqyKtjm6iAt3ctq4rMGQ
-   iV0BAGNaS+xtC+1lEaP12VgH1+XyccYkihd7mAlJeussLQOn9dSJ3IhjT
-   IDxaCYps0r1nCl8qPlAbDGWTxWQ0AqyhnGpwrip3K8Br30gTRiMPsP/DF
-   GRxlmh3SYnBVtri54zGOKPDaspCNjI3jtw1MjAWEg7oEjObu1qlQkp8X9
-   g==;
-X-CSE-ConnectionGUID: LUpyhWbyQmaSQf5MBCcweg==
-X-CSE-MsgGUID: c+Np3FpjQ+ugMit/bF71GA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11659"; a="80275784"
-X-IronPort-AV: E=Sophos;i="6.21,198,1763452800"; 
-   d="scan'208";a="80275784"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jan 2026 12:44:47 -0800
-X-CSE-ConnectionGUID: tk28MacfQHKXkklM6oGp7w==
-X-CSE-MsgGUID: H8m4GpiGSeCgVN3Dk67f2Q==
-X-ExtLoop1: 1
-Received: from msatwood-mobl.amr.corp.intel.com (HELO [10.125.109.9]) ([10.125.109.9])
-  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jan 2026 12:44:46 -0800
-Message-ID: <a507a85c-e1dd-4c63-94b2-9756ea9ece63@intel.com>
-Date: Sat, 3 Jan 2026 12:44:45 -0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lSrmBejJ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E09EFC2BCF6
+	for <iommu@lists.linux.dev>; Sun,  4 Jan 2026 11:38:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1767526686;
+	bh=zzt8nsTReCOrFFimHSYnuwYVhyLibD7TXrGiySpB+f0=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=lSrmBejJxZP8gHrW1lt8qLoXx5i5yIr8c9JjAw76JwT4w2DU5Bw/V3A8ds+61J9gA
+	 qrA1BD0oGFxFt5TGFqAv6/RSxsC53w/k7B87GXnPPGu5JyBIFEy/k2xW5XqJfBLQwZ
+	 s7To43MM/23LrjwnT2MHsbj2v+MNR3gch8pFv9yPYQDYuMjuaAik+CInCYu5+ZmfZA
+	 x9Du36muqnYdgEnwcEtBPGE0Q2krb+xtqRR3x8L+34PJR5hQ5QQvm7VmmsMrN+wnM9
+	 I2UaQA0Jag3f/lobO/fONtZhnVUHsQ9680OTtldkoKQt1MckmCleLVqFj0F055vXis
+	 sgoDnkXq9m56w==
+Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-78d6a3c3b77so10529877b3.0
+        for <iommu@lists.linux.dev>; Sun, 04 Jan 2026 03:38:06 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCUL59bwhyUd3SHM8TtUz+s/951a96emI7Rw8phM4rO8mzRweWwWIQgx1dkAZsSv07uyIGkCBg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yz2z2ZptwfizOCUYpbb7b+T0Yx4NbU7agNM+gipM+IkwEUHMuIX
+	K28u3YPiGSHISFqGGeHchoOFK8P0daNmvZSaD3DW1tdd+l77vZpdVC7dw5frpgzzJ7jKYTCB+46
+	ZpX9jOt5AzaP9T/kHT0fczzYsY+ouGKQ=
+X-Google-Smtp-Source: AGHT+IF4Orabbp+U3oU6DE4mJfK9KKnbEOxrcm3UcvoG3IBBIUd0oK3DmWjwYq82sAXiIcIbWSh2iznA2Fvf8inAirk=
+X-Received: by 2002:a05:690e:b4d:b0:645:591a:cb5c with SMTP id
+ 956f58d0204a3-646e341a6cdmr3638468d50.23.1767526685648; Sun, 04 Jan 2026
+ 03:38:05 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v15 19/28] x86/tpm: Early TPM PCR extending driver
-To: "Daniel P. Smith" <dpsmith@apertussolutions.com>,
- Ross Philipson <ross.philipson@oracle.com>, linux-kernel@vger.kernel.org,
- x86@kernel.org, linux-integrity@vger.kernel.org, linux-doc@vger.kernel.org,
- linux-crypto@vger.kernel.org, kexec@lists.infradead.org,
- linux-efi@vger.kernel.org, iommu@lists.linux.dev
-Cc: tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, hpa@zytor.com,
- dave.hansen@linux.intel.com, ardb@kernel.org, mjg59@srcf.ucam.org,
- James.Bottomley@hansenpartnership.com, peterhuewe@gmx.de, jarkko@kernel.org,
- jgg@ziepe.ca, luto@amacapital.net, nivedita@alum.mit.edu,
- herbert@gondor.apana.org.au, davem@davemloft.net, corbet@lwn.net,
- ebiederm@xmission.com, dwmw2@infradead.org, baolu.lu@linux.intel.com,
- kanth.ghatraju@oracle.com, andrew.cooper3@citrix.com,
- trenchboot-devel@googlegroups.com
-References: <20251215233316.1076248-1-ross.philipson@oracle.com>
- <20251215233316.1076248-20-ross.philipson@oracle.com>
- <56929e8b-a7cf-4390-b4ec-0b4c2c32b311@intel.com>
- <62227ed3-3804-4795-93c9-ce2bbad3f2a7@apertussolutions.com>
-From: Dave Hansen <dave.hansen@intel.com>
-Content-Language: en-US
-Autocrypt: addr=dave.hansen@intel.com; keydata=
- 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
-In-Reply-To: <62227ed3-3804-4795-93c9-ce2bbad3f2a7@apertussolutions.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20251212231203.727227-1-robh@kernel.org>
+In-Reply-To: <20251212231203.727227-1-robh@kernel.org>
+From: Linus Walleij <linusw@kernel.org>
+Date: Sun, 4 Jan 2026 12:37:54 +0100
+X-Gmail-Original-Message-ID: <CAD++jLkAaAH9_YdTGqHUcOp8PfW+1P=ZLZzS_QseVYWxA4kiWw@mail.gmail.com>
+X-Gm-Features: AQt7F2qijkDXeXovdHRRQ5QEL33UZBQlEMiEIzun3p2-rj7cwfnP7kAmQfWhUyg
+Message-ID: <CAD++jLkAaAH9_YdTGqHUcOp8PfW+1P=ZLZzS_QseVYWxA4kiWw@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: Remove unused includes
+To: "Rob Herring (Arm)" <robh@kernel.org>
+Cc: Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Bjorn Andersson <andersson@kernel.org>, Michal Simek <michal.simek@amd.com>, 
+	Vinod Koul <vkoul@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>, 
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, 
+	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Yong Wu <yong.wu@mediatek.com>, Peter Rosin <peda@axentia.se>, 
+	Chen-Yu Tsai <wens@kernel.org>, Jernej Skrabec <jernej.skrabec@gmail.com>, 
+	Samuel Holland <samuel@sholland.org>, Philipp Zabel <p.zabel@pengutronix.de>, 
+	Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, 
+	Pengutronix Kernel Team <kernel@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, 
+	Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org, 
+	linux-clk@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	dmaengine@vger.kernel.org, linux-mediatek@lists.infradead.org, 
+	linux-iio@vger.kernel.org, iommu@lists.linux.dev, linux-gpio@vger.kernel.org, 
+	linux-sunxi@lists.linux.dev, imx@lists.linux.dev, linux-sound@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 12/19/25 13:26, Daniel P. Smith wrote:
-...
->> I also seem to remember that there are special rules around the US
->> federal government's inability to hold copyrights. This seems worth at
->> least a mention ... somewhere.
-> 
-> IANAL either, but in general the safest/correct approach is to retain
-> any CRs placed on the code being reused, and the above is the CR on the
-> source from the Xen tree.
+On Sat, Dec 13, 2025 at 12:12=E2=80=AFAM Rob Herring (Arm) <robh@kernel.org=
+> wrote:
 
-Yeah, in general, that's a good thing to do.
+> Remove includes which are not referenced by either DTS files or drivers.
+>
+> There's a few more which are new, so they are excluded for now.
+>
+> Signed-off-by: Rob Herring (Arm) <robh@kernel.org>
 
-But I'm puzzled by your response. Are you making an attempt to justify
-the past choice to copy the copyrights verbatim? Or are you declining to
-follow my request to involve your companies' legal experts given that
-you used the "safest/correct approach"?
+Good.
+Reviewed-by: Linus Walleij <linusw@kernel.org>
 
-FWIW, I don't think what you did was bad here. You _did_ use a quite
-reasonable approach in the case that a copyright was copied verbatim
-from an existing legitimate* project.
-
- * I'll give Xen the benefit of the doubt just this one time and put it
-   in the "legitimate" bucket. :P
+Yours,
+Linus Walleij
