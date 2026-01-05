@@ -1,158 +1,140 @@
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f171.google.com (mail-qk1-f171.google.com [209.85.222.171])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D48C93203B6;
-	Mon,  5 Jan 2026 18:28:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C652339716
+	for <iommu@lists.linux.dev>; Mon,  5 Jan 2026 18:54:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767637741; cv=none; b=i2cz0YultQ9gnzMYFz86NlyrX11Ybn4num+ZUYwrbUz7T34S7nzUxn76q5YjEIHqdI20u5/914SAdDl3qucidGsVDDrlQ/6fSBrlY9b523aGXz/l12M9MWk3GFvH27I7mgv9o9tN5Yxd/6pqM2irtaNAt4rb1A67L4FTdlIS1SY=
+	t=1767639267; cv=none; b=Bzq0AFykjbAUW3aPyq8ttC1Aik/1Zxp5XLucVbcDbKmS/hPZt90n3NjS7Vh3sEvMf3pSsxPce/LL6abQuPfIyQeHhj28zq+GI3Kzxt90ak1yDumqaUxSIjgAOgjX04sdvSQT2NlyrZV9nIeuxrQRBVI7VPN0x6ULFJ3H8bI8nAQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767637741; c=relaxed/simple;
-	bh=wkAGmiMchBtc9OScQOQ+Muej3QggBVoP0YqNKFLI0KM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
-	 Content-Type:References; b=UG5A5UOeHXBgqjtmWK9z0+QLW+6piABj8V6/8ezdge4p0Q5V7G7mUOufw8xQKkVnubzWaTpd1jM3zC2qpbTz/fOvMhE1C81iOY3aHWA+Dx24AzR6vD6eBO8pACD6hk4+qWFl1IDFJKYfu2wV1207E31cYr4S6Rqq8bIe1wALQuI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=LdlQdo1J; arc=none smtp.client-ip=210.118.77.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1767639267; c=relaxed/simple;
+	bh=ye4WgWUCpvD2gGQR0QMsre2IOoSU2Qr1YG9uLKSAPu4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=eixLvCwz4hFUovc5mPngneAV1x623og4xSYFoEJzY32hkdmHRejqbtcairTXFyI5XBJjKLJgZbgdwx0HQUT9LykfUtio5zzFIAeCLQUVkxq6s+85HDfU5SBNh5DNVNl5CZvnL3KZDYQrYA8GdBUNXGQudLh97oCSXwlEAHUpfco=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=C1ORhoWs; arc=none smtp.client-ip=209.85.222.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="LdlQdo1J"
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20260105182857euoutp026f24319d0d6511f3b1dbeb43bf327fba~H6Sg15q060910809108euoutp02v;
-	Mon,  5 Jan 2026 18:28:57 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20260105182857euoutp026f24319d0d6511f3b1dbeb43bf327fba~H6Sg15q060910809108euoutp02v
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1767637737;
-	bh=F01Bjiv9Jbar7XQTaAD7ePnWrXaKEdBZUMCzSmOxZ3Q=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=LdlQdo1JQFmuW+nVqR6pwR1qxAMBlcHCB53DqTjz4qoL8zVNAVcLAY7DEdvFDUPEX
-	 xa+oSFRiA5tW+HJopKkBa4sbH+fRMdumqVRL0lkSIiiIDowbEKKdngy5qaMdQoXYiq
-	 YpSPdz3zIWjH8xm+/pth0F/AvhREHn05EsTPmbcU=
-Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20260105182856eucas1p158734c1d57a10887c100d14aab210ced~H6Sf77ObP2452124521eucas1p1_;
-	Mon,  5 Jan 2026 18:28:56 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20260105182850eusmtip28ed1049745959a614ed8486dd208282c~H6SaLDVa40433904339eusmtip2D;
-	Mon,  5 Jan 2026 18:28:50 +0000 (GMT)
-Message-ID: <278f23d7-4c95-49df-b9c9-6ad19e6a08ca@samsung.com>
-Date: Mon, 5 Jan 2026 19:28:49 +0100
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="C1ORhoWs"
+Received: by mail-qk1-f171.google.com with SMTP id af79cd13be357-8b2a4b6876fso24610385a.3
+        for <iommu@lists.linux.dev>; Mon, 05 Jan 2026 10:54:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1767639265; x=1768244065; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=ffKzN1sLhhBqUNkiha1w3dy/564YXw9eASHrYEoDuBI=;
+        b=C1ORhoWsyGFhRW28GLGfk2J+U/C9rRZ3IZ3NKTF0Tvayvc3pvYtZSnh2zsfSZdzISG
+         MZLMZTJ7mkfaz0BZgvt/pDhYieaS+OfbxSiCtwkShDIj5MrldwVbdq+NSlgWyVtNw8MB
+         mMy32d9J9/UpopvRDQBE+oClbCsDhK1U/o09rhHH9YKeiqmSfZ9YOD015SItK7lKvFG/
+         2JS+H2LhBHi4cjiGzWJR2Gv+TXWVqBzZ/iIh7yey9YJK8WTA0MighiStYj5fnTSyYV6x
+         Cgo+uZqnfVKdDCo37CL/tjjywQEZ4p/9+tVdHoirEFmXsvtj5u2wytv8b5Pcd0hSwGna
+         2i4A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1767639265; x=1768244065;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=ffKzN1sLhhBqUNkiha1w3dy/564YXw9eASHrYEoDuBI=;
+        b=fnLIY0xl5gwlYXh1aLozIvFfb8JWy2djSriNhW3EJg2N81Ro8ezdRdwGURfqjpHiGI
+         sMrXHzR7NrCmvq/cmAab8KMJxXDJw8hHKwlLTIDq7bMYW6D5CZ8raxNhQPkTcYOR7qfI
+         wEc2ilUVtiWK5EOQt1Q/pkl3GleQVIRd7qzVe26I7mE+cAvUxP9G2oArWWFebqdlw1nV
+         ABqK+OGnrWWRkVq3MN3N4tKRJ8nwYrYj4WULlQnZJKOfPE76M2cL90bxhORAu8E3FfEd
+         v/ILdkmUggbRs2db5XJaAGuqMjDkiKxvjYcIsZJO89GLI0S61PVFPVPvGIkK7z6PrNLd
+         Zvew==
+X-Forwarded-Encrypted: i=1; AJvYcCVFaP1dFpTihUYhMnm8QkhfoTNJAUJs4RE28l9XsplU7q+UcoDWrTQXBxi6wVcdSYBv0KncaA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwyeXWGqdtv1gDk4SGBfh3J0g9SJ0OFjjiCgYZLHBxKUkjKBa2m
+	0kUrHLbuqJKwmOXBwWVCihaWbyvmfj6fFr1lCkSXAxeAV2y4btcAY2U4D6ZVq5uLDX0T6Jcuh6H
+	o24ol
+X-Gm-Gg: AY/fxX6QYe66B5QYzYrv03mHWfhyylbEq6ND7gyWJYKT63nFc4ne4pe3FOYHQBL4GiF
+	L1GJRwVNH6AqcJ8oxSCpJW3xqtTyQpESLZmEGvclBERC41CnmUggvWIvliRRpmBHGiTUGHDAeFm
+	m7phO8ea/jd1vod+2ze18LltZxpk8qOQ4ggFnjSM+11dfhxn9U9C0V13ujmjUbykt5S5nbtIFRZ
+	NzmCHUY82j6PMUeatNWJusUottKe2g5+eZpaPllD+GsOFzog/bWZsqjxw8Sun/E2j1HfUkkPHYO
+	VOqADHHd3MXxD6/vxLVX70bxqrmHwD+VUJ3ywVZUNgKkfOQiVAy8llnPdomkc4C2dOOu3AyTiLt
+	FT4SzaJ2badpvwrP3qm/8N7d7Mfr2CNBAAEJceYxUBNngDDuAdFKVbB5Jy0Us1CCs/QAOoxeyNc
+	zJWoO1eb2Ja7TZVVtHQEIdEb27erGamnmn1gYnCAeV7eZsdem3Mc2YXW6E1rIlnGtahCY=
+X-Google-Smtp-Source: AGHT+IFPnEh+/aHLidYNOpkwlSqg6n9Ja4S07lmjAzoYGYdPvIKU/oQn/q1c0tGHGXl/b++dfA2K6Q==
+X-Received: by 2002:a05:622a:303:b0:4ed:af59:9df0 with SMTP id d75a77b69052e-4ffa77f5e8fmr6419151cf.40.1767639265008;
+        Mon, 05 Jan 2026 10:54:25 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-162-112-119.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.112.119])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-4ffa71fc4bdsm3676911cf.31.2026.01.05.10.54.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 05 Jan 2026 10:54:24 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1vcpih-00000001C7Y-21aN;
+	Mon, 05 Jan 2026 14:54:23 -0400
+Date: Mon, 5 Jan 2026 14:54:23 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Dawei Li <dawei.li@linux.dev>, will@kernel.org, joro@8bytes.org,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, set_pte_at@outlook.com,
+	stable@vger.kernel.org
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Maintain valid access attributes for
+ non-coherent SMMU
+Message-ID: <20260105185423.GI125261@ziepe.ca>
+References: <20251229002354.162872-1-dawei.li@linux.dev>
+ <c25309d1-0424-495e-82af-d025b3e6d8c8@arm.com>
+ <20260105145321.GD125261@ziepe.ca>
+ <f253d6aa-1dc2-4b1a-85df-f43b06719c04@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH v2 02/15] docs: dma-api: document
- __dma_from_device_group_begin()/end()
-To: "Michael S. Tsirkin" <mst@redhat.com>, linux-kernel@vger.kernel.org
-Cc: Cong Wang <xiyou.wangcong@gmail.com>, Jonathan Corbet <corbet@lwn.net>,
-	Olivia Mackall <olivia@selenic.com>, Herbert Xu
-	<herbert@gondor.apana.org.au>, Jason Wang <jasowang@redhat.com>, Paolo
-	Bonzini <pbonzini@redhat.com>, Stefan Hajnoczi <stefanha@redhat.com>,
-	=?UTF-8?Q?Eugenio_P=C3=A9rez?= <eperezma@redhat.com>, "James E.J. Bottomley"
-	<James.Bottomley@hansenpartnership.com>, "Martin K. Petersen"
-	<martin.petersen@oracle.com>, Gerd Hoffmann <kraxel@redhat.com>, Xuan Zhuo
-	<xuanzhuo@linux.alibaba.com>, Robin Murphy <robin.murphy@arm.com>, Stefano
-	Garzarella <sgarzare@redhat.com>, "David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo
-	Abeni <pabeni@redhat.com>, Simon Horman <horms@kernel.org>, Petr Tesarik
-	<ptesarik@suse.com>, Leon Romanovsky <leon@kernel.org>, Jason Gunthorpe
-	<jgg@ziepe.ca>, Bartosz Golaszewski <brgl@kernel.org>,
-	linux-doc@vger.kernel.org, linux-crypto@vger.kernel.org,
-	virtualization@lists.linux.dev, linux-scsi@vger.kernel.org,
-	iommu@lists.linux.dev, kvm@vger.kernel.org, netdev@vger.kernel.org
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <01ea88055ded4d70cac70ba557680fd5fa7d9ff5.1767601130.git.mst@redhat.com>
-Content-Transfer-Encoding: 7bit
-X-CMS-MailID: 20260105182856eucas1p158734c1d57a10887c100d14aab210ced
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20260105082311eucas1p2f6744dcf6d7bb74e39e353e57dc99c86
-X-EPHeader: CA
-X-CMS-RootMailID: 20260105082311eucas1p2f6744dcf6d7bb74e39e353e57dc99c86
-References: <cover.1767601130.git.mst@redhat.com>
-	<CGME20260105082311eucas1p2f6744dcf6d7bb74e39e353e57dc99c86@eucas1p2.samsung.com>
-	<01ea88055ded4d70cac70ba557680fd5fa7d9ff5.1767601130.git.mst@redhat.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f253d6aa-1dc2-4b1a-85df-f43b06719c04@arm.com>
 
-On 05.01.2026 09:22, Michael S. Tsirkin wrote:
-> Document the __dma_from_device_group_begin()/end() annotations.
->
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> ---
->   Documentation/core-api/dma-api-howto.rst | 52 ++++++++++++++++++++++++
->   1 file changed, 52 insertions(+)
+On Mon, Jan 05, 2026 at 04:02:34PM +0000, Robin Murphy wrote:
 
-Acked-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> > It is reasonable that Linux will set the attributes properly based on
+> > what it is doing. Setting the wrong attributes and expecting the HW to
+> > ignore them seems like a hacky direction.
+> 
+> Oh, I'm not saying that we *shouldn't* set our attributes more exactly -
+> this would still be needed for doing things the "right" way too - I just
+> want to be very clear on the reasons why. 
 
-> diff --git a/Documentation/core-api/dma-api-howto.rst b/Documentation/core-api/dma-api-howto.rst
-> index 96fce2a9aa90..e97743ab0f26 100644
-> --- a/Documentation/core-api/dma-api-howto.rst
-> +++ b/Documentation/core-api/dma-api-howto.rst
-> @@ -146,6 +146,58 @@ What about block I/O and networking buffers?  The block I/O and
->   networking subsystems make sure that the buffers they use are valid
->   for you to DMA from/to.
->   
-> +__dma_from_device_group_begin/end annotations
-> +=============================================
-> +
-> +As explained previously, when a structure contains a DMA_FROM_DEVICE /
-> +DMA_BIDIRECTIONAL buffer (device writes to memory) alongside fields that the
-> +CPU writes to, cache line sharing between the DMA buffer and CPU-written fields
-> +can cause data corruption on CPUs with DMA-incoherent caches.
-> +
-> +The ``__dma_from_device_group_begin(GROUP)/__dma_from_device_group_end(GROUP)``
-> +macros ensure proper alignment to prevent this::
-> +
-> +	struct my_device {
-> +		spinlock_t lock1;
-> +		__dma_from_device_group_begin();
-> +		char dma_buffer1[16];
-> +		char dma_buffer2[16];
-> +		__dma_from_device_group_end();
-> +		spinlock_t lock2;
-> +	};
-> +
-> +To isolate a DMA buffer from adjacent fields, use
-> +``__dma_from_device_group_begin(GROUP)`` before the first DMA buffer
-> +field and ``__dma_from_device_group_end(GROUP)`` after the last DMA
-> +buffer field (with the same GROUP name). This protects both the head
-> +and tail of the buffer from cache line sharing.
-> +
-> +The GROUP parameter is an optional identifier that names the DMA buffer group
-> +(in case you have several in the same structure)::
-> +
-> +	struct my_device {
-> +		spinlock_t lock1;
-> +		__dma_from_device_group_begin(buffer1);
-> +		char dma_buffer1[16];
-> +		__dma_from_device_group_end(buffer1);
-> +		spinlock_t lock2;
-> +		__dma_from_device_group_begin(buffer2);
-> +		char dma_buffer2[16];
-> +		__dma_from_device_group_end(buffer2);
-> +	};
-> +
-> +On cache-coherent platforms these macros expand to zero-length array markers.
-> +On non-coherent platforms, they also ensure the minimal DMA alignment, which
-> +can be as large as 128 bytes.
-> +
-> +.. note::
-> +
-> +        It is allowed (though somewhat fragile) to include extra fields, not
-> +        intended for DMA from the device, within the group (in order to pack the
-> +        structure tightly) - but only as long as the CPU does not write these
-> +        fields while any fields in the group are mapped for DMA_FROM_DEVICE or
-> +        DMA_BIDIRECTIONAL.
-> +
->   DMA addressing capabilities
->   ===========================
->   
+At least I know of HW where the SMMU fetches covered by COHACC:
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+ * Translation table walks.
+ * Fetches of L1STD, STE, L1CD and CD.
+ * Command queue, Event queue and PRI queue access.
+ * GERROR, CMD_SYNC, Event queue and PRI queue MSIs, if supported.
 
+Have a mixture of coherency support. The SOC has multiple fabrics, one
+non-coherent one specifically for isochronous traffic.  In HW some
+SMMU sub-units (like the table walk) been wired to the isochronous
+fabric, while others are using the normal coherent fabric.
+
+So when it comes to this statement:
+
+ If either the SMMU or system cannot *fully* support IO-coherent
+ access to SMMU structures/queues/translations, this reads as 0.
+
+The HW is "partially" IO-coherent, so COHACC is 0.
+
+It has been lucky that so far the incorrect attributes haven't caused a
+problem, but the next spin of this HW may have issue here. I'd like to
+see it fixed.
+
+> bug per se, and although it's indeed not 100% robust, the cases where it
+> doesn't hold are more often than not for the wrong reason. Therefore I would
+> say doing this purely for the sake of working around bad firmware - and
+> especially errata - is just as hacky if not more so.
+
+Yeah, maybe, I am also curious what is motivating Dawei to do this work..
+
+> the DMA API aspect I mean is that in
+> general we need some sort of DMA_ATTR_NO_SNOOP when mapping/allocating such
+> isochronous buffers/pagetables etc., to make the DMA layer still do the
+> cache maintenance/non-cacheable remaps despite dev_is_dma_coherent() being
+> true.
+
+I have a feeling this missing support underlies some of the reasons
+why FW might lie and set COHACC=0 as it resolves "how does the GPU
+driver cache flush things" with no effort..
+
+Jason
