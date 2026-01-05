@@ -1,80 +1,87 @@
-Received: from mail-qk1-f175.google.com (mail-qk1-f175.google.com [209.85.222.175])
+Received: from mail-pf1-f171.google.com (mail-pf1-f171.google.com [209.85.210.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32D2A3A1E68
-	for <iommu@lists.linux.dev>; Mon,  5 Jan 2026 00:02:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6128324B0C
+	for <iommu@lists.linux.dev>; Mon,  5 Jan 2026 04:56:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767571355; cv=none; b=SQnX+QkHov2q8QUhfu8x/TMOPyaW6ss4WbFtejwEWsowZrOWNgD5xSpfhUoAe31mlBOle5qfoal79RoZMKalpAWPTNYBvUKyIyGE4IyTGci9Pg1sHwjhcr8hILlHPk9P3y19qoFJBDE4pql8hNzqbiegjkzc/1JqRATXZ6f+WMY=
+	t=1767589006; cv=none; b=dorbO5uVxNr1PlwYJjXHuMY1tQA3P7UU45jj+cvg+3Wql1Z39Cnakl7wHKCpCor34513okdZocB+/sL7REhE8nA5cqWOum/GlIUUtWLRWkbBgVK8l4hABoRheJqsoX0HK02gEh4o3HWlFQNs/UmNNo37rmHTYqx0eYZVjDgkSWI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767571355; c=relaxed/simple;
-	bh=5Pd8XHirDAvBeGnaTQQoB4X3T4keVMq6ZwvkHBRkwKA=;
+	s=arc-20240116; t=1767589006; c=relaxed/simple;
+	bh=jBwvhnDfidsek4dpH3nFNU7R+wPfEwm8oFGbdpxTVpU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=FWgJ1Ir1+03BkQmQNAR/dHhzf2RwE6nSUNs/CJZP0glMHUcsyxXePMLs4+5k8Zb4uyzvuWj0lC3wA2jc5w9b3TdZODjXkbb+gwTBsOqfzlNXiF7NHKMwJb6DUaYGnzaPkX0UfOFa1+M2IsFKd4rpSnKK70uhR2U0wuGCnNuX7PQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Zt7RhYAR; arc=none smtp.client-ip=209.85.222.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	 Content-Type:Content-Disposition:In-Reply-To; b=WuSD/tr10xTMpsVeRK6CM+I2b80vs4KXOs4TX0lvaPUt0LpTwSWr9lxU569IU749erXbKlrkE3J+Fk2cyJwOCWaDpZnOJKAKtPxQlF0uvzh8zmOuuAHJsku0NakZva+rCyT0sBet6yV8xA81TYki3je6rcCnSSP5do43EgqJ+dI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=oCgc1Ihs; arc=none smtp.client-ip=209.85.210.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Zt7RhYAR"
-Received: by mail-qk1-f175.google.com with SMTP id af79cd13be357-8be92e393f8so157500385a.1
-        for <iommu@lists.linux.dev>; Sun, 04 Jan 2026 16:02:31 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="oCgc1Ihs"
+Received: by mail-pf1-f171.google.com with SMTP id d2e1a72fcca58-7e2762ad850so14294247b3a.3
+        for <iommu@lists.linux.dev>; Sun, 04 Jan 2026 20:56:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1767571351; x=1768176151; darn=lists.linux.dev;
+        d=linaro.org; s=google; t=1767589004; x=1768193804; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=8+jSiPWTak82xdkGqmhBxUT/Rw7weH7GEOHsr3Ick4Q=;
-        b=Zt7RhYARxejrDcTLcrHBu+LzuDzO5VzcigpeDl2KfgcAeDpjdDASGZtet3+BIr22up
-         MNz4mXwksh2SdR/t9S1CCkIKtmGq7DXTZUCZvgmcejLH2ndvClV+6sTiPL5WJQB7cbI/
-         jLeKsMXe0/xM/ESZBMV0cu983RTOOno0H02zLqkq5k272+axNWVGZhQ93IqbN5XrDa/P
-         gJSV5hsSaGPVuTNB2IvUBHfYvvmqG7tZsKOXWRZn4YRsA6HsIBOtJ+0yJEOks21oq+73
-         aBuSSEC3iFeTEAPfSwJa6FbKT5YI0zYWKJOxkPqOP9vL4ZI6GMF+wXpV1/SKVIEVRd3S
-         g+7A==
+        bh=3hFH3lNfVrL079RvxBKm1qFjwG/jqKdNHXIh3f8h06U=;
+        b=oCgc1IhsBhBJnrwceWTMe0LuQ9Szsd0CHnYUjE66NDnzHfAjbuxfJXMWjT707SD7XX
+         3KAOZR45HNsfeFhESzMAb8s4e1EyHYslXF16vDnGaVTyEMSOx33QnU6XgMHtIpxLYlHJ
+         /1qHz1iJd/2/QUiD4NL02lHZePu+Au5kmAn8MZi/To7nsu8rLaMvEE55bnHbZtpgYvIR
+         XxyzgPnGoxlVFrBeJr5PYq6kal6rClrh8Z+3QkL+ouH4U1IWDSU19sY0vjH5C9iingod
+         lD+jE6LeaAVFxqyVpabGYOV3upzI4flq2esow+1qpZG3pazlrSrImPYX+n6GG+jWHHpi
+         TnpQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1767571351; x=1768176151;
+        d=1e100.net; s=20230601; t=1767589004; x=1768193804;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=8+jSiPWTak82xdkGqmhBxUT/Rw7weH7GEOHsr3Ick4Q=;
-        b=uIgd555+UXF6VqS0ZlerA+fUITyeN6Himngp64H7GDCOWHvz1Y3/xlRgZVLm7qeis6
-         38a7kfZ2XashY1WRMp1tP02P/Mxe5P0Qwh7d1HUI8x0EmZd1RmBq9uX3CXf2hF9b3MSB
-         9/pRs//urZZbw34gSng8H69B78bLnKz3EtNijKXuyhxA8hkRf20zUYpY5AFVlgj+IPax
-         zfX5DRaahydbfaUTrahrGgWJm7Nk7to6PygTRXjwtY5VHhL14i+0erIRSt2MLoGAkgT9
-         hIp4cRkimBFSLNLy6GDDMPXXTTas658wa9o+NkiuW3nCLVaWWGdUlacrBqwy5qYKTl0t
-         7J9A==
-X-Forwarded-Encrypted: i=1; AJvYcCVAfy9LfE6UBvo++DV2hH+LgA6Y56jU1fT2EcHUWY7ITHG3oa6u1oYBlJEgJJ31ihJfYVOuIg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyzpDYyJhPnRDN7TVyQ2WYhPg1ng2DS+M9RJwBhoghp+NqNn1K9
-	Cu/IMLpu/4eObQy9m2CJe5IfqJEwOE+53uXpdsw8s8G88Xv13U6hmSoyTd/L8hDbxyY=
-X-Gm-Gg: AY/fxX50pyYCQS/xkfCY+iPvd7aXcnMhXsDoAnez7Mbc/vJwlEtBIgoHVbW0iGyULaV
-	fMuSrDCECDjL23llymTSbKH1SZ+UDNnm8LIrOV2rURpNB55HBaiDPV2pPouZKKYfwyAyuPH6m6t
-	mf6bH4+PWtzNImPdTS7XTSzNEJ7JMpVgoycH770qRonNSbqvb5/GZFGodHkk7fWlGJC08O7Zp4G
-	C0oCctAGXOPMSO3TZ1/u02ySO71upEzT/mH/VqPx/KNLkPgQOFZD/lD0vtawPZTn+eyDEoyK9mq
-	HQFDENqf/jCUyLi40FShY0XETWRDbUSPCuheanMMXo4Pvpvf/04uiixBln9w6So9zOs8v3hYZ79
-	9jv2V/KNazmpCqZam1atNiKRZq0g+/tX3iZo1cyyWPYkqs2x37lP485XTQYHbdp64YPiMRFMteg
-	otdPSUilNbVlDH0cUntKZ0POLZF4FdFlnPVI7Zup3UXj526PJzATUb4Etc0SaaR43kcPU=
-X-Google-Smtp-Source: AGHT+IGiRum5OAeqK7KwLoeA3fYC8uB4/qk0h6ByodkxfauKgGSblQTUCpTabkdDEAjM1i6E2aZiIQ==
-X-Received: by 2002:a05:620a:440b:b0:8a2:595f:657 with SMTP id af79cd13be357-8c356f10068mr814244585a.21.1767571350945;
-        Sun, 04 Jan 2026 16:02:30 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-162-112-119.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.112.119])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-8c09688e3d4sm3545746985a.13.2026.01.04.16.02.30
+        bh=3hFH3lNfVrL079RvxBKm1qFjwG/jqKdNHXIh3f8h06U=;
+        b=MFqCCHOUkIi+F88rPvYDjJ+fzueJgDrwvdvuVr94U1eSg28+5W2XooDU5erJC370Zk
+         u/Lcsgfbsx5WOq61W0FPVheJjRKkdQp7JbwikRaJ/KMIkRmnVdaornyh2vFNy/YeBE7K
+         HhuaW/Vs140QjqBq6DMNhUpc/lm0PHFnffmE0cyOEMcc1ZndnwLr+4P4Z/54VUubD3st
+         c/Al4El6d1plbvgABRn5V9n++abw5eEcAJfOmD+epIT5of0GjOszMxz/+lAJY9Uf3zA6
+         mIYiSR010oU3jOVPxyZ+rYslt7jxM70YTcvURVrEd0DkEXd9NdF5lqhffpkPSo85zVV+
+         ZuyQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXMynsxrYRCSrSZjLgQHi3bfVXhmdwPfvLD4/bD6NyF5o4OVPm6gsBCtQUoX7INFX2sRqFy1Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy3VlEykzSRMt2+9MXt3dRGTCS/fHXVi/Og1HXBiIMMEYFtRHDZ
+	O4jeBmLD6Vf4pXkBKMOeam6KWmx7jBxiXoTwdysik8xmHennO4vb6MIJAZEB0mr6sxs=
+X-Gm-Gg: AY/fxX5K5691OHNqRRVeHhqcVwI+7mkWUBXGzwbl74bOGvywLmNPSMrwkuwmtu0mdJj
+	RqMHqT4BijXDCxZ3n0SSoV4tjPanQr1r1xXzHyC007GxgtuHU5KsvGSxMpTUULKqUkHXjSis0nI
+	eMbmLKcA+xS27u4T20+Q2r5xwwxxzO7sgp4S7fF7K3mZx1L9gnMSMwkNTvQkKVKBHW8XJUgcd90
+	ySn+9aiiX3I4Boi5WhvZs9agJnERQqg2SBvdX7XNUuh+PwFs4sgHfiNzF2tA/VCrf6UBfdjCzj+
+	+GGjc0qaikw/Psl59Puhrl7Co6mLEaQAtmkWzL61Hj3m6g/jjcAZBuIpv//6Q1IWYGdyR5rsKwT
+	2IjSNYfBo7EBc+5247pzoEPbACwqOmRSSMyz2gh/MrBueURVSNTBKmi6axIBO2T34/cxqatMwgz
+	7h/2BhAbxai6Y=
+X-Google-Smtp-Source: AGHT+IFZ00gScIfn7Z/S2C4S8PPgyPbUGX5mTMlgh0Rzf0TnKH5YXmLt4fA7cx6w6t8/JqVkxOTy2w==
+X-Received: by 2002:a05:6a20:918e:b0:364:13aa:a526 with SMTP id adf61e73a8af0-376a9ce54bbmr44864432637.60.1767589003573;
+        Sun, 04 Jan 2026 20:56:43 -0800 (PST)
+Received: from localhost ([122.172.80.63])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c1e7bd61b4csm40590900a12.18.2026.01.04.20.56.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 04 Jan 2026 16:02:30 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1vcY3J-0000000156c-2OeL;
-	Sun, 04 Jan 2026 20:02:29 -0400
-Date: Sun, 4 Jan 2026 20:02:29 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Dawei Li <dawei.li@linux.dev>
-Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, set_pte_at@outlook.com,
-	stable@vger.kernel.org
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Maintain valid access attributes for
- non-coherent SMMU
-Message-ID: <20260105000229.GC125261@ziepe.ca>
-References: <20251229002354.162872-1-dawei.li@linux.dev>
- <20260102184113.GA125261@ziepe.ca>
- <20260104133532.GA173992@wendao-VirtualBox>
+        Sun, 04 Jan 2026 20:56:42 -0800 (PST)
+Date: Mon, 5 Jan 2026 10:26:40 +0530
+From: Viresh Kumar <viresh.kumar@linaro.org>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: linux-kernel@vger.kernel.org, Cong Wang <xiyou.wangcong@gmail.com>, 
+	Jonathan Corbet <corbet@lwn.net>, Olivia Mackall <olivia@selenic.com>, 
+	Herbert Xu <herbert@gondor.apana.org.au>, Jason Wang <jasowang@redhat.com>, 
+	Paolo Bonzini <pbonzini@redhat.com>, Stefan Hajnoczi <stefanha@redhat.com>, 
+	Eugenio =?utf-8?B?UMOpcmV6?= <eperezma@redhat.com>, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, 
+	"Martin K. Petersen" <martin.petersen@oracle.com>, Gerd Hoffmann <kraxel@redhat.com>, 
+	Xuan Zhuo <xuanzhuo@linux.alibaba.com>, Marek Szyprowski <m.szyprowski@samsung.com>, 
+	Robin Murphy <robin.murphy@arm.com>, Stefano Garzarella <sgarzare@redhat.com>, 
+	"David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, Simon Horman <horms@kernel.org>, 
+	Petr Tesarik <ptesarik@suse.com>, Leon Romanovsky <leon@kernel.org>, 
+	Jason Gunthorpe <jgg@ziepe.ca>, linux-doc@vger.kernel.org, linux-crypto@vger.kernel.org, 
+	virtualization@lists.linux.dev, linux-scsi@vger.kernel.org, iommu@lists.linux.dev, 
+	kvm@vger.kernel.org, netdev@vger.kernel.org, 
+	"Enrico Weigelt, metux IT consult" <info@metux.net>, Viresh Kumar <vireshk@kernel.org>, 
+	Linus Walleij <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>, 
+	linux-gpio@vger.kernel.org
+Subject: Re: [PATCH RFC 14/13] gpio: virtio: fix DMA alignment
+Message-ID: <nyz6mnesozpu5u6p2mxrg37fwuj3sy7hjo2xkyepd3aybm7m52@7weoocg2pbs5>
+References: <cover.1767089672.git.mst@redhat.com>
+ <6f2f2a7a74141fa3ad92e001ee276c01ffe9ae49.1767112757.git.mst@redhat.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -83,59 +90,38 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260104133532.GA173992@wendao-VirtualBox>
+In-Reply-To: <6f2f2a7a74141fa3ad92e001ee276c01ffe9ae49.1767112757.git.mst@redhat.com>
 
-> >  /* DMA for "CMDQ MSI" which targets q->base_dma allocated by arm_smmu_init_one_queue() */
-> > 
-> > > @@ -1612,11 +1624,18 @@ void arm_smmu_make_cdtable_ste(struct arm_smmu_ste *target,
-> > >  		(cd_table->cdtab_dma & STRTAB_STE_0_S1CTXPTR_MASK) |
-> > >  		FIELD_PREP(STRTAB_STE_0_S1CDMAX, cd_table->s1cdmax));
-> > >  
-> > > +	if (smmu_coherent(smmu)) {
-> > > +		val = FIELD_PREP(STRTAB_STE_1_S1CIR, STRTAB_STE_1_S1C_CACHE_WBRA) |
-> > > +		      FIELD_PREP(STRTAB_STE_1_S1COR, STRTAB_STE_1_S1C_CACHE_WBRA) |
-> > > +		      FIELD_PREP(STRTAB_STE_1_S1CSH, ARM_SMMU_SH_ISH);
-> > > +	} else {
-> > > +		val = FIELD_PREP(STRTAB_STE_1_S1CIR, STRTAB_STE_1_S1C_CACHE_NC) |
-> > > +		      FIELD_PREP(STRTAB_STE_1_S1COR, STRTAB_STE_1_S1C_CACHE_NC) |
-> > > +		      FIELD_PREP(STRTAB_STE_1_S1CSH, ARM_SMMU_SH_OSH);
-> > > +	}
-> > 
-> > This one is "CD fetch" allocated by arm_smmu_alloc_cd_ptr()
-> > 
-> > etc
-> > 
-> > And note that the above will need this hunk too:
-> > 
-> > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
-> > @@ -432,6 +432,14 @@ size_t arm_smmu_get_viommu_size(struct device *dev,
-> >             !(smmu->features & ARM_SMMU_FEAT_S2FWB))
-> >                 return 0;
-> >  
-> > +       /*
-> > +        * When running non-coherent we can't suppot S2FWB since it will also
-> > +        * force a coherent CD fetch, aside from the question of what
-> > +        * S2FWB/CANWBS even does with non-coherent SMMUs.
-> > +        */
-> > +       if (!smmu_coherent(smmu))
-> > +               return 0;
+On 30-12-25, 11:40, Michael S. Tsirkin wrote:
+> The res and ires buffers in struct virtio_gpio_line and struct
+> vgpio_irq_line respectively are used for DMA_FROM_DEVICE via virtqueue_add_sgs().
+> However, within these structs, even though these elements are tagged
+> as ____cacheline_aligned, adjacent struct elements
+> can share DMA cachelines on platforms where ARCH_DMA_MINALIGN >
+> L1_CACHE_BYTES (e.g., arm64 with 128-byte DMA alignment but 64-byte
+> cache lines).
 > 
-> I was wondering why S2FWB can affect CD fetching before reading 13.8.
+> The existing ____cacheline_aligned annotation aligns to L1_CACHE_BYTES
+> which is now always sufficient for DMA alignment. For example,
+> with L1_CACHE_BYTES = 32 and ARCH_DMA_MINALIGN = 128
+>   - irq_lines[0].ires at offset 128
+>   - irq_lines[1].type at offset 192
+> both in same 128-byte DMA cacheline [128-256)
+> 
+> When the device writes to irq_lines[0].ires and the CPU concurrently
+> modifies one of irq_lines[1].type/disabled/masked/queued flags,
+> corruption can occur on non-cache-coherent platform.
+> 
+> Fix by using __dma_from_device_aligned_begin/end annotations on the
+> DMA buffers. Drop ____cacheline_aligned - it's not required to isolate
+> request and response, and keeping them would increase the memory cost.
+> 
+> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> ---
+>  drivers/gpio/gpio-virtio.c | 14 ++++++++++----
+>  1 file changed, 10 insertions(+), 4 deletions(-)
 
-Yeah, that table is super useful
+Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
 
-> +               if (!fwb) {
-> +                       val = FIELD_PREP(STRTAB_STE_1_S1CIR, STRTAB_STE_1_S1C_CACHE_NC) |
-> +                               FIELD_PREP(STRTAB_STE_1_S1COR, STRTAB_STE_1_S1C_CACHE_NC) |
-> +                               FIELD_PREP(STRTAB_STE_1_S1CSH, ARM_SMMU_SH_OSH);
-> +               } else {
-> +                       dev_warn(&smmu->dev, "Inconsitency between COHACC & S2FWB\n");
-> +                       /* FIX ME */
-> +                       return;
-
-I prefer we block it as I showed instead of printing a warning, cache
-inconsistencies in virtualization can become security problems.
-
-Though it is probably good to add a comment here about s2fwb also
-
-Jason
+-- 
+viresh
