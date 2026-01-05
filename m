@@ -1,52 +1,52 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 092AA4C81;
-	Mon,  5 Jan 2026 22:58:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 356E62836AF;
+	Mon,  5 Jan 2026 22:58:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767653921; cv=none; b=qFLkNhAOW7FQcl+WcaOEHY7INKBD/WPHMLHl3XfAMAPl581iLo62LZNi/MopiBOwA0t/4Iz71FwuYDBLHK34G9NjjmjdUqb1mjTPYKV2l1Tto9LE7B1o7XPtxpxyeU9PePS8gjdR0lGeDpKDjxr93EAc8TbHJY6y48AExAawRkg=
+	t=1767653932; cv=none; b=M6q1EhzhMORYgSpdOKPfYamCe8AM9NxrA7WMolzaBdcl/bkiIAu964CTwADp9ri45obl4ow/5qYGydYss5iROS7lg+RDGA6J2z2bCq71accc/dO30UAhyJP3hhs56AFvEXfpQpPl6CEnomKxCwH+7vuKm2GOCyYMBX3zrzegBW4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767653921; c=relaxed/simple;
-	bh=57Y8OhPb0RdZXNMjxm6zVtmsLCS976QesMyxc2EBE3s=;
+	s=arc-20240116; t=1767653932; c=relaxed/simple;
+	bh=cLXwZ1WD6XB2ttdqYuMSJm8C7jJVWMio9fAwVSYUEI0=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=nyBGVOLsvFq+hlRQuJjJFGU+lmLurry7ISRq0xFOEUpSOlwiNzRiqiCk4kzJgzgp1pAw9XasfK3QeRsS5eHhMDnYsm2+A2llkSBBJ8VW6NY+l1bRcgFn3ahOL2jDDlWbtb/vpnfDXhvuD/MTJTZffz08fvS1aKEbcJQKuMLqbac=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dKoXhy8P; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=sBM7lagZ3wWUEQO8StlO2GQwpaV0Bimo5cNA4dWo2VzuOTNV8vSqLLoABFFMxUaAI0OfL8/phga3LD0BJE1kOilKOTgbmA3cAZQ5w5zg4PM1y88p9nnAx5B5ig0kaLeWZbFxgB44vbohpwaPyBSXk0b+o8oDlSBV6FVFawOu9wE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=F0Z+6WzG; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dKoXhy8P"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8E28C116D0;
-	Mon,  5 Jan 2026 22:58:37 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="F0Z+6WzG"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C370C116D0;
+	Mon,  5 Jan 2026 22:58:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1767653920;
-	bh=57Y8OhPb0RdZXNMjxm6zVtmsLCS976QesMyxc2EBE3s=;
+	s=k20201202; t=1767653931;
+	bh=cLXwZ1WD6XB2ttdqYuMSJm8C7jJVWMio9fAwVSYUEI0=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=dKoXhy8PphpPNPQyctzXS0XHOTt/dcW1d3000+w5MghP3P4D+HpA/3NvPIWZCXdno
-	 Tf7mqXJHL0BMgUe4E2BTTw9KKuXPNGufXSKw/kkxxTksGoTNcdOXERj+H6dRT2cSOg
-	 S/4XaH2Mz0bAE750Zw1A0tK8K6cSSvOfI2gQgTj/K0UZp2J91/5yeR0j/w0haqIBvW
-	 gtiKwroqz/OluIdw15azPae9Sa9pb0dGYktG5nn+3aT3T+Vvoajs1ghah5Vsw5sM8H
-	 l33fBbvu1iOB2WsKxua255VCktaOZ4QjAe68fk/Ts1qTcpUMaQ5OVOI5HtmtyU4/fp
-	 PTgXf8OTzNkTA==
+	b=F0Z+6WzG0T5ybYBS8g+X6WeKSBsTKdT3JubTbsUPjqPx59Wq92GnP95rJWZLcE1Ys
+	 W2E9ZKzPlZFc2V5QznkfqGrK7GO3UZDLk9xq5FMyA9pk/lCMmnRHERgX+IRQ0yrAZg
+	 zj4EJktYpKlAJ1ZT7JlviGUF11FflI6dKpf3pzdS5BFNLOcdCiAM+7YQnpHPYQxmiY
+	 ZgTK814WYo3bQ5aQmH3f7xN26vfC9DpW3bkU6QqDHgGtsbXikAX8J2AMAVBsJH1RZY
+	 BSDO33GSfumjwXpr8eOeSTIdN8XukvMd7VoDbvhb8koa7+cA7rHVJOHxQeFuQI4u9p
+	 +sB26HE0CAKyQ==
 From: Will Deacon <will@kernel.org>
-To: konrad.dybcio@oss.qualcomm.com,
-	robin.clark@oss.qualcomm.com,
-	dmitry.baryshkov@oss.qualcomm.com,
-	robin.murphy@arm.com,
-	joro@8bytes.org,
-	bibek.patro@oss.qualcomm.com
+To: linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev,
+	Joerg Roedel <joro@8bytes.org>,
+	Mostafa Saleh <smostafa@google.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Jacob Pan <jacob.pan@linux.microsoft.com>
 Cc: catalin.marinas@arm.com,
 	kernel-team@android.com,
 	Will Deacon <will@kernel.org>,
-	iommu@lists.linux.dev,
-	linux-arm-msm@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
-Subject: Re: [PATCH v5] iommu/arm-smmu-qcom: add actlr settings for mdss on Qualcomm platforms
-Date: Mon,  5 Jan 2026 22:58:19 +0000
-Message-ID: <176764799410.1451727.17568755330994660848.b4-ty@kernel.org>
+	Zhang Yu <zhangyu1@linux.microsoft.com>,
+	Alexander Grest <Alexander.Grest@microsoft.com>,
+	Jean-Philippe Brucker <jpb@kernel.org>
+Subject: Re: [PATCH v5 0/3] SMMU v3 CMDQ fix and improvement
+Date: Mon,  5 Jan 2026 22:58:23 +0000
+Message-ID: <176764512514.1439618.10919808867972292538.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20251209052323.1133495-1-bibek.patro@oss.qualcomm.com>
-References: <20251209052323.1133495-1-bibek.patro@oss.qualcomm.com>
+In-Reply-To: <20251208212857.13101-1-jacob.pan@linux.microsoft.com>
+References: <20251208212857.13101-1-jacob.pan@linux.microsoft.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -56,23 +56,21 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 
-On Tue, 09 Dec 2025 10:53:23 +0530, bibek.patro@oss.qualcomm.com wrote:
-> Add ACTLR settings for missing MDSS devices on Qualcomm platforms.
+On Mon, 08 Dec 2025 13:28:54 -0800, Jacob Pan wrote:
+> These two patches address logic issues that occur when SMMU CMDQ spaces
+> are nearly exhausted at runtime. The problems become more pronounced
+> when multiple CPUs submit to a single queue, a common scenario under SVA
+> when shared buffers (used by both CPU and device) are being unmapped.
 > 
-> These are QoS settings and are specific to per SoC thus different
-> settings, eg: some have shallow prefetch while others have no
-> prefetch.
 > 
-> Aswell, this prefetch feature is not implemented for all the
-> platforms, capturing to those are implemented to the best of my
-> knowledge.
+> Thanks,
 > 
 > [...]
 
-Applied to iommu (arm/smmu/updates), thanks!
+Applied third patch to iommu (arm/smmu/updates), thanks!
 
-[1/1] iommu/arm-smmu-qcom: Add actlr settings for mdss on Qualcomm platforms
-      https://git.kernel.org/iommu/c/f91879fdf70b
+[3/3] iommu/arm-smmu-v3: Improve CMDQ lock fairness and efficiency
+      https://git.kernel.org/iommu/c/df180b1a4cc5
 
 Cheers,
 -- 
