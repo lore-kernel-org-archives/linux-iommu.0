@@ -1,80 +1,84 @@
-Received: from mail-qk1-f177.google.com (mail-qk1-f177.google.com [209.85.222.177])
+Received: from mail-qk1-f180.google.com (mail-qk1-f180.google.com [209.85.222.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E2CB35977
-	for <iommu@lists.linux.dev>; Mon,  5 Jan 2026 18:02:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73D8C29E110
+	for <iommu@lists.linux.dev>; Mon,  5 Jan 2026 18:12:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767636139; cv=none; b=QTolTAnlv7+WTl76jkmexP8XS15MmxjrMDjUBQ4ho3ZBaS2i2PsrRm5+GnpW7X0/58HOrSs7QEhmr2Dnu6lqHJO+5HCcNwAbQ/HzQ9AD/5Mk/oUm1BHsBojGLqXCEAPT6dCzcioYBL4ChL91vat2mxiBC4da6AkLr0hpdicHHiw=
+	t=1767636725; cv=none; b=ooca8nU319+rPXPM3TIFjTfAj651mRk+QARRLkI+PieBp2y7kPWIs/jWenahLW0o5tTGVnMaQJK5ElWDLO7w+Y/S5ee7UTCJruMEWeDNFl/g3KeqMuf/YW6eyEGkb7FOxXbjxqA2sO3ak/fyRWeDCFm/1MxdPbdRRthg+Flly7c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767636139; c=relaxed/simple;
-	bh=J2ifw4ZRsQ9TrX3pkMbT12XKImaFrB1+bL172ft1MMY=;
+	s=arc-20240116; t=1767636725; c=relaxed/simple;
+	bh=OCb3A1WFzV0w5ZbO/H402vOffTteqscuLBNvsEalcXI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nzhejjCKeW7Jyh3Urxbn3HzwUCvOau7nzXq4gH3tAScJwcbXgFSJhPMda8yNfqO45WmckGLkbKuZtrUeBQmVhsQeDkOhM5eHt07wi/Vt4/5/ARW4f+xIJL3XEhOY8+CyQIy4nSobTHEgz9DIQfN/uda21IvA2Fo8TvRLvdPsTp4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=TYfWVMlq; arc=none smtp.client-ip=209.85.222.177
+	 Content-Type:Content-Disposition:In-Reply-To; b=MKK5eNIcgO/6BmKDpeI6zomMgERE7QvdYd+1GqBOW1YLBR0zmAZgPEqY6fL8aqD0a8M3RUQb5f1Vj3rQUajJow8t9V8RedavRbK/h52SVqWVw45b93LlPl4tSotnu+4P6cCiDaQVEzMq2kHMauAHphNK/aQ51SvOKJzRJZnA5xQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=oMDmfLAJ; arc=none smtp.client-ip=209.85.222.180
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="TYfWVMlq"
-Received: by mail-qk1-f177.google.com with SMTP id af79cd13be357-8b2d32b9777so20842885a.2
-        for <iommu@lists.linux.dev>; Mon, 05 Jan 2026 10:02:16 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="oMDmfLAJ"
+Received: by mail-qk1-f180.google.com with SMTP id af79cd13be357-8b2d6df99c5so223915685a.1
+        for <iommu@lists.linux.dev>; Mon, 05 Jan 2026 10:12:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1767636135; x=1768240935; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1767636722; x=1768241522; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=W3nbp59mhgTws0br3p+6wkvcLWwbjOWOkhKphzo8jIA=;
-        b=TYfWVMlq/DRBo9Kchks1stmtzabJU7UWudV+XMMtyi+JOajtDp4tlWZ9brv1H9dw5c
-         70vZ7dmQEBFj8QcH0SdQsPN2cbLxSnCB6wMBZqSZK40jnkrcd8cDQ01bCX9scd7LVNz5
-         4ZUCwP4UYscfhe2V0DiA0mUVPIerdyPSGk/m0pO9aL+shyncEP5NtiIOgYN4PCSuERh0
-         82uewCMiGnO1NYOWUYGyZ7SE7U+i0gQyYswvJU+yXZbmGifxUdTbQJW7fSDM70r5rdpJ
-         IqYTSewA9A+BAGwvQKMeWYW546vKOol0JELlm6urLXjM3K3DdInbx5zr9qQP4WsgHzyX
-         j3gQ==
+        bh=RNoRn5xn2oaDC2IYtqhOSxgeOL9snP+iopTS7Mlk9mY=;
+        b=oMDmfLAJrnrgDsv02Ao9W4QQbd8euPAEO41viyqKPrdsvR0tg4E7YKvm4dn7XPtWzQ
+         yxGlWVgmHWWOi6sE4NznAv1uFUhdkMWyYP96/N878bUPCWevr59gORjoe3ljIk3GNITj
+         HB6QGLUbScazcujbKsXlcl6am9erCm1h0GCHLEDRIFTGn7v5I2XBXMZmaKJvM3nb1c1T
+         qzCINHBM/EVZ1kd6qTTrHTE6wi2LOqPPGqe4rXBk1tUnzt7AWDDemuErpWFUhXLwbziu
+         9hFBZ/3mgFRKjWtgnxnPM75TNnhSsgpAfgmV+QVBwLS93KZWJRgTdwvs4pJRmydcr9wB
+         yGsQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1767636135; x=1768240935;
+        d=1e100.net; s=20230601; t=1767636722; x=1768241522;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=W3nbp59mhgTws0br3p+6wkvcLWwbjOWOkhKphzo8jIA=;
-        b=i7NXOWV3A5ypPLwW2VqC1ZuZGXYlIT7XdkJuxnjkT8fGKgysgNa2L4DzfVgH60V2YZ
-         /W1ibjWr7jej1B4TguxUJQI/70gB9rqLqEFzrogw4C46ZDWR4J+q3kQsGu9Kz/stiNNG
-         pCizlghpaBVpREOP978HX7g6mYJg9zvEe88kUjoqT7L/iavUlbCVRe4l2YGSvzQ2v0rx
-         ho3BDXi0jw1KxOZuJewjNSs1EidAIdpOx/YUUThkUrKhTrLoGmrpjhkD+QC0tjnzt1Am
-         429UjYBo4xpqq2OZioscTHaDM3JqELD71CyGLmM2Rregh64EPuIXxfE5eIQpfgTZJRPn
-         HGQA==
-X-Forwarded-Encrypted: i=1; AJvYcCWI8krMRRmU4jFU/6PsAOSPaeIq+dDX6y8rsHmIOjfRw1S39M4Ny9Ne2wrVH0dJJ7ccSZ/H6g==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxVDTWo8vVPQ8G9CbuWQRAoPzdO+D5PPp8ueFGlokxVZnbLGsig
-	2bxyj8B16BOqCmWX3snmyW+XSStXgajsuO56wLrdnUg6PRr0jPR73yVLQdVFMRtHMBc=
-X-Gm-Gg: AY/fxX6uKVSbO2SZJbbFL4aNLS2fgSFB6yIUWdcEHlD0W3QqW9Ctq/yq7pBKcVn0DbA
-	xEGmi/W7Ik1MfPqMsqYIGUoCtWfDZh2AqY/Peu0pETuY1t7DTTUr6G5fk1EI3OjTdYWgJ6Upyv5
-	L3T6djlNHc7ZDL+JKxv37hScslSnKxNtaGzQhjxInufLDy1H6r729F9DPkOZisYhoab3M96E5Ke
-	xZGwqc1bvJ9EwdiUkMZMSwdbDmRfKE6A1bpeJiudnPAo9DeisTtK1tvZmAhCmDz1KctRuI1w6wG
-	Iz5zdiqbhqEwf451KTHrj+JWasr1anI0OI3ZfICoZ/h61hnLe9j5uyiO6BKCUB4JY3C3hZvysja
-	akENk3N3vvQ5Gj35vAyiSBw2eFZTn8ZoOvXlJc/voFHOpzji9tt8rbiFL/X8gbmGZQ/jmTIio3W
-	/Sw7O0B3J9cZD3KPRaroxS0IA8mweIr/M7ALN9+pUGvIbSwBLN1bDmUk7Zmy28LVKXo/A=
-X-Google-Smtp-Source: AGHT+IHRi2JeGLgddwIBbL3/jFiLlbsJ9ZkBik0QV2GMfdv4mRpNXrWXsxjaLvNVDtTIrWyY23IT9Q==
-X-Received: by 2002:a05:620a:1a07:b0:8b2:e7d8:d630 with SMTP id af79cd13be357-8c37ebcd17cmr60238785a.72.1767636135387;
-        Mon, 05 Jan 2026 10:02:15 -0800 (PST)
+        bh=RNoRn5xn2oaDC2IYtqhOSxgeOL9snP+iopTS7Mlk9mY=;
+        b=ETp7UEEMZPa3W6jDdSb38ilvFb7zbfq6nP0eFP2YaZ0jb1Ev785d4dWPFsJy5Vi1r5
+         KU5t/wen4xQyUdoi6/QsNe1nYe9GFkOp4hlQKOi8lyyQJTg6Og7zHUyj+ULor8nj2pEN
+         EnKrBYAIRF10Jn0BbnBm1AwSILrXUyhBwluO8EbgBnHH2aHXoyFM2eUovCNZxkOhvByp
+         ammyxThJiwIwVik5T3eVF7rto3FpWDR66V0ijuruJkUFDj9QiMDY5Lj3C/LEmdV1ZY+l
+         aRV9IsG7VajsSSEEPIpE0eW0u2jBtCvSoF+ddjM8RzNplLzGk4qwclV+9q0qiHbcgXVf
+         d5rw==
+X-Forwarded-Encrypted: i=1; AJvYcCWs+waJbYD3L5WvVbS7FU0fEq6abILk2oiVeqGtI2nCFzDQ5QInsaxEkHQ2yYnDvXMX5KeAwg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyimLxz6JXJ5YTARP5d2QD6m2w2QEAsmpOtKrNAud/zuAHWTKD6
+	k7n3UhQ37Ibh6cfHrcy3XBNGh5lWerY8eMjPMdPN/AxPlcu130gHGNt/WWkUVTXSU+o=
+X-Gm-Gg: AY/fxX5BnnC/Wpmaff0pUKTA4/0mLPvWsE/SD4SGnGGQThSKiUzn1sY50+t2miLcjA2
+	mCRXWcayjMY1JR1TTsL2PSGCQqbzVcXZW4AF9Oa4YAN73+DdOrHFSHLhGDhy8JxrHmzwjMwh10C
+	5hJUvekjR22YCNl4JxGzMk7kJeMVPIaEvkORUZx0cCpY/HCoDBgmp8h/b5FtuYtXV91dOk3H7fZ
+	SNbKMDv3DqeWGeU89Kb0Vs7wa8UCnrud4hHg70zgLa3JyAKR3ObdhVo+RB2hbW4z21iH3u/g/Zb
+	x1TSkNaW4PjHb1CQCGQHSIzK58jKSgS6pV5iuHhKavRtluoYOw7RetpacVYTBA/lzDTjdAW8asK
+	jP1UP2OI7xyW7AP1WBw/3iyyn2IDAQsHy3Hg+EXkxOScGw1YaB2lJ/w9IlDP3Xpgvnnr+VsjSOQ
+	Af7kJNuB7mp9NPpU+B1ieX+6EG/LS3HfxaUFAA25IUNan3psYBWRDn0lKgoWr9ZhD9x53yppU67
+	yVT3Q==
+X-Google-Smtp-Source: AGHT+IG3qj9OottVfFav2AogQtpKbbanpaAujF7w0LodjQe+bZqnAMPWgOXRjmlvmo/4kgErrL/wuw==
+X-Received: by 2002:ac8:5f09:0:b0:4ff:519c:f478 with SMTP id d75a77b69052e-4ffa83bc599mr1094121cf.1.1767636722055;
+        Mon, 05 Jan 2026 10:12:02 -0800 (PST)
 Received: from ziepe.ca (hlfxns017vw-142-162-112-119.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.112.119])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-8c37f51bf8csm677385a.28.2026.01.05.10.02.14
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-4ffa7056f18sm3363511cf.1.2026.01.05.10.12.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Jan 2026 10:02:14 -0800 (PST)
+        Mon, 05 Jan 2026 10:12:01 -0800 (PST)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1vcouD-00000001Bdl-0wbb;
-	Mon, 05 Jan 2026 14:02:13 -0400
-Date: Mon, 5 Jan 2026 14:02:13 -0400
+	id 1vcp3g-00000001BhV-2dYQ;
+	Mon, 05 Jan 2026 14:12:00 -0400
+Date: Mon, 5 Jan 2026 14:12:00 -0400
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Christian Schrefl <chrisi.schrefl@gmail.com>
-Cc: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
-	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
-	Rob Clark <robin.clark@oss.qualcomm.com>,
-	Matti Vaittinen <mazziesaccount@gmail.com>,
-	Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
-	linux-arm-msm@vger.kernel.org, Rudraksha Gupta <guptarud@gmail.com>
-Subject: Re: [REGRESSION] qcom: iommu: nullpointer dereference on boot on
- apq8064
-Message-ID: <20260105180213.GG125261@ziepe.ca>
-References: <569d7de2-cfcd-4d28-8bbf-14a0179f665e@gmail.com>
+To: Dmytro Maluka <dmaluka@chromium.org>
+Cc: David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>, iommu@lists.linux.dev,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
+	"Vineeth Pillai (Google)" <vineeth@bitbyteword.org>,
+	Aashish Sharma <aashish@aashishsharma.net>,
+	Grzegorz Jaszczyk <jaszczyk@chromium.org>,
+	Chuanxiao Dong <chuanxiao.dong@intel.com>,
+	Kevin Tian <kevin.tian@intel.com>
+Subject: Re: [PATCH v2 0/5] iommu/vt-d: Ensure memory ordering in context &
+ root entry updates
+Message-ID: <20260105181200.GH125261@ziepe.ca>
+References: <20251227175728.4358-1-dmaluka@chromium.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -83,57 +87,37 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <569d7de2-cfcd-4d28-8bbf-14a0179f665e@gmail.com>
+In-Reply-To: <20251227175728.4358-1-dmaluka@chromium.org>
 
-On Mon, Dec 29, 2025 at 11:26:42PM +0100, Christian Schrefl wrote:
-> Hi everyone,
+On Sat, Dec 27, 2025 at 06:57:23PM +0100, Dmytro Maluka wrote:
+> As discussed in [1], we don't currently prevent the compiler from
+> reordering memory writes when updating context entries, which is
+> potentially dangerous, as it may cause setting the present bit (i.e.
+> enabling DMA translation for the given device) before finishing setting
+> up other bits in the context entry (and thus creating a time window when
+> a DMA from the device may result in an unpredicted behavior).
 > 
-> I've found a panic on boot with v6.19-rc3 on the asus-nexus7-flo tablet with a APQ8064 CPU.
+> Fix this in the same way as how this is already addressed for PASID
+> entries, i.e. by using READ_ONCE/WRITE_ONCE in the helpers used for
+> setting individual bits in context entries, so that memory writes done
+> by those helpers are ordered in relation to each other (plus, prevent
+> load/store tearing and so on).
 > 
-> I've bisected it down to commit bcb81ac6ae3c ("iommu: Get DT/ACPI parsing into the proper 
-> probe path"). Reverting the drivers/iommu/iommu.c changes (removing the added if block)
-> fixes the crash, but that presumably exists for a reason.
-> The diff for the fix:
-> ```
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 2ca990dfbb88..9f32d70b207d 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -453,14 +453,6 @@ static int iommu_init_device(struct device *dev)
->          * already having a driver bound means dma_configure has already run and
->          * found no IOMMU to wait for, so there's no point calling it again.
->          */
-> -       if (!dev->iommu->fwspec && !dev->driver && dev->bus->dma_configure) {
-> -               mutex_unlock(&iommu_probe_device_lock);
-> -               dev->bus->dma_configure(dev);
-> -               mutex_lock(&iommu_probe_device_lock);
-> -               /* If another instance finished the job for us, skip it */
-> -               if (!dev->iommu || dev->iommu_group)
-> -                       return -ENODEV;
-> -       }
->         /*
->          * At this point, relevant devices either now have a fwspec which will
->          * match ops registered with a non-NULL fwnode, or we can reasonably
-> ```
+> While at it, similarly paranoidally fix updating root entries as well:
+> use WRITE_ONCE to make sure that the present bit is set atomically
+> together with the context table address bits, not before them.
 
-> [    5.900971] Call trace:
-> [    5.900999]  qcom_iommu_of_xlate from of_iommu_xlate+0x7c/0x9c
+The PASID entries should not be manipulated 'livel' in a haphazard way
+like this in the first place!
 
-Did you look at what line in qcom_iommu_of_xlate() is crashing with
-NULL pointer?
+Like AMD and ARM build the new PASID entry on the stack and then it
+should be copied to the DMA'able memory in a way that is consistent
+with the HW's atomicity granual, paying attention not to 'tear' it.
 
-It wasn't so obvious to me what it could be..
+This manipulate-in-place is just asking for trouble, and can never
+support replace or full viommu requirements.. :\
 
-Though this looks really weird:
-
-        struct msm_iommu_ctx_dev *master = dev_iommu_priv_get(dev);
-        int sid;
-
-        if (list_empty(&(*iommu)->ctx_list)) {
-                master = kzalloc(sizeof(*master), GFP_ATOMIC);
-
-So maybe master is NULL and !list_empty()? It is really confused, it
-looks like it only adds exactly one entry to the ctx_list? Why have
-the list?
+So while it is perhaps an improvement to do this work, it would be
+better to fix the root cause issue if someone has time..
 
 Jason
