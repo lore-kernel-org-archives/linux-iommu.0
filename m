@@ -1,52 +1,49 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 356E62836AF;
-	Mon,  5 Jan 2026 22:58:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF3D130214B;
+	Mon,  5 Jan 2026 22:58:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767653932; cv=none; b=M6q1EhzhMORYgSpdOKPfYamCe8AM9NxrA7WMolzaBdcl/bkiIAu964CTwADp9ri45obl4ow/5qYGydYss5iROS7lg+RDGA6J2z2bCq71accc/dO30UAhyJP3hhs56AFvEXfpQpPl6CEnomKxCwH+7vuKm2GOCyYMBX3zrzegBW4=
+	t=1767653935; cv=none; b=bdZsUKGiM2hBvVySxYizX0klqyeGDkJcAP/huRySagmFb/BUVBPLlb20oSQDzFeIq1dgIGedGIxKx8icPi1sUz0ABRSRpcOEe+K3R59zsu2ejMF55XCzevGM/llHvfax113Ve751mwuL+WD54BD+URmVxgC6WxmqvSMVkxq257I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767653932; c=relaxed/simple;
-	bh=cLXwZ1WD6XB2ttdqYuMSJm8C7jJVWMio9fAwVSYUEI0=;
+	s=arc-20240116; t=1767653935; c=relaxed/simple;
+	bh=za7YNt3enxyPJ4YpLu4GYj73La7HrT7JJAIZfsfnNqc=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=sBM7lagZ3wWUEQO8StlO2GQwpaV0Bimo5cNA4dWo2VzuOTNV8vSqLLoABFFMxUaAI0OfL8/phga3LD0BJE1kOilKOTgbmA3cAZQ5w5zg4PM1y88p9nnAx5B5ig0kaLeWZbFxgB44vbohpwaPyBSXk0b+o8oDlSBV6FVFawOu9wE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=F0Z+6WzG; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=aIrdmAY85Fn+zm8JHvka7FfrWrVXmD51/ZYteEZ+MpvkQWfO+PHq51AfcsDOC6iTHqv5JwcTst7qAVnVIipmokg37rMbKPGoYyjEN/Dv/URfyEVUWkFXrrQ7CiZVlC/r7RHEQHAexzmU1bXdpyks7Kzd/U+bDkgWggIZSITeVC0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mGk9/lU3; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="F0Z+6WzG"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C370C116D0;
-	Mon,  5 Jan 2026 22:58:48 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mGk9/lU3"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52DAAC19425;
+	Mon,  5 Jan 2026 22:58:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1767653931;
-	bh=cLXwZ1WD6XB2ttdqYuMSJm8C7jJVWMio9fAwVSYUEI0=;
+	s=k20201202; t=1767653934;
+	bh=za7YNt3enxyPJ4YpLu4GYj73La7HrT7JJAIZfsfnNqc=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=F0Z+6WzG0T5ybYBS8g+X6WeKSBsTKdT3JubTbsUPjqPx59Wq92GnP95rJWZLcE1Ys
-	 W2E9ZKzPlZFc2V5QznkfqGrK7GO3UZDLk9xq5FMyA9pk/lCMmnRHERgX+IRQ0yrAZg
-	 zj4EJktYpKlAJ1ZT7JlviGUF11FflI6dKpf3pzdS5BFNLOcdCiAM+7YQnpHPYQxmiY
-	 ZgTK814WYo3bQ5aQmH3f7xN26vfC9DpW3bkU6QqDHgGtsbXikAX8J2AMAVBsJH1RZY
-	 BSDO33GSfumjwXpr8eOeSTIdN8XukvMd7VoDbvhb8koa7+cA7rHVJOHxQeFuQI4u9p
-	 +sB26HE0CAKyQ==
+	b=mGk9/lU3+sIOcpG1lUUOhhj5clSduvESN/PzA7SkfjPjMMs0N+IM1m0lV32EYck9w
+	 R5jRT2ogLnS1ovYkY++wM71KNkVgMKwgHkWv99OgCQyiuc+AenyBaI5M+LSrq03+zv
+	 +/Lh8XOUbC0c+OOtMSbPXesrVfbubLc+7ZDwLHnTwx8Ad+N17e5NEJSkDL1Izy8bUj
+	 4BurhbCbQl9ClVrX1M0gwFkfQABa1rTJPaH4BXR50xCOhfZC6+yO5a7AkuKBICTmSf
+	 p8slZ1r1aI2JSvnyICLQ09QUn+rXrlgUOoAMf2IWKby92WusmAF20XVOIu2eNT3LtW
+	 /xv6TBB2SmVOQ==
 From: Will Deacon <will@kernel.org>
-To: linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev,
-	Joerg Roedel <joro@8bytes.org>,
-	Mostafa Saleh <smostafa@google.com>,
+To: Rob Clark <robin.clark@oss.qualcomm.com>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Jacob Pan <jacob.pan@linux.microsoft.com>
+	Joerg Roedel <joro@8bytes.org>,
+	iommu@lists.linux.dev,
+	linux-arm-msm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 Cc: catalin.marinas@arm.com,
 	kernel-team@android.com,
-	Will Deacon <will@kernel.org>,
-	Zhang Yu <zhangyu1@linux.microsoft.com>,
-	Alexander Grest <Alexander.Grest@microsoft.com>,
-	Jean-Philippe Brucker <jpb@kernel.org>
-Subject: Re: [PATCH v5 0/3] SMMU v3 CMDQ fix and improvement
-Date: Mon,  5 Jan 2026 22:58:23 +0000
-Message-ID: <176764512514.1439618.10919808867972292538.b4-ty@kernel.org>
+	Will Deacon <will@kernel.org>
+Subject: Re: [PATCH] iommu: arm-smmu: Simplify with scoped for each OF child loop
+Date: Mon,  5 Jan 2026 22:58:24 +0000
+Message-ID: <176764815322.1453267.5338402258433264092.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20251208212857.13101-1-jacob.pan@linux.microsoft.com>
-References: <20251208212857.13101-1-jacob.pan@linux.microsoft.com>
+In-Reply-To: <20260102125003.64962-2-krzysztof.kozlowski@oss.qualcomm.com>
+References: <20260102125003.64962-2-krzysztof.kozlowski@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -56,21 +53,16 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 
-On Mon, 08 Dec 2025 13:28:54 -0800, Jacob Pan wrote:
-> These two patches address logic issues that occur when SMMU CMDQ spaces
-> are nearly exhausted at runtime. The problems become more pronounced
-> when multiple CPUs submit to a single queue, a common scenario under SVA
-> when shared buffers (used by both CPU and device) are being unmapped.
+On Fri, 02 Jan 2026 13:50:04 +0100, Krzysztof Kozlowski wrote:
+> Use scoped for-each loop when iterating over device nodes to make code a
+> bit simpler.
 > 
 > 
-> Thanks,
-> 
-> [...]
 
-Applied third patch to iommu (arm/smmu/updates), thanks!
+Applied to iommu (arm/smmu/updates), thanks!
 
-[3/3] iommu/arm-smmu-v3: Improve CMDQ lock fairness and efficiency
-      https://git.kernel.org/iommu/c/df180b1a4cc5
+[1/1] iommu/qcom: Simplify with scoped for each OF child loop
+      https://git.kernel.org/iommu/c/2026159372bb
 
 Cheers,
 -- 
