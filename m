@@ -1,222 +1,120 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+Received: from mail-qk1-f176.google.com (mail-qk1-f176.google.com [209.85.222.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E71F341056
-	for <iommu@lists.linux.dev>; Mon,  5 Jan 2026 13:40:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A2D62DF131
+	for <iommu@lists.linux.dev>; Mon,  5 Jan 2026 14:53:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767620439; cv=none; b=j5NxCnL0aEobZpxOz15lNRiij4nE0LqpmNw/kkGcMNlgFS/50ctjQ48cmOmvcFbxE/ONOO3zuFeWzQeSz/G8Z+fAb8C0QxsXcPEDa0b1lk+er49psvcwQW7AK1UkFK4QVb0GsfC0lgK6XjPVK7ecBv1ZgOLOeCYk9jXqK2N8dGo=
+	t=1767624806; cv=none; b=FmHS9TGA+m5LJoeRGo5QdXDsErZSuEzCTyTJeeKheeiBRbe/q50xag5KP0AK4EqufgS9AnPRlxYJIe/rQM4fdjWb1FrPNU6fndsjLdvmer6Mh4yPJ+gzlmpj98Js9SeaV7USmjez+y5+u6NBl81KLS76CsowONoSSJUP6j4T4ms=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767620439; c=relaxed/simple;
-	bh=x4FbGO9rb3oDBd7srLGxGoyKvyyHdSRpv19OZNd+OHs=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=XWBlQ0xYP3UJ5QY8dMxkUjrGzHsdbmWR0NnRlMkKhU6QMzV+r5a4Tyg1NUiFCMh2xHmGd1LsMOKD6UJYPWIYRaIc8BYtFeQNd2TE3dq1jcaJTlCUWyxKBWOxuZ3Tg2FhBS3y8rUnYwhLhO7DKDW5AuCGK2qDex3oVjix8/L6VuU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=YVpd+4f0; arc=none smtp.client-ip=209.85.128.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	s=arc-20240116; t=1767624806; c=relaxed/simple;
+	bh=0VJAy1LxeO1DoMMmQqr6qf7GwbBJdW99Z0xb4rwj9wE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=F7FlUSOpMeiZaF0MyDO8vFxksKS5r4AsqfyjN9LaSGiSkyRqtuHzu7/ldr6iQCAcWafF3WPZr2omKce5Nxv5E1zIyYbtii40ZO5uvbLq9k4af05Usjg1JdZUmR0z2uBtBHqqgqMsInlnb7+TvPJtuAFcU7jVFQCGExoLMeZjglQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Mf4ST3sl; arc=none smtp.client-ip=209.85.222.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="YVpd+4f0"
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-4779d8286d8so10634725e9.0
-        for <iommu@lists.linux.dev>; Mon, 05 Jan 2026 05:40:36 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Mf4ST3sl"
+Received: by mail-qk1-f176.google.com with SMTP id af79cd13be357-8b2148ca40eso2278590685a.1
+        for <iommu@lists.linux.dev>; Mon, 05 Jan 2026 06:53:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1767620435; x=1768225235; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=f1KqtsDg02Q4tg0OrM0LKqtAMxJWRmTEsyj+AQ7lEeQ=;
-        b=YVpd+4f0mQ9AKbwrBnByrcEnPiEAPkdJqBb0fUcIW+9WnYnHrTG23Wt65WdDSlMFm3
-         mIrN9UR7ouemMl0mQYr8gOgJa8lKgOENnWT8ToWBXoiLGie+/RHE/HxxttU/nAPLVItW
-         4aP7cTJe5vnnO/wYhp1A+EU6oSmdqKRcUE0ZrQ5+RdrDeOc1XqgR3bIcJxdp7f2m6lv3
-         23CeROYsXYqHb8Oe716UAK//ULXd2wAVSEyCwGP6U2NYbiQfl3yDeCIa/HrcbDSkIw4/
-         vw4SoBlPTC//AC+Z9gp8/9YQOALOaTNm2XgfCrqU8h6K2XqjCjlLclsqd3N5mcPmYteb
-         RQBg==
+        d=ziepe.ca; s=google; t=1767624803; x=1768229603; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=0VJAy1LxeO1DoMMmQqr6qf7GwbBJdW99Z0xb4rwj9wE=;
+        b=Mf4ST3slFWs+QV/gmpPahBeQSph/p3ge7RLC456vddZVJCpzK5mnzhUGLSgH0ZdZYW
+         4FqsGKZuoSaEGTYm2rycr7FPxZSpwpfz1iH3dumm191Vs6Sbuch55yquci2hSp5tUosq
+         GYHTFjwvJME29s7ZGOEx+LQIlf3Iree8t1YBxSyARndNN7Tm1q5w5nVVj7YdEPIl/tif
+         rtl7PQF7ORbjbOFyvZi6HjxVqfNWw8GUmXvMCzC3U437YWMejM/wb19+cqDSC2zFbIIC
+         NePQuGKwjUOZBzuAwsqcrmJ4zu616fbZqJFutJts9paYEQcpK6jygpCnvai6JI8bNf25
+         j/Lw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1767620435; x=1768225235;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=f1KqtsDg02Q4tg0OrM0LKqtAMxJWRmTEsyj+AQ7lEeQ=;
-        b=XCKQYCTnYNsqvd37MlvhsVAbAMaUJpuDFkzQEfImpHN/dJn0hsOp4mqsM3EljD4GeX
-         OJD35EFkdnXuakUxEqZl3PK1ETwBOGXATFZHtL1lj9n4SFbGraIQthnezAN3tJ08kiGx
-         gHiJo9X9qbFGI4rF0qiIUHgqjA+X+vt/RMd3B6+98azd7xwaiKwohgKRVujWSUmc2U3Y
-         BJuCSL3SCH/K95wtgJB/rBJm6xRXvxdUwBvTob9resG95HdEh0ofjvZ6UrwwdO5MQ8FQ
-         s42cJ9S6/Ua+yG2gvpY7pNlIPAcrxLNuGdrBD7BMhUhPafPU6cKMhYAAJfeDOXg7SlxS
-         UkkA==
-X-Forwarded-Encrypted: i=1; AJvYcCWqUYmAu/1oclWYF8o9bd3r1nzdfCWzu77K86b3OOVwqfkZvt5TP2JT4Otw3TzR+mRi2YFxHQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx7SNc/JqTHBFx0JM3z9ZJBSW7Xssbz2fpM9cFL9L1g9V7mTzzM
-	NN3wWx/09pXLjkdL++Jf44I0kUng1xiIaLnh+zSqlhMgi2eR9/TX7hoWh9LMYlOfZog=
-X-Gm-Gg: AY/fxX6XJ5LBOrvgTr7OlW7UHT7vXsgvgPTFzezUaf1w9ieUY0xyDboAkGUKRutwnfO
-	P7rwwZcjCUbcK4bJe87gDouUnMVnItrn+27PidsoWahIe2NN/pCcsfgp9/r6ou1aw80f+OAfLT2
-	uY7EA2XW4UpgtpmDTxr0FwtN9DO/Fx2JYXtsQeiLnLXW2dNvIJPp5OzcDidq1N9a1VelnKBlxE0
-	4YkmWuldOQI8sn0bMiD94NfNxSiLoLZmohDISWA4mr9XceVTJa1anpZ67gfP84o2GreAOBDZJXX
-	nn7baI3SslGatK8s71CXunX9paiHFk0YJVQerbJKrUEH/0BlUDYUO7HG7ik3ANFynak8A9ghB+s
-	l/8/u1T27GniVF7gLyKbG5IRPwEb3p3+I+POUBA5TpVWmEsomfiuy+NGX3Rgde+7R80/tzLJoXw
-	uquwN4yHgvF3Uvn5lUP+EQ5owdRQC76TOOkw8osTEGK8Exs9ZpZ3C/1HHgUBSmsHhZZl/R3d6tK
-	qN7
-X-Google-Smtp-Source: AGHT+IFwXSkFSnAzDpXmvBfpaag5Ig2x/hY7lR/fPaiKG8l/aTMnGjVbJNKYUdmZgkyBxJqwrNsd/A==
-X-Received: by 2002:a05:600c:4ed2:b0:477:9c9e:ec7e with SMTP id 5b1f17b1804b1-47d19597517mr371677315e9.6.1767620434763;
-        Mon, 05 Jan 2026 05:40:34 -0800 (PST)
-Received: from mordecai (dynamic-2a00-1028-83b8-1e7a-3010-3bd6-8521-caf1.ipv6.o2.cz. [2a00:1028:83b8:1e7a:3010:3bd6:8521:caf1])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-47d6be2ce32sm61878015e9.2.2026.01.05.05.40.33
+        d=1e100.net; s=20230601; t=1767624803; x=1768229603;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=0VJAy1LxeO1DoMMmQqr6qf7GwbBJdW99Z0xb4rwj9wE=;
+        b=Fm3aGj/WJIB0YzaEMXuHPLOr5tSaJmtbRpfAz7VZJ/YTHkA4WodXncz25fbuDAjpjl
+         q5aPmi2tAZxOPAC0s0estxM4O6SGehYKakguFC4b68n/Is2ITbnJNVDSrNre/cCFbp0+
+         olEBTZNdtD5jRI3YaDul7CR9MLwVXQU7kzWuk+fiYpfoy3DYiT5bRdunkrw+M0t7Hve1
+         U2XbgR1rMPub6sczLCsbUllaQXK8In4HaK6/vyPtSUZQadMpwopRMxNf2QQcobU9ayla
+         jJxHRUsgRgN8pEKQGWhXYkvEstMQYglHQYpSGnTVB3P7e+aFh0JKubm4D+npjD4On473
+         wlyg==
+X-Forwarded-Encrypted: i=1; AJvYcCVP+yqzu0AJg+QPZT+LKbQcKyvN+mHXXdDCmmHLthV1Qmb+Wwe7mJB06RVacP9JapvwskoOtQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwPziJ9fnspTJqzzHjnr2YOyuLMb2w6NMsGUlZijobvZW5ZuFQd
+	RjmOe63wNolRUd1nLglMv9CSJiTniGej8Bbl7ymTJgQzLUhP1zjQvskovPMRxRr0Vu0=
+X-Gm-Gg: AY/fxX5n7e7/gSx/hX5XtiM4cUZGiWFUDHa9wfCIPNQLlU8pVbTelJAiuuUuAqI5nnp
+	2SHLpMuV76v+mKEGhRV//2OU+OpPmu9KHpWfWQZG4BlFOjla6mAlCq+iIg0dmNSBBzITv2fZawn
+	ShhUUZrYx9M0DialNoSXGG41l5Oh+8lcN2c4woGWvs9NXanjcq7iVS89USNZbgNmgdZe0FoCwBk
+	GsFCfafjhZRj+juZjJ7HzTLkRrBQyZtNhJ6a53vuu1B879iwjE+9vvxQtmnlpjBrCrNmyymqiQp
+	orDR3M2pd+PnBBQD9ifJ8g8xpIpe6GHrOkMU3WWwEreI/9kMKvI30Em/e3WaaU7bPZlNvP/l5D/
+	3damMW/5UrgBErXHMN7a8WKwlWzO+m3lZOfKhxDP4PxHFwiGcf9TGuc2tg5x5/nzMA2LUwIjTCp
+	QNOr9yDIjryZILOkn3XP7rG3XRi69xrEU+OhYMMBtpPblyOR9lzgxz6KDCgH1Nsg7/a5M=
+X-Google-Smtp-Source: AGHT+IFUt6wPvI9u2rR/xi8Np2VLLWZzGxeI/Po3U8DHhN0nYQEKldceIemvjTqj2Iro8b99/psoBA==
+X-Received: by 2002:a05:620a:4611:b0:89f:19e:46fa with SMTP id af79cd13be357-8c08fab5a22mr6994767385a.20.1767624803162;
+        Mon, 05 Jan 2026 06:53:23 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-162-112-119.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.112.119])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-8c0973f28e3sm3963769885a.45.2026.01.05.06.53.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Jan 2026 05:40:34 -0800 (PST)
-Date: Mon, 5 Jan 2026 14:40:31 +0100
-From: Petr Tesarik <ptesarik@suse.com>
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: linux-kernel@vger.kernel.org, Cong Wang <xiyou.wangcong@gmail.com>,
- Jonathan Corbet <corbet@lwn.net>, Olivia Mackall <olivia@selenic.com>,
- Herbert Xu <herbert@gondor.apana.org.au>, Jason Wang <jasowang@redhat.com>,
- Paolo Bonzini <pbonzini@redhat.com>, Stefan Hajnoczi <stefanha@redhat.com>,
- Eugenio =?UTF-8?B?UMOpcmV6?= <eperezma@redhat.com>, "James E.J. Bottomley"
- <James.Bottomley@hansenpartnership.com>, "Martin K. Petersen"
- <martin.petersen@oracle.com>, Gerd Hoffmann <kraxel@redhat.com>, Xuan Zhuo
- <xuanzhuo@linux.alibaba.com>, Marek Szyprowski <m.szyprowski@samsung.com>,
- Robin Murphy <robin.murphy@arm.com>, Stefano Garzarella
- <sgarzare@redhat.com>, "David S. Miller" <davem@davemloft.net>, Eric
- Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo
- Abeni <pabeni@redhat.com>, Simon Horman <horms@kernel.org>, Leon Romanovsky
- <leon@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>, Bartosz Golaszewski
- <brgl@kernel.org>, linux-doc@vger.kernel.org, linux-crypto@vger.kernel.org,
- virtualization@lists.linux.dev, linux-scsi@vger.kernel.org,
- iommu@lists.linux.dev, kvm@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v2 05/15] dma-debug: track cache clean flag in entries
-Message-ID: <20260105144031.2520c81b@mordecai>
-In-Reply-To: <20260105073621-mutt-send-email-mst@kernel.org>
-References: <cover.1767601130.git.mst@redhat.com>
-	<0ffb3513d18614539c108b4548cdfbc64274a7d1.1767601130.git.mst@redhat.com>
-	<20260105105433.5b875ce3@mordecai>
-	<20260105073621-mutt-send-email-mst@kernel.org>
-X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-suse-linux-gnu)
+        Mon, 05 Jan 2026 06:53:22 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1vclxR-00000001ANB-23EY;
+	Mon, 05 Jan 2026 10:53:21 -0400
+Date: Mon, 5 Jan 2026 10:53:21 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Dawei Li <dawei.li@linux.dev>, will@kernel.org, joro@8bytes.org,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, set_pte_at@outlook.com,
+	stable@vger.kernel.org
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Maintain valid access attributes for
+ non-coherent SMMU
+Message-ID: <20260105145321.GD125261@ziepe.ca>
+References: <20251229002354.162872-1-dawei.li@linux.dev>
+ <c25309d1-0424-495e-82af-d025b3e6d8c8@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c25309d1-0424-495e-82af-d025b3e6d8c8@arm.com>
 
-On Mon, 5 Jan 2026 07:37:31 -0500
-"Michael S. Tsirkin" <mst@redhat.com> wrote:
+On Mon, Jan 05, 2026 at 01:33:34PM +0000, Robin Murphy wrote:
+> The assumption is that if the SMMU is not I/O-coherent, then the Normal
+> Cacheable attribute will inherently degrade to a non-snooping (and thus
+> effectively Normal Non-Cacheable) one, as that's essentially what AXI will
+> do in practice, and thus the attribute doesn't actually matter all that much
+> in terms of functional correctness. If the SMMU _is_ capable of snooping but
+> is not described as such then frankly firmware is wrong.
 
-> On Mon, Jan 05, 2026 at 10:54:33AM +0100, Petr Tesarik wrote:
-> > On Mon, 5 Jan 2026 03:23:10 -0500
-> > "Michael S. Tsirkin" <mst@redhat.com> wrote:
-> >   
-> > > If a driver is buggy and has 2 overlapping mappings but only
-> > > sets cache clean flag on the 1st one of them, we warn.
-> > > But if it only does it for the 2nd one, we don't.
-> > > 
-> > > Fix by tracking cache clean flag in the entry.
-> > > 
-> > > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> > > ---
-> > >  kernel/dma/debug.c | 27 ++++++++++++++++++++++-----
-> > >  1 file changed, 22 insertions(+), 5 deletions(-)
-> > > 
-> > > diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-> > > index 7e66d863d573..43d6a996d7a7 100644
-> > > --- a/kernel/dma/debug.c
-> > > +++ b/kernel/dma/debug.c
-> > > @@ -63,6 +63,7 @@ enum map_err_types {
-> > >   * @sg_mapped_ents: 'mapped_ents' from dma_map_sg
-> > >   * @paddr: physical start address of the mapping
-> > >   * @map_err_type: track whether dma_mapping_error() was checked
-> > > + * @is_cache_clean: driver promises not to write to buffer while mapped
-> > >   * @stack_len: number of backtrace entries in @stack_entries
-> > >   * @stack_entries: stack of backtrace history
-> > >   */
-> > > @@ -76,7 +77,8 @@ struct dma_debug_entry {
-> > >  	int		 sg_call_ents;
-> > >  	int		 sg_mapped_ents;
-> > >  	phys_addr_t	 paddr;
-> > > -	enum map_err_types  map_err_type;
-> > > +	enum map_err_types map_err_type;  
-> > 
-> > *nitpick* unnecessary change in white space (breaks git-blame).
-> > 
-> > Other than that, LGTM. I'm not formally a reviewer, but FWIW:
-> > 
-> > Reviewed-by: Petr Tesarik <ptesarik@suse.com>
-> > 
-> > Petr T  
-> 
-> 
-> I mean, yes it's not really required here, but the padding we had before
-> was broken (two spaces not aligning to anything).
+Sadly I am aware of people doing this.. Either a HW bug or some other
+weird issue forces the FW to set a non-coherent FW attribute even
+though the HW is partially or fully able to process cachable AXI
+attributes.
 
-Oh, you're right! Yes, then let's fix it now, because you touch the
-neighbouring line.
+It is reasonable that Linux will set the attributes properly based on
+what it is doing. Setting the wrong attributes and expecting the HW to
+ignore them seems like a hacky direction.
 
-Sorry for the noise.
+I didn't see anything in the spec that says COHACC means the memory
+attributes are ignored and forced to non-coherent, even though that is
+the current assumption of the driver.
 
-Petr T
+> If prople have a good reason for wanting to use a coherent SMMU
+> non-coherently (and/or control of allocation hints), then that should really
+> be some kind of driver-level option - it would need a bit of additional DMA
+> API work (which has been low down my to-do list for a few years now...), but
+> it's perfectly achievable, and I think it's still preferable to abusing the
+> COHACC override in firmware.
 
-> > > +	bool		 is_cache_clean;
-> > >  #ifdef CONFIG_STACKTRACE
-> > >  	unsigned int	stack_len;
-> > >  	unsigned long	stack_entries[DMA_DEBUG_STACKTRACE_ENTRIES];
-> > > @@ -472,12 +474,15 @@ static int active_cacheline_dec_overlap(phys_addr_t cln)
-> > >  	return active_cacheline_set_overlap(cln, --overlap);
-> > >  }
-> > >  
-> > > -static int active_cacheline_insert(struct dma_debug_entry *entry)
-> > > +static int active_cacheline_insert(struct dma_debug_entry *entry,
-> > > +				   bool *overlap_cache_clean)
-> > >  {
-> > >  	phys_addr_t cln = to_cacheline_number(entry);
-> > >  	unsigned long flags;
-> > >  	int rc;
-> > >  
-> > > +	*overlap_cache_clean = false;
-> > > +
-> > >  	/* If the device is not writing memory then we don't have any
-> > >  	 * concerns about the cpu consuming stale data.  This mitigates
-> > >  	 * legitimate usages of overlapping mappings.
-> > > @@ -487,8 +492,16 @@ static int active_cacheline_insert(struct dma_debug_entry *entry)
-> > >  
-> > >  	spin_lock_irqsave(&radix_lock, flags);
-> > >  	rc = radix_tree_insert(&dma_active_cacheline, cln, entry);
-> > > -	if (rc == -EEXIST)
-> > > +	if (rc == -EEXIST) {
-> > > +		struct dma_debug_entry *existing;
-> > > +
-> > >  		active_cacheline_inc_overlap(cln);
-> > > +		existing = radix_tree_lookup(&dma_active_cacheline, cln);
-> > > +		/* A lookup failure here after we got -EEXIST is unexpected. */
-> > > +		WARN_ON(!existing);
-> > > +		if (existing)
-> > > +			*overlap_cache_clean = existing->is_cache_clean;
-> > > +	}
-> > >  	spin_unlock_irqrestore(&radix_lock, flags);
-> > >  
-> > >  	return rc;
-> > > @@ -583,20 +596,24 @@ DEFINE_SHOW_ATTRIBUTE(dump);
-> > >   */
-> > >  static void add_dma_entry(struct dma_debug_entry *entry, unsigned long attrs)
-> > >  {
-> > > +	bool overlap_cache_clean;
-> > >  	struct hash_bucket *bucket;
-> > >  	unsigned long flags;
-> > >  	int rc;
-> > >  
-> > > +	entry->is_cache_clean = !!(attrs & DMA_ATTR_CPU_CACHE_CLEAN);
-> > > +
-> > >  	bucket = get_hash_bucket(entry, &flags);
-> > >  	hash_bucket_add(bucket, entry);
-> > >  	put_hash_bucket(bucket, flags);
-> > >  
-> > > -	rc = active_cacheline_insert(entry);
-> > > +	rc = active_cacheline_insert(entry, &overlap_cache_clean);
-> > >  	if (rc == -ENOMEM) {
-> > >  		pr_err_once("cacheline tracking ENOMEM, dma-debug disabled\n");
-> > >  		global_disable = true;
-> > >  	} else if (rc == -EEXIST &&
-> > > -		   !(attrs & (DMA_ATTR_SKIP_CPU_SYNC | DMA_ATTR_CPU_CACHE_CLEAN)) &&
-> > > +		   !(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
-> > > +		   !(entry->is_cache_clean && overlap_cache_clean) &&
-> > >  		   !(IS_ENABLED(CONFIG_DMA_BOUNCE_UNALIGNED_KMALLOC) &&
-> > >  		     is_swiotlb_active(entry->dev))) {
-> > >  		err_printk(entry->dev, entry,  
-> 
+IMHO, this is a different topic, and something that will probably
+become interesting this year. I'm aware of some HW/drivers that needs
+optional non-coherent mappings for isochronous flows - but it is not
+the DMA API that is the main issue but the page table walks :\
 
+Jason
