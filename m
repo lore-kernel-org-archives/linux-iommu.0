@@ -1,272 +1,222 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AB2BD22126C
-	for <iommu@lists.linux.dev>; Mon,  5 Jan 2026 13:33:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E71F341056
+	for <iommu@lists.linux.dev>; Mon,  5 Jan 2026 13:40:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767620028; cv=none; b=oVki4LQ1TWGEA9tNH0HQ6dQYhIVLdF+zfoqUvCVySep++vE1uV/YfkHybRugBeAkGxNqD78dQ2c0DVgQ0OWNuGBNrARu5+YlMqGP/WMgGPrSIoqSgcIp10Jdv1c2DDZ1eapmnejIdhP91jDtGcL3RBvuJfpdAhELulq2kwbJVPI=
+	t=1767620439; cv=none; b=j5NxCnL0aEobZpxOz15lNRiij4nE0LqpmNw/kkGcMNlgFS/50ctjQ48cmOmvcFbxE/ONOO3zuFeWzQeSz/G8Z+fAb8C0QxsXcPEDa0b1lk+er49psvcwQW7AK1UkFK4QVb0GsfC0lgK6XjPVK7ecBv1ZgOLOeCYk9jXqK2N8dGo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767620028; c=relaxed/simple;
-	bh=nCWOgRZIUXW0j0gbppdkor1fXJf+jhSKoSaxKWm7sZY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=cpSVLUBqsCPInTg09vezNj2G2aL88fqts6iRiAN1bm/d2YYAfLmT702cYs0KEdfzJUmQtHN0qqV3n3Whl/7geYqkIgGAGwYAcGvp0nq+tv0DAjxCIIwTTthNf3VzKj2RbOsuWq/zSQWTNb24XvgGav7PMjdXiDkzyWQeH2D8I3c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1F5C8497;
-	Mon,  5 Jan 2026 05:33:38 -0800 (PST)
-Received: from [10.57.49.14] (unknown [10.57.49.14])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A7F733F5A1;
-	Mon,  5 Jan 2026 05:33:42 -0800 (PST)
-Message-ID: <c25309d1-0424-495e-82af-d025b3e6d8c8@arm.com>
-Date: Mon, 5 Jan 2026 13:33:34 +0000
+	s=arc-20240116; t=1767620439; c=relaxed/simple;
+	bh=x4FbGO9rb3oDBd7srLGxGoyKvyyHdSRpv19OZNd+OHs=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=XWBlQ0xYP3UJ5QY8dMxkUjrGzHsdbmWR0NnRlMkKhU6QMzV+r5a4Tyg1NUiFCMh2xHmGd1LsMOKD6UJYPWIYRaIc8BYtFeQNd2TE3dq1jcaJTlCUWyxKBWOxuZ3Tg2FhBS3y8rUnYwhLhO7DKDW5AuCGK2qDex3oVjix8/L6VuU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=YVpd+4f0; arc=none smtp.client-ip=209.85.128.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="YVpd+4f0"
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-4779d8286d8so10634725e9.0
+        for <iommu@lists.linux.dev>; Mon, 05 Jan 2026 05:40:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1767620435; x=1768225235; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=f1KqtsDg02Q4tg0OrM0LKqtAMxJWRmTEsyj+AQ7lEeQ=;
+        b=YVpd+4f0mQ9AKbwrBnByrcEnPiEAPkdJqBb0fUcIW+9WnYnHrTG23Wt65WdDSlMFm3
+         mIrN9UR7ouemMl0mQYr8gOgJa8lKgOENnWT8ToWBXoiLGie+/RHE/HxxttU/nAPLVItW
+         4aP7cTJe5vnnO/wYhp1A+EU6oSmdqKRcUE0ZrQ5+RdrDeOc1XqgR3bIcJxdp7f2m6lv3
+         23CeROYsXYqHb8Oe716UAK//ULXd2wAVSEyCwGP6U2NYbiQfl3yDeCIa/HrcbDSkIw4/
+         vw4SoBlPTC//AC+Z9gp8/9YQOALOaTNm2XgfCrqU8h6K2XqjCjlLclsqd3N5mcPmYteb
+         RQBg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1767620435; x=1768225235;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=f1KqtsDg02Q4tg0OrM0LKqtAMxJWRmTEsyj+AQ7lEeQ=;
+        b=XCKQYCTnYNsqvd37MlvhsVAbAMaUJpuDFkzQEfImpHN/dJn0hsOp4mqsM3EljD4GeX
+         OJD35EFkdnXuakUxEqZl3PK1ETwBOGXATFZHtL1lj9n4SFbGraIQthnezAN3tJ08kiGx
+         gHiJo9X9qbFGI4rF0qiIUHgqjA+X+vt/RMd3B6+98azd7xwaiKwohgKRVujWSUmc2U3Y
+         BJuCSL3SCH/K95wtgJB/rBJm6xRXvxdUwBvTob9resG95HdEh0ofjvZ6UrwwdO5MQ8FQ
+         s42cJ9S6/Ua+yG2gvpY7pNlIPAcrxLNuGdrBD7BMhUhPafPU6cKMhYAAJfeDOXg7SlxS
+         UkkA==
+X-Forwarded-Encrypted: i=1; AJvYcCWqUYmAu/1oclWYF8o9bd3r1nzdfCWzu77K86b3OOVwqfkZvt5TP2JT4Otw3TzR+mRi2YFxHQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yx7SNc/JqTHBFx0JM3z9ZJBSW7Xssbz2fpM9cFL9L1g9V7mTzzM
+	NN3wWx/09pXLjkdL++Jf44I0kUng1xiIaLnh+zSqlhMgi2eR9/TX7hoWh9LMYlOfZog=
+X-Gm-Gg: AY/fxX6XJ5LBOrvgTr7OlW7UHT7vXsgvgPTFzezUaf1w9ieUY0xyDboAkGUKRutwnfO
+	P7rwwZcjCUbcK4bJe87gDouUnMVnItrn+27PidsoWahIe2NN/pCcsfgp9/r6ou1aw80f+OAfLT2
+	uY7EA2XW4UpgtpmDTxr0FwtN9DO/Fx2JYXtsQeiLnLXW2dNvIJPp5OzcDidq1N9a1VelnKBlxE0
+	4YkmWuldOQI8sn0bMiD94NfNxSiLoLZmohDISWA4mr9XceVTJa1anpZ67gfP84o2GreAOBDZJXX
+	nn7baI3SslGatK8s71CXunX9paiHFk0YJVQerbJKrUEH/0BlUDYUO7HG7ik3ANFynak8A9ghB+s
+	l/8/u1T27GniVF7gLyKbG5IRPwEb3p3+I+POUBA5TpVWmEsomfiuy+NGX3Rgde+7R80/tzLJoXw
+	uquwN4yHgvF3Uvn5lUP+EQ5owdRQC76TOOkw8osTEGK8Exs9ZpZ3C/1HHgUBSmsHhZZl/R3d6tK
+	qN7
+X-Google-Smtp-Source: AGHT+IFwXSkFSnAzDpXmvBfpaag5Ig2x/hY7lR/fPaiKG8l/aTMnGjVbJNKYUdmZgkyBxJqwrNsd/A==
+X-Received: by 2002:a05:600c:4ed2:b0:477:9c9e:ec7e with SMTP id 5b1f17b1804b1-47d19597517mr371677315e9.6.1767620434763;
+        Mon, 05 Jan 2026 05:40:34 -0800 (PST)
+Received: from mordecai (dynamic-2a00-1028-83b8-1e7a-3010-3bd6-8521-caf1.ipv6.o2.cz. [2a00:1028:83b8:1e7a:3010:3bd6:8521:caf1])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-47d6be2ce32sm61878015e9.2.2026.01.05.05.40.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 05 Jan 2026 05:40:34 -0800 (PST)
+Date: Mon, 5 Jan 2026 14:40:31 +0100
+From: Petr Tesarik <ptesarik@suse.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: linux-kernel@vger.kernel.org, Cong Wang <xiyou.wangcong@gmail.com>,
+ Jonathan Corbet <corbet@lwn.net>, Olivia Mackall <olivia@selenic.com>,
+ Herbert Xu <herbert@gondor.apana.org.au>, Jason Wang <jasowang@redhat.com>,
+ Paolo Bonzini <pbonzini@redhat.com>, Stefan Hajnoczi <stefanha@redhat.com>,
+ Eugenio =?UTF-8?B?UMOpcmV6?= <eperezma@redhat.com>, "James E.J. Bottomley"
+ <James.Bottomley@hansenpartnership.com>, "Martin K. Petersen"
+ <martin.petersen@oracle.com>, Gerd Hoffmann <kraxel@redhat.com>, Xuan Zhuo
+ <xuanzhuo@linux.alibaba.com>, Marek Szyprowski <m.szyprowski@samsung.com>,
+ Robin Murphy <robin.murphy@arm.com>, Stefano Garzarella
+ <sgarzare@redhat.com>, "David S. Miller" <davem@davemloft.net>, Eric
+ Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo
+ Abeni <pabeni@redhat.com>, Simon Horman <horms@kernel.org>, Leon Romanovsky
+ <leon@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>, Bartosz Golaszewski
+ <brgl@kernel.org>, linux-doc@vger.kernel.org, linux-crypto@vger.kernel.org,
+ virtualization@lists.linux.dev, linux-scsi@vger.kernel.org,
+ iommu@lists.linux.dev, kvm@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v2 05/15] dma-debug: track cache clean flag in entries
+Message-ID: <20260105144031.2520c81b@mordecai>
+In-Reply-To: <20260105073621-mutt-send-email-mst@kernel.org>
+References: <cover.1767601130.git.mst@redhat.com>
+	<0ffb3513d18614539c108b4548cdfbc64274a7d1.1767601130.git.mst@redhat.com>
+	<20260105105433.5b875ce3@mordecai>
+	<20260105073621-mutt-send-email-mst@kernel.org>
+X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Maintain valid access attributes for
- non-coherent SMMU
-To: Dawei Li <dawei.li@linux.dev>, will@kernel.org, joro@8bytes.org
-Cc: jgg@ziepe.ca, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org, set_pte_at@outlook.com,
- stable@vger.kernel.org
-References: <20251229002354.162872-1-dawei.li@linux.dev>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20251229002354.162872-1-dawei.li@linux.dev>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On 2025-12-29 12:23 am, Dawei Li wrote:
-> According to SMMUv3 architecture specification, IO-coherent access for
-> SMMU is supported for:
-> - Translation table walks.
-> - Fetches of L1STD, STE, L1CD and CD.
-> - Command queue, Event queue and PRI queue access.
-> - GERROR, CMD_SYNC, Event queue and PRI queue MSIs, if supported
+On Mon, 5 Jan 2026 07:37:31 -0500
+"Michael S. Tsirkin" <mst@redhat.com> wrote:
+
+> On Mon, Jan 05, 2026 at 10:54:33AM +0100, Petr Tesarik wrote:
+> > On Mon, 5 Jan 2026 03:23:10 -0500
+> > "Michael S. Tsirkin" <mst@redhat.com> wrote:
+> >   
+> > > If a driver is buggy and has 2 overlapping mappings but only
+> > > sets cache clean flag on the 1st one of them, we warn.
+> > > But if it only does it for the 2nd one, we don't.
+> > > 
+> > > Fix by tracking cache clean flag in the entry.
+> > > 
+> > > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> > > ---
+> > >  kernel/dma/debug.c | 27 ++++++++++++++++++++++-----
+> > >  1 file changed, 22 insertions(+), 5 deletions(-)
+> > > 
+> > > diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
+> > > index 7e66d863d573..43d6a996d7a7 100644
+> > > --- a/kernel/dma/debug.c
+> > > +++ b/kernel/dma/debug.c
+> > > @@ -63,6 +63,7 @@ enum map_err_types {
+> > >   * @sg_mapped_ents: 'mapped_ents' from dma_map_sg
+> > >   * @paddr: physical start address of the mapping
+> > >   * @map_err_type: track whether dma_mapping_error() was checked
+> > > + * @is_cache_clean: driver promises not to write to buffer while mapped
+> > >   * @stack_len: number of backtrace entries in @stack_entries
+> > >   * @stack_entries: stack of backtrace history
+> > >   */
+> > > @@ -76,7 +77,8 @@ struct dma_debug_entry {
+> > >  	int		 sg_call_ents;
+> > >  	int		 sg_mapped_ents;
+> > >  	phys_addr_t	 paddr;
+> > > -	enum map_err_types  map_err_type;
+> > > +	enum map_err_types map_err_type;  
+> > 
+> > *nitpick* unnecessary change in white space (breaks git-blame).
+> > 
+> > Other than that, LGTM. I'm not formally a reviewer, but FWIW:
+> > 
+> > Reviewed-by: Petr Tesarik <ptesarik@suse.com>
+> > 
+> > Petr T  
 > 
-> In other words, if a SMMU implementation doesn't support IO coherent
-> access(SMMUIDR0.COHACC==0), all fields above accessed by SMMU is
-> expected to be non-coherent and S/W is supposed to maintain proper
-> access attributes to achieve expected behavior.
 > 
-> Unfortunately, for non-coherent SMMU implementation, current codebase
-> only takes care of translation table walking. Fix it by providing right
-> attributes(cacheability, shareablility, cache allocation hints, e.g) to
-> other fields.
+> I mean, yes it's not really required here, but the padding we had before
+> was broken (two spaces not aligning to anything).
 
-The assumption is that if the SMMU is not I/O-coherent, then the Normal 
-Cacheable attribute will inherently degrade to a non-snooping (and thus 
-effectively Normal Non-Cacheable) one, as that's essentially what AXI 
-will do in practice, and thus the attribute doesn't actually matter all 
-that much in terms of functional correctness. If the SMMU _is_ capable 
-of snooping but is not described as such then frankly firmware is wrong.
+Oh, you're right! Yes, then let's fix it now, because you touch the
+neighbouring line.
 
-If prople have a good reason for wanting to use a coherent SMMU 
-non-coherently (and/or control of allocation hints), then that should 
-really be some kind of driver-level option - it would need a bit of 
-additional DMA API work (which has been low down my to-do list for a few 
-years now...), but it's perfectly achievable, and I think it's still 
-preferable to abusing the COHACC override in firmware.
+Sorry for the noise.
 
-> Fixes: 4f41845b3407 ("iommu/io-pgtable: Replace IO_PGTABLE_QUIRK_NO_DMA with specific flag")
+Petr T
 
-That commit didn't change any behaviour though?
-
-> Fixes: 9e6ea59f3ff3 ("iommu/io-pgtable: Support non-coherent page tables")
-
-And that was a change to io-pgtable which did exactly what it intended 
-and claimed to do, entirely orthogonal to arm-smmu-v3. (And IIRC it was 
-really more about platforms using arm-smmu (v2) where the SMMU is 
-non-coherent but the Outer Cacheable attribute acts as an allocation 
-hint for a transparent system cache.)
-
-Thanks,
-Robin.
-
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Dawei Li <dawei.li@linux.dev>
-> ---
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 73 +++++++++++++++------
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  1 +
->   2 files changed, 54 insertions(+), 20 deletions(-)
+> > > +	bool		 is_cache_clean;
+> > >  #ifdef CONFIG_STACKTRACE
+> > >  	unsigned int	stack_len;
+> > >  	unsigned long	stack_entries[DMA_DEBUG_STACKTRACE_ENTRIES];
+> > > @@ -472,12 +474,15 @@ static int active_cacheline_dec_overlap(phys_addr_t cln)
+> > >  	return active_cacheline_set_overlap(cln, --overlap);
+> > >  }
+> > >  
+> > > -static int active_cacheline_insert(struct dma_debug_entry *entry)
+> > > +static int active_cacheline_insert(struct dma_debug_entry *entry,
+> > > +				   bool *overlap_cache_clean)
+> > >  {
+> > >  	phys_addr_t cln = to_cacheline_number(entry);
+> > >  	unsigned long flags;
+> > >  	int rc;
+> > >  
+> > > +	*overlap_cache_clean = false;
+> > > +
+> > >  	/* If the device is not writing memory then we don't have any
+> > >  	 * concerns about the cpu consuming stale data.  This mitigates
+> > >  	 * legitimate usages of overlapping mappings.
+> > > @@ -487,8 +492,16 @@ static int active_cacheline_insert(struct dma_debug_entry *entry)
+> > >  
+> > >  	spin_lock_irqsave(&radix_lock, flags);
+> > >  	rc = radix_tree_insert(&dma_active_cacheline, cln, entry);
+> > > -	if (rc == -EEXIST)
+> > > +	if (rc == -EEXIST) {
+> > > +		struct dma_debug_entry *existing;
+> > > +
+> > >  		active_cacheline_inc_overlap(cln);
+> > > +		existing = radix_tree_lookup(&dma_active_cacheline, cln);
+> > > +		/* A lookup failure here after we got -EEXIST is unexpected. */
+> > > +		WARN_ON(!existing);
+> > > +		if (existing)
+> > > +			*overlap_cache_clean = existing->is_cache_clean;
+> > > +	}
+> > >  	spin_unlock_irqrestore(&radix_lock, flags);
+> > >  
+> > >  	return rc;
+> > > @@ -583,20 +596,24 @@ DEFINE_SHOW_ATTRIBUTE(dump);
+> > >   */
+> > >  static void add_dma_entry(struct dma_debug_entry *entry, unsigned long attrs)
+> > >  {
+> > > +	bool overlap_cache_clean;
+> > >  	struct hash_bucket *bucket;
+> > >  	unsigned long flags;
+> > >  	int rc;
+> > >  
+> > > +	entry->is_cache_clean = !!(attrs & DMA_ATTR_CPU_CACHE_CLEAN);
+> > > +
+> > >  	bucket = get_hash_bucket(entry, &flags);
+> > >  	hash_bucket_add(bucket, entry);
+> > >  	put_hash_bucket(bucket, flags);
+> > >  
+> > > -	rc = active_cacheline_insert(entry);
+> > > +	rc = active_cacheline_insert(entry, &overlap_cache_clean);
+> > >  	if (rc == -ENOMEM) {
+> > >  		pr_err_once("cacheline tracking ENOMEM, dma-debug disabled\n");
+> > >  		global_disable = true;
+> > >  	} else if (rc == -EEXIST &&
+> > > -		   !(attrs & (DMA_ATTR_SKIP_CPU_SYNC | DMA_ATTR_CPU_CACHE_CLEAN)) &&
+> > > +		   !(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
+> > > +		   !(entry->is_cache_clean && overlap_cache_clean) &&
+> > >  		   !(IS_ENABLED(CONFIG_DMA_BOUNCE_UNALIGNED_KMALLOC) &&
+> > >  		     is_swiotlb_active(entry->dev))) {
+> > >  		err_printk(entry->dev, entry,  
 > 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index d16d35c78c06..4f00bf53d26c 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -265,8 +265,14 @@ static int queue_remove_raw(struct arm_smmu_queue *q, u64 *ent)
->   	return 0;
->   }
->   
-> +static __always_inline bool smmu_coherent(struct arm_smmu_device *smmu)
-> +{
-> +	return !!(smmu->features & ARM_SMMU_FEAT_COHERENCY);
-> +}
-> +
->   /* High-level queue accessors */
-> -static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
-> +static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent,
-> +				   struct arm_smmu_device *smmu)
->   {
->   	memset(cmd, 0, 1 << CMDQ_ENT_SZ_SHIFT);
->   	cmd[0] |= FIELD_PREP(CMDQ_0_OP, ent->opcode);
-> @@ -358,8 +364,13 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
->   		} else {
->   			cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_CS, CMDQ_SYNC_0_CS_SEV);
->   		}
-> -		cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSH, ARM_SMMU_SH_ISH);
-> -		cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSIATTR, ARM_SMMU_MEMATTR_OIWB);
-> +		if (smmu_coherent(smmu)) {
-> +			cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSH, ARM_SMMU_SH_ISH);
-> +			cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSIATTR, ARM_SMMU_MEMATTR_OIWB);
-> +		} else {
-> +			cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSH, ARM_SMMU_SH_OSH);
-> +			cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSIATTR, ARM_SMMU_MEMATTR_OINC);
-> +		}
->   		break;
->   	default:
->   		return -ENOENT;
-> @@ -405,7 +416,7 @@ static void arm_smmu_cmdq_build_sync_cmd(u64 *cmd, struct arm_smmu_device *smmu,
->   				   q->ent_dwords * 8;
->   	}
->   
-> -	arm_smmu_cmdq_build_cmd(cmd, &ent);
-> +	arm_smmu_cmdq_build_cmd(cmd, &ent, smmu);
->   	if (arm_smmu_cmdq_needs_busy_polling(smmu, cmdq))
->   		u64p_replace_bits(cmd, CMDQ_SYNC_0_CS_NONE, CMDQ_SYNC_0_CS);
->   }
-> @@ -461,7 +472,7 @@ void __arm_smmu_cmdq_skip_err(struct arm_smmu_device *smmu,
->   		dev_err(smmu->dev, "\t0x%016llx\n", (unsigned long long)cmd[i]);
->   
->   	/* Convert the erroneous command into a CMD_SYNC */
-> -	arm_smmu_cmdq_build_cmd(cmd, &cmd_sync);
-> +	arm_smmu_cmdq_build_cmd(cmd, &cmd_sync, smmu);
->   	if (arm_smmu_cmdq_needs_busy_polling(smmu, cmdq))
->   		u64p_replace_bits(cmd, CMDQ_SYNC_0_CS_NONE, CMDQ_SYNC_0_CS);
->   
-> @@ -913,7 +924,7 @@ static int __arm_smmu_cmdq_issue_cmd(struct arm_smmu_device *smmu,
->   {
->   	u64 cmd[CMDQ_ENT_DWORDS];
->   
-> -	if (unlikely(arm_smmu_cmdq_build_cmd(cmd, ent))) {
-> +	if (unlikely(arm_smmu_cmdq_build_cmd(cmd, ent, smmu))) {
->   		dev_warn(smmu->dev, "ignoring unknown CMDQ opcode 0x%x\n",
->   			 ent->opcode);
->   		return -EINVAL;
-> @@ -965,7 +976,7 @@ static void arm_smmu_cmdq_batch_add(struct arm_smmu_device *smmu,
->   	}
->   
->   	index = cmds->num * CMDQ_ENT_DWORDS;
-> -	if (unlikely(arm_smmu_cmdq_build_cmd(&cmds->cmds[index], cmd))) {
-> +	if (unlikely(arm_smmu_cmdq_build_cmd(&cmds->cmds[index], cmd, smmu))) {
->   		dev_warn(smmu->dev, "ignoring unknown CMDQ opcode 0x%x\n",
->   			 cmd->opcode);
->   		return;
-> @@ -1603,6 +1614,7 @@ void arm_smmu_make_cdtable_ste(struct arm_smmu_ste *target,
->   {
->   	struct arm_smmu_ctx_desc_cfg *cd_table = &master->cd_table;
->   	struct arm_smmu_device *smmu = master->smmu;
-> +	u64 val;
->   
->   	memset(target, 0, sizeof(*target));
->   	target->data[0] = cpu_to_le64(
-> @@ -1612,11 +1624,18 @@ void arm_smmu_make_cdtable_ste(struct arm_smmu_ste *target,
->   		(cd_table->cdtab_dma & STRTAB_STE_0_S1CTXPTR_MASK) |
->   		FIELD_PREP(STRTAB_STE_0_S1CDMAX, cd_table->s1cdmax));
->   
-> +	if (smmu_coherent(smmu)) {
-> +		val = FIELD_PREP(STRTAB_STE_1_S1CIR, STRTAB_STE_1_S1C_CACHE_WBRA) |
-> +		      FIELD_PREP(STRTAB_STE_1_S1COR, STRTAB_STE_1_S1C_CACHE_WBRA) |
-> +		      FIELD_PREP(STRTAB_STE_1_S1CSH, ARM_SMMU_SH_ISH);
-> +	} else {
-> +		val = FIELD_PREP(STRTAB_STE_1_S1CIR, STRTAB_STE_1_S1C_CACHE_NC) |
-> +		      FIELD_PREP(STRTAB_STE_1_S1COR, STRTAB_STE_1_S1C_CACHE_NC) |
-> +		      FIELD_PREP(STRTAB_STE_1_S1CSH, ARM_SMMU_SH_OSH);
-> +	}
-> +
->   	target->data[1] = cpu_to_le64(
-> -		FIELD_PREP(STRTAB_STE_1_S1DSS, s1dss) |
-> -		FIELD_PREP(STRTAB_STE_1_S1CIR, STRTAB_STE_1_S1C_CACHE_WBRA) |
-> -		FIELD_PREP(STRTAB_STE_1_S1COR, STRTAB_STE_1_S1C_CACHE_WBRA) |
-> -		FIELD_PREP(STRTAB_STE_1_S1CSH, ARM_SMMU_SH_ISH) |
-> +		FIELD_PREP(STRTAB_STE_1_S1DSS, s1dss) | val |
->   		((smmu->features & ARM_SMMU_FEAT_STALLS &&
->   		  !master->stall_enabled) ?
->   			 STRTAB_STE_1_S1STALLD :
-> @@ -3746,7 +3765,7 @@ int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
->   	q->cons_reg	= page + cons_off;
->   	q->ent_dwords	= dwords;
->   
-> -	q->q_base  = Q_BASE_RWA;
-> +	q->q_base  = smmu_coherent(smmu) ? Q_BASE_RWA : 0;
->   	q->q_base |= q->base_dma & Q_BASE_ADDR_MASK;
->   	q->q_base |= FIELD_PREP(Q_BASE_LOG2SIZE, q->llq.max_n_shift);
->   
-> @@ -4093,6 +4112,7 @@ static void arm_smmu_write_strtab(struct arm_smmu_device *smmu)
->   	struct arm_smmu_strtab_cfg *cfg = &smmu->strtab_cfg;
->   	dma_addr_t dma;
->   	u32 reg;
-> +	u64 val;
->   
->   	if (smmu->features & ARM_SMMU_FEAT_2_LVL_STRTAB) {
->   		reg = FIELD_PREP(STRTAB_BASE_CFG_FMT,
-> @@ -4107,8 +4127,12 @@ static void arm_smmu_write_strtab(struct arm_smmu_device *smmu)
->   		      FIELD_PREP(STRTAB_BASE_CFG_LOG2SIZE, smmu->sid_bits);
->   		dma = cfg->linear.ste_dma;
->   	}
-> -	writeq_relaxed((dma & STRTAB_BASE_ADDR_MASK) | STRTAB_BASE_RA,
-> -		       smmu->base + ARM_SMMU_STRTAB_BASE);
-> +
-> +	val = dma & STRTAB_BASE_ADDR_MASK;
-> +	if (smmu_coherent(smmu))
-> +		val |= STRTAB_BASE_RA;
-> +
-> +	writeq_relaxed(val, smmu->base + ARM_SMMU_STRTAB_BASE);
->   	writel_relaxed(reg, smmu->base + ARM_SMMU_STRTAB_BASE_CFG);
->   }
->   
-> @@ -4130,12 +4154,21 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu)
->   		return ret;
->   
->   	/* CR1 (table and queue memory attributes) */
-> -	reg = FIELD_PREP(CR1_TABLE_SH, ARM_SMMU_SH_ISH) |
-> -	      FIELD_PREP(CR1_TABLE_OC, CR1_CACHE_WB) |
-> -	      FIELD_PREP(CR1_TABLE_IC, CR1_CACHE_WB) |
-> -	      FIELD_PREP(CR1_QUEUE_SH, ARM_SMMU_SH_ISH) |
-> -	      FIELD_PREP(CR1_QUEUE_OC, CR1_CACHE_WB) |
-> -	      FIELD_PREP(CR1_QUEUE_IC, CR1_CACHE_WB);
-> +	if (smmu_coherent(smmu)) {
-> +		reg = FIELD_PREP(CR1_TABLE_SH, ARM_SMMU_SH_ISH) |
-> +		      FIELD_PREP(CR1_TABLE_OC, CR1_CACHE_WB) |
-> +		      FIELD_PREP(CR1_TABLE_IC, CR1_CACHE_WB) |
-> +		      FIELD_PREP(CR1_QUEUE_SH, ARM_SMMU_SH_ISH) |
-> +		      FIELD_PREP(CR1_QUEUE_OC, CR1_CACHE_WB) |
-> +		      FIELD_PREP(CR1_QUEUE_IC, CR1_CACHE_WB);
-> +	} else {
-> +		reg = FIELD_PREP(CR1_TABLE_SH, ARM_SMMU_SH_OSH) |
-> +		      FIELD_PREP(CR1_TABLE_OC, CR1_CACHE_NC) |
-> +		      FIELD_PREP(CR1_TABLE_IC, CR1_CACHE_NC) |
-> +		      FIELD_PREP(CR1_QUEUE_SH, ARM_SMMU_SH_OSH) |
-> +		      FIELD_PREP(CR1_QUEUE_OC, CR1_CACHE_NC) |
-> +		      FIELD_PREP(CR1_QUEUE_IC, CR1_CACHE_NC);
-> +	}
->   	writel_relaxed(reg, smmu->base + ARM_SMMU_CR1);
->   
->   	/* CR2 (random crap) */
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> index ae23aacc3840..7a5f76e165dc 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> @@ -183,6 +183,7 @@ struct arm_vsmmu;
->   #define ARM_SMMU_SH_ISH			3
->   #define ARM_SMMU_MEMATTR_DEVICE_nGnRE	0x1
->   #define ARM_SMMU_MEMATTR_OIWB		0xf
-> +#define ARM_SMMU_MEMATTR_OINC		0x5
->   
->   #define Q_IDX(llq, p)			((p) & ((1 << (llq)->max_n_shift) - 1))
->   #define Q_WRP(llq, p)			((p) & (1 << (llq)->max_n_shift))
 
