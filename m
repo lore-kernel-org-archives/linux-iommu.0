@@ -1,82 +1,77 @@
-Received: from mail-qk1-f171.google.com (mail-qk1-f171.google.com [209.85.222.171])
+Received: from mail-pf1-f181.google.com (mail-pf1-f181.google.com [209.85.210.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C652339716
-	for <iommu@lists.linux.dev>; Mon,  5 Jan 2026 18:54:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E08B33EB02
+	for <iommu@lists.linux.dev>; Mon,  5 Jan 2026 18:55:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767639267; cv=none; b=Bzq0AFykjbAUW3aPyq8ttC1Aik/1Zxp5XLucVbcDbKmS/hPZt90n3NjS7Vh3sEvMf3pSsxPce/LL6abQuPfIyQeHhj28zq+GI3Kzxt90ak1yDumqaUxSIjgAOgjX04sdvSQT2NlyrZV9nIeuxrQRBVI7VPN0x6ULFJ3H8bI8nAQ=
+	t=1767639306; cv=none; b=WItD2DzAHCWzx3Xd72+iEvLk99NpuZBIHioLvUTbpHxHbqzM0SNK4wqWLssNOOF0qJYfYvp+WRwBHDI+lSNHhF9gXQkp+i6jGJvfwzgt1ZBn+Z9666OtoIU2tFqqsv2acgZO7MCfUnbCWV07afeSIvnCyUb+SXduFxdxJ0x+NzY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767639267; c=relaxed/simple;
-	bh=ye4WgWUCpvD2gGQR0QMsre2IOoSU2Qr1YG9uLKSAPu4=;
+	s=arc-20240116; t=1767639306; c=relaxed/simple;
+	bh=8N6sbBAWid/ZYJztu1ECpBF8QM5YL+5wF3MbJNf6KgY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=eixLvCwz4hFUovc5mPngneAV1x623og4xSYFoEJzY32hkdmHRejqbtcairTXFyI5XBJjKLJgZbgdwx0HQUT9LykfUtio5zzFIAeCLQUVkxq6s+85HDfU5SBNh5DNVNl5CZvnL3KZDYQrYA8GdBUNXGQudLh97oCSXwlEAHUpfco=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=C1ORhoWs; arc=none smtp.client-ip=209.85.222.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	 Content-Type:Content-Disposition:In-Reply-To; b=UZOaNvsRh50kn5y2e7Cf6jbGBQhb/AmYAB7gFxmNfzqGxQUl64TKTBvZ4NXS6UYfWch8k0lLaORPX1IH5tetcQOUNGkYQkqDCgtBLkp3j/QAFyDyQoibgqOw74s8C37Y6V8XEF+VrBLMyZ8JxJk1qq4fkRW3LDV9jbWhDp/Pl9s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=VdA6SsPo; arc=none smtp.client-ip=209.85.210.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="C1ORhoWs"
-Received: by mail-qk1-f171.google.com with SMTP id af79cd13be357-8b2a4b6876fso24610385a.3
-        for <iommu@lists.linux.dev>; Mon, 05 Jan 2026 10:54:26 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="VdA6SsPo"
+Received: by mail-pf1-f181.google.com with SMTP id d2e1a72fcca58-7d26a7e5639so286937b3a.1
+        for <iommu@lists.linux.dev>; Mon, 05 Jan 2026 10:55:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1767639265; x=1768244065; darn=lists.linux.dev;
+        d=chromium.org; s=google; t=1767639304; x=1768244104; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ffKzN1sLhhBqUNkiha1w3dy/564YXw9eASHrYEoDuBI=;
-        b=C1ORhoWsyGFhRW28GLGfk2J+U/C9rRZ3IZ3NKTF0Tvayvc3pvYtZSnh2zsfSZdzISG
-         MZLMZTJ7mkfaz0BZgvt/pDhYieaS+OfbxSiCtwkShDIj5MrldwVbdq+NSlgWyVtNw8MB
-         mMy32d9J9/UpopvRDQBE+oClbCsDhK1U/o09rhHH9YKeiqmSfZ9YOD015SItK7lKvFG/
-         2JS+H2LhBHi4cjiGzWJR2Gv+TXWVqBzZ/iIh7yey9YJK8WTA0MighiStYj5fnTSyYV6x
-         Cgo+uZqnfVKdDCo37CL/tjjywQEZ4p/9+tVdHoirEFmXsvtj5u2wytv8b5Pcd0hSwGna
-         2i4A==
+        bh=5DpxS8rpJviMrwQBnUs6BNFBrH4xHFjBHXZzxcPZ11E=;
+        b=VdA6SsPoHIRZqPlllxXoESNdOb2aw8SF23xeeR4KeOK0B9rYQtvIxLoP4pzVi4QVL/
+         Cw8jYCB0NkYrBnZEu655/578aLI3PA/2RmIcp0d0KW3GkJ2ZIXScFYWNMMz1e+KfrpsQ
+         yzBDbJtSmospRL1KuAgYIpiEQEC7qTUADODTU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1767639265; x=1768244065;
+        d=1e100.net; s=20230601; t=1767639304; x=1768244104;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=ffKzN1sLhhBqUNkiha1w3dy/564YXw9eASHrYEoDuBI=;
-        b=fnLIY0xl5gwlYXh1aLozIvFfb8JWy2djSriNhW3EJg2N81Ro8ezdRdwGURfqjpHiGI
-         sMrXHzR7NrCmvq/cmAab8KMJxXDJw8hHKwlLTIDq7bMYW6D5CZ8raxNhQPkTcYOR7qfI
-         wEc2ilUVtiWK5EOQt1Q/pkl3GleQVIRd7qzVe26I7mE+cAvUxP9G2oArWWFebqdlw1nV
-         ABqK+OGnrWWRkVq3MN3N4tKRJ8nwYrYj4WULlQnZJKOfPE76M2cL90bxhORAu8E3FfEd
-         v/ILdkmUggbRs2db5XJaAGuqMjDkiKxvjYcIsZJO89GLI0S61PVFPVPvGIkK7z6PrNLd
-         Zvew==
-X-Forwarded-Encrypted: i=1; AJvYcCVFaP1dFpTihUYhMnm8QkhfoTNJAUJs4RE28l9XsplU7q+UcoDWrTQXBxi6wVcdSYBv0KncaA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwyeXWGqdtv1gDk4SGBfh3J0g9SJ0OFjjiCgYZLHBxKUkjKBa2m
-	0kUrHLbuqJKwmOXBwWVCihaWbyvmfj6fFr1lCkSXAxeAV2y4btcAY2U4D6ZVq5uLDX0T6Jcuh6H
-	o24ol
-X-Gm-Gg: AY/fxX6QYe66B5QYzYrv03mHWfhyylbEq6ND7gyWJYKT63nFc4ne4pe3FOYHQBL4GiF
-	L1GJRwVNH6AqcJ8oxSCpJW3xqtTyQpESLZmEGvclBERC41CnmUggvWIvliRRpmBHGiTUGHDAeFm
-	m7phO8ea/jd1vod+2ze18LltZxpk8qOQ4ggFnjSM+11dfhxn9U9C0V13ujmjUbykt5S5nbtIFRZ
-	NzmCHUY82j6PMUeatNWJusUottKe2g5+eZpaPllD+GsOFzog/bWZsqjxw8Sun/E2j1HfUkkPHYO
-	VOqADHHd3MXxD6/vxLVX70bxqrmHwD+VUJ3ywVZUNgKkfOQiVAy8llnPdomkc4C2dOOu3AyTiLt
-	FT4SzaJ2badpvwrP3qm/8N7d7Mfr2CNBAAEJceYxUBNngDDuAdFKVbB5Jy0Us1CCs/QAOoxeyNc
-	zJWoO1eb2Ja7TZVVtHQEIdEb27erGamnmn1gYnCAeV7eZsdem3Mc2YXW6E1rIlnGtahCY=
-X-Google-Smtp-Source: AGHT+IFPnEh+/aHLidYNOpkwlSqg6n9Ja4S07lmjAzoYGYdPvIKU/oQn/q1c0tGHGXl/b++dfA2K6Q==
-X-Received: by 2002:a05:622a:303:b0:4ed:af59:9df0 with SMTP id d75a77b69052e-4ffa77f5e8fmr6419151cf.40.1767639265008;
-        Mon, 05 Jan 2026 10:54:25 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-162-112-119.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.112.119])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-4ffa71fc4bdsm3676911cf.31.2026.01.05.10.54.24
+        bh=5DpxS8rpJviMrwQBnUs6BNFBrH4xHFjBHXZzxcPZ11E=;
+        b=Xlb6TtarIHOGgfL5dAS/57j4wi8rPuov0qSnXUVHsVUO1BtQiB7Wogz+182tlqJpjm
+         18LB68blZyr5rDIwCtUQ2lPoN0sCPehz4JabussC2IHx5glKt5eSL2Wx+aqzEuGkSCxK
+         ZZl467tC888nlhJSJeV/zWYesEwssCwH0wCJnyyyTMVb3gVp5rv3Dl7bSpOBFYPcSVUb
+         cI7rbNc2XJ7map4j7px76LgMUrj+rFswHwt8APBCl0k02AG3VMqfa8bYZRS4CdM0SHUv
+         bU1QdIjeScKyO067jC7/HaQS6XFGB41eiBrk9MyYugQSMbNx4P0faqk86niml/l7IHea
+         dCFA==
+X-Forwarded-Encrypted: i=1; AJvYcCW2TwvbG8tW8NqaodRF41fSKq142xvnlZAusrJhe+cxdn0TDkr8o5kIf08gqE3uozu6l2o4Cg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwmbtoId2RZdmkdQoqLz17PFo7AT4Jh4M0qaBrxt1CRfgi0TdfG
+	nycKeqzSp9eoprvBhbxcUm9SHeZUCalmX3KF6zOeUet5CklbfX6FxNKJiRepP3TMlw==
+X-Gm-Gg: AY/fxX49Cid4zKpdU6OIR36S32XcRtUeAF1NR/BaLwYXmi9vDLi6FLMa/PzlANOdejH
+	Y4fNS23rdVHGsAK/w40Fu8xgG5idBJYAOsPRwlR0+pUJJI1w124PefAuhh8YEaaFFZHAAaKSq4P
+	J6OFNTAitPkJRn/GCh/PsU7c/r8YdXvNU1zyj0/uGp7EOJv/DLixD1hi7W7ibZDLBKE/N3SPhNg
+	b5LDGzd4+fc6iCqb/0JNSOijSZeLJFGdZQwR1rk8ihhZxt+yk2EtbAss8oAmA6+CXPlTL52npzB
+	ZEGvltmPf4NrOx/nAJ8BMVI1r/1ZGaDOwWswpRummUn4q+oI76K90SgfoX3Mg4eiJZPjODU9elg
+	XTV6RII7ObXh4ozgAY6M4ZLgXr2yuT3n8ZMPB++KunVJOcbbX3P+Bpmw7HXP+BvVZcdQisj2gkP
+	AehXGvR83R
+X-Google-Smtp-Source: AGHT+IGmDE0QeurRLjjRHeAoA4yBYARtAMlpXceX0Y11k7mpPzrXKm6iX0itkPmBxWioX0MmbudKnA==
+X-Received: by 2002:a05:6a21:6d8f:b0:35e:7605:56a4 with SMTP id adf61e73a8af0-3898237c8b5mr235964637.51.1767639303711;
+        Mon, 05 Jan 2026 10:55:03 -0800 (PST)
+Received: from google.com ([2a00:79e0:a:200:1194:8740:be25:ee08])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-34f5f8afba8sm68540a91.13.2026.01.05.10.55.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Jan 2026 10:54:24 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1vcpih-00000001C7Y-21aN;
-	Mon, 05 Jan 2026 14:54:23 -0400
-Date: Mon, 5 Jan 2026 14:54:23 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Dawei Li <dawei.li@linux.dev>, will@kernel.org, joro@8bytes.org,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, set_pte_at@outlook.com,
-	stable@vger.kernel.org
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Maintain valid access attributes for
- non-coherent SMMU
-Message-ID: <20260105185423.GI125261@ziepe.ca>
-References: <20251229002354.162872-1-dawei.li@linux.dev>
- <c25309d1-0424-495e-82af-d025b3e6d8c8@arm.com>
- <20260105145321.GD125261@ziepe.ca>
- <f253d6aa-1dc2-4b1a-85df-f43b06719c04@arm.com>
+        Mon, 05 Jan 2026 10:55:03 -0800 (PST)
+Date: Mon, 5 Jan 2026 19:54:53 +0100
+From: Dmytro Maluka <dmaluka@chromium.org>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>, iommu@lists.linux.dev,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
+	"Vineeth Pillai (Google)" <vineeth@bitbyteword.org>,
+	Aashish Sharma <aashish@aashishsharma.net>,
+	Grzegorz Jaszczyk <jaszczyk@chromium.org>,
+	Chuanxiao Dong <chuanxiao.dong@intel.com>,
+	Kevin Tian <kevin.tian@intel.com>
+Subject: Re: [PATCH v2 0/5] iommu/vt-d: Ensure memory ordering in context &
+ root entry updates
+Message-ID: <aVwI_SHHGPl0xndu@google.com>
+References: <20251227175728.4358-1-dmaluka@chromium.org>
+ <20260105181200.GH125261@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -85,56 +80,62 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <f253d6aa-1dc2-4b1a-85df-f43b06719c04@arm.com>
+In-Reply-To: <20260105181200.GH125261@ziepe.ca>
 
-On Mon, Jan 05, 2026 at 04:02:34PM +0000, Robin Murphy wrote:
-
-> > It is reasonable that Linux will set the attributes properly based on
-> > what it is doing. Setting the wrong attributes and expecting the HW to
-> > ignore them seems like a hacky direction.
+On Mon, Jan 05, 2026 at 02:12:00PM -0400, Jason Gunthorpe wrote:
+> On Sat, Dec 27, 2025 at 06:57:23PM +0100, Dmytro Maluka wrote:
+> > As discussed in [1], we don't currently prevent the compiler from
+> > reordering memory writes when updating context entries, which is
+> > potentially dangerous, as it may cause setting the present bit (i.e.
+> > enabling DMA translation for the given device) before finishing setting
+> > up other bits in the context entry (and thus creating a time window when
+> > a DMA from the device may result in an unpredicted behavior).
+> > 
+> > Fix this in the same way as how this is already addressed for PASID
+> > entries, i.e. by using READ_ONCE/WRITE_ONCE in the helpers used for
+> > setting individual bits in context entries, so that memory writes done
+> > by those helpers are ordered in relation to each other (plus, prevent
+> > load/store tearing and so on).
+> > 
+> > While at it, similarly paranoidally fix updating root entries as well:
+> > use WRITE_ONCE to make sure that the present bit is set atomically
+> > together with the context table address bits, not before them.
 > 
-> Oh, I'm not saying that we *shouldn't* set our attributes more exactly -
-> this would still be needed for doing things the "right" way too - I just
-> want to be very clear on the reasons why. 
+> The PASID entries should not be manipulated 'livel' in a haphazard way
+> like this in the first place!
+> 
+> Like AMD and ARM build the new PASID entry on the stack and then it
+> should be copied to the DMA'able memory in a way that is consistent
+> with the HW's atomicity granual, paying attention not to 'tear' it.
 
-At least I know of HW where the SMMU fetches covered by COHACC:
+As I understand, the "consistent with the HW's atomicity granual, paying
+attention not to 'tear' it" part is already fulfilled for PASID entries
+(and with this series, for context entries as well):
 
- * Translation table walks.
- * Fetches of L1STD, STE, L1CD and CD.
- * Command queue, Event queue and PRI queue access.
- * GERROR, CMD_SYNC, Event queue and PRI queue MSIs, if supported.
+static inline void pasid_set_bits(u64 *ptr, u64 mask, u64 bits)
+{
+	u64 old;
 
-Have a mixture of coherency support. The SOC has multiple fabrics, one
-non-coherent one specifically for isochronous traffic.  In HW some
-SMMU sub-units (like the table walk) been wired to the isochronous
-fabric, while others are using the normal coherent fabric.
+	old = READ_ONCE(*ptr);
+	WRITE_ONCE(*ptr, (old & ~mask) | bits);
+}
 
-So when it comes to this statement:
+I've been assuming it's ok to manipulate other bits in place as long as
+we take care to only do that while the present bit it cleared (i.e.
+while the entry is ignored by hardware)?
 
- If either the SMMU or system cannot *fully* support IO-coherent
- access to SMMU structures/queues/translations, this reads as 0.
+So IIUC the only problem with this approach is the redundancy: we do
+this READ_ONCE+WRITE_ONCE for each invididual field in a PASID entry.
 
-The HW is "partially" IO-coherent, so COHACC is 0.
+So while I agree it would be more more natural to build whole entries,
+and the existing way looks strange and not the most efficient, I'm
+wondering if it is causing any actual correctness issues (apart from
+those addressed by this series).
 
-It has been lucky that so far the incorrect attributes haven't caused a
-problem, but the next spin of this HW may have issue here. I'd like to
-see it fixed.
-
-> bug per se, and although it's indeed not 100% robust, the cases where it
-> doesn't hold are more often than not for the wrong reason. Therefore I would
-> say doing this purely for the sake of working around bad firmware - and
-> especially errata - is just as hacky if not more so.
-
-Yeah, maybe, I am also curious what is motivating Dawei to do this work..
-
-> the DMA API aspect I mean is that in
-> general we need some sort of DMA_ATTR_NO_SNOOP when mapping/allocating such
-> isochronous buffers/pagetables etc., to make the DMA layer still do the
-> cache maintenance/non-cacheable remaps despite dev_is_dma_coherent() being
-> true.
-
-I have a feeling this missing support underlies some of the reasons
-why FW might lie and set COHACC=0 as it resolves "how does the GPU
-driver cache flush things" with no effort..
-
-Jason
+> This manipulate-in-place is just asking for trouble, and can never
+> support replace or full viommu requirements.. :\
+> 
+> So while it is perhaps an improvement to do this work, it would be
+> better to fix the root cause issue if someone has time..
+> 
+> Jason
