@@ -1,109 +1,227 @@
-Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
+Received: from mail-vs1-f50.google.com (mail-vs1-f50.google.com [209.85.217.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11C3C33CEA9
-	for <iommu@lists.linux.dev>; Tue,  6 Jan 2026 17:14:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70C6F352FBB
+	for <iommu@lists.linux.dev>; Tue,  6 Jan 2026 18:42:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767719661; cv=none; b=Jwza8GmS2pxTLf7rfq2ccQ6B2Nonr4bB577rOwmXNVyoia2hSH2wDIFRL3MJzBqYaFrl76V9DOW5hDTAEroaXnps4S8jnxfhZd7Iy03ZNKn6DzEh28r4iDTYu1FwUUX5gTl6GyIDJxfBPWle2fwNc6azpahpoN7AzlGXp/oXCEM=
+	t=1767724933; cv=none; b=gS1GxegLKxLQSpB/N1zXkrifIJuwZa5M3wNvMy5ljlM6rxU9FjVwCwX7mJ2cqbDfLIS7Q/ZzdnQxEk0iaFHp0+RTnBxCdXQqq4ymj0DKy1/jRtITNe+ImrRHcpn/u27zhKCjupFaSG998DmTQR+ZTMwzGXOyw1E4OZ9+l6ATDVE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767719661; c=relaxed/simple;
-	bh=e4T35VNlQjT4yqGwiGvGk0dwu/9CLYOxKafixrrvTew=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ZVisaVhoBdEcIv5AQv2ZtpaQJ6nE5XsNARRtl0IIwZlYtdz49xKGUgAfC09tmARH80ljmGFK42QAzLeKQFKYo7mKbImo2nJM6pQLWRbfllaB6Pu9CzrdjhKjLDAXWWO2HPW6IVSJ9n4NjU7/3s5UFkOhqbiNo+tePBOrDqnDUDQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=MfTKWUJp; arc=none smtp.client-ip=209.85.218.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
+	s=arc-20240116; t=1767724933; c=relaxed/simple;
+	bh=AdGpRXl8KQ0FVqwOIuOubcueXdDNpP9wX8eW3KMHMfE=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=ugLYttIidplygxsn11f7QWOTtxjsas+Nmr7/cVuy9tg6ci9tBhf5fwRfAYhOpF5d/AoGa+8k8NYT7WOM/dvu7rQrnMAalx1K484WgI5a/XGjxu+N5gpoukZIDSdrEyafj3bzGPAjPP2PcLq128TZ+BaSvniezN8bL7OWT/U4yUQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=M5NIWu/2; arc=none smtp.client-ip=209.85.217.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="MfTKWUJp"
-Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-b7a72874af1so231296266b.3
-        for <iommu@lists.linux.dev>; Tue, 06 Jan 2026 09:14:19 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="M5NIWu/2"
+Received: by mail-vs1-f50.google.com with SMTP id ada2fe7eead31-5dd88eef2f3so446834137.3
+        for <iommu@lists.linux.dev>; Tue, 06 Jan 2026 10:42:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1767719658; x=1768324458; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=WXlvJG9FK5UUD3fcZ9qJ2guvXJiAhk3kEUMV4nJofUY=;
-        b=MfTKWUJpch2zyDfGjX8cstp92uLYSjhTOkEh3oY+5gJcyIEV8Nn/Njgvo+sRv3+29G
-         WjYBea6PZYNz+kslCqLeKUZL3E2FC4FX4uWEE8NWx+OQFrZCr3wQxmPVSMKS3YADsSpH
-         keiInUSc6hHu6aB7shRkJLyWYDNCUzZy9mtbU=
+        d=gmail.com; s=20230601; t=1767724930; x=1768329730; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=CIXoBgSYkP/sd1BWOcNCLESjfDQLcEW6GaW2Kbu8M0A=;
+        b=M5NIWu/2Drt4ug0PofbUhLJuRHm/womHtbvNBeBOX5zPMQn7nf9+p0WTXxEYbyJD42
+         e84HY9VyAZl522eCXnaaG94w656izFBoTDk5QRsXsAzt4sHaJB/HSgAf/wbfNhSf2DwI
+         W0/hPUaDPhK0ZvU2RFoXCDk9sDsPJCKXPagn/OgMw1LTAWITNkjsC/A5fHrVUug5cJi+
+         zwEy1heIH18sjC00gwCBGYv8t5HLx/337Gq9w72UHR2w4x5Wbnpx0DmW4bmezfvBsPDD
+         IWsoV124kLvP8jd3g3TxZiCUTB76urgCqLaOShYm5iTP+voxKOAhga9UQzVai/iyDQq6
+         ijUQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1767719658; x=1768324458;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=WXlvJG9FK5UUD3fcZ9qJ2guvXJiAhk3kEUMV4nJofUY=;
-        b=OcQkRTLk5TTBOMLN6A6DQVvd0jagkshw9b4g4VG+TRUGv6JUZg/EJ7B3QLXJNdArPy
-         x4Y0VjYVywY5GUBwCSCgLU0jY6J9+ohiwgZGLW5kWUNtWgYnsclbwge1347NL5buDIMm
-         RKKVx+Runve6hYzHlWd5nM61LewTlpfwBU07diCGG8Fhf8WtcRpANh3mBOjJnlA6hzIo
-         kEoqL3dJhpQvDXtlMz8QjRGG3jtXUsY/V+EM4iRop5xQt/Ky1edOxznUje8WhXtJiSTF
-         I9C3u/vKPxauZczVj+ex0Lu22ABq5XZ63nVBzw/1gIxH/MtrfNCGwCGGJxE2EaeL8YRP
-         htPg==
-X-Forwarded-Encrypted: i=1; AJvYcCXg28sM0aTK34+A3Ja/uL+zZGdjzCDu6OBazpaDj48Y/mDH59wTacfs6T1XSIk8mtyWRnbgfA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwSvs5XB8rq+xP1sTwsrkEijxrJ9f8jd2tS8RCfUXb0saQ7VacJ
-	hEbL+I/c7YoxJXEbq19C36xGrykJMqvfiNHZkfhxnkn4/H5HY4NLO70kRiyuKWQhZA==
-X-Gm-Gg: AY/fxX7vOqGAotshsuRLzK6PCyKVjP+sqcSpJpx9Vo4ytw2RqntusFaTf9LkZvBAiu+
-	qZd78sh9fqSnqJKrOwixFeLj9PY5Gn1iscLHci8LKkUfq7R8OppLRrXiKhFY+Cr5qSA9Fr0rzYR
-	p1EFNQeS9IqV3NmDQ/hyhi2gR6ao0Hlf5cKHGO9oPxs0DJUo6VsKfJQiuyo0yt2rEo3dnkLTcrb
-	E2nKc2Jm4CRBUPA6LuVwy50gy3NupU9y44hjN5XbU+Dqs7eA5saSsuUkQ8KTvUro0j60qbnO8kq
-	vcUpFSAFZWOPqAtGsn7SUBpV+EKNs133FnIE+UdDE1jcdVo0D3s9llkg2tZKmfg9V2uGGaCZxZ2
-	PoTEi39MvMThN3JGGDch+YmHxk3OfWzTYQrHd1MhNxIsLTmlAdS1HUCHXr7l69p5BCDtqUEr8Ne
-	hVc0SrDvDxzsLODxIsD72B
-X-Google-Smtp-Source: AGHT+IE722evihuuwUcy6Q4PwCANc2+jPlRhxHzW5JOblV3Ggq8Yl4BedgAWZgXFlOOAVc6DpgPqcw==
-X-Received: by 2002:a17:907:980e:b0:b72:d001:7653 with SMTP id a640c23a62f3a-b8426c5f9demr391134866b.19.1767719658324;
-        Tue, 06 Jan 2026 09:14:18 -0800 (PST)
-Received: from mitya-t14-2025 ([2a02:a31b:20c3:6680:43e9:5120:2208:3239])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b842a27c0bfsm279941566b.22.2026.01.06.09.14.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Jan 2026 09:14:17 -0800 (PST)
-Date: Tue, 6 Jan 2026 18:14:14 +0100
-From: Dmytro Maluka <dmaluka@chromium.org>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>, iommu@lists.linux.dev,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
-	"Vineeth Pillai (Google)" <vineeth@bitbyteword.org>,
-	Aashish Sharma <aashish@aashishsharma.net>,
-	Grzegorz Jaszczyk <jaszczyk@chromium.org>,
-	Chuanxiao Dong <chuanxiao.dong@intel.com>,
-	Kevin Tian <kevin.tian@intel.com>
-Subject: Re: [PATCH v2 0/5] iommu/vt-d: Ensure memory ordering in context &
- root entry updates
-Message-ID: <aV1C5tG_SRMe1yvL@mitya-t14-2025>
-References: <20251227175728.4358-1-dmaluka@chromium.org>
- <20260105181200.GH125261@ziepe.ca>
- <aVwI_SHHGPl0xndu@google.com>
- <20260105191410.GJ125261@ziepe.ca>
- <aVwZkFQ-iQ7OHMi2@google.com>
- <20260106001418.GK125261@ziepe.ca>
- <aV0TalseaDGW-1Jp@mitya-t14-2025>
- <20260106142301.GS125261@ziepe.ca>
- <aV0vM9ad-4QhCNaA@mitya-t14-2025>
- <20260106164518.GA340082@ziepe.ca>
+        d=1e100.net; s=20230601; t=1767724930; x=1768329730;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=CIXoBgSYkP/sd1BWOcNCLESjfDQLcEW6GaW2Kbu8M0A=;
+        b=EEknz28NRL6w1XFi5o3RECFkn9XEV1obzxA0vsAvhdN8KCPP/zuTXpW3SeM/PBhO1/
+         48esdnq7ZY3EUsCRS/+TvtwTvAPqmgoEMR8bKZ789F+09ryBgrZUvtR9/D8ygT5IG3fG
+         rFOsnA/VbzvWx2LjDcRo9BlUerFVYZvJ5GFV1xpPgX5T70IfbuAVzO3KFK14ilHKDRlf
+         I8E94B9zMwSuA5r6B9MFpEAeDI2FT9BtYtxr4Io1vkW/BRYqizkCByOFOPGWwp651XX/
+         kiES/ggLrt1bTyNWB8OEy0cy2i0NyBgFQUOnndueGa1ZqVG4TBuDWVwkcB5jJV5tujEZ
+         6YXg==
+X-Forwarded-Encrypted: i=1; AJvYcCUwNwZZioxK9PxkQSTjAOvPMQWNxi9jZ6y9Q8FLDbSrZYVi1C/+59wtmNiixqyhMO149TkO3A==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yyz7Nbv1jp0CmGFSztwjbjSIicxZd2MKU3UAgbX9nL1KpdcGIex
+	1bt4LuwMP0j5BqAxKCR9bCzKNWgT2N8hHJ+/jzW4zL7gY0DQjqLFRx+kloQVnDZBvZ4w6pP5Sp0
+	v5Li2haTY0qZ/RLYdHtP0FCB+1O91IWs=
+X-Gm-Gg: AY/fxX7ayVg3nBpCaIBT37ISVHo0yudySGWXAnu/CKuta//PYLaExYsbd4aEwXAkm33
+	i3DkR3dwH63XB51gopRwOzx037Oa4XAaZ5OFs/W1M6IYMuZkezRC8GyEBKaq/BsX27gqXAwDvt3
+	bmCEOWimOg5Q6IAy4zbg1EV9TBDCNs2zv9EKOFWGslKd0bPC/yKpgKyrw1aG8j0JbfBz6WgwK10
+	ztVSnWRXeE+b2dmgdfKFqAl7hNSouQ4nuLWVG8vu4PdTUbvwM9MIPhXjlF2vHt6Zhsh+A==
+X-Google-Smtp-Source: AGHT+IGzdDZdJH61h073/MhkLoyFPUTEGFa4biMd35SsepoUxfnatinjaLQUW4RiSiTNL7sRRTPCzkdKJMTlCl0LUrk=
+X-Received: by 2002:a05:6102:560f:b0:5df:aff3:c41c with SMTP id
+ ada2fe7eead31-5ec744a174bmr1358450137.30.1767724928829; Tue, 06 Jan 2026
+ 10:42:08 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260106164518.GA340082@ziepe.ca>
+References: <20251226225254.46197-1-21cnbao@gmail.com> <20251226225254.46197-6-21cnbao@gmail.com>
+ <20251227200933.GO11869@unreal> <CAGsJ_4yA83-K7PXiEtyidzF_j6qqKkt92z485KBS9+zGe_rjnw@mail.gmail.com>
+ <20251228145041.GS11869@unreal>
+In-Reply-To: <20251228145041.GS11869@unreal>
+From: Barry Song <21cnbao@gmail.com>
+Date: Wed, 7 Jan 2026 07:41:57 +1300
+X-Gm-Features: AQt7F2qVpIXArh0HsV3sq1RKrv0OCVapLrZHo6-0eziWiogqpS6BzLG8_AyfAb8
+Message-ID: <CAGsJ_4yex5MKQkGtFr2zUcg4h0PtsFs2QVcE_NSfiyOn4qBzhQ@mail.gmail.com>
+Subject: Re: [PATCH v2 5/8] dma-mapping: Support batch mode for dma_direct_sync_sg_for_*
+To: Leon Romanovsky <leon@kernel.org>
+Cc: catalin.marinas@arm.com, m.szyprowski@samsung.com, robin.murphy@arm.com, 
+	will@kernel.org, iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+	linux-kernel@vger.kernel.org, xen-devel@lists.xenproject.org, 
+	Ada Couprie Diaz <ada.coupriediaz@arm.com>, Ard Biesheuvel <ardb@kernel.org>, Marc Zyngier <maz@kernel.org>, 
+	Anshuman Khandual <anshuman.khandual@arm.com>, Ryan Roberts <ryan.roberts@arm.com>, 
+	Suren Baghdasaryan <surenb@google.com>, Tangquan Zheng <zhengtangquan@oppo.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jan 06, 2026 at 12:45:18PM -0400, Jason Gunthorpe wrote:
-> On Tue, Jan 06, 2026 at 04:50:11PM +0100, Dmytro Maluka wrote:
-> > So we'd better make sure that if it happens before the barrier (i.e.
-> > when the device is not supposed to do DMA), the compiler (and thus
-> > the CPU) doesn't set the present bit, so it stays non-present, so
-> > the IOMMU will block this unexpected/malicious DMA?
-> 
-> It is true that any write to the dword containing the present bit
-> (only!) should probably use WRITE_ONCE.
+On Mon, Dec 29, 2025 at 3:50=E2=80=AFAM Leon Romanovsky <leon@kernel.org> w=
+rote:
+>
+> On Sun, Dec 28, 2025 at 09:52:05AM +1300, Barry Song wrote:
+> > On Sun, Dec 28, 2025 at 9:09=E2=80=AFAM Leon Romanovsky <leon@kernel.or=
+g> wrote:
+> > >
+> > > On Sat, Dec 27, 2025 at 11:52:45AM +1300, Barry Song wrote:
+> > > > From: Barry Song <baohua@kernel.org>
+> > > >
+> > > > Instead of performing a flush per SG entry, issue all cache
+> > > > operations first and then flush once. This ultimately benefits
+> > > > __dma_sync_sg_for_cpu() and __dma_sync_sg_for_device().
+> > > >
+> > > > Cc: Leon Romanovsky <leon@kernel.org>
+> > > > Cc: Catalin Marinas <catalin.marinas@arm.com>
+> > > > Cc: Will Deacon <will@kernel.org>
+> > > > Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+> > > > Cc: Robin Murphy <robin.murphy@arm.com>
+> > > > Cc: Ada Couprie Diaz <ada.coupriediaz@arm.com>
+> > > > Cc: Ard Biesheuvel <ardb@kernel.org>
+> > > > Cc: Marc Zyngier <maz@kernel.org>
+> > > > Cc: Anshuman Khandual <anshuman.khandual@arm.com>
+> > > > Cc: Ryan Roberts <ryan.roberts@arm.com>
+> > > > Cc: Suren Baghdasaryan <surenb@google.com>
+> > > > Cc: Tangquan Zheng <zhengtangquan@oppo.com>
+> > > > Signed-off-by: Barry Song <baohua@kernel.org>
+> > > > ---
+> > > >  kernel/dma/direct.c | 14 +++++++-------
+> > > >  1 file changed, 7 insertions(+), 7 deletions(-)
+> > >
+> > > <...>
+> > >
+> > > > -             if (!dev_is_dma_coherent(dev)) {
+> > > > +             if (!dev_is_dma_coherent(dev))
+> > > >                       arch_sync_dma_for_device(paddr, sg->length,
+> > > >                                       dir);
+> > > > -                     arch_sync_dma_flush();
+> > > > -             }
+> > > >       }
+> > > > +     if (!dev_is_dma_coherent(dev))
+> > > > +             arch_sync_dma_flush();
+> > >
+> > > This patch should be squashed into the previous one. You introduced
+> > > arch_sync_dma_flush() there, and now you are placing it elsewhere.
+> >
+> > Hi Leon,
+> >
+> > The previous patch replaces all arch_sync_dma_for_* calls with
+> > arch_sync_dma_for_* plus arch_sync_dma_flush(), without any
+> > functional change. The subsequent patches then implement the
+> > actual batching. I feel this is a better approach for reviewing
+> > each change independently. Otherwise, the previous patch would
+> > be too large.
+>
+> Don't worry about it. Your patches are small enough.
 
-Yeah, I agree that for other dwords within an entry it isn't necessary.
+My hardware does not require a bounce buffer, but I am concerned that
+this patch may be incorrect for systems that do require one.
 
-So, when it comes to the actual code, it's not like the Intel IOMMU
-driver has lots of WRITE_ONCE spread all over the code. It's only in
-pasid_set_bits() and pasid_clear_entry(). Though, since pasid_set_bits()
-is used for setting any bits, as a result, WRITE_ONCE is also done for
-dwords that don't need it, but that doesn't hurt either.
+Now it is:
+
+void dma_direct_sync_sg_for_cpu(struct device *dev,
+                struct scatterlist *sgl, int nents, enum dma_data_direction=
+ dir)
+{
+        struct scatterlist *sg;
+        int i;
+
+        for_each_sg(sgl, sg, nents, i) {
+                phys_addr_t paddr =3D dma_to_phys(dev, sg_dma_address(sg));
+
+                if (!dev_is_dma_coherent(dev))
+                        arch_sync_dma_for_cpu(paddr, sg->length, dir);
+
+                swiotlb_sync_single_for_cpu(dev, paddr, sg->length, dir);
+
+                if (dir =3D=3D DMA_FROM_DEVICE)
+                        arch_dma_mark_clean(paddr, sg->length);
+        }
+
+        if (!dev_is_dma_coherent(dev)) {
+                arch_sync_dma_flush();
+                arch_sync_dma_for_cpu_all();
+        }
+}
+
+Should we call swiotlb_sync_single_for_cpu() and
+arch_dma_mark_clean() after the flush to ensure the CPU sees the
+latest data and that the memcpy is correct? I mean:
+
+void dma_direct_sync_sg_for_cpu(struct device *dev,
+                struct scatterlist *sgl, int nents, enum dma_data_direction=
+ dir)
+{
+        struct scatterlist *sg;
+        int i;
+
+        for_each_sg(sgl, sg, nents, i) {
+                phys_addr_t paddr =3D dma_to_phys(dev, sg_dma_address(sg));
+
+                if (!dev_is_dma_coherent(dev))
+                        arch_sync_dma_for_cpu(paddr, sg->length, dir);
+        }
+
+        if (!dev_is_dma_coherent(dev)) {
+                arch_sync_dma_flush();
+                arch_sync_dma_for_cpu_all();
+        }
+
+        for_each_sg(sgl, sg, nents, i) {
+                phys_addr_t paddr =3D dma_to_phys(dev, sg_dma_address(sg));
+
+                swiotlb_sync_single_for_cpu(dev, paddr, sg->length, dir);
+
+                if (dir =3D=3D DMA_FROM_DEVICE)
+                        arch_dma_mark_clean(paddr, sg->length);
+        }
+}
+
+Could this be the same issue for dma_direct_unmap_sg()?
+
+Another option is to not support batched synchronization for the bounce
+buffer case, since it is rare. In that case, it could be:
+
+diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+index 550a1a13148d..a4840f7e8722 100644
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -423,8 +423,11 @@ void dma_direct_sync_sg_for_cpu(struct device *dev,
+        for_each_sg(sgl, sg, nents, i) {
+                phys_addr_t paddr =3D dma_to_phys(dev, sg_dma_address(sg));
+
+-               if (!dev_is_dma_coherent(dev))
++               if (!dev_is_dma_coherent(dev)) {
+                        arch_sync_dma_for_cpu(paddr, sg->length, dir);
++                       if (unlikely(dev->dma_io_tlb_mem))
++                               arch_sync_dma_flush();
++               }
+
+                swiotlb_sync_single_for_cpu(dev, paddr, sg->length, dir);
+
+What=E2=80=99s your view on this, Leon?
+
+Thanks
+Barry
