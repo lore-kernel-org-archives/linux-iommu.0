@@ -1,69 +1,89 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f47.google.com (mail-qv1-f47.google.com [209.85.219.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B53A15ADB4;
-	Tue,  6 Jan 2026 13:59:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30877256C9E
+	for <iommu@lists.linux.dev>; Tue,  6 Jan 2026 14:23:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767707950; cv=none; b=GlAjolafAFt619KbkoO+48JkOEEq4ZvSSqU74NFOAAOv3KuvslCqPF6hT+rCCweGqUo4OWYuqbUQqkuX41c6PT6i4J6mr4I7IEDzGB09kQCoopmCESpaLxLbNKUPrOGBIt4HIoUvaWCiP6LaXi+eFQ4JLI+yP2aWg9hk8sm1pXk=
+	t=1767709385; cv=none; b=RXag7tDB2JN7ETfaT6ipAYLpmplFe4NrcTgBycJJCrAiqdZbNcl86eCMT1vweBC3vt0UzmbYVpFECk0na6tD4EJZMPMY6OUEMWER7KdEEesYqF9MWC/CEu4NLSR4XodI4ORcyOCM5le0BAKCN7y1GqK332OvWC6Z9zFnIqj4VNU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767707950; c=relaxed/simple;
-	bh=bATSEUYjKeNS7e/OIXZYGlu3IzOGHEmM0mmg91Ubd6Y=;
+	s=arc-20240116; t=1767709385; c=relaxed/simple;
+	bh=D3hn8o8W41ASib38yz54W9zJegHoNaEKK0H0y7laV3k=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=bhZWhRADfeKfWturCjo9BFwJRlrsKlF2Hvx8IctqxbJKSOdwIDrOraQH6zJlo4+U5P6lYOf0WjEeDTG2He7+X2AB3f9jejqZB92niDV7igqsErvANpkRJEq+T5cQHujQbGnl4CLPgOgt8fwr3J8qCvhk7NGBsy+iIBU795sj/fk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XC06cU5w; arc=none smtp.client-ip=198.175.65.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=JXWTr66Ob6kho8P/2SCfb8Mz87AY67gNXSWgE3HKqtjpSl5YItI1ae8NTpyU24nVeULTqUFtkZuC4LZID/NsZp/ng9Fk1xeokR0OPpPdmLGj1nn2b9i5s03/Dbyf02ASsN34yEjp4M1lIJavzXhFpbVGT6UVE29Hw2ApoTLUDaE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=ioWXoHVF; arc=none smtp.client-ip=209.85.219.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XC06cU5w"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1767707949; x=1799243949;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=bATSEUYjKeNS7e/OIXZYGlu3IzOGHEmM0mmg91Ubd6Y=;
-  b=XC06cU5wKTzRM0RE3tGgKGRon4VkTF6eQvGoCkD+PWtb3UwhnoAfVUN0
-   bx8arBfkGBWMt8pXFomLY4J/v2Zs1zekAD/Vn6eImxBUSenWf12F0VNmM
-   lHLiM5vHI2cPML/3hhMvP+dWzTGJFp0j/K8UsI0T6pLIMdkYiCAVI0paF
-   vo2Rl7WbBBLTPN9h3iRR/c2eTerxIftlG5LmbMNbIyQudaLXwPJKwYTeG
-   Ed+MiG4UajQ8EGY1s0w1KizJbMKeNg113Ph9eA3r3vg0BE/vDO4ZzAMJl
-   i4ESR1Q2lx7q0AYelwCDoqoRErz3ux3V/pldgN7qOaGkuPfaGJn4r6XCE
-   g==;
-X-CSE-ConnectionGUID: MzOGQRSfQmKY5iMyy18z3g==
-X-CSE-MsgGUID: KZHDcwuFS/qx5Ki9MxX9eA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11663"; a="72701211"
-X-IronPort-AV: E=Sophos;i="6.21,204,1763452800"; 
-   d="scan'208";a="72701211"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jan 2026 05:59:08 -0800
-X-CSE-ConnectionGUID: Kq4pX/UHTr+BztI2ExfctQ==
-X-CSE-MsgGUID: y6VDX6r9SaOkYhyKcKs3pw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,204,1763452800"; 
-   d="scan'208";a="226198576"
-Received: from lkp-server01.sh.intel.com (HELO 765f4a05e27f) ([10.239.97.150])
-  by fmviesa002.fm.intel.com with ESMTP; 06 Jan 2026 05:59:04 -0800
-Received: from kbuild by 765f4a05e27f with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1vd7aP-000000001zl-18zv;
-	Tue, 06 Jan 2026 13:59:01 +0000
-Date: Tue, 6 Jan 2026 21:58:53 +0800
-From: kernel test robot <lkp@intel.com>
-To: Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>,
-	robin.murphy@arm.com, will@kernel.org, joro@8bytes.org,
-	robh@kernel.org, dmitry.baryshkov@oss.qualcomm.com,
-	konrad.dybcio@oss.qualcomm.com, bjorn.andersson@oss.qualcomm.com,
-	bod@kernel.org, conor+dt@kernel.org, krzk+dt@kernel.org,
-	saravanak@google.com, prakash.gupta@oss.qualcomm.com,
-	vikash.garodia@oss.qualcomm.com
-Cc: oe-kbuild-all@lists.linux.dev, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-	Charan Teja Kalla <charan.kalla@oss.qualcomm.com>,
-	Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
-Subject: Re: [PATCH v4 2/3] of: factor arguments passed to of_map_id() into a
- struct
-Message-ID: <202601062128.BCmw1wNO-lkp@intel.com>
-References: <20251231114257.2382820-3-vijayanand.jitta@oss.qualcomm.com>
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="ioWXoHVF"
+Received: by mail-qv1-f47.google.com with SMTP id 6a1803df08f44-88a367a1dbbso13531096d6.0
+        for <iommu@lists.linux.dev>; Tue, 06 Jan 2026 06:23:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1767709383; x=1768314183; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=I0D3CvlFcm4pr/seu4ZgrWAYZBh6R3LQGn6S/koqnKc=;
+        b=ioWXoHVFgsGVxifT9sYUzyjmgUIkGwhLDYGe46e6Il85ivwxCEw8mLO9/Amr2kjL0q
+         +HQqoKeY7bC3A+U7a+hdzbdLVB2ZX7OrcFpAHdauZ2E6HCbiRtiDE9umptRs6buVWSZ6
+         JWl7sYa/0eoNVJTThS1OcHHuk2LxuFjj+Ia/zopJ0kcR888YhZC+xSCfx0kKPQXEsKLP
+         eL5VL0HMgAT/hEcVm1oPSg7bMi7wqvrpAfhzKb7ppXE8qR8JIGi7Fow2flJRHEF/OtMm
+         R3R35kH8EbTOyIloHajQkuph9NuLlgiRs3DrtaARHYgFtzsyk3+23kTXBbEBXQKi0uJb
+         ZpJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1767709383; x=1768314183;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=I0D3CvlFcm4pr/seu4ZgrWAYZBh6R3LQGn6S/koqnKc=;
+        b=ZfO7jQZ8kG0dMXBaoEeaGFdN7YlBFI7HHJYvOO179JD94dGeyBDAqZL/DOL5rGFIjS
+         FlMaNA4UIElBXnDUWdHwuFdkrKqbpPMaYGDcLyYqXgnILxStf0XyeK4nERZGe2nL1Ke4
+         KcLeIebrZ9cw1xW2U1OOOKqjaHkAcJSK2G6IHMHzwa71+82u0fa/zObjRqbsv5JE01mi
+         0ArcZaE3dKz42EiUZDIFOW/h3wEfNTP1GrUU6KFWivc9ays16q+Uxn2/K+oW3+gb2Yxw
+         LCpSkGUiQaiHcZdgENiRHSfbYyfQBJaZVGT7JlC+W2bw4LAoMgrPY39CWByrzrX5nMqn
+         CgRQ==
+X-Forwarded-Encrypted: i=1; AJvYcCU/z5/YwL1zv/UhJNNTRXaACDBTR2KfWojGMKo9rADnYvyWg3fkJKBquqFpETX5UrFUH9eHlQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy13EbFkcXp9KOfCHZSk2BPcXpKQ3kOln0/1GdDz2RNognrzPdD
+	CkPShvztGd6hlz2rFEiRk9J5KTVdBCIjYs8gtopMOMl+LwVNvdBfdaAUSRThTXdf/aY=
+X-Gm-Gg: AY/fxX5dQP/oWSRTtmIunIxlXja9q02V1/pB65OsjvtG1jFG9XydG+mdIl1VzHAejZt
+	P7xWyJfI6HPI57x1IgJargxO75z/IE3zIP++9ZHO4H/xBwqI3VtdhdcydPHtzekFRxA/0YopACG
+	tkX7pW4HDMiPkujRb8H/q4OO5+t1823I5oMscNHSoJTyhpcZx0emQ5L6yGXPjKF61FSScPeAp+W
+	AHgiTg2xq+FlVxlV4T2s1hi0jdpe3KDPoWF1UsmTvC/7+VoR4KBgK0BZ9bhuWUkpEF83xNqS3d/
+	EhQy/hO4F3N1peplahZ0Ui4rH2eetr6qIIFv18YS1+qEbLuATyUuzFkMfqGTkmxZpsZzBJrZHN8
+	klU834yE21sVxiOAQEQNT5TIETFsLIlik3Rd/9wdMgYEvrvWuWnn89pHvyNK0jPU+B363lE14T6
+	RpfZeY4YB3PI24OgpRrmqZmXcAAkuCMwXWwaKrDxne+pUgimXkW2wWvWAljvRheDsrgFE=
+X-Google-Smtp-Source: AGHT+IFzGRnnY+E+PXxkKzl3qVqNXYs8quD8xdQVu6fDbp50qflJwpcycz/Aa/6inYojSY9MRZgTJw==
+X-Received: by 2002:a05:6214:590f:b0:87b:f369:35d2 with SMTP id 6a1803df08f44-89075ebba0amr44896036d6.39.1767709383008;
+        Tue, 06 Jan 2026 06:23:03 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-162-112-119.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.112.119])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-890772682besm14029016d6.50.2026.01.06.06.23.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 06 Jan 2026 06:23:02 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1vd7xd-00000001QS0-3KsY;
+	Tue, 06 Jan 2026 10:23:01 -0400
+Date: Tue, 6 Jan 2026 10:23:01 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Dmytro Maluka <dmaluka@chromium.org>
+Cc: David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>, iommu@lists.linux.dev,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
+	"Vineeth Pillai (Google)" <vineeth@bitbyteword.org>,
+	Aashish Sharma <aashish@aashishsharma.net>,
+	Grzegorz Jaszczyk <jaszczyk@chromium.org>,
+	Chuanxiao Dong <chuanxiao.dong@intel.com>,
+	Kevin Tian <kevin.tian@intel.com>
+Subject: Re: [PATCH v2 0/5] iommu/vt-d: Ensure memory ordering in context &
+ root entry updates
+Message-ID: <20260106142301.GS125261@ziepe.ca>
+References: <20251227175728.4358-1-dmaluka@chromium.org>
+ <20260105181200.GH125261@ziepe.ca>
+ <aVwI_SHHGPl0xndu@google.com>
+ <20260105191410.GJ125261@ziepe.ca>
+ <aVwZkFQ-iQ7OHMi2@google.com>
+ <20260106001418.GK125261@ziepe.ca>
+ <aV0TalseaDGW-1Jp@mitya-t14-2025>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -72,77 +92,56 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20251231114257.2382820-3-vijayanand.jitta@oss.qualcomm.com>
+In-Reply-To: <aV0TalseaDGW-1Jp@mitya-t14-2025>
 
-Hi Vijayanand,
+On Tue, Jan 06, 2026 at 02:51:38PM +0100, Dmytro Maluka wrote:
+> >    WRITE_ONCE(non-present)
+> >    dma_wmb()
+> >    <cmd to flush caches>
+> 
+> Regarding a barrier after clearing present bit - good point, I should
+> probably add that to my patch 4 as well.
 
-kernel test robot noticed the following build warnings:
+It is already integrated into <cmd to flush caches> I showed it here
+for clarity.
 
-[auto build test WARNING on xen-tip/linux-next]
-[cannot apply to robh/for-next pci/next pci/for-linus linus/master v6.19-rc4 next-20260106]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+> Regarding flushing caches right after that - what for? (BTW the Intel
+> driver doesn't do that either.) If we don't do that and as a result the
+> HW is using an old entry cached before we cleared the present bit, it
+> is not affected by our later modifications anyway.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Vijayanand-Jitta/of-Add-convenience-wrappers-for-of_map_id/20251231-194928
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/xen/tip.git linux-next
-patch link:    https://lore.kernel.org/r/20251231114257.2382820-3-vijayanand.jitta%40oss.qualcomm.com
-patch subject: [PATCH v4 2/3] of: factor arguments passed to of_map_id() into a struct
-config: alpha-allyesconfig (https://download.01.org/0day-ci/archive/20260106/202601062128.BCmw1wNO-lkp@intel.com/config)
-compiler: alpha-linux-gcc (GCC) 15.1.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260106/202601062128.BCmw1wNO-lkp@intel.com/reproduce)
+You don't know what state the HW fetcher is in. This kind of race is possible:
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202601062128.BCmw1wNO-lkp@intel.com/
+     CPU                 FETCHER
+                        read present = 1
+    present = 0
+    mangle qword 1
+                        read qword 1
+                        < fail - HW sees a corrupted entry >
 
-All warnings (new ones prefixed by >>):
+The flush is not just a flush but a barrier to synchronize with the HW
+that it is done all fetches that may have been dependent on seeing
+present = 1.
 
-   In file included from drivers/cdx/cdx_msi.c:8:
-   In function 'of_map_msi_id',
-       inlined from 'cdx_msi_prepare' at drivers/cdx/cdx_msi.c:131:8:
->> include/linux/of.h:1451:30: warning: 'dev_id' is used uninitialized [-Wuninitialized]
-    1451 |         struct of_map_id_arg arg = {
-         |                              ^~~
-   drivers/cdx/cdx_msi.c: In function 'cdx_msi_prepare':
-   drivers/cdx/cdx_msi.c:127:13: note: 'dev_id' was declared here
-     127 |         u32 dev_id;
-         |             ^~~~~~
---
-   drivers/pci/controller/dwc/pci-imx6.c: In function 'imx_pcie_add_lut_by_rid':
->> drivers/pci/controller/dwc/pci-imx6.c:1112:30: warning: 'sid_i' is used uninitialized [-Wuninitialized]
-    1112 |         arg.map_args.args[0] = sid_i;
-         |         ~~~~~~~~~~~~~~~~~~~~~^~~~~~~
-   drivers/pci/controller/dwc/pci-imx6.c:1105:13: note: 'sid_i' was declared here
-    1105 |         u32 sid_i, sid_m;
-         |             ^~~~~
->> drivers/pci/controller/dwc/pci-imx6.c:1126:17: warning: 'sid_m' is used uninitialized [-Wuninitialized]
-    1126 |         err_m = of_map_msi_id(dev->of_node, rid, &target, &sid_m);
-         |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/pci/controller/dwc/pci-imx6.c:1105:20: note: 'sid_m' was declared here
-    1105 |         u32 sid_i, sid_m;
-         |                    ^~~~~
+So missing a flush after clearing present is possibly a bug today - I
+don't remember what guarenteed the atomic size is for Intel IOMMU
+though, if the atomic size is the whole entry it is OK since there is
+only one fetcher read. Though AMD is 128 bits and ARM is 64 bits.
 
+> I was talking about compiler guarantees, not HW guarantees. I mean: when
+> setting some other bit in the entry before the barrier, if we do that
+> without WRITE_ONCE, with a mere "foo |= bar", are we certain the
+> compiler will not implement that as, for example, setting the value to
+> 0xffffffffffffffff and then clearing other bits (for whatever crazy
+> reason)? That would be still a legal thing for the compiler to do, in
+> terms of its single-thread guarantees?
 
-vim +/dev_id +1451 include/linux/of.h
+The HW doesn't read the values the CPU is writing, so it doesn't
+matter if the compiler does something strange. That is the whole
+justification for why it is possible to code it like this at all.
 
-  1447	
-  1448	static inline int of_map_msi_id(const struct device_node *np, u32 id,
-  1449					struct device_node **target, u32 *id_out)
-  1450	{
-> 1451		struct of_map_id_arg arg = {
-  1452			.map_args = {
-  1453				.np = *target,
-  1454				.args_count = 1,
-  1455				.args = { *id_out },
-  1456			},
-  1457		};
-  1458	
-  1459		return of_map_id(np, id, "msi-map", "msi-map-mask", &arg);
-  1460	}
-  1461	
+The dma_mb() is also a compiler barrier and ensures all that
+uncertainty is resolved. Once it completes a DMA from the HW will see
+the program defined values only.
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Jason
