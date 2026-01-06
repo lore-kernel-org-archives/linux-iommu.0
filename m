@@ -1,25 +1,25 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7CDFB30F55F
-	for <iommu@lists.linux.dev>; Tue,  6 Jan 2026 18:51:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 69631355050
+	for <iommu@lists.linux.dev>; Tue,  6 Jan 2026 19:12:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767725464; cv=none; b=gJHITYYsvY9ZJpqnmsG0IdSphHC+OS11c2s3idOJPySVB/iNGcim76qm+Ay196vLitff6haC1d30ztoivLgkQnE3S1s9wMJd5EzWS8K3oU++53ENEBBY7jg1Z702LDfSOOHDNoESQuBlO/WlZwpZEfIEeWkDhUB0wTPJCYfOc+8=
+	t=1767726730; cv=none; b=gyDKHQvnXQsfrwP9ZDeKY5X53cAZJrKeRJOHMb0h9AjRWGx3sYvqpJeiv8m9ub4uDVtmV6h5YgTVdtrwv+n1wZCf7AgSqUp9Glj0pCishYbH5BzoVg7B3PacQ2WlEDy9Xyjb66BnMABie6Ew8xg3LTtHm8WVxFzyK/Aw+19lzvU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767725464; c=relaxed/simple;
-	bh=7LU2IieSdrwxa9q8owXuIsOk8it20eQCQUVEuE/0NtE=;
+	s=arc-20240116; t=1767726730; c=relaxed/simple;
+	bh=SDzQKGWuO/sdn64pswtkgKtgQjm2NSK1ETlO5wGxiHA=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=rIjP3LyU0WX1QRmsY0TGJPw0b4n3zQwv/a3jC+q/EZxgkQjlYB6XfoslZSHJNLxfz2o8Qq3C1U+rmieahd8kWhlZo5FTMWMrD/cCbcx0Cx24BERcY8mErWAyo/J4QvZLTMXd3wD3aTrBRaPzGZ2Dz4svIHaxJtfsPWeV3L2lWik=
+	 In-Reply-To:Content-Type; b=RC7VK+D0szAW+xIctcQxNuR8VJCAL4gtGVW+74yATtJmTE6vRm9Te08BheJkZK7kgDtxaUJVnSXm7pEtExuiv7vrFrjxqg+5sKHOxsnIjQZW2h3TAZra0QsGzZqKVMe5CGpfZ+MlfZ4fXgYr3OTiBiDrHkZ8qk/oA994XIafY40=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9033A497;
-	Tue,  6 Jan 2026 10:50:52 -0800 (PST)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C9CDB497;
+	Tue,  6 Jan 2026 11:12:00 -0800 (PST)
 Received: from [10.57.46.241] (unknown [10.57.46.241])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E77303F6A8;
-	Tue,  6 Jan 2026 10:50:57 -0800 (PST)
-Message-ID: <9a86120e-c0be-4ed5-a3de-cc7f164da154@arm.com>
-Date: Tue, 6 Jan 2026 18:50:55 +0000
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1C7853F5A1;
+	Tue,  6 Jan 2026 11:12:04 -0800 (PST)
+Message-ID: <de876e61-42c5-414d-b439-2f9196c6c128@arm.com>
+Date: Tue, 6 Jan 2026 19:12:02 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -27,144 +27,178 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [REGRESSION] qcom: iommu: nullpointer dereference on boot on
- apq8064
-To: Jason Gunthorpe <jgg@ziepe.ca>,
- Christian Schrefl <chrisi.schrefl@gmail.com>
-Cc: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
- Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
- Rob Clark <robin.clark@oss.qualcomm.com>,
- Matti Vaittinen <mazziesaccount@gmail.com>, iommu@lists.linux.dev,
- linux-arm-msm@vger.kernel.org, Rudraksha Gupta <guptarud@gmail.com>
-References: <569d7de2-cfcd-4d28-8bbf-14a0179f665e@gmail.com>
- <20260105180213.GG125261@ziepe.ca>
+Subject: Re: [PATCH v2 5/8] dma-mapping: Support batch mode for
+ dma_direct_sync_sg_for_*
+To: Barry Song <21cnbao@gmail.com>, Leon Romanovsky <leon@kernel.org>
+Cc: catalin.marinas@arm.com, m.szyprowski@samsung.com, will@kernel.org,
+ iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, xen-devel@lists.xenproject.org,
+ Ada Couprie Diaz <ada.coupriediaz@arm.com>, Ard Biesheuvel
+ <ardb@kernel.org>, Marc Zyngier <maz@kernel.org>,
+ Anshuman Khandual <anshuman.khandual@arm.com>,
+ Ryan Roberts <ryan.roberts@arm.com>, Suren Baghdasaryan <surenb@google.com>,
+ Tangquan Zheng <zhengtangquan@oppo.com>
+References: <20251226225254.46197-1-21cnbao@gmail.com>
+ <20251226225254.46197-6-21cnbao@gmail.com> <20251227200933.GO11869@unreal>
+ <CAGsJ_4yA83-K7PXiEtyidzF_j6qqKkt92z485KBS9+zGe_rjnw@mail.gmail.com>
+ <20251228145041.GS11869@unreal>
+ <CAGsJ_4yex5MKQkGtFr2zUcg4h0PtsFs2QVcE_NSfiyOn4qBzhQ@mail.gmail.com>
 From: Robin Murphy <robin.murphy@arm.com>
 Content-Language: en-GB
-In-Reply-To: <20260105180213.GG125261@ziepe.ca>
+In-Reply-To: <CAGsJ_4yex5MKQkGtFr2zUcg4h0PtsFs2QVcE_NSfiyOn4qBzhQ@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 2026-01-05 6:02 pm, Jason Gunthorpe wrote:
-> On Mon, Dec 29, 2025 at 11:26:42PM +0100, Christian Schrefl wrote:
->> Hi everyone,
+On 2026-01-06 6:41 pm, Barry Song wrote:
+> On Mon, Dec 29, 2025 at 3:50 AM Leon Romanovsky <leon@kernel.org> wrote:
 >>
->> I've found a panic on boot with v6.19-rc3 on the asus-nexus7-flo tablet with a APQ8064 CPU.
+>> On Sun, Dec 28, 2025 at 09:52:05AM +1300, Barry Song wrote:
+>>> On Sun, Dec 28, 2025 at 9:09 AM Leon Romanovsky <leon@kernel.org> wrote:
+>>>>
+>>>> On Sat, Dec 27, 2025 at 11:52:45AM +1300, Barry Song wrote:
+>>>>> From: Barry Song <baohua@kernel.org>
+>>>>>
+>>>>> Instead of performing a flush per SG entry, issue all cache
+>>>>> operations first and then flush once. This ultimately benefits
+>>>>> __dma_sync_sg_for_cpu() and __dma_sync_sg_for_device().
+>>>>>
+>>>>> Cc: Leon Romanovsky <leon@kernel.org>
+>>>>> Cc: Catalin Marinas <catalin.marinas@arm.com>
+>>>>> Cc: Will Deacon <will@kernel.org>
+>>>>> Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+>>>>> Cc: Robin Murphy <robin.murphy@arm.com>
+>>>>> Cc: Ada Couprie Diaz <ada.coupriediaz@arm.com>
+>>>>> Cc: Ard Biesheuvel <ardb@kernel.org>
+>>>>> Cc: Marc Zyngier <maz@kernel.org>
+>>>>> Cc: Anshuman Khandual <anshuman.khandual@arm.com>
+>>>>> Cc: Ryan Roberts <ryan.roberts@arm.com>
+>>>>> Cc: Suren Baghdasaryan <surenb@google.com>
+>>>>> Cc: Tangquan Zheng <zhengtangquan@oppo.com>
+>>>>> Signed-off-by: Barry Song <baohua@kernel.org>
+>>>>> ---
+>>>>>   kernel/dma/direct.c | 14 +++++++-------
+>>>>>   1 file changed, 7 insertions(+), 7 deletions(-)
+>>>>
+>>>> <...>
+>>>>
+>>>>> -             if (!dev_is_dma_coherent(dev)) {
+>>>>> +             if (!dev_is_dma_coherent(dev))
+>>>>>                        arch_sync_dma_for_device(paddr, sg->length,
+>>>>>                                        dir);
+>>>>> -                     arch_sync_dma_flush();
+>>>>> -             }
+>>>>>        }
+>>>>> +     if (!dev_is_dma_coherent(dev))
+>>>>> +             arch_sync_dma_flush();
+>>>>
+>>>> This patch should be squashed into the previous one. You introduced
+>>>> arch_sync_dma_flush() there, and now you are placing it elsewhere.
+>>>
+>>> Hi Leon,
+>>>
+>>> The previous patch replaces all arch_sync_dma_for_* calls with
+>>> arch_sync_dma_for_* plus arch_sync_dma_flush(), without any
+>>> functional change. The subsequent patches then implement the
+>>> actual batching. I feel this is a better approach for reviewing
+>>> each change independently. Otherwise, the previous patch would
+>>> be too large.
 >>
->> I've bisected it down to commit bcb81ac6ae3c ("iommu: Get DT/ACPI parsing into the proper
->> probe path"). Reverting the drivers/iommu/iommu.c changes (removing the added if block)
->> fixes the crash, but that presumably exists for a reason.
->> The diff for the fix:
->> ```
->> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->> index 2ca990dfbb88..9f32d70b207d 100644
->> --- a/drivers/iommu/iommu.c
->> +++ b/drivers/iommu/iommu.c
->> @@ -453,14 +453,6 @@ static int iommu_init_device(struct device *dev)
->>           * already having a driver bound means dma_configure has already run and
->>           * found no IOMMU to wait for, so there's no point calling it again.
->>           */
->> -       if (!dev->iommu->fwspec && !dev->driver && dev->bus->dma_configure) {
->> -               mutex_unlock(&iommu_probe_device_lock);
->> -               dev->bus->dma_configure(dev);
->> -               mutex_lock(&iommu_probe_device_lock);
->> -               /* If another instance finished the job for us, skip it */
->> -               if (!dev->iommu || dev->iommu_group)
->> -                       return -ENODEV;
->> -       }
->>          /*
->>           * At this point, relevant devices either now have a fwspec which will
->>           * match ops registered with a non-NULL fwnode, or we can reasonably
->> ```
+>> Don't worry about it. Your patches are small enough.
 > 
->> [    5.900971] Call trace:
->> [    5.900999]  qcom_iommu_of_xlate from of_iommu_xlate+0x7c/0x9c
+> My hardware does not require a bounce buffer, but I am concerned that
+> this patch may be incorrect for systems that do require one.
 > 
-> Did you look at what line in qcom_iommu_of_xlate() is crashing with
-> NULL pointer?
+> Now it is:
 > 
-> It wasn't so obvious to me what it could be..
+> void dma_direct_sync_sg_for_cpu(struct device *dev,
+>                  struct scatterlist *sgl, int nents, enum dma_data_direction dir)
+> {
+>          struct scatterlist *sg;
+>          int i;
+> 
+>          for_each_sg(sgl, sg, nents, i) {
+>                  phys_addr_t paddr = dma_to_phys(dev, sg_dma_address(sg));
+> 
+>                  if (!dev_is_dma_coherent(dev))
+>                          arch_sync_dma_for_cpu(paddr, sg->length, dir);
+> 
+>                  swiotlb_sync_single_for_cpu(dev, paddr, sg->length, dir);
+> 
+>                  if (dir == DMA_FROM_DEVICE)
+>                          arch_dma_mark_clean(paddr, sg->length);
+>          }
+> 
+>          if (!dev_is_dma_coherent(dev)) {
+>                  arch_sync_dma_flush();
+>                  arch_sync_dma_for_cpu_all();
+>          }
+> }
+> 
+> Should we call swiotlb_sync_single_for_cpu() and
+> arch_dma_mark_clean() after the flush to ensure the CPU sees the
+> latest data and that the memcpy is correct? I mean:
 
-Comparing the "Code:" line from the dump against a local build, this
-looks to be the dereference of master->num_mids at the start of the
-loop.
-
-> Though this looks really weird:
-> 
->          struct msm_iommu_ctx_dev *master = dev_iommu_priv_get(dev);
->          int sid;
-> 
->          if (list_empty(&(*iommu)->ctx_list)) {
->                  master = kzalloc(sizeof(*master), GFP_ATOMIC);
-> 
-> So maybe master is NULL and !list_empty()?
-
-AFAICS that could happen if of_xlate has run once, and then for whatever
-reason dev->iommu is torn down and the whole process started from
-scratch a second time - although I'm struggling to see any obvious cause
-for that in the absence of any other visible errors or async probe
-races (and assuming that the IOMMUs on this platform ever actually
-worked at all, of course...)
-
-However it certainly stands out as a bit wrong that of_xlate is touching
-the IOMMU instance itself - that should never have been expected to work
-well. Does the diff below help?
+Yes, this and the equivalents in the later patches are broken for all 
+the sync_for_cpu and unmap paths which may end up bouncing (beware some 
+of them get a bit fiddly) - any cache maintenance *must* be completed 
+before calling SWIOTLB. As for mark_clean, IIRC that was an IA-64 thing, 
+and appears to be entirely dead now.
 
 Thanks,
 Robin.
 
------>8-----
-diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
-index 819add75a665..e57780fc3287 100644
---- a/drivers/iommu/msm_iommu.c
-+++ b/drivers/iommu/msm_iommu.c
-@@ -360,14 +360,11 @@ static int msm_iommu_domain_config(struct msm_priv *priv)
-  /* Must be called under msm_iommu_lock */
-  static struct msm_iommu_dev *find_iommu_for_dev(struct device *dev)
-  {
-+	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-  	struct msm_iommu_dev *iommu, *ret = NULL;
--	struct msm_iommu_ctx_dev *master;
-  
-  	list_for_each_entry(iommu, &qcom_iommu_devices, dev_node) {
--		master = list_first_entry(&iommu->ctx_list,
--					  struct msm_iommu_ctx_dev,
--					  list);
--		if (master->of_node == dev->of_node) {
-+		if (iommu->dev->fwnode == fwspec->iommu_fwnode) {
-  			ret = iommu;
-  			break;
-  		}
-@@ -378,6 +375,7 @@ static struct msm_iommu_dev *find_iommu_for_dev(struct device *dev)
-  
-  static struct iommu_device *msm_iommu_probe_device(struct device *dev)
-  {
-+	struct msm_iommu_ctx_dev *master;
-  	struct msm_iommu_dev *iommu;
-  	unsigned long flags;
-  
-@@ -388,6 +386,8 @@ static struct iommu_device *msm_iommu_probe_device(struct device *dev)
-  	if (!iommu)
-  		return ERR_PTR(-ENODEV);
-  
-+	master = dev_iommu_priv_get(dev);
-+	list_add(&master->list, &iommu->ctx_list);
-  	return &iommu->iommu;
-  }
-  
-@@ -604,14 +604,13 @@ static int insert_iommu_master(struct device *dev,
-  	struct msm_iommu_ctx_dev *master = dev_iommu_priv_get(dev);
-  	int sid;
-  
--	if (list_empty(&(*iommu)->ctx_list)) {
-+	if (!master) {
-  		master = kzalloc(sizeof(*master), GFP_ATOMIC);
-  		if (!master) {
-  			dev_err(dev, "Failed to allocate iommu_master\n");
-  			return -ENOMEM;
-  		}
-  		master->of_node = dev->of_node;
--		list_add(&master->list, &(*iommu)->ctx_list);
-  		dev_iommu_priv_set(dev, master);
-  	}
-  
+> void dma_direct_sync_sg_for_cpu(struct device *dev,
+>                  struct scatterlist *sgl, int nents, enum dma_data_direction dir)
+> {
+>          struct scatterlist *sg;
+>          int i;
+> 
+>          for_each_sg(sgl, sg, nents, i) {
+>                  phys_addr_t paddr = dma_to_phys(dev, sg_dma_address(sg));
+> 
+>                  if (!dev_is_dma_coherent(dev))
+>                          arch_sync_dma_for_cpu(paddr, sg->length, dir);
+>          }
+> 
+>          if (!dev_is_dma_coherent(dev)) {
+>                  arch_sync_dma_flush();
+>                  arch_sync_dma_for_cpu_all();
+>          }
+> 
+>          for_each_sg(sgl, sg, nents, i) {
+>                  phys_addr_t paddr = dma_to_phys(dev, sg_dma_address(sg));
+> 
+>                  swiotlb_sync_single_for_cpu(dev, paddr, sg->length, dir);
+> 
+>                  if (dir == DMA_FROM_DEVICE)
+>                          arch_dma_mark_clean(paddr, sg->length);
+>          }
+> }
+> 
+> Could this be the same issue for dma_direct_unmap_sg()?
+> 
+> Another option is to not support batched synchronization for the bounce
+> buffer case, since it is rare. In that case, it could be:
+> 
+> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+> index 550a1a13148d..a4840f7e8722 100644
+> --- a/kernel/dma/direct.c
+> +++ b/kernel/dma/direct.c
+> @@ -423,8 +423,11 @@ void dma_direct_sync_sg_for_cpu(struct device *dev,
+>          for_each_sg(sgl, sg, nents, i) {
+>                  phys_addr_t paddr = dma_to_phys(dev, sg_dma_address(sg));
+> 
+> -               if (!dev_is_dma_coherent(dev))
+> +               if (!dev_is_dma_coherent(dev)) {
+>                          arch_sync_dma_for_cpu(paddr, sg->length, dir);
+> +                       if (unlikely(dev->dma_io_tlb_mem))
+> +                               arch_sync_dma_flush();
+> +               }
+> 
+>                  swiotlb_sync_single_for_cpu(dev, paddr, sg->length, dir);
+> 
+> What’s your view on this, Leon?
+> 
+> Thanks
+> Barry
 
