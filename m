@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B038238C33;
-	Tue,  6 Jan 2026 06:37:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62B46306B11;
+	Tue,  6 Jan 2026 06:39:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767681475; cv=none; b=hVMJ9piBmOHXd3Zy4KMLUYbLShpECzYXJe9MOAMfLZ0bbTsnOjGgm9Nb4uWIurTQCAe43JWLEr71OjWZqMudvDI57EiBqQUnVchCwtZqtgElAS4uUK/e5RIGB/AZz1Uo/+AxT2694GDSrpzPcluVZNTGOxgZ+VcrE+MBO5i8FC8=
+	t=1767681592; cv=none; b=CU63avmPc5VayLUn6RMxNTYAmtdoDl/u/yKuo4WNhMNCBbzhpcJbYUts4v2aJqIs8hOskJnJh0xNT5dQX9VDZmPhQxq5niLysw6kToW2R5cda4CeCvNw8ok/W00P6bBHKUloLHRhxqFSp9ALb8RdokrHTae/auL7hOWwhmNxiNA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767681475; c=relaxed/simple;
-	bh=BTY3qbG6lw8MNKTh9vwaWJkOKG3i9gvUi5qIYXM9YIg=;
+	s=arc-20240116; t=1767681592; c=relaxed/simple;
+	bh=BN+TWnmNdOA+F/DmI99DzHmyTksArNl2AaNzWqG3JK0=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=k6bqqsu6v+qMWcH+wM5RFpR8m3jsYgl2F94s2EdWtSLvRw3zlTZ6u6yYiAb9Jz3FCD0bHhS0dXF9q7yYNZM5S3cbpCvYt++zRVSfhLjkp74BaJ2oiehP1RhBpg52bGT3D3WldT6nTTY+hwWcG/POIqCJ6DkWfpy84gYbhNjU0Dc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Djtf/fF7; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=H3bR4Id6U/ud9PhreXzoHJItMW2wJULCV0AK2ZzrOaBstmFNUHZMxNfRp3Qtvk8GjbfeqyOgV/2J4sapCQq4xLmAX9wZ0I9ODxRHcdnQwhmv1pmmt/vIPz2ZeskNSoWK9XTBmzaMIJoQSS94aEZq9abiwJSGtUU9Uljk84amCeY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Fa3TqpWS; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Djtf/fF7"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2C5DC116C6;
-	Tue,  6 Jan 2026 06:37:51 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Fa3TqpWS"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78EB7C116C6;
+	Tue,  6 Jan 2026 06:39:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1767681475;
-	bh=BTY3qbG6lw8MNKTh9vwaWJkOKG3i9gvUi5qIYXM9YIg=;
+	s=k20201202; t=1767681591;
+	bh=BN+TWnmNdOA+F/DmI99DzHmyTksArNl2AaNzWqG3JK0=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=Djtf/fF77dkGoLZRmeYTtQMKDKuZXspyLiBRn8sLLSZN58LqZ4Hwy0AdqFJuB84OR
-	 t9EDKmBnh/Qfosrc+v/UxfkKeR6+lTJ1urj9DVQWN4uEYZxSti2KpGV6PiC4cd143J
-	 vP5EMfWvC9TOmUttC0bP1TGSrAcb2Lk5Uqc5y+/C+GfMkHQW2U08ge5KyYUDvmt6BD
-	 gtf1T1ds/IIn4FNLdTTZii7RR5y9aeZo3uG/xYBQzmMS1yLTDPGzUB3tusZIY0IdrC
-	 iNhheNm470/0lnEbDE8/8q3ac5ekQE5sXL1B7S+6ohY+2atF8tUTfpK4B9mOZ/wbuO
-	 5sGgbBv8bo5Wg==
+	b=Fa3TqpWS2k1O+lDyc7kHEf8oqN7d1dSAGg2BTYVbxpM7VVxD3jaK/sFr9qnLNvkRS
+	 zXBXzfh+6ZmULWWJWF/4as87uTJITNiSde79xH/8V+iTARfzxPVn2vSE0F0aKabLjB
+	 Li5C3AjsWItWFjIynmT4eAQIwpid61ufDF8jw5tLyOhrV7eXOJBXA0XlCDnyokE0sA
+	 lIxd16gN0u3Q9cPl3uNh8ecFBrO/Gs48S1BPyEqcfht+t6VN/RDopBvEtb9iwcvIQO
+	 h25KVLyIqBBRHaUFP/0/X/oErvYjoajq6VwrrrC2ke/yptBAujBC6gYaEjEYKarLGU
+	 iRoK3wJZ1KcFA==
 X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
 From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
 To: Jason Gunthorpe <jgg@ziepe.ca>
@@ -35,75 +35,76 @@ Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
 	maz@kernel.org, tglx@linutronix.de, robin.murphy@arm.com,
 	suzuki.poulose@arm.com, akpm@linux-foundation.org,
 	steven.price@arm.com
-Subject: Re: [PATCH v2 1/4] swiotlb: dma: its: Enforce host page-size
- alignment for shared buffers
-In-Reply-To: <20260106011636.GQ125261@ziepe.ca>
+Subject: Re: [PATCH v2 0/4] Enforce host page-size alignment for shared buffers
+In-Reply-To: <20260106011143.GP125261@ziepe.ca>
 References: <20251221160920.297689-1-aneesh.kumar@kernel.org>
- <20251221160920.297689-2-aneesh.kumar@kernel.org>
- <20260106011636.GQ125261@ziepe.ca>
-Date: Tue, 06 Jan 2026 12:07:48 +0530
-Message-ID: <yq5a7btvjlfn.fsf@kernel.org>
+ <20260106011143.GP125261@ziepe.ca>
+Date: Tue, 06 Jan 2026 12:09:45 +0530
+Message-ID: <yq5a4iozjlce.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
 Jason Gunthorpe <jgg@ziepe.ca> writes:
 
-> On Sun, Dec 21, 2025 at 09:39:17PM +0530, Aneesh Kumar K.V (Arm) wrote:
->> +#define mem_encrypt_align mem_encrypt_align
->> +static inline size_t mem_encrypt_align(size_t size)
->> +{
->> +	return size;
->> +}
->> +
+> On Sun, Dec 21, 2025 at 09:39:16PM +0530, Aneesh Kumar K.V (Arm) wrote:
+>> Hi all,
+>>=20
+>> This patch series addresses alignment requirements for buffers shared be=
+tween
+>> private-memory guests and the host.
+>>=20
+>> When running private-memory guests, the guest kernel must apply addition=
+al
+>> constraints when allocating buffers that are shared with the hypervisor.=
+ These
+>> shared buffers are also accessed by the host kernel and therefore must be
+>> aligned to the host=E2=80=99s page size.
+>>=20
+>> Architectures such as Arm can tolerate realm physical address space PFNs=
+ being
+>> mapped as shared memory, as incorrect accesses are detected and reported=
+ as GPC
+>> faults. However, relying on this mechanism alone is unsafe and can still=
+ lead to
+>> kernel crashes.
+>>=20
+>> This is particularly likely when guest_memfd allocations are mmapped and
+>> accessed from userspace. Once exposed to userspace, it is not possible to
+>> guarantee that applications will only access the intended 4K shared regi=
+on
+>> rather than the full 64K page mapped into their address space. Such user=
+space
+>> addresses may also be passed back into the kernel and accessed via the l=
+inear
+>> map, potentially resulting in a GPC fault and a kernel crash.
+>>=20
+>> To address this, the series introduces a new helper, `mem_encrypt_align(=
+)`,
+>> which allows callers to enforce the required alignment for shared buffer=
+s.
 >
-> IMHO this is the wrong API.
+> This explanation makes sense, but to maybe bottom line the requirement
+> to something very simple..
 >
-> The issue here is not about alignment, it is about the permitted
-> granule size for shared/private.
+>  In ARM64 the guest shared/private granule size must be >=3D the
+>  hypervisor PAGE_SIZE, which may be larger than the VM's natural
+>  PAGE_SIZE.
 >
-> On X86 this will be PAGE_SIZE on ARM64 it is
->   max(hypervisor_page_size, PAGE_SIZE)
->
-> So think the arch helper should simply be
->
->   __pure size_T mem_encrypt_granule_size(void);
->
->> +	if (WARN_ON(!IS_ALIGNED(addr, mem_encrypt_align(PAGE_SIZE))))
->> +		return 0;
->> +
->> +	if (WARN_ON(!IS_ALIGNED(numpages << PAGE_SHIFT, mem_encrypt_align(PAGE_SIZE))))
->> +		return 0;
->
-> And then we don't end up with weiro reading stuff like this..
->
-> if (WARN_ON(!IS_ALIGNED(addr, mem_encrypt_granule_size())) ||
->     WARN_ON(!IS_ALIGNED(numpages, mem_encrypt_granule_size() / PAGE_SIZE)))
->
-> Is much more readable..
+> Meaning we have to go through an change all the places doing
+> shared/private stuff to work on a shared/private granual size. I think
+> this is not just alignment, but allocation size as well?
 >
 
-I added this helper
+That is correct. I updated the commit message to
 
->> @@ -319,8 +319,8 @@ static void __init *swiotlb_memblock_alloc(unsigned long nslabs,
->>  		unsigned int flags,
->>  		int (*remap)(void *tlb, unsigned long nslabs))
->>  {
->> -	size_t bytes = PAGE_ALIGN(nslabs << IO_TLB_SHIFT);
->>  	void *tlb;
->> +	size_t bytes = mem_encrypt_align(nslabs << IO_TLB_SHIFT);
->
-> The stuff like this is just ALING(nslabs << IO_TLB_SHIFT, mem_encrypt_granule_size())
->
+These shared buffers are also accessed by the host kernel and therefore
+must be aligned to the host=E2=80=99s page size, and have a size that is a
+multiple of the host page size.
 
-I guess we can still keep mem_encrypt_align so that changes like below
-becomes simpler.
-
--	int page_order = get_order(min_size);
-+	int page_order = get_order(mem_encrypt_align(min_size));
- 
 -aneesh
