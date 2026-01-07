@@ -1,122 +1,190 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mail-08.mail-europe.com (mail-08.mail-europe.com [57.129.93.249])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31ADB3624BB;
-	Wed,  7 Jan 2026 16:53:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4184392628
+	for <iommu@lists.linux.dev>; Wed,  7 Jan 2026 17:13:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=57.129.93.249
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767804840; cv=none; b=lxY81uiv/oZvPvEeoUvv356+K1hdd99ACV0yb+CJRhWdS3rggxpaZaqdgWpmURGfAFBqf7v5qo2KnUtchF2Jgi5zn/7RWBfWA3a6ijFBFqLJNXqAvJJ9ut1yEPUmV8gGzhVVvNwvu+WPYOfctYdgiW5L7GO1uNSIOb9mwvnAfpY=
+	t=1767805989; cv=none; b=lXPbkAA6HlKfO4j5t5l9l6Yh36RjeKGWztAnxom4uBh3SYdAZd6uMVthWtK0VyNmN/Uo1LvgBmDjN7foK4WIpt9oADsBT4XijE+lsfc+sPYcZmmGMKkLsJ2JboW7P/r0jaP99t2k5zxm+mHQI9WiT2z6lwy/HaS3sUHXgKQokP0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767804840; c=relaxed/simple;
-	bh=igcM/mbFCK5S5KFQ8zrsNmn+iGbAx0HVWfuQ0JlSRE0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=GeWLxyb9f6+fGL2CVcqBcdiBCn1BOpTvGvZxII6uzhaXncCKZAWUw3OzFsbX5K3vr3ZyYDWTIvUtr07JrDowb1DLKAyOag84frLgwxIIy5wpG6gvJxT3jIXEYZOYncB/uCtNloEAfZmD49UxtsiyOHIUqjpdPAb+LVTXU5qnPA0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VIC026HR; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1767805989; c=relaxed/simple;
+	bh=KPXjS+m50oZ2FiY4Maaq1+icW3dTYCp58q42lx+h+A0=;
+	h=Date:To:From:Cc:Subject:Message-ID:MIME-Version:Content-Type; b=N9OiF/q4IFdQZukNEvUI7GUrluNSoN8K1aYXwSlqHF6womLQAk+7fdvMpmPCRGpeJ122Fv73FUZKhqdrpKQ4bUlp9FZOJoHOc6JQcbWFCJudloLw4zqVVYchjMymneNgxutrCV4DYhrrZz27a7T5aJ4gAc0mpTfC7rZuOdIblyU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=proton.me; spf=pass smtp.mailfrom=proton.me; dkim=pass (2048-bit key) header.d=proton.me header.i=@proton.me header.b=dA7BY/Ek; arc=none smtp.client-ip=57.129.93.249
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=proton.me
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=proton.me
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VIC026HR"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93191C4CEF1;
-	Wed,  7 Jan 2026 16:53:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1767804839;
-	bh=igcM/mbFCK5S5KFQ8zrsNmn+iGbAx0HVWfuQ0JlSRE0=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=VIC026HRBah3/LsXLaAE3th9gYPyUI7/UJ+HecNvUect9qSGHiQUG+MPv+IJV7zNf
-	 9gdYifVQKJVPagLEqwd7OXb5JZBYyuFjakGvlHbX8fi/uIcHPYCQxk4oc2W97goHeG
-	 +Gay3ZH8tcIuXzGTIt51ZglUY2UPYKRU/fSXEUofKwu36OAgr6NuQ2EqlBzkPfGorn
-	 gmv7QFaki6yYwOxL6U7x5GawqWLqNANBUX1/uux1igWZwjohPmBxMedZ0RmidJXedK
-	 A1+Tg++rJ4Oxt+hSlMfq/RPmElqRzrLHi0khAyQ6m3DGxSob9Sp6uCt9xSdS3/7EG9
-	 GvTpxHuW80Jhw==
-Message-ID: <1a6aedcd-34c2-4e26-b07e-6eb8d423b759@kernel.org>
-Date: Wed, 7 Jan 2026 17:53:50 +0100
+	dkim=pass (2048-bit key) header.d=proton.me header.i=@proton.me header.b="dA7BY/Ek"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=proton.me;
+	s=y4mgpxcufrf2jbp7icyvx6kgty.protonmail; t=1767805970; x=1768065170;
+	bh=NJx7dY9YCLh75L1rM9Jw9KJFuHY3g0wrtZ2TeIdB9oc=;
+	h=Date:To:From:Cc:Subject:Message-ID:Feedback-ID:From:To:Cc:Date:
+	 Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
+	b=dA7BY/EkBHpfgDLXXP3Bf4WgMSvASVIsvhkW1ljGXBVxb+qnruJVKGEM/ly3FxORb
+	 TNrbQW1waG9c6xd/oZkX/KSTNKj3rCOxUiIrftPFXTQ3vlYrx7gEJ9ZBlKt88u07kt
+	 x1tag8tWudKS8U5J0C7KPY3Lzo8UPWLyhF18lSVga+eToZzoxiJ6EstFDCyrWwKzeZ
+	 ArIY1FnT7/XtK3Qt96egweOJKdXz20MT7+hq5DBa4PsdgOevqisoYCEHyMH+L0ffCz
+	 rgI4rFnEjrxgZMO2Q4MHYvupKmMPfZ4iEj5qy0qF9vSCsbxvtiBDVNzaNo+uQqiIX1
+	 Q9iCqWs5ATYaw==
+Date: Wed, 07 Jan 2026 17:12:47 +0000
+To: "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+From: Tj <tj.iam.tj@proton.me>
+Cc: Joerg Roedel <joro@8bytes.org>
+Subject: amd_iommu: Kernel panic - not syncing: timer doesn't work through Interrupt-remapped IO-APIC
+Message-ID: <1Z2Ru2RmAxtkhZhrEa2zqn0k2zgpgbB6W-SgyuWJioaY8S40qY9b8UkPH8UpVCzfljOfC2KFIQKr9rpWW6_k5IReGboeeA10QUgma15NNis=@proton.me>
+Feedback-ID: 113488376:user:proton
+X-Pm-Message-ID: f601dee083fdffdd5a3de04f3f224d180c581f09
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 1/4] iommu: Add page_ext for IOMMU_DEBUG_PAGEALLOC
-To: Mostafa Saleh <smostafa@google.com>, linux-mm@kvack.org,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- linux-doc@vger.kernel.org
-Cc: corbet@lwn.net, joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
- akpm@linux-foundation.org, vbabka@suse.cz, surenb@google.com,
- mhocko@suse.com, jackmanb@google.com, hannes@cmpxchg.org, ziy@nvidia.com,
- lorenzo.stoakes@oracle.com, Liam.Howlett@oracle.com, rppt@kernel.org,
- xiaqinxin@huawei.com, baolu.lu@linux.intel.com, rdunlap@infradead.org
-References: <20260106162200.2223655-1-smostafa@google.com>
- <20260106162200.2223655-2-smostafa@google.com>
-From: "David Hildenbrand (Red Hat)" <david@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=david@kernel.org; keydata=
- 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
-In-Reply-To: <20260106162200.2223655-2-smostafa@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-On 1/6/26 17:21, Mostafa Saleh wrote:
-> Add a new config IOMMU_DEBUG_PAGEALLOC, which registers new data to
-> page_ext.
-> 
-> This config will be used by the IOMMU API to track pages mapped in
-> the IOMMU to catch drivers trying to free kernel memory that they
-> still map in their domains, causing all types of memory corruption.
-> 
-> This behaviour is disabled by default and can be enabled using
-> kernel cmdline iommu.debug_pagealloc.
-> 
-> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-> Signed-off-by: Mostafa Saleh <smostafa@google.com>
-> ---
+Currently debugging a KEXEC_JUMP preserve_context panic with amd iommu on k=
+exec restart using:
 
-I think I acked it, but maybe too late for you to spot it
+/usr/sbin/kexec --debug --load-preserve-context --mem-max=3D0x3f000000 --lo=
+ad /boot/vmlinuz --initrd /boot/initrd.img --reuse-cmdline
 
-for the MM bits
+From my limited understanding so far it seems that because the KEXEC_JUMP p=
+reserve_context path mostly follows the same flow as an S4 hibernation the =
+IOMMU code, on restart, assumes the IOMMU had a hardware reset. In this pre=
+serve_context case that is not correct and the IOMMU is still in the state =
+from the prior kernel where it has done:
 
-Acked-by: David Hildenbrand (Red Hat) <david@kernel.org>
+drivers/iommu/amd/init.c::amd_iommu_enable(void)
+...
+ ret =3D iommu_go_to_state(IOMMU_ENABLED);
+...
+irq_remapping_enabled =3D 1;
 
--- 
-Cheers
+So I wonder if in the shutdown path this needs handling in amd_iommu_suspen=
+d() ?
 
-David
+I've been testing some changes to syscore to enable passing runtime state i=
+n struct syscore_data in order to notify amd_iommu_suspend() this is a KEXE=
+C_JUMP but cannot find a way to force a reset of the IOMMU. I initially att=
+empted to handle it in amd_iommu_resume() but that doesn't seem early enoug=
+h in the startup flow - I don't think syscore_resume() is called until afte=
+r this panic point.
+
+...
+[  141.722644] shutdown[1]: Rebooting with kexec.
+[  141.781931] Freezing user space processes
+[  141.787032] Freezing user space processes completed (elapsed 0.001 secon=
+ds)
+[  141.794028] OOM killer disabled.
+...
+[  142.975667] Disabling non-boot CPUs ...
+...
+[  143.594423] Calling amd_iommu_suspend+0x0/0x20
+...
+[    0.000000] Linux version 6.19.0-rc3+debian+tj (linux@iam.tj) (gcc (Debi=
+an 12.2.0-14) 12.2.0, GNU ld (GNU Binutils for Debian) 2.40) #364 SMP PREEM=
+PT_DYNAMIC Wed Jan  7 12:46:49 UTC 2026
+[    0.000000] Command line: root=3D/dev/mapper/SUNNY-rootfs ro debug syste=
+md.log_level=3Dinfo drm.edid_firmware=3DDP-2:edid/UE50NU7400.edid fbcon=3Dr=
+otate:3 modprobe.blacklist=3Dradeon amdgpu.si_support=3D1 console=3DttyS0,1=
+15200 console=3Dtty0 no_console_suspend nosplash vt.handoff=3D7 pm_debug_me=
+ssages=3D1 "dyndbg=3Dfile syscore.c +p" elfcorehdr=3D1032176K kexec_jump_ba=
+ck_entry=3D0x00000001ff34012b
+...
+[    1.571701] clocksource: hpet: mask: 0xffffffff max_cycles: 0xffffffff, =
+max_idle_ns: 133484873504 ns
+[    1.580860] APIC: Switch to symmetric I/O mode setup
+[    1.586226] AMD-Vi: Using global IVHD EFR:0x0, EFR2:0x0
+[    1.591467] AMD-Vi: Re-using command buffer from the previous kernel
+[    1.597834] AMD-Vi: Re-using event buffer from the previous kernel
+[    1.923179] x2apic: IRQ remapping doesn't support X2APIC mode
+[    1.929564] ..TIMER: vector=3D0x30 apic1=3D0 pin1=3D2 apic2=3D-1 pin2=3D=
+-1
+[    1.980114] Kernel panic - not syncing: timer doesn't work through Inter=
+rupt-remapped IO-APIC
+[    1.988652] CPU: 0 UID: 0 PID: 0 Comm: swapper/0 Not tainted 6.19.0-rc3+=
+debian+tj #364 PREEMPT(lazy)
+[    1.997882] Hardware name: System manufacturer System Product Name/PRIME=
+ X370-PRO, BIOS 6203 07/27/2023
+[    2.007289] Call Trace:
+[    2.009747]  <TASK>
+[    2.011856]  vpanic+0x31f/0x3a0
+[    2.015010]  panic+0x63/0x70
+[    2.017902]  ? timer_irq_works+0x80/0x130
+[    2.021921]  panic_if_irq_remap+0x1d/0x20
+[    2.025943]  setup_IO_APIC+0x8c1/0xa30
+[    2.029706]  ? __pfx_amd_iommu_enable_faulting+0x10/0x10
+[    2.035030]  ? __pfx_amd_iommu_enable_faulting+0x10/0x10
+[    2.040351]  ? __cpuhp_setup_state+0x63/0xf0
+[    2.044626]  apic_intr_mode_init+0x76/0xf0
+[    2.048733]  x86_late_time_init+0x2d/0x50
+[    2.052754]  start_kernel+0x7f2/0xc50
+[    2.056428]  x86_64_start_reservations+0x18/0x30
+[    2.061057]  x86_64_start_kernel+0xfa/0x150
+[    2.065251]  common_startup_64+0x13e/0x141
+[    2.069361]  </TASK>
+[    2.071558] ---[ end Kernel panic - not syncing: timer doesn't work thro=
+ugh Interrupt-remapped IO-APIC ]---
+
+
+$ grep -E '(IOMMU|KEXEC)' /boot/config-$(uname -r)
+CONFIG_KEXEC_CORE=3Dy
+CONFIG_HAVE_IMA_KEXEC=3Dy
+CONFIG_KEXEC=3Dy
+CONFIG_KEXEC_FILE=3Dy
+CONFIG_KEXEC_SIG=3Dy
+# CONFIG_KEXEC_SIG_FORCE is not set
+CONFIG_KEXEC_BZIMAGE_VERIFY_SIG=3Dy
+CONFIG_KEXEC_JUMP=3Dy
+CONFIG_KEXEC_HANDOVER=3Dy
+# CONFIG_KEXEC_HANDOVER_DEBUG is not set
+CONFIG_KEXEC_HANDOVER_DEBUGFS=3Dy
+# CONFIG_KEXEC_HANDOVER_ENABLE_DEFAULT is not set
+CONFIG_GART_IOMMU=3Dy
+CONFIG_ARCH_SUPPORTS_KEXEC=3Dy
+CONFIG_ARCH_SUPPORTS_KEXEC_FILE=3Dy
+CONFIG_ARCH_SELECTS_KEXEC_FILE=3Dy
+CONFIG_ARCH_SUPPORTS_KEXEC_PURGATORY=3Dy
+CONFIG_ARCH_SUPPORTS_KEXEC_SIG=3Dy
+CONFIG_ARCH_SUPPORTS_KEXEC_SIG_FORCE=3Dy
+CONFIG_ARCH_SUPPORTS_KEXEC_BZIMAGE_VERIFY_SIG=3Dy
+CONFIG_ARCH_SUPPORTS_KEXEC_JUMP=3Dy
+CONFIG_ARCH_SUPPORTS_KEXEC_HANDOVER=3Dy
+CONFIG_IOMMU_MM_DATA=3Dy
+CONFIG_VFIO_IOMMU_TYPE1=3Dm
+# CONFIG_VFIO_NOIOMMU is not set
+CONFIG_IOMMU_IOVA=3Dy
+CONFIG_IOMMU_API=3Dy
+CONFIG_IOMMU_SUPPORT=3Dy
+# Generic IOMMU Pagetable Support
+# end of Generic IOMMU Pagetable Support
+# CONFIG_IOMMU_DEBUGFS is not set
+# CONFIG_IOMMU_DEFAULT_DMA_STRICT is not set
+CONFIG_IOMMU_DEFAULT_DMA_LAZY=3Dy
+# CONFIG_IOMMU_DEFAULT_PASSTHROUGH is not set
+CONFIG_IOMMU_DMA=3Dy
+CONFIG_IOMMU_SVA=3Dy
+CONFIG_IOMMU_IOPF=3Dy
+CONFIG_AMD_IOMMU=3Dy
+CONFIG_INTEL_IOMMU=3Dy
+CONFIG_INTEL_IOMMU_SVM=3Dy
+# CONFIG_INTEL_IOMMU_DEFAULT_ON is not set
+CONFIG_INTEL_IOMMU_FLOPPY_WA=3Dy
+CONFIG_INTEL_IOMMU_SCALABLE_MODE_DEFAULT_ON=3Dy
+CONFIG_INTEL_IOMMU_PERF_EVENTS=3Dy
+# CONFIG_IOMMUFD is not set
+CONFIG_HYPERV_IOMMU=3Dy
+CONFIG_VIRTIO_IOMMU=3Dm
+CONFIG_IOMMU_PT=3Dy
+CONFIG_IOMMU_PT_AMDV1=3Dy
+CONFIG_IOMMU_PT_VTDSS=3Dy
+CONFIG_IOMMU_PT_X86_64=3Dy
+# CONFIG_IMA_KEXEC is not set
+CONFIG_IOMMU_HELPER=3Dy
+# CONFIG_IOMMU_DEBUG is not set
+# CONFIG_TEST_KEXEC_HANDOVER is not set
+
+Thanks for looking at this.
+
+Tj.
