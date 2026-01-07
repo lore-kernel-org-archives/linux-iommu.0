@@ -1,120 +1,126 @@
-Received: from mail-oo1-f65.google.com (mail-oo1-f65.google.com [209.85.161.65])
+Received: from mail-pf1-f201.google.com (mail-pf1-f201.google.com [209.85.210.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6685935EDAD
-	for <iommu@lists.linux.dev>; Wed,  7 Jan 2026 17:51:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.65
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B4E3F4FA
+	for <iommu@lists.linux.dev>; Wed,  7 Jan 2026 20:18:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767808310; cv=none; b=EvDjrScvG9+3cNm3DAZ1ySHNoFpof80fEMWGk6Zwstqd4Vo6NIj77grdVQDZRpYqThoL86oUyZnvBAUYqb1XxTR+tfPTMF1QrDjErUNv5QyJl0DnxaNWapYvoc04n4Z91vRVQ0SNT3VeY++tibbn6yowvnY0GaPRbc8CQa65djo=
+	t=1767817085; cv=none; b=jo+WjYN4bClBfv+oyoOsF1RDicDn86ZZ/rN2uzd+8EBuZd8IHCgchTWci0+RTfWSZN11qc6No1RnCE+v46FQm1/45sHVOZK0g/Fm0rlFTjXFSugpANDu5wa9yBvRxefy4WsiDmOtWYwDUk1yJ5S42h/ZD3TsrN5pgK/8itxtuOo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767808310; c=relaxed/simple;
-	bh=RcoDYlucZ66l2Sfv7PYDyJOdRnPBCeYpyqcCKNIchCE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=hgfovdzvZ/mKJhSR49GBfhiapNMAi9TuXyjE7SNIbFzu1cHHiqEAP6dn2xyRJnrxuFiOW0iviLiwwWiTAk2UomqhF8LCpUxKFVhZzX9Km7W+XdK3//rMRQFlaylRviFwd4IrYJt0wd1fFmuL1CB1v9lj0ESB7H7RuUrzEqhPehE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com; spf=pass smtp.mailfrom=ventanamicro.com; dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b=TIMwzyMJ; arc=none smtp.client-ip=209.85.161.65
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ventanamicro.com
+	s=arc-20240116; t=1767817085; c=relaxed/simple;
+	bh=TvOkn6u8I9/U/iJG9I9EEu4rPAWu4/Ro3ETE+xAntc0=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=FyTMU41wL0PxlmtHMTNUEcF6GaVVl7yYYa3CBCR3Cbb4nhBe0tJsXB/tCzgN9HGjGngfszbZNzFFxOJCcmsrhUFTDL1kTlIF5w1gwFHkiO5tS8Q6+ygUnf9YnEpHrD/g0v9FxmAOE65O7D9N+QfI9H2adDtZlq/YdBjZcjCJg7s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=3AcFK9Fq; arc=none smtp.client-ip=209.85.210.201
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="TIMwzyMJ"
-Received: by mail-oo1-f65.google.com with SMTP id 006d021491bc7-659848c994bso1166266eaf.3
-        for <iommu@lists.linux.dev>; Wed, 07 Jan 2026 09:51:44 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="3AcFK9Fq"
+Received: by mail-pf1-f201.google.com with SMTP id d2e1a72fcca58-81b299128b8so1264870b3a.1
+        for <iommu@lists.linux.dev>; Wed, 07 Jan 2026 12:18:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google; t=1767808302; x=1768413102; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=/E5kiVoPjL6HPjfNbHsUE0ncuM+O4VtxgKzooyiAI6s=;
-        b=TIMwzyMJVNJDuikYZTSbBoqj1oGrOkxaHjkpFv/OT98oJv3SPXGU6F6kLkswc2v6pT
-         rDOZje2MlH113thvlI+S2cre/eJ9odN4TDCz0fAmnsGUBqLXcbx9x2+fibI2cJDOYPe6
-         wHLZLYmmquK0xLPqe11Txlbixa2ZYudBNRny3AHa8ZIK1svfK1izN2li6Y2gz0yy8cYi
-         kzrXVVWXyuaydmNcxqmZ0Jtw3aSMbRh19AjAVniAvKckjg7SY88MQucR4a2ZJDH9fir5
-         LHrKbXoiz5UaJJZsqSXI2+9+KSBLnRB46e9bNRwsHd+XxmdPWDoiBjgv7BC8FuH7974Z
-         WnCQ==
+        d=google.com; s=20230601; t=1767817083; x=1768421883; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=BRji2ofdtY/PgKBBjoXBJuWSbx9X2KHKEteqA3GTxBo=;
+        b=3AcFK9FqnnzU01Cgkt/gBg37K4768EnF9cv/dbQ14Qrm38BVXLCR4gEVVI8Mbe7dYh
+         L95eOlgMrDTEXvwbmCtxEXOUhGIppKqJ+Rk27QUn1qnYH3tv4cbEtynf2Y/0Gt5xz73q
+         N3d8FJ7NOr9ip+36jUwj/w7BUFbIXihmQ8CWVKOPbDCALgvrgdUtIz9jR8/4rCZ5dFbG
+         F2J7k45Akm4Mi3zpCTNVqtBQpuB2cL/8XiKL8PLI2dv2IcZ01/3IFQImR44FwKhvOexe
+         WaiBtYXM7cogrVfpw5jyBsihm9w29cM4l6m+6xILTBO8bUDj/bm4bhxS8wV+Vkw1hwNj
+         YGhw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1767808302; x=1768413102;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=/E5kiVoPjL6HPjfNbHsUE0ncuM+O4VtxgKzooyiAI6s=;
-        b=vSUsOAYYYgiHWf5kWySBfYVKeWm/CoecthmONC6wvosnFiHq+74PvyWha1G3GqsbxP
-         iK6VIDpSAFUTous4Uar3ObPeGyuyBtLBJQlbJc+Tw+/KfiZPuhWZlagCMJEXA3vkoWng
-         PSLsrUiTuPCI1LX/jPdgSBFrMoNawXJ14wIW4tiKU1M6uYZSzMCp+2qYrgGuz1hHujk9
-         oZh9vkytibKGw64R6zw1g7Miu363mvw9sKrFJuyugzMIw1tyqXNGRCzwjkFf0T1xZjbG
-         ibyGnpURLvGP4yxOEdZlzcSm6MPNfWB2kyvXUp7EDkEiTSj6uG8IdMtKjY5Lei0s/80C
-         bjmQ==
-X-Forwarded-Encrypted: i=1; AJvYcCV98OeutTlJaqOfQH8ZE8pDuI/+CkwBCA6m0xk/G37qt+O07GUnPd3Gh9H2qUS0QeqM1J0oAg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzLcjeUiQHbE+0+pB8OLgYrGXB1ib1JmZbKH8DHUJoTAL27OHTM
-	3nm+mMpCWbdok9/6Bqzh8MpZJV+uslL1wZqbeouk94Bz+ltqOuOaDS2YiXnEbGfUOxI=
-X-Gm-Gg: AY/fxX71ewt4t1Q5N58TP3A/xSvu9Lpu+62+3e9CvEujWmtagLct71oM6k6ovoZE6lY
-	IP/sDWXpTCcjdLwpyVz7Oe8L1UW3MT/l40cdlV6jaXBsnkKIBbD9q5629Lzx0ZvhlhP5mO0jXmz
-	S0ibiGCFb4pKT6eraXlKawwD2v8q7qjU0GFfhvoUV22E19W76035HPq4ZW8ef0Q21RfcGIcKSGV
-	BXnaUr6vC1L75xlL/0V1tc78otHrrlLbIHPjvnM07c761OfKGsxY/ziS/7rx10N4Ed8Ol+VHAOC
-	o5NXc9OnylEdKMLYyGuNtK+DRwK5tm1Kzmy+PInT4LX0InkWLHarbdqeEtQ00ut+XCFXhQjuiCx
-	gIK1dFmdh0kAn2KslXFnQEZ0uRWtmbp1+JcazpRpLVYGUEd+cldkZJ5edNCnyhLECMxP5sKicn4
-	JN1p9taA7LhtVA
-X-Google-Smtp-Source: AGHT+IE13osf5CjYyTbx4kUFVq9/wdcOC/ch/TW3ja8QBG6H6cD6+EWQcns0Lx1kzYLZNwCYibHqkw==
-X-Received: by 2002:a05:6820:2204:b0:659:9a49:8fe1 with SMTP id 006d021491bc7-65f54ed4064mr1332868eaf.14.1767808301928;
-        Wed, 07 Jan 2026 09:51:41 -0800 (PST)
-Received: from localhost ([140.82.166.162])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-3ffa4de8cbfsm3524574fac.3.2026.01.07.09.51.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Jan 2026 09:51:41 -0800 (PST)
-Date: Wed, 7 Jan 2026 11:51:40 -0600
-From: Andrew Jones <ajones@ventanamicro.com>
-To: Xu Lu <luxu.kernel@bytedance.com>
-Cc: Jason Gunthorpe <jgg@nvidia.com>, Zong Li <zong.li@sifive.com>, 
-	Tomasz Jeznach <tjeznach@rivosinc.com>, joro@8bytes.org, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Anup Patel <anup@brainfault.org>, atish.patra@linux.dev, 
-	Thomas Gleixner <tglx@linutronix.de>, alex.williamson@redhat.com, 
-	Paul Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt <palmer@dabbelt.com>, 
-	Alexandre Ghiti <alex@ghiti.fr>, iommu@lists.linux.dev, kvm-riscv@lists.infradead.org, 
-	kvm@vger.kernel.org, linux-riscv <linux-riscv@lists.infradead.org>, 
-	LKML <linux-kernel@vger.kernel.org>
-Subject: Re: Question about RISCV IOMMU irqbypass patch series
-Message-ID: <20260107-dc4b5f1d879db9afb00a4a87@orel>
-References: <CAPYmKFscKJ1ff470d6YmuMxLdJPSZ-ZmuGMMAFO83TT-vvV2JQ@mail.gmail.com>
+        d=1e100.net; s=20230601; t=1767817083; x=1768421883;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=BRji2ofdtY/PgKBBjoXBJuWSbx9X2KHKEteqA3GTxBo=;
+        b=AHFNZJZlDq3CUaEswQv1ZdZTvpm7vYjcsgD4cIN19sIXX4W6p1JtLEaUJD5D3HdJ6+
+         nRv9oNfI+CQF5TPIpm3gnz8qHUy6h/qAZly+ZrgTICbjj5OAt1meotpBn457jQsblBjp
+         1lPvnPZKEn3gAMgqht13S9QwavypNktrxGnDwUcMaVjxz1RDtuy64SNrSUnSRMo0+aSm
+         I4twlrHbPDODTJE2Wfd4k0Bge0gpKrlfDCTmZJMKIV9ryd3O9IldsL7xuvrIFULVg16H
+         ih8c/5RQfvaVZ3ERxVX734P6fjM8xDZgpLECSOhImSO7U0jgK65pltCkM5OLnZui+ULZ
+         s+wA==
+X-Forwarded-Encrypted: i=1; AJvYcCVouwxNiYE0Td04HQ8x5ZQuTMDzWu9xsUNZJ1/yBI4KVjSYP9aR8kNWadE/j2n2VEWwzSxaqQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyMhl4Qnau0DpkaKhPyzzMARgJnMw7YbeFmoVNpVa7S/sX9p4Pp
+	dxrdeScVLfNOMJ/JrMzBuHagl5e6y+nMQPT/a2XxryL5f7ARuLFL6uhZ5G+FdadFg4i6aTE1u03
+	CRFcmgb3U2qF0Qw==
+X-Google-Smtp-Source: AGHT+IHpSjmtFIkns5HQtlhETgrC7VtMTaI0oceBagAYDCz1RUoLr1bA46QQW/+00lvC5tMM37yLiV7a8rdzpg==
+X-Received: from pfblp20.prod.google.com ([2002:a05:6a00:3d54:b0:7b8:565a:73bd])
+ (user=skhawaja job=prod-delivery.src-stubby-dispatcher) by
+ 2002:a05:6a00:8086:b0:7e8:4471:8c5 with SMTP id d2e1a72fcca58-81b7f101490mr3287211b3a.38.1767817082661;
+ Wed, 07 Jan 2026 12:18:02 -0800 (PST)
+Date: Wed,  7 Jan 2026 20:17:57 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAPYmKFscKJ1ff470d6YmuMxLdJPSZ-ZmuGMMAFO83TT-vvV2JQ@mail.gmail.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.52.0.351.gbe84eed79e-goog
+Message-ID: <20260107201800.2486137-1-skhawaja@google.com>
+Subject: [PATCH 0/3] iommu/vt-d: Add support to hitless replace IOMMU domain
+From: Samiullah Khawaja <skhawaja@google.com>
+To: David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Pasha Tatashin <pasha.tatashin@soleen.com>, Jason Gunthorpe <jgg@ziepe.ca>, 
+	David Matlack <dmatlack@google.com>
+Cc: Samiullah Khawaja <skhawaja@google.com>, Robin Murphy <robin.murphy@arm.com>, 
+	Pratyush Yadav <pratyush@kernel.org>, Kevin Tian <kevin.tian@intel.com>, 
+	Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, kvm@vger.kernel.org, 
+	Saeed Mahameed <saeedm@nvidia.com>, Adithya Jayachandran <ajayachandra@nvidia.com>, 
+	Parav Pandit <parav@nvidia.com>, Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
 
-On Wed, Jan 07, 2026 at 06:01:26PM +0800, Xu Lu wrote:
-> Hi Andrew,
-> 
-> Thanks for your brilliant job on the RISCV IOMMU irqbypass patch
-> series[1]. I have rebased it on v6.18 and successfully passed through
-> a nvme device to VM. But I still have some questions about it.
-> 
-> 1. It seems "irqdomain->host_data->domain" can be NULL for blocking or
-> identity domain. So it's better to check whether it's NULL in
-> riscv_iommu_ir_irq_domain_alloc_irqs or
-> riscv_iommu_ir_irq_domain_free_irqs functions. Otherwise page fault
-> can happen.
+Intel IOMMU Driver already supports replacing IOMMU domain hitlessly in
+scalable mode. The support is not available in legacy mode and for
+NO_PASID in scalable mode. This patch series adds the support for legacy
+mode and NO_PASID scalable mode.
 
-Indeed. Did you hit the NULL dereference in your testing?
+This is needed for the Live update IOMMU persistence to hotswap the
+iommu domain after liveupdate:
+https://lore.kernel.org/all/20251202230303.1017519-1-skhawaja@google.com/
 
-> 
-> 2. It seems you are using the first stage iommu page table even for
-> gpa->spa, what if a VM needs an vIOMMU? Or did I miss something?
+The patch adds the support for scalable mode NO_PASID mode by using the
+existing replace semantics. This works since in scalable mode the
+context entries are not updated and only the pasid entries are updated.
 
-Unfortunately the IOMMU spec wasn't clear on the use of the MSI table
-when only stage1 is in use and now, after discussions with the spec
-author, it appears what I have written won't work. Additionally, Jason
-didn't like this new approach to IRQ_DOMAIN_FLAG_ISOLATED_MSI either,
-so there's a lot of rework that needs to be done for v3. I had had hopes
-to dedicate December to this but got distracted with other things and
-vacation. Now I hope to dedicate this month, but I still need to get
-started!
+The patch series also contains a vfio selftests for the iommu domain
+replace using iommufd hwpt replace functionality.
 
-Thanks,
-drew
+Tested on a Host with scalable mode and on Qemu with legacy mode:
 
-> 
-> [1] https://lore.kernel.org/all/20250920203851.2205115-20-ajones@ventanamicro.com/
-> 
-> Best regards,
-> Xu Lu
+tools/testing/selftests/vfio/scripts/setup.sh <dsa_device_bdf>
+tools/testing/selftests/vfio/vfio_iommufd_hwpt_replace_test <dsa_device_bdf>
+
+TAP version 13
+1..2
+# Starting 2 tests from 2 test cases.
+#  RUN           vfio_iommufd_replace_hwpt_test.domain_replace.memcpy ...
+#            OK  vfio_iommufd_replace_hwpt_test.domain_replace.memcpy
+ok 1 vfio_iommufd_replace_hwpt_test.domain_replace.memcpy
+#  RUN           vfio_iommufd_replace_hwpt_test.noreplace.memcpy ...
+#            OK  vfio_iommufd_replace_hwpt_test.noreplace.memcpy
+ok 2 vfio_iommufd_replace_hwpt_test.noreplace.memcpy
+# PASSED: 2 / 2 tests passed.
+# Totals: pass:2 fail:0 xfail:0 xpass:0 skip:0 error:0
+
+Samiullah Khawaja (3):
+  iommu/vt-d: Allow replacing no_pasid iommu_domain
+  vfio: selftests: Add support of creating iommus from iommufd
+  vfio: selftests: Add iommufd hwpt replace test
+
+ drivers/iommu/intel/iommu.c                   | 107 +++++++++----
+ tools/testing/selftests/vfio/Makefile         |   1 +
+ .../vfio/lib/include/libvfio/iommu.h          |   2 +
+ .../lib/include/libvfio/vfio_pci_device.h     |   2 +
+ tools/testing/selftests/vfio/lib/iommu.c      |  60 ++++++-
+ .../selftests/vfio/lib/vfio_pci_device.c      |  16 +-
+ .../vfio/vfio_iommufd_hwpt_replace_test.c     | 151 ++++++++++++++++++
+ 7 files changed, 303 insertions(+), 36 deletions(-)
+ create mode 100644 tools/testing/selftests/vfio/vfio_iommufd_hwpt_replace_test.c
+
+
+base-commit: 6cd6c12031130a349a098dbeb19d8c3070d2dfbe
+-- 
+2.52.0.351.gbe84eed79e-goog
+
