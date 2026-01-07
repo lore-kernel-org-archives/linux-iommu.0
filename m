@@ -1,398 +1,95 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ua1-f53.google.com (mail-ua1-f53.google.com [209.85.222.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC2E0235358;
-	Wed,  7 Jan 2026 09:14:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02491284694
+	for <iommu@lists.linux.dev>; Wed,  7 Jan 2026 10:01:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767777287; cv=none; b=WjrkVeFNgoiHVk4GcusOZMOWTF7LoYyWOn5dKemprjsOEagsRoK+VfMJAjIbQTuKUo+lFmt8tkCebqGOgv7vFzsP7QXugr4UF2hD0A7EwC0BbYLVBA2TRPHfjlZoACs/11/Mb+kmHAOpnghmmaLEICc2GyRtI+dR70GstI6rDK0=
+	t=1767780099; cv=none; b=nAzov7Hu2jPZBc6P7jWAzWp197YJ4u1MjXqhM0/vS8D64Nvgu94VuyMuZ9jtlVWA/IGWl1GvjaLTaBHEqzQEDCVPFC831XiboPOGbfdSfhj0t+p6s7aRko5JY9gi/JtX6g6aVDR8KYdnNynnkGg1pJ4E34CcMQxm/aBNw2gVBxI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767777287; c=relaxed/simple;
-	bh=HsPlCCX1CEyta2DFKeO1SH/8Utd6OpTbt/o6QeMxdoI=;
-	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type; b=ugAudALv/ki+cb3L7qbd0MuN8seOYMjIsV5C76PTsZ9yPGNAOLqxgzSzgibASj3czxfNqdtdw7srt0FAxD32gnFqs4aYPGaqLfOUPk1X1EZtGkVfzXWGYO5pY6TcMF/o6XTpBlAhGR2tyFrCcsHhlZPuME+9gNx7ZrxjbT8i7xU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hDhzIVAA; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1767780099; c=relaxed/simple;
+	bh=1e7HzwoffI5S/6V5SheLWTLvf9f05N/KDUwstam8N0k=;
+	h=MIME-Version:From:Date:Message-ID:Subject:To:Cc:Content-Type; b=JKZbyPkN6LiZWmZ9jpVdvAvhs5LLTMq57dM/gPJvtDnxsN3OD/1jbGpFljDeZK1ww4VEzr230LT/4QkisQJIHZlP0Jg4tHHPtSljGuut8LTn+HtBlw+sqEMJGbNQTmyEA8LEBcIo9dn3nYVd4I/j0u+grSNfnJuR0ieOOp6UEv0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=DfaOdHpE; arc=none smtp.client-ip=209.85.222.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hDhzIVAA"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8C37C4CEF7;
-	Wed,  7 Jan 2026 09:14:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1767777286;
-	bh=HsPlCCX1CEyta2DFKeO1SH/8Utd6OpTbt/o6QeMxdoI=;
-	h=From:To:Subject:Date:From;
-	b=hDhzIVAAC19+cgnPI09bILtCRfXF3p6nxY6+6cBYuiKEvDub7R6ZCbU/tl4v0qTEr
-	 mUKbxTG5qvLxlvcetNxlxnQJAkShZu0jNxBXACh1u8tNEbrKRcZ5PgHNLoPRfAMKYZ
-	 ooXXOC/5JlIKE/fxcP3+oZU9YLfYjU14dikwHIonIlqUWZU4w9NqJbTsi2Cu9PlW/6
-	 JrSkw/Pt6j1+NSZipD4DN2rXk3uvpmx70q0ZmHfa7gIOLW7b9BCpfyEVgorJJHamMT
-	 Heh8v7vInmPCzP1tmE6/Vs+aBlJNT5Bro+LIOxE8TpH+sQvpqBc7JKv8WAGNQNEDNz
-	 zDLX6pBD3yhrA==
-From: Leon Romanovsky <leon@kernel.org>
-To: Alex Williamson <alex@shazbot.org>,
-	linux-media@vger.kernel.org,
-	dri-devel@lists.freedesktop.org,
-	linaro-mm-sig@lists.linaro.org,
-	linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev,
-	kvm@vger.kernel.org,
-	Sumit Semwal <sumit.semwal@linaro.org>,
-	=?utf-8?q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Yishai Hadas <yishaih@nvidia.com>,
-	Shameer Kolothum <skolothumtho@nvidia.com>,
-	Ankit Agrawal <ankita@nvidia.com>,
-	Matthew Wilcox <willy@infradead.org>,
-	Jens Axboe <axboe@kernel.dk>
-Subject: types: reuse common phys_vec type instead of DMABUF open‑coded variant
-Date: Wed,  7 Jan 2026 11:14:14 +0200
-Message-ID: <20260107-convert-to-pvec-v1-1-6e3ab8079708@nvidia.com>
-X-Mailer: git-send-email 2.52.0
+	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="DfaOdHpE"
+Received: by mail-ua1-f53.google.com with SMTP id a1e0cc1a2514c-941063da73eso1236704241.3
+        for <iommu@lists.linux.dev>; Wed, 07 Jan 2026 02:01:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance.com; s=google; t=1767780097; x=1768384897; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=1e7HzwoffI5S/6V5SheLWTLvf9f05N/KDUwstam8N0k=;
+        b=DfaOdHpEyvbFAxECC71HBb4atB+6N8Jx+2tBaL82CEyUouXHK35W5CsUnKYq2TiG6Y
+         ZM4uzKdAkHQ3btMy3HV3gfAuClhavZEisMDVVTq3g1PODvqhNJT7dfDxFbxzUowR+EhY
+         QKEkEgO/uPwSQwNDvAfh3jjloeNu1nQKoG5hROdWHByew4LTRmJWobe2yL1PkJ7VbaRB
+         /894cGcZ+4MAY75dGzIQar6bnSKzm/ENcaYTHc5P7d+pGLrcuhy1z1DwZzkJXNuejLxj
+         YMq9jwhWSimLqd4/+N4kGDz2VXQRF30UndI00nPUdGOOzjq6QhdpkmTlUJklwKcno9t2
+         vTXg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1767780097; x=1768384897;
+        h=cc:to:subject:message-id:date:from:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=1e7HzwoffI5S/6V5SheLWTLvf9f05N/KDUwstam8N0k=;
+        b=adL5UJetevukGbajjzEi7DQE+poMupp5N2Ayl5g64qiaZUrdrOSQuPDNQmno3UFa1I
+         1j/V0C+cHuoTyelAkC5n6ilWsfyzfGH1BD7BDmTDAOlYz2Wdc2GbK2qSMqFrXKmtltM7
+         eLECGEeh0ByFx36gWZZ3wkLNmGzKRw3bqdYRsSmFFG7KuSdQ16nfua82SbeYhYgByx2o
+         08qqtegVGfVAwwySwx/OvEcnSFbq8YzfxBLSCGzJVKyed2IClBEKJNlYPMHnoTyoPuGi
+         hCKQgFN0KQNJshpfl44z7+s/UJ1UmKB3B8xmJ64lhPm1iA3GG7PzXXjt2R8RFW/i8GOl
+         AQfQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVHdoY70UpOMNAdYuR5+Y5fgSxdknPpF3nGjBdz/lDZBCubNbnOBpDaBq3Z4A4CGDagpy9ekw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwTOo1AILjTC8k//vFt9IDycJhPOwu6WDd+R7tuvrOxPN6L5pZz
+	2khcvkNGkuu7/3vAFr7tEfXMIm7sF9kr4q6BM7s0Q2XXfK7WmxXW10QQbXHP9DmnR9QwNDR5sqH
+	OWb5zHlaIMvqZmL1/gruAkyMwqqx99v2HkV4GAB6Umw==
+X-Gm-Gg: AY/fxX7VJ99P1lf30jTCafil8das2fXJw5KiZFaZwByBOUkX8V7Wg5vtrbSyLnLohF2
+	NpITLLine5aNXHFrWGJ88Q7UTZ05sJWtJSLQqFqWfiWd0T4ImXpjOVWrYI9rane+16hVH2QU3mD
+	vhEzL8vPcyvV9Z7fPexg5kwMccnc0DgtMLO8s3/fXgpq7TSx7feC4JB8PMeKfUp4XoH1Zzfs372
+	EtUHbJtVpeQ42eyYx4hIWykh+FuwwfOic5VZ/dMLv0EoP7dEXpeSdiyXWgHvTcvAwB7e5sxeqjs
+	Xpox1RyL
+X-Google-Smtp-Source: AGHT+IFY9o6LoBGhJfHFhrwQmRjYbAjez+97Fc8MV2H/JqEGQGgiF+2CT3xNTtCeZryZYDcntgXs7hAyuiU8xea9t8Y=
+X-Received: by 2002:a05:6102:534f:b0:5db:34b5:318c with SMTP id
+ ada2fe7eead31-5ecb6955532mr709984137.45.1767780096723; Wed, 07 Jan 2026
+ 02:01:36 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-X-Change-ID: 20260107-convert-to-pvec-bf04dfcf3d12
-X-Mailer: b4 0.15-dev-a6db3
-Content-Transfer-Encoding: quoted-printable
+From: Xu Lu <luxu.kernel@bytedance.com>
+Date: Wed, 7 Jan 2026 18:01:26 +0800
+X-Gm-Features: AQt7F2okIYDpNGyBgdlwrVkXSKzrOvkkA7_TMkO--kZnCCpAAR9jkMnVcWZBt1o
+Message-ID: <CAPYmKFscKJ1ff470d6YmuMxLdJPSZ-ZmuGMMAFO83TT-vvV2JQ@mail.gmail.com>
+Subject: Question about RISCV IOMMU irqbypass patch series
+To: Andrew Jones <ajones@ventanamicro.com>
+Cc: Jason Gunthorpe <jgg@nvidia.com>, Zong Li <zong.li@sifive.com>, 
+	Tomasz Jeznach <tjeznach@rivosinc.com>, joro@8bytes.org, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Anup Patel <anup@brainfault.org>, atish.patra@linux.dev, 
+	Thomas Gleixner <tglx@linutronix.de>, alex.williamson@redhat.com, 
+	Paul Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt <palmer@dabbelt.com>, 
+	Alexandre Ghiti <alex@ghiti.fr>, iommu@lists.linux.dev, kvm-riscv@lists.infradead.org, 
+	kvm@vger.kernel.org, linux-riscv <linux-riscv@lists.infradead.org>, 
+	LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 
-From: Leon Romanovsky <leonro@nvidia.com>=0D
-=0D
-After commit fcf463b92a08 ("types: move phys_vec definition to common heade=
-r"),=0D
-we can use the shared phys_vec type instead of the DMABUF=E2=80=91specific=
-=0D
-dma_buf_phys_vec, which duplicated the same structure and semantics.=0D
-=0D
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>=0D
----=0D
-Alex,=0D
-=0D
-According to diffstat, VFIO is the subsystem with the largest set of change=
-s,=0D
-so it would be great if you could take it through your tree.=0D
-=0D
-The series is based on the for-7.0/blk-pvec shared branch from Jens:=0D
-https://git.kernel.org/pub/scm/linux/kernel/git/axboe/linux.git/log/?h=3Dfo=
-r-7.0/blk-pvec=0D
-=0D
-Thanks=0D
----=0D
-Cc: linux-media@vger.kernel.org=0D
-Cc: dri-devel@lists.freedesktop.org=0D
-Cc: linaro-mm-sig@lists.linaro.org=0D
-Cc: linux-kernel@vger.kernel.org=0D
-Cc: iommu@lists.linux.dev=0D
-Cc: kvm@vger.kernel.org=0D
-To: Sumit Semwal <sumit.semwal@linaro.org>=0D
-To: Christian K=C3=B6nig <christian.koenig@amd.com>=0D
-To: Jason Gunthorpe <jgg@ziepe.ca>=0D
-To: Kevin Tian <kevin.tian@intel.com>=0D
-To: Joerg Roedel <joro@8bytes.org>=0D
-To: Will Deacon <will@kernel.org>=0D
-To: Robin Murphy <robin.murphy@arm.com>=0D
-To: Yishai Hadas <yishaih@nvidia.com>=0D
-To: Shameer Kolothum <skolothumtho@nvidia.com>=0D
-To: Ankit Agrawal <ankita@nvidia.com>=0D
-To: Alex Williamson <alex@shazbot.org>=0D
-Cc: Matthew Wilcox <willy@infradead.org>=0D
-Cc: Jens Axboe <axboe@kernel.dk>=0D
----=0D
- drivers/dma-buf/dma-buf-mapping.c       |  6 +++---=0D
- drivers/iommu/iommufd/io_pagetable.h    |  2 +-=0D
- drivers/iommu/iommufd/iommufd_private.h |  5 ++---=0D
- drivers/iommu/iommufd/pages.c           |  4 ++--=0D
- drivers/iommu/iommufd/selftest.c        |  2 +-=0D
- drivers/vfio/pci/nvgrace-gpu/main.c     |  2 +-=0D
- drivers/vfio/pci/vfio_pci_dmabuf.c      |  8 ++++----=0D
- include/linux/dma-buf-mapping.h         |  2 +-=0D
- include/linux/dma-buf.h                 | 10 ----------=0D
- include/linux/vfio_pci_core.h           | 13 ++++++-------=0D
- 10 files changed, 21 insertions(+), 33 deletions(-)=0D
-=0D
-diff --git a/drivers/dma-buf/dma-buf-mapping.c b/drivers/dma-buf/dma-buf-ma=
-pping.c=0D
-index b7352e609fbd..174677faa577 100644=0D
---- a/drivers/dma-buf/dma-buf-mapping.c=0D
-+++ b/drivers/dma-buf/dma-buf-mapping.c=0D
-@@ -33,8 +33,8 @@ static struct scatterlist *fill_sg_entry(struct scatterli=
-st *sgl, size_t length,=0D
- }=0D
- =0D
- static unsigned int calc_sg_nents(struct dma_iova_state *state,=0D
--				  struct dma_buf_phys_vec *phys_vec,=0D
--				  size_t nr_ranges, size_t size)=0D
-+				  struct phys_vec *phys_vec, size_t nr_ranges,=0D
-+				  size_t size)=0D
- {=0D
- 	unsigned int nents =3D 0;=0D
- 	size_t i;=0D
-@@ -91,7 +91,7 @@ struct dma_buf_dma {=0D
-  */=0D
- struct sg_table *dma_buf_phys_vec_to_sgt(struct dma_buf_attachment *attach=
-,=0D
- 					 struct p2pdma_provider *provider,=0D
--					 struct dma_buf_phys_vec *phys_vec,=0D
-+					 struct phys_vec *phys_vec,=0D
- 					 size_t nr_ranges, size_t size,=0D
- 					 enum dma_data_direction dir)=0D
- {=0D
-diff --git a/drivers/iommu/iommufd/io_pagetable.h b/drivers/iommu/iommufd/i=
-o_pagetable.h=0D
-index 14cd052fd320..27e3e311d395 100644=0D
---- a/drivers/iommu/iommufd/io_pagetable.h=0D
-+++ b/drivers/iommu/iommufd/io_pagetable.h=0D
-@@ -202,7 +202,7 @@ struct iopt_pages_dmabuf_track {=0D
- =0D
- struct iopt_pages_dmabuf {=0D
- 	struct dma_buf_attachment *attach;=0D
--	struct dma_buf_phys_vec phys;=0D
-+	struct phys_vec phys;=0D
- 	/* Always PAGE_SIZE aligned */=0D
- 	unsigned long start;=0D
- 	struct list_head tracker;=0D
-diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommuf=
-d/iommufd_private.h=0D
-index eb6d1a70f673..6ac1965199e9 100644=0D
---- a/drivers/iommu/iommufd/iommufd_private.h=0D
-+++ b/drivers/iommu/iommufd/iommufd_private.h=0D
-@@ -20,7 +20,6 @@ struct iommu_group;=0D
- struct iommu_option;=0D
- struct iommufd_device;=0D
- struct dma_buf_attachment;=0D
--struct dma_buf_phys_vec;=0D
- =0D
- struct iommufd_sw_msi_map {=0D
- 	struct list_head sw_msi_item;=0D
-@@ -718,7 +717,7 @@ int __init iommufd_test_init(void);=0D
- void iommufd_test_exit(void);=0D
- bool iommufd_selftest_is_mock_dev(struct device *dev);=0D
- int iommufd_test_dma_buf_iommufd_map(struct dma_buf_attachment *attachment=
-,=0D
--				     struct dma_buf_phys_vec *phys);=0D
-+				     struct phys_vec *phys);=0D
- #else=0D
- static inline void iommufd_test_syz_conv_iova_id(struct iommufd_ucmd *ucmd=
-,=0D
- 						 unsigned int ioas_id,=0D
-@@ -742,7 +741,7 @@ static inline bool iommufd_selftest_is_mock_dev(struct =
-device *dev)=0D
- }=0D
- static inline int=0D
- iommufd_test_dma_buf_iommufd_map(struct dma_buf_attachment *attachment,=0D
--				 struct dma_buf_phys_vec *phys)=0D
-+				 struct phys_vec *phys)=0D
- {=0D
- 	return -EOPNOTSUPP;=0D
- }=0D
-diff --git a/drivers/iommu/iommufd/pages.c b/drivers/iommu/iommufd/pages.c=
-=0D
-index dbe51ecb9a20..bababd564cf9 100644=0D
---- a/drivers/iommu/iommufd/pages.c=0D
-+++ b/drivers/iommu/iommufd/pages.c=0D
-@@ -1077,7 +1077,7 @@ static int pfn_reader_user_update_pinned(struct pfn_r=
-eader_user *user,=0D
- }=0D
- =0D
- struct pfn_reader_dmabuf {=0D
--	struct dma_buf_phys_vec phys;=0D
-+	struct phys_vec phys;=0D
- 	unsigned long start_offset;=0D
- };=0D
- =0D
-@@ -1460,7 +1460,7 @@ static struct dma_buf_attach_ops iopt_dmabuf_attach_r=
-evoke_ops =3D {=0D
-  */=0D
- static int=0D
- sym_vfio_pci_dma_buf_iommufd_map(struct dma_buf_attachment *attachment,=0D
--				 struct dma_buf_phys_vec *phys)=0D
-+				 struct phys_vec *phys)=0D
- {=0D
- 	typeof(&vfio_pci_dma_buf_iommufd_map) fn;=0D
- 	int rc;=0D
-diff --git a/drivers/iommu/iommufd/selftest.c b/drivers/iommu/iommufd/selft=
-est.c=0D
-index 550ff36dec3a..989d8c4c60a7 100644=0D
---- a/drivers/iommu/iommufd/selftest.c=0D
-+++ b/drivers/iommu/iommufd/selftest.c=0D
-@@ -2002,7 +2002,7 @@ static const struct dma_buf_ops iommufd_test_dmabuf_o=
-ps =3D {=0D
- };=0D
- =0D
- int iommufd_test_dma_buf_iommufd_map(struct dma_buf_attachment *attachment=
-,=0D
--				     struct dma_buf_phys_vec *phys)=0D
-+				     struct phys_vec *phys)=0D
- {=0D
- 	struct iommufd_test_dma_buf *priv =3D attachment->dmabuf->priv;=0D
- =0D
-diff --git a/drivers/vfio/pci/nvgrace-gpu/main.c b/drivers/vfio/pci/nvgrace=
--gpu/main.c=0D
-index 84d142a47ec6..a0f4edd6a30b 100644=0D
---- a/drivers/vfio/pci/nvgrace-gpu/main.c=0D
-+++ b/drivers/vfio/pci/nvgrace-gpu/main.c=0D
-@@ -784,7 +784,7 @@ nvgrace_gpu_write(struct vfio_device *core_vdev,=0D
- static int nvgrace_get_dmabuf_phys(struct vfio_pci_core_device *core_vdev,=
-=0D
- 				   struct p2pdma_provider **provider,=0D
- 				   unsigned int region_index,=0D
--				   struct dma_buf_phys_vec *phys_vec,=0D
-+				   struct phys_vec *phys_vec,=0D
- 				   struct vfio_region_dma_range *dma_ranges,=0D
- 				   size_t nr_ranges)=0D
- {=0D
-diff --git a/drivers/vfio/pci/vfio_pci_dmabuf.c b/drivers/vfio/pci/vfio_pci=
-_dmabuf.c=0D
-index d4d0f7d08c53..9a84c238c013 100644=0D
---- a/drivers/vfio/pci/vfio_pci_dmabuf.c=0D
-+++ b/drivers/vfio/pci/vfio_pci_dmabuf.c=0D
-@@ -14,7 +14,7 @@ struct vfio_pci_dma_buf {=0D
- 	struct vfio_pci_core_device *vdev;=0D
- 	struct list_head dmabufs_elm;=0D
- 	size_t size;=0D
--	struct dma_buf_phys_vec *phys_vec;=0D
-+	struct phys_vec *phys_vec;=0D
- 	struct p2pdma_provider *provider;=0D
- 	u32 nr_ranges;=0D
- 	u8 revoked : 1;=0D
-@@ -94,7 +94,7 @@ static const struct dma_buf_ops vfio_pci_dmabuf_ops =3D {=
-=0D
-  *    will fail if it is currently revoked=0D
-  */=0D
- int vfio_pci_dma_buf_iommufd_map(struct dma_buf_attachment *attachment,=0D
--				 struct dma_buf_phys_vec *phys)=0D
-+				 struct phys_vec *phys)=0D
- {=0D
- 	struct vfio_pci_dma_buf *priv;=0D
- =0D
-@@ -116,7 +116,7 @@ int vfio_pci_dma_buf_iommufd_map(struct dma_buf_attachm=
-ent *attachment,=0D
- }=0D
- EXPORT_SYMBOL_FOR_MODULES(vfio_pci_dma_buf_iommufd_map, "iommufd");=0D
- =0D
--int vfio_pci_core_fill_phys_vec(struct dma_buf_phys_vec *phys_vec,=0D
-+int vfio_pci_core_fill_phys_vec(struct phys_vec *phys_vec,=0D
- 				struct vfio_region_dma_range *dma_ranges,=0D
- 				size_t nr_ranges, phys_addr_t start,=0D
- 				phys_addr_t len)=0D
-@@ -148,7 +148,7 @@ EXPORT_SYMBOL_GPL(vfio_pci_core_fill_phys_vec);=0D
- int vfio_pci_core_get_dmabuf_phys(struct vfio_pci_core_device *vdev,=0D
- 				  struct p2pdma_provider **provider,=0D
- 				  unsigned int region_index,=0D
--				  struct dma_buf_phys_vec *phys_vec,=0D
-+				  struct phys_vec *phys_vec,=0D
- 				  struct vfio_region_dma_range *dma_ranges,=0D
- 				  size_t nr_ranges)=0D
- {=0D
-diff --git a/include/linux/dma-buf-mapping.h b/include/linux/dma-buf-mappin=
-g.h=0D
-index a3c0ce2d3a42..09bde3f748e4 100644=0D
---- a/include/linux/dma-buf-mapping.h=0D
-+++ b/include/linux/dma-buf-mapping.h=0D
-@@ -9,7 +9,7 @@=0D
- =0D
- struct sg_table *dma_buf_phys_vec_to_sgt(struct dma_buf_attachment *attach=
-,=0D
- 					 struct p2pdma_provider *provider,=0D
--					 struct dma_buf_phys_vec *phys_vec,=0D
-+					 struct phys_vec *phys_vec,=0D
- 					 size_t nr_ranges, size_t size,=0D
- 					 enum dma_data_direction dir);=0D
- void dma_buf_free_sgt(struct dma_buf_attachment *attach, struct sg_table *=
-sgt,=0D
-diff --git a/include/linux/dma-buf.h b/include/linux/dma-buf.h=0D
-index 0bc492090237..400a5311368e 100644=0D
---- a/include/linux/dma-buf.h=0D
-+++ b/include/linux/dma-buf.h=0D
-@@ -531,16 +531,6 @@ struct dma_buf_export_info {=0D
- 	void *priv;=0D
- };=0D
- =0D
--/**=0D
-- * struct dma_buf_phys_vec - describe continuous chunk of memory=0D
-- * @paddr:   physical address of that chunk=0D
-- * @len:     Length of this chunk=0D
-- */=0D
--struct dma_buf_phys_vec {=0D
--	phys_addr_t paddr;=0D
--	size_t len;=0D
--};=0D
--=0D
- /**=0D
-  * DEFINE_DMA_BUF_EXPORT_INFO - helper macro for exporters=0D
-  * @name: export-info name=0D
-diff --git a/include/linux/vfio_pci_core.h b/include/linux/vfio_pci_core.h=
-=0D
-index 706877f998ff..2ac288bb2c60 100644=0D
---- a/include/linux/vfio_pci_core.h=0D
-+++ b/include/linux/vfio_pci_core.h=0D
-@@ -28,7 +28,6 @@=0D
- struct vfio_pci_core_device;=0D
- struct vfio_pci_region;=0D
- struct p2pdma_provider;=0D
--struct dma_buf_phys_vec;=0D
- struct dma_buf_attachment;=0D
- =0D
- struct vfio_pci_eventfd {=0D
-@@ -62,25 +61,25 @@ struct vfio_pci_device_ops {=0D
- 	int (*get_dmabuf_phys)(struct vfio_pci_core_device *vdev,=0D
- 			       struct p2pdma_provider **provider,=0D
- 			       unsigned int region_index,=0D
--			       struct dma_buf_phys_vec *phys_vec,=0D
-+			       struct phys_vec *phys_vec,=0D
- 			       struct vfio_region_dma_range *dma_ranges,=0D
- 			       size_t nr_ranges);=0D
- };=0D
- =0D
- #if IS_ENABLED(CONFIG_VFIO_PCI_DMABUF)=0D
--int vfio_pci_core_fill_phys_vec(struct dma_buf_phys_vec *phys_vec,=0D
-+int vfio_pci_core_fill_phys_vec(struct phys_vec *phys_vec,=0D
- 				struct vfio_region_dma_range *dma_ranges,=0D
- 				size_t nr_ranges, phys_addr_t start,=0D
- 				phys_addr_t len);=0D
- int vfio_pci_core_get_dmabuf_phys(struct vfio_pci_core_device *vdev,=0D
- 				  struct p2pdma_provider **provider,=0D
- 				  unsigned int region_index,=0D
--				  struct dma_buf_phys_vec *phys_vec,=0D
-+				  struct phys_vec *phys_vec,=0D
- 				  struct vfio_region_dma_range *dma_ranges,=0D
- 				  size_t nr_ranges);=0D
- #else=0D
- static inline int=0D
--vfio_pci_core_fill_phys_vec(struct dma_buf_phys_vec *phys_vec,=0D
-+vfio_pci_core_fill_phys_vec(struct phys_vec *phys_vec,=0D
- 			    struct vfio_region_dma_range *dma_ranges,=0D
- 			    size_t nr_ranges, phys_addr_t start,=0D
- 			    phys_addr_t len)=0D
-@@ -89,7 +88,7 @@ vfio_pci_core_fill_phys_vec(struct dma_buf_phys_vec *phys=
-_vec,=0D
- }=0D
- static inline int vfio_pci_core_get_dmabuf_phys(=0D
- 	struct vfio_pci_core_device *vdev, struct p2pdma_provider **provider,=0D
--	unsigned int region_index, struct dma_buf_phys_vec *phys_vec,=0D
-+	unsigned int region_index, struct phys_vec *phys_vec,=0D
- 	struct vfio_region_dma_range *dma_ranges, size_t nr_ranges)=0D
- {=0D
- 	return -EOPNOTSUPP;=0D
-@@ -228,6 +227,6 @@ static inline bool is_aligned_for_order(struct vm_area_=
-struct *vma,=0D
- }=0D
- =0D
- int vfio_pci_dma_buf_iommufd_map(struct dma_buf_attachment *attachment,=0D
--				 struct dma_buf_phys_vec *phys);=0D
-+				 struct phys_vec *phys);=0D
- =0D
- #endif /* VFIO_PCI_CORE_H */=0D
-=0D
----=0D
-base-commit: fcf463b92a08686d1aeb1e66674a72eb7a8bfb9b=0D
-change-id: 20260107-convert-to-pvec-bf04dfcf3d12=0D
-=0D
-Best regards,=0D
---  =0D
-Leon Romanovsky <leonro@nvidia.com>=0D
-=0D
+Hi Andrew,
+
+Thanks for your brilliant job on the RISCV IOMMU irqbypass patch
+series[1]. I have rebased it on v6.18 and successfully passed through
+a nvme device to VM. But I still have some questions about it.
+
+1. It seems "irqdomain->host_data->domain" can be NULL for blocking or
+identity domain. So it's better to check whether it's NULL in
+riscv_iommu_ir_irq_domain_alloc_irqs or
+riscv_iommu_ir_irq_domain_free_irqs functions. Otherwise page fault
+can happen.
+
+2. It seems you are using the first stage iommu page table even for
+gpa->spa, what if a VM needs an vIOMMU? Or did I miss something?
+
+[1] https://lore.kernel.org/all/20250920203851.2205115-20-ajones@ventanamicro.com/
+
+Best regards,
+Xu Lu
