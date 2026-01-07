@@ -1,192 +1,86 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4BE36322B7D
-	for <iommu@lists.linux.dev>; Wed,  7 Jan 2026 13:16:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C3AA34A79F
+	for <iommu@lists.linux.dev>; Wed,  7 Jan 2026 14:26:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767791821; cv=none; b=YyWCeIF22tEmLWtCE7kHo8f+SZxPSKkjMkTijuYptuALJCMAZN8qB7kE2PgIVRszrKfy+hnrVBIIdQbzdhCqI5GN0OHvoVNyvlJquB9bexGjjN9hX4cpaiA7HgD7C+BV5knFAt2JPVwew82H0AL7pKtrUfox+Tl3RuKl4TqituE=
+	t=1767795988; cv=none; b=qyujISC8NpNadoY5Ct+Dm3QWWdJ6LbLsBRJ8D94iNnDzWEI8F2slC7XPogqbvXKdIg3MNj/mFE8H7Jt9xWa6+TCjoquWCkl56uTLlHkTDRC6X/su+vcaDErHjpygbNVw3NCrNFIkbe5t501ag3BFoW35ElyD/T1bTSnFUltWioo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767791821; c=relaxed/simple;
-	bh=8XPGWz6gc1WF5JXzink2MSJWua21d/hl8REDDuFkb1I=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=rt2WX0WM3oSmgAsaaC5yMokWXRt5FGp+4WrD7d+lKuxAGupKjkKmAMVSJDk04ygfM6Bi4Sq7flEKgPIR03uq6AYhazs47zXtAiFwxGcjSjCT13o3pgRCz2PRfqbJ9pnkiF5kGM6bzFSdw+LW0riVY3VF7kIZ1mtfeyBU5cl3o40=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6C02F497;
-	Wed,  7 Jan 2026 05:16:50 -0800 (PST)
-Received: from [10.57.48.49] (unknown [10.57.48.49])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9A0A33F5A1;
-	Wed,  7 Jan 2026 05:16:54 -0800 (PST)
-Message-ID: <551bb2e3-d7c7-4949-a9bd-ce0cf70e7134@arm.com>
-Date: Wed, 7 Jan 2026 13:16:52 +0000
+	s=arc-20240116; t=1767795988; c=relaxed/simple;
+	bh=PjkR2tMQRuYn/ygqr2HVflV0gK3dD8M60qKBdwuHS8E=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=Q4iwgk36X277fOPl+vxhy/+dbZy/57Y5xlRlzEVdIkRgYcLMBcsnG167bCZ+xL7G41M97humCKvqvNtEHSzPKQoYLCr/pav/lsGy6Dq1ubykvwvugoaYyIJZacZHdK7x0PHNcdemqbWglxSDsbJdfUx7wEmx5SbR5/ip1EOcOKY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TJOP5xqg; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TJOP5xqg"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFC19C4AF0B
+	for <iommu@lists.linux.dev>; Wed,  7 Jan 2026 14:26:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1767795988;
+	bh=PjkR2tMQRuYn/ygqr2HVflV0gK3dD8M60qKBdwuHS8E=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=TJOP5xqgxdXpV2aQaEkmAtPWRBKcIjm2Hq4nvMViPZZRdEbwQkuv1exYg/gXJNAzQ
+	 +7pfdLIN+EEBC+TBkNUJ3VUgTF/shJTSAjIzvXPGbEmzBtClQSMrqvYO3JRuiQd29t
+	 ucWoafNVeFEycsfzqs1vS6ZK4CRotpRoJeOdqhHNcMBDyeWkju5ZRYYK/vByznsrIQ
+	 VnjOo+aRwZUMktOoetOCjnRqCOg15GYIrquXPj37JowIHtaTrEWP+M346kfdxAfWH6
+	 o5c64Ol5I9Lt10UhuJrxCbZnapQpWFO8Y7Wa2zmk6LsxJv/BitgLp8WnuM5SaE6d+4
+	 CzXgvXfQz+zxQ==
+Received: by mail-yx1-f43.google.com with SMTP id 956f58d0204a3-6467ac59e16so1710037d50.1
+        for <iommu@lists.linux.dev>; Wed, 07 Jan 2026 06:26:27 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCUARLGeT45F8OofaTCqd415VStbwymTKXub1dy7Eb/C1un6iwAEXniYRapIDMyy5xY03ue4qQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy2M6sTnF7bpimxQyElHHTpEPfkoTZq7fQ5jAsAkisTorWgKpB6
+	TuypcaluLSPnGXrKNAfktR69CQ0pGIAlFFsPVxxF8jJZ95xVi2SaxlPDBJeqgZsg49FUaTYK9cd
+	Rc2CDyctz9eNmBUIsu2LcqowV9Cfuv/A=
+X-Google-Smtp-Source: AGHT+IE1AHMbjbBLRmE3oJob/4kE4EVVYQZcaA9cnEmtwVucD/JfcgKztpsKkpS1pfgNeslV7gLnm8DPgheIPd3GLMU=
+X-Received: by 2002:a05:690e:5cc:b0:640:d038:fafb with SMTP id
+ 956f58d0204a3-64716c79f7amr1819221d50.64.1767795987264; Wed, 07 Jan 2026
+ 06:26:27 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 5/8] dma-mapping: Support batch mode for
- dma_direct_sync_sg_for_*
-To: Barry Song <21cnbao@gmail.com>
-Cc: Leon Romanovsky <leon@kernel.org>, catalin.marinas@arm.com,
- m.szyprowski@samsung.com, will@kernel.org, iommu@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- xen-devel@lists.xenproject.org, Ada Couprie Diaz <ada.coupriediaz@arm.com>,
- Ard Biesheuvel <ardb@kernel.org>, Marc Zyngier <maz@kernel.org>,
- Anshuman Khandual <anshuman.khandual@arm.com>,
- Ryan Roberts <ryan.roberts@arm.com>, Suren Baghdasaryan <surenb@google.com>,
- Tangquan Zheng <zhengtangquan@oppo.com>
-References: <20251226225254.46197-1-21cnbao@gmail.com>
- <20251226225254.46197-6-21cnbao@gmail.com> <20251227200933.GO11869@unreal>
- <CAGsJ_4yA83-K7PXiEtyidzF_j6qqKkt92z485KBS9+zGe_rjnw@mail.gmail.com>
- <20251228145041.GS11869@unreal>
- <CAGsJ_4yex5MKQkGtFr2zUcg4h0PtsFs2QVcE_NSfiyOn4qBzhQ@mail.gmail.com>
- <de876e61-42c5-414d-b439-2f9196c6c128@arm.com>
- <CAGsJ_4xYqseJMFXOU39JJW4Lk2ZHXAnRJLhZdVuFLxAi=Dy5sw@mail.gmail.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <CAGsJ_4xYqseJMFXOU39JJW4Lk2ZHXAnRJLhZdVuFLxAi=Dy5sw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <20260102155037.2551524-1-aneesh.kumar@kernel.org> <20260105175323.GF125261@ziepe.ca>
+In-Reply-To: <20260105175323.GF125261@ziepe.ca>
+From: Linus Walleij <linusw@kernel.org>
+Date: Wed, 7 Jan 2026 15:26:16 +0100
+X-Gmail-Original-Message-ID: <CAD++jLnfWuoYavrOKoxd6=UvPhuWJmKzHWe76-FM2S+raUnEuw@mail.gmail.com>
+X-Gm-Features: AQt7F2rZFEypFbURIrjAt4rTyOBrSrpSe9zI9wXLa3pFPoPxNv2R2a7h-FMGnY0
+Message-ID: <CAD++jLnfWuoYavrOKoxd6=UvPhuWJmKzHWe76-FM2S+raUnEuw@mail.gmail.com>
+Subject: Re: [PATCH v2] dma-direct: set decrypted flag for remapped DMA allocations
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, Marek Szyprowski <m.szyprowski@samsung.com>, 
+	Robin Murphy <robin.murphy@arm.com>, Arnd Bergmann <arnd@kernel.org>, 
+	Matthew Wilcox <willy@infradead.org>, Suzuki K Poulose <suzuki.poulose@arm.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 2026-01-06 7:47 pm, Barry Song wrote:
-> On Wed, Jan 7, 2026 at 8:12 AM Robin Murphy <robin.murphy@arm.com> wrote:
->>
->> On 2026-01-06 6:41 pm, Barry Song wrote:
->>> On Mon, Dec 29, 2025 at 3:50 AM Leon Romanovsky <leon@kernel.org> wrote:
->>>>
->>>> On Sun, Dec 28, 2025 at 09:52:05AM +1300, Barry Song wrote:
->>>>> On Sun, Dec 28, 2025 at 9:09 AM Leon Romanovsky <leon@kernel.org> wrote:
->>>>>>
->>>>>> On Sat, Dec 27, 2025 at 11:52:45AM +1300, Barry Song wrote:
->>>>>>> From: Barry Song <baohua@kernel.org>
->>>>>>>
->>>>>>> Instead of performing a flush per SG entry, issue all cache
->>>>>>> operations first and then flush once. This ultimately benefits
->>>>>>> __dma_sync_sg_for_cpu() and __dma_sync_sg_for_device().
->>>>>>>
->>>>>>> Cc: Leon Romanovsky <leon@kernel.org>
->>>>>>> Cc: Catalin Marinas <catalin.marinas@arm.com>
->>>>>>> Cc: Will Deacon <will@kernel.org>
->>>>>>> Cc: Marek Szyprowski <m.szyprowski@samsung.com>
->>>>>>> Cc: Robin Murphy <robin.murphy@arm.com>
->>>>>>> Cc: Ada Couprie Diaz <ada.coupriediaz@arm.com>
->>>>>>> Cc: Ard Biesheuvel <ardb@kernel.org>
->>>>>>> Cc: Marc Zyngier <maz@kernel.org>
->>>>>>> Cc: Anshuman Khandual <anshuman.khandual@arm.com>
->>>>>>> Cc: Ryan Roberts <ryan.roberts@arm.com>
->>>>>>> Cc: Suren Baghdasaryan <surenb@google.com>
->>>>>>> Cc: Tangquan Zheng <zhengtangquan@oppo.com>
->>>>>>> Signed-off-by: Barry Song <baohua@kernel.org>
->>>>>>> ---
->>>>>>>    kernel/dma/direct.c | 14 +++++++-------
->>>>>>>    1 file changed, 7 insertions(+), 7 deletions(-)
->>>>>>
->>>>>> <...>
->>>>>>
->>>>>>> -             if (!dev_is_dma_coherent(dev)) {
->>>>>>> +             if (!dev_is_dma_coherent(dev))
->>>>>>>                         arch_sync_dma_for_device(paddr, sg->length,
->>>>>>>                                         dir);
->>>>>>> -                     arch_sync_dma_flush();
->>>>>>> -             }
->>>>>>>         }
->>>>>>> +     if (!dev_is_dma_coherent(dev))
->>>>>>> +             arch_sync_dma_flush();
->>>>>>
->>>>>> This patch should be squashed into the previous one. You introduced
->>>>>> arch_sync_dma_flush() there, and now you are placing it elsewhere.
->>>>>
->>>>> Hi Leon,
->>>>>
->>>>> The previous patch replaces all arch_sync_dma_for_* calls with
->>>>> arch_sync_dma_for_* plus arch_sync_dma_flush(), without any
->>>>> functional change. The subsequent patches then implement the
->>>>> actual batching. I feel this is a better approach for reviewing
->>>>> each change independently. Otherwise, the previous patch would
->>>>> be too large.
->>>>
->>>> Don't worry about it. Your patches are small enough.
->>>
->>> My hardware does not require a bounce buffer, but I am concerned that
->>> this patch may be incorrect for systems that do require one.
->>>
->>> Now it is:
->>>
->>> void dma_direct_sync_sg_for_cpu(struct device *dev,
->>>                   struct scatterlist *sgl, int nents, enum dma_data_direction dir)
->>> {
->>>           struct scatterlist *sg;
->>>           int i;
->>>
->>>           for_each_sg(sgl, sg, nents, i) {
->>>                   phys_addr_t paddr = dma_to_phys(dev, sg_dma_address(sg));
->>>
->>>                   if (!dev_is_dma_coherent(dev))
->>>                           arch_sync_dma_for_cpu(paddr, sg->length, dir);
->>>
->>>                   swiotlb_sync_single_for_cpu(dev, paddr, sg->length, dir);
->>>
->>>                   if (dir == DMA_FROM_DEVICE)
->>>                           arch_dma_mark_clean(paddr, sg->length);
->>>           }
->>>
->>>           if (!dev_is_dma_coherent(dev)) {
->>>                   arch_sync_dma_flush();
->>>                   arch_sync_dma_for_cpu_all();
->>>           }
->>> }
->>>
->>> Should we call swiotlb_sync_single_for_cpu() and
->>> arch_dma_mark_clean() after the flush to ensure the CPU sees the
->>> latest data and that the memcpy is correct? I mean:
->>
->> Yes, this and the equivalents in the later patches are broken for all
->> the sync_for_cpu and unmap paths which may end up bouncing (beware some
->> of them get a bit fiddly) - any cache maintenance *must* be completed
->> before calling SWIOTLB. As for mark_clean, IIRC that was an IA-64 thing,
->> and appears to be entirely dead now.
-> 
-> Thanks, Robin. Personally, I would prefer an approach like the one below—
-> that is, not optimizing the bounce buffer cases, as they are already slow
-> due to hardware limitations with memcpy, and optimizing them would make
-> the code quite messy.
-> 
-> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-> index 550a1a13148d..a4840f7e8722 100644
-> --- a/kernel/dma/direct.c
-> +++ b/kernel/dma/direct.c
-> @@ -423,8 +423,11 @@ void dma_direct_sync_sg_for_cpu(struct device *dev,
->          for_each_sg(sgl, sg, nents, i) {
->                  phys_addr_t paddr = dma_to_phys(dev, sg_dma_address(sg));
-> 
-> -               if (!dev_is_dma_coherent(dev))
-> +               if (!dev_is_dma_coherent(dev)) {
->                          arch_sync_dma_for_cpu(paddr, sg->length, dir);
-> +                       if (unlikely(dev->dma_io_tlb_mem))
-> +                               arch_sync_dma_flush();
-> +               }
-> 
->                  swiotlb_sync_single_for_cpu(dev, paddr, sg->length, dir);
-> 
-> I’d like to check with you, Leon, and Marek on your views about this.
+On Mon, Jan 5, 2026 at 6:53=E2=80=AFPM Jason Gunthorpe <jgg@ziepe.ca> wrote=
+:
+>
+> On Fri, Jan 02, 2026 at 09:20:37PM +0530, Aneesh Kumar K.V (Arm) wrote:
+> > Devices that are DMA non-coherent and require a remap were skipping
+> > dma_set_decrypted(), leaving DMA buffers encrypted even when the device
+> > requires unencrypted access. Move the call after the if (remap) branch
+> > so that both the direct and remapped allocation paths correctly mark th=
+e
+> > allocation as decrypted (or fail cleanly) before use.
+>
+> This is probably fine, but IMHO, we should be excluding the
+> combination of highmem and CC at the kconfig level :\
 
-That doesn't work, since dma_io_tlb_mem is always initialised if a 
-SWIOTLB buffer exists at all. Similarly I think the existing 
-dma_need_sync tracking is also too coarse, as that's also always going 
-to be true for a non-coherent device.
+The only way you can get CMA in highmem is by passing in a highmem
+location to the allocator from the command line.
 
-Really this flush wants to be after the swiotlb_find_pool() check in the 
-swiotlb_tbl_unmap_single()/__swiotlb_sync_single_for_cpu() paths, as 
-that's the only point we know for sure it's definitely needed for the 
-given address. It would then be rather fiddly to avoid 
-potentially-redundant flushes for the non-sg cases (and the final 
-segment of an sg), but as you already mentioned, if it's limited to 
-cases when we *are* already paying the cost of bouncing anyway, perhaps 
-one extra DSB isn't *too* bad if it means zero impact to the 
-non-bouncing paths.
+I have a strong urge to just patch CMA to not allow that and see what
+happens. Or at least have it print a big fat warning that this will go
+away soon.
 
-Thanks,
-Robin.
+I think this is only used on legacy ARM32 products that are no longer
+maintained, but I might be wrong.
+
+Yours,
+Linus Walleij
