@@ -1,163 +1,138 @@
-Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from sender4-of-o50.zoho.com (sender4-of-o50.zoho.com [136.143.188.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2CDE26C39E
-	for <iommu@lists.linux.dev>; Thu,  8 Jan 2026 16:21:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7EB8126E70E
+	for <iommu@lists.linux.dev>; Thu,  8 Jan 2026 16:22:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.50
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767889286; cv=pass; b=dmXArRuDfylFOaZD8ugPmjJ/BNhsAwl9kEFyIXEpbf2knCZXlPvRmoyjt/s6ojeLPo1RkziVk779KwcPqF+tIFOyHAgT1nQvb/7raKrWAQsv7HqIa+FH385ib8Y/K1XXR18BZZ4qr2F2NOhEjkPEwmCeO9m35qJgkBCrNhVbaGY=
+	t=1767889334; cv=pass; b=J31Tt5nuMqT6iVZQk0XmI+tvJy6CETdfxGROSpuPQvTMv+Pj04F2QFOcbLH2OWs5qG//vA/gpkUttssSJBkqDdMPt1xiD/o/SWoJ0QDPrKTkdmWqzQ1EJ+sGAsHcssZg2Unh2E2xEpecy1o0fy16rXFrYghRGtqtNRrgigV7j4U=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767889286; c=relaxed/simple;
-	bh=HJoZfm5SHVdr1yyHhKTweECAeQtP5+kYrvSv/kZ9VQk=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=o9qMi1DMK8KO01viki4+vhhqmK3DunVlH3AV5yK4RZibQ6iL57ww6opWY6vFC0j1CFsMPeUVi+8ZlCCqzvlNxMhSpLpZ5n4p0JvQccIVK4Wb4E3aEIM/nYvhwBluVn/eP9fvBUe1eN7mrpF8FM5uT/nPbA+1Y/n3zGvnzajq7Ak=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=0O2M7H+T; arc=pass smtp.client-ip=209.85.208.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1767889334; c=relaxed/simple;
+	bh=+zUpWzhBo4C4q4QtCguT1lWr97eOh1cfKA9jqI4g5Ug=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=PGHHY951/Jzsdoq5/zx1zxa9PCvYB20w6m3r/pwEk3Gz03n37BbUISlxWOi7PwEjh6MFcHDDh0AuDU0Q3Xeva4eK5f7MZsNXYpWijlfDVo0kIgiUF4/DcCdx/NMAt0jEOP1YYWCOybQdy3tYdVPlhEqNM3VLWI5YB/IEcM3qegs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=apertussolutions.com; spf=pass smtp.mailfrom=apertussolutions.com; dkim=pass (1024-bit key) header.d=apertussolutions.com header.i=dpsmith@apertussolutions.com header.b=dlxv/K6Z; arc=pass smtp.client-ip=136.143.188.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=apertussolutions.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=apertussolutions.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="0O2M7H+T"
-Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-64baa44df99so20139a12.0
-        for <iommu@lists.linux.dev>; Thu, 08 Jan 2026 08:21:24 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1767889283; cv=none;
-        d=google.com; s=arc-20240605;
-        b=Pt/W+drqKRQ5tRWNZduPjs1F437p8qQBbSgo5ik2oPs/47PpN8Z+MWyXMpltSDFli5
-         q2MMeVYPv7egpCCo3Kur/6Xtpad/mDuaxrb/OFobmvw6aj/UxZEjaXXUkSL/zjtttEVY
-         NfqzuxsFOb9jqv7XHFVlIm6c2IpwGfpAAgW72ksW2tyMqCcba+XWePue9lK/1XURInDn
-         VdYvLDSVYqr87HqxfNQyPkk2Od8hH7RsY6H4la61PGYmKcNtFIUGqyQhb/RKygS6viQi
-         3aJjxV0OhhnOikeVO5oap6XDsn+RrqWqzlMeLGamFYuFfvM7/P+J5iEvYU5V1ovkWfRz
-         JQQg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=HJoZfm5SHVdr1yyHhKTweECAeQtP5+kYrvSv/kZ9VQk=;
-        fh=QdQdILWvlLc2hQqnp0n/8wdU4F3LkmOj3Hx2ZzpVSAk=;
-        b=ArfQbIkAU+zMNxKyivSNpoR8RhqvPATYD0i+uT0tT14KTga4me/M/MYSm+nTue+Y1w
-         IDbG6/906mUNRtq3fflaSeu+y/ThSrzfT7vRkSHvEwS8s5/rUqN/ifVzKDkqiQDBjSGz
-         GkTt0JcjngdZ6AUOQdusnMCjODIf49vJZANtm50Ac7yGsNuR5najymzLl3aQlbVYYVdX
-         leI0vu6aZP8eJDdyt1rIONUuApIGl4EHSOkXRAlwiPqmN/elhVdaK5JMg2T89x8eupLZ
-         zefGUKToPfzlVCc6WTARw08wWd0trEdR2UbIp3mMX5fXSMXg2gmm78SrceTXjhXAi8Xr
-         ui+A==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1767889283; x=1768494083; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=HJoZfm5SHVdr1yyHhKTweECAeQtP5+kYrvSv/kZ9VQk=;
-        b=0O2M7H+Tcz6iVjJBRwq9Zv2vQ3NYWxRzdVf8SU+tPMm9F5czg2yuMNMOmqTaVVsv4D
-         GGoUmB+HqRvhzYGBd1NxF3O7/jC8rHasdopm3R9Q6ZNsNyoVUMqpJqZyagv8KSVlAJUt
-         JTz1R/EJmAdXZ+cYEeaOLWAyYE2CC9o97LErugmrPVjTOLq/CR5xW02DsI2WbVH+AN7a
-         nzUG/qSItyoGr1n3meyjpgFLyi6b0RIyxvDOpoKL6Fwz5kcQyfzZeqorNf+64tOmIScT
-         lzFOTAtb1XoPXNaFpohjV1oxcl3psD5bvgyboVLAUV98IyeR8t3nrBhBHkCaqrxTxgC3
-         qH1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1767889283; x=1768494083;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=HJoZfm5SHVdr1yyHhKTweECAeQtP5+kYrvSv/kZ9VQk=;
-        b=LpzL9pIvJweaPCiZwV4mJD8Y6MeKanYve/w49s/Veuf3pA/qZscQJdvv/uelA7h6BB
-         pgdiquIS4a2vbaRfyDKJkLdV77aZd5dwfIwn0RUVEtRLmUCFJACdq92TIe5hell42hlB
-         59xkWrAADvmmDMryBoCI5nPzyr3XW/oXz5ybMDEf6US9uPWunCilL4oT1grLIVmXtAan
-         nzYrFczFjJbINfZusbi7X8+MIVQYeRNkdYy4lTh27a0OA49aEFa5pBKZKHG6w+kg7i35
-         dwFCJ9QRZd88WONTiJdqyolRPja+nWQyBmZBCaeAGNowVTG11CYgOVl11yDCn960FVLg
-         vr2Q==
-X-Gm-Message-State: AOJu0Yxfy/kt/zhMxQEHs4APRBDyVm6qeNy6LmyygX0tD6fUuScMC1RH
-	oKvtWUKru4ieBV0Z0ut8yIKvQt1R4b2AL3EHFTHS0XTa7NNypeTJ19F1AZbEA91a11JUouUzwJ3
-	EZn6JUA3JIXmKeJROk2HM/J1zE4JfBoJbKCBFou4d
-X-Gm-Gg: AY/fxX7Q1bfA0jYCBAJiOiorWQDaDh/AGtJ3YkU64O7MOirTrYIbRT3XVBarFaCTWvf
-	VMWiYun0PNNP0p0KYTEtBokdfMXO5NMMEymxyw91iwfgqUmel5otLuLyvhE/fJ53iMejJTY+QnI
-	FfvwBqpEqIwMnbG1bMDsjW+bBrDPN7tLTP2yyIZH+yXOOxdzNWKt8o54A6NjsmpyoFn1xzDJDGm
-	8nLn2ZlnTig9PAB1XKx6Zc1V+5RDB5JMylJEhUhiNAHzBZY8XWbaaJZJiNPgsvYNqb1gJbF0D1d
-	lUnotN0Dof9vIWRm2qPZd0wqvsGMow==
-X-Received: by 2002:aa7:d305:0:b0:64f:8fc5:251c with SMTP id
- 4fb4d7f45d1cf-650b8824940mr27337a12.18.1767889282916; Thu, 08 Jan 2026
- 08:21:22 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=apertussolutions.com header.i=dpsmith@apertussolutions.com header.b="dlxv/K6Z"
+ARC-Seal: i=1; a=rsa-sha256; t=1767889297; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=IXM3IwQSRjpf/AjEz0IjjgNpQjKhbp5nQ8u43T/PE0S2VoEpHrCn41jycdM712iwf9SCmkXoHzMIahruw+OiMdoiMDU65J49RY54wL/zZJJwPKVDBCcDoveqL4CBjR4yE9wL/S0hCXYHl4a3+rJ6q4JdT07ezzAMed44GQyD5w0=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1767889297; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=oqv29i/Jkyku4YGsPHEwXi5y4vCYAIfyZbGbk20cx3Q=; 
+	b=V4u9qhFfLwuC/8Ag3Sr7TEjepvSGOCV/0ZLCktSz/x6xG7OdamVnnr7uXXtZ8K05UG6IkM2ElQmmVgs2MgnTSYFX8utd266JxvnAhmeeOd5+bfetzHyFAJxsbX51kZa008dUmX9puWqIpF2mcE2Ew2pQNnqeiiGZ8FHA5+0eop4=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=apertussolutions.com;
+	spf=pass  smtp.mailfrom=dpsmith@apertussolutions.com;
+	dmarc=pass header.from=<dpsmith@apertussolutions.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1767889297;
+	s=zoho; d=apertussolutions.com; i=dpsmith@apertussolutions.com;
+	h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+	bh=oqv29i/Jkyku4YGsPHEwXi5y4vCYAIfyZbGbk20cx3Q=;
+	b=dlxv/K6ZtChdyvl/fMxeMprD8qzLhwyyhoGEar4fSoaloeGwKaCIeVO/F2y/Q5Ka
+	T744G8PcyfblQWZlsHFeICcqT+L/mnCRbA9zEbnGSZ4EGhtqWDeoxqlA7dmfI0TpyXU
+	7GSm0GZP1/k+gmQmJ7byGqtM0ntYyCd6Cup03B7E=
+Received: by mx.zohomail.com with SMTPS id 1767889293888361.3114789025136;
+	Thu, 8 Jan 2026 08:21:33 -0800 (PST)
+Message-ID: <adb92eca-440b-4322-b65b-c21279710a0a@apertussolutions.com>
+Date: Thu, 8 Jan 2026 11:21:31 -0500
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260108113846.56179-1-smostafa@google.com> <20260108125934.GB545276@ziepe.ca>
- <CAFgf54ocNybHR_Mp1+i7cff-jkeMUV1QxBCt04jnKxwfwnyUfQ@mail.gmail.com>
- <CAFgf54o+YZUyZTszFt-uBW4ZhjrAMsfPFUb9kKTK1uHWdS+++w@mail.gmail.com> <20260108144520.GE545276@ziepe.ca>
-In-Reply-To: <20260108144520.GE545276@ziepe.ca>
-From: Mostafa Saleh <smostafa@google.com>
-Date: Thu, 8 Jan 2026 16:21:10 +0000
-X-Gm-Features: AQt7F2q7zAjQEJb7B7Z3UzD_3MZv9K7QzyaGgeYqN-ppW1uuZW9n5E_HzFAEE-c
-Message-ID: <CAFgf54rkwipUMQH6452xoKXT_FwcE2s=TNwoTZd3_TrK5WJNCg@mail.gmail.com>
-Subject: Re: [PATCH] iommu/io-pgtable-arm: Drop DMA API usage for CMOs
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
-	linux-kernel@vger.kernel.org, robin.murphy@arm.com, will@kernel.org, 
-	joro@8bytes.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v15 19/28] x86/tpm: Early TPM PCR extending driver
+Content-Language: en-US
+To: Dave Hansen <dave.hansen@intel.com>,
+ Ross Philipson <ross.philipson@oracle.com>, linux-kernel@vger.kernel.org,
+ x86@kernel.org, linux-integrity@vger.kernel.org, linux-doc@vger.kernel.org,
+ linux-crypto@vger.kernel.org, kexec@lists.infradead.org,
+ linux-efi@vger.kernel.org, iommu@lists.linux.dev
+Cc: tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, hpa@zytor.com,
+ dave.hansen@linux.intel.com, ardb@kernel.org, mjg59@srcf.ucam.org,
+ James.Bottomley@hansenpartnership.com, peterhuewe@gmx.de, jarkko@kernel.org,
+ jgg@ziepe.ca, luto@amacapital.net, nivedita@alum.mit.edu,
+ herbert@gondor.apana.org.au, davem@davemloft.net, corbet@lwn.net,
+ ebiederm@xmission.com, dwmw2@infradead.org, baolu.lu@linux.intel.com,
+ kanth.ghatraju@oracle.com, andrew.cooper3@citrix.com,
+ trenchboot-devel@googlegroups.com
+References: <20251215233316.1076248-1-ross.philipson@oracle.com>
+ <20251215233316.1076248-20-ross.philipson@oracle.com>
+ <56929e8b-a7cf-4390-b4ec-0b4c2c32b311@intel.com>
+ <62227ed3-3804-4795-93c9-ce2bbad3f2a7@apertussolutions.com>
+ <a507a85c-e1dd-4c63-94b2-9756ea9ece63@intel.com>
+From: "Daniel P. Smith" <dpsmith@apertussolutions.com>
+Autocrypt: addr=dpsmith@apertussolutions.com; keydata=
+ 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
+In-Reply-To: <a507a85c-e1dd-4c63-94b2-9756ea9ece63@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ZohoMailClient: External
 
-On Thu, Jan 8, 2026 at 2:45=E2=80=AFPM Jason Gunthorpe <jgg@ziepe.ca> wrote=
-:
->
-> On Thu, Jan 08, 2026 at 01:44:51PM +0000, Mostafa Saleh wrote:
-> > On Thu, Jan 8, 2026 at 1:27=E2=80=AFPM Mostafa Saleh <smostafa@google.c=
-om> wrote:
-> > >
-> > > On Thu, Jan 8, 2026 at 12:59=E2=80=AFPM Jason Gunthorpe <jgg@ziepe.ca=
-> wrote:
-> > > >
-> > > > On Thu, Jan 08, 2026 at 11:38:46AM +0000, Mostafa Saleh wrote:
-> > > > > Jason pointed out that the DMA-API calls are not really needed [2=
-].
-> > > > >
-> > > > > Looking more into this. Initially, the io-pgtable API let drivers
-> > > > > do the CMOs using tlb::flush_pgtable() where drivers were using t=
-he
-> > > > > DMA API (map/unmap_single) only to do CMOs as the low-level cache
-> > > > > functions won=E2=80=99t be available for modules.
-> > > >
-> > > > This isn't what I ment at all, the iommu-pages.h could do the flush
-> > > > inside itself using the already existing
-> > > > iommu_pages_flush_incoherent() instead of open coding the dma api
-> > > > calls everwhere, and maybe that could directly call the arch functi=
-on
-> > > > on arm (as x86 does) which would be easier to implement in pkvm's
-> > > > hypervisor.
-> > > >
-> > >
-> > > I see, so basically, we add the check for IOMMU_PAGES_USE_DMA_API in
-> > > iommu_pages_flush_incoherent() with the DMA-API stuff and call it fro=
-m
-> > > the io-pgtable-arm instead.
-> > >
-> >
-> > iommu_pages_flush_incoherent() is also used to flush non-cacheable
-> > pages in generic_pt from flush_writes_*(), so it might not be that
-> > simple; We might need to add a new variant.
->
-> There are no non-cachable pages in the iommu-pages system???
->
+On 1/3/26 15:44, Dave Hansen wrote:
+> On 12/19/25 13:26, Daniel P. Smith wrote:
+> ...
+>>> I also seem to remember that there are special rules around the US
+>>> federal government's inability to hold copyrights. This seems worth at
+>>> least a mention ... somewhere.
+>>
+>> IANAL either, but in general the safest/correct approach is to retain
+>> any CRs placed on the code being reused, and the above is the CR on the
+>> source from the Xen tree.
+> 
+> Yeah, in general, that's a good thing to do.
+> 
+> But I'm puzzled by your response. Are you making an attempt to justify
+> the past choice to copy the copyrights verbatim? Or are you declining to
+> follow my request to involve your companies' legal experts given that
+> you used the "safest/correct approach"?
 
-Sorry I meant to flush writes for memory accessed by not-coherent IOMMUs.
+My apologies that it came across like I was rebuffing your request. I 
+was just trying to inform as to why it was there. Yes, we are working to 
+determine the answer to your concern and what should be the correct 
+course of action.
 
-> All memory comes from folios and is mapped to the CPU cachable.
->
-> The general API requires the user of iommu-pages to know if the
-> underlying HW is going to do non-coherent DMA, in this case it must
-> call iommu_pages_flush_incoherent() before the HW does DMA.
->
-> Effectively what I'm saying here is to convert the arm page table to
-> use iommu-pages and then put your pkvm abstraction at the iommu-pages
-> level instead of trying to hack up all these users.
->
+> FWIW, I don't think what you did was bad here. You _did_ use a quite
+> reasonable approach in the case that a copyright was copied verbatim
+> from an existing legitimate* project.
+> 
+>   * I'll give Xen the benefit of the doubt just this one time and put it
+>     in the "legitimate" bucket. :P
 
-I see, I need to check how that plays with the custom allocator in the
-io-pgtable though. I will look further into it.
+As a Xen contributor/maintainer, thanks ... I think. (^_^)
 
-Thanks,
-Mostafa
-
-> You can also do the same conversion to the smmu driver to use
-> iommu-pages instead of DMA API, AMD and Intel are doing this already.
->
-> Jason
+V/r,
+dps
