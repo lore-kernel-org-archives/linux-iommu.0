@@ -1,79 +1,79 @@
-Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
+Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FBA046700C
-	for <iommu@lists.linux.dev>; Thu,  8 Jan 2026 13:27:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D76148167D
+	for <iommu@lists.linux.dev>; Thu,  8 Jan 2026 13:45:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.178
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767878866; cv=pass; b=uiiKH1aqF9GFwjqHbWjlSv79cxDpKUYSdhqI/Gv8yjA1px8f2uO4vcxpvOafSjYMGlJ17nd4QdS5xUx6QTrugrs4dx0/lQPT1FpMcrsFnp9fIfOQiyPXZwd/lrpTczqJbJBEj2n3/OlL90jfmmmY0wVBai+7ujh2RJ1VAZafMUM=
+	t=1767879913; cv=pass; b=YUMsD75OQRjzBdO8DuUlSiJLk8/p3lGPovTHRbooKnfYihGWgde5yZ8T0brMVbD/3RqIY1KjpX65CgqHYfTrpArQbURoPXzpqe3/IP//uSHj5zRpiH/yZ1m/i78aRBV6dY+pYbd5RtTQ61NMGD/88JEi6jSRLKxc2AXGiSwxEQk=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767878866; c=relaxed/simple;
-	bh=rUg45kZKXdAkqMBdmgTwXnVyU+lC99m/pLl1VS0vvmM=;
+	s=arc-20240116; t=1767879913; c=relaxed/simple;
+	bh=qyRa40fh8YhmtwCdrRt6pdxxVr6ipd3YcrOg4WQdMeM=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Pb80sIOGIhY9OSCsGN6FK/ga/K5oQ91ECoMfSsDtY3foahKANJQHZ+GVnvr0xTPypvt01JI8Ln6iNGXz95tEflmTJVOS+Z4k2BkvBbmcgaMERUDYYTUZbFRzt5/1TFBAUQQdr/yM927Z2Bk4bHx/SoLeCaKQafgh44x/sSVZcqs=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=eao2INzT; arc=pass smtp.client-ip=209.85.160.182
+	 To:Cc:Content-Type; b=MD2JKTiLevJMFoSOIsoScK3idIQOyeVedsg6t6hEYbnSLf/04H87jLNKJ8U72rQZtt5sT6KKORdm68QS8lpaUxUdyHZdH9I+MtjnuWGue5yI6Ydawa9tDX9GXWvn/IbJop8xLdcJ9M49oLVrUejNOKUeHW1eXvP5lKZNo31f52o=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=AJEjF3EL; arc=pass smtp.client-ip=209.85.160.178
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="eao2INzT"
-Received: by mail-qt1-f182.google.com with SMTP id d75a77b69052e-4ffbaaafac4so726761cf.0
-        for <iommu@lists.linux.dev>; Thu, 08 Jan 2026 05:27:43 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1767878863; cv=none;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="AJEjF3EL"
+Received: by mail-qt1-f178.google.com with SMTP id d75a77b69052e-4ee147baf7bso962531cf.1
+        for <iommu@lists.linux.dev>; Thu, 08 Jan 2026 05:45:05 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1767879904; cv=none;
         d=google.com; s=arc-20240605;
-        b=B+Ljo1fJ+VohVx0FF298IPELEwhYhGFe1CDCpWAPswqt8EbyO/xhRBZD+qBPBn0wdJ
-         mMb0QGFssxCOWTwbAYlE2VaRIspXCAOQW6EII5qudI91iiUbAy4KCiwYh6IHlkJ4t99d
-         sCd1OL6P83tVKudZeTUnSm7gmA7a/kppOv/FCcILx7CpnJbj6dZnBOauFdmF9CaU6bvF
-         E8+gJcCWSWujrJ5MNUqhhcXDZJT68+Vn3u7jOh29cN5SRq+86sZ1DXiTh0OhTjM3bQUJ
-         PTr6cCOVKssl8wBWN7ZHSvH6Yc3Nhcmi8HcT4nxgf7z3dsVsBSTjd1aSA1y9e1jIOfaN
-         5Twg==
+        b=GgBB04QWk8k3JwQLZRJWME905yrTakOLi9bPJBXSulhKMY/Znjrt+rRVBFIYCyKnFf
+         yojbP1iCUWON5w/834a5HVyZJGRE5cF0qkRYOafCehZRTijt6Cvo3udrJX+qiQRKhMvK
+         hx6SKFF/qR6j5CBuiJTmziCdHvlqBdPmQRso4s2pRvf7OO7VDOkezo5OOfo17Ha92Ohm
+         jnYFpv9vhv1M9EZwwxPSkLuvaKUFUuw0K/ABGVfz5HO+fsS7xUS21b6yfjtIBlPAUY9s
+         /M+8cDDxB4hcCNfzzLNqVKuWtATgqr0PATp9JGdzcVR/N+xJVKOk/AShLeJjPpkJDAAG
+         LARA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=rUg45kZKXdAkqMBdmgTwXnVyU+lC99m/pLl1VS0vvmM=;
+        bh=qyRa40fh8YhmtwCdrRt6pdxxVr6ipd3YcrOg4WQdMeM=;
         fh=QdQdILWvlLc2hQqnp0n/8wdU4F3LkmOj3Hx2ZzpVSAk=;
-        b=BJ7zIev2ViemHCHfybjTUspo78hm3/Z7Dr8NuW5c6gjH3AElDU7Kk/PkNOGFRR5R9/
-         KweHPHBCOu4uC9MM1se9BGr2R1X4K2T4He6S4uDgdJilTpojDp59Fv8VVFRht0qcer9Y
-         TEFFXfvT8B/7mkVrmYASWJ+4sX06rI6XpmygrMrUE2Q9/J58WRA95ZE1xJwYQFimNZAB
-         USqOHICeykbhiHVD7xkU9AUMhcvw7Ds7tqkvlciyhJqjfz0oiiYqczRp8K+PL9oJXxkQ
-         gVy6njrfCG2/fvAAAenjMo6A5j2fmHvQ/1ZguKZVoCZOAPnd2GltA1KwiXUvdnK6cJe3
-         D1PQ==;
+        b=ggRQC6b/EHruHeHKFwVrhue8I/JGhAQ5A5t5b+TeNIMAsfKFQy1LFO/x+Vah8B4F+c
+         52aqxzEOWjU/LiVgmskEAhoXZfmLv9mSYuzzt1vzlUCPwo/3Ae9pIxtcuuvIT7hjj1e3
+         S7jdnkILHu2FKipIcvTI2M5p3PN0ERtmkkCCQOdtl9VK8QroKIBqeymo6xGAr6p2tTF4
+         PfuzzK43Qv0m0A2ds6/FyB+3AHIf5EwVXV7YyFsaTIA160GiKe+rfOTnY4E9telmqgo4
+         oy+1SOZqZd+ukzlTjRG5tP1BcR87WhzdbNX3jhZj5yI5NnQI/UTP+cY2RngiBVb4G3Td
+         beAw==;
         darn=lists.linux.dev
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1767878863; x=1768483663; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1767879904; x=1768484704; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=rUg45kZKXdAkqMBdmgTwXnVyU+lC99m/pLl1VS0vvmM=;
-        b=eao2INzTS30XMUWAqNTiXbQPbWq51qws0lF5Wbd2uWKOOHMqWJqyy6rolqzRD5+ezN
-         JtTLuc7eI/hdpME0/OlRptMQdLMw0KEcVX8A4GFUOVL5oAgMjXI9AjW14mfzqjLBwUcu
-         Tq2Cnht13IoAbOpfsW/Q+YEBXg1WsfoFeM5ULo4+ASfTdcSqDNZH25cNyKBZZIxv3HOu
-         c48f1fTNW7s49dh4DZH9NKGWlJoNx9j0bxfQqzMNAjL3uD4cKrfizb4pMrcmeRPXt0Vz
-         tK+MSa/M+HDikk+pxFkEHFGPp9WA5I4APnmpf56ipHSLfDMm0HTfi0pp+t06pfKBLJvx
-         B6Og==
+        bh=qyRa40fh8YhmtwCdrRt6pdxxVr6ipd3YcrOg4WQdMeM=;
+        b=AJEjF3ELgC/NWhmaFbhaIpy4xW0dNuOjUdG+d7xxZud0BOJFTA3Yw+iRnLN9fQw/s+
+         umDfuvavAAc7VKFTk8RvZbD2Ll3BNz5ntpJKhvH3ocPOq/2OrHrs93aRYkr7zasBBG0L
+         Sqv2ShhTvIkdstlsqYIqBuwaO5NJJHrNCcrh4veSZ8JdFtH4BGh/DOjrU8nzuA9+xPtH
+         y6Sq6i0x4VMRbgZ+toKxGtPAWdxB1rQXxkeH8cvbrQSHm87XpdBbeFatnep/tPxI7utj
+         nuwA8qLSQBfJukvZ+11WpZW0WIwW21Kg3U+pgbhHGCf2SFaZ+ig+rhSZCHMMYPohyTSS
+         w+qA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1767878863; x=1768483663;
+        d=1e100.net; s=20230601; t=1767879904; x=1768484704;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=rUg45kZKXdAkqMBdmgTwXnVyU+lC99m/pLl1VS0vvmM=;
-        b=WkdKpsij7nhACB4XljCqNsEGYyBj5G4F0qyqjIaRAsmIiKheTZegYHKlmco465FmGR
-         LL4/Xl9xb33GBNEQZfcZmklmoiY3Ik3eIPjZoFcb4F3yJ6eo1d2gA41rCuZoNrSW0g0K
-         GEeD99WfgKaiaru5mgzTx4jKJ1yNiI3eOexBpKZqBz44zIN+pBtQ+Iw5Pe1hNEpvMdf7
-         SDoX7Aj2bn++mSEMR0Tw7tlNfFLVV3RBw9ry3EUdu5kfcleUpynfMqfF0CW86SaUxBTo
-         m+bhUHWcBO8g0/16VLNOs5p/BYRqaNO8H6NKzNMUrhmfGlKE30S6c5W8I/aHwR4cq3B/
-         CtPA==
-X-Gm-Message-State: AOJu0YxCctjpYM/lJB1yIjjthwifKObhq4VmGKouxUvGjRPqeS6kcMOU
-	4/3xNkwQlp+pLR5BUf/eOg6y8Udee8MLMzTsEwFoAYPAJD5PO2U3n6ASAjA6EZeTh5oKNCHUWE9
-	64AtFXKOKTHc9o7RWdg5CJJoFGmDBbou0sHMWNfnIIolXcy0CuDPmVKYapNw=
-X-Gm-Gg: AY/fxX6JtAUL16+Yh7cb+U/jkVt5ENMNCmvFb4iM4AwNDGNYsJsllcVAeapn2HIHP7X
-	ZajyEtSBGvRiA0t9yBz/dlhGBQjn87CY0lsF1v29XCkD0foqbeSvqiGeQosAY4XL3nBYtmD5+T1
-	4NB1eD1fDCpnOKNtpcm4niZS0jCIRKkgF7jQWT/+YoGJambMVZJfCKEroH0OuASSxrmPTV5b0M4
-	X+BC05LaaGGrw4xgUOt3A1+mDdyrWbfB4SMSCrkTUq/CbyampaLKUHidP1CTpWp6zGH0X9NHXX2
-	TwrmuJHcpw0rtPRXjsWCPz+9Lp1LXg==
-X-Received: by 2002:a05:622a:120d:b0:4f0:2e33:81aa with SMTP id
- d75a77b69052e-4ffc094eecemr8503661cf.11.1767878862613; Thu, 08 Jan 2026
- 05:27:42 -0800 (PST)
+        bh=qyRa40fh8YhmtwCdrRt6pdxxVr6ipd3YcrOg4WQdMeM=;
+        b=MDk8nhgytsh1VS9FAm2J9r4GykArm+jizIbbsrPwpKfPTUJBluMfsSEuNcNYpDZIbJ
+         W2BUTKSaSc34bCCZJm6Nr6/u75G3l4YeyM2v7vvdHyclhS2RLCzodEkSJ0XLqZRMyO8L
+         KI7D+FJ8W0SxfJcWy4KOUHzroArGpFU4HQR3yTdJLReB4qqrgb0Kjb91HVuDyJyy9n1z
+         oa1nfyHKH+YbLbKfztUzc/aq16f60UGW7ezg9hqYE/kp1UFfc5liq5iANuDJF/3FsXsa
+         n3tr8mVvIpoLWIVTs9S3I0A+I9CoFGqPyPu834UyzFGkTKVqmGkO76jEAQlBj7l97KmE
+         RcfQ==
+X-Gm-Message-State: AOJu0YzmkKFmPLAeQ8gCfmX+YJt/9rFREgO1jrl/ExzrMNWDVLeJSikW
+	ZD1bEUa2ANb2C/6SjaW4cN6Jztet9m8VMjuoDc201PQ+kSc/jCcAVUWJQILw9yoY0CgggtAu4FM
+	Ovwn7rqOA96oqHRUqasaOR+5Yp2KutWfXirrS45tS
+X-Gm-Gg: AY/fxX4XvESFZ0QFS+uUaVurJxZgwN+INNQs+NbL/Yv1/AtuRiFFETlaaXYhhZFGXE0
+	5jiUoYx1N5C1UbxPt7QYVxVXwApts+I2C9WLgWH3EkI4W5swGNWZSYAf8XYpiVOesOtl9zvh48T
+	wcDCdxe+dW/8B/QbdRND1CBEaLto6vNFWVs3SPwu2/ZReZ5ZK6Cfpl8iup6SfSV3zRz3Ee/YmFU
+	T4d5GvEFqoN3r76r77uL3GojJxiSfDqhaDD4bQQ+/tHMhGln/qT/Sw2PKT/TDn5sYEmmy0spW+X
+	4FM5b63hpJcyzX4KrsSpG24t/5ID6w==
+X-Received: by 2002:a05:622a:290:b0:4f1:9c3f:2845 with SMTP id
+ d75a77b69052e-4ffc094e8e8mr8332571cf.9.1767879903423; Thu, 08 Jan 2026
+ 05:45:03 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -81,11 +81,12 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 References: <20260108113846.56179-1-smostafa@google.com> <20260108125934.GB545276@ziepe.ca>
-In-Reply-To: <20260108125934.GB545276@ziepe.ca>
+ <CAFgf54ocNybHR_Mp1+i7cff-jkeMUV1QxBCt04jnKxwfwnyUfQ@mail.gmail.com>
+In-Reply-To: <CAFgf54ocNybHR_Mp1+i7cff-jkeMUV1QxBCt04jnKxwfwnyUfQ@mail.gmail.com>
 From: Mostafa Saleh <smostafa@google.com>
-Date: Thu, 8 Jan 2026 13:27:30 +0000
-X-Gm-Features: AQt7F2o_Qbifizn2oH0tHC8NOTIpDkZD__WQsOdMvWghmYJtGdKDy7Vhh49RAqA
-Message-ID: <CAFgf54ocNybHR_Mp1+i7cff-jkeMUV1QxBCt04jnKxwfwnyUfQ@mail.gmail.com>
+Date: Thu, 8 Jan 2026 13:44:51 +0000
+X-Gm-Features: AQt7F2qxCojV-Rkt2Q0oF4yYRt65modgBec2JKi-LjVwHS9mVz_oTorZ1Gh5S3k
+Message-ID: <CAFgf54o+YZUyZTszFt-uBW4ZhjrAMsfPFUb9kKTK1uHWdS+++w@mail.gmail.com>
 Subject: Re: [PATCH] iommu/io-pgtable-arm: Drop DMA API usage for CMOs
 To: Jason Gunthorpe <jgg@ziepe.ca>
 Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
@@ -94,37 +95,48 @@ Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jan 8, 2026 at 12:59=E2=80=AFPM Jason Gunthorpe <jgg@ziepe.ca> wrot=
-e:
+On Thu, Jan 8, 2026 at 1:27=E2=80=AFPM Mostafa Saleh <smostafa@google.com> =
+wrote:
 >
-> On Thu, Jan 08, 2026 at 11:38:46AM +0000, Mostafa Saleh wrote:
-> > Jason pointed out that the DMA-API calls are not really needed [2].
+> On Thu, Jan 8, 2026 at 12:59=E2=80=AFPM Jason Gunthorpe <jgg@ziepe.ca> wr=
+ote:
 > >
-> > Looking more into this. Initially, the io-pgtable API let drivers
-> > do the CMOs using tlb::flush_pgtable() where drivers were using the
-> > DMA API (map/unmap_single) only to do CMOs as the low-level cache
-> > functions won=E2=80=99t be available for modules.
+> > On Thu, Jan 08, 2026 at 11:38:46AM +0000, Mostafa Saleh wrote:
+> > > Jason pointed out that the DMA-API calls are not really needed [2].
+> > >
+> > > Looking more into this. Initially, the io-pgtable API let drivers
+> > > do the CMOs using tlb::flush_pgtable() where drivers were using the
+> > > DMA API (map/unmap_single) only to do CMOs as the low-level cache
+> > > functions won=E2=80=99t be available for modules.
+> >
+> > This isn't what I ment at all, the iommu-pages.h could do the flush
+> > inside itself using the already existing
+> > iommu_pages_flush_incoherent() instead of open coding the dma api
+> > calls everwhere, and maybe that could directly call the arch function
+> > on arm (as x86 does) which would be easier to implement in pkvm's
+> > hypervisor.
+> >
 >
-> This isn't what I ment at all, the iommu-pages.h could do the flush
-> inside itself using the already existing
-> iommu_pages_flush_incoherent() instead of open coding the dma api
-> calls everwhere, and maybe that could directly call the arch function
-> on arm (as x86 does) which would be easier to implement in pkvm's
-> hypervisor.
+> I see, so basically, we add the check for IOMMU_PAGES_USE_DMA_API in
+> iommu_pages_flush_incoherent() with the DMA-API stuff and call it from
+> the io-pgtable-arm instead.
 >
 
-I see, so basically, we add the check for IOMMU_PAGES_USE_DMA_API in
-iommu_pages_flush_incoherent() with the DMA-API stuff and call it from
-the io-pgtable-arm instead.
-
-> Then it is reasonable to have a pkvm version of the iommu-pages api
-> for the page table and drive rto use.
->
-
-That makes sense, I will look it over and send another version if
-Robin is Ok with it.
+iommu_pages_flush_incoherent() is also used to flush non-cacheable
+pages in generic_pt from flush_writes_*(), so it might not be that
+simple; We might need to add a new variant.
 
 Thanks,
 Mostafa
 
-> Jason
+> > Then it is reasonable to have a pkvm version of the iommu-pages api
+> > for the page table and drive rto use.
+> >
+>
+> That makes sense, I will look it over and send another version if
+> Robin is Ok with it.
+>
+> Thanks,
+> Mostafa
+>
+> > Jason
