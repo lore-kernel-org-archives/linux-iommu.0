@@ -1,134 +1,206 @@
-Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0191825A2BB
-	for <iommu@lists.linux.dev>; Thu,  8 Jan 2026 14:45:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0270F25C838
+	for <iommu@lists.linux.dev>; Thu,  8 Jan 2026 14:45:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767883524; cv=none; b=s15gtFElrP+QS0rUVJigyjiDwSbgG90yl4GpmmmfQlZVXMoO/X6nbRy9MD2FRUHp4PwmRvNApWBNSBUe5hjZ5Jsg5h4D8Ex48wx/my/VdXfMwHA1Dts6NVc6yP5mo7ZM8EM1FgfDAcRL/VjlF4mondRWSPBMPuTHVgWOaPrExcA=
+	t=1767883536; cv=none; b=Z8v2zs4B4DVA9GpoArP6JUgPiuuwrueNIuH0EN/i8dDyU1mxjGkF/75Y9cC5UmZDSZMIuuaLyu6s+zsKH/hxt+fdwROrWDFGloH5bp2puRrfALgmGyyJJWt1anfJRP+UuPqtbuP/k07iGUSp7RPP/tuiiPMuMmZzctlt9ii4etk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767883524; c=relaxed/simple;
-	bh=DhBkaXnKGIzDRLsxPLOuraqjH4fA+nbCX0ARvwiyQ1o=;
+	s=arc-20240116; t=1767883536; c=relaxed/simple;
+	bh=ScTKP+c2rR672BgupG9wm67XF9gVvJQXcIgn+/1V/bU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=AzD7QNnHjP+kJ3qT279yOdo4goR+bFW95FZdo8Xcs9Aqq7+46oGy9/k3TB2F/VRUtinUppHq7uhiP+kPaLfUIQqFgOBV09I3aTmdpmjPYYF7UYk+pSP5BjG/FZsHFgQJcXBtho+zxVWVcNmqecCyqgUpxmWw0h+Wpu+5RyGBAxU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=AbiAIT4p; arc=none smtp.client-ip=209.85.160.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	 In-Reply-To:Content-Type:Content-Disposition; b=mR9OkklzWjDJQIPdni5JH9tn3k/1NQPJDbs3FFcuL6aVUT3H02PIkVHHJpXt8aUGFHOxr2b4ShqwsV7Fp1xZe9pxRu9OD89lkBaGSPi3AfSyZeov5VrG2f0xHR1utyIwWQy5+lidRSCk5rkaoFcbEaflq1zJ3Wi/sFpLaEKj3Ac=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=cEGkcdDU; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="AbiAIT4p"
-Received: by mail-qt1-f173.google.com with SMTP id d75a77b69052e-4f1ab2ea5c1so43990481cf.3
-        for <iommu@lists.linux.dev>; Thu, 08 Jan 2026 06:45:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1767883522; x=1768488322; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=N4LHsOGc5pju7+ZZ7G/UCMXvDe5juRNxgmay6MHvgpc=;
-        b=AbiAIT4pYoSvn91C5XrRDKOsmf1ufzMFkYdSYSkc09m+fCGZGsjr+ZyiQJHTRQ7mLo
-         mGvKRBqF2CWfg1fv1405LKUY/ihB5fEDdBcM6yGcmIvwwJNx8gOuuIXGH5tVMYPHbT2S
-         UrgacWG2zWYreHw9z1ECxGOX1dbSo1LDuJwXubzsc4omDOU8ttZnu8Ex+qCAQkNT/dzM
-         ZbUsRMeh2jyKzfSi+HO6Dr7VDF/EhUKS9mV3LhLVn5xgi7A00P1nW1w7zhtkhEXuoI9u
-         8HdX5O9m6jkBYw+I6xBldd6/VZgxGwCftqPuSoUfCf0o3vdIeCVPnNrNDjXZmjLA7EUL
-         dBNg==
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="cEGkcdDU"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1767883533;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=WfT1Va6tq1fm9ghByqfjKPhOxaDhZdEa8+dMcUknkTw=;
+	b=cEGkcdDUtwCQAciuSSLPqYzZQLxzlTFaGDIdEP0X8UFn5G8Y/D6hxjUZg6yiUflE7EN2k4
+	J2U1U795kp1zBtn1Tn6S8CWBMwNd3tkOmU7bmO8HpD+flpM/BpJphL2Hil55M32c8aQq2e
+	Amn28rycEmRtPiKgq24J22/GVIogvmI=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-578-q41iMbaPNnacCHfm6-DkpQ-1; Thu, 08 Jan 2026 09:45:31 -0500
+X-MC-Unique: q41iMbaPNnacCHfm6-DkpQ-1
+X-Mimecast-MFC-AGG-ID: q41iMbaPNnacCHfm6-DkpQ_1767883531
+Received: by mail-ej1-f71.google.com with SMTP id a640c23a62f3a-b7cea4b3f15so492511166b.3
+        for <iommu@lists.linux.dev>; Thu, 08 Jan 2026 06:45:31 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1767883522; x=1768488322;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=N4LHsOGc5pju7+ZZ7G/UCMXvDe5juRNxgmay6MHvgpc=;
-        b=rJ/woNViUjR3ul/oyLQ02QJ9R3VLnmiCmn1MO8FmV9QFvxSBCPdMB2uuwsL/FdXc9l
-         2fgFdsxv9Z/Sp50GKHkBa82Xo2lYRWhwVLxO9aKF21CZznSbLDEMWGBe5wFUhTJZ21L0
-         tqmGFIwjjPpN5/2shfXSh3I4LZVX0tdqYcDKk4iUKqPR+VO9611nIjJDMk1kmSf503Hl
-         IZUlMqYZRwhINa8f2874GHnXokzbioV1QtCtY1N2iAZ/w9oMXnOxNFb41eGUEELOqSk/
-         IDqPutYvEw0DXXGXNgTRWszS0lULPsLzCUDmPo9Y2lvyLjHBCwceIjgTLEfPcj7Jq5eX
-         wFDw==
-X-Gm-Message-State: AOJu0YwI5gZM6/4mXJx+jnVrXvMPKWOVJyW/GujVQmNSdWJBtFxmKbEv
-	2LC9+lNZsYh9aifs/IYA4JuLXzyS/vWUt/jfPtevkJhi2Wam6oaABPDCSxxwfJ1E0sQ=
-X-Gm-Gg: AY/fxX68dbhirUA7GEdTSUZV5DK42W2ehOONa0ypyEhfoFw2u4wVfJ+JvW/ntvDJp8l
-	shtSNhvHrOd14id/iYWW1J4HDTETKg9eIJFSOFTPfUY8zYgBfhO71zW+u7cLVBIY436qFgGg/tO
-	XVhnt8pTBj1VX0kmmCxEP63O5HAwm2av3qXMwscXDM3CyfNczUlMreSTUFLI1NGenaPEH8rWDwT
-	NYy9jTf4cce3bX8jsiLy0urDdHcPhrZYedAAbM63lUjCduAQlfIPLWQJXUJGny2hXk6aMrLPsGJ
-	Lr+E3OUPBVSFit1S+tfHGdVRBuV7RsoI6+BU2CuUarMcQL2T8b2opgvzdDqwlw8/XKLzzPHPUvX
-	6d5QdHwZfQcKvtMMI/O2voNesi9VlF0tvcN9J2sOt0oXhh9JWWKAcFfYIKGK1ygdrPBz0v+bM2V
-	lo1mJQaR3b/n3nsuO8pLP6yONZUGasOJtQ3G/7PqYKAQF93HpgQ2VIJOn/QdDy8zx7i3Nyv8HI7
-	x/vRg==
-X-Google-Smtp-Source: AGHT+IES3ov00CDdYvOziEIM2g2UrgYu5X+EmgztTduCXnjzLnO2ob95S0v4/KfSRH05axzpnJtLpA==
-X-Received: by 2002:a05:622a:2297:b0:4ed:b8d6:e0e8 with SMTP id d75a77b69052e-4ffb48a86e1mr83270651cf.22.1767883521678;
-        Thu, 08 Jan 2026 06:45:21 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-162-112-119.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.112.119])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-4ffa8d64563sm48461021cf.13.2026.01.08.06.45.20
+        d=1e100.net; s=20230601; t=1767883530; x=1768488330;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=WfT1Va6tq1fm9ghByqfjKPhOxaDhZdEa8+dMcUknkTw=;
+        b=lkE3LOnPK6HO27/60TKWwdV/Tw5bUgPdw1wzqmhEl3mu39IwYjLZhf0qf31ttFTzab
+         Zh/nEmZIPe9bjMEbsOhbwN7tmgzj8uEWwK3Pkz6WwRK1sU4XK3zeSplGJ8y7Ja35kDFV
+         s4c5U1a4527j+focD2VXz9tKeJurbbLdY3Nb3vVWG8TOmCKtdU/vMoH0yyWswIUFaUUJ
+         Zx3fS6oBb10dm7V+LUEmfsUxM4Nj9WpKIGXSV/kzvY+AcWl0Zqr6zApIFWgwVqnxKq9b
+         DTEhQi7AT+PxqD/5QiZMG03Ymtj8aWi5bGEPegLveal8owmjIy0MJKFO0x9pi2libXKD
+         Cndg==
+X-Forwarded-Encrypted: i=1; AJvYcCW+2Cy8dWdVngoFZNEFWcGdhKCYCW9LEufXfSPMf8Jd9AnKnBcsZkVUmsjfT6Rw05xpD6oxCg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yz0Zx59r9i7eCkWHAz9Fvu6SIxFWX5PEY3/FDidx4ysTCq/bScE
+	HSCnV0IdW4dqWgZa3bIrY7mQw9iFW+z0i6e1QGqlEX41Gy/5wrKIdv6SO1UHsDtzP0enqwwuKd/
+	sOLhROY8ophhc6l5/dQAruC5rb6bDKACJz257C5L/3fO3oqa7Ubac0lLY
+X-Gm-Gg: AY/fxX5bHkPrVoGkfUuDflOLjjD4jb5qfYCVOdqltq/wRUeM52taqpd3pbMKi1pG3zB
+	w0u5+hzR1QBz23ib0kUoRo5buMYAl1aPVAV//H7aYh5cMe74iVhRbbE4wP2aCa+UKQ4i/oiSfc9
+	+PzEz8iBKMQa+t+m7jUQGfBeCuWpeZbyEpQ4luu4qNgXWdSoFxBRYfP4Oj76vJjLqeMuQ+pouRp
+	/62VUdmFomCA9n/0bTAmbdr6FxHOmwEN85cdCugdwmHpsNZr+P9YG5ts2KknIN7jlBdwOq/+EFj
+	XtPR0wdNTHztliXGHS5igHtSngcnqtgp4XSXJzmHqgqnDKKjbwO0gMDj35xbky0EP3I3wxnSZ4x
+	dXsYs0FX5vHTRL3S4
+X-Received: by 2002:a17:906:c103:b0:b79:e974:4060 with SMTP id a640c23a62f3a-b8444fd41a2mr660535166b.48.1767883530429;
+        Thu, 08 Jan 2026 06:45:30 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IEy4t9xkgOZMs7kPUcCm9yBAey59kExadAcY+9phGlSdjSpATKGUSBjtzXbWCkzKn2HKwCwkQ==
+X-Received: by 2002:a17:906:c103:b0:b79:e974:4060 with SMTP id a640c23a62f3a-b8444fd41a2mr660529166b.48.1767883529753;
+        Thu, 08 Jan 2026 06:45:29 -0800 (PST)
+Received: from sgarzare-redhat ([193.207.223.215])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b842a564255sm848076466b.63.2026.01.08.06.45.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Jan 2026 06:45:21 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1vdrGK-00000002MBP-1mPB;
-	Thu, 08 Jan 2026 10:45:20 -0400
-Date: Thu, 8 Jan 2026 10:45:20 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Mostafa Saleh <smostafa@google.com>
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, robin.murphy@arm.com, will@kernel.org,
-	joro@8bytes.org
-Subject: Re: [PATCH] iommu/io-pgtable-arm: Drop DMA API usage for CMOs
-Message-ID: <20260108144520.GE545276@ziepe.ca>
-References: <20260108113846.56179-1-smostafa@google.com>
- <20260108125934.GB545276@ziepe.ca>
- <CAFgf54ocNybHR_Mp1+i7cff-jkeMUV1QxBCt04jnKxwfwnyUfQ@mail.gmail.com>
- <CAFgf54o+YZUyZTszFt-uBW4ZhjrAMsfPFUb9kKTK1uHWdS+++w@mail.gmail.com>
+        Thu, 08 Jan 2026 06:45:28 -0800 (PST)
+Date: Thu, 8 Jan 2026 15:45:20 +0100
+From: Stefano Garzarella <sgarzare@redhat.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: linux-kernel@vger.kernel.org, Cong Wang <xiyou.wangcong@gmail.com>, 
+	Jonathan Corbet <corbet@lwn.net>, Olivia Mackall <olivia@selenic.com>, 
+	Herbert Xu <herbert@gondor.apana.org.au>, Jason Wang <jasowang@redhat.com>, 
+	Paolo Bonzini <pbonzini@redhat.com>, Stefan Hajnoczi <stefanha@redhat.com>, 
+	Eugenio =?utf-8?B?UMOpcmV6?= <eperezma@redhat.com>, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, 
+	"Martin K. Petersen" <martin.petersen@oracle.com>, Gerd Hoffmann <kraxel@redhat.com>, 
+	Xuan Zhuo <xuanzhuo@linux.alibaba.com>, Marek Szyprowski <m.szyprowski@samsung.com>, 
+	Robin Murphy <robin.murphy@arm.com>, "David S. Miller" <davem@davemloft.net>, 
+	Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, 
+	Paolo Abeni <pabeni@redhat.com>, Simon Horman <horms@kernel.org>, 
+	Petr Tesarik <ptesarik@suse.com>, Leon Romanovsky <leon@kernel.org>, 
+	Jason Gunthorpe <jgg@ziepe.ca>, Bartosz Golaszewski <brgl@kernel.org>, linux-doc@vger.kernel.org, 
+	linux-crypto@vger.kernel.org, virtualization@lists.linux.dev, linux-scsi@vger.kernel.org, 
+	iommu@lists.linux.dev, kvm@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v2 13/15] vsock/virtio: reorder fields to reduce padding
+Message-ID: <aV_Cr_f47qqc2JoP@sgarzare-redhat>
+References: <cover.1767601130.git.mst@redhat.com>
+ <fdc1da263186274b37cdf7660c0d1e8793f8fe40.1767601130.git.mst@redhat.com>
+ <aV-6gniRnZlNvkwc@sgarzare-redhat>
+ <20260108091514-mutt-send-email-mst@kernel.org>
+ <aV-9F42fMfKGP4Rg@sgarzare-redhat>
+ <20260108092931-mutt-send-email-mst@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20260108092931-mutt-send-email-mst@kernel.org>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: UjA7UV0YpCfhuzPiLBSjcgP5qpAC40d8J4RMWXaPi8M_1767883531
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAFgf54o+YZUyZTszFt-uBW4ZhjrAMsfPFUb9kKTK1uHWdS+++w@mail.gmail.com>
 
-On Thu, Jan 08, 2026 at 01:44:51PM +0000, Mostafa Saleh wrote:
-> On Thu, Jan 8, 2026 at 1:27 PM Mostafa Saleh <smostafa@google.com> wrote:
-> >
-> > On Thu, Jan 8, 2026 at 12:59 PM Jason Gunthorpe <jgg@ziepe.ca> wrote:
-> > >
-> > > On Thu, Jan 08, 2026 at 11:38:46AM +0000, Mostafa Saleh wrote:
-> > > > Jason pointed out that the DMA-API calls are not really needed [2].
-> > > >
-> > > > Looking more into this. Initially, the io-pgtable API let drivers
-> > > > do the CMOs using tlb::flush_pgtable() where drivers were using the
-> > > > DMA API (map/unmap_single) only to do CMOs as the low-level cache
-> > > > functions won’t be available for modules.
-> > >
-> > > This isn't what I ment at all, the iommu-pages.h could do the flush
-> > > inside itself using the already existing
-> > > iommu_pages_flush_incoherent() instead of open coding the dma api
-> > > calls everwhere, and maybe that could directly call the arch function
-> > > on arm (as x86 does) which would be easier to implement in pkvm's
-> > > hypervisor.
-> > >
-> >
-> > I see, so basically, we add the check for IOMMU_PAGES_USE_DMA_API in
-> > iommu_pages_flush_incoherent() with the DMA-API stuff and call it from
-> > the io-pgtable-arm instead.
-> >
-> 
-> iommu_pages_flush_incoherent() is also used to flush non-cacheable
-> pages in generic_pt from flush_writes_*(), so it might not be that
-> simple; We might need to add a new variant.
+On Thu, Jan 08, 2026 at 09:32:23AM -0500, Michael S. Tsirkin wrote:
+>On Thu, Jan 08, 2026 at 03:27:04PM +0100, Stefano Garzarella wrote:
+>> On Thu, Jan 08, 2026 at 09:17:49AM -0500, Michael S. Tsirkin wrote:
+>> > On Thu, Jan 08, 2026 at 03:11:36PM +0100, Stefano Garzarella wrote:
+>> > > On Mon, Jan 05, 2026 at 03:23:41AM -0500, Michael S. Tsirkin wrote:
+>> > > > Reorder struct virtio_vsock fields to place the DMA buffer (event_list)
+>> > > > last. This eliminates the padding from aligning the struct size on
+>> > > > ARCH_DMA_MINALIGN.
+>> > > >
+>> > > > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+>> > > > ---
+>> > > > net/vmw_vsock/virtio_transport.c | 8 +++++---
+>> > > > 1 file changed, 5 insertions(+), 3 deletions(-)
+>> > > >
+>> > > > diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
+>> > > > index ef983c36cb66..964d25e11858 100644
+>> > > > --- a/net/vmw_vsock/virtio_transport.c
+>> > > > +++ b/net/vmw_vsock/virtio_transport.c
+>> > > > @@ -60,9 +60,7 @@ struct virtio_vsock {
+>> > > > 	 */
+>> > > > 	struct mutex event_lock;
+>> > > > 	bool event_run;
+>> > > > -	__dma_from_device_group_begin();
+>> > > > -	struct virtio_vsock_event event_list[8];
+>> > > > -	__dma_from_device_group_end();
+>> > > > +
+>> > > > 	u32 guest_cid;
+>> > > > 	bool seqpacket_allow;
+>> > > >
+>> > > > @@ -76,6 +74,10 @@ struct virtio_vsock {
+>> > > > 	 */
+>> > > > 	struct scatterlist *out_sgs[MAX_SKB_FRAGS + 1];
+>> > > > 	struct scatterlist out_bufs[MAX_SKB_FRAGS + 1];
+>> > > > +
+>> > >
+>> > > IIUC we would like to have these fields always on the bottom of this struct,
+>> > > so would be better to add a comment here to make sure we will not add other
+>> > > fields in the future after this?
+>> >
+>> > not necessarily - you can add fields after, too - it's just that
+>> > __dma_from_device_group_begin already adds a bunch of padding, so adding
+>> > fields in this padding is cheaper.
+>> >
+>>
+>> Okay, I see.
+>>
+>> >
+>> > do we really need to add comments to teach people about the art of
+>> > struct packing?
+>>
+>> I can do it later if you prefer, I don't want to block this work, but yes,
+>> I'd prefer to have a comment because otherwise I'll have to ask every time
+>> to avoid, especially for new contributors xD
+>
+>On the one hand you are right on the other I don't want it
+>duplicated each time __dma_from_device_group_begin is invoked.
 
-There are no non-cachable pages in the iommu-pages system???
+yeah, I see.
 
-All memory comes from folios and is mapped to the CPU cachable.
+>Pls come up with something you like, and we'll discuss.
 
-The general API requires the user of iommu-pages to know if the
-underlying HW is going to do non-coherent DMA, in this case it must
-call iommu_pages_flush_incoherent() before the HW does DMA.
+sure, I'll check a bit similar cases to have some inspiration.
 
-Effectively what I'm saying here is to convert the arm page table to
-use iommu-pages and then put your pkvm abstraction at the iommu-pages
-level instead of trying to hack up all these users.
+>
+>> >
+>> > > Maybe we should also add a comment about the `ev`nt_lock`
+>> > > requirement we
+>> > > have in the section above.
+>> > >
+>> > > Thanks,
+>> > > Stefano
+>> >
+>> > hmm which requirement do you mean?
+>>
+>> That `event_list` must be accessed with `event_lock`.
+>>
+>> So maybe we can move also `event_lock` and `event_run`, so we can just move
+>> that comment. I mean something like this:
+>>
+>>
+>> @@ -74,6 +67,15 @@ struct virtio_vsock {
+>>          */
+>>         struct scatterlist *out_sgs[MAX_SKB_FRAGS + 1];
+>>         struct scatterlist out_bufs[MAX_SKB_FRAGS + 1];
+>> +
+>> +       /* The following fields are protected by event_lock.
+>> +        * vqs[VSOCK_VQ_EVENT] must be accessed with event_lock held.
+>> +        */
+>> +       struct mutex event_lock;
+>> +       bool event_run;
+>> +       __dma_from_device_group_begin();
+>> +       struct virtio_vsock_event event_list[8];
+>> +       __dma_from_device_group_end();
+>>  };
+>>
+>>  static u32 virtio_transport_get_local_cid(void)
+>
+>Yea this makes sense.
 
-You can also do the same conversion to the smmu driver to use
-iommu-pages instead of DMA API, AMD and Intel are doing this already.
+Thanks for that!
+Stefano
 
-Jason
