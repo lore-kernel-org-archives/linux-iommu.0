@@ -1,103 +1,76 @@
-Received: from mail-qv1-f41.google.com (mail-qv1-f41.google.com [209.85.219.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 604E646800B
-	for <iommu@lists.linux.dev>; Thu,  8 Jan 2026 12:59:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.41
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6B60D468036
+	for <iommu@lists.linux.dev>; Thu,  8 Jan 2026 12:59:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767877179; cv=none; b=X05IxGXQCap7A9qQN+78xmyMCF1jo/2jhe1TeT6TqQGNJJihclASaGak2nEGtDUI4N7zyiY6a3AXXhXxCvChxiTRc+T7tCoXhVDP7cVFG9E0G5POFHopXt4eOJLUCWEH59crlZ5/iBm/hr0Hta0QoPBgGnqZeYIm8AvgtuFZfi4=
+	t=1767877201; cv=none; b=Ykgp+/somEmcNyxOWgbBPqbGb1luN6/zkNfgR++I8sWdzKqMHyED7wuGEfJX64rYKi2Wao/dQtXezVgykERW39UtrE/qbfRDa9LjXf0OcnqHW8h0bh5OozYxLrbK/JORLOqY3G5Dd7d2O2MAVyTVPVlRdIUzuLWyIEwICqG0YOM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767877179; c=relaxed/simple;
-	bh=fh7a1B+YJS2JmyCdtnj9D+HNi/7ce1pAoGxIczcHLX4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=P9ATg+b4gRARe3qg5NP9SiqkNKusmLi6mCjhOEYan9NAi9RXUvFHoskRxcQ3flG3MPBLhaYk2WaSrOZ7u/3eKpSe4Ny021d1KQsTkxIQhWpyeurfnx5XJJxouRapAlYDLCRJ8/N52Txe1ewG6deR3JqYWpm7skMQu6u4kNG9YG0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=AaWm1rTP; arc=none smtp.client-ip=209.85.219.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="AaWm1rTP"
-Received: by mail-qv1-f41.google.com with SMTP id 6a1803df08f44-888bd3bd639so22679816d6.1
-        for <iommu@lists.linux.dev>; Thu, 08 Jan 2026 04:59:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1767877176; x=1768481976; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=p+tihbqUE1EbblM//rEnVenEBX3R9t17BCYh0GNCNok=;
-        b=AaWm1rTPtX7pf6bwqPvoWhelEBQ5nsfwXV6/0rV/5xqMgqUfBKw2Fbl/HUaxGuY/0r
-         LkzE9H1L47xilpMOYWGoCJnAfqdGpapEo2o45AmjuQosvjCXCNUm8/jqJHHa/q+1zUgg
-         NGjn73rAVgVEu0LdgrGR/3loNQ+WgjivVTBptuFWCgdF4GuV4v4wpLizawEckibLeLgH
-         16E7wi0SL+hzriKALd8m2kxsofV0ZGPxkNSAesDaZWCm7mSpwhm3i7gvWn/Rt60Igh1A
-         j54ENRF5vlhgnvF/hbsTigPUPNDru9j7pp2xbTRJkXq/gfCKXC5WAVhvV/BvkbBjhrXG
-         glyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1767877176; x=1768481976;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=p+tihbqUE1EbblM//rEnVenEBX3R9t17BCYh0GNCNok=;
-        b=HhsEHJh6YM8+AAMWZmZkeAfiW1RnMYmirX62nkoaMY06lw5IesmpuS4X2bnM7cxL+p
-         9P99ct/pCwYfDp8z8FkswVbiN2/bpZVMLwcmFi7iPBXim5x1bIHGsBoIowKbTe68E7EC
-         YE0OPX7tSsi6JFxzIDO5WoICnR01zT4en0mXzNRktjrWe/kfJe7rze8dnLrTipu1H8dD
-         PCof/9GPLxEzxz9QEVWl6Qr2iMpOnq1qa7VHMlyAYf8Izel7bErk3powDxWXxicVOiMZ
-         pQgjveoh0IMn1/QfD+oddSFRfmJmpPiWyOzhsGFQh0VWwkDCcTuypfjPsQ1cBynouICk
-         2pJw==
-X-Gm-Message-State: AOJu0YykAZxVDDpbFBuIUwj5DdbVHdePkjrif9ZMU4cMaf4sclRU8YlH
-	vWv/VPxaVARAfuaySiOGUWodROp0O7FtNI5JOK0L0SqmkTpxjNd69STW2OAXCrKzJy4=
-X-Gm-Gg: AY/fxX4LvfO1UMs39tImaWut7XIyG/lv45JBFxGyrNHHeKWZ2Du/G1a8ij6Sgppf5Ha
-	pjd6l1zBl7sczwaONdQRVg0+mtI7wh9GLJ8OoZbCoQ0Z5pKk2ZYUNf7ApG2gmCZrQzs88ogEIM8
-	kS+Aw/nZYtbybLA4x8aW1oWn6f+rxIspIGNB4plo/Ni7QeC22C8LX1CJDdD/HvVowqSNnqmrtoj
-	nZ8I0ezl7jxkTMI1tF/OUolQoEkdW1EPNTLYai8dLGHjk1rcH4/Z44STq6xSnnh4B8nG0CW6PCT
-	Qi5uPFqTNrry+O72uP4TX5cFQqKVDmapmNXJygMm1DNsj5Se8DMDhtViykb+CMvjTlANVvvdVWo
-	WkP0NGqUEKlEOil4ubj5OD6jzLxsCxpg4bGu7Y08gnQrw6zZ+s9oZBup4rVi8tM/moimOMfgMhQ
-	g2CAZTEuc40y0ZqKua8dPUNrSLCYODBEYs4LOJ4yuFmtOhXhGon6Lm4ZYb4ysKxHRUDOo=
-X-Google-Smtp-Source: AGHT+IGK4Dj4/NADNs3lIQ6ILPYQuAK9EULOU60X6gh7oaJwS0PLStMhP2giOvf6NQHsl1JfKzlisQ==
-X-Received: by 2002:a05:6214:d0a:b0:88a:2b3d:31f with SMTP id 6a1803df08f44-89076a3198bmr127336966d6.31.1767877176202;
-        Thu, 08 Jan 2026 04:59:36 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-162-112-119.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.112.119])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-890772682besm52485796d6.50.2026.01.08.04.59.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Jan 2026 04:59:35 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1vdpby-00000002LK7-4BCK;
-	Thu, 08 Jan 2026 08:59:34 -0400
-Date: Thu, 8 Jan 2026 08:59:34 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Mostafa Saleh <smostafa@google.com>
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, robin.murphy@arm.com, will@kernel.org,
-	joro@8bytes.org
-Subject: Re: [PATCH] iommu/io-pgtable-arm: Drop DMA API usage for CMOs
-Message-ID: <20260108125934.GB545276@ziepe.ca>
-References: <20260108113846.56179-1-smostafa@google.com>
+	s=arc-20240116; t=1767877201; c=relaxed/simple;
+	bh=/fdTvZqnSGCixCqn294d7b+lvtXZKPYD5uzlkzXDBnM=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Oj3d7GksrZHF7YMeSiL4bTVA5Cwlc38zIwr6XKXbOz3h04wAXtZARuF3nsKpIg+Fs3bF48THuRnXZ2jcGAdO7dz7w2l12hNXUBkDc5/sIgsivcWeiPQFtXrR064hUjyNcWupSkGvmSjCG7UOfMuxgw3NM6vXmGJ7t6kVa69Pfu0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DFDF6497;
+	Thu,  8 Jan 2026 04:59:51 -0800 (PST)
+Received: from [10.57.47.193] (unknown [10.57.47.193])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6C9B93F6A8;
+	Thu,  8 Jan 2026 04:59:57 -0800 (PST)
+Message-ID: <1ada44db-63a9-43ac-81da-0bdd4e7b7363@arm.com>
+Date: Thu, 8 Jan 2026 12:59:55 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260108113846.56179-1-smostafa@google.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] dma-direct: Skip cache prep for HighMem coherent
+ allocations
+To: Marek Szyprowski <m.szyprowski@samsung.com>,
+ "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+Cc: Arnd Bergmann <arnd@kernel.org>, Linus Walleij <linusw@kernel.org>,
+ Matthew Wilcox <willy@infradead.org>,
+ Suzuki K Poulose <suzuki.poulose@arm.com>
+References: <20260102155118.2551804-1-aneesh.kumar@kernel.org>
+ <CGME20260108105031eucas1p2a3e8d0308ae6a5d43b5250ca8b14ecb9@eucas1p2.samsung.com>
+ <9cbe49ae-6612-491d-8ac6-6a99a08d73e2@arm.com>
+ <9f28b833-5813-4e5d-b705-eed9a2a31863@samsung.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <9f28b833-5813-4e5d-b705-eed9a2a31863@samsung.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Thu, Jan 08, 2026 at 11:38:46AM +0000, Mostafa Saleh wrote:
-> Jason pointed out that the DMA-API calls are not really needed [2].
+On 2026-01-08 12:41 pm, Marek Szyprowski wrote:
+> On 08.01.2026 11:50, Robin Murphy wrote:
+>> On 2026-01-02 3:51 pm, Aneesh Kumar K.V (Arm) wrote:
+>>> dma_direct_alloc() calls arch_dma_prep_coherent() to clean any dirty
+>>> cache lines from the kernel linear alias before creating a coherent
+>>> remapping.
+>>>
+>>> HighMem pages have no kernel alias mapping, so there are no alias cache
+>>> lines to clean. Skip arch_dma_prep_coherent() for HighMem allocations.
+>>
+>> This is assuming that caches are always cleaned when unmapping
+>> highmem, and no still-mapped highmem pages are dirty - how is that
+>> guaranteed? The fact that they're not in the linear map doesn't mean
+>> they don't necessarily have kernel aliases in either vmalloc
+>> pagetables or caches.
 > 
-> Looking more into this. Initially, the io-pgtable API let drivers
-> do the CMOs using tlb::flush_pgtable() where drivers were using the
-> DMA API (map/unmap_single) only to do CMOs as the low-level cache
-> functions won’t be available for modules.
+> 
+> Right, so it is better to keep this unconditional
+> arch_dma_prep_coherent() call. I will drop it from dma-mapping-fixes then.
 
-This isn't what I ment at all, the iommu-pages.h could do the flush
-inside itself using the already existing
-iommu_pages_flush_incoherent() instead of open coding the dma api
-calls everwhere, and maybe that could directly call the arch function
-on arm (as x86 does) which would be easier to implement in pkvm's
-hypervisor.
+Yeah, I think the confusing thing here is that there are architectures 
+with CONFIG_HIGHMEM that don't actually check for and handle it in their 
+arch_dma_prep_coherent() as they seemingly should, however I'm not sure 
+off-hand whether they also support/use highmem CMA in the manner that 
+could end up being an issue in practice (the lack of any reports of 
+crashes or DMA corruption over the last however many years suggests not...)
 
-Then it is reasonable to have a pkvm version of the iommu-pages api
-for the page table and drive rto use.
-
-Jason
+Thanks,
+Robin.
