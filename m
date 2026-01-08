@@ -1,142 +1,177 @@
-Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D76148167D
-	for <iommu@lists.linux.dev>; Thu,  8 Jan 2026 13:45:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.178
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767879913; cv=pass; b=YUMsD75OQRjzBdO8DuUlSiJLk8/p3lGPovTHRbooKnfYihGWgde5yZ8T0brMVbD/3RqIY1KjpX65CgqHYfTrpArQbURoPXzpqe3/IP//uSHj5zRpiH/yZ1m/i78aRBV6dY+pYbd5RtTQ61NMGD/88JEi6jSRLKxc2AXGiSwxEQk=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767879913; c=relaxed/simple;
-	bh=qyRa40fh8YhmtwCdrRt6pdxxVr6ipd3YcrOg4WQdMeM=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=MD2JKTiLevJMFoSOIsoScK3idIQOyeVedsg6t6hEYbnSLf/04H87jLNKJ8U72rQZtt5sT6KKORdm68QS8lpaUxUdyHZdH9I+MtjnuWGue5yI6Ydawa9tDX9GXWvn/IbJop8xLdcJ9M49oLVrUejNOKUeHW1eXvP5lKZNo31f52o=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=AJEjF3EL; arc=pass smtp.client-ip=209.85.160.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1788B369224
+	for <iommu@lists.linux.dev>; Thu,  8 Jan 2026 13:49:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.130
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1767880154; cv=none; b=TSq7fJQA3eBmcCHCvKSh1yecgCkcThlcaaY6b66l9zonKOduRbM6QI1ILAkritLOmVk/29Ocav4y+5GKEteTSzOyPpQOtpysCLc0tAAhbmImmkvsb3NRvlpsonxGqpWHKqv+iQs23sgAoLx7HrgkCvr7OuI04IF/+pYGHgmt4V0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1767880154; c=relaxed/simple;
+	bh=IP6v91sqECvO+CLDQQ/CAC75x1XVtVY9Hf/auCzttIU=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=Y8eyRuXLPDkgfFc9TBXqXqSiNbzQ8vLmpEGGAMbtpLzAdEuTFgUG+fj5SpCB3eJ+M4tNMh5ErAvlcUk/FvYKEoBeU/96v4dKg/SgqQjAH+AWiUugro5Q5FUpx0tblu20mT247vqymxBKjjs2YNtawREnUp/nt2JP8btEkJh+2Ak=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=o4yUi4yr; arc=none smtp.client-ip=115.124.30.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="AJEjF3EL"
-Received: by mail-qt1-f178.google.com with SMTP id d75a77b69052e-4ee147baf7bso962531cf.1
-        for <iommu@lists.linux.dev>; Thu, 08 Jan 2026 05:45:05 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1767879904; cv=none;
-        d=google.com; s=arc-20240605;
-        b=GgBB04QWk8k3JwQLZRJWME905yrTakOLi9bPJBXSulhKMY/Znjrt+rRVBFIYCyKnFf
-         yojbP1iCUWON5w/834a5HVyZJGRE5cF0qkRYOafCehZRTijt6Cvo3udrJX+qiQRKhMvK
-         hx6SKFF/qR6j5CBuiJTmziCdHvlqBdPmQRso4s2pRvf7OO7VDOkezo5OOfo17Ha92Ohm
-         jnYFpv9vhv1M9EZwwxPSkLuvaKUFUuw0K/ABGVfz5HO+fsS7xUS21b6yfjtIBlPAUY9s
-         /M+8cDDxB4hcCNfzzLNqVKuWtATgqr0PATp9JGdzcVR/N+xJVKOk/AShLeJjPpkJDAAG
-         LARA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=qyRa40fh8YhmtwCdrRt6pdxxVr6ipd3YcrOg4WQdMeM=;
-        fh=QdQdILWvlLc2hQqnp0n/8wdU4F3LkmOj3Hx2ZzpVSAk=;
-        b=ggRQC6b/EHruHeHKFwVrhue8I/JGhAQ5A5t5b+TeNIMAsfKFQy1LFO/x+Vah8B4F+c
-         52aqxzEOWjU/LiVgmskEAhoXZfmLv9mSYuzzt1vzlUCPwo/3Ae9pIxtcuuvIT7hjj1e3
-         S7jdnkILHu2FKipIcvTI2M5p3PN0ERtmkkCCQOdtl9VK8QroKIBqeymo6xGAr6p2tTF4
-         PfuzzK43Qv0m0A2ds6/FyB+3AHIf5EwVXV7YyFsaTIA160GiKe+rfOTnY4E9telmqgo4
-         oy+1SOZqZd+ukzlTjRG5tP1BcR87WhzdbNX3jhZj5yI5NnQI/UTP+cY2RngiBVb4G3Td
-         beAw==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1767879904; x=1768484704; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=qyRa40fh8YhmtwCdrRt6pdxxVr6ipd3YcrOg4WQdMeM=;
-        b=AJEjF3ELgC/NWhmaFbhaIpy4xW0dNuOjUdG+d7xxZud0BOJFTA3Yw+iRnLN9fQw/s+
-         umDfuvavAAc7VKFTk8RvZbD2Ll3BNz5ntpJKhvH3ocPOq/2OrHrs93aRYkr7zasBBG0L
-         Sqv2ShhTvIkdstlsqYIqBuwaO5NJJHrNCcrh4veSZ8JdFtH4BGh/DOjrU8nzuA9+xPtH
-         y6Sq6i0x4VMRbgZ+toKxGtPAWdxB1rQXxkeH8cvbrQSHm87XpdBbeFatnep/tPxI7utj
-         nuwA8qLSQBfJukvZ+11WpZW0WIwW21Kg3U+pgbhHGCf2SFaZ+ig+rhSZCHMMYPohyTSS
-         w+qA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1767879904; x=1768484704;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=qyRa40fh8YhmtwCdrRt6pdxxVr6ipd3YcrOg4WQdMeM=;
-        b=MDk8nhgytsh1VS9FAm2J9r4GykArm+jizIbbsrPwpKfPTUJBluMfsSEuNcNYpDZIbJ
-         W2BUTKSaSc34bCCZJm6Nr6/u75G3l4YeyM2v7vvdHyclhS2RLCzodEkSJ0XLqZRMyO8L
-         KI7D+FJ8W0SxfJcWy4KOUHzroArGpFU4HQR3yTdJLReB4qqrgb0Kjb91HVuDyJyy9n1z
-         oa1nfyHKH+YbLbKfztUzc/aq16f60UGW7ezg9hqYE/kp1UFfc5liq5iANuDJF/3FsXsa
-         n3tr8mVvIpoLWIVTs9S3I0A+I9CoFGqPyPu834UyzFGkTKVqmGkO76jEAQlBj7l97KmE
-         RcfQ==
-X-Gm-Message-State: AOJu0YzmkKFmPLAeQ8gCfmX+YJt/9rFREgO1jrl/ExzrMNWDVLeJSikW
-	ZD1bEUa2ANb2C/6SjaW4cN6Jztet9m8VMjuoDc201PQ+kSc/jCcAVUWJQILw9yoY0CgggtAu4FM
-	Ovwn7rqOA96oqHRUqasaOR+5Yp2KutWfXirrS45tS
-X-Gm-Gg: AY/fxX4XvESFZ0QFS+uUaVurJxZgwN+INNQs+NbL/Yv1/AtuRiFFETlaaXYhhZFGXE0
-	5jiUoYx1N5C1UbxPt7QYVxVXwApts+I2C9WLgWH3EkI4W5swGNWZSYAf8XYpiVOesOtl9zvh48T
-	wcDCdxe+dW/8B/QbdRND1CBEaLto6vNFWVs3SPwu2/ZReZ5ZK6Cfpl8iup6SfSV3zRz3Ee/YmFU
-	T4d5GvEFqoN3r76r77uL3GojJxiSfDqhaDD4bQQ+/tHMhGln/qT/Sw2PKT/TDn5sYEmmy0spW+X
-	4FM5b63hpJcyzX4KrsSpG24t/5ID6w==
-X-Received: by 2002:a05:622a:290:b0:4f1:9c3f:2845 with SMTP id
- d75a77b69052e-4ffc094e8e8mr8332571cf.9.1767879903423; Thu, 08 Jan 2026
- 05:45:03 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="o4yUi4yr"
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1767880140; h=From:To:Subject:Date:Message-Id:MIME-Version;
+	bh=/DggpkpQ+sZ9M+sA9W097wq5BtxSRcjoGTAICDIz5D0=;
+	b=o4yUi4yrXQWsHv810+6ZMPMUgCulxN5Vm4cJ5Q2YK7Ilc+K3yzB6LAXw9/tZY8cbN4RseWcb4dU17KP5e6pjmkKZCddEWpDQzUhgaA4shUeJWk6awwwWRhjWdCGTrt76/XEt5MyeAxe4oZGf+9eyb8SXlmjEr5yfSL7xsgZNV88=
+Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0WwcviKM_1767880138 cluster:ay36)
+          by smtp.aliyun-inc.com;
+          Thu, 08 Jan 2026 21:49:00 +0800
+From: fangyu.yu@linux.alibaba.com
+To: tjeznach@rivosinc.com,
+	joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	pjw@kernel.org,
+	palmer@dabbelt.com,
+	aou@eecs.berkeley.edu,
+	alex@ghiti.fr
+Cc: guoren@kernel.org,
+	ajones@ventanamicro.com,
+	iommu@lists.linux.dev,
+	linux-riscv@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	Fangyu Yu <fangyu.yu@linux.alibaba.com>
+Subject: [PATCH] iommu/riscv: Add IOTINVAL after updating DDT/PDT entries
+Date: Thu,  8 Jan 2026 21:48:55 +0800
+Message-Id: <20260108134855.91341-1-fangyu.yu@linux.alibaba.com>
+X-Mailer: git-send-email 2.39.3 (Apple Git-146)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260108113846.56179-1-smostafa@google.com> <20260108125934.GB545276@ziepe.ca>
- <CAFgf54ocNybHR_Mp1+i7cff-jkeMUV1QxBCt04jnKxwfwnyUfQ@mail.gmail.com>
-In-Reply-To: <CAFgf54ocNybHR_Mp1+i7cff-jkeMUV1QxBCt04jnKxwfwnyUfQ@mail.gmail.com>
-From: Mostafa Saleh <smostafa@google.com>
-Date: Thu, 8 Jan 2026 13:44:51 +0000
-X-Gm-Features: AQt7F2qxCojV-Rkt2Q0oF4yYRt65modgBec2JKi-LjVwHS9mVz_oTorZ1Gh5S3k
-Message-ID: <CAFgf54o+YZUyZTszFt-uBW4ZhjrAMsfPFUb9kKTK1uHWdS+++w@mail.gmail.com>
-Subject: Re: [PATCH] iommu/io-pgtable-arm: Drop DMA API usage for CMOs
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
-	linux-kernel@vger.kernel.org, robin.murphy@arm.com, will@kernel.org, 
-	joro@8bytes.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Thu, Jan 8, 2026 at 1:27=E2=80=AFPM Mostafa Saleh <smostafa@google.com> =
-wrote:
->
-> On Thu, Jan 8, 2026 at 12:59=E2=80=AFPM Jason Gunthorpe <jgg@ziepe.ca> wr=
-ote:
-> >
-> > On Thu, Jan 08, 2026 at 11:38:46AM +0000, Mostafa Saleh wrote:
-> > > Jason pointed out that the DMA-API calls are not really needed [2].
-> > >
-> > > Looking more into this. Initially, the io-pgtable API let drivers
-> > > do the CMOs using tlb::flush_pgtable() where drivers were using the
-> > > DMA API (map/unmap_single) only to do CMOs as the low-level cache
-> > > functions won=E2=80=99t be available for modules.
-> >
-> > This isn't what I ment at all, the iommu-pages.h could do the flush
-> > inside itself using the already existing
-> > iommu_pages_flush_incoherent() instead of open coding the dma api
-> > calls everwhere, and maybe that could directly call the arch function
-> > on arm (as x86 does) which would be easier to implement in pkvm's
-> > hypervisor.
-> >
->
-> I see, so basically, we add the check for IOMMU_PAGES_USE_DMA_API in
-> iommu_pages_flush_incoherent() with the DMA-API stuff and call it from
-> the io-pgtable-arm instead.
->
+From: Fangyu Yu <fangyu.yu@linux.alibaba.com>
 
-iommu_pages_flush_incoherent() is also used to flush non-cacheable
-pages in generic_pt from flush_writes_*(), so it might not be that
-simple; We might need to add a new variant.
+Add riscv_iommu_iodir_iotinval() to perform required TLB and context cache
+invalidations after updating DDT or PDT entries, as mandated by the RISC-V
+IOMMU specification (Section 6.3.1 and 6.3.2).
 
-Thanks,
-Mostafa
+Signed-off-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
+---
+ drivers/iommu/riscv/iommu.c | 85 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 85 insertions(+)
 
-> > Then it is reasonable to have a pkvm version of the iommu-pages api
-> > for the page table and drive rto use.
-> >
->
-> That makes sense, I will look it over and send another version if
-> Robin is Ok with it.
->
-> Thanks,
-> Mostafa
->
-> > Jason
+diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
+index d9429097a2b5..2900170133fc 100644
+--- a/drivers/iommu/riscv/iommu.c
++++ b/drivers/iommu/riscv/iommu.c
+@@ -996,7 +996,82 @@ static void riscv_iommu_iotlb_inval(struct riscv_iommu_domain *domain,
+ }
+ 
+ #define RISCV_IOMMU_FSC_BARE 0
++/*
++ * This function sends IOTINVAL commands as required by the RISC-V
++ * IOMMU specification (Section 6.3.1 and 6.3.2 in 1.0 spec version)
++ * after modifying DDT or PDT entries
++ */
++static void riscv_iommu_iodir_iotinval(struct riscv_iommu_device *iommu,
++				    bool inval_pdt, unsigned long iohgatp,
++				    struct riscv_iommu_dc *dc, struct riscv_iommu_pc *pc)
++{
++	struct riscv_iommu_command cmd;
+ 
++	if (FIELD_GET(RISCV_IOMMU_DC_IOHGATP_MODE, iohgatp) ==
++		RISCV_IOMMU_DC_IOHGATP_MODE_BARE) {
++		if (inval_pdt) {
++			/*
++			 * IOTINVAL.VMA with GV=AV=0, and PSCV=1, and
++			 * PSCID=PC.PSCID
++			 */
++			riscv_iommu_cmd_inval_vma(&cmd);
++			riscv_iommu_cmd_inval_set_pscid(&cmd,
++				FIELD_GET(RISCV_IOMMU_PC_TA_PSCID, pc->ta));
++		} else {
++			if (FIELD_GET(RISCV_IOMMU_DC_TC_PDTV, dc->tc) || (
++				    FIELD_GET(RISCV_IOMMU_DC_FSC_MODE, dc->fsc) ==
++				    RISCV_IOMMU_DC_FSC_MODE_BARE)) {
++				/* IOTINVAL.VMA with GV=AV=PSCV=0 */
++				riscv_iommu_cmd_inval_vma(&cmd);
++			} else {
++				/*
++				 * IOTINVAL.VMA with GV=AV=0, and PSCV=1, and
++				 * PSCID=DC.ta.PSCID
++				 */
++				riscv_iommu_cmd_inval_vma(&cmd);
++				riscv_iommu_cmd_inval_set_pscid(&cmd,
++					FIELD_GET(RISCV_IOMMU_DC_TA_PSCID, dc->ta));
++			}
++		}
++	} else {
++		if (inval_pdt) {
++			/*
++			 * IOTINVAL.VMA with GV=1, AV=0, and PSCV=1, and
++			 * GSCID=DC.iohgatp.GSCID, PSCID=PC.PSCID
++			 */
++			riscv_iommu_cmd_inval_vma(&cmd);
++			riscv_iommu_cmd_inval_set_gscid(&cmd,
++				FIELD_GET(RISCV_IOMMU_DC_IOHGATP_GSCID, iohgatp));
++			riscv_iommu_cmd_inval_set_pscid(&cmd,
++				FIELD_GET(RISCV_IOMMU_PC_TA_PSCID, pc->ta));
++		} else {
++			/*
++			 * IOTINVAL.VMA with GV=1,AV=PSCV=0,and
++			 * GSCID=DC.iohgatp.GSCID
++			 */
++			riscv_iommu_cmd_inval_vma(&cmd);
++			riscv_iommu_cmd_inval_set_gscid(&cmd,
++				FIELD_GET(RISCV_IOMMU_DC_IOHGATP_GSCID, iohgatp));
++
++			/*
++			 * IOTINVAL.GVMA with GV=1,AV=0,and
++			 * GSCID=DC.iohgatp.GSCID
++			 */
++			/*
++			 * For now, the Second-Stage feature have not yet been merged, so
++			 * let's comment out the code first.
++			 */
++#if 0
++			riscv_iommu_cmd_send(iommu, &cmd);
++			memset(&cmd, 0, sizeof(cmd));
++			riscv_iommu_cmd_inval_gvma(&cmd);
++			riscv_iommu_cmd_inval_set_gscid(&cmd,
++				FIELD_GET(RISCV_IOMMU_DC_IOHGATP_GSCID, iohgatp));
++#endif
++		}
++	}
++	riscv_iommu_cmd_send(iommu, &cmd);
++}
+ /*
+  * Update IODIR for the device.
+  *
+@@ -1031,6 +1106,11 @@ static void riscv_iommu_iodir_update(struct riscv_iommu_device *iommu,
+ 		riscv_iommu_cmd_iodir_inval_ddt(&cmd);
+ 		riscv_iommu_cmd_iodir_set_did(&cmd, fwspec->ids[i]);
+ 		riscv_iommu_cmd_send(iommu, &cmd);
++		/*
++		 * For now, the SVA and PASID features have not yet been merged, the
++		 * default configuration is inval_pdt=false and pc=NULL.
++		 */
++		riscv_iommu_iodir_iotinval(iommu, false, dc->iohgatp, dc, NULL);
+ 		sync_required = true;
+ 	}
+ 
+@@ -1055,6 +1135,11 @@ static void riscv_iommu_iodir_update(struct riscv_iommu_device *iommu,
+ 		/* Invalidate device context after update */
+ 		riscv_iommu_cmd_iodir_inval_ddt(&cmd);
+ 		riscv_iommu_cmd_iodir_set_did(&cmd, fwspec->ids[i]);
++		/*
++		 * For now, the SVA and PASID features have not yet been merged, the
++		 * default configuration is inval_pdt=false and pc=NULL.
++		 */
++		riscv_iommu_iodir_iotinval(iommu, false, dc->iohgatp, dc, NULL);
+ 		riscv_iommu_cmd_send(iommu, &cmd);
+ 	}
+ 
+-- 
+2.50.1
+
