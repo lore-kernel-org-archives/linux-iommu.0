@@ -1,189 +1,103 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 19BF947A537
-	for <iommu@lists.linux.dev>; Thu,  8 Jan 2026 12:52:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-qv1-f41.google.com (mail-qv1-f41.google.com [209.85.219.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 604E646800B
+	for <iommu@lists.linux.dev>; Thu,  8 Jan 2026 12:59:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767876740; cv=none; b=HdDC7CiZ62he5z88uLO3EMrdpZxVxMExOb3oOdd3ojfXdhg9Lm94jXlx5KJ2RFMIVr9AkmBAntv8Hj8Xf1MMcOREU8swV9rUJKXWGuwdlInx8tkGLdZy5nVb43vKz9xUJSMJNIEKifMkbzhSQw+a+b/VJYHrejVC15Q6jOCt7h8=
+	t=1767877179; cv=none; b=X05IxGXQCap7A9qQN+78xmyMCF1jo/2jhe1TeT6TqQGNJJihclASaGak2nEGtDUI4N7zyiY6a3AXXhXxCvChxiTRc+T7tCoXhVDP7cVFG9E0G5POFHopXt4eOJLUCWEH59crlZ5/iBm/hr0Hta0QoPBgGnqZeYIm8AvgtuFZfi4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767876740; c=relaxed/simple;
-	bh=zu72ng1U26p514b3TMYQAv5hE7z0ZgMnHnIkuj5XLYs=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=VGIN+FdGHfRuuaxfUnHaZZ50WFB7ohY9FK07UwhGT6+0KVxoA3DYeJaVMDEsWIKnsRA7UVUSEQHj/se6EPHzftzSUhrvKatg6MM0bpvW+TKgGbJrD2vyX0HMMz69sE/lCpKaaH0gIsbh8vnPddaWCoPBvYVr6cgLHRr/PAcrLOY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8E126497;
-	Thu,  8 Jan 2026 04:52:09 -0800 (PST)
-Received: from [10.57.47.193] (unknown [10.57.47.193])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 550CC3F6A8;
-	Thu,  8 Jan 2026 04:52:15 -0800 (PST)
-Message-ID: <56c39e62-0417-495d-a40e-99180a107777@arm.com>
-Date: Thu, 8 Jan 2026 12:52:13 +0000
+	s=arc-20240116; t=1767877179; c=relaxed/simple;
+	bh=fh7a1B+YJS2JmyCdtnj9D+HNi/7ce1pAoGxIczcHLX4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=P9ATg+b4gRARe3qg5NP9SiqkNKusmLi6mCjhOEYan9NAi9RXUvFHoskRxcQ3flG3MPBLhaYk2WaSrOZ7u/3eKpSe4Ny021d1KQsTkxIQhWpyeurfnx5XJJxouRapAlYDLCRJ8/N52Txe1ewG6deR3JqYWpm7skMQu6u4kNG9YG0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=AaWm1rTP; arc=none smtp.client-ip=209.85.219.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="AaWm1rTP"
+Received: by mail-qv1-f41.google.com with SMTP id 6a1803df08f44-888bd3bd639so22679816d6.1
+        for <iommu@lists.linux.dev>; Thu, 08 Jan 2026 04:59:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1767877176; x=1768481976; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=p+tihbqUE1EbblM//rEnVenEBX3R9t17BCYh0GNCNok=;
+        b=AaWm1rTPtX7pf6bwqPvoWhelEBQ5nsfwXV6/0rV/5xqMgqUfBKw2Fbl/HUaxGuY/0r
+         LkzE9H1L47xilpMOYWGoCJnAfqdGpapEo2o45AmjuQosvjCXCNUm8/jqJHHa/q+1zUgg
+         NGjn73rAVgVEu0LdgrGR/3loNQ+WgjivVTBptuFWCgdF4GuV4v4wpLizawEckibLeLgH
+         16E7wi0SL+hzriKALd8m2kxsofV0ZGPxkNSAesDaZWCm7mSpwhm3i7gvWn/Rt60Igh1A
+         j54ENRF5vlhgnvF/hbsTigPUPNDru9j7pp2xbTRJkXq/gfCKXC5WAVhvV/BvkbBjhrXG
+         glyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1767877176; x=1768481976;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=p+tihbqUE1EbblM//rEnVenEBX3R9t17BCYh0GNCNok=;
+        b=HhsEHJh6YM8+AAMWZmZkeAfiW1RnMYmirX62nkoaMY06lw5IesmpuS4X2bnM7cxL+p
+         9P99ct/pCwYfDp8z8FkswVbiN2/bpZVMLwcmFi7iPBXim5x1bIHGsBoIowKbTe68E7EC
+         YE0OPX7tSsi6JFxzIDO5WoICnR01zT4en0mXzNRktjrWe/kfJe7rze8dnLrTipu1H8dD
+         PCof/9GPLxEzxz9QEVWl6Qr2iMpOnq1qa7VHMlyAYf8Izel7bErk3powDxWXxicVOiMZ
+         pQgjveoh0IMn1/QfD+oddSFRfmJmpPiWyOzhsGFQh0VWwkDCcTuypfjPsQ1cBynouICk
+         2pJw==
+X-Gm-Message-State: AOJu0YykAZxVDDpbFBuIUwj5DdbVHdePkjrif9ZMU4cMaf4sclRU8YlH
+	vWv/VPxaVARAfuaySiOGUWodROp0O7FtNI5JOK0L0SqmkTpxjNd69STW2OAXCrKzJy4=
+X-Gm-Gg: AY/fxX4LvfO1UMs39tImaWut7XIyG/lv45JBFxGyrNHHeKWZ2Du/G1a8ij6Sgppf5Ha
+	pjd6l1zBl7sczwaONdQRVg0+mtI7wh9GLJ8OoZbCoQ0Z5pKk2ZYUNf7ApG2gmCZrQzs88ogEIM8
+	kS+Aw/nZYtbybLA4x8aW1oWn6f+rxIspIGNB4plo/Ni7QeC22C8LX1CJDdD/HvVowqSNnqmrtoj
+	nZ8I0ezl7jxkTMI1tF/OUolQoEkdW1EPNTLYai8dLGHjk1rcH4/Z44STq6xSnnh4B8nG0CW6PCT
+	Qi5uPFqTNrry+O72uP4TX5cFQqKVDmapmNXJygMm1DNsj5Se8DMDhtViykb+CMvjTlANVvvdVWo
+	WkP0NGqUEKlEOil4ubj5OD6jzLxsCxpg4bGu7Y08gnQrw6zZ+s9oZBup4rVi8tM/moimOMfgMhQ
+	g2CAZTEuc40y0ZqKua8dPUNrSLCYODBEYs4LOJ4yuFmtOhXhGon6Lm4ZYb4ysKxHRUDOo=
+X-Google-Smtp-Source: AGHT+IGK4Dj4/NADNs3lIQ6ILPYQuAK9EULOU60X6gh7oaJwS0PLStMhP2giOvf6NQHsl1JfKzlisQ==
+X-Received: by 2002:a05:6214:d0a:b0:88a:2b3d:31f with SMTP id 6a1803df08f44-89076a3198bmr127336966d6.31.1767877176202;
+        Thu, 08 Jan 2026 04:59:36 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-162-112-119.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.112.119])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-890772682besm52485796d6.50.2026.01.08.04.59.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 08 Jan 2026 04:59:35 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1vdpby-00000002LK7-4BCK;
+	Thu, 08 Jan 2026 08:59:34 -0400
+Date: Thu, 8 Jan 2026 08:59:34 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Mostafa Saleh <smostafa@google.com>
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, robin.murphy@arm.com, will@kernel.org,
+	joro@8bytes.org
+Subject: Re: [PATCH] iommu/io-pgtable-arm: Drop DMA API usage for CMOs
+Message-ID: <20260108125934.GB545276@ziepe.ca>
+References: <20260108113846.56179-1-smostafa@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommu/io-pgtable-arm: Drop DMA API usage for CMOs
-To: Mostafa Saleh <smostafa@google.com>, iommu@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc: will@kernel.org, joro@8bytes.org, Jason Gunthorpe <jgg@ziepe.ca>
-References: <20260108113846.56179-1-smostafa@google.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20260108113846.56179-1-smostafa@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260108113846.56179-1-smostafa@google.com>
 
-On 2026-01-08 11:38 am, Mostafa Saleh wrote:
-> As part of the KVM SMMUv3 series[1], we are trying to factor out
-> the kernel specific code from io-pgtable-arm so it can also compile
-> for the hypervisor.
-> 
+On Thu, Jan 08, 2026 at 11:38:46AM +0000, Mostafa Saleh wrote:
 > Jason pointed out that the DMA-API calls are not really needed [2].
 > 
 > Looking more into this. Initially, the io-pgtable API let drivers
 > do the CMOs using tlb::flush_pgtable() where drivers were using the
 > DMA API (map/unmap_single) only to do CMOs as the low-level cache
 > functions won’t be available for modules.
-> 
-> This was later moved to the core code [3], with possibility to
-> convert it to full blown DMA-API code if there was a use case.
 
-I don't understand that sentence at all.
+This isn't what I ment at all, the iommu-pages.h could do the flush
+inside itself using the already existing
+iommu_pages_flush_incoherent() instead of open coding the dma api
+calls everwhere, and maybe that could directly call the arch function
+on arm (as x86 does) which would be easier to implement in pkvm's
+hypervisor.
 
-> However, no such use case appeared, and we can simplify the code
-> slightly by doing CMO directly instead of going through the DMA-API
-> functions just for CMOs.
-> 
-> Although HTTU is not used at the moment, leave the
-> arch_sync_dma_for_cpu() in __arm_lpae_free_pages() as this is not a
-> hot path.
-> 
-> Removing the DMA-API will also remove some extra checks ensuring that
-> the IOMMU can deal with physical addrs. we can add those check at
-> page table creation time (Something as use_dma_iommu/is_swiotlb_active
-> However, that seemed a little too much as Linux doesn't support such
-> topologies anyways.
+Then it is reasonable to have a pkvm version of the iommu-pages api
+for the page table and drive rto use.
 
-NAK - io-pgtable is regular driver code doing what is absolutely a DMA 
-mapping operation. How would Panfrost calling arch_sync_* signal to hyp 
-that the page is now being used for DMA so needs mapping/pinning at 
-stage 2? We can't even say that that doesn't apply to "real" IOMMU 
-drivers, since there do unfortunately exist cases where an entire "stage 
-1" SMMUv3 is upstream of a "stage 2" SMMUv3 such that it's only workable 
-if the former is assigned to EL1 as just another black-box device, while 
-only EL2 knows about the latter.
-
-If "pagetable creation time" means alloc_io_pgtable_ops() as I've taken 
-it to, how do you specifically propose to check that pages which haven't 
-been allocated yet will definitely be valid for DMA in future? Also note 
-that the only reason for the virt_to_phys() check (which *has* often 
-caught genuine driver/platform configuration issues to a degree that I 
-would be very uncomfortable removing it) is basically laziness, in that 
-nobody's got round to doing the work to be able to keep track of kernel 
-addresses separately from the DMA addresses in the tables themselves, 
-and thus allow visibly-remapped pagetables - every now and then there 
-arises a situation where that would be really useful, so it is still on 
-my wishlist.
-
-Frankly if KVM is going to have increasingly divergent requirements and 
-assumptions about pagetables, then it should have its own pagetable code 
-like it does for the CPU.
-
-Thanks,
-Robin.
-
-> [1] https://lore.kernel.org/linux-iommu/20251117184815.1027271-1-smostafa@google.com/
-> [2] https://lore.kernel.org/linux-iommu/20251216005834.GC31492@ziepe.ca/
-> [3] https://lore.kernel.org/linux-iommu/7c5584d3efa61ee6b0b87efb72f24f32852aafb7.1438195011.git.robin.murphy@arm.com/
-> 
-> Suggested-by: Jason Gunthorpe <jgg@ziepe.ca>
-> Signed-off-by: Mostafa Saleh <smostafa@google.com>
-> ---
->   drivers/iommu/io-pgtable-arm.c | 39 +++++++---------------------------
->   1 file changed, 8 insertions(+), 31 deletions(-)
-> 
-> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-> index e6626004b323..0da9195155ec 100644
-> --- a/drivers/iommu/io-pgtable-arm.c
-> +++ b/drivers/iommu/io-pgtable-arm.c
-> @@ -15,7 +15,7 @@
->   #include <linux/sizes.h>
->   #include <linux/slab.h>
->   #include <linux/types.h>
-> -#include <linux/dma-mapping.h>
-> +#include <linux/dma-map-ops.h>
->   
->   #include <asm/barrier.h>
->   
-> @@ -254,7 +254,6 @@ static void *__arm_lpae_alloc_pages(size_t size, gfp_t gfp,
->   {
->   	struct device *dev = cfg->iommu_dev;
->   	size_t alloc_size;
-> -	dma_addr_t dma;
->   	void *pages;
->   
->   	/*
-> @@ -271,32 +270,10 @@ static void *__arm_lpae_alloc_pages(size_t size, gfp_t gfp,
->   	if (!pages)
->   		return NULL;
->   
-> -	if (!cfg->coherent_walk) {
-> -		dma = dma_map_single(dev, pages, size, DMA_TO_DEVICE);
-> -		if (dma_mapping_error(dev, dma))
-> -			goto out_free;
-> -		/*
-> -		 * We depend on the IOMMU being able to work with any physical
-> -		 * address directly, so if the DMA layer suggests otherwise by
-> -		 * translating or truncating them, that bodes very badly...
-> -		 */
-> -		if (dma != virt_to_phys(pages))
-> -			goto out_unmap;
-> -	}
-> -
-> +	if (!cfg->coherent_walk)
-> +		arch_sync_dma_for_device(__arm_lpae_dma_addr(pages), size,
-> +					 DMA_TO_DEVICE);
->   	return pages;
-> -
-> -out_unmap:
-> -	dev_err(dev, "Cannot accommodate DMA translation for IOMMU page tables\n");
-> -	dma_unmap_single(dev, dma, size, DMA_TO_DEVICE);
-> -
-> -out_free:
-> -	if (cfg->free)
-> -		cfg->free(cookie, pages, size);
-> -	else
-> -		iommu_free_pages(pages);
-> -
-> -	return NULL;
->   }
->   
->   static void __arm_lpae_free_pages(void *pages, size_t size,
-> @@ -304,8 +281,8 @@ static void __arm_lpae_free_pages(void *pages, size_t size,
->   				  void *cookie)
->   {
->   	if (!cfg->coherent_walk)
-> -		dma_unmap_single(cfg->iommu_dev, __arm_lpae_dma_addr(pages),
-> -				 size, DMA_TO_DEVICE);
-> +		arch_sync_dma_for_cpu(__arm_lpae_dma_addr(pages),
-> +				      size, DMA_TO_DEVICE);
->   
->   	if (cfg->free)
->   		cfg->free(cookie, pages, size);
-> @@ -316,8 +293,8 @@ static void __arm_lpae_free_pages(void *pages, size_t size,
->   static void __arm_lpae_sync_pte(arm_lpae_iopte *ptep, int num_entries,
->   				struct io_pgtable_cfg *cfg)
->   {
-> -	dma_sync_single_for_device(cfg->iommu_dev, __arm_lpae_dma_addr(ptep),
-> -				   sizeof(*ptep) * num_entries, DMA_TO_DEVICE);
-> +	arch_sync_dma_for_device(__arm_lpae_dma_addr(ptep),
-> +				 sizeof(*ptep) * num_entries, DMA_TO_DEVICE);
->   }
->   
->   static void __arm_lpae_clear_pte(arm_lpae_iopte *ptep, struct io_pgtable_cfg *cfg, int num_entries)
-
+Jason
