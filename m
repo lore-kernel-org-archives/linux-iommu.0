@@ -1,198 +1,234 @@
-Received: from mail-wm1-f74.google.com (mail-wm1-f74.google.com [209.85.128.74])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A6B1472DB3
-	for <iommu@lists.linux.dev>; Thu,  8 Jan 2026 11:38:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.74
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63DF647420B
+	for <iommu@lists.linux.dev>; Thu,  8 Jan 2026 11:45:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767872337; cv=none; b=mo+ssCvrkvBzQpCVdZOi8tmE+4lkZz6hqG5032BuiRaCYDky5qw6mVc+/cJlgmlDnyCAX7PlDAshf2/AHD5B8po0Am0BcRvJT/ebkIwRDxyib6NtXKLRheOMRbAag7mjSp7p66tSUlv8rscmlAhaU/2VXoQ+OAIAY41kqvMejsI=
+	t=1767872710; cv=none; b=ooXXkrNZgNz1RTojQ6oWwqgiO9ydXkEr+U9TS9OgLSklStYeNF2A9hWLMc3BxWRLui8UNEA5f3J7QIfsx3XRRAgS05N/JPxy8fXxAVaBbwnyo8xlhHlefjcy3XnnwirY4naflCXbEXRLIsiZbEKZ68rrWs8FFsdTl3jJ34HVHrs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767872337; c=relaxed/simple;
-	bh=Fx6BCdFN7l0mjaIYuJOQklh2nn/iWgHSBjgfKrDUd3g=;
-	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=Qx6T19aNeShncwZqrBRsWRF6ui1c/nns4rT/+nAoWt0jWTJ8VWjCJt9MMfRtndIt6ysCKM7eiDp+jz05yO/E2MCHQZ5DF7rbZvYuCQ5xWmkAKFoyweSKNEaaiMdTVKSdcMGkY3uFLgVQsz5kvybhrGdHj20LKbhQokb/eEgmJ1o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=aUQFAfof; arc=none smtp.client-ip=209.85.128.74
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com
+	s=arc-20240116; t=1767872710; c=relaxed/simple;
+	bh=GYKOm74jzkCT6WYjfb6m9Te2fdizWn4dkm+UWe1lDMU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
+	 Content-Type:References; b=Z3YZv25H1M9nqmNiUx0pv93eJEiybvd3GjQIbZ3VbO3Q97KNrMt/nWJVmiJsv1RaLiUqa6qTapJfJevVNBxAdOBfheLXTDdExtrZ6iWRskgHOl0Tn/UpKOKKDr3H2XK9MAXV+r9rZbehnZmnuOZPUzgPU76J5hiHUc7VqKIcb4s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=J2E4DuaC; arc=none smtp.client-ip=210.118.77.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="aUQFAfof"
-Received: by mail-wm1-f74.google.com with SMTP id 5b1f17b1804b1-47a97b785bdso24873225e9.3
-        for <iommu@lists.linux.dev>; Thu, 08 Jan 2026 03:38:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1767872331; x=1768477131; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:from:subject:message-id
-         :mime-version:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=h+PD5I1T9SWnu5gQJxf6wuZ/2pTtA653VoNBiXR/ZCw=;
-        b=aUQFAfofzGRMRV6wrJwGF3GBNX/SlW/+XK6u+tR08HuxmKGKExxgFP6P9isu73O0ia
-         A3Vcc08LDJ5cZdfE7dad83HzyGKGXD2gyzkLSoGs/JMmNsk+fUd40m+5NqghSH2oZPe0
-         VMRsWjd6Ky2jVOq46sQuxD6ODYtfmzKrFMokMxUHhg5cXkw4+r5jSRESkYjvvKZFYiT+
-         QPqcfZj9/+r5bA9Pe5nRf4lMBMQtAf/5+kZK9WtZE2XzavRwU1ZH3OqdLDyx6muWthY0
-         3/WnZE/AzxrwS0UCkP46SWUiZDsqwAPId7HhMxIhpeLxXhGmgUGyWTLWDT11JP6yiPmR
-         FfSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1767872331; x=1768477131;
-        h=content-transfer-encoding:cc:to:from:subject:message-id
-         :mime-version:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=h+PD5I1T9SWnu5gQJxf6wuZ/2pTtA653VoNBiXR/ZCw=;
-        b=bW1Yu8ehttMVoRnSzdVa2MFCboQyhGaQL63FQ6gzKzMwH4bIV08W040fCAFTyi+BnV
-         RWGa/jaawN8Rt3oxkkYgSM1i3vy74GaDT7jX+5jLRno2otaDehPc7lwQ956aN1pCYcE/
-         hIHByEzpNJE5+aEc8dh7A4ABDLRKXX35tTrF+b3bdFx22DOWJiLnWZGoSJF5Kymhu94C
-         L8TAoFx8PgcZmqSSNWZQGj79sxyoItIB5tex9mQx2AgCQdjwcejO2ZrJbOkHbExJ0C9x
-         KK39WJMoSYuUneplRqK9DfwmqK6wtmvr7mO2RnQ4TnD/mjftmvCT1jBtx/jiLRMSujSE
-         q+mQ==
-X-Gm-Message-State: AOJu0Yxax+XbdDYphKwSYIpBQmVJoqNOEsjuyYHs4F4z2KN3oP/sCG+w
-	pYxnfDH3HUzVBdgB3l72Gj464o8U+/aXXRkuKZ58zM1fu4yeV4ffUNCMV/biuZcwBVgndYkJcyj
-	h4Sr+kaqpDOifaTCZy/WeT4/kmt2lbQESKxfxrPapLGLYfGbzkjIo6nCm08wJIsAOOGLZpHMfeo
-	y6xXHdLzYCs9oToiOJLyQIcCjUrHQ3Btd4yRC1BYwb7S6ihg==
-X-Google-Smtp-Source: AGHT+IGr16gVlj0tGy6ZbPOm8QxP8OJb1ECy1Lx+gySYdlsvpdFscKv8yCc/e9t5dZ5OMMD/GUP08duGuCyGKw==
-X-Received: from wrbfs2.prod.google.com ([2002:a05:6000:25c2:b0:430:f5a3:57c8])
- (user=smostafa job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:600c:4e51:b0:477:7af8:c8ad with SMTP id 5b1f17b1804b1-47d84b39850mr75537675e9.31.1767872331602;
- Thu, 08 Jan 2026 03:38:51 -0800 (PST)
-Date: Thu,  8 Jan 2026 11:38:46 +0000
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="J2E4DuaC"
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20260108114503euoutp01d9894409158d46ebc441c106db69bd81~Ivtt65lR71310113101euoutp01L
+	for <iommu@lists.linux.dev>; Thu,  8 Jan 2026 11:45:03 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20260108114503euoutp01d9894409158d46ebc441c106db69bd81~Ivtt65lR71310113101euoutp01L
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1767872703;
+	bh=80K+d4Szn6RvlP9wVPPYJwKN3aMRnNo3dCDMAoay0As=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=J2E4DuaCy6+4FUxry+Tn1XeH87/YA0Nm4UjVkxrph9SmNJ2a1v6zW2o9uouRlYEw2
+	 1c9XdXUQVm5I2ZNtBxe3VoeEt91ceOeW9lZzN5rAjuzl7L+j7KDFSFmuEWTieDulaq
+	 ApUx4sYyPm8IAEoAXJLbbAvSh0YdDr+VrE/+/ohI=
+Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+	20260108114503eucas1p1a3e0deb0e605e7382bf16448c83ec6f8~Ivtth0YBR2914529145eucas1p1x;
+	Thu,  8 Jan 2026 11:45:03 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+	20260108114501eusmtip15f0fd6545e69b98729bf484cf7dc88fd~IvtsWADvp1512515125eusmtip1d;
+	Thu,  8 Jan 2026 11:45:01 +0000 (GMT)
+Message-ID: <b331d1a8-e5ff-40ae-89b8-e1e30f523d06@samsung.com>
+Date: Thu, 8 Jan 2026 12:45:01 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.52.0.351.gbe84eed79e-goog
-Message-ID: <20260108113846.56179-1-smostafa@google.com>
-Subject: [PATCH] iommu/io-pgtable-arm: Drop DMA API usage for CMOs
-From: Mostafa Saleh <smostafa@google.com>
-To: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
-	linux-kernel@vger.kernel.org
-Cc: robin.murphy@arm.com, will@kernel.org, joro@8bytes.org, 
-	Mostafa Saleh <smostafa@google.com>, Jason Gunthorpe <jgg@ziepe.ca>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+User-Agent: Betterbird (Windows)
+Subject: Re: [PATCH v2 5/8] dma-mapping: Support batch mode for
+ dma_direct_sync_sg_for_*
+To: Robin Murphy <robin.murphy@arm.com>, Barry Song <21cnbao@gmail.com>
+Cc: Leon Romanovsky <leon@kernel.org>, catalin.marinas@arm.com,
+	will@kernel.org, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	xen-devel@lists.xenproject.org, Ada Couprie Diaz <ada.coupriediaz@arm.com>,
+	Ard Biesheuvel <ardb@kernel.org>, Marc Zyngier <maz@kernel.org>, Anshuman
+	Khandual <anshuman.khandual@arm.com>, Ryan Roberts <ryan.roberts@arm.com>,
+	Suren Baghdasaryan <surenb@google.com>, Tangquan Zheng
+	<zhengtangquan@oppo.com>
+Content-Language: en-US
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <551bb2e3-d7c7-4949-a9bd-ce0cf70e7134@arm.com>
+Content-Transfer-Encoding: 8bit
+X-CMS-MailID: 20260108114503eucas1p1a3e0deb0e605e7382bf16448c83ec6f8
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20260107131700eucas1p17e2d8e705c31f81d861d02588380ea16
+X-EPHeader: CA
+X-CMS-RootMailID: 20260107131700eucas1p17e2d8e705c31f81d861d02588380ea16
+References: <20251226225254.46197-1-21cnbao@gmail.com>
+	<20251226225254.46197-6-21cnbao@gmail.com> <20251227200933.GO11869@unreal>
+	<CAGsJ_4yA83-K7PXiEtyidzF_j6qqKkt92z485KBS9+zGe_rjnw@mail.gmail.com>
+	<20251228145041.GS11869@unreal>
+	<CAGsJ_4yex5MKQkGtFr2zUcg4h0PtsFs2QVcE_NSfiyOn4qBzhQ@mail.gmail.com>
+	<de876e61-42c5-414d-b439-2f9196c6c128@arm.com>
+	<CAGsJ_4xYqseJMFXOU39JJW4Lk2ZHXAnRJLhZdVuFLxAi=Dy5sw@mail.gmail.com>
+	<CGME20260107131700eucas1p17e2d8e705c31f81d861d02588380ea16@eucas1p1.samsung.com>
+	<551bb2e3-d7c7-4949-a9bd-ce0cf70e7134@arm.com>
 
-As part of the KVM SMMUv3 series[1], we are trying to factor out
-the kernel specific code from io-pgtable-arm so it can also compile
-for the hypervisor.
+On 07.01.2026 14:16, Robin Murphy wrote:
+> On 2026-01-06 7:47 pm, Barry Song wrote:
+>> On Wed, Jan 7, 2026 at 8:12 AM Robin Murphy <robin.murphy@arm.com> 
+>> wrote:
+>>>
+>>> On 2026-01-06 6:41 pm, Barry Song wrote:
+>>>> On Mon, Dec 29, 2025 at 3:50 AM Leon Romanovsky <leon@kernel.org> 
+>>>> wrote:
+>>>>>
+>>>>> On Sun, Dec 28, 2025 at 09:52:05AM +1300, Barry Song wrote:
+>>>>>> On Sun, Dec 28, 2025 at 9:09 AM Leon Romanovsky <leon@kernel.org> 
+>>>>>> wrote:
+>>>>>>>
+>>>>>>> On Sat, Dec 27, 2025 at 11:52:45AM +1300, Barry Song wrote:
+>>>>>>>> From: Barry Song <baohua@kernel.org>
+>>>>>>>>
+>>>>>>>> Instead of performing a flush per SG entry, issue all cache
+>>>>>>>> operations first and then flush once. This ultimately benefits
+>>>>>>>> __dma_sync_sg_for_cpu() and __dma_sync_sg_for_device().
+>>>>>>>>
+>>>>>>>> Cc: Leon Romanovsky <leon@kernel.org>
+>>>>>>>> Cc: Catalin Marinas <catalin.marinas@arm.com>
+>>>>>>>> Cc: Will Deacon <will@kernel.org>
+>>>>>>>> Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+>>>>>>>> Cc: Robin Murphy <robin.murphy@arm.com>
+>>>>>>>> Cc: Ada Couprie Diaz <ada.coupriediaz@arm.com>
+>>>>>>>> Cc: Ard Biesheuvel <ardb@kernel.org>
+>>>>>>>> Cc: Marc Zyngier <maz@kernel.org>
+>>>>>>>> Cc: Anshuman Khandual <anshuman.khandual@arm.com>
+>>>>>>>> Cc: Ryan Roberts <ryan.roberts@arm.com>
+>>>>>>>> Cc: Suren Baghdasaryan <surenb@google.com>
+>>>>>>>> Cc: Tangquan Zheng <zhengtangquan@oppo.com>
+>>>>>>>> Signed-off-by: Barry Song <baohua@kernel.org>
+>>>>>>>> ---
+>>>>>>>>    kernel/dma/direct.c | 14 +++++++-------
+>>>>>>>>    1 file changed, 7 insertions(+), 7 deletions(-)
+>>>>>>>
+>>>>>>> <...>
+>>>>>>>
+>>>>>>>> -             if (!dev_is_dma_coherent(dev)) {
+>>>>>>>> +             if (!dev_is_dma_coherent(dev))
+>>>>>>>> arch_sync_dma_for_device(paddr, sg->length,
+>>>>>>>>                                         dir);
+>>>>>>>> -                     arch_sync_dma_flush();
+>>>>>>>> -             }
+>>>>>>>>         }
+>>>>>>>> +     if (!dev_is_dma_coherent(dev))
+>>>>>>>> +             arch_sync_dma_flush();
+>>>>>>>
+>>>>>>> This patch should be squashed into the previous one. You introduced
+>>>>>>> arch_sync_dma_flush() there, and now you are placing it elsewhere.
+>>>>>>
+>>>>>> Hi Leon,
+>>>>>>
+>>>>>> The previous patch replaces all arch_sync_dma_for_* calls with
+>>>>>> arch_sync_dma_for_* plus arch_sync_dma_flush(), without any
+>>>>>> functional change. The subsequent patches then implement the
+>>>>>> actual batching. I feel this is a better approach for reviewing
+>>>>>> each change independently. Otherwise, the previous patch would
+>>>>>> be too large.
+>>>>>
+>>>>> Don't worry about it. Your patches are small enough.
+>>>>
+>>>> My hardware does not require a bounce buffer, but I am concerned that
+>>>> this patch may be incorrect for systems that do require one.
+>>>>
+>>>> Now it is:
+>>>>
+>>>> void dma_direct_sync_sg_for_cpu(struct device *dev,
+>>>>                   struct scatterlist *sgl, int nents, enum 
+>>>> dma_data_direction dir)
+>>>> {
+>>>>           struct scatterlist *sg;
+>>>>           int i;
+>>>>
+>>>>           for_each_sg(sgl, sg, nents, i) {
+>>>>                   phys_addr_t paddr = dma_to_phys(dev, 
+>>>> sg_dma_address(sg));
+>>>>
+>>>>                   if (!dev_is_dma_coherent(dev))
+>>>>                           arch_sync_dma_for_cpu(paddr, sg->length, 
+>>>> dir);
+>>>>
+>>>>                   swiotlb_sync_single_for_cpu(dev, paddr, 
+>>>> sg->length, dir);
+>>>>
+>>>>                   if (dir == DMA_FROM_DEVICE)
+>>>>                           arch_dma_mark_clean(paddr, sg->length);
+>>>>           }
+>>>>
+>>>>           if (!dev_is_dma_coherent(dev)) {
+>>>>                   arch_sync_dma_flush();
+>>>>                   arch_sync_dma_for_cpu_all();
+>>>>           }
+>>>> }
+>>>>
+>>>> Should we call swiotlb_sync_single_for_cpu() and
+>>>> arch_dma_mark_clean() after the flush to ensure the CPU sees the
+>>>> latest data and that the memcpy is correct? I mean:
+>>>
+>>> Yes, this and the equivalents in the later patches are broken for all
+>>> the sync_for_cpu and unmap paths which may end up bouncing (beware some
+>>> of them get a bit fiddly) - any cache maintenance *must* be completed
+>>> before calling SWIOTLB. As for mark_clean, IIRC that was an IA-64 
+>>> thing,
+>>> and appears to be entirely dead now.
+>>
+>> Thanks, Robin. Personally, I would prefer an approach like the one 
+>> below—
+>> that is, not optimizing the bounce buffer cases, as they are already 
+>> slow
+>> due to hardware limitations with memcpy, and optimizing them would make
+>> the code quite messy.
+>>
+>> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+>> index 550a1a13148d..a4840f7e8722 100644
+>> --- a/kernel/dma/direct.c
+>> +++ b/kernel/dma/direct.c
+>> @@ -423,8 +423,11 @@ void dma_direct_sync_sg_for_cpu(struct device *dev,
+>>          for_each_sg(sgl, sg, nents, i) {
+>>                  phys_addr_t paddr = dma_to_phys(dev, 
+>> sg_dma_address(sg));
+>>
+>> -               if (!dev_is_dma_coherent(dev))
+>> +               if (!dev_is_dma_coherent(dev)) {
+>>                          arch_sync_dma_for_cpu(paddr, sg->length, dir);
+>> +                       if (unlikely(dev->dma_io_tlb_mem))
+>> +                               arch_sync_dma_flush();
+>> +               }
+>>
+>>                  swiotlb_sync_single_for_cpu(dev, paddr, sg->length, 
+>> dir);
+>>
+>> I’d like to check with you, Leon, and Marek on your views about this.
+>
+> That doesn't work, since dma_io_tlb_mem is always initialised if a 
+> SWIOTLB buffer exists at all. Similarly I think the existing 
+> dma_need_sync tracking is also too coarse, as that's also always going 
+> to be true for a non-coherent device.
+>
+> Really this flush wants to be after the swiotlb_find_pool() check in 
+> the swiotlb_tbl_unmap_single()/__swiotlb_sync_single_for_cpu() paths, 
+> as that's the only point we know for sure it's definitely needed for 
+> the given address. It would then be rather fiddly to avoid 
+> potentially-redundant flushes for the non-sg cases (and the final 
+> segment of an sg), but as you already mentioned, if it's limited to 
+> cases when we *are* already paying the cost of bouncing anyway, 
+> perhaps one extra DSB isn't *too* bad if it means zero impact to the 
+> non-bouncing paths.
 
-Jason pointed out that the DMA-API calls are not really needed [2].
+I agree with Robin, optimizing the swiotlb path doesn't make much sense.
 
-Looking more into this. Initially, the io-pgtable API let drivers
-do the CMOs using tlb::flush_pgtable() where drivers were using the
-DMA API (map/unmap_single) only to do CMOs as the low-level cache
-functions won=E2=80=99t be available for modules.
-
-This was later moved to the core code [3], with possibility to
-convert it to full blown DMA-API code if there was a use case.
-
-However, no such use case appeared, and we can simplify the code
-slightly by doing CMO directly instead of going through the DMA-API
-functions just for CMOs.
-
-Although HTTU is not used at the moment, leave the
-arch_sync_dma_for_cpu() in __arm_lpae_free_pages() as this is not a
-hot path.
-
-Removing the DMA-API will also remove some extra checks ensuring that
-the IOMMU can deal with physical addrs. we can add those check at
-page table creation time (Something as use_dma_iommu/is_swiotlb_active
-However, that seemed a little too much as Linux doesn't support such
-topologies anyways.
-
-[1] https://lore.kernel.org/linux-iommu/20251117184815.1027271-1-smostafa@g=
-oogle.com/
-[2] https://lore.kernel.org/linux-iommu/20251216005834.GC31492@ziepe.ca/
-[3] https://lore.kernel.org/linux-iommu/7c5584d3efa61ee6b0b87efb72f24f32852=
-aafb7.1438195011.git.robin.murphy@arm.com/
-
-Suggested-by: Jason Gunthorpe <jgg@ziepe.ca>
-Signed-off-by: Mostafa Saleh <smostafa@google.com>
----
- drivers/iommu/io-pgtable-arm.c | 39 +++++++---------------------------
- 1 file changed, 8 insertions(+), 31 deletions(-)
-
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.=
-c
-index e6626004b323..0da9195155ec 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -15,7 +15,7 @@
- #include <linux/sizes.h>
- #include <linux/slab.h>
- #include <linux/types.h>
--#include <linux/dma-mapping.h>
-+#include <linux/dma-map-ops.h>
-=20
- #include <asm/barrier.h>
-=20
-@@ -254,7 +254,6 @@ static void *__arm_lpae_alloc_pages(size_t size, gfp_t =
-gfp,
- {
- 	struct device *dev =3D cfg->iommu_dev;
- 	size_t alloc_size;
--	dma_addr_t dma;
- 	void *pages;
-=20
- 	/*
-@@ -271,32 +270,10 @@ static void *__arm_lpae_alloc_pages(size_t size, gfp_=
-t gfp,
- 	if (!pages)
- 		return NULL;
-=20
--	if (!cfg->coherent_walk) {
--		dma =3D dma_map_single(dev, pages, size, DMA_TO_DEVICE);
--		if (dma_mapping_error(dev, dma))
--			goto out_free;
--		/*
--		 * We depend on the IOMMU being able to work with any physical
--		 * address directly, so if the DMA layer suggests otherwise by
--		 * translating or truncating them, that bodes very badly...
--		 */
--		if (dma !=3D virt_to_phys(pages))
--			goto out_unmap;
--	}
--
-+	if (!cfg->coherent_walk)
-+		arch_sync_dma_for_device(__arm_lpae_dma_addr(pages), size,
-+					 DMA_TO_DEVICE);
- 	return pages;
--
--out_unmap:
--	dev_err(dev, "Cannot accommodate DMA translation for IOMMU page tables\n"=
-);
--	dma_unmap_single(dev, dma, size, DMA_TO_DEVICE);
--
--out_free:
--	if (cfg->free)
--		cfg->free(cookie, pages, size);
--	else
--		iommu_free_pages(pages);
--
--	return NULL;
- }
-=20
- static void __arm_lpae_free_pages(void *pages, size_t size,
-@@ -304,8 +281,8 @@ static void __arm_lpae_free_pages(void *pages, size_t s=
-ize,
- 				  void *cookie)
- {
- 	if (!cfg->coherent_walk)
--		dma_unmap_single(cfg->iommu_dev, __arm_lpae_dma_addr(pages),
--				 size, DMA_TO_DEVICE);
-+		arch_sync_dma_for_cpu(__arm_lpae_dma_addr(pages),
-+				      size, DMA_TO_DEVICE);
-=20
- 	if (cfg->free)
- 		cfg->free(cookie, pages, size);
-@@ -316,8 +293,8 @@ static void __arm_lpae_free_pages(void *pages, size_t s=
-ize,
- static void __arm_lpae_sync_pte(arm_lpae_iopte *ptep, int num_entries,
- 				struct io_pgtable_cfg *cfg)
- {
--	dma_sync_single_for_device(cfg->iommu_dev, __arm_lpae_dma_addr(ptep),
--				   sizeof(*ptep) * num_entries, DMA_TO_DEVICE);
-+	arch_sync_dma_for_device(__arm_lpae_dma_addr(ptep),
-+				 sizeof(*ptep) * num_entries, DMA_TO_DEVICE);
- }
-=20
- static void __arm_lpae_clear_pte(arm_lpae_iopte *ptep, struct io_pgtable_c=
-fg *cfg, int num_entries)
---=20
-2.52.0.351.gbe84eed79e-goog
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
