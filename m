@@ -1,87 +1,116 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93D3550097F;
-	Fri,  9 Jan 2026 03:15:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F070255E43
+	for <iommu@lists.linux.dev>; Fri,  9 Jan 2026 03:28:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767928554; cv=none; b=u/xiZchtlmFu+ovHqPt253TaZc4hDan7LGeoDLR9BLTaZLEXl1gZjCT+YadFJVlgGmgcAbHJXaZfpeTWxPgmA49qx06JTaf7rwoDrIrFTXRhcvr4QMdfO+n/OGEUor5fByosE2dQJhN9BzEWfAp1MKeSZaAwtS+hywX8I9zErN8=
+	t=1767929304; cv=none; b=FDoJsFQp74W9tmtgFx9AV9K7N/tZfvcbMt4dDUoqhC2p7WDPOVcoXB1Pzd08ltzAMUMM3f+kubcHoVAvMQtHH17SJ9oU/B8mPjcwSJmL3tD6aCBuUrGou8TNkXhxcgiGLPbw9pRgcNaRO8Pmwsnxf7mawI+5nbWHn8u5LgMNFTs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767928554; c=relaxed/simple;
-	bh=O7AkpeJoA2tDzLIf8XVdUdY/zxdBrpgc5MILVfKOwds=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=IPvpmPJJ8/TW8nRJT4bQMFOqFAC+E6/iO6SLVT1L5u4gIlR+/1CFvZtjfli+xQWZsn9VEIE1MD1lohkR8WVLOpdRm6y9pA696s/jP7LTGqMKcPrcQ7iM/+0iWJ6bFxAp7rPlowQna+G1WhUHA5mqO3zre0xKBgo0p0XbhT4nbcE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aq3g5Jpt; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1767929304; c=relaxed/simple;
+	bh=y4tYwPF3ZC63Ir+4yC1KcSfjvehP4llbqhsh9Bjl7/k=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=V2j3/zTV68jAMarFCXaGFjnsJscnIx6LFIB26I7QQ9hCCr5fsIhyA3gr2alxxTsX26w/wfUjITFivy8mJY4ZrG1nmpBbIuwFpc4gPcpqzq7mtxA/OWPIJ3j0EJc9CVSjTN5QIMefTdjCvHcxtYH8mpMpmZYPEkPQUlC6pkFV70o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=afRkp4W6; arc=none smtp.client-ip=198.175.65.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aq3g5Jpt"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FD88C116C6;
-	Fri,  9 Jan 2026 03:15:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1767928554;
-	bh=O7AkpeJoA2tDzLIf8XVdUdY/zxdBrpgc5MILVfKOwds=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=aq3g5Jpt2waagcIRwf7bXvzFcDACKrqy6May9Yiwb1/gtB71KhrG8XfxpCHdebJXc
-	 zY2UF5o7DaRZbSV/TdTXIqBWYfn+0XTaTpoVKD8PaEH4Rxg1dZzCawk0sl/NkPOec1
-	 6qg3cOZbPoJzUACaCV6ZKXck2t7xwJX8KWx6VuRtT32bbvoH5DHcdRoUa7g6esYX1o
-	 wbqBFUVqp96hhoUjysXFmt4xAN+oLIBoVzV9JVm7vwVfXiQr2yM5FIBc7i4D44FgXW
-	 Ap6JGrT+H1JrHOGfDicHRJlHDPz5IBd7wzQoaxLXKf55ySzn8ldyB1Pqy47zCP2jgl
-	 sTIpkqwfdqXuA==
-X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
-From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
-To: Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Cc: Arnd Bergmann <arnd@kernel.org>, Linus Walleij <linusw@kernel.org>,
-	Matthew Wilcox <willy@infradead.org>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>
-Subject: Re: [PATCH] dma-direct: Skip cache prep for HighMem coherent
- allocations
-In-Reply-To: <1ada44db-63a9-43ac-81da-0bdd4e7b7363@arm.com>
-References: <20260102155118.2551804-1-aneesh.kumar@kernel.org>
- <CGME20260108105031eucas1p2a3e8d0308ae6a5d43b5250ca8b14ecb9@eucas1p2.samsung.com>
- <9cbe49ae-6612-491d-8ac6-6a99a08d73e2@arm.com>
- <9f28b833-5813-4e5d-b705-eed9a2a31863@samsung.com>
- <1ada44db-63a9-43ac-81da-0bdd4e7b7363@arm.com>
-Date: Fri, 09 Jan 2026 08:45:48 +0530
-Message-ID: <yq5a4iov5vdn.fsf@kernel.org>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="afRkp4W6"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1767929303; x=1799465303;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=y4tYwPF3ZC63Ir+4yC1KcSfjvehP4llbqhsh9Bjl7/k=;
+  b=afRkp4W6KLwUtO4TNBtROPnQx2Jbq0ixXXDnZWte4+wa5tfYGrX5uVh2
+   NrvUiEEFgCB0dJt3mbACdEA9Qm04zx7zdsb1SyozuheSGL2hv6HoICpg9
+   wl0oehYHHB2RbsOgblqyK/OEb5td3a5l0xyzso87epsTskbdwynMp5jCO
+   hx2l74DvKO4DcpMS/j+xYE6eHcFglu995vpCazax1oE8hncwmP/BX9hd2
+   0tcu8Cf3RP8bW2tWbIFAPsI3V1nQXvb4y7JxNNLstaRX7oFUqvB2OXAu1
+   XOQxJjxTSBf7NYNlLqUpXG8sTkhT2v4Qz2Rsmlwm0SeeOBCAOSWyvNYOc
+   A==;
+X-CSE-ConnectionGUID: xYUgZnj9TQmei3apmacopw==
+X-CSE-MsgGUID: EAnfHz4hQEyqc7HZNKeRJQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11665"; a="69296285"
+X-IronPort-AV: E=Sophos;i="6.21,211,1763452800"; 
+   d="scan'208";a="69296285"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jan 2026 19:28:23 -0800
+X-CSE-ConnectionGUID: 2d2ZBL/rTb2r1726moL31A==
+X-CSE-MsgGUID: A7Och2SKQ2eaTHkkLOcU4g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,211,1763452800"; 
+   d="scan'208";a="234075920"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jan 2026 19:28:18 -0800
+Message-ID: <d6236413-7385-45c5-94ad-8b0f2007f1ac@linux.intel.com>
+Date: Fri, 9 Jan 2026 11:28:32 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 3/4] iommu: debug-pagealloc: Track IOMMU pages
+To: Mostafa Saleh <smostafa@google.com>,
+ Pranjal Shrivastava <praan@google.com>
+Cc: linux-mm@kvack.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ linux-doc@vger.kernel.org, corbet@lwn.net, joro@8bytes.org, will@kernel.org,
+ robin.murphy@arm.com, akpm@linux-foundation.org, vbabka@suse.cz,
+ surenb@google.com, mhocko@suse.com, jackmanb@google.com, hannes@cmpxchg.org,
+ ziy@nvidia.com, david@redhat.com, lorenzo.stoakes@oracle.com,
+ Liam.Howlett@oracle.com, rppt@kernel.org, xiaqinxin@huawei.com,
+ rdunlap@infradead.org
+References: <20260106162200.2223655-1-smostafa@google.com>
+ <20260106162200.2223655-4-smostafa@google.com> <aV56BWisUQTMK2Gk@google.com>
+ <aV-PvBqQ0Ktiha8e@google.com>
+ <CAFgf54o4Ja7jQwxo6XyW+JaT+aUuj3O2dvLqOTb+YSVCKTdvyQ@mail.gmail.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <CAFgf54o4Ja7jQwxo6XyW+JaT+aUuj3O2dvLqOTb+YSVCKTdvyQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Robin Murphy <robin.murphy@arm.com> writes:
+On 1/8/26 19:33, Mostafa Saleh wrote:
+> I have this, it should have the same effect + a WARN, I will include
+> it in the new version
+> 
+> diff --git a/drivers/iommu/iommu-debug-pagealloc.c
+> b/drivers/iommu/iommu-debug-pagealloc.c
+> index 5353417e64f9..64ec0795fe4c 100644
+> --- a/drivers/iommu/iommu-debug-pagealloc.c
+> +++ b/drivers/iommu/iommu-debug-pagealloc.c
+> @@ -146,16 +146,12 @@ void __iommu_debug_unmap_end(struct iommu_domain *domain,
+>          if (unmapped == size)
+>                  return;
+> 
+> -       /*
+> -        * If unmap failed, re-increment the refcount, but if it unmapped
+> -        * larger size, decrement the extra part.
+> -        */
+> +       /* If unmap failed, re-increment the refcount. */
+>          if (unmapped < size)
+>                  __iommu_debug_update_iova(domain, iova + unmapped,
+>                                            size - unmapped, true);
+>          else
+> -               __iommu_debug_update_iova(domain, iova + size,
+> -                                         unmapped - size, false);
+> +               WARN_ONCE(1, "iommu: unmap larger than requested is
+> not supported in debug_pagealloc\n");
+>   }
+> 
+>   void iommu_debug_init(void)
 
-> On 2026-01-08 12:41 pm, Marek Szyprowski wrote:
->> On 08.01.2026 11:50, Robin Murphy wrote:
->>> On 2026-01-02 3:51 pm, Aneesh Kumar K.V (Arm) wrote:
->>>> dma_direct_alloc() calls arch_dma_prep_coherent() to clean any dirty
->>>> cache lines from the kernel linear alias before creating a coherent
->>>> remapping.
->>>>
->>>> HighMem pages have no kernel alias mapping, so there are no alias cache
->>>> lines to clean. Skip arch_dma_prep_coherent() for HighMem allocations.
->>>
->>> This is assuming that caches are always cleaned when unmapping
->>> highmem, and no still-mapped highmem pages are dirty - how is that
->>> guaranteed? The fact that they're not in the linear map doesn't mean
->>> they don't necessarily have kernel aliases in either vmalloc
->>> pagetables or caches.
->> 
->> 
->> Right, so it is better to keep this unconditional
->> arch_dma_prep_coherent() call. I will drop it from dma-mapping-fixes then.
->
-> Yeah, I think the confusing thing here is that there are architectures 
-> with CONFIG_HIGHMEM that don't actually check for and handle it in their 
-> arch_dma_prep_coherent() as they seemingly should, however I'm not sure 
-> off-hand whether they also support/use highmem CMA in the manner that 
-> could end up being an issue in practice (the lack of any reports of 
-> crashes or DMA corruption over the last however many years suggests not...)
->
+How aobut
 
-Should we then remove the PageHighMem() check with DMA_ATTR_NO_KERNEL_MAPPING?
+	if ((unmapped == size) || WARN_ON_ONCE(unmapped > size))
+		return;
 
--aneesh
+	/* If unmap failed, re-increment the refcount. */
+	__iommu_debug_update_iova(domain, iova + unmapped, size - unmapped, true);
+
+?
+
+Thanks,
+baolu
