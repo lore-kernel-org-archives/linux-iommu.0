@@ -1,133 +1,196 @@
-Received: from mail-wm1-f66.google.com (mail-wm1-f66.google.com [209.85.128.66])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8700296BBD
-	for <iommu@lists.linux.dev>; Fri,  9 Jan 2026 06:05:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.66
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D9C11DE885
+	for <iommu@lists.linux.dev>; Fri,  9 Jan 2026 06:32:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767938713; cv=none; b=tqpKEfXhW3iL7DC8mGkWBfY0mOJiPM3Fw0o6dXNNRwgwuR41Kk0Q/SJzQ7Jdbzml1KZlCxspHFLUszj9MRdVfwzOXlegzAdwrEb/X+xg4nb/6iQndkAh+hGHj0vL57l3GGJvLVKtFCBl/ui2giLhGNrNc/3TAeE7CZbheFr3d/s=
+	t=1767940373; cv=none; b=KYk1nesQxGZSpkuWpQ7yF4IFCLecUE8UK49SFp51bbwAGyZlpRfqBrmJdo71Dyh8e0PALazgahNP/o3WdQO2b8DL8VOhqGuvFOx+YKb08N9QhjMdO/cYkSD97K6bubqlKlCtuc/iffYOqWGA9zXromo5Ishg12aJm7HXVbSZBcU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767938713; c=relaxed/simple;
-	bh=5jmRjEH5N9K+TIrarSzQwamG6eEZwg5nkhCLwf4iIQU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=OcHz+D5pf2JgaPY8ZymeYd9POI+A1eCyuHlJjUAlMy/2MNISM0g9gZKPDLSQbiMICkYJXbedbNHT/wU1aD87pv5NyVuoJ5yhV0xLpseiUwwLz47/NgB+DV9YCcg0lL5lkz8rNjFMtn+2Jt05hMmtsUm9fE2XdCR/wx8RbEQodCc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=OjO3lRdt; arc=none smtp.client-ip=209.85.128.66
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1767940373; c=relaxed/simple;
+	bh=o1bzcRFAbGGR1RiZWRemxRqqakMYAxgbuXzphpzN8kQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=bce5WXHBsXc0OcACatlZ486vxSUoB0xfjyZruNdX3YjZPjOtJaPe/ScgAkm8Q3u+wkDmnofLtBD/Qz1PgdAUOu937C9L7sEoeGDhwDFU+8UghCA4nolCGvjAjnzTlOYcYxX1Un/8jDi59uNa1iLRBeC9RlGqBRmooVG+Z/cbd8Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hM9K1i9w; arc=none smtp.client-ip=192.198.163.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="OjO3lRdt"
-Received: by mail-wm1-f66.google.com with SMTP id 5b1f17b1804b1-47d1d8a49f5so25767045e9.3
-        for <iommu@lists.linux.dev>; Thu, 08 Jan 2026 22:05:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1767938710; x=1768543510; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ooM/uKuoWiEKylwC/sKJICq7ujylAuG7XtKbwAgBTOw=;
-        b=OjO3lRdtb7a+uE0fHyDWfPP9L/bmDsbWoL2pkQ5G2aJxpIwv/zcIFswicBnUHPs7Tt
-         rC+sOTEDsBWk/KMSjD1HSEX35Mq3ofbQKq3JmnRm93Kz7uXsDQUt54y2FhjWKkCUuG+R
-         fV+LNwOfRhT2dgaEPC3F7NcR8LESAGMn1mlp/iaGwoCpFNw0dKKBwXH+ykne9wwWYYyC
-         JOjNv1itJr75Q6IIllO7NfpMk1oDD1NAFtX7kHzRFtj9XJrOsR3KTKtOvfnmSDiPfmyi
-         KKfEbINzqeEv7nRb0+1FkkDBL+qge66iZIQjCxEXBd0SRrgS3Xfkn4M5LsAa5gU3z+e5
-         T9tQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1767938710; x=1768543510;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ooM/uKuoWiEKylwC/sKJICq7ujylAuG7XtKbwAgBTOw=;
-        b=mByypU1QJpbHSuMc47w1tYHxfXMSvtQ/gqE5P6P8mLzIQJjdoWn1crJNGG8LdKim/E
-         l0kGm30aMllhfj/q+HadfRzG0PiUeliY+iyQfnPVlMNLbrA8EsXGRCl9TcBH2dgjoq1T
-         7cWCEhah+b4MKbFx4Ubk/wUrdOr+7lllqRo7E95xTHYYO8HcWp0yPT34+E2tI5K3nbXX
-         nUfFX4uVSwM+rOv1JifNjoSEb1ZqVeV7z3Fog3CJmQtmA8gzQ52dgn0SrYTC+xCHUaYr
-         If+TCOWk8KNfZpIslgmljIy0FepzoahpZtCvb7nG3UBbYj3NLI9/qx5pHwK/HIueC+Sb
-         ow7A==
-X-Forwarded-Encrypted: i=1; AJvYcCVCDIIUSH3LlR5vvNh9l8uToGAg784ksfzFtS3bqKZIiESy4qXb+hLpiA8BOo+g30NX+SzHMQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzqUuDXuACoWJ7Q5b5IR9podscIlS4tQTZec7+DoQwufZkFLqiE
-	kiJQBaZlzGMfCMYG9wr+EN6IhZyql7Q6IZLHxlw02ekBJs/opZGARBABn6AaDF/gcok=
-X-Gm-Gg: AY/fxX4tv0Tkfm4OASEbI6zIayZGqDEHl8b9WUYmP/oU4V3ZGQr1MXl+huyo8uKx/jy
-	n6ptVhSACEmN5FITxjOSwKtFymxaFgtEAsBVJhbMbbgbU9fiVPFD4bPXxijziczTRPrnyIclscl
-	9w0WXxAMB/3364KuJLiIwFfjKyrS0dqwDvzFyoRf+K9N9HGqE6VMgRAr66YHOnVpQTq21p7hqJf
-	qvfjF27pQER7kH4nvIb09vicyrEpeQl8R5P+Bg++XMO3/Te0BtLI8oY4vlB5FyOqRbRLnv/vitK
-	xqAToAdcPQVWemhoE0ZYUNOK/XVMoj0ubqnqNxWxKWnnZ4+tQ2+qCKEfOQJjc+VuVWJGagOOstV
-	IMKBEdoJayfbsnxDIlZ9dGg3X7O10tdOuTar/UrymWqAMUo2GTH5862oR3b1m91RrZ30X5SGCzi
-	ursbdKlOVDGGCCLth/
-X-Google-Smtp-Source: AGHT+IEw+1D/KV35h1xmcYg8u9aLCmfWv//Elr/Sqt7gE9ixomZwQZirSOOCipRMnwEtDetKsHdjHw==
-X-Received: by 2002:a05:600c:8b52:b0:477:abea:9028 with SMTP id 5b1f17b1804b1-47d84b1a348mr88128745e9.6.1767938710132;
-        Thu, 08 Jan 2026 22:05:10 -0800 (PST)
-Received: from localhost ([196.207.164.177])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-47d7f695956sm195146375e9.6.2026.01.08.22.05.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Jan 2026 22:05:09 -0800 (PST)
-Date: Fri, 9 Jan 2026 09:05:06 +0300
-From: Dan Carpenter <dan.carpenter@linaro.org>
-To: Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>
-Cc: joro@8bytes.org, suravee.suthikulpanit@amd.com, will@kernel.org,
-	robin.murphy@arm.com, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, Vasant.Hegde@amd.com,
-	Sairaj Kodilkar <Sairaj.ArunKodilkar@amd.com>,
-	kernel test robot <lkp@intel.com>,
-	Dan Carpenter <error27@gmail.com>
-Subject: Re: [PATCH] iommu/amd: Use array_index_nospec() for rlookup_table
- index
-Message-ID: <aWCakni4dwgJpuE_@stanley.mountain>
-References: <20260109052040.938-1-dheerajkumar.srivastava@amd.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hM9K1i9w"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1767940372; x=1799476372;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=o1bzcRFAbGGR1RiZWRemxRqqakMYAxgbuXzphpzN8kQ=;
+  b=hM9K1i9wUGHnZwF8ndqx5tkWPOKRIUdln86nXvWsIF6QggQMAvXKkSIG
+   LmTKALVHXw7JPWnoCMi2yaK7+DuYy6pKG5oeDGBzh6WWSLtTXc+12QOT7
+   vZxcjgCj1abiCjUFyfUky/1G/JogZuDIRuukHOi03Zp0bQDuYC1+uTsDF
+   t1vXF6fowjuraCfeSzeS0JB04E3tYpRzTApEkI01kg/txihXO7NB1K9WD
+   IdL8yZLod7Ldt+pMBpiwJX2dRxuPo21rQe/90kiefxu08LjLKuA/TilRl
+   UOXaGtCLWMQwDhe3k70qwSatzWmhJKUnoQMgKSJu88lnRVJ8/FElkL8iU
+   Q==;
+X-CSE-ConnectionGUID: /QZK+L70StCzraB1tzg4zQ==
+X-CSE-MsgGUID: TTJldM+iR2asWOlC/NdMaw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11665"; a="80687238"
+X-IronPort-AV: E=Sophos;i="6.21,212,1763452800"; 
+   d="scan'208";a="80687238"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jan 2026 22:32:51 -0800
+X-CSE-ConnectionGUID: f8qXV5c8RbCS71bpbPWKhA==
+X-CSE-MsgGUID: bIzjGvcTQc6xiXul/PRKdg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,212,1763452800"; 
+   d="scan'208";a="203173713"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jan 2026 22:31:57 -0800
+Message-ID: <2f9e3589-d488-4ffb-9ae9-0d69ac77a8fb@linux.intel.com>
+Date: Fri, 9 Jan 2026 14:32:12 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260109052040.938-1-dheerajkumar.srivastava@amd.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 0/5] iommu/vt-d: Ensure memory ordering in context &
+ root entry updates
+To: "Tian, Kevin" <kevin.tian@intel.com>, Dmytro Maluka
+ <dmaluka@chromium.org>, Jason Gunthorpe <jgg@ziepe.ca>
+Cc: David Woodhouse <dwmw2@infradead.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "Vineeth Pillai (Google)" <vineeth@bitbyteword.org>,
+ Aashish Sharma <aashish@aashishsharma.net>,
+ Grzegorz Jaszczyk <jaszczyk@chromium.org>,
+ "Dong, Chuanxiao" <chuanxiao.dong@intel.com>
+References: <20251227175728.4358-1-dmaluka@chromium.org>
+ <20260105181200.GH125261@ziepe.ca> <aVwI_SHHGPl0xndu@google.com>
+ <20260105191410.GJ125261@ziepe.ca> <aVwZkFQ-iQ7OHMi2@google.com>
+ <20260106001418.GK125261@ziepe.ca> <aV0TalseaDGW-1Jp@mitya-t14-2025>
+ <20260106142301.GS125261@ziepe.ca> <aV0vM9ad-4QhCNaA@mitya-t14-2025>
+ <BN9PR11MB52764C6A9F1774DDAFED41258C85A@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB52764C6A9F1774DDAFED41258C85A@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Fri, Jan 09, 2026 at 10:50:40AM +0530, Dheeraj Kumar Srivastava wrote:
-> Use array_index_nospec() to prevent speculative out-of-bounds
-> access when indexing pci_seg->rlookup_table with a user provided
-> device id.
+On 1/8/26 10:09, Tian, Kevin wrote:
+>> From: Dmytro Maluka <dmaluka@chromium.org>
+>> Sent: Tuesday, January 6, 2026 11:50 PM
+>>
+>> On Tue, Jan 06, 2026 at 10:23:01AM -0400, Jason Gunthorpe wrote:
+>>> On Tue, Jan 06, 2026 at 02:51:38PM +0100, Dmytro Maluka wrote:
+>>>> Regarding flushing caches right after that - what for? (BTW the Intel
+>>>> driver doesn't do that either.) If we don't do that and as a result the
+>>>> HW is using an old entry cached before we cleared the present bit, it
+>>>> is not affected by our later modifications anyway.
+>>>
+>>> You don't know what state the HW fetcher is in. This kind of race is possible:
+>>>
+>>>       CPU                 FETCHER
+>>>                          read present = 1
+>>>      present = 0
+>>>      mangle qword 1
+>>>                          read qword 1
+>>>                          < fail - HW sees a corrupted entry >
+>>>
+>>> The flush is not just a flush but a barrier to synchronize with the HW
+>>> that it is done all fetches that may have been dependent on seeing
+>>> present = 1.
+>>>
+>>> So missing a flush after clearing present is possibly a bug today - I
+>>> don't remember what guarenteed the atomic size is for Intel IOMMU
+>>> though, if the atomic size is the whole entry it is OK since there is
+>>> only one fetcher read. Though AMD is 128 bits and ARM is 64 bits.
+>>
+>> Indeed, may be a bug... In the VT-d spec I don't immediately see a
+>> guarantee that context and PASID entries are fetched atomically. (And
+>> for PASID entries, which are 512 bits, that seems particularly
+>> unlikely.)
+>>
 > 
-> Signed-off-by: Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>
-> Reviewed-by: Sairaj Kodilkar <Sairaj.ArunKodilkar@amd.com>
-> Reported-by: kernel test robot <lkp@intel.com>
-> Reported-by: Dan Carpenter <error27@gmail.com>
-> Closes: https://lore.kernel.org/r/202510281233.q4cBnp3z-lkp@intel.com/
-
-This is interesting because more and more people are using lei to
-recieve email and now they get unfiltered Smatch warnings from zero day
-bot.
-
-Normally, I just ignore these warnings because they're hard to review
-and I recently modified Smatch to stop the zero day bot from warning
-about them.
-
-The problem is that I've tried to contact people from Intel to help
-review some of the warnings but I've never recieved a response.  I've
-heard that Intel has a handful of people that deal with Spectre v1 bugs
-but I've never seen any evidence of that...  I've never tried reaching
-out to AMD.
-
-> ---
->  drivers/iommu/amd/debugfs.c | 1 +
->  1 file changed, 1 insertion(+)
+> 512bits atomicity is possible, but not on the PASID entry.
 > 
-> diff --git a/drivers/iommu/amd/debugfs.c b/drivers/iommu/amd/debugfs.c
-> index 10fa217a7119..4990f6db99ef 100644
-> --- a/drivers/iommu/amd/debugfs.c
-> +++ b/drivers/iommu/amd/debugfs.c
-> @@ -174,6 +174,7 @@ static ssize_t devid_write(struct file *filp, const char __user *ubuf,
->  			kfree(srcid_ptr);
->  			return -EINVAL;
->  		}
-> +		devid = array_index_nospec(devid, (u32)pci_seg->last_bdf + 1);
+> VT-d spec, head of section 9 (Translation Structure Formats):
+> 
+> "
+> This chapter describes the memory-resident structures for DMA and
+> interrupt remapping. Hardware must access structure entries that
+> are 64-bit or 128-bit atomically. Hardware must update a 512-bit
+> Posted Interrupt Descriptor (see Section 9.11 for details) atomically.
+> Other than the Posted Interrupt Descriptor (PID), hardware is allowed
+> to break access to larger than 128-bit entries into multiple aligned
+> 128-bit accesses.
+> "
+> 
+> root entry, scalable root entry, context entry and IRTE are 128bits
+> so they are OK.
+> 
+> scalable context entry are 256bits but only the lower 128bits are
+> defined so it's OK for now.
+> 
+> scalable PASID directory entry is 64bits. ok.
+> 
+> posted interrupt descriptor is 512bits with atomicity guaranteed.
+> 
+> but we do have problem on scalable pasid entry which is 512bits.
+>    - bits beyond 191 are for future hardware, not a problem now
+>    - bits 128-191 are for 1st-stage
+>    - bits 0-127 manages stage selection, 2nd-stage, and some 1st-stage
+> 
+> so in theory 1st-stage and nesting are affected by this bug.
 
-This is debugfs so it's already root only.  The cast to (u32) is
-unnecessary.
+Yes. This is a real software bug. The hardware is legally allowed to
+tear the pasid table entry read into 4 128-bit chunks. For first-stage
+(first-only or nested) translation, chunk 1 (bit 0-127) and chunk 2 (bit
+128-191) both contain active configuration data, hardware could possibly
+read a entry composed of half-old and half-new data.
 
-regards,
-dan carpenter
+The VT-d spec defines software guide for pasid table entry manipulation
+in section 6.5.3.3 (Guidance to Software for Invalidations), I think the
+Linux driver doesn't handle the handshake between CPU and IOMMU hardware
+in the right way.
 
->  		iommu = pci_seg->rlookup_table[devid];
->  		if (!iommu) {
->  			kfree(srcid_ptr);
-> -- 
-> 2.25.1
+The correct way should be a clear-flush-update sequence, that is, when
+tearing down a present pasid table entry, the software should
+
+1. Clear the Present bit;
+2. Invalidate the cache according to section 6.5.3.3;
+[now CPU owns the pasid table entry]
+3. Update other fields;
+4. Set the Present bit;
+[now the VT-d hardware owns the pasid table entry].
+
+> 
+> In reality:
+>    - iommu driver shouldn't receive an attach request on an in-use pasid
+>      entry, so the cache should remain cleared (either at initial state or
+>      flushed by previous teardown) then hw won't use a partial 1st-stage
+>      config after seeing the entry as non-present.
+
+Yes. But the current tear down process is buggy as described above.
+
+> 
+>    - replace is already broken, as the entry should not be cleared in the
+>      1st place then this bug will be fixed when replace is reworked.
+
+We still have a long way to go before achieving the real replace since
+the hardware doesn't guarantee 512-bit atomicity, "hitless" is very
+difficult.
+
+> 
+> If no oversight (Baolu?), probably we don't need to fix it strictly following
+> Jason's pseudo logic at this point. Instead, just rename pasid_clear_entry()
+> to pasid_clear_entry_no_flush() for now (with some comment to clarify
+> the expectation), and rework the replace path in parallel.
+> We may never require a pasid_clear_entry_flush_cache() once hitless> replace is in place. 😊
+
+Perhaps we can first add pasid_entry_clear_present() to fulfill the
+clear-flush-update handshake between the software and the IOMMU hardware
+while reworking the PASID replace path?
+
+Thanks,
+baolu
