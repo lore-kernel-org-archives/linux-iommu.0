@@ -1,48 +1,44 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 83E6C29B8E1
-	for <iommu@lists.linux.dev>; Sat, 10 Jan 2026 09:53:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2C9372C11D3
+	for <iommu@lists.linux.dev>; Sat, 10 Jan 2026 09:54:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768038785; cv=none; b=uOy8aUmo5k0cc9ZC44iYLDpXSJg23U883lcIQ2jE3ar7sBqLWFFyfcDoDtOAcDIpS6akka0huRSgVe3m8XsvH+v00p33oYq7XTlowBtQpWp+u+/IPNS2Xs4Ahi+1vyAbEygb5uy713yRRY2N4pvYagJa/l/mR3iutP4vAvRoFSE=
+	t=1768038900; cv=none; b=UXMmVHki1VSqNFOZjjFhPihsEAckFReYACh+z8bht8AdlhVtdHf4nUHZeBVWZV11ippAfHU05tiALUyHK9oOoDY2rmTx9sV2ymI/USo+nMMnYTElOQfRkUZdwNzHmpcztigFl/iTzhdsgoO01SwERcBooQGLwg91Ix4sbju6DsY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768038785; c=relaxed/simple;
-	bh=8f2+IkGXwyU7O3VPRSlueHN7/p5N+Fr7AxEkYHrqvh4=;
+	s=arc-20240116; t=1768038900; c=relaxed/simple;
+	bh=NyVKM7MzG2B1EFbs5BO6COfh8OyBtU1fT+f6Oat0vTI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=H1xeKH27U/K9EkZdHbuQcaa06iQlIX5b+z/VsyoVCmzmAgkAD5ReaLB8OPyXHfoYJwwzbG4oTC4EZXxFnwclDb8ruRvOTFXoSSkOo2da/GST+M0NTYCt9LyGZWDPBPCi3TTlZJnmEFGVIZ7G+Ww63sfN2KymFoSUzpLTEWXHQc4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=yoiDrFVL; arc=none smtp.client-ip=85.214.250.239
+	 Content-Type:Content-Disposition:In-Reply-To; b=q5/XgjY8NoY/u2+i5wJPAV/fy4gmkUs/vlcEJFv3qP76FWwacMlT71dkGmcDgBOfeV55qgQepqBpfFsbjs3NuCNSPwX4bWU9EK9zuenPxjzqWrFZSO9bDlDI0LKoM2wIblSnWTFH3ae0+ys8/I4uhNGMGUTSLsx1eLZbaYXjg1w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=kXr7LkBU; arc=none smtp.client-ip=85.214.250.239
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="yoiDrFVL"
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="kXr7LkBU"
 Received: from 8bytes.org (p200300f6af1d9600dfc71246d978d903.dip0.t-ipconnect.de [IPv6:2003:f6:af1d:9600:dfc7:1246:d978:d903])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 61A745ED0B;
-	Sat, 10 Jan 2026 10:53:01 +0100 (CET)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 445615F02F;
+	Sat, 10 Jan 2026 10:54:58 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1768038781;
-	bh=8f2+IkGXwyU7O3VPRSlueHN7/p5N+Fr7AxEkYHrqvh4=;
+	s=default; t=1768038898;
+	bh=NyVKM7MzG2B1EFbs5BO6COfh8OyBtU1fT+f6Oat0vTI=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=yoiDrFVLI2g7ITJQIFUgZo5GKLHt1TXSh+HKM2bHlpEATFs3zLxAycUoCSktsw5+M
-	 m9DJ087QRHaxMvAUmrRI+0FNhIq5Ss9mD582PVPzJAZJXbKDqTViRZ1DfkR7frOinF
-	 yPJfDuoZKnpyY3gB4krZijiB8i1ZkhoZxc82OhJy/qP44TvlxhePGwXLWJhGqlKnZB
-	 9pDzITnoCE7YZFnaw75HbH+6eTnkxucmkpKj8u7vBIUFV+2QCykzPUkVW8zllWLnPv
-	 ePyCUW8/l0hsnar9iSvV3Zc0eEv0B6Y0ejc4P0kwv26F/Sz3fqdp7WO9lom6oZ3JDC
-	 XlgtPKTfgyDag==
-Date: Sat, 10 Jan 2026 10:53:00 +0100
+	b=kXr7LkBUx5Y/s0k5Mw7ov8H88F8LWh+watKg0t4dMVrpSVghx/PLQ8fcRIRHXAqxU
+	 hRdGf6EQixG44XSgn0AnoL2UsSmiqbYCQOENlx59bpWKo2ivdJ3ts1pzmHPRQuqEhY
+	 Qat4Cau4YFSOb6Q0QkHglF3Ze8L98uYHyPGHBZ3pNDgthsBvaZV6jElqeE0va77aim
+	 Cd8gHcuoW35xVd/HDSFlO3V3eaXnx+++znp5w3vfX/CkwBRJi0AwbNVi+5h2gexTWr
+	 JdVL6DdF5RDtZm7PBSMTMmGiiAObySwsLOdzhEpFQ+XYMeURIVseqj7ZkMcm2f2xwf
+	 xlsWD9RiAwRpQ==
+Date: Sat, 10 Jan 2026 10:54:57 +0100
 From: =?utf-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>
-To: Mostafa Saleh <smostafa@google.com>
-Cc: linux-mm@kvack.org, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, corbet@lwn.net, will@kernel.org, 
-	robin.murphy@arm.com, akpm@linux-foundation.org, vbabka@suse.cz, surenb@google.com, 
-	mhocko@suse.com, jackmanb@google.com, hannes@cmpxchg.org, ziy@nvidia.com, 
-	david@redhat.com, lorenzo.stoakes@oracle.com, Liam.Howlett@oracle.com, 
-	rppt@kernel.org, xiaqinxin@huawei.com, baolu.lu@linux.intel.com, 
-	rdunlap@infradead.org
-Subject: Re: [PATCH v6 0/4] iommu: Add page_ext for IOMMU_DEBUG_PAGEALLOC
-Message-ID: <hf3gfmaq673tvz6lc7mgip3m4y4o62b3nyqlofas252qr5776y@6oekozsrwea3>
-References: <20260109171805.901995-1-smostafa@google.com>
+To: Ankit Soni <Ankit.Soni@amd.com>
+Cc: iommu@lists.linux.dev, vasant.hegde@amd.com, 
+	suravee.suthikulpanit@amd.com, will@kernel.org, robin.murphy@arm.com, 
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu/amd: move wait_on_sem() out of spinlock
+Message-ID: <is5wyo3x5ynjjjhqbpbzdbqcqvht45xrdfmy64osi3a7rzkx4g@bpuj5n32a54p>
+References: <60d2601b17c7008834fe393e75990371cdac74b5.1764591214.git.Ankit.Soni@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -51,26 +47,21 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260109171805.901995-1-smostafa@google.com>
+In-Reply-To: <60d2601b17c7008834fe393e75990371cdac74b5.1764591214.git.Ankit.Soni@amd.com>
 
-On Fri, Jan 09, 2026 at 05:18:01PM +0000, Mostafa Saleh wrote:
-> Mostafa Saleh (4):
->   iommu: Add page_ext for IOMMU_DEBUG_PAGEALLOC
->   iommu: Add calls for IOMMU_DEBUG_PAGEALLOC
->   iommu: debug-pagealloc: Track IOMMU pages
->   iommu: debug-pagealloc: Check mapped/unmapped kernel memory
+On Mon, Dec 01, 2025 at 02:39:40PM +0000, Ankit Soni wrote:
+> With iommu.strict=1, the existing completion wait path can cause soft
+> lockups under stressed environment, as wait_on_sem() busy-waits under the
+> spinlock with interrupts disabled.
 > 
->  .../admin-guide/kernel-parameters.txt         |   9 +
->  drivers/iommu/Kconfig                         |  19 ++
->  drivers/iommu/Makefile                        |   1 +
->  drivers/iommu/iommu-debug-pagealloc.c         | 167 ++++++++++++++++++
->  drivers/iommu/iommu-priv.h                    |  58 ++++++
->  drivers/iommu/iommu.c                         |  11 +-
->  include/linux/iommu-debug-pagealloc.h         |  32 ++++
->  include/linux/mm.h                            |   5 +
->  mm/page_ext.c                                 |   4 +
->  9 files changed, 304 insertions(+), 2 deletions(-)
->  create mode 100644 drivers/iommu/iommu-debug-pagealloc.c
->  create mode 100644 include/linux/iommu-debug-pagealloc.h
+> Move the completion wait in iommu_completion_wait() out of the spinlock.
+> wait_on_sem() only polls the hardware-updated cmd_sem and does not require
+> iommu->lock, so holding the lock during the busy wait unnecessarily
+> increases contention and extends the time with interrupts disabled.
+> 
+> Signed-off-by: Ankit Soni <Ankit.Soni@amd.com>
+> ---
+>  drivers/iommu/amd/iommu.c | 25 +++++++++++++++++--------
+>  1 file changed, 17 insertions(+), 8 deletions(-)
 
 Applied, thanks.
