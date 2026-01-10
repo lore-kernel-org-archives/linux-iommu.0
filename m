@@ -1,46 +1,48 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6DA0E285C98;
-	Sat, 10 Jan 2026 09:51:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 83E6C29B8E1
+	for <iommu@lists.linux.dev>; Sat, 10 Jan 2026 09:53:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768038679; cv=none; b=QfLoVOj6Pa62cewaN6aqHuklzzVv5XvdbMiAxdm6LBkH5jfBwVE9FS/23lHHvxhW2GnUj4mGmcixQ18LxGOwSqknRM6r+WMQX3vgDVj6D6l4qqf5EKCcZ5YpBH1iy9VqqcZaVBPIxh1oXu+sbyubsLJGKT2ZqQ3AZ80Kxx0tEkg=
+	t=1768038785; cv=none; b=uOy8aUmo5k0cc9ZC44iYLDpXSJg23U883lcIQ2jE3ar7sBqLWFFyfcDoDtOAcDIpS6akka0huRSgVe3m8XsvH+v00p33oYq7XTlowBtQpWp+u+/IPNS2Xs4Ahi+1vyAbEygb5uy713yRRY2N4pvYagJa/l/mR3iutP4vAvRoFSE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768038679; c=relaxed/simple;
-	bh=9OyWKMYDe148U9X26qJNDCTreFJSbiafj02DwpRaC9w=;
+	s=arc-20240116; t=1768038785; c=relaxed/simple;
+	bh=8f2+IkGXwyU7O3VPRSlueHN7/p5N+Fr7AxEkYHrqvh4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kFYVNDNc/QukpWxAj7kjCtGnXyHLJixRqCXbpBLKWeJrC057ee1CLAk2tG9tyhey86qRWpOe7f2uIwqyW3EoNYGOOwG4/RQaUGNVptUB4Fcsj16Ai3n9LVGvVmd+BgO/9nbfNUtXooGXmCxcGELtYQEYPjvQAsrqrW4W+xOOs5w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=0/YIWTHv; arc=none smtp.client-ip=85.214.250.239
+	 Content-Type:Content-Disposition:In-Reply-To; b=H1xeKH27U/K9EkZdHbuQcaa06iQlIX5b+z/VsyoVCmzmAgkAD5ReaLB8OPyXHfoYJwwzbG4oTC4EZXxFnwclDb8ruRvOTFXoSSkOo2da/GST+M0NTYCt9LyGZWDPBPCi3TTlZJnmEFGVIZ7G+Ww63sfN2KymFoSUzpLTEWXHQc4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=yoiDrFVL; arc=none smtp.client-ip=85.214.250.239
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="0/YIWTHv"
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="yoiDrFVL"
 Received: from 8bytes.org (p200300f6af1d9600dfc71246d978d903.dip0.t-ipconnect.de [IPv6:2003:f6:af1d:9600:dfc7:1246:d978:d903])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 096FB5ED0B;
-	Sat, 10 Jan 2026 10:51:17 +0100 (CET)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 61A745ED0B;
+	Sat, 10 Jan 2026 10:53:01 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1768038677;
-	bh=9OyWKMYDe148U9X26qJNDCTreFJSbiafj02DwpRaC9w=;
+	s=default; t=1768038781;
+	bh=8f2+IkGXwyU7O3VPRSlueHN7/p5N+Fr7AxEkYHrqvh4=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=0/YIWTHvvFJJoFOEwEAVf02+QLOKfF7QlvUohsNwoFunliS1JF2HV+TPuFx0JVKUO
-	 /es3xZ+qHJu2gbptuKDHXbJtSle+tdBLZgfTGAnYR4yJOo1/u3bhBM7kxD1HTdpXCD
-	 sY8qBSuiRdDyzC+3cmo4Sv/dBN7ewZxLDPOHP91Tl1StGpBhAD8mrl7dRC9EX8xKTO
-	 +kaXLu9UsciHiOYGuD64D11SceJpHP1m+zSOyN8IMhd0Hnplfhr5rKiVaJ4bSyJ2Sn
-	 pGB2mEp4vGKWg3RM80Sg5VnsMcyhOEVJw6iRnmNsYUdFqYJpK0sn1EhsvX11bVVZS6
-	 xnjo5bwoC9jAQ==
-Date: Sat, 10 Jan 2026 10:51:15 +0100
-From: Joerg Roedel <joro@8bytes.org>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, "Tian, Kevin" <kevin.tian@intel.com>, 
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, 
-	Alejandro Jimenez <alejandro.j.jimenez@oracle.com>, Joerg Roedel <joerg.roedel@amd.com>, 
-	kernel test robot <lkp@intel.com>, Pasha Tatashin <pasha.tatashin@soleen.com>, 
-	patches@lists.linux.dev, Samiullah Khawaja <skhawaja@google.com>
-Subject: Re: [PATCH rc] iommupt: Make pt_feature() always_inline
-Message-ID: <yor3hkhdde4erqwddzfzxg7leslnbob6ajyv6u3uypvgrhjlpg@p5kijkus7dx2>
-References: <0-v1-3a1ecb955351+244-iommupt_noswbit_jgg@nvidia.com>
+	b=yoiDrFVLI2g7ITJQIFUgZo5GKLHt1TXSh+HKM2bHlpEATFs3zLxAycUoCSktsw5+M
+	 m9DJ087QRHaxMvAUmrRI+0FNhIq5Ss9mD582PVPzJAZJXbKDqTViRZ1DfkR7frOinF
+	 yPJfDuoZKnpyY3gB4krZijiB8i1ZkhoZxc82OhJy/qP44TvlxhePGwXLWJhGqlKnZB
+	 9pDzITnoCE7YZFnaw75HbH+6eTnkxucmkpKj8u7vBIUFV+2QCykzPUkVW8zllWLnPv
+	 ePyCUW8/l0hsnar9iSvV3Zc0eEv0B6Y0ejc4P0kwv26F/Sz3fqdp7WO9lom6oZ3JDC
+	 XlgtPKTfgyDag==
+Date: Sat, 10 Jan 2026 10:53:00 +0100
+From: =?utf-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>
+To: Mostafa Saleh <smostafa@google.com>
+Cc: linux-mm@kvack.org, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, corbet@lwn.net, will@kernel.org, 
+	robin.murphy@arm.com, akpm@linux-foundation.org, vbabka@suse.cz, surenb@google.com, 
+	mhocko@suse.com, jackmanb@google.com, hannes@cmpxchg.org, ziy@nvidia.com, 
+	david@redhat.com, lorenzo.stoakes@oracle.com, Liam.Howlett@oracle.com, 
+	rppt@kernel.org, xiaqinxin@huawei.com, baolu.lu@linux.intel.com, 
+	rdunlap@infradead.org
+Subject: Re: [PATCH v6 0/4] iommu: Add page_ext for IOMMU_DEBUG_PAGEALLOC
+Message-ID: <hf3gfmaq673tvz6lc7mgip3m4y4o62b3nyqlofas252qr5776y@6oekozsrwea3>
+References: <20260109171805.901995-1-smostafa@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -49,33 +51,26 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <0-v1-3a1ecb955351+244-iommupt_noswbit_jgg@nvidia.com>
+In-Reply-To: <20260109171805.901995-1-smostafa@google.com>
 
-On Fri, Jan 09, 2026 at 10:29:52AM -0400, Jason Gunthorpe wrote:
-> gcc 8.5 on powerpc does not automatically inline these functions even
-> though they evaluate to constants in key cases. Since the constant
-> propagation is essential for some code elimination and built-time checks
-> this causes a build failure:
+On Fri, Jan 09, 2026 at 05:18:01PM +0000, Mostafa Saleh wrote:
+> Mostafa Saleh (4):
+>   iommu: Add page_ext for IOMMU_DEBUG_PAGEALLOC
+>   iommu: Add calls for IOMMU_DEBUG_PAGEALLOC
+>   iommu: debug-pagealloc: Track IOMMU pages
+>   iommu: debug-pagealloc: Check mapped/unmapped kernel memory
 > 
->  ERROR: modpost: "__pt_no_sw_bit" [drivers/iommu/generic_pt/fmt/iommu_amdv1.ko] undefined!
-> 
-> Caused by this:
-> 
-> 	if (pts_feature(&pts, PT_FEAT_DMA_INCOHERENT) &&
-> 	    !pt_test_sw_bit_acquire(&pts,
-> 				    SW_BIT_CACHE_FLUSH_DONE))
-> 		flush_writes_item(&pts);
-> 
-> Where pts_feature() evaluates to a constant false. Mark them as
-> __always_inline to force it to evaluate to a constant and trigger the code
-> elimination.
-> 
-> Fixes: 7c5b184db714 ("genpt: Generic Page Table base API")
-> Reported-by: kernel test robot <lkp@intel.com>
-> Closes: https://lore.kernel.org/oe-kbuild-all/202512230720.9y9DtWIo-lkp@intel.com/
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->  drivers/iommu/generic_pt/pt_defs.h | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+>  .../admin-guide/kernel-parameters.txt         |   9 +
+>  drivers/iommu/Kconfig                         |  19 ++
+>  drivers/iommu/Makefile                        |   1 +
+>  drivers/iommu/iommu-debug-pagealloc.c         | 167 ++++++++++++++++++
+>  drivers/iommu/iommu-priv.h                    |  58 ++++++
+>  drivers/iommu/iommu.c                         |  11 +-
+>  include/linux/iommu-debug-pagealloc.h         |  32 ++++
+>  include/linux/mm.h                            |   5 +
+>  mm/page_ext.c                                 |   4 +
+>  9 files changed, 304 insertions(+), 2 deletions(-)
+>  create mode 100644 drivers/iommu/iommu-debug-pagealloc.c
+>  create mode 100644 include/linux/iommu-debug-pagealloc.h
 
-Applied for -rc, thanks.
+Applied, thanks.
