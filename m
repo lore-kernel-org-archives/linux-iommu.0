@@ -1,89 +1,103 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+Received: from esa2.hc555-34.eu.iphmx.com (esa2.hc555-34.eu.iphmx.com [23.90.104.147])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74182311958
-	for <iommu@lists.linux.dev>; Mon, 12 Jan 2026 06:57:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56ED4322537;
+	Mon, 12 Jan 2026 06:59:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=23.90.104.147
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768201050; cv=none; b=jlGWoOm7JFSUVgsSCd3v0jn8Hi0mot1uUb0B0JhlzWvUX+Sni5siia09yaOvQns44Ah8rBeZPzD4GYF7rAE3nkKgtj3dXYCtHjKeL9eDF3Ap88AjZMhEKRDNAjlBbxbyY1lpUOD/JF+w1mg2/X2uBX+tU/PZt31DffH0VAWoCtM=
+	t=1768201177; cv=none; b=YNIBmKXPlXjEKMQEUk57BknlAr0fG41cJc5SFINcD6HO5JjJUO1jw0o3YJiscks7z9UC4IUIqL2nr3CsLnGLSJD559w9INSmabVsBqf+CTQsRq0r2atnkSdpSA0E1kh8OBnxTKuoLcKb4dFGs9A6IU8+8hQT4rqnsJWCYuFVA7A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768201050; c=relaxed/simple;
-	bh=Y+CKsY8ozRxqCtRq+eeYgn3o+J/olhPv8FM0d4eUp64=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=IZv0fBJ4ClRA6ZZBs9FRKtad7VmSP7bl6pZnRpm6hwBE6v9j86qTnzAJXJ1o/rgmdb2qEDd9BeylI1Eh9WrdlrKdWYXPCtZGrajU2gjF/1r/kqJMP/i8boCARhCcg2kiPbL3hzgdjqFEeHfkFbKO/JJRAtPdwAZXNaowzyRFO1g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Y78Cdpwr; arc=none smtp.client-ip=192.198.163.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1768201177; c=relaxed/simple;
+	bh=S86iPthB8Mz0CkECZazPVHa80rEM1013uyEDwE2IV5A=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=A1JXzXm4kWOKyeMuo/xcHiDvtDwT/ytqiziRFg35T2oIgf8F1QfIQke30Rbwh1Taw6InKx2DScY+Wqj6vzwnrxyKMLTnRMGPNh9/Mx8P5vvtuNd4Ogo8C/zkbN6ntv0uSxM8hqrJUvah0D+J17dEIjsPWjm1fF8C8bXKSg+oPQY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mobileye.com; spf=pass smtp.mailfrom=mobileye.com; dkim=fail (0-bit key) header.d=mobileye.com header.i=@mobileye.com header.b=PqCMs+Yo reason="key not found in DNS"; arc=none smtp.client-ip=23.90.104.147
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mobileye.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mobileye.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Y78Cdpwr"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1768201050; x=1799737050;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=Y+CKsY8ozRxqCtRq+eeYgn3o+J/olhPv8FM0d4eUp64=;
-  b=Y78CdpwrjNc5bhGDwTMY99O5BxUPfiFkJ00vYVIbG1pTzAKvLlhgySSJ
-   /IdPC2i1XIJ2MQm+0coSnfqLDvVZa/Wf4PZw8s/jUTBDpwKSVGdNJM8Wc
-   EtU/5i7dTo3uD61rU2SWxAaBGt9bHl1P+0fzCRwSKeCif7C4AtmEAuheO
-   1LIDz7KIHMhty0qF+mAiXps74dTRc6hNjhq/fqZfRI2TRslGS7hIYgmJ/
-   K6eQIjWgtXqN5JkCFFfr3LuYBKVo5pX3g6pkaE+oetecLgKxZryk+9Oi4
-   dMVnLkvoQc7o1G6KmNd1pizr0ACqK2zTqU0XK7M24UGXojG7r7yHnyerE
-   w==;
-X-CSE-ConnectionGUID: y9VCtzZ6RIuUAIn7U+Pj6A==
-X-CSE-MsgGUID: RxjE8ZFuS4SX3XmUP4rkzQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11668"; a="69547300"
-X-IronPort-AV: E=Sophos;i="6.21,219,1763452800"; 
-   d="scan'208";a="69547300"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jan 2026 22:57:29 -0800
-X-CSE-ConnectionGUID: HO7kVFxARhOyVCLZUGBmrQ==
-X-CSE-MsgGUID: i/tOWdsKTC6wJf+vpDrMEg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,219,1763452800"; 
-   d="scan'208";a="203927150"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jan 2026 22:57:25 -0800
-Message-ID: <e867398d-6bef-46cf-9c25-91eabd49428c@linux.intel.com>
-Date: Mon, 12 Jan 2026 14:57:34 +0800
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=mobileye.com header.i=@mobileye.com header.b="PqCMs+Yo"
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=mobileye.com; i=@mobileye.com; q=dns/txt; s=MoEyIP;
+  t=1768201174; x=1799737174;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=S86iPthB8Mz0CkECZazPVHa80rEM1013uyEDwE2IV5A=;
+  b=PqCMs+Yo+b6kCI/5KSyPmHs2HLqt6meWN5HpHkFDi4ETGwchoWazOljV
+   ue3sRHYI7vU89SMqp37xmcUTFW9uBRzL+jIxeKkCic1GcL9gUIdP13HW9
+   pyTy2mwbxyoqrtekJJQZqcwntixT3sMMEUOgjnFUHxrmMvrFLRZOcl5rL
+   yQA8e7lEk02lik/nnIN2LT4Zbbb5Cyc6Ut7+YLARu7rcZotNkY7LrGIHd
+   GeJQyq5+ohRkpJPwrY6mxdfs5oUP7PYSRk3vJ7FG0EtbzQzBD9exWODK/
+   nRWCKMvwTJG4vVB7F9jtcu+yNF3losbVzIUlQFs2Jlwm1QgLSPdfssm8U
+   g==;
+X-CSE-ConnectionGUID: Drr0LerJRRSyEz5ou9sHvw==
+X-CSE-MsgGUID: V/A2/8p6Qe25qMdG7JHeaQ==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from unknown (HELO ces02_data.me-corp.lan) ([146.255.191.134])
+  by esa2.hc555-34.eu.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2026 08:59:24 +0200
+X-CSE-ConnectionGUID: EsrqnE3ATQuiZ4VSoKzRGg==
+X-CSE-MsgGUID: qZ26/BZARpCbFJcbJb1pDQ==
+Received: from unknown (HELO epgd071.me-corp.lan) ([10.154.54.6])
+  by ces02_data.me-corp.lan with SMTP; 12 Jan 2026 09:01:12 +0200
+Received: by epgd071.me-corp.lan (sSMTP sendmail emulation); Mon, 12 Jan 2026 08:59:24 +0200
+From: Vladimir Kondratiev <vladimir.kondratiev@mobileye.com>
+To: lkp@intel.com,
+	mick@ics.forth.gr,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	llvm@lists.linux.dev,
+	oe-kbuild-all@lists.linux.dev,
+	vladimir.kondratiev@mobileye.com,
+	Vladimir.Kondratiev@mobileye.com,
+	akpm@linux-foundation.org,
+	alex@ghiti.fr,
+	aou@eecs.berkeley.edu,
+	hch@infradead.org,
+	linux-mm@kvack.org,
+	linux-riscv@lists.infradead.org,
+	palmer@dabbelt.com,
+	paul.walmsley@sifive.com
+Subject: [PATCH v2] dma-pool: don't allocate DMA32 pool if no 32-bit memory
+Date: Mon, 12 Jan 2026 08:58:56 +0200
+Message-ID: <20260112065857.3137331-1-vladimir.kondratiev@mobileye.com>
+In-Reply-To: <202601120747.TAMpIDnI-lkp@intel.com>
+References: <202601120747.TAMpIDnI-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 0/3] iommu/vt-d: Add support to hitless replace IOMMU
- domain
-To: Jason Gunthorpe <jgg@ziepe.ca>, Samiullah Khawaja <skhawaja@google.com>
-Cc: David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Pasha Tatashin <pasha.tatashin@soleen.com>,
- David Matlack <dmatlack@google.com>, Robin Murphy <robin.murphy@arm.com>,
- Pratyush Yadav <pratyush@kernel.org>, Kevin Tian <kevin.tian@intel.com>,
- Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
- Saeed Mahameed <saeedm@nvidia.com>,
- Adithya Jayachandran <ajayachandra@nvidia.com>,
- Parav Pandit <parav@nvidia.com>, Leon Romanovsky <leonro@nvidia.com>,
- William Tu <witu@nvidia.com>
-References: <20260107201800.2486137-1-skhawaja@google.com>
- <20260107202812.GD340082@ziepe.ca> <20260107204607.GE340082@ziepe.ca>
- <CAAywjhTEyOUmxWeCX6GwCBSnMf-p18Ksu2TUYeQ57K8H4RW-9w@mail.gmail.com>
- <20260111221440.GA745888@ziepe.ca>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20260111221440.GA745888@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 1/12/26 06:14, Jason Gunthorpe wrote:
->> Thank you for the feedback. I will prepare a v2 series addressing these points.
-> I think there are so many problems here you should talk to Kevin and
-> Baolu to come up with some plan. A single series is not going to be
-> able to do all of this.
+If system have no 32-bit memory, GFP_DMA32 pool allocation will
+obviously fail, so skip it.
 
-Yes, absolutely. I am working on a patch series to address the
-fundamental atomicity issue. I hope to post it for discussion soon. Once
-that is addressed, we can discuss any additional problems.
+Changes in v2: use arch-independent "memblock_start_of_DRAM" to get
+DRAM base address
 
-Thanks,
-baolu
+Signed-off-by: Vladimir Kondratiev <vladimir.kondratiev@mobileye.com>
+---
+ kernel/dma/pool.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
+index ee45dee33d49..ecd77a0272f2 100644
+--- a/kernel/dma/pool.c
++++ b/kernel/dma/pool.c
+@@ -209,7 +209,7 @@ static int __init dma_atomic_pool_init(void)
+ 		if (!atomic_pool_dma)
+ 			ret = -ENOMEM;
+ 	}
+-	if (IS_ENABLED(CONFIG_ZONE_DMA32)) {
++	if (IS_ENABLED(CONFIG_ZONE_DMA32) && memblock_start_of_DRAM() < BIT_ULL(32)) {
+ 		atomic_pool_dma32 = __dma_atomic_pool_init(atomic_pool_size,
+ 						GFP_KERNEL | GFP_DMA32);
+ 		if (!atomic_pool_dma32)
+
+base-commit: 7d0a66e4bb9081d75c82ec4957c50034cb0ea449
+-- 
+2.43.0
+
