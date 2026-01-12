@@ -1,179 +1,91 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8931B2C21F3;
-	Mon, 12 Jan 2026 12:20:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6339828002B;
+	Mon, 12 Jan 2026 12:22:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768220402; cv=none; b=DfDQFN0rrTo8HwD2+WwOHtKI+KamQp/DShjRLe/a0k9K9P7fwNg7tknpLwTgGFl94UUUT2ZGGxyqJmcoR3ZhWVjKw4v73Ur4WqNDs9oNPISiIQtJTczF7An+dGPVkjP56Zd0n2U+jPMdr3sj1Rxw7DY24V0gikIUUEiZWeYdKC4=
+	t=1768220535; cv=none; b=XzAitCUXaUHZHltcPe+LuZC4t/VgxlpV7o4ozYS/zLKjrg56FvJ458NwpLA5CDEZDeevISPebxe6tmyUuXgPiwEksk7NV/XE+HvTWMfbDOZGU+xaKZRRX5gOi2vNCGANk5H7BSe4B9SAb50FDrIoaoz+/oGD2+ClwhPBxG6osd0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768220402; c=relaxed/simple;
-	bh=+Nliq3Hq9k4ThIYArW3/W+oRJeWgrnz/ZUwpOJtv0cM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=K+688+kJTHQ4HLSVF02wSH16ASWCT6732uP2dJVY9/JJZJV0HdLex233haeowDxr5N3qMXQz5pXw1/sqO2fU3X0YkyhT4tPVEi/bXLV1k8R8nyRan59TwBT/nWtNLLI23sxvA80wwe967TxkX5fTxPqBQi36YscFOyAUjVJvBEE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iL2K02pv; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1768220535; c=relaxed/simple;
+	bh=In/hpMRJfhiXzhzZwIdodDpGGdbZM78IgG2doxTojRg=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=RONLJOKjk7T6dZLc7nY++Q4YR0FxXXQboJ6DH7gnPOM3eysA5finsHwa4Uq7aApQR5sVrmHADzFLmSR5aebb9INoKeEp9OUhTTQkxafZexpxgkT+wZk1rvYPZpVmZq4BQ9lnQG9jkhRwSmYgV1rUVtl8hgrtmJ58aAzCPOq6Zm0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uoRHMqLC; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iL2K02pv"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 233D1C16AAE;
-	Mon, 12 Jan 2026 12:20:00 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uoRHMqLC"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75184C16AAE;
+	Mon, 12 Jan 2026 12:22:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1768220402;
-	bh=+Nliq3Hq9k4ThIYArW3/W+oRJeWgrnz/ZUwpOJtv0cM=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=iL2K02pvk6E1DsvDlqWboBCtpQHXaKUBrL1wltPlg05hlgRoVPE9d6yCnJgpfHU3K
-	 5wnwkxG9AmFATvFjjgHmhJmW/kYdcxNn5zEl7CCQGsXozborPGix1NS3B6tfKluFUp
-	 4+jaQq6nlsWR88DToo/mPKJ87brhQnhnntP/R+nXtW3dhiXFicBW1f3BpAsty+mLjZ
-	 99FE2FBFc/kRsz2G+ht2VEMhhnQ2twEqyml4iPXDcjXNFCp0ahYY66D1dhde+2mS0q
-	 8Y77nf0bPjNjJG2JcBS0x7Evxif8Ub6tPWPTIo5nqywmPi5aJOLKCeAsDSKhiNLd77
-	 0aouxLftPfDUw==
-Date: Mon, 12 Jan 2026 14:19:56 +0200
-From: Leon Romanovsky <leon@kernel.org>
-To: Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>
-Cc: Jason Gunthorpe <jgg@ziepe.ca>, Sumit Semwal <sumit.semwal@linaro.org>,
-	Alex Williamson <alex@shazbot.org>,
-	Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
-	linaro-mm-sig@lists.linaro.org, kvm@vger.kernel.org,
-	iommu@lists.linux.dev
-Subject: Re: [PATCH 0/4] dma-buf: add revoke mechanism to invalidate shared
- buffers
-Message-ID: <20260112121956.GE14378@unreal>
-References: <20260111-dmabuf-revoke-v1-0-fb4bcc8c259b@nvidia.com>
- <eed9fd4c-ca36-4f6a-af10-56d6e0997d8c@amd.com>
+	s=k20201202; t=1768220535;
+	bh=In/hpMRJfhiXzhzZwIdodDpGGdbZM78IgG2doxTojRg=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+	b=uoRHMqLCYjA19cYSXsN3rOETGaopZKHHwjj2gK+WuMdLeVLv4viV0nibx15+1Gezu
+	 +eGDRzZVTdy7HN/c3KotgetK58ho7o2A1Z9s1xGrve2wpGIUQiQe+NTczvoWPvBWq6
+	 MIVhrLV5u5/dt3XmdvaERcDW5jVlIAM++VCDIDDJQ7ZcQIQMMSZ2ZxNzyFwjJFOH3d
+	 tRTtcM768KJQ7B3AxV4UwOd8PFXbT6HqPV6RpSddDhp/OellW0OBVG957N/8BpJLg+
+	 GclFSbXlb/52B0rv3EMJkbNgPJjBzx7htPQcF4IvwzQ9qbZVAhKEy5xbj6gipBY4ER
+	 QTt7mvT80dcMw==
+X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Cc: Arnd Bergmann <arnd@kernel.org>, Linus Walleij <linusw@kernel.org>,
+	Matthew Wilcox <willy@infradead.org>,
+	Suzuki K Poulose <suzuki.poulose@arm.com>
+Subject: Re: [PATCH] dma-direct: Skip cache prep for HighMem coherent
+ allocations
+In-Reply-To: <f827085f-0084-41d8-8ab5-a0ecfc0260d2@samsung.com>
+References: <20260102155118.2551804-1-aneesh.kumar@kernel.org>
+ <CGME20260108105031eucas1p2a3e8d0308ae6a5d43b5250ca8b14ecb9@eucas1p2.samsung.com>
+ <9cbe49ae-6612-491d-8ac6-6a99a08d73e2@arm.com>
+ <9f28b833-5813-4e5d-b705-eed9a2a31863@samsung.com>
+ <1ada44db-63a9-43ac-81da-0bdd4e7b7363@arm.com>
+ <yq5a4iov5vdn.fsf@kernel.org>
+ <f827085f-0084-41d8-8ab5-a0ecfc0260d2@samsung.com>
+Date: Mon, 12 Jan 2026 17:52:08 +0530
+Message-ID: <yq5afr8bdnrj.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <eed9fd4c-ca36-4f6a-af10-56d6e0997d8c@amd.com>
+Content-Type: text/plain
 
-On Mon, Jan 12, 2026 at 11:04:38AM +0100, Christian König wrote:
-> On 1/11/26 11:37, Leon Romanovsky wrote:
-> > This series implements a dma-buf “revoke” mechanism: to allow a dma-buf
-> > exporter to explicitly invalidate (“kill”) a shared buffer after it has
-> > been distributed to importers, so that further CPU and device access is
-> > prevented and importers reliably observe failure.
-> 
-> We already have that. This is what the move_notify is all about.
-> 
-> > Today, dma-buf effectively provides “if you have the fd, you can keep using
-> > the memory indefinitely.” That assumption breaks down when an exporter must
-> > reclaim, reset, evict, or otherwise retire backing memory after it has been
-> > shared. Concrete cases include GPU reset and recovery where old allocations
-> > become unsafe to access, memory eviction/overcommit where backing storage
-> > must be withdrawn, and security or isolation situations where continued access
-> > must be prevented. While drivers can sometimes approximate this with
-> > exporter-specific fencing and policy, there is no core dma-buf state transition
-> > that communicates “this buffer is no longer valid; fail access” across all
-> > access paths.
-> 
-> It's not correct that there is no DMA-buf handling for this use case.
-> 
-> > The change in this series is to introduce a core “revoked” state on the dma-buf
-> > object and a corresponding exporter-triggered revoke operation. Once a dma-buf
-> > is revoked, new access paths are blocked so that attempts to DMA-map, vmap, or
-> > mmap the buffer fail in a consistent way.
-> > 
-> > In addition, the series aims to invalidate existing access as much as the kernel
-> > allows: device mappings are torn down where possible so devices and IOMMUs cannot
-> > continue DMA.
-> > 
-> > The semantics are intentionally simple: revoke is a one-way, permanent transition
-> > for the lifetime of that dma-buf instance.
-> > 
-> > From a compatibility perspective, users that never invoke revoke are unaffected,
-> > and exporters that adopt it gain a core-supported enforcement mechanism rather
-> > than relying on ad hoc driver behavior. The intent is to keep the interface
-> > minimal and avoid imposing policy; the series provides the mechanism to terminate
-> > access, with policy remaining in the exporter and higher-level components.
-> 
-> As far as I can see that patch set is completely superfluous.
-> 
-> The move_notify mechanism has been implemented exactly to cover this use case and is in use for a couple of years now.
-> 
-> What exactly is missing?
+Marek Szyprowski <m.szyprowski@samsung.com> writes:
 
-From what I can tell, the missing piece is what happens after .move_notify()
-is called. According to the documentation, the exporter remains valid, and
-the importer is expected to recreate all mappings.
+> On 09.01.2026 04:15, Aneesh Kumar K.V wrote:
+>> Robin Murphy <robin.murphy@arm.com> writes:
+>>> On 2026-01-08 12:41 pm, Marek Szyprowski wrote:
+>>>> On 08.01.2026 11:50, Robin Murphy wrote:
+>>>>> On 2026-01-02 3:51 pm, Aneesh Kumar K.V (Arm) wrote:
+>>>>>> dma_direct_alloc() calls arch_dma_prep_coherent() to clean any dirty
+>>>>>> cache lines from the kernel linear alias before creating a coherent
+>>>>>> remapping.
+>>>>>>
+>>>>>> HighMem pages have no kernel alias mapping, so there are no alias cache
+>>>>>> lines to clean. Skip arch_dma_prep_coherent() for HighMem allocations.
+>>>>> This is assuming that caches are always cleaned when unmapping
+>>>>> highmem, and no still-mapped highmem pages are dirty - how is that
+>>>>> guaranteed? The fact that they're not in the linear map doesn't mean
+>>>>> they don't necessarily have kernel aliases in either vmalloc
+>>>>> pagetables or caches.
+>>>> Right, so it is better to keep this unconditional
+>>>> arch_dma_prep_coherent() call. I will drop it from dma-mapping-fixes then.
+>>> Yeah, I think the confusing thing here is that there are architectures
+>>> with CONFIG_HIGHMEM that don't actually check for and handle it in their
+>>> arch_dma_prep_coherent() as they seemingly should, however I'm not sure
+>>> off-hand whether they also support/use highmem CMA in the manner that
+>>> could end up being an issue in practice (the lack of any reports of
+>>> crashes or DMA corruption over the last however many years suggests not...)
+>>>
+>> Should we then remove the PageHighMem() check with DMA_ATTR_NO_KERNEL_MAPPING?
+>
+> Right, this has to be unified.
 
-include/linux/dma-buf.h:
-  471          * Mappings stay valid and are not directly affected by this callback.
-  472          * But the DMA-buf can now be in a different physical location, so all
-  473          * mappings should be destroyed and re-created as soon as possible.
-  474          *
-  475          * New mappings can be created after this callback returns, and will
-  476          * point to the new location of the DMA-buf.
+I had a related question, how do we handle cache flushes required for
+architectures that don't implement CONFIG_ARCH_HAS_DMA_PREP_COHERENT (arch/arm)?
 
-Call to dma_buf_move_notify() does not prevent new attachments to that
-exporter, while "revoke" does. In the current code, the importer is not aware
-that the exporter no longer exists and will continue calling
-dma_buf_map_attachment().
-
-In summary, the current implementation allows a single .attach() check but
-permits multiple .map_dma_buf() calls. With "revoke", we gain the ability to
-block any subsequent .map_dma_buf() operations.
-
-Main use case is VFIO as exporter and IOMMUFD as importer.
-
-Thanks
-
-> 
-> Regards,
-> Christian.
-> 
-> > 
-> > BTW, see this megathread [1] for additional context.  
-> > Ironically, it was posted exactly one year ago.
-> > 
-> > [1] https://lore.kernel.org/all/20250107142719.179636-2-yilun.xu@linux.intel.com/
-> > 
-> > Thanks
-> > 
-> > Cc: linux-rdma@vger.kernel.org
-> > Cc: linux-kernel@vger.kernel.org
-> > Cc: linux-media@vger.kernel.org
-> > Cc: dri-devel@lists.freedesktop.org
-> > Cc: linaro-mm-sig@lists.linaro.org
-> > Cc: kvm@vger.kernel.org
-> > Cc: iommu@lists.linux.dev
-> > To: Jason Gunthorpe <jgg@ziepe.ca>
-> > To: Leon Romanovsky <leon@kernel.org>
-> > To: Sumit Semwal <sumit.semwal@linaro.org>
-> > To: Christian König <christian.koenig@amd.com>
-> > To: Alex Williamson <alex@shazbot.org>
-> > To: Kevin Tian <kevin.tian@intel.com>
-> > To: Joerg Roedel <joro@8bytes.org>
-> > To: Will Deacon <will@kernel.org>
-> > To: Robin Murphy <robin.murphy@arm.com>
-> > 
-> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> > ---
-> > Leon Romanovsky (4):
-> >       dma-buf: Introduce revoke semantics
-> >       vfio: Use dma-buf revoke semantics
-> >       iommufd: Require DMABUF revoke semantics
-> >       iommufd/selftest: Reuse dma-buf revoke semantics
-> > 
-> >  drivers/dma-buf/dma-buf.c          | 36 ++++++++++++++++++++++++++++++++----
-> >  drivers/iommu/iommufd/pages.c      |  2 +-
-> >  drivers/iommu/iommufd/selftest.c   | 12 ++++--------
-> >  drivers/vfio/pci/vfio_pci_dmabuf.c | 27 ++++++---------------------
-> >  include/linux/dma-buf.h            | 31 +++++++++++++++++++++++++++++++
-> >  5 files changed, 74 insertions(+), 34 deletions(-)
-> > ---
-> > base-commit: 9ace4753a5202b02191d54e9fdf7f9e3d02b85eb
-> > change-id: 20251221-dmabuf-revoke-b90ef16e4236
-> > 
-> > Best regards,
-> > --  
-> > Leon Romanovsky <leonro@nvidia.com>
-> > 
-> 
-> 
+-aneesh
