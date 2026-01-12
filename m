@@ -1,90 +1,47 @@
-Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7750F3612E9
-	for <iommu@lists.linux.dev>; Mon, 12 Jan 2026 15:35:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0A742EDD63;
+	Mon, 12 Jan 2026 15:43:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768232107; cv=none; b=iqt+pNW/fj5/D5ElZsTvL6AFgTms9cXZY4tKOOH5MZ3Z0ESxoWjaF5Q6UcfpEiIXAvsJM/qCwpnnQlTwrL9BycLNrxAoHPAa+fSAaTFS2ky4RMqxh4iuR9fefQRWa1uMncBoBaCND/3c2rWy/80qEA7wOxpYGgzU+JTyVfsZH7E=
+	t=1768232583; cv=none; b=S+Pyx2NyVQmhCGrr+oTeuGf6HDIvRfyQOlwSNlG8GydkDXe10YRwAAKEtH8jAqphipgzzAAjADCGjqRrkSeL3rgSszWX/O4qBIB1FT0yzEnpyPMTfri/GtVVE616mZ/BEVR051GHgiaB1urzukC6AUSXY81Col7x6GHnpSfzxWo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768232107; c=relaxed/simple;
-	bh=2+ptEh+o740cfHiY7Soe2/6xEyrL9rhhMehdOO2NfTk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=J4hHm3p0/n5u2LaoqPKXoRvbrqESJdtLw4kkhT+nSEW7GzxFrnrWuy6TOInpJptm1tUM6/sy9YAeuk2Z8h/+8bG3wAlmg15Q6IFFWU2c/aQ4SOc5TERJhX3tIisc76DPmcGQX1K9VNeYoeAoa5PzgJxXse8QEZz6vH9kzhpq/Ns=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=GFUfawBp; arc=none smtp.client-ip=209.85.219.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1768232583; c=relaxed/simple;
+	bh=izSRihgLKHZ+DoHsO5bDEFKmHV3B0RnYMw1wVE+GmXA=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=RB3YcaBcKawTzeX2+OMSjZrFApnpX9hehuAFPA49fEMrXZcnc8297PBPWTawYspKvCkduajDqbHK4qQbzhUq/CH6tq0FN+Ok+DM9u4dzW7Dt6+9BfsubJv/P4pj/bRtvwrLEvWAtTJVoomOQF+2Wasz7CJbZ4cr45sULuQKkLoI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EQSWTtJV; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="GFUfawBp"
-Received: by mail-qv1-f42.google.com with SMTP id 6a1803df08f44-88fdac49a85so69693986d6.0
-        for <iommu@lists.linux.dev>; Mon, 12 Jan 2026 07:35:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1768232104; x=1768836904; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=YhowijaztWf/3gTanh1QGKmo9pcuIvisiulcfP4DQN8=;
-        b=GFUfawBpJMhFn87XCUzujsgLteo1UP+jTkrHYDYupEXZOU83Ohglj8AvFskCuG5/a2
-         CF8yu629AXvkbcqPVkwhH6CxFD6zSz1Gn16XmI3hPPeU7O3+2hrpWya4Kn7ZR24Xa4WM
-         uCNZb21K96x5yukR3EBQCd1MiMQMTBf/hL9aQUG84b7Wu51DS/u8usvy59pSBgnazI8g
-         KcENAOfEfqx4DBnPNaUNC217Vdrc7mojWkLLSuma0iHz7tl0SL4k2XsMEFt10WakIBUp
-         891EN+zoIOW74vTyvBwVJ5Dxjp8FHgh0bVNNz4UG8zWIe1gmbYo4yb4XnjrBt6Q6Iny6
-         LOqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1768232104; x=1768836904;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=YhowijaztWf/3gTanh1QGKmo9pcuIvisiulcfP4DQN8=;
-        b=bB5PZ7gqjiNEfGeuJwyAtNTNKVACXTXvgEzYNVjEQoyYGFfecWkMwqdkOrvifqlc4Y
-         7Wk2W+bvd1gAiIpkB0+7efmDr9cksuJzg5YMnE9frnSd7FdLhzd9eJuZDQCii2xy9gYI
-         CyHnhDdiQB3X+YnP44DOQ9C4MIq4Bme4MHfkqo7AiquceiRpdJ6qvcv4jE8l9E5BaXLF
-         mgerCkslFsvQdjYK2Kze70gwPwMRZRrKnvPs51WcRvWurlGr69VtV46p/ylgNbQClY1K
-         vegArE4a2WT94PdR4N8PPQ1bIjB/a2mVDVlHwiB+kE7sZj4840KXzBn1czs4jlKsMkDi
-         0CHg==
-X-Forwarded-Encrypted: i=1; AJvYcCXfZpDl2UO8MiRhsygrlImEyHBAVGEJ3SGmVK9NYuV9jyX7f0cb7dkvA1NdrwulZ4PmPzDhzw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxeC9V6U5N+W1M33vSBsSowdmY4LYH048F54hVvDKvBzZpkd102
-	DL4pvHYWgDcT34Y8sxTwZQLX55WQXUnKxHDuVszSzbaY+qA5HrmY7vSxvIUKM7xlXno=
-X-Gm-Gg: AY/fxX5luTKq3zjh+QZ8G4mdYNuA8RRAL/J9ROwXcdmuNypB8xbRqLW66vSv/ANpEWp
-	RDro/cPUjHduchYw3HKfz3QIw9V4t9gFA48y7W5cAmrp4J6QYIjp3ysrQk25goMb/2pDmGtKpxH
-	KxzdN+DneLmSpgOXfQM/rTGAE+SdllkKI8FM/jlGm4pRM+uP67cNQD04QR8ZwmT8iKlOsGAbRYQ
-	V2Ub+S+Xm619juyJ/oKs9w0LZzmIKaGoi+jxbK0TIIRb+akYLhh6DfJA/5FcSS+V8pJdxGvFxRf
-	8HbgMtSl3GKT8D6DFT/jBT+36j4GsE5EXeyKLpSYYObdRiylQzgpmqgO7/Y395GOLtUYGo1Ry57
-	WWjTwazJmtzRDB3ZjiLelbuAtypldw3EfWjWPHeIbgq2xcfXTzAr/KhZwd0CXIFhvuEifvQYyqI
-	Sl6E9e8NPTiLvSJocZiDmvevNbW+fp2ZcFopYiYw4zPehFkqYX+gLnFGFvEommaiUlhuw=
-X-Google-Smtp-Source: AGHT+IHFUDshOX5YDXPelpZvfCAVTGi9FjIy10Hnlj/GEw1ZiF/o5tF46ZaUyCruFsiUwzfjzfL6tA==
-X-Received: by 2002:a05:6214:458e:b0:888:6fa6:782b with SMTP id 6a1803df08f44-890841d596amr270142346d6.30.1768232104214;
-        Mon, 12 Jan 2026 07:35:04 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-162-112-119.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.112.119])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-89077280fd3sm137593066d6.55.2026.01.12.07.35.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Jan 2026 07:35:03 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1vfJwd-00000003R6K-0Swy;
-	Mon, 12 Jan 2026 11:35:03 -0400
-Date: Mon, 12 Jan 2026 11:35:03 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>
-Cc: Simona Vetter <simona.vetter@ffwll.ch>,
-	Leon Romanovsky <leon@kernel.org>,
-	Sumit Semwal <sumit.semwal@linaro.org>,
-	Alex Williamson <alex@shazbot.org>,
-	Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
-	linaro-mm-sig@lists.linaro.org, kvm@vger.kernel.org,
-	iommu@lists.linux.dev
-Subject: Re: [PATCH 0/4] dma-buf: add revoke mechanism to invalidate shared
- buffers
-Message-ID: <20260112153503.GF745888@ziepe.ca>
-References: <20260111-dmabuf-revoke-v1-0-fb4bcc8c259b@nvidia.com>
- <eed9fd4c-ca36-4f6a-af10-56d6e0997d8c@amd.com>
- <20260112121956.GE14378@unreal>
- <2db90323-9ddc-4408-9074-b44d9178bc68@amd.com>
- <20260112141440.GE745888@ziepe.ca>
- <f7f1856a-44fa-44af-b496-eb1267a05d11@amd.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EQSWTtJV"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2A61C16AAE;
+	Mon, 12 Jan 2026 15:43:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1768232583;
+	bh=izSRihgLKHZ+DoHsO5bDEFKmHV3B0RnYMw1wVE+GmXA=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+	b=EQSWTtJVq61nQT5LeZGFJzDAatd2/p2fAjVWfAOIESaV47dDFAcxbJhs5iVYMXXOH
+	 GodqhQGn8o7SJn4vki7BebEPlsEbZYqSeNLZN56agsp/Aaa9rq08/SJqNIGvBD9k9q
+	 Y5o5Am37XvQh0K0c8mqNpztyEjQV08fFs8TPSO8hF2uLYNeB0EGfl7AnZQrA04VHHU
+	 BKExUr2AuiU1WRvzHiwIIPM6MMAD/Lw/QhqIV/rRZd9fkLQFU1F0F6B1KLF71V1Z9p
+	 o6UN/2kTqjCa+tf/qBZX+ouVah+GOI5aCnZoXk5FXmxRyoj8qD8fCHpFFOUaCdsVUd
+	 NNfHUJCQRrn7g==
+X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-coco@lists.linux.dev
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, steven.price@arm.com,
+	Suzuki K Poulose <suzuki.poulose@arm.com>,
+	Claire Chang <tientzu@chromium.org>
+Subject: Re: [PATCH] dma-direct: swiotlb: Skip encryption toggles for
+ swiotlb allocations
+In-Reply-To: <1290fd7e-bfaf-47ce-b12f-cca0b938b293@arm.com>
+References: <20260102155448.2554240-1-aneesh.kumar@kernel.org>
+ <cddcaeff-9652-4685-ba6c-0fda79bd8680@arm.com>
+ <yq5a7btr5wii.fsf@kernel.org>
+ <1290fd7e-bfaf-47ce-b12f-cca0b938b293@arm.com>
+Date: Mon, 12 Jan 2026 21:12:56 +0530
+Message-ID: <yq5acy3eet1b.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -92,57 +49,69 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <f7f1856a-44fa-44af-b496-eb1267a05d11@amd.com>
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jan 12, 2026 at 03:56:32PM +0100, Christian König wrote:
-> > The problem revoke is designed to solve is that many importers have
-> > hardware that can either be DMA'ing or failing. There is no fault
-> > mechanims that can be used to implement the full "move around for no
-> > reason" semantics that are implied by move_notify.
-> 
-> In this case just call dma_buf_pin(). We already support that
-> approach for RDMA devices which can't do ODP.
+Robin Murphy <robin.murphy@arm.com> writes:
 
-That alone isn't good enough - the patch adding the non-ODP support
-also contained this:
+> On 2026-01-09 2:51 am, Aneesh Kumar K.V wrote:
+>> Robin Murphy <robin.murphy@arm.com> writes:
+>>=20
+>>> On 2026-01-02 3:54 pm, Aneesh Kumar K.V (Arm) wrote:
+>>>> Swiotlb backing pages are already mapped decrypted via
+>>>> swiotlb_update_mem_attributes(), so dma-direct does not need to call
+>>>> set_memory_decrypted() during allocation or re-encrypt the memory on
+>>>> free.
+>>>>
+>>>> Handle swiotlb-backed buffers explicitly: obtain the DMA address and
+>>>> zero the linear mapping for lowmem pages, and bypass the decrypt/encry=
+pt
+>>>> transitions when allocating/freeing from the swiotlb pool (detected via
+>>>> swiotlb_find_pool()).
+>>>
+>>> swiotlb_update_mem_attributes() only applies to the default SWIOTLB
+>>> buffer, while the dma_direct_alloc_swiotlb() path is only for private
+>>> restricted pools (because the whole point is that restricted DMA devices
+>>> cannot use the regular allocator/default pools). There is no redundancy
+>>> here AFAICS.
+>>>
+>>=20
+>> But rmem_swiotlb_device_init() is also marking the entire pool decrypted
+>>=20
+>> 	set_memory_decrypted((unsigned long)phys_to_virt(rmem->base),
+>> 			     rmem->size >> PAGE_SHIFT);
+>
+> OK, so why doesn't the commit message mention that instead of saying=20
+> something which fails to justify the patch at all? ;)
+>
+> Furthermore, how much does this actually matter? The "real" restricted=20
+> DMA use-case is on systems where dma_set_decrypted() is a no-op anyway.=20
+> I know we used restricted DMA as a hack in the early days of CCA=20
+> prototyping, but is it intended to actually deploy that as a supported=20
+> and recommended mechanism now?
+>
+> Note also that the swiotlb_alloc path is essentially an emergency=20
+> fallback, which doesn't work for all situations anyway - any restricted=20
+> device that actually needs to make significant coherent allocations (or=20
+> rather, that firmware cannot assume won't want to do so) should really=20
+> have a proper coherent pool alongside its restricted one. The expected=20
+> use-case here is for something like a wifi driver that only needs to=20
+> allocate one or two small coherent buffers once at startup, then do=20
+> everything else with streaming DMA.
+>
 
-static void
-ib_umem_dmabuf_unsupported_move_notify(struct dma_buf_attachment *attach)
-{
-	struct ib_umem_dmabuf *umem_dmabuf = attach->importer_priv;
 
-	ibdev_warn_ratelimited(umem_dmabuf->umem.ibdev,
-			       "Invalidate callback should not be called when memory is pinned\n");
-}
+I was aiming to bring more consistency in how swiotlb buffers are
+handled, specifically by treating all swiotlb memory as decrypted
+buffers, which is also how the current code behaves.
 
-static struct dma_buf_attach_ops ib_umem_dmabuf_attach_pinned_ops = {
-	.allow_peer2peer = true,
-	.move_notify = ib_umem_dmabuf_unsupported_move_notify,
-};
+If we are concluding that restricted DMA is not used in conjunction with
+memory encryption, then we could, in fact, remove the
+set_memory_decrypted() call from rmem_swiotlb_device_init() and
+instead add failure conditions for force_dma_unencrypted(dev) in
+is_swiotlb_for_alloc(). However, it=E2=80=99s worth noting that the initial
+commit did take the memory encryption feature into account
+(0b84e4f8b793eb4045fd64f6f514165a7974cd16).
 
-So we can't just allow it to attach to exporters that are going to
-start calling move_notify while pinned.
+Please let me know if you think this needs to be fixed.
 
-Looking around I don't see anyone else doing something like this, and
-reading your remarks I think EFA guys got it wrong. So I'm wondering
-if this should not have been allowed. Unfortunately 5 years later I'm
-pretty sure it is being used in places where we don't have HW support
-to invalidate at all, and it is now well established uAPI that we
-can't just break.
-
-Which is why we are coming to negotiation because at least the above
-isn't going to work if move_notify is called for revoke reasons, and
-we'd like to block attaching exporters that need revoke for the above.
-
-So, would you be happier with this if we documented that move_notify
-can be called for pinned importers for revoke purposes and figure out
-something to mark the above as special so exporters can fail pin if
-they are going to call move_notify?
-
-Then this series would transform into documentation, making VFIO
-accept pin and continue to call move_notify as it does right now, and
-some logic to reject the RDMA non-ODP importer.
-
-Jason
+-aneesh
