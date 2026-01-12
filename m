@@ -1,145 +1,166 @@
-Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com [209.85.160.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from CY7PR03CU001.outbound.protection.outlook.com (mail-westcentralusazon11010023.outbound.protection.outlook.com [40.93.198.23])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B45C286D7E
-	for <iommu@lists.linux.dev>; Mon, 12 Jan 2026 10:20:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AA8734B412
+	for <iommu@lists.linux.dev>; Mon, 12 Jan 2026 10:48:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.198.23
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768213228; cv=pass; b=Ltj4vZyI6rNAhysMH+Tka7CakmBlvFiyYk6DvhXk+kBt0X4zj6XV6Tt6O9JYO3O4k3u0BUbnNpnChifTEb7pH15T1V1hbEpR8Lw7Z071NAMJxwZiWh0uQm0N+fLvlkaG4odd4TG/miZjKtsQhxK/pmHRVNJU9gMcVjO93uicSec=
+	t=1768214895; cv=fail; b=hrpkeHwLxGyS3h/n4lcZAOBRmujgiS5ftVBHzH6DKDLMzHJanbwuDBizs13Wl5CV8bq+58Iom05RLT58wSm7bIeRcbn9Kx7+iF/Gix48d3ufFnHa29Q/6jS03a0x6Iu1X+sllg1FA8D3Odie0KGS0PQ5jo+Cmpui7VySpH4dkho=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768213228; c=relaxed/simple;
-	bh=gYHXiFLElUluIbrWA5o6qkz/fX9Z11mOZiGUFzm+f54=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=RB0bxVWi+EydzLezHdx9IV1QrMN+aN3rWwUKPelMDweMxBf59ZOhbnIiVyvKLpzW8arF8pSD1na4v04QMK1k/2i9CpN0Ld7HSN4fsFYDfgya0F/1SZEYpatN3hpNf7mAJCCV4XWXkXwhES05V2g6vpdVwyNhirzadhu0WQ9uPJM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=a37JHgoY; arc=pass smtp.client-ip=209.85.160.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1768214895; c=relaxed/simple;
+	bh=ORc5tl43JrKB0u+YcEZUPc7Kr8p+Kp2zvVW841ojBmU=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=MtDJThFc6a4S1p1d5PiVaDtD4qKZHU7s1Ek1tMEAp9lCTQkcUNcoL6knoTOhOHTD7ynEeIeBmK8+jqt7QZfG1L1U9GAMGXom/CM8e3uuq1+H5csu7OWR49F5o2Z1HScNNtJRifeMi4eKwrYF+6xWdpabQu7ChuSBz3eQOVpkbsI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com; spf=pass smtp.mailfrom=ti.com; dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b=IzVOFTzG; arc=fail smtp.client-ip=40.93.198.23
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ti.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="a37JHgoY"
-Received: by mail-qt1-f171.google.com with SMTP id d75a77b69052e-4ee147baf7bso768221cf.1
-        for <iommu@lists.linux.dev>; Mon, 12 Jan 2026 02:20:27 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1768213226; cv=none;
-        d=google.com; s=arc-20240605;
-        b=ESC6ahRwbyV9WHtm51yVux/ldpoGhU/NoBBZ00syA4SmisZKxrL1fATwDkfoOIKfc8
-         jnfEHu/LS2OGDRiO3d68KXbAffn5YCO6XGhju0Fqql79UEcEyzNwQhSYPN1ry6fqDfck
-         dLLHu8Vmf5qDImm3xkifNTgg/WBqwXyjyFSFl/cU37T8FRBQFy7MLCVWBRS2eip+pXRG
-         Zkj19GyxQSKOrRvXsGUjcJRrWioho+T7eBwT+bZtl4LPss+UEweDLQmQICnCmbOR8j7P
-         U6Uq8J1e4T/t0mLmq4XQyROAmRH1lLlBsBK7JkxzePZtqiTvBgRSQAjCx1cljwCKpXdl
-         C2Mg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=K81YAnOXZO5D4mYdCuhOxp178GZoWafY9YiJgFtn31w=;
-        fh=znJrNEOjlJ/Nd23B1MWDiIYO+nYSJ+ymOkZfoIViAuw=;
-        b=BeVPNpaTsxdOnDNMH9FyIi4oDeiX8riW+Wiy+Yv2OOEXg6I/xaQlLSclU46Fv98RaW
-         NX/wtkOHo8l9nKhvT6bmMbRN8z/RZ7JSuDsuxK2/+VfQKed9hPb9dLh+WfF+uwqxS/xj
-         hxp3iPvHOunxviYsLRKnKOR9w8yvTk6IBXkPF7wDyYJz3+3i6N7lgp8lC9HvkozKn8bn
-         l3DmCPy67HqEG6MFC4tIHXnSSO29mMiApo2pnOf0q+oSXZ58LMgzWbAXQ6EU6NlmokHH
-         Itx0DJf3R1mD62giKV7shwrX18qhv37aJaXnFY4KxmPnuMIZsCLW6+E5BoAU9SGmABi+
-         xOnA==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1768213226; x=1768818026; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=K81YAnOXZO5D4mYdCuhOxp178GZoWafY9YiJgFtn31w=;
-        b=a37JHgoY2jdm1wCE8jXW3trAmZCUOc6eR2jlZ/qB8Q3HYiyG4Z1GNGLER9/Tx25HOA
-         LV/uwSayOKdKkLc/2rmzh3uiPerQIRUwRVMYonpeNQlMHr7DcD88VqmsPpgrwixcD2Fs
-         DMRrqTNP0l37peP2hEq2aohDEph9+skQoPLIaUQoRlH6NuiLhrVrJA6d3N+R9/KILibg
-         oTGIB6a14fEsja6PiohURfCdsenwOfUCNfublxq1WbGz4Yn0bnBMtFcyAdh9zuweS6Q2
-         vFgpqpD99MONvrHTnaRTLswy13MU/fpttfjOiW++/4E9ylgjCygP2ZM85NEkBaGk3Obq
-         AOwg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1768213226; x=1768818026;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=K81YAnOXZO5D4mYdCuhOxp178GZoWafY9YiJgFtn31w=;
-        b=Rq4x7cKNbPTPyyv1IFHFtt6qvMTvS8+nXiTndmlj9eaZ7Uzg/5aUVwjvviTfqjmaZK
-         2Yocqq2u23noIWkSL5s7F48UOshY3OLkXXWdZHUpRyfpmDs8rYpHVLia/K4+upHMq5OH
-         C61lzjbp96EM7kIs4OVuAUkMDa074N04UzoZ2zQLHOXOB+9Pk7bXqFrUOoaayv0mjEBv
-         lQNXMp7oraJObDgDgQgvCtSkkFNvD8JETarnu1OsNrkGFHeN2T+Li7jI5CoNHGp4XLXk
-         0EkjW6C/Q8/z5XtxeWrUvjOQO6tzhw4jcGUjQ8G/MGtDZVklVYPH6fSalVBZJkLjVXDI
-         1yXQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXNRn+GAshiX8ceiz5kWTCvauoBLtPG43qlYAyZkrIkfTJyq13MWUX0OlBi+uiFu2r4+rOMIg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yz14EfNgycz1TzxbAFT7YcnIUeiIcTRMrQAAEy1gerLV4ow/Vjr
-	kv/iJoLPrr3weUkXGn/18m9Tv8yt5jx0gm8vjRyyZe8W3p2DalExY+mDVrIJloyio+KPQmJhGfw
-	6n+WnzC4iRbe2pkQu0Z+Yokly0Gmo5rpBAsNmgJmz
-X-Gm-Gg: AY/fxX5uOQXIJvRc5/dtkvwpz1w+xlTGgS8pU3vmaq+QQiVaVOF5kILF+K/hcCmOGf+
-	NRgiTXPOv38rVbJmJMe7JpJw8vAx4mO1/kMtTzRqE5p+30Ja6ViSe6OHf/962sX0LkeqiQmDowr
-	xnmvzEMjq0tFrfmvyw/GGTlrB9HDJ9bzO3dN11MFWl0sHIiCtyfEMq8KqBIZmkY+wG+PzaPqq+H
-	imhem+LhUxOKFPFFf3fNe2EdrCg0PaMvRU3QkuoUgfauz0viUE+ec8eR8FYNPrdLC6rZ533W4rI
-	XBwqVF7tg+KKOGbw3Ep0FHYL7w==
-X-Received: by 2002:a05:622a:350:b0:4ff:cb86:eec2 with SMTP id
- d75a77b69052e-501197697e7mr18829141cf.5.1768213226233; Mon, 12 Jan 2026
- 02:20:26 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="IzVOFTzG"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=du25i5d931SCjY0IyhQqsbMkp5NnOqFVh1YUX5u7E2NjAsiX5b9WwhkcXD2H/UemLokzv7YVO371GyCIL3+Lll0W+wAzhcCgoC6veEezbXORB7q8o2925qon4YZvja1PECz8V74nxT+raaaSe/FBPlAytnrVh2PxFou+C9TzVG2/+41qU5SsLjIJ9hrb7p9YIwpBtxqNVMP6v6smHwdLgIyD0FUOesgSwXF8qDtUgOkkegF6L5JF8MSBnVmwnctxTmuCcxOVvcERalfdFpT+IoWRGWojLqmxrv9c2DD0pBzs7vSbr9fwM8W8Fn/8Y6WX/3arQbMam1Rsv9NYFNibnA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=/jvLeQzHt/L3iYlJ5sYFAmET/kIIOhZS92NLjqNQqyM=;
+ b=NTbw+++xM98a+7Di6wEVG19yNcoh96BF7lbnIE5HzOJXea5nM9W/s4vSuUglQevVDDP5ntq6Gp89+/MttOyNT3Gi+umAeR1Bskq9Qh7ya+arghdcV4FnuhRLw+whyKJG0Tzz49mv5vkdgGCZVmNmtoveZvW50ZWz1HFj82JYMwjMv2T8afXGnzlNyhwwcGFB6VRNllS0fdqjuei/B7Qv9eMT7vp+gyseT3m8DvQousvBvhlpg3yk5+gn5bRfh4egjAMXjI9NFxg9eg129+qsS7hHc4+cMvz8YPS3AOHxXKmWOdJgdQl6lBS+dXX30yxeM0sF5CGVpSsTJDxqh0Cy5A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 198.47.21.195) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=ti.com;
+ dmarc=pass (p=quarantine sp=none pct=100) action=none header.from=ti.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/jvLeQzHt/L3iYlJ5sYFAmET/kIIOhZS92NLjqNQqyM=;
+ b=IzVOFTzG7TQmoQyHeED/hEZS4liWmdMVXJhpo1npPJoNOKP0iJOVm4hLnuGZH5ThxJZwNSJ/ml6xwjp5IA86hwXDn+64cXBblNe8OiK9VwUipiqqx8a0LNOuYg3Du+ZIhwoOwhceBCEoSGfVUnZ74Q3hsbRvyPfnobbYrRlLcUI=
+Received: from SJ0PR03CA0355.namprd03.prod.outlook.com (2603:10b6:a03:39c::30)
+ by IA4PR10MB8447.namprd10.prod.outlook.com (2603:10b6:208:562::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9499.7; Mon, 12 Jan
+ 2026 10:48:04 +0000
+Received: from CO1PEPF000075F2.namprd03.prod.outlook.com
+ (2603:10b6:a03:39c:cafe::7f) by SJ0PR03CA0355.outlook.office365.com
+ (2603:10b6:a03:39c::30) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9499.7 via Frontend Transport; Mon,
+ 12 Jan 2026 10:48:06 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 198.47.21.195)
+ smtp.mailfrom=ti.com; dkim=none (message not signed) header.d=none;dmarc=pass
+ action=none header.from=ti.com;
+Received-SPF: Pass (protection.outlook.com: domain of ti.com designates
+ 198.47.21.195 as permitted sender) receiver=protection.outlook.com;
+ client-ip=198.47.21.195; helo=flwvzet201.ext.ti.com; pr=C
+Received: from flwvzet201.ext.ti.com (198.47.21.195) by
+ CO1PEPF000075F2.mail.protection.outlook.com (10.167.249.41) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.9520.1 via Frontend Transport; Mon, 12 Jan 2026 10:48:01 +0000
+Received: from DFLE201.ent.ti.com (10.64.6.59) by flwvzet201.ext.ti.com
+ (10.248.192.32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Mon, 12 Jan
+ 2026 04:47:59 -0600
+Received: from DFLE213.ent.ti.com (10.64.6.71) by DFLE201.ent.ti.com
+ (10.64.6.59) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Mon, 12 Jan
+ 2026 04:47:59 -0600
+Received: from lelvem-mr05.itg.ti.com (10.180.75.9) by DFLE213.ent.ti.com
+ (10.64.6.71) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
+ Transport; Mon, 12 Jan 2026 04:47:59 -0600
+Received: from uda0498651.dhcp.ti.com (uda0498651.dhcp.ti.com [172.24.233.239])
+	by lelvem-mr05.itg.ti.com (8.18.1/8.18.1) with ESMTP id 60CAluhu366624;
+	Mon, 12 Jan 2026 04:47:57 -0600
+From: Sai Sree Kartheek Adivi <s-adivi@ti.com>
+To: <m.szyprowski@samsung.com>, <robin.murphy@arm.com>,
+	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
+CC: <vigneshr@ti.com>
+Subject: [PATCH v2] dma/pool: respect __GFP_NOWARN in dma_alloc_from_pool()
+Date: Mon, 12 Jan 2026 16:17:49 +0530
+Message-ID: <20260112104749.4132641-1-s-adivi@ti.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260109171805.901995-1-smostafa@google.com> <20260109171805.901995-4-smostafa@google.com>
- <20260109195111.GQ545276@ziepe.ca>
-In-Reply-To: <20260109195111.GQ545276@ziepe.ca>
-From: Mostafa Saleh <smostafa@google.com>
-Date: Mon, 12 Jan 2026 10:20:14 +0000
-X-Gm-Features: AZwV_QhBZadnJiyUFvTjuypzRI_tAKalJjtR7zhOZQkOyHcxgKv9-680wPv8WNg
-Message-ID: <CAFgf54r_au6isA10Nrve=MHL455X=tKhNsSwH1ej-TX08J3xLA@mail.gmail.com>
-Subject: Re: [PATCH v6 3/4] iommu: debug-pagealloc: Track IOMMU pages
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: linux-mm@kvack.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	linux-doc@vger.kernel.org, corbet@lwn.net, joro@8bytes.org, will@kernel.org, 
-	robin.murphy@arm.com, akpm@linux-foundation.org, vbabka@suse.cz, 
-	surenb@google.com, mhocko@suse.com, jackmanb@google.com, hannes@cmpxchg.org, 
-	ziy@nvidia.com, david@redhat.com, lorenzo.stoakes@oracle.com, 
-	Liam.Howlett@oracle.com, rppt@kernel.org, xiaqinxin@huawei.com, 
-	baolu.lu@linux.intel.com, rdunlap@infradead.org, 
-	Samiullah Khawaja <skhawaja@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-C2ProcessedOrg: 333ef613-75bf-4e12-a4b1-8e3623f5dcea
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1PEPF000075F2:EE_|IA4PR10MB8447:EE_
+X-MS-Office365-Filtering-Correlation-Id: e0e00d12-3444-4b3d-d00e-08de51c80ec0
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|36860700013|1800799024|34020700016|82310400026;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?z5B75yaaNpqMO1KtG0gVwju4PreiVvGw37fS47ZsiZBcX5H2HJ8jnWoxLyp4?=
+ =?us-ascii?Q?wKvuUiFUC3R7rvcldzAREgL/vAmeG4RWXB/4ImB6f1hD2VR9Oq+hVOxy5EqM?=
+ =?us-ascii?Q?D+IYxSRmArXp5vr6dXwUteCqN235EOdxIF2c5gvakL1OCJ8vx24OzV4wQFKy?=
+ =?us-ascii?Q?63YMkZ4rx+fvyDbnZk54JcUewj4/07yEgZle4UWup22NbIDQ1K48FqWFakdZ?=
+ =?us-ascii?Q?QBdJkWv5Kr3POQPiWNJsn96O4/tifJ3D2hMworTB90x2w0PLKMhPNlrk2GZe?=
+ =?us-ascii?Q?KHx3jNmp+mXLjYfwakk3WDymGqa+e6Di5FFKS0e947UhiqBzxX7pfjre7Dm5?=
+ =?us-ascii?Q?Wsgbr6yGlNKGo96B26iLq3qpg9gakbwC2zIiMSD28k4Kac6tp/WGP3SP6t6l?=
+ =?us-ascii?Q?ILKSGESiQKOrkUHvCKKMqusgQcmt0jbjPrpZxvCPZi019mliBjeU2pisOqu1?=
+ =?us-ascii?Q?FqMKvmUfQMlqj7C1l2kh5k9kUastZ99i6TyEmBrerVsdmd+agoRfX8wpBLdA?=
+ =?us-ascii?Q?2bKFAJWaKzwwgRSGbL63OTpEY3EyVA/OU6GDLAv1kQXxiUYoogMgwkhodYwk?=
+ =?us-ascii?Q?Zt8RowkIvTq2dCMWsIuzyuqlzpdSu1h7FFjJtsyKh4BgaxmfKAo/hJOBWXRO?=
+ =?us-ascii?Q?k2vbzqc+5J5ADgoNqnLgp/+B+xKpbZsYchCKENjbL4BmkxEW8BDVwqplWm70?=
+ =?us-ascii?Q?a6zycoEYevx8FmVTZ/eEagyp9RXTCu0bys+h15/n1VNdpH2uMKDBu2VHofEH?=
+ =?us-ascii?Q?dj+EP+BkMFakTsWREnBVLgHPiEz90AeYv3LS/LjQhtOkZsNnd+0V1JSQvSHd?=
+ =?us-ascii?Q?hLQKrOephA2AGOIcHUkiaVL5/ec+TjXxP5ZjeOTAdQpBRoAYbOrCOlL/PPBk?=
+ =?us-ascii?Q?7w6hMmxdoB+Tn/3RjRLXnLtJqEEPUU/NpS+71fAusOMzcHr+IJxtQVXjluuE?=
+ =?us-ascii?Q?fiPA6K1ETwM17orTDk1vNcu7t/Q/2N+FRBnpB6ZkuyzjKdSqPJIn4Y5S6N18?=
+ =?us-ascii?Q?t6zisjRGhpgMGYtwycyQ4fgRoZEYefuDIuKWi8C0tbAjTls+Svya1Sd9krYg?=
+ =?us-ascii?Q?lGggOIRQ7EZJHOV8V4wQR2NrO8Y+L+wkPdIqMdfNwNQRE0XgG4ZIxymusUeR?=
+ =?us-ascii?Q?igOVPkS66C74NWspA0HPSHO6poMnsD/zalGOs3Dl2+Wdt5eDjPYjyXPbcJd1?=
+ =?us-ascii?Q?SiZJk13HASjqyikBX7WL7zobqt17TLGq39RQS8fPVsJoxvRlEYM77D0PDWpe?=
+ =?us-ascii?Q?mrMRE+999Z5dKUnLrPyiRpnKoHGpezMh69ydToXCidM7Pg3NTLbH62jInP7B?=
+ =?us-ascii?Q?Wy+xkkGZNzapE03ni+FshcqxQI4lQYGPP0myXaEeT5GDJi1VROl8GuDOP6dA?=
+ =?us-ascii?Q?Rqai5FTMkAhXZ1G4B775SadDNfmVkI8WqcA0dA8HWm7C4GioE8vc7aLFZcIj?=
+ =?us-ascii?Q?BrOaHhameWBgu4AZ12p7G+XvwWyflzSOowIU/PAEe+o1Sv2nHFzsfyxvhNCU?=
+ =?us-ascii?Q?bpJyh12XO7nlYBZOmhHaTUMIKqrO1uma7IjML9hebwdaT8tOjQeaDoHO6jIl?=
+ =?us-ascii?Q?hI+zJ3s5uXYPg48jitk=3D?=
+X-Forefront-Antispam-Report:
+	CIP:198.47.21.195;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:flwvzet201.ext.ti.com;PTR:ErrorRetry;CAT:NONE;SFS:(13230040)(376014)(36860700013)(1800799024)(34020700016)(82310400026);DIR:OUT;SFP:1101;
+X-OriginatorOrg: ti.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jan 2026 10:48:01.4683
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: e0e00d12-3444-4b3d-d00e-08de51c80ec0
+X-MS-Exchange-CrossTenant-Id: e5b49634-450b-4709-8abb-1e2b19b982b7
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=e5b49634-450b-4709-8abb-1e2b19b982b7;Ip=[198.47.21.195];Helo=[flwvzet201.ext.ti.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CO1PEPF000075F2.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA4PR10MB8447
 
-On Fri, Jan 9, 2026 at 7:51=E2=80=AFPM Jason Gunthorpe <jgg@ziepe.ca> wrote=
-:
->
-> On Fri, Jan 09, 2026 at 05:18:04PM +0000, Mostafa Saleh wrote:
-> > +static struct page_ext *get_iommu_page_ext(phys_addr_t phys)
-> > +{
-> > +     struct page *page =3D phys_to_page(phys);
-> > +     struct page_ext *page_ext =3D page_ext_get(page);
-> > +
-> > +     return page_ext;
-> > +}
-> > +
-> > +static struct iommu_debug_metadata *get_iommu_data(struct page_ext *pa=
-ge_ext)
-> > +{
-> > +     return page_ext_data(page_ext, &page_iommu_debug_ops);
-> > +}
-> > +
-> > +static void iommu_debug_inc_page(phys_addr_t phys)
-> > +{
-> > +     struct page_ext *page_ext =3D get_iommu_page_ext(phys);
-> > +     struct iommu_debug_metadata *d =3D get_iommu_data(page_ext);
->
-> You cannot do this - phys_to_page() can only be called if we already
-> know that phys is a struct page backed item and by the time you get
-> here that information is lost.
->
-> Probably the only way to resolve this is to somehow pass in an iommu
-> prot flag that can tell the difference between struct page and
-> non-struct page addresses.
->
-> But I have to NAK this approach of blindly calling phys_to_page().
->
+Currently, dma_alloc_from_pool() unconditionally warns and dumps a stack
+trace when an allocation fails.
 
-The callers to this, first will check "pfn_valid", which is the right
-check AFAICT (looking at similar patterns in page_owner for example).
+This prevents callers from using the __GFP_NOWARN flag to suppress error
+messages, breaking the expectation that this flag will silence
+allocation failure logs.
 
-Thanks,
-Mostafa
+Align dma_pool behaviour with other core allocators by checking for
+__GFP_NOWARN before issuing the warning.
 
-> Jason
->
+Fixes: 9420139f516d ("dma-pool: fix coherent pool allocations for IOMMU mappings")
+Signed-off-by: Sai Sree Kartheek Adivi <s-adivi@ti.com>
+---
+ kernel/dma/pool.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
+index 26392badc36b..f63e027b8a27 100644
+--- a/kernel/dma/pool.c
++++ b/kernel/dma/pool.c
+@@ -276,7 +276,7 @@ struct page *dma_alloc_from_pool(struct device *dev, size_t size,
+ 			return page;
+ 	}
+ 
+-	WARN(1, "Failed to get suitable pool for %s\n", dev_name(dev));
++	WARN(!(gfp & __GFP_NOWARN), "Failed to get suitable pool for %s\n", dev_name(dev));
+ 	return NULL;
+ }
+ 
+-- 
+2.34.1
+
