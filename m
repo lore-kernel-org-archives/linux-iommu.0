@@ -1,205 +1,453 @@
-Received: from mail-qk1-f180.google.com (mail-qk1-f180.google.com [209.85.222.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from CH1PR05CU001.outbound.protection.outlook.com (mail-northcentralusazolkn19010018.outbound.protection.outlook.com [52.103.20.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C220537419E
-	for <iommu@lists.linux.dev>; Mon, 12 Jan 2026 17:04:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.180
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768237479; cv=none; b=bD7F/idWtB/kUAmKampYolmhVF3RZrcZ+6mU9Qxnx4LwGh2lERmIFvtZIsupXxCqx5DuOhwKvRPXujO/Srb3eq+hV9IvAlfbWRblKMu0uNmQMv8BnPoniHdtFRvIpWmtAPm07HJ/mJ6XC/w+l4sMgh1QvxBcLSSD3idKDnErXDM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768237479; c=relaxed/simple;
-	bh=kqVUiqT6KtRytlahMDtuyi2Socb+UOgt4TA6Nk04jRA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=jGd3XTdKHtPwNUIy+RmiH9Gkb8u1lT+X36L4IQC4Sp6O3OoudvQbUFlxWx0NjI3+kkMpjP1fH4BgwKEwzTFiVbpJHAwZb7WQSJYYcFpO+jxHd2Q2rflNBPqwAeKMnfM28hrNoeSC67FKKp0thOhUiqg3X/OxeEakEOUgSNvehdI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=imZQivFi; arc=none smtp.client-ip=209.85.222.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0855837BE6D
+	for <iommu@lists.linux.dev>; Mon, 12 Jan 2026 17:48:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.103.20.18
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1768240117; cv=fail; b=k+4lfKtEcF2MNHX7yDdgjQjBCQ+FzDkoJ8JBCR+3/oDdENIo+lEPHi3rmbTgrqnpfVubgCk4IrQCqJR7iiZ1Zip+mS2MsGrM02xTT3M7ytmYoeGN+i/zfOwaVwqhylpAtEuVYeqzsKBk1GlDOabGrbmGz27lV6YWU5pkMZSdbs8=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1768240117; c=relaxed/simple;
+	bh=0bAKGtYLKkhu7mzhcR5gfSQXEPFDlLZVn65p4AvO20I=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=I3rbSS0tqV2WB+NkMRMseTUMH9TaKIspPEBFan3B8PjNAoYjtEVHYY0zkBdmUJdj0HPdWmzre+HZMW1d6zCivSbiv8pM/yH7O3vbq2DXaS8pw8m41Snxq6d8O4DjMToDecaNwEvhTL3YN5iY5c1uKPOsPVQh9zE7O2P1TPB1fN4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=k+vnLIU+; arc=fail smtp.client-ip=52.103.20.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="imZQivFi"
-Received: by mail-qk1-f180.google.com with SMTP id af79cd13be357-8bc53dae8c2so984995485a.2
-        for <iommu@lists.linux.dev>; Mon, 12 Jan 2026 09:04:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1768237477; x=1768842277; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=OcyVQ16xm+GiG5uZamh0DYF4z7rm9kbmhFMirpeUsGo=;
-        b=imZQivFiq4RR42XlLr2jKsaIliAPaLtkt3XbRlMdvKVLMqBk6cmje3N0iv3ggy6758
-         uCnmAVVpC3rd8KR7fnIL4tRye28TNAALF9Qr6Ry1Ryv6H/imLB50lvUzQAYZm1UpU+E5
-         W7MAaUv4L3drOYsdjZBWGPNEVU35Vp0b+LLUWg1AQe89B3+auhwCD2ESUdaPG4FtZ6mv
-         NxM6Jg+lceOXgwYqecCMJkzXBB1IkZy2am+vx0oDd4Fv110roRWTRtB/InLRVtsRgBvd
-         VnCpPf3dp9LLaNXrxeVqs+/U8G1kKNi/SSXjfIAUpETGKAMS2gxQGr0zINJy4uRGWpat
-         3jXA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1768237477; x=1768842277;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=OcyVQ16xm+GiG5uZamh0DYF4z7rm9kbmhFMirpeUsGo=;
-        b=YGqWzO3s5nMevs9DcN6q3wF89k/knKRifsqKSEo8jInkZIMUje1Qst1nJKyysAidNE
-         pbsJoyK0s7zBs5M7OA642WpkgwDumVJqRQRSZCa2QJ6CC0yyARrA9gz+o3Htb8frrGrR
-         zwlqvmgilcAyUFNH/Igs1aYATnqydNHmdBD80mjjk3ZFwCWC7+ZYd4QqosSj2bwcrqu/
-         dFSixtNeawsvhF/cx4ekrze6cMiwo6eWJF+vMNz5s1lXBiczwP/6PlounkSEOF8de4zf
-         bljm6Tn2but4r1BrkP9gG31ULrkEa/0fd9jXS3UySgfZcrckxzVr1nIq2QzWZwypcX+E
-         gVmw==
-X-Forwarded-Encrypted: i=1; AJvYcCVlKoc8RMc/Ew1lHY6G8pPtURELOuf0g4EAKeXWfCTknSKhD8kAme6GZqVNqiGfT55DzOuvcA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwixoZHQLGxbXXxEjlatXpV5ZuX63tcknhfQz3MjpWxPVhdrgJl
-	yXyAp6Ziy5XKNvIloL8UzUDwk0Dumvui6UQ6/aoY/FDCBoLheS989G+MrbvcM66ik+0=
-X-Gm-Gg: AY/fxX4Zat6XmdS/hrC+HlDww9i1NshQHiEYBM8NGMktEAUCqiJzvUxr6He+WmWU/TQ
-	qR4jIFC/+XSlnPbvMLeFRKnqcOChA72qdGLjSAqxTeHqMezr8wpvwFJVAOugWmh8TkRYUEm7iAz
-	w8YyvmrzVs/n/T+5uvr5XQvtHhjLeKtimoSnxbygQHUS+/hKM3ZsPut5hqF3WccaC+YDP0Ifgbm
-	6MiW7/42HqxXJY5D8L+q9MM5mCUgYUTvdm8SYVB1lPzzDijLsTU1CAmfYQ/CNx3a4ZCESBVaiUo
-	vxG6hlA2MtFEk0XzvirUfgF2lT7deRuAF0VmL9/CuAqkdIt/7YhsFyO5D7Os0JuSuv3EKp7e3Pn
-	sPWoTwtYnOCAooMNDHJ7vX3ey/EhrnMWI8i1Aa5aGHDkgD5AdEEqlLI9xb5MmXTVwp7Sm1QPerq
-	7OhtJ4Jhep3bZ0vHSmtb9bnLFvF2atl5J/ESB5Nfl1CG9ox1W0BHBVXVxSbfwo0tY9t2xmXcA9c
-	hPO5Q==
-X-Google-Smtp-Source: AGHT+IFNLsjliAScqbFFhKVSqiGiRJW+dH1w6MdFsmu8SpI9IHI7Dx7AHxGoF9vGvT6LPNemfh4Zsw==
-X-Received: by 2002:a05:620a:2807:b0:8b5:5a03:36e3 with SMTP id af79cd13be357-8c38936c4e7mr2741533585a.16.1768237475821;
-        Mon, 12 Jan 2026 09:04:35 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-162-112-119.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.112.119])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-8c37f51cdcesm1544825185a.26.2026.01.12.09.04.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Jan 2026 09:04:35 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1vfLLG-00000003RoH-2rL8;
-	Mon, 12 Jan 2026 13:04:34 -0400
-Date: Mon, 12 Jan 2026 13:04:34 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>
-Cc: Simona Vetter <simona.vetter@ffwll.ch>,
-	Leon Romanovsky <leon@kernel.org>,
-	Sumit Semwal <sumit.semwal@linaro.org>,
-	Alex Williamson <alex@shazbot.org>,
-	Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
-	linaro-mm-sig@lists.linaro.org, kvm@vger.kernel.org,
-	iommu@lists.linux.dev
-Subject: Re: [PATCH 0/4] dma-buf: add revoke mechanism to invalidate shared
- buffers
-Message-ID: <20260112170434.GH745888@ziepe.ca>
-References: <20260111-dmabuf-revoke-v1-0-fb4bcc8c259b@nvidia.com>
- <eed9fd4c-ca36-4f6a-af10-56d6e0997d8c@amd.com>
- <20260112121956.GE14378@unreal>
- <2db90323-9ddc-4408-9074-b44d9178bc68@amd.com>
- <20260112141440.GE745888@ziepe.ca>
- <f7f1856a-44fa-44af-b496-eb1267a05d11@amd.com>
- <20260112153503.GF745888@ziepe.ca>
- <f2f82341-3799-4379-a0e7-6e9d56a7eda1@amd.com>
+	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="k+vnLIU+"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=T/MZbNf01cvVqhuJu2tW8QIhI8iH/p0VH5gmF/wCWSBAfYUqmNPs5e6ZAL7ej9fjB5NL327QLUiiG6D/CT+3KmnkhcVfhl3eTt5UnOUyogyRbtzBbRiyNpYz+tjKdpzu7ak1fqzPciwRM87oHgYWUhQOiWIQ1gf9YywHzirOp5ulQ2VwLw85m+/8Z8oqrUgcdQihYiuMdg4yM1TM/DJhe8VzA7/QjYJjM3UcYrhABJBvINcSsXHgJdravf4OVpm2H1LL0cUm9+ae5nSaI5/jFpU+r7MAMCgqsIQ6uOsGcmCspWrhSg4fxydxCsyQD6pEws+vOMYmbbF5q11Zcm1Y0Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Prm0CkZjm6AvivR1lCW3tMDY0nezPby9oFrIoiApnzU=;
+ b=mzrQHweQ1kNcCjhdqyYrJHGD3NKKLB1DafSg8BC97eXiWuUuDt3a39yZECqUSUS4BIxyfalcYPWKdsOb+qh3wA7f6cVhnsoRamv363t+LdA6T9wSjYpwKKLS4Un9tN8ePX/GIGz41eTq5RAiQFVJnLD4zGuEe2WoS3MdC03bK/TPEr7v2xtWk/gZbq+QQzm+qF1jP3KhW2t/A2ijY9LZKfYbK5ABDzqE+/uDm7koBPYDF5dPdWrNg3bN5iOPRmnOsUId2O7s1n7YRXa8LkWYDa+k4dzqjbzytizsLr3lgNXLhMy0k5A/pCu6cmwQWJx874xvNok5UT+3CKNYwIX+8g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Prm0CkZjm6AvivR1lCW3tMDY0nezPby9oFrIoiApnzU=;
+ b=k+vnLIU+lttgRLbJb3wEHme/MjCmz2RFupSrErrl2OSDSV7B0m70vdBrNZ7Frbyg1oZoRngN99L+fJewxTI9c7kYPXeS+GCzq+HDqES+SlA7poYQO3Ybi5/Oca1+QCBIZECBJx799grxdSdixEoq0K/0Pp1VUK+PfkJGfm5vzC4nhOXY4R3U1pKLJxMTZM55Ei3w6Pt+8u1YYLPguaw+sXyT5OIvsI+31CXytMI3VtnCeDsZ2DbncqX5azEbe7kI+S/iQbl3yR2UiSevpZpU18aPGsw8gg3uVi8WNRt87MthjhmBrWK4g9dqvCUnzLURhC4NLIqAhVKRiSXpo5QraQ==
+Received: from SN6PR02MB4157.namprd02.prod.outlook.com (2603:10b6:805:33::23)
+ by CO1PR02MB8425.namprd02.prod.outlook.com (2603:10b6:303:154::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9499.2; Mon, 12 Jan
+ 2026 17:48:31 +0000
+Received: from SN6PR02MB4157.namprd02.prod.outlook.com
+ ([fe80::900:1ccf:2b1e:52b6]) by SN6PR02MB4157.namprd02.prod.outlook.com
+ ([fe80::900:1ccf:2b1e:52b6%6]) with mapi id 15.20.9499.005; Mon, 12 Jan 2026
+ 17:48:31 +0000
+From: Michael Kelley <mhklinux@outlook.com>
+To: Yu Zhang <zhangyu1@linux.microsoft.com>
+CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, "linux-pci@vger.kernel.org"
+	<linux-pci@vger.kernel.org>, "kys@microsoft.com" <kys@microsoft.com>,
+	"haiyangz@microsoft.com" <haiyangz@microsoft.com>, "wei.liu@kernel.org"
+	<wei.liu@kernel.org>, "decui@microsoft.com" <decui@microsoft.com>,
+	"lpieralisi@kernel.org" <lpieralisi@kernel.org>, "kwilczynski@kernel.org"
+	<kwilczynski@kernel.org>, "mani@kernel.org" <mani@kernel.org>,
+	"robh@kernel.org" <robh@kernel.org>, "bhelgaas@google.com"
+	<bhelgaas@google.com>, "arnd@arndb.de" <arnd@arndb.de>, "joro@8bytes.org"
+	<joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"easwar.hariharan@linux.microsoft.com"
+	<easwar.hariharan@linux.microsoft.com>, "jacob.pan@linux.microsoft.com"
+	<jacob.pan@linux.microsoft.com>, "nunodasneves@linux.microsoft.com"
+	<nunodasneves@linux.microsoft.com>, "mrathor@linux.microsoft.com"
+	<mrathor@linux.microsoft.com>, "peterz@infradead.org" <peterz@infradead.org>,
+	"linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>
+Subject: RE: [RFC v1 5/5] iommu/hyperv: Add para-virtualized IOMMU support for
+ Hyper-V guest
+Thread-Topic: [RFC v1 5/5] iommu/hyperv: Add para-virtualized IOMMU support
+ for Hyper-V guest
+Thread-Index: AQHcaMpb286bdBhc60y7Ts6ZOD3veLVIruwggAZIL4CAAAL1EA==
+Date: Mon, 12 Jan 2026 17:48:30 +0000
+Message-ID:
+ <SN6PR02MB41571D67D866538138D06585D481A@SN6PR02MB4157.namprd02.prod.outlook.com>
+References: <20251209051128.76913-1-zhangyu1@linux.microsoft.com>
+ <20251209051128.76913-6-zhangyu1@linux.microsoft.com>
+ <SN6PR02MB41572D46CF6C1DE68974EAA1D485A@SN6PR02MB4157.namprd02.prod.outlook.com>
+ <dws34g6znmam7eabwetg722b4wgf2wxufcqxqphhbqlryx23mb@we5utwanawe2>
+In-Reply-To: <dws34g6znmam7eabwetg722b4wgf2wxufcqxqphhbqlryx23mb@we5utwanawe2>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: SN6PR02MB4157:EE_|CO1PR02MB8425:EE_
+x-ms-office365-filtering-correlation-id: f035fb3e-d81a-4250-d14a-08de5202cc4a
+x-microsoft-antispam:
+ BCL:0;ARA:14566002|8062599012|51005399006|19110799012|8060799015|15080799012|41001999006|461199028|13091999003|31061999003|56899033|440099028|3412199025|40105399003|102099032|12091999003;
+x-microsoft-antispam-message-info:
+ =?us-ascii?Q?uiVbgy+oHE9k4h8zRKRO/w2N264bE84KNsxvurbDo4QlStmMCxfzKreMaQJ2?=
+ =?us-ascii?Q?jml8gCmo7Rnt8xhUokmmrh0AMMWpP1PXhTJezlnwCNAaZaFuMXk5h1QHaAoY?=
+ =?us-ascii?Q?M+DQ/aSJCaWVXCQ5JKvWGhzjlCx0blsDRoI83xMV0IZCIkGwnnogQABtapZB?=
+ =?us-ascii?Q?T5osj3Ed/o/gLO6mjWKznqcu2cGAS88paSgooLdkJJAhUx6S7kUMu7Wrym3s?=
+ =?us-ascii?Q?89Xo3Al0Oj3CrR93EZ/4lD5GLTNypbDe+aQS1NaIpjOJstLzmQ21dznmYq0i?=
+ =?us-ascii?Q?b2ClShkCDzO0yFwAi2/mYMEMFTwPwA+LGAyKtTEMRv5RuyBgy+RLOrgqxmPI?=
+ =?us-ascii?Q?LssPLCJiNkEsSbt9qOuB7Bq7Bbd6Z6iNXdi80MB0xk2dtRAUdfGbvR8bQ6If?=
+ =?us-ascii?Q?YsBILH2JsRT0uO4ArGYfGJFofFK5oNl8kvof9HWTkgR4Y/aVLTxIl6lmoFeX?=
+ =?us-ascii?Q?X0o+u7p2rrnxjoIGr2XXp4JF64W5l4kaIVbh49/902vj023XtCkH6HzonLma?=
+ =?us-ascii?Q?zH9zuNZkivOqhOltRj/blnS+Wr0MpQkzFUmOWta9sJVK3xIZwfwVDW3HMHft?=
+ =?us-ascii?Q?JjZYPO9PIoiD3OkBxAdm5BpZX4l2mQ1FVgQwjLHO/O6rGjK3v7sxsB7d2Mit?=
+ =?us-ascii?Q?adMXj0WT7ZtU9rh7vJ76dJuT0biJ9UrQ0mfjhz3NzXOylyLWKScIuVjzET+j?=
+ =?us-ascii?Q?yMEfifXgsSdYwIfZKC+ZqgVj/DVnrnLOz2mPn0rZDObHk5lTmqhS3CdFMvrW?=
+ =?us-ascii?Q?wAmYHxLFQgya2i6k4LSPBN4lOQhFZJ/W8+PgYnMx8oIl6c9sfgxDbM2UCVA3?=
+ =?us-ascii?Q?tcviJ5UgCySy8fuOaUxmm4ybFabW0gl7yFkIkPjS+x+vo5fEh/7DUWLBd+n8?=
+ =?us-ascii?Q?2zjzmbDoqSJidYd3cfKFlUe+GmOggErFC1HII1Wwa2yaeiB8Myst7Wi6lZ+u?=
+ =?us-ascii?Q?99pfN9KeUmfdkMBByOKITME4t/a07w70V0TDgS//EVxMqPVA+rETYtzwFddx?=
+ =?us-ascii?Q?wbKl9zH1ddUAcisNUpJmR38c9/9pDHP3gM2urLEtobZZ45JOi/WHYsgbh1wF?=
+ =?us-ascii?Q?fTPs/1vyFcr5QRwZaNV677EQUK07iUVOIgb2djnJjlYI2qu5uQqGcnIBSeVi?=
+ =?us-ascii?Q?VncxkJAqAmMMzsFqFnPDOX9Lgp3bLc0/RX4NfVDDVNSSdgNw0Y+v3nbdPUqr?=
+ =?us-ascii?Q?sKmSV0HIS/PBOMmdutBh/YJoqq2BYGKpatDK4j6+LGvRaVrfZAhQub4b5oms?=
+ =?us-ascii?Q?UkanyOpeIDpGzga7spJgHTrz3/C1WOPncF+t2ltcaw=3D=3D?=
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?N40aPPaRahhlTNiVwXcLJqgHceWv8msOxbI+EKBpcBc88NMBWlinwqOT/3A/?=
+ =?us-ascii?Q?LXxb6woFD0LL3yHGrB5dhklsdrsMfLxClN44h16yii7p7l0lzp+0R7aVCxD7?=
+ =?us-ascii?Q?e9T4YNzlntDJHHVkDCfclrA0xPZzyl4bZ9U9xHPKyc2EVV2iLVwmo5ArOhjW?=
+ =?us-ascii?Q?OFRPKC0i9oq83BEcx4cmPImN9cymJqFKrr5FlY2uN+XZdnJofdrMvjVkn8ua?=
+ =?us-ascii?Q?drGti3i7yEMuXVJjkm2XjfAe+bICvUKKsX1Xbtpi4xELpP8bB8Sxk0/W0fuo?=
+ =?us-ascii?Q?/iCwQZ7mWW/SNtDIPvS0DgI8LRqVi8VZ8Jnq58BCt790UzYR/U5S1jEbxwe0?=
+ =?us-ascii?Q?nSp0i7Z3/oyaWhyOlWUux6q7sBOSLvgJmpO6kH6iXRQVNiBwHbnFBsyUa+AR?=
+ =?us-ascii?Q?9NiGMNPQajpz58R5icGDidPY79QxV281OgZdzfsnXZ56vHIGbYyk1CN6ZQtT?=
+ =?us-ascii?Q?QEtAHkgcDr4j0LfLJBRPNnS5vJWXp065QPkrNohwQy1jSg9+YGX8WMhKN/i2?=
+ =?us-ascii?Q?fmYpT7dogaA7Wta1UJnf4djCaREH6h6nqXrztJb3t+BTRVzqHym5MD73pe+t?=
+ =?us-ascii?Q?78wc0JZow/h90WZcBVX9FIssNKtdtE9wB3t8KhGZpJaY8nIh2tYxDZfjDTTb?=
+ =?us-ascii?Q?GCyXXloxKo/50DBYp00JUuAfzgwR038p2VaZMxnBmt0VS+FOBwpRbnc2hlb3?=
+ =?us-ascii?Q?ScZjPUthab27DZEwstoW+Gi4XGUCzUWFFpdyIrPJmDZpd2yDyj9mo7QHHOiy?=
+ =?us-ascii?Q?db0eNWXgedSClt+Frvj+X94eFgAj9YDlpc0fNaz8lh5YRygzxxYsCQ1cjIhj?=
+ =?us-ascii?Q?VFqtI2j76sHkxXkuxFz4TaRX50XX27sju9fGv6+3ke5dfd6bxz2oJLGGFHcU?=
+ =?us-ascii?Q?3O6kbBqIUJDhcMnbn9kJf5ektcCgrQJcjcDF7pOaLGuNLog6q+lZhvTSQrD5?=
+ =?us-ascii?Q?vmWDOgShdcxIv5tuXhS5Ngc5aZJ26B8sjt1n1cBBUl6T06SafKl/oz5mMYvi?=
+ =?us-ascii?Q?/TOPutcHmW3Y3zJ2NWy8swnjNenZJqNATNQ419wa+RBrVncpCGsdGeQmpPyG?=
+ =?us-ascii?Q?Xc5J0IPB9NY5szEb3uPe9XZgsgMDHGGUZhvJvx6LQ2om+CysAiyUmhK+f+VP?=
+ =?us-ascii?Q?/NqigXx45r9aIk6nFkxkrroBgow8gco5tctw9Zy2Yl5zE4yHaTOmGVqghzJA?=
+ =?us-ascii?Q?wQqpJYWoZzUjD6UvtWknh/9Lxi9n5Xj/56IHx5moqY2JUmWuux1eYxT3U2fb?=
+ =?us-ascii?Q?ilj8gsscCsLC7X9xdEwyFRJeZO7pAEf1zbiEh4zfEdOuTEjH+2aCVsFritMn?=
+ =?us-ascii?Q?+Gg3a6duRV4+2MdgvpmU+/AB03Nj9Hq5j/G+27pmi806LlTF4ANCGUZAGunj?=
+ =?us-ascii?Q?6OnOxiw=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <f2f82341-3799-4379-a0e7-6e9d56a7eda1@amd.com>
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR02MB4157.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-Network-Message-Id: f035fb3e-d81a-4250-d14a-08de5202cc4a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Jan 2026 17:48:30.3894
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR02MB8425
 
-On Mon, Jan 12, 2026 at 05:12:36PM +0100, Christian König wrote:
-> > static struct dma_buf_attach_ops ib_umem_dmabuf_attach_pinned_ops = {
-> > 	.allow_peer2peer = true,
-> > 	.move_notify = ib_umem_dmabuf_unsupported_move_notify,
-> > };
-> > 
-> > So we can't just allow it to attach to exporters that are going to
-> > start calling move_notify while pinned.
-> 
-> The point is exporters are already doing this.
+From: Yu Zhang <zhangyu1@linux.microsoft.com> Sent: Monday, January 12, 202=
+6 8:56 AM
+>=20
+> On Thu, Jan 08, 2026 at 06:48:59PM +0000, Michael Kelley wrote:
+> > From: Yu Zhang <zhangyu1@linux.microsoft.com> Sent: Monday, December 8,=
+ 2025 9:11 PM
+>=20
+> <snip>
+> Thank you so much, Michael, for the thorough review!
+>=20
+> I've snipped some comments I fully agree with and will address in
+> next version. Actually, I have to admit I agree with your remaining
+> comments below as well. :)
+>=20
+> > > +struct hv_iommu_dev *hv_iommu_device;
+> > > +static struct hv_iommu_domain hv_identity_domain;
+> > > +static struct hv_iommu_domain hv_blocking_domain;
+> >
+> > Why is hv_iommu_device allocated dynamically while the two
+> > domains are allocated statically? Seems like the approach could
+> > be consistent, though maybe there's some reason I'm missing.
+> >
+>=20
+> On second thought, `hv_identity_domain` and `hv_blocking_domain` should
+> likely be allocated dynamically as well, consistent with `hv_iommu_device=
+`.
 
-:( So obviously this doesn't work fully correctly..
+I don't know if there's a strong rationale either way (static allocation vs=
+.
+dynamic). If the long-term expectation is that there is never more than one
+PV IOMMU in a guest, then static would be OK. If future direction allows th=
+at
+there could be multiple PV IOMMUs in a guest, then doing dynamic from
+the start is justifiable (though the current PV IOMMU hypercalls seem to
+assume only one PV IOMMU). But either way, being consistent is desirable.
 
-> > Which is why we are coming to negotiation because at least the above
-> > isn't going to work if move_notify is called for revoke reasons, and
-> > we'd like to block attaching exporters that need revoke for the above.
-> 
-> Ah, yes that makes sense. This is clearly a new requirement.
-> 
-> So basically for PCIe hotplug was a rare event were we said we have
-> some problems with non-ODP but we can live with that, but for this
-> use case here it's more like a perfectly normal condition that
-> userspace can trigger.
+>=20
+> <snip>
+> > > +static int hv_iommu_get_logical_device_property(struct device *dev,
+> > > +					enum hv_logical_device_property_code code,
+> > > +					struct hv_output_get_logical_device_property *property)
+> > > +{
+> > > +	u64 status;
+> > > +	unsigned long flags;
+> > > +	struct hv_input_get_logical_device_property *input;
+> > > +	struct hv_output_get_logical_device_property *output;
+> > > +
+> > > +	local_irq_save(flags);
+> > > +
+> > > +	input =3D *this_cpu_ptr(hyperv_pcpu_input_arg);
+> > > +	output =3D *this_cpu_ptr(hyperv_pcpu_output_arg);
+> > > +	memset(input, 0, sizeof(*input));
+> > > +	memset(output, 0, sizeof(*output));
+> >
+> > General practice is to *not* zero the output area prior to a hypercall.=
+ The hypervisor
+> > should be correctly setting all the output bits. There are a couple of =
+cases in the new
+> > MSHV code where the output is zero'ed, but I'm planning to submit a pat=
+ch to
+> > remove those so that hypercall call sites that have output are consiste=
+nt across the
+> > code base. Of course, it's possible to have a Hyper-V bug where it does=
+n't do the
+> > right thing, and zero'ing the output could be done as a workaround. But=
+ such cases
+> > should be explicitly known with code comments indicating the reason for=
+ the
+> > zero'ing.
+> >
+> > Same applies in hv_iommu_detect().
+> >
+>=20
+> Thanks for the information! Just to clarify: this is only because Hyper-V=
+ is
+> supposed to zero the output page, and for input page, memset is still nee=
+ded.
+> Am I correct?
 
-Yes that seems to be exactly the case. I didn't know about the PCI RAS
-case until now :(
+Yes, you are correct.
 
-> So the exporter wants to reject importers which can't handle a
-> mapping invalidation while the BO is pinned, correct?
+The general TLFS requirement for hypercall input is that unused fields and =
+bits
+are set to zero. This requirement ensures forward compatibility if a later =
+version of
+the hypervisor assigns some meaning to previously unused fields/bits. So be=
+st practice
+for hypercall call sites is to use memset() to zero the entire input area, =
+and then specific
+field values are set on top of that. Any fields/bits that aren't explicitly=
+ set then meet
+the TLFS requirement.
 
-Yes. I think at a minimum exporters where it is a normal use case
-should block it so unpriv user space cannot trigger incorrect behavior
-/ ignored invalidation. ie VFIO will trigger this based on unpriv user
-system calls.
+It would be OK if a hypercall call site explicitly set every field/bit inst=
+ead of using
+memset(), but it's easy to unintentionally miss a field/bit and create a fo=
+rward
+compatibility problem. However, when the hypercall input contains a large a=
+rray,
+the code usually does *not* do memset() on the large array because of the p=
+erf
+impact, but instead the code populating the large array must be careful to =
+not leave
+any bits uninitialized.
 
-I supposed we have to retain the PCI RAS misbehavior for now at least.
-It would probably be uAPI regression to start blocking some of the
-existing ones.
+For hypercall output, the hypervisor essentially has the same requirement. =
+It should
+make sure that any unused fields/bits in the output area are zero, so that =
+the Linux
+guest can properly deal with a future hypervisor version that assigns meani=
+ng to
+previously unused fields/bits.
 
-It also seems we should invest in the RDMA side to minimize where this
-is used.
+>=20
+> <snip>
+>=20
+> > > +static void hv_iommu_shutdown(void)
+> > > +{
+> > > +	iommu_device_sysfs_remove(&hv_iommu_device->iommu);
+> > > +
+> > > +	kfree(hv_iommu_device);
+> > > +}
+> > > +
+> > > +static struct syscore_ops hv_iommu_syscore_ops =3D {
+> > > +	.shutdown =3D hv_iommu_shutdown,
+> > > +};
+> >
+> > Why is a shutdown needed at all?  hv_iommu_shutdown() doesn't do anythi=
+ng
+> > that really needed, since sysfs entries are transient, and freeing memo=
+ry isn't
+> > relevant for a shutdown.
+> >
+>=20
+> For iommu_device_sysfs_remove(), I guess they are not necessary, and
+> I will need to do some homework to better understand the sysfs. :)
+> Originally, we wanted a shutdown routine to trigger some hypercall,
+> so that Hyper-V will disable the DMA translation, e.g., during the VM
+> reboot process.
 
-> > So, would you be happier with this if we documented that move_notify
-> > can be called for pinned importers for revoke purposes and figure out
-> > something to mark the above as special so exporters can fail pin if
-> > they are going to call move_notify?
-> 
-> That would work for me. I mean it is already current practice, we
-> just never fully documented it.
+I would presume that if Hyper-V reboots the VM, Hyper-V automatically
+resets the PV IOMMU and prevents any further DMA operations. But
+consider kexec(), where a new kernel gets loaded without going through
+the hypervisor "reboot-this-VM" path. There have been problems in the
+past with kexec() where parts of Hyper-V state for the guest didn't get
+reset, and the PV IOMMU is likely something in that category. So there
+may indeed be a need to tell the hypervisor to reset everything related
+to the PV IOMMU. There are already functions to do Hyper-V cleanup: see
+vmbus_initiate_unload() and hyperv_cleanup(). These existing functions
+may be a better place to do PV IOMMU cleanup/reset if needed.
 
-OK
- 
-> > Then this series would transform into documentation, making VFIO
-> > accept pin and continue to call move_notify as it does right now, and
-> > some logic to reject the RDMA non-ODP importer.
-> 
-> I think we just need to expose this with flags or similar from the
-> importer side. As far as I know RDMA without ODP is currently the
-> only one really needing this (except for cross device scanout, but
-> that is special anyway).
+>=20
+> <snip>
+>=20
+> > > +device_initcall(hv_iommu_init);
+> >
+> > I'm concerned about the timing of this initialization. VMBus is initial=
+ized with
+> > subsys_initcall(), which is initcall level 4 while device_initcall() is=
+ initcall level 6.
+> > So VMBus initialization happens quite a bit earlier, and the hypervisor=
+ starts
+> > offering devices to the guest, including PCI pass-thru devices, before =
+the
+> > IOMMU initialization starts. I cobbled together a way to make this IOMM=
+U code
+> > run in an Azure VM using the identity domain. The VM has an NVMe OS dis=
+k,
+> > two NVMe data disks, and a MANA NIC. The NVMe devices were offered, and
+> > completed hv_pci_probe() before this IOMMU initialization was started. =
+When
+> > IOMMU initialization did run, it went back and found the NVMe devices. =
+But
+> > I'm unsure if that's OK because my hacked together environment obviousl=
+y
+> > couldn't do real IOMMU mapping. It appears that the NVMe device driver
+> > didn't start its initialization until after the IOMMU driver was setup,=
+ which
+> > would probably make everything OK. But that might be just timing luck, =
+or
+> > maybe there's something that affirmatively prevents the native PCI driv=
+er
+> > (like NVMe) from getting started until after all the initcalls have fin=
+ished.
+> >
+>=20
+> This is yet another immature attempt by me to do the hv_iommu_init() in
+> an arch-independent path. And I do not think using device_initcall() is
+> harmless. This patch set was tested using an assigned Intel DSA device,
+> and the DMA tests succeeded w/o any error. But that is not enough to
+> justify using device_initcall(): I reset the idxd driver as kernel
+> builtin and realized, just like you said, both hv_pci_probe() and
+> idxd_pci_probe() were triggered before hv_iommu_init(), and when pvIOMMU
+> tries to probe the endpoint device, a warning is printed:
+>=20
+> [    3.609697] idxd 13d7:00:00.0: late IOMMU probe at driver bind, someth=
+ing fishy here!
+>=20
 
-I did not see any other importers with an obvious broken move_notify,
-so I hope this is right. Even iommufd has a working move_notify
-(disruptive, but working).
+You succeeded in doing what I was going to try! I won't spend time on it no=
+w.
 
-How do you feel about an enum in the ops:
+> > I'm planning to look at this further to see if there's a way for a PCI =
+driver
+> > to try initializing a pass-thru device *before* this IOMMU driver has i=
+nitialized.
+> > If so, a different way to do the IOMMU initialization will be needed th=
+at is
+> > linked to VMBus initialization so things can't happen out-of-order. Est=
+ablishing
+> > such a linkage is probably a good idea regardless.
+> >
+> > FWIW, the Azure VM with the 3 NVMe devices and MANA, and operating with
+> > the identity IOMMU domain, all seemed to work fine! Got 4 IOMMU groups,
+> > and devices coming and going dynamically all worked correctly. When a d=
+evice
+> > was removed, it was moved to the blocking domain, and then flushed befo=
+re
+> > being finally removed. All good! I wish I had a way to test with an IOM=
+MU
+> > paging domain that was doing real translation.
+> >
+>=20
+> Thank you, Michael! I really appreciate you running these extra experimen=
+ts!
+>=20
+> My tests on this DSA device passed (using paging domain) too, with no DMA
+> errors observed (regardless its driver is builtin or as a kernel module).
+> But that doesn't make me confident about using `device_initcall`. I belie=
+ve
+> your concern is valid. E.g., an endpoint device might allocate a DMA addr=
+ess(
+> using a raw GPA, instead of gIOVA) before pvIOMMU is initialized, and the=
+n
+> use that address for DMA later, after a paging domain is attached?
 
-+enum dma_buf_move_notify_level {
-+	/*
-+	 * The importer can pause HW access while move_notify is running
-+	 * and cleanly handle dynamic changes to the DMA mapping without
-+	 * any disruption.
-+	 */
-+	DMA_BUF_MOVE_NOTIFY_FAULTING = 0,
-+	/*
-+	 * The importer can stop HW access and disruptively fail any
-+	 * of its DMA activity. move_notify should only be called if the
-+	 * exporter is experiencing an unusual error and can accept
-+	 * that the importer will be disrupted.
-+	 */
-+	DMA_BUF_MOVE_NOTIFY_REVOKING,
-+	/*
-+	 * move_notify is not supported at all and must not be called. Do not
-+	 * introduce new drivers using this, it has significant draw backs
-+	 * around PCI error handling and other cases. It has the most limited
-+	 * set of compatible importers.
-+	 */
-+	DMA_BUF_MOVE_NOTIFY_UNSUPPORTED,
-+};
-+
- /**
-  * struct dma_buf_attach_ops - importer operations for an attachment
-  *
-@@ -457,6 +480,8 @@ struct dma_buf_attach_ops {
- 	 */
- 	bool allow_peer2peer;
- 
-+	enum dma_buf_move_notify_level move_notify_level;
-+
- 	/**
- 	 * @move_notify: [optional] notification that the DMA-buf is moving
- 	 *
+Yes, that's exactly my concern.
 
-Jason
+>=20
+> > > diff --git a/drivers/iommu/hyperv/iommu.h b/drivers/iommu/hyperv/iomm=
+u.h
+> > > new file mode 100644
+> > > index 000000000000..c8657e791a6e
+> > > --- /dev/null
+> > > +++ b/drivers/iommu/hyperv/iommu.h
+> > > @@ -0,0 +1,53 @@
+> > > +/* SPDX-License-Identifier: GPL-2.0 */
+> > > +
+> > > +/*
+> > > + * Hyper-V IOMMU driver.
+> > > + *
+> > > + * Copyright (C) 2024-2025, Microsoft, Inc.
+> > > + *
+> > > + */
+> > > +
+> > > +#ifndef _HYPERV_IOMMU_H
+> > > +#define _HYPERV_IOMMU_H
+> > > +
+> > > +struct hv_iommu_dev {
+> > > +	struct iommu_device iommu;
+> > > +	struct ida domain_ids;
+> > > +
+> > > +	/* Device configuration */
+> > > +	u8  max_iova_width;
+> > > +	u8  max_pasid_width;
+> > > +	u64 cap;
+> > > +	u64 pgsize_bitmap;
+> > > +
+> > > +	struct iommu_domain_geometry geometry;
+> > > +	u64 first_domain;
+> > > +	u64 last_domain;
+> > > +};
+> > > +
+> > > +struct hv_iommu_domain {
+> > > +	union {
+> > > +		struct iommu_domain    domain;
+> > > +		struct pt_iommu        pt_iommu;
+> > > +		struct pt_iommu_x86_64 pt_iommu_x86_64;
+> > > +	};
+> > > +	struct hv_iommu_dev *hv_iommu;
+> > > +	struct hv_input_device_domain device_domain;
+> > > +	u64		pgsize_bitmap;
+> > > +
+> > > +	spinlock_t lock; /* protects dev_list and TLB flushes */
+> > > +	/* List of devices in this DMA domain */
+> >
+> > It appears that this list is really a list of endpoints (i.e., struct
+> > hv_iommu_endpoint), not devices (which I read to be struct
+> > hv_iommu_dev).
+> >
+> > But that said, what is the list used for?  I see code to add
+> > endpoints to the list, and to remove then, but the list is never
+> > walked by any code in this patch set. If there is an anticipated
+> > future use, it would be better to add the list as part of the code
+> > for that future use.
+> >
+>=20
+> Yes, we do not really need this list for this patch set. Thanks!
+>=20
+> B.R.
+> Yu
