@@ -1,117 +1,79 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0A742EDD63;
-	Mon, 12 Jan 2026 15:43:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECA1C363C42;
+	Mon, 12 Jan 2026 15:53:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768232583; cv=none; b=S+Pyx2NyVQmhCGrr+oTeuGf6HDIvRfyQOlwSNlG8GydkDXe10YRwAAKEtH8jAqphipgzzAAjADCGjqRrkSeL3rgSszWX/O4qBIB1FT0yzEnpyPMTfri/GtVVE616mZ/BEVR051GHgiaB1urzukC6AUSXY81Col7x6GHnpSfzxWo=
+	t=1768233221; cv=none; b=F8Zmmd5ELqKUSrMggssc465EnRHs7450iJDdJ5R+usMGqRYul9eJkW5uUtgzwsRp13oibiqhrNgIBBNTpn0bFxWGBL0N1zSxhcTn20tsWqeHB7w6JYJRQY9wGYTBd9TmQJFtkZp7NdUzBxXJEYSrNAwjKqgxNgtbRfjo4UIbrSA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768232583; c=relaxed/simple;
-	bh=izSRihgLKHZ+DoHsO5bDEFKmHV3B0RnYMw1wVE+GmXA=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=RB3YcaBcKawTzeX2+OMSjZrFApnpX9hehuAFPA49fEMrXZcnc8297PBPWTawYspKvCkduajDqbHK4qQbzhUq/CH6tq0FN+Ok+DM9u4dzW7Dt6+9BfsubJv/P4pj/bRtvwrLEvWAtTJVoomOQF+2Wasz7CJbZ4cr45sULuQKkLoI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EQSWTtJV; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1768233221; c=relaxed/simple;
+	bh=Iwz2FZB7Ir4MOz88EBGnyMaOkJY3tnWlW7Bxq070cus=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=WRWdK7hgR5HQARmeIGkfw6oN6rlcVEBeJ7grmtpl96JzTsQErdrRZOcsOgfjOsU1jujBv14XQY3MAytw9UR6FO8zpBfGAhqC8GxPjof7FsbQYVxOPIVpSeJDSWlklVbVAVBIGgBmNVvfv5O/6yFTDweFJF6iyeP9mInakIB0E80=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JxixVHp6; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EQSWTtJV"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2A61C16AAE;
-	Mon, 12 Jan 2026 15:43:00 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JxixVHp6"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7459EC16AAE;
+	Mon, 12 Jan 2026 15:53:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1768232583;
-	bh=izSRihgLKHZ+DoHsO5bDEFKmHV3B0RnYMw1wVE+GmXA=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=EQSWTtJVq61nQT5LeZGFJzDAatd2/p2fAjVWfAOIESaV47dDFAcxbJhs5iVYMXXOH
-	 GodqhQGn8o7SJn4vki7BebEPlsEbZYqSeNLZN56agsp/Aaa9rq08/SJqNIGvBD9k9q
-	 Y5o5Am37XvQh0K0c8mqNpztyEjQV08fFs8TPSO8hF2uLYNeB0EGfl7AnZQrA04VHHU
-	 BKExUr2AuiU1WRvzHiwIIPM6MMAD/Lw/QhqIV/rRZd9fkLQFU1F0F6B1KLF71V1Z9p
-	 o6UN/2kTqjCa+tf/qBZX+ouVah+GOI5aCnZoXk5FXmxRyoj8qD8fCHpFFOUaCdsVUd
-	 NNfHUJCQRrn7g==
-X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
-From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
-To: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-coco@lists.linux.dev
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, steven.price@arm.com,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Claire Chang <tientzu@chromium.org>
-Subject: Re: [PATCH] dma-direct: swiotlb: Skip encryption toggles for
- swiotlb allocations
-In-Reply-To: <1290fd7e-bfaf-47ce-b12f-cca0b938b293@arm.com>
-References: <20260102155448.2554240-1-aneesh.kumar@kernel.org>
- <cddcaeff-9652-4685-ba6c-0fda79bd8680@arm.com>
- <yq5a7btr5wii.fsf@kernel.org>
- <1290fd7e-bfaf-47ce-b12f-cca0b938b293@arm.com>
-Date: Mon, 12 Jan 2026 21:12:56 +0530
-Message-ID: <yq5acy3eet1b.fsf@kernel.org>
+	s=k20201202; t=1768233220;
+	bh=Iwz2FZB7Ir4MOz88EBGnyMaOkJY3tnWlW7Bxq070cus=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=JxixVHp6QGt172wu0poHq5+oMZ2CU8nIbuhotT0mjSZb5/+6YJLBIk4TFWsb3ePV0
+	 5XjNL4IkcVx+tTURrRqMxqNJ19Sl1sjJGjk6ixKSDtR3nj0T3uPLSXGB+xwD/142C4
+	 nPMkQeQHmt+0dCAbBHuKnlQqiM661a1YmpoW1whGkqxGIAzhfTJ5r529xGeQJJ3k+Y
+	 SG5iCe6tsz1q2UB3Nm9X5i72LF6+R6e/NwKDCZAEQ0nK6FraXkn2KkZuM1QZSkq3h5
+	 XlpFtV2LXj2J5AH+QqlkxoWCbd4sOlpF1kdq1W/7ANqjOqWuIhvZTaBnm67ai+BLnx
+	 34gcMQZnsHKgw==
+Date: Mon, 12 Jan 2026 15:53:29 +0000
+From: Will Deacon <will@kernel.org>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Nicolin Chen <nicolinc@nvidia.com>, robin.murphy@arm.com,
+	joro@8bytes.org, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	skolothumtho@nvidia.com, praan@google.com,
+	xueshuai@linux.alibaba.com, smostafa@google.com
+Subject: Re: [PATCH rc v5 1/4] iommu/arm-smmu-v3: Add update_safe bits to fix
+ STE update sequence
+Message-ID: <aWUY-f3kvM94z4qh@willie-the-truck>
+References: <cover.1766093909.git.nicolinc@nvidia.com>
+ <58f5af553fa7c3b5fd16f1eb13a81ae428f85678.1766093909.git.nicolinc@nvidia.com>
+ <aV7OBrH-TDiGRblt@willie-the-truck>
+ <20260108003646.GA537728@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260108003646.GA537728@nvidia.com>
 
-Robin Murphy <robin.murphy@arm.com> writes:
+On Wed, Jan 07, 2026 at 08:36:46PM -0400, Jason Gunthorpe wrote:
+> On Wed, Jan 07, 2026 at 09:20:06PM +0000, Will Deacon wrote:
+> > >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  2 ++
+> > >  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c  | 18 ++++++++++---
+> > >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 27 ++++++++++++++-----
+> > >  3 files changed, 37 insertions(+), 10 deletions(-)
+> > 
+> > Hmm. So this appears to ignore the safe bits entirely, whereas the
+> > rationale for the change is that going from {MEV,EATS} disabled to
+> > enabled is safe (which I agree with). 
+> 
+> The argument was it doesn't matter for either direction be it disabled
+> to enabled or vice versa, see my reply to Mustfa in the v4 posting:
+> 
+> https://lore.kernel.org/all/20251218180129.GA254720@nvidia.com/
 
-> On 2026-01-09 2:51 am, Aneesh Kumar K.V wrote:
->> Robin Murphy <robin.murphy@arm.com> writes:
->>=20
->>> On 2026-01-02 3:54 pm, Aneesh Kumar K.V (Arm) wrote:
->>>> Swiotlb backing pages are already mapped decrypted via
->>>> swiotlb_update_mem_attributes(), so dma-direct does not need to call
->>>> set_memory_decrypted() during allocation or re-encrypt the memory on
->>>> free.
->>>>
->>>> Handle swiotlb-backed buffers explicitly: obtain the DMA address and
->>>> zero the linear mapping for lowmem pages, and bypass the decrypt/encry=
-pt
->>>> transitions when allocating/freeing from the swiotlb pool (detected via
->>>> swiotlb_find_pool()).
->>>
->>> swiotlb_update_mem_attributes() only applies to the default SWIOTLB
->>> buffer, while the dma_direct_alloc_swiotlb() path is only for private
->>> restricted pools (because the whole point is that restricted DMA devices
->>> cannot use the regular allocator/default pools). There is no redundancy
->>> here AFAICS.
->>>
->>=20
->> But rmem_swiotlb_device_init() is also marking the entire pool decrypted
->>=20
->> 	set_memory_decrypted((unsigned long)phys_to_virt(rmem->base),
->> 			     rmem->size >> PAGE_SHIFT);
->
-> OK, so why doesn't the commit message mention that instead of saying=20
-> something which fails to justify the patch at all? ;)
->
-> Furthermore, how much does this actually matter? The "real" restricted=20
-> DMA use-case is on systems where dma_set_decrypted() is a no-op anyway.=20
-> I know we used restricted DMA as a hack in the early days of CCA=20
-> prototyping, but is it intended to actually deploy that as a supported=20
-> and recommended mechanism now?
->
-> Note also that the swiotlb_alloc path is essentially an emergency=20
-> fallback, which doesn't work for all situations anyway - any restricted=20
-> device that actually needs to make significant coherent allocations (or=20
-> rather, that firmware cannot assume won't want to do so) should really=20
-> have a proper coherent pool alongside its restricted one. The expected=20
-> use-case here is for something like a wifi driver that only needs to=20
-> allocate one or two small coherent buffers once at startup, then do=20
-> everything else with streaming DMA.
->
+It would be good to include some of that rationale in the comment and
+commit message for patch 3, as at the moment it only talks about the
+change in one direction.
 
+I'm also still not convinced that this is generally safe, even if it
+works within what Linux currently does. For example, if somebody tries
+to disable S2S and enable ATS at the same time, couldn't you transiently
+get an illegal STE?
 
-I was aiming to bring more consistency in how swiotlb buffers are
-handled, specifically by treating all swiotlb memory as decrypted
-buffers, which is also how the current code behaves.
-
-If we are concluding that restricted DMA is not used in conjunction with
-memory encryption, then we could, in fact, remove the
-set_memory_decrypted() call from rmem_swiotlb_device_init() and
-instead add failure conditions for force_dma_unencrypted(dev) in
-is_swiotlb_for_alloc(). However, it=E2=80=99s worth noting that the initial
-commit did take the memory encryption feature into account
-(0b84e4f8b793eb4045fd64f6f514165a7974cd16).
-
-Please let me know if you think this needs to be fixed.
-
--aneesh
+Will
