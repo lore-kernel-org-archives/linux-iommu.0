@@ -1,182 +1,64 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1F550350D67
-	for <iommu@lists.linux.dev>; Tue, 13 Jan 2026 17:29:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from forward101d.mail.yandex.net (forward101d.mail.yandex.net [178.154.239.212])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6AC717B505
+	for <iommu@lists.linux.dev>; Tue, 13 Jan 2026 18:31:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.154.239.212
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768325384; cv=none; b=eg4hHd/53nH9CC1m+gSs7GOZ0mEVq4bExqdMjH4wqD/9kXhollDhceShyUMqX4qTspmB2eWMcG1pmwWill3hzG5+shq80CcY1VdGqDgzVa/kC8SD08x+Da3qDZRhZdDtcnkqQtU2WUKClsgqX2Ok+pCkRWdc60oSqxBbWJ3MDPg=
+	t=1768329097; cv=none; b=Ihgkp6NfFriPbQc4UHhRnaI+pY0M+5FyWuiX5nBJUKOOJLaYhh9/sB7VCTNfygn1n+16HT6kC4quRTkVCnvDsqreRDCsnNRC6ReBKqCipho4mr3rZzbQ9zOc0xV2bR4pqo0/RKTo3g4FFzqYpS0B3OzLcRVlCPqucWuOgc7gXYQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768325384; c=relaxed/simple;
-	bh=LhFzFpqZCkTlg+4EdN58/iujAtnb8yiY5L+KDY9IGBk=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=mtMHVspX3u/RzhpWfja1YUUj3tE9NQjf9NaIsYgXoz9EQC7zw2e/Dqd/jh8QNTOX5E0PhYenksmWr4E7wTkZT+AB5NoG8icO46rG8O/UFV9xJ8XpCAafzTU+iei3H+7KHpqr0RFUbt0LmhjB1i3TEhaZvfJwOBYobSJDHwQkG1Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=rEhrHDPf; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1768329097; c=relaxed/simple;
+	bh=kCMTfI7dzBOFipYIy5Kks1xdsteHQYxHHZjru9teJcI=;
+	h=Message-ID:Subject:From:To:Cc:Date:Content-Type:MIME-Version; b=qRH0MmNw6OmWLtl9nj2i2cljW5T6kRaF7r1f+LTkDLTJ62wV5lQLm37orzy8xO0nSxTF+eBObkyinIlhITp/NMT+kc/Wp/f1l0TYmlEanuFI3GAy72J1U/UZ64UWmci3nonXsIPujUgVxis6KpMMXHuk6NE+lb6LxDnqyr1lNr4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=yandex.ru; spf=pass smtp.mailfrom=yandex.ru; dkim=pass (1024-bit key) header.d=yandex.ru header.i=@yandex.ru header.b=ZcQ9T3se; arc=none smtp.client-ip=178.154.239.212
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=yandex.ru
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=yandex.ru
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="rEhrHDPf"
-Received: from localhost (unknown [20.236.11.42])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 62AE620B716E;
-	Tue, 13 Jan 2026 09:29:41 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 62AE620B716E
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1768325382;
-	bh=C4y6lqCer5WCpiCbWDllL4m7vUvxhKlPrlTUCsJaCKY=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=rEhrHDPf0ohClKYxtcWftDMzjclcsu19XUgvYouGFQ0IUPkhtcPJYct2FErUegenL
-	 sG2a7uFooNbvJQuyVHs7iEL5saHdANhDSbqSj0Plu8dz6BeoM503I77um3Vn7p2WjD
-	 IRV4xWtqXce+W7WPRG5BM1+dzopxxeMxzSo0xO1A=
-Date: Tue, 13 Jan 2026 09:29:40 -0800
-From: Jacob Pan <jacob.pan@linux.microsoft.com>
-To: Michael Kelley <mhklinux@outlook.com>
-Cc: Yu Zhang <zhangyu1@linux.microsoft.com>, "linux-kernel@vger.kernel.org"
- <linux-kernel@vger.kernel.org>, "linux-hyperv@vger.kernel.org"
- <linux-hyperv@vger.kernel.org>, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>, "linux-pci@vger.kernel.org"
- <linux-pci@vger.kernel.org>, "kys@microsoft.com" <kys@microsoft.com>,
- "haiyangz@microsoft.com" <haiyangz@microsoft.com>, "wei.liu@kernel.org"
- <wei.liu@kernel.org>, "decui@microsoft.com" <decui@microsoft.com>,
- "lpieralisi@kernel.org" <lpieralisi@kernel.org>, "kwilczynski@kernel.org"
- <kwilczynski@kernel.org>, "mani@kernel.org" <mani@kernel.org>,
- "robh@kernel.org" <robh@kernel.org>, "bhelgaas@google.com"
- <bhelgaas@google.com>, "arnd@arndb.de" <arnd@arndb.de>, "joro@8bytes.org"
- <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>,
- "easwar.hariharan@linux.microsoft.com"
- <easwar.hariharan@linux.microsoft.com>, "nunodasneves@linux.microsoft.com"
- <nunodasneves@linux.microsoft.com>, "mrathor@linux.microsoft.com"
- <mrathor@linux.microsoft.com>, "peterz@infradead.org"
- <peterz@infradead.org>, "linux-arch@vger.kernel.org"
- <linux-arch@vger.kernel.org>
-Subject: Re: [RFC v1 5/5] iommu/hyperv: Add para-virtualized IOMMU support
- for Hyper-V guest
-Message-ID: <20260113092940.000050b8@linux.microsoft.com>
-In-Reply-To: <SN6PR02MB41571D67D866538138D06585D481A@SN6PR02MB4157.namprd02.prod.outlook.com>
-References: <20251209051128.76913-1-zhangyu1@linux.microsoft.com>
-	<20251209051128.76913-6-zhangyu1@linux.microsoft.com>
-	<SN6PR02MB41572D46CF6C1DE68974EAA1D485A@SN6PR02MB4157.namprd02.prod.outlook.com>
-	<dws34g6znmam7eabwetg722b4wgf2wxufcqxqphhbqlryx23mb@we5utwanawe2>
-	<SN6PR02MB41571D67D866538138D06585D481A@SN6PR02MB4157.namprd02.prod.outlook.com>
-Organization: LSG
-X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
+	dkim=pass (1024-bit key) header.d=yandex.ru header.i=@yandex.ru header.b="ZcQ9T3se"
+Received: from mail-nwsmtp-smtp-production-main-52.klg.yp-c.yandex.net (mail-nwsmtp-smtp-production-main-52.klg.yp-c.yandex.net [IPv6:2a02:6b8:c42:ea2:0:640:ef77:0])
+	by forward101d.mail.yandex.net (Yandex) with ESMTPS id 04426C004D;
+	Tue, 13 Jan 2026 21:31:25 +0300 (MSK)
+Received: by mail-nwsmtp-smtp-production-main-52.klg.yp-c.yandex.net (smtp/Yandex) with ESMTPSA id IVYgsY1Gq0U0-k9uatQ9f;
+	Tue, 13 Jan 2026 21:31:24 +0300
+X-Yandex-Fwd: 1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex.ru; s=mail;
+	t=1768329084; bh=kCMTfI7dzBOFipYIy5Kks1xdsteHQYxHHZjru9teJcI=;
+	h=Date:Cc:To:From:Subject:Message-ID;
+	b=ZcQ9T3seB2K/MYqGqZbWCywQEOk6b9S4hop76LZ5JHi5fIz6VdUO7TsM4+7Ku6rnM
+	 cMJuhkigcwVAjn+PE3Ds2Lko6BcI8+kAi6JdQi1LVW0G2ADyWXquZo4ZAY0JP/REJK
+	 psBdSfGviRc0Rj8yWQhZ4O4wII4P2lQSf7bWtTl0=
+Authentication-Results: mail-nwsmtp-smtp-production-main-52.klg.yp-c.yandex.net; dkim=pass header.i=@yandex.ru
+Message-ID: <05fd3e4d1b7f4ef7b55c35d79fde55b3b3eaa47b.camel@yandex.ru>
+Subject: Possible mid-air JMB58x AHCI SATA reset / data loss
+From: Dmitry Antipov <dmantipov@yandex.ru>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: iommu@lists.linux.dev, support@minisforum.com
+Date: Tue, 13 Jan 2026 21:31:18 +0300
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.58.2 (3.58.2-1.fc43) 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
 
-Hi Michael,
+Hello,
 
-On Mon, 12 Jan 2026 17:48:30 +0000
-Michael Kelley <mhklinux@outlook.com> wrote:
+could someone please read and comment on https://www.reddit.com/r/MINISFORU=
+M/comments/1pbnql6/silent_data_corruption_on_n5_pro_nas?
+A few users of https://www.minisforum.com/products/n5 has suspecting a nast=
+y hardware bug resulting in data corruption on SATA drives,
+and an actual data corruption comes immediately after the message like:
 
-> From: Michael Kelley <mhklinux@outlook.com>
-> To: Yu Zhang <zhangyu1@linux.microsoft.com>
-> CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-> "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-> "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-> "linux-pci@vger.kernel.org"  <linux-pci@vger.kernel.org>,
-> "kys@microsoft.com" <kys@microsoft.com>,  "haiyangz@microsoft.com"
-> <haiyangz@microsoft.com>, "wei.liu@kernel.org"  <wei.liu@kernel.org>,
-> "decui@microsoft.com" <decui@microsoft.com>,  "lpieralisi@kernel.org"
-> <lpieralisi@kernel.org>, "kwilczynski@kernel.org"
-> <kwilczynski@kernel.org>, "mani@kernel.org" <mani@kernel.org>,
-> "robh@kernel.org" <robh@kernel.org>, "bhelgaas@google.com"
-> <bhelgaas@google.com>, "arnd@arndb.de" <arnd@arndb.de>,
-> "joro@8bytes.org"  <joro@8bytes.org>, "will@kernel.org"
-> <will@kernel.org>,  "robin.murphy@arm.com" <robin.murphy@arm.com>,
-> "easwar.hariharan@linux.microsoft.com"
-> <easwar.hariharan@linux.microsoft.com>,
-> "jacob.pan@linux.microsoft.com"  <jacob.pan@linux.microsoft.com>,
-> "nunodasneves@linux.microsoft.com"
-> <nunodasneves@linux.microsoft.com>, "mrathor@linux.microsoft.com"
-> <mrathor@linux.microsoft.com>, "peterz@infradead.org"
-> <peterz@infradead.org>,  "linux-arch@vger.kernel.org"
-> <linux-arch@vger.kernel.org> Subject: RE: [RFC v1 5/5] iommu/hyperv:
-> Add para-virtualized IOMMU support for  Hyper-V guest Date: Mon, 12
-> Jan 2026 17:48:30 +0000
->=20
-> From: Yu Zhang <zhangyu1@linux.microsoft.com> Sent: Monday, January
-> 12, 2026 8:56 AM
-> >=20
-> > On Thu, Jan 08, 2026 at 06:48:59PM +0000, Michael Kelley wrote: =20
-> > > From: Yu Zhang <zhangyu1@linux.microsoft.com> Sent: Monday,
-> > > December 8, 2025 9:11 PM =20
-> >=20
-> > <snip>
-> > Thank you so much, Michael, for the thorough review!
-> >=20
-> > I've snipped some comments I fully agree with and will address in
-> > next version. Actually, I have to admit I agree with your remaining
-> > comments below as well. :)
-> >  =20
-> > > > +struct hv_iommu_dev *hv_iommu_device;
-> > > > +static struct hv_iommu_domain hv_identity_domain;
-> > > > +static struct hv_iommu_domain hv_blocking_domain; =20
-> > >
-> > > Why is hv_iommu_device allocated dynamically while the two
-> > > domains are allocated statically? Seems like the approach could
-> > > be consistent, though maybe there's some reason I'm missing.
-> > > =20
-> >=20
-> > On second thought, `hv_identity_domain` and `hv_blocking_domain`
-> > should likely be allocated dynamically as well, consistent with
-> > `hv_iommu_device`. =20
->=20
-> I don't know if there's a strong rationale either way (static
-> allocation vs. dynamic). If the long-term expectation is that there
-> is never more than one PV IOMMU in a guest, then static would be OK.
-> If future direction allows that there could be multiple PV IOMMUs in
-> a guest, then doing dynamic from the start is justifiable (though the
-> current PV IOMMU hypercalls seem to assume only one PV IOMMU). But
-> either way, being consistent is desirable.
->=20
-I believe we only need a single global static identity domain here
-regardless how many vIOMMUs there may be. From the guest=E2=80=99s perspect=
-ive,
-the hvIOMMU only supports hardware=E2=80=91passthrough identity domains, wh=
-ich
-do not maintain any per=E2=80=91IOMMU state, i.e., there is no S1 IO page t=
-able
-based identity domain.
+[60281.710938] ahci 0000:04:00.0: Using 64-bit DMA addresses
 
-The expectation of physical IOMMU settings for guest identity
-domain should be as follows:
-- Intel vtd PASID entry PGTT =3D 010b (Second-stage Translation only)
-- AMD DTE TV=3D1; GV=3D0
+has appeared in kernel log.
 
-> >=20
-> > <snip>
-> >  =20
-> > > > +static void hv_iommu_shutdown(void)
-> > > > +{
-> > > > +	iommu_device_sysfs_remove(&hv_iommu_device->iommu);
-> > > > +
-> > > > +	kfree(hv_iommu_device);
-> > > > +}
-> > > > +
-> > > > +static struct syscore_ops hv_iommu_syscore_ops =3D {
-> > > > +	.shutdown =3D hv_iommu_shutdown,
-> > > > +}; =20
->  [...] =20
-> >=20
-> > For iommu_device_sysfs_remove(), I guess they are not necessary, and
-> > I will need to do some homework to better understand the sysfs. :)
-> > Originally, we wanted a shutdown routine to trigger some hypercall,
-> > so that Hyper-V will disable the DMA translation, e.g., during the
-> > VM reboot process. =20
->=20
-> I would presume that if Hyper-V reboots the VM, Hyper-V automatically
-> resets the PV IOMMU and prevents any further DMA operations. But
-> consider kexec(), where a new kernel gets loaded without going through
-> the hypervisor "reboot-this-VM" path. There have been problems in the
-> past with kexec() where parts of Hyper-V state for the guest didn't
-> get reset, and the PV IOMMU is likely something in that category. So
-> there may indeed be a need to tell the hypervisor to reset everything
-> related to the PV IOMMU. There are already functions to do Hyper-V
-> cleanup: see vmbus_initiate_unload() and hyperv_cleanup(). These
-> existing functions may be a better place to do PV IOMMU cleanup/reset
-> if needed.
-That would be my vote also.
+Feel free to ask more questions and even send kernel patches - I have this =
+(maybe buggy)
+hardware, can reproduce this issue, and run custom kernel as well.
+
+Thanks in advance,
+Dmitry
