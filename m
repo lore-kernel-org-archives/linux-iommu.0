@@ -1,289 +1,298 @@
-Received: from mail-dl1-f42.google.com (mail-dl1-f42.google.com [74.125.82.42])
+Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com [209.85.208.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42BF634EEFC
-	for <iommu@lists.linux.dev>; Tue, 13 Jan 2026 19:27:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.82.42
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768332465; cv=pass; b=ntlGzB3huqh4e/LRfy9zk1QXxlZdHi9pFOFNaKUp11MTKviNCuI3ykNwVDB01R90WmYXn15Vi8VuRvNCICjjnK0uLbvmA267tbgnULnM5JuPa6wIR/EcIHNGLLQLPVgsMJDtz8xt5GqvxWiOCW8Pc6cTQMmvoxwLKPAtnSNLRcs=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768332465; c=relaxed/simple;
-	bh=DRsD+O/Q90/DG7BNxa1cphbFxBXy2V4XhRj5OOFzD8Q=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Uj6hOsrtTrPEieS08iE8R1W2HZ6wh4iCjrsXGTg3X/b+aF23cxTeR303PdJp9iSBGG3TD1ds2MtAYraaMe6BAjr/fRNa4MGwiqGGB0yJOIL5AvmgmHu3dkPYn6vZDcuttjhtX09n3Q9diCoQQz1jPuLIUCgGNRlIJZBAljZtAiE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=DbvvoFF5; arc=pass smtp.client-ip=74.125.82.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FF8935EDC8
+	for <iommu@lists.linux.dev>; Tue, 13 Jan 2026 19:27:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.50
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1768332477; cv=none; b=ReeQQEAmX9myVsvJBXq4TJ/MIn5qQWeE+71b/BDeJnvjlXoVEV9YeK9CvCpqc7/ZiWMTAYAurbKw0ffMQMQTd7THnaRSSlPzY/YtkI5dXBsJouGVbJFe33csVJCPwzmSOUiGBdZb/hibiyFbrV1yAHIKEvQ7rz0o7k/ZQR1JPTQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1768332477; c=relaxed/simple;
+	bh=j3MTvudFYp/Z3BA8v0Nf5anA/VDSXeRdzFYQIHWSPAc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=eBbntptN0QaSBRGLoyZP7wZ0udTwSgS6Cjsj3OZrTBtWfwGsiK/xdGwraHr8Ttr6icg48QNvjbaryniPOa9XdvHe2wPd4sxmxazMz/XBQ4uLOe463z//YhoAsRzzmLNPGD8GjjVELVcIWQIDs07HdauDA6YTY5EH1nbaqi483rU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=fOsPCrJj; arc=none smtp.client-ip=209.85.208.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="DbvvoFF5"
-Received: by mail-dl1-f42.google.com with SMTP id a92af1059eb24-11a247de834so1297c88.0
-        for <iommu@lists.linux.dev>; Tue, 13 Jan 2026 11:27:44 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1768332463; cv=none;
-        d=google.com; s=arc-20240605;
-        b=TkDY+5KVZQNIyRmJWSgYClH2G9cO0f3f0g4w1VJbpOhdaC7AtWSlmFEvLo82qUGlTw
-         71HhhBHyUi+5WJDZuAq54uhgfvN1GlpUDL7dI3vClBPiSdDgJWDijyClUMgOiFCJ7Fue
-         CxVzyw5AKPWe+ARRnQvVJcMEMRaC0cRiuwWBSmYtQeAXzDM2Im2uwQARRwr14y/UplOl
-         lEe7OygJJGitGZEACq9E4eBvXTQEjFinJZQrtfCuokseqVS0DL9YKRO8dXbkSa1mB2OW
-         lVd9g/V8szYLvcrFhHQ16paLVZwnJREm3qE7cikp5RJzhaT5+tbX8RjIsgDckIy423Ws
-         boEA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=493EN+fYZC3l32j+GUSt7UmH+I1OsH8A7/4AZCa3vq0=;
-        fh=pQf5dIqv+lPrhWNnmsBKsIc0SGCu2yckX/Qxnfrv1UQ=;
-        b=VK4YjnZH+EoyFqSiszIr5b+gTElitacGTMItH3wAPL3riuTwdIl+sAvy92+1+uKm3j
-         PvWmsgFTTdOg5Dm8sj+3N9hIPeiPboJyQijOJdtrMTsCPIS/9KBHWasDRUvSTeT5rBD7
-         fYCykT/uoNEcGMmoxN6bLJg0jbFV6i/p4lOXd8wve3stJqH8yVsILx2K2I7otYnb92Ip
-         JgHCG1+5WUhBiuKkv8UHee0u9mBLV5Nh5PBdN1tnGz24+ZgjsKnIpkgwFZK7Q8+KwE6I
-         qSi2IdHzI+zzmBALDfvHCpqyTb7dEnVRRgCZ7J+wZ6DYF128b/6GhqRs6hR1MOISUVD6
-         gTdA==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="fOsPCrJj"
+Received: by mail-ed1-f50.google.com with SMTP id 4fb4d7f45d1cf-64b7318f1b0so11373801a12.2
+        for <iommu@lists.linux.dev>; Tue, 13 Jan 2026 11:27:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1768332463; x=1768937263; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=493EN+fYZC3l32j+GUSt7UmH+I1OsH8A7/4AZCa3vq0=;
-        b=DbvvoFF5sP86lhtM6wSJLcAkrK035UdzLU6+A8ILiE1MpAQCUy8hEffrsolfcTVpkX
-         8KL5fIG3f6N7ADnZQ0yLMsgQn82AyrOzgSMahDCd+QTcfOP65wxhIUcmMESzlrtWiBkU
-         o4qIx4+H8NBM8Pa+OPEgZcMx1/Vq07/BpAnm+oEG39cDhzQKEYVinCGD6REw+FmI/WRn
-         rkov3DQIquIyA8VuC6N6m5B6lpzgPTbMuo4GAAPQ6Sm50FdZmD9Wqb5eSst/IVztT6LI
-         1XG37joroWvUM6tkScdOs7F0J2YAQQbfoamgCaPHfIws92ijgP4fe8Dcjefo1K574p45
-         rZXQ==
+        d=chromium.org; s=google; t=1768332474; x=1768937274; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=LZBaZL2bW3E22EnT/tukcFNcW6Np3cq6LKK5NCta40E=;
+        b=fOsPCrJj6S+nzpZaJ1ZUWko/B+7rfL8jRdZQ8HcZMwrBrvFjnznQEIywOCBt3KIxiw
+         BtFOhLP5Z+dZ4nzswY0Rp90TiGTddncdVPgh8ASmZ7ekji/vQ44HYbuFGBzUocMynRe3
+         XQbo6pwIDjivJw3SIVKONujM8LnR6JdNcTD5k=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1768332463; x=1768937263;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=493EN+fYZC3l32j+GUSt7UmH+I1OsH8A7/4AZCa3vq0=;
-        b=dk6wlOH5hxLJBUTzxCLsgVsiFZvSWy+5TTtDXm4Gpen06eNomxx8BVVTLrlk+3TSeA
-         NukDcFo6dnbwaCUQMjfIRjKthLhkkc7a1t0d1dVSI/qWnGb5oBpJ/4RghzSSp4NB6yiq
-         nH0BI5rcQnpPwMNe9tbu+JNsq4SnuFgzNtV6n0cE0n0YVyfylLXQsJrJQ/gtWS66LD++
-         smL3Ded+UMGqv7AFGpQwES9DzQj/KgZMfV26yo7yN4hdIGINq6JDWPxr+NsUUvpXl+NL
-         rhn6u7YOQkKGotdQK+9PA78VBybNnhCnYVu2g4Mgefi2or0utsRAvKOKS3UTsvg4d6VV
-         899w==
-X-Forwarded-Encrypted: i=1; AJvYcCXVDfeXujnj2GqgPLdZCbfric8i+LNP4Xv8pGHxHYvtResLAGjxRa/ANK+gL4RTMnk0Z4upgA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxZWyzsFywAx/sAVovvMvcxinukZwv4NuDJnec3ZAwZOaLODG/K
-	TwXAeodcEzWqTYcU5dmaGdumjmy3UzRunPdGrjY6ejwhf7VSYG6SafYoIT73HoBBP0FkGjJbyys
-	G2GUIpAcqMtLI1aXrzmVEQ6u7pWMVuwj5C/SzXb4B
-X-Gm-Gg: AY/fxX5mwgDQbVcAYkqziimYm+7aNMyEOuUJuf/YStIsJY9JpGVhVFwQmO/DDNtFgiP
-	unoGQiFJ9iSaRspJU/91a0cZ2AhPSf540vK7hKeoda+RQCxB5BLcXjEFywdwW9RnXTGeO8hbJfb
-	DnaoKXoQeL6AUh4jFBJFF+xT4v7TA4pnCOLkmyffpeHv29+KO5wZdx8yks2LYQC/iF4qHoeTCT8
-	dXToGNor29c2EPJuWNNoiNlLUjL6PulegCtq2P5s256EpSQm1qRpUSskowlqp8zi+2En/+ILuGN
-	xLoSQBhYGiq1z6xuKHob04yCoQ==
-X-Received: by 2002:a05:7022:608c:b0:11a:44d1:533b with SMTP id
- a92af1059eb24-12336714909mr18498c88.8.1768332462242; Tue, 13 Jan 2026
- 11:27:42 -0800 (PST)
+        d=1e100.net; s=20230601; t=1768332474; x=1768937274;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=LZBaZL2bW3E22EnT/tukcFNcW6Np3cq6LKK5NCta40E=;
+        b=ffhZ6V6h+u0QY5L9/tiUr/uAUbdyTeC/GpuhMRdQy66SvnvlSusUoymb/4vJrqNiPO
+         BGmu6ydklItMGILQRynrjxXEKWAkaVLaVK/3TgdR9d3cyBaQktXmLE32Gp1dpHCvVtfQ
+         RCeDCOxWIDkVSKQwGDj12NjtzwbkMFAz30NaiNGg7KS0fYHpjJNuJXnCpAEiwrpQTsor
+         22VD+orKQ5beoe30/BKOC7IvaEW3UR8r+7A94smWO4fH/JZLW6wMg+wCQA/m/hdzp+4W
+         MopwbRBY38jm+I8rN28P9J2KfPGz0fiTzrKKPEmgiYd6ZXAnbjQt9tmn8xuN5snINFgk
+         HwkQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWvvGG2q5V5B0W9iYMbB45Mw2jCF2mYm+YhWiEHv940ZLeNAdr5jSqnFLL801FJWzuYzd1BEQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxoehSzw7+W+VVo/+P5uET1IQo3SPh/k3iTJ/9QcebKQ7KLgfWw
+	actIz9E5kJyBwYVt7innxGbb20MRJ6ZB+kKPNN/xFsH/gbr2NPmFqqzJ6kuVlxSJkQ==
+X-Gm-Gg: AY/fxX4Ofg/TKc+ynUMIP9W7pzy2YhkJOw+8ssbhlYB9PWTet4AhBfvByFykPpEA+Ed
+	jNSJGvosidKDYCNcyHYsB390CUcBS0T5FopnqqLshohyR2fVVIR529ii7fjXEF2O91f414HyUrf
+	1i25rG1Ja/fZuOnW32S/scpqDyyi+pnmT9pAxrgNTdlwvVIbK1BS2F9ust6tWaXflqthqcqH0JE
+	AB6xgeX2V6FqZjZLS9hfBgtJBQBR8dN/Nv0a3D316W14+ekMJ/B9Er9b5zlTsnwG9+p2PuWFJg+
+	3t//zp829JGdjMKG10NyTe3hgsE5w6oc0DLejp5ew3R8kmD4ETsq4dyizYIWkjQyxpDeEKrbURY
+	G++MWkklKWJyaCzwghWxKgK1D5lXnjk3qVDYhzL0beTMCO+N7hs8dCUXbzG1rvBdGs45QgLw+f2
+	Bb+zM7
+X-Received: by 2002:a17:906:c141:b0:b87:4f80:f4ca with SMTP id a640c23a62f3a-b87612c3b87mr19870766b.56.1768332474242;
+        Tue, 13 Jan 2026 11:27:54 -0800 (PST)
+Received: from google.com ([2a00:79e0:a:200:e42d:53cb:2a0f:636a])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b8724197145sm564109066b.11.2026.01.13.11.27.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 13 Jan 2026 11:27:53 -0800 (PST)
+Date: Tue, 13 Jan 2026 20:27:46 +0100
+From: Dmytro Maluka <dmaluka@chromium.org>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
+	Samiullah Khawaja <skhawaja@google.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	"Vineeth Pillai (Google)" <vineeth@bitbyteword.org>,
+	Aashish Sharma <aashish@aashishsharma.net>
+Subject: Re: [PATCH 1/3] iommu/vt-d: Use 128-bit atomic updates for context
+ entries
+Message-ID: <aWacsq9gDrAgPxli@google.com>
+References: <20260113030052.977366-1-baolu.lu@linux.intel.com>
+ <20260113030052.977366-2-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260113030052.977366-1-baolu.lu@linux.intel.com> <20260113030052.977366-4-baolu.lu@linux.intel.com>
-In-Reply-To: <20260113030052.977366-4-baolu.lu@linux.intel.com>
-From: Samiullah Khawaja <skhawaja@google.com>
-Date: Tue, 13 Jan 2026 11:27:30 -0800
-X-Gm-Features: AZwV_Qhnu8ou1jK_MHPEbHfY-n_CgTPLWVCRtVF6KGvYNKzPNds4-AUft-Rsd1k
-Message-ID: <CAAywjhSv56Y9rJLVdqV9N54c7S30ZUjyNh05xc-EW2+dS74GFQ@mail.gmail.com>
-Subject: Re: [PATCH 3/3] iommu/vt-d: Rework hitless PASID entry replacement
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>, 
-	Jason Gunthorpe <jgg@nvidia.com>, Dmytro Maluka <dmaluka@chromium.org>, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260113030052.977366-2-baolu.lu@linux.intel.com>
 
-On Mon, Jan 12, 2026 at 7:03=E2=80=AFPM Lu Baolu <baolu.lu@linux.intel.com>=
- wrote:
->
-> The Intel VT-d PASID table entry is 512 bits (64 bytes). Because the
-> hardware may fetch this entry in multiple 128-bit chunks, updating the
-> entire entry while it is active (P=3D1) risks a "torn" read where the
-> hardware observes an inconsistent state.
->
-> However, certain updates (e.g., changing page table pointers while
-> keeping the translation type and domain ID the same) can be performed
-> hitlessly. This is possible if the update is limited to a single
-> 128-bit chunk while the other chunks remains stable.
->
-> Introduce a hitless replacement mechanism for PASID entries:
->
-> - Update 'struct pasid_entry' with a union to support 128-bit
->   access via the newly added val128[4] array.
-> - Add pasid_support_hitless_replace() to determine if a transition
->   between an old and new entry is safe to perform atomically.
->   - For First-level/Nested translations: The first 128 bits (chunk 0)
->     must remain identical; chunk 1 is updated atomically.
+On Tue, Jan 13, 2026 at 11:00:46AM +0800, Lu Baolu wrote:
+> On Intel IOMMU, device context entries are accessed by hardware in
+> 128-bit chunks. Currently, the driver updates these entries by
+> programming the 'lo' and 'hi' 64-bit fields individually.
+> 
+> This creates a potential race condition where the IOMMU hardware may fetch
+> a context entry while the CPU has only completed one of the two 64-bit
+> writes. This "torn" entry — consisting of half-old and half-new data —
+> could lead to unpredictable hardware behavior, especially when
+> transitioning the 'Present' bit or changing translation types.
+> 
+> To ensure the IOMMU hardware always observes a consistent state, use
+> 128-bit atomic updates for context entries. This is achieved by building
+> context entries on the stack and write them to the table in a single
+> operation.
+> 
+> As this relies on arch_cmpxchg128_local(), restrict INTEL_IOMMU
+> dependencies to X86_64.
+> 
+> Fixes: ba39592764ed2 ("Intel IOMMU: Intel IOMMU driver")
+> Reported-by: Dmytro Maluka <dmaluka@chromium.org>
 
-Looking at the specs, the DID is part of the first 128 bits (chunk 0),
-so I guess for the first level the hitless replacement would not be
-supported since each domain will have a different DID?
->   - For Second-level/Pass-through: The second 128 bits (chunk 1)
->     must remain identical; chunk 0 is updated atomically.
-> - If hitless replacement is supported, use intel_iommu_atomic128_set()
->   to commit the change in a single 16-byte burst.
-> - If the changes are too extensive to be hitless, fall back to the
->   safe "tear down and re-setup" flow (clear present -> flush -> setup).
->
-> Fixes: 7543ee63e811 ("iommu/vt-d: Add pasid replace helpers")
+FWIW, Jason and Kevin contributed to this discovery more than I did. :)
+
+> Closes: https://lore.kernel.org/all/aTG7gc7I5wExai3S@google.com/
 > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 > ---
->  drivers/iommu/intel/pasid.h | 26 ++++++++++++++++-
->  drivers/iommu/intel/pasid.c | 57 ++++++++++++++++++++++++++++++++++---
->  2 files changed, 78 insertions(+), 5 deletions(-)
->
-> diff --git a/drivers/iommu/intel/pasid.h b/drivers/iommu/intel/pasid.h
-> index 35de1d77355f..b569e2828a8b 100644
-> --- a/drivers/iommu/intel/pasid.h
-> +++ b/drivers/iommu/intel/pasid.h
-> @@ -37,7 +37,10 @@ struct pasid_dir_entry {
->  };
->
->  struct pasid_entry {
-> -       u64 val[8];
-> +       union {
-> +               u64 val[8];
-> +               u128 val128[4];
-> +       };
->  };
->
->  #define PASID_ENTRY_PGTT_FL_ONLY       (1)
-> @@ -297,6 +300,27 @@ static inline void pasid_set_eafe(struct pasid_entry=
- *pe)
->         pasid_set_bits(&pe->val[2], 1 << 7, 1 << 7);
->  }
->
-> +static inline bool pasid_support_hitless_replace(struct pasid_entry *pte=
-,
-> +                                                struct pasid_entry *new,=
- int type)
+>  drivers/iommu/intel/Kconfig |  2 +-
+>  drivers/iommu/intel/iommu.h | 22 ++++++++++++++++++----
+>  drivers/iommu/intel/iommu.c | 30 +++++++++++++++---------------
+>  drivers/iommu/intel/pasid.c | 18 +++++++++---------
+>  4 files changed, 43 insertions(+), 29 deletions(-)
+> 
+> diff --git a/drivers/iommu/intel/Kconfig b/drivers/iommu/intel/Kconfig
+> index 5471f814e073..efda19820f95 100644
+> --- a/drivers/iommu/intel/Kconfig
+> +++ b/drivers/iommu/intel/Kconfig
+> @@ -11,7 +11,7 @@ config DMAR_DEBUG
+>  
+>  config INTEL_IOMMU
+>  	bool "Support for Intel IOMMU using DMA Remapping Devices"
+> -	depends on PCI_MSI && ACPI && X86
+> +	depends on PCI_MSI && ACPI && X86_64
+>  	select IOMMU_API
+>  	select GENERIC_PT
+>  	select IOMMU_PT
+> diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+> index 25c5e22096d4..b8999802f401 100644
+> --- a/drivers/iommu/intel/iommu.h
+> +++ b/drivers/iommu/intel/iommu.h
+> @@ -546,6 +546,16 @@ struct pasid_entry;
+>  struct pasid_state_entry;
+>  struct page_req_dsc;
+>  
+> +static __always_inline void intel_iommu_atomic128_set(u128 *ptr, u128 val)
 > +{
-> +       switch (type) {
-> +       case PASID_ENTRY_PGTT_FL_ONLY:
-> +       case PASID_ENTRY_PGTT_NESTED:
-> +               /* The first 128 bits remain the same. */
-> +               return READ_ONCE(pte->val[0]) =3D=3D READ_ONCE(new->val[0=
-]) &&
-> +                       READ_ONCE(pte->val[1]) =3D=3D READ_ONCE(new->val[=
-1]);
-> +       case PASID_ENTRY_PGTT_SL_ONLY:
-> +       case PASID_ENTRY_PGTT_PT:
-> +               /* The second 128 bits remain the same. */
-> +               return READ_ONCE(pte->val[2]) =3D=3D READ_ONCE(new->val[2=
-]) &&
-> +                       READ_ONCE(pte->val[3]) =3D=3D READ_ONCE(new->val[=
-3]);
-> +       default:
-> +               WARN_ON(true);
-> +       }
-> +
-> +       return false;
+> +	/*
+> +	 * Use the cmpxchg16b instruction for 128-bit atomicity. As updates
+> +	 * are serialized by a spinlock, we use the local (unlocked) variant
+> +	 * to avoid unnecessary bus locking overhead.
+> +	 */
+> +	arch_cmpxchg128_local(ptr, *ptr, val);
+
+Any reason why not cmpxchg128_local()? (except following the AMD driver)
+
+Otherwise,
+
+Reviewed-by: Dmytro Maluka <dmaluka@chromium.org>
+
 > +}
 > +
->  extern unsigned int intel_pasid_max_id;
->  int intel_pasid_alloc_table(struct device *dev);
->  void intel_pasid_free_table(struct device *dev);
+>  /*
+>   * 0: Present
+>   * 1-11: Reserved
+> @@ -569,8 +579,13 @@ struct root_entry {
+>   * 8-23: domain id
+>   */
+>  struct context_entry {
+> -	u64 lo;
+> -	u64 hi;
+> +	union {
+> +		struct {
+> +			u64 lo;
+> +			u64 hi;
+> +		};
+> +		u128 val128;
+> +	};
+>  };
+>  
+>  struct iommu_domain_info {
+> @@ -946,8 +961,7 @@ static inline int context_domain_id(struct context_entry *c)
+>  
+>  static inline void context_clear_entry(struct context_entry *context)
+>  {
+> -	context->lo = 0;
+> -	context->hi = 0;
+> +	intel_iommu_atomic128_set(&context->val128, 0);
+>  }
+>  
+>  #ifdef CONFIG_INTEL_IOMMU
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index 134302fbcd92..d721061ebda2 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -1147,8 +1147,8 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
+>  			domain_lookup_dev_info(domain, iommu, bus, devfn);
+>  	u16 did = domain_id_iommu(domain, iommu);
+>  	int translation = CONTEXT_TT_MULTI_LEVEL;
+> +	struct context_entry *context, new = {0};
+>  	struct pt_iommu_vtdss_hw_info pt_info;
+> -	struct context_entry *context;
+>  	int ret;
+>  
+>  	if (WARN_ON(!intel_domain_is_ss_paging(domain)))
+> @@ -1170,19 +1170,19 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
+>  		goto out_unlock;
+>  
+>  	copied_context_tear_down(iommu, context, bus, devfn);
+> -	context_clear_entry(context);
+> -	context_set_domain_id(context, did);
+> +	context_set_domain_id(&new, did);
+>  
+>  	if (info && info->ats_supported)
+>  		translation = CONTEXT_TT_DEV_IOTLB;
+>  	else
+>  		translation = CONTEXT_TT_MULTI_LEVEL;
+>  
+> -	context_set_address_root(context, pt_info.ssptptr);
+> -	context_set_address_width(context, pt_info.aw);
+> -	context_set_translation_type(context, translation);
+> -	context_set_fault_enable(context);
+> -	context_set_present(context);
+> +	context_set_address_root(&new, pt_info.ssptptr);
+> +	context_set_address_width(&new, pt_info.aw);
+> +	context_set_translation_type(&new, translation);
+> +	context_set_fault_enable(&new);
+> +	context_set_present(&new);
+> +	intel_iommu_atomic128_set(&context->val128, new.val128);
+>  	if (!ecap_coherent(iommu->ecap))
+>  		clflush_cache_range(context, sizeof(*context));
+>  	context_present_cache_flush(iommu, did, bus, devfn);
+> @@ -3771,8 +3771,8 @@ static int intel_iommu_set_dirty_tracking(struct iommu_domain *domain,
+>  static int context_setup_pass_through(struct device *dev, u8 bus, u8 devfn)
+>  {
+>  	struct device_domain_info *info = dev_iommu_priv_get(dev);
+> +	struct context_entry *context, new = {0};
+>  	struct intel_iommu *iommu = info->iommu;
+> -	struct context_entry *context;
+>  
+>  	spin_lock(&iommu->lock);
+>  	context = iommu_context_addr(iommu, bus, devfn, 1);
+> @@ -3787,17 +3787,17 @@ static int context_setup_pass_through(struct device *dev, u8 bus, u8 devfn)
+>  	}
+>  
+>  	copied_context_tear_down(iommu, context, bus, devfn);
+> -	context_clear_entry(context);
+> -	context_set_domain_id(context, FLPT_DEFAULT_DID);
+> +	context_set_domain_id(&new, FLPT_DEFAULT_DID);
+>  
+>  	/*
+>  	 * In pass through mode, AW must be programmed to indicate the largest
+>  	 * AGAW value supported by hardware. And ASR is ignored by hardware.
+>  	 */
+> -	context_set_address_width(context, iommu->msagaw);
+> -	context_set_translation_type(context, CONTEXT_TT_PASS_THROUGH);
+> -	context_set_fault_enable(context);
+> -	context_set_present(context);
+> +	context_set_address_width(&new, iommu->msagaw);
+> +	context_set_translation_type(&new, CONTEXT_TT_PASS_THROUGH);
+> +	context_set_fault_enable(&new);
+> +	context_set_present(&new);
+> +	intel_iommu_atomic128_set(&context->val128, new.val128);
+>  	if (!ecap_coherent(iommu->ecap))
+>  		clflush_cache_range(context, sizeof(*context));
+>  	context_present_cache_flush(iommu, FLPT_DEFAULT_DID, bus, devfn);
 > diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
-> index 4f36138448d8..da7ab18d3bfe 100644
+> index 3e2255057079..298a39183996 100644
 > --- a/drivers/iommu/intel/pasid.c
 > +++ b/drivers/iommu/intel/pasid.c
-> @@ -452,7 +452,20 @@ int intel_pasid_replace_first_level(struct intel_iom=
-mu *iommu,
->
->         WARN_ON(old_did !=3D pasid_get_domain_id(pte));
->
-> -       *pte =3D new_pte;
-> +       if (!pasid_support_hitless_replace(pte, &new_pte,
-> +                                          PASID_ENTRY_PGTT_FL_ONLY)) {
-> +               spin_unlock(&iommu->lock);
-> +               intel_pasid_tear_down_entry(iommu, dev, pasid, false);
-> +
-> +               return intel_pasid_setup_first_level(iommu, dev, fsptptr,
-> +                                                    pasid, did, flags);
-> +       }
-> +
-> +       /*
-> +        * A first-only hitless replace requires the first 128 bits to re=
-main
-> +        * the same. Only the second 128-bit chunk needs to be updated.
-> +        */
-> +       intel_iommu_atomic128_set(&pte->val128[1], new_pte.val128[1]);
->         spin_unlock(&iommu->lock);
->
->         intel_pasid_flush_present(iommu, dev, pasid, old_did, pte);
-> @@ -563,7 +576,19 @@ int intel_pasid_replace_second_level(struct intel_io=
-mmu *iommu,
->
->         WARN_ON(old_did !=3D pasid_get_domain_id(pte));
->
-> -       *pte =3D new_pte;
-> +       if (!pasid_support_hitless_replace(pte, &new_pte,
-> +                                          PASID_ENTRY_PGTT_SL_ONLY)) {
-> +               spin_unlock(&iommu->lock);
-> +               intel_pasid_tear_down_entry(iommu, dev, pasid, false);
-> +
-> +               return intel_pasid_setup_second_level(iommu, domain, dev,=
- pasid);
-> +       }
-> +
-> +       /*
-> +        * A second-only hitless replace requires the second 128 bits to =
-remain
-> +        * the same. Only the first 128-bit chunk needs to be updated.
-> +        */
-> +       intel_iommu_atomic128_set(&pte->val128[0], new_pte.val128[0]);
->         spin_unlock(&iommu->lock);
->
->         intel_pasid_flush_present(iommu, dev, pasid, old_did, pte);
-> @@ -707,7 +732,19 @@ int intel_pasid_replace_pass_through(struct intel_io=
-mmu *iommu,
->
->         WARN_ON(old_did !=3D pasid_get_domain_id(pte));
->
-> -       *pte =3D new_pte;
-> +       if (!pasid_support_hitless_replace(pte, &new_pte,
-> +                                          PASID_ENTRY_PGTT_PT)) {
-> +               spin_unlock(&iommu->lock);
-> +               intel_pasid_tear_down_entry(iommu, dev, pasid, false);
-> +
-> +               return intel_pasid_setup_pass_through(iommu, dev, pasid);
-> +       }
-> +
-> +       /*
-> +        * A passthrough hitless replace requires the second 128 bits to =
-remain
-> +        * the same. Only the first 128-bit chunk needs to be updated.
-> +        */
-> +       intel_iommu_atomic128_set(&pte->val128[0], new_pte.val128[0]);
->         spin_unlock(&iommu->lock);
->
->         intel_pasid_flush_present(iommu, dev, pasid, old_did, pte);
-> @@ -903,7 +940,19 @@ int intel_pasid_replace_nested(struct intel_iommu *i=
-ommu,
->
->         WARN_ON(old_did !=3D pasid_get_domain_id(pte));
->
-> -       *pte =3D new_pte;
-> +       if (!pasid_support_hitless_replace(pte, &new_pte,
-> +                                          PASID_ENTRY_PGTT_NESTED)) {
-> +               spin_unlock(&iommu->lock);
-> +               intel_pasid_tear_down_entry(iommu, dev, pasid, false);
-> +
-> +               return intel_pasid_setup_nested(iommu, dev, pasid, domain=
-);
-> +       }
-> +
-> +       /*
-> +        * A nested hitless replace requires the first 128 bits to remain
-> +        * the same. Only the second 128-bit chunk needs to be updated.
-> +        */
-> +       intel_iommu_atomic128_set(&pte->val128[1], new_pte.val128[1]);
->         spin_unlock(&iommu->lock);
->
->         intel_pasid_flush_present(iommu, dev, pasid, old_did, pte);
-> --
+> @@ -978,23 +978,23 @@ static int context_entry_set_pasid_table(struct context_entry *context,
+>  	struct device_domain_info *info = dev_iommu_priv_get(dev);
+>  	struct pasid_table *table = info->pasid_table;
+>  	struct intel_iommu *iommu = info->iommu;
+> +	struct context_entry new = {0};
+>  	unsigned long pds;
+>  
+> -	context_clear_entry(context);
+> -
+>  	pds = context_get_sm_pds(table);
+> -	context->lo = (u64)virt_to_phys(table->table) | context_pdts(pds);
+> -	context_set_sm_rid2pasid(context, IOMMU_NO_PASID);
+> +	new.lo = (u64)virt_to_phys(table->table) | context_pdts(pds);
+> +	context_set_sm_rid2pasid(&new, IOMMU_NO_PASID);
+>  
+>  	if (info->ats_supported)
+> -		context_set_sm_dte(context);
+> +		context_set_sm_dte(&new);
+>  	if (info->pasid_supported)
+> -		context_set_pasid(context);
+> +		context_set_pasid(&new);
+>  	if (info->pri_supported)
+> -		context_set_sm_pre(context);
+> +		context_set_sm_pre(&new);
+>  
+> -	context_set_fault_enable(context);
+> -	context_set_present(context);
+> +	context_set_fault_enable(&new);
+> +	context_set_present(&new);
+> +	intel_iommu_atomic128_set(&context->val128, new.val128);
+>  	__iommu_flush_cache(iommu, context, sizeof(*context));
+>  
+>  	return 0;
+> -- 
 > 2.43.0
->
+> 
