@@ -1,168 +1,182 @@
-Received: from sender4-pp-f112.zoho.com (sender4-pp-f112.zoho.com [136.143.188.112])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4BB82E2852
-	for <iommu@lists.linux.dev>; Tue, 13 Jan 2026 16:25:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.112
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768321558; cv=pass; b=DUHIs1Ljv/87ZjIbq/5PXchsBGrRgrarjfye/GKU7FHia5yZLBgHwmfutsWKFWzEF01dMbHSFdnQspVJBn8xi+VYnIW30rHyoURLfSkkNbXyCMcj5N0NZz9GO4jtflqlgUP9aeRKcLu46sIajxVH/hNX4gmqM/ShhvJgK/IzM4Q=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768321558; c=relaxed/simple;
-	bh=8N4Z3VgUP3MWafV03tf45truWB+Bm887dDFsDVFqNtQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=HU8c90Y8BQaY6x0LhDAR1IObbcA64nzQnuMWgiJJinr6y1T4k7JL98k001vM1864o13zGfmrCbTh4b/fLSkdh1NLi3FmMpVMWH9+B8rkhtpgUnziI9WLA7vAvnPdqfK4Ku+6+l9hDhvOxnj8M7WnT84UMR7De3iGKvOQl6aTj4g=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=benjamin.gaignard@collabora.com header.b=bFsn/J3v; arc=pass smtp.client-ip=136.143.188.112
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1F550350D67
+	for <iommu@lists.linux.dev>; Tue, 13 Jan 2026 17:29:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1768325384; cv=none; b=eg4hHd/53nH9CC1m+gSs7GOZ0mEVq4bExqdMjH4wqD/9kXhollDhceShyUMqX4qTspmB2eWMcG1pmwWill3hzG5+shq80CcY1VdGqDgzVa/kC8SD08x+Da3qDZRhZdDtcnkqQtU2WUKClsgqX2Ok+pCkRWdc60oSqxBbWJ3MDPg=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1768325384; c=relaxed/simple;
+	bh=LhFzFpqZCkTlg+4EdN58/iujAtnb8yiY5L+KDY9IGBk=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=mtMHVspX3u/RzhpWfja1YUUj3tE9NQjf9NaIsYgXoz9EQC7zw2e/Dqd/jh8QNTOX5E0PhYenksmWr4E7wTkZT+AB5NoG8icO46rG8O/UFV9xJ8XpCAafzTU+iei3H+7KHpqr0RFUbt0LmhjB1i3TEhaZvfJwOBYobSJDHwQkG1Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=rEhrHDPf; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=collabora.com header.i=benjamin.gaignard@collabora.com header.b="bFsn/J3v"
-ARC-Seal: i=1; a=rsa-sha256; t=1768321546; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=DLH1LzOnCusazCYXX75NuMLJP83JxGsgedB7KGa2sOKG+ZQh30Ix6X7QNmnVES7B4DAWPiylYujhrPJE9ePCwSkntdEA5nL1CVKVfteb1RaoOj1wF2i9iVWdBt5d3+qpkgc3kik760CsUjrhjGNU/rcCApQeFD8K33jsNJx3dpY=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1768321546; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=8MTiHfloStfO84sC7uhvGAOAjhnPQBxw01aUbUwJ3uE=; 
-	b=SIsa1Y1QhTpfxhlrqSjL11vkUWAxF4a14NFrBtl6MFGqPyH+MBBvJ1Pq0koF5F3ZfIv9DRZV/OGVvAP6TphHRk/eY/Nxj3li1dCQKtyGDIZPNXrrMsAcaK8AFQByg4q3VTz2Nn+c++AEG3M962pc0JuQ7h+kt4LacuI63sX/hVU=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=collabora.com;
-	spf=pass  smtp.mailfrom=benjamin.gaignard@collabora.com;
-	dmarc=pass header.from=<benjamin.gaignard@collabora.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1768321546;
-	s=zohomail; d=collabora.com; i=benjamin.gaignard@collabora.com;
-	h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-	bh=8MTiHfloStfO84sC7uhvGAOAjhnPQBxw01aUbUwJ3uE=;
-	b=bFsn/J3vxgypV86zjeTIuOFJba9OL7HTRMgwvfjDsAWBPlJqF5E9KD/xVc6mLg/A
-	z699RwO9we9zu32cwiVCaTr0RyW756EanyoVO6BITFHOkh7cbSZHv6VO63qwc4PN1T8
-	v4A4I79/8OHgO7pEwg7pT5zNNzTrbj1vp17KxPV4=
-Received: by mx.zohomail.com with SMTPS id 1768321544021680.0980354267477;
-	Tue, 13 Jan 2026 08:25:44 -0800 (PST)
-Message-ID: <68a49f8b-178c-4fa2-b4a9-315ad602271d@collabora.com>
-Date: Tue, 13 Jan 2026 17:25:38 +0100
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="rEhrHDPf"
+Received: from localhost (unknown [20.236.11.42])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 62AE620B716E;
+	Tue, 13 Jan 2026 09:29:41 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 62AE620B716E
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1768325382;
+	bh=C4y6lqCer5WCpiCbWDllL4m7vUvxhKlPrlTUCsJaCKY=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=rEhrHDPf0ohClKYxtcWftDMzjclcsu19XUgvYouGFQ0IUPkhtcPJYct2FErUegenL
+	 sG2a7uFooNbvJQuyVHs7iEL5saHdANhDSbqSj0Plu8dz6BeoM503I77um3Vn7p2WjD
+	 IRV4xWtqXce+W7WPRG5BM1+dzopxxeMxzSo0xO1A=
+Date: Tue, 13 Jan 2026 09:29:40 -0800
+From: Jacob Pan <jacob.pan@linux.microsoft.com>
+To: Michael Kelley <mhklinux@outlook.com>
+Cc: Yu Zhang <zhangyu1@linux.microsoft.com>, "linux-kernel@vger.kernel.org"
+ <linux-kernel@vger.kernel.org>, "linux-hyperv@vger.kernel.org"
+ <linux-hyperv@vger.kernel.org>, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>, "linux-pci@vger.kernel.org"
+ <linux-pci@vger.kernel.org>, "kys@microsoft.com" <kys@microsoft.com>,
+ "haiyangz@microsoft.com" <haiyangz@microsoft.com>, "wei.liu@kernel.org"
+ <wei.liu@kernel.org>, "decui@microsoft.com" <decui@microsoft.com>,
+ "lpieralisi@kernel.org" <lpieralisi@kernel.org>, "kwilczynski@kernel.org"
+ <kwilczynski@kernel.org>, "mani@kernel.org" <mani@kernel.org>,
+ "robh@kernel.org" <robh@kernel.org>, "bhelgaas@google.com"
+ <bhelgaas@google.com>, "arnd@arndb.de" <arnd@arndb.de>, "joro@8bytes.org"
+ <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>,
+ "easwar.hariharan@linux.microsoft.com"
+ <easwar.hariharan@linux.microsoft.com>, "nunodasneves@linux.microsoft.com"
+ <nunodasneves@linux.microsoft.com>, "mrathor@linux.microsoft.com"
+ <mrathor@linux.microsoft.com>, "peterz@infradead.org"
+ <peterz@infradead.org>, "linux-arch@vger.kernel.org"
+ <linux-arch@vger.kernel.org>
+Subject: Re: [RFC v1 5/5] iommu/hyperv: Add para-virtualized IOMMU support
+ for Hyper-V guest
+Message-ID: <20260113092940.000050b8@linux.microsoft.com>
+In-Reply-To: <SN6PR02MB41571D67D866538138D06585D481A@SN6PR02MB4157.namprd02.prod.outlook.com>
+References: <20251209051128.76913-1-zhangyu1@linux.microsoft.com>
+	<20251209051128.76913-6-zhangyu1@linux.microsoft.com>
+	<SN6PR02MB41572D46CF6C1DE68974EAA1D485A@SN6PR02MB4157.namprd02.prod.outlook.com>
+	<dws34g6znmam7eabwetg722b4wgf2wxufcqxqphhbqlryx23mb@we5utwanawe2>
+	<SN6PR02MB41571D67D866538138D06585D481A@SN6PR02MB4157.namprd02.prod.outlook.com>
+Organization: LSG
+X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v11 3/7] iommu: Add verisilicon IOMMU driver
-To: Will Deacon <will@kernel.org>
-Cc: joro@8bytes.org, robin.murphy@arm.com, robh@kernel.org,
- krzk+dt@kernel.org, conor+dt@kernel.org, heiko@sntech.de,
- nicolas.dufresne@collabora.com, p.zabel@pengutronix.de, mchehab@kernel.org,
- iommu@lists.linux.dev, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-rockchip@lists.infradead.org, linux-media@vger.kernel.org,
- kernel@collabora.com
-References: <20260107101005.84039-1-benjamin.gaignard@collabora.com>
- <20260107101005.84039-4-benjamin.gaignard@collabora.com>
- <aWZui-rn5RDPwpEO@willie-the-truck>
-Content-Language: en-US
-From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-In-Reply-To: <aWZui-rn5RDPwpEO@willie-the-truck>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
+Hi Michael,
 
-Le 13/01/2026 à 17:10, Will Deacon a écrit :
-> Hi Benjamin,
->
-> Thanks for posting a v11.
->
-> On Wed, Jan 07, 2026 at 11:09:53AM +0100, Benjamin Gaignard wrote:
->> The Verisilicon IOMMU hardware block can be found in combination
->> with Verisilicon hardware video codecs (encoders or decoders) on
->> different SoCs.
->> Enable it will allow us to use non contiguous memory allocators
->> for Verisilicon video codecs.
->> If both decoder and this iommu driver are compiled has modules
->> there is undefined symboles issues so this iommu driver could
->> only be compiled has built-in.
->>
->> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
->> ---
->> changes in version 11:
->> - Fix dependency issue when decoder driver is build as module.
->>
->>   drivers/iommu/Kconfig     |  11 +
->>   drivers/iommu/Makefile    |   1 +
->>   drivers/iommu/vsi-iommu.c | 808 ++++++++++++++++++++++++++++++++++++++
->>   include/linux/vsi-iommu.h |  21 +
->>   4 files changed, 841 insertions(+)
->>   create mode 100644 drivers/iommu/vsi-iommu.c
->>   create mode 100644 include/linux/vsi-iommu.h
-> Based on your reply to v9:
->
-> https://lore.kernel.org/all/0eff8b1a-c45f-47b1-a871-59f4a0101f0f@collabora.com/
->
-> I took another look at this to see whether it had changed significantly
-> from v6 when compared to the rockchip driver. Sadly, they still look
-> very similar to me and I continue to suspect that the hardware is a
-> derivative. I really don't understand why having a shared implementation
-> of the default domain ops is difficult or controversial. Have you tried
-> to write it?
->
-> However, given that nobody from the Rockchip side has contributed to the
-> discussion and you claim that this is a distinct piece of IP, I don't
-> want to block the merging of the driver by leaving the conversation
-> hanging.
->
-> There is still one thing I don't understand (which, amusingly, the
-> rockchip driver doesn't seem to suffer from):
->
->> +static void vsi_iommu_flush_tlb_all(struct iommu_domain *domain)
->> +{
->> +	struct vsi_iommu_domain *vsi_domain = to_vsi_domain(domain);
->> +	struct list_head *pos;
->> +	unsigned long flags;
->> +
->> +	spin_lock_irqsave(&vsi_domain->lock, flags);
->> +
->> +	list_for_each(pos, &vsi_domain->iommus) {
->> +		struct vsi_iommu *iommu;
->> +		int ret;
->> +
->> +		iommu = list_entry(pos, struct vsi_iommu, node);
->> +		ret = pm_runtime_resume_and_get(iommu->dev);
->> +		if (ret < 0)
->> +			continue;
->> +
->> +		spin_lock(&iommu->lock);
->> +
->> +		writel(VSI_MMU_BIT_FLUSH, iommu->regs + VSI_MMU_FLUSH_BASE);
->> +		writel(0, iommu->regs + VSI_MMU_FLUSH_BASE);
->> +
->> +		spin_unlock(&iommu->lock);
->> +		pm_runtime_put_autosuspend(iommu->dev);
->> +	}
->> +
->> +	spin_unlock_irqrestore(&vsi_domain->lock, flags);
->> +}
-> [...]
->
->> +static const struct iommu_ops vsi_iommu_ops = {
->> +	.identity_domain = &vsi_identity_domain,
->> +	.release_domain = &vsi_identity_domain,
->> +	.domain_alloc_paging = vsi_iommu_domain_alloc_paging,
->> +	.of_xlate = vsi_iommu_of_xlate,
->> +	.probe_device = vsi_iommu_probe_device,
->> +	.release_device = vsi_iommu_release_device,
->> +	.device_group = generic_single_device_group,
->> +	.owner = THIS_MODULE,
->> +	.default_domain_ops = &(const struct iommu_domain_ops) {
->> +		.attach_dev		= vsi_iommu_attach_device,
->> +		.map_pages		= vsi_iommu_map,
->> +		.unmap_pages		= vsi_iommu_unmap,
->> +		.flush_iotlb_all	= vsi_iommu_flush_tlb_all,
-> This has no callers and so your unmap routine appears to be broken.
+On Mon, 12 Jan 2026 17:48:30 +0000
+Michael Kelley <mhklinux@outlook.com> wrote:
 
-It is a leftover of previous attempt to allow video decoder to clean/flush
-the iommu by using a function from the API.
-Now it is using vsi_iommu_restore_ctx().
-I while remove it in version 12.
+> From: Michael Kelley <mhklinux@outlook.com>
+> To: Yu Zhang <zhangyu1@linux.microsoft.com>
+> CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+> "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+> "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+> "linux-pci@vger.kernel.org"  <linux-pci@vger.kernel.org>,
+> "kys@microsoft.com" <kys@microsoft.com>,  "haiyangz@microsoft.com"
+> <haiyangz@microsoft.com>, "wei.liu@kernel.org"  <wei.liu@kernel.org>,
+> "decui@microsoft.com" <decui@microsoft.com>,  "lpieralisi@kernel.org"
+> <lpieralisi@kernel.org>, "kwilczynski@kernel.org"
+> <kwilczynski@kernel.org>, "mani@kernel.org" <mani@kernel.org>,
+> "robh@kernel.org" <robh@kernel.org>, "bhelgaas@google.com"
+> <bhelgaas@google.com>, "arnd@arndb.de" <arnd@arndb.de>,
+> "joro@8bytes.org"  <joro@8bytes.org>, "will@kernel.org"
+> <will@kernel.org>,  "robin.murphy@arm.com" <robin.murphy@arm.com>,
+> "easwar.hariharan@linux.microsoft.com"
+> <easwar.hariharan@linux.microsoft.com>,
+> "jacob.pan@linux.microsoft.com"  <jacob.pan@linux.microsoft.com>,
+> "nunodasneves@linux.microsoft.com"
+> <nunodasneves@linux.microsoft.com>, "mrathor@linux.microsoft.com"
+> <mrathor@linux.microsoft.com>, "peterz@infradead.org"
+> <peterz@infradead.org>,  "linux-arch@vger.kernel.org"
+> <linux-arch@vger.kernel.org> Subject: RE: [RFC v1 5/5] iommu/hyperv:
+> Add para-virtualized IOMMU support for  Hyper-V guest Date: Mon, 12
+> Jan 2026 17:48:30 +0000
+>=20
+> From: Yu Zhang <zhangyu1@linux.microsoft.com> Sent: Monday, January
+> 12, 2026 8:56 AM
+> >=20
+> > On Thu, Jan 08, 2026 at 06:48:59PM +0000, Michael Kelley wrote: =20
+> > > From: Yu Zhang <zhangyu1@linux.microsoft.com> Sent: Monday,
+> > > December 8, 2025 9:11 PM =20
+> >=20
+> > <snip>
+> > Thank you so much, Michael, for the thorough review!
+> >=20
+> > I've snipped some comments I fully agree with and will address in
+> > next version. Actually, I have to admit I agree with your remaining
+> > comments below as well. :)
+> >  =20
+> > > > +struct hv_iommu_dev *hv_iommu_device;
+> > > > +static struct hv_iommu_domain hv_identity_domain;
+> > > > +static struct hv_iommu_domain hv_blocking_domain; =20
+> > >
+> > > Why is hv_iommu_device allocated dynamically while the two
+> > > domains are allocated statically? Seems like the approach could
+> > > be consistent, though maybe there's some reason I'm missing.
+> > > =20
+> >=20
+> > On second thought, `hv_identity_domain` and `hv_blocking_domain`
+> > should likely be allocated dynamically as well, consistent with
+> > `hv_iommu_device`. =20
+>=20
+> I don't know if there's a strong rationale either way (static
+> allocation vs. dynamic). If the long-term expectation is that there
+> is never more than one PV IOMMU in a guest, then static would be OK.
+> If future direction allows that there could be multiple PV IOMMUs in
+> a guest, then doing dynamic from the start is justifiable (though the
+> current PV IOMMU hypercalls seem to assume only one PV IOMMU). But
+> either way, being consistent is desirable.
+>=20
+I believe we only need a single global static identity domain here
+regardless how many vIOMMUs there may be. From the guest=E2=80=99s perspect=
+ive,
+the hvIOMMU only supports hardware=E2=80=91passthrough identity domains, wh=
+ich
+do not maintain any per=E2=80=91IOMMU state, i.e., there is no S1 IO page t=
+able
+based identity domain.
 
-Thanks for your review.
-Benjamin
+The expectation of physical IOMMU settings for guest identity
+domain should be as follows:
+- Intel vtd PASID entry PGTT =3D 010b (Second-stage Translation only)
+- AMD DTE TV=3D1; GV=3D0
 
->
-> Will
+> >=20
+> > <snip>
+> >  =20
+> > > > +static void hv_iommu_shutdown(void)
+> > > > +{
+> > > > +	iommu_device_sysfs_remove(&hv_iommu_device->iommu);
+> > > > +
+> > > > +	kfree(hv_iommu_device);
+> > > > +}
+> > > > +
+> > > > +static struct syscore_ops hv_iommu_syscore_ops =3D {
+> > > > +	.shutdown =3D hv_iommu_shutdown,
+> > > > +}; =20
+>  [...] =20
+> >=20
+> > For iommu_device_sysfs_remove(), I guess they are not necessary, and
+> > I will need to do some homework to better understand the sysfs. :)
+> > Originally, we wanted a shutdown routine to trigger some hypercall,
+> > so that Hyper-V will disable the DMA translation, e.g., during the
+> > VM reboot process. =20
+>=20
+> I would presume that if Hyper-V reboots the VM, Hyper-V automatically
+> resets the PV IOMMU and prevents any further DMA operations. But
+> consider kexec(), where a new kernel gets loaded without going through
+> the hypervisor "reboot-this-VM" path. There have been problems in the
+> past with kexec() where parts of Hyper-V state for the guest didn't
+> get reset, and the PV IOMMU is likely something in that category. So
+> there may indeed be a need to tell the hypervisor to reset everything
+> related to the PV IOMMU. There are already functions to do Hyper-V
+> cleanup: see vmbus_initiate_unload() and hyperv_cleanup(). These
+> existing functions may be a better place to do PV IOMMU cleanup/reset
+> if needed.
+That would be my vote also.
