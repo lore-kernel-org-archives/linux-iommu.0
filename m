@@ -1,104 +1,85 @@
-Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D08DB1E98E6
-	for <iommu@lists.linux.dev>; Wed, 14 Jan 2026 11:12:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7632397AA2;
+	Wed, 14 Jan 2026 12:18:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768389170; cv=none; b=D3ei+2VzZ34pnIx80ihs0Y5N1e1ga56BaHjz9IFgc/8VTqqe1y9k+sS3G9yunfEw1/EU6CHI4Rq1gsrA8B4xMaLfdY/2jh3hbt+HYoaaxM7nWnft3mhoVbMWRWO9ywUpgqhoRgsV+3+76nWW6s5gERLcgVH/XdAOm64Oqia1VNM=
+	t=1768393103; cv=none; b=TZPyuo2bjuwUqyrXwvRu76yWaC3K4ANpMK3lRK4WORNlrBbwht9pVg5qtJWhMZB/Fa5Jsiq8fY/MuK8A1ien6HqF884v8ZQWkco9WQQbCYwTVr9qSpvnuL7ZibKhQlcONbfeAxux+yLGuKRi1stGg/0dWi88l24NdFDlHxaJPQk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768389170; c=relaxed/simple;
-	bh=YiiIXB4m376SMBEYw0oDLToDNFi4w0vs0fNtZFVXXAg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=bvfMrMf7a75FnxW4HcoyuPBhub7L5vr7FG3SjvK0uxPYBNpjTLEJjK+kHDI5br/ovQqouCznTmxyVQ/zce2ltEaSUPdOB/Cc7CQs65j+0EJV+j1CmWNQxaCehB6fbPPMUiR2K1zpygQzAkhAijR0J7CY3+fkgqCU92Lu6jPb8QY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=TUGr4AYO; arc=none smtp.client-ip=209.85.208.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
+	s=arc-20240116; t=1768393103; c=relaxed/simple;
+	bh=kphkpO43U3xs8Hu/vDSQXNFGwyRGtpggdrrNZNCgHek=;
+	h=Date:From:To:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=k+tQyeJLbQmjnfEM444gv8oNXUghf3nIl/2Xpjy0ue56Q9sbLj/Yg11rEdQGBj9IBSSB4q4qTWvzefnLiKS/yBdSMjdzB7X9QFYuUIIMGDrZmYH8NJF25PQ4Abh3CUeyHpw0r13ULk854vpXLcDg9p/UJZXxa6Q4w6Rxy3OQJxA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VtHY2A2P; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="TUGr4AYO"
-Received: by mail-ed1-f43.google.com with SMTP id 4fb4d7f45d1cf-64b791b5584so14178289a12.0
-        for <iommu@lists.linux.dev>; Wed, 14 Jan 2026 03:12:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1768389167; x=1768993967; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=xuErrEDD6LEKFLnxAkiNejSn6LYGgcXZoCz48zROcO0=;
-        b=TUGr4AYOaxrE+z3D4qknaOvVTWA0gSkWb7peMrfyOjpN5d1gDIV0hKpOU+iXvr94zX
-         dNVkM3fN/y/cczwfDFDz9q+uQx0PVslma8RYw9L0Q8p/VhMRVmO2/5mzMFVmQSDcXRsb
-         AEHcsO1O+TVsGUi3Hzh3+4KulJvGOQVZMfyMU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1768389167; x=1768993967;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=xuErrEDD6LEKFLnxAkiNejSn6LYGgcXZoCz48zROcO0=;
-        b=YwzVOceU3qd2qjmaQ/cOHPlZZ+DEzMja0b01se4qXnHKVq3TexTUpao7fYCQ6bAZ5y
-         2JW7v6Xo4Rn/eWUGMYtdJcQJPRYE8ZzGNHVJ2edJClCETfarQVWSiOin5qhZJfO9mYad
-         Y+cSa/2h2ZQIBKfdlWteaw83JsXbD6kAjSeOtI7gaJzINFbIffJZnb/iyHeiDmZD1477
-         Z/Zjro6JL5CS7wzasIUQWD4Pa0FDUZRwWAyY+G3TDidrer86+CDyJnlVQcV3o0uD7j90
-         sjGm4yJp4WI3z9j5lWckZLQI62Om0fhkhjlrvGqLu6L+FkaQBCuHn3/pMlSq3W/v3OlE
-         DyEw==
-X-Forwarded-Encrypted: i=1; AJvYcCXE6ANMQFoZrcQC35RDXPReZmV2F/2R45c2PjXaQVMx9xEI6LdmaAw+aKvcxEKZ8HFp3wEAKA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yzcdjzn4QfCzuSpE1QFA+7KXtGhnPJ1dpukuVhsDNuTXLFJkw9Z
-	/y5T4qyqqVkk40vbtCPWKKDm8D5IL+3K1xhsMKAwR77la9X1Wnu/IXCTDVFf2HPkcw==
-X-Gm-Gg: AY/fxX4s+O7u/qbXZPBEP3+7MjH9MrLi+TK3Z1Tn/DXezHnny7otGzmdiGKCL/CB+77
-	aALX/P2mozwfyNzCK2RvViFcTgtfx26XVLgGMyHXU+4PeZsHoCKwbi4clYd/OxsD4h8Tjey4CpH
-	leJwa0Cp8MMwTgolmCde0heOcJ8am3G+S6ux1cy3XwWUBMQupUPKexkvI8ahJRSwXl6fzp0Tbr8
-	LWlv5Qgw5WT3qB+U4gXG5TukKXZQBdakIr1HXhr3E6ZYJnNWjutn5SsLxsRwbGaHIsBGCrIp9Q2
-	O0VPiifMjRtP/aWBJJGrLsRjG2IxRzdTR0z+gPR3OvX3qLYXTywyrjrwL8qT+tebi/27+7dc+xF
-	Wnh7ql6P0MhBQ5b9MPukjCuA/P1xCKyLSTAfj9bW1GfVoaFEJ92vwKTAwQfjtYj5EpNGP3wA2dI
-	25skyiLqT45i4Q2bwMWab3
-X-Received: by 2002:a17:907:6d19:b0:b87:892:f43f with SMTP id a640c23a62f3a-b876108019emr184539366b.29.1768389167032;
-        Wed, 14 Jan 2026 03:12:47 -0800 (PST)
-Received: from mitya-t14-2025 ([2a02:a31b:20c3:6680:8f9d:1786:e151:a9f5])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b842a563f0esm2532511266b.60.2026.01.14.03.12.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Jan 2026 03:12:46 -0800 (PST)
-Date: Wed, 14 Jan 2026 12:12:40 +0100
-From: Dmytro Maluka <dmaluka@chromium.org>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VtHY2A2P"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3159C16AAE;
+	Wed, 14 Jan 2026 12:18:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1768393102;
+	bh=kphkpO43U3xs8Hu/vDSQXNFGwyRGtpggdrrNZNCgHek=;
+	h=Date:From:To:Subject:References:In-Reply-To:From;
+	b=VtHY2A2PoHXvJAI3LMSsL+HyLEeHCtSGgKPp6a+dXtGF+CLsybGNKbmvKBUBWia3N
+	 WzDOaC8LZwddJrTiwDuAvztJ2Cj6lbzW1QhIsPa2Yj7gshUYGiE+UnyC+TOrtdMm/g
+	 w1z2AAwKhhUC2jnihuALXEURtgZdp20+biBdG4c3/EUMr7V2orcFxiAsimeIxtOnKS
+	 fLsmHd7cMnVsC8ycZcOC8GfU+l75TBXsIJOO7clPXSbuJAuxBDrzz2EjRR1ts6eoAt
+	 WlTQrxGaNTudz8vRy+m7KhkdV2QM6ewUI891wPgHouxLWeGmg1Hv3j8OlX/YjyDn48
+	 v0y4wibp7fC8w==
+Date: Wed, 14 Jan 2026 14:18:19 +0200
+From: Leon Romanovsky <leon@kernel.org>
+To: Alex Williamson <alex@shazbot.org>, linux-media@vger.kernel.org,
+	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	kvm@vger.kernel.org, Sumit Semwal <sumit.semwal@linaro.org>,
+	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
-	Samiullah Khawaja <skhawaja@google.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	"Vineeth Pillai (Google)" <vineeth@bitbyteword.org>,
-	Aashish Sharma <aashish@aashishsharma.net>
-Subject: Re: [PATCH 2/3] iommu/vt-d: Clear Present bit before tearing down
- PASID entry
-Message-ID: <aWd6KIGBiE-nL2IT@mitya-t14-2025>
-References: <20260113030052.977366-1-baolu.lu@linux.intel.com>
- <20260113030052.977366-3-baolu.lu@linux.intel.com>
- <aWaeUJcAFQ_vbJtd@google.com>
- <8e232d7f-9436-401e-9abc-308492a1fcbf@linux.intel.com>
+	Yishai Hadas <yishaih@nvidia.com>,
+	Shameer Kolothum <skolothumtho@nvidia.com>,
+	Ankit Agrawal <ankita@nvidia.com>,
+	Matthew Wilcox <willy@infradead.org>, Jens Axboe <axboe@kernel.dk>
+Subject: Re: types: reuse common =?utf-8?Q?phys=5Fv?=
+ =?utf-8?Q?ec_type_instead_of_DMABUF_open=E2=80=91coded?= variant
+Message-ID: <20260114121819.GB10680@unreal>
+References: <20260107-convert-to-pvec-v1-1-6e3ab8079708@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <8e232d7f-9436-401e-9abc-308492a1fcbf@linux.intel.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260107-convert-to-pvec-v1-1-6e3ab8079708@nvidia.com>
 
-On Wed, Jan 14, 2026 at 01:38:13PM +0800, Baolu Lu wrote:
-> On 1/14/26 03:34, Dmytro Maluka wrote:
-> > On Tue, Jan 13, 2026 at 11:00:47AM +0800, Lu Baolu wrote:
-> > > +	intel_pasid_clear_entry(iommu, dev, pasid, fault_ignore);
-> > Is it safe to do this with iommu->lock already unlocked?
+On Wed, Jan 07, 2026 at 11:14:14AM +0200, Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@nvidia.com>
 > 
-> Yes, it is. The PASID entry lifecycle is serialized by the iommu_group-
-> >mutex in the iommu core, which ensures that no other thread can attempt
-> to allocate or setup this same PASID until intel_pasid_tear_down_entry()
-> has returned.
+> After commit fcf463b92a08 ("types: move phys_vec definition to common header"),
+> we can use the shared phys_vec type instead of the DMABUF‑specific
+> dma_buf_phys_vec, which duplicated the same structure and semantics.
 > 
-> The iommu->lock is held during the initial transition (P->0) to ensure
-> atomicity against other hardware-table walkers, but once the P bit is
-> cleared and the caches are flushed, the final zeroing of the 'dead'
-> entry does not strictly require the spinlock because the PASID remains
-> reserved in software until the function completes.
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> ---
+> Alex,
+> 
+> According to diffstat, VFIO is the subsystem with the largest set of changes,
+> so it would be great if you could take it through your tree.
+> 
+> The series is based on the for-7.0/blk-pvec shared branch from Jens:
+> https://git.kernel.org/pub/scm/linux/kernel/git/axboe/linux.git/log/?h=for-7.0/blk-pvec
+> 
+> Thanks
+> ---
 
-Ok. Just to understand: "other hardware-table walkers" means some
-software walkers, not hardware ones? Which software walkers are those?
-(I can't imagine how holding a spinlock could prevent the hardware from
-walking those tables. :))
+Alex,
+
+Could you please move this patch forward? We have the RDMA series [1] that
+depends on this rename, and I would like to base it on the shared branch.
+
+[1] https://lore.kernel.org/all/20260108-dmabuf-export-v1-0-6d47d46580d3@nvidia.com/
+
+Thanks
