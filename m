@@ -1,168 +1,143 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47E841E5B7A;
-	Wed, 14 Jan 2026 09:49:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6DA3538B989
+	for <iommu@lists.linux.dev>; Wed, 14 Jan 2026 10:09:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.251.105.195
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768384178; cv=none; b=D1nnPjdA49Nj4GjV9FLFb/hz4vGrePlLv2AJPgLRkUn/Vu4FuAgQYxT6me+3AET4EIh0n1ejT1M9LrWloYKW4EibKHc7uuiGZfCtr7MC7zm6z2509B+egmfe7Cr7nvY5BOcbVfxWPTvvmJcDnLcLSd3UOhD9YZwOh7Dr77OqwdA=
+	t=1768385370; cv=none; b=FXC58IeOIj5xlIQdJACVfKe/OkgGQ/Jni8TZco2zgxLhHq6+eE8VZCQ0nRd2J1mNzvKp0hjoSwRJlyn1Y3cU1eYIFA2+/r8HwCJBjntY2Nc7Hffqhgq+Aj+oOmmafljDHsX9kcfLAm4a9FDm4z57vDTMfCoxsg35jUypZF5Pqlo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768384178; c=relaxed/simple;
-	bh=u55y8FLLXt3PA7k6Z//td6lIvEIDtfft8qfles6S5/Y=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=Kt1FcVL0VRKlYydELo7a7QDO0AEx8veyNPFjtKKtl7w9HSPyeNad92nZBWx+LvCWX9a0QIsxn/zTSFDGTwlDMXTyqFF5NUF+30/dcEY3nZDsTOgl/2urKLr64rWcnutHcRKIvtdYmL2jRR6yemQRACtl473qbEQRVbQZzibsdS0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qC5SYAwZ; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1768385370; c=relaxed/simple;
+	bh=DNtLMGNbZb6Rx7hXH70qj+NI37bo1I4GXdx0IehFZUk=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=b8aW7/I5/kZAggE/MkXQx8whlQOA6g+l5WdSq8LyXNYpkB3yAI+rvzTUc7uGBztK5I30jYU4DqQjt4jdzD/1jyLgG9G/4rV461u+LY0BvbXltYePGtv4e985aH251VzSiDTEiOwGABFYYk6t9KeURePYhE3h6bQm+RgiL2PSFT0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=AlnMEg2e; arc=none smtp.client-ip=148.251.105.195
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qC5SYAwZ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FFCBC4CEF7;
-	Wed, 14 Jan 2026 09:49:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1768384177;
-	bh=u55y8FLLXt3PA7k6Z//td6lIvEIDtfft8qfles6S5/Y=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=qC5SYAwZeHK7TCOQ8roMntT+rill4iXmTCvtjvcsq/Gc54jPMYvMkixOtG8V3e/i4
-	 Y/VBpdeV22wy+2zkqul5FtxJRU8QCuuK2l/qt7b1jlhpcB1zy7oIU60aIKWXrxR+F5
-	 n0EWf+mfiSqZ4blXp7MaqImCnHb7RJ2Pe9max5JoKZAc77Iu6ohrU5m5bVfdiudiJN
-	 VzUfUKnKE1Ncevzatsoqkk9ZASvZdj/AjK6ZmdWWW0YZ0GdKgSUC0WC/rG5qSM0bKf
-	 q4ycrB1quZFUb24RLAijUk2TfauNbcfxHp4orpvicNn3rGXYK7hwUl5S3bT0A4jOqR
-	 SmvhbXAoyxokQ==
-X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
-From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
-To: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-coco@lists.linux.dev
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, steven.price@arm.com,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Claire Chang <tientzu@chromium.org>
-Subject: Re: [PATCH] dma-direct: swiotlb: Skip encryption toggles for
- swiotlb allocations
-In-Reply-To: <yq5acy3eet1b.fsf@kernel.org>
-References: <20260102155448.2554240-1-aneesh.kumar@kernel.org>
- <cddcaeff-9652-4685-ba6c-0fda79bd8680@arm.com>
- <yq5a7btr5wii.fsf@kernel.org>
- <1290fd7e-bfaf-47ce-b12f-cca0b938b293@arm.com>
- <yq5acy3eet1b.fsf@kernel.org>
-Date: Wed, 14 Jan 2026 15:19:31 +0530
-Message-ID: <yq5aldi0cyms.fsf@kernel.org>
+	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="AlnMEg2e"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1768385367;
+	bh=DNtLMGNbZb6Rx7hXH70qj+NI37bo1I4GXdx0IehFZUk=;
+	h=From:To:Cc:Subject:Date:From;
+	b=AlnMEg2e1zxsSG5taOVeiWQd8KWq7fUvwlsgur8Ag9kbN15koWkGWxik7QdVGAALc
+	 2RqifSLwOa9W/fgtUsmMCczEWbf9kQMb6+6vZOlgg1OmJ+R+Av7Lc0++t6z5H0lQd6
+	 aycLkCZKNp0jyybwWskXmyhwUXYBFLeuF+Dd+MbUVrCbAqjJrUp9nFYZSlZ1x646Jj
+	 wv0HoXXrFDocjr49DTid7d1vaFbwyKrhjRuE6Fp1AjwfAhrjXZW1El/7ZBKYGpFV9k
+	 oziHsI3omcdIm/fwHcpWJv1ebzgyhoo+V2NhtrKPL6BqsctagRHYgPrckibpA8RDuQ
+	 RhytmLaV0rmKQ==
+Received: from benjamin-XPS-13-9310.. (unknown [IPv6:2a01:e0a:120:3210:1dad:60e8:7174:bd20])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: benjamin.gaignard)
+	by bali.collaboradmins.com (Postfix) with ESMTPSA id 512CD17E10C8;
+	Wed, 14 Jan 2026 11:09:27 +0100 (CET)
+From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+To: joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	heiko@sntech.de,
+	nicolas.dufresne@collabora.com,
+	p.zabel@pengutronix.de,
+	mchehab@kernel.org
+Cc: iommu@lists.linux.dev,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org,
+	linux-media@vger.kernel.org,
+	kernel@collabora.com,
+	Benjamin Gaignard <benjamin.gaignard@collabora.com>
+Subject: [PATCH v12 0/6] Add support for Verisilicon IOMMU used by media
+Date: Wed, 14 Jan 2026 11:09:12 +0100
+Message-ID: <20260114100922.149187-1-benjamin.gaignard@collabora.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=a
+Content-Transfer-Encoding: 8bit
 
-Aneesh Kumar K.V <aneesh.kumar@kernel.org> writes:
+Hi all,
 
-> Robin Murphy <robin.murphy@arm.com> writes:
->
->> On 2026-01-09 2:51 am, Aneesh Kumar K.V wrote:
->>> Robin Murphy <robin.murphy@arm.com> writes:
->>>=20
->>>> On 2026-01-02 3:54 pm, Aneesh Kumar K.V (Arm) wrote:
->>>>> Swiotlb backing pages are already mapped decrypted via
->>>>> swiotlb_update_mem_attributes(), so dma-direct does not need to call
->>>>> set_memory_decrypted() during allocation or re-encrypt the memory on
->>>>> free.
->>>>>
->>>>> Handle swiotlb-backed buffers explicitly: obtain the DMA address and
->>>>> zero the linear mapping for lowmem pages, and bypass the decrypt/encr=
-ypt
->>>>> transitions when allocating/freeing from the swiotlb pool (detected v=
-ia
->>>>> swiotlb_find_pool()).
->>>>
->>>> swiotlb_update_mem_attributes() only applies to the default SWIOTLB
->>>> buffer, while the dma_direct_alloc_swiotlb() path is only for private
->>>> restricted pools (because the whole point is that restricted DMA devic=
-es
->>>> cannot use the regular allocator/default pools). There is no redundancy
->>>> here AFAICS.
->>>>
->>>=20
->>> But rmem_swiotlb_device_init() is also marking the entire pool decrypted
->>>=20
->>> 	set_memory_decrypted((unsigned long)phys_to_virt(rmem->base),
->>> 			     rmem->size >> PAGE_SHIFT);
->>
->> OK, so why doesn't the commit message mention that instead of saying=20
->> something which fails to justify the patch at all? ;)
->>
->> Furthermore, how much does this actually matter? The "real" restricted=20
->> DMA use-case is on systems where dma_set_decrypted() is a no-op anyway.=
-=20
->> I know we used restricted DMA as a hack in the early days of CCA=20
->> prototyping, but is it intended to actually deploy that as a supported=20
->> and recommended mechanism now?
->>
->> Note also that the swiotlb_alloc path is essentially an emergency=20
->> fallback, which doesn't work for all situations anyway - any restricted=
-=20
->> device that actually needs to make significant coherent allocations (or=
-=20
->> rather, that firmware cannot assume won't want to do so) should really=20
->> have a proper coherent pool alongside its restricted one. The expected=20
->> use-case here is for something like a wifi driver that only needs to=20
->> allocate one or two small coherent buffers once at startup, then do=20
->> everything else with streaming DMA.
->>
->
->
-> I was aiming to bring more consistency in how swiotlb buffers are
-> handled, specifically by treating all swiotlb memory as decrypted
-> buffers, which is also how the current code behaves.
->
-> If we are concluding that restricted DMA is not used in conjunction with
-> memory encryption, then we could, in fact, remove the
-> set_memory_decrypted() call from rmem_swiotlb_device_init() and
-> instead add failure conditions for force_dma_unencrypted(dev) in
-> is_swiotlb_for_alloc(). However, it=E2=80=99s worth noting that the initi=
-al
-> commit did take the memory encryption feature into account
-> (0b84e4f8b793eb4045fd64f6f514165a7974cd16).
->
-> Please let me know if you think this needs to be fixed.
->
+This patch series adds support for the Verisilicon IOMMU, which is found
+in front
+of hardware encoder and decoder blocks in several SoCs using Verisilicon
+IP. 
+A first implementation of this IOMMU is available on the Rockchip RK3588
+SoC.
 
-Something like.
+Rockchip provides a driver for this hardware in their 6.1 kernel branch:
+https://github.com/rockchip-linux/kernel/blob/develop-6.1/drivers/iommu/rockchip-iommu-av1d.c
 
-dma-direct: restricted-dma: Do not mark the restricted DMA pool unencrypted
+This series includes:
+- a new binding for the Verisilicon IOMMU
+- a driver implementation
+- DT updates for RK3588
 
-As per commit f4111e39a52a ("swiotlb: Add restricted DMA alloc/free
-support"), the restricted-dma-pool is used in conjunction with the
-shared-dma-pool. Since allocations from the shared-dma-pool are not
-marked unencrypted, skip marking the restricted-dma-pool as unencrypted
-as well. We do not expect systems using the restricted-dma-pool to have
-memory encryption or to run with confidential computing features enabled.
+The driver was forward-ported from Rockchip’s 6.1 implementation, 
+the prefix was renamed to vsi for generality, and several fixes were
+applied.
 
-If a device requires unencrypted access (force_dma_unencrypted(dev)),
-the dma-direct allocator will mark the restricted-dma-pool allocation as
-unencrypted.
+AV1 decoding was tested using the stateless VPU driver and Fluster.
+The test results show a score of 205/239, which confirms that no
+regressions were introduced by this series.
 
-The only disadvantage is that, when running on a CC guest with a
-different hypervisor page size, restricted-dma-pool allocation sizes
-must now be aligned to the hypervisor page size. This alignment would
-not be required if the entire pool were marked unencrypted. However, the
-new code enables the use of the restricted-dma-pool for trusted devices.
-Previously, because the entire pool was marked unencrypted, trusted
-devices were unable to allocate from it.
+Feedback and testing welcome.
 
-There is still an open question regarding allocations from the
-shared-dma-pool. Currently, they are not marked unencrypted.
+changes in version 12:
+- Remove useless vsi_iommu_flush_tlb_all()
+- Merge MAINTAINERS changes in the patch introducing VSI iommu driver
 
-Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
+changes in version 11:
+- Fix dependency issue when decoder driver is build as module.
 
-1 file changed, 2 deletions(-)
-kernel/dma/swiotlb.c | 2 --
+changes in version 10:
+- Update vsi_iommu_identity_attach() and vsi_iommu_attach_device()
+  prototypes.
+- Fix build as module issue when Verisilicon video decoder is built-in.
+- Rebase on master branch.
 
-modified   kernel/dma/swiotlb.c
-@@ -1835,8 +1835,6 @@ static int rmem_swiotlb_device_init(struct reserved_m=
-em *rmem,
- 			return -ENOMEM;
- 		}
-=20
--		set_memory_decrypted((unsigned long)phys_to_virt(rmem->base),
--				     rmem->size >> PAGE_SHIFT);
- 		swiotlb_init_io_tlb_pool(pool, rmem->base, nslabs,
- 					 false, nareas);
- 		mem->force_bounce =3D true;
+changes in version 9:
+- removing blanks lines.
+
+changes in version 8:
+- Add myself in MAINTAINERS file.
+- Add API to restore VSI iommu context from decoder driver
+- Fix reported checkpatch issues: add comment in pinlock_t declaration
+  and remove blank line.
+- Include board name in defconfig patch commit message
+
+ 
+Benjamin Gaignard (6):
+  dt-bindings: vendor-prefixes: Add Verisilicon
+  dt-bindings: iommu: verisilicon: Add binding for VSI IOMMU
+  iommu: Add verisilicon IOMMU driver
+  media: verisilicon: AV1: Restore IOMMU context before decoding a frame
+  arm64: dts: rockchip: Add verisilicon IOMMU node on RK3588
+  arm64: defconfig: enable Verisilicon IOMMU for Rockchip RK3588
+
+ .../bindings/iommu/verisilicon,iommu.yaml     |  71 ++
+ .../devicetree/bindings/vendor-prefixes.yaml  |   2 +
+ MAINTAINERS                                   |   8 +
+ arch/arm64/boot/dts/rockchip/rk3588-base.dtsi |  11 +
+ arch/arm64/configs/defconfig                  |   1 +
+ drivers/iommu/Kconfig                         |  11 +
+ drivers/iommu/Makefile                        |   1 +
+ drivers/iommu/vsi-iommu.c                     | 778 ++++++++++++++++++
+ .../verisilicon/rockchip_vpu981_hw_av1_dec.c  |  15 +
+ include/linux/vsi-iommu.h                     |  21 +
+ 10 files changed, 919 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iommu/verisilicon,iommu.yaml
+ create mode 100644 drivers/iommu/vsi-iommu.c
+ create mode 100644 include/linux/vsi-iommu.h
+
+-- 
+2.43.0
+
