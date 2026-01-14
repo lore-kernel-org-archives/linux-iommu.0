@@ -1,182 +1,230 @@
-Received: from CH1PR05CU001.outbound.protection.outlook.com (mail-northcentralusazon11010016.outbound.protection.outlook.com [52.101.193.16])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f74.google.com (mail-wm1-f74.google.com [209.85.128.74])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46C9A387590
-	for <iommu@lists.linux.dev>; Wed, 14 Jan 2026 16:16:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.193.16
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768407366; cv=fail; b=EAXGtWehNzsDs49kt0rMfWBYvr7vlKo83y0HF9mwfCqC9SEAgwoPYTz7IAFtmzXKzygoX6nCUY1fnCP0dc1MfAqSH8oc1bllw4Lcj/a1ATeY1WrMsImXYXhLTjbYOKqPEd3fUN1uca+ZufMOOvtCMzdl6WII7G9unyoeJBcNQ7Y=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768407366; c=relaxed/simple;
-	bh=7sY8ES/B22Ri8jr/FFGJqBgIa1qHrdyq8QFW8p/FNZw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=rynijPfNUgwNcFo7+PY594SVHis0XWrdp1ccKQJCOWstJpAMH+Gw2jCxVvMvn67NiWPH0SgHUFKk7dTJd/L/hhWtggVKPnsKsUM5dq+iCWffA9u8tD0oXqIyscmCh+OxG8EPHi2EXC04xOJv5b/TavvSiegHCm6c5mTMQHnz7iQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=bZEloC/0; arc=fail smtp.client-ip=52.101.193.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 647173A4AD7
+	for <iommu@lists.linux.dev>; Wed, 14 Jan 2026 16:43:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.74
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1768409013; cv=none; b=U5HlbVOXG4N5Lm/fzor89MCaSsJquGS6SKjTfJx0Rb/WmumvXu3dER9hjYEXRf2tHL/vrCWnn387xy2C0SFAAy0549BuRUNMqwWazbsLtGfJqolpvmpweC5CNMpHhNXPImoQibu6keadAY5cv3FFkybhXRQYwVA/2DKuplDhgpg=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1768409013; c=relaxed/simple;
+	bh=dXh2ayx+79QFmMkjaJ3fx+VU7Efs17lwo3jymxpelrw=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=NNhzAaoaD/l4bdjkq8Mepk62RJWMY1dJc00yTJQ6nkyeYys5hg1ycn/emumpRS/y0g2z75CV81AQzwL804Ls5VjOu+9l/lfDMDoh3Re9TXSi+KHo5aI1Uck4cXIoCUQ+bhf7u/BVwaHsXRdJNyKbAU++PhCFC4KXjp7vewMJWaA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=L6o9v8ij; arc=none smtp.client-ip=209.85.128.74
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="bZEloC/0"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=BAZiwfvBdOygCp+U7EEwNOrwdlljMr4zReF0kY6eCrWn9CWkdNiiJdyr4JNiJDnjddC74PJgTU4F30pcpnrrRqFsyH24wk0PVbieazd/USzpMfhbrYOhWUQ8DRq1dEETDQOqfL0QxLtmKaZHHC0fF+ZbFaX9+jzGV/2ZXGa9MEfVSuoRB+x7Hx/g4ltgdpICoKvDgW7VY65pqoUfLUFOZ8opyF9Iu6GDz0RRCCxtSLR7lmatocM2Uc8WSInAUhgbgs5j/BY2rdXfPrXxsV/ckjJkEcLNq4HTr6f86zbH/AqpqtUErPj3e4IAW05df5hxS/AUTPyAjJmu1m9XsbrpZw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=v9W8Yk20egcocmnGj4pP/yWQj+CbskKr4n1++gyA+78=;
- b=u8MQkRn46VezHvawR/TBCtDaqXHNflkAv/0oKbJH2PhoHPaHLF2VWVpSFQ1tOTK5uQlKOjA6y3tBjBUWJhZ9ajSC1/o2l5Rb+1mlqEACRliLiG1YBDq/0Igq6m14NEtHXyk7H9RFRdJHseazCkuxJ8ntn9GfS1zaWI9QCVqo6ItBFZjNYF4fRZpcaGzFD1gfvop/BPVyUwdy73j0Bu/XY8Nt3qf4ToodCyRX4EdklyLgGcL+/HWiaecElcKhugu/TnSB1jxlhoaWBBx9zTdZ9UXrs1Y/Btdu/vwHxIaIqJPAZ4x7Uy2EV9A0+1wnuDSGtA929nEOfZFGolH7aV6DiA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=v9W8Yk20egcocmnGj4pP/yWQj+CbskKr4n1++gyA+78=;
- b=bZEloC/0wN5rUOD+LK7DtqN76bxsHOCvlTwXstAnR3hRPxWFHXgYRHmFhFU1q2YoQdLoC70J2i5IikQTsX829pzGThRnFjSBOi5YLtyr1MyfVLwAixtnzarMKRDZyc5P76yUJ8QVrBeWVO51rvxPeAhJj/ua07dmoeJPsYvMlmWbxNDULPPpIIH2ITjVxCnaGkBe5hBskb8pf0A2C53zWvAzwQPqClIKg2DILw7fkaXXx3Hcp4ImDH9a1+E3uslBR75TAQuW16XjBwnHHxtK5T20HDIJgVBPv9qDtWE5K302pLJi6sTSRlEp5U3Kbes3G0RQPnWdrIybEAIrIOyueg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
- by SN7PR12MB7371.namprd12.prod.outlook.com (2603:10b6:806:29a::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9499.7; Wed, 14 Jan
- 2026 16:16:00 +0000
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::1b59:c8a2:4c00:8a2c]) by LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::1b59:c8a2:4c00:8a2c%3]) with mapi id 15.20.9499.005; Wed, 14 Jan 2026
- 16:15:58 +0000
-Date: Wed, 14 Jan 2026 12:15:57 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Pranjal Shrivastava <praan@google.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, will@kernel.org,
-	robin.murphy@arm.com, joro@8bytes.org,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, skolothumtho@nvidia.com,
-	xueshuai@linux.alibaba.com, smostafa@google.com
-Subject: Re: [PATCH rc v6 3/4] iommu/arm-smmu-v3: Mark STE EATS safe when
- computing the update sequence
-Message-ID: <20260114161557.GB961588@nvidia.com>
-References: <cover.1768248467.git.nicolinc@nvidia.com>
- <b8055e0f0f1b4473db2583586350b4f7aa8f3b4c.1768248467.git.nicolinc@nvidia.com>
- <aWe9C8wwfszvqxR6@google.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aWe9C8wwfszvqxR6@google.com>
-X-ClientProxiedBy: IA1P220CA0019.NAMP220.PROD.OUTLOOK.COM
- (2603:10b6:208:464::6) To LV8PR12MB9620.namprd12.prod.outlook.com
- (2603:10b6:408:2a1::19)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="L6o9v8ij"
+Received: by mail-wm1-f74.google.com with SMTP id 5b1f17b1804b1-477563a0c75so200325e9.1
+        for <iommu@lists.linux.dev>; Wed, 14 Jan 2026 08:43:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1768409010; x=1769013810; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:from:subject:message-id
+         :mime-version:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=ptbGfqhARAg/OJu3oyRxs8/LiGbyPAv+mElQ7v4+SEE=;
+        b=L6o9v8ijSJ8tF5oRSZ0OyngEz2HIb/3tYGNNAY0M1wgq57Xsd8auJQcVQywlzumoDr
+         GDJsgLyF6DOSDUeJ1+K7CXUvhGV8Pp9g0bxtb73OdQOwXzHuEBDERhnotllQFnelxdfg
+         0iSkrNA6dpPyyzmzkthjcdPRCIIjS3q7Eb5OnVNOqJ6cNC3Fmo1ddR1OsQpa7nADuXy+
+         zj0d7pZ9MN/xZITN4X098N7/+05YDU2ntgin4eBrMUdFQ0zesj2/hKQDKGNxi73SadHn
+         qf6UzK6JOXtUqag6KfYo2Rqv/Nq35IoSb3TG9TtO6dK/KLugtPtvdUHfIxwSlz84lJgl
+         SmAQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1768409010; x=1769013810;
+        h=content-transfer-encoding:cc:to:from:subject:message-id
+         :mime-version:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ptbGfqhARAg/OJu3oyRxs8/LiGbyPAv+mElQ7v4+SEE=;
+        b=cU6K2h4J57uFjPkSAkdvcERInZFIfhaYRNpJZcVNVigntPbKPgPg3xr+csgyDXArDf
+         dnHO9jPuHYpabgAlLDBwScktiz1igwuXvc2KTCSYkLWouTs+lVMKAY6IkApn1JUdOLTW
+         EbVotf2zDery+nOwJs7zYUhG+8YVdFlPqpj/7c8AErfl6cB8gHybJ1pW45PnfzVGGE/w
+         XjpEGUYjvH3B91FgoIJ6NfXweqHq0XuOOt1Q3DjQG707g87ZSYtGYW8ku62g5HDVad5k
+         HF2OiEHTG5lIdJVUJX+0rPZsigvbvcuJMk85tZMD2w6ynk3FW0UGyPtLrucmdTZsAvVf
+         4vmw==
+X-Forwarded-Encrypted: i=1; AJvYcCWy6xC29nexyQsXLSosYIE6BE7c0hQKnmO3sskvz0J98Ja0gT6hUS3ddWRJAzATADAvneChMg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwRGAJrMK71ldSEHyUKAamM0twLQ7aKbJaPEDSjXYoCSiwNxsR5
+	P9Wm7R37BfrB/TnPc8oUXWV6joId3scEMrtiUFsJCcRtIeWjhmQmnwkKMNJC1s2jafYaMmuLEwm
+	sWYIOR2a5lQQJMQ==
+X-Received: from wmbem10.prod.google.com ([2002:a05:600c:820a:b0:479:3624:3472])
+ (user=smostafa job=prod-delivery.src-stubby-dispatcher) by
+ 2002:a05:600c:4e0f:b0:477:73cc:82c2 with SMTP id 5b1f17b1804b1-47ee32fcef4mr41658405e9.9.1768409009960;
+ Wed, 14 Jan 2026 08:43:29 -0800 (PST)
+Date: Wed, 14 Jan 2026 16:43:17 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|SN7PR12MB7371:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4b16f167-73ff-459b-31a1-08de538833ed
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|366016|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?w3ogux47uwx7x25yygKZ1mfCEWjyxuThGcmjPb5LiC19C9TbNvePvc7viKSW?=
- =?us-ascii?Q?K7lZ30jhd6I8aScIJQrOfPr+zb+FrCHDhR7gTyyg6T4LCUksACtZTBzCz2CP?=
- =?us-ascii?Q?j2Fd2KbTcW7VQJBA/ojl6511ir7rYtHMd0AtkO/ZINQzTUp36zS4ZFcWhFkV?=
- =?us-ascii?Q?pWaQf0Y3D8FYQ6RR8Aivgd3YUyMRNDCl1kt8dz3lAgn6BrMHfLPO6DQybI7h?=
- =?us-ascii?Q?1hBfGgsNx2c4d7+GPI+2dArIPl+QikuCaLfY03joeHZrEQiFO6Wkk0OW7V2m?=
- =?us-ascii?Q?i5/EXn/NjMXIEshgd2E4xbDsqq+Warl4330eMMTjgIlqq6iizRk+jjXntJ32?=
- =?us-ascii?Q?gqx8qfFT96rLmYOtyv6Vgmtpv5asW4IuaXZPZkSS/SVXfdkF8kP61sOSgAfc?=
- =?us-ascii?Q?XQcrGwruHC22NIRCPZ+viDY55cgtTL1A44nAoUPbWQXm7Ty/0PMBiZGqPDIw?=
- =?us-ascii?Q?ux8Ho2rm2XaImdahvzZ52lmFgQQVs6mECopay8bJGJf7FpY+M6352C0y63DS?=
- =?us-ascii?Q?9YTZlZ3nSW3sFQoFfHqiqgNI96aacP77k06n77XpNa0ga1QGbjNPZdCZcFLZ?=
- =?us-ascii?Q?pqoVcwWlRljT9jfwgAIqbTn15r2JNQqdhoVaZzRdD8SP7+qKF+EWWPj3yZ/T?=
- =?us-ascii?Q?0s1VH5R9fvTIR/r/SvtqKNZkB7ypixH4gSiPYj2qOEcHH76kDmyXIVrBiFBE?=
- =?us-ascii?Q?qKZ0Yzl03bD6pUujtC87L7TkQK3o8Rtgv5403pqvFgduCwKLLWZa7bshizmz?=
- =?us-ascii?Q?b06tY6EVlxW6LWY39BE1LLRe3abyksSlu1zFC1zzylJe5VrfEb3PfVxOkniX?=
- =?us-ascii?Q?gb6VSpgw34ky95tdi5vIUwBhJ6XhCLGCzzJQbE0FuBUb7XR+oqAbgUukMoCn?=
- =?us-ascii?Q?jIibPKqX3eHBljjSRqCcLxTvPTHXFS4mMBYmM4VzYgX2DaO9QHjCE4XdGef9?=
- =?us-ascii?Q?c70hCDidd9Rs3l0+iwVWIHRFlzr03rQbG+/lvw/TQVvcJru8/rquD93AOny5?=
- =?us-ascii?Q?5IhoritypYDHOFVTh7jARBud23Q6Q+jEUqWh+61o25+woELoklI8EKjUlQ3D?=
- =?us-ascii?Q?QnZNbmrDUaorXREnsjoCyCtlDTVDKi30JbyO398OipXbC3BQxA7v/p/HRiSU?=
- =?us-ascii?Q?q4Mv+TqQ1i1kN2G3dwy9Ov/l5Wt3FMzkRY6sgadsQnzLCV1I2Dx9j8VrjD33?=
- =?us-ascii?Q?6+2PFKKGXV1kWWxkRPp7nlp5WWzeVv0ZB2C2H2eEss9xqpNrxTweqEvYq1gu?=
- =?us-ascii?Q?9KASeYbiomWqExzDKDKy4gWZL/HQw+Eu/LLz6mPz3EoiCtReBGfSypOHZ5XH?=
- =?us-ascii?Q?25KDjFU2CCijOghrE1iC6CMhvRnuBy6TnYd8rmp26OHCQc5bywoIU3geB5IU?=
- =?us-ascii?Q?ilUm2O8hcnsyzAm5vQGe+/JWM/81aNnK1ld9UCIrmUuAv6O7p5WAKMneBMKG?=
- =?us-ascii?Q?1bud1Jd4M7MD9aGN9tOUWddgda2ad1irqe0z94QHnVqiOiPtPNSDgV+i3RrI?=
- =?us-ascii?Q?ab8/aH2CbanUpPKebHNFkGE/KiUXIgR994FVghv4k6c3q1cGiHOStng2tCH2?=
- =?us-ascii?Q?3bfcfcK377V+9JVlXgs=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?XQ6RsFDbTB+XNlf4t5A5YLiVwqPjvkus/aG1TsDkuanGeSfNQcJIIHFzM0YO?=
- =?us-ascii?Q?L5tEyaD301nb6lbHsPG1LB5ILFDXSSAqjtsfhhtaQFPmlcUJ8KfHzWmTXZcV?=
- =?us-ascii?Q?DQ/Acj2hg7eFeDcCQ/P9SBSLhRPesPulL2h1bx3x5ThH62hyU5MYyS57R6Cv?=
- =?us-ascii?Q?xmKNDvYkOR0JLyNHyQGJ/DiczJ0SurWvHQq7q5xtep92XMWN2QcI/jaUfEkB?=
- =?us-ascii?Q?RMREhi/ssLtNUWlEdGBrPm2z1AW2AyKtS+ne17sT0JeiRYvXGIPTx4rUVsIh?=
- =?us-ascii?Q?xIT4EoNkSjMIcTlfJ3tSEk+CShqEYuvq6yeQotYLHhM5dBVZrjKhmwJtm6RZ?=
- =?us-ascii?Q?8mtAuv1yCE3xArxHRPffDSg8rLkHjJCD1/6dXHMHwc+liSljL//AzY8Yo3Q0?=
- =?us-ascii?Q?mGXyCXIPchf/XqsJLy0zAjeCtEJja5yYPS1IaZQwZkr0szcURp5l54y2yH+a?=
- =?us-ascii?Q?Rm1Qar+pJVh/eJURxof95VfeFL/vo/0SyJYPOYRmH63nffnK2JSDQmraz5s2?=
- =?us-ascii?Q?qooKtmdzSHWybaABFeEHTfCKLVMrnZuPnzyZPStP0dH6fCiE/FZ/VVhQ7hE/?=
- =?us-ascii?Q?fjX4oKdlHI+pni8ZGj45V3aQBEFeo1sYVANjGg2H3AKzXPNZTXlsQatqbP3s?=
- =?us-ascii?Q?bHIqW35Q7+z851ze1SGUjdcj8tOoOVAMgXog60OWTmHdZj0ilvU08zfyYGVD?=
- =?us-ascii?Q?lZi5NjMAbfEfFvKDQzQFrQnQrHm4iTDP0fl3fvHPiIlyzYZHONesf24je/K8?=
- =?us-ascii?Q?JFZfPnPN9oVBb48MHH3NKnllql9quXCCmmEfPlqohX3b17QfCLcuBS7vNEJq?=
- =?us-ascii?Q?wzbVnii+JFayL92msmFZKWxFRF0f2pHS8I2DLAtsC2ZnKdquWE6TGvfGHiU0?=
- =?us-ascii?Q?q2Ypc3rMYEDxZH4ckS25yH/aVUFGZFwCfJevxZLPAglP2dGV6w1aWdEUZeyZ?=
- =?us-ascii?Q?NDMTN/0t/wTvBYmYWfXUrgEj7VzvZxHSat35S85uuwwpUAmtrlUYga2TxLkF?=
- =?us-ascii?Q?Llh27+iUMiAzbwPpGy/n0up/s2y4U+2niHK2XR9UQDCrPrCdmMMYMtC+UKtr?=
- =?us-ascii?Q?0HZmSRjdMcDIwkjg9TrLSHiHoe6poMafj3feFz83weBjlD/eTsujnEHnz4dO?=
- =?us-ascii?Q?17ArRNRHBrGH6vxScCxYhQu2eYbIdDv15EEv2wdYNyoR2XcDcwhH/YcZGoJ1?=
- =?us-ascii?Q?7XeSqRxliF5sRl1OuLa9qS5YIXdhjiNC+qk5Go1WhD4hm69XXDcOAm6EZ8u0?=
- =?us-ascii?Q?Pzo44yM+NIDw6M46tKmEf/FQo5hOIqoXgOvtvhQoDuEnbY7nD5cLi4YvuIeJ?=
- =?us-ascii?Q?s+WlvHB4qpj3BXOxzZ0weLb+jDnDENBG5KjCOvrqCYZ/hcLpi+FiKJ99qHOy?=
- =?us-ascii?Q?ok8hm6heCKIf832ujh0iEhDM96/Gw+S+NKiL4c7PP7W/NRgnV2/6wCOAGzuc?=
- =?us-ascii?Q?zKd9LdMUgK5oONE7IPOmCZzKHVK3mPqpbUWxBD9y5RwJFyd500kNcadhK4vL?=
- =?us-ascii?Q?wZLqyFPp7EoOub4Hu6EAwN0nmzDhGZ668uYxU39ftDlta18maQRs5xjc0LdV?=
- =?us-ascii?Q?XicA1wlNyEOsQbHBisnEPiH/rfxv9j4MmMEJxtr5Q70Q2ox5hXsyfwzrlMaX?=
- =?us-ascii?Q?TTIag76/o5Kc9H+8MGgnWj9F9uovm0MBIFUaBFpWD0W51hiaDT8aEG5dViWm?=
- =?us-ascii?Q?QGDYoY7nouox2yVDfMTnswBu5TQrTH3FVGNqh7bfA4pI1G9FfeOcpRINGwrT?=
- =?us-ascii?Q?btUwBGv6mg=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4b16f167-73ff-459b-31a1-08de538833ed
-X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jan 2026 16:15:58.7492
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: jmRK/tCLXw/SwN3hFV7eGM70Uf1L290Vixx0gkP50CiYgkqoQlNn85cdqOEfYZnA
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB7371
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.52.0.457.g6b5491de43-goog
+Message-ID: <20260114164322.787125-1-smostafa@google.com>
+Subject: [PATCH v7 0/5] iommu: Add page_ext for IOMMU_DEBUG_PAGEALLOC
+From: Mostafa Saleh <smostafa@google.com>
+To: linux-mm@kvack.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	linux-doc@vger.kernel.org
+Cc: corbet@lwn.net, joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, 
+	akpm@linux-foundation.org, vbabka@suse.cz, surenb@google.com, mhocko@suse.com, 
+	jackmanb@google.com, hannes@cmpxchg.org, ziy@nvidia.com, david@redhat.com, 
+	lorenzo.stoakes@oracle.com, Liam.Howlett@oracle.com, rppt@kernel.org, 
+	xiaqinxin@huawei.com, baolu.lu@linux.intel.com, rdunlap@infradead.org, 
+	Mostafa Saleh <smostafa@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jan 14, 2026 at 03:58:03PM +0000, Pranjal Shrivastava wrote:
-> > +
-> > +	/*
-> > +	 * When a STE comes to change EATS the sequencing code in the attach
-> > +	 * logic already will have the PCI cap for ATS disabled. Thus at this
-> > +	 * moment we can expect that the device will not generate ATS queries
-> > +	 * and so we don't care about the sequencing of EATS. The purpose of
-> > +	 * EATS is to protect the system from hostile untrusted devices that
-> > +	 * issue ATS when the PCI config space is disabled. However, if EATS
-> > +	 * is being changed then we already must be trusting the device since
-> > +	 * the EATS security block is being disabled.
-> > +	 *
-> > +	 *  Note: Since we moved the EATS update to the first phase, changing
-> > +	 *  S2S and EATS might transiently set S2S=1 and EATS=1, resulting in
-> > +	 *  a bad STE. See "5.2 Stream Table Entry". In such a case, we can't
-> > +	 *  do a hitless update.
-> > +	 */
-> > +	if (!((cur[2] | target[2]) & cpu_to_le64(STRTAB_STE_2_S2S)))
-> > +		safe_bits[1] |= cpu_to_le64(STRTAB_STE_1_EATS);
-> 
-> I understand what we're trying to do here but isn't this implicitly
-> saying it is safe to transition hitlessly to any non-zero EATS value,
-> including S1CHK or RSVD. S1CHK might have other config dependencies?
+Overview
+--------
+This patch series introduces a new debugging feature,
+IOMMU_DEBUG_PAGEALLOC, designed to catch DMA use-after-free bugs
+and IOMMU mapping leaks from buggy drivers.
 
-Will pointed this issue with S1CHK, Nicolin has a suggestion to fix it here:
+The kernel has powerful sanitizers like KASAN and DEBUG_PAGEALLOC
+for catching CPU-side memory corruption. However, there is limited
+runtime sanitization for DMA mappings managed by the IOMMU. A buggy
+driver can free a page while it is still mapped for DMA, leading to
+memory corruption or use-after-free vulnerabilities when that page is
+reallocated and used for a different purpose.
 
-https://lore.kernel.org/linux-iommu/aWarF90zBqxD0Gef@Asurada-Nvidia/
+Inspired by DEBUG_PAGEALLOC, this sanitizer tracks IOMMU mappings on a
+per-page basis, as it=E2=80=99s not possible to unmap the pages, because it
+requires to lock and walk all domains on every kernel free, instead we
+rely on page_ext to add an IOMMU-specific mapping reference count for
+each page.
+And on each page allocated/freed from the kernel we simply check the
+count and WARN if it is not zero, and dumping page owner information
+if enabled.
 
-It would block RSVD too.
+Concurrency
+-----------
+By design this check is racy where one caller can map pages just after
+the check, which can lead to false negatives.
+In my opinion this is acceptable for sanitizers (for ex KCSAN have
+that property).
+Otherwise we have to implement locks in iommu_map/unmap for all domains
+which is not favourable even for a debug feature.
+The sanitizer only guarantees that the refcount itself doesn=E2=80=99t get
+corrupted using atomics. And there are no false positives.
 
-Thanks,
-Jason
+CPU vs IOMMU Page Size
+----------------------
+IOMMUs can use different page sizes and which can be non-homogeneous;
+not even all of them have the same page size.
+
+To solve this, the refcount is always incremented and decremented in
+units of the smallest page size supported by the IOMMU domain. This
+ensures the accounting remains consistent regardless of the size of
+the map or unmap operation, otherwise double counting can happen.
+
+Testing & Performance
+---------------------
+Earlier versions were tested on Morello with Arm64 + SMMUv3
+This version was tested and benchmarked on Lenovo IdeaCentre X Gen 10
+Snapdragon.
+
+With dma_map_benchmark, tested on both SMMUv3 and SMMUv3, where:
+
+CONFIG refers to "CONFIG_IOMMU_DEBUG_PAGEALLOC"
+cmdline refers to "iommu.debug_pagealloc"
+Numbers are (map latency)/(unmap latency), lower is better.
+
+SMMUv3:
+echo dma_map_benchmark > /sys/bus/pci/devices/0005\:01\:00.0/driver_overrid=
+e
+echo 0005:01:00.0 >  /sys/bus/pci/devices/0005\:01\:00.0/driver/unbind
+echo 0005:01:00.0 > /sys/bus/pci/drivers/dma_map_benchmark/bind
+./dma_map_benchmark -t $threads -g $nr_pages
+
+			CONFIG=3Dn    CONFIG=3Dy    CONFIG=3Dy
+			            cmdline=3D0   cmdline=3D1
+4K - 1 thread		0.0/1.8     0.0/1.8     0.1/1.9
+4K - 8 threads		0.2/6.2     0.2/6.1     0.3/6.8
+1M - 1 thread		0.5/54.3    0.5/54.4    6.7/74.4
+1M - 8 threads		1.2/339.7   1.1/340.9   10.5/331.7
+
+
+SMMUv2:
+echo dma_map_benchmark > /sys/bus/platform/devices/ac0000.geniqup/driver_ov=
+erride
+echo ac0000.geniqup >  /sys/bus/platform/devices/ac0000.geniqup/driver/unbi=
+nd
+echo ac0000.geniqup > /sys/bus/platform/drivers/dma_map_benchmark/bind
+./dma_map_benchmark -t $threads -g $nr_pages
+
+			CONFIG=3Dn    CONFIG=3Dy    CONFIG=3Dy
+			            cmdline=3D0   cmdline=3D1
+4K - 1 thread		0.6/3.9     0.6/3.9     0.7/4.0
+4K - 8 threads		1.0/19.6    1.0/19.7    1.1/19.9
+1M - 1 thread		61.8/372.0  61.8/374.9  68.1/396.7
+1M - 8 threads		89.4/1470.5 89.9/1362.9 100.3/1373.3
+
+Changes in v7:
+v6: https://lore.kernel.org/linux-iommu/20260109171805.901995-1-smostafa@go=
+ogle.com/
+- Add a new function page_ext_get_phys() and use it instead of
+  pfn_valid() + phys_to_page().
+- Drop R-bs on patch 4.
+
+Changes in v6:
+v5: https://lore.kernel.org/linux-iommu/20260106162200.2223655-1-smostafa@g=
+oogle.com/
+- Remove wrong logic for handling unmap with bigger size than requested
+  and warn instead.
+- Collect R-bs and Acked-by
+
+Changes in v5:
+v4: https://lore.kernel.org/all/20251211125928.3258905-1-smostafa@google.co=
+m/
+- Fix typo in comment
+- Collect Baolu R-bs
+
+Main changes in v4:
+v3: https://lore.kernel.org/all/20251124200811.2942432-1-smostafa@google.co=
+m/
+- Update the kernel parameter format in docs based on Randy feedback
+- Update commit subjects
+- Add IOMMU only functions in iommu-priv.h based on Baolu feedback
+
+Main changes in v3: (Most of them addressing Will comments)
+v2: https://lore.kernel.org/linux-iommu/20251106163953.1971067-1-smostafa@g=
+oogle.com/
+- Reword the Kconfig help
+- Use unmap_begin/end instead of unmap/remap
+- Use relaxed accessors when refcounting
+- Fix a bug with checking the returned address from iova_to_phys
+- Add more hardening checks (overflow)
+- Add more debug info on assertions (dump_page_owner())
+- Handle cases where unmap returns larger size as the core code seems
+  to tolerate that.
+- Drop Tested-by tags from Qinxin as the code logic changed
+
+Main changes in v2:
+v1: https://lore.kernel.org/linux-iommu/20251003173229.1533640-1-smostafa@g=
+oogle.com/
+- Address J=C3=B6rg comments about #ifdefs and static keys
+- Reword the Kconfig help
+- Drop RFC
+- Collect t-b from Qinxin
+- Minor cleanups
+
+Mostafa Saleh (5):
+  mm/page_ext: Add page_ext_get_phys()
+  iommu: Add page_ext for IOMMU_DEBUG_PAGEALLOC
+  iommu: Add calls for IOMMU_DEBUG_PAGEALLOC
+  iommu: debug-pagealloc: Track IOMMU pages
+  iommu: debug-pagealloc: Check mapped/unmapped kernel memory
+
+ .../admin-guide/kernel-parameters.txt         |   9 +
+ drivers/iommu/Kconfig                         |  19 ++
+ drivers/iommu/Makefile                        |   1 +
+ drivers/iommu/iommu-debug-pagealloc.c         | 169 ++++++++++++++++++
+ drivers/iommu/iommu-priv.h                    |  58 ++++++
+ drivers/iommu/iommu.c                         |  11 +-
+ include/linux/iommu-debug-pagealloc.h         |  32 ++++
+ include/linux/mm.h                            |   5 +
+ include/linux/page_ext.h                      |   6 +
+ mm/page_ext.c                                 |  27 +++
+ 10 files changed, 335 insertions(+), 2 deletions(-)
+ create mode 100644 drivers/iommu/iommu-debug-pagealloc.c
+ create mode 100644 include/linux/iommu-debug-pagealloc.h
+
+--=20
+2.52.0.457.g6b5491de43-goog
+
