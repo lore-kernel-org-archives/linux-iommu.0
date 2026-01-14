@@ -1,98 +1,150 @@
-Received: from sender4-pp-f112.zoho.com (sender4-pp-f112.zoho.com [136.143.188.112])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 193D61B3925
-	for <iommu@lists.linux.dev>; Tue, 13 Jan 2026 21:51:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.112
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768341073; cv=pass; b=HX7WzyTrXXwDi3Cg0l0wluQEpogSnXpUjVTWK+eR4fHJR9IIqTW/0YMf1jHz9ZnbPMThnh218zMjO6Egg2qwVWjiisQS6t80e41U6EqekM43n1flNtdjgnjJJ0g/fJQ2GsXZSqRevBfqi6iapOgkmsEa1gAleLDZYG7pIiV/fNU=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768341073; c=relaxed/simple;
-	bh=ekAUez4+2plL4pdPm5f1N1qqBlyBPKjY8j6Kb8XqgmI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=A2xfessP2UAAUkmlhHMl4ZH+DHN7oZ16U13R6JVi4BdVsOkcciNwDYsxGGOs0dCVYPJ0eWVz5A1mBD+7lADG5Fs+foF6m/2D1pzSUvNrnqJL29Xc6BhK+fV+Ta4pGLUopXlgp03f4lw5HS8wvJqPu8ajvpMFL6AaSFCInKEnvS0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=deborah.brouwer@collabora.com header.b=IbYU7DmI; arc=pass smtp.client-ip=136.143.188.112
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 492A432D44B
+	for <iommu@lists.linux.dev>; Wed, 14 Jan 2026 05:14:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1768367681; cv=none; b=gxjJ4U5cfxoY/5q/jm40KdG4cu1Dkr8X1jAFvZqtdqIbc8JRj0HjZgvuEDVlDBRvDab/qMEmysurOJTX4ZZ/g9s/4NB3oTKyRaJDh7PGKCEBGmQHZK89ib2P+kP2BImsQ/iAcRI8Rid0Fpn6JZBUe2X+BVtxXPnX4kv2zfn5OR0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1768367681; c=relaxed/simple;
+	bh=ZLyrbONB+3qaOwgvL7yX1aaPdLC+ySXSll3Um0jr+Is=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=qpFBJ5yycjwC08QmSgPj+24yUH/6bSLjmhh8soTUe0K5IrSqZh9j7eYEBWbN4Qig+9vyi3CJe8eGEqotSB9T0w1fNPhthJQiU3KaX9q9tA/tfQcUgObd7M3c6hyobz3AsDm44twOSu/bnXN0yNsR0BE3moe1sw2opNBs8NkK3e8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Mb0gzr08; arc=none smtp.client-ip=192.198.163.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=collabora.com header.i=deborah.brouwer@collabora.com header.b="IbYU7DmI"
-ARC-Seal: i=1; a=rsa-sha256; t=1768341035; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=hVhzh7AUHTdxJu6JvU4kLmFazeYoDzKotMzv/D0+4u5XOphxRjl7dZTbxQS4N5Mkz3d/eIx3IvpTS931MdBemgUkwZATmz3d1Ag1d/KfBBEFCXSBOzAQteKzUS97haUtC+K3Yy4IKG078ZDvzWmTWcDVJfiJQXhFJCr6MYk2V+8=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1768341035; h=Content-Type:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=DPLmlARrAcdXGkqRjXYNOZR541qNKastiV4OAPsNBiI=; 
-	b=EZj3yMH0q9j4X6ixHTZ3mt+M3ALvq0gNqc/kJlCT0VrQ1bkUJakxrFuUkyq0bfXRm0HedxzFGlGbfWhmUmmrQEfzXdtzULlZGQyzhNAN5eTtKTJlsIQMu1PLT0lJk258gPp7GviAR61IDWtfUXBAJFf5FuTibTMiQ6H/IjvQHzs=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=collabora.com;
-	spf=pass  smtp.mailfrom=deborah.brouwer@collabora.com;
-	dmarc=pass header.from=<deborah.brouwer@collabora.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1768341035;
-	s=zohomail; d=collabora.com; i=deborah.brouwer@collabora.com;
-	h=Date:Date:From:From:To:To:Cc:Cc:Subject:Subject:Message-ID:References:MIME-Version:Content-Type:In-Reply-To:Message-Id:Reply-To;
-	bh=DPLmlARrAcdXGkqRjXYNOZR541qNKastiV4OAPsNBiI=;
-	b=IbYU7DmIuRb+kX+hMyLBkx3DFwew+5h+AoOpYREVU3b0zeTRpjIkL+MS1wX0zerY
-	v+XtqpaEwvaanAklDZfQVtzj6ZSmfxod8CenGAi8MzmDUF9SUmZGBREfF+kkkP2/kby
-	bX2qewW7GYMa40KjmoW4SN+/T0+lwxaZgfBkpE7E=
-Received: by mx.zohomail.com with SMTPS id 1768341034234779.9306294454532;
-	Tue, 13 Jan 2026 13:50:34 -0800 (PST)
-Date: Tue, 13 Jan 2026 13:50:33 -0800
-From: Deborah Brouwer <deborah.brouwer@collabora.com>
-To: Alice Ryhl <aliceryhl@google.com>
-Cc: Miguel Ojeda <ojeda@kernel.org>, Will Deacon <will@kernel.org>,
-	Daniel Almeida <daniel.almeida@collabora.com>,
-	Boris Brezillon <boris.brezillon@collabora.com>,
-	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
-	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Benno Lossin <lossin@kernel.org>,
-	Andreas Hindborg <a.hindborg@kernel.org>,
-	Trevor Gross <tmgross@umich.edu>,
-	Danilo Krummrich <dakr@kernel.org>, Joerg Roedel <joro@8bytes.org>,
-	Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
-	"Liam R. Howlett" <Liam.Howlett@oracle.com>,
-	Asahi Lina <lina+kernel@asahilina.net>,
-	linux-kernel@vger.kernel.org, rust-for-linux@vger.kernel.org,
-	iommu@lists.linux.dev, linux-mm@kvack.org
-Subject: Re: [PATCH v5] io: add io_pgtable abstraction
-Message-ID: <aWa-KVC8CVvn8GGs@um790>
-References: <20260113-io-pgtable-v5-1-7ed771bc3d8d@google.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Mb0gzr08"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1768367678; x=1799903678;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=ZLyrbONB+3qaOwgvL7yX1aaPdLC+ySXSll3Um0jr+Is=;
+  b=Mb0gzr08VapDLPUD1rjkyIiCUv8BGBR9B2daj8zHWJGniQQEIEPThOJS
+   6so+jbGzZ3wbWjtlyIaPTxupo4zloMwJRRMZviVSnDI4goWQhfnUTw0ha
+   hGW8H1iKX84V46vE4KtQNxv7CM4yl3H8agRi9wdaxcVbn9sThQ6brHH+K
+   UA2q0LPsjP+hdejiuEn2Dsdjsq/+YbsMWTQDlFcbBCdvZIVGovTJqbs6d
+   B0ZQAiEGk0hw84JqbVGvhq2CEJUrqP17CMR8TRZlu4QR4gAV2wVrjFp8I
+   Z0UI28fhqfwmNgCh9cLVZl5VcUVIoSnpWvFVsxj+1gU9wHGWEEPUjDxmk
+   w==;
+X-CSE-ConnectionGUID: DV8kzXNgRMykVCUyFFRKbQ==
+X-CSE-MsgGUID: NMgFNUf4RlqhzCDT68E6RA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11670"; a="69570986"
+X-IronPort-AV: E=Sophos;i="6.21,224,1763452800"; 
+   d="scan'208";a="69570986"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2026 21:14:33 -0800
+X-CSE-ConnectionGUID: ZOhZDQu/Qe+0XU0SqT4thQ==
+X-CSE-MsgGUID: OrZpxMbwR52tG3ZnseLJVw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,224,1763452800"; 
+   d="scan'208";a="209039629"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2026 21:14:30 -0800
+Message-ID: <1e967054-d2bd-4c3d-99eb-315a40bac9de@linux.intel.com>
+Date: Wed, 14 Jan 2026 13:14:36 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260113-io-pgtable-v5-1-7ed771bc3d8d@google.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/3] iommu/vt-d: Use 128-bit atomic updates for context
+ entries
+To: Dmytro Maluka <dmaluka@chromium.org>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
+ Jason Gunthorpe <jgg@nvidia.com>, Samiullah Khawaja <skhawaja@google.com>,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ "Vineeth Pillai (Google)" <vineeth@bitbyteword.org>,
+ Aashish Sharma <aashish@aashishsharma.net>
+References: <20260113030052.977366-1-baolu.lu@linux.intel.com>
+ <20260113030052.977366-2-baolu.lu@linux.intel.com>
+ <aWacsq9gDrAgPxli@google.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <aWacsq9gDrAgPxli@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Tue, Jan 13, 2026 at 08:49:27AM +0000, Alice Ryhl wrote:
-> From: Asahi Lina <lina+kernel@asahilina.net>
+On 1/14/26 03:27, Dmytro Maluka wrote:
+> On Tue, Jan 13, 2026 at 11:00:46AM +0800, Lu Baolu wrote:
+>> On Intel IOMMU, device context entries are accessed by hardware in
+>> 128-bit chunks. Currently, the driver updates these entries by
+>> programming the 'lo' and 'hi' 64-bit fields individually.
+>>
+>> This creates a potential race condition where the IOMMU hardware may fetch
+>> a context entry while the CPU has only completed one of the two 64-bit
+>> writes. This "torn" entry — consisting of half-old and half-new data —
+>> could lead to unpredictable hardware behavior, especially when
+>> transitioning the 'Present' bit or changing translation types.
+>>
+>> To ensure the IOMMU hardware always observes a consistent state, use
+>> 128-bit atomic updates for context entries. This is achieved by building
+>> context entries on the stack and write them to the table in a single
+>> operation.
+>>
+>> As this relies on arch_cmpxchg128_local(), restrict INTEL_IOMMU
+>> dependencies to X86_64.
+>>
+>> Fixes: ba39592764ed2 ("Intel IOMMU: Intel IOMMU driver")
+>> Reported-by: Dmytro Maluka<dmaluka@chromium.org>
+> FWIW, Jason and Kevin contributed to this discovery more than I did. 🙂
+
+Thanks to all you guys.
+
 > 
-> This will be used by the Tyr driver to create and modify the page table
-> of each address space on the GPU. Each time a mapping gets created or
-> removed by userspace, Tyr will call into GPUVM, which will figure out
-> which calls to map_pages and unmap_pages are required to map the data in
-> question in the page table so that the GPU may access those pages when
-> using that address space.
+>> Closes:https://lore.kernel.org/all/aTG7gc7I5wExai3S@google.com/
+>> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
+>> ---
+>>   drivers/iommu/intel/Kconfig |  2 +-
+>>   drivers/iommu/intel/iommu.h | 22 ++++++++++++++++++----
+>>   drivers/iommu/intel/iommu.c | 30 +++++++++++++++---------------
+>>   drivers/iommu/intel/pasid.c | 18 +++++++++---------
+>>   4 files changed, 43 insertions(+), 29 deletions(-)
+>>
+>> diff --git a/drivers/iommu/intel/Kconfig b/drivers/iommu/intel/Kconfig
+>> index 5471f814e073..efda19820f95 100644
+>> --- a/drivers/iommu/intel/Kconfig
+>> +++ b/drivers/iommu/intel/Kconfig
+>> @@ -11,7 +11,7 @@ config DMAR_DEBUG
+>>   
+>>   config INTEL_IOMMU
+>>   	bool "Support for Intel IOMMU using DMA Remapping Devices"
+>> -	depends on PCI_MSI && ACPI && X86
+>> +	depends on PCI_MSI && ACPI && X86_64
+>>   	select IOMMU_API
+>>   	select GENERIC_PT
+>>   	select IOMMU_PT
+>> diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+>> index 25c5e22096d4..b8999802f401 100644
+>> --- a/drivers/iommu/intel/iommu.h
+>> +++ b/drivers/iommu/intel/iommu.h
+>> @@ -546,6 +546,16 @@ struct pasid_entry;
+>>   struct pasid_state_entry;
+>>   struct page_req_dsc;
+>>   
+>> +static __always_inline void intel_iommu_atomic128_set(u128 *ptr, u128 val)
+>> +{
+>> +	/*
+>> +	 * Use the cmpxchg16b instruction for 128-bit atomicity. As updates
+>> +	 * are serialized by a spinlock, we use the local (unlocked) variant
+>> +	 * to avoid unnecessary bus locking overhead.
+>> +	 */
+>> +	arch_cmpxchg128_local(ptr, *ptr, val);
+> Any reason why not cmpxchg128_local()? (except following the AMD driver)
+
+Yes. This follows the AMD IOMMU driver. Both drivers use spin lock to
+synchronize the update of table entries. They only need the atomicity of
+the 128-bit instruction itself. So arch_cmpxchg128_local() works.
+
 > 
-> The Rust type wraps the struct using a raw pointer rather than the usual
-> Opaque+ARef approach because Opaque+ARef requires the target type to be
-> refcounted.
+> Otherwise,
 > 
-> Signed-off-by: Asahi Lina <lina+kernel@asahilina.net>
-> Acked-by: Boris Brezillon <boris.brezillon@collabora.com>
-> Reviewed-by: Daniel Almeida <daniel.almeida@collabora.com>
-> Co-developed-by: Alice Ryhl <aliceryhl@google.com>
-> Signed-off-by: Alice Ryhl <aliceryhl@google.com>
-> ---
->
+> Reviewed-by: Dmytro Maluka<dmaluka@chromium.org>
 
-As part of the wip for booting Tyr firmware, I have been using this
-io_pgtable abstraction including v5.
-
-Built and tested on arm64 with rustc 1.91.0 and bindgen 0.72.1.
-
-Tested-by: Deborah Brouwer <deborah.brouwer@collabora.com>
-
+Thanks,
+baolu
