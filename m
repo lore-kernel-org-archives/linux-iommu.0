@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 653402D7DE2
-	for <iommu@lists.linux.dev>; Wed, 14 Jan 2026 05:38:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA0E235BDC2
+	for <iommu@lists.linux.dev>; Wed, 14 Jan 2026 05:45:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768369101; cv=none; b=nbdq/03xLvgXbnJXnHsWYx3xuRJN3uJV5jrlHDoAvQuGven5rowhJ1CVj2+W/QnS15QUeZRoAvv/Q4NV1FcJVcsoOG2qGyU/LA15ULT3/vIlQKF7cpsJXN3xSyc8vW3lsy7Oq8uGtD+nJO597g0rIeZ9VYouJLO9qCleJAvaeyo=
+	t=1768369525; cv=none; b=ZOVo9edviQ2/iYUfrHKQ9L44s0se89vor85ED5lO6yYCO9zjOLnIWIYoDRtGOEKZqSw2H0shE2jF7sK6nEQ+pyDUfojJK1p5K2vsRCxMq927YZoyCy76awUH+LkubTa4eMX5x5lJEQ/jwuw7pqe2G0n8pWbeMH4B9vY4dURa5W4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768369101; c=relaxed/simple;
-	bh=NaWNGC8eIe6DWhS5jjIGjpVMO28905qyt/11nl+saBY=;
+	s=arc-20240116; t=1768369525; c=relaxed/simple;
+	bh=aMeL2laT0NhLCwJfSRDJEB8bVxQ/LT7NOk83/6mB4vc=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=uSKRpKvkg6ylfj5cgxKQrC5plez/PRHcz2EuObczkFS+hnku+zop6NQaxMEXWTSu3yBaHmYpE7bsARiJR77I8EqtTbE2NmD+DQo4M36n4CVMDpiJkdJZAerJU9z2xs4M1k/2wqtaXIBG5s07wJvX/oORLI36tLQTYqfKuvEWVKM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=WQwp/ubH; arc=none smtp.client-ip=198.175.65.12
+	 In-Reply-To:Content-Type; b=KhQloAcipJfrbRwyifTJ/tIc6J/z6YjOFGxtOAQ32FQXv1lJhuulao8DHZKYMiaL4aELUQVu8QeCPcyOvIrSwARHNklMVzyTgcYU0uS01rZvgocoTHtyDlJ4LxeGReR7GvvTsGmuvH0u8CN+QPToB0LB7U5HZOrxy65+Vgg6sYI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=UdOlwTw4; arc=none smtp.client-ip=192.198.163.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WQwp/ubH"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="UdOlwTw4"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1768369093; x=1799905093;
+  t=1768369515; x=1799905515;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=NaWNGC8eIe6DWhS5jjIGjpVMO28905qyt/11nl+saBY=;
-  b=WQwp/ubHjZU4ShnFLC/RM1rDfSLQk1MOv+qUgiBjCx524sE976po0Tsm
-   41AX0/X0k5CFLQ6pPKkPevFtR+3lcG+afpfW3TVKZaLHjKrpyozGZBjeg
-   WvCOi7kSePUOtG9OXHMupdVVgULA17raM6sfUiZ5nZxqQfFDlgAkRtMq6
-   2Pf1JlbeLn8GTxJKkvcO9XmqubWytvymuKB70wDFVl8KNQ8WTnKC+JizM
-   rjn+XJtV7O0ADgo/4277WYUHcPIXVcrqlFfzlkWfjigLxyQzvt4m4KJr/
-   DNqGgvb2A3cfkbYlrBfw9h6O5CxHS6KzS2q8Yk2YbJ/5tqVxGziB5BYTJ
-   w==;
-X-CSE-ConnectionGUID: BT3SxlO2RvWlw0PuImnMgg==
-X-CSE-MsgGUID: iIprT5cqTzKjBGm2KB8ERw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11670"; a="81112322"
-X-IronPort-AV: E=Sophos;i="6.21,224,1763452800"; 
-   d="scan'208";a="81112322"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2026 21:38:10 -0800
-X-CSE-ConnectionGUID: yInFS5wVRaaDy0aIdlqY/Q==
-X-CSE-MsgGUID: jhDDwrdeRyyLOcfa+tUhVQ==
+  bh=aMeL2laT0NhLCwJfSRDJEB8bVxQ/LT7NOk83/6mB4vc=;
+  b=UdOlwTw4h3Em4hxZ7us7nv8tzttJOxnofxjDABPoDn/qgwflD0hYS9ig
+   nots0yMY/CWbeATk0NeiWi2doTxsa7R+Zin6/QbzqggFHev69JMNKqBLE
+   9WWBmSdZit3HMAFf4yt9wIUhJddvO94f5O5uzFjeTgPOIz9J8VRIUBo3h
+   3tDoUSmSlaS8KSjIVZBS7YgVUu6EcJH0YslH0DNpY1+mLRDLZ3a7Rw2oQ
+   sUGnlXFpRjTec29OarHKUHlRDvab+qCwWzMjpkazGPxLTJus2ypOtctCK
+   x6tylnyxYVKVjEFcgGQIiLFBcqV3mSrZ9Zz7hJDDF+z1d9YfRGwa6kVgr
+   Q==;
+X-CSE-ConnectionGUID: 7tMwTEjmRXaed89D8M4VOg==
+X-CSE-MsgGUID: JNF/93/4TS6KArWrIWBOUg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11670"; a="73518870"
+X-IronPort-AV: E=Sophos;i="6.21,225,1763452800"; 
+   d="scan'208";a="73518870"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2026 21:45:13 -0800
+X-CSE-ConnectionGUID: lT4+8GHkQK2IY0OY7UrCjA==
+X-CSE-MsgGUID: /xwQOJRXS9e910HJBYxe/w==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,224,1763452800"; 
-   d="scan'208";a="209631175"
+X-IronPort-AV: E=Sophos;i="6.21,225,1763452800"; 
+   d="scan'208";a="204377298"
 Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2026 21:38:07 -0800
-Message-ID: <8e232d7f-9436-401e-9abc-308492a1fcbf@linux.intel.com>
-Date: Wed, 14 Jan 2026 13:38:13 +0800
+  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2026 21:45:10 -0800
+Message-ID: <ef58cd8a-504d-457b-b731-f7dfdba0e43c@linux.intel.com>
+Date: Wed, 14 Jan 2026 13:45:16 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,131 +52,49 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/3] iommu/vt-d: Clear Present bit before tearing down
- PASID entry
-To: Dmytro Maluka <dmaluka@chromium.org>
+Subject: Re: [PATCH 3/3] iommu/vt-d: Rework hitless PASID entry replacement
+To: Samiullah Khawaja <skhawaja@google.com>
 Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
  Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
- Jason Gunthorpe <jgg@nvidia.com>, Samiullah Khawaja <skhawaja@google.com>,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- "Vineeth Pillai (Google)" <vineeth@bitbyteword.org>,
- Aashish Sharma <aashish@aashishsharma.net>
+ Jason Gunthorpe <jgg@nvidia.com>, Dmytro Maluka <dmaluka@chromium.org>,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
 References: <20260113030052.977366-1-baolu.lu@linux.intel.com>
- <20260113030052.977366-3-baolu.lu@linux.intel.com>
- <aWaeUJcAFQ_vbJtd@google.com>
+ <20260113030052.977366-4-baolu.lu@linux.intel.com>
+ <CAAywjhSv56Y9rJLVdqV9N54c7S30ZUjyNh05xc-EW2+dS74GFQ@mail.gmail.com>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <aWaeUJcAFQ_vbJtd@google.com>
+In-Reply-To: <CAAywjhSv56Y9rJLVdqV9N54c7S30ZUjyNh05xc-EW2+dS74GFQ@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-On 1/14/26 03:34, Dmytro Maluka wrote:
-> On Tue, Jan 13, 2026 at 11:00:47AM +0800, Lu Baolu wrote:
->> The Intel VT-d Scalable Mode PASID table entry consists of 512 bits (64
->> bytes). When tearing down an entry, the current implementation zeros the
->> entire 64-byte structure immediately.
+On 1/14/26 03:27, Samiullah Khawaja wrote:
+> On Mon, Jan 12, 2026 at 7:03 PM Lu Baolu<baolu.lu@linux.intel.com> wrote:
+>> The Intel VT-d PASID table entry is 512 bits (64 bytes). Because the
+>> hardware may fetch this entry in multiple 128-bit chunks, updating the
+>> entire entry while it is active (P=1) risks a "torn" read where the
+>> hardware observes an inconsistent state.
 >>
->> However, the IOMMU hardware may fetch these 64 bytes using multiple
->> internal transactions (e.g., four 128-bit bursts). If a hardware fetch
->> occurs simultaneously with the CPU zeroing the entry, the hardware could
->> observe a "torn" entry — where some chunks are zeroed and others still
->> contain old data — leading to unpredictable behavior or spurious faults.
+>> However, certain updates (e.g., changing page table pointers while
+>> keeping the translation type and domain ID the same) can be performed
+>> hitlessly. This is possible if the update is limited to a single
+>> 128-bit chunk while the other chunks remains stable.
 >>
->> Follow the "Guidance to Software for Invalidations" in the VT-d spec
->> (Section 6.5.3.3) by implementing a proper ownership handshake:
+>> Introduce a hitless replacement mechanism for PASID entries:
 >>
->> 1. Clear only the 'Present' (P) bit of the PASID entry. This tells the
->>     hardware that the entry is no longer valid.
->> 2. Execute the required invalidation sequence (PASID cache, IOTLB, and
->>     Device-TLB flush) to ensure the hardware has released all cached
->>     references to the entry.
->> 3. Only after the flushes are complete, zero out the remaining fields of
->>     the PASID entry.
->>
->> Additionally, add an explicit clflush in intel_pasid_clear_entry() to
->> ensure that the cleared entry is visible to the IOMMU on systems where
->> memory coherency (ecap_coherent) is not supported.
->>
->> Fixes: 0bbeb01a4faf ("iommu/vt-d: Manage scalalble mode PASID tables")
->> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
->> ---
->>   drivers/iommu/intel/pasid.h | 12 ++++++++++++
->>   drivers/iommu/intel/pasid.c |  9 +++++++--
->>   2 files changed, 19 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/iommu/intel/pasid.h b/drivers/iommu/intel/pasid.h
->> index b4c85242dc79..35de1d77355f 100644
->> --- a/drivers/iommu/intel/pasid.h
->> +++ b/drivers/iommu/intel/pasid.h
->> @@ -237,6 +237,18 @@ static inline void pasid_set_present(struct pasid_entry *pe)
->>   	pasid_set_bits(&pe->val[0], 1 << 0, 1);
->>   }
->>   
->> +/*
->> + * Clear the Present (P) bit (bit 0) of a scalable-mode PASID table entry.
->> + * This initiates the transition of the entry's ownership from hardware
->> + * to software. The caller is responsible for fulfilling the invalidation
->> + * handshake recommended by the VT-d spec, Section 6.5.3.3 (Guidance to
->> + * Software for Invalidations).
->> + */
->> +static inline void pasid_clear_present(struct pasid_entry *pe)
->> +{
->> +	pasid_set_bits(&pe->val[0], 1 << 0, 0);
->> +}
->> +
->>   /*
->>    * Setup Page Walk Snoop bit (Bit 87) of a scalable mode PASID
->>    * entry.
->> diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
->> index 298a39183996..4f36138448d8 100644
->> --- a/drivers/iommu/intel/pasid.c
->> +++ b/drivers/iommu/intel/pasid.c
->> @@ -178,7 +178,8 @@ static struct pasid_entry *intel_pasid_get_entry(struct device *dev, u32 pasid)
->>    * Interfaces for PASID table entry manipulation:
->>    */
->>   static void
->> -intel_pasid_clear_entry(struct device *dev, u32 pasid, bool fault_ignore)
->> +intel_pasid_clear_entry(struct intel_iommu *iommu, struct device *dev,
->> +			u32 pasid, bool fault_ignore)
->>   {
->>   	struct pasid_entry *pe;
->>   
->> @@ -190,6 +191,9 @@ intel_pasid_clear_entry(struct device *dev, u32 pasid, bool fault_ignore)
->>   		pasid_clear_entry_with_fpd(pe);
->>   	else
->>   		pasid_clear_entry(pe);
->> +
->> +	if (!ecap_coherent(iommu->ecap))
->> +		clflush_cache_range(pe, sizeof(*pe));
->>   }
->>   
->>   static void
->> @@ -272,7 +276,7 @@ void intel_pasid_tear_down_entry(struct intel_iommu *iommu, struct device *dev,
->>   
->>   	did = pasid_get_domain_id(pte);
->>   	pgtt = pasid_pte_get_pgtt(pte);
->> -	intel_pasid_clear_entry(dev, pasid, fault_ignore);
->> +	pasid_clear_present(pte);
->>   	spin_unlock(&iommu->lock);
->>   
->>   	if (!ecap_coherent(iommu->ecap))
->> @@ -286,6 +290,7 @@ void intel_pasid_tear_down_entry(struct intel_iommu *iommu, struct device *dev,
->>   		iommu->flush.flush_iotlb(iommu, did, 0, 0, DMA_TLB_DSI_FLUSH);
->>   
->>   	devtlb_invalidation_with_pasid(iommu, dev, pasid);
->> +	intel_pasid_clear_entry(iommu, dev, pasid, fault_ignore);
-> Is it safe to do this with iommu->lock already unlocked?
+>> - Update 'struct pasid_entry' with a union to support 128-bit
+>>    access via the newly added val128[4] array.
+>> - Add pasid_support_hitless_replace() to determine if a transition
+>>    between an old and new entry is safe to perform atomically.
+>>    - For First-level/Nested translations: The first 128 bits (chunk 0)
+>>      must remain identical; chunk 1 is updated atomically.
+> Looking at the specs, the DID is part of the first 128 bits (chunk 0),
+> so I guess for the first level the hitless replacement would not be
+> supported since each domain will have a different DID?
 
-Yes, it is. The PASID entry lifecycle is serialized by the iommu_group-
- >mutex in the iommu core, which ensures that no other thread can attempt
-to allocate or setup this same PASID until intel_pasid_tear_down_entry()
-has returned.
-
-The iommu->lock is held during the initial transition (P->0) to ensure
-atomicity against other hardware-table walkers, but once the P bit is
-cleared and the caches are flushed, the final zeroing of the 'dead'
-entry does not strictly require the spinlock because the PASID remains
-reserved in software until the function completes.
+It's not necessarily true that each domain will have a different DID. On
+Intel IOMMU, all SVA domains can share a single DID. Similarly, multiple
+nested domains sitting on top of the same second-stage page table can
+also share a DID.
 
 Thanks,
 baolu
