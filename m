@@ -1,124 +1,126 @@
-Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E2CA37F8D5
-	for <iommu@lists.linux.dev>; Wed, 14 Jan 2026 16:59:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10C511F5EA;
+	Wed, 14 Jan 2026 17:30:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768409950; cv=none; b=VYfY+Yk22PvKe1Vi/2bh8P+/oEyCHLURNTjsNXsf46kA7HLFLhc3A1zEu+ozXwtYK0N1JMXCZKUKic+pvn3XVUpOIPek/F1EzYgsHM6hdL6H+YdNpQ+wQnpQdZ9NBplyjykD7D78o2edR8+Av5iYPhd6k/gKBFHoAJxk1/kf5Us=
+	t=1768411831; cv=none; b=P6ozJ0HmlPNNqAvtpuXKLwHzokdHfEMOYhwSdmijBnGl4KVzGjtTT1L4Ua0outmkFzTNuL6N9HiQ8uTK502sCxNvOiAaQoo+JVJuY8X8JCz9RQNyinbzqJnzz0gGfQPwyM5EVmfWp2XxtRLpW5tcUXRZuD8oi7RAWiP0o/ObrgY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768409950; c=relaxed/simple;
-	bh=DjpdDDJbM/IsjFMrq1EcksQWZkZ6ktdKQa8/EaVmO2c=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=R3zSFRwCnvS+Sg27buv2nonBS2Q3ajvA30PiAgKkACgS8Jp06vc/0tz9ncxBonXPVP8wiW2iVQlvKWYxngKuUCmbjSYRRtPBPusBGRQyYXdaDVtVYaJplghmfwMnxl/fyzOurNoFhs7mZF6xhdJkaN5XRc6/uppJ70GdL0+Nu90=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=VvkslXcH; arc=none smtp.client-ip=209.85.214.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1768411831; c=relaxed/simple;
+	bh=hwNrqKA8AlHPcVAA3NPkwsp4ijTzIp4nlEDnDkoEX8M=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=JKyop0gKHES9gexB16K1QfPZ3XmWGJShGXVeCQIzuN0+kBxuFEAxhUFE0Ggs+N1HsF2+tKmPtUGFOUkGBxi/JKZITtVn4n8YjS8jF7aPNPrfmETO9idt5YduQ91hAmW7xh5yg2jNP1+UyzmtBYLYaWnz6wT5lVmr13JPwvguiVg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XM81uToJ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="VvkslXcH"
-Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-2a35ae38bdfso82555ad.1
-        for <iommu@lists.linux.dev>; Wed, 14 Jan 2026 08:59:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1768409948; x=1769014748; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=nvlZDl7Sj74xagDLD4MC5KELnDbe4Vh9GRDyybbfdBA=;
-        b=VvkslXcHMByO/QEPVYwfKNdG7YLOEyG7p9kwIB8/e8+djYGRdP3QJvjYjEGRAINd1L
-         wB6yxigk9nIxFWfMBeWhRekHCDuLaDk4rrpgJqN04DjBu4Sq408M5819O+qm+mXXsrhF
-         UrHS/5K7wundV78coBg9wq8wPx2juUgewuwYCpEhs7Xc3bsUSAG64EfZkQvenmWCQxHW
-         7cNbnXdjsyubHA/6ftfgh8YlMxwr2XJjQadjMTf0x/i23zxyQ7XojTM63PfjnHqYpByz
-         XsBXIm1xFuIgmVvO8n9DtasCqx7jDJXbvdKxSb52YFGvOcIKGs/4M9e/WfFwDNnhHcnQ
-         j6Ug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1768409948; x=1769014748;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=nvlZDl7Sj74xagDLD4MC5KELnDbe4Vh9GRDyybbfdBA=;
-        b=d6bIuMGUYFfEPXfFjisYi0R/G+K2668rIIF77FrUpI8IEFkuMgC2npI25Nujd9x8kh
-         FSFQ267t/ZNGwwNpuW15sLgioMH2gb0Vhk1v9s117PMo2qg74zKECjCCkLcQFsqyWXjY
-         T8/4hZITnINz+lvndb6vOjDvNTM/LiToW4fbwysyjpEIqI5fARb5R0oEidTPYMhwtRNy
-         SbVQScX05FQjb+qvbfbBa6SHbsfTlb3kGvAGYRcbyJNcaF4uK+TaGwCQgHnQjuE5uCYx
-         0e+fUL9ehloEYjVJ9P/ZfVTKeTJGgOJXnsRbxbupf4/EXg/y1WT2eDsdATrrO/ZiRh8a
-         z0Mg==
-X-Forwarded-Encrypted: i=1; AJvYcCWhhDvXi7vOnA/ofJ69LsEwo8YwwuJMHeYiOPYV/tkMwjCfiipiZBeHraxGHBhTRAgchb5c7g==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwpdUXo3L0m68iqVwHKyLIkn+qeUpELzc6i4HxHciLsxyugLJ0b
-	d92mEYmzRb0/2lbMppaHs/VOynfxvWf8+C9078Imm1OF2jGE4Ee8EthB3nHT7KvLHA==
-X-Gm-Gg: AY/fxX75CR6RXpOoXS2gKhCVUK4T7GEnqbgHTjADdhDr2uOkShnak0QazzlIQouTLgE
-	9dvzinX8odIpDEA+jFb5gYq5mSz8GPpnViGItqPYrSOfzC3rp4yfA8y1ZecJoyi5w7cA8Xh0QcK
-	mJbR8pxKxOVez8zs72G/mVt2hZbVL8oXtgQScSlEA0gBXw3P7QUzKdo1DgxgYowQ+54HJ/tzfd0
-	vX+19EseNDQO5oX9rGgLRuXt9KbYnNg44YTC5bl3mpsiVCOwL56ggR/m33nuptMvP+bUQLlma6M
-	Jtpy/38tCoTOlZN8/cAqdrsPNmooigrxoBAZ7o2MsejKoY4PDcsnYy8qXTtRP6+REXoSL3AXnEP
-	VwZG3KEIypxSpOMc8OAxMdGKn4QASgjWLEilF1AtZp08bwGQTcVGqb7Eng47xV7GbhY4FrqLbER
-	icKLiFzfFqCKqv8MrRZJyppUU5S9Z6mmYACPYebHqH52iPkqie
-X-Received: by 2002:a17:902:e890:b0:265:e66:6c10 with SMTP id d9443c01a7336-2a599a24a2amr3823475ad.4.1768409948061;
-        Wed, 14 Jan 2026 08:59:08 -0800 (PST)
-Received: from google.com (222.245.187.35.bc.googleusercontent.com. [35.187.245.222])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-81f8e381d7csm135568b3a.0.2026.01.14.08.59.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Jan 2026 08:59:07 -0800 (PST)
-Date: Wed, 14 Jan 2026 16:59:02 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, will@kernel.org,
-	robin.murphy@arm.com, joro@8bytes.org,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, skolothumtho@nvidia.com,
-	xueshuai@linux.alibaba.com, smostafa@google.com
-Subject: Re: [PATCH rc v6 3/4] iommu/arm-smmu-v3: Mark STE EATS safe when
- computing the update sequence
-Message-ID: <aWfLVlDNZR5ecesC@google.com>
-References: <cover.1768248467.git.nicolinc@nvidia.com>
- <b8055e0f0f1b4473db2583586350b4f7aa8f3b4c.1768248467.git.nicolinc@nvidia.com>
- <aWe9C8wwfszvqxR6@google.com>
- <20260114161557.GB961588@nvidia.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XM81uToJ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2DC8C4CEF7;
+	Wed, 14 Jan 2026 17:30:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1768411830;
+	bh=hwNrqKA8AlHPcVAA3NPkwsp4ijTzIp4nlEDnDkoEX8M=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=XM81uToJyiYMw/1XFamfWLJfbjbhZq4H+WDl1MDE4XJ/V6c7SW8xH8G1t38NSD3I4
+	 DDTX+mdio9NVjVitwYe+jDKUEgRKwU6oGzlGHIxpZ7GVPVZ9LDpWLi9vY3N4RgHjXD
+	 Il0TXIbcrRpESIc7ozCshMH+IbH52UibSOsnUVrbRYrK+vyrcjQind9V7GHTCB8vAW
+	 WtLU/9wbAm+9Dqg9Y1U3u3Q+pGy9gv+nsvKIUvRN0M0zkr0PcZzA3MuxG6YhDOIekV
+	 8r8LdsupZ3UWycZ7Rxjz8GiLwg3gpJrSe3fjeMJJeh7n/KVktkp06CcST6d7eRWkHD
+	 CCO5b62lO+g/A==
+Message-ID: <f239e391-ac7c-4d26-ab82-4024a77ec3d3@kernel.org>
+Date: Wed, 14 Jan 2026 18:30:24 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260114161557.GB961588@nvidia.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v6 3/4] iommu: debug-pagealloc: Track IOMMU pages
+To: Jason Gunthorpe <jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>
+Cc: linux-mm@kvack.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ linux-doc@vger.kernel.org, corbet@lwn.net, joro@8bytes.org, will@kernel.org,
+ robin.murphy@arm.com, akpm@linux-foundation.org, vbabka@suse.cz,
+ surenb@google.com, mhocko@suse.com, jackmanb@google.com, hannes@cmpxchg.org,
+ ziy@nvidia.com, lorenzo.stoakes@oracle.com, Liam.Howlett@oracle.com,
+ rppt@kernel.org, xiaqinxin@huawei.com, baolu.lu@linux.intel.com,
+ rdunlap@infradead.org, Samiullah Khawaja <skhawaja@google.com>
+References: <20260109195111.GQ545276@ziepe.ca>
+ <CAFgf54r_au6isA10Nrve=MHL455X=tKhNsSwH1ej-TX08J3xLA@mail.gmail.com>
+ <20260112133256.GB745888@ziepe.ca>
+ <CAFgf54psxPrsvujStPNtrzxiKOsJF+aVrN7BcNxxmAF4wDmRXA@mail.gmail.com>
+ <20260112135208.GD745888@ziepe.ca>
+ <CAFgf54q+9Y5TtGJDB=8q_BW-0F=TM7zBbCcMzvtvr_N2WMnd-w@mail.gmail.com>
+ <746f5adb-1d91-4ca2-8ae0-a2d171203b66@kernel.org>
+ <CAFgf54pbkfdFr6biE8BiNKBnTBFWxXGmvxsZ0E+C1C44c9AW_g@mail.gmail.com>
+ <482f2f36-e906-492a-a80c-987bf7359d83@kernel.org>
+ <CAFgf54ovfnTHmMuZGk73SEEKsP3k-_exR1wqUE4W9tLYKv_iDw@mail.gmail.com>
+ <20260113150828.GP745888@ziepe.ca>
+From: "David Hildenbrand (Red Hat)" <david@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=david@kernel.org; keydata=
+ xsFNBFXLn5EBEAC+zYvAFJxCBY9Tr1xZgcESmxVNI/0ffzE/ZQOiHJl6mGkmA1R7/uUpiCjJ
+ dBrn+lhhOYjjNefFQou6478faXE6o2AhmebqT4KiQoUQFV4R7y1KMEKoSyy8hQaK1umALTdL
+ QZLQMzNE74ap+GDK0wnacPQFpcG1AE9RMq3aeErY5tujekBS32jfC/7AnH7I0v1v1TbbK3Gp
+ XNeiN4QroO+5qaSr0ID2sz5jtBLRb15RMre27E1ImpaIv2Jw8NJgW0k/D1RyKCwaTsgRdwuK
+ Kx/Y91XuSBdz0uOyU/S8kM1+ag0wvsGlpBVxRR/xw/E8M7TEwuCZQArqqTCmkG6HGcXFT0V9
+ PXFNNgV5jXMQRwU0O/ztJIQqsE5LsUomE//bLwzj9IVsaQpKDqW6TAPjcdBDPLHvriq7kGjt
+ WhVhdl0qEYB8lkBEU7V2Yb+SYhmhpDrti9Fq1EsmhiHSkxJcGREoMK/63r9WLZYI3+4W2rAc
+ UucZa4OT27U5ZISjNg3Ev0rxU5UH2/pT4wJCfxwocmqaRr6UYmrtZmND89X0KigoFD/XSeVv
+ jwBRNjPAubK9/k5NoRrYqztM9W6sJqrH8+UWZ1Idd/DdmogJh0gNC0+N42Za9yBRURfIdKSb
+ B3JfpUqcWwE7vUaYrHG1nw54pLUoPG6sAA7Mehl3nd4pZUALHwARAQABzSREYXZpZCBIaWxk
+ ZW5icmFuZCA8ZGF2aWRAa2VybmVsLm9yZz7CwY0EEwEIADcWIQQb2cqtc1xMOkYN/MpN3hD3
+ AP+DWgUCaKYhwAIbAwUJJlgIpAILCQQVCgkIAhYCAh4FAheAAAoJEE3eEPcA/4Naa5EP/3a1
+ 9sgS9m7oiR0uenlj+C6kkIKlpWKRfGH/WvtFaHr/y06TKnWn6cMOZzJQ+8S39GOteyCCGADh
+ 6ceBx1KPf6/AvMktnGETDTqZ0N9roR4/aEPSMt8kHu/GKR3gtPwzfosX2NgqXNmA7ErU4puf
+ zica1DAmTvx44LOYjvBV24JQG99bZ5Bm2gTDjGXV15/X159CpS6Tc2e3KvYfnfRvezD+alhF
+ XIym8OvvGMeo97BCHpX88pHVIfBg2g2JogR6f0PAJtHGYz6M/9YMxyUShJfo0Df1SOMAbU1Q
+ Op0Ij4PlFCC64rovjH38ly0xfRZH37DZs6kP0jOj4QdExdaXcTILKJFIB3wWXWsqLbtJVgjR
+ YhOrPokd6mDA3gAque7481KkpKM4JraOEELg8pF6eRb3KcAwPRekvf/nYVIbOVyT9lXD5mJn
+ IZUY0LwZsFN0YhGhQJ8xronZy0A59faGBMuVnVb3oy2S0fO1y/r53IeUDTF1wCYF+fM5zo14
+ 5L8mE1GsDJ7FNLj5eSDu/qdZIKqzfY0/l0SAUAAt5yYYejKuii4kfTyLDF/j4LyYZD1QzxLC
+ MjQl36IEcmDTMznLf0/JvCHlxTYZsF0OjWWj1ATRMk41/Q+PX07XQlRCRcE13a8neEz3F6we
+ 08oWh2DnC4AXKbP+kuD9ZP6+5+x1H1zEzsFNBFXLn5EBEADn1959INH2cwYJv0tsxf5MUCgh
+ Cj/CA/lc/LMthqQ773gauB9mN+F1rE9cyyXb6jyOGn+GUjMbnq1o121Vm0+neKHUCBtHyseB
+ fDXHA6m4B3mUTWo13nid0e4AM71r0DS8+KYh6zvweLX/LL5kQS9GQeT+QNroXcC1NzWbitts
+ 6TZ+IrPOwT1hfB4WNC+X2n4AzDqp3+ILiVST2DT4VBc11Gz6jijpC/KI5Al8ZDhRwG47LUiu
+ Qmt3yqrmN63V9wzaPhC+xbwIsNZlLUvuRnmBPkTJwwrFRZvwu5GPHNndBjVpAfaSTOfppyKB
+ Tccu2AXJXWAE1Xjh6GOC8mlFjZwLxWFqdPHR1n2aPVgoiTLk34LR/bXO+e0GpzFXT7enwyvF
+ FFyAS0Nk1q/7EChPcbRbhJqEBpRNZemxmg55zC3GLvgLKd5A09MOM2BrMea+l0FUR+PuTenh
+ 2YmnmLRTro6eZ/qYwWkCu8FFIw4pT0OUDMyLgi+GI1aMpVogTZJ70FgV0pUAlpmrzk/bLbRk
+ F3TwgucpyPtcpmQtTkWSgDS50QG9DR/1As3LLLcNkwJBZzBG6PWbvcOyrwMQUF1nl4SSPV0L
+ LH63+BrrHasfJzxKXzqgrW28CTAE2x8qi7e/6M/+XXhrsMYG+uaViM7n2je3qKe7ofum3s4v
+ q7oFCPsOgwARAQABwsF8BBgBCAAmAhsMFiEEG9nKrXNcTDpGDfzKTd4Q9wD/g1oFAmic2qsF
+ CSZYCKEACgkQTd4Q9wD/g1oq0xAAsAnw/OmsERdtdwRfAMpC74/++2wh9RvVQ0x8xXvoGJwZ
+ rk0Jmck1ABIM//5sWDo7eDHk1uEcc95pbP9XGU6ZgeiQeh06+0vRYILwDk8Q/y06TrTb1n4n
+ 7FRwyskKU1UWnNW86lvWUJuGPABXjrkfL41RJttSJHF3M1C0u2BnM5VnDuPFQKzhRRktBMK4
+ GkWBvXlsHFhn8Ev0xvPE/G99RAg9ufNAxyq2lSzbUIwrY918KHlziBKwNyLoPn9kgHD3hRBa
+ Yakz87WKUZd17ZnPMZiXriCWZxwPx7zs6cSAqcfcVucmdPiIlyG1K/HIk2LX63T6oO2Libzz
+ 7/0i4+oIpvpK2X6zZ2cu0k2uNcEYm2xAb+xGmqwnPnHX/ac8lJEyzH3lh+pt2slI4VcPNnz+
+ vzYeBAS1S+VJc1pcJr3l7PRSQ4bv5sObZvezRdqEFB4tUIfSbDdEBCCvvEMBgoisDB8ceYxO
+ cFAM8nBWrEmNU2vvIGJzjJ/NVYYIY0TgOc5bS9wh6jKHL2+chrfDW5neLJjY2x3snF8q7U9G
+ EIbBfNHDlOV8SyhEjtX0DyKxQKioTYPOHcW9gdV5fhSz5tEv+ipqt4kIgWqBgzK8ePtDTqRM
+ qZq457g1/SXSoSQi4jN+gsneqvlTJdzaEu1bJP0iv6ViVf15+qHuY5iojCz8fa0=
+In-Reply-To: <20260113150828.GP745888@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Jan 14, 2026 at 12:15:57PM -0400, Jason Gunthorpe wrote:
-> On Wed, Jan 14, 2026 at 03:58:03PM +0000, Pranjal Shrivastava wrote:
-> > > +
-> > > +	/*
-> > > +	 * When a STE comes to change EATS the sequencing code in the attach
-> > > +	 * logic already will have the PCI cap for ATS disabled. Thus at this
-> > > +	 * moment we can expect that the device will not generate ATS queries
-> > > +	 * and so we don't care about the sequencing of EATS. The purpose of
-> > > +	 * EATS is to protect the system from hostile untrusted devices that
-> > > +	 * issue ATS when the PCI config space is disabled. However, if EATS
-> > > +	 * is being changed then we already must be trusting the device since
-> > > +	 * the EATS security block is being disabled.
-> > > +	 *
-> > > +	 *  Note: Since we moved the EATS update to the first phase, changing
-> > > +	 *  S2S and EATS might transiently set S2S=1 and EATS=1, resulting in
-> > > +	 *  a bad STE. See "5.2 Stream Table Entry". In such a case, we can't
-> > > +	 *  do a hitless update.
-> > > +	 */
-> > > +	if (!((cur[2] | target[2]) & cpu_to_le64(STRTAB_STE_2_S2S)))
-> > > +		safe_bits[1] |= cpu_to_le64(STRTAB_STE_1_EATS);
-> > 
-> > I understand what we're trying to do here but isn't this implicitly
-> > saying it is safe to transition hitlessly to any non-zero EATS value,
-> > including S1CHK or RSVD. S1CHK might have other config dependencies?
+On 1/13/26 16:08, Jason Gunthorpe wrote:
+> On Tue, Jan 13, 2026 at 10:49:28AM +0000, Mostafa Saleh wrote:
+>> Would you have a problem if we added a new function in page_ext
+>> "page_ext_from_phys()" as Jason suggested?
 > 
-> Will pointed this issue with S1CHK, Nicolin has a suggestion to fix it here:
+> Given the hidden complexity that David just pointed out I think this
+> is essential to encapsulate it in a function.
 > 
-> https://lore.kernel.org/linux-iommu/aWarF90zBqxD0Gef@Asurada-Nvidia/
-> 
-> It would block RSVD too.
-> 
+> The function must be able to accept any phys_addr_t and safely returns
+> NULL if page_ext cannot be used for some reason.
 
-Ohh okay, sounds good then, my client dropped it somehow. I'll defer
-this to Will.
+Right. I think pfn_to_online_page() is the appropriate check.
 
-> Thanks,
-> Jason
+@Mostafa, I saw you already sent a v7, is the pfn_to_online_page() stuff 
+handled in there?
 
-Thanks,
-Praan
+-- 
+Cheers
+
+David
