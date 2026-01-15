@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67C702848BE
-	for <iommu@lists.linux.dev>; Thu, 15 Jan 2026 02:45:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E860129ACC6
+	for <iommu@lists.linux.dev>; Thu, 15 Jan 2026 03:26:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768445117; cv=none; b=dMgLgzxdCcwni0Zug/QGjrvM2QqE0GbqhE32zXo013TMQo7ttH1wWbGQSLsnNKuBMyNe7+3iSovPiTi77I1QTRba9IRnG67sCcaufzmArADtLL4OyFY/BoNEH22eFos9jBmvUVBQtpeifWO02X2f7D/QhpsQpCm8dH/sgc421D8=
+	t=1768447609; cv=none; b=pCFzcGT5lcZuhEeTVHpmlt07LPdxid5tKO8ItvkNasf0SwJWrT5KL9p3cxMsRpGad+InDFOCLS5gd9yj20C+yf9Ow3mNc3CSHo+B307mJkOE1KFb/R5a2hVuKrgETEFRg1JopBOYQWHRONlRg5XTgZcenBR5mXLFkhziyOjDCqU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768445117; c=relaxed/simple;
-	bh=OEuNYHOUzw3wHyni+D17LrNAnpZtaWcnstAKbHR3Ge0=;
+	s=arc-20240116; t=1768447609; c=relaxed/simple;
+	bh=Oe+gaZZ6grkVr27jqZrZV1xRAtQa0X5snW3MPucT+mY=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=bzliKvEFcg4zR1kmD2kq0jPLbavhGzSSHEUJIOTsOsiZRSIMsOxIod3oPj+ec/Jor3GCak4uTY+uWxoH3DHaUdGCnBtiqBlvqu6yjvfX30rGwxNgdN5DRwVUJICbemkMLmfi8PC5fkV4/usxb2Yit2BAsIJEzCSPKFP4ZssejaM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BhZsis0y; arc=none smtp.client-ip=192.198.163.15
+	 In-Reply-To:Content-Type; b=LiHC6PIL16TtYcAuY6jGPdxy92KYRfQw2TxWJyBC4trr6GA6Uz+geViJR3oGoSdTr/k7slgV8c6KrdNqqXwKb9mCf5z1YJ0IYMLaAXi81C/Mp7rRcXQTOItb62pzNaxQH4JZC1YdBTG95elrOd0a3vK7+7qm16TUWBAvVjOZDbY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FmooTGof; arc=none smtp.client-ip=198.175.65.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BhZsis0y"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FmooTGof"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1768445112; x=1799981112;
+  t=1768447608; x=1799983608;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=OEuNYHOUzw3wHyni+D17LrNAnpZtaWcnstAKbHR3Ge0=;
-  b=BhZsis0yLAAOqNogvyQHuavn/kaSzCQBuUmWtkPMhL5FlSzXQio+6N+O
-   l/VZwhRZSsHq3kV/+sX1y/NEJRVJYcAnJFNuWkFWTxY/ygU8b0qnw/YKo
-   /CY3qABFHC3uma9TDW8UD1XamB3YIKaBDaVX0vHh3X0FR7H1VamWpYEha
-   AkYpcHdXWAgCs9pAG/89DQUnlbT20X63VTc5opn2MWBIozonLQWtAogEa
-   DjU+SvLsrcZrSlaH5lNfUO3d6c0RZ5gxeJ57/zoA6ZfY+FkwRwTIyArHO
-   6XBBi1qMGfsB4arq8EWxvjAMuf3ccmSYUpESgQOAfR2JQNDqAHXvTZQQd
-   A==;
-X-CSE-ConnectionGUID: jkFnNVdqTOyoua9mCdgOEA==
-X-CSE-MsgGUID: GNSpnFwCT0KRwDmUlNjziQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11671"; a="69837793"
+  bh=Oe+gaZZ6grkVr27jqZrZV1xRAtQa0X5snW3MPucT+mY=;
+  b=FmooTGof2lRuF0bj7qmAgnAmIxMEMeymWwL2Irj6U14rUASQiDTesgAA
+   JACOBuw+y0IXsZxxOB2+fHNUmUD5RB1J7Ji6zuT2cQFdcp8a+sUvLQFak
+   oBZazqtWF7iFSNZYle0EhvmzFs6ehVC6vQb9IBevbdsHoO7ZF9vXFj1SL
+   Mmw8dOFtngQJGoPXdmj6rT58EI/6NUZVFc0MtLQcgNDimbQSBms9a7tPP
+   crpM91Iqx+Nd/GkKseVyw3Na/Xg9m9kjACzFn1B39ja79+OJpFI+s9hUQ
+   RSeUbN0CtZEOi3p8fRgK05V7KZT2VSybC5hneKiQ0tu6iOHso/4xm71dN
+   g==;
+X-CSE-ConnectionGUID: 4v6w6Dq4QUWubRhsxL+ZqQ==
+X-CSE-MsgGUID: VRvURpzvTCKcLk3+CeWL4Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11671"; a="87165039"
 X-IronPort-AV: E=Sophos;i="6.21,226,1763452800"; 
-   d="scan'208";a="69837793"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jan 2026 18:45:10 -0800
-X-CSE-ConnectionGUID: ZkRo0lG+Snmar7CP0HuOtA==
-X-CSE-MsgGUID: tEt/Bu7oSGCckyDWdu2ZyA==
+   d="scan'208";a="87165039"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jan 2026 19:26:48 -0800
+X-CSE-ConnectionGUID: 88hg6QZzRkmymDD4NacBgg==
+X-CSE-MsgGUID: jwxD2HRjR72Frcg0fvqn0g==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,226,1763452800"; 
-   d="scan'208";a="204730275"
+   d="scan'208";a="236105173"
 Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jan 2026 18:45:07 -0800
-Message-ID: <6c1888bb-83ff-4121-baef-4c3c93dcbf58@linux.intel.com>
-Date: Thu, 15 Jan 2026 10:45:12 +0800
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jan 2026 19:26:45 -0800
+Message-ID: <db26b1e3-bd7a-44ee-b458-6cb0fedf6662@linux.intel.com>
+Date: Thu, 15 Jan 2026 11:26:50 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,84 +52,97 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/3] iommu/vt-d: Clear Present bit before tearing down
- PASID entry
-To: Dmytro Maluka <dmaluka@chromium.org>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
- Jason Gunthorpe <jgg@nvidia.com>, Samiullah Khawaja <skhawaja@google.com>,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- "Vineeth Pillai (Google)" <vineeth@bitbyteword.org>,
- Aashish Sharma <aashish@aashishsharma.net>
+Subject: Re: [PATCH 1/3] iommu/vt-d: Use 128-bit atomic updates for context
+ entries
+To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Jason Gunthorpe <jgg@nvidia.com>
+Cc: Dmytro Maluka <dmaluka@chromium.org>,
+ Samiullah Khawaja <skhawaja@google.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 References: <20260113030052.977366-1-baolu.lu@linux.intel.com>
- <20260113030052.977366-3-baolu.lu@linux.intel.com>
- <aWaeUJcAFQ_vbJtd@google.com>
- <8e232d7f-9436-401e-9abc-308492a1fcbf@linux.intel.com>
- <aWd6KIGBiE-nL2IT@mitya-t14-2025>
+ <20260113030052.977366-2-baolu.lu@linux.intel.com>
+ <BN9PR11MB5276EFACF8AA21215568550F8C8FA@BN9PR11MB5276.namprd11.prod.outlook.com>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <aWd6KIGBiE-nL2IT@mitya-t14-2025>
+In-Reply-To: <BN9PR11MB5276EFACF8AA21215568550F8C8FA@BN9PR11MB5276.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 1/14/26 19:12, Dmytro Maluka wrote:
-> On Wed, Jan 14, 2026 at 01:38:13PM +0800, Baolu Lu wrote:
->> On 1/14/26 03:34, Dmytro Maluka wrote:
->>> On Tue, Jan 13, 2026 at 11:00:47AM +0800, Lu Baolu wrote:
->>>> +	intel_pasid_clear_entry(iommu, dev, pasid, fault_ignore);
->>> Is it safe to do this with iommu->lock already unlocked?
+On 1/14/26 15:54, Tian, Kevin wrote:
+>> From: Lu Baolu <baolu.lu@linux.intel.com>
+>> Sent: Tuesday, January 13, 2026 11:01 AM
 >>
->> Yes, it is. The PASID entry lifecycle is serialized by the iommu_group-
->>> mutex in the iommu core, which ensures that no other thread can attempt
->> to allocate or setup this same PASID until intel_pasid_tear_down_entry()
->> has returned.
+>> On Intel IOMMU, device context entries are accessed by hardware in
+>> 128-bit chunks. Currently, the driver updates these entries by
+>> programming the 'lo' and 'hi' 64-bit fields individually.
 >>
->> The iommu->lock is held during the initial transition (P->0) to ensure
->> atomicity against other hardware-table walkers, but once the P bit is
->> cleared and the caches are flushed, the final zeroing of the 'dead'
->> entry does not strictly require the spinlock because the PASID remains
->> reserved in software until the function completes.
+>> This creates a potential race condition where the IOMMU hardware may
+>> fetch
+>> a context entry while the CPU has only completed one of the two 64-bit
+>> writes. This "torn" entry — consisting of half-old and half-new data —
+>> could lead to unpredictable hardware behavior, especially when
+>> transitioning the 'Present' bit or changing translation types.
 > 
-> Ok. Just to understand: "other hardware-table walkers" means some
-> software walkers, not hardware ones? Which software walkers are those?
-> (I can't imagine how holding a spinlock could prevent the hardware from
-> walking those tables. :))
+> this is not accurate. context entry is 128bits only. Scalable context
+> entry is 256bits but only the lower 128bits are defined. so hardware always
+> fetches the context entry atomically. Then if software ensures the right
+> order of updates (clear present first then other bits), the hardware won't
+> look at the partial entry after seeing present=0.
+> 
+> But now as Dmytro reported there is no barrier in place so two 64bits
+> updates to the context entry might be reordered so hw could fetch
+> an entry with old lower half (present=1) and new higher half.
+> 
+> then 128bit atomic operation avoids this ordering concern.
 
-You are right. A spinlock doesn't stop the hardware. The spinlock
-serializes software threads to ensure the hardware walker always sees a
-consistent entry.
+You're right. I will update the commit message to be more precise. Since
+the hardware fetches the 128-bit context entry atomically, the issue is
+essentially a software ordering problem.
 
-When a PASID entry is active (P=1), other kernel paths might modify
-the control bits in-place. For example:
+We considered three approaches to solve this:
 
-void intel_pasid_setup_page_snoop_control(struct intel_iommu *iommu,
-                                           struct device *dev, u32 pasid)
-{
-         struct pasid_entry *pte;
-         u16 did;
+- Memory barriers (to enforce Present bit clearing order)
+- WRITE_ONCE() (to prevent compiler reordering)
+- 128-bit atomic updates
 
-         spin_lock(&iommu->lock);
-         pte = intel_pasid_get_entry(dev, pasid);
-         if (WARN_ON(!pte || !pasid_pte_is_present(pte))) {
-                 spin_unlock(&iommu->lock);
-                 return;
-         }
+This patch uses the atomic update approach.
 
-         pasid_set_pgsnp(pte);
-         did = pasid_get_domain_id(pte);
-         spin_unlock(&iommu->lock);
+> 
+>> @@ -1170,19 +1170,19 @@ static int domain_context_mapping_one(struct
+>> dmar_domain *domain,
+>>   		goto out_unlock;
+>>
+>>   	copied_context_tear_down(iommu, context, bus, devfn);
+>> -	context_clear_entry(context);
+>> -	context_set_domain_id(context, did);
+>> +	context_set_domain_id(&new, did);
+> 
+> I wonder whether it's necessary to use atomic in the attach path, from
+> fix p.o.v.
+> 
+> The assumption is that the context should have been cleared already
+> before calling this function (and following ones). Does it make more
+> sense to check the present bit, warning if set, then fail the operation?
+> We could refactor them to do atomic update, but then it's for cleanup> instead of being part of a fix.
 
-         intel_pasid_flush_present(iommu, dev, pasid, did, pte);
-}
+Yes. For the attach path, this is a cleanup rather than a fix.
 
-In this case, the iommu->lock ensures that if two threads try to modify
-the same active entry, they don't interfere with each other and leave
-the entry in a 'torn' state for the IOMMU hardware to read.
+> 
+> Then this may be split into three patches:
+> 
+> - change context_clear_entry() to be atomic, to fix the teardown path
+> - add present bit check in other functions in this patch, to scrutinize the
+>    attach path
+> - change those functions to be atomic, as a clean up
 
-In intel_pasid_tear_down_entry(), once the PASID entry is deactivated
-(setting P=0 and flushing caches), the entry is owned exclusively  by
-the teardown thread until it is re-configured. That's the reason why the
-final zeroing doesn't need the spinlock.
+Perhaps this also paves the way for enabling hitless replace in the
+attach_dev path?
+
+> Does it make sense?
+
+Yes, it is.
 
 Thanks,
 baolu
