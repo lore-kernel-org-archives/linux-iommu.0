@@ -1,355 +1,177 @@
-Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
+Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D82B53BFE4B
-	for <iommu@lists.linux.dev>; Thu, 15 Jan 2026 18:27:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.170
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768501632; cv=pass; b=p32w9rJw5Le/IyYx6tjGS5GBy+FKw6mO6XWwZBimX5SXClA7aSEXFjvgTKnj9hXUk1gpzuljFo4fRu+Sz8usos9HYW1NG3Gn1dj048a++01/Tyiiw9H4ObGyv5ec05gTXLKNZXTf7jSmaMqq/W09i3YH4rWI2VGUJohfjvKcLds=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768501632; c=relaxed/simple;
-	bh=9a2GaFXb+fA4y7W8/hgyJhmBHxnYTsdZC/+sIB8sV60=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=M8W3yh+lAiAvdkuquOvAo7vAuv8tjJNyzgQwZpDbYwv5rvWv2F7yIQnATu9Axuz7UigFLGEaOfJS08xxSgV3BwEo7PAbAtWkbfCPrapM5KYB95xpiVh7du9JUmdCaSlbG4eLof2p8FI7ZsWU8JZykzCuagJqa68xOznIcPe7Qn8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=cYGizj9x; arc=pass smtp.client-ip=209.85.160.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B139625D1E9
+	for <iommu@lists.linux.dev>; Thu, 15 Jan 2026 19:02:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.182
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1768503730; cv=none; b=ENBarvrsBYD3IzH3Qc59gjtX4ZYkHjNgKLbIPLwR0cyECrp2kWXQdBLJLRZoG49KeryaagMDcsNUpjHsnHXLcifiyL4BxG9Ish3VGF164FGxdwee7i0uSBp9+RMOiUlB8S6qo6KLJGg2hYnY3LEaewrmB17gVSzh9Jp3Vnqxq5M=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1768503730; c=relaxed/simple;
+	bh=cEYuY2nwSmF3nngV50RNePn1W3opmsLWtx/aK+S8ZpA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=oU4SYbj3B0EKzpP1GHEo53clWY6UF/uHvFrfSCc2RMqG72OgmjEEYp+7rNvd0vyDwifNa4+aPY0ptKyNGyGMmK8l0mBmZr3/IRit7hJtMRD/R0hxhlQnlBA3tdeE4F3QEzRyxitIEtM7l+dLgDneVpIK8vdXDOkQvFEnCH8aRUw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fG0Znqvv; arc=none smtp.client-ip=209.85.160.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="cYGizj9x"
-Received: by mail-qt1-f170.google.com with SMTP id d75a77b69052e-501511aa012so21611cf.0
-        for <iommu@lists.linux.dev>; Thu, 15 Jan 2026 10:27:10 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1768501630; cv=none;
-        d=google.com; s=arc-20240605;
-        b=ShY5XU/jWgsb/AL08+73dO6aXP6X5oUkDnGxaNmrMGATAxLezg/ohHae20OPB/2ZLI
-         V2Db+gEPiG/H71R580xs0N73+4qyOMHuWvHhs1FXHrmQQ9aERwlCutg0IIh6TAYfFrlS
-         VehK2U/swhMtk6rhYUtvc0XCPp+yOtQ108KfgBw8Th5guv31fam1Twpd7/vkP3XLl8+q
-         o6IonarnPJNEEDXZvibisZ2Kku7KF7EVNN5ASsKN8oIKaVmq3WEOGikKWHCIbA0tAzch
-         6IYG8Med6zpujEHUHiWcRrUVVfY8birlVM0veA1CQR+Qz78hr3yPAPqkW3ybzevF8gvJ
-         GYRQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=UUBnr0pT69XDgeuYcmjVaY3IHFc3NphytYYdMb5XuDc=;
-        fh=sI1Ks4YH03fdiGBWEgMbwrTlUnFYsAmO8Qvz/Uo1LMk=;
-        b=gC5NT66UgxLyS7AZuOMGx1f5wqzZPdgbYVS152jkmoq4IL6E98/BA6tJg5Dnqs5Y8r
-         Yozkj+nR2RCxytZTte4m8kY0AjSSnYacn0W90cp3ruGYGOY0bhnbq4ZDGOM8ZCGEK9S8
-         WQu6yiLl8NoaF5i1mrXFlqjBIY3akzRKaXUr03DPYYkcXrtrlp7UPT2KXTjhbNHRJYXt
-         Fldn363tkdl5fhdlxQqm7NeLpzwzK8woHnaojGDGG1XTXKJa8HI19TF5xyEnH/rR1IZ1
-         K2F6S+Oc31ij9Al3NItgtIDvMb8Efi7f4el3PoX8jfue6vyX1J6U5OrNzl6ZA8Tk23uH
-         xmjQ==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fG0Znqvv"
+Received: by mail-qt1-f182.google.com with SMTP id d75a77b69052e-5014600ad12so9602831cf.2
+        for <iommu@lists.linux.dev>; Thu, 15 Jan 2026 11:02:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1768501630; x=1769106430; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=UUBnr0pT69XDgeuYcmjVaY3IHFc3NphytYYdMb5XuDc=;
-        b=cYGizj9xR4tduw7mFjX2AaS+65nRfIlByhH5mxF2t/BsuybvvuwpOp1/rJVtNxEwYY
-         F73/JXIWqYADCAWPmzVgPO22fqaJH7Tgu8f2sB4U1Cq+edWsbM168cjgdAYmPd2noOiF
-         vBcObevqQ+CJpm8San46r44IAYcAQB9Y4m9RZMRyHxjPqybJPVZKHipoTjx79DSAcTlU
-         mbPhbvYI242vaGzvQ2mvnBH4jCaDoRDfngb/04rUx3TEFoIe0T+3zYJekJWtRUOg7wR6
-         a2Iuyz1Ow0F2YWM5VLRAvOvlWy0DH3a21Frx0PXfKrEcwbn9SSM96UZZy8FIt3PlEknf
-         TWdA==
+        d=gmail.com; s=20230601; t=1768503728; x=1769108528; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=vk2UXOqM9Kcx+mMxkNCtAlr2gfKKKvNS6oqXFgbFlQw=;
+        b=fG0ZnqvvJNJ6DX0f6VaAeZvyvYb/I1G8HToK68FKzWdx8dEproMqMbvPp3ND8I0i6v
+         KEzqlTtwD+hxuKnQVn92r/2hE1dTdwJVwK552bZ0tqi5feCqZqFAIYaxqzKP7Jv+Y3mR
+         2urFEVpcjr/pJ6Vl266Q5339t/I8wdpefoSmElWK5vwcD2ngArg8ZRXmdGETmk7mPQMq
+         xR9sGXxxP9Z57mVC21iOSj1m2RtpkZtZQOSfL7nxabVVfYurPVA8wW4VvmRlyRss8eIg
+         FkzEd+pNihiALlyJAotLDajmzjUGupLZlTkvV9t4E2bkG7TLtcq3lvwHTB4uY65jh0nc
+         0Yxg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1768501630; x=1769106430;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=UUBnr0pT69XDgeuYcmjVaY3IHFc3NphytYYdMb5XuDc=;
-        b=VYlyc3xKlAusktDjeIgY2dBHeDimgX4Ua1R7/pZ7ySBpVj8UIFcZjwJhJ8M3y0Rt0u
-         s/AJYBKCddYBmR1V6b9zN3tVDAKAkv9C/bi9M5rfkNUJ2WSTn7D5wnU6ID2vI6fc0SK/
-         WPtjsqeEMbAyL9wYt8tdHa9RbIde2dQ4QA+8/a9BHPTvfdpRThFYzDN/03pMgdjoYhwS
-         tRkXcNBUTd7rT9BG0LRHBRzbLsZRMCgxeS6pUCr64gWBFqtj+GUv0uE11qk//H3+JrHA
-         S4x0gxhleD0goXkqitC8qTZnHQxx4LcEl68fUtSKj1BdCu5Dmf+Pj3EcBOFWIH7qeQuc
-         mrLQ==
-X-Gm-Message-State: AOJu0YxO7bT5CzK/g6QAVes+fdMoJRMu7W9GwUg3eId8auP5DoeO25uB
-	H3onYib929PAfPKHSTbMvAKEBpeAZhXAszE5gBP4HsH1/XyFBb8bDd7RTeUV7gn4m7JBwYTi3SB
-	F7lgEDKjSK8/R9V9tWVrxJiDWL/IdDmvECm9BRijE
-X-Gm-Gg: AY/fxX4bqF6+YS+zohttr00yacqJz8UaFkuDJszcGywQ0kg0+g5KWK7/bo0PRFFJuZ5
-	1e0J8kRNRltk5RdMIveEyxXORgDsgowOIGAyn1qGVyRy2Z727RyWbBUz7sFb5r1lv55kCdpnNaM
-	XfGSXN52ifYA058jKeSgGu7P73s0U4SAJASDtaU+gEC9q2UZ+ETZ9RPssyRy/gAYBk5ayJLoI8q
-	63qcJCKSPfSNCnrT4R0FqphT3+zrxkVQWK7xJqOK6dqfH2Wrj9OHRLGQjowmt0zlax0/r3+7DwH
-	aDIDK4nHKCTls8kUP2ETet732sKJlpxpCavoolCF
-X-Received: by 2002:a05:622a:291:b0:501:4539:c81 with SMTP id
- d75a77b69052e-502a2308ca2mr347271cf.2.1768501629281; Thu, 15 Jan 2026
- 10:27:09 -0800 (PST)
+        d=1e100.net; s=20230601; t=1768503728; x=1769108528;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=vk2UXOqM9Kcx+mMxkNCtAlr2gfKKKvNS6oqXFgbFlQw=;
+        b=lHeFz7H3KM2rcjrl89QT/DHBJPMjAbLpccbjKUOy4+ETs+Agf59nQ8adHaj4tn0DEp
+         eni9Hu2RNuIs8GUVzl06JK4hjr1BOtCDuYduIuPaYK8577fMABhPbiTRAde0lP1LPE/k
+         od6QYcSZ+3khrRaPwi/gzCQxzn0KSj636g2/QW98AayJrtRHuz7/6Ew53lBn+ZtRtAhh
+         2H9vvdjCKXTNTF9T2j/dlkvgikUAh8Uib87eQzY6yPBEqEMYozLe2x8lNQlporVR39Ff
+         AeOVGFSqHu+LIEzFvAwYCVI3mV0hz6heEW5OVgujs0JSPLRRdvIgzqCiFhhqp+KOAHx0
+         LjJw==
+X-Forwarded-Encrypted: i=1; AJvYcCXRMXeRS0PMFgy/OIEXe+UIAh1/rgDLUTl8OLIWCzatif/AifiMvMau68KMPBXAQrUOXOHGAA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwOxI+7z6esAD3Nztsv07B0m0kS2dJDRc6dFiHn2zHgCVfeFMaS
+	tgc4DWNqeEEr7Bu3RQu+UHE0JR/CDE6w+KTW+g10QPy/eVIGQwIdjIzv
+X-Gm-Gg: AY/fxX6X8osZ+/6AlUkibAMqmz984FZSKbclGgajlE0Hi3EMxKcY9FGBPOu6nWHomwX
+	mCczW7lg1tCZsIsVeY8Il61nCeo471Ss0+jvFaz4spTQIgwP2NbEWIA+rbnNoucQFPb79bcgXMB
+	+kBVv/4cJgVSPQZRCzaZ/BNp8b0dFkbUmV4VBRJSTiJUkUZkWkQY6przkgVhX03t1uGKyVY81c1
+	gKEskzAE5RGSoZoqGCIFPgOfe5w88gF+LqcJz44+MdmrJTLbs2InwMEHVXWZdtMWtbookiw5LzA
+	61+dc00ml2bJmZTLuxODkQq+FA++rNJs8VTqnpUIrT8/vD7RFfopBF1a6/zGvFv31GUsgaQs3m/
+	cHBdS7IVEnz9FxTcByWJD0lvEHjb83T+m3ArNmQfqSeH+zD35aRodiHWkLCSPbZwsKeUqbqBsoW
+	8cVNMuCIW2NyuBmLMTGmOQLI9B
+X-Received: by 2002:a05:622a:110e:b0:4f3:5652:6743 with SMTP id d75a77b69052e-502a17565b9mr8274571cf.39.1768503727274;
+        Thu, 15 Jan 2026 11:02:07 -0800 (PST)
+Received: from ?IPV6:2001:871:22a:693f::1ad1? ([2001:871:22a:693f::1ad1])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-502a1ed3155sm2097251cf.19.2026.01.15.11.02.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 15 Jan 2026 11:02:06 -0800 (PST)
+Message-ID: <5cab0953-c2a3-4baa-af91-e9519afef092@gmail.com>
+Date: Thu, 15 Jan 2026 20:02:02 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <0-v1-d7be57da596d+3f8c0-iommpt_map_direct_jgg@nvidia.com> <2-v1-d7be57da596d+3f8c0-iommpt_map_direct_jgg@nvidia.com>
-In-Reply-To: <2-v1-d7be57da596d+3f8c0-iommpt_map_direct_jgg@nvidia.com>
-From: Samiullah Khawaja <skhawaja@google.com>
-Date: Thu, 15 Jan 2026 10:26:57 -0800
-X-Gm-Features: AZwV_Qj4613PNkmN-MpgZ-OnhoPRlV1kS1AqbIQ7IWr66Cc22XInFcWPLAOoDfo
-Message-ID: <CAAywjhSL5Qv=RFU83TfXa7kSYxC8FzWq4VVMREtHvk8=khLmNA@mail.gmail.com>
-Subject: Re: [PATCH 2/3] iommupt: Directly call iommupt's unmap_range()
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, 
-	Alejandro Jimenez <alejandro.j.jimenez@oracle.com>, Joerg Roedel <joerg.roedel@amd.com>, 
-	Kevin Tian <kevin.tian@intel.com>, kernel test robot <lkp@intel.com>, 
-	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [REGRESSION] qcom: iommu: nullpointer dereference on boot on
+ apq8064
+To: Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
+ Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
+ Rob Clark <robin.clark@oss.qualcomm.com>,
+ Matti Vaittinen <mazziesaccount@gmail.com>, iommu@lists.linux.dev,
+ linux-arm-msm@vger.kernel.org, Rudraksha Gupta <guptarud@gmail.com>
+References: <569d7de2-cfcd-4d28-8bbf-14a0179f665e@gmail.com>
+ <20260105180213.GG125261@ziepe.ca>
+ <9a86120e-c0be-4ed5-a3de-cc7f164da154@arm.com>
+Content-Language: en-US, de-DE
+From: Christian Schrefl <chrisi.schrefl@gmail.com>
+In-Reply-To: <9a86120e-c0be-4ed5-a3de-cc7f164da154@arm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Mon, Jan 12, 2026 at 6:49=E2=80=AFAM Jason Gunthorpe <jgg@nvidia.com> wr=
-ote:
->
-> The common algorithm in iommupt does not require the iommu_pgsize()
-> calculations, it can directly unmap any arbitrary range. Add a new functi=
-on
-> pointer to directly call an iommupt unmap_range op and make
-> __iommu_unmap() call it directly.
->
-> Gives about a 5% gain on single page unmappings.
->
-> The function pointer is run through pt_iommu_ops instead of
-> iommu_domain_ops to discourage using it outside iommupt. All drivers with
-> their own page tables should continue to use the simplified
-> map/unmap_pages() style interfaces.
->
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->  drivers/iommu/generic_pt/iommu_pt.h | 29 ++++------------------
->  drivers/iommu/iommu.c               | 18 +++++++++++---
->  include/linux/generic_pt/iommu.h    | 37 ++++++++++++++++++++++++-----
->  include/linux/iommu.h               |  1 +
->  4 files changed, 51 insertions(+), 34 deletions(-)
->
-> diff --git a/drivers/iommu/generic_pt/iommu_pt.h b/drivers/iommu/generic_=
-pt/iommu_pt.h
-> index 3327116a441cac..5c898c01659798 100644
-> --- a/drivers/iommu/generic_pt/iommu_pt.h
-> +++ b/drivers/iommu/generic_pt/iommu_pt.h
-> @@ -1012,34 +1012,12 @@ static __maybe_unused int __unmap_range(struct pt=
-_range *range, void *arg,
->         return ret;
->  }
->
-> -/**
-> - * unmap_pages() - Make a range of IOVA empty/not present
-> - * @domain: Domain to manipulate
-> - * @iova: IO virtual address to start
-> - * @pgsize: Length of each page
-> - * @pgcount: Length of the range in pgsize units starting from @iova
-> - * @iotlb_gather: Gather struct that must be flushed on return
-> - *
-> - * unmap_pages() will remove a translation created by map_pages(). It ca=
-nnot
-> - * subdivide a mapping created by map_pages(), so it should be called wi=
-th IOVA
-> - * ranges that match those passed to map_pages(). The IOVA range can agg=
-regate
-> - * contiguous map_pages() calls so long as no individual range is split.
-> - *
-> - * Context: The caller must hold a write range lock that includes
-> - * the whole range.
-> - *
-> - * Returns: Number of bytes of VA unmapped. iova + res will be the point
-> - * unmapping stopped.
-> - */
-> -size_t DOMAIN_NS(unmap_pages)(struct iommu_domain *domain, unsigned long=
- iova,
-> -                             size_t pgsize, size_t pgcount,
-> +static size_t NS(unmap_range)(struct pt_iommu *iommu_table, dma_addr_t i=
-ova,
-> +                             dma_addr_t len,
->                               struct iommu_iotlb_gather *iotlb_gather)
->  {
-> -       struct pt_iommu *iommu_table =3D
-> -               container_of(domain, struct pt_iommu, domain);
->         struct pt_unmap_args unmap =3D { .free_list =3D IOMMU_PAGES_LIST_=
-INIT(
->                                                unmap.free_list) };
-> -       pt_vaddr_t len =3D pgsize * pgcount;
->         struct pt_range range;
->         int ret;
->
-> @@ -1054,7 +1032,6 @@ size_t DOMAIN_NS(unmap_pages)(struct iommu_domain *=
-domain, unsigned long iova,
->
->         return unmap.unmapped;
->  }
-> -EXPORT_SYMBOL_NS_GPL(DOMAIN_NS(unmap_pages), "GENERIC_PT_IOMMU");
->
->  static void NS(get_info)(struct pt_iommu *iommu_table,
->                          struct pt_iommu_info *info)
-> @@ -1102,6 +1079,7 @@ static void NS(deinit)(struct pt_iommu *iommu_table=
-)
->  }
->
->  static const struct pt_iommu_ops NS(ops) =3D {
-> +       .unmap_range =3D NS(unmap_range),
->  #if IS_ENABLED(CONFIG_IOMMUFD_DRIVER) && defined(pt_entry_is_write_dirty=
-) && \
->         IS_ENABLED(CONFIG_IOMMUFD_TEST) && defined(pt_entry_make_write_di=
-rty)
->         .set_dirty =3D NS(set_dirty),
-> @@ -1164,6 +1142,7 @@ static int pt_iommu_init_domain(struct pt_iommu *io=
-mmu_table,
->
->         domain->type =3D __IOMMU_DOMAIN_PAGING;
->         domain->pgsize_bitmap =3D info.pgsize_bitmap;
-> +       domain->is_iommupt =3D true;
->
->         if (pt_feature(common, PT_FEAT_DYNAMIC_TOP))
->                 range =3D _pt_top_range(common,
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 2ca990dfbb884f..000dd6c374877b 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -34,6 +34,7 @@
->  #include <linux/sched/mm.h>
->  #include <linux/msi.h>
->  #include <uapi/linux/iommufd.h>
-> +#include <linux/generic_pt/iommu.h>
->
->  #include "dma-iommu.h"
->  #include "iommu-priv.h"
-> @@ -2596,9 +2597,9 @@ int iommu_map(struct iommu_domain *domain, unsigned=
- long iova,
->  }
->  EXPORT_SYMBOL_GPL(iommu_map);
->
-> -static size_t __iommu_unmap(struct iommu_domain *domain,
-> -                           unsigned long iova, size_t size,
-> -                           struct iommu_iotlb_gather *iotlb_gather)
-> +static size_t
-> +__iommu_unmap_domain_pgtbl(struct iommu_domain *domain, unsigned long io=
-va,
-> +                          size_t size, struct iommu_iotlb_gather *iotlb_=
-gather)
->  {
->         const struct iommu_domain_ops *ops =3D domain->ops;
->         size_t unmapped_page, unmapped =3D 0;
-> @@ -2650,6 +2651,17 @@ static size_t __iommu_unmap(struct iommu_domain *d=
-omain,
->         return unmapped;
->  }
->
-> +static size_t __iommu_unmap(struct iommu_domain *domain, unsigned long i=
-ova,
-> +                           size_t size,
-> +                           struct iommu_iotlb_gather *iotlb_gather)
-> +{
-> +       struct pt_iommu *pt =3D iommupt_from_domain(domain);
-> +
-> +       if (pt)
-> +               return pt->ops->unmap_range(pt, iova, size, iotlb_gather)=
-;
-> +       return __iommu_unmap_domain_pgtbl(domain, iova, size, iotlb_gathe=
-r);
-> +}
-> +
->  /**
->   * iommu_unmap() - Remove mappings from a range of IOVA
->   * @domain: Domain to manipulate
-> diff --git a/include/linux/generic_pt/iommu.h b/include/linux/generic_pt/=
-iommu.h
-> index 9eefbb74efd087..f094f8f44e4e8a 100644
-> --- a/include/linux/generic_pt/iommu.h
-> +++ b/include/linux/generic_pt/iommu.h
-> @@ -66,6 +66,13 @@ struct pt_iommu {
->         struct device *iommu_device;
->  };
->
-> +static inline struct pt_iommu *iommupt_from_domain(struct iommu_domain *=
-domain)
-> +{
-> +       if (!IS_ENABLED(CONFIG_IOMMU_PT) || !domain->is_iommupt)
-> +               return NULL;
-> +       return container_of(domain, struct pt_iommu, domain);
-> +}
-> +
->  /**
->   * struct pt_iommu_info - Details about the IOMMU page table
->   *
-> @@ -80,6 +87,29 @@ struct pt_iommu_info {
->  };
->
->  struct pt_iommu_ops {
-> +       /**
-> +        * @unmap_range: Make a range of IOVA empty/not present
-> +        * @iommu_table: Table to manipulate
-> +        * @iova: IO virtual address to start
-> +        * @len: Length of the range starting from @iova
-> +        * @iotlb_gather: Gather struct that must be flushed on return
-> +        *
-> +        * unmap_range() will remove a translation created by map_range()=
-. It
-> +        * cannot subdivide a mapping created by map_range(), so it shoul=
-d be
-> +        * called with IOVA ranges that match those passed to map_pages. =
-The
-> +        * IOVA range can aggregate contiguous map_range() calls so long =
-as no
-> +        * individual range is split.
-> +        *
-> +        * Context: The caller must hold a write range lock that includes
-> +        * the whole range.
-> +        *
-> +        * Returns: Number of bytes of VA unmapped. iova + res will be th=
-e
-> +        * point unmapping stopped.
-> +        */
-> +       size_t (*unmap_range)(struct pt_iommu *iommu_table, dma_addr_t io=
-va,
-> +                             dma_addr_t len,
-> +                             struct iommu_iotlb_gather *iotlb_gather);
-> +
->         /**
->          * @set_dirty: Make the iova write dirty
->          * @iommu_table: Table to manipulate
-> @@ -198,10 +228,6 @@ struct pt_iommu_cfg {
->                                        unsigned long iova, phys_addr_t pa=
-ddr,  \
->                                        size_t pgsize, size_t pgcount,    =
-      \
->                                        int prot, gfp_t gfp, size_t *mappe=
-d);   \
-> -       size_t pt_iommu_##fmt##_unmap_pages(                             =
-      \
-> -               struct iommu_domain *domain, unsigned long iova,         =
-      \
-> -               size_t pgsize, size_t pgcount,                           =
-      \
-> -               struct iommu_iotlb_gather *iotlb_gather);                =
-      \
->         int pt_iommu_##fmt##_read_and_clear_dirty(                       =
-      \
->                 struct iommu_domain *domain, unsigned long iova, size_t s=
-ize,  \
->                 unsigned long flags, struct iommu_dirty_bitmap *dirty);  =
-      \
-> @@ -223,8 +249,7 @@ struct pt_iommu_cfg {
->   */
->  #define IOMMU_PT_DOMAIN_OPS(fmt)                        \
->         .iova_to_phys =3D &pt_iommu_##fmt##_iova_to_phys, \
-> -       .map_pages =3D &pt_iommu_##fmt##_map_pages,       \
-> -       .unmap_pages =3D &pt_iommu_##fmt##_unmap_pages
-> +       .map_pages =3D &pt_iommu_##fmt##_map_pages
->  #define IOMMU_PT_DIRTY_OPS(fmt) \
->         .read_and_clear_dirty =3D &pt_iommu_##fmt##_read_and_clear_dirty
->
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 8c66284a91a8b0..0e8c9d31796bfd 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -223,6 +223,7 @@ enum iommu_domain_cookie_type {
->  struct iommu_domain {
->         unsigned type;
->         enum iommu_domain_cookie_type cookie_type;
-> +       bool is_iommupt;
->         const struct iommu_domain_ops *ops;
->         const struct iommu_dirty_ops *dirty_ops;
->         const struct iommu_ops *owner; /* Whose domain_alloc we came from=
- */
-> --
-> 2.43.0
->
+Hi Robin,
 
-Reviewed-by: Samiullah Khawaja <skhawaja@google.com>
+On 1/6/26 7:50 PM, Robin Murphy wrote:
+> On 2026-01-05 6:02 pm, Jason Gunthorpe wrote:
+>> Though this looks really weird:
+>>
+>>          struct msm_iommu_ctx_dev *master = dev_iommu_priv_get(dev);
+>>          int sid;
+>>
+>>          if (list_empty(&(*iommu)->ctx_list)) {
+>>                  master = kzalloc(sizeof(*master), GFP_ATOMIC);
+>>
+>> So maybe master is NULL and !list_empty()?
+> 
+> AFAICS that could happen if of_xlate has run once, and then for whatever
+> reason dev->iommu is torn down and the whole process started from
+> scratch a second time - although I'm struggling to see any obvious cause
+> for that in the absence of any other visible errors or async probe
+> races (and assuming that the IOMMUs on this platform ever actually
+> worked at all, of course...)
+> 
+> However it certainly stands out as a bit wrong that of_xlate is touching
+> the IOMMU instance itself - that should never have been expected to work
+> well. Does the diff below help?
+> 
+> Thanks,
+> Robin.
+> 
+> ----->8-----
+> diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
+> index 819add75a665..e57780fc3287 100644
+> --- a/drivers/iommu/msm_iommu.c
+> +++ b/drivers/iommu/msm_iommu.c
+> @@ -360,14 +360,11 @@ static int msm_iommu_domain_config(struct msm_priv *priv)
+>  /* Must be called under msm_iommu_lock */
+>  static struct msm_iommu_dev *find_iommu_for_dev(struct device *dev)
+>  {
+> +    struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+>      struct msm_iommu_dev *iommu, *ret = NULL;
+> -    struct msm_iommu_ctx_dev *master;
+>  
+>      list_for_each_entry(iommu, &qcom_iommu_devices, dev_node) {
+> -        master = list_first_entry(&iommu->ctx_list,
+> -                      struct msm_iommu_ctx_dev,
+> -                      list);
+> -        if (master->of_node == dev->of_node) {
+> +        if (iommu->dev->fwnode == fwspec->iommu_fwnode) {
+>              ret = iommu;
+>              break;
+>          }
+> @@ -378,6 +375,7 @@ static struct msm_iommu_dev *find_iommu_for_dev(struct device *dev)
+>  
+>  static struct iommu_device *msm_iommu_probe_device(struct device *dev)
+>  {
+> +    struct msm_iommu_ctx_dev *master;
+>      struct msm_iommu_dev *iommu;
+>      unsigned long flags;
+>  
+> @@ -388,6 +386,8 @@ static struct iommu_device *msm_iommu_probe_device(struct device *dev)
+>      if (!iommu)
+>          return ERR_PTR(-ENODEV);
+>  
+> +    master = dev_iommu_priv_get(dev);
+> +    list_add(&master->list, &iommu->ctx_list);
+>      return &iommu->iommu;
+>  }
+>  
+> @@ -604,14 +604,13 @@ static int insert_iommu_master(struct device *dev,
+>      struct msm_iommu_ctx_dev *master = dev_iommu_priv_get(dev);
+>      int sid;
+>  
+> -    if (list_empty(&(*iommu)->ctx_list)) {
+> +    if (!master) {
+>          master = kzalloc(sizeof(*master), GFP_ATOMIC);
+>          if (!master) {
+>              dev_err(dev, "Failed to allocate iommu_master\n");
+>              return -ENOMEM;
+>          }
+>          master->of_node = dev->of_node;
+> -        list_add(&master->list, &(*iommu)->ctx_list);
+>          dev_iommu_priv_set(dev, master);
+>      }
+>  
+
+Sorry for taking so long until I got to trying it out.
+The patch fixes the crash!
+
+Cheers,
+Christian
+
