@@ -1,125 +1,111 @@
-Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com [209.85.160.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 413DF2DC764
-	for <iommu@lists.linux.dev>; Fri, 16 Jan 2026 09:08:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.175
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768554537; cv=pass; b=c8WN7oRDTxCdLMOBnVjIPCq+IXQrtefXyYO0J8YVu6ZleyCctS2gRcTwWwKf9is+S3wSKN3hGIMkbuQKDA4mdLxRYaQV2VD6Hy9V0dlakrzwoAu9gK+s+PaLX9xCtsTJQP3G6FEh7bEzwJKwX75SkZwkSPnRit6ZIeNzMeul3Nw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768554537; c=relaxed/simple;
-	bh=uV5ai8+6EC+pJzLYQZ3fFgNGH9Y3bcfVxId6H0sX3yk=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=sXvX6FIyeHUbn3aeD37I3sB7cEkHeGIwhUFKiqvKGPFO7DcxwyKNElNnbETCD0E/kz66GFOF0AHlQMnX9acll3Ndz8O5pQv7cK9fxHKWm2zycliw3T1O16Y6/+mR6bTS6dHU0Z2DoPk9Ms4fhH5TX4zXeVVX5Oc26PzQemg3Ib8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Jy187yrp; arc=pass smtp.client-ip=209.85.160.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18DDF361647
+	for <iommu@lists.linux.dev>; Fri, 16 Jan 2026 10:29:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1768559388; cv=none; b=Jn6xOy+2H9sRyc5ZSL/8nICMPh0Q0IlagwfcA+rmm9yUJtuKGD3nzsfrfbwxRkVKojansXfQ+23KPP54dPaq4c8SOeHssN/Is99AkYYDIyNTdU8S8Mq9tEA+EpDQcXzMi/2lPiK/4nujP1QZvDdTB7sClSse0NBd1sCU4PpvJKA=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1768559388; c=relaxed/simple;
+	bh=ri6n2FJjzjo4MlesnuPS2v2nLwbKMnFeTzAhfoVGV6A=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
+	 Content-Type:References; b=D0+jSe6iWeah1wjLJ4+bE2qwYWoV6Wiu5S0LV6k5MMBdd3m4lbjqwyyo0KaZDIPZLT7y4W9Sijcj5p43E7SaUxTLndAxCdLC+0vxxXB4NN4/pe/CIyjnW8yCDzZOoB2saBcsItHtatRPXz1bF7Uwbf23pk6iqETDCZtv4USJg/g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=UUJ2GXx4; arc=none smtp.client-ip=210.118.77.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Jy187yrp"
-Received: by mail-qt1-f175.google.com with SMTP id d75a77b69052e-50299648ae9so307111cf.1
-        for <iommu@lists.linux.dev>; Fri, 16 Jan 2026 01:08:56 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1768554535; cv=none;
-        d=google.com; s=arc-20240605;
-        b=ccTFLamiq9vASqRl1qgcY7S/CZN+cvaiy7tS7hm48UWVEEfRPiXUtLQx/Hc4I8Qpy0
-         WXm1LDFbuN9CunmSMut7WT1LI/4VpF7q0icTEnIPkbFCD2TdQKmYVwPFDTmBfKo2GjRW
-         A6NlKlm2PTr5SbRsu1UHcn9hFUPjaKaZEkkak9b8O1omcYk2U+E54KVIJHHfM/211T5p
-         m7AF43S7glSrRfpcuoxFXKo6lrX1EmOpurRynmmqWu9l0NOChuN4MDy2zq0cDgmhmR0K
-         AaEPaqJMXYQIA6aInTlGD66t+LtyjjFxp/a5KP6TIhTH3PCoAgMoBtySKsP9bnzLsAlo
-         jjMQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=RcimFNxoQuk1GUtLKJNj8zegx2jcra7sXFZBTJ6wuhQ=;
-        fh=l958m7z/s5A7xBOLHjiAe01JZXjsojDkoOFJdRnFiAU=;
-        b=TIISbFftPyNmqsKs+NPBIglhc6d37qrMgeSCtH+7wuyOEL6uFIasczb8sxbwijxhcH
-         LisLHrCDnaxuNAhWcfyitp8KUjUBJJXjXnYvj3D2L3EfMSSHrdenkJswqtHCZo1WqtkG
-         OhTJI5KeURhPaY3iHCYHiT7a7rnLaaadIRGtiAQdivCmmWWJroXHCB+Im/Sc7IAc3wFR
-         PAuuzfX6W8+Om9/d/fLfNfOXFBRqKWwc+udJjz4RdMYGst2oXcgUTKbznVog/HJnVFWy
-         cAE52iRDPX0eoVJDUeryeqP1rkgkVJCLeyiXUSLBakzlaHhAvdDRW0Ht2ssz+TrF46LL
-         Jksw==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1768554535; x=1769159335; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=RcimFNxoQuk1GUtLKJNj8zegx2jcra7sXFZBTJ6wuhQ=;
-        b=Jy187yrpheyguGY/RcBTXYtSdJLyW/MFLmtM4Zd9lsTqkYV/4X+ep2hmhFB7FMkK+J
-         mVK+CrQqBs/CYB0EhwbSZUldAUQdvxQRdjtByYg6QHwJe0hxVXKcSyiQjUut/5uIdehD
-         3syjOzKC2TJHaO3tYyxeILNF7hzcaD42EGwks4MpToeZDngOy25IYcJydeULlmW60ZsU
-         1TuHTd1m/vq3DJ99T1SlbV5bhwwJsPgVBaLlBQsHZTBveYVHxci+tkBVFez19H4ObciK
-         UzvHaZoXw9B82iNz+DXO8092HRglSG8CHqRXu0OlCPJTxmhqL5bHe3IyYGqtYN+1u4rj
-         oH7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1768554535; x=1769159335;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=RcimFNxoQuk1GUtLKJNj8zegx2jcra7sXFZBTJ6wuhQ=;
-        b=g/YpXMAYmctEUaSBNl04lI4sTvhFsLeTJHVH5I6uTPpDnecPkfwuTqkZVUR1EYNvZg
-         Qt/Z+ysPCeqKXPWeXwfLdVBDzO/8SrLb6PIvg9GyMDJxwqpGx/d2MZEuteswzguidH4d
-         LqZDI3zIdpWjLnUyb7Dqfq4K0PUVRvGDRYgpwxapRLxOj6/hDfd+zjRwlBEZXT/7Hr2J
-         3NHValZDsjQnRB/qdjLT6Ndw2py5+EYByzH1Jzhk8BEtZ6yFL85L7J6jidPpd8HZdBo1
-         l1shij1ppGRMHsrqNhvXCXOyrf6A8zt0RFPI5op8QbudbZixieyE4dVOGwMLxBtjrOKn
-         0aYQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWITKw0DuQ401f70E7pOYHIrtKEtqLDA9iQGqahok0GGLEwZEto5mO1mAQInZ18J20SS3O1WA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzbBVlQzpgZl+HMe4K0Vyf1i46iV5MltQlHyGqImMNocSJBYCb7
-	J+fXbxGFxver/+Nj5/CiBTkvyTW/l00o00DFTFeiSMwx4orw1KiiOvaoZIu3XQ4erZKa21uWGZr
-	M1rDIRfdfEZc6tkRVIrjjqbPlu2tIO1hHPT3QoBT1
-X-Gm-Gg: AY/fxX6+VFTCuHXBTRTLjEUOt4MvyKfkA5KzQzFf2kGOw5IolWxNqVw7E9Lr8JQc9Ye
-	8praSsTqv347jEjAPjHQdd2apNZ3bw45pqwOGb0zN6/Y1V9IIfW3ui63YEMm3Z6O9+HD0IMEaGz
-	8P3Kc7Eh9tdehAfnQvY/+XfIey/TpWazBl2k3f86pviNIKhQwxCNs74eEPC/zmLl+C9aDoaIwcC
-	LLngyOORUUE7cwvDczQCmvvGFi88dQTQgBTnPDwm4YiLwJrk5MguhoSG930dyPl+OHqZQs=
-X-Received: by 2002:a05:622a:1aa0:b0:501:3b94:bcae with SMTP id
- d75a77b69052e-502a2386e05mr553561cf.8.1768554534866; Fri, 16 Jan 2026
- 01:08:54 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="UUJ2GXx4"
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20260116102939euoutp011afae805bd16cf4f03f72c4f0d86cebf~LL2KTtte80169501695euoutp01L
+	for <iommu@lists.linux.dev>; Fri, 16 Jan 2026 10:29:39 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20260116102939euoutp011afae805bd16cf4f03f72c4f0d86cebf~LL2KTtte80169501695euoutp01L
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1768559379;
+	bh=Uq1ZZ4FhIYQqQu1RdtWRuRDWiMZMMg/77Oe2VQKcmjY=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=UUJ2GXx434F+ethg/HyjrmryfOaCARz6D9tfsdAXOHQQ5za9/lMAHxCoyW5uLYhbp
+	 VzgJdtfRnUAZ1ExjkzuxkGLpJobMxmT3Z4SDi0R8JYdJL/LNVLc875X+HSs8YPvxHe
+	 Lc7M9R4/hPrZKGBW49lN0o0KpfUHeJNaF6vZ69PI=
+Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+	20260116102938eucas1p1e60ec793ea515699dd6abd92b9da99ae~LL2KD_hbH0529605296eucas1p1j;
+	Fri, 16 Jan 2026 10:29:38 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20260116102937eusmtip2b794af29ef4c05016c35e39902696cdd~LL2JLVLVC1042410424eusmtip2P;
+	Fri, 16 Jan 2026 10:29:37 +0000 (GMT)
+Message-ID: <8a872e0c-f13e-4ff1-a939-bc6814b3ec3e@samsung.com>
+Date: Fri, 16 Jan 2026 11:29:37 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260114164322.787125-1-smostafa@google.com> <f3ab0156-3d7c-470d-9c1e-922195ea27af@linux.intel.com>
-In-Reply-To: <f3ab0156-3d7c-470d-9c1e-922195ea27af@linux.intel.com>
-From: Mostafa Saleh <smostafa@google.com>
-Date: Fri, 16 Jan 2026 09:08:42 +0000
-X-Gm-Features: AZwV_QiM8_AWnP4if6nM9uRrMx7z-1pq157-8TMrLaAscPdc1UVyRJ2GSwTSnA8
-Message-ID: <CAFgf54rVPaUgbouXWQkczCyFQvXkrei_x6FYY6n1X5NkSSwYfA@mail.gmail.com>
-Subject: Re: [PATCH v7 0/5] iommu: Add page_ext for IOMMU_DEBUG_PAGEALLOC
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: linux-mm@kvack.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	linux-doc@vger.kernel.org, corbet@lwn.net, joro@8bytes.org, will@kernel.org, 
-	robin.murphy@arm.com, akpm@linux-foundation.org, vbabka@suse.cz, 
-	surenb@google.com, mhocko@suse.com, jackmanb@google.com, hannes@cmpxchg.org, 
-	ziy@nvidia.com, david@redhat.com, lorenzo.stoakes@oracle.com, 
-	Liam.Howlett@oracle.com, rppt@kernel.org, xiaqinxin@huawei.com, 
-	rdunlap@infradead.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Betterbird (Windows)
+Subject: Re: [PATCH] dma-direct: Skip cache prep for HighMem coherent
+ allocations
+To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, Robin Murphy
+	<robin.murphy@arm.com>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Cc: Arnd Bergmann <arnd@kernel.org>, Linus Walleij <linusw@kernel.org>,
+	Matthew Wilcox <willy@infradead.org>, Suzuki K Poulose
+	<suzuki.poulose@arm.com>
+Content-Language: en-US
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <yq5afr8bdnrj.fsf@kernel.org>
+Content-Transfer-Encoding: 7bit
+X-CMS-MailID: 20260116102938eucas1p1e60ec793ea515699dd6abd92b9da99ae
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20260108105031eucas1p2a3e8d0308ae6a5d43b5250ca8b14ecb9
+X-EPHeader: CA
+X-CMS-RootMailID: 20260108105031eucas1p2a3e8d0308ae6a5d43b5250ca8b14ecb9
+References: <20260102155118.2551804-1-aneesh.kumar@kernel.org>
+	<CGME20260108105031eucas1p2a3e8d0308ae6a5d43b5250ca8b14ecb9@eucas1p2.samsung.com>
+	<9cbe49ae-6612-491d-8ac6-6a99a08d73e2@arm.com>
+	<9f28b833-5813-4e5d-b705-eed9a2a31863@samsung.com>
+	<1ada44db-63a9-43ac-81da-0bdd4e7b7363@arm.com> <yq5a4iov5vdn.fsf@kernel.org>
+	<f827085f-0084-41d8-8ab5-a0ecfc0260d2@samsung.com>
+	<yq5afr8bdnrj.fsf@kernel.org>
 
-Sorry I was travelling all day yesterday. I see Jorg hasn't done the
-pull request yet, so I was hoping we can still change it.
-But I can send the fix separately also.
+On 12.01.2026 13:22, Aneesh Kumar K.V wrote:
+> Marek Szyprowski <m.szyprowski@samsung.com> writes:
+>> On 09.01.2026 04:15, Aneesh Kumar K.V wrote:
+>>> Robin Murphy <robin.murphy@arm.com> writes:
+>>>> On 2026-01-08 12:41 pm, Marek Szyprowski wrote:
+>>>>> On 08.01.2026 11:50, Robin Murphy wrote:
+>>>>>> On 2026-01-02 3:51 pm, Aneesh Kumar K.V (Arm) wrote:
+>>>>>>> dma_direct_alloc() calls arch_dma_prep_coherent() to clean any dirty
+>>>>>>> cache lines from the kernel linear alias before creating a coherent
+>>>>>>> remapping.
+>>>>>>>
+>>>>>>> HighMem pages have no kernel alias mapping, so there are no alias cache
+>>>>>>> lines to clean. Skip arch_dma_prep_coherent() for HighMem allocations.
+>>>>>> This is assuming that caches are always cleaned when unmapping
+>>>>>> highmem, and no still-mapped highmem pages are dirty - how is that
+>>>>>> guaranteed? The fact that they're not in the linear map doesn't mean
+>>>>>> they don't necessarily have kernel aliases in either vmalloc
+>>>>>> pagetables or caches.
+>>>>> Right, so it is better to keep this unconditional
+>>>>> arch_dma_prep_coherent() call. I will drop it from dma-mapping-fixes then.
+>>>> Yeah, I think the confusing thing here is that there are architectures
+>>>> with CONFIG_HIGHMEM that don't actually check for and handle it in their
+>>>> arch_dma_prep_coherent() as they seemingly should, however I'm not sure
+>>>> off-hand whether they also support/use highmem CMA in the manner that
+>>>> could end up being an issue in practice (the lack of any reports of
+>>>> crashes or DMA corruption over the last however many years suggests not...)
+>>>>
+>>> Should we then remove the PageHighMem() check with DMA_ATTR_NO_KERNEL_MAPPING?
+>> Right, this has to be unified.
+> I had a related question, how do we handle cache flushes required for
+> architectures that don't implement CONFIG_ARCH_HAS_DMA_PREP_COHERENT (arch/arm)?
 
-Thanks,
-Mostafa
+ARM 32bit architecture provides arch_dma_alloc(), which handles cache 
+management internally.
 
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
-
-On Thu, Jan 15, 2026 at 6:15=E2=80=AFAM Baolu Lu <baolu.lu@linux.intel.com>=
- wrote:
->
-> On 1/15/26 00:43, Mostafa Saleh wrote:
-> > Changes in v7:
-> > v6:https://lore.kernel.org/linux-iommu/20260109171805.901995-1-
-> > smostafa@google.com/
-> > - Add a new function page_ext_get_phys() and use it instead of
-> >    pfn_valid() + phys_to_page().
-> > - Drop R-bs on patch 4.
->
-> This series has been applied. If you have any further fixups, it's
-> better to submit them as follow-up patches.
->
-> Thanks,
-> baolu
