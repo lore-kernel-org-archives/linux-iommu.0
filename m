@@ -1,187 +1,197 @@
-Received: from mailgw.kylinos.cn (mailgw.kylinos.cn [124.126.103.232])
+Received: from mout.web.de (mout.web.de [212.227.17.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E362334F24D
-	for <iommu@lists.linux.dev>; Fri, 16 Jan 2026 06:57:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=124.126.103.232
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 139C02DCBFC
+	for <iommu@lists.linux.dev>; Fri, 16 Jan 2026 08:02:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.17.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768546634; cv=none; b=LBVHmN/5V0nKD+hEYcqFURQl0B571AsVH7M1reOT7L60SYj11ZeyBQMY4jlK4Mx49DUO3zbdgN3Vry7AoHgZ/lpYZpbPM0vqgdfLHGxmcraRsghW40eWau6+Iwf9tjwrn5rXWN8XxYbtwdtcRbkKtNkY0fdRK3OPWbubV1r9LIk=
+	t=1768550575; cv=none; b=gB+CJG8OU3iu8m70vNFgsV+L95Nd8NyIjZENuGG2IDOeticdDt/ox+TATAwjM8ypZZ6zWOSygFsc9GpTbEBRu3xYBnKaI0tfsO2LUjcTTaU9+bmQLTFlh7ymzVPdu3SLlYJvYGrvixIeDLsI7yI1ve3ny1OvVN+cGaBYn2vOBQI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768546634; c=relaxed/simple;
-	bh=jgWiO+RmKANPJSAyJWxKxrsTEXyQZdR9DhQw72QUBuo=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=del2OOQTCfCnHNNRWWM9awqjMB+dIvDoOVqPeYpZ+qUuk+2chY5HWxBpaLhqrvAwzcwm15weyjN5d3bG1PfNUmABZA63YUjhkEXZANaAaPecBdN1Z2cR47wLj9yJ/pFHLvM/+wJQkWuxsY2PaiJ+FMkRPdSSu0qyyS0sgRgZliY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn; spf=pass smtp.mailfrom=kylinos.cn; arc=none smtp.client-ip=124.126.103.232
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kylinos.cn
-X-UUID: 8d595ae0f2a811f0b0f03b4cfa9209d1-20260116
-X-CTIC-Tags:
-	HR_CC_COUNT, HR_CC_DOMAIN_COUNT, HR_CC_NAME, HR_CC_NO_NAME, HR_CTE_8B
-	HR_CTT_MISS, HR_DATE_H, HR_DATE_WKD, HR_DATE_ZONE, HR_FROM_NAME
-	HR_SJ_DIGIT_LEN, HR_SJ_LANG, HR_SJ_LEN, HR_SJ_LETTER, HR_SJ_NOR_SYM
-	HR_SJ_PHRASE, HR_SJ_PHRASE_LEN, HR_SJ_WS, HR_TO_COUNT, HR_TO_DOMAIN_COUNT
-	HR_TO_NO_NAME, IP_TRUSTED, SRC_TRUSTED, DN_TRUSTED, SA_TRUSTED
-	SA_EXISTED, SN_TRUSTED, SN_EXISTED, SPF_NOPASS, DKIM_NOPASS
-	DMARC_NOPASS, CIE_BAD, CIE_GOOD, CIE_GOOD_SPF, GTI_FG_BS
-	GTI_RG_INFO, GTI_C_BU, AMN_GOOD, ABX_MISS_RDNS
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.3.6,REQID:f14f3aae-c8f5-4e95-896d-8adf8f3cb945,IP:15,U
-	RL:0,TC:0,Content:0,EDM:0,RT:0,SF:-30,FILE:0,BULK:0,RULE:Release_Ham,ACTIO
-	N:release,TS:-15
-X-CID-INFO: VERSION:1.3.6,REQID:f14f3aae-c8f5-4e95-896d-8adf8f3cb945,IP:15,URL
-	:0,TC:0,Content:0,EDM:0,RT:0,SF:-30,FILE:0,BULK:0,RULE:Release_Ham,ACTION:
-	release,TS:-15
-X-CID-META: VersionHash:a9d874c,CLOUDID:85178abcf0bab9a63b057a6ed2ee289c,BulkI
-	D:260116145700HP4Z2B2D,BulkQuantity:0,Recheck:0,SF:10|38|66|78|102|127|850
-	|898,TC:nil,Content:0|15|50,EDM:-3,IP:-2,URL:99|1,File:nil,RT:nil,Bulk:nil
-	,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0,AV:0,LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:
-	0,ARC:0
-X-CID-BVR: 2,SSN|SDN
-X-CID-BAS: 2,SSN|SDN,0,_
-X-CID-FACTOR: TF_CID_SPAM_SNR,TF_CID_SPAM_ULS
-X-CID-RHF: D41D8CD98F00B204E9800998ECF8427E
-X-UUID: 8d595ae0f2a811f0b0f03b4cfa9209d1-20260116
-X-User: pengcan@kylinos.cn
-Received: from localhost.localdomain [(116.128.244.171)] by mailgw.kylinos.cn
-	(envelope-from <pengcan@kylinos.cn>)
-	(Generic MTA with TLSv1.3 TLS_AES_256_GCM_SHA384 256/256)
-	with ESMTP id 616118724; Fri, 16 Jan 2026 14:56:58 +0800
-From: Can Peng <pengcan@kylinos.cn>
-To: joro@8bytes.org,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	Markus.Elfring@web.de,
-	vasant.hegde@amd.com
-Cc: iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Can Peng <pengcan@kylinos.cn>
-Subject: [PATCH v4] iommu: simplify list initialization across the iommu subsystem
-Date: Fri, 16 Jan 2026 14:55:54 +0800
-Message-Id: <20260116065554.830579-1-pengcan@kylinos.cn>
-X-Mailer: git-send-email 2.25.1
+	s=arc-20240116; t=1768550575; c=relaxed/simple;
+	bh=ne2ZFD5HGicCkc7p+7LOEcg1ZVUId2Jv/p4donXEmZU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=EUB99Bj3Iy6VRiEhHohxW7JuiED6za//6+ecbiGIlSScGLFOXnF58fKQOiFTNB3hmpiHGc36wr8RifbUGWX/HqOVkgbih09VfU8T2/4CbUA41liamVwzEWxLJZ16SnZfa6oUH62QK917PKsUoRsRPmQz79j5VpyRDkYF10nc/Xw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de; spf=pass smtp.mailfrom=web.de; dkim=pass (2048-bit key) header.d=web.de header.i=markus.elfring@web.de header.b=hx4z5+Qv; arc=none smtp.client-ip=212.227.17.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=web.de
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=web.de header.i=markus.elfring@web.de header.b="hx4z5+Qv"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=web.de;
+	s=s29768273; t=1768550558; x=1769155358; i=markus.elfring@web.de;
+	bh=kGg9wrvE7Yh6khdfRYmMfQMtLdtPPTBz6zVebGaiuYQ=;
+	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:Subject:To:Cc:
+	 References:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding:cc:content-transfer-encoding:
+	 content-type:date:from:message-id:mime-version:reply-to:subject:
+	 to;
+	b=hx4z5+QvzDcK/RGS95gNKoker9Dp1m4DwUolb99mZMyDyTl+ceawQd0MXNg/8KO6
+	 OP/ZZnwFdl1blmC/LiHbFtm1VKKyRNFBNQOMCNmYMGGtQY3ilVQXcegGFpxjJ1Fch
+	 ymceS3x358aaofwLWghnY8R/Cu19DatBOrRV4Zcd1Bqak706UIPQAVcEAq6qBws4+
+	 q2AtkxAWapw2ZBu6bHJcwcr3ydXiOIarnVkmjbcVErncy9KW2cvP2J5aSH5N2ru/G
+	 11lyQgq6FjezhlpxeQQJRLLGja/4nMwQBm8KQiQcQBeuerkvYlzCYYJmhWwyEkdKK
+	 y7FFNf5nl3sLTmLVqA==
+X-UI-Sender-Class: 814a7b36-bfc1-4dae-8640-3722d8ec6cd6
+Received: from [192.168.178.29] ([94.31.69.218]) by smtp.web.de (mrweb106
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 1M3Eut-1vfIPL2Xhl-00DwH0; Fri, 16
+ Jan 2026 09:02:38 +0100
+Message-ID: <2067dfae-5399-434e-afc3-ca6a5816f78f@web.de>
+Date: Fri, 16 Jan 2026 09:02:30 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4] iommu: simplify list initialization across the iommu
+ subsystem
+To: Can Peng <pengcan@kylinos.cn>, iommu@lists.linux.dev,
+ =?UTF-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>,
+ Robin Murphy <robin.murphy@arm.com>, Vasant Hegde <vasant.hegde@amd.com>,
+ Will Deacon <will@kernel.org>
+Cc: LKML <linux-kernel@vger.kernel.org>, kernel-janitors@vger.kernel.org
+References: <20260116065554.830579-1-pengcan@kylinos.cn>
+Content-Language: en-GB, de-DE
+From: Markus Elfring <Markus.Elfring@web.de>
+In-Reply-To: <20260116065554.830579-1-pengcan@kylinos.cn>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:W1XWhh0DN3DeVjXBWJ+DXLKoInXKwxIozuMn+yZoNWpQX55PZIB
+ lfLXvflw8arY7lG4TPV5eWBdXe9i5SPnRN426RXbUUYyjTLEWK0D3NPqVDO/F5TRlbd1W8X
+ S64LV9l+aBmuov4HQSVxqY+GLFS05kZTiN7BKr52IoKqJZ5LytamHtYtj8/Lttgdn+/UZqV
+ HXZVvyRjibO7RLQSOSdsQ==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:UevudTey0aw=;eNJcudXxiM2bYoRp5CGN8ohg70/
+ 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
 
-Replace separate list head declarations and INIT_LIST_HEAD() calls with
-the combined LIST_HEAD() macro throughout the iommu directory.
-Using LIST_HEAD() merges declaration and initialization into a single
-statement, improving code readability and reducing boilerplate without
-altering any functionality.
+> Replace separate list head declarations and INIT_LIST_HEAD() calls with
+> the combined LIST_HEAD() macro throughout the iommu directory.
+> Using LIST_HEAD() merges declaration and initialization into a single
+> statement, improving code readability and reducing boilerplate without
+> altering any functionality.
+=E2=80=A6
+> Markus Elfring suggested using a more concise summary and
+> recommended the use of Coccinelle for this kind of transformation.
 
-No functional change intended.
+Some development tools can help to achieve desirable changes in more conve=
+nient ways
+and that possible adjustments would become more complete eventually.
 
-Signed-off-by: Can Peng <pengcan@kylinos.cn>
----
-Changes since previous version:
-Rebased on top of iommu/next as requested by Vasant Hegde.
-Adjusted commit message to be shorter and clearer, following Markus Elfring's suggestion.
-Retained the LIST_HEAD() cleanup pattern consistently across the iommu directory.
 
-Notes on prior discussion (from chat history):
-The earlier version was reviewed positively:
-Link: https://lore.kernel.org/all/4526ca31-71a4-4b3f-b378-32546eb8133d@amd.com/
+=E2=80=A6
+> +++ b/drivers/iommu/iommu.c
+> @@ -932,7 +932,7 @@ int iommu_get_group_resv_regions(struct iommu_group =
+*group,
+> =20
+>  	mutex_lock(&group->mutex);
+>  	for_each_group_device(group, device) {
+> -		struct list_head dev_resv_regions;
+> +		LIST_HEAD(dev_resv_regions);
+> =20
+>  		/*
+>  		 * Non-API groups still expose reserved_regions in sysfs,
+> @@ -941,7 +941,6 @@ int iommu_get_group_resv_regions(struct iommu_group =
+*group,
+>  		if (!dev_has_iommu(device->dev))
+>  			break;
+> =20
+> -		INIT_LIST_HEAD(&dev_resv_regions);
+>  		iommu_get_resv_regions(device->dev, &dev_resv_regions);
+>  		ret =3D iommu_insert_device_resv_regions(&dev_resv_regions, head);
+>  		iommu_put_resv_regions(device->dev, &dev_resv_regions);
+=E2=80=A6
+> +++ b/drivers/iommu/iommufd/eventq.c
+> @@ -21,12 +21,11 @@ void iommufd_auto_response_faults(struct iommufd_hw_=
+pagetable *hwpt,
+>  {
+>  	struct iommufd_fault *fault =3D hwpt->fault;
+>  	struct iopf_group *group, *next;
+> -	struct list_head free_list;
+> +	LIST_HEAD(free_list);
+>  	unsigned long index;
+> =20
+>  	if (!fault || !handle)
+>  		return;
+> -	INIT_LIST_HEAD(&free_list);
+> =20
+>  	mutex_lock(&fault->mutex);
+=E2=80=A6
 
-Markus Elfring suggested using a more concise summary and
-recommended the use of Coccinelle for this kind of transformation.
+Does anything hinder to apply LIST_HEAD() calls at other source code posit=
+ions?
 
-Best regards,
-Can Peng
+May variable scopes be reduced for more use cases?
 
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 3 +--
- drivers/iommu/arm/arm-smmu/arm-smmu.c       | 3 +--
- drivers/iommu/iommu.c                       | 6 ++----
- drivers/iommu/iommufd/eventq.c              | 3 +--
- 4 files changed, 5 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index fc5a705f6cb3..a772010b5331 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -4659,10 +4659,9 @@ static void __iomem *arm_smmu_ioremap(struct device *dev, resource_size_t start,
- 
- static void arm_smmu_rmr_install_bypass_ste(struct arm_smmu_device *smmu)
- {
--	struct list_head rmr_list;
-+	LIST_HEAD(rmr_list);
- 	struct iommu_resv_region *e;
- 
--	INIT_LIST_HEAD(&rmr_list);
- 	iort_get_rmr_sids(dev_fwnode(smmu->dev), &rmr_list);
- 
- 	list_for_each_entry(e, &rmr_list, list) {
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-index 5e690cf85ec9..d7e58ac1e14a 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-@@ -2072,12 +2072,11 @@ static int arm_smmu_device_dt_probe(struct arm_smmu_device *smmu,
- 
- static void arm_smmu_rmr_install_bypass_smr(struct arm_smmu_device *smmu)
- {
--	struct list_head rmr_list;
-+	LIST_HEAD(rmr_list);
- 	struct iommu_resv_region *e;
- 	int idx, cnt = 0;
- 	u32 reg;
- 
--	INIT_LIST_HEAD(&rmr_list);
- 	iort_get_rmr_sids(dev_fwnode(smmu->dev), &rmr_list);
- 
- 	/*
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 4926a43118e6..2652ab6f5dde 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -932,7 +932,7 @@ int iommu_get_group_resv_regions(struct iommu_group *group,
- 
- 	mutex_lock(&group->mutex);
- 	for_each_group_device(group, device) {
--		struct list_head dev_resv_regions;
-+		LIST_HEAD(dev_resv_regions);
- 
- 		/*
- 		 * Non-API groups still expose reserved_regions in sysfs,
-@@ -941,7 +941,6 @@ int iommu_get_group_resv_regions(struct iommu_group *group,
- 		if (!dev_has_iommu(device->dev))
- 			break;
- 
--		INIT_LIST_HEAD(&dev_resv_regions);
- 		iommu_get_resv_regions(device->dev, &dev_resv_regions);
- 		ret = iommu_insert_device_resv_regions(&dev_resv_regions, head);
- 		iommu_put_resv_regions(device->dev, &dev_resv_regions);
-@@ -957,10 +956,9 @@ static ssize_t iommu_group_show_resv_regions(struct iommu_group *group,
- 					     char *buf)
- {
- 	struct iommu_resv_region *region, *next;
--	struct list_head group_resv_regions;
-+	LIST_HEAD(group_resv_regions);
- 	int offset = 0;
- 
--	INIT_LIST_HEAD(&group_resv_regions);
- 	iommu_get_group_resv_regions(group, &group_resv_regions);
- 
- 	list_for_each_entry_safe(region, next, &group_resv_regions, list) {
-diff --git a/drivers/iommu/iommufd/eventq.c b/drivers/iommu/iommufd/eventq.c
-index e23d9ee4fe38..95a9ee581072 100644
---- a/drivers/iommu/iommufd/eventq.c
-+++ b/drivers/iommu/iommufd/eventq.c
-@@ -21,12 +21,11 @@ void iommufd_auto_response_faults(struct iommufd_hw_pagetable *hwpt,
- {
- 	struct iommufd_fault *fault = hwpt->fault;
- 	struct iopf_group *group, *next;
--	struct list_head free_list;
-+	LIST_HEAD(free_list);
- 	unsigned long index;
- 
- 	if (!fault || !handle)
- 		return;
--	INIT_LIST_HEAD(&free_list);
- 
- 	mutex_lock(&fault->mutex);
- 	spin_lock(&fault->common.lock);
--- 
-2.25.1
-
+Regards,
+Markus
