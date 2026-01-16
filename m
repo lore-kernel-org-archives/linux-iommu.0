@@ -1,215 +1,272 @@
-Received: from DM5PR21CU001.outbound.protection.outlook.com (mail-centralusazon11011046.outbound.protection.outlook.com [52.101.62.46])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B255939A7F7;
-	Fri, 16 Jan 2026 18:27:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.62.46
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768588070; cv=fail; b=gQhpjnjXZl0USt9sg4y/WkwsnNUHax3nob67fK7nmvaE0WINuHg644ehybZqmo8d4O8VSsKa1eKs68U2m5rfmv6dx+jzvLUI+qghp7bBFrcjvhVKcFgJZGf3APi8r78KlClhpsWGn0Rnvo38Ebm+lQq/iz7m2SlvPDxI7Uq4njc=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768588070; c=relaxed/simple;
-	bh=UYvktm0JYUJlvghOSwGJ35bzM7CyZMbRCd2TZBPl5+w=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LU1aoXMRiXuZva84hsU/GaUZypxhr+t/PRFj0oxmmbys4oEXI0tRmd6N48V6UeQSAT3y7bulSozWjkwqhY3VuicZPMmXNmjwfF5gDFa9+sAQBd2PSrXSS/TMtLS/7DSxDBGNtLC1CFozbyt+h4cavLPkI5/3IE6NkPwfu/1F6ns=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=CbfnrYgA; arc=fail smtp.client-ip=52.101.62.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 241BB3A1A59
+	for <iommu@lists.linux.dev>; Fri, 16 Jan 2026 20:12:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1768594331; cv=none; b=unMce9aSqBi5/zaqUIonEy3B3L/OHzoUGp+NU9XTLOzdcNXOLMZ6oJhCifd9RoTqe5m9D1sugpPwnl6w/hfm5AdNv4PJZ5JW9mnMqND954wPfZNeeiyCTbyJSiCS39BYzXrVsfX8A3gx3hF454HFtMqE8bPBgK+wOQTvZRlhiNg=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1768594331; c=relaxed/simple;
+	bh=/L9ExpZCscfiM98QRpyOG5XRpoe3MayI+OZdi3XZnIw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=nprvSHTeM2iv6reHCKNoDjeZOpocWoeul+v+xmxHkEiThylGk/ewXHg0FHX0/TMYTYUm1PJdOGZVf5uO02WFztSOpwGdoaf1q43KQoTaGqgVI5uGi8cVF+2vS+s9Jdv9UzpMk1+5fiVKRLlWWeC4bnrpG4dhv9WnJrzVwXyzv1o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=ggGPT0dM; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=Q3/jRP3E; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="CbfnrYgA"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Q8noG2forEtdP3wvrWPIa+JijIpMcPFSdzI4ODk2OiV9ISh0aGqCN4hHXQLB5CRj7jpHHw5f+IdyCTQyhaZoWa921niJBohpihZPEKM40MWvco0kOWwG3IMSxbMsWOrGaqJrP2peN6t0frNEcFPpOf8c6SqdJfhS4uYitkU8nHDO5aqGsGyuT7LrR76SubFtHhlESQt6CGIpkJzBpQpfUNm8DfzwnUJYi2kNFOQBVu7FxL6TjH2xIaFVOkZ3FQZNNqONBNHwyB/K6k/xvbez2ButdXShW4xp4eylbngA6mw78LtRE/NTf5gGp547B+AWBp6T1ltDdXHFh2EE06KHMQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=r2lDQYSJz6YhqvAlEaZwC2CNiY7ZexF1JaixrWWW8ao=;
- b=FDj0FW2U7CgVcQzFXVtU/U3LctlEDcpUGkwBM9ooPQUeRLGf8umTzmeVGP2BR61FXZL6Bh7ryxFTc74ZdCvOREI1vbq9GKMevh3nc1xAHn+5qi2Hmp0QLEIN5QPXp3kPis+mUrWms69anVS4lvbD8koAjeYTvXcIWRvfGqm0MpSvI9lqm0KBojxw8ageE7JS65po/Rs920tPmSNThcIw+ZgqQqDJzdp47qyqcxerMI1KsuICPCiM26r9zKENteGBXZUCYBBcMdvIyr+0x5o01sCJwO4NT8CXACLxqdBIfD8NHEWog/xfFjJPJdSQ++1SVTa/PAP+ETW0GUDwzuWhQw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=r2lDQYSJz6YhqvAlEaZwC2CNiY7ZexF1JaixrWWW8ao=;
- b=CbfnrYgASGhB2PNFLvITbwbJT4NWXvpL0tR/cp37EvGy1y6D0MEjUyRfEL5B/x0/PZH4rImlx0AqFlJBRS97IM8VkMY4UBz47KlMka2yQd+db7fWjArFkDF/73+RBI1tmAb0IO0C2e29OCxfeyuMuikc/ILJiiGtYffOVc2ZA2NAxbKAkD6/98yL6d7lNKHnhDXUJ/RK1zTfg7DEhwZx/zeaRV1TwZ5t1w/fs65gMDUUZ06/hmalaCCOvFq+d1ZOpFatVJuZLkYkcUCxJirnVMCDyrtqyfBLLKA68IEbz7TMbpfCIoIzl5N7zosW7rTuNmNVDX7f71gxU7J/1z8BKw==
-Received: from BN9PR03CA0094.namprd03.prod.outlook.com (2603:10b6:408:fd::9)
- by CH3PR12MB9025.namprd12.prod.outlook.com (2603:10b6:610:129::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9520.5; Fri, 16 Jan
- 2026 18:27:44 +0000
-Received: from BN2PEPF000044A9.namprd04.prod.outlook.com
- (2603:10b6:408:fd:cafe::93) by BN9PR03CA0094.outlook.office365.com
- (2603:10b6:408:fd::9) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9520.7 via Frontend Transport; Fri,
- 16 Jan 2026 18:27:41 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- BN2PEPF000044A9.mail.protection.outlook.com (10.167.243.103) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9542.4 via Frontend Transport; Fri, 16 Jan 2026 18:27:44 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Fri, 16 Jan
- 2026 10:27:27 -0800
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail205.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Fri, 16 Jan
- 2026 10:27:27 -0800
-Received: from Asurada-Nvidia (10.127.8.14) by mail.nvidia.com (10.129.68.7)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
- Transport; Fri, 16 Jan 2026 10:27:26 -0800
-Date: Fri, 16 Jan 2026 10:27:25 -0800
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
-	<jpb@kernel.org>, <praan@google.com>, <miko.lenczewski@arm.com>,
-	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <patches@lists.linux.dev>
-Subject: Re: [PATCH v1 2/9] iommu/arm-smmu-v3: Add alloc_id/free_id functions
- to arm_smmu_invs
-Message-ID: <aWqDDRTz5mB1Iumf@Asurada-Nvidia>
-References: <cover.1766088962.git.nicolinc@nvidia.com>
- <1541ea4a9e9c935c2f907c0c5f13a4af2bdc2114.1766088962.git.nicolinc@nvidia.com>
- <20251219170551.GF254720@nvidia.com>
- <aVQfhaqfvfLFNZqe@Asurada-Nvidia>
- <20260102155715.GC125162@nvidia.com>
- <aWnI3Ii3KCFmJV3/@Asurada-Nvidia>
- <20260116144120.GM961588@nvidia.com>
- <aWpuGsnyZJWTmgrf@Asurada-Nvidia>
- <20260116171158.GQ961588@nvidia.com>
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="ggGPT0dM";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="Q3/jRP3E"
+Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 60GJAlXk1451526
+	for <iommu@lists.linux.dev>; Fri, 16 Jan 2026 20:12:09 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-type:date:from:in-reply-to:message-id:mime-version
+	:references:subject:to; s=qcppdkim1; bh=F0iTtiZUAH8dw0zZmuH/r59V
+	0R+RqGKf8svO6zz8Cxs=; b=ggGPT0dM6jHxOV3uGfQzqU0q4OdhdA91sWx/nSyf
+	FF0yxSUsweBl/pqfY/fkBvGPbc23RE9hMVnFXl2AQ5WVcNRHYNS5HQMBqViLbUzF
+	NrDy9NfDFGpTGgTIUTdY4f6m091jv1JtVHqeVbQkfWjs5ZBSJWxqQh/4GtqCrrPf
+	dhN7Ny0pgfX6Efue+UB572IddQGEp/jFZ6T3XfiNMYwgw9P7TCaXNU5E5GJCRqjh
+	xlah0yPfTpvCzyxdo52fJhS7LtAlR/TqG8DfdKt2r2BLk2MacrbSgesqgd5JKy8N
+	ZCmyQPVQDH5aUlycUQIgwp2eWTJSeACX+Nj6r0tvhAucKQ==
+Received: from mail-oa1-f70.google.com (mail-oa1-f70.google.com [209.85.160.70])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4bqqjurxj2-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Fri, 16 Jan 2026 20:12:08 +0000 (GMT)
+Received: by mail-oa1-f70.google.com with SMTP id 586e51a60fabf-4041ef81d32so6078230fac.3
+        for <iommu@lists.linux.dev>; Fri, 16 Jan 2026 12:12:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1768594328; x=1769199128; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=F0iTtiZUAH8dw0zZmuH/r59V0R+RqGKf8svO6zz8Cxs=;
+        b=Q3/jRP3ELDGFhOZssC6qBe3fgSHv9crKxmhcZyjJPTn1lfNvVWtAHplyvCk2OCezMI
+         AJqYQtLoNCKi1g+A93cVv9N0zxr2c10iNokm+R7kPrGZzglGdAfbMB6BRo9r5UUOXskx
+         kAcFy5F7XUIHsue//AlySShKQBfmJ8Ac9uRzcUCHk4fGaobQZcdnVTfJgxQoz6OiW5sk
+         FgVrXgtcZki1cgcPTZ5YsSBAq9Q6oetzoULP+lDPREjVfbzstvwVXebBRHtm44SJW5Qo
+         BaLfcJENNpAWC1dJyDdHA0Ag7srjcPp+WSsODxVZNh+MeuzlPYQ2JTToaPqYenRoYZ1V
+         xrkQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1768594328; x=1769199128;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=F0iTtiZUAH8dw0zZmuH/r59V0R+RqGKf8svO6zz8Cxs=;
+        b=TgADb/R2EBwsm4PFZoPqc/H4Ljv1UUbGmOEC0xpgwuWlD7qlSzze9zOkeI3BWt7f0x
+         9bPuQ6TvQjnq2pFRiR6xPcoMcrmN36dRwh7N+zk6hwrCCNFGEkLU0vH+OLjhutrTtWRZ
+         9lI4AuOkcnwuteCZhtOeWnVRUMWtdoVsHckaqD+yO/EUnUiNAD9XbwPyfslRN60m9f1Z
+         +G/Ek2BJ3xp+n0v+miDuX/ANrCSFujgStnfbwt1nq9ZsTZHBjQgtq2hqA8/P8bs6G3v3
+         3PHnJkXTwbuFZUBiHTRfhgPb2BWWbf3zkKzzcZORCximiP4LtXGt0YkhYyLcafFktb0D
+         mZmw==
+X-Forwarded-Encrypted: i=1; AJvYcCU40wsHaiVLk79YtnIR6jIG6iIySE1aiw70bnKGrBwJQ0XjciHTuumoSo4iQZzkFgWEsEg2cA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yx4x2kpcm48BxsNPEn3Sd1DmW0WtW6J4d7KEFC68eIUFuF4SQhC
+	2bnF4AAaJTMxhtMhRc49hKK79Gstm/9icyqzppBj1T2dC1AN3LqsJDeJVMtsl2fhEfbKxBsIzsU
+	9wQAC2uubAOGaotBpWWCu69Z/+fqDit7iPXKdOH8IjG2U0VMaf8hVGuQvGQ==
+X-Gm-Gg: AY/fxX5OUIN7AoaEtmljvH54QBoDEVl5Bk4YsbzDxRrm/dfWB24Ll6bBI7TJ993BZVU
+	zYDAbZkZ2WUrCY9+Oj3aEfRG1G7Jo8oePPD2E5AgaWiybluucGUqUYIcjLivG3Xgm1r4LApaenz
+	u7CAtdY9ARC1CPEV4Yhy+ZMoKWGNOatpG6DRP1Y9ShqH24yc00DBu17LkWubmUqaUoidJ2/Lsez
+	S+RiBOuw0xXhji2+QYgKQeVNyRbujoY4Z4f3MtRMYYUKtHtdhEEU9DJQdwSENYGpEXPY5zBpLRn
+	Uf4YmV0GVSNjTwlZLr4SdpBdXs54H0kGEJWvBMCu3rr8V/u3DAW0EdCTswkpcqltm1nX6hWIa1P
+	vuNPHosnkTD2hAP0E3+o=
+X-Received: by 2002:a05:6871:c70c:b0:3f5:4172:12 with SMTP id 586e51a60fabf-4044c62c893mr1920560fac.59.1768594328230;
+        Fri, 16 Jan 2026 12:12:08 -0800 (PST)
+X-Received: by 2002:a05:6871:c70c:b0:3f5:4172:12 with SMTP id 586e51a60fabf-4044c62c893mr1920545fac.59.1768594327832;
+        Fri, 16 Jan 2026 12:12:07 -0800 (PST)
+Received: from localhost ([140.82.166.162])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4044bb528d5sm2422436fac.8.2026.01.16.12.12.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 16 Jan 2026 12:12:07 -0800 (PST)
+Date: Fri, 16 Jan 2026 14:12:06 -0600
+From: Andrew Jones <andrew.jones@oss.qualcomm.com>
+To: fangyu.yu@linux.alibaba.com
+Cc: tjeznach@rivosinc.com, joro@8bytes.org, will@kernel.org,
+        robin.murphy@arm.com, pjw@kernel.org, palmer@dabbelt.com,
+        aou@eecs.berkeley.edu, alex@ghiti.fr, guoren@kernel.org,
+        ajones@ventanamicro.com, iommu@lists.linux.dev,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu/riscv: Add IOTINVAL after updating DDT/PDT entries
+Message-ID: <c5sk7h5r5fozjdyguamekenlzd7pzbtvdh2boq3arynxifba22@ii4ikea2tuyq>
+References: <20260108134855.91341-1-fangyu.yu@linux.alibaba.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260116171158.GQ961588@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN2PEPF000044A9:EE_|CH3PR12MB9025:EE_
-X-MS-Office365-Filtering-Correlation-Id: 94b9755a-832c-4310-e498-08de552cf100
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|7416014|1800799024|376014|36860700013|82310400026;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?cW4+qv+RwhJfMCNI6ccsCgN3cMC7dO/K+WRznUSNM5rdBLkJzA/ncc96BIuB?=
- =?us-ascii?Q?BMBj8wBCWHsWx3CTVV7wWTEPvsVbKK+5Xf/hzqWKxNMJf5EhnP77pLVzbo7N?=
- =?us-ascii?Q?xSwVGJ7OhR/Yio+YFqwBUcZj+vzj5lftDnW3qCIeK6dIz1pW9cI8oxVjzeSn?=
- =?us-ascii?Q?hPyNcvY/XOq8FZOmlG32drRGfjo9qZSapAemiAElBXoiGvx1m0oKjPHbtIV0?=
- =?us-ascii?Q?AGTB4vovfCo3oURZhrm6lJrCEB+5aGjE90KXvn8bZzBEcllQFnwXeMApffUG?=
- =?us-ascii?Q?FnEjSeI21jyx2Lxy65oCM7gu3zpcPNll3t7tcYbOGRSWKIm5/futAIjzBCOL?=
- =?us-ascii?Q?yXHyIaQCxOtTfMyADaZGw5vHLOoyzN+Etl6Mr7PJTru31mH1qN8/R7Vg5m29?=
- =?us-ascii?Q?HUA+g1LtjxwJRnz66ckPeN2RKp5d7oI0IkSTdZpyIucTGt8PeowxdZYyqUpj?=
- =?us-ascii?Q?uc7CHRU3ZYIcCRWQMnZpl8fmE5Jo/btmda1TW2gRGjD2HnUjpP3aJGgZB5To?=
- =?us-ascii?Q?KaZ3R/l611Je+W/4c3O4uzxi8ictiOjRoeGQaA22XD4C4aP5rCT/t/0AG7j5?=
- =?us-ascii?Q?H0LtQeZUCNa3AYOkub9sj1O30gWeJNqKEc8Vh/2nqky++PyERCbPjZHIdfpq?=
- =?us-ascii?Q?FdKLXQpeNZtIFIm1uhC7OXniVmyQoCZNsrYGZsQBpIwGfen7q3qT5TW8snwY?=
- =?us-ascii?Q?NNAAUs2fa5yMjY2xCHYcHJyd/5fdNShHLOO03LYAv5b3rRWEArzrYX33P6hy?=
- =?us-ascii?Q?L7oPY4VHHbeGF7K0D9onDJhonrhxjWZpHfHpT2eTJidaGuSQjBojih6iI1+T?=
- =?us-ascii?Q?6fyBk5j+Mx4y5Uz36A+A2EkiXv+Y3PQ5G9Ro78TapqX1kej1vPESUZkKf/3r?=
- =?us-ascii?Q?hnNy+Bk3D5ZN+tZYIsgatRSxL8VBFoaSR4AWrzsPgpQWmiC8/j6lJN7HXddH?=
- =?us-ascii?Q?qgaCULf01E7XRPkKS/V/A2DaRXUgPndONpi/0DpZpIyvGwm0l5dxM4f8LEna?=
- =?us-ascii?Q?MQNbemBPlBdDdZgZQNX284p6MYCGzeYi2rxqzOlKRSsm/WqO3LQtvqIP+GFb?=
- =?us-ascii?Q?3ESUHC6lgLJ/IEEYCQCA/bYl+fBPzeSWGdnaDrK7cWe6sHctjLb+nGWwKTba?=
- =?us-ascii?Q?OaZOfgSCnTVf/d/RFPcz1NCipDOjq+omQw9aRTXtW1ZC4BBVKJxwnv4UPcJr?=
- =?us-ascii?Q?YWRToIshKx9JHHUyIfB9/e+uwgdSwo08asWo12qMDJXNOcWSDiNqBjhGTrqa?=
- =?us-ascii?Q?b9VyFEdqe8eNf/SykhxCtO/1e+ldCommnvS5nsqKjJ65ERtOqqNKFB6jhdBK?=
- =?us-ascii?Q?xeLsCCTG141QpUnBKjanaH6NjjxTqhDSazYKaHrli4ykjT5S5ZHu6CInVTJ2?=
- =?us-ascii?Q?KiVWAlhPyBYhRx1YklvBm/gaECwbs0eUSQSZ1S1eFcmF0d2/RevX0cOkUPeK?=
- =?us-ascii?Q?Hg/6WbaV3IviowVp5KqcLLVrmny/kQ12d7ZzndJvRCqh4KPWo5MtF2Qd0IHb?=
- =?us-ascii?Q?7ogx96Si0GRClZw+t5CPeBoDAZAwxvYp/3dcFkFlD4oJVs/WjR93S5mToV1y?=
- =?us-ascii?Q?L2SZUuRILaeYlCJRRnE8JT251UxnAAxeJDJkg6GcFGi4kWeTQXaEpNJwi4Wf?=
- =?us-ascii?Q?3hIGnOB0zThjRIcEmvK6wrGysNG+mqsRB2lKytiz5khdm159bssdNRNOqSJz?=
- =?us-ascii?Q?n5HEFw=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(7416014)(1800799024)(376014)(36860700013)(82310400026);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jan 2026 18:27:44.1649
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 94b9755a-832c-4310-e498-08de552cf100
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN2PEPF000044A9.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB9025
+In-Reply-To: <20260108134855.91341-1-fangyu.yu@linux.alibaba.com>
+X-Proofpoint-ORIG-GUID: cfQSjBgUc_ZfqDWvkEPRsf5amOGUxLaT
+X-Proofpoint-GUID: cfQSjBgUc_ZfqDWvkEPRsf5amOGUxLaT
+X-Authority-Analysis: v=2.4 cv=atu/yCZV c=1 sm=1 tr=0 ts=696a9b98 cx=c_pps
+ a=nSjmGuzVYOmhOUYzIAhsAg==:117 a=cvcws7F5//HeuvjG1O1erQ==:17
+ a=kj9zAlcOel0A:10 a=vUbySO9Y5rIA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=SRrdq9N9AAAA:8 a=EUspDBNiAAAA:8
+ a=78wgLUYcwfu5JlQfcDUA:9 a=CjuIK1q_8ugA:10 a=1zu1i0D7hVQfj8NKfPKu:22
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMTE2MDE1MSBTYWx0ZWRfX8Ch9S7jHSMo7
+ kLEIcZ5PetO0aZOTx63QkQv002RLhSADPbW1S57UGQlD5CExTA56WuKGuYa20/eVfkLMoUfvEH6
+ /pS7LJJ5adxXPsC2lNeVOfq7DNl4G/3C4rPLNLa1gJKZt3BNudFu3RYjTrOoVBKrZ7PpxGlLrjC
+ Z472yBlTmumOM78qy+eLkGwe/jXrtzjq1eaHry7/r2J1MbhJMKehMmkNSr4neosyWagPiBV0QDV
+ XSSUAMpYTTYzM4Z/fwaTkw3dsD6LO/1Ec3J4caHgX0I5M6+KcuHOng+U04BRQ7suuDhi3nJnQeV
+ 7ZuBS8VTZh1I9C6aTNAdXT/tEYDDXlffg1+HBhJNcbkOErYoV+JHlHAqI8jGP22NJ76szI2coOq
+ p9zuRnlqJCqNsWsjj45dpdEeO+JQoL+pSyjT/yR8hdn23iTI8VB0T/FCRkVwLV+CWvdVC3CENQs
+ hM2Pxr8RRZ3ri/VFj6w==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.9,FMLib:17.12.100.49
+ definitions=2026-01-16_07,2026-01-15_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ bulkscore=0 adultscore=0 clxscore=1011 lowpriorityscore=0 suspectscore=0
+ spamscore=0 impostorscore=0 phishscore=0 malwarescore=0 priorityscore=1501
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2512120000 definitions=main-2601160151
 
-On Fri, Jan 16, 2026 at 01:11:58PM -0400, Jason Gunthorpe wrote:
-> On Fri, Jan 16, 2026 at 08:58:02AM -0800, Nicolin Chen wrote:
-> > On Fri, Jan 16, 2026 at 10:41:20AM -0400, Jason Gunthorpe wrote:
-> > > On Thu, Jan 15, 2026 at 09:13:00PM -0800, Nicolin Chen wrote:
-> > > > On Fri, Jan 02, 2026 at 11:57:15AM -0400, Jason Gunthorpe wrote:
-> > > > > On Tue, Dec 30, 2025 at 10:52:53AM -0800, Nicolin Chen wrote:
-> > > > > > Hi Jason,
-> > > > > > 
-> > > > > > On Fri, Dec 19, 2025 at 01:05:51PM -0400, Jason Gunthorpe wrote:
-> > > > > > > +static int arm_smmu_get_tag(struct arm_smmu_domain *smmu_domain,
-> > > > > > > +			    struct arm_smmu_master *master,
-> > > > > > > +			    struct arm_vsmmu *vsmmu,
-> > > > > > > +			    struct arm_smmu_iotlb_tag *tag, bool no_alloc)
-> > > > > > [...]
-> > > > > > > +	case ARM_SMMU_DOMAIN_S2:
-> > > > > > > +		if (smmu_domain->nest_parent) {
-> > > > > > > +			/* FIXME we can support attaching a nest_parent without
-> > > > > > > +			 * a vsmmu, but to do that we need to fix
-> > > > > > > +			 * arm_smmu_get_id_from_invs() to never return the vmid
-> > > > > > > +			 * of a vsmmu. Probably by making a
-> > > > > > > +			 * INV_TYPE_S2_VMID_VSMMU */
-> > > > > > > +			id = vsmmu->vmid;
-> > > > > > > +			return 0;
-> > > > > > > +		}
-> > > > > > 
-> > > > > > Would you mind elaborating why arm_smmu_get_id_from_invs() can't
-> > > > > > return vsmmu->vmid to share with a naked S2 STE?
-> > > > > 
-> > > > > A "naked" S2 domain doesn't have a pointer to the vsmmu, so it is
-> > > > > impossible to get vsmmu->vmid.
-> > > > 
-> > > > An S2 parent domain should be per VM. And a vSMMU on top of an S2
-> > > > should be per SMMU. So, it could have stored a list of vSMMUs and
-> > > > device attaching to a naked S2 could match its master->smmu with
-> > > > vSMMU->smmu in the list?
-> > > 
-> > > That would cause lifecycle problems if the vSMMU is destroyed
-> > > while the nake S2 is still attached and trying to use the vSMMU's
-> > > VMID.
-> > 
-> > Well, if vSMMU code does the same get-build-merge in vsmmu_init()
-> > and build-unref in vsmmu_destroy(), VMID is basically managed by
-> > the invalidation array. Yes, a naked S2 attachment would still use
-> > the shared VMID, but I think that's fine for a nesting parent?
+On Thu, Jan 08, 2026 at 09:48:55PM +0800, fangyu.yu@linux.alibaba.com wrote:
+> From: Fangyu Yu <fangyu.yu@linux.alibaba.com>
 > 
-> The VMID has to be managed by the vsmmu itself, it would be a big
-> confusing mess any other way. There are multiple invalidation lists,
-> so you can't rely on that to refcount things.
+> Add riscv_iommu_iodir_iotinval() to perform required TLB and context cache
+> invalidations after updating DDT or PDT entries, as mandated by the RISC-V
+> IOMMU specification (Section 6.3.1 and 6.3.2).
+> 
+> Signed-off-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
+> ---
+>  drivers/iommu/riscv/iommu.c | 85 +++++++++++++++++++++++++++++++++++++
+>  1 file changed, 85 insertions(+)
+> 
+> diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
+> index d9429097a2b5..2900170133fc 100644
+> --- a/drivers/iommu/riscv/iommu.c
+> +++ b/drivers/iommu/riscv/iommu.c
+> @@ -996,7 +996,82 @@ static void riscv_iommu_iotlb_inval(struct riscv_iommu_domain *domain,
+>  }
+>  
+>  #define RISCV_IOMMU_FSC_BARE 0
+> +/*
+> + * This function sends IOTINVAL commands as required by the RISC-V
+> + * IOMMU specification (Section 6.3.1 and 6.3.2 in 1.0 spec version)
+> + * after modifying DDT or PDT entries
+> + */
+> +static void riscv_iommu_iodir_iotinval(struct riscv_iommu_device *iommu,
+> +				    bool inval_pdt, unsigned long iohgatp,
+> +				    struct riscv_iommu_dc *dc, struct riscv_iommu_pc *pc)
+> +{
+> +	struct riscv_iommu_command cmd;
+>  
+> +	if (FIELD_GET(RISCV_IOMMU_DC_IOHGATP_MODE, iohgatp) ==
+> +		RISCV_IOMMU_DC_IOHGATP_MODE_BARE) {
 
-Hmm, in which case will we have multiple invalidation lists? And,
-why can't we rely on the refcount? (for learning purpose here)
+nit: This condition can stick out. We have 100 chars.
 
-My view is that VM has one big beautiful invalidation list on the
-S2 parent domain, which manages all the VMIDs. So, basically VMIDs
-could be still tied to the S2 parent domain on attachments. And a
-VMID must be one per SMMU instance, whether initially allocated by
-a naked or a nested attachment. A second user would just increase
-the refcount.
+> +		if (inval_pdt) {
+> +			/*
+> +			 * IOTINVAL.VMA with GV=AV=0, and PSCV=1, and
+> +			 * PSCID=PC.PSCID
+> +			 */
+> +			riscv_iommu_cmd_inval_vma(&cmd);
+> +			riscv_iommu_cmd_inval_set_pscid(&cmd,
+> +				FIELD_GET(RISCV_IOMMU_PC_TA_PSCID, pc->ta));
+> +		} else {
+> +			if (FIELD_GET(RISCV_IOMMU_DC_TC_PDTV, dc->tc) || (
+> +				    FIELD_GET(RISCV_IOMMU_DC_FSC_MODE, dc->fsc) ==
+> +				    RISCV_IOMMU_DC_FSC_MODE_BARE)) {
 
-This could work for standard vSMMU case, as its VMID would be only
-used by the invalidation function that must be after an attachment
-to a nested domain.
+nit: formatting
+			if (FIELD_GET(RISCV_IOMMU_DC_TC_PDTV, dc->tc) ||
+			    (FIELD_GET(RISCV_IOMMU_DC_FSC_MODE, dc->fsc) ==
+			     RISCV_IOMMU_DC_FSC_MODE_BARE)) {
 
-Yet, the CMDQ-V case made it complicated, because HW spec suggests
-to program the VMID when enabling a VTINF..
+> +				/* IOTINVAL.VMA with GV=AV=PSCV=0 */
+> +				riscv_iommu_cmd_inval_vma(&cmd);
+> +			} else {
+> +				/*
+> +				 * IOTINVAL.VMA with GV=AV=0, and PSCV=1, and
+> +				 * PSCID=DC.ta.PSCID
+> +				 */
+> +				riscv_iommu_cmd_inval_vma(&cmd);
+> +				riscv_iommu_cmd_inval_set_pscid(&cmd,
+> +					FIELD_GET(RISCV_IOMMU_DC_TA_PSCID, dc->ta));
+> +			}
+> +		}
+> +	} else {
+> +		if (inval_pdt) {
+> +			/*
+> +			 * IOTINVAL.VMA with GV=1, AV=0, and PSCV=1, and
+> +			 * GSCID=DC.iohgatp.GSCID, PSCID=PC.PSCID
+> +			 */
+> +			riscv_iommu_cmd_inval_vma(&cmd);
+> +			riscv_iommu_cmd_inval_set_gscid(&cmd,
+> +				FIELD_GET(RISCV_IOMMU_DC_IOHGATP_GSCID, iohgatp));
+> +			riscv_iommu_cmd_inval_set_pscid(&cmd,
+> +				FIELD_GET(RISCV_IOMMU_PC_TA_PSCID, pc->ta));
+> +		} else {
+> +			/*
+> +			 * IOTINVAL.VMA with GV=1,AV=PSCV=0,and
+> +			 * GSCID=DC.iohgatp.GSCID
+> +			 */
+> +			riscv_iommu_cmd_inval_vma(&cmd);
+> +			riscv_iommu_cmd_inval_set_gscid(&cmd,
+> +				FIELD_GET(RISCV_IOMMU_DC_IOHGATP_GSCID, iohgatp));
+> +
+> +			/*
+> +			 * IOTINVAL.GVMA with GV=1,AV=0,and
+> +			 * GSCID=DC.iohgatp.GSCID
+> +			 */
+> +			/*
+> +			 * For now, the Second-Stage feature have not yet been merged, so
+> +			 * let's comment out the code first.
+> +			 */
+> +#if 0
+> +			riscv_iommu_cmd_send(iommu, &cmd);
+> +			memset(&cmd, 0, sizeof(cmd));
 
-Thanks
-Nicolin
+The memset isn't necessary since riscv_iommu_cmd_inval_gvma(), which
+doesn't yet exist, will overwrite dword0 and zero out dword1.
+
+> +			riscv_iommu_cmd_inval_gvma(&cmd);
+> +			riscv_iommu_cmd_inval_set_gscid(&cmd,
+> +				FIELD_GET(RISCV_IOMMU_DC_IOHGATP_GSCID, iohgatp));
+> +#endif
+> +		}
+> +	}
+> +	riscv_iommu_cmd_send(iommu, &cmd);
+> +}
+>  /*
+>   * Update IODIR for the device.
+>   *
+> @@ -1031,6 +1106,11 @@ static void riscv_iommu_iodir_update(struct riscv_iommu_device *iommu,
+>  		riscv_iommu_cmd_iodir_inval_ddt(&cmd);
+>  		riscv_iommu_cmd_iodir_set_did(&cmd, fwspec->ids[i]);
+>  		riscv_iommu_cmd_send(iommu, &cmd);
+> +		/*
+> +		 * For now, the SVA and PASID features have not yet been merged, the
+> +		 * default configuration is inval_pdt=false and pc=NULL.
+> +		 */
+> +		riscv_iommu_iodir_iotinval(iommu, false, dc->iohgatp, dc, NULL);
+>  		sync_required = true;
+>  	}
+>  
+> @@ -1055,6 +1135,11 @@ static void riscv_iommu_iodir_update(struct riscv_iommu_device *iommu,
+>  		/* Invalidate device context after update */
+>  		riscv_iommu_cmd_iodir_inval_ddt(&cmd);
+>  		riscv_iommu_cmd_iodir_set_did(&cmd, fwspec->ids[i]);
+> +		/*
+> +		 * For now, the SVA and PASID features have not yet been merged, the
+> +		 * default configuration is inval_pdt=false and pc=NULL.
+> +		 */
+> +		riscv_iommu_iodir_iotinval(iommu, false, dc->iohgatp, dc, NULL);
+>  		riscv_iommu_cmd_send(iommu, &cmd);
+>  	}
+>  
+> -- 
+> 2.50.1
+>
+
+A faithful implementation of the 6.3.1 and 6.3.2 guidelines for what the
+code currently supports. I presume this is fixing an issue? If so, can you
+point that out in the commit message?
+
+Otherwise,
+
+Reviewed-by: Andrew Jones <andrew.jones@oss.qualcomm.com>
+
+Thanks,
+drew
