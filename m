@@ -1,147 +1,141 @@
-Received: from fout-a8-smtp.messagingengine.com (fout-a8-smtp.messagingengine.com [103.168.172.151])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1D8D325739
-	for <iommu@lists.linux.dev>; Fri, 16 Jan 2026 17:15:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.151
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3EBEF23D2B2;
+	Fri, 16 Jan 2026 17:24:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768583705; cv=none; b=GNiMIr/m23XC2rs8N/s8K8Fkmzgb5T9ZFyOu9yHwAXDqmSzNNBAVWs4WcN4J5orO8oaiHhvS0k5+CPIGhs2PO4u9d7Xz17+b7+Hj59QWP8pf3Ad89YWVY2ip9sHIpLQMXu99D23qylTi1VPP2Lf3N/aIum55bgGMUzz1VqDbX9A=
+	t=1768584294; cv=none; b=l/duFHXUgSVpReX5YS9jY+Ux1huSOJbWdcUx0u0v3EGih7MOHfHkfrTadlnf0sWs3tkSLEyvbicbJpM0yLjk5LziYfr/ZrjqQObxIR9a0y6rgKcKEYK3L1AFaEupsRsoaEuvRaxKdtz0A5cV2Zf4fwalw5hbIzSldn/de0vF8xY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768583705; c=relaxed/simple;
-	bh=0FXrPczUOrhee8jIFsw7hgSARUDQ79vgAPF0FggUhmk=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=aacXb9J8/eykIE3KBjYnQRQvWb2EvJRn6kbw/x2UDukCmncb2/yRB3zoh926Qb+GhOMvBf9CQZPV72lQ13QlFUxodyTICCYdXb/7bnfsrYoT0gvw08AKbUnTWm4GTR9JEY0e2Cd/vcIMrBtnaRq59g/VBfLQ/zAF9/LAdHbwHKA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=shazbot.org; spf=pass smtp.mailfrom=shazbot.org; dkim=pass (2048-bit key) header.d=shazbot.org header.i=@shazbot.org header.b=TwLaUg8W; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=OvfkkKhs; arc=none smtp.client-ip=103.168.172.151
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=shazbot.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=shazbot.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=shazbot.org header.i=@shazbot.org header.b="TwLaUg8W";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="OvfkkKhs"
-Received: from phl-compute-10.internal (phl-compute-10.internal [10.202.2.50])
-	by mailfout.phl.internal (Postfix) with ESMTP id DCEC4EC0018;
-	Fri, 16 Jan 2026 12:15:00 -0500 (EST)
-Received: from phl-frontend-04 ([10.202.2.163])
-  by phl-compute-10.internal (MEProxy); Fri, 16 Jan 2026 12:15:00 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=shazbot.org; h=
-	cc:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm1; t=1768583700;
-	 x=1768670100; bh=0FXrPczUOrhee8jIFsw7hgSARUDQ79vgAPF0FggUhmk=; b=
-	TwLaUg8WpaV8Xx2UVWstYKzCsNhLiFt7WODmu8D8FGJ9QspjsDqsOgcOU37le+X5
-	nTkFGvVV+w4fM5Faru2k0lFah88bfWIJmA2UYQ69I7Uncm8HpOWKqZtzo3CoajK3
-	3Jyfu9eX0cS+YVBc6WdvN6zd4+GPe+iqH86D4icK15iJ7G0eHqFGgh9HCQ9y62Ui
-	0d4VBz8KyEQU0gbHpnXX8gkrvejolE97u2I1zKejzKzctjtQCPNvYmDf97RwuukA
-	ZS3AO0ggII5IMoVTBtvwJLywjKtqZ8zbhIlhO3xyGtMy0qJcX/IwXGfWE4iNdn+L
-	E8Fw1uM+bmPEmS/1YN/7lA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1768583700; x=
-	1768670100; bh=0FXrPczUOrhee8jIFsw7hgSARUDQ79vgAPF0FggUhmk=; b=O
-	vfkkKhs4p7bsagtj+8NEgkFsNkypQxA6spXs1UeTIsrKT1OjO7C6VlDOSpHhbUNe
-	bQXb7vzXvYpAAlO6n3g/xISHO1SF1M1JZfdrN3MBfuY18pxyiuOAh+BXOdsL4AdG
-	AWUgcdsYcYu7Tx6o6khV1cRMlNNzNH24moDlEBJiBsoRrGJ6tGTJup1lKZkDMAXE
-	IHZi0sZh3TqYY3EX4JbL+DUdkV5RFbulC9MkBr2XUAUJRDGBVqCZBvAMb0K1keru
-	V+eTtp5dkbq3uzDe13j8JjnQH5FuE1hYWonI4RvSz3Mqd6r/9EmCwW+7n2w//cDg
-	y/p3HU3j0TNOvv8OCgIJA==
-X-ME-Sender: <xms:E3JqaaPLBfxjLJIjo4E3cGPEdKFUdUOR8YlJWnoFBQHZLBMlZVSMIA>
-    <xme:E3Jqad39gRRu3uVpFYTQ8EWmenuebstBG0WBi7ie5Z5IPSYy0iSVWFrwDZYNZMwoh
-    QI9qg-EozZQdwMP8SjSCIe6PPF6sT7EVuy_CFLEa-ENTM_cWG52eQ>
-X-ME-Received: <xmr:E3JqaZ3tdWY7A-Q-DrFDrvkUhhrOwA5omQqQ3UrZcutWqN89h9-Xu4t94qk>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefgedrtddtgdduvdelheduucetufdoteggodetrf
-    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfurfetoffkrfgpnffqhgenuceu
-    rghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujf
-    gurhepfffhvfevuffkjghfofggtgfgsehtqhertdertdejnecuhfhrohhmpeetlhgvgicu
-    hghilhhlihgrmhhsohhnuceorghlvgigsehshhgriigsohhtrdhorhhgqeenucggtffrrg
-    htthgvrhhnpeetuefgleefhfdvueegffdtffevhfffgfffiedutdetgffhheejtdekfeek
-    ieehgfenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivg
-    eptdenucfrrghrrghmpehmrghilhhfrhhomheprghlvgigsehshhgriigsohhtrdhorhhg
-    pdhnsggprhgtphhtthhopeduledpmhhouggvpehsmhhtphhouhhtpdhrtghpthhtoheplh
-    gvohhnsehkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhmvgguihgrsehv
-    ghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtohepughrihdquggvvhgvlheslhhish
-    htshdrfhhrvggvuggvshhkthhophdrohhrghdprhgtphhtthhopehlihhnrghrohdqmhhm
-    qdhsihhgsehlihhsthhsrdhlihhnrghrohdrohhrghdprhgtphhtthhopehlihhnuhigqd
-    hkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehiohhmmhhu
-    sehlihhsthhsrdhlihhnuhigrdguvghvpdhrtghpthhtohepkhhvmhesvhhgvghrrdhkvg
-    hrnhgvlhdrohhrghdprhgtphhtthhopehsuhhmihhtrdhsvghmfigrlheslhhinhgrrhho
-    rdhorhhgpdhrtghpthhtoheptghhrhhishhtihgrnhdrkhhovghnihhgsegrmhgurdgtoh
-    hm
-X-ME-Proxy: <xmx:E3Jqab-IcKIyRwYG7LaoEKmTVhok3LWerbw8ijEnhTy0lXBvUyTZlQ>
-    <xmx:E3JqaVa67f-xQfuyTg1R5CA8HkGyu_7wSpqHIAuZ5MruxoLYBKpv5Q>
-    <xmx:E3JqaayEXDzqrC8NKLM17-V3qsjiBbNwtSSFKDCyCIWX5M5B1sRHUQ>
-    <xmx:E3JqaT--ksTvLwQFeleOE7oFSUUqGYeC6jTpSJIDDdBI0rksznVNcg>
-    <xmx:FHJqaSjNj8Cwr1Zg7Cj_qZiHrxgO23kE7kre3zKH90J67yxMYhSSbuSq>
-Feedback-ID: i03f14258:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 16 Jan 2026 12:14:56 -0500 (EST)
-Date: Fri, 16 Jan 2026 10:14:55 -0700
-From: Alex Williamson <alex@shazbot.org>
-To: Leon Romanovsky <leon@kernel.org>
-Cc: linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
- linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev, kvm@vger.kernel.org, Sumit Semwal
- <sumit.semwal@linaro.org>, Christian =?UTF-8?B?S8O2bmln?=
- <christian.koenig@amd.com>, Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian
- <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
- <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Yishai Hadas
- <yishaih@nvidia.com>, Shameer Kolothum <skolothumtho@nvidia.com>, Ankit
- Agrawal <ankita@nvidia.com>, Matthew Wilcox <willy@infradead.org>, Jens
- Axboe <axboe@kernel.dk>
-Subject: Re: types: reuse common phys_vec type instead of DMABUF
- =?UTF-8?B?b3BlbuKAkWNvZGVk?= variant
-Message-ID: <20260116101455.45e39650@shazbot.org>
-In-Reply-To: <20260114121819.GB10680@unreal>
-References: <20260107-convert-to-pvec-v1-1-6e3ab8079708@nvidia.com>
-	<20260114121819.GB10680@unreal>
-X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
+	s=arc-20240116; t=1768584294; c=relaxed/simple;
+	bh=JAS6eKKYV7sDFHlsH109WcdIrJVmwu4Wc7dgojhn554=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=uUlypVE2MnBZvbw3tnIAaL3a5IAhH1CBD0SiOsIIZrheliOsxowlgPZMk0peRpeDRnlaa4/8dKLkIZ9drHh4arUR/gC9rX5GBw2EmPSUne7MQzpXPYzDBTkcRW1Kisv4CV5Fhpxyvv7xONy/hLbCXOYi2cCDzhxjbWaOCB99NhY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E51CA1515;
+	Fri, 16 Jan 2026 09:24:44 -0800 (PST)
+Received: from [10.57.49.133] (unknown [10.57.49.133])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 416DE3F59E;
+	Fri, 16 Jan 2026 09:24:49 -0800 (PST)
+Message-ID: <4da29d46-9a80-4ec4-b6b8-6c9457eed481@arm.com>
+Date: Fri, 16 Jan 2026 17:24:46 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [REGRESSION] Re: imx8 PCI regression since "iommu: Get DT/ACPI
+ parsing into the proper probe path"
+To: Nicolas Cavallari <Nicolas.Cavallari@green-communications.fr>,
+ iommu@lists.linux.dev, linux-pci@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc: Bjorn Helgaas <bhelgaas@google.com>, "Rob Herring (Arm)"
+ <robh@kernel.org>, Lorenzo Pieralisi <lpieralisi@kernel.org>,
+ Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <jroedel@suse.de>,
+ regressions@lists.linux.dev
+References: <a1d926f0-4cb5-4877-a4df-617902648d80@green-communications.fr>
+ <eb94b379-6e0b-4beb-aaa7-413a4e7f04b9@green-communications.fr>
+ <3780eb61-68e2-42ce-939e-7458cd3a63cb@green-communications.fr>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <3780eb61-68e2-42ce-939e-7458cd3a63cb@green-communications.fr>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Wed, 14 Jan 2026 14:18:19 +0200
-Leon Romanovsky <leon@kernel.org> wrote:
+On 2026-01-16 4:52 pm, Nicolas Cavallari wrote:
+> +cc regressions ML
+> 
+> Le 13/01/2026 à 10:17, Nicolas Cavallari a écrit :
+>> +cc patch author & reviewers
+>>
+>> On 1/9/26 17:22, Nicolas Cavallari wrote:
+>>> When upgrading from 6.12 to a 6.18 kernel, I noticed that a PCI
+>>> Ethernet adapter (Microchip LAN7430) would hang under load and not
+>>> recover.  When that happens, some of its registers indicate it is
+>>> failing to do DMA reads, so cannot reclaim entries on its ring buffer.
+>>>
+>>> I bisected the problem into this commit:
+>>>
+>>> commit bcb81ac6ae3c2ef95b44e7b54c3c9522364a245c
+>>> Author: Robin Murphy <robin.murphy@arm.com>
+>>> Date:   Fri Feb 28 15:46:33 2025 +0000
+>>>
+>>>       iommu: Get DT/ACPI parsing into the proper probe path
+>>>
+>>> The problem still exists on 6.19-rc1, on pci/next (29a77b4897f1) and on
+>>> iommu/master (360e85353769) trees.  Reverting the commit fixes the 
+>>> issue.
+> 
+> The problem persists on 6.19-rc5
+> 
+>>> The system is a Gateworks GW7200, which is a i.MX 8 Mini connected to a
+>>> Pericom
+>>> PI7C9X2G404 4-port switch connected to the LAN7430 chip.
+>>>
+>>> -[0000:00]---00.0-[01-ff]----00.0-[02-05]--+-01.0-[03]----00.0
+>>>                                              +-02.0-[04]--
+>>>                                              \-03.0-[05]----00.0
+>>>
+>>> The problem only occurs when there is at least another PCI device in use
+>>> on the
+>>> switch.  It does not happen if the LAN7430 is the only PCI device, or if
+>>> the
+>>> other devices are not actively used.  For example i can reproduce it
+>>> with an
+>>> ath9k wireless network adapter when it is up and running, but not when
+>>> it is
+>>> down or its driver is not loaded.
+>>>
+>>> I suspect that other PCI devices have similar issues, but the LAN7430 is
+>>> the
+>>> easiest one to diagnose, as it hangs within seconds with an iperf3 --
+>>> bidir -u
+>>> -b 200M and its register map are public.
+>>>
+>>> I couldn't find an way to dump the PCI address translation mapping from
+>>> userspace.
+>>> I would be happy to provide more information or test patches.
+> 
+> I debugged it further, it seems to be mostly a PCI issue since the 
+> system does not actually have an IOMMU.
 
-> On Wed, Jan 07, 2026 at 11:14:14AM +0200, Leon Romanovsky wrote:
-> > From: Leon Romanovsky <leonro@nvidia.com>
-> >=20
-> > After commit fcf463b92a08 ("types: move phys_vec definition to common h=
-eader"),
-> > we can use the shared phys_vec type instead of the DMABUF=E2=80=91speci=
-fic
-> > dma_buf_phys_vec, which duplicated the same structure and semantics.
-> >=20
-> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> > ---
-> > Alex,
-> >=20
-> > According to diffstat, VFIO is the subsystem with the largest set of ch=
-anges,
-> > so it would be great if you could take it through your tree.
-> >=20
-> > The series is based on the for-7.0/blk-pvec shared branch from Jens:
-> > https://git.kernel.org/pub/scm/linux/kernel/git/axboe/linux.git/log/?h=
-=3Dfor-7.0/blk-pvec
-> >=20
-> > Thanks
-> > --- =20
->=20
-> Alex,
->=20
-> Could you please move this patch forward? We have the RDMA series [1] that
-> depends on this rename, and I would like to base it on the shared branch.
->=20
-> [1] https://lore.kernel.org/all/20260108-dmabuf-export-v1-0-6d47d46580d3@=
-nvidia.com/
+Indeed, I was figuring this had to be another case of a switch with 
+wonky ACS - do Mani's patches adjusting ACS enablement make any difference?
 
-I tried to ping Jens regarding why the branch with this code hasn't
-been merged into their for-next branch, maybe you have more traction.
+https://lore.kernel.org/all/20260102-pci_acs-v3-1-72280b94d288@oss.qualcomm.com/
+
+Although in this case I guess the issue is arguably more that we're 
+requesting ACS at all, before we know that there's actually an IOMMU 
+present to warrant it. Clearly the best option would be to figure out if 
+the switch behaviour itself can be fixed somehow, but perhaps something 
+like this might help paper over the issue for now (but I'd have to test 
+it to make sure it doesn't break IOMMUs again...)
+
+----->8-----
+diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+index 6b989a62def2..837cc0b5ace4 100644
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -141,10 +141,12 @@ int of_iommu_configure(struct device *dev, struct 
+device_node *master_np,
+  			.np = master_np,
+  		};
+
+-		pci_request_acs();
+  		err = pci_for_each_dma_alias(to_pci_dev(dev),
+  					     of_pci_iommu_init, &info);
+-		of_pci_check_device_ats(dev, master_np);
++		if (!err) {
++			pci_request_acs();
++			of_pci_check_device_ats(dev, master_np);
++		}
+  	} else {
+  		err = of_iommu_configure_device(master_np, dev, id);
+  	}
+-----8<-----
+
 Thanks,
-
-Alex
+Robin.
