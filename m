@@ -1,74 +1,62 @@
-Received: from sosiego.soundray.org (sosiego.soundray.org [116.203.207.114])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48A8532E698
-	for <iommu@lists.linux.dev>; Fri, 16 Jan 2026 12:09:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=116.203.207.114
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D28E35959;
+	Fri, 16 Jan 2026 12:19:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768565383; cv=none; b=KWbsVCORZovRiaV5aG2a6/9Uv2As/3VUxJPQXwAxPK4WGs75pWESiDm/U30HWqvxO4rbvhtJMmtSYvIxr/NrDfysX4ZqCltqB+wtputQjhq/YnJ7f67oeenHme9kLer+ukEGJSg7Fm3gwIAnpN1dfReUOdYbdmhesCjJxCQ1yXo=
+	t=1768565993; cv=none; b=EubFQ1Vnc1NoQS7+eEHm6JzKNnN/5rB3Mr4BpUS7rDZ7F8fcagO3Cz3v2z59wweGj0Y2D+JuycRq4rjwqb8TfW2gtMHvxn/TxikXyqKGBt9PySEuBWyDU9xTlQShxyxnqW9Sywvc3RMRjrQcbYJZEgolLSNV3ln+XvqwxDP5NfA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768565383; c=relaxed/simple;
-	bh=fZpNl6qLmku+wDFFbX6PIZ6rmp6961Cg6/l5UNO/3aI=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=qmvDFVLukCE31pN/MUagDT2ZC6A/LJ4Sv0689YOWWqL0Skj1aHeM6+5P/XHzBmy/whI6E8v8fupqiVz+XTWSmEt8qmjDjYqGL/5qXR9Fsfti24FuFqLUWpg/EuVFHoLi+8JyA+rfnsJs55OkROk8IJ80vfuZ+Uodog/TnVOoxvQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=schreibt.jetzt; spf=pass smtp.mailfrom=schreibt.jetzt; dkim=pass (1024-bit key) header.d=schreibt.jetzt header.i=@schreibt.jetzt header.b=VaIjciaP; arc=none smtp.client-ip=116.203.207.114
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=schreibt.jetzt
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=schreibt.jetzt
+	s=arc-20240116; t=1768565993; c=relaxed/simple;
+	bh=N27lR6LD8aLrpqUY3jTvrBfxTbUYZ+iLvKoUwVGh4p8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=eqR31n/zyKHC78O5cuGs3ESzcLyUDZeKHb42aO7QicbJMn8c8swpuedWgvDTvV88J2gk+m85sj/Q1B3FBqMxIZVzUa64v6zFXN4Ic03QY/bUcfW4aaQhtDsjZWPBDK6G0gzkW4FeiOaqErlOnynRgmr0cG22YU4pZLNp4v4qHvE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NLDqW3um; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=schreibt.jetzt header.i=@schreibt.jetzt header.b="VaIjciaP"
-From: Linus Heckemann <linus@schreibt.jetzt>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=schreibt.jetzt;
-	s=sosiego; t=1768564835;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=fZpNl6qLmku+wDFFbX6PIZ6rmp6961Cg6/l5UNO/3aI=;
-	b=VaIjciaP4wD7UHRzhPtd6F8AOMWXAvojghwS0p4Fk5ELCMWzlfPxkTCV/c/93kpZwPcOpR
-	WCRg22Djr5wa9hnCC9EPeM8f9PLzaaK5Y3M8knoeuAnWG/rY2XcozJ+D+aO6IxE6oIjmQo
-	0xgKjXdsMswvqqK+eNGQf+FQ+I6vXOA=
-To: Jason Gunthorpe <jgg@nvidia.com>, Min Ma <min.ma@amd.com>, Lizhi Hou
- <lizhi.hou@amd.com>, dri-devel@lists.freedesktop.org
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: amdxdna breaks suspend (was: Re: [PATCH v5 2/8] iommu: Remove
- IOMMU_DEV_FEAT_SVA)
-In-Reply-To: <20251230011916.GB23056@nvidia.com>
-References: <20250418080130.1844424-1-baolu.lu@linux.intel.com>
- <20250418080130.1844424-3-baolu.lu@linux.intel.com>
- <ygaqzsib7bc.fsf@localhost> <20251230011916.GB23056@nvidia.com>
-Date: Fri, 16 Jan 2026 13:00:34 +0100
-Message-ID: <yga3445n4wt.fsf@localhost>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NLDqW3um"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA661C116C6;
+	Fri, 16 Jan 2026 12:19:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1768565993;
+	bh=N27lR6LD8aLrpqUY3jTvrBfxTbUYZ+iLvKoUwVGh4p8=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=NLDqW3umKUH+oTSWeFot7VEADoh18cZVilBpn//cNgFD3fP0Bxh+2ORvBW1B98Yst
+	 GB/QiuV75BD/IAJzSl0SjZ5nI8Nf35O63pUOq3j8tLKWi//TNDE6XNb/iuAbpIaiTV
+	 L3Ky+yG5G96EPeyo3Rmhmi8oDXcvMZVsjShSrYq8+B3dvzeIzrFnhM2B6oc4bFmMBT
+	 MH1ib2aX1LQSJO5pvg7w3fWjAATy4D2EyqR6051befqLmQKGiZWfPME/S1vX82U7+w
+	 yX20DDUn4pt6fugT9hFrKeMcdmd84MPGKKZZ9MLThalk0lScIBzxAQP4uWB9JxNNHl
+	 put1nqc2PqCnA==
+Date: Fri, 16 Jan 2026 12:19:45 +0000
+From: Will Deacon <will@kernel.org>
+To: Mostafa Saleh <smostafa@google.com>
+Cc: Baolu Lu <baolu.lu@linux.intel.com>, linux-mm@kvack.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	linux-doc@vger.kernel.org, corbet@lwn.net, joro@8bytes.org,
+	robin.murphy@arm.com, akpm@linux-foundation.org, vbabka@suse.cz,
+	surenb@google.com, mhocko@suse.com, jackmanb@google.com,
+	hannes@cmpxchg.org, ziy@nvidia.com, david@redhat.com,
+	lorenzo.stoakes@oracle.com, Liam.Howlett@oracle.com,
+	rppt@kernel.org, xiaqinxin@huawei.com, rdunlap@infradead.org
+Subject: Re: [PATCH v7 0/5] iommu: Add page_ext for IOMMU_DEBUG_PAGEALLOC
+Message-ID: <aWos4aIxKpqWuHoK@willie-the-truck>
+References: <20260114164322.787125-1-smostafa@google.com>
+ <f3ab0156-3d7c-470d-9c1e-922195ea27af@linux.intel.com>
+ <CAFgf54rVPaUgbouXWQkczCyFQvXkrei_x6FYY6n1X5NkSSwYfA@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAFgf54rVPaUgbouXWQkczCyFQvXkrei_x6FYY6n1X5NkSSwYfA@mail.gmail.com>
 
-Jason Gunthorpe <jgg@nvidia.com> writes:
+On Fri, Jan 16, 2026 at 09:08:42AM +0000, Mostafa Saleh wrote:
+> Sorry I was travelling all day yesterday. I see Jorg hasn't done the
+> pull request yet, so I was hoping we can still change it.
+> But I can send the fix separately also.
 
-> On Thu, Dec 25, 2025 at 10:05:59PM +0100, Linus Heckemann wrote:
->> It appears the code removed here was not in fact entirely dead; my 2024
->> gpd win mini ("G1617-01", with a Ryzen 8840U) fails to suspend
->> correctly, and I bisected the issue to this commit.
->
-> The only behavior change this patch had that could be relavent to a
-> Ryzen was in drivers/accel/amdxdna/aie2_pci.c - are you using this
-> driver?
->
-> Prior to this patch amdxdna would have failed to load in configs
-> without an iommu as iommu_dev_enable_feature() would have
-> failed. After this patch it will load successfully.
->
-> If so then that driver presmuably doesn't have working power
-> management in your system.
+iommu/core is a stable (non-rebasing) branch, so patches on top, please.
 
-You're right, blacklisting the amdxdna driver fixes suspend, thanks for
-the pointer!
-
-@Min Ma, Lizhi Hou, dri-devel: do you have any insight into why this
-might be happening?
-
-Cheers
-
-Linus H
+Will
