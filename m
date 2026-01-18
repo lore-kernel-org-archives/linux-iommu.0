@@ -1,49 +1,46 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CB8AC280332
-	for <iommu@lists.linux.dev>; Sun, 18 Jan 2026 09:41:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7358A280325;
+	Sun, 18 Jan 2026 09:47:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768729271; cv=none; b=uiJAJIuaJ5ZUFZ/U0F9zBTXxXk/74f3aLdjtNwFhIJUHVp8FNy75X2QsdjIV0VoogyETDml2LgW6ZwG5h1TilnnnLoY+CrnH20zTVWSw6qqhjHyEnehOICSzCHcXeYj6Vs3jrDzrI5tfP0+hJBpqm4ybfkZt2U4/bJNr2h7rKkg=
+	t=1768729635; cv=none; b=HHSPo+DpdJ8VwYHsyyVlVF1rIBDLQhotynln5Oh2ELmJtRd+evJv/0lAkoK+6bEXOmUOtAHnDxmUEaX+KvyIatTx9k2F0kJAkMIsKlgJn8wLm1jATSVDr8Dkx2maHF9XZ0/Aq0jYnYIlFZIucV8VBcawwb7lP6chdWRuvNyi1jY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768729271; c=relaxed/simple;
-	bh=meUwEYrMdweubvTIm5FwW/U0eowupvfI3Lql8NwUJtM=;
+	s=arc-20240116; t=1768729635; c=relaxed/simple;
+	bh=8iKWHE439+Kv8ItzaeIxmsbO/iGWOBbKxZWzeiViago=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=QbBHpjt+T5dGxhnVKd0DyMo4KDO3Ayu6hHwHgNByX8TwKOD+A4Z69W/9nlnkZWp/aT0VV23O5ONKdgRfRA2wVZAOxp9s9xP8UINZPdHym1gr+o63vXS6UgIBsM/tqI2XK8oCzlcj8V1Lth5D/UG8RPQAhrtLvSI/cRzonVNQkvI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=1oHg8FZw; arc=none smtp.client-ip=85.214.250.239
+	 Content-Type:Content-Disposition:In-Reply-To; b=CzZfMwPu/QcCwrsFMu+LJGXt+pxgeyWqT2qEyv4wwx3uFNgTQTxTkdzSA+hxBpyR5pgNd3yyODmf13e5ShhFCpgGti4uBOX1GLtea/9Ol8dZWb8fHvk1yYinIRmu9e0MrRDn1+EDsPHAW4G6ucxlIZVHYu3LAG+CuP+jN/9grCE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=LUImN+rp; arc=none smtp.client-ip=85.214.250.239
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="1oHg8FZw"
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="LUImN+rp"
 Received: from 8bytes.org (p200300f6af1d960047d77347aeef488f.dip0.t-ipconnect.de [IPv6:2003:f6:af1d:9600:47d7:7347:aeef:488f])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 3781A5FABE;
-	Sun, 18 Jan 2026 10:41:03 +0100 (CET)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 6909D5C16D;
+	Sun, 18 Jan 2026 10:47:12 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1768729263;
-	bh=meUwEYrMdweubvTIm5FwW/U0eowupvfI3Lql8NwUJtM=;
+	s=default; t=1768729632;
+	bh=8iKWHE439+Kv8ItzaeIxmsbO/iGWOBbKxZWzeiViago=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=1oHg8FZw2wv7vH7qbbyBuDnThAsavGNrks5gc3Jq2wMNdke5i1Q5X8PMji2guRWGE
-	 tISEaDxmMcUZo0WZMg8LHkcxlA9ZTht/1K+ceKUNl3/sSMC6EHZtv7YBtB+RqDjpA4
-	 Szz4quSLI8HQ18qzVX6o6IpZb1AS5OWjc7ahvV2RpkSYoK/wdI9T/EpxfA4QMngOoj
-	 k7luaysT03vqWQIqtBWe8Xh0ZdCw6GyGgV2NQu8+BD1Qr2xxfxqhVz/a60NaIag9ZI
-	 Tq2fFY7KNW/hXIYXvo5W+0hnDbTA7rhJpwyu9TlRVdmPBxZNLwm6XHCXJzG5hhEmDn
-	 emj3VYKPzjczw==
-Date: Sun, 18 Jan 2026 10:41:02 +0100
-From: =?utf-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>
-To: Will Deacon <will@kernel.org>
-Cc: Benjamin Gaignard <benjamin.gaignard@collabora.com>, 
-	robin.murphy@arm.com, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, 
-	heiko@sntech.de, nicolas.dufresne@collabora.com, p.zabel@pengutronix.de, 
-	mchehab@kernel.org, iommu@lists.linux.dev, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-rockchip@lists.infradead.org, linux-media@vger.kernel.org, kernel@collabora.com
-Subject: Re: [PATCH v11 3/7] iommu: Add verisilicon IOMMU driver
-Message-ID: <eqv7yfdagt2axkj5xbtmrtkaakhq63ywf2q5tjo33exumhfrc5@7ghelrz6yt2d>
-References: <20260107101005.84039-1-benjamin.gaignard@collabora.com>
- <20260107101005.84039-4-benjamin.gaignard@collabora.com>
- <aWZui-rn5RDPwpEO@willie-the-truck>
+	b=LUImN+rpN377qF9Tp7yCbJW2MDSjy4wP1EuzBDf/5tZ2XstUYeuIYLX4J3VJPUPme
+	 kSVf5PPG11XJxvL4Y27xpY+IuB/l9v+KGdY6gL/GpX745zFngJv7ffSk6EfC+I6PdR
+	 KzxREW4X6YSCa40aF1AY0tICNDXpNoxbZdsLQbqfk2PP3urn8Ryno2xaAkBXd2Q1yf
+	 ADR9M3iMMakbf/Nu6GmooKz+tgZGFgjZXkimdAS1ReOuXliLYWCJkE0P2mQzB88EUP
+	 IQQdV+YLQkymr1BQh/tFvuBzNb12SDEhgRkCz8OWTGIvGMLtZUoBZPIL6T9fuXIKue
+	 bTrc1ZM/HaYcA==
+Date: Sun, 18 Jan 2026 10:47:11 +0100
+From: Joerg Roedel <joro@8bytes.org>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Robin Murphy <robin.murphy@arm.com>, 
+	Will Deacon <will@kernel.org>, Alejandro Jimenez <alejandro.j.jimenez@oracle.com>, 
+	Joerg Roedel <joerg.roedel@amd.com>, Kevin Tian <kevin.tian@intel.com>, 
+	kernel test robot <lkp@intel.com>, Pasha Tatashin <pasha.tatashin@soleen.com>, 
+	patches@lists.linux.dev, Samiullah Khawaja <skhawaja@google.com>
+Subject: Re: [PATCH 0/3] Let iommupt manage changes in page size internally
+Message-ID: <wpqmukpcurzufu4nrbnjox3scdfgjqwfrjqk3ijmd7oo5gtrmf@vx4tw4usghkg>
+References: <0-v1-d7be57da596d+3f8c0-iommpt_map_direct_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,22 +49,17 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <aWZui-rn5RDPwpEO@willie-the-truck>
+In-Reply-To: <0-v1-d7be57da596d+3f8c0-iommpt_map_direct_jgg@nvidia.com>
 
-Benjamin,
+Jason,
 
-On Tue, Jan 13, 2026 at 04:10:51PM +0000, Will Deacon wrote:
-> I took another look at this to see whether it had changed significantly
-> from v6 when compared to the rockchip driver. Sadly, they still look
-> very similar to me and I continue to suspect that the hardware is a
-> derivative. I really don't understand why having a shared implementation
-> of the default domain ops is difficult or controversial. Have you tried
-> to write it?
+On Mon, Jan 12, 2026 at 10:49:01AM -0400, Jason Gunthorpe wrote:
+> Jason Gunthorpe (3):
+>   iommupt: Make pt_feature() always_inline
+>   iommupt: Directly call iommupt's unmap_range()
+>   iommupt: Avoid rewalking during map
 
-When updating for v12, can you please put an explanatory comment at the top of
-the file explaining the relationship of the IP this driver is for to the
-RockChip IOMMU and the rationale for having it as a separate driver? I want
-this part of the discussion documented in the code in case it comes up again.
-
+Please re-spin patch 3 based on the comments and resend it together with patch
+2.
 
 -Joerg
