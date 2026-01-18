@@ -1,262 +1,207 @@
-Received: from OS0P286CU011.outbound.protection.outlook.com (mail-japanwestazon11020080.outbound.protection.outlook.com [52.101.228.80])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8F8F359FBE;
-	Sun, 18 Jan 2026 13:56:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.228.80
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768744566; cv=fail; b=fZWBSFWmuRgc6nGXn/Aj6X5Gh3hyhfTOROOuGKMl5+OX6jQHBAeSTHL0yEqVX5UA+Dgml1LOGFEiZ7tAo9QgcGjCqjct6wzn1jJRalenLzRjX94E9kta3i5yiFpB2ubPPsD7bBN0bccssyGMirO76mKepNLL+lQHsifcPMSC7u4=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768744566; c=relaxed/simple;
-	bh=OFUkD4E+4Ukvxd4hwqTv1/sNXaCaoiCDWemyU+y7EwI=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=K22rhdMxT1zIz1suXraIv92dEuyP8tDJ8Xj24Ll0gvig5HwGP5Vkha5zh53zSI8jGz5U8JyAVAo8RQRkvnpe4I1lEbZvJ2AnrOvFmQkNFl4yPpA1E0nboWLB1inyYJNbwtWPKHC2ia4fQg/oL+r/t+LJrF3Q4mbtQRKXOmG3lBY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=valinux.co.jp; spf=pass smtp.mailfrom=valinux.co.jp; dkim=pass (1024-bit key) header.d=valinux.co.jp header.i=@valinux.co.jp header.b=jYlG2kU8; arc=fail smtp.client-ip=52.101.228.80
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=valinux.co.jp
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=valinux.co.jp
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 022B530F7FC;
+	Sun, 18 Jan 2026 14:16:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1768745806; cv=none; b=vDisPyR6cOwvXVe83DAtsbEV6rkjDDong5tqDyjsQUbKYMQpDNtpoXDDXyHMWTcjFXHKucrEFRkq4A/a+1Mhd1qK9RwM6MJFqs6UFvrfzqLQ3YXSeA+BnGm7E2sPYNAikJp4lK6z3HFpBkmwCcL0++Ji4wIXk2y4oQAjx3TJXLk=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1768745806; c=relaxed/simple;
+	bh=UudtuDq34MYJqWXnxCgj7hLDUtpJxnIbpapqDIrG7M8=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=empfCv4QnpTFFLIcNYzOxa8+ZZmZuRbWDmPdWOqixCqzDqmhpbM2KFdzQnl6ZXBpEQ2SPglg0gH5gE3o6qRFUtf3I4kfjlFYgghvgVoV00MeiWOiWDlf903jXsu9qYyQPVw2p23uFNtoXoxFvdlfC7nlDCr72/+zFOaH+14GBek=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gJbr+/P+; arc=none smtp.client-ip=198.175.65.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=valinux.co.jp header.i=@valinux.co.jp header.b="jYlG2kU8"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=R+Fza3Jgk3Zbjn6eMQpYzSSg9AkJS4KDLcPqJxLujCCyMWY/vpVemGOLexVe4N53Zvo5YSKna1OtAnUtlBSR4OW1+jfvBdDjCydIMynYZ8fC8vQzqYD8TtKGW7DZIYF9qvofZMoOJdFJmD4FusNJN8///RrKSjNIuQBGU9eB+O4mZXwxHpTzCEsB5UOjZFILy3jOTveGjcpY+UPsIDTD54arEI9OL+W7FpcM7T1UDGQnVhNXYVKTU0Sh1LJMMXdtmWiyMOUi1JfSZZCOHBf7cxY6vE3Dc2jpdElVt5THgQI0yXMHJ2W/3AW0BqCsK/DSlw2aPaNSh6wVP0xJb4irfQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=2IV6mAImmdaQxF+HLb3oX6pkRkUuKqxuOTBnEtlk+FM=;
- b=ypQq0OSwKPd3ZB681Ag41xx55tApYREH5F3DbFVLJhout5zgJgL8hd9yEmmKEL60LrPzP0Wn1+AX07oZa0qCWi1LS31megbf3BgExb4rOhGq7Brh5gIkFGCkPrW2m0aqzGaNm86Mv+walZsAPpEAG9iDMvzhq+EWq7EwEBG769J6FNa1ih0Ph6KD01u04LUWmzT4JYCK3U9t9uDiRkmjiSFsK4sMJOnrVhCdcVS4mRNljv4mgBomRs8h11sG8zs9pC7JeQ9pTc40tL0OSRYl2aiCQ2QpLo32REA9CzM3xVXwxqUCKmarRCwTPPmErElQY+QsuSVwCzzOktVFVZomsA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=valinux.co.jp; dmarc=pass action=none
- header.from=valinux.co.jp; dkim=pass header.d=valinux.co.jp; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=valinux.co.jp;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2IV6mAImmdaQxF+HLb3oX6pkRkUuKqxuOTBnEtlk+FM=;
- b=jYlG2kU8SOpbhqlyI4wHu1V+ZTthZnLlqWehhP5yOhvWnJKu+aW7u8sIzs19ZHIrN/xUHkKq6nt5DH18iSjHAV1SfhG34SbaSPG4JavDvPxPXaoR29LcLuGTiWbXSJbx1QSadTtOmFkmskMX4hdhV8GuCoH5anDQK/RCXiscssY=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=valinux.co.jp;
-Received: from TY7P286MB7722.JPNP286.PROD.OUTLOOK.COM (2603:1096:405:38f::10)
- by OSZP286MB2093.JPNP286.PROD.OUTLOOK.COM (2603:1096:604:180::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9520.10; Sun, 18 Jan
- 2026 13:55:48 +0000
-Received: from TY7P286MB7722.JPNP286.PROD.OUTLOOK.COM
- ([fe80::2305:327c:28ec:9b32]) by TY7P286MB7722.JPNP286.PROD.OUTLOOK.COM
- ([fe80::2305:327c:28ec:9b32%5]) with mapi id 15.20.9520.009; Sun, 18 Jan 2026
- 13:55:48 +0000
-From: Koichiro Den <den@valinux.co.jp>
-To: Frank.Li@nxp.com,
-	dave.jiang@intel.com,
-	cassel@kernel.org,
-	mani@kernel.org,
-	kwilczynski@kernel.org,
-	kishon@kernel.org,
-	bhelgaas@google.com,
-	geert+renesas@glider.be,
-	robh@kernel.org,
-	vkoul@kernel.org,
-	jdmason@kudzu.us,
-	allenbh@gmail.com,
-	jingoohan1@gmail.com,
-	lpieralisi@kernel.org
-Cc: linux-pci@vger.kernel.org,
-	linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	dmaengine@vger.kernel.org,
-	iommu@lists.linux.dev,
-	ntb@lists.linux.dev,
-	netdev@vger.kernel.org,
-	linux-kselftest@vger.kernel.org,
-	arnd@arndb.de,
-	gregkh@linuxfoundation.org,
-	joro@8bytes.org,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	magnus.damm@gmail.com,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
-	corbet@lwn.net,
-	skhan@linuxfoundation.org,
-	andriy.shevchenko@linux.intel.com,
-	jbrunet@baylibre.com,
-	utkarsh02t@gmail.com
-Subject: [RFC PATCH v4 38/38] selftests: pci_endpoint: Add remote eDMA transfer coverage
-Date: Sun, 18 Jan 2026 22:54:40 +0900
-Message-ID: <20260118135440.1958279-39-den@valinux.co.jp>
-X-Mailer: git-send-email 2.51.0
-In-Reply-To: <20260118135440.1958279-1-den@valinux.co.jp>
-References: <20260118135440.1958279-1-den@valinux.co.jp>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: TY4P286CA0066.JPNP286.PROD.OUTLOOK.COM
- (2603:1096:405:371::10) To TY7P286MB7722.JPNP286.PROD.OUTLOOK.COM
- (2603:1096:405:38f::10)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gJbr+/P+"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1768745805; x=1800281805;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:content-transfer-encoding:mime-version;
+  bh=UudtuDq34MYJqWXnxCgj7hLDUtpJxnIbpapqDIrG7M8=;
+  b=gJbr+/P+MKHPZ+tCx6H9X5e2RxJAHi3CMH/0d98U3N9fSxupLpY1QeHk
+   nhTtMSlFMBM2s6+wxdRTnK1q1Wm/5sDwBDci7YgKYPHic+ePCdk1Ei+TY
+   ZK5ruH5VRkpUsPN2LZTR6CDPWygkzubawuZvsFkGCKVpLOTua1J4UkAQ6
+   amx34nH8NyNv5S9OwfFzHi56quMtC3ROjMXF5Y6GpVCNlYpZG+Uix2eTa
+   1oL97e7laPoCuL4s6yGf+t6kDk90o0YXElzHKKC0vznw/Kwri9Gm5VIVJ
+   Bi9XUwmPuKzgU027EKzo/ub4YuiKUk2h3UkNfGoSORJrY4SbSFh09Q+wt
+   Q==;
+X-CSE-ConnectionGUID: CIo1c2C2QGS8iDtoZcbGGw==
+X-CSE-MsgGUID: Mo0W9sXTQXm+nLQ11QGZQg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11675"; a="80279020"
+X-IronPort-AV: E=Sophos;i="6.21,235,1763452800"; 
+   d="scan'208";a="80279020"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2026 06:16:44 -0800
+X-CSE-ConnectionGUID: uEuCMJyAT1SPhq5oFgFZ9A==
+X-CSE-MsgGUID: YCbX+3UhScWByywIYHhhTQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,235,1763452800"; 
+   d="scan'208";a="205264188"
+Received: from egrumbac-mobl6.ger.corp.intel.com (HELO [10.245.244.5]) ([10.245.244.5])
+  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2026 06:16:38 -0800
+Message-ID: <f115c91bbc9c6087d8b32917b9e24e3363a91f33.camel@linux.intel.com>
+Subject: Re: [PATCH v2 0/4] dma-buf: document revoke mechanism to invalidate
+ shared buffers
+From: Thomas =?ISO-8859-1?Q?Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>
+To: Leon Romanovsky <leon@kernel.org>, Sumit Semwal
+ <sumit.semwal@linaro.org>,  Christian =?ISO-8859-1?Q?K=F6nig?=	
+ <christian.koenig@amd.com>, Alex Deucher <alexander.deucher@amd.com>, David
+ Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, Gerd Hoffmann
+ <kraxel@redhat.com>,  Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+ Gurchetan Singh <gurchetansingh@chromium.org>, Chia-I Wu	
+ <olvaffe@gmail.com>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+  Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann
+ <tzimmermann@suse.de>, Lucas De Marchi	 <lucas.demarchi@intel.com>, Rodrigo
+ Vivi <rodrigo.vivi@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian
+ <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
+ <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Alex Williamson
+ <alex@shazbot.org>
+Cc: linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org, 
+	linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org, 
+	amd-gfx@lists.freedesktop.org, virtualization@lists.linux.dev, 
+	intel-xe@lists.freedesktop.org, linux-rdma@vger.kernel.org, 
+	iommu@lists.linux.dev, kvm@vger.kernel.org
+Date: Sun, 18 Jan 2026 15:16:25 +0100
+In-Reply-To: <20260118-dmabuf-revoke-v2-0-a03bb27c0875@nvidia.com>
+References: <20260118-dmabuf-revoke-v2-0-a03bb27c0875@nvidia.com>
+Organization: Intel Sweden AB, Registration Number: 556189-6027
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.54.3 (3.54.3-2.fc41) 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: TY7P286MB7722:EE_|OSZP286MB2093:EE_
-X-MS-Office365-Filtering-Correlation-Id: 093b9545-ef78-4b46-5f05-08de569939b2
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|376014|7416014|10070799003|1800799024|921020;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?qKHl/G6XrMVx8HQdRGmdRtj1cafNBKh6lGgli5JGvBJLomO9WhGHQE7Dw7GZ?=
- =?us-ascii?Q?2Sss5Dge94QrXweqHb0aDuOPNBgmwkhq8r048vWev3rIHzXzHwqqh8RQwvJ/?=
- =?us-ascii?Q?l2RfIsWpBEHPMsPjkcZ76oXcje/JWXMZSxeMymMspbZypZi+WQG7BTzhjSjl?=
- =?us-ascii?Q?xqJq4Fop2JfCqT4S00BLohlyZJFfThuK0YOIsOyRCZmiptQYasaRI6IsSk06?=
- =?us-ascii?Q?bbQs3etXp7E4TqfCvErTKJSgyB0hd6bE+A39NqMlZRzq4S63dnQtR6KUUWxg?=
- =?us-ascii?Q?zl4BG9HT+A9mqUxCtklcuUAbXWXDiixzzcTreHYxLaccatpilre7DOfenB8N?=
- =?us-ascii?Q?y1U/HliJw6i9YkWk5hjmhXBBIAy6CoqNXmzRL1mtDqI3snRQapBr4nTYtNpX?=
- =?us-ascii?Q?r3mx4atBzL1Vlqzf12JqMJux6OvUnwdYO8Fi8xvJDHFMLK5eqEtXVzq70XZd?=
- =?us-ascii?Q?Ki9yWYJXFLw28m/bmW29qAQAjzxyq3ib01Ja0eNW4AqUY7rFU5r82uzqkxP3?=
- =?us-ascii?Q?9OEckoIGrkYi5OBx0U5JJuyR1hYtZT1UpZ5Ftd2+UD7u5j/R1JEUqZvUoHxl?=
- =?us-ascii?Q?OWkdwj1UJfV349GXj5JQQKc+t9e/PSSknCW0a6ppSOQWe/kDigQO+GK0qa6k?=
- =?us-ascii?Q?cyNtNOBoulAqJv96cgJScanXHAjkxvjXQyP9A/8x5IZcXmtmXzUTk6aW9vGh?=
- =?us-ascii?Q?eJtnvjhlGAZ/9U1ZyYceLP+S48EPMIyU9kwUQUjAgUjKsSU6i1MYx1aTr/Wd?=
- =?us-ascii?Q?RHPdaU1CFhTp5dnyvOI3CbG53y0SDQMtt2u9DlxYg7UokZcM+tq1EZtOQiCA?=
- =?us-ascii?Q?ZApZB4hT/Gfi1TjaNl+pgGefFvCZfuzmndYW5Spfw96ck77muDgVI1BgM1id?=
- =?us-ascii?Q?9qiCho9oIUbPzEg+0kOqqR0mYaTM4UF6mkWXkgYkOFSWV4QZVy6PRJwQ+MWj?=
- =?us-ascii?Q?pfNJN9JW6UNjk1lwGW+28K6e1gzqOh2DC35uI8IJ3QCy8rHLZ8i6MsUIzvwt?=
- =?us-ascii?Q?FxiH6iIs61eCU6dKgf4DJbWPx/PyU1s2PKSIrbwNV9IIwBOfwtvhpGNF/dv9?=
- =?us-ascii?Q?mIUECwTXhaaBZxg50u2WiGRFTfOjGbHEdI2WL6KFCGktOBQ5NGh3qS+J7W6Q?=
- =?us-ascii?Q?CezrJjKu8n/LCGMEp/WLQB2rlmW2X1zBAA5XjShKHJpVx0bAejjZRXslDRhI?=
- =?us-ascii?Q?Cl6lcXAUI1gx96tVRPDNTTKSlpTL0jzCxiV1OheqMM/nP9dpTDokLmQxD507?=
- =?us-ascii?Q?tF3GNcD1f17PWVvyFixdNIbhElIlIBcZ4wYooYMElbc0jlQ9O41kqqyPOV8E?=
- =?us-ascii?Q?Q2+qMQOB71L6UAkHmbx5S5iWMk9AxqBw7gkix+5ltyToHxZ4n8nABjk9GiS3?=
- =?us-ascii?Q?JVlmCaZKfYqj6WQ0SRJAIl2x5lu15jioTKgGQeTr5GLhVOJkBP1PBzARHbnt?=
- =?us-ascii?Q?5k/jJ/Sr+yZ0fmdYPIpWbM/FrXE9kxmbqRir+Pks10cEcW+szSg3vqwoiO7M?=
- =?us-ascii?Q?6dKu8Z42pF3cdujS2hRUSA+LxQjmW8zEgusdKYcZh9YnTTSEhaEocM3rSNkl?=
- =?us-ascii?Q?ZWehaNw+/O1+ie7yDQpzZrnYEB723ZHGs++tptXVgTU0J/wiYQVfxpFmkwSO?=
- =?us-ascii?Q?NQ=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TY7P286MB7722.JPNP286.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(7416014)(10070799003)(1800799024)(921020);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?vUx5OEvjRGYKYdRUS+EAxmZCYwG9WmODx/NcW55oy5U9SnCrA0AMkSE4o2Di?=
- =?us-ascii?Q?9ZNqe2S8t7S3jC2GbYvtHJaBYSlHxaxGIhS22ASEGjL9SyBcl4QQuNDRy5Bo?=
- =?us-ascii?Q?9a66BKu7vx8Lc2XfZ2+MuKsxw9F1MLB6mcUKxhJ/9QaczN2COa30JoJWEsb/?=
- =?us-ascii?Q?Cdn9Jv9XbxVL8YyxbG9uPMrwfflbBHgLx9HR6nSLDZZB3+ky3WC3KlWorO5k?=
- =?us-ascii?Q?/80RLdlfj1OJsV0MSymIeBNTY/0/Ewa3ccxi4PJ5xJUjWMvMDn45EKZTmS0i?=
- =?us-ascii?Q?A4p1GTg0DZEUF9RtI5AYRDoga+gv98VVV15lU+VI0OukBdB80xYV2bqzZuaz?=
- =?us-ascii?Q?CB8Spo/D97cfQtplnDS1V8PoGomLDhwrS6mxKXOF6UI29tjMZcEKEehGgPby?=
- =?us-ascii?Q?5FQQ3+w5S4/6qOj2RqQ0qW44IKMOCJo9K/ce5t4WgasKS0mYD2LoUAK5IrhC?=
- =?us-ascii?Q?O6Nuh/gJ3/lIV15yIup65yQM50QfKD4jLLAcmkhOQeXEG235rlcYg8pVzEU9?=
- =?us-ascii?Q?wBEe4EMdlK73KkW2dYwSeuK3XvWDDaeKa9qP9lRqNlioMT7j9ddyxq5RGkmV?=
- =?us-ascii?Q?BvstqzgJMaMgisqqSsFDXwttMMXJKtEo72iUwMSyTr9EINA3NfgmKE9hzPXr?=
- =?us-ascii?Q?Y6kchCiSb1AzZ2w0a5Aosl0p2FE8LLv6TrTUm/IzEg+AmkV1++ohJYubkM1Q?=
- =?us-ascii?Q?T46NdF2y0yTkbgI/hOYXXmmCs2bxExu2RO17e5IFzDSZbp4jMRbypjWsJyXh?=
- =?us-ascii?Q?lxPhZglKmJSBCOuVllQGkYR4EUl0oiNk+vcF9qhUXSs3ff+0IohFQ37eyOxI?=
- =?us-ascii?Q?S8oPh8RPzzoG5F0/DJ2B4cFxYb4J4Jq64/I4OWShk+Kp26LtxFnO72q8fnb6?=
- =?us-ascii?Q?1HYJ3LTr69UHoQqaZIK7MT7x5gzQWqOQCoSTEeIxIpoX+hpvDnOsfL40Vx9+?=
- =?us-ascii?Q?1uI8+GMJtoPwDEhmMyusZjN0SErssNIcwPiplIUWEcR7vtpttUs065ue3kQr?=
- =?us-ascii?Q?fV4sCpoYV0XpUbe9du5S0NDpb/U/WXIgkq6iklr/3sg787WvpqH6apYqYxm3?=
- =?us-ascii?Q?n/Q3EekPpE8ZKAEN+48Hj++4uBG5PbHaaDIqMdHptzsgVXc1iX4yXNNcLFmx?=
- =?us-ascii?Q?shrTNlaCnSJADAhqSwYVM5C6QRy+euxyMgVVqe3ToX2JWB9eBL+omd0/z+I/?=
- =?us-ascii?Q?HWeWCUpSFCLWrgByqVLLwg/GKTH0/MrLihdBj46K+zbNr6APGnRv/Lpq/j2v?=
- =?us-ascii?Q?023qHZUgoQIvJwUaeF59LzKQttnIK5Ukn9E3yJasmKWc32+02ROyX2MuZwlh?=
- =?us-ascii?Q?/gMmCUf45nb4gl/RciG8HKL8w6HPfaPDaP/awFHZVPVcEyazqBAESImeno2m?=
- =?us-ascii?Q?GBLZxkmMPsVIq90Nb6rhRYhfbJhcMgcXQ55seqFYyQy0U+E9/kP3sH+UeVPo?=
- =?us-ascii?Q?SL/yjH/nehf4BEv6nyAKnZPcoFtFkeF8vduA1Ddcm+aY0H8BZlwIW9VPkMpa?=
- =?us-ascii?Q?jD/aYQgv6v/KNb4u30WSi0V1cqUFDasS56R1gG9JJFUbxVUB+s8ylskhac3s?=
- =?us-ascii?Q?tk3ZxbcyQYtsKai9NL0BL/eJErXrGb+gzwbgjUivR7k9rJRw7B+xg6AU3IgD?=
- =?us-ascii?Q?s53nv7xhH+4O3PFQUzTBXqIGs3EZ3uJX7/IDUCZqebnekJS/m4HUZRmaADK8?=
- =?us-ascii?Q?g7A1GPBZDe2usrHVdIvtz0vZmqct8beDPMH3j1jnjaCAODgN+kHeHy6IUhTg?=
- =?us-ascii?Q?GtGO5J5KH3384ErFm3ZkIpezuRQkxNQaZ52u5iwEOgpFOUX3SqYq?=
-X-OriginatorOrg: valinux.co.jp
-X-MS-Exchange-CrossTenant-Network-Message-Id: 093b9545-ef78-4b46-5f05-08de569939b2
-X-MS-Exchange-CrossTenant-AuthSource: TY7P286MB7722.JPNP286.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jan 2026 13:55:23.1538
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 7a57bee8-f73d-4c5f-a4f7-d72c91c8c111
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: EPzcYAk0saVCN5s+E9WpisbOpmIzm0iV+mVuk40e2a2ieo127oPFM7lIygEVb5S3qidv4ZS0CAtfN3EJeBZsmQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSZP286MB2093
 
-Extend the pci_endpoint_test kselftest with a 'remote_edma' variant for
-READ/WRITE tests. The variant sets PCITEST_FLAGS_USE_REMOTE_EDMA and
-skips the test when the feature is not supported.
+Hi, Leon,
 
-Also treat -EOPNOTSUPP from BAR tests as "BAR is reserved" and skip,
-since the host driver may reserve a BAR for remote-eDMA metadata.
+On Sun, 2026-01-18 at 14:08 +0200, Leon Romanovsky wrote:
+> Changelog:
+> v2:
+> =C2=A0* Changed series to document the revoke semantics instead of
+> =C2=A0=C2=A0 implementing it.
+> v1:
+> https://patch.msgid.link/20260111-dmabuf-revoke-v1-0-fb4bcc8c259b@nvidia.=
+com
+>=20
+> ---------------------------------------------------------------------
+> ----
+> This series documents a dma-buf =E2=80=9Crevoke=E2=80=9D mechanism: to al=
+low a dma-
+> buf
+> exporter to explicitly invalidate (=E2=80=9Ckill=E2=80=9D) a shared buffe=
+r after it
+> has
+> been distributed to importers, so that further CPU and device access
+> is
+> prevented and importers reliably observe failure.
+>=20
+> The change in this series is to properly document and use existing
+> core
+> =E2=80=9Crevoked=E2=80=9D state on the dma-buf object and a corresponding=
+ exporter-
+> triggered
+> revoke operation. Once a dma-buf is revoked, new access paths are
+> blocked so
+> that attempts to DMA-map, vmap, or mmap the buffer fail in a
+> consistent way.
 
-Signed-off-by: Koichiro Den <den@valinux.co.jp>
----
- .../selftests/pci_endpoint/pci_endpoint_test.c  | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+This sounds like it does not match how many GPU-drivers use the
+move_notify() callback.
 
-diff --git a/tools/testing/selftests/pci_endpoint/pci_endpoint_test.c b/tools/testing/selftests/pci_endpoint/pci_endpoint_test.c
-index 23aac6f97061..39593da3b40d 100644
---- a/tools/testing/selftests/pci_endpoint/pci_endpoint_test.c
-+++ b/tools/testing/selftests/pci_endpoint/pci_endpoint_test.c
-@@ -67,6 +67,8 @@ TEST_F(pci_ep_bar, BAR_TEST)
- 	pci_ep_ioctl(PCITEST_BAR, variant->barno);
- 	if (ret == -ENODATA)
- 		SKIP(return, "BAR is disabled");
-+	if (ret == -EOPNOTSUPP)
-+		SKIP(return, "BAR is reserved");
- 	EXPECT_FALSE(ret) TH_LOG("Test failed for BAR%d", variant->barno);
- }
- 
-@@ -165,16 +167,25 @@ FIXTURE_TEARDOWN(pci_ep_data_transfer)
- FIXTURE_VARIANT(pci_ep_data_transfer)
- {
- 	bool use_dma;
-+	bool use_remote_edma;
- };
- 
- FIXTURE_VARIANT_ADD(pci_ep_data_transfer, memcpy)
- {
- 	.use_dma = false,
-+	.use_remote_edma = false,
- };
- 
- FIXTURE_VARIANT_ADD(pci_ep_data_transfer, dma)
- {
- 	.use_dma = true,
-+	.use_remote_edma = false,
-+};
-+
-+FIXTURE_VARIANT_ADD(pci_ep_data_transfer, remote_edma)
-+{
-+	.use_dma = false,
-+	.use_remote_edma = true,
- };
- 
- TEST_F(pci_ep_data_transfer, READ_TEST)
-@@ -184,6 +195,8 @@ TEST_F(pci_ep_data_transfer, READ_TEST)
- 
- 	if (variant->use_dma)
- 		param.flags = PCITEST_FLAGS_USE_DMA;
-+	if (variant->use_remote_edma)
-+		param.flags = PCITEST_FLAGS_USE_REMOTE_EDMA;
- 
- 	pci_ep_ioctl(PCITEST_SET_IRQTYPE, PCITEST_IRQ_TYPE_AUTO);
- 	ASSERT_EQ(0, ret) TH_LOG("Can't set AUTO IRQ type");
-@@ -203,6 +216,8 @@ TEST_F(pci_ep_data_transfer, WRITE_TEST)
- 
- 	if (variant->use_dma)
- 		param.flags = PCITEST_FLAGS_USE_DMA;
-+	if (variant->use_remote_edma)
-+		param.flags = PCITEST_FLAGS_USE_REMOTE_EDMA;
- 
- 	pci_ep_ioctl(PCITEST_SET_IRQTYPE, PCITEST_IRQ_TYPE_AUTO);
- 	ASSERT_EQ(0, ret) TH_LOG("Can't set AUTO IRQ type");
-@@ -222,6 +237,8 @@ TEST_F(pci_ep_data_transfer, COPY_TEST)
- 
- 	if (variant->use_dma)
- 		param.flags = PCITEST_FLAGS_USE_DMA;
-+	if (variant->use_remote_edma)
-+		SKIP(return, "Remote eDMA is not supported");
- 
- 	pci_ep_ioctl(PCITEST_SET_IRQTYPE, PCITEST_IRQ_TYPE_AUTO);
- 	ASSERT_EQ(0, ret) TH_LOG("Can't set AUTO IRQ type");
--- 
-2.51.0
+move_notify() would typically invalidate any device maps and any
+asynchronous part of that invalidation would be complete when the dma-
+buf's reservation object becomes idle WRT DMA_RESV_USAGE_BOOKKEEP
+fences.
+
+However, the importer could, after obtaining the resv lock, obtain a
+new map using dma_buf_map_attachment(), and I'd assume the CPU maps
+work in the same way, I.E. move_notify() does not *permanently* revoke
+importer access.
+
+/Thomas
+
+
+>=20
+> Thanks
+>=20
+> Cc: linux-media@vger.kernel.org
+> Cc: dri-devel@lists.freedesktop.org
+> Cc: linaro-mm-sig@lists.linaro.org
+> Cc: linux-kernel@vger.kernel.org
+> Cc: amd-gfx@lists.freedesktop.org
+> Cc: virtualization@lists.linux.dev
+> Cc: intel-xe@lists.freedesktop.org
+> Cc: linux-rdma@vger.kernel.org
+> Cc: iommu@lists.linux.dev
+> Cc: kvm@vger.kernel.org
+> To: Sumit Semwal <sumit.semwal@linaro.org>
+> To: Christian K=C3=B6nig <christian.koenig@amd.com>
+> To: Alex Deucher <alexander.deucher@amd.com>
+> To: David Airlie <airlied@gmail.com>
+> To: Simona Vetter <simona@ffwll.ch>
+> To: Gerd Hoffmann <kraxel@redhat.com>
+> To: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+> To: Gurchetan Singh <gurchetansingh@chromium.org>
+> To: Chia-I Wu <olvaffe@gmail.com>
+> To: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+> To: Maxime Ripard <mripard@kernel.org>
+> To: Thomas Zimmermann <tzimmermann@suse.de>
+> To: Lucas De Marchi <lucas.demarchi@intel.com>
+> To: Thomas Hellstr=C3=B6m <thomas.hellstrom@linux.intel.com>
+> To: Rodrigo Vivi <rodrigo.vivi@intel.com>
+> To: Jason Gunthorpe <jgg@ziepe.ca>
+> To: Leon Romanovsky <leon@kernel.org>
+> To: Kevin Tian <kevin.tian@intel.com>
+> To: Joerg Roedel <joro@8bytes.org>
+> To: Will Deacon <will@kernel.org>
+> To: Robin Murphy <robin.murphy@arm.com>
+> To: Alex Williamson <alex@shazbot.org>
+>=20
+> ---
+> Leon Romanovsky (4):
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 dma-buf: Rename .move_notify() callback to=
+ a clearer identifier
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 dma-buf: Document revoke semantics
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 iommufd: Require DMABUF revoke semantics
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 vfio: Add pinned interface to perform revo=
+ke semantics
+>=20
+> =C2=A0drivers/dma-buf/dma-buf.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0 =
+6 +++---
+> =C2=A0drivers/gpu/drm/amd/amdgpu/amdgpu_dma_buf.c |=C2=A0 4 ++--
+> =C2=A0drivers/gpu/drm/virtio/virtgpu_prime.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0 |=C2=A0 2 +-
+> =C2=A0drivers/gpu/drm/xe/tests/xe_dma_buf.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0 |=C2=A0 6 +++---
+> =C2=A0drivers/gpu/drm/xe/xe_dma_buf.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0 2 +-
+> =C2=A0drivers/infiniband/core/umem_dmabuf.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0 |=C2=A0 4 ++--
+> =C2=A0drivers/infiniband/hw/mlx5/mr.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0 2 +-
+> =C2=A0drivers/iommu/iommufd/pages.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 | 11 +++++++++--
+> =C2=A0drivers/vfio/pci/vfio_pci_dmabuf.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0 | 16 ++++++++++++++++
+> =C2=A0include/linux/dma-buf.h=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0 | 25
+> ++++++++++++++++++++++---
+> =C2=A010 files changed, 60 insertions(+), 18 deletions(-)
+> ---
+> base-commit: 9ace4753a5202b02191d54e9fdf7f9e3d02b85eb
+> change-id: 20251221-dmabuf-revoke-b90ef16e4236
+>=20
+> Best regards,
+> --=C2=A0=20
+> Leon Romanovsky <leonro@nvidia.com>
+>=20
 
