@@ -1,51 +1,47 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 40BCF1B808
-	for <iommu@lists.linux.dev>; Sun, 18 Jan 2026 09:50:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0FF302DB783
+	for <iommu@lists.linux.dev>; Sun, 18 Jan 2026 09:56:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768729858; cv=none; b=slcBnflVQz5820rLR1qbcV/fksn09+WMlr3yBZzklq6eT8vuUxS4OewTHwoMHj1W0OXE1G051XZ5pyjPgLoTFIVAHwgl/g+5wDbNmlOmAh3GgDckpOa+x3FODWyPq6ZLBmA4zbiE+t7F59SRykU6A89Efo0uwONPD9kdfeM+xl0=
+	t=1768730224; cv=none; b=bn687dUGv2qlY3TASYCIU8ZOrzVw4ui3nffbLxc7FLvCUHw0gTaf9+HSdhgpclEsXxjMScme9/miXLw5jJi3ZfPCSltVCTqsseu7bL9DTxUFlScPVCpxAxallNng+OESWcKRGs8j5YZE+9nlKhGvmQeL/8PmbOgPKGCy2xEcicw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768729858; c=relaxed/simple;
-	bh=8PTSJ8pfJPlmOwYFvGwrXK5b9UqaO4C/h0rYTsruiqA=;
+	s=arc-20240116; t=1768730224; c=relaxed/simple;
+	bh=NMp1qt6UbE+ghhzKetlXkA50OSaRDWTjBpEgwKY6G6c=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HenjGSNphj/udNIexl2jFKm0lYmurmHasEP8BAiv9l7YH0Kun6fJBsUdma9sKUHQIVJV8lyukJxK2csvc+rSqaAmhSUeTHWNyVmTMEJECFhu6ENiDrOjI59bSwGp+o+b5VfhIfeuHAK06JnFdLbXJxUO9runqnhA09I8qP5Dmos=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=Rl41jstB; arc=none smtp.client-ip=85.214.250.239
+	 Content-Type:Content-Disposition:In-Reply-To; b=UVB25H3ozVQaLdJno2Yi5ykc9sSzKlqeWQSUoVO1v+T/1hNbFqlDH98u/YWFhVDjTKr6upG7Q3H5yMXqh/Qke84jqpFA0NnMtoaDJlO5IIxjinYHpV2RVwAWShOzGT15r3zGgmeVtnQ1TTgUkBfSc5iT3F5k/jEry3QtEsbnHXA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=RvMqRZel; arc=none smtp.client-ip=85.214.250.239
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="Rl41jstB"
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="RvMqRZel"
 Received: from 8bytes.org (p200300f6af1d960047d77347aeef488f.dip0.t-ipconnect.de [IPv6:2003:f6:af1d:9600:47d7:7347:aeef:488f])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 1BEF65C16D;
-	Sun, 18 Jan 2026 10:50:55 +0100 (CET)
+	by mail.8bytes.org (Postfix) with ESMTPSA id D59095C16D;
+	Sun, 18 Jan 2026 10:56:52 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1768729855;
-	bh=8PTSJ8pfJPlmOwYFvGwrXK5b9UqaO4C/h0rYTsruiqA=;
+	s=default; t=1768730213;
+	bh=NMp1qt6UbE+ghhzKetlXkA50OSaRDWTjBpEgwKY6G6c=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Rl41jstBxXOX5c8HRJDBTxD4sOcPT7SO7m9rB1WimfWEdpH8/PiBpM4ZaiU8Rca8q
-	 NQ2hnP/8BOBr5vIRmkHeqa8pVUqJsHvBGOBHlkDRDR5fyKuNGiUW4PILXfr45/bLIT
-	 tU7umTsFvi6wfCWuOXB9Cie83xWbzHywUblnRuvb+x+YclEJwL+12/L8ackb1nBwWL
-	 y/KtUqEy3koDjic3Uf6qFlIYEaD3ClIcHXfsKmDgOfVtSl4uXPnAhk+rH3a8K0SCK9
-	 23nFhgJb6M0SJwNhzmuNJWYvq7S4yTnd34usNf5lOHI/+cfR6ABaGniHNrunaK1OgI
-	 iUjmcWclgqs7w==
-Date: Sun, 18 Jan 2026 10:50:53 +0100
-From: Joerg Roedel <joro@8bytes.org>
-To: Alice Ryhl <aliceryhl@google.com>
-Cc: Miguel Ojeda <ojeda@kernel.org>, Will Deacon <will@kernel.org>, 
-	Daniel Almeida <daniel.almeida@collabora.com>, Boris Brezillon <boris.brezillon@collabora.com>, 
-	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, 
-	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>, 
-	=?utf-8?B?QmrDtnJu?= Roy Baron <bjorn3_gh@protonmail.com>, Benno Lossin <lossin@kernel.org>, 
-	Andreas Hindborg <a.hindborg@kernel.org>, Trevor Gross <tmgross@umich.edu>, 
-	Danilo Krummrich <dakr@kernel.org>, Lorenzo Stoakes <lorenzo.stoakes@oracle.com>, 
-	"Liam R. Howlett" <Liam.Howlett@oracle.com>, Asahi Lina <lina+kernel@asahilina.net>, 
-	linux-kernel@vger.kernel.org, rust-for-linux@vger.kernel.org, iommu@lists.linux.dev, 
-	linux-mm@kvack.org
-Subject: Re: [PATCH v5] io: add io_pgtable abstraction
-Message-ID: <swz2lj4xhs6vjmjs56aj5u7pbk4uaqur3cqt4zoybqrx7yckg5@ifu7j7i2fmco>
-References: <20260113-io-pgtable-v5-1-7ed771bc3d8d@google.com>
+	b=RvMqRZelX+mCXlRAp2TjYjonPb/aGvFUFQ6LoJgmjt7XQFbV6M3Br5fhUCL9kke+Z
+	 otLfVfnhjT28lpN8C0K7JtR0TUfB3lv10Ga7dm7mRhATFZ7Wm7rGMF+y5Dt25R68F0
+	 0vpYhpy1yzpx3c2P39CcEzIrKYD895y8sjiRQ2TsQxMsGrYTNcVnBMruDiTabtWHoU
+	 UyEwQ5SXPIwi4vZjiA3dfctEP7/0SAyyzJMLGiDBgKCjnOA8KCCM24544bV3lip+fJ
+	 CPOoe7hsQEjd5JQIG4oZGrG+seWY/IiUHz5sg2RrjJzQ7GTvLPCC2Z8qj9OtdHiSXb
+	 TSNjZQLzb3qqg==
+Date: Sun, 18 Jan 2026 10:56:51 +0100
+From: =?utf-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>
+To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Cc: jgg@nvidia.com, nicolinc@nvidia.com, linux-kernel@vger.kernel.org, 
+	robin.murphy@arm.com, will@kernel.org, kevin.tian@intel.com, jsnitsel@redhat.com, 
+	vasant.hegde@amd.com, iommu@lists.linux.dev, santosh.shukla@amd.com, 
+	sairaj.arunkodilkar@amd.com, jon.grimm@amd.com, prashanthpra@google.com, wvw@google.com, 
+	wnliu@google.com, gptran@google.com, kpsingh@google.com, joao.m.martins@oracle.com, 
+	alejandro.j.jimenez@oracle.com
+Subject: Re: [PATCH v6 00/13] iommu/amd: Introduce Nested Translation support
+Message-ID: <awtsil6exdtraqchd4qbe7ka6aely6bfs5v5ksqkv7i625dgf3@nwalhlk7g46t>
+References: <20260115060814.10692-1-suravee.suthikulpanit@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -54,22 +50,24 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260113-io-pgtable-v5-1-7ed771bc3d8d@google.com>
+In-Reply-To: <20260115060814.10692-1-suravee.suthikulpanit@amd.com>
 
-Hi Alice,
+On Thu, Jan 15, 2026 at 06:08:01AM +0000, Suravee Suthikulpanit wrote:
+> Suravee Suthikulpanit (13):
+>   iommu/amd: Add support for hw_info for iommu capability query
+>   iommu/amd: Rename DEV_DOMID_MASK to DTE_DOMID_MASK
+>   iommu/amd: Make amd_iommu_make_clear_dte() non-static inline
+>   iommu/amd: Introduce helper function amd_iommu_update_dte()
+>   iommufd: Introduce data struct for AMD nested domain allocation
+>   iommu/amd: Always enable GCR3TRPMode when supported.
+>   iommu/amd: Add support for nest parent domain allocation
+>   iommu/amd: Introduce struct amd_iommu_viommu
+>   iommu/amd: Add support for nested domain allocation
+>   iommu/amd: Introduce gDomID-to-hDomID Mapping and handle parent domain
+>     invalidation
+>   iommu/amd: Refactor persistent DTE bits programming into
+>     amd_iommu_make_clear_dte()
+>   iommu/amd: Refactor logic to program the host page table in DTE
+>   iommu/amd: Add support for nested domain attach/detach
 
-On Tue, Jan 13, 2026 at 08:49:27AM +0000, Alice Ryhl wrote:
->  MAINTAINERS                     |   1 +
->  rust/bindings/bindings_helper.h |   3 +-
->  rust/kernel/io.rs               |   1 +
->  rust/kernel/io/pgtable.rs       | 276 ++++++++++++++++++++++++++++++++++++++++
->  4 files changed, 280 insertions(+), 1 deletion(-)
-
-Thanks for your contribution! I'd like to queue that for 6.20 but agree with
-Danilo that there should be a dedicated iommu directory under rust/kernel/. Can
-you please move the file and send a v6?
-
-That directory might some day also contain everything needed to having full
-IOMMU drivers written in Rust :)
-
--Joerg
+Applied, thanks Suravee.
