@@ -1,173 +1,249 @@
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B7593090E4
-	for <iommu@lists.linux.dev>; Mon, 19 Jan 2026 09:52:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94DDD1A23B9;
+	Mon, 19 Jan 2026 10:20:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768816345; cv=none; b=dSmVxGbv9BRdJ4DHarvjR8vYvQAkWFMdeUFwlxklXxlJocvtsNYfikXcBf7Ca7NUC2WP0cQcX5L3TlWyh4N8cS3iQLUUIxd3q5HOzEZPYXdNKFlr7rQeOUvhYdYDaGRSBXr9Ub74nxxMmFBwZ34l6OmkZN2zRx9Zx/JdpAeuf/8=
+	t=1768818005; cv=none; b=PhAsbufV3U9aCbJeQWeW2W7prCS2X71cnj2eb+NImsSMktBnAxjQW3Sc0cJyajcf136EmVQLaWHUX7iq5J/9e1tTt1R07KWH6s6K6Piqg0uChXd4Vk0wJdPop20x45n/fgjbAYSx+TPnhJoH9lbsuUYSq3tOaEdfEY2NGpoJDY4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768816345; c=relaxed/simple;
-	bh=/K+N7no199LAFJIxvY+00e+LuKC/ursEmV+EEGWlkAs=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
-	 Content-Type:References; b=EqNCGTeUtmFjDqWxLM8AAMKMpJmo6Eu1Dh0lyAhtQaHtUsouF6kvXX+Gh/yY91KtknWt/P0Za+W1nDYcrfGPZlgcEsv31i+DVf4VRCuIBmDvphuREIhmgEo5mCYH318sHd9WgMh5tLDX+6+4nafBODvnLDtbDu1dUI/Nc7W0M9M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=HT2tSp8e; arc=none smtp.client-ip=210.118.77.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1768818005; c=relaxed/simple;
+	bh=2RDjQUZMhmdWBYNRZtH/kkwU0r9gHkrCC4kz2CcBePY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ShOJ1I5KbPTMyzf0MlkYApTuwJR82jyY7kVFeAb7UtwnkqUb3kRSVI9cJLf1Z5hwT/Yqu3I7+yFtJp32mAhjKijGPe84mT6ewdY078OA1la1g3aWt5BsG8K/KX9h14XiiPEOnHk2nMZGKIhah0kMeMbeXM/r3x63PYWQwu0UFJc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DxrQQXAa; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="HT2tSp8e"
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20260119095218euoutp019c0c435ad14380a1626f3444858f5c9a~MGRaSbhiq0043400434euoutp01J
-	for <iommu@lists.linux.dev>; Mon, 19 Jan 2026 09:52:18 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20260119095218euoutp019c0c435ad14380a1626f3444858f5c9a~MGRaSbhiq0043400434euoutp01J
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1768816338;
-	bh=z+vsQlcwjoKouWWPbWz3EuaV6xaRFyJGEtU6Clh6LuY=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=HT2tSp8e+PSghdGYDZYmObYU/8bmAGjJlWaaI8ovGriTuclja1rET6+8M7pi8XMdx
-	 rIfLsbDJ0Ze2unJ6fA8v+gVJl4ycH6b5dZHQvk4ZJilMIw6Vrt33+5xhVCpWTIZ4rA
-	 HlYM32uWPGi86JY4hz+pSyQyIo0XAFGNFtMnM5Dc=
-Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20260119095218eucas1p111df7f3d647c3d385fbb38cc02607986~MGRaEfgS91419314193eucas1p1U;
-	Mon, 19 Jan 2026 09:52:18 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20260119095217eusmtip29bce1b403ef6b57acb65e729c09cc16c~MGRZo21kV1622316223eusmtip2n;
-	Mon, 19 Jan 2026 09:52:17 +0000 (GMT)
-Message-ID: <0ad7a059-8c51-4d26-9d7e-055abb702b66@samsung.com>
-Date: Mon, 19 Jan 2026 10:52:16 +0100
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DxrQQXAa"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 992BBC116C6;
+	Mon, 19 Jan 2026 10:20:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1768818005;
+	bh=2RDjQUZMhmdWBYNRZtH/kkwU0r9gHkrCC4kz2CcBePY=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=DxrQQXAaI0qp3UxT5FitNpNW3Y9svXeBpnJR8Mwvk24SmBQfuUIB86Rn8wh4a/ecQ
+	 pixwE/Z1cQ7jAwH5Xn4fAmSy+WAHOtmuhwbgMe1tcgyZoc2JxN67BOiUkLlG7dAZ4l
+	 khAt25iuWNQOrsVRWjFsFCLlai/63P8eDcFYXOtI6ejGK+Cu+Dry69rHRjOgbENrNO
+	 lPdh+8a9nXnyzv60+Z+ElrFp0rGvrInDnteHpR0Bd8RjB1i7CfWg3ENBjJ/z6EqW2a
+	 e2HuPDKEOpE3UjazOeYLrGHAjL5NuqIVqBfBtCuolSeMuXg4lb7kuRYhoBwXGm6Ty2
+	 nMhOuNmDbrRGw==
+Date: Mon, 19 Jan 2026 12:20:00 +0200
+From: Leon Romanovsky <leon@kernel.org>
+To: Thomas =?iso-8859-1?Q?Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>
+Cc: Sumit Semwal <sumit.semwal@linaro.org>,
+	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+	Alex Deucher <alexander.deucher@amd.com>,
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+	Gerd Hoffmann <kraxel@redhat.com>,
+	Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+	Gurchetan Singh <gurchetansingh@chromium.org>,
+	Chia-I Wu <olvaffe@gmail.com>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	Lucas De Marchi <lucas.demarchi@intel.com>,
+	Rodrigo Vivi <rodrigo.vivi@intel.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Alex Williamson <alex@shazbot.org>, linux-media@vger.kernel.org,
+	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+	linux-kernel@vger.kernel.org, amd-gfx@lists.freedesktop.org,
+	virtualization@lists.linux.dev, intel-xe@lists.freedesktop.org,
+	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
+	kvm@vger.kernel.org
+Subject: Re: [PATCH v2 0/4] dma-buf: document revoke mechanism to invalidate
+ shared buffers
+Message-ID: <20260119102000.GH13201@unreal>
+References: <20260118-dmabuf-revoke-v2-0-a03bb27c0875@nvidia.com>
+ <f115c91bbc9c6087d8b32917b9e24e3363a91f33.camel@linux.intel.com>
+ <20260119075229.GE13201@unreal>
+ <9112a605d2ee382e83b84b50c052dd9e4a79a364.camel@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH] dma-direct: swiotlb: Skip encryption toggles for
- swiotlb allocations
-To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, Robin Murphy
-	<robin.murphy@arm.com>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	linux-coco@lists.linux.dev
-Cc: steven.price@arm.com, Suzuki K Poulose <suzuki.poulose@arm.com>, Claire
-	Chang <tientzu@chromium.org>
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <yq5aldi0cyms.fsf@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-CMS-MailID: 20260119095218eucas1p111df7f3d647c3d385fbb38cc02607986
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20260114094941eucas1p2b2985accee8c2eb5ccd48f94463adffa
-X-EPHeader: CA
-X-CMS-RootMailID: 20260114094941eucas1p2b2985accee8c2eb5ccd48f94463adffa
-References: <20260102155448.2554240-1-aneesh.kumar@kernel.org>
-	<cddcaeff-9652-4685-ba6c-0fda79bd8680@arm.com> <yq5a7btr5wii.fsf@kernel.org>
-	<1290fd7e-bfaf-47ce-b12f-cca0b938b293@arm.com> <yq5acy3eet1b.fsf@kernel.org>
-	<CGME20260114094941eucas1p2b2985accee8c2eb5ccd48f94463adffa@eucas1p2.samsung.com>
-	<yq5aldi0cyms.fsf@kernel.org>
+In-Reply-To: <9112a605d2ee382e83b84b50c052dd9e4a79a364.camel@linux.intel.com>
 
-On 14.01.2026 10:49, Aneesh Kumar K.V wrote:
-> Aneesh Kumar K.V <aneesh.kumar@kernel.org> writes:
->> Robin Murphy <robin.murphy@arm.com> writes:
->>> On 2026-01-09 2:51 am, Aneesh Kumar K.V wrote:
->>>> Robin Murphy <robin.murphy@arm.com> writes:
->>>>> On 2026-01-02 3:54 pm, Aneesh Kumar K.V (Arm) wrote:
->>>>>> Swiotlb backing pages are already mapped decrypted via
->>>>>> swiotlb_update_mem_attributes(), so dma-direct does not need to call
->>>>>> set_memory_decrypted() during allocation or re-encrypt the memory on
->>>>>> free.
->>>>>>
->>>>>> Handle swiotlb-backed buffers explicitly: obtain the DMA address and
->>>>>> zero the linear mapping for lowmem pages, and bypass the decrypt/encrypt
->>>>>> transitions when allocating/freeing from the swiotlb pool (detected via
->>>>>> swiotlb_find_pool()).
->>>>> swiotlb_update_mem_attributes() only applies to the default SWIOTLB
->>>>> buffer, while the dma_direct_alloc_swiotlb() path is only for private
->>>>> restricted pools (because the whole point is that restricted DMA devices
->>>>> cannot use the regular allocator/default pools). There is no redundancy
->>>>> here AFAICS.
->>>>>
->>>> But rmem_swiotlb_device_init() is also marking the entire pool decrypted
->>>>
->>>> 	set_memory_decrypted((unsigned long)phys_to_virt(rmem->base),
->>>> 			     rmem->size >> PAGE_SHIFT);
->>> OK, so why doesn't the commit message mention that instead of saying
->>> something which fails to justify the patch at all? ;)
->>>
->>> Furthermore, how much does this actually matter? The "real" restricted
->>> DMA use-case is on systems where dma_set_decrypted() is a no-op anyway.
->>> I know we used restricted DMA as a hack in the early days of CCA
->>> prototyping, but is it intended to actually deploy that as a supported
->>> and recommended mechanism now?
->>>
->>> Note also that the swiotlb_alloc path is essentially an emergency
->>> fallback, which doesn't work for all situations anyway - any restricted
->>> device that actually needs to make significant coherent allocations (or
->>> rather, that firmware cannot assume won't want to do so) should really
->>> have a proper coherent pool alongside its restricted one. The expected
->>> use-case here is for something like a wifi driver that only needs to
->>> allocate one or two small coherent buffers once at startup, then do
->>> everything else with streaming DMA.
->> I was aiming to bring more consistency in how swiotlb buffers are
->> handled, specifically by treating all swiotlb memory as decrypted
->> buffers, which is also how the current code behaves.
->>
->> If we are concluding that restricted DMA is not used in conjunction with
->> memory encryption, then we could, in fact, remove the
->> set_memory_decrypted() call from rmem_swiotlb_device_init() and
->> instead add failure conditions for force_dma_unencrypted(dev) in
->> is_swiotlb_for_alloc(). However, it’s worth noting that the initial
->> commit did take the memory encryption feature into account
->> (0b84e4f8b793eb4045fd64f6f514165a7974cd16).
->>
->> Please let me know if you think this needs to be fixed.
-> Something like.
->
-> dma-direct: restricted-dma: Do not mark the restricted DMA pool unencrypted
->
-> As per commit f4111e39a52a ("swiotlb: Add restricted DMA alloc/free
-> support"), the restricted-dma-pool is used in conjunction with the
-> shared-dma-pool. Since allocations from the shared-dma-pool are not
-> marked unencrypted, skip marking the restricted-dma-pool as unencrypted
-> as well. We do not expect systems using the restricted-dma-pool to have
-> memory encryption or to run with confidential computing features enabled.
->
-> If a device requires unencrypted access (force_dma_unencrypted(dev)),
-> the dma-direct allocator will mark the restricted-dma-pool allocation as
-> unencrypted.
->
-> The only disadvantage is that, when running on a CC guest with a
-> different hypervisor page size, restricted-dma-pool allocation sizes
-> must now be aligned to the hypervisor page size. This alignment would
-> not be required if the entire pool were marked unencrypted. However, the
-> new code enables the use of the restricted-dma-pool for trusted devices.
-> Previously, because the entire pool was marked unencrypted, trusted
-> devices were unable to allocate from it.
->
-> There is still an open question regarding allocations from the
-> shared-dma-pool. Currently, they are not marked unencrypted.
->
-> Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
->
-> 1 file changed, 2 deletions(-)
-> kernel/dma/swiotlb.c | 2 --
->
-> modified   kernel/dma/swiotlb.c
-> @@ -1835,8 +1835,6 @@ static int rmem_swiotlb_device_init(struct reserved_mem *rmem,
->   			return -ENOMEM;
->   		}
->   
-> -		set_memory_decrypted((unsigned long)phys_to_virt(rmem->base),
-> -				     rmem->size >> PAGE_SHIFT);
->   		swiotlb_init_io_tlb_pool(pool, rmem->base, nslabs,
->   					 false, nareas);
->   		mem->force_bounce = true;
+On Mon, Jan 19, 2026 at 10:27:00AM +0100, Thomas Hellström wrote:
+> On Mon, 2026-01-19 at 09:52 +0200, Leon Romanovsky wrote:
+> > On Sun, Jan 18, 2026 at 03:16:25PM +0100, Thomas Hellström wrote:
+> > > Hi, Leon,
+> > > 
+> > > On Sun, 2026-01-18 at 14:08 +0200, Leon Romanovsky wrote:
+> > > > Changelog:
+> > > > v2:
+> > > >  * Changed series to document the revoke semantics instead of
+> > > >    implementing it.
+> > > > v1:
+> > > > https://patch.msgid.link/20260111-dmabuf-revoke-v1-0-fb4bcc8c259b@nvidia.com
+> > > > 
+> > > > -----------------------------------------------------------------
+> > > > ----
+> > > > ----
+> > > > This series documents a dma-buf “revoke” mechanism: to allow a
+> > > > dma-
+> > > > buf
+> > > > exporter to explicitly invalidate (“kill”) a shared buffer after
+> > > > it
+> > > > has
+> > > > been distributed to importers, so that further CPU and device
+> > > > access
+> > > > is
+> > > > prevented and importers reliably observe failure.
+> > > > 
+> > > > The change in this series is to properly document and use
+> > > > existing
+> > > > core
+> > > > “revoked” state on the dma-buf object and a corresponding
+> > > > exporter-
+> > > > triggered
+> > > > revoke operation. Once a dma-buf is revoked, new access paths are
+> > > > blocked so
+> > > > that attempts to DMA-map, vmap, or mmap the buffer fail in a
+> > > > consistent way.
+> > > 
+> > > This sounds like it does not match how many GPU-drivers use the
+> > > move_notify() callback.
+> > 
+> > No change for them.
+> > 
+> > > 
+> > > move_notify() would typically invalidate any device maps and any
+> > > asynchronous part of that invalidation would be complete when the
+> > > dma-
+> > > buf's reservation object becomes idle WRT DMA_RESV_USAGE_BOOKKEEP
+> > > fences.
+> > 
+> > This part has not changed and remains the same for the revocation
+> > flow as well.
+> > 
+> > > 
+> > > However, the importer could, after obtaining the resv lock, obtain
+> > > a
+> > > new map using dma_buf_map_attachment(), and I'd assume the CPU maps
+> > > work in the same way, I.E. move_notify() does not *permanently*
+> > > revoke
+> > > importer access.
+> > 
+> > This part diverges by design and is documented to match revoke
+> > semantics.  
+> > It defines what must occur after the exporter requests that the
+> > buffer be  
+> > "killed". An importer that follows revoke semantics will not attempt
+> > to call  
+> > dma_buf_map_attachment(), and the exporter will block any remapping
+> > attempts  
+> > regardless. See the priv->revoked flag in the VFIO exporter.
+> > 
+> > In addition, in this email thread, Christian explains that revoke
+> > semantics already exists, with the combination of dma_buf_pin and
+> > dma_buf_move_notify, just not documented:
+> > https://lore.kernel.org/all/f7f1856a-44fa-44af-b496-eb1267a05d11@amd.com/
+> 
+> 
+> Hmm,
+> 
+> Considering 
+> 
+> https://elixir.bootlin.com/linux/v6.19-rc5/source/drivers/infiniband/core/umem_dmabuf.c#L192
+> 
+> this sounds like it's not just undocumented but also in some cases
+> unimplemented.
 
-Robin, could You review this? Is it ready for applying?
+Yes, it was discussed later in the thread https://lore.kernel.org/all/20260112153503.GF745888@ziepe.ca/.
+RDMA will need some adjustments later, but first we need to document the
+existing semantics.
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+> The xe driver for one doesn't expect move_notify() to be
+> called on pinned buffers, so if that is indeed going to be part of the
+> dma-buf protocol,  wouldn't support for that need to be advertised by
+> the importer?
 
+This is what Jason proposed with "enum dma_buf_move_notify_level", but
+for some reason we got no responses.
+
+Thanks
+
+> 
+> Thanks,
+> Thomas
+> 
+> > 
+> > Thanks
+> > 
+> > > 
+> > > /Thomas
+> > > 
+> > > 
+> > > > 
+> > > > Thanks
+> > > > 
+> > > > Cc: linux-media@vger.kernel.org
+> > > > Cc: dri-devel@lists.freedesktop.org
+> > > > Cc: linaro-mm-sig@lists.linaro.org
+> > > > Cc: linux-kernel@vger.kernel.org
+> > > > Cc: amd-gfx@lists.freedesktop.org
+> > > > Cc: virtualization@lists.linux.dev
+> > > > Cc: intel-xe@lists.freedesktop.org
+> > > > Cc: linux-rdma@vger.kernel.org
+> > > > Cc: iommu@lists.linux.dev
+> > > > Cc: kvm@vger.kernel.org
+> > > > To: Sumit Semwal <sumit.semwal@linaro.org>
+> > > > To: Christian König <christian.koenig@amd.com>
+> > > > To: Alex Deucher <alexander.deucher@amd.com>
+> > > > To: David Airlie <airlied@gmail.com>
+> > > > To: Simona Vetter <simona@ffwll.ch>
+> > > > To: Gerd Hoffmann <kraxel@redhat.com>
+> > > > To: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+> > > > To: Gurchetan Singh <gurchetansingh@chromium.org>
+> > > > To: Chia-I Wu <olvaffe@gmail.com>
+> > > > To: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+> > > > To: Maxime Ripard <mripard@kernel.org>
+> > > > To: Thomas Zimmermann <tzimmermann@suse.de>
+> > > > To: Lucas De Marchi <lucas.demarchi@intel.com>
+> > > > To: Thomas Hellström <thomas.hellstrom@linux.intel.com>
+> > > > To: Rodrigo Vivi <rodrigo.vivi@intel.com>
+> > > > To: Jason Gunthorpe <jgg@ziepe.ca>
+> > > > To: Leon Romanovsky <leon@kernel.org>
+> > > > To: Kevin Tian <kevin.tian@intel.com>
+> > > > To: Joerg Roedel <joro@8bytes.org>
+> > > > To: Will Deacon <will@kernel.org>
+> > > > To: Robin Murphy <robin.murphy@arm.com>
+> > > > To: Alex Williamson <alex@shazbot.org>
+> > > > 
+> > > > ---
+> > > > Leon Romanovsky (4):
+> > > >       dma-buf: Rename .move_notify() callback to a clearer
+> > > > identifier
+> > > >       dma-buf: Document revoke semantics
+> > > >       iommufd: Require DMABUF revoke semantics
+> > > >       vfio: Add pinned interface to perform revoke semantics
+> > > > 
+> > > >  drivers/dma-buf/dma-buf.c                   |  6 +++---
+> > > >  drivers/gpu/drm/amd/amdgpu/amdgpu_dma_buf.c |  4 ++--
+> > > >  drivers/gpu/drm/virtio/virtgpu_prime.c      |  2 +-
+> > > >  drivers/gpu/drm/xe/tests/xe_dma_buf.c       |  6 +++---
+> > > >  drivers/gpu/drm/xe/xe_dma_buf.c             |  2 +-
+> > > >  drivers/infiniband/core/umem_dmabuf.c       |  4 ++--
+> > > >  drivers/infiniband/hw/mlx5/mr.c             |  2 +-
+> > > >  drivers/iommu/iommufd/pages.c               | 11 +++++++++--
+> > > >  drivers/vfio/pci/vfio_pci_dmabuf.c          | 16
+> > > > ++++++++++++++++
+> > > >  include/linux/dma-buf.h                     | 25
+> > > > ++++++++++++++++++++++---
+> > > >  10 files changed, 60 insertions(+), 18 deletions(-)
+> > > > ---
+> > > > base-commit: 9ace4753a5202b02191d54e9fdf7f9e3d02b85eb
+> > > > change-id: 20251221-dmabuf-revoke-b90ef16e4236
+> > > > 
+> > > > Best regards,
+> > > > --  
+> > > > Leon Romanovsky <leonro@nvidia.com>
+> > > > 
+> > > 
+> 
