@@ -1,33 +1,25 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20F3435B15F;
-	Mon, 19 Jan 2026 14:27:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C770235B15F;
+	Mon, 19 Jan 2026 14:28:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768832825; cv=none; b=eqWAw6WRdxqPiho2uL2K1R+jIAMjCuFHs3GtOKjDgKPl+tKLFEYAFO9OWOV515bWTRbzU/oKOJd0pqbyDMuDyLazFieFs3m55Y2y4EIJsORmgGb6kVw+0Wf0Ek+P2VwX/nt1p2FECzB/JC/FENMwYVljPQfkxhXnny7Yl8/omaE=
+	t=1768832918; cv=none; b=o5X+RAWtGLyLmeskw3xHa8DSdy5KJS/Ab2PGpm0FhJ/zvbgySYdtAxhACKgqh3VKv+fyHDbHN4AZGCCF49fE9Cvyh0U0u4nRNgQkxUKvA63vouixeOSN/iBRwnQWOSMtcVbX3zoGl4+alicfgLi0qolZ6B1W64B2olAQiqwbDBM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768832825; c=relaxed/simple;
-	bh=3DK5QC6r/ORsUFeMRQ3y1WSNFwVhnIsC3TsiYDomweg=;
+	s=arc-20240116; t=1768832918; c=relaxed/simple;
+	bh=ve+Hz0ZxHCZpnZdkG3b0WTI75EsvXcb7rVB7KGcU8Sg=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=e1/ttA2QV76yem3InriWNJNdjHh+M5P7kwt/iQ1uFgLgFYVLMidjmtO89HI1nDazknBK7KRw+DNFBdUQbVtjiJR/f4IVGtgoTNw1rtxVarxl+uDP8cSHJENc4hsvRkgJe4bwaUAXe1aCaFbftANUr9rAojlwRmzENtSa7NJqX9g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=N7OWZZ4Z; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="N7OWZZ4Z"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19B8FC19423;
-	Mon, 19 Jan 2026 14:26:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1768832824;
-	bh=3DK5QC6r/ORsUFeMRQ3y1WSNFwVhnIsC3TsiYDomweg=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=N7OWZZ4ZT9xDMT32+wWxnFfbssR+lej35fUiE6pjuFwaEAf6Frz6ZF5Tzg81oRb9s
-	 YtY//5xSdkddrcZCOLXQKQ5yytZ9LoNKA+t2M76LkJvTFjG8ivJ4CXP8Vrjin7WgFq
-	 mm6eDv+4p8oxSEHap7HDOXiyZsiGk4yuaqNLYLmQTaA9ySxBQmwp0+eVyLzuVh4Pnd
-	 qcUiDFp38doWF4E9BOQB78Ro3PiuN115iOsR9yweUGyuvIEF7B9j8wc57gyhX31pTj
-	 /IGxKllmArfbkNOynUoUb/ClCXaZkrjA3P4gWd6bjxhTph+5kOoFS1kZPHZ7bIKX+L
-	 Z2liNTFBeNqBQ==
-Message-ID: <bca59694-6b09-4839-8577-c8ac4420eb56@kernel.org>
-Date: Mon, 19 Jan 2026 15:26:57 +0100
+	 In-Reply-To:Content-Type; b=j801Hma7VIHegKKkwjCkqiLqCSJSvOJgnrQWh9VZKvdEONMxTQ17HYuH4osozKitGuWZDBMn4tz4nbFgnoJWCa6lhuTezh7ADdbwjaFxbmw4gDLSfTV062Efz6vPPiSKyhUPOIe62ok14nIA5ll2cizM6eE+RAtLoBrVxMfgZgg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AEF26497;
+	Mon, 19 Jan 2026 06:28:29 -0800 (PST)
+Received: from [10.1.196.85] (e121345-lin.cambridge.arm.com [10.1.196.85])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1A5783F632;
+	Mon, 19 Jan 2026 06:28:26 -0800 (PST)
+Message-ID: <3110c452-22d7-453f-bc60-7578b2458089@arm.com>
+Date: Mon, 19 Jan 2026 14:28:25 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -35,88 +27,129 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 0/2] iommu: debug-pagealloc: Remove pfn_valid() usage
-To: Mostafa Saleh <smostafa@google.com>, linux-mm@kvack.org,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- linux-doc@vger.kernel.org
-Cc: corbet@lwn.net, joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
- akpm@linux-foundation.org, vbabka@suse.cz, surenb@google.com,
- mhocko@suse.com, jackmanb@google.com, hannes@cmpxchg.org, ziy@nvidia.com,
- lorenzo.stoakes@oracle.com, Liam.Howlett@oracle.com, rppt@kernel.org,
- xiaqinxin@huawei.com, baolu.lu@linux.intel.com, rdunlap@infradead.org
-References: <20260119142246.3821052-1-smostafa@google.com>
-From: "David Hildenbrand (Red Hat)" <david@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=david@kernel.org; keydata=
- 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
-In-Reply-To: <20260119142246.3821052-1-smostafa@google.com>
+Subject: Re: [PATCH] dma-direct: swiotlb: Skip encryption toggles for swiotlb
+ allocations
+To: Marek Szyprowski <m.szyprowski@samsung.com>,
+ "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, linux-coco@lists.linux.dev
+Cc: steven.price@arm.com, Suzuki K Poulose <suzuki.poulose@arm.com>,
+ Claire Chang <tientzu@chromium.org>
+References: <20260102155448.2554240-1-aneesh.kumar@kernel.org>
+ <cddcaeff-9652-4685-ba6c-0fda79bd8680@arm.com> <yq5a7btr5wii.fsf@kernel.org>
+ <1290fd7e-bfaf-47ce-b12f-cca0b938b293@arm.com> <yq5acy3eet1b.fsf@kernel.org>
+ <CGME20260114094941eucas1p2b2985accee8c2eb5ccd48f94463adffa@eucas1p2.samsung.com>
+ <yq5aldi0cyms.fsf@kernel.org>
+ <0ad7a059-8c51-4d26-9d7e-055abb702b66@samsung.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <0ad7a059-8c51-4d26-9d7e-055abb702b66@samsung.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 1/19/26 15:22, Mostafa Saleh wrote:
-> This is a small fix for the new config IOMMU_DEBUG_PAGEALLOC based
-> on the discussion:
-> https://lore.kernel.org/linux-iommu/CAFgf54pBAUm3ao-UJksiuGKtvv4wzRyFq_uKwLe0H1ettO4DLQ@mail.gmail.com/
+On 19/01/2026 9:52 am, Marek Szyprowski wrote:
+> On 14.01.2026 10:49, Aneesh Kumar K.V wrote:
+>> Aneesh Kumar K.V <aneesh.kumar@kernel.org> writes:
+>>> Robin Murphy <robin.murphy@arm.com> writes:
+>>>> On 2026-01-09 2:51 am, Aneesh Kumar K.V wrote:
+>>>>> Robin Murphy <robin.murphy@arm.com> writes:
+>>>>>> On 2026-01-02 3:54 pm, Aneesh Kumar K.V (Arm) wrote:
+>>>>>>> Swiotlb backing pages are already mapped decrypted via
+>>>>>>> swiotlb_update_mem_attributes(), so dma-direct does not need to call
+>>>>>>> set_memory_decrypted() during allocation or re-encrypt the memory on
+>>>>>>> free.
+>>>>>>>
+>>>>>>> Handle swiotlb-backed buffers explicitly: obtain the DMA address and
+>>>>>>> zero the linear mapping for lowmem pages, and bypass the decrypt/encrypt
+>>>>>>> transitions when allocating/freeing from the swiotlb pool (detected via
+>>>>>>> swiotlb_find_pool()).
+>>>>>> swiotlb_update_mem_attributes() only applies to the default SWIOTLB
+>>>>>> buffer, while the dma_direct_alloc_swiotlb() path is only for private
+>>>>>> restricted pools (because the whole point is that restricted DMA devices
+>>>>>> cannot use the regular allocator/default pools). There is no redundancy
+>>>>>> here AFAICS.
+>>>>>>
+>>>>> But rmem_swiotlb_device_init() is also marking the entire pool decrypted
+>>>>>
+>>>>> 	set_memory_decrypted((unsigned long)phys_to_virt(rmem->base),
+>>>>> 			     rmem->size >> PAGE_SHIFT);
+>>>> OK, so why doesn't the commit message mention that instead of saying
+>>>> something which fails to justify the patch at all? ;)
+>>>>
+>>>> Furthermore, how much does this actually matter? The "real" restricted
+>>>> DMA use-case is on systems where dma_set_decrypted() is a no-op anyway.
+>>>> I know we used restricted DMA as a hack in the early days of CCA
+>>>> prototyping, but is it intended to actually deploy that as a supported
+>>>> and recommended mechanism now?
+>>>>
+>>>> Note also that the swiotlb_alloc path is essentially an emergency
+>>>> fallback, which doesn't work for all situations anyway - any restricted
+>>>> device that actually needs to make significant coherent allocations (or
+>>>> rather, that firmware cannot assume won't want to do so) should really
+>>>> have a proper coherent pool alongside its restricted one. The expected
+>>>> use-case here is for something like a wifi driver that only needs to
+>>>> allocate one or two small coherent buffers once at startup, then do
+>>>> everything else with streaming DMA.
+>>> I was aiming to bring more consistency in how swiotlb buffers are
+>>> handled, specifically by treating all swiotlb memory as decrypted
+>>> buffers, which is also how the current code behaves.
+>>>
+>>> If we are concluding that restricted DMA is not used in conjunction with
+>>> memory encryption, then we could, in fact, remove the
+>>> set_memory_decrypted() call from rmem_swiotlb_device_init() and
+>>> instead add failure conditions for force_dma_unencrypted(dev) in
+>>> is_swiotlb_for_alloc(). However, it’s worth noting that the initial
+>>> commit did take the memory encryption feature into account
+>>> (0b84e4f8b793eb4045fd64f6f514165a7974cd16).
+>>>
+>>> Please let me know if you think this needs to be fixed.
+>> Something like.
+>>
+>> dma-direct: restricted-dma: Do not mark the restricted DMA pool unencrypted
+>>
+>> As per commit f4111e39a52a ("swiotlb: Add restricted DMA alloc/free
+>> support"), the restricted-dma-pool is used in conjunction with the
+>> shared-dma-pool. Since allocations from the shared-dma-pool are not
+>> marked unencrypted, skip marking the restricted-dma-pool as unencrypted
+>> as well. We do not expect systems using the restricted-dma-pool to have
+>> memory encryption or to run with confidential computing features enabled.
+>>
+>> If a device requires unencrypted access (force_dma_unencrypted(dev)),
+>> the dma-direct allocator will mark the restricted-dma-pool allocation as
+>> unencrypted.
+>>
+>> The only disadvantage is that, when running on a CC guest with a
+>> different hypervisor page size, restricted-dma-pool allocation sizes
+>> must now be aligned to the hypervisor page size. This alignment would
+>> not be required if the entire pool were marked unencrypted. However, the
+>> new code enables the use of the restricted-dma-pool for trusted devices.
+>> Previously, because the entire pool was marked unencrypted, trusted
+>> devices were unable to allocate from it.
+>>
+>> There is still an open question regarding allocations from the
+>> shared-dma-pool. Currently, they are not marked unencrypted.
+>>
+>> Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
+>>
+>> 1 file changed, 2 deletions(-)
+>> kernel/dma/swiotlb.c | 2 --
+>>
+>> modified   kernel/dma/swiotlb.c
+>> @@ -1835,8 +1835,6 @@ static int rmem_swiotlb_device_init(struct reserved_mem *rmem,
+>>    			return -ENOMEM;
+>>    		}
+>>    
+>> -		set_memory_decrypted((unsigned long)phys_to_virt(rmem->base),
+>> -				     rmem->size >> PAGE_SHIFT);
+>>    		swiotlb_init_io_tlb_pool(pool, rmem->base, nslabs,
+>>    					 false, nareas);
+>>    		mem->force_bounce = true;
 > 
-> Where it was concluded that pfn_valid() is not enough to validate
-> physical addresses before access to page_ext.
-> 
-> The first patch introduces a new function in page_ext that takes a
-> physical address as an argument, and the second patch uses it instead
-> of calling pfn_valid() and phys_to_page()
-> 
-> Benchmarks with the new implementation can be found in:
-> https://lore.kernel.org/linux-iommu/20260114164322.787125-1-smostafa@google.com/
-> 
-> This series applies to iommu/core tree.
+> Robin, could You review this? Is it ready for applying?
 
-This is part of v7 [1], right? Can't we just apply v7 instead or are the 
-commit IDs already stable?
+But wouldn't this break the actual intended use of restricted pools for 
+streaming DMA bouncing, which does depend on the buffer being 
+pre-decrypted/shared? (Since streaming DMA mappings definitely need to 
+be supported in nowait contexts)
 
-[1] https://lkml.kernel.org/r/20260114164322.787125-1-smostafa@google.com
-
--- 
-Cheers
-
-David
+Thanks,
+Robin.
