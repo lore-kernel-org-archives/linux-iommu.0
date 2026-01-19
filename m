@@ -1,99 +1,132 @@
-Received: from sender4-pp-f112.zoho.com (sender4-pp-f112.zoho.com [136.143.188.112])
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BEA430ACEB
-	for <iommu@lists.linux.dev>; Mon, 19 Jan 2026 10:28:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.112
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768818511; cv=pass; b=gDKew39USKO1NZLcf+6V3ZN79NajZ5sG72Kh7GmOGwo9OlBQc+XBhp4mjyHkKO1URCdznciuymRl2XUnuZ5GdAbvlLlDi2N+Axt/kyVE+GXKgN5ncDIK85FzfZNxDKf1F/HAJqq5mCUz2kVDdynwEKgCFSWbWr2cT7tJPLH7mBA=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768818511; c=relaxed/simple;
-	bh=UHOcM8dCH3oMm/0168Hmp5M7ehoLPJvYL3gflDB1RII=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=MFhP+Lh8lWByxz972jaZK0AkGhrMXnloJ+0HgqXWwiTbr51QDGwJL1G+dZUpzwaP6SYzlfN1oWHB6KAM+Lb0GckqoRVgsorTDjnaDFag0B5ctaEPB2hTRmqXyGxkdC5GUmAquSxddhZD6yQjLGljGMNjvXpoiHuAVZdZZRy/WY4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=benjamin.gaignard@collabora.com header.b=IzMYIQ9x; arc=pass smtp.client-ip=136.143.188.112
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48BBF2DC334
+	for <iommu@lists.linux.dev>; Mon, 19 Jan 2026 10:38:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1768819128; cv=none; b=DTyYqe7ukKUlUOmDP7YfY5civEOdL6+/LZNnnJFWAYqBKxPpA8qHhHRVeSWtAQ/ShdWpruXasQqP3baaXlPuJ8yHnpJD8di/9az/qrO018QxBY9aUx/Dl+V68NDQUIye6yxTY1QTxHVwoamReOxh2LcESCxavoXMiiMq0M+jaG4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1768819128; c=relaxed/simple;
+	bh=vYRiHaxSMY/GrPhmusiLm/wN6g35BdjNX3fcj6y1Yxc=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
+	 Content-Type:References; b=CrJOHGDEQz7s5KkXaYTvD1Uj/mNLv/fMZKpdHZ/vHAXbyas7tbiSvHfYL1Z9pGBP6l/dD3hpL6vAZmQgZxdywq0qlf2+cQfBxJ3UQoINioLXjNtsk9iy4f+VwRB8luop8+2NA33dGFVolNPsx59TJ8m8wNvXAXmIG+PZOsy28VY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=ggTC86J0; arc=none smtp.client-ip=210.118.77.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=collabora.com header.i=benjamin.gaignard@collabora.com header.b="IzMYIQ9x"
-ARC-Seal: i=1; a=rsa-sha256; t=1768818497; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=c2+Oc9wLMk54ge9fXvqUDFJyAAT7ec7rGEzKziR5QaN+z1z+rYOLC4VTelqvmOGmxAWYdKRr6O6s6MNKpwLXDhlL5lcGObgtP0rdHil9Vb0BGdsnIs4YglM6IDmVEaxWfWUQUdSpnEvc+N1CvCq+b7wf0NJz67YVdzuQZegORwk=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1768818497; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=EsuevJkgsl5C8dp30TcVS68HeqiqukUtd3I4/TFexqc=; 
-	b=PCpgNlj7n6I5+jp2Tf7Tr7dHfDi1tCAjsYDvdzMx5yFgbzZX6WT/h8sBwDUjW/hCqwYF0Ev65ozoN4kome1DuU0c3HYx8O/Q3KClOtdpMKpcdvH15iWcsAngNGweP3xIAGbiJSVfDmHKROVyhsDbXAFuGlYofF0jcARnDjD9J1M=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=collabora.com;
-	spf=pass  smtp.mailfrom=benjamin.gaignard@collabora.com;
-	dmarc=pass header.from=<benjamin.gaignard@collabora.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1768818497;
-	s=zohomail; d=collabora.com; i=benjamin.gaignard@collabora.com;
-	h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-	bh=EsuevJkgsl5C8dp30TcVS68HeqiqukUtd3I4/TFexqc=;
-	b=IzMYIQ9xcILSyPL5IEgFBFGVo7j1D7ZBB9+pLkD8TJou1OhxL5m2aeY0mUG8sBsv
-	Wv1ahwlZ/JxKsdyJ4LI5HiTSJL64r53/U8Kqgk1RJy/0aMnZ+lBkwQr9s8a6uXe7Fe1
-	Ncr7UNildBZ9+LxfW3aXn6Ywt29jhDAL6JPF1W+g=
-Received: by mx.zohomail.com with SMTPS id 1768818497079716.4924558723245;
-	Mon, 19 Jan 2026 02:28:17 -0800 (PST)
-Message-ID: <d81c0f26-ab36-42a9-bc40-b9767aea038a@collabora.com>
-Date: Mon, 19 Jan 2026 11:28:11 +0100
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="ggTC86J0"
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20260119103844euoutp01157c9689ddf6c80951a4993cadd75dc1~MG59EE-ay1950019500euoutp01J
+	for <iommu@lists.linux.dev>; Mon, 19 Jan 2026 10:38:44 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20260119103844euoutp01157c9689ddf6c80951a4993cadd75dc1~MG59EE-ay1950019500euoutp01J
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1768819124;
+	bh=h6T1OAseONU5xESAp7DldoRF/tx4f3Urlb72aBL0shY=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=ggTC86J0tuNir92HdO3ZuqKiwG+33RBa5m/KJMQHzp307IUNPZHcXARfyLutyZBlp
+	 BwxzhDEaWMHOPDuafLcV+9LuXVZvuDCF3v0WlY7wPgYq29mYKCMJ8ETrC0HiNebEnF
+	 3D/nLvqBlON+m5EAOKDFvMK3U0BDf71e8IrdgQZk=
+Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+	20260119103843eucas1p13969f70041187467385971a512493b86~MG58fQVze1992819928eucas1p1p;
+	Mon, 19 Jan 2026 10:38:43 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+	20260119103842eusmtip18efa3015d962d36d6aae889482359cc9~MG57VTnAg2814528145eusmtip1K;
+	Mon, 19 Jan 2026 10:38:42 +0000 (GMT)
+Message-ID: <89f8895f-436d-4a73-a2c8-d61a2f4ee41a@samsung.com>
+Date: Mon, 19 Jan 2026 11:38:42 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v11 3/7] iommu: Add verisilicon IOMMU driver
-To: =?UTF-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>,
- Will Deacon <will@kernel.org>
-Cc: robin.murphy@arm.com, robh@kernel.org, krzk+dt@kernel.org,
- conor+dt@kernel.org, heiko@sntech.de, nicolas.dufresne@collabora.com,
- p.zabel@pengutronix.de, mchehab@kernel.org, iommu@lists.linux.dev,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org,
- linux-media@vger.kernel.org, kernel@collabora.com
-References: <20260107101005.84039-1-benjamin.gaignard@collabora.com>
- <20260107101005.84039-4-benjamin.gaignard@collabora.com>
- <aWZui-rn5RDPwpEO@willie-the-truck>
- <eqv7yfdagt2axkj5xbtmrtkaakhq63ywf2q5tjo33exumhfrc5@7ghelrz6yt2d>
+User-Agent: Betterbird (Windows)
+Subject: Re: [PATCH] of: reserved_mem: Allow reserved_mem framework detect
+ "cma=" kernel param
+To: Rob Herring <robh@kernel.org>
+Cc: Oreoluwa Babatunde <oreoluwa.babatunde@oss.qualcomm.com>,
+	ye.li@oss.nxp.com, kernel@oss.qualcomm.com, saravanak@google.com,
+	akpm@linux-foundation.org, david@redhat.com, lorenzo.stoakes@oracle.com,
+	Liam.Howlett@oracle.com, vbabka@suse.cz, rppt@kernel.org, surenb@google.com,
+	mhocko@suse.com, robin.murphy@arm.com, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux.dev,
+	quic_c_gdjako@quicinc.com
 Content-Language: en-US
-From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-In-Reply-To: <eqv7yfdagt2axkj5xbtmrtkaakhq63ywf2q5tjo33exumhfrc5@7ghelrz6yt2d>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <CAL_JsqK5QEZfyRTDY4z88mX_eYENibea1ZM8H_bEfCCsOOwY4A@mail.gmail.com>
 Content-Transfer-Encoding: 8bit
+X-CMS-MailID: 20260119103843eucas1p13969f70041187467385971a512493b86
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20251210002053eucas1p1d1408ad0fb49a49bf4371687f8df7395
+X-EPHeader: CA
+X-CMS-RootMailID: 20251210002053eucas1p1d1408ad0fb49a49bf4371687f8df7395
+References: <CGME20251210002053eucas1p1d1408ad0fb49a49bf4371687f8df7395@eucas1p1.samsung.com>
+	<20251210002027.1171519-1-oreoluwa.babatunde@oss.qualcomm.com>
+	<X-TH#1.CAL_JsqL6VVQ7K_ZAbHJ8Gb7ei_jusLx6wRn=AdOVgV50dX0ejQ@mail.gmail.com>
+	<99dc91c9-59fd-47c5-b1d9-157bda86ad59@samsung.com>
+	<CAL_JsqK5QEZfyRTDY4z88mX_eYENibea1ZM8H_bEfCCsOOwY4A@mail.gmail.com>
 
+On 18.12.2025 15:42, Rob Herring wrote:
+> On Thu, Dec 18, 2025 at 3:55 AM Marek Szyprowski
+> <m.szyprowski@samsung.com> wrote:
+>> On 10.12.2025 15:07, Rob Herring wrote:
+>>> On Tue, Dec 9, 2025 at 6:20 PM Oreoluwa Babatunde
+>>> <oreoluwa.babatunde@oss.qualcomm.com> wrote:
+>>>> When initializing the default cma region, the "cma=" kernel parameter
+>>>> takes priority over a DT defined linux,cma-default region. Hence, give
+>>>> the reserved_mem framework the ability to detect this so that the DT
+>>>> defined cma region can skip initialization accordingly.
+>>> Please explain here why this is a new problem. Presumably the
+>>> RESERVEDMEM_OF_DECLARE hook after commit xxxx gets called before the
+>>> early_param hook. And why is it now earlier?
+>>>
+>>> I don't really like the state/ordering having to be worried about in 2 places.
+>> I also don't like this spaghetti, but it originates from
+>> commit 8a6e02d0c00e ("of: reserved_mem: Restructure how the reserved
+>> memory regions are processed") and the first fixup for it: 2c223f7239f3
+>> ("of: reserved_mem: Restructure call site for
+>> dma_contiguous_early_fixup()").
+> Honestly, this code wasn't great before. Every time it is touched it
+> breaks someone.
 
-Le 18/01/2026 à 10:41, Jörg Rödel a écrit :
-> Benjamin,
+Indeed it got a bit complicated and needs some improvement, but first I 
+want to fix the the reported regression. This patch does this and it 
+looks that there are no ideas how to fix this in a different way. Rob, 
+could I apply it via dma-mapping-fixes?
+
+>> It looks that it is really hard to make reserved memory
+>> initialization fully dynamic assuming that the cma related fixups have
+>> to be known before populating kernel memory pages tables. I also advised
+>> in
+>> https://lore.kernel.org/all/be70bdc4-bddd-4afe-8574-7e0889fd381c@samsung.com/
+>> to simply increase the size of the static table to make it large enough for the sane use cases, but
+>> it turned out that this approach was already discussed and rejected:
+>> https://lore.kernel.org/all/1650488954-26662-1-git-send-email-quic_pdaly@quicinc.com/
+> I guess the question is what's a sane limit? After 128, are we going
+> to accept 256? I really suspect we are just enabling some further
+> abuse of /reserved-memory downstream. For example, I could imagine
+> there's micromanaging the location of media/graphics buffers so they
+> end up in specific DRAM banks to optimize accesses. No one ever wants
+> to detail why they want/need more regions.
 >
-> On Tue, Jan 13, 2026 at 04:10:51PM +0000, Will Deacon wrote:
->> I took another look at this to see whether it had changed significantly
->> from v6 when compared to the rockchip driver. Sadly, they still look
->> very similar to me and I continue to suspect that the hardware is a
->> derivative. I really don't understand why having a shared implementation
->> of the default domain ops is difficult or controversial. Have you tried
->> to write it?
-> When updating for v12, can you please put an explanatory comment at the top of
-> the file explaining the relationship of the IP this driver is for to the
-> RockChip IOMMU and the rationale for having it as a separate driver? I want
-> this part of the discussion documented in the code in case it comes up again.
-
-Does the follow wording summarize the situation correctly for you if I put it
-in header comment ?
-
-  * This hardware block is using a 2 pages tables allocation structure.
-  * That make very similar to Rockhip iommu hardware blocks but it has
-  * it own driver because the registers offset and configuration bits
-  * are completely different. An additional raison is that this hardware
-  * has been developped by Verisilicon to be used by their hardware video
-  * decoders and for a general purpose like Rockchip iommus.
-
-Regards,
-Benjamin
-
+>> Maybe it would make sense to revert the mentioned changes and get back
+>> to such simple approach - to make the size of the static table
+>> configurable in the Kconfig?
+> I'd rather not resort to a kconfig option.
 >
->
-> -Joerg
->
+> We could go back to processing all the regions at the beginning
+> (growing the static size), and then just shrinking allocation. Or
+> maybe it could just be freed entirely. I don't think we really need to
+> keep the state around forever.
+
+I will check if this can be refactored somehow.
+
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
+
