@@ -1,45 +1,64 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5CCE33A707;
-	Mon, 19 Jan 2026 08:01:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C256D3370E5;
+	Mon, 19 Jan 2026 08:04:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768809665; cv=none; b=VSjYAjUqtGCivxiJekEiAl4Qik2k+BzKWSmq+OwbilTz89f+2g6uXicpQKzACqRAPoxwcgsAOULE3MGjHW7OZpwkDNEoStJzGGc78x5DEVwPV+g1EWyV1xPX0Vuuw7/IJH1IRWfipCWcgBWNl1x9sFE+/OW9OFel9SJIWt72TOI=
+	t=1768809850; cv=none; b=Z18jE2VKlB6pWWisVbCTnBObVia055/d0vbKYD7tDxULRXsqrFF0GPLVUpryXZXYu/eAt/OxOgSx5+uihDzwbiDAqbKYYtAwT5SPVpOkyWoXrb9AeRSLycyYlDx0jG5gEFy6FR0CCCFzt8d29iV56T+t0KBjLyU+rfRDWNhNQXk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768809665; c=relaxed/simple;
-	bh=Esu4hAZ6HFgue4J3DwoNl2MfyWUyIt0GHSfRSJpFKGo=;
+	s=arc-20240116; t=1768809850; c=relaxed/simple;
+	bh=HRBEt4RF/jLlwOJnYEYMNWDtdCxSUN5YasBH6jxxKIg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=U8LTgcS8o9xqXRF1gkrdQ+J03mNnyHGg7u1GWvPB5NCcmmlnPzTyLJB1qSp95rWqyfgjstpGoK7mLlacCh8F7Hy9eIYVpsznfojVqsbrsQT1S0fbBZeHt8iAm+DEQJty+FbW6M4EaOeBx9bmoPXuFd9YraE2i/v3eEtfH8FwR7o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=ubq6fn6T; arc=none smtp.client-ip=198.137.202.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org
+	 Content-Type:Content-Disposition:In-Reply-To; b=q6urBFqensCv5nhhtqSnaTzg4da2aWwTnARKRaubWeMJLxz9JhXw7wxAilCwIq1Cm6QUvB+2KYmgtCW8FqKymdYGQD7Cya8Ec8ojf31f4V7qUDdBqEDPZHxqJIypaeb+WbT15hypO9MlE3l/pwPcKSoStQdIyIt+6I/x7MIHH9M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BDgV12G7; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="ubq6fn6T"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=Esu4hAZ6HFgue4J3DwoNl2MfyWUyIt0GHSfRSJpFKGo=; b=ubq6fn6Thksqja2wtuOztcnsPl
-	ZEVXRGcsKpuB9PFdv+U3vIHMxd/KX0dtY9Llto/E/19HhxqA50SyrDF7xuFy+rUcprfaCQzwk/Qa7
-	CJOQuIkuIn4533eWlv/FzBEZRuZbwv9E5MO/MNdu2SLehHK+b5YYPt2p9Y7kHkr9v1dMG54YopTIq
-	zg2OI3JLUT+Wz2Be5lTIV3rKVGyjNahTGgTs+w3DfVrWJiqsHAeMhLzKWZvIhknfdhs3jg48omViR
-	/gDh98CiZBNzyUyoVIly3HBJfG6fffxBrz1C3XqcF5noayvH6hYVXEn0vLaNysH7Ew03K/jJ00apo
-	RQL7tWww==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.98.2 #2 (Red Hat Linux))
-	id 1vhkBz-00000001X3N-3IJg;
-	Mon, 19 Jan 2026 08:00:55 +0000
-Date: Mon, 19 Jan 2026 00:00:55 -0800
-From: Christoph Hellwig <hch@infradead.org>
-To: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-Cc: robin.murphy@arm.com, joro@8bytes.org, will@kernel.org,
-	m.szyprowski@samsung.com, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, vikash.garodia@oss.qualcomm.com,
-	dikshita.agarwal@oss.qualcomm.com
-Subject: Re: [PATCH] dma-iommu: Introduce API to reserve IOVA regions for
- dynamically created devices
-Message-ID: <aW3kt0sKxCw2Cri8@infradead.org>
-References: <20260119054936.3350128-1-busanna.reddy@oss.qualcomm.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BDgV12G7"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C7CAC116C6;
+	Mon, 19 Jan 2026 08:04:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1768809850;
+	bh=HRBEt4RF/jLlwOJnYEYMNWDtdCxSUN5YasBH6jxxKIg=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=BDgV12G7l5a1sp8yv1MAiOTY/L1jkmyTQZGAh3jpU9VjkGMv9/T3jgHh2lE5LuXTK
+	 Q0XiE0/v6mTCIL++UG0OUkE3zwpNkiDWjOwRxhFFIi2wh+H4hSil6YHS5SELsgqCDn
+	 WeDdVnUzfPkFP37afqzkaFH2kBs5cZ3OkLmqvQ8WC6xPHnyiZoM6tCbAr4Rpggc7r2
+	 +twjbWsZJSrJk1zeM7aeq7DGnmBtEQc4wcipZGljnLygNxxBENIhR7XiKP9tHHgxTC
+	 bG2/CJQU8uA+pwflgnBuItu8+MXhQXRs68HQNRr/vZQQeXMAP3G3vwl+sklL/3KSsp
+	 iWYoOtPON0K+w==
+Date: Mon, 19 Jan 2026 10:04:04 +0200
+From: Leon Romanovsky <leon@kernel.org>
+To: John Hubbard <jhubbard@nvidia.com>
+Cc: Sumit Semwal <sumit.semwal@linaro.org>,
+	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+	Alex Deucher <alexander.deucher@amd.com>,
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+	Gerd Hoffmann <kraxel@redhat.com>,
+	Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+	Gurchetan Singh <gurchetansingh@chromium.org>,
+	Chia-I Wu <olvaffe@gmail.com>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	Lucas De Marchi <lucas.demarchi@intel.com>,
+	Thomas =?iso-8859-1?Q?Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>,
+	Rodrigo Vivi <rodrigo.vivi@intel.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Alex Williamson <alex@shazbot.org>, linux-media@vger.kernel.org,
+	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+	linux-kernel@vger.kernel.org, amd-gfx@lists.freedesktop.org,
+	virtualization@lists.linux.dev, intel-xe@lists.freedesktop.org,
+	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
+	kvm@vger.kernel.org
+Subject: Re: [PATCH v2 2/4] dma-buf: Document revoke semantics
+Message-ID: <20260119080404.GF13201@unreal>
+References: <20260118-dmabuf-revoke-v2-0-a03bb27c0875@nvidia.com>
+ <20260118-dmabuf-revoke-v2-2-a03bb27c0875@nvidia.com>
+ <d41d08e3-6a86-40a4-925c-6a3172670079@nvidia.com>
+ <20260119072524.GD13201@unreal>
+ <3380a80a-7574-4dbf-87cb-0735fb20cd15@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -48,8 +67,47 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260119054936.3350128-1-busanna.reddy@oss.qualcomm.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+In-Reply-To: <3380a80a-7574-4dbf-87cb-0735fb20cd15@nvidia.com>
 
-This still seems to lack an actual user.
+On Sun, Jan 18, 2026 at 11:32:20PM -0800, John Hubbard wrote:
+> On 1/18/26 11:25 PM, Leon Romanovsky wrote:
+> > On Sun, Jan 18, 2026 at 01:40:11PM -0800, John Hubbard wrote:
+> > > On 1/18/26 4:08 AM, Leon Romanovsky wrote:
+> > > > From: Leon Romanovsky <leonro@nvidia.com>
+> > > ...
+> > > > +/**
+> > > > + * dma_buf_attachment_is_revoke - check if a DMA-buf importer implements
+> > > > + * revoke semantics.
+> > > > + * @attach: the DMA-buf attachment to check
+> > > > + *
+> > > > + * Returns true if DMA-buf importer honors revoke semantics, which is
+> > > > + * negotiated with the exporter, by making sure that importer implements
+> > > > + * .invalidate_mappings() callback and calls to dma_buf_pin() after
+> > > > + * DMA-buf attach.
+> > > > + */
+> > > > +static inline bool
+> > > > +dma_buf_attachment_is_revoke(struct dma_buf_attachment *attach)
+> > > 
+> > > Maybe a slight rename, to dma_buf_attachment_is_revocable()?
+> > 
+> > I can do that. The issue is that even "dma_buf_attachment_is_revoke"
+> > is already too long. :)
+> > 
+> 
+> If you're really pressed for space for some reason,
 
+Mainly aesthetics.
+
+> maybe dma_buf_attach_revocable() ?
+> 
+> Just trying to hang on to the "revocable" part of the name, as
+> I think it's an improvement.
+
+Sure
+
+> 
+> thanks,
+> -- 
+> John Hubbard
+> 
+> 
