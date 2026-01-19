@@ -1,132 +1,89 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AB75389E19;
-	Mon, 19 Jan 2026 15:16:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CF2E52773F4
+	for <iommu@lists.linux.dev>; Mon, 19 Jan 2026 15:49:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768835804; cv=none; b=doOQt3FfZeXqrR0CaB1xoRrMSiPbuWoFEx42llQKkIRWuAFIoQ+03aM7Ur/du7F2HT3OLuBaumx5PO8R087OB8FHYL9ccqwrS0WlShltpu/L4rMfSLqrRQpzNMQzUMg1o1AUWNAivBEaZwZ5qmeyIvyvIydmRJ/SmXylxiFkQdg=
+	t=1768837745; cv=none; b=TYBrRX0pOVgIixrXYbxNOmPZfSA+hTYMFrJClN0w76ySzkKFzN1DS68PacDfSxByutAk/sUCnRMxKNpra09gcHZJET5ms3kk1FyjuIsr0ph025XqrmhnRaDHZUH/R6osAa8d00sF5NB6nnPAL9anb1fdS8t4AoLycAJ0JhocD0w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768835804; c=relaxed/simple;
-	bh=hckTS3gmFRkxNWBtsceb6zn11jss+f3BKrZwJeC3S+4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=WQigFS+zggL9RUgD1PRkAxjzN6hoNy2U8nYX0G1ZjvZw7mLt00KApumtRxNsXxbBBA1HrMpxIij2k/RaZp8+crS1KOs2PXk1m5NPw7p8fguFiCp7admXiAmBjWfqlNdXim9o01MR3BKOZLs2v2CjVQ2iumWSMpn/FZv2ZK2TH6w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JtnM6QFC; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1768837745; c=relaxed/simple;
+	bh=BL3meZqsZ6zyWrqmX2gWLKX25saoedB0Z4kpaDwfnzo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=sWSVGtJW4W2rAWff0uK/9vVYq8KLB5Al28hpJDeXUE46f04moK/psZjxKtO1Mt44wle+JirtQRtINNzY6GtseSACjLRNz4NrpSbZV907izIznlHu8cWXYi4nVnY1LTb3FwB7xkEWMl+zuIKwvRGJkdjFG39rGzGfVPAHneBGTag=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=HW0W0lCk; arc=none smtp.client-ip=85.214.250.239
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JtnM6QFC"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2035C19423;
-	Mon, 19 Jan 2026 15:16:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1768835802;
-	bh=hckTS3gmFRkxNWBtsceb6zn11jss+f3BKrZwJeC3S+4=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=JtnM6QFCOqRvP3fhKJwZe8ubr+qygGq2F6rMhmTS3c+/vs08+wVAKLX9K5sFj5j1Z
-	 AuVgg5mIUtvWDPTYM7e01lAWUUsreZe9z2wYkwPqx9s6osoYtpUaYkOtQalRvwKttx
-	 hjixW67WN9K8S55vfmvlhrk+sp2DmaDDGTC6vY4JwT62eufHPQPU3pA6Be5f4fDx6r
-	 0pfW1waxsTgYV+OuoG1PKGeLft8fREvhN6RqW0DTO9kOR6wrwQoLWL4Ec+aplCTd/f
-	 cz16IZHWD6singoUagzOV+gCSfbkCj1ZMv1o39T1dP0UrUHQDArSEBfMXq49QZXrVm
-	 vkvzt5zm/KyzA==
-Message-ID: <af260a0b-ee84-42d5-85e7-ea2b4789f31f@kernel.org>
-Date: Mon, 19 Jan 2026 16:16:34 +0100
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="HW0W0lCk"
+Received: from 8bytes.org (p4ffe051a.dip0.t-ipconnect.de [79.254.5.26])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.8bytes.org (Postfix) with ESMTPSA id EA7845FE9B;
+	Mon, 19 Jan 2026 16:49:00 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1768837741;
+	bh=BL3meZqsZ6zyWrqmX2gWLKX25saoedB0Z4kpaDwfnzo=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=HW0W0lCkK4CaHA4Z0Y6y0pe30gQQ2PlASyvv3YVMM07Fb1uDmQybHHE/TxTEwaxFd
+	 KejVucrd2Hg38/eDkNJxoiBSxWEgpH78R3wmtduIrTwWV8n5q9Rh1afo2ZJhCmXf3j
+	 W8Ixey6KgB6GqCdXjZY4eWayYOTd5PY8DkFdNsyK9Hc37dJz1FFEhimJm0klWU6OeT
+	 sr4iT5Vnhl6kMPgXxY1aDhCAncqtEb0rbRNheZ06p5ZXKyFEaqCVP9CEDQuAVdRSlJ
+	 asaZCz/xHBE/ktb7q2dHNRLThdHrW34nX/CPQzzXQgLgCQkjzsqjP+nI6QEuX5S9Dv
+	 67jjjGxBIe0DA==
+Date: Mon, 19 Jan 2026 16:48:59 +0100
+From: =?utf-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>
+To: Mostafa Saleh <smostafa@google.com>
+Cc: linux-mm@kvack.org, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, corbet@lwn.net, will@kernel.org, 
+	robin.murphy@arm.com, akpm@linux-foundation.org, vbabka@suse.cz, surenb@google.com, 
+	mhocko@suse.com, jackmanb@google.com, hannes@cmpxchg.org, ziy@nvidia.com, 
+	david@redhat.com, lorenzo.stoakes@oracle.com, Liam.Howlett@oracle.com, 
+	rppt@kernel.org, xiaqinxin@huawei.com, baolu.lu@linux.intel.com, 
+	rdunlap@infradead.org
+Subject: Re: [PATCH 1/2] mm/page_ext: Add page_ext_get_phys()
+Message-ID: <qu5oksvcaytolppeeale6rwf4bzvckvfdg3iw77kowrg4fn24a@p4hmieukkttu>
+References: <20260119142246.3821052-1-smostafa@google.com>
+ <20260119142246.3821052-2-smostafa@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 0/2] iommu: debug-pagealloc: Remove pfn_valid() usage
-To: Mostafa Saleh <smostafa@google.com>
-Cc: linux-mm@kvack.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- linux-doc@vger.kernel.org, corbet@lwn.net, joro@8bytes.org, will@kernel.org,
- robin.murphy@arm.com, akpm@linux-foundation.org, vbabka@suse.cz,
- surenb@google.com, mhocko@suse.com, jackmanb@google.com, hannes@cmpxchg.org,
- ziy@nvidia.com, lorenzo.stoakes@oracle.com, Liam.Howlett@oracle.com,
- rppt@kernel.org, xiaqinxin@huawei.com, baolu.lu@linux.intel.com,
- rdunlap@infradead.org
-References: <20260119142246.3821052-1-smostafa@google.com>
- <bca59694-6b09-4839-8577-c8ac4420eb56@kernel.org>
- <CAFgf54paL1O22-crK-RufOzwYBqQ-CU4BD6=h30WOOfdA2__Vg@mail.gmail.com>
-From: "David Hildenbrand (Red Hat)" <david@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=david@kernel.org; keydata=
- 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
-In-Reply-To: <CAFgf54paL1O22-crK-RufOzwYBqQ-CU4BD6=h30WOOfdA2__Vg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260119142246.3821052-2-smostafa@google.com>
 
-On 1/19/26 16:09, Mostafa Saleh wrote:
-> On Mon, Jan 19, 2026 at 2:27 PM David Hildenbrand (Red Hat)
-> <david@kernel.org> wrote:
->>
->> On 1/19/26 15:22, Mostafa Saleh wrote:
->>> This is a small fix for the new config IOMMU_DEBUG_PAGEALLOC based
->>> on the discussion:
->>> https://lore.kernel.org/linux-iommu/CAFgf54pBAUm3ao-UJksiuGKtvv4wzRyFq_uKwLe0H1ettO4DLQ@mail.gmail.com/
->>>
->>> Where it was concluded that pfn_valid() is not enough to validate
->>> physical addresses before access to page_ext.
->>>
->>> The first patch introduces a new function in page_ext that takes a
->>> physical address as an argument, and the second patch uses it instead
->>> of calling pfn_valid() and phys_to_page()
->>>
->>> Benchmarks with the new implementation can be found in:
->>> https://lore.kernel.org/linux-iommu/20260114164322.787125-1-smostafa@google.com/
->>>
->>> This series applies to iommu/core tree.
->>
->> This is part of v7 [1], right? Can't we just apply v7 instead or are the
->> commit IDs already stable?
->>
-> 
-> It should be stable according to Will:
-> https://lore.kernel.org/linux-iommu/20260114164322.787125-1-smostafa@google.com/T/#m59d0b455e3f2160cb6f9980a0ae65bc481c53898
+On Mon, Jan 19, 2026 at 02:22:45PM +0000, Mostafa Saleh wrote:
+> +static inline struct page_ext *page_ext_get_phys(phys_addr_t phys)
 
-Shame, probably applied a bit too fast ...
+The name is misleading as it indicates that the function returns a physical
+address. Maybe name it page_ext_from_phys()?
 
--- 
-Cheers
+> +{
+> +	return NULL;
+> +}
+> +
+>  static inline void page_ext_put(struct page_ext *page_ext)
+>  {
+>  }
+> diff --git a/mm/page_ext.c b/mm/page_ext.c
+> index 297e4cd8ce90..5fe65a0ac4f3 100644
+> --- a/mm/page_ext.c
+> +++ b/mm/page_ext.c
+> @@ -538,6 +538,29 @@ struct page_ext *page_ext_get(const struct page *page)
+>  	return page_ext;
+>  }
+>  
+> +/**
+> + * page_ext_get_phys() - Get the page_ext structure for a physical address.
+> + * @phys: The physical address to query.
+> + *
+> + * This function safely gets the `struct page_ext` associated with a given
+> + * physical address. It performs validation to ensure the address corresponds
+> + * to a valid, online struct page before attempting to access it.
+> + * It should return NULL for (MMIO, ZONE_DEVICE, holes, offline memory)
 
-David
+It should?
+
+-Joerg
