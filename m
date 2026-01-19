@@ -1,72 +1,71 @@
-Received: from mail-qk1-f176.google.com (mail-qk1-f176.google.com [209.85.222.176])
+Received: from mail-ua1-f49.google.com (mail-ua1-f49.google.com [209.85.222.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AB3D2DC333
-	for <iommu@lists.linux.dev>; Mon, 19 Jan 2026 16:59:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3DCA22C15A2
+	for <iommu@lists.linux.dev>; Mon, 19 Jan 2026 17:03:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768841995; cv=none; b=JjRfTVjhGaLaSlRyfNO0OR8meyrC8ji1SEjxryZxXVYXsy+dNXC+mJRC9nMzSDlE63/47W6cA6nX+Vzz1ZVnFZvCe3ZStD9KjkCPU92UiQQEPgga5gGGWp0jd13kFGR4ROeL56WwuSopzQNNNHMFWdHcwNVQZxrJ/cf031RZ8c0=
+	t=1768842216; cv=none; b=dypoyT68Gmr5zTm+UhR1Cz6DGovNH8FqEb3NE3+GqN4QtTvIu5WlMvZVv8UQQsE+/FaI44bMLVeZEra+31H+QBc+sTvCdhSgALFRj/pUytTqF1FdrGCfZeNG60s6YtNrnIJC/3CDFNsk2btJZOPdQ5zfIM3Nv/5Rf/oKbRMTNwA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768841995; c=relaxed/simple;
-	bh=bhDzKe3hBaMep6hb4Ruwhdat9qUjuZInlAgPSftgqs8=;
+	s=arc-20240116; t=1768842216; c=relaxed/simple;
+	bh=rf6zLo4HMSx3jjTOpNOmyUHF2Og5rRAkebiZTxcDcUQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=T2Apnz6aSIdRfBMqrpRcQ49nlDYbTfJ0+b+Fby3A268CcgM9jZFblpZvES7wCTH6QJ886VrlVNd03aREKaR5oaLh6YYr87twMkLLKKRSPyspmxYV30oKkVQOGa5sUQtszGBywyIjd/qNdbV3pWlPwcY0LWLtfQPqa6/c6xqGJaQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Ud4leYJB; arc=none smtp.client-ip=209.85.222.176
+	 Content-Type:Content-Disposition:In-Reply-To; b=EHC8cEyOj1S8hwziAEQGFwd6cUSpR+O69kScrBBp3++5QTXrIitgFPigHYdBT9hsNoRXBz2OjnVhTInLM3lL3mPxBsEHIAtjMdk+C3oNLdANoljqc4bb45fEaa77FDex5VT9ttW7EwgHiDnQFhWdwtoofe3RIF/SAaB+RoL7HPQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=etGEmKRh; arc=none smtp.client-ip=209.85.222.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Ud4leYJB"
-Received: by mail-qk1-f176.google.com with SMTP id af79cd13be357-8c52f15c5b3so520668785a.3
-        for <iommu@lists.linux.dev>; Mon, 19 Jan 2026 08:59:53 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="etGEmKRh"
+Received: by mail-ua1-f49.google.com with SMTP id a1e0cc1a2514c-93f5761e09aso2732388241.1
+        for <iommu@lists.linux.dev>; Mon, 19 Jan 2026 09:03:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1768841992; x=1769446792; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=TPsA7s1a/5IQbuetD0KLnhoW9jbCMPzN3lJpfuVRncw=;
-        b=Ud4leYJB89gXsZ4uDZ/4u7oLHV5PkFCtSnjixqJMSxzGe5RUTXD7+cNX7nTc48ftFR
-         xgvEr9/K60f1NOn8W69HaHHkWzf15SCHL2XnfoY6ZMuUurwdGiv9TmGhH5MW1eHxUEni
-         luZ6bC3/JhhKvpyGvGJJ63PP+7N5UO7x26gFrVK8RH3jdeq3WtaXSP8PynQjwOEa6sYp
-         mIB5UjV4oXSt1KTbL08xrTX359q4JBnQvefy25yqlR2ITOSjrVjABY3FAKUduzL/9o9B
-         8mt0Cr1EkOkQNLG1TudUvPB+nEyMZAUYPuTonPl4Yy+Jm+jqjKOprDSRxeoOeI1wf2GS
-         QhZQ==
+        d=ziepe.ca; s=google; t=1768842214; x=1769447014; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=xPF37M4OZRPT3BtJHYXM5EEOm0b3fHdtNnzMGWb7xcQ=;
+        b=etGEmKRhp/a4Av/U5IqTruxF2Vwqnvo3PDrIXzeewfsAVuWavSfSeamH/NjCyqrvVW
+         8Wr+cnY5nplEg1J06noMDABA4+kKJ4mwoV0IfUQQJ11Gh5Lvwrlcw0rGh0w/NZYCH1bQ
+         6cRzsdAJy2Z/RLdIYVOQ0tWeohlR4Bhu1IppDtyEqI7QEz+C1q7KEVmbIBQEc1qckGfM
+         wQ1PKiF3RpJV4zwdbzEpISMf0o5iu6vBMo8bljL7Q8DI9v2eiTGoqFLoRbS+6Ikb8zyY
+         R+CuweR3Hw22swS8YuLsWhXYIpwIYO9yB5+G1glLZ/XSyPGSP6TfuGCFBmtGz/2pAosJ
+         74CA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1768841992; x=1769446792;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=TPsA7s1a/5IQbuetD0KLnhoW9jbCMPzN3lJpfuVRncw=;
-        b=R6st0UYXToAQyPjRBKWTamRnnPjVm1QiEyU+ie8vIXPXYlRiSOXAgv0vDAedMXcnRf
-         /BQfYcG+R6e3FN3dJiax9PXmFkV4ZJPINeSugQKQgou4rSqd0+kZke7veXi+Iq+jid8V
-         21jjX3eOX7TzRnIDfNmSU5TiuCx5V0Kn3xpKt2nquCxpoUq6Agd0BlJ+CXw5tOt9cB2n
-         dRObcfBPOWa9NxDN4kryzRVaSlxhw1V+d7MmZ1aU7VTXx4IVRrplZZSwhZnoycXnnolg
-         M/TVMBhS09OFLkZkhZEvm6B/DblKNcNaWil1YaridhRfIHj5uuYdC5Sum5mZPghrW8bP
-         esxA==
-X-Forwarded-Encrypted: i=1; AJvYcCViTHohHLaN6Kiq25BB5KAA1KthO7+BCOfPw0fAtZu26oFukcl4jWIR6tXBFauTx1OFVfHocQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzlCmi7nSO9LnEPAAliRoB5pqDrYdsd5Shn1QmqXJk1YNFx18Q8
-	UWVs9bYBQw/tCNhuKkOLj8XnXRPFHC9jko7xpUTRG3ic/6qPJaCvl0BdsoCKcJhQJIE=
-X-Gm-Gg: AY/fxX5eC9PtHB1Zn5aiKxsBiy3N1+spjhtYyFCUiLwrbOYXJ/lCBlz4YPn81jRcS3D
-	J9Rdl1L3y0akGahXyuyOEHqlZ3x+G49wzKS2I5bg3qIuZXKn87f2CriogC4RLV7T2e9GVXFw29Y
-	gMBnS0EgakC7HZTNULrCxvczCxDmFTvgqFjbx2HwWHT+Ar2MppUAtEwvCLgXPdMGdOTliWQHiXB
-	RqHM5amOsVgoB3wqf5oAH5bRYMVLG6KaVqavQ9+htyOL5+mgcuGhrZVqFn5OqUcr6kO/s4wkU1U
-	423UXUaeKYriXJWRSkVQByI5GzlpCmGqIj8mb+W+a6k4i6uiZLef6D5MqISn0tB3M6Ks2u+BdRU
-	0Icud5sM4X9cuP9lYBCXPeitBZkeMNw0WWEDCjp4SRKjjrFBiK2HVlxk72oFN0kn5GuDjAx2fhi
-	5dUnC2iJH0dgBGjr3pl49IHGdYzCSpV0cq0K5uzFRN9PPbMSPv40Sfw6u9cFBZz8yd7uo=
-X-Received: by 2002:ac8:7f56:0:b0:501:50cd:cd3a with SMTP id d75a77b69052e-502a16b363amr184663241cf.43.1768841992288;
-        Mon, 19 Jan 2026 08:59:52 -0800 (PST)
+        d=1e100.net; s=20230601; t=1768842214; x=1769447014;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=xPF37M4OZRPT3BtJHYXM5EEOm0b3fHdtNnzMGWb7xcQ=;
+        b=kIwc3boUN7Wcw0BgYcEBQNSnCO06wv70/qGmqL1XDGwjiC2NUxLc5/u0haO5LRj2fb
+         4cOxIfScjo3oa1egC9M+6JF6w3Mx5EGsdUYE39rCc8wK1Am9dW61j+regxPdH5LGbPMF
+         mlMZhT3kh+Rl9g+GEt1x/ZLEw0aX9givAi8jZazF4LefhBTWnAQwAKHjo9MSdN62v/55
+         RztlZLJ+LCaoVS4hmvQ6DzSSPFZ6ubOYzycg7Iij0nt94cFl5ksQ2SRjrJcTYQcr8lLV
+         xry2C6gT6/1EXrn9z4m5ERkuNRN9zdAaCARJPufhUFyGdNh6A735XBL1N8pOskd0nDwe
+         y1gg==
+X-Forwarded-Encrypted: i=1; AJvYcCXzH+//jPwRrrTkFVFSQNSjMPxs97laUAr+Wko9Z09e+8eBCVQcTHf4TwfDGNwrLFcqzSy//Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yz6w5W++4Tr6x1kz5Hzbbjx8mn5phtgInGkgnZsp77U/lK+GnPW
+	E/S+3A9GzTqrwcRhtmUS02CkqhadgRt/V8ogVXAIkcrnK+91KOmLCIKIJdX4ezeD9jA=
+X-Gm-Gg: AY/fxX7jlzwyIZq8kzoWXZyJRpvGdQM1R03ekIBJmM85HjQO9KK28l+lwTv59mTCw1J
+	6ga0/jY5pEIlD78WZhkcEPw+pocME+0V2sb/+6tIEhbMgrUcDrcOcAxOPYAmAPKgA7WosrB74xF
+	z60ru8mh9mCUuWmo6naA7jGWNNLiRrftynp38oPDtCMv9jK0OhkJj4lHLrjGl5WYjm+OH8jOVCs
+	kYxd3bGOnY3Q+VskMplohN3aJiDhnrZhLiFI7QoODLfBf2us5BAYwp47Z21hpROPGOsLZ+Xzu5L
+	W8ZF6EjXX+t4rZ0hTCTFtULxkLWjXtZwqDpbPTLtJbtllUYNPzazxwicMC/bjYk8IspxV4j+xoU
+	aDW/JbW/XNPEfi8vE0NBpwwbO1kV3nQ5fzrKJPwHtG3xHDPeAQZpfvuenoDK2ayzHF9DSy05vom
+	ViA8ZPVYb7QbkJ+qzdPOxoXLpmdJebBBeqNyaKgtUCcg3FH7KLMYIHhy5+y/W+3i7LE3c=
+X-Received: by 2002:a05:6102:2ac9:b0:5db:d07c:218f with SMTP id ada2fe7eead31-5f1a55dacc2mr3505780137.40.1768842212920;
+        Mon, 19 Jan 2026 09:03:32 -0800 (PST)
 Received: from ziepe.ca (hlfxns017vw-142-162-112-119.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.112.119])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8942e5e4d79sm93947786d6.2.2026.01.19.08.59.51
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8942e6027c9sm90833946d6.13.2026.01.19.09.03.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Jan 2026 08:59:51 -0800 (PST)
+        Mon, 19 Jan 2026 09:03:32 -0800 (PST)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1vhsbX-00000005IQz-1QSu;
-	Mon, 19 Jan 2026 12:59:51 -0400
-Date: Mon, 19 Jan 2026 12:59:51 -0400
+	id 1vhsf5-00000005ITl-3vB3;
+	Mon, 19 Jan 2026 13:03:31 -0400
+Date: Mon, 19 Jan 2026 13:03:31 -0400
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Leon Romanovsky <leon@kernel.org>
-Cc: Sumit Semwal <sumit.semwal@linaro.org>,
-	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+Cc: Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
 	Alex Deucher <alexander.deucher@amd.com>,
 	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
 	Gerd Hoffmann <kraxel@redhat.com>,
@@ -87,57 +86,30 @@ Cc: Sumit Semwal <sumit.semwal@linaro.org>,
 	virtualization@lists.linux.dev, intel-xe@lists.freedesktop.org,
 	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
 	kvm@vger.kernel.org
-Subject: Re: [PATCH v2 3/4] iommufd: Require DMABUF revoke semantics
-Message-ID: <20260119165951.GI961572@ziepe.ca>
+Subject: Re: [PATCH v2 4/4] vfio: Add pinned interface to perform revoke
+ semantics
+Message-ID: <20260119170331.GJ961572@ziepe.ca>
 References: <20260118-dmabuf-revoke-v2-0-a03bb27c0875@nvidia.com>
- <20260118-dmabuf-revoke-v2-3-a03bb27c0875@nvidia.com>
+ <20260118-dmabuf-revoke-v2-4-a03bb27c0875@nvidia.com>
+ <bd37adf0-afd0-49c4-b608-7f9aa5994f7b@amd.com>
+ <20260119130244.GN13201@unreal>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260118-dmabuf-revoke-v2-3-a03bb27c0875@nvidia.com>
+In-Reply-To: <20260119130244.GN13201@unreal>
 
-On Sun, Jan 18, 2026 at 02:08:47PM +0200, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
-> 
-> IOMMUFD does not support page fault handling, and after a call to
-> .invalidate_mappings() all mappings become invalid. Ensure that
-> the IOMMUFD DMABUF importer is bound to a revoke‑aware DMABUF exporter
-> (for example, VFIO).
-> 
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> ---
->  drivers/iommu/iommufd/pages.c | 9 ++++++++-
->  1 file changed, 8 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/iommufd/pages.c b/drivers/iommu/iommufd/pages.c
-> index 76f900fa1687..a5eb2bc4ef48 100644
-> --- a/drivers/iommu/iommufd/pages.c
-> +++ b/drivers/iommu/iommufd/pages.c
-> @@ -1501,16 +1501,22 @@ static int iopt_map_dmabuf(struct iommufd_ctx *ictx, struct iopt_pages *pages,
->  		mutex_unlock(&pages->mutex);
->  	}
->  
-> -	rc = sym_vfio_pci_dma_buf_iommufd_map(attach, &pages->dmabuf.phys);
-> +	rc = dma_buf_pin(attach);
->  	if (rc)
->  		goto err_detach;
->  
-> +	rc = sym_vfio_pci_dma_buf_iommufd_map(attach, &pages->dmabuf.phys);
-> +	if (rc)
-> +		goto err_unpin;
-> +
->  	dma_resv_unlock(dmabuf->resv);
->  
->  	/* On success iopt_release_pages() will detach and put the dmabuf. */
->  	pages->dmabuf.attach = attach;
->  	return 0;
+On Mon, Jan 19, 2026 at 03:02:44PM +0200, Leon Romanovsky wrote:
 
-Don't we need an explicit unpin after unmapping?
+> We (VFIO and IOMMUFD) followed the same pattern used in  
+> amdgpu_bo_move_notify(), which also does not wait.
+
+You have to be really careful copying anything from the GPU drivers as
+they have these waits hidden and batched in other parts of their
+operations..
 
 Jason
