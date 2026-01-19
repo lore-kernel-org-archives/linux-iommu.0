@@ -1,450 +1,760 @@
-Received: from fhigh-a3-smtp.messagingengine.com (fhigh-a3-smtp.messagingengine.com [103.168.172.154])
+Received: from PA4PR04CU001.outbound.protection.outlook.com (mail-francecentralazon11013044.outbound.protection.outlook.com [40.107.162.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBB1028FFE7
-	for <iommu@lists.linux.dev>; Mon, 19 Jan 2026 20:39:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.154
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768855185; cv=none; b=ivKy5eNfdnhlSqsYh6iF3kp2ZZNiT3B97WRif40m9Xv7q39hhIjg+7IwxcaDgy28UHGu7aPMH7a1zfECr4Zm5C1ASA4O06oPnjvD1B+HtBDdwqJJghmJmS2CpHdpY0y2jZOHLIIZCHuqjJat6frPUWvmUCb782IHTk9hd18fyjQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768855185; c=relaxed/simple;
-	bh=2ZHQG5QysP8GWCkJkDWOynJhD7gEi5uzjEoljrqGN1A=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=OSLQqNtzKtliQPd4oRCJlNmfuwHuM9BICnMYZ1fB26cp7a2waPzV3W3VqXlxOasrFNspQd0PCQAGy9rM2ldmVH2Ua5KiA1xT4P5RqOlmSurJjLsAHLcKJl73kvudZA1eJNVTgwKEEvpvAuTryz2bq7UyKIBX9/kak6HUOjfNn8c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=shazbot.org; spf=pass smtp.mailfrom=shazbot.org; dkim=pass (2048-bit key) header.d=shazbot.org header.i=@shazbot.org header.b=P1XnC/36; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=Ub2M62RE; arc=none smtp.client-ip=103.168.172.154
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=shazbot.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=shazbot.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E89EF25CC79;
+	Mon, 19 Jan 2026 20:47:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.162.44
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1768855667; cv=fail; b=EqH9ZStm5aoSdOQT1N5mFgU09uHsNN/ebh2A3pxVJ9mSIHo1qLdzFtTb/ujQGEZ1cotEEyYyKaSRpQ15tHrLQJgDKxtHTb4hSlbzHDoiefr3QmwrSVfaScqXFLiKvxMIiQ2C4VVfchVn27MokZCcmpMrdAe64QsuTLOdOVNmPiM=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1768855667; c=relaxed/simple;
+	bh=/jZ+VFo8ubBvgHshFOb/XvlHwsYrLXZgTnauK0NIFtk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=DkxsG+Btg3cKTLr7L5RZjST+HvkGQXxAgX7bixi8PVcxy78abk1+3+6OW6I+64KiXeprbeuO+bFdFFT5D5DzBeRApb5vBccsGvQ2p9/f/IXQ3jTTogtE45XLW9rSyFZM4075YpAz6QPVdXk7ZkyY9rEsB3h8jFfFzlbVD+l2v3Y=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com; spf=pass smtp.mailfrom=nxp.com; dkim=pass (2048-bit key) header.d=nxp.com header.i=@nxp.com header.b=mOE0uRNM; arc=fail smtp.client-ip=40.107.162.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nxp.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=shazbot.org header.i=@shazbot.org header.b="P1XnC/36";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="Ub2M62RE"
-Received: from phl-compute-04.internal (phl-compute-04.internal [10.202.2.44])
-	by mailfhigh.phl.internal (Postfix) with ESMTP id 0641114003D8;
-	Mon, 19 Jan 2026 15:39:41 -0500 (EST)
-Received: from phl-frontend-04 ([10.202.2.163])
-  by phl-compute-04.internal (MEProxy); Mon, 19 Jan 2026 15:39:41 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=shazbot.org; h=
-	cc:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm1; t=1768855181;
-	 x=1768941581; bh=FBdWTk6CLd7WzHVr+BniKWIMiLwjgEIx9h33mejtkC4=; b=
-	P1XnC/36fYykJJ9hnqqSF7UNj0QHCjJgtc8y3GJ6ukEpTAJqf56qB0vn4rQdanq/
-	ofjcBtKyivy1Km7zJZYqh9Zp5VXsG1knNw2ILGRIiuKRz4AeO0+i/yIsTJER3fWp
-	CjeX4jMzosIIICpTRnolIew+Ew/06hKDsFVgcazeS6/Dl4+bTBfa2hmJyU5Mf9hs
-	4THLLOq5lg+WVCwHIdvFK45O+I12DJ4OuSu6kW1nflmCl2ilYHwM7EbQXTYW4gR4
-	7p8tefrcMbcrc0YnW8JstgfX9dScl/jwqyi+gKdmsO3L6rnL+A2lgBz0zzG68F4K
-	9YcRVwhbBNq76aXa5M6Vkw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1768855181; x=
-	1768941581; bh=FBdWTk6CLd7WzHVr+BniKWIMiLwjgEIx9h33mejtkC4=; b=U
-	b2M62REKHprj2NiRN7bNn/j7uYcseRMwk/iE7FqETvSL8QPL8fWor1aqIiZfT0vi
-	pkHbIm0ydLrQdMkr7ECyMdeWa/3dNWYklYMAufrzZUzb7w/yxw8AbmN6vu6sGwJ3
-	v2eS7eXk+YH8FtTQezbtgvmtwLZzmmZdYN9YbZnME2P0BMa+eo0qTzeEj3ewf9uA
-	knfSQtuGOm7SdAK8q70kAmlBcXUE7qyDwgGl1kkGGKb3k3kfZh2VWYZOHHYTLhX3
-	d5qUCEmTc3S/Q1Ea8jg1X9nPe4kUuXeBfxUVOm6I0xrHtlLHup9cJOs6QyiVx/7o
-	iUphbhdNvvNSmKwmLs75w==
-X-ME-Sender: <xms:i5ZuafTUgcayBDnaDZ8yDTipSw_jpQebmpIGZZLmXkFXWppyWBZgdA>
-    <xme:i5ZuaVq7XJDTnZZ7v2BbwMlv4oBszoWhusrocVsnkZEFnlg0fdlvesIaiT8mx4lHe
-    LsTaqweB6LSC2T2-8GJZzbdpVEhq81yFAlta-SXK4knx-F-gE-MHA>
-X-ME-Received: <xmr:i5ZuadbpEr4MLpr4RVFVKR8cig5phbMu9010vXXUbNhDA7uXnG3ujsX4It0>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefgedrtddtgddufeekheegucetufdoteggodetrf
-    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfurfetoffkrfgpnffqhgenuceu
-    rghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujf
-    gurhepfffhvfevuffkjghfofggtgfgsehtqhertdertdejnecuhfhrohhmpeetlhgvgicu
-    hghilhhlihgrmhhsohhnuceorghlvgigsehshhgriigsohhtrdhorhhgqeenucggtffrrg
-    htthgvrhhnpeetuefgleefhfdvueegffdtffevhfffgfffiedutdetgffhheejtdekfeek
-    ieehgfenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivg
-    eptdenucfrrghrrghmpehmrghilhhfrhhomheprghlvgigsehshhgriigsohhtrdhorhhg
-    pdhnsggprhgtphhtthhopeduledpmhhouggvpehsmhhtphhouhhtpdhrtghpthhtoheplh
-    gvohhnsehkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhmvgguihgrsehv
-    ghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtohepughrihdquggvvhgvlheslhhish
-    htshdrfhhrvggvuggvshhkthhophdrohhrghdprhgtphhtthhopehlihhnrghrohdqmhhm
-    qdhsihhgsehlihhsthhsrdhlihhnrghrohdrohhrghdprhgtphhtthhopehlihhnuhigqd
-    hkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehiohhmmhhu
-    sehlihhsthhsrdhlihhnuhigrdguvghvpdhrtghpthhtohepkhhvmhesvhhgvghrrdhkvg
-    hrnhgvlhdrohhrghdprhgtphhtthhopehsuhhmihhtrdhsvghmfigrlheslhhinhgrrhho
-    rdhorhhgpdhrtghpthhtoheptghhrhhishhtihgrnhdrkhhovghnihhgsegrmhgurdgtoh
-    hm
-X-ME-Proxy: <xmx:i5ZuaQQjb-1iZXZxx1XoHH3oBltF_1jZw1Uy74MVDv4Tx3SNVeQk2A>
-    <xmx:i5Zuabdni7r3rs7uS6cXUPkdvZDTtpYo7_QmJaG6qi9KXhEi6ZOZ2g>
-    <xmx:i5Zuafl8sE7RC1vxkqw9TpG6v9zgIXmZQydq7x8z2MeThz34ntXLeA>
-    <xmx:i5ZuaQilZLD1rPx47evUb8GhlOIopeOC1mJTBX-cqbxpd3WFlZEkkA>
-    <xmx:jZZuaYE6MQFViaKOq8g2Z3Bl3liKI28dVxcFL6GsTsdDSO9ji5U-6dwm>
-Feedback-ID: i03f14258:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 19 Jan 2026 15:39:38 -0500 (EST)
-Date: Mon, 19 Jan 2026 13:38:38 -0700
-From: Alex Williamson <alex@shazbot.org>
-To: Leon Romanovsky <leon@kernel.org>
-Cc: linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
- linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev, kvm@vger.kernel.org, Sumit Semwal
- <sumit.semwal@linaro.org>, Christian =?UTF-8?B?S8O2bmln?=
- <christian.koenig@amd.com>, Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian
- <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
- <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Yishai Hadas
- <yishaih@nvidia.com>, Shameer Kolothum <skolothumtho@nvidia.com>, Ankit
- Agrawal <ankita@nvidia.com>, Matthew Wilcox <willy@infradead.org>, Jens
- Axboe <axboe@kernel.dk>
-Subject: Re: types: reuse common phys_vec type instead of DMABUF
- =?UTF-8?B?b3BlbuKAkWNvZGVk?= variant
-Message-ID: <20260119133838.66203b01@shazbot.org>
-In-Reply-To: <20260107-convert-to-pvec-v1-1-6e3ab8079708@nvidia.com>
-References: <20260107-convert-to-pvec-v1-1-6e3ab8079708@nvidia.com>
-X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=nxp.com header.i=@nxp.com header.b="mOE0uRNM"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=zTGRo+nVqmEvPFpNCpxfoVzeg9NvcytM+CJm19IyOaZECso0w/g2F8pYnqOSkvHq0vWdNTocHKN1jwj9UuR7ikHSal9uj7g76AX43mnHx+OQNmeC8XbiVSkbgJL9DIDp/b1suKizQnnCMQPxm2R86rAsP+kRLODa5sIIHFWZwN4bId1ac2rdKU6/Uh/d5M7BfwPd7LxECkUslYr35x+AAPU+r463cWYWGMzlOvbjtVian8peCFemi82DhmzqY5IHGr7W45+d/sCqIhg7C0bzq4tRVDebsLbvgjDj8VjkDfZqLPZZIeqkWk35FRaj52hwZ1lWKYV1kPDBBEX5AeI6/g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=SY5LKv4oCUhPexRPBkdD49RmNhecKYm84Hd+ebGpZPI=;
+ b=PW69/F78O66cO30KsxjLbO/eUtEw8+WAhw//V5YYiBvvn59Jeh2qzTw9x26N9nRUFE/ZfEGm/nt71TwzN16yDRpWGvDsFeYRMYTBaXTI2UkRkf+J1XSKr/pNLgxB3kbk1QW5ea1GdcOQVr0KuDxkltzpH+OnhWS7BV26X/eLOeBg9phkYv4bZusOC+HwR7pNBll9Wf93jUa3VPhkTNV82lZEKMF8XQYuE296owI974i63DoPtGV7VTQdvQRANUMk9N8jvpXkpZirWRPZWuH2N2v6eg1Ek3Khmf2GmkrGLyiHwWlFxr85f0Ctt+w5PXVI1nJqGI2RWxXT4KNuMdHpAg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=SY5LKv4oCUhPexRPBkdD49RmNhecKYm84Hd+ebGpZPI=;
+ b=mOE0uRNM8BX8o6RljBPW4NJjKNgLmgdFxUbjXldWW3uklnucgbfJ4WIQwYmHex2D0fHI/dloQPaoL247MDSatgkH6M8C5aPqo5O4fo0+PSquu+KN7MtBfiSK9o2vU24Zoi36qoP+nosHGatLGC8a6vE5Ph1KIEMLwDA7x+ZI0/x2sSc6s9VwBXNU07xywupc2Hy5q0zRPVQg6mTkghXQqRABfSACJJkxAaTrz69sqo0sq6g6Uql99EwqRXgKGxNpG1ouzt2FrigJmPgw+ci7BoNKIA0Plz6HirV8qndwrFDjUzPpW0Wm6mcVbWQ7geOBFOaH5qgA6oPG/GhrmHrx1Q==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from PRASPRMB0004.eurprd04.prod.outlook.com (2603:10a6:102:29b::6)
+ by AS4PR04MB9575.eurprd04.prod.outlook.com (2603:10a6:20b:4fd::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9520.12; Mon, 19 Jan
+ 2026 20:47:40 +0000
+Received: from PRASPRMB0004.eurprd04.prod.outlook.com
+ ([fe80::6ab3:f427:606a:1ecd]) by PRASPRMB0004.eurprd04.prod.outlook.com
+ ([fe80::6ab3:f427:606a:1ecd%4]) with mapi id 15.20.9520.009; Mon, 19 Jan 2026
+ 20:47:40 +0000
+Date: Mon, 19 Jan 2026 15:47:27 -0500
+From: Frank Li <Frank.li@nxp.com>
+To: Koichiro Den <den@valinux.co.jp>
+Cc: dave.jiang@intel.com, cassel@kernel.org, mani@kernel.org,
+	kwilczynski@kernel.org, kishon@kernel.org, bhelgaas@google.com,
+	geert+renesas@glider.be, robh@kernel.org, vkoul@kernel.org,
+	jdmason@kudzu.us, allenbh@gmail.com, jingoohan1@gmail.com,
+	lpieralisi@kernel.org, linux-pci@vger.kernel.org,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
+	dmaengine@vger.kernel.org, iommu@lists.linux.dev,
+	ntb@lists.linux.dev, netdev@vger.kernel.org,
+	linux-kselftest@vger.kernel.org, arnd@arndb.de,
+	gregkh@linuxfoundation.org, joro@8bytes.org, will@kernel.org,
+	robin.murphy@arm.com, magnus.damm@gmail.com, krzk+dt@kernel.org,
+	conor+dt@kernel.org, corbet@lwn.net, skhan@linuxfoundation.org,
+	andriy.shevchenko@linux.intel.com, jbrunet@baylibre.com,
+	utkarsh02t@gmail.com
+Subject: Re: [RFC PATCH v4 36/38] PCI: endpoint: pci-epf-test: Add remote
+ eDMA-backed mode
+Message-ID: <aW6YX0A0Ogc6KLF5@lizhi-Precision-Tower-5810>
+References: <20260118135440.1958279-1-den@valinux.co.jp>
+ <20260118135440.1958279-37-den@valinux.co.jp>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260118135440.1958279-37-den@valinux.co.jp>
+X-ClientProxiedBy: SJ0PR05CA0042.namprd05.prod.outlook.com
+ (2603:10b6:a03:33f::17) To PRASPRMB0004.eurprd04.prod.outlook.com
+ (2603:10a6:102:29b::6)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PRASPRMB0004:EE_|AS4PR04MB9575:EE_
+X-MS-Office365-Filtering-Correlation-Id: 30baabf8-90b1-42e0-163f-08de579bfc93
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|19092799006|52116014|7416014|376014|366016|1800799024|38350700014|7053199007|18082099003;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?x1offhixC2MWJhC2XP3b7VPAB0z3b/E9056cIWsMmyVRaFM1cSy0QBKpmUk4?=
+ =?us-ascii?Q?wZEKpeymMHiJXakjeLnddMVVOCY87D02g6M4nGbFmWgQ/jMELeQRsUmJFgv8?=
+ =?us-ascii?Q?/1RqV5cX1A1EW7qtmeBwJ0To5BGfXk3wJXC/5u33c4VN3CtEToJgyiPQqogS?=
+ =?us-ascii?Q?klaYyCmGccIeToXAJJNH68G5fa2GJ7GBX+kZMrH+eyPXaUmZpHKJud0E0sy1?=
+ =?us-ascii?Q?FR7Q2UU/v/SJHsjZmomASV4pSuKYfFlQaeJr0SIttazS1Aw0Arp+MmW/l2ED?=
+ =?us-ascii?Q?RkxwhsDPAjtFbXNVOOeR+RJJUpzWdsd0KtTF4fxKd0a1nRp6P5eWV481bzWu?=
+ =?us-ascii?Q?tSw4EgsVapQKTl5OkD2G069vWrQH0Mmdl4n2nJetJUWPPbQAp8x2P7mfsrTz?=
+ =?us-ascii?Q?of/CloZbq+XRSq7MYHkADrMaIAneGB3bTPhsAl7ws03A1gh29xNd/1eco6l0?=
+ =?us-ascii?Q?vAcAIfju7t3/hOR9s54NGIpWvm75tJGjE5ZoYghZHbO6NgblsuMkww+w9upP?=
+ =?us-ascii?Q?qmVSy/HbN40ElrTD3vyTbk6hPoO+6owHumnkI691ixUQUcikpLb+m2QgGPXU?=
+ =?us-ascii?Q?AyK0gjg6nGrvKsWAn/QXwNESZjdWy9zKpPmgJQdGsw24+10EANuHt45DzR/5?=
+ =?us-ascii?Q?jT3S29arxvW+fG1HZVSyij00bRClMSVUGUe1Li6NKZyB2d33XmnKcg1OrbKb?=
+ =?us-ascii?Q?8EPz91HGOU1nSVEJ8/SJSrQsAB/PqKIchW3EKSGGoFqzsFyInby63Qwbue6q?=
+ =?us-ascii?Q?sWPIJ8QRRmXgwYcO82dUBsmrnP72qdnBwyYQtA/n6ABrs4duvuFHNQoI0Sm7?=
+ =?us-ascii?Q?V4ruyyOYUFsLise9BGoc7kBsjjR/VvW2yqBKfaCbm33Ewp8QWN7UCzhPVNWI?=
+ =?us-ascii?Q?oPune2sdBRiAoUT2FUUFmf0JXwZP0SzkK/g38YguSkVZt1Yy1eriQuWFVwig?=
+ =?us-ascii?Q?sEQu2wqQPyk7RtiGeKE51HUzz/taHv94+qLK6pRwwPz8IqlQvIMDiP/pC8tP?=
+ =?us-ascii?Q?47sBTZ9PcXZx4+Z/WzfxbJYMmrrVyRCpjCtXOfYofxqmcrQJanYB5E/RfxkG?=
+ =?us-ascii?Q?WIT4lQIQV4eDyTKGq6nnpWDU5tLFtDHluHBOZnqURE9PL2EkfgTUb8q1vgGF?=
+ =?us-ascii?Q?lsvGx7jLGGoMWLjddK+1GsSWOlLoWkdshtiKk1ATjb5I6M4iASf6g/qG94uL?=
+ =?us-ascii?Q?mzEWuhpjueRGQnchXDI0XOKhPFWzkZJtEz/jzsXbidwVMCCU3+1gvFG2q5gx?=
+ =?us-ascii?Q?REmWOdWcFCaebqNWVQkyOK8xUX3Y731Bdt6ba2XWCuUswEzZgsbqDS2eur5a?=
+ =?us-ascii?Q?q91NlAfvxMJCtGXxjOcd80AThew2herZkWOxp5ljQohKKBAP7pY9PF5powom?=
+ =?us-ascii?Q?aZhZ1j5Olgt3cqKh/j7d210rvIb7EpLGkM5Vi8akq93s5ud+/RGElc90h36g?=
+ =?us-ascii?Q?w9V6gP3rRY5NJh4TBXubiUISfQZkL+qwJU+IvAhts820kq3rLl9/ES/vfTfj?=
+ =?us-ascii?Q?9UAHAqq74f9UqRjCyfVrdkBByXS4L86v0KrJMy0esTTgMGJ2jiPDyJsOGAGW?=
+ =?us-ascii?Q?Lq3eKXtCobY0FabPQ465FDE/aAOB2xP7HH5YZVxQAo1hv9T/L9uurIUu/lGw?=
+ =?us-ascii?Q?wnkGvH8b5TzFV0yjQaQH/7Q=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PRASPRMB0004.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(19092799006)(52116014)(7416014)(376014)(366016)(1800799024)(38350700014)(7053199007)(18082099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?WttgAbA9WTWxmem0OD9EGRyFlmQTzEcZeRXEdZZ8vWPW8D/zIk8JcsvN7w13?=
+ =?us-ascii?Q?PdiVckYTRaJ1Z1PotUeALscWHeUQYqTvkDr5+vxljKOjF8dC2RkuSpDlxRA2?=
+ =?us-ascii?Q?tfOz50NknU6F9SsI/U3w1sQOUnS1qaODHCiU1n5uRtrOV2pFYAV1gb31tSy/?=
+ =?us-ascii?Q?VeZt+HVRFYqv9gXHE7DjunMi7YeU9MKQ2x8jo7dVrt0hyyDw2M1HIQs3gz4r?=
+ =?us-ascii?Q?RZ+VGyDntrgZ4OXpllOrbqn8czJXJTiz4ygZtfbJpE/DSCuaevVO84Sop6dX?=
+ =?us-ascii?Q?RNFant8hCBH4Kw1qCDvDsXqOJ14ksBWqZa6YGnQNAI5QxZRjtndVntY01E1B?=
+ =?us-ascii?Q?jpjjR38fABICXyrYtOg04Xzc9oMsIDYJsV8PIC9rOaqYK0rar15xHcR0bWgG?=
+ =?us-ascii?Q?U3ni9r+oIUVBu9DCDKvS5czBGoBgp+mXEcYpHy+23B6VkhQksEn0R8lsstZo?=
+ =?us-ascii?Q?L8Ga3xJHlQa3vZf5ey53uSezvmhO+bIz3sdrbA1a5HBAQZoEJ6gbDFhZ1MjV?=
+ =?us-ascii?Q?p40bdyai/FlsScCcGhA40OgIfRwOScpb7j8te2WuWB2MQgWWEOudAww1wd39?=
+ =?us-ascii?Q?fGknjGFbXjI7sERTqGL5Xo3wuHUujakCoT/ATZY+gHHozbgR1RbCjgF/NNKa?=
+ =?us-ascii?Q?8EbrbBDCnLe3dybGxDZA+hQimFst3Wx63eGcsV+UJBZOLn+IgLwXoslOPLDN?=
+ =?us-ascii?Q?ajseZue6rb2a8nX9h1Nub9hLCxQ2d97k5UWf2FlXY3svJyIPNiJMD3dPm8zv?=
+ =?us-ascii?Q?cM5FbpEnvBb6B8qwKx3gaNi2z2o7dudRL9arLjhnqkoa3dRgRve/BO3TQLBb?=
+ =?us-ascii?Q?4SIFFxGm0IApTqrDzk2Q9HTbVTfkpkK0d+OfUbk1PnXywYxWU8CiwTCXuCO1?=
+ =?us-ascii?Q?dd6ozVGTrF9si7NBGODyWL7olAArhmJPDjWsKcLAD2GWBC/4aUZTNEV4ILbL?=
+ =?us-ascii?Q?hnUtywVDLj1iqv6U1IiEY7mwcelk9IOZynHM+KQlNJyav9BZfuL2AFMfweT8?=
+ =?us-ascii?Q?ZZLtQLBjjJbWCK0D8li40fnDBPxIuJ+rLImK9ZUozbW+Bmas1TNUAdoGBQgz?=
+ =?us-ascii?Q?d9QdEJ1hoiHRuAktMdgOW8pB1rsKMoQXb8OhjBxWt3htgtMJtGeStEIyhYGN?=
+ =?us-ascii?Q?1n5a30+LmHPL0sh8cPRKlkyCHOHfOdCsbA08EQOKGuDXt9GrjCp+DF1KDwTT?=
+ =?us-ascii?Q?IJbizqlB6WGTKkHi2XuzM/o1oxeLNUbTh8mrDhQLQyzEt9fLtk2dbEuRNSyu?=
+ =?us-ascii?Q?P/ZfWgnCh5XNFhaVUoiJKliFPzP5odT3jnWuQ71MXr7fMYRomEekepYz+nB9?=
+ =?us-ascii?Q?tkXh1XYfx5rW6CMjz/EhTu7k/mvH7IpXpL4UZyedRk5Uk+WePnYAtDwmMi4y?=
+ =?us-ascii?Q?+ktNcgmMwGWzeV2O5hHFAKWLI8LKfLZsNEfi6F2lnqbfnR62h8SFkUMSKKTy?=
+ =?us-ascii?Q?jG8IBgvlsiPecLB+vr5l3tB5B9hYbDaWyJQMIWxSh+IHxZygt/InSwgmJGsh?=
+ =?us-ascii?Q?x295dT4yVr5aBoNMjVuPKqclAcUz9wPipIYYOnHwKqTIuXnqNjRc+qz3Aiiu?=
+ =?us-ascii?Q?RfHQxozI9yMUtqWaG0MQUiCl6i5wur2IFC2F4Nw4uF3l99B+kRZrvRmEQPrK?=
+ =?us-ascii?Q?gPb7r3eBRwVJvj45Bd29xDuItakNLIN7U3TW1iL2OVhL+gUGdJL7eOpQ2hme?=
+ =?us-ascii?Q?7tDjxhhH7PojxW3hyelU/fDkpG+hqj96Ebk/w92ZX7OnltaJ?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 30baabf8-90b1-42e0-163f-08de579bfc93
+X-MS-Exchange-CrossTenant-AuthSource: PRASPRMB0004.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jan 2026 20:47:40.4937
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: O/RWVp3El61cUgEA18AS7GUGIJbGHykIYucS0LEwm8L+0jXS4PfzHcqIdM/QCJHyjh9A7ajMoIfFv1nl23Xntw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS4PR04MB9575
 
-On Wed,  7 Jan 2026 11:14:14 +0200
-Leon Romanovsky <leon@kernel.org> wrote:
-
-> From: Leon Romanovsky <leonro@nvidia.com>
->=20
-> After commit fcf463b92a08 ("types: move phys_vec definition to common hea=
-der"),
-> we can use the shared phys_vec type instead of the DMABUF=E2=80=91specific
-> dma_buf_phys_vec, which duplicated the same structure and semantics.
->=20
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+On Sun, Jan 18, 2026 at 10:54:38PM +0900, Koichiro Den wrote:
+> Some DesignWare-based endpoints integrate an eDMA engine that can be
+> programmed by the host via MMIO. The upcoming NTB transport remote-eDMA
+> backend relies on this capability, but there is currently no upstream
+> test coverage for the end-to-end control and data path.
+>
+> Extend pci-epf-test with an optional remote eDMA test backend (built when
+> CONFIG_DW_EDMA is enabled).
+>
+> - Reserve a spare BAR and expose a small 'pcitest_edma_info' header at
+>   BAR offset 0. The header carries a magic/version and describes the
+>   endpoint eDMA register window, per-direction linked-list (LL)
+>   locations and an endpoint test buffer.
+> - Map the eDMA registers and LL locations into that BAR using BAR
+>   subrange mappings (address-match inbound iATU).
+>
+> To run this extra testing, two new endpoint commands are added:
+>   * COMMAND_REMOTE_EDMA_SETUP
+>   * COMMAND_REMOTE_EDMA_CHECKSUM
+>
+> When the former command is received, the endpoint prepares for the
+> remote eDMA transfer. The CHECKSUM command is useful for Host-to-EP
+> transfer testing, as the endpoint side is not expected to receive the
+> DMA completion interrupt directly. Instead, the host asks the endpoint
+> to compute a CRC32 over the transferred data.
+>
+> This backend is exercised by the host-side pci_endpoint_test driver via a
+> new UAPI flag.
+>
+> Signed-off-by: Koichiro Den <den@valinux.co.jp>
 > ---
-> Alex,
->=20
-> According to diffstat, VFIO is the subsystem with the largest set of chan=
-ges,
-> so it would be great if you could take it through your tree.
->=20
-> The series is based on the for-7.0/blk-pvec shared branch from Jens:
-> https://git.kernel.org/pub/scm/linux/kernel/git/axboe/linux.git/log/?h=3D=
-for-7.0/blk-pvec
+>  drivers/pci/endpoint/functions/pci-epf-test.c | 477 ++++++++++++++++++
 
-Applied to vfio next branch for v6.20/7.0 and pushed tag
-common_phys_vec_via_vfio including this commit and dependency.
-Thanks,
+This patch should be combined into your submap patches, which is one user
+of submap.
 
-Alex
+Frank
 
-
-> ---
-> Cc: linux-media@vger.kernel.org
-> Cc: dri-devel@lists.freedesktop.org
-> Cc: linaro-mm-sig@lists.linaro.org
-> Cc: linux-kernel@vger.kernel.org
-> Cc: iommu@lists.linux.dev
-> Cc: kvm@vger.kernel.org
-> To: Sumit Semwal <sumit.semwal@linaro.org>
-> To: Christian K=C3=B6nig <christian.koenig@amd.com>
-> To: Jason Gunthorpe <jgg@ziepe.ca>
-> To: Kevin Tian <kevin.tian@intel.com>
-> To: Joerg Roedel <joro@8bytes.org>
-> To: Will Deacon <will@kernel.org>
-> To: Robin Murphy <robin.murphy@arm.com>
-> To: Yishai Hadas <yishaih@nvidia.com>
-> To: Shameer Kolothum <skolothumtho@nvidia.com>
-> To: Ankit Agrawal <ankita@nvidia.com>
-> To: Alex Williamson <alex@shazbot.org>
-> Cc: Matthew Wilcox <willy@infradead.org>
-> Cc: Jens Axboe <axboe@kernel.dk>
-> ---
->  drivers/dma-buf/dma-buf-mapping.c       |  6 +++---
->  drivers/iommu/iommufd/io_pagetable.h    |  2 +-
->  drivers/iommu/iommufd/iommufd_private.h |  5 ++---
->  drivers/iommu/iommufd/pages.c           |  4 ++--
->  drivers/iommu/iommufd/selftest.c        |  2 +-
->  drivers/vfio/pci/nvgrace-gpu/main.c     |  2 +-
->  drivers/vfio/pci/vfio_pci_dmabuf.c      |  8 ++++----
->  include/linux/dma-buf-mapping.h         |  2 +-
->  include/linux/dma-buf.h                 | 10 ----------
->  include/linux/vfio_pci_core.h           | 13 ++++++-------
->  10 files changed, 21 insertions(+), 33 deletions(-)
->=20
-> diff --git a/drivers/dma-buf/dma-buf-mapping.c b/drivers/dma-buf/dma-buf-=
-mapping.c
-> index b7352e609fbd..174677faa577 100644
-> --- a/drivers/dma-buf/dma-buf-mapping.c
-> +++ b/drivers/dma-buf/dma-buf-mapping.c
-> @@ -33,8 +33,8 @@ static struct scatterlist *fill_sg_entry(struct scatter=
-list *sgl, size_t length,
->  }
-> =20
->  static unsigned int calc_sg_nents(struct dma_iova_state *state,
-> -				  struct dma_buf_phys_vec *phys_vec,
-> -				  size_t nr_ranges, size_t size)
-> +				  struct phys_vec *phys_vec, size_t nr_ranges,
-> +				  size_t size)
->  {
->  	unsigned int nents =3D 0;
->  	size_t i;
-> @@ -91,7 +91,7 @@ struct dma_buf_dma {
->   */
->  struct sg_table *dma_buf_phys_vec_to_sgt(struct dma_buf_attachment *atta=
-ch,
->  					 struct p2pdma_provider *provider,
-> -					 struct dma_buf_phys_vec *phys_vec,
-> +					 struct phys_vec *phys_vec,
->  					 size_t nr_ranges, size_t size,
->  					 enum dma_data_direction dir)
->  {
-> diff --git a/drivers/iommu/iommufd/io_pagetable.h b/drivers/iommu/iommufd=
-/io_pagetable.h
-> index 14cd052fd320..27e3e311d395 100644
-> --- a/drivers/iommu/iommufd/io_pagetable.h
-> +++ b/drivers/iommu/iommufd/io_pagetable.h
-> @@ -202,7 +202,7 @@ struct iopt_pages_dmabuf_track {
-> =20
->  struct iopt_pages_dmabuf {
->  	struct dma_buf_attachment *attach;
-> -	struct dma_buf_phys_vec phys;
-> +	struct phys_vec phys;
->  	/* Always PAGE_SIZE aligned */
->  	unsigned long start;
->  	struct list_head tracker;
-> diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iomm=
-ufd/iommufd_private.h
-> index eb6d1a70f673..6ac1965199e9 100644
-> --- a/drivers/iommu/iommufd/iommufd_private.h
-> +++ b/drivers/iommu/iommufd/iommufd_private.h
-> @@ -20,7 +20,6 @@ struct iommu_group;
->  struct iommu_option;
->  struct iommufd_device;
->  struct dma_buf_attachment;
-> -struct dma_buf_phys_vec;
-> =20
->  struct iommufd_sw_msi_map {
->  	struct list_head sw_msi_item;
-> @@ -718,7 +717,7 @@ int __init iommufd_test_init(void);
->  void iommufd_test_exit(void);
->  bool iommufd_selftest_is_mock_dev(struct device *dev);
->  int iommufd_test_dma_buf_iommufd_map(struct dma_buf_attachment *attachme=
-nt,
-> -				     struct dma_buf_phys_vec *phys);
-> +				     struct phys_vec *phys);
->  #else
->  static inline void iommufd_test_syz_conv_iova_id(struct iommufd_ucmd *uc=
-md,
->  						 unsigned int ioas_id,
-> @@ -742,7 +741,7 @@ static inline bool iommufd_selftest_is_mock_dev(struc=
-t device *dev)
->  }
->  static inline int
->  iommufd_test_dma_buf_iommufd_map(struct dma_buf_attachment *attachment,
-> -				 struct dma_buf_phys_vec *phys)
-> +				 struct phys_vec *phys)
->  {
->  	return -EOPNOTSUPP;
->  }
-> diff --git a/drivers/iommu/iommufd/pages.c b/drivers/iommu/iommufd/pages.c
-> index dbe51ecb9a20..bababd564cf9 100644
-> --- a/drivers/iommu/iommufd/pages.c
-> +++ b/drivers/iommu/iommufd/pages.c
-> @@ -1077,7 +1077,7 @@ static int pfn_reader_user_update_pinned(struct pfn=
-_reader_user *user,
->  }
-> =20
->  struct pfn_reader_dmabuf {
-> -	struct dma_buf_phys_vec phys;
-> +	struct phys_vec phys;
->  	unsigned long start_offset;
+>  1 file changed, 477 insertions(+)
+>
+> diff --git a/drivers/pci/endpoint/functions/pci-epf-test.c b/drivers/pci/endpoint/functions/pci-epf-test.c
+> index e560c3becebb..eea10bddcd2a 100644
+> --- a/drivers/pci/endpoint/functions/pci-epf-test.c
+> +++ b/drivers/pci/endpoint/functions/pci-epf-test.c
+> @@ -10,6 +10,7 @@
+>  #include <linux/delay.h>
+>  #include <linux/dmaengine.h>
+>  #include <linux/io.h>
+> +#include <linux/iommu.h>
+>  #include <linux/module.h>
+>  #include <linux/msi.h>
+>  #include <linux/slab.h>
+> @@ -33,6 +34,8 @@
+>  #define COMMAND_COPY			BIT(5)
+>  #define COMMAND_ENABLE_DOORBELL		BIT(6)
+>  #define COMMAND_DISABLE_DOORBELL	BIT(7)
+> +#define COMMAND_REMOTE_EDMA_SETUP	BIT(8)
+> +#define COMMAND_REMOTE_EDMA_CHECKSUM	BIT(9)
+>
+>  #define STATUS_READ_SUCCESS		BIT(0)
+>  #define STATUS_READ_FAIL		BIT(1)
+> @@ -48,6 +51,10 @@
+>  #define STATUS_DOORBELL_ENABLE_FAIL	BIT(11)
+>  #define STATUS_DOORBELL_DISABLE_SUCCESS BIT(12)
+>  #define STATUS_DOORBELL_DISABLE_FAIL	BIT(13)
+> +#define STATUS_REMOTE_EDMA_SETUP_SUCCESS	BIT(14)
+> +#define STATUS_REMOTE_EDMA_SETUP_FAIL		BIT(15)
+> +#define STATUS_REMOTE_EDMA_CHECKSUM_SUCCESS	BIT(16)
+> +#define STATUS_REMOTE_EDMA_CHECKSUM_FAIL	BIT(17)
+>
+>  #define FLAG_USE_DMA			BIT(0)
+>
+> @@ -77,6 +84,9 @@ struct pci_epf_test {
+>  	bool			dma_private;
+>  	const struct pci_epc_features *epc_features;
+>  	struct pci_epf_bar	db_bar;
+> +
+> +	/* For extended tests that rely on vendor-specific features */
+> +	void *data;
 >  };
-> =20
-> @@ -1460,7 +1460,7 @@ static struct dma_buf_attach_ops iopt_dmabuf_attach=
-_revoke_ops =3D {
->   */
->  static int
->  sym_vfio_pci_dma_buf_iommufd_map(struct dma_buf_attachment *attachment,
-> -				 struct dma_buf_phys_vec *phys)
-> +				 struct phys_vec *phys)
->  {
->  	typeof(&vfio_pci_dma_buf_iommufd_map) fn;
->  	int rc;
-> diff --git a/drivers/iommu/iommufd/selftest.c b/drivers/iommu/iommufd/sel=
-ftest.c
-> index 550ff36dec3a..989d8c4c60a7 100644
-> --- a/drivers/iommu/iommufd/selftest.c
-> +++ b/drivers/iommu/iommufd/selftest.c
-> @@ -2002,7 +2002,7 @@ static const struct dma_buf_ops iommufd_test_dmabuf=
-_ops =3D {
->  };
-> =20
->  int iommufd_test_dma_buf_iommufd_map(struct dma_buf_attachment *attachme=
-nt,
-> -				     struct dma_buf_phys_vec *phys)
-> +				     struct phys_vec *phys)
->  {
->  	struct iommufd_test_dma_buf *priv =3D attachment->dmabuf->priv;
-> =20
-> diff --git a/drivers/vfio/pci/nvgrace-gpu/main.c b/drivers/vfio/pci/nvgra=
-ce-gpu/main.c
-> index 84d142a47ec6..a0f4edd6a30b 100644
-> --- a/drivers/vfio/pci/nvgrace-gpu/main.c
-> +++ b/drivers/vfio/pci/nvgrace-gpu/main.c
-> @@ -784,7 +784,7 @@ nvgrace_gpu_write(struct vfio_device *core_vdev,
->  static int nvgrace_get_dmabuf_phys(struct vfio_pci_core_device *core_vde=
-v,
->  				   struct p2pdma_provider **provider,
->  				   unsigned int region_index,
-> -				   struct dma_buf_phys_vec *phys_vec,
-> +				   struct phys_vec *phys_vec,
->  				   struct vfio_region_dma_range *dma_ranges,
->  				   size_t nr_ranges)
->  {
-> diff --git a/drivers/vfio/pci/vfio_pci_dmabuf.c b/drivers/vfio/pci/vfio_p=
-ci_dmabuf.c
-> index d4d0f7d08c53..9a84c238c013 100644
-> --- a/drivers/vfio/pci/vfio_pci_dmabuf.c
-> +++ b/drivers/vfio/pci/vfio_pci_dmabuf.c
-> @@ -14,7 +14,7 @@ struct vfio_pci_dma_buf {
->  	struct vfio_pci_core_device *vdev;
->  	struct list_head dmabufs_elm;
->  	size_t size;
-> -	struct dma_buf_phys_vec *phys_vec;
-> +	struct phys_vec *phys_vec;
->  	struct p2pdma_provider *provider;
->  	u32 nr_ranges;
->  	u8 revoked : 1;
-> @@ -94,7 +94,7 @@ static const struct dma_buf_ops vfio_pci_dmabuf_ops =3D=
- {
->   *    will fail if it is currently revoked
->   */
->  int vfio_pci_dma_buf_iommufd_map(struct dma_buf_attachment *attachment,
-> -				 struct dma_buf_phys_vec *phys)
-> +				 struct phys_vec *phys)
->  {
->  	struct vfio_pci_dma_buf *priv;
-> =20
-> @@ -116,7 +116,7 @@ int vfio_pci_dma_buf_iommufd_map(struct dma_buf_attac=
-hment *attachment,
+>
+>  struct pci_epf_test_reg {
+> @@ -117,6 +127,454 @@ static enum pci_barno pci_epf_test_next_free_bar(struct pci_epf_test *epf_test)
+>  	return bar;
 >  }
->  EXPORT_SYMBOL_FOR_MODULES(vfio_pci_dma_buf_iommufd_map, "iommufd");
-> =20
-> -int vfio_pci_core_fill_phys_vec(struct dma_buf_phys_vec *phys_vec,
-> +int vfio_pci_core_fill_phys_vec(struct phys_vec *phys_vec,
->  				struct vfio_region_dma_range *dma_ranges,
->  				size_t nr_ranges, phys_addr_t start,
->  				phys_addr_t len)
-> @@ -148,7 +148,7 @@ EXPORT_SYMBOL_GPL(vfio_pci_core_fill_phys_vec);
->  int vfio_pci_core_get_dmabuf_phys(struct vfio_pci_core_device *vdev,
->  				  struct p2pdma_provider **provider,
->  				  unsigned int region_index,
-> -				  struct dma_buf_phys_vec *phys_vec,
-> +				  struct phys_vec *phys_vec,
->  				  struct vfio_region_dma_range *dma_ranges,
->  				  size_t nr_ranges)
+>
+> +#if IS_REACHABLE(CONFIG_DW_EDMA)
+> +#include <linux/dma/edma.h>
+> +
+> +#define PCITEST_EDMA_INFO_MAGIC		0x414d4445U /* 'EDMA' */
+> +#define PCITEST_EDMA_INFO_VERSION	0x00010000U
+> +#define PCITEST_EDMA_TEST_BUF_SIZE	(1024 * 1024)
+> +
+> +struct pci_epf_test_edma {
+> +	/* Remote eDMA test resources */
+> +	bool			enabled;
+> +	enum pci_barno		bar;
+> +	void			*info;
+> +	size_t			total_size;
+> +	void			*test_buf;
+> +	dma_addr_t		test_buf_phys;
+> +	size_t			test_buf_size;
+> +
+> +	/* DW eDMA specifics */
+> +	phys_addr_t		reg_phys;
+> +	size_t			reg_submap_sz;
+> +	unsigned long		reg_iova;
+> +	size_t			reg_iova_sz;
+> +	phys_addr_t		ll_rd_phys;
+> +	size_t			ll_rd_sz_aligned;
+> +	phys_addr_t		ll_wr_phys;
+> +	size_t			ll_wr_sz_aligned;
+> +};
+> +
+> +struct pcitest_edma_info {
+> +	__le32 magic;
+> +	__le32 version;
+> +
+> +	__le32 reg_off;
+> +	__le32 reg_size;
+> +
+> +	__le64 ll_rd_phys;
+> +	__le32 ll_rd_off;
+> +	__le32 ll_rd_size;
+> +
+> +	__le64 ll_wr_phys;
+> +	__le32 ll_wr_off;
+> +	__le32 ll_wr_size;
+> +
+> +	__le64 test_buf_phys;
+> +	__le32 test_buf_size;
+> +};
+> +
+> +static bool pci_epf_test_bar_is_reserved(struct pci_epf_test *test,
+> +					 enum pci_barno barno)
+> +{
+> +	struct pci_epf_test_edma *edma = test->data;
+> +
+> +	if (!edma)
+> +		return false;
+> +
+> +	return barno == edma->bar;
+> +}
+> +
+> +static void pci_epf_test_clear_submaps(struct pci_epf_bar *bar)
+> +{
+> +	kfree(bar->submap);
+> +	bar->submap = NULL;
+> +	bar->num_submap = 0;
+> +}
+> +
+> +static int pci_epf_test_add_submap(struct pci_epf_bar *bar, phys_addr_t phys,
+> +				   size_t size)
+> +{
+> +	struct pci_epf_bar_submap *submap, *new;
+> +
+> +	new = krealloc_array(bar->submap, bar->num_submap + 1, sizeof(*new),
+> +			     GFP_KERNEL);
+> +	if (!new)
+> +		return -ENOMEM;
+> +
+> +	bar->submap = new;
+> +	submap = &bar->submap[bar->num_submap];
+> +	submap->phys_addr = phys;
+> +	submap->size = size;
+> +	bar->num_submap++;
+> +
+> +	return 0;
+> +}
+> +
+> +static void pci_epf_test_clean_remote_edma(struct pci_epf_test *test)
+> +{
+> +	struct pci_epf_test_edma *edma = test->data;
+> +	struct pci_epf *epf = test->epf;
+> +	struct pci_epc *epc = epf->epc;
+> +	struct device *dev = epc->dev.parent;
+> +	struct iommu_domain *dom;
+> +	struct pci_epf_bar *bar;
+> +	enum pci_barno barno;
+> +
+> +	if (!edma)
+> +		return;
+> +
+> +	barno = edma->bar;
+> +	if (barno == NO_BAR)
+> +		return;
+> +
+> +	bar = &epf->bar[barno];
+> +
+> +	dom = iommu_get_domain_for_dev(dev);
+> +	if (dom && edma->reg_iova_sz) {
+> +		iommu_unmap(dom, edma->reg_iova, edma->reg_iova_sz);
+> +		edma->reg_iova = 0;
+> +		edma->reg_iova_sz = 0;
+> +	}
+> +
+> +	if (edma->test_buf) {
+> +		dma_free_coherent(dev, edma->test_buf_size,
+> +				  edma->test_buf,
+> +				  edma->test_buf_phys);
+> +		edma->test_buf = NULL;
+> +		edma->test_buf_phys = 0;
+> +		edma->test_buf_size = 0;
+> +	}
+> +
+> +	if (edma->info) {
+> +		pci_epf_free_space(epf, edma->info, barno, PRIMARY_INTERFACE);
+> +		edma->info = NULL;
+> +	}
+> +
+> +	pci_epf_test_clear_submaps(bar);
+> +	pci_epc_clear_bar(epc, epf->func_no, epf->vfunc_no, bar);
+> +
+> +	edma->bar = NO_BAR;
+> +	edma->enabled = false;
+> +}
+> +
+> +static int pci_epf_test_init_remote_edma(struct pci_epf_test *test)
+> +{
+> +	const struct pci_epc_features *epc_features = test->epc_features;
+> +	struct pci_epf_test_edma *edma;
+> +	struct pci_epf *epf = test->epf;
+> +	struct pci_epc *epc = epf->epc;
+> +	struct pcitest_edma_info *info;
+> +	struct device *dev = epc->dev.parent;
+> +	struct dw_edma_region region;
+> +	struct iommu_domain *dom;
+> +	size_t reg_sz_aligned, ll_rd_sz_aligned, ll_wr_sz_aligned;
+> +	phys_addr_t phys, ll_rd_phys, ll_wr_phys;
+> +	size_t ll_rd_size, ll_wr_size;
+> +	resource_size_t reg_size;
+> +	unsigned long iova;
+> +	size_t off, size;
+> +	int ret;
+> +
+> +	if (!test->dma_chan_tx || !test->dma_chan_rx)
+> +		return -ENODEV;
+> +
+> +	edma = devm_kzalloc(&epf->dev, sizeof(*edma), GFP_KERNEL);
+> +	if (!edma)
+> +		return -ENOMEM;
+> +	test->data = edma;
+> +
+> +	edma->bar = pci_epf_test_next_free_bar(test);
+> +	if (edma->bar == NO_BAR) {
+> +		dev_err(&epf->dev, "No spare BAR for remote eDMA (remote eDMA disabled)\n");
+> +		ret = -ENOSPC;
+> +		goto err;
+> +	}
+> +
+> +	ret = dw_edma_get_reg_window(epc, &edma->reg_phys, &reg_size);
+> +	if (ret) {
+> +		dev_err(dev, "failed to get edma reg window: %d\n", ret);
+> +		goto err;
+> +	}
+> +	dom = iommu_get_domain_for_dev(dev);
+> +	if (dom) {
+> +		phys = edma->reg_phys & PAGE_MASK;
+> +		size = PAGE_ALIGN(reg_size + edma->reg_phys - phys);
+> +		iova = phys;
+> +
+> +		ret = iommu_map(dom, iova, phys, size,
+> +				IOMMU_READ | IOMMU_WRITE | IOMMU_MMIO,
+> +				GFP_KERNEL);
+> +		if (ret) {
+> +			dev_err(dev, "failed to direct map eDMA reg: %d\n", ret);
+> +			goto err;
+> +		}
+> +		edma->reg_iova = iova;
+> +		edma->reg_iova_sz = size;
+> +	}
+> +
+> +	/* Get LL location addresses and sizes */
+> +	ret = dw_edma_chan_get_ll_region(test->dma_chan_rx, &region);
+> +	if (ret) {
+> +		dev_err(dev, "failed to get edma ll region for rx: %d\n", ret);
+> +		goto err;
+> +	}
+> +	ll_rd_phys = region.paddr;
+> +	ll_rd_size = region.sz;
+> +
+> +	ret = dw_edma_chan_get_ll_region(test->dma_chan_tx, &region);
+> +	if (ret) {
+> +		dev_err(dev, "failed to get edma ll region for tx: %d\n", ret);
+> +		goto err;
+> +	}
+> +	ll_wr_phys = region.paddr;
+> +	ll_wr_size = region.sz;
+> +
+> +	edma->test_buf_size = PCITEST_EDMA_TEST_BUF_SIZE;
+> +	edma->test_buf = dma_alloc_coherent(dev, edma->test_buf_size,
+> +					    &edma->test_buf_phys, GFP_KERNEL);
+> +	if (!edma->test_buf) {
+> +		ret = -ENOMEM;
+> +		goto err;
+> +	}
+> +
+> +	reg_sz_aligned = PAGE_ALIGN(reg_size);
+> +	ll_rd_sz_aligned = PAGE_ALIGN(ll_rd_size);
+> +	ll_wr_sz_aligned = PAGE_ALIGN(ll_wr_size);
+> +	edma->total_size = PAGE_SIZE + reg_sz_aligned + ll_rd_sz_aligned +
+> +			   ll_wr_sz_aligned;
+> +	size = roundup_pow_of_two(edma->total_size);
+> +
+> +	info = pci_epf_alloc_space(epf, size, edma->bar,
+> +				   epc_features, PRIMARY_INTERFACE);
+> +	if (!info) {
+> +		ret = -ENOMEM;
+> +		goto err;
+> +	}
+> +	memset(info, 0, size);
+> +
+> +	off = PAGE_SIZE;
+> +	info->magic = cpu_to_le32(PCITEST_EDMA_INFO_MAGIC);
+> +	info->version = cpu_to_le32(PCITEST_EDMA_INFO_VERSION);
+> +
+> +	info->reg_off = cpu_to_le32(off);
+> +	info->reg_size = cpu_to_le32(reg_size);
+> +	off += reg_sz_aligned;
+> +
+> +	info->ll_rd_phys = cpu_to_le64(ll_rd_phys);
+> +	info->ll_rd_off = cpu_to_le32(off);
+> +	info->ll_rd_size = cpu_to_le32(ll_rd_size);
+> +	off += ll_rd_sz_aligned;
+> +
+> +	info->ll_wr_phys = cpu_to_le64(ll_wr_phys);
+> +	info->ll_wr_off = cpu_to_le32(off);
+> +	info->ll_wr_size = cpu_to_le32(ll_wr_size);
+> +	off += ll_wr_sz_aligned;
+> +
+> +	info->test_buf_phys = cpu_to_le64(edma->test_buf_phys);
+> +	info->test_buf_size = cpu_to_le32(edma->test_buf_size);
+> +
+> +	edma->info = info;
+> +	edma->reg_submap_sz = reg_sz_aligned;
+> +	edma->ll_rd_phys = ll_rd_phys;
+> +	edma->ll_wr_phys = ll_wr_phys;
+> +	edma->ll_rd_sz_aligned = ll_rd_sz_aligned;
+> +	edma->ll_wr_sz_aligned = ll_wr_sz_aligned;
+> +
+> +	ret = pci_epc_set_bar(epc, epf->func_no, epf->vfunc_no,
+> +			      &epf->bar[edma->bar]);
+> +	if (ret) {
+> +		dev_err(dev,
+> +			"failed to init BAR%d for remote eDMA: %d\n",
+> +			edma->bar, ret);
+> +		goto err;
+> +	}
+> +	dev_info(dev, "BAR%d initialized for remote eDMA\n", edma->bar);
+> +
+> +	return 0;
+> +
+> +err:
+> +	pci_epf_test_clean_remote_edma(test);
+> +	devm_kfree(&epf->dev, edma);
+> +	test->data = NULL;
+> +	return ret;
+> +}
+> +
+> +static int pci_epf_test_map_remote_edma(struct pci_epf_test *test)
+> +{
+> +	struct pci_epf_test_edma *edma = test->data;
+> +	struct pcitest_edma_info *info;
+> +	struct pci_epf *epf = test->epf;
+> +	struct pci_epc *epc = epf->epc;
+> +	struct pci_epf_bar *bar;
+> +	enum pci_barno barno;
+> +	struct device *dev = epc->dev.parent;
+> +	int ret;
+> +
+> +	if (!edma)
+> +		return -ENODEV;
+> +
+> +	info = edma->info;
+> +	barno = edma->bar;
+> +
+> +	if (barno == NO_BAR)
+> +		return -ENOSPC;
+> +	if (!info || !edma->test_buf)
+> +		return -ENODEV;
+> +
+> +	bar = &epf->bar[barno];
+> +	pci_epf_test_clear_submaps(bar);
+> +
+> +	ret = pci_epf_test_add_submap(bar, bar->phys_addr, PAGE_SIZE);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = pci_epf_test_add_submap(bar, edma->reg_phys, edma->reg_submap_sz);
+> +	if (ret)
+> +		goto err_submap;
+> +
+> +	ret = pci_epf_test_add_submap(bar, edma->ll_rd_phys,
+> +				      edma->ll_rd_sz_aligned);
+> +	if (ret)
+> +		goto err_submap;
+> +
+> +	ret = pci_epf_test_add_submap(bar, edma->ll_wr_phys,
+> +				      edma->ll_wr_sz_aligned);
+> +	if (ret)
+> +		goto err_submap;
+> +
+> +	if (bar->size > edma->total_size) {
+> +		ret = pci_epf_test_add_submap(bar, 0,
+> +					      bar->size - edma->total_size);
+> +		if (ret)
+> +			goto err_submap;
+> +	}
+> +
+> +	ret = pci_epc_set_bar(epc, epf->func_no, epf->vfunc_no, bar);
+> +	if (ret) {
+> +		dev_err(dev, "failed to map BAR%d: %d\n", barno, ret);
+> +		goto err_submap;
+> +	}
+> +
+> +	/*
+> +	 * Endpoint-local interrupts must be ignored even if the host fails to
+> +	 * mask them.
+> +	 */
+> +	ret = dw_edma_chan_irq_config(test->dma_chan_tx, DW_EDMA_CH_IRQ_REMOTE);
+> +	if (ret) {
+> +		dev_err(dev, "failed to set irq mode for tx channel: %d\n",
+> +			ret);
+> +		goto err_bar;
+> +	}
+> +	ret = dw_edma_chan_irq_config(test->dma_chan_rx, DW_EDMA_CH_IRQ_REMOTE);
+> +	if (ret) {
+> +		dev_err(dev, "failed to set irq mode for rx channel: %d\n",
+> +			ret);
+> +		goto err_bar;
+> +	}
+> +
+> +	return 0;
+> +err_bar:
+> +	pci_epc_clear_bar(epc, epf->func_no, epf->vfunc_no, &epf->bar[barno]);
+> +err_submap:
+> +	pci_epf_test_clear_submaps(bar);
+> +	return ret;
+> +}
+> +
+> +static void pci_epf_test_remote_edma_setup(struct pci_epf_test *epf_test,
+> +					   struct pci_epf_test_reg *reg)
+> +{
+> +	struct pci_epf_test_edma *edma = epf_test->data;
+> +	size_t size = le32_to_cpu(reg->size);
+> +	void *buf;
+> +	int ret;
+> +
+> +	if (!edma || !edma->test_buf || size > edma->test_buf_size) {
+> +		reg->status = cpu_to_le32(STATUS_REMOTE_EDMA_SETUP_FAIL);
+> +		return;
+> +	}
+> +
+> +	buf = edma->test_buf;
+> +
+> +	if (!edma->enabled) {
+> +		/* NB. Currently DW eDMA is the only supported backend */
+> +		ret = pci_epf_test_map_remote_edma(epf_test);
+> +		if (ret) {
+> +			WRITE_ONCE(reg->status,
+> +				   cpu_to_le32(STATUS_REMOTE_EDMA_SETUP_FAIL));
+> +			return;
+> +		}
+> +		edma->enabled = true;
+> +	}
+> +
+> +	/* Populate the test buffer with random data */
+> +	get_random_bytes(buf, size);
+> +	reg->checksum = cpu_to_le32(crc32_le(~0, buf, size));
+> +
+> +	WRITE_ONCE(reg->status, cpu_to_le32(STATUS_REMOTE_EDMA_SETUP_SUCCESS));
+> +}
+> +
+> +static void pci_epf_test_remote_edma_checksum(struct pci_epf_test *epf_test,
+> +					      struct pci_epf_test_reg *reg)
+> +{
+> +	struct pci_epf_test_edma *edma = epf_test->data;
+> +	u32 status = le32_to_cpu(reg->status);
+> +	size_t size;
+> +	void *addr;
+> +	u32 crc32;
+> +
+> +	size = le32_to_cpu(reg->size);
+> +	if (!edma || !edma->test_buf || size > edma->test_buf_size) {
+> +		status |= STATUS_REMOTE_EDMA_CHECKSUM_FAIL;
+> +		reg->status = cpu_to_le32(status);
+> +		return;
+> +	}
+> +
+> +	addr = edma->test_buf;
+> +	crc32 = crc32_le(~0, addr, size);
+> +	status |= STATUS_REMOTE_EDMA_CHECKSUM_SUCCESS;
+> +
+> +	reg->checksum = cpu_to_le32(crc32);
+> +	reg->status = cpu_to_le32(status);
+> +}
+> +
+> +static void pci_epf_test_reset_dma_chan(struct dma_chan *chan)
+> +{
+> +	dw_edma_chan_irq_config(chan, DW_EDMA_CH_IRQ_DEFAULT);
+> +}
+> +#else
+> +static bool pci_epf_test_bar_is_reserved(struct pci_epf_test *test,
+> +					 enum pci_barno barno)
+> +{
+> +	return false;
+> +}
+> +
+> +static void pci_epf_test_clean_remote_edma(struct pci_epf_test *test)
+> +{
+> +}
+> +
+> +static int pci_epf_test_init_remote_edma(struct pci_epf_test *test)
+> +{
+> +	return -EOPNOTSUPP;
+> +}
+> +
+> +static void pci_epf_test_remote_edma_setup(struct pci_epf_test *epf_test,
+> +					   struct pci_epf_test_reg *reg)
+> +{
+> +	reg->status = cpu_to_le32(STATUS_REMOTE_EDMA_SETUP_FAIL);
+> +}
+> +
+> +static void pci_epf_test_remote_edma_checksum(struct pci_epf_test *epf_test,
+> +					      struct pci_epf_test_reg *reg)
+> +{
+> +	reg->status = cpu_to_le32(STATUS_REMOTE_EDMA_CHECKSUM_FAIL);
+> +}
+> +
+> +static void pci_epf_test_reset_dma_chan(struct dma_chan *chan)
+> +{
+> +}
+> +#endif
+> +
+>  static void pci_epf_test_dma_callback(void *param)
 >  {
-> diff --git a/include/linux/dma-buf-mapping.h b/include/linux/dma-buf-mapp=
-ing.h
-> index a3c0ce2d3a42..09bde3f748e4 100644
-> --- a/include/linux/dma-buf-mapping.h
-> +++ b/include/linux/dma-buf-mapping.h
-> @@ -9,7 +9,7 @@
-> =20
->  struct sg_table *dma_buf_phys_vec_to_sgt(struct dma_buf_attachment *atta=
-ch,
->  					 struct p2pdma_provider *provider,
-> -					 struct dma_buf_phys_vec *phys_vec,
-> +					 struct phys_vec *phys_vec,
->  					 size_t nr_ranges, size_t size,
->  					 enum dma_data_direction dir);
->  void dma_buf_free_sgt(struct dma_buf_attachment *attach, struct sg_table=
- *sgt,
-> diff --git a/include/linux/dma-buf.h b/include/linux/dma-buf.h
-> index 0bc492090237..400a5311368e 100644
-> --- a/include/linux/dma-buf.h
-> +++ b/include/linux/dma-buf.h
-> @@ -531,16 +531,6 @@ struct dma_buf_export_info {
->  	void *priv;
->  };
-> =20
-> -/**
-> - * struct dma_buf_phys_vec - describe continuous chunk of memory
-> - * @paddr:   physical address of that chunk
-> - * @len:     Length of this chunk
-> - */
-> -struct dma_buf_phys_vec {
-> -	phys_addr_t paddr;
-> -	size_t len;
-> -};
-> -
->  /**
->   * DEFINE_DMA_BUF_EXPORT_INFO - helper macro for exporters
->   * @name: export-info name
-> diff --git a/include/linux/vfio_pci_core.h b/include/linux/vfio_pci_core.h
-> index 706877f998ff..2ac288bb2c60 100644
-> --- a/include/linux/vfio_pci_core.h
-> +++ b/include/linux/vfio_pci_core.h
-> @@ -28,7 +28,6 @@
->  struct vfio_pci_core_device;
->  struct vfio_pci_region;
->  struct p2pdma_provider;
-> -struct dma_buf_phys_vec;
->  struct dma_buf_attachment;
-> =20
->  struct vfio_pci_eventfd {
-> @@ -62,25 +61,25 @@ struct vfio_pci_device_ops {
->  	int (*get_dmabuf_phys)(struct vfio_pci_core_device *vdev,
->  			       struct p2pdma_provider **provider,
->  			       unsigned int region_index,
-> -			       struct dma_buf_phys_vec *phys_vec,
-> +			       struct phys_vec *phys_vec,
->  			       struct vfio_region_dma_range *dma_ranges,
->  			       size_t nr_ranges);
->  };
-> =20
->  #if IS_ENABLED(CONFIG_VFIO_PCI_DMABUF)
-> -int vfio_pci_core_fill_phys_vec(struct dma_buf_phys_vec *phys_vec,
-> +int vfio_pci_core_fill_phys_vec(struct phys_vec *phys_vec,
->  				struct vfio_region_dma_range *dma_ranges,
->  				size_t nr_ranges, phys_addr_t start,
->  				phys_addr_t len);
->  int vfio_pci_core_get_dmabuf_phys(struct vfio_pci_core_device *vdev,
->  				  struct p2pdma_provider **provider,
->  				  unsigned int region_index,
-> -				  struct dma_buf_phys_vec *phys_vec,
-> +				  struct phys_vec *phys_vec,
->  				  struct vfio_region_dma_range *dma_ranges,
->  				  size_t nr_ranges);
->  #else
->  static inline int
-> -vfio_pci_core_fill_phys_vec(struct dma_buf_phys_vec *phys_vec,
-> +vfio_pci_core_fill_phys_vec(struct phys_vec *phys_vec,
->  			    struct vfio_region_dma_range *dma_ranges,
->  			    size_t nr_ranges, phys_addr_t start,
->  			    phys_addr_t len)
-> @@ -89,7 +88,7 @@ vfio_pci_core_fill_phys_vec(struct dma_buf_phys_vec *ph=
-ys_vec,
+>  	struct pci_epf_test *epf_test = param;
+> @@ -168,6 +626,8 @@ static int pci_epf_test_data_transfer(struct pci_epf_test *epf_test,
+>  		return -EINVAL;
+>  	}
+>
+> +	pci_epf_test_reset_dma_chan(chan);
+> +
+>  	if (epf_test->dma_private) {
+>  		sconf.direction = dir;
+>  		if (dir == DMA_MEM_TO_DEV)
+> @@ -870,6 +1330,14 @@ static void pci_epf_test_cmd_handler(struct work_struct *work)
+>  		pci_epf_test_disable_doorbell(epf_test, reg);
+>  		pci_epf_test_raise_irq(epf_test, reg);
+>  		break;
+> +	case COMMAND_REMOTE_EDMA_SETUP:
+> +		pci_epf_test_remote_edma_setup(epf_test, reg);
+> +		pci_epf_test_raise_irq(epf_test, reg);
+> +		break;
+> +	case COMMAND_REMOTE_EDMA_CHECKSUM:
+> +		pci_epf_test_remote_edma_checksum(epf_test, reg);
+> +		pci_epf_test_raise_irq(epf_test, reg);
+> +		break;
+>  	default:
+>  		dev_err(dev, "Invalid command 0x%x\n", command);
+>  		break;
+> @@ -961,6 +1429,10 @@ static int pci_epf_test_epc_init(struct pci_epf *epf)
+>  	if (ret)
+>  		epf_test->dma_supported = false;
+>
+> +	ret = pci_epf_test_init_remote_edma(epf_test);
+> +	if (ret && ret != -EOPNOTSUPP)
+> +		dev_warn(dev, "Remote eDMA setup failed\n");
+> +
+>  	if (epf->vfunc_no <= 1) {
+>  		ret = pci_epc_write_header(epc, epf->func_no, epf->vfunc_no, header);
+>  		if (ret) {
+> @@ -1007,6 +1479,7 @@ static void pci_epf_test_epc_deinit(struct pci_epf *epf)
+>  	struct pci_epf_test *epf_test = epf_get_drvdata(epf);
+>
+>  	cancel_delayed_work_sync(&epf_test->cmd_handler);
+> +	pci_epf_test_clean_remote_edma(epf_test);
+>  	pci_epf_test_clean_dma_chan(epf_test);
+>  	pci_epf_test_clear_bar(epf);
 >  }
->  static inline int vfio_pci_core_get_dmabuf_phys(
->  	struct vfio_pci_core_device *vdev, struct p2pdma_provider **provider,
-> -	unsigned int region_index, struct dma_buf_phys_vec *phys_vec,
-> +	unsigned int region_index, struct phys_vec *phys_vec,
->  	struct vfio_region_dma_range *dma_ranges, size_t nr_ranges)
->  {
->  	return -EOPNOTSUPP;
-> @@ -228,6 +227,6 @@ static inline bool is_aligned_for_order(struct vm_are=
-a_struct *vma,
->  }
-> =20
->  int vfio_pci_dma_buf_iommufd_map(struct dma_buf_attachment *attachment,
-> -				 struct dma_buf_phys_vec *phys);
-> +				 struct phys_vec *phys);
-> =20
->  #endif /* VFIO_PCI_CORE_H */
->=20
-> ---
-> base-commit: fcf463b92a08686d1aeb1e66674a72eb7a8bfb9b
-> change-id: 20260107-convert-to-pvec-bf04dfcf3d12
->=20
-> Best regards,
-> -- =20
-> Leon Romanovsky <leonro@nvidia.com>
->=20
->=20
-
+> @@ -1076,6 +1549,9 @@ static int pci_epf_test_alloc_space(struct pci_epf *epf)
+>  		if (bar == test_reg_bar)
+>  			continue;
+>
+> +		if (pci_epf_test_bar_is_reserved(epf_test, bar))
+> +			continue;
+> +
+>  		if (epc_features->bar[bar].type == BAR_FIXED)
+>  			test_reg_size = epc_features->bar[bar].fixed_size;
+>  		else
+> @@ -1146,6 +1622,7 @@ static void pci_epf_test_unbind(struct pci_epf *epf)
+>
+>  	cancel_delayed_work_sync(&epf_test->cmd_handler);
+>  	if (epc->init_complete) {
+> +		pci_epf_test_clean_remote_edma(epf_test);
+>  		pci_epf_test_clean_dma_chan(epf_test);
+>  		pci_epf_test_clear_bar(epf);
+>  	}
+> --
+> 2.51.0
+>
