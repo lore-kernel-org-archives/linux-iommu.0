@@ -1,235 +1,450 @@
-Received: from AM0PR02CU008.outbound.protection.outlook.com (mail-westeuropeazon11013013.outbound.protection.outlook.com [52.101.72.13])
+Received: from fhigh-a3-smtp.messagingengine.com (fhigh-a3-smtp.messagingengine.com [103.168.172.154])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EDA72E92A2;
-	Mon, 19 Jan 2026 20:39:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.72.13
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768855146; cv=fail; b=a6DoGqkWhrwuk4zREvggFvnc3LPjudCBuDVomSlKdvOPxW9LE2r8KY2XrFqUJBijbHY4JnoE7arKopv7AD0KzgwLfZIIXykB7YpWN3N5ZYLjtq5QejLkSzIpNOoN/5pkDDyjVgOclR0p+SM5vQalKfbhRE7L6QcxMg8szkwC5SE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768855146; c=relaxed/simple;
-	bh=IKNDb0X4Ia4uIgxCgpzjw4hnFxgB8ZNp0Urgz+ID6sc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=ZDOG+FCmAS4oIZnq/R07n5buvz+WcSKm94FkJvRccFSRFtNxchie3XuuzbwU2gVFqBHS5Yb7b+74STZ421SbSRYDHysCI8SF5DUrhxbiR74w5XyIaPHNSvusBP9wTJkfc6WdmIfQ8kVvB7EpnxgldZww7ryZ2oo6E9+Nreac0As=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com; spf=pass smtp.mailfrom=nxp.com; dkim=pass (2048-bit key) header.d=nxp.com header.i=@nxp.com header.b=YSs7m8Zp; arc=fail smtp.client-ip=52.101.72.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nxp.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBB1028FFE7
+	for <iommu@lists.linux.dev>; Mon, 19 Jan 2026 20:39:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.154
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1768855185; cv=none; b=ivKy5eNfdnhlSqsYh6iF3kp2ZZNiT3B97WRif40m9Xv7q39hhIjg+7IwxcaDgy28UHGu7aPMH7a1zfECr4Zm5C1ASA4O06oPnjvD1B+HtBDdwqJJghmJmS2CpHdpY0y2jZOHLIIZCHuqjJat6frPUWvmUCb782IHTk9hd18fyjQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1768855185; c=relaxed/simple;
+	bh=2ZHQG5QysP8GWCkJkDWOynJhD7gEi5uzjEoljrqGN1A=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=OSLQqNtzKtliQPd4oRCJlNmfuwHuM9BICnMYZ1fB26cp7a2waPzV3W3VqXlxOasrFNspQd0PCQAGy9rM2ldmVH2Ua5KiA1xT4P5RqOlmSurJjLsAHLcKJl73kvudZA1eJNVTgwKEEvpvAuTryz2bq7UyKIBX9/kak6HUOjfNn8c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=shazbot.org; spf=pass smtp.mailfrom=shazbot.org; dkim=pass (2048-bit key) header.d=shazbot.org header.i=@shazbot.org header.b=P1XnC/36; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=Ub2M62RE; arc=none smtp.client-ip=103.168.172.154
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=shazbot.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=shazbot.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=nxp.com header.i=@nxp.com header.b="YSs7m8Zp"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=rBNNCoy/hH9e8mfG+Qt8B02FKu1Fxjh17fD6R46pFffPRVSaLMyrFtZcH1X2EzaLukFiz4beq9VyOdHNXjv/pFKax7LUcBHNBHb5e18r7vS2mdKwhaxyCLuenmzP/tp2Vip066DgAm5nW+VRndDzkIX6Tx6Xhf5FLK4A7GI4r9iMkGv3hteDuVsYnWePbR26+yM/FPfW/x0glpIK6dYz+de87n2WmwoJp/v1YTkD1L4V2iK3uQLCW+jgJZeaxxkqtAuoC+uo5xdKdn25Peznq4u6ACfIBj9kz4UsoHNsqBAfG00e+sUW1KuNhMd0JRlgxghyrWcSlZgnnNvYFg8o7A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=J8EDeRiCbSg9y+6h2Kn0j/nAz7TQuy28vpJSwrcleSk=;
- b=cM6nwW6UQf7F/qL+c5SPKe1fznPNG7BzYFIOHkzuG6l110QChrzoj+kbYtb9M/vjCwZAYAH15QCW6+UhAV3lT7rjcyAzL0DWavSz8smFuoiUgRQOUSHGNeyYRlTwVzJF9KG/kOgYEI3wx2MyS/8WBdTVi+g11ayySea0/0MfcRSImJO3wY3Sp6MHfvi3FSYFRCZzBvfBs+P1BEaDsuSxGSm7m5ANmwv39sYrhNQc2hM/dOXMc7D0JE+HNP2CKt4TZSXRwnPMgEg4sN/mcYsRWs0/IermlLLeOu/UQ7eRgWBgP7yi36MaOsL7Ax73qzLwJUFIatODQ8CpLSayChW8gQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=J8EDeRiCbSg9y+6h2Kn0j/nAz7TQuy28vpJSwrcleSk=;
- b=YSs7m8ZpAehMlbxiBQwmTRfXPCxGquHdwxgLUHfWtDM0H0f1HmSNQRYvn6vnHIKjkUcjpO2b87E27F55ko3R//kqDHbRLLrSvwMJQpeSSyDpmR6f0P6zrlUtxhXnzapvFTH9K5fXT6wR48tkMWKDlrggDaG/bofEFOxm9RERLoravsuKOZusIfgklLTivZQFSvuq5eq7Dy8FivFYkw+CcE5U7nfDMYouiFdo7Pr7JpOCgi/lUx0eUdeDYN/mxqOMOTu2BOTrGp7OrJ/3j7LATNDLqJm6U6eZ7iIWWGUPuftuGO4XiqnzLQzejgKCl7w22xITcPcNCX2kohFJNQ3NMw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from PRASPRMB0004.eurprd04.prod.outlook.com (2603:10a6:102:29b::6)
- by DU2PR04MB8614.eurprd04.prod.outlook.com (2603:10a6:10:2d9::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9520.12; Mon, 19 Jan
- 2026 20:39:01 +0000
-Received: from PRASPRMB0004.eurprd04.prod.outlook.com
- ([fe80::6ab3:f427:606a:1ecd]) by PRASPRMB0004.eurprd04.prod.outlook.com
- ([fe80::6ab3:f427:606a:1ecd%4]) with mapi id 15.20.9520.009; Mon, 19 Jan 2026
- 20:39:01 +0000
-Date: Mon, 19 Jan 2026 15:38:51 -0500
-From: Frank Li <Frank.li@nxp.com>
-To: Koichiro Den <den@valinux.co.jp>
-Cc: dave.jiang@intel.com, cassel@kernel.org, mani@kernel.org,
-	kwilczynski@kernel.org, kishon@kernel.org, bhelgaas@google.com,
-	geert+renesas@glider.be, robh@kernel.org, vkoul@kernel.org,
-	jdmason@kudzu.us, allenbh@gmail.com, jingoohan1@gmail.com,
-	lpieralisi@kernel.org, linux-pci@vger.kernel.org,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
-	dmaengine@vger.kernel.org, iommu@lists.linux.dev,
-	ntb@lists.linux.dev, netdev@vger.kernel.org,
-	linux-kselftest@vger.kernel.org, arnd@arndb.de,
-	gregkh@linuxfoundation.org, joro@8bytes.org, will@kernel.org,
-	robin.murphy@arm.com, magnus.damm@gmail.com, krzk+dt@kernel.org,
-	conor+dt@kernel.org, corbet@lwn.net, skhan@linuxfoundation.org,
-	andriy.shevchenko@linux.intel.com, jbrunet@baylibre.com,
-	utkarsh02t@gmail.com
-Subject: Re: [RFC PATCH v4 18/38] NTB: ntb_transport: Use ntb_get_dma_dev()
-Message-ID: <aW6WW6S3Qq/usQyi@lizhi-Precision-Tower-5810>
-References: <20260118135440.1958279-1-den@valinux.co.jp>
- <20260118135440.1958279-19-den@valinux.co.jp>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260118135440.1958279-19-den@valinux.co.jp>
-X-ClientProxiedBy: SA9PR11CA0006.namprd11.prod.outlook.com
- (2603:10b6:806:6e::11) To PRASPRMB0004.eurprd04.prod.outlook.com
- (2603:10a6:102:29b::6)
+	dkim=pass (2048-bit key) header.d=shazbot.org header.i=@shazbot.org header.b="P1XnC/36";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="Ub2M62RE"
+Received: from phl-compute-04.internal (phl-compute-04.internal [10.202.2.44])
+	by mailfhigh.phl.internal (Postfix) with ESMTP id 0641114003D8;
+	Mon, 19 Jan 2026 15:39:41 -0500 (EST)
+Received: from phl-frontend-04 ([10.202.2.163])
+  by phl-compute-04.internal (MEProxy); Mon, 19 Jan 2026 15:39:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=shazbot.org; h=
+	cc:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to; s=fm1; t=1768855181;
+	 x=1768941581; bh=FBdWTk6CLd7WzHVr+BniKWIMiLwjgEIx9h33mejtkC4=; b=
+	P1XnC/36fYykJJ9hnqqSF7UNj0QHCjJgtc8y3GJ6ukEpTAJqf56qB0vn4rQdanq/
+	ofjcBtKyivy1Km7zJZYqh9Zp5VXsG1knNw2ILGRIiuKRz4AeO0+i/yIsTJER3fWp
+	CjeX4jMzosIIICpTRnolIew+Ew/06hKDsFVgcazeS6/Dl4+bTBfa2hmJyU5Mf9hs
+	4THLLOq5lg+WVCwHIdvFK45O+I12DJ4OuSu6kW1nflmCl2ilYHwM7EbQXTYW4gR4
+	7p8tefrcMbcrc0YnW8JstgfX9dScl/jwqyi+gKdmsO3L6rnL+A2lgBz0zzG68F4K
+	9YcRVwhbBNq76aXa5M6Vkw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1768855181; x=
+	1768941581; bh=FBdWTk6CLd7WzHVr+BniKWIMiLwjgEIx9h33mejtkC4=; b=U
+	b2M62REKHprj2NiRN7bNn/j7uYcseRMwk/iE7FqETvSL8QPL8fWor1aqIiZfT0vi
+	pkHbIm0ydLrQdMkr7ECyMdeWa/3dNWYklYMAufrzZUzb7w/yxw8AbmN6vu6sGwJ3
+	v2eS7eXk+YH8FtTQezbtgvmtwLZzmmZdYN9YbZnME2P0BMa+eo0qTzeEj3ewf9uA
+	knfSQtuGOm7SdAK8q70kAmlBcXUE7qyDwgGl1kkGGKb3k3kfZh2VWYZOHHYTLhX3
+	d5qUCEmTc3S/Q1Ea8jg1X9nPe4kUuXeBfxUVOm6I0xrHtlLHup9cJOs6QyiVx/7o
+	iUphbhdNvvNSmKwmLs75w==
+X-ME-Sender: <xms:i5ZuafTUgcayBDnaDZ8yDTipSw_jpQebmpIGZZLmXkFXWppyWBZgdA>
+    <xme:i5ZuaVq7XJDTnZZ7v2BbwMlv4oBszoWhusrocVsnkZEFnlg0fdlvesIaiT8mx4lHe
+    LsTaqweB6LSC2T2-8GJZzbdpVEhq81yFAlta-SXK4knx-F-gE-MHA>
+X-ME-Received: <xmr:i5ZuadbpEr4MLpr4RVFVKR8cig5phbMu9010vXXUbNhDA7uXnG3ujsX4It0>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefgedrtddtgddufeekheegucetufdoteggodetrf
+    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfurfetoffkrfgpnffqhgenuceu
+    rghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujf
+    gurhepfffhvfevuffkjghfofggtgfgsehtqhertdertdejnecuhfhrohhmpeetlhgvgicu
+    hghilhhlihgrmhhsohhnuceorghlvgigsehshhgriigsohhtrdhorhhgqeenucggtffrrg
+    htthgvrhhnpeetuefgleefhfdvueegffdtffevhfffgfffiedutdetgffhheejtdekfeek
+    ieehgfenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivg
+    eptdenucfrrghrrghmpehmrghilhhfrhhomheprghlvgigsehshhgriigsohhtrdhorhhg
+    pdhnsggprhgtphhtthhopeduledpmhhouggvpehsmhhtphhouhhtpdhrtghpthhtoheplh
+    gvohhnsehkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhmvgguihgrsehv
+    ghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtohepughrihdquggvvhgvlheslhhish
+    htshdrfhhrvggvuggvshhkthhophdrohhrghdprhgtphhtthhopehlihhnrghrohdqmhhm
+    qdhsihhgsehlihhsthhsrdhlihhnrghrohdrohhrghdprhgtphhtthhopehlihhnuhigqd
+    hkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehiohhmmhhu
+    sehlihhsthhsrdhlihhnuhigrdguvghvpdhrtghpthhtohepkhhvmhesvhhgvghrrdhkvg
+    hrnhgvlhdrohhrghdprhgtphhtthhopehsuhhmihhtrdhsvghmfigrlheslhhinhgrrhho
+    rdhorhhgpdhrtghpthhtoheptghhrhhishhtihgrnhdrkhhovghnihhgsegrmhgurdgtoh
+    hm
+X-ME-Proxy: <xmx:i5ZuaQQjb-1iZXZxx1XoHH3oBltF_1jZw1Uy74MVDv4Tx3SNVeQk2A>
+    <xmx:i5Zuabdni7r3rs7uS6cXUPkdvZDTtpYo7_QmJaG6qi9KXhEi6ZOZ2g>
+    <xmx:i5Zuafl8sE7RC1vxkqw9TpG6v9zgIXmZQydq7x8z2MeThz34ntXLeA>
+    <xmx:i5ZuaQilZLD1rPx47evUb8GhlOIopeOC1mJTBX-cqbxpd3WFlZEkkA>
+    <xmx:jZZuaYE6MQFViaKOq8g2Z3Bl3liKI28dVxcFL6GsTsdDSO9ji5U-6dwm>
+Feedback-ID: i03f14258:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 19 Jan 2026 15:39:38 -0500 (EST)
+Date: Mon, 19 Jan 2026 13:38:38 -0700
+From: Alex Williamson <alex@shazbot.org>
+To: Leon Romanovsky <leon@kernel.org>
+Cc: linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+ linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev, kvm@vger.kernel.org, Sumit Semwal
+ <sumit.semwal@linaro.org>, Christian =?UTF-8?B?S8O2bmln?=
+ <christian.koenig@amd.com>, Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian
+ <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
+ <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Yishai Hadas
+ <yishaih@nvidia.com>, Shameer Kolothum <skolothumtho@nvidia.com>, Ankit
+ Agrawal <ankita@nvidia.com>, Matthew Wilcox <willy@infradead.org>, Jens
+ Axboe <axboe@kernel.dk>
+Subject: Re: types: reuse common phys_vec type instead of DMABUF
+ =?UTF-8?B?b3BlbuKAkWNvZGVk?= variant
+Message-ID: <20260119133838.66203b01@shazbot.org>
+In-Reply-To: <20260107-convert-to-pvec-v1-1-6e3ab8079708@nvidia.com>
+References: <20260107-convert-to-pvec-v1-1-6e3ab8079708@nvidia.com>
+X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PRASPRMB0004:EE_|DU2PR04MB8614:EE_
-X-MS-Office365-Filtering-Correlation-Id: 562317f7-5304-40b7-0df6-08de579ac726
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|7416014|52116014|376014|1800799024|19092799006|366016|38350700014|7053199007;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?7zqE0dKhOXy5CzHs1a8YBJujMOzwF2Z4YNqNAujczEHvaXQN6AdK/iwX6hsx?=
- =?us-ascii?Q?VIwCKJ0G0sr7BecehbZ7rC/eKk2ueSyKtBNTCaLBZvfemwVTV9SMlWEzpYvC?=
- =?us-ascii?Q?hKUDIwUys435iHDcDERnGLRMtLUmmQTK0gmy+Vf4yTYCbHcQEJ5hqifBy+9A?=
- =?us-ascii?Q?q1k0gXyc3GnmgJduDTu66FLuquDJuxZvMIRY+WrspvruYEDrHz55TqyJNdY4?=
- =?us-ascii?Q?hPE18ob6wj26KgEVueb2yWTTivhpbfBvA0nhBfLQUf5/1mUZrqaxbn+4YfXa?=
- =?us-ascii?Q?Jqqgc5bf9CzcJsJS1lYbHpT2m7SJ7gtqvUjb/IkC2aaLYanw/UUJ5WmnPWi3?=
- =?us-ascii?Q?7Kwdah1bOQe5r3PtSPjvp31E5BMfcPO6Lqbcwh3iQjZkTl3kn99Bsn+n2qmk?=
- =?us-ascii?Q?MY0cF/MgTyU0gC95Q2x9JDMokJl6Za8LGNAwy+7WNU73UDHAGfGrVX2SKYZg?=
- =?us-ascii?Q?pxvblEKYqYdmOSFM+jTXeVdRPSbv0dBmkI1tMeGEJKKGQZPJM+jdKR7B2TPX?=
- =?us-ascii?Q?n2bgmIomQwQRn3ZL2eMTrxH6H7g8adOjt376gvX+r5SAAoDOgw/cLiKV3SEF?=
- =?us-ascii?Q?/5uBRNWTE9S7CdBkeSqiyLRIUl6j+Z97wQxziK/Gq6bykIML6gojk7Mw9FaD?=
- =?us-ascii?Q?o7XATTihzlt5kzNCUi96oKSlMjrzST3ZbKGgbSsUdk5drU5n7E/0o8tTWMv7?=
- =?us-ascii?Q?hPsJ7OFLAaNL5g5Be249kAN34uZEk1BDXUIMj1uQFDbWFqW2FS1JgndV7Ro7?=
- =?us-ascii?Q?AKQpnbjYNywyQYX1S4LHLyc9hxd6VtBUZoU10qcgrUxI/0YooQyAh3DIMYQI?=
- =?us-ascii?Q?LeEpvzpF/IgcRpR5hStu8MJyH0BNXGZie+HOUOVDO9V/HW2Tdo77x3Ep67Jp?=
- =?us-ascii?Q?IXSahquGcwtEaz5urT3R/k+5BbPoIH0vMahJVL859Cotiph4UzdKLQYmY6bA?=
- =?us-ascii?Q?FNsQLYElxnwbCfunV6BQM4gImmFD/Z/swiXptCuTf0JV9022nfyAelPUnB+5?=
- =?us-ascii?Q?0Za0OuU4AeEWPNKA26645sKz758UPgVnj1JkMUfocLI/OrMzrvv11lAqMibm?=
- =?us-ascii?Q?WuGPSHmq8xsHDLjS9rDIhZHdhJzwHxpX3hRQW/KCyoE8Dqd6LdSqJ06yYlLq?=
- =?us-ascii?Q?7SRcpZCMRK686PAb4HhDsVB6jnhExDDkmUMQfd+6pp5jqgmBuQrD2ni7eKae?=
- =?us-ascii?Q?pheYSR1Ummp+2qYGfG0U6BkrnN+CaCWQXi6/ne0KoZj7lwBdHZDNL418mTLQ?=
- =?us-ascii?Q?jw0FYP7+Tdyhs8ltot2ACmWhHd6hZIUrfphRbRay0g4LunS6UZvJRKsWl7Cs?=
- =?us-ascii?Q?6LJKm1bP9lvxNjuGlMck5TJaXZlBgUNYy5OX+zQOdUsMrop512DuATrqUqaV?=
- =?us-ascii?Q?5C/mwVdPxXk4bv1LeRNG+p1iwlhkcb3HGiZv6Jke43atNVbYValV2ydioPuY?=
- =?us-ascii?Q?nSxfcFv6zNQizbhg81pZGvcOx3ZRvl+5g+1JDpMq2ppgXzUAlfLkSVPkT5hA?=
- =?us-ascii?Q?c7ztbw6JGZFhdlAF1M4u2/An0jf5Ed/4jLlb9D92tTJuQ3lw6OCbC/ulGGUM?=
- =?us-ascii?Q?9jitB/P+Dm8EI4cOAPYyQhMqgQhyHdppUDRkibNiZbnRBtr22RYKUjxLKyGz?=
- =?us-ascii?Q?Y6XLPBv12xpZAQZWGGPm5Z8=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PRASPRMB0004.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(52116014)(376014)(1800799024)(19092799006)(366016)(38350700014)(7053199007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?IsYDuFU8r1RP5HFFLQfFyVMmRYIMRcHACJrehgOhTY9jCYLJgf4zIK8C6wZZ?=
- =?us-ascii?Q?cTE8yaCiiZeHlfNoxNAL10ACpWLUnFIZb1w+0VNUEVp2Es+l/tov048HyBhg?=
- =?us-ascii?Q?gUX7WglAQY4Zo6R+ykJEzcwV2rqaMwtU0CAqAMXZYkzRwXufc7Rt+sE77rwN?=
- =?us-ascii?Q?3nmIzPM14NwP/OltHsujqdw4yVf8Haco+IGZtURErrSf746bsqvNuOkMNv8u?=
- =?us-ascii?Q?/1A7ufMAP31JRvBXkh1NXwzjoGBy62h64jw3o1+lBDquHxnv/C3MwngrJWRk?=
- =?us-ascii?Q?mlQf9K50BIn0LIiC+M/2+UKbsrematQnqePwThNDJbU7ObCgw2Z9GY9/pkl1?=
- =?us-ascii?Q?lvn8sg6h7kdA5Q7A1n7BQzNiP/aqiR0jdbKHWFoLATz40pwaETD2bgsrDuFY?=
- =?us-ascii?Q?tQCjmO1EsUAdhl+kOOisnr+pcG6fIl5GlE8aj1ljJ+UkG7CAWk9/ePr+pmyI?=
- =?us-ascii?Q?dlDlMBQ33lrdF0gj+Aj3W1dDsjc1MIUHgQx6Y/U7Qcthv9dUXbprFbmkOzt/?=
- =?us-ascii?Q?gZ8ZvYK2DBMYwq5D4be9CG1F/U3yQiww9+R+1M1aIWRHrZyvLQwV6v23AyC3?=
- =?us-ascii?Q?CgGwA7dGAOO6NWHNkqUWCX3uKcl8EyfNzIJ3hRpJVCogWLK0rDl5xVW9c+cX?=
- =?us-ascii?Q?wVecRCYRt5wh/c740F7vm/soDg+riVqDrQqqz5XQjdH12jecXLFynjp5WBiZ?=
- =?us-ascii?Q?RpptXYLVXxFd6wgHGX8EXH4IMjwDOpXOX3q4z1ngEyjgSR1jCgbN/8jR1i+4?=
- =?us-ascii?Q?EmPh9SXPBg3Q76j2calkiujwwtIIp01fAp3nL1XOMIBSa+jCdJe4k1OlrDz0?=
- =?us-ascii?Q?4sK0x2X/Z9/kr3HvGjtJ6FKVMtL3+YUbv3IziHbFFkek6Z9nzqU9AeSFmlTh?=
- =?us-ascii?Q?3216o7t5FMBb9n3w/zICkzaZV4rhUmgc+lyZofeRJ3P3WAPyu0Srj1T6aVVE?=
- =?us-ascii?Q?74NnRURjFJBCdEShsSa/zAFmYW6U0NrKzoOVCviRgQHu+kqMh0vmQHQkF9qq?=
- =?us-ascii?Q?YAcIQfW6+GgBoRFGz0kHDUDBfYlfthsiG/6K5TqIev1CF96gANosCDhee1Vv?=
- =?us-ascii?Q?smrYmVrAz2R1ybw081+X2Rs0vy6pGfv+8gC59Dcgqh2UyZXhz/EGQ6FE61dF?=
- =?us-ascii?Q?kjfrCPo8j/Ol7yOeHGzRP7WTwCyi/th1oOYzrTDrfBT/6Lwej3ISiSgnm44M?=
- =?us-ascii?Q?tUKNErnN5jZyAwJVAsD99sGaC3j7FLp8OklUJm4yvbUZlRJRJTDI9gfTX5vD?=
- =?us-ascii?Q?bCYuOaplO91DZqeA1+oZIh8y93ejCKyuLSghnad+I0M2lpYgJfIe+rW7FAex?=
- =?us-ascii?Q?OzI1lALjGbClVNeJQvYioC1JVv3Kvn4R3kppzeodOOgNMefn3OvxssnnjKWO?=
- =?us-ascii?Q?NHD/EgkBMnJJA4FIRgPBNAKPeLqY5V8MdGnEJfzEQZQRSKFX63KdmpjldNka?=
- =?us-ascii?Q?Xh/eJQcLKcdBiQNj3vKlbZyFF9MKgYwkAls5P1NFr5TvexsYz4+MLEjwYBUH?=
- =?us-ascii?Q?sqjUxZP9rIerUwKNANf5I2CGJOxRiP7za4EwCgObx+MIVbVyOoeinigPzbXv?=
- =?us-ascii?Q?5ycWXUAgTztfVUrOzfSkOtLGw+XL5WS31WnOXeHd0+7QRifnCnqVIbdTluHX?=
- =?us-ascii?Q?U+gS5HbY9ooVKL1K+wmpjqisAyJP6IcFDkdip5RLwmZOnrVPmKp9xP5B+9t0?=
- =?us-ascii?Q?yH2saBw3WCTMewfSPS9gUtN91sASR97qJ4Do8XKdqKfA3I5o?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 562317f7-5304-40b7-0df6-08de579ac726
-X-MS-Exchange-CrossTenant-AuthSource: PRASPRMB0004.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jan 2026 20:39:01.3386
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: uLuKblLdzMeifspwhO1UK5SFu5Kd3+lJCMfSKDYr5fWutduVBzCMLwJwtjs36l5lOSwpd46U8rZDKVtRe8Epqg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU2PR04MB8614
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Sun, Jan 18, 2026 at 10:54:20PM +0900, Koichiro Den wrote:
-> Replace direct use of ntb->pdev with ntb_get_dma_dev() for DMA-safe
-> allocations and frees. This allows ntb_transport to operate on NTB
-> implementations that are not backed by a PCI device from IOMMU
-> perspective.
->
-> Signed-off-by: Koichiro Den <den@valinux.co.jp>
+On Wed,  7 Jan 2026 11:14:14 +0200
+Leon Romanovsky <leon@kernel.org> wrote:
+
+> From: Leon Romanovsky <leonro@nvidia.com>
+>=20
+> After commit fcf463b92a08 ("types: move phys_vec definition to common hea=
+der"),
+> we can use the shared phys_vec type instead of the DMABUF=E2=80=91specific
+> dma_buf_phys_vec, which duplicated the same structure and semantics.
+>=20
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 > ---
-Reviewed-by: Frank Li <Frank.Li@nxp.com>
->  drivers/ntb/ntb_transport.c | 18 +++++++++---------
->  1 file changed, 9 insertions(+), 9 deletions(-)
->
-> diff --git a/drivers/ntb/ntb_transport.c b/drivers/ntb/ntb_transport.c
-> index 6ed680d0470f..7b320249629c 100644
-> --- a/drivers/ntb/ntb_transport.c
-> +++ b/drivers/ntb/ntb_transport.c
-> @@ -771,13 +771,13 @@ static void ntb_transport_msi_desc_changed(void *data)
->  static void ntb_free_mw(struct ntb_transport_ctx *nt, int num_mw)
+> Alex,
+>=20
+> According to diffstat, VFIO is the subsystem with the largest set of chan=
+ges,
+> so it would be great if you could take it through your tree.
+>=20
+> The series is based on the for-7.0/blk-pvec shared branch from Jens:
+> https://git.kernel.org/pub/scm/linux/kernel/git/axboe/linux.git/log/?h=3D=
+for-7.0/blk-pvec
+
+Applied to vfio next branch for v6.20/7.0 and pushed tag
+common_phys_vec_via_vfio including this commit and dependency.
+Thanks,
+
+Alex
+
+
+> ---
+> Cc: linux-media@vger.kernel.org
+> Cc: dri-devel@lists.freedesktop.org
+> Cc: linaro-mm-sig@lists.linaro.org
+> Cc: linux-kernel@vger.kernel.org
+> Cc: iommu@lists.linux.dev
+> Cc: kvm@vger.kernel.org
+> To: Sumit Semwal <sumit.semwal@linaro.org>
+> To: Christian K=C3=B6nig <christian.koenig@amd.com>
+> To: Jason Gunthorpe <jgg@ziepe.ca>
+> To: Kevin Tian <kevin.tian@intel.com>
+> To: Joerg Roedel <joro@8bytes.org>
+> To: Will Deacon <will@kernel.org>
+> To: Robin Murphy <robin.murphy@arm.com>
+> To: Yishai Hadas <yishaih@nvidia.com>
+> To: Shameer Kolothum <skolothumtho@nvidia.com>
+> To: Ankit Agrawal <ankita@nvidia.com>
+> To: Alex Williamson <alex@shazbot.org>
+> Cc: Matthew Wilcox <willy@infradead.org>
+> Cc: Jens Axboe <axboe@kernel.dk>
+> ---
+>  drivers/dma-buf/dma-buf-mapping.c       |  6 +++---
+>  drivers/iommu/iommufd/io_pagetable.h    |  2 +-
+>  drivers/iommu/iommufd/iommufd_private.h |  5 ++---
+>  drivers/iommu/iommufd/pages.c           |  4 ++--
+>  drivers/iommu/iommufd/selftest.c        |  2 +-
+>  drivers/vfio/pci/nvgrace-gpu/main.c     |  2 +-
+>  drivers/vfio/pci/vfio_pci_dmabuf.c      |  8 ++++----
+>  include/linux/dma-buf-mapping.h         |  2 +-
+>  include/linux/dma-buf.h                 | 10 ----------
+>  include/linux/vfio_pci_core.h           | 13 ++++++-------
+>  10 files changed, 21 insertions(+), 33 deletions(-)
+>=20
+> diff --git a/drivers/dma-buf/dma-buf-mapping.c b/drivers/dma-buf/dma-buf-=
+mapping.c
+> index b7352e609fbd..174677faa577 100644
+> --- a/drivers/dma-buf/dma-buf-mapping.c
+> +++ b/drivers/dma-buf/dma-buf-mapping.c
+> @@ -33,8 +33,8 @@ static struct scatterlist *fill_sg_entry(struct scatter=
+list *sgl, size_t length,
+>  }
+> =20
+>  static unsigned int calc_sg_nents(struct dma_iova_state *state,
+> -				  struct dma_buf_phys_vec *phys_vec,
+> -				  size_t nr_ranges, size_t size)
+> +				  struct phys_vec *phys_vec, size_t nr_ranges,
+> +				  size_t size)
 >  {
->  	struct ntb_transport_mw *mw = &nt->mw_vec[num_mw];
-> -	struct pci_dev *pdev = nt->ndev->pdev;
-> +	struct device *dev = ntb_get_dma_dev(nt->ndev);
->
-> -	if (!mw->virt_addr)
-> +	if (!dev || !mw->virt_addr)
->  		return;
->
->  	ntb_mw_clear_trans(nt->ndev, PIDX, num_mw);
-> -	dma_free_coherent(&pdev->dev, mw->alloc_size,
-> +	dma_free_coherent(dev, mw->alloc_size,
->  			  mw->alloc_addr, mw->dma_addr);
->  	mw->xlat_size = 0;
->  	mw->buff_size = 0;
-> @@ -847,13 +847,13 @@ static int ntb_set_mw(struct ntb_transport_ctx *nt, int num_mw,
->  		      resource_size_t size)
+>  	unsigned int nents =3D 0;
+>  	size_t i;
+> @@ -91,7 +91,7 @@ struct dma_buf_dma {
+>   */
+>  struct sg_table *dma_buf_phys_vec_to_sgt(struct dma_buf_attachment *atta=
+ch,
+>  					 struct p2pdma_provider *provider,
+> -					 struct dma_buf_phys_vec *phys_vec,
+> +					 struct phys_vec *phys_vec,
+>  					 size_t nr_ranges, size_t size,
+>  					 enum dma_data_direction dir)
 >  {
->  	struct ntb_transport_mw *mw = &nt->mw_vec[num_mw];
-> -	struct pci_dev *pdev = nt->ndev->pdev;
-> +	struct device *dev = ntb_get_dma_dev(nt->ndev);
->  	size_t xlat_size, buff_size;
->  	resource_size_t xlat_align;
->  	resource_size_t xlat_align_size;
+> diff --git a/drivers/iommu/iommufd/io_pagetable.h b/drivers/iommu/iommufd=
+/io_pagetable.h
+> index 14cd052fd320..27e3e311d395 100644
+> --- a/drivers/iommu/iommufd/io_pagetable.h
+> +++ b/drivers/iommu/iommufd/io_pagetable.h
+> @@ -202,7 +202,7 @@ struct iopt_pages_dmabuf_track {
+> =20
+>  struct iopt_pages_dmabuf {
+>  	struct dma_buf_attachment *attach;
+> -	struct dma_buf_phys_vec phys;
+> +	struct phys_vec phys;
+>  	/* Always PAGE_SIZE aligned */
+>  	unsigned long start;
+>  	struct list_head tracker;
+> diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iomm=
+ufd/iommufd_private.h
+> index eb6d1a70f673..6ac1965199e9 100644
+> --- a/drivers/iommu/iommufd/iommufd_private.h
+> +++ b/drivers/iommu/iommufd/iommufd_private.h
+> @@ -20,7 +20,6 @@ struct iommu_group;
+>  struct iommu_option;
+>  struct iommufd_device;
+>  struct dma_buf_attachment;
+> -struct dma_buf_phys_vec;
+> =20
+>  struct iommufd_sw_msi_map {
+>  	struct list_head sw_msi_item;
+> @@ -718,7 +717,7 @@ int __init iommufd_test_init(void);
+>  void iommufd_test_exit(void);
+>  bool iommufd_selftest_is_mock_dev(struct device *dev);
+>  int iommufd_test_dma_buf_iommufd_map(struct dma_buf_attachment *attachme=
+nt,
+> -				     struct dma_buf_phys_vec *phys);
+> +				     struct phys_vec *phys);
+>  #else
+>  static inline void iommufd_test_syz_conv_iova_id(struct iommufd_ucmd *uc=
+md,
+>  						 unsigned int ioas_id,
+> @@ -742,7 +741,7 @@ static inline bool iommufd_selftest_is_mock_dev(struc=
+t device *dev)
+>  }
+>  static inline int
+>  iommufd_test_dma_buf_iommufd_map(struct dma_buf_attachment *attachment,
+> -				 struct dma_buf_phys_vec *phys)
+> +				 struct phys_vec *phys)
+>  {
+>  	return -EOPNOTSUPP;
+>  }
+> diff --git a/drivers/iommu/iommufd/pages.c b/drivers/iommu/iommufd/pages.c
+> index dbe51ecb9a20..bababd564cf9 100644
+> --- a/drivers/iommu/iommufd/pages.c
+> +++ b/drivers/iommu/iommufd/pages.c
+> @@ -1077,7 +1077,7 @@ static int pfn_reader_user_update_pinned(struct pfn=
+_reader_user *user,
+>  }
+> =20
+>  struct pfn_reader_dmabuf {
+> -	struct dma_buf_phys_vec phys;
+> +	struct phys_vec phys;
+>  	unsigned long start_offset;
+>  };
+> =20
+> @@ -1460,7 +1460,7 @@ static struct dma_buf_attach_ops iopt_dmabuf_attach=
+_revoke_ops =3D {
+>   */
+>  static int
+>  sym_vfio_pci_dma_buf_iommufd_map(struct dma_buf_attachment *attachment,
+> -				 struct dma_buf_phys_vec *phys)
+> +				 struct phys_vec *phys)
+>  {
+>  	typeof(&vfio_pci_dma_buf_iommufd_map) fn;
 >  	int rc;
->
-> -	if (!size)
-> +	if (!dev || !size)
->  		return -EINVAL;
->
->  	rc = ntb_mw_get_align(nt->ndev, PIDX, num_mw, &xlat_align,
-> @@ -876,12 +876,12 @@ static int ntb_set_mw(struct ntb_transport_ctx *nt, int num_mw,
->  	mw->buff_size = buff_size;
->  	mw->alloc_size = buff_size;
->
-> -	rc = ntb_alloc_mw_buffer(mw, &pdev->dev, xlat_align);
-> +	rc = ntb_alloc_mw_buffer(mw, dev, xlat_align);
->  	if (rc) {
->  		mw->alloc_size *= 2;
-> -		rc = ntb_alloc_mw_buffer(mw, &pdev->dev, xlat_align);
-> +		rc = ntb_alloc_mw_buffer(mw, dev, xlat_align);
->  		if (rc) {
-> -			dev_err(&pdev->dev,
-> +			dev_err(dev,
->  				"Unable to alloc aligned MW buff\n");
->  			mw->xlat_size = 0;
->  			mw->buff_size = 0;
-> @@ -894,7 +894,7 @@ static int ntb_set_mw(struct ntb_transport_ctx *nt, int num_mw,
->  	rc = ntb_mw_set_trans(nt->ndev, PIDX, num_mw, mw->dma_addr,
->  			      mw->xlat_size);
->  	if (rc) {
-> -		dev_err(&pdev->dev, "Unable to set mw%d translation", num_mw);
-> +		dev_err(dev, "Unable to set mw%d translation", num_mw);
->  		ntb_free_mw(nt, num_mw);
->  		return -EIO;
->  	}
-> --
-> 2.51.0
->
+> diff --git a/drivers/iommu/iommufd/selftest.c b/drivers/iommu/iommufd/sel=
+ftest.c
+> index 550ff36dec3a..989d8c4c60a7 100644
+> --- a/drivers/iommu/iommufd/selftest.c
+> +++ b/drivers/iommu/iommufd/selftest.c
+> @@ -2002,7 +2002,7 @@ static const struct dma_buf_ops iommufd_test_dmabuf=
+_ops =3D {
+>  };
+> =20
+>  int iommufd_test_dma_buf_iommufd_map(struct dma_buf_attachment *attachme=
+nt,
+> -				     struct dma_buf_phys_vec *phys)
+> +				     struct phys_vec *phys)
+>  {
+>  	struct iommufd_test_dma_buf *priv =3D attachment->dmabuf->priv;
+> =20
+> diff --git a/drivers/vfio/pci/nvgrace-gpu/main.c b/drivers/vfio/pci/nvgra=
+ce-gpu/main.c
+> index 84d142a47ec6..a0f4edd6a30b 100644
+> --- a/drivers/vfio/pci/nvgrace-gpu/main.c
+> +++ b/drivers/vfio/pci/nvgrace-gpu/main.c
+> @@ -784,7 +784,7 @@ nvgrace_gpu_write(struct vfio_device *core_vdev,
+>  static int nvgrace_get_dmabuf_phys(struct vfio_pci_core_device *core_vde=
+v,
+>  				   struct p2pdma_provider **provider,
+>  				   unsigned int region_index,
+> -				   struct dma_buf_phys_vec *phys_vec,
+> +				   struct phys_vec *phys_vec,
+>  				   struct vfio_region_dma_range *dma_ranges,
+>  				   size_t nr_ranges)
+>  {
+> diff --git a/drivers/vfio/pci/vfio_pci_dmabuf.c b/drivers/vfio/pci/vfio_p=
+ci_dmabuf.c
+> index d4d0f7d08c53..9a84c238c013 100644
+> --- a/drivers/vfio/pci/vfio_pci_dmabuf.c
+> +++ b/drivers/vfio/pci/vfio_pci_dmabuf.c
+> @@ -14,7 +14,7 @@ struct vfio_pci_dma_buf {
+>  	struct vfio_pci_core_device *vdev;
+>  	struct list_head dmabufs_elm;
+>  	size_t size;
+> -	struct dma_buf_phys_vec *phys_vec;
+> +	struct phys_vec *phys_vec;
+>  	struct p2pdma_provider *provider;
+>  	u32 nr_ranges;
+>  	u8 revoked : 1;
+> @@ -94,7 +94,7 @@ static const struct dma_buf_ops vfio_pci_dmabuf_ops =3D=
+ {
+>   *    will fail if it is currently revoked
+>   */
+>  int vfio_pci_dma_buf_iommufd_map(struct dma_buf_attachment *attachment,
+> -				 struct dma_buf_phys_vec *phys)
+> +				 struct phys_vec *phys)
+>  {
+>  	struct vfio_pci_dma_buf *priv;
+> =20
+> @@ -116,7 +116,7 @@ int vfio_pci_dma_buf_iommufd_map(struct dma_buf_attac=
+hment *attachment,
+>  }
+>  EXPORT_SYMBOL_FOR_MODULES(vfio_pci_dma_buf_iommufd_map, "iommufd");
+> =20
+> -int vfio_pci_core_fill_phys_vec(struct dma_buf_phys_vec *phys_vec,
+> +int vfio_pci_core_fill_phys_vec(struct phys_vec *phys_vec,
+>  				struct vfio_region_dma_range *dma_ranges,
+>  				size_t nr_ranges, phys_addr_t start,
+>  				phys_addr_t len)
+> @@ -148,7 +148,7 @@ EXPORT_SYMBOL_GPL(vfio_pci_core_fill_phys_vec);
+>  int vfio_pci_core_get_dmabuf_phys(struct vfio_pci_core_device *vdev,
+>  				  struct p2pdma_provider **provider,
+>  				  unsigned int region_index,
+> -				  struct dma_buf_phys_vec *phys_vec,
+> +				  struct phys_vec *phys_vec,
+>  				  struct vfio_region_dma_range *dma_ranges,
+>  				  size_t nr_ranges)
+>  {
+> diff --git a/include/linux/dma-buf-mapping.h b/include/linux/dma-buf-mapp=
+ing.h
+> index a3c0ce2d3a42..09bde3f748e4 100644
+> --- a/include/linux/dma-buf-mapping.h
+> +++ b/include/linux/dma-buf-mapping.h
+> @@ -9,7 +9,7 @@
+> =20
+>  struct sg_table *dma_buf_phys_vec_to_sgt(struct dma_buf_attachment *atta=
+ch,
+>  					 struct p2pdma_provider *provider,
+> -					 struct dma_buf_phys_vec *phys_vec,
+> +					 struct phys_vec *phys_vec,
+>  					 size_t nr_ranges, size_t size,
+>  					 enum dma_data_direction dir);
+>  void dma_buf_free_sgt(struct dma_buf_attachment *attach, struct sg_table=
+ *sgt,
+> diff --git a/include/linux/dma-buf.h b/include/linux/dma-buf.h
+> index 0bc492090237..400a5311368e 100644
+> --- a/include/linux/dma-buf.h
+> +++ b/include/linux/dma-buf.h
+> @@ -531,16 +531,6 @@ struct dma_buf_export_info {
+>  	void *priv;
+>  };
+> =20
+> -/**
+> - * struct dma_buf_phys_vec - describe continuous chunk of memory
+> - * @paddr:   physical address of that chunk
+> - * @len:     Length of this chunk
+> - */
+> -struct dma_buf_phys_vec {
+> -	phys_addr_t paddr;
+> -	size_t len;
+> -};
+> -
+>  /**
+>   * DEFINE_DMA_BUF_EXPORT_INFO - helper macro for exporters
+>   * @name: export-info name
+> diff --git a/include/linux/vfio_pci_core.h b/include/linux/vfio_pci_core.h
+> index 706877f998ff..2ac288bb2c60 100644
+> --- a/include/linux/vfio_pci_core.h
+> +++ b/include/linux/vfio_pci_core.h
+> @@ -28,7 +28,6 @@
+>  struct vfio_pci_core_device;
+>  struct vfio_pci_region;
+>  struct p2pdma_provider;
+> -struct dma_buf_phys_vec;
+>  struct dma_buf_attachment;
+> =20
+>  struct vfio_pci_eventfd {
+> @@ -62,25 +61,25 @@ struct vfio_pci_device_ops {
+>  	int (*get_dmabuf_phys)(struct vfio_pci_core_device *vdev,
+>  			       struct p2pdma_provider **provider,
+>  			       unsigned int region_index,
+> -			       struct dma_buf_phys_vec *phys_vec,
+> +			       struct phys_vec *phys_vec,
+>  			       struct vfio_region_dma_range *dma_ranges,
+>  			       size_t nr_ranges);
+>  };
+> =20
+>  #if IS_ENABLED(CONFIG_VFIO_PCI_DMABUF)
+> -int vfio_pci_core_fill_phys_vec(struct dma_buf_phys_vec *phys_vec,
+> +int vfio_pci_core_fill_phys_vec(struct phys_vec *phys_vec,
+>  				struct vfio_region_dma_range *dma_ranges,
+>  				size_t nr_ranges, phys_addr_t start,
+>  				phys_addr_t len);
+>  int vfio_pci_core_get_dmabuf_phys(struct vfio_pci_core_device *vdev,
+>  				  struct p2pdma_provider **provider,
+>  				  unsigned int region_index,
+> -				  struct dma_buf_phys_vec *phys_vec,
+> +				  struct phys_vec *phys_vec,
+>  				  struct vfio_region_dma_range *dma_ranges,
+>  				  size_t nr_ranges);
+>  #else
+>  static inline int
+> -vfio_pci_core_fill_phys_vec(struct dma_buf_phys_vec *phys_vec,
+> +vfio_pci_core_fill_phys_vec(struct phys_vec *phys_vec,
+>  			    struct vfio_region_dma_range *dma_ranges,
+>  			    size_t nr_ranges, phys_addr_t start,
+>  			    phys_addr_t len)
+> @@ -89,7 +88,7 @@ vfio_pci_core_fill_phys_vec(struct dma_buf_phys_vec *ph=
+ys_vec,
+>  }
+>  static inline int vfio_pci_core_get_dmabuf_phys(
+>  	struct vfio_pci_core_device *vdev, struct p2pdma_provider **provider,
+> -	unsigned int region_index, struct dma_buf_phys_vec *phys_vec,
+> +	unsigned int region_index, struct phys_vec *phys_vec,
+>  	struct vfio_region_dma_range *dma_ranges, size_t nr_ranges)
+>  {
+>  	return -EOPNOTSUPP;
+> @@ -228,6 +227,6 @@ static inline bool is_aligned_for_order(struct vm_are=
+a_struct *vma,
+>  }
+> =20
+>  int vfio_pci_dma_buf_iommufd_map(struct dma_buf_attachment *attachment,
+> -				 struct dma_buf_phys_vec *phys);
+> +				 struct phys_vec *phys);
+> =20
+>  #endif /* VFIO_PCI_CORE_H */
+>=20
+> ---
+> base-commit: fcf463b92a08686d1aeb1e66674a72eb7a8bfb9b
+> change-id: 20260107-convert-to-pvec-bf04dfcf3d12
+>=20
+> Best regards,
+> -- =20
+> Leon Romanovsky <leonro@nvidia.com>
+>=20
+>=20
+
