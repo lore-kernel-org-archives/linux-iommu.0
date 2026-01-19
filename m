@@ -1,132 +1,272 @@
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48BBF2DC334
-	for <iommu@lists.linux.dev>; Mon, 19 Jan 2026 10:38:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E09853559F9;
+	Mon, 19 Jan 2026 10:53:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768819128; cv=none; b=DTyYqe7ukKUlUOmDP7YfY5civEOdL6+/LZNnnJFWAYqBKxPpA8qHhHRVeSWtAQ/ShdWpruXasQqP3baaXlPuJ8yHnpJD8di/9az/qrO018QxBY9aUx/Dl+V68NDQUIye6yxTY1QTxHVwoamReOxh2LcESCxavoXMiiMq0M+jaG4=
+	t=1768819997; cv=none; b=i8yaU4iWvh8XTrznHmPPiICPJ6910PyPMvzeetYdDgc45MtK+7gC2UIjFCvBhlWcKPULqWyxxwq8ZF8OR+Ner271TV6QgZKfhq4I8j8lq5QB+GidxWHpBCPkhI/Y79d8k1iZ1z3qztXDxNk4baqEPsESI3FKAWgF6Yuxs5pq8Wk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768819128; c=relaxed/simple;
-	bh=vYRiHaxSMY/GrPhmusiLm/wN6g35BdjNX3fcj6y1Yxc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
-	 Content-Type:References; b=CrJOHGDEQz7s5KkXaYTvD1Uj/mNLv/fMZKpdHZ/vHAXbyas7tbiSvHfYL1Z9pGBP6l/dD3hpL6vAZmQgZxdywq0qlf2+cQfBxJ3UQoINioLXjNtsk9iy4f+VwRB8luop8+2NA33dGFVolNPsx59TJ8m8wNvXAXmIG+PZOsy28VY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=ggTC86J0; arc=none smtp.client-ip=210.118.77.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1768819997; c=relaxed/simple;
+	bh=1q27yzMVmLBdhU4D/EWhJZCqgMjxahH/mYESJWghn8I=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=i8i0n+tuiWEkXMpUW4bv49h8NmP0FjNhMoqEfRuSyzeA5+belopAfQTDLCXW9VRqzQAlcbFiU5XK4cJdZOSRpwnePscanI8eMI3mmmdL4YwM6X2qPro4SnkDjps1+Jz50HNDjeOXCiLxKgE3paExfnUU9MvvS+5b4I1UY/HyyTw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OpdkTsQs; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="ggTC86J0"
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20260119103844euoutp01157c9689ddf6c80951a4993cadd75dc1~MG59EE-ay1950019500euoutp01J
-	for <iommu@lists.linux.dev>; Mon, 19 Jan 2026 10:38:44 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20260119103844euoutp01157c9689ddf6c80951a4993cadd75dc1~MG59EE-ay1950019500euoutp01J
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1768819124;
-	bh=h6T1OAseONU5xESAp7DldoRF/tx4f3Urlb72aBL0shY=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=ggTC86J0tuNir92HdO3ZuqKiwG+33RBa5m/KJMQHzp307IUNPZHcXARfyLutyZBlp
-	 BwxzhDEaWMHOPDuafLcV+9LuXVZvuDCF3v0WlY7wPgYq29mYKCMJ8ETrC0HiNebEnF
-	 3D/nLvqBlON+m5EAOKDFvMK3U0BDf71e8IrdgQZk=
-Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20260119103843eucas1p13969f70041187467385971a512493b86~MG58fQVze1992819928eucas1p1p;
-	Mon, 19 Jan 2026 10:38:43 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20260119103842eusmtip18efa3015d962d36d6aae889482359cc9~MG57VTnAg2814528145eusmtip1K;
-	Mon, 19 Jan 2026 10:38:42 +0000 (GMT)
-Message-ID: <89f8895f-436d-4a73-a2c8-d61a2f4ee41a@samsung.com>
-Date: Mon, 19 Jan 2026 11:38:42 +0100
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OpdkTsQs"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C06F1C19422;
+	Mon, 19 Jan 2026 10:53:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1768819996;
+	bh=1q27yzMVmLBdhU4D/EWhJZCqgMjxahH/mYESJWghn8I=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=OpdkTsQsAByKSZOuH5DOP1PFuu7t9GqCW2+xZDZ4wPjOB+LfhqU7I4kx0h1PA0bVc
+	 sQvjJt+cbJxzgGXazSGQxw2vNNz8u6+MDRTkjAl+F8eDoa90tjt3DxdRlTHpFH+4zO
+	 ZhXJddMFtauS+Vg79rL4DHBp9AMLJlHZruQvY18G1yiREFBVPlLHGmr7NvBXAnUd73
+	 0vUmDNy0Mp6GiPsvlWsUc2E3oXtx+u42qwjhNDIoRwpVDZ9O0Rmx9/vH5xWi+bI7+z
+	 g9p6a9Mxgo7Dy5L8zJD5xKf0dNxrUJMFJDSMRzhdhw02wJpTluutGC5JS1BwSXoJXC
+	 PHUVE3zE5n0vg==
+Date: Mon, 19 Jan 2026 12:53:12 +0200
+From: Leon Romanovsky <leon@kernel.org>
+To: Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>
+Cc: Thomas =?iso-8859-1?Q?Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Alex Deucher <alexander.deucher@amd.com>,
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+	Gerd Hoffmann <kraxel@redhat.com>,
+	Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+	Gurchetan Singh <gurchetansingh@chromium.org>,
+	Chia-I Wu <olvaffe@gmail.com>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	Lucas De Marchi <lucas.demarchi@intel.com>,
+	Rodrigo Vivi <rodrigo.vivi@intel.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Alex Williamson <alex@shazbot.org>, linux-media@vger.kernel.org,
+	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+	linux-kernel@vger.kernel.org, amd-gfx@lists.freedesktop.org,
+	virtualization@lists.linux.dev, intel-xe@lists.freedesktop.org,
+	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
+	kvm@vger.kernel.org
+Subject: Re: [PATCH v2 0/4] dma-buf: document revoke mechanism to invalidate
+ shared buffers
+Message-ID: <20260119105312.GJ13201@unreal>
+References: <20260118-dmabuf-revoke-v2-0-a03bb27c0875@nvidia.com>
+ <f115c91bbc9c6087d8b32917b9e24e3363a91f33.camel@linux.intel.com>
+ <20260119075229.GE13201@unreal>
+ <9112a605d2ee382e83b84b50c052dd9e4a79a364.camel@linux.intel.com>
+ <78035892-758d-4104-9dd5-aed9a045d481@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH] of: reserved_mem: Allow reserved_mem framework detect
- "cma=" kernel param
-To: Rob Herring <robh@kernel.org>
-Cc: Oreoluwa Babatunde <oreoluwa.babatunde@oss.qualcomm.com>,
-	ye.li@oss.nxp.com, kernel@oss.qualcomm.com, saravanak@google.com,
-	akpm@linux-foundation.org, david@redhat.com, lorenzo.stoakes@oracle.com,
-	Liam.Howlett@oracle.com, vbabka@suse.cz, rppt@kernel.org, surenb@google.com,
-	mhocko@suse.com, robin.murphy@arm.com, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux.dev,
-	quic_c_gdjako@quicinc.com
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <CAL_JsqK5QEZfyRTDY4z88mX_eYENibea1ZM8H_bEfCCsOOwY4A@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-CMS-MailID: 20260119103843eucas1p13969f70041187467385971a512493b86
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20251210002053eucas1p1d1408ad0fb49a49bf4371687f8df7395
-X-EPHeader: CA
-X-CMS-RootMailID: 20251210002053eucas1p1d1408ad0fb49a49bf4371687f8df7395
-References: <CGME20251210002053eucas1p1d1408ad0fb49a49bf4371687f8df7395@eucas1p1.samsung.com>
-	<20251210002027.1171519-1-oreoluwa.babatunde@oss.qualcomm.com>
-	<X-TH#1.CAL_JsqL6VVQ7K_ZAbHJ8Gb7ei_jusLx6wRn=AdOVgV50dX0ejQ@mail.gmail.com>
-	<99dc91c9-59fd-47c5-b1d9-157bda86ad59@samsung.com>
-	<CAL_JsqK5QEZfyRTDY4z88mX_eYENibea1ZM8H_bEfCCsOOwY4A@mail.gmail.com>
+In-Reply-To: <78035892-758d-4104-9dd5-aed9a045d481@amd.com>
 
-On 18.12.2025 15:42, Rob Herring wrote:
-> On Thu, Dec 18, 2025 at 3:55 AM Marek Szyprowski
-> <m.szyprowski@samsung.com> wrote:
->> On 10.12.2025 15:07, Rob Herring wrote:
->>> On Tue, Dec 9, 2025 at 6:20 PM Oreoluwa Babatunde
->>> <oreoluwa.babatunde@oss.qualcomm.com> wrote:
->>>> When initializing the default cma region, the "cma=" kernel parameter
->>>> takes priority over a DT defined linux,cma-default region. Hence, give
->>>> the reserved_mem framework the ability to detect this so that the DT
->>>> defined cma region can skip initialization accordingly.
->>> Please explain here why this is a new problem. Presumably the
->>> RESERVEDMEM_OF_DECLARE hook after commit xxxx gets called before the
->>> early_param hook. And why is it now earlier?
->>>
->>> I don't really like the state/ordering having to be worried about in 2 places.
->> I also don't like this spaghetti, but it originates from
->> commit 8a6e02d0c00e ("of: reserved_mem: Restructure how the reserved
->> memory regions are processed") and the first fixup for it: 2c223f7239f3
->> ("of: reserved_mem: Restructure call site for
->> dma_contiguous_early_fixup()").
-> Honestly, this code wasn't great before. Every time it is touched it
-> breaks someone.
+On Mon, Jan 19, 2026 at 11:20:46AM +0100, Christian König wrote:
+> On 1/19/26 10:27, Thomas Hellström wrote:
+> > On Mon, 2026-01-19 at 09:52 +0200, Leon Romanovsky wrote:
+> >> On Sun, Jan 18, 2026 at 03:16:25PM +0100, Thomas Hellström wrote:
+> >>> Hi, Leon,
+> >>>
+> >>> On Sun, 2026-01-18 at 14:08 +0200, Leon Romanovsky wrote:
+> >>>> Changelog:
+> >>>> v2:
+> >>>>  * Changed series to document the revoke semantics instead of
+> >>>>    implementing it.
+> >>>> v1:
+> >>>> https://patch.msgid.link/20260111-dmabuf-revoke-v1-0-fb4bcc8c259b@nvidia.com
+> >>>>
+> >>>> -----------------------------------------------------------------
+> >>>> ----
+> >>>> ----
+> >>>> This series documents a dma-buf “revoke” mechanism: to allow a
+> >>>> dma-
+> >>>> buf
+> >>>> exporter to explicitly invalidate (“kill”) a shared buffer after
+> >>>> it
+> >>>> has
+> >>>> been distributed to importers, so that further CPU and device
+> >>>> access
+> >>>> is
+> >>>> prevented and importers reliably observe failure.
+> >>>>
+> >>>> The change in this series is to properly document and use
+> >>>> existing
+> >>>> core
+> >>>> “revoked” state on the dma-buf object and a corresponding
+> >>>> exporter-
+> >>>> triggered
+> >>>> revoke operation. Once a dma-buf is revoked, new access paths are
+> >>>> blocked so
+> >>>> that attempts to DMA-map, vmap, or mmap the buffer fail in a
+> >>>> consistent way.
+> >>>
+> >>> This sounds like it does not match how many GPU-drivers use the
+> >>> move_notify() callback.
+> >>
+> >> No change for them.
+> >>
+> >>>
+> >>> move_notify() would typically invalidate any device maps and any
+> >>> asynchronous part of that invalidation would be complete when the
+> >>> dma-
+> >>> buf's reservation object becomes idle WRT DMA_RESV_USAGE_BOOKKEEP
+> >>> fences.
+> >>
+> >> This part has not changed and remains the same for the revocation
+> >> flow as well.
+> >>
+> >>>
+> >>> However, the importer could, after obtaining the resv lock, obtain
+> >>> a
+> >>> new map using dma_buf_map_attachment(), and I'd assume the CPU maps
+> >>> work in the same way, I.E. move_notify() does not *permanently*
+> >>> revoke
+> >>> importer access.
+> >>
+> >> This part diverges by design and is documented to match revoke
+> >> semantics.  
+> 
+> Please don't document that. This is specific exporter behavior and doesn't belong into DMA-buf at all.
+> 
+> >> It defines what must occur after the exporter requests that the
+> >> buffer be  
+> >> "killed". An importer that follows revoke semantics will not attempt
+> >> to call  
+> >> dma_buf_map_attachment(), and the exporter will block any remapping
+> >> attempts  
+> >> regardless. See the priv->revoked flag in the VFIO exporter.
+> 
+> I have to clearly reject that.
+> 
+> It's the job of the exporter to reject such calls with an appropriate error and not the importer to not make them.
 
-Indeed it got a bit complicated and needs some improvement, but first I 
-want to fix the the reported regression. This patch does this and it 
-looks that there are no ideas how to fix this in a different way. Rob, 
-could I apply it via dma-mapping-fixes?
+Current code behaves as expected: the exporter rejects mapping attempts after
+.invalidate_mapping is called, and handles the logic internally.
 
->> It looks that it is really hard to make reserved memory
->> initialization fully dynamic assuming that the cma related fixups have
->> to be known before populating kernel memory pages tables. I also advised
->> in
->> https://lore.kernel.org/all/be70bdc4-bddd-4afe-8574-7e0889fd381c@samsung.com/
->> to simply increase the size of the static table to make it large enough for the sane use cases, but
->> it turned out that this approach was already discussed and rejected:
->> https://lore.kernel.org/all/1650488954-26662-1-git-send-email-quic_pdaly@quicinc.com/
-> I guess the question is what's a sane limit? After 128, are we going
-> to accept 256? I really suspect we are just enabling some further
-> abuse of /reserved-memory downstream. For example, I could imagine
-> there's micromanaging the location of media/graphics buffers so they
-> end up in specific DRAM banks to optimize accesses. No one ever wants
-> to detail why they want/need more regions.
->
->> Maybe it would make sense to revert the mentioned changes and get back
->> to such simple approach - to make the size of the static table
->> configurable in the Kconfig?
-> I'd rather not resort to a kconfig option.
->
-> We could go back to processing all the regions at the beginning
-> (growing the static size), and then just shrinking allocation. Or
-> maybe it could just be freed entirely. I don't think we really need to
-> keep the state around forever.
+However, it is not clear what exactly you are proposing. In v1 — which you
+objected to — I suggested negotiating revoke support along with the logic for
+rejecting mappings in the dma-buf core. In this version, you object to placing
+the rejection logic in the exporter.
 
-I will check if this can be refactored somehow.
-
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
-
+> 
+> >> In addition, in this email thread, Christian explains that revoke
+> >> semantics already exists, with the combination of dma_buf_pin and
+> >> dma_buf_move_notify, just not documented:
+> >> https://lore.kernel.org/all/f7f1856a-44fa-44af-b496-eb1267a05d11@amd.com/
+> > 
+> > 
+> > Hmm,
+> > 
+> > Considering 
+> > 
+> > https://elixir.bootlin.com/linux/v6.19-rc5/source/drivers/infiniband/core/umem_dmabuf.c#L192
+> 
+> Yes, that case is well known.
+> 
+> > this sounds like it's not just undocumented but also in some cases
+> > unimplemented. The xe driver for one doesn't expect move_notify() to be
+> > called on pinned buffers,
+> 
+> And that is what we need to change. See move_notify can happen on pinned buffers currently as well.
+> 
+> For example in the case of PCI hot unplug. After pinning we just don't call it for memory management needs any more.
+> 
+> We just haven't documented that properly.
+> 
+> > so if that is indeed going to be part of the
+> > dma-buf protocol,  wouldn't support for that need to be advertised by
+> > the importer?
+> 
+> That's what this patch set here should do, yes.
+> 
+> Regards,
+> Christian.
+> 
+> > 
+> > Thanks,
+> > Thomas
+> > 
+> >>
+> >> Thanks
+> >>
+> >>>
+> >>> /Thomas
+> >>>
+> >>>
+> >>>>
+> >>>> Thanks
+> >>>>
+> >>>> Cc: linux-media@vger.kernel.org
+> >>>> Cc: dri-devel@lists.freedesktop.org
+> >>>> Cc: linaro-mm-sig@lists.linaro.org
+> >>>> Cc: linux-kernel@vger.kernel.org
+> >>>> Cc: amd-gfx@lists.freedesktop.org
+> >>>> Cc: virtualization@lists.linux.dev
+> >>>> Cc: intel-xe@lists.freedesktop.org
+> >>>> Cc: linux-rdma@vger.kernel.org
+> >>>> Cc: iommu@lists.linux.dev
+> >>>> Cc: kvm@vger.kernel.org
+> >>>> To: Sumit Semwal <sumit.semwal@linaro.org>
+> >>>> To: Christian König <christian.koenig@amd.com>
+> >>>> To: Alex Deucher <alexander.deucher@amd.com>
+> >>>> To: David Airlie <airlied@gmail.com>
+> >>>> To: Simona Vetter <simona@ffwll.ch>
+> >>>> To: Gerd Hoffmann <kraxel@redhat.com>
+> >>>> To: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+> >>>> To: Gurchetan Singh <gurchetansingh@chromium.org>
+> >>>> To: Chia-I Wu <olvaffe@gmail.com>
+> >>>> To: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+> >>>> To: Maxime Ripard <mripard@kernel.org>
+> >>>> To: Thomas Zimmermann <tzimmermann@suse.de>
+> >>>> To: Lucas De Marchi <lucas.demarchi@intel.com>
+> >>>> To: Thomas Hellström <thomas.hellstrom@linux.intel.com>
+> >>>> To: Rodrigo Vivi <rodrigo.vivi@intel.com>
+> >>>> To: Jason Gunthorpe <jgg@ziepe.ca>
+> >>>> To: Leon Romanovsky <leon@kernel.org>
+> >>>> To: Kevin Tian <kevin.tian@intel.com>
+> >>>> To: Joerg Roedel <joro@8bytes.org>
+> >>>> To: Will Deacon <will@kernel.org>
+> >>>> To: Robin Murphy <robin.murphy@arm.com>
+> >>>> To: Alex Williamson <alex@shazbot.org>
+> >>>>
+> >>>> ---
+> >>>> Leon Romanovsky (4):
+> >>>>       dma-buf: Rename .move_notify() callback to a clearer
+> >>>> identifier
+> >>>>       dma-buf: Document revoke semantics
+> >>>>       iommufd: Require DMABUF revoke semantics
+> >>>>       vfio: Add pinned interface to perform revoke semantics
+> >>>>
+> >>>>  drivers/dma-buf/dma-buf.c                   |  6 +++---
+> >>>>  drivers/gpu/drm/amd/amdgpu/amdgpu_dma_buf.c |  4 ++--
+> >>>>  drivers/gpu/drm/virtio/virtgpu_prime.c      |  2 +-
+> >>>>  drivers/gpu/drm/xe/tests/xe_dma_buf.c       |  6 +++---
+> >>>>  drivers/gpu/drm/xe/xe_dma_buf.c             |  2 +-
+> >>>>  drivers/infiniband/core/umem_dmabuf.c       |  4 ++--
+> >>>>  drivers/infiniband/hw/mlx5/mr.c             |  2 +-
+> >>>>  drivers/iommu/iommufd/pages.c               | 11 +++++++++--
+> >>>>  drivers/vfio/pci/vfio_pci_dmabuf.c          | 16
+> >>>> ++++++++++++++++
+> >>>>  include/linux/dma-buf.h                     | 25
+> >>>> ++++++++++++++++++++++---
+> >>>>  10 files changed, 60 insertions(+), 18 deletions(-)
+> >>>> ---
+> >>>> base-commit: 9ace4753a5202b02191d54e9fdf7f9e3d02b85eb
+> >>>> change-id: 20251221-dmabuf-revoke-b90ef16e4236
+> >>>>
+> >>>> Best regards,
+> >>>> --  
+> >>>> Leon Romanovsky <leonro@nvidia.com>
+> >>>>
+> >>>
+> > 
+> 
