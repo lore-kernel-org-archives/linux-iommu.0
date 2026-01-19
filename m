@@ -1,64 +1,51 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C256D3370E5;
-	Mon, 19 Jan 2026 08:04:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D78E7350297
+	for <iommu@lists.linux.dev>; Mon, 19 Jan 2026 08:56:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768809850; cv=none; b=Z18jE2VKlB6pWWisVbCTnBObVia055/d0vbKYD7tDxULRXsqrFF0GPLVUpryXZXYu/eAt/OxOgSx5+uihDzwbiDAqbKYYtAwT5SPVpOkyWoXrb9AeRSLycyYlDx0jG5gEFy6FR0CCCFzt8d29iV56T+t0KBjLyU+rfRDWNhNQXk=
+	t=1768812987; cv=none; b=Dt3erOXDq621f10M7M90aFTrvQxycz9yvFhwbgt3w4T4vJ9j9FTT4VHGBcd3URHJthCYa2nkkgHBtMOnRfKoAeRsxiVy/Yr6N8XOQRLhLRgovEJJGm/e9MafayliQjHlRn8yY3T7py6YjPru9xbCRG8etdGerkVygIkF52w6ZiE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768809850; c=relaxed/simple;
-	bh=HRBEt4RF/jLlwOJnYEYMNWDtdCxSUN5YasBH6jxxKIg=;
+	s=arc-20240116; t=1768812987; c=relaxed/simple;
+	bh=9iYYlWq5RKphq3xtHuAjLTBgmtCUMliojUXRG4UjaZo=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=q6urBFqensCv5nhhtqSnaTzg4da2aWwTnARKRaubWeMJLxz9JhXw7wxAilCwIq1Cm6QUvB+2KYmgtCW8FqKymdYGQD7Cya8Ec8ojf31f4V7qUDdBqEDPZHxqJIypaeb+WbT15hypO9MlE3l/pwPcKSoStQdIyIt+6I/x7MIHH9M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BDgV12G7; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=a0z3btbKeSaIXIt0jrOFZQYMdbJxQCjeZF04/hMCkDEsO9Mg5TQuHigN7ath0q1EMFD7ncN1BpqajXwZFlsQZDU6gHfJcAR3owkab1+o2AJECqzgjc76cZicb0VzofIGyVrIZVOo0DnlO3lWkG/Bnu9VRXw9Qc616bsdCBg17MY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=vajByuO2; arc=none smtp.client-ip=85.214.250.239
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BDgV12G7"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C7CAC116C6;
-	Mon, 19 Jan 2026 08:04:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1768809850;
-	bh=HRBEt4RF/jLlwOJnYEYMNWDtdCxSUN5YasBH6jxxKIg=;
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="vajByuO2"
+Received: from 8bytes.org (p4ffe051a.dip0.t-ipconnect.de [79.254.5.26])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 592055FD8D;
+	Mon, 19 Jan 2026 09:56:24 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1768812984;
+	bh=9iYYlWq5RKphq3xtHuAjLTBgmtCUMliojUXRG4UjaZo=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=BDgV12G7l5a1sp8yv1MAiOTY/L1jkmyTQZGAh3jpU9VjkGMv9/T3jgHh2lE5LuXTK
-	 Q0XiE0/v6mTCIL++UG0OUkE3zwpNkiDWjOwRxhFFIi2wh+H4hSil6YHS5SELsgqCDn
-	 WeDdVnUzfPkFP37afqzkaFH2kBs5cZ3OkLmqvQ8WC6xPHnyiZoM6tCbAr4Rpggc7r2
-	 +twjbWsZJSrJk1zeM7aeq7DGnmBtEQc4wcipZGljnLygNxxBENIhR7XiKP9tHHgxTC
-	 bG2/CJQU8uA+pwflgnBuItu8+MXhQXRs68HQNRr/vZQQeXMAP3G3vwl+sklL/3KSsp
-	 iWYoOtPON0K+w==
-Date: Mon, 19 Jan 2026 10:04:04 +0200
-From: Leon Romanovsky <leon@kernel.org>
-To: John Hubbard <jhubbard@nvidia.com>
-Cc: Sumit Semwal <sumit.semwal@linaro.org>,
-	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-	Alex Deucher <alexander.deucher@amd.com>,
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-	Gerd Hoffmann <kraxel@redhat.com>,
-	Dmitry Osipenko <dmitry.osipenko@collabora.com>,
-	Gurchetan Singh <gurchetansingh@chromium.org>,
-	Chia-I Wu <olvaffe@gmail.com>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	Lucas De Marchi <lucas.demarchi@intel.com>,
-	Thomas =?iso-8859-1?Q?Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>,
-	Rodrigo Vivi <rodrigo.vivi@intel.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Alex Williamson <alex@shazbot.org>, linux-media@vger.kernel.org,
-	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
-	linux-kernel@vger.kernel.org, amd-gfx@lists.freedesktop.org,
-	virtualization@lists.linux.dev, intel-xe@lists.freedesktop.org,
-	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
-	kvm@vger.kernel.org
-Subject: Re: [PATCH v2 2/4] dma-buf: Document revoke semantics
-Message-ID: <20260119080404.GF13201@unreal>
-References: <20260118-dmabuf-revoke-v2-0-a03bb27c0875@nvidia.com>
- <20260118-dmabuf-revoke-v2-2-a03bb27c0875@nvidia.com>
- <d41d08e3-6a86-40a4-925c-6a3172670079@nvidia.com>
- <20260119072524.GD13201@unreal>
- <3380a80a-7574-4dbf-87cb-0735fb20cd15@nvidia.com>
+	b=vajByuO2m3rIm5XGOXMJd9MmaN6MUFzdLp7pdgRDi47q/3HGvMK9/E8JSS+t75IdZ
+	 BorcbBaGlbxYg9O2ESDONDIEntUG+zczjNiwoXemUmNPF7JhbhiEfxf9w6cv3oKJWm
+	 s9u+WEuAMSvROa+EoLo02BdL+hsIADQH+tJIpX15oy2Qmj9z2y5UPaJRSYbu8DvVzJ
+	 G0dADKJkmt/5WVGLZaXuZaslpofgoEGij34S9rvBbc5LbwN9CyRn9EfXaCiIJG7qs5
+	 Zi7PhzD4w5TN77ppzARYJY87eIn/2gM+eCQWlhOZAX5CP4FtmsxbQF13nWJb/ncpwD
+	 bZM6gIB3KeQNQ==
+Date: Mon, 19 Jan 2026 09:56:23 +0100
+From: =?utf-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>
+To: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+Cc: Will Deacon <will@kernel.org>, robin.murphy@arm.com, robh@kernel.org, 
+	krzk+dt@kernel.org, conor+dt@kernel.org, heiko@sntech.de, 
+	nicolas.dufresne@collabora.com, p.zabel@pengutronix.de, mchehab@kernel.org, 
+	iommu@lists.linux.dev, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org, linux-media@vger.kernel.org, 
+	kernel@collabora.com
+Subject: Re: [PATCH v11 3/7] iommu: Add verisilicon IOMMU driver
+Message-ID: <piak4uh65p5rzyicotia4at2g2bdwqg3xyrln53v3yfjzyde5j@irwvikgbyexl>
+References: <20260107101005.84039-1-benjamin.gaignard@collabora.com>
+ <20260107101005.84039-4-benjamin.gaignard@collabora.com>
+ <aWZui-rn5RDPwpEO@willie-the-truck>
+ <eqv7yfdagt2axkj5xbtmrtkaakhq63ywf2q5tjo33exumhfrc5@7ghelrz6yt2d>
+ <1030ddab-6124-414d-958f-c461c19bdbb0@collabora.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -67,47 +54,9 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <3380a80a-7574-4dbf-87cb-0735fb20cd15@nvidia.com>
+In-Reply-To: <1030ddab-6124-414d-958f-c461c19bdbb0@collabora.com>
 
-On Sun, Jan 18, 2026 at 11:32:20PM -0800, John Hubbard wrote:
-> On 1/18/26 11:25 PM, Leon Romanovsky wrote:
-> > On Sun, Jan 18, 2026 at 01:40:11PM -0800, John Hubbard wrote:
-> > > On 1/18/26 4:08 AM, Leon Romanovsky wrote:
-> > > > From: Leon Romanovsky <leonro@nvidia.com>
-> > > ...
-> > > > +/**
-> > > > + * dma_buf_attachment_is_revoke - check if a DMA-buf importer implements
-> > > > + * revoke semantics.
-> > > > + * @attach: the DMA-buf attachment to check
-> > > > + *
-> > > > + * Returns true if DMA-buf importer honors revoke semantics, which is
-> > > > + * negotiated with the exporter, by making sure that importer implements
-> > > > + * .invalidate_mappings() callback and calls to dma_buf_pin() after
-> > > > + * DMA-buf attach.
-> > > > + */
-> > > > +static inline bool
-> > > > +dma_buf_attachment_is_revoke(struct dma_buf_attachment *attach)
-> > > 
-> > > Maybe a slight rename, to dma_buf_attachment_is_revocable()?
-> > 
-> > I can do that. The issue is that even "dma_buf_attachment_is_revoke"
-> > is already too long. :)
-> > 
-> 
-> If you're really pressed for space for some reason,
+On Mon, Jan 19, 2026 at 08:51:46AM +0100, Benjamin Gaignard wrote:
+> I have already send v12 where I have removed the useless function.
 
-Mainly aesthetics.
-
-> maybe dma_buf_attach_revocable() ?
-> 
-> Just trying to hang on to the "revocable" part of the name, as
-> I think it's an improvement.
-
-Sure
-
-> 
-> thanks,
-> -- 
-> John Hubbard
-> 
-> 
+Then either send a patch on-top or a v13.
