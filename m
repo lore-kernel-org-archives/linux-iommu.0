@@ -1,94 +1,49 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B76B444A72F
-	for <iommu@lists.linux.dev>; Tue, 20 Jan 2026 22:26:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C9CA242316C
+	for <iommu@lists.linux.dev>; Tue, 20 Jan 2026 22:27:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768947989; cv=none; b=MdvaOyQZ6HenLdxbzE9siRtI8mtu7qzArp5J1C8xcN2GTjedcec9FSrlB8p3AGAeaunW+uOGamNwyUl6meDXcZgBR9tvSmSDw5QAzA83oEVAxplvAoZ89xCy1TLAiVj0GLpxhKjei7AKMjhg63Duhfcw2ssgXn0jn0ziB3M8AF8=
+	t=1768948076; cv=none; b=Mb2LyHlrWkAYWHKfUcF07H7nZoHhS3zbaqv0za/wZUpCEHUsOm9O5DbDFafMNkHgVapt+Sld6CU81NpcVJN1R2UlI3qv+6dgnxneth14e1h+LfsXPnaPg4FOHzinzUl44D0NeSe/QQ3Q66ULGb0qWG8iydBeV2y6SmzvgdCBQ2g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768947989; c=relaxed/simple;
-	bh=+AjOHVFzafAxyNv7kFoLLoEDJ5x3Ho1X9GPgsA5PtZ4=;
+	s=arc-20240116; t=1768948076; c=relaxed/simple;
+	bh=meBHf+PRAy3RVYIIvJwzRqHHYWt1bKNjploxW9YFjFE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=AiM3La5P/7FR8QLR0u0gZdUz0MtlkNISFVOSM4iWhRGFfju445JkDEYC2NnTzAyb5Dlvzc3bOQrJZYy010Q7MM48AinVdqDuy9hM4t1SXP/zHNAnLjXZecLL0pxl9x2yekA3uhfMcuRY5hH0lCwNCt4OqyxM2lUcOvSK39tD/6M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=Uq1aKteu; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=ZYlzgcFF; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=N2zVul4RjuUSzT1mtmTBvG0VWgSG0auSBDJF+x3OTbixdsMOPIt7j2xhQoJ7fZHYIfXLGY+Z6CgbuF8xdOhgAKVy8EXQ7nNAVYFxP+DeK+1kh1h/8QShgq4cpiVRidkgvIwN+Vb0LLZYXVNguxz9iQmvKIhionwDn6CE3NF2MTQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=LR/P3vCX; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="Uq1aKteu";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="ZYlzgcFF"
-Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 60KK06tY797938
-	for <iommu@lists.linux.dev>; Tue, 20 Jan 2026 22:26:22 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=12m2xvgJzDqiJreuY7EetpiV
-	ScySOxRmwMPypQhBiRc=; b=Uq1aKteu47PUQzhdxfFj7EO6snCXAim50cVpMhE4
-	lw2IzTFCoAZcdYOJQQ7+u2shTUiCSxqeBRvsxCO7RZLFDh8eYm9mxgiCiuglsdNB
-	q/yvkrlBCzTvLuO5lTbYPQZ2EyNcyKzR76+GLFRsNWOVISDHS1wGppYKy2FCD/B0
-	ksdH+i7yWwMV4Cujf1h58voGin2EU2PNMMTR5CURy3/hSqtsF6X3ZJ93qfFjUGCN
-	1IF9uxVj6JJprDlEVPjPoFeIehkdDHphW7UeoRsX9gsQ3K9idKZFkqsVEPle/0w+
-	wuYCYnKKZVjSq5gRdxaFT12r0u0HYlewIgBOfZqBoooj1w==
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com [209.85.222.199])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4bta6q1v0p-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Tue, 20 Jan 2026 22:26:22 +0000 (GMT)
-Received: by mail-qk1-f199.google.com with SMTP id af79cd13be357-8c6a289856eso142203485a.0
-        for <iommu@lists.linux.dev>; Tue, 20 Jan 2026 14:26:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1768947982; x=1769552782; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=12m2xvgJzDqiJreuY7EetpiVScySOxRmwMPypQhBiRc=;
-        b=ZYlzgcFFv5pglKZ7XH6VgE3NMGVlsLHcurQJjyYUJSPhi43AuARlG0iJoMJCSlpryh
-         ryIX6sPGRG8rTmGbxFkjDMC84OykB5Jid/NImz/U1xjg71vSaPHGHmRfGCBQsL3liMJn
-         Z0fzJpVaQCiIzX09FhtTIaPajola000MHBqp6Sc3R1hfAR+L6NMb+EAF6OY0cwc1/rlz
-         pvIG8raKl2PZDG4u7VxsKbipCSw9MrUqfbdApStsmrbTTg/vTKslhmb6MWnBLWUAizSa
-         +5aahZeJp1JXNsInb8RtIlyt7jMupbJjQbGt78Pv+vbCiWxwCrRxlWvnsTSwHLjqjZqN
-         t2IA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1768947982; x=1769552782;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=12m2xvgJzDqiJreuY7EetpiVScySOxRmwMPypQhBiRc=;
-        b=WLE6/X1FfY0xI6Cd0+W4EQLUBH4LBKuEtWBe7N38nq3KM3apyTHQ1CaE5csTD91oUb
-         grsUTLrhf1Xe2Bw1WQ0LWFIOyWlXifAtf5SvTSnFiXlWaVg2KRg4Cr9uduXO9bjrZzmQ
-         EYVVTargYcjrMdrK32ldFvd/YOcNAezyx3MYhzIuWDP3cCiqtgeRAui5IEd1YXiZv1W3
-         3FExfNKVnMpa0QIRm8SBP6+TLISZxZ7JsmN99tCXTi1XsrBtHpmIBVEXG1t8GkryplDX
-         no+Se0+ii/O8a3EGy4ElAvvfnLWSbFMr9MunG2m8yjMWXWf4tVfIXhbLB71TRSnPDEhB
-         1+QA==
-X-Forwarded-Encrypted: i=1; AJvYcCUCyuoicgtKqhQ83i5Cl+1jEM8svhEo8Z5Y+VYOMNQSr1agGN1ECtFjlYSYMnECAsKScD8Kow==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyD5uj/JQL00XgkD7xKo17xTWeJ1NYugJe61Cyr34eg0iNmBHX+
-	3YHo/GkXbR0QsuaSTI0zM20LmE3H2vAKzDOmXPIfsIcABKkWc7PiJ3WKcVh1I3Gl9svYiCRvGYu
-	/HZRlFmd+pf0RTdx1X0tElt8nG3FvFA9W/7ACm+gVwXgfINytCxxGgxMaQw==
-X-Gm-Gg: AY/fxX7rr3oOPV8c7ftiYKcgRJvJ83m2eK2PRlfAiC2BuyjbTt4QqKNg3PaJWyNb17p
-	DH73WsqPKfw8MvK5cyZlup0dzky+Ry1gGEC3Frz+YvaEj8CiEunZrmst+VbY2Jgylbho8RNfcBG
-	V/vtQf5fWyIUjLc8g3pQV2g3beMjDMddnQEHmoGZPi8vjC3ZmxKrFYYnTBsXtf30Mf7IZT5uHD0
-	PCE2cGPc7REEbnWeOzfxpx4+8itbK4OunckcdpJAxr6akVIbwv/+h9/Kt3JWzMdx8ycLoPLgH5Q
-	gNB0s3yPedHOanOTUPtK0NSWBwFnhIhr/oz1AGxPk77reRJQo0QbPFdOEwwREFZYZ+9Qq1SQm3U
-	WNo0jnItazhpRTcbv4FYGz1MA35Gl31I5+QBkWHaT+9Q9gyDCa/bJ1Le5cCdqv7UekDl3zjGYsk
-	+wzFpNviN7UEwrU0kJS03jOaA=
-X-Received: by 2002:a05:620a:4114:b0:8c6:a64e:f66a with SMTP id af79cd13be357-8c6a64f04camr2155763685a.21.1768947981604;
-        Tue, 20 Jan 2026 14:26:21 -0800 (PST)
-X-Received: by 2002:a05:620a:4114:b0:8c6:a64e:f66a with SMTP id af79cd13be357-8c6a64f04camr2155759285a.21.1768947981130;
-        Tue, 20 Jan 2026 14:26:21 -0800 (PST)
-Received: from umbar.lan (2001-14ba-a073-af00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a073:af00:264b:feff:fe8b:be8a])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-59baf34d572sm4303193e87.24.2026.01.20.14.26.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Jan 2026 14:26:20 -0800 (PST)
-Date: Wed, 21 Jan 2026 00:26:18 +0200
-From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-To: bibek.patro@oss.qualcomm.com
-Cc: will@kernel.org, catalin.marinas@arm.com, charan.kalla@oss.qualcomm.com,
-        iommu@lists.linux.dev, joro@8bytes.org, kernel-team@android.com,
-        konrad.dybcio@oss.qualcomm.com, linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        robin.clark@oss.qualcomm.com, robin.murphy@arm.com
-Subject: Re: [PATCH] iommu/arm-smmu-qcom: Restore ACTLR settings for MDSS on
- sa8775p
-Message-ID: <ctdfmzictrjcwugv66hmk5pouj56qviy5umdo3yrmhvfexqoni@kmtozbt53sdv>
-References: <20260120151105.614792-1-bibek.patro@oss.qualcomm.com>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="LR/P3vCX"
+Received: from skinsburskii.localdomain (c-98-225-44-182.hsd1.wa.comcast.net [98.225.44.182])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 96EF920B7167;
+	Tue, 20 Jan 2026 14:27:34 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 96EF920B7167
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1768948055;
+	bh=TtQ2QoYLJn1s3uHte30pNr+WHXuCyKS2txAnzP8/+HE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=LR/P3vCX7xx8DrCzcPc++LOlapP4HKNSuldXE0UBzrxPMGofDX924TfgdmPc+ywVP
+	 d9tvKFbY3fAV7eFuRUBoG4HnEtZuxP5pCMeyEkS/5Cmn8OyH6MRx4SYrBQulX7Z+e0
+	 UXW3pctUG9dDqf2MqdXnnpmCFzK3mLQJYhMhM5to=
+Date: Tue, 20 Jan 2026 14:27:33 -0800
+From: Stanislav Kinsburskii <skinsburskii@linux.microsoft.com>
+To: Mukesh R <mrathor@linux.microsoft.com>
+Cc: linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
+	kys@microsoft.com, haiyangz@microsoft.com, wei.liu@kernel.org,
+	decui@microsoft.com, longli@microsoft.com, catalin.marinas@arm.com,
+	will@kernel.org, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+	dave.hansen@linux.intel.com, hpa@zytor.com, joro@8bytes.org,
+	lpieralisi@kernel.org, kwilczynski@kernel.org, mani@kernel.org,
+	robh@kernel.org, bhelgaas@google.com, arnd@arndb.de,
+	nunodasneves@linux.microsoft.com, mhklinux@outlook.com,
+	romank@linux.microsoft.com
+Subject: Re: [PATCH v0 11/15] x86/hyperv: Build logical device ids for PCI
+ passthru hcalls
+Message-ID: <aXABVTS6xDb2GB2s@skinsburskii.localdomain>
+References: <20260120064230.3602565-1-mrathor@linux.microsoft.com>
+ <20260120064230.3602565-12-mrathor@linux.microsoft.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -97,47 +52,178 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260120151105.614792-1-bibek.patro@oss.qualcomm.com>
-X-Authority-Analysis: v=2.4 cv=QohTHFyd c=1 sm=1 tr=0 ts=6970010e cx=c_pps
- a=HLyN3IcIa5EE8TELMZ618Q==:117 a=xqWC_Br6kY4A:10 a=kj9zAlcOel0A:10
- a=vUbySO9Y5rIA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=EUspDBNiAAAA:8 a=kvr8ZGpsiUTQIvHu6H8A:9 a=CjuIK1q_8ugA:10
- a=bTQJ7kPSJx9SKPbeHEYW:22
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMTIwMDE4NiBTYWx0ZWRfXy+smgbKWAetS
- liPkuJk0nvrWDhfVCMck20I7relqutjPcBSHoE35JLcdHCdl3C0xHTaxATk135K4/2uvVDhPLYs
- 12akYtW8+nH1LhcqNyvtUSo9VwupoxLp+5qCj1hGPHGeTTBIbX/ZFKe1GHZwqvdDLZo+CZhJaVW
- xzIRFWRUti/+2XzLlO2UPFkj3IegDvLZmnC8BZTyoHkhBTRD291T1bPPWYMlyazSaAvEh93sWpZ
- Oy6RS5hPpYfWzZ005gw8RW0GY5s/V++2cUIPCVm5vY7N1+4qwNgttT9XvSpH9kzIeet6v7J0ZWh
- HwV+WdwpgTflndT5qcgLjW55xPEhCqUvQhc3AAKx37ADOMJ+e+yVhWMghEPbadq27O1yQsG3Ou7
- cp3j+Kb1d8fkOq4Q77bqAN1qwQcJmdMguPciMEHdZYWAnpMVYnAzeyqghiFsjymJy2GQc+Cns5O
- fD3P/pbJ3LbEAM/Gx5A==
-X-Proofpoint-GUID: n89yvSRITRh4rcLpYdIo8Pn1OBYgEmc5
-X-Proofpoint-ORIG-GUID: n89yvSRITRh4rcLpYdIo8Pn1OBYgEmc5
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.20,FMLib:17.12.100.49
- definitions=2026-01-20_06,2026-01-20_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- bulkscore=0 malwarescore=0 priorityscore=1501 adultscore=0 clxscore=1015
- impostorscore=0 lowpriorityscore=0 phishscore=0 suspectscore=0 spamscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2601150000 definitions=main-2601200186
+In-Reply-To: <20260120064230.3602565-12-mrathor@linux.microsoft.com>
 
-On Tue, Jan 20, 2026 at 08:41:05PM +0530, bibek.patro@oss.qualcomm.com wrote:
-> From: Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>
+On Mon, Jan 19, 2026 at 10:42:26PM -0800, Mukesh R wrote:
+> From: Mukesh Rathor <mrathor@linux.microsoft.com>
 > 
-> The ACTLR configuration for the sa8775p MDSS client was inadvertently
-> dropped while reworking the commit f91879fdf70b ("iommu/arm-smmu-qcom:
-> Add actlr settings for mdss on Qualcomm platforms"). Without this
-> entry, the sa8775p MDSS block does not receive the intended default
-> ACTLR configuration.
+> On Hyper-V, most hypercalls related to PCI passthru to map/unmap regions,
+> interrupts, etc need a device id as a parameter. A device id refers
+> to a specific device. A device id is of two types:
+>    o Logical: used for direct attach (see below) hypercalls. A logical
+>               device id is a unique 62bit value that is created and
+>               sent during the initial device attach. Then all further
+>               communications (for interrupt remaps etc) must use this
+>               logical id.
+>    o PCI: used for device domain hypercalls such as map, unmap, etc.
+>           This is built using actual device BDF info.
 > 
-> Restore the missing compatible entry so that the platform receives the
-> expected behavior.
+>    PS: Since an L1VH only supports direct attaches, a logical device id
+>        on an L1VH VM is always a VMBus device id. For non-L1VH cases,
+>        we just use PCI BDF info, altho not strictly needed, to build the
+>        logical device id.
 > 
-> Signed-off-by: Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>
+> At a high level, Hyper-V supports two ways to do PCI passthru:
+>   1. Device Domain: root must create a device domain in the hypervisor,
+>      and do map/unmap hypercalls for mapping and unmapping guest RAM.
+>      All hypervisor communications use device id of type PCI for
+>      identifying and referencing the device.
+> 
+>   2. Direct Attach: the hypervisor will simply use the guest's HW
+>      page table for mappings, thus the host need not do map/unmap
+>      hypercalls. A direct attached device must be referenced
+>      via logical device id and never via the PCI device id. For an
+>      L1VH root/parent, Hyper-V only supports direct attaches.
+> 
+> Signed-off-by: Mukesh Rathor <mrathor@linux.microsoft.com>
+> ---
+>  arch/x86/hyperv/irqdomain.c     | 60 ++++++++++++++++++++++++++++++---
+>  arch/x86/include/asm/mshyperv.h | 14 ++++++++
+>  2 files changed, 70 insertions(+), 4 deletions(-)
+> 
+> diff --git a/arch/x86/hyperv/irqdomain.c b/arch/x86/hyperv/irqdomain.c
+> index ccbe5848a28f..33017aa0caa4 100644
+> --- a/arch/x86/hyperv/irqdomain.c
+> +++ b/arch/x86/hyperv/irqdomain.c
+> @@ -137,7 +137,7 @@ static int get_rid_cb(struct pci_dev *pdev, u16 alias, void *data)
+>  	return 0;
+>  }
+>  
+> -static union hv_device_id hv_build_devid_type_pci(struct pci_dev *pdev)
+> +static u64 hv_build_devid_type_pci(struct pci_dev *pdev)
+>  {
+>  	int pos;
+>  	union hv_device_id hv_devid;
+> @@ -197,7 +197,58 @@ static union hv_device_id hv_build_devid_type_pci(struct pci_dev *pdev)
+>  	}
+>  
+>  out:
+> -	return hv_devid;
+> +	return hv_devid.as_uint64;
+> +}
+> +
+> +/* Build device id for direct attached devices */
+> +static u64 hv_build_devid_type_logical(struct pci_dev *pdev)
+> +{
+> +	hv_pci_segment segment;
+> +	union hv_device_id hv_devid;
+> +	union hv_pci_bdf bdf = {.as_uint16 = 0};
+> +	struct rid_data data = {
+> +		.bridge = NULL,
+> +		.rid = PCI_DEVID(pdev->bus->number, pdev->devfn)
+> +	};
+> +
+> +	segment = pci_domain_nr(pdev->bus);
+> +	bdf.bus = PCI_BUS_NUM(data.rid);
+> +	bdf.device = PCI_SLOT(data.rid);
+> +	bdf.function = PCI_FUNC(data.rid);
+> +
+> +	hv_devid.as_uint64 = 0;
+> +	hv_devid.device_type = HV_DEVICE_TYPE_LOGICAL;
+> +	hv_devid.logical.id = (u64)segment << 16 | bdf.as_uint16;
+> +
+> +	return hv_devid.as_uint64;
+> +}
+> +
+> +/* Build device id after the device has been attached */
+> +u64 hv_build_devid_oftype(struct pci_dev *pdev, enum hv_device_type type)
+> +{
+> +	if (type == HV_DEVICE_TYPE_LOGICAL) {
+> +		if (hv_l1vh_partition())
+> +			return hv_pci_vmbus_device_id(pdev);
 
-Missing Fixes tag. Otherwise LGTM
+Should this one be renamed into hv_build_devid_type_vmbus() to align
+with the other two function names?
 
--- 
-With best wishes
-Dmitry
+Thanks,
+Stanislav
+
+> +		else
+> +			return hv_build_devid_type_logical(pdev);
+> +	} else if (type == HV_DEVICE_TYPE_PCI)
+> +		return hv_build_devid_type_pci(pdev);
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(hv_build_devid_oftype);
+> +
+> +/* Build device id for the interrupt path */
+> +static u64 hv_build_irq_devid(struct pci_dev *pdev)
+> +{
+> +	enum hv_device_type dev_type;
+> +
+> +	if (hv_pcidev_is_attached_dev(pdev) || hv_l1vh_partition())
+> +		dev_type = HV_DEVICE_TYPE_LOGICAL;
+> +	else
+> +		dev_type = HV_DEVICE_TYPE_PCI;
+> +
+> +	return hv_build_devid_oftype(pdev, dev_type);
+>  }
+>  
+>  /*
+> @@ -221,7 +272,7 @@ int hv_map_msi_interrupt(struct irq_data *data,
+>  
+>  	msidesc = irq_data_get_msi_desc(data);
+>  	pdev = msi_desc_to_pci_dev(msidesc);
+> -	hv_devid = hv_build_devid_type_pci(pdev);
+> +	hv_devid.as_uint64 = hv_build_irq_devid(pdev);
+>  	cpu = cpumask_first(irq_data_get_effective_affinity_mask(data));
+>  
+>  	return hv_map_interrupt(hv_current_partition_id, hv_devid, false, cpu,
+> @@ -296,7 +347,8 @@ static int hv_unmap_msi_interrupt(struct pci_dev *pdev,
+>  {
+>  	union hv_device_id hv_devid;
+>  
+> -	hv_devid = hv_build_devid_type_pci(pdev);
+> +	hv_devid.as_uint64 = hv_build_irq_devid(pdev);
+> +
+>  	return hv_unmap_interrupt(hv_devid.as_uint64, irq_entry);
+>  }
+>  
+> diff --git a/arch/x86/include/asm/mshyperv.h b/arch/x86/include/asm/mshyperv.h
+> index 0d7fdfb25e76..97477c5a8487 100644
+> --- a/arch/x86/include/asm/mshyperv.h
+> +++ b/arch/x86/include/asm/mshyperv.h
+> @@ -188,6 +188,20 @@ bool hv_vcpu_is_preempted(int vcpu);
+>  static inline void hv_apic_init(void) {}
+>  #endif
+>  
+> +#if IS_ENABLED(CONFIG_HYPERV_IOMMU)
+> +static inline bool hv_pcidev_is_attached_dev(struct pci_dev *pdev)
+> +{ return false; }       /* temporary */
+> +u64 hv_build_devid_oftype(struct pci_dev *pdev, enum hv_device_type type);
+> +#else	/* CONFIG_HYPERV_IOMMU */
+> +static inline bool hv_pcidev_is_attached_dev(struct pci_dev *pdev)
+> +{ return false; }
+> +
+> +static inline u64 hv_build_devid_oftype(struct pci_dev *pdev,
+> +				       enum hv_device_type type)
+> +{ return 0; }
+> +
+> +#endif	/* CONFIG_HYPERV_IOMMU */
+> +
+>  u64 hv_pci_vmbus_device_id(struct pci_dev *pdev);
+>  
+>  struct irq_domain *hv_create_pci_msi_domain(void);
+> -- 
+> 2.51.2.vfs.0.1
+> 
+
+
+
+
+
+
+
+
+
