@@ -1,30 +1,30 @@
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B55B238B9A3
-	for <iommu@lists.linux.dev>; Tue, 20 Jan 2026 06:43:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8B8E538A2AA
+	for <iommu@lists.linux.dev>; Tue, 20 Jan 2026 06:43:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768891420; cv=none; b=KIgg41Y8wGQ+tmLQ8C5xXTBFj1HqaMJRjWtc4u/1Uw9vGQNZVSSyrBBXc8pxGz7ogmKBvFF/Iv9MeVp7aeddyJXeXK/oXo9GfLx81RRb3bmmPcv0Iz8yEKsDpbDlr4k1Ki4PuHWW1PeAJgAoZvv9LGfvd/OKQ52UOlA3NylGVKc=
+	t=1768891427; cv=none; b=WZu6pTjMp7Q5IN/ivtqDwypJr0kLOkVKii6UtsGvi2cuciPJliwlQ00SO339/meUwvZBDZVdQtqmCx5lQmv+aGHistNxltlXHCEn8qo/+D3ruLzEIEpMmF8bfU8k4ywcosix0uH2ophPOBNZGPdxdQSRoMDZADr6LeDzrPGbMRQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768891420; c=relaxed/simple;
-	bh=GqMdKi5YZBvXDKmd2dv+DNeAkosf/TJZ+8e9nFDVzXw=;
+	s=arc-20240116; t=1768891427; c=relaxed/simple;
+	bh=bA8FXOSfgwoFcriGq3LSw/3iLnfAcmWaKC91caQlQcs=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=DitLsY+elVr7tRMZ4gaLk4diYkBSvx/9wkPn8BCDhuQR5LLqlUBHw0nbbX/trJ8wF4GNABnid/mE41naYwb/f1kfteBSrCapDBJvYIts7eb7MiXZujmNMvhwtRezyFrTv6mr6jk1F6z4BHCCXolh+gYogyRn3T2Plh0UJSmf2sI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=OyE5IrEX; arc=none smtp.client-ip=13.77.154.182
+	 MIME-Version; b=VJ/zWyPqlROse4F3iL5ukob1UO1yhJU7GApDuyJ2a9RPx5JHkmM9wHLGM0CaeVQOb1wmjr5SMbuI9HXFCOe+5zuC4IazCNO6dAkqpZurNNrWmSAtZfbi7MZg1fWNxE+hsidkHy1IZ2Zk0MM7LotNNDQjzrbWOciWXhiZUorR1Dk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=IOvVNIdh; arc=none smtp.client-ip=13.77.154.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="OyE5IrEX"
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="IOvVNIdh"
 Received: from mrdev.corp.microsoft.com (192-184-212-33.fiber.dynamic.sonic.net [192.184.212.33])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 0AF6020B716C;
-	Mon, 19 Jan 2026 22:43:30 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 0AF6020B716C
+	by linux.microsoft.com (Postfix) with ESMTPSA id B615E20B716F;
+	Mon, 19 Jan 2026 22:43:33 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com B615E20B716F
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1768891410;
-	bh=GY/3BAplObLOWLiMmMhdzuiyonlo2hPySFg8J0DmMRg=;
+	s=default; t=1768891414;
+	bh=FwXH04ojEJxzpdDZwfeULNXdgZ4dyhCYxfw3tXdVy3E=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=OyE5IrEXEydCDRpaah6ewzB23X17QX/RjBGB29tQkSo3l2hB8CFiO6YmqRj0708qp
-	 EfkZmdhRxrU1OIR3rZ4960CcronEfP/kE700rK8djoXhNeQhKHhgnxNT6HJRWUZ94I
-	 Oo0gffN1n2BT7OZCtpE2b2IsuJYEKTvJMyFBk6po=
+	b=IOvVNIdhQm1FzPXkTQDr6pHRkzL3ArhoH+uoR99cwC5MHH22g9j3Kl66U8jUWNDCP
+	 k5Y9DlpfYNsMYamxE6UKNWHlrDXpfhR5dsom3uwq/vPtCAsjkiqt4DXdL6AWhq3aOF
+	 L6r1zY4aWR9/vJsgZZzPvwf9FsiwH55J+H45oDPk=
 From: Mukesh R <mrathor@linux.microsoft.com>
 To: linux-kernel@vger.kernel.org,
 	linux-hyperv@vger.kernel.org,
@@ -54,9 +54,9 @@ Cc: kys@microsoft.com,
 	nunodasneves@linux.microsoft.com,
 	mhklinux@outlook.com,
 	romank@linux.microsoft.com
-Subject: [PATCH v0 03/15] x86/hyperv: add insufficient memory support in irqdomain.c
-Date: Mon, 19 Jan 2026 22:42:18 -0800
-Message-ID: <20260120064230.3602565-4-mrathor@linux.microsoft.com>
+Subject: [PATCH v0 06/15] mshv: Implement mshv bridge device for VFIO
+Date: Mon, 19 Jan 2026 22:42:21 -0800
+Message-ID: <20260120064230.3602565-7-mrathor@linux.microsoft.com>
 X-Mailer: git-send-email 2.51.2.vfs.0.1
 In-Reply-To: <20260120064230.3602565-1-mrathor@linux.microsoft.com>
 References: <20260120064230.3602565-1-mrathor@linux.microsoft.com>
@@ -70,93 +70,250 @@ Content-Transfer-Encoding: 8bit
 
 From: Mukesh Rathor <mrathor@linux.microsoft.com>
 
-Passthru exposes insufficient memory hypercall failure in the current map
-device interrupt hypercall. In case of such a failure, we must deposit
-more memory and redo the hypercall. Add support for that. Deposit memory
-needs partition id, make that a parameter to the map interrupt function.
+Add a new file to implement VFIO-MSHV bridge pseudo device. These
+functions are called in the VFIO framework, and credits to kvm/vfio.c
+as this file was adapted from it.
+
+Original author: Wei Liu <wei.liu@kernel.org>
+(Slightly modified from the original version).
 
 Signed-off-by: Mukesh Rathor <mrathor@linux.microsoft.com>
 ---
- arch/x86/hyperv/irqdomain.c | 38 +++++++++++++++++++++++++++++++------
- 1 file changed, 32 insertions(+), 6 deletions(-)
+ drivers/hv/Makefile    |   3 +-
+ drivers/hv/mshv_vfio.c | 210 +++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 212 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/hv/mshv_vfio.c
 
-diff --git a/arch/x86/hyperv/irqdomain.c b/arch/x86/hyperv/irqdomain.c
-index f6b61483b3b8..ccbe5848a28f 100644
---- a/arch/x86/hyperv/irqdomain.c
-+++ b/arch/x86/hyperv/irqdomain.c
-@@ -13,8 +13,9 @@
- #include <linux/irqchip/irq-msi-lib.h>
- #include <asm/mshyperv.h>
+diff --git a/drivers/hv/Makefile b/drivers/hv/Makefile
+index a49f93c2d245..eae003c4cb8f 100644
+--- a/drivers/hv/Makefile
++++ b/drivers/hv/Makefile
+@@ -14,7 +14,8 @@ hv_vmbus-y := vmbus_drv.o \
+ hv_vmbus-$(CONFIG_HYPERV_TESTING)	+= hv_debugfs.o
+ hv_utils-y := hv_util.o hv_kvp.o hv_snapshot.o hv_utils_transport.o
+ mshv_root-y := mshv_root_main.o mshv_synic.o mshv_eventfd.o mshv_irq.o \
+-	       mshv_root_hv_call.o mshv_portid_table.o mshv_regions.o
++	       mshv_root_hv_call.o mshv_portid_table.o mshv_regions.o \
++               mshv_vfio.o
+ mshv_vtl-y := mshv_vtl_main.o
  
--static int hv_map_interrupt(union hv_device_id hv_devid, bool level,
--		int cpu, int vector, struct hv_interrupt_entry *ret_entry)
-+static u64 hv_map_interrupt_hcall(u64 ptid, union hv_device_id hv_devid,
-+				  bool level, int cpu, int vector,
-+				  struct hv_interrupt_entry *ret_entry)
- {
- 	struct hv_input_map_device_interrupt *input;
- 	struct hv_output_map_device_interrupt *output;
-@@ -30,8 +31,10 @@ static int hv_map_interrupt(union hv_device_id hv_devid, bool level,
- 
- 	intr_desc = &input->interrupt_descriptor;
- 	memset(input, 0, sizeof(*input));
--	input->partition_id = hv_current_partition_id;
+ # Code that must be built-in
+diff --git a/drivers/hv/mshv_vfio.c b/drivers/hv/mshv_vfio.c
+new file mode 100644
+index 000000000000..6ea4d99a3bd2
+--- /dev/null
++++ b/drivers/hv/mshv_vfio.c
+@@ -0,0 +1,210 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * VFIO-MSHV bridge pseudo device
++ *
++ * Heavily inspired by the VFIO-KVM bridge pseudo device.
++ */
++#include <linux/errno.h>
++#include <linux/file.h>
++#include <linux/list.h>
++#include <linux/module.h>
++#include <linux/mutex.h>
++#include <linux/slab.h>
++#include <linux/vfio.h>
 +
-+	input->partition_id = ptid;
- 	input->device_id = hv_devid.as_uint64;
++#include "mshv.h"
++#include "mshv_root.h"
 +
- 	intr_desc->interrupt_type = HV_X64_INTERRUPT_TYPE_FIXED;
- 	intr_desc->vector_count = 1;
- 	intr_desc->target.vector = vector;
-@@ -64,6 +67,28 @@ static int hv_map_interrupt(union hv_device_id hv_devid, bool level,
- 
- 	local_irq_restore(flags);
- 
-+	return status;
++struct mshv_vfio_file {
++	struct list_head node;
++	struct file *file;	/* list of struct mshv_vfio_file */
++};
++
++struct mshv_vfio {
++	struct list_head file_list;
++	struct mutex lock;
++};
++
++static bool mshv_vfio_file_is_valid(struct file *file)
++{
++	bool (*fn)(struct file *file);
++	bool ret;
++
++	fn = symbol_get(vfio_file_is_valid);
++	if (!fn)
++		return false;
++
++	ret = fn(file);
++
++	symbol_put(vfio_file_is_valid);
++
++	return ret;
 +}
 +
-+static int hv_map_interrupt(u64 ptid, union hv_device_id device_id, bool level,
-+			    int cpu, int vector,
-+			    struct hv_interrupt_entry *ret_entry)
++static long mshv_vfio_file_add(struct mshv_device *mshvdev, unsigned int fd)
 +{
-+	u64 status;
-+	int rc, deposit_pgs = 16;		/* don't loop forever */
++	struct mshv_vfio *mshv_vfio = mshvdev->device_private;
++	struct mshv_vfio_file *mvf;
++	struct file *filp;
++	long ret = 0;
 +
-+	while (deposit_pgs--) {
-+		status = hv_map_interrupt_hcall(ptid, device_id, level, cpu,
-+						vector, ret_entry);
++	filp = fget(fd);
++	if (!filp)
++		return -EBADF;
 +
-+		if (hv_result(status) != HV_STATUS_INSUFFICIENT_MEMORY)
-+			break;
++	/* Ensure the FD is a vfio FD. */
++	if (!mshv_vfio_file_is_valid(filp)) {
++		ret = -EINVAL;
++		goto out_fput;
++	}
 +
-+		rc = hv_call_deposit_pages(NUMA_NO_NODE, ptid, 1);
-+		if (rc)
-+			break;
-+	};
++	mutex_lock(&mshv_vfio->lock);
 +
- 	if (!hv_result_success(status))
- 		hv_status_err(status, "\n");
- 
-@@ -199,8 +224,8 @@ int hv_map_msi_interrupt(struct irq_data *data,
- 	hv_devid = hv_build_devid_type_pci(pdev);
- 	cpu = cpumask_first(irq_data_get_effective_affinity_mask(data));
- 
--	return hv_map_interrupt(hv_devid, false, cpu, cfg->vector,
--				out_entry ? out_entry : &dummy);
-+	return hv_map_interrupt(hv_current_partition_id, hv_devid, false, cpu,
-+				cfg->vector, out_entry ? out_entry : &dummy);
- }
- EXPORT_SYMBOL_GPL(hv_map_msi_interrupt);
- 
-@@ -422,6 +447,7 @@ int hv_map_ioapic_interrupt(int ioapic_id, bool level, int cpu, int vector,
- 	hv_devid.device_type = HV_DEVICE_TYPE_IOAPIC;
- 	hv_devid.ioapic.ioapic_id = (u8)ioapic_id;
- 
--	return hv_map_interrupt(hv_devid, level, cpu, vector, entry);
-+	return hv_map_interrupt(hv_current_partition_id, hv_devid, level, cpu,
-+				vector, entry);
- }
- EXPORT_SYMBOL_GPL(hv_map_ioapic_interrupt);
++	list_for_each_entry(mvf, &mshv_vfio->file_list, node) {
++		if (mvf->file == filp) {
++			ret = -EEXIST;
++			goto out_unlock;
++		}
++	}
++
++	mvf = kzalloc(sizeof(*mvf), GFP_KERNEL_ACCOUNT);
++	if (!mvf) {
++		ret = -ENOMEM;
++		goto out_unlock;
++	}
++
++	mvf->file = get_file(filp);
++	list_add_tail(&mvf->node, &mshv_vfio->file_list);
++
++out_unlock:
++	mutex_unlock(&mshv_vfio->lock);
++out_fput:
++	fput(filp);
++	return ret;
++}
++
++static long mshv_vfio_file_del(struct mshv_device *mshvdev, unsigned int fd)
++{
++	struct mshv_vfio *mshv_vfio = mshvdev->device_private;
++	struct mshv_vfio_file *mvf;
++	long ret;
++
++	CLASS(fd, f)(fd);
++
++	if (fd_empty(f))
++		return -EBADF;
++
++	ret = -ENOENT;
++	mutex_lock(&mshv_vfio->lock);
++
++	list_for_each_entry(mvf, &mshv_vfio->file_list, node) {
++		if (mvf->file != fd_file(f))
++			continue;
++
++		list_del(&mvf->node);
++		fput(mvf->file);
++		kfree(mvf);
++		ret = 0;
++		break;
++	}
++
++	mutex_unlock(&mshv_vfio->lock);
++	return ret;
++}
++
++static long mshv_vfio_set_file(struct mshv_device *mshvdev, long attr,
++			      void __user *arg)
++{
++	int32_t __user *argp = arg;
++	int32_t fd;
++
++	switch (attr) {
++	case MSHV_DEV_VFIO_FILE_ADD:
++		if (get_user(fd, argp))
++			return -EFAULT;
++		return mshv_vfio_file_add(mshvdev, fd);
++
++	case MSHV_DEV_VFIO_FILE_DEL:
++		if (get_user(fd, argp))
++			return -EFAULT;
++		return mshv_vfio_file_del(mshvdev, fd);
++	}
++
++	return -ENXIO;
++}
++
++static long mshv_vfio_set_attr(struct mshv_device *mshvdev,
++			      struct mshv_device_attr *attr)
++{
++	switch (attr->group) {
++	case MSHV_DEV_VFIO_FILE:
++		return mshv_vfio_set_file(mshvdev, attr->attr,
++					  u64_to_user_ptr(attr->addr));
++	}
++
++	return -ENXIO;
++}
++
++static long mshv_vfio_has_attr(struct mshv_device *mshvdev,
++			      struct mshv_device_attr *attr)
++{
++	switch (attr->group) {
++	case MSHV_DEV_VFIO_FILE:
++		switch (attr->attr) {
++		case MSHV_DEV_VFIO_FILE_ADD:
++		case MSHV_DEV_VFIO_FILE_DEL:
++			return 0;
++		}
++
++		break;
++	}
++
++	return -ENXIO;
++}
++
++static long mshv_vfio_create_device(struct mshv_device *mshvdev, u32 type)
++{
++	struct mshv_device *tmp;
++	struct mshv_vfio *mshv_vfio;
++
++	/* Only one VFIO "device" per VM */
++	hlist_for_each_entry(tmp, &mshvdev->device_pt->pt_devices,
++			     device_ptnode)
++		if (tmp->device_ops == &mshv_vfio_device_ops)
++			return -EBUSY;
++
++	mshv_vfio = kzalloc(sizeof(*mshv_vfio), GFP_KERNEL_ACCOUNT);
++	if (mshv_vfio == NULL)
++		return -ENOMEM;
++
++	INIT_LIST_HEAD(&mshv_vfio->file_list);
++	mutex_init(&mshv_vfio->lock);
++
++	mshvdev->device_private = mshv_vfio;
++
++	return 0;
++}
++
++/* This is called from mshv_device_fop_release() */
++static void mshv_vfio_release_device(struct mshv_device *mshvdev)
++{
++	struct mshv_vfio *mv = mshvdev->device_private;
++	struct mshv_vfio_file *mvf, *tmp;
++
++	list_for_each_entry_safe(mvf, tmp, &mv->file_list, node) {
++		fput(mvf->file);
++		list_del(&mvf->node);
++		kfree(mvf);
++	}
++
++	kfree(mv);
++	kfree(mshvdev);
++}
++
++struct mshv_device_ops mshv_vfio_device_ops = {
++	.device_name = "mshv-vfio",
++	.device_create = mshv_vfio_create_device,
++	.device_release = mshv_vfio_release_device,
++	.device_set_attr = mshv_vfio_set_attr,
++	.device_has_attr = mshv_vfio_has_attr,
++};
 -- 
 2.51.2.vfs.0.1
 
