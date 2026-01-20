@@ -1,104 +1,131 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 74BB2350A37;
-	Tue, 20 Jan 2026 17:11:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 53E4440B6EB
+	for <iommu@lists.linux.dev>; Tue, 20 Jan 2026 17:24:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768929094; cv=none; b=LEyLvSjsXwwq+kb+veW/lrQEAgfEwI/aLXUInjMQ3CLTCA8iRSET1jl4JQQ9KicAK6H96JNnir2Oe/2kmjRw7HeJNMVGmlY7AwYeuyGctX/GLsR8ov/d8cOSPSONobpRHnmzJnAfno/TFA9HT3qub9im1dbyi/lfkbbaNtf81rE=
+	t=1768929870; cv=none; b=Ip59Jv58JbblzSOR+1IJhh00zw0V5MQf2F9D+p5BhGKpOrHB8rAIg/p4ZaA2BeUfHSxvdCT9wA8fu1CWO2cyfWYuRMGN/01ilzh4bd+EfgeOXu90uYkvq9Xxq9glJp2R2XSHQtn3d0bgyC9FVdk/EUCyfjQsYeLxIIeWsot32e4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768929094; c=relaxed/simple;
-	bh=+7A45g6nCXGJghJD5eSlgmjk2vVDlzcQ1kIWsxRemzk=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=XZGfiYyatkmj2+IolPWUCOd8aE1yT8u4FcuNxnSLXKtrb3kDXKUUM5mW7gf4RGVqh33EBRvfVqAnVHKa9Ibq+v2D3dAw7J1Gi1KdoPUpp3Kc5xMl1xiRMXdodYFtQQwqiCxEKGYnc/FBBmBTKYa+gh7VuKfat9xggbxyvJ3FjiM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 50DA71476;
-	Tue, 20 Jan 2026 09:11:24 -0800 (PST)
-Received: from [10.57.49.114] (unknown [10.57.49.114])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8645B3F632;
-	Tue, 20 Jan 2026 09:11:29 -0800 (PST)
-Message-ID: <a89e8fcc-29f0-4a6a-85f8-ca8ca41c53ce@arm.com>
-Date: Tue, 20 Jan 2026 17:11:27 +0000
+	s=arc-20240116; t=1768929870; c=relaxed/simple;
+	bh=5bL60qb20EhXrNOMh7AxwUBB3DdXknRv7p7jngQupDs=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=uESG3ju8Pv3I4MFD9HU5nBiFsmB9U1PTd2SIsf34JAiBEMdlRGXm+yV8SP0yGnAIIdGtmOQ9wARVLDqvd98ClQbPqTvszN/hBQbhINf0wbDkpQdXOdijXcFedPROp8UqBog3/EF0nsypYi268UlPv9s1fGlKt0E1J3+WzjpQwdg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=AMr8o2aW; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="AMr8o2aW"
+Received: from localhost (unknown [20.236.11.29])
+	by linux.microsoft.com (Postfix) with ESMTPSA id BEBBD20B716A;
+	Tue, 20 Jan 2026 09:24:28 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com BEBBD20B716A
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1768929869;
+	bh=rAvan7uCS/VjRPrCEciTwP185oGdpk264vz99WC0BcA=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=AMr8o2aWp+BZuJzQJp5J4o+czJMcOadfzoj+Z4jSuc+5pG250oHlKQpwrMoEAJZpN
+	 i6u1mcB2FzH97Cz6AVHZW+5DvD4DemMEYxw9y/8e6LxacmimbRT0/Ds8Os8aaCLjrS
+	 9+d8t/41ktfoEsARHelnZepkQ9otyh3Yb+u9pfDc=
+Date: Tue, 20 Jan 2026 09:24:27 -0800
+From: Jacob Pan <jacob.pan@linux.microsoft.com>
+To: Ankit Soni <Ankit.Soni@amd.com>
+Cc: <iommu@lists.linux.dev>, <vasant.hegde@amd.com>,
+ <suravee.suthikulpanit@amd.com>, <joro@8bytes.org>, <will@kernel.org>,
+ <robin.murphy@arm.com>, <linux-kernel@vger.kernel.org>,
+ <Srikanth.Aithal@amd.com>
+Subject: Re: [PATCH] iommu/amd: serialize sequence allocation under
+ concurrent TLB invalidations
+Message-ID: <20260120092427.00001794@linux.microsoft.com>
+In-Reply-To: <abcfda19c05becb988ede3a1a0ba6d87161943bf.1768899638.git.Ankit.Soni@amd.com>
+References: <abcfda19c05becb988ede3a1a0ba6d87161943bf.1768899638.git.Ankit.Soni@amd.com>
+Organization: LSG
+X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/2] dma-direct: Validate DMA mask against canonical DMA
- addresses
-To: Jason Gunthorpe <jgg@ziepe.ca>, Suzuki K Poulose <suzuki.poulose@arm.com>
-Cc: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
- linux-coco@lists.linux.dev, Catalin Marinas <catalin.marinas@arm.com>,
- will@kernel.org, steven.price@arm.com,
- Marek Szyprowski <m.szyprowski@samsung.com>
-References: <20260120064255.179425-1-aneesh.kumar@kernel.org>
- <2a0b6d1b-875a-4075-8fc9-a8534afc9168@arm.com> <yq5atswgjrkp.fsf@kernel.org>
- <0da8b73c-5bec-44c3-9902-221a11142c34@arm.com>
- <20260120151127.GP961572@ziepe.ca>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20260120151127.GP961572@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On 2026-01-20 3:11 pm, Jason Gunthorpe wrote:
-> On Tue, Jan 20, 2026 at 02:39:14PM +0000, Suzuki K Poulose wrote:
->>>>> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
->>>>> index 8e04f72baaa3..a5639e9415f5 100644
->>>>> --- a/kernel/dma/direct.c
->>>>> +++ b/kernel/dma/direct.c
->>>>> @@ -580,12 +580,12 @@ int dma_direct_supported(struct device *dev, u64 mask)
->>>>>     	/*
->>>>>     	 * This check needs to be against the actual bit mask value, so use
->>>>> -	 * phys_to_dma_unencrypted() here so that the SME encryption mask isn't
->>>>> +	 * __phys_to_dma() here so that the arch specific encryption mask isn't
->>>>>     	 * part of the check.
->>>>>     	 */
->>>>>     	if (IS_ENABLED(CONFIG_ZONE_DMA))
->>>>>     		min_mask = min_t(u64, min_mask, zone_dma_limit);
->>>>> -	return mask >= phys_to_dma_unencrypted(dev, min_mask);
->>>>> +	return mask >= __phys_to_dma(dev, min_mask);
->>>>
->>>> This is wrong, isn't it ? For e.g., for CCA, even though the "Flag" is
->>>> added to the PA, it is really part of the actual "PA" and thus must be
->>>> checked against the full PA ?
->>>>
->>>
->>> That is true only when the device is operating in untrusted mode?. For a
->>> trusted device that mask is valid mask right?
->>
->> Irrespective of the mode in which the device is operating, the DMA
->> address must include the fully qualified "{I}PA" address, right ?
->> i.e., "the Unencrypted" bit is only a software construct and the full
->> PA must be used, irrespective of the mode of the device.
-> 
-> But you could make an argument that a trusted device won't DMA to
-> shared memory, ie it would SWIOTLB to private memory if that is
-> required.
+Hi Ankit,
 
-I don't think we can assume that any arbitrary trusted device is *never* 
-going to want to access shared memory in the Realm IPA space, and while 
-it might technically be possible for a private SWIOTLB buffer to handle 
-that, we currently only have infrastructure that assumes the opposite 
-(i.e. that SWIOTLB buffers are shared for bouncing untrusted DMA to/from 
-private memory). Thus for now, saying we can only promise to support DMA 
-if the device can access the whole IPA space itself is accurate.
+On Tue, 20 Jan 2026 09:05:07 +0000
+Ankit Soni <Ankit.Soni@amd.com> wrote:
 
-> Otherwise these two limitations will exclude huge numbers of real
-> devices from working with ARM CCA at all.
+> With concurrent TLB invalidations, completion wait randomly gets
+> timed out because cmd_sem_val was incremented outside the IOMMU
+> spinlock, allowing CMD_COMPL_WAIT commands to be queued out of
+> sequence and breaking the ordering assumption in wait_on_sem().
+> Move the cmd_sem_val increment under iommu->lock so completion
+> sequence allocation is serialized with command queuing.
+> And remove the unnecessary return.
+>=20
+> Fixes: d2a0cac10597 ("iommu/amd: move wait_on_sem() out of spinlock")
+>=20
+> Tested-by: Srikanth Aithal <sraithal@amd.com>
+> Reported-by: Srikanth Aithal <sraithal@amd.com>
+> Signed-off-by: Ankit Soni <Ankit.Soni@amd.com>
+> ---
+>  drivers/iommu/amd/iommu.c | 18 ++++++++++++------
+>  1 file changed, 12 insertions(+), 6 deletions(-)
+>=20
+> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+> index d7f457338de7..593fb879b7b0 100644
+> --- a/drivers/iommu/amd/iommu.c
+> +++ b/drivers/iommu/amd/iommu.c
+> @@ -1422,6 +1422,12 @@ static int iommu_queue_command(struct
+> amd_iommu *iommu, struct iommu_cmd *cmd) return
+> iommu_queue_command_sync(iommu, cmd, true); }
+> =20
+> +static u64 get_cmdsem_val(struct amd_iommu *iommu)
+> +{
+> +	lockdep_assert_held(&iommu->lock);
+> +	return atomic64_inc_return(&iommu->cmd_sem_val);
+Do we still need this to be atomic now that it=E2=80=99s protected by a
+spinlock?
 
-Pretty sure the dependency on TDISP wins in that regard ;)
+> +}
+> +
+>  /*
+>   * This function queues a completion wait command into the command
+>   * buffer of an IOMMU
+> @@ -1436,11 +1442,11 @@ static int iommu_completion_wait(struct
+> amd_iommu *iommu) if (!iommu->need_sync)
+>  		return 0;
+> =20
+> -	data =3D atomic64_inc_return(&iommu->cmd_sem_val);
+> -	build_completion_wait(&cmd, iommu, data);
+> -
+>  	raw_spin_lock_irqsave(&iommu->lock, flags);
+> =20
+> +	data =3D get_cmdsem_val(iommu);
+> +	build_completion_wait(&cmd, iommu, data);
+> +
+>  	ret =3D __iommu_queue_command_sync(iommu, &cmd, false);
+>  	raw_spin_unlock_irqrestore(&iommu->lock, flags);
+> =20
+> @@ -3119,10 +3125,11 @@ static void
+> iommu_flush_irt_and_complete(struct amd_iommu *iommu, u16 devid)
+> return;=20
+>  	build_inv_irt(&cmd, devid);
+> -	data =3D atomic64_inc_return(&iommu->cmd_sem_val);
+> -	build_completion_wait(&cmd2, iommu, data);
+> =20
+>  	raw_spin_lock_irqsave(&iommu->lock, flags);
+> +	data =3D get_cmdsem_val(iommu);
+> +	build_completion_wait(&cmd2, iommu, data);
+> +
+>  	ret =3D __iommu_queue_command_sync(iommu, &cmd, true);
+>  	if (ret)
+>  		goto out_err;
+> @@ -3136,7 +3143,6 @@ static void iommu_flush_irt_and_complete(struct
+> amd_iommu *iommu, u16 devid)=20
+>  out_err:
+>  	raw_spin_unlock_irqrestore(&iommu->lock, flags);
+> -	return;
+>  }
+> =20
+>  static inline u8 iommu_get_int_tablen(struct iommu_dev_data
+> *dev_data)
 
-However, assuming that Realms and RMMs might eventually come up with 
-their own attestation mechanisms for on-chip non-PCIe devices (and such 
-devices continue to have crippled DMA capabilities) then the fact is 
-still that DA requires an SMMU for S2, so at worst there should always 
-be the possibility for an RMM to offer S1 SMMU support to the Realm, 
-we're just not there yet.
-
-Thanks,
-Robin.
