@@ -1,135 +1,109 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 827FA3ED11A;
-	Tue, 20 Jan 2026 11:00:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 68AA6427A00;
+	Tue, 20 Jan 2026 11:59:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768906802; cv=none; b=cbPAqZBhiOZq6jD8u5ew0YtPgp/KEKFCv1zS44bER4zyWybqoWiqaKfbRMs9ACN5VCWvkQbm8gPBxSYqDeNPYy5UB12EZLY7fRWuCxyzIKILEPKq5/oIoWWiQbCqNuR7XhaI4oSP0yneUmVmDR39lqZKKXLuxeMjyiQVF8k5lu8=
+	t=1768910386; cv=none; b=MK56eZzMu0CdDlssyxNCsqAkW9yQg8kp/RkrfIXOe08Cav8gpVHhXoUruJtJu8bzZ8yejYlsuZhePf+W2VxLEz964eHOj0c7hMVs0Hts0RpY80RnIu6LFF8r2NubUvUP8AVXMaQHsGhLrIDJ8IaH5nluyMOu/RI0/2b/+PipnPE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768906802; c=relaxed/simple;
-	bh=lY4JeADarjlp9LvVA1IUcRgL0c8f7WJjiZIQ38czuho=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=MRBj0g00ZpP4ydmOjpu7jSs8mPg/K0xZPxZ2Y96KZFbY3rnVr4kNitjTo06SFflSQ2ZUC+h5c2v/8YHhSuK6mzAI+vSzir7Zfp5XxsSwd/gYJ8Q7jL+eapRH81WQnsFPTd5y0fEkBlyT0AZZR1fusLpSz9RD/2zzbQ/y5zToftI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Ks7sFK1N; arc=none smtp.client-ip=192.198.163.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Ks7sFK1N"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1768906801; x=1800442801;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=lY4JeADarjlp9LvVA1IUcRgL0c8f7WJjiZIQ38czuho=;
-  b=Ks7sFK1Nur4LM+OjDzdEQg+TQDNjH9/Kp1v0lYkO5C7DywZ5+lZdBAwy
-   /GN03Apdd3TReksTaId9eGSeskbFlYjhd2WV/oyFIZxilBcQNoui32cea
-   Q0a26OKVPR1+wxe1YAXW0a2wMUS/rPVs5uZg+7pOX8H77mPi/dwZnujcs
-   Cb0DIa/8Sun+sD0n5eKuOktEUWSNa/SxUDmKjiCWCCv8VP8FsPUFOtN4K
-   U+ZcwZyMDmDURLGpIw5ZGCSSSTdxZF21Hy5APRkrjOGV+iR8x9u9u6WIN
-   NVhfXu1wI4pIvVgOdMCzHHbnbR8KAxbvVWl+2UhB0/GclEsr5VvsbPVei
-   Q==;
-X-CSE-ConnectionGUID: cWi0FG4YSi2a2m532pFx3g==
-X-CSE-MsgGUID: nZG2z/f+QcStZxUK30IerQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11676"; a="80744710"
-X-IronPort-AV: E=Sophos;i="6.21,240,1763452800"; 
-   d="scan'208";a="80744710"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2026 03:00:00 -0800
-X-CSE-ConnectionGUID: apOSSKeMRDOj8vy3BB7/jg==
-X-CSE-MsgGUID: IiFLw6HiRDOMkap+J+T3bQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,240,1763452800"; 
-   d="scan'208";a="205892918"
-Received: from lkp-server01.sh.intel.com (HELO 765f4a05e27f) ([10.239.97.150])
-  by orviesa009.jf.intel.com with ESMTP; 20 Jan 2026 02:59:57 -0800
-Received: from kbuild by 765f4a05e27f with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1vi9Sj-00000000OrV-3JHz;
-	Tue, 20 Jan 2026 10:59:53 +0000
-Date: Tue, 20 Jan 2026 18:59:52 +0800
-From: kernel test robot <lkp@intel.com>
-To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	linux-coco@lists.linux.dev
-Cc: oe-kbuild-all@lists.linux.dev,
-	Catalin Marinas <catalin.marinas@arm.com>, will@kernel.org,
-	robin.murphy@arm.com, suzuki.poulose@arm.com, jgg@ziepe.ca,
-	steven.price@arm.com, Marek Szyprowski <m.szyprowski@samsung.com>,
-	"Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
-Subject: Re: [PATCH 1/2] dma-direct: Validate DMA mask against canonical DMA
- addresses
-Message-ID: <202601201822.0I4WAqVW-lkp@intel.com>
-References: <20260120064255.179425-1-aneesh.kumar@kernel.org>
+	s=arc-20240116; t=1768910386; c=relaxed/simple;
+	bh=f8HjKNZRU+5iiqgVaqMtofxKEPVaTMz3aNtiOwoAGXg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=sAytPezAPoF4QgNs+1KqMSKX7bhAMNMQ375qYrVqWDQ4XjmNvhSMb+Relif+0g+ltyuYejNjpgF78Y76zQdbN4ffuvZ6p7pZJ6Ejmxeo9nOKL+QSXcDr4CO04d1jBFOUpze8Au35I9NtPz+G2Yh0Gguy2Gp3dXfTZT9d7yS+IAo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 10DE11476;
+	Tue, 20 Jan 2026 03:59:37 -0800 (PST)
+Received: from [10.57.49.114] (unknown [10.57.49.114])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 34D213F694;
+	Tue, 20 Jan 2026 03:59:41 -0800 (PST)
+Message-ID: <893a6503-d33f-41d8-8966-19b9f251d9da@arm.com>
+Date: Tue, 20 Jan 2026 11:59:39 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260120064255.179425-1-aneesh.kumar@kernel.org>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/2] dma-direct: Validate DMA mask against canonical DMA
+ addresses
+To: Suzuki K Poulose <suzuki.poulose@arm.com>,
+ "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+ linux-coco@lists.linux.dev
+Cc: Catalin Marinas <catalin.marinas@arm.com>, will@kernel.org, jgg@ziepe.ca,
+ steven.price@arm.com, Marek Szyprowski <m.szyprowski@samsung.com>
+References: <20260120064255.179425-1-aneesh.kumar@kernel.org>
+ <2a0b6d1b-875a-4075-8fc9-a8534afc9168@arm.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <2a0b6d1b-875a-4075-8fc9-a8534afc9168@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-Hi Aneesh,
+On 2026-01-20 9:59 am, Suzuki K Poulose wrote:
+> On 20/01/2026 06:42, Aneesh Kumar K.V (Arm) wrote:
+>> On systems that apply an address encryption tag or mask to DMA addresses,
+>> DMA mask validation must be performed against the canonical DMA address.
+>> Using a non-canonical (e.g. encrypted or unencrypted) DMA address
+>> can incorrectly fail capability checks, since architecture-specific
+>> encryption bits are not part of the device’s actual DMA addressing
+>> capability. For example, arm64 adds PROT_NS_SHARED to unencrypted DMA
+>> addresses.
+>>
+>> Fix this by validating device DMA masks against __phys_to_dma(), ensuring
+>> that the architecture encryption mask does not influence the check.
+>>
+>> Fixes: b66e2ee7b6c8 ("dma: Introduce generic dma_addr_*crypted helpers")
+> 
+> 
+>> Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
+>> ---
+>>   kernel/dma/direct.c | 4 ++--
+>>   1 file changed, 2 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+>> index 8e04f72baaa3..a5639e9415f5 100644
+>> --- a/kernel/dma/direct.c
+>> +++ b/kernel/dma/direct.c
+>> @@ -580,12 +580,12 @@ int dma_direct_supported(struct device *dev, u64 
+>> mask)
+>>       /*
+>>        * This check needs to be against the actual bit mask value, so use
+>> -     * phys_to_dma_unencrypted() here so that the SME encryption mask 
+>> isn't
+>> +     * __phys_to_dma() here so that the arch specific encryption mask 
+>> isn't
+>>        * part of the check.
+>>        */
+>>       if (IS_ENABLED(CONFIG_ZONE_DMA))
+>>           min_mask = min_t(u64, min_mask, zone_dma_limit);
+>> -    return mask >= phys_to_dma_unencrypted(dev, min_mask);
+>> +    return mask >= __phys_to_dma(dev, min_mask);
+> 
+> This is wrong, isn't it ? For e.g., for CCA, even though the "Flag" is
+> added to the PA, it is really part of the actual "PA" and thus must be
+> checked against the full PA ?
 
-kernel test robot noticed the following build errors:
+Yes, it's much the same as for AMD SEV (albeit the other way round) - 
+the encryption/decryption bit is part of the DMA address because it 
+needs to be driven by the device, so it is crucial that the device's DMA 
+mask is capable of expressing that.
 
-[auto build test ERROR on linus/master]
-[also build test ERROR on v6.19-rc6 next-20260119]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+Hence, as I think we've discussed before, for CCA we can't really 
+support 32-bit devices doing DMA to shared pages at all, unless the 
+whole VM is limited to a 31-bit IPA space.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Aneesh-Kumar-K-V-Arm/dma-direct-Make-phys_to_dma-pick-encrypted-vs-unencrypted-per-device/20260120-145025
-base:   linus/master
-patch link:    https://lore.kernel.org/r/20260120064255.179425-1-aneesh.kumar%40kernel.org
-patch subject: [PATCH 1/2] dma-direct: Validate DMA mask against canonical DMA addresses
-config: powerpc-allnoconfig (https://download.01.org/0day-ci/archive/20260120/202601201822.0I4WAqVW-lkp@intel.com/config)
-compiler: powerpc-linux-gcc (GCC) 15.2.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260120/202601201822.0I4WAqVW-lkp@intel.com/reproduce)
+Thanks,
+Robin.
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202601201822.0I4WAqVW-lkp@intel.com/
+> 
+> Suzuki
+> 
+> 
+>>   }
+>>   static const struct bus_dma_region *dma_find_range(struct device *dev,
+> 
 
-All errors (new ones prefixed by >>):
-
-   kernel/dma/direct.c: In function 'dma_direct_supported':
->> kernel/dma/direct.c:564:24: error: implicit declaration of function '__phys_to_dma'; did you mean 'phys_to_dma'? [-Wimplicit-function-declaration]
-     564 |         return mask >= __phys_to_dma(dev, min_mask);
-         |                        ^~~~~~~~~~~~~
-         |                        phys_to_dma
-
-
-vim +564 kernel/dma/direct.c
-
-   543	
-   544	int dma_direct_supported(struct device *dev, u64 mask)
-   545	{
-   546		u64 min_mask = (max_pfn - 1) << PAGE_SHIFT;
-   547	
-   548		/*
-   549		 * Because 32-bit DMA masks are so common we expect every architecture
-   550		 * to be able to satisfy them - either by not supporting more physical
-   551		 * memory, or by providing a ZONE_DMA32.  If neither is the case, the
-   552		 * architecture needs to use an IOMMU instead of the direct mapping.
-   553		 */
-   554		if (mask >= DMA_BIT_MASK(32))
-   555			return 1;
-   556	
-   557		/*
-   558		 * This check needs to be against the actual bit mask value, so use
-   559		 * __phys_to_dma() here so that the arch specific encryption mask isn't
-   560		 * part of the check.
-   561		 */
-   562		if (IS_ENABLED(CONFIG_ZONE_DMA))
-   563			min_mask = min_t(u64, min_mask, zone_dma_limit);
- > 564		return mask >= __phys_to_dma(dev, min_mask);
-   565	}
-   566	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
