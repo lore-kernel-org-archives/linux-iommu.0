@@ -1,66 +1,103 @@
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3D405249EB;
-	Tue, 20 Jan 2026 09:19:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768900761; cv=none; b=ktgNvp9OnAumcnSVxGdb50xNMjWHW3QnEvABV4ZmdWjVkHm8NAgfxMI2JE7y+nJNhQctIM/T8je+cnB9nbVwp6g8FT8EtmiCYEuO3dbltUKQKQXFHn8nj6xwa3hYm1nyHwkWEDao5ZRmLoWwZQlSWrzxtY8QCvbhmqNYOlYQzzc=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768900761; c=relaxed/simple;
-	bh=1e9mZsaiATXaIXW6CmBfDOFIo4cZshVuAw/kNN8Nwb0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=RSmKMAdVNBA5IN3VW7t7xi9X+uqOaEgovqxmFdImX6yufecsf1/ODU5pyWGpDrh0HyvsHRPp9MSUFm9anSs6nEV7bWsw2PYobBaeClS+DHlpxFFn0KQXYa5v+EEpFvb8KUU6p7mmd2mEeMa63ZzEcHYg6MbH/SJbjnuyqwsQwNk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=QtRuLDhm; arc=none smtp.client-ip=85.214.250.239
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="QtRuLDhm"
-Received: from 8bytes.org (p4ffe051a.dip0.t-ipconnect.de [79.254.5.26])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+Received: from mail-wr1-f73.google.com (mail-wr1-f73.google.com [209.85.221.73])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 04AC75E2F3;
-	Tue, 20 Jan 2026 10:19:18 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1768900758;
-	bh=1e9mZsaiATXaIXW6CmBfDOFIo4cZshVuAw/kNN8Nwb0=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=QtRuLDhmqskkqqQkOlNhBn4es4EF1Cz6/oOozVBEZ+8DZzjkSuayL//UKEpcKaBIM
-	 yn51Rw7V4GvDGNL+UdVecTiTtDJqX4kPmlnyjPQWP6hpipB8ani/UtXLqMDkA2cjp/
-	 jtb7xnoG0zWK2U9r93Yz3LsLRxQchkLPZG9BBpnIAIpA8hThb4v0kt2erWDdAxh0cB
-	 XF7sUCp4DN9hVZ4gsMX4NrND0AYpMHyqKbsv+3do0WNn0Uq9mvYWUEShJZUSmPny4+
-	 mptXcs8cLVSnCbXtmWnace4DbV2Nw+Rmt2UsouxAEADANUV12CESEBLe3K7JPA5XTb
-	 2Er+8BAhLu9vA==
-Date: Tue, 20 Jan 2026 10:19:16 +0100
-From: Joerg Roedel <joro@8bytes.org>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Justin Stitt <justinstitt@google.com>, 
-	llvm@lists.linux.dev, Bill Wendling <morbo@google.com>, 
-	Nathan Chancellor <nathan@kernel.org>, Nick Desaulniers <nick.desaulniers+lkml@gmail.com>, 
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, 
-	Alejandro Jimenez <alejandro.j.jimenez@oracle.com>, Chunyu Hu <chuhu@redhat.com>, 
-	Joerg Roedel <joerg.roedel@amd.com>, Kevin Tian <kevin.tian@intel.com>, 
-	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev, Samiullah Khawaja <skhawaja@google.com>
-Subject: Re: [PATCH rc] iommupt: Make it clearer to the compiler that
- pts.level == 0 for single page
-Message-ID: <r3isxjju2lbhezh5x747evatqyc352hworepwraaclwox52jal@ned62cmypn7g>
-References: <0-v1-5b908a8b789a+838-iommpt_single_page_const_jgg@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0C953C1982
+	for <iommu@lists.linux.dev>; Tue, 20 Jan 2026 09:19:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.73
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1768900775; cv=none; b=bzCisftVLrauqF+1fb5OQfUq+7z5rhsaUFEklXciepF6z/gbTtoOsPlPzRzfryEVov9FlM0iThJ/ElAN+MduC//SCNgW1ue06AvfDbKsoWEtmslpZdxMeVfGfOuq4LjTLgLWyEI+kOwU+Qhb5QIWWIFACMLMLVCNhFeVU57TzOw=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1768900775; c=relaxed/simple;
+	bh=dz8KYRvaR4cIH7OFqi4HAkd8OxCeLLplo8K/12b6aYw=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=XXGgDjXmCJ+FJyMsPUHt4P+3lDV+ErdQczjWuZXVHX/Fr0Csu2oIZeUHnJknzc2KpRroZW0CgKNHEMRxCgcs/swUke9QHRT9wSqwdQvd6aX1XJ7F3XuQbbNux2ed2QoCKxw0b4kSx3/5OOb5Np5mI2429/VtHh8OYjdj0JI/WFs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=XVg1d6nK; arc=none smtp.client-ip=209.85.221.73
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="XVg1d6nK"
+Received: by mail-wr1-f73.google.com with SMTP id ffacd0b85a97d-43102ac1da8so4316103f8f.2
+        for <iommu@lists.linux.dev>; Tue, 20 Jan 2026 01:19:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1768900772; x=1769505572; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=Gf2YI936iIbQws0HxhhxYueO3tESeyYZp/38y2RVRZI=;
+        b=XVg1d6nK7DD64g4NvI6NOSfrxLLGqLajqXWeDfTvz2U4TAJnadhJRF8nvfFG9rk1nU
+         afUbp0Edg8GDsYy3JCbQ9NmKDnG7T11F185jLRbl8IZ8/8NLm/YzKombG0YkT62NI7u3
+         pYJPatMfingnXntF+qJeOCl4q3pTu3WM1PpmNjGJsmA3Ox+Vcs8AKVeu8bm2+Xap4usk
+         gIceoxJ7mpUs5WuS0CQYf6XynJ3SsOwRogwiK16dRWUrglCTuUJ30ka4cIjT6TFFp7KI
+         FbrAb2slbbuMSOc3idynYIrHBOfrM8T/f2V06PADviiHNd8iBvIYrviiq4QyoueYu4uy
+         Mz9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1768900772; x=1769505572;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Gf2YI936iIbQws0HxhhxYueO3tESeyYZp/38y2RVRZI=;
+        b=IN2UU7veGtML080oVOvuiQWrM0hvNomDDZz12oIZl/JhkJplFsiDDBwCELDiEzaut7
+         F705cySPBlrOOajtNWJNmq1/0xcFHEuIR84+2sWH+si0iznTBjdoGA4gtqknnKqWYcZY
+         4TABwS+F469V4Y+BB3ecAPOiDO71f1mSRLAfE9G5njhhfv2uIg6DUccp3xH8+NqApuoh
+         EeOClHpGrN5jaIo2cnfeo17U+AqcK3D+7T0uasI+0htoWwg/aNm/mxE3FHwXcz3skRLD
+         mVnSxyMcDECtd9vUPG9txIDRPrqWhfs7LhkiezUrveUQ3nG8k3yvAyHwgDOIv1/5OwDv
+         xUCw==
+X-Forwarded-Encrypted: i=1; AJvYcCVyyKijNDgTEQUNV/LGWsLYFT+wNCs6CE/kzSx2igXwhTSOE12RM8czVbk7DSn3TH/iQce22g==@lists.linux.dev
+X-Gm-Message-State: AOJu0YywYCLMClheoCrOQBmfxMNpCopqyfLpYpRyiiwjjqAZQZZ6widE
+	AgeFcpIxncbTwN9L4DlkuX48hD+/d0kp4Kd5e1wS1inRFZAYdm0PX57CTm1CV4uDV5B8mdQM3zF
+	39eqnjt0hoYuPvA==
+X-Received: from wrvk17.prod.google.com ([2002:a5d:5191:0:b0:430:f5ea:d30b])
+ (user=smostafa job=prod-delivery.src-stubby-dispatcher) by
+ 2002:a05:6000:1448:b0:42f:f627:3aa3 with SMTP id ffacd0b85a97d-4358ff398b2mr1994536f8f.56.1768900771795;
+ Tue, 20 Jan 2026 01:19:31 -0800 (PST)
+Date: Tue, 20 Jan 2026 09:19:24 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0-v1-5b908a8b789a+838-iommpt_single_page_const_jgg@nvidia.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.52.0.457.g6b5491de43-goog
+Message-ID: <20260120091926.670155-1-smostafa@google.com>
+Subject: [PATCH v2 0/2] iommu: debug-pagealloc: Remove pfn_valid() usage
+From: Mostafa Saleh <smostafa@google.com>
+To: linux-mm@kvack.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	linux-doc@vger.kernel.org
+Cc: corbet@lwn.net, joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, 
+	akpm@linux-foundation.org, vbabka@suse.cz, surenb@google.com, mhocko@suse.com, 
+	jackmanb@google.com, hannes@cmpxchg.org, ziy@nvidia.com, david@redhat.com, 
+	lorenzo.stoakes@oracle.com, Liam.Howlett@oracle.com, rppt@kernel.org, 
+	xiaqinxin@huawei.com, baolu.lu@linux.intel.com, rdunlap@infradead.org, 
+	Mostafa Saleh <smostafa@google.com>
+Content-Type: text/plain; charset="UTF-8"
 
-On Mon, Jan 19, 2026 at 08:19:49PM -0400, Jason Gunthorpe wrote:
-> Fixes: dcd6a011a8d5 ("iommupt: Add map_pages op")
-> Reported-by: Chunyu Hu <chuhu@redhat.com>
-> Closes: https://lore.kernel.org/all/aUn9uGPCooqB-RIF@gmail.com/
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->  drivers/iommu/generic_pt/iommu_pt.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+This is a small fix for the new config IOMMU_DEBUG_PAGEALLOC based
+on the discussion:
+https://lore.kernel.org/linux-iommu/CAFgf54pBAUm3ao-UJksiuGKtvv4wzRyFq_uKwLe0H1ettO4DLQ@mail.gmail.com/
 
-Applied, thanks.
+Where it was concluded that pfn_valid() is not enough to validate
+physical addresses before access to page_ext.
+
+The first patch introduces a new function in page_ext that takes a
+physical address as an argument, and the second patch uses it instead
+of calling pfn_valid() and phys_to_page()
+
+Benchmarks with the new implementation can be found in:
+https://lore.kernel.org/linux-iommu/20260114164322.787125-1-smostafa@google.com/
+
+This series applies to iommu/core tree.
+
+Changes on v2:
+v1: https://lore.kernel.org/linux-iommu/20260119142246.3821052-1-smostafa@google.com/
+- Rename page_ext_phys() to page_ext_from_phys()
+- Reword comment and commit messages.
+
+Mostafa Saleh (2):
+  mm/page_ext: Add page_ext_get_from_phys()
+  iommu: debug-pagealloc: Use page_ext_get_from_phys()
+
+ drivers/iommu/iommu-debug-pagealloc.c | 31 ++++++++++++---------------
+ include/linux/page_ext.h              |  6 ++++++
+ mm/page_ext.c                         | 23 ++++++++++++++++++++
+ 3 files changed, 43 insertions(+), 17 deletions(-)
+
+-- 
+2.52.0.457.g6b5491de43-goog
+
