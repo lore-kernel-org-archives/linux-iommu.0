@@ -1,226 +1,104 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E2E0A4779AC
-	for <iommu@lists.linux.dev>; Tue, 20 Jan 2026 16:13:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 74BB2350A37;
+	Tue, 20 Jan 2026 17:11:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768925638; cv=none; b=ga1yeDA+zxsFMKfTnvLENEgki4M2CTSVERnrc6Gbvw5qDG6Bwm0DT6jYn/XGvkY7hHue916rL3kQXZ2oiRHpWEPS1cHvoCEDPX7eh6DWBy75i+r9OGdNMgJ6E0oY8KVq64ds8cXN7le2Kuf1mwgOplgULha5L45MWojuWm3eZZc=
+	t=1768929094; cv=none; b=LEyLvSjsXwwq+kb+veW/lrQEAgfEwI/aLXUInjMQ3CLTCA8iRSET1jl4JQQ9KicAK6H96JNnir2Oe/2kmjRw7HeJNMVGmlY7AwYeuyGctX/GLsR8ov/d8cOSPSONobpRHnmzJnAfno/TFA9HT3qub9im1dbyi/lfkbbaNtf81rE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768925638; c=relaxed/simple;
-	bh=xsjjUWsrEHOLFWe2BoC5SLfeDNDK/qtujNgUgM+Xs9c=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kXP8DYDnUscuJFwX0e1klAd62oiBui3bJ0iV3SOHLnW2nI357KCkgrX6DXEGa3QLK+arIsLKkxD4zKfPA2G8EzRnyu/ggMJT+SZNJgAt84590beQa4aNkZ6FMBf5J1rt5RkdJBE7ENS2GQ8iQ+6BS0lPN/W2R3pVGH7YFK/lSGw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=F5fTmeb0; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="F5fTmeb0"
-Received: from skinsburskii.localdomain (unknown [20.236.11.102])
-	by linux.microsoft.com (Postfix) with ESMTPSA id D96D220B716A;
-	Tue, 20 Jan 2026 08:13:55 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com D96D220B716A
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1768925636;
-	bh=/Swnp5UxzGM1E07wXoCWuTUm5dNDFNjqw04IYItUiZc=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=F5fTmeb0PykDmukATKeznivsbr5F+tiwHrBIXbSukB7u/I8XQMQr07lyn7T8HB+DC
-	 0Yu6Td8AvHMQu5KoktaRBGfu3OEDheGEkU1Sw9HqaN9f/pkYRdAt2lb4gKNw70hudj
-	 Z1+JJSU7NLIBgTC0La4WehEREThNXf/D1ERTikfY=
-Date: Tue, 20 Jan 2026 08:13:55 -0800
-From: Stanislav Kinsburskii <skinsburskii@linux.microsoft.com>
-To: Mukesh R <mrathor@linux.microsoft.com>
-Cc: linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
-	kys@microsoft.com, haiyangz@microsoft.com, wei.liu@kernel.org,
-	decui@microsoft.com, longli@microsoft.com, catalin.marinas@arm.com,
-	will@kernel.org, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-	dave.hansen@linux.intel.com, hpa@zytor.com, joro@8bytes.org,
-	lpieralisi@kernel.org, kwilczynski@kernel.org, mani@kernel.org,
-	robh@kernel.org, bhelgaas@google.com, arnd@arndb.de,
-	nunodasneves@linux.microsoft.com, mhklinux@outlook.com,
-	romank@linux.microsoft.com
-Subject: Re: [PATCH v0 07/15] mshv: Add ioctl support for MSHV-VFIO bridge
- device
-Message-ID: <aW-pw7GlQdFv-lf5@skinsburskii.localdomain>
-References: <20260120064230.3602565-1-mrathor@linux.microsoft.com>
- <20260120064230.3602565-8-mrathor@linux.microsoft.com>
+	s=arc-20240116; t=1768929094; c=relaxed/simple;
+	bh=+7A45g6nCXGJghJD5eSlgmjk2vVDlzcQ1kIWsxRemzk=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=XZGfiYyatkmj2+IolPWUCOd8aE1yT8u4FcuNxnSLXKtrb3kDXKUUM5mW7gf4RGVqh33EBRvfVqAnVHKa9Ibq+v2D3dAw7J1Gi1KdoPUpp3Kc5xMl1xiRMXdodYFtQQwqiCxEKGYnc/FBBmBTKYa+gh7VuKfat9xggbxyvJ3FjiM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 50DA71476;
+	Tue, 20 Jan 2026 09:11:24 -0800 (PST)
+Received: from [10.57.49.114] (unknown [10.57.49.114])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8645B3F632;
+	Tue, 20 Jan 2026 09:11:29 -0800 (PST)
+Message-ID: <a89e8fcc-29f0-4a6a-85f8-ca8ca41c53ce@arm.com>
+Date: Tue, 20 Jan 2026 17:11:27 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260120064230.3602565-8-mrathor@linux.microsoft.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/2] dma-direct: Validate DMA mask against canonical DMA
+ addresses
+To: Jason Gunthorpe <jgg@ziepe.ca>, Suzuki K Poulose <suzuki.poulose@arm.com>
+Cc: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+ linux-coco@lists.linux.dev, Catalin Marinas <catalin.marinas@arm.com>,
+ will@kernel.org, steven.price@arm.com,
+ Marek Szyprowski <m.szyprowski@samsung.com>
+References: <20260120064255.179425-1-aneesh.kumar@kernel.org>
+ <2a0b6d1b-875a-4075-8fc9-a8534afc9168@arm.com> <yq5atswgjrkp.fsf@kernel.org>
+ <0da8b73c-5bec-44c3-9902-221a11142c34@arm.com>
+ <20260120151127.GP961572@ziepe.ca>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20260120151127.GP961572@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Mon, Jan 19, 2026 at 10:42:22PM -0800, Mukesh R wrote:
-> From: Mukesh Rathor <mrathor@linux.microsoft.com>
+On 2026-01-20 3:11 pm, Jason Gunthorpe wrote:
+> On Tue, Jan 20, 2026 at 02:39:14PM +0000, Suzuki K Poulose wrote:
+>>>>> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+>>>>> index 8e04f72baaa3..a5639e9415f5 100644
+>>>>> --- a/kernel/dma/direct.c
+>>>>> +++ b/kernel/dma/direct.c
+>>>>> @@ -580,12 +580,12 @@ int dma_direct_supported(struct device *dev, u64 mask)
+>>>>>     	/*
+>>>>>     	 * This check needs to be against the actual bit mask value, so use
+>>>>> -	 * phys_to_dma_unencrypted() here so that the SME encryption mask isn't
+>>>>> +	 * __phys_to_dma() here so that the arch specific encryption mask isn't
+>>>>>     	 * part of the check.
+>>>>>     	 */
+>>>>>     	if (IS_ENABLED(CONFIG_ZONE_DMA))
+>>>>>     		min_mask = min_t(u64, min_mask, zone_dma_limit);
+>>>>> -	return mask >= phys_to_dma_unencrypted(dev, min_mask);
+>>>>> +	return mask >= __phys_to_dma(dev, min_mask);
+>>>>
+>>>> This is wrong, isn't it ? For e.g., for CCA, even though the "Flag" is
+>>>> added to the PA, it is really part of the actual "PA" and thus must be
+>>>> checked against the full PA ?
+>>>>
+>>>
+>>> That is true only when the device is operating in untrusted mode?. For a
+>>> trusted device that mask is valid mask right?
+>>
+>> Irrespective of the mode in which the device is operating, the DMA
+>> address must include the fully qualified "{I}PA" address, right ?
+>> i.e., "the Unencrypted" bit is only a software construct and the full
+>> PA must be used, irrespective of the mode of the device.
 > 
-> Add ioctl support for creating MSHV devices for a paritition. At
-> present only VFIO device types are supported, but more could be
-> added. At a high level, a partition ioctl to create device verifies
-> it is of type VFIO and does some setup for bridge code in mshv_vfio.c.
-> Adapted from KVM device ioctls.
-> 
-> Credits: Original author: Wei Liu <wei.liu@kernel.org>
-> NB: Slightly modified from the original version.
-> 
-> Signed-off-by: Mukesh Rathor <mrathor@linux.microsoft.com>
-> ---
->  drivers/hv/mshv_root_main.c | 126 ++++++++++++++++++++++++++++++++++++
->  1 file changed, 126 insertions(+)
-> 
-> diff --git a/drivers/hv/mshv_root_main.c b/drivers/hv/mshv_root_main.c
-> index 83c7bad269a0..27313419828d 100644
-> --- a/drivers/hv/mshv_root_main.c
-> +++ b/drivers/hv/mshv_root_main.c
-> @@ -1551,6 +1551,129 @@ mshv_partition_ioctl_initialize(struct mshv_partition *partition)
->  	return ret;
->  }
->  
-> +static long mshv_device_attr_ioctl(struct mshv_device *mshv_dev, int cmd,
-> +				   ulong uarg)
-> +{
-> +	struct mshv_device_attr attr;
-> +	const struct mshv_device_ops *devops = mshv_dev->device_ops;
-> +
-> +	if (copy_from_user(&attr, (void __user *)uarg, sizeof(attr)))
-> +		return -EFAULT;
-> +
-> +	switch (cmd) {
-> +	case MSHV_SET_DEVICE_ATTR:
-> +		if (devops->device_set_attr)
-> +			return devops->device_set_attr(mshv_dev, &attr);
-> +		break;
-> +	case MSHV_HAS_DEVICE_ATTR:
-> +		if (devops->device_has_attr)
-> +			return devops->device_has_attr(mshv_dev, &attr);
-> +		break;
-> +	}
-> +
-> +	return -EPERM;
-> +}
-> +
-> +static long mshv_device_fop_ioctl(struct file *filp, unsigned int cmd,
-> +				  ulong uarg)
-> +{
-> +	struct mshv_device *mshv_dev = filp->private_data;
-> +
-> +	switch (cmd) {
-> +	case MSHV_SET_DEVICE_ATTR:
-> +	case MSHV_HAS_DEVICE_ATTR:
-> +		return mshv_device_attr_ioctl(mshv_dev, cmd, uarg);
-> +	}
-> +
-> +	return -ENOTTY;
-> +}
-> +
-> +static int mshv_device_fop_release(struct inode *inode, struct file *filp)
-> +{
-> +	struct mshv_device *mshv_dev = filp->private_data;
-> +	struct mshv_partition *partition = mshv_dev->device_pt;
-> +
-> +	if (mshv_dev->device_ops->device_release) {
-> +		mutex_lock(&partition->pt_mutex);
-> +		hlist_del(&mshv_dev->device_ptnode);
-> +		mshv_dev->device_ops->device_release(mshv_dev);
-> +		mutex_unlock(&partition->pt_mutex);
-> +	}
-> +
-> +	mshv_partition_put(partition);
-> +	return 0;
-> +}
-> +
-> +static const struct file_operations mshv_device_fops = {
-> +	.owner = THIS_MODULE,
-> +	.unlocked_ioctl = mshv_device_fop_ioctl,
-> +	.release = mshv_device_fop_release,
-> +};
-> +
-> +long mshv_partition_ioctl_create_device(struct mshv_partition *partition,
-> +					void __user *uarg)
-> +{
-> +	long rc;
-> +	struct mshv_create_device devargk;
-> +	struct mshv_device *mshv_dev;
-> +	const struct mshv_device_ops *vfio_ops;
-> +	int type;
-> +
-> +	if (copy_from_user(&devargk, uarg, sizeof(devargk))) {
-> +		rc = -EFAULT;
-> +		goto out;
-> +	}
-> +
-> +	/* At present, only VFIO is supported */
-> +	if (devargk.type != MSHV_DEV_TYPE_VFIO) {
-> +		rc = -ENODEV;
-> +		goto out;
-> +	}
-> +
-> +	if (devargk.flags & MSHV_CREATE_DEVICE_TEST) {
-> +		rc = 0;
-> +		goto out;
-> +	}
-> +
-> +	mshv_dev = kzalloc(sizeof(*mshv_dev), GFP_KERNEL_ACCOUNT);
-> +	if (mshv_dev == NULL) {
-> +		rc = -ENOMEM;
-> +		goto out;
-> +	}
-> +
-> +	vfio_ops = &mshv_vfio_device_ops;
-> +	mshv_dev->device_ops = vfio_ops;
-> +	mshv_dev->device_pt = partition;
-> +
-> +	rc = vfio_ops->device_create(mshv_dev, type);
-> +	if (rc < 0) {
-> +		kfree(mshv_dev);
-> +		goto out;
-> +	}
-> +
-> +	hlist_add_head(&mshv_dev->device_ptnode, &partition->pt_devices);
-> +
-> +	mshv_partition_get(partition);
-> +	rc = anon_inode_getfd(vfio_ops->device_name, &mshv_device_fops,
-> +			      mshv_dev, O_RDWR | O_CLOEXEC);
-> +	if (rc < 0) {
-> +		mshv_partition_put(partition);
-> +		hlist_del(&mshv_dev->device_ptnode);
-> +		vfio_ops->device_release(mshv_dev);
-> +		goto out;
-> +	}
-> +
-> +	devargk.fd = rc;
-> +	rc = 0;
-> +
-> +	if (copy_to_user(uarg, &devargk, sizeof(devargk))) {
+> But you could make an argument that a trusted device won't DMA to
+> shared memory, ie it would SWIOTLB to private memory if that is
+> required.
 
-Shouldn't the partition be put here?
+I don't think we can assume that any arbitrary trusted device is *never* 
+going to want to access shared memory in the Realm IPA space, and while 
+it might technically be possible for a private SWIOTLB buffer to handle 
+that, we currently only have infrastructure that assumes the opposite 
+(i.e. that SWIOTLB buffers are shared for bouncing untrusted DMA to/from 
+private memory). Thus for now, saying we can only promise to support DMA 
+if the device can access the whole IPA space itself is accurate.
+
+> Otherwise these two limitations will exclude huge numbers of real
+> devices from working with ARM CCA at all.
+
+Pretty sure the dependency on TDISP wins in that regard ;)
+
+However, assuming that Realms and RMMs might eventually come up with 
+their own attestation mechanisms for on-chip non-PCIe devices (and such 
+devices continue to have crippled DMA capabilities) then the fact is 
+still that DA requires an SMMU for S2, so at worst there should always 
+be the possibility for an RMM to offer S1 SMMU support to the Realm, 
+we're just not there yet.
 
 Thanks,
-Stanislav
-
-> +		rc = -EFAULT;
-> +		goto out;
-> +	}
-> +out:
-> +	return rc;
-> +}
-> +
->  static long
->  mshv_partition_ioctl(struct file *filp, unsigned int ioctl, unsigned long arg)
->  {
-> @@ -1587,6 +1710,9 @@ mshv_partition_ioctl(struct file *filp, unsigned int ioctl, unsigned long arg)
->  	case MSHV_ROOT_HVCALL:
->  		ret = mshv_ioctl_passthru_hvcall(partition, true, uarg);
->  		break;
-> +	case MSHV_CREATE_DEVICE:
-> +		ret = mshv_partition_ioctl_create_device(partition, uarg);
-> +		break;
->  	default:
->  		ret = -ENOTTY;
->  	}
-> -- 
-> 2.51.2.vfs.0.1
-> 
+Robin.
