@@ -1,53 +1,53 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C0943DA7E0;
-	Tue, 20 Jan 2026 10:50:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 827FA3ED11A;
+	Tue, 20 Jan 2026 11:00:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768906203; cv=none; b=MaivNdoAZGHXhqnqUBvfCYWBiXuEKdK6g2y1yJrpVuV0Mxb4zXKNi9M/A7+sGUQZ1UJF4mbCheyl0O2Lqo7SjUVXV8MWqOMWdx/m313c0j7QVflgDFpOrCBRQe++si+IZf2MiL4WoiTlHsC/v/KP5wFrN2dnzbnzrHRXLrz5lQM=
+	t=1768906802; cv=none; b=cbPAqZBhiOZq6jD8u5ew0YtPgp/KEKFCv1zS44bER4zyWybqoWiqaKfbRMs9ACN5VCWvkQbm8gPBxSYqDeNPYy5UB12EZLY7fRWuCxyzIKILEPKq5/oIoWWiQbCqNuR7XhaI4oSP0yneUmVmDR39lqZKKXLuxeMjyiQVF8k5lu8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768906203; c=relaxed/simple;
-	bh=MwynAAQAluum4MC4e4RB1MZB5tHetTmeywmdNHtAE+I=;
+	s=arc-20240116; t=1768906802; c=relaxed/simple;
+	bh=lY4JeADarjlp9LvVA1IUcRgL0c8f7WJjiZIQ38czuho=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=OgLtmRPhModhQqkPL4kDPoYqXx7UbyoqzAqNU8dSgv/VZ9exsECpioIyUT8QO5PmtJ9RvXF/rMLk0SH3Ll2IoczSO1RGvyrT7L4OPq4tNR2Y5E1Q/lC/JvRm43kQGop6wmvIuNFCB6NZ0Edjss+qt8BSiLWC/8NgC+cug364cwk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=G3EGUfFu; arc=none smtp.client-ip=192.198.163.8
+	 Content-Type:Content-Disposition:In-Reply-To; b=MRBj0g00ZpP4ydmOjpu7jSs8mPg/K0xZPxZ2Y96KZFbY3rnVr4kNitjTo06SFflSQ2ZUC+h5c2v/8YHhSuK6mzAI+vSzir7Zfp5XxsSwd/gYJ8Q7jL+eapRH81WQnsFPTd5y0fEkBlyT0AZZR1fusLpSz9RD/2zzbQ/y5zToftI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Ks7sFK1N; arc=none smtp.client-ip=192.198.163.11
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="G3EGUfFu"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Ks7sFK1N"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1768906200; x=1800442200;
+  t=1768906801; x=1800442801;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=MwynAAQAluum4MC4e4RB1MZB5tHetTmeywmdNHtAE+I=;
-  b=G3EGUfFuXK0fRacJO79qYzOOsiZwW5vWZJENiD6XUoHebYdGvhydE5Yo
-   SJ99+tTYeSqqTpe18RTBMSXbYO3dOlGT737ECKcJoZA07USlagxgvCqgY
-   ybj1Yfi35pwkxJ7ZHUuDQI3WKoKTIe64kE9PGtJeiwwhuyPT7PALu6NFs
-   gpHdqvsw1axBbDPnTswNcwrsL4x+c4tissuujUFmz5L4oQJEvV4kKoj3M
-   dh41cZk3Bt/rN8ZNThZBlD9i4Cd1aUaPHpCBKu9g4Q2VB8+Ds4+i4+MrP
-   hWxmoESZLpE0SfPmeCziB7sYD3039nkyN8wD5RpldN+c7o8hNrhiiBWbi
-   A==;
-X-CSE-ConnectionGUID: 9EChl8gUS+S7I/M5voB/DA==
-X-CSE-MsgGUID: tRa5B23xRa+rb7HW7NC14w==
-X-IronPort-AV: E=McAfee;i="6800,10657,11676"; a="87691992"
+  bh=lY4JeADarjlp9LvVA1IUcRgL0c8f7WJjiZIQ38czuho=;
+  b=Ks7sFK1Nur4LM+OjDzdEQg+TQDNjH9/Kp1v0lYkO5C7DywZ5+lZdBAwy
+   /GN03Apdd3TReksTaId9eGSeskbFlYjhd2WV/oyFIZxilBcQNoui32cea
+   Q0a26OKVPR1+wxe1YAXW0a2wMUS/rPVs5uZg+7pOX8H77mPi/dwZnujcs
+   Cb0DIa/8Sun+sD0n5eKuOktEUWSNa/SxUDmKjiCWCCv8VP8FsPUFOtN4K
+   U+ZcwZyMDmDURLGpIw5ZGCSSSTdxZF21Hy5APRkrjOGV+iR8x9u9u6WIN
+   NVhfXu1wI4pIvVgOdMCzHHbnbR8KAxbvVWl+2UhB0/GclEsr5VvsbPVei
+   Q==;
+X-CSE-ConnectionGUID: cWi0FG4YSi2a2m532pFx3g==
+X-CSE-MsgGUID: nZG2z/f+QcStZxUK30IerQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11676"; a="80744710"
 X-IronPort-AV: E=Sophos;i="6.21,240,1763452800"; 
-   d="scan'208";a="87691992"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2026 02:49:59 -0800
-X-CSE-ConnectionGUID: u5IY2F4hRbWyMLTkZ61jrQ==
-X-CSE-MsgGUID: yonfwMKISciBNoXmKg4UPg==
+   d="scan'208";a="80744710"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2026 03:00:00 -0800
+X-CSE-ConnectionGUID: apOSSKeMRDOj8vy3BB7/jg==
+X-CSE-MsgGUID: IiFLw6HiRDOMkap+J+T3bQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,240,1763452800"; 
-   d="scan'208";a="210581981"
+   d="scan'208";a="205892918"
 Received: from lkp-server01.sh.intel.com (HELO 765f4a05e27f) ([10.239.97.150])
-  by orviesa004.jf.intel.com with ESMTP; 20 Jan 2026 02:49:56 -0800
+  by orviesa009.jf.intel.com with ESMTP; 20 Jan 2026 02:59:57 -0800
 Received: from kbuild by 765f4a05e27f with local (Exim 4.98.2)
 	(envelope-from <lkp@intel.com>)
-	id 1vi9J3-00000000Oqj-1UIB;
-	Tue, 20 Jan 2026 10:49:53 +0000
-Date: Tue, 20 Jan 2026 18:49:27 +0800
+	id 1vi9Sj-00000000OrV-3JHz;
+	Tue, 20 Jan 2026 10:59:53 +0000
+Date: Tue, 20 Jan 2026 18:59:52 +0800
 From: kernel test robot <lkp@intel.com>
 To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
 	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
@@ -57,10 +57,10 @@ Cc: oe-kbuild-all@lists.linux.dev,
 	robin.murphy@arm.com, suzuki.poulose@arm.com, jgg@ziepe.ca,
 	steven.price@arm.com, Marek Szyprowski <m.szyprowski@samsung.com>,
 	"Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
-Subject: Re: [PATCH 2/2] dma-direct: Make phys_to_dma() pick encrypted vs
- unencrypted per device
-Message-ID: <202601201857.7LKBY5dB-lkp@intel.com>
-References: <20260120064255.179425-2-aneesh.kumar@kernel.org>
+Subject: Re: [PATCH 1/2] dma-direct: Validate DMA mask against canonical DMA
+ addresses
+Message-ID: <202601201822.0I4WAqVW-lkp@intel.com>
+References: <20260120064255.179425-1-aneesh.kumar@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -69,7 +69,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260120064255.179425-2-aneesh.kumar@kernel.org>
+In-Reply-To: <20260120064255.179425-1-aneesh.kumar@kernel.org>
 
 Hi Aneesh,
 
@@ -83,66 +83,52 @@ https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
 url:    https://github.com/intel-lab-lkp/linux/commits/Aneesh-Kumar-K-V-Arm/dma-direct-Make-phys_to_dma-pick-encrypted-vs-unencrypted-per-device/20260120-145025
 base:   linus/master
-patch link:    https://lore.kernel.org/r/20260120064255.179425-2-aneesh.kumar%40kernel.org
-patch subject: [PATCH 2/2] dma-direct: Make phys_to_dma() pick encrypted vs unencrypted per device
-config: alpha-allnoconfig (https://download.01.org/0day-ci/archive/20260120/202601201857.7LKBY5dB-lkp@intel.com/config)
-compiler: alpha-linux-gcc (GCC) 15.2.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260120/202601201857.7LKBY5dB-lkp@intel.com/reproduce)
+patch link:    https://lore.kernel.org/r/20260120064255.179425-1-aneesh.kumar%40kernel.org
+patch subject: [PATCH 1/2] dma-direct: Validate DMA mask against canonical DMA addresses
+config: powerpc-allnoconfig (https://download.01.org/0day-ci/archive/20260120/202601201822.0I4WAqVW-lkp@intel.com/config)
+compiler: powerpc-linux-gcc (GCC) 15.2.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260120/202601201822.0I4WAqVW-lkp@intel.com/reproduce)
 
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202601201857.7LKBY5dB-lkp@intel.com/
+| Closes: https://lore.kernel.org/oe-kbuild-all/202601201822.0I4WAqVW-lkp@intel.com/
 
 All errors (new ones prefixed by >>):
 
-   In file included from kernel/dma/direct.h:10,
-                    from kernel/dma/mapping.c:19:
-   include/linux/dma-direct.h: In function 'phys_to_dma':
->> include/linux/dma-direct.h:103:13: error: implicit declaration of function 'force_dma_unencrypted'; did you mean 'phys_to_dma_unencrypted'? [-Wimplicit-function-declaration]
-     103 |         if (force_dma_unencrypted(dev))
-         |             ^~~~~~~~~~~~~~~~~~~~~
-         |             phys_to_dma_unencrypted
-   include/linux/dma-direct.h: At top level:
->> include/linux/dma-direct.h:125:20: error: conflicting types for 'force_dma_unencrypted'; have 'bool(struct device *)' {aka '_Bool(struct device *)'}
-     125 | static inline bool force_dma_unencrypted(struct device *dev)
-         |                    ^~~~~~~~~~~~~~~~~~~~~
-   include/linux/dma-direct.h:103:13: note: previous implicit declaration of 'force_dma_unencrypted' with type 'int()'
-     103 |         if (force_dma_unencrypted(dev))
-         |             ^~~~~~~~~~~~~~~~~~~~~
+   kernel/dma/direct.c: In function 'dma_direct_supported':
+>> kernel/dma/direct.c:564:24: error: implicit declaration of function '__phys_to_dma'; did you mean 'phys_to_dma'? [-Wimplicit-function-declaration]
+     564 |         return mask >= __phys_to_dma(dev, min_mask);
+         |                        ^~~~~~~~~~~~~
+         |                        phys_to_dma
 
 
-vim +103 include/linux/dma-direct.h
+vim +564 kernel/dma/direct.c
 
-   102	
- > 103		if (force_dma_unencrypted(dev))
-   104			return phys_to_dma_unencrypted(dev, paddr);
-   105		return phys_to_dma_encrypted(dev, paddr);
-   106	}
-   107	
-   108	static inline phys_addr_t dma_to_phys(struct device *dev, dma_addr_t dma_addr)
-   109	{
-   110		phys_addr_t paddr;
-   111	
-   112		dma_addr = dma_addr_canonical(dma_addr);
-   113		if (dev->dma_range_map)
-   114			paddr = translate_dma_to_phys(dev, dma_addr);
-   115		else
-   116			paddr = dma_addr;
-   117	
-   118		return paddr;
-   119	}
-   120	#endif /* !CONFIG_ARCH_HAS_PHYS_TO_DMA */
-   121	
-   122	#ifdef CONFIG_ARCH_HAS_FORCE_DMA_UNENCRYPTED
-   123	bool force_dma_unencrypted(struct device *dev);
-   124	#else
- > 125	static inline bool force_dma_unencrypted(struct device *dev)
-   126	{
-   127		return false;
-   128	}
-   129	#endif /* CONFIG_ARCH_HAS_FORCE_DMA_UNENCRYPTED */
-   130	
+   543	
+   544	int dma_direct_supported(struct device *dev, u64 mask)
+   545	{
+   546		u64 min_mask = (max_pfn - 1) << PAGE_SHIFT;
+   547	
+   548		/*
+   549		 * Because 32-bit DMA masks are so common we expect every architecture
+   550		 * to be able to satisfy them - either by not supporting more physical
+   551		 * memory, or by providing a ZONE_DMA32.  If neither is the case, the
+   552		 * architecture needs to use an IOMMU instead of the direct mapping.
+   553		 */
+   554		if (mask >= DMA_BIT_MASK(32))
+   555			return 1;
+   556	
+   557		/*
+   558		 * This check needs to be against the actual bit mask value, so use
+   559		 * __phys_to_dma() here so that the arch specific encryption mask isn't
+   560		 * part of the check.
+   561		 */
+   562		if (IS_ENABLED(CONFIG_ZONE_DMA))
+   563			min_mask = min_t(u64, min_mask, zone_dma_limit);
+ > 564		return mask >= __phys_to_dma(dev, min_mask);
+   565	}
+   566	
 
 -- 
 0-DAY CI Kernel Test Service
