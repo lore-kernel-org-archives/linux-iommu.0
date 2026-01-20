@@ -1,183 +1,150 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE8DA1DF736;
-	Tue, 20 Jan 2026 09:46:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30E4C34A77F;
+	Tue, 20 Jan 2026 09:50:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768902365; cv=none; b=Os9wYKzHfRYTuiE1aP5Yp3GgBe6gRfJw7U8qeP1p48DvEfSXNlCED4SAjWMUhJhaqT6mgh9yO32lyZE1yssJRqgOymqqYvevaMPMB+xlcgqd84I6AdjO4sQW2P0RPHIFS7jA/0gRuOQHkgHMTIiAjeD96tzs2WFdUIwkcOrHUgc=
+	t=1768902607; cv=none; b=buPUIYU4FWy2QDh5zDURpgqLPqkjpYcsXd7VK2DxwGnzRoWSf/SwUZkMgzDxpO+S6QgH99V/Lhve5nMshiGcQbcpWGwkpHpUE2lxl8FIpbkJW1U9tZmPrvM09ZpZ4iBSO/GUzFMV0usAOnlvWXOB4evRWwrbzz4VxacMq/qvv2w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768902365; c=relaxed/simple;
-	bh=xwqfvmhHmuW9plUqJwJFOo0A9JPdncx7ymGaNl95+yo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nroogO/3HRp/VoyM6bgFdytpivsnGKdcxq8MANBBr4bGVUHuRZ37UzyVehhMOZoM4LNItHR12e3l1RuLiEaS2YoZtL9CPx3R1dJMyu4peRxjjrRg7u80fHjtUKai21lnUpnXJ2u9jQ/uJkFSVDoh6d+FCygKdEny8/0hV7DiDG8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dLp9ReyQ; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1768902607; c=relaxed/simple;
+	bh=wK35c35gu+tBkwYBS533CiS2O+AHznWXGgIxYjxVurA=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=gzHmH8Ut2h94bhuE+WMVVYESXGaunZcPejAQlpCWxl47SSMAMBxVPFN0srPF4XAAQoPT+1tlHXLBs8Hb8kyHYDMuh8Ab9OKIDZ4lAaI4RAWzRfi55KCYuEyhWt0FwO9qfb73u8ALZ0+OCEjrSv/HuFfpQn2eEOyPidbEDGQRLYw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bkWqG5VX; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dLp9ReyQ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B94BC16AAE;
-	Tue, 20 Jan 2026 09:46:04 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bkWqG5VX"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B0D1C16AAE;
+	Tue, 20 Jan 2026 09:50:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1768902365;
-	bh=xwqfvmhHmuW9plUqJwJFOo0A9JPdncx7ymGaNl95+yo=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=dLp9ReyQRpZBQ1HsP4UfwVvklS8InFrF5hZROHOsUQf2ANERezVMKk+6yLg6Ao4g3
-	 bLcG3imT0sMt+H8fCaljcj6H6q3C49oKM5UFuq9mCGfKKoc58e7IfUyEjHp9yyDWly
-	 YIKTxAK65ASJJqdGUsUzRrjLdUxxrZkSb5a45Yin99EzC3KcC/KU54U44uAJoCTHCk
-	 /GXbSQK/AWWMtHtI6tfkHgvO0RI0YfUByVjh5FRuPknr3l7QRpVrbBG7WUGy8+TysZ
-	 sOw9jD1XrRQTSSUqXvrM/yMlG1kzWM8fP+8vKPFCkbcyIu4rYCttJvTje8CuUxTa6t
-	 RL0gf/JISbozw==
-Date: Tue, 20 Jan 2026 11:45:59 +0200
-From: Leon Romanovsky <leon@kernel.org>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Sumit Semwal <sumit.semwal@linaro.org>,
-	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-	Alex Deucher <alexander.deucher@amd.com>,
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-	Gerd Hoffmann <kraxel@redhat.com>,
-	Dmitry Osipenko <dmitry.osipenko@collabora.com>,
-	Gurchetan Singh <gurchetansingh@chromium.org>,
-	Chia-I Wu <olvaffe@gmail.com>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	Lucas De Marchi <lucas.demarchi@intel.com>,
-	Thomas =?iso-8859-1?Q?Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>,
-	Rodrigo Vivi <rodrigo.vivi@intel.com>,
-	Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Alex Williamson <alex@shazbot.org>, linux-media@vger.kernel.org,
-	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
-	linux-kernel@vger.kernel.org, amd-gfx@lists.freedesktop.org,
-	virtualization@lists.linux.dev, intel-xe@lists.freedesktop.org,
-	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
-	kvm@vger.kernel.org
-Subject: Re: [PATCH v2 2/4] dma-buf: Document revoke semantics
-Message-ID: <20260120094559.GR13201@unreal>
-References: <20260118-dmabuf-revoke-v2-0-a03bb27c0875@nvidia.com>
- <20260118-dmabuf-revoke-v2-2-a03bb27c0875@nvidia.com>
- <20260119164421.GF961572@ziepe.ca>
+	s=k20201202; t=1768902606;
+	bh=wK35c35gu+tBkwYBS533CiS2O+AHznWXGgIxYjxVurA=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+	b=bkWqG5VXUnGSQK3L2AXbRkhfT5p0w8i65e/sJkXJd/l0iToOGSRXhUkukxHVJ0e8F
+	 EvSsWY/X9R+tE5GW31BWTW/rFYUtN3671l37pw26hfZQ7xaF88CKlOsv0hW0wBVPNT
+	 CWqIlQX9uvJaSpVS8WTRI4UxZ6COeGLKuLrayR8aD1y/LKiFtqO/y3AhScF9/FWmL/
+	 qsHuRB0zAlKvH+6CPSU9Mf501b6OTDeosVDbELM30ERbycKgNVMNQshFdrqi+1S42t
+	 d1b5yKxJ3bhH8nmYktOisxKlEkP546rTGlM/ymr9j1xaIfhQqamwiHB4OSrN7JJtdc
+	 ZLzSc0koVbqLA==
+X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Cc: Arnd Bergmann <arnd@kernel.org>, Linus Walleij <linusw@kernel.org>,
+	Matthew Wilcox <willy@infradead.org>,
+	Suzuki K Poulose <suzuki.poulose@arm.com>
+Subject: Re: [PATCH] dma-direct: Skip cache prep for HighMem coherent
+ allocations
+In-Reply-To: <87dc0a06-5818-45f3-99c9-d1aef807873f@samsung.com>
+References: <20260102155118.2551804-1-aneesh.kumar@kernel.org>
+ <CGME20260108105031eucas1p2a3e8d0308ae6a5d43b5250ca8b14ecb9@eucas1p2.samsung.com>
+ <9cbe49ae-6612-491d-8ac6-6a99a08d73e2@arm.com>
+ <9f28b833-5813-4e5d-b705-eed9a2a31863@samsung.com>
+ <1ada44db-63a9-43ac-81da-0bdd4e7b7363@arm.com>
+ <yq5a4iov5vdn.fsf@kernel.org>
+ <f827085f-0084-41d8-8ab5-a0ecfc0260d2@samsung.com>
+ <yq5afr8bdnrj.fsf@kernel.org>
+ <8a872e0c-f13e-4ff1-a939-bc6814b3ec3e@samsung.com>
+ <yq5ams2akznl.fsf@kernel.org>
+ <87dc0a06-5818-45f3-99c9-d1aef807873f@samsung.com>
+Date: Tue, 20 Jan 2026 15:19:55 +0530
+Message-ID: <yq5awm1ck3zw.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260119164421.GF961572@ziepe.ca>
+Content-Type: text/plain
 
-On Mon, Jan 19, 2026 at 12:44:21PM -0400, Jason Gunthorpe wrote:
-> On Sun, Jan 18, 2026 at 02:08:46PM +0200, Leon Romanovsky wrote:
-> > From: Leon Romanovsky <leonro@nvidia.com>
-> > 
-> > Document a DMA-buf revoke mechanism that allows an exporter to explicitly
-> > invalidate ("kill") a shared buffer after it has been handed out to
-> > importers. Once revoked, all further CPU and device access is blocked, and
-> > importers consistently observe failure.
-> > 
-> > This requires both importers and exporters to honor the revoke contract.
-> > 
-> > For importers, this means implementing .invalidate_mappings() and calling
-> > dma_buf_pin() after the DMA‑buf is attached to verify the exporter’s support
-> > for revocation.
-> > 
-> > For exporters, this means implementing the .pin() callback, which checks
-> > the DMA‑buf attachment for a valid revoke implementation.
-> > 
-> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> > ---
-> >  include/linux/dma-buf.h | 19 +++++++++++++++++++
-> >  1 file changed, 19 insertions(+)
-> > 
-> > diff --git a/include/linux/dma-buf.h b/include/linux/dma-buf.h
-> > index 1b397635c793..e0bc0b7119f5 100644
-> > --- a/include/linux/dma-buf.h
-> > +++ b/include/linux/dma-buf.h
-> > @@ -579,6 +579,25 @@ static inline bool dma_buf_is_dynamic(struct dma_buf *dmabuf)
-> >  	return !!dmabuf->ops->pin;
-> >  }
-> >  
-> > +/**
-> > + * dma_buf_attachment_is_revoke - check if a DMA-buf importer implements
-> > + * revoke semantics.
-> > + * @attach: the DMA-buf attachment to check
-> > + *
-> > + * Returns true if DMA-buf importer honors revoke semantics, which is
-> > + * negotiated with the exporter, by making sure that importer implements
-> > + * .invalidate_mappings() callback and calls to dma_buf_pin() after
-> > + * DMA-buf attach.
-> > + */
-> 
-> I think this clarification should also have comment to
-> dma_buf_move_notify(). Maybe like this:
-> 
-> @@ -1324,7 +1324,18 @@ EXPORT_SYMBOL_NS_GPL(dma_buf_sgt_unmap_attachment_unlocked, "DMA_BUF");
->   * @dmabuf:    [in]    buffer which is moving
->   *
->   * Informs all attachments that they need to destroy and recreate all their
-> - * mappings.
-> + * mappings. If the attachment is dynamic then the dynamic importer is expected
-> + * to invalidate any caches it has of the mapping result and perform a new
-> + * mapping request before allowing HW to do any further DMA.
-> + *
-> + * If the attachment is pinned then this informs the pinned importer that
-> + * the underlying mapping is no longer available. Pinned importers may take
-> + * this is as a permanent revocation so exporters should not trigger it
-> + * lightly.
-> + *
-> + * For legacy pinned importers that cannot support invalidation this is a NOP.
-> + * Drivers can call dma_buf_attachment_is_revoke() to determine if the
-> + * importer supports this.
->   */
-> 
-> Also it would be nice to document what Christian pointed out regarding
-> fences after move_notify.
+Marek Szyprowski <m.szyprowski@samsung.com> writes:
 
-I added this comment too:
-diff --git a/drivers/dma-buf/dma-buf.c b/drivers/dma-buf/dma-buf.c
-index 6dd70f7b992d..478127dc63e9 100644
---- a/drivers/dma-buf/dma-buf.c
-+++ b/drivers/dma-buf/dma-buf.c
-@@ -1253,6 +1253,10 @@ EXPORT_SYMBOL_NS_GPL(dma_buf_unmap_attachment_unlocked, "DMA_BUF");
-  * For legacy pinned importers that cannot support invalidation this is a NOP.
-  * Drivers can call dma_buf_attach_revocable() to determine if the importer
-  * supports this.
-+ *
-+ * NOTE: The invalidation triggers asynchronous HW operation and the callers
-+ * need to wait for this operation to complete by calling
-+ * to dma_resv_wait_timeout().
-  */
- void dma_buf_move_notify(struct dma_buf *dmabuf)
- {
+> On 19.01.2026 05:13, Aneesh Kumar K.V wrote:
+>> Marek Szyprowski <m.szyprowski@samsung.com> writes:
+>>> On 12.01.2026 13:22, Aneesh Kumar K.V wrote:
+>>>> Marek Szyprowski <m.szyprowski@samsung.com> writes:
+>>>>> On 09.01.2026 04:15, Aneesh Kumar K.V wrote:
+>>>>>> Robin Murphy <robin.murphy@arm.com> writes:
+>>>>>>> On 2026-01-08 12:41 pm, Marek Szyprowski wrote:
+>>>>>>>> On 08.01.2026 11:50, Robin Murphy wrote:
+>>>>>>>>> On 2026-01-02 3:51 pm, Aneesh Kumar K.V (Arm) wrote:
+>>>>>>>>>> dma_direct_alloc() calls arch_dma_prep_coherent() to clean any dirty
+>>>>>>>>>> cache lines from the kernel linear alias before creating a coherent
+>>>>>>>>>> remapping.
+>>>>>>>>>>
+>>>>>>>>>> HighMem pages have no kernel alias mapping, so there are no alias cache
+>>>>>>>>>> lines to clean. Skip arch_dma_prep_coherent() for HighMem allocations.
+>>>>>>>>> This is assuming that caches are always cleaned when unmapping
+>>>>>>>>> highmem, and no still-mapped highmem pages are dirty - how is that
+>>>>>>>>> guaranteed? The fact that they're not in the linear map doesn't mean
+>>>>>>>>> they don't necessarily have kernel aliases in either vmalloc
+>>>>>>>>> pagetables or caches.
+>>>>>>>> Right, so it is better to keep this unconditional
+>>>>>>>> arch_dma_prep_coherent() call. I will drop it from dma-mapping-fixes then.
+>>>>>>> Yeah, I think the confusing thing here is that there are architectures
+>>>>>>> with CONFIG_HIGHMEM that don't actually check for and handle it in their
+>>>>>>> arch_dma_prep_coherent() as they seemingly should, however I'm not sure
+>>>>>>> off-hand whether they also support/use highmem CMA in the manner that
+>>>>>>> could end up being an issue in practice (the lack of any reports of
+>>>>>>> crashes or DMA corruption over the last however many years suggests not...)
+>>>>>>>
+>>>>>> Should we then remove the PageHighMem() check with DMA_ATTR_NO_KERNEL_MAPPING?
+>>>>> Right, this has to be unified.
+>>>> I had a related question, how do we handle cache flushes required for
+>>>> architectures that don't implement CONFIG_ARCH_HAS_DMA_PREP_COHERENT (arch/arm)?
+>>> ARM 32bit architecture provides arch_dma_alloc(), which handles cache
+>>> management internally.
+>>>
+>> But dma_direct_alloc does the below
+>>
+>> 	if ((attrs & DMA_ATTR_NO_KERNEL_MAPPING) &&
+>> 	    !force_dma_unencrypted(dev) && !is_swiotlb_for_alloc(dev))
+>> 		return dma_direct_alloc_no_mapping(dev, size, dma_handle, gfp);
+>>
+>> 	if (!dev_is_dma_coherent(dev)) {
+>> 		if (IS_ENABLED(CONFIG_ARCH_HAS_DMA_ALLOC) &&
+>> 		    !is_swiotlb_for_alloc(dev))
+>> 			return arch_dma_alloc(dev, size, dma_handle, gfp,
+>> 					      attrs);
+>>
+>> IIUC, this implies we won't call arch_dma_alloc for
+>> DMA_ATTR_NO_KERNEL_MAPPING ?
+>
+> It looks that commit 849facea92fa ("dma-direct: simplify the 
+> DMA_ATTR_NO_KERNEL_MAPPING handling") changed this. Before that 
+> arch_dma_alloc() was called regardless of the provided DMA attrs. 
+> Indeed, this should be fixed. Frankly speaking this probably means that 
+> there are no active users of this combination (arch/arm, 
+> DMA_ATTR_NO_KERNEL_MAPPING and dma-direct) or nobody cares.
+>
 
-> 
-> > +static inline bool
-> > +dma_buf_attachment_is_revoke(struct dma_buf_attachment *attach)
-> > +{
-> > +	return IS_ENABLED(CONFIG_DMABUF_MOVE_NOTIFY) &&
-> > +	       dma_buf_is_dynamic(attach->dmabuf) &&
-> > +	       (attach->importer_ops &&
-> > +		attach->importer_ops->invalidate_mappings);
-> > +}
-> 
-> And I don't think we should use a NULL invalidate_mappings function
-> pointer to signal this.
-> 
-> It sounds like the direction is to require importers to support
-> move_notify, so we should not make it easy to just drop a NULL in the
-> ops struct to get out of the desired configuration.
-> 
-> I suggest defining a function
-> "dma_buf_unsupported_invalidate_mappings" and use
-> EXPORT_SYMBOL_FOR_MODULES so only RDMA can use it. Then check for that
-> along with NULL importer_ops to cover the two cases where it is not
-> allowed.
-> 
-> The only reason RDMA has to use dma_buf_dynamic_attach() is to set the
-> allow_p2p=true ..
+Before that commit we did
 
-Will do.
+	if (!IS_ENABLED(CONFIG_ARCH_HAS_DMA_SET_UNCACHED) &&
+	    !IS_ENABLED(CONFIG_DMA_DIRECT_REMAP) &&
+	    dma_alloc_need_uncached(dev, attrs))
+		return arch_dma_alloc(dev, size, dma_handle, gfp, attrs);
 
-> 
-> Jason
+dma_alloc_need_uncached() returned false for DMA_ATTR_NO_KERNEL_MAPPING
+
+static __always_inline bool dma_alloc_need_uncached(struct device *dev,
+		unsigned long attrs)
+{
+	if (dev_is_dma_coherent(dev))
+		return false;
+	if (attrs & DMA_ATTR_NO_KERNEL_MAPPING)
+		return false;
+	return true;
+}
+
+It looks like for DMA_ATTR_NO_KERNEL_MAPPING, we never called into arch_dma_alloc()?
+
+>
+> The DMA_ATTR_NO_KERNEL_MAPPING attribute was initially introduced for 
+> the DMA-IOMMU based implementation, where it saves significant amount of 
+> resources.
+>
+
+
+-aneesh
