@@ -1,181 +1,173 @@
-Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com [209.85.208.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F28D5428826
-	for <iommu@lists.linux.dev>; Tue, 20 Jan 2026 14:07:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2DB042EEDE;
+	Tue, 20 Jan 2026 14:07:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768918034; cv=none; b=m+rsCqTnTdaIeeoY1IHf7pOrSAwrpdsU4oxdMhbNsjiDuT4+jh02KOny1BW4IVzBhqiK0WyZMipNgAkybugjgLGkQ9XJcIsJapqhE4GtuiOjA7IMgW0tmnsycPYebdaIG045o37DQ3ZAM6Z7rcFRx0o2z0zCNwN/TPft9SHJZVw=
+	t=1768918038; cv=none; b=sP/XpyfF4vVWds77KSc8ImTl9YWkoJZBrQRkqTY/PG6t/15We+fOKPvRqUSOO8gKBcWESXJ72Rpph62dtlUHMYOT8SV3fdQ6yfK0/k5XhAANW77aiEbuzQ9Z7uuy2hmPKVVZbMA1Q7Yxbdhpy+GUkC03vAqSABVCfMA3dgyWgqo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768918034; c=relaxed/simple;
-	bh=H5SjFQ55Nrbz+wQa69yMJLdnVWF1p5wRy6GRjG6nUI0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=pZDbSB7flX4JG+y2x2Gj5SVJPBrLE570/FipR7z9jueZdc3giNGiyQtAisy4h6e26Rn7TEbbiFzNkAjqRkvNZLO2bHAH8+jd4IOMk3JdtouDuKEmTw71ttv5YSVGg6vfJk0s6ctuI7NdM3wKAQFRKrwE6megC+AYtlo5gK3AIgU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=ZMd2Dmzo; arc=none smtp.client-ip=209.85.208.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
+	s=arc-20240116; t=1768918038; c=relaxed/simple;
+	bh=ROKkB0mIS7khlsv4KQDOsZjX4a+rHO4aJnOw0MFmrm0=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=QhjteGRkiu+XR4fC1LCwMdmswioFFca1vvqs7R9wmNpuxO912BgsXlze1oW0ACbZLdIZ4s5HSFEANjnbPRB4+8uGKpAd3sshRAnAwSo5irxL4bZcray06BxJ7n15KIueztg4k1MWF7cgIAiC3qpAA+0AqxQ5Xv+zuO552c5J5bs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Z9FPLJNH; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="ZMd2Dmzo"
-Received: by mail-ed1-f44.google.com with SMTP id 4fb4d7f45d1cf-64dfb22c7e4so11278988a12.1
-        for <iommu@lists.linux.dev>; Tue, 20 Jan 2026 06:07:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1768918029; x=1769522829; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=5XJOUYy42/sptKbdOJ7wrgOiP608mSPN3Mi26FejI24=;
-        b=ZMd2DmzoQY2DLj6Jk3LottNJkNEDrpyQkdKk4vtC/NML7i5i/erUtnUvvUhCHam6Ie
-         lXkf5Fqw6y4jIp5YlYNoTanLXE4ijBxWx1N0xuc131lrKdw2pFdM74ACpK2DGRoHzZRF
-         Vs7VQE3gcBWZyYOMQby6Uk8GfVHoDN6bbTujs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1768918029; x=1769522829;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=5XJOUYy42/sptKbdOJ7wrgOiP608mSPN3Mi26FejI24=;
-        b=wyNysQuAc2Z9jB9YSekSjhFByf8+5YPoTGI1ep7Ziuuw2Iu+0FX2fUQcKfmzYnuwFs
-         9fIa7Pczcunu2gEsks1iUMZp1QyW46fHtFG9a0MYUWdDhZHuljwu6mTM+OjdkR0AaOyb
-         I/t71pbTygpF/AjwYO4l5Qyz1TP1mp930Fq+AVt1jL3BGgWAwPLKaMV2OoWonTBdxO3J
-         ZO5tMM4NGJmEoC8HQy4CeZUcsiA1kyfKW2dH8ggEw2LXxnXzEtW6/D+EDsu9Y6/bAteK
-         SNqIyxD9Z8ua7xQqhQbhCWsTREgoLJ0qqqifjztajHRCzUlFBVLKy0Y+UvkAPATeflTE
-         e4dA==
-X-Forwarded-Encrypted: i=1; AJvYcCXTOo/tQisywgAdHWxETTTR/TKiKTRcOmVCgVKSl5X9Y0f5v+QV7bIcN17JX77Web9LZCEZ+g==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzPOFt6nD5lBz+rtDeLvWWh38yEDsoLaV+tKujIFJFZeps+hewg
-	NzxLrSdrLW4f34XvQfuPUZ8q+Zn3FAGCHmbM2VMlz+6AmeRPT5Lb+QupjCsm+prUVg==
-X-Gm-Gg: AY/fxX5N55dObOUgg5FkeSXP8sHV1FVQ7mZ9YL2t6Yw4L1iMz+nh1/e63wtELmTEqco
-	+m9tO3DCUeRsmmI9LBMXsRX3Q4O/ZTZDs2Um0r0lpGA9W9JQgKXhiYnqjAY64Ls6L2SY2C17mtD
-	VczVwbHG2mn8TZX5bat3PeUgjcqL54OtZjPPRTahwvnYfLRHsBAUaB1VRX7dQmr39B4bE627QKu
-	zeXAg54st3fhLD2OcUZo2HfH3ipKkMFSxN0QWWTKnsdOzA8rgvSJ6EHhLoTQMAhCL3kNtf15SOE
-	SzDdoUvSdoUhB2oDTP4UlaY1zskAhp9Ykm0Jq6ZbjraumVLkKxomjGTbbUwNNkYBVxI2wjcms/r
-	u5eomnNbpu812qFyrnAFztG58oZX1Hvq/2r7BK5t8mds0f3dsvFlexKRyP6lXKCKsEJRp9qjXtD
-	t/erjkV7qMlg13Yz0=
-X-Received: by 2002:a17:906:6a1e:b0:b71:60a3:a8b9 with SMTP id a640c23a62f3a-b8793a5bf69mr1523608066b.29.1768918029060;
-        Tue, 20 Jan 2026 06:07:09 -0800 (PST)
-Received: from google.com ([2a02:a31b:20c3:6680:e571:3179:cb1d:9314])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b87959fbd23sm1405601566b.51.2026.01.20.06.07.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Jan 2026 06:07:08 -0800 (PST)
-Date: Tue, 20 Jan 2026 15:07:01 +0100
-From: Dmytro Maluka <dmaluka@chromium.org>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Z9FPLJNH"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 347A2C16AAE;
+	Tue, 20 Jan 2026 14:07:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1768918037;
+	bh=ROKkB0mIS7khlsv4KQDOsZjX4a+rHO4aJnOw0MFmrm0=;
+	h=From:To:Cc:Subject:Date:From;
+	b=Z9FPLJNHtjmg+g+XBBXJHq1bk31q3tuCG8U641sPe5PuEyRi4qoevHZQgLWvE3BeV
+	 NHcVnzAv548oIrOaPpNs4fPlzIzY8D6OAgDy24afQIILoJ5sUJRw4C9U44GL1Jk1Gs
+	 6mqU9Gb2bBQDbKFny5CeMgMjvN3hpdZnU3hUFMqdq7O8rVtRv92lUsTZvkNBoFIycl
+	 RYDK/SoQiG5vtv2N1Wn7zoWr52yIAtUVuf58teP6LzB3tVY3Xrzd0h81xYeR4xRJwD
+	 Brafxmuv73RoqMNIrYdIQvZy7BhjYWgDSpoh6V83F3ly/524nRWpBY6F66Y2zu5aT3
+	 /oAR4obsvM6mA==
+From: Leon Romanovsky <leon@kernel.org>
+To: Sumit Semwal <sumit.semwal@linaro.org>,
+	=?utf-8?q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+	Alex Deucher <alexander.deucher@amd.com>,
+	David Airlie <airlied@gmail.com>,
+	Simona Vetter <simona@ffwll.ch>,
+	Gerd Hoffmann <kraxel@redhat.com>,
+	Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+	Gurchetan Singh <gurchetansingh@chromium.org>,
+	Chia-I Wu <olvaffe@gmail.com>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	Lucas De Marchi <lucas.demarchi@intel.com>,
+	=?utf-8?q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
+	Rodrigo Vivi <rodrigo.vivi@intel.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Leon Romanovsky <leon@kernel.org>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
-	Samiullah Khawaja <skhawaja@google.com>, iommu@lists.linux.dev,
+	Felix Kuehling <Felix.Kuehling@amd.com>,
+	Alex Williamson <alex@shazbot.org>,
+	Ankit Agrawal <ankita@nvidia.com>,
+	Vivek Kasireddy <vivek.kasireddy@intel.com>
+Cc: linux-media@vger.kernel.org,
+	dri-devel@lists.freedesktop.org,
+	linaro-mm-sig@lists.linaro.org,
 	linux-kernel@vger.kernel.org,
-	"Vineeth Pillai (Google)" <vineeth@bitbyteword.org>,
-	Aashish Sharma <aashish@aashishsharma.net>
-Subject: Re: [PATCH v2 2/3] iommu/vt-d: Clear Present bit before tearing down
- context entry
-Message-ID: <aW-MBQg5q4SCivbk@google.com>
-References: <20260120061816.2132558-1-baolu.lu@linux.intel.com>
- <20260120061816.2132558-3-baolu.lu@linux.intel.com>
+	amd-gfx@lists.freedesktop.org,
+	virtualization@lists.linux.dev,
+	intel-xe@lists.freedesktop.org,
+	linux-rdma@vger.kernel.org,
+	iommu@lists.linux.dev,
+	kvm@vger.kernel.org
+Subject: [PATCH v3 0/7] dma-buf: Use revoke mechanism to invalidate shared buffers
+Date: Tue, 20 Jan 2026 16:07:00 +0200
+Message-ID: <20260120-dmabuf-revoke-v3-0-b7e0b07b8214@nvidia.com>
+X-Mailer: git-send-email 2.52.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset="utf-8"
+X-Change-ID: 20251221-dmabuf-revoke-b90ef16e4236
+X-Mailer: b4 0.15-dev-a6db3
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260120061816.2132558-3-baolu.lu@linux.intel.com>
 
-On Tue, Jan 20, 2026 at 02:18:13PM +0800, Lu Baolu wrote:
-> When tearing down a context entry, the current implementation zeros the
-> entire 128-bit entry using multiple 64-bit writes. This creates a window
-> where the hardware can fetch a "torn" entry — where some fields are
-> already zeroed while the 'Present' bit is still set — leading to
-> unpredictable behavior or spurious faults.
-> 
-> While x86 provides strong write ordering, the compiler may reorder writes
-> to the two 64-bit halves of the context entry. Even without compiler
-> reordering, the hardware fetch is not guaranteed to be atomic with
-> respect to multiple CPU writes.
-> 
-> Align with the "Guidance to Software for Invalidations" in the VT-d spec
-> (Section 6.5.3.3) by implementing the recommended ownership handshake:
-> 
-> 1. Clear only the 'Present' (P) bit of the context entry first to
->    signal the transition of ownership from hardware to software.
-> 2. Use dma_wmb() to ensure the cleared bit is visible to the IOMMU.
-> 3. Perform the required cache and context-cache invalidation to ensure
->    hardware no longer has cached references to the entry.
-> 4. Fully zero out the entry only after the invalidation is complete.
-> 
-> Also, add a dma_wmb() to context_set_present() to ensure the entry
-> is fully initialized before the 'Present' bit becomes visible.
-> 
-> Fixes: ba39592764ed2 ("Intel IOMMU: Intel IOMMU driver")
-> Reported-by: Dmytro Maluka <dmaluka@chromium.org>
-> Closes: https://lore.kernel.org/all/aTG7gc7I5wExai3S@google.com/
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> ---
->  drivers/iommu/intel/iommu.h | 21 ++++++++++++++++++++-
->  drivers/iommu/intel/iommu.c |  4 +++-
->  2 files changed, 23 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-> index 25c5e22096d4..599913fb65d5 100644
-> --- a/drivers/iommu/intel/iommu.h
-> +++ b/drivers/iommu/intel/iommu.h
-> @@ -900,7 +900,26 @@ static inline int pfn_level_offset(u64 pfn, int level)
->  
->  static inline void context_set_present(struct context_entry *context)
->  {
-> -	context->lo |= 1;
-> +	u64 val;
-> +
-> +	dma_wmb();
-> +	val = READ_ONCE(context->lo) | 1;
+Changelog:
+v3:
+ * Used Jason's wordings for commits and cover letter.
+ * Removed IOMMUFD patch.
+ * Renamed dma_buf_attachment_is_revoke() to be dma_buf_attach_revocable().
+ * Added patch to remove CONFIG_DMABUF_MOVE_NOTIFY.
+ * Added Reviewed-by tags.
+ * Called to dma_resv_wait_timeout() after dma_buf_move_notify() in VFIO.
+ * Added dma_buf_attach_revocable() check to VFIO DMABUF attach function.
+ * Slightly changed commit messages.
+v2: https://patch.msgid.link/20260118-dmabuf-revoke-v2-0-a03bb27c0875@nvidia.com
+ * Changed series to document the revoke semantics instead of
+   implementing it.
+v1: https://patch.msgid.link/20260111-dmabuf-revoke-v1-0-fb4bcc8c259b@nvidia.com
 
-As IIRC Jason noted, READ_ONCE is not really necessary?
+-------------------------------------------------------------------------
+This series documents a dma-buf “revoke” mechanism: to allow a dma-buf
+exporter to explicitly invalidate (“kill”) a shared buffer after it has
+been distributed to importers, so that further CPU and device access is
+prevented and importers reliably observe failure.
 
-> +	WRITE_ONCE(context->lo, val);
-> +}
-> +
-> +/*
-> + * Clear the Present (P) bit (bit 0) of a context table entry. This initiates
-> + * the transition of the entry's ownership from hardware to software. The
-> + * caller is responsible for fulfilling the invalidation handshake recommended
-> + * by the VT-d spec, Section 6.5.3.3 (Guidance to Software for Invalidations).
-> + */
-> +static inline void context_clear_present(struct context_entry *context)
-> +{
-> +	u64 val;
-> +
-> +	val = READ_ONCE(context->lo) & GENMASK_ULL(63, 1);
+The change in this series is to properly document and use existing core
+“revoked” state on the dma-buf object and a corresponding exporter-triggered
+revoke operation.
 
-Maybe "& ~1ULL" would be a bit more readable? (and READ_ONCE not
-necessary here either?)
+dma-buf has quietly allowed calling move_notify on pinned dma-bufs, even
+though legacy importers using dma_buf_attach() would simply ignore
+these calls.
 
-Anyway,
+RDMA saw this and needed to use allow_peer2peer=true, so implemented a
+new-style pinned importer with an explicitly non-working move_notify()
+callback.
 
-Reviewed-by: Dmytro Maluka <dmaluka@chromium.org>
+This has been tolerable because the existing exporters are thought to
+only call move_notify() on a pinned DMABUF under RAS events and we
+have been willing to tolerate the UAF that results by allowing the
+importer to continue to use the mapping in this rare case.
 
-> +	WRITE_ONCE(context->lo, val);
-> +	dma_wmb();
->  }
->  
->  static inline void context_set_fault_enable(struct context_entry *context)
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index 134302fbcd92..c66cc51f9e51 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -1240,10 +1240,12 @@ static void domain_context_clear_one(struct device_domain_info *info, u8 bus, u8
->  	}
->  
->  	did = context_domain_id(context);
-> -	context_clear_entry(context);
-> +	context_clear_present(context);
->  	__iommu_flush_cache(iommu, context, sizeof(*context));
->  	spin_unlock(&iommu->lock);
->  	intel_context_flush_no_pasid(info, context, did);
-> +	context_clear_entry(context);
-> +	__iommu_flush_cache(iommu, context, sizeof(*context));
->  }
->  
->  int __domain_setup_first_level(struct intel_iommu *iommu, struct device *dev,
-> -- 
-> 2.43.0
-> 
+VFIO wants to implement a pin supporting exporter that will issue a
+revoking move_notify() around FLRs and a few other user triggerable
+operations. Since this is much more common we are not willing to
+tolerate the security UAF caused by interworking with non-move_notify()
+supporting drivers. Thus till now VFIO has required dynamic importers,
+even though it never actually moves the buffer location.
+
+To allow VFIO to work with pinned importers, according to how dma-buf
+was intended, we need to allow VFIO to detect if an importer is legacy
+or RDMA and does not actually implement move_notify().
+
+Introduce a new function that exporters can call to detect these less
+capable importers. VFIO can then refuse to accept them during attach.
+
+In theory all exporters that call move_notify() on pinned dma-buf's
+should call this function, however that would break a number of widely
+used NIC/GPU flows. Thus for now do not spread this further than VFIO
+until we can understand how much of RDMA can implement the full
+semantic.
+
+In the process clarify how move_notify is intended to be used with
+pinned dma-bufs.
+
+Thanks
+
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+---
+Leon Romanovsky (7):
+      dma-buf: Rename .move_notify() callback to a clearer identifier
+      dma-buf: Always build with DMABUF_MOVE_NOTIFY
+      dma-buf: Document RDMA non-ODP invalidate_mapping() special case
+      dma-buf: Add check function for revoke semantics
+      iommufd: Pin dma-buf importer for revoke semantics
+      vfio: Wait for dma-buf invalidation to complete
+      vfio: Validate dma-buf revocation semantics
+
+ drivers/dma-buf/Kconfig                     | 12 -----
+ drivers/dma-buf/dma-buf.c                   | 69 +++++++++++++++++++++++------
+ drivers/gpu/drm/amd/amdgpu/amdgpu_dma_buf.c | 14 +++---
+ drivers/gpu/drm/amd/amdkfd/Kconfig          |  2 +-
+ drivers/gpu/drm/virtio/virtgpu_prime.c      |  2 +-
+ drivers/gpu/drm/xe/tests/xe_dma_buf.c       |  7 ++-
+ drivers/gpu/drm/xe/xe_dma_buf.c             | 14 +++---
+ drivers/infiniband/core/umem_dmabuf.c       | 13 +-----
+ drivers/infiniband/hw/mlx5/mr.c             |  2 +-
+ drivers/iommu/iommufd/pages.c               | 11 ++++-
+ drivers/vfio/pci/vfio_pci_dmabuf.c          |  8 ++++
+ include/linux/dma-buf.h                     |  9 ++--
+ 12 files changed, 96 insertions(+), 67 deletions(-)
+---
+base-commit: 9ace4753a5202b02191d54e9fdf7f9e3d02b85eb
+change-id: 20251221-dmabuf-revoke-b90ef16e4236
+
+Best regards,
+--  
+Leon Romanovsky <leonro@nvidia.com>
+
