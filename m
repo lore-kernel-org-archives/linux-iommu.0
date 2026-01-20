@@ -1,233 +1,160 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2E51E39A816
-	for <iommu@lists.linux.dev>; Tue, 20 Jan 2026 06:43:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1F7A36C0CE
+	for <iommu@lists.linux.dev>; Tue, 20 Jan 2026 06:50:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768891445; cv=none; b=c6lOThtk2T1kuyxXrT5FeZ7WprRVRSZWNyGX3WZ4KzXVMPV+M7wpWu9H3UQLHNKD3DfWqm0QACMUXbcNRLOZuuVA8FW1/KBfLExkxEv4yeJHuwceMzuY+DupmmwXdHOj9HJq63uGie4BrDNwQbsMj8Er/QcTAIoKASFGwL2+Tj4=
+	t=1768891813; cv=none; b=MDwGuJHN1DUaPo71TIz5Lby6X5suKorYgeg9P/KZ+lFKqPBn8XOX6yW/zb+q4UkpZHpCYqzhskDAEJ58Gl5VD8O3VgQU0d31mcypOZulMF6qBDI8SPryfdSwrqvDycOi+Ik8KH/W9OqX+pT19l0hBSnuBbzL4RQbJsilaN3yh8Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768891445; c=relaxed/simple;
-	bh=lFCdL+6ojHEEiti/5oEEzqcHgGMBpFffGSnL89hXCKs=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=LybVdSPuhubykZSfsrUPzi2TLvZZ3xc4oIKrqAzWDpG5Y5fV1d+4Q9NAevgZxIbyHfgPaShfev4eDCPcuTzWF9uk7WjKF4+2USNhGmIt2Z78eIMKj851Cvxwkc/a84FSJ/IEQX6Bgmnk/WPuoNVq0Eso/JnnXM6X3mB+WiT6QFM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=nPKgQKZQ; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1768891813; c=relaxed/simple;
+	bh=La9XdNKDvIlNLu3KgpfvxzV/fhd4Lv/FNSjmGr2QPwI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=nCG1AZJbLcczYrl/LgvL/S84Q9v74P8UVQNbSn0wtZHy9Ote7AalccBcnR0cvRByUPoZ5CIqe/y+RE0JtlGxMBI2toJFEKhJQylpnFFSP6qpZ9G0BLLCE9L0Qvm8LlyROKZgHleOMa9yUFMR5gmlwkttXpxV9oY+bDJLdrU7OkI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OQob5zWU; arc=none smtp.client-ip=198.175.65.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="nPKgQKZQ"
-Received: from mrdev.corp.microsoft.com (192-184-212-33.fiber.dynamic.sonic.net [192.184.212.33])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 795D320B716D;
-	Mon, 19 Jan 2026 22:43:50 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 795D320B716D
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1768891431;
-	bh=vwKC6HwtuqTh63I/EcCnX9kz02TP/FLMLkDGVcBN5Jg=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=nPKgQKZQP36at7Pw9ekyrrLYOUWnS9INVzf/0p/e0spMOrWzbrSFIdbBIYmCgu9Yl
-	 48+3TE7z+OgQ6l8v5rUbjC5ExL0L5TS/agbqGuSQ32EEIyWVA0e4BzSdoH7oe9rgAX
-	 6TseUo1oxO/Z0ZpmEfj8TIL4CIuSoguKL/aCkpmA=
-From: Mukesh R <mrathor@linux.microsoft.com>
-To: linux-kernel@vger.kernel.org,
-	linux-hyperv@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev,
-	linux-pci@vger.kernel.org,
-	linux-arch@vger.kernel.org
-Cc: kys@microsoft.com,
-	haiyangz@microsoft.com,
-	wei.liu@kernel.org,
-	decui@microsoft.com,
-	longli@microsoft.com,
-	catalin.marinas@arm.com,
-	will@kernel.org,
-	tglx@linutronix.de,
-	mingo@redhat.com,
-	bp@alien8.de,
-	dave.hansen@linux.intel.com,
-	hpa@zytor.com,
-	joro@8bytes.org,
-	lpieralisi@kernel.org,
-	kwilczynski@kernel.org,
-	mani@kernel.org,
-	robh@kernel.org,
-	bhelgaas@google.com,
-	arnd@arndb.de,
-	nunodasneves@linux.microsoft.com,
-	mhklinux@outlook.com,
-	romank@linux.microsoft.com
-Subject: [PATCH v0 15/15] mshv: Populate mmio mappings for PCI passthru
-Date: Mon, 19 Jan 2026 22:42:30 -0800
-Message-ID: <20260120064230.3602565-16-mrathor@linux.microsoft.com>
-X-Mailer: git-send-email 2.51.2.vfs.0.1
-In-Reply-To: <20260120064230.3602565-1-mrathor@linux.microsoft.com>
-References: <20260120064230.3602565-1-mrathor@linux.microsoft.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OQob5zWU"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1768891808; x=1800427808;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=La9XdNKDvIlNLu3KgpfvxzV/fhd4Lv/FNSjmGr2QPwI=;
+  b=OQob5zWUYhsQqPjKytLH0ybDG0lqN1Y2MqwGrZepXPqzqk5rO7I3/fea
+   sYG/EVkpcKkHUyaA3uecrtRTByv6il7TCICnSGvn/bn3iPSyGr0ohrfNn
+   9EbLystb/cK6HLCBZK7QeI5A4KY1kzyd4CCqTF51WdNBcts641l+XoGik
+   0TM24fYjFYGTAy4gnLIFfOq2FRm8oLmCpXz9TGdLX5lJ4m/vDgY7mGvhq
+   IJDbgIJ1nN5jFHa/zCQZFX45Q9a38DGKnVahKVI40yfTKGf+fcQVcYod+
+   Rpp/VBCHxf+fMWUbqE1vGB5mZ6x2FMA9fXnJ9HVIs9lGsh00H47/9rB9q
+   Q==;
+X-CSE-ConnectionGUID: JLxY31EIRQuRUKQFiZ5Ykw==
+X-CSE-MsgGUID: lQUMmGCAQmqfxbeG0MGR8Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11676"; a="81201843"
+X-IronPort-AV: E=Sophos;i="6.21,240,1763452800"; 
+   d="scan'208";a="81201843"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2026 22:50:02 -0800
+X-CSE-ConnectionGUID: BJ/NJHRjTWqgV0G2QdEGdQ==
+X-CSE-MsgGUID: jHn1saJITG+v2MLV21VjKg==
+X-ExtLoop1: 1
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2026 22:49:59 -0800
+Message-ID: <8908354f-4962-4ecb-85f1-b1c58ce45385@linux.intel.com>
+Date: Tue, 20 Jan 2026 14:49:55 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 0/2] iommu/vt-d: Skip dev-iotlb flush for inaccessible
+ PCIe device
+To: Jinhui Guo <guojinhui.liam@bytedance.com>, dwmw2@infradead.org,
+ joro@8bytes.org, will@kernel.org
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ stable@vger.kernel.org
+References: <20251211035946.2071-1-guojinhui.liam@bytedance.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20251211035946.2071-1-guojinhui.liam@bytedance.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-From: Mukesh Rathor <mrathor@linux.microsoft.com>
+On 12/11/25 11:59, Jinhui Guo wrote:
+> Hi, all
+> 
+> We hit hard-lockups when the Intel IOMMU waits indefinitely for an ATS invalidation
+> that cannot complete, especially under GDR high-load conditions.
+> 
+> 1. Hard-lock when a passthrough PCIe NIC with ATS enabled link-down in Intel IOMMU
+>     non-scalable mode. Two scenarios exist: NIC link-down with an explicit link-down
+>     event and link-down without any event.
+> 
+>     a) NIC link-down with an explicit link-dow event.
+>        Call Trace:
+>         qi_submit_sync
+>         qi_flush_dev_iotlb
+>         __context_flush_dev_iotlb.part.0
+>         domain_context_clear_one_cb
+>         pci_for_each_dma_alias
+>         device_block_translation
+>         blocking_domain_attach_dev
+>         iommu_deinit_device
+>         __iommu_group_remove_device
+>         iommu_release_device
+>         iommu_bus_notifier
+>         blocking_notifier_call_chain
+>         bus_notify
+>         device_del
+>         pci_remove_bus_device
+>         pci_stop_and_remove_bus_device
+>         pciehp_unconfigure_device
+>         pciehp_disable_slot
+>         pciehp_handle_presence_or_link_change
+>         pciehp_ist
+> 
+>     b) NIC link-down without an event - hard-lock on VM destroy.
+>        Call Trace:
+>         qi_submit_sync
+>         qi_flush_dev_iotlb
+>         __context_flush_dev_iotlb.part.0
+>         domain_context_clear_one_cb
+>         pci_for_each_dma_alias
+>         device_block_translation
+>         blocking_domain_attach_dev
+>         __iommu_attach_device
+>         __iommu_device_set_domain
+>         __iommu_group_set_domain_internal
+>         iommu_detach_group
+>         vfio_iommu_type1_detach_group
+>         vfio_group_detach_container
+>         vfio_group_fops_release
+>         __fput
+> 
+> 2. Hard-lock when a passthrough PCIe NIC with ATS enabled link-down in Intel IOMMU
+>     scalable mode; NIC link-down without an event hard-locks on VM destroy.
+>     Call Trace:
+>      qi_submit_sync
+>      qi_flush_dev_iotlb
+>      intel_pasid_tear_down_entry
+>      device_block_translation
+>      blocking_domain_attach_dev
+>      __iommu_attach_device
+>      __iommu_device_set_domain
+>      __iommu_group_set_domain_internal
+>      iommu_detach_group
+>      vfio_iommu_type1_detach_group
+>      vfio_group_detach_container
+>      vfio_group_fops_release
+>      __fput
+> 
+> Fix both issues with two patches:
+> 1. Skip dev-IOTLB flush for inaccessible devices in __context_flush_dev_iotlb() using
+>     pci_device_is_present().
+> 2. Use pci_device_is_present() instead of pci_dev_is_disconnected() to decide when to
+>     skip ATS invalidation in devtlb_invalidation_with_pasid().
+> 
+> Best Regards,
+> Jinhui
+> 
+> ---
+> v1:https://lore.kernel.org/all/20251210171431.1589-1- 
+> guojinhui.liam@bytedance.com/
+> 
+> Changelog in v1 -> v2 (suggested by Baolu Lu)
+>   - Simplify the pci_device_is_present() check in __context_flush_dev_iotlb().
+>   - Add Cc:stable@vger.kernel.org to both patches.
+> 
+> Jinhui Guo (2):
+>    iommu/vt-d: Skip dev-iotlb flush for inaccessible PCIe device without
+>      scalable mode
+>    iommu/vt-d: Flush dev-IOTLB only when PCIe device is accessible in
+>      scalable mode
 
-Upon guest access, in case of missing mmio mapping, the hypervisor
-generates an unmapped gpa intercept. In this path, lookup the PCI
-resource pfn for the guest gpa, and ask the hypervisor to map it
-via hypercall. The PCI resource pfn is maintained by the VFIO driver,
-and obtained via fixup_user_fault call (similar to KVM).
+Queued for iommu next.
 
-Signed-off-by: Mukesh Rathor <mrathor@linux.microsoft.com>
----
- drivers/hv/mshv_root_main.c | 115 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 115 insertions(+)
-
-diff --git a/drivers/hv/mshv_root_main.c b/drivers/hv/mshv_root_main.c
-index 03f3aa9f5541..4c8bc7cd0888 100644
---- a/drivers/hv/mshv_root_main.c
-+++ b/drivers/hv/mshv_root_main.c
-@@ -56,6 +56,14 @@ struct hv_stats_page {
- 	};
- } __packed;
- 
-+bool hv_nofull_mmio;   /* don't map entire mmio region upon fault */
-+static int __init setup_hv_full_mmio(char *str)
-+{
-+	hv_nofull_mmio = true;
-+	return 0;
-+}
-+__setup("hv_nofull_mmio", setup_hv_full_mmio);
-+
- struct mshv_root mshv_root;
- 
- enum hv_scheduler_type hv_scheduler_type;
-@@ -612,6 +620,109 @@ mshv_partition_region_by_gfn(struct mshv_partition *partition, u64 gfn)
- }
- 
- #ifdef CONFIG_X86_64
-+
-+/*
-+ * Check if uaddr is for mmio range. If yes, return 0 with mmio_pfn filled in
-+ * else just return -errno.
-+ */
-+static int mshv_chk_get_mmio_start_pfn(struct mshv_partition *pt, u64 gfn,
-+				       u64 *mmio_pfnp)
-+{
-+	struct vm_area_struct *vma;
-+	bool is_mmio;
-+	u64 uaddr;
-+	struct mshv_mem_region *mreg;
-+	struct follow_pfnmap_args pfnmap_args;
-+	int rc = -EINVAL;
-+
-+	/*
-+	 * Do not allow mem region to be deleted beneath us. VFIO uses
-+	 * useraddr vma to lookup pci bar pfn.
-+	 */
-+	spin_lock(&pt->pt_mem_regions_lock);
-+
-+	/* Get the region again under the lock */
-+	mreg = mshv_partition_region_by_gfn(pt, gfn);
-+	if (mreg == NULL || mreg->type != MSHV_REGION_TYPE_MMIO)
-+		goto unlock_pt_out;
-+
-+	uaddr = mreg->start_uaddr +
-+		((gfn - mreg->start_gfn) << HV_HYP_PAGE_SHIFT);
-+
-+	mmap_read_lock(current->mm);
-+	vma = vma_lookup(current->mm, uaddr);
-+	is_mmio = vma ? !!(vma->vm_flags & (VM_IO | VM_PFNMAP)) : 0;
-+	if (!is_mmio)
-+		goto unlock_mmap_out;
-+
-+	pfnmap_args.vma = vma;
-+	pfnmap_args.address = uaddr;
-+
-+	rc = follow_pfnmap_start(&pfnmap_args);
-+	if (rc) {
-+		rc = fixup_user_fault(current->mm, uaddr, FAULT_FLAG_WRITE,
-+				      NULL);
-+		if (rc)
-+			goto unlock_mmap_out;
-+
-+		rc = follow_pfnmap_start(&pfnmap_args);
-+		if (rc)
-+			goto unlock_mmap_out;
-+	}
-+
-+	*mmio_pfnp = pfnmap_args.pfn;
-+	follow_pfnmap_end(&pfnmap_args);
-+
-+unlock_mmap_out:
-+	mmap_read_unlock(current->mm);
-+unlock_pt_out:
-+	spin_unlock(&pt->pt_mem_regions_lock);
-+	return rc;
-+}
-+
-+/*
-+ * At present, the only unmapped gpa is mmio space. Verify if it's mmio
-+ * and resolve if possible.
-+ * Returns: True if valid mmio intercept and it was handled, else false
-+ */
-+static bool mshv_handle_unmapped_gpa(struct mshv_vp *vp)
-+{
-+	struct hv_message *hvmsg = vp->vp_intercept_msg_page;
-+	struct hv_x64_memory_intercept_message *msg;
-+	union hv_x64_memory_access_info accinfo;
-+	u64 gfn, mmio_spa, numpgs;
-+	struct mshv_mem_region *mreg;
-+	int rc;
-+	struct mshv_partition *pt = vp->vp_partition;
-+
-+	msg = (struct hv_x64_memory_intercept_message *)hvmsg->u.payload;
-+	accinfo = msg->memory_access_info;
-+
-+	if (!accinfo.gva_gpa_valid)
-+		return false;
-+
-+	/* Do a fast check and bail if non mmio intercept */
-+	gfn = msg->guest_physical_address >> HV_HYP_PAGE_SHIFT;
-+	mreg = mshv_partition_region_by_gfn(pt, gfn);
-+	if (mreg == NULL || mreg->type != MSHV_REGION_TYPE_MMIO)
-+		return false;
-+
-+	rc = mshv_chk_get_mmio_start_pfn(pt, gfn, &mmio_spa);
-+	if (rc)
-+		return false;
-+
-+	if (!hv_nofull_mmio) {		/* default case */
-+		gfn = mreg->start_gfn;
-+		mmio_spa = mmio_spa - (gfn - mreg->start_gfn);
-+		numpgs = mreg->nr_pages;
-+	} else
-+		numpgs = 1;
-+
-+	rc = hv_call_map_mmio_pages(pt->pt_id, gfn, mmio_spa, numpgs);
-+
-+	return rc == 0;
-+}
-+
- static struct mshv_mem_region *
- mshv_partition_region_by_gfn_get(struct mshv_partition *p, u64 gfn)
- {
-@@ -666,13 +777,17 @@ static bool mshv_handle_gpa_intercept(struct mshv_vp *vp)
- 
- 	return ret;
- }
-+
- #else  /* CONFIG_X86_64 */
-+static bool mshv_handle_unmapped_gpa(struct mshv_vp *vp) { return false; }
- static bool mshv_handle_gpa_intercept(struct mshv_vp *vp) { return false; }
- #endif /* CONFIG_X86_64 */
- 
- static bool mshv_vp_handle_intercept(struct mshv_vp *vp)
- {
- 	switch (vp->vp_intercept_msg_page->header.message_type) {
-+	case HVMSG_UNMAPPED_GPA:
-+		return mshv_handle_unmapped_gpa(vp);
- 	case HVMSG_GPA_INTERCEPT:
- 		return mshv_handle_gpa_intercept(vp);
- 	}
--- 
-2.51.2.vfs.0.1
-
+Thanks,
+baolu
