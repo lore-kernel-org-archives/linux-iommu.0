@@ -1,134 +1,175 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12E7842E01A;
-	Tue, 20 Jan 2026 13:34:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2281E3E9F6E
+	for <iommu@lists.linux.dev>; Tue, 20 Jan 2026 13:49:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768916044; cv=none; b=pNi/R5QC6HpBG/eadw11+UbzQDKRAQHN8cz3ccXPurhM9T5o7HqQIzxmZku8rw5anoJ0n4gARV7i/gRw8rO7ehZS2okSzE8BkKCuxSqhNibVe9/pqImafiUjQ3RMTMFHY4blpBBEagrOv4D8bX91cKV2QsfN+6TZf/Ot4lx6Ie8=
+	t=1768916968; cv=none; b=P85ymD4J677DeWdt57oKWWwT5P78qxJdIXU0t/04fUCstos6YRsT6D+ITcGa04s5zAcKULskvdCfL/y376ZxfB9csMdWHP4+kfeR9JnbfbP+o6h7FTr6q+YX2MJp6A4UR/JPKkVbUy3yArxhjblVHOlPxtzA/J4jMOHHReIjzcE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768916044; c=relaxed/simple;
-	bh=oLJ2iu9KlHT5QrDdejkQxW6aJLgiN+DqMd8h51OdTRU=;
+	s=arc-20240116; t=1768916968; c=relaxed/simple;
+	bh=KhIvR3889p1HTQfCBF3w3nKndwU9ce0t4peR252dtZg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kPYLmd6BBFuH7rrM74o8RIyL90PSdttM3jGJLc9oXhJNNejkrNfEw+9ajbxbVCwOvoxBq9h4n5jboDrWWzuPuTVSuzWO0OTgm3ubc+FS5nOtMLbT0Y+6RxKnKB5sGA30mR1Tu/wMlvr2Ax6utJuhVNA4ukINgHWGMPwBHYkxg7E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JpEG1sP9; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=haJeVzcpaHNP2wGP2wQrU9mToWUz404P/xhTRY/zZ9VJL6O8miLlyvNfD/077Q7tgkXJjm+xZcaR9y3uaHDqSt5nN2J3BzR+kQtAGHXs/g8w8LyrQ3q9wEI4nSF3rURqdMlRmUcDY/PgknZJ53+l5xHMCPAQ22lOGyUnotLJ7hg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=KUkiK4LT; arc=none smtp.client-ip=209.85.218.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JpEG1sP9"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC30AC16AAE;
-	Tue, 20 Jan 2026 13:34:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1768916043;
-	bh=oLJ2iu9KlHT5QrDdejkQxW6aJLgiN+DqMd8h51OdTRU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=JpEG1sP9sdoE2iRilDGuE2cq1/H2M6cDuai69Nw+oSU99dcdoZdWBvI1Ukv0pmCi9
-	 TsEw1r+DamQwCel7MoQtDe43k96uNEN2EIGYyUqy+LKVNlFKvNVQdDnF9gRgkw6+oE
-	 Iyr3Ih5rCshWR5ndygaol8Ath9Rlm/yA6Sguxq2x2tSUxefkc1flchRkXEHVN8GCfi
-	 tJskCUcB7JdPmjSewrBWCzbAo1v7780XPg1+FKbkQX6nJPso+uCdLPziwkOu29i/jw
-	 mD8HoF6GofHxxX6dhDDXQOlk4BrG8fNLd2RXpMxN3Qn9LCRK7nBxumFh6AjnzbEM7k
-	 ZfnVnW6TNMaYg==
-Date: Tue, 20 Jan 2026 15:33:57 +0200
-From: Leon Romanovsky <leon@kernel.org>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Sumit Semwal <sumit.semwal@linaro.org>,
-	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-	Alex Deucher <alexander.deucher@amd.com>,
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-	Gerd Hoffmann <kraxel@redhat.com>,
-	Dmitry Osipenko <dmitry.osipenko@collabora.com>,
-	Gurchetan Singh <gurchetansingh@chromium.org>,
-	Chia-I Wu <olvaffe@gmail.com>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	Lucas De Marchi <lucas.demarchi@intel.com>,
-	Thomas =?iso-8859-1?Q?Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>,
-	Rodrigo Vivi <rodrigo.vivi@intel.com>,
-	Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Alex Williamson <alex@shazbot.org>, linux-media@vger.kernel.org,
-	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
-	linux-kernel@vger.kernel.org, amd-gfx@lists.freedesktop.org,
-	virtualization@lists.linux.dev, intel-xe@lists.freedesktop.org,
-	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
-	kvm@vger.kernel.org
-Subject: Re: [PATCH v2 3/4] iommufd: Require DMABUF revoke semantics
-Message-ID: <20260120133357.GT13201@unreal>
-References: <20260118-dmabuf-revoke-v2-0-a03bb27c0875@nvidia.com>
- <20260118-dmabuf-revoke-v2-3-a03bb27c0875@nvidia.com>
- <20260119165951.GI961572@ziepe.ca>
- <20260119182300.GO13201@unreal>
- <20260119195444.GL961572@ziepe.ca>
- <20260120131046.GS13201@unreal>
- <20260120131530.GN961572@ziepe.ca>
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="KUkiK4LT"
+Received: by mail-ej1-f42.google.com with SMTP id a640c23a62f3a-b876798b97eso850449566b.1
+        for <iommu@lists.linux.dev>; Tue, 20 Jan 2026 05:49:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google; t=1768916965; x=1769521765; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=rrgUsOtMJYh6LFiukcDW6xx8+sO+QWx05n2GaEl7uC0=;
+        b=KUkiK4LTgRFWJ1uUs2NujJ8nrIWKrypdzjVzLE0jjQv4CsdRhgSCqK66u2TLOFWaeW
+         KI/1eFkGOHHxdg6PQsAwmjsmnKLpBXEbPD9DtiPeLnSwa7KL3B9cwG7lY1g4ReRGvUqX
+         qT9TYFVUqQ1LQpdiC5HkCAf8J4GiKLakPWv5o=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1768916965; x=1769521765;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=rrgUsOtMJYh6LFiukcDW6xx8+sO+QWx05n2GaEl7uC0=;
+        b=pPTl0Cr7H2ot/OqMtXAjhf1kTCvB+om4CQwtyh3p4bvJZKD8b6cF7jadqZA6xrQ+lB
+         hYinDJXCmEvwh5JSBq5dD5catNtZ11E0NWCtvgoJRaxTg7KOpxYJwpJ0OlynV/XA09Gj
+         zOfrx4ESv7MtJLNkbDkKYGEHKBajp19IXLt2QUYQP7y7kQzOvNFVIZEdI5AziZyZ9INP
+         IqNqBtrZBw+J6qC79XUkll9x+p0LtRT+ApeHhPrdpmV8RiXQUEceA/QgdGUAKF9brvwI
+         ibl0moCQmo3vV1Yg2t0uOn2ECxyW3Hgvt7KOYHoqV6xfmITnXKvXKazrF6xu9knfYg5o
+         gjhA==
+X-Forwarded-Encrypted: i=1; AJvYcCWdpaqZL+aZdSXFxIQleUCwswBPTEMaaUlk6Li9WU/7/TI9VjpsYQs6T5rRaKRZeJbxbFNmEA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yzzm37vJV8cbKGhkd6Pt2ga2dlyip7zQOzoGVBdH07rThTD8vh9
+	SFG3zFj5ni7z5RUv18DoKxnSIHRKlNtY7G3LKLjP7v408Py9sWTRD2LLmaWN9kObKBXJJ3QqaV6
+	fwV8=
+X-Gm-Gg: AZuq6aKUXep+OFkldC2P2j6Uc8PI7t+ZEwQDl6aruRdd2A3Ctp8i73uTTTaPMTFeVln
+	Mupx4GPxoUuKA16X9smbvVrqET3KHgtS3uaTGbABtusRabmBdQH3cUo7r42+MuufJVudPw5FVk5
+	WURnw/ur07O0RTjvjIoJQoIRMMxbBNBRQMO5hTQeC2Qq9WCwPlL1KqGRekTt6G18hAOSrGmJPVy
+	kIEF0by5kQZCh3bXNKG22xVAk+zu+v/hyelHRFC219XwBL361UQWleIUfFS9KCLLQtHClMQMhaU
+	Ha5oBtVIDn0N0Hyir3OLWp9Y/Up7IJw5gb6l9VkUxgJt1PF9+IjOUFhQ5Dm4H6pWosZyzREqK3T
+	U8LpICs8a6JiOxhsA6uuwf5RgvbcxotTrBJ4CUZWGQ8XCQCttG0NAEf29t7pGC35OgBK1O1TQrw
+	3maJe9wdAG9neBjdg=
+X-Received: by 2002:a17:906:6a0a:b0:b87:778b:89b9 with SMTP id a640c23a62f3a-b8800656cefmr171951066b.35.1768916965470;
+        Tue, 20 Jan 2026 05:49:25 -0800 (PST)
+Received: from google.com ([2a02:a31b:20c3:6680:e571:3179:cb1d:9314])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b879516900csm1501917266b.23.2026.01.20.05.49.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 20 Jan 2026 05:49:24 -0800 (PST)
+Date: Tue, 20 Jan 2026 14:49:21 +0100
+From: Dmytro Maluka <dmaluka@chromium.org>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
+	Samiullah Khawaja <skhawaja@google.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	"Vineeth Pillai (Google)" <vineeth@bitbyteword.org>,
+	Aashish Sharma <aashish@aashishsharma.net>
+Subject: Re: [PATCH 2/3] iommu/vt-d: Clear Present bit before tearing down
+ PASID entry
+Message-ID: <aW-H4Qn2qV7QHeff@google.com>
+References: <20260113030052.977366-1-baolu.lu@linux.intel.com>
+ <20260113030052.977366-3-baolu.lu@linux.intel.com>
+ <aWaeUJcAFQ_vbJtd@google.com>
+ <8e232d7f-9436-401e-9abc-308492a1fcbf@linux.intel.com>
+ <aWd6KIGBiE-nL2IT@mitya-t14-2025>
+ <6c1888bb-83ff-4121-baef-4c3c93dcbf58@linux.intel.com>
+ <aWldkApQ3C9pfZ3_@google.com>
+ <59eb3d65-0962-4523-a4c9-8e4417217a0f@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260120131530.GN961572@ziepe.ca>
+In-Reply-To: <59eb3d65-0962-4523-a4c9-8e4417217a0f@linux.intel.com>
 
-On Tue, Jan 20, 2026 at 09:15:30AM -0400, Jason Gunthorpe wrote:
-> On Tue, Jan 20, 2026 at 03:10:46PM +0200, Leon Romanovsky wrote:
-> > On Mon, Jan 19, 2026 at 03:54:44PM -0400, Jason Gunthorpe wrote:
-> > > On Mon, Jan 19, 2026 at 08:23:00PM +0200, Leon Romanovsky wrote:
-> > > > On Mon, Jan 19, 2026 at 12:59:51PM -0400, Jason Gunthorpe wrote:
-> > > > > On Sun, Jan 18, 2026 at 02:08:47PM +0200, Leon Romanovsky wrote:
-> > > > > > From: Leon Romanovsky <leonro@nvidia.com>
-> > > > > > 
-> > > > > > IOMMUFD does not support page fault handling, and after a call to
-> > > > > > .invalidate_mappings() all mappings become invalid. Ensure that
-> > > > > > the IOMMUFD DMABUF importer is bound to a revoke‑aware DMABUF exporter
-> > > > > > (for example, VFIO).
-> > > > > > 
-> > > > > > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> > > > > > ---
-> > > > > >  drivers/iommu/iommufd/pages.c | 9 ++++++++-
-> > > > > >  1 file changed, 8 insertions(+), 1 deletion(-)
-> > > > > > 
-> > > > > > diff --git a/drivers/iommu/iommufd/pages.c b/drivers/iommu/iommufd/pages.c
-> > > > > > index 76f900fa1687..a5eb2bc4ef48 100644
-> > > > > > --- a/drivers/iommu/iommufd/pages.c
-> > > > > > +++ b/drivers/iommu/iommufd/pages.c
-> > > > > > @@ -1501,16 +1501,22 @@ static int iopt_map_dmabuf(struct iommufd_ctx *ictx, struct iopt_pages *pages,
-> > > > > >  		mutex_unlock(&pages->mutex);
-> > > > > >  	}
-> > > > > >  
-> > > > > > -	rc = sym_vfio_pci_dma_buf_iommufd_map(attach, &pages->dmabuf.phys);
-> > > > > > +	rc = dma_buf_pin(attach);
-> > > > > >  	if (rc)
-> > > > > >  		goto err_detach;
-> > > > > >  
-> > > > > > +	rc = sym_vfio_pci_dma_buf_iommufd_map(attach, &pages->dmabuf.phys);
-> > > > > > +	if (rc)
-> > > > > > +		goto err_unpin;
-> > > > > > +
-> > > > > >  	dma_resv_unlock(dmabuf->resv);
-> > > > > >  
-> > > > > >  	/* On success iopt_release_pages() will detach and put the dmabuf. */
-> > > > > >  	pages->dmabuf.attach = attach;
-> > > > > >  	return 0;
+On Fri, Jan 16, 2026 at 02:06:30PM +0800, Baolu Lu wrote:
+> On 1/16/26 05:35, Dmytro Maluka wrote:
+> > On Thu, Jan 15, 2026 at 10:45:12AM +0800, Baolu Lu wrote:
+> > > On 1/14/26 19:12, Dmytro Maluka wrote:
+> > > > On Wed, Jan 14, 2026 at 01:38:13PM +0800, Baolu Lu wrote:
+> > > > > On 1/14/26 03:34, Dmytro Maluka wrote:
+> > > > > > On Tue, Jan 13, 2026 at 11:00:47AM +0800, Lu Baolu wrote:
+> > > > > > > +	intel_pasid_clear_entry(iommu, dev, pasid, fault_ignore);
+> > > > > > Is it safe to do this with iommu->lock already unlocked?
 > > > > > 
-> > > > > Don't we need an explicit unpin after unmapping?
+> > > > > Yes, it is. The PASID entry lifecycle is serialized by the iommu_group-
+> > > > > > mutex in the iommu core, which ensures that no other thread can attempt
+> > > > > to allocate or setup this same PASID until intel_pasid_tear_down_entry()
+> > > > > has returned.
+> > > > > 
+> > > > > The iommu->lock is held during the initial transition (P->0) to ensure
+> > > > > atomicity against other hardware-table walkers, but once the P bit is
+> > > > > cleared and the caches are flushed, the final zeroing of the 'dead'
+> > > > > entry does not strictly require the spinlock because the PASID remains
+> > > > > reserved in software until the function completes.
 > > > > 
-> > > > Yes, but this patch is going to be dropped in v3 because of this
-> > > > suggestion.
-> > > > https://lore.kernel.org/all/a397ff1e-615f-4873-98a9-940f9c16f85c@amd.com
+> > > > Ok. Just to understand: "other hardware-table walkers" means some
+> > > > software walkers, not hardware ones? Which software walkers are those?
+> > > > (I can't imagine how holding a spinlock could prevent the hardware from
+> > > > walking those tables. :))
 > > > 
-> > > That's not right, that suggestion is about changing VFIO. iommufd must
-> > > still act as a pinning importer!
+> > > You are right. A spinlock doesn't stop the hardware. The spinlock
+> > > serializes software threads to ensure the hardware walker always sees a
+> > > consistent entry.
+> > > 
+> > > When a PASID entry is active (P=1), other kernel paths might modify
+> > > the control bits in-place. For example:
+> > > 
+> > > void intel_pasid_setup_page_snoop_control(struct intel_iommu *iommu,
+> > >                                            struct device *dev, u32 pasid)
+> > > {
+> > >          struct pasid_entry *pte;
+> > >          u16 did;
+> > > 
+> > >          spin_lock(&iommu->lock);
+> > >          pte = intel_pasid_get_entry(dev, pasid);
+> > >          if (WARN_ON(!pte || !pasid_pte_is_present(pte))) {
+> > >                  spin_unlock(&iommu->lock);
+> > >                  return;
+> > >          }
+> > > 
+> > >          pasid_set_pgsnp(pte);
+> > >          did = pasid_get_domain_id(pte);
+> > >          spin_unlock(&iommu->lock);
+> > > 
+> > >          intel_pasid_flush_present(iommu, dev, pasid, did, pte);
+> > > }
+> > > 
+> > > In this case, the iommu->lock ensures that if two threads try to modify
+> > > the same active entry, they don't interfere with each other and leave
+> > > the entry in a 'torn' state for the IOMMU hardware to read.
+> > > 
+> > > In intel_pasid_tear_down_entry(), once the PASID entry is deactivated
+> > > (setting P=0 and flushing caches), the entry is owned exclusively  by
+> > > the teardown thread until it is re-configured. That's the reason why the
+> > > final zeroing doesn't need the spinlock.
 > > 
-> > There is no change in iommufd, as it invokes dma_buf_dynamic_attach()
-> > with a valid &iopt_dmabuf_attach_revoke_ops. The check determining whether
-> > iommufd can perform a revoke is handled there.
+> > I see. Am I correct that those other code paths (modifying an entry
+> > in-place) are not supposed to do that concurrently with
+> > intel_pasid_tear_down_entry(), i.e. they should only do that while it is
+> > guaranteed that the entry remains present? Otherwise there is a bug
+> > (hence, for example, the WARN_ON in
+> > intel_pasid_setup_page_snoop_control())?
 > 
-> iommufd is a pining importer. I did not add a call to pin because it
-> only worked with VFIO that would not support it. Now that this series
-> fixes it the pin must be added. Don't drop this patch.
+> The iommu driver assumes that high-level software should ensure this.
+> 
+> > So, holding iommu->lock during
+> > entry teardown is not strictly necessary (i.e. we could unlock it even
+> > earlier than setting P=0), i.e. holding the lock until the entry is
+> > deactivated is basically just a safety measure for possible buggy code?
+> 
+> There are other paths that may be concurrent, such as the debugfs path
+> (dumping the pasid table through debugfs). Therefore, keeping iommu-
+> >lock in the driver is neither redundant nor buggy.
 
-No problem, let's keep it.
+I see, that makes sense: clearing the present bit before iommu->lock is
+unlocked should prevent such read-only walkers like debugfs from trying
+to further walk down the path (i.e. to page tables) after iommu->lock is
+unlocked.
 
-Thanks
+> Thanks,
+> baolu
