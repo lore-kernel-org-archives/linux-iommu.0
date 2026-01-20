@@ -1,196 +1,131 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DB8E40B6E4;
-	Tue, 20 Jan 2026 19:08:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D7AE147886F;
+	Tue, 20 Jan 2026 19:22:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768936132; cv=none; b=YWcYGxMD5PwzKZRkcZ67FpcoLm05w9ePEn2LmM3R/9tbTl5/qD3xR8E/OZyiFgXPLdn6e1D6sX1SZeDbV67DI51aVeuxmtHbbU9aKKHiHRwUmfqN4tHQKrUamt6IwmXo244w70OkuoGBB6hNbCmp6L14zv5zFlD4yPCUYbpbP9A=
+	t=1768936928; cv=none; b=ORAB7IoWvcy3TJPL3p9FOPl4DIu03jVC6WVGrRyg0wr5Nc7N6rNOJkF8yY8Vlwca7XBJQQ89UKQYmRzt29un5yP/7/WH1bUchznb6gg1+HiVbXifIS04Ynn+DCO2Uq1j0k0S1LjCuPh7PwAfmrO+o9hi/0DiZ63xN7xClPWHJac=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768936132; c=relaxed/simple;
-	bh=suq092sxUq1UZDCmvSjB4EIKq0NWnio2m/MOEmqo3HM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=gs2Yy7owjnspUZTGLQjrKLCUFB7s5+Qy+yu5Rx7mGoTdefcVVCDXgCC6Xwc8zjjYzrrr331m9pBI1ANrALAcSnw6CUK9fIIQW0YqFbzNdGps6TSmTh4nzgLZqw1ix+uYpW+urP9EUtKD0Gxq9jCeR2sf++DngID2am2Ab6iX4h4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=PYDqAKB1; arc=none smtp.client-ip=192.198.163.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PYDqAKB1"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1768936131; x=1800472131;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=suq092sxUq1UZDCmvSjB4EIKq0NWnio2m/MOEmqo3HM=;
-  b=PYDqAKB18VxL8n+qx/lznWGeA8rSNU0rjH+7CB1gUMbmhg4WcFbNEbW7
-   diOCe1eTeZylh10obxDXFM480lxmERdUbhAZYBkgkYhgjIXKluT/B/Xtd
-   KBD1cF0xmsz0oPoVsenzElzpbZZDy6mu6wq9a4rjCtADKcBf6sMOArBKO
-   +35dCNC6nPMO6gYgAMOIPHAqNqz7hIlMjED7sR2UEsr5OPxWp9pvRa6aI
-   0VabahKIwfVuCVS+qL+86fxiRM7oNCrDBa5OjWv2GYi8GZhU4aAfieGTb
-   DLlT+PPbh18rFy/YRMbdy3JYIKyzU5H6rLlybtvRzXOvUCh/NcwkTQWEd
-   w==;
-X-CSE-ConnectionGUID: igVuXgNqQ2ShwMEYUDOgyg==
-X-CSE-MsgGUID: RIxQttgCTfCuMJULXE6Buw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11677"; a="57716903"
-X-IronPort-AV: E=Sophos;i="6.21,241,1763452800"; 
-   d="scan'208";a="57716903"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2026 11:08:49 -0800
-X-CSE-ConnectionGUID: S/qzfxi6Tjynf60TUbjybw==
-X-CSE-MsgGUID: oFTL2pAKTTqSKELIV4YUSw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,241,1763452800"; 
-   d="scan'208";a="206450650"
-Received: from lkp-server01.sh.intel.com (HELO 765f4a05e27f) ([10.239.97.150])
-  by fmviesa008.fm.intel.com with ESMTP; 20 Jan 2026 11:08:43 -0800
-Received: from kbuild by 765f4a05e27f with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1viH5k-00000000POH-2pR0;
-	Tue, 20 Jan 2026 19:08:40 +0000
-Date: Wed, 21 Jan 2026 03:08:24 +0800
-From: kernel test robot <lkp@intel.com>
-To: Mukesh R <mrathor@linux.microsoft.com>, linux-kernel@vger.kernel.org,
-	linux-hyperv@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev, linux-pci@vger.kernel.org,
-	linux-arch@vger.kernel.org
-Cc: oe-kbuild-all@lists.linux.dev, kys@microsoft.com,
-	haiyangz@microsoft.com, wei.liu@kernel.org, decui@microsoft.com,
-	longli@microsoft.com, catalin.marinas@arm.com, will@kernel.org,
-	tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-	dave.hansen@linux.intel.com, hpa@zytor.com, joro@8bytes.org,
-	lpieralisi@kernel.org, kwilczynski@kernel.org, mani@kernel.org,
-	robh@kernel.org, bhelgaas@google.com, arnd@arndb.de,
-	nunodasneves@linux.microsoft.com, mhklinux@outlook.com,
-	romank@linux.microsoft.com
-Subject: Re: [PATCH v0 01/15] iommu/hyperv: rename hyperv-iommu.c to
- hyperv-irq.c
-Message-ID: <202601210208.mg3YUkif-lkp@intel.com>
-References: <20260120064230.3602565-2-mrathor@linux.microsoft.com>
+	s=arc-20240116; t=1768936928; c=relaxed/simple;
+	bh=fHz2YOLDMN3k9zSXfasCjgbpvcHgmmzt+EZjwtKQk28=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=UtmytsaKxeWyG4uEAPv1arfyLfUq4NVoNerPqra3qtg/qFpeLzUyxrGQW2KRTkP38KvVuhMNdOLXmF9Z0xG5cfm5DkmrLF2DD5O/+bm4zHHGrrSOA5YbvPiBcir+XZ+frh3iRm2+ZXkN3MPwJUV/tUujyphNHbFnjWrHiGvD8As=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 55A0F1517;
+	Tue, 20 Jan 2026 11:21:58 -0800 (PST)
+Received: from [10.57.49.114] (unknown [10.57.49.114])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 813923F632;
+	Tue, 20 Jan 2026 11:22:03 -0800 (PST)
+Message-ID: <b662e137-5d2a-4ee7-b1f7-b4545388d4fe@arm.com>
+Date: Tue, 20 Jan 2026 19:22:01 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260120064230.3602565-2-mrathor@linux.microsoft.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/2] dma-direct: Validate DMA mask against canonical DMA
+ addresses
+To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>,
+ Suzuki K Poulose <suzuki.poulose@arm.com>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev, linux-coco@lists.linux.dev
+Cc: Catalin Marinas <catalin.marinas@arm.com>, will@kernel.org, jgg@ziepe.ca,
+ steven.price@arm.com, Marek Szyprowski <m.szyprowski@samsung.com>
+References: <20260120064255.179425-1-aneesh.kumar@kernel.org>
+ <2a0b6d1b-875a-4075-8fc9-a8534afc9168@arm.com>
+ <893a6503-d33f-41d8-8966-19b9f251d9da@arm.com> <yq5aqzrkjr9e.fsf@kernel.org>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <yq5aqzrkjr9e.fsf@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-Hi Mukesh,
+On 2026-01-20 2:25 pm, Aneesh Kumar K.V wrote:
+> Robin Murphy <robin.murphy@arm.com> writes:
+> 
+>> On 2026-01-20 9:59 am, Suzuki K Poulose wrote:
+>>> On 20/01/2026 06:42, Aneesh Kumar K.V (Arm) wrote:
+>>>> On systems that apply an address encryption tag or mask to DMA addresses,
+>>>> DMA mask validation must be performed against the canonical DMA address.
+>>>> Using a non-canonical (e.g. encrypted or unencrypted) DMA address
+>>>> can incorrectly fail capability checks, since architecture-specific
+>>>> encryption bits are not part of the device’s actual DMA addressing
+>>>> capability. For example, arm64 adds PROT_NS_SHARED to unencrypted DMA
+>>>> addresses.
+>>>>
+>>>> Fix this by validating device DMA masks against __phys_to_dma(), ensuring
+>>>> that the architecture encryption mask does not influence the check.
+>>>>
+>>>> Fixes: b66e2ee7b6c8 ("dma: Introduce generic dma_addr_*crypted helpers")
+>>>
+>>>
+>>>> Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
+>>>> ---
+>>>>    kernel/dma/direct.c | 4 ++--
+>>>>    1 file changed, 2 insertions(+), 2 deletions(-)
+>>>>
+>>>> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+>>>> index 8e04f72baaa3..a5639e9415f5 100644
+>>>> --- a/kernel/dma/direct.c
+>>>> +++ b/kernel/dma/direct.c
+>>>> @@ -580,12 +580,12 @@ int dma_direct_supported(struct device *dev, u64
+>>>> mask)
+>>>>        /*
+>>>>         * This check needs to be against the actual bit mask value, so use
+>>>> -     * phys_to_dma_unencrypted() here so that the SME encryption mask
+>>>> isn't
+>>>> +     * __phys_to_dma() here so that the arch specific encryption mask
+>>>> isn't
+>>>>         * part of the check.
+>>>>         */
+>>>>        if (IS_ENABLED(CONFIG_ZONE_DMA))
+>>>>            min_mask = min_t(u64, min_mask, zone_dma_limit);
+>>>> -    return mask >= phys_to_dma_unencrypted(dev, min_mask);
+>>>> +    return mask >= __phys_to_dma(dev, min_mask);
+>>>
+>>> This is wrong, isn't it ? For e.g., for CCA, even though the "Flag" is
+>>> added to the PA, it is really part of the actual "PA" and thus must be
+>>> checked against the full PA ?
+>>
+>> Yes, it's much the same as for AMD SEV (albeit the other way round) -
+>> the encryption/decryption bit is part of the DMA address because it
+>> needs to be driven by the device, so it is crucial that the device's DMA
+>> mask is capable of expressing that.
+>>
+> 
+> Commit c92a54cfa0257e8ffd66b2a17d49e9c0bd4b769f explains these details.
 
-kernel test robot noticed the following build errors:
+See x86's force_dma_unencrypted() implementation - the reason dma-direct 
+doesn't need to be so strict for that is because things are the right 
+way round that it can always fall back to shared/untrusted DMA as the 
+general case, and a device can only access an encrypted page directly if 
+it *can* drive the SME bit in the input address to trigger the inline 
+encryption engine.
 
-[auto build test ERROR on tip/x86/core]
-[also build test ERROR on pci/next pci/for-linus arm64/for-next/core clk/clk-next soc/for-next linus/master arnd-asm-generic/master v6.19-rc6 next-20260119]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+For CCA we have rather the opposite, where dma-direct requires a device 
+to be able to address any IPA directly to be sure of working at all, but 
+if we do happen to have a stage 1 IOMMU then we could rely on that to 
+map smaller IOVAs to the upper IPA space.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Mukesh-R/iommu-hyperv-rename-hyperv-iommu-c-to-hyperv-irq-c/20260120-145832
-base:   tip/x86/core
-patch link:    https://lore.kernel.org/r/20260120064230.3602565-2-mrathor%40linux.microsoft.com
-patch subject: [PATCH v0 01/15] iommu/hyperv: rename hyperv-iommu.c to hyperv-irq.c
-config: i386-randconfig-001-20260120 (https://download.01.org/0day-ci/archive/20260121/202601210208.mg3YUkif-lkp@intel.com/config)
-compiler: gcc-14 (Debian 14.2.0-19) 14.2.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260121/202601210208.mg3YUkif-lkp@intel.com/reproduce)
+> I was wondering whether the DMA-enable operation should live outside the
+> set_mask operation. Conceptually, set_mask should be derived purely from
+> max_pfn, while the DMA enablement path could additionally verify whether
+> the device requires access to an alias address, depending on whether it
+> is operating in trusted or untrusted mode?
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202601210208.mg3YUkif-lkp@intel.com/
+No, the point of the set_mask check is "is this mask big enough to 
+accommodate any *DMA address* we might need to give the device?" - that 
+includes offsets, magic bits, magic bits encoded as fake offsets (yes 
+you, Raspberry Pi...) and whatever else might comprise an actual DMA 
+address as handed off to the hardware. It is *not* directly a "can this 
+device DMA to all RAM we know about?" check - that is in the assumption 
+that if necessary the SWIOTLB buffer will be reachable at a <=32-bit DMA 
+address, and thus we should not *need* to give >32-bit addresses to 
+devices. It is only that assumption which fundamentally falls apart for 
+CCA (with more than 2GB of IPA space, at least).
 
-All errors (new ones prefixed by >>):
-
-   In file included from drivers/acpi/pci_root.c:20:
->> include/linux/dmar.h:269:17: error: unknown type name '__u128'; did you mean '__u32'?
-     269 |                 __u128 irte;
-         |                 ^~~~~~
-         |                 __u32
-
-Kconfig warnings: (for reference only)
-   WARNING: unmet direct dependencies detected for IRQ_REMAP
-   Depends on [n]: IOMMU_SUPPORT [=y] && X86_64 [=n] && X86_IO_APIC [=y] && PCI_MSI [=n] && ACPI [=y]
-   Selected by [y]:
-   - HYPERV_IOMMU [=y] && IOMMU_SUPPORT [=y] && HYPERV [=y] && X86 [=y]
-
-
-vim +269 include/linux/dmar.h
-
-2ae21010694e56 Suresh Siddha   2008-07-10  200  
-2ae21010694e56 Suresh Siddha   2008-07-10  201  struct irte {
-b1fe7f2cda2a00 Peter Zijlstra  2023-05-31  202  	union {
-b1fe7f2cda2a00 Peter Zijlstra  2023-05-31  203  		struct {
-2ae21010694e56 Suresh Siddha   2008-07-10  204  			union {
-3bf17472226b00 Thomas Gleixner 2015-06-09  205  				/* Shared between remapped and posted mode*/
-2ae21010694e56 Suresh Siddha   2008-07-10  206  				struct {
-3bf17472226b00 Thomas Gleixner 2015-06-09  207  					__u64	present		: 1,  /*  0      */
-3bf17472226b00 Thomas Gleixner 2015-06-09  208  						fpd		: 1,  /*  1      */
-3bf17472226b00 Thomas Gleixner 2015-06-09  209  						__res0		: 6,  /*  2 -  6 */
-3bf17472226b00 Thomas Gleixner 2015-06-09  210  						avail		: 4,  /*  8 - 11 */
-3bf17472226b00 Thomas Gleixner 2015-06-09  211  						__res1		: 3,  /* 12 - 14 */
-3bf17472226b00 Thomas Gleixner 2015-06-09  212  						pst		: 1,  /* 15      */
-3bf17472226b00 Thomas Gleixner 2015-06-09  213  						vector		: 8,  /* 16 - 23 */
-3bf17472226b00 Thomas Gleixner 2015-06-09  214  						__res2		: 40; /* 24 - 63 */
-3bf17472226b00 Thomas Gleixner 2015-06-09  215  				};
-3bf17472226b00 Thomas Gleixner 2015-06-09  216  
-3bf17472226b00 Thomas Gleixner 2015-06-09  217  				/* Remapped mode */
-3bf17472226b00 Thomas Gleixner 2015-06-09  218  				struct {
-3bf17472226b00 Thomas Gleixner 2015-06-09  219  					__u64	r_present	: 1,  /*  0      */
-3bf17472226b00 Thomas Gleixner 2015-06-09  220  						r_fpd		: 1,  /*  1      */
-3bf17472226b00 Thomas Gleixner 2015-06-09  221  						dst_mode	: 1,  /*  2      */
-3bf17472226b00 Thomas Gleixner 2015-06-09  222  						redir_hint	: 1,  /*  3      */
-3bf17472226b00 Thomas Gleixner 2015-06-09  223  						trigger_mode	: 1,  /*  4      */
-3bf17472226b00 Thomas Gleixner 2015-06-09  224  						dlvry_mode	: 3,  /*  5 -  7 */
-3bf17472226b00 Thomas Gleixner 2015-06-09  225  						r_avail		: 4,  /*  8 - 11 */
-3bf17472226b00 Thomas Gleixner 2015-06-09  226  						r_res0		: 4,  /* 12 - 15 */
-3bf17472226b00 Thomas Gleixner 2015-06-09  227  						r_vector	: 8,  /* 16 - 23 */
-3bf17472226b00 Thomas Gleixner 2015-06-09  228  						r_res1		: 8,  /* 24 - 31 */
-3bf17472226b00 Thomas Gleixner 2015-06-09  229  						dest_id		: 32; /* 32 - 63 */
-3bf17472226b00 Thomas Gleixner 2015-06-09  230  				};
-3bf17472226b00 Thomas Gleixner 2015-06-09  231  
-3bf17472226b00 Thomas Gleixner 2015-06-09  232  				/* Posted mode */
-3bf17472226b00 Thomas Gleixner 2015-06-09  233  				struct {
-3bf17472226b00 Thomas Gleixner 2015-06-09  234  					__u64	p_present	: 1,  /*  0      */
-3bf17472226b00 Thomas Gleixner 2015-06-09  235  						p_fpd		: 1,  /*  1      */
-3bf17472226b00 Thomas Gleixner 2015-06-09  236  						p_res0		: 6,  /*  2 -  7 */
-3bf17472226b00 Thomas Gleixner 2015-06-09  237  						p_avail		: 4,  /*  8 - 11 */
-3bf17472226b00 Thomas Gleixner 2015-06-09  238  						p_res1		: 2,  /* 12 - 13 */
-3bf17472226b00 Thomas Gleixner 2015-06-09  239  						p_urgent	: 1,  /* 14      */
-3bf17472226b00 Thomas Gleixner 2015-06-09  240  						p_pst		: 1,  /* 15      */
-3bf17472226b00 Thomas Gleixner 2015-06-09  241  						p_vector	: 8,  /* 16 - 23 */
-3bf17472226b00 Thomas Gleixner 2015-06-09  242  						p_res2		: 14, /* 24 - 37 */
-3bf17472226b00 Thomas Gleixner 2015-06-09  243  						pda_l		: 26; /* 38 - 63 */
-2ae21010694e56 Suresh Siddha   2008-07-10  244  				};
-2ae21010694e56 Suresh Siddha   2008-07-10  245  				__u64 low;
-2ae21010694e56 Suresh Siddha   2008-07-10  246  			};
-2ae21010694e56 Suresh Siddha   2008-07-10  247  
-2ae21010694e56 Suresh Siddha   2008-07-10  248  			union {
-3bf17472226b00 Thomas Gleixner 2015-06-09  249  				/* Shared between remapped and posted mode*/
-2ae21010694e56 Suresh Siddha   2008-07-10  250  				struct {
-3bf17472226b00 Thomas Gleixner 2015-06-09  251  					__u64	sid		: 16,  /* 64 - 79  */
-3bf17472226b00 Thomas Gleixner 2015-06-09  252  						sq		: 2,   /* 80 - 81  */
-3bf17472226b00 Thomas Gleixner 2015-06-09  253  						svt		: 2,   /* 82 - 83  */
-3bf17472226b00 Thomas Gleixner 2015-06-09  254  						__res3		: 44;  /* 84 - 127 */
-3bf17472226b00 Thomas Gleixner 2015-06-09  255  				};
-3bf17472226b00 Thomas Gleixner 2015-06-09  256  
-3bf17472226b00 Thomas Gleixner 2015-06-09  257  				/* Posted mode*/
-3bf17472226b00 Thomas Gleixner 2015-06-09  258  				struct {
-3bf17472226b00 Thomas Gleixner 2015-06-09  259  					__u64	p_sid		: 16,  /* 64 - 79  */
-3bf17472226b00 Thomas Gleixner 2015-06-09  260  						p_sq		: 2,   /* 80 - 81  */
-3bf17472226b00 Thomas Gleixner 2015-06-09  261  						p_svt		: 2,   /* 82 - 83  */
-3bf17472226b00 Thomas Gleixner 2015-06-09  262  						p_res3		: 12,  /* 84 - 95  */
-3bf17472226b00 Thomas Gleixner 2015-06-09  263  						pda_h		: 32;  /* 96 - 127 */
-2ae21010694e56 Suresh Siddha   2008-07-10  264  				};
-2ae21010694e56 Suresh Siddha   2008-07-10  265  				__u64 high;
-2ae21010694e56 Suresh Siddha   2008-07-10  266  			};
-2ae21010694e56 Suresh Siddha   2008-07-10  267  		};
-b1fe7f2cda2a00 Peter Zijlstra  2023-05-31  268  #ifdef CONFIG_IRQ_REMAP
-b1fe7f2cda2a00 Peter Zijlstra  2023-05-31 @269  		__u128 irte;
-b1fe7f2cda2a00 Peter Zijlstra  2023-05-31  270  #endif
-b1fe7f2cda2a00 Peter Zijlstra  2023-05-31  271  	};
-b1fe7f2cda2a00 Peter Zijlstra  2023-05-31  272  };
-423f085952fd72 Thomas Gleixner 2010-10-10  273  
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Thanks,
+Robin.
