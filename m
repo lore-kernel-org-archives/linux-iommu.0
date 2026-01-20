@@ -1,65 +1,46 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0857D36C5A3
-	for <iommu@lists.linux.dev>; Tue, 20 Jan 2026 06:20:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC6F036CDE5;
+	Tue, 20 Jan 2026 06:43:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768890057; cv=none; b=XHZbhFvZanP7znPyBif6QWLfmDBVANjFeT4dpJRqRTa+KdBsSRtG0mlfcNvNAE3PRFDy+nKKkew3wfJcF8dJMIAKJbfzSb05FT9fQ+dL0SpuSYML6pKvxLRUwidyqUIeAfZTa8i8P3mCR360JT8WM9oiA4hC+xfkg3eoN3HVCUE=
+	t=1768891404; cv=none; b=q06xO7XEBX1rFI8cCS1CC0a35CoTAQw8yFZS+8hfR/Au1/f6XlZRuYuSXAMqPWVkv0R3YHeG61n4JIXke1dGNVorFM35zi7mq02KzIE0d+ix/Jdy8lkgzxfE5GahQn/k7sLqsl67oOb1y2cWEoYSKLkf4/LwLcoCuKCjs6hpg+A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768890057; c=relaxed/simple;
-	bh=Wsf8+Tqw1vh/9VsN5YjTjdQxnbGm1mUm8mSEQp+1Las=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=kQJAMy5Un///SRhXZqnol+gOZ4xv2hfLKaCri+uNbl3iwgi+3EluR3Q31WWjd3nsRZ0yTpCjol+qTzeaA3d7QxR4TD3Z/uWy/PowPTA9RVz33bekP8yby4HGICZp2zwtLuVGw+Wv/g9s/LlkbLp7nFV9QKO9S4OTjbMbWDij4pY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Bt/hs+sL; arc=none smtp.client-ip=192.198.163.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1768891404; c=relaxed/simple;
+	bh=fXqBeANeANyqIBfh9xTfBVpuJiDNRuy2sOT6ZNznJXM=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=Lf/fxREjSgVQwFFeHoY/sP9z4z5JLKgt5WpQ1aRYrcOkVwlHuwHV3HeBSBwUReJGQKBWJV/y9qZYNLQUBzzJQGcW8B6MaKXW+gKNk2mFi1wA12tdBr30z6OCbrPxprYGM6kJB9Z4lWmO43ZRsXm0I2/T2m+B4O+Ky9oBp9XYLBA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FkTbO84t; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Bt/hs+sL"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1768890055; x=1800426055;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Wsf8+Tqw1vh/9VsN5YjTjdQxnbGm1mUm8mSEQp+1Las=;
-  b=Bt/hs+sL6q3WRGqz3rCZBqB8UE8WkjqemnaWHE2kIdKpJZ09qV6WFfK6
-   2FZ/4NXwPHH5elYIEfQC1UMCqiAsGR+UngPbFiPCSUXyEi0DF+bIG76v7
-   9MCmAN3VoNSKpn5nzoXQreEQSQEWds5Wx62smspicxib4nRC+dHSoxv56
-   yRXudwkT5Mn1XdXK6jqbUtHA1g6xfQmbwJLAkfNA/GCcT6MlThbf8IQy2
-   rjzcGFSOrw0h89DxY7ir7MUD81RRvdE6MeyCUSb2jSfHknFDPqCiitTX/
-   mC+tQ7mzdP2SHqoQrIGZyogRiY62UybFKo0o4Nbmt6R85iTngi6IXDOjc
-   Q==;
-X-CSE-ConnectionGUID: BadDbOYDSimseooSn+zhOQ==
-X-CSE-MsgGUID: S0l+040PTLWGqRi7crX5gg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11676"; a="69991325"
-X-IronPort-AV: E=Sophos;i="6.21,240,1763452800"; 
-   d="scan'208";a="69991325"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2026 22:20:54 -0800
-X-CSE-ConnectionGUID: EPNpNMMiS36U2q/soj20FQ==
-X-CSE-MsgGUID: CIRPfzxSQ0a4y7gqSvl5ZA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,240,1763452800"; 
-   d="scan'208";a="206464274"
-Received: from allen-box.sh.intel.com ([10.239.159.52])
-  by fmviesa009.fm.intel.com with ESMTP; 19 Jan 2026 22:20:52 -0800
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Jason Gunthorpe <jgg@nvidia.com>
-Cc: Dmytro Maluka <dmaluka@chromium.org>,
-	Samiullah Khawaja <skhawaja@google.com>,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FkTbO84t"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 785F2C19423;
+	Tue, 20 Jan 2026 06:43:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1768891402;
+	bh=fXqBeANeANyqIBfh9xTfBVpuJiDNRuy2sOT6ZNznJXM=;
+	h=From:To:Cc:Subject:Date:From;
+	b=FkTbO84t0lXCTbD7BtoBVc8kXF2FKQeYZ1mi/kiCVmD3srEYrU20sJhBaKQwpAtlV
+	 YpZRi1kTDaTRs89YScExX2/IG5PxqWhAt2+lHqaD6nHywVGqSAYGZ4rFg73CebDRI1
+	 OtuMvvcx+Eq14397ETWDPkRjdSraznOrWAAcC67UmQM0+3o9A27CuDY1+NL241HBu7
+	 beDatetyw0G+gbH1FgIygbnJDnxPl7yqpxLZJqdpaKstDLsPUKnToy0RTwQn5yQxLC
+	 gR5B3vqCXD5ClWNDjExVt4kekPwUqssjn3CTgzy6zkXZdpVzUYbGcUL99aoJ4dhh+6
+	 h2At01Kg5/Pvg==
+From: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
+To: linux-kernel@vger.kernel.org,
 	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v2 3/3] iommu/vt-d: Fix race condition during PASID entry replacement
-Date: Tue, 20 Jan 2026 14:18:14 +0800
-Message-ID: <20260120061816.2132558-4-baolu.lu@linux.intel.com>
+	linux-coco@lists.linux.dev
+Cc: Catalin Marinas <catalin.marinas@arm.com>,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	suzuki.poulose@arm.com,
+	jgg@ziepe.ca,
+	steven.price@arm.com,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	"Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
+Subject: [PATCH 1/2] dma-direct: Validate DMA mask against canonical DMA addresses
+Date: Tue, 20 Jan 2026 12:12:54 +0530
+Message-ID: <20260120064255.179425-1-aneesh.kumar@kernel.org>
 X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260120061816.2132558-1-baolu.lu@linux.intel.com>
-References: <20260120061816.2132558-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -69,351 +50,42 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-The Intel VT-d PASID table entry is 512 bits (64 bytes). When replacing
-an active PASID entry (e.g., during domain replacement), the current
-implementation calculates a new entry on the stack and copies it to the
-table using a single structure assignment.
+On systems that apply an address encryption tag or mask to DMA addresses,
+DMA mask validation must be performed against the canonical DMA address.
+Using a non-canonical (e.g. encrypted or unencrypted) DMA address
+can incorrectly fail capability checks, since architecture-specific
+encryption bits are not part of the device’s actual DMA addressing
+capability. For example, arm64 adds PROT_NS_SHARED to unencrypted DMA
+addresses.
 
-        struct pasid_entry *pte, new_pte;
+Fix this by validating device DMA masks against __phys_to_dma(), ensuring
+that the architecture encryption mask does not influence the check.
 
-        pte = intel_pasid_get_entry(dev, pasid);
-        pasid_pte_config_first_level(iommu, &new_pte, ...);
-        *pte = new_pte;
-
-Because the hardware may fetch the 512-bit PASID entry in multiple
-128-bit chunks, updating the entire entry while it is active (Present
-bit set) risks a "torn" read. In this scenario, the IOMMU hardware
-could observe an inconsistent state — partially new data and partially
-old data — leading to unpredictable behavior or spurious faults.
-
-Fix this by removing the unsafe "replace" helpers and following the
-"clear-then-update" flow, which ensures the Present bit is cleared and
-the required invalidation handshake is completed before the new
-configuration is applied.
-
-Fixes: 7543ee63e811 ("iommu/vt-d: Add pasid replace helpers")
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Fixes: b66e2ee7b6c8 ("dma: Introduce generic dma_addr_*crypted helpers")
+Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
 ---
- drivers/iommu/intel/pasid.h  |  14 ---
- drivers/iommu/intel/iommu.c  |  29 +++---
- drivers/iommu/intel/nested.c |   9 +-
- drivers/iommu/intel/pasid.c  | 184 -----------------------------------
- 4 files changed, 16 insertions(+), 220 deletions(-)
+ kernel/dma/direct.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/intel/pasid.h b/drivers/iommu/intel/pasid.h
-index 0b303bd0b0c1..c3c8c907983e 100644
---- a/drivers/iommu/intel/pasid.h
-+++ b/drivers/iommu/intel/pasid.h
-@@ -316,20 +316,6 @@ int intel_pasid_setup_pass_through(struct intel_iommu *iommu,
- 				   struct device *dev, u32 pasid);
- int intel_pasid_setup_nested(struct intel_iommu *iommu, struct device *dev,
- 			     u32 pasid, struct dmar_domain *domain);
--int intel_pasid_replace_first_level(struct intel_iommu *iommu,
--				    struct device *dev, phys_addr_t fsptptr,
--				    u32 pasid, u16 did, u16 old_did, int flags);
--int intel_pasid_replace_second_level(struct intel_iommu *iommu,
--				     struct dmar_domain *domain,
--				     struct device *dev, u16 old_did,
--				     u32 pasid);
--int intel_pasid_replace_pass_through(struct intel_iommu *iommu,
--				     struct device *dev, u16 old_did,
--				     u32 pasid);
--int intel_pasid_replace_nested(struct intel_iommu *iommu,
--			       struct device *dev, u32 pasid,
--			       u16 old_did, struct dmar_domain *domain);
--
- void intel_pasid_tear_down_entry(struct intel_iommu *iommu,
- 				 struct device *dev, u32 pasid,
- 				 bool fault_ignore);
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index c66cc51f9e51..705828b06e32 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -1252,12 +1252,10 @@ int __domain_setup_first_level(struct intel_iommu *iommu, struct device *dev,
- 			       ioasid_t pasid, u16 did, phys_addr_t fsptptr,
- 			       int flags, struct iommu_domain *old)
- {
--	if (!old)
--		return intel_pasid_setup_first_level(iommu, dev, fsptptr, pasid,
--						     did, flags);
--	return intel_pasid_replace_first_level(iommu, dev, fsptptr, pasid, did,
--					       iommu_domain_did(old, iommu),
--					       flags);
-+	if (old)
-+		intel_pasid_tear_down_entry(iommu, dev, pasid, false);
-+
-+	return intel_pasid_setup_first_level(iommu, dev, fsptptr, pasid, did, flags);
+diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+index 8e04f72baaa3..a5639e9415f5 100644
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -580,12 +580,12 @@ int dma_direct_supported(struct device *dev, u64 mask)
+ 
+ 	/*
+ 	 * This check needs to be against the actual bit mask value, so use
+-	 * phys_to_dma_unencrypted() here so that the SME encryption mask isn't
++	 * __phys_to_dma() here so that the arch specific encryption mask isn't
+ 	 * part of the check.
+ 	 */
+ 	if (IS_ENABLED(CONFIG_ZONE_DMA))
+ 		min_mask = min_t(u64, min_mask, zone_dma_limit);
+-	return mask >= phys_to_dma_unencrypted(dev, min_mask);
++	return mask >= __phys_to_dma(dev, min_mask);
  }
  
- static int domain_setup_second_level(struct intel_iommu *iommu,
-@@ -1265,23 +1263,20 @@ static int domain_setup_second_level(struct intel_iommu *iommu,
- 				     struct device *dev, ioasid_t pasid,
- 				     struct iommu_domain *old)
- {
--	if (!old)
--		return intel_pasid_setup_second_level(iommu, domain,
--						      dev, pasid);
--	return intel_pasid_replace_second_level(iommu, domain, dev,
--						iommu_domain_did(old, iommu),
--						pasid);
-+	if (old)
-+		intel_pasid_tear_down_entry(iommu, dev, pasid, false);
-+
-+	return intel_pasid_setup_second_level(iommu, domain, dev, pasid);
- }
- 
- static int domain_setup_passthrough(struct intel_iommu *iommu,
- 				    struct device *dev, ioasid_t pasid,
- 				    struct iommu_domain *old)
- {
--	if (!old)
--		return intel_pasid_setup_pass_through(iommu, dev, pasid);
--	return intel_pasid_replace_pass_through(iommu, dev,
--						iommu_domain_did(old, iommu),
--						pasid);
-+	if (old)
-+		intel_pasid_tear_down_entry(iommu, dev, pasid, false);
-+
-+	return intel_pasid_setup_pass_through(iommu, dev, pasid);
- }
- 
- static int domain_setup_first_level(struct intel_iommu *iommu,
-diff --git a/drivers/iommu/intel/nested.c b/drivers/iommu/intel/nested.c
-index a3fb8c193ca6..e9a440e9c960 100644
---- a/drivers/iommu/intel/nested.c
-+++ b/drivers/iommu/intel/nested.c
-@@ -136,11 +136,10 @@ static int domain_setup_nested(struct intel_iommu *iommu,
- 			       struct device *dev, ioasid_t pasid,
- 			       struct iommu_domain *old)
- {
--	if (!old)
--		return intel_pasid_setup_nested(iommu, dev, pasid, domain);
--	return intel_pasid_replace_nested(iommu, dev, pasid,
--					  iommu_domain_did(old, iommu),
--					  domain);
-+	if (old)
-+		intel_pasid_tear_down_entry(iommu, dev, pasid, false);
-+
-+	return intel_pasid_setup_nested(iommu, dev, pasid, domain);
- }
- 
- static int intel_nested_set_dev_pasid(struct iommu_domain *domain,
-diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
-index eb069aefa4fa..4b880b9ad49d 100644
---- a/drivers/iommu/intel/pasid.c
-+++ b/drivers/iommu/intel/pasid.c
-@@ -416,50 +416,6 @@ int intel_pasid_setup_first_level(struct intel_iommu *iommu, struct device *dev,
- 	return 0;
- }
- 
--int intel_pasid_replace_first_level(struct intel_iommu *iommu,
--				    struct device *dev, phys_addr_t fsptptr,
--				    u32 pasid, u16 did, u16 old_did,
--				    int flags)
--{
--	struct pasid_entry *pte, new_pte;
--
--	if (!ecap_flts(iommu->ecap)) {
--		pr_err("No first level translation support on %s\n",
--		       iommu->name);
--		return -EINVAL;
--	}
--
--	if ((flags & PASID_FLAG_FL5LP) && !cap_fl5lp_support(iommu->cap)) {
--		pr_err("No 5-level paging support for first-level on %s\n",
--		       iommu->name);
--		return -EINVAL;
--	}
--
--	pasid_pte_config_first_level(iommu, &new_pte, fsptptr, did, flags);
--
--	spin_lock(&iommu->lock);
--	pte = intel_pasid_get_entry(dev, pasid);
--	if (!pte) {
--		spin_unlock(&iommu->lock);
--		return -ENODEV;
--	}
--
--	if (!pasid_pte_is_present(pte)) {
--		spin_unlock(&iommu->lock);
--		return -EINVAL;
--	}
--
--	WARN_ON(old_did != pasid_get_domain_id(pte));
--
--	*pte = new_pte;
--	spin_unlock(&iommu->lock);
--
--	intel_pasid_flush_present(iommu, dev, pasid, old_did, pte);
--	intel_iommu_drain_pasid_prq(dev, pasid);
--
--	return 0;
--}
--
- /*
-  * Set up the scalable mode pasid entry for second only translation type.
-  */
-@@ -526,51 +482,6 @@ int intel_pasid_setup_second_level(struct intel_iommu *iommu,
- 	return 0;
- }
- 
--int intel_pasid_replace_second_level(struct intel_iommu *iommu,
--				     struct dmar_domain *domain,
--				     struct device *dev, u16 old_did,
--				     u32 pasid)
--{
--	struct pasid_entry *pte, new_pte;
--	u16 did;
--
--	/*
--	 * If hardware advertises no support for second level
--	 * translation, return directly.
--	 */
--	if (!ecap_slts(iommu->ecap)) {
--		pr_err("No second level translation support on %s\n",
--		       iommu->name);
--		return -EINVAL;
--	}
--
--	did = domain_id_iommu(domain, iommu);
--
--	pasid_pte_config_second_level(iommu, &new_pte, domain, did);
--
--	spin_lock(&iommu->lock);
--	pte = intel_pasid_get_entry(dev, pasid);
--	if (!pte) {
--		spin_unlock(&iommu->lock);
--		return -ENODEV;
--	}
--
--	if (!pasid_pte_is_present(pte)) {
--		spin_unlock(&iommu->lock);
--		return -EINVAL;
--	}
--
--	WARN_ON(old_did != pasid_get_domain_id(pte));
--
--	*pte = new_pte;
--	spin_unlock(&iommu->lock);
--
--	intel_pasid_flush_present(iommu, dev, pasid, old_did, pte);
--	intel_iommu_drain_pasid_prq(dev, pasid);
--
--	return 0;
--}
--
- /*
-  * Set up dirty tracking on a second only or nested translation type.
-  */
-@@ -683,38 +594,6 @@ int intel_pasid_setup_pass_through(struct intel_iommu *iommu,
- 	return 0;
- }
- 
--int intel_pasid_replace_pass_through(struct intel_iommu *iommu,
--				     struct device *dev, u16 old_did,
--				     u32 pasid)
--{
--	struct pasid_entry *pte, new_pte;
--	u16 did = FLPT_DEFAULT_DID;
--
--	pasid_pte_config_pass_through(iommu, &new_pte, did);
--
--	spin_lock(&iommu->lock);
--	pte = intel_pasid_get_entry(dev, pasid);
--	if (!pte) {
--		spin_unlock(&iommu->lock);
--		return -ENODEV;
--	}
--
--	if (!pasid_pte_is_present(pte)) {
--		spin_unlock(&iommu->lock);
--		return -EINVAL;
--	}
--
--	WARN_ON(old_did != pasid_get_domain_id(pte));
--
--	*pte = new_pte;
--	spin_unlock(&iommu->lock);
--
--	intel_pasid_flush_present(iommu, dev, pasid, old_did, pte);
--	intel_iommu_drain_pasid_prq(dev, pasid);
--
--	return 0;
--}
--
- /*
-  * Set the page snoop control for a pasid entry which has been set up.
-  */
-@@ -848,69 +727,6 @@ int intel_pasid_setup_nested(struct intel_iommu *iommu, struct device *dev,
- 	return 0;
- }
- 
--int intel_pasid_replace_nested(struct intel_iommu *iommu,
--			       struct device *dev, u32 pasid,
--			       u16 old_did, struct dmar_domain *domain)
--{
--	struct iommu_hwpt_vtd_s1 *s1_cfg = &domain->s1_cfg;
--	struct dmar_domain *s2_domain = domain->s2_domain;
--	u16 did = domain_id_iommu(domain, iommu);
--	struct pasid_entry *pte, new_pte;
--
--	/* Address width should match the address width supported by hardware */
--	switch (s1_cfg->addr_width) {
--	case ADDR_WIDTH_4LEVEL:
--		break;
--	case ADDR_WIDTH_5LEVEL:
--		if (!cap_fl5lp_support(iommu->cap)) {
--			dev_err_ratelimited(dev,
--					    "5-level paging not supported\n");
--			return -EINVAL;
--		}
--		break;
--	default:
--		dev_err_ratelimited(dev, "Invalid stage-1 address width %d\n",
--				    s1_cfg->addr_width);
--		return -EINVAL;
--	}
--
--	if ((s1_cfg->flags & IOMMU_VTD_S1_SRE) && !ecap_srs(iommu->ecap)) {
--		pr_err_ratelimited("No supervisor request support on %s\n",
--				   iommu->name);
--		return -EINVAL;
--	}
--
--	if ((s1_cfg->flags & IOMMU_VTD_S1_EAFE) && !ecap_eafs(iommu->ecap)) {
--		pr_err_ratelimited("No extended access flag support on %s\n",
--				   iommu->name);
--		return -EINVAL;
--	}
--
--	pasid_pte_config_nestd(iommu, &new_pte, s1_cfg, s2_domain, did);
--
--	spin_lock(&iommu->lock);
--	pte = intel_pasid_get_entry(dev, pasid);
--	if (!pte) {
--		spin_unlock(&iommu->lock);
--		return -ENODEV;
--	}
--
--	if (!pasid_pte_is_present(pte)) {
--		spin_unlock(&iommu->lock);
--		return -EINVAL;
--	}
--
--	WARN_ON(old_did != pasid_get_domain_id(pte));
--
--	*pte = new_pte;
--	spin_unlock(&iommu->lock);
--
--	intel_pasid_flush_present(iommu, dev, pasid, old_did, pte);
--	intel_iommu_drain_pasid_prq(dev, pasid);
--
--	return 0;
--}
--
- /*
-  * Interfaces to setup or teardown a pasid table to the scalable-mode
-  * context table entry:
+ static const struct bus_dma_region *dma_find_range(struct device *dev,
 -- 
 2.43.0
 
