@@ -1,483 +1,196 @@
-Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71932451078
-	for <iommu@lists.linux.dev>; Tue, 20 Jan 2026 18:54:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.173
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768935280; cv=pass; b=CNxDbwWXvJEKLcIiWT4VD4FXr1n3gZHcfDjjLY7rVFQbdl3TEIcvCBqoyPTeBzRBxJ0nScgA/4SCtln58ICs7cFULSvlrliBos1aWVUvvhP7cBSGxpkot7rlxGoal7r5pvhJlObqckNmRZejHd4tgHKNVvuPfG4TAFnKl7g5FJw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768935280; c=relaxed/simple;
-	bh=V582aYpr/3n+HZxDU1y5caIF8xZLStfe4C1NStSYDjs=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=CR0Tmbh2KFH/Cq0bY5z6zCWvcPhe9q+2GQdi7mMi31EWk7MVmo4P/Yf1UfAouiRsOQqyVYxxR/fagOGmm1ZzvNz/SP/+NPOkEzAROC/58aIDlOiZfNlm68Qt5P9DmT/jTa2bxso/RpB6CzkrzYQnXWLqqpRf/f0uGpZzxIGo1sA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=xaavNWja; arc=pass smtp.client-ip=209.85.160.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DB8E40B6E4;
+	Tue, 20 Jan 2026 19:08:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1768936132; cv=none; b=YWcYGxMD5PwzKZRkcZ67FpcoLm05w9ePEn2LmM3R/9tbTl5/qD3xR8E/OZyiFgXPLdn6e1D6sX1SZeDbV67DI51aVeuxmtHbbU9aKKHiHRwUmfqN4tHQKrUamt6IwmXo244w70OkuoGBB6hNbCmp6L14zv5zFlD4yPCUYbpbP9A=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1768936132; c=relaxed/simple;
+	bh=suq092sxUq1UZDCmvSjB4EIKq0NWnio2m/MOEmqo3HM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=gs2Yy7owjnspUZTGLQjrKLCUFB7s5+Qy+yu5Rx7mGoTdefcVVCDXgCC6Xwc8zjjYzrrr331m9pBI1ANrALAcSnw6CUK9fIIQW0YqFbzNdGps6TSmTh4nzgLZqw1ix+uYpW+urP9EUtKD0Gxq9jCeR2sf++DngID2am2Ab6iX4h4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=PYDqAKB1; arc=none smtp.client-ip=192.198.163.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="xaavNWja"
-Received: by mail-qt1-f173.google.com with SMTP id d75a77b69052e-5014b5d8551so47751cf.0
-        for <iommu@lists.linux.dev>; Tue, 20 Jan 2026 10:54:36 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1768935276; cv=none;
-        d=google.com; s=arc-20240605;
-        b=BNqJ2bhTAUhOUPRFN1xRgzmUmds6GKgTtYBnWl35MMfvB6C/fRfvoUtPBpecIcbmKo
-         6trKMTpFoF5+rZsL0NGOXv65Yr5IPnJ2/GzouApN8yGTehaMCVyElssyDaXag30ThrDi
-         CYgyHLNsyxzr+LLFV2Y2ZH3eFGXrfeBemCE12aWBu1OmaQtr9P3wXDTAZyofj0GoafzI
-         ZxsGQ/zMi/J+toZLPJydXcUxRkCqzffS8nGyGMzaFgdYGTccWvLNbvtSdq47S14C9XhR
-         E0f8LQmlvYGYhzhREGRHUbcRtllvcIPiXGwKWszVziIg2tYvNoHfVwL/bdFONhp6Dofk
-         glmQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=2BTFh3swbxk6yii2GbGWRCrQnmABbA33xQ++jpwmXME=;
-        fh=h7DOAmzfz+406dSYaXRix5uw5Igx03WgjQgGaNeBpwg=;
-        b=h1yn3k0bdXnisLvFM5MEOyuNo7KI9J09h5mzfLEg9vQkoRMX1T6ahVjueFoKkIFJmw
-         2ACvm66+xq3nqZlnYP+sIJ8b+A5eUTJtOBzkxHaItyZNflKVidcxzjrX4cKiL8Euew5x
-         leuILeRcwLiyWNsMDJM5mfUaMsfDenDCFKqbW7aQSIe9yLr+uUc1LJrITEV17c5t17Ac
-         IGOu26l46k9YEP1i70prGpNSHy4MQq3EMYuDYDkWUTTQeKhaa4xOf3Gn92XMm9Zudv73
-         aArmw/Ra3pj9GD+X/M6RTyX23ddBcfD9rxu8ladQlridcG7OHrCB4CNG58ky6LJPPpii
-         nB6w==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1768935276; x=1769540076; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=2BTFh3swbxk6yii2GbGWRCrQnmABbA33xQ++jpwmXME=;
-        b=xaavNWja3f94JtKhrZudLFdUKrgxavO/ptOaau53AJjZPM/SSyTFPFR+WO6j1iBnfs
-         LoxGaV6Ci7+60abYw1g1A1AdnLqD0iXWxEZmk3K5c2DNoEXbMbsCPmzhWKPUG0eN4UVw
-         PO57AmRW3TTubfzXPpPNPbqBW6SdtAu/nG0rJy1D3p17l/OHsPT/RUlizJ1RaPD+wtG8
-         qOIdyC0W9TuXnc/EH0wYrKUJmXfsAFl7yDuMOV9YPkpyLYld/HJivtjvJJj3xTucb336
-         7rpkHt4hN0vWuUbKYSikkfA4/XnOIvNpym7YW9f3w6aRXvDoAqQmqN1ZRr1cwnNITVc6
-         +B3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1768935276; x=1769540076;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=2BTFh3swbxk6yii2GbGWRCrQnmABbA33xQ++jpwmXME=;
-        b=w89INjjiSB3OwsX7xWt0ZSnUzuwL14icloXZOTakSR8Xvuk4lduiS0nzJsgHArrGCN
-         CYb8KI3bCtp/maEw0Ce5XzfwVq+jriW3DDfmW/g3zF/nFVfk4nGo9A6/RGFas4L8X/IF
-         fBQ5TxQAc3mFK+mcmVEVhEldJaMNjiRlfKP0dsv3QMTYfXRHQD/YHKSjgltpcF1D+RX4
-         WQVRosHczWghZrrSRTR149i3umE2W70HGC92y9o6eqX04XWVZhLn98ysCrHWl5GdW/ks
-         UENAF6MBsoHvfCZbbXBgbOAI/KSk2e7PA/PklG/EVdzdSq3uosMWcjywNR2qXJnQw04g
-         Nbaw==
-X-Forwarded-Encrypted: i=1; AJvYcCVCEHyrAt2RJPbgDs5qPiidAphiqWSwgnE1ANixkSpqbZ/I3mnDuId81u2t3fHmz9+kHLP/qQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwmCUW2Y6854jHDdq7JH83P2D9xL34g7XEGsyAfT5mfQtC4uu1g
-	p4pvIoO6ri4mhGMyhUhkfehLS3ueE35N4I4ahGw1XI3AC5FugGyCFpf/hnlXJrNrcmvOm7dna4/
-	sUW/u8cH49+HeBcSKZEUMwd9UbR/LnomUZwUNcTKg
-X-Gm-Gg: AY/fxX4S+xjR5xjz1TG8k0+R9A6Z1osvUgMIt7SgXHM2NdHJpzgmOpbeN6B/VY7rrdR
-	bgMW+KI2VQw71YrSH+9qZkcvoLJurW3t7ps8pCLC3IsVk9DgwIn+tg99uVOVGAFCykkbMH6TJW1
-	HRL1WQjMkgNdCeVAS0u5r6jcqhFO+C++GwhgokkyL8FTHrcIAkP+vtzOaa3JBLJ7hwZZ9l3khue
-	Dv2/iCVStPdY+e4mQq/WQjBCssqhj3SCKJctXot33qvwsdmiJJ00vhznrTcvFzgbfn430lKWZRg
-	ydb0sYNC5+4hKFpQQI0Ikk0h
-X-Received: by 2002:a05:622a:89:b0:4ff:a98b:7fd3 with SMTP id
- d75a77b69052e-502e0c0e855mr1082171cf.2.1768935275528; Tue, 20 Jan 2026
- 10:54:35 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PYDqAKB1"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1768936131; x=1800472131;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=suq092sxUq1UZDCmvSjB4EIKq0NWnio2m/MOEmqo3HM=;
+  b=PYDqAKB18VxL8n+qx/lznWGeA8rSNU0rjH+7CB1gUMbmhg4WcFbNEbW7
+   diOCe1eTeZylh10obxDXFM480lxmERdUbhAZYBkgkYhgjIXKluT/B/Xtd
+   KBD1cF0xmsz0oPoVsenzElzpbZZDy6mu6wq9a4rjCtADKcBf6sMOArBKO
+   +35dCNC6nPMO6gYgAMOIPHAqNqz7hIlMjED7sR2UEsr5OPxWp9pvRa6aI
+   0VabahKIwfVuCVS+qL+86fxiRM7oNCrDBa5OjWv2GYi8GZhU4aAfieGTb
+   DLlT+PPbh18rFy/YRMbdy3JYIKyzU5H6rLlybtvRzXOvUCh/NcwkTQWEd
+   w==;
+X-CSE-ConnectionGUID: igVuXgNqQ2ShwMEYUDOgyg==
+X-CSE-MsgGUID: RIxQttgCTfCuMJULXE6Buw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11677"; a="57716903"
+X-IronPort-AV: E=Sophos;i="6.21,241,1763452800"; 
+   d="scan'208";a="57716903"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2026 11:08:49 -0800
+X-CSE-ConnectionGUID: S/qzfxi6Tjynf60TUbjybw==
+X-CSE-MsgGUID: oFTL2pAKTTqSKELIV4YUSw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,241,1763452800"; 
+   d="scan'208";a="206450650"
+Received: from lkp-server01.sh.intel.com (HELO 765f4a05e27f) ([10.239.97.150])
+  by fmviesa008.fm.intel.com with ESMTP; 20 Jan 2026 11:08:43 -0800
+Received: from kbuild by 765f4a05e27f with local (Exim 4.98.2)
+	(envelope-from <lkp@intel.com>)
+	id 1viH5k-00000000POH-2pR0;
+	Tue, 20 Jan 2026 19:08:40 +0000
+Date: Wed, 21 Jan 2026 03:08:24 +0800
+From: kernel test robot <lkp@intel.com>
+To: Mukesh R <mrathor@linux.microsoft.com>, linux-kernel@vger.kernel.org,
+	linux-hyperv@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev, linux-pci@vger.kernel.org,
+	linux-arch@vger.kernel.org
+Cc: oe-kbuild-all@lists.linux.dev, kys@microsoft.com,
+	haiyangz@microsoft.com, wei.liu@kernel.org, decui@microsoft.com,
+	longli@microsoft.com, catalin.marinas@arm.com, will@kernel.org,
+	tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+	dave.hansen@linux.intel.com, hpa@zytor.com, joro@8bytes.org,
+	lpieralisi@kernel.org, kwilczynski@kernel.org, mani@kernel.org,
+	robh@kernel.org, bhelgaas@google.com, arnd@arndb.de,
+	nunodasneves@linux.microsoft.com, mhklinux@outlook.com,
+	romank@linux.microsoft.com
+Subject: Re: [PATCH v0 01/15] iommu/hyperv: rename hyperv-iommu.c to
+ hyperv-irq.c
+Message-ID: <202601210208.mg3YUkif-lkp@intel.com>
+References: <20260120064230.3602565-2-mrathor@linux.microsoft.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260120061816.2132558-1-baolu.lu@linux.intel.com> <20260120061816.2132558-4-baolu.lu@linux.intel.com>
-In-Reply-To: <20260120061816.2132558-4-baolu.lu@linux.intel.com>
-From: Samiullah Khawaja <skhawaja@google.com>
-Date: Tue, 20 Jan 2026 10:54:24 -0800
-X-Gm-Features: AZwV_QjgqKV8oYZr0d2F4SsF0CaOFMuX-UxeG4p1D8LUmz3xj5udvUQtTCKBJ4s
-Message-ID: <CAAywjhS-e_SpPTDWx3zYvVWQBor2P79AHU4SfO-k+ipVGx6-MQ@mail.gmail.com>
-Subject: Re: [PATCH v2 3/3] iommu/vt-d: Fix race condition during PASID entry replacement
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>, 
-	Jason Gunthorpe <jgg@nvidia.com>, Dmytro Maluka <dmaluka@chromium.org>, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260120064230.3602565-2-mrathor@linux.microsoft.com>
 
-On Mon, Jan 19, 2026 at 10:20=E2=80=AFPM Lu Baolu <baolu.lu@linux.intel.com=
-> wrote:
->
-> The Intel VT-d PASID table entry is 512 bits (64 bytes). When replacing
-> an active PASID entry (e.g., during domain replacement), the current
-> implementation calculates a new entry on the stack and copies it to the
-> table using a single structure assignment.
->
->         struct pasid_entry *pte, new_pte;
->
->         pte =3D intel_pasid_get_entry(dev, pasid);
->         pasid_pte_config_first_level(iommu, &new_pte, ...);
->         *pte =3D new_pte;
->
-> Because the hardware may fetch the 512-bit PASID entry in multiple
-> 128-bit chunks, updating the entire entry while it is active (Present
-> bit set) risks a "torn" read. In this scenario, the IOMMU hardware
-> could observe an inconsistent state =E2=80=94 partially new data and part=
-ially
-> old data =E2=80=94 leading to unpredictable behavior or spurious faults.
->
-> Fix this by removing the unsafe "replace" helpers and following the
-> "clear-then-update" flow, which ensures the Present bit is cleared and
-> the required invalidation handshake is completed before the new
-> configuration is applied.
->
-> Fixes: 7543ee63e811 ("iommu/vt-d: Add pasid replace helpers")
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> ---
->  drivers/iommu/intel/pasid.h  |  14 ---
->  drivers/iommu/intel/iommu.c  |  29 +++---
->  drivers/iommu/intel/nested.c |   9 +-
->  drivers/iommu/intel/pasid.c  | 184 -----------------------------------
->  4 files changed, 16 insertions(+), 220 deletions(-)
->
-> diff --git a/drivers/iommu/intel/pasid.h b/drivers/iommu/intel/pasid.h
-> index 0b303bd0b0c1..c3c8c907983e 100644
-> --- a/drivers/iommu/intel/pasid.h
-> +++ b/drivers/iommu/intel/pasid.h
-> @@ -316,20 +316,6 @@ int intel_pasid_setup_pass_through(struct intel_iomm=
-u *iommu,
->                                    struct device *dev, u32 pasid);
->  int intel_pasid_setup_nested(struct intel_iommu *iommu, struct device *d=
-ev,
->                              u32 pasid, struct dmar_domain *domain);
-> -int intel_pasid_replace_first_level(struct intel_iommu *iommu,
-> -                                   struct device *dev, phys_addr_t fsptp=
-tr,
-> -                                   u32 pasid, u16 did, u16 old_did, int =
-flags);
-> -int intel_pasid_replace_second_level(struct intel_iommu *iommu,
-> -                                    struct dmar_domain *domain,
-> -                                    struct device *dev, u16 old_did,
-> -                                    u32 pasid);
-> -int intel_pasid_replace_pass_through(struct intel_iommu *iommu,
-> -                                    struct device *dev, u16 old_did,
-> -                                    u32 pasid);
-> -int intel_pasid_replace_nested(struct intel_iommu *iommu,
-> -                              struct device *dev, u32 pasid,
-> -                              u16 old_did, struct dmar_domain *domain);
-> -
->  void intel_pasid_tear_down_entry(struct intel_iommu *iommu,
->                                  struct device *dev, u32 pasid,
->                                  bool fault_ignore);
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index c66cc51f9e51..705828b06e32 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -1252,12 +1252,10 @@ int __domain_setup_first_level(struct intel_iommu=
- *iommu, struct device *dev,
->                                ioasid_t pasid, u16 did, phys_addr_t fsptp=
-tr,
->                                int flags, struct iommu_domain *old)
->  {
-> -       if (!old)
-> -               return intel_pasid_setup_first_level(iommu, dev, fsptptr,=
- pasid,
-> -                                                    did, flags);
-> -       return intel_pasid_replace_first_level(iommu, dev, fsptptr, pasid=
-, did,
-> -                                              iommu_domain_did(old, iomm=
-u),
-> -                                              flags);
-> +       if (old)
-> +               intel_pasid_tear_down_entry(iommu, dev, pasid, false);
-> +
-> +       return intel_pasid_setup_first_level(iommu, dev, fsptptr, pasid, =
-did, flags);
->  }
->
->  static int domain_setup_second_level(struct intel_iommu *iommu,
-> @@ -1265,23 +1263,20 @@ static int domain_setup_second_level(struct intel=
-_iommu *iommu,
->                                      struct device *dev, ioasid_t pasid,
->                                      struct iommu_domain *old)
->  {
-> -       if (!old)
-> -               return intel_pasid_setup_second_level(iommu, domain,
-> -                                                     dev, pasid);
-> -       return intel_pasid_replace_second_level(iommu, domain, dev,
-> -                                               iommu_domain_did(old, iom=
-mu),
-> -                                               pasid);
-> +       if (old)
-> +               intel_pasid_tear_down_entry(iommu, dev, pasid, false);
-> +
-> +       return intel_pasid_setup_second_level(iommu, domain, dev, pasid);
->  }
->
->  static int domain_setup_passthrough(struct intel_iommu *iommu,
->                                     struct device *dev, ioasid_t pasid,
->                                     struct iommu_domain *old)
->  {
-> -       if (!old)
-> -               return intel_pasid_setup_pass_through(iommu, dev, pasid);
-> -       return intel_pasid_replace_pass_through(iommu, dev,
-> -                                               iommu_domain_did(old, iom=
-mu),
-> -                                               pasid);
-> +       if (old)
-> +               intel_pasid_tear_down_entry(iommu, dev, pasid, false);
-> +
-> +       return intel_pasid_setup_pass_through(iommu, dev, pasid);
->  }
->
->  static int domain_setup_first_level(struct intel_iommu *iommu,
-> diff --git a/drivers/iommu/intel/nested.c b/drivers/iommu/intel/nested.c
-> index a3fb8c193ca6..e9a440e9c960 100644
-> --- a/drivers/iommu/intel/nested.c
-> +++ b/drivers/iommu/intel/nested.c
-> @@ -136,11 +136,10 @@ static int domain_setup_nested(struct intel_iommu *=
-iommu,
->                                struct device *dev, ioasid_t pasid,
->                                struct iommu_domain *old)
->  {
-> -       if (!old)
-> -               return intel_pasid_setup_nested(iommu, dev, pasid, domain=
-);
-> -       return intel_pasid_replace_nested(iommu, dev, pasid,
-> -                                         iommu_domain_did(old, iommu),
-> -                                         domain);
-> +       if (old)
-> +               intel_pasid_tear_down_entry(iommu, dev, pasid, false);
-> +
-> +       return intel_pasid_setup_nested(iommu, dev, pasid, domain);
->  }
->
->  static int intel_nested_set_dev_pasid(struct iommu_domain *domain,
-> diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
-> index eb069aefa4fa..4b880b9ad49d 100644
-> --- a/drivers/iommu/intel/pasid.c
-> +++ b/drivers/iommu/intel/pasid.c
-> @@ -416,50 +416,6 @@ int intel_pasid_setup_first_level(struct intel_iommu=
- *iommu, struct device *dev,
->         return 0;
->  }
->
-> -int intel_pasid_replace_first_level(struct intel_iommu *iommu,
-> -                                   struct device *dev, phys_addr_t fsptp=
-tr,
-> -                                   u32 pasid, u16 did, u16 old_did,
-> -                                   int flags)
-> -{
-> -       struct pasid_entry *pte, new_pte;
-> -
-> -       if (!ecap_flts(iommu->ecap)) {
-> -               pr_err("No first level translation support on %s\n",
-> -                      iommu->name);
-> -               return -EINVAL;
-> -       }
-> -
-> -       if ((flags & PASID_FLAG_FL5LP) && !cap_fl5lp_support(iommu->cap))=
- {
-> -               pr_err("No 5-level paging support for first-level on %s\n=
-",
-> -                      iommu->name);
-> -               return -EINVAL;
-> -       }
-> -
-> -       pasid_pte_config_first_level(iommu, &new_pte, fsptptr, did, flags=
-);
-> -
-> -       spin_lock(&iommu->lock);
-> -       pte =3D intel_pasid_get_entry(dev, pasid);
-> -       if (!pte) {
-> -               spin_unlock(&iommu->lock);
-> -               return -ENODEV;
-> -       }
-> -
-> -       if (!pasid_pte_is_present(pte)) {
-> -               spin_unlock(&iommu->lock);
-> -               return -EINVAL;
-> -       }
-> -
-> -       WARN_ON(old_did !=3D pasid_get_domain_id(pte));
-> -
-> -       *pte =3D new_pte;
-> -       spin_unlock(&iommu->lock);
-> -
-> -       intel_pasid_flush_present(iommu, dev, pasid, old_did, pte);
-> -       intel_iommu_drain_pasid_prq(dev, pasid);
-> -
-> -       return 0;
-> -}
-> -
->  /*
->   * Set up the scalable mode pasid entry for second only translation type=
-.
->   */
-> @@ -526,51 +482,6 @@ int intel_pasid_setup_second_level(struct intel_iomm=
-u *iommu,
->         return 0;
->  }
->
-> -int intel_pasid_replace_second_level(struct intel_iommu *iommu,
-> -                                    struct dmar_domain *domain,
-> -                                    struct device *dev, u16 old_did,
-> -                                    u32 pasid)
-> -{
-> -       struct pasid_entry *pte, new_pte;
-> -       u16 did;
-> -
-> -       /*
-> -        * If hardware advertises no support for second level
-> -        * translation, return directly.
-> -        */
-> -       if (!ecap_slts(iommu->ecap)) {
-> -               pr_err("No second level translation support on %s\n",
-> -                      iommu->name);
-> -               return -EINVAL;
-> -       }
-> -
-> -       did =3D domain_id_iommu(domain, iommu);
-> -
-> -       pasid_pte_config_second_level(iommu, &new_pte, domain, did);
-> -
-> -       spin_lock(&iommu->lock);
-> -       pte =3D intel_pasid_get_entry(dev, pasid);
-> -       if (!pte) {
-> -               spin_unlock(&iommu->lock);
-> -               return -ENODEV;
-> -       }
-> -
-> -       if (!pasid_pte_is_present(pte)) {
-> -               spin_unlock(&iommu->lock);
-> -               return -EINVAL;
-> -       }
-> -
-> -       WARN_ON(old_did !=3D pasid_get_domain_id(pte));
-> -
-> -       *pte =3D new_pte;
-> -       spin_unlock(&iommu->lock);
-> -
-> -       intel_pasid_flush_present(iommu, dev, pasid, old_did, pte);
-> -       intel_iommu_drain_pasid_prq(dev, pasid);
-> -
-> -       return 0;
-> -}
-> -
->  /*
->   * Set up dirty tracking on a second only or nested translation type.
->   */
-> @@ -683,38 +594,6 @@ int intel_pasid_setup_pass_through(struct intel_iomm=
-u *iommu,
->         return 0;
->  }
->
-> -int intel_pasid_replace_pass_through(struct intel_iommu *iommu,
-> -                                    struct device *dev, u16 old_did,
-> -                                    u32 pasid)
-> -{
-> -       struct pasid_entry *pte, new_pte;
-> -       u16 did =3D FLPT_DEFAULT_DID;
-> -
-> -       pasid_pte_config_pass_through(iommu, &new_pte, did);
-> -
-> -       spin_lock(&iommu->lock);
-> -       pte =3D intel_pasid_get_entry(dev, pasid);
-> -       if (!pte) {
-> -               spin_unlock(&iommu->lock);
-> -               return -ENODEV;
-> -       }
-> -
-> -       if (!pasid_pte_is_present(pte)) {
-> -               spin_unlock(&iommu->lock);
-> -               return -EINVAL;
-> -       }
-> -
-> -       WARN_ON(old_did !=3D pasid_get_domain_id(pte));
-> -
-> -       *pte =3D new_pte;
-> -       spin_unlock(&iommu->lock);
-> -
-> -       intel_pasid_flush_present(iommu, dev, pasid, old_did, pte);
-> -       intel_iommu_drain_pasid_prq(dev, pasid);
-> -
-> -       return 0;
-> -}
-> -
->  /*
->   * Set the page snoop control for a pasid entry which has been set up.
->   */
-> @@ -848,69 +727,6 @@ int intel_pasid_setup_nested(struct intel_iommu *iom=
-mu, struct device *dev,
->         return 0;
->  }
->
-> -int intel_pasid_replace_nested(struct intel_iommu *iommu,
-> -                              struct device *dev, u32 pasid,
-> -                              u16 old_did, struct dmar_domain *domain)
-> -{
-> -       struct iommu_hwpt_vtd_s1 *s1_cfg =3D &domain->s1_cfg;
-> -       struct dmar_domain *s2_domain =3D domain->s2_domain;
-> -       u16 did =3D domain_id_iommu(domain, iommu);
-> -       struct pasid_entry *pte, new_pte;
-> -
-> -       /* Address width should match the address width supported by hard=
-ware */
-> -       switch (s1_cfg->addr_width) {
-> -       case ADDR_WIDTH_4LEVEL:
-> -               break;
-> -       case ADDR_WIDTH_5LEVEL:
-> -               if (!cap_fl5lp_support(iommu->cap)) {
-> -                       dev_err_ratelimited(dev,
-> -                                           "5-level paging not supported=
-\n");
-> -                       return -EINVAL;
-> -               }
-> -               break;
-> -       default:
-> -               dev_err_ratelimited(dev, "Invalid stage-1 address width %=
-d\n",
-> -                                   s1_cfg->addr_width);
-> -               return -EINVAL;
-> -       }
-> -
-> -       if ((s1_cfg->flags & IOMMU_VTD_S1_SRE) && !ecap_srs(iommu->ecap))=
- {
-> -               pr_err_ratelimited("No supervisor request support on %s\n=
-",
-> -                                  iommu->name);
-> -               return -EINVAL;
-> -       }
-> -
-> -       if ((s1_cfg->flags & IOMMU_VTD_S1_EAFE) && !ecap_eafs(iommu->ecap=
-)) {
-> -               pr_err_ratelimited("No extended access flag support on %s=
-\n",
-> -                                  iommu->name);
-> -               return -EINVAL;
-> -       }
-> -
-> -       pasid_pte_config_nestd(iommu, &new_pte, s1_cfg, s2_domain, did);
-> -
-> -       spin_lock(&iommu->lock);
-> -       pte =3D intel_pasid_get_entry(dev, pasid);
-> -       if (!pte) {
-> -               spin_unlock(&iommu->lock);
-> -               return -ENODEV;
-> -       }
-> -
-> -       if (!pasid_pte_is_present(pte)) {
-> -               spin_unlock(&iommu->lock);
-> -               return -EINVAL;
-> -       }
-> -
-> -       WARN_ON(old_did !=3D pasid_get_domain_id(pte));
-> -
-> -       *pte =3D new_pte;
-> -       spin_unlock(&iommu->lock);
-> -
-> -       intel_pasid_flush_present(iommu, dev, pasid, old_did, pte);
-> -       intel_iommu_drain_pasid_prq(dev, pasid);
-> -
-> -       return 0;
-> -}
-> -
->  /*
->   * Interfaces to setup or teardown a pasid table to the scalable-mode
->   * context table entry:
-> --
-> 2.43.0
->
+Hi Mukesh,
 
-Reviewed-by: Samiullah Khawaja <skhawaja@google.com>
+kernel test robot noticed the following build errors:
+
+[auto build test ERROR on tip/x86/core]
+[also build test ERROR on pci/next pci/for-linus arm64/for-next/core clk/clk-next soc/for-next linus/master arnd-asm-generic/master v6.19-rc6 next-20260119]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Mukesh-R/iommu-hyperv-rename-hyperv-iommu-c-to-hyperv-irq-c/20260120-145832
+base:   tip/x86/core
+patch link:    https://lore.kernel.org/r/20260120064230.3602565-2-mrathor%40linux.microsoft.com
+patch subject: [PATCH v0 01/15] iommu/hyperv: rename hyperv-iommu.c to hyperv-irq.c
+config: i386-randconfig-001-20260120 (https://download.01.org/0day-ci/archive/20260121/202601210208.mg3YUkif-lkp@intel.com/config)
+compiler: gcc-14 (Debian 14.2.0-19) 14.2.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260121/202601210208.mg3YUkif-lkp@intel.com/reproduce)
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202601210208.mg3YUkif-lkp@intel.com/
+
+All errors (new ones prefixed by >>):
+
+   In file included from drivers/acpi/pci_root.c:20:
+>> include/linux/dmar.h:269:17: error: unknown type name '__u128'; did you mean '__u32'?
+     269 |                 __u128 irte;
+         |                 ^~~~~~
+         |                 __u32
+
+Kconfig warnings: (for reference only)
+   WARNING: unmet direct dependencies detected for IRQ_REMAP
+   Depends on [n]: IOMMU_SUPPORT [=y] && X86_64 [=n] && X86_IO_APIC [=y] && PCI_MSI [=n] && ACPI [=y]
+   Selected by [y]:
+   - HYPERV_IOMMU [=y] && IOMMU_SUPPORT [=y] && HYPERV [=y] && X86 [=y]
+
+
+vim +269 include/linux/dmar.h
+
+2ae21010694e56 Suresh Siddha   2008-07-10  200  
+2ae21010694e56 Suresh Siddha   2008-07-10  201  struct irte {
+b1fe7f2cda2a00 Peter Zijlstra  2023-05-31  202  	union {
+b1fe7f2cda2a00 Peter Zijlstra  2023-05-31  203  		struct {
+2ae21010694e56 Suresh Siddha   2008-07-10  204  			union {
+3bf17472226b00 Thomas Gleixner 2015-06-09  205  				/* Shared between remapped and posted mode*/
+2ae21010694e56 Suresh Siddha   2008-07-10  206  				struct {
+3bf17472226b00 Thomas Gleixner 2015-06-09  207  					__u64	present		: 1,  /*  0      */
+3bf17472226b00 Thomas Gleixner 2015-06-09  208  						fpd		: 1,  /*  1      */
+3bf17472226b00 Thomas Gleixner 2015-06-09  209  						__res0		: 6,  /*  2 -  6 */
+3bf17472226b00 Thomas Gleixner 2015-06-09  210  						avail		: 4,  /*  8 - 11 */
+3bf17472226b00 Thomas Gleixner 2015-06-09  211  						__res1		: 3,  /* 12 - 14 */
+3bf17472226b00 Thomas Gleixner 2015-06-09  212  						pst		: 1,  /* 15      */
+3bf17472226b00 Thomas Gleixner 2015-06-09  213  						vector		: 8,  /* 16 - 23 */
+3bf17472226b00 Thomas Gleixner 2015-06-09  214  						__res2		: 40; /* 24 - 63 */
+3bf17472226b00 Thomas Gleixner 2015-06-09  215  				};
+3bf17472226b00 Thomas Gleixner 2015-06-09  216  
+3bf17472226b00 Thomas Gleixner 2015-06-09  217  				/* Remapped mode */
+3bf17472226b00 Thomas Gleixner 2015-06-09  218  				struct {
+3bf17472226b00 Thomas Gleixner 2015-06-09  219  					__u64	r_present	: 1,  /*  0      */
+3bf17472226b00 Thomas Gleixner 2015-06-09  220  						r_fpd		: 1,  /*  1      */
+3bf17472226b00 Thomas Gleixner 2015-06-09  221  						dst_mode	: 1,  /*  2      */
+3bf17472226b00 Thomas Gleixner 2015-06-09  222  						redir_hint	: 1,  /*  3      */
+3bf17472226b00 Thomas Gleixner 2015-06-09  223  						trigger_mode	: 1,  /*  4      */
+3bf17472226b00 Thomas Gleixner 2015-06-09  224  						dlvry_mode	: 3,  /*  5 -  7 */
+3bf17472226b00 Thomas Gleixner 2015-06-09  225  						r_avail		: 4,  /*  8 - 11 */
+3bf17472226b00 Thomas Gleixner 2015-06-09  226  						r_res0		: 4,  /* 12 - 15 */
+3bf17472226b00 Thomas Gleixner 2015-06-09  227  						r_vector	: 8,  /* 16 - 23 */
+3bf17472226b00 Thomas Gleixner 2015-06-09  228  						r_res1		: 8,  /* 24 - 31 */
+3bf17472226b00 Thomas Gleixner 2015-06-09  229  						dest_id		: 32; /* 32 - 63 */
+3bf17472226b00 Thomas Gleixner 2015-06-09  230  				};
+3bf17472226b00 Thomas Gleixner 2015-06-09  231  
+3bf17472226b00 Thomas Gleixner 2015-06-09  232  				/* Posted mode */
+3bf17472226b00 Thomas Gleixner 2015-06-09  233  				struct {
+3bf17472226b00 Thomas Gleixner 2015-06-09  234  					__u64	p_present	: 1,  /*  0      */
+3bf17472226b00 Thomas Gleixner 2015-06-09  235  						p_fpd		: 1,  /*  1      */
+3bf17472226b00 Thomas Gleixner 2015-06-09  236  						p_res0		: 6,  /*  2 -  7 */
+3bf17472226b00 Thomas Gleixner 2015-06-09  237  						p_avail		: 4,  /*  8 - 11 */
+3bf17472226b00 Thomas Gleixner 2015-06-09  238  						p_res1		: 2,  /* 12 - 13 */
+3bf17472226b00 Thomas Gleixner 2015-06-09  239  						p_urgent	: 1,  /* 14      */
+3bf17472226b00 Thomas Gleixner 2015-06-09  240  						p_pst		: 1,  /* 15      */
+3bf17472226b00 Thomas Gleixner 2015-06-09  241  						p_vector	: 8,  /* 16 - 23 */
+3bf17472226b00 Thomas Gleixner 2015-06-09  242  						p_res2		: 14, /* 24 - 37 */
+3bf17472226b00 Thomas Gleixner 2015-06-09  243  						pda_l		: 26; /* 38 - 63 */
+2ae21010694e56 Suresh Siddha   2008-07-10  244  				};
+2ae21010694e56 Suresh Siddha   2008-07-10  245  				__u64 low;
+2ae21010694e56 Suresh Siddha   2008-07-10  246  			};
+2ae21010694e56 Suresh Siddha   2008-07-10  247  
+2ae21010694e56 Suresh Siddha   2008-07-10  248  			union {
+3bf17472226b00 Thomas Gleixner 2015-06-09  249  				/* Shared between remapped and posted mode*/
+2ae21010694e56 Suresh Siddha   2008-07-10  250  				struct {
+3bf17472226b00 Thomas Gleixner 2015-06-09  251  					__u64	sid		: 16,  /* 64 - 79  */
+3bf17472226b00 Thomas Gleixner 2015-06-09  252  						sq		: 2,   /* 80 - 81  */
+3bf17472226b00 Thomas Gleixner 2015-06-09  253  						svt		: 2,   /* 82 - 83  */
+3bf17472226b00 Thomas Gleixner 2015-06-09  254  						__res3		: 44;  /* 84 - 127 */
+3bf17472226b00 Thomas Gleixner 2015-06-09  255  				};
+3bf17472226b00 Thomas Gleixner 2015-06-09  256  
+3bf17472226b00 Thomas Gleixner 2015-06-09  257  				/* Posted mode*/
+3bf17472226b00 Thomas Gleixner 2015-06-09  258  				struct {
+3bf17472226b00 Thomas Gleixner 2015-06-09  259  					__u64	p_sid		: 16,  /* 64 - 79  */
+3bf17472226b00 Thomas Gleixner 2015-06-09  260  						p_sq		: 2,   /* 80 - 81  */
+3bf17472226b00 Thomas Gleixner 2015-06-09  261  						p_svt		: 2,   /* 82 - 83  */
+3bf17472226b00 Thomas Gleixner 2015-06-09  262  						p_res3		: 12,  /* 84 - 95  */
+3bf17472226b00 Thomas Gleixner 2015-06-09  263  						pda_h		: 32;  /* 96 - 127 */
+2ae21010694e56 Suresh Siddha   2008-07-10  264  				};
+2ae21010694e56 Suresh Siddha   2008-07-10  265  				__u64 high;
+2ae21010694e56 Suresh Siddha   2008-07-10  266  			};
+2ae21010694e56 Suresh Siddha   2008-07-10  267  		};
+b1fe7f2cda2a00 Peter Zijlstra  2023-05-31  268  #ifdef CONFIG_IRQ_REMAP
+b1fe7f2cda2a00 Peter Zijlstra  2023-05-31 @269  		__u128 irte;
+b1fe7f2cda2a00 Peter Zijlstra  2023-05-31  270  #endif
+b1fe7f2cda2a00 Peter Zijlstra  2023-05-31  271  	};
+b1fe7f2cda2a00 Peter Zijlstra  2023-05-31  272  };
+423f085952fd72 Thomas Gleixner 2010-10-10  273  
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
