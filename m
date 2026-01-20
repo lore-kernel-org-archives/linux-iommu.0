@@ -1,109 +1,100 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 68AA6427A00;
-	Tue, 20 Jan 2026 11:59:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE3B33D668E;
+	Tue, 20 Jan 2026 12:14:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768910386; cv=none; b=MK56eZzMu0CdDlssyxNCsqAkW9yQg8kp/RkrfIXOe08Cav8gpVHhXoUruJtJu8bzZ8yejYlsuZhePf+W2VxLEz964eHOj0c7hMVs0Hts0RpY80RnIu6LFF8r2NubUvUP8AVXMaQHsGhLrIDJ8IaH5nluyMOu/RI0/2b/+PipnPE=
+	t=1768911290; cv=none; b=ON+Dr6LIiKyy307LKyEmGpy3Ig5LckZDb1mLjXq23kB57QT339aRt6y4BsX8qnzrcAwGufiA0vaO+9K+IY1uYpWyG6xX+hqtMAB8Hro+uvD7rk7RHlt72ewm8fR3Z74IZUzb3tTD3iHFtYm98g4vQpGKHflu90pTDjJijzRlD1Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768910386; c=relaxed/simple;
-	bh=f8HjKNZRU+5iiqgVaqMtofxKEPVaTMz3aNtiOwoAGXg=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=sAytPezAPoF4QgNs+1KqMSKX7bhAMNMQ375qYrVqWDQ4XjmNvhSMb+Relif+0g+ltyuYejNjpgF78Y76zQdbN4ffuvZ6p7pZJ6Ejmxeo9nOKL+QSXcDr4CO04d1jBFOUpze8Au35I9NtPz+G2Yh0Gguy2Gp3dXfTZT9d7yS+IAo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 10DE11476;
-	Tue, 20 Jan 2026 03:59:37 -0800 (PST)
-Received: from [10.57.49.114] (unknown [10.57.49.114])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 34D213F694;
-	Tue, 20 Jan 2026 03:59:41 -0800 (PST)
-Message-ID: <893a6503-d33f-41d8-8966-19b9f251d9da@arm.com>
-Date: Tue, 20 Jan 2026 11:59:39 +0000
+	s=arc-20240116; t=1768911290; c=relaxed/simple;
+	bh=IiflnQDxJs4RPcYs3sxwTdyuyK0ue/FTAVFF6cNAICg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=o8Bo0H5JG/ulxEgzfrSR31Ss8G1eI8imt77zXOdfqI8xdtp6enFoxnq+eqJ7Ryqqx5ZwaA+E371vKCoD+Jb8t+Tlq5EwAjpm7G6x90y4UJeFmnWnc03M3WParvy+0ftxzjj+9IB2QCuOhbXQVVjYFDxNDM4VOqmTQeWgZQuSSls=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TWlHrxNg; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TWlHrxNg"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAF6EC19422;
+	Tue, 20 Jan 2026 12:14:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1768911288;
+	bh=IiflnQDxJs4RPcYs3sxwTdyuyK0ue/FTAVFF6cNAICg=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=TWlHrxNgWqnpPI+Z1vQZLBDmUo9Wlf6vxXq2teccxfLdid4tvBzqGTD3v3/gM1S0b
+	 dMOL8fE7uBhRCT7Q8arm/7M9dWP2JUPE2sztXWnIIm/s2m1Ibl0ceuwf3oeKpHeh7L
+	 wimFfhq1vH/am8BNvKU+hR3kLHQkgzS7iC968GPLDFcFn+Gb1Ip6nTsYu5ZawYOv/X
+	 jsIv5x6Xh6UETvy9QdoVFr5qBWhfQOewc18u7kpYfxQlgnJCk7X1f6izLll+8W4CxR
+	 qGxdO5/y7sKhfCVJpTQbtzk0x3JMRoZVUPf6SEHp8kWf8yrUxgCOAsylNvb9KgaqMU
+	 qMGgqcqHyiMYQ==
+Date: Tue, 20 Jan 2026 12:14:43 +0000
+From: Will Deacon <will@kernel.org>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Robin Murphy <robin.murphy@arm.com>, Dawei Li <dawei.li@linux.dev>,
+	joro@8bytes.org, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	set_pte_at@outlook.com, stable@vger.kernel.org
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Maintain valid access attributes for
+ non-coherent SMMU
+Message-ID: <aW9xs1ko3nWq5VbS@willie-the-truck>
+References: <20251229002354.162872-1-dawei.li@linux.dev>
+ <c25309d1-0424-495e-82af-d025b3e6d8c8@arm.com>
+ <20260105145321.GD125261@ziepe.ca>
+ <f253d6aa-1dc2-4b1a-85df-f43b06719c04@arm.com>
+ <20260105185423.GI125261@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/2] dma-direct: Validate DMA mask against canonical DMA
- addresses
-To: Suzuki K Poulose <suzuki.poulose@arm.com>,
- "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
- linux-coco@lists.linux.dev
-Cc: Catalin Marinas <catalin.marinas@arm.com>, will@kernel.org, jgg@ziepe.ca,
- steven.price@arm.com, Marek Szyprowski <m.szyprowski@samsung.com>
-References: <20260120064255.179425-1-aneesh.kumar@kernel.org>
- <2a0b6d1b-875a-4075-8fc9-a8534afc9168@arm.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <2a0b6d1b-875a-4075-8fc9-a8534afc9168@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260105185423.GI125261@ziepe.ca>
 
-On 2026-01-20 9:59 am, Suzuki K Poulose wrote:
-> On 20/01/2026 06:42, Aneesh Kumar K.V (Arm) wrote:
->> On systems that apply an address encryption tag or mask to DMA addresses,
->> DMA mask validation must be performed against the canonical DMA address.
->> Using a non-canonical (e.g. encrypted or unencrypted) DMA address
->> can incorrectly fail capability checks, since architecture-specific
->> encryption bits are not part of the device’s actual DMA addressing
->> capability. For example, arm64 adds PROT_NS_SHARED to unencrypted DMA
->> addresses.
->>
->> Fix this by validating device DMA masks against __phys_to_dma(), ensuring
->> that the architecture encryption mask does not influence the check.
->>
->> Fixes: b66e2ee7b6c8 ("dma: Introduce generic dma_addr_*crypted helpers")
+On Mon, Jan 05, 2026 at 02:54:23PM -0400, Jason Gunthorpe wrote:
+> On Mon, Jan 05, 2026 at 04:02:34PM +0000, Robin Murphy wrote:
 > 
+> > > It is reasonable that Linux will set the attributes properly based on
+> > > what it is doing. Setting the wrong attributes and expecting the HW to
+> > > ignore them seems like a hacky direction.
+> > 
+> > Oh, I'm not saying that we *shouldn't* set our attributes more exactly -
+> > this would still be needed for doing things the "right" way too - I just
+> > want to be very clear on the reasons why. 
 > 
->> Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
->> ---
->>   kernel/dma/direct.c | 4 ++--
->>   1 file changed, 2 insertions(+), 2 deletions(-)
->>
->> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
->> index 8e04f72baaa3..a5639e9415f5 100644
->> --- a/kernel/dma/direct.c
->> +++ b/kernel/dma/direct.c
->> @@ -580,12 +580,12 @@ int dma_direct_supported(struct device *dev, u64 
->> mask)
->>       /*
->>        * This check needs to be against the actual bit mask value, so use
->> -     * phys_to_dma_unencrypted() here so that the SME encryption mask 
->> isn't
->> +     * __phys_to_dma() here so that the arch specific encryption mask 
->> isn't
->>        * part of the check.
->>        */
->>       if (IS_ENABLED(CONFIG_ZONE_DMA))
->>           min_mask = min_t(u64, min_mask, zone_dma_limit);
->> -    return mask >= phys_to_dma_unencrypted(dev, min_mask);
->> +    return mask >= __phys_to_dma(dev, min_mask);
+> At least I know of HW where the SMMU fetches covered by COHACC:
 > 
-> This is wrong, isn't it ? For e.g., for CCA, even though the "Flag" is
-> added to the PA, it is really part of the actual "PA" and thus must be
-> checked against the full PA ?
+>  * Translation table walks.
+>  * Fetches of L1STD, STE, L1CD and CD.
+>  * Command queue, Event queue and PRI queue access.
+>  * GERROR, CMD_SYNC, Event queue and PRI queue MSIs, if supported.
+> 
+> Have a mixture of coherency support. The SOC has multiple fabrics, one
+> non-coherent one specifically for isochronous traffic.  In HW some
+> SMMU sub-units (like the table walk) been wired to the isochronous
+> fabric, while others are using the normal coherent fabric.
+> 
+> So when it comes to this statement:
+> 
+>  If either the SMMU or system cannot *fully* support IO-coherent
+>  access to SMMU structures/queues/translations, this reads as 0.
+> 
+> The HW is "partially" IO-coherent, so COHACC is 0.
+> 
+> It has been lucky that so far the incorrect attributes haven't caused a
+> problem, but the next spin of this HW may have issue here. I'd like to
+> see it fixed.
 
-Yes, it's much the same as for AMD SEV (albeit the other way round) - 
-the encryption/decryption bit is part of the DMA address because it 
-needs to be driven by the device, so it is crucial that the device's DMA 
-mask is capable of expressing that.
+I'm not against being more careful about the memory attributes used by
+the non-coherent walker, but we shouldn't fool ourselves into thinking
+that Linux can treat coherent devices as non-coherent and expect things
+to work generally. The use of non-cacheable mappings in
+dma_alloc_coherent() and cache invalidation in the streaming API when
+transferring buffer ownership back to the CPU can both lead to DMA
+corruption if the device can snoop the CPU caches.
 
-Hence, as I think we've discussed before, for CCA we can't really 
-support 32-bit devices doing DMA to shared pages at all, unless the 
-whole VM is limited to a 31-bit IPA space.
+I think we're all agreed on that, but just wanted to make sure as this
+is something that has come up before when talking to hardware folks
+who seem to think that the "dma-coherent" property is a hint.
 
-Thanks,
-Robin.
-
-> 
-> Suzuki
-> 
-> 
->>   }
->>   static const struct bus_dma_region *dma_find_range(struct device *dev,
-> 
-
+Will
