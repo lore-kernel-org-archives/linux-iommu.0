@@ -1,79 +1,65 @@
-Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37718427A13
-	for <iommu@lists.linux.dev>; Tue, 20 Jan 2026 13:27:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12E7842E01A;
+	Tue, 20 Jan 2026 13:34:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768915623; cv=none; b=TSmJ76HXK+bWlqIwGxWIwZq3FI/DhoINkWajySIqZdA93Mqh+PnlEgee0JK168JFjP7ErdIC6l+nDwpmRCapOlOzBBAc180vq1jRg7Lk04cTJvJJTJ1mBGYA9Mt4fOp2Kp/EpuugrHe5qKcfOo9h9NjaPnOV7GDdkWNUC2grEvA=
+	t=1768916044; cv=none; b=pNi/R5QC6HpBG/eadw11+UbzQDKRAQHN8cz3ccXPurhM9T5o7HqQIzxmZku8rw5anoJ0n4gARV7i/gRw8rO7ehZS2okSzE8BkKCuxSqhNibVe9/pqImafiUjQ3RMTMFHY4blpBBEagrOv4D8bX91cKV2QsfN+6TZf/Ot4lx6Ie8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768915623; c=relaxed/simple;
-	bh=7Szwsklx/Y2EMX9dqKOORk1vk6jK5LCw+XlCJJsBgeU=;
+	s=arc-20240116; t=1768916044; c=relaxed/simple;
+	bh=oLJ2iu9KlHT5QrDdejkQxW6aJLgiN+DqMd8h51OdTRU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=mSWoBVd/Kzb8hlgOffPJn5lqUs1cUzO11qDIuYa2/8du+Veb1bdCyKmWvOvETNvmUdOtGgjF+Fe7DNZbKI1jI6+rzc8zR5w8qiWGXgr3r4hSNLLh2FODZQqPdqT/kSgn+Ydas3eNwzO+Kfa/UIO/0mqcVgq78YYcZsozURGpfXo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=PJZIxqoh; arc=none smtp.client-ip=209.85.219.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	 Content-Type:Content-Disposition:In-Reply-To; b=kPYLmd6BBFuH7rrM74o8RIyL90PSdttM3jGJLc9oXhJNNejkrNfEw+9ajbxbVCwOvoxBq9h4n5jboDrWWzuPuTVSuzWO0OTgm3ubc+FS5nOtMLbT0Y+6RxKnKB5sGA30mR1Tu/wMlvr2Ax6utJuhVNA4ukINgHWGMPwBHYkxg7E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JpEG1sP9; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="PJZIxqoh"
-Received: by mail-qv1-f42.google.com with SMTP id 6a1803df08f44-88888d80590so80206896d6.3
-        for <iommu@lists.linux.dev>; Tue, 20 Jan 2026 05:27:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1768915620; x=1769520420; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=hLxUlz931pMaY4udrGaMFThPKCbG+2P0gYX4WJ/4nHM=;
-        b=PJZIxqohKaoZP4wsJ68JW2WrHd6cYARGLrqxaKWEs7CVT1sMiG+tyiZHuSFm8VQmq7
-         mfoDvO8HmAi1GAsD8v9evFXkB7Xsy3aBNL6j5yw3YpsNekAoO+3uQol1ZoCQYBe/T2kV
-         kKOmKewdxGUmt6LWhY/2R30F68fh6U2DGKf+2TgT7lUei4Lf8KVWEr4PO3hEC9D5hbbQ
-         T/ArrF9RVEtBYRPuYtxqqdig7hpcJ/s+2YYpzaoRDQyRqmJfxWi9/wE2eQd5OP2A013o
-         3ps0ZDE2LdtZxDUcr1/m+pJ8xVwkvtFQFBqQU0XWKiMek7SQr1CLqwEGpTJTR7/hZkEg
-         lsfw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1768915620; x=1769520420;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=hLxUlz931pMaY4udrGaMFThPKCbG+2P0gYX4WJ/4nHM=;
-        b=BWObjwQNYqgv8PXW0toV06iUaVk7CydKOHjVnO0YenDYxLQHeaFnZb/JD3+GQRPQyW
-         tC5sm24/+vE5F/zZ2Dpb9bEZm9+M/DkVIHzr/UPgXLFSWK5hSFh+IqXJiRPVCJjnWKFY
-         39QhIRlVdJ0DtjRBr8oXKebE93blV/Wvk1xIBUs1oG91csR0XpChJO/HkJlMViAGwt3d
-         qs34YTStYsF7SqzakZhzrbtgrSDqE4twbCOnqckGAze013YmkVRCWOGwZz0NrvZ96ct6
-         TFpOeJpRqUVcuBsCQdTwdgutr3skc+3LHY4Gaa/t4eFOjVDpnQdbi2gnIYA78yD+rtHe
-         fN9w==
-X-Forwarded-Encrypted: i=1; AJvYcCUKYg4VCa832G8ajNMOT8eLFu+qab/EOerXq0cpPkIuEfX9Uxc9ddITMvz/FVXaMwj8Md3i5g==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxiNlsSaNhDWIDFl+YBxb/X+2NiPsfNMIfNTTC+tsmqSaDybDTa
-	aDpGxTr+NQpQzvTba8HMSIAlrx7vYKKRrSQV1Rj2YX5toqLtm7An2zEe6ZyZoFJMMMY=
-X-Gm-Gg: AZuq6aIPymLufTIX7kI2uFpO/H4YD9Jy535USTXU+tphtAsbejPghYld9UW9HOQ0Gj9
-	ywsc18Bx+SmUyAYUjfeT/hZIbAQfSRobqtRJGgeKdmFBYjsPnniItJlcyvbXc50z4jooz0CmtRj
-	+VMtgPS5PYErsUeqzY3dMQY4vXN7l1hwHw7fylgMyJK1uCHUeI9Cf73Et9snEozCQJlRLl4gNFW
-	mFP6EpMyM9OU1d8b+jCRXB+f85D6dyXw2S9m68UgkQwv8VXYFlIhpCRMxU352001Vj2pxf/P62A
-	S9mrDSjLg7FMTHx0JYK6DbHQQ+iXa1HSJk8C4seXBioir1nNJnEPggrr4jlwaHFyfrngYcEO+WM
-	xC0xBZK4CFDJaRgKF88QwcXg0zK1mVyCtyBOXrffeDSvHgHG7RBsVxzRICc3ZR8w4IhGnHN0cEJ
-	FFRaSGWcgsMJcE1tgy3MGGXr2zKNf7bYs/DIqz5CuiYo/ZZqUu/ijhcvw6fC/BLiFk4NM=
-X-Received: by 2002:a05:6214:1949:b0:894:67d8:293 with SMTP id 6a1803df08f44-89467d803acmr14754196d6.57.1768915619729;
-        Tue, 20 Jan 2026 05:26:59 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-162-112-119.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.112.119])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8946e3aee12sm1805076d6.39.2026.01.20.05.26.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Jan 2026 05:26:58 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1viBl3-00000005WB9-3bIR;
-	Tue, 20 Jan 2026 09:26:57 -0400
-Date: Tue, 20 Jan 2026 09:26:57 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	linux-coco@lists.linux.dev,
-	Catalin Marinas <catalin.marinas@arm.com>, will@kernel.org,
-	robin.murphy@arm.com, suzuki.poulose@arm.com, steven.price@arm.com,
-	Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: Re: [PATCH 1/2] dma-direct: Validate DMA mask against canonical DMA
- addresses
-Message-ID: <20260120132657.GO961572@ziepe.ca>
-References: <20260120064255.179425-1-aneesh.kumar@kernel.org>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JpEG1sP9"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC30AC16AAE;
+	Tue, 20 Jan 2026 13:34:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1768916043;
+	bh=oLJ2iu9KlHT5QrDdejkQxW6aJLgiN+DqMd8h51OdTRU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=JpEG1sP9sdoE2iRilDGuE2cq1/H2M6cDuai69Nw+oSU99dcdoZdWBvI1Ukv0pmCi9
+	 TsEw1r+DamQwCel7MoQtDe43k96uNEN2EIGYyUqy+LKVNlFKvNVQdDnF9gRgkw6+oE
+	 Iyr3Ih5rCshWR5ndygaol8Ath9Rlm/yA6Sguxq2x2tSUxefkc1flchRkXEHVN8GCfi
+	 tJskCUcB7JdPmjSewrBWCzbAo1v7780XPg1+FKbkQX6nJPso+uCdLPziwkOu29i/jw
+	 mD8HoF6GofHxxX6dhDDXQOlk4BrG8fNLd2RXpMxN3Qn9LCRK7nBxumFh6AjnzbEM7k
+	 ZfnVnW6TNMaYg==
+Date: Tue, 20 Jan 2026 15:33:57 +0200
+From: Leon Romanovsky <leon@kernel.org>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Sumit Semwal <sumit.semwal@linaro.org>,
+	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+	Alex Deucher <alexander.deucher@amd.com>,
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+	Gerd Hoffmann <kraxel@redhat.com>,
+	Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+	Gurchetan Singh <gurchetansingh@chromium.org>,
+	Chia-I Wu <olvaffe@gmail.com>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	Lucas De Marchi <lucas.demarchi@intel.com>,
+	Thomas =?iso-8859-1?Q?Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>,
+	Rodrigo Vivi <rodrigo.vivi@intel.com>,
+	Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Alex Williamson <alex@shazbot.org>, linux-media@vger.kernel.org,
+	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+	linux-kernel@vger.kernel.org, amd-gfx@lists.freedesktop.org,
+	virtualization@lists.linux.dev, intel-xe@lists.freedesktop.org,
+	linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
+	kvm@vger.kernel.org
+Subject: Re: [PATCH v2 3/4] iommufd: Require DMABUF revoke semantics
+Message-ID: <20260120133357.GT13201@unreal>
+References: <20260118-dmabuf-revoke-v2-0-a03bb27c0875@nvidia.com>
+ <20260118-dmabuf-revoke-v2-3-a03bb27c0875@nvidia.com>
+ <20260119165951.GI961572@ziepe.ca>
+ <20260119182300.GO13201@unreal>
+ <20260119195444.GL961572@ziepe.ca>
+ <20260120131046.GS13201@unreal>
+ <20260120131530.GN961572@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -83,57 +69,66 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260120064255.179425-1-aneesh.kumar@kernel.org>
+In-Reply-To: <20260120131530.GN961572@ziepe.ca>
 
-On Tue, Jan 20, 2026 at 12:12:54PM +0530, Aneesh Kumar K.V (Arm) wrote:
-> On systems that apply an address encryption tag or mask to DMA addresses,
-> DMA mask validation must be performed against the canonical DMA address.
-> Using a non-canonical (e.g. encrypted or unencrypted) DMA address
-> can incorrectly fail capability checks, since architecture-specific
-> encryption bits are not part of the device’s actual DMA addressing
-> capability. For example, arm64 adds PROT_NS_SHARED to unencrypted DMA
-> addresses.
+On Tue, Jan 20, 2026 at 09:15:30AM -0400, Jason Gunthorpe wrote:
+> On Tue, Jan 20, 2026 at 03:10:46PM +0200, Leon Romanovsky wrote:
+> > On Mon, Jan 19, 2026 at 03:54:44PM -0400, Jason Gunthorpe wrote:
+> > > On Mon, Jan 19, 2026 at 08:23:00PM +0200, Leon Romanovsky wrote:
+> > > > On Mon, Jan 19, 2026 at 12:59:51PM -0400, Jason Gunthorpe wrote:
+> > > > > On Sun, Jan 18, 2026 at 02:08:47PM +0200, Leon Romanovsky wrote:
+> > > > > > From: Leon Romanovsky <leonro@nvidia.com>
+> > > > > > 
+> > > > > > IOMMUFD does not support page fault handling, and after a call to
+> > > > > > .invalidate_mappings() all mappings become invalid. Ensure that
+> > > > > > the IOMMUFD DMABUF importer is bound to a revoke‑aware DMABUF exporter
+> > > > > > (for example, VFIO).
+> > > > > > 
+> > > > > > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> > > > > > ---
+> > > > > >  drivers/iommu/iommufd/pages.c | 9 ++++++++-
+> > > > > >  1 file changed, 8 insertions(+), 1 deletion(-)
+> > > > > > 
+> > > > > > diff --git a/drivers/iommu/iommufd/pages.c b/drivers/iommu/iommufd/pages.c
+> > > > > > index 76f900fa1687..a5eb2bc4ef48 100644
+> > > > > > --- a/drivers/iommu/iommufd/pages.c
+> > > > > > +++ b/drivers/iommu/iommufd/pages.c
+> > > > > > @@ -1501,16 +1501,22 @@ static int iopt_map_dmabuf(struct iommufd_ctx *ictx, struct iopt_pages *pages,
+> > > > > >  		mutex_unlock(&pages->mutex);
+> > > > > >  	}
+> > > > > >  
+> > > > > > -	rc = sym_vfio_pci_dma_buf_iommufd_map(attach, &pages->dmabuf.phys);
+> > > > > > +	rc = dma_buf_pin(attach);
+> > > > > >  	if (rc)
+> > > > > >  		goto err_detach;
+> > > > > >  
+> > > > > > +	rc = sym_vfio_pci_dma_buf_iommufd_map(attach, &pages->dmabuf.phys);
+> > > > > > +	if (rc)
+> > > > > > +		goto err_unpin;
+> > > > > > +
+> > > > > >  	dma_resv_unlock(dmabuf->resv);
+> > > > > >  
+> > > > > >  	/* On success iopt_release_pages() will detach and put the dmabuf. */
+> > > > > >  	pages->dmabuf.attach = attach;
+> > > > > >  	return 0;
+> > > > > 
+> > > > > Don't we need an explicit unpin after unmapping?
+> > > > 
+> > > > Yes, but this patch is going to be dropped in v3 because of this
+> > > > suggestion.
+> > > > https://lore.kernel.org/all/a397ff1e-615f-4873-98a9-940f9c16f85c@amd.com
+> > > 
+> > > That's not right, that suggestion is about changing VFIO. iommufd must
+> > > still act as a pinning importer!
+> > 
+> > There is no change in iommufd, as it invokes dma_buf_dynamic_attach()
+> > with a valid &iopt_dmabuf_attach_revoke_ops. The check determining whether
+> > iommufd can perform a revoke is handled there.
+> 
+> iommufd is a pining importer. I did not add a call to pin because it
+> only worked with VFIO that would not support it. Now that this series
+> fixes it the pin must be added. Don't drop this patch.
 
-Huh?
+No problem, let's keep it.
 
-static inline dma_addr_t phys_to_dma_direct(struct device *dev,
-                phys_addr_t phys)
-{
-        if (force_dma_unencrypted(dev))
-                return phys_to_dma_unencrypted(dev, phys);
-        return phys_to_dma(dev, phys);
-}
-
-dma_addr_t swiotlb_map(struct device *dev, phys_addr_t paddr, size_t size,
-                enum dma_data_direction dir, unsigned long attrs)
-{
-[..]
-
-        /* Ensure that the address returned is DMA'ble */
-        dma_addr = phys_to_dma_unencrypted(dev, swiotlb_addr);
-[..]
-        return dma_addr;
-}
-
-The check in dma_direct_supported() is checking if the device's HW
-capability can contain the range of dma_addr_t's the DMA API will
-generate. Since it above is generating dma_addr_t's with the
-PROT_NS_SHARED set, it is correct to check it against the mask.
-
-If the IOVA does not contain PROT_NS_SHARED then I would expect all of
-the above to be removed too?
-
-Can you please explain what the probem is better?
-
-I just had a long talk with our internal people about this very
-subject and they were adament that the ARM design had the T=0 SMMU S2
-configured so that the IOVA starts at PROT_NS_SHARED, not 0. I am
-against this, I think it is a bad choice, and this patch is showing
-exactly why :)
-
-IMHO you should map the T=0 S2 so that the IOVA starts at 0 and we
-don't add PROT_NS_SHARED to the IOVA anyhwere.
-
-This logic is going to be wrong for T=1 DMA to private memory though.
-
-Jason
+Thanks
