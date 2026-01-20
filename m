@@ -1,98 +1,131 @@
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D12643CEEC
-	for <iommu@lists.linux.dev>; Tue, 20 Jan 2026 14:20:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53E0838F946;
+	Tue, 20 Jan 2026 14:27:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768918808; cv=none; b=FZgeKG12RBwkLYnO56X6bFzBYkyQ1HRunS7QbuqcWYUezmy1tusekXQbcMhQ3osetCLMYa8/hSBpNM4w+99w1u/cEIuWZm1tk7eojWJqvrbBf9mw4aC2BhAm7mA6YN3LTadwu+kZ5SeBRUqcUEXrcT7JzPOqSt/C8MVhILTWRTM=
+	t=1768919247; cv=none; b=Ex9dees7wkksy3VYhQlmYeUwjDcKdcjoMNwmEFMxmCrI650cdLopc6TUrCrkdxmnpXV12kQak+JRUdjsrP0jVy1nbKGhq8Zns/jgvRCtENVQyELb8aqHosWQCH9OyEy4Jl19L75OC6opTT/01Frd0pfppObLKkea89wXdlMLshk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768918808; c=relaxed/simple;
-	bh=TA9JEi4f3YsWqh8mdfIO9MAxZOiBqwLRRep26TGn32g=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type:
-	 References; b=ktCb9KG0vW22dbPYQ7tfIGJt6M4gD1chyKTtaXIJ/l0luJONK5l3RV8T4d1+KGlEPf908RkUkY7JkkMBI/HRS0ocov2sj7CRRxLf7cFiceOocbaPXsIaVgaALzqwmVKdquICHwo0UYqkODXzDXevoYmaQjUgIE4O38/CgPemvCU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=f6P/1OAy; arc=none smtp.client-ip=210.118.77.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1768919247; c=relaxed/simple;
+	bh=RfyOja/qZmCGr/jYafKpgxD1MIXYyLKj1fQpTNb+o3c=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=KHrFp+CtBF/wNbox5DpstgOMuRhYOC1XFM5sZEFuxeGADa4DmRMEw0mgRnMr9z9sPMXAt+nidFExV/shjVVS9gXsDfLdCQW0gjIyf7jvbXIgcIMhNYMpr/YZWY0PqHi9TzG+n/FEmsXGXukP3AXhfqh04S2MxsNbrbzKIQ0fkmA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IMgmhc6X; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="f6P/1OAy"
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20260120141959euoutp018bcecffd068111d81740c85fcacd6628~MdkaMG_PZ1653616536euoutp01o
-	for <iommu@lists.linux.dev>; Tue, 20 Jan 2026 14:19:59 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20260120141959euoutp018bcecffd068111d81740c85fcacd6628~MdkaMG_PZ1653616536euoutp01o
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1768918799;
-	bh=KEeMjSbFKXoGipD43mJPm0kjFlNrOXsA37q7S3lVtrU=;
-	h=From:To:Cc:Subject:Date:References:From;
-	b=f6P/1OAyaQsRqPSKO+EJ9njBGBK9AIjX8sy/MbUcbC5C2LmyBG59hejjoCSNyfV0z
-	 zRuHamDNbvJiBCh0+RDS6QLW6fVG8nYbVaTLDyf206cSgHi4yosXPUNRhAdn+UCkCs
-	 rJx0k1nT8DQiwwz+Fd1bNirdP1c6OvsPj0LKktzM=
-Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20260120141958eucas1p152c74f446ca0a743d0c97201bab52ac7~MdkaAnE1i1228112281eucas1p1y;
-	Tue, 20 Jan 2026 14:19:58 +0000 (GMT)
-Received: from AMDC4653.digital.local (unknown [106.120.51.32]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20260120141958eusmtip1fe1b1758fad5b1441ac5c7c30506c48f~MdkZtClf90169201692eusmtip1y;
-	Tue, 20 Jan 2026 14:19:58 +0000 (GMT)
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, Marek Szyprowski
-	<m.szyprowski@samsung.com>, Christoph Hellwig <hch@lst.de>, Robin Murphy
-	<robin.murphy@arm.com>
-Subject: [GIT PULL] more dma-mapping fixes for Linux 6.19
-Date: Tue, 20 Jan 2026 15:19:42 +0100
-Message-Id: <20260120141942.3674759-1-m.szyprowski@samsung.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IMgmhc6X"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E77FC16AAE;
+	Tue, 20 Jan 2026 14:27:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1768919246;
+	bh=RfyOja/qZmCGr/jYafKpgxD1MIXYyLKj1fQpTNb+o3c=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+	b=IMgmhc6X9WJ/dl0TcFpwQnYjeNjew2Oy1ZkhXLUFaqnBKkzAyp9C3OeogfNWp6ePe
+	 P+XwOywdFwhfX+jszHcSKt74M2YYe5gbR/+Gs8zdReOoq9YvDLNXzR8X0oJoDjU9Xx
+	 74KN0g91S4ODK1oNQiTga3FCEEciebV0OItUpU6uZ7Yz/3bK7Wq4W90gJrihQcINfh
+	 bipEcc+lGNOuiR6/R7XNl2EpuIedIpJ9FFxW/anTKiLk+gHLik3U1L3blQu/6N5RG+
+	 NB0lrWZcgb6/2QCN+PipfLQqP6U9TiNj9Nxv9qX1346ZBtT7ucQdYn0LjJyBJTdCVH
+	 DPHZezWO8/ObA==
+X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: Robin Murphy <robin.murphy@arm.com>,
+	Suzuki K Poulose <suzuki.poulose@arm.com>,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	linux-coco@lists.linux.dev
+Cc: Catalin Marinas <catalin.marinas@arm.com>, will@kernel.org,
+	jgg@ziepe.ca, steven.price@arm.com,
+	Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: Re: [PATCH 1/2] dma-direct: Validate DMA mask against canonical DMA
+ addresses
+In-Reply-To: <893a6503-d33f-41d8-8966-19b9f251d9da@arm.com>
+References: <20260120064255.179425-1-aneesh.kumar@kernel.org>
+ <2a0b6d1b-875a-4075-8fc9-a8534afc9168@arm.com>
+ <893a6503-d33f-41d8-8966-19b9f251d9da@arm.com>
+Date: Tue, 20 Jan 2026 19:55:01 +0530
+Message-ID: <yq5aqzrkjr9e.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CMS-MailID: 20260120141958eucas1p152c74f446ca0a743d0c97201bab52ac7
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20260120141958eucas1p152c74f446ca0a743d0c97201bab52ac7
-X-EPHeader: CA
-X-CMS-RootMailID: 20260120141958eucas1p152c74f446ca0a743d0c97201bab52ac7
-References: <CGME20260120141958eucas1p152c74f446ca0a743d0c97201bab52ac7@eucas1p1.samsung.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-The following changes since commit 7f2e8e1d22f6e28edff3782535c16cfbace30902:
+Robin Murphy <robin.murphy@arm.com> writes:
 
-  parisc: Set valid bit in high byte of 64‑bit physical address (2025-12-19 13:56:17 +0100)
+> On 2026-01-20 9:59 am, Suzuki K Poulose wrote:
+>> On 20/01/2026 06:42, Aneesh Kumar K.V (Arm) wrote:
+>>> On systems that apply an address encryption tag or mask to DMA addresse=
+s,
+>>> DMA mask validation must be performed against the canonical DMA address.
+>>> Using a non-canonical (e.g. encrypted or unencrypted) DMA address
+>>> can incorrectly fail capability checks, since architecture-specific
+>>> encryption bits are not part of the device=E2=80=99s actual DMA address=
+ing
+>>> capability. For example, arm64 adds PROT_NS_SHARED to unencrypted DMA
+>>> addresses.
+>>>
+>>> Fix this by validating device DMA masks against __phys_to_dma(), ensuri=
+ng
+>>> that the architecture encryption mask does not influence the check.
+>>>
+>>> Fixes: b66e2ee7b6c8 ("dma: Introduce generic dma_addr_*crypted helpers")
+>>=20
+>>=20
+>>> Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
+>>> ---
+>>> =C2=A0 kernel/dma/direct.c | 4 ++--
+>>> =C2=A0 1 file changed, 2 insertions(+), 2 deletions(-)
+>>>
+>>> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+>>> index 8e04f72baaa3..a5639e9415f5 100644
+>>> --- a/kernel/dma/direct.c
+>>> +++ b/kernel/dma/direct.c
+>>> @@ -580,12 +580,12 @@ int dma_direct_supported(struct device *dev, u64=
+=20
+>>> mask)
+>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /*
+>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 * This check needs to be against t=
+he actual bit mask value, so use
+>>> -=C2=A0=C2=A0=C2=A0=C2=A0 * phys_to_dma_unencrypted() here so that the =
+SME encryption mask=20
+>>> isn't
+>>> +=C2=A0=C2=A0=C2=A0=C2=A0 * __phys_to_dma() here so that the arch speci=
+fic encryption mask=20
+>>> isn't
+>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 * part of the check.
+>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 */
+>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (IS_ENABLED(CONFIG_ZONE_DMA))
+>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 min_mask =3D min=
+_t(u64, min_mask, zone_dma_limit);
+>>> -=C2=A0=C2=A0=C2=A0 return mask >=3D phys_to_dma_unencrypted(dev, min_m=
+ask);
+>>> +=C2=A0=C2=A0=C2=A0 return mask >=3D __phys_to_dma(dev, min_mask);
+>>=20
+>> This is wrong, isn't it ? For e.g., for CCA, even though the "Flag" is
+>> added to the PA, it is really part of the actual "PA" and thus must be
+>> checked against the full PA ?
+>
+> Yes, it's much the same as for AMD SEV (albeit the other way round) -=20
+> the encryption/decryption bit is part of the DMA address because it=20
+> needs to be driven by the device, so it is crucial that the device's DMA=
+=20
+> mask is capable of expressing that.
+>
 
-are available in the Git repository at:
+Commit c92a54cfa0257e8ffd66b2a17d49e9c0bd4b769f explains these details.
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/mszyprowski/linux.git tags/dma-mapping-6.19-2026-01-20
+I was wondering whether the DMA-enable operation should live outside the
+set_mask operation. Conceptually, set_mask should be derived purely from
+max_pfn, while the DMA enablement path could additionally verify whether
+the device requires access to an alias address, depending on whether it
+is operating in trusted or untrusted mode?
 
-for you to fetch changes up to c6ccd098807483762ccd726e1498bac5a71d0005:
+>
+> Hence, as I think we've discussed before, for CCA we can't really=20
+> support 32-bit devices doing DMA to shared pages at all, unless the=20
+> whole VM is limited to a 31-bit IPA space.
+>
 
-  dma/pool: Avoid allocating redundant pools (2026-01-14 11:00:00 +0100)
-
-----------------------------------------------------------------
-dma-mapping fixes for Linux 6.19
-
-- minor fixes for the corner cases of the SWIOTLB pool management (Robin Murphy)
-
-----------------------------------------------------------------
-Robin Murphy (3):
-      dma/pool: Improve pool lookup
-      mm_zone: Generalise has_managed_dma()
-      dma/pool: Avoid allocating redundant pools
-
- include/linux/mmzone.h |  9 +++++----
- kernel/dma/pool.c      | 27 ++++++++++++++++++---------
- mm/page_alloc.c        |  8 ++------
- 3 files changed, 25 insertions(+), 19 deletions(-)
-
-----------------------------------------------------------------
-
-Thanks!
-
-Best regards
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
-
-
+-aneesh
