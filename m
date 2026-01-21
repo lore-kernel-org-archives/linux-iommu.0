@@ -1,121 +1,80 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D421339B30;
-	Wed, 21 Jan 2026 14:55:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 41EF6421F1D;
+	Wed, 21 Jan 2026 15:11:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769007329; cv=none; b=lWVciuywU2+hMOWizSEepmF2CIdBEew+lEy9NvWA94Ma9jMgnBSF6BJUmvUCVmUuAeEz+OethDYEtzsL5DdvMQWtPLsEX3BBNv1xVK4RIAHROEXMjczYGLEL1gOEEszUFLczx8VHGMeJnMz32sM1XYDADfOBgZkBYhNdabUQ2V8=
+	t=1769008269; cv=none; b=n6fT1tAhxcm9wBjuA/XyRgxLdYFblia6IZVLGQmCvmek+tnhejPjE1GMWcoEO9GgJuexK+w/mJptgKX5DrGaAVGhNOLGZsJqiqUnCPkPcb4sHpj1k7JpQLjAG7zOWD99AE/DXZY6lC404Vz4WwUGiRkH8tcgB9vG3kcvKvUYErU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769007329; c=relaxed/simple;
-	bh=CXwnx1t8wyz3VfpGOXzehAEuCOrJbBBjpxzQID/HcVA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Qr+O2b2jDLEx6LRDxmIXix+jrGLQWQqTO4OBam/84XGG9rR4wKHrCBMvto/gZdttRMcO/cVSzW9QDwz68jVineXNHWWaxKYdzYsJ80nFsezG6pKHh4TQ2MG1QX97RfvCsF9a4PlMjchsErlgPpU6eXYa50arjbchoOiHcJkDuhA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=NtqfizRY; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="NtqfizRY"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F6B7C19421;
-	Wed, 21 Jan 2026 14:55:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1769007329;
-	bh=CXwnx1t8wyz3VfpGOXzehAEuCOrJbBBjpxzQID/HcVA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=NtqfizRYBdSsyCyq9fi6KoYVYQMyPZLrKZluAjqj/oIPVsw06CnuH+XQRrofRAyGR
-	 ZtkCJxMdBJYjIYMENQNp+kHVl+bdFtL007y604SMZaFrRiqdeXlFSK75La1HD7YTz6
-	 zyMFNz3Ctzk9TwF7PUAP8HsPaBECSKi972VxDhbE=
-Date: Wed, 21 Jan 2026 15:55:25 +0100
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Mario Limonciello <superm1@kernel.org>,
-	Mario Limonciello <mario.limonciello@amd.com>,
-	regressions <regressions@lists.linux.dev>, stable@vger.kernel.org,
-	iommu@lists.linux.dev, "Hegde, Vasant" <Vasant.Hegde@amd.com>,
-	"Hou, Lizhi" <lizhi.hou@amd.com>
-Subject: Re: IOMMU regression in linux-6.18.y
-Message-ID: <2026012113-multiple-stunned-0f64@gregkh>
-References: <870872aa-28e9-412a-bac6-8020bf560e4f@amd.com>
- <c51ed4bf-ec2a-45f1-a077-8e2236076827@kernel.org>
- <3fccd233-c5cf-4252-98ea-61f240f82695@linux.intel.com>
- <2026012112-phantom-music-f6e8@gregkh>
- <da9eddb1-305a-491a-9e00-e30ec20dbef3@linux.intel.com>
+	s=arc-20240116; t=1769008269; c=relaxed/simple;
+	bh=pl9AN7mrkmrrcSPY7LzRnmTnRRdHbG6I4Yzm1E/3Vs8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=IUGkyVb+pZf3pRmNAxxuLU30IpP9Yl5IZdkfmgvNU5PDDWAMJ2aAan8AzBAuuSymAJOHWL3ZXOu9YvM1nHdZwMmgCQSZvqN2i+nxbt7hfFpY90zWp5x7tqZCxFRKuwu3zYlDqFQOavA4mRnboGuWbELQrsb2Jo//nOTiuMd5Pck=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EEF4D1476;
+	Wed, 21 Jan 2026 07:10:59 -0800 (PST)
+Received: from [10.1.196.85] (e121345-lin.cambridge.arm.com [10.1.196.85])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 897FF3F632;
+	Wed, 21 Jan 2026 07:11:04 -0800 (PST)
+Message-ID: <56506bb7-89ff-4b7a-9cb3-42f6ecf4dc6a@arm.com>
+Date: Wed, 21 Jan 2026 15:11:03 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <da9eddb1-305a-491a-9e00-e30ec20dbef3@linux.intel.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu/arm-smmu-qcom: do not register driver in probe()
+To: Danilo Krummrich <dakr@kernel.org>, gregkh@linuxfoundation.org,
+ rafael@kernel.org, broonie@kernel.org, will@kernel.org, joro@8bytes.org,
+ robin.clark@oss.qualcomm.com, hanguidong02@gmail.com,
+ quic_c_gdjako@quicinc.com, dmitry.baryshkov@oss.qualcomm.com
+Cc: driver-core@lists.linux.dev, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ linux-arm-msm@vger.kernel.org
+References: <20260121141215.29658-1-dakr@kernel.org>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20260121141215.29658-1-dakr@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Jan 21, 2026 at 03:32:42PM +0800, Baolu Lu wrote:
-> On 1/21/26 15:26, Greg KH wrote:
-> > On Wed, Jan 21, 2026 at 03:14:42PM +0800, Baolu Lu wrote:
-> > > On 1/21/26 13:26, Mario Limonciello wrote:
-> > > > 
-> > > > 
-> > > > On 1/20/26 8:08 PM, Mario Limonciello wrote:
-> > > > > Hi,
-> > > > > 
-> > > > > Recently I found out that amdxdna stopped working in linux-6.18.4.
-> > > > > This is because of this commit in linux-6.18.y:
-> > > > > 
-> > > > > commit c341dee80b5d ("iommu: disable SVA when CONFIG_X86 is set")
-> > > > > 
-> > > > > That was originally backported from upstream:
-> > > > > 
-> > > > > commit 72f98ef9a4be ("iommu: disable SVA when CONFIG_X86 is set")
-> > > > > 
-> > > > > ---
-> > > > > 
-> > > > > SVA support is a requirement for amdxdna.
-> > > > > 
-> > > > > The series that this commit came from was part of a larger 8 patch
-> > > > > series, but this was the only commit that was CC'ed to stable.
-> > > > > 
-> > > > > As a result this is not broken in 6.19-rc, but it is broken in
-> > > > > linux-6.18.y (and presumably any older stable kernels still around
-> > > > > that picked it up).
-> > > > > 
-> > > > > So there are two options I see:
-> > > > > 
-> > > > > 1) Revert c341dee80b5d in linux-6.18.y (and any other stable kernel
-> > > > > that picked it up but has amdxdna)
-> > > > > 
-> > > > > 2) Bring the entire 8 patch series to linux-6.18.y.
-> > > > > 
-> > > > > This is the entire series (I didn't look up the hashes from
-> > > > > mainline, but they should have all landed):
-> > > > > https://lore.kernel.org/linux-iommu/20251022082635.2462433-1-
-> > > > > baolu.lu@linux.intel.com/
-> > > > > 
-> > > > > What should we do?
-> > > > > 
-> > > > 
-> > > > If the decision is to take the remaining commits to 6.18.y to fix this I
-> > > > did confirm they cleanly cherry pick and build.  Here are the hashes.
-> > > > 
-> > > > commit 27bfafac65d8 ("mm: add a ptdesc flag to mark kernel page tables")
-> > > > commit 977870522af3 ("mm: actually mark kernel page table pages")
-> > > > commit 412d000346ea ("x86/mm: use 'ptdesc' when freeing PMD pages")
-> > > > commit 018942956723 ("mm: introduce pure page table freeing function")
-> > > > commit bf9e4e30f353 ("x86/mm: use pagetable_free()")
-> > > > commit 5ba2f0a15564 ("mm: introduce deferred freeing for kernel page
-> > > > tables")
-> > > > commit e37d5a2d60a3 ("iommu/sva: invalidate stale IOTLB entries for
-> > > > kernel address space")
-> > > > 
-> > > 
-> > > Yes. These patches fix a security issue in iommu/sva on x86 and restore
-> > > the SVA functionality.
-> > 
-> > So all should be backported?  If so, great, but why were they not tagged
-> > as such?
+On 21/01/2026 2:12 pm, Danilo Krummrich wrote:
+> Commit 0b4eeee2876f ("iommu/arm-smmu-qcom: Register the TBU driver in
+> qcom_smmu_impl_init") intended to also probe the TBU driver when
+> CONFIG_ARM_SMMU_QCOM_DEBUG is disabled, but also moved the corresponding
+> platform_driver_register() call into qcom_smmu_impl_init() which is
+> called from arm_smmu_device_probe().
 > 
-> Yes, they should be backported. I am sorry; we should have tagged them
-> at the time we upstreamed them.
+> However, it neither makes sense to register drivers from probe()
+> callbacks of other drivers, nor does the driver core allow registering
+> drivers with a device lock already being held.
+> 
+> The latter was revealed by commit dc23806a7c47 ("driver core: enforce
+> device_lock for driver_match_device()") leading to a deadlock condition
+> described in [1].
+> 
+> Additionally, it was noted by Robin that the current approach is
+> potentially racy with async probe [2].
 
-Ok, all now queued up, thanks.
+On third look, the current lack of unregister, when it can end up in a 
+module which (theoretically) supports unloading, is also sketchy :)
 
-greg k-h
+> Hence, fix this by registering the qcom_smmu_tbu_driver from
+> module_init(). Unfortunately, due to the vendoring of the driver, this
+> requires an indirection through arm-smmu-impl.c.
+ >
+> Reported-by: Mark Brown <broonie@kernel.org>
+> Closes: https://lore.kernel.org/lkml/7ae38e31-ef31-43ad-9106-7c76ea0e8596@sirena.org.uk/
+> Link: https://lore.kernel.org/lkml/DFU7CEPUSG9A.1KKGVW4HIPMSH@kernel.org/ [1]
+> Link: https://lore.kernel.org/lkml/0c0d3707-9ea5-44f9-88a1-a65c62e3df8d@arm.com/ [2]
+> Fixes: dc23806a7c47 ("driver core: enforce device_lock for driver_match_device()")
+> Fixes: 0b4eeee2876f ("iommu/arm-smmu-qcom: Register the TBU driver in qcom_smmu_impl_init")
+> Signed-off-by: Danilo Krummrich <dakr@kernel.org>
+
+Looks OK to me, thanks Danilo!
+
+Acked-by: Robin Murphy <robin.murphy@arm.com>
