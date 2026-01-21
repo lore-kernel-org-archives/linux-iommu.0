@@ -1,87 +1,84 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A33773BF30D;
-	Wed, 21 Jan 2026 16:02:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3632B2DE1E0;
+	Wed, 21 Jan 2026 16:05:42 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769011378; cv=none; b=SkN8066w5/GUWAAfgI04JB01B+hBRtvph87ePUL/Q9S9btTe3Cc/YAsyq9vBrwjHF1f40mCqBannmyEqbqHvt8YYjQz3vKpexHukPD79c65zxDSe7OGmyRojistg7JKCkzbagP/Jl02nE1yn/KRY3x3coZHg4N/5iWEh5d1EsTA=
+	t=1769011543; cv=none; b=LJTc7AuPgmvEcJTF81IGFtiFW8I+PCWqeFG1i3CcvN/B8/vjXU5J+6fs0e4m930FAJ44qR/RqGZsQdEHhnv/asBJ1kWwb4jyFivhA5heeGjNT98AQetKdTLv/+EW7d6+59VHOLvcap9lbI2hzUAUrpolUKxIjcFP86b9lZYF4gg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769011378; c=relaxed/simple;
-	bh=F9bPyEYde8jlWbcHshXKq3vOhM722s15C6Irbdet8y4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=OUTcnvIN6CwsfOj0KN02dXB2G9VxKZOHdPyQPmpYWbPy00vyV9WOX6Vg3zVxpqg0nAjdSiuj0fbgGXYjfbzxBDWP3W0cFvxX8uQ0us0wQSYtbUUcUYHJEFgmmQFpXcx1apDJ3j4ya6fXL7Irg8IIIRsIQeXLnN6N1+v09DFpDfc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UEjgfzQ3; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1769011543; c=relaxed/simple;
+	bh=+XXifxIzgcTJ3aqY5fFJg3+/NCrXj9uBQTF3nUjPP9c=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=OeC1nHaGaqMX8S2m9s7E3Nf3crlQeLBlO7ICiK4mGd9TT/Nt+U3fAd5lbChgoEAJLKk84ShZGOZyPyncqZqncZ4yBQQR+n9Xp47aRFWf/yE0rEM4W8BgR8Q69UuziAN9cYTUHIQvFTTqs6qGe5QctfflxsdxgnnpCEWG/n2Bv+Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hUn5CB4I; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UEjgfzQ3"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F623C4CEF1;
-	Wed, 21 Jan 2026 16:02:53 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hUn5CB4I"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C317C116D0;
+	Wed, 21 Jan 2026 16:05:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1769011378;
-	bh=F9bPyEYde8jlWbcHshXKq3vOhM722s15C6Irbdet8y4=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=UEjgfzQ3Yy0qFP25NRRt1WZG1cmk7k0VEnQyB8xip8s2J6UnYdkTSBrR1Yq5U5+uE
-	 0/AMp8dQ8UaAL5vlNQGvE9xgYcRJVF0kJWMhmWCsTdQNmZVK9sqPcE4qTgwq9H8WSj
-	 +edWOKkfUP1XsY2kX/WO0nFvUK1NoTGdG+c5J/t7AK6agi9xolmIkOLVY+xnrq6eyI
-	 cR34/ZA8hz0wwyIEkWqCXlqQVA7JQ6csR+zf/w4CwHgQ8FI+Drz8Fh26vbcjxjMiep
-	 BGokjRjztegbw7pmQzjoicX9UM4NLWmZ7j6cw72innV0l4eFnts4DACl/UfmFE2gFl
-	 I9owkn1KBx8fg==
-Message-ID: <35780b65-8c95-4d58-8d4a-2f451cf5377d@kernel.org>
-Date: Wed, 21 Jan 2026 17:02:50 +0100
+	s=k20201202; t=1769011542;
+	bh=+XXifxIzgcTJ3aqY5fFJg3+/NCrXj9uBQTF3nUjPP9c=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=hUn5CB4IDHqmXukCU9BcL26Tvfs2z2HQcgoOZ8LRzJonMdVZcU/eZXWSiWPRappxn
+	 ZOiCU1bbToiOU2MroEzxliimiv3Pdoc2iN4ELl5E61Y5DZtgNfCk/knferG74NiWuU
+	 napIpiKCyCo9VEhy0x1y6DDWS7nDGv3WaNs6xothT8Ra3LVzfkRregRCUC2xW2iEAt
+	 HSYQ6z+qjgpEUWEsXrvQXmjBBKAiGoNfoDE6+cKOCg+zAp14ys+OaFww0eEWrhHdIP
+	 yT/yEtNKoM6vtt1Bqwo5Qrkx7IMrTd74qeTCrxO+ZQ7A2qrU7srGVFwkZ4uywFL10z
+	 esSnPABlYVSjA==
+Date: Wed, 21 Jan 2026 16:05:37 +0000
+From: Mark Brown <broonie@kernel.org>
+To: Danilo Krummrich <dakr@kernel.org>
+Cc: gregkh@linuxfoundation.org, rafael@kernel.org, will@kernel.org,
+	robin.murphy@arm.com, joro@8bytes.org, robin.clark@oss.qualcomm.com,
+	hanguidong02@gmail.com, quic_c_gdjako@quicinc.com,
+	dmitry.baryshkov@oss.qualcomm.com, driver-core@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH] iommu/arm-smmu-qcom: do not register driver in probe()
+Message-ID: <02db754c-b689-45f0-92da-521e273f025e@sirena.org.uk>
+References: <20260121141215.29658-1-dakr@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommu/arm-smmu-qcom: do not register driver in probe()
-To: Danilo Krummrich <dakr@kernel.org>, gregkh@linuxfoundation.org,
- rafael@kernel.org, broonie@kernel.org, will@kernel.org,
- robin.murphy@arm.com, joro@8bytes.org, robin.clark@oss.qualcomm.com,
- hanguidong02@gmail.com, quic_c_gdjako@quicinc.com,
- dmitry.baryshkov@oss.qualcomm.com
-Cc: driver-core@lists.linux.dev, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- linux-arm-msm@vger.kernel.org
-References: <20260121141215.29658-1-dakr@kernel.org>
-Content-Language: en-US
-From: Konrad Dybcio <konradybcio@kernel.org>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="ChzoroEYYxNMitxq"
+Content-Disposition: inline
 In-Reply-To: <20260121141215.29658-1-dakr@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-Cookie: Eschew obfuscation.
 
-On 1/21/26 3:12 PM, Danilo Krummrich wrote:
+
+--ChzoroEYYxNMitxq
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+On Wed, Jan 21, 2026 at 03:12:01PM +0100, Danilo Krummrich wrote:
 > Commit 0b4eeee2876f ("iommu/arm-smmu-qcom: Register the TBU driver in
 > qcom_smmu_impl_init") intended to also probe the TBU driver when
 > CONFIG_ARM_SMMU_QCOM_DEBUG is disabled, but also moved the corresponding
 > platform_driver_register() call into qcom_smmu_impl_init() which is
 > called from arm_smmu_device_probe().
-> 
-> However, it neither makes sense to register drivers from probe()
-> callbacks of other drivers, nor does the driver core allow registering
-> drivers with a device lock already being held.
-> 
-> The latter was revealed by commit dc23806a7c47 ("driver core: enforce
-> device_lock for driver_match_device()") leading to a deadlock condition
-> described in [1].
-> 
-> Additionally, it was noted by Robin that the current approach is
-> potentially racy with async probe [2].
-> 
-> Hence, fix this by registering the qcom_smmu_tbu_driver from
-> module_init(). Unfortunately, due to the vendoring of the driver, this
-> requires an indirection through arm-smmu-impl.c.
-> 
-> Reported-by: Mark Brown <broonie@kernel.org>
-> Closes: https://lore.kernel.org/lkml/7ae38e31-ef31-43ad-9106-7c76ea0e8596@sirena.org.uk/
-> Link: https://lore.kernel.org/lkml/DFU7CEPUSG9A.1KKGVW4HIPMSH@kernel.org/ [1]
-> Link: https://lore.kernel.org/lkml/0c0d3707-9ea5-44f9-88a1-a65c62e3df8d@arm.com/ [2]
-> Fixes: dc23806a7c47 ("driver core: enforce device_lock for driver_match_device()")
-> Fixes: 0b4eeee2876f ("iommu/arm-smmu-qcom: Register the TBU driver in qcom_smmu_impl_init")
-> Signed-off-by: Danilo Krummrich <dakr@kernel.org>
-> ---
 
-Acked-by: Konrad Dybcio <konradybcio@kernel.org>
+This fixes the boot lockup on Juno for me:
 
-Konrad
+Tested-by: Mark Brown <broonie@kernel.org>
+
+--ChzoroEYYxNMitxq
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmlw+VAACgkQJNaLcl1U
+h9C2Awf+JTlEPX5L1eRIkZ1G0xUwbjSgqn3cw2vE2R6ou1mn1B+Zg7AQrliouFA1
+lhr4dlAVlvMhPb0Pj855r6Xr2F7UPxR3rX203ecrbXUQoCN/NjEZkIMBFGy4Cxpr
+tvLQyKjpbijfqqPARYEke+46IlJyaykzK3175jQkx3z+tNXMfB84dbJXOntcTBwM
+adtPwEAraVaenGkGmW22AkSE1WdKPItAwic6142MyHpJHEzwc3k1ssAFmHPWuV5h
+lsdJpfidJto6uoI7BgDkZ7ufFYGgQQIQE82CG/l2lAVVlt6NtXRrzARRGlazDLSt
+viADbl4xQiZLJW5dZwom6oP7pcoS6w==
+=Sdwb
+-----END PGP SIGNATURE-----
+
+--ChzoroEYYxNMitxq--
