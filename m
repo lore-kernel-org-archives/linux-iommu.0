@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DD2E4534B6
-	for <iommu@lists.linux.dev>; Wed, 21 Jan 2026 07:29:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2744C466B57;
+	Wed, 21 Jan 2026 07:32:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768980553; cv=none; b=iHaHy49BgTYq0jLNEhhymZqgWzgMP/jlRM5RmCbAczEYw1NSTy6dUizxpn/G7QgybYzy2d67hNfHJYOiUMcohVDVMcs91t7TDx/qiX06HcZmE+NzTh9HgsXjwc9Wb8f3myhkkoNHmkFtUUzH9HZbcsz7BH0P93usTzoInIbQWb8=
+	t=1768980780; cv=none; b=sBXEeRgKbplridY7F7xHV0KpwmNzkXw0kOlH0hdIEk397qPHIL2YlCeiFQoodTgJkhnIwciiy3Zpvs3RxMmeZ4kxd48fTUomu5cslzcM27yxD1A8L5cOlTRl20MvUDnUv0O4WUZ8qOMIysspjiGIINab2JG+12mUxjvrERejPN8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768980553; c=relaxed/simple;
-	bh=sZC9/40ABxh7RwSmrB46lUvB8P+jEp+Zte5qlGC9bCA=;
+	s=arc-20240116; t=1768980780; c=relaxed/simple;
+	bh=KocdujL+epywWSUPAqXXiAES3jtX3NCdmQVHto50vZY=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=DTqPDvHdI683zv5do9pj0VOOdk3bs4kJOb7xxjyVNFUxI70t3/sl7bnISKh5UGrx0exFVnV/ISH67bCC8FR6RsJ8tBVyEdt9ptkvVrFqBtnOAFQs5ONNBoXQvl4rePcGH+hJHQIWZ98liefK374d6VRb5f28fkzh0j98Am/+lAg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=crDZVaij; arc=none smtp.client-ip=192.198.163.14
+	 In-Reply-To:Content-Type; b=WtSYTTEyX65zA4hWT+MFRYCHt9IcbU9mSWwQ0fWKL+PYPOE0wrV3RrSEg4PIOyrjSkTOqOjSyvCAcfk4t+upzHYekmxt7z8+GNWAKlWfKODFoOyBDWwHAfwBxhAuToHYgZenQKRFHF9EB1pg/3dTIJZYOmNULgdy0tYkjeiJSyw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=STSPX8t3; arc=none smtp.client-ip=198.175.65.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="crDZVaij"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="STSPX8t3"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1768980546; x=1800516546;
+  t=1768980773; x=1800516773;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=sZC9/40ABxh7RwSmrB46lUvB8P+jEp+Zte5qlGC9bCA=;
-  b=crDZVaijP6s/DYxFZZFpTSxKmMRENO4kXyOgEIaIaQ6cqwKtY6bYSrNx
-   y19TmhdeuRAwtij377GXaUwbD91+rr9uMfWXkFQb9j8NXgxtr14lo6axw
-   HmclCUNJ8VOzBiIsMX7huBE2E8pSyKgB7777vAqp4v5DacoT6KT7BOtGj
-   5jH+b7tR8EtEcpkJt+9Uj5josom7y2U4vM09OuzaXvidDz22zvAKi36b2
-   nbIGYTAf2gmSbyfxvTOTHvvT819hlZAkH+HJv1YFwOqhzD34bveTDaoRC
-   1ZJXC3OVsQawcOYPERUZwgDo38HtoDRAKv51HuVkKkWxsEWyeGhzMYpTL
-   A==;
-X-CSE-ConnectionGUID: 5R0NYUDRRTqiUGlhG13vVg==
-X-CSE-MsgGUID: sgib5lFiTx2Iz4nCZlOV5A==
-X-IronPort-AV: E=McAfee;i="6800,10657,11677"; a="70256545"
+  bh=KocdujL+epywWSUPAqXXiAES3jtX3NCdmQVHto50vZY=;
+  b=STSPX8t3P6ggVCUURQvouz6iJmAEUcyPECOr8NKbAF8/yNsFeThaY8yn
+   0087oc3HyLP4E4ycg3qYiJdpHhHPsfGfQZpDOjJt56363euueB0frEDjk
+   a8017aUKi/2O49tUcSTCwkfbD4QDoX7MSUXEzpyadP72ZJVQ5OMLf81i7
+   ZPVUOdobdrPwadG1vSZSvD7MsuMmg/wGjNnCZc1v4rc78KPRwe7vzbSA5
+   R+qq/8WYts3NEAVut351LPz6pWydWizbo1l3mnwlIHp4YzSOCM3TUaiqA
+   xzo0kofsIEwSJ9bAwT9RYBPOXxCKdgDgynPLTEKbz3d5A2MZt/h7Upb7w
+   w==;
+X-CSE-ConnectionGUID: oWAB5dmkTbKVnsrzGrADWA==
+X-CSE-MsgGUID: TAl1CxG7SLy/3yRhMDs52g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11677"; a="87615490"
 X-IronPort-AV: E=Sophos;i="6.21,242,1763452800"; 
-   d="scan'208";a="70256545"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2026 23:29:03 -0800
-X-CSE-ConnectionGUID: ydZNN5eMRzy5an+ZTsmi2Q==
-X-CSE-MsgGUID: 7RtRJt/FSuGbzTdpQP39VQ==
+   d="scan'208";a="87615490"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2026 23:32:50 -0800
+X-CSE-ConnectionGUID: cc8N6P4jTiiViNi17R1B7A==
+X-CSE-MsgGUID: jWepoUefS7Ca/BNWogF4ig==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,242,1763452800"; 
-   d="scan'208";a="206289920"
+   d="scan'208";a="205513188"
 Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2026 23:29:01 -0800
-Message-ID: <a2c1531a-f720-412f-9f39-6a6b9fabe5e7@linux.intel.com>
-Date: Wed, 21 Jan 2026 15:28:55 +0800
+  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2026 23:32:48 -0800
+Message-ID: <da9eddb1-305a-491a-9e00-e30ec20dbef3@linux.intel.com>
+Date: Wed, 21 Jan 2026 15:32:42 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,87 +52,94 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/3] iommu/vt-d: Clear Present bit before tearing down
- context entry
-To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jason Gunthorpe <jgg@nvidia.com>
-Cc: Dmytro Maluka <dmaluka@chromium.org>,
- Samiullah Khawaja <skhawaja@google.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20260120061816.2132558-1-baolu.lu@linux.intel.com>
- <20260120061816.2132558-3-baolu.lu@linux.intel.com>
- <BL1PR11MB5271F1F4DF8B6D4052D626088C96A@BL1PR11MB5271.namprd11.prod.outlook.com>
+Subject: Re: IOMMU regression in linux-6.18.y
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Mario Limonciello <superm1@kernel.org>,
+ Mario Limonciello <mario.limonciello@amd.com>,
+ regressions <regressions@lists.linux.dev>, stable@vger.kernel.org,
+ iommu@lists.linux.dev, "Hegde, Vasant" <Vasant.Hegde@amd.com>,
+ "Hou, Lizhi" <lizhi.hou@amd.com>
+References: <870872aa-28e9-412a-bac6-8020bf560e4f@amd.com>
+ <c51ed4bf-ec2a-45f1-a077-8e2236076827@kernel.org>
+ <3fccd233-c5cf-4252-98ea-61f240f82695@linux.intel.com>
+ <2026012112-phantom-music-f6e8@gregkh>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BL1PR11MB5271F1F4DF8B6D4052D626088C96A@BL1PR11MB5271.namprd11.prod.outlook.com>
+In-Reply-To: <2026012112-phantom-music-f6e8@gregkh>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-On 1/21/26 14:23, Tian, Kevin wrote:
->> From: Lu Baolu <baolu.lu@linux.intel.com>
->> Sent: Tuesday, January 20, 2026 2:18 PM
+On 1/21/26 15:26, Greg KH wrote:
+> On Wed, Jan 21, 2026 at 03:14:42PM +0800, Baolu Lu wrote:
+>> On 1/21/26 13:26, Mario Limonciello wrote:
+>>>
+>>>
+>>> On 1/20/26 8:08 PM, Mario Limonciello wrote:
+>>>> Hi,
+>>>>
+>>>> Recently I found out that amdxdna stopped working in linux-6.18.4.
+>>>> This is because of this commit in linux-6.18.y:
+>>>>
+>>>> commit c341dee80b5d ("iommu: disable SVA when CONFIG_X86 is set")
+>>>>
+>>>> That was originally backported from upstream:
+>>>>
+>>>> commit 72f98ef9a4be ("iommu: disable SVA when CONFIG_X86 is set")
+>>>>
+>>>> ---
+>>>>
+>>>> SVA support is a requirement for amdxdna.
+>>>>
+>>>> The series that this commit came from was part of a larger 8 patch
+>>>> series, but this was the only commit that was CC'ed to stable.
+>>>>
+>>>> As a result this is not broken in 6.19-rc, but it is broken in
+>>>> linux-6.18.y (and presumably any older stable kernels still around
+>>>> that picked it up).
+>>>>
+>>>> So there are two options I see:
+>>>>
+>>>> 1) Revert c341dee80b5d in linux-6.18.y (and any other stable kernel
+>>>> that picked it up but has amdxdna)
+>>>>
+>>>> 2) Bring the entire 8 patch series to linux-6.18.y.
+>>>>
+>>>> This is the entire series (I didn't look up the hashes from
+>>>> mainline, but they should have all landed):
+>>>> https://lore.kernel.org/linux-iommu/20251022082635.2462433-1-
+>>>> baolu.lu@linux.intel.com/
+>>>>
+>>>> What should we do?
+>>>>
+>>>
+>>> If the decision is to take the remaining commits to 6.18.y to fix this I
+>>> did confirm they cleanly cherry pick and build.  Here are the hashes.
+>>>
+>>> commit 27bfafac65d8 ("mm: add a ptdesc flag to mark kernel page tables")
+>>> commit 977870522af3 ("mm: actually mark kernel page table pages")
+>>> commit 412d000346ea ("x86/mm: use 'ptdesc' when freeing PMD pages")
+>>> commit 018942956723 ("mm: introduce pure page table freeing function")
+>>> commit bf9e4e30f353 ("x86/mm: use pagetable_free()")
+>>> commit 5ba2f0a15564 ("mm: introduce deferred freeing for kernel page
+>>> tables")
+>>> commit e37d5a2d60a3 ("iommu/sva: invalidate stale IOTLB entries for
+>>> kernel address space")
+>>>
 >>
->> When tearing down a context entry, the current implementation zeros the
->> entire 128-bit entry using multiple 64-bit writes. This creates a window
->> where the hardware can fetch a "torn" entry — where some fields are
->> already zeroed while the 'Present' bit is still set — leading to
->> unpredictable behavior or spurious faults.
->>
->> While x86 provides strong write ordering, the compiler may reorder writes
->> to the two 64-bit halves of the context entry. Even without compiler
->> reordering, the hardware fetch is not guaranteed to be atomic with
->> respect to multiple CPU writes.
->>
->> Align with the "Guidance to Software for Invalidations" in the VT-d spec
->> (Section 6.5.3.3) by implementing the recommended ownership handshake:
->>
->> 1. Clear only the 'Present' (P) bit of the context entry first to
->>     signal the transition of ownership from hardware to software.
->> 2. Use dma_wmb() to ensure the cleared bit is visible to the IOMMU.
->> 3. Perform the required cache and context-cache invalidation to ensure
->>     hardware no longer has cached references to the entry.
->> 4. Fully zero out the entry only after the invalidation is complete.
->>
->> Also, add a dma_wmb() to context_set_present() to ensure the entry
->> is fully initialized before the 'Present' bit becomes visible.
->>
->> Fixes: ba39592764ed2 ("Intel IOMMU: Intel IOMMU driver")
->> Reported-by: Dmytro Maluka <dmaluka@chromium.org>
->> Closes: https://lore.kernel.org/all/aTG7gc7I5wExai3S@google.com/
->> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> Yes. These patches fix a security issue in iommu/sva on x86 and restore
+>> the SVA functionality.
 > 
-> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-> 
-> btw there is a context_clear_entry() for copied context entry in
-> device_pasid_table_setup(), but this patch doesn't touch that
-> path. It seems to assume that no in-flight DMA will exist at that
-> point:
-> 
->          if (context_copied(iommu, bus, devfn)) {
->                  context_clear_entry(context);
->                  ...
->                  /*
->                   * At this point, the device is supposed to finish reset at
->                   * its driver probe stage, so no in-flight DMA will exist,
->                   * and we don't need to worry anymore hereafter.
->                   */
->                  clear_context_copied(iommu, bus, devfn);
-> 
-> Is that guaranteed by all devices? from kdump feature p.o.v. if
-> that assumption is broken it just means potential DMA errors
-> in this transition window. But regarding to the issue which this
-> patch tries to fix, in-fly DMAs may lead to undesired behaviors
-> including memory corruption etc.
-> 
-> So, should it be fixed too?
+> So all should be backported?  If so, great, but why were they not tagged
+> as such?
 
-This path is triggered when the device driver has probed the device
-(ensuring it has been reset) and then calls the kernel DMA API for the
-first time. At this stage, there should be no in-flight DMAs. We can
-apply the same logic here to improve code readability, but this is not a
-bug that requires a fix. Or not?
+Yes, they should be backported. I am sorry; we should have tagged them
+at the time we upstreamed them.
+
+> 
+> thanks,
+> 
+> greg k-h
+> 
 
 Thanks,
 baolu
