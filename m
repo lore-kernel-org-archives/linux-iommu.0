@@ -1,156 +1,87 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00824330675
-	for <iommu@lists.linux.dev>; Wed, 21 Jan 2026 18:13:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3331B25744D;
+	Wed, 21 Jan 2026 18:43:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769019236; cv=none; b=uKh5SWlsiPMxEomqmNFuf1bJCf7w+n3pUUwq/4HHRu14cFKD1QE4PkWm61HOHt8W5VJhu8QZyMmLBSpBl3wsfpPW9l2y4xWLuhiwm/G5QotuqbRWEDe2iWBLS5Cp/65lTin6TBS85x4CaRsslJ3xOH/HKZMrCqtHO9lEuXrZcP4=
+	t=1769021038; cv=none; b=o683k01ds3dKjPqFPqjaR7WI/+HjUbtCrOrWpvLbP02iV3Ykd3yH9gjCFuEyR4tBtm3kBsU86Jmgkzbapcwd04XDvlwVYCn3CHWZviIuteCkQbducjfR4f06tcOFW/E1asQRKvHs9RpYaOFdtK5yCAZAFSl8ngTMpx9vaaB8p10=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769019236; c=relaxed/simple;
-	bh=C28c/EW5CuQsoDdUsx8dGqG9K8fs0K81D2a2muNH+l8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=u+XDr1xngho6yoB277BV6hGTqxP7bz8pSnabtBRbl2JXi0MYcN9hetpftIdbasBX+q+MFubeOK2CBaQ6naexnud4LSnZrGtdiROQ6B2ZKseA4WU2qfUP5tPqu6tyvCckM1uTT7xDnDaep2qaWdNa94gJvDLH8JZRJZJnDqmA26Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=BLmpl0cV; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1769021038; c=relaxed/simple;
+	bh=NIsmmpLGKbWhPgew24tZd6Itt6nMHVhnQNdKYu+CduM=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Giq7/20uEDHwWAHfRBp5PL/MftexTQh1QullzwLKLD+lf7UxOXL96OC7c5qn4J7x+ZwSmgvAra1tm2PQlH+rfwJRY9AKaqmFPuIvpIKEIW0qiOjM/tsP+GZe3XM1OP743wIL11dAODphYt2yepLDkUE4JW214oqFTNp2QHl5l/k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=n6QXdMF+; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="BLmpl0cV"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1769019233;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Ynpg/cJ+vd3nqyV8BLe/SIqtaIrKy7cylnYrcUttxQg=;
-	b=BLmpl0cVbQsXY+sk0BfiWUfKfmtlMwJObd70KwK9hI0gHlIWe6G2MYT5RXuw0/zH25LyOg
-	N6SOvTW+lMHkc7HtGvhRYUntm0RwVbJN8iCC47O1iIzr632SMNaEhsp67l/TBYPJD2QVHx
-	RVPogjzbO0oMo+Hgl76GgUST+AVBeEg=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-209-luc8IYzJMGeASPfzr9Q4wA-1; Wed, 21 Jan 2026 13:13:52 -0500
-X-MC-Unique: luc8IYzJMGeASPfzr9Q4wA-1
-X-Mimecast-MFC-AGG-ID: luc8IYzJMGeASPfzr9Q4wA_1769019231
-Received: by mail-wr1-f69.google.com with SMTP id ffacd0b85a97d-4325b81081aso83805f8f.3
-        for <iommu@lists.linux.dev>; Wed, 21 Jan 2026 10:13:52 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769019231; x=1769624031;
-        h=content-transfer-encoding:in-reply-to:content-language:from
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Ynpg/cJ+vd3nqyV8BLe/SIqtaIrKy7cylnYrcUttxQg=;
-        b=U1MwHDxQ3yyCAIM4G5ZbC94jNC5pkUeGUhuOFuUtoIjxdh9A7lSfr+BDs38pe2hQRV
-         /x2zomm5bZ4vV+O3SwsqnmRmzDTyiSS2WHBcMlbdPIxVOn1NsNCPJjesRZby7OJzMqdE
-         TNvgH9MDdOseEdfdeZdbk3gLhLMNPyUtAjexUlDQLbhix/jryaSw3VnCoiW+ULRh22Xt
-         lfsuIzCb67qfg6nG/DCCEvOusf08JNw7FIUIaNsacPUbZdBU9fi/8Rt+kgmgwAf6eF1E
-         RTJpjghpjJ5N7T15tNYDermGBzXFP7kA/Rv9YdRJbwkAQRI5hfGD8YKw7pX5A8iBf3n3
-         ChCQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUe7V0DxGRgJpRU+M1QuEAp6EqUKaZl7LFktW6mJYU7FXBUYQ9boxMUxIaOGUPvSSagPQBuKg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yy3NiGo1DAzw1nBMY02lA0Ssl4qcA/GABUdof9G93Av2FyCfxoX
-	qbfkGY0Szmy/WNw0gYVEx6pClLGjnECPapNhXC7ynZLg6CXq6swVTUrI5s6qQSMiGfVo1KN9u7r
-	S2XIcXLEo2zbQ85EqxBmKwXMGoLd1z4kSaV4/nqc2rhRWILqQpuX6bn6D
-X-Gm-Gg: AZuq6aLN92afJX0H/eqPV3Qqxab87u0W0VohhJe2PuctgLX1QEXgJM6oHOT4/BLN2Ps
-	yeGp1bWmH+5Il/gxmmddV5SmswgTAmjTw947sBEKxOdFG5TjgPJDxHqXhijGfIM8u8oc3o1ZDQy
-	BM4uMkVJ9wN7TBm7VGFUWBSr85QHWobelB0V0IxanAw81OW8+7ZpJTs0cR4you17GzMEAerHZrQ
-	c3EI9x5kc1LGf9vJ3oEem+InN9ByyDkm7l83kM+8MAYrEwRXENg2EWHIleFoHP2lvtusaYoN8vt
-	8qNZp48DLWvXf4WpAV6wlszPEPpaNHJLz2hg123lvVFE9vgpu+caIZ5/gPe2CwYskq+Q8Rv+h9E
-	kkT3qtfqPOjtdBW53urK5Vr7lmpKyj3PGpwyzWaXhNMthYe+ePBdaUydHvXvQmvrf5utgg0QboU
-	nir81qeG8YwzMOdw==
-X-Received: by 2002:a5d:4688:0:b0:435:95c9:6891 with SMTP id ffacd0b85a97d-43595c96bcamr7351149f8f.42.1769019231265;
-        Wed, 21 Jan 2026 10:13:51 -0800 (PST)
-X-Received: by 2002:a5d:4688:0:b0:435:95c9:6891 with SMTP id ffacd0b85a97d-43595c96bcamr7351114f8f.42.1769019230831;
-        Wed, 21 Jan 2026 10:13:50 -0800 (PST)
-Received: from [192.168.10.48] ([151.61.26.160])
-        by smtp.googlemail.com with ESMTPSA id ffacd0b85a97d-43569921da2sm38550536f8f.1.2026.01.21.10.13.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 21 Jan 2026 10:13:49 -0800 (PST)
-Message-ID: <5bea843b-dec8-4f15-bb7c-1d0550542034@redhat.com>
-Date: Wed, 21 Jan 2026 19:13:43 +0100
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="n6QXdMF+"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E864C4CEF1;
+	Wed, 21 Jan 2026 18:43:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1769021038;
+	bh=NIsmmpLGKbWhPgew24tZd6Itt6nMHVhnQNdKYu+CduM=;
+	h=From:To:Cc:Subject:Date:From;
+	b=n6QXdMF+AkyZsmWsB5Kvfi+uVgnUz7vd6n26ICpoWR+t97+hJlZhiOYyVvY59wmQc
+	 MlDMWVFJhfZ59t5CXX32glMb9bSFSXV84ins247ZaA7RrteF/Sxv/VxwhBTN9Jk6zX
+	 Let4ClRljARefhTZDRSs40Q+GN9L3f8bSo4Bem/xhlI1lDA+PpIRUxKVFHiLccfnKn
+	 yz0cPkF7DX+1WcsDXUhT1hyl8iJhpls8qjDBjtx0Z4aoafTet8sdfsvPp2m8kH9H74
+	 9kRLKsYKiIc8gj1hTpN5UH8+96Z9sYgnOWu2AHFct8+a+0+3ie1Ol6aYMxsCTbqEyx
+	 RtM3UsEl4HGSg==
+From: Miguel Ojeda <ojeda@kernel.org>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Miguel Ojeda <ojeda@kernel.org>
+Cc: Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux.dev,
+	Boqun Feng <boqun.feng@gmail.com>,
+	Gary Guo <gary@garyguo.net>,
+	=?UTF-8?q?Bj=C3=B6rn=20Roy=20Baron?= <bjorn3_gh@protonmail.com>,
+	Benno Lossin <lossin@kernel.org>,
+	Andreas Hindborg <a.hindborg@kernel.org>,
+	Alice Ryhl <aliceryhl@google.com>,
+	Trevor Gross <tmgross@umich.edu>,
+	Danilo Krummrich <dakr@kernel.org>,
+	rust-for-linux@vger.kernel.org,
+	Mark Brown <broonie@kernel.org>
+Subject: [PATCH 1/2] rust: iommu: fix Rust formatting
+Date: Wed, 21 Jan 2026 19:43:38 +0100
+Message-ID: <20260121184339.74256-1-ojeda@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: possible deadlock due to irq_set_thread_affinity() calling into
- the scheduler (was Re: [PATCH v3 38/62] KVM: SVM: Take and hold ir_list_lock
- across IRTE updates in IOMMU)
-To: Thomas Gleixner <tglx@kernel.org>, Ankit Soni <Ankit.Soni@amd.com>,
- Sean Christopherson <seanjc@google.com>, Marc Zyngier <maz@kernel.org>
-Cc: Oliver Upton <oliver.upton@linux.dev>, Joerg Roedel <joro@8bytes.org>,
- David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
- linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev,
- kvm@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- Sairaj Kodilkar <sarunkod@amd.com>, Vasant Hegde <vasant.hegde@amd.com>,
- Maxim Levitsky <mlevitsk@redhat.com>,
- Joao Martins <joao.m.martins@oracle.com>,
- Francesco Lavra <francescolavra.fl@gmail.com>,
- David Matlack <dmatlack@google.com>, Naveen Rao <Naveen.Rao@amd.com>,
- Crystal Wood <crwood@redhat.com>
-References: <20250611224604.313496-2-seanjc@google.com>
- <20250611224604.313496-40-seanjc@google.com>
- <njhjud3e6wbdftzr3ziyuh5bhyvc5ndt5qvmg7rlvh5isoop2l@f2uxctws2c7d>
- <42513cb3-3c2e-4aa8-b748-23b6656a5096@redhat.com> <874iovu742.ffs@tglx>
- <87pl7jsrdg.ffs@tglx>
-From: Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <87pl7jsrdg.ffs@tglx>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: QcWB0w1Y3EgkIVW3WpJ34gVE25PCU1g3qGfWsoJa4WQ_1769019231
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-Sorry, not sure how the previous email ended up encrypted.
+The Rust kernel code should be kept `rustfmt`-clean [1].
 
-On 1/8/26 22:53, Thomas Gleixner wrote:
-> On Thu, Jan 08 2026 at 22:28, Thomas Gleixner wrote:
->> On Mon, Dec 22 2025 at 15:09, Paolo Bonzini wrote:
->>> Of the three, the most sketchy is (a); notably, __setup_irq() calls
->>> wake_up_process outside desc->lock.  Therefore I'd like so much to treat
->>> it as a kernel/irq/ bug; and the simplest (perhaps too simple...) fix is
->>
->> It's not more sketchy than VIRT assuming that it can do what it wants
->> under rq->lock. 🙂
->
-> And just for the record, that's not the only place in the irq core which
-> has that lock chain.
->
-> irq_set_affinity_locked()       // invoked with desc::lock held
->     if (desc->affinity_notify)
->        schedule_work()           // Ends up taking rq::lock
->
-> and that's the case since cd7eab44e994 ("genirq: Add IRQ affinity
-> notifiers"), which was added 15 years ago.
->
-> Are you still claiming that this is a kernel/irq bug?
+Thus run the `rustfmt` target to fix the formatting issue.
 
-Not really, I did say I'd like to treat it as a kernel/irq bug...
-but certainly didn't have hopes high enough to "claim" that.
-I do think that it's ugly to have locks that are internal,
-non-leaf and held around callbacks; but people smarter than
-me have thought about it and you can't call it a bug anyway.
+Link: https://rust-for-linux.com/contributing#submit-checklist-addendum [1]
+Fixes: 2e2f6b0ef855 ("rust: iommu: add io_pgtable abstraction")
+Signed-off-by: Miguel Ojeda <ojeda@kernel.org>
+---
+It would be nice to clean this up, so that Mark may start enforcing it
+in linux-next -- thanks!
 
-For x86/AMD we have a way to fix it, so that part is not a problem.
+Please feel free to rebase if needed instead.
 
-For the call(*) to irq_set_affinity() in arch/arm64/kvm/'s
-vgic_v4_load() I think it can be solved as well.
-kvm_make_request(KVM_REQ_RELOAD_GICv4) will delay vgic_v4_load()
-to a safe spot, so just cache the previous smp_processor_id() and,
-if it is different, do the kvm_make_request() and return instead
-of calling irq_set_affinity().
+Cc: Mark Brown <broonie@kernel.org>
 
-vgic_v3_load() is the only place that calls it from the preempt
-notifier, so this behavior can be tied to a "bool delay_set_affinity"
-argument to vgic_v4_load() or placed in a different function.
+ rust/kernel/iommu/pgtable.rs | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Marc/Oliver, does that sound doable?
-
-Paolo
-
-(*) kvm_sched_in() preempt notifier -> kvm_arch_vcpu_load() ->
-     kvm_vgic_load() -> vgic_v3_load() -> vgic_v4_load()
-
+diff --git a/rust/kernel/iommu/pgtable.rs b/rust/kernel/iommu/pgtable.rs
+index 6135ba141e48..916e1f509e62 100644
+--- a/rust/kernel/iommu/pgtable.rs
++++ b/rust/kernel/iommu/pgtable.rs
+@@ -14,7 +14,7 @@
+     bindings,
+     device::{
+         Bound,
+-        Device //
++        Device, //
+     },
+     devres::Devres,
+     error::to_result,
+--
+2.52.0
