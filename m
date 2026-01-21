@@ -1,186 +1,248 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from BN1PR04CU002.outbound.protection.outlook.com (mail-eastus2azon11010014.outbound.protection.outlook.com [52.101.56.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C56E438E120;
-	Wed, 21 Jan 2026 10:40:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768992049; cv=none; b=ar28+mHQuvzujG4XCFmt2xeDldXW8dHIr4T/ZVHr1Xv1qIZLmZwEm53MRyUSMk893DLx6N6/+Kh0rBgzEYWPqCZGqXp35Eppm2gtUnTfWi6Gc1TKJfhVn6PAfT+X3Ce6U0X1o4u1Ui+TDaKxlOYDZAYeDSZJ+PnxcSBa9JG35tQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768992049; c=relaxed/simple;
-	bh=diILtPbIO2e/lmvjVRrgZemqYdsA6zxNoXkieHKJLyY=;
-	h=Mime-Version:Content-Type:Date:Message-Id:Cc:To:From:Subject:
-	 References:In-Reply-To; b=MpvYlkJanK3mgT5ULxsCZ3TIjtw20lyp/yjYHAbMWXeTpNgDUERCvk9C10wBOfhjKToF3Q0U/Ncpm11kyc3GBSXAY1+hvtOVyt8QaKx5s4qyQWKrz0t73uiTA1FE90itFbTzkHs7RQTYDBxZ2p1B2W0CehTLDpBUqLMq+QndpCM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JvVoMAMI; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68BA53D332D;
+	Wed, 21 Jan 2026 10:42:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.56.14
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1768992125; cv=fail; b=A1hiREy6hAWBRlVsQvoOMhni1drKlq4xNC9APA/N2mFxy+LXyxeTRhBu3DUAHHYLggv04oGNagcehIgoVi/Ge2YrI9bBdGLq92VG3e+Z+Njck+vucT6sCu+dOO30fpKUJTa+Q+dDnUsW6kqUfs10bGISrVrYpT7UpJEvDdc5rbY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1768992125; c=relaxed/simple;
+	bh=89t1XrASrIg694PdiIuidO1WnZQgy4hOIjQFH1UDUt8=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=n1IOImmgBIqOzFYTlNgYDayPY6hVvbA90iEJmks0hP0eM3I4/cjQ6gS4QbzAtpl63njSVHXst97JnK/ZkXjry9TQrjnzNboYgDg24qgIhlIK9WmKN8+paTloDRcHPYKaVzW6Nq8SAuVBEdwt8dtwc80ZnKHcgrYlkS5y6AtOWEA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=mRxS2fei; arc=fail smtp.client-ip=52.101.56.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JvVoMAMI"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4A17C116D0;
-	Wed, 21 Jan 2026 10:40:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1768992049;
-	bh=diILtPbIO2e/lmvjVRrgZemqYdsA6zxNoXkieHKJLyY=;
-	h=Date:Cc:To:From:Subject:References:In-Reply-To:From;
-	b=JvVoMAMIrIilphYRliPGYIT2HNWRsllPqpbCepyHI8ZvQPR6t9GB43dclizDB3gfB
-	 YLGotfNc3NSGDTXmnira7yUt3siS5DzEe0jupTy6BMZOX/6rufN12NwXgKZGEaDa6w
-	 YIBg9eQBZgZkYGdSJ1ybBWOnfvtKh0rm8UkTPcX+oxLQ4x17ckgFCBb4ctneVQElIe
-	 L2bnBpFqfBN4MXxXjuzqt7dyQslZcdIEbn2xysz28871/5CwjqXdi5Fw52YS5jPvKh
-	 xChGe2vexQo64YVOycWPfC6PGdWxwtdmCkm9SCCN0OHtf2+Dl7PHDW8HxiDLaYHpKf
-	 wBVEnF0UN5G+A==
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="mRxS2fei"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=mPamIJIWLUwTmOefhKfxqREYIuq+aCzkTsJTknRCAsD4MP5W/fAVFY/JiBoKdc5Qst6Tycm6PBdzKKkp8V3GRg0tB29p2uZjWQGkt+mRfA2X6UWCPyp1p+rUOD0Qu19gVS4TCIhTxnvYMjb5oqcYb2tpPx14riTmC5VV3+4VWVVUFkhJ2nszQYpD0cuxcNM2dlYYJ9j/S30PWjpFAhMd5hdfsnh6dvmaS+SDllMpu3HOcTqhFPvetuV3sxONW2gLgxaYo7KLTCVKK1ph60RLxGYhe6F5/6ozxgv5u2CZVrkcEVcffICV54UDrkoWUnLx+kdux4v/N/5jhaz47kw7Vg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=eZ7PpEz6FJSaH1PvMB78D+0D9ySJR+zivDsoO5jbcSk=;
+ b=nqwLJ91AboujHZuZ+AfF3MShi7xMDZb5CiDe7Tue6BwuvdPo4GpcyMJGygGQCTzbHDqsVRdJN0Cfmy1B7YSVdlm/qCZE5UTY0UGXpF6KnVG+Gm+MvwsezJF1p+80DBtGiAuWXO0wkAt+5jMVOTyyAvsbAX2dmgZksfrKiVD8luIs3N0thENAdt911ozW7LuUTKkgn2qkSVgtyxsYP3IQazCNdGJl75UatH2vHbwKM9HG57Ov6DqZ26vyscBleXFVYntQ2OO4Gc4xYha81KNkEJMTseiemPK9wrG+rswWLIswQzNrPe2YKSnv7L0vGxmaXPT8fH1xL+IGF1qXKOHZ/g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=eZ7PpEz6FJSaH1PvMB78D+0D9ySJR+zivDsoO5jbcSk=;
+ b=mRxS2fei13rAayC3/xv8WNghrIjAKKIzd0CzQ6e4J/oN36gG3zKDyVzTCi70yKyDxMSrgSFscpaCrhOegkBgByIpo5hBHUq+2RVCmd2UPoIegohJEjy+n9E2FlNDTxRICGDoYY5bJU2QD60bMKflqPZXNd+nYHYH10yApJbLeV4=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from PH7PR12MB5685.namprd12.prod.outlook.com (2603:10b6:510:13c::22)
+ by SN7PR12MB6713.namprd12.prod.outlook.com (2603:10b6:806:273::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9542.10; Wed, 21 Jan
+ 2026 10:41:57 +0000
+Received: from PH7PR12MB5685.namprd12.prod.outlook.com
+ ([fe80::46fb:96f2:7667:7ca5]) by PH7PR12MB5685.namprd12.prod.outlook.com
+ ([fe80::46fb:96f2:7667:7ca5%4]) with mapi id 15.20.9542.008; Wed, 21 Jan 2026
+ 10:41:57 +0000
+Message-ID: <015b25e6-cfe1-4110-963f-5f8dc4720d1b@amd.com>
+Date: Wed, 21 Jan 2026 11:41:48 +0100
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 6/7] vfio: Wait for dma-buf invalidation to complete
+To: Matthew Brost <matthew.brost@intel.com>, Leon Romanovsky <leon@kernel.org>
+Cc: Sumit Semwal <sumit.semwal@linaro.org>,
+ Alex Deucher <alexander.deucher@amd.com>, David Airlie <airlied@gmail.com>,
+ Simona Vetter <simona@ffwll.ch>, Gerd Hoffmann <kraxel@redhat.com>,
+ Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+ Gurchetan Singh <gurchetansingh@chromium.org>, Chia-I Wu
+ <olvaffe@gmail.com>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
+ Lucas De Marchi <lucas.demarchi@intel.com>,
+ =?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
+ Rodrigo Vivi <rodrigo.vivi@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+ Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Felix Kuehling <Felix.Kuehling@amd.com>, Alex Williamson <alex@shazbot.org>,
+ Ankit Agrawal <ankita@nvidia.com>,
+ Vivek Kasireddy <vivek.kasireddy@intel.com>, linux-media@vger.kernel.org,
+ dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+ linux-kernel@vger.kernel.org, amd-gfx@lists.freedesktop.org,
+ virtualization@lists.linux.dev, intel-xe@lists.freedesktop.org,
+ linux-rdma@vger.kernel.org, iommu@lists.linux.dev, kvm@vger.kernel.org
+References: <20260120-dmabuf-revoke-v3-0-b7e0b07b8214@nvidia.com>
+ <20260120-dmabuf-revoke-v3-6-b7e0b07b8214@nvidia.com>
+ <aW/pQmOO8komCgOK@lstrano-desk.jf.intel.com>
+Content-Language: en-US
+From: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
+In-Reply-To: <aW/pQmOO8komCgOK@lstrano-desk.jf.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: BN9PR03CA0308.namprd03.prod.outlook.com
+ (2603:10b6:408:112::13) To PH7PR12MB5685.namprd12.prod.outlook.com
+ (2603:10b6:510:13c::22)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Wed, 21 Jan 2026 11:40:45 +0100
-Message-Id: <DFU7CEPUSG9A.1KKGVW4HIPMSH@kernel.org>
-Cc: <Aishwarya.TCV@arm.com>, <broonie@kernel.org>, <chenqiuji666@gmail.com>,
- <linux-kernel@vger.kernel.org>, <m.szyprowski@samsung.com>,
- <robin.clark@oss.qualcomm.com>, <will@kernel.org>, <robin.murphy@arm.com>,
- <joro@8bytes.org>, <iommu@lists.linux.dev>
-To: "Wang Jiayue" <akaieurus@gmail.com>, <hanguidong02@gmail.com>,
- <gregkh@linuxfoundation.org>, <rafael@kernel.org>
-From: "Danilo Krummrich" <dakr@kernel.org>
-Subject: Re: [PATCH v5] driver core: enforce device_lock for
- driver_match_device()
-References: <CALbr=LYt-MqGM0ua78Rt7M679WR9hNnk0Or-WrB2myZ=KhaN0w@mail.gmail.com> <20260121085549.165428-1-akaieurus@gmail.com>
-In-Reply-To: <20260121085549.165428-1-akaieurus@gmail.com>
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH7PR12MB5685:EE_|SN7PR12MB6713:EE_
+X-MS-Office365-Filtering-Correlation-Id: d5b8e0c4-0252-4539-8f7c-08de58d9b36a
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|7416014|376014|1800799024|366016;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?a0Y2UnlKTjNDWFRvRDJhMDV4aERlWFQ5eXMySU1uNkpqRXlwY0dwK0dDL3B2?=
+ =?utf-8?B?TGZvcXJDeTR5ejFMbWFpSlpVa3JVenBnZi9VOXdUaklRQXBtUjNnaXI0MnBU?=
+ =?utf-8?B?a01sQ3B0RVpVcHBhVldYL2RJeTRubVl3YjIrSHIyM0Q3NDFYeGE3V2F4QmdO?=
+ =?utf-8?B?MlNIUzlHUU11NjNFVGhXa2hILzhmOFlQWFR0d0NvMUtwalJaREtEbFREOENN?=
+ =?utf-8?B?SVMyNG5BQURWejNkeGlPd0V6bmIyeG9IYVQ2L1VSU1lyUkJJenprVzFVSWpj?=
+ =?utf-8?B?ZlB0WnRPNnlvYmlJSnJxMDRHU04zcHJmeGM4Yy81emtUNXExejcrL090dUxS?=
+ =?utf-8?B?UkJXZnlacFJ6M2RVRDB5eURudE9aYmtQRFZuRGs2Q3NrV0hvQjgzbGlraGJ5?=
+ =?utf-8?B?OWc1U2hWTmZ0a3JJdjBHT0w5VVl4ZzBYcUI4Kzc3dzVhRzFENHhTOXpUZW9a?=
+ =?utf-8?B?YS9IT2E1Z2p4MDBKTi91NmhtMk9QVUdxWDhyREZnMHRPUzgvRHNDMDVBbDBs?=
+ =?utf-8?B?Z1Z0R2NxZHNFV3JXK2NtcEwyWFlsc0lvbWRSOS9IbjVHZDFnU1ZBNlloOUJN?=
+ =?utf-8?B?TXlKMlQvUm9pdU41eDFLOU9EVEhCcXpwNUZ5NTVEemd1VTRvaE1PQS9tUklS?=
+ =?utf-8?B?Ti9QbHRSM3o5ZS80WVlQdXlwUGdnRWp2cmdwaDgxZzVpdW5OclhBVVJ5V2JP?=
+ =?utf-8?B?b0FKZzNmQWgxam11ZGs3eVJqMjByc1VnczNoaWtTWUJFME9Rd3EzSDh2RkRi?=
+ =?utf-8?B?WHpVUDNoaTdRREdRczlHS2tvRVFDQnVTNmtBM3ExeFR0MVE2VTJ6cS9WSjhp?=
+ =?utf-8?B?K0JzUE9FYnlQUnRVYlpXejJLSzRpSW82NVY1NGZTb3BlWUN3dWF0cGJyOUYy?=
+ =?utf-8?B?YW1kemdKV09kRkx2RHpNVkJGS05la2tETTQ1eGlKTXpndmdhNkRlMWw5Z1Nl?=
+ =?utf-8?B?SGRVcit3ajdKVDJmdFNIMWc3OHF0SDV6YzNCL3Y2OWJmT0VTdUN2T2tnREtP?=
+ =?utf-8?B?ajlEVkVhQ3RWa1VxZHNYQy9nM3FtNDFibWtVbmxob29iSytpdzBnMGRqNkVq?=
+ =?utf-8?B?cldBSUdvWHVoNU9GdXg3bGpVdkhZZ2srY2xyakxxVW1NQWk4N2dBR2NVZlN1?=
+ =?utf-8?B?Z1RzN0ZQbHBzWGdVaXUvalc2QmxSRVQ0T0RjQ3RqVmRuc0lpN0g2L1dmSDdZ?=
+ =?utf-8?B?cW80eHphZTE0QW01WHNUMjNnQWlJSXMyNnlobE16VVF6VFZ5YVFzVTZkMGg1?=
+ =?utf-8?B?WmcwelZ3Y2hSNnZReWxKMzl1anVweHNHaEtwT1JrMXo3aTVXRHV3aWRtMlls?=
+ =?utf-8?B?b1MwYm52VklEMm9wWk1KUXlDMStZSGR6a0VBZlRlSlBpSW1nUFZDczNJV2FP?=
+ =?utf-8?B?NTBkTWJZRGhiREhxdXRGOXBNSG9rcGNMMm84c3JQOXVobXFZV0MzMHNUTCt4?=
+ =?utf-8?B?RHhwVGVZTmV0THBHYmlMeVZZOFBxTkdBNGZKNG1SVVNwUWxXeUdoeGJQQU1F?=
+ =?utf-8?B?RW5JWFZMQ2h4VDNGN2lscHArVGZWU2s5TjJIM3h1ZXA2aFpEZzBaYUVPdm4x?=
+ =?utf-8?B?L2hIT1gzK3d6blhURHU3YlF3MUw0QmcrNWRtQ2xKVHdTeDlQODBmTlc1VllU?=
+ =?utf-8?B?K2xpbnA2bWprTnc2WGF4elBtdmJvWnRlU2ZzU2ZFbXYrSzkvd1pCTVBjMUw5?=
+ =?utf-8?B?UytVekhQdnJaNDdEUXlVVGlJcVcxcENwTWtPall4N3NzNlNlTHArbUV1bFMw?=
+ =?utf-8?B?LzdGYTRZcWlNTjFpSHpZVVI0Yk1EdXBVdkdKZ1IweGJaUy9Ja1ZEZ0MwUDVu?=
+ =?utf-8?B?eXJlOU5CTFpqM05vRWNCU3V4dGdoaEV2d3JWOFdJR2xwY2lERjJib2M1V0Rs?=
+ =?utf-8?B?UFhsTjBRY3NyNS9WVDRWc1Q5blJhclpCNUs0UElUaU1HMk1OSElYQi85ZzRH?=
+ =?utf-8?B?NGdRMmZIYmdQcFBaZmNra0QvOHc0SzY0NkdLOEZjZGtOM1Vxb01HQSt4M2NH?=
+ =?utf-8?B?Ym9SV1ZSSE1TVzRjSEFtTVFESkxHZVp6QzVXK010NHdrdyt2ZEJ0UGtPNWFV?=
+ =?utf-8?B?dWJVRG1BN3FnNThkTktaeEZjNDJvT3EwTjg2STBuN2dRbTE2QnlaZ1kzbTgy?=
+ =?utf-8?Q?8Leo=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5685.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(1800799024)(366016);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?VkpKcXlGYzhlMktYZzZxVTJiM3ZFNzc3ci94L3BCKzF4K2EvbG1nb2syRFV3?=
+ =?utf-8?B?ZmtaZVRaTjNGMUY4VVkvRFRpK2NxTWF3YjFuNDBHR3NhZEJWdG9ZUHk5Nkdk?=
+ =?utf-8?B?VmZKMmVMN3laWGpFcmdkYXMzVEtNUU1NYlFtc2FMdFZmU3poWFVBclcwb2FD?=
+ =?utf-8?B?VWFpNGNYdGQ1N2JjUFgvaUxGMWZlOGVUQ1NZZzNRTlJodGR1Z2U4VzdJNXlz?=
+ =?utf-8?B?NXZyNlVjeHM3c01ONTQ1YkFVZENMb05QRTc2M0o3Y3llaGFmSWcwTldpWTZT?=
+ =?utf-8?B?MzJMRVVZaGt6NzhJQUMvZS82SUtmZkUwQ0VKOUNSMTdVSVlsWVlSck5RdkFn?=
+ =?utf-8?B?Z1I0bExPN00vQmFzVW4ra0wyTko2cFlzY0lxZVYvSmZpZ2UydVBtbE55Z1Iz?=
+ =?utf-8?B?OTRpSmpmWE1XMGRKY3FvSXVtT204anlmbGgrQjhHQ29IeEM0ZlFBQ1d4MlVo?=
+ =?utf-8?B?bVg1UzF1UHdlVmxybzZMVDBSNE5zeS8zdFVIQUtGbGIxNGVQdWRvTTJ1Sy8x?=
+ =?utf-8?B?NWVoTW0vYnVrdkRzcTFPNFRLYU9OVi9zRGNuMmdsVVVCMFZ3T1UvVG5vYndo?=
+ =?utf-8?B?NmVwUjA3bkwrUjRTeVgzbW95UGhCQ2FhU2pWUUVYQjE1WWJ0YzhNaUN4cm52?=
+ =?utf-8?B?RDlOT2JQQTRKOWR6a2JKQzVUdlc4L1BEZ1ZyOXc3cjB2eTIwNnVhYVVlbVFV?=
+ =?utf-8?B?QVVqQ0VjZ2d2ZlNjL2VYdFlNN1MxOUh3SElmZWgvdUNXZHFlYU1sNUJpdE1x?=
+ =?utf-8?B?b1JteHA2d0hpNVFPN2oraTJWR2p2M0ZLMGZTYUhJVTdoRjc5UDVlT1NSUkpi?=
+ =?utf-8?B?QVpIMzhYaGhmYXRWTDJIU3d0U3J2YStKM1JkMFFLaG02M2xjNDNhaUpyY2c0?=
+ =?utf-8?B?QjA4YkNHVlRhUm5KVWdyYmhuNXNWbE54WHAyMGgwU1oya0xxcGdtK1MvaWZx?=
+ =?utf-8?B?bEVEbHg5YjFlVkhmZ2tlS3diOWszK2VoZU1xUVowZlgvQk9sVXN6dUtYRlBx?=
+ =?utf-8?B?U3dnUTlBOTJLWG10aWQzeG1jbWZVQjZ4ZHpBL25UMTIwTC9FZ3JGYnY4RmZJ?=
+ =?utf-8?B?OXFabk5CKzJJT3VIMVlWaUJNSDdWcWxaS2V2RnRlckRFSXJYL3lwS3BJRUFU?=
+ =?utf-8?B?aWREZ0I2K21heFBRSVpMZ0J3cDBuV2NHVVB2aUFYN0E5cUNvZUQ2MGZZU08v?=
+ =?utf-8?B?d0VLM3VmWTU3VUhQc1N3MDl2bnZMZEVEUGlzUkI4RkRsUWpnbU9GcTVGb0sy?=
+ =?utf-8?B?c1ZKQ2t1QlMyTHJNK3QyZGFTaFEyWU1iQzJYTlF2UzFUcFhhaGVmZmg3aXE0?=
+ =?utf-8?B?aHI2eSthZWNITDNiMXVSbGg1QnlYVnc4TEtJNllRMGFJOWJ0aUhmN0xvSGFv?=
+ =?utf-8?B?dnNmNFFtUWY5dXNjZ0hMMk5hYU9mRVQyTExqYjV4Umc0Tzc2WllJMFhSUTZi?=
+ =?utf-8?B?Y21SL2svb3VsMmVOaWlndktweHZ1M1l1Y0h4S2k1b2xwenFXd0dZclhpbDZC?=
+ =?utf-8?B?S1E3UHRiSE0vNDFFbnEzVU84aWdwcGdDbW4zNy9sRFExczVYcWNhUDRZWm12?=
+ =?utf-8?B?REFkdW0wNFNaaW02Q05rSTJyZEl4aGxKaWNxK3RZb2U3dlcwaXhJSXppZUpP?=
+ =?utf-8?B?ZTFzL1NTZ0hiMmZzbU50S3J2b2JjVzNzVHo2SmZlcW1QQ0lJZk42cnR4ckd4?=
+ =?utf-8?B?TUo5SkFOMllJT1FiSFhXdEtmY25tQjBhZEpMWkZxSndmRXdjMVo4UlZIb0ho?=
+ =?utf-8?B?UjdKWXJvVk1kWWozUFRFRDFNQ0h1YW13WlUxQTBrUjM1eEYyUVFVN1BwbVNy?=
+ =?utf-8?B?cjN4Mlkyc1luMm40MkpvZkEvT1hMeUd6SHQ5Q2tIeTZqbUp6MldMbk1XVTFk?=
+ =?utf-8?B?MmM5TVdBd0tYTHVyaXFXQU9TRy9jQzhwWjdaQmlzN0dYYUtiTGZzOWJ2RnRm?=
+ =?utf-8?B?Wk52dHBORXBXQitPMHk4TzVkb3ptT3dvWTllblFWYkZ4UjNLZU9EdTZQM1la?=
+ =?utf-8?B?MW15N1JsMG52Z1V6Kzd4VktYVkNnNkpCTUpNUUhOVmRFc1FJeHZQR1lIL2Vt?=
+ =?utf-8?B?SFFFejhPZkg0WmZMMnRCVm5NaHQ3L1Y4U3hkWFE4UlVqVXpvazE0ZmE5OHVh?=
+ =?utf-8?B?ZEFheENKYjlXVEU1YXI0ZWl4bnRNNGFtRVdITy9SQitxbFQyemlhcFI0Y1dQ?=
+ =?utf-8?B?d0hDN1Q2SHhsb3gyNXFrYWVRcm9YbVB5ZzNRbHFyUG5wNVMvZzJMRE4wOVhl?=
+ =?utf-8?B?aXBmd09SMWR0dVk0LzFxeGFVK3BpeThidXdWNDZVZFFUc0oyanFHa01WTGFU?=
+ =?utf-8?Q?ILzGvCpxLFdb8emJfK?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d5b8e0c4-0252-4539-8f7c-08de58d9b36a
+X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5685.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Jan 2026 10:41:57.5526
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: omFBqJ0aS9Hwr7YXf4UFa/MoCZkjVG5sfYgntO1idXTvqVHMhPlcUcl487iqipAG
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB6713
 
-(Cc: Rob, Will, Robin, Joerg)
+On 1/20/26 21:44, Matthew Brost wrote:
+> On Tue, Jan 20, 2026 at 04:07:06PM +0200, Leon Romanovsky wrote:
+>> From: Leon Romanovsky <leonro@nvidia.com>
+>>
+>> dma-buf invalidation is performed asynchronously by hardware, so VFIO must
+>> wait until all affected objects have been fully invalidated.
+>>
+>> Fixes: 5d74781ebc86 ("vfio/pci: Add dma-buf export support for MMIO regions")
+>> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+>> ---
+>>  drivers/vfio/pci/vfio_pci_dmabuf.c | 5 +++++
+>>  1 file changed, 5 insertions(+)
+>>
+>> diff --git a/drivers/vfio/pci/vfio_pci_dmabuf.c b/drivers/vfio/pci/vfio_pci_dmabuf.c
+>> index d4d0f7d08c53..33bc6a1909dd 100644
+>> --- a/drivers/vfio/pci/vfio_pci_dmabuf.c
+>> +++ b/drivers/vfio/pci/vfio_pci_dmabuf.c
+>> @@ -321,6 +321,9 @@ void vfio_pci_dma_buf_move(struct vfio_pci_core_device *vdev, bool revoked)
+>>  			dma_resv_lock(priv->dmabuf->resv, NULL);
+>>  			priv->revoked = revoked;
+>>  			dma_buf_move_notify(priv->dmabuf);
+>> +			dma_resv_wait_timeout(priv->dmabuf->resv,
+>> +					      DMA_RESV_USAGE_KERNEL, false,
+>> +					      MAX_SCHEDULE_TIMEOUT);
+> 
+> Should we explicitly call out in the dma_buf_move_notify() /
+> invalidate_mappings kernel-doc that KERNEL slots are the mechanism
+> for communicating asynchronous dma_buf_move_notify /
+> invalidate_mappings events via fences?
 
-On Wed Jan 21, 2026 at 9:55 AM CET, Wang Jiayue wrote:
-> After partially modifying juno.dts, I managed to roughly emulate kernel
-> boot on juno board with qemu and successfully reproduced the boot hang.
-> Below is the gdb backtrace:
->
-> #0  0xffff800080114ae0 in mutex_spin_on_owner (lock=3D0xffff0000036bfc90,=
- owner=3D0xffff000003510000, ww_ctx=3D0x0, waiter=3D0x0) at kernel/locking/=
-mutex.c:377
-> #1  0xffff80008118cecc in mutex_optimistic_spin (waiter=3D<optimized out>=
-, ww_ctx=3D<optimized out>, lock=3D<optimized out>) at kernel/locking/mutex=
-.c:480
-> #2  __mutex_lock_common (use_ww_ctx=3D<optimized out>, ww_ctx=3D<optimize=
-d out>, ip=3D<optimized out>, nest_lock=3D<optimized out>, subclass=3D<opti=
-mized out>, state=3D<optimized out>, lock=3D<optimized out>) at kernel/lock=
-ing/mutex.c:618
-> #3  __mutex_lock (lock=3D0xffff0000036bfc90, state=3D0x2, ip=3D<optimized=
- out>, nest_lock=3D<optimized out>, subclass=3D<optimized out>) at kernel/l=
-ocking/mutex.c:776
-> #4  0xffff80008118d1dc in __mutex_lock_slowpath (lock=3D0xffff0000036bfc9=
-0) at kernel/locking/mutex.c:1065
-> #5  0xffff80008118d230 in mutex_lock (lock=3D0xffff0000036bfc90) at kerne=
-l/locking/mutex.c:290
-> #6  0xffff8000809cdd1c in device_lock (dev=3D<optimized out>) at ./includ=
-e/linux/device.h:895
-> #7  class_device_constructor (_T=3D<optimized out>) at ./include/linux/de=
-vice.h:913
-> #8  driver_match_device_locked (dev=3D<optimized out>, drv=3D<optimized o=
-ut>) at drivers/base/base.h:193
-> #9  __driver_attach (dev=3D0xffff0000036bfc10, data=3D0xffff800082e64440 =
-<qcom_smmu_tbu_driver+40>) at drivers/base/dd.c:1183
-> #10 0xffff8000809cb17c in bus_for_each_dev (bus=3D0xffff0000036bfc90, sta=
-rt=3D0x0, data=3D0xffff800082e64440 <qcom_smmu_tbu_driver+40>, fn=3D0xffff8=
-000809cdcec <__driver_attach>) at drivers/base/bus.c:383
-> #11 0xffff8000809cd03c in driver_attach (drv=3D0x0) at drivers/base/dd.c:=
-1245
-> #12 0xffff8000809cc748 in bus_add_driver (drv=3D0xffff800082e64440 <qcom_=
-smmu_tbu_driver+40>) at drivers/base/bus.c:715
-> #13 0xffff8000809ced28 in driver_register (drv=3D0xffff800082e64440 <qcom=
-_smmu_tbu_driver+40>) at drivers/base/driver.c:249
-> #14 0xffff8000809d0254 in __platform_driver_register (drv=3D0x0, owner=3D=
-0xffff000003510000) at drivers/base/platform.c:908
-> #15 0xffff8000809a6208 in qcom_smmu_impl_init (smmu=3D0xffff0000037c0080)=
- at drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c:780
-> #16 0xffff8000809a48a0 in arm_smmu_impl_init (smmu=3D0xffff0000037c0080) =
-at drivers/iommu/arm/arm-smmu/arm-smmu-impl.c:224
-> #17 0xffff8000809a2ae0 in arm_smmu_device_probe (pdev=3D0xffff0000036bfc0=
-0) at drivers/iommu/arm/arm-smmu/arm-smmu.c:2155
-> #18 0xffff8000809d060c in platform_probe (_dev=3D0xffff0000036bfc10) at d=
-rivers/base/platform.c:1446
-> #19 0xffff8000809cd6a4 in call_driver_probe (drv=3D<optimized out>, dev=
-=3D<optimized out>) at drivers/base/dd.c:583
-> #20 really_probe (dev=3D0xffff0000036bfc10, drv=3D0xffff800082e641c0 <arm=
-_smmu_driver+40>) at drivers/base/dd.c:661
-> #21 0xffff8000809cd8f8 in __driver_probe_device (drv=3D0xffff800082e641c0=
- <arm_smmu_driver+40>, dev=3D0xffff0000036bfc10) at drivers/base/dd.c:803
-> #22 0xffff8000809cdb34 in driver_probe_device (drv=3D0xffff0000036bfc90, =
-dev=3D0xffff0000036bfc10) at drivers/base/dd.c:833
-> #23 0xffff8000809cddb8 in __driver_attach (data=3D<optimized out>, dev=3D=
-<optimized out>) at drivers/base/dd.c:1227
-> #24 __driver_attach (dev=3D0xffff0000036bfc10, data=3D0xffff800082e641c0 =
-<arm_smmu_driver+40>) at drivers/base/dd.c:1167
-> #25 0xffff8000809cb17c in bus_for_each_dev (bus=3D0xffff0000036bfc90, sta=
-rt=3D0x0, data=3D0xffff800082e641c0 <arm_smmu_driver+40>, fn=3D0xffff800080=
-9cdcec <__driver_attach>) at drivers/base/bus.c:383
-> #26 0xffff8000809cd03c in driver_attach (drv=3D0x0) at drivers/base/dd.c:=
-1245
-> #27 0xffff8000809cc748 in bus_add_driver (drv=3D0xffff800082e641c0 <arm_s=
-mmu_driver+40>) at drivers/base/bus.c:715
-> #28 0xffff8000809ced28 in driver_register (drv=3D0xffff800082e641c0 <arm_=
-smmu_driver+40>) at drivers/base/driver.c:249
-> #29 0xffff8000809d0254 in __platform_driver_register (drv=3D0x0, owner=3D=
-0xffff000003510000) at drivers/base/platform.c:908
-> #30 0xffff800081f3d12c in arm_smmu_driver_init () at drivers/iommu/arm/ar=
-m-smmu/arm-smmu.c:2368
-> #31 0xffff800080015218 in do_one_initcall (fn=3D0xffff800081f3d10c <arm_s=
-mmu_driver_init>) at init/main.c:1378
-> #32 0xffff800081ed13e4 in do_initcall_level (command_line=3D<optimized ou=
-t>, level=3D<optimized out>) at init/main.c:1440
-> #33 do_initcalls () at init/main.c:1456
-> #34 do_basic_setup () at init/main.c:1475
-> #35 kernel_init_freeable () at init/main.c:1688
-> #36 0xffff800081187b50 in kernel_init (unused=3D0xffff0000036bfc90) at in=
-it/main.c:1578
-> #37 0xffff800080015f58 in ret_from_fork () at arch/arm64/kernel/entry.S:8=
-60
-> Backtrace stopped: previous frame identical to this frame (corrupt stack?=
-)
+Oh, I missed that! And no that is not correct.
 
-Thanks, this backtrace is very helpful. My lockdep patch should reveal the =
-same
-issue once run on real hardware, but with this it's probably not even neces=
-sary
-anymore.
+This should be DMA_RESV_USAGE_BOOKKEEP so that we wait for everything.
 
-So, the problem is that in the callstack of the arm-smmu driver's (a platfo=
-rm
-driver) probe() function, the QCOM specific code (through arm_smmu_impl_ini=
-t())
-registers another platform driver. Since we are still in probe() of arm-smm=
-u the
-call to platform_driver_register() happens with the device lock of the arm-=
-smmu
-platform device held.
+Regards,
+Christian.
 
-platform_driver_register() eventually results in driver_attach() which iter=
-ates
-over all the devices of a bus. Since the device we are probing and the driv=
-er we
-are registering are for the same bus (i.e. the platform bus) it can now hap=
-pen
-that by chance that we also match the exact same device that is currently p=
-robed
-again. And since we take the device lock for matching now, we actually take=
- the
-same lock twice.
+> 
+> Yes, this is probably implied, but it wouldn’t hurt to state this
+> explicitly as part of the cross-driver contract.
+> 
+> Here is what we have now:
+> 
+>  	 * - Dynamic importers should set fences for any access that they can't
+> 	 *   disable immediately from their &dma_buf_attach_ops.invalidate_mappings
+>  	 *   callback.
+> 
+> Matt
+> 
+>>  			dma_resv_unlock(priv->dmabuf->resv);
+>>  		}
+>>  		fput(priv->dmabuf->file);
+>> @@ -342,6 +345,8 @@ void vfio_pci_dma_buf_cleanup(struct vfio_pci_core_device *vdev)
+>>  		priv->vdev = NULL;
+>>  		priv->revoked = true;
+>>  		dma_buf_move_notify(priv->dmabuf);
+>> +		dma_resv_wait_timeout(priv->dmabuf->resv, DMA_RESV_USAGE_KERNEL,
+>> +				      false, MAX_SCHEDULE_TIMEOUT);
+>>  		dma_resv_unlock(priv->dmabuf->resv);
+>>  		vfio_device_put_registration(&vdev->vdev);
+>>  		fput(priv->dmabuf->file);
+>>
+>> -- 
+>> 2.52.0
+>>
 
-Now, we could avoid this by not matching bound devices, but we check this
-through dev->driver while holding the device lock, so that doesn't help.
-
-But on the other hand, I don't see any reason why a driver would call
-platform_driver_register() from probe() in the first place. I think drivers
-should not do that and instead just register the driver through a normal
-initcall.
-
-(If, however, it turns out that registering drivers from probe() is somethi=
-ng we
-really need for some reason, it is probably best to drop the patch and don'=
-t
-make any guarantees about whether match() is called with the device lock he=
-ld or
-not.
-
-Consequently, driver_override must be protected with a separate lock (which
-would be the cleaner solution in any case).)
