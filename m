@@ -1,211 +1,141 @@
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A215B349AE1
-	for <iommu@lists.linux.dev>; Wed, 21 Jan 2026 10:03:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37896481FC3;
+	Wed, 21 Jan 2026 10:14:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768989795; cv=none; b=u390bO2jBISVkhfmk9dwvYE1Xfw+KVzHHVqd+a5+72Espzb1BhgirpHMK8jbDqvw6mx7RA2Upf2ob2hPLksOWdDYw1mGPMTdxR79IFT53iT/vNF3TXkO/Ie5yzdwiO60eH+MbgIWVPlMvDeh0xK5X9DQe1Phy6yknjiUp9IkkI8=
+	t=1768990467; cv=none; b=URAKnxQfKFt0kVE0q2dtRklh+F7fsnMiUtNKMvgr6im+ZnHqX3/t8Lq52xnlXN/dWsptY8Wi+cVC7oSR81kzC0hNM1MMmp4e6snrIG4+NpzmCsxyJutIZUcKYZHkSD9b8blmVz5Ne0HVZhgzGAkZVxQS1ZoqRNWzqLAOAQLGhno=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768989795; c=relaxed/simple;
-	bh=SJDG0zKTxQAYGuRzI2QN/I/f6dS+vRmyBTh9Gqbke2k=;
-	h=Date:From:To:CC:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=QRR3V24EMkbdfDEZ3aVbkytDwvKlke18srXujDTy0bg2TOQXVtwgkx9JDvIv4ZiIuHw+K+9/NJyYRoISmZvXTqLzkVKcRq6NW+4tB4MW4OzsFyGmBPcAykk/ICxbhw5sEq7ah//u0/ZCbaXlwpDXorYyXthfJFOlGsjZ2SV+/ac=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.18.224.107])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTPS id 4dx09m32w0zHnHCX;
-	Wed, 21 Jan 2026 18:02:36 +0800 (CST)
-Received: from dubpeml500005.china.huawei.com (unknown [7.214.145.207])
-	by mail.maildlp.com (Postfix) with ESMTPS id E48EE40570;
-	Wed, 21 Jan 2026 18:03:09 +0800 (CST)
-Received: from localhost (10.203.177.15) by dubpeml500005.china.huawei.com
- (7.214.145.207) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.11; Wed, 21 Jan
- 2026 10:03:09 +0000
-Date: Wed, 21 Jan 2026 10:03:07 +0000
-From: Jonathan Cameron <jonathan.cameron@huawei.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-CC: Nicolin Chen <nicolinc@nvidia.com>, "jgg@nvidia.com" <jgg@nvidia.com>,
-	"will@kernel.org" <will@kernel.org>, "robin.murphy@arm.com"
-	<robin.murphy@arm.com>, "bhelgaas@google.com" <bhelgaas@google.com>,
-	"Williams, Dan J" <dan.j.williams@intel.com>, "joro@8bytes.org"
-	<joro@8bytes.org>, "praan@google.com" <praan@google.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
-	"miko.lenczewski@arm.com" <miko.lenczewski@arm.com>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "linux-pci@vger.kernel.org"
-	<linux-pci@vger.kernel.org>, <linux-cxl@vger.kernel.org>
-Subject: Re: [PATCH RFCv1 1/3] PCI: Allow ATS to be always on for CXL.cache
- capable devices
-Message-ID: <20260121100307.00004e60@huawei.com>
-In-Reply-To: <BL1PR11MB5271F0BDC68C2D7F172122E98C96A@BL1PR11MB5271.namprd11.prod.outlook.com>
-References: <cover.1768624180.git.nicolinc@nvidia.com>
-	<d1768bb6384050a23769f20ca28216f520f77e26.1768624181.git.nicolinc@nvidia.com>
-	<BL1PR11MB5271F0BDC68C2D7F172122E98C96A@BL1PR11MB5271.namprd11.prod.outlook.com>
-X-Mailer: Claws Mail 4.3.0 (GTK 3.24.42; x86_64-w64-mingw32)
+	s=arc-20240116; t=1768990467; c=relaxed/simple;
+	bh=Tfo/OWueoKu8rex7Tl9fDhj3HYw8PFEJM2EofHNagw8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=SDDnkdHMnvKDwMluaYUq6aceQ1Jz0nuJJGboAbkS0BPACVoZvOx0lCCPQU5NxoYHrcUwuJ4nbyB9PjKUy1u799Hna1Il5SJ6Qxdy6YnOKI8yfzbN9k0N2IF3um4HFPUsWWaTMGogHELNSydC1WFLZjc4xZLmELmCere2ckcZh9c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=N5mnHwlZ; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="N5mnHwlZ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0DD7C19422;
+	Wed, 21 Jan 2026 10:14:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1768990466;
+	bh=Tfo/OWueoKu8rex7Tl9fDhj3HYw8PFEJM2EofHNagw8=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=N5mnHwlZ4VBOzCaF2qAu+DjTaYQWAFbky4+JT2mBLPGjrNKxQ+fM9k9d6IllOUceW
+	 j1tAd0RJdJnA6QxkAhArkPbFRodriKbgtOU4tbyG0Ur1/cdjnP09GyrxTAfwHP4xnP
+	 X2So8WSV2cSYLZ1AZt0vyY20Gne5NDjhKQIqOjY28If9yXQcsOj1ST1qi7+CzWJcpx
+	 Bps75wKKBhcc5ddkolv1NkPvv+0fB5Nv0q0I8EgTvOodoH6D+g2E7dAFxYKe7BHlLR
+	 hPLlN+CWPcGoGBCvh/VKV743I73C6D0fJrJ2uaTEJdSDWeaB+0vclUS32VmzRQQIbg
+	 QHhoM3gbQHIKg==
+Date: Wed, 21 Jan 2026 12:14:21 +0200
+From: Leon Romanovsky <leon@kernel.org>
+To: Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>
+Cc: Sumit Semwal <sumit.semwal@linaro.org>,
+	Alex Deucher <alexander.deucher@amd.com>,
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+	Gerd Hoffmann <kraxel@redhat.com>,
+	Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+	Gurchetan Singh <gurchetansingh@chromium.org>,
+	Chia-I Wu <olvaffe@gmail.com>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	Lucas De Marchi <lucas.demarchi@intel.com>,
+	Thomas =?iso-8859-1?Q?Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>,
+	Rodrigo Vivi <rodrigo.vivi@intel.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Felix Kuehling <Felix.Kuehling@amd.com>,
+	Alex Williamson <alex@shazbot.org>,
+	Ankit Agrawal <ankita@nvidia.com>,
+	Vivek Kasireddy <vivek.kasireddy@intel.com>,
+	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org,
+	amd-gfx@lists.freedesktop.org, virtualization@lists.linux.dev,
+	intel-xe@lists.freedesktop.org, linux-rdma@vger.kernel.org,
+	iommu@lists.linux.dev, kvm@vger.kernel.org
+Subject: Re: [PATCH v3 2/7] dma-buf: Always build with DMABUF_MOVE_NOTIFY
+Message-ID: <20260121101421.GZ13201@unreal>
+References: <20260120-dmabuf-revoke-v3-0-b7e0b07b8214@nvidia.com>
+ <20260120-dmabuf-revoke-v3-2-b7e0b07b8214@nvidia.com>
+ <24c7a7e6-b1bd-4407-b62d-4d9ea4cdeee4@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: lhrpeml500011.china.huawei.com (7.191.174.215) To
- dubpeml500005.china.huawei.com (7.214.145.207)
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <24c7a7e6-b1bd-4407-b62d-4d9ea4cdeee4@amd.com>
 
-On Wed, 21 Jan 2026 08:01:36 +0000
-"Tian, Kevin" <kevin.tian@intel.com> wrote:
-
-> +Dan. I recalled an offline discussion in which he raised concern on
-> having the kernel blindly enable ATS for cxl.cache device instead of
-> creating a knob for admin to configure from userspace (in case
-> security is viewed more important than functionality, upon allowing
-> DMA to read data out of CPU caches)...
-> 
-
-+CC Linux-cxl
-
-Jonathan
-
-
-> > From: Nicolin Chen <nicolinc@nvidia.com>
-> > Sent: Saturday, January 17, 2026 12:57 PM
+On Wed, Jan 21, 2026 at 09:55:38AM +0100, Christian König wrote:
+> On 1/20/26 15:07, Leon Romanovsky wrote:
+> > From: Leon Romanovsky <leonro@nvidia.com>
 > > 
-> > Controlled by the IOMMU driver, ATS is usually enabled "on demand", when
-> > a
-> > device requests a translation service from its associated IOMMU HW running
-> > on the channel of a given PASID. This is working even when a device has no
-> > translation on its RID, i.e. RID is IOMMU bypassed.
+> > DMABUF_MOVE_NOTIFY was introduced in 2018 and has been marked as
+> > experimental and disabled by default ever since. Six years later,
+> > all new importers implement this callback.
 > > 
-> > On the other hand, certain PCIe device requires non-PASID ATS, when its RID
-> > stream is IOMMU bypassed. Call this "always on".
+> > It is therefore reasonable to drop CONFIG_DMABUF_MOVE_NOTIFY and
+> > always build DMABUF with support for it enabled.
 > > 
-> > For instance, the CXL spec notes in "3.2.5.13 Memory Type on CXL.cache":
-> > "To source requests on CXL.cache, devices need to get the Host Physical
-> >  Address (HPA) from the Host by means of an ATS request on CXL.io."
-> > In other word, the CXL.cache capability relies on ATS. Otherwise, it won't
-> > have access to the host physical memory.
-> > 
-> > Introduce a new pci_ats_always_on() for IOMMU driver to scan a PCI device,
-> > to shift ATS policies between "on demand" and "always on".
-> > 
-> > Add the support for CXL.cache devices first. Non-CXL devices will be added
-> > in quirks.c file.
-> > 
-> > Suggested-by: Vikram Sethi <vsethi@nvidia.com>
-> > Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
-> > Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> > Suggested-by: Christian König <christian.koenig@amd.com>
+> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 > > ---
-> >  include/linux/pci-ats.h       |  3 +++
-> >  include/uapi/linux/pci_regs.h |  5 ++++
-> >  drivers/pci/ats.c             | 44 +++++++++++++++++++++++++++++++++++
-> >  3 files changed, 52 insertions(+)
+> >  drivers/dma-buf/Kconfig                     | 12 ------------
+> >  drivers/dma-buf/dma-buf.c                   | 12 ++----------
+> >  drivers/gpu/drm/amd/amdgpu/amdgpu_dma_buf.c | 10 +++-------
+> >  drivers/gpu/drm/amd/amdkfd/Kconfig          |  2 +-
+> >  drivers/gpu/drm/xe/tests/xe_dma_buf.c       |  3 +--
+> >  drivers/gpu/drm/xe/xe_dma_buf.c             | 12 ++++--------
+> >  6 files changed, 11 insertions(+), 40 deletions(-)
 > > 
-> > diff --git a/include/linux/pci-ats.h b/include/linux/pci-ats.h
-> > index 75c6c86cf09d..d14ba727d38b 100644
-> > --- a/include/linux/pci-ats.h
-> > +++ b/include/linux/pci-ats.h
-> > @@ -12,6 +12,7 @@ int pci_prepare_ats(struct pci_dev *dev, int ps);
-> >  void pci_disable_ats(struct pci_dev *dev);
-> >  int pci_ats_queue_depth(struct pci_dev *dev);
-> >  int pci_ats_page_aligned(struct pci_dev *dev);
-> > +bool pci_ats_always_on(struct pci_dev *dev);
-> >  #else /* CONFIG_PCI_ATS */
-> >  static inline bool pci_ats_supported(struct pci_dev *d)
-> >  { return false; }
-> > @@ -24,6 +25,8 @@ static inline int pci_ats_queue_depth(struct pci_dev *d)
-> >  { return -ENODEV; }
-> >  static inline int pci_ats_page_aligned(struct pci_dev *dev)
-> >  { return 0; }
-> > +static inline bool pci_ats_always_on(struct pci_dev *dev)
-> > +{ return false; }
-> >  #endif /* CONFIG_PCI_ATS */
-> > 
-> >  #ifdef CONFIG_PCI_PRI
-> > diff --git a/include/uapi/linux/pci_regs.h b/include/uapi/linux/pci_regs.h
-> > index 3add74ae2594..84da6d7645a3 100644
-> > --- a/include/uapi/linux/pci_regs.h
-> > +++ b/include/uapi/linux/pci_regs.h
-> > @@ -1258,6 +1258,11 @@
-> >  #define PCI_DVSEC_CXL_PORT_CTL				0x0c
-> >  #define PCI_DVSEC_CXL_PORT_CTL_UNMASK_SBR		0x00000001
-> > 
-> > +/* CXL 2.0 8.1.3: PCIe DVSEC for CXL Device */
-> > +#define CXL_DVSEC_PCIE_DEVICE				0
-> > +#define   CXL_DVSEC_CAP_OFFSET				0xA
-> > +#define     CXL_DVSEC_CACHE_CAPABLE			BIT(0)
-> > +
-> >  /* Integrity and Data Encryption Extended Capability */
-> >  #define PCI_IDE_CAP			0x04
-> >  #define  PCI_IDE_CAP_LINK		0x1  /* Link IDE Stream Supported */
-> > diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
-> > index ec6c8dbdc5e9..1795131f0697 100644
-> > --- a/drivers/pci/ats.c
-> > +++ b/drivers/pci/ats.c
-> > @@ -205,6 +205,50 @@ int pci_ats_page_aligned(struct pci_dev *pdev)
-> >  	return 0;
+> > diff --git a/drivers/dma-buf/Kconfig b/drivers/dma-buf/Kconfig
+> > index b46eb8a552d7..84d5e9b24e20 100644
+> > --- a/drivers/dma-buf/Kconfig
+> > +++ b/drivers/dma-buf/Kconfig
+> > @@ -40,18 +40,6 @@ config UDMABUF
+> >  	  A driver to let userspace turn memfd regions into dma-bufs.
+> >  	  Qemu can use this to create host dmabufs for guest framebuffers.
+> >  
+> > -config DMABUF_MOVE_NOTIFY
+> > -	bool "Move notify between drivers (EXPERIMENTAL)"
+> > -	default n
+> > -	depends on DMA_SHARED_BUFFER
+> > -	help
+> > -	  Don't pin buffers if the dynamic DMA-buf interface is available on
+> > -	  both the exporter as well as the importer. This fixes a security
+> > -	  problem where userspace is able to pin unrestricted amounts of memory
+> > -	  through DMA-buf.
+> > -	  This is marked experimental because we don't yet have a consistent
+> > -	  execution context and memory management between drivers.
+> > -
+> >  config DMABUF_DEBUG
+> >  	bool "DMA-BUF debug checks"
+> >  	depends on DMA_SHARED_BUFFER
+> > diff --git a/drivers/dma-buf/dma-buf.c b/drivers/dma-buf/dma-buf.c
+> > index 59cc647bf40e..cd3b60ce4863 100644
+> > --- a/drivers/dma-buf/dma-buf.c
+> > +++ b/drivers/dma-buf/dma-buf.c
+> > @@ -837,18 +837,10 @@ static void mangle_sg_table(struct sg_table *sg_table)
+> >  
 > >  }
-> > 
-> > +/*
-> > + * CXL r4.0, sec 3.2.5.13 Memory Type on CXL.cache notes: to source
-> > requests on
-> > + * CXL.cache, devices need to get the Host Physical Address (HPA) from the
-> > Host
-> > + * by means of an ATS request on CXL.io.
-> > + *
-> > + * In other world, CXL.cache devices cannot access physical memory
-> > without ATS.
-> > + */
-> > +static bool pci_cxl_ats_always_on(struct pci_dev *pdev)
-> > +{
-> > +	int offset;
-> > +	u16 cap;
-> > +
-> > +	offset = pci_find_dvsec_capability(pdev, PCI_VENDOR_ID_CXL,
-> > +					   CXL_DVSEC_PCIE_DEVICE);
-> > +	if (!offset)
-> > +		return false;
-> > +
-> > +	pci_read_config_word(pdev, offset + CXL_DVSEC_CAP_OFFSET,
-> > &cap);
-> > +	if (cap & CXL_DVSEC_CACHE_CAPABLE)
-> > +		return true;
-> > +
-> > +	return false;
-> > +}
-> > +
-> > +/**
-> > + * pci_ats_always_on - Whether the PCI device requires ATS to be always
-> > enabled
-> > + * @pdev: the PCI device
-> > + *
-> > + * Returns true, if the PCI device requires non-PASID ATS function on an
-> > IOMMU
-> > + * bypassed configuration.
-> > + */
-> > +bool pci_ats_always_on(struct pci_dev *pdev)
-> > +{
-> > +	if (pci_ats_disabled() || !pci_ats_supported(pdev))
-> > +		return false;
-> > +
-> > +	/* A VF inherits its PF's requirement for ATS function */
-> > +	if (pdev->is_virtfn)
-> > +		pdev = pci_physfn(pdev);
-> > +
-> > +	return pci_cxl_ats_always_on(pdev);
-> > +}
-> > +EXPORT_SYMBOL_GPL(pci_ats_always_on);
-> > +
-> >  #ifdef CONFIG_PCI_PRI
-> >  void pci_pri_init(struct pci_dev *pdev)
-> >  {
-> > --
-> > 2.43.0  
+> >  
+> > -static inline bool
+> > -dma_buf_attachment_is_dynamic(struct dma_buf_attachment *attach)
 > 
-> 
+> I would rather like to keep the wrapper and even add some explanation what it means when true is returned.
 
+We have different opinion here. I don't like single line functions which
+are called only twice. I'll keep this function to ensure progress the
+series.
+
+Thanks
+
+> 
+> Apart from that looks good to me.
+> 
+> Regards,
+> Christian.
