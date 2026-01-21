@@ -1,221 +1,156 @@
-Received: from PH7PR06CU001.outbound.protection.outlook.com (mail-westus3azon11010041.outbound.protection.outlook.com [52.101.201.41])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4973339848
-	for <iommu@lists.linux.dev>; Wed, 21 Jan 2026 18:05:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.201.41
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769018702; cv=fail; b=dKIKxmmcT7EFG41i1QoVvCIdbt5gSkIsj370t7qLkjC+4wOJi4zz7eJNkajdmHjW/zZJWfxitn8MJZir2ADdnHfuZKtaGq9Ccd2YV1H2QGY/fRkKm2KzaC1FRkX2G3aHJRcInC5CT9dIjSl97h13bRQOBLgmItV8ah00tbSaxpc=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769018702; c=relaxed/simple;
-	bh=ZCFzMcyEAu0e8baLn1tIRzUm5HrjtchEI0kUScYRWtk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=VQ3vgCBCWkYY4Jmp5869NGSqod/ILWv1Lz9vsFJZAH9eQUcp+Jj7ZiTHyNLzuG+aiuafTPqEr1nExPUknOmW/DW4zL/JzM0btntr6GJcug6YmAytNOONJuPii37C+cJBAWkwmZ8UFsLylsoaO9V+8liRLTuFi1p3Sp5/bOW2tsc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=pK19rrE1; arc=fail smtp.client-ip=52.101.201.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00824330675
+	for <iommu@lists.linux.dev>; Wed, 21 Jan 2026 18:13:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1769019236; cv=none; b=uKh5SWlsiPMxEomqmNFuf1bJCf7w+n3pUUwq/4HHRu14cFKD1QE4PkWm61HOHt8W5VJhu8QZyMmLBSpBl3wsfpPW9l2y4xWLuhiwm/G5QotuqbRWEDe2iWBLS5Cp/65lTin6TBS85x4CaRsslJ3xOH/HKZMrCqtHO9lEuXrZcP4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1769019236; c=relaxed/simple;
+	bh=C28c/EW5CuQsoDdUsx8dGqG9K8fs0K81D2a2muNH+l8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=u+XDr1xngho6yoB277BV6hGTqxP7bz8pSnabtBRbl2JXi0MYcN9hetpftIdbasBX+q+MFubeOK2CBaQ6naexnud4LSnZrGtdiROQ6B2ZKseA4WU2qfUP5tPqu6tyvCckM1uTT7xDnDaep2qaWdNa94gJvDLH8JZRJZJnDqmA26Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=BLmpl0cV; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="pK19rrE1"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Ldgl5C3LxBUKR5MtcLPqU+0I289jehkLZHXyspGYDbJdYAxX2vZRcaHS9tanKB7Oyw0ZI/2/ZjRviCKD/15tllNFQYE3qV/0NkDorATsBYPKL2nmpWJ29FnYiyVFZBQgNVhMC5QFm4OY1hqVBcCGfvejJ441HS9vgtk/cyAtErvgUNc5yvHp3A9AIoUrCl34Deq44hfhfMFB3F9uE47oxX+amFNYB4ewKrGYhcRvfmgd2Sirn0sqDPX6fg6NvZF2EkCkV9bKZgJhSoU/I7Dv70hNP2TFi6UJvrjaGEa+8rYgdwX9eEjn5oQmZ6TSD0wYlzMrzFj1z74F5jK0qfw6Pw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gE58OO4S3zhPSwZFXBLqI+H/7GFSrbqNa1yRTgUcDP8=;
- b=Vvyg/WJScWl+BVQtVZoTuRhHwPOdYKKGEb65vdpVC11kR606u+fRcEl/UjZpr86tuqVY9ReY9rpmIc/WcmnHLqXswuyYfdjFFblEcmn9OkJxHmBcxKyZHzPIt4k9LhFwi5bhtYAik9ZtbmbsevYOlpdfs2zWSOl2SZoVP5thpYiRqzMgyYn4ospmX2eqNtEEcOLpRa3NWKxXAQLdwvbALd7yncQBa9cNiV3Ziht+OHGOELbET9UcCX9rnDoHzOWdNrO7ognCHzUPvU2sbtJ4V4RDBtcquLxej0F+IbkywLX+soFq+SNuP8epdTM1x3gqL4skEVgBkH5Ov+18eU2cTA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gE58OO4S3zhPSwZFXBLqI+H/7GFSrbqNa1yRTgUcDP8=;
- b=pK19rrE1+RRmxbVqmS5YjWfOixz5/QsfxqRDG8MN64tBBYKiRIvrkFMNr0YULRoneEyRDL457Oo1B6CfHE5riVV8KX6awHrfZbb5K/PRmNJRS97iBLR1rABb+lkNBG+wbMc86b/v7cPbtFczh6qW7UIIi2/60Eb288KxoMfu+S5JVqyY1szOQmSG2A4j/cAjFo1m4mQA00W5P9aKW7WH2FodSl9W605xHAAO49QUbgC8pQFcgZSqF6ZXWHGuIRF391qH7+3R67rXMt7LsZbkde9LYxZD24Uyol5o6mfopGTcQwztKloyuXy0HHOpds8JLiUCD3Bl3vxFCCpn9M1RkA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
- by SJ0PR12MB5633.namprd12.prod.outlook.com (2603:10b6:a03:428::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9520.12; Wed, 21 Jan
- 2026 18:04:53 +0000
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::1b59:c8a2:4c00:8a2c]) by LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::1b59:c8a2:4c00:8a2c%3]) with mapi id 15.20.9542.008; Wed, 21 Jan 2026
- 18:04:50 +0000
-Date: Wed, 21 Jan 2026 14:04:49 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Francois Dugast <francois.dugast@intel.com>
-Cc: iommu@lists.linux.dev, intel-xe@lists.freedesktop.org,
-	Joerg Roedel <joerg.roedel@amd.com>,
-	Calvin Owens <calvin@wbinvd.org>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Samiullah Khawaja <skhawaja@google.com>,
-	Matthew Brost <matthew.brost@intel.com>,
-	Thomas =?utf-8?Q?Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
-	Tina Zhang <tina.zhang@intel.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Kevin Tian <kevin.tian@intel.com>
-Subject: Re: Xe performance regression with recent IOMMU changes
-Message-ID: <20260121180449.GA1490142@nvidia.com>
-References: <20260121130233.257428-1-francois.dugast@intel.com>
- <20260121131135.GF1134360@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260121131135.GF1134360@nvidia.com>
-X-ClientProxiedBy: BL6PEPF00013E05.NAMP222.PROD.OUTLOOK.COM
- (2603:10b6:22e:400:0:1001:0:4) To LV8PR12MB9620.namprd12.prod.outlook.com
- (2603:10b6:408:2a1::19)
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="BLmpl0cV"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1769019233;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=Ynpg/cJ+vd3nqyV8BLe/SIqtaIrKy7cylnYrcUttxQg=;
+	b=BLmpl0cVbQsXY+sk0BfiWUfKfmtlMwJObd70KwK9hI0gHlIWe6G2MYT5RXuw0/zH25LyOg
+	N6SOvTW+lMHkc7HtGvhRYUntm0RwVbJN8iCC47O1iIzr632SMNaEhsp67l/TBYPJD2QVHx
+	RVPogjzbO0oMo+Hgl76GgUST+AVBeEg=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-209-luc8IYzJMGeASPfzr9Q4wA-1; Wed, 21 Jan 2026 13:13:52 -0500
+X-MC-Unique: luc8IYzJMGeASPfzr9Q4wA-1
+X-Mimecast-MFC-AGG-ID: luc8IYzJMGeASPfzr9Q4wA_1769019231
+Received: by mail-wr1-f69.google.com with SMTP id ffacd0b85a97d-4325b81081aso83805f8f.3
+        for <iommu@lists.linux.dev>; Wed, 21 Jan 2026 10:13:52 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1769019231; x=1769624031;
+        h=content-transfer-encoding:in-reply-to:content-language:from
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Ynpg/cJ+vd3nqyV8BLe/SIqtaIrKy7cylnYrcUttxQg=;
+        b=U1MwHDxQ3yyCAIM4G5ZbC94jNC5pkUeGUhuOFuUtoIjxdh9A7lSfr+BDs38pe2hQRV
+         /x2zomm5bZ4vV+O3SwsqnmRmzDTyiSS2WHBcMlbdPIxVOn1NsNCPJjesRZby7OJzMqdE
+         TNvgH9MDdOseEdfdeZdbk3gLhLMNPyUtAjexUlDQLbhix/jryaSw3VnCoiW+ULRh22Xt
+         lfsuIzCb67qfg6nG/DCCEvOusf08JNw7FIUIaNsacPUbZdBU9fi/8Rt+kgmgwAf6eF1E
+         RTJpjghpjJ5N7T15tNYDermGBzXFP7kA/Rv9YdRJbwkAQRI5hfGD8YKw7pX5A8iBf3n3
+         ChCQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUe7V0DxGRgJpRU+M1QuEAp6EqUKaZl7LFktW6mJYU7FXBUYQ9boxMUxIaOGUPvSSagPQBuKg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy3NiGo1DAzw1nBMY02lA0Ssl4qcA/GABUdof9G93Av2FyCfxoX
+	qbfkGY0Szmy/WNw0gYVEx6pClLGjnECPapNhXC7ynZLg6CXq6swVTUrI5s6qQSMiGfVo1KN9u7r
+	S2XIcXLEo2zbQ85EqxBmKwXMGoLd1z4kSaV4/nqc2rhRWILqQpuX6bn6D
+X-Gm-Gg: AZuq6aLN92afJX0H/eqPV3Qqxab87u0W0VohhJe2PuctgLX1QEXgJM6oHOT4/BLN2Ps
+	yeGp1bWmH+5Il/gxmmddV5SmswgTAmjTw947sBEKxOdFG5TjgPJDxHqXhijGfIM8u8oc3o1ZDQy
+	BM4uMkVJ9wN7TBm7VGFUWBSr85QHWobelB0V0IxanAw81OW8+7ZpJTs0cR4you17GzMEAerHZrQ
+	c3EI9x5kc1LGf9vJ3oEem+InN9ByyDkm7l83kM+8MAYrEwRXENg2EWHIleFoHP2lvtusaYoN8vt
+	8qNZp48DLWvXf4WpAV6wlszPEPpaNHJLz2hg123lvVFE9vgpu+caIZ5/gPe2CwYskq+Q8Rv+h9E
+	kkT3qtfqPOjtdBW53urK5Vr7lmpKyj3PGpwyzWaXhNMthYe+ePBdaUydHvXvQmvrf5utgg0QboU
+	nir81qeG8YwzMOdw==
+X-Received: by 2002:a5d:4688:0:b0:435:95c9:6891 with SMTP id ffacd0b85a97d-43595c96bcamr7351149f8f.42.1769019231265;
+        Wed, 21 Jan 2026 10:13:51 -0800 (PST)
+X-Received: by 2002:a5d:4688:0:b0:435:95c9:6891 with SMTP id ffacd0b85a97d-43595c96bcamr7351114f8f.42.1769019230831;
+        Wed, 21 Jan 2026 10:13:50 -0800 (PST)
+Received: from [192.168.10.48] ([151.61.26.160])
+        by smtp.googlemail.com with ESMTPSA id ffacd0b85a97d-43569921da2sm38550536f8f.1.2026.01.21.10.13.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 21 Jan 2026 10:13:49 -0800 (PST)
+Message-ID: <5bea843b-dec8-4f15-bb7c-1d0550542034@redhat.com>
+Date: Wed, 21 Jan 2026 19:13:43 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|SJ0PR12MB5633:EE_
-X-MS-Office365-Filtering-Correlation-Id: 59c943cb-ee8d-45a4-3ade-08de59179205
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|7416014|376014|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?jP6UI4zeqnLzGRthR01DO1mH6csc+pgC5KXw5qEoO5W1IrtJAJLA2vv4m8EH?=
- =?us-ascii?Q?YD34dPIzEUUuEpGL1l8qUzg0fsC1Qb+6I2vcyMKjV0n070tACESddd9QCJBv?=
- =?us-ascii?Q?8OYd9dcdnAw3iGrpYE1XKq5OYZRsmN4XS5H3+8l9Y0lFnPOeCDLomvNd+TyA?=
- =?us-ascii?Q?HaydAAtfSzeXGxjGGqtMwvdbg/E7mzTUFUpMDqwQHEajEDksegizXVutaioS?=
- =?us-ascii?Q?0/orqKGQ9jFnSAAbn4kpxAscuz3N7GJLiTAQmc1LvechhgvQ3AgGXbEnOogS?=
- =?us-ascii?Q?awJt8wEWglBbDzqHsld4Y0m+anFuRczCHk3LtW16jWmXs3l/buNweqSMhWOK?=
- =?us-ascii?Q?X55O1pei/wPoagNWLWQQqotwjiDuA0nykdA9iZPqYHLa91dzc1CjOgismPbl?=
- =?us-ascii?Q?+9JJ975pyUb1VFHQJOFr3oXnNuBrvNUynGumdaK+/AZDsr0SqavpBAMbn4Ug?=
- =?us-ascii?Q?Y5zR6eHNG0f7PVmeApuwaPnMrySYRQZS5e6e3DU4qVB7IGf6Emn5zeIq2UrI?=
- =?us-ascii?Q?LgOtkan+OuBz/6n/UjiCwrnZy/gsHPfF0s2vdI158XFuA2M1Hqg0+Tb4edbe?=
- =?us-ascii?Q?ZwsluF9iaQfpT64SqEd3uI9eD/TrwX7AiZ54OahYktXLjgS1UTsbRPfiEwtS?=
- =?us-ascii?Q?S+uwdKdvOXJizyK6Tof55GsgYtalxyBe+WWlZwu9O0s8+qJyIIn8dQ6afB4O?=
- =?us-ascii?Q?xjxNdzim6yLKj7MC+NqbpMPOKSzyHssDVvJ9d/frqz9n+v1KkkwQ6z309FE1?=
- =?us-ascii?Q?GlGZMMXfBtu8CpLtvo025mj4JE1nmXjZJQKgxouKFSXmdbXOCcSfvtHe5H22?=
- =?us-ascii?Q?4JbCIrCEiSuJHB4jA+z4bDhGKul0ontEGAffPlAGL/lrzYPnM3gxwAv+vJBO?=
- =?us-ascii?Q?PTdJ8rLghbAGQO0+JHZ5v/eWi4M5lfpZ8Z/emu0PstjCXQpTq/0Bs8QIcf24?=
- =?us-ascii?Q?ufA4p1eeY1ih3RUL3SrMn3X8n1qScpLUy/cPWgZg/xno8e31DMw5AXlsMUom?=
- =?us-ascii?Q?qaM+srJ6XRm+s2LmzSWFXgOXjfQtXf+F4UncJ4dctH5pMXnQOgY9K6TPexjE?=
- =?us-ascii?Q?PpTeuCZxC45X68hmrJDPSNwTyl8+tIeHy91SWFuev4DLSOdO36JassnHi+kd?=
- =?us-ascii?Q?5S4EwQsUCw/Ge+FMNuRRmjB4UcbXuq0ctpG68V9nMlo4NJOHfb9L9oG3mtKd?=
- =?us-ascii?Q?Y0hCrTbnMwrg+Y9hMhGUGxQFThtl8qoHwFYXxdIS5ogtafEbGepz5eH39qT/?=
- =?us-ascii?Q?4GTa0SKqdRhoYoXuy2oynwUOJC1S1gTt26/T7KfiwmzbNAxgQPPqNBqZQsoI?=
- =?us-ascii?Q?hbthibVgV4DUO+pAFGkitmGdPrArywYWWi1edhdILK4vxbvh1dSIWvxJYmlg?=
- =?us-ascii?Q?1UJ7H6bXtw+YlXxStKJCkqHc8cNCoBaiTIjhbY2T3fZAweLXiaaDZlQUNVfu?=
- =?us-ascii?Q?bExsISJfxmJWOz1sFGDPPFMpf+Utf8k6m4UGVx3406juA8E8eCSrePw9bBPZ?=
- =?us-ascii?Q?58HctjCfkcJz0kainDZt6g3908ZDWS6NYTfza2AqvgSnmC/Hqa1eUMLh+4Sl?=
- =?us-ascii?Q?hTR/Bf5U85EMXZHX+L0=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(7416014)(376014)(1800799024);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?EdqmYLzfN7OkNAJ3MNGXadwy3d16x7tz3OldFGQTQ1CQIymXhredlKo2Ym57?=
- =?us-ascii?Q?PdYzfKdN3VjXks1FHlM1STTgmIr8tnAz7QN4AwNqNNOwGsq49TmUJwcGBzWQ?=
- =?us-ascii?Q?C/WK8/hrRS18dP/v/RvGw73Y1w7hRjLJSYJ5N9zwV0s5DD93XTCkfrNWtVa3?=
- =?us-ascii?Q?ryG5Sb4ba4oEUig5J8BSYNsxnvoyOQga44io/4CkTx6ymMkFzLwpkyOaeWWK?=
- =?us-ascii?Q?Lw3DNXLBslou6a+sVQWkLP55FUHK/bAmAUESdf6hDkzmG3MTSbCwNrGEk2ZM?=
- =?us-ascii?Q?cuXYrHAgGo272vNTFaE8LodT5fXmdxIfrjarhMhgvfXtVgd+NXtHpNkUVKiJ?=
- =?us-ascii?Q?lljsTVw+AwaezpI3tN6vDZ+43bFzlbdN0AHwE1nnKyRawGaKIZVVOD0TXxf2?=
- =?us-ascii?Q?ju+LPwWr8NMYjqK4PHYgdGSYJh6/lrmu+HD/0B/QB8ltKjT1ks7o60dtETO2?=
- =?us-ascii?Q?SOnszWkEALlYFpG1t6282fvoke6VNkxMl2os0P8NylrM65QamQ7CyjjQ6xpZ?=
- =?us-ascii?Q?ByZ4R2nmIRVm3mG3uQkLS/eoxiXqQTmkiNRwKwg+Wks/wsZpHkGqLD+RAxJD?=
- =?us-ascii?Q?jDt3RQDOQ2TZt46LbwNpWyHdUdfCqpKxMzApJQW/f7iQ4FLViNbEU3+J10jV?=
- =?us-ascii?Q?iKsC/wPXSiRtI5hS1mTE/HAkkmiphKgg4JAYX2Cx6yzqMqgdm9Jf1vbn147G?=
- =?us-ascii?Q?ILhE7SDYNIKYqZPzgG0msaHL5EWiBX4HBMPeHU52FDNwHeih/GUPlshklKu1?=
- =?us-ascii?Q?G3bn4YyuEMOWDnXFK/f5jhKtsGtYzu6W9UZbA7xjHbEOttXmkw9m5EtAh3P7?=
- =?us-ascii?Q?CutsPay2YN01gYnvp9dz4y8JDMLzgMcFnAHSDcx+rcGr93oUGIvALub/r1bA?=
- =?us-ascii?Q?etPJJzyMhwxi2KwzC0wrAqJhwhZDYWr3L7nDClY+/9MPh4Qy7phoE1/03xFN?=
- =?us-ascii?Q?d+IsES7blWn9anE2STGyLIrDL5axSDLMiox5HoTgjlBFwNuTOko+8d2sX7IC?=
- =?us-ascii?Q?aqKGHgiGsXxZxNrzOBqOIPa8kyoBnAswe6ArnVwEyJaY3jvwDSIVZle7buVe?=
- =?us-ascii?Q?Eoi40mDhHITFYCtZSKPOiblgaWWRT8d7bCaT0NBE5knWBbUdEqJC+eADC4v4?=
- =?us-ascii?Q?gGFCBCoDh2jClIC8vhYTZUzDhnw9NclQJL+D/tdI82Wqus9cETUgIBHhAaXf?=
- =?us-ascii?Q?Fl/3A3+woeUJmWY5S2KCCjB0wverSUx6i5QqJAy0MSyp9w9fessHUSyMSD2w?=
- =?us-ascii?Q?0YI7g9dLydoo75H7ZXHrvjvuPaiWY4zrxOC/CQz1q/SWWpXrip26lTDeHbc3?=
- =?us-ascii?Q?19s3mXU2qQDZdg9KgyotnP6wa6iQiVAvpmuINI41DgT9zywSYU/rvrn+IQIr?=
- =?us-ascii?Q?JW3QcrPIDiA7jpbD8nSH3HAlmgr5kOU2axrn/7821Qffi39pBNKETC/mMYVt?=
- =?us-ascii?Q?nbWPccS8at2N2Ayjk3Ksl3//KZsApVjdjCY2r49I56YYWOWDWqA9siS76dpg?=
- =?us-ascii?Q?FQIa+bEpgcgxG19OLZ7WsWaVQZ9BFmFlKWmS8G6Xso6eNLMaP4qhX76x+cgC?=
- =?us-ascii?Q?WAH4dgiU6DG8QJlbK6PZiQqKmNV7D32W1qoiod38lHHZOwp859opzROwo3MP?=
- =?us-ascii?Q?X7svE/THBnWJE3sNyVXvqfflWqvyJZFmfwsFxFBGVQ6Tf+M+ybkV9Mo3wz2j?=
- =?us-ascii?Q?zHQGEfhtmR2ywEsKmDhJ0V2mP22HUohoRA5ofszxemLGqBeM?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 59c943cb-ee8d-45a4-3ade-08de59179205
-X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Jan 2026 18:04:50.5821
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: kZXlaSKfyMcCh8cBNQvhBdmP0zDKfZqlec+O1M8JvB/myHgm13rJhrKpy8o9H+6w
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB5633
+User-Agent: Mozilla Thunderbird
+Subject: Re: possible deadlock due to irq_set_thread_affinity() calling into
+ the scheduler (was Re: [PATCH v3 38/62] KVM: SVM: Take and hold ir_list_lock
+ across IRTE updates in IOMMU)
+To: Thomas Gleixner <tglx@kernel.org>, Ankit Soni <Ankit.Soni@amd.com>,
+ Sean Christopherson <seanjc@google.com>, Marc Zyngier <maz@kernel.org>
+Cc: Oliver Upton <oliver.upton@linux.dev>, Joerg Roedel <joro@8bytes.org>,
+ David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
+ linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev,
+ kvm@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ Sairaj Kodilkar <sarunkod@amd.com>, Vasant Hegde <vasant.hegde@amd.com>,
+ Maxim Levitsky <mlevitsk@redhat.com>,
+ Joao Martins <joao.m.martins@oracle.com>,
+ Francesco Lavra <francescolavra.fl@gmail.com>,
+ David Matlack <dmatlack@google.com>, Naveen Rao <Naveen.Rao@amd.com>,
+ Crystal Wood <crwood@redhat.com>
+References: <20250611224604.313496-2-seanjc@google.com>
+ <20250611224604.313496-40-seanjc@google.com>
+ <njhjud3e6wbdftzr3ziyuh5bhyvc5ndt5qvmg7rlvh5isoop2l@f2uxctws2c7d>
+ <42513cb3-3c2e-4aa8-b748-23b6656a5096@redhat.com> <874iovu742.ffs@tglx>
+ <87pl7jsrdg.ffs@tglx>
+From: Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <87pl7jsrdg.ffs@tglx>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: QcWB0w1Y3EgkIVW3WpJ34gVE25PCU1g3qGfWsoJa4WQ_1769019231
+X-Mimecast-Originator: redhat.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Wed, Jan 21, 2026 at 09:11:35AM -0400, Jason Gunthorpe wrote:
-> On Wed, Jan 21, 2026 at 02:02:16PM +0100, Francois Dugast wrote:
-> > I am reporting a slowdown in Xe caused by a couple of IOMMU changes. It
-> > can be observed during DMA mappings/unmappings required to issue copies
-> > between system memory and the device, when handling GPU faults. Not sure
-> > how other use cases or vendors are affected but below is the impact on
-> > execution times for BMG:
-> > 
-> > Before changes:
-> >   4KB
-> >     drm_pagemap_migrate_map_pages: 0.4 us
-> >     drm_pagemap_migrate_unmap_pages: 0.4 us
-> >   64KB
-> >     drm_pagemap_migrate_map_pages: 2.5 us
-> >     drm_pagemap_migrate_unmap_pages: 3.5 us
-> >   2MB
-> >     drm_pagemap_migrate_map_pages: 88 us
-> >     drm_pagemap_migrate_unmap_pages: 108 us
-> > 
-> > After changes:
-> >   4KB
-> >     drm_pagemap_migrate_map_pages: 0.7 us
-> >     drm_pagemap_migrate_unmap_pages: 0.7 us
-> >   64KB
-> >     drm_pagemap_migrate_map_pages: 3.5 us
-> >     drm_pagemap_migrate_unmap_pages: 10.5 us
-> >   2MB
-> >     drm_pagemap_migrate_map_pages: 102 us
-> >     drm_pagemap_migrate_unmap_pages: 330 us
-> 
-> I posted some more optimizations for these cases, it should reduce the
-> numbers.
-> 
-> This is the opposite of the benchmark numbers I ran which showed
-> significant gains as the page count and sizes increased.
-> 
-> But something weird is going on to see a 3x increase in unmap, that
-> shouldn't be just algorithm overhead. That almost seems like
-> additional IOTLB invalidation overhead or something else going wrong.
-> 
-> Is this from a system with the VT-d cache flushing requirement? That
-> logic changed around too and could have this kind of big impact.
+Sorry, not sure how the previous email ended up encrypted.
 
-Oh looking at the code a bit you've got pretty much the slowest
-possible thing you can do here:
+On 1/8/26 22:53, Thomas Gleixner wrote:
+> On Thu, Jan 08 2026 at 22:28, Thomas Gleixner wrote:
+>> On Mon, Dec 22 2025 at 15:09, Paolo Bonzini wrote:
+>>> Of the three, the most sketchy is (a); notably, __setup_irq() calls
+>>> wake_up_process outside desc->lock.  Therefore I'd like so much to treat
+>>> it as a kernel/irq/ bug; and the simplest (perhaps too simple...) fix is
+>>
+>> It's not more sketchy than VIRT assuming that it can do what it wants
+>> under rq->lock. 🙂
+>
+> And just for the record, that's not the only place in the irq core which
+> has that lock chain.
+>
+> irq_set_affinity_locked()       // invoked with desc::lock held
+>     if (desc->affinity_notify)
+>        schedule_work()           // Ends up taking rq::lock
+>
+> and that's the case since cd7eab44e994 ("genirq: Add IRQ affinity
+> notifiers"), which was added 15 years ago.
+>
+> Are you still claiming that this is a kernel/irq bug?
 
-	for (i = 0; i < npages;) {
-		if (!pagemap_addr[i].addr || dma_mapping_error(dev, pagemap_addr[i].addr))
-			goto next;
+Not really, I did say I'd like to treat it as a kernel/irq bug...
+but certainly didn't have hopes high enough to "claim" that.
+I do think that it's ugly to have locks that are internal,
+non-leaf and held around callbacks; but people smarter than
+me have thought about it and you can't call it a bug anyway.
 
-		dma_unmap_page(dev, pagemap_addr[i].addr, PAGE_SIZE << pagemap_addr[i].order, dir);
+For x86/AMD we have a way to fix it, so that part is not a problem.
 
-It is weird though:
+For the call(*) to irq_set_affinity() in arch/arm64/kvm/'s
+vgic_v4_load() I think it can be solved as well.
+kvm_make_request(KVM_REQ_RELOAD_GICv4) will delay vgic_v4_load()
+to a safe spot, so just cache the previous smp_processor_id() and,
+if it is different, do the kvm_make_request() and return instead
+of calling irq_set_affinity().
 
-0.7 us * 512 = 358us so it is about the reported speed.
+vgic_v3_load() is the only place that calls it from the preempt
+notifier, so this behavior can be tied to a "bool delay_set_affinity"
+argument to vgic_v4_load() or placed in a different function.
 
-But the old one is 0.4 us * 512 = 204 us which is twice as
-slow as reported?? It got 2x faster the more times you loop it? Huh?
+Marc/Oliver, does that sound doable?
 
-The real way to fix this up is to use the new DMA API so this can be
-collapsed into a single unmap. Then it will take < 1us for all those cases.
+Paolo
 
-Look at the patches Leon made for the RDMA ODP stuff, it has a similar
-looking workflow.
+(*) kvm_sched_in() preempt notifier -> kvm_arch_vcpu_load() ->
+     kvm_vgic_load() -> vgic_v3_load() -> vgic_v4_load()
 
-The optimizations I posted will help this noticably.
-
-Jason
