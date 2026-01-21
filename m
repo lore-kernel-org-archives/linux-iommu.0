@@ -1,82 +1,73 @@
-Received: from CH1PR05CU001.outbound.protection.outlook.com (mail-northcentralusazon11010050.outbound.protection.outlook.com [52.101.193.50])
+Received: from OS0P286CU010.outbound.protection.outlook.com (mail-japanwestazon11021088.outbound.protection.outlook.com [40.107.74.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD83E883F;
-	Wed, 21 Jan 2026 01:09:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.193.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD09129BDAB;
+	Wed, 21 Jan 2026 01:38:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.74.88
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768957745; cv=fail; b=g6CWjnfk4r5Bc80XRoumkHHfq4xGxaeomA7xBuZ0N7KYi7p+wRWEIx+SvyA1/ZHWN65YtqxO9jHZorb31DvjmJ8Vt4aD3HvH9NHUnXUPX3fr9KU6BAaasZz3FnWu2HwtKbehoZhvzb32FIqtOZZJpM9WTfTtOBaGfec2YG1Cf0s=
+	t=1768959543; cv=fail; b=lKM9hWiSdrtEMlMNeyLDBKj2e13tt7vLuRjbEiMVALMMMjQIE5OpWadHgqps+S3u6o6096/5FmkhTeTSSJLPfaShmV++JLPQPr/pebCBmqOQ+PSZrELDO1RPBvJ7Aimr7r3BpGP+QOHp5qie1UoABri31eut1GKOq0rteuV5WwA=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768957745; c=relaxed/simple;
-	bh=0NWD4n+xQLqMPWi+50/Gji46VjkdwVWYDYHtnOygcsw=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=J/OYCzA9Lqy3yPugln1tMMnUuYgJWwCsCJow6Pve2nb5RSkDYGm/ip0/1dDN9S8nkQH4sJQCMYUzni36mmbh8uH9SSoCzQge6TTvX+1SgnxW4DNw4gvEOPc2qWhCIU+tFz/pCV+M75Bv8YdTdCyRsbGos3dao9FfroGqjuhLuMI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=HrgR/o2Q; arc=fail smtp.client-ip=52.101.193.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	s=arc-20240116; t=1768959543; c=relaxed/simple;
+	bh=aN6yMqNU2gOx2tEVqm4KwNEwNOTzxr1Hx+WTqjskRI0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=XwxAeuZlfSdQ2Uiagzl7Wjvr4wIppe4wpmmVv50UJqiOFWskutCoq+UybLfobqFgSs2THPv8OlFKkmeQn1aeDvg5Vzr2yx40cAHNsodPgNBXvq3j8TohXrTNGodLEoSMdM1UMW3x77RGMQWiFbLTcRw6JOnkCgc7nbqCxeGfv58=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=valinux.co.jp; spf=pass smtp.mailfrom=valinux.co.jp; dkim=pass (1024-bit key) header.d=valinux.co.jp header.i=@valinux.co.jp header.b=ilArfXMP; arc=fail smtp.client-ip=40.107.74.88
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=valinux.co.jp
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=valinux.co.jp
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="HrgR/o2Q"
+	dkim=pass (1024-bit key) header.d=valinux.co.jp header.i=@valinux.co.jp header.b="ilArfXMP"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=wN9ZCgo2frxqnI/DBNIHVb90Ac933fo56U5HjNpuVyBYL189BTSdbO7vEAr0sx1Iz9Rhnp215+I9s2zbDvEzHPPoI+7CqCqKxFfK4dlBRpMxqBEnltMg/zCV8yVESPaqwJFJF6UfWP28MFkEKeYT2knhiDOdp/K78UnIRSRBy9aQaBwPoEl5GdfB28peFr5lMyzpdiSzhdc42H6YOalVrlmNP0hWHI5EYsDFv95d+fAR9HjWWJL1oUtXavkGUc29XAgI7taTB4ubr9PHByK+Tx1K2ndwt5S3vkJy8SNPwCnO0E+r6kcjEs7yOzLKB8NSQrkN5VO+7MMhZBQvTmFH4g==
+ b=C3yfHD9kl9//ybCWCbzsatJ9tAn6f4PR46KxHKsz77COItVkAu0N4YGlJhoLjvvN4dMtGQ80Oxd0yvfCAWwh5xPNYnWoJnIWlUpXzcbW9R/x/g54mF87VkKMnz6ZvtwmRgY7S8hqTWxY4gM05AY4+yiC7QnZsDo/1o/uHnSqt0vATvmD/ZG82QIof14Bk/YEt1V2pHMsp1yslvHj50wGVvfgmmjip1Ps5eBEuDJV06bC93BWJbiKM+a/nwg2nghFoxNnvt4HNv20bqj2Mo4r5OvNk+ZWcjsN6v+2Vb6i5ntIUHI2znWQkatXGmXxiE5Yl0jeM3h92RXF5t8WNTWvpA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=i+M+opapEdawm6NAlmIMxSknJfZKj/76LxWnOIUx3i4=;
- b=mAEey2bNGW/A6iXzJsqWqIlHBfYqrGmBaxGrI3VunqnL5ljT7/ku04Y3do5rB/Den/AJ+E1sb5mvHLA6cU51vwbsKCIvsWUKPdNhDf8NYgWDCKIOab0kJgy8vaCQanQfMmNa7co6xNQ2KOGuOWvXt+BnkY0yeOA/RF7CFQGEuvZYwarINx+13RS9p2iavP/GGe4W1nSkcTP+uEPF6VoKk3bVoEKuZZDh/jC/DVCvi19OA2kDHPdFBb1E+vXU4ZTOdypB4WqLelQea4qXo4yGcf9wInyZ9X1XrUoCkbiwFzXVQGzpfReeoJVI4kHyOinI4Yvu63zuYtApc5aqDr2AzA==
+ bh=4KVs3lE5uxOnxpa2P564KJhIMeXnXt5yfmklvfTU8M8=;
+ b=x0xUTR3BQ8Rh3F5Sd63sTjGp+mFMj615ZIgW8sK5wFn7WoH26mBj6qjxtYCiEeu7dRPNZ2qsDREp7TZoBIFiXRy5ecbe2ATKQlclJmS+vHabVluqkuUd8opGpedHrUdC62XN2gGNZ4BzsHcOvG+0aguX7I8asUMcxGlbCOQMxgrGOal5goZNzem8BM3KhoKVh7rmsIgLQwAVqb1kHWy7EnOjUKrpqylsa2u4/01pc+3gxKnRBGxSIgtD21V+UFvopRtXQLGNExK9NViByj+vZRljVRAdrGPsM7X6KvmUEhonqGY87yE0nMumYQ5al486mTCHYBCw5sB0Cssh4HbFWg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ smtp.mailfrom=valinux.co.jp; dmarc=pass action=none
+ header.from=valinux.co.jp; dkim=pass header.d=valinux.co.jp; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=valinux.co.jp;
+ s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=i+M+opapEdawm6NAlmIMxSknJfZKj/76LxWnOIUx3i4=;
- b=HrgR/o2Q+Mm6r9TuoFdDoC3zBQ6fWxE0Y46rNyX5OTd5hH/70uv8JJ40CYQ98NHLcfs9rLSKAk2X6peybcb8K+ALZdRpbrZJ3X9GF754r7ytUGqpVxKOrh4XGUuOkBq306mCVLXz7n9ONTS+X2mU66GfvbwEd/IY3LceQTXd5BY=
+ bh=4KVs3lE5uxOnxpa2P564KJhIMeXnXt5yfmklvfTU8M8=;
+ b=ilArfXMPzaQR8b3E5Jp0I2ZmAU3UPLOME3dIPFRlCBFJ5qENAnwIRN93bZQQmN1GWAnx25kgHsvZYbX/ff7uGJJFlAU+Wv8/vf+fRxAjBsBE/Zb8Bd/6lGyBXH1+QzIuTTKkCm+FbGNs3Ho7WijVctUn8Hd9oAjGdYGT0adHoWk=
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from CH3PR12MB9194.namprd12.prod.outlook.com (2603:10b6:610:19f::7)
- by DM4PR12MB6230.namprd12.prod.outlook.com (2603:10b6:8:a7::10) with
+ header.d=none;dmarc=none action=none header.from=valinux.co.jp;
+Received: from TY7P286MB7722.JPNP286.PROD.OUTLOOK.COM (2603:1096:405:38f::10)
+ by TY7P286MB6416.JPNP286.PROD.OUTLOOK.COM (2603:1096:405:32b::14) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9542.9; Wed, 21 Jan
- 2026 01:08:58 +0000
-Received: from CH3PR12MB9194.namprd12.prod.outlook.com
- ([fe80::1e6b:ca8b:7715:6fee]) by CH3PR12MB9194.namprd12.prod.outlook.com
- ([fe80::1e6b:ca8b:7715:6fee%4]) with mapi id 15.20.9542.008; Wed, 21 Jan 2026
- 01:08:57 +0000
-Message-ID: <e8cb2549-6a17-47ce-8e9f-96c576890262@amd.com>
-Date: Wed, 21 Jan 2026 12:08:19 +1100
-User-Agent: Mozilla Thunderbird Beta
-Subject: Re: [PATCH v8 07/15] iommupt: Add map_pages op
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Alexandre Ghiti <alex@ghiti.fr>, Anup Patel <anup@brainfault.org>,
- Albert Ou <aou@eecs.berkeley.edu>, Jonathan Corbet <corbet@lwn.net>,
- iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
- Justin Stitt <justinstitt@google.com>, linux-doc@vger.kernel.org,
- linux-kselftest@vger.kernel.org, linux-riscv@lists.infradead.org,
- llvm@lists.linux.dev, Bill Wendling <morbo@google.com>,
- Nathan Chancellor <nathan@kernel.org>,
- Nick Desaulniers <nick.desaulniers+lkml@gmail.com>,
- Miguel Ojeda <ojeda@kernel.org>, Palmer Dabbelt <palmer@dabbelt.com>,
- Paul Walmsley <pjw@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Shuah Khan <shuah@kernel.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Will Deacon <will@kernel.org>,
- Alejandro Jimenez <alejandro.j.jimenez@oracle.com>,
- James Gowans <jgowans@amazon.com>, Kevin Tian <kevin.tian@intel.com>,
- Michael Roth <michael.roth@amd.com>,
- Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
- Samiullah Khawaja <skhawaja@google.com>, Vasant Hegde <vasant.hegde@amd.com>
-References: <7-v8-d50aeee4481d+55efb-iommu_pt_jgg@nvidia.com>
- <fc4f0354-4e6d-452d-abfb-fe24e53253a2@amd.com>
- <20260117154347.GF1134360@nvidia.com>
- <e0514ec6-b428-4367-9e0d-cfb53cc64379@amd.com>
- <20260119173734.GL1134360@nvidia.com>
-From: Alexey Kardashevskiy <aik@amd.com>
-Content-Language: en-US
-In-Reply-To: <20260119173734.GL1134360@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SYYP282CA0005.AUSP282.PROD.OUTLOOK.COM
- (2603:10c6:10:b4::15) To CH3PR12MB9194.namprd12.prod.outlook.com
- (2603:10b6:610:19f::7)
+ 2026 01:38:53 +0000
+Received: from TY7P286MB7722.JPNP286.PROD.OUTLOOK.COM
+ ([fe80::2305:327c:28ec:9b32]) by TY7P286MB7722.JPNP286.PROD.OUTLOOK.COM
+ ([fe80::2305:327c:28ec:9b32%5]) with mapi id 15.20.9542.008; Wed, 21 Jan 2026
+ 01:38:53 +0000
+Date: Wed, 21 Jan 2026 10:38:52 +0900
+From: Koichiro Den <den@valinux.co.jp>
+To: Frank Li <Frank.li@nxp.com>
+Cc: dave.jiang@intel.com, cassel@kernel.org, mani@kernel.org, 
+	kwilczynski@kernel.org, kishon@kernel.org, bhelgaas@google.com, geert+renesas@glider.be, 
+	robh@kernel.org, vkoul@kernel.org, jdmason@kudzu.us, allenbh@gmail.com, 
+	jingoohan1@gmail.com, lpieralisi@kernel.org, linux-pci@vger.kernel.org, 
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, 
+	devicetree@vger.kernel.org, dmaengine@vger.kernel.org, iommu@lists.linux.dev, 
+	ntb@lists.linux.dev, netdev@vger.kernel.org, linux-kselftest@vger.kernel.org, 
+	arnd@arndb.de, gregkh@linuxfoundation.org, joro@8bytes.org, will@kernel.org, 
+	robin.murphy@arm.com, magnus.damm@gmail.com, krzk+dt@kernel.org, conor+dt@kernel.org, 
+	corbet@lwn.net, skhan@linuxfoundation.org, andriy.shevchenko@linux.intel.com, 
+	jbrunet@baylibre.com, utkarsh02t@gmail.com
+Subject: Re: [RFC PATCH v4 05/38] dmaengine: dw-edma: Add a helper to query
+ linked-list region
+Message-ID: <e4y664ylum35wvj4endwprzpp4cvfaggklik5mxvdkgmakuqyj@lgevmhllem72>
+References: <20260118135440.1958279-1-den@valinux.co.jp>
+ <20260118135440.1958279-6-den@valinux.co.jp>
+ <aW0S60D2uALBXdtQ@lizhi-Precision-Tower-5810>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <aW0S60D2uALBXdtQ@lizhi-Precision-Tower-5810>
+X-ClientProxiedBy: TYCP301CA0065.JPNP301.PROD.OUTLOOK.COM
+ (2603:1096:405:7d::10) To TY7P286MB7722.JPNP286.PROD.OUTLOOK.COM
+ (2603:1096:405:38f::10)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -84,252 +75,184 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB9194:EE_|DM4PR12MB6230:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1e25e3c7-ebd4-4edd-894e-08de5889a732
+X-MS-TrafficTypeDiagnostic: TY7P286MB7722:EE_|TY7P286MB6416:EE_
+X-MS-Office365-Filtering-Correlation-Id: 03f2278f-88d2-4b11-9fdd-08de588dd5ee
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|7416014|366016;
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|7416014|366016|10070799003|1800799024;
 X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?cCtGMTlzSlA1dDZUaEZ2dzI3N3MybVNYSzlRckxIUzVTQ2VXM20yc1A0Uitu?=
- =?utf-8?B?dFRLY3ZieHViOUhHS1Nublp1VkNkdm1YRGJZenZZSGx5dEd5dFQ5aFpiWHly?=
- =?utf-8?B?ZVZLd2d3U1VXZUMvUmJOMTVESWlVaEJMR3Y1dUt3Y2U2WGt3dXh0ZHRLSnFs?=
- =?utf-8?B?aWl3U1pmQWNlMUZVYVhYSi9vTGJYNWZWbUNzSUg3WjhVYzNNQ2NyTXFBZmQr?=
- =?utf-8?B?QnFjcUFXOVJOWFd5K1dSNjRpUEF1akI5ZjNPN01jcVZuKzM2OGFoYWZOamJQ?=
- =?utf-8?B?b05iQ3dITWpSeHRJcmZIQ2lhSExnd2FsR04yQ3FyMVMrNklrN0lIekVvbkxG?=
- =?utf-8?B?RWdOSGlLLzRNckVCMjE4cnhuaUd2VElLd3JobDROTEZ1M2F6SHY1Y1pVeDJ6?=
- =?utf-8?B?S0YzMEx0MllDMW1JSWcydWNlUTU5NmhFeUFEeXJadko2eHpscXFHclBvOEpw?=
- =?utf-8?B?d1N6QVBEMnh2Ym5FU09adXdMU2NJNW1vbzNjaG56SS8xL2ErdjhHMjdIYXNJ?=
- =?utf-8?B?Ky9QL2x3VTF6dWVFOHdOZUx4SWtQTkV4VDhFVEpyNTltcnhSVW9jaWMrNXJV?=
- =?utf-8?B?emJPcXErc2E0TFMzMVhoWmdnQzdPa2VLM0RmUkhLWjZYL3dSWUQ5ZjlEZ3Zu?=
- =?utf-8?B?anAxZGxXdVZZQkJleU8yTGlxVndtR3JVeVlsVGdpaTBmWVdLWWhJNjlSYUxi?=
- =?utf-8?B?dVVHVjZsQnhCZHl4eTNMUEh6OGV5ZHJoS0p2T0hGVER6YkRFayszVlRoV2ds?=
- =?utf-8?B?WFROT3JKRTNOeHJWZVIxZjBzN2JSVHRrTFlXTk83bzdLdWN2YlcyQ3hQVVRP?=
- =?utf-8?B?QTJxUUZOZU04MFcrVUVPejU4RHRvcm16RG04NlppZ3dsamF5MWIzZnNoZXRJ?=
- =?utf-8?B?b1dYdndPNnh3V3pZOWhtZ3cwaTJJSklwS095eTVGU0RET3dSVjZvOTh1U3BP?=
- =?utf-8?B?WlR2ZzB1NnpIaW5zOWN5b0JiL1R2cmNZVVdFMGk2eDhzQkFVSk1yQlN5TlJX?=
- =?utf-8?B?RHkrdDVJemNLcUQ1L0hzSEhLNTdKejdpdENTWnZRUmhpTVFMVVpmSHNoRFoz?=
- =?utf-8?B?dGh1NkhvNWNibjcwVTFySE93S1o0b3BKWkZEMldnVDB0VzI3UjhnU05VMmJF?=
- =?utf-8?B?RTR2UENFdDVsbnZ5NkFSR1ZwcUtGK2JXbXJzaHo1M1M3cGFiOVlsSGRncnoz?=
- =?utf-8?B?emhQYnByMVhBNDNFT252SXdjT1lOcXNUbDRIWDhsK0QxZ3d1Yi9CSWJLQjE3?=
- =?utf-8?B?bnk4QlhraXlrQTVyKzJ0YWh2V3pWV0R6ZXJaSlNWcUpRUldTOHBOQ3JVUmhS?=
- =?utf-8?B?R2NvQitqNGhWSUdVYlRsNjdBV0FVc1c2Q3hidVlPK0RMbmloajAvak9iTHR2?=
- =?utf-8?B?dGRKQXBkRmhDSnlpSVo3Z0c5RERUTE9CakJtdXJ0Y09xM3RtZmtzQW9WZkJI?=
- =?utf-8?B?ZXJTbTliUEpHWHRVT0Q4VDY2RTlhbnFMb2VDUVNQTnlpZnc1dmRzci9MLzgw?=
- =?utf-8?B?bklITUhVU2hQa3F2VGV5Y0tkaldaeUFFbVJWVCtEYThSaGZHVitqV3pFZkZq?=
- =?utf-8?B?SllwWldjY3pFSURMMC9Mb2RvTENoUjduSWQ2OTBBVGVHUVlxa3R5UjNRMXAy?=
- =?utf-8?B?N3VvV1dMWHUwclkyQ2lPclpYSnFxTVJBR0JCZ3JIQWJvbDZvVlY3VG9UV01D?=
- =?utf-8?B?SGpTRUtSNzBMTjgybThwWHZPUDNUSEtGRlpwWXByeVVucGV5T0duczJZdi9z?=
- =?utf-8?B?Z1FJOEd6amFqVldYcHpJaG5Wc2NCdW1DSjZIUkJOd1ROakhyR2dVU1ZaVXM0?=
- =?utf-8?B?TjErSGdTRmlkYUlKVzNaZEV5L3R4WjNjZ0Y2a2J0M2Q5OXRjclpER0hQV2NF?=
- =?utf-8?B?ZXc1K0RJa1k1MFFHazdKYVoyRG54SUhVR0NIL3o2TDJQSmtJaUUxV1VHeVU5?=
- =?utf-8?B?bWRrWHZsOCtnUDROLzdBem56MWl4b1J3WUtMV2V0V2pTOHAwdVJwV3JUZXF5?=
- =?utf-8?B?VlJPZ29FaHh2aFhLVDV5UW81ckhHSTQySnE0eXdVNkhiLzZTTlV6Uk9yeVFH?=
- =?utf-8?B?Y1BvZHhJUWJrdmNlTW1vOXV3bkZSVk1nUGlCSHNINFZ1c0xSSHpzRG00dTFD?=
- =?utf-8?Q?LfSI=3D?=
+	=?us-ascii?Q?GyJLnoMKKJEAnwLCXMyQhJxNeURmN+qgqoDAyydiA9FJ3juGY/uPxpRkHEdS?=
+ =?us-ascii?Q?kL/lue9bO5CxvUx3Ef7YMmTBI0n4mFbVwQueqwpyeXBeTl8ap8CgRQtAJ7WV?=
+ =?us-ascii?Q?Drv72HuIcNhRrD/vxlPSd2Cbrh2xP5QbqacSv6cE1hq5iNY05TGjUNekPUC3?=
+ =?us-ascii?Q?TgIanWC2mtKRh4wx9MKeTWUpFmLnWWrDtOeR6yzmrj+cgRixpjmO+H+00/Qh?=
+ =?us-ascii?Q?Ycc1fJ5OR7vBQgGSGusLrw1ibiis8cDUfEF9X6kM/8tcXl7oBPuDYUbxfmjX?=
+ =?us-ascii?Q?81HjfD9zt9Gx/xPjrGpnvExrHKHLoxwSbyjPzwaw9NFuspWLN3PvgjfqE3eS?=
+ =?us-ascii?Q?BwU+TN4vrkPt62eGqJY29TETAKVKl2YctXNJ+QNqpdOKvTvWZtZ6+Du5on8S?=
+ =?us-ascii?Q?KKuxUTKsZ5oLTqNzPD69Llfm+VMwL4hYpvpNvE3OiaVdL38x/TJyV0vI2w7Q?=
+ =?us-ascii?Q?uRydjZSilLuXExgo9hdMA/vASeWd+jOjRK9hKGWAfoYq2eda5CTxgVADDOLh?=
+ =?us-ascii?Q?NF38CD7H3pmzfplUhZAyqosL5Uerl/3pUiGv/jGXjcNecajj5sJNQHqdA7uo?=
+ =?us-ascii?Q?RLViIedz3xIwicJcGftVdLM1KVK8mN/vVCQi7DrYHi5vDOJDGxrij5UnwSbY?=
+ =?us-ascii?Q?kHVc4fTfLbKtM92bgtLWoafTwi8KWepYJt+sssWnnQ6OKShMXL9ROaMcRRUt?=
+ =?us-ascii?Q?cqNs4Gyrj4YZ7GDGw5eVgbC3KPItEkoVFwe39YPG5l14lLDgL7YhglUOuOCU?=
+ =?us-ascii?Q?vByfk9f0TK5nT/rwYip7t3/uCMtPaCoEghe9kUs2kAEKI/lopkH4mg9o3K55?=
+ =?us-ascii?Q?562k4WKV/hvVmUcDVR7SuoJZ9QIwkHSsyPGefp4yETmWhfjKyrUgH+JJV4Hk?=
+ =?us-ascii?Q?4f2NRvjBQSbUV+siWZ1vlIFXorzJbkY/oegvfYRdFkdgedd9n0J+7e8zsOgV?=
+ =?us-ascii?Q?fIL/5tyOvWCFvgF0AIZzpV7ZPzAKFBIZwh/YHGv2JWXj0Zsd+pHU+tXpdhhA?=
+ =?us-ascii?Q?DX2fXQuwrup5ucU9qXR1z/aYfSskSiFN2Cd9VRXKcwPrjXzBNrJz/I0QHwaf?=
+ =?us-ascii?Q?i8d2AhoyDeG9GbVkKw32tdnxvuldYXIi9cdTKc8P4zyQZhYw8lqocTeM5yWO?=
+ =?us-ascii?Q?gdzIGlg3sz9/soyo33h30hOR2OWhxv0go9emc0nXFa39eOEru39EnrPbo/I8?=
+ =?us-ascii?Q?KXtMpQgu7+tUcKb8/gkUVZ3gtkt+eO9BseBBb5uEWhy3hJ+7p9XUNfGPpyxe?=
+ =?us-ascii?Q?yncRLKpm7Lh82BMaCxSl6UWQKvAQggBOIquLJDIWXKo57b5rKs17A11YeYzH?=
+ =?us-ascii?Q?KUSbVDaLPKwa77z0I8MWNQQDWS8GooX3BZSK04hclU1c+doYnsuoACWDVn2y?=
+ =?us-ascii?Q?ZZDm3kkONLv96O6Yto/3LrBP6j4yQjoqEjHTdYYdcElJf/mdSQJmxqsHCsAt?=
+ =?us-ascii?Q?zNzzKBzRDYF1/yyCQ4WpSRwqODaM0S+LZ5M7gOZfioPEge1f5IWoo/AM6tlH?=
+ =?us-ascii?Q?FZAO4s4/4lhBLBvjOQ7f4AKSoE7XylAgvv0Ewi906gOCXBrNm9anUzfoSZDv?=
+ =?us-ascii?Q?XgLS1CyajNAxzA3Hgus=3D?=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB9194.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(7416014)(366016);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TY7P286MB7722.JPNP286.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(366016)(10070799003)(1800799024);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?QmF4akZhT2hyTTlsR2xJUE9mNmlRL3Viem9tb2JVRHlxaFRaMXAxVXJua3Rs?=
- =?utf-8?B?Vld4WjZ3OG5oTkxkNUt3eEdzUkdJek5DSTI1RHJWS1lYdUhVa0FKMVRwS0Ri?=
- =?utf-8?B?anlUdHlpWU83ZXFBNnd1b0hHRU5uajBVUHFrZE1EdmxQSWl3STB3RWVmcHVH?=
- =?utf-8?B?N1VtbjhHK3VOYWNTWmo0MFBONXlibk51RVFKM1I3ZGxiUkp0VkFKajhyZlRx?=
- =?utf-8?B?WVZMVWRia0NWaGJGTDZoVHJZRHB3OWNaMit5czBaaDdhOSt5WmZ1bWRyK1Rr?=
- =?utf-8?B?RzRmdTltTzRhSzQwNEhMVUtwUE9VcEdTZFdQZWN2ZTdwanBwMzlFSXZoZlZD?=
- =?utf-8?B?VWN4aEU0ekU5aW9mQXNneDcwQXNxaDQwcjIvbVN1VTlQOGRKWHRBSUFOWjNj?=
- =?utf-8?B?YWx1enJCUkdwS3pkN3dXYWZiQjJCRzZ0QVJEbTU3ekdZNFRpSk12WllBTHFQ?=
- =?utf-8?B?N0dtUEcrTUtQYmFtaGIxdTllSHZZNWFEL25MQjRNK3lVTFB1dDJXek12V2J1?=
- =?utf-8?B?Uno5SzdURk53RVlyc24wOEgyNUxjeHNrTGpFZThnUjErVVdXZ0MvUytxam9U?=
- =?utf-8?B?cXZrTllsZDUxR3JCa1Z1YVBVRU5razVTaW5sT0YxZ2NaZjFCcG55R0wrTk5y?=
- =?utf-8?B?MFBZclFEZHZaSW8yRnowOEFQcHI1TEo3ek54QWhLV1RVWng5d1RGK2cyelBG?=
- =?utf-8?B?ZktRMnFQMmU2NlhBZzBQYkREVmo1V1k3aEJDLzNJTWdUYmVGOTRSU0VIR2JJ?=
- =?utf-8?B?S1dvVkhkYUNlcFZKaDFVc0dhNGh3citWVUU3VXlCNG1Id3dxYUh2a1hrbXJL?=
- =?utf-8?B?L2RJbHNrdDFCSGlTQ1NGeHdQZjdXeDUyOFNhQzVweVdDZkJIcjF3eUg1TDZy?=
- =?utf-8?B?aUJuUlBZMzhmR3JYTWlBR21wWkhYbTkxc0crTmFGR1FVcWt5RS91QUZvWU1T?=
- =?utf-8?B?VlF1ZDU4OHViZkpRSENJaWM1dlJwYlQ5Rm93UHdPZkdjOVRkRCtVdzV4bkdl?=
- =?utf-8?B?UjA2U0NwemNnRnhoK0h3UHBsRmlZUmFIOTkvQVZzSHdudGJZelJGNEJyYXNa?=
- =?utf-8?B?YklOYkthbWZGZ2ZMaGhwcFBtb1JBTHdXMkgrVXdTV3FoWTVaK0xQNlpMV2Zk?=
- =?utf-8?B?ZE1BT09MMVBmbU5Eb09NWi8xWWhIa0JpSkdLYUxiQWcwM1FObm1TdGgrcFlJ?=
- =?utf-8?B?ZHhYdmhIUjFydHFIOFowTjZKdzEydWg3c0dlb3JSOU9KWnJORnlzN203Ujlk?=
- =?utf-8?B?aXBNcUtqcU16clRhVmRtLzlzc1Z5UW4xRFQwRXVYOVJtekRlRXJjaHpNNUJr?=
- =?utf-8?B?Y0JzZTRGdGxkS3BDWlo5T2VmaU5LSjlXL0wwUExFcm5JUnhkZlJ3WnF2Vmtu?=
- =?utf-8?B?L0MrWUhSM2ZXd3lVREVLemFHZEw3em85OU9nZFJuakRXUzhxRGJ1dExnK3RN?=
- =?utf-8?B?RWlDdEUxS3kwOW1UOTR4Y1ZGNEpTQzE4UHdzcWN5elFjZWpWQVBLemhPS1JQ?=
- =?utf-8?B?R2kybTI4ZkJNd2l3em1PeFZSMFBLWFZ0NVVIU1B3dFNubXd3LytXa2tmbUJW?=
- =?utf-8?B?M2hnWFRtei8wWjNJa1prT0JlNVpvL0FlcTAwSk1BUExQVzNCVDdjMXlmWDVy?=
- =?utf-8?B?dWRrK2lNcStPZTk5M2pvVVQrejhqc2FCeWIvcE4zOWNReExzVDVTb1BKWmVa?=
- =?utf-8?B?T2kvbXpSQlpXd2toelQ3V3BPdDNLdTJUTmp3VzNnelNxaG43T2gwbUwwandV?=
- =?utf-8?B?N01keFRmVCtTRU9xUVFtWExrR3FmdXZ6bGNENFd3UW5mbTMxU0I4eHpRVVlZ?=
- =?utf-8?B?WWFjR3ZTVDlXNko5NnJvMjJEU21YZi95VnNVb2RncnNRWmViRkdYL3ExeFpi?=
- =?utf-8?B?L3F2cDc0L1djRW1Kekt2WFNvbjNrS000aGEvS0twL0NCTXEzQzIwS1g0Q1pS?=
- =?utf-8?B?R3pEOTFEOUxldHFZU25XUWhONSt4MFR4TzlrRkVHdlhtZzk5bU14VENQayts?=
- =?utf-8?B?c1ZhZCsrYmFqTm90NmsyOXpVSWlnRUNVaE1YMDZrd0owMjhNaGMydi9NeUxU?=
- =?utf-8?B?TFpldmMzQ3NzUDJkVFYreDFEMW5kUGNlMnJDbGl0Sk4rVUtxRGRKZit2Visz?=
- =?utf-8?B?M1ZVcGloZnEzVXBWdUhEWEhYTmpoZWtaWi9iWHROYUp6L084WVErRU9rajMz?=
- =?utf-8?B?dWVKbXRKZGdqZnZldldoaHF0L1Fuc21wa0UyNzFGTWhFSnlMNStrblJ2eGZk?=
- =?utf-8?B?WGZycWR3NnozSEpLNUdDYzFTYzBoMExQZUIySG1Cby9XSG9aYjBibHNFcmRH?=
- =?utf-8?Q?ARqDNErvNzBxQ1iSv5?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1e25e3c7-ebd4-4edd-894e-08de5889a732
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB9194.namprd12.prod.outlook.com
+	=?us-ascii?Q?hm+vQO7wVkxmml8cvAx7lQUD7lEjP38SGLgA92ftn9QBfZUkmTHqkhayWKIT?=
+ =?us-ascii?Q?muqzvkCMmyTM02qE8NcmSIkM5Gu+uJaWuGp/4usir7Ygk1gn/UD3f9sSi1KE?=
+ =?us-ascii?Q?vXL2FHFtiu/Ye/LBYrvnytZ6yUBpfdJWxRX1s9oJ2Elb31aq5tLQcPD/1BP4?=
+ =?us-ascii?Q?bxPXZ7P312F4zXrw9aPkq53g10bGsiZP+4CJnrcqRLXXSjnlRl0bQRgEMFP3?=
+ =?us-ascii?Q?f12Oxw9NC8fWCnxQqCKftBUzXjE9wO/jX1nyrbYq5JqhCDtlzqa7GktObZoU?=
+ =?us-ascii?Q?xHI4xU7iVF/YdLMX1MxFUFRZ/RJxWMqW9NTzacZVdThZgrg4WMWzv4V+AEy0?=
+ =?us-ascii?Q?jq/lXnQwkkbLbBTBmpBdkpGqSixST2ORd2Q1268z2UgleKweqmm2ClXwtVsG?=
+ =?us-ascii?Q?G2OTCbhIn6b8nmwQc4A+pwsRyuNn8pv8vm+YUowpMWCkN2+7ZqedvtqzsRJb?=
+ =?us-ascii?Q?9y8Ik/vXKdKc3PilkDz3ECWV/agmUBQGAlzMftckO0/Se2qLYDxTfl68C+Vr?=
+ =?us-ascii?Q?6Q2WOHgQNVsR6cGO8+Ut2Jt43bWt8xOBB0H15Trn7PRmHJGXCo0rSilIOS3c?=
+ =?us-ascii?Q?xTasdQ9+mKkfseIzAMPWIq39DBaInnp2VPEQUivp96DAbw891Ea8nf/wthMT?=
+ =?us-ascii?Q?RpBH16k1P2hKHCctTxBDLkfjEsOImztTMPHiJQBhqkM0fkDyAjizv8wRvd8u?=
+ =?us-ascii?Q?0eTFipJPvnIAt5fYSPIsKxH1BJeCLNakgm1iIsEhOt4bf3Qupy+08Boxglgz?=
+ =?us-ascii?Q?QHlPRARXdv3WK3YRRJ46zDxDx8kV5+MbP9hy7nKU1+hR8JtRNlB9o1biodTZ?=
+ =?us-ascii?Q?E8H/11OXVC6vXpDOsMJLPYhBY/NYaOULB3EhwENYqrwqQ/hdCkpe79ss3Tmc?=
+ =?us-ascii?Q?qBJ7NT1eBqDgVCe6b/MQSwVBFiNhdSxOydxW5j3iYE7qNl4O+b/EsWL7EpEt?=
+ =?us-ascii?Q?8i7k4fpWe8F1eCgmADHODvD6BvBY4HOSPtEzAn7fQsrOtzrPYJJA3Mpj02ke?=
+ =?us-ascii?Q?nIIwBHqYpVFboh5qSdWFJFbqyJKtHGPc7VeLqptz9U4Zgws3evWuhFP0zWkX?=
+ =?us-ascii?Q?ACsuo9cjewXGmT2gYuc/G+EZ+UNvk9XZXyW/vIWlMVRUYJUezfAdKTaR9s2A?=
+ =?us-ascii?Q?9M4FHGxV+ZrKzX8lA1Sp3/xy3C3ZIU05+ah01WdyVFfDmAg0d9PbJM4PDnyM?=
+ =?us-ascii?Q?brURm+mibaee4N5HDfOfqJ85VzgROX8k6G/X9ANgAeBB2pKCj/uO+0dRugB1?=
+ =?us-ascii?Q?Poy+nC0paqSahpZPXpLJKtneZWZHzruKup7T1XcebBsud0aKNCO2pS+NV/iZ?=
+ =?us-ascii?Q?ghu7KmInG1StG/2SGzyoykK4vJZzJ+SS8CvB20k7cDiknvRgOiBBvce7xxmD?=
+ =?us-ascii?Q?ovjuEH9Ikn2+Mk4/gVlKICPiZVnUea4lBKmpQsCSvMG+Z4Q0r953mnz36V95?=
+ =?us-ascii?Q?nMD+RZYut3UtYdFMw9pR+up9BgDADuSvhssi/okkQESCGJvIyyhgdr5Cu8MT?=
+ =?us-ascii?Q?CpSE/mKq49r9Y7DlJ8zE/6uCK20YDRJKrPQ7PeuOE3IGj+OQNOlgB0rc96Dr?=
+ =?us-ascii?Q?xtpavfwoK37PeOlTo/0FiaivyE5fw4txg51Na4lFhuQXTsyyBq7trPKfny5d?=
+ =?us-ascii?Q?IQbelPSxBeAxjYN6h1afVcsJYupnXxwhWLYbIlrh/FY2Yb6d/REGqms6H8vu?=
+ =?us-ascii?Q?RGpv1AjR2hEFZ0sFMAYCGN91/BFlFFZN7EjUNz130Eq/WsV9eg3b2A54TxAf?=
+ =?us-ascii?Q?BMTpcg6VrCG2ShXV/m6AC6QJ41Erm3vUW2383A5rwpBKyCWT4H63?=
+X-OriginatorOrg: valinux.co.jp
+X-MS-Exchange-CrossTenant-Network-Message-Id: 03f2278f-88d2-4b11-9fdd-08de588dd5ee
+X-MS-Exchange-CrossTenant-AuthSource: TY7P286MB7722.JPNP286.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Jan 2026 01:08:57.4099
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Jan 2026 01:38:53.7309
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-Id: 7a57bee8-f73d-4c5f-a4f7-d72c91c8c111
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: PEFrfVLtA5FHwG7QB74Z1kYfpcQiZgY5hoIMJc4H7Qky8p1CBDv5mRmsopyJIAs7kr5lDKwmN/8+da2GZlySEA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6230
+X-MS-Exchange-CrossTenant-UserPrincipalName: 2oHdW80p2vtFqISk3cZ/sCOO4xgFboUR0/rfN9cTJ1geN10we1UNgyK+SsxdCJndYCvx5AWEIDtzTKTRkvDuQA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY7P286MB6416
 
-
-
-On 20/1/26 04:37, Jason Gunthorpe wrote:
-> On Mon, Jan 19, 2026 at 12:00:47PM +1100, Alexey Kardashevskiy wrote:
->> On 18/1/26 02:43, Jason Gunthorpe wrote:
->>> On Sat, Jan 17, 2026 at 03:54:52PM +1100, Alexey Kardashevskiy wrote:
->>>
->>>> I am trying this with TEE-IO on AMD SEV and hitting problems.
->>>
->>> My understanding is that if you want to use SEV today you also have to
->>> use the kernel command line parameter to force 4k IOMMU pages?
->>
->> No, not only 4K. I do not enforce any page size by default so it is
->> "everything but 512G", only when the device is "accepted" - I unmap
->> everything in QEMU, "accept" the device, then map everything again
->> but this time IOMMU uses the (4K|2M) pagemask and takes RMP entry
->> sizes into account.
+On Sun, Jan 18, 2026 at 12:05:47PM -0500, Frank Li wrote:
+> On Sun, Jan 18, 2026 at 10:54:07PM +0900, Koichiro Den wrote:
+> > A remote eDMA provider may need to expose the linked-list (LL) memory
+> > region that was configured by platform glue (typically at boot), so the
+> > peer (host) can map it and operate the remote view of the controller.
+> >
+> > Export dw_edma_chan_get_ll_region() to return the LL region associated
+> > with a given dma_chan.
 > 
-> I mean, I'm telling you how things work in upstream right now. If you
-> want this to work you set the 4k only cmdline option and it
-> works. None of what you are describing is upstream. Upstream does not
-> support > 4K IOPTEs if RMP is used.
+> This informaiton passed from dwc epc driver. Is it possible to get it from
+> EPC driver.
 
-ah, that. Well, even now if you force swiotlb, then IOMMU should be able to use huge pages. But ok, point taken.
+That makes sense, from an API cleanness perspective, thanks.
+I'll add a helper function dw_pcie_edma_get_ll_region() in
+drivers/pci/controller/dwc/pcie-designware.c, instead of the current
+dw_edma_chan_get_ll_region() in dw-edma-core.c.
 
->>>> Now, from time to time the guest will share 4K pages which makes the
->>>> host OS smash NPT's 2MB PDEs to 4K PTEs, and 2M RMP entries to 4K
->>>> RMP entries, and since the IOMMU performs RMP checks - IOMMU PDEs
->>>> have to use the same granularity as NPT and RMP.
->>>
->>> IMHO this is a bad hardware choice, it is going to make some very
->>> troublesome software, so sigh.
->>
->> afaik the Other OS is still not using 2MB pages (or does but not much?) and runs on the same hw :)
->>
->> Sure we can force some rules in Linux to make the sw simpler though.
+Thanks for the review,
+Koichiro
+
 > 
-> I mean that the HW requires multiple SW controlled tables to all be
-> sizes must be matched. Instead the HW should read all the tables and
-> compute the appropriate smallest size automatically.
-
-Not sure I follow. IOMMU table matches the QEMU page table, it is two tables already and IOMMU cannot just blindly use 2M PTEs if the guest is backed with 4K pages.
-
->>> Doing it at mapping time doesn't seem right to me, AFAICT the RMP can
->>> change dynamically whenever the guest decides to change the
->>> private/shared status of memory?
->>
->> The guest requests page state conversion which makes KVM change RMPs
->> and potentially smash huge pages, the guest only (in)validates the
->> RMP entry but does not change ASID+GPA+otherbits, the host does. But
->> yeah a race is possible here.
-> 
-> It is not even a "race", it is just something the VMM has to deal with
-> whenever the RMP changes.
-> 
->>> My expectation for AMD was that the VMM would be monitoring the RMP
->>> granularity and use cut or "increase/decrease page size" through
->>> iommupt to adjust the S2 mapping so it works with these RMP
->>> limitations.
->>>
->>> Those don't fully exist yet, but they are in the plans.
->>
->> I remember the talks about hitless smashing but in case of RMPs atomic xchg is not enough (we have a HW engine for that).
-> 
-> I don't think you need hitless here, if the guest is doing
-> encrpyed/decrypted conversions then it can be expected to not do DMA
-> at the same time, or at least it is OK if DMA during this period
-> fails.
-
-The guest converts only a handful of 4Ks (say, the guest userspace wants to read certificates from guest-os->host-os->fw) and only that converted part is not expected for DMA but the rest of 2MB page is DMA-able.
-
-
-> So long as the VMM gets a chance to fix the iommu before the guest
-> understands the RMP change is completed it would be OK.
-
-The IOMMU HW needs to understand the change too. After I smash IO PDE, there is a small window before smashing an RMP entry when incoming trafic may hit not-converted part of a 2MB page and RMP check in the IOMMU will fail. That mentioned above HW+FW engine can stall DMA for a few ms while it is smashing things.
-
-> I'm assuming there is a VMM call involved here?
-
-Yes.
-
->>> It assumes that the VMM is continually aware of what all the RMP PTEs
->>> look like and when they are changing so it can make the required
->>> adjustments.
->>>
->>> The flow would be some thing like..
->>>    1) Create an IOAS
->>>    2) Create a HWPT. If there is some known upper bound on RMP/etc page
->>>       size then limit the HWPT page size to the upper bound
->>>    3) Map stuff into the ioas
->>>    4) Build the RMP/etc and map ranges of page granularity
->>>    5) Call iommufd to adjust the page size within ranges
->>
->> Say, I hotplug a device into a VM with a mix of 4K and 2M RMPs. QEMU
->> will ask iommufd to map everything (and that would be 2M/1G), should
->> then QEMU ask KVM to walk through ranges and call iommufd directly
->> to make IO PDEs/PTEs match RMPs?
-> 
-> Yes, assuming it isn't already tracking it on its own.
-> 
->> I mean, I have to do the KVM->iommufd part anyway when 2M->4K
->> smashing happens in runtime but the initial mapping could be simpler
->> if iommufd could check RMP.
-> 
-> Yeah, but then we have to implement two completely different
-> flows. You can't do without the above since you have to deal with
-> dynamic changes to the RMP by the guest.
-> 
-> Making it so map can happen right the first time is an
-> optimization. Lets get the basics and then think about optimising. I
-> think optimizing hot plug is not important, nor do I know how good an
-> optimization this would even be.
-
-Got it.
-
->> For the time being I do bypass IOMMU and make KVM call another FW+HW DMA engine to smash IOPDEs.
-> 
-> I don't even want to know what that means :\ You can't change the
-> IOMMU page tables owned by linux from FW or you are creating bugs.
-
-oh but I can :) It is a FW call which takes a pointer to an 2MB IOPDE, a new table of 4K PTEs filled with the old PDE's pfn plus offsets and then the FW exchanges the old IOPDE with a new table and smashes the corresponding RMP, and it suspends the DMA while doing so.
-
-If I get it right, for other platforms, the entire IOMMU table is going to live in a secure space so there will be similar FW calls so it is not that different.
-
->> ps. I am still curious about:
->>
->>> btw just realized - does the code check that the folio_size
->>> matches IO pagesize? Or batch_to_domain() is expected to start a
->>> new batch if the next page size is not the same as previous? With
->>> THP, we can have a mix of page sizes"
-> 
-> The batch has a linear chunk of consecutive physical addreses. It has
-> nothing to do with folios. The batch can start and end on any physical
-> address so long as all addresses within the range are contiguously
-> mapped.
-> 
-> The iommu mapping logic accept contiguous physical ranges and breaks
-> them back down into IOPTEs. There is no direct relationship between
-> folio size and IOPTE construction.
-
-Ah right, pfn_reader_first/next take care of that constructiveness. Never mind. Thanks,
-
-> For example the iommufd selftest often has a scenario where it lucks
-> into maybe 16k of consecutive PFNs because that is just what the MM
-> does on a fresh boot. Even though they are actually 4k folios they
-> will be mapped into AMDv1's 16k IOPTE encoding.
-> 
-> Jason
-
--- 
-Alexey
-
+> Frank
+> >
+> > Signed-off-by: Koichiro Den <den@valinux.co.jp>
+> > ---
+> >  drivers/dma/dw-edma/dw-edma-core.c | 26 ++++++++++++++++++++++++++
+> >  include/linux/dma/edma.h           | 14 ++++++++++++++
+> >  2 files changed, 40 insertions(+)
+> >
+> > diff --git a/drivers/dma/dw-edma/dw-edma-core.c b/drivers/dma/dw-edma/dw-edma-core.c
+> > index 0eb8fc1dcc34..c4fb66a9b5f5 100644
+> > --- a/drivers/dma/dw-edma/dw-edma-core.c
+> > +++ b/drivers/dma/dw-edma/dw-edma-core.c
+> > @@ -1209,6 +1209,32 @@ int dw_edma_chan_register_notify(struct dma_chan *dchan,
+> >  }
+> >  EXPORT_SYMBOL_GPL(dw_edma_chan_register_notify);
+> >
+> > +int dw_edma_chan_get_ll_region(struct dma_chan *dchan,
+> > +			       struct dw_edma_region *region)
+> > +{
+> > +	struct dw_edma_chip *chip;
+> > +	struct dw_edma_chan *chan;
+> > +
+> > +	if (!dchan || !region || !dchan->device)
+> > +		return -ENODEV;
+> > +
+> > +	chan = dchan2dw_edma_chan(dchan);
+> > +	if (!chan)
+> > +		return -ENODEV;
+> > +
+> > +	chip = chan->dw->chip;
+> > +	if (!(chip->flags & DW_EDMA_CHIP_LOCAL))
+> > +		return -EINVAL;
+> > +
+> > +	if (chan->dir == EDMA_DIR_WRITE)
+> > +		*region = chip->ll_region_wr[chan->id];
+> > +	else
+> > +		*region = chip->ll_region_rd[chan->id];
+> > +
+> > +	return 0;
+> > +}
+> > +EXPORT_SYMBOL_GPL(dw_edma_chan_get_ll_region);
+> > +
+> >  MODULE_LICENSE("GPL v2");
+> >  MODULE_DESCRIPTION("Synopsys DesignWare eDMA controller core driver");
+> >  MODULE_AUTHOR("Gustavo Pimentel <gustavo.pimentel@synopsys.com>");
+> > diff --git a/include/linux/dma/edma.h b/include/linux/dma/edma.h
+> > index 3c538246de07..c9ec426e27ec 100644
+> > --- a/include/linux/dma/edma.h
+> > +++ b/include/linux/dma/edma.h
+> > @@ -153,6 +153,14 @@ bool dw_edma_chan_ignore_irq(struct dma_chan *chan);
+> >  int dw_edma_chan_register_notify(struct dma_chan *chan,
+> >  				 void (*cb)(struct dma_chan *chan, void *user),
+> >  				 void *user);
+> > +
+> > +/**
+> > + * dw_edma_chan_get_ll_region - get linked list (LL) memory for a dma_chan
+> > + * @chan: the target DMA channel
+> > + * @region: output parameter returning the corresponding LL region
+> > + */
+> > +int dw_edma_chan_get_ll_region(struct dma_chan *chan,
+> > +			       struct dw_edma_region *region);
+> >  #else
+> >  static inline int dw_edma_probe(struct dw_edma_chip *chip)
+> >  {
+> > @@ -182,6 +190,12 @@ static inline int dw_edma_chan_register_notify(struct dma_chan *chan,
+> >  {
+> >  	return -ENODEV;
+> >  }
+> > +
+> > +static inline int dw_edma_chan_get_ll_region(struct dma_chan *chan,
+> > +					     struct dw_edma_region *region)
+> > +{
+> > +	return -EINVAL;
+> > +}
+> >  #endif /* CONFIG_DW_EDMA */
+> >
+> >  struct pci_epc;
+> > --
+> > 2.51.0
+> >
