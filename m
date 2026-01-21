@@ -1,262 +1,128 @@
-Received: from BN1PR04CU002.outbound.protection.outlook.com (mail-eastus2azon11010023.outbound.protection.outlook.com [52.101.56.23])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54076369985;
-	Wed, 21 Jan 2026 10:58:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.56.23
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768993085; cv=fail; b=Dli3tC4T+QcrUNrNX4D4d4n9h6Rim7bZMt95lNdf+paeITajZfdB2mjtmuDJRwPM8HITLUSTsDWZAwDzezm1+H5eXRvYuKye1FiXaxrU1tMrGDFLwakSwhPx6GT2hO6EoWZQIm22BvesOp8Fy6Mg962GPS2JcjBj3L6MGN3gYbA=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768993085; c=relaxed/simple;
-	bh=YbNrZ5LlyAZXitWbdfnSJ+smNwqw8ajpRDK/os1prB8=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=cjFHO6raSqcvUWQTJUgkGvF34eMZvre7OuCv8nOZFN8h+1QU7OXIAOovoTD7eQ/je+lOx18tmTkwrJUy9qWowzwxXFppZLS9lsGh8Y+8cK+KszXAXc6SMwayYL+1bQtjdOGMEUxymeZjMV4fpTv5bGRLYN5l1fayg6IlfGpFgS8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=ZKcl1Yod; arc=fail smtp.client-ip=52.101.56.23
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E8B53A8FE2;
+	Wed, 21 Jan 2026 11:02:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1768993340; cv=none; b=eTwpc0AUmQuvNz1kOrk9+x/hkDvbTv/YRRH3UjQMDFitE7bTKFllYSsW+ip4qu2zi0A1Njy8zUBsBGtnwqhrmXFR+c3wHUbOs+zoRoIHKRc6rzWh0fQhRaM+yt+QNL8GgjLNIv1heAEsXYGCQsNDaHWP0QaYSkwzu0NNi6UO8IM=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1768993340; c=relaxed/simple;
+	bh=8kyC71C1fYKyMdKH2TUs0LV7M6/6LOJ7dZNuLy9ltdg=;
+	h=Mime-Version:Content-Type:Date:Message-Id:From:Subject:Cc:To:
+	 References:In-Reply-To; b=OtmyHonA5pBowyT7VHMp1SII6AfH+GTpgl7z/lQ6k8LJ7muSrUiYmMwJEuZKtDvbcM67JjKSXI6dgp6BaQvZ/9bHH1p7dw5F1AjnD8qUvnewsxhR7+07fjvw6Wlyrohu1qm053TNGMBrW+mgsixk196mffufmhO2R4ln3hQwDxs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TH6aZXwp; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="ZKcl1Yod"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=a1oFvLy5CQr5NUvkjT5MhuriZ7bygi5IkNSe/Ou9PZ1rFFLb7/m4O6TWKrP7XelfVYH4sIE/MCpKD4IMJQo1ZXzmYQXuHWzh1N5SVcVmcRSRub4trAzTv4qAcEPPa1jBQxyhc3tel6vVKY7UtKtr8JJqWnD3DsZLko40TFtQYdByje8pC6nmCw292qoiMSmGPoEPBQcWeGGLP1TIjjU5jdCSuB0msgKz7q8urY7X1rRVTvtSkdz3y0F9kFEXD7+iYUwnilq1h8SUupXvOHofcmZxUZkbHnhdp5LyByoYynpDJfx0cXGOCSK5uMzfIgJrIj2XU7xQktE7CxO7FvxmPw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=NQiQmUMK8nqIXoP3Ke5JWgql+62HnBBJ0VHUnRuGISE=;
- b=WgJ1K6WeKhjfkGZ82Fl/FOqHCOSvXuSKIPWt+CyqdfYR3A/GbSjDZikXvesBdvfzdPb6NWstrthcXooEkqxLMo9Qxl9SvyFZ8ZG1oA/3e1EAUERvm1fvc7ex5bxwsaBfehwmcf0desdp7EezVMhSGmp2D+j1giNqMijSxiwZIFNMbPYIzpvTcP6rd82kqfaGnc73WI8hDWy8KMGpNaGFMKYUyVrVRPHaT0boQA8xAPp46BS/yEiUQKbaKBzC2Tqu8DmSX/PMyW0Ta5jlIBqnhAO51AtPt3TCDrbKNlh+h/qUflxKTC+0iuMyc3OkXf70NgixmWH4+SlK+D4lMytxbg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NQiQmUMK8nqIXoP3Ke5JWgql+62HnBBJ0VHUnRuGISE=;
- b=ZKcl1YodPgYP6sqP8l8BAppdI+8lRvjZpuCjGzUJOpeI5zH18WUj8Rma3ZK51MkjMATno6sjx/TrykcpHpnzmO3fUzxTYoOqXal5KulM/0vwMtb53yaC1gVBAggMZvbD+S4LqULT3Gs0Rj771hYiBAX7j6tACDz3JOnxBwJinMw=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from PH7PR12MB5685.namprd12.prod.outlook.com (2603:10b6:510:13c::22)
- by PH7PR12MB5736.namprd12.prod.outlook.com (2603:10b6:510:1e3::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9542.9; Wed, 21 Jan
- 2026 10:57:57 +0000
-Received: from PH7PR12MB5685.namprd12.prod.outlook.com
- ([fe80::46fb:96f2:7667:7ca5]) by PH7PR12MB5685.namprd12.prod.outlook.com
- ([fe80::46fb:96f2:7667:7ca5%4]) with mapi id 15.20.9542.008; Wed, 21 Jan 2026
- 10:57:57 +0000
-Message-ID: <693f302b-e859-47a3-ab00-626ced35ee78@amd.com>
-Date: Wed, 21 Jan 2026 11:57:45 +0100
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 2/7] dma-buf: Always build with DMABUF_MOVE_NOTIFY
-To: Leon Romanovsky <leon@kernel.org>
-Cc: Sumit Semwal <sumit.semwal@linaro.org>,
- Alex Deucher <alexander.deucher@amd.com>, David Airlie <airlied@gmail.com>,
- Simona Vetter <simona@ffwll.ch>, Gerd Hoffmann <kraxel@redhat.com>,
- Dmitry Osipenko <dmitry.osipenko@collabora.com>,
- Gurchetan Singh <gurchetansingh@chromium.org>, Chia-I Wu
- <olvaffe@gmail.com>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
- Lucas De Marchi <lucas.demarchi@intel.com>,
- =?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
- Rodrigo Vivi <rodrigo.vivi@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
- Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Felix Kuehling <Felix.Kuehling@amd.com>, Alex Williamson <alex@shazbot.org>,
- Ankit Agrawal <ankita@nvidia.com>,
- Vivek Kasireddy <vivek.kasireddy@intel.com>, linux-media@vger.kernel.org,
- dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
- linux-kernel@vger.kernel.org, amd-gfx@lists.freedesktop.org,
- virtualization@lists.linux.dev, intel-xe@lists.freedesktop.org,
- linux-rdma@vger.kernel.org, iommu@lists.linux.dev, kvm@vger.kernel.org
-References: <20260120-dmabuf-revoke-v3-0-b7e0b07b8214@nvidia.com>
- <20260120-dmabuf-revoke-v3-2-b7e0b07b8214@nvidia.com>
- <24c7a7e6-b1bd-4407-b62d-4d9ea4cdeee4@amd.com>
- <20260121101421.GZ13201@unreal>
-Content-Language: en-US
-From: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
-In-Reply-To: <20260121101421.GZ13201@unreal>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: FR4P281CA0270.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:e8::20) To PH7PR12MB5685.namprd12.prod.outlook.com
- (2603:10b6:510:13c::22)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TH6aZXwp"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 498F8C19422;
+	Wed, 21 Jan 2026 11:02:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1768993340;
+	bh=8kyC71C1fYKyMdKH2TUs0LV7M6/6LOJ7dZNuLy9ltdg=;
+	h=Date:From:Subject:Cc:To:References:In-Reply-To:From;
+	b=TH6aZXwpd3Uek/qsHM85TdeOnxZVE0llSoWc/tB172GDFJ2/1qaGhL9sXiHzXK6St
+	 vPLS3NGMLaF8zR+GcWTOy6MA70OcbwlU9KaacMMaaJNhciegMpXssNj9ZayqMQ6cdj
+	 WqKSLa53bijebmX0vvu0CXtgnh51ExG5B4nIrEbsmDlVlvtGiGpbUo496Dm9JesPiH
+	 cNA92tULgSjXqq07j9sl5IPok0B3DJis93APKcPxU+7/rq4+Po9FNpeQ9OtHcksx1/
+	 po8Yksq18BANZ9kxoFDWZJwCDTMRBE4TCEiRA2iBmf6QwQhDctDEkDFr5cy3S+DYRH
+	 dM0Qs1AjE5WLQ==
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH7PR12MB5685:EE_|PH7PR12MB5736:EE_
-X-MS-Office365-Filtering-Correlation-Id: cb2d42ee-b7cd-4742-bbaf-08de58dbef56
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|7416014|376014|1800799024|366016;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?VVRQM0Rmb0ZYSCt4T0JuOTBVN2l5bDM1K0RJOEJKaE9aSzloOWgyNFVnR2JV?=
- =?utf-8?B?Z29qcCtPMlY1bFlLa2MrcFpKVG1TSTBaTFZLRFRZbzRWNGwveHNyY0xMOUxW?=
- =?utf-8?B?TVlpWGtmVHRHUi9UVko4VGxsY3RYb0FIR0M0Yi9BYjRublVyYVZEV2FoTWNU?=
- =?utf-8?B?V1JpeGF5VmxjVStRcFZvaGJEdFRLaldWVUhXWkx4V0s3OG14VGVjSnFlekxx?=
- =?utf-8?B?OXgyb29JK2NFbTVMVE9pNm5VNERRZ1hLM3lJeklhQ1dwNjk3cno5d0cxTTFV?=
- =?utf-8?B?RXNmMnEwcUR1cFViU1VqYnpnUjZleE9lOWcrNThwa25zbzcwUFJmc1VOSE5B?=
- =?utf-8?B?VkI3bDIrck1yekVhSkhmUjNVbnI5OVIxS085ZXdneUhKN0I5dW9FU2N0Y2Z6?=
- =?utf-8?B?SFFwY2I1NlJGV3RIUDN4SEVLZU9Pa2hDdHMrcHM1YzRNQ3B2M2FJa2tKbXUr?=
- =?utf-8?B?MEE1aW9RZ3gxRFg3VUxBYkFkcnViRmdSVGhpMUt0Q2RSSGtzbUQ4c2NVRGo4?=
- =?utf-8?B?cE9rdlY5R1V2eWo4QUgzZGhEV0x4NG5ZNkF2UnZHRGxOZEViWEdNN3JLZlNw?=
- =?utf-8?B?L3IrelZ5NEpBenpJdlpyUVVkWi9jMStuZTZ5dXlheGlYbDlkZlloS2NhQnlC?=
- =?utf-8?B?ZmtSZWNxeVVIYzZXSmFCVlpjN3RRRU9YaUNyNlZ6eTVSbDdBOVZTbmZKdlNY?=
- =?utf-8?B?UmNMblh2OGJDTml2SFMyY0tMRDBmNTFqQUpvbTczM2dSWnp4WjRBc2lLOVNl?=
- =?utf-8?B?SW5FZ2s5S2pWS3hPWmdSdk9WM3AwdkZZRmQ0UVJnd1JoWkZJVkJ4NW8vcmhL?=
- =?utf-8?B?Q0Jkcy9PdGxzcW02cThrVEJGeVVlN1ZJL0F6VHpxUURsb1RsaUxNUHQyaEJx?=
- =?utf-8?B?YjlEWjFab1JzZUlyaHV0SUFmRE5OSnBYanV2ejBpcTdiQlNyMis5VElpd0FW?=
- =?utf-8?B?OXB1ZEhsc2FzMCs0a0JJUEdGY1hONTEwaEYxdVVhWmlRbk53MnhMd0FmUHdX?=
- =?utf-8?B?TzNLM0NaVml2bGpZSGIwbzBkY05aYkV3Rk82NFEwTDZBMzJieGZ5UmJZNVIr?=
- =?utf-8?B?S290T1hESEs5S1pLL2p0cXhENHNreUl1SG93NitqdUZKbzRLVmpGMGtycmV4?=
- =?utf-8?B?bHhXcFExSFpZbitURkt4Q0xwcDJNNGVXbVFmTDNEVFBBRmtoTnFUTDJXUEFx?=
- =?utf-8?B?d0trSFpYWnRRaU11Y0dURHJFUGtwL3R3TFJUazBIZHY2SGI3TEk5ZW1lLzhp?=
- =?utf-8?B?NDdmdjE1V0lIc0ZtZGwzY2plK1ordWt3RmpVTklrbE42WXdYeFJMSnJIbFlz?=
- =?utf-8?B?TDNGc1hxbTJGYkFQRUFKemdxVEdmbzVYWERIQWFCZERwNEFjN0ExVlk5NG8z?=
- =?utf-8?B?eWJvNjkva01hR2xqL2lWUHdsUTFmV1hqcWgxUFV6cGNYR0pUMFVxWkcrWk9U?=
- =?utf-8?B?UTFJT0ZYN09iYmR6ZnpsdStXenpVcFR4aTNzTjF5dVhyTTZoek56MFgyQm1Y?=
- =?utf-8?B?ZjVtWHRBVnJqZ21BSmpTOUxldUMwUmZOSHpxTEpiZUtXMmxPT1ZNRmd1Y3p0?=
- =?utf-8?B?YUNHSUhPSkpBNWNtbnl3Q1hNa2JOajJpbFc1c2svRllIaEFhb0I5eW4vcFVP?=
- =?utf-8?B?Y0JBRjJ1bUJwaXIxVVlXTlRGYk5RZDFlZmorbXVBSHYvdmtITkZQMStHTERD?=
- =?utf-8?B?SFlTamNuZUsvdTU0dUQraGZ3WFhocUNnODhWOS9wWm40bFY1WG5jMFlVU2xo?=
- =?utf-8?B?amdWRVFsMVdFc1lLNlBPbUVPZCtwQk1kOUtvaEFBS3VoZGZiaUdqa1Z3enZv?=
- =?utf-8?B?S2ZMSlR6YUFPUUpYWkphS3JlZERiYk4wU09NNzltL2sxWmxJRlhJVnR6Z2lO?=
- =?utf-8?B?SnFLMUtWTCswejlxSkR5SzRmb3dCb1dlc2dlODlOSlB5MXJHWVJySVJvRDhB?=
- =?utf-8?B?T2pkeE5QU1pEY201eWJPelVEV0VOemN4YUFPZlFCZW82QnRWTjJMdVRpMzRm?=
- =?utf-8?B?aytBL1NqU051dUMrb3ZFdldBTmRoYVlnYnYxN3NuQngxMnZmcmVLK1o2dHdS?=
- =?utf-8?B?UXo3eWF0c2VEN084aERaOVJXSVRZSmMzY2NDYmJqY2VJSnBmVnRzZEcvTkVi?=
- =?utf-8?Q?lA0U=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5685.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(1800799024)(366016);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?V2l0cTEvUmI4eFBRWXVudk5mbUZFOVM3dTFyRVI5bU4xNS9LRFpjT25lNC9l?=
- =?utf-8?B?Tng4N3Y5Snc1aXZlbzdEU2ltamxSQkRWN1d3Z3lGY0dSaTAyTlIxVE56Q09E?=
- =?utf-8?B?K2tIUWY5SFUxSEZqSllZMnZyZk9yUjRzY01RT3RDLytpZk02UWFOQ1RCR0lK?=
- =?utf-8?B?SU5CUjRYVGpURVhwL28xaWt3MS9UenlEemc5NEpTQVhudEd1VHRmelRDUlNv?=
- =?utf-8?B?cnJzWmpoeVN6dlJQNjB3RHJLakdQSW5Xeno5dnJKTk0xVHhncGFYZjV6S2JG?=
- =?utf-8?B?SjUrNUZtTEFGMEVlQ0ZDWTVMaWs4U1JlbSs2bkFaSzRGbnFwMGFwWlZsOG94?=
- =?utf-8?B?cGtQbEJJNnJmS1hOck8ySTdaeExKL2FEa21XL2V1UHhJbDRsM081d1l0dWVl?=
- =?utf-8?B?YWFjamFlK0ZQc3pnaUhnenZGQnB4RVl2UHhoMVVnZDJGUUUwM1ArSjIrU2Nx?=
- =?utf-8?B?dTFHaEt3Z1VPdU5ibkR5RWMxVC9ieXMxRWc0TGJVZlFxcnZFaW1SZVVXdkx1?=
- =?utf-8?B?R3g2UmtwZTZPbmI2L0s2cGdBQ3NUUDkvc2dIaGpmMnlUajJSS2R6T2RLc3F6?=
- =?utf-8?B?MHljWm1DNFpSSDNWY1RseSthY1lycDNUSGFUNDhSWXB6MmtWWU1YeE5PWGIy?=
- =?utf-8?B?SWNURlN0SncvU1RLbFZ6eHZzU05VOXhHU3lGVmhwR3ExV1FlTHM1eXdzV05G?=
- =?utf-8?B?dXBMOTRXWW11L3hSNEFrUEx0UnNlTzVLdE9OK3h2Mld5bFJ0aWhKYm5McTNo?=
- =?utf-8?B?cTdFUjJ0SEhBNGNKZ3o4aTY0cHFsUEZ1NVpzdXNQSFVmTFQvZnFETkVTMXc3?=
- =?utf-8?B?bS9XRllYUXF0SC90K0lHSmdTWFJSb1FrZ3E1QmVhZUZsdDZaaytmMjhHeW50?=
- =?utf-8?B?YTBVZTVPQWdyc2NKamF5VE4xcE00V1gzcE5UUVVzZmdVRzV4ZXFZUXQydkdw?=
- =?utf-8?B?RWl2WU1CVHZ6Y2VoS0Y3RkhjWGJLVHJEUXhGS05VV3VlZTUwdXZYUzQ4QWtl?=
- =?utf-8?B?bGVEalZpTHdCNDh4emNCMXlnbFoydllIQUtWVFhQbkF4d3BJVlE2a28wRFFo?=
- =?utf-8?B?eSsyWVpVZWlPSkFOUGxjQWF2cXBiQVpqQmFNbWMvalNiMCt3THUyS0w4aWI0?=
- =?utf-8?B?T1NKcXVLTE1vcHgwb2psa2VtYWh6NFBsWENxWVFuZFAyUi9Eb1QwTHB6SEtX?=
- =?utf-8?B?SHZWVTROV0h2ZnFPLzdOdWFtbFIxZUlCWlRVZUNLbjMrV01LN0tNVi90dGFK?=
- =?utf-8?B?SHBCeUhpWEF4OGZ3Z1BsVnYvTVovcnhxMVNFQWlReW91MFRyOXFMaGkrMUor?=
- =?utf-8?B?U0s2UGdsaTNGbVIycEdHa3hKNmVSbzZnYjJ6YXR2QTZhQ0lGcVhYZnVETkg4?=
- =?utf-8?B?QnNNbU9JOVpJdld6MGxIdmgvVHhCNmVPUWE1enk0bTkwWDd0NEE5UFFoNTdW?=
- =?utf-8?B?OEJJZnpuM2VZaEpkdjA2SDBhM1g2cWZROWNtUmk1cXB0a1p2VzkwSk15akd4?=
- =?utf-8?B?UmxTOVM0RjExMERkSE1PRGFmUkNlVXYrVGFWZm50OFl3TXJGaWlEa1UydUZm?=
- =?utf-8?B?M1VXMHR3Q3l1TUNWU1Y3Q1NZOUtjc092NXdqc3A0L3c3WFVuTGR3TWFtaWU3?=
- =?utf-8?B?eFRSN3JMVFhQQ2U1MG16Q2o5aFQzdFZRcFFsK1pPbmxFMmlmOTNJdE9pUUtl?=
- =?utf-8?B?LzJCUkNmMUEvUXp6R2Z6QUJCSTYxalFQcndBSm04VVcyMWF5SHYyMmFzNStv?=
- =?utf-8?B?N3JqaGQyRkhjalQycnQyQ2toMjE2SElrOXNPWGdUUHNMQk44K00vY09UTElD?=
- =?utf-8?B?d0MxamlkS2FaNjBCcXI3V0VGZ3pGZzExeC9VYkJmLzgwVTcwa24wdFRlZnJC?=
- =?utf-8?B?WkFaV2V6R3lCSVFmRjhDVmI0UU5uOU1CU2FXWmNoT3JiSmhCVjF2UFd0WW1W?=
- =?utf-8?B?RlB4WVFkMDRublArSUhHaUlnSVdOSEsxQ24zL28yZDUxU2prM25QbkxHRXd3?=
- =?utf-8?B?RmZKUHNsQlZQcGFuMXpqdG02NE1EcTllYmZkcncwUGVuTEJ3eEV5cjYxdytF?=
- =?utf-8?B?dThNWG5TbFlqWFVLaS9QUERoTmZpU1o5bGh4TGFyUFY4RHI2VVJONjhCZDNj?=
- =?utf-8?B?K1hudkpQdCtVUi9UcTlUT3U5L2lyM1E0ZTBsQUtqaUx2S3lPdFVjUGY0MEo1?=
- =?utf-8?B?ZTVEcnFJZElrZTlzampoUWdyMzdPMVphaUdCZTFFV0JlWWtacFZsOHYzQm91?=
- =?utf-8?B?NEtLOHZjMjdaYTVkbVBIaUlRSERKT2xlaytxazh4ZFZnYVJ4Z3Z0ZExDelQ5?=
- =?utf-8?Q?xqM9jk9FzzNvUY30lH?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cb2d42ee-b7cd-4742-bbaf-08de58dbef56
-X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5685.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Jan 2026 10:57:57.0919
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: w1HWx8A9tVnNr+Ul2VeoKBasGwsWi3/SYoJOvwFDzfJSZnRKLIMF+a57bLWnr+p9
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB5736
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Wed, 21 Jan 2026 12:02:15 +0100
+Message-Id: <DFU7SVI5SYE5.3MJP2ECGGZK5P@kernel.org>
+From: "Danilo Krummrich" <dakr@kernel.org>
+Subject: Re: [PATCH v5] driver core: enforce device_lock for
+ driver_match_device()
+Cc: <Aishwarya.TCV@arm.com>, <broonie@kernel.org>, <chenqiuji666@gmail.com>,
+ <linux-kernel@vger.kernel.org>, <m.szyprowski@samsung.com>,
+ <robin.clark@oss.qualcomm.com>, <will@kernel.org>, <robin.murphy@arm.com>,
+ <joro@8bytes.org>, <iommu@lists.linux.dev>
+To: "Wang Jiayue" <akaieurus@gmail.com>, <hanguidong02@gmail.com>,
+ <gregkh@linuxfoundation.org>, <rafael@kernel.org>
+References: <CALbr=LYt-MqGM0ua78Rt7M679WR9hNnk0Or-WrB2myZ=KhaN0w@mail.gmail.com> <20260121085549.165428-1-akaieurus@gmail.com> <DFU7CEPUSG9A.1KKGVW4HIPMSH@kernel.org>
+In-Reply-To: <DFU7CEPUSG9A.1KKGVW4HIPMSH@kernel.org>
 
-On 1/21/26 11:14, Leon Romanovsky wrote:
-> On Wed, Jan 21, 2026 at 09:55:38AM +0100, Christian König wrote:
->> On 1/20/26 15:07, Leon Romanovsky wrote:
->>> From: Leon Romanovsky <leonro@nvidia.com>
->>>
->>> DMABUF_MOVE_NOTIFY was introduced in 2018 and has been marked as
->>> experimental and disabled by default ever since. Six years later,
->>> all new importers implement this callback.
->>>
->>> It is therefore reasonable to drop CONFIG_DMABUF_MOVE_NOTIFY and
->>> always build DMABUF with support for it enabled.
->>>
->>> Suggested-by: Christian König <christian.koenig@amd.com>
->>> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
->>> ---
->>>  drivers/dma-buf/Kconfig                     | 12 ------------
->>>  drivers/dma-buf/dma-buf.c                   | 12 ++----------
->>>  drivers/gpu/drm/amd/amdgpu/amdgpu_dma_buf.c | 10 +++-------
->>>  drivers/gpu/drm/amd/amdkfd/Kconfig          |  2 +-
->>>  drivers/gpu/drm/xe/tests/xe_dma_buf.c       |  3 +--
->>>  drivers/gpu/drm/xe/xe_dma_buf.c             | 12 ++++--------
->>>  6 files changed, 11 insertions(+), 40 deletions(-)
->>>
->>> diff --git a/drivers/dma-buf/Kconfig b/drivers/dma-buf/Kconfig
->>> index b46eb8a552d7..84d5e9b24e20 100644
->>> --- a/drivers/dma-buf/Kconfig
->>> +++ b/drivers/dma-buf/Kconfig
->>> @@ -40,18 +40,6 @@ config UDMABUF
->>>  	  A driver to let userspace turn memfd regions into dma-bufs.
->>>  	  Qemu can use this to create host dmabufs for guest framebuffers.
->>>  
->>> -config DMABUF_MOVE_NOTIFY
->>> -	bool "Move notify between drivers (EXPERIMENTAL)"
->>> -	default n
->>> -	depends on DMA_SHARED_BUFFER
->>> -	help
->>> -	  Don't pin buffers if the dynamic DMA-buf interface is available on
->>> -	  both the exporter as well as the importer. This fixes a security
->>> -	  problem where userspace is able to pin unrestricted amounts of memory
->>> -	  through DMA-buf.
->>> -	  This is marked experimental because we don't yet have a consistent
->>> -	  execution context and memory management between drivers.
->>> -
->>>  config DMABUF_DEBUG
->>>  	bool "DMA-BUF debug checks"
->>>  	depends on DMA_SHARED_BUFFER
->>> diff --git a/drivers/dma-buf/dma-buf.c b/drivers/dma-buf/dma-buf.c
->>> index 59cc647bf40e..cd3b60ce4863 100644
->>> --- a/drivers/dma-buf/dma-buf.c
->>> +++ b/drivers/dma-buf/dma-buf.c
->>> @@ -837,18 +837,10 @@ static void mangle_sg_table(struct sg_table *sg_table)
->>>  
->>>  }
->>>  
->>> -static inline bool
->>> -dma_buf_attachment_is_dynamic(struct dma_buf_attachment *attach)
->>
->> I would rather like to keep the wrapper and even add some explanation what it means when true is returned.
-> 
-> We have different opinion here. I don't like single line functions which
-> are called only twice. I'll keep this function to ensure progress the
-> series.
+On Wed Jan 21, 2026 at 11:40 AM CET, Danilo Krummrich wrote:
+> So, the problem is that in the callstack of the arm-smmu driver's (a plat=
+form
+> driver) probe() function, the QCOM specific code (through arm_smmu_impl_i=
+nit())
+> registers another platform driver. Since we are still in probe() of arm-s=
+mmu the
+> call to platform_driver_register() happens with the device lock of the ar=
+m-smmu
+> platform device held.
+>
+> platform_driver_register() eventually results in driver_attach() which it=
+erates
+> over all the devices of a bus. Since the device we are probing and the dr=
+iver we
+> are registering are for the same bus (i.e. the platform bus) it can now h=
+appen
+> that by chance that we also match the exact same device that is currently=
+ probed
+> again. And since we take the device lock for matching now, we actually ta=
+ke the
+> same lock twice.
+>
+> Now, we could avoid this by not matching bound devices, but we check this
+> through dev->driver while holding the device lock, so that doesn't help.
+>
+> But on the other hand, I don't see any reason why a driver would call
+> platform_driver_register() from probe() in the first place. I think drive=
+rs
+> should not do that and instead just register the driver through a normal
+> initcall.
+>
+> (If, however, it turns out that registering drivers from probe() is somet=
+hing we
+> really need for some reason, it is probably best to drop the patch and do=
+n't
+> make any guarantees about whether match() is called with the device lock =
+held or
+> not.
+>
+> Consequently, driver_override must be protected with a separate lock (whi=
+ch
+> would be the cleaner solution in any case).)
 
-Yeah, I agree with that but I like to have the opportunity to document things.
+I assume that this should resolve the problem (unless there are more driver=
+s
+that register drivers in probe()):
 
-Especially since the meaning changed over time.
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm=
+/arm-smmu/arm-smmu-qcom.c
+index 573085349df3..9bb793efc35f 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+@@ -774,10 +774,6 @@ struct arm_smmu_device *qcom_smmu_impl_init(struct arm=
+_smmu_device *smmu)
+ {
+        const struct device_node *np =3D smmu->dev->of_node;
+        const struct of_device_id *match;
+-       static u8 tbu_registered;
+-
+-       if (!tbu_registered++)
+-               platform_driver_register(&qcom_smmu_tbu_driver);
 
-Thanks,
-Christian.
+ #ifdef CONFIG_ACPI
+        if (np =3D=3D NULL) {
+@@ -802,3 +798,5 @@ struct arm_smmu_device *qcom_smmu_impl_init(struct arm_=
+smmu_device *smmu)
 
-> 
-> Thanks
-> 
->>
->> Apart from that looks good to me.
->>
->> Regards,
->> Christian.
+        return smmu;
+ }
++
++builtin_platform_driver(qcom_smmu_tbu_driver);
 
+@qcom maintainers: I'm aware of commit 0b4eeee2876f ("iommu/arm-smmu-qcom:
+Register the TBU driver in qcom_smmu_impl_init"), but I think the above pat=
+ch
+should work fine as it is still *not only* registered when
+CONFIG_ARM_SMMU_QCOM_DEBUG?
