@@ -1,202 +1,193 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 606A047F2E0;
-	Wed, 21 Jan 2026 15:54:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70BE0328631
+	for <iommu@lists.linux.dev>; Wed, 21 Jan 2026 16:02:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769010856; cv=none; b=IKRDqvJkOoOunG9SMwi18hOg/KwvhS8Nn8XqC/QqB6PlNFDyuS9naVw6+aUZOI1L7FnrUTWZZ6Bnv754pVWrgHV+Y3Pzpbwx04XLrozvX+/wqA6nY1CjLCkd9wk7N4ghuO/TaSSNCz8LpkGA8+9WwG4mKSsgwyC5afcA2SvMd/8=
+	t=1769011327; cv=none; b=X3+6Fget4iRiA/yT1XYkzhVOberb9Q1G3YIml+z1/XQA5lsQCWTEBE1nv3eXu7e4hEC1EvjpzQ1jLwfYeKdAVWAMP3gehlCv1TTbIRIjItU6DisNiSsNqhHJoYQ4NAzv3o8/mgGIIff+8SbWW2j6U4In6VatETHbqZb25tBduEE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769010856; c=relaxed/simple;
-	bh=+141CksYSv3b4SLpMVPnysGzcabKoPf7/a948LcWCGU=;
+	s=arc-20240116; t=1769011327; c=relaxed/simple;
+	bh=ALN3BZ1h37bw87fH1I2phtqMuOjkp7pNGMZRlYvqJKU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=S1Vrb6pij80S1XD621t3knq1/2F6Zk0Ws762sQ6BTq0mXw3rpkh8QTXaHTNJ2j0GjKmCJAsCsvHjU+Psd4l0k40b423OT36hbAN8PM0L2ZJMddDXHG+5/iDcJeuDc85ZdUL4gCEt8WNYxp/RMHYll+c00ExIekrzD2Uno2vPZeA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=A7PyGp6q; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=rBqcm6cg46U2/Khp+D68sD33dLRzqoKa2HHHp112lwW7easli3RzIHaLhUNJNXR5+g2yFo+EruR6Atto1rz37UNonix9srwuKyQ82cdwGxBMz5PGQdtzXhxeW567tzV+OzjufHX7oENcFAMGfXVwMfDpz0MEXjDJNt8MIXAwW1M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=BE4Ni8wB; arc=none smtp.client-ip=209.85.219.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="A7PyGp6q"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F9D3C4CEF1;
-	Wed, 21 Jan 2026 15:54:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1769010854;
-	bh=+141CksYSv3b4SLpMVPnysGzcabKoPf7/a948LcWCGU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=A7PyGp6qaS2fhjUjuXbfeoViLVg1VdUaQV7i21HfFLr1KRrNpiJBC0hv4FbJeywiK
-	 ZA8Ex9jLxgJwER1WDj3rqmTP5sgOAUpSqeixhKaCnRdJ4gJ3/hhWDQrFRXaMADZ+9C
-	 1oMzOYrqkgHIjMVp6hBMriwd323Jn0BYNPHzNTrud5C5JULW/vjVNn25N8tsV04sHd
-	 v3cz8509AyBuXDS5sLLJWWWmXSeAkOTzAjT7N3Ux78yMfBrv7v8AwejLqHMt+/NsDS
-	 r1Y8Nlj8q8uFHTGTYvB2PtFdQ7apDmoKMtIwFGjAPiEWk6PLwxF1+L/p9xj3NyWjuC
-	 T8Ie1VLQWJLSw==
-Date: Wed, 21 Jan 2026 09:54:11 -0600
-From: Bjorn Andersson <andersson@kernel.org>
-To: Danilo Krummrich <dakr@kernel.org>
-Cc: gregkh@linuxfoundation.org, rafael@kernel.org, broonie@kernel.org, 
-	will@kernel.org, robin.murphy@arm.com, joro@8bytes.org, 
-	robin.clark@oss.qualcomm.com, hanguidong02@gmail.com, quic_c_gdjako@quicinc.com, 
-	dmitry.baryshkov@oss.qualcomm.com, driver-core@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org
-Subject: Re: [PATCH] iommu/arm-smmu-qcom: do not register driver in probe()
-Message-ID: <h2jbtahw5zcrn3rckul6ixesdvqpcdboz6daselk6cpnxosrii@ui45pvdammup>
-References: <20260121141215.29658-1-dakr@kernel.org>
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="BE4Ni8wB"
+Received: by mail-qv1-f42.google.com with SMTP id 6a1803df08f44-894724bc5cbso8692126d6.1
+        for <iommu@lists.linux.dev>; Wed, 21 Jan 2026 08:02:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1769011321; x=1769616121; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=Xk50a3DJCYgVIrcCVz4YsPwnwCkWAaxm0jVyWa00IrY=;
+        b=BE4Ni8wB0bzXIn/IGkhnHvKDdywG4G53zNoaqsVtTZ8DLqfNVQ/tIsbkZkZKFOGKnf
+         EqKJaPCJJUeLRByZKRCNzh0oq4HaZevXEFyq1tEqAnLKbr5+QbiNcTyjZDzzg4YiQkSt
+         HOzk/Pq2wKlkUW3jIY3dpjgRbD4ibCsytER8L/XCLs1A21HF5YltmzEHWlCgE5oxqDZ2
+         t0uAlYelD1HAVZODTBi6/Wh5ZGrFZXo/YRoAHibiIY1Nru+d1/8jfRnaAnszlZbtznmE
+         AiQ4vDWSNKoNNZfM6t0KgA+rfiPaUIA/oXva8+UkmynrR0qcPTWNpUw0wkJbESo8CkTn
+         sZbw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1769011321; x=1769616121;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Xk50a3DJCYgVIrcCVz4YsPwnwCkWAaxm0jVyWa00IrY=;
+        b=bE79xEOpqGMOliQRW+m8NgFb86QeL/mGiYukSfzTU6o8YmS5pZ8lUUjc2Kx57dRTc4
+         wbbfEnlLhTjyVd8EwBYGthtjEFRGXylHVwe0sV6KC2yk7uDDJsR2+rZrp2pOW2BH/LPt
+         x9BXt38ciTOOAU2v9oubLxV/WbHxL9cEGhXCgvFW92mNZefj0Bk0rnGhmUa17DCUaMP4
+         r8XQ4NnqtKQ4+zrJ3LmE+ynmz04ZvHOh/7SX6k5V0h439G76NwcPVpVKWmN4GrrwuYMB
+         Be4DuesjTqyR2Lz8HpdyVhHum1ydKbABnQI1qgCdmDlHYEw49pX4LToURc4r0WVu5kiB
+         v70g==
+X-Forwarded-Encrypted: i=1; AJvYcCVfXADVRYPixEHdPT9kOWqm5SCl/mny15619eg2GU4uapr5vjpVr8jCGqLpklKtiujdDt+7+w==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyL1sbL+3hjAw8GPIROJmPF8NKQGQ4ho8T/qF3g9AaNXccXoT5/
+	dlIIclWTMjC440q3PDCKEwpygxbTy7s33PkylHuOkz2V9nP2PonK11J2Am5F8DOeW4A=
+X-Gm-Gg: AZuq6aKCEwBZDF64cPJaYkDpqLkQeLBkM2B6BPY6vMH0QUrV9al0ExW1mJESAs3Hxfd
+	MqmOZgeWxKLDSmRO23FBfSfULlGA2wtfdqtqtW/i1k2EaPMMJT25cvOICYkx0uJKORd0yjjF/4W
+	gcxJ6I3VbYbcXL7k9AxpF3r3gYzP7C/eoQRsHzPQci5hP3h7i4d8NOBMsy5yUaCICxA7jOJ9nWM
+	QbEzfZUo+j8/7JWokWSiFnWEGWBEHlmQoFOL9jo9nCKPFEztvJsiessLNcKZcgL9CHUNXQT3Qzj
+	qWv30OSuEdCOjMw8to8qhMlV1y84N2If/DdxWY9h2/9lD83RLuWLNO4TWhMcuvY20ntR6N5/WOL
+	7tDRF7RHOBCOfaEoK/ftbketA/aRNrCkJW7tXf76fFcneckISKJHLMkqJEBdUFKAB43VNt23jTy
+	0Ua8xwpSgcCHOEJC9wxdm0NCc9TW0Fm2s/o4OWq+ekrtEhqLSkLXybJi4QQ8GKajaK56AuBNNkS
+	fEYGw==
+X-Received: by 2002:ad4:5c4d:0:b0:88a:3861:9131 with SMTP id 6a1803df08f44-893982737e8mr294508076d6.34.1769011302558;
+        Wed, 21 Jan 2026 08:01:42 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-162-112-119.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.112.119])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8946e3aee12sm27692726d6.39.2026.01.21.08.01.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 21 Jan 2026 08:01:41 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1viaeK-00000006Es6-2jLq;
+	Wed, 21 Jan 2026 12:01:40 -0400
+Date: Wed, 21 Jan 2026 12:01:40 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>
+Cc: Leon Romanovsky <leon@kernel.org>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Alex Deucher <alexander.deucher@amd.com>,
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+	Gerd Hoffmann <kraxel@redhat.com>,
+	Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+	Gurchetan Singh <gurchetansingh@chromium.org>,
+	Chia-I Wu <olvaffe@gmail.com>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	Lucas De Marchi <lucas.demarchi@intel.com>,
+	Thomas =?utf-8?Q?Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
+	Rodrigo Vivi <rodrigo.vivi@intel.com>,
+	Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Felix Kuehling <Felix.Kuehling@amd.com>,
+	Alex Williamson <alex@shazbot.org>,
+	Ankit Agrawal <ankita@nvidia.com>,
+	Vivek Kasireddy <vivek.kasireddy@intel.com>,
+	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org,
+	amd-gfx@lists.freedesktop.org, virtualization@lists.linux.dev,
+	intel-xe@lists.freedesktop.org, linux-rdma@vger.kernel.org,
+	iommu@lists.linux.dev, kvm@vger.kernel.org
+Subject: Re: [PATCH v3 6/7] vfio: Wait for dma-buf invalidation to complete
+Message-ID: <20260121160140.GF961572@ziepe.ca>
+References: <20260120-dmabuf-revoke-v3-0-b7e0b07b8214@nvidia.com>
+ <20260120-dmabuf-revoke-v3-6-b7e0b07b8214@nvidia.com>
+ <b129f0c1-b61e-4efb-9e25-d8cdadaca1b3@amd.com>
+ <20260121133146.GY961572@ziepe.ca>
+ <b88b500c-bacc-483d-9d1a-725d4158302a@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260121141215.29658-1-dakr@kernel.org>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <b88b500c-bacc-483d-9d1a-725d4158302a@amd.com>
 
-On Wed, Jan 21, 2026 at 03:12:01PM +0100, Danilo Krummrich wrote:
-> Commit 0b4eeee2876f ("iommu/arm-smmu-qcom: Register the TBU driver in
-> qcom_smmu_impl_init") intended to also probe the TBU driver when
-> CONFIG_ARM_SMMU_QCOM_DEBUG is disabled, but also moved the corresponding
-> platform_driver_register() call into qcom_smmu_impl_init() which is
-> called from arm_smmu_device_probe().
+On Wed, Jan 21, 2026 at 04:28:17PM +0100, Christian König wrote:
+> On 1/21/26 14:31, Jason Gunthorpe wrote:
+> > On Wed, Jan 21, 2026 at 10:20:51AM +0100, Christian König wrote:
+> >> On 1/20/26 15:07, Leon Romanovsky wrote:
+> >>> From: Leon Romanovsky <leonro@nvidia.com>
+> >>>
+> >>> dma-buf invalidation is performed asynchronously by hardware, so VFIO must
+> >>> wait until all affected objects have been fully invalidated.
+> >>>
+> >>> Fixes: 5d74781ebc86 ("vfio/pci: Add dma-buf export support for MMIO regions")
+> >>> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> >>
+> >> Reviewed-by: Christian König <christian.koenig@amd.com>
+> >>
+> >> Please also keep in mind that the while this wait for all fences for
+> >> correctness you also need to keep the mapping valid until
+> >> dma_buf_unmap_attachment() was called.
+> > 
+> > Can you elaborate on this more?
+> > 
+> > I think what we want for dma_buf_attach_revocable() is the strong
+> > guarentee that the importer stops doing all access to the memory once
+> > this sequence is completed and the exporter can rely on it. I don't
+> > think this works any other way.
+> > 
+> > This is already true for dynamic move capable importers, right?
 > 
-> However, it neither makes sense to register drivers from probe()
-> callbacks of other drivers, nor does the driver core allow registering
-> drivers with a device lock already being held.
-> 
-> The latter was revealed by commit dc23806a7c47 ("driver core: enforce
-> device_lock for driver_match_device()") leading to a deadlock condition
-> described in [1].
-> 
-> Additionally, it was noted by Robin that the current approach is
-> potentially racy with async probe [2].
-> 
-> Hence, fix this by registering the qcom_smmu_tbu_driver from
-> module_init(). Unfortunately, due to the vendoring of the driver, this
-> requires an indirection through arm-smmu-impl.c.
-> 
-> Reported-by: Mark Brown <broonie@kernel.org>
-> Closes: https://lore.kernel.org/lkml/7ae38e31-ef31-43ad-9106-7c76ea0e8596@sirena.org.uk/
-> Link: https://lore.kernel.org/lkml/DFU7CEPUSG9A.1KKGVW4HIPMSH@kernel.org/ [1]
-> Link: https://lore.kernel.org/lkml/0c0d3707-9ea5-44f9-88a1-a65c62e3df8d@arm.com/ [2]
-> Fixes: dc23806a7c47 ("driver core: enforce device_lock for driver_match_device()")
-> Fixes: 0b4eeee2876f ("iommu/arm-smmu-qcom: Register the TBU driver in qcom_smmu_impl_init")
-> Signed-off-by: Danilo Krummrich <dakr@kernel.org>
+> Not quite, no.
 
-Thank you Danilo.
+:(
 
-Tested-by: Bjorn Andersson <andersson@kernel.org>
-Reviewed-by: Bjorn Andersson <andersson@kernel.org>
+It is kind of shocking to hear these APIs work like this with such a
+loose lifetime definition. Leon can you include some of these detail
+in the new comments?
 
-Regards,
-Bjorn
+> >> In other words you can only redirect the DMA-addresses previously
+> >> given out into nirvana (or a dummy memory or similar), but you still
+> >> need to avoid re-using them for something else.
+> > 
+> > Does any driver do this? If you unload/reload a GPU driver it is
+> > going to re-use the addresses handed out?
+> 
+> I never fully read through all the source code, but if I'm not
+> completely mistaken that is enforced for all GPU drivers through the
+> DMA-buf and DRM layer lifetime handling and I think even in other in
+> kernel frameworks like V4L, alsa etc...
 
-> ---
->  drivers/iommu/arm/arm-smmu/arm-smmu-impl.c | 14 +++++++++++++
->  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 14 +++++++++----
->  drivers/iommu/arm/arm-smmu/arm-smmu.c      | 24 +++++++++++++++++++++-
->  drivers/iommu/arm/arm-smmu/arm-smmu.h      |  5 +++++
->  4 files changed, 52 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c b/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
-> index db9b9a8e139c..4565a58bb213 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
-> @@ -228,3 +228,17 @@ struct arm_smmu_device *arm_smmu_impl_init(struct arm_smmu_device *smmu)
->  
->  	return smmu;
->  }
-> +
-> +int __init arm_smmu_impl_module_init(void)
-> +{
-> +	if (IS_ENABLED(CONFIG_ARM_SMMU_QCOM))
-> +		return qcom_smmu_module_init();
-> +
-> +	return 0;
-> +}
-> +
-> +void __exit arm_smmu_impl_module_exit(void)
-> +{
-> +	if (IS_ENABLED(CONFIG_ARM_SMMU_QCOM))
-> +		qcom_smmu_module_exit();
-> +}
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> index 573085349df3..22906d2c9a2d 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> @@ -774,10 +774,6 @@ struct arm_smmu_device *qcom_smmu_impl_init(struct arm_smmu_device *smmu)
->  {
->  	const struct device_node *np = smmu->dev->of_node;
->  	const struct of_device_id *match;
-> -	static u8 tbu_registered;
-> -
-> -	if (!tbu_registered++)
-> -		platform_driver_register(&qcom_smmu_tbu_driver);
->  
->  #ifdef CONFIG_ACPI
->  	if (np == NULL) {
-> @@ -802,3 +798,13 @@ struct arm_smmu_device *qcom_smmu_impl_init(struct arm_smmu_device *smmu)
->  
->  	return smmu;
->  }
-> +
-> +int __init qcom_smmu_module_init(void)
-> +{
-> +	return platform_driver_register(&qcom_smmu_tbu_driver);
-> +}
-> +
-> +void __exit qcom_smmu_module_exit(void)
-> +{
-> +	platform_driver_unregister(&qcom_smmu_tbu_driver);
-> +}
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> index 5e690cf85ec9..1e218fbea35a 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> @@ -2365,7 +2365,29 @@ static struct platform_driver arm_smmu_driver = {
->  	.remove = arm_smmu_device_remove,
->  	.shutdown = arm_smmu_device_shutdown,
->  };
-> -module_platform_driver(arm_smmu_driver);
-> +
-> +static int __init arm_smmu_init(void)
-> +{
-> +	int ret;
-> +
-> +	ret = platform_driver_register(&arm_smmu_driver);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = arm_smmu_impl_module_init();
-> +	if (ret)
-> +		platform_driver_unregister(&arm_smmu_driver);
-> +
-> +	return ret;
-> +}
-> +module_init(arm_smmu_init);
-> +
-> +static void __exit arm_smmu_exit(void)
-> +{
-> +	arm_smmu_impl_module_exit();
-> +	platform_driver_unregister(&arm_smmu_driver);
-> +}
-> +module_exit(arm_smmu_exit);
->  
->  MODULE_DESCRIPTION("IOMMU API for ARM architected SMMU implementations");
->  MODULE_AUTHOR("Will Deacon <will@kernel.org>");
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h b/drivers/iommu/arm/arm-smmu/arm-smmu.h
-> index 2dbf3243b5ad..26d2e33cd328 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
-> @@ -540,6 +540,11 @@ struct arm_smmu_device *arm_smmu_impl_init(struct arm_smmu_device *smmu);
->  struct arm_smmu_device *nvidia_smmu_impl_init(struct arm_smmu_device *smmu);
->  struct arm_smmu_device *qcom_smmu_impl_init(struct arm_smmu_device *smmu);
->  
-> +int __init arm_smmu_impl_module_init(void);
-> +void __exit arm_smmu_impl_module_exit(void);
-> +int __init qcom_smmu_module_init(void);
-> +void __exit qcom_smmu_module_exit(void);
-> +
->  void arm_smmu_write_context_bank(struct arm_smmu_device *smmu, int idx);
->  int arm_mmu500_reset(struct arm_smmu_device *smmu);
->  
-> 
-> base-commit: dc23806a7c47ec5f1293aba407fb69519f976ee0
-> -- 
-> 2.52.0
-> 
-> 
+> What roughly happens is that each DMA-buf mapping through a couple
+> of hoops keeps a reference on the device, so even after a hotplug
+> event the device can only fully go away after all housekeeping
+> structures are destroyed and buffers freed.
+
+A simple reference on the device means nothing for these kinds of
+questions. It does not stop unloading and reloading a driver.
+
+Obviously if the driver is loaded fresh it will reallocate.
+
+To do what you are saying the DRM drivers would have to block during
+driver remove until all unmaps happen.
+
+> Background is that a lot of device still make reads even after you
+> have invalidated a mapping, but then discard the result.
+
+And they also don't insert fences to conclude that?
+
+> So when you don't have same grace period you end up with PCI AER,
+> warnings from IOMMU, random accesses to PCI BARs which just happen
+> to be in the old location of something etc...
+
+Yes, definitely. It is very important to have a definitive point in
+the API where all accesses stop. While "read but discard" seems
+harmless on the surface, there are corner cases where it is not OK.
+
+Am I understanding right that these devices must finish their reads
+before doing unmap?
+
+> I would rather like to keep that semantics even for forcefully
+> shootdowns since it proved to be rather reliable.
+
+We can investigate making unmap the barrier point if this is the case.
+
+Jason
