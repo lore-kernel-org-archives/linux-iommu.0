@@ -1,119 +1,128 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7D5349219D;
-	Wed, 21 Jan 2026 13:00:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B49931282F
+	for <iommu@lists.linux.dev>; Wed, 21 Jan 2026 13:02:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769000405; cv=none; b=mJ7mNPvtR2KuJ4lWEdCKOm566euP9/SzC9eh3/yQ49kFrWyzA+Vrx+xliCQZqmhrNbjDjtIKHQz7n4FmqgUvSWzAjcPLGtYzkNPwzifk9sz4Lz1hJacm/sqqKJuO2C/DTVRqu4TTMzFnnA3leYXN3yDZlDGdhABKcA2P/z2SaJ4=
+	t=1769000579; cv=none; b=OYkhY2+glfN+O5H/8snfEsMjMPBawc3DSDFh0A12arXYHZIU5C/sGx94L82u/6aLoOk/M1NM94dPIxNxoJIrTo2OMF6MDvGZdGxQniCzAaO0pyr0LDsxi3CXb+/Zt0z2VCZUdnWzq+dOqMLVGMILNFdkf6VFC3PZn+D1+CXz/gk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769000405; c=relaxed/simple;
-	bh=tkBWbuPcCcp/u7j2SLPWnxsR4yn6Id6uZvGXefafQVg=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Y06dINdi0ZZvOGfsKjLCCphrqnZ6Ub1amL3OSbVjogyWrraW/nVk0xBigkKsEIbeh5GBovKAHnh0et2suzAY8moRYH+M4k5Med3Lu5qu4hB7F3jyvotMJ8IPifOU1/KUCe+P2VJ/ITOoE/5r4ieywhzuiI2fSrkK8BsbG0ntf0w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XiD5Mw8d; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1769000579; c=relaxed/simple;
+	bh=06HnCxUF8RH/TuxV13Wuyjw9IUeyczz66ygRpiulYHU=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=F522tBdVKjSkRGeOt7u88S+TqBKhp+en8OAROtpCMWgXfVrWCJTBrOFrcDuSNhFexSMaz+NrNNnVbVHvrLU/5oju8Kq5Epg9iX6IfibG9tplOHmkmfX+MWIZjQpNRmwj51VrqeOxQ6wgEaK96Ozg5b8i5we4o34RldwsqaUl2Ws=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=VBD3LKuP; arc=none smtp.client-ip=192.198.163.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XiD5Mw8d"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE989C116D0;
-	Wed, 21 Jan 2026 13:00:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1769000405;
-	bh=tkBWbuPcCcp/u7j2SLPWnxsR4yn6Id6uZvGXefafQVg=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=XiD5Mw8d/xml0FH5gdmZRlHA4aqR6JveYCrrTDcuzyZ8kXqorfmqTk0E2cd2aFlBt
-	 IlyaERqz/4+Csnj0W4X3sPWUI0vbrjrgEL0V0anU1ZWHg3tzvQ51QR6kUlpeWNHigz
-	 /6RxVyfBlfEh48rUkNs9u4d+7M8ZsMYk4KBuyFSmmNeFgcNiBYRQFbz4vz8RuQrqKY
-	 auHzS5OkYP2LlC6XzGHo2c9H1BmRrxt6eMjDollxj61ne6mII8UwDp3yRoV+SqJ9s8
-	 rxCQH4EJGsUoAN6qzjYdeDerw+95p8+z+ILF5ZfB9wY+I1YInEeUO4Awvob9xoaXY2
-	 4zfXVFobpIydg==
-From: Leon Romanovsky <leon@kernel.org>
-To: Sumit Semwal <sumit.semwal@linaro.org>,
-	=?utf-8?q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-	Alex Deucher <alexander.deucher@amd.com>,
-	David Airlie <airlied@gmail.com>,
-	Simona Vetter <simona@ffwll.ch>,
-	Gerd Hoffmann <kraxel@redhat.com>,
-	Dmitry Osipenko <dmitry.osipenko@collabora.com>,
-	Gurchetan Singh <gurchetansingh@chromium.org>,
-	Chia-I Wu <olvaffe@gmail.com>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	Lucas De Marchi <lucas.demarchi@intel.com>,
-	=?utf-8?q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
-	Rodrigo Vivi <rodrigo.vivi@intel.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Leon Romanovsky <leon@kernel.org>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Joerg Roedel <joro@8bytes.org>,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="VBD3LKuP"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1769000577; x=1800536577;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=06HnCxUF8RH/TuxV13Wuyjw9IUeyczz66ygRpiulYHU=;
+  b=VBD3LKuPH81eZyrDVm+1bm3U5Qxax6fk/+r6wNsQLheTCHhTXdudSbkl
+   7yPmlUxtD+ot/EW4po7pN+j84sgqSCwtxPzyCXJPsGs5fRqSkiRxyzk+E
+   53bucue/4IBziF+4u5z40z5dfLPDrZ/nVeqe7Py6ov3gNnDVVOuTyQPvy
+   is4tIZ4tJTfG97zok97kRTqKppTHGp4HhP6fR3hYGjDWSihx0oKCWqxjo
+   JfJs0usm7rShu24RXWtTKn9r/PScnBOWYcdXi0FsDw0KqOr1e1PzxJJEt
+   mzwqNt02iWIFDvdF4R5x0jvcxXNekBEwYg8wyF9+TFFQZtMnLmyHutyFG
+   Q==;
+X-CSE-ConnectionGUID: +Ida3sajRBi1aOoo1TgSag==
+X-CSE-MsgGUID: ijCFuB5FQmCV3CT6+zV3Qw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11677"; a="80944499"
+X-IronPort-AV: E=Sophos;i="6.21,242,1763452800"; 
+   d="scan'208";a="80944499"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jan 2026 05:02:56 -0800
+X-CSE-ConnectionGUID: FR01gN1ETx6CctIuUQyAPA==
+X-CSE-MsgGUID: yK/R4wqkSRKeSwj3gquUog==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,242,1763452800"; 
+   d="scan'208";a="211452180"
+Received: from dalessan-mobl3.ger.corp.intel.com (HELO fdugast-desk.home) ([10.245.245.68])
+  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jan 2026 05:02:53 -0800
+From: Francois Dugast <francois.dugast@intel.com>
+To: iommu@lists.linux.dev
+Cc: intel-xe@lists.freedesktop.org,
+	Francois Dugast <francois.dugast@intel.com>,
+	Jason Gunthorpe <jgg@nvidia.com>,
+	Joerg Roedel <joerg.roedel@amd.com>,
+	Calvin Owens <calvin@wbinvd.org>,
+	David Woodhouse <dwmw2@infradead.org>,
 	Will Deacon <will@kernel.org>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Felix Kuehling <Felix.Kuehling@amd.com>,
-	Alex Williamson <alex@shazbot.org>,
-	Ankit Agrawal <ankita@nvidia.com>,
-	Vivek Kasireddy <vivek.kasireddy@intel.com>
-Cc: linux-media@vger.kernel.org,
-	dri-devel@lists.freedesktop.org,
-	linaro-mm-sig@lists.linaro.org,
-	linux-kernel@vger.kernel.org,
-	amd-gfx@lists.freedesktop.org,
-	virtualization@lists.linux.dev,
-	intel-xe@lists.freedesktop.org,
-	linux-rdma@vger.kernel.org,
-	iommu@lists.linux.dev,
-	kvm@vger.kernel.org
-Subject: [PATCH v4 7/8] vfio: Wait for dma-buf invalidation to complete
-Date: Wed, 21 Jan 2026 14:59:15 +0200
-Message-ID: <20260121-dmabuf-revoke-v4-7-d311cbc8633d@nvidia.com>
-X-Mailer: git-send-email 2.52.0
-In-Reply-To: <20260121-dmabuf-revoke-v4-0-d311cbc8633d@nvidia.com>
-References: <20260121-dmabuf-revoke-v4-0-d311cbc8633d@nvidia.com>
+	Samiullah Khawaja <skhawaja@google.com>,
+	Matthew Brost <matthew.brost@intel.com>,
+	=?UTF-8?q?Thomas=20Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
+	Tina Zhang <tina.zhang@intel.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Kevin Tian <kevin.tian@intel.com>
+Subject: Xe performance regression with recent IOMMU changes
+Date: Wed, 21 Jan 2026 14:02:16 +0100
+Message-ID: <20260121130233.257428-1-francois.dugast@intel.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-X-Mailer: b4 0.15-dev-a6db3
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-From: Leon Romanovsky <leonro@nvidia.com>
+I am reporting a slowdown in Xe caused by a couple of IOMMU changes. It
+can be observed during DMA mappings/unmappings required to issue copies
+between system memory and the device, when handling GPU faults. Not sure
+how other use cases or vendors are affected but below is the impact on
+execution times for BMG:
 
-dma-buf invalidation is performed asynchronously by hardware, so VFIO must
-wait until all affected objects have been fully invalidated.
+Before changes:
+  4KB
+    drm_pagemap_migrate_map_pages: 0.4 us
+    drm_pagemap_migrate_unmap_pages: 0.4 us
+  64KB
+    drm_pagemap_migrate_map_pages: 2.5 us
+    drm_pagemap_migrate_unmap_pages: 3.5 us
+  2MB
+    drm_pagemap_migrate_map_pages: 88 us
+    drm_pagemap_migrate_unmap_pages: 108 us
 
-Fixes: 5d74781ebc86 ("vfio/pci: Add dma-buf export support for MMIO regions")
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
----
- drivers/vfio/pci/vfio_pci_dmabuf.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+After changes:
+  4KB
+    drm_pagemap_migrate_map_pages: 0.7 us
+    drm_pagemap_migrate_unmap_pages: 0.7 us
+  64KB
+    drm_pagemap_migrate_map_pages: 3.5 us
+    drm_pagemap_migrate_unmap_pages: 10.5 us
+  2MB
+    drm_pagemap_migrate_map_pages: 102 us
+    drm_pagemap_migrate_unmap_pages: 330 us
 
-diff --git a/drivers/vfio/pci/vfio_pci_dmabuf.c b/drivers/vfio/pci/vfio_pci_dmabuf.c
-index 362e3d149817..5fceefc40e27 100644
---- a/drivers/vfio/pci/vfio_pci_dmabuf.c
-+++ b/drivers/vfio/pci/vfio_pci_dmabuf.c
-@@ -321,6 +321,9 @@ void vfio_pci_dma_buf_move(struct vfio_pci_core_device *vdev, bool revoked)
- 			dma_resv_lock(priv->dmabuf->resv, NULL);
- 			priv->revoked = revoked;
- 			dma_buf_invalidate_mappings(priv->dmabuf);
-+			dma_resv_wait_timeout(priv->dmabuf->resv,
-+					      DMA_RESV_USAGE_BOOKKEEP, false,
-+					      MAX_SCHEDULE_TIMEOUT);
- 			dma_resv_unlock(priv->dmabuf->resv);
- 		}
- 		fput(priv->dmabuf->file);
-@@ -342,6 +345,9 @@ void vfio_pci_dma_buf_cleanup(struct vfio_pci_core_device *vdev)
- 		priv->vdev = NULL;
- 		priv->revoked = true;
- 		dma_buf_invalidate_mappings(priv->dmabuf);
-+		dma_resv_wait_timeout(priv->dmabuf->resv,
-+				      DMA_RESV_USAGE_BOOKKEEP, false,
-+				      MAX_SCHEDULE_TIMEOUT);
- 		dma_resv_unlock(priv->dmabuf->resv);
- 		vfio_device_put_registration(&vdev->vdev);
- 		fput(priv->dmabuf->file);
+Bisecting points to these commits:
+  d373449d8e97 iommu/vt-d: Use the generic iommu page table
+  d856f9d27885 iommupt/vtd: Allow VT-d to have a larger table top than the vasz requires
+
+Simply reverting them brings back performance.
+
+Any idea about why and how to fix it?
+
+Thanks,
+Francois
+
+Cc: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Joerg Roedel <joerg.roedel@amd.com>
+Cc: Calvin Owens <calvin@wbinvd.org>
+Cc: David Woodhouse <dwmw2@infradead.org>
+Cc: Will Deacon <will@kernel.org>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: Samiullah Khawaja <skhawaja@google.com>
+Cc: Matthew Brost <matthew.brost@intel.com>
+Cc: Thomas Hellström <thomas.hellstrom@linux.intel.com>
+Cc: Tina Zhang <tina.zhang@intel.com>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Kevin Tian <kevin.tian@intel.com>
 
 -- 
-2.52.0
+2.43.0
 
