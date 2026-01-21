@@ -1,141 +1,186 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37896481FC3;
-	Wed, 21 Jan 2026 10:14:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C56E438E120;
+	Wed, 21 Jan 2026 10:40:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768990467; cv=none; b=URAKnxQfKFt0kVE0q2dtRklh+F7fsnMiUtNKMvgr6im+ZnHqX3/t8Lq52xnlXN/dWsptY8Wi+cVC7oSR81kzC0hNM1MMmp4e6snrIG4+NpzmCsxyJutIZUcKYZHkSD9b8blmVz5Ne0HVZhgzGAkZVxQS1ZoqRNWzqLAOAQLGhno=
+	t=1768992049; cv=none; b=ar28+mHQuvzujG4XCFmt2xeDldXW8dHIr4T/ZVHr1Xv1qIZLmZwEm53MRyUSMk893DLx6N6/+Kh0rBgzEYWPqCZGqXp35Eppm2gtUnTfWi6Gc1TKJfhVn6PAfT+X3Ce6U0X1o4u1Ui+TDaKxlOYDZAYeDSZJ+PnxcSBa9JG35tQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768990467; c=relaxed/simple;
-	bh=Tfo/OWueoKu8rex7Tl9fDhj3HYw8PFEJM2EofHNagw8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=SDDnkdHMnvKDwMluaYUq6aceQ1Jz0nuJJGboAbkS0BPACVoZvOx0lCCPQU5NxoYHrcUwuJ4nbyB9PjKUy1u799Hna1Il5SJ6Qxdy6YnOKI8yfzbN9k0N2IF3um4HFPUsWWaTMGogHELNSydC1WFLZjc4xZLmELmCere2ckcZh9c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=N5mnHwlZ; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1768992049; c=relaxed/simple;
+	bh=diILtPbIO2e/lmvjVRrgZemqYdsA6zxNoXkieHKJLyY=;
+	h=Mime-Version:Content-Type:Date:Message-Id:Cc:To:From:Subject:
+	 References:In-Reply-To; b=MpvYlkJanK3mgT5ULxsCZ3TIjtw20lyp/yjYHAbMWXeTpNgDUERCvk9C10wBOfhjKToF3Q0U/Ncpm11kyc3GBSXAY1+hvtOVyt8QaKx5s4qyQWKrz0t73uiTA1FE90itFbTzkHs7RQTYDBxZ2p1B2W0CehTLDpBUqLMq+QndpCM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JvVoMAMI; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="N5mnHwlZ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0DD7C19422;
-	Wed, 21 Jan 2026 10:14:25 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JvVoMAMI"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4A17C116D0;
+	Wed, 21 Jan 2026 10:40:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1768990466;
-	bh=Tfo/OWueoKu8rex7Tl9fDhj3HYw8PFEJM2EofHNagw8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=N5mnHwlZ4VBOzCaF2qAu+DjTaYQWAFbky4+JT2mBLPGjrNKxQ+fM9k9d6IllOUceW
-	 j1tAd0RJdJnA6QxkAhArkPbFRodriKbgtOU4tbyG0Ur1/cdjnP09GyrxTAfwHP4xnP
-	 X2So8WSV2cSYLZ1AZt0vyY20Gne5NDjhKQIqOjY28If9yXQcsOj1ST1qi7+CzWJcpx
-	 Bps75wKKBhcc5ddkolv1NkPvv+0fB5Nv0q0I8EgTvOodoH6D+g2E7dAFxYKe7BHlLR
-	 hPLlN+CWPcGoGBCvh/VKV743I73C6D0fJrJ2uaTEJdSDWeaB+0vclUS32VmzRQQIbg
-	 QHhoM3gbQHIKg==
-Date: Wed, 21 Jan 2026 12:14:21 +0200
-From: Leon Romanovsky <leon@kernel.org>
-To: Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>
-Cc: Sumit Semwal <sumit.semwal@linaro.org>,
-	Alex Deucher <alexander.deucher@amd.com>,
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-	Gerd Hoffmann <kraxel@redhat.com>,
-	Dmitry Osipenko <dmitry.osipenko@collabora.com>,
-	Gurchetan Singh <gurchetansingh@chromium.org>,
-	Chia-I Wu <olvaffe@gmail.com>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	Lucas De Marchi <lucas.demarchi@intel.com>,
-	Thomas =?iso-8859-1?Q?Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>,
-	Rodrigo Vivi <rodrigo.vivi@intel.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Felix Kuehling <Felix.Kuehling@amd.com>,
-	Alex Williamson <alex@shazbot.org>,
-	Ankit Agrawal <ankita@nvidia.com>,
-	Vivek Kasireddy <vivek.kasireddy@intel.com>,
-	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
-	linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org,
-	amd-gfx@lists.freedesktop.org, virtualization@lists.linux.dev,
-	intel-xe@lists.freedesktop.org, linux-rdma@vger.kernel.org,
-	iommu@lists.linux.dev, kvm@vger.kernel.org
-Subject: Re: [PATCH v3 2/7] dma-buf: Always build with DMABUF_MOVE_NOTIFY
-Message-ID: <20260121101421.GZ13201@unreal>
-References: <20260120-dmabuf-revoke-v3-0-b7e0b07b8214@nvidia.com>
- <20260120-dmabuf-revoke-v3-2-b7e0b07b8214@nvidia.com>
- <24c7a7e6-b1bd-4407-b62d-4d9ea4cdeee4@amd.com>
+	s=k20201202; t=1768992049;
+	bh=diILtPbIO2e/lmvjVRrgZemqYdsA6zxNoXkieHKJLyY=;
+	h=Date:Cc:To:From:Subject:References:In-Reply-To:From;
+	b=JvVoMAMIrIilphYRliPGYIT2HNWRsllPqpbCepyHI8ZvQPR6t9GB43dclizDB3gfB
+	 YLGotfNc3NSGDTXmnira7yUt3siS5DzEe0jupTy6BMZOX/6rufN12NwXgKZGEaDa6w
+	 YIBg9eQBZgZkYGdSJ1ybBWOnfvtKh0rm8UkTPcX+oxLQ4x17ckgFCBb4ctneVQElIe
+	 L2bnBpFqfBN4MXxXjuzqt7dyQslZcdIEbn2xysz28871/5CwjqXdi5Fw52YS5jPvKh
+	 xChGe2vexQo64YVOycWPfC6PGdWxwtdmCkm9SCCN0OHtf2+Dl7PHDW8HxiDLaYHpKf
+	 wBVEnF0UN5G+A==
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <24c7a7e6-b1bd-4407-b62d-4d9ea4cdeee4@amd.com>
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Wed, 21 Jan 2026 11:40:45 +0100
+Message-Id: <DFU7CEPUSG9A.1KKGVW4HIPMSH@kernel.org>
+Cc: <Aishwarya.TCV@arm.com>, <broonie@kernel.org>, <chenqiuji666@gmail.com>,
+ <linux-kernel@vger.kernel.org>, <m.szyprowski@samsung.com>,
+ <robin.clark@oss.qualcomm.com>, <will@kernel.org>, <robin.murphy@arm.com>,
+ <joro@8bytes.org>, <iommu@lists.linux.dev>
+To: "Wang Jiayue" <akaieurus@gmail.com>, <hanguidong02@gmail.com>,
+ <gregkh@linuxfoundation.org>, <rafael@kernel.org>
+From: "Danilo Krummrich" <dakr@kernel.org>
+Subject: Re: [PATCH v5] driver core: enforce device_lock for
+ driver_match_device()
+References: <CALbr=LYt-MqGM0ua78Rt7M679WR9hNnk0Or-WrB2myZ=KhaN0w@mail.gmail.com> <20260121085549.165428-1-akaieurus@gmail.com>
+In-Reply-To: <20260121085549.165428-1-akaieurus@gmail.com>
 
-On Wed, Jan 21, 2026 at 09:55:38AM +0100, Christian König wrote:
-> On 1/20/26 15:07, Leon Romanovsky wrote:
-> > From: Leon Romanovsky <leonro@nvidia.com>
-> > 
-> > DMABUF_MOVE_NOTIFY was introduced in 2018 and has been marked as
-> > experimental and disabled by default ever since. Six years later,
-> > all new importers implement this callback.
-> > 
-> > It is therefore reasonable to drop CONFIG_DMABUF_MOVE_NOTIFY and
-> > always build DMABUF with support for it enabled.
-> > 
-> > Suggested-by: Christian König <christian.koenig@amd.com>
-> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> > ---
-> >  drivers/dma-buf/Kconfig                     | 12 ------------
-> >  drivers/dma-buf/dma-buf.c                   | 12 ++----------
-> >  drivers/gpu/drm/amd/amdgpu/amdgpu_dma_buf.c | 10 +++-------
-> >  drivers/gpu/drm/amd/amdkfd/Kconfig          |  2 +-
-> >  drivers/gpu/drm/xe/tests/xe_dma_buf.c       |  3 +--
-> >  drivers/gpu/drm/xe/xe_dma_buf.c             | 12 ++++--------
-> >  6 files changed, 11 insertions(+), 40 deletions(-)
-> > 
-> > diff --git a/drivers/dma-buf/Kconfig b/drivers/dma-buf/Kconfig
-> > index b46eb8a552d7..84d5e9b24e20 100644
-> > --- a/drivers/dma-buf/Kconfig
-> > +++ b/drivers/dma-buf/Kconfig
-> > @@ -40,18 +40,6 @@ config UDMABUF
-> >  	  A driver to let userspace turn memfd regions into dma-bufs.
-> >  	  Qemu can use this to create host dmabufs for guest framebuffers.
-> >  
-> > -config DMABUF_MOVE_NOTIFY
-> > -	bool "Move notify between drivers (EXPERIMENTAL)"
-> > -	default n
-> > -	depends on DMA_SHARED_BUFFER
-> > -	help
-> > -	  Don't pin buffers if the dynamic DMA-buf interface is available on
-> > -	  both the exporter as well as the importer. This fixes a security
-> > -	  problem where userspace is able to pin unrestricted amounts of memory
-> > -	  through DMA-buf.
-> > -	  This is marked experimental because we don't yet have a consistent
-> > -	  execution context and memory management between drivers.
-> > -
-> >  config DMABUF_DEBUG
-> >  	bool "DMA-BUF debug checks"
-> >  	depends on DMA_SHARED_BUFFER
-> > diff --git a/drivers/dma-buf/dma-buf.c b/drivers/dma-buf/dma-buf.c
-> > index 59cc647bf40e..cd3b60ce4863 100644
-> > --- a/drivers/dma-buf/dma-buf.c
-> > +++ b/drivers/dma-buf/dma-buf.c
-> > @@ -837,18 +837,10 @@ static void mangle_sg_table(struct sg_table *sg_table)
-> >  
-> >  }
-> >  
-> > -static inline bool
-> > -dma_buf_attachment_is_dynamic(struct dma_buf_attachment *attach)
-> 
-> I would rather like to keep the wrapper and even add some explanation what it means when true is returned.
+(Cc: Rob, Will, Robin, Joerg)
 
-We have different opinion here. I don't like single line functions which
-are called only twice. I'll keep this function to ensure progress the
-series.
+On Wed Jan 21, 2026 at 9:55 AM CET, Wang Jiayue wrote:
+> After partially modifying juno.dts, I managed to roughly emulate kernel
+> boot on juno board with qemu and successfully reproduced the boot hang.
+> Below is the gdb backtrace:
+>
+> #0  0xffff800080114ae0 in mutex_spin_on_owner (lock=3D0xffff0000036bfc90,=
+ owner=3D0xffff000003510000, ww_ctx=3D0x0, waiter=3D0x0) at kernel/locking/=
+mutex.c:377
+> #1  0xffff80008118cecc in mutex_optimistic_spin (waiter=3D<optimized out>=
+, ww_ctx=3D<optimized out>, lock=3D<optimized out>) at kernel/locking/mutex=
+.c:480
+> #2  __mutex_lock_common (use_ww_ctx=3D<optimized out>, ww_ctx=3D<optimize=
+d out>, ip=3D<optimized out>, nest_lock=3D<optimized out>, subclass=3D<opti=
+mized out>, state=3D<optimized out>, lock=3D<optimized out>) at kernel/lock=
+ing/mutex.c:618
+> #3  __mutex_lock (lock=3D0xffff0000036bfc90, state=3D0x2, ip=3D<optimized=
+ out>, nest_lock=3D<optimized out>, subclass=3D<optimized out>) at kernel/l=
+ocking/mutex.c:776
+> #4  0xffff80008118d1dc in __mutex_lock_slowpath (lock=3D0xffff0000036bfc9=
+0) at kernel/locking/mutex.c:1065
+> #5  0xffff80008118d230 in mutex_lock (lock=3D0xffff0000036bfc90) at kerne=
+l/locking/mutex.c:290
+> #6  0xffff8000809cdd1c in device_lock (dev=3D<optimized out>) at ./includ=
+e/linux/device.h:895
+> #7  class_device_constructor (_T=3D<optimized out>) at ./include/linux/de=
+vice.h:913
+> #8  driver_match_device_locked (dev=3D<optimized out>, drv=3D<optimized o=
+ut>) at drivers/base/base.h:193
+> #9  __driver_attach (dev=3D0xffff0000036bfc10, data=3D0xffff800082e64440 =
+<qcom_smmu_tbu_driver+40>) at drivers/base/dd.c:1183
+> #10 0xffff8000809cb17c in bus_for_each_dev (bus=3D0xffff0000036bfc90, sta=
+rt=3D0x0, data=3D0xffff800082e64440 <qcom_smmu_tbu_driver+40>, fn=3D0xffff8=
+000809cdcec <__driver_attach>) at drivers/base/bus.c:383
+> #11 0xffff8000809cd03c in driver_attach (drv=3D0x0) at drivers/base/dd.c:=
+1245
+> #12 0xffff8000809cc748 in bus_add_driver (drv=3D0xffff800082e64440 <qcom_=
+smmu_tbu_driver+40>) at drivers/base/bus.c:715
+> #13 0xffff8000809ced28 in driver_register (drv=3D0xffff800082e64440 <qcom=
+_smmu_tbu_driver+40>) at drivers/base/driver.c:249
+> #14 0xffff8000809d0254 in __platform_driver_register (drv=3D0x0, owner=3D=
+0xffff000003510000) at drivers/base/platform.c:908
+> #15 0xffff8000809a6208 in qcom_smmu_impl_init (smmu=3D0xffff0000037c0080)=
+ at drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c:780
+> #16 0xffff8000809a48a0 in arm_smmu_impl_init (smmu=3D0xffff0000037c0080) =
+at drivers/iommu/arm/arm-smmu/arm-smmu-impl.c:224
+> #17 0xffff8000809a2ae0 in arm_smmu_device_probe (pdev=3D0xffff0000036bfc0=
+0) at drivers/iommu/arm/arm-smmu/arm-smmu.c:2155
+> #18 0xffff8000809d060c in platform_probe (_dev=3D0xffff0000036bfc10) at d=
+rivers/base/platform.c:1446
+> #19 0xffff8000809cd6a4 in call_driver_probe (drv=3D<optimized out>, dev=
+=3D<optimized out>) at drivers/base/dd.c:583
+> #20 really_probe (dev=3D0xffff0000036bfc10, drv=3D0xffff800082e641c0 <arm=
+_smmu_driver+40>) at drivers/base/dd.c:661
+> #21 0xffff8000809cd8f8 in __driver_probe_device (drv=3D0xffff800082e641c0=
+ <arm_smmu_driver+40>, dev=3D0xffff0000036bfc10) at drivers/base/dd.c:803
+> #22 0xffff8000809cdb34 in driver_probe_device (drv=3D0xffff0000036bfc90, =
+dev=3D0xffff0000036bfc10) at drivers/base/dd.c:833
+> #23 0xffff8000809cddb8 in __driver_attach (data=3D<optimized out>, dev=3D=
+<optimized out>) at drivers/base/dd.c:1227
+> #24 __driver_attach (dev=3D0xffff0000036bfc10, data=3D0xffff800082e641c0 =
+<arm_smmu_driver+40>) at drivers/base/dd.c:1167
+> #25 0xffff8000809cb17c in bus_for_each_dev (bus=3D0xffff0000036bfc90, sta=
+rt=3D0x0, data=3D0xffff800082e641c0 <arm_smmu_driver+40>, fn=3D0xffff800080=
+9cdcec <__driver_attach>) at drivers/base/bus.c:383
+> #26 0xffff8000809cd03c in driver_attach (drv=3D0x0) at drivers/base/dd.c:=
+1245
+> #27 0xffff8000809cc748 in bus_add_driver (drv=3D0xffff800082e641c0 <arm_s=
+mmu_driver+40>) at drivers/base/bus.c:715
+> #28 0xffff8000809ced28 in driver_register (drv=3D0xffff800082e641c0 <arm_=
+smmu_driver+40>) at drivers/base/driver.c:249
+> #29 0xffff8000809d0254 in __platform_driver_register (drv=3D0x0, owner=3D=
+0xffff000003510000) at drivers/base/platform.c:908
+> #30 0xffff800081f3d12c in arm_smmu_driver_init () at drivers/iommu/arm/ar=
+m-smmu/arm-smmu.c:2368
+> #31 0xffff800080015218 in do_one_initcall (fn=3D0xffff800081f3d10c <arm_s=
+mmu_driver_init>) at init/main.c:1378
+> #32 0xffff800081ed13e4 in do_initcall_level (command_line=3D<optimized ou=
+t>, level=3D<optimized out>) at init/main.c:1440
+> #33 do_initcalls () at init/main.c:1456
+> #34 do_basic_setup () at init/main.c:1475
+> #35 kernel_init_freeable () at init/main.c:1688
+> #36 0xffff800081187b50 in kernel_init (unused=3D0xffff0000036bfc90) at in=
+it/main.c:1578
+> #37 0xffff800080015f58 in ret_from_fork () at arch/arm64/kernel/entry.S:8=
+60
+> Backtrace stopped: previous frame identical to this frame (corrupt stack?=
+)
 
-Thanks
+Thanks, this backtrace is very helpful. My lockdep patch should reveal the =
+same
+issue once run on real hardware, but with this it's probably not even neces=
+sary
+anymore.
 
-> 
-> Apart from that looks good to me.
-> 
-> Regards,
-> Christian.
+So, the problem is that in the callstack of the arm-smmu driver's (a platfo=
+rm
+driver) probe() function, the QCOM specific code (through arm_smmu_impl_ini=
+t())
+registers another platform driver. Since we are still in probe() of arm-smm=
+u the
+call to platform_driver_register() happens with the device lock of the arm-=
+smmu
+platform device held.
+
+platform_driver_register() eventually results in driver_attach() which iter=
+ates
+over all the devices of a bus. Since the device we are probing and the driv=
+er we
+are registering are for the same bus (i.e. the platform bus) it can now hap=
+pen
+that by chance that we also match the exact same device that is currently p=
+robed
+again. And since we take the device lock for matching now, we actually take=
+ the
+same lock twice.
+
+Now, we could avoid this by not matching bound devices, but we check this
+through dev->driver while holding the device lock, so that doesn't help.
+
+But on the other hand, I don't see any reason why a driver would call
+platform_driver_register() from probe() in the first place. I think drivers
+should not do that and instead just register the driver through a normal
+initcall.
+
+(If, however, it turns out that registering drivers from probe() is somethi=
+ng we
+really need for some reason, it is probably best to drop the patch and don'=
+t
+make any guarantees about whether match() is called with the device lock he=
+ld or
+not.
+
+Consequently, driver_override must be protected with a separate lock (which
+would be the cleaner solution in any case).)
