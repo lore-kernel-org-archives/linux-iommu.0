@@ -1,165 +1,146 @@
-Received: from mail-ed1-f67.google.com (mail-ed1-f67.google.com [209.85.208.67])
+Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com [209.85.160.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 064DA4921B7
-	for <iommu@lists.linux.dev>; Wed, 21 Jan 2026 13:22:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.67
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769001783; cv=pass; b=c38rTBJuD/wlZ7RTLCtZeIFrPA1wCZ4WlbwEb99DVVKlEXbgsXO70CH2i9BgwxTly1WxrFt+Qt50OO+hM7m3J0qkCNHnH5bpREAaKakjV6MTNAp7kOypUntQfXGQR8IjOkXJvqzdxPAYAJ83svJ40A0+wgn4tIfzRUJzyAccvIo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769001783; c=relaxed/simple;
-	bh=yEgcr40VQhOLEftR/t7J516ntpJIhqPO42ZC5RrF4UA=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=gAoTflo633k5aNkY6mKP+F50AvZI4FW4B3X/gd2i5ROKEzIrR+G02AFnzbnbjjgAYJJaotRGy0P60NRsdd88dnQ14FYeJqikaPgU5MFDCaCnIFsLM6mySzQUUHbM0A6PpAbhJ9RDjJ0rXZ9an3f+r0KZekXw7C/SoNdFkf5Jz7I=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=aC6QyT1p; arc=pass smtp.client-ip=209.85.208.67
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D7A43EF0AD
+	for <iommu@lists.linux.dev>; Wed, 21 Jan 2026 13:31:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.180
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1769002314; cv=none; b=ADZfwWSR7pgrUVmzqblw0cn/tHOA4mXJsThXjqGiXH3A88AEs1rSFRG/Bvn1xB2yGyBigNqLK+JyCMdJ6i8O4L9ak39/ktzcq9hHv4+NPji7TzX7lbtNtQ9xPtfeTiuHssUUSRuJNsY7ECgvoPpB0qvyvYReUEL17JsieOPGAz0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1769002314; c=relaxed/simple;
+	bh=DcH9k9Tlh2c03HyU3Zw/7RvqbH8v2zIC0lTji3hhsSM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Hhut56dTzP43yzH0m8qPHM3GLBPwL7HeYsYqCb8v5YbBI2r7bwb9Hj09eqb+vcsjUdfT4/cP+ZpYgc7BZTWHxtI2KKPtUPG2K5MBKa00gwyH7pT2RnWmIgh2C0N4AUfiFis341RYdP66P0RzNO1Y/NTOb/4+ByL8kEyRYmrpe1Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=PXHLgd6I; arc=none smtp.client-ip=209.85.160.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="aC6QyT1p"
-Received: by mail-ed1-f67.google.com with SMTP id 4fb4d7f45d1cf-652fdd043f9so12068076a12.1
-        for <iommu@lists.linux.dev>; Wed, 21 Jan 2026 05:22:59 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1769001775; cv=none;
-        d=google.com; s=arc-20240605;
-        b=E9RJ4mKXilwWZwaHCzrzJn2rfPhfui1qHl2VjWd8F/kV4RplZhcDiB3up62/zRD5RK
-         TS9Kh4uneZfhDQ8LiCppjPZTcaYPS2uRPb4GOaqz7qYVwhVi7UP/aLXHRe5+T5DbGjLK
-         KpEEvn6ppkMUSftHfHsjcmkMzxiXwdhORYPKjEcD/UvV+W7t7KEf/9aVwFdlp+fDROmi
-         BNWD8B3wjvyWdidCWZR7wabIAa2vjSgbxd5ucExwuSyYcGCnAKBwOToodgLrgEiPjd7c
-         jzSiUgB9fOcF35VsvEbeP6PgmSPMyTFZKt8BL1XaAxkAojqymZzgcWispYKGc+rqFDx6
-         +A3A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=GL+gDmFrJN5LyjvIjcwO8wjaEWmzubFTGCKPz3jpYTk=;
-        fh=3zbWNeZ9P7RH1Y++l4D+99EuuhV2q16wera4dQDgVSk=;
-        b=JhmjRocLegm8/Iw+/YmiiTYuHzzIwp6lboMjtoYvpQAxDn1a46Sz0OoRGEUHfbQxnY
-         qLl+k+DDlOusMC4zXjA1flrWenz9gBUvIqswSuZcigQoj8CU+qQEjMsFoXefy5jtWSF0
-         F4/HRPKDSTLUvDY+0zjoZuxyMiXKmDIhckduuUoxwzXKfhXJsfO7oXvzEB1cGxvauwIG
-         r5R9vLKFEfgB1peS7lKcM9lPbiBJqkLiotLcYXl46GwMPKNul9kqxGRj0mvBB0GAsYZO
-         tOQ0B+9ynhP52aBAc/ubxkFVWlit9HbIPTWw9XSBKk8DkuXItOWPt4l6+RfjDG8ng6m2
-         YL0g==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="PXHLgd6I"
+Received: by mail-qt1-f180.google.com with SMTP id d75a77b69052e-502a26e8711so28381811cf.1
+        for <iommu@lists.linux.dev>; Wed, 21 Jan 2026 05:31:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1769001775; x=1769606575; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=GL+gDmFrJN5LyjvIjcwO8wjaEWmzubFTGCKPz3jpYTk=;
-        b=aC6QyT1pTttHTNwr/NAYfMUv9GlwOdO4fnprAH0vsyyh2IZBKmeSQyfVeezQqYh7iE
-         ekYJ9q88FWZXe2cBwfsCBDa4dcwgRH8B0I2FMx9IBLjn4ZPFDq93UiZCm/r+jOKbtvX5
-         +XeyHrQVz54b/JEfLuCxtJ3X9Zjn2hBjjZn5RdTTP3IX3h8VbrAOG5l4gn+Xrm33gi8d
-         rAWKSfQZinfi1b00a+k9pQA0DuCo30z3wdXOgyrdzZmIYcCprmDLhaD4rzKWrkha4uIA
-         4j/lZWRnw9+MuLWGTSL8eFJ2bsiq2sJdcQNOqqVCFGMek9PrswyGAR3KH1jlLfXZF0fX
-         p2rw==
+        d=ziepe.ca; s=google; t=1769002311; x=1769607111; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=aX294P4TliS2B0BrPhrC1yfpgvWNBReUGID/aL6TSBE=;
+        b=PXHLgd6IRa4fT/3+fpQP1lH4fS1ZjAJPbfMwDrXf9z6BOINz8xuLSHN/3fV/zl1z1h
+         /hdqcrgWDWToR9MJ73EVdT3Tl+vnsWNSBTHY3ArV/39MXllsg4kR2DFGpAn+J04mXJNW
+         KvKek9lDwfKb2AQtiv8PMtepBDp+1rLOCF+9E4dOv8vaNDjUTxFhj4kHZZW3U5r0VMC6
+         2M6m+EfuRyFr0UQtCg7ION0/AKc/ma3Yk6J/mZkAjK6xyIeuXXbSMmFTq5lv9h5D54sJ
+         1I2XAuqx4iuYp5cNg/9YJJCSgXiXwNbuPjnHdTUZRJlaeWrw8tk1yO1HhDLFbpe30AVK
+         xZEQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769001775; x=1769606575;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=GL+gDmFrJN5LyjvIjcwO8wjaEWmzubFTGCKPz3jpYTk=;
-        b=EAVRq3kb6e65HhT8RI0oL2jLZtoqXtNOHkgOEfj9lelqpGgYJM0Fo9NZh3n2PPahuD
-         dHwbyS/mnbRjOB4l40aIPDL7Ij2W2iIkHrrVbbIOWU3Fmmzbb0DB5AQJYLsYOOCA1bk3
-         GkhwBb9SXNJD+LnNqZS42N/NcZv/Qt+jzvOnbwHots0srapHwWUoXQjcq1WAATUAoX0r
-         nuuEzNz9ZYOrmn7CS8Z2Foyv2LfxIqaHXcZ645vSYVw7/aTk/waJYJ4YtJMbyp/Suhyx
-         GO6FPZ4neDwFdXHIU4F4sZunV5krVrIDRbr8evR+NoFVs/zC3dh5SGCR1dLcl0zpNSY2
-         NoDQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXOtxvV4GoNH0+BkLKrqd5RoX0H4boZuFc31vRzPNf2BWkKPa7YBBWlNGfUOFEoIjKpuwkGIA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyXPSASyoJJG8O/Z492wmweRngtOau+VI2bbekc/qqCUI0PIDu2
-	t91jQZVwsU92488qnKS6MEMqTxuO41/twRiYWWL73yaAgvKU0BgA0zKYnoed9+ozBxNw+4V0r+X
-	2LwNMu7isGK8KY0fwvBQMgQWb6/jjoos=
-X-Gm-Gg: AZuq6aLz5/e3+kMUUecjtQJdOnKCNDumrc60AGFh6xZKu4Sc6LWWkPgn1NtV50RQ27I
-	PLeEwIuir3RYX+t1Z7h5kfd/+2r8eYs5GgNoh3y4E4s14FzU5yIiQmVYgey1uozxkfuosa1hvxj
-	49AssMw+jB4uWoOscbhfc7UhITgXt2uD4DrG4UHtVbxJRfPAu/FjQ9RPe3w/KdNSfqttjFqPWXA
-	iAEYyr2SIB4igJaLXGqdA5zP2KMhsnR6Oy3tYgAmsO0xPCKsV6kpr/7H0hyem+PDQ7/qNMa
-X-Received: by 2002:a05:6402:5d0:b0:655:c01e:ec27 with SMTP id
- 4fb4d7f45d1cf-655c01eef0cmr11842605a12.13.1769001774908; Wed, 21 Jan 2026
- 05:22:54 -0800 (PST)
+        d=1e100.net; s=20230601; t=1769002311; x=1769607111;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=aX294P4TliS2B0BrPhrC1yfpgvWNBReUGID/aL6TSBE=;
+        b=eaR3pD59tsIv634w/EOkr1idhJnBvoCclOZb/tU701piORcv7/OT4y6L+VTlSDEISK
+         w2D2ra2gKjeJbA65NrnCC8Vqu5JqJRewOL6edVioz6xAeTldPeFHCZlXS8Berfe/CkEg
+         /P1IuiCCHYCKBV80fV3ul3wyKZZud89u6Ay6rNM5zGJC7vv2gdpopaeZpu7dRS3S+naY
+         MnGNBmwyQNeixPlfeKLzHLjqfdVogPc6cbbrLaSBK+r7+ky4N5uNiF2j3UYOf6L8Vkfp
+         ouogMjDYS51+XWzZ1kK+nWA4FBVCSQgda11A5VYRURMqrtzRw2bxj4zhu/Jhc1Gx23BE
+         NGqQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUrnyQOm14MI9zugU9udLrPK+0+xtKIjvQOYIT+5qGp/EsJ0ALTrdDdCWGO/A9uBr5DcBOzyg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyWPXIBj17fBog6aduVdXvGrIUHFX6mC+jTzOU0L1tiy3NVkkmU
+	QXLJM5MSOrWsW+X0p3y0CQPG+tuNPiTOc27fmU2jKFs/bkUnG8z9en/VTNEfeOtlGH8=
+X-Gm-Gg: AZuq6aLl1wwqVmV+JAdqSCr0r0Euc23kwA1Xi//psu4T8FTD3HBnyl/6daaqVlYKV0x
+	UihJl87/KrCf2bBt5ba2EtLpSzedCoSl2tZP3UDjtpKP0dKcBUihuPRT8hVQiyTJK+PRItkvLDF
+	llP3kKQJF+DS4hY4JqwOXkq5gdrDaA7kQj88AIH7h0KvReKtMRaQtHXkBIHzDUvHnWKalyo3J/Z
+	5jF+pxpfkKkDHPIlhjpRbIXYHGvkRFeGoP+p6GncjTz2g6WkuRfZRqA/KiDz+9A5BTeCcJlZKHU
+	TCoyA7V5JO2R2Mxj/PRwDR17j/WoiHkeIBHLAwJ76RrBDD1mbTAXzse9Z7bHKT90l2e+Oz+NfDw
+	XP9ULPVZWZEUmkLXJ0hyfE4dZs6bhuV9azlcxGLIXIOIonpcVC/1Vlc3qaiUFCi2d3el0LzlrR/
+	LQ8jMD5iceutrl4i1F48eq65Kj0qDP+gHmb52dU19dZyq5sLBXA/FtWtan04cermXgrXEhc5GvH
+	M6YYw==
+X-Received: by 2002:a05:622a:1aa1:b0:4ee:2200:409e with SMTP id d75a77b69052e-502d82772a6mr67009251cf.4.1769002308002;
+        Wed, 21 Jan 2026 05:31:48 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-162-112-119.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.112.119])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-502a1f1c1c4sm108692291cf.33.2026.01.21.05.31.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 21 Jan 2026 05:31:47 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1viYJG-00000006Dbm-2x5v;
+	Wed, 21 Jan 2026 09:31:46 -0400
+Date: Wed, 21 Jan 2026 09:31:46 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>
+Cc: Leon Romanovsky <leon@kernel.org>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Alex Deucher <alexander.deucher@amd.com>,
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+	Gerd Hoffmann <kraxel@redhat.com>,
+	Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+	Gurchetan Singh <gurchetansingh@chromium.org>,
+	Chia-I Wu <olvaffe@gmail.com>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	Lucas De Marchi <lucas.demarchi@intel.com>,
+	Thomas =?utf-8?Q?Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
+	Rodrigo Vivi <rodrigo.vivi@intel.com>,
+	Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Felix Kuehling <Felix.Kuehling@amd.com>,
+	Alex Williamson <alex@shazbot.org>,
+	Ankit Agrawal <ankita@nvidia.com>,
+	Vivek Kasireddy <vivek.kasireddy@intel.com>,
+	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org,
+	amd-gfx@lists.freedesktop.org, virtualization@lists.linux.dev,
+	intel-xe@lists.freedesktop.org, linux-rdma@vger.kernel.org,
+	iommu@lists.linux.dev, kvm@vger.kernel.org
+Subject: Re: [PATCH v3 6/7] vfio: Wait for dma-buf invalidation to complete
+Message-ID: <20260121133146.GY961572@ziepe.ca>
+References: <20260120-dmabuf-revoke-v3-0-b7e0b07b8214@nvidia.com>
+ <20260120-dmabuf-revoke-v3-6-b7e0b07b8214@nvidia.com>
+ <b129f0c1-b61e-4efb-9e25-d8cdadaca1b3@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <CALbr=LYt-MqGM0ua78Rt7M679WR9hNnk0Or-WrB2myZ=KhaN0w@mail.gmail.com>
- <20260121085549.165428-1-akaieurus@gmail.com> <DFU7CEPUSG9A.1KKGVW4HIPMSH@kernel.org>
- <DFU7SVI5SYE5.3MJP2ECGGZK5P@kernel.org>
-In-Reply-To: <DFU7SVI5SYE5.3MJP2ECGGZK5P@kernel.org>
-From: Jiayue Wang <akaieurus@gmail.com>
-Date: Wed, 21 Jan 2026 21:22:55 +0800
-X-Gm-Features: AZwV_QiegzQ2mhV8STvOkraTfIW0vCUhW1EFG-1ihIXGD3s1KAQ_UAVxlNleihs
-Message-ID: <CAFE6=PDyWwGGHbRVoLTZyUgcWC3CQ1kt1df4sLT8BWYrt6FS9Q@mail.gmail.com>
-Subject: Re: [PATCH v5] driver core: enforce device_lock for driver_match_device()
-To: Danilo Krummrich <dakr@kernel.org>
-Cc: hanguidong02@gmail.com, gregkh@linuxfoundation.org, rafael@kernel.org, 
-	Aishwarya.TCV@arm.com, broonie@kernel.org, chenqiuji666@gmail.com, 
-	linux-kernel@vger.kernel.org, m.szyprowski@samsung.com, 
-	robin.clark@oss.qualcomm.com, will@kernel.org, robin.murphy@arm.com, 
-	joro@8bytes.org, iommu@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <b129f0c1-b61e-4efb-9e25-d8cdadaca1b3@amd.com>
 
->
-> On Wed Jan 21, 2026 at 11:40 AM CET, Danilo Krummrich wrote:
-> > So, the problem is that in the callstack of the arm-smmu driver's (a platform
-> > driver) probe() function, the QCOM specific code (through arm_smmu_impl_init())
-> > registers another platform driver. Since we are still in probe() of arm-smmu the
-> > call to platform_driver_register() happens with the device lock of the arm-smmu
-> > platform device held.
-> >
-> > platform_driver_register() eventually results in driver_attach() which iterates
-> > over all the devices of a bus. Since the device we are probing and the driver we
-> > are registering are for the same bus (i.e. the platform bus) it can now happen
-> > that by chance that we also match the exact same device that is currently probed
-> > again. And since we take the device lock for matching now, we actually take the
-> > same lock twice.
-> >
-> > Now, we could avoid this by not matching bound devices, but we check this
-> > through dev->driver while holding the device lock, so that doesn't help.
-> >
-> > But on the other hand, I don't see any reason why a driver would call
-> > platform_driver_register() from probe() in the first place. I think drivers
-> > should not do that and instead just register the driver through a normal
-> > initcall.
-> >
-> > (If, however, it turns out that registering drivers from probe() is something we
-> > really need for some reason, it is probably best to drop the patch and don't
-> > make any guarantees about whether match() is called with the device lock held or
-> > not.
-> >
-> > Consequently, driver_override must be protected with a separate lock (which
-> > would be the cleaner solution in any case).)
->
-> I assume that this should resolve the problem (unless there are more drivers
-> that register drivers in probe()):
+On Wed, Jan 21, 2026 at 10:20:51AM +0100, Christian König wrote:
+> On 1/20/26 15:07, Leon Romanovsky wrote:
+> > From: Leon Romanovsky <leonro@nvidia.com>
+> > 
+> > dma-buf invalidation is performed asynchronously by hardware, so VFIO must
+> > wait until all affected objects have been fully invalidated.
+> > 
+> > Fixes: 5d74781ebc86 ("vfio/pci: Add dma-buf export support for MMIO regions")
+> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> 
+> Reviewed-by: Christian König <christian.koenig@amd.com>
+> 
+> Please also keep in mind that the while this wait for all fences for
+> correctness you also need to keep the mapping valid until
+> dma_buf_unmap_attachment() was called.
 
-I tested this patch on qemu, and the boot appears to be normal now
-without deadlocks. I encountered some other minor issues, but those
-are likely due to my forced emulation in qemu and should be unrelated.
+Can you elaborate on this more?
 
-Tested-by: Wang Jiayue <akaieurus@gmail.com>
+I think what we want for dma_buf_attach_revocable() is the strong
+guarentee that the importer stops doing all access to the memory once
+this sequence is completed and the exporter can rely on it. I don't
+think this works any other way.
 
->
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> index 573085349df3..9bb793efc35f 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> @@ -774,10 +774,6 @@ struct arm_smmu_device *qcom_smmu_impl_init(struct arm_smmu_device *smmu)
->  {
->         const struct device_node *np = smmu->dev->of_node;
->         const struct of_device_id *match;
-> -       static u8 tbu_registered;
-> -
-> -       if (!tbu_registered++)
-> -               platform_driver_register(&qcom_smmu_tbu_driver);
->
->  #ifdef CONFIG_ACPI
->         if (np == NULL) {
-> @@ -802,3 +798,5 @@ struct arm_smmu_device *qcom_smmu_impl_init(struct arm_smmu_device *smmu)
->
->         return smmu;
->  }
-> +
-> +builtin_platform_driver(qcom_smmu_tbu_driver);
->
-> @qcom maintainers: I'm aware of commit 0b4eeee2876f ("iommu/arm-smmu-qcom:
-> Register the TBU driver in qcom_smmu_impl_init"), but I think the above patch
-> should work fine as it is still *not only* registered when
-> CONFIG_ARM_SMMU_QCOM_DEBUG?
+This is already true for dynamic move capable importers, right?
+
+For the non-revocable importers I can see the invalidate sequence is
+more of an advisory thing and you can't know the access is gone until
+the map is undone.
+
+> In other words you can only redirect the DMA-addresses previously
+> given out into nirvana (or a dummy memory or similar), but you still
+> need to avoid re-using them for something else.
+
+Does any driver do this? If you unload/reload a GPU driver it is
+going to re-use the addresses handed out?
+
+Jason
