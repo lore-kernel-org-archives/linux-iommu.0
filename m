@@ -1,128 +1,74 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B49931282F
-	for <iommu@lists.linux.dev>; Wed, 21 Jan 2026 13:02:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD14A22D4DD;
+	Wed, 21 Jan 2026 13:03:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769000579; cv=none; b=OYkhY2+glfN+O5H/8snfEsMjMPBawc3DSDFh0A12arXYHZIU5C/sGx94L82u/6aLoOk/M1NM94dPIxNxoJIrTo2OMF6MDvGZdGxQniCzAaO0pyr0LDsxi3CXb+/Zt0z2VCZUdnWzq+dOqMLVGMILNFdkf6VFC3PZn+D1+CXz/gk=
+	t=1769000586; cv=none; b=GFhHujbbZnaed4VGjyq7DTBGv46egt+06g0trNwMSbl/azbDkmZk11PrA/03l548IJ43bhj6+0YEfyZ5C1PclglqWbFXuWR1tc2s/+4ayjeokVemWvfxL97ccVL5ZfZ/xLiUu/qDtKexmpbEeGMz1T8pPhaWoxoCHYgoFUrG3uo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769000579; c=relaxed/simple;
-	bh=06HnCxUF8RH/TuxV13Wuyjw9IUeyczz66ygRpiulYHU=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=F522tBdVKjSkRGeOt7u88S+TqBKhp+en8OAROtpCMWgXfVrWCJTBrOFrcDuSNhFexSMaz+NrNNnVbVHvrLU/5oju8Kq5Epg9iX6IfibG9tplOHmkmfX+MWIZjQpNRmwj51VrqeOxQ6wgEaK96Ozg5b8i5we4o34RldwsqaUl2Ws=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=VBD3LKuP; arc=none smtp.client-ip=192.198.163.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1769000586; c=relaxed/simple;
+	bh=BOd5zkjfHP132J3aOakYOWbzIMqm43y3rol1qpZtb5w=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=O1pv3uPrAp2kaKo8eGoLiop5UBxe+gRSbKbJgla4gRXtnIh5oqd6RO2gQ9pfYSUCSwYQGy82PdY/2p23HyUZ6oRQBMBCb5cM+YIHuiJmQwWoDRSGU4YW0rIBkiWK+6MEamLvTseMkfr/26MMoq53RvjNkAyTD2KxxLp/zh98wB8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KZ7z8eGd; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="VBD3LKuP"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1769000577; x=1800536577;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=06HnCxUF8RH/TuxV13Wuyjw9IUeyczz66ygRpiulYHU=;
-  b=VBD3LKuPH81eZyrDVm+1bm3U5Qxax6fk/+r6wNsQLheTCHhTXdudSbkl
-   7yPmlUxtD+ot/EW4po7pN+j84sgqSCwtxPzyCXJPsGs5fRqSkiRxyzk+E
-   53bucue/4IBziF+4u5z40z5dfLPDrZ/nVeqe7Py6ov3gNnDVVOuTyQPvy
-   is4tIZ4tJTfG97zok97kRTqKppTHGp4HhP6fR3hYGjDWSihx0oKCWqxjo
-   JfJs0usm7rShu24RXWtTKn9r/PScnBOWYcdXi0FsDw0KqOr1e1PzxJJEt
-   mzwqNt02iWIFDvdF4R5x0jvcxXNekBEwYg8wyF9+TFFQZtMnLmyHutyFG
-   Q==;
-X-CSE-ConnectionGUID: +Ida3sajRBi1aOoo1TgSag==
-X-CSE-MsgGUID: ijCFuB5FQmCV3CT6+zV3Qw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11677"; a="80944499"
-X-IronPort-AV: E=Sophos;i="6.21,242,1763452800"; 
-   d="scan'208";a="80944499"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jan 2026 05:02:56 -0800
-X-CSE-ConnectionGUID: FR01gN1ETx6CctIuUQyAPA==
-X-CSE-MsgGUID: yK/R4wqkSRKeSwj3gquUog==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,242,1763452800"; 
-   d="scan'208";a="211452180"
-Received: from dalessan-mobl3.ger.corp.intel.com (HELO fdugast-desk.home) ([10.245.245.68])
-  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jan 2026 05:02:53 -0800
-From: Francois Dugast <francois.dugast@intel.com>
-To: iommu@lists.linux.dev
-Cc: intel-xe@lists.freedesktop.org,
-	Francois Dugast <francois.dugast@intel.com>,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	Joerg Roedel <joerg.roedel@amd.com>,
-	Calvin Owens <calvin@wbinvd.org>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Samiullah Khawaja <skhawaja@google.com>,
-	Matthew Brost <matthew.brost@intel.com>,
-	=?UTF-8?q?Thomas=20Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
-	Tina Zhang <tina.zhang@intel.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Kevin Tian <kevin.tian@intel.com>
-Subject: Xe performance regression with recent IOMMU changes
-Date: Wed, 21 Jan 2026 14:02:16 +0100
-Message-ID: <20260121130233.257428-1-francois.dugast@intel.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KZ7z8eGd"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17485C116D0;
+	Wed, 21 Jan 2026 13:03:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1769000586;
+	bh=BOd5zkjfHP132J3aOakYOWbzIMqm43y3rol1qpZtb5w=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=KZ7z8eGd34tS2wxDungBy76VNLBqfVJ6ksE3dpA2/FKel/jk8pbGQDwh2IzXhEKaN
+	 je8DXkc24f43ksA5GV3BZ3hLh6qSKYfo3yt9vSDu4WOWdo+1bLb1c09EuD8jjU8P78
+	 rLgAQfLE/A5sMzeTxWeVUR6NOZvMiR/Td3DOtyrfrMKoZ2EeKP9Hwfb7HEBSI/p5Ny
+	 NkLqUl2vEbj1xl2GQjRISslXXJu2VC1uRupgalrQIyAZazWLD9L3c4BMwxEP+OdnAg
+	 Ezghkd3KYBOCInYGbSL8Du+elpnESSeWbf4ENabQdil0/5cF2TWZmjtlMvz+iOy7HF
+	 PxB1Kl+yLdN3g==
+Date: Wed, 21 Jan 2026 13:02:59 +0000
+From: Will Deacon <will@kernel.org>
+To: Danilo Krummrich <dakr@kernel.org>
+Cc: Mark Brown <broonie@kernel.org>, Wang Jiayue <akaieurus@gmail.com>,
+	hanguidong02@gmail.com, gregkh@linuxfoundation.org,
+	rafael@kernel.org, Aishwarya.TCV@arm.com, chenqiuji666@gmail.com,
+	linux-kernel@vger.kernel.org, m.szyprowski@samsung.com,
+	robin.clark@oss.qualcomm.com, robin.murphy@arm.com, joro@8bytes.org,
+	iommu@lists.linux.dev, quic_c_gdjako@quicinc.com,
+	dmitry.baryshkov@linaro.org, dmitry.baryshkov@oss.qualcomm.com
+Subject: Re: [PATCH v5] driver core: enforce device_lock for
+ driver_match_device()
+Message-ID: <aXDOg9YXqWyV3JTR@willie-the-truck>
+References: <CALbr=LYt-MqGM0ua78Rt7M679WR9hNnk0Or-WrB2myZ=KhaN0w@mail.gmail.com>
+ <20260121085549.165428-1-akaieurus@gmail.com>
+ <DFU7CEPUSG9A.1KKGVW4HIPMSH@kernel.org>
+ <DFU7SVI5SYE5.3MJP2ECGGZK5P@kernel.org>
+ <789030ba-c5bd-4c1d-a10a-2bed4fd76dce@sirena.org.uk>
+ <DFUA41G0WJ04.3TZX9914SM60E@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <DFUA41G0WJ04.3TZX9914SM60E@kernel.org>
 
-I am reporting a slowdown in Xe caused by a couple of IOMMU changes. It
-can be observed during DMA mappings/unmappings required to issue copies
-between system memory and the device, when handling GPU faults. Not sure
-how other use cases or vendors are affected but below is the impact on
-execution times for BMG:
+On Wed, Jan 21, 2026 at 01:50:52PM +0100, Danilo Krummrich wrote:
+> On Wed Jan 21, 2026 at 1:49 PM CET, Mark Brown wrote:
+> > On Wed, Jan 21, 2026 at 12:02:15PM +0100, Danilo Krummrich wrote:
+> >
+> >> I assume that this should resolve the problem (unless there are more drivers
+> >> that register drivers in probe()):
+> >
+> > This makes sense to me, I guess we can just fix any other instances as
+> > they arise.  Will you send the patch?
+> 
+> Yes, I will send it soon.
 
-Before changes:
-  4KB
-    drm_pagemap_migrate_map_pages: 0.4 us
-    drm_pagemap_migrate_unmap_pages: 0.4 us
-  64KB
-    drm_pagemap_migrate_map_pages: 2.5 us
-    drm_pagemap_migrate_unmap_pages: 3.5 us
-  2MB
-    drm_pagemap_migrate_map_pages: 88 us
-    drm_pagemap_migrate_unmap_pages: 108 us
+Please make sure you cc Dmitry and Georgi when you do that. I'm worried
+that you proposal means we run the probe code once per TBU, which looks
+like it will break.
 
-After changes:
-  4KB
-    drm_pagemap_migrate_map_pages: 0.7 us
-    drm_pagemap_migrate_unmap_pages: 0.7 us
-  64KB
-    drm_pagemap_migrate_map_pages: 3.5 us
-    drm_pagemap_migrate_unmap_pages: 10.5 us
-  2MB
-    drm_pagemap_migrate_map_pages: 102 us
-    drm_pagemap_migrate_unmap_pages: 330 us
-
-Bisecting points to these commits:
-  d373449d8e97 iommu/vt-d: Use the generic iommu page table
-  d856f9d27885 iommupt/vtd: Allow VT-d to have a larger table top than the vasz requires
-
-Simply reverting them brings back performance.
-
-Any idea about why and how to fix it?
-
-Thanks,
-Francois
-
-Cc: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Joerg Roedel <joerg.roedel@amd.com>
-Cc: Calvin Owens <calvin@wbinvd.org>
-Cc: David Woodhouse <dwmw2@infradead.org>
-Cc: Will Deacon <will@kernel.org>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: Samiullah Khawaja <skhawaja@google.com>
-Cc: Matthew Brost <matthew.brost@intel.com>
-Cc: Thomas Hellström <thomas.hellstrom@linux.intel.com>
-Cc: Tina Zhang <tina.zhang@intel.com>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Kevin Tian <kevin.tian@intel.com>
-
--- 
-2.43.0
-
+Will
