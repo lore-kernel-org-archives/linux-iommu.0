@@ -1,82 +1,77 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0D292E5B3D;
-	Thu, 22 Jan 2026 16:59:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40245371068;
+	Thu, 22 Jan 2026 18:47:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769101197; cv=none; b=I2Nykr2gMHDh2atSd60fUUN8Q+PHDDhgkUZNbDh1dO4nGYBreif9ggH8QcPqclwp+HRjJuGROzE1Ss9iLVZx386pu6M7K08zhwcrlvQpY1ue8pGcX0rSzLGkuCZ7SnFRJrSWFfW4X+zuNtpLGBnepO2ARfjaFggU4fMboWo3iG0=
+	t=1769107643; cv=none; b=uB9wIJ03Eo1+g3luR35JFqhUIW0A0aqc6CfU2d8k3jqeqswW4ssNtzFyPYbukPqbD32SQMXqgc+eE0pkkpAosH0JYDTtABT1aDPrrraUYc7KLRZUzGmwI9YF5DMB5IKkkkLZ2DdP3vI2DQtV56ZxAe/SSEG96o1rZMEQWhr+/1A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769101197; c=relaxed/simple;
-	bh=fnj5f0mzOP3nCSR0nXkS9PzcpIrYNOAhr7vqfig/jcU=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=jU+aBm/2otYUtAdEDfm+v2oGpTyG+4zI22lM+hSffGdqGb5CGNYdcjdD9UbxT5fUC2nGtXdq3igJ97cYm155f+89ZdVCtvssMpEv5YgrKkUce8531Hw/FYXDxrMeZZ2ZNYVZYXwxfULYYC7la7GZFWhui1HESUVa8VFay3pAuOk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=D/mSaB/N; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1769107643; c=relaxed/simple;
+	bh=puZkcLq0LJbBc92hUq9q08tH9W7ZSmix0U1xdnYs+V0=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=o10Al1qlEAH8J/9x8nuz6aizyc/+xMVdKazxbAoxjiyt45jZQOEC+4Tmr5vxpOzb53MPtCcPgYz1iWyftzp3F5DVIv2l1EN0sJgXxSiCmAvYceatGUo/prnhyV6OfoRD3OxLlsEBWMtc3E0rv/l+diTZcxbcecnws3B1dNFA+y0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Oopj1T3C; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="D/mSaB/N"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E608C116C6;
-	Thu, 22 Jan 2026 16:59:54 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Oopj1T3C"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AFC0C116C6;
+	Thu, 22 Jan 2026 18:47:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1769101197;
-	bh=fnj5f0mzOP3nCSR0nXkS9PzcpIrYNOAhr7vqfig/jcU=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=D/mSaB/NDq2jreN5kdch+CxtKuutzH5sGJhcWs4Iuwgska/79RFnyt2+QmqWuOzGj
-	 gXH49QCP0UiMSu415Mm11bk6ywNiJ7DvUgjyJKtD5lGm1o9dzTHIfFfIwrF81pK4Fp
-	 FIOM5sjK9z0/1ApyexIZkGEuctP9XMkB7OVAKpVketT29w/lydGM6WPFTcIdN89gKa
-	 ZlfLq7d9bZ3zhooCGWOhKTCjyQef0+LHL0W7mB5nfskVQyFirlFZhE7SsbhxU6Q8OU
-	 9f0PgWIgO/clpgh3X13HxqSdcZ5UskxXCMbnTHq2Kg73Fo1ljatyxXFx2PkPQOKf2O
-	 Z9C0nbg45tr9Q==
-From: Will Deacon <will@kernel.org>
-To: bibek.patro@oss.qualcomm.com
-Cc: catalin.marinas@arm.com,
-	kernel-team@android.com,
-	Will Deacon <will@kernel.org>,
-	charan.kalla@oss.qualcomm.com,
-	dmitry.baryshkov@oss.qualcomm.com,
-	iommu@lists.linux.dev,
-	joro@8bytes.org,
-	konrad.dybcio@oss.qualcomm.com,
-	linux-arm-kernel@lists.infradead.org,
-	linux-arm-msm@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	robin.clark@oss.qualcomm.com,
-	robin.murphy@arm.com
-Subject: Re: [PATCH] iommu/arm-smmu-qcom: Restore ACTLR settings for MDSS on sa8775p
-Date: Thu, 22 Jan 2026 16:59:40 +0000
-Message-ID: <176909187807.2987598.8685170214732571189.b4-ty@kernel.org>
-X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20260120151105.614792-1-bibek.patro@oss.qualcomm.com>
-References: <20260120151105.614792-1-bibek.patro@oss.qualcomm.com>
+	s=k20201202; t=1769107642;
+	bh=puZkcLq0LJbBc92hUq9q08tH9W7ZSmix0U1xdnYs+V0=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+	b=Oopj1T3C87F1OYkkk/5BD0ca99ulodCm+Ezbv2lwzIfZcowo3h/CJJ0q0QidAVZoF
+	 Bf9+oZMr8wPnKv+D1oedhwr03xBH2o2ZfAbV2qNAdXA5GVXIKxX6QGx5wE4LVt6Abm
+	 9vr0IIGCmDkRvRCBoNLmve3e5ezH+x9ECFZEyrzLEiTakr/4wVNOxgcwsHfk+iR9TG
+	 Pm1YBaMFd82xZvRFpRluuvy1Ecv1Gkw3QI9lf2rTFbtohxiMzfX3EGjR05bo/mbpDk
+	 HGa6HnzEkZ837z6ETr/vpqCLC3W9hg+eor5l2Dp3conaZmwspMkZNMpG+8A6SLAAmr
+	 IM2dAF1bynjRA==
+From: Thomas Gleixner <tglx@kernel.org>
+To: Paolo Bonzini <pbonzini@redhat.com>, Ankit Soni <Ankit.Soni@amd.com>,
+ Sean Christopherson <seanjc@google.com>, Marc Zyngier <maz@kernel.org>
+Cc: Oliver Upton <oliver.upton@linux.dev>, Joerg Roedel <joro@8bytes.org>,
+ David Woodhouse <dwmw2@infradead.org>, Lu Baolu
+ <baolu.lu@linux.intel.com>, linux-arm-kernel@lists.infradead.org,
+ kvmarm@lists.linux.dev, kvm@vger.kernel.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, Sairaj Kodilkar <sarunkod@amd.com>, Vasant
+ Hegde <vasant.hegde@amd.com>, Maxim Levitsky <mlevitsk@redhat.com>, Joao
+ Martins <joao.m.martins@oracle.com>, Francesco Lavra
+ <francescolavra.fl@gmail.com>, David Matlack <dmatlack@google.com>, Naveen
+ Rao <Naveen.Rao@amd.com>, Crystal Wood <crwood@redhat.com>
+Subject: Re: possible deadlock due to irq_set_thread_affinity() calling into
+ the scheduler (was Re: [PATCH v3 38/62] KVM: SVM: Take and hold
+ ir_list_lock across IRTE updates in IOMMU)
+In-Reply-To: <5bea843b-dec8-4f15-bb7c-1d0550542034@redhat.com>
+References: <20250611224604.313496-2-seanjc@google.com>
+ <20250611224604.313496-40-seanjc@google.com>
+ <njhjud3e6wbdftzr3ziyuh5bhyvc5ndt5qvmg7rlvh5isoop2l@f2uxctws2c7d>
+ <42513cb3-3c2e-4aa8-b748-23b6656a5096@redhat.com> <874iovu742.ffs@tglx>
+ <87pl7jsrdg.ffs@tglx> <5bea843b-dec8-4f15-bb7c-1d0550542034@redhat.com>
+Date: Thu, 22 Jan 2026 19:47:18 +0100
+Message-ID: <87sebxtrgp.ffs@tglx>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 
-On Tue, 20 Jan 2026 20:41:05 +0530, bibek.patro@oss.qualcomm.com wrote:
-> The ACTLR configuration for the sa8775p MDSS client was inadvertently
-> dropped while reworking the commit f91879fdf70b ("iommu/arm-smmu-qcom:
-> Add actlr settings for mdss on Qualcomm platforms"). Without this
-> entry, the sa8775p MDSS block does not receive the intended default
-> ACTLR configuration.
-> 
-> Restore the missing compatible entry so that the platform receives the
-> expected behavior.
-> 
-> [...]
+On Wed, Jan 21 2026 at 19:13, Paolo Bonzini wrote:
+> On 1/8/26 22:53, Thomas Gleixner wrote:
+>> Are you still claiming that this is a kernel/irq bug?
+>
+> Not really, I did say I'd like to treat it as a kernel/irq bug...
+> but certainly didn't have hopes high enough to "claim" that.
+> I do think that it's ugly to have locks that are internal,
+> non-leaf and held around callbacks; but people smarter than
+> me have thought about it and you can't call it a bug anyway.
 
-Applied to iommu (arm/smmu/updates), thanks!
+Deep core code has a tendency to be ugly. But if it makes your life
+easier, then these wakeups can be delayed via an irq_work to be outside
+of the lock. That needs some life-time issues to be addressed, but
+should be doable.
 
-[1/1] iommu/arm-smmu-qcom: Restore ACTLR settings for MDSS on sa8775p
-      https://git.kernel.org/iommu/c/14e9a138dd02
+Thanks,
 
-Cheers,
--- 
-Will
-
-https://fixes.arm64.dev
-https://next.arm64.dev
-https://will.arm64.dev
+        tglx
