@@ -1,46 +1,46 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 21B6132720E;
-	Thu, 22 Jan 2026 07:56:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 40C8434AB16;
+	Thu, 22 Jan 2026 08:18:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769068582; cv=none; b=YDvecusH55+GYyhBpXcoDqCoIiDQe3m75L0rF2yO0PAySB1ewvs4zj1p13iOQADLFakvLIs6g8G3lg7z6Ynwj8TKeN5dX6dgMJd1i8aDgwnQpmgEvOPU85W1E566gkiduYrO9FXlZUyZsoT7pAYLVieLtpAyhd+Sr7AM3JUMQW4=
+	t=1769069923; cv=none; b=f0V+CZbIMI5s/NNmhxw/gnf9auCAAbf6BB3qgCxPAjOQbQYLKkeiYKSIF0hcv2wy6T4bxCjbyuBlXfWzi8+ANhKUybxtMpQoPUMgC6T7ax9Gs6g4fgdsD+e6+rgammDdzWpiBkEhxUNUHvvAoegPHbfJZJIs2G5C6XcZbjP5zrE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769068582; c=relaxed/simple;
-	bh=YJic1/XLgE96fzrxFvELH7XvK4WNcmG6B4CpNmXzS8I=;
+	s=arc-20240116; t=1769069923; c=relaxed/simple;
+	bh=7CIJ7TMjYpB8LpC3GI/NHJut7LLEZIAawxgiBGDf2Sk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=UT30XAqbPs59/jGu08TTCiRcvRU9Pv/03wzYPpJfTcyNyH9DOa5E6zhfp/biMXJRm5MGvJ+On8IXNu5kpXJbLe/ZexJYoAw3P0Ubn6apP624kUg1oZeQYC6HAcJUU4NYHchD9fvZQlMCyePT+LJuITZ6U88QU35H7QqE89nSz+Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=KhMVwVRc; arc=none smtp.client-ip=85.214.250.239
+	 Content-Type:Content-Disposition:In-Reply-To; b=skYSVwpFp51WIqu8PIYZHiuqW14c+lNqSmgnVma7dEXD2ZXHtewpY5n0wtqXQfctiY+PpDrrZIGm1exVXkmNwlq2X67RStx0hk7ursHsWHgrvEYj3JxUqptBpyxc9bu0GAXbeEXzFHzKA1WtNQb13oITidk7xLV9YCIWC9q1w8I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=PvMWY5uf; arc=none smtp.client-ip=85.214.250.239
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="KhMVwVRc"
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="PvMWY5uf"
 Received: from 8bytes.org (p4ffe051a.dip0.t-ipconnect.de [79.254.5.26])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 7C1181C03E4;
-	Thu, 22 Jan 2026 08:56:13 +0100 (CET)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 0012B1C03FC;
+	Thu, 22 Jan 2026 09:18:39 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1769068573;
-	bh=YJic1/XLgE96fzrxFvELH7XvK4WNcmG6B4CpNmXzS8I=;
+	s=default; t=1769069920;
+	bh=7CIJ7TMjYpB8LpC3GI/NHJut7LLEZIAawxgiBGDf2Sk=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=KhMVwVRc9f2h1Xmdana7v4gRcA+ULRSJdCOUCZTS++WvgA5jydfggsztHuq5BAjSF
-	 BBEJKltix0gAywoM7Ck1wHofbpNH5iNs8QU/bOPkUNgLfg/waClrLZREbbuBaboZ73
-	 tdmfjzS3CFWCeeOLidAtieVaMLbnByW1grp1Adj9sxFxr/M2qqbwF+/mdUhlCI1FKe
-	 NOBvppWc2xyjrjCyS9V8zHBjWfbw2k1vj1jtzFkVMOgZIbvAxxUD0x1Jt30HIgyybq
-	 F7fAxuW368AWVIzKHGidk+ewgNwer1xHAuowrJsKP4pMUvW8xde8Y6mcQqaam9zFdt
-	 AMfscVcSbKzzg==
-Date: Thu, 22 Jan 2026 08:56:12 +0100
-From: Joerg Roedel <joro@8bytes.org>
-To: Tomasz Jeznach <tjeznach@rivosinc.com>
-Cc: Jason Gunthorpe <jgg@nvidia.com>, Alexandre Ghiti <alex@ghiti.fr>, 
-	Albert Ou <aou@eecs.berkeley.edu>, iommu@lists.linux.dev, linux-riscv@lists.infradead.org, 
-	Palmer Dabbelt <palmer@dabbelt.com>, Paul Walmsley <pjw@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, lihangjing@bytedance.com, 
-	Xu Lu <luxu.kernel@bytedance.com>, patches@lists.linux.dev, xieyongji@bytedance.com
-Subject: Re: [PATCH v2 0/5] Convert riscv to use the generic iommu page table
-Message-ID: <72olk767l4goaqsrkyelhtnzg33nxbtwnammy4asnqxukbolnh@gwypmg6n5t3e>
-References: <0-v2-b11ebca8abb6+c096-iommu_pt_riscv_jgg@nvidia.com>
+	b=PvMWY5ufBPgoOXsVdUw8Vj0CniCI9dAvxLDn4lDpuXmCKwHf2Gc0icqZELzs5/bxF
+	 hNLma+GYNrjzkPOB2Qi4+AsUIA14s87i2YIrIns6zc4PhvuV2MRETKhUZppOhAc+ZO
+	 QGhIF9P8a4rD10CKsr/W1YkuraSl0HsyvSmpxqlG2GQMDNQAFqIbyjiclWtBAR7EBY
+	 rwJVIzSjmh5iHWabfQ7oKB0IW2zjK9M184vYXLOwjmqd4/Z2zhJpdOFOGEe0Bw4xGJ
+	 PUWjW1bFZxAX6H9BTIBQAsDq7KiGmJLoJoO7pCJbKEBPMHsAltRtUIfPrAsN/CBAPq
+	 YvZDKQkPYin5g==
+Date: Thu, 22 Jan 2026 09:18:38 +0100
+From: =?utf-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>
+To: Danilo Krummrich <dakr@kernel.org>
+Cc: gregkh@linuxfoundation.org, rafael@kernel.org, broonie@kernel.org, 
+	will@kernel.org, robin.murphy@arm.com, robin.clark@oss.qualcomm.com, 
+	hanguidong02@gmail.com, quic_c_gdjako@quicinc.com, dmitry.baryshkov@oss.qualcomm.com, 
+	driver-core@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH] iommu/arm-smmu-qcom: do not register driver in probe()
+Message-ID: <mo5v74ryxfwik4ggr56c2xha34sfwq2kq6suxi65pbqxrdppnj@oqkirr2kgrey>
+References: <20260121141215.29658-1-dakr@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -49,16 +49,47 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <0-v2-b11ebca8abb6+c096-iommu_pt_riscv_jgg@nvidia.com>
+In-Reply-To: <20260121141215.29658-1-dakr@kernel.org>
 
-Tomasz,
+On Wed, Jan 21, 2026 at 03:12:01PM +0100, Danilo Krummrich wrote:
+> Commit 0b4eeee2876f ("iommu/arm-smmu-qcom: Register the TBU driver in
+> qcom_smmu_impl_init") intended to also probe the TBU driver when
+> CONFIG_ARM_SMMU_QCOM_DEBUG is disabled, but also moved the corresponding
+> platform_driver_register() call into qcom_smmu_impl_init() which is
+> called from arm_smmu_device_probe().
+> 
+> However, it neither makes sense to register drivers from probe()
+> callbacks of other drivers, nor does the driver core allow registering
+> drivers with a device lock already being held.
+> 
+> The latter was revealed by commit dc23806a7c47 ("driver core: enforce
+> device_lock for driver_match_device()") leading to a deadlock condition
+> described in [1].
+> 
+> Additionally, it was noted by Robin that the current approach is
+> potentially racy with async probe [2].
+> 
+> Hence, fix this by registering the qcom_smmu_tbu_driver from
+> module_init(). Unfortunately, due to the vendoring of the driver, this
+> requires an indirection through arm-smmu-impl.c.
+> 
+> Reported-by: Mark Brown <broonie@kernel.org>
+> Closes: https://lore.kernel.org/lkml/7ae38e31-ef31-43ad-9106-7c76ea0e8596@sirena.org.uk/
+> Link: https://lore.kernel.org/lkml/DFU7CEPUSG9A.1KKGVW4HIPMSH@kernel.org/ [1]
+> Link: https://lore.kernel.org/lkml/0c0d3707-9ea5-44f9-88a1-a65c62e3df8d@arm.com/ [2]
+> Fixes: dc23806a7c47 ("driver core: enforce device_lock for driver_match_device()")
+> Fixes: 0b4eeee2876f ("iommu/arm-smmu-qcom: Register the TBU driver in qcom_smmu_impl_init")
+> Signed-off-by: Danilo Krummrich <dakr@kernel.org>
 
-On Tue, Jan 06, 2026 at 11:06:44AM -0400, Jason Gunthorpe wrote:
-> Jason Gunthorpe (5):
->   iommupt: Add the RISC-V page table format
->   iommu/riscv: Disable SADE
->   iommu/riscv: Use the generic iommu page table
->   iommu/riscv: Enable SVNAPOT support for contiguous ptes
->   iommu/riscv: Allow RISC_VIOMMU to COMPILE_TEST
+Acked-by: Joerg Roedel <joerg.roedel@amd.com>
 
-Any opinion on that series?
+This patch should go via the branch that contains
+
+	dc23806a7c47 ("driver core: enforce device_lock for driver_match_device()").
+	
+Otherwise we add a Fixes tag pointing to a commit which comes later in the git
+history.
+
+
+-Joerg
+
