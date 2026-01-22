@@ -1,62 +1,70 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 299F0436374;
-	Thu, 22 Jan 2026 11:52:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5F1C5480973;
+	Thu, 22 Jan 2026 12:12:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769082773; cv=none; b=CTHN7Ym3Ytldinlr+qtcKT96t/oOz2n+HM+LiryrKWKqqd/qvoNn1hHdRtXLoWC4S+eS4JdDf1q/Lef1oLVwRxEUwpHFQJruJyf/miNw4x9slDlvOAgIFpa2ROPaaFXWnATlbVGpmMQuIujONrTUK9bKK4/ehwlRONM2GlQpuZU=
+	t=1769083981; cv=none; b=Nyc2TS9JM3feypIqSlDXyYbJACmLFv4qYYmcPJezOMdwLPqTtFJEbtcY656qQtsr7GIOImbUkc5apAVn35RkdUfmHwvT2XMf4UbgEbuxdbvwAwQLUbyo3HSBHIg/+Q2wcMIxVJIxIq8i8roeKcqowyXGutUQY+BoRq0JneSX9/o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769082773; c=relaxed/simple;
-	bh=8bKk78/cUBVMRsGmIHB9eHx8NN7HqTjyj+NpF8y77Vk=;
-	h=Mime-Version:Content-Type:Date:Message-Id:From:Subject:Cc:To:
-	 References:In-Reply-To; b=tVvgyGA5WRpeRF3E4mpjbUEULX3Vx2x8lPy8sLLdKOeFfCT2w97l3KnBPbUeO4f5HJq8F/G2k8SjT/psSrQeKmNBhyHyi0oU6jHTj6lwFPfVUTXWWRamATj0cWeVXr194veRdzVJIrStAPUw1cSdv/HsXqpxzbHxq2JtQS13QOo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WKFhd6eJ; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WKFhd6eJ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85833C116C6;
-	Thu, 22 Jan 2026 11:52:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1769082771;
-	bh=8bKk78/cUBVMRsGmIHB9eHx8NN7HqTjyj+NpF8y77Vk=;
-	h=Date:From:Subject:Cc:To:References:In-Reply-To:From;
-	b=WKFhd6eJG/25Tu4S4NiFeifgs5vRUp2FvhIhO9DOqZHowGyVhBvqgg+aZaszjdrFy
-	 n8ifSpsyn0O3b7M/uwQxbFTWBoIGqFRrA0fOKwQmHJfBSJKzPzpjU35UML3nFzwV3d
-	 h1HO3UU/PT6kDfE77KwS+bMvGFQe9bACXaz7I9U4odtNTE0CReW60VkX7xP9WENuQq
-	 oZejainJFYp9vFSx8K4TusF1lRA37G6EGikufyzZTh33VEHyqTfkDKkn/yRepN++LK
-	 kbVe0vhEaP7/NZeO5EYTlnbJr7dV9TGOu02iQc9ozWBuabmlwKqMhPgDHI0Yb/cZLj
-	 gaR7SJwmgt8gg==
+	s=arc-20240116; t=1769083981; c=relaxed/simple;
+	bh=BPfY/Gnf0QsAl+WZe3Pj2UYJa/GxAUnm6Hk0MlMg79s=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=iYjaNV46x6ZXdWWkCHo723kOPrX6crHK/77gLgaBEyK8ltOwElrC9d+Feaw9RNFrytQ1SI/osGBuIBhDhPw74aqpkGTK7ecudT/i1U+5+H189wDc2s0WWPz77zFlNFuMFxCDeuMTMaX2MRRwKhQmQscV01J7wxQW4BXFgBTA32Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A97831476;
+	Thu, 22 Jan 2026 04:12:51 -0800 (PST)
+Received: from [10.57.51.35] (unknown [10.57.51.35])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B38FB3F740;
+	Thu, 22 Jan 2026 04:12:55 -0800 (PST)
+Message-ID: <d2ddbb72-30a8-44da-b761-876b2d37567e@arm.com>
+Date: Thu, 22 Jan 2026 12:12:53 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Thu, 22 Jan 2026 12:52:46 +0100
-Message-Id: <DFV3I3D5UIZP.38TNCAJWQGI3O@kernel.org>
-From: "Danilo Krummrich" <dakr@kernel.org>
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH] iommu/arm-smmu-qcom: do not register driver in probe()
-Cc: <gregkh@linuxfoundation.org>, <rafael@kernel.org>, <broonie@kernel.org>,
- <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
- <robin.clark@oss.qualcomm.com>, <hanguidong02@gmail.com>,
- <quic_c_gdjako@quicinc.com>, <dmitry.baryshkov@oss.qualcomm.com>,
- <driver-core@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
- <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
- <linux-arm-msm@vger.kernel.org>
-To: "Ioana Ciornei" <ioana.ciornei@nxp.com>
+To: Danilo Krummrich <dakr@kernel.org>, Ioana Ciornei <ioana.ciornei@nxp.com>
+Cc: gregkh@linuxfoundation.org, rafael@kernel.org, broonie@kernel.org,
+ will@kernel.org, joro@8bytes.org, robin.clark@oss.qualcomm.com,
+ hanguidong02@gmail.com, quic_c_gdjako@quicinc.com,
+ dmitry.baryshkov@oss.qualcomm.com, driver-core@lists.linux.dev,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org
 References: <20260121141215.29658-1-dakr@kernel.org>
  <6oogrqe3n5sxtpdydjqo4ucwp7n3ipqoupxtekvzbnqd7dae3s@q22wc7fpbtya>
-In-Reply-To: <6oogrqe3n5sxtpdydjqo4ucwp7n3ipqoupxtekvzbnqd7dae3s@q22wc7fpbtya>
+ <DFV3I3D5UIZP.38TNCAJWQGI3O@kernel.org>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <DFV3I3D5UIZP.38TNCAJWQGI3O@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Thu Jan 22, 2026 at 10:21 AM CET, Ioana Ciornei wrote:
-> The boot lockup was visible also on the NXP LX2160ARDB. This patch fixes
-> it.
+On 2026-01-22 11:52 am, Danilo Krummrich wrote:
+> On Thu Jan 22, 2026 at 10:21 AM CET, Ioana Ciornei wrote:
+>> The boot lockup was visible also on the NXP LX2160ARDB. This patch fixes
+>> it.
+> 
+> Interesting, this means that qcom_smmu_impl_init() must be called on this
+> machine, is this expected?
 
-Interesting, this means that qcom_smmu_impl_init() must be called on this
-machine, is this expected?
+Yup, same as on the Juno boards and probably others - an Arm SMMU is 
+present, which means if ARM_SMMU_QCOM is enabled then 
+arm_smmu_impl_init() is going to offer it to ask "hey, is this one of 
+yours that you might want to do something with based on your extensive 
+and complicated match list that we don't want to maintain in the common 
+impl code?", wherein qcom_smmu_impl_init() *should* return without doing 
+anything at all as it's not a match...
 
-> Tested-by: Ioana Ciornei <ioana.ciornei@nxp.com> #LX2160ARDB
+Cheers,
+Robin.
 
-Thanks for testing!
+> 
+>> Tested-by: Ioana Ciornei <ioana.ciornei@nxp.com> #LX2160ARDB
+> 
+> Thanks for testing!
+
