@@ -1,182 +1,263 @@
-Received: from AM0PR83CU005.outbound.protection.outlook.com (mail-westeuropeazon11010059.outbound.protection.outlook.com [52.101.69.59])
+Received: from BN1PR04CU002.outbound.protection.outlook.com (mail-eastus2azon11010044.outbound.protection.outlook.com [52.101.56.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 462DC34BA21;
-	Thu, 22 Jan 2026 09:21:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.69.59
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 888203346B8
+	for <iommu@lists.linux.dev>; Thu, 22 Jan 2026 10:06:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.56.44
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769073694; cv=fail; b=VaIXMedMI4KqGy8GNLj/sMV1SyJtShMmZN1VgrZldYRKbacJ3m7JBOD00AsIiisnT3lg6LjQt8S8cdobyBUDmHCXg90itR0QkYfA3QZV3QyxsFgAl4695GUZ8yMW8Zg1Xs72hFxvTh0Mfs9wqLV2zR7caq+OXQsashJCmOUp4TA=
+	t=1769076423; cv=fail; b=UbSye6k2BMT/y3qKTHffhviRCakfpI5bHMrmfa1CPBvxX5DZBWFdRke+7c29cy30sit2QXPDszdYMl1vukJEI8i/8qHy7nFvV1hLsYicp3v7HLIPxX+9wIMOQtfNwiXn1bPDllZRmLh7x4XdNtJIxZp+1DQonop5TT5Uo79wFPc=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769073694; c=relaxed/simple;
-	bh=UH8yivkBx3HOJuS50cnQyCqeW4rGcrwZu/M4J9JhheM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=InZURkCfPV2U6pqwU1DzIBQmf3reXWUKRcKU7qBqC0aXa7Z3vB6IuR367zFq10KFqowRYS52Lsds7CZhaBDTewdNzzmY6ntpKowVcW+c/ld5pJML8jb4eMxK3oEOhXfCRxvGhMgtMlqxmYoI4wiKL062xKDJ0rAa24DrZigMp2o=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com; spf=pass smtp.mailfrom=nxp.com; dkim=pass (2048-bit key) header.d=nxp.com header.i=@nxp.com header.b=ix9C/GWL; arc=fail smtp.client-ip=52.101.69.59
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nxp.com
+	s=arc-20240116; t=1769076423; c=relaxed/simple;
+	bh=gQBob/Y90IraRUInrF7rPnKABbcDuwfCQu5YkyFx9Ag=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=XVrtLEy8ZLlGCe06OG1zATa8+BQoHiJQBQh1z9xmS7aKRHepJrOCQ8qtYi46v+WEQK5sgxXbV9+0/4+DbTk/Zo8MzhQYLcs0Y7PEJa3o4/p/+jTpB6XSZ55skltPX5oEVEu6FtnToves8rgaI62bg2WO1oVFu6DA913qI6KBqZY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com; spf=pass smtp.mailfrom=ti.com; dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b=MDKKW02e; arc=fail smtp.client-ip=52.101.56.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ti.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=nxp.com header.i=@nxp.com header.b="ix9C/GWL"
+	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="MDKKW02e"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=hfeLIHqUWocQgdxStpy7qJ9/Ci6BLtZKA6gVDODrczObk+Jo2ZlzsGET27JFGefqKMl8RjcR1e4YrpVcLLBAZHmpcfOQp5gV1R/Zg0mtIiArD64VXPtkE4g3rUaMuwVAbeGQalx8ztmojUEprTYYngdhcQmONBZQQttQumvRrDYh+1djXWSSRBTQO9+F1UroWOQMB6k50AuXgSqaPRuBvIQJz0Bh2z6REOIXijFySUmnBbS05TG1JFsIhOd0hMKq/3lL5y4+v0R6EwNNpPn4ROwaUk6iwmuF+2z4eKoJOlKhYzNZekHMMMF9OvC7pKIQfsJJtuiqZ5Xebh/V29MR4w==
+ b=QyOUqmuNSq3tOa75vh+jt6Qje+fZ16BGvVegPKpFOY/CBoZx68rLUatoWIFr0WiAB6heCrSYxAgwBUZQCzFEo1aKJ19W2DqBn0NMwi4tbdBYnQB5Y0Oa4NLqlV3yFxw3w0XWaqw2y5w6sk7MUCZ9MeOat0Q9+A+aMuFucNS1l1BLSxJra4AnDUQ5O9vilavCL++Ew8Sr+Tog0HLGbcEh+AFGTUuCR8/XGkiKOYqw/K+nhaj5jlc8gWivl8LHFm2l1iwfHCw0MDZwXrhiI4TZZ+97q516TNEBYun8tcxQMRLzJFEp0NbvXrldKqi6K7x9y0CeadRwzAGVatDBbEFCHA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=DC94HxsU5WlWFPo8fA42IWzv2SCV5yEUDdgc68K/fA0=;
- b=JCv2GJRpDsITVXYFNahgPy1NMBjmA220BLjSnJSMAbHqfkY8WjfrcHOPRzJpVBSQr0Ld35/j5jcbmvnTqm0VsRKUGAHeN6dZsJIrJ0dD17jYtQxuDrbCEcFEinhwXatkFCtggzNzAIjOkbZXRbCK75ed/wmwucl1LHVFhDduS+NlRmAgS1MashsO884LiaBEjt5R+4kXF+yf4cBUvP4m0SmRewKI0PbDycXbShHJmgoN72t5orFJFdWGIOY85EO//czF8+5KlB7wpUvRnf4aiyuQE38ZPtvj0m9Sp3Iz3zjg0dThe/3tXxhunVVFgspaMiHZONkIn1QTYlklrgnutw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector1;
+ bh=ovLQqeJyqeuGLk0JmO8jvVPrGf6XCfJf4nc3LRW49Bg=;
+ b=FSMnQSp0NislDj4AWOvvk9HWVtZRgbfZ/UPuwYDT4p0Ek/nfvHsZGp0pYZFv1YPIhm9p5qxvP7IxtXhAhcm1QrFGh//iN8oQu7RmSsNg5D7qJn+OVgtp8eIVdSwl26UdIUCz8vtOC02DfMr70aXXZlr7dq7dX/aXpQdi58scWs7XH/cdW+uPtpzkaNyXfQAhg3pAJu2XSfbeusAYnNDhwWakU5eYpwKjx/9+q++lJI5gfxkYV1h8amAUZU8vZF0lx8sVriwsjKX2Y2FG+33m/BENY2IuL/B+XmXjj4ri9Z2rNJRVAdHtCs74W09ZbKsS3Nun2KBHbzsn9bv5ISlBJw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 198.47.23.195) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=ti.com;
+ dmarc=pass (p=quarantine sp=none pct=100) action=none header.from=ti.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DC94HxsU5WlWFPo8fA42IWzv2SCV5yEUDdgc68K/fA0=;
- b=ix9C/GWLyvI3EiOLqZ2OAZdK5/IZa1l+sF1+mhqxaNSh4t8C5W689NxzSm2MQOEX8ez/vOCQ0ktK8WMOAS2Jstoue+NjK9Z+j/FnvS9fHJWt5JffwGu0PHJLSbuJaGZwHDMyEe+253gRFuWCNXkmqvjJz5Kiue1OAsh8adiu556Uozmn366fzLDrRc0GrbmxVT9AqAPhNgy1iV6u52W98X+tO/yA5mkbT+S5oNimUfO1mUWJ+ik245gEC7EPorJo6nz4ZVCUx8KwyLoK0HfOSm/qcr0jRtwFDOxBwlAdTQvbptA73gozg3SIbItDarjy6lwDk8yU9U2MDv+rxWbhbA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from PAXPR04MB8253.eurprd04.prod.outlook.com (2603:10a6:102:1bf::7)
- by AMDPR04MB11605.eurprd04.prod.outlook.com (2603:10a6:20b:71a::9) with
+ bh=ovLQqeJyqeuGLk0JmO8jvVPrGf6XCfJf4nc3LRW49Bg=;
+ b=MDKKW02eqJcmLSDEchrq+7maTkTfxPdA6fqJmFGvHD7Ylx9Ll++nACN1hG3RsQj2kyJ9JCJVhUQuNyj567asw9PZxGfaHg2DU0HRvKwm1pQZ0CWN0pWPj/ut0Dq9tAUeQPPQn+UHk5voFyTZ7+MTnfme3yc0HMPZrgE7FlBRi4I=
+Received: from DM6PR17CA0026.namprd17.prod.outlook.com (2603:10b6:5:1b3::39)
+ by SA1PR10MB6391.namprd10.prod.outlook.com (2603:10b6:806:257::21) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9542.10; Thu, 22 Jan
- 2026 09:21:28 +0000
-Received: from PAXPR04MB8253.eurprd04.prod.outlook.com
- ([fe80::b853:e05b:c1e5:41b7]) by PAXPR04MB8253.eurprd04.prod.outlook.com
- ([fe80::b853:e05b:c1e5:41b7%5]) with mapi id 15.20.9542.009; Thu, 22 Jan 2026
- 09:21:28 +0000
-Date: Thu, 22 Jan 2026 11:21:23 +0200
-From: Ioana Ciornei <ioana.ciornei@nxp.com>
-To: Danilo Krummrich <dakr@kernel.org>
-Cc: gregkh@linuxfoundation.org, rafael@kernel.org, broonie@kernel.org, 
-	will@kernel.org, robin.murphy@arm.com, joro@8bytes.org, 
-	robin.clark@oss.qualcomm.com, hanguidong02@gmail.com, quic_c_gdjako@quicinc.com, 
-	dmitry.baryshkov@oss.qualcomm.com, driver-core@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org
-Subject: Re: [PATCH] iommu/arm-smmu-qcom: do not register driver in probe()
-Message-ID: <6oogrqe3n5sxtpdydjqo4ucwp7n3ipqoupxtekvzbnqd7dae3s@q22wc7fpbtya>
-References: <20260121141215.29658-1-dakr@kernel.org>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260121141215.29658-1-dakr@kernel.org>
-X-ClientProxiedBy: AS4P189CA0012.EURP189.PROD.OUTLOOK.COM
- (2603:10a6:20b:5d7::15) To PAXPR04MB8253.eurprd04.prod.outlook.com
- (2603:10a6:102:1bf::7)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9542.9; Thu, 22 Jan
+ 2026 10:06:55 +0000
+Received: from DS1PEPF00017098.namprd05.prod.outlook.com
+ (2603:10b6:5:1b3:cafe::5f) by DM6PR17CA0026.outlook.office365.com
+ (2603:10b6:5:1b3::39) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9542.10 via Frontend Transport; Thu,
+ 22 Jan 2026 10:06:53 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 198.47.23.195)
+ smtp.mailfrom=ti.com; dkim=none (message not signed) header.d=none;dmarc=pass
+ action=none header.from=ti.com;
+Received-SPF: Pass (protection.outlook.com: domain of ti.com designates
+ 198.47.23.195 as permitted sender) receiver=protection.outlook.com;
+ client-ip=198.47.23.195; helo=lewvzet201.ext.ti.com; pr=C
+Received: from lewvzet201.ext.ti.com (198.47.23.195) by
+ DS1PEPF00017098.mail.protection.outlook.com (10.167.18.102) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.9564.3 via Frontend Transport; Thu, 22 Jan 2026 10:06:55 +0000
+Received: from DLEE205.ent.ti.com (157.170.170.85) by lewvzet201.ext.ti.com
+ (10.4.14.104) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Thu, 22 Jan
+ 2026 04:06:54 -0600
+Received: from DLEE201.ent.ti.com (157.170.170.76) by DLEE205.ent.ti.com
+ (157.170.170.85) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Thu, 22 Jan
+ 2026 04:06:54 -0600
+Received: from lelvem-mr05.itg.ti.com (10.180.75.9) by DLEE201.ent.ti.com
+ (157.170.170.76) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
+ Transport; Thu, 22 Jan 2026 04:06:54 -0600
+Received: from [172.24.233.239] (uda0498651.dhcp.ti.com [172.24.233.239])
+	by lelvem-mr05.itg.ti.com (8.18.1/8.18.1) with ESMTP id 60MA6qpE388587;
+	Thu, 22 Jan 2026 04:06:53 -0600
+Message-ID: <5e866646-1a69-4765-bdd9-b0713ec64992@ti.com>
+Date: Thu, 22 Jan 2026 15:36:51 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] dma/pool: respect __GFP_NOWARN in
+ dma_alloc_from_pool()
+To: Robin Murphy <robin.murphy@arm.com>, <m.szyprowski@samsung.com>,
+	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
+CC: <vigneshr@ti.com>
+References: <20260112104749.4132641-1-s-adivi@ti.com>
+ <aa4565e7-af59-483a-a875-5bd970c9c923@arm.com>
+ <d27d0a15-36a6-4399-a904-b0163804298d@ti.com>
+ <3a8f32c8-a5e5-4e6c-8af1-dbf0ff22b966@arm.com>
+Content-Language: en-US
+From: Sai Sree Kartheek Adivi <s-adivi@ti.com>
+In-Reply-To: <3a8f32c8-a5e5-4e6c-8af1-dbf0ff22b966@arm.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-C2ProcessedOrg: 333ef613-75bf-4e12-a4b1-8e3623f5dcea
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PAXPR04MB8253:EE_|AMDPR04MB11605:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8ccfd776-58be-4b08-957e-08de59979f0c
+X-MS-TrafficTypeDiagnostic: DS1PEPF00017098:EE_|SA1PR10MB6391:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7e84e738-d811-4a05-d357-08de599df8d7
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|7416014|376014|366016|19092799006|7053199007;
+	BCL:0;ARA:13230040|376014|82310400026|36860700013|1800799024;
 X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?1LS3EjnX+w/X7pB7dZx1N7h3YwuMGJpQNYpfiLJQxyWOE73pXnqW+atd52wZ?=
- =?us-ascii?Q?cXxyjwj3jLNo4GsaWcveEXjomkejrr4i/KtrrgHlkvL6nbVZ0NY+Yl7ImB2G?=
- =?us-ascii?Q?zIjlths4b86LvwN71QK23nHmIgCLMCb+DVnkTz9c+5+Zntg8ii6K9CJ/qXMv?=
- =?us-ascii?Q?DX3jlRSS5fsbStr0eHxWhscwpMReXrxHlL308HLuvQYgCYwVNAMavaXF963R?=
- =?us-ascii?Q?cVnVeSHtNcYqKmHBHffXugCYm0uFOdLRvDDbUXLSJxii8e7ADJzrPipDEAEn?=
- =?us-ascii?Q?0JAt0LbDD9SeG2e+25mkIktSgetFFcXLrkl9/LgrGzsD6ni1LK5/Jsm6H9l0?=
- =?us-ascii?Q?oWuAQjyv+ZlPYTjjj14UvAhy5fxkjROKpINLuqU0zqiUHRuMcKICFBzWaGoi?=
- =?us-ascii?Q?OKqVs2ZxZmyiMyZnwSGItUm9SpQIW849OdUTa9gG/4dMeU94cS313kMMkRBi?=
- =?us-ascii?Q?yOrDFRr3VBRU2P2u0lDRQV/LvLQCVj2CcmhpFE2ikzdoLDf8dTRvKAb7p9/5?=
- =?us-ascii?Q?N2/v3aDtLcEEvlDuLf5+lfjLxCcl8xbyeWFD17MPNBksdc8X6JoqZldZQpwL?=
- =?us-ascii?Q?PVbDDn+tcXL6d9Id7aORLq626quzwRRgmIfvUfKnMFdGuMiiF1zbIISbEkwK?=
- =?us-ascii?Q?Wq6vVwhSGFnq03z7LwhR4Jderp9PXRVREOkUnUR51ZDZefKHNLqsecJFcQON?=
- =?us-ascii?Q?B7A60Mg+3eEokK7vq8oUy3aExAi9QD+bqd0KPKcaL/24+Ff426Cy/jtHlbOP?=
- =?us-ascii?Q?IRbJxQErLRVrfU5HKGro/b5K6VDTQcM2p7Fz1VW52o0zPiqwJOyAWHt7eJxj?=
- =?us-ascii?Q?qud5Yy81nUUHtkCLjTGwzJdsgP2IWL/8w/bkTsMVSRYqJXcr9nQhTJq3rDlf?=
- =?us-ascii?Q?iCui/j3HKjtxO98raE1+wQ5RDyR54C3NebFSMNo02ld0Ct0K6Tv8gJ2Fy3Jr?=
- =?us-ascii?Q?9uBCcqynFq9dLQJ/1A1gqwuH9sbF29zsVfE8+/koFHBm/ID2fMuH5ysBba3a?=
- =?us-ascii?Q?+ui8oz1sR2wOA9+tyoe1/0kEOqVH62W+drNJmVMFHKGMDCjAv1OLuse8TK7M?=
- =?us-ascii?Q?WGhV8HEfXWoa04/uaHYx7DpDiP35rFB/iY3FA6Lf/f3XNPTzSllbQ4KMimqM?=
- =?us-ascii?Q?kyR0EFHo0kJwQKLBHOEM47Nmdt/D4AIWsF3/UBbPDn6Gec8qgnElqHgOnXCe?=
- =?us-ascii?Q?1eyst1BS3Z6jwyjLxbHZXIvMFyIdxSR6LLz12J+4B8+ap5ACIbBWhkUlSgxx?=
- =?us-ascii?Q?w5jtq4dlGYbDRAX1lBjk/W/wg0fOUoi3fVmxAPsnONRgxv3nllubbKFRC4WX?=
- =?us-ascii?Q?4Ifh0+wgCIfPTtLvzDtIcqP5udeNPYk23qkTn2JTfawyrqqjT8XvI2jI50DM?=
- =?us-ascii?Q?yDE1RWEyG+G7Kg+eLEijF/x0nIPQC++SXa3Mrazho6QFQM9HzwrjZKdoLz6r?=
- =?us-ascii?Q?5DKI7+BB4TfAADlDQWtnGBzL68u1E3e9ok0rysqtAedIPOFdI7kxV9x1+Z6R?=
- =?us-ascii?Q?/cvT+6RHtisK3kNBIsSPqn2lthFKfONamoZkw4MrhJlOcHgnuNuCjowjhRVj?=
- =?us-ascii?Q?v/g4UTVcHMVkisoiODS9tn4B6QcXZZc2WHX5tiQ8?=
+	=?utf-8?B?YU9kUXB0SnFLMXU3YW9FU2Jhdno4eXZ5dEVJTmhxOHAzcnlrY0trYWwxeHpF?=
+ =?utf-8?B?dFBpU2N4TnlhbUhQSG15YjhhVkp2YURBWGUwVDRodlVYelhHR2NZTElMRnRT?=
+ =?utf-8?B?VjBudU5Qa0NiWTRsUVZ6L3JJYXRjemw4bTNoVXArdkZPWWJ1NlRDZ0xQbzd4?=
+ =?utf-8?B?K0RmMXdCRXFwZHhnMldhUS9IVi8vN3NKVmVDRHhpVnZ3NkRkU2lvTEd1cDR0?=
+ =?utf-8?B?ZTFiVXA5RlhpaW82SXlaQ0FkWkxtM0szcERuUU5NWHg5bmQyTkRobFAzQzJY?=
+ =?utf-8?B?U1ZiSG15UkcyMkVzSy9jL1pnak9HL05xOTJYcU1qRk5NMFEvelhrclg3dkJV?=
+ =?utf-8?B?K21FeEJzVTRISmNETFI1YjlXbC94clJubWlUUjVFY291SUVrVWVLcFBIZC8y?=
+ =?utf-8?B?ajhoOGVBMndtWk9MQTF5Q2pHYkRwU0ZoSmZYL0NtelcxZE1TeUMwUzc1ZWha?=
+ =?utf-8?B?ZGRSa3Y0ZExxMEVuUFhpRWRzclpJV0ZJSXV3Z1ZQVytLNU50YitnQVZxRDVt?=
+ =?utf-8?B?bEpZNjJYb3NtbWdUOE1Jbk5UeC8xL09VV0ZzK3JZanBwUW5RMzNMbU5OUEpa?=
+ =?utf-8?B?Q1pvSUlUWlpPK2Rhc1BQNGtiUzFrUXdXOEJETlBmZ2pQb2RJWGFJZmNIbExB?=
+ =?utf-8?B?UDJyNmQ2V2ZWUFhtVHc0NGNqRnYxbngvTWdwM3A1QU82MnJCdWdaYzNYd0Zq?=
+ =?utf-8?B?RE90TmdjWTRpT1BGbkt1ZnNjRXh0T3FpNG9qaSt1cnRLVGRRdDRrM3Q2azJv?=
+ =?utf-8?B?T1NJdXlNeGd1QkpVTVczcmd5bHFKclpHalFRYS9QcmtwRmVyZkQ2RDM3dDFt?=
+ =?utf-8?B?VHovM3VkM0ZqOWJTaVZDN0I2a3BtSUczTm53RTByZ3g0UzV5cHBhZXZPVjZG?=
+ =?utf-8?B?MUsyOXBVa05kTU9BL3lmbHFQb1pOd0s5TkdnVGR3OGJpd1h2VnZMVjNIWlg0?=
+ =?utf-8?B?OHJaNWNDclJqZUxuNVdaYTZCVUFmY0E4M3UwODRwd3VhenN4ZlZLTUxQbGNU?=
+ =?utf-8?B?djBIanVZVTBhZDhnaTdxVmUxOVk2WlVXaFIxdDdiWEIvdkhyaTZmdlE5UnVt?=
+ =?utf-8?B?dE5meThabzZlTXVrSksvK0FleElyOUtlTGI1ckd4TGRTYTdlUitwOHdqT1RI?=
+ =?utf-8?B?ajFNRDRPcW95UmFCVlRwbHViZkNsK3RraS9ITDdVd1VTc3VibVRDSXZjV2Rz?=
+ =?utf-8?B?SnNuYkZHV0VCU1RPNGJTcTVuOXFiTjZKc01wZVI4UGFWelczVDVrRytwaFJr?=
+ =?utf-8?B?aDY4bHZuUzdaYnVWN1JGSUR0bnFlOW1vdEhVSDc4ZnFIYzIyRnVaOHlSTmdV?=
+ =?utf-8?B?ay9wZjlNeDBsZXByRnZCNlZKaW85b2w2ZlVDK2N1RzMxZ21IbzNDem95SVNw?=
+ =?utf-8?B?VnBhenBYZTFZZFQ5YnRkTmtDN3orVW96VldIM1hqQUVFc0FTYnhNRzV5dWtQ?=
+ =?utf-8?B?Mjl0QmVzbmJGcWxQSlNBZkhUQTdjWFZLYlNmUmplQ1h2TTlVemxwQlk2bXhs?=
+ =?utf-8?B?VjRBV3FiYTNMVXJ0b1hjWVZIemxVZ0R5b3pBUlVSNFVRWTdCVHhhSkNLWDdk?=
+ =?utf-8?B?RHNsUWtBUFFVVkc5enluRU1wVVl2aDZvOC9xTXJIL3lKK1l3LzZQRGVMMEZI?=
+ =?utf-8?B?b1RpVnF6eEViU0laVzQySnFGalExaE84d2V2VkRqaFZNRFQxdjBucUYyR0Y4?=
+ =?utf-8?B?UjNyN3dXMGJvbCt5T1lFTnNjVTlINDhGY2NuWGpRMmFhMTNRZHFjNzE1NVRK?=
+ =?utf-8?B?N1B5NFZmMVpxTHlRcmpGMlQ1NGJTb1FPbWFxWGFMajFtZnorbUF3QWZSWEFq?=
+ =?utf-8?B?NmVtenJaK0RRcGFaOG9qdFBWRGFlNFIxa1lYNUlOUWtjaHp4dEpsTzlhWmlG?=
+ =?utf-8?B?UGE4T1VTQm5GdnNVU2NpQkR6SS83cU1hYy9DWDBqbFRLdy9BWXZKU1BMWjRp?=
+ =?utf-8?B?QlVXejNCYzBPb3FUdVR2VVYzTU44MXVXVDcxZVVxUEFmcjhLbEtYV1B3c2lQ?=
+ =?utf-8?B?K3plVS9oOC8wcExmSnVERXVVTitxWVJ4RUNHMlRCdDUrVG00Nm1yVzRiaHNX?=
+ =?utf-8?B?YXZMeWZVd2k3Z3p6SUVJZjBaZk9EV2MyMGg2ckwreCs2UWZaWmZMUVVqNS80?=
+ =?utf-8?B?KzlpU0JLWjVsQVNoOTl1THZybWFqczExVkpEYlh5SFBtaFBMZ2MwOHNCeDND?=
+ =?utf-8?B?RmJQaDBQMVZ0MmV1UnVodStRZkc0Q3dISFhQNGJhN0Fic1Vod3pyaWp5dmVK?=
+ =?utf-8?B?QmR3d2hSbXRWQXl0aE9JWVQ5VnRnPT0=?=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR04MB8253.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(376014)(366016)(19092799006)(7053199007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?tL62zeuJBlq7yl++LpbmWr+m6SeYO/zhQIUk8tncu0zCva3APqdkNmFORibY?=
- =?us-ascii?Q?TaV4/zSYo09UyDqoUvCsO53LStNzSsoXnwxzR5TVxwHVpuXy5m0J23X4tJPM?=
- =?us-ascii?Q?D1YgimGmEiILEuCefUdA3Myc0TDDbxh6CDqw2fRD8p7uGpwoYl2duMnp1Yzj?=
- =?us-ascii?Q?nVpartqXMLf2eDrWNqif5VRXdBGtVG9IIrwY9jbu3mqM/CGhvEgp89OOPhwo?=
- =?us-ascii?Q?cSfPEr0LrctWyxhMaPaumfF21eNCxHQyP5D6mK47Xz4kg6aACBSEIsqwPVuc?=
- =?us-ascii?Q?69irw6CaHUsIvdiWq0jbixFgS34LLvso8ueuSdW8slMfIzSqf8x702KW7cKl?=
- =?us-ascii?Q?NIiD9IO/kbr7iI9WqfDZM3qGMdlRetqBvDwuP9FyDP1/kuo6IpWKA3k0l02u?=
- =?us-ascii?Q?Toy9E/VRLuvuCdwPvC61GEsgOgJ00hX6xxlIFks7cnB+gE9VsDe3knEQ4SOx?=
- =?us-ascii?Q?2Bbfdw6gE72xGC1DrGpRGxdoOojgLDyqJyJqMu29ggAJikmV74KTspof/OpZ?=
- =?us-ascii?Q?L7/AFPUmzw4MeH9D0iVyQA3bXEdNIV7QJ2ZaYSFMVLZqmBnCt0SgG/tU3BAU?=
- =?us-ascii?Q?rugetNlFoYxBS1JF7VULlxPEE4j/XJOaa4CDNFSgOwnrs4yJw1kPmxhJ9b7E?=
- =?us-ascii?Q?hFNl7/dFIdkRtFu5Y4dVMpLCE3B5v8At5onlL50L/QQ2AQV//pklZEma567w?=
- =?us-ascii?Q?R5iXewl5iLk97IGGC7WPdS81wg54c5KWpKwqVUhWmx1MDFe1Ckfruec01Q3e?=
- =?us-ascii?Q?bdzSpE/EtTTZRQMqWRgXgPsG6atkp2X3GgVsGP8bcrOp/WKr/YDszUeBduY9?=
- =?us-ascii?Q?kUrTMpa0s1yv4UwB2PPpVk/H5b0U5aS4ixvdClWzc+oKXOB97yJiidMLTZWa?=
- =?us-ascii?Q?x9Xnp0KSdDUFbdeYSWqZp8dsInK+S829gJcd7XRp1P+g3fy6n4AirrTotH8H?=
- =?us-ascii?Q?BkYYQ7UjICTAlkdzyeXhnffJ7vCNeY4dhQIPtKKzj+mRIDiVpEdEs1tpEsmL?=
- =?us-ascii?Q?ehg9/6/7sqezVTilcHWykpTxD3SMzGNHgmVBFhe4P4HWRSDScB1SD6ELAteg?=
- =?us-ascii?Q?FWjVzvH2MRYIoX+OZ1PQvuGrY5ZvCZD+N6Z4Ws5+fuOYoQ3Q4LOfOIGCm+cJ?=
- =?us-ascii?Q?LOBLpP0s4ESdYbM3ef2oDCtIg9SBVd047WiVWTkeiQ6snjftOVB0Rkw0Mzyp?=
- =?us-ascii?Q?qthfqnnQGnz9eDtQw00i35PKMrTjLZNazIG0x2cVYDjDYw66ZwGSJsWDF6Uh?=
- =?us-ascii?Q?jNHSfjCrwH+8qVK/YRt5AJ8YN12/qiNL6qmqLVBbp7Q/Sfqu7k2CdzoXNZJ2?=
- =?us-ascii?Q?Un6E1LR7uAlH/CPwDJoVV4DrE3eUWM+0KjbE608j1L9fVZjxoF2PVZARLvfP?=
- =?us-ascii?Q?5n/t+/gaUehasI2d+53Mv81TCnxdmF/lmvNE5yS/OBkueg0kxtdGnK4cfFQo?=
- =?us-ascii?Q?/WN+PzOA2Gu1/UVp+Y4HxvhHLOgQ20TYRDiwEGLklsL/nRDolyesLb2hH72+?=
- =?us-ascii?Q?k6oRVWCjuYNz5lmYqsCw4AQVXBblhKqI+iUYuDADBcRwvOEJABjUy3Gbo8sn?=
- =?us-ascii?Q?Q81JTFdE0hkRwkPmkInbk2qtZXXUBa1pcBrAXnHWgTZDCO9hR5avm3lX9Llm?=
- =?us-ascii?Q?VtxJGMmMkjMGgEYfZGtTm/nXIweTiYuKcLHCujQponDsnLeLg5+ptwj/NmvG?=
- =?us-ascii?Q?/GRJZsw3nk/mF4zxCKp6Nnp8xt62AXhL/baIByfgN6sxMh5sQQaTSy530Ksl?=
- =?us-ascii?Q?MUP3Q0/Low=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8ccfd776-58be-4b08-957e-08de59979f0c
-X-MS-Exchange-CrossTenant-AuthSource: PAXPR04MB8253.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jan 2026 09:21:28.0494
+	CIP:198.47.23.195;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:lewvzet201.ext.ti.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(376014)(82310400026)(36860700013)(1800799024);DIR:OUT;SFP:1101;
+X-OriginatorOrg: ti.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jan 2026 10:06:55.1871
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: m1zjWD+aVVxcCgXSrPiLo/4wd7mQrWkQdu98A3v7e32c3PMRl/GRkE+o0ek2V9QnadyMBD57CQ3fFLwzA0wV5w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AMDPR04MB11605
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7e84e738-d811-4a05-d357-08de599df8d7
+X-MS-Exchange-CrossTenant-Id: e5b49634-450b-4709-8abb-1e2b19b982b7
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=e5b49634-450b-4709-8abb-1e2b19b982b7;Ip=[198.47.23.195];Helo=[lewvzet201.ext.ti.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DS1PEPF00017098.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR10MB6391
 
-On Wed, Jan 21, 2026 at 03:12:01PM +0100, Danilo Krummrich wrote:
-> Commit 0b4eeee2876f ("iommu/arm-smmu-qcom: Register the TBU driver in
-> qcom_smmu_impl_init") intended to also probe the TBU driver when
-> CONFIG_ARM_SMMU_QCOM_DEBUG is disabled, but also moved the corresponding
-> platform_driver_register() call into qcom_smmu_impl_init() which is
-> called from arm_smmu_device_probe().
-> 
-> However, it neither makes sense to register drivers from probe()
-> callbacks of other drivers, nor does the driver core allow registering
-> drivers with a device lock already being held.
-> 
-> The latter was revealed by commit dc23806a7c47 ("driver core: enforce
-> device_lock for driver_match_device()") leading to a deadlock condition
-> described in [1].
-> 
-> Additionally, it was noted by Robin that the current approach is
-> potentially racy with async probe [2].
-> 
-> Hence, fix this by registering the qcom_smmu_tbu_driver from
-> module_init(). Unfortunately, due to the vendoring of the driver, this
-> requires an indirection through arm-smmu-impl.c.
-> 
-> Reported-by: Mark Brown <broonie@kernel.org>
-> Closes: https://lore.kernel.org/lkml/7ae38e31-ef31-43ad-9106-7c76ea0e8596@sirena.org.uk/
-> Link: https://lore.kernel.org/lkml/DFU7CEPUSG9A.1KKGVW4HIPMSH@kernel.org/ [1]
-> Link: https://lore.kernel.org/lkml/0c0d3707-9ea5-44f9-88a1-a65c62e3df8d@arm.com/ [2]
-> Fixes: dc23806a7c47 ("driver core: enforce device_lock for driver_match_device()")
-> Fixes: 0b4eeee2876f ("iommu/arm-smmu-qcom: Register the TBU driver in qcom_smmu_impl_init")
-> Signed-off-by: Danilo Krummrich <dakr@kernel.org>
 
-The boot lockup was visible also on the NXP LX2160ARDB. This patch fixes
-it.
+On 13/01/26 20:32, Robin Murphy wrote:
+> On 2026-01-13 8:45 am, Adivi, Sai Sree Kartheek wrote:
+>>
+>>
+>> On 1/12/2026 7:43 PM, Robin Murphy wrote:
+>>> On 2026-01-12 10:47 am, Sai Sree Kartheek Adivi wrote:
+>>>> Currently, dma_alloc_from_pool() unconditionally warns and dumps a 
+>>>> stack
+>>>> trace when an allocation fails.
+>>>>
+>>>> This prevents callers from using the __GFP_NOWARN flag to suppress 
+>>>> error
+>>>> messages, breaking the expectation that this flag will silence
+>>>> allocation failure logs.
+>>>
+>>> This is not an "allocation failure" in that sense, though. It's not 
+>>> like the caller has opportunistically requested a large allocation, 
+>>> and is happy to try again with a smaller size - if someone has asked 
+>>> for an allocation in atomic context that can only be satisfied from 
+>>> an atomic pool, and there is no atomic pool at all, that points at 
+>>> something being more fundamentally wrong with the system, in a 
+>>> manner that the caller probably isn't expecting.
+>>>
+>>> Under what circumstances are you seeing the warning without things 
+>>> being totally broken anyway?
+>>
+>> Hi Robin,
+>>
+>> To clarify this specific circumstance: I am testing a dmaengine 
+>> driver using the in-kernel crypto test framework, which generates a 
+>> synthetic high load.
+>>
+>> The driver attempts to allocate descriptors in an atomic context 
+>> using GFP_NOWAIT. When the atomic pool is exhausted under this 
+>> stress, we want to return NULL silently so the driver can gracefully 
+>> handle the back pressure by either:
+>> 1. Falling back to non-DMA (PIO) mode, or
+>> 2. Triggering dmaengine_synchronize() to allow async threads to 
+>> actually free up used descriptors.
+>>
+>> Since the driver implements a valid fallback for this exhaustion, the 
+>> current unconditional WARN generates false alarms in the log.
+>>
+>> This change would align dma_pool behavior with the core page 
+>> allocator. For example, warn_alloc() in mm/page_alloc.c explicitly 
+>> checks for __GFP_NOWARN to allow callers to suppress failure messages 
+>> when they have a recovery path.
+>
+> Oof, apologies - looking again at the code in context, now I finally 
+> see what the bug really is: this warning still serves its original 
+> purpose, but due to the refactoring in 9420139f516d indeed it's *also* 
+> ended up in the path where the correct pool was found but was simply 
+> unable to satisfy the allocation. I agree that's not right - we never 
+> used to warn on an actual gen_pool_alloc() failure either way, so 
+> whether we have a suppressible (and more appropriately worded) warning 
+> for that condition I'm not too fussed. However, what I don't want to 
+> do is go too far the other way and lose the intended message when the 
+> requested allocation flags could *never* be satisfied by the current 
+> system configuration.
+>
+> What distracted me is that I think the latter can be falsely reported 
+> for __GFP_DMA32 on a system where CONFIG_ZONE_DMA32 is enabled, but 
+> all the memory is in ZONE_DMA, so I was wondering whether your system 
+> was in that situation. The other series I sent should fix that.
+No our system doesn't use __GFP_DMA32.
+>
+>> However if you feel the atomic pool should strictly not support 
+>> silent failures, the alternative would be for the driver to manually 
+>> track its own usage against the pool size and stop allocating before 
+>> hitting the limit. We prefer the __GFP_NOWARN approach as it avoids 
+>> duplicating resource tracking logic in the driver.
+>
+> Eww, no, that would be far worse :) Just untangling the "failed to 
+> allocate from a valid pool" condition from the "failed to find an 
+> appropriate pool at all" one in this code is fine!
 
-Tested-by: Ioana Ciornei <ioana.ciornei@nxp.com> #LX2160ARDB
+Cool. What do you think of the below snippet. I'll post a v3 based on 
+your feedback.
 
+struct page *dma_alloc_from_pool(struct device *dev, size_t size,
+  {
+         struct gen_pool *pool = NULL;
+         struct page *page;
++       bool pool_found = false;
+
+         while ((pool = dma_guess_pool(pool, gfp))) {
++               pool_found = true;
+                 page = __dma_alloc_from_pool(dev, size, pool, cpu_addr,
+                                              phys_addr_ok);
+                 if (page)
+                         return page;
+         }
+
+-       WARN(1, "Failed to get suitable pool for %s\n", dev_name(dev));
++       if (pool_found)
++               WARN(!(gfp & __GFP_NOWARN), "DMA pool exhausted for 
+%s\n", dev_name(dev));
++ else
++               WARN(1, "Failed to get suitable pool for %s\n", 
+dev_name(dev));
+         return NULL;
+  }
+
+Thanks,
+Kartheek.
+
+>
+> Thanks,
+> Robin.
