@@ -1,114 +1,146 @@
-Received: from mail-qv1-f48.google.com (mail-qv1-f48.google.com [209.85.219.48])
+Received: from mail-qv1-f43.google.com (mail-qv1-f43.google.com [209.85.219.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B5AC354AD6
-	for <iommu@lists.linux.dev>; Thu, 22 Jan 2026 23:37:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C94D3D9050
+	for <iommu@lists.linux.dev>; Thu, 22 Jan 2026 23:44:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769125068; cv=none; b=UDbRyLKdU0xlse7DufYJD06AXU+VfO7VX7xebfehCahUBEDlOUKVj42aE6qBdMNOCr1ZlH2B/TUi0XUKay9u8ZcSWQ9RGYYpZJRxBRI1is9yrvCTmsm3n/KKgmUQ08ttenWcWj/N28Nb+3Ze0lHFFDKu+wzb5NPuFgT0iiszN6g=
+	t=1769125456; cv=none; b=hHeL7B1uzj0bkV4zdb4pZFL9qcBFvUXV+K7cq9DYgwCBMWE0be5z57Lh9/J8Jo04amkUNgGeo7BlDEtUqpNfSLkcdwLnZnajA+orIvbf4uNsmAjLfpnnBtYim2IkrMljn1fsu3CE8JkIIrwQs12fgbYsFcmAY3Ujt3JJehJu4iU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769125068; c=relaxed/simple;
-	bh=6XGtJQywpqmosyYrCosqc3I9CRVHTZWO+/CMBFEch+g=;
+	s=arc-20240116; t=1769125456; c=relaxed/simple;
+	bh=tD5f+h84ofqnK09ZH5j1acZDqC2EpodfEzB0D4Jj1p0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=sXPrZGDTGANkuT8z+IpxNhZ0PjVlmeY9Lf1n7NRAtzvojxqukZ8KzsL7Ncd7bs5SIvvBcm8cqI8tmgpDxnvJo4T1d/Rvevth8W566jWLXetb4rlQ9Q14aO/PDo5WuR7fJ44QJ0mwwkD3M/Rq1GLamo+d6DgQbh5+sH6p/jKrvq4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=ck7Zx8X9; arc=none smtp.client-ip=209.85.219.48
+	 Content-Type:Content-Disposition:In-Reply-To; b=ZoFz3xiigg4CsFVy8+x+qxowMOJRh+U27mT+/oca1A5tH+u6iEVs0NRJL5l3/XTCmikminubg8lURChv/e0uJ7OvB3D7pIx8Vn9vxgknqikwKHQN51sIjxNoaLbQunk+X9kdaGISDafQVNQuDom8Ddj5ARGJqAvfGrduYMkjMJY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=QaWjTl2G; arc=none smtp.client-ip=209.85.219.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="ck7Zx8X9"
-Received: by mail-qv1-f48.google.com with SMTP id 6a1803df08f44-8947e17968eso17558426d6.0
-        for <iommu@lists.linux.dev>; Thu, 22 Jan 2026 15:37:43 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="QaWjTl2G"
+Received: by mail-qv1-f43.google.com with SMTP id 6a1803df08f44-894703956b8so24751206d6.1
+        for <iommu@lists.linux.dev>; Thu, 22 Jan 2026 15:44:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1769125061; x=1769729861; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=FfXBu7LAWDQnsgm7Hb+Sdya9B9wy+rjzXCa0xANmbwc=;
-        b=ck7Zx8X9fgp+osppFoQJEjXo3VjnKXmFVbK5EixdSz08v+MPeEyy6prKl7ePe7E4xq
-         74WIsOn/0L1d7rNOFrQ5pBe7oSpoCbHrGxlFeeU3W5SjjI+Mitk58DRIkdE2wN+WioDZ
-         kn+JDILzo99iHmxQIAVr1dtEN1IuaiO0fBajrPoeFYc3Tb7kCn4Dlw7s2lny+bi+PK0y
-         GPGZIM3+bQKkLXAroHkThyXBlYk6X33GLNVbk71pmGP+2w0iskdCP+MCUjC7rd0KQ/xH
-         lL13ny5848v0ilrrW6M5Bl93XEtj0ODQS8qTiD74JPUczo0qV8RQgLpCBPQML0ZAO5NJ
-         goCA==
+        d=ziepe.ca; s=google; t=1769125446; x=1769730246; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=Udk1T2MTSGRhmMtQ3jtc9BpxDT02wAcqHYT9NWJE+U4=;
+        b=QaWjTl2GNlmqM7AA3iQDtHNOQnxRwDeNgeisoyFAlSa41uKV2oCHE/C1SKVqa3ldRN
+         d3K8LsS/SCL3rKF7PgttV2xHEFzVvoj1BC+WJi+6X0m0FpVyl7eGHyRTn3VWJ7+MBeTe
+         EVQ+lXtrtPEj/CFjy8uKnfwZbgE5VnUM5bL6la2BbzbkGDWORjHQjKeQ5RCcNbPTfePl
+         35CiTTZwGuHCTuZ6I8Ugw4sN1ku1F63ualVuEaIZlBTa6alhG+mELDueTI27/HFVFzSj
+         vwiT4UexK9DxcwDTmeQVJH/IU0/mF8MApqCT4CE3Gv3f2hJN6Q4SVHWaMTtVkhjOAvhc
+         gocg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769125061; x=1769729861;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=FfXBu7LAWDQnsgm7Hb+Sdya9B9wy+rjzXCa0xANmbwc=;
-        b=a6Ir+p8qoB/GIiIb6x4/WbHV5fDoQyTUORMaip9C09pcsLMT4zex3+f1JFwrxwBd3A
-         t4fOTQMAQraeUkZbLuuwYDZBMyEbrH0512OFkOSKhCx9a+SMj2SXG0I6Nzw+HftjJ0w4
-         /dn/XLCA/B/5kXIuX+Xgwaeijr+9oFO7kThGwZ5GgcoWp7Ypy3jK+YQgA8PT9FEHH186
-         N/N95qVezYT0xXZM46z7H72xjrKzB98yY54zYYMcCfqG1P1VmpzUMHDZp2eDtmUhOXqV
-         qJUxMKRcF/AOJr3Nfvp2pqY8poRq1T6nKrfjiEODBf6hOvjMdKER9aQ8iAyIzP/3wczE
-         HKZw==
-X-Forwarded-Encrypted: i=1; AJvYcCVddQEhcqWJ3JH/bjnC6JGi5w05isO2Mb9D4Dij1IvDDNB6wK5+TvN8fzDikB3YoQQ45jOa7g==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzIYH9VycAckohV4ZW1fV0yRWOd3jUS627NEmJv8nebEF81AQeh
-	jh4/gKieJuydqcn5c7PwjdcUYcTuQLUqPPphruI5Rc1sicjoOT3Tufs5ItyuawtIUjI=
-X-Gm-Gg: AZuq6aJOKSzrgkKJZLH2KZLc8xMCvzMWTAMgxLNj9CeM3CJg9Lt9R89H/XFT14Ma9yQ
-	E4f5afbuoSI48+WNRJiX9TqHmkRrXUWUJMjjCYtyJ9UT2vsU7zDqbPlULNUKaiJipWavPUkeFT5
-	YgknDNVejTpfMbpISu09wGqQURIYrDk/Ee+pLU3fRRG+HzRLlldXVO+IXZvfOH0y1WovHMPxiIQ
-	Zt5Tn/vhsVo0FXiEBGqcWJtw3uuODR3cSTDTdgL9oriOsTVag+VMAB9JemR6ulLqxcy4UyVOUvP
-	JvZvHodPQ4g9y/1EyIMXgCWjwzTyMrPkrD/+MbDTE5zZ9HMpabIiyvkaxt71WJo9FFYkce5Cu7t
-	rh3/ebRqC8Ulo11OIVKE1i2owY9k/18Gfq8wJ/OI7bZNk7qAqZutaELgnR3c9e8+8SAmutXfHwT
-	wE1WvTJKF3/+nKZN3qAXwkC5YzqBYKuLEXdzXlLvBpbreHD0H9vSHt3XPEKwiKQXd/wIA=
-X-Received: by 2002:a05:6214:c2f:b0:88a:2fd1:b582 with SMTP id 6a1803df08f44-8949022bd07mr17695716d6.47.1769125061444;
-        Thu, 22 Jan 2026 15:37:41 -0800 (PST)
+        d=1e100.net; s=20230601; t=1769125446; x=1769730246;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Udk1T2MTSGRhmMtQ3jtc9BpxDT02wAcqHYT9NWJE+U4=;
+        b=B/B9fV6+1UncvmWucvAxuNK1GyLU/RAxu5wuhBpb1y3wm7V56uUWXHbTIX0I48mNWs
+         BJLzJaCp31ALGCy2zloGizoCyJfzYtIsfE/sayA/ZrvVbmQ1iXHFG2PXJUkNLXbGllex
+         hLn7hbtYIv1sk3tXKkRJjtWWCDncPo9mY6Q4i1XfqdDqDNIRrU443mvtT4tGPSBs32o/
+         FlXJd6dchqKuHOtfTO0jCdbPFErpf1XBeGH998WPLmdyipTgJfnwuVMFm60deikJGxb/
+         WrhkqmxIdYTV5C1e9JpRJI/voyw5Mf4b1NgaiTmehAolaTg634cFEdl5SW6lp3zeNpKY
+         DR5g==
+X-Forwarded-Encrypted: i=1; AJvYcCXEwUUKVgD0ICiG88cZ9pXoqwey43+AGAuo+FRKd9U75LhMwji12YQToWge9Hxgbi7vBm0F8A==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzVztxl4PasFTXvIIY2zKo6fX6YA8xsOezyrjdyKMNp8aZKgZ/J
+	GZINMaGYnznW3QzYjKhwsjiirUpPpVXslEws6yDps+17buhptqeBPvTBtVcE106/0N8=
+X-Gm-Gg: AZuq6aL2CHLrxg3D/7hMkIIdNwvBRBnPvI1KZSZhfma7PHJwbGSpZYrcMa3IGpobcIX
+	S1QzGyETQQ9Nkul94AwgLxNWBVbC2gVxJW9VnFq70Xmdbo+ihq1gVQ1ar1Fvi+jdyV8m8rVh/u6
+	u/34qRzEmq6OmeqgNrYk5gdKnUA0X8iOa85JD3DBOj2XuIJqZHqaXkDbveF2duJwBayudfcPafv
+	QFNhSnnxhL4kMtFI8gDwwbLHBE8vIAgu03RqU8VTNlMsetDFXaor1wBoseVL4aeg3KKip77RTCt
+	8NFimEVi1zKgltfWGVlSZMibX1APC2X6CfkpnWjwGlA3uH0Vyr+YZ4RYaAbkQnPHcCy4wsr9hjN
+	ybca5lophaO9Tl0MAoq7MARVrg2sbH8FnV9a6lwIpr1jckCeIPFUV4rEzX8qYRp43uzXB7pp/xv
+	q121VEHg58eSuDqJB+mXlWbakbbSUI1HT6daAsfYRnNE1tTMs7/Q4XEy9uOTnSj+l2ZJg=
+X-Received: by 2002:a05:6214:2269:b0:894:6530:efd1 with SMTP id 6a1803df08f44-894901ac85dmr20677696d6.19.1769125446269;
+        Thu, 22 Jan 2026 15:44:06 -0800 (PST)
 Received: from ziepe.ca (hlfxns017vw-142-162-112-119.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.112.119])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-89491821e98sm4770066d6.9.2026.01.22.15.37.40
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-8c6e3854a6csm44128885a.41.2026.01.22.15.44.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Jan 2026 15:37:40 -0800 (PST)
+        Thu, 22 Jan 2026 15:44:05 -0800 (PST)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1vj4FA-00000006gPw-1bNk;
-	Thu, 22 Jan 2026 19:37:40 -0400
-Date: Thu, 22 Jan 2026 19:37:40 -0400
+	id 1vj4LM-00000006gRo-0Lke;
+	Thu, 22 Jan 2026 19:44:04 -0400
+Date: Thu, 22 Jan 2026 19:44:04 -0400
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Nathan Chancellor <nathan@kernel.org>
-Cc: Joerg Roedel <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+To: Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>
+Cc: Leon Romanovsky <leon@kernel.org>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Alex Deucher <alexander.deucher@amd.com>,
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+	Gerd Hoffmann <kraxel@redhat.com>,
+	Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+	Gurchetan Singh <gurchetansingh@chromium.org>,
+	Chia-I Wu <olvaffe@gmail.com>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	Lucas De Marchi <lucas.demarchi@intel.com>,
+	Thomas =?utf-8?Q?Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
+	Rodrigo Vivi <rodrigo.vivi@intel.com>,
+	Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Vasant Hegde <vasant.hegde@amd.com>,
-	Nicolin Chen <nicolinc@nvidia.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommu/amd: Fix type of type parameter to
- amd_iommufd_hw_info()
-Message-ID: <20260122233740.GA1589888@ziepe.ca>
-References: <20260122-amd-iommufd-fix-wifpts-v1-1-8ee604527875@kernel.org>
+	Felix Kuehling <Felix.Kuehling@amd.com>,
+	Alex Williamson <alex@shazbot.org>,
+	Ankit Agrawal <ankita@nvidia.com>,
+	Vivek Kasireddy <vivek.kasireddy@intel.com>,
+	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org,
+	amd-gfx@lists.freedesktop.org, virtualization@lists.linux.dev,
+	intel-xe@lists.freedesktop.org, linux-rdma@vger.kernel.org,
+	iommu@lists.linux.dev, kvm@vger.kernel.org
+Subject: Re: [PATCH v3 6/7] vfio: Wait for dma-buf invalidation to complete
+Message-ID: <20260122234404.GB1589888@ziepe.ca>
+References: <20260120-dmabuf-revoke-v3-0-b7e0b07b8214@nvidia.com>
+ <20260120-dmabuf-revoke-v3-6-b7e0b07b8214@nvidia.com>
+ <b129f0c1-b61e-4efb-9e25-d8cdadaca1b3@amd.com>
+ <20260121133146.GY961572@ziepe.ca>
+ <b88b500c-bacc-483d-9d1a-725d4158302a@amd.com>
+ <20260121160140.GF961572@ziepe.ca>
+ <a1c55bd8-9891-4064-83fe-ac56141e586f@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260122-amd-iommufd-fix-wifpts-v1-1-8ee604527875@kernel.org>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <a1c55bd8-9891-4064-83fe-ac56141e586f@amd.com>
 
-On Thu, Jan 22, 2026 at 02:42:38PM -0700, Nathan Chancellor wrote:
-> When building with -Wincompatible-function-pointer-types-strict, a
-> warning designed to catch kernel control flow integrity (kCFI) issues at
-> build time, there is an instance around amd_iommufd_hw_info():
+On Thu, Jan 22, 2026 at 12:32:03PM +0100, Christian König wrote:
+> >> What roughly happens is that each DMA-buf mapping through a couple
+> >> of hoops keeps a reference on the device, so even after a hotplug
+> >> event the device can only fully go away after all housekeeping
+> >> structures are destroyed and buffers freed.
+> > 
+> > A simple reference on the device means nothing for these kinds of
+> > questions. It does not stop unloading and reloading a driver.
 > 
->   drivers/iommu/amd/iommu.c:3141:13: error: incompatible function pointer types initializing 'void *(*)(struct device *, u32 *, enum iommu_hw_info_type *)' (aka 'void *(*)(struct device *, unsigned int *, enum iommu_hw_info_type *)') with an expression of type 'void *(struct device *, u32 *, u32 *)' (aka 'void *(struct device *, unsigned int *, unsigned int *)') [-Werror,-Wincompatible-function-pointer-types-strict]
->    3141 |         .hw_info = amd_iommufd_hw_info,
->         |                    ^~~~~~~~~~~~~~~~~~~
+> Well as far as I know it stops the PCIe address space from being re-used.
 > 
-> While 'u32 *' and 'enum iommu_hw_info_type *' are ABI compatible, hence
-> no regular warning from -Wincompatible-function-pointer-types, the
-> mismatch will trigger a kCFI violation when amd_iommufd_hw_info() is
-> called indirectly.
-> 
-> Update the type parameter of amd_iommufd_hw_info() to be
-> 'enum iommu_hw_info_type *' to match the prototype in
-> 'struct iommu_ops', clearing up the warning and kCFI violation.
-> 
-> Fixes: 7d8b06ecc45b ("iommu/amd: Add support for hw_info for iommu capability query")
-> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-> ---
->  drivers/iommu/amd/iommufd.c | 2 +-
->  drivers/iommu/amd/iommufd.h | 2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
+> So when you do an "echo 1 > remove" and then an re-scan on the
+> upstream bridge that works, but you get different addresses for your
+> MMIO BARs!
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com
+That's pretty a niche scenario.. Most people don't rescan their PCI
+bus. If you just do rmmod/insmod then it will be re-used, there is no
+rescan to move the MMIO around on that case.
+
+> Oh, well I never looked to deeply into that.
+> 
+> As far as I know it doesn't block, but rather the last drm_dev_put()
+> just cleans things up.
+> 
+> And we have a CI test system which exercises that stuff over and
+> over again because we have a big customer depending on that.
+
+I doubt a CI would detect a UAF like we are discussing here..
+
+Connect a RDMA pinned importer. Do rmmod. If rmmod doesn't hang the
+driver has a UAF on some RAS cases. Not great, but is unlikely to
+actually trouble any real user.
 
 Jason
