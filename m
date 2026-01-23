@@ -1,66 +1,32 @@
-Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A20927B32B
-	for <iommu@lists.linux.dev>; Fri, 23 Jan 2026 18:11:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.51
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 55A652741AB
+	for <iommu@lists.linux.dev>; Fri, 23 Jan 2026 18:23:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769191863; cv=none; b=gN6IwVe14kegvafvzwyyVatm20X8+Z4gpgFa0xyBOHfkgL3SlWkZHW4p2e3vJhtYsEvP8KdNp1qM8vFn1axrw1VrZZCurt6Q8qdLqOmFVWfh5A2MdQ7HGNMcBLBRmEEf7iz+zR5Q0KtFALYAvJxjdOtSJCIXHN+gC46vR1Kn+kY=
+	t=1769192594; cv=none; b=LT215hlt8bNmEtcir36Xyx5GpuPKNm8YVxPuP7l96kvAQ5piC1pJV6e0tCmbVJPFKlk+P15NFrAprpQi6/O+pueUdnMriflUjV62k+BwdMD6IOE5ObOIfmWLHUVDF0KM67RN/xQd1kEyhlqUP4EW1Lg1bfIkn4l9GV3Uv3Xt1jU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769191863; c=relaxed/simple;
-	bh=z6+4XFmAM+9E9nMdkW7Ivutg05qfOcI/VIcnBRViQZ0=;
+	s=arc-20240116; t=1769192594; c=relaxed/simple;
+	bh=MEyY8GOBWUJDY8rEF5Zd4HVF4yIttXDYJoRqTvoySqM=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=e9sy8UaspGyJga5SSF4yMwk6gkQbYpuXUtNJwfezpmXqf7dszOlmnOTXMYVMwFTaDhA2dqSXzaIkn1aZWjsbSVNDMcSxsgL/2W3VMo3I3XmZlLSQmiuXgISdepJgYW2CCWVb+CiDiKteQj1cIZCBnnVQmR7L73mFIYzkyFNd/wI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Kkhf1wnE; arc=none smtp.client-ip=209.85.221.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	 In-Reply-To:Content-Type; b=BEgFQ6hBG1z4FUcvETJjiHfxw4/MZMv6tgUmebu4QroOCrP1rB5zTIsW+Kq1BPN4swAfBEYDAjrGedd09XkrlOnCFB8xa1JkEDMAo5y4XfiYITYkpghdNffUy0EFClF88CemZWVXubrt/uXZLpIqrRCXzb6XMnIvb5/q6IUMxpQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=QjSCNtxz; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Kkhf1wnE"
-Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-42fbc305914so2192263f8f.0
-        for <iommu@lists.linux.dev>; Fri, 23 Jan 2026 10:11:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1769191860; x=1769796660; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=J0KMpHNofunhigiSe2e7em+jTqmhfyGJoueS1EQ8l48=;
-        b=Kkhf1wnEIVKwGvZDJY0qtlsw+QwzwnBkBnkbKM7RyLwVw6v0hFmtdWMe5Oc162sEEv
-         jD7RxeaeYKctbO/d2QoA9ZK8E6Qz/dRrqg5lRFJ6z/547vnFWecmLW4jBGCI6sEF56ie
-         cn6J528RNEHtF1nB6nMl/I8MjHkGtBdAFqlMP+VYC60EGuMEADqkh8RtCb8JULHyKc2h
-         ECVxvDr9UG6Zp+Z1YsuIz1hqlVUmyksNl9bIYWGT7B0y5ELdLNCfQ18HfLOts/bGXboJ
-         1bASwYVn91oLuZ3KYBG1OVLmbuF7gxQoPtrJPUPjyXv19GuxP2iRsnaTRzYoD3vvg/93
-         cX+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769191860; x=1769796660;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=J0KMpHNofunhigiSe2e7em+jTqmhfyGJoueS1EQ8l48=;
-        b=eo1CHBSrrMDJZt+XbIyoEerPaeEMuuCkJdtGBRNOcf4z8gVCtUhvOzDx4m9zbwgXZj
-         gQhKZJjXPdhiAR8WKih6JW2mWsxP8DXxeFqxQcozmp47lwqcQMLSfcXTIO99I8TYIlRo
-         Lc7UcTz+SwYSaH8Wp3xBhp061n+EjCGi4OyTETTYGnSIR0Xj3MFMRtCwsUIkpw74MlCE
-         F959Kulb3GbEV7bKXcQLpCxenXcdU2X6Q7N/+I7bw5hCsiWoiENmirYiJj27zv5oUTl8
-         rQ0GIcTYib087hNsCTqglRwDQpR7kK0CBtTSwv+HTtlNzcdPmS0YHnOUyNdBft5gqVdK
-         v+7w==
-X-Forwarded-Encrypted: i=1; AJvYcCXnWgu+3ffeRlxmNLoqWWC0ysdBpjKLqX0kaYlpt1z7ufpk0Wgux31rAlZxjCoFDeLg4/VNRQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwX92xH1qOa91ZF81B7CyHK5TPLSKSGYqzUQ3d2DuzhwYE3sdOU
-	Eqrt240rqbyvQ53wWh0uVfm3h3xWesaTrR9vtGz3/JvfFy3SVlPQubZj
-X-Gm-Gg: AZuq6aL1g/V0xJAFQAL+pVfX5nuKVTBYzsAV/mvU8NKtNQ93zr7ufcCYeJsgLPKKKTS
-	p75D/+gDCSDRvv5Bl5G4D2xR2KHVePPCZnrnyk4cJoCbHAFW8JujtTM3c0W2tVflnsSYDD8Zhgq
-	yloL2k++0smW1Y8X5YnSA9txXpg6VktLg9xa+kdASEGJahXslaAUhl2v6Abo98uwCvxsl97fO6e
-	g4r1zHy3j+vrFoJ4vq+XvgBadrHq5tNfKQVru2dBt3Zs/oEQTLEQ5IirRqaV6kd2NxkvFAtyNdo
-	CNZnAEqZWzn5In3zAP+6F9fklxowad9Sq+hNhmW+Cl7uhfIVlLSeMUPWN0IZc1kIWGiV+pFlTly
-	Y8ZZXDnKoikeXbbAoVE2m6+XAfP2qIiLz5PVtEPKJCLMrGyB+eKnsGque3/4G35qlAuxsTCb6KZ
-	ROX94BuS3ZidfCvBT3d+cbGNWe3A==
-X-Received: by 2002:a05:6000:200f:b0:435:ae10:cf84 with SMTP id ffacd0b85a97d-435b15887fcmr7722618f8f.5.1769191860167;
-        Fri, 23 Jan 2026 10:11:00 -0800 (PST)
-Received: from ?IPV6:2001:871:22a:cfb5::18a2? ([2001:871:22a:cfb5::18a2])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-435b1f7b4d8sm8059422f8f.38.2026.01.23.10.10.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 23 Jan 2026 10:10:59 -0800 (PST)
-Message-ID: <ab9103dd-c1c6-473b-9dd7-87a3d5e203c9@gmail.com>
-Date: Fri, 23 Jan 2026 19:10:58 +0100
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="QjSCNtxz"
+Received: from [100.65.200.94] (unknown [20.236.11.185])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 1B6BA20B7167;
+	Fri, 23 Jan 2026 10:23:05 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 1B6BA20B7167
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1769192585;
+	bh=oEGl/tnoimH8y8JY83vb7PwQ86H3tjg5VxpV1bbsBJ8=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=QjSCNtxzEhRg6U/ueRjHRaw98P/cSWWNtXZUsYDH4gc80MbbvPU+CmjXRiqGgAABx
+	 eS3DvI7hcfflcEy7gCrCztVGp4KlDCM3MgwSjQUThwsnGKn1EN/XeharNXH43mpcrD
+	 LKzop3RyFjrOANn6ow1GGzaeYELgTRK66NHfiu8o=
+Message-ID: <420bf947-2dc5-4a6b-9766-0eff4d1e1618@linux.microsoft.com>
+Date: Fri, 23 Jan 2026 10:23:04 -0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -68,43 +34,120 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [REGRESSION] qcom: iommu: nullpointer dereference on boot on
- apq8064
-To: Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
- Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
- Rob Clark <robin.clark@oss.qualcomm.com>,
- Matti Vaittinen <mazziesaccount@gmail.com>, iommu@lists.linux.dev,
- linux-arm-msm@vger.kernel.org, Rudraksha Gupta <guptarud@gmail.com>
-References: <569d7de2-cfcd-4d28-8bbf-14a0179f665e@gmail.com>
- <20260105180213.GG125261@ziepe.ca>
- <9a86120e-c0be-4ed5-a3de-cc7f164da154@arm.com>
- <5cab0953-c2a3-4baa-af91-e9519afef092@gmail.com>
- <da3fcb7f-4ac4-41c0-b3ad-055c6766fd5c@arm.com>
-Content-Language: en-US, de-DE
-From: Christian Schrefl <chrisi.schrefl@gmail.com>
-In-Reply-To: <da3fcb7f-4ac4-41c0-b3ad-055c6766fd5c@arm.com>
+Subject: Re: [PATCH v0 04/15] mshv: Provide a way to get partition id if
+ running in a VMM process
+To: Mukesh R <mrathor@linux.microsoft.com>, linux-kernel@vger.kernel.org,
+ linux-hyperv@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev, linux-pci@vger.kernel.org, linux-arch@vger.kernel.org
+Cc: kys@microsoft.com, haiyangz@microsoft.com, wei.liu@kernel.org,
+ decui@microsoft.com, longli@microsoft.com, catalin.marinas@arm.com,
+ will@kernel.org, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+ dave.hansen@linux.intel.com, hpa@zytor.com, joro@8bytes.org,
+ lpieralisi@kernel.org, kwilczynski@kernel.org, mani@kernel.org,
+ robh@kernel.org, bhelgaas@google.com, arnd@arndb.de, mhklinux@outlook.com,
+ romank@linux.microsoft.com
+References: <20260120064230.3602565-1-mrathor@linux.microsoft.com>
+ <20260120064230.3602565-5-mrathor@linux.microsoft.com>
+Content-Language: en-US
+From: Nuno Das Neves <nunodasneves@linux.microsoft.com>
+In-Reply-To: <20260120064230.3602565-5-mrathor@linux.microsoft.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-Hi Robin
-
-On 1/23/26 7:02 PM, Robin Murphy wrote:
-> On 2026-01-15 7:02 pm, Christian Schrefl wrote:
->> Hi Robin,
->>
->> Sorry for taking so long until I got to trying it out.
->> The patch fixes the crash!
+On 1/19/2026 10:42 PM, Mukesh R wrote:
+> From: Mukesh Rathor <mrathor@linux.microsoft.com>
 > 
-> Bah, in the process of writing this up properly I've realised that although it fixes the crash, I think it breaks the multi-IOMMU functionality, as .add_device will only be called for the first IOMMU instance, whereas the current code is cheekily abusing .of_xlate to link the device to both instances. And in fact that implies the existing code is yet more buggy, as it seems it will leak and reallocate dev_iommu_priv the first time it looks up the second instance (whose ctx_list will be empty), thus it's only working at all because in all cases the DT happens to list all the IDs for one instance before all for the other, and both use an identical set of ID values. Oh dear...
+> Many PCI passthru related hypercalls require partition id of the target
+> guest. Guests are actually managed by MSHV driver and the partition id
+> is only maintained there. Add a field in the partition struct in MSHV
+> driver to save the tgid of the VMM process creating the partition,
+> and add a function there to retrieve partition id if valid VMM tgid.
+> 
+> Signed-off-by: Mukesh Rathor <mrathor@linux.microsoft.com>
+> ---
+>  drivers/hv/mshv_root.h         |  1 +
+>  drivers/hv/mshv_root_main.c    | 35 +++++++++++++++++++++++++++-------
+>  include/asm-generic/mshyperv.h |  1 +
+>  3 files changed, 30 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/hv/mshv_root.h b/drivers/hv/mshv_root.h
+> index 3c1d88b36741..c3753b009fd8 100644
+> --- a/drivers/hv/mshv_root.h
+> +++ b/drivers/hv/mshv_root.h
+> @@ -134,6 +134,7 @@ struct mshv_partition {
+>  
+>  	struct mshv_girq_routing_table __rcu *pt_girq_tbl;
+>  	u64 isolation_type;
+> +	pid_t pt_vmm_tgid;
+>  	bool import_completed;
+>  	bool pt_initialized;
+>  };
+> diff --git a/drivers/hv/mshv_root_main.c b/drivers/hv/mshv_root_main.c
+> index 1134a82c7881..83c7bad269a0 100644
+> --- a/drivers/hv/mshv_root_main.c
+> +++ b/drivers/hv/mshv_root_main.c
+> @@ -1823,6 +1823,20 @@ mshv_partition_release(struct inode *inode, struct file *filp)
+>  	return 0;
+>  }
+>  
+> +/* Given a process tgid, return partition id if it is a VMM process */
+> +u64 mshv_pid_to_partid(pid_t tgid)
+> +{
+> +	struct mshv_partition *pt;
+> +	int i;
+> +
+> +	hash_for_each_rcu(mshv_root.pt_htable, i, pt, pt_hnode)
+> +		if (pt->pt_vmm_tgid == tgid)
+> +			return pt->pt_id;
+> +
+> +	return HV_PARTITION_ID_INVALID;
+> +}
+> +EXPORT_SYMBOL_GPL(mshv_pid_to_partid);
+> +
+>  static int
+>  add_partition(struct mshv_partition *partition)
+>  {
+> @@ -1987,13 +2001,20 @@ mshv_ioctl_create_partition(void __user *user_arg, struct device *module_dev)
+>  		goto delete_partition;
+>  
+>  	ret = mshv_init_async_handler(partition);
+> -	if (!ret) {
+> -		ret = FD_ADD(O_CLOEXEC, anon_inode_getfile("mshv_partition",
+> -							   &mshv_partition_fops,
+> -							   partition, O_RDWR));
+> -		if (ret >= 0)
+> -			return ret;
+> -	}
+> +	if (ret)
+> +		goto rem_partition;
+> +
+> +	ret = FD_ADD(O_CLOEXEC, anon_inode_getfile("mshv_partition",
+> +						   &mshv_partition_fops,
+> +						   partition, O_RDWR));
+> +	if (ret < 0)
+> +		goto rem_partition;
+> +
+> +	partition->pt_vmm_tgid = current->tgid;
+> +
+> +	return ret;
+> +
+> +rem_partition:
+>  	remove_partition(partition);
+>  delete_partition:
+>  	hv_call_delete_partition(partition->pt_id);
+> diff --git a/include/asm-generic/mshyperv.h b/include/asm-generic/mshyperv.h
+> index ecedab554c80..e46a38916e76 100644
+> --- a/include/asm-generic/mshyperv.h
+> +++ b/include/asm-generic/mshyperv.h
+> @@ -211,6 +211,7 @@ void __init ms_hyperv_late_init(void);
+>  int hv_common_cpu_init(unsigned int cpu);
+>  int hv_common_cpu_die(unsigned int cpu);
+>  void hv_identify_partition_type(void);
+> +u64 mshv_pid_to_partid(pid_t tgid);
 
-Thanks for looking into this! I'm not familiar with the IOMMU subsystem so it would probably take me a long
-time to figure out anything useful about this.
+This should go inside the #if IS_ENABLED(CONFIG_MSHV_ROOT) section.
 
-> Are you using the GPU and/or display device(s) enough to be able to tell whether their IOMMUs are working as expected?
-No I currently only have a serial console, though at least the display used to work on earlier versions,
-but maybe that's just a configuration issue. Its on my list to investigate when I've got the time for it.
-
-Cheers,
-Christian
+>  
+>  /**
+>   * hv_cpu_number_to_vp_number() - Map CPU to VP.
 
