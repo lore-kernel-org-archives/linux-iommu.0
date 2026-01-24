@@ -1,63 +1,172 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A082026FDBF;
-	Fri, 23 Jan 2026 21:25:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4101B11CAF
+	for <iommu@lists.linux.dev>; Sat, 24 Jan 2026 00:36:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769203502; cv=none; b=jX40CkEEQUna/MsGyRyZscwJmMbwqVaMJoOVWByCAv2htnrAnVXCXBKn3Wuk41DdFBKhPvhCrKVaASbTKvvIekN5MtHOCw2X/DGWb4Y6z4Rq+ipYoavHM+/upAU1nA4uOAsiBgAVt/BP+OnGUpyfn6ieVr/ewkuulxhs4BzNx8g=
+	t=1769214991; cv=none; b=T/l/QNQFAnsxX5yO85/TKdXNikMY7rY/Jcg5JxxKhnWMckCeDTKHPHfUhrffgdntawCv1VogsnoZz9YykCoQ12fJxVOWBhHb8fDcztPKEyN/KKnHa1x94SBpx3znmFitOxUiQLIUl47UefDn5pePXxFk6HkJQShF5rQoW05OHkg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769203502; c=relaxed/simple;
-	bh=5bdYMnAH8Rlm+TPBzdF0Yg+Y3O23TX7JpVBjWF/PbEM=;
-	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=U6CZUAQHoYvWyS5r7zaU9ObKFrERq/MxmU4m2a8EZR6dy1rtbu1P+GnR8Inye+RRF+rtIecy6eCXTifxOV1u9TT74uAUTcJbIvCdg6ZEKyTsM8gcQL2IKOY1qo520omzXnyNCagAG+jsDd4F9gY9K8YO6xFiHreHjYhThtFPd9A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RaZbc5Va; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1769214991; c=relaxed/simple;
+	bh=4+JcBjsJ3jpNa79nmBtW6xWHGRy+D9IpO6UQvRDNZL8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=WI3FbZ2BYHY8tOtCq+K0YRa2x/xCoY4J3qzp7Mf3Nf1ayvkDJJbLMl3EhhtLldu3vX+Q1EkWtUKwy30cY9CcZHZBd2SoqRHPU3y/U8s2vAaQUlzyuxFVBcqDx5lJ3ldWFdgqPGpMzIu5s+2yHrzH1Vo7vdYK2M2czjHb2WrjWG4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=ZoxJ8N07; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RaZbc5Va"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EFFDC4CEF1;
-	Fri, 23 Jan 2026 21:25:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1769203502;
-	bh=5bdYMnAH8Rlm+TPBzdF0Yg+Y3O23TX7JpVBjWF/PbEM=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-	b=RaZbc5VavDR1uyrDyvoZGA1VKU2M543KOmncCcO7TJjtcQKWKRTRMlV5KwNldyi1Y
-	 XH2Pl6DSaC1YwnQ0I2s6nReikoYWE2xzJznOcN5ajgTOTItrTpE8lZtYgGfbSDdWDZ
-	 OXqaiHwTL2f57RWIkOgWMSOPmvogMTGoVgUML/g4uUITKkvEyBXIQprN7UBYTLghfz
-	 Z19rENKGNN9EYW+W7weZv/aRI0GM4cRVvuyQzOvpH0dzHGFssp5hrH3WK1tgUmOosT
-	 IxFBOaNZoZ0T0eQ8Uj1VYm31IrW3JRHX6l/JP5tCTG3iWhX2Iy9pL5AeWphAERhy3s
-	 fK3Z9SjMOq98A==
-Received: from [10.30.226.235] (localhost [IPv6:::1])
-	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id 8B9FF3808200;
-	Fri, 23 Jan 2026 21:24:59 +0000 (UTC)
-Subject: Re: [git pull] IOMMU Fixes for Linux v6.19-rc6
-From: pr-tracker-bot@kernel.org
-In-Reply-To: <6ikdjv5m3mq7m7fpvccuvnnqm2xwmho4ukpd5vxiwu5fk7klqs@2wtgllvskkxt>
-References: <6ikdjv5m3mq7m7fpvccuvnnqm2xwmho4ukpd5vxiwu5fk7klqs@2wtgllvskkxt>
-X-PR-Tracked-List-Id: <iommu.lists.linux.dev>
-X-PR-Tracked-Message-Id: <6ikdjv5m3mq7m7fpvccuvnnqm2xwmho4ukpd5vxiwu5fk7klqs@2wtgllvskkxt>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git tags/iommu-fixes-v6.19-rc6
-X-PR-Tracked-Commit-Id: 374e7af67d9d9d6103c2cfc8eb32abfecf3a2fd8
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: b33d70625977126d59f59dfd8c0bf9a75b4591c0
-Message-Id: <176920349821.2720183.4068828957657794894.pr-tracker-bot@kernel.org>
-Date: Fri, 23 Jan 2026 21:24:58 +0000
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="ZoxJ8N07"
+Received: from [100.75.32.59] (unknown [40.78.12.246])
+	by linux.microsoft.com (Postfix) with ESMTPSA id B602120B7167;
+	Fri, 23 Jan 2026 16:36:28 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com B602120B7167
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1769214989;
+	bh=HF5ySjziVuJCs18G6mejhJJ5cTlOU0ca7WYm9uSxPe0=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=ZoxJ8N07WkrIxSZAzIIae4bQSiNO7HPLD4KvNa35tBPT8NdKWZCZ7cXemYe4oebBo
+	 YvmpizsnddjeAz767kYSeb6kjB6NVl9oVl7CpmwHKkwcrNh5K3udRmzC/keMmfDxId
+	 lnT/vCjzi5p6CdQFjHto94Me8w0OmN2LRaNMWb7Y=
+Message-ID: <eb50b355-06f9-c93f-3600-56af4a53f4c0@linux.microsoft.com>
+Date: Fri, 23 Jan 2026 16:36:28 -0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.1
+Subject: Re: [PATCH v0 05/15] mshv: Declarations and definitions for VFIO-MSHV
+ bridge device
+Content-Language: en-US
+To: Nuno Das Neves <nunodasneves@linux.microsoft.com>,
+ linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ linux-pci@vger.kernel.org, linux-arch@vger.kernel.org
+Cc: kys@microsoft.com, haiyangz@microsoft.com, wei.liu@kernel.org,
+ decui@microsoft.com, longli@microsoft.com, catalin.marinas@arm.com,
+ will@kernel.org, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+ dave.hansen@linux.intel.com, hpa@zytor.com, joro@8bytes.org,
+ lpieralisi@kernel.org, kwilczynski@kernel.org, mani@kernel.org,
+ robh@kernel.org, bhelgaas@google.com, arnd@arndb.de, mhklinux@outlook.com,
+ romank@linux.microsoft.com
+References: <20260120064230.3602565-1-mrathor@linux.microsoft.com>
+ <20260120064230.3602565-6-mrathor@linux.microsoft.com>
+ <eeb79431-47e6-4334-b97a-4dd64474e539@linux.microsoft.com>
+From: Mukesh R <mrathor@linux.microsoft.com>
+In-Reply-To: <eeb79431-47e6-4334-b97a-4dd64474e539@linux.microsoft.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-The pull request you sent on Fri, 23 Jan 2026 10:13:01 +0100:
+On 1/23/26 10:25, Nuno Das Neves wrote:
+> On 1/19/2026 10:42 PM, Mukesh R wrote:
+>> From: Mukesh Rathor <mrathor@linux.microsoft.com>
+>>
+>> Add data structs needed by the subsequent patch that introduces a new
+>> module to implement VFIO-MSHV pseudo device.
+>>
+>> Signed-off-by: Mukesh Rathor <mrathor@linux.microsoft.com>
+>> ---
+>>   drivers/hv/mshv_root.h    | 23 +++++++++++++++++++++++
+>>   include/uapi/linux/mshv.h | 31 +++++++++++++++++++++++++++++++
+>>   2 files changed, 54 insertions(+)
+>>
+>> diff --git a/drivers/hv/mshv_root.h b/drivers/hv/mshv_root.h
+>> index c3753b009fd8..42e1da1d545b 100644
+>> --- a/drivers/hv/mshv_root.h
+>> +++ b/drivers/hv/mshv_root.h
+>> @@ -220,6 +220,29 @@ struct port_table_info {
+>>   	};
+>>   };
+>>   
+>> +struct mshv_device {
+>> +	const struct mshv_device_ops *device_ops;
+>> +	struct mshv_partition *device_pt;
+>> +	void *device_private;
+>> +	struct hlist_node device_ptnode;
+>> +};
+>> +
+>> +struct mshv_device_ops {
+>> +	const char *device_name;
+>> +	long (*device_create)(struct mshv_device *dev, u32 type);
+>> +	void (*device_release)(struct mshv_device *dev);
+>> +	long (*device_set_attr)(struct mshv_device *dev,
+>> +				struct mshv_device_attr *attr);
+>> +	long (*device_has_attr)(struct mshv_device *dev,
+>> +				struct mshv_device_attr *attr);
+>> +};
+>> +
+>> +extern struct mshv_device_ops mshv_vfio_device_ops;
+>> +int mshv_vfio_ops_init(void);
+>> +void mshv_vfio_ops_exit(void);
+>> +long mshv_partition_ioctl_create_device(struct mshv_partition *partition,
+>> +					void __user *user_args);
+>> +
+>>   int mshv_update_routing_table(struct mshv_partition *partition,
+>>   			      const struct mshv_user_irq_entry *entries,
+>>   			      unsigned int numents);
+>> diff --git a/include/uapi/linux/mshv.h b/include/uapi/linux/mshv.h
+>> index dee3ece28ce5..b7b10f9e2896 100644
+>> --- a/include/uapi/linux/mshv.h
+>> +++ b/include/uapi/linux/mshv.h
+>> @@ -252,6 +252,7 @@ struct mshv_root_hvcall {
+>>   #define MSHV_GET_GPAP_ACCESS_BITMAP	_IOWR(MSHV_IOCTL, 0x06, struct mshv_gpap_access_bitmap)
+>>   /* Generic hypercall */
+>>   #define MSHV_ROOT_HVCALL		_IOWR(MSHV_IOCTL, 0x07, struct mshv_root_hvcall)
+>> +#define MSHV_CREATE_DEVICE		_IOWR(MSHV_IOCTL, 0x08, struct mshv_create_device)
+>>   
+> 
+> With this commit, the IOCTL number is exposed to userspace but it doesn't work.
+> Ideally the IOCTL number should be added in the commit where it becomes usable.
+> 
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git tags/iommu-fixes-v6.19-rc6
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/b33d70625977126d59f59dfd8c0bf9a75b4591c0
+Correct, I switched it because the next patch won't compile without it as
+it needs the declarations here. It could be combined into one big patch,
+but I think normally one would not expect full functionality until the
+release is certified to be that feature compliant anyways. Hope that
+makes sense.
 
-Thank you!
+Thanks,
+-Mukesh
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+
+
+
+>>   /*
+>>    ********************************
+>> @@ -402,4 +403,34 @@ struct mshv_sint_mask {
+>>   /* hv_hvcall device */
+>>   #define MSHV_HVCALL_SETUP        _IOW(MSHV_IOCTL, 0x1E, struct mshv_vtl_hvcall_setup)
+>>   #define MSHV_HVCALL              _IOWR(MSHV_IOCTL, 0x1F, struct mshv_vtl_hvcall)
+>> +
+>> +/* device passhthru */
+>> +#define MSHV_CREATE_DEVICE_TEST		1
+>> +
+>> +enum {
+>> +	MSHV_DEV_TYPE_VFIO,
+>> +	MSHV_DEV_TYPE_MAX,
+>> +};
+>> +
+>> +struct mshv_create_device {
+>> +	__u32	type;	     /* in: MSHV_DEV_TYPE_xxx */
+>> +	__u32	fd;	     /* out: device handle */
+>> +	__u32	flags;	     /* in: MSHV_CREATE_DEVICE_xxx */
+>> +};
+>> +
+>> +#define MSHV_DEV_VFIO_FILE      1
+>> +#define MSHV_DEV_VFIO_FILE_ADD	1
+>> +#define MSHV_DEV_VFIO_FILE_DEL	2
+>> +
+>> +struct mshv_device_attr {
+>> +	__u32	flags;		/* no flags currently defined */
+>> +	__u32	group;		/* device-defined */
+>> +	__u64	attr;		/* group-defined */
+>> +	__u64	addr;		/* userspace address of attr data */
+>> +};
+>> +
+>> +/* Device fds created with MSHV_CREATE_DEVICE */
+>> +#define MSHV_SET_DEVICE_ATTR	_IOW(MSHV_IOCTL, 0x00, struct mshv_device_attr)
+>> +#define MSHV_HAS_DEVICE_ATTR	_IOW(MSHV_IOCTL, 0x01, struct mshv_device_attr)
+>> +
+>>   #endif
+
