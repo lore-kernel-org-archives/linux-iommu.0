@@ -1,156 +1,135 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8AD7EEEAB
-	for <iommu@lists.linux.dev>; Sat, 24 Jan 2026 02:27:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from mail-oo1-f80.google.com (mail-oo1-f80.google.com [209.85.161.80])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58A76A55
+	for <iommu@lists.linux.dev>; Sat, 24 Jan 2026 06:45:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.80
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769221657; cv=none; b=SlaorXOii+z91GnC+2GEAIpT6B6C5btcMtDQnuardEP9iLfLsirugVcCfB7+VfWbU34wGKR83nD2jbQJFdYfdn4NW/PMlBY1HHUfyfDZxd1NkPUXuAWsP1o3WMTPuP4WHYTKy7vFTqVn3vAyLtZPu98gSBKFiKpNXkOg1Divyas=
+	t=1769237128; cv=none; b=jYKUM9PgqOtt0bAEyugGeZZyaIpuf1qLRn6VIv7dNpVTwkzj+8Cq1vqtfKjD/4nVE2goZTQbSCYYTCy+AG2aG1Xv+1idF5DJVq6mLxR+6dG3/WNGelnGs6Y0MP1D3cC3oqQoYHu9IembWIvYv2ewDXDjJ0NbFaHoGTxrPSKtfu8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769221657; c=relaxed/simple;
-	bh=6QoxWTLvgZMqmlC876KlJ3u6SCCBvsx0O80CrSJNRg0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ilrYMZOaWomTnjrtrJ5AEg+QHsZVYERmPDQSItpRFgtY1AFneltJWURfzjhRck2/CkAn9Wg2n/SjTrKyjWcD5v1rONQ2IqRLLP9OFWGLxx6v0iTj0iKOgwO5yrT1HoLtxO/FmAoPPJ5ZCAL45SNroj8Wid7wy74dMsezR4N2YX4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=mm3uS6ln; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="mm3uS6ln"
-Received: from [100.75.32.59] (unknown [40.78.13.147])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 238F120B7167;
-	Fri, 23 Jan 2026 18:27:35 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 238F120B7167
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1769221655;
-	bh=kCVqDvHy5B6w0DimA3jf1nqis+n/ymqDPTFfWJQ9xCQ=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=mm3uS6lnYTE7qJBLr9zU/W/yLV8ymPsdbCUmrntTDqIEQnaCgtahGfq6XhrFvBXLb
-	 NdvnxrCtd4vngwf37xU01YelLuRbT3RZ7JhQvpfoZueaI4h3cScWInpsmJZbzOoNE7
-	 1ryZR0dNAUUaomPkj6zTA1NLy2Korhz2Ht/j9OCI=
-Message-ID: <8300a3b5-873c-4911-689f-cd3ab2d9d7e4@linux.microsoft.com>
-Date: Fri, 23 Jan 2026 18:27:34 -0800
+	s=arc-20240116; t=1769237128; c=relaxed/simple;
+	bh=YV68kNdKM4zJaVK+ywP3hgURCx89+6pauX8u8UfgnyU=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=NOk3Mqe9W+KT56qWQHTcyGyxOKpq+ohfSl2HZIOZWCMrYePLCWtamCwAP3DuxXtDIY55LeT1EgpwNXuTdYaH496lXh8AhoM38oJekhpd7+19YzByRLchb+Mv/7r46UFKirPSOiqk288W31dnvski268yY/hsBSIJPVBq0HFNFE0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.80
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oo1-f80.google.com with SMTP id 006d021491bc7-662c684f983so6719868eaf.2
+        for <iommu@lists.linux.dev>; Fri, 23 Jan 2026 22:45:27 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1769237126; x=1769841926;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=ovvaLSDGwqTtnbf8Py+CqfNAbKXz7Vu52LEEzigpIn8=;
+        b=LiFukSLdz+Ya24oKm8XS9zD0+FDS6fvaQcFIAR1lCQV4kGEWkVmm6WU/p7NzLJP2lc
+         vFFeTLT9myyVaAuDqWhkfyKVJtTjADnGIFaak2qPRubMu8boer2WWDle3OAEK5SsVT36
+         mMIZMyKoJ6k6BdYNTsIvLNDPY5iNzMxnGdEXC4YR3AWZuj/tpqRoevhl1p4xflSytzUE
+         00979mi6bG1Ezmm8I6z/HODtiwOs6TNSZ1gltoHHfBpxkPTxFRHz7Y4CDP1pUZoGdF/k
+         nrYV6b0hJBJX7ZbTaaAOhSe61FEn3yKvi8v1UfulIiTfMwsIDA8Gb3K/WfK6wGBvSddx
+         hj3w==
+X-Gm-Message-State: AOJu0YzLIA6UhXPphDoE6COtPOHqQMR/Brm8h2J+xfIJ7Bb3vZICK0wM
+	nC20Cejbu7sqsK+3ETg/oRusJqFkCiQ6DLaI+ahLqgQGoouQObtfui5n9WMmDbr4FvoENWgZOm2
+	s/DwYm3DXa0YtCpfBpMWzlhOLWUqDAxjDyFy0G+/hZ+2MdiFkL5hpq3yxJHtoMg==
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.1
-Subject: Re: [PATCH v0 00/15] PCI passthru on Hyper-V (Part I)
-Content-Language: en-US
-To: Jacob Pan <jacob.pan@linux.microsoft.com>
-Cc: linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- linux-pci@vger.kernel.org, linux-arch@vger.kernel.org, kys@microsoft.com,
- haiyangz@microsoft.com, wei.liu@kernel.org, decui@microsoft.com,
- longli@microsoft.com, catalin.marinas@arm.com, will@kernel.org,
- tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
- dave.hansen@linux.intel.com, hpa@zytor.com, joro@8bytes.org,
- lpieralisi@kernel.org, kwilczynski@kernel.org, mani@kernel.org,
- robh@kernel.org, bhelgaas@google.com, arnd@arndb.de,
- nunodasneves@linux.microsoft.com, mhklinux@outlook.com
-References: <20260120064230.3602565-1-mrathor@linux.microsoft.com>
- <20260120134933.00004f2a@linux.microsoft.com>
-From: Mukesh R <mrathor@linux.microsoft.com>
-In-Reply-To: <20260120134933.00004f2a@linux.microsoft.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a05:6820:f028:b0:661:23:e422 with SMTP id
+ 006d021491bc7-662caad722fmr2499213eaf.11.1769237126395; Fri, 23 Jan 2026
+ 22:45:26 -0800 (PST)
+Date: Fri, 23 Jan 2026 22:45:26 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <69746a86.050a0220.226181.0002.GAE@google.com>
+Subject: [syzbot] [iommu?] KMSAN: uninit-value in pfn_reader_next
+From: syzbot <syzbot+df28076a30d726933015@syzkaller.appspotmail.com>
+To: iommu@lists.linux.dev, jgg@ziepe.ca, joro@8bytes.org, kevin.tian@intel.com, 
+	linux-kernel@vger.kernel.org, robin.murphy@arm.com, 
+	syzkaller-bugs@googlegroups.com, will@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On 1/20/26 13:50, Jacob Pan wrote:
-> Hi Mukesh,
-> 
-> On Mon, 19 Jan 2026 22:42:15 -0800
-> Mukesh R <mrathor@linux.microsoft.com> wrote:
-> 
->> From: Mukesh Rathor <mrathor@linux.microsoft.com>
->>
->> Implement passthru of PCI devices to unprivileged virtual machines
->> (VMs) when Linux is running as a privileged VM on Microsoft Hyper-V
->> hypervisor. This support is made to fit within the workings of VFIO
->> framework, and any VMM needing to use it must use the VFIO subsystem.
->> This supports both full device passthru and SR-IOV based VFs.
->>
->> There are 3 cases where Linux can run as a privileged VM (aka MSHV):
->>    Baremetal root (meaning Hyper-V+Linux), L1VH, and Nested.
->>
-> I think some introduction/background to L1VH would help.
+Hello,
 
-Ok, i can add something, but l1vh was very well introduced if you
-search the mshv commits for "l1vh".
+syzbot found the following issue on:
 
->> At a high level, the hypervisor supports traditional mapped iommu
->> domains that use explicit map and unmap hypercalls for mapping and
->> unmapping guest RAM into the iommu subsystem.
-> It may be clearer to state that the hypervisor supports Linux IOMMU
-> paging domains through map/unmap hypercalls, mapping GPAs to HPAs using
-> stage?2 I/O page tables.
+HEAD commit:    c072629f05d7 Merge tag 'v6.19-p4' of git://git.kernel.org/..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=1716005a580000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=8bf02b9e495b9fcd
+dashboard link: https://syzkaller.appspot.com/bug?extid=df28076a30d726933015
+compiler:       Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1436b79a580000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15a63d22580000
 
-sure.
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/b6b938ba4a72/disk-c072629f.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/bb1384b011b2/vmlinux-c072629f.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/1dd4bb2f206e/bzImage-c072629f.xz
 
->> Hyper-V also has a
->> concept of direct attach devices whereby the iommu subsystem simply
->> uses the guest HW page table (ept/npt/..). This series adds support
->> for both, and both are made to work in VFIO type1 subsystem.
->>
-> This may warrant introducing a new IOMMU domain feature flag, as it
-> performs mappings but does not support map/unmap semantics in the same
-> way as a paging domain.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+df28076a30d726933015@syzkaller.appspotmail.com
 
-Yeah, I was hoping we can get by for now without it. At least in case of
-the cloud hypervisor, entire guest ram is mapped anyways. We can document
-it and work on enhancements which are much easier once we have a baseline.
-For now, it's a paging domain will all pages pinned.. :).
+iommufd_mock iommufd_mock0: Adding to iommu group 0
+=====================================================
+BUG: KMSAN: uninit-value in batch_add_pfn_num drivers/iommu/iommufd/pages.c:365 [inline]
+BUG: KMSAN: uninit-value in batch_add_pfn drivers/iommu/iommufd/pages.c:398 [inline]
+BUG: KMSAN: uninit-value in batch_from_pages drivers/iommu/iommufd/pages.c:658 [inline]
+BUG: KMSAN: uninit-value in pfn_reader_fill_span drivers/iommu/iommufd/pages.c:1220 [inline]
+BUG: KMSAN: uninit-value in pfn_reader_next+0x1d5a/0x3e50 drivers/iommu/iommufd/pages.c:1247
+ batch_add_pfn_num drivers/iommu/iommufd/pages.c:365 [inline]
+ batch_add_pfn drivers/iommu/iommufd/pages.c:398 [inline]
+ batch_from_pages drivers/iommu/iommufd/pages.c:658 [inline]
+ pfn_reader_fill_span drivers/iommu/iommufd/pages.c:1220 [inline]
+ pfn_reader_next+0x1d5a/0x3e50 drivers/iommu/iommufd/pages.c:1247
+ pfn_reader_first+0xbcf/0xee0 drivers/iommu/iommufd/pages.c:1354
+ iopt_area_fill_domains+0x202/0x1590 drivers/iommu/iommufd/pages.c:1917
+ iopt_fill_domains_pages drivers/iommu/iommufd/io_pagetable.c:359 [inline]
+ iopt_map_pages+0x1ba5/0x2130 drivers/iommu/iommufd/io_pagetable.c:387
+ iopt_map_common+0x224/0x610 drivers/iommu/iommufd/io_pagetable.c:425
+ iopt_map_user_pages+0x148/0x1c0 drivers/iommu/iommufd/io_pagetable.c:466
+ iommufd_ioas_map+0x6a2/0x9b0 drivers/iommu/iommufd/ioas.c:270
+ iommufd_fops_ioctl+0x82a/0x9e0 drivers/iommu/iommufd/main.c:533
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:597 [inline]
+ __se_sys_ioctl+0x23c/0x400 fs/ioctl.c:583
+ __x64_sys_ioctl+0x97/0xe0 fs/ioctl.c:583
+ x64_sys_call+0x18a7/0x3e70 arch/x86/include/generated/asm/syscalls_64.h:17
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0xc9/0xf80 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
 
->> While this Part I focuses on memory mappings, upcoming Part II
->> will focus on irq bypass along with some minor irq remapping
->> updates.
->>
->> This patch series was tested using Cloud Hypervisor verion 48. Qemu
->> support of MSHV is in the works, and that will be extended to include
->> PCI passthru and SR-IOV support also in near future.
->>
->> Based on: 8f0b4cce4481 (origin/hyperv-next)
->>
->> Thanks,
->> -Mukesh
->>
->> Mukesh Rathor (15):
->>    iommu/hyperv: rename hyperv-iommu.c to hyperv-irq.c
->>    x86/hyperv: cosmetic changes in irqdomain.c for readability
->>    x86/hyperv: add insufficient memory support in irqdomain.c
->>    mshv: Provide a way to get partition id if running in a VMM process
->>    mshv: Declarations and definitions for VFIO-MSHV bridge device
->>    mshv: Implement mshv bridge device for VFIO
->>    mshv: Add ioctl support for MSHV-VFIO bridge device
->>    PCI: hv: rename hv_compose_msi_msg to hv_vmbus_compose_msi_msg
->>    mshv: Import data structs around device domains and irq remapping
->>    PCI: hv: Build device id for a VMBus device
->>    x86/hyperv: Build logical device ids for PCI passthru hcalls
->>    x86/hyperv: Implement hyperv virtual iommu
->>    x86/hyperv: Basic interrupt support for direct attached devices
->>    mshv: Remove mapping of mmio space during map user ioctl
->>    mshv: Populate mmio mappings for PCI passthru
->>
->>   MAINTAINERS                         |    1 +
->>   arch/arm64/include/asm/mshyperv.h   |   15 +
->>   arch/x86/hyperv/irqdomain.c         |  314 ++++++---
->>   arch/x86/include/asm/mshyperv.h     |   21 +
->>   arch/x86/kernel/pci-dma.c           |    2 +
->>   drivers/hv/Makefile                 |    3 +-
->>   drivers/hv/mshv_root.h              |   24 +
->>   drivers/hv/mshv_root_main.c         |  296 +++++++-
->>   drivers/hv/mshv_vfio.c              |  210 ++++++
->>   drivers/iommu/Kconfig               |    1 +
->>   drivers/iommu/Makefile              |    2 +-
->>   drivers/iommu/hyperv-iommu.c        | 1004
->> +++++++++++++++++++++------ drivers/iommu/hyperv-irq.c          |
->> 330 +++++++++ drivers/pci/controller/pci-hyperv.c |  207 ++++--
->>   include/asm-generic/mshyperv.h      |    1 +
->>   include/hyperv/hvgdk_mini.h         |   11 +
->>   include/hyperv/hvhdk_mini.h         |  112 +++
->>   include/linux/hyperv.h              |    6 +
->>   include/uapi/linux/mshv.h           |   31 +
->>   19 files changed, 2182 insertions(+), 409 deletions(-)
->>   create mode 100644 drivers/hv/mshv_vfio.c
->>   create mode 100644 drivers/iommu/hyperv-irq.c
->>
+Local variable pfns created at:
+ iopt_area_fill_domains+0x5c/0x1590 drivers/iommu/iommufd/pages.c:1900
+ iopt_fill_domains_pages drivers/iommu/iommufd/io_pagetable.c:359 [inline]
+ iopt_map_pages+0x1ba5/0x2130 drivers/iommu/iommufd/io_pagetable.c:387
 
+CPU: 0 UID: 0 PID: 6065 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(voluntary) 
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/13/2026
+=====================================================
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+
+If the report is already addressed, let syzbot know by replying with:
+#syz fix: exact-commit-title
+
+If you want syzbot to run the reproducer, reply with:
+#syz test: git://repo/address.git branch-or-commit-hash
+If you attach or paste a git patch, syzbot will apply it before testing.
+
+If you want to overwrite report's subsystems, reply with:
+#syz set subsystems: new-subsystem
+(See the list of subsystem names on the web dashboard)
+
+If the report is a duplicate of another one, reply with:
+#syz dup: exact-subject-of-another-report
+
+If you want to undo deduplication, reply with:
+#syz undup
