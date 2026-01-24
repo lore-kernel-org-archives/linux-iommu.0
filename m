@@ -1,135 +1,119 @@
-Received: from mail-oo1-f80.google.com (mail-oo1-f80.google.com [209.85.161.80])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58A76A55
-	for <iommu@lists.linux.dev>; Sat, 24 Jan 2026 06:45:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.80
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89DF722F767
+	for <iommu@lists.linux.dev>; Sat, 24 Jan 2026 07:49:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769237128; cv=none; b=jYKUM9PgqOtt0bAEyugGeZZyaIpuf1qLRn6VIv7dNpVTwkzj+8Cq1vqtfKjD/4nVE2goZTQbSCYYTCy+AG2aG1Xv+1idF5DJVq6mLxR+6dG3/WNGelnGs6Y0MP1D3cC3oqQoYHu9IembWIvYv2ewDXDjJ0NbFaHoGTxrPSKtfu8=
+	t=1769240998; cv=none; b=KjOgitEvySW/WyujixPS+iPtrEfDGzmbaXb453iMwv2fmmcYqAkalvq5XTgkIEQsWIl0Yet9aULeIAvcJtzm4ArPpp3k0yrvhGape3KLL2XJDmzXqm+L/qHvR1orWzBIu9zj4Uj5o+ZgvaVLbr1lqJw80Tzig9s5WpQ1Ghi7++g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769237128; c=relaxed/simple;
-	bh=YV68kNdKM4zJaVK+ywP3hgURCx89+6pauX8u8UfgnyU=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=NOk3Mqe9W+KT56qWQHTcyGyxOKpq+ohfSl2HZIOZWCMrYePLCWtamCwAP3DuxXtDIY55LeT1EgpwNXuTdYaH496lXh8AhoM38oJekhpd7+19YzByRLchb+Mv/7r46UFKirPSOiqk288W31dnvski268yY/hsBSIJPVBq0HFNFE0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.80
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f80.google.com with SMTP id 006d021491bc7-662c684f983so6719868eaf.2
-        for <iommu@lists.linux.dev>; Fri, 23 Jan 2026 22:45:27 -0800 (PST)
+	s=arc-20240116; t=1769240998; c=relaxed/simple;
+	bh=wjMnGoeDh+YdrtLg+xDqC4Hnv8XghUga4m38t6BAP9M=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=FAbG3UzQJ8Ko+fVPuuU+rwxLi3nGXla3yVloqow2roUUFeTf1IKGpQE/9eIoD6+JjHU2BIOX8AAYSeItPq/P0QgunS13M3jOF2fkG8bUgn+6uCoFmVYaBWqFmzc/U+95ZaiVX5DM++72iROFKknVhVMW8b7BgwziGv4KHqJ5Jwk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=Ok97up28; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Ok97up28"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1769240995;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=wjMnGoeDh+YdrtLg+xDqC4Hnv8XghUga4m38t6BAP9M=;
+	b=Ok97up28cwKzKuP+BwTkQqyLnQji+fmpvR+421Kl1UxREhVEKI9QEBXxtxoyxEmcNL6x5W
+	VBHafoFohNpvP8u0TuMEbo+EUR1MbW51qu3rsO3KWYS3q/QHW8ldsLzrDbFtkuI/vg+6ul
+	jW7c5S/bM2edBn7xKeUJ/A5MZLLw06g=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-80-z_nlDNacNH-L3QVHoAaoFg-1; Sat, 24 Jan 2026 02:49:54 -0500
+X-MC-Unique: z_nlDNacNH-L3QVHoAaoFg-1
+X-Mimecast-MFC-AGG-ID: z_nlDNacNH-L3QVHoAaoFg_1769240993
+Received: by mail-wr1-f72.google.com with SMTP id ffacd0b85a97d-435ab9ed85dso650601f8f.1
+        for <iommu@lists.linux.dev>; Fri, 23 Jan 2026 23:49:53 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769237126; x=1769841926;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=ovvaLSDGwqTtnbf8Py+CqfNAbKXz7Vu52LEEzigpIn8=;
-        b=LiFukSLdz+Ya24oKm8XS9zD0+FDS6fvaQcFIAR1lCQV4kGEWkVmm6WU/p7NzLJP2lc
-         vFFeTLT9myyVaAuDqWhkfyKVJtTjADnGIFaak2qPRubMu8boer2WWDle3OAEK5SsVT36
-         mMIZMyKoJ6k6BdYNTsIvLNDPY5iNzMxnGdEXC4YR3AWZuj/tpqRoevhl1p4xflSytzUE
-         00979mi6bG1Ezmm8I6z/HODtiwOs6TNSZ1gltoHHfBpxkPTxFRHz7Y4CDP1pUZoGdF/k
-         nrYV6b0hJBJX7ZbTaaAOhSe61FEn3yKvi8v1UfulIiTfMwsIDA8Gb3K/WfK6wGBvSddx
-         hj3w==
-X-Gm-Message-State: AOJu0YzLIA6UhXPphDoE6COtPOHqQMR/Brm8h2J+xfIJ7Bb3vZICK0wM
-	nC20Cejbu7sqsK+3ETg/oRusJqFkCiQ6DLaI+ahLqgQGoouQObtfui5n9WMmDbr4FvoENWgZOm2
-	s/DwYm3DXa0YtCpfBpMWzlhOLWUqDAxjDyFy0G+/hZ+2MdiFkL5hpq3yxJHtoMg==
+        d=1e100.net; s=20230601; t=1769240993; x=1769845793;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=wjMnGoeDh+YdrtLg+xDqC4Hnv8XghUga4m38t6BAP9M=;
+        b=KCWW5lpwjQKnPO4MW9n0RnhlEh/ovI7q2ELZPMbatZSb/0dFXxL34bGkURjGjKxKbf
+         BvGw3PFiFGHDj4sv7Rs5Hr7rfB/zilpVwl3EJgfugTGB/LThbyTRK32Ier/x+ZqnRMRL
+         VMABe0lhLtWqWyDK0Atp9kfZkh5bZAAjgiUBqJgiUi4k2fhrJCvgp83c5mSTxMHnfFRi
+         ZnkLFJ5S/7FJLXN9mRFaA2ValKX1TTz29O53UyMLvbwo7qJ1h2RovPYlcaMOPbHZ1BwN
+         YdSlZ6jvGm6l98zFPrc71PyKfqJc1uNkbhISZhzVrPXOiP0kjodbuO4IzRBdBqlhz894
+         Ap4w==
+X-Forwarded-Encrypted: i=1; AJvYcCUFtTZTUcBYzFOvuMSYszegIvZpfE+UZNT4kZBJUrg2/HYIcCUaE5I/MZ69jyALoseQxRIpSA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yyj2QbNPamjM5vQvozo/wLnb9QDKPPX4Pn0zUvogK+OS8TT2PLd
+	pOQMrPyzHrKq3xDnaEDz97pCayUjp1Rcg1pIOIocCqLAuhW78T4oauNBMFHoib9GZpwyAERwQsK
+	JB9OJRwz7hxJvtI0KrL8Krz60kg637wVjSxUkpb6y9DV2zq++eZgzmiTM8L0QCQ2v0k/FhVz/kw
+	/Vxr2IwZX58k8oSYcIjIi8maVoSORWnng=
+X-Gm-Gg: AZuq6aJPLl04cSuDcoEQ4UKg2rHZ3RQP/3NB3LzyFnbMDTpTQHSGsEQZaAva9SLSi8D
+	VYHK9OGr9aSAhQLbslkiW8brPi3YsoJ4abFYQm7/r4jbZJbGNt5mqCidOh1HjwtXcduo94zNQUT
+	QN0veQiYHacCmlF/O3h/ZyanBGrC9VDKOQuIJ1gLXjEQNezbNs0CXl6y5zYP0CYKWvcJr6h98Gn
+	MBNciiyfBCoEaBCYSp8aK3Lhd1oU0RThXRDQHkN9XXrCfBtnm6TCfQrKxkB/fv2DqXpmg==
+X-Received: by 2002:a05:6000:601:b0:430:fdc8:8bbd with SMTP id ffacd0b85a97d-435b16039damr9146799f8f.41.1769240992687;
+        Fri, 23 Jan 2026 23:49:52 -0800 (PST)
+X-Received: by 2002:a05:6000:601:b0:430:fdc8:8bbd with SMTP id
+ ffacd0b85a97d-435b16039damr9146785f8f.41.1769240992303; Fri, 23 Jan 2026
+ 23:49:52 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:f028:b0:661:23:e422 with SMTP id
- 006d021491bc7-662caad722fmr2499213eaf.11.1769237126395; Fri, 23 Jan 2026
- 22:45:26 -0800 (PST)
-Date: Fri, 23 Jan 2026 22:45:26 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <69746a86.050a0220.226181.0002.GAE@google.com>
-Subject: [syzbot] [iommu?] KMSAN: uninit-value in pfn_reader_next
-From: syzbot <syzbot+df28076a30d726933015@syzkaller.appspotmail.com>
-To: iommu@lists.linux.dev, jgg@ziepe.ca, joro@8bytes.org, kevin.tian@intel.com, 
-	linux-kernel@vger.kernel.org, robin.murphy@arm.com, 
-	syzkaller-bugs@googlegroups.com, will@kernel.org
+References: <20250611224604.313496-2-seanjc@google.com> <20250611224604.313496-40-seanjc@google.com>
+ <njhjud3e6wbdftzr3ziyuh5bhyvc5ndt5qvmg7rlvh5isoop2l@f2uxctws2c7d>
+ <42513cb3-3c2e-4aa8-b748-23b6656a5096@redhat.com> <874iovu742.ffs@tglx>
+ <87pl7jsrdg.ffs@tglx> <5bea843b-dec8-4f15-bb7c-1d0550542034@redhat.com> <87sebxtrgp.ffs@tglx>
+In-Reply-To: <87sebxtrgp.ffs@tglx>
+From: Paolo Bonzini <pbonzini@redhat.com>
+Date: Sat, 24 Jan 2026 08:49:40 +0100
+X-Gm-Features: AZwV_Qj6aLwVSas8vwNUo-Ndu2FBevRcUQp0THPxC18GLGDTRk3JARciXPkQtdQ
+Message-ID: <CABgObfbijO2k6fe6z03M3u--4ZKXxwPSf2RrasU1=J5rtj9CUg@mail.gmail.com>
+Subject: Re: possible deadlock due to irq_set_thread_affinity() calling into
+ the scheduler (was Re: [PATCH v3 38/62] KVM: SVM: Take and hold ir_list_lock
+ across IRTE updates in IOMMU)
+To: Thomas Gleixner <tglx@kernel.org>
+Cc: Ankit Soni <Ankit.Soni@amd.com>, Sean Christopherson <seanjc@google.com>, Marc Zyngier <maz@kernel.org>, 
+	Oliver Upton <oliver.upton@linux.dev>, Joerg Roedel <joro@8bytes.org>, 
+	David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
+	linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev, 
+	kvm@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	Sairaj Kodilkar <sarunkod@amd.com>, Vasant Hegde <vasant.hegde@amd.com>, 
+	Maxim Levitsky <mlevitsk@redhat.com>, Joao Martins <joao.m.martins@oracle.com>, 
+	Francesco Lavra <francescolavra.fl@gmail.com>, David Matlack <dmatlack@google.com>, 
+	Naveen Rao <Naveen.Rao@amd.com>, Crystal Wood <crwood@redhat.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: ZJ28TqMRse0PtHqTMeLkrXbXzCS9i6pmjw1zQk3HhAk_1769240993
+X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hello,
+On Thu, Jan 22, 2026 at 7:47=E2=80=AFPM Thomas Gleixner <tglx@kernel.org> w=
+rote:
+>
+> On Wed, Jan 21 2026 at 19:13, Paolo Bonzini wrote:
+> > On 1/8/26 22:53, Thomas Gleixner wrote:
+> >> Are you still claiming that this is a kernel/irq bug?
+> >
+> > Not really, I did say I'd like to treat it as a kernel/irq bug...
+> > but certainly didn't have hopes high enough to "claim" that.
+> > I do think that it's ugly to have locks that are internal,
+> > non-leaf and held around callbacks; but people smarter than
+> > me have thought about it and you can't call it a bug anyway.
+>
+> Deep core code has a tendency to be ugly. But if it makes your life
+> easier, then these wakeups can be delayed via an irq_work to be outside
+> of the lock. That needs some life-time issues to be addressed, but
+> should be doable.
 
-syzbot found the following issue on:
+Thanks for the suggestion---hopefully it's not needed at all and we
+can delay taking the lock in KVM.
 
-HEAD commit:    c072629f05d7 Merge tag 'v6.19-p4' of git://git.kernel.org/..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=1716005a580000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=8bf02b9e495b9fcd
-dashboard link: https://syzkaller.appspot.com/bug?extid=df28076a30d726933015
-compiler:       Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1436b79a580000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15a63d22580000
+Paolo
 
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/b6b938ba4a72/disk-c072629f.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/bb1384b011b2/vmlinux-c072629f.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/1dd4bb2f206e/bzImage-c072629f.xz
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+df28076a30d726933015@syzkaller.appspotmail.com
-
-iommufd_mock iommufd_mock0: Adding to iommu group 0
-=====================================================
-BUG: KMSAN: uninit-value in batch_add_pfn_num drivers/iommu/iommufd/pages.c:365 [inline]
-BUG: KMSAN: uninit-value in batch_add_pfn drivers/iommu/iommufd/pages.c:398 [inline]
-BUG: KMSAN: uninit-value in batch_from_pages drivers/iommu/iommufd/pages.c:658 [inline]
-BUG: KMSAN: uninit-value in pfn_reader_fill_span drivers/iommu/iommufd/pages.c:1220 [inline]
-BUG: KMSAN: uninit-value in pfn_reader_next+0x1d5a/0x3e50 drivers/iommu/iommufd/pages.c:1247
- batch_add_pfn_num drivers/iommu/iommufd/pages.c:365 [inline]
- batch_add_pfn drivers/iommu/iommufd/pages.c:398 [inline]
- batch_from_pages drivers/iommu/iommufd/pages.c:658 [inline]
- pfn_reader_fill_span drivers/iommu/iommufd/pages.c:1220 [inline]
- pfn_reader_next+0x1d5a/0x3e50 drivers/iommu/iommufd/pages.c:1247
- pfn_reader_first+0xbcf/0xee0 drivers/iommu/iommufd/pages.c:1354
- iopt_area_fill_domains+0x202/0x1590 drivers/iommu/iommufd/pages.c:1917
- iopt_fill_domains_pages drivers/iommu/iommufd/io_pagetable.c:359 [inline]
- iopt_map_pages+0x1ba5/0x2130 drivers/iommu/iommufd/io_pagetable.c:387
- iopt_map_common+0x224/0x610 drivers/iommu/iommufd/io_pagetable.c:425
- iopt_map_user_pages+0x148/0x1c0 drivers/iommu/iommufd/io_pagetable.c:466
- iommufd_ioas_map+0x6a2/0x9b0 drivers/iommu/iommufd/ioas.c:270
- iommufd_fops_ioctl+0x82a/0x9e0 drivers/iommu/iommufd/main.c:533
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:597 [inline]
- __se_sys_ioctl+0x23c/0x400 fs/ioctl.c:583
- __x64_sys_ioctl+0x97/0xe0 fs/ioctl.c:583
- x64_sys_call+0x18a7/0x3e70 arch/x86/include/generated/asm/syscalls_64.h:17
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0xc9/0xf80 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-
-Local variable pfns created at:
- iopt_area_fill_domains+0x5c/0x1590 drivers/iommu/iommufd/pages.c:1900
- iopt_fill_domains_pages drivers/iommu/iommufd/io_pagetable.c:359 [inline]
- iopt_map_pages+0x1ba5/0x2130 drivers/iommu/iommufd/io_pagetable.c:387
-
-CPU: 0 UID: 0 PID: 6065 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(voluntary) 
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/13/2026
-=====================================================
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-
-If the report is already addressed, let syzbot know by replying with:
-#syz fix: exact-commit-title
-
-If you want syzbot to run the reproducer, reply with:
-#syz test: git://repo/address.git branch-or-commit-hash
-If you attach or paste a git patch, syzbot will apply it before testing.
-
-If you want to overwrite report's subsystems, reply with:
-#syz set subsystems: new-subsystem
-(See the list of subsystem names on the web dashboard)
-
-If the report is a duplicate of another one, reply with:
-#syz dup: exact-subject-of-another-report
-
-If you want to undo deduplication, reply with:
-#syz undup
