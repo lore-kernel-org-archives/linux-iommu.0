@@ -1,68 +1,147 @@
-Received: from out-174.mta1.migadu.com (out-174.mta1.migadu.com [95.215.58.174])
+Received: from sender4-pp-f112.zoho.com (sender4-pp-f112.zoho.com [136.143.188.112])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B0412F6910
-	for <iommu@lists.linux.dev>; Mon, 26 Jan 2026 08:05:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.174
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769414732; cv=none; b=b+etgmQeMw5Vi/7ZZgiyJerBVHW0qiIAHircBky4nIV5kZgMqGLlTvDcUlqWi61Sly+C+sfnX6y98lAbBEg7g2Y4EsXOXDcxAHZ0h5QRrLzs6OdIA20q9Vuu+J0ZSJDrvOWngGFwaQF1QvjhogKliRXQynKsBE9ILJG8kVYyXdQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769414732; c=relaxed/simple;
-	bh=zMUckWgGtcirGJLEx2UUjbpZqgAfgZosdpNUcdalQWw=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=jNc8YxkK12hTu9Zic+yqoXKvUvA4XCHh2U8qWtMxPSG9QeixvyvsCRKYBweHb2Kxsh3SD5oRwf1eiE0CbhUluPzpNYY1UawR+8vEAz5/5A2dB5vagWhkR1kSqKKUV4Yn3YCuuPpJePyDC25/MqPZl45MCaC9bgcNhHnAO81vskM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=Cwq6pbKN; arc=none smtp.client-ip=95.215.58.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8694C2F83A2
+	for <iommu@lists.linux.dev>; Mon, 26 Jan 2026 09:03:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.112
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1769418220; cv=pass; b=ltRsFdBOq4jPhJBG0R12ppdozd7Is5uKeH3XqVB6zw43+D+p/noab8XskHgIgoI6cCJJKykMV0G+KUwlN93L2XGpQbU6/HT8lAaI2Sod3HE0kc7y8GYdgS4kPzK48LFXEIU7iDjYqLYkk6NprDCGmQalDgut0DXMskSQoWxS9eA=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1769418220; c=relaxed/simple;
+	bh=TGimY2g/rPo873RPmUyXIir1ih5AhpTHPgfuuvqhDKE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=KVTzvrJdbfkEzKD/NegmhjkXcy6r8FrVKNDAvgyTpo8dMdgE+z8tBsy1zUYvhPG8fm5LIyTxNSLLJBX/Lqg+vzWb5o6SFppYk4mRsw9NFCEKV35AEtmisB+isN+Ds0FBdgmT8+h8UaFKsv6wpm8EtJgTY5UHV3jtiA1CTkFRIPE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=benjamin.gaignard@collabora.com header.b=k+ETJadj; arc=pass smtp.client-ip=136.143.188.112
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="Cwq6pbKN"
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1769414729;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=zMUckWgGtcirGJLEx2UUjbpZqgAfgZosdpNUcdalQWw=;
-	b=Cwq6pbKNtfv15F/Yv3/GYVSsu+X7TYZ8ypk5rmzA0ZzytJ7IHMlEMuWrer24jYfxgpFWGA
-	/wCTJvSOpSi/4TZFH0v5zJHZO9lEv6scV/Agkp5/36jFWHWZ9hsJ6i4Q2EIHQldToPYD9+
-	OBNgtqpK/pTW5P35yv0JlutwU1ch3js=
-From: Fushuai Wang <fushuai.wang@linux.dev>
-To: kevin.tian@intel.com
-Cc: fushuai.wang@linux.dev,
-	iommu@lists.linux.dev,
-	jgg@ziepe.ca,
-	joro@8bytes.org,
-	linux-kernel@vger.kernel.org,
-	nicolinc@nvidia.com,
-	robin.murphy@arm.com,
-	syzbot+a0c841e02f328005bbcc@syzkaller.appspotmail.com,
-	wangfushuai@baidu.com,
-	will@kernel.org
-Subject: Re: [PATCH] iommufd: Initialize batch->kind field in pfn_batch
-Date: Mon, 26 Jan 2026 16:05:06 +0800
-Message-Id: <20260126080506.83112-1-fushuai.wang@linux.dev>
-In-Reply-To: <BN9PR11MB527624911E329D4B870380418C93A@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <BN9PR11MB527624911E329D4B870380418C93A@BN9PR11MB5276.namprd11.prod.outlook.com>
+	dkim=pass (1024-bit key) header.d=collabora.com header.i=benjamin.gaignard@collabora.com header.b="k+ETJadj"
+ARC-Seal: i=1; a=rsa-sha256; t=1769418206; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=Lfh/eRNm7h3SKUFm2ewA6a/EsO2tqg1/xGQ+4lMYt1NSSKBmFa5Yo7Y0T98Fohkna4IETqDWDFUGU6JlBuzIGWRBeTuXqaUcejl+G06NT+cw+t6j2WcgdhtNfuMC+98o5/k6OJ7PGTbF6LPRaZurovzQTNKEilwh54OxdWzw4rY=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1769418206; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=Szw4w1kPWz+z204rfjqE2SzFPSa+7l4i9w+mPzkshVs=; 
+	b=HS+DgwvModzf5uvt0IgC5Gzq2xsRBnKY56Vb9GkgQOvXigBYCvEjIyhhohOsVUeRg54tcKh2LemWXFt7OTcO7nM9qefvhFi2zh4+ucq4VEIfz4jS3e8SN/S8SaAKA763hppE4FRhgnPH47hdlrV1+Mr3ddwj6n/1mnbOzn7IPB4=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=collabora.com;
+	spf=pass  smtp.mailfrom=benjamin.gaignard@collabora.com;
+	dmarc=pass header.from=<benjamin.gaignard@collabora.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1769418206;
+	s=zohomail; d=collabora.com; i=benjamin.gaignard@collabora.com;
+	h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+	bh=Szw4w1kPWz+z204rfjqE2SzFPSa+7l4i9w+mPzkshVs=;
+	b=k+ETJadj+tQfi4J6Ht/P5SsTGGRtFvu9K2hXalxlFZNnQJSLk9grhNLWdip5NIwC
+	S1UYSrbLFgKI/53E7laWLIsCv2TSNC8htoWjQHbF8dFzxz0r5xvbbY55GSGQlEzHUw8
+	OyROJfVgetbJCMyPXxdlEpb+3AO+h+1jPwiALJGc=
+Received: by mx.zohomail.com with SMTPS id 1769418204273347.0095929584735;
+	Mon, 26 Jan 2026 01:03:24 -0800 (PST)
+Message-ID: <8fd2c508-cbe9-4050-ba02-85b22fcff10d@collabora.com>
+Date: Mon, 26 Jan 2026 10:03:19 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v11 3/7] iommu: Add verisilicon IOMMU driver
+To: Will Deacon <will@kernel.org>
+Cc: joro@8bytes.org, robin.murphy@arm.com, robh@kernel.org,
+ krzk+dt@kernel.org, conor+dt@kernel.org, heiko@sntech.de,
+ nicolas.dufresne@collabora.com, p.zabel@pengutronix.de, mchehab@kernel.org,
+ iommu@lists.linux.dev, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-rockchip@lists.infradead.org, linux-media@vger.kernel.org,
+ kernel@collabora.com
+References: <20260107101005.84039-1-benjamin.gaignard@collabora.com>
+ <20260107101005.84039-4-benjamin.gaignard@collabora.com>
+ <aWZui-rn5RDPwpEO@willie-the-truck>
+ <68a49f8b-178c-4fa2-b4a9-315ad602271d@collabora.com>
+ <aWeTQ50DOtntcniN@willie-the-truck>
+ <db0950f1-b357-47c2-9829-e33262ab456d@collabora.com>
+ <aW4kb5EbxbrhTOxK@willie-the-truck>
+ <b8f43fe8-3e07-4d98-a50d-817c31370710@collabora.com>
+ <aXDL2JH_4RCDmAJv@willie-the-truck>
+ <4b33b50f-f0c3-4db8-b394-dd2d4d6e3a55@collabora.com>
+ <aXOsdlGMVzhHOrUr@willie-the-truck>
+Content-Language: en-US
+From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+In-Reply-To: <aXOsdlGMVzhHOrUr@willie-the-truck>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
 
-> this is incorrect. 'carry' means a portion of previous batch was handed
-> over to the new batch, and it already initializes the array with a valid
-> item#0. So the old 'kind' type should be kept.
 
-Yes, you are right.
+Le 23/01/2026 à 18:14, Will Deacon a écrit :
+> On Wed, Jan 21, 2026 at 02:50:18PM +0100, Benjamin Gaignard wrote:
+>> Le 21/01/2026 à 13:51, Will Deacon a écrit :
+>>> On Mon, Jan 19, 2026 at 03:03:44PM +0100, Benjamin Gaignard wrote:
+>>>>>>>>>> +static const struct iommu_ops vsi_iommu_ops = {
+>>>>>>>>>> +	.identity_domain = &vsi_identity_domain,
+>>>>>>>>>> +	.release_domain = &vsi_identity_domain,
+>>>>>>>>>> +	.domain_alloc_paging = vsi_iommu_domain_alloc_paging,
+>>>>>>>>>> +	.of_xlate = vsi_iommu_of_xlate,
+>>>>>>>>>> +	.probe_device = vsi_iommu_probe_device,
+>>>>>>>>>> +	.release_device = vsi_iommu_release_device,
+>>>>>>>>>> +	.device_group = generic_single_device_group,
+>>>>>>>>>> +	.owner = THIS_MODULE,
+>>>>>>>>>> +	.default_domain_ops = &(const struct iommu_domain_ops) {
+>>>>>>>>>> +		.attach_dev		= vsi_iommu_attach_device,
+>>>>>>>>>> +		.map_pages		= vsi_iommu_map,
+>>>>>>>>>> +		.unmap_pages		= vsi_iommu_unmap,
+>>>>>>>>>> +		.flush_iotlb_all	= vsi_iommu_flush_tlb_all,
+>>>>>>>>> This has no callers and so your unmap routine appears to be broken.
+>>>>>>>> It is a leftover of previous attempt to allow video decoder to clean/flush
+>>>>>>>> the iommu by using a function from the API.
+>>>>>>>> Now it is using vsi_iommu_restore_ctx().
+>>>>>>>> I while remove it in version 12.
+>>>>>>> Don't you still need some invalidation on the unmap path?
+>>>>>> In vsi_iommu_unmap_iova() page is invalided by calling vsi_mk_pte_invalid().
+>>>>> But that just writes an invalid descriptor and doesn't appear to invalidate
+>>>>> the TLB at all.
+>>>>>
+>>>>>> That clear BIT(0) so the hardware knows the page is invalid.
+>>>>>> Do I have miss something here ?
+>>>>> Yes, the TLB structure needs to be invalidated so that the page-table
+>>>>> walker sees the new value that you have written in memory.
+>>>>>
+>>>>> The rockchip driver gets this correct...
+>>>> Rockchip hardware have a ZAP_ONE_LINE register which didn't exist on Verisilicon
+>>>> hardware.
+>>> Presumably you have some sort of Verisilicon datasheet or downstream driver
+>>> from which you can infer the TLB invalidation runes?
+>> I have only this downstream driver:
+>> https://github.com/rockchip-linux/kernel/blob/develop-6.1/drivers/iommu/rockchip-iommu-av1d.c
+>> No datasheet...
+>>
+>>>> I have tried to use VSI_MMU_BIT_FLUSH on VSI driver after unmapping iova
+>>>> but it doesn't work.
+>>> What do you mean by "doesn't work"? If it works without doing any
+>>> invalidation at all, then it's very peculiar that adding the invalidation
+>>> would introduce issues.
+>> I mean VSI_MMU_BIT_FLUSH register can't be used to invalid the TLB.
+>> I think the hardware iterates over the pages tables in memory and
+>> check the valid/invalid bit.
+> I bet it doesn't: that would be horrible for performance.
+>
+> The hardware clearly has TLB invalidation support, as the downstream driver
+> that you linked above implements av1_iommu_flush_tlb_all() to poke it.
+> If the hardware has a TLB, then unmapping a page-table means you need to:
+>
+> 1. Clear the valid bit from the descriptor in memory
+> 2. Have some sort of memory barrier
+> 3. Invalidate the TLB
+> 4. Wait for the invalidation to complete
 
-> From this angle Deepanshu's patch [1] is correct.
+That exactly what I had tried to do by calling vsi_iommu_flush_tlb_all() (minux the lock)
+after calling vsi_iommu_unmap_iova() in vsi_iommu_unmap() but that doesn't work
+and even make the system crash sometimes.
 
-I was not aware of Deepanshu's patch before, please ignore my patch.
+Benjamin
 
----
-Regards,
-WANG
+>
+> All IOMMUs tend to work like that and I don't think this one is any
+> different.
+>
+> Will
+>
