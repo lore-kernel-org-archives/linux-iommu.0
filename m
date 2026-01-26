@@ -1,474 +1,231 @@
-Received: from mail.sig21.net (mail.sig21.net [217.197.84.222])
+Received: from SJ2PR03CU001.outbound.protection.outlook.com (mail-westusazon11012046.outbound.protection.outlook.com [52.101.43.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88F6D3375A6
-	for <iommu@lists.linux.dev>; Mon, 26 Jan 2026 15:12:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.197.84.222
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769440358; cv=none; b=WYzibwK49hdDm6LbNo2NozF6q4V4h0k7cVpzR/8bscSomBX+nC5+Vxz++CBxknkiFyYR1EHGVyQnNLrRbuu35ksEcu3uUg+ZJyr8ML9oiEJnUvallY19j0A9zaoNyUyquiCjMnU7aa1YaGQwGhK9H83jd+IBAvfrCmzovnU5HUc=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769440358; c=relaxed/simple;
-	bh=S1KUWsq5OgneXXpeZFqAuoQD9+wgMLTQyWvYicbCoho=;
-	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=MPTntmFNrNX7O/5canizhbMR/xwaDHOgmt8RsuHfUP4nyVhFWmKxDjkSgIIu3I0UbY6Qk/wDB0XWIc3MJSKZaJ8/ru7H3gWXTH31IHtKs8i2AFvDlsp3fmzWzItRQ1X0h8k1yKNWWjtPHW1LyQL26T7rQNW6hjWUpcyy+fEz3zg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sig21.net; spf=pass smtp.mailfrom=sig21.net; arc=none smtp.client-ip=217.197.84.222
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sig21.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sig21.net
-Received: from localhorst ([127.0.0.1])
-	 by mail.sig21.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-	 (Exim 4.94.2)
-	(envelope-from <js@sig21.net>)
-	 id 1vkNzP-0000D2-PS 
-	for iommu@lists.linux.dev; Mon, 26 Jan 2026 15:54:51 +0100
-Received: from js by abc.local with local (Exim 4.99.1)
-	(envelope-from <js@sig21.net>)
-	id 1vkNzO-0000000053d-27PA
-	for iommu@lists.linux.dev;
-	Mon, 26 Jan 2026 15:54:50 +0100
-Date: Mon, 26 Jan 2026 15:54:50 +0100
-From: Johannes Stezenbach <js@sig21.net>
-To: iommu@lists.linux.dev
-Subject: AMD IOMMU issue with hibernate on Asrock X600
-Message-ID: <aXeAOtGQUdlNZF6V@sig21.net>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C014533B6FD
+	for <iommu@lists.linux.dev>; Mon, 26 Jan 2026 15:20:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.43.46
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1769440831; cv=fail; b=jWIVy0lfprKtxAHw8Rx7wcAwcG/vuYrf4QnmcnCKts85FVIGmWFrorQH7Prjwk+e2Vc8wPeLtD/yYmhoeaEnbHIOILEASr3PvwB+eszeTNqCJL065ML335Qvn7dG6EEEVpj3lgeJoY9cTCiREGnTYcr/ZddAwiCVi7U5lbZlpaQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1769440831; c=relaxed/simple;
+	bh=/DbjMIMcID0v7CMwuUEhLMb6ZKlKHVkHim9SQ7fDQ2E=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=fkKI2f7DdG7SbcM25u+hUAS3jAF2Kcnu7KaWoGApiSl7tEIKhjAkpGfX5Qx+pi/p9Uzwt7W9jOZJQo5AoTbQ2ftMc1Z7cfNS8+Q1y+l5FATYq3P4S+1uTM1eSq1jWwkSzlTEP4PEvwk9fYPgx7CbkM6D6ggUB6UNjf7zd9b+RSc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=uFqadPBj; arc=fail smtp.client-ip=52.101.43.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="uFqadPBj"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=Ymzb8Tdr0CrDVSS0UJiytlRRBDR5HYHtswSaas2KIb2BLsuvZ0gQAOmvMuy3ADRWAQLQTha2zflEnEspOHKaP4HUyOB/NqD8aL2V4ofRM+l46xEsW15eOeBDBnFpw68kVBZWY6M4AHXOkm71qGpYdahXdVdBDGsRDh47AiwJksYA4yEhJCuhJXssoUVvXVmWtqbVZlkwsSVxzNE57UE7jwBFF1Gn/oSfeAIsQ6bqDMroUK97PWlvituCkIn1Sh65jEWSeFjZjyvGB1tcxG+cUvYgbiw9sC1vvfqkaYGNYJeLIX/dNipVEySDvGxt18dU5YbtmllPgzBHJ4MTG55a7Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=USAWvyGPbX8weMuPil7fIhYnN3agyAuJuq18dFDOCOM=;
+ b=k7Hoh6GrkOTVlaHrP/RVfnUHAslyQ/tK9xgXiT/la1wl6HYxzC4Gd4a0i4YrvCnuxC7eeBec5lkljOqoEdWjGUcQQ6NiqiYBaM+5phe99Bechadsxn4j1SzZSKMrvMRszGOZBBm3LCGxDVixyrUPUgD54JiEjaYyzlUo7WDm41Y+QduloUyJvGRYwmQ+g9nIWW9/7arWV/Te7XaMcR5WIaqFsiwWvVSIGwtfAr33mJU3IwDRKU/2dXpFgnqayW+9vdIDthCkAlH+6LZEMyCr0MePNrFkWVgktDQ5MTId4W/l1lto2KPLHmffV8tJM7pYiBns54eprukPmK1zykfO0A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=USAWvyGPbX8weMuPil7fIhYnN3agyAuJuq18dFDOCOM=;
+ b=uFqadPBjIY4s1Te1d6D0IrIJX54Zlcs8TOBP8z2caooAXIsGynYDSMBwm8jyJpdz1HLEy0TkS7lP1CALk+VDbno+3+2eRWwnZ4SssdInGlXKG1Qu4zdJ2LzjWylkqfUg8JH+ZWmZoS/JgzcJdk8vFSVoaf5tkMDNqiMnKjktqOf68Tsrvsqp+v7yEeZarCpHJVFSR6q3K2Ozl73659gIn5uH/wZOD4MH2y9QFsaVOGORpxLW8MBGKp5K2V0zAvCpMnKrmaYcgYGy1m3xm7Z9qu1TLRBy2rYMDmfoOER4DhAJjnoJ9Y0rEvgkhpe0gRrfvN2C91o/CcU2vnA6B4dprQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
+ by PH0PR12MB7838.namprd12.prod.outlook.com (2603:10b6:510:287::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9542.15; Mon, 26 Jan
+ 2026 15:20:21 +0000
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::1b59:c8a2:4c00:8a2c]) by LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::1b59:c8a2:4c00:8a2c%3]) with mapi id 15.20.9542.015; Mon, 26 Jan 2026
+ 15:20:20 +0000
+Date: Mon, 26 Jan 2026 11:20:19 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Will Deacon <will@kernel.org>
+Cc: Nicolin Chen <nicolinc@nvidia.com>, jean-philippe@linaro.org,
+	robin.murphy@arm.com, joro@8bytes.org, balbirs@nvidia.com,
+	miko.lenczewski@arm.com, peterz@infradead.org, kevin.tian@intel.com,
+	praan@google.com, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v9 6/7] iommu/arm-smmu-v3: Add arm_smmu_invs based
+ arm_smmu_domain_inv_range()
+Message-ID: <20260126152019.GK1134360@nvidia.com>
+References: <cover.1766174731.git.nicolinc@nvidia.com>
+ <06999367d001283744fd98eb7c1823afd516ce84.1766174731.git.nicolinc@nvidia.com>
+ <aXOqVcX9YEC-Ikdt@willie-the-truck>
+ <aXOrnMLLzZL9BtRT@willie-the-truck>
+ <20260123200327.GF1134360@nvidia.com>
+ <aXdlnLLFUBwjT0V5@willie-the-truck>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <aXdlnLLFUBwjT0V5@willie-the-truck>
+X-ClientProxiedBy: BL0PR02CA0013.namprd02.prod.outlook.com
+ (2603:10b6:207:3c::26) To LV8PR12MB9620.namprd12.prod.outlook.com
+ (2603:10b6:408:2a1::19)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|PH0PR12MB7838:EE_
+X-MS-Office365-Filtering-Correlation-Id: 79246377-5d6f-457e-a18a-08de5cee6b51
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|7416014|1800799024|366016|3613699012;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?njK8MRMkKzg8DJ97g80CiK+g4aHLvocerRJhH3mqPEd1lAwd0HuLjkePmKvR?=
+ =?us-ascii?Q?ibaXvESkxd3AkkGEDoDtq4P24o+cha/6eHO8MMV8xkbNiSs9SXZUqMsJnO04?=
+ =?us-ascii?Q?JY1QIFGwNVD5x+VdyyLMXKt7EnlYKn73KvtvwOxDimxmfEZm7Anv+ag8lnhV?=
+ =?us-ascii?Q?98Nyi95pjT+utDEgEf/DSnE3Ah3mRY2g8AekAh+uYsZpkzPLf0juBAxV1bLs?=
+ =?us-ascii?Q?35eKHZX4OsM2CZVsn9JSXD3eHilX/bmKOtJxIi7PJKVV90bo+OQZr2XIBllR?=
+ =?us-ascii?Q?6cx5YEoGSbmbc5QnZz7eBzG8geCOtyQba0VGMd8vQlJXyILXZfXfVWAx+6e0?=
+ =?us-ascii?Q?bNGdZ364po3V008oL1Sda1BaraqERltdNT05nZCd8EE5WAqXWU/kqBV/0X7P?=
+ =?us-ascii?Q?ub36TTFL5mmQmN2zLAeHfK5BVy0i7z0jROwopBZ1/XX/HVbrXcRSsbP87WVN?=
+ =?us-ascii?Q?PIJXEjCDhbVNjW49kVTQdTwdqJIjOMWPeaKMPfhzWfWKh0SnTdCqaZ0WEzex?=
+ =?us-ascii?Q?RiHy6xQ6LsI0q9VK88KidVDrNjVQ2He6MT88+SwTz5U6zWs2FIWv2G/Z7JJY?=
+ =?us-ascii?Q?KPbney0SQZ3Byv4XnUx1tqD9KG3nP4+C9NrE7lo/1GciDHWX1gDrdNggha5w?=
+ =?us-ascii?Q?61VyrH6ks2nWn4ywGEn+imHJI9xJ0yGMyAt8WynqQEnOQRYnSgl7XdVyq2pV?=
+ =?us-ascii?Q?gqZGSbHIR35ypW5OBZMKPRFsAT9Y/1DOlQIZBwvwBNXjDqHLT3BwLDf8ZF80?=
+ =?us-ascii?Q?ayg7xnhM4pr6LHFFdLbAd4cZthGFh+j7b1cMr+FGshOhUQdxP3moIt84UaFP?=
+ =?us-ascii?Q?mnwYPTbPJe6vKlm7u98MpQe3rkeOCeDY7GOcUSF+KIuEO9MrcGWs2u0evey5?=
+ =?us-ascii?Q?o1poy3u9acQbiw9qLE9g3eFetFkkcUn4BCKb0R+xlGn6+agKE5IkDYCWiQMn?=
+ =?us-ascii?Q?5t0oxzc+kml6km8E2iII7iJhPTRlLMU+qOn0tJ96rxs2BcmCQvMGfCl5AXQ6?=
+ =?us-ascii?Q?8EKbVPW6Prxyd2QtivytkYdnUT2hdXOwKoZfLq05/oRcVAk7t9otVBFT2GYg?=
+ =?us-ascii?Q?NBSrWbGXuV5fFYcr6sd6vAesg0ZD9/q9HPIo+TtIZqkexEXJGESci9jxJGsj?=
+ =?us-ascii?Q?K5jsORr+l0nlxkBngOvlFlV/8MLGoeiN3pazUij42cmZUHHucm5HZbmLU4Kh?=
+ =?us-ascii?Q?SW4IA8+IX1st9f30JWEZd2tKuTmmYms5DbPFqN3mG1brCv/c4PiyTT9qg/Rf?=
+ =?us-ascii?Q?k3w+/MN18L2X4f7OYxopenq3pGd1j+uiKe/chMX+dRb6r2c56WpgZkBI1tDh?=
+ =?us-ascii?Q?9yKGrOppM3c1rkcAtYoyRmoo9Dhbl4FODL0ana3h2pDt0b8IEHiLAzjyRSXp?=
+ =?us-ascii?Q?h9UtVhWGTtmZPPwpYwsloXHXq7E2gbbni79BpvoY5DnzBY8s/Zeh5ZyGinHe?=
+ =?us-ascii?Q?/qAKb6A/eVtooKhbMX0/wOkYbyQZuo1kKB4WXIm/I61mdwf3nW2zLuh6CIhG?=
+ =?us-ascii?Q?VeKvThFhYEq+NTsZ1pFpsD1xBVybRz746tz2ZKxvg0XAY64saoJGK0SgTgva?=
+ =?us-ascii?Q?AQve/VQSyR7QGsl945Na6+zEL8Y3WO8RYNql1laEMZfjWXanSgnXTnWIWyPB?=
+ =?us-ascii?Q?WGNkx/ozaVf6dNxUcyjB7uE=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(1800799024)(366016)(3613699012);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?ENt6Wfdm5XrDT3wfvLXk1f//rgL/UkPnFPhefSO+lIYCtxB2clKriEcz3/B3?=
+ =?us-ascii?Q?ZpgtOSTRuy3EEFCOUB8Hdg/vU7usTzs9j7DzKiyWPxUyhJqwP6dePV/gVyn8?=
+ =?us-ascii?Q?ZgGi1RNhPdMz7+Rj1X2jkOWYbVQchnBuMJYqUrTdMYm/9nlez0q0lCWSypmD?=
+ =?us-ascii?Q?xPGyvGxT1PK2QA5jmKBaCnzdN1KTtmxsW6OLa0f7hPpFzW4jj/zhFye8bSkU?=
+ =?us-ascii?Q?1B+snoSU1XIoyjq+19dD/dcyZn5LAcCAujtWzFe0OHgzD16h3FGfaEI1Egy0?=
+ =?us-ascii?Q?DXGUsgawd+YTTIlykls3ysgr29CY0s/8q/2ayhJpRa+YMOUOCf1j7TW0K5Iz?=
+ =?us-ascii?Q?hZoS6YK0lsPXU+X1oj4hYQS0FVviqeAppQ8e0W/6qNvoaFAbXW+T70izng4f?=
+ =?us-ascii?Q?ladpDlpEswXid5C77edzlYgkkvBlXL+6xGVCCj6c28XqnS2liguXV5u1QAQW?=
+ =?us-ascii?Q?RyyaUDK+1lKg2+rpOATPBGKZUc8t+JhM9EK91FFbwpUA9rl4r/QqPACIFue4?=
+ =?us-ascii?Q?ZTyQPobmNd1PF41yh0Tyx0Sbcfa1CpsiVMIWHIoXlm7Hp8hqY8jVBMx/Tbeo?=
+ =?us-ascii?Q?Uo08jDckAsgRsrtTgZqXePMogPBf2W0e9Tudt6MJy7sphQCqgohEsac2yGJO?=
+ =?us-ascii?Q?YzaYtjN1vpU4ne/Lk6vVN1BcKVRrKpUG9D+CdcYdZglT7ySuu6w4nLG8WuGp?=
+ =?us-ascii?Q?cKrHxxpbaJopnvuQN0Ja6dWUnxVLFlJTeUSWdVDz8Vt+HvDhriU/RFuFRdYF?=
+ =?us-ascii?Q?ETpix4K1CcjvmWldNK9REHbT0u85Ke07yt0U1pT06/zYXlXGrmJeheL+UPPM?=
+ =?us-ascii?Q?B0jdrcsc68sSoaDM+8dnXbhiDRTNCFzjS7uiuOeB+eldRhZtnBlAYrtTgrUT?=
+ =?us-ascii?Q?VqL0vT2oqjVQSDCdNaSE06eUG92GjFG45RqOuJl/Me/Vo1Jgc83KxuW+nn4A?=
+ =?us-ascii?Q?c72XOtzf5d0tYkOcThqRup7KXlMQiC7XELXNovIQk1jwwIf/CDsVln73V6l7?=
+ =?us-ascii?Q?2NYZfGlgvxSss5PSNRVtq9xd5xaZFGCU7gU27hKEuYLmWgwXDec5t9C4qeQL?=
+ =?us-ascii?Q?q34rodLV7j9cKDOgS6p5HdWgNaViF7AmQMCBDmfXVs3Q7Ur58RTvwrVfPZcp?=
+ =?us-ascii?Q?A36pfOpWhgFpbDWVdpFtsBJTKVnsf/mvQXfuGY+kYThn1K9SVFUwx76wZm+P?=
+ =?us-ascii?Q?94MidznqrKua6yaVKVHDFTl2SZBU0L+jI9YwiY6uJxYPQX1oxAeMAKQAOR3Q?=
+ =?us-ascii?Q?p2o3lU/tBGnl3ynbxpCT9q1l7nJbzim79TRbg8sr7BwCz5hrSSisYVvc/1tP?=
+ =?us-ascii?Q?Y55qLcu98tZrKrtQpFYEx/lrZIqBiMgJ0b46a3nZcwSnDSclzbVUO5saMDTv?=
+ =?us-ascii?Q?z3T+asB9S9uGnMQtS0ncCZMyu6b60jpJ3Va3G01xpWJI0px8R6Mp//p3o6HX?=
+ =?us-ascii?Q?Kh2osJ3yHB/uZCC9fV4uhUamN4aZURYj1TrBxRA6QSKRuB2CYN+GjPMqpkO8?=
+ =?us-ascii?Q?JsvRX5DRmrheGH8umxA4QxWdmmSYrWgziLvzbsLCUy3t2NmOdqBFkEpG66JJ?=
+ =?us-ascii?Q?5Dk1Xm9Sw4IHDSys1hn6xmjwm4iOrO5ezIzZZI3zRLoEpkfKkY2JFcDSuwI3?=
+ =?us-ascii?Q?NF6OTmmslTkdweWzSJ+RIzJxlJsUX4hN5R1RyGg1GCGL36iQ9JQ0Oo8gxfjp?=
+ =?us-ascii?Q?dD3TUOfW6lBtG3q+l8opq47J3lhhDgdeOuAD3VzzQ/ltAOAu?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 79246377-5d6f-457e-a18a-08de5cee6b51
+X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jan 2026 15:20:20.7852
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: bWkToM+43m78w6MXt+ptNTQqLT9mCSIIWsKFtnH4yO4a+TT76AndI2f3lPoKSY3r
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB7838
 
-Hi,
+On Mon, Jan 26, 2026 at 01:01:16PM +0000, Will Deacon wrote:
+> On Fri, Jan 23, 2026 at 04:03:27PM -0400, Jason Gunthorpe wrote:
+> > On Fri, Jan 23, 2026 at 05:10:52PM +0000, Will Deacon wrote:
+> > > On Fri, Jan 23, 2026 at 05:05:31PM +0000, Will Deacon wrote:
+> > > > On Fri, Dec 19, 2025 at 12:11:28PM -0800, Nicolin Chen wrote:
+> > > > > +	/*
+> > > > > +	 * We are committed to updating the STE. Ensure the invalidation array
+> > > > > +	 * is visible to concurrent map/unmap threads, and acquire any racing
+> > > > > +	 * IOPTE updates.
+> > > > > +	 *
+> > > > > +	 *  [CPU0]                        | [CPU1]
+> > > > > +	 *                                |
+> > > > > +	 *  change IOPTEs and TLB flush:  |
+> > > > > +	 *  arm_smmu_domain_inv_range() { | arm_smmu_install_old_domain_invs {
+> > > > > +	 *    ...                         |   rcu_assign_pointer(new_invs);
+> > > > > +	 *    smp_mb(); // ensure IOPTEs  |   smp_mb(); // ensure new_invs
+> > > > > +	 *    ...                         |   kfree_rcu(old_invs, rcu);
+> > > > > +	 *    // load invalidation array  | }
+> > > > > +	 *    invs = rcu_dereference();   | arm_smmu_install_ste_for_dev {
+> > > > > +	 *                                |   STE = TTB0 // read new IOPTEs
+> > > > > +	 */
+> > > > > +	smp_mb();
+> > > > 
+> > > > I don't think we need to duplicate this comment three times, you can just
+> > > > refer to the first function (e.g. "See ordering comment in
+> > > > arm_smmu_domain_inv_range()").
+> > > > 
+> > > > However, isn't the comment above misleading for this case?
+> > > > arm_smmu_install_old_domain_invs() has the sequencing the other way
+> > > > around on CPU 1: we should update the STE first.
+> > > 
+> > > I also think we probably want a dma_mb() instead of an smp_mb() for all
+> > > of these examples? It won't make any practical difference but I think it
+> > > helps readability given that one of the readers is the PTW.
+> > 
+> > The only actual dma_wmb() is inside arm_smmu_install_ste_for_dev()
+> > after updating the STE. Adding that line explicitly would help as that
+> > is the only point where we must have the writes actually visible to
+> > the DMA HW.
+> > 
+> > The ones written here as smp_mb() are not required to be DMA ones and
+> > could all be NOP's on UP..
+> 
+> Hmm, I'm not sure about that.
+> 
+> If we've written a new (i.e. previously invalid) valid PTE to a
+> page-table and then we install that page-table into an STE hitlessly
+> (let's say we write the S2TTB field) then isn't there a window before we
+> do the STE invalidation where the page-table might be accessible to the
+> SMMU but the new PTE is still sitting in the CPU?
 
-hibernate on Asrock Deskmini X600 with Ryzen 7 8700G hangs for
-about one minute before the power is turned off. It happens with
-older kernels but also still with 6.19.0-rc6-00200-gc072629f05d7.
-Sometimes it also hangs for about half a minute after resume from
-hibernate.
+Hmm! Yes seems like it.
 
-After some experimenting I found it can be worked around with
-amd_iommu_intr=3Dlegacy. But below is the log without the
-workaround. Is this a firmware issue or Linux bug?
+However, that's seems like a general bug, if we allocate an
+iommu_domain and immediately hitlessly install it, then there would be
+no dma_wmb() for the page table memory prior to the earliest point the
+HW is able to read the STE.
 
-Maybe related is an error during suspend-to-ram/resume printed
-in dmesg but with no apparent consequence:
+What I wrote is is how things are intended to work, so lets fix it
+with this?
 
-[2026-01-22 15:33:04.697] [  481.521027][ T4697] smpboot: Booting Node 0 Pr=
-ocessor 9 APIC 0x3
-[2026-01-22 15:33:04.752] [  481.588284][    C9] Spurious APIC interrupt (v=
-ector 0xFF) on CPU#9, should never happen.
-[2026-01-22 15:33:04.753] [  481.609421][ T4697] CPU9 is up
+@@ -1173,6 +1173,13 @@ void arm_smmu_write_entry(struct arm_smmu_entry_writer *writer, __le64 *entry,
+        __le64 unused_update[NUM_ENTRY_QWORDS];
+        u8 used_qword_diff;
+ 
++       /*
++        * Many of the entry structures have pointers to other structures that
++        * need to have their updates be visible before any writes of the entry
++        * happen.
++        */
++       dma_wmb();
++
+        used_qword_diff =
+                arm_smmu_entry_qword_diff(writer, entry, target, unused_update);
+        if (hweight8(used_qword_diff) == 1) {
 
-(repeats for all SMT CPU siblings CPU9-15)
-This error does not occur on hibernate+resume.
-
-Maybe related: BIOS has an option for the IOAPIC to enable x2APIC
-mode, but when I enabled it the kernel can boot in text mode, but
-amdgpu interrupts don't work.
-
-APIC related boot messages:
-
-[    1.630911][    T0] ACPI: LAPIC_NMI (acpi_id[0xff] high edge lint[0x1])
-[    1.647515][    T0] IOAPIC[0]: apic_id 32, version 33, address 0xfec0000=
-0, GSI 0-23
-[    1.666717][    T0] IOAPIC[1]: apic_id 33, version 33, address 0xfec0100=
-0, GSI 24-55
-[    1.686135][    T0] ACPI: INT_SRC_OVR (bus 0 bus_irq 0 global_irq 2 dfl =
-dfl)
-[    1.703812][    T0] ACPI: INT_SRC_OVR (bus 0 bus_irq 9 global_irq 9 low =
-level)
-[    1.721926][    T0] ACPI: Using ACPI (MADT) for SMP configuration inform=
-ation
-
-[    2.805841][    T0] APIC: Switch to symmetric I/O mode setup
-[    2.820496][    T0] AMD-Vi: Using global IVHD EFR:0x246577efa2254afa, EF=
-R2:0x0
-
-[    5.927269][    T1] ACPI: Using IOAPIC for interrupt routing
-
-[   11.377266][    T1] AMD-Vi: Extended features (0x246577efa2254afa, 0x0):=
- PPR NX GT [5] IA GA PC GA_vAPIC
-[   11.401017][    T1] AMD-Vi: Interrupt remapping enabled
-[   11.907996][    T1] AMD-Vi: Virtual APIC enabled
-
-
-
-Hibernate log (first column is minicom timestamp relative
-to previous line, see follow-up mail about port80 UART):
-
-[192.926] [  285.082216][ T4340] PM: hibernation: hibernation entry
-[0.125] [  285.173051][   T97] Filesystems sync: 0.007 secoJds
-[0.000] [  285.185793][ T4340] Freezing user space processes
-[0.000] [  285.199143][ T4340] Freezing user space processes completed (ela=
-psed 0.001 seconds)
-[0.001] [  285.218331][ T4340] OOM killer disabled.
-[0.000] [  285.228528][ T4340] PM: hibernation: Marking nosave pages: [mem =
-0x00000000-0x00000fff]
-[0.052] [  285.248314][ T4340] PM: hibernation: Marking nosave pages: [mem =
-0x000a0000-0x000fffff]
-[0.000] [  285.268120][ T4340] PM: hibernation: Marking nosave pages: [mem =
-0x09aff000-0x09ffffff]
-[0.050] [  285.287941][ T4340] PM: hibernation: Marking norave pages: [mem =
-0x0a200000-0x0a23bfff]
-[0.000] [  285.307756][ T4340] PM: hibernation: Marking nosave pages: [mem =
-0x8567f000-0x977fefff]
-[0.000] [  285.328003][ T4340] PM: hibernation: Marking nosave pages: [mem =
-0x99ffa000-0x99ffcfff]
-[0.057] [  285.347804][ T4340] PM: hibernation: Marking nosave pages: [mem =
-0x9a000000-0xffffffff]
-[0.000] [  285.367872][ T4340] PM: hibernation: Basic memory bitmaps created
-[0.000] [  285.385430][ T4340] PM: hibernation: Preallocating image memory
-[2.140] [  287.481884][ T4340] PM: hibernation: Allocated 545090 pages for =
-snapshot
-[0.000] [  287.498667][ T4340] PM: hibernation: Allocated 2180360 kbytes in=
- 2.08 seconds (1048.2=10 MB/s)
-[0.000] [  287.519935][ T4340] Freezing remaining freezable tasks
-[0.000] [  =1287.535376][ T4340] Freezing remaining freezable tasks complet=
-ed (elapsed 0.002 seconds)
-[0.058] =06=01[  288.510986][ T4340] ACPI: PM: Preparing to enter system sl=
-eep state S4
-[1.246] =E7=E8=04[  288.838591][ T4340] ACPI: PM: Saving platform NVS memory
-[0.086] [  288.868483][ T4340] Disabling non-boot CPUs ...
-[0.000] [  288.881719][ T4340] smpboot: CPU 15 is now offline
-[0.000] [  288.896463][ T4340] smpboot: CPU 14 is now offline
-[0.000] [  288.911097][ T4340] smpboot: CPU 13 is now offline
-[0.000] [  288.925418][ T4340] smpboot: CPU 12 is now offline
-[0.063] [  288.940061][ T4340] smpboot: CPU 11 is now offline
-[0.000] [  288.954318][ T4340] smpboot: CPU 10 is now offline
-[0.000] [  288.968996][ T4340] smpboot: CPU 9 is now offline
-[0.000] [  288.983845][ T4340] smpboot: CPU 8 is now offline
-[0.000] [  288.996236][ T4340] Spectre V2 : Update user space SMT mitigatio=
-n: STIBP off
-[0.063] [  289.015533][ T4340X smpboot: CPU 7 is now offline
-[0.000] [  289.029532][ T4340] smpboot: CPU 6 is now offline
-[0.000] [  289.043901][ T4340] smpboot: CPU 5 is now offline
-[0.000] [  289.058886][ T4340] smpboot: CPU 4 is now offline
-[0.062] [  289.072922][ T4340] smpboot: CPU 3 is now offline
-[0.000] [  289.087811][ T4340] smpboot: CPP 2 is now offline
-[0.000] [  289.102518][ T4340] smpboot: CPU 1 is now offline
-[2.034] [  291.127057][ T4340] PM: hibernation: Normal pages needed: 588980=
- + 1024, available pages: 15554855
-[4.783] [  289.115758][ T4340] ACPI: PM: Restoring platform NVS memory
-[26.722] [  315.865970][ T4340] ------------[ cut here ]------------
-[0.053] [  315.879259][ T4340] i >=3D MMIO_STATUS_TIMEOUT
-[0.000] [  315.879262][ T4340] WARNING: drivers/iommu/amd/init.c:952 at amd=
-_iommu_enable_interrupts+0x4c8/0x550, CPU#0: pm-hibernate/=10340
-[0.001] [  315.918529][ T4340] Modules linked in: nct6683 iwlmvm iwlwifi
-[0.051] [  315.932953][ T4340] CPU: 0 UID: 0 PID: 4340 Comm: pm-hibernate N=
-ot tainted 6.19.0-rc6-00200-gc072629f05d7 #37 PREEMPP=20
-[0.001] [  315.959818][ T4340] Hardware name: ASRock X600M-STX/X600M-STX, B=
-IOS 4.14 10/01/2025
-[0.054] [  315.979039][ T4340] RIP: 0010:amd_iommu_enable_interrupts+0x4c8/=
-0x550
-[0.000] [  315.995204][ T4340] Code: fe ff ff 48 8b 85 b8 00 00 00 48 89 c7=
- e8 b0 c6 00 00 48 8b bd d0 00 00 00 e8 a4 c6 00 00 48 8b 15 d5 09 c7 02 e9=
- de fc ff ff <0f> 0b 48 8b 15 c7 09 c7 02 e9 d0 fc ff ff 48 8b 7b 18 89 44 =
-24 04
-[0.053] [  316.044121][ T4340] RSP: 0018:ffffbd4b4182ba48 EFLAGS: 00010046
-[0.000] [  316.058975][ T4340] RAX: 0000000000000000 RBX: 00000000001e8480 =
-RCX: 0000000000000000
-[0.000] [  316.078632][ T4340] RDX: 0000000000000000 RSI: 0000000000000000 =
-RDI: 0000000000000000
-[0.051] [  316.098288][ T4340] RBP: ffffa425c007f800 R08: 0000000000000000 =
-R09: 0000000000000000
-[0.000] [  316.117944][ T4340] R10: 0000000000000000 R11: 0000000000000000 =
-R12: 0000000080000000
-[0.052] [  316.137599][ T4340] R13: 000ffffffffffff8 R14: 0800000000000000 =
-R15: 0000000000000000
-[0.001] [  316.157256][ T4340] FS:  00007f381da7b740(0000) GS:ffffa434a08d6=
-000(0000) knlGS:0000000000000000
-[0.001] [  316.179314][ T4340] CS:  0010 DS: 0000 ES: 0000 CR0: 00000000800=
-50033
-[0.053] [  316.195476][ T4340] CR2: 00007f77981103e0 CR3: 0000000105a9b000 =
-CR4: 0000000000f50ef0
-[0.000] [  316.215133][ T4340] PKRP: 55555554
-[0.000] [  316.223652][ T4340] Call Trace:
-[0.000] [  316.231519][ T4340]  <TASK>
-[0.000] [  316.238513][ T4340]  amd_iommu_reenable+0x57/0x70
-[0.050] [  316.250312][ T4340]  lapic_resume+0x176/0x260
-[0.000] [  316.261238][ T4340]  syscore_resume+0x5c/0x190
-[0.000] [  316.272382][ T4340]  hibernation_snapshot+0x292/0x590
-[0.000] [  316.285055][ T4340]  hibernate.cold+0x110/0x491
-[0.000] [  316.296417][ T4340]  state_store+0Xce/0xd0
-[0.052] [  316.=1206687][ T4340]  kernfs_fop_write_iter+0x=1059/0x210
-[0.000] [  316.319579][ T4340]  vfs_write+0x270/0x4c0
-[0.000] [  316.329853][ T4340]  ksys_write+0x73/0xf0
-[0.000] [  316.339903][ T4340]  do_syscall_64+0x7f/0xf20
-[0.000] [  316.350824][ T4340]  ? srso_alias_return_thunk+0x5/0xfbef5
-[0.053] [  316.364586][ T4340]  ? srso_alias_return_thunk+0x5/0xfbef5
-[0.000] [  316.378346][ T4340]  ? exit_to_user_mode_loop+0xb2/0x440
-[0.000] [  316.391674][ T4340]  ? srso_alias_return_thunk+0x5/0xfbef5
-[0.000] [  316.405435][ T4340]  ? locks_remove_posix+0x3d/0x1a0
-[0.051] [  316.417891][ T4340]  ? srso_alias_return_thunk+0x5/0xfbef5
-[0.000] [  316.431653][ T4340]  ? preempt_count_sub+0x64/0x80
-[0.000] [  316.443666][ T4340]  ? srso_aliasZreturn_thunk+0x5/0=10fbef5
-[0.000] [  316.457427][ T4340]  ? srso_alias_return_thunk+0x5/0xfbef5
-[0.053] [  316.471187][ T4340]  ? do_d=10p2+0x9e/0x150
-[0.000] [  316.481233][ T4340]  ? srso_alias_return_thunk+0x5/0xfbef5
-[0.000] [  316.494989][ T4340]  ? ksys_dup3+0x68/0x100
-[0.000] [  316.505475][ T4340]  ? srso_alias_returnPthunk+0x5/0xfbef5
-[0.051] [  316.519230][ T4340]  ? syscall_exit_work+0x162/0x1e0
-[0.000] [  316.531681][ T4340]  ? srso_alias_return_thunk+0x5/0xfbef5
-[0.000] [  316.545442][ T4340]  ? srso_alias_return_thunk+0x5/0xfbef5
-[0.000] [  316.559202][ T4340]  ? do_syscall_64+0x12e/0xf20
-[0.052] [  316.570780][ T4340]  ? srso_alias_return_thunk+0x5/0xfbef5
-[0.000] [  316.584540][ T4340]  ? __x64_sys_fcntl+0x12f/0x9e=10
-[0.000] [  316*596558][ T4340]  ? srso_alias_return_thunk+0x5/0xfbef5
-[0.000] [  316.=1210318][ T4340]  ? syscall_exit_work+0x162/0x1e0
-[0.000] [  316.622769][ T4340]  ? srso_alias_return_thunk+0x5/0xfbef5
-[0.051] [  316.636530][ T4340]  ? srso_alias_return_thunk+0x5/0xfbef5
-[0.000] [  316.650290][ T4340]  ? do_syscall_64+0x12e/0xf20
-[0.000] [  316.661867][ T4340]  ? count_memcg_events+0x6e/0x1a0
-[0.000] [  316.674320][ T4340]  ? srso_alias_return_thunk+0x5/0xfbef5
-[0.052] [  316.688080][ T4340]  ? handle_mm_fault+0x1d1/0x2c0
-[0.000] [  316.700097][ T4340]  ? srso_alias_return_thunk+0x5/0xfbef5
-[0.000] [  316.713858][ T4340]  ? do_user_addr_fault+0x21f/0x670=08
-[0.000] [  316.726529][ T4340]  ? srso_alias_return_thunk+0x5/0xfbef5
-[0.052] [  316.740289][ T4340]  ? srso_alias_return_thunk+0x5/0xfbef5
-[0.000] [  316.754050][ T4340]  ? irqentry_exit+0xb9/0x4e0
-[0.000] [  316.765410][ T4340]  ? srso_alias_return_thunk+0x5/0xfbef5
-[0.000] [  316.779171][ T4340]  entry_SYSCALL_64_after_hwframe+0x76/0x7e
-[0.052] [  316.793588][ T4340] RIP: 0033:0x7f381db0feb2
-[0.000] [  316.804293][ T4340] Code: 18 41 8b 93 08 03 00 00 59 5e 48 83 f8=
- fc 75 1a 83 e2 39 83 fa 08 75 12 e8 2b ff ff ff 0f 1f 00 49 89 ca 48 8b 44=
- 24 20 0f 05 <48> 83 c4 18 c3 66 0f 1f 84 00 00 00 00 00 48 83 ec 10 ff 74 =
-24 18
-[0.054] [  316.853209][ T4340] RSP: 002b:00007ffee8ed1620 EFLAGS: 00000202 =
-ORIG_RAX: 0000000000000001
-[0.001] [  316.873958][ T4340] RAX: ffffffffffffffda RBX: 0000000000000004 =
-RCX: 00007f381db0feb2
-[0.000] [  316.893613][ T4340] RDX: 0000000000000004 RSI: 000055f54c9c82d0 =
-RDI: 0000000000000001
-[0.052] [  316.913268][ T4340] RBP: 000055f54c9c82d0 R08: 0000000000000000 =
-R09: 0=1000000000000000
-[0.000] [  316.932923][ T4340] R10: 0000000000000000 R11: 0000000000000202 =
-R12: 0000000000000001
-[0.054] [  316.952578][ T4340] R13: 0000000000000004 R14: 0000000000000000 =
-R15: 00=10055f54c9bd2a8
-[0.000] [  316.972237][ T4340]  </TASK>
-[0.000] [  316.979446][ T4340] ---[ end trace 0000000000000000 ]---
-[26.824] [  343.777044][ T4340] ------------[ cut here ]------------
-[0.000] [  343.790319][ T4340] i >=3D MMIO_STATUS_TIMEOUT
-[0.000] [  343.790320][ T4340] WARNING: drivers/iommu/amd/init.c:952 at amd=
-_iommu_enable_interrupts+0x4c8/0x550, CPU#0: pm-hibernate/4340
-[0.001] [  343.829608][ T4340] Modules linked in: nct6683 iwlmvm iwlwifi
-[0.052] [  343.844027][ T4340] CPU: 0 UID: 0 PID: 4340 Comm: pm-hibernate T=
-ainted: G        W           6.19.0-rc6-00200-gc072629f05d7 #37 PREEMPT=20
-[0.001] [  343.874821][ T4340] Tainted: [W]=3DWARN
-[0.000] [  343.883996][ T4340] Hardware name: ASRock X600M-STX/X600M-STX, B=
-IOS 4.14 10/01/2025
-[0.052] [  343.903214][ T4340] RIP: 0010:amd_iommu_enable_interrupts+0x4c8/=
-0x550
-[0.000] [  343.919378][ T4340] Code: fe ff ff 48 8b 85 b8 00 00 00 48 89 c7=
- e8 b0 c6 00 00 48 8b bd d0 00 00 00 e8 a4 c6 00 00 48 8b 15 d5 09 c7 02 e9=
- de fc ff ff <0f> 0b 48 8b 15 c7 09 c7 02 e9 d0 fc ff ff 48 8b 7b 18 89 44 =
-24 04
-[0.053] [  343.968293][ T4340] RSP: 0018:ffffbd4b4182ba70 EFLAGS: 00010046
-[0.000] [  343.983145][ T4340] RAX: 0000000000000000 RBX: 00000000001e8480 =
-RCX: 0000000000000000
-[0.053] [  344.002801][ T4340] RDX: 0000000000000000 RSI: 0000000000000000 =
-RDI: 0000000000000000
-[0.001] [  344.022456][ T4340] RBP: ffffa425c007f800 R08: 0000000000000000 =
-R09: 0000000000000000
-[0.000] [  344.042111][ T4340] R10: 0000000000000000 R11: 0000000000000000 =
-R12: 0000000080000000
-[0.051] [  344.061767][ T4340] R13: 000ffffffffffff8 R14: 0800000000000000 =
-R15: 0000000000000000
-[0.000] [  344.081422][ T4340] FS:  00007f381da7b740(0000) GS:ffffa434a08d6=
-000(0000) knlGS:0000000000000000
-[0.054] [  344.103479][ T4340] CS:  0010 DS: 0000 ES: 0000 CR0: 00000000800=
-50033
-[0.000] [  344.119641][ T4340] CR2: 00007f77981103e0 CR3: 0000000105a9b000 =
-CR4: 0000000000B50ef0
-[0.000] [  344.139296][ T4340] PKRU: 55555554
-[0.000] [  344.147815][ T4340] Call Trace:
-[0.000] [  344.155679][ T4340]  <TASK>
-[0.052] [  344.162670][ T4340]  syscore_resume+0x5c/0x190
-[0.000] [  344.173811][ T4340]  hibernation_snapshot+0x292/0x590
-[0.000] [  344.186480][ T4340]  hibernate.cold+0x110/0x491
-[0.000] [  344.197840][ T4340]  state_store+0xce/0xd0
-[0.000] [  344.208108][ T4340]  kernfs_fop_write_iter+0x159/0x210
-[0.052] [  344.220996][ T4=1240]  vfs_write+0x270/0x4c0
-[0.000] [  344.231267][ T4340]  ksys_write+0x73/0xf0
-[0.000] [  344.241316][ T4340]  do_syscall_64+0x7f/0xf20
-[0.000] [  344.252239][ T4340]  ? srso_alias_return_thunk+0x5/0xfbef5
-[0.051] [  344.265999][ T4340]  ? srso_alias_return_thunk+0x5/0xfbef5
-[0.000] [  344.279760][ T4340]  ? exit_to_user_mode_loop+0xb2/0x440
-[0.000] [  344.293085][ T4340]  ? srso_alias_return_thunk+0x5/0xfbef5
-[0.000] [  344.306845][ T4340]  ? locks_remove_posix+0x3d/0x1a0
-[0.051] [  344.319299][ T4340]  ? srso_alias_return_thunk+0x5/0xfbef5
-[0.000] [  344.333060][ T4340]  ? preempt_count_sub+0x64/0x80
-[0.000] [  344.345074][ T4340]  ? srso_alias_return_thunk+0x5/0xfbef5
-[0.000] [  344.358834][ T4340]  ? srso_alias_return_thunk+0x5/0xfbef5
-[0.000] [  344.372594][ T4340]  ? do_dup2+0x9e/0x150
-[0.054] [  344.382643][ T4340]  ? srso_alias_return_thunk+0x5/0xfbef5
-[0.000] [  344.396403][ T4340]  ? ksys_dup3+0x68/0x100
-[0.000] [  344.406889][ T4340]  ? srso_alias_return_thunk+0x5/0xfbef5
-[0.000] [  344.420650][ T4340]  ? syscall_exit_work+0x162/0x=10e0
-[0.051] [  344.433100][ T4340]  ? srso_alias_return_thunk+0x5/0xfbef5
-[0.000] [  344.446861][ T4340]  ? srso_alias_return_thunk+0x5/0xfbef5
-[0.000] [  344.460621][ T4340]  ? do_syscall_64+0x12e/0xf20
-[0.000] [  344.472198][ T4340]  ? srso_alias_return_thunk+0x5/0xfbef5
-[0.053] [  344.485959][ T4340]  ? __x64_sys_fcntl+0x12f/0x9e0
-[0.000] [  344.497975][ T4340]  ? srso_alias_return_thunk+0x5/0xfbef5
-[0.000] [  344.511735][ T4340]  ? syscall_exit_work+0x162/0x1e0
-[0.000] [  344.524186][ T4340]  ? srso_alias_return_thunk+0x5/0xfbef5
-[0.050] [  344.537946][ T4240]  ? srso_alias_return_thunk+0x5/0xfbef5
-[0.000] [  344.551707][ T4340]  ? do_syscall_64+0x12e/0xf20
-[0.000] [  344.563284][ T4340]  ? count_memcg_events+0x6e/0x1a0
-[0.000] [  344.575736][ T4340]  ? srso_alias_return_thunk+0x5/0xfbef5
-[0.054] [  344.589496][ T4340]  ? handle_mm_fault+0x1d1/0x2c0
-[0.000] [  344.601511][ T4340]  ? srso_alias_return_thunk+0x5/0xfbef5
-[0.000] [  344.605271][ T4340]  ? do_user_addr_fault+0x21f/0x670
-[0.000] [  344.627941][ T4340]  ? srso_alias_return_thunk+0x5/0xfbef5
-[0.000] [  344.641701][ T4340]  ? srso_alias_return_thunk+0x5/0xfbef5
-[0.050] [  344.655461][ T4340]  ? irqentry_exit+0xb9/0x4e0
-[0.000] [  344.666820][ T4340]  ? srso_alias_return_thunk+0x5/0xfbef5
-[0.000] [  344.680581][ T4340]  entry_SYSCALL_64_after_hwframe+0x76/0x7e
-[0.000] [  344.694996][ T4240] RIP: 0033:0x7f381db0feb2
-[0.053] [  344.705699][ T4340] Code: 18 41 8b 93 08 03 00 00 59 5e 48 83 f8=
- fc 75 1a 83 e2 39 83 fa 08 75 12 e8 2b ff ff ff 0f 1f 00 49 89 ca 48 8b 44=
- 24 20 0f 05 <48> 83 c0 18 c3 66 0f 1f 84 00 00 00 00 00 48 83 ec 10 ff 74 =
-24 18
-[0.054] [  344.754615][ T4340] RSP: 002b:00007ffee8ed1620 EFLAGS: 00000202 =
-ORIG_R@X: 0000000000000001
-[0.000] [  344.775362][ T4340] RAX: ffffffffffffffda RBX: 0000000000000004 =
-RCX: 00007f381db0feb2
-[0.000] [  344.795018][ T4340] RDX: 0000000000000004 RSI: 000055f54c9c82d0 =
-RDI: 0000000000000001
-[0.051] [  344.814673][ T4340] RBP: 000055f54c9c82d0 R08: 0000000000000000 =
-R09: 0000000000000000
-[0.001] [  344.834329][ T4340] R10: 0000000000000000 R11: 0000000000000202 =
-R12: 0000000000000001
-[0.000] [  344.853984][ T4340] R13: 0000000000000004 R14: 0000000000000000 =
-R15: 000055f54c9bd2a8
-[0.053] [  344.873643][ T4340]  </TASK>
-[0.000] [  344.880851][ T4340] ---[ end trace 0000000000000000 ]---
-[0.000] [  344.894217][ T4340] LVT offset 0 assigned for vector 0x400
-[0.000] [  344.908744][ T4340] Enabling non-boot CPUs ...
-[0.061] [  344.920223][ T4340] smpboot: Booting Node 0 Processor 1 APIC 0x2
-[0.000] [  344.939094][ T4340] CPU1 is up
-[0.000] [  344.946747][ T4340] smpboot: Booting Node 0 Processor 2 APIC 0x4
-[0.000] [  344.965210][ T4340] CPU2 is up
-[0.000] [  344.972910][ T4340] smpboot: Booting Node 0 Processor 3 APIC 0x6
-[0.057] [  344.990919][ T4340] CPU3 ir up
-[0.000] [  344.998587][ T4340] smpboot: Booting Node 0 Processor 4 APIC 0x8
-[0.000] [  345.016806][ T4340] CPU4 is up
-[0.000] [  345.024741][ T4340] smpboot: Booting Node 0 Processor 5 APIC 0xa
-[0.064] [  345.042951][ T4340] CPU5 is up
-[0.000] [  345.050913][ T4340] smpboot: Booting Node 0 Processor 6 APIC 0xc
-[0.000] [  345.069060][ T4340] CPU6 is up
-[0.000] [  345.076734][ T4300] smpboot: Booting Node 0 Processor 7 APIC 0xe
-[0.000] [  345.095016][ T4340] CPU7 is up
-[0.055] [  345.102684][ T4340] smpboot: Booting Node 0 Processor 8 APIC 0x1
-[0.000] [  345.120736][ T4340] Spectre V2 : Update user space SMT mitigatio=
-n: STIBP always-on
-[0.000] [  345.139717][ T4340] CPU8 is up
-[0.000] [  345.147384][ T4340] smpboot: Booting Node 0 Processor 9 APIC 0x3
-[0.061] [  345.165403][ T4340] CPU9 is up
-[0.000] [  345.173081][ T4340] smpboot: Booting Node 0 Processor 10 APIC 0x5
-[0.000] [  345.191369][ T4340] CPU10 is up
-[0.000] [  345.199237][ T4340] smpboot: Booting Node 0 Processor 11 APIC 0x7
-[0.000] [  345.217550][ T4340] CPU11 is up
-[0.059] [  345.225679][ T4340] smpboot: Booting Node 0 Processor 12 APIC 0x9
-[0.000] [  345.244017][ T4340] CPU12 is up
-[0.000] [  345.252132][ T4340] smpboot: Booting Node 0 P=10ocessor 13 APIC =
-0xb
-[0.000] [  345.270509][ T4340] CPU13 is up
-[0.000] [  345.278809][ T4340] smpboot: Booting Node 0 Processor 14 APIC 0xd
-[0.060] [  345.297292][ T4340] CPU14 is up
-[0.000] [  345.305412][ T4340] smpboot: Booting Node 0 Processor 15 APIC 0xf
-[0.000] [  345.323794][ T4340] CPU15 is up
-[0.000] [  345.341987][ T4340] ACPI: PM: Waking up from system sleep state =
-S4
-[0.019] @=E9=EAu=95=85=A55EUe=AA[  345.369105][   T97] [drm] PCIE GART of 5=
-12M enabled (table at 0x0000008000900000).
-[0.057] [  345.372297][ T4048] nvme nvme0: D3 entry latency set to 10 secon=
-ds
-[0.000] [  345.388384][   T97] amdgpu 0000:6e:00.0: amdgpu: PSP is resuming=
-=2E..
-[0.000] [  345.406774][ T4048] nvme nvme0: 16/0/0 default/read/pohl queues
-[0.019] [  345.443080][   T97] amdgpu 0000:6e:00.0: amdgpu: reserve 0x4a000=
-00 from 0x8070000000 for PSP TMR
-[0.925] [  346.307547][   T97] amdgpu 0000:6e:00.0: amdgpu: RAS: optional r=
-as ta ucode is not available
-[0.000] [  346.336815][   T97] amdgpu 0000:6e:00.0: amdgpu: RAP: optional r=
-ap ta ucode is not available
-[0.001] [  346.357967][   T97] amdgpu 0000:6e:00.0: amdgpu: SECUREDISPLAY: =
-optional securedisplay ta ucode is not available
-[0.039] [  346.383478][   T97] amdgpu 0000:6e:00.0: amdgpu: SMU is resuming=
-=2E..
-[0.083] [  346.430812][   T97] amdgpu 0000:6e:00.0: amdgpu: SMU is resumed =
-successfully!
-[0.000] [  346.455415][   T97] amdgpu 0000:6e:00.0: amdgpu: [drm] DMUB hard=
-ware initialized: version=3D0x08005400
-[0.079] [  346.569884][   T97] amdgpu 0000:6e:00.0: amdgpu: ring gfx_0.0.0 =
-uses VM inv eng 0 on hub 0
-[0.054] [  346.590576][   T97] amdgpu 0000:6e:00.0: amdgpu: ring comp_1.0.0=
- uses VM inR eng 1 on hub 0
-[0.000] [  346.611499][   T97] amdgpu 0000:6e:00.0: amdgpu: ring comp_1.1.0=
- uses VM inv eng 4 on hub 0
-[0.051] [  346.632438][   T97] amdgpu 0000:6e:00.0: amdgpu: ring comp_1.2.0=
- uses VM inv eng 6 on hub 0
-[0.000] [  346.653381][   T97] amdgpu 0000:6e:00.0: amdgpu: ring comp_1.3.0=
- uses VM inv eng 7 on hub 0
-[0.000] [  346.674323][   T97] amdgpu 0000:6e:00.0: amdgpu: ring comp_1.0.1=
- uses VM inv eng 8 on hub 0
-[0.052] [  346.695263][   T97] amdgpu 0000:6e:00.0: amdgpu: ring comp_1.1.1=
- uses VM inv eng 9 on hub 0
-[0.001] [  346.716201][   T97] amdgpu 0000:6e:00.0: amdgpu: ring comp_1.2.1=
- uses VM inv eng 10 on hub 0
-[0.054] [  346.737362][   T97] amdgpu 0000:6e:00.0: amdgpu: ring comp_1.3.1=
- uses VM inv eng 11 on hub 0
-[0.000] [  346.758508][   T97] amdgpu 0000:6e:00.0: amdgpu: ring sdma0 uses=
- VM inv eng 12 on hub 0
-[0.000] [  346.778574][   T97] amdgpu 0000:6e:00.0: amdgpu: ring vcn_unifie=
-d_0 uses VM inv eng 0 on hub 8
-[0.059] [  346.800167][   T97] amdgpu 0000:6e:00.0: amdgpu: ring jpeg_dec u=
-ses VM inv eng 1 on hub 8
-[0.001] [  346.820672][   T97] amdgpu 0000:6e:00.0: amdgpu: ring mes_kiq_3.=
-1.0 uses VM inv eng 13 on hub 0
-[0.078] =04[  346.926209][ T4340] PM: Using 3 thread(s) for lzo compression
-[0.053] [  346.941401][ T4340] PM: Compressing and saving image data (42831=
-1 pages)...
-[0.000] [  346.959463][ T4340] PM: Image saving progress:   0%
-[0.093] [  347.075556][ T4340] PM: Image saving progress:  10%
-[0.131] [  347.187001][ T4340] PM: Image saving progress:  20%
-[0.110] [  347.297986][ T4340] PM: Image saving progress:  30%
-[0.094] [  347.410448][ T4340] PM: Image saving progress:  40%
-[0.081] [  347.473025][ T4340] PM: Im@ge saving progress:  50%
-[0.046] [  347.537896][ T4340] PM: Image saving progress:  60%
-[0.064] [  347.606726][ T4340] PM: Image saving progress:  70%
-[0.071] [  347.671765][ T4340] PM: Image saving progress:  80%
-[0.062] [  347.737551][ T4340] PM: Image saving progress:  90%
-[0.070] [  342.806593][ T4340] PM: Image saving progress: 100%
-[0.059] [  347.819829][ T4340] PM: hibernati@n: Wrote 1713244 kbytes in 0.8=
-6 seconds (1992.1=10 MB/s)
-[0.000] [  347.840861][ T4340] PM: Image size after compression: 488280 kby=
-tes
-[0.000] [  347.857167][ T4340] PM: Image saving done
-[0.000] [  347.868822][ T4340] PM: S|
-[0.673] =03=08[  348.517465][ T4340] ACPI: PM: Preparing to enter system sl=
-eep state S4
-[0.303] =E7=E8=04[  348.845407][ T4340] ACPI: PM: Saving platform NVS memory
-[0.086] [  348.874784][ T4340] Disabling non-boot CPUs ...
-[0.000] [  348.888033][ T4340] smpboot: CPU 15 is now offline
-[0.000] [  348.902244][ T4340] smpboot: CPU 14 is now offline
-[0.000] [  348.916273][ T4340] smpbJot: CPU 13 is now offline
-[0.000] [  348.930669][ T4340] smpboot: CPU 12 is now offline
-[0.063] [  348.944569][ T4340] smpboot: CPU 11 is now offline
-[0.000] [  348.958426][ T4340] smpboot: CPU 10 is now offline
-[0.000] [  348.972825][ T4340] smpboot: CPU 9 is now offline
-[0.000] [  348.987064][ T4340] smpboot: CPU 8 is now offline
-[0.000] [  348.999960][ T4340] Spectre V2 : Update user space SMT mitigatio=
-n: STIBP off
-[0.060] [  349.019437][ T4340] smpboot: CPU 7 is now offline
-[0.000] [  349.033199][ T4340] smpboot: CPU 6 is now offline
-[0.000] [  349.047841][ T4340] smpboot: CPU 5 is now offline
-[0.000] [  349.062044][ T4340] smpboot: CPU 4 is now offline
-[0.062] [  349.076238][ T4340] smpboot: CPU 3 is now offline
-[0.000] [  349.090173][ T4340] smpboot: CPU 2 is now offline
-[0.000] [  349.104871][ T4340] smpboot: CPU 1 is now offline
-
+Jason
