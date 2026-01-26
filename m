@@ -1,90 +1,106 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A985123B61E
-	for <iommu@lists.linux.dev>; Mon, 26 Jan 2026 18:49:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45A4423B61E;
+	Mon, 26 Jan 2026 18:56:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769453355; cv=none; b=oJ158iVS9gCcNZaWJHCe9Kp+l5Ovlt34TY3yllTRCI15mSGfTRBhePu1FkFTI6axEeAeTWivmzrol2Q4HKPH7GTsSthXDKgX2iyoeBtHclkWjKDGGJXKVwxjqWEqNXRF3/8G1GCzjnSy+AYQSzmJXD7rfR6MME3WrQYDmOV0V8I=
+	t=1769453800; cv=none; b=EWfAJJm28bXSlFNo0R1T4A6Z6Y/Oe9xs8OWDGHCCTs1W9UrS5gUrOjAZC30gMoa2JwPHSWJHpXUIx6BR2/gZ0tdOlF9h4/1KH/S3ns9kqwTflW/lnChG9AZtAb5ozs2jnLIuZQIZx2sHxsRyg1px5dKWzihutXxAKlveFmPFFgU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769453355; c=relaxed/simple;
-	bh=BjevpJtv6JdMvGyZ4+3HDmYp0JsItGorquKWgvQc8uE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=TX7TeQlbHQMRqmXWtsaAnDhvZYCtt53Yj7wXsmEwikNvFbS0CHVGUk9Moa20tiiiZhmXT2sKhpDQ9OkSJ4MQiwFz9K/10YtqFoEBtyTCKfKjTz7D20PwPGPGdqkeC/Qu9N1WvPt+FEEN7wxhNLG3amBtqzsPxUpRRjjPdyuqIE4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 62AD3339;
-	Mon, 26 Jan 2026 10:49:05 -0800 (PST)
-Received: from [10.57.51.176] (unknown [10.57.51.176])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C9EA63F73F;
-	Mon, 26 Jan 2026 10:49:09 -0800 (PST)
-Message-ID: <0a60797a-fbb9-4a83-adc6-ad62baf5915b@arm.com>
-Date: Mon, 26 Jan 2026 18:49:07 +0000
+	s=arc-20240116; t=1769453800; c=relaxed/simple;
+	bh=RK0yLvS/H1dCapN7yhJ4VLO4e8zez9xvVOjncJv7jew=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=cE9TnRqZq+DqlikVmzc8Adi/db2jM2S98EGaevLJQNNjDe09IlLQyl7nd7JF9SFRJK7GcnyifQ4/WerooWeLXh+AEnjpenUyr0GtRWIDm6rtHI8rUmnOoA2QURY5kG7NX0MfI5Xe6RRHRw5zt3MScj4EzbcLdzb1O8TQ+L37SVk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dvM4iFxr; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dvM4iFxr"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C4C6C116C6;
+	Mon, 26 Jan 2026 18:56:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1769453800;
+	bh=RK0yLvS/H1dCapN7yhJ4VLO4e8zez9xvVOjncJv7jew=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=dvM4iFxr+f/wFDXQSK8NT83OzplMeoeF4/k19OjEM06oT8+iQXYl7iJGwezwXkux7
+	 QK9QLjeL96W/imrxoz8n28+EQ8f8XuPNr6fttDnG4TY42YtGSb9QawAX7sB2Mtbxzj
+	 5/CLclzqbuAQWMa8QW3gv1sSLVDRik0j7OTj4rGyQbxPJkq7AQHX5djpeth2WNfuu3
+	 smQVrp7XawN65z3ZtetJA9tH09cwKwBsBhrcoSAnWIDXnFwpZHXDCcGFQXQA7wQcxA
+	 jmFWVX1w1YzMK8ozhl/s58H4RlaW+lhkbgdY7oSnBmoAIUCuzAEAe3K+U5Bk564X0/
+	 ga1sWg732h4Ww==
+Date: Mon, 26 Jan 2026 18:56:34 +0000
+From: Will Deacon <will@kernel.org>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Nicolin Chen <nicolinc@nvidia.com>, jean-philippe@linaro.org,
+	robin.murphy@arm.com, joro@8bytes.org, balbirs@nvidia.com,
+	miko.lenczewski@arm.com, peterz@infradead.org, kevin.tian@intel.com,
+	praan@google.com, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v9 6/7] iommu/arm-smmu-v3: Add arm_smmu_invs based
+ arm_smmu_domain_inv_range()
+Message-ID: <aXe44sLQ3yUYiS9H@willie-the-truck>
+References: <cover.1766174731.git.nicolinc@nvidia.com>
+ <06999367d001283744fd98eb7c1823afd516ce84.1766174731.git.nicolinc@nvidia.com>
+ <aXOqVcX9YEC-Ikdt@willie-the-truck>
+ <aXOrnMLLzZL9BtRT@willie-the-truck>
+ <20260123200327.GF1134360@nvidia.com>
+ <aXdlnLLFUBwjT0V5@willie-the-truck>
+ <20260126152019.GK1134360@nvidia.com>
+ <aXeQC3GjUgafuOi-@willie-the-truck>
+ <20260126160940.GM1134360@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFCv1 3/3] iommu/arm-smmu-v3: Allow ATS to be always on
-To: Jason Gunthorpe <jgg@nvidia.com>, Will Deacon <will@kernel.org>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, bhelgaas@google.com, joro@8bytes.org,
- praan@google.com, baolu.lu@linux.intel.com, kevin.tian@intel.com,
- miko.lenczewski@arm.com, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- linux-pci@vger.kernel.org
-References: <cover.1768624180.git.nicolinc@nvidia.com>
- <09cb6be1f8f7472a2f1ccab72154cc6e22cf570b.1768624181.git.nicolinc@nvidia.com>
- <aXdgljWHHPVMTmya@willie-the-truck> <20260126172020.GP1134360@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20260126172020.GP1134360@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260126160940.GM1134360@nvidia.com>
 
-On 2026-01-26 5:20 pm, Jason Gunthorpe wrote:
-> On Mon, Jan 26, 2026 at 12:39:50PM +0000, Will Deacon wrote:
->>> +	ret = arm_smmu_alloc_cd_tables(master);
->>> +	if (ret)
->>> +		return ret;
->>
->> Were do you allocate the second level entry for ssid 0 if we're using
->> 2-level cd tables?
+On Mon, Jan 26, 2026 at 12:09:40PM -0400, Jason Gunthorpe wrote:
+> On Mon, Jan 26, 2026 at 04:02:19PM +0000, Will Deacon wrote:
+> > On Mon, Jan 26, 2026 at 11:20:19AM -0400, Jason Gunthorpe wrote:
+> > > On Mon, Jan 26, 2026 at 01:01:16PM +0000, Will Deacon wrote:
+> > > > On Fri, Jan 23, 2026 at 04:03:27PM -0400, Jason Gunthorpe wrote:
+> > > > > On Fri, Jan 23, 2026 at 05:10:52PM +0000, Will Deacon wrote:
+> > > > > > On Fri, Jan 23, 2026 at 05:05:31PM +0000, Will Deacon wrote:
+> > > > > > > On Fri, Dec 19, 2025 at 12:11:28PM -0800, Nicolin Chen wrote:
+> > > > > > > > +	/*
+> > > > > > > > +	 * We are committed to updating the STE. Ensure the invalidation array
+> > > > > > > > +	 * is visible to concurrent map/unmap threads, and acquire any racing
+> > > > > > > > +	 * IOPTE updates.
+> > > > > > > > +	 *
+> > > > > > > > +	 *  [CPU0]                        | [CPU1]
+> > > > > > > > +	 *                                |
+> > > > > > > > +	 *  change IOPTEs and TLB flush:  |
+> > > > > > > > +	 *  arm_smmu_domain_inv_range() { | arm_smmu_install_old_domain_invs {
+> > > > > > > > +	 *    ...                         |   rcu_assign_pointer(new_invs);
+> > > > > > > > +	 *    smp_mb(); // ensure IOPTEs  |   smp_mb(); // ensure new_invs
+> > > > > > > > +	 *    ...                         |   kfree_rcu(old_invs, rcu);
+> > > > > > > > +	 *    // load invalidation array  | }
+> > > > > > > > +	 *    invs = rcu_dereference();   | arm_smmu_install_ste_for_dev {
+> > > > > > > > +	 *                                |   STE = TTB0 // read new IOPTEs
+> > > > > > > > +	 */
+> > > > > > > > +	smp_mb();
 > 
-> I don't think we need to. The entire design here has a non-valid CD entry
-> for SSID 0.
+> > If we do that, can we drop the smp_mb()s from
+> > arm_smmu_install_{old,new}_domain_invs()?
 > 
-> The spec is really weird here, on one hand it explicitly says that with
-> S1DSS the CD entry is ignored.
-> 
-> On the other hand, you are also required to have a CD table pointer of
-> at least size one for some reason.
+> I suppose so, but domain attach isn't a performance path so it depends
+> on your preference for strict pairing of barriers. Currently the two
+> smp_mbs() are paired. Can we reliably pair smp_mb() with dma_wmb()?
+> Are you happy with that clarity?
 
-Because it is not possible to enable 0 SubStreams, since that wouldn't 
-make any sense, hence S1CDMax also acts as the "enable SubStreams" 
-control (assuming SSIDSIZE > 0 and it does anything at all - note that 
-strictly we cannot assume this bypass trick is *always* possible, since 
-an SMMU is permitted to support ATS without supporting SubStreams).
+Yeah, I think that's ok.
 
-> So, I think a CD table pointer to a fully invalid L1 table of at least
-> size 1 should be OK?
-> 
-> Or stated another way, why would ie be OK to have a 1 level table with
-> an non-valid CD table entry for SSID0 but not OK to have a 2 level
-> table that returns non-valid at the first walk?
+> My view is attach isn't a performance path, so having extra barriers
+> is fine if it helps understandability.
 
-S1ContextPtr itself is reachable since S1 is enabled, so it cannot point 
-to nonsense. But the S1DSS==Bypass behaviour does state:
+I think that the more barriers we have, the harder the code is to
+understand so I would prefer just to have the smp_mb() for the
+write->read case in arm_smmu_domain_inv_range() along with a comment
+explaining why it's needed.
 
-"Note: Such a transaction does not fetch a CD, and therefore does not 
-report F_CD_FETCH, C_BAD_CD or a stage 2 Translation-related fault with 
-CLASS == CD."
+I think that also means that my concern about the old comments on the
+other patch largely disappears.
 
-So if we're not intending to actually allow traffic on the SubStream(s), 
-then it should be fine to use either a 1-level table of invalid CDs, or 
-a 2-level format with an empty L1CD table to gracefully terminate any 
-config prefetches.
-
-Thanks,
-Robin.
+Will
