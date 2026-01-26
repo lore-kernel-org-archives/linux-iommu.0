@@ -1,147 +1,500 @@
-Received: from sender4-pp-f112.zoho.com (sender4-pp-f112.zoho.com [136.143.188.112])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8694C2F83A2
-	for <iommu@lists.linux.dev>; Mon, 26 Jan 2026 09:03:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.112
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769418220; cv=pass; b=ltRsFdBOq4jPhJBG0R12ppdozd7Is5uKeH3XqVB6zw43+D+p/noab8XskHgIgoI6cCJJKykMV0G+KUwlN93L2XGpQbU6/HT8lAaI2Sod3HE0kc7y8GYdgS4kPzK48LFXEIU7iDjYqLYkk6NprDCGmQalDgut0DXMskSQoWxS9eA=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769418220; c=relaxed/simple;
-	bh=TGimY2g/rPo873RPmUyXIir1ih5AhpTHPgfuuvqhDKE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=KVTzvrJdbfkEzKD/NegmhjkXcy6r8FrVKNDAvgyTpo8dMdgE+z8tBsy1zUYvhPG8fm5LIyTxNSLLJBX/Lqg+vzWb5o6SFppYk4mRsw9NFCEKV35AEtmisB+isN+Ds0FBdgmT8+h8UaFKsv6wpm8EtJgTY5UHV3jtiA1CTkFRIPE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=benjamin.gaignard@collabora.com header.b=k+ETJadj; arc=pass smtp.client-ip=136.143.188.112
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23F9A329C6B
+	for <iommu@lists.linux.dev>; Mon, 26 Jan 2026 12:26:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1769430391; cv=none; b=Jxcre7GH5R62Cws/BVfRmadSSVLYhF0lHlqXsfG0Tl71EM7zZnDb4yh3tzp71vgeYlum3IFvN35mgJNFlmmPWIKYM1SYpF0C26vC4dma+B9S1meZWdXWzgJ1UvacQulUMeNH1q9XvYJHX0jkJtSGfq4hncnTYQUEGSyBB/65/g8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1769430391; c=relaxed/simple;
+	bh=sXgpZAB7fBr74J4nr5ln8ouz3i95Ff2hs0Y+dXHx2qo=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=k0mJD2qKVy31G1J3M+nRH/yAly5AbLbesw5wywMmS5JNUOZMqr/q86+b194hFcKGiqrgI6wZ0Ia+atooSObz76kHwC9JKeZEl3MI0Mp7KuT+SYlznEdZOBa19q6GifjQ0gIStX6k5nLvFx+uFn0ORCHvo6QJapi//HL2I6dLraU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=fa6jQ4+5; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=ekc+udV0; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=collabora.com header.i=benjamin.gaignard@collabora.com header.b="k+ETJadj"
-ARC-Seal: i=1; a=rsa-sha256; t=1769418206; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=Lfh/eRNm7h3SKUFm2ewA6a/EsO2tqg1/xGQ+4lMYt1NSSKBmFa5Yo7Y0T98Fohkna4IETqDWDFUGU6JlBuzIGWRBeTuXqaUcejl+G06NT+cw+t6j2WcgdhtNfuMC+98o5/k6OJ7PGTbF6LPRaZurovzQTNKEilwh54OxdWzw4rY=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1769418206; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=Szw4w1kPWz+z204rfjqE2SzFPSa+7l4i9w+mPzkshVs=; 
-	b=HS+DgwvModzf5uvt0IgC5Gzq2xsRBnKY56Vb9GkgQOvXigBYCvEjIyhhohOsVUeRg54tcKh2LemWXFt7OTcO7nM9qefvhFi2zh4+ucq4VEIfz4jS3e8SN/S8SaAKA763hppE4FRhgnPH47hdlrV1+Mr3ddwj6n/1mnbOzn7IPB4=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=collabora.com;
-	spf=pass  smtp.mailfrom=benjamin.gaignard@collabora.com;
-	dmarc=pass header.from=<benjamin.gaignard@collabora.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1769418206;
-	s=zohomail; d=collabora.com; i=benjamin.gaignard@collabora.com;
-	h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-	bh=Szw4w1kPWz+z204rfjqE2SzFPSa+7l4i9w+mPzkshVs=;
-	b=k+ETJadj+tQfi4J6Ht/P5SsTGGRtFvu9K2hXalxlFZNnQJSLk9grhNLWdip5NIwC
-	S1UYSrbLFgKI/53E7laWLIsCv2TSNC8htoWjQHbF8dFzxz0r5xvbbY55GSGQlEzHUw8
-	OyROJfVgetbJCMyPXxdlEpb+3AO+h+1jPwiALJGc=
-Received: by mx.zohomail.com with SMTPS id 1769418204273347.0095929584735;
-	Mon, 26 Jan 2026 01:03:24 -0800 (PST)
-Message-ID: <8fd2c508-cbe9-4050-ba02-85b22fcff10d@collabora.com>
-Date: Mon, 26 Jan 2026 10:03:19 +0100
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="fa6jQ4+5";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="ekc+udV0"
+Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 60Q92A4c1258051
+	for <iommu@lists.linux.dev>; Mon, 26 Jan 2026 12:26:29 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=qcppdkim1; bh=UJ/cBH7DIpycsyrwwFYgg4
+	UAaSrAaQym3P8qPeNnyE8=; b=fa6jQ4+5Hqdq6SC0WZsSGVySMKBR8/1tfT4H6L
+	SZvDHnl0EMZFwbXxhulfAlwmGxt/LJC/kmpKwM4tQkMGB2aymiTegie5WpmvNuxD
+	My22Gp2hdeew1RR3HehqYYqTyAnsLkTpdCjOAPt221+n5yg9znNE01b/dKjgfW9L
+	cEC4q3mUCJviVif8sB0j0Ra5jl5kGxDlz2b2CEfkb4SlxSpg31eJuBEsvFr+FJwP
+	JKJQ6QwWxV4mGg2sTIOd2B3NUfeffOQ+FfUjvJNT7dQjxyjNp0fJ/Ckx4C1ZcxYp
+	aFhd2yuIUoTEwaZzYEnV116/PTHQ1nQt2149DCsVBSJ8lDew==
+Received: from mail-pg1-f197.google.com (mail-pg1-f197.google.com [209.85.215.197])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4bvwtybx6d-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Mon, 26 Jan 2026 12:26:29 +0000 (GMT)
+Received: by mail-pg1-f197.google.com with SMTP id 41be03b00d2f7-c552d1f9eafso342382a12.0
+        for <iommu@lists.linux.dev>; Mon, 26 Jan 2026 04:26:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1769430389; x=1770035189; darn=lists.linux.dev;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=UJ/cBH7DIpycsyrwwFYgg4UAaSrAaQym3P8qPeNnyE8=;
+        b=ekc+udV0PfY4Vaffgw1NCv8ikNYJLxV4pZ0wem7ox1zQvkZrLJOHQmQh+sagD5Kq4P
+         3eVbsGqWn6Lwt+wXIjSW3uRz3de6c9ey1Qp7jug/Th/0ieOr2DeULdslhJ1ECVaCZVR7
+         loxAdWKod3DBmig+GCkusx1dTSpb/0Mzuxq28uoE9X3IMikU0NSoKR0ZjR8WLKoaULYC
+         NZN7RidrtUPww/zOQ1OAziMPXC9Suuvn1BPPrUfhCsj7vfpt+qSNyLPTedBXVCOB+sT9
+         m+kVA7K6cQlFbZmuhtMmFkC0JBJvaY4gyEp+dB43TGKOTYWUtOr/jJ3YtfqrE4Lx7+D9
+         wP2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1769430389; x=1770035189;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=UJ/cBH7DIpycsyrwwFYgg4UAaSrAaQym3P8qPeNnyE8=;
+        b=ty9irKsaTRPLDFoLMeTqla/hzLo+vPQWpDx593cAGFKCSk1Wq3Y8Ut1sf/oupJrzJF
+         uhs2MyxUCtXdbdFlt9SnJfSDxNX25bmGaqcs89V8jid2PcEHWP5+uPSMRL5ZUVbkzair
+         EJiR7rwcbYdabZ5qJdh32UZX5a2hUFom7XC/CHluAcKOCAK0UrJSkOnXxHzJxi4rjSVe
+         6lqPWJD13XbLvfzzxcfhfp01LezvQ1bBEqbr5sM8IG5QdmwPr4tIcOPLXDuBoPDN4PEi
+         2tIeosGaiazwgKDx/0bYYLKjTJGhcVcT6ly6vPtJoCyK1ifZXpo4t5xKY9CzzTADiWW1
+         sR4Q==
+X-Forwarded-Encrypted: i=1; AJvYcCURDTpnztGP4jwes7S2P/K8nAEF5KLweQYCkwK7QYPdu1Bqro2qypYwQ41M0SiFbqcaQ4T+4Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyTuzuDcE9XBIhfl7UAPp4kRp57iHu3FFBGxBgWbqaXOfI+G4vq
+	0Oy/xEJltEIc2MVMzsITzZkerZuSBgtwKKcHsbVS+4Bdygb0WsDvNEHLfuv8pdZC2zr0TzyvMD7
+	BDdUQKF0KR3N96MPh5nd5m2q4AJQvz78QgYDBg5sMl00jrye4ROQwgAPfRw==
+X-Gm-Gg: AZuq6aJDvf1IO6fYtZvDugryPEfXnNdvGLX8kX+l6ugoz1SFSAecxbLiqBeS67VQw28
+	zq1+offH523R8E6d0rL22QQfy2Fb4DXLT8+3RRM25fOFXLKQM40PEwLZCIvK1DtZgo4jqM7j/eS
+	y9DBgZOztXu08ZiIz3hM+799HdvgNhOYLG+NoEgkHwfwpC8CB6B4oRzAVfaZNWXaJuPFoACkIQ2
+	Mq536yPJURBMVgn87qn9+od4cwPwfrCcQn2J679FLTUgU5yxdKPuSPp31Hq0sHpAEU0Un9zOyYV
+	wYozaWFS5iyETQa2cZoTPPHfl+Sxl6ukplO2h9LdZ+uG6XJXLavCD27bpfPWn6LTerMxGjH15xn
+	dgl5FYaLhzWycb0mXan+2zHzvOS5FWZEKHBvIdQdbs7/S
+X-Received: by 2002:a05:6a21:3988:b0:38d:657f:7d87 with SMTP id adf61e73a8af0-38e9f0f4a4bmr3890959637.13.1769430388528;
+        Mon, 26 Jan 2026 04:26:28 -0800 (PST)
+X-Received: by 2002:a05:6a21:3988:b0:38d:657f:7d87 with SMTP id adf61e73a8af0-38e9f0f4a4bmr3890921637.13.1769430387992;
+        Mon, 26 Jan 2026 04:26:27 -0800 (PST)
+Received: from hu-vgarodia-hyd.qualcomm.com ([202.46.23.25])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c6366644379sm6076022a12.33.2026.01.26.04.26.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 26 Jan 2026 04:26:27 -0800 (PST)
+From: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
+Subject: [PATCH 0/7] media: iris: add support for kaanapali platform
+Date: Mon, 26 Jan 2026 17:55:43 +0530
+Message-Id: <20260126-kaanapali-iris-v1-0-e2646246bfc1@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v11 3/7] iommu: Add verisilicon IOMMU driver
-To: Will Deacon <will@kernel.org>
-Cc: joro@8bytes.org, robin.murphy@arm.com, robh@kernel.org,
- krzk+dt@kernel.org, conor+dt@kernel.org, heiko@sntech.de,
- nicolas.dufresne@collabora.com, p.zabel@pengutronix.de, mchehab@kernel.org,
- iommu@lists.linux.dev, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-rockchip@lists.infradead.org, linux-media@vger.kernel.org,
- kernel@collabora.com
-References: <20260107101005.84039-1-benjamin.gaignard@collabora.com>
- <20260107101005.84039-4-benjamin.gaignard@collabora.com>
- <aWZui-rn5RDPwpEO@willie-the-truck>
- <68a49f8b-178c-4fa2-b4a9-315ad602271d@collabora.com>
- <aWeTQ50DOtntcniN@willie-the-truck>
- <db0950f1-b357-47c2-9829-e33262ab456d@collabora.com>
- <aW4kb5EbxbrhTOxK@willie-the-truck>
- <b8f43fe8-3e07-4d98-a50d-817c31370710@collabora.com>
- <aXDL2JH_4RCDmAJv@willie-the-truck>
- <4b33b50f-f0c3-4db8-b394-dd2d4d6e3a55@collabora.com>
- <aXOsdlGMVzhHOrUr@willie-the-truck>
-Content-Language: en-US
-From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-In-Reply-To: <aXOsdlGMVzhHOrUr@willie-the-truck>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAEddd2kC/y2NQY7CMAxFr1JlPakStylthUZzD8TCTZwZA20hL
+ giEuDsBZmPpPcnv35VQYhLVF3eV6MLC85TBfhXK/+H0S5pDZgUGGmOh0XvECY94YM2JRUMXg21
+ rgki1yk/HRJGv7+Bm++FEp3PuLh+pRhLBd7cv1v9Za5yrjSm7atW6Rlt94R3e8tAUyh0vC/7MI
+ uXpjAc/j2OZz/drbEAh/TK89IXHCg3EgHXAlsBbPzQDErmwgsoBddlFJFTbx+MJLtyH8fcAAAA
+ =
+X-Change-ID: 20260126-kaanapali-iris-29fd184e2fe4
+To: Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
+        Abhinav Kumar <abhinav.kumar@linux.dev>,
+        Bryan O'Donoghue <bod@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Saravana Kannan <saravanak@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Stefan Schmidt <stefan.schmidt@linaro.org>,
+        Hans Verkuil <hverkuil@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Vishnu Reddy <busanna.reddy@oss.qualcomm.com>,
+        Hans Verkuil <hverkuil+cisco@kernel.org>
+Cc: linux-arm-msm@vger.kernel.org, linux-media@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        iommu@lists.linux.dev, Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
+        Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
+        Charan Teja Kalla <charan.kalla@oss.qualcomm.com>,
+        Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1769430381; l=14125;
+ i=vikash.garodia@oss.qualcomm.com; s=20241104; h=from:subject:message-id;
+ bh=sXgpZAB7fBr74J4nr5ln8ouz3i95Ff2hs0Y+dXHx2qo=;
+ b=UdAc47Zn8Gbk7z/QwjTbyRbxGhOwdvde9DFwYraBREbaRZNWPdR8b/XMJkLLxtJzxMjSMCQ35
+ C6VeU+fRJMTBUxvL4yOD/P1duxVI1hIoask7ZvdjA0TCN4SS//QeOmE
+X-Developer-Key: i=vikash.garodia@oss.qualcomm.com; a=ed25519;
+ pk=LY9Eqp4KiHWxzGNKGHbwRFEJOfRCSzG/rxQNmvZvaKE=
+X-Proofpoint-GUID: 4mOnaI5Pgj1vDpz0Y9VrEga-NKycbQMn
+X-Authority-Analysis: v=2.4 cv=BteQAIX5 c=1 sm=1 tr=0 ts=69775d75 cx=c_pps
+ a=rz3CxIlbcmazkYymdCej/Q==:117 a=ZePRamnt/+rB5gQjfz0u9A==:17
+ a=IkcTkHD0fZMA:10 a=vUbySO9Y5rIA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8
+ a=toAFPFK_xAPQ-ejxx0AA:9 a=QEXdDO2ut3YA:10 a=bFCP_H2QrGi7Okbo017w:22
+X-Proofpoint-ORIG-GUID: 4mOnaI5Pgj1vDpz0Y9VrEga-NKycbQMn
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMTI2MDEwNSBTYWx0ZWRfX3b7qLNtJg+xZ
+ DGX0/EmrREK+qd9Nnz8Qh5nPd8Mn+5oR+X+iDQ9CY2e4Wwz93IbPZYnWrO+dbdkTYjLueO/fzxj
+ l96GpTRJ34MhbciwJyy49DGI6VUs59RHvsaqG/XIVyFct9RnOTnquj16SY9ad1gWDlqrDIUz8ZC
+ MX2VlfJfH1ryPghS1Bc9J+IyK/hycRPVtTSn7NPCX/ci22LKU3chq4H0x3jVqEE1+cq1qnUoEgM
+ HJtioHHkdX8TeDuWoZcSU0RgdwMJ1BaakkLrMe/APodDb7lxG3Lo7NataAnqRlKCaLehm/414V8
+ WrAPIQEkQczEazf6Gz5usx7+h12/LQgi2GD2Ur0KX6hxYC20zFlXTJsegbvMpdG1Lkm3YBNJiZv
+ ytiTD1tZy082NKzD7Mq3xQjbW5j77dF3WSaMa5eSP8t+NNdE7gY1nHpV8Q/zLHHVrzg0ZDIQq+f
+ vrWZfOPAPCWlUwiwGVg==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.20,FMLib:17.12.100.49
+ definitions=2026-01-26_02,2026-01-22_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ impostorscore=0 priorityscore=1501 suspectscore=0 clxscore=1011 phishscore=0
+ lowpriorityscore=0 adultscore=0 spamscore=0 bulkscore=0 malwarescore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2601150000 definitions=main-2601260105
 
+Qualcomm kaanapali platform have a newer generation of video IP iris4. 
+The hardware have evolved mostly with respect to higher number of power 
+domains as well as multiple clock sources.
 
-Le 23/01/2026 à 18:14, Will Deacon a écrit :
-> On Wed, Jan 21, 2026 at 02:50:18PM +0100, Benjamin Gaignard wrote:
->> Le 21/01/2026 à 13:51, Will Deacon a écrit :
->>> On Mon, Jan 19, 2026 at 03:03:44PM +0100, Benjamin Gaignard wrote:
->>>>>>>>>> +static const struct iommu_ops vsi_iommu_ops = {
->>>>>>>>>> +	.identity_domain = &vsi_identity_domain,
->>>>>>>>>> +	.release_domain = &vsi_identity_domain,
->>>>>>>>>> +	.domain_alloc_paging = vsi_iommu_domain_alloc_paging,
->>>>>>>>>> +	.of_xlate = vsi_iommu_of_xlate,
->>>>>>>>>> +	.probe_device = vsi_iommu_probe_device,
->>>>>>>>>> +	.release_device = vsi_iommu_release_device,
->>>>>>>>>> +	.device_group = generic_single_device_group,
->>>>>>>>>> +	.owner = THIS_MODULE,
->>>>>>>>>> +	.default_domain_ops = &(const struct iommu_domain_ops) {
->>>>>>>>>> +		.attach_dev		= vsi_iommu_attach_device,
->>>>>>>>>> +		.map_pages		= vsi_iommu_map,
->>>>>>>>>> +		.unmap_pages		= vsi_iommu_unmap,
->>>>>>>>>> +		.flush_iotlb_all	= vsi_iommu_flush_tlb_all,
->>>>>>>>> This has no callers and so your unmap routine appears to be broken.
->>>>>>>> It is a leftover of previous attempt to allow video decoder to clean/flush
->>>>>>>> the iommu by using a function from the API.
->>>>>>>> Now it is using vsi_iommu_restore_ctx().
->>>>>>>> I while remove it in version 12.
->>>>>>> Don't you still need some invalidation on the unmap path?
->>>>>> In vsi_iommu_unmap_iova() page is invalided by calling vsi_mk_pte_invalid().
->>>>> But that just writes an invalid descriptor and doesn't appear to invalidate
->>>>> the TLB at all.
->>>>>
->>>>>> That clear BIT(0) so the hardware knows the page is invalid.
->>>>>> Do I have miss something here ?
->>>>> Yes, the TLB structure needs to be invalidated so that the page-table
->>>>> walker sees the new value that you have written in memory.
->>>>>
->>>>> The rockchip driver gets this correct...
->>>> Rockchip hardware have a ZAP_ONE_LINE register which didn't exist on Verisilicon
->>>> hardware.
->>> Presumably you have some sort of Verisilicon datasheet or downstream driver
->>> from which you can infer the TLB invalidation runes?
->> I have only this downstream driver:
->> https://github.com/rockchip-linux/kernel/blob/develop-6.1/drivers/iommu/rockchip-iommu-av1d.c
->> No datasheet...
->>
->>>> I have tried to use VSI_MMU_BIT_FLUSH on VSI driver after unmapping iova
->>>> but it doesn't work.
->>> What do you mean by "doesn't work"? If it works without doing any
->>> invalidation at all, then it's very peculiar that adding the invalidation
->>> would introduce issues.
->> I mean VSI_MMU_BIT_FLUSH register can't be used to invalid the TLB.
->> I think the hardware iterates over the pages tables in memory and
->> check the valid/invalid bit.
-> I bet it doesn't: that would be horrible for performance.
->
-> The hardware clearly has TLB invalidation support, as the downstream driver
-> that you linked above implements av1_iommu_flush_tlb_all() to poke it.
-> If the hardware has a TLB, then unmapping a page-table means you need to:
->
-> 1. Clear the valid bit from the descriptor in memory
-> 2. Have some sort of memory barrier
-> 3. Invalidate the TLB
-> 4. Wait for the invalidation to complete
+The series extends support for multiple iommu-map entries for the same 
+input id. Considering iris as a client driver, it adds the handling for 
+multiple stream ids from VPU via iommu-map.
 
-That exactly what I had tried to do by calling vsi_iommu_flush_tlb_all() (minux the lock)
-after calling vsi_iommu_unmap_iova() in vsi_iommu_unmap() but that doesn't work
-and even make the system crash sometimes.
+This series is depend on the below series:
+Link: https://lore.kernel.org/all/20260121055400.937856-1-vijayanand.jitta@oss.qualcomm.com/
 
-Benjamin
+Following are the compliance and functional validation reports.
 
->
-> All IOMMUs tend to work like that and I don't think this one is any
-> different.
->
-> Will
->
+v4l2-compliance report for decoder including streaming tests:
+
+v4l2-compliance 1.33.0-5441, 64 bits, 64-bit time_t
+v4l2-compliance SHA: 4310f15610f4 2026-01-18 22:09:17
+
+Compliance test for iris_driver device /dev/video0:
+
+Driver Info:
+        Driver name      : iris_driver
+        Card type        : Iris Decoder
+        Bus info         : platform:2000000.video-codec
+        Driver version   : 6.19.0
+        Capabilities     : 0x84204000
+                Video Memory-to-Memory Multiplanar
+                Streaming
+                Extended Pix Format
+                Device Capabilities
+        Device Caps      : 0x04204000
+                Video Memory-to-Memory Multiplanar
+                Streaming
+                Extended Pix Format
+        Detected Stateful Decoder
+
+Required ioctls:
+        test VIDIOC_QUERYCAP: OK
+        test invalid ioctls: OK
+
+Allow for multiple opens:
+        test second /dev/video0 open: OK
+        test VIDIOC_QUERYCAP: OK
+        test VIDIOC_G/S_PRIORITY: OK
+        test for unlimited opens: OK
+
+Debug ioctls:
+        test VIDIOC_DBG_G/S_REGISTER: OK (Not Supported)
+        test VIDIOC_LOG_STATUS: OK (Not Supported)
+
+Input ioctls:
+        test VIDIOC_G/S_TUNER/ENUM_FREQ_BANDS: OK (Not Supported)
+        test VIDIOC_G/S_FREQUENCY: OK (Not Supported)
+        test VIDIOC_S_HW_FREQ_SEEK: OK (Not Supported)
+        test VIDIOC_ENUMAUDIO: OK (Not Supported)
+        test VIDIOC_G/S/ENUMINPUT: OK (Not Supported)
+        test VIDIOC_G/S_AUDIO: OK (Not Supported)
+        Inputs: 0 Audio Inputs: 0 Tuners: 0
+
+Output ioctls:
+        test VIDIOC_G/S_MODULATOR: OK (Not Supported)
+        test VIDIOC_G/S_FREQUENCY: OK (Not Supported)
+        test VIDIOC_ENUMAUDOUT: OK (Not Supported)
+        test VIDIOC_G/S/ENUMOUTPUT: OK (Not Supported)
+        test VIDIOC_G/S_AUDOUT: OK (Not Supported)
+        Outputs: 0 Audio Outputs: 0 Modulators: 0
+
+Input/Output configuration ioctls:
+        test VIDIOC_ENUM/G/S/QUERY_STD: OK (Not Supported)
+        test VIDIOC_ENUM/G/S/QUERY_DV_TIMINGS: OK (Not Supported)
+        test VIDIOC_DV_TIMINGS_CAP: OK (Not Supported)
+        test VIDIOC_G/S_EDID: OK (Not Supported)
+
+Control ioctls:
+        test VIDIOC_QUERY_EXT_CTRL/QUERYMENU: OK
+        test VIDIOC_QUERYCTRL: OK
+        test VIDIOC_G/S_CTRL: OK
+        test VIDIOC_G/S/TRY_EXT_CTRLS: OK
+        test VIDIOC_(UN)SUBSCRIBE_EVENT/DQEVENT: OK
+        test VIDIOC_G/S_JPEGCOMP: OK (Not Supported)
+        Standard Controls: 12 Private Controls: 0
+
+Format ioctls:
+        test VIDIOC_ENUM_FMT/FRAMESIZES/FRAMEINTERVALS: OK
+        test VIDIOC_G/S_PARM: OK (Not Supported)
+        test VIDIOC_G_FBUF: OK (Not Supported)
+        test VIDIOC_G_FMT: OK
+        test VIDIOC_TRY_FMT: OK
+        test VIDIOC_S_FMT: OK
+        test VIDIOC_G_SLICED_VBI_CAP: OK (Not Supported)
+        test Cropping: OK
+        test Composing: OK
+        test Scaling: OK (Not Supported)
+
+Codec ioctls:
+        test VIDIOC_(TRY_)ENCODER_CMD: OK (Not Supported)
+        test VIDIOC_G_ENC_INDEX: OK (Not Supported)
+        test VIDIOC_(TRY_)DECODER_CMD: OK
+
+Buffer ioctls:
+        test VIDIOC_REQBUFS/CREATE_BUFS/QUERYBUF: OK
+        test CREATE_BUFS maximum buffers: OK
+        test VIDIOC_REMOVE_BUFS: OK
+        test VIDIOC_EXPBUF: OK
+        test Requests: OK (Not Supported)
+        test blocking wait: OK
+
+Test input 0:
+
+Streaming ioctls:
+        test read/write: OK (Not Supported)
+the input file is smaller than 7077888 bytes
+        Video Capture Multiplanar: Captured 465 buffers
+        test MMAP (select, REQBUFS): OK
+the input file is smaller than 7077888 bytes
+        Video Capture Multiplanar: Captured 465 buffers
+        test MMAP (epoll, REQBUFS): OK
+the input file is smaller than 7077888 bytes
+        Video Capture Multiplanar: Captured 465 buffers
+        test MMAP (select, CREATE_BUFS): OK
+the input file is smaller than 7077888 bytes
+        Video Capture Multiplanar: Captured 465 buffers
+        test MMAP (epoll, CREATE_BUFS): OK
+        test USERPTR (select): OK (Not Supported)
+        test DMABUF: Cannot test, specify --expbuf-device
+
+Total for iris_driver device /dev/video0: 54, Succeeded: 54, Failed: 0, 
+Warnings: 0
+
+v4l2-compliance report for encoder including streaming tests:
+
+v4l2-compliance 1.33.0-5441, 64 bits, 64-bit time_t
+v4l2-compliance SHA: 4310f15610f4 2026-01-18 22:09:17
+
+Compliance test for iris_driver device /dev/video1:
+
+Driver Info:
+        Driver name      : iris_driver
+        Card type        : Iris Encoder
+        Bus info         : platform:2000000.video-codec
+        Driver version   : 6.19.0
+        Capabilities     : 0x84204000
+                Video Memory-to-Memory Multiplanar
+                Streaming
+                Extended Pix Format
+                Device Capabilities
+        Device Caps      : 0x04204000
+                Video Memory-to-Memory Multiplanar
+                Streaming
+                Extended Pix Format
+        Detected Stateful Encoder
+
+Required ioctls:
+        test VIDIOC_QUERYCAP: OK
+        test invalid ioctls: OK
+
+Allow for multiple opens:
+        test second /dev/video1 open: OK
+        test VIDIOC_QUERYCAP: OK
+        test VIDIOC_G/S_PRIORITY: OK
+        test for unlimited opens: OK
+
+Debug ioctls:
+        test VIDIOC_DBG_G/S_REGISTER: OK (Not Supported)
+        test VIDIOC_LOG_STATUS: OK (Not Supported)
+
+Input ioctls:
+        test VIDIOC_G/S_TUNER/ENUM_FREQ_BANDS: OK (Not Supported)
+        test VIDIOC_G/S_FREQUENCY: OK (Not Supported)
+        test VIDIOC_S_HW_FREQ_SEEK: OK (Not Supported)
+        test VIDIOC_ENUMAUDIO: OK (Not Supported)
+        test VIDIOC_G/S/ENUMINPUT: OK (Not Supported)
+        test VIDIOC_G/S_AUDIO: OK (Not Supported)
+        Inputs: 0 Audio Inputs: 0 Tuners: 0
+
+Output ioctls:
+        test VIDIOC_G/S_MODULATOR: OK (Not Supported)
+        test VIDIOC_G/S_FREQUENCY: OK (Not Supported)
+        test VIDIOC_ENUMAUDOUT: OK (Not Supported)
+        test VIDIOC_G/S/ENUMOUTPUT: OK (Not Supported)
+        test VIDIOC_G/S_AUDOUT: OK (Not Supported)
+        Outputs: 0 Audio Outputs: 0 Modulators: 0
+
+Input/Output configuration ioctls:
+        test VIDIOC_ENUM/G/S/QUERY_STD: OK (Not Supported)
+        test VIDIOC_ENUM/G/S/QUERY_DV_TIMINGS: OK (Not Supported)
+        test VIDIOC_DV_TIMINGS_CAP: OK (Not Supported)
+        test VIDIOC_G/S_EDID: OK (Not Supported)
+
+Control ioctls:
+        test VIDIOC_QUERY_EXT_CTRL/QUERYMENU: OK
+        test VIDIOC_QUERYCTRL: OK
+        test VIDIOC_G/S_CTRL: OK
+        test VIDIOC_G/S/TRY_EXT_CTRLS: OK
+        test VIDIOC_(UN)SUBSCRIBE_EVENT/DQEVENT: OK
+        test VIDIOC_G/S_JPEGCOMP: OK (Not Supported)
+        Standard Controls: 38 Private Controls: 0
+
+Format ioctls:
+        test VIDIOC_ENUM_FMT/FRAMESIZES/FRAMEINTERVALS: OK
+        test VIDIOC_G/S_PARM: OK
+        test VIDIOC_G_FBUF: OK (Not Supported)
+        test VIDIOC_G_FMT: OK
+        test VIDIOC_TRY_FMT: OK
+        test VIDIOC_S_FMT: OK
+        test VIDIOC_G_SLICED_VBI_CAP: OK (Not Supported)
+        test Cropping: OK
+        test Composing: OK (Not Supported)
+        test Scaling: OK (Not Supported)
+
+Codec ioctls:
+        test VIDIOC_(TRY_)ENCODER_CMD: OK
+        test VIDIOC_G_ENC_INDEX: OK (Not Supported)
+        test VIDIOC_(TRY_)DECODER_CMD: OK (Not Supported)
+
+Buffer ioctls:
+        test VIDIOC_REQBUFS/CREATE_BUFS/QUERYBUF: OK
+        test CREATE_BUFS maximum buffers: OK
+        test VIDIOC_REMOVE_BUFS: OK
+        test VIDIOC_EXPBUF: OK
+        test Requests: OK (Not Supported)
+        test blocking wait: OK
+
+Test input 0:
+
+Streaming ioctls:
+        test read/write: OK (Not Supported)
+        Video Capture Multiplanar: Captured 61 buffers
+        test MMAP (select, REQBUFS): OK
+        Video Capture Multiplanar: Captured 61 buffers
+        test MMAP (epoll, REQBUFS): OK
+        Video Capture Multiplanar: Captured 61 buffers
+        test MMAP (select, CREATE_BUFS): OK
+        Video Capture Multiplanar: Captured 61 buffers
+        test MMAP (epoll, CREATE_BUFS): OK
+        test USERPTR (select): OK (Not Supported)
+        test DMABUF: Cannot test, specify --expbuf-device
+
+Total for iris_driver device /dev/video1: 54, Succeeded: 54, Failed: 0, 
+Warnings: 0
+
+gstreamer test:
+Decoders validated with below commands, codec specific:
+gst-launch-1.0 multifilesrc location=<input_file.h264> stop-index=0 !
+parsebin ! v4l2h264dec ! video/x-raw ! videoconvert dither=none !
+video/x-raw,format=I420 ! filesink location=<output_file.yuv>
+
+gst-launch-1.0 multifilesrc location=<input_file.hevc> stop-index=0 !
+parsebin ! v4l2h265dec ! video/x-raw ! videoconvert dither=none !
+video/x-raw,format=I420 ! filesink location=<output_file.yuv>
+
+gst-launch-1.0 filesrc location=<input_file.webm> stop-index=0 !
+parsebin ! vp9dec ! video/x-raw ! videoconvert dither=none !
+video/x-raw,format=I420 ! filesink location=<output_file.yuv>
+
+Encoders validated with below commands:
+gst-launch-1.0 -v filesrc location=<input_file.yuv> ! rawvideoparse
+format=nv12 width=<width> height=<height> framerate=30/1 ! v4l2h264enc
+capture-io-mode=4 output-io-mode=4 ! filesink sync=true
+location=<output_file.h264>
+
+gst-launch-1.0 -v filesrc location=<input_file.yuv> ! rawvideoparse
+format=nv12 width=<width> height=<height> framerate=30/1 ! v4l2h265enc
+capture-io-mode=4 output-io-mode=4 ! filesink sync=true
+location=<output_file.hevc>
+
+ffmpeg test:
+Decoders validated with below commands:
+ffmpeg -vcodec h264_v4l2m2m -i <input_file.h264> -pix_fmt nv12 -vsync 0
+output_file.yuv -y
+ffmpeg -vcodec hevc_v4l2m2m -i <input_file.hevc> -pix_fmt nv12 -vsync 0
+output_file.yuv -y
+ffmpeg -vcodec vp9_v4l2m2m -i <input_file.webm> -pix_fmt nv12 -vsync 0
+output_file.yuv -y
+
+v4l2-ctl test
+Decoders validated with below commands:
+v4l2-ctl --verbose --set-fmt-video-out=pixelformat=H264
+--set-fmt-video=pixelformat=NV12 --stream-mmap --stream-out-mmap
+--stream-from=<input_file.h264> --stream-to=<output_file.yuv>
+
+v4l2-ctl --verbose --set-fmt-video-out=pixelformat=HEVC
+--set-fmt-video=pixelformat=NV12 --stream-mmap --stream-out-mmap
+--stream-from=input_file.bit --stream-to=<output_file.yuv>
+
+v4l2-ctl --verbose --set-fmt-video-out=pixelformat=VP90
+--set-fmt-video=pixelformat=NV12 --stream-mmap --stream-out-mmap
+--stream-from-hdr=input_file.hdr  --stream-mmap
+--stream-to=<output_file.yuv>
+
+Encoders validated with below commands:
+v4l2-ctl --verbose
+--set-fmt-video-out=width=<width>,height=<height>,pixelformat=NV12
+--set-selection-output
+target=crop,top=0,left=0,width=<width>,height=<height>
+--set-fmt-video=pixelformat=H264 --stream-mmap --stream-out-mmap
+--stream-from=<input_file.yuv> --stream-to=<output_file.h264> -d
+/dev/video1
+v4l2-ctl --verbose
+--set-fmt-video-out=width=<width>,height=<height>,pixelformat=NV12
+--set-selection-output
+target=crop,top=0,left=0,width=<width>,height=<height>
+--set-fmt-video=pixelformat=HEVC --stream-mmap --stream-out-mmap
+--stream-from=<input_file.yuv> --stream-to=<output_file.hevc> -d
+/dev/video1
+
+Signed-off-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
+---
+Charan Teja Kalla (2):
+      of: factor out of_map_id() code
+      of/iommu: add multi-map support
+
+Vikash Garodia (5):
+      media: dt-bindings: qcom-kaanapali-iris: Add kaanapali video codec binding
+      media: iris: Switch to hardware mode after firmware boot
+      media: iris: add context bank devices using iommu-map
+      media: iris: add helper to select context bank device
+      media: iris: Add platform data for kaanapali
+
+ .../bindings/media/qcom,kaanapali-iris.yaml        | 234 +++++++++++++++++++++
+ drivers/iommu/of_iommu.c                           |  36 +++-
+ drivers/media/platform/qcom/iris/iris_buffer.c     |   7 +-
+ drivers/media/platform/qcom/iris/iris_buffer.h     |   2 +
+ drivers/media/platform/qcom/iris/iris_core.c       |   4 +
+ drivers/media/platform/qcom/iris/iris_hfi_common.c |   4 +
+ drivers/media/platform/qcom/iris/iris_hfi_queue.c  |  16 +-
+ .../platform/qcom/iris/iris_platform_common.h      |  30 +++
+ .../media/platform/qcom/iris/iris_platform_gen2.c  |  90 ++++++++
+ .../platform/qcom/iris/iris_platform_kaanapali.h   |  80 +++++++
+ drivers/media/platform/qcom/iris/iris_probe.c      |  59 +++++-
+ drivers/media/platform/qcom/iris/iris_resources.c  |  93 ++++++++
+ drivers/media/platform/qcom/iris/iris_resources.h  |   3 +
+ drivers/media/platform/qcom/iris/iris_vidc.c       |   4 +-
+ drivers/media/platform/qcom/iris/iris_vpu2.c       |   1 +
+ drivers/media/platform/qcom/iris/iris_vpu3x.c      |   9 +-
+ drivers/media/platform/qcom/iris/iris_vpu4x.c      |  24 ++-
+ drivers/media/platform/qcom/iris/iris_vpu_common.c |  16 +-
+ drivers/media/platform/qcom/iris/iris_vpu_common.h |   3 +
+ drivers/of/base.c                                  |  69 ++++--
+ include/linux/of.h                                 |   6 +
+ 21 files changed, 726 insertions(+), 64 deletions(-)
+---
+base-commit: ca3a02fda4da8e2c1cb6baee5d72352e9e2cfaea
+change-id: 20260126-kaanapali-iris-29fd184e2fe4
+prerequisite-message-id: <20260121055400.937856-1-vijayanand.jitta@oss.qualcomm.com>
+prerequisite-patch-id: 1d896ff4a958ebd06066dbf705c4c45cf73b6041
+prerequisite-patch-id: 44414df7d8342ca19c0518ac087f08f98546c3ff
+prerequisite-patch-id: 0f45ca6f67948e03a89274c144660a55b3ff8fb1
+
+Best regards,
+-- 
+Vikash Garodia <vikash.garodia@oss.qualcomm.com>
+
