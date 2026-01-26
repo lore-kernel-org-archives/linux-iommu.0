@@ -1,87 +1,86 @@
 Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0B5F3358CA
-	for <iommu@lists.linux.dev>; Mon, 26 Jan 2026 12:26:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25C8E3358B5
+	for <iommu@lists.linux.dev>; Mon, 26 Jan 2026 12:26:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769430398; cv=none; b=njaX/uNnmlF27fZxTRAj/+ikPKG9Yu4GZq4BT2+v6Lx2idRCNr3nLzLGzsPNfUMk6HqifkQyHRqhJ2Crizz7BrnXcZvL8IPQT6kMU9oeazIQOSqUwU3wCi5q8413xSGeKwhRGfRE/Hk8CjFkubW+1HpP+DVHGpQFV6qn88XMxhc=
+	t=1769430403; cv=none; b=h4nz0+JPkoCfe0sd6Rg6mAZzzRNaOs3EoiBQaL9qFJvFMbUDsImm8u/NAd9VBGtbscGzVSokibdqAL5UyPyq+/K4N8WfDgy5tn6ohtamqZsynGefYzrtFX/OFFZZTQZ4zTmbHxfHCPsNdRaMfF3zlzZilbIHH6EdShMqCofFiO4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769430398; c=relaxed/simple;
-	bh=tGKS4T92lrECaZQhadjFHBGpVn6bF3J4R7FWoMwtElw=;
+	s=arc-20240116; t=1769430403; c=relaxed/simple;
+	bh=LisLM8o2IrxdYcIIO9+hL3LVsKTwWPx/Vp9uhneXL6E=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=PZgok2LfGH5Q4uMWGCNO3XHLQ3gkuEjid36P9csjosQGv6FWZjbh3F/992cjlnKDbyYBR7hRnxh8D5MXIq/J4JT3eBQB/MdfmGBSbiuM/U+SD2U3ttNeYh9rPoni02rqgEitOUWvi8YQErYfEb4yHwGA8HgHYHkAC53XbCbE4Lk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=NTzoS6v3; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=cCcRzBsh; arc=none smtp.client-ip=205.220.168.131
+	 In-Reply-To:To:Cc; b=CSOKHY6MoJ/3EhdDAhPDbE0CE/suc0JUw0N34p6gElKGW5tCLYoM4Cq3tdAxowJ9SD1DIwKy3u5fZcSwFMDagCaAI02ahHGE4ojO7hFz/Czq+L3WZDqs7eN/ZXUCSlyK77Y8vG9CLDbjL37F4FEJw09cz40hACiXtETHp2Riib0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=BXv9ysV9; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=IPBvc01h; arc=none smtp.client-ip=205.220.168.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="NTzoS6v3";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="cCcRzBsh"
-Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 60Q8Oo5h493215
-	for <iommu@lists.linux.dev>; Mon, 26 Jan 2026 12:26:35 GMT
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="BXv9ysV9";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="IPBvc01h"
+Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 60Q95Ke31075287
+	for <iommu@lists.linux.dev>; Mon, 26 Jan 2026 12:26:41 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
 	cc:content-transfer-encoding:content-type:date:from:in-reply-to
 	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	FF5H5bV09c8fWN0vXsZAWtIwWT18Rthxv0eooXBFjfg=; b=NTzoS6v3tklV6okW
-	LzTIumiqL8VsrxFjva+FQq9IHp90VjaBkXi2O/JrnWBfTszXTR4OW7/gvQDYvMWY
-	565ecqM4KbpKAVa1R2z+IauMd2yO5aFFor3ZX+bxLDBWYvcBn1tHBfEaciURz7EX
-	bhSg9LjdwSw63UL+swldLTsOwKlgxHU8CHC1K7FK6pUstGLkl676Gi8QrzeEC2Wv
-	muWC1CxkmQGV2ex0YhpORiPpRpf2hsYECp0HhfMsjc3yBZMQ8d0tBIvMTS9Nb5tj
-	+VpltIidUmqKNdYHMsnrHBkS7BwpnrWLxxkJiXCb6mQRawsFOFoRrai6QiF72CQO
-	uh5jJQ==
-Received: from mail-pg1-f200.google.com (mail-pg1-f200.google.com [209.85.215.200])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4bvq6uvfd0-1
+	pUt1hiMnVbf8G3WXvMrybBKWWZSAdzLDBYLcaYIhNMA=; b=BXv9ysV99eCh4hQ9
+	YAdh3KJEhaq1e1wKPUKNcqD3YBVoFLgJnXbPpL1yHo0DdHzBHW1SrC+MHOR+H71H
+	t9tIpgSf/yi8KSfVpVMviAGNfcGt1DTtZQYAeQUG+d0/KCMEzbXCUhlCmkjiA+cI
+	y5hd5cD8MmHL1+vyhLZJIHs5MY2sOAIilYGOGqBJLW0fApcw/kGkgmMJJK1fvLMh
+	BYWu7RQRwe/jjjboDdzShpPryYIO/CHoBkzUYk2B0dRCAedMY/xP6egQGlBUQ+O9
+	Gdt9JQbPMsK0sbAXZQMUvQRpExTfxVu9zL7fdUaMqJDLA0gKrubjsbHlIO2LvQ5+
+	5pKb3Q==
+Received: from mail-pg1-f199.google.com (mail-pg1-f199.google.com [209.85.215.199])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4bvq9f4f4e-1
 	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Mon, 26 Jan 2026 12:26:35 +0000 (GMT)
-Received: by mail-pg1-f200.google.com with SMTP id 41be03b00d2f7-c6133262e4eso2494523a12.2
-        for <iommu@lists.linux.dev>; Mon, 26 Jan 2026 04:26:35 -0800 (PST)
+	for <iommu@lists.linux.dev>; Mon, 26 Jan 2026 12:26:41 +0000 (GMT)
+Received: by mail-pg1-f199.google.com with SMTP id 41be03b00d2f7-c549aaa796dso327492a12.1
+        for <iommu@lists.linux.dev>; Mon, 26 Jan 2026 04:26:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1769430394; x=1770035194; darn=lists.linux.dev;
+        d=oss.qualcomm.com; s=google; t=1769430401; x=1770035201; darn=lists.linux.dev;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=FF5H5bV09c8fWN0vXsZAWtIwWT18Rthxv0eooXBFjfg=;
-        b=cCcRzBshjltTmxz4JO7/Lb60v8J0JcZbs8UhLC7xCFwFxtfNV1mNbu/pvTBXMsDTLr
-         E1HczafzZyZLuLs19fD/T56dyb3moktgwN9NXxoCwrwviKgTHtssOpB0G5rCTnsJJlue
-         ezHA/S8dUDVsIq0ThYaYqpGcOxtjMc7ZD0NJOC4dMKJ2vPcHTqWm9RHuJz9okU2IG0IW
-         ibS5XKqpI0KyuiXFRFR6XM7dUZGxM7lMqWljsWgNrXnjYxLqu1k9IVUYDep+n0v10pAw
-         vpo0v2tNDxYiAVv4NEidCMWhcxkE2BT88g5Lme6gvCSM/iP2Ht7u3G7+i4el7waIYcSR
-         C4gQ==
+        bh=pUt1hiMnVbf8G3WXvMrybBKWWZSAdzLDBYLcaYIhNMA=;
+        b=IPBvc01hquD9quWfQ9sdQ/RJj4GjsIqWIV8mwp+uIpkSE35+3Rse8qCP+begQCJxJW
+         +zYcGWtMnkU6QieuOTlAUihJo0JsmoCjhfDdt5jDcMIqhyR9luamWYz21WEYYrbSmsun
+         IEct0OUMA6cQqv4jTbTLvH3HIZktJOLTVtn/Na6mxnTHEVSsP/RRbEesm9mnLWCPgKxI
+         /8u9hCnujmoJ+2xNdpjKmMOmzhG5K5M9QZwJuUNufnODhbsOhbqZGWOt9gWXUhkIP5wD
+         AiHhmkpte+imCUjuEWyysanEe5RA0etZTW8Yp28CUCc9GX0Klolz0nL0c/I+uBk3HUP0
+         fAfA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769430394; x=1770035194;
+        d=1e100.net; s=20230601; t=1769430401; x=1770035201;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=FF5H5bV09c8fWN0vXsZAWtIwWT18Rthxv0eooXBFjfg=;
-        b=OlirNsN3L98xGtIvbDs6wg5EruMLTXGm4Gz2GPACxfBeKR8G1X+FEqj72OqIIo3xjr
-         JCvSp8Qi2FFKq/rJDtxmVnnnTLfOPaQPqjBz9yojR1OVWoH25ucovXgLYlbI6S1A5eHi
-         7BkQBKXElAow2/97ioqLCEOK37lZuAgrQNyw5hO0kaKnRyZtMHugWyT6NSFxAwwbIQ6A
-         CWDV+FSaNKAEMJLIoEZKkKs42vTREpfj4RcRThYyADg4tzE7PlxMZ9A+oKGwpPKB0qeA
-         WwOjyq8sYNsT1z9zH1OmJKgSsMKhe1P6xnKGGXXl0vFWIC82houuGXZ+21t3OFhda5Xc
-         MAjA==
-X-Forwarded-Encrypted: i=1; AJvYcCW7noc3UGqmM2u7h7sphw/heEqUshbUvAjqQy/b9mey6ID3yVUGXxY7KXeIkQNLylpV49o8WQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzrlD3tZSaKK12p91WjTG8n95kzZfLTO7VFaTwij6X2nrEQcFVs
-	DgpLEyfpxzymun2YP6VHRyu5Oa/ENCwIDrne8uBQkgBb4OFRomAA8AQGOkbL/zYoWwyL8an0FS6
-	a2a/XT0HvUFxxrk/ODjNeyS4easVWDVDN5Zgl8134u/77O0wR/fHbONt06w==
-X-Gm-Gg: AZuq6aK7L/difRwJ2AGz6javV2tuFsUeXk2AroqLCq9i/4jzo/sjCO0PaZc4nqKEvfJ
-	7QGrmqeuPc3s+0ftnpvNw8D1bQKKU7vW2RT5tLhiTPZNswxjmG7LqadLqygjm3k+rp22zI73NTB
-	ORp2XtoszHBgs2/HKo6rOn967zNtFH+oU6HC9jsxgn7BxLPn1uIvzlXbBSs+oFMU0buisBJOqFi
-	E9dt3KGwvQ7sjMnFysmM0siBrZ5AtOYq9WYXI2KcotH5AkoTCdgANLjt0LtRiJgE6WpomqtsM5c
-	xdKpAbH0CJZLrvfWbtSWODwDyc3bcb7o/tEJhZArVRvZAtRYGcdzXeLBwaCJ3g/kpwWFKhvpkFo
-	Hwu5LRQ4jkT9HzdKaiFnwolfUUXV5Zghdtwl9p7C0DE7W
-X-Received: by 2002:a05:6a20:1604:b0:38b:dea2:fd0f with SMTP id adf61e73a8af0-38e9f11003dmr4162613637.21.1769430394400;
-        Mon, 26 Jan 2026 04:26:34 -0800 (PST)
-X-Received: by 2002:a05:6a20:1604:b0:38b:dea2:fd0f with SMTP id adf61e73a8af0-38e9f11003dmr4162586637.21.1769430393880;
-        Mon, 26 Jan 2026 04:26:33 -0800 (PST)
+        bh=pUt1hiMnVbf8G3WXvMrybBKWWZSAdzLDBYLcaYIhNMA=;
+        b=lrcBCv5P4OJOIyHajL43k6LLyX39OkCnJ0b7wat9VvEOiq/bDkF4o+hkN+RxKM+8yd
+         AWOK2/V+yWdih2/Qpkg6gV+uYAe2Y87fMWI7+WowJmZxphVosJSIF9gVpIUojppv5Yz3
+         of0D11giWybgm8gL/2IUH7NqZcC1b/Yd+t0Ewqs3WEJdmSSd7nurEXmO6zKmiy4hSRWY
+         Ucr0cgxjhZQk8b93KMOMZxMsuw1vmqYlKb8ozQzPWfFZhmNWxZ/ji7EctQMCkg6H04P0
+         PoHypQurRuwQGQOT4n7FJ9eFMYC2miqCbgtjwieYCXNe249YZWMGL7Yfc7Wd/k7dtzL/
+         tlPg==
+X-Forwarded-Encrypted: i=1; AJvYcCUFimfxaaqr1wbT4/J3XQNdqwgc+mn71Qh3AF0wD3K8z3n3kJW+iufncEr+ASOqwfPodji0Hg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyLRb80zJ/tHfZ64ZrzzejZD+RtAm/E1/ATlDJCcDgvzVdrxf3J
+	K4HmACA66PTTTSsIAHj6cSWWlopNKj44ClWGoI+Qmg4YtFJrdkkIIQbWsLJ6Bf9SDa8cv0RFcXm
+	O1/mWM+0HHS6bWmJwOW6TdXPcEDsh8LckthqDPtYbpazjx9kit8hi4w3izQ==
+X-Gm-Gg: AZuq6aLwkyzTEryoKNTLPxqk2dr+exjnfdletsSYsIJjLLR5Vb7LxrPpKJuZdv+RZW4
+	uJzSmal0EcHANKP6MdKPPLLFMZQQO6VopHWzZu40v4g5/8y8p1Xfh/Nz+Y2BpvOeagTM8VWUfuF
+	CyW0PI+8OiRyT+Zf7HDkOqADOd43XjfQghkTJdm7RbubQAJeMPzB1MZBuGhBcJxSS4PJO6yoA2W
+	lzeo/rSVVa1I0yZkfqct6HgyYY/qnngNTT7mR8uJ8rqvAf+A8qaTPs8sHLDTCCkvxn9sK8iI2Xe
+	/QnCYucQhLeBCc3r33F3esZLSppgJrhYI/zMCc9sKPsc9cxMROVVdC7mYLLrbi5gtxkUtUKLYai
+	VT9kvYahnBxWFd/SBYs6NnL+7/s+d5K/DKJawzzMhBdP0
+X-Received: by 2002:a05:6300:2209:b0:34d:d030:6739 with SMTP id adf61e73a8af0-38e9f15357amr4026343637.31.1769430400672;
+        Mon, 26 Jan 2026 04:26:40 -0800 (PST)
+X-Received: by 2002:a05:6300:2209:b0:34d:d030:6739 with SMTP id adf61e73a8af0-38e9f15357amr4026310637.31.1769430400178;
+        Mon, 26 Jan 2026 04:26:40 -0800 (PST)
 Received: from hu-vgarodia-hyd.qualcomm.com ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c6366644379sm6076022a12.33.2026.01.26.04.26.28
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c6366644379sm6076022a12.33.2026.01.26.04.26.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Jan 2026 04:26:33 -0800 (PST)
+        Mon, 26 Jan 2026 04:26:39 -0800 (PST)
 From: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
-Date: Mon, 26 Jan 2026 17:55:44 +0530
-Subject: [PATCH 1/7] media: dt-bindings: qcom-kaanapali-iris: Add kaanapali
- video codec binding
+Date: Mon, 26 Jan 2026 17:55:45 +0530
+Subject: [PATCH 2/7] of: factor out of_map_id() code
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -90,7 +89,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260126-kaanapali-iris-v1-1-e2646246bfc1@oss.qualcomm.com>
+Message-Id: <20260126-kaanapali-iris-v1-2-e2646246bfc1@oss.qualcomm.com>
 References: <20260126-kaanapali-iris-v1-0-e2646246bfc1@oss.qualcomm.com>
 In-Reply-To: <20260126-kaanapali-iris-v1-0-e2646246bfc1@oss.qualcomm.com>
 To: Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
@@ -110,297 +109,147 @@ To: Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
 Cc: linux-arm-msm@vger.kernel.org, linux-media@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         iommu@lists.linux.dev, Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
-        Vikash Garodia <vikash.garodia@oss.qualcomm.com>
+        Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
+        Charan Teja Kalla <charan.kalla@oss.qualcomm.com>,
+        Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1769430381; l=8103;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1769430381; l=3666;
  i=vikash.garodia@oss.qualcomm.com; s=20241104; h=from:subject:message-id;
- bh=tGKS4T92lrECaZQhadjFHBGpVn6bF3J4R7FWoMwtElw=;
- b=HROUZwon26Sdvm09gkLPN2Y/qqvNXRElUO31/tz+MRZ42SyMCtLkwrdGc9/zUdCk7umE9ZcoN
- n1zjijlJz/LCS2c68b6SZ1FNf0ub0jajPXEQkYMQO+4W5z5QCv6thVr
+ bh=ZpTj9qWsLnyN4rxo95Da1e9fz3tnEJ1IHU8Y7c6eY7s=;
+ b=Xs61KGtP1xf6/QohXdv+2+qgdPqJTXd0nbCPTYqLgi/wUjzCUtxlAhw+hcGQVNKmohUSqdQ0l
+ 8b7uE2KjS/xA/BKlfbI7ATmoLurwn1QlBp3+hVQ32r+OYOunyv8lJrx
 X-Developer-Key: i=vikash.garodia@oss.qualcomm.com; a=ed25519;
  pk=LY9Eqp4KiHWxzGNKGHbwRFEJOfRCSzG/rxQNmvZvaKE=
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMTI2MDEwNSBTYWx0ZWRfX+WMAm+wOZPKX
- qMzmM0K+45OTVkuMFfQRP4dxujCkF9s/03Gne7LxO2dS6tKFY1ejgUn+j2c0IaHuqzAoasDC9+d
- 5hfC1Zs31ywGLE+oEWogyPAH/F5aZzp1zcqJ6JzfacfIpKH7UpudbXK2g9QpOhcIBuGC/bpscAd
- DSvPMVoYigOyH50SREUesr4xcnAeM4TMEhPut11/mWFhyQ+5O5RfKpZHOTg6ZmU5IVbSFkUXipw
- yKgfcucTPYYnsB022pwjkIieN/qvvqbBLQHSafBqF521mLoVLlTrTVGjwkpWLQ3N2vFOaNlsMLK
- QvQrsohXiIo9J/wjUcmGh5Bk1zibeLOj2hg4WMISanQgHuFaF5wyo6N1tthCVZGis4MZhuz2d1c
- XStdCVkYIsTyjF5kOCrl94WOYpNU2PFH3uL6182cj/v+9PpJpmcLmM+SagmGaoj1M5JHVOd17Cy
- p2w9iX5QKDAHfxdQJ9w==
-X-Authority-Analysis: v=2.4 cv=UqRu9uwB c=1 sm=1 tr=0 ts=69775d7b cx=c_pps
- a=oF/VQ+ItUULfLr/lQ2/icg==:117 a=ZePRamnt/+rB5gQjfz0u9A==:17
+X-Authority-Analysis: v=2.4 cv=YLGSCBGx c=1 sm=1 tr=0 ts=69775d81 cx=c_pps
+ a=Oh5Dbbf/trHjhBongsHeRQ==:117 a=ZePRamnt/+rB5gQjfz0u9A==:17
  a=IkcTkHD0fZMA:10 a=vUbySO9Y5rIA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=gEfo2CItAAAA:8 a=EUspDBNiAAAA:8
- a=PIz1-sESaiOoqeWa7OYA:9 a=QEXdDO2ut3YA:10 a=3WC7DwWrALyhR5TkjVHa:22
- a=sptkURWiP4Gy88Gu7hUp:22
-X-Proofpoint-ORIG-GUID: 3tp9UsQ72Sn8dXXiJkl5aGJEEyz4U-3F
-X-Proofpoint-GUID: 3tp9UsQ72Sn8dXXiJkl5aGJEEyz4U-3F
+ a=VkNPw1HP01LnGYTKEx00:22 a=EUspDBNiAAAA:8 a=WfhCwlpBSbr3wMVQJZIA:9
+ a=QEXdDO2ut3YA:10 a=_Vgx9l1VpLgwpw_dHYaR:22
+X-Proofpoint-GUID: _5EWi0HR7q5HpuRsj3d0z69EjHKHKdhc
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMTI2MDEwNSBTYWx0ZWRfX/hByXk7Py6V0
+ zjyCyL2I1afXWLdk1NxD9OTOLeQOGaytJQRwoMpVxMcGQMXH8De+nNEtlI9CNm1P3qWeHNGRM6S
+ 3O/vG3760BwaKPFpY6tk3w4p2fzxP0HiC1sM7nIPc59B8ZwcqOUTCr6ETpEg9XOVsO5VRZAxQze
+ w3y2sRCA2VFAenlJH/S48c4egWK8RVXsieDcetDZDXaHIThhLg9uxJnVaFy9jNNHzZo9Mqcu9lw
+ TCE5unkzYXbD2rlOt8tZjCWRn4iNwoA9TBbPw6Htztef6YA9CfaRiprjpViYR8DOSVBn7wSs9Vf
+ QHjY+oYNlb1EJnApf4mvpaSrraUjodURu60kcu9WlKv0sUPNBaw2FeLUNh8bXQUmZLU5frApNP7
+ SFWbiIIAe7C+py2pkHpxjK3UqfFttB1RzOoPYtcdSbppjij8DWAxpJywMBqDqewHtVFSLr0Jj+U
+ 5gF8pBM3bcoJbafBDIg==
+X-Proofpoint-ORIG-GUID: _5EWi0HR7q5HpuRsj3d0z69EjHKHKdhc
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.20,FMLib:17.12.100.49
  definitions=2026-01-26_02,2026-01-22_02,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- priorityscore=1501 impostorscore=0 suspectscore=0 spamscore=0
- lowpriorityscore=0 phishscore=0 adultscore=0 malwarescore=0 bulkscore=0
- clxscore=1011 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2601150000
- definitions=main-2601260105
+ adultscore=0 priorityscore=1501 suspectscore=0 bulkscore=0 lowpriorityscore=0
+ clxscore=1011 impostorscore=0 phishscore=0 spamscore=0 malwarescore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2601150000 definitions=main-2601260105
 
-Kaanapali SOC brings in the new generation of video IP i.e iris4. When
-compared to previous generation, iris3x, it has,
-- separate power domains for stream and pixel processing hardware blocks
-  (bse and vpp).
-- additional power domain for apv codec.
-- power domains for individual pipes (VPPx).
-- different clocks and reset lines.
+From: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
 
-iommu-map include all the different stream-ids which can be possibly
-generated by vpu4 hardware.
+Linux interprets multiple mappings for the same input ID as a set of
+equivalent choices to pick one. There exists usecases where these set
+must be maintained in parallel, ex: on ARM, a dynamically created child
+device(s) is referencing multiple input id's in parent iommu-map.
 
+Factor out the code where multiple mappings needs to be maintained in
+parallel can be achieved through callback from this factored out code.
+
+Signed-off-by: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
+Signed-off-by: Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
 Signed-off-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
 ---
- .../bindings/media/qcom,kaanapali-iris.yaml        | 234 +++++++++++++++++++++
- 1 file changed, 234 insertions(+)
+ drivers/of/base.c | 47 ++++++++++++++++++++++++++++++++---------------
+ 1 file changed, 32 insertions(+), 15 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/media/qcom,kaanapali-iris.yaml b/Documentation/devicetree/bindings/media/qcom,kaanapali-iris.yaml
-new file mode 100644
-index 0000000000000000000000000000000000000000..4ed2afacb19043a60cfd67c4492356b4adb81c3d
---- /dev/null
-+++ b/Documentation/devicetree/bindings/media/qcom,kaanapali-iris.yaml
-@@ -0,0 +1,234 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/media/qcom,kaanapali-iris.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/drivers/of/base.c b/drivers/of/base.c
+index 0825f3dc93f2472e9947af09acdde72031ab85bc..606bef4f90e7d13bae4f7b0c45acd1755ad89826 100644
+--- a/drivers/of/base.c
++++ b/drivers/of/base.c
+@@ -2122,6 +2122,32 @@ static bool of_check_bad_map(const __be32 *map, int len)
+ 	return true;
+ }
+ 
++static int of_map_id_fill_output(struct of_map_id_arg *arg,
++				 struct device_node *phandle_node, u32 id_or_offset,
++				 const __be32 *out_base, u32 cells,
++				 bool bypass)
++{
++	if (bypass) {
++		arg->map_args.args[0] = id_or_offset;
++		return 0;
++	}
 +
-+title: Qualcomm Kaanapali Iris video encoder and decoder
++	if (arg->map_args.np)
++		of_node_put(phandle_node);
++	else
++		arg->map_args.np = phandle_node;
 +
-+maintainers:
-+  - Vikash Garodia <vikash.garodia@oss.qualcomm.com>
-+  - Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>
++	if (arg->map_args.np != phandle_node)
++		return -EAGAIN;
 +
-+description:
-+  The iris video processing unit is a video encode and decode accelerator
-+  present on Qualcomm Kaanapali SoC.
++	for (int i = 0; i < cells; i++)
++		arg->map_args.args[i] = (id_or_offset + be32_to_cpu(out_base[i]));
 +
-+properties:
-+  compatible:
-+    const: qcom,kaanapali-iris
++	arg->map_args.args_count = cells;
 +
-+  reg:
-+    maxItems: 1
++	return 0;
++}
 +
-+  clocks:
-+    maxItems: 10
-+
-+  clock-names:
-+    items:
-+      - const: iface
-+      - const: core
-+      - const: vcodec0_core
-+      - const: iface1
-+      - const: core_freerun
-+      - const: vcodec0_core_freerun
-+      - const: vcodec_bse
-+      - const: vcodec_vpp0
-+      - const: vcodec_vpp1
-+      - const: vcodec_apv
-+
-+  dma-coherent: true
-+
-+  firmware-name:
-+    maxItems: 1
-+
-+  interconnects:
-+    maxItems: 2
-+
-+  interconnect-names:
-+    items:
-+      - const: cpu-cfg
-+      - const: video-mem
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  iommu-map: true
-+
-+  memory-region:
-+    maxItems: 1
-+
-+  operating-points-v2: true
-+  opp-table:
-+    type: object
-+
-+  power-domains:
-+    maxItems: 7
-+
-+  power-domain-names:
-+    items:
-+      - const: venus
-+      - const: vcodec0
-+      - const: mxc
-+      - const: mmcx
-+      - const: vpp0
-+      - const: vpp1
-+      - const: apv
-+
-+  resets:
-+    maxItems: 4
-+
-+  reset-names:
-+    items:
-+      - const: bus0
-+      - const: bus1
-+      - const: core
-+      - const: vcodec0_core
-+
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+  - clock-names
-+  - dma-coherent
-+  - interconnects
-+  - interconnect-names
-+  - interrupts
-+  - iommu-map
-+  - memory-region
-+  - power-domains
-+  - power-domain-names
-+  - resets
-+  - reset-names
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/power/qcom,rpmhpd.h>
-+
-+    video-codec@2000000 {
-+        compatible = "qcom,kaanapali-iris";
-+        reg = <0x02000000 0xf0000>;
-+
-+        clocks = <&gcc_video_axi0_clk>,
-+                 <&video_cc_mvs0c_clk>,
-+                 <&video_cc_mvs0_clk>,
-+                 <&gcc_video_axi1_clk>,
-+                 <&video_cc_mvs0c_freerun_clk>,
-+                 <&video_cc_mvs0_freerun_clk>,
-+                 <&video_cc_mvs0b_clk>,
-+                 <&video_cc_mvs0_vpp0_clk>,
-+                 <&video_cc_mvs0_vpp1_clk>,
-+                 <&video_cc_mvs0a_clk>;
-+        clock-names = "iface",
-+                      "core",
-+                      "vcodec0_core",
-+                      "iface1",
-+                      "core_freerun",
-+                      "vcodec0_core_freerun",
-+                      "vcodec_bse",
-+                      "vcodec_vpp0",
-+                      "vcodec_vpp1",
-+                      "vcodec_apv";
-+
-+        dma-coherent;
-+
-+        interconnects = <&gem_noc_master_appss_proc &config_noc_slave_venus_cfg>,
-+                        <&mmss_noc_master_video_mvp &mc_virt_slave_ebi1>;
-+        interconnect-names = "cpu-cfg",
-+                             "video-mem";
-+
-+        interrupts = <GIC_SPI 174 IRQ_TYPE_LEVEL_HIGH>;
-+
-+        iommu-map = <0x100 &apps_smmu 0x1940 0x0 0x1>,
-+                    <0x100 &apps_smmu 0x1a20 0x0 0x1>,
-+                    <0x100 &apps_smmu 0x1944 0x0 0x1>,
-+                    <0x101 &apps_smmu 0x1943 0x0 0x1>,
-+                    <0x200 &apps_smmu 0x1941 0x0 0x1>,
-+                    <0x200 &apps_smmu 0x1a21 0x0 0x1>,
-+                    <0x201 &apps_smmu 0x1945 0x0 0x1>,
-+                    <0x202 &apps_smmu 0x1946 0x0 0x1>,
-+                    <0x300 &apps_smmu 0x1a22 0x0 0x1>;
-+
-+        memory-region = <&video_mem>;
-+
-+        operating-points-v2 = <&iris_opp_table>;
-+
-+        power-domains = <&video_cc_mvs0c_gdsc>,
-+                        <&video_cc_mvs0_gdsc>,
-+                        <&rpmhpd RPMHPD_MXC>,
-+                        <&rpmhpd RPMHPD_MMCX>,
-+                        <&video_cc_mvs0_vpp0_gdsc>,
-+                        <&video_cc_mvs0_vpp1_gdsc>,
-+                        <&video_cc_mvs0a_gdsc>;
-+        power-domain-names = "venus",
-+                             "vcodec0",
-+                             "mxc",
-+                             "mmcx",
-+                             "vpp0",
-+                             "vpp1",
-+                             "apv";
-+
-+        resets = <&gcc_video_axi0_clk_ares>,
-+                 <&gcc_video_axi1_clk_ares>,
-+                 <&video_cc_mvs0c_freerun_clk_ares>,
-+                 <&video_cc_mvs0_freerun_clk_ares>;
-+        reset-names = "bus0",
-+                      "bus1",
-+                      "core",
-+                      "vcodec0_core";
-+
-+        iris_opp_table: opp-table {
-+            compatible = "operating-points-v2";
-+
-+            opp-240000000 {
-+                opp-hz = /bits/ 64 <240000000 240000000 240000000 360000000>;
-+                required-opps = <&rpmhpd_opp_low_svs_d1>,
-+                                <&rpmhpd_opp_low_svs_d1>;
-+            };
-+
-+            opp-338000000 {
-+                opp-hz = /bits/ 64 <338000000 338000000 338000000 507000000>;
-+                required-opps = <&rpmhpd_opp_low_svs>,
-+                                <&rpmhpd_opp_low_svs>;
-+            };
-+
-+            opp-420000000 {
-+                opp-hz = /bits/ 64 <420000000 420000000 420000000 630000000>;
-+                required-opps = <&rpmhpd_opp_svs>,
-+                                <&rpmhpd_opp_svs>;
-+            };
-+
-+            opp-444000000 {
-+                opp-hz = /bits/ 64 <444000000 444000000 444000000 666000000>;
-+                required-opps = <&rpmhpd_opp_svs_l1>,
-+                                <&rpmhpd_opp_svs_l1>;
-+            };
-+
-+            opp-533000000 {
-+                opp-hz = /bits/ 64 <533000000 533000000 533000000 800000000>;
-+                required-opps = <&rpmhpd_opp_nom>,
-+                                <&rpmhpd_opp_nom>;
-+            };
-+
-+            opp-630000000 {
-+                opp-hz = /bits/ 64 <630000000 630000000 630000000 1104000000>;
-+                required-opps = <&rpmhpd_opp_turbo>,
-+                                <&rpmhpd_opp_turbo>;
-+            };
-+
-+            opp-800000000 {
-+                opp-hz = /bits/ 64 <800000000 630000000 630000000 1260000000>;
-+                required-opps = <&rpmhpd_opp_turbo_l0>,
-+                                <&rpmhpd_opp_turbo_l0>;
-+            };
-+
-+            opp-1000000000 {
-+                opp-hz = /bits/ 64 <1000000000 630000000 850000000 1260000000>;
-+                required-opps = <&rpmhpd_opp_turbo_l1>,
-+                                <&rpmhpd_opp_turbo_l1>;
-+            };
-+        };
-+    };
+ /**
+  * of_map_id - Translate an ID through a downstream mapping.
+  * @np: root complex device node.
+@@ -2162,8 +2188,7 @@ int of_map_id(const struct device_node *np, u32 id, const char *map_name,
+ 		if (arg->map_args.np)
+ 			return -ENODEV;
+ 		/* Otherwise, no map implies no translation */
+-		arg->map_args.args[0] = id;
+-		return 0;
++		goto bypass_translation;
+ 	}
+ 
+ 	if (map_bytes % sizeof(*map))
+@@ -2185,6 +2210,7 @@ int of_map_id(const struct device_node *np, u32 id, const char *map_name,
+ 		struct device_node *phandle_node;
+ 		u32 id_base, phandle, id_len, id_off, cells = 0;
+ 		const __be32 *out_base;
++		int ret;
+ 
+ 		if (map_len - offset < 2)
+ 			goto err_map_len;
+@@ -2238,19 +2264,10 @@ int of_map_id(const struct device_node *np, u32 id, const char *map_name,
+ 		if (masked_id < id_base || id_off >= id_len)
+ 			continue;
+ 
+-		if (arg->map_args.np)
+-			of_node_put(phandle_node);
+-		else
+-			arg->map_args.np = phandle_node;
+-
+-		if (arg->map_args.np != phandle_node)
++		ret = of_map_id_fill_output(arg, phandle_node, id_off, out_base, cells, false);
++		if (ret == -EAGAIN)
+ 			continue;
+ 
+-		for (int i = 0; i < cells; i++)
+-			arg->map_args.args[i] = (id_off + be32_to_cpu(out_base[i]));
+-
+-		arg->map_args.args_count = cells;
+-
+ 		pr_debug("%pOF: %s, using mask %08x, id-base: %08x, out-base: %08x, length: %08x, id: %08x -> %08x\n",
+ 			np, map_name, map_mask, id_base, be32_to_cpup(out_base),
+ 			id_len, id, id_off + be32_to_cpup(out_base));
+@@ -2260,9 +2277,9 @@ int of_map_id(const struct device_node *np, u32 id, const char *map_name,
+ 	pr_info("%pOF: no %s translation for id 0x%x on %pOF\n", np, map_name,
+ 		id, arg->map_args.np  ? arg->map_args.np : NULL);
+ 
++bypass_translation:
+ 	/* Bypasses translation */
+-	arg->map_args.args[0] = id;
+-	return 0;
++	return of_map_id_fill_output(arg, NULL, id, 0, 0, true);
+ 
+ err_map_len:
+ 	pr_err("%pOF: Error: Bad %s length: %d\n", np, map_name, map_bytes);
 
 -- 
 2.34.1
