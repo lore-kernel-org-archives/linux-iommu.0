@@ -1,133 +1,147 @@
-Received: from mail-oo1-f80.google.com (mail-oo1-f80.google.com [209.85.161.80])
+Received: from mail-qv1-f44.google.com (mail-qv1-f44.google.com [209.85.219.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8403E1EE7D5
-	for <iommu@lists.linux.dev>; Sun, 25 Jan 2026 06:02:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.80
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769320951; cv=none; b=AlF0Kus5h0v+Gq3FMwTQDRdtuUnTRijYTNLrrIbRHRjPoSX2w7Msu7dtsYGZ2cFD842SvY4+NE0x/fZdhxAYKsO0eKdhFc5HapQPe36lDmyf+lwMtJqIZOmc5YNDoLrfvM78Gq3mlKD2j88EmfLX+JYvl3E+LHg3gm6O7IcZMzI=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769320951; c=relaxed/simple;
-	bh=zE+LHEVzDerPodawcsD5m1dYFUj/lMmrsDptshOXCUk=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=uEuGXYeF9J5OKbFdgWrwJvoCj4YITpKlZqvtcyiqShpjtK3EzMAqs8wNHAdsZLzgAyha+sAKUwHfqCWQ3OS3hACt1p89HuibKy4HrCc+kkHGSNZZYG+ybPgjfyg2y8wvjmNQCpna5/b7TIuQeg/Ic1dnJBbesXJHf8zuEDpC8Pw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.161.80
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oo1-f80.google.com with SMTP id 006d021491bc7-662c6ddda94so9582209eaf.0
-        for <iommu@lists.linux.dev>; Sat, 24 Jan 2026 22:02:29 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A0CE1C4A20
+	for <iommu@lists.linux.dev>; Mon, 26 Jan 2026 01:43:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.219.44
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1769391796; cv=pass; b=adcTxIUN9KS2wZQflpSQYP9cHSw9UfUSqaeKfCKmoT2yMo+UlXQuOWK81xZTUaKc2luYCd6weP/TMDkz1jBclsWaHvNkjLe6ocUbPiC1huL0Srekg7VGaESrvHJJgKIHmo4lU7qP6uxLLHtAerbR8/HjVDC37NtKKvxboBDejXQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1769391796; c=relaxed/simple;
+	bh=ShqFT9AIDvn/Aacc2hNx3D4aX32pq+QTgFv1oZuGe/U=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=awgo/n4ujE04iLvra9v+5OkRE57nIA5MqqRmBwJu9Ah6t82eI0Opk5UPySO0duxh8MyeUzVIsfPfwmFdSP4b7UqLI3gZRCQ4IIvkEY++mKhGLfqh2SiD9erTOeibfvG1V1FOIbj7KQhi/ofXkWnO8QMBuhbdyS4S2sSxwLGXrCA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=CMQ48KvJ; arc=pass smtp.client-ip=209.85.219.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CMQ48KvJ"
+Received: by mail-qv1-f44.google.com with SMTP id 6a1803df08f44-8887ac841e2so33891206d6.2
+        for <iommu@lists.linux.dev>; Sun, 25 Jan 2026 17:43:15 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1769391794; cv=none;
+        d=google.com; s=arc-20240605;
+        b=Chw9DbXCyhJF4jJ/uH7qAPJOGfxYtvjI/Rs0sxaGMidXTkpvzclAlas3M8vDfSIxqt
+         BDezilfg0FKgxyJiW8UDQ6qnk6KC2kyIkzcHP64+6OQ6X+zH/MnX/9HUWqnW0fsktsrc
+         sgSR6TrdMLY06NaXCapDfmq6i/1G30Hj9SbjLgel6I5BUIBmni6K45M4ZODvQ7bpTMNF
+         4ww4TDFdBXpXHGCcNvOSQMDbjXhYBjs0cMaV9c+JmcEPh2Xgh9VZg2Uf44U//G53sNCJ
+         dpaAxeNGV5Vn1pxaTQpyHN0PdBen8BoOjTIUt29GDioF8zY1RohnAEkAV8VytMYTn/NY
+         I4Ow==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=Td4QUCSFnNiGlIQcniNA/rp8ZfKnX5RqAxkcu4MfCJE=;
+        fh=ooHqn3+NgbbG8ZG+vTT5dXNhL3GsYofizUUIbAwAeNk=;
+        b=jG9ul/+FU0bqSUqXqvTrGEi6wUZyEL5LmjvJznwveaKF4xJY6E2jhIdnHGri/rGwqD
+         ga3O4syKprobpp2veIL+vlrhd7PvlHgLQO/Qpbu62tTBNnx0XmONBNqqjVn5zxS/OeEl
+         Ssio56OtTc6H45Acp6VdHt/Gyr0uzXaFu0St4NfX85e31vbBXdP2WuKPIhKamfFCNaKF
+         /fbkvrUInuEDEvr8Aaj/Zgak2Um+34+zp/h8a1tQiMgfuN+eu+CT0qk4P6dOUG7JCVqW
+         j9p/o+getZrzCc5m+RxqaUJPLbCtJ7HfP3ezRVxE87sELv9WlDEkarPUyvq0yGtvqe/w
+         wpLA==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1769391794; x=1769996594; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=Td4QUCSFnNiGlIQcniNA/rp8ZfKnX5RqAxkcu4MfCJE=;
+        b=CMQ48KvJazx7b2Oena1od3ikzp9J2c28ooIHPQzKdfY32xMkQBYi3R9htIaG5Qwzl8
+         VPYZfTanMPJpp2MBRaF+Q67pA8fmFNiDtuLpaMUxxtIXhgMQqGYba6SC8NFaWBJoi5cg
+         nBb9FjGA6aX1g562J8RT6qhsB/vYm1O8gSxt7FOhCRwHgdFaI16JB9ajoWl4WelQYgih
+         eFUkg53iCZgcqWXW/luS/kJh21JLYBBN8p5B2861E4l8DUFE/LMz7AKH+pHrFlt8WZ4x
+         1dgLFRQ8B3juisNYHxRjHZf/3VNMXtl6js/kVTSYPvR3MR0U8TpfWTr8MZCy7A8pXISg
+         LAfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769320948; x=1769925748;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=j+q1jqIaaxEeT0dCDcERCUMQ+PfeBJqze3pTvLgu0Hc=;
-        b=Y3Vi/o90SCqE29fzqhJzzSRakODW57TJqDk99RVzZf5LRmGLMCJB2uOeIOLx/vmtpF
-         XNf7RSNLIrxlTy0T92Na40Cwuz6MtqPlPfGTv94a1eVpzWq3hdrIGRyqBHIlHMNYG0gD
-         EqhOkHsngyQXCwamYCxGhB3av8SDeinBpPVOlULty6vB7vRd/NkzKQrFTWIv+Jg0w3PK
-         a5hFaaHy8IAYW+lXcoW7J4IpK8p6H8y1UUu8P+o0ropRMjTcxADiDckEIRMHJ7D+vjj8
-         SOvF9GyZVKk5lijft9I1iCLM3sADZHwnmmvLNuzKU+wv1BtAY6VOIWCKiVlfE9YmYU0p
-         /XAg==
-X-Gm-Message-State: AOJu0YxzwSIWtsZl8KmKJSrsrzZw9hDTCd5UrZpOZrByV5VoMnieNDrQ
-	tZhHDQaGCw/i1kb+jefLdbYHk5PoiATdOf65zUJsv792vb9rVq44361V+xubdD08xY5Ht0eU53a
-	xfpmb1l0yePQ/CNjVTHMfitKe4TyKCpdatU7mGXDsWv0eK+bFM1tvFlxwUGV3AQ==
+        d=1e100.net; s=20230601; t=1769391794; x=1769996594;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Td4QUCSFnNiGlIQcniNA/rp8ZfKnX5RqAxkcu4MfCJE=;
+        b=HPqWBj1ZM64F2WYfpSfasIgRTTa1ZklggLARlBvQ7CnZ/2Y8hvPwCcp4kMZKuKVj7e
+         GsG5ghj/df8okuAqR8s+iQCXjQibRLPZ9trosEGGtgAfUC26k2v0CS0S6X1Q3ZIQY/uJ
+         xSCpfwFNx1VUWBmWw+0S2BMi/GXzC6KFn7/UANRK8W0c0XYdOEXjDA9f7xtpxmEvOS+k
+         Ts1VG9l3u+qf3UnYMYFDUTvtBoZOurLfHk35QdtVCugv9MPS2TiHwCTQ4DbBq4cClRsc
+         VtbgqRLxrjBSD2XCys82L4bh252iPynMG4r3d8vORmyUVReAXWu+9j/+CIdS0LQu+ApC
+         RCuQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWRiO7AQw19NPYbJlWeG9evxvB4P/GcMAZxAuIx0ffMLKCYj5HvWoSRNnfNkkeTOlz5uWLyVA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yz7PgKxPQYHiTB2ZTv7EzZd9SQC1R6Qiopzcu8fE4xcfTQE3ECa
+	zuY2vmXldXM7u9EGY8AK/Si2Px0v8gVIicbB71gU20CBYEhpbVeUfxeBhQhPv/RSkAfJx2xW9cS
+	9hW9gqL9A7n7gZYZQ3R9QUU3cZIWIUO4=
+X-Gm-Gg: AZuq6aKjoshN8twQlgUE27dXFAMajzPhdH9hgpFC5UKahZSNKu2Zw8KBK7xmlVsEnNv
+	Del7ckvRlb3gf56ndg13XLh6EKU2cXQ+JU81g1ywqibnFXMiv4bvnxcmXgMJio+vvrfiGPOkRpE
+	o2VLMdd/PI+l28oOFoG7WX0YIPePICzLj9UYpaB0KFvwlZ7RaYMWD5dNhYzlpg1BocBWy7rwaDF
+	GKuKBloZGB5N4r+ppqB4TIgwwTdl0bAv/dQ0UNvCrSxmNWkyLualBc/Ngy4Bi2EQJYWX9Ji4w==
+X-Received: by 2002:a05:6214:d85:b0:88a:4452:750b with SMTP id
+ 6a1803df08f44-894b0792ademr38139946d6.60.1769391793952; Sun, 25 Jan 2026
+ 17:43:13 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6820:1622:b0:662:c029:682d with SMTP id
- 006d021491bc7-662e046d5d3mr497728eaf.51.1769320948542; Sat, 24 Jan 2026
- 22:02:28 -0800 (PST)
-Date: Sat, 24 Jan 2026 22:02:28 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6975b1f4.a00a0220.33ccc7.001f.GAE@google.com>
-Subject: [syzbot] [iommu?] KMSAN: uninit-value in iopt_pages_unfill_xarray
-From: syzbot <syzbot+a0c841e02f328005bbcc@syzkaller.appspotmail.com>
-To: iommu@lists.linux.dev, jgg@ziepe.ca, joro@8bytes.org, kevin.tian@intel.com, 
-	linux-kernel@vger.kernel.org, robin.murphy@arm.com, 
-	syzkaller-bugs@googlegroups.com, will@kernel.org
+References: <20251226225254.46197-1-21cnbao@gmail.com> <20251226225254.46197-2-21cnbao@gmail.com>
+ <aW90tXGtLVC0mKWP@willie-the-truck>
+In-Reply-To: <aW90tXGtLVC0mKWP@willie-the-truck>
+From: Barry Song <21cnbao@gmail.com>
+Date: Mon, 26 Jan 2026 09:43:02 +0800
+X-Gm-Features: AZwV_QjeDywrcz2eWqXN9SXa7QL5VefpgErEyUZbE549AGDu67lQKOvE9Fh-udU
+Message-ID: <CAGsJ_4wDYTbuuzzfGNWqp1+ca1cAkg0XMgbgkspRGdKKAx_Ymg@mail.gmail.com>
+Subject: Re: [PATCH v2 1/8] arm64: Provide dcache_by_myline_op_nosync helper
+To: Will Deacon <will@kernel.org>
+Cc: catalin.marinas@arm.com, m.szyprowski@samsung.com, robin.murphy@arm.com, 
+	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+	linux-kernel@vger.kernel.org, xen-devel@lists.xenproject.org, 
+	Leon Romanovsky <leon@kernel.org>, Ada Couprie Diaz <ada.coupriediaz@arm.com>, 
+	Ard Biesheuvel <ardb@kernel.org>, Marc Zyngier <maz@kernel.org>, 
+	Anshuman Khandual <anshuman.khandual@arm.com>, Ryan Roberts <ryan.roberts@arm.com>, 
+	Suren Baghdasaryan <surenb@google.com>, Tangquan Zheng <zhengtangquan@oppo.com>
 Content-Type: text/plain; charset="UTF-8"
 
-Hello,
+[...]
 
-syzbot found the following issue on:
+> >   */
+> > -     .macro dcache_by_myline_op op, domain, start, end, linesz, tmp, fixup
+> > +     .macro raw_dcache_by_myline_op op, start, end, linesz, tmp, fixup
+> >       sub     \tmp, \linesz, #1
+> >       bic     \start, \start, \tmp
+> >  .Ldcache_op\@:
+> > @@ -402,14 +401,13 @@ alternative_endif
+> >       add     \start, \start, \linesz
+> >       cmp     \start, \end
+> >       b.lo    .Ldcache_op\@
+> > -     dsb     \domain
+>
+> Naming nit, but I'd prefer this to be dcache_by_myline_op_nosync() for
+> consistency with the other macros that you're adding. The 'raw' prefix
+> is used by raw_dcache_line_size() to indicate that we're getting the
+> value from the underlying hardware register.
 
-HEAD commit:    6c790212c588 Merge tag 'devicetree-fixes-for-6.19-3' of gi..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=113ef852580000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=8bf02b9e495b9fcd
-dashboard link: https://syzkaller.appspot.com/bug?extid=a0c841e02f328005bbcc
-compiler:       Debian clang version 21.1.8 (++20251221033036+2078da43e25a-1~exp1~20251221153213.50), Debian LLD 21.1.8
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1796579a580000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13919d22580000
+Ok. thanks!
 
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/913c7571d705/disk-6c790212.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/62003bdb5d84/vmlinux-6c790212.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/5fd53ea608c6/bzImage-6c790212.xz
+>
+> >
+> >       _cond_uaccess_extable .Ldcache_op\@, \fixup
+> >       .endm
+> >
+> >  /*
+> >   * Macro to perform a data cache maintenance for the interval
+> > - * [start, end)
+> > + * [start, end) and wait for completion
+> >   *
+> >   *   op:             operation passed to dc instruction
+> >   *   domain:         domain used in dsb instruction
+> > @@ -420,7 +418,23 @@ alternative_endif
+> >   */
+> >       .macro dcache_by_line_op op, domain, start, end, tmp1, tmp2, fixup
+> >       dcache_line_size \tmp1, \tmp2
+> > -     dcache_by_myline_op \op, \domain, \start, \end, \tmp1, \tmp2, \fixup
+> > +     raw_dcache_by_myline_op \op, \start, \end, \tmp1, \tmp2, \fixup
+> > +     dsb \domain
+> > +     .endm
+>
+> This could just be dcache_by_line_op_nosync() + dsb.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+a0c841e02f328005bbcc@syzkaller.appspotmail.com
+Ok. thanks!
 
-=====================================================
-BUG: KMSAN: uninit-value in batch_add_pfn_num drivers/iommu/iommufd/pages.c:365 [inline]
-BUG: KMSAN: uninit-value in batch_add_pfn drivers/iommu/iommufd/pages.c:398 [inline]
-BUG: KMSAN: uninit-value in batch_from_xarray_clear drivers/iommu/iommufd/pages.c:590 [inline]
-BUG: KMSAN: uninit-value in iopt_pages_unpin_xarray drivers/iommu/iommufd/pages.c:2030 [inline]
-BUG: KMSAN: uninit-value in iopt_pages_unfill_xarray+0xfe3/0x1660 drivers/iommu/iommufd/pages.c:2068
- batch_add_pfn_num drivers/iommu/iommufd/pages.c:365 [inline]
- batch_add_pfn drivers/iommu/iommufd/pages.c:398 [inline]
- batch_from_xarray_clear drivers/iommu/iommufd/pages.c:590 [inline]
- iopt_pages_unpin_xarray drivers/iommu/iommufd/pages.c:2030 [inline]
- iopt_pages_unfill_xarray+0xfe3/0x1660 drivers/iommu/iommufd/pages.c:2068
- iopt_area_remove_access+0x508/0x650 drivers/iommu/iommufd/pages.c:2516
- iommufd_access_unpin_pages+0x637/0xa50 drivers/iommu/iommufd/device.c:1358
- iommufd_test_access_unmap+0x423/0x6b0 drivers/iommu/iommufd/selftest.c:1384
- iommufd_test_staccess_release+0x7f/0x140 drivers/iommu/iommufd/selftest.c:1425
- __fput+0x60e/0x1050 fs/file_table.c:468
- ____fput+0x25/0x30 fs/file_table.c:496
- task_work_run+0x208/0x2b0 kernel/task_work.c:233
- resume_user_mode_work include/linux/resume_user_mode.h:50 [inline]
- __exit_to_user_mode_loop kernel/entry/common.c:44 [inline]
- exit_to_user_mode_loop+0x2ff/0x1b20 kernel/entry/common.c:75
- __exit_to_user_mode_prepare include/linux/irq-entry-common.h:226 [inline]
- syscall_exit_to_user_mode_prepare include/linux/irq-entry-common.h:256 [inline]
- syscall_exit_to_user_mode_work include/linux/entry-common.h:159 [inline]
- syscall_exit_to_user_mode include/linux/entry-common.h:194 [inline]
- do_syscall_64+0x1d7/0xf80 arch/x86/entry/syscall_64.c:100
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-
-Local variable batch created at:
- iopt_pages_unfill_xarray+0x86/0x1660 drivers/iommu/iommufd/pages.c:2053
- iopt_area_remove_access+0x508/0x650 drivers/iommu/iommufd/pages.c:2516
-
-CPU: 0 UID: 0 PID: 6001 Comm: syz.0.17 Not tainted syzkaller #0 PREEMPT(voluntary) 
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/13/2026
-=====================================================
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-
-If the report is already addressed, let syzbot know by replying with:
-#syz fix: exact-commit-title
-
-If you want syzbot to run the reproducer, reply with:
-#syz test: git://repo/address.git branch-or-commit-hash
-If you attach or paste a git patch, syzbot will apply it before testing.
-
-If you want to overwrite report's subsystems, reply with:
-#syz set subsystems: new-subsystem
-(See the list of subsystem names on the web dashboard)
-
-If the report is a duplicate of another one, reply with:
-#syz dup: exact-subject-of-another-report
-
-If you want to undo deduplication, reply with:
-#syz undup
+Best Regards
+Barry
