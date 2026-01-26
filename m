@@ -1,153 +1,111 @@
-Received: from sender4-pp-f112.zoho.com (sender4-pp-f112.zoho.com [136.143.188.112])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38DCA155757
-	for <iommu@lists.linux.dev>; Mon, 26 Jan 2026 14:47:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.112
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769438835; cv=pass; b=Hg5fDVZQ74sFrAOD9mNqP/Oz2WCOmq7NIEylBij+bGGzIqBQZD/J+N0eF+RQHRwxtRZRCvMyiz0Z+0yB+AvA/X/+AyTsHfapv9+dCix6BT5hvS8xw9HdEgoA2v4UdvKrHGVmuDET2Nph0/hpQVo2MEVeaLDosjXJwTNQ9T0ZNY0=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769438835; c=relaxed/simple;
-	bh=ud1/yhum8fSasYKC+1JF/nMd2KhAyqTk3cYwbNVA2M4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ZBITwmn09muRFMIOkrAUsUGSgkRVNr701U5EnCVfgvRMkB6RL6wMM4rXcGXmijLTH2kBOTgDdN2Lpt1201w540LsQxwxS17GziSzkFbAzJhrMVihgB06rZWYy3dGDdZ+kUE21/O6hRB+9hL/3Iml5mD15X/rGwHPG/IxuzuctDo=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=benjamin.gaignard@collabora.com header.b=IvusYAoC; arc=pass smtp.client-ip=136.143.188.112
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08B4333066B;
+	Mon, 26 Jan 2026 14:54:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1769439285; cv=none; b=IlChuno6cAPrQOxq8SfSF2H+CRaO+2NlvZg7zm7qd0yoyf8lv7sV7POloKvpn+/7GRgn+UKAEL/Obx0uXzFwBADyqijTzVlYHn2IkdDb9iL3hXoedBBeI2aDgzaDPoHfJYOWll9OSEOODZuqCq4SVS5PwlcD34xuvnUyHjKLu+s=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1769439285; c=relaxed/simple;
+	bh=7sRyq9vC8/ABpNkwM+B6b4cRdcvsa50dvpc8Ewv/ufM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=j1xB6qeuMeKZ864V1653XEyx51MTL80HpxjoYhyrB7jHwDPlhV4QjjJZLOu47KCYwHyUWccgKiAJR+ySz7+ejUtTUtIl+7Hh2FLwkKbkzfsMFcBE+SBtfGHK9+eckk0quXIJ1+NwJo/ymm8WY5qi7tRmlG7CgJXeF92FVVeXeLw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XDxdNLEy; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=collabora.com header.i=benjamin.gaignard@collabora.com header.b="IvusYAoC"
-ARC-Seal: i=1; a=rsa-sha256; t=1769438821; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=g7QZPLCFJG4diwhCtqex30R/0irfBRYPcfcikzCMvM5y+qBwyhb+JayIBxqGW7JvwAYrweeMfHk/G5Ibg7SEBUOVS6obQ0fKM0f0m2unudjrI+lgbSWaUFNCxxYK8MtngNpONm+yeI4QamIGBoYF7DvlTWH+QneTCrJVEgLD1tU=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1769438821; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=3ssbdTUHNW+Tvz0qqW64nDulngnRtrkUBEpIXz/HKr8=; 
-	b=E7q2ZLT6DX7svkaJf5hOSioRIS1KZ1HEBBDZEl7E0oQciCVRnvxb6NR2xX2su5posSyc1l9ab7qmJy8rByyRMJhWL4vEUkuT+RQcTTaoH6j9TLnCYsyYrIPZ1J/MCx5bFM96uxBxlRzm6TlFedmZ157hBfdOoNYUk0yJu/kmzOo=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=collabora.com;
-	spf=pass  smtp.mailfrom=benjamin.gaignard@collabora.com;
-	dmarc=pass header.from=<benjamin.gaignard@collabora.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1769438821;
-	s=zohomail; d=collabora.com; i=benjamin.gaignard@collabora.com;
-	h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-	bh=3ssbdTUHNW+Tvz0qqW64nDulngnRtrkUBEpIXz/HKr8=;
-	b=IvusYAoCZolGFd1MCeYIUo9SgrSLUSraYPZ1Ar5Ng5TYTHxH822JgqW6UooSAP5H
-	8AsMs1ug4g22pPboNBT9+o+63xfFDZ1PEZos7kPOMlcOKjbHx1xPVO89/lWKuXdOR4W
-	dDXmu8vNI6yIEGRDlgW8WUReRXMVEGHR1ah1kEtk=
-Received: by mx.zohomail.com with SMTPS id 1769438819623670.7730935133327;
-	Mon, 26 Jan 2026 06:46:59 -0800 (PST)
-Message-ID: <ad70a610-f5a8-4091-8f32-e5c2caee9685@collabora.com>
-Date: Mon, 26 Jan 2026 15:46:54 +0100
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XDxdNLEy"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BD1FC116C6;
+	Mon, 26 Jan 2026 14:54:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1769439284;
+	bh=7sRyq9vC8/ABpNkwM+B6b4cRdcvsa50dvpc8Ewv/ufM=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=XDxdNLEyhAhLPM9W+w9yGtoYMuvdFpDU4if2F/p6P197GRjupD8TsigOvI5CaZv9k
+	 sK96+NZp97x4X6xVF08Gt62nGXGKg3lcFhLEjf36+JboinAsU3PZfmM7T8ZsINaLeS
+	 LO2NdtIbU0pWRchVnOzJsmTyj2hWkXSpccD5ITTgly0UZPkQ2yZMbZSu4DENeGl/A9
+	 rjtZuX1lrnPDjAF9SVU8i2taw7CACtOPdl4mvuhG9kIljzP9dKZ25uNmU/vC0iQWKS
+	 5qaf3qk718m0LvQuNYb3rhQqVaqgbK9s8em5hZ+V+J3Klspfh0ZOdGlIykPOeoM17E
+	 11QP0vbpVYqhA==
+Date: Mon, 26 Jan 2026 14:54:38 +0000
+From: Will Deacon <will@kernel.org>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Nicolin Chen <nicolinc@nvidia.com>, jean-philippe@linaro.org,
+	robin.murphy@arm.com, joro@8bytes.org, balbirs@nvidia.com,
+	miko.lenczewski@arm.com, peterz@infradead.org, kevin.tian@intel.com,
+	praan@google.com, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v9 3/7] iommu/arm-smmu-v3: Introduce a per-domain
+ arm_smmu_invs array
+Message-ID: <aXeALpV1wcQk9tah@willie-the-truck>
+References: <cover.1766174731.git.nicolinc@nvidia.com>
+ <8c94c5194871ee1a0f3a6b49e18818b88f51226d.1766174731.git.nicolinc@nvidia.com>
+ <aXOpzjkAgODnh2HU@willie-the-truck>
+ <aXOxfi8ZQAkr4zHU@Asurada-Nvidia>
+ <aXO1OLrOsCkep3V8@willie-the-truck>
+ <aXO2MY6gzs/lxT7S@Asurada-Nvidia>
+ <20260123191654.GD1134360@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v11 3/7] iommu: Add verisilicon IOMMU driver
-To: Will Deacon <will@kernel.org>
-Cc: joro@8bytes.org, robin.murphy@arm.com, robh@kernel.org,
- krzk+dt@kernel.org, conor+dt@kernel.org, heiko@sntech.de,
- nicolas.dufresne@collabora.com, p.zabel@pengutronix.de, mchehab@kernel.org,
- iommu@lists.linux.dev, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-rockchip@lists.infradead.org, linux-media@vger.kernel.org,
- kernel@collabora.com
-References: <aWZui-rn5RDPwpEO@willie-the-truck>
- <68a49f8b-178c-4fa2-b4a9-315ad602271d@collabora.com>
- <aWeTQ50DOtntcniN@willie-the-truck>
- <db0950f1-b357-47c2-9829-e33262ab456d@collabora.com>
- <aW4kb5EbxbrhTOxK@willie-the-truck>
- <b8f43fe8-3e07-4d98-a50d-817c31370710@collabora.com>
- <aXDL2JH_4RCDmAJv@willie-the-truck>
- <4b33b50f-f0c3-4db8-b394-dd2d4d6e3a55@collabora.com>
- <aXOsdlGMVzhHOrUr@willie-the-truck>
- <8fd2c508-cbe9-4050-ba02-85b22fcff10d@collabora.com>
- <aXd4CXE0fqWiKJXl@willie-the-truck>
-Content-Language: en-US
-From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-In-Reply-To: <aXd4CXE0fqWiKJXl@willie-the-truck>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260123191654.GD1134360@nvidia.com>
 
+On Fri, Jan 23, 2026 at 03:16:54PM -0400, Jason Gunthorpe wrote:
+> On Fri, Jan 23, 2026 at 09:56:01AM -0800, Nicolin Chen wrote:
+> > On Fri, Jan 23, 2026 at 05:51:52PM +0000, Will Deacon wrote:
+> > > On Fri, Jan 23, 2026 at 09:35:58AM -0800, Nicolin Chen wrote:
+> > > > On Fri, Jan 23, 2026 at 05:03:10PM +0000, Will Deacon wrote:
+> > > > > On Fri, Dec 19, 2025 at 12:11:25PM -0800, Nicolin Chen wrote:
+> > > > > > +struct arm_smmu_inv {
+> > > > > > +	struct arm_smmu_device *smmu;
+> > > > > > +	u8 type;
+> > > > > > +	u8 size_opcode;
+> > > > > > +	u8 nsize_opcode;
+> > > > > > +	u32 id; /* ASID or VMID or SID */
+> > > > > > +	union {
+> > > > > > +		size_t pgsize; /* ARM_SMMU_FEAT_RANGE_INV */
+> > > > > > +		u32 ssid; /* INV_TYPE_ATS */
+> > > > > > +	};
+> > > > > > +
+> > > > > > +	refcount_t users; /* users=0 to mark as a trash to be purged */
+> > > > > 
+> > > > > The refcount_t API uses atomics with barrier semantics. Do we actually
+> > > > > need those properties when updating the refcounts here? The ASID lock
+> > > > > gives us pretty strong serialisation even after this patch series and
+> > > > > we rely heavily on that.
+> > > > 
+> > > > But we can't use that mutex in the invalidation function that
+> > > > might be an IRQ context?
+> > > 
+> > > My question, really, is why do you need the atomic properties in this patch
+> > > series? It just looks like overhead at the moment.
+> > 
+> > Hmm, shouldn't it be atomic, since..
+> > 
+> > (might be IRQ, no mutex) __arm_smmu_domain_inv_range() reads it.
+> > (mutex protected) arm_smmu_attach_dev() writes it.
+> > 
+> > ..?
+> 
+> It doesn't need to be a full atomic, you can use WRITE_ONCE/READ_ONCE
+> instead for this case.
+> 
+> The general argument of this scheme is it doesn't matter if the
+> invalidation side is doing extra invalidation, that is supposed to
+> always be safe except for ATS. For ATS we hold locks and then it
+> doesn't to be atomic because of the lock.
+> 
+> So I think Will has it right, just use READ_ONCE/WRITE_ONCE on a naked
+> unsigned int.
 
-Le 26/01/2026 à 15:19, Will Deacon a écrit :
-> On Mon, Jan 26, 2026 at 10:03:19AM +0100, Benjamin Gaignard wrote:
->> Le 23/01/2026 à 18:14, Will Deacon a écrit :
->>> On Wed, Jan 21, 2026 at 02:50:18PM +0100, Benjamin Gaignard wrote:
->>>> Le 21/01/2026 à 13:51, Will Deacon a écrit :
->>>>> On Mon, Jan 19, 2026 at 03:03:44PM +0100, Benjamin Gaignard wrote:
->>>>>>>>>>>> +static const struct iommu_ops vsi_iommu_ops = {
->>>>>>>>>>>> +	.identity_domain = &vsi_identity_domain,
->>>>>>>>>>>> +	.release_domain = &vsi_identity_domain,
->>>>>>>>>>>> +	.domain_alloc_paging = vsi_iommu_domain_alloc_paging,
->>>>>>>>>>>> +	.of_xlate = vsi_iommu_of_xlate,
->>>>>>>>>>>> +	.probe_device = vsi_iommu_probe_device,
->>>>>>>>>>>> +	.release_device = vsi_iommu_release_device,
->>>>>>>>>>>> +	.device_group = generic_single_device_group,
->>>>>>>>>>>> +	.owner = THIS_MODULE,
->>>>>>>>>>>> +	.default_domain_ops = &(const struct iommu_domain_ops) {
->>>>>>>>>>>> +		.attach_dev		= vsi_iommu_attach_device,
->>>>>>>>>>>> +		.map_pages		= vsi_iommu_map,
->>>>>>>>>>>> +		.unmap_pages		= vsi_iommu_unmap,
->>>>>>>>>>>> +		.flush_iotlb_all	= vsi_iommu_flush_tlb_all,
->>>>>>>>>>> This has no callers and so your unmap routine appears to be broken.
->>>>>>>>>> It is a leftover of previous attempt to allow video decoder to clean/flush
->>>>>>>>>> the iommu by using a function from the API.
->>>>>>>>>> Now it is using vsi_iommu_restore_ctx().
->>>>>>>>>> I while remove it in version 12.
->>>>>>>>> Don't you still need some invalidation on the unmap path?
->>>>>>>> In vsi_iommu_unmap_iova() page is invalided by calling vsi_mk_pte_invalid().
->>>>>>> But that just writes an invalid descriptor and doesn't appear to invalidate
->>>>>>> the TLB at all.
->>>>>>>
->>>>>>>> That clear BIT(0) so the hardware knows the page is invalid.
->>>>>>>> Do I have miss something here ?
->>>>>>> Yes, the TLB structure needs to be invalidated so that the page-table
->>>>>>> walker sees the new value that you have written in memory.
->>>>>>>
->>>>>>> The rockchip driver gets this correct...
->>>>>> Rockchip hardware have a ZAP_ONE_LINE register which didn't exist on Verisilicon
->>>>>> hardware.
->>>>> Presumably you have some sort of Verisilicon datasheet or downstream driver
->>>>> from which you can infer the TLB invalidation runes?
->>>> I have only this downstream driver:
->>>> https://github.com/rockchip-linux/kernel/blob/develop-6.1/drivers/iommu/rockchip-iommu-av1d.c
->>>> No datasheet...
->>>>
->>>>>> I have tried to use VSI_MMU_BIT_FLUSH on VSI driver after unmapping iova
->>>>>> but it doesn't work.
->>>>> What do you mean by "doesn't work"? If it works without doing any
->>>>> invalidation at all, then it's very peculiar that adding the invalidation
->>>>> would introduce issues.
->>>> I mean VSI_MMU_BIT_FLUSH register can't be used to invalid the TLB.
->>>> I think the hardware iterates over the pages tables in memory and
->>>> check the valid/invalid bit.
->>> I bet it doesn't: that would be horrible for performance.
->>>
->>> The hardware clearly has TLB invalidation support, as the downstream driver
->>> that you linked above implements av1_iommu_flush_tlb_all() to poke it.
->>> If the hardware has a TLB, then unmapping a page-table means you need to:
->>>
->>> 1. Clear the valid bit from the descriptor in memory
->>> 2. Have some sort of memory barrier
->>> 3. Invalidate the TLB
->>> 4. Wait for the invalidation to complete
->> That exactly what I had tried to do by calling vsi_iommu_flush_tlb_all() (minux the lock)
->> after calling vsi_iommu_unmap_iova() in vsi_iommu_unmap() but that doesn't work
->> and even make the system crash sometimes.
-> Then it sounds like you have some debugging to do...
->
-> I don't think we should elide the TLB invalidation just because you
-> couldn't get it to work.
+There's the usual scary ordering worries with this stuff, but they exist
+with refcount_read() too. We're ok because cur->users is address dependent
+on the read of the invalidation array pointer, which is RCU protected.
 
-It is working but not in the order you expect.
-TLB invalidation occurs before each decoding frames by calling vsi_iommu_restore_ctx().
-After that decoder map all the needed buffer and perform decoding.
+(I think!)
 
-Benjamin
-
->
-> Will
->
+Will
