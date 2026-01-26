@@ -1,147 +1,126 @@
-Received: from mail-qv1-f44.google.com (mail-qv1-f44.google.com [209.85.219.44])
+Received: from mail-qk1-f171.google.com (mail-qk1-f171.google.com [209.85.222.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A0CE1C4A20
-	for <iommu@lists.linux.dev>; Mon, 26 Jan 2026 01:43:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.219.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA83022D785
+	for <iommu@lists.linux.dev>; Mon, 26 Jan 2026 02:51:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.222.171
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769391796; cv=pass; b=adcTxIUN9KS2wZQflpSQYP9cHSw9UfUSqaeKfCKmoT2yMo+UlXQuOWK81xZTUaKc2luYCd6weP/TMDkz1jBclsWaHvNkjLe6ocUbPiC1huL0Srekg7VGaESrvHJJgKIHmo4lU7qP6uxLLHtAerbR8/HjVDC37NtKKvxboBDejXQ=
+	t=1769395885; cv=pass; b=fNGGFtrOzVMfpGVe6C3bUGeXLj+cbWxxpJDoO22L5LD7myLhKvCjVKieD1T6LQxNPprQzkcEvUNOIeWpen0gLnWmrfTraH5ml2JjGyaoqwRCD8A7g389VklhSXjQmIkLVnVBDuyhC2Aux9xsJm0OVVq/LL80iVYj9OBplfte3qc=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769391796; c=relaxed/simple;
-	bh=ShqFT9AIDvn/Aacc2hNx3D4aX32pq+QTgFv1oZuGe/U=;
+	s=arc-20240116; t=1769395885; c=relaxed/simple;
+	bh=lLGj/5JbDrizBI4s95rI7BnGWGt651dfbulABo1MnJ4=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=awgo/n4ujE04iLvra9v+5OkRE57nIA5MqqRmBwJu9Ah6t82eI0Opk5UPySO0duxh8MyeUzVIsfPfwmFdSP4b7UqLI3gZRCQ4IIvkEY++mKhGLfqh2SiD9erTOeibfvG1V1FOIbj7KQhi/ofXkWnO8QMBuhbdyS4S2sSxwLGXrCA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=CMQ48KvJ; arc=pass smtp.client-ip=209.85.219.44
+	 To:Cc:Content-Type; b=IaK2ue+nz7fsKcxRvirjiov/LNCTHYMN7QrmmBZLRht3QjV4FmAbs3GFnZ9Jky3kvjD53fKrYPsafUy7DPzoOCpEzMr8Vh04lCd+ArveKGG3RNMvn3hZIbqha7wZ5oXMQxcgKxNc8u1s1rGAhGIRIfRjc9oX0zORV0TEChrZRZI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=WmFeaxzr; arc=pass smtp.client-ip=209.85.222.171
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CMQ48KvJ"
-Received: by mail-qv1-f44.google.com with SMTP id 6a1803df08f44-8887ac841e2so33891206d6.2
-        for <iommu@lists.linux.dev>; Sun, 25 Jan 2026 17:43:15 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1769391794; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WmFeaxzr"
+Received: by mail-qk1-f171.google.com with SMTP id af79cd13be357-8c5265d06c3so570312185a.1
+        for <iommu@lists.linux.dev>; Sun, 25 Jan 2026 18:51:23 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1769395883; cv=none;
         d=google.com; s=arc-20240605;
-        b=Chw9DbXCyhJF4jJ/uH7qAPJOGfxYtvjI/Rs0sxaGMidXTkpvzclAlas3M8vDfSIxqt
-         BDezilfg0FKgxyJiW8UDQ6qnk6KC2kyIkzcHP64+6OQ6X+zH/MnX/9HUWqnW0fsktsrc
-         sgSR6TrdMLY06NaXCapDfmq6i/1G30Hj9SbjLgel6I5BUIBmni6K45M4ZODvQ7bpTMNF
-         4ww4TDFdBXpXHGCcNvOSQMDbjXhYBjs0cMaV9c+JmcEPh2Xgh9VZg2Uf44U//G53sNCJ
-         dpaAxeNGV5Vn1pxaTQpyHN0PdBen8BoOjTIUt29GDioF8zY1RohnAEkAV8VytMYTn/NY
-         I4Ow==
+        b=efqB5iDY3E+VQ/zOtLRpAxlGvwpjdw5iZ3NB3Qx6OH4jIgsaMMJVWHs4JTE+tKXJKV
+         yhSeF7mb2uM21vwUIPLHZ2OsBqzGxcqR6KzGwy/EtpCzxWbxYVYHbrB6DamvJwRX4w5V
+         kEe8LiyGJW3dxkEzs50wEoxahX1x9gm8qtYlrfch45sM1Ou9DjtlNVeb9Q6CyxvZPIsf
+         MOYusvTPZl561R9eehGDyLAfyaoe0LfbYETAIzaWfR+0Ldty2uFlAanQymYJ2UUu/VJB
+         Urbu4WMT4iYvk9hIm3odmX+w6If4KnqULNISQAycH6ASOpriY4DIqgUBNoWbIQddfL1j
+         WzlQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=Td4QUCSFnNiGlIQcniNA/rp8ZfKnX5RqAxkcu4MfCJE=;
-        fh=ooHqn3+NgbbG8ZG+vTT5dXNhL3GsYofizUUIbAwAeNk=;
-        b=jG9ul/+FU0bqSUqXqvTrGEi6wUZyEL5LmjvJznwveaKF4xJY6E2jhIdnHGri/rGwqD
-         ga3O4syKprobpp2veIL+vlrhd7PvlHgLQO/Qpbu62tTBNnx0XmONBNqqjVn5zxS/OeEl
-         Ssio56OtTc6H45Acp6VdHt/Gyr0uzXaFu0St4NfX85e31vbBXdP2WuKPIhKamfFCNaKF
-         /fbkvrUInuEDEvr8Aaj/Zgak2Um+34+zp/h8a1tQiMgfuN+eu+CT0qk4P6dOUG7JCVqW
-         j9p/o+getZrzCc5m+RxqaUJPLbCtJ7HfP3ezRVxE87sELv9WlDEkarPUyvq0yGtvqe/w
-         wpLA==;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=URbjx9ICHTnGD0lFSJDDko12hiaAKA6BGls4sQTEKIo=;
+        fh=Ts+BQxKHYnJLUbBvQjlXK6RxoWNdlbjUPsrR1lpSvFY=;
+        b=ZgwkDCchMbFoVdnPRxR3UWZG9p0sGJP6roDd2wR4ETtI/IJEzmFNoiOhgxeqysm3VQ
+         x4zTC7H3MIRb0W+Nkf8j0oIKHRGLe9s3vFVQ1wjZ+AOVyMnT2JdpDlddiBXnwnmX0Fdh
+         eFq10sRxhuMqQUpmVNyp8W3dybkC3utmUVDxpai86Vl2p4yV0hPjq0/5icWP9YWkJNQb
+         Z19r3XqZcB/oiRJlyn+4jeHdJjjW48CBv5HS6PQapwHLc923ZCKcZtLCiOpNiv/SC3vd
+         nlNYDW4p146pIhtJBUVGgRRyKzsD6FpHs9JjvP2B3UEiQbPNkuh6XML2oJu8mfL1S702
+         JHgg==;
         darn=lists.linux.dev
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1769391794; x=1769996594; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=Td4QUCSFnNiGlIQcniNA/rp8ZfKnX5RqAxkcu4MfCJE=;
-        b=CMQ48KvJazx7b2Oena1od3ikzp9J2c28ooIHPQzKdfY32xMkQBYi3R9htIaG5Qwzl8
-         VPYZfTanMPJpp2MBRaF+Q67pA8fmFNiDtuLpaMUxxtIXhgMQqGYba6SC8NFaWBJoi5cg
-         nBb9FjGA6aX1g562J8RT6qhsB/vYm1O8gSxt7FOhCRwHgdFaI16JB9ajoWl4WelQYgih
-         eFUkg53iCZgcqWXW/luS/kJh21JLYBBN8p5B2861E4l8DUFE/LMz7AKH+pHrFlt8WZ4x
-         1dgLFRQ8B3juisNYHxRjHZf/3VNMXtl6js/kVTSYPvR3MR0U8TpfWTr8MZCy7A8pXISg
-         LAfw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769391794; x=1769996594;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20230601; t=1769395883; x=1770000683; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Td4QUCSFnNiGlIQcniNA/rp8ZfKnX5RqAxkcu4MfCJE=;
-        b=HPqWBj1ZM64F2WYfpSfasIgRTTa1ZklggLARlBvQ7CnZ/2Y8hvPwCcp4kMZKuKVj7e
-         GsG5ghj/df8okuAqR8s+iQCXjQibRLPZ9trosEGGtgAfUC26k2v0CS0S6X1Q3ZIQY/uJ
-         xSCpfwFNx1VUWBmWw+0S2BMi/GXzC6KFn7/UANRK8W0c0XYdOEXjDA9f7xtpxmEvOS+k
-         Ts1VG9l3u+qf3UnYMYFDUTvtBoZOurLfHk35QdtVCugv9MPS2TiHwCTQ4DbBq4cClRsc
-         VtbgqRLxrjBSD2XCys82L4bh252iPynMG4r3d8vORmyUVReAXWu+9j/+CIdS0LQu+ApC
-         RCuQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWRiO7AQw19NPYbJlWeG9evxvB4P/GcMAZxAuIx0ffMLKCYj5HvWoSRNnfNkkeTOlz5uWLyVA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yz7PgKxPQYHiTB2ZTv7EzZd9SQC1R6Qiopzcu8fE4xcfTQE3ECa
-	zuY2vmXldXM7u9EGY8AK/Si2Px0v8gVIicbB71gU20CBYEhpbVeUfxeBhQhPv/RSkAfJx2xW9cS
-	9hW9gqL9A7n7gZYZQ3R9QUU3cZIWIUO4=
-X-Gm-Gg: AZuq6aKjoshN8twQlgUE27dXFAMajzPhdH9hgpFC5UKahZSNKu2Zw8KBK7xmlVsEnNv
-	Del7ckvRlb3gf56ndg13XLh6EKU2cXQ+JU81g1ywqibnFXMiv4bvnxcmXgMJio+vvrfiGPOkRpE
-	o2VLMdd/PI+l28oOFoG7WX0YIPePICzLj9UYpaB0KFvwlZ7RaYMWD5dNhYzlpg1BocBWy7rwaDF
-	GKuKBloZGB5N4r+ppqB4TIgwwTdl0bAv/dQ0UNvCrSxmNWkyLualBc/Ngy4Bi2EQJYWX9Ji4w==
-X-Received: by 2002:a05:6214:d85:b0:88a:4452:750b with SMTP id
- 6a1803df08f44-894b0792ademr38139946d6.60.1769391793952; Sun, 25 Jan 2026
- 17:43:13 -0800 (PST)
+        bh=URbjx9ICHTnGD0lFSJDDko12hiaAKA6BGls4sQTEKIo=;
+        b=WmFeaxzrhpAXhBjsK3xiWItz2kMysr0JB7h5mb8kfMC51x+U6NOGFlMN5BDkfni8Au
+         LnG+XeGkEwhil8T+4a86FaQlQLk8S0ERtusBYoH1GQTlUGe/adNhu4pYqjwbSKufkLie
+         7C++YPmCJgULMDi+S7JWNrtaOimSTqggRprMuABR9qHtKeYTFgVH9JgTn4PYPTJ1OdEr
+         ljXcpMVFafVl6CKtO43JMxeNNLFkrwGsJvI890Mfp1tuA30yf+j5AGKfjvUBJIJn1aLa
+         IvW1zUPHxTIGHCop5LUMna+N1JMMNaKnHeyaz31ggh28ejqyDHSvRSZIHA0hEggfE4GL
+         YBag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1769395883; x=1770000683;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=URbjx9ICHTnGD0lFSJDDko12hiaAKA6BGls4sQTEKIo=;
+        b=KBI+GAticwjfbgpCpuRQP5e6ZB6WDeCh4yj42PFOdJJUaZVg4JW5GH+kAovHThq3vG
+         4NW1YMdF33tg1BP4Q+9UBGUzb0doh0oIVYiRsbrZ0PvmELV6lmHuCrQWhYQlpMKMk3ap
+         dJgFiXr6NJwNuXvsBfXpznUz1dUKDQdAZHjcJPH5xKJAqu9FUbAvAAFkd5C7OawSXtTs
+         c+3LIcVZBoeNpn1QTzg1NAoKvW8xnYTiWm0hXsvFlG7i0YiWcdb1vBjaIg/hbsSFKZTt
+         9yFDd4EnvPHz/StYWSxGvNPzNVUKClBreuKu8qZWBBxkrXcEiI1Pht/UjNbuFI1hjvX/
+         r67w==
+X-Forwarded-Encrypted: i=1; AJvYcCWDg/5/5g1hpxiBLf9pW8GpZMEifA2tdj4GST7Z5MMQe4wfKaBdDiUPRIN/WGjwUDEPftgxhA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyAtuo7UucfkrwasUiXlLQU9glbsPxvAVeyTDk3/PG2djTEFVhN
+	U5PJG841IkoyT1S/kiNJrFwPJ8dOPCvSQqjSfyoOoxtW7OGE2fi+zO524zp6XI68HRa/2rrfiAn
+	6JvRZtV7nxDMgFzf2TeeWIkSd8Ke0L2chAvfGHrg=
+X-Gm-Gg: AZuq6aJMrs9ap6nsOG82hBuoBSMNArIaQnR6WWfT1E5i7gmILGhEsqv2bRPQMZolDVv
+	30o70jPVBrfXBx0YSh9UB8RkdOcJme8c2yyDyyNypL3mb1zxC7h3apiZr6iWoYF3AwLhCJgWw83
+	YIfsH6bh97HxQUSn1CZxRAP1SKzgbVUfm8OWI0tCtRfYRosHhubhpfsX3DYkPiJo5Can0/yDzix
+	hMwGGsoOHS7wgBI+sIPdkY9Q9c/pt+Kq8SljkSB88XUmURu7hBFXJPt1/39JtJcSCgpgbsN8w==
+X-Received: by 2002:a05:620a:4489:b0:8b2:eefb:c8ab with SMTP id
+ af79cd13be357-8c6f97f1f17mr308663285a.19.1769395882595; Sun, 25 Jan 2026
+ 18:51:22 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20251226225254.46197-1-21cnbao@gmail.com> <20251226225254.46197-2-21cnbao@gmail.com>
- <aW90tXGtLVC0mKWP@willie-the-truck>
-In-Reply-To: <aW90tXGtLVC0mKWP@willie-the-truck>
+References: <20260112093436.3456315-1-xiaqinxin@huawei.com> <20260112093436.3456315-4-xiaqinxin@huawei.com>
+In-Reply-To: <20260112093436.3456315-4-xiaqinxin@huawei.com>
 From: Barry Song <21cnbao@gmail.com>
-Date: Mon, 26 Jan 2026 09:43:02 +0800
-X-Gm-Features: AZwV_QjeDywrcz2eWqXN9SXa7QL5VefpgErEyUZbE549AGDu67lQKOvE9Fh-udU
-Message-ID: <CAGsJ_4wDYTbuuzzfGNWqp1+ca1cAkg0XMgbgkspRGdKKAx_Ymg@mail.gmail.com>
-Subject: Re: [PATCH v2 1/8] arm64: Provide dcache_by_myline_op_nosync helper
-To: Will Deacon <will@kernel.org>
-Cc: catalin.marinas@arm.com, m.szyprowski@samsung.com, robin.murphy@arm.com, 
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
-	linux-kernel@vger.kernel.org, xen-devel@lists.xenproject.org, 
-	Leon Romanovsky <leon@kernel.org>, Ada Couprie Diaz <ada.coupriediaz@arm.com>, 
-	Ard Biesheuvel <ardb@kernel.org>, Marc Zyngier <maz@kernel.org>, 
-	Anshuman Khandual <anshuman.khandual@arm.com>, Ryan Roberts <ryan.roberts@arm.com>, 
-	Suren Baghdasaryan <surenb@google.com>, Tangquan Zheng <zhengtangquan@oppo.com>
+Date: Mon, 26 Jan 2026 10:51:11 +0800
+X-Gm-Features: AZwV_Qh70YfLcTpDfirNJFyaXFpRBaH8c9jaxDPmuH5P2M7dnE8wVp59HQrhN-I
+Message-ID: <CAGsJ_4zkLF8Si6A0tvFNPGq2VJ8Md-Be=25K65XxSn-JWtCxbA@mail.gmail.com>
+Subject: Re: [PATCH v6 3/3] tools/dma: Add dma_map_sg support
+To: Qinxin Xia <xiaqinxin@huawei.com>
+Cc: jonathan.cameron@huawei.com, wangzhou1@hisilicon.com, 
+	iommu@lists.linux.dev, prime.zeng@huawei.com, fanghao11@huawei.com, 
+	linux-kernel@vger.kernel.org, linuxarm@huawei.com
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-[...]
-
-> >   */
-> > -     .macro dcache_by_myline_op op, domain, start, end, linesz, tmp, fixup
-> > +     .macro raw_dcache_by_myline_op op, start, end, linesz, tmp, fixup
-> >       sub     \tmp, \linesz, #1
-> >       bic     \start, \start, \tmp
-> >  .Ldcache_op\@:
-> > @@ -402,14 +401,13 @@ alternative_endif
-> >       add     \start, \start, \linesz
-> >       cmp     \start, \end
-> >       b.lo    .Ldcache_op\@
-> > -     dsb     \domain
+On Mon, Jan 12, 2026 at 5:34=E2=80=AFPM Qinxin Xia <xiaqinxin@huawei.com> w=
+rote:
 >
-> Naming nit, but I'd prefer this to be dcache_by_myline_op_nosync() for
-> consistency with the other macros that you're adding. The 'raw' prefix
-> is used by raw_dcache_line_size() to indicate that we're getting the
-> value from the underlying hardware register.
-
-Ok. thanks!
-
+> Support for dma_map_sg, add option '-m' to distinguish mode.
 >
-> >
-> >       _cond_uaccess_extable .Ldcache_op\@, \fixup
-> >       .endm
-> >
-> >  /*
-> >   * Macro to perform a data cache maintenance for the interval
-> > - * [start, end)
-> > + * [start, end) and wait for completion
-> >   *
-> >   *   op:             operation passed to dc instruction
-> >   *   domain:         domain used in dsb instruction
-> > @@ -420,7 +418,23 @@ alternative_endif
-> >   */
-> >       .macro dcache_by_line_op op, domain, start, end, tmp1, tmp2, fixup
-> >       dcache_line_size \tmp1, \tmp2
-> > -     dcache_by_myline_op \op, \domain, \start, \end, \tmp1, \tmp2, \fixup
-> > +     raw_dcache_by_myline_op \op, \start, \end, \tmp1, \tmp2, \fixup
-> > +     dsb \domain
-> > +     .endm
+> i) Users can set option '-m' to select mode:
+>    DMA_MAP_BENCH_SINGLE_MODE=3D0, DMA_MAP_BENCH_SG_MODE:=3D1
+>    (The mode is also show in the test result).
+> ii) Users can set option '-g' to set sg_nents
+>     (total count of entries in scatterlist)
+>     the maximum number is 1024. Each of sg buf size is PAGE_SIZE.
+>     e.g
+>     [root@localhost]# ./dma_map_benchmark -m 1 -g 8 -t 8 -s 30 -d 2
+>     dma mapping mode: DMA_MAP_BENCH_SG_MODE
+>     dma mapping benchmark: threads:8 seconds:30 node:-1
+>     dir:FROM_DEVICE granule/sg_nents: 8
+>     average map latency(us):1.4 standard deviation:0.3
+>     average unmap latency(us):1.3 standard deviation:0.3
+>     [root@localhost]# ./dma_map_benchmark -m 0 -g 8 -t 8 -s 30 -d 2
+>     dma mapping mode: DMA_MAP_BENCH_SINGLE_MODE
+>     dma mapping benchmark: threads:8 seconds:30 node:-1
+>     dir:FROM_DEVICE granule/sg_nents: 8
+>     average map latency(us):1.0 standard deviation:0.3
+>     average unmap latency(us):1.3 standard deviation:0.5
 >
-> This could just be dcache_by_line_op_nosync() + dsb.
 
-Ok. thanks!
+What happens if m is set to 0 while g is set to 8?
 
-Best Regards
+Thanks
 Barry
