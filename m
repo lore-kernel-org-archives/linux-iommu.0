@@ -1,570 +1,180 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 293F82EC563
-	for <iommu@lists.linux.dev>; Tue, 27 Jan 2026 03:02:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769482954; cv=none; b=uvM2qt3szGJJ260Oemz2QtA+hn7YnyWL9PTuibW8pFl2M4zmPaLX0IuB4JYLw+ILUlbJD9SGmi0CxsNbRIDrUIH6Jhs7Dabk+5Zu2IMpp6Rjn+wPtF5cnfQ41hbC70c+f9rX8421f620944wNZG0aM51X7j3vA8WyRYJOsEoXME=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769482954; c=relaxed/simple;
-	bh=vlgt1FXq02kIQ+MzEedobY2lj5K8FbZp/y3VNUh5Ofs=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=boC6wC0Uj0CZzFg3cAFxh9AGBjX7loqNqd4AnGcUL8n52Nj1BDA2ALAr1RUJxSZYlQJhbL9xInTVvzausdFHTFPVwQ66buCckO8XzwipflmCSSlXijgAIu8GrmezOKHC/Vp4uQ90vKbjBF9UiQMdkp2DXn5jGpZByoB8n+mC6QU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=P3Ywf56J; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+Received: from BN1PR04CU002.outbound.protection.outlook.com (mail-eastus2azon11010036.outbound.protection.outlook.com [52.101.56.36])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C2CB1A8F97;
+	Tue, 27 Jan 2026 03:06:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.56.36
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1769483203; cv=fail; b=hyU8pDfPuq0PcTxhkUUmUn5BgQJwTnGGMQH0ckyZVHaSMNRt1bgNF/IUhvKoCHnUC414Rk1PPV0iBeMYhwVoQVjD4mGoML7ddl6NtFRFW7DImanOOHNJk72b69TuLy+TQFFX4G4OXABoAkYSg0MxW5x9x35mV0v4JP2zPQSmCvA=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1769483203; c=relaxed/simple;
+	bh=O9w3gnWuO4jhfuRC32pt/yEyz8urMcfQHqSty/ov9aY=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=UX56Dg04q3LAVHjOScMQC+JxsLKYOlxBKTDT7dVT8ZYAR1UDRNValURtro7ghMGywUNGbTKE91PvH4RdB5WWyNFbAIecrl2HpgJDPgk+YRnEOANQkpNOtQ1xxT8BvtaX7KI7okKjRbgct4yxX3/rtrDw25KkZUkNiTyhrT8nEXc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=GqvHViTp; arc=fail smtp.client-ip=52.101.56.36
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="P3Ywf56J"
-Received: from [192.168.0.88] (192-184-212-33.fiber.dynamic.sonic.net [192.184.212.33])
-	by linux.microsoft.com (Postfix) with ESMTPSA id F3F2D20B7165;
-	Mon, 26 Jan 2026 19:02:29 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com F3F2D20B7165
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1769482950;
-	bh=MndF/rFIARzCJ9TLfHAUaRn09kC1jbFfqs7R2iCh5Fs=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=P3Ywf56JAsEYia1PjmJEYYUaFScKpdIwYtSgUBeyJwYM0ejeldLa1H/O65/7eOdLe
-	 33zipUR/iKpZf4GoMb/18Gyv2TBsuTjpsaRPodPViMHUTT81sk+ZAeruR5GGGBHdTN
-	 TuX3YssVr+UdJVREXoWVcUfQ9UUjBa+uyAjh+Byc=
-Message-ID: <c40e6dc8-8e42-b0f3-f8e5-3c637adb7f13@linux.microsoft.com>
-Date: Mon, 26 Jan 2026 19:02:29 -0800
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="GqvHViTp"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=vDj9QqHFt0LHgFJDh/wh5sIhe4GLYX9Bs5jbxsO1bOwV7TMEGhOy8F10uqopYZUEsRmb0wnlH8ksj3gSkgMD4J3c93u3wGZP4LwNiUqUX9h0IXpH6nfSOYD33XL9COaKLSpvqfrNpZFmOVrUuQPeRJnaCBa5eJ9RuioDKA/5SJti8Xxl9dfcYvQTUwBHUK88cmeS0RbzEFo4HNCXdpCqrZwp8dhw9KmAQ2yvkKHhx0hsurCTO9o3Q8LGMXw0fTM9iXlpf/ftWSdYoi2favSDAJrNKPfZP0cjgy/Y/i+dHJr5MzKGsHkydwCgFxELKfPEOC+7cB4kqMacrgfjhADKkA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ItuYqzZWzA/Z3U4wcfz0YROqGSZl50/WH43Vd1lJUW4=;
+ b=quBrYbVr8jB6gTvt7gW/74+YIyrawdt9yBv9d+XMU2m5jSBv8T/xM9GC87jwmsVnBmqxlDg0/Xw+Q8QA0ZGhfRvoD9lyTCslkL5aImUwT7ctJ1BJSledcurKEjhfGpZ00zslrtCIsqcLg3NOTDTG3oqCJkMdjI5GP+jNmRTzIdVuZQk9JaUEQWIfW+3wa3gYVvQk9npmxabtPMtDjNh3CwfKb0QpDuZltB5DloPzO9Er+RAaditMw0pyYxccRDRqXXnhb0wXhPno32S5uuQwy7K1/xrj1mOqzQJpHVw/++2SToeOF3KY2mPYUfnbFZ+QJkgfzwh7Bbyfy+KKYQ4jjQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ItuYqzZWzA/Z3U4wcfz0YROqGSZl50/WH43Vd1lJUW4=;
+ b=GqvHViTpoA3IzY1N9/R7BT46N1NNe4z0y7edntjHUTu0jwPrhhy2+x/fxViOwA2Pz2nAnuvSbiCS8tlvaWCwS5zzWZGX6MsezFa9oRLggqOKaNoNwEgDd4l2a2oKNZl7lg8J+Q09oh2hAQE9/XLjWKR6wePT5LshjfOBiYlgoWMjCJPUkCQwjWzXblFuko1PKkLwXIxl6598PlADmX4AD8etxLmWwe9BQJsYuPPHiZowouoQGxH6Yd1PhvUIQ3EwQxhW2i4++c3rNgf8RTWDOBpVLLlF0ns4EF/9detUc0tgZctpxQStRzBTflwtFbzKc93Mpmy4H7L/XUovzjSq5w==
+Received: from SA9PR13CA0042.namprd13.prod.outlook.com (2603:10b6:806:22::17)
+ by IA1PR12MB8336.namprd12.prod.outlook.com (2603:10b6:208:3fc::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9542.15; Tue, 27 Jan
+ 2026 03:06:38 +0000
+Received: from SN1PEPF00036F42.namprd05.prod.outlook.com
+ (2603:10b6:806:22:cafe::c6) by SA9PR13CA0042.outlook.office365.com
+ (2603:10b6:806:22::17) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9564.6 via Frontend Transport; Tue,
+ 27 Jan 2026 03:06:33 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ SN1PEPF00036F42.mail.protection.outlook.com (10.167.248.26) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.9564.3 via Frontend Transport; Tue, 27 Jan 2026 03:06:37 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Mon, 26 Jan
+ 2026 19:06:26 -0800
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail202.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Mon, 26 Jan
+ 2026 19:06:26 -0800
+Received: from Asurada-Nvidia (10.127.8.14) by mail.nvidia.com (10.129.68.10)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
+ Transport; Mon, 26 Jan 2026 19:06:25 -0800
+Date: Mon, 26 Jan 2026 19:06:24 -0800
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
+	<jpb@kernel.org>, <praan@google.com>, <miko.lenczewski@arm.com>,
+	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, <patches@lists.linux.dev>
+Subject: Re: [PATCH v2 06/10] iommu/arm-smmu-v3: Allocate vmid in
+ arm_vsmmu_init
+Message-ID: <aXgrsJeXB3bpFQqK@Asurada-Nvidia>
+References: <cover.1769044718.git.nicolinc@nvidia.com>
+ <3f7c5b84c4f8605688ac08fc2ea2dab08a3c5c0c.1769044718.git.nicolinc@nvidia.com>
+ <20260126211636.GB1134360@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.1
-Subject: Re: [PATCH v0 12/15] x86/hyperv: Implement hyperv virtual iommu
-Content-Language: en-US
-To: Stanislav Kinsburskii <skinsburskii@linux.microsoft.com>
-Cc: linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- linux-pci@vger.kernel.org, linux-arch@vger.kernel.org, kys@microsoft.com,
- haiyangz@microsoft.com, wei.liu@kernel.org, decui@microsoft.com,
- longli@microsoft.com, catalin.marinas@arm.com, will@kernel.org,
- tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
- dave.hansen@linux.intel.com, hpa@zytor.com, joro@8bytes.org,
- lpieralisi@kernel.org, kwilczynski@kernel.org, mani@kernel.org,
- robh@kernel.org, bhelgaas@google.com, arnd@arndb.de,
- nunodasneves@linux.microsoft.com, mhklinux@outlook.com,
- romank@linux.microsoft.com
-References: <20260120064230.3602565-1-mrathor@linux.microsoft.com>
- <20260120064230.3602565-13-mrathor@linux.microsoft.com>
- <aXAZ-r1PeUBAHwaK@skinsburskii.localdomain>
- <54fd73b9-ade6-f1bb-08fc-17571aeadb20@linux.microsoft.com>
- <aXeO7wh7bpacJ1Sk@skinsburskii.localdomain>
-From: Mukesh R <mrathor@linux.microsoft.com>
-In-Reply-To: <aXeO7wh7bpacJ1Sk@skinsburskii.localdomain>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20260126211636.GB1134360@nvidia.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SN1PEPF00036F42:EE_|IA1PR12MB8336:EE_
+X-MS-Office365-Filtering-Correlation-Id: 892c2b39-0508-45ec-664f-08de5d511631
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|82310400026|376014|7416014|1800799024|36860700013;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?t94IkakZdyxP6vMhwmCao2Ey9L2efmn4J8Qn4HGK3EZDxkE9b2bqDZdM4U9V?=
+ =?us-ascii?Q?8ixZL3949An6UYpAesGGkwv6BhMMTa1gJrUpGRuwWoBzw7hpDWU/k7CMyoKV?=
+ =?us-ascii?Q?lIR1bAJivsuf0tMaeat9y2pi5l83i26omEls37hwqHdC6iOCKMbeB1WrpTIu?=
+ =?us-ascii?Q?up8OQ81KnqvGQ9lHf5RF/MxQxvHLrmUZhon6s8oZmsSbgcZUboyl6/zt1Ksd?=
+ =?us-ascii?Q?VeIxi5HgvPM/KE8j2e6A9gCzaHOtzarFwygJC/W677kRFCVptHOjnYwXpRKk?=
+ =?us-ascii?Q?qle70z/B/78fhwopQM13WBec6WBIQDAUB/6lpktPSHyj8KXN4UyKa4J0quzT?=
+ =?us-ascii?Q?pv71BDyf/wtxgQWBcYH/gY3hh3PpwaDaHVf6OHfHK62M14egD4TOJx0U6ioR?=
+ =?us-ascii?Q?kfStKD7LYWq/sdfpHKaM8g4+DWoqcTtEpRF06KZ6HEZXlj9w76hpbSmJCqL5?=
+ =?us-ascii?Q?GQHEZ9/YyVcTk9wVF9HV/ifIuWMPdD1Pw4WAmx+dbIOWp/+clzjmJZnbr3KZ?=
+ =?us-ascii?Q?zidRSY8Tfguuvpf2XD3vVyicIzu2xZYx/I2GqJ8VsP2UUQ8oGSncFRWRRcVE?=
+ =?us-ascii?Q?7W0dCx/KXsIw3qCcgxkFMlnyTeowMRG/Mejw5EVOqY/2XCXDrI0l/7ad7ob8?=
+ =?us-ascii?Q?5KlnwCY3y6FSn0TsfqZAm3pnKHKE8MznfkcEYPIUuWxoNkjmKsG3E3ohagMd?=
+ =?us-ascii?Q?k3q9B+1oEb2b40948ikobjB40MW7Bhw2AGP8tNbYXw0CCXUfyzSh/j1w+w88?=
+ =?us-ascii?Q?WlECjYj27qVTDEW2HT3DR/mPRra8dL3f1iNu+J9cZAcRJloCV1+RMdFcVkLl?=
+ =?us-ascii?Q?DOkgZESRHItJrw9Cqe1rEnEdGqobrEbuIUH74EOTcZV7gDGvoijBzh2oD1sr?=
+ =?us-ascii?Q?Q3RXonVHGrpSGLP1+MWSnnSsxGvYbeLpGHzDpWlVsDT+eQYPORsIoxZiKAo0?=
+ =?us-ascii?Q?511MXI40GvzIYLM+uNHd9MiC9N1PDCwsG6Nl8zj7rEkVvEKi6puoe4k+U++x?=
+ =?us-ascii?Q?5CSFK9+MIZ/s/aF6/+rioCoN6NVR5rfTLQ7Wc8kTkPm4gC+sjKRF+WC6XXwb?=
+ =?us-ascii?Q?gGvvtCGn7/Y4F3UjXRFiqkIPHQP8JzfrmXPqnjUykaCWLUinOUViHdV/w5FT?=
+ =?us-ascii?Q?jlJrdRPU9M5FIYGcZT3UN17icNlpz47reJVW2wJWAfWkjqItZcxs4iWMLTVT?=
+ =?us-ascii?Q?jsvHNLaLHWirEiFMM2+54NohGcIDV+Moh7TqdFdEGnRaLmSJ9vn/fF96sW4q?=
+ =?us-ascii?Q?gh8X9KDM3ULu4KkavooAAHTO95inJQkm2UKsk8Lw2CMe2VL2HP85pPY/9xVo?=
+ =?us-ascii?Q?klZlNCqSz5BWt45Bv4VxA18MK6e0ZeN6JmJExOUWwrdI1CgwhHjArn6jNNfT?=
+ =?us-ascii?Q?f6XUVMSxasHK7lk2VdA+MZBvBaz1/M0/iDkRox2Tfgwh5HTGRiT1oPHm2wRd?=
+ =?us-ascii?Q?8PJ7tQSgEKuc8wIRqK0JQdwGL82+SuPMphNff2BjlcP+0ykBxS41tXpgwqHX?=
+ =?us-ascii?Q?CXw2HoFfWCC5TbQdUArC5juvYtMt4d1lmW0Sar9NbfCdhhKg3/L1VTAcsY/8?=
+ =?us-ascii?Q?hZTy5t/PNL4VUmgiq/TNmoUWXF12GV4SLRUuXB5/Waa7MIGhvHBC1JMUk44g?=
+ =?us-ascii?Q?YcKX91U82wlvuFiGUehxVOj+dqh7jKJ1JuT8SSspzGh/9FHDZGFvxk2JEK66?=
+ =?us-ascii?Q?IXMUIw=3D=3D?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(376014)(7416014)(1800799024)(36860700013);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jan 2026 03:06:37.7872
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 892c2b39-0508-45ec-664f-08de5d511631
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SN1PEPF00036F42.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB8336
 
-On 1/26/26 07:57, Stanislav Kinsburskii wrote:
-> On Fri, Jan 23, 2026 at 05:26:19PM -0800, Mukesh R wrote:
->> On 1/20/26 16:12, Stanislav Kinsburskii wrote:
->>> On Mon, Jan 19, 2026 at 10:42:27PM -0800, Mukesh R wrote:
->>>> From: Mukesh Rathor <mrathor@linux.microsoft.com>
->>>>
->>>> Add a new file to implement management of device domains, mapping and
->>>> unmapping of iommu memory, and other iommu_ops to fit within the VFIO
->>>> framework for PCI passthru on Hyper-V running Linux as root or L1VH
->>>> parent. This also implements direct attach mechanism for PCI passthru,
->>>> and it is also made to work within the VFIO framework.
->>>>
->>>> At a high level, during boot the hypervisor creates a default identity
->>>> domain and attaches all devices to it. This nicely maps to Linux iommu
->>>> subsystem IOMMU_DOMAIN_IDENTITY domain. As a result, Linux does not
->>>> need to explicitly ask Hyper-V to attach devices and do maps/unmaps
->>>> during boot. As mentioned previously, Hyper-V supports two ways to do
->>>> PCI passthru:
->>>>
->>>>     1. Device Domain: root must create a device domain in the hypervisor,
->>>>        and do map/unmap hypercalls for mapping and unmapping guest RAM.
->>>>        All hypervisor communications use device id of type PCI for
->>>>        identifying and referencing the device.
->>>>
->>>>     2. Direct Attach: the hypervisor will simply use the guest's HW
->>>>        page table for mappings, thus the host need not do map/unmap
->>>>        device memory hypercalls. As such, direct attach passthru setup
->>>>        during guest boot is extremely fast. A direct attached device
->>>>        must be referenced via logical device id and not via the PCI
->>>>        device id.
->>>>
->>>> At present, L1VH root/parent only supports direct attaches. Also direct
->>>> attach is default in non-L1VH cases because there are some significant
->>>> performance issues with device domain implementation currently for guests
->>>> with higher RAM (say more than 8GB), and that unfortunately cannot be
->>>> addressed in the short term.
->>>>
->>>
->>> <snip>
->>>
+On Mon, Jan 26, 2026 at 05:16:36PM -0400, Jason Gunthorpe wrote:
+> On Wed, Jan 21, 2026 at 05:24:24PM -0800, Nicolin Chen wrote:
+> > VMID owned by a vSMMU should be allocated in the viommu_init callback, as
+> > HW like tegra241-cmdqv needs to setup VINTF with the VMID.
 > 
-> <snip>
+> Even the architected SMMU needs this, the VMS (not implemented in
+> Linux) should all share the same VMID for the same VM.
+
+But for standard SMMU, the allocation/sharing could happen at the
+device attachment to a nested (maybe bypass proxy) domain, right?
+
+vmid is only needed for STE (attach) and invalidation.
+
+Or do you see some other case where vmid must be allocated during
+viommu_init?
+
+> > +void arm_vsmmu_destroy(struct iommufd_viommu *viommu)
+> > +{
+> > +	struct arm_vsmmu *vsmmu = container_of(viommu, struct arm_vsmmu, core);
+> > +
+> > +	mutex_lock(&arm_smmu_asid_lock);
+> > +	ida_free(&vsmmu->smmu->vmid_map, vsmmu->vmid);
+> > +	mutex_unlock(&arm_smmu_asid_lock);
 > 
->>>> +static void hv_iommu_detach_dev(struct iommu_domain *immdom, struct device *dev)
->>>> +{
->>>> +	struct pci_dev *pdev;
->>>> +	struct hv_domain *hvdom = to_hv_domain(immdom);
->>>> +
->>>> +	/* See the attach function, only PCI devices for now */
->>>> +	if (!dev_is_pci(dev))
->>>> +		return;
->>>> +
->>>> +	if (hvdom->num_attchd == 0)
->>>> +		pr_warn("Hyper-V: num_attchd is zero (%s)\n", dev_name(dev));
->>>> +
->>>> +	pdev = to_pci_dev(dev);
->>>> +
->>>> +	if (hvdom->attached_dom) {
->>>> +		hv_iommu_det_dev_from_guest(hvdom, pdev);
->>>> +
->>>> +		/* Do not reset attached_dom, hv_iommu_unmap_pages happens
->>>> +		 * next.
->>>> +		 */
->>>> +	} else {
->>>> +		hv_iommu_det_dev_from_dom(hvdom, pdev);
->>>> +	}
->>>> +
->>>> +	hvdom->num_attchd--;
->>>
->>> Shouldn't this be modified iff the detach succeeded?
->>
->> We want to still free the domain and not let it get stuck. The purpose
->> is more to make sure detach was called before domain free.
->>
+> Need a comment explaining where the flush is.
+
+Ack.
+
+> It looks like arm_smmu_iotlb_tag_free() does the free in the case of
+> INV_TYPE_S2_VMID_VSMMU?
 > 
-> How can one debug subseqent errors if num_attchd is decremented
-> unconditionally? In reality the device is left attached, but the related
-> kernel metadata is gone.
+> But this patch doesn't have that code yet. So maybe this should be
+> merged with the next patch..
 
-Error is printed in case of failed detach. If there is panic, at least
-you can get some info about the device. Metadata in hypervisor is
-around if failed.
+Or maybe I should re-order the sequence of the patches. I'll see
+what works the best.
 
->>>> +}
->>>> +
->>>> +static int hv_iommu_add_tree_mapping(struct hv_domain *hvdom,
->>>> +				     unsigned long iova, phys_addr_t paddr,
->>>> +				     size_t size, u32 flags)
->>>> +{
->>>> +	unsigned long irqflags;
->>>> +	struct hv_iommu_mapping *mapping;
->>>> +
->>>> +	mapping = kzalloc(sizeof(*mapping), GFP_ATOMIC);
->>>> +	if (!mapping)
->>>> +		return -ENOMEM;
->>>> +
->>>> +	mapping->paddr = paddr;
->>>> +	mapping->iova.start = iova;
->>>> +	mapping->iova.last = iova + size - 1;
->>>> +	mapping->flags = flags;
->>>> +
->>>> +	spin_lock_irqsave(&hvdom->mappings_lock, irqflags);
->>>> +	interval_tree_insert(&mapping->iova, &hvdom->mappings_tree);
->>>> +	spin_unlock_irqrestore(&hvdom->mappings_lock, irqflags);
->>>> +
->>>> +	return 0;
->>>> +}
->>>> +
->>>> +static size_t hv_iommu_del_tree_mappings(struct hv_domain *hvdom,
->>>> +					unsigned long iova, size_t size)
->>>> +{
->>>> +	unsigned long flags;
->>>> +	size_t unmapped = 0;
->>>> +	unsigned long last = iova + size - 1;
->>>> +	struct hv_iommu_mapping *mapping = NULL;
->>>> +	struct interval_tree_node *node, *next;
->>>> +
->>>> +	spin_lock_irqsave(&hvdom->mappings_lock, flags);
->>>> +	next = interval_tree_iter_first(&hvdom->mappings_tree, iova, last);
->>>> +	while (next) {
->>>> +		node = next;
->>>> +		mapping = container_of(node, struct hv_iommu_mapping, iova);
->>>> +		next = interval_tree_iter_next(node, iova, last);
->>>> +
->>>> +		/* Trying to split a mapping? Not supported for now. */
->>>> +		if (mapping->iova.start < iova)
->>>> +			break;
->>>> +
->>>> +		unmapped += mapping->iova.last - mapping->iova.start + 1;
->>>> +
->>>> +		interval_tree_remove(node, &hvdom->mappings_tree);
->>>> +		kfree(mapping);
->>>> +	}
->>>> +	spin_unlock_irqrestore(&hvdom->mappings_lock, flags);
->>>> +
->>>> +	return unmapped;
->>>> +}
->>>> +
->>>> +/* Return: must return exact status from the hypercall without changes */
->>>> +static u64 hv_iommu_map_pgs(struct hv_domain *hvdom,
->>>> +			    unsigned long iova, phys_addr_t paddr,
->>>> +			    unsigned long npages, u32 map_flags)
->>>> +{
->>>> +	u64 status;
->>>> +	int i;
->>>> +	struct hv_input_map_device_gpa_pages *input;
->>>> +	unsigned long flags, pfn = paddr >> HV_HYP_PAGE_SHIFT;
->>>> +
->>>> +	local_irq_save(flags);
->>>> +	input = *this_cpu_ptr(hyperv_pcpu_input_arg);
->>>> +	memset(input, 0, sizeof(*input));
->>>> +
->>>> +	input->device_domain.partition_id = HV_PARTITION_ID_SELF;
->>>> +	input->device_domain.domain_id.type = HV_DEVICE_DOMAIN_TYPE_S2;
->>>> +	input->device_domain.domain_id.id = hvdom->domid_num;
->>>> +	input->map_flags = map_flags;
->>>> +	input->target_device_va_base = iova;
->>>> +
->>>> +	pfn = paddr >> HV_HYP_PAGE_SHIFT;
->>>> +	for (i = 0; i < npages; i++, pfn++)
->>>> +		input->gpa_page_list[i] = pfn;
->>>> +
->>>> +	status = hv_do_rep_hypercall(HVCALL_MAP_DEVICE_GPA_PAGES, npages, 0,
->>>> +				     input, NULL);
->>>> +
->>>> +	local_irq_restore(flags);
->>>> +	return status;
->>>> +}
->>>> +
->>>> +/*
->>>> + * The core VFIO code loops over memory ranges calling this function with
->>>> + * the largest size from HV_IOMMU_PGSIZES. cond_resched() is in vfio_iommu_map.
->>>> + */
->>>> +static int hv_iommu_map_pages(struct iommu_domain *immdom, ulong iova,
->>>> +			      phys_addr_t paddr, size_t pgsize, size_t pgcount,
->>>> +			      int prot, gfp_t gfp, size_t *mapped)
->>>> +{
->>>> +	u32 map_flags;
->>>> +	int ret;
->>>> +	u64 status;
->>>> +	unsigned long npages, done = 0;
->>>> +	struct hv_domain *hvdom = to_hv_domain(immdom);
->>>> +	size_t size = pgsize * pgcount;
->>>> +
->>>> +	map_flags = HV_MAP_GPA_READABLE;	/* required */
->>>> +	map_flags |= prot & IOMMU_WRITE ? HV_MAP_GPA_WRITABLE : 0;
->>>> +
->>>> +	ret = hv_iommu_add_tree_mapping(hvdom, iova, paddr, size, map_flags);
->>>> +	if (ret)
->>>> +		return ret;
->>>> +
->>>> +	if (hvdom->attached_dom) {
->>>> +		*mapped = size;
->>>> +		return 0;
->>>> +	}
->>>> +
->>>> +	npages = size >> HV_HYP_PAGE_SHIFT;
->>>> +	while (done < npages) {
->>>> +		ulong completed, remain = npages - done;
->>>> +
->>>> +		status = hv_iommu_map_pgs(hvdom, iova, paddr, remain,
->>>> +					  map_flags);
->>>> +
->>>> +		completed = hv_repcomp(status);
->>>> +		done = done + completed;
->>>> +		iova = iova + (completed << HV_HYP_PAGE_SHIFT);
->>>> +		paddr = paddr + (completed << HV_HYP_PAGE_SHIFT);
->>>> +
->>>> +		if (hv_result(status) == HV_STATUS_INSUFFICIENT_MEMORY) {
->>>> +			ret = hv_call_deposit_pages(NUMA_NO_NODE,
->>>> +						    hv_current_partition_id,
->>>> +						    256);
->>>> +			if (ret)
->>>> +				break;
->>>> +		}
->>>> +		if (!hv_result_success(status))
->>>> +			break;
->>>> +	}
->>>> +
->>>> +	if (!hv_result_success(status)) {
->>>> +		size_t done_size = done << HV_HYP_PAGE_SHIFT;
->>>> +
->>>> +		hv_status_err(status, "pgs:%lx/%lx iova:%lx\n",
->>>> +			      done, npages, iova);
->>>> +		/*
->>>> +		 * lookup tree has all mappings [0 - size-1]. Below unmap will
->>>> +		 * only remove from [0 - done], we need to remove second chunk
->>>> +		 * [done+1 - size-1].
->>>> +		 */
->>>> +		hv_iommu_del_tree_mappings(hvdom, iova, size - done_size);
->>>> +		hv_iommu_unmap_pages(immdom, iova - done_size, pgsize,
->>>> +				     done, NULL);
->>>> +		if (mapped)
->>>> +			*mapped = 0;
->>>> +	} else
->>>> +		if (mapped)
->>>> +			*mapped = size;
->>>> +
->>>> +	return hv_result_to_errno(status);
->>>> +}
->>>> +
->>>> +static size_t hv_iommu_unmap_pages(struct iommu_domain *immdom, ulong iova,
->>>> +				   size_t pgsize, size_t pgcount,
->>>> +				   struct iommu_iotlb_gather *gather)
->>>> +{
->>>> +	unsigned long flags, npages;
->>>> +	struct hv_input_unmap_device_gpa_pages *input;
->>>> +	u64 status;
->>>> +	struct hv_domain *hvdom = to_hv_domain(immdom);
->>>> +	size_t unmapped, size = pgsize * pgcount;
->>>> +
->>>> +	unmapped = hv_iommu_del_tree_mappings(hvdom, iova, size);
->>>> +	if (unmapped < size)
->>>> +		pr_err("%s: could not delete all mappings (%lx:%lx/%lx)\n",
->>>> +		       __func__, iova, unmapped, size);
->>>> +
->>>> +	if (hvdom->attached_dom)
->>>> +		return size;
->>>> +
->>>> +	npages = size >> HV_HYP_PAGE_SHIFT;
->>>> +
->>>> +	local_irq_save(flags);
->>>> +	input = *this_cpu_ptr(hyperv_pcpu_input_arg);
->>>> +	memset(input, 0, sizeof(*input));
->>>> +
->>>> +	input->device_domain.partition_id = HV_PARTITION_ID_SELF;
->>>> +	input->device_domain.domain_id.type = HV_DEVICE_DOMAIN_TYPE_S2;
->>>> +	input->device_domain.domain_id.id = hvdom->domid_num;
->>>> +	input->target_device_va_base = iova;
->>>> +
->>>> +	status = hv_do_rep_hypercall(HVCALL_UNMAP_DEVICE_GPA_PAGES, npages,
->>>> +				     0, input, NULL);
->>>> +	local_irq_restore(flags);
->>>> +
->>>> +	if (!hv_result_success(status))
->>>> +		hv_status_err(status, "\n");
->>>> +
->>>
->>> There is some inconsistency in namings and behaviour of paired
->>> functions:
->>> 1. The pair of hv_iommu_unmap_pages is called hv_iommu_map_pgs
->>
->> The pair of hv_iommu_unmap_pages is hv_iommu_map_pages right above.
->> hv_iommu_map_pgs could be renamed to hv_iommu_map_pgs_hcall I suppose.
->>
-> 
-> Hv_iommu_map_pages is a wrapper around hv_iommu_map_pgs while
-> hv_iommu_unmap_pages is a wrapper around the correspodning hypercall.
-> That's the inconsistency I meant.
-
-Unmap does not need intermediate function.
-
->>> 2. hv_iommu_map_pgs doesn't print status in case of error.
-
-  We print error upon its failure in hv_iommu_map_pages():
-
-          if (!hv_result_success(status)) {
-                 size_t done_size = done << HV_HYP_PAGE_SHIFT;
-                 hv_status_err(status, "pgs:%lx/%lx iova:%lx\n",
-                               done, npages, iova);
-
-
->> it does:
->>              hv_status_err(status, "\n");  <==============
-> 
-> It does not. I guess you are confusing it with some other function.
-> Here is the function:
-> 
->>
->>
->>> It would be much better to keep this code consistent.
->>>
->>>> +	return unmapped;
->>>> +}
->>>> +
->>>> +static phys_addr_t hv_iommu_iova_to_phys(struct iommu_domain *immdom,
->>>> +					 dma_addr_t iova)
->>>> +{
->>>> +	u64 paddr = 0;
->>>> +	unsigned long flags;
->>>> +	struct hv_iommu_mapping *mapping;
->>>> +	struct interval_tree_node *node;
->>>> +	struct hv_domain *hvdom = to_hv_domain(immdom);
->>>> +
->>>> +	spin_lock_irqsave(&hvdom->mappings_lock, flags);
->>>> +	node = interval_tree_iter_first(&hvdom->mappings_tree, iova, iova);
->>>> +	if (node) {
->>>> +		mapping = container_of(node, struct hv_iommu_mapping, iova);
->>>> +		paddr = mapping->paddr + (iova - mapping->iova.start);
->>>> +	}
->>>> +	spin_unlock_irqrestore(&hvdom->mappings_lock, flags);
->>>> +
->>>> +	return paddr;
->>>> +}
->>>> +
->>>> +/*
->>>> + * Currently, hypervisor does not provide list of devices it is using
->>>> + * dynamically. So use this to allow users to manually specify devices that
->>>> + * should be skipped. (eg. hypervisor debugger using some network device).
->>>> + */
->>>> +static struct iommu_device *hv_iommu_probe_device(struct device *dev)
->>>> +{
->>>> +	if (!dev_is_pci(dev))
->>>> +		return ERR_PTR(-ENODEV);
->>>> +
->>>> +	if (pci_devs_to_skip && *pci_devs_to_skip) {
->>>> +		int rc, pos = 0;
->>>> +		int parsed;
->>>> +		int segment, bus, slot, func;
->>>> +		struct pci_dev *pdev = to_pci_dev(dev);
->>>> +
->>>> +		do {
->>>> +			parsed = 0;
->>>> +
->>>> +			rc = sscanf(pci_devs_to_skip + pos, " (%x:%x:%x.%x) %n",
->>>> +				    &segment, &bus, &slot, &func, &parsed);
->>>> +			if (rc)
->>>> +				break;
->>>> +			if (parsed <= 0)
->>>> +				break;
->>>> +
->>>> +			if (pci_domain_nr(pdev->bus) == segment &&
->>>> +			    pdev->bus->number == bus &&
->>>> +			    PCI_SLOT(pdev->devfn) == slot &&
->>>> +			    PCI_FUNC(pdev->devfn) == func) {
->>>> +
->>>> +				dev_info(dev, "skipped by Hyper-V IOMMU\n");
->>>> +				return ERR_PTR(-ENODEV);
->>>> +			}
->>>> +			pos += parsed;
->>>> +
->>>> +		} while (pci_devs_to_skip[pos]);
->>>> +	}
->>>> +
->>>> +	/* Device will be explicitly attached to the default domain, so no need
->>>> +	 * to do dev_iommu_priv_set() here.
->>>> +	 */
->>>> +
->>>> +	return &hv_virt_iommu;
->>>> +}
->>>> +
->>>> +static void hv_iommu_probe_finalize(struct device *dev)
->>>> +{
->>>> +	struct iommu_domain *immdom = iommu_get_domain_for_dev(dev);
->>>> +
->>>> +	if (immdom && immdom->type == IOMMU_DOMAIN_DMA)
->>>> +		iommu_setup_dma_ops(dev);
->>>> +	else
->>>> +		set_dma_ops(dev, NULL);
->>>> +}
->>>> +
->>>> +static void hv_iommu_release_device(struct device *dev)
->>>> +{
->>>> +	struct hv_domain *hvdom = dev_iommu_priv_get(dev);
->>>> +
->>>> +	/* Need to detach device from device domain if necessary. */
->>>> +	if (hvdom)
->>>> +		hv_iommu_detach_dev(&hvdom->iommu_dom, dev);
->>>> +
->>>> +	dev_iommu_priv_set(dev, NULL);
->>>> +	set_dma_ops(dev, NULL);
->>>> +}
->>>> +
->>>> +static struct iommu_group *hv_iommu_device_group(struct device *dev)
->>>> +{
->>>> +	if (dev_is_pci(dev))
->>>> +		return pci_device_group(dev);
->>>> +	else
->>>> +		return generic_device_group(dev);
->>>> +}
->>>> +
->>>> +static int hv_iommu_def_domain_type(struct device *dev)
->>>> +{
->>>> +	/* The hypervisor always creates this by default during boot */
->>>> +	return IOMMU_DOMAIN_IDENTITY;
->>>> +}
->>>> +
->>>> +static struct iommu_ops hv_iommu_ops = {
->>>> +	.capable	    = hv_iommu_capable,
->>>> +	.domain_alloc_identity	= hv_iommu_domain_alloc_identity,
->>>> +	.domain_alloc_paging	= hv_iommu_domain_alloc_paging,
->>>> +	.probe_device	    = hv_iommu_probe_device,
->>>> +	.probe_finalize     = hv_iommu_probe_finalize,
->>>> +	.release_device     = hv_iommu_release_device,
->>>> +	.def_domain_type    = hv_iommu_def_domain_type,
->>>> +	.device_group	    = hv_iommu_device_group,
->>>> +	.default_domain_ops = &(const struct iommu_domain_ops) {
->>>> +		.attach_dev   = hv_iommu_attach_dev,
->>>> +		.map_pages    = hv_iommu_map_pages,
->>>> +		.unmap_pages  = hv_iommu_unmap_pages,
->>>> +		.iova_to_phys = hv_iommu_iova_to_phys,
->>>> +		.free	      = hv_iommu_domain_free,
->>>> +	},
->>>> +	.owner		    = THIS_MODULE,
->>>> +};
->>>> +
->>>> +static void __init hv_initialize_special_domains(void)
->>>> +{
->>>> +	hv_def_identity_dom.iommu_dom.geometry = default_geometry;
->>>> +	hv_def_identity_dom.domid_num = HV_DEVICE_DOMAIN_ID_S2_DEFAULT; /* 0 */
->>>
->>> hv_def_identity_dom is a static global variable.
->>> Why not initialize hv_def_identity_dom upon definition instead of
->>> introducing a new function?
->>
->> Originally, it was function. I changed it static, but during 6.6
->> review I changed it back to function.  I can't remember why, but is
->> pretty harmless. We may add more domains, for example null domain to the
->> initilization in future.
->>
->>>> +}
->>>> +
->>>> +static int __init hv_iommu_init(void)
->>>> +{
->>>> +	int ret;
->>>> +	struct iommu_device *iommup = &hv_virt_iommu;
->>>> +
->>>> +	if (!hv_is_hyperv_initialized())
->>>> +		return -ENODEV;
->>>> +
->>>> +	ret = iommu_device_sysfs_add(iommup, NULL, NULL, "%s", "hyperv-iommu");
->>>> +	if (ret) {
->>>> +		pr_err("Hyper-V: iommu_device_sysfs_add failed: %d\n", ret);
->>>> +		return ret;
->>>> +	}
->>>> +
->>>> +	/* This must come before iommu_device_register because the latter calls
->>>> +	 * into the hooks.
->>>> +	 */
->>>> +	hv_initialize_special_domains();
->>>> +
->>>> +	ret = iommu_device_register(iommup, &hv_iommu_ops, NULL);
->>>
->>> It looks weird to initialize an object after creating sysfs entries for
->>> it.
->>> It should be the other way around.
->>
->> Not sure if it should be, much easier to remove sysfs entry than other
->> cleanup, even tho iommu_device_unregister is there. I am sure we'll add
->> more code here, probably why it was originally done this way.
->>
-> 
-> Sysfs provides user space access to kernel objects. If the object is not
-> initialized, it's not only a useless sysfs entry, but also a potential
-> cause for kernel panic if user space will try to access this entry
-> before the object is initialized.
-
-I hear you... but,
-   o there is nothing under sysfs to be accessed when created
-   o it is during boot
-   o it should almost never fail...
-   o iommu_device_sysfs_remove is much more light weight than
-     iommu_device_unregister
-   o i expect more to be added there as we enhance it
-
-Thanks,
--Mukesh
-
-
-> Thanks,
-> Stanislav
-> 
-> 
->> Thanks,
->> -Mukesh
->>
->>
->> ... snip........
-
+Thanks
+Nicolin
