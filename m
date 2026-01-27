@@ -1,391 +1,78 @@
-Received: from mail-qv1-f49.google.com (mail-qv1-f49.google.com [209.85.219.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D62A35B127
-	for <iommu@lists.linux.dev>; Tue, 27 Jan 2026 13:51:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.49
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EAF693570B4
+	for <iommu@lists.linux.dev>; Tue, 27 Jan 2026 14:20:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769521883; cv=none; b=V6uqZs1iZscw+TkdPTczp/n4yaNH+E/Awi+/o0x9JnEDeeai/77I8RqIuiukfy2XpouPdoYotAK0oxl2iy8azN1ulQC/GtJaKSztJf24rgCwxgoOvDv1uEJ8jff68QPZpYlaIVfLWfIWphVjUvErtOt95nRve1CVqigMJeIeP4M=
+	t=1769523619; cv=none; b=gpY69ZnqQ0fJPKBV4aBGjh7dg48zDfpysiz6yOYfHq4/AzWGA9AOi9BvPqYDIRfFZTWkWZ4q63wUjJ7PsYO1NrfERVyVbV+n0bf7lxWb+9TFmoFZpG9acqq57HLfnWdwvAFzSut7LoPojgMwrWQ9B7q6vC9vJ3IESqowih1nuaE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769521883; c=relaxed/simple;
-	bh=26a1JMciDcTJ+TZWbqnJJKHWKRs9hvl9k+BGAGE5Hns=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=Pkn73IWwNgPPagRhFhBUIzSxMj1pZSCotVuCWneUc0SmcZZmx35hrZN2Hvlr94XcawYTrVjKLuR5JEI4PgKf3Cb68RZlOcvfp//MSnEh6woU527fDT1akfQbN+Zfu5wifxgTk+oXQMpD2o3kdrh8mDocoM4yVvUvhqNC6EVdi20=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ndufresne.ca; spf=pass smtp.mailfrom=ndufresne.ca; dkim=pass (2048-bit key) header.d=ndufresne-ca.20230601.gappssmtp.com header.i=@ndufresne-ca.20230601.gappssmtp.com header.b=OAKofFJR; arc=none smtp.client-ip=209.85.219.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ndufresne.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ndufresne.ca
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ndufresne-ca.20230601.gappssmtp.com header.i=@ndufresne-ca.20230601.gappssmtp.com header.b="OAKofFJR"
-Received: by mail-qv1-f49.google.com with SMTP id 6a1803df08f44-894723da7dfso89948166d6.1
-        for <iommu@lists.linux.dev>; Tue, 27 Jan 2026 05:51:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ndufresne-ca.20230601.gappssmtp.com; s=20230601; t=1769521880; x=1770126680; darn=lists.linux.dev;
-        h=mime-version:user-agent:autocrypt:references:in-reply-to:date:cc:to
-         :from:subject:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=TWb9tHCixSdnVfIgDBaxxTLH7WM+nmMGf9vhIY0VeHY=;
-        b=OAKofFJRp95YWx6pRyiB2aOm3xYlHFWnYGpKcLtx7Htv1GNbSZbBGda63jtFKtV3I3
-         wOxo8jC5LGmpONCmYk4adhQwEWHdYjjou8UcFsyEzMHp1oZ2r7WvhzqSCBbI5ia+sr1G
-         auG4Crt45i6n0IXq+KsX9TmGMcPmPIo/zNCtGatuh0DS3neXjULbRTBDolQJU9C4HA5t
-         DsTUlM04IlVJPFjC44us2oq2BCR5FeWAmv+HAxMoDL1mQtkZlvNWFL7Vt2T2nPfrVPFR
-         rU3wSB5Mr7qRcR9KGtlkA1gt+QVJMOTBtHKig4sb00WUO3oM+0Kgwsue+CVfkZ3/y6Zk
-         +eWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769521880; x=1770126680;
-        h=mime-version:user-agent:autocrypt:references:in-reply-to:date:cc:to
-         :from:subject:message-id:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=TWb9tHCixSdnVfIgDBaxxTLH7WM+nmMGf9vhIY0VeHY=;
-        b=SBEQcN4JSR8ksCaU+eNen6+JaA8kiJu8yHZilLPtvcAcEF9P+F/K92enASzam4iCmG
-         JhzeTeGx8Hb4/BE06PggrUI/FEnu3UdAeWyu3PREp6/ZA32pVuay9rLSAebRy9XxUV6i
-         rtabDbUoviJdc5pUkg5AEvlZRV61U1OG4hgGdyxJbzM2DJVvHfzEGU7JL/X6JYBpo9tN
-         ithsvhmW/AumXH+7Wt6aa/FjzKgioyjyM3Xu0XJIW38OE3sZzRtbSxaOwRWjCgN+9CMj
-         wMJPrFZOKU6CBl0HDcjsWlHvaGE9As5Rmep1nACiogRK/lz5MGsneIpkJJeef8Ylknn2
-         5SSA==
-X-Forwarded-Encrypted: i=1; AJvYcCWbJ0+FQcjFuzq1ywzKR2SSsdXeo1buwf7DFnvqbkhshqx3Xm/QNdrNV1umMACndCNCxaP01g==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yxb1/89bygLCfmjKZ1Z2lzH09oQQUQVg0A9ZkbdBPa0HQEyuZ7P
-	AZeEzuad0U7SBn/0MvrMGPCRhAond6Xk+vGm5c6fJcsC2kDYmmMHc+RFFLDRRRJN/EI=
-X-Gm-Gg: AZuq6aKTqhxH3Ze8vj4vFIcNOVqcKBnfiL6wuPqpcgySbMnYlPUtfzJBb/fQOHAVVKU
-	lNzjY65rZ6M8Ag+NQh3Mpbd/9ho0VuqPQ5H9vhau+y/+Aj69g2x5FS0IFGmkC07uGA63OXl7VlK
-	jIOOBzRPaIJcumTW6AS+Vnnt8PY/xQrQBS4KAfjFzjkLptzRn6iqQax2qbOVUSmhDmIjzYGCl23
-	G3zpZtVhYsuMN3bxrHu2zOahZLhAbVCd0sISglU/aeUK71cxVtswiIBnLtxk9jeuZeiYSYXgzWS
-	1Je42s7UYW5qF1gNDH8zRHF/83dCghrDCRNdgqfsWU2HOJnP6kLbBD5+JTCJ9fJ4VbhuTqy9sZN
-	+8dEEfwI8/ttg1NkybftfFyDQuz8rzh6N/+7ffiM4YbCGyf+ZTHcCJVRRS9HWsJOzc9SJFnZp96
-	eabH7kH8QR5OZMhaa7
-X-Received: by 2002:ac8:7f0e:0:b0:4ff:a40c:c6c4 with SMTP id d75a77b69052e-5032f774757mr18752511cf.15.1769521880245;
-        Tue, 27 Jan 2026 05:51:20 -0800 (PST)
-Received: from ?IPv6:2606:6d00:17:7b4b::5ac? ([2606:6d00:17:7b4b::5ac])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-503337f04a3sm4279551cf.5.2026.01.27.05.51.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Jan 2026 05:51:19 -0800 (PST)
-Message-ID: <95ea1872a0afb10265aa675817647d830de42d70.camel@ndufresne.ca>
-Subject: Re: [PATCH 3/7] of/iommu: add multi-map support
-From: Nicolas Dufresne <nicolas@ndufresne.ca>
-To: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, Vikash Garodia
-	 <vikash.garodia@oss.qualcomm.com>
-Cc: Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>, Abhinav Kumar	
- <abhinav.kumar@linux.dev>, Bryan O'Donoghue <bod@kernel.org>, Mauro
- Carvalho Chehab <mchehab@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski	 <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Saravana Kannan	 <saravanak@kernel.org>, Joerg
- Roedel <joro@8bytes.org>, Will Deacon	 <will@kernel.org>, Robin Murphy
- <robin.murphy@arm.com>, Stefan Schmidt	 <stefan.schmidt@linaro.org>, Hans
- Verkuil <hverkuil@kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>,
- Vishnu Reddy <busanna.reddy@oss.qualcomm.com>, Hans Verkuil	
- <hverkuil+cisco@kernel.org>, linux-arm-msm@vger.kernel.org, 
-	linux-media@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, Bryan O'Donoghue	
- <bryan.odonoghue@linaro.org>, Charan Teja Kalla
- <charan.kalla@oss.qualcomm.com>,  Vijayanand Jitta
- <vijayanand.jitta@oss.qualcomm.com>
-Date: Tue, 27 Jan 2026 08:51:17 -0500
-In-Reply-To: <hunwsdkmeo6efpv3yt3izkgmarelnubd74dywj3scryxrreq6p@njijwtoyjh46>
-References: <20260126-kaanapali-iris-v1-0-e2646246bfc1@oss.qualcomm.com>
-	 <20260126-kaanapali-iris-v1-3-e2646246bfc1@oss.qualcomm.com>
-	 <hunwsdkmeo6efpv3yt3izkgmarelnubd74dywj3scryxrreq6p@njijwtoyjh46>
-Autocrypt: addr=nicolas@ndufresne.ca; prefer-encrypt=mutual;
- keydata=mDMEaCN2ixYJKwYBBAHaRw8BAQdAM0EHepTful3JOIzcPv6ekHOenE1u0vDG1gdHFrChD
- /e0J05pY29sYXMgRHVmcmVzbmUgPG5pY29sYXNAbmR1ZnJlc25lLmNhPoicBBMWCgBEAhsDBQsJCA
- cCAiICBhUKCQgLAgQWAgMBAh4HAheABQkJZfd1FiEE7w1SgRXEw8IaBG8S2UGUUSlgcvQFAmibrjo
- CGQEACgkQ2UGUUSlgcvQlQwD/RjpU1SZYcKG6pnfnQ8ivgtTkGDRUJ8gP3fK7+XUjRNIA/iXfhXMN
- abIWxO2oCXKf3TdD7aQ4070KO6zSxIcxgNQFtDFOaWNvbGFzIER1ZnJlc25lIDxuaWNvbGFzLmR1Z
- nJlc25lQGNvbGxhYm9yYS5jb20+iJkEExYKAEECGwMFCwkIBwICIgIGFQoJCAsCBBYCAwECHgcCF4
- AWIQTvDVKBFcTDwhoEbxLZQZRRKWBy9AUCaCyyxgUJCWX3dQAKCRDZQZRRKWBy9ARJAP96pFmLffZ
- smBUpkyVBfFAf+zq6BJt769R0al3kHvUKdgD9G7KAHuioxD2v6SX7idpIazjzx8b8rfzwTWyOQWHC
- AAS0LU5pY29sYXMgRHVmcmVzbmUgPG5pY29sYXMuZHVmcmVzbmVAZ21haWwuY29tPoiZBBMWCgBBF
- iEE7w1SgRXEw8IaBG8S2UGUUSlgcvQFAmibrGYCGwMFCQll93UFCwkIBwICIgIGFQoJCAsCBBYCAw
- ECHgcCF4AACgkQ2UGUUSlgcvRObgD/YnQjfi4+L8f4fI7p1pPMTwRTcaRdy6aqkKEmKsCArzQBAK8
- bRLv9QjuqsE6oQZra/RB4widZPvphs78H0P6NmpIJ
-Content-Type: multipart/signed; micalg="pgp-sha512";
-	protocol="application/pgp-signature"; boundary="=-sqPE2tvWLzFfDUXBP4ZG"
-User-Agent: Evolution 3.58.2 (3.58.2-1.fc43) 
+	s=arc-20240116; t=1769523619; c=relaxed/simple;
+	bh=3dbkaF5OVhRQfnw/0d9n1Gzk+2qa9elwJ9BhiZVnO/8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Vy47uylEoJqMDTD/+QfIbwzUJtCjxozNVyxGLkC5K+gczOswtoc4pLJDTjSKhc07AxuADGSLMvYh6av1NQV3aDAvSVxqEw7Dz+69jApbCIlYCGZfVNo81zCGTqgbY54F7dB0T3b1g4EownHYFzC7qrNEoxSNwjxGs7GJsIGVXX4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C522F1595;
+	Tue, 27 Jan 2026 06:20:10 -0800 (PST)
+Received: from [10.57.51.176] (unknown [10.57.51.176])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4E1BF3F73F;
+	Tue, 27 Jan 2026 06:20:13 -0800 (PST)
+Message-ID: <78ffd1ce-5408-4bf5-a782-0c4ca14017b1@arm.com>
+Date: Tue, 27 Jan 2026 14:20:09 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 3/7] of/iommu: add multi-map support
+To: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
+ Vikash Garodia <vikash.garodia@oss.qualcomm.com>
+Cc: Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
+ Abhinav Kumar <abhinav.kumar@linux.dev>, Bryan O'Donoghue <bod@kernel.org>,
+ Mauro Carvalho Chehab <mchehab@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Saravana Kannan <saravanak@kernel.org>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Stefan Schmidt <stefan.schmidt@linaro.org>,
+ Hans Verkuil <hverkuil@kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>,
+ Vishnu Reddy <busanna.reddy@oss.qualcomm.com>,
+ Hans Verkuil <hverkuil+cisco@kernel.org>, linux-arm-msm@vger.kernel.org,
+ linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+ Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
+ Charan Teja Kalla <charan.kalla@oss.qualcomm.com>,
+ Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
+References: <20260126-kaanapali-iris-v1-0-e2646246bfc1@oss.qualcomm.com>
+ <20260126-kaanapali-iris-v1-3-e2646246bfc1@oss.qualcomm.com>
+ <hunwsdkmeo6efpv3yt3izkgmarelnubd74dywj3scryxrreq6p@njijwtoyjh46>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <hunwsdkmeo6efpv3yt3izkgmarelnubd74dywj3scryxrreq6p@njijwtoyjh46>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-
---=-sqPE2tvWLzFfDUXBP4ZG
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-Hi,
-
-Le mardi 27 janvier 2026 =C3=A0 13:45 +0200, Dmitry Baryshkov a =C3=A9crit=
-=C2=A0:
+On 2026-01-27 11:45 am, Dmitry Baryshkov wrote:
 > On Mon, Jan 26, 2026 at 05:55:46PM +0530, Vikash Garodia wrote:
-> > From: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
-> >=20
-> > When multiple mappings are present for an input id, linux matches just
-> > the first one. There is a usecase[1] where all the mappings are to be
-> > maintained in parallel for an iommu-map entry of a same input id.
->=20
+>> From: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
+>>
+>> When multiple mappings are present for an input id, linux matches just
+>> the first one. There is a usecase[1] where all the mappings are to be
+>> maintained in parallel for an iommu-map entry of a same input id.
+> 
 > This contradicts the IOMMU idealogy (at least as far as I understood it
 > fom the maintainers): the device (driver) doesn't control which IOMMUs
 > are getting used. Instead _all_ defined entries should get used. For
 > iommu-map it means that if the map defines several entries for a single
 > function, then all entries should always get mapped.
->=20
-> >=20
-> > Whether multi-map is needed is reported by the callers through the
-> > callback function passed, which is called for every input id match.
-> >=20
-> > Since the requirement in the usecase[1] is for platform devices, not
-> > sure if it is really clean to maintain this decision on the bus type at
-> > the of_iommu layer or further to be from the respective
-> > iommu_driver->impl_ops().
->=20
-> This doesn't tell us, why do you want to control, which entries of the
-> map get used.
->=20
-> >=20
-> > [1]
-> > https://lore.kernel.org/all/20250627-video_cb-v3-0-51e18c0ffbce@quicinc=
-.com/
 
-Since its for an M2M V4L2 device, and its all about having more address spa=
-ce
-according to this link, you may want to use a different iommu domain per m2=
-m
-instances, rather then per device (what is done implicitly). On top of whic=
-h, it
-will ensure memory isolation between instances, making this driver suitable=
- for
-virtualisation. 4Gb per instance (which is also per stream) seems like a lo=
-t of
-memory to me. But like Dmitry says, there is little clarity in what you are
-trying to achieve.
+Indeed there is no concept of "multi-map" - if a single input ID 
+represents more than one thing then that notion of "input ID" is 
+fundamentally wrong. A single *device* may have multiple IDs, as in the 
+case of PCI bridge aliasing, but in that case there are multiple things 
+to map.
 
-Nicolas
-
-> >=20
-> > Signed-off-by: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
-> > Signed-off-by: Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
-> > Signed-off-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
-> > ---
-> > =C2=A0drivers/iommu/of_iommu.c | 36 ++++++++++++++++++++++++++++-------=
--
-> > =C2=A0drivers/of/base.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 | 38 =
-++++++++++++++++++++++++++++----------
-> > =C2=A0include/linux/of.h=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0 6 =
-++++++
-> > =C2=A03 files changed, 62 insertions(+), 18 deletions(-)
-> >=20
-> > diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-> > index
-> > 768eaddf927b0700b2497b08ea21611b1a1b5688..067bb2298973671e1eaf01bb2ea52=
-df3d2
-> > a52a44 100644
-> > --- a/drivers/iommu/of_iommu.c
-> > +++ b/drivers/iommu/of_iommu.c
-> > @@ -16,6 +16,7 @@
-> > =C2=A0#include <linux/pci.h>
-> > =C2=A0#include <linux/slab.h>
-> > =C2=A0#include <linux/fsl/mc.h>
-> > +#include <linux/platform_device.h>
-> > =C2=A0
-> > =C2=A0#include "iommu-priv.h"
-> > =C2=A0
-> > @@ -41,22 +42,41 @@ static int of_iommu_xlate(struct device *dev,
-> > =C2=A0	return ret;
-> > =C2=A0}
-> > =C2=A0
-> > +/*
-> > + * Callback to be called from of_map_id(), that tells if
-> > + * all the mappings for an input id to be maintained in
-> > + * parallel. Should this decission be from further layers,
-> > + * iommu_driver->impl_ops?
-> > + */
-> > +static int of_iommu_configure_cb(struct of_map_id_arg *arg)
-> > +{
-> > +	struct of_phandle_args *iommu_spec =3D &arg->map_args;
-> > +	struct device *dev =3D arg->dev;
-> > +	int err;
-> > +
-> > +	err =3D of_iommu_xlate(dev, iommu_spec);
-> > +	of_node_put(iommu_spec->np);
-> > +
-> > +	/* !iommu_spec->np may be from the bypassed translations */
-> > +	if (!err)
-> > +		err =3D (!arg->multi_map || !iommu_spec->np) ? 0 : -EAGAIN;
-> > +
-> > +	return err;
-> > +}
-> > +
-> > =C2=A0static int of_iommu_configure_dev_id(struct device_node *master_n=
-p,
-> > =C2=A0				=C2=A0=C2=A0=C2=A0=C2=A0 struct device *dev,
-> > =C2=A0				=C2=A0=C2=A0=C2=A0=C2=A0 const u32 *id)
-> > =C2=A0{
-> > =C2=A0	struct of_map_id_arg arg =3D {
-> > =C2=A0		.map_args =3D {},
-> > +		.cb =3D of_iommu_configure_cb,
-> > +		.dev =3D dev,
-> > +		/* Should this be pushed to iommu_driver->impl_ops? */
-> > +		.multi_map =3D dev_is_platform(dev),
-> > =C2=A0	};
-> > -	int err;
-> > -
-> > -	err =3D of_map_iommu_id(master_np, *id, &arg);
-> > -	if (err)
-> > -		return err;
-> > =C2=A0
-> > -	err =3D of_iommu_xlate(dev, &arg.map_args);
-> > -	of_node_put(arg.map_args.np);
-> > -	return err;
-> > +	return of_map_iommu_id(master_np, *id, &arg);
-> > =C2=A0}
-> > =C2=A0
-> > =C2=A0static int of_iommu_configure_dev(struct device_node *master_np,
-> > diff --git a/drivers/of/base.c b/drivers/of/base.c
-> > index
-> > 606bef4f90e7d13bae4f7b0c45acd1755ad89826..a1c3c5954ec7e8eb3753c8fd782a1=
-570f9
-> > eb9c17 100644
-> > --- a/drivers/of/base.c
-> > +++ b/drivers/of/base.c
-> > @@ -2122,14 +2122,21 @@ static bool of_check_bad_map(const __be32 *map,=
- int
-> > len)
-> > =C2=A0	return true;
-> > =C2=A0}
-> > =C2=A0
-> > -static int of_map_id_fill_output(struct of_map_id_arg *arg,
-> > -				 struct device_node *phandle_node, u32
-> > id_or_offset,
-> > -				 const __be32 *out_base, u32 cells,
-> > -				 bool bypass)
-> > +/*
-> > + * Fill the id_out and target for the of_map_id() caller. Also
-> > + * call the callback passed to the of_map_id() as part of the arg
-> > + * that decides if to continue further search.
-> > + */
-> > +static int of_map_id_fill_arg(struct of_map_id_arg *arg,
-> > +			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct device_node *phandle_node, u3=
-2
-> > id_or_offset,
-> > +			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 const __be32 *out_base, u32 cells,
-> > +			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 bool bypass, bool *multi_id_map)
-> > =C2=A0{
-> > +	int ret;
-> > +
-> > =C2=A0	if (bypass) {
-> > =C2=A0		arg->map_args.args[0] =3D id_or_offset;
-> > -		return 0;
-> > +		goto output;
-> > =C2=A0	}
-> > =C2=A0
-> > =C2=A0	if (arg->map_args.np)
-> > @@ -2145,7 +2152,14 @@ static int of_map_id_fill_output(struct of_map_i=
-d_arg
-> > *arg,
-> > =C2=A0
-> > =C2=A0	arg->map_args.args_count =3D cells;
-> > =C2=A0
-> > -	return 0;
-> > +output:
-> > +	/* pass the output for the callback, callers may further decide */
-> > +	ret =3D=C2=A0 arg->cb ? arg->cb(arg) : 0;
-> > +
-> > +	if (multi_id_map && ret =3D=3D -EAGAIN)
-> > +		*multi_id_map =3D true;
-> > +
-> > +	return ret;
-> > =C2=A0}
-> > =C2=A0
-> > =C2=A0/**
-> > @@ -2179,6 +2193,7 @@ int of_map_id(const struct device_node *np, u32 i=
-d,
-> > const char *map_name,
-> > =C2=A0	int map_bytes, map_len, offset =3D 0;
-> > =C2=A0	bool bad_map =3D false;
-> > =C2=A0	const __be32 *map =3D NULL;
-> > +	bool multi_id_map =3D false;
-> > =C2=A0
-> > =C2=A0	if (!np || !map_name || !arg)
-> > =C2=A0		return -EINVAL;
-> > @@ -2264,23 +2279,26 @@ int of_map_id(const struct device_node *np, u32=
- id,
-> > const char *map_name,
-> > =C2=A0		if (masked_id < id_base || id_off >=3D id_len)
-> > =C2=A0			continue;
-> > =C2=A0
-> > -		ret =3D of_map_id_fill_output(arg, phandle_node, id_off,
-> > out_base, cells, false);
-> > +		ret =3D of_map_id_fill_arg(arg, phandle_node, id_off,
-> > out_base,
-> > +					 cells, false, &multi_id_map);
-> > =C2=A0		if (ret =3D=3D -EAGAIN)
-> > =C2=A0			continue;
-> > =C2=A0
-> > =C2=A0		pr_debug("%pOF: %s, using mask %08x, id-base: %08x, out-
-> > base: %08x, length: %08x, id: %08x -> %08x\n",
-> > =C2=A0			np, map_name, map_mask, id_base,
-> > be32_to_cpup(out_base),
-> > =C2=A0			id_len, id, id_off + be32_to_cpup(out_base));
-> > -		return 0;
-> > +		return ret;
-> > =C2=A0	}
-> > =C2=A0
-> > +	if (multi_id_map)
-> > +		return 0;
-> > +
-> > =C2=A0	pr_info("%pOF: no %s translation for id 0x%x on %pOF\n", np,
-> > map_name,
-> > =C2=A0		id, arg->map_args.np=C2=A0 ? arg->map_args.np : NULL);
-> > =C2=A0
-> > =C2=A0bypass_translation:
-> > =C2=A0	/* Bypasses translation */
-> > -	return of_map_id_fill_output(arg, NULL, id, 0, 0, true);
-> > -
-> > +	return of_map_id_fill_arg(arg, NULL, id, 0, 0, true, NULL);
-> > =C2=A0err_map_len:
-> > =C2=A0	pr_err("%pOF: Error: Bad %s length: %d\n", np, map_name,
-> > map_bytes);
-> > =C2=A0	return -EINVAL;
-> > diff --git a/include/linux/of.h b/include/linux/of.h
-> > index
-> > 9efa6f93712c6024f05476f9fd39f3294f942ec1..abab73a76682351f5635c1127a6c8=
-99917
-> > 525050 100644
-> > --- a/include/linux/of.h
-> > +++ b/include/linux/of.h
-> > @@ -25,6 +25,9 @@
-> > =C2=A0typedef u32 phandle;
-> > =C2=A0typedef u32 ihandle;
-> > =C2=A0
-> > +struct of_map_id_arg;
-> > +typedef int (*of_map_id_cb)(struct of_map_id_arg *arg);
-> > +
-> > =C2=A0struct property {
-> > =C2=A0	char	*name;
-> > =C2=A0	int	length;
-> > @@ -76,6 +79,9 @@ struct of_phandle_args {
-> > =C2=A0
-> > =C2=A0struct of_map_id_arg {
-> > =C2=A0	struct of_phandle_args map_args;
-> > +	of_map_id_cb cb;
-> > +	struct device *dev;
-> > +	bool multi_map;
-> > =C2=A0};
-> > =C2=A0
-> > =C2=A0struct of_phandle_iterator {
-> >=20
-> > --=20
-> > 2.34.1
-> >=20
-
---=-sqPE2tvWLzFfDUXBP4ZG
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQTvDVKBFcTDwhoEbxLZQZRRKWBy9AUCaXjC1QAKCRDZQZRRKWBy
-9AdQAP4gtvm3/cBxyYM8uZ50t1efySdzZ/rt1/ZyrL5c2cGZhAD9FLIi6O56sq1S
-VY5E1+gXbEXsbTA/TbUUH5BjQojFPA0=
-=+cdM
------END PGP SIGNATURE-----
-
---=-sqPE2tvWLzFfDUXBP4ZG--
+Thanks,
+Robin.
