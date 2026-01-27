@@ -1,170 +1,239 @@
-Received: from SJ2PR03CU001.outbound.protection.outlook.com (mail-westusazon11012041.outbound.protection.outlook.com [52.101.43.41])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80A1E21CC7B
-	for <iommu@lists.linux.dev>; Tue, 27 Jan 2026 16:39:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.43.41
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769531942; cv=fail; b=Xlp666ooujGnxAaoYfcqTVUAjFC062z3QSADzQE+I9C0eiS8fEUbTLyMBI5+Et6Re+pi2RKwD8XqTAKxE+9q6xY1zLRoKBIB8C4xJgzuuOu7QB3vz839tFSTfqnumP1qI1nEXrPJxZa/dsDT4jO9b27rBM7h0APgcxtY0jc+Uos=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769531942; c=relaxed/simple;
-	bh=V5E18wgLWGr762OS44jnrl2pjcvJ0Mhuy6OO9UNsQUg=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=IjEvPwuNAkHBHoTT2QGmrMv/wen0E/NrQQUpp9ZEws5DKE+zt3TfengrRnqZVKF8g+9RjTn5U3Np3zACo0fozbSE8V7ucuobvbH6B6LREhqsMRauPtr5uilfWc+pI6w2LmhxksJpUE2ir4ypTCl5X/bdqiHLzaSEYqFjQdIeCgQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=l39RjM64; arc=fail smtp.client-ip=52.101.43.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A668B361657
+	for <iommu@lists.linux.dev>; Tue, 27 Jan 2026 16:49:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1769532596; cv=none; b=XoqQXd5QeiYQvyXt3nzj1ATaCkXmh3NOntVlFDnICWaEaHCdL1bVPNk7dQAGUYmNuDybATAYu9h97jueWgg3IJSLmrd4cmIRIgIU45CUPY2V3wPhXkPjyilwQp5wtUzLhm8hzWsN+g751b7rycpD5hdmNrs7JqVYyj1Ahzny2rA=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1769532596; c=relaxed/simple;
+	bh=uI2HXAW17zYtOEMTXnjlUKn9NrrZpUIxt/eqbaiU+Ks=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=H2fcRHuh+ZrSASUByBDeGpyCVwjKttildJ31Q3f5kGokETXBD+huBmTempBE2vhbPv6EXHEstfpbheQXMAxhbYTmLvgDUaOsvF/fo86bLkThyJs8jhHmnz5xOfXS+p332YkaTau14m8SzRLldHlUdSY7F5UfWUdGVaTnBQRmm8s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=PFmZWdbd; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=HsIdk3eZ; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="l39RjM64"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=CmAxk87CWoC78If8/gELExGXa5+HAaN0qFZiIFtdecVJlKnDrmdfCcf5QIKPi9LheaLibqJav1iAuHh/k/88/GEwdZXckzTyIt/yT4Rp27eiPNsROtIZ3zkZAFT05EC4Znl6hbG43pkYYMgANt46tVHx/G/ESUkDNPn6OTaXASkVRlCrxG36wrv+byOlKA7Kxol2VpWtwaTKPshxU0izKpTShWTb490hYko7NdRDGqM8R8k4kqqtRdplOJZ/SgLRNiI90bzF5qRbivktWvWNNiSdoyEkgVtYy/GHoAsXeyDJA7eAbASKdm+1pdstfFChO0TCwgvLquj1Yb8XaFKLWQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=DBnEH2TUcdXc4W7xQBKCM4C/o6CyLMaBab9UbKGPTrg=;
- b=tIpkTjuU5DKnSXWrfdfF1eFlzI1XCncJ6XXkk5VWZaz9EP6Pgc2R+idwdOuuF6dhcrtXIPZvVtlRhjpsmSAUiGbLQj1yXIlgAGcb81LCCX37ID9HvIjFu44sFstxEVawPPMvGW7nRNJuiu8AuPNFgYEIK2TgNAeYHQ4544b2Ujci1r/5jFV6cbqCbCvblLVJ14noPjtOQfETisozmTNAB7JyldeiqeuEqJ1mEuzEhKNYvhxfU727nvoTRC+GIb7/SvWdYXCdfDqEk4kBO06Q+lvc92G3pmR6qG7VD5EhwHtpb5ufdZMG303pOLLOa+tmqAeZ/+p0omm83Q/OlPI2dg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DBnEH2TUcdXc4W7xQBKCM4C/o6CyLMaBab9UbKGPTrg=;
- b=l39RjM64i097t08E+XJQj8SFEet+pllvJ4oT8sEqZaZ4TCLSRVMQoTvNzZOcGaecP55fAeiP/Ix0NnNSmYZALrGF13icMui7H7IAGOV7NxsjbCKXhD5G/asw9N4rCMOAQEQgXFdteGPh5jJ4iGFhyZbtJzG+n+jBhz4jboJIZGyuCn5fo23jgUZ6A4MvKkdDVJbcBdre8u+P+5KHBj766rYcSG/VcqqzqQ61Thy+lTfey0zBJIeEkideJxZt/5my03UP+DKbUAQfZe4aMCv1jNaDOfPe/s15/eDmJaWZjCPmynV64MipvpKb/aRT7+VOiW8sDWkOM/dOhUn0m5TbmQ==
-Received: from SJ0PR13CA0073.namprd13.prod.outlook.com (2603:10b6:a03:2c4::18)
- by DS7PR12MB5886.namprd12.prod.outlook.com (2603:10b6:8:79::8) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9542.15; Tue, 27 Jan 2026 16:38:55 +0000
-Received: from SJ5PEPF000001F3.namprd05.prod.outlook.com
- (2603:10b6:a03:2c4:cafe::d1) by SJ0PR13CA0073.outlook.office365.com
- (2603:10b6:a03:2c4::18) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9564.7 via Frontend Transport; Tue,
- 27 Jan 2026 16:38:18 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- SJ5PEPF000001F3.mail.protection.outlook.com (10.167.242.71) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9564.3 via Frontend Transport; Tue, 27 Jan 2026 16:38:53 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Tue, 27 Jan
- 2026 08:38:34 -0800
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Tue, 27 Jan
- 2026 08:38:33 -0800
-Received: from Asurada-Nvidia (10.127.8.14) by mail.nvidia.com (10.129.68.8)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
- Transport; Tue, 27 Jan 2026 08:38:32 -0800
-Date: Tue, 27 Jan 2026 08:38:31 -0800
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: <jgg@nvidia.com>, Pranjal Shrivastava <praan@google.com>
-CC: <will@kernel.org>, <jean-philippe@linaro.org>, <robin.murphy@arm.com>,
-	<joro@8bytes.org>, <balbirs@nvidia.com>, <miko.lenczewski@arm.com>,
-	<peterz@infradead.org>, <kevin.tian@intel.com>,
-	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v9 6/7] iommu/arm-smmu-v3: Add arm_smmu_invs based
- arm_smmu_domain_inv_range()
-Message-ID: <aXjqBy2sWAUMm/aY@Asurada-Nvidia>
-References: <cover.1766174731.git.nicolinc@nvidia.com>
- <06999367d001283744fd98eb7c1823afd516ce84.1766174731.git.nicolinc@nvidia.com>
- <aXND9YJTwm6om689@google.com>
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="PFmZWdbd";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="HsIdk3eZ"
+Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 60REZwak1066277
+	for <iommu@lists.linux.dev>; Tue, 27 Jan 2026 16:49:54 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-type:date:from:in-reply-to:message-id:mime-version
+	:references:subject:to; s=qcppdkim1; bh=yQo6VrZHfmG9VNHQSAg9y8t7
+	eLlTHj5DLIPChUOy9a4=; b=PFmZWdbdxzcBW9ca31lVQLc+xXMI3DzoFV0gl3zk
+	7qw2Be+dAUUZiAMTyOM56y71ppPWLB53fgboIv6wgpgKDDMvUn2cmSk9qMZRgkiJ
+	nx5yyrMVBZyXP+oMkBH5h/LQpNOCRF9mznreE1Uf8gr3JnenyWJr1x+69cuHmB3e
+	NTFR+yNAazM+KDyLpd1srghzyUW0XogeDHz/X3RrX5NPQ8B6zkaUAfHP/4r3hUCd
+	XN1vX0/AVVn/6PVDAhVfW7H7tAO9qcHOtI4t/MMA6jRYo7xH2B5NUNZpk+eic6Ct
+	ndfhV5Ta/DYmn5C6gRf1IOQsPwAuRn7XOKlP2xtswWzwfw==
+Received: from mail-ua1-f70.google.com (mail-ua1-f70.google.com [209.85.222.70])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4bxy8x0h3m-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Tue, 27 Jan 2026 16:49:53 +0000 (GMT)
+Received: by mail-ua1-f70.google.com with SMTP id a1e0cc1a2514c-93f65d0a94eso7884609241.2
+        for <iommu@lists.linux.dev>; Tue, 27 Jan 2026 08:49:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1769532593; x=1770137393; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=yQo6VrZHfmG9VNHQSAg9y8t7eLlTHj5DLIPChUOy9a4=;
+        b=HsIdk3eZiTPyg8H/Rske6ZbFL6W6235ctHGXlWIzxTCLR0OfyZbJvxe7b7b8DP5b++
+         90J8jiYb5JIxKHDayobdAXrFqVi1jhbuS82za1u6mrql2bU09bvO/HiVHiDLzHLtanQj
+         Y3omBULjDwm/2/vz+4yIBXl7xQzTObus2gJNw3DgoYqQOcyLGCeZijelHE4Z8oeKWmaV
+         t18aAo8Y2GCruwT5ApmV6FJy9RFCu2GBNyZNTJzO+ssEi/2Bojvvm1BSG2wFpfDpfxt4
+         ELB6fD4VVCW4zF6uCKosxkNxwmvnYpQgzQgja1z4ZOnkLt9O9jSFeYkWECWuz18L8LBA
+         FWZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1769532593; x=1770137393;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=yQo6VrZHfmG9VNHQSAg9y8t7eLlTHj5DLIPChUOy9a4=;
+        b=uR5zvF6GmQ+dsO6KMz3Bv1xFdQu3IGh7eDDKPAcXkRgyb2Ae26VmTGWT8aE6ydSJ5k
+         SZWwmupu7NTAWxNgPXM8rcoLeBnqsjxoiYLDKpBCAglWYjYbvl2t50SbPRNb7MxSvlnq
+         r50sLQOYNrBBgX3rNzhKECELtnPbXRg+Vp7+roYE9NKbeeQuKsGYNTs4t0ybvtXPr1m8
+         HjQRq06UhvYBYczeuC0KpnPb2cF1IaMnCDDQyVKEl0D0M5NC8buk0jH2/S6/MNGUYTfX
+         Ax7ArvXucne9J/lhoNmx/Bb/p715JhWYjesyo7t4H1jhcPQSYK/olUx8WXbvt1Ri3Nhq
+         3YVg==
+X-Forwarded-Encrypted: i=1; AJvYcCU9m9k/tWKnt9IOD/vg2v+Da2/n/KGypjdqYEXNcg0CmdebdCoEMotQNiBUbhpILuBb/4SUng==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yxj6A933gDblhxVfvfy+hA1EhWtkLRtPItmlfOlsIAK5DEH/Vh5
+	jOSvJdUkJVyXYBxNrFuBGvtyYGpy/CgxCeNBwwz3wj5AUOLdNBOKOgCW7JHRtmRa5j+Wxs73BSK
+	twDSy4P9OpnwHh4agiNgARUIyHrteqN0IHv/3H8ogcoziJ5RyRO3VyDLceQ==
+X-Gm-Gg: AZuq6aJfIdfV+6yChKnM30ECcLhFft42bZ5D7U6DS7TRUWMF+zAU7dQCPboJNLDC44a
+	k2B8VHIRtWmOB2q8p3GGD02kj6c+7DCR1k6mBo85vpeZpHzIC+vQODAVwJJuQstJAJ0VGzUBIHY
+	ByhdJB7soyCixo5hVa5iARWodicx9zYKWt4Eibk/x81PUQHYbu3mp/fk5p7sLlyakHvHPh8wBK9
+	nzaa1hSCUukRM4Qr/ckk136v0jCQHYYsuVxCu+AShgQFf/AO0vcL1GKgizEDtOA0dSVZ1nzMOgh
+	2URcRhlyqwqBchf39wAwTYMtKau/dV38SWRUpvJICODyY0G6H9c7Krnej5wyBDwQVaQgBpvshuo
+	NS7T4TpqEIpgn7rWw+s6QPd8OIJdE0AsdlxvTGu0yI2brmHZcQIBdCy586mNfH2ufJ7VEPDWtaI
+	oL0DSnH/Sbh+VhTO91dxM/cN4=
+X-Received: by 2002:a05:6102:41a6:b0:5ee:a1e5:6504 with SMTP id ada2fe7eead31-5f7238206afmr850588137.36.1769532592734;
+        Tue, 27 Jan 2026 08:49:52 -0800 (PST)
+X-Received: by 2002:a05:6102:41a6:b0:5ee:a1e5:6504 with SMTP id ada2fe7eead31-5f7238206afmr850558137.36.1769532592052;
+        Tue, 27 Jan 2026 08:49:52 -0800 (PST)
+Received: from umbar.lan (2001-14ba-a073-af00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a073:af00:264b:feff:fe8b:be8a])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-59e074887desm46265e87.27.2026.01.27.08.49.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 27 Jan 2026 08:49:51 -0800 (PST)
+Date: Tue, 27 Jan 2026 18:49:49 +0200
+From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+To: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
+Cc: Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
+        Abhinav Kumar <abhinav.kumar@linux.dev>,
+        Bryan O'Donoghue <bod@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Saravana Kannan <saravanak@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Stefan Schmidt <stefan.schmidt@linaro.org>,
+        Hans Verkuil <hverkuil@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Vishnu Reddy <busanna.reddy@oss.qualcomm.com>,
+        Hans Verkuil <hverkuil+cisco@kernel.org>,
+        linux-arm-msm@vger.kernel.org, linux-media@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        iommu@lists.linux.dev, Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
+        Charan Teja Kalla <charan.kalla@oss.qualcomm.com>,
+        Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
+Subject: Re: [PATCH 0/7] media: iris: add support for kaanapali platform
+Message-ID: <svmbjepmhjub2coqismesfjd7wgaenauawszjophmozntjohw3@566w2rnnycou>
+References: <20260126-kaanapali-iris-v1-0-e2646246bfc1@oss.qualcomm.com>
+ <lpgw6eodclsvfwgvtljfiorvjkpd5vd27yhxs7i3ijfibaqzuk@bak2lwbyh77f>
+ <2d4632b2-916a-4eda-ad08-44af68461dc8@oss.qualcomm.com>
+ <vv4stkmrrwdqmbnpv7pg5nd4immtqo5iplwbcia3oykycfmg2m@dsithotfy5ls>
+ <eef542b8-2a1c-4941-8895-453a108634dd@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <aXND9YJTwm6om689@google.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ5PEPF000001F3:EE_|DS7PR12MB5886:EE_
-X-MS-Office365-Filtering-Correlation-Id: 53840c5c-b7e1-4810-8c7e-08de5dc28eef
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|7416014|36860700013|376014|1800799024|82310400026|3613699012;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?U6SJG0Pz2FuteLo5gw0vy184JPgXJ3KwG+EEeT0Dhq9MjcM/fyjkcUIEtRuK?=
- =?us-ascii?Q?rJ8NEyMj3TuxhDzAzyxCa7gJikTI/Ei+ujmc5A0wjKZANsn9PrA5bpCeFAvx?=
- =?us-ascii?Q?kRsUkiLh7RquMre7PSZss/YbRBJxcRAQ3FLz2ZTOAaiqRFwtaINwqtN5RQ6h?=
- =?us-ascii?Q?laD5kr1fAliXVfHx0nvf5LDmhpSIlYC7kkp/yWiOuOdcU2vc2Qbp7uNxGsty?=
- =?us-ascii?Q?0LKgDLzOuwHUhNIyMzCgvm2rGlG7u6+2QfFix1OTaBX0H5P6RmeULy0aBFVl?=
- =?us-ascii?Q?fCWaUr8CB5IK9Fmn+MTQ6JhTZEUxG8hQxlMDQEp0CmG6DSkbzKPSILRFDQiY?=
- =?us-ascii?Q?ZNkwqmCjeboyx/zmeE8fGFlHTb9nRzjj1T+F6UiPl7BC5/tUWoMaYD2m6bpT?=
- =?us-ascii?Q?CfQEOedWLawZ/AITrNWn+4VAA1hNXzuPAj8j1kKbiN/nLLIBfeseuPF6iRMi?=
- =?us-ascii?Q?QNdx8UrJnZtbCFxKywcQKdFobvT7ObgL73iy9FVrJ8J3tHm+q35/1FR3oxd/?=
- =?us-ascii?Q?3khFYOQfnGp9PXzcdlGCK4v0aXofl3jBA1BUF2bbOsFPF3QhH6V1eg/uO1V/?=
- =?us-ascii?Q?katlRg+C+BGc1rPFQRtnbZg6t9ScrKlJrgryV6PvjedklFHHXmdKLMrd97lS?=
- =?us-ascii?Q?ZtyfIRT05rO6El7DVQQUNWvK/X/KV+fFDcpKWhmhqpBULHAuG/6yT+NApXUv?=
- =?us-ascii?Q?GME5PwA6dDIUcOUN6Wx/pu+g4PmhFe1b7gUzowYIU9xa+P0IG7Sd6r8TN7bq?=
- =?us-ascii?Q?OwbI6V8ocedFrpAMODNzKL+MGFe4WQ3tDgsixfbQidnTs/X8atPlFHQGun3G?=
- =?us-ascii?Q?lAD7/CgGnVJTZ91E5PLfvsg2Qrg+5fM0Td6zKTT/UglR+xu83vJxXVV7sjoc?=
- =?us-ascii?Q?iYvkRHnkDETmsk0Y44AXh/A+VchDJEjz+s/aVguFbFDoNA0Tas9hBkbWxnhQ?=
- =?us-ascii?Q?ojGYRybfnjVODEyIv7ZtVg7ZIoB06iaWwVPwnOpGJWLUPwWdPt/SHX31f7pB?=
- =?us-ascii?Q?sGFFlGgKDCcN0wq6SU1mL++pe5BNbm/EYF4riqZ761ruw63w2CN3kJU0p49c?=
- =?us-ascii?Q?gDL2onbhaX4NghW8M55pfpWnxa9Dxc26VekM8y+vO/zm2TJvG1011TO/7wjU?=
- =?us-ascii?Q?r+taNlz3OBUyQv8D3ajrXWddG+9WgVYnhm0h+UfoZeN7Bsj0xx9HRtU7z/o6?=
- =?us-ascii?Q?/H4tCmqMw/qeQ1sR1Z5GTPMxXW7QH9+awgzHVM7l8P+jwPAQ7gRG6quPaGbw?=
- =?us-ascii?Q?1g9N/DF86hM3dkPRUXxcP3ZBAZDHhXHC4XGuOURAJAzvz/N+m6yyjpYgHasg?=
- =?us-ascii?Q?e7Q3hVIZyLnADR9mvfrN83csuwdzh+P1//p1XTFiW1YOARUFDcgsCbLw8+Vm?=
- =?us-ascii?Q?aL+w2AzrbCWgc67ZuLDwga0eoGxFBAwUhE8fa2qf+C7vHMn4fsrwSMl3dHp5?=
- =?us-ascii?Q?MWHC9L6EPXvBudx2jTjH48OwbNiyRNiYdX0PSHeau6JsiGg09K2RLOADamrP?=
- =?us-ascii?Q?WUfuYHoFy1e6AoKGhkOvwhHOo6D2BIT5hIssnJUTuBX5ceaCrkxLWJFxEZYS?=
- =?us-ascii?Q?N1td0d9FAkY644/NX6A+1mbB46WJfNq+7KtvnSkzcfSnVon39Zq0xGZgIZxF?=
- =?us-ascii?Q?smYTfBm9i6BOQ937c9W7qj0KTAYbcW5K07gpXSaEZYUgxC2WXiAW/F2oWm1F?=
- =?us-ascii?Q?v/1QJdz0k+z4/le4O8hn+/5SF5k=3D?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(7416014)(36860700013)(376014)(1800799024)(82310400026)(3613699012);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jan 2026 16:38:53.5743
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 53840c5c-b7e1-4810-8c7e-08de5dc28eef
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SJ5PEPF000001F3.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB5886
+In-Reply-To: <eef542b8-2a1c-4941-8895-453a108634dd@oss.qualcomm.com>
+X-Proofpoint-GUID: Boe15Qjyx-cPRdem1zhiZAHQaOhY22-z
+X-Authority-Analysis: v=2.4 cv=OcWVzxTY c=1 sm=1 tr=0 ts=6978ecb1 cx=c_pps
+ a=R6oCqFB+Yf/t2GF8e0/dFg==:117 a=xqWC_Br6kY4A:10 a=kj9zAlcOel0A:10
+ a=vUbySO9Y5rIA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8 a=e5mUnYsNAAAA:8 a=dHVBxyF5DYbF2fpzP9wA:9
+ a=CjuIK1q_8ugA:10 a=TD8TdBvy0hsOASGTdmB-:22 a=Vxmtnl_E_bksehYqCbjh:22
+X-Proofpoint-ORIG-GUID: Boe15Qjyx-cPRdem1zhiZAHQaOhY22-z
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMTI3MDEzNyBTYWx0ZWRfX6u3SRAi2VpuP
+ HAImnLXtiM67CX5HpC1dEpkjtc4Jpj1CtR1/xNkWs54mz0bCBcSylkXKLPP2QYqmIL2zk2VJMNm
+ fZBbh8DjqbpA+FQ4pAnthw1QU7oAJ5wgxVc5z4H2h81UgTn/WymCWjb8HVwZGHknIo6ZqY8kUwv
+ 2sU6bWRuRXG0dLztQxpFfX23TQSj++ZJdj60+vJ8wnTxFS0HiYQ/vv83SmHTvhVh2+mpSw1h0o1
+ oAphLXdYz0/VMf+3QyxPIXQT3re6G1C4GYkCB0N7PyK3IFslDBCBRBKD+JqkbHnE08NQ1ek17F+
+ /T5nLcK8MKDSqFjEGGFXLMIrgW10ehcC29ikATEq727X6ES9V/YEYgb2fmw7eUtXES/NDczSaQR
+ tF4fapvPpOV/pfrhUvAI+JdQsegks68XPYB9juw+z4sZuFL2qp2uudBAuA3LZIwf5eh+EUW9wzW
+ WxVCWmSnfXpXfFKblUw==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-01-27_03,2026-01-27_03,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ lowpriorityscore=0 priorityscore=1501 adultscore=0 clxscore=1011 phishscore=0
+ impostorscore=0 malwarescore=0 bulkscore=0 suspectscore=0 spamscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2601150000 definitions=main-2601270137
 
-Hi Pranjal,
-
-Sorry, I missed this!
-
-On Fri, Jan 23, 2026 at 09:48:37AM +0000, Pranjal Shrivastava wrote:
-> On Fri, Dec 19, 2025 at 12:11:28PM -0800, Nicolin Chen wrote:
-> > +	/*
-> > +	 * Avoid locking unless ATS is being used. No ATC invalidation can be
-> > +	 * going on after a domain is detached.
-> > +	 */
-> > +	if (invs->has_ats) {
-> > +		read_lock(&invs->rwlock);
+On Tue, Jan 27, 2026 at 09:41:01PM +0530, Vikash Garodia wrote:
 > 
-> Shouldn't these be read_lock_irqsave for all rwlock variants here? 
-> Invalidations might happen in IRQ context as well..
+> On 1/27/2026 5:22 PM, Dmitry Baryshkov wrote:
+> > On Tue, Jan 27, 2026 at 04:56:34PM +0530, Vikash Garodia wrote:
+> > > 
+> > > On 1/26/2026 7:08 PM, Dmitry Baryshkov wrote:
+> > > > On Mon, Jan 26, 2026 at 05:55:43PM +0530, Vikash Garodia wrote:
+> > > > > Qualcomm kaanapali platform have a newer generation of video IP iris4.
+> > > > > The hardware have evolved mostly with respect to higher number of power
+> > > > > domains as well as multiple clock sources.
+> > > > > 
+> > > > > The series extends support for multiple iommu-map entries for the same
+> > > > > input id. Considering iris as a client driver, it adds the handling for
+> > > > > multiple stream ids from VPU via iommu-map.
+> > > > > 
+> > > > > This series is depend on the below series:
+> > > > > Link: https://lore.kernel.org/all/20260121055400.937856-1-vijayanand.jitta@oss.qualcomm.com/
+> > > > > 
+> > > > > Following are the compliance and functional validation reports.
+> > > > 
+> > > > Please validate with fluster too. Having a "knowingly good" command line
+> > > > is not a validation. It can't be reproduced by anybody else.
+> > > > 
+> > > 
+> > > Below is the fluster result on kaanapali (will add in cover letter in next
+> > > revision)
+> > 
+> > Nice, thanks!
+> > 
+> > > 
+> > > H264:
+> > > 77/135 while testing JVT-AVC_V1 with GStreamer-H.264-V4L2-Gst1.0.JVT-AVC_V1.
+> > 
+> > What about the extension testsuites? Even if they are not supported,
+> > they should not crash or cause the timeouts.
+> > 
+> > > - 52 test vectors failed due to interlaced clips - not supported
+> > 
+> > Yet or completely? Does "failed" mean "returned an error" or something
+> > else?
 > 
-> > +		__arm_smmu_domain_inv_range(invs, iova, size, granule, leaf);
-> > +		read_unlock(&invs->rwlock);
+> completely. Driver returns error on firmware detecting the content as
+> interlace.
 
-It was kept from the older versions where we had a trylock. Jason
-had an insight about this, mainly for less latency on invalidation
-threads.
+Ok. I was more worried about timeouts or other kinds of failures.
 
-Yet, now we have a plain locking. TBH, I can't find a good reason
-justifying this. And it does look a bit unsafe to me. So, I think
-I will just change to the _irqsave version. (Jason?)
+> 
+> > 
+> > > - 3 test vectors failed due to unsupported bitstream.
+> > > - 2 test vectors failed because SP_SLICE type - not supported by the
+> > >    hardware.
+> > > - 1 test vector failed due to unsupported profile
+> > > 
+> > > H265:
+> > >   129/147 testcases passed while testing JCT-VC-HEVC_V1 with
+> > >   GStreamer-H.265-V4L2-Gst1.0.
+> > >   The failing test case:
+> > >   - 10 testcases failed due to unsupported 10 bit format.
+> > 
+> > MAIN10? I was actually surprised, Venus driver supported them for the
+> > Iris2 hardware. Is it somethething to be fixed in future?
+> 
+> 10bit would be added in iris. We are catching up with all the codecs, 10bit
+> should be next from decoder side.
 
-Thanks
-Nicolin
+Thanks!
+
+> > > > > gst-launch-1.0 multifilesrc location=<input_file.hevc> stop-index=0 !
+> > > > > parsebin ! v4l2h265dec ! video/x-raw ! videoconvert dither=none !
+> > > > > video/x-raw,format=I420 ! filesink location=<output_file.yuv>
+> > > > > 
+> > > > > gst-launch-1.0 filesrc location=<input_file.webm> stop-index=0 !
+> > > > > parsebin ! vp9dec ! video/x-raw ! videoconvert dither=none !
+> > > > > video/x-raw,format=I420 ! filesink location=<output_file.yuv>
+> > > > > 
+> > > > > Encoders validated with below commands:
+> > > > > gst-launch-1.0 -v filesrc location=<input_file.yuv> ! rawvideoparse
+> > > > > format=nv12 width=<width> height=<height> framerate=30/1 ! v4l2h264enc
+> > > > > capture-io-mode=4 output-io-mode=4 ! filesink sync=true
+> > > > > location=<output_file.h264>
+> > > > 
+> > > > At least these should use test sinks in order to be reproducible.
+> > > 
+> > > it is using filesink in the pipeline to generate the encoded bitstream
+> > 
+> > I should have been more explicit: test sinks to generate the image.
+> > 
+> 
+> If you could suggest a gst pipeline for it, i can give it a try.
+
+gst-launch-1.0 -v videotestsrc pattern=smpte '!' video/x-raw,width=1280,height=720 '!' xvimagesink
+
+There are other patterns supported too:
+https://gstreamer.freedesktop.org/documentation/videotestsrc/index.html?gi-language=c#GstVideoTestSrcMotionType
+
+-- 
+With best wishes
+Dmitry
