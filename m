@@ -1,257 +1,175 @@
-Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com [209.85.160.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from MW6PR02CU001.outbound.protection.outlook.com (mail-westus2azon11012021.outbound.protection.outlook.com [52.101.48.21])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 165EB35D5F7
-	for <iommu@lists.linux.dev>; Tue, 27 Jan 2026 15:10:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.175
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769526616; cv=none; b=TwWgbTJJZxbbx1W+akSMPQsv6x1URaQyIGeiwDYFrKHhHNq2gt5E3HL1G3NmDHHM8TyTYpQIvJReNWTjLH/uxGcMaBxidKhrhh6rbbOJUeGC2Sl0FBToCX+7S4B88tajkMMZbdaahbZBgTP98Qk3y7y7cZT05qAQ1mkC+k4j2UU=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769526616; c=relaxed/simple;
-	bh=V2NzastbFhpzOzHM5nA+miN7xKYKTp/1Xy8T6Y+6Cv0=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=p/HNGjOTk6i4pubWWEmUcgu0HCAEzSmUUc9SMEAxl5sjV8BjF3+n5D3ojs0P32Naf5y4KN0owp11p8REHyEFkAaQ6CAztm4IFOYY/kRIULi6xbM3ECDDzpk5Y1JDiQYktvGkecFckPOeDtiIeabq7/nTLx/cYdr22/BkziuFn3k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ndufresne.ca; spf=pass smtp.mailfrom=ndufresne.ca; dkim=pass (2048-bit key) header.d=ndufresne-ca.20230601.gappssmtp.com header.i=@ndufresne-ca.20230601.gappssmtp.com header.b=eKCt8/kn; arc=none smtp.client-ip=209.85.160.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ndufresne.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ndufresne.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3B923624AE;
+	Tue, 27 Jan 2026 15:11:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.48.21
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1769526706; cv=fail; b=d8lt7H4uLxdYfPkzuNHm0mACYN9CG9hkxv5IQZ8rUJOfDRUsvho8FSnsL/IWfl+muR0UIJOIIo9gHhzLnQI4gTti1MAyxUpTFnNgwJI8A9TJRjb2d1GRk4S6QPhhQORQPoaI2Wa8BxooPGcly+UmFIPwP86UqWA3JWrvHLVS3Yc=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1769526706; c=relaxed/simple;
+	bh=KkXCB5lyVNzZg/CNMlCRkzPV7z+AoeV2MyyXgidmpMI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=C8LLwRaWT9/ArMhfrEog/hs9GdjttKncW6JETXtBdezbI/uOeUYDaaLFBbwTD5ETcE2U145ekxwgWymeG/ECnqsSOqLuv5nTpJ0d8d+NLx2+3s/PEqUdP//YQOzQsjU4OtEPgQg7zPQNWuiZ29L7as5KNq45NkK7/I1khS/Tb6w=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=WTO4LrZ0; arc=fail smtp.client-ip=52.101.48.21
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ndufresne-ca.20230601.gappssmtp.com header.i=@ndufresne-ca.20230601.gappssmtp.com header.b="eKCt8/kn"
-Received: by mail-qt1-f175.google.com with SMTP id d75a77b69052e-502b0aa36feso70103521cf.1
-        for <iommu@lists.linux.dev>; Tue, 27 Jan 2026 07:10:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ndufresne-ca.20230601.gappssmtp.com; s=20230601; t=1769526612; x=1770131412; darn=lists.linux.dev;
-        h=mime-version:user-agent:autocrypt:references:in-reply-to:date:cc:to
-         :from:subject:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=OhCrE4/omd3Aqh9ad+ieSaeycC5AgJDDUBgsMqT4cBk=;
-        b=eKCt8/kn27rjdXzV1wxLtB2CUo0sWgNxrvuS1I4yTGJU6jauKz4o91Fy3RNo2LwiA/
-         jc9Nj4OApbhSjqdF54iUowYCPzGsOkKiePdawF6FRyiAzJ3DdjcPeF6SFFmrXAB7y4cj
-         IrfZfC8roi+BSrvbTtNRIfwXbikcI7HgwoTpvZzM6excGc1DI2u7HeIDouGFobdGhr0V
-         lk1jr8RBUaIVIiLQaB3oTHjtHpahKprcImPooWgnWPYttZ8pOvhv+cSGWRJL5lLToC+P
-         FNCTqk+rDCWbwyWii+xsx/NoQsB8ulS0BkMiJqkNOpyQ0F63MvkJu4VkMNW5J9eDVK3U
-         1/HA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769526612; x=1770131412;
-        h=mime-version:user-agent:autocrypt:references:in-reply-to:date:cc:to
-         :from:subject:message-id:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=OhCrE4/omd3Aqh9ad+ieSaeycC5AgJDDUBgsMqT4cBk=;
-        b=wx/AzMbvaONBlPZLrppEhdUGZFdVG1jREL2Mh0LHDwFH9gVG6tgMLjS6b9qntANrJW
-         HMjqmLQ9c4eOQ40hKDp6Ur0k9SKIkSYVXapIWZmxMp9cEs0VmLNvg3uKaWkaMLHDcsWi
-         P7nON10X8zXASV5RFjM0U9quJ7AOnXYX0oCnGWZVvIvQFk1F44sM8uDs9LRSOp9G9tBV
-         BSSkA6/ZpGoYrvIqQKv1y+2k6ULDTVj4miiJi4tmp9N+WN4Vl6uhz2mad0d/D/8KDbnO
-         BOuleFoRXOFY1jYIOA2NVzWzcYomgYpeT5/QWE8rLsfoLmmVt7ywS9NQt8Knjm719dCM
-         9AhQ==
-X-Forwarded-Encrypted: i=1; AJvYcCW3bbjnngptvagmZkUrcWDryyaW0HkBTnCHiuujfiJGqqdVZxFF/HKAFTRfaCV40hdc25iV9g==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxyTJXg7thK/TrBfZcWaMBT7oQJIyDeZz9CljoFMVKYX56uoQNO
-	+cpNVusuoTILQm156UO8DBHTvMOc2RMO4y75Uh0BiT3IpaiHT3kt0RtGGDEDrSUmrqA=
-X-Gm-Gg: AZuq6aIm6jL6h09WVttC2OF5LAfonsYqmQmEizWrx/gV7V1qYF6hU7Vl1M4alzxb90r
-	KDWPCcLDu+gtTWtzX+sumD8TjJRigZ6KvHfNSBVYIaWdzLOf0FwqRpdjGu06rul3F5+57nlBLoa
-	Q5UbOlmc7H6wGUHcrXEPRwXXBNKlpsOOd4TAtn4AhcoVyOrf1ywj8NOY4/qjeffAAtwXQwpJoe6
-	iHn2+Vde4J5pFoEio2ufqj2yB1vbdia91X9rStz1NSnozIVYWrQLA5IBawx4POULZMVKqOLgnK+
-	rIYXL2qfppi8jwBhfXucQ+6nMqx6JlTewKmY7w+4VtNZSYSkO3Vw/0mNx+PZtT3Z8MOy6iuHCwb
-	Cd3asfid4AaP6EpSsRFl2sq4rcjQKiVIX7qAwllV2shT2Rr1ZMQQlaqGD0Z5FZ0Xl+fYmI1/w0O
-	M9bkcpyoaJ1ngn65qY
-X-Received: by 2002:a05:622a:592:b0:501:45d7:10cd with SMTP id d75a77b69052e-503301175d8mr21471091cf.20.1769526612072;
-        Tue, 27 Jan 2026 07:10:12 -0800 (PST)
-Received: from ?IPv6:2606:6d00:17:7b4b::5ac? ([2606:6d00:17:7b4b::5ac])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-89491841640sm113651406d6.17.2026.01.27.07.10.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Jan 2026 07:10:11 -0800 (PST)
-Message-ID: <df2d7dcc31c9a47752a1d58efdd7a416311e55ec.camel@ndufresne.ca>
-Subject: Re: [PATCH 0/7] media: iris: add support for kaanapali platform
-From: Nicolas Dufresne <nicolas@ndufresne.ca>
-To: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, Vikash Garodia
-	 <vikash.garodia@oss.qualcomm.com>
-Cc: Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>, Abhinav Kumar	
- <abhinav.kumar@linux.dev>, Bryan O'Donoghue <bod@kernel.org>, Mauro
- Carvalho Chehab <mchehab@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski	 <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Saravana Kannan	 <saravanak@kernel.org>, Joerg
- Roedel <joro@8bytes.org>, Will Deacon	 <will@kernel.org>, Robin Murphy
- <robin.murphy@arm.com>, Stefan Schmidt	 <stefan.schmidt@linaro.org>, Hans
- Verkuil <hverkuil@kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>,
- Vishnu Reddy <busanna.reddy@oss.qualcomm.com>, Hans Verkuil	
- <hverkuil+cisco@kernel.org>, linux-arm-msm@vger.kernel.org, 
-	linux-media@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, Bryan O'Donoghue	
- <bryan.odonoghue@linaro.org>, Charan Teja Kalla
- <charan.kalla@oss.qualcomm.com>,  Vijayanand Jitta
- <vijayanand.jitta@oss.qualcomm.com>
-Date: Tue, 27 Jan 2026 10:10:08 -0500
-In-Reply-To: <vv4stkmrrwdqmbnpv7pg5nd4immtqo5iplwbcia3oykycfmg2m@dsithotfy5ls>
-References: <20260126-kaanapali-iris-v1-0-e2646246bfc1@oss.qualcomm.com>
-	 <lpgw6eodclsvfwgvtljfiorvjkpd5vd27yhxs7i3ijfibaqzuk@bak2lwbyh77f>
-	 <2d4632b2-916a-4eda-ad08-44af68461dc8@oss.qualcomm.com>
-	 <vv4stkmrrwdqmbnpv7pg5nd4immtqo5iplwbcia3oykycfmg2m@dsithotfy5ls>
-Autocrypt: addr=nicolas@ndufresne.ca; prefer-encrypt=mutual;
- keydata=mDMEaCN2ixYJKwYBBAHaRw8BAQdAM0EHepTful3JOIzcPv6ekHOenE1u0vDG1gdHFrChD
- /e0J05pY29sYXMgRHVmcmVzbmUgPG5pY29sYXNAbmR1ZnJlc25lLmNhPoicBBMWCgBEAhsDBQsJCA
- cCAiICBhUKCQgLAgQWAgMBAh4HAheABQkJZfd1FiEE7w1SgRXEw8IaBG8S2UGUUSlgcvQFAmibrjo
- CGQEACgkQ2UGUUSlgcvQlQwD/RjpU1SZYcKG6pnfnQ8ivgtTkGDRUJ8gP3fK7+XUjRNIA/iXfhXMN
- abIWxO2oCXKf3TdD7aQ4070KO6zSxIcxgNQFtDFOaWNvbGFzIER1ZnJlc25lIDxuaWNvbGFzLmR1Z
- nJlc25lQGNvbGxhYm9yYS5jb20+iJkEExYKAEECGwMFCwkIBwICIgIGFQoJCAsCBBYCAwECHgcCF4
- AWIQTvDVKBFcTDwhoEbxLZQZRRKWBy9AUCaCyyxgUJCWX3dQAKCRDZQZRRKWBy9ARJAP96pFmLffZ
- smBUpkyVBfFAf+zq6BJt769R0al3kHvUKdgD9G7KAHuioxD2v6SX7idpIazjzx8b8rfzwTWyOQWHC
- AAS0LU5pY29sYXMgRHVmcmVzbmUgPG5pY29sYXMuZHVmcmVzbmVAZ21haWwuY29tPoiZBBMWCgBBF
- iEE7w1SgRXEw8IaBG8S2UGUUSlgcvQFAmibrGYCGwMFCQll93UFCwkIBwICIgIGFQoJCAsCBBYCAw
- ECHgcCF4AACgkQ2UGUUSlgcvRObgD/YnQjfi4+L8f4fI7p1pPMTwRTcaRdy6aqkKEmKsCArzQBAK8
- bRLv9QjuqsE6oQZra/RB4widZPvphs78H0P6NmpIJ
-Content-Type: multipart/signed; micalg="pgp-sha512";
-	protocol="application/pgp-signature"; boundary="=-fIhbK5YC4Jyx7+92/gYN"
-User-Agent: Evolution 3.58.2 (3.58.2-1.fc43) 
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="WTO4LrZ0"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=VxlWQGucge3VjctUOd01zpwJHkSR4tK1qS1R9+ERftQBxa1eDAat7SXPYQA4eZh5N21BPvMlRk3SIY2hsCRUW4sjQdXqj9zRO4T63EZfa5aglITHj4LmZtW+Ba0eJNNLWWiBSopqfM5KQB9MCxQDrL1Q5qBMJNP7eZm+e0r8TpKjhTz1wGB0wp0v4jmpEjVCCYc6zWNyra+eNAJrCf30blSxKwjHZ20/cOB9okWnQF8UOCs//oKWAGguwvjZMIr2dowHvqQoss3/39pKPr3wSRjoddF0M/NG7UeboMJP7U8PjGpFRqL1XjESkZNhwzmRWBhW84g8CaFU2xG6ZbO1oA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=TmlnnHaLajHX0f7NKrwmyjkHbW/oEAb3Wt8HZGBTR6I=;
+ b=D8yLQrFsMDKYyWJzEgcKrnGx1wxxVuK/WTAL3RTDnUYXI4Hy5e6CrewZnZ0+4qV/1dD/oFyoG7Gf1eA+yHGw7c0Fqxd8ap2nYz7p6iUyFswwSIvVpxP/Pefw0meNgbuGWbD6C09/IU1j/12TBJrapTfktCkfiZuRsZ3stID/LopworLSfUYjktDaOlzCytmZP1cmb0Cvki8or6UrSBIz2pgfNAH944qPkIfaF46r4VrtWmvLHyobbuxf7tiB/q8uuDqOdcUk57cyHgyPD65xHc7SuCRXWk7U4f0NMNtn8wPbbjWd9V+D9InVPjjPANFx2KVOXftt4t8FNZvwuQEaTw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=TmlnnHaLajHX0f7NKrwmyjkHbW/oEAb3Wt8HZGBTR6I=;
+ b=WTO4LrZ0BJ7LCAoctzrQJ0NIUgCC5uCdfuEDPZ4HuzQsPVowkg8mzyIV2LNL+dmIJiXd5uxqwa3O/bEsetqyaA8BoGE+o8/a7ezSuTukYMXGkd4fHuMDVEXbmSVFPVhoHFURj83dQp1cxOrMpgD3W7XIavbWcsn/sPaXiH+QMWPmlvsD9/z31TKWKWbsKirC3MugHkFo2jBSqPXEJUtIzu/TdB+h1DlgRo0CLa8en+7SMy3sqGv78btcb1f0CjlCrrkbwaCxNKSPEgNFc87TunqIJ9I2AgYLEP1f62RFjFlziTEqhko/Ck4DUkM8pIdFghOKkAHIUrgtgfBE337IUA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
+ by MW4PR12MB7483.namprd12.prod.outlook.com (2603:10b6:303:212::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9542.15; Tue, 27 Jan
+ 2026 15:11:40 +0000
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::1b59:c8a2:4c00:8a2c]) by LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::1b59:c8a2:4c00:8a2c%3]) with mapi id 15.20.9542.015; Tue, 27 Jan 2026
+ 15:11:40 +0000
+Date: Tue, 27 Jan 2026 11:11:38 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org, jpb@kernel.org,
+	praan@google.com, miko.lenczewski@arm.com,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, patches@lists.linux.dev
+Subject: Re: [PATCH v2 06/10] iommu/arm-smmu-v3: Allocate vmid in
+ arm_vsmmu_init
+Message-ID: <20260127151138.GI1134360@nvidia.com>
+References: <cover.1769044718.git.nicolinc@nvidia.com>
+ <3f7c5b84c4f8605688ac08fc2ea2dab08a3c5c0c.1769044718.git.nicolinc@nvidia.com>
+ <20260126211636.GB1134360@nvidia.com>
+ <aXgrsJeXB3bpFQqK@Asurada-Nvidia>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <aXgrsJeXB3bpFQqK@Asurada-Nvidia>
+X-ClientProxiedBy: MN2PR15CA0037.namprd15.prod.outlook.com
+ (2603:10b6:208:237::6) To LV8PR12MB9620.namprd12.prod.outlook.com
+ (2603:10b6:408:2a1::19)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|MW4PR12MB7483:EE_
+X-MS-Office365-Filtering-Correlation-Id: a41ed359-f416-4bc3-aafd-08de5db65f7c
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|7416014|376014|366016|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?FWu6GqDAMLL85yRN0PZWxp7pXucKgPoSHJXhBsc38gPdDnCiC32s7yj5CGWb?=
+ =?us-ascii?Q?NEwmMb4AmbTxb+t+vETBmA6Vyutd/sgeYro1k4wKVXhqf45QEkQP3O3Z1iZl?=
+ =?us-ascii?Q?3ZpxCe+EONMCYzviousJ7m6Fh2JcF7SB7FtGLC/MFZ57IUkYZjzagDk9aNur?=
+ =?us-ascii?Q?/JYiv4rMzBLmJFJDdaq3yKeWoWKaKXPIfXX7C97n7llN/abcwzn49lZG2j90?=
+ =?us-ascii?Q?aR2NU8zX7FVwHswpKhwSAJvdMi+KEg5lFFuChR0dnS4bZ7xm+zs/xxNVuqK5?=
+ =?us-ascii?Q?VdGRMfHKWxvpKCMljs7F2qzxVWZYzA7QT72b6S6ClZnrL/RsMz/sc4Ras5dO?=
+ =?us-ascii?Q?gZSrTBOlVtxl5Qyu9s9/N/sRK1YzDogdmZqEW6DYi8MVDxeuIPaHsHQmJqCS?=
+ =?us-ascii?Q?+YTIGyaQ/FnfR53TT1Wv9Awf0H4gozW794lP29AcBbq8+186IEAzPnoD+vcl?=
+ =?us-ascii?Q?clvC861bWUCAFPEHUQbsRK1yZdnyhmNC7BWd4pyNuiaXxBdUWUpOt7voW+PS?=
+ =?us-ascii?Q?laSJpGQ0ISpHttq0KmtPo+jn/In6t4iXLuFEpcj8uMOCWUYvQ7LpYPKgwnUo?=
+ =?us-ascii?Q?cVg1dTbLfdHD0h84Ncx0rOxFSGzXBF7OxemHpNUXnNNjOWTrVK8/z7NrBwSr?=
+ =?us-ascii?Q?eSTSr4awBH5cSuxaHq3hbVUNerGTCFHYgyk6XYEE0DO4Av3zq1CuXPnZh40T?=
+ =?us-ascii?Q?aPnk05AXQFqLsaojf8BUl8vq+Sbsjv4ix4z5LFzg2xU6xYrN/+YR83Xrw6Qu?=
+ =?us-ascii?Q?otfXlyQK/AmVz8YPqOwkpiLz4PpCnUF1owwRTRzyChhU54C7b6ccq6DIhpco?=
+ =?us-ascii?Q?UM/Ku6onSqGSdmeOpoch4cyytPTRbLNFlcJrgQv1ZmNcLxKrjcdioLVpztnt?=
+ =?us-ascii?Q?r0fQvJAW02Q+8WKN0jlim5k4SBJ/XqMa1TIK2EsyVcRq+t3/n7mAXkoMrzeb?=
+ =?us-ascii?Q?heKn1Ls0TbpFMdzORTcByIURwTZxgM7raD00PWjpkIR6hTxkh032k0YGkNWO?=
+ =?us-ascii?Q?Zfe7fqEfplM9H71nK/iXf1piy0ZaETjpL3WvUt1YEkVAYz2U8rbs7auAsIWV?=
+ =?us-ascii?Q?VBNFLBCF3LzViEUEdHNAac+eVJ7UfwWNk9yaD03+fHNSwwpyF6a5ww/d7WJC?=
+ =?us-ascii?Q?xTCKfIQjEU4Q7sFHfTT0sGwdwyR8wNpHFXX8nnJ+a0NAcifrzv88aQhUkJiS?=
+ =?us-ascii?Q?yej5TVMXwQld0keENdlVNoE5VGve1y1/OqLmkwc33SLpfUl08toRebo8FlYR?=
+ =?us-ascii?Q?CqrNdRgS5eA2Njuki6QV9C0zXbmLQmwysYj77DWhxQas2kEFI8eygIziEO/g?=
+ =?us-ascii?Q?HKEvGcy/H9klxdWPEPtrawZhbdRdFLv3iYW5gJomDJBhjYPsYf5gNQP//eiv?=
+ =?us-ascii?Q?XXLgBJ8Rrot2nGmZIARHGF7AKq12SuYsBjpDSZpruSMJ0PiqzEufkTMBdl/O?=
+ =?us-ascii?Q?cz6VCI9DCN70WdR8QTQob9hwlFxLwu4hAtkfFBSZS6+9J+dRzrO/L9YIUkS3?=
+ =?us-ascii?Q?b2cm2w7Q1zGTeQtwKgnBtC8JJshUlR0siWcP/nuNagw3uCMR7AjZhKVP3gcN?=
+ =?us-ascii?Q?k+TOroyaRHT1I3OLCz0=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(366016)(1800799024);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?1wYbjATIKkOPlIVA+glMZbTEcJeH0vzBc9UFydUfo4vYCbyA3uIr80TvELES?=
+ =?us-ascii?Q?GRNIQWDdDLC+74nEmr12uUQpU4BW3hCBxz+iIzpEQ+/Vhc7L6A6WeAZqWr8r?=
+ =?us-ascii?Q?bTR2rpZf/tNgAvMMGXXhXdA+4LDhGEPLz8B7RDbCzuk3gbP/Wy+x7XvDvjhG?=
+ =?us-ascii?Q?RhPP5c22f3tDrLpH6kASPyvIZcWTESNDIAc6s13T4dvIRspyMU9kO0swbv4/?=
+ =?us-ascii?Q?FgYA+K3K1s6Hx30KuIQc61M3W7jDdNcyBrNuAuNXHrt9Xa4ccvSD4wzxoRBi?=
+ =?us-ascii?Q?UT9XJqPD3r1d/kx2jjef1B8alOKMTdXxrssAmNGvopaRxEABpeotzm2sXPI0?=
+ =?us-ascii?Q?hpxZ1GK3HyPSSwLLYnk+ycBHw0ZGis3YSl19YZz8rkIOu4vVaCPzj00zuiYS?=
+ =?us-ascii?Q?KVzkYbY8QmBblNLs+w0w5lYO8rdSFRR6hjegDe/IipjMVjNp5WmslyCw4EgS?=
+ =?us-ascii?Q?Dmnp0IuHyCCFGvZk4WusDRC/pPCwdZOa6siPfsEpVJolNgimdYT3NLwGh/Cu?=
+ =?us-ascii?Q?14y00fto1+5IMyZe9dx3Xqr5pogUKvY/78nLxr19wosuLubwrqtLybaMdIoP?=
+ =?us-ascii?Q?54B2oFsqkaTfijIqDxbhsMjO3ijI1ibR5ZwERZC6mblnvq/NY3LUbs0ARk5y?=
+ =?us-ascii?Q?dFPObOVUhbluqimwlgRNwULaG+uSTWME7i5WuIs89gqhxrA9xJnHhKDf3sD/?=
+ =?us-ascii?Q?NZZRnoQOt414VFeNFkkiQxEi/6r8e2P+UApFlHr+pIxNSA9R5m6WxQNaC26V?=
+ =?us-ascii?Q?xYoU233VqP4XYBBYcK+yl7uL2Zy6u7zoXh8ei5/CuegRnzSEIrWTAZRAJ+uR?=
+ =?us-ascii?Q?kYxiw0zd5lRop8NFwX21b3Rqbj9HqYpQFzKySLD7nwmnrcCtYQOZU9aCy6EW?=
+ =?us-ascii?Q?Xxkz8YIDb4awaTI9zGRXCjTYfqcD8dg/+YqACyiOCA9Q4IOpCGSVlVI9+8jN?=
+ =?us-ascii?Q?esK9ooq+Up8DO8Bo+LINUm2fxiPGEbd7UeXylWGiXKDoeJI1S9sEj2XDKtbI?=
+ =?us-ascii?Q?kSyc4LhTK/GZ4F1rHxZ/iEhc9TEIa+JAEjdpeWvnPt+dkw3cp+8dNrXvgkOZ?=
+ =?us-ascii?Q?FzS549Qim7gIhyy2XWS96Wv3n3BoT/gpB1yMneVEAYZe+JpOKNYSy5pOW5q+?=
+ =?us-ascii?Q?eSXKV0N1Pv9X++GaTTNr6u/gvRkjzFK2hNNrp6eRKybZUi8sNau+q5blivCp?=
+ =?us-ascii?Q?46jQzDH1Ger1N7PMqHhOijHO3qrkMrBwhk8R8RwXEmm0DuF636gcwn4q2XfZ?=
+ =?us-ascii?Q?/RkSVRtNh4PMB0sgJbY8zYp3OWlaBQByGQgDzCNJhlwjx5MvSf206W5wKq5Y?=
+ =?us-ascii?Q?4PG/CDwK/FLwWRIGcS2bz8wci8EV5honwfEtK+VEUKGKq6HiCp5XgxaL1o/z?=
+ =?us-ascii?Q?ahqHX5x0gpW7gVxNW5X67kutVTLXsL+aM/NPxgzfiDU0uNOUvI2qd4S54l4C?=
+ =?us-ascii?Q?R4BSfaYDKb91C6arVkUUKNuLgLiViHcnUdshe2H4WwMvgm0q+m7nbZTJqKbz?=
+ =?us-ascii?Q?sztS5GNywovspzSrZzrN6i+fTLwoy9vLTuagZaWTDnU+vUskpT6VwPenAa+g?=
+ =?us-ascii?Q?0anM93kuVhcQG8lqM1Ai7r0GgJjvdF2X1+2lw9xKZTAfiIn/01kMA9YXxYJr?=
+ =?us-ascii?Q?mBfOQT+ONZHmCAHHK2WMCH/toyQaunf8qg5mtSubKG9xAYrEVfVRdB/0AHRK?=
+ =?us-ascii?Q?W5OMj7SYKPn8a3LEEIkIGGv4ftfC8k/MruMTMgh6G4fDevc1/jqkIHwBv2p8?=
+ =?us-ascii?Q?urcIEg/bMg=3D=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a41ed359-f416-4bc3-aafd-08de5db65f7c
+X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jan 2026 15:11:40.2749
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: tOFiDwkOfP0rO6XnlWVcFJPcT5kvf420a/MjCeBIrJrlnJepJ/W3/+iYDLW7+J3Y
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB7483
 
+On Mon, Jan 26, 2026 at 07:06:24PM -0800, Nicolin Chen wrote:
+> On Mon, Jan 26, 2026 at 05:16:36PM -0400, Jason Gunthorpe wrote:
+> > On Wed, Jan 21, 2026 at 05:24:24PM -0800, Nicolin Chen wrote:
+> > > VMID owned by a vSMMU should be allocated in the viommu_init callback, as
+> > > HW like tegra241-cmdqv needs to setup VINTF with the VMID.
+> > 
+> > Even the architected SMMU needs this, the VMS (not implemented in
+> > Linux) should all share the same VMID for the same VM.
+> 
+> But for standard SMMU, the allocation/sharing could happen at the
+> device attachment to a nested (maybe bypass proxy) domain, right?
+> 
+> vmid is only needed for STE (attach) and invalidation.
+> 
+> Or do you see some other case where vmid must be allocated during
+> viommu_init?
 
---=-fIhbK5YC4Jyx7+92/gYN
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+It has to be tied to the VSMMU, it doesn't matter if a single VMID is
+allocated on-demand for the VSMMU or for the lifetime, it has to be a
+single ID and shared across all STEs.
 
-Hi,
+It is easy to understand that lifecycle by just allocating it for the
+lifetime of the VSMMU..
 
-Le mardi 27 janvier 2026 =C3=A0 13:52 +0200, Dmitry Baryshkov a =C3=A9crit=
-=C2=A0:
-> On Tue, Jan 27, 2026 at 04:56:34PM +0530, Vikash Garodia wrote:
->=20
-
-[..]
-
->=20
-> > =C2=A0- 4 testcase failed due to unsupported resolution
->=20
-> Can it be fixed?
-
-Its nicer if you name the failing tests vectors. I can guess this is
-PICSIZE_{A,B,C,D}_Bossen_1 by experience, but not everyone will guess. HEVC
-level impose a limit on bandwidth, not on resolution. These files are eithe=
-r
-very large and small height or the opposite. One of these is just 4K in por=
-trait
-mode (that is more concerning). Though, there is a V4L2 limitation for this
-aspect, since we advertise the resolutions by range. Most hardware is desig=
-ned
-to support 4096x4096, in that casse that's what you should expose as limits=
-.
-
-Though, some hardware do have dynamic sizing capabilities (like RKVDEC HEVC=
-), in
-this case there is not much you can do, you have to find the right trade of=
-. But
-since you expose LEVELs, I think its fine to overshoot a little. Both
-constraints should ensure it works with valid streams.
-
->=20
-> > =C2=A0- 2 testcase failed due to CRC mismatch
-
-These are clear example of "no one can guess".
-
->=20
-> Which means an error in the testsuite or somewhere on our side?
-
-The testsuite fully pass if you run using Franhofer reference decoder. This=
- is
-logical since the MD5 has been generated with it.
-
->=20
-> > =C2=A0- 2 test fails due to session error (under debug)
-> > =C2=A0=C2=A0 - PICSIZE_C_Bossen_1
-
-Hmm, see, I have no idea which fourth one could fail due to resolution, and=
- that
-forth one is likely a bug on your side.
-
-> > =C2=A0=C2=A0 - WPP_E_ericsson_MAIN_2
-> >=20
-> > VP9:
-> > 235/305 testcases passed while testing VP9-TEST-VECTORS with
-> > =C2=A0GStreamer-VP9-V4L2-Gst1.0.
-> > =C2=A0The failing test case:
-> > =C2=A0- 64 testcases failed due to unsupported resolution
->=20
-> Can it be fixed?
-
-Check if you aren't mixing up constraints between display, coded and alloca=
-ted
-resolutions. On most hardware, all 3 can differ. The OUTPUT queue should ei=
-ther
-not care at all, or use it to allow optimistic pre-allocation. But check th=
-at
-the low resolution constraints is not coming from the OUTPUT queue software=
-.
-
-VP9 coded resolution, it always at least 64x64.
-
->=20
-> > =C2=A0- 2 testcases failed due to unsupported format
->=20
-> Hmm?
-
-Clarify please, I suppose these are YUV444 (aka professional profiles).
-
->=20
-> > =C2=A0- 1 testcase failed with CRC mismatch (fails with ref decoder as =
-well)
->=20
-> Could you please raise an issue against fluster?
-
-Check your setup, it fully pass with reference here. The MD5 has been gener=
-ated
-using the reference.
-
-  ./fluster.py run -d libvpx-VP9 -ts  VP9-TEST-VECTORS
-
-It also fully pass with the GStreamer wrapper, though it had been fixed in
-recent GStreamer versions (I'm testing with 1.26.10).
-
->=20
-> > =C2=A0- 2 testcase failed due to unsupported resolution after sequence =
-change
->=20
-> Can it be fixed?
-
-This one can't be fixed without adding an extension to the V4L2 Stateful De=
-coder
-spec, like we did for the stateless decoder spec. In order to handle inter-=
-frame
-resolution changes (a resolution change on a non-keyframe), you have to not=
-ify
-userspace with the new resolution, give it a way to read back this solution=
-,
-have CREATE_BUFS() support to allow allocating for that new resolution with=
-out
-going through streamoff (to avoid looking reference data), and finally, a w=
-ay to
-remove buffers that are now too small (or too big if userspace wants to red=
-uce
-the amount of RAM used) through the new DELETE_BUFS ioctl. You also have to
-track in your driver the reference buffer resolution/stride.
-
-This is non-trivial with the existing stateful state-machine. You have to m=
-ake
-sure userspace won't be confused between normal DRC and inter-frame DRC (dy=
-namic
-resolution changes).
-
-
-[...]
-
-regards,
-Nicolas
-
---=-fIhbK5YC4Jyx7+92/gYN
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQTvDVKBFcTDwhoEbxLZQZRRKWBy9AUCaXjVUQAKCRDZQZRRKWBy
-9K0kAQD0MAxPQbBuvjXyEOQ54AGTdA6LiPXI/V2NXsiuOOyzsQEA0zSjwWpUUgI8
-OAbqxNRQbDIJW1n1zkHysWn/LRy5NQI=
-=TSG9
------END PGP SIGNATURE-----
-
---=-fIhbK5YC4Jyx7+92/gYN--
+Jason
