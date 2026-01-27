@@ -1,200 +1,265 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D3B9244692
-	for <iommu@lists.linux.dev>; Tue, 27 Jan 2026 04:15:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769487312; cv=none; b=Fa1bw2ORvV/xlT/TVNTC6U6RfMB+0MacIzt4yR8PZiK3PONxVbEqbmyLe7jo7QhwvCssAIcR8KMApfwaZugEJHti7kfLgRz8KdOjBRvYqidggzfQey4VqD+D3GEdh1D6H4+A0gsZLs4I+DhR07OtxoW19ZPgVavwxxewWYk7Hyg=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769487312; c=relaxed/simple;
-	bh=xDoav1BfW2wI8Iv+YupRqR17ieEF5LHWM/T4d5wyYmI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=IWhDovgTTxoYHJdO31kkWTFJzhBPV3aeTpGnvO5ADd7H2vMd19FDg1atSZOUIfnxDPmxdnm7tkesqVQ/bl0S4zUyxo/7+IWfqCH1nAeUVDA9C/dEu2HbjlKb9zYNkZTJpj1e6dcnrWZ9gOaUeK6iQ1Ptmljc9WhrpFDDr8ozGbs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=D9C3sVbt; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=RfLIr7nu; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 025374F881;
+	Tue, 27 Jan 2026 07:33:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.17
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1769499213; cv=fail; b=QW/UMNylqeDkarEfKpmEaidUnyv4/i77hMsB5bEb5vY+DDsKtffhAsflZUfDjybur91tT/0z/ZUwCZFIBQ6S/yt4/jkV2aQd/8/OWzwH0LlrJcBnGRhPT7ihA0hNioc/cs3A7DNiEVaA85ZATZYbM8xc4u8+OIXDBaJkl2ylWJo=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1769499213; c=relaxed/simple;
+	bh=F4HgHPEr7WmKMM4n33jUH2Iw/S4BdIGcRhZQZBXMkh0=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=QatGF0U86FKtuf+V9oMAz6X2aZ9ayOtMYjvvm79fB8ZM6botJcrZZWRTzzd8Pu8/An6SVZ7RGoSoQo1BWNKwWHFqCwxjnZEvle644+QDN0ibrstLm7vYAxoJgvm2xoISjTZR3WJ8abs4jJvJO87xjvsPVMN0UPm+5DaoS4YiFIs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=fyV1QILL; arc=fail smtp.client-ip=192.198.163.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="D9C3sVbt";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="RfLIr7nu"
-Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 60QKgKe83912708
-	for <iommu@lists.linux.dev>; Tue, 27 Jan 2026 04:15:10 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	yR3aK7XyKr62djQaHFknCTq+ksn7q374+TYHBAPMHvs=; b=D9C3sVbtyvzpfTpv
-	v4PR7w/M2VJsuPUqxwbgtTnhbREm2J3m5t9umuRiBRCttObko820HzQkhya8qgID
-	/HGeaenw8wGG3dKjCSgg7xVOXJqKwr+3tFz89FSEh65oUYgral2B1/k3CmDVPwbi
-	1egLMCiXPQpmb3bpUXsJc1lTBov5aSPIskNVPCuWPvYendTLpUMjnOJezaq4FHKw
-	9pHYvQJwcL8blqxKnz3gGnKBZ83opsHpTaodD+Eiqf51UvIv54htxic6/cYRjmm5
-	GpNGrrYw1U0QMhlrE2DArNfmrgOrrz1vd6L+CaPPZydxzcP/f0ILhtTMcZ2wV+fl
-	ZPmlDg==
-Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com [209.85.216.71])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4bxew3s6cf-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Tue, 27 Jan 2026 04:15:10 +0000 (GMT)
-Received: by mail-pj1-f71.google.com with SMTP id 98e67ed59e1d1-352e6fcd72dso8167681a91.3
-        for <iommu@lists.linux.dev>; Mon, 26 Jan 2026 20:15:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1769487309; x=1770092109; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=yR3aK7XyKr62djQaHFknCTq+ksn7q374+TYHBAPMHvs=;
-        b=RfLIr7nuK7u6yKNvXYQwiJrFQrwQEUyX3NhjN5h2RJmT5BG5EvW7dZfr4U2sqnQtsa
-         y2Wf7Wg8mjZw5PoTrIzi2JOmhRy0Of7ipzKvBFax4J2e7h8L/tOhaVBBrNM8EPO+FawY
-         PJ8uLePfzboaAjhXiY68qPWVegHwYBQUgMup7TgBVz2vniMacTxTQL/i/qiTb6wuv3N7
-         kRIGIwQcJOuZw1n4lZHH5UCOaowxR+iSA1qjZVf6zBKL+1Bo5LBqV3nMzmv9MZLAFvZ0
-         5vqfD4lai1VAMWfPWIBf9Axq2mz8R1C4Pj47eNv72hIVqL3cSIN9LT9XDTzxTMvJUjzC
-         U26Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769487309; x=1770092109;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=yR3aK7XyKr62djQaHFknCTq+ksn7q374+TYHBAPMHvs=;
-        b=wSTAwfj55tR3N4clwiNcE0XrHjlFO0sq10/J9byUNIukFE6/+pAiufVp+7pT4VGSgT
-         EVuqzWSFXZQd2uK/Y/yM+ZDr+WyT9S6cw0IvW/O5Iu2YKfLhfdPvEm+JpwWUVM6CRkAU
-         AK8+5bxCCQPl8sg6gYXqdifQBk6IgJJEXLIAlBNlEx+9eKz5ZWOODNaIRvwVh29zgPfk
-         rQ5qWBBoTfn8AcGTmUjyXLcVHCf1bu+AVSr47BvmhZG+1BAmc0GR53enTYWCLxR2NlKD
-         bXBk2ZCqDRKmadnn1qENiU+2scmNKhSO8wa1Bf31ktauTzBmXMB64coPS6MB0V35+Q3p
-         wQPg==
-X-Forwarded-Encrypted: i=1; AJvYcCVrhNdaHa0xoKg0H+JwFJLuwvqEaMvDoD/LyMuKfl69Wn4mjwHRub0S3/476LoIopXdsrV7ZQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yzmehv+MciK+kNPrW9BS3Cpzmxp8h33Ft40UkfQpYVcexOZqsF2
-	QZ3W7mGJc7f4YYwJNcs+pOwJmb6RgT1SxzwncUnWrfJPY9qXfpt6JtCstlPYIhej5Ixl56LiXSO
-	1M4WD5aqqjNWNeH/w4lXNF6K37+T7DzQlE1LET0rF7Yu4ZPlgrfleZ0asqQ==
-X-Gm-Gg: AZuq6aJ9siB//tpIStnI/Wpo0jh6uEvyYMgE47X/Fetqbtb/4TM1aVSo8UNP2Onts58
-	jdogSR8eok3N9NmCeGFNvWmZosVZ5hRnHuCsBRm1dzL0PvRin2y6cSTaGtM/M5t1Gxm9vJISBt+
-	rAK3uEhjnmIVF4JuGClFzhEa//Gbq3bvylUCRfKr05v919AFFwjUAf9mxCAsrqRFlpHq0gmSwSh
-	+DNYnaG83yHZFbN1E/Dl9X4RRx9HmYX3LXg5/viAXuQ/sgrI+CFDo2St50ch8A8Nh1mcA0A9fgw
-	Ulty0ZSGkU6U7CgzI2uxjiw4fz1HvctAr42UZ70A9DWlK5gGuqmvAFsiwpRzFKxrALxe7MO1rGF
-	zyN8AQX0UhpDQ4tkTvszqQANhxt+u96NaIMj+HupRNVwM
-X-Received: by 2002:a17:90b:50:b0:352:fa96:5137 with SMTP id 98e67ed59e1d1-353fed5cb28mr515809a91.21.1769487309459;
-        Mon, 26 Jan 2026 20:15:09 -0800 (PST)
-X-Received: by 2002:a17:90b:50:b0:352:fa96:5137 with SMTP id 98e67ed59e1d1-353fed5cb28mr515792a91.21.1769487308971;
-        Mon, 26 Jan 2026 20:15:08 -0800 (PST)
-Received: from [10.219.57.109] ([202.46.23.19])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-353f612917csm931826a91.8.2026.01.26.20.15.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 26 Jan 2026 20:15:08 -0800 (PST)
-Message-ID: <def02695-0c39-4a65-859d-17ddaece7d6f@oss.qualcomm.com>
-Date: Tue, 27 Jan 2026 09:45:00 +0530
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="fyV1QILL"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1769499211; x=1801035211;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=F4HgHPEr7WmKMM4n33jUH2Iw/S4BdIGcRhZQZBXMkh0=;
+  b=fyV1QILLEkURtXHN/lCHbM6qkl2XYtvjNwX1eg43kT7/XEKSVpuTX4Mg
+   TSKBhOSNcX4LVEIbKcmkoilTHBNfejEZbKGToo2EICvysaIy2LHjgfR5m
+   a4S5y0NRepDF9C17c5VggsLV1OJCjnc3WReWfzCvUsCdxPYzafKeGLiUj
+   sAH4EQGscEBnltRFNLItE2f8e5koGxpFXEOL4tLDKqfCZ2rT/ujqKMT/o
+   c6kexNewYwtWIloNPrMky+idXUqi5pVH+VaupXgv07a6EQFOrm6b/dTz3
+   590i7xSOIh4s0v1dVs0eR1MQbgokPEctrjafqvVhBkWCOLFslPzrB7j/Z
+   w==;
+X-CSE-ConnectionGUID: 7l8njWJoTtGDd7SSXzkNSQ==
+X-CSE-MsgGUID: KGQsOAhCSnyvQjcAZrZezQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11683"; a="70588616"
+X-IronPort-AV: E=Sophos;i="6.21,256,1763452800"; 
+   d="scan'208";a="70588616"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2026 23:33:20 -0800
+X-CSE-ConnectionGUID: 5IRkAcHoSzW1J1/awrQC6w==
+X-CSE-MsgGUID: t0/wqkEnT+KNdXoRhDfKZw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,256,1763452800"; 
+   d="scan'208";a="245511533"
+Received: from fmsmsx901.amr.corp.intel.com ([10.18.126.90])
+  by orviesa001.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2026 23:33:13 -0800
+Received: from FMSMSX901.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx901.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.35; Mon, 26 Jan 2026 23:33:12 -0800
+Received: from fmsedg903.ED.cps.intel.com (10.1.192.145) by
+ FMSMSX901.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.35 via Frontend Transport; Mon, 26 Jan 2026 23:33:12 -0800
+Received: from CH1PR05CU001.outbound.protection.outlook.com (52.101.193.62) by
+ edgegateway.intel.com (192.55.55.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.35; Mon, 26 Jan 2026 23:33:12 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=dh664GuRx1NnPxYup2VHlkWVMmPfHk7aFW+PblhwDl2xXQ9bW25DzM6Lqk/NQNHJh+fWwOuFUO/B9GUgdTrVNSuvQIBcfchdY65zJ7Z5N2EvNDXOwbGesjnOLT2o6MAbV6f311GZXQpcdlO6SIPkDYJCfoXNiIZYJLbyQocAyfBV7tstmQVrYCpAO10dDIZaxKtrjv7SWSPRkirWJxJiCXLU+e8cG+eU4bMjftsvQrRKSzCQz18Oa8/tff6NqcpEhbnpRpY/g1L7Ra02neYR+OAS2hTEPFtMuNDI9fv/06FBxUyiiuVNdtuu+wbImCWOUlCyNEz+aXehkoNcM3kyjA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=jZ8GMWRQEdZ0BcrUy/x79g6f3QPA6kH8xsALh/5L4+c=;
+ b=odRWMEJhLt1nd/ZmNXE2UDFR56kfQaQCuhazITcIkPy6aUTrQMOz9/7J1/pwmXKJ1e2x+7AdSk1T2QM5Ml7OHO37IKVmFwN6aeIWq0u2XhMrMDO5IwN+AVa5PwdB9gEHIlZlj6HCfScmfVSYuTlarE1Qjd+R4Gf77KeZww6CfZDyNMue067OwfNtB7/pmCrrFKpaAKd1HjZIIVbh5PxW+ycIY0OqJcx2SDWhQyVoptobhA4v2p9WPJ2pfFJjYYcrWv+dhPB48dr6yDBIbxJwKiD9IyEpWMIogRx+Pquygtt4C0Kk3wokyE1UUrbgAPc38MaAlv4mUjmHR7OvsHDWWQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by SJ2PR11MB7473.namprd11.prod.outlook.com (2603:10b6:a03:4d2::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9542.16; Tue, 27 Jan
+ 2026 07:33:04 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::f997:762f:f079:134f]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::f997:762f:f079:134f%5]) with mapi id 15.20.9542.010; Tue, 27 Jan 2026
+ 07:33:03 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: "iommu@lists.linux.dev" <iommu@lists.linux.dev>, Joerg Roedel
+	<joro@8bytes.org>, "Brost, Matthew" <matthew.brost@intel.com>, Robin Murphy
+	<robin.murphy@arm.com>, Will Deacon <will@kernel.org>, "Dugast, Francois"
+	<francois.dugast@intel.com>, Joerg Roedel <joerg.roedel@amd.com>,
+	"patches@lists.linux.dev" <patches@lists.linux.dev>
+Subject: RE: [PATCH rc] iommupt: Only cache flush memory changed by unmap
+Thread-Topic: [PATCH rc] iommupt: Only cache flush memory changed by unmap
+Thread-Index: AQHcjXSSUrfgiyXzp0aDYIe7CuoQ4LVkD5fAgABxlYCAASHO8A==
+Date: Tue, 27 Jan 2026 07:33:03 +0000
+Message-ID: <BN9PR11MB5276CAE7540825644463250C8C90A@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <0-v1-21ee371752fc+4c-iommupt_unmap_cflush_jgg@nvidia.com>
+ <BN9PR11MB527689AC9554360C2339E7598C93A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20260126141411.GJ1134360@nvidia.com>
+In-Reply-To: <20260126141411.GJ1134360@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|SJ2PR11MB7473:EE_
+x-ms-office365-filtering-correlation-id: 501ae9e1-3020-48b0-9dae-08de5d764e94
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;ARA:13230040|1800799024|376014|366016|38070700021;
+x-microsoft-antispam-message-info: =?us-ascii?Q?qfwcyez5obVClySmcN1d5RRVSjm57XdoiCSZKVjA7O6Bj6VhzCgxI5PPqFnp?=
+ =?us-ascii?Q?KKX3NZMnrnByidoYTF7CQwKmEFf6mceqQ0L+f7DItqLRYNVPB7C8IPMkJQGs?=
+ =?us-ascii?Q?LISel/NoYRvznV/x160BGui6ZRb/SHtdbnT7BSss40mumUoRCpM/k/7BkRm/?=
+ =?us-ascii?Q?vdcChaaw+N3hTUQsfs/oqVqxMRRRIm03n8sxnq2WAdPKBJWc5O+v3eVZlqZt?=
+ =?us-ascii?Q?J4EpwGYyyHl9R64hLJlNix74ErlKTMOrOtTi7InmUuXK8K8ETmNUDhzEdiH/?=
+ =?us-ascii?Q?dTFxMfWyBRIov2v3B8PmFAYiCRUv3rnPNtIILo5TdOHA8tWbYKfLJrLWj2FF?=
+ =?us-ascii?Q?0nd1drTXO+rrDWB19gR/IEpEO6JKSrMpN7yRLQWen4vKlbKSmY32yxruxE2+?=
+ =?us-ascii?Q?OZ7yxlR48KtuYRWcU/4Ch8XbdUzfFqaeylecawiHvI9wbZbpbng4EYL9bIFz?=
+ =?us-ascii?Q?lj2aGtZgY8NeBi+TEoKBCtxQwOMQw1DUqFu6mzETZgy7mjn0LLrJ368R6iYz?=
+ =?us-ascii?Q?mZ+54tQ46ZogoZFfKIHSZSpsy84iOE3EvL8uiBe0FmOmohAsulKjYpFW4ia+?=
+ =?us-ascii?Q?R8XtzUUuR0KvgsbGXohthIdaQ1MMg1wdO1Sb4GNBANEUZwb3PsZJJni7K/KK?=
+ =?us-ascii?Q?iX9MIWcWpBnz2NWqYGwmgJvcTq5SV5lwGpKLBA24y2F/dA2eyH6lzxUg0uz3?=
+ =?us-ascii?Q?6Bdf1QwlKExWC0ZEtapNIBQSyk2RDEvtttViCZUWdR4gjgFQY1MVvFJmRImw?=
+ =?us-ascii?Q?cV15s1sAlnY21dLUlWPwRNlpfJQiUbk0DKcS0NK0lv4TitfMjp4Yn8Ueq7jG?=
+ =?us-ascii?Q?a9O16Q2MzbvqEmV+Hqd9XGIXeQmlxF1v850P3sk/9kkdG6sUvxlJspGPzrHY?=
+ =?us-ascii?Q?wUzcLaWKSCPUpYHplUIrg5Q1Ks/qAlSkxrbgXmaysUweq5BBBL/XQeRP0B0K?=
+ =?us-ascii?Q?rWk60sI0IeBB1EjLWllW4+ji/xCKqXi4iqo95FHpkJQWbzsg+nO4dFZO/Fds?=
+ =?us-ascii?Q?42A0Yw59v+QRH67BY75FHgRRr4kddS0eb7R+gaWlPQjHOS//h/fjsPj+b0im?=
+ =?us-ascii?Q?MpZljajzD02aNgJqvGKiOUF9Ng2xfsorJUG4tzui6LreLoluchtnZJ8URGiG?=
+ =?us-ascii?Q?iCossl9eQzndDT/wrbQXZj7kXKj1Rod41gPXps6E23i8GV1fqPYe3oGm6cwO?=
+ =?us-ascii?Q?pvFKZXMrJDSYWxPluJWzS7Pl9sBb7FMCnCIx7rhihbXqd5qLE+fQ8wzZUgQI?=
+ =?us-ascii?Q?exuReO7Z0d/l2vfIeG9UsSymovdJ6/qoHIYwGhOeJTvFk/qisfWcaVIpUNS3?=
+ =?us-ascii?Q?HKF6ymLIRnQ/L+WvlqJtyO6aT4ZWWtPSRVvD6fy/6Umfar+cLSk+oJGDBUjy?=
+ =?us-ascii?Q?mpdVIr0+WNYb+EQsMSvvg8D/EUay7jEWTFSXSTnfk0ONbiMmzypNOfy7AmJy?=
+ =?us-ascii?Q?7H326srytVLgJk+HbgoqzW9ygfiqMlsy8LuO0+cHhW9xi+1f6ssIMNVvijTj?=
+ =?us-ascii?Q?2+IWnpZZLws+gduWzUA1iIMYAjZoycoDzL9QNpmQE5WqS8DVjoTAN5dHLT+p?=
+ =?us-ascii?Q?ICVQ6boxxqGbETlHBTLtU6VP2IK29F1IzDsB2P5qyqHGvJFK/U31TkffrH9r?=
+ =?us-ascii?Q?NA=3D=3D?=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016)(38070700021);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?xx+X3nAG/XwMiNpHjpS/utHiS7idvzSu/dlH4VGHaXXZug5rGs53IA6XYt5B?=
+ =?us-ascii?Q?O1bakexeILt4fPNeilfgVQA8HaduhUKl80qEnmZxhOtMFNqwhVJ0Y1fmw9a4?=
+ =?us-ascii?Q?WnrSBzFCuHvxsPQgb2HU3DU1V8PqpzPIdMXyEMqs41sTX4kvzJzd7/z8WcmU?=
+ =?us-ascii?Q?VN+ZGmYZsfo3k5r92L6p1Wm44L9oXz+LvlIRpn4+oaxkSe9iI4hvMXx1fuPc?=
+ =?us-ascii?Q?NhyciR8CuWzjPq3uQBpVO5S6ksT+UYKAK1TZGRvMcWDA8YXIwbO+7N00IPwE?=
+ =?us-ascii?Q?1e1FLu36cUKx7OSLBf+/XoIWOw8X+BN2ChAIt0//w2vtnghzLxueq+4vkisu?=
+ =?us-ascii?Q?WA1BI08zXd5dRIISAuYJETEepvAMjTLExECN+SaeKbeDlo2VggLz012FoWKG?=
+ =?us-ascii?Q?jphtw1rvnAR9WU6qtKQj8w5l6GBqO1oHBFT+fsKhTR15piAwwadpnTQM/qi0?=
+ =?us-ascii?Q?ssuC300L2PWSn/SMFp16Gk2e+9Jfpbcgc3JZfWAJ9BoWZx2c4U4dJmsDyYfT?=
+ =?us-ascii?Q?Fbcna+jgeARAZQ2+s6ajlnl/6HzCA+fpUdl6x+RjTsgXpHi7xX+5CMYeLJWs?=
+ =?us-ascii?Q?LUqnXQiCBdwZk9OA/pc/yqZ6lJghi9gtVsQ09qNjMsZOfLoXuGGjKVZIHKU4?=
+ =?us-ascii?Q?hqPzo0njvAhNlrTlToNVZLRzftdXohfz31hc36WM1xhG9BoJUTCFNSK9vJ9b?=
+ =?us-ascii?Q?sTZO6McQ09UpvKX/ep2fHE7nw099JASC2rb7e9MZ4WjbMtBaS6zsXEP5km69?=
+ =?us-ascii?Q?JAsMupo1agJ/oZ8ecd6Sa1NfJ3l1MFv736I8zo99If2gGqSF3DSqBBhAqlnN?=
+ =?us-ascii?Q?vXCDevHMFFKPZZfdm4clD9Yg5oJeVivHUyMJquH88QCkI3k353KvETorpj4A?=
+ =?us-ascii?Q?ArzsQMXPhkVVDOAxTupL9MPi+VYQsH1bUm5Q6Ag9rR92o2bxwy+L/B5zfgLi?=
+ =?us-ascii?Q?xUvUEB1faM3AXtTSbiTeZTR8PLZRasJStI4kKCChYkrD2xTzUpU0BDqsgdhn?=
+ =?us-ascii?Q?7QkPVxfRBKEc9HKwxdoizmEUquobdD2cKEBa/bFFjm2fe3/sW+wzht5snl3h?=
+ =?us-ascii?Q?5Ej5V7wCrAl7AKTP+jytySH2kkB2dmH3yKND4boAjzArKicnF6saelYj+z+O?=
+ =?us-ascii?Q?7lnfGc7PSy3EP4yq/6keuSGDrAEbRKlIFe0RIilElchCneBeZnwIFwxUOlPh?=
+ =?us-ascii?Q?IUogr5vcP6sEaOr7WhdVENDPj3Yny9UYcVKi13wE+OolYKq4bDF8l08NzwR9?=
+ =?us-ascii?Q?PXW9VC+SfGPVxCNNDz8Y7+Q+FtzYyM48EfNCy5rkDLzS6YmFFG4xnSyhs37z?=
+ =?us-ascii?Q?HDQ8rebstpg22Eax1fAHMr900UkSXNNfoZ57pQmLAZC5shAn9/jk6xdyKjHH?=
+ =?us-ascii?Q?M5TuEyfKaMglhlFKVNPdAA6mctQdfQ1OeZUIiWYgueoh4x3PZR844S13mWlV?=
+ =?us-ascii?Q?JAVQr296QpNxfP7lAdvxNbMvBz0S0Udqerq+8bEGsMvAd3Bj5xqAg6psebdS?=
+ =?us-ascii?Q?J6xMkAxyeXVWnTjmS5RYe5XWAORV/2g6mvM+CZkZq+rMUZJtCnUoXCZgScGG?=
+ =?us-ascii?Q?ZfHzlXAl02Z6j5YuUYlHol9eYFf/n1wnuM771FxAMt6VbEQMdqm2nY2b41AR?=
+ =?us-ascii?Q?jw7WTKbwN+rtZ4Hxb4xzPM1rsMPABIsp5CZMgDrW4OghRgnjsFkgWLKOw7bR?=
+ =?us-ascii?Q?mCyQAMNvLd1vw/171Bkp51GbMVwlj8LdCVY1lCPQN8gUqQq12JM1LPFFZ4X1?=
+ =?us-ascii?Q?1Y3p5ABMfQ=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 2/3] of: factor arguments passed to of_map_id() into a
- struct
-To: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-Cc: robin.murphy@arm.com, will@kernel.org, joro@8bytes.org, robh@kernel.org,
-        konrad.dybcio@oss.qualcomm.com, bjorn.andersson@oss.qualcomm.com,
-        bod@kernel.org, conor+dt@kernel.org, krzk+dt@kernel.org,
-        prakash.gupta@oss.qualcomm.com, vikash.garodia@oss.qualcomm.com,
-        iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org,
-        Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
-References: <20260121055400.937856-1-vijayanand.jitta@oss.qualcomm.com>
- <20260121055400.937856-3-vijayanand.jitta@oss.qualcomm.com>
- <CAO9ioeXLJK6fvriRA9RZs8cWcBdv4fgw8VG1_LqLDfc-5hFQZQ@mail.gmail.com>
- <21b3f41a-d480-4eb1-a02e-c2ae411f3dd9@oss.qualcomm.com>
- <CAO9ioeU8-uQx4cJ=_nPfQ_ZJ=ZUAwwCYrehSqLw5X-YBVnFz3Q@mail.gmail.com>
-Content-Language: en-US
-From: Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
-In-Reply-To: <CAO9ioeU8-uQx4cJ=_nPfQ_ZJ=ZUAwwCYrehSqLw5X-YBVnFz3Q@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-ORIG-GUID: YbX3jKJpKxEzXzo5nLaxU_0gdQocUPJZ
-X-Proofpoint-GUID: YbX3jKJpKxEzXzo5nLaxU_0gdQocUPJZ
-X-Authority-Analysis: v=2.4 cv=J8CnLQnS c=1 sm=1 tr=0 ts=69783bce cx=c_pps
- a=UNFcQwm+pnOIJct1K4W+Mw==:117 a=j4ogTh8yFefVWWEFDRgCtg==:17
- a=IkcTkHD0fZMA:10 a=vUbySO9Y5rIA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8
- a=HnkMKtxlUvcyAqyK8NAA:9 a=QEXdDO2ut3YA:10 a=uKXjsCUrEbL0IQVhDsJ9:22
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMTI3MDAzMiBTYWx0ZWRfX8WsUL3GUgvcl
- CGq5s225UL18k2tE9U/WHXGIf4FU0j7nJJxIxttmOFCBNuH83+z9PMEEmZj8k2cx5+pkb+EZZ6l
- MoBIWrxk2l+M6UVVoEoTWQiVjRk0lqJtR8WmDqmCFtMk29l0trFO48kKn9IJJGwtoBhCCEOWj4x
- ++YbR/pLtS6tYqtDhpvPz7XM46UI2q/MXsu1nwiwCCujG70jzUnZC7GKQoWHlPP2nYQkI9xPcjR
- LKYQm5KMEeMfRcxJCYUV2rl3udizynb0TMKxv3sDJRIpYTr9Lxls3LqcKBhKrguEOs7qfnwUG06
- FQKVWY6waYYgK093NRrHPUqaArJXPzakBIANzlqpflnDU19scauXxvscJ37RmHg4Q111KI8Ocxd
- HGoEzLlzQUrHDbFIdqGASYykyVjBHcV22tUdWTtNkrmxb+kTz8RAo3mHpbnTAxFpAfDG7OeL7TW
- 0syluxCdrGEmWdS3CMQ==
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.20,FMLib:17.12.100.49
- definitions=2026-01-27_01,2026-01-26_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- phishscore=0 lowpriorityscore=0 spamscore=0 clxscore=1015 bulkscore=0
- priorityscore=1501 adultscore=0 impostorscore=0 suspectscore=0 malwarescore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2601150000 definitions=main-2601270032
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 501ae9e1-3020-48b0-9dae-08de5d764e94
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Jan 2026 07:33:03.8297
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: YSVOhhu02pSeS1kvcsdA/3ODrKWEGQnzfYfZvDpEROHCT53jg2wA2iE+z/yuP//F4xIP86FC5zIHLLQE5rL6qA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR11MB7473
+X-OriginatorOrg: intel.com
 
+> From: Jason Gunthorpe <jgg@nvidia.com>
+> Sent: Monday, January 26, 2026 10:14 PM
+>=20
+> On Mon, Jan 26, 2026 at 07:33:21AM +0000, Tian, Kevin wrote:
+> > > From: Jason Gunthorpe <jgg@nvidia.com>
+> > > Sent: Sunday, January 25, 2026 5:00 AM
+> > >
+> > > The cache flush was happening on every level across the whole range o=
+f
+> > > iteration, even if no leafs or tables were cleared. Instead flush onl=
+y the
+> > > sub range that was actually written.
+> > >
+> > > Overflushing isn't a correctness problem but it does impact the
+> > > performance of unmap.
+> > >
+> > > After this series the performance compared to the original VT-d
+> > > implementation with cache flushing turned on is:
+> > >
+> > > map_pages
+> > >    pgsz  ,avg new,old ns, min new,old ns  , min % (+ve is better)
+> > >      2^12,    253,266   ,     213,227     ,   6.06
+> > >      2^21,    246,244   ,     221,219     ,   0.00
+> > >      2^30,    231,240   ,     209,217     ,   3.03
+> > >  256*2^12,   2604,2668  ,    2415,2540    ,   4.04
+> > >  256*2^21,   2495,2824  ,    2390,2734    ,  12.12
+> > >  256*2^30,   2542,2845  ,    2380,2718    ,  12.12
+> > >
+> > > unmap_pages
+> > >    pgsz  ,avg new,old ns, min new,old ns  , min % (+ve is better)
+> > >      2^12,    259,292   ,     222,251     ,  11.11
+> > >      2^21,    255,259   ,     227,236     ,   3.03
+> > >      2^30,    238,254   ,     217,230     ,   5.05
+> > >  256*2^12,   2751,2620  ,    2417,2437    ,   0.00
+> > >  256*2^21,   2461,2526  ,    2377,2423    ,   1.01
+> > >  256*2^30,   2498,2543  ,    2370,2404    ,   1.01
+> > >
+> >
+> > that is great!
+> >
+> > Out of curiosity - why would an optimization in the unmap path also
+> > lead to better efficiency in the map path (in some cases map improves
+> > even more than unmap, e.g. with 256 pages)?
+>=20
+> I cannot explain this, but it is how the test behaves on my system -
+> before this patch:
+>=20
+> map_pages
+>    pgsz  ,avg new,old ns, min new,old ns  , min % (+ve is better)
+>      2^12,    530,237   ,     450,207     , -117.17
+>      2^21,    417,231   ,     375,208     , -80.80
+>      2^30,    325,233   ,     275,217     , -26.26
+>  256*2^12,   3020,2658  ,    2599,2492    ,  -4.04
+>  256*2^21,   2892,2839  ,    2585,2721    ,   4.04
+>  256*2^30,   2794,2836  ,    2548,2712    ,   6.06
+>=20
+> unmap_pages
+>    pgsz  ,avg new,old ns, min new,old ns  , min % (+ve is better)
+>      2^12,    444,257   ,     410,230     , -78.78
+>      2^21,    378,244   ,     353,225     , -56.56
+>      2^30,    300,245   ,     281,229     , -22.22
+>  256*2^12,   2975,2604  ,    2536,2403    ,  -5.05
+>  256*2^21,   2887,2523  ,    2489,2417    ,  -2.02
+>  256*2^30,   2799,2525  ,    2471,2397    ,  -3.03
+>=20
+> Perhaps it is an artifact of how the test is constructed and
+> subsequent maps are suffering because the cache for the already
+> populated levels is in a poor state due to the extra flush?
 
+that's a possible reason.
 
-On 1/21/2026 12:08 PM, Dmitry Baryshkov wrote:
-> On Wed, 21 Jan 2026 at 08:38, Vijayanand Jitta
-> <vijayanand.jitta@oss.qualcomm.com> wrote:
->>
->>
->>
->> On 1/21/2026 11:30 AM, Dmitry Baryshkov wrote:
->>> On Wed, 21 Jan 2026 at 07:54, Vijayanand Jitta
->>> <vijayanand.jitta@oss.qualcomm.com> wrote:
->>>>
->>>> From: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
->>>>
->>>> Introduce a new struct type where the optional arguments passed to
->>>> of_map_id() are Currently embedded as of_phandle_args struct.
->>>> Subsequent patches add additional arguments to the struct that the
->>>> caller expects to be filled of_map_id().
->>>
->>> Which additional arguments? I don't see anything being added in 3/3 of
->>> this series.
->>>
->>> Can we use of_phandle_args and switch to of_map_id_args when it's
->>> actually required.
->>>
->>
->> As mentioned in the cover letter, this change prepares the interface for a
->> follow-up series adding multi-map support, which we will be sending out
->> shortly and which extends these arguments. Keeping this in place avoids a
->> subsequent rework and keeps the overall transition incremental.
-> 
-> Could you please point out patches adding more args.
-> 
+>=20
+> Mapping requires an atomic on the cache line so maybe that interacts
+> poorly with a clflush somehow?
+>=20
 
-Please refer to the below patch series, it extends the args:
+depend on the concurrency of mappings vs. clflush...
 
-https://lore.kernel.org/linux-media/20260126-kaanapali-iris-v1-0-e2646246bfc1@oss.qualcomm.com/
+anyway since it's fixed the regression:
 
-Thanks,
-Vijay
-
->>
->>
->> Thanks,
->> Vijay
->>
->>>>
->>>> Suggested-by: Rob Herring (Arm) <robh@kernel.org>
->>>> Signed-off-by: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
->>>> Signed-off-by: Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
->>>> ---
->>>>  drivers/cdx/cdx_msi.c                 |  2 +-
->>>>  drivers/iommu/of_iommu.c              | 12 ++++++---
->>>>  drivers/of/base.c                     | 37 +++++++++++++--------------
->>>>  drivers/pci/controller/dwc/pci-imx6.c | 10 ++++++--
->>>>  drivers/pci/controller/pcie-apple.c   |  4 ++-
->>>>  drivers/xen/grant-dma-ops.c           | 20 +++++++++------
->>>>  include/linux/of.h                    | 32 ++++++++++++++++++-----
->>>>  7 files changed, 75 insertions(+), 42 deletions(-)
->>>>
->>>
->>>
->>
-> 
-> 
-
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
