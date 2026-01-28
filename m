@@ -1,148 +1,479 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BA8634DB44
-	for <iommu@lists.linux.dev>; Wed, 28 Jan 2026 09:55:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 189F0334C00;
+	Wed, 28 Jan 2026 10:53:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769594158; cv=none; b=gds9TGaSo45OXaMtnr+N4rI3QbbrvGeffrYHCQkAkU+fJfv1DPEbWEEdqp0P3Gu50FOxjtY5C2kGT03kXU8Xm8DcG4E6yHPlGtS9DeWPGKCPbqvLy+Dmt23YBt6d6i2A8SyehtKv31IUJokbGRkiP5jx437Qk9yOAdK7kdnPhVY=
+	t=1769597634; cv=none; b=qZmAc/7JPMaxPIF6hg1oladqWcCLrzk3Xryw2KEUOgXX13SFgl79tpu118Lj1JHW5Uha1HyETzYQV+ssuCbEcFCS8juFAwfhLzyUjm0BwLZmmNO+5SIePT5AZZSqERP1DvWU+1bdIXYvjT5IenpZTGRYfk+ZbHbdnQ8YcwaYuD0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769594158; c=relaxed/simple;
-	bh=a8PmjOimE/57zI/f5ieyRUYuPN5myeNHEN+leOoS/c4=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=C2pR/+ws+i6tF5KUVca9dpz6/XLXFAnVgPlY19gbLlKcFyoDMrutb0I5kLI37d5w6cnGgTjepzTe/h0KcOxgJt5nX1LwM6iPPK+7KLmzLfhnYEniTYOKrfvMcSno7WR+R+JljboDZ1Kz5ywx6KyLNVTbcnab2XbL94xLVHbTM0g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=0EWZpln4; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=bo0pv0LT; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1769597634; c=relaxed/simple;
+	bh=IH7dlVvX0BrqfneedFEsGx+dBrFkBFmcPSu9v6mmRIs=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=nS2JUPN5W2Zbni8CtWF2xOj8IEWounzi2sc0af9oAWWmy1SEZMy7Zza+8MEyUE3x/yg2KjquuUf7H/4NRyBTsL7Q0aW/V5weYf2Wh0l6/CqklflRmaU8AvX0KCbPv6or9RcbjcU/e+edwZGHvedjPGbpx4xnLWw9/TNMe4d5gUw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ieDlm7c7; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="0EWZpln4";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="bo0pv0LT"
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1769594155;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=zni2r7zu/AvwTPfuVhIq9YilbCGCckmhbNu3MIHICGc=;
-	b=0EWZpln4s4OC4PaBWzPRQSOm6OKYoR4E8gD539RM2isa/0C+LELWfy7hyoex284I8Wivxy
-	EBtcqP3ebp7STcj4kn3Ps65ke2qapXOLQQJwYHWP5BIOtNIYOpNyWg0OIYizuXBMgGujsA
-	D4OMM0rMFkTVY1cHJcm8RvGkc2tGP2jNgWvGWCkz9FzPjXJGgfYBZM0ed91eZuPb6v2ID7
-	fF2NaiXL37gSDBOQ1yU3XLUChUSBqQa9WURPotfeWuOztojzQbpBDBCdmZzjBWOAJ14GLt
-	EFBckd5O6jVRwZ536K1fr6r2rxAuU/61YJIY2mQH/qgxIyA/r9rFtEI1Vvj4mg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1769594155;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=zni2r7zu/AvwTPfuVhIq9YilbCGCckmhbNu3MIHICGc=;
-	b=bo0pv0LTUtjK5HcL3yxulX9wkN0230jI57qMa8V3IiJC2MPakFh9C9dsHNmbbxiyPu592n
-	Fs7vUcS8KrCGAaDA==
-To: linux-kernel@vger.kernel.org
-Cc: "Thomas Gleixner" <tglx@kernel.org>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Joerg Roedel <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	iommu@lists.linux.dev
-Subject: [PATCH v2 03/20] iommu/amd: Use core's primary handler and set IRQF_ONESHOT
-Date: Wed, 28 Jan 2026 10:55:23 +0100
-Message-ID: <20260128095540.863589-4-bigeasy@linutronix.de>
-In-Reply-To: <20260128095540.863589-1-bigeasy@linutronix.de>
-References: <20260128095540.863589-1-bigeasy@linutronix.de>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ieDlm7c7"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CB76C4CEF1;
+	Wed, 28 Jan 2026 10:53:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1769597633;
+	bh=IH7dlVvX0BrqfneedFEsGx+dBrFkBFmcPSu9v6mmRIs=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=ieDlm7c7z1+wcL2GPnKAcTeCaOHZjTtVQyew0L7UsQLDiKu9YfUIsog1Xt6mlUWsa
+	 IUipjRuz6mYReMZbQp8s8+8tTeVlFB0ZYE4uVyFG1vr+V54ea2kcwdxZteFCb/4pki
+	 FVlL5hyG5B9SR/ziVllFR31zNRRj7cRsHo/nBEcyrrN19UHorgySlMtEoxzFNC8OxX
+	 Ao36nyBXh6XdvIBiIb1fPFBXUH+VZr2X8rq7ctTECa3uyieIV/VtNyn72AMpra3UKh
+	 E8BHqaq+T5V/+xiROTO2b/T8gbmYBC5dVuggJ26IwT8decyHqyRfdE1jFcnsMiCmL4
+	 Lfwav9PHcD+Ng==
+Message-ID: <974a95d4-0ae5-400a-992f-9e468a0666d6@kernel.org>
+Date: Wed, 28 Jan 2026 11:53:48 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [RFC PATCH] powerpc: iommu: Initial IOMMUFD support for PPC64
+To: Shivaprasad G Bhat <sbhat@linux.ibm.com>, linux-kernel@vger.kernel.org,
+ linuxppc-dev@lists.ozlabs.org, kvm@vger.kernel.org, iommu@lists.linux.dev
+Cc: mpe@ellerman.id.au, maddy@linux.ibm.com, npiggin@gmail.com,
+ alex@shazbot.org, joerg.roedel@amd.com, kevin.tian@intel.com,
+ gbatra@linux.ibm.com, jgg@nvidia.com, clg@kaod.org, vaibhav@linux.ibm.com,
+ brking@linux.vnet.ibm.com, nnmlinux@linux.ibm.com, amachhiw@linux.ibm.com,
+ tpearson@raptorengineering.com
+References: <176953894915.725.1102545144304639827.stgit@linux.ibm.com>
+Content-Language: fr-FR
+From: "Christophe Leroy (CS GROUP)" <chleroy@kernel.org>
+In-Reply-To: <176953894915.725.1102545144304639827.stgit@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-request_threaded_irq() is invoked with a primary and a secondary handler
-and no flags are passed. The primary handler is the same as
-irq_default_primary_handler() so there is no need to have an identical
-copy.
-The lack of the IRQF_ONESHOT can be dangerous because the interrupt
-source is not masked while the threaded handler is active. This means,
-especially on LEVEL typed interrupt lines, the interrupt can fire again
-before the threaded handler had a chance to run.
 
-Use the default primary interrupt handler by specifying NULL and set
-IRQF_ONESHOT so the interrupt source is masked until the secondary
-handler is done.
 
-Fixes: 72fe00f01f9a3 ("x86/amd-iommu: Use threaded interupt handler")
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
----
-Cc: Joerg Roedel <joro@8bytes.org>
-Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Cc: iommu@lists.linux.dev
----
- drivers/iommu/amd/amd_iommu.h |  1 -
- drivers/iommu/amd/init.c      | 12 ++++--------
- drivers/iommu/amd/iommu.c     |  5 -----
- 3 files changed, 4 insertions(+), 14 deletions(-)
+Le 27/01/2026 à 19:35, Shivaprasad G Bhat a écrit :
+> The RFC attempts to implement the IOMMUFD support on PPC64 by
+> adding new iommu_ops for paging domain. The existing platform
+> domain continues to be the default domain for in-kernel use.
+> The domain ownership transfer ensures the reset of iommu states
+> for the new paging domain and in-kernel usage.
+> 
+> On PPC64, IOVA ranges are based on the type of the DMA window
+> and their properties. Currently, there is no way to expose the
+> attributes of the non-default 64-bit DMA window, which the platform
+> supports. The platform allows the operating system to select the
+> starting offset(at 4GiB or 512PiB default offset), pagesize and
+> window size for the non-default 64-bit DMA window. For example,
+> with VFIO, this is handled via VFIO_IOMMU_SPAPR_TCE_GET_INFO
+> and VFIO_IOMMU_SPAPR_TCE_CREATE|REMOVE ioctls. While I am exploring
+> the ways to expose and configure these DMA window attributes as
+> per user input, any suggestions in this regard will be very helpful.
+> 
+> Currently existing vfio type1 specific vfio-compat driver even
+> with this patch will not work for PPC64. I believe we need to have
+> a separate "vfio-spapr-compat" driver to make it work.
+> 
+> So brief list of current open problems and ongoing reworks:
+>   - Second DMA window support as mentioned above.
+>   - KVM support.
+>   - EEH support.
+>   - The vfio compat driver for the spapr tce iommu.
+>   - Multiple devices (multifunction, same/different iommu group checks,
+>     SRIOV VF assignment) support.
+>   - Race conditions, device plug/unplug.
+>   - self|tests.
+> 
+> The patch currently works for single device and exposes only the
+> default DMA window of 1GB to the user. It has been tested for
+> both PowerNV and pSeries machine tce iommu backends. The testing
+> was done using a Qemu[1] and TCG guest having a NVME device
+> passthrough. One can use the command like below to try:
+> 
+> qemu-system-ppc64 -machine pseries -accel tcg \
+> -device spapr-pci-host-bridge,index=1,id=pci.1,ddw=off \
+> -device vfio-pci,host=<hostdev>,id=hostdev0,\
+> bus=pci.1.0,addr=0x1,iommufd=iommufd0 \
+> -object iommufd,id=iommufd0 <...>
+> ...
+> root:localhost# mount /dev/nvme0n1 /mnt
+> root:localhost# ls /mnt
+> ...
+> 
+> The current patch is based on linux kernel 6.19-rc6 tree.
 
-diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
-index b742ef1adb352..df1c238dc8885 100644
---- a/drivers/iommu/amd/amd_iommu.h
-+++ b/drivers/iommu/amd/amd_iommu.h
-@@ -15,7 +15,6 @@ irqreturn_t amd_iommu_int_thread(int irq, void *data);
- irqreturn_t amd_iommu_int_thread_evtlog(int irq, void *data);
- irqreturn_t amd_iommu_int_thread_pprlog(int irq, void *data);
- irqreturn_t amd_iommu_int_thread_galog(int irq, void *data);
--irqreturn_t amd_iommu_int_handler(int irq, void *data);
- void amd_iommu_restart_log(struct amd_iommu *iommu, const char *evt_type,
- 			   u8 cntrl_intr, u8 cntrl_log,
- 			   u32 status_run_mask, u32 status_overflow_mask);
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 384c90b4f90a0..62a7a718acf8f 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -2356,12 +2356,8 @@ static int iommu_setup_msi(struct amd_iommu *iommu)
- 	if (r)
- 		return r;
-=20
--	r =3D request_threaded_irq(iommu->dev->irq,
--				 amd_iommu_int_handler,
--				 amd_iommu_int_thread,
--				 0, "AMD-Vi",
--				 iommu);
--
-+	r =3D request_threaded_irq(iommu->dev->irq, NULL, amd_iommu_int_thread,
-+				 IRQF_ONESHOT, "AMD-Vi", iommu);
- 	if (r) {
- 		pci_disable_msi(iommu->dev);
- 		return r;
-@@ -2535,8 +2531,8 @@ static int __iommu_setup_intcapxt(struct amd_iommu *i=
-ommu, const char *devname,
- 		return irq;
- 	}
-=20
--	ret =3D request_threaded_irq(irq, amd_iommu_int_handler,
--				   thread_fn, 0, devname, iommu);
-+	ret =3D request_threaded_irq(irq, NULL, thread_fn, IRQF_ONESHOT, devname,
-+				   iommu);
- 	if (ret) {
- 		irq_domain_free_irqs(irq, 1);
- 		irq_domain_remove(domain);
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 7c12be1b247f4..0f9045ce93af1 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -1151,11 +1151,6 @@ irqreturn_t amd_iommu_int_thread(int irq, void *data)
- 	return IRQ_HANDLED;
- }
-=20
--irqreturn_t amd_iommu_int_handler(int irq, void *data)
--{
--	return IRQ_WAKE_THREAD;
--}
--
- /*************************************************************************=
-***
-  *
-  * IOMMU command queuing functions
---=20
-2.51.0
+Getting the following build failure on linuxppc-dev patchwork with 
+g5_defconfig or ppc64_defconfig:
+
+Error: /linux/arch/powerpc/sysdev/dart_iommu.c:325:9: error: 
+initialization of 'int (*)(struct iommu_table *, long int,  long int, 
+long unsigned int,  enum dma_data_direction,  long unsigned int,  bool)' 
+{aka 'int (*)(struct iommu_table *, long int,  long int,  long unsigned 
+int,  enum dma_data_direction,  long unsigned int,  _Bool)'} from 
+incompatible pointer type 'int (*)(struct iommu_table *, long int,  long 
+int,  long unsigned int,  enum dma_data_direction,  long unsigned int)' 
+[-Werror=incompatible-pointer-types]
+   .set = dart_build,
+          ^~~~~~~~~~
+/linux/arch/powerpc/sysdev/dart_iommu.c:325:9: note: (near 
+initialization for 'iommu_dart_ops.set')
+cc1: all warnings being treated as errors
+make[5]: *** [/linux/scripts/Makefile.build:287: 
+arch/powerpc/sysdev/dart_iommu.o] Error 1
+make[4]: *** [/linux/scripts/Makefile.build:544: arch/powerpc/sysdev] 
+Error 2
+
+Christophe
+
+> 
+> Signed-off-by: Shivaprasad G Bhat <sbhat@linux.ibm.com>
+> 
+> References:
+> 1 : https://eur01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fgithub.com%2Fshivaprasadbhat%2Fqemu%2Ftree%2Fiommufd-wip&data=05%7C02%7Cchristophe.leroy%40csgroup.eu%7C4b6054524dcf4d42f24308de5dd2fc27%7C8b87af7d86474dc78df45f69a2011bb5%7C0%7C0%7C639051357920885715%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=NBGzjiMaEskySEDGCZHhPwQ5VzADQXPCpH45d5p4Cuk%3D&reserved=0
+> ---
+>   arch/powerpc/include/asm/iommu.h              |    2
+>   arch/powerpc/kernel/iommu.c                   |  181 +++++++++++++++++++++++++
+>   arch/powerpc/platforms/powernv/pci-ioda-tce.c |    4 -
+>   arch/powerpc/platforms/powernv/pci-ioda.c     |    4 -
+>   arch/powerpc/platforms/powernv/pci.h          |    2
+>   arch/powerpc/platforms/pseries/iommu.c        |    6 -
+>   drivers/vfio/Kconfig                          |    4 -
+>   7 files changed, 190 insertions(+), 13 deletions(-)
+> 
+> diff --git a/arch/powerpc/include/asm/iommu.h b/arch/powerpc/include/asm/iommu.h
+> index eafdd63cd6c4..1dc72fbb89e7 100644
+> --- a/arch/powerpc/include/asm/iommu.h
+> +++ b/arch/powerpc/include/asm/iommu.h
+> @@ -46,7 +46,7 @@ struct iommu_table_ops {
+>   			long index, long npages,
+>   			unsigned long uaddr,
+>   			enum dma_data_direction direction,
+> -			unsigned long attrs);
+> +			unsigned long attrs, bool is_phys);
+>   #ifdef CONFIG_IOMMU_API
+>   	/*
+>   	 * Exchanges existing TCE with new TCE plus direction bits;
+> diff --git a/arch/powerpc/kernel/iommu.c b/arch/powerpc/kernel/iommu.c
+> index 0ce71310b7d9..e6543480c461 100644
+> --- a/arch/powerpc/kernel/iommu.c
+> +++ b/arch/powerpc/kernel/iommu.c
+> @@ -365,7 +365,7 @@ static dma_addr_t iommu_alloc(struct device *dev, struct iommu_table *tbl,
+>   	/* Put the TCEs in the HW table */
+>   	build_fail = tbl->it_ops->set(tbl, entry, npages,
+>   				      (unsigned long)page &
+> -				      IOMMU_PAGE_MASK(tbl), direction, attrs);
+> +				      IOMMU_PAGE_MASK(tbl), direction, attrs, false);
+>   
+>   	/* tbl->it_ops->set() only returns non-zero for transient errors.
+>   	 * Clean up the table bitmap in this case and return
+> @@ -539,7 +539,7 @@ int ppc_iommu_map_sg(struct device *dev, struct iommu_table *tbl,
+>   		/* Insert into HW table */
+>   		build_fail = tbl->it_ops->set(tbl, entry, npages,
+>   					      vaddr & IOMMU_PAGE_MASK(tbl),
+> -					      direction, attrs);
+> +					      direction, attrs, false);
+>   		if(unlikely(build_fail))
+>   			goto failure;
+>   
+> @@ -1201,7 +1201,15 @@ spapr_tce_blocked_iommu_attach_dev(struct iommu_domain *platform_domain,
+>   	 * also sets the dma_api ops
+>   	 */
+>   	table_group = iommu_group_get_iommudata(grp);
+> +
+> +	if (old && old->type == IOMMU_DOMAIN_DMA) {
+> +		ret = table_group->ops->unset_window(table_group, 0);
+> +		if (ret)
+> +			goto exit;
+> +	}
+> +
+>   	ret = table_group->ops->take_ownership(table_group, dev);
+> +exit:
+>   	iommu_group_put(grp);
+>   
+>   	return ret;
+> @@ -1260,6 +1268,167 @@ static struct iommu_group *spapr_tce_iommu_device_group(struct device *dev)
+>   	return hose->controller_ops.device_group(hose, pdev);
+>   }
+>   
+> +struct ppc64_domain {
+> +	struct iommu_domain  domain;
+> +	struct device        *device; /* Make it a list */
+> +	struct iommu_table   *table;
+> +	spinlock_t           list_lock;
+> +	struct rcu_head      rcu;
+> +};
+> +
+> +static struct ppc64_domain *to_ppc64_domain(struct iommu_domain *dom)
+> +{
+> +	return container_of(dom, struct ppc64_domain, domain);
+> +}
+> +
+> +static void spapr_tce_domain_free(struct iommu_domain *domain)
+> +{
+> +	struct ppc64_domain *ppc64_domain = to_ppc64_domain(domain);
+> +
+> +	kfree(ppc64_domain);
+> +}
+> +
+> +static const struct iommu_ops spapr_tce_iommu_ops;
+> +static struct iommu_domain *spapr_tce_domain_alloc_paging(struct device *dev)
+> +{
+> +	struct iommu_group *grp = iommu_group_get(dev);
+> +	struct iommu_table_group *table_group;
+> +	struct ppc64_domain *ppc64_domain;
+> +	struct iommu_table *ptbl;
+> +	int ret = -1;
+> +
+> +	table_group = iommu_group_get_iommudata(grp);
+> +	ppc64_domain = kzalloc(sizeof(*ppc64_domain), GFP_KERNEL);
+> +	if (!ppc64_domain)
+> +		return NULL;
+> +
+> +	/* Just the default window hardcode for now */
+> +	ret = table_group->ops->create_table(table_group, 0, 0xc, 0x40000000, 1, &ptbl);
+> +	iommu_tce_table_get(ptbl);
+> +	ppc64_domain->table = ptbl; /* REVISIT: Single device for now */
+> +	if (!ppc64_domain->table) {
+> +		kfree(ppc64_domain);
+> +		iommu_tce_table_put(ptbl);
+> +		iommu_group_put(grp);
+> +		return NULL;
+> +	}
+> +
+> +	table_group->ops->set_window(table_group, 0, ptbl);
+> +	iommu_group_put(grp);
+> +
+> +	ppc64_domain->domain.pgsize_bitmap = SZ_4K;
+> +	ppc64_domain->domain.geometry.force_aperture = true;
+> +	ppc64_domain->domain.geometry.aperture_start = 0;
+> +	ppc64_domain->domain.geometry.aperture_end = 0x40000000; /*default window */
+> +	ppc64_domain->domain.ops = spapr_tce_iommu_ops.default_domain_ops;
+> +
+> +	spin_lock_init(&ppc64_domain->list_lock);
+> +
+> +	return &ppc64_domain->domain;
+> +}
+> +
+> +static size_t spapr_tce_iommu_unmap_pages(struct iommu_domain *domain,
+> +				unsigned long iova,
+> +				size_t pgsize, size_t pgcount,
+> +				struct iommu_iotlb_gather *gather)
+> +{
+> +	struct ppc64_domain *ppc64_domain = to_ppc64_domain(domain);
+> +	struct iommu_table *tbl = ppc64_domain->table;
+> +	unsigned long pgshift = __ffs(pgsize);
+> +	size_t size = pgcount << pgshift;
+> +	size_t mapped = 0;
+> +	unsigned int tcenum;
+> +	int  mask;
+> +
+> +	if (pgsize != SZ_4K)
+> +		return -EINVAL;
+> +
+> +	size = PAGE_ALIGN(size);
+> +
+> +	mask = IOMMU_PAGE_MASK(tbl);
+> +	tcenum = iova >> tbl->it_page_shift;
+> +
+> +	tbl->it_ops->clear(tbl, tcenum, pgcount);
+> +
+> +	mapped = pgsize * pgcount;
+> +
+> +	return mapped;
+> +}
+> +
+> +static phys_addr_t spapr_tce_iommu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova)
+> +{
+> +	struct ppc64_domain *ppc64_domain = to_ppc64_domain(domain);
+> +	struct iommu_table *tbl = ppc64_domain->table;
+> +	phys_addr_t paddr, rpn, tceval;
+> +	unsigned int tcenum;
+> +
+> +	tcenum = iova >> tbl->it_page_shift;
+> +	tceval = tbl->it_ops->get(tbl, tcenum);
+> +
+> +	/* Ignore the direction bits */
+> +	rpn = tceval >> tbl->it_page_shift;
+> +	paddr = rpn << tbl->it_page_shift;
+> +
+> +	return paddr;
+> +}
+> +
+> +static int spapr_tce_iommu_map_pages(struct iommu_domain *domain,
+> +				unsigned long iova, phys_addr_t paddr,
+> +				size_t pgsize, size_t pgcount,
+> +				int prot, gfp_t gfp, size_t *mapped)
+> +{
+> +	struct ppc64_domain *ppc64_domain = to_ppc64_domain(domain);
+> +	enum dma_data_direction direction = DMA_BIDIRECTIONAL;
+> +	struct iommu_table *tbl = ppc64_domain->table;
+> +	unsigned long pgshift = __ffs(pgsize);
+> +	size_t size = pgcount << pgshift;
+> +	unsigned int tcenum;
+> +	int ret;
+> +
+> +	if (pgsize != SZ_4K)
+> +		return -EINVAL;
+> +
+> +	if (iova < ppc64_domain->domain.geometry.aperture_start ||
+> +	    (iova + size - 1) > ppc64_domain->domain.geometry.aperture_end)
+> +		return -EINVAL;
+> +
+> +	if (!IS_ALIGNED(iova | paddr, pgsize))
+> +		return -EINVAL;
+> +
+> +	if (!(prot & IOMMU_WRITE))
+> +		direction = DMA_FROM_DEVICE;
+> +
+> +	if (!(prot & IOMMU_READ))
+> +		direction = DMA_TO_DEVICE;
+> +
+> +	size = PAGE_ALIGN(size);
+> +	tcenum = iova >> tbl->it_page_shift;
+> +
+> +	/* Put the TCEs in the HW table */
+> +	ret = tbl->it_ops->set(tbl, tcenum, pgcount,
+> +				paddr, direction, 0, true);
+> +	if (!ret && mapped)
+> +		*mapped = pgsize;
+> +
+> +	return 0;
+> +}
+> +
+> +static int spapr_tce_iommu_attach_device(struct iommu_domain *domain,
+> +				    struct device *dev, struct iommu_domain *old)
+> +{
+> +	struct ppc64_domain *ppc64_domain = to_ppc64_domain(domain);
+> +
+> +	/* REVISIT */
+> +	if (!domain)
+> +		return 0;
+> +
+> +	/* REVISIT: Check table group, list handling */
+> +	ppc64_domain->device = dev;
+> +
+> +	return 0;
+> +}
+> +
+> +
+>   static const struct iommu_ops spapr_tce_iommu_ops = {
+>   	.default_domain = &spapr_tce_platform_domain,
+>   	.blocked_domain = &spapr_tce_blocked_domain,
+> @@ -1267,6 +1436,14 @@ static const struct iommu_ops spapr_tce_iommu_ops = {
+>   	.probe_device = spapr_tce_iommu_probe_device,
+>   	.release_device = spapr_tce_iommu_release_device,
+>   	.device_group = spapr_tce_iommu_device_group,
+> +	.domain_alloc_paging = spapr_tce_domain_alloc_paging,
+> +	.default_domain_ops = &(const struct iommu_domain_ops) {
+> +		.attach_dev     = spapr_tce_iommu_attach_device,
+> +		.map_pages      = spapr_tce_iommu_map_pages,
+> +		.unmap_pages    = spapr_tce_iommu_unmap_pages,
+> +		.iova_to_phys   = spapr_tce_iommu_iova_to_phys,
+> +		.free           = spapr_tce_domain_free,
+> +	}
+>   };
+>   
+>   static struct attribute *spapr_tce_iommu_attrs[] = {
+> diff --git a/arch/powerpc/platforms/powernv/pci-ioda-tce.c b/arch/powerpc/platforms/powernv/pci-ioda-tce.c
+> index e96324502db0..8800bf86d17a 100644
+> --- a/arch/powerpc/platforms/powernv/pci-ioda-tce.c
+> +++ b/arch/powerpc/platforms/powernv/pci-ioda-tce.c
+> @@ -123,10 +123,10 @@ static __be64 *pnv_tce(struct iommu_table *tbl, bool user, long idx, bool alloc)
+>   
+>   int pnv_tce_build(struct iommu_table *tbl, long index, long npages,
+>   		unsigned long uaddr, enum dma_data_direction direction,
+> -		unsigned long attrs)
+> +		unsigned long attrs, bool is_phys)
+>   {
+>   	u64 proto_tce = iommu_direction_to_tce_perm(direction);
+> -	u64 rpn = __pa(uaddr) >> tbl->it_page_shift;
+> +	u64 rpn = !is_phys ? __pa(uaddr) >> tbl->it_page_shift : uaddr >> tbl->it_page_shift;
+>   	long i;
+>   
+>   	if (proto_tce & TCE_PCI_WRITE)
+> diff --git a/arch/powerpc/platforms/powernv/pci-ioda.c b/arch/powerpc/platforms/powernv/pci-ioda.c
+> index b0c1d9d16fb5..610146a63e3b 100644
+> --- a/arch/powerpc/platforms/powernv/pci-ioda.c
+> +++ b/arch/powerpc/platforms/powernv/pci-ioda.c
+> @@ -1241,10 +1241,10 @@ static void pnv_pci_ioda2_tce_invalidate(struct iommu_table *tbl,
+>   static int pnv_ioda2_tce_build(struct iommu_table *tbl, long index,
+>   		long npages, unsigned long uaddr,
+>   		enum dma_data_direction direction,
+> -		unsigned long attrs)
+> +		unsigned long attrs, bool is_phys)
+>   {
+>   	int ret = pnv_tce_build(tbl, index, npages, uaddr, direction,
+> -			attrs);
+> +			attrs, is_phys);
+>   
+>   	if (!ret)
+>   		pnv_pci_ioda2_tce_invalidate(tbl, index, npages);
+> diff --git a/arch/powerpc/platforms/powernv/pci.h b/arch/powerpc/platforms/powernv/pci.h
+> index 42075501663b..3579ecd55d00 100644
+> --- a/arch/powerpc/platforms/powernv/pci.h
+> +++ b/arch/powerpc/platforms/powernv/pci.h
+> @@ -300,7 +300,7 @@ extern void pe_level_printk(const struct pnv_ioda_pe *pe, const char *level,
+>   
+>   extern int pnv_tce_build(struct iommu_table *tbl, long index, long npages,
+>   		unsigned long uaddr, enum dma_data_direction direction,
+> -		unsigned long attrs);
+> +		unsigned long attrs, bool is_phys);
+>   extern void pnv_tce_free(struct iommu_table *tbl, long index, long npages);
+>   extern int pnv_tce_xchg(struct iommu_table *tbl, long index,
+>   		unsigned long *hpa, enum dma_data_direction *direction);
+> diff --git a/arch/powerpc/platforms/pseries/iommu.c b/arch/powerpc/platforms/pseries/iommu.c
+> index eec333dd2e59..8c6f9f18e462 100644
+> --- a/arch/powerpc/platforms/pseries/iommu.c
+> +++ b/arch/powerpc/platforms/pseries/iommu.c
+> @@ -122,7 +122,7 @@ static void iommu_pseries_free_group(struct iommu_table_group *table_group,
+>   static int tce_build_pSeries(struct iommu_table *tbl, long index,
+>   			      long npages, unsigned long uaddr,
+>   			      enum dma_data_direction direction,
+> -			      unsigned long attrs)
+> +			      unsigned long attrs, bool false)
+>   {
+>   	u64 proto_tce;
+>   	__be64 *tcep;
+> @@ -250,7 +250,7 @@ static DEFINE_PER_CPU(__be64 *, tce_page);
+>   static int tce_buildmulti_pSeriesLP(struct iommu_table *tbl, long tcenum,
+>   				     long npages, unsigned long uaddr,
+>   				     enum dma_data_direction direction,
+> -				     unsigned long attrs)
+> +				     unsigned long attrs, bool is_phys)
+>   {
+>   	u64 rc = 0;
+>   	u64 proto_tce;
+> @@ -287,7 +287,7 @@ static int tce_buildmulti_pSeriesLP(struct iommu_table *tbl, long tcenum,
+>   		__this_cpu_write(tce_page, tcep);
+>   	}
+>   
+> -	rpn = __pa(uaddr) >> tceshift;
+> +	rpn = !is_phys ? __pa(uaddr) >> tceshift : uaddr >> tceshift;
+>   	proto_tce = TCE_PCI_READ;
+>   	if (direction != DMA_TO_DEVICE)
+>   		proto_tce |= TCE_PCI_WRITE;
+> diff --git a/drivers/vfio/Kconfig b/drivers/vfio/Kconfig
+> index ceae52fd7586..9929aa78a5da 100644
+> --- a/drivers/vfio/Kconfig
+> +++ b/drivers/vfio/Kconfig
+> @@ -4,7 +4,7 @@ menuconfig VFIO
+>   	select IOMMU_API
+>   	depends on IOMMUFD || !IOMMUFD
+>   	select INTERVAL_TREE
+> -	select VFIO_GROUP if SPAPR_TCE_IOMMU || IOMMUFD=n
+> +	select VFIO_GROUP if IOMMUFD=n
+>   	select VFIO_DEVICE_CDEV if !VFIO_GROUP
+>   	select VFIO_CONTAINER if IOMMUFD=n
+>   	help
+> @@ -16,7 +16,7 @@ menuconfig VFIO
+>   if VFIO
+>   config VFIO_DEVICE_CDEV
+>   	bool "Support for the VFIO cdev /dev/vfio/devices/vfioX"
+> -	depends on IOMMUFD && !SPAPR_TCE_IOMMU
+> +	depends on IOMMUFD
+>   	default !VFIO_GROUP
+>   	help
+>   	  The VFIO device cdev is another way for userspace to get device
+> 
+> 
 
