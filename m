@@ -1,150 +1,174 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from sg-1-14.ptr.blmpb.com (sg-1-14.ptr.blmpb.com [118.26.132.14])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88F262FFDFA
-	for <iommu@lists.linux.dev>; Wed, 28 Jan 2026 07:46:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74CA5222565
+	for <iommu@lists.linux.dev>; Wed, 28 Jan 2026 08:23:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=118.26.132.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769586418; cv=none; b=hziJErJXIqhFzBLKwFdnuToFps9FkkNzIQWq3+Ndhfl/C+7dkRCR24kyrNdxRFtkL+tUOJP+c3IxhpjJvj0Bdw5IPGOD4/wa8imoI/ncmRYx6eQREmRa61eP+SvBQqAAyN9eGoFaHi9ry6gWK0/0myoSg5TlB3PCPHIDjs1uL18=
+	t=1769588619; cv=none; b=ZCXtn5Ef5CnUaeWGP9fMmD48Lr830QZdpZ8WE/5cQwo1V0iqGtN6ikiBIF0I+cqq1DKja8HpmaYW2K1AZxOpwn+SZrlxhA93u/9u2lSN6RzO666QFzlqMlNHujfhR2pLKFqd3QzgMmtRLlRShgr77Zkkbe7x00MuRknkcjjuRpk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769586418; c=relaxed/simple;
-	bh=z62/RuRxg1GLISaWH6IMwItcc7YqIlYdCnRlC9Ws/yM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Hbz31JSBRVJ7UpxMPkqqdwIGyGMXGUinbsPB9S/7kriMqeh0AYNfpJiQy17p5N1R9zgqrsxT7QNPWYHRm03CHZ34lgpYHuRjKTw6XuupnlxyWNFujouaYjGpHuFHEJDXbnw5GzrGLZAiz6asMApRPi4qzZvbhc0biQwp7j5lEqk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FFe9+6UP; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1769588619; c=relaxed/simple;
+	bh=ra8KNPg9YDCXJYrYtNkZX6YGu3yt+J+mfgBga6VH5kw=;
+	h=Cc:Subject:References:In-Reply-To:Date:To:From:Mime-Version:
+	 Content-Type:Message-Id; b=EGNrymOO2NbcJ6kEdJtEloeiVmtB6wQLiMA9Kt3wpJx/KpJYo4qw6lUifXQ3l16dYdsSfIGjfMXYGhKOB6wi++nqA6iMiVWxUMLb+9njJp749wshsQpO7ekZj9Ox164shJLFWdhKFKl+tlPMO42TKRtED/UoOulchl0tja9FcJM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=spacemit.com; spf=pass smtp.mailfrom=spacemit.com; dkim=pass (2048-bit key) header.d=spacemit.com header.i=@spacemit.com header.b=PjYjrJwE; arc=none smtp.client-ip=118.26.132.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=spacemit.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=spacemit.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FFe9+6UP"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03653C4CEF1;
-	Wed, 28 Jan 2026 07:46:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1769586418;
-	bh=z62/RuRxg1GLISaWH6IMwItcc7YqIlYdCnRlC9Ws/yM=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=FFe9+6UPJU/IxIjpYakA5K0MlxBgM/8hcR8S0Y+op5WwBmclfOnh8MWOSjUuGb1iS
-	 oY/b52uNrDSY+YEzOtpVO7jgG4iSgO+hSHcddPBJxAzD3dBKab5BDXKU9zqsWMPLv8
-	 f23Wo1mTslLnfY6d7PTpo6y0beehi3NrPQ2aOYQu8MitvaMtkv2X4aaO8TcAAF5JvX
-	 /uNqdZOaGRjThr00RMd7DTBlL3owvhSZMQXL1QH2vcS9b34h3QQG9yDJZKMSHRHds4
-	 aKrkI6mKM/56sNikbccEdQYX5poFbjnOAfvLAaEaI+RBoToaHtjBFqsQxXbyeb7RuW
-	 Oqe3k0ZRTOEgA==
-Message-ID: <b169f461-ee74-4592-9d2a-b25a1478e135@kernel.org>
-Date: Wed, 28 Jan 2026 08:46:53 +0100
+	dkim=pass (2048-bit key) header.d=spacemit.com header.i=@spacemit.com header.b="PjYjrJwE"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ s=feishu2303021642; d=spacemit.com; t=1769588600; h=from:subject:
+ mime-version:from:date:message-id:subject:to:cc:reply-to:content-type:
+ mime-version:in-reply-to:message-id;
+ bh=ra8KNPg9YDCXJYrYtNkZX6YGu3yt+J+mfgBga6VH5kw=;
+ b=PjYjrJwEnBTs3SKO5RM6az5WvdF3kbrUqQ7TOiFgfyDs5u10cf3MzqCC4LkbZz9UAZtObz
+ 4sVMANzzG6mMWP9Fm1UcflJ3nflFZZk8j2uBchGFKjW9RmKY9MChC+MkE89YlXKkiRQage
+ imuCvgkHWwSRgibRjnHJqe93er573+q6lP6OL5v/BKzVb7IJkF19kiwFvFefAiffDYgeWp
+ Ft7EzW0eUrO+klljKH8pBDzZm5ElKSyY4RUQHynz0+o2rpcgtiax8qggMQD38e0X5fg21J
+ CJ43p6JzO5f1E36KZFxRk10fvS+3j5fTOMahTxFMGyeCOyLm3mH/akm5Do/ZSA==
+Cc: "Robin Murphy" <robin.murphy@arm.com>, 
+	"Tomasz Jeznach" <tjeznach@rivosinc.com>, 
+	"Jingyu Li" <joey.li@spacemit.com>, "iommu" <iommu@lists.linux.dev>
+Subject: Re: [PATCH 5/6] spacemit/t100: Add global filter support for RISC-V IOMMU HPM
+References: <cover.1769562575.git.lv.zheng@spacemit.com> <aef97d98028a9e9a26de844990debfc0b414c2dd.1769562575.git.lv.zheng@spacemit.com>
+	<b169f461-ee74-4592-9d2a-b25a1478e135@kernel.org>
+In-Reply-To: <b169f461-ee74-4592-9d2a-b25a1478e135@kernel.org>
+Date: Wed, 28 Jan 2026 16:23:17 +0800
+To: "Krzysztof Kozlowski" <krzk@kernel.org>
+From: =?utf-8?q?=E9=83=91=E5=BE=8B?= <lv.zheng@spacemit.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 5/6] spacemit/t100: Add global filter support for RISC-V
- IOMMU HPM
-To: Lv Zheng <lv.zheng@spacemit.com>, Robin Murphy <robin.murphy@arm.com>,
- Tomasz Jeznach <tjeznach@rivosinc.com>
-Cc: Jingyu Li <joey.li@spacemit.com>, Zhijian Chen <zhijian@spacemit.com>,
- iommu@lists.linux.dev
-References: <cover.1769562575.git.lv.zheng@spacemit.com>
- <aef97d98028a9e9a26de844990debfc0b414c2dd.1769562575.git.lv.zheng@spacemit.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 a/A=
-In-Reply-To: <aef97d98028a9e9a26de844990debfc0b414c2dd.1769562575.git.lv.zheng@spacemit.com>
+Mime-Version: 1.0
+X-Lms-Return-Path: <lba+16979c776+4d344f+lists.linux.dev+lv.zheng@spacemit.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <a4684b7f094a6a5ee87d9db722b75594f851b9fb.a29bb0cf.146d.44fe.9433.61cc415a421e@feishu.cn>
 
-On 28/01/2026 03:25, Lv Zheng wrote:
-> This patch introduces global filter support for RISC-V IOMMU HPM. The
+Hi,
 
-Please do not use "This commit/patch/change", but imperative mood. See
-longer explanation here:
-https://elixir.bootlin.com/linux/v6.16/source/Documentation/process/submitting-patches.rst#L94
+> From: "Krzysztof Kozlowski"<krzk@kernel.org>
+> Date:=C2=A0 Wed, Jan 28, 2026, 15:47
+> Subject:=C2=A0 Re: [PATCH 5/6] spacemit/t100: Add global filter support f=
+or RISC-V IOMMU HPM
+> To: "Lv Zheng"<lv.zheng@spacemit.com>, "Robin Murphy"<robin.murphy@arm.co=
+m>, "Tomasz Jeznach"<tjeznach@rivosinc.com>
+> Cc: "Jingyu Li"<joey.li@spacemit.com>, "Zhijian Chen"<zhijian@spacemit.co=
+m>, <iommu@lists.linux.dev>
+> On 28/01/2026 03:25, Lv Zheng wrote:
+> > This patch introduces global filter support for RISC-V IOMMU HPM. The
+>=C2=A0
+> Please do not use "This commit/patch/change", but imperative mood. See
+> longer explanation here:
+> https://elixir.bootlin.com/linux/v6.16/source/Documentation/process/submi=
+tting-patches.rst#L94
+>=C2=A0
+> > global filter can be seen in SpacemiT T100 which only supports single
+> > filter to be applied to all event counters. This silicon design can sav=
+e
+> > the number of the event bus signals.
+> >=C2=A0
+> > Signed-off-by: Lv Zheng <lv.zheng@spacemit.com>
+> > Signed-off-by: Jingyu Li <joey.li@spacemit.com>
+> > ---
+> > =C2=A0.../bindings/iommu/riscv,iommu.yaml =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 | =C2=A02 +
+> > =C2=A0drivers/iommu/riscv/iommu-hpm.c =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 | 93 +++++++++++++++++--
+> > =C2=A0drivers/iommu/riscv/iommu.h =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 | =C2=A01 +
+> > =C2=A03 files changed, 89 insertions(+), 7 deletions(-)
+> >=C2=A0
+> > diff --git a/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml b=
+/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
+> > index b69109362b20..ec5b84ff5afb 100644
+> > --- a/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
+> > +++ b/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
+> > @@ -72,6 +72,8 @@ properties:
+> > =C2=A0 =C2=A0 =C2=A0minItems: 1
+> > =C2=A0 =C2=A0 =C2=A0maxItems: 120
+> > =C2=A0
+> > + =C2=A0global-filter: true
+>=C2=A0
+> NAK, absolutely pointless and wrong code. I am not providing you full
+> review because you did not bother to follow basic steps required from
+> you, so essentially you waste our time.
+>=C2=A0
+> Please run scripts/checkpatch.pl on the patches and fix reported
+> warnings. After that, run also 'scripts/checkpatch.pl --strict' on the
+> patches and (probably) fix more warnings. Some warnings can be ignored,
+> especially from --strict run, but the code here looks like it needs a
+> fix. Feel free to get in touch if the warning is not clear.
 
-> global filter can be seen in SpacemiT T100 which only supports single
-> filter to be applied to all event counters. This silicon design can save
-> the number of the event bus signals.
-> 
-> Signed-off-by: Lv Zheng <lv.zheng@spacemit.com>
-> Signed-off-by: Jingyu Li <joey.li@spacemit.com>
-> ---
->  .../bindings/iommu/riscv,iommu.yaml           |  2 +
->  drivers/iommu/riscv/iommu-hpm.c               | 93 +++++++++++++++++--
->  drivers/iommu/riscv/iommu.h                   |  1 +
->  3 files changed, 89 insertions(+), 7 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml b/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
-> index b69109362b20..ec5b84ff5afb 100644
-> --- a/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
-> +++ b/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
-> @@ -72,6 +72,8 @@ properties:
->      minItems: 1
->      maxItems: 120
->  
-> +  global-filter: true
+Thanks for the reminder.
 
-NAK, absolutely pointless and wrong code. I am not providing you full
-review because you did not bother to follow basic steps required from
-you, so essentially you waste our time.
+I've been away from the community for too long time, and this is my first
+time submitting driver patches with DT updates required. Sorry for the
+basic mistakes.
 
-Please run scripts/checkpatch.pl on the patches and fix reported
-warnings. After that, run also 'scripts/checkpatch.pl --strict' on the
-patches and (probably) fix more warnings. Some warnings can be ignored,
-especially from --strict run, but the code here looks like it needs a
-fix. Feel free to get in touch if the warning is not clear.
+Will re-work and submit again. My appologies.
 
-Please use scripts/get_maintainers.pl to get a list of necessary people
-and lists to CC (and consider --no-git-fallback argument, so you will
-not CC people just because they made one commit years ago). It might
-happen, that command when run on an older kernel, gives you outdated
-entries. Therefore please be sure you base your patches on recent Linux
-kernel.
+> Please use scripts/get_maintainers.pl to get a list of necessary people
+> and lists to CC (and consider --no-git-fallback argument, so you will
+> not CC people just because they made one commit years ago). It might
+> happen, that command when run on an older kernel, gives you outdated
+> entries. Therefore please be sure you base your patches on recent Linux
+> kernel.
+>=C2=A0
+> Tools like b4 or scripts/get_maintainer.pl provide you proper list of
+> people, so fix your workflow. Tools might also fail if you work on some
+> ancient tree (don't, instead use mainline) or work on fork of kernel
+> (don't, instead use mainline). Just use b4 and everything should be
+> fine, although remember about `b4 prep --auto-to-cc` if you added new
+> patches to the patchset.
 
-Tools like b4 or scripts/get_maintainer.pl provide you proper list of
-people, so fix your workflow. Tools might also fail if you work on some
-ancient tree (don't, instead use mainline) or work on fork of kernel
-(don't, instead use mainline). Just use b4 and everything should be
-fine, although remember about `b4 prep --auto-to-cc` if you added new
-patches to the patchset.
+Sure. Will loop to Will and Joerg in and probably with perf community inclu=
+ded
+for acknowledgement.
+
+Best regards
+Lv
+
+>=C2=A0
+>=C2=A0
+> Best regards,
+> Krzysztof
+>=C2=A0
 
 
-Best regards,
-Krzysztof
+This message and any attachment are confidential and may be privileged or o=
+therwise protected from disclosure. If you are not an intended recipient of=
+ this message, please delete it and any attachment from your system and not=
+ify the sender immediately by reply e-mail. Unintended recipients should no=
+t use, copy, disclose or take any action based on this message or any infor=
+mation contained in this message. Emails cannot be guaranteed to be secure =
+or error free as they can be intercepted, amended, lost or destroyed, and y=
+ou should take full responsibility for security checking.=20
+=20
+=E6=9C=AC=E9=82=AE=E4=BB=B6=E5=8F=8A=E5=85=B6=E4=BB=BB=E4=BD=95=E9=99=84=E4=
+=BB=B6=E5=85=B7=E6=9C=89=E4=BF=9D=E5=AF=86=E6=80=A7=E8=B4=A8=EF=BC=8C=E5=B9=
+=B6=E5=8F=AF=E8=83=BD=E5=8F=97=E5=85=B6=E4=BB=96=E4=BF=9D=E6=8A=A4=E6=88=96=
+=E4=B8=8D=E5=85=81=E8=AE=B8=E8=A2=AB=E6=8A=AB=E9=9C=B2=E7=BB=99=E7=AC=AC=E4=
+=B8=89=E6=96=B9=E3=80=82=E5=A6=82=E9=98=81=E4=B8=8B=E8=AF=AF=E6=94=B6=E5=88=
+=B0=E6=9C=AC=E9=82=AE=E4=BB=B6=EF=BC=8C=E6=95=AC=E8=AF=B7=E7=AB=8B=E5=8D=B3=
+=E4=BB=A5=E5=9B=9E=E5=A4=8D=E7=94=B5=E5=AD=90=E9=82=AE=E4=BB=B6=E7=9A=84=E6=
+=96=B9=E5=BC=8F=E9=80=9A=E7=9F=A5=E5=8F=91=E4=BB=B6=E4=BA=BA=EF=BC=8C=E5=B9=
+=B6=E5=B0=86=E6=9C=AC=E9=82=AE=E4=BB=B6=E5=8F=8A=E5=85=B6=E4=BB=BB=E4=BD=95=
+=E9=99=84=E4=BB=B6=E4=BB=8E=E9=98=81=E4=B8=8B=E7=B3=BB=E7=BB=9F=E4=B8=AD=E4=
+=BA=88=E4=BB=A5=E5=88=A0=E9=99=A4=E3=80=82=E5=A6=82=E9=98=81=E4=B8=8B=E5=B9=
+=B6=E9=9D=9E=E6=9C=AC=E9=82=AE=E4=BB=B6=E5=86=99=E6=98=8E=E4=B9=8B=E6=94=B6=
+=E4=BB=B6=E4=BA=BA=EF=BC=8C=E6=95=AC=E8=AF=B7=E5=88=87=E5=8B=BF=E4=BD=BF=E7=
+=94=A8=E3=80=81=E5=A4=8D=E5=88=B6=E3=80=81=E6=8A=AB=E9=9C=B2=E6=9C=AC=E9=82=
+=AE=E4=BB=B6=E6=88=96=E5=85=B6=E4=BB=BB=E4=BD=95=E5=86=85=E5=AE=B9=EF=BC=8C=
+=E4=BA=A6=E8=AF=B7=E5=88=87=E5=8B=BF=E4=BE=9D=E6=9C=AC=E9=82=AE=E4=BB=B6=E6=
+=88=96=E5=85=B6=E4=BB=BB=E4=BD=95=E5=86=85=E5=AE=B9=E8=80=8C=E9=87=87=E5=8F=
+=96=E4=BB=BB=E4=BD=95=E8=A1=8C=E5=8A=A8=E3=80=82=E7=94=B5=E5=AD=90=E9=82=AE=
+=E4=BB=B6=E6=97=A0=E6=B3=95=E4=BF=9D=E8=AF=81=E6=98=AF=E4=B8=80=E7=A7=8D=E5=
+=AE=89=E5=85=A8=E5=92=8C=E4=B8=8D=E4=BC=9A=E5=87=BA=E7=8E=B0=E4=BB=BB=E4=BD=
+=95=E5=B7=AE=E9=94=99=E7=9A=84=E9=80=9A=E4=BF=A1=E6=96=B9=E5=BC=8F=EF=BC=8C=
+=E5=8F=AF=E8=83=BD=E4=BC=9A=E8=A2=AB=E6=8B=A6=E6=88=AA=E3=80=81=E4=BF=AE=E6=
+=94=B9=E3=80=81=E4=B8=A2=E5=A4=B1=E6=88=96=E6=8D=9F=E5=9D=8F=EF=BC=8C=E6=94=
+=B6=E4=BB=B6=E4=BA=BA=E9=9C=80=E8=87=AA=E8=A1=8C=E8=B4=9F=E8=B4=A3=E5=81=9A=
+=E5=A5=BD=E5=AE=89=E5=85=A8=E6=A3=80=E6=9F=A5=E3=80=82
