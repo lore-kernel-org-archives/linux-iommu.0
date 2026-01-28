@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B98B072612
-	for <iommu@lists.linux.dev>; Wed, 28 Jan 2026 07:45:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88F262FFDFA
+	for <iommu@lists.linux.dev>; Wed, 28 Jan 2026 07:46:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769586343; cv=none; b=FfYr8mWegoGCE9eLNdOwQtkUfKJ63jSOasWDoxTK01Yy99ISLaF3IzQ4BaexbbsEHtETrsfDnjkRYiaNx0HOe9yG5eJLiSps5g9YPTb2TU0ttZna6qV2Km8O/Gpn79136th4NjvCRG8Pvb+nGUReviwlJCm+RQWItooP8iF2u+A=
+	t=1769586418; cv=none; b=hziJErJXIqhFzBLKwFdnuToFps9FkkNzIQWq3+Ndhfl/C+7dkRCR24kyrNdxRFtkL+tUOJP+c3IxhpjJvj0Bdw5IPGOD4/wa8imoI/ncmRYx6eQREmRa61eP+SvBQqAAyN9eGoFaHi9ry6gWK0/0myoSg5TlB3PCPHIDjs1uL18=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769586343; c=relaxed/simple;
-	bh=rY6kUKNzB4WOcKN39RPFt0WJ3h8pS71JyXsh5o5KE0I=;
+	s=arc-20240116; t=1769586418; c=relaxed/simple;
+	bh=z62/RuRxg1GLISaWH6IMwItcc7YqIlYdCnRlC9Ws/yM=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=GgrnIgHUHz8tVSNKi2MpgdPUVPzjvjlOAkACt07uHxdsGo9mP0nLQKyxAoSMBggJ9BWmnpGP5/+c6JpVSLdNUc+ap/qdXrDpD0qRsxt8b2p7L7J67jeIEttU79MjZ+HS5gHIPWT4AtFbf3p0Aq2zsNtAOhZOo6VM96JeP/IMV2s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uYQf/PNG; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=Hbz31JSBRVJ7UpxMPkqqdwIGyGMXGUinbsPB9S/7kriMqeh0AYNfpJiQy17p5N1R9zgqrsxT7QNPWYHRm03CHZ34lgpYHuRjKTw6XuupnlxyWNFujouaYjGpHuFHEJDXbnw5GzrGLZAiz6asMApRPi4qzZvbhc0biQwp7j5lEqk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FFe9+6UP; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uYQf/PNG"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D633C4CEF1;
-	Wed, 28 Jan 2026 07:45:40 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FFe9+6UP"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03653C4CEF1;
+	Wed, 28 Jan 2026 07:46:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1769586343;
-	bh=rY6kUKNzB4WOcKN39RPFt0WJ3h8pS71JyXsh5o5KE0I=;
+	s=k20201202; t=1769586418;
+	bh=z62/RuRxg1GLISaWH6IMwItcc7YqIlYdCnRlC9Ws/yM=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=uYQf/PNGjAe72vLwfvQXxLc0wSiVhF5+ru9tExB6wTwnXg4VzChMyUkyL8iZmJVSx
-	 n/VnxBYAUxuO0Im5Z8xQiBgaG9rKdoRSGHmCRbK0POK3PfNYWb0qokwcy/mVDcuKcf
-	 FQVJN8AHcjE6/ve0KX0aofVNF1erckxUUFKyKdYrB8I8HABxPVOxXJDtnSZF/fe7Q8
-	 b+dG1QfUL2o3JkYSG0gtK3tW1bhyLX8I6KFeAHsks8iaosCkYN2/7dYtf1/fFVBxCK
-	 23e7tZU+fiKwY5QdctfGSCl5PlwsSYXODt/kZeZOBewpsVqM9aE/rjn4eIb8lcbhl3
-	 V1I1etyvR8CGQ==
-Message-ID: <5caf9ea1-17b4-4fef-8ff1-f8d6b580f0b3@kernel.org>
-Date: Wed, 28 Jan 2026 08:45:37 +0100
+	b=FFe9+6UPJU/IxIjpYakA5K0MlxBgM/8hcR8S0Y+op5WwBmclfOnh8MWOSjUuGb1iS
+	 oY/b52uNrDSY+YEzOtpVO7jgG4iSgO+hSHcddPBJxAzD3dBKab5BDXKU9zqsWMPLv8
+	 f23Wo1mTslLnfY6d7PTpo6y0beehi3NrPQ2aOYQu8MitvaMtkv2X4aaO8TcAAF5JvX
+	 /uNqdZOaGRjThr00RMd7DTBlL3owvhSZMQXL1QH2vcS9b34h3QQG9yDJZKMSHRHds4
+	 aKrkI6mKM/56sNikbccEdQYX5poFbjnOAfvLAaEaI+RBoToaHtjBFqsQxXbyeb7RuW
+	 Oqe3k0ZRTOEgA==
+Message-ID: <b169f461-ee74-4592-9d2a-b25a1478e135@kernel.org>
+Date: Wed, 28 Jan 2026 08:46:53 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -35,14 +35,14 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 4/6] spacemit/t100: Add vendor event support for RISC-V
+Subject: Re: [PATCH 5/6] spacemit/t100: Add global filter support for RISC-V
  IOMMU HPM
 To: Lv Zheng <lv.zheng@spacemit.com>, Robin Murphy <robin.murphy@arm.com>,
  Tomasz Jeznach <tjeznach@rivosinc.com>
 Cc: Jingyu Li <joey.li@spacemit.com>, Zhijian Chen <zhijian@spacemit.com>,
  iommu@lists.linux.dev
 References: <cover.1769562575.git.lv.zheng@spacemit.com>
- <cb4abe275a064f241fa54440608cd3240fb82284.1769562575.git.lv.zheng@spacemit.com>
+ <aef97d98028a9e9a26de844990debfc0b414c2dd.1769562575.git.lv.zheng@spacemit.com>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -88,19 +88,42 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  jWt87ecuHlpL3uuQ0ZZNWqHgZoQLXoqC2ZV5KrtKWb/jyiFX/sxSrodALf0zf+tfHv0FZWT2
  zHjUqd0t4njD/UOsuIMOQn4Ig0SdivYPfZukb5cdasKJukG1NOpbW7yRNivaCnfZz6dTawXw
  XRIV/KDsHQiyVxKvN73bThKhONkcX2LWuD928tAR6XMM2G5ovxLe09vuOzzfTWQDsm++9UKF a/A=
-In-Reply-To: <cb4abe275a064f241fa54440608cd3240fb82284.1769562575.git.lv.zheng@spacemit.com>
+In-Reply-To: <aef97d98028a9e9a26de844990debfc0b414c2dd.1769562575.git.lv.zheng@spacemit.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 28/01/2026 03:24, Lv Zheng wrote:
-> This patch adds mechanism to allow vendor events to be registered via
-> device tree. This is useful to support SpacemiT T100 IOMMU where the
-> maximum 128 event IDs should be supported by T100 IOATS.
+On 28/01/2026 03:25, Lv Zheng wrote:
+> This patch introduces global filter support for RISC-V IOMMU HPM. The
+
+Please do not use "This commit/patch/change", but imperative mood. See
+longer explanation here:
+https://elixir.bootlin.com/linux/v6.16/source/Documentation/process/submitting-patches.rst#L94
+
+> global filter can be seen in SpacemiT T100 which only supports single
+> filter to be applied to all event counters. This silicon design can save
+> the number of the event bus signals.
 > 
 > Signed-off-by: Lv Zheng <lv.zheng@spacemit.com>
 > Signed-off-by: Jingyu Li <joey.li@spacemit.com>
 > ---
->  .../bindings/iommu/riscv,iommu.yaml           |  4 +
+>  .../bindings/iommu/riscv,iommu.yaml           |  2 +
+>  drivers/iommu/riscv/iommu-hpm.c               | 93 +++++++++++++++++--
+>  drivers/iommu/riscv/iommu.h                   |  1 +
+>  3 files changed, 89 insertions(+), 7 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml b/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
+> index b69109362b20..ec5b84ff5afb 100644
+> --- a/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
+> +++ b/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
+> @@ -72,6 +72,8 @@ properties:
+>      minItems: 1
+>      maxItems: 120
+>  
+> +  global-filter: true
+
+NAK, absolutely pointless and wrong code. I am not providing you full
+review because you did not bother to follow basic steps required from
+you, so essentially you waste our time.
 
 Please run scripts/checkpatch.pl on the patches and fix reported
 warnings. After that, run also 'scripts/checkpatch.pl --strict' on the
@@ -122,8 +145,6 @@ ancient tree (don't, instead use mainline) or work on fork of kernel
 fine, although remember about `b4 prep --auto-to-cc` if you added new
 patches to the patchset.
 
-Anyway, the property is NAK - does not follow any standard rules. Read
-docs in kernel about bindings and some DTS beginners talks/slides.
 
 Best regards,
 Krzysztof
