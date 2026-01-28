@@ -1,57 +1,131 @@
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C651A207A32;
-	Wed, 28 Jan 2026 14:14:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769609689; cv=none; b=PoNMvpxAxB+omLAUudxJvlasJ/zAgg9bYwENToZFzu/djpB6Q6iHKHspgRreb/iHn8BbCY2KYEBCs37eTYuEnRLMAPAcYD9WslZtecWxGtnaS+vmtdP8T1531yZ7LAfT8NOuH7QXyIlfaK1tdwpcOgD3Q+oSGXVJE0ivZIyct4s=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769609689; c=relaxed/simple;
-	bh=+2MqYXm55ZNxYj0lms2m+cR0rcBORP8r8Baw39QWR6M=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=QLrEAhzKuw5jPkcCuSg59HOVsIjElLK13orgzAGU4+bOJ0F7euGdCkiy4NvNbwY4nUYAPZXaUTaU68P4rIoYadCLjnfrwzvqrGPSAZ/FtludAn6DnFb/ykUDSR8+dfyyCf6+fR+sLfL1D9L6Sa7fCfmF04x3GMAUrRTxtoRPKjA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=teR+dy6P; arc=none smtp.client-ip=85.214.250.239
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="teR+dy6P"
-Received: from 8bytes.org (p4ffe051a.dip0.t-ipconnect.de [79.254.5.26])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 5AD911C0959;
-	Wed, 28 Jan 2026 15:14:46 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1769609686;
-	bh=+2MqYXm55ZNxYj0lms2m+cR0rcBORP8r8Baw39QWR6M=;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 988A0350A14;
+	Wed, 28 Jan 2026 14:36:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1769610994; cv=none; b=OxAESKj6ExPuqv8S5LVblWi9rN87B/gPCQNBEJz33P4mUEAk0ROSXLIlBrbukYuO2Z22pZTLVS6tXXZUBlmYndoF1/2v8UYqWD4X+XMVDNt98V5VcpXwHb7oJM31vNKC2KaGMs0X98QhLLQMWOHLi9UnCy+SwJ1nC32B6LP67tc=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1769610994; c=relaxed/simple;
+	bh=w7RrBBzZIuz8xqrWdZPUre+AvVJylwUW9queAH7gzkE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=dG258EeYvedlFQQYkhekzd5JjfRxMI1t6+3GcFrwNAIjhp5oVuqv6JlpcS+Ppqk/Sw3n4heSIsDhGVF9GMABmS2bh626I8Z3cr1AA8Q5Of0ls3I/ECPAy9O48ZVCMRnr/JMeFWAwZNTx8hlyepD1UNmh6HE4YNAaS6UfyDJe7eo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dLgYQaz3; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dLgYQaz3"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2DEBC4CEF1;
+	Wed, 28 Jan 2026 14:36:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1769610994;
+	bh=w7RrBBzZIuz8xqrWdZPUre+AvVJylwUW9queAH7gzkE=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=teR+dy6PXty/9b4m9hVEKeOEv9qfekMciICkCoXja/RvVqzUs0K55PuOizO3r8Wme
-	 +5wtN1ZQeVVg3XfgvT+ZYleH1OOaZqP35sz39r2w4AFIjSmhzqcVXHUPeIHznytrkC
-	 ywGUGto9maOYag0hokCu7IxCVRs/I3OMGWJ2R68kqnXtbwsw3VE//STDf55FLDSeEY
-	 fS6hz5o2cprZTxerDRdFD6ANWK5e2AXzFC+BhwqH36Jx9an48DeZB3qBlsgm129vzP
-	 ezZE7FFiK4EOws7In5qpEqgHLarDsjTNP0/GlNckNdkhdWfaaiDn03f9Xfw7KzIDak
-	 n/RtnctUBwf6g==
-Date: Wed, 28 Jan 2026 15:14:45 +0100
-From: Joerg Roedel <joro@8bytes.org>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Matthew Brost <matthew.brost@intel.com>, 
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, 
-	Francois Dugast <francois.dugast@intel.com>, Joerg Roedel <joerg.roedel@amd.com>, 
-	Kevin Tian <kevin.tian@intel.com>, patches@lists.linux.dev
-Subject: Re: [PATCH rc] iommupt: Only cache flush memory changed by unmap
-Message-ID: <cwpjyumxpavy24ljo5nlxddo4gozzztnwzrxcm5jkotwn34wg6@a4u7f7emsoph>
-References: <0-v1-21ee371752fc+4c-iommupt_unmap_cflush_jgg@nvidia.com>
+	b=dLgYQaz3hk08B66xJru+tcLyUXLfa2syE5i0+ySVr5hp2pTvBHFoYfN2RUqzL63xr
+	 TnXnJYFbFmIqK0F84CfWyeINuD4unEvDN9HxQVQpR/uTo8mtdSMIA6pEe+dNcxk18+
+	 GJWNXS6LU16HcUVNJhaTri8i7hdJOaZhFOZIGyFlK0gMlXsenBJFkcC3m/5zQ2SFWZ
+	 +B/2/0DdD9Gu9ZhaCDQ83hv55zLYP27Yhesox8Sh5yOEZs5Yoo8RrDJpPH27u9fRnr
+	 t222h4hNov3WoLGJ3NJjV9LL8kcHxUjOdj1AeqOS02hJaBhsfWFJNWnVbZiExRrfSs
+	 w+hRuUqcOcsYA==
+Date: Wed, 28 Jan 2026 20:06:21 +0530
+From: Manivannan Sadhasivam <mani@kernel.org>
+To: Mukesh R <mrathor@linux.microsoft.com>
+Cc: Stanislav Kinsburskii <skinsburskii@linux.microsoft.com>, 
+	linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, linux-pci@vger.kernel.org, 
+	linux-arch@vger.kernel.org, kys@microsoft.com, haiyangz@microsoft.com, wei.liu@kernel.org, 
+	decui@microsoft.com, longli@microsoft.com, catalin.marinas@arm.com, will@kernel.org, 
+	tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com, 
+	hpa@zytor.com, joro@8bytes.org, lpieralisi@kernel.org, kwilczynski@kernel.org, 
+	robh@kernel.org, bhelgaas@google.com, arnd@arndb.de, 
+	nunodasneves@linux.microsoft.com, mhklinux@outlook.com, romank@linux.microsoft.com
+Subject: Re: [PATCH v0 10/15] PCI: hv: Build device id for a VMBus device
+Message-ID: <323krpkmg4zmswo567ccah2g7ymprs66nfei3eo6saobl2azda@35jdfloq5g3g>
+References: <20260120064230.3602565-1-mrathor@linux.microsoft.com>
+ <20260120064230.3602565-11-mrathor@linux.microsoft.com>
+ <aXAAH4G9ztAGDWuy@skinsburskii.localdomain>
+ <a2e54fff-3cbb-e332-c35e-7520c36eceed@linux.microsoft.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <0-v1-21ee371752fc+4c-iommupt_unmap_cflush_jgg@nvidia.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <a2e54fff-3cbb-e332-c35e-7520c36eceed@linux.microsoft.com>
 
-On Sat, Jan 24, 2026 at 05:00:21PM -0400, Jason Gunthorpe wrote:
->  drivers/iommu/generic_pt/iommu_pt.h | 11 ++++++++++-
->  1 file changed, 10 insertions(+), 1 deletion(-)
+On Fri, Jan 23, 2026 at 04:42:54PM -0800, Mukesh R wrote:
+> On 1/20/26 14:22, Stanislav Kinsburskii wrote:
+> > On Mon, Jan 19, 2026 at 10:42:25PM -0800, Mukesh R wrote:
+> > > From: Mukesh Rathor <mrathor@linux.microsoft.com>
+> > > 
+> > > On Hyper-V, most hypercalls related to PCI passthru to map/unmap regions,
+> > > interrupts, etc need a device id as a parameter. This device id refers
+> > > to that specific device during the lifetime of passthru.
+> > > 
+> > > An L1VH VM only contains VMBus based devices. A device id for a VMBus
+> > > device is slightly different in that it uses the hv_pcibus_device info
+> > > for building it to make sure it matches exactly what the hypervisor
+> > > expects. This VMBus based device id is needed when attaching devices in
+> > > an L1VH based guest VM. Before building it, a check is done to make sure
+> > > the device is a valid VMBus device.
+> > > 
+> > > Signed-off-by: Mukesh Rathor <mrathor@linux.microsoft.com>
+> > > ---
+> > >   arch/x86/include/asm/mshyperv.h     |  2 ++
+> > >   drivers/pci/controller/pci-hyperv.c | 29 +++++++++++++++++++++++++++++
+> > >   2 files changed, 31 insertions(+)
+> > > 
+> > > diff --git a/arch/x86/include/asm/mshyperv.h b/arch/x86/include/asm/mshyperv.h
+> > > index eef4c3a5ba28..0d7fdfb25e76 100644
+> > > --- a/arch/x86/include/asm/mshyperv.h
+> > > +++ b/arch/x86/include/asm/mshyperv.h
+> > > @@ -188,6 +188,8 @@ bool hv_vcpu_is_preempted(int vcpu);
+> > >   static inline void hv_apic_init(void) {}
+> > >   #endif
+> > > +u64 hv_pci_vmbus_device_id(struct pci_dev *pdev);
+> > > +
+> > >   struct irq_domain *hv_create_pci_msi_domain(void);
+> > >   int hv_map_msi_interrupt(struct irq_data *data,
+> > > diff --git a/drivers/pci/controller/pci-hyperv.c b/drivers/pci/controller/pci-hyperv.c
+> > > index 8bc6a38c9b5a..40f0b06bb966 100644
+> > > --- a/drivers/pci/controller/pci-hyperv.c
+> > > +++ b/drivers/pci/controller/pci-hyperv.c
+> > > @@ -579,6 +579,8 @@ static void hv_pci_onchannelcallback(void *context);
+> > >   #define DELIVERY_MODE		APIC_DELIVERY_MODE_FIXED
+> > >   #define HV_MSI_CHIP_FLAGS	MSI_CHIP_FLAG_SET_ACK
+> > > +static bool hv_vmbus_pci_device(struct pci_bus *pbus);
+> > > +
+> > 
+> > Why not moving this static function definition above the called instead of
+> > defining the prototype?
+> 
+> Did you see the function implementation? It has other dependencies that
+> are later, it would need code reorg.
+> 
+> Thanks,
+> -Mukesh
+> 
+> 
+> > >   static int hv_pci_irqchip_init(void)
+> > >   {
+> > >   	return 0;
+> > > @@ -598,6 +600,26 @@ static unsigned int hv_msi_get_int_vector(struct irq_data *data)
+> > >   #define hv_msi_prepare		pci_msi_prepare
+> > > +u64 hv_pci_vmbus_device_id(struct pci_dev *pdev)
+> > > +{
+> > > +	u64 u64val;
+> > 
+> > This variable is redundant.
+> 
+> Not really. It helps with debug by putting a quick print, and is
+> harmless.
+> 
 
-Applied, thanks.
+Such debug print do not exist now. So there is no need of a variable, drop it.
+
+- Mani
+
+-- 
+மணிவண்ணன் சதாசிவம்
