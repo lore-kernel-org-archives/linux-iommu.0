@@ -1,171 +1,154 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 14CD72DEA6B
-	for <iommu@lists.linux.dev>; Wed, 28 Jan 2026 18:44:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-qv1-f47.google.com (mail-qv1-f47.google.com [209.85.219.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 781DD2FF178
+	for <iommu@lists.linux.dev>; Wed, 28 Jan 2026 19:59:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769625895; cv=none; b=k4AUA3f8+J3ITKBHEB0NJohFwzDAaMuEHPS8VgZhTfBhKtAP66pVuBUI0oNSegL3eB8SYoonGSfJ821sVvHnbbbYdFRkVyr6ZB1zgqm1i0tkuV6ZwCKMKF4zrABjFb5RLRvqsMONx0G0CzK3GxXWhzFgEZ+AHmO2XA2HmHGRYZo=
+	t=1769630386; cv=none; b=gIyvN6Psc5m+KxzxlUEe95uxmBTRS5raHYvxFLrhhGIAColV9NvuTThg0NghHs9CQKUwE/gbA3e4InzxumDAWp0VZX12GNBQ/auwkYXsoi4sf1msOe51ABMIXJgmChc/CSGwX9faOwL0Jbyeybe0HYc+P1qpryVuvNJGJFprLIo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769625895; c=relaxed/simple;
-	bh=YWYdf9VXH4blRVtgKNmi/VpABd2r97IKD4NwZPdQJw8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=eIhMIj4/kOUrt0TzW5MZhLFJL/ROdwkBrzWtRwg+yhPy3ZiMGLFTag52Eok/sFkz2VKisv7DusGVdsF0l+knsBXmewirTmyp+/StOBN7nOI+V1ecWMT1i6iwXkfEd6pirxKD6xzJz4n72sTbq9M72WSXEexJL5bXpgmAAtsYLAU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C644B1516;
-	Wed, 28 Jan 2026 10:44:46 -0800 (PST)
-Received: from [10.1.196.85] (e121345-lin.cambridge.arm.com [10.1.196.85])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 12D3B3F5CA;
-	Wed, 28 Jan 2026 10:44:47 -0800 (PST)
-Message-ID: <d6bc7f38-b41d-4e89-b484-0e699981b8b4@arm.com>
-Date: Wed, 28 Jan 2026 18:44:35 +0000
+	s=arc-20240116; t=1769630386; c=relaxed/simple;
+	bh=INVF0NKpfeA9Zqk17ZaQUkV6i2PcpJndfTdw11nI7f4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=MsNzdErEP9wjVQjxuQDKqejxJy79TmmVQdh82UBIKFbXDhW0ikZseDQL2PE6vakbnP1QwsC7vbSDLhU+ZnYNG0CiBKPq0SYg1UTqrEuzU+S17Hzry8DUCMfHQ//N6nudLCcyPh4iDZslfzJa60HrYD1+RwLnRy+GjXCo6aVW8vs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=CC+tYUtT; arc=none smtp.client-ip=209.85.219.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="CC+tYUtT"
+Received: by mail-qv1-f47.google.com with SMTP id 6a1803df08f44-8946a794e4fso3074886d6.2
+        for <iommu@lists.linux.dev>; Wed, 28 Jan 2026 11:59:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1769630384; x=1770235184; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=JYo9G/VcbU/Bswn8IpEHmUA4exilaj26AXaG+5ltVBw=;
+        b=CC+tYUtTERwWBtK11jsKpyAzeNN74t8N/bk0JwNzAuQEB9i5QrTEXktvx10oeFlaVZ
+         ChXts3gSpknu6Hl2zFc0Nxk67t6cBQ/XPZKMYR3RKqfJUN3f+cb6OjJxNN1G+aHikrwC
+         3od0Al0LSJHljFNiPk8QFbqxzi3Qi7NoHm6CS9eXGb2mgkSsVpzYrOXvIfepDQKWjQxp
+         Oak4RDxw4sPnX3tQIp4Iwjj68GXLTn3JwXZpdT18gv+ITs7zFVMaD0l7hb5m3OVuhxXR
+         Aju7aBmhZdIiVmni7IObepAzQEkRTozDBGbILXpPZG2UtjNGKLnUj3YtjagOSL/V/6ON
+         edwA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1769630384; x=1770235184;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=JYo9G/VcbU/Bswn8IpEHmUA4exilaj26AXaG+5ltVBw=;
+        b=GAqnK8g4av5+N0QwkmunnxklWvKiT2WSZqkvFylnLq6yjKr7Z4XfL+VFQ0RVRtUNCJ
+         bqtSbl99mo/YB8lNECNOgKnavYkeqOFji5MwtuouxSzNIpS61FiKZR/z9qbizWyC2jp0
+         /GRl1KFbK++Q+4Y5/+WKe8h/KhMw4i/gbrC44OuHFYa9u45a2D213ephynuO5agQ32RT
+         SokiJnDWOLyRZENd90YtNRfRFAa7PHt0Th+IZSQLURmNq1RDiWkTiMvwejGm+rsz7jMh
+         uLCov34YDmd0IADlzn2EC1jyNKH5by1ca4jRZ9f04fnN/hOHf3yigCsgDuS+pyB92f2h
+         KpZw==
+X-Forwarded-Encrypted: i=1; AJvYcCVnHkD/9BW2UPJUoZSkGAaTZ8FTl8m0n+5pRifSpRaPA6QBQ3wSZzDoRO6CTBPVQ0i5I/ALpg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyGOZ+hf4lTQlF9vrwOmhIJO/TB/alf+SPgMy40qMw0LU9cT0Uq
+	wpkX1Z9HCrdRZIMS/nwTniHOE+j+nBMD87tIAnI1grorO3cXs3lPFSKUzeJaUBV0tLM=
+X-Gm-Gg: AZuq6aI16NvdUdrsMBfvAE17l/21g/W9PzuorOKj5Wo4We1+pZCNkIvU5ILzh+FJUD0
+	0t+bDSIyrah8xVgT8thphwl/LzML0/AfGM1227+1B92aQ7ng9or9THL8gpGSEstcbLkJnkcJSTw
+	6kC0IpLJ66VrMsU+anr/dxkrpatDu6bJCu/2/+FIFW9T6urG3izNka3QNuus1EsWNsyjz0rzVSw
+	/FN+v2mjUzSbN4ArfYolQ0fQXPm8u3JCvZf0bURGFtKt5EL+wQIewwzSyZGznCW3RPOHTU/DuYP
+	Qut0bwjue3pGrHB5fpCou3l7IJ1mHajcZKsLG1ppruGLnk50PFRoBX6dxpYqrrNyd0um489yRZI
+	p9y9PR+QTa8kYzgyhqVcA6ZfHyRfRTeyFLVhB7m7mK8FAFqE8+1a811m1uBfBnzw2opgzHJ1XKw
+	N69zoxswi5b72Vj8BZtc6/dvWVkOGa6GxchtcnFx+oG1iqwe/39jbZOLps/HwNnbzXQGg=
+X-Received: by 2002:ad4:5ce9:0:b0:880:5883:4d23 with SMTP id 6a1803df08f44-894cc7f5461mr96138006d6.16.1769630384364;
+        Wed, 28 Jan 2026 11:59:44 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-162-112-119.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.112.119])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-894d375f3casm23658566d6.47.2026.01.28.11.59.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 28 Jan 2026 11:59:43 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1vlBhX-00000009es5-18WU;
+	Wed, 28 Jan 2026 15:59:43 -0400
+Date: Wed, 28 Jan 2026 15:59:43 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Samiullah Khawaja <skhawaja@google.com>
+Cc: David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>, iommu@lists.linux.dev,
+	Robin Murphy <robin.murphy@arm.com>,
+	Pratyush Yadav <pratyush@kernel.org>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Alex Williamson <alex@shazbot.org>, linux-kernel@vger.kernel.org,
+	Saeed Mahameed <saeedm@nvidia.com>,
+	Adithya Jayachandran <ajayachandra@nvidia.com>,
+	Parav Pandit <parav@nvidia.com>,
+	Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>,
+	Vipin Sharma <vipinsh@google.com>, dmatlack@google.com,
+	YiFei Zhu <zhuyifei@google.com>, Chris Li <chrisl@kernel.org>,
+	praan@google.com
+Subject: Re: [RFC PATCH v2 00/32] Add live update state preservation
+Message-ID: <20260128195943.GY1641016@ziepe.ca>
+References: <20251202230303.1017519-1-skhawaja@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommu/arm-smmu: Use pm_runtime in fault handlers
-To: Prakash Gupta <prakash.gupta@oss.qualcomm.com>,
- Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
- Rob Clark <robin.clark@oss.qualcomm.com>, Connor Abbott <cwabbott0@gmail.com>
-Cc: linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- Akhil P Oommen <akhilpo@oss.qualcomm.com>,
- Pratyush Brahma <pratyush.brahma@oss.qualcomm.com>,
- Pranjal Shrivastava <praan@google.com>
-References: <20260127-smmu-rpm-v1-1-2ef2f4c85305@oss.qualcomm.com>
- <9fb8f661-a235-4f86-bc10-f80a21a8fa9d@arm.com>
- <00fcbcf2-3f48-410d-88a3-88dc834c1ed7@oss.qualcomm.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <00fcbcf2-3f48-410d-88a3-88dc834c1ed7@oss.qualcomm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20251202230303.1017519-1-skhawaja@google.com>
 
-[ +Pranjal as this might matter for v3 too... ]
-
-On 28/01/2026 5:56 am, Prakash Gupta wrote:
+On Tue, Dec 02, 2025 at 11:02:30PM +0000, Samiullah Khawaja wrote:
 > 
-> On 1/27/2026 9:35 PM, Robin Murphy wrote:
->> On 2026-01-27 12:11 pm, Prakash Gupta wrote:
->>> Commit d4a44f0750bb ("iommu/arm-smmu: Invoke pm_runtime across the
->>> driver")
->>> enabled pm_runtime for the arm-smmu device. On systems where the SMMU
->>> sits in a power domain, all register accesses must be done while the
->>> device is runtime-resumed to avoid unclocked register reads and
->>> potential NoC errors.
->>>
->>> So far, this has not been an issue for most SMMU clients because
->>> stall-on-fault is enabled by default. While a translation fault is
->>> being handled, the SMMU stalls further translations for that context
->>> bank, so the fault handler would not race with a powered-down
->>> SMMU.
->>>
->>> Adreno SMMU now disables stall-on-fault in the presence of fault
->>> storms to avoid saturating SMMU resources and hanging the GMU. With
->>> stall-on-fault disabled, the SMMU can generate faults while its power
->>> domain may no longer be enabled, which makes unclocked accesses to
->>> fault-status registers in the SMMU fault handlers possible.
->>
->> At face value, that sounds wrong - how does an SMMU generate a fault,
->> or indeed do anything, when it's powered off? In principle it's
->> possible that the SMMU might signal an interrupt, and is _then_
->> suspended (with the interrupt line somehow remaining asserted, so
->> probably more clock-gated than completely powered down) before the
->> interrupt hander runs, but we rather assume that we're not going to
->> have an unhandled hardware IRQ hanging around for longer than the
->> autosuspend delay.
->>
->> So, judging by the diff below, I guess what you really mean is that in
->> the case of a threaded context IRQ handler, it can take long enough
->> between handling the hardware IRQ and the thread actually running that
->> the SMMU may have suspended in between?
+> Samiullah Khawaja (26):
+>   iommu: Add liveupdate FLB for IOMMU state preservation
+>   iommu: Register IOMMU FLB with iommufd file handler
+>   iommu: Implement IOMMU LU FLB preserve/unpreserve callbacks
+>   iommu: Add iommu_domain ops to preserve, unpreserve and restore
+>   iommu/pages: Add APIs to preserve/unpreserve/restore iommu pages
+>   iommupt: Implement preserve/unpreserve/restore callbacks
+>   iommu: Add APIs to preserve/unpreserve iommu domains
+>   iommufd: Use the iommu_domain_preserve/unpreserve APIs
+>   iommu: Add API to keep track of iommu domain attachments
+>   iommu: Add API to preserve/unpreserve a device
+>   iommu/vt-d: Implement device and iommu preserve/unpreserve ops
+>   iommufd: Add APIs to preserve/unpreserve a vfio cdev
+>   vfio/pci: Preserve the iommufd state of the vfio cdev
+>   iommu: Add APIs to get preserved state of a device
+>   iommu/vt-d: Clean the context entries of unpreserved devices
+>   iommu: Implement IOMMU FLB retrieve and finish ops
+>   iommu: Add an API get the preserved state of an IOMMU
+>   iommu/vt-d: restore state of the preserved IOMMU
+>   iommu: Add helper APIs to fetch preserved device state
+>   iommu/vt-d: reclaim domain ids of the preserved devices
+>   iommu: restore preserved domain and reattach
+>   iommu/vt-d: reuse the preserved domain id for preserved devices
+>   iommufd: Handle the iommufd can_finish properly
+>   iommu: Transfer device ownership after liveupdate
+>   iommu: Allow replacing restored domain
+>   iommufd/selftest: Add test to verify iommufd preservation
 > 
-> You are correct that the SMMU cannot generate a fault while powered
-> down. A more accurate description of the race condition is as follows:
-> When stall-on-fault is disabled, the faulting transaction does is
-> terminated. This allows the master (the GPU) to complete its work, drop
-> its power vote for the SMMU, and allow the SMMU to suspend. However, the
-> SMMU fault handler may still be waiting to execute on the CPU.
-> If the SMMU suspends before the handler reads the fault registers, an
-> unclocked access occurs. This scenario is significantly more likely when
-> using threaded IRQs due to the scheduling latency involved. I will
-> update the next iteration to reflect this.
-> 
->>
->>> Guard the context and global fault handlers with arm_smmu_rpm_get() /
->>> arm_smmu_rpm_put() so that all SMMU fault register accesses are done
->>> with the SMMU powered.
->>>
->>> Fixes: b13044092c1e ("drm/msm: Temporarily disable stall-on-fault
->>> after a page fault")
->>> Co-developed-by: Pratyush Brahma <pratyush.brahma@oss.qualcomm.com>
->>> Signed-off-by: Pratyush Brahma <pratyush.brahma@oss.qualcomm.com>
->>> Signed-off-by: Prakash Gupta <prakash.gupta@oss.qualcomm.com>
->>> ---
->>>    drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c |  5 ++-
->>>    drivers/iommu/arm/arm-smmu/arm-smmu.c      | 53
->>> ++++++++++++++++++++++--------
->>>    2 files changed, 43 insertions(+), 15 deletions(-)
->>>
->>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->>> b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->>> index 573085349df3..2d03df72612d 100644
->>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->>> @@ -317,6 +317,7 @@ static int qcom_adreno_smmu_init_context(struct
->>> arm_smmu_domain *smmu_domain,
->>>        struct arm_smmu_device *smmu = smmu_domain->smmu;
->>>        struct qcom_smmu *qsmmu = to_qcom_smmu(smmu);
->>>        const struct of_device_id *client_match;
->>> +    const struct arm_smmu_impl *impl = qsmmu->data->impl;
->>>        int cbndx = smmu_domain->cfg.cbndx;
->>>        struct adreno_smmu_priv *priv;
->>>    @@ -350,10 +351,12 @@ static int
->>> qcom_adreno_smmu_init_context(struct arm_smmu_domain *smmu_domain,
->>>        priv->get_ttbr1_cfg = qcom_adreno_smmu_get_ttbr1_cfg;
->>>        priv->set_ttbr0_cfg = qcom_adreno_smmu_set_ttbr0_cfg;
->>>        priv->get_fault_info = qcom_adreno_smmu_get_fault_info;
->>> -    priv->set_stall = qcom_adreno_smmu_set_stall;
->>>        priv->set_prr_bit = NULL;
->>>        priv->set_prr_addr = NULL;
->>>    +    if (impl->context_fault_needs_threaded_irq)
->>> +        priv->set_stall = qcom_adreno_smmu_set_stall;
->>> +
->>>        if (of_device_is_compatible(np, "qcom,smmu-500") &&
->>>            !of_device_is_compatible(np, "qcom,sm8250-smmu-500") &&
->>>            of_device_is_compatible(np, "qcom,adreno-smmu")) {
->>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c
->>> b/drivers/iommu/arm/arm-smmu/arm-smmu.c
->>> index 5e690cf85ec9..183f12e45b02 100644
->>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
->>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
->>> @@ -462,10 +462,23 @@ static irqreturn_t arm_smmu_context_fault(int
->>> irq, void *dev)
->>>        int idx = smmu_domain->cfg.cbndx;
->>>        int ret;
->>>    +    if (smmu->impl && smmu->impl->context_fault_needs_threaded_irq) {
->>
->> Why is this conditional on being threaded, if the global fault handler
->> that can never be threaded at all apparently needs it unconditionally?
-> Synchronous runtime PM calls can sleep, which would cause issue if
-> called within a hard IRQ context. This is why I added the conditional
-> check for threaded IRQs.
-> Furthermore, this change only allow the driver to override the
-> stall-on-fault setting when context_fault_needs_threaded_irq is true.
-> Since the unclocked access issue is tied to disabling stall-on-fault,
-> the fix is only logically required for the threaded IRQ path.
-> For the Global Fault handler, which runs in a hard IRQ context, you are
-> right—we cannot safely vote for power there. I will remove the runtime
-> PM call from that section.
+> YiFei Zhu (6):
+>   iommufd: Allow HWPTs to have a NULL IOAS
+>   iommufd: split alloc and domain assign from iommufd_hwpt_paging_alloc
+>   iommufd: Add basic skeleton based on liveupdate_file_handler
+>   iommufd-lu: Implement basic prepare/cancel/finish/retrieve using
+>     folios
+>   iommufd-lu: Implement ioctl to let userspace mark an HWPT to be
+>     preserved
+>   iommufd-lu: Persist iommu hardware pagetables for live update
 
-Hmm, but then how *do* we actually guarantee that autosuspend doesn't 
-happen to kick in and power down the SMMU just as a hardirq handler 
-runs, when there's some unexpected event? I fear there's a horrible can 
-of worms here...
+This really needs to be made smaller and more focused to be
+reviewable and mergable. Try to stick to 15-ish patches.
 
-Thanks,
-Robin.
+There is a lot giong on here, I suggest focusing this only on the main
+iommu core, a vt-d driver implementation of the bare minimum, and an
+iommufd function to trigger preservation of a domain.
+
+Start off by just making the successor kernel fail to accept any
+drivers at all because the iommu_domain was preserved. ie restore the
+domain and set it as the default_domain and then fail in
+iommu_device_use_default_domain() and related functions.
+
+All it should do is convey an iommu_domain and the pasid table entry
+unchanged without hit from prior to successor kernel. That's the bare
+minimum.
+
+Then a second series which picks up from there and feeds the sucessor path
+through iommufd/vfio.
+
+Jason
