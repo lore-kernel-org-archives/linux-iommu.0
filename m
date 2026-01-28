@@ -1,50 +1,33 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 969FF156236;
-	Wed, 28 Jan 2026 06:09:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B98B072612
+	for <iommu@lists.linux.dev>; Wed, 28 Jan 2026 07:45:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769580554; cv=none; b=sPsvu/IUw6VNRrP10KNeOALhcB/BDwTox0ZziaRD86REDFOTHVAKrAXk8Jn77TGyh7IPoGNswgUy0/760s+IqrzxgYr6Xu+s05XNxJLS7pUmj/l1hJbOw7Xte7eUPMIZ4z9/C4QG2Pm8neg+vv28loUmJILfKhKkA4onR/xZXpU=
+	t=1769586343; cv=none; b=FfYr8mWegoGCE9eLNdOwQtkUfKJ63jSOasWDoxTK01Yy99ISLaF3IzQ4BaexbbsEHtETrsfDnjkRYiaNx0HOe9yG5eJLiSps5g9YPTb2TU0ttZna6qV2Km8O/Gpn79136th4NjvCRG8Pvb+nGUReviwlJCm+RQWItooP8iF2u+A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769580554; c=relaxed/simple;
-	bh=s/okfIUZSLkkp0Oiwe2WaXA9B0yTq5rYfKf2znL3eUo=;
+	s=arc-20240116; t=1769586343; c=relaxed/simple;
+	bh=rY6kUKNzB4WOcKN39RPFt0WJ3h8pS71JyXsh5o5KE0I=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=mdzrcEW3Mt3yWeRuBy22hjxY6WrgEeoGxaz+fwv+G7ft5XtJWSGX7mQoEolsim9FrnwoEll2SS9tZzF70iKIPJdLcEeVOv/THeNTpXzdyfkCazZaj/VFDV/LAY3I2OFTdA/iocK/aZprDlqPLZOoS/WCQJ3VaBaseJknrtae3B0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=YyzBYcBH; arc=none smtp.client-ip=198.175.65.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	 In-Reply-To:Content-Type; b=GgrnIgHUHz8tVSNKi2MpgdPUVPzjvjlOAkACt07uHxdsGo9mP0nLQKyxAoSMBggJ9BWmnpGP5/+c6JpVSLdNUc+ap/qdXrDpD0qRsxt8b2p7L7J67jeIEttU79MjZ+HS5gHIPWT4AtFbf3p0Aq2zsNtAOhZOo6VM96JeP/IMV2s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uYQf/PNG; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="YyzBYcBH"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1769580553; x=1801116553;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=s/okfIUZSLkkp0Oiwe2WaXA9B0yTq5rYfKf2znL3eUo=;
-  b=YyzBYcBHperEKP72NjPxbBfY+rjTpwPgRr09jv5RwFHCMWvYA71un33e
-   Ww2aRXuKlWIcmlOHu1RV7M7raHEAO9QyURdlMk2xI26ke1sj70kmgs93I
-   +lLII/C7dLO0DjDS0ajeIGMokFu6KG7FPI/HsekbNVNXQavZC/qL1nbwK
-   FBZ72YlHqRtZ+6sfEISp8kaP2eVnOR7HUOIDN0uhRvTDEd06G4hbZqGfT
-   mRYSwyT8/vZoxC9CeKr9k6JOjx6zud90P7kysdE6yd8CKs8pgc6/X/Yh6
-   i7PSjttrcXw4Qwt8JdNJECFN17WE++WQ9DcH0RrXrPpUCxlx8SNGZJiQ9
-   A==;
-X-CSE-ConnectionGUID: Su2jdGGhQ+yKWU5FfUd70A==
-X-CSE-MsgGUID: v4o01gnARuOCs7wmn1YigA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11684"; a="70829596"
-X-IronPort-AV: E=Sophos;i="6.21,258,1763452800"; 
-   d="scan'208";a="70829596"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2026 22:09:12 -0800
-X-CSE-ConnectionGUID: fyQ2ql9CTGO8LwO3DdF25A==
-X-CSE-MsgGUID: tNXscwK2QjaBAS+o+mt2Bw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,258,1763452800"; 
-   d="scan'208";a="208249072"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2026 22:09:09 -0800
-Message-ID: <daf9e672-15c0-4726-9f2c-47f5018b126f@linux.intel.com>
-Date: Wed, 28 Jan 2026 14:08:51 +0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uYQf/PNG"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D633C4CEF1;
+	Wed, 28 Jan 2026 07:45:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1769586343;
+	bh=rY6kUKNzB4WOcKN39RPFt0WJ3h8pS71JyXsh5o5KE0I=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=uYQf/PNGjAe72vLwfvQXxLc0wSiVhF5+ru9tExB6wTwnXg4VzChMyUkyL8iZmJVSx
+	 n/VnxBYAUxuO0Im5Z8xQiBgaG9rKdoRSGHmCRbK0POK3PfNYWb0qokwcy/mVDcuKcf
+	 FQVJN8AHcjE6/ve0KX0aofVNF1erckxUUFKyKdYrB8I8HABxPVOxXJDtnSZF/fe7Q8
+	 b+dG1QfUL2o3JkYSG0gtK3tW1bhyLX8I6KFeAHsks8iaosCkYN2/7dYtf1/fFVBxCK
+	 23e7tZU+fiKwY5QdctfGSCl5PlwsSYXODt/kZeZOBewpsVqM9aE/rjn4eIb8lcbhl3
+	 V1I1etyvR8CGQ==
+Message-ID: <5caf9ea1-17b4-4fef-8ff1-f8d6b580f0b3@kernel.org>
+Date: Wed, 28 Jan 2026 08:45:37 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,58 +35,95 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH rc] iommupt: Only cache flush memory changed by unmap
-To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
- Joerg Roedel <joro@8bytes.org>, Matthew Brost <matthew.brost@intel.com>,
- Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>
-Cc: Francois Dugast <francois.dugast@intel.com>,
- Joerg Roedel <joerg.roedel@amd.com>, Kevin Tian <kevin.tian@intel.com>,
- patches@lists.linux.dev
-References: <0-v1-21ee371752fc+4c-iommupt_unmap_cflush_jgg@nvidia.com>
+Subject: Re: [PATCH 4/6] spacemit/t100: Add vendor event support for RISC-V
+ IOMMU HPM
+To: Lv Zheng <lv.zheng@spacemit.com>, Robin Murphy <robin.murphy@arm.com>,
+ Tomasz Jeznach <tjeznach@rivosinc.com>
+Cc: Jingyu Li <joey.li@spacemit.com>, Zhijian Chen <zhijian@spacemit.com>,
+ iommu@lists.linux.dev
+References: <cover.1769562575.git.lv.zheng@spacemit.com>
+ <cb4abe275a064f241fa54440608cd3240fb82284.1769562575.git.lv.zheng@spacemit.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <0-v1-21ee371752fc+4c-iommupt_unmap_cflush_jgg@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Autocrypt: addr=krzk@kernel.org; keydata=
+ xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
+ cFgcqTTuNHjAvxtUG8pQgGTHAObYs6xeYJtjUH0ZX6ndJ33FJYf5V3yXqqjcZ30FgHzJCFUu
+ JMp7PSyMPzpUXfU12yfcRYVEMQrmplNZssmYhiTeVicuOOypWugZKVLGNm0IweVCaZ/DJDIH
+ gNbpvVwjcKYrx85m9cBVEBUGaQP6AT7qlVCkrf50v8bofSIyVa2xmubbAwwFA1oxoOusjPIE
+ J3iadrwpFvsZjF5uHAKS+7wHLoW9hVzOnLbX6ajk5Hf8Pb1m+VH/E8bPBNNYKkfTtypTDUCj
+ NYcd27tjnXfG+SDs/EXNUAIRefCyvaRG7oRYF3Ec+2RgQDRnmmjCjoQNbFrJvJkFHlPeHaeS
+ BosGY+XWKydnmsfY7SSnjAzLUGAFhLd/XDVpb1Een2XucPpKvt9ORF+48gy12FA5GduRLhQU
+ vK4tU7ojoem/G23PcowM1CwPurC8sAVsQb9KmwTGh7rVz3ks3w/zfGBy3+WmLg++C2Wct6nM
+ Pd8/6CBVjEWqD06/RjI2AnjIq5fSEH/BIfXXfC68nMp9BZoy3So4ZsbOlBmtAPvMYX6U8VwD
+ TNeBxJu5Ex0Izf1NV9CzC3nNaFUYOY8KfN01X5SExAoVTr09ewARAQABzSVLcnp5c3p0b2Yg
+ S296bG93c2tpIDxrcnprQGtlcm5lbC5vcmc+wsGVBBMBCgA/AhsDBgsJCAcDAgYVCAIJCgsE
+ FgIDAQIeAQIXgBYhBJvQfg4MUfjVlne3VBuTQ307QWKbBQJoF1BKBQkWlnSaAAoJEBuTQ307
+ QWKbHukP/3t4tRp/bvDnxJfmNdNVn0gv9ep3L39IntPalBFwRKytqeQkzAju0whYWg+R/rwp
+ +r2I1Fzwt7+PTjsnMFlh1AZxGDmP5MFkzVsMnfX1lGiXhYSOMP97XL6R1QSXxaWOpGNCDaUl
+ ajorB0lJDcC0q3xAdwzRConxYVhlgmTrRiD8oLlSCD5baEAt5Zw17UTNDnDGmZQKR0fqLpWy
+ 786Lm5OScb7DjEgcA2PRm17st4UQ1kF0rQHokVaotxRM74PPDB8bCsunlghJl1DRK9s1aSuN
+ hL1Pv9VD8b4dFNvCo7b4hfAANPU67W40AaaGZ3UAfmw+1MYyo4QuAZGKzaP2ukbdCD/DYnqi
+ tJy88XqWtyb4UQWKNoQqGKzlYXdKsldYqrLHGoMvj1UN9XcRtXHST/IaLn72o7j7/h/Ac5EL
+ 8lSUVIG4TYn59NyxxAXa07Wi6zjVL1U11fTnFmE29ALYQEXKBI3KUO1A3p4sQWzU7uRmbuxn
+ naUmm8RbpMcOfa9JjlXCLmQ5IP7Rr5tYZUCkZz08LIfF8UMXwH7OOEX87Y++EkAB+pzKZNNd
+ hwoXulTAgjSy+OiaLtuCys9VdXLZ3Zy314azaCU3BoWgaMV0eAW/+gprWMXQM1lrlzvwlD/k
+ whyy9wGf0AEPpLssLVt9VVxNjo6BIkt6d1pMg6mHsUEVzsFNBFVDXDQBEADNkrQYSREUL4D3
+ Gws46JEoZ9HEQOKtkrwjrzlw/tCmqVzERRPvz2Xg8n7+HRCrgqnodIYoUh5WsU84N03KlLue
+ MNsWLJBvBaubYN4JuJIdRr4dS4oyF1/fQAQPHh8Thpiz0SAZFx6iWKB7Qrz3OrGCjTPcW6ei
+ OMheesVS5hxietSmlin+SilmIAPZHx7n242u6kdHOh+/SyLImKn/dh9RzatVpUKbv34eP1wA
+ GldWsRxbf3WP9pFNObSzI/Bo3kA89Xx2rO2roC+Gq4LeHvo7ptzcLcrqaHUAcZ3CgFG88CnA
+ 6z6lBZn0WyewEcPOPdcUB2Q7D/NiUY+HDiV99rAYPJztjeTrBSTnHeSBPb+qn5ZZGQwIdUW9
+ YegxWKvXXHTwB5eMzo/RB6vffwqcnHDoe0q7VgzRRZJwpi6aMIXLfeWZ5Wrwaw2zldFuO4Dt
+ 91pFzBSOIpeMtfgb/Pfe/a1WJ/GgaIRIBE+NUqckM+3zJHGmVPqJP/h2Iwv6nw8U+7Yyl6gU
+ BLHFTg2hYnLFJI4Xjg+AX1hHFVKmvl3VBHIsBv0oDcsQWXqY+NaFahT0lRPjYtrTa1v3tem/
+ JoFzZ4B0p27K+qQCF2R96hVvuEyjzBmdq2esyE6zIqftdo4MOJho8uctOiWbwNNq2U9pPWmu
+ 4vXVFBYIGmpyNPYzRm0QPwARAQABwsF8BBgBCgAmAhsMFiEEm9B+DgxR+NWWd7dUG5NDfTtB
+ YpsFAmgXUF8FCRaWWyoACgkQG5NDfTtBYptO0w//dlXJs5/42hAXKsk+PDg3wyEFb4NpyA1v
+ qmx7SfAzk9Hf6lWwU1O6AbqNMbh6PjEwadKUk1m04S7EjdQLsj/MBSgoQtCT3MDmWUUtHZd5
+ RYIPnPq3WVB47GtuO6/u375tsxhtf7vt95QSYJwCB+ZUgo4T+FV4hquZ4AsRkbgavtIzQisg
+ Dgv76tnEv3YHV8Jn9mi/Bu0FURF+5kpdMfgo1sq6RXNQ//TVf8yFgRtTUdXxW/qHjlYURrm2
+ H4kutobVEIxiyu6m05q3e9eZB/TaMMNVORx+1kM3j7f0rwtEYUFzY1ygQfpcMDPl7pRYoJjB
+ dSsm0ZuzDaCwaxg2t8hqQJBzJCezTOIkjHUsWAK+tEbU4Z4SnNpCyM3fBqsgYdJxjyC/tWVT
+ AQ18NRLtPw7tK1rdcwCl0GFQHwSwk5pDpz1NH40e6lU+NcXSeiqkDDRkHlftKPV/dV+lQXiu
+ jWt87ecuHlpL3uuQ0ZZNWqHgZoQLXoqC2ZV5KrtKWb/jyiFX/sxSrodALf0zf+tfHv0FZWT2
+ zHjUqd0t4njD/UOsuIMOQn4Ig0SdivYPfZukb5cdasKJukG1NOpbW7yRNivaCnfZz6dTawXw
+ XRIV/KDsHQiyVxKvN73bThKhONkcX2LWuD928tAR6XMM2G5ovxLe09vuOzzfTWQDsm++9UKF a/A=
+In-Reply-To: <cb4abe275a064f241fa54440608cd3240fb82284.1769562575.git.lv.zheng@spacemit.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 1/25/26 05:00, Jason Gunthorpe wrote:
-> The cache flush was happening on every level across the whole range of
-> iteration, even if no leafs or tables were cleared. Instead flush only the
-> sub range that was actually written.
+On 28/01/2026 03:24, Lv Zheng wrote:
+> This patch adds mechanism to allow vendor events to be registered via
+> device tree. This is useful to support SpacemiT T100 IOMMU where the
+> maximum 128 event IDs should be supported by T100 IOATS.
 > 
-> Overflushing isn't a correctness problem but it does impact the
-> performance of unmap.
-> 
-> After this series the performance compared to the original VT-d
-> implementation with cache flushing turned on is:
-> 
-> map_pages
->     pgsz  ,avg new,old ns, min new,old ns  , min % (+ve is better)
->       2^12,    253,266   ,     213,227     ,   6.06
->       2^21,    246,244   ,     221,219     ,   0.00
->       2^30,    231,240   ,     209,217     ,   3.03
->   256*2^12,   2604,2668  ,    2415,2540    ,   4.04
->   256*2^21,   2495,2824  ,    2390,2734    ,  12.12
->   256*2^30,   2542,2845  ,    2380,2718    ,  12.12
-> 
-> unmap_pages
->     pgsz  ,avg new,old ns, min new,old ns  , min % (+ve is better)
->       2^12,    259,292   ,     222,251     ,  11.11
->       2^21,    255,259   ,     227,236     ,   3.03
->       2^30,    238,254   ,     217,230     ,   5.05
->   256*2^12,   2751,2620  ,    2417,2437    ,   0.00
->   256*2^21,   2461,2526  ,    2377,2423    ,   1.01
->   256*2^30,   2498,2543  ,    2370,2404    ,   1.01
-> 
-> Fixes: efa03dab7ce4 ("iommupt: Flush the CPU cache after any writes to the page table")
-> Reported-by: Francois Dugast<francois.dugast@intel.com>
-> Closes:https://lore.kernel.org/all/20260121130233.257428-1- 
-> francois.dugast@intel.com/
-> Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
+> Signed-off-by: Lv Zheng <lv.zheng@spacemit.com>
+> Signed-off-by: Jingyu Li <joey.li@spacemit.com>
 > ---
->   drivers/iommu/generic_pt/iommu_pt.h | 11 ++++++++++-
->   1 file changed, 10 insertions(+), 1 deletion(-)
+>  .../bindings/iommu/riscv,iommu.yaml           |  4 +
 
-Thanks for fixing this.
+Please run scripts/checkpatch.pl on the patches and fix reported
+warnings. After that, run also 'scripts/checkpatch.pl --strict' on the
+patches and (probably) fix more warnings. Some warnings can be ignored,
+especially from --strict run, but the code here looks like it needs a
+fix. Feel free to get in touch if the warning is not clear.
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+Please use scripts/get_maintainers.pl to get a list of necessary people
+and lists to CC (and consider --no-git-fallback argument, so you will
+not CC people just because they made one commit years ago). It might
+happen, that command when run on an older kernel, gives you outdated
+entries. Therefore please be sure you base your patches on recent Linux
+kernel.
+
+Tools like b4 or scripts/get_maintainer.pl provide you proper list of
+people, so fix your workflow. Tools might also fail if you work on some
+ancient tree (don't, instead use mainline) or work on fork of kernel
+(don't, instead use mainline). Just use b4 and everything should be
+fine, although remember about `b4 prep --auto-to-cc` if you added new
+patches to the patchset.
+
+Anyway, the property is NAK - does not follow any standard rules. Read
+docs in kernel about bindings and some DTS beginners talks/slides.
+
+Best regards,
+Krzysztof
