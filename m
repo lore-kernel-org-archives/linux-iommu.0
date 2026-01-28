@@ -1,281 +1,377 @@
-Received: from sg-1-18.ptr.blmpb.com (sg-1-18.ptr.blmpb.com [118.26.132.18])
+Received: from sg-1-12.ptr.blmpb.com (sg-1-12.ptr.blmpb.com [118.26.132.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EAF00291C3F
-	for <iommu@lists.linux.dev>; Wed, 28 Jan 2026 02:25:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=118.26.132.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC0FC291C3F
+	for <iommu@lists.linux.dev>; Wed, 28 Jan 2026 02:25:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=118.26.132.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769567123; cv=none; b=Y8DMg4hcMO2eM53JGx9RY3i/oMwPcMZPb4fKHZIBI7ThvGNIvcEgPeE0m0pzVjCK+SkPGDJ9rBjwQsHYewYUSxp93Lx2Cksg16oc0VcornIkxy5ag16AFacaABqgcHRNh5gKux1S5xg8u7hzoIUcQFqaDhFMm94Zw7uRcrl3LIM=
+	t=1769567132; cv=none; b=PDaZbdYlkiL1aP5gf0XJuEwq5erYMjSesiLHaYxxi4EEcTlpKrTj916STxQVIMGkc5caTvrA99cmjXRDeXvbUjeH2icUASNOlSy880OGyqmtEdN1xE2yfHcVF+119ssjAHKKrRwrqjUGV5siD5mRMkTAZEAIMN0QqfeWFBA5nTc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769567123; c=relaxed/simple;
-	bh=UPUQ3MiWIkl+gNpjz+uanOZbzY6XJRhV2ct2rwY8ok0=;
-	h=From:In-Reply-To:References:To:Cc:Subject:Message-Id:Content-Type:
-	 Date:Mime-Version; b=F8KIHTVB7Rl9q+DBeQ/eROv+FKT1kBlTYocCiVdRkfnBgPc1ufeVYNQsRgtpCJ2heqxr/82VlLvOzhDCfRxwPc0RiObRykzr1ujOQOw7pF/oKWY+LVaz4rhah60qPcF1kjJMOL+zAqWZJfEZ9bfqifoiP+umA5Zy8ajgj6/yPHQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=spacemit.com; spf=pass smtp.mailfrom=spacemit.com; dkim=pass (2048-bit key) header.d=spacemit.com header.i=@spacemit.com header.b=ZCcLAwbw; arc=none smtp.client-ip=118.26.132.18
+	s=arc-20240116; t=1769567132; c=relaxed/simple;
+	bh=yRd01u+xWYU/FraasZJLN2/B3BCOJ0fYzfi3RHJz/Os=;
+	h=Subject:In-Reply-To:From:Message-Id:Date:Mime-Version:
+	 Content-Type:To:Cc:References; b=YEnm/jaqhio7cxrtD+EkUz/Osl++yTp7Qe0aXekweJjtySTldjESJxIcnRvjTb8OmdSug1SJZMQub7T1Li0EY+KAamrudp/iajXN9DyVwG1aDpblpAp7XdWY+GB+7ogbXgd+qjfOMDjkPdesBxjHY+ah+u6BFu+R6XGGrVH92OY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=spacemit.com; spf=pass smtp.mailfrom=spacemit.com; dkim=pass (2048-bit key) header.d=spacemit.com header.i=@spacemit.com header.b=B+59FqVa; arc=none smtp.client-ip=118.26.132.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=spacemit.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=spacemit.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=spacemit.com header.i=@spacemit.com header.b="ZCcLAwbw"
+	dkim=pass (2048-bit key) header.d=spacemit.com header.i=@spacemit.com header.b="B+59FqVa"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- s=feishu2303021642; d=spacemit.com; t=1769567111; h=from:subject:
+ s=feishu2303021642; d=spacemit.com; t=1769567118; h=from:subject:
  mime-version:from:date:message-id:subject:to:cc:reply-to:content-type:
  mime-version:in-reply-to:message-id;
- bh=YKGCfP4ShUg8owDf9BgRNTrFEMkArSPqJTbMNulh67M=;
- b=ZCcLAwbw+xmah1MsTvZnJQn3xKaTgVzlijx+LiOlbApR7SjkvhL8BVCyeV1aZAUFHth/s9
- RR+pFzQA5OqlozPLgjJpRuGdcX+1OL7Te4kXlO6ka46onfgeygCyRw1QRx5IfI/Da6MScg
- Bxq3BFh/pXNtWq2KrAkDmEADKE4F0dzQckOBX+tO5Pnb7oSUcniXwF3+JMuMjxgz0/1AEu
- cHhFzDf9nODUDETIq0jzQ+89Cs0QlYuByl3l+P0hAKOrzzwcDhPYpJqxMleC52WX1n3Rsh
- lWHk49d9aaWcWrAxQ0WDEA7zHfJmevtDcKntKE47IrWjSJpMrNJx6D97HVx5iQ==
-From: "Lv Zheng" <lv.zheng@spacemit.com>
-Received: from SurfaceBook2-B.localdomain ([122.224.183.70]) by smtp.feishu.cn with ESMTPS; Wed, 28 Jan 2026 10:25:08 +0800
+ bh=cj1fHFbHfZe5swUmMejpWKb1A4iQU05GhaE651qh1dw=;
+ b=B+59FqValxRfpo3uo2m4o+Kk+kpbTtDtm39LMbCoR6Jd4OaDuG0kybzHqFUCHeOuoCscFS
+ Mxn4BiFbUQKhgpZzzq2Ck/uYUxrGGyLigzqXUwlNAHXH9frsx+1ZJ2nD7UEU++gICpMWps
+ 4GO8idP4XGCzaFt8CPITGVY0IbMIy+JHh/2d5F4JKCH/1i2G2BoyGZG8lCdtxTYF+6sYUI
+ oRUhv7tKw/HE8IA0iTVbjGQld0JLJGEVqPZmrsO9eZnO4CZ61HzMfOflpCdwU3gUFA6i7S
+ lQ4bfNT/qCuERJFF7RsaO2lKg0mWNnUu61mo/nqEWS7PHGLFE//qvGZb7pDtug==
+Subject: [PATCH 6/6] spacemit/t100: Add SpacemiT T100 IOATC HPM support
+X-Mailer: git-send-email 2.43.0
 In-Reply-To: <cover.1769562575.git.lv.zheng@spacemit.com>
-References: <cover.1769562575.git.lv.zheng@spacemit.com>
-To: "Robin Murphy" <robin.murphy@arm.com>, 
-	"Tomasz Jeznach" <tjeznach@rivosinc.com>
-Cc: "Jingyu Li" <joey.li@spacemit.com>, "Lv Zheng" <lv.zheng@spacemit.com>, 
-	"Zhijian Chen" <zhijian@spacemit.com>, <iommu@lists.linux.dev>
-Subject: [PATCH 5/6] spacemit/t100: Add global filter support for RISC-V IOMMU HPM
-Message-Id: <aef97d98028a9e9a26de844990debfc0b414c2dd.1769562575.git.lv.zheng@spacemit.com>
-X-Original-From: Lv Zheng <lv.zheng@spacemit.com>
-Content-Type: text/plain; charset=UTF-8
-Date: Wed, 28 Jan 2026 10:25:05 +0800
-X-Lms-Return-Path: <lba+269797385+cd06de+lists.linux.dev+lv.zheng@spacemit.com>
+From: "Lv Zheng" <lv.zheng@spacemit.com>
+Message-Id: <db5831a243c94687d5f8651cb2baefe7e165c85e.1769562575.git.lv.zheng@spacemit.com>
+X-Lms-Return-Path: <lba+26979738d+311107+lists.linux.dev+lv.zheng@spacemit.com>
+Date: Wed, 28 Jan 2026 10:25:11 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
-X-Mailer: git-send-email 2.43.0
+Content-Type: text/plain; charset=UTF-8
+To: "Robin Murphy" <robin.murphy@arm.com>, 
+	"Tomasz Jeznach" <tjeznach@rivosinc.com>
+Cc: "Jingyu Li" <joey.li@spacemit.com>, "Lv Zheng" <lv.zheng@spacemit.com>, 
+	"Zhijian Chen" <zhijian@spacemit.com>, <iommu@lists.linux.dev>
+Received: from SurfaceBook2-B.localdomain ([122.224.183.70]) by smtp.feishu.cn with ESMTPS; Wed, 28 Jan 2026 10:25:15 +0800
+References: <cover.1769562575.git.lv.zheng@spacemit.com>
+X-Original-From: Lv Zheng <lv.zheng@spacemit.com>
 Content-Transfer-Encoding: quoted-printable
 
-This patch introduces global filter support for RISC-V IOMMU HPM. The
-global filter can be seen in SpacemiT T100 which only supports single
-filter to be applied to all event counters. This silicon design can save
-the number of the event bus signals.
+This patch adds IOATC discovery and HPM support for SpacemiT T100.
+
+SpacemiT T100 supports distributed architecture which allows IOTLBs to be
+cached in adjacent to the DMA masters. Such IOTLBs controllers are called
+as IOATC, this patch adds distributed HPM support for IOATCs.
 
 Signed-off-by: Lv Zheng <lv.zheng@spacemit.com>
 Signed-off-by: Jingyu Li <joey.li@spacemit.com>
 ---
- .../bindings/iommu/riscv,iommu.yaml           |  2 +
- drivers/iommu/riscv/iommu-hpm.c               | 93 +++++++++++++++++--
- drivers/iommu/riscv/iommu.h                   |  1 +
- 3 files changed, 89 insertions(+), 7 deletions(-)
+ drivers/iommu/riscv/iommu-bits.h     |  12 ++
+ drivers/iommu/riscv/iommu-hpm.c      | 173 ++++++++++++++++++++++++++-
+ drivers/iommu/riscv/iommu-platform.c |   4 +-
+ drivers/iommu/riscv/iommu.h          |   2 +-
+ 4 files changed, 184 insertions(+), 7 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml b/Doc=
-umentation/devicetree/bindings/iommu/riscv,iommu.yaml
-index b69109362b20..ec5b84ff5afb 100644
---- a/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
-+++ b/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
-@@ -72,6 +72,8 @@ properties:
-     minItems: 1
-     maxItems: 120
+diff --git a/drivers/iommu/riscv/iommu-bits.h b/drivers/iommu/riscv/iommu-b=
+its.h
+index d85f2ae898dd..b62869c906be 100644
+--- a/drivers/iommu/riscv/iommu-bits.h
++++ b/drivers/iommu/riscv/iommu-bits.h
+@@ -283,6 +283,18 @@ enum riscv_iommu_hpmevent_id {
+ #define RISCV_IOMMU_ICVEC_PMIV		GENMASK_ULL(11, 8)
+ #define RISCV_IOMMU_ICVEC_PIV		GENMASK_ULL(15, 12)
 =20
-+  global-filter: true
++/* 5.28 Distributed translation interface status register (dtisr0-3) (4 * =
+32-bits) */
++#define RISCV_IOMMU_REG_DTISR_BASE	0x02B0
++#define RISCV_IOMMU_REG_DTISR(_n)	(RISCV_IOMMU_REG_DTISR_BASE + ((_n) * 0x=
+04))
++#define RISCV_IOMMU_DTI_STS_SHIFT(_n)	(((_n) % 16) * 2)
++#define RISCV_IOMMU_DTI_STS_MASK(_n)	(0x3 << RISCV_IOMMU_DTI_STS_SHIFT(_n)=
+)
++#define RISCV_IOMMU_DTI_STS_NONE	0x0
++#define RISCV_IOMMU_DTI_STS_TBU_IOATC	0x1
 +
- required:
-   - compatible
-   - reg
++#define MAX_RISCV_IOMMU_IOATC		64
++#define RISCV_IOMMU_IOATC_BASE(_base, _idx) \
++	((void __iomem *)((u8 __iomem *)(_base) + ((_idx) + 1) * RISCV_IOMMU_REG_=
+SIZE))
++
+ /* 5.28 MSI Configuration table (32 * 64bits) */
+ #define RISCV_IOMMU_REG_MSI_CFG_TBL	0x0300
+ #define RISCV_IOMMU_REG_MSI_CFG_TBL_ADDR(_n) \
 diff --git a/drivers/iommu/riscv/iommu-hpm.c b/drivers/iommu/riscv/iommu-hp=
 m.c
-index 24da70de65fe..1273e5e12020 100644
+index 1273e5e12020..bb3d545515ec 100644
 --- a/drivers/iommu/riscv/iommu-hpm.c
 +++ b/drivers/iommu/riscv/iommu-hpm.c
-@@ -134,6 +134,49 @@ static inline void riscv_iommu_hpm_interrupt_clear(str=
-uct riscv_iommu_hpm *hpm)
- 	riscv_iommu_hpm_writel(hpm, RISCV_IOMMU_REG_IPSR, RISCV_IOMMU_IPSR_PMIP);
- }
+@@ -7,6 +7,7 @@
+  *                 Lv Zheng <lv.zheng@spacemit.com>
+  */
 =20
-+static bool riscv_iommu_hpm_check_global_filter(struct perf_event *curr,
-+						struct perf_event *new)
++#include <linux/platform_device.h>
+ #include "iommu.h"
+=20
+ #define to_iommu_hpm(p) (container_of(p, struct riscv_iommu_hpm, pmu))
+@@ -31,6 +32,94 @@ static atomic_t riscv_iommu_hpm_ids =3D ATOMIC_INIT(0);
+ static int cpuhp_state_num =3D -1;
+ static int cpuhp_refcnt;
+=20
++struct riscv_iommu_ioatc_desc {
++	u32 offset;
++	int irq;
++	u32 index;
++};
++
++static int riscv_iommu_hpm_collect_ioatcs(struct riscv_iommu_device *iommu=
+,
++					  struct riscv_iommu_ioatc_desc *descs,
++					  int max_desc)
 +{
-+	u32 curr_pid_pscid, curr_did_gscid, curr_pv_pscv;
-+	u32 curr_dv_gscv, curr_idt, curr_dmask;
-+	u32 new_pid_pscid, new_did_gscid, new_pv_pscv;
-+	u32 new_dv_gscv, new_idt, new_dmask;
++	struct device *dev =3D iommu->dev;
++	struct device_node *np =3D dev->of_node;
++	struct platform_device *pdev =3D to_platform_device(dev);
++	int count =3D 0;
++	int i;
++	int *ioatc_irqs =3D NULL;
 +
-+	curr_pid_pscid =3D get_filter_pid_pscid(curr);
-+	curr_did_gscid =3D get_filter_did_gscid(curr);
-+	curr_pv_pscv =3D get_filter_pv_pscv(curr);
-+	curr_dv_gscv =3D get_filter_dv_gscv(curr);
-+	curr_idt =3D get_filter_idt(curr);
-+	curr_dmask =3D get_filter_dmask(curr);
++	if (!descs || max_desc <=3D 0)
++		return 0;
 +
-+	new_pid_pscid =3D get_filter_pid_pscid(new);
-+	new_did_gscid =3D get_filter_did_gscid(new);
-+	new_pv_pscv =3D get_filter_pv_pscv(new);
-+	new_dv_gscv =3D get_filter_dv_gscv(new);
-+	new_idt =3D get_filter_idt(new);
-+	new_dmask =3D get_filter_dmask(new);
++	if (np) {
++		int names_count =3D of_property_count_strings(np, "interrupt-names");
++		const char *name;
++		int irq_idx;
++		u32 ioatc_idx;
 +
-+	return (curr_pid_pscid =3D=3D new_pid_pscid &&
-+		curr_did_gscid =3D=3D new_did_gscid &&
-+		curr_pv_pscv =3D=3D new_pv_pscv &&
-+		curr_dv_gscv =3D=3D new_dv_gscv &&
-+		curr_idt =3D=3D new_idt &&
-+		curr_dmask =3D=3D new_dmask);
-+}
++		ioatc_irqs =3D kcalloc(MAX_RISCV_IOMMU_IOATC, sizeof(int), GFP_KERNEL);
++		if (!ioatc_irqs)
++			goto discover;
 +
-+static bool riscv_iommu_hpm_events_compatible(struct perf_event *curr,
-+					      struct perf_event *new)
-+{
-+	if (new->pmu !=3D curr->pmu)
-+		return false;
++		for (i =3D 0; i < names_count; i++) {
++			if (of_property_read_string_index(np,
++				"interrupt-names", i, &name))
++				continue;
 +
-+	if (to_iommu_hpm(new->pmu)->global_filter &&
-+	    !riscv_iommu_hpm_check_global_filter(curr, new))
-+		return false;
++			if (!strstr(name, "ioatc") || !strstr(name, "hpm"))
++				continue;
 +
-+	return true;
-+}
++			if (sscanf(name, "ioatc%u-hpm", &ioatc_idx) !=3D 1)
++				continue;
 +
- static void riscv_iommu_hpm_event_update(struct perf_event *event)
- {
- 	struct hw_perf_event *hwc =3D &event->hw;
-@@ -253,9 +296,10 @@ static void riscv_iommu_hpm_set_event_filter(struct pe=
-rf_event *event, int idx,
- 			       RISCV_IOMMU_REG_IOHPMEVT(idx), event_cfg);
- }
-=20
--static void riscv_iommu_hpm_apply_event_filter(struct riscv_iommu_hpm *iom=
-mu_hpm,
--					       struct perf_event *event, int idx)
-+static int riscv_iommu_hpm_apply_event_filter(struct riscv_iommu_hpm *iomm=
-u_hpm,
-+					      struct perf_event *event, int idx)
- {
-+	unsigned int cur_idx, num_ctrs =3D iommu_hpm->num_counters;
- 	u32 pid_pscid, did_gscid, pv_pscv, dv_gscv, idt, dmask;
-=20
- 	pid_pscid =3D get_filter_pid_pscid(event);
-@@ -265,14 +309,36 @@ static void riscv_iommu_hpm_apply_event_filter(struct=
- riscv_iommu_hpm *iommu_hpm
- 	idt =3D get_filter_idt(event);
- 	dmask =3D get_filter_dmask(event);
-=20
-+	if (iommu_hpm->global_filter) {
-+		cur_idx =3D find_first_bit(iommu_hpm->used_counters, num_ctrs - 1);
-+		if (cur_idx =3D=3D num_ctrs - 1) {
-+			/* First event, set the global filter */
-+			riscv_iommu_hpm_set_event_filter(event, 0, pid_pscid,
-+							 did_gscid,
-+							 pv_pscv, dv_gscv, idt, dmask);
-+		} else {
-+			/* Check if the new event's filter is compatible with
-+			 * the global filter
-+			 */
-+			if (!riscv_iommu_hpm_check_global_filter(
-+				iommu_hpm->events[cur_idx + 1], event)) {
-+				dev_dbg(iommu_hpm->pmu.dev,
-+					"HPM: Filter incompatible with global filter\n");
-+				return -EAGAIN;
++			if (ioatc_idx >=3D MAX_RISCV_IOMMU_IOATC)
++				continue;
++
++			if (i < iommu->irqs_count) {
++				irq_idx =3D iommu->irqs[i];
++				ioatc_irqs[ioatc_idx] =3D irq_idx;
++			} else {
++				irq_idx =3D platform_get_irq(pdev, i);
++				if (irq_idx < 0)
++					ioatc_irqs[ioatc_idx] =3D 0;
++				else
++					ioatc_irqs[ioatc_idx] =3D irq_idx;
 +			}
 +		}
-+		return 0;
 +	}
 +
- 	riscv_iommu_hpm_set_event_filter(event, idx, pid_pscid, did_gscid,
- 					 pv_pscv, dv_gscv, idt, dmask);
-+	return 0;
++discover:
++	/* Automatically discover IOATCs by scanning DTISR registers */
++	for (i =3D 0; i < 4 && count < max_desc; i++) {
++		u32 dtisr =3D riscv_iommu_readl(iommu, RISCV_IOMMU_REG_DTISR(i));
++		int j;
++
++		for (j =3D 0; j < 16 && count < max_desc; j++) {
++			u32 idx =3D i * 16 + j;
++			u32 state;
++
++			state =3D (dtisr & RISCV_IOMMU_DTI_STS_MASK(idx)) >>
++				RISCV_IOMMU_DTI_STS_SHIFT(idx);
++			if (state =3D=3D RISCV_IOMMU_DTI_STS_TBU_IOATC) {
++				descs[count].offset =3D (idx + 1) * RISCV_IOMMU_REG_SIZE;
++				descs[count].index =3D idx;
++
++				if (ioatc_irqs && idx < MAX_RISCV_IOMMU_IOATC
++					       && ioatc_irqs[idx] > 0)
++					descs[count].irq =3D ioatc_irqs[idx];
++				else
++					descs[count].irq =3D 0;
++				count++;
++			}
++		}
++	}
++
++	kfree(ioatc_irqs);
++
++	return count;
++}
++
+ static inline void riscv_iommu_hpm_writel(struct riscv_iommu_hpm *hpm, u32=
+ reg,
+ 					  u32 val)
+ {
+@@ -565,6 +654,43 @@ static const struct attribute_group *riscv_iommu_hpm_a=
+ttr_grps[] =3D {
+ 	NULL
+ };
+=20
++#define IOMMU_IOATC_EVENT_ATTR(_name, _id) \
++	PMU_EVENT_ATTR_ID(ioatc_##_name, riscv_iommu_hpm_event_show, _id)
++
++static struct attribute *riscv_iommu_ioatc_events[] =3D {
++	IOMMU_IOATC_EVENT_ATTR(untranslated_requests, 1),
++	IOMMU_IOATC_EVENT_ATTR(translated_requests, 2),
++	IOMMU_IOATC_EVENT_ATTR(tlb_miss, 4),
++	IOMMU_IOATC_EVENT_ATTR(translation_requests, 21),
++	IOMMU_IOATC_EVENT_ATTR(translations_issued, 24),
++	IOMMU_IOATC_EVENT_ATTR(transactions_unissued_slot_drain, 25),
++	IOMMU_IOATC_EVENT_ATTR(transactions_unissued_token_drain, 26),
++	IOMMU_IOATC_EVENT_ATTR(write_transactions_unissued_wb_full, 27),
++	IOMMU_IOATC_EVENT_ATTR(write_transactions_using_wb, 28),
++	IOMMU_IOATC_EVENT_ATTR(write_transactions_not_using_wb, 29),
++	IOMMU_IOATC_EVENT_ATTR(makeinvalid_downgrades, 30),
++	IOMMU_IOATC_EVENT_ATTR(stash_fails, 31),
++	IOMMU_IOATC_EVENT_ATTR(mtlb_lookups, 56),
++	IOMMU_IOATC_EVENT_ATTR(mtlb_misses, 57),
++	IOMMU_IOATC_EVENT_ATTR(utlb_lookups, 58),
++	IOMMU_IOATC_EVENT_ATTR(utlb_misses, 59),
++	IOMMU_IOATC_EVENT_ATTR(mtlb_reads, 65),
++	IOMMU_IOATC_EVENT_ATTR(mtlb_errors, 108),
++	NULL
++};
++
++static const struct attribute_group riscv_iommu_ioatc_events_group =3D {
++	.name =3D "events",
++	.attrs =3D riscv_iommu_ioatc_events,
++};
++
++static const struct attribute_group *riscv_iommu_ioatc_attr_grps[] =3D {
++	&riscv_iommu_hpm_cpumask_group,
++	&riscv_iommu_ioatc_events_group,
++	&riscv_iommu_hpm_format_group,
++	NULL
++};
++
+ static irqreturn_t riscv_iommu_hpm_handle_irq(int irq_num, void *data)
+ {
+ 	struct riscv_iommu_hpm *iommu_hpm =3D data;
+@@ -753,6 +879,18 @@ static void riscv_iommu_hpm_set_standard_events(struct=
+ riscv_iommu_hpm *iommu_hp
+ 	set_bit(RISCV_IOMMU_HPMEVENT_G_WALKS, iommu_hpm->supported_events);
  }
 =20
- static int riscv_iommu_hpm_get_event_idx(struct riscv_iommu_hpm *iommu_hpm=
-,
- 					 struct perf_event *event)
- {
--	int idx;
-+	int idx, err;
- 	unsigned int num_ctrs =3D iommu_hpm->num_counters;
- 	u16 event_id =3D get_event(event);
-=20
-@@ -294,7 +360,10 @@ static int riscv_iommu_hpm_get_event_idx(struct riscv_=
-iommu_hpm *iommu_hpm,
- 		return -EAGAIN;
- 	}
-=20
--	riscv_iommu_hpm_apply_event_filter(iommu_hpm, event, idx);
-+	err =3D riscv_iommu_hpm_apply_event_filter(iommu_hpm, event, idx);
-+	if (err)
-+		return err;
++static void riscv_iommu_hpm_set_ioatc_events(struct riscv_iommu_hpm *iommu=
+_hpm)
++{
++	static const unsigned int ioatc_event_ids[] =3D {
++		1, 2, 4, 21, 24, 25, 26, 27, 28, 29, 30, 31,
++		56, 57, 58, 59, 65, 108,
++	};
++	int i;
 +
- 	set_bit(idx, iommu_hpm->used_counters);
-=20
- 	return idx;
-@@ -370,6 +439,8 @@ static int riscv_iommu_hpm_event_init(struct perf_event=
- *event)
- 	}
-=20
- 	if (!is_software_event(event->group_leader)) {
-+		if (!riscv_iommu_hpm_events_compatible(event->group_leader, event))
-+			return -EINVAL;
- 		if (++group_num_events > iommu_hpm->num_counters)
- 			return -EINVAL;
- 	}
-@@ -377,6 +448,8 @@ static int riscv_iommu_hpm_event_init(struct perf_event=
- *event)
- 	for_each_sibling_event(sibling, event->group_leader) {
- 		if (is_software_event(sibling))
- 			continue;
-+		if (!riscv_iommu_hpm_events_compatible(sibling, event))
-+			return -EINVAL;
- 		if (++group_num_events > iommu_hpm->num_counters)
- 			return -EINVAL;
- 	}
-@@ -690,6 +763,7 @@ static void riscv_iommu_hpm_remove(void *data)
++	for (i =3D 0; i < ARRAY_SIZE(ioatc_event_ids); i++)
++		set_bit(ioatc_event_ids[i], iommu_hpm->supported_events);
++}
++
+ static void riscv_iommu_hpm_remove(void *data)
+ {
+ 	struct riscv_iommu_hpm *iommu_hpm =3D data;
+@@ -763,7 +901,7 @@ static void riscv_iommu_hpm_remove(void *data)
  static int riscv_iommu_hpm_register_unit(struct riscv_iommu_device *iommu,
  					 struct riscv_iommu_hpm *iommu_hpm,
  					 u32 offset, int irq,
-+					 bool global_filter,
+-					 bool global_filter,
++					 bool global_filter, bool ioatc,
  					 const struct attribute_group **attr_groups,
  					 const char *prefix, int index)
  {
-@@ -714,6 +788,8 @@ static int riscv_iommu_hpm_register_unit(struct riscv_i=
-ommu_device *iommu,
- 	iommu_hpm->base =3D base;
- 	bitmap_zero(iommu_hpm->used_counters, RISCV_IOMMU_HPMCOUNTER_MAX);
- 	bitmap_zero(iommu_hpm->supported_events, RISCV_IOMMU_HPMEVENT_MAX);
-+	iommu_hpm->global_filter =3D of_property_read_bool(dev->of_node,
-+							 "global-filter");;
-=20
- 	riscv_iommu_hpm_writel(iommu_hpm,
- 			       RISCV_IOMMU_REG_IOCOUNTINH, 0xFFFFFFFF);
-@@ -781,8 +857,10 @@ static int riscv_iommu_hpm_register_unit(struct riscv_=
+@@ -802,7 +940,10 @@ static int riscv_iommu_hpm_register_unit(struct riscv_=
 iommu_device *iommu,
- 	if (err)
- 		goto err_cpuhp;
+ 	iommu_hpm->on_cpu =3D raw_smp_processor_id();
+ 	iommu_hpm->irq =3D irq;
 =20
--	dev_info(dev, "HPM: Registered %s (%d counters, IRQ %d)\n",
--		 pmu_name, iommu_hpm->num_counters, iommu_hpm->irq);
-+	dev_info(dev, "HPM: Registered %s (%d counters, IRQ %d, %s filter)\n",
-+		 pmu_name, iommu_hpm->num_counters,
-+		 iommu_hpm->irq,
-+		 iommu_hpm->global_filter ? "global" : "per-counter");
- 	return 0;
+-	riscv_iommu_hpm_set_standard_events(iommu_hpm);
++	if (ioatc)
++		riscv_iommu_hpm_set_ioatc_events(iommu_hpm);
++	else
++		riscv_iommu_hpm_set_standard_events(iommu_hpm);
+ 	riscv_iommu_hpm_reset(iommu_hpm);
 =20
- err_cpuhp:
-@@ -851,7 +929,8 @@ int riscv_iommu_add_hpm(struct riscv_iommu_device *iomm=
-u)
- 	if (rc < 0)
+ 	if (index >=3D 0)
+@@ -908,8 +1049,9 @@ static void riscv_iommu_hpm_exit(void)
+ int riscv_iommu_add_hpm(struct riscv_iommu_device *iommu)
+ {
+ 	struct device *dev =3D iommu->dev;
++	struct riscv_iommu_ioatc_desc ioatcs[MAX_RISCV_IOMMU_IOATC];
+ 	struct attribute **vendor_attrs =3D NULL;
+-	int num_vendor_events;
++	int ioatc_count, num_vendor_events;
+ 	int irq;
+ 	int rc, i;
+=20
+@@ -930,7 +1072,7 @@ int riscv_iommu_add_hpm(struct riscv_iommu_device *iom=
+mu)
  		return rc;
 =20
--	rc =3D riscv_iommu_hpm_register_unit(iommu, &iommu->hpm, 0, irq,
-+	rc =3D riscv_iommu_hpm_register_unit(iommu, &iommu->hpm,
-+					   0, irq, true,
+ 	rc =3D riscv_iommu_hpm_register_unit(iommu, &iommu->hpm,
+-					   0, irq, true,
++					   0, irq, true, false,
  					   riscv_iommu_hpm_attr_grps,
  					   "riscv_iommu_hpm", -1);
  	if (rc < 0)
+@@ -950,6 +1092,29 @@ int riscv_iommu_add_hpm(struct riscv_iommu_device *io=
+mmu)
+ 		}
+ 	}
+=20
++	ioatc_count =3D riscv_iommu_hpm_collect_ioatcs(iommu, ioatcs,
++						     ARRAY_SIZE(ioatcs));
++	for (i =3D 0; i < ioatc_count; i++) {
++		struct riscv_iommu_hpm *extra;
++
++		extra =3D devm_kzalloc(dev, sizeof(*extra), GFP_KERNEL);
++		if (!extra)
++			continue;
++
++		rc =3D riscv_iommu_hpm_register_unit(iommu, extra,
++						   ioatcs[i].offset,
++						   ioatcs[i].irq,
++						   true, true,
++						   riscv_iommu_ioatc_attr_grps,
++						   "riscv_iommu_ioatc",
++						   ioatcs[i].index);
++		if (rc) {
++			dev_warn(dev,
++				 "HPM: Failed to register IOATC%u PMU: %d\n",
++				 ioatcs[i].index, rc);
++		}
++	}
++
+ 	return 0;
+=20
+ err_module:
+diff --git a/drivers/iommu/riscv/iommu-platform.c b/drivers/iommu/riscv/iom=
+mu-platform.c
+index 684bc267ac30..ca8de9ec5266 100644
+--- a/drivers/iommu/riscv/iommu-platform.c
++++ b/drivers/iommu/riscv/iommu-platform.c
+@@ -75,8 +75,8 @@ static int riscv_iommu_platform_probe(struct platform_dev=
+ice *pdev)
+ 	if (iommu->irqs_count <=3D 0)
+ 		return dev_err_probe(dev, -ENODEV,
+ 				     "no IRQ resources provided\n");
+-	if (iommu->irqs_count > RISCV_IOMMU_INTR_COUNT)
+-		iommu->irqs_count =3D RISCV_IOMMU_INTR_COUNT;
++	if (iommu->irqs_count > RISCV_IOMMU_INTR_COUNT + MAX_RISCV_IOMMU_IOATC)
++		iommu->irqs_count =3D RISCV_IOMMU_INTR_COUNT + MAX_RISCV_IOMMU_IOATC;
+=20
+ 	igs =3D FIELD_GET(RISCV_IOMMU_CAPABILITIES_IGS, iommu->caps);
+ 	switch (igs) {
 diff --git a/drivers/iommu/riscv/iommu.h b/drivers/iommu/riscv/iommu.h
-index c84391342977..bafcdc7ff356 100644
+index bafcdc7ff356..ba80de1bd19c 100644
 --- a/drivers/iommu/riscv/iommu.h
 +++ b/drivers/iommu/riscv/iommu.h
-@@ -41,6 +41,7 @@ struct riscv_iommu_hpm {
- 	int irq;
- 	int on_cpu;
- 	struct hlist_node node;
-+	bool global_filter;
- 	/*
- 	 * Layout of events:
- 	 * 0       -> HPMCYCLES
+@@ -75,7 +75,7 @@ struct riscv_iommu_device {
+ 	u32 fctl;
+=20
+ 	/* available interrupt numbers, MSI or WSI */
+-	unsigned int irqs[RISCV_IOMMU_INTR_COUNT];
++	unsigned int irqs[RISCV_IOMMU_INTR_COUNT + MAX_RISCV_IOMMU_IOATC];
+ 	unsigned int irqs_count;
+ 	unsigned int icvec;
+=20
 --=20
 2.43.0
 
