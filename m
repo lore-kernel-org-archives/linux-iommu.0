@@ -1,222 +1,165 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5322231ED6B;
-	Thu, 29 Jan 2026 08:42:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A05A155A5D
+	for <iommu@lists.linux.dev>; Thu, 29 Jan 2026 08:42:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769676123; cv=none; b=SpE3L3w6WeWB0f1ytjorFjai8o1aeddEWb8N78SWJbCVf32f45d5hmpQzqofCLbaM0WdDJVbJRcCWlgxwXJatEzLDH24gcgyuzT2lsgD286Ki4m/t9JXu5JiLmIXIp/+5KaxPzct5N53KS13kFzzaRv/aWHXUIoW3bvnm0xV8wc=
+	t=1769676140; cv=none; b=U1zwz3V4fSaSDJVFUZ58n1V1N/hVvloyyfNrSG94OMJML7MZRykWfGxLLXJRfXG4sn95JoYoycORjdnVT2VmOj9YCc2UlcAPexghdQyHbaSp55tF7YC53fKFu/SwqBOaN4PXepiuBEPodR0aq4plzp+1OGYSQziCgemH7c8thKg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769676123; c=relaxed/simple;
-	bh=ULqTXXRRvOEaToOQufqn0DT2Uq0Y5ZhV8wPvD5kiy38=;
+	s=arc-20240116; t=1769676140; c=relaxed/simple;
+	bh=Bs6mTjUeA5qkWiBJBxqsJFMQQCY3VsRZlZa2vBfNivk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Jjknwjcx18IAXWZ1myxRPqGNfgBCm71CRMPykdNn8kd3x30e/rXIMAAKVXwuaQp4wCfC+27M++AgbSrf6kwV+sfqDZX4v8p+4voFPX3S6AjmHse/y3OwkRyzzrla5AiGXK9gbY9m4fnyZo5g/AWT07hKU5dN1U73bZdkFeoxUbw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=sJecCk3f; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type:Content-Disposition; b=kswUXfUFtF2IbqU01zCEXvhsAWdj+R/50xh5vb3wdLSxQHxUW2HY2Ts2n2DiY3jfdI8fJ2fFhgMYPss3O668cZrVk6GMuttGTVbRrE8PlCvIjZOLwH5WhNHLlCQPHTQMnbceGOEyxTBDIE/KB0FpkuV1Qr548G3XeeQ+pYVNOJA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=VWMB9joG; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="sJecCk3f"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED8E8C4CEF7;
-	Thu, 29 Jan 2026 08:42:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1769676122;
-	bh=ULqTXXRRvOEaToOQufqn0DT2Uq0Y5ZhV8wPvD5kiy38=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=sJecCk3fd142pV7aGXECoVLIDzOZhUWnnhJKlTwcp9G4EN9Cuwi1JPzmHE7fiMuyf
-	 e/hYZk7b68M92QyJpAGFzHgWPoWU4Wv7Yc4Pss8RlXgDoH8Z3zICPvVfVfnUVRD32G
-	 Ja9IvIO/38norewAYFYG4VPRhHkXMjp05wW4imftl2jLLNJZbuWAtXZxRFaOPiW5qe
-	 /apGZQxhSLlXRP7POJu5VImlUrKlNTUavJQSDI4NJJ23U9yj4JOx9ldP/dQ+uCrERk
-	 vTmo7fG/G4U1Lw+wkQ7q9YMCGCnnKeD3CrfFgxtQgSnLVANjTikelLazKIOJKQQ9Ca
-	 XUPt3aSNkmxwg==
-Date: Thu, 29 Jan 2026 10:41:56 +0200
-From: Leon Romanovsky <leon@kernel.org>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: Jason Gunthorpe <jgg@ziepe.ca>, Pranjal Shrivastava <praan@google.com>,
-	Sumit Semwal <sumit.semwal@linaro.org>,
-	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-	Alex Deucher <alexander.deucher@amd.com>,
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-	Gerd Hoffmann <kraxel@redhat.com>,
-	Dmitry Osipenko <dmitry.osipenko@collabora.com>,
-	Gurchetan Singh <gurchetansingh@chromium.org>,
-	Chia-I Wu <olvaffe@gmail.com>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	Lucas De Marchi <lucas.demarchi@intel.com>,
-	Thomas =?iso-8859-1?Q?Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>,
-	"Vivi, Rodrigo" <rodrigo.vivi@intel.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Felix Kuehling <Felix.Kuehling@amd.com>,
-	Alex Williamson <alex@shazbot.org>,
-	Ankit Agrawal <ankita@nvidia.com>,
-	"Kasireddy, Vivek" <vivek.kasireddy@intel.com>,
-	"linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
-	"dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-	"linaro-mm-sig@lists.linaro.org" <linaro-mm-sig@lists.linaro.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"amd-gfx@lists.freedesktop.org" <amd-gfx@lists.freedesktop.org>,
-	"virtualization@lists.linux.dev" <virtualization@lists.linux.dev>,
-	"intel-xe@lists.freedesktop.org" <intel-xe@lists.freedesktop.org>,
-	"linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>
-Subject: Re: [PATCH v5 4/8] vfio: Wait for dma-buf invalidation to complete
-Message-ID: <20260129084156.GC10992@unreal>
-References: <20260124-dmabuf-revoke-v5-0-f98fca917e96@nvidia.com>
- <20260124-dmabuf-revoke-v5-4-f98fca917e96@nvidia.com>
- <aXfUZcSEr9N18o6w@google.com>
- <20260127085835.GQ13967@unreal>
- <20260127162754.GH1641016@ziepe.ca>
- <BN9PR11MB5276B99D4E8C6496B0C447888C9EA@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20260129073331.GB10992@unreal>
- <BN9PR11MB52766EA91FEB08876DA474888C9EA@BN9PR11MB5276.namprd11.prod.outlook.com>
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="VWMB9joG"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1769676137;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=THtu/B0OMAesHMQ0Tb4jSeVco+ToRrfio4hfGUipZDw=;
+	b=VWMB9joGXYC7p4SXDrqZ3kZ3eOqnv+1+GtytduFRo7jVG9Ybe1PWzU0Bt8QeKVgfkfWdz6
+	zmGDLVMkEvnLW0E9bRuhO3BQN7RGMB8HvHXXW10KrTRrtR3xoELejQ01NarfC09UEGnnFN
+	zyLUAx/s2WOiULXH4ByRf/0obMLKfDs=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-676-_okSPxzSNOu-P0IUP21bkg-1; Thu, 29 Jan 2026 03:42:15 -0500
+X-MC-Unique: _okSPxzSNOu-P0IUP21bkg-1
+X-Mimecast-MFC-AGG-ID: _okSPxzSNOu-P0IUP21bkg_1769676134
+Received: by mail-wr1-f71.google.com with SMTP id ffacd0b85a97d-430fcb6b2ebso399629f8f.2
+        for <iommu@lists.linux.dev>; Thu, 29 Jan 2026 00:42:14 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1769676134; x=1770280934;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=THtu/B0OMAesHMQ0Tb4jSeVco+ToRrfio4hfGUipZDw=;
+        b=poG/V4UCZvyuh5lZgu17+JJpd7QVua15E/eOO3tDLalvnhsNQnv4qL4P8N8KiTXwPM
+         Xso/hORJa2DwB0iQ5xy5DcFSwrUBcQS5LJXfzN6F0u5TsGdFV2ZfMuoEvGxRePO4PRFf
+         +QbpKuReQ2JiLET5qzUZsZWHZGLLkFXq+k6I0qvVBz9LKjlo5gz1eoUOIwMDIGZBoFzV
+         A3+k+W/9eLrzE3nqJXb5gtSov19Xf5ofDIxX+DJmoUwCBCvWcf4cTRKiVS8dK2Kf/iW+
+         Fr4BF/XlFBQCGozRIRSBZRopiHwMeln54D2YWyjajF5/pZazDarO0zn6n7l/VJSKyD3y
+         9rDw==
+X-Forwarded-Encrypted: i=1; AJvYcCXjmqAV1mYaGTlCHUzEpYMwtAhIDafs0ZtpiIASmrNKoMsoeJoMTj5M3ycxqMlaJVLb7ynxIg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzMfTxqnMfzH1dK0D0MoLgq3NBIIycyk02zpKvwUsM7ep5hI0hO
+	+4feZFK9J+RiGh5G/s8XyeKD9UmgfHM4MRT7bdgwqmyO3e1rTLg4MD2g+MWAm/P17tlJPrZfTyF
+	kCdc9oJLU+jlAKYc8fG50r2Nobf3n6Qj9FdhNdoWWlSXFCVX+8MZKvir9
+X-Gm-Gg: AZuq6aLBfM4SkcuPpFKxCnaWF7IMWPB3BYG1MsowqSRjAKyuQ6+2MKpP/UyHqpzXw0V
+	+vbu+P/rlbwdJU9+x2GWLzWy3CHmdymTds1TFsADlK1xXs0CpJ97+O+IOWHQB+Xn6w3578nuJ3p
+	tFVEvYU5AHN4TdzFmeVWgJXgPn0hwrVeu3ZPVYPfXFnnlOiRB7L6qJT0QWREdqy93RlpUIZZ+pN
+	FAwIadloVM5CwQoDYkCEshorZWTNJENlh5scNKxiUuQlCHXinFX6IOmPCTpXWx9XZ23zICbPUDp
+	S7hTUitrBfy3xIFi1kpr2a2nIQj4YmK32iQY5+4eZTpyV30WzCe148A7r/yqWwYcBzjak7StXsh
+	odt6fDQcehY3tMCyGVnNe4FV/L+UyU2h3KXUF00GAM7ZHT2T2Jwig
+X-Received: by 2002:a05:6000:178b:b0:435:9116:c713 with SMTP id ffacd0b85a97d-435dd02db27mr12237788f8f.5.1769676133911;
+        Thu, 29 Jan 2026 00:42:13 -0800 (PST)
+X-Received: by 2002:a05:6000:178b:b0:435:9116:c713 with SMTP id ffacd0b85a97d-435dd02db27mr12237753f8f.5.1769676133482;
+        Thu, 29 Jan 2026 00:42:13 -0800 (PST)
+Received: from sgarzare-redhat (ip110-139-192-82.pool-bba.aruba.it. [82.192.139.110])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-435e10ee040sm12807318f8f.11.2026.01.29.00.42.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 29 Jan 2026 00:42:12 -0800 (PST)
+Date: Thu, 29 Jan 2026 09:42:06 +0100
+From: Stefano Garzarella <sgarzare@redhat.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: linux-kernel@vger.kernel.org, Cong Wang <xiyou.wangcong@gmail.com>, 
+	Jonathan Corbet <corbet@lwn.net>, Olivia Mackall <olivia@selenic.com>, 
+	Herbert Xu <herbert@gondor.apana.org.au>, Jason Wang <jasowang@redhat.com>, 
+	Paolo Bonzini <pbonzini@redhat.com>, Stefan Hajnoczi <stefanha@redhat.com>, 
+	Eugenio =?utf-8?B?UMOpcmV6?= <eperezma@redhat.com>, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, 
+	"Martin K. Petersen" <martin.petersen@oracle.com>, Gerd Hoffmann <kraxel@redhat.com>, 
+	Xuan Zhuo <xuanzhuo@linux.alibaba.com>, Marek Szyprowski <m.szyprowski@samsung.com>, 
+	Robin Murphy <robin.murphy@arm.com>, "David S. Miller" <davem@davemloft.net>, 
+	Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, 
+	Paolo Abeni <pabeni@redhat.com>, Simon Horman <horms@kernel.org>, 
+	Petr Tesarik <ptesarik@suse.com>, Leon Romanovsky <leon@kernel.org>, 
+	Jason Gunthorpe <jgg@ziepe.ca>, Bartosz Golaszewski <brgl@kernel.org>, linux-doc@vger.kernel.org, 
+	linux-crypto@vger.kernel.org, virtualization@lists.linux.dev, linux-scsi@vger.kernel.org, 
+	iommu@lists.linux.dev, kvm@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v3 15/15] vsock/virtio: reorder fields to reduce padding
+Message-ID: <aXsclvInQFIuFe5i@sgarzare-redhat>
+References: <f1221bbc120df6adaba9006710a517f1e84a10b2.1767601130.git.mst@redhat.com>
+ <ce44f61af415521e00ab7492aa16d3d19f00bd5e.1769632071.git.mst@redhat.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <ce44f61af415521e00ab7492aa16d3d19f00bd5e.1769632071.git.mst@redhat.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: vSjceHxJ9h7-iWTvOi7mluIyuoAbmoRiTfwyQjZlfqU_1769676134
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <BN9PR11MB52766EA91FEB08876DA474888C9EA@BN9PR11MB5276.namprd11.prod.outlook.com>
 
-On Thu, Jan 29, 2026 at 08:13:18AM +0000, Tian, Kevin wrote:
-> > From: Leon Romanovsky <leon@kernel.org>
-> > Sent: Thursday, January 29, 2026 3:34 PM
-> > 
-> > On Thu, Jan 29, 2026 at 07:06:37AM +0000, Tian, Kevin wrote:
-> > > > From: Jason Gunthorpe <jgg@ziepe.ca>
-> > > > Sent: Wednesday, January 28, 2026 12:28 AM
-> > > >
-> > > > On Tue, Jan 27, 2026 at 10:58:35AM +0200, Leon Romanovsky wrote:
-> > > > > > > @@ -333,7 +359,37 @@ void vfio_pci_dma_buf_move(struct
-> > > > vfio_pci_core_device *vdev, bool revoked)
-> > > > > > >  			dma_resv_lock(priv->dmabuf->resv, NULL);
-> > > > > > >  			priv->revoked = revoked;
-> > > > > > >  			dma_buf_invalidate_mappings(priv-
-> > >dmabuf);
-> > > > > > > +			dma_resv_wait_timeout(priv->dmabuf->resv,
-> > > > > > > +
-> > DMA_RESV_USAGE_BOOKKEEP,
-> > > > false,
-> > > > > > > +
-> > MAX_SCHEDULE_TIMEOUT);
-> > > > > > >  			dma_resv_unlock(priv->dmabuf->resv);
-> > > > > > > +			if (revoked) {
-> > > > > > > +				kref_put(&priv->kref,
-> > > > vfio_pci_dma_buf_done);
-> > > > > > > +				/* Let's wait till all DMA unmap are
-> > > > completed. */
-> > > > > > > +				wait = wait_for_completion_timeout(
-> > > > > > > +					&priv->comp,
-> > secs_to_jiffies(1));
-> > > > > >
-> > > > > > Is the 1-second constant sufficient for all hardware, or should the
-> > > > > > invalidate_mappings() contract require the callback to block until
-> > > > > > speculative reads are strictly fenced? I'm wondering about a case
-> > where
-> > > > > > a device's firmware has a high response latency, perhaps due to
-> > internal
-> > > > > > management tasks like error recovery or thermal and it exceeds the
-> > 1s
-> > > > > > timeout.
-> > > > > >
-> > > > > > If the device is in the middle of a large DMA burst and the firmware is
-> > > > > > slow to flush the internal pipelines to a fully "quiesced"
-> > > > > > read-and-discard state, reclaiming the memory at exactly 1.001
-> > seconds
-> > > > > > risks triggering platform-level faults..
-> > > > > >
-> > > > > > Since the wen explicitly permit these speculative reads until unmap is
-> > > > > > complete, relying on a hardcoded timeout in the exporter seems to
-> > > > > > introduce a hardware-dependent race condition that could
-> > compromise
-> > > > > > system stability via IOMMU errors or AER faults.
-> > > > > >
-> > > > > > Should the importer instead be required to guarantee that all
-> > > > > > speculative access has ceased before the invalidation call returns?
-> > > > >
-> > > > > It is guaranteed by the dma_resv_wait_timeout() call above. That call
-> > > > ensures
-> > > > > that the hardware has completed all pending operations. The 1‑second
-> > > > delay is
-> > > > > meant to catch cases where an in-kernel DMA unmap call is missing,
-> > which
-> > > > should
-> > > > > not trigger any DMA activity at that point.
-> > > >
-> > > > Christian may know actual examples, but my general feeling is he was
-> > > > worrying about drivers that have pushed the DMABUF to visibility on
-> > > > the GPU and the move notify & fences only shoot down some access. So
-> > > > it has to wait until the DMABUF is finally unmapped.
-> > > >
-> > > > Pranjal's example should be covered by the driver adding a fence and
-> > > > then the unbounded fence wait will complete it.
-> > > >
-> > >
-> > > Bear me if it's an ignorant question.
-> > >
-> > > The commit msg of patch6 says that VFIO doesn't tolerate unbounded
-> > > wait, which is the reason behind the 2nd timeout wait here.
-> > 
-> > It is not accurate. A second timeout is present both in the
-> > description of patch 6 and in VFIO implementation. The difference is
-> > that the timeout is enforced within VFIO.
-> > 
-> > >
-> > > Then why is "the unbounded fence wait" not a problem in the same
-> > > code path? the use of MAX_SCHEDULE_TIMEOUT imply a worst-case
-> > > timeout in hundreds of years...
-> > 
-> > "An unbounded fence wait" is a different class of wait. It indicates broken
-> > hardware that continues to issue DMA transactions even after it has been
-> > told to
-> > stop.
-> > 
-> > The second wait exists to catch software bugs or misuse, where the dma-buf
-> > importer has misrepresented its capabilities.
-> > 
-> 
-> Okay I see.
-> 
-> > >
-> > > and it'd be helpful to put some words in the code based on what's
-> > > discussed here.
-> > 
-> > We've documented as much as we can in dma_buf_attach_revocable() and
-> > dma_buf_invalidate_mappings(). Do you have any suggestions on what else
-> > should be added here?
-> > 
-> 
-> the selection of 1s?
+On Wed, Jan 28, 2026 at 03:31:21PM -0500, Michael S. Tsirkin wrote:
+>Reorder struct virtio_vsock fields to place the DMA buffer (event_list)
+>last. This eliminates the padding from aligning the struct size on
+>ARCH_DMA_MINALIGN.
+>
+>Suggested-by: Stefano Garzarella <sgarzare@redhat.com>
+>Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+>---
+>
+>changes from v2:
+>	move event_lock and event_run too, to keep
+>	event things logically together, as suggested by
+>	Stefano Garzarella.
 
-It is indirectly written in description of WARN_ON(), but let's add
-more. What about the following?
+Thanks for that!
 
-diff --git a/drivers/vfio/pci/vfio_pci_dmabuf.c b/drivers/vfio/pci/vfio_pci_dmabuf.c
-index 93795ad2e025..948ba75288c6 100644
---- a/drivers/vfio/pci/vfio_pci_dmabuf.c
-+++ b/drivers/vfio/pci/vfio_pci_dmabuf.c
-@@ -357,7 +357,13 @@ void vfio_pci_dma_buf_move(struct vfio_pci_core_device *vdev, bool revoked)
-                        dma_resv_unlock(priv->dmabuf->resv);
-                        if (revoked) {
-                                kref_put(&priv->kref, vfio_pci_dma_buf_done);
--                               /* Let's wait till all DMA unmap are completed. */
-+                               /*
-+                                * Let's wait for 1 second till all DMA unmap
-+                                * are completed. It is supposed to catch dma-buf
-+                                * importers which lied about their support
-+                                * of dmabuf revoke. See dma_buf_invalidate_mappings()
-+                                * for the expected behaviour,
-+                                */
-                                wait = wait_for_completion_timeout(
-                                        &priv->comp, secs_to_jiffies(1));
-                                /*
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
 
-> 
-> then,
-> 
-> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+>
+>Note: this is the only change in v3 and it's cosmetic, so I am
+>not reposting the whole patchset.
+>
+>
+> net/vmw_vsock/virtio_transport.c | 18 +++++++++---------
+> 1 file changed, 9 insertions(+), 9 deletions(-)
+>
+>diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
+>index 999a0839726a..b333a7591b26 100644
+>--- a/net/vmw_vsock/virtio_transport.c
+>+++ b/net/vmw_vsock/virtio_transport.c
+>@@ -55,15 +55,6 @@ struct virtio_vsock {
+> 	int rx_buf_nr;
+> 	int rx_buf_max_nr;
+>
+>-	/* The following fields are protected by event_lock.
+>-	 * vqs[VSOCK_VQ_EVENT] must be accessed with event_lock held.
+>-	 */
+>-	struct mutex event_lock;
+>-	bool event_run;
+>-	__dma_from_device_group_begin();
+>-	struct virtio_vsock_event event_list[8];
+>-	__dma_from_device_group_end();
+>-
+> 	u32 guest_cid;
+> 	bool seqpacket_allow;
+>
+>@@ -77,6 +68,15 @@ struct virtio_vsock {
+> 	 */
+> 	struct scatterlist *out_sgs[MAX_SKB_FRAGS + 1];
+> 	struct scatterlist out_bufs[MAX_SKB_FRAGS + 1];
+>+
+>+	/* The following fields are protected by event_lock.
+>+	 * vqs[VSOCK_VQ_EVENT] must be accessed with event_lock held.
+>+	 */
+>+	struct mutex event_lock;
+>+	bool event_run;
+>+	__dma_from_device_group_begin();
+>+	struct virtio_vsock_event event_list[8];
+>+	__dma_from_device_group_end();
+> };
+>
+> static u32 virtio_transport_get_local_cid(void)
+>-- 
+>MST
+>
 
-Thanks
