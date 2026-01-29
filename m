@@ -1,105 +1,184 @@
-Received: from mail-qt1-f172.google.com (mail-qt1-f172.google.com [209.85.160.172])
+Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C65B264602
-	for <iommu@lists.linux.dev>; Thu, 29 Jan 2026 00:46:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.172
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769647604; cv=none; b=H7rfGOChkjd8KBLXvJswR3UR7cHd3fQueG54NqSKZwr8zyve3hoDu/7UzE0MgmBcTwwl9z6sofymBt8SDUZ6zc7K//upllEbU+orHAkiZyXRjpZM9O4Ji9J6/Z88pX+CrQRMlqpxaGPKxeYmRgDG3U9wQPx6fTrXuOQARZ6RkzU=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769647604; c=relaxed/simple;
-	bh=OF+MmJBRYqLO4yfcVi+gc8uySaBfiQSsc840eoOTyAI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=SqrtJaUevOEFNwHmPPDQBW/yj13Ea75weRjvtafExwm+qr2YN0rllVv7Go5bpSDl0gD+fed7WE8SAw1YHXXWDuV9IHHZOItkPGnaBbv+nUiCOPPYu+buKl+h2P1yR5fBk+4+0tZoJGSAHMv3DqyAaVU3wBTytxh6cWLr11VrK+g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=l/Qed0j6; arc=none smtp.client-ip=209.85.160.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C58C23E356
+	for <iommu@lists.linux.dev>; Thu, 29 Jan 2026 01:11:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.173
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1769649099; cv=pass; b=QFtG+4LggZQvv9ir86hwMIFWmE57ywudXsBsgLeiKlbXmeQ71SDik3sx167Et8i+ALCsbo2VyF/1B2R0AA2POnQ/LYGSIoYGyBgcG17Oev+Iq4FngjdE86163EfmIt0k23dtyepjCYIKtHEaWQHBqN3XhuFIydhbxbtsW9nnAkU=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1769649099; c=relaxed/simple;
+	bh=waLrhpvh/frM8oNLEkJ2UwKy5n4NvgCqoMT4unJ/UT0=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=mLT5osflSpd/rVtxm8+SZrRLA04qfYyuuJVXu2XugAqToGF1rQYN9cMcrKx1XgGiWOxC5lJi5/E7QBb/85DUpStlU9LOs8AV9XxQvk5iNXmz6LTMiyQ6pB4Ij6nVSP2k/JXCbVv5t+Vp6u/nc6EMIoRS68CtFrLso52ryfds0oE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=mpx9YNGh; arc=pass smtp.client-ip=209.85.160.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="l/Qed0j6"
-Received: by mail-qt1-f172.google.com with SMTP id d75a77b69052e-50146483bf9so4295041cf.3
-        for <iommu@lists.linux.dev>; Wed, 28 Jan 2026 16:46:42 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="mpx9YNGh"
+Received: by mail-qt1-f173.google.com with SMTP id d75a77b69052e-50299648ae9so120471cf.1
+        for <iommu@lists.linux.dev>; Wed, 28 Jan 2026 17:11:38 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1769649097; cv=none;
+        d=google.com; s=arc-20240605;
+        b=L4KwT/q/1gVhWIEzNmNtI8D9lQ3GgB/wh33DWhZrq1nQHVIrB3Me+LcVgrmhnriPk9
+         mHBnzhLsSoH5eFH3InmaVCUp3iE+zJRNjfobegaaQk0ABAsW0lfGacBkXeFsTmGnLhgT
+         JvxLoIAcjL+otSALjGYano1d3oZeImSsTPbbCYD/BOt/tdRkyLlyZEiWBZ5u/mMHdb3+
+         JUV/3lBqFBpUtQOZKF8REsvVj+OVR8WlJVTFz1DZCeLvnCtEeXO2f7Q6q5fPJwnD335V
+         wxhfx6WUwgb/9kttXFxXCdGbE2SYoA94xHKGXbhp2CDNcJRHVVfaNe2a7+pytuHzNsvl
+         6OVQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=XSVGt8as8LEYmgDu9c9BmAOwcIDQvoR+ttqvLRbhmSk=;
+        fh=npzNL/j6Tiumh8yD2XHkQpMkkxoNDWE0BkBe7ze3Cj8=;
+        b=VRbb2ab2Dt2Ec4Q3SLONycfyoCO4vy2wRZFtLt+CcOAZwyhNzOw92PRE4WR6XufNL4
+         OPgbHedA5fOxg3THhrJNnwm7nFIRladw4VH7+i7tQHon3GnHHCIOSld4SLAT/capw421
+         I1K7L7ppg4oLUvIm+yb3/DZt/AbTbgr07rPxldVocDFwH3b7V59lzji/xnxwot1An90G
+         Sl5t1y1VcJcqvYlLq/A7eEJ7dsYPOX5AzMNrHNOnLEwGQnAwqyTYPOtX4/CQe1DiTmwS
+         oMULVs7t/gzsZtleQnXzWxWYyqy3R9pWSEeQ+5yBorlF3olX6VWkxA3eil5mwVvvnpJG
+         1X0A==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1769647602; x=1770252402; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=AaqVgHlI2seUK2YRo3bqtWiP6hNp3fDsIh3WrTJfgb4=;
-        b=l/Qed0j6fBcO2mibjtY3g/i2lXJsshiw76DLyVisO4fDliL8S84L9qI1tO10uOFUkk
-         0g1w8D3J2ItFP0ZydrVbew2Y7l2TWvsHlV12vAPGkloTFPkEx7Zlql/ZVGHJiPziynHh
-         Zo62sPX+BxpQXgNT6u93ReBPRfO5J+S1SPUreebmvOR2OAgeqpoETr7p5KUz/GIc7hHA
-         KwcdC6fQB+uYHuijOpHm8ZyNbjvxT8sLr7aZjM1FEuJ/MxK9Z2znBbSvYezEhebttq99
-         H8uYjYXkm1hG56G7/17J6JqovXrUa2RdNGhTWZ96Wd76KnifHLiIWNjE5fbICIJvYR2Y
-         ywjA==
+        d=google.com; s=20230601; t=1769649097; x=1770253897; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=XSVGt8as8LEYmgDu9c9BmAOwcIDQvoR+ttqvLRbhmSk=;
+        b=mpx9YNGhuLXpzb8KeJE02fnFEtvKuq8KDmO1sWSgHv5TRdE8eILrFkelROI77E02A/
+         Uki6OiC8D9Z6W5XkDh0Gmsug7AR/L3ggCYqIh6HMH62npykdiTFRRFS6y8mMLPB7tkh0
+         dUCmd+OGBuYoKgzsJq5kB0ro0f1N1va3n46elCGWFQP/cP/ZeoskMUGQt/PV9cbne9M8
+         JnTVJRXLnB/+Z7IAwXW2FLaqTRQwedzgAvPPLY2yrJh222LwVvDAXqIUkhULiOIvOLmd
+         QqcXlzO+VkUCD0bqNGE58odM4WcBEjw64n3dp1yg7+K8TsNkW6tmarYuSv4aMYcKOZYO
+         tuvw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769647602; x=1770252402;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=AaqVgHlI2seUK2YRo3bqtWiP6hNp3fDsIh3WrTJfgb4=;
-        b=P8wU0ZMujtQXhJPC/HTsdYdVnBFbFriD7ahhx2PkHQNbePoGXO7sDl/rf6Ck7Mq/eF
-         VDAJiHe83I+8Jv5f6VMC++tmjFecCiIFHHa94ghfkk6IKz2OkM7QcI1Zg3oNhxNZ5Tsg
-         YRax4MOIjmNpwR0udqRwEVnEeYba+3e7Kjj3IYaImcnDUj2P0pDx1rriRtYyeGYXPYTP
-         kaDUcjHdPTtFAHoLHEW583Bq7agpMBC89/yZhUuTZAeg1HtyR+pap4ivLan0IFZyJaQj
-         sFXasexuKhHIWdyBOCS/WssQss8Dz23IPATLV/OADtHHOsIG7OZMc5hP1RWKeY2Q20c+
-         skZQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWcKvGxzUSQRpiEwBG3Chj4a++xYENss+ilN9xomKyL3EYBY8vIAz8gsP6/sg5crCBf/oBalA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxAZbSjRbVjNnkvDsO+hE0UZ/5LyRTFCZ00An4dYHzV9X+YH5K6
-	IBfOw4GGYIJiA6wBapnjPb/oVXzJHOJ3mkJaNfGOlee91NHkrSp5gloKhgSmlOviUH4=
-X-Gm-Gg: AZuq6aKMEp16rDoMjA18JFkMsVutxYnbwHWPN1cqk2URqZlYf4KYhyULxKBgx4Zo8u9
-	j6nSgNK7uwiZ7tcRfS18ZYVcpdn9lN7BV9hIkLbsMnrJ4X21NtDHb2IIJHOXXPHgLv/zA+/Upkd
-	LBiT+BZpslAzf1x/AL9C818zPRnJGmt6Wjom9SoCX4JDYLSk+IYYCDkSNsoqedMb2nlMbjVdFGb
-	lPd/EOZwH/mvTg9plM/dLc8J/1ql9Zp/TkzzZ644WfhNBcxUKwbV9XKMnqo/P19c/iWbLR+0J6/
-	atyaqohYGPh3iXRIIKjscBAGGCoxoWYsRYnD1xSQmCHTWPbejFLEU+/ubbH2nBgw/m33zlyXGyy
-	pztwV+YbAn6nsfn1slxGjoEwTmA/gaZSQddJ4JDeuw1sj6MUdeOY9tCgCyEfdt2iu4zBh8EThkG
-	RmoVOvvm8wv/sfoJz2t3WMIMoaSynTsNAIo7xrMA3e4Ov8kGa04pN6PApIyy/AzwKDv+4=
-X-Received: by 2002:a05:622a:188e:b0:4f4:bfc8:b7be with SMTP id d75a77b69052e-5032f742fe3mr89269221cf.12.1769647601991;
-        Wed, 28 Jan 2026 16:46:41 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-162-112-119.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.112.119])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-894d36c2413sm27296786d6.15.2026.01.28.16.46.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Jan 2026 16:46:41 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1vlGBE-00000009gA4-3SP9;
-	Wed, 28 Jan 2026 20:46:40 -0400
-Date: Wed, 28 Jan 2026 20:46:40 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Tomasz Jeznach <tjeznach@rivosinc.com>, Alexandre Ghiti <alex@ghiti.fr>,
-	Albert Ou <aou@eecs.berkeley.edu>, iommu@lists.linux.dev,
-	linux-riscv@lists.infradead.org,
-	Palmer Dabbelt <palmer@dabbelt.com>, Paul Walmsley <pjw@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
-	lihangjing@bytedance.com, Xu Lu <luxu.kernel@bytedance.com>,
-	patches@lists.linux.dev, xieyongji@bytedance.com
-Subject: Re: [PATCH v2 0/5] Convert riscv to use the generic iommu page table
-Message-ID: <20260129004640.GB1641016@ziepe.ca>
-References: <0-v2-b11ebca8abb6+c096-iommu_pt_riscv_jgg@nvidia.com>
- <72olk767l4goaqsrkyelhtnzg33nxbtwnammy4asnqxukbolnh@gwypmg6n5t3e>
+        d=1e100.net; s=20230601; t=1769649097; x=1770253897;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=XSVGt8as8LEYmgDu9c9BmAOwcIDQvoR+ttqvLRbhmSk=;
+        b=HyZRKXJ69hUIw1gQpIP0SC3m2hgzMdwq+oV0kGFPK3u+q+f9sPfdMYg1ekJxsXdGvD
+         Y79bKsxA6iDREUlFCtUshd4SasEHi/igQbcHKsk5EWVzd0gujTX0e35Gtcl5uciC8Noz
+         1K1C6bYWnUHEGDcKeE5HIOxBiKF19FYoWe8TQDfC38BGR8qJp3yGYpmhHruL13DsC2Xv
+         1I5mIxpITcDHmJQqo6/hKX+Uls+1WfR3ED8qfPIEK+KBXkDHFd0A0SuQrhgFKzhLSJi2
+         rOBdIXzScakV6DcdFF0gHBisM5XrZBxX5mGqnxczHFEl3Gq7rkcf1ezrM14SEuNc/RIe
+         inEw==
+X-Forwarded-Encrypted: i=1; AJvYcCXo7YISw0HbMT+QqCUChUmPsGDAHwx0TasjJj17svSwCT6+m3QACb7oDwuv6pc7KDj5N071LQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yxv1OK6aKOiMn8Vd4VfVeCHVTbT759UWrnZkuXX27AThRX97jLy
+	zZylIRCqtOX/9U7xndicD/g1aK2ufwlw1UruKUfT1BKNMrSn7cmXbj2C59psd0Z81QNypWML8TM
+	EvOcaieY3vvkY6xunMW94rE6hdMsgWDqz9WXHcOck
+X-Gm-Gg: AZuq6aJTepbj3EoajfPmD6w2K8andtmLjKK/li50mzdoH2lbbCy6/1iNW0nMyfzFsBf
+	EnKqzze5KuR4n3Dn3xxuFudBv3ynb8aohXKNT3KsmT43HQhTfohT5OzGWApFTzYbZyvugFfCjoH
+	1Gfckytk7aJd0+SHnvO2p3WjY2ALfhEMn4D/RStc1cch+0Zz2SJjffCNuDMNCC3zkpqRiA2I6D0
+	hrdWGCBoHy+aCyP/xMq39PIwbLNOTKsJ14q6xc0lj2IPDAlcuOJ0uB9aivrn294WWa/G01sr66W
+	Cx3enpRUKg/675ANKVaIpLvjZO6y
+X-Received: by 2002:ac8:7c47:0:b0:503:2d8f:4cd9 with SMTP id
+ d75a77b69052e-503b67573e4mr5410721cf.16.1769649096824; Wed, 28 Jan 2026
+ 17:11:36 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <72olk767l4goaqsrkyelhtnzg33nxbtwnammy4asnqxukbolnh@gwypmg6n5t3e>
+References: <20251202230303.1017519-1-skhawaja@google.com> <20260128195943.GY1641016@ziepe.ca>
+In-Reply-To: <20260128195943.GY1641016@ziepe.ca>
+From: Samiullah Khawaja <skhawaja@google.com>
+Date: Wed, 28 Jan 2026 17:11:25 -0800
+X-Gm-Features: AZwV_Qg8fFmu7C7S4fidkwAvXAKr8T8WZOaG3wh7Y4myB6lAdsCMpqMVoC_OLgs
+Message-ID: <CAAywjhRXwRD7rmZ2DjN2roDMvWCV2772KhM2hox5RE8Prt4nxw@mail.gmail.com>
+Subject: Re: [RFC PATCH v2 00/32] Add live update state preservation
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Pasha Tatashin <pasha.tatashin@soleen.com>, iommu@lists.linux.dev, 
+	Robin Murphy <robin.murphy@arm.com>, Pratyush Yadav <pratyush@kernel.org>, 
+	Kevin Tian <kevin.tian@intel.com>, Alex Williamson <alex@shazbot.org>, linux-kernel@vger.kernel.org, 
+	Saeed Mahameed <saeedm@nvidia.com>, Adithya Jayachandran <ajayachandra@nvidia.com>, 
+	Parav Pandit <parav@nvidia.com>, Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>, 
+	Vipin Sharma <vipinsh@google.com>, dmatlack@google.com, YiFei Zhu <zhuyifei@google.com>, 
+	Chris Li <chrisl@kernel.org>, praan@google.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jan 22, 2026 at 08:56:12AM +0100, Joerg Roedel wrote:
-> Tomasz,
-> 
-> On Tue, Jan 06, 2026 at 11:06:44AM -0400, Jason Gunthorpe wrote:
-> > Jason Gunthorpe (5):
-> >   iommupt: Add the RISC-V page table format
-> >   iommu/riscv: Disable SADE
-> >   iommu/riscv: Use the generic iommu page table
-> >   iommu/riscv: Enable SVNAPOT support for contiguous ptes
-> >   iommu/riscv: Allow RISC_VIOMMU to COMPILE_TEST
-> 
-> Any opinion on that series?
+On Wed, Jan 28, 2026 at 11:59=E2=80=AFAM Jason Gunthorpe <jgg@ziepe.ca> wro=
+te:
+>
+> On Tue, Dec 02, 2025 at 11:02:30PM +0000, Samiullah Khawaja wrote:
+> >
+> > Samiullah Khawaja (26):
+> >   iommu: Add liveupdate FLB for IOMMU state preservation
+> >   iommu: Register IOMMU FLB with iommufd file handler
+> >   iommu: Implement IOMMU LU FLB preserve/unpreserve callbacks
+> >   iommu: Add iommu_domain ops to preserve, unpreserve and restore
+> >   iommu/pages: Add APIs to preserve/unpreserve/restore iommu pages
+> >   iommupt: Implement preserve/unpreserve/restore callbacks
+> >   iommu: Add APIs to preserve/unpreserve iommu domains
+> >   iommufd: Use the iommu_domain_preserve/unpreserve APIs
+> >   iommu: Add API to keep track of iommu domain attachments
+> >   iommu: Add API to preserve/unpreserve a device
+> >   iommu/vt-d: Implement device and iommu preserve/unpreserve ops
+> >   iommufd: Add APIs to preserve/unpreserve a vfio cdev
+> >   vfio/pci: Preserve the iommufd state of the vfio cdev
+> >   iommu: Add APIs to get preserved state of a device
+> >   iommu/vt-d: Clean the context entries of unpreserved devices
+> >   iommu: Implement IOMMU FLB retrieve and finish ops
+> >   iommu: Add an API get the preserved state of an IOMMU
+> >   iommu/vt-d: restore state of the preserved IOMMU
+> >   iommu: Add helper APIs to fetch preserved device state
+> >   iommu/vt-d: reclaim domain ids of the preserved devices
+> >   iommu: restore preserved domain and reattach
+> >   iommu/vt-d: reuse the preserved domain id for preserved devices
+> >   iommufd: Handle the iommufd can_finish properly
+> >   iommu: Transfer device ownership after liveupdate
+> >   iommu: Allow replacing restored domain
+> >   iommufd/selftest: Add test to verify iommufd preservation
+> >
+> > YiFei Zhu (6):
+> >   iommufd: Allow HWPTs to have a NULL IOAS
+> >   iommufd: split alloc and domain assign from iommufd_hwpt_paging_alloc
+> >   iommufd: Add basic skeleton based on liveupdate_file_handler
+> >   iommufd-lu: Implement basic prepare/cancel/finish/retrieve using
+> >     folios
+> >   iommufd-lu: Implement ioctl to let userspace mark an HWPT to be
+> >     preserved
+> >   iommufd-lu: Persist iommu hardware pagetables for live update
+>
+> This really needs to be made smaller and more focused to be
+> reviewable and mergable. Try to stick to 15-ish patches.
 
-Let's take it if we don't hear from Tomasz this week? It brings
-the contiguous page feature people wanted and now that it is tested
-I'm not especially worried about it.
+Agreed. I will restructure this into a more focused series.
+>
+> There is a lot giong on here, I suggest focusing this only on the main
+> iommu core, a vt-d driver implementation of the bare minimum, and an
+> iommufd function to trigger preservation of a domain.
 
-Jason
+The preservation is done into FLB and that is bound to the iommufd
+file handler. So the phase 1 series will need some boiler plate logic
+to trigger preserve/unpreserve. It will also need checking that memfds
+are preserved and SEALd to make it robust. But I will try to keep it
+to a minimum.
+>
+> Start off by just making the successor kernel fail to accept any
+> drivers at all because the iommu_domain was preserved. ie restore the
+> domain and set it as the default_domain and then fail in
+> iommu_device_use_default_domain() and related functions.
+
+Right. In this model, the device would remain unusable after
+liveupdate as you cannot do session finish. So the only way to recover
+would be to do a proper reboot. But I think this is a great
+intermediate step.
+>
+> All it should do is convey an iommu_domain and the pasid table entry
+> unchanged without hit from prior to successor kernel. That's the bare
+> minimum.
+>
+> Then a second series which picks up from there and feeds the sucessor pat=
+h
+> through iommufd/vfio.
+
+Yes this sounds like a great split of series. I experimented with this
+a little and it is workable. But like I mentioned earlier, some boiler
+plate will be needed.
+>
+> Jason
