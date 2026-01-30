@@ -1,159 +1,104 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D8592874F5;
-	Fri, 30 Jan 2026 13:38:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C6D530DD2C
+	for <iommu@lists.linux.dev>; Fri, 30 Jan 2026 13:44:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769780284; cv=none; b=GhKGys7+Iung4qT7CfDXkNyNvxEcJ7y2QG/4oHkbpoiOyMTaM6VfwiQhC9VbzYu9u7XgLf0v/AnzYjY0nMu7DG5ff26N6o1JV0DuJZOCO133SeBd0Q+ukK7pq0R4Ck7wdFR4jDRXTp/dILATMzFRdAub0Hg4/M2H8kMohPti+S8=
+	t=1769780689; cv=none; b=tA3rXJ12NwuIaRbnaV61jFmqNpjEHjgZFl9oYVquivBssVLJ8w2/q4zIV+EpWHtXazxzgTd/P2uvR/gEvHvSD/N8QOI7utKW3F6rub2soEeZtlhnWx+ga3yrKMoQQW+LWICs06uN+CT4ZwBw1Air2Vd4lNjOkivm/o7IaJP6WOE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769780284; c=relaxed/simple;
-	bh=jrUktIM7vM/80ddCZ+2MusPve+WTOO+VsuJlV1nB6jM=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=RBDmkPWTeaMhmjloCfL+d6r66BxIdRlQrbP1CiSt5iukIOg3SgtZ+XSiFxHF2pYPAeOUGcc6MZqRmE+s/gY2VuQIVGhueeiTEOO5qLWfYyORTHxQUBlA3Kh2J+Cfme8PR2Tex6Y3Hts0v5JdNbdbjolXuZYJVOXikNXxDXDHumY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=i0M+C/ei; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1769780689; c=relaxed/simple;
+	bh=zq0enudfxYyZO8ReGjAlm3eJCI6Ktkd2wS+QbgkoBU8=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type:
+	 References; b=uoVeG4C9AJKpJVdymvVAID8xzv2coECttdF3SSPZRcp8zZ5uKu/91ZiodErEKy0qfrOc/IrYW5IzHMw3S3uXocGam00WgpOSlbmNGqwINE+PWj5NY2jxOnMPBujj/wxfRr+nbD5yPPIDwnAToHWr32AarAEUbsruAoXsWdhMVyM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=GSKZCtcI; arc=none smtp.client-ip=210.118.77.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="i0M+C/ei"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D9D4C4CEF7;
-	Fri, 30 Jan 2026 13:38:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1769780283;
-	bh=jrUktIM7vM/80ddCZ+2MusPve+WTOO+VsuJlV1nB6jM=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=i0M+C/eioHuYogmy0Da5vMPAH7UkBp+pP7m8wKSGBPQ16nSY3W5XL2/A4x4QcClup
-	 I8/bZ7sSDRosWHNDLtpzHKth4IXsxBTGyt4Cjm+FfZEBqrDkq9vnNm815YHtoMLAcp
-	 BAqPrsN08lsCZlkvN21bPZMTERcVRK8i8NfgNVa39jSW/PW1/OfKv97dxYnn7lwosw
-	 9+N31toxl9iF66LerNQGze25PWKC9dxO+QYYOfmAT9NCG1GT+l1S4EZiAKudF294zX
-	 mx3KTgMWDJILsRaqjksQO21oCnSzN/tUDbzkWULK6oWEXpWkxFboXwoCLJOarkhP6o
-	 RgIAsQKJdURjg==
-From: Leon Romanovsky <leon@kernel.org>
-To: Sumit Semwal <sumit.semwal@linaro.org>,
-	=?utf-8?q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-	Alex Deucher <alexander.deucher@amd.com>,
-	David Airlie <airlied@gmail.com>,
-	Simona Vetter <simona@ffwll.ch>,
-	Gerd Hoffmann <kraxel@redhat.com>,
-	Dmitry Osipenko <dmitry.osipenko@collabora.com>,
-	Gurchetan Singh <gurchetansingh@chromium.org>,
-	Chia-I Wu <olvaffe@gmail.com>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	Lucas De Marchi <lucas.demarchi@intel.com>,
-	=?utf-8?q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
-	Rodrigo Vivi <rodrigo.vivi@intel.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Leon Romanovsky <leon@kernel.org>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Felix Kuehling <Felix.Kuehling@amd.com>,
-	Alex Williamson <alex@shazbot.org>,
-	Ankit Agrawal <ankita@nvidia.com>,
-	Vivek Kasireddy <vivek.kasireddy@intel.com>
-Cc: linux-media@vger.kernel.org,
-	dri-devel@lists.freedesktop.org,
-	linaro-mm-sig@lists.linaro.org,
-	linux-kernel@vger.kernel.org,
-	amd-gfx@lists.freedesktop.org,
-	virtualization@lists.linux.dev,
-	intel-xe@lists.freedesktop.org,
-	linux-rdma@vger.kernel.org,
-	iommu@lists.linux.dev,
-	kvm@vger.kernel.org
-Subject: [PATCH v6 5/8] dma-buf: Make .invalidate_mapping() truly optional
-Date: Fri, 30 Jan 2026 15:37:21 +0200
-Message-ID: <20260130-dmabuf-revoke-v6-5-06278f9b7bf0@nvidia.com>
-X-Mailer: git-send-email 2.52.0
-In-Reply-To: <20260130-dmabuf-revoke-v6-0-06278f9b7bf0@nvidia.com>
-References: <20260130-dmabuf-revoke-v6-0-06278f9b7bf0@nvidia.com>
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="GSKZCtcI"
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20260130134440euoutp017b34f8868754127550d0f1db1682508a~Phib4FwAb0748807488euoutp01K
+	for <iommu@lists.linux.dev>; Fri, 30 Jan 2026 13:44:40 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20260130134440euoutp017b34f8868754127550d0f1db1682508a~Phib4FwAb0748807488euoutp01K
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1769780680;
+	bh=vx9SJEm9ZQavuNcFk5P+ricBJ9M19+QPA1hZKRLrRao=;
+	h=From:To:Cc:Subject:Date:References:From;
+	b=GSKZCtcIFzgxKPEp11l/6/h5vtG844OQW0kknUidAIHNgIMW4Vo2hRbLS9ZjB6+gl
+	 mh5o8SD6fmeWuJ9ad9NlvxCYfR4wlcDpOCpkCNBNZ19gIIPJO4RHqNx5ghvocd/Hf8
+	 0bM9jT9O4EAsSq8z6aPdAZP0+qTTPDDMflMmadss=
+Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+	20260130134440eucas1p1e639225c498d3f6668f2f198860a9900~PhibqW5AR1914819148eucas1p1U;
+	Fri, 30 Jan 2026 13:44:40 +0000 (GMT)
+Received: from AMDC4653.digital.local (unknown [106.120.51.32]) by
+	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+	20260130134439eusmtip163f762a4ea7d513896c9ef08c930b4f3~PhibR0BUb0817008170eusmtip1R;
+	Fri, 30 Jan 2026 13:44:39 +0000 (GMT)
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, Marek Szyprowski
+	<m.szyprowski@samsung.com>, Christoph Hellwig <hch@lst.de>, Robin Murphy
+	<robin.murphy@arm.com>, Sai Sree Kartheek Adivi <s-adivi@ti.com>, Oreoluwa
+	Babatunde <oreoluwa.babatunde@oss.qualcomm.com>
+Subject: [GIT PULL] last minute dma-mapping fixes for Linux 6.19
+Date: Fri, 30 Jan 2026 14:34:45 +0100
+Message-Id: <20260130133445.2069751-1-m.szyprowski@samsung.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-X-Mailer: b4 0.15-dev-47773
 Content-Transfer-Encoding: 8bit
+X-CMS-MailID: 20260130134440eucas1p1e639225c498d3f6668f2f198860a9900
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20260130134440eucas1p1e639225c498d3f6668f2f198860a9900
+X-EPHeader: CA
+X-CMS-RootMailID: 20260130134440eucas1p1e639225c498d3f6668f2f198860a9900
+References: <CGME20260130134440eucas1p1e639225c498d3f6668f2f198860a9900@eucas1p1.samsung.com>
 
-From: Leon Romanovsky <leonro@nvidia.com>
+The following changes since commit c6ccd098807483762ccd726e1498bac5a71d0005:
 
-The .invalidate_mapping() callback is documented as optional, yet it
-effectively became mandatory whenever importer_ops were provided. This
-led to cases where RDMA non-ODP code had to supply an empty stub.
+  dma/pool: Avoid allocating redundant pools (2026-01-14 11:00:00 +0100)
 
-Relax the checks in the dma-buf core so the callback can be omitted,
-allowing RDMA code to drop the unnecessary function.
+are available in the Git repository at:
 
-Removing the stub allows the next patch to tell that RDMA does not support
-.invalidate_mapping() by checking for a NULL op.
+  https://git.kernel.org/pub/scm/linux/kernel/git/mszyprowski/linux.git tags/dma-mapping-6.19-2026-01-30
 
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
----
- drivers/dma-buf/dma-buf.c             |  6 ++----
- drivers/infiniband/core/umem_dmabuf.c | 13 -------------
- 2 files changed, 2 insertions(+), 17 deletions(-)
+for you to fetch changes up to 56c430c7f06d838fe3b2077dbbc4cc0bf992312b:
 
-diff --git a/drivers/dma-buf/dma-buf.c b/drivers/dma-buf/dma-buf.c
-index cd68c1c0bfd7..1629312d364a 100644
---- a/drivers/dma-buf/dma-buf.c
-+++ b/drivers/dma-buf/dma-buf.c
-@@ -947,9 +947,6 @@ dma_buf_dynamic_attach(struct dma_buf *dmabuf, struct device *dev,
- 	if (WARN_ON(!dmabuf || !dev))
- 		return ERR_PTR(-EINVAL);
- 
--	if (WARN_ON(importer_ops && !importer_ops->invalidate_mappings))
--		return ERR_PTR(-EINVAL);
--
- 	attach = kzalloc(sizeof(*attach), GFP_KERNEL);
- 	if (!attach)
- 		return ERR_PTR(-ENOMEM);
-@@ -1260,7 +1257,8 @@ void dma_buf_invalidate_mappings(struct dma_buf *dmabuf)
- 	dma_resv_assert_held(dmabuf->resv);
- 
- 	list_for_each_entry(attach, &dmabuf->attachments, node)
--		if (attach->importer_ops)
-+		if (attach->importer_ops &&
-+		    attach->importer_ops->invalidate_mappings)
- 			attach->importer_ops->invalidate_mappings(attach);
- }
- EXPORT_SYMBOL_NS_GPL(dma_buf_invalidate_mappings, "DMA_BUF");
-diff --git a/drivers/infiniband/core/umem_dmabuf.c b/drivers/infiniband/core/umem_dmabuf.c
-index d77a739cfe7a..256e34c15e6b 100644
---- a/drivers/infiniband/core/umem_dmabuf.c
-+++ b/drivers/infiniband/core/umem_dmabuf.c
-@@ -129,9 +129,6 @@ ib_umem_dmabuf_get_with_dma_device(struct ib_device *device,
- 	if (check_add_overflow(offset, (unsigned long)size, &end))
- 		return ret;
- 
--	if (unlikely(!ops || !ops->invalidate_mappings))
--		return ret;
--
- 	dmabuf = dma_buf_get(fd);
- 	if (IS_ERR(dmabuf))
- 		return ERR_CAST(dmabuf);
-@@ -184,18 +181,8 @@ struct ib_umem_dmabuf *ib_umem_dmabuf_get(struct ib_device *device,
- }
- EXPORT_SYMBOL(ib_umem_dmabuf_get);
- 
--static void
--ib_umem_dmabuf_unsupported_move_notify(struct dma_buf_attachment *attach)
--{
--	struct ib_umem_dmabuf *umem_dmabuf = attach->importer_priv;
--
--	ibdev_warn_ratelimited(umem_dmabuf->umem.ibdev,
--			       "Invalidate callback should not be called when memory is pinned\n");
--}
--
- static struct dma_buf_attach_ops ib_umem_dmabuf_attach_pinned_ops = {
- 	.allow_peer2peer = true,
--	.invalidate_mappings = ib_umem_dmabuf_unsupported_move_notify,
- };
- 
- struct ib_umem_dmabuf *
+  dma/pool: distinguish between missing and exhausted atomic pools (2026-01-29 10:23:45 +0100)
 
--- 
-2.52.0
+----------------------------------------------------------------
+dma-mapping fixes for Linux 6.19
+
+- important fix for ARM 32-bit based systems using cma= kernel parameter
+  (Oreoluwa Babatunde)
+- a fix for the corner case of the DMA atomic pool based allocations
+  (Sai Sree Kartheek Adivi)
+
+----------------------------------------------------------------
+Oreoluwa Babatunde (1):
+      of: reserved_mem: Allow reserved_mem framework detect "cma=" kernel param
+
+Sai Sree Kartheek Adivi (1):
+      dma/pool: distinguish between missing and exhausted atomic pools
+
+ drivers/of/of_reserved_mem.c | 19 +++++++++++++++++--
+ include/linux/cma.h          |  9 +++++++++
+ kernel/dma/contiguous.c      | 16 ++++++++++------
+ kernel/dma/pool.c            |  7 ++++++-
+ 4 files changed, 42 insertions(+), 9 deletions(-)
+
+----------------------------------------------------------------
+
+Thanks!
+
+Best regards
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
+
 
