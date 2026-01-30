@@ -1,137 +1,195 @@
-Received: from mail-qk1-f182.google.com (mail-qk1-f182.google.com [209.85.222.182])
+Received: from sg-1-40.ptr.blmpb.com (sg-1-40.ptr.blmpb.com [118.26.132.40])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E956221FCD
-	for <iommu@lists.linux.dev>; Fri, 30 Jan 2026 00:17:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9292133033A
+	for <iommu@lists.linux.dev>; Fri, 30 Jan 2026 01:30:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=118.26.132.40
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769732236; cv=none; b=D3VoQ2sMj5sR6Sem+XYtHxhRHABNG+roqndS3OqmqZ7FbK+qhrELpEwl4/vG78e87JEWNVb4f5sVb5LUTH7QLqJpjRp69JWIqCcOppLpZhXcehEznwRL1vIKcx6OyFaJx8bgaWp1q0KrF8qJo0BGmbokEljGD0L6XizVJY+fdlo=
+	t=1769736649; cv=none; b=hgR0ltQcLFAHEkU5uVwYPHRhp4I1NDDfUfCvADbkSpp2tzT7CQvOMx9cpvjpl2Gz2ZO8QmKFx+/IJzj/FakDhuGUTAsmxiTz+AdjWzH7kC0uSt6mhOD2Oe1U7EmLBUSPLJAwKeqfpwDIOr2cNyAiBfeqxucBzDzehSa55ej+/1c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769732236; c=relaxed/simple;
-	bh=PgxWXxtJeqUdvgjP5KxrfenUWVrCXmnl/Ip3hY3gzr0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kHufKybpIwYfcUotPTv1PI+x+pRazx2R8J9Gj+dT91eg4okioE5LCf6PlLH5dzdoRSn+cE5Gj0K2/E2zQKiMgJM1Z/rWmHBW7iH0+sRyo1MYrP5/N68hFxRm7GcONLIBFLsRBYDdix4m4cVW7WoQQY6wkIqXogvGot+JxAnjlkY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=H0gg8EBt; arc=none smtp.client-ip=209.85.222.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1769736649; c=relaxed/simple;
+	bh=suEQkRNvZoCOc0//N1x9+pIb/ihS7enDgh91Lsz4D8I=;
+	h=References:In-Reply-To:Content-Type:Date:To:Cc:Subject:Message-Id:
+	 From:Mime-Version; b=VFxyMLq0a9ynNOlqsowwpyXWai+W6ql3+KUHIT0IW72/UxrZKVXBj7uiAGEqotVjgsPciJYm7WUn7pRoSvovOpmTtDN3QhlD3PUpX0uCYeP4bcK5qoxbQEo/A03nqWBAnqr+4C6V5pzl2uvj2sJ7qSuDrWlQhfSC2Ka5LhpnWuM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=spacemit.com; spf=pass smtp.mailfrom=spacemit.com; dkim=pass (2048-bit key) header.d=spacemit.com header.i=@spacemit.com header.b=PPC9Q3yF; arc=none smtp.client-ip=118.26.132.40
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=spacemit.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=spacemit.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="H0gg8EBt"
-Received: by mail-qk1-f182.google.com with SMTP id af79cd13be357-8c52c67f64cso148147185a.0
-        for <iommu@lists.linux.dev>; Thu, 29 Jan 2026 16:17:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1769732232; x=1770337032; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=JQnCcQDZjp9U0R1Q7JCyNDeekOxxS8phMo1p2crcsis=;
-        b=H0gg8EBtPMqKEknAuFR0p4aWl8eOqMRb8JU0ZEmmQKX3QI58fYfis1Cws/2r7bCqSt
-         KmTt4Zk3BevOEr0dNXM+F0wRCSpfCEtAaLHfTeQYaUcy4rb/V9Wgg4ohcP4l+oHs5v8i
-         QWkVVWJhd1AMQBVc7wr1UoFPpZo8WorQQTv+Gn7Wt9HEilZMX7rfTfqz8DXdU2dMhwMw
-         8rtUMs3JFrk9PG6HIevEk6brIVwznppFk7A40p8jaCQi+jAu/kzaRE3BwjrBYr8ezCye
-         Irl7Uyd9nK2tA91yaYSpR1uPrzmJLPkFZJfQqoEMzvT/kALn2UOBsp5IfxRtMr1GRe19
-         cdkQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769732232; x=1770337032;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=JQnCcQDZjp9U0R1Q7JCyNDeekOxxS8phMo1p2crcsis=;
-        b=cr0tl6/92Dox7LyQHSjNrUFNr0V594G6QrbXDsSF/yPhWgOLV8LxlK5FnEchoATaXl
-         8YYIQnzfZmaLajulSKRJzY0JR8E30Sktpl8wkZWA5kTdiALkKKbFgIMOVuDrx4p9ArpM
-         8bND5iiZrDNYa02PyPdUlBexyfAY4EY72ibQ33RhRM8WRhHQftFAaBOpB/liF3m0Yrr5
-         kK3rS/W0ITP6WGxSZn64kykNVhtRaZUW9nD+TmVYH4kq6okyuhNf0cW9x0Gvpv/XvF4F
-         TdtVKjDnkRYQ7hZHa3e2l/M6nHTvkIFVEKqmlYNRwjJBTSjft1snwUO7mCbrbWZGyG//
-         uYgg==
-X-Forwarded-Encrypted: i=1; AJvYcCX0LGcThB9VBSMwd3ox+kw9KI/IC2k0bQvS63K9KTnfz2JW0Cj+Wo9wYDxu40s1kD7U5TtIvQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx51XwezssVIn12cVPjVmZWICIeG/T8VEI6eZVSvrW2LgdohXK5
-	tGEecaxdoMDLghIc0i/Rne83NUdxWGINFcyE+Ja87VXhaVNseETu/gI1Ds2Oko6Cvrs=
-X-Gm-Gg: AZuq6aL9HV7od/sBWGSZ2sfp9fmuXsKofq/iPQvZ8aEYmHOGDq7zs3vicX3IsOMXdg6
-	FBXK8pV2ZWpVzeKRTKsDB2bB7FqlidueOjkyGMmg4XVLr/j048uX/sskRiyKZ3UgodIfCbadtsg
-	GUsrKM4jH07Usu0msFvfuZkq+zs0B0Xkv5LACkDge5/4dLYyarP16+UswF76w/vjYggSOuKS/ho
-	U5bIQC4TN1c5JPKgshkYjNBqTn0zvmFZJCLTZor1IAd0locApOG6kCBfICQhglSp3h/0q6KrPWs
-	T4BirzNlKrCycMIlMVoHH8g5iHKi4rUbsIXLrRzuSkCBNDO5Npb5vj8YKQX3HTUuOzeL1zRuTL7
-	QJfi//s631IV+Cnntvx+WykG0lMw2wso3xvI+K2w7bFiwlSAHQ7BDNvnOxnPQy/x9rss5YroRWn
-	POMDs1JTTFCb9lcmTkQtQILecgrL1Sa6Q2frjhudBuxZcja23+VcWwB3cgdU/+ICGKR/oG1aiqQ
-	eQtVA==
-X-Received: by 2002:ac8:5781:0:b0:4f3:5f7b:cc1d with SMTP id d75a77b69052e-505d21846b4mr19549181cf.34.1769732232444;
-        Thu, 29 Jan 2026 16:17:12 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-162-112-119.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.112.119])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-50337cc19d7sm45008611cf.35.2026.01.29.16.17.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Jan 2026 16:17:11 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1vlcCE-0000000AQZD-13C4;
-	Thu, 29 Jan 2026 20:17:10 -0400
-Date: Thu, 29 Jan 2026 20:17:10 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Leon Romanovsky <leon@kernel.org>
-Cc: Sumit Semwal <sumit.semwal@linaro.org>,
-	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
-	Alex Deucher <alexander.deucher@amd.com>,
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-	Gerd Hoffmann <kraxel@redhat.com>,
-	Dmitry Osipenko <dmitry.osipenko@collabora.com>,
-	Gurchetan Singh <gurchetansingh@chromium.org>,
-	Chia-I Wu <olvaffe@gmail.com>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	Lucas De Marchi <lucas.demarchi@intel.com>,
-	Thomas =?utf-8?Q?Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
-	Rodrigo Vivi <rodrigo.vivi@intel.com>,
-	Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Felix Kuehling <Felix.Kuehling@amd.com>,
-	Alex Williamson <alex@shazbot.org>,
-	Ankit Agrawal <ankita@nvidia.com>,
-	Vivek Kasireddy <vivek.kasireddy@intel.com>,
-	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
-	linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org,
-	amd-gfx@lists.freedesktop.org, virtualization@lists.linux.dev,
-	intel-xe@lists.freedesktop.org, linux-rdma@vger.kernel.org,
-	iommu@lists.linux.dev, kvm@vger.kernel.org
-Subject: Re: [PATCH v5 8/8] iommufd: Add dma_buf_pin()
-Message-ID: <20260130001710.GB2328995@ziepe.ca>
-References: <20260124-dmabuf-revoke-v5-0-f98fca917e96@nvidia.com>
- <20260124-dmabuf-revoke-v5-8-f98fca917e96@nvidia.com>
+	dkim=pass (2048-bit key) header.d=spacemit.com header.i=@spacemit.com header.b="PPC9Q3yF"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ s=feishu2303021642; d=spacemit.com; t=1769736637; h=from:subject:
+ mime-version:from:date:message-id:subject:to:cc:reply-to:content-type:
+ mime-version:in-reply-to:message-id;
+ bh=suEQkRNvZoCOc0//N1x9+pIb/ihS7enDgh91Lsz4D8I=;
+ b=PPC9Q3yF5hUaX3Wtgs1l/TkEjcGUsqX2Jl1RwrfqgR5DjjKeoF8oN7VovRj8jGQosbKd3F
+ suq32AMw4TYFeVvbcm1A71Gj74PPk5oa42UG7Lws7xhySfGfv7+P1Bk8dD7+zh9kttNKO2
+ oRDe2j6ZF3STIEU0Jp/s2q0fvhxIp/DBc9z7I1cwFgEmP9qh7h2B8hFkMe7rZGsk+VSfH8
+ uf1YaNbfQHvlP5Z2BP2YZiC9mkPlMjQBbEJuDex3P6FnsKZX2Gxup1lyKUHqaWC9kUoY/c
+ SL9FchmZ2iwRbcyDlCsnqTcLhchsT8LYSVuBsC3q6bYdWfgl1TAuNEnDx8fqJg==
+References: <cover.1769562575.git.lv.zheng@spacemit.com> <cover.1769666438.git.lv.zheng@spacemit.com> <15209d7b8c5a5055f8944ab7261e440d70a18a03.1769666438.git.lv.zheng@spacemit.com> <20260129-evolution-femur-84eb5668f4a7@spud> <a4684b7f094a6a5ee87d9db722b75594f851b9fb.d4fb292a.1570.47af.8025.bf9af089dc8a@feishu.cn> <20260129-grandly-compare-e8e3a105f690@spud>
+	<2f1f48c6-ad75-4e7d-89a2-c93bb1c1d067@arm.com>
+In-Reply-To: <2f1f48c6-ad75-4e7d-89a2-c93bb1c1d067@arm.com>
+X-Lms-Return-Path: <lba+1697c09bb+b09bd2+lists.linux.dev+lv.zheng@spacemit.com>
+Content-Type: text/plain; charset=UTF-8
+Date: Fri, 30 Jan 2026 09:30:34 +0800
+To: "Robin Murphy" <robin.murphy@arm.com>
+Cc: "Conor Dooley" <conor@kernel.org>, 
+	"Tomasz Jeznach" <tjeznach@rivosinc.com>, 
+	"Joerg Roedel" <joro@8bytes.org>, "Will Deacon" <will@kernel.org>, 
+	"Rob Herring" <robh@kernel.org>, 
+	"Krzysztof Kozlowski" <krzk+dt@kernel.org>, 
+	"Conor Dooley" <conor+dt@kernel.org>, "Paul Walmsley" <pjw@kernel.org>, 
+	"Palmer Dabbelt" <palmer@dabbelt.com>, 
+	"Albert Ou" <aou@eecs.berkeley.edu>, "Alexandre Ghiti" <alex@ghiti.fr>, 
+	"Jingyu Li" <joey.li@spacemit.com>, "iommu" <iommu@lists.linux.dev>, 
+	"linux-perf-users" <linux-perf-users@vger.kernel.org>, 
+	"linux-riscv" <linux-riscv@lists.infradead.org>, 
+	"spacemit" <spacemit@lists.linux.dev>, 
+	"devicetree" <devicetree@vger.kernel.org>
+Subject: Re: [PATCH v1.1 4/7] dt-bindings: iommu: Add spacemit/t100 features
+Message-Id: <a4684b7f094a6a5ee87d9db722b75594f851b9fb.75577c8a.52dc.41c3.80a1.ca94d4edcb4c@feishu.cn>
+From: =?utf-8?q?=E9=83=91=E5=BE=8B?= <lv.zheng@spacemit.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260124-dmabuf-revoke-v5-8-f98fca917e96@nvidia.com>
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
 
-On Sat, Jan 24, 2026 at 09:14:20PM +0200, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
-> 
-> IOMMUFD relies on a private protocol with VFIO, and this always operated
-> in pinned mode.
-> 
-> Now that VFIO can support pinned importers update IOMMUFD to invoke the
-> normal dma-buf flow to request pin.
-> 
-> This isn't enough to allow IOMMUFD to work with other exporters, it still
-> needs a way to get the physical address list which is another series.
-> 
-> IOMMUFD supports the defined revoke semantics. It immediately stops and
-> fences access to the memory inside it's invalidate_mappings() callback,
-> and it currently doesn't use scatterlists so doesn't call map/unmap at
-> all.
-> 
-> It is expected that a future revision can synchronously call unmap from
-> the move_notify callback as well.
-> 
-> Acked-by: Christian König <christian.koenig@amd.com>
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> ---
->  drivers/iommu/iommufd/pages.c | 9 ++++++++-
->  1 file changed, 8 insertions(+), 1 deletion(-)
+> From: "Robin Murphy"<robin.murphy@arm.com>
+> Date:=C2=A0 Fri, Jan 30, 2026, 01:06
+> Subject:=C2=A0 Re: [PATCH v1.1 4/7] dt-bindings: iommu: Add spacemit/t100=
+ features
+> To: "Conor Dooley"<conor@kernel.org>, "=E9=83=91=E5=BE=8B"<lv.zheng@space=
+mit.com>
+> Cc: "Tomasz Jeznach"<tjeznach@rivosinc.com>, "Joerg Roedel"<joro@8bytes.o=
+rg>, "Will Deacon"<will@kernel.org>, "Rob Herring"<robh@kernel.org>, "Krzys=
+ztof Kozlowski"<krzk+dt@kernel.org>, "Conor Dooley"<conor+dt@kernel.org>, "=
+Paul Walmsley"<pjw@kernel.org>, "Palmer Dabbelt"<palmer@dabbelt.com>, "Albe=
+rt Ou"<aou@eecs.berkeley.edu>, "Alexandre Ghiti"<alex@ghiti.fr>, "Jingyu Li=
+"<joey.li@spacemit.com>, "iommu"<iommu@lists.linux.dev>, "linux-perf-users"=
+<linux-perf-users@vger.kernel.org>, "linux-riscv"<linux-riscv@lists.infrade=
+ad.org>, "spacemit"<spacemit@lists.linux.dev>, "devicetree"<devicetree@vger=
+.kernel.org>
+> On 29/01/2026 4:41 pm, Conor Dooley wrote:
+> > On Thu, Jan 29, 2026 at 06:43:03PM +0800, =E9=83=91=E5=BE=8B wrote:
+> >>> From: "Conor Dooley"<conor@kernel.org>
+> >>> Date:=C2=A0 Thu, Jan 29, 2026, 18:08
+> >>> Subject:=C2=A0 Re: [PATCH v1.1 4/7] dt-bindings: iommu: Add spacemit/=
+t100 features
+> >>> To: "Lv Zheng"<lv.zheng@spacemit.com>
+> >>> Cc: "Tomasz Jeznach"<tjeznach@rivosinc.com>, "Joerg Roedel"<joro@8byt=
+es.org>, "Will Deacon"<will@kernel.org>, "Robin Murphy"<robin.murphy@arm.co=
+m>, "Rob Herring"<robh@kernel.org>, "Krzysztof Kozlowski"<krzk+dt@kernel.or=
+g>, "Conor Dooley"<conor+dt@kernel.org>, "Paul Walmsley"<pjw@kernel.org>, "=
+Palmer Dabbelt"<palmer@dabbelt.com>, "Albert Ou"<aou@eecs.berkeley.edu>, "A=
+lexandre Ghiti"<alex@ghiti.fr>, "Jingyu Li"<joey.li@spacemit.com>, "Zhijian=
+ Chen"<zhijian@spacemit.com>, <iommu@lists.linux.dev>, <linux-perf-users@vg=
+er.kernel.org>, <linux-riscv@lists.infradead.org>, <spacemit@lists.linux.de=
+v>, <devicetree@vger.kernel.org>
+> >>> On Thu, Jan 29, 2026 at 02:09:13PM +0800, Lv Zheng wrote:
+> >>>> Adds device tree bindings for SpacemiT T100 specific features.
+> >>>> =C2=A0=C2=A0
+> >>>> vendor-hpm-events: Allow vendor events to be customized in the devic=
+e
+> >>>> =C2=A0=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
+ =C2=A0tree.
+> >>>> global-filter: The feature saves silicon area by reducing filters to
+> >>>> =C2=A0=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0one and=
+ use it as a global filter across all events.
+> >>>> =C2=A0=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0This us=
+ually is sufficient for real applications.
+> >>> =C2=A0=C2=A0
+> >>> Why can these not be determined from a device specific compatible?
+> >>
+> >> The specification only defines less than 10 standard event types while=
+ the
+> >> real silicons should have implemented many other event types based on
+> >> their micro-architecture. I tried to provide a common mechanism for al=
+l
+> >> vendor specific event types across different vendors.
+> >=C2=A0
+> > Given that the variance is based on uarch, it sounds like it can be
+> > determined from the compatible.
+> >=C2=A0
+> >> It is similar for the global filter, the global filter mechanism actua=
+lly
+> >> complies to the IOMMU specification, users can alter the iohpmevt
+> >> registers as is what is specified in the IOMMU specification. It only
+> >> provides slight application difference between the final effection. Th=
+us
+> >> this could also be a non-device specific option.
+> >=C2=A0
+> > What is a "user" in this context? Given you're talking about reducing
+> > silicon area, it sounds like this will be set in stone for each SoC, an=
+d
+> > therefore can be determined by compatible. If other devices do this,
+> > they can also determine it from their compatible.
+> >=C2=A0
+> > Properties for things that can be determined based on compatible are
+> > generally not permitted, so you'll need to provide a compelling
+> > rationale. Common mechanism isn't one, since determining based on
+> > compatible would be a common mechanism based on match data that people
+> > can tack onto for their devices.
+>=C2=A0
+> Also, reinventing jevents via devicetree is pretty grim anyway - the PMU=
+=C2=A0
+> can simply expose an "identifier" attribute that uniquely identifies the=
+=C2=A0
+> vendor implementation, and perf tooling can match that to a set of event=
+=C2=A0
+> definitions in userspace, with the added bonus that jevents can also=C2=
+=A0
+> encode meaningful descriptions, metrics and suchlike. There doesn't=C2=A0
+> *need* to be a sysfs alias for every possible event. I see the RISC-V=C2=
+=A0
+> CPU PMUs are already on-board with this approach - note the=C2=A0
+> "Unit"/"Compat" matching for system/uncore PMUs is a little different=C2=
+=A0
+> from the mapfile used for CPUs, but see other architectures for examples.
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Thanks for the idea. It sounds great and I'll give it a try.
 
-Jason
+Best regards,
+Lv
+
+>=C2=A0
+> Thanks,
+> Robin.
+
+
+This message and any attachment are confidential and may be privileged or o=
+therwise protected from disclosure. If you are not an intended recipient of=
+ this message, please delete it and any attachment from your system and not=
+ify the sender immediately by reply e-mail. Unintended recipients should no=
+t use, copy, disclose or take any action based on this message or any infor=
+mation contained in this message. Emails cannot be guaranteed to be secure =
+or error free as they can be intercepted, amended, lost or destroyed, and y=
+ou should take full responsibility for security checking.=20
+=20
+=E6=9C=AC=E9=82=AE=E4=BB=B6=E5=8F=8A=E5=85=B6=E4=BB=BB=E4=BD=95=E9=99=84=E4=
+=BB=B6=E5=85=B7=E6=9C=89=E4=BF=9D=E5=AF=86=E6=80=A7=E8=B4=A8=EF=BC=8C=E5=B9=
+=B6=E5=8F=AF=E8=83=BD=E5=8F=97=E5=85=B6=E4=BB=96=E4=BF=9D=E6=8A=A4=E6=88=96=
+=E4=B8=8D=E5=85=81=E8=AE=B8=E8=A2=AB=E6=8A=AB=E9=9C=B2=E7=BB=99=E7=AC=AC=E4=
+=B8=89=E6=96=B9=E3=80=82=E5=A6=82=E9=98=81=E4=B8=8B=E8=AF=AF=E6=94=B6=E5=88=
+=B0=E6=9C=AC=E9=82=AE=E4=BB=B6=EF=BC=8C=E6=95=AC=E8=AF=B7=E7=AB=8B=E5=8D=B3=
+=E4=BB=A5=E5=9B=9E=E5=A4=8D=E7=94=B5=E5=AD=90=E9=82=AE=E4=BB=B6=E7=9A=84=E6=
+=96=B9=E5=BC=8F=E9=80=9A=E7=9F=A5=E5=8F=91=E4=BB=B6=E4=BA=BA=EF=BC=8C=E5=B9=
+=B6=E5=B0=86=E6=9C=AC=E9=82=AE=E4=BB=B6=E5=8F=8A=E5=85=B6=E4=BB=BB=E4=BD=95=
+=E9=99=84=E4=BB=B6=E4=BB=8E=E9=98=81=E4=B8=8B=E7=B3=BB=E7=BB=9F=E4=B8=AD=E4=
+=BA=88=E4=BB=A5=E5=88=A0=E9=99=A4=E3=80=82=E5=A6=82=E9=98=81=E4=B8=8B=E5=B9=
+=B6=E9=9D=9E=E6=9C=AC=E9=82=AE=E4=BB=B6=E5=86=99=E6=98=8E=E4=B9=8B=E6=94=B6=
+=E4=BB=B6=E4=BA=BA=EF=BC=8C=E6=95=AC=E8=AF=B7=E5=88=87=E5=8B=BF=E4=BD=BF=E7=
+=94=A8=E3=80=81=E5=A4=8D=E5=88=B6=E3=80=81=E6=8A=AB=E9=9C=B2=E6=9C=AC=E9=82=
+=AE=E4=BB=B6=E6=88=96=E5=85=B6=E4=BB=BB=E4=BD=95=E5=86=85=E5=AE=B9=EF=BC=8C=
+=E4=BA=A6=E8=AF=B7=E5=88=87=E5=8B=BF=E4=BE=9D=E6=9C=AC=E9=82=AE=E4=BB=B6=E6=
+=88=96=E5=85=B6=E4=BB=BB=E4=BD=95=E5=86=85=E5=AE=B9=E8=80=8C=E9=87=87=E5=8F=
+=96=E4=BB=BB=E4=BD=95=E8=A1=8C=E5=8A=A8=E3=80=82=E7=94=B5=E5=AD=90=E9=82=AE=
+=E4=BB=B6=E6=97=A0=E6=B3=95=E4=BF=9D=E8=AF=81=E6=98=AF=E4=B8=80=E7=A7=8D=E5=
+=AE=89=E5=85=A8=E5=92=8C=E4=B8=8D=E4=BC=9A=E5=87=BA=E7=8E=B0=E4=BB=BB=E4=BD=
+=95=E5=B7=AE=E9=94=99=E7=9A=84=E9=80=9A=E4=BF=A1=E6=96=B9=E5=BC=8F=EF=BC=8C=
+=E5=8F=AF=E8=83=BD=E4=BC=9A=E8=A2=AB=E6=8B=A6=E6=88=AA=E3=80=81=E4=BF=AE=E6=
+=94=B9=E3=80=81=E4=B8=A2=E5=A4=B1=E6=88=96=E6=8D=9F=E5=9D=8F=EF=BC=8C=E6=94=
+=B6=E4=BB=B6=E4=BA=BA=E9=9C=80=E8=87=AA=E8=A1=8C=E8=B4=9F=E8=B4=A3=E5=81=9A=
+=E5=A5=BD=E5=AE=89=E5=85=A8=E6=A3=80=E6=9F=A5=E3=80=82
