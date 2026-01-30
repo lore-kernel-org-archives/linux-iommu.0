@@ -1,69 +1,69 @@
-Received: from mail-qv1-f54.google.com (mail-qv1-f54.google.com [209.85.219.54])
+Received: from mail-qk1-f177.google.com (mail-qk1-f177.google.com [209.85.222.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD1FD30FF1E
-	for <iommu@lists.linux.dev>; Fri, 30 Jan 2026 13:56:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 979EE3195E0
+	for <iommu@lists.linux.dev>; Fri, 30 Jan 2026 14:01:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769781382; cv=none; b=M7MureXh5iJxYbFaApe7B9paCPxlRvn42yX8xgFg7tMhWINDWH25RoyMWckTjUOhjgLS/BoXQ/wG2fE5kgOiyKz5jpbuLTUBS/vNkncP+CpGwUuTmyP1sb50pRKvOtZEnusuAvk5wQcNPGR6OJkb2DhhVgAxdBNagHJjUKooZ0k=
+	t=1769781681; cv=none; b=lyldtW7Jy4HiIF0LkqLmHG5sln6gXiFfnMfurb10gBVbjIVORSUucJHNvcX5BUrBx3tKjXIqOMS6XsQuben2vUzIsnBPAiC5UZCKA7juIZtwekCo1PWi+V7QG4I+Z6wyl0CxJvGVrpMLwGR8dvyZ+ft+69mWVnnZhQJntjI5WzE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769781382; c=relaxed/simple;
-	bh=SL16M++KtfIb+4uJE+a/R7kOylXhnM5j4tZGOMk8fro=;
+	s=arc-20240116; t=1769781681; c=relaxed/simple;
+	bh=B2BjUDXErJP5w+VRNup6GLKty66RY3PW3GzWxgahGUw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qmMcXxlNij2wMang2+J/SXiGgllIhPTXLiyppaJ9guRgJFlkDFwOTkdeGu+hj4Nnc+nTQ7U1fbTU78FgPkjHBLvhBdUEXVijeq3m+dROJkEk4pTCG9bttzW3hATyZxrZ7i22AmLj0vbIWi1m5Soha2jNT5Bw3fTM5qlPCivs4/Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=S64ToH4N; arc=none smtp.client-ip=209.85.219.54
+	 Content-Type:Content-Disposition:In-Reply-To; b=HmN9hKa3HdrWRdB9Lm5gvCyJ0hQCdp/kJM88R/7F2ws1n6xFd9cMTV5lya2t0Ux563MCq7ycxLRWpLPrG00vKu4AScWZbJ6fjuZQbA2eoKi2YebQOQWq9wDVUMk0GgI2EB37sE4UHJ7myNNTrYQd1HvRORSc9to2jtiQD9olx9Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=BCBE4/hS; arc=none smtp.client-ip=209.85.222.177
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="S64ToH4N"
-Received: by mail-qv1-f54.google.com with SMTP id 6a1803df08f44-88a288811a4so21075626d6.3
-        for <iommu@lists.linux.dev>; Fri, 30 Jan 2026 05:56:20 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="BCBE4/hS"
+Received: by mail-qk1-f177.google.com with SMTP id af79cd13be357-8c533228383so134623485a.3
+        for <iommu@lists.linux.dev>; Fri, 30 Jan 2026 06:01:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1769781379; x=1770386179; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1769781679; x=1770386479; darn=lists.linux.dev;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=nHaCd4HrbYw78ScpRIoaj6AeaBJaVtnx8urFDLScj1Y=;
-        b=S64ToH4NaF49kPJsUwF3aOvFtqGZZ/9lHsTXj1o1U7Hrzyn0LqSOmCPalwM0fj1m8m
-         WYI9iz0Q6OOqn7esnBSYHHrUzz+pRccfMSE/i0/9f6yEcsCcjx4q44YlPdai04NQjfDt
-         IfkdLZ3G7Jrav7wZiUBmpgIUZ8j7hn/jPPXbr+0Q3bHni/czsPpL0fXLTBuIl7NVRrT8
-         bMqo9YyGwvSXmlR2TAG2WQNhKQt+MaevLaWZVfcqL4vVwIF1KP3R3BIOAPlNuCM/rYyd
-         ZbzEfZJ2KKS6zFD8aFR/MEOCDlDti1jAXBfLcBLonYyE4kyx1/nkqha77MedwCcjUl62
-         ukCA==
+        bh=RZzJd1rUXnKgbbFoik2J/HwA+Mcwjh2UI/kxMGq+fms=;
+        b=BCBE4/hS6fo0DTZ0gzevSQjor0Ne4XLHYsu+UPZTmGQvCEsrYCYVIgEmBl1I7UMS6r
+         mdCnVp194MEbJn81k/kYNRLO4W9NlAG9UGDfR14JOwzAGgHPzlzKoRcvEysQCNZgH6l4
+         q1IF33NbEomgpA/SDRLy1VlIrGPn9HUS5ai8TZOsHayTvcQo3V1KiOP3xHQQinxoNyy+
+         evrPai0k8QN0NpPN3dYVg/qF7/gMVllK/ZvQTwaQrCbcQyyNM2/TS9x4MmastcgTkTAZ
+         J5KHI4BuV3Tb/b+IQMWIb+kmE0otr2frE/gYcf4wN/1SLUl52+8HOZOja7ynLRR4dDJN
+         qX/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769781379; x=1770386179;
+        d=1e100.net; s=20230601; t=1769781679; x=1770386479;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=nHaCd4HrbYw78ScpRIoaj6AeaBJaVtnx8urFDLScj1Y=;
-        b=uWzFS6BIpmIrCt+BWYHF/y5FHI6kTHJ/qtr4X3DMGefCwvAPeuveluEgQVLRNdM8fw
-         bpRNME/o/VhaVL5ks2eHX8CAP+/PFJTpuRrrWfjDCBiNnTLQSszq4SsUJwmxjEYfuc/v
-         oqHKxKtM7e/hnvJIpjL3nFDWDMSwEPn+NVb9ZT1kNwkrf9cF9X5ifvnF1234Uxf4+4jL
-         Pz+j9lvFHbN+SYVCxIygIATVj4+3cwxeQgzeZeIUvK4L1mNNl2JDv2sHVPKi1coNXOLB
-         avFY0GS9bsrBoTGfja5Ls4PgLQMzAzrSucYTS7XnrYr9Z8EKAaQWAR6lH/7t8J9iGfzv
-         Tn+Q==
-X-Forwarded-Encrypted: i=1; AJvYcCWoq/MuiM9UzFJNUpUHfRg3H/xfPk3tfv8GzHL8mWbEwdxF3Ts5yMiCEU4byxiFtGxRriBWDw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwezJMPCa7aAMheGmQ1f2cQz2jNk5a8kGqkANjT7OZDP5/25It+
-	kH4GwvFbMKmmgbxJQ1sfduuPZtPhthZ+P22MaNAUPIqB90GPA8lDht50FLLHfTQnBRU=
-X-Gm-Gg: AZuq6aJbGHkUnhJn+ANhIPBxT36PBCe8Ukb/kuQmccYWs8qZ/cvJz9ifz9+10zhmZZi
-	F4he2I3dxueqYd4IhZSj8TxiRrkMW4CE17jG+6q2UKUXStfQezWhxKiPx82iDl+/ChVKrYNna5B
-	fdIMcdNDZbaxfB43D9nqZ8aTdWclvRc750FCZZImO01lgk9R6+zHECzCJc4owBRDz0FMziqFY8O
-	faS/DPE6tuaZ0Yf6rhckyx/8LU9WGrogfG/ZstxSN6QqJHmSy9XM8wpsDu3D0mdNsdOF9rZknCV
-	6jM/C4jZjHmg7hnEOCR5Vp+M79YnFcROY6Oy1ZM67z7G0kpwN4QwsEhDxqMlFbAxT6DujlN9R4Y
-	NHUNiUXXPjNKteUvUI3fo9iYyyuuFBoXFZCF9njYUzVB+0HNgTu6X3tgfROB9wKTKRewAXWu/Dv
-	JvyLxg7ApQOwD1zyZL29uhEyyLmPT/ZeSLadvNDHpsqyPw+/WjREBVUbLRPHeYzRKifGjP4BriQ
-	/Qthg==
-X-Received: by 2002:a05:6214:2a48:b0:88a:529a:a53a with SMTP id 6a1803df08f44-894ea09691emr43666386d6.51.1769781379597;
-        Fri, 30 Jan 2026 05:56:19 -0800 (PST)
+        bh=RZzJd1rUXnKgbbFoik2J/HwA+Mcwjh2UI/kxMGq+fms=;
+        b=F3p5bp1PXhVGJxNlDaqqgAXGBw0q+YFyWQNOIA+XAYKPp8am9WsZ52s1ZQWiNcVz0f
+         42a9YYK0+vLibIBo8trLXahxBHD5XmwQPPIwHvSYUg93MsbAxQ6sfH2h3d1wDRkXrN4P
+         fNyb+PUQUq4e+t7iCcX7jry8wvNrTd5WloochPR5OD1vpkNQcfseNrlvOzlZLZ8Szxug
+         4PkytuCfdDDHIgR1q8zpcDm0Dq3Y/Rxx/YPIwaFpTg6lp6wjn2v8WG130SMrDrnen/jX
+         ve4O7i05YZEe9lQ9YKDXa6hPNVdvYCxAuNFJ8n2qPrgEiwfRx9BHNJH7sPLJyrRtHgtN
+         unTA==
+X-Forwarded-Encrypted: i=1; AJvYcCVnTTiyfscHGiRtEtqBTRd2bcHn4oCsXnErYEw0Wh2J7sdetXUoaMJSJ4IuhKmp6j6atU0p3g==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyAMlSz1JockF8QsLMj5cQTck3UrtxAoVcNR8ClzYwH4r2lzNFJ
+	H49N3vgrJSFQ7hesiXn2v9W9dEMeBSPgfGwtHJfPubp3yIUtlUkDXb4XOv92dABiA8Y=
+X-Gm-Gg: AZuq6aI0s4xHHxv9OBxkD07UrTKR7hxSwobuhB0Dxa//Oin2dryHU+WcUPg5SUuV4SB
+	vXZFPkMUdubDZHg63+XLGA7g5fE0eSWekRqIa8nVMEKUrYT3TMs3IbRD3Js2plUdU31UZkjJPzT
+	E64g4+g3sNe+sHyvPrw7gLwIZtgOb0xhquLw1SjP0YpGMnDfSf/Tb385tDHRTlTuJuw21FdMKjO
+	4L7TjwlnWV24/dOUECCrMmgReKw6OltKyLF/BlcSeM4uaN0N4H/BhMkbru4qETeYmLH8nWPMfX/
+	PREHnm4iJZxC95X7BkSkfwlSK5V+hzUvOsBoP0e+n9gveFY7ZuRBAqs8Vccmy9bOYUjtemr3G4d
+	frs4qbZLheaXf8GrzqxXStGGDHyP1ay0FBLWFpfXuRR7Txc+BJKqsTvmLbZ8n8J3U8DWhGXxJqI
+	3I4BdXqTq8gkV2+dadtCX/WlpHdu3WaaDOuAyf7knQMs59FSnfcYgM5th4Meb3snOXT6rzsNgFv
+	v3tng==
+X-Received: by 2002:a05:620a:290f:b0:8c3:650d:577e with SMTP id af79cd13be357-8c9eb224827mr368793585a.4.1769781649371;
+        Fri, 30 Jan 2026 06:00:49 -0800 (PST)
 Received: from ziepe.ca (hlfxns017vw-142-162-112-119.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.112.119])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-894d376da66sm59670316d6.50.2026.01.30.05.56.19
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-8c711b95e4esm700915485a.15.2026.01.30.06.00.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 30 Jan 2026 05:56:19 -0800 (PST)
+        Fri, 30 Jan 2026 06:00:48 -0800 (PST)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1vloyw-0000000AmRb-29H1;
-	Fri, 30 Jan 2026 09:56:18 -0400
-Date: Fri, 30 Jan 2026 09:56:18 -0400
+	id 1vlp3H-0000000Annc-1AWG;
+	Fri, 30 Jan 2026 10:00:47 -0400
+Date: Fri, 30 Jan 2026 10:00:47 -0400
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>
 Cc: Leon Romanovsky <leon@kernel.org>,
@@ -91,13 +91,11 @@ Cc: Leon Romanovsky <leon@kernel.org>,
 	amd-gfx@lists.freedesktop.org, virtualization@lists.linux.dev,
 	intel-xe@lists.freedesktop.org, linux-rdma@vger.kernel.org,
 	iommu@lists.linux.dev, kvm@vger.kernel.org
-Subject: Re: [PATCH v5 4/8] vfio: Wait for dma-buf invalidation to complete
-Message-ID: <20260130135618.GC2328995@ziepe.ca>
+Subject: Re: [PATCH v5 6/8] dma-buf: Add dma_buf_attach_revocable()
+Message-ID: <20260130140047.GD2328995@ziepe.ca>
 References: <20260124-dmabuf-revoke-v5-0-f98fca917e96@nvidia.com>
- <20260124-dmabuf-revoke-v5-4-f98fca917e96@nvidia.com>
- <31872c87-5cba-4081-8196-72cc839c6122@amd.com>
- <20260130130131.GO10992@unreal>
- <d25bead8-8372-4791-a741-3371342f4698@amd.com>
+ <20260124-dmabuf-revoke-v5-6-f98fca917e96@nvidia.com>
+ <b4cf1379-d68b-45da-866b-c461d6feb51b@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -107,29 +105,35 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <d25bead8-8372-4791-a741-3371342f4698@amd.com>
+In-Reply-To: <b4cf1379-d68b-45da-866b-c461d6feb51b@amd.com>
 
-On Fri, Jan 30, 2026 at 02:21:08PM +0100, Christian König wrote:
-
-> That would work for me.
+On Fri, Jan 30, 2026 at 09:43:22AM +0100, Christian König wrote:
+> On 1/24/26 20:14, Leon Romanovsky wrote:
+> > From: Leon Romanovsky <leonro@nvidia.com>
+> > 
+> > Some exporters need a flow to synchronously revoke access to the DMA-buf
+> > by importers. Once revoke is completed the importer is not permitted to
+> > touch the memory otherwise they may get IOMMU faults, AERs, or worse.
 > 
-> Question is if you really want to do it this way? See usually
-> exporters try to avoid blocking such functions.
+> That approach is seriously not going to fly.
+> 
+> You can use the invalidate_mappings approach to trigger the importer
+> to give back the mapping, but when the mapping is really given back
+> is still completely on the importer side.
 
-Yes, it has to be this way, revoke is a synchronous user space
-triggered operation around things like FLR or device close. We can't
-defer it into some background operation like pm.
+Yes, and that is what this is all doing, there is the wait for the
+importer's unmap to happen in the sequence.
 
-> >>>  		}
-> >>>  		fput(priv->dmabuf->file);
-> >>
-> >> This is also extremely questionable. Why doesn't the dmabuf have
-> >> a reference while on the linked list?
+> In other words you can't do the shot down revoke semantics you are
+> trying to establish here.
 
-If we hold a refcount while on the list then the FD can never be
-closed.
+All this is doing is saying if dma_buf_attach_revocable() == true then
+the importer will call unmap within bounded time after
+dma_buf_invalidate_mappings().
 
-There is locking protecting the list so that it is safe and close
-continues to work right.
+That's it. If the importing driver doesn't want to do that then it
+should make dma_buf_attach_revocable()=false.
+
+VFIO/etc only want to interwork with importers that can do this.
 
 Jason
