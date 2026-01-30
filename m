@@ -1,104 +1,135 @@
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f54.google.com (mail-qv1-f54.google.com [209.85.219.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C6D530DD2C
-	for <iommu@lists.linux.dev>; Fri, 30 Jan 2026 13:44:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD1FD30FF1E
+	for <iommu@lists.linux.dev>; Fri, 30 Jan 2026 13:56:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769780689; cv=none; b=tA3rXJ12NwuIaRbnaV61jFmqNpjEHjgZFl9oYVquivBssVLJ8w2/q4zIV+EpWHtXazxzgTd/P2uvR/gEvHvSD/N8QOI7utKW3F6rub2soEeZtlhnWx+ga3yrKMoQQW+LWICs06uN+CT4ZwBw1Air2Vd4lNjOkivm/o7IaJP6WOE=
+	t=1769781382; cv=none; b=M7MureXh5iJxYbFaApe7B9paCPxlRvn42yX8xgFg7tMhWINDWH25RoyMWckTjUOhjgLS/BoXQ/wG2fE5kgOiyKz5jpbuLTUBS/vNkncP+CpGwUuTmyP1sb50pRKvOtZEnusuAvk5wQcNPGR6OJkb2DhhVgAxdBNagHJjUKooZ0k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769780689; c=relaxed/simple;
-	bh=zq0enudfxYyZO8ReGjAlm3eJCI6Ktkd2wS+QbgkoBU8=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type:
-	 References; b=uoVeG4C9AJKpJVdymvVAID8xzv2coECttdF3SSPZRcp8zZ5uKu/91ZiodErEKy0qfrOc/IrYW5IzHMw3S3uXocGam00WgpOSlbmNGqwINE+PWj5NY2jxOnMPBujj/wxfRr+nbD5yPPIDwnAToHWr32AarAEUbsruAoXsWdhMVyM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=GSKZCtcI; arc=none smtp.client-ip=210.118.77.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1769781382; c=relaxed/simple;
+	bh=SL16M++KtfIb+4uJE+a/R7kOylXhnM5j4tZGOMk8fro=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=qmMcXxlNij2wMang2+J/SXiGgllIhPTXLiyppaJ9guRgJFlkDFwOTkdeGu+hj4Nnc+nTQ7U1fbTU78FgPkjHBLvhBdUEXVijeq3m+dROJkEk4pTCG9bttzW3hATyZxrZ7i22AmLj0vbIWi1m5Soha2jNT5Bw3fTM5qlPCivs4/Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=S64ToH4N; arc=none smtp.client-ip=209.85.219.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="GSKZCtcI"
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20260130134440euoutp017b34f8868754127550d0f1db1682508a~Phib4FwAb0748807488euoutp01K
-	for <iommu@lists.linux.dev>; Fri, 30 Jan 2026 13:44:40 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20260130134440euoutp017b34f8868754127550d0f1db1682508a~Phib4FwAb0748807488euoutp01K
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1769780680;
-	bh=vx9SJEm9ZQavuNcFk5P+ricBJ9M19+QPA1hZKRLrRao=;
-	h=From:To:Cc:Subject:Date:References:From;
-	b=GSKZCtcIFzgxKPEp11l/6/h5vtG844OQW0kknUidAIHNgIMW4Vo2hRbLS9ZjB6+gl
-	 mh5o8SD6fmeWuJ9ad9NlvxCYfR4wlcDpOCpkCNBNZ19gIIPJO4RHqNx5ghvocd/Hf8
-	 0bM9jT9O4EAsSq8z6aPdAZP0+qTTPDDMflMmadss=
-Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20260130134440eucas1p1e639225c498d3f6668f2f198860a9900~PhibqW5AR1914819148eucas1p1U;
-	Fri, 30 Jan 2026 13:44:40 +0000 (GMT)
-Received: from AMDC4653.digital.local (unknown [106.120.51.32]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20260130134439eusmtip163f762a4ea7d513896c9ef08c930b4f3~PhibR0BUb0817008170eusmtip1R;
-	Fri, 30 Jan 2026 13:44:39 +0000 (GMT)
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, Marek Szyprowski
-	<m.szyprowski@samsung.com>, Christoph Hellwig <hch@lst.de>, Robin Murphy
-	<robin.murphy@arm.com>, Sai Sree Kartheek Adivi <s-adivi@ti.com>, Oreoluwa
-	Babatunde <oreoluwa.babatunde@oss.qualcomm.com>
-Subject: [GIT PULL] last minute dma-mapping fixes for Linux 6.19
-Date: Fri, 30 Jan 2026 14:34:45 +0100
-Message-Id: <20260130133445.2069751-1-m.szyprowski@samsung.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="S64ToH4N"
+Received: by mail-qv1-f54.google.com with SMTP id 6a1803df08f44-88a288811a4so21075626d6.3
+        for <iommu@lists.linux.dev>; Fri, 30 Jan 2026 05:56:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1769781379; x=1770386179; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=nHaCd4HrbYw78ScpRIoaj6AeaBJaVtnx8urFDLScj1Y=;
+        b=S64ToH4NaF49kPJsUwF3aOvFtqGZZ/9lHsTXj1o1U7Hrzyn0LqSOmCPalwM0fj1m8m
+         WYI9iz0Q6OOqn7esnBSYHHrUzz+pRccfMSE/i0/9f6yEcsCcjx4q44YlPdai04NQjfDt
+         IfkdLZ3G7Jrav7wZiUBmpgIUZ8j7hn/jPPXbr+0Q3bHni/czsPpL0fXLTBuIl7NVRrT8
+         bMqo9YyGwvSXmlR2TAG2WQNhKQt+MaevLaWZVfcqL4vVwIF1KP3R3BIOAPlNuCM/rYyd
+         ZbzEfZJ2KKS6zFD8aFR/MEOCDlDti1jAXBfLcBLonYyE4kyx1/nkqha77MedwCcjUl62
+         ukCA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1769781379; x=1770386179;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=nHaCd4HrbYw78ScpRIoaj6AeaBJaVtnx8urFDLScj1Y=;
+        b=uWzFS6BIpmIrCt+BWYHF/y5FHI6kTHJ/qtr4X3DMGefCwvAPeuveluEgQVLRNdM8fw
+         bpRNME/o/VhaVL5ks2eHX8CAP+/PFJTpuRrrWfjDCBiNnTLQSszq4SsUJwmxjEYfuc/v
+         oqHKxKtM7e/hnvJIpjL3nFDWDMSwEPn+NVb9ZT1kNwkrf9cF9X5ifvnF1234Uxf4+4jL
+         Pz+j9lvFHbN+SYVCxIygIATVj4+3cwxeQgzeZeIUvK4L1mNNl2JDv2sHVPKi1coNXOLB
+         avFY0GS9bsrBoTGfja5Ls4PgLQMzAzrSucYTS7XnrYr9Z8EKAaQWAR6lH/7t8J9iGfzv
+         Tn+Q==
+X-Forwarded-Encrypted: i=1; AJvYcCWoq/MuiM9UzFJNUpUHfRg3H/xfPk3tfv8GzHL8mWbEwdxF3Ts5yMiCEU4byxiFtGxRriBWDw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwezJMPCa7aAMheGmQ1f2cQz2jNk5a8kGqkANjT7OZDP5/25It+
+	kH4GwvFbMKmmgbxJQ1sfduuPZtPhthZ+P22MaNAUPIqB90GPA8lDht50FLLHfTQnBRU=
+X-Gm-Gg: AZuq6aJbGHkUnhJn+ANhIPBxT36PBCe8Ukb/kuQmccYWs8qZ/cvJz9ifz9+10zhmZZi
+	F4he2I3dxueqYd4IhZSj8TxiRrkMW4CE17jG+6q2UKUXStfQezWhxKiPx82iDl+/ChVKrYNna5B
+	fdIMcdNDZbaxfB43D9nqZ8aTdWclvRc750FCZZImO01lgk9R6+zHECzCJc4owBRDz0FMziqFY8O
+	faS/DPE6tuaZ0Yf6rhckyx/8LU9WGrogfG/ZstxSN6QqJHmSy9XM8wpsDu3D0mdNsdOF9rZknCV
+	6jM/C4jZjHmg7hnEOCR5Vp+M79YnFcROY6Oy1ZM67z7G0kpwN4QwsEhDxqMlFbAxT6DujlN9R4Y
+	NHUNiUXXPjNKteUvUI3fo9iYyyuuFBoXFZCF9njYUzVB+0HNgTu6X3tgfROB9wKTKRewAXWu/Dv
+	JvyLxg7ApQOwD1zyZL29uhEyyLmPT/ZeSLadvNDHpsqyPw+/WjREBVUbLRPHeYzRKifGjP4BriQ
+	/Qthg==
+X-Received: by 2002:a05:6214:2a48:b0:88a:529a:a53a with SMTP id 6a1803df08f44-894ea09691emr43666386d6.51.1769781379597;
+        Fri, 30 Jan 2026 05:56:19 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-162-112-119.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.112.119])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-894d376da66sm59670316d6.50.2026.01.30.05.56.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 30 Jan 2026 05:56:19 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1vloyw-0000000AmRb-29H1;
+	Fri, 30 Jan 2026 09:56:18 -0400
+Date: Fri, 30 Jan 2026 09:56:18 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>
+Cc: Leon Romanovsky <leon@kernel.org>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Alex Deucher <alexander.deucher@amd.com>,
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+	Gerd Hoffmann <kraxel@redhat.com>,
+	Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+	Gurchetan Singh <gurchetansingh@chromium.org>,
+	Chia-I Wu <olvaffe@gmail.com>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	Lucas De Marchi <lucas.demarchi@intel.com>,
+	Thomas =?utf-8?Q?Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
+	Rodrigo Vivi <rodrigo.vivi@intel.com>,
+	Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Felix Kuehling <Felix.Kuehling@amd.com>,
+	Alex Williamson <alex@shazbot.org>,
+	Ankit Agrawal <ankita@nvidia.com>,
+	Vivek Kasireddy <vivek.kasireddy@intel.com>,
+	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org,
+	amd-gfx@lists.freedesktop.org, virtualization@lists.linux.dev,
+	intel-xe@lists.freedesktop.org, linux-rdma@vger.kernel.org,
+	iommu@lists.linux.dev, kvm@vger.kernel.org
+Subject: Re: [PATCH v5 4/8] vfio: Wait for dma-buf invalidation to complete
+Message-ID: <20260130135618.GC2328995@ziepe.ca>
+References: <20260124-dmabuf-revoke-v5-0-f98fca917e96@nvidia.com>
+ <20260124-dmabuf-revoke-v5-4-f98fca917e96@nvidia.com>
+ <31872c87-5cba-4081-8196-72cc839c6122@amd.com>
+ <20260130130131.GO10992@unreal>
+ <d25bead8-8372-4791-a741-3371342f4698@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-CMS-MailID: 20260130134440eucas1p1e639225c498d3f6668f2f198860a9900
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20260130134440eucas1p1e639225c498d3f6668f2f198860a9900
-X-EPHeader: CA
-X-CMS-RootMailID: 20260130134440eucas1p1e639225c498d3f6668f2f198860a9900
-References: <CGME20260130134440eucas1p1e639225c498d3f6668f2f198860a9900@eucas1p1.samsung.com>
+In-Reply-To: <d25bead8-8372-4791-a741-3371342f4698@amd.com>
 
-The following changes since commit c6ccd098807483762ccd726e1498bac5a71d0005:
+On Fri, Jan 30, 2026 at 02:21:08PM +0100, Christian König wrote:
 
-  dma/pool: Avoid allocating redundant pools (2026-01-14 11:00:00 +0100)
+> That would work for me.
+> 
+> Question is if you really want to do it this way? See usually
+> exporters try to avoid blocking such functions.
 
-are available in the Git repository at:
+Yes, it has to be this way, revoke is a synchronous user space
+triggered operation around things like FLR or device close. We can't
+defer it into some background operation like pm.
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/mszyprowski/linux.git tags/dma-mapping-6.19-2026-01-30
+> >>>  		}
+> >>>  		fput(priv->dmabuf->file);
+> >>
+> >> This is also extremely questionable. Why doesn't the dmabuf have
+> >> a reference while on the linked list?
 
-for you to fetch changes up to 56c430c7f06d838fe3b2077dbbc4cc0bf992312b:
+If we hold a refcount while on the list then the FD can never be
+closed.
 
-  dma/pool: distinguish between missing and exhausted atomic pools (2026-01-29 10:23:45 +0100)
+There is locking protecting the list so that it is safe and close
+continues to work right.
 
-----------------------------------------------------------------
-dma-mapping fixes for Linux 6.19
-
-- important fix for ARM 32-bit based systems using cma= kernel parameter
-  (Oreoluwa Babatunde)
-- a fix for the corner case of the DMA atomic pool based allocations
-  (Sai Sree Kartheek Adivi)
-
-----------------------------------------------------------------
-Oreoluwa Babatunde (1):
-      of: reserved_mem: Allow reserved_mem framework detect "cma=" kernel param
-
-Sai Sree Kartheek Adivi (1):
-      dma/pool: distinguish between missing and exhausted atomic pools
-
- drivers/of/of_reserved_mem.c | 19 +++++++++++++++++--
- include/linux/cma.h          |  9 +++++++++
- kernel/dma/contiguous.c      | 16 ++++++++++------
- kernel/dma/pool.c            |  7 ++++++-
- 4 files changed, 42 insertions(+), 9 deletions(-)
-
-----------------------------------------------------------------
-
-Thanks!
-
-Best regards
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
-
-
+Jason
