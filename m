@@ -1,97 +1,104 @@
-Received: from out28-97.mail.aliyun.com (out28-97.mail.aliyun.com [115.124.28.97])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34C7581AA8
-	for <iommu@lists.linux.dev>; Fri, 30 Jan 2026 07:00:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.28.97
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5E8B18E1F;
+	Fri, 30 Jan 2026 07:00:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769756417; cv=none; b=fx7zOkhw6Qp3gb2z7Iecf0PIl2AtGyfNOLb28PA5O+vVbiPVno3PKv7xPyXvq3I64KRTCc0rDn8nlsVYVcrw0Cp4Zt6p7zPbaR+T7+dyoIVY9MI81aZOoWw9BQIn0T5l2h7r93ytcViDRU1vqvcu+DdiFvCBMSC/nrMP1FK0+ww=
+	t=1769756426; cv=none; b=OllqJ5tLolwZlIZSO8cbc4rtZRbvIrBto/lSB+P0UYZtC1tQhYrAFi27sQ0HcHY6is2CegqUZ+lEaDONmqVH+HrbhXsF/J4FxK9HpHA44CPBQpmvBa5G+FSPNCqczaDAvTjRd+TtAe834tw3Wnp6xcK1wLJG2mrCWWgtlvKHIi8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769756417; c=relaxed/simple;
-	bh=9ombZwwISGB5HH7OzI8Btk4cF//LltI4Twak3chuXWg=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=Ky1Pa88CNLpGRwuQw8psBlBpw8sI3ijwH9Lsdj7fW1E495iAxQ2Tf8GfAtRcE0kb0BE4SXLmxoaRQAwhYXWWLf6Bp7sb0G58iofdV94LegjLTp5w6bJtbsI7EmRLspBweB/FU0PKDmsqLfdnmPzpvnZHLY8HM9sM1dQbnBWeRPI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bosc.ac.cn; spf=pass smtp.mailfrom=bosc.ac.cn; arc=none smtp.client-ip=115.124.28.97
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bosc.ac.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bosc.ac.cn
-Received: from guoyaxing.localdomain(mailfrom:guoyaxing@bosc.ac.cn fp:SMTPD_---.gK.y6dm_1769756062 cluster:ay29)
-          by smtp.aliyun-inc.com;
-          Fri, 30 Jan 2026 14:54:48 +0800
-From: Yaxing Guo <guoyaxing@bosc.ac.cn>
-To: tjeznach@rivosinc.com
-Cc: joro@8bytes.org,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	pjw@kernel.org,
-	palmer@dabbelt.com,
-	aou@eecs.berkeley.edu,
-	alex@ghiti.fr,
-	iommu@lists.linux.dev,
-	linux-riscv@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	Yaxing Guo <guoyaxing@bosc.ac.cn>
-Subject: [PATCH v1] iommu/riscv: Skip IRQ count check when using MSI interrupts
-Date: Fri, 30 Jan 2026 14:54:20 +0800
-Message-Id: <20260130065420.16811-1-guoyaxing@bosc.ac.cn>
-X-Mailer: git-send-email 2.34.1
+	s=arc-20240116; t=1769756426; c=relaxed/simple;
+	bh=SwKC4Xj637CvF1FqfD2Ffqfuyi88P+/KMhUf6nGE4LM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=VDbsPrfMOs6VI7Fo/dL7mE51N5gt6Y4teTFcJZgilkiK0fu7ZB8qyCzBKbrWEV0+mILuPPfa/NpdxHdztOSjBPLJbwzDnU29kBCJV1WHymmc8+0rNqQYscxxuvWeRlPZjxZ0mhszgVvNa50D/w87E6ayT5zsXQqHp9WKzknUBlQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XgFgDh/B; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XgFgDh/B"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D936C4CEF7;
+	Fri, 30 Jan 2026 07:00:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1769756425;
+	bh=SwKC4Xj637CvF1FqfD2Ffqfuyi88P+/KMhUf6nGE4LM=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=XgFgDh/B2YishN2dcZMkY4CYAevPBkIu68baPIcKz/BgbT6K1tAsL2PyN3wiTtTdC
+	 jo/kJAT5trQs3MZIEI2HGW5+AMnkxt5iV0ImdQgQsoTCoQBNrmrR0NYasy+oABNKse
+	 2506cQYBt7VCpgmNR0NGwk8KJuGzVDxaTxLm5zv3CFufoJRLo+BJmBbclqkeysqioP
+	 G9FDslcvaLNN+jr1zhicNXavcYV8aWXwLQJxJl1mt6q9n8l+XfSHeCoa1t8NTjNH4p
+	 +u5KQMWBIITybzgApJ5DlFVUHQvpdI2Ck7QaRsJjuRp1K7FbNEEVLaxkSmNyiD2Fm/
+	 rdwqK8S3ocnHQ==
+Date: Fri, 30 Jan 2026 09:00:20 +0200
+From: Leon Romanovsky <leon@kernel.org>
+To: Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>
+Cc: Sumit Semwal <sumit.semwal@linaro.org>,
+	Alex Deucher <alexander.deucher@amd.com>,
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+	Gerd Hoffmann <kraxel@redhat.com>,
+	Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+	Gurchetan Singh <gurchetansingh@chromium.org>,
+	Chia-I Wu <olvaffe@gmail.com>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	Lucas De Marchi <lucas.demarchi@intel.com>,
+	Thomas =?iso-8859-1?Q?Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>,
+	Rodrigo Vivi <rodrigo.vivi@intel.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Felix Kuehling <Felix.Kuehling@amd.com>,
+	Alex Williamson <alex@shazbot.org>,
+	Ankit Agrawal <ankita@nvidia.com>,
+	Vivek Kasireddy <vivek.kasireddy@intel.com>,
+	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org,
+	amd-gfx@lists.freedesktop.org, virtualization@lists.linux.dev,
+	intel-xe@lists.freedesktop.org, linux-rdma@vger.kernel.org,
+	iommu@lists.linux.dev, kvm@vger.kernel.org
+Subject: Re: [PATCH v5 3/8] dma-buf: Always build with DMABUF_MOVE_NOTIFY
+Message-ID: <20260130070020.GM10992@unreal>
+References: <20260124-dmabuf-revoke-v5-0-f98fca917e96@nvidia.com>
+ <20260124-dmabuf-revoke-v5-3-f98fca917e96@nvidia.com>
+ <0d2ec2d6-c999-45d8-a2bd-b5b21883db47@amd.com>
+ <20260127095831.GR13967@unreal>
+ <83cd911c-99ea-4fab-821e-fcf703209731@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <83cd911c-99ea-4fab-821e-fcf703209731@amd.com>
 
-In RISC-V IOMMU platform devices that use MSI interrupts (indicated by the
-presence of 'msi-parent' in the device tree), there are no wired interrupt
-lines, so calling platform_get_irq_count() returns 0 or -ENXIO, causing the
-driver to fail during probe.
+On Tue, Jan 27, 2026 at 11:02:03AM +0100, Christian König wrote:
+> On 1/27/26 10:58, Leon Romanovsky wrote:
+> > On Tue, Jan 27, 2026 at 10:26:26AM +0100, Christian König wrote:
+> >> On 1/24/26 20:14, Leon Romanovsky wrote:
+> >>> From: Leon Romanovsky <leonro@nvidia.com>
+> >>>
+> >>> DMABUF_MOVE_NOTIFY was introduced in 2018 and has been marked as
+> >>> experimental and disabled by default ever since. Six years later,
+> >>> all new importers implement this callback.
+> >>>
+> >>> It is therefore reasonable to drop CONFIG_DMABUF_MOVE_NOTIFY and
+> >>> always build DMABUF with support for it enabled.
+> >>>
+> >>> Suggested-by: Christian König <christian.koenig@amd.com>
+> >>> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> >>
+> >> Reviewed-by: Christian König <christian.koenig@amd.com>
+> >>
+> >> As long as nobody starts screaming in the last second or I encounter some other problem I'm going to push the first three patches to drm-misc-next now.
+> > 
+> > How do you see progress of other patches?
+> > Can they be queued for that tree as well?
+> 
+> I was hoping to get through them by the end of the week.
 
-However, MSI interrupts are allocated dynamically via the MSI subsystem and
-do not appear in the device tree 'interrupts' property. Therefore, the
-driver should not require a non-zero IRQ count when 'msi-parent' is present.
+Christian,
 
-This patch fixes the bug where probe fails when using MSI interrupts
- (which do not have an 'interrupts' property in the device tree)..
+Can we please merge the whole series now?
 
-Fixes: <d5f88acdd6ff> ("iommu/riscv: Add support for platform msi")
-
-Signed-off-by: Yaxing Guo <guoyaxing@bosc.ac.cn>
----
- drivers/iommu/riscv/iommu-platform.c | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/iommu/riscv/iommu-platform.c b/drivers/iommu/riscv/iommu-platform.c
-index 83a28c83f991..8f15b06e8499 100644
---- a/drivers/iommu/riscv/iommu-platform.c
-+++ b/drivers/iommu/riscv/iommu-platform.c
-@@ -68,12 +68,7 @@ static int riscv_iommu_platform_probe(struct platform_device *pdev)
- 	iommu->caps = riscv_iommu_readq(iommu, RISCV_IOMMU_REG_CAPABILITIES);
- 	iommu->fctl = riscv_iommu_readl(iommu, RISCV_IOMMU_REG_FCTL);
- 
--	iommu->irqs_count = platform_irq_count(pdev);
--	if (iommu->irqs_count <= 0)
--		return dev_err_probe(dev, -ENODEV,
--				     "no IRQ resources provided\n");
--	if (iommu->irqs_count > RISCV_IOMMU_INTR_COUNT)
--		iommu->irqs_count = RISCV_IOMMU_INTR_COUNT;
-+	iommu->irqs_count = RISCV_IOMMU_INTR_COUNT;
- 
- 	igs = FIELD_GET(RISCV_IOMMU_CAPABILITIES_IGS, iommu->caps);
- 	switch (igs) {
-@@ -120,6 +115,13 @@ static int riscv_iommu_platform_probe(struct platform_device *pdev)
- 		fallthrough;
- 
- 	case RISCV_IOMMU_CAPABILITIES_IGS_WSI:
-+		iommu->irqs_count = platform_irq_count(pdev);
-+		if (iommu->irqs_count <= 0)
-+			return dev_err_probe(dev, -ENODEV,
-+					     "no IRQ resources provided\n");
-+		if (iommu->irqs_count > RISCV_IOMMU_INTR_COUNT)
-+			iommu->irqs_count = RISCV_IOMMU_INTR_COUNT;
-+
- 		for (vec = 0; vec < iommu->irqs_count; vec++)
- 			iommu->irqs[vec] = platform_get_irq(pdev, vec);
- 
--- 
-2.34.1
-
+Thanks
