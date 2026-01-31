@@ -1,148 +1,62 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8AFF733554F;
-	Sat, 31 Jan 2026 05:35:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C78802580F2
+	for <iommu@lists.linux.dev>; Sat, 31 Jan 2026 09:23:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769837702; cv=none; b=cphx0dBjsQRVy/DPfSXtCGD7V+MBsFKkcylzzdxkL5m0Hjr5nE79TYlhdqikUQw4TKC/aK7w11avRnke1H9DIdWqRC4rCo4Ck/0qGRvqb3w6x80iaa6wF6R6tenJfUxc48v3dNQfKJlqylC2TyOL0qiwfY3d49lLDP/d20vbJCI=
+	t=1769851397; cv=none; b=HTGIw40XjsNMVwLGpiPnxHu2q1KGZKFOJwMBtV8fuT7ypfmAk8B6wUBQ1okGHDrU2BoNYnGJQxqPdWnumOtdFPsELQ6UNJU7xZPJzgyU1FgYBvANIzMrzDVPapIu2J7tZtbErJfOuvrb45V01p9A3rUdBnDM4wgjz4/jPCO5Jd4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769837702; c=relaxed/simple;
-	bh=xc+xbxZ3oNBD2JuFMoUcoiVyL/l5Ver5G6iPoq8UFrM=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=CJ0LZ8jUaqPcFw1lK6vjFjAz7HBGMH6niQqnVx46wp5y5Et/gdHif056H3uLZsbnDqkzngZTCNbnpqPzLvsXo/BsRER6EXHZnH4wmKKSmSw8b6VM+XVkeFJGdxq99jZe8TgK79QdjYmoKpvKrgmHF3L696p5dhw68EHGUF6ABKA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WdACCORf; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1769851397; c=relaxed/simple;
+	bh=oq9EKKdg93DkudeARIZwtKEHxeGstm9HG6iU9TSazns=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=WYfyV9aOQeuWM4zBeXd5w5uchIgkoDzxFZGZRkMIIW3BLc0UqqCcCqGujzcpWv5VQS4mMknl/RnsdRV/ILJqsWdTuTR1APisGLy9btyXQa1ZmcFi4jdrFbcah3Sr8VrP1cyKnxyucpuVoQaRhqhqAGQRsToQI0BZPmE7d+Gv1PE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=386OtMbc; arc=none smtp.client-ip=85.214.250.239
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WdACCORf"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C052C19422;
-	Sat, 31 Jan 2026 05:35:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1769837702;
-	bh=xc+xbxZ3oNBD2JuFMoUcoiVyL/l5Ver5G6iPoq8UFrM=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=WdACCORfHa5sZ8DizbHHRa6fxGpeGe7kg01QmfISUAKyvEL5a2BmGj6BqfFduDGi8
-	 mBoFbousmRtM6iLxbxdaKS3dLj/duVQvhfnARWn/1+HADh5swJ8oOJPrJhM5e5eOsp
-	 gXwcaHztnoVguimRptoOEvYr3QeJcBW8idunPKQcxe8Wh4jkdLAhEyKM2QqNglGany
-	 +4S+D27BL8rT+kdVl/Zho4eEIXVniLtJmqSmnV1wrNsYbiSrRbvQoJrfAySMH2WLw5
-	 Ee2zveWlmXrOAaby2fHDu02v71EJPL4/fuzV92SvdMrObRQ+K+AfOH8UpweHRfK9Ty
-	 wqaOkxlLS/98A==
-From: Leon Romanovsky <leon@kernel.org>
-To: Sumit Semwal <sumit.semwal@linaro.org>,
-	=?utf-8?q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-	Alex Deucher <alexander.deucher@amd.com>,
-	David Airlie <airlied@gmail.com>,
-	Simona Vetter <simona@ffwll.ch>,
-	Gerd Hoffmann <kraxel@redhat.com>,
-	Dmitry Osipenko <dmitry.osipenko@collabora.com>,
-	Gurchetan Singh <gurchetansingh@chromium.org>,
-	Chia-I Wu <olvaffe@gmail.com>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	Lucas De Marchi <lucas.demarchi@intel.com>,
-	=?utf-8?q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
-	Rodrigo Vivi <rodrigo.vivi@intel.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Leon Romanovsky <leon@kernel.org>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Felix Kuehling <Felix.Kuehling@amd.com>,
-	Alex Williamson <alex@shazbot.org>,
-	Ankit Agrawal <ankita@nvidia.com>,
-	Vivek Kasireddy <vivek.kasireddy@intel.com>
-Cc: linux-media@vger.kernel.org,
-	dri-devel@lists.freedesktop.org,
-	linaro-mm-sig@lists.linaro.org,
-	linux-kernel@vger.kernel.org,
-	amd-gfx@lists.freedesktop.org,
-	virtualization@lists.linux.dev,
-	intel-xe@lists.freedesktop.org,
-	linux-rdma@vger.kernel.org,
-	iommu@lists.linux.dev,
-	kvm@vger.kernel.org,
-	Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH v7 8/8] iommufd: Add dma_buf_pin()
-Date: Sat, 31 Jan 2026 07:34:18 +0200
-Message-ID: <20260131-dmabuf-revoke-v7-8-463d956bd527@nvidia.com>
-X-Mailer: git-send-email 2.52.0
-In-Reply-To: <20260131-dmabuf-revoke-v7-0-463d956bd527@nvidia.com>
-References: <20260131-dmabuf-revoke-v7-0-463d956bd527@nvidia.com>
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="386OtMbc"
+Received: from 8bytes.org (unknown [IPv6:2001:67c:1810:f051:57e6:3c1a:1909:f41d])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.8bytes.org (Postfix) with ESMTPSA id DCAFF5C784;
+	Sat, 31 Jan 2026 10:23:07 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1769851388;
+	bh=oq9EKKdg93DkudeARIZwtKEHxeGstm9HG6iU9TSazns=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=386OtMbcoCIT9uW9KBmYrAmNmaWlPUrk7hOHA4+rnI0vTlSAnxSYkPrD9B9/Oy317
+	 ZSjZBo1yAAqtcYgKAJ3pGMG1XML3bn22Z5+0srlen97ffG2+EP0hGkWxc1bWwjARjO
+	 TzXqqymqQS51qamNH2Bkvl4ONngc4mSC+BvNRCbkukxHjdOFjDvGFYePMJlxiA7FIe
+	 Kx9anYrtLNHT+fOIBOfQ17yN+CRLQMeCt8+lwvcAUpg8rCbOQxPOYCMt6qcVd+tHmL
+	 GUZR1oKljzoHcH3wKN/kZS26Nu/QAqxsF9S7mFg92KeYqmdV6jAZSimQdVhyhCcrkK
+	 Wq4MERPytoOGA==
+Date: Sat, 31 Jan 2026 10:23:05 +0100
+From: =?utf-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: will@kernel.org, jgg@nvidia.com, robin.murphy@arm.com, 
+	linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, ncqb@google.com
+Subject: Re: [PATCH rc] iommu/tegra241-cmdqv: Reset VCMDQ in
+ tegra241_vcmdq_hw_init_user()
+Message-ID: <x75l7ibr4o45dfdmdxlpefusks4maovaf3ugukcxuszd4dvmx3@w3hmrgo4e4qb>
+References: <20260129224341.1594785-1-nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-X-Mailer: b4 0.15-dev-47773
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260129224341.1594785-1-nicolinc@nvidia.com>
 
-From: Leon Romanovsky <leonro@nvidia.com>
+On Thu, Jan 29, 2026 at 02:43:41PM -0800, Nicolin Chen wrote:
+> Fixes: 6717f26ab1e7 ("iommu/tegra241-cmdqv: Add user-space use support")
+> Cc: stable@vger.kernel.org
+> Reported-by: Bao Nguyen <ncqb@google.com>
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c | 3 +++
+>  1 file changed, 3 insertions(+)
 
-IOMMUFD relies on a private protocol with VFIO, and this always operated
-in pinned mode.
-
-Now that VFIO can support pinned importers update IOMMUFD to invoke the
-normal dma-buf flow to request pin.
-
-This isn't enough to allow IOMMUFD to work with other exporters, it still
-needs a way to get the physical address list which is another series.
-
-IOMMUFD supports the defined revoke semantics. It immediately stops and
-fences access to the memory inside it's invalidate_mappings() callback,
-and it currently doesn't use scatterlists so doesn't call map/unmap at
-all.
-
-It is expected that a future revision can synchronously call unmap from
-the move_notify callback as well.
-
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Acked-by: Christian König <christian.koenig@amd.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
----
- drivers/iommu/iommufd/pages.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/iommufd/pages.c b/drivers/iommu/iommufd/pages.c
-index 76f900fa1687..a5eb2bc4ef48 100644
---- a/drivers/iommu/iommufd/pages.c
-+++ b/drivers/iommu/iommufd/pages.c
-@@ -1501,16 +1501,22 @@ static int iopt_map_dmabuf(struct iommufd_ctx *ictx, struct iopt_pages *pages,
- 		mutex_unlock(&pages->mutex);
- 	}
- 
--	rc = sym_vfio_pci_dma_buf_iommufd_map(attach, &pages->dmabuf.phys);
-+	rc = dma_buf_pin(attach);
- 	if (rc)
- 		goto err_detach;
- 
-+	rc = sym_vfio_pci_dma_buf_iommufd_map(attach, &pages->dmabuf.phys);
-+	if (rc)
-+		goto err_unpin;
-+
- 	dma_resv_unlock(dmabuf->resv);
- 
- 	/* On success iopt_release_pages() will detach and put the dmabuf. */
- 	pages->dmabuf.attach = attach;
- 	return 0;
- 
-+err_unpin:
-+	dma_buf_unpin(attach);
- err_detach:
- 	dma_resv_unlock(dmabuf->resv);
- 	dma_buf_detach(dmabuf, attach);
-@@ -1656,6 +1662,7 @@ void iopt_release_pages(struct kref *kref)
- 	if (iopt_is_dmabuf(pages) && pages->dmabuf.attach) {
- 		struct dma_buf *dmabuf = pages->dmabuf.attach->dmabuf;
- 
-+		dma_buf_unpin(pages->dmabuf.attach);
- 		dma_buf_detach(dmabuf, pages->dmabuf.attach);
- 		dma_buf_put(dmabuf);
- 		WARN_ON(!list_empty(&pages->dmabuf.tracker));
-
--- 
-2.52.0
-
+Applied, thanks.
