@@ -1,164 +1,91 @@
-Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9043E378D7D
-	for <iommu@lists.linux.dev>; Mon,  2 Feb 2026 15:12:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.170
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 32BF537A4AB
+	for <iommu@lists.linux.dev>; Mon,  2 Feb 2026 15:16:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770045146; cv=none; b=O7yhgEExD0Tt5gUadrWIzKbe1xN+pip3ar9fkGA4lzdBwv/frnbqCP0gtAafEqtxvt2cnde+oBpIortttJlXtRlthzdFHOT7wUyMP6GZXfL8XIFuhBYuro3ntB0As/LaOsRiBWISyyhLSYBQYS1jJHD+6xzase8vwZA7Lcr1kMo=
+	t=1770045418; cv=none; b=P4duGxdqOpJzT7WunRGJ7Sj1SUMPQff+wQ0aliqzxE2Ld+lQGnTkTVkvlK1TyTDUhe7lxPkM63ttH6J9GNnyYrHR34QkjeY6bOWv0EHr/Ct5nnkGFOOkLms1dS3slUtzA9cV2TayKyfv2llO8/VV5/B+nyb4SsoT5MpkjtbrivU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770045146; c=relaxed/simple;
-	bh=rQqYEXSh+ob8KxdPcyhxAvs4tWXZTKZFQO51kRUI59c=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=NE8/D4aAd6rFVYcx7KqKZP7E3WF4KVYlqRqujMWxcPncL+Ytfw7mNyuucSJYlHj0a8vOowYGEeJCETIxhIyZQnbJiP8uGT6WVIkKbq/GUtMn7l4MNrd/7P09HjPcbWMU+SXxeHr5btg6p4eT2VvTPoPxnBEXinq6ZaDyXuhvn9A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=X8MTT2Pi; arc=none smtp.client-ip=209.85.160.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="X8MTT2Pi"
-Received: by mail-qt1-f170.google.com with SMTP id d75a77b69052e-505a1789a27so21659631cf.3
-        for <iommu@lists.linux.dev>; Mon, 02 Feb 2026 07:12:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1770045143; x=1770649943; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=xO0aL+oRN74yVSsHQO79QNqtu9/dj8jxjzC/60StG/Q=;
-        b=X8MTT2PizjjwwBAhepArmSWsKXSqcuYUfBLh1z8A6Fvk9GRmxQocJyc0CRAvinpmEo
-         0U+eQSnOLgdKGQS5wND7ve7psbXSGt5H1YguSCNpH006Q5e3bSR7vy9/hDFa6l+cL13j
-         3wbMdRI1I6jDTfX7mfANRrlLVumNfE0M7sPnkTZPqLoPUKuPUwypxjXtdfF/8CtdoTjF
-         /bysXXbgkT+r1+Oe6xE5HMJuHqtzcSgvubZlmKMwPiRuRlUVmGLsMaiPoAYLDurr2Dn+
-         asbUNc0S1GR5V5lG+ZX0HV8JadxB+g8ldBB/5GD3dMu6m1VFAyVU6jwX1Qw2snHdbNsP
-         lbBA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770045143; x=1770649943;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=xO0aL+oRN74yVSsHQO79QNqtu9/dj8jxjzC/60StG/Q=;
-        b=H/TdvhagG+ICPGnIl96hIdCYTAvS2tF1PO1KKyC/6ODv7/gLWvmgYtYqU/P6/WW7hj
-         griBNibqx97jEyz6X2fcdLrHxqE6Pybfq2KO8d8aI34ra4lneOwEwFeuv2sf7icldZRI
-         8lEF1MF/uPpKl66Sp0BtjdNlLjnKZR9ze6eBYnAxx92DqpPLaDt7BoZNjBt1jtPQll3q
-         pwuRda5rJYplTJJd+eaDAf+E24jd+byFqAIJdU64gxDT9LWDYsKqhe6WeF/kfc3qHnOE
-         MvMLnTYS2wO9Si8UrtzzGZuHpvmM5877XoImla7JAw5OVUA7uMVAUhD+S7izbdHhpNIs
-         1tqQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUjzCZ6Z42+zAHLlGlBUxA+zCNcP9X0/aM8CMOc5+NcJnuQuvCcediG/+/Bwf32265aPw3l7Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxvaxQ7nwYpkJKIhng1uXAJmw6k82/El0v5UGC4x/RdIeU5E6P6
-	11KQ4eATBaSaUP+MMNQWEktz21HGdOuzPTuKnPiZ+z9rfhD0kiSbqXh3eXCBd0j2PoM=
-X-Gm-Gg: AZuq6aKpV6MLDDCQr6e7x0D73MGJ+E3sQVJvSelRAzLVlWRjcSHSez6PO2E6otfveVb
-	asQiWaKvXEPcSjfplqJIpL0bDxKGh1+SpVJIiET6ZTJujOdPreImBz0syRcJ34ZsnPA4B9oa+t9
-	3ioQ6lnjED8q/4fhl64khwTNmhGh1WTZ1gONLKVDrhAqhYNjUuQPfHpvZFeK+8xuu4vFgCnqjZ+
-	SeA/Y0HnE2D+LFYjRZqcSIwJUzgZUrfgBR5BIIXAM/NKoGqRtaosz/7T2qZ0lMIDDpSGcRot2pY
-	zXuopvmdVHkw8pRRd8OXbJ4Td5cXdk6HDvPfk+5lp1TMx9c6ssu8ZfBEKfqc17eRs79El/nIMmG
-	7mDwE1T05xwv1/SmytlbyrrSJSUS39qBAuRQ+WU4r3fcYsSy2W1sT4v7YiLtHAY587YRaUhepx/
-	8xuTdTIHjGXdjjpOE0Dx6+2uVVQb8E1W+xA4erO3JlHDrm4qM0TYssNPmP6c2gXjsHGHQ=
-X-Received: by 2002:a05:622a:1993:b0:4ee:1903:367b with SMTP id d75a77b69052e-505d214ba65mr150834861cf.5.1770045143271;
-        Mon, 02 Feb 2026 07:12:23 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-162-112-119.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.112.119])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-50337bb9d21sm106856261cf.26.2026.02.02.07.12.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Feb 2026 07:12:22 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1vmvbB-0000000FJuI-3Zxp;
-	Mon, 02 Feb 2026 11:12:21 -0400
-Date: Mon, 2 Feb 2026 11:12:21 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>
-Cc: Leon Romanovsky <leon@kernel.org>,
-	Sumit Semwal <sumit.semwal@linaro.org>,
-	Alex Deucher <alexander.deucher@amd.com>,
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-	Gerd Hoffmann <kraxel@redhat.com>,
-	Dmitry Osipenko <dmitry.osipenko@collabora.com>,
-	Gurchetan Singh <gurchetansingh@chromium.org>,
-	Chia-I Wu <olvaffe@gmail.com>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	Lucas De Marchi <lucas.demarchi@intel.com>,
-	Thomas =?utf-8?Q?Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
-	Rodrigo Vivi <rodrigo.vivi@intel.com>,
-	Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Felix Kuehling <Felix.Kuehling@amd.com>,
-	Alex Williamson <alex@shazbot.org>,
-	Ankit Agrawal <ankita@nvidia.com>,
-	Vivek Kasireddy <vivek.kasireddy@intel.com>,
-	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
-	linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org,
-	amd-gfx@lists.freedesktop.org, virtualization@lists.linux.dev,
-	intel-xe@lists.freedesktop.org, linux-rdma@vger.kernel.org,
-	iommu@lists.linux.dev, kvm@vger.kernel.org
-Subject: Re: [PATCH v5 4/8] vfio: Wait for dma-buf invalidation to complete
-Message-ID: <20260202151221.GH2328995@ziepe.ca>
-References: <20260124-dmabuf-revoke-v5-0-f98fca917e96@nvidia.com>
- <20260124-dmabuf-revoke-v5-4-f98fca917e96@nvidia.com>
- <31872c87-5cba-4081-8196-72cc839c6122@amd.com>
- <20260130130131.GO10992@unreal>
- <d25bead8-8372-4791-a741-3371342f4698@amd.com>
- <20260130135618.GC2328995@ziepe.ca>
- <d1dce6c1-9a89-4ae4-90eb-7b6d8cdcdd91@amd.com>
- <20260130144415.GE2328995@ziepe.ca>
- <c976c33c-4fa7-4350-8dcc-a5c218d1b0d6@amd.com>
+	s=arc-20240116; t=1770045418; c=relaxed/simple;
+	bh=AC/VkGV/EwGQnbVNV2ojOv9bZOi6Wld/Ma1nCt5NG80=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=KjK1p8zfKp5OzcO/ns+G3AVs5KIlgshjo47pCWDDmmGBxNZhrmK3xW6kTymRMivK+SgLK7dpKRIUjJkVkRgWoFczn8ZGc+PqED76LFIPNkmI1PJqHJbybxqGomff/yHxs5QyCc2rv4v6uPQBZbZVMMJ7Mn5cQ+GjhfciYDMM960=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E24DC339;
+	Mon,  2 Feb 2026 07:16:48 -0800 (PST)
+Received: from [10.57.54.50] (unknown [10.57.54.50])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 518813F740;
+	Mon,  2 Feb 2026 07:16:53 -0800 (PST)
+Message-ID: <dc34c246-d6ba-4c2e-8593-6fe32a616174@arm.com>
+Date: Mon, 2 Feb 2026 15:16:50 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <c976c33c-4fa7-4350-8dcc-a5c218d1b0d6@amd.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH V1] nvme-pci: Fix NULL pointer dereference in
+ nvme_pci_prp_iter_next
+To: Christoph Hellwig <hch@lst.de>,
+ Pradeep P V K <pradeep.pragallapati@oss.qualcomm.com>
+Cc: kbusch@kernel.org, axboe@kernel.dk, sagi@grimberg.me,
+ linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
+ nitin.rawat@oss.qualcomm.com, Leon Romanovsky <leon@kernel.org>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev
+References: <20260202143548.GA19313@lst.de>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20260202143548.GA19313@lst.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Mon, Feb 02, 2026 at 09:42:22AM +0100, Christian König wrote:
-> On 1/30/26 15:44, Jason Gunthorpe wrote:
-> > On Fri, Jan 30, 2026 at 03:11:48PM +0100, Christian König wrote:
-> >> On 1/30/26 14:56, Jason Gunthorpe wrote:
-> >>> On Fri, Jan 30, 2026 at 02:21:08PM +0100, Christian König wrote:
-> >>>
-> >>>> That would work for me.
-> >>>>
-> >>>> Question is if you really want to do it this way? See usually
-> >>>> exporters try to avoid blocking such functions.
-> >>>
-> >>> Yes, it has to be this way, revoke is a synchronous user space
-> >>> triggered operation around things like FLR or device close. We can't
-> >>> defer it into some background operation like pm.
-> >>
-> >> Yeah, but you only need that in a couple of use cases and not all.
-> > 
-> > Not all, that is why the dma_buf_attach_revocable() is there to
-> > distinguish this case from others.
+On 2026-02-02 2:35 pm, Christoph Hellwig wrote:
+> On Mon, Feb 02, 2026 at 06:27:38PM +0530, Pradeep P V K wrote:
+>> Fix a NULL pointer dereference that occurs in nvme_pci_prp_iter_next()
+>> when SWIOTLB bounce buffering becomes active during runtime.
+>>
+>> The issue occurs when SWIOTLB activation changes the device's DMA
+>> mapping requirements at runtime,
+>>
+>> creating a mismatch between
+>> iod->dma_vecs allocation and access logic.
+>>
+>> The problem manifests when:
+>> 1. Device initially operates with dma_skip_sync=true
+>>     (coherent DMA assumed)
+>> 2. First SWIOTLB mapping occurs due to DMA address limitations,
+>>     memory encryption, or IOMMU bounce buffering requirements
+>> 3. SWIOTLB calls dma_reset_need_sync(), permanently setting
+>>     dma_skip_sync=false
+>> 4. Subsequent I/Os now have dma_need_unmap()=true, requiring
+>>     iod->dma_vecs
 > 
-> No, no that's not what I mean.
-> 
-> See on the one hand you have runtime PM which automatically shuts
-> down your device after some time when the last user stops using it.
-> 
-> Then on the other hand you have an intentional revoke triggered by
-> userspace.
-> 
-> As far as I've read up on the code currently both are handled the
-> same way, and that doesn't sound correct to me.
-> 
-> Runtime PM should *not* trigger automatically when there are still
-> mappings or even DMA-bufs in existence for the VFIO device.
+> I think this patch just papers over the bug.  If dma_need_unmap
+> can't be trusted before the dma_map_* call, we've not saved
+> the unmap information and the unmap won't work properly.
 
-I'm a little confused why we are talking about runtime PM - are you
-pointing out an issue in VFIO today where it's PM support is not good?
+The dma_need_unmap() kerneldoc says:
 
-I admit I don't know a lot about VFIO PM support.. Though I thought in
-the VFIO case PM was actually under userspace control as generally the
-PM control is delegated to the VM.
+"This function must be called after all mappings that might
+  need to be unmapped have been performed."
 
-Through that lens, what is happening here is correct. If the VM
-requests to shut down VFIO PM (through a hypervisor vfio ioctl) then
-we do want to revoke the DMABUF so that the VM can't trigger a AER/etc
-by trying to access the sleeping PCI device.
+Trying to infer anything from it beforehand is definitely a bug in the 
+caller.
 
-I don't think VFIO uses automatic PM on a timer, that doesn't make
-sense for it's programming model.
+> So we'll need to extend the core code to tell if a mapping
+> will set dma_skip_sync=false before doing the mapping.
 
-Jason
+I don't see that being possible - at best we could reasonably infer that 
+a fully-coherent system with no sync ops, no SWIOTLB and no DMA_DEBUG 
+shouldn't ever set it to true, but as for the other way round, by the 
+time you've run through all the SWIOTLB logic to guess whether a 
+particular mapping would be bounced or not, you've basically performed 
+the mapping anyway. Thus at best, such an API to potentially do a whole 
+dry-run mapping before every actual mapping would seem like a pretty 
+pointless anti-optimisation.
+
+Thanks,
+Robin.
