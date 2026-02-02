@@ -1,144 +1,110 @@
-Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
+Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com [209.85.160.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 531B43563F7
-	for <iommu@lists.linux.dev>; Mon,  2 Feb 2026 23:00:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.173
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770073227; cv=pass; b=H+9atWtkthlnVqeZgKmt701tgqcIvcrVeFLkUS5YZG3/cpwoS5lgO2iBOR+t16m/2QAVxjkqtrijFl4n2INm/ItPLMIiwE1g3JoAu3SS7xm6h5Ylms1FHQ3BSlYeB1krAIUsywziT0BjYVayuT6sgzOjbz0fz2yZQjnE9FXF9VQ=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770073227; c=relaxed/simple;
-	bh=9AzK+os/lgSg1CiRrO+I0MUKa7EQTWNrJKALfvzLWx4=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=MMh4cGqLMzgulz+UHUHWxoUtSrUO2uuZK4XfEHoVMUIsjNuSd4l7C2uog4OURXZpnh+Qp3dwhmj0OlFd3UKY8JePch2CiSXf3wweyH/3LrI9amQNUN0bJQi3yHhjwxsPS9+sqRodsI/5JjYJWYIxYBzX+r24+XkzeiDDrI8+BDg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Dee5je0I; arc=pass smtp.client-ip=209.85.160.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44A5738E5D9
+	for <iommu@lists.linux.dev>; Mon,  2 Feb 2026 23:43:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.175
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1770075818; cv=none; b=cadA7+T0dhqtBTySkaq5iVrss0gn3due2IOxitF7Ds+5y23nZWJTvYQbvyK8JOBW9zEGSHfqfFDJt9PVsGDPWrPu14RL+xYdkZIXDXNii+Gtg4GUG0OugTN1UyGI9VmzOFRsIzEM46BwpGAge9H8yv+y10RscZn22UoovGVakPI=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1770075818; c=relaxed/simple;
+	bh=KxCZb7m68SELksBw6wq/ZEyhCC8tdMFOFPozDlx1NLA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Ys6Fh914JsblQUwR9Be4QrR4RNZLuwnhWrfQHt20fg+XTt9anf1OO3gUSJCYV/9nzuCSod2a11LY7laZ/y8+l42gY48P1P7P4I+MDYhi0XtWwcYNOXcplDlxRv83O3d1YE72/l0QLygh7HmaIwnC+vie9g46iA08JLOiv8lsKSI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=B87XINus; arc=none smtp.client-ip=209.85.160.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Dee5je0I"
-Received: by mail-qt1-f173.google.com with SMTP id d75a77b69052e-5014b5d8551so68671cf.0
-        for <iommu@lists.linux.dev>; Mon, 02 Feb 2026 15:00:26 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1770073225; cv=none;
-        d=google.com; s=arc-20240605;
-        b=jp49e9dEDdXxsMvmoU0u5ZB5n0LAxMVOP9x9E4E6vKDDsHGi2+2+qYdwP1K4gq8Or/
-         gEY/F9XDlIiUtPkDSXTHU8+cbp0nzjQMx/SyfUmge69a9Q32KPtfT0FAd1HF81S/05XM
-         xp/MQIWOjf5h0eclb2hb23abc4AdU/LdxhzIKsr/URORGqWnBM4ecsIhkcE5OqnlZcXG
-         QL3FgwBrrs+36YlxYHo6J9qnj+p92A9APeRogNucUTr1x9hoL76EtUkT0OzPFj/8i3b4
-         qdl/7c2aABwEqXsFieQ9jolfKMh1nGfq4Dhjo1HZ+MOxN7UIPNwNngOsnqcF1C8KuBg4
-         NLYQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=pidlYzygBXsl2eN3/OZt5dOCVpR9+38WSAxJRCkM3ys=;
-        fh=xNGBVmtuItDU5dRSGEGXbiHONoCyBOdYOdrHZ2kpbc4=;
-        b=ALkXyCFw/Rz58J5VU+svIyykrtJ29RnxyRQ0e+0hXIZsqob79P9eO5DPq4dU7Cl6Hx
-         Az5wVThQHFBy0GZKlLJRnye2llrbZPNHhxYIbdaMVS2hnG3GoU+LGnchbColk0hJShUB
-         k10hH4483QjOzQ4VX2JEQs+n9AcQKjAcVCqaXZSqE5CQVJAokDAke43WB0350LAGgWV4
-         NCHzdqulYY07MmJQxq1MANKIEbsj202u435K+7LtW91A3wrwVKkB0nbNQFWtxUXxAxse
-         zBUkleQQOZY5CGTvxyky6pDFCZ13i61yFqNa0Z/qAJ105m5/aLwETPvLDMfye/lArLoy
-         pwMg==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="B87XINus"
+Received: by mail-qt1-f175.google.com with SMTP id d75a77b69052e-505aaab61d9so36867691cf.0
+        for <iommu@lists.linux.dev>; Mon, 02 Feb 2026 15:43:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1770073225; x=1770678025; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=pidlYzygBXsl2eN3/OZt5dOCVpR9+38WSAxJRCkM3ys=;
-        b=Dee5je0Iy+xNwDMBLeUSQMU9HSE2XUStbPzNUYc5YHoW8gbWBXWYPaz9np+9+dHoG1
-         +0ev0J35HCHVrlB84TBNbTtMKY7xJO9Kfyn7AXcvEe6JxNYGI4/uWa1ePrz+BL+l2xik
-         jVb5rRwSJejARQWnZ39ep3uwureSHSyyBdavP09jf94ivfn6gSfjE1DbnD4EpZA104P8
-         y1ZNYVFcAnLQXTwyKCQXEh2QSr/ptoDrQHILisrJsE1JiBYMBNJh6pmpKCv8LjSVwXtA
-         uAJRXuMZEfl1Xe/yLqVTqUiLpCqnJSrxH9GbJM4/B9KD1dkra8HaEYa8PkihL2+cwpM8
-         lBvg==
+        d=ziepe.ca; s=google; t=1770075816; x=1770680616; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=lbr9I1sJrI4qHhUfKsSd+7bRl/Tu2BGmuFfiKL8Kjfk=;
+        b=B87XINusd+3XsdTs+Fv+S8jI05P0ZhCbbUYiMcQ1wVzOUmRL/1ggk2Xo8xUjOP6hRt
+         ioPWsROrvMIT9tu169dPmCH4E3wd0lrdPofoVGha40SfS1KYY4cebiZ70I+QCw9Z+tPP
+         H1jdCI/oX+YUjIOV/7K9Lss/KiHYgEvnMeOhhuJz3jW2J8lib8YSYURfKprWDk7JMrG/
+         +aN3oMotiFeMnL2MSMV/CXlEoHulrIH5ttZzfN8/wDXuyqdzeHhwL9fykf1LmTMzUrHM
+         3a9PHCnLJeRwXvMgGCzDfEc9wQt5TcMcdGLpDIIwznDWhVQo9H/Cz+UmHaDt08l5d6a+
+         4cFw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770073225; x=1770678025;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=pidlYzygBXsl2eN3/OZt5dOCVpR9+38WSAxJRCkM3ys=;
-        b=h65UwyL+sMeBTANZmkCJRGSvjH1dg7XKrQmnJefmYfyGgbYu9+g5VcKd6t1oxQgAfv
-         K5gA9HyxDcVo3QeMEMbkv2sAnpnp8kisgbiizK8MdwlOFgwXu+YlpovEnIUX+e+adjiq
-         SKa1taSS6ALeRGjlwknykiaLhYvU3lILGS1+aMRQiUgti1obAXHp6Y4QF+bTPoYs7P+w
-         5rqpkVniI6Gkcvz/X9+339u2ulgV1BXsIHXz6KIgZagPLwXW640Q1SItsJVuP2AKcukY
-         3q5jNrGSU/P4ekmto83Y8AWR/HBqbD/Vo+M5WTNRwyWdK0gMaHgzMTbiOmJhxx6Afw93
-         acfg==
-X-Forwarded-Encrypted: i=1; AJvYcCUOatt3S/Db1hrooE7LP2vjFycXXa3wAlL52dRapXSPOsG1RPSJAPcRmqxzg+3YCJBwuKGzfg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyVCDWSGQTCKBwveGK1DWbwzV7wUtTKC0UIVCOYiRBOphyD7hkI
-	oBlKWJng15qWBZmaaYUo4iIUVvYe3BW605PUA1irHTmxGCErMmMWbtTZkBRbk5KXe29aWs65Loo
-	pdUDLdsAFV2tMcNlxcueuft9DC0L4711bsB8i6N23
-X-Gm-Gg: AZuq6aJBu4yqrTpZx3WJwIoDxkX4OnyruSQm3zPGXMbnDwSErx5E9SlFuMH2Cs9Ryr7
-	HPHHGyS5YRH75eJDcxdzXr7FHnNF8IRxR9LZkslDzpfWHYsC9BXtSzp3HTvP3fU/jOoXvEK6hPB
-	quo4QrYc1d4CmE3IA59j5gPUbtm4b44BOF0wfdfPDEJEXx71X5ChRBEbdzfhs15AhYtURx12i7m
-	xwbA/FE+lWvYCr8IdEka0xFpq51VhUsfXWBvEcvqKcwK1CRXHTfxwyVEFN9jBqmXX9lpjpbn4ze
-	RYqHKyRKD5K8OgdRZMOezzRycw==
-X-Received: by 2002:ac8:584a:0:b0:503:2d8f:4cd9 with SMTP id
- d75a77b69052e-5060a24f407mr3796721cf.16.1770073224683; Mon, 02 Feb 2026
- 15:00:24 -0800 (PST)
+        d=1e100.net; s=20230601; t=1770075816; x=1770680616;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=lbr9I1sJrI4qHhUfKsSd+7bRl/Tu2BGmuFfiKL8Kjfk=;
+        b=VIkryWERXs8rW2tY/oserTCTf+Qb1J1OWHCYuFU90+q/9Th9pHDvLy6bNA1hO+7Q2G
+         xFV7JTsBW6pDmcSRHCDSWXysNwbETi+GCNgmuUoh8BFuLdRb0MCzjisjczC2SUwP32uo
+         So+NHhDeLMNP+NiAjVkqn7P9iScZn5HC5hFpR/e/ugAbvfN5eFjC7Mzfz+MoSL1dksPR
+         r2tHW6TibpOIGLeRtDazzfEQIY+evGeSHjqWS65LhqJyuWuf0nro9ShiiSoce2zbB5f/
+         em6sHLThNQNQBBjtFQP1ddEwzpwEbBAw5S4iUbmDbOCif8jE9ikPgvoFY8QiI3HWDq+y
+         raMA==
+X-Forwarded-Encrypted: i=1; AJvYcCV+wZMKT//Ur/9XL5h4MKlgiR+3DKdkQyM2e5g1A8nm+53mWIvV9VNUZzhdfdvfBJ9GjNjgmw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzvlzOwe2QKHsdbIdF2dMhqv92eTO1tX/hUAJXdqxrISS3g8T4r
+	13QrtcJIC39a6qjAPNxB17oDQ2vA9g695yypE/98kXp6LEP9mD4iHMSifBcOHzH9r1U=
+X-Gm-Gg: AZuq6aJTkFa9zokQ3UZNsY9/LjwWMF5xtOWK8s4UdfcSSHQYCzHcOnH7EN2cde6OUcu
+	S+etSeSbBO7DC02UZWGdoIcMyfznplM6PQTrRR+AjrRW3IvhXSNr+67L9pCcFu9rNz+f88wnozU
+	p75/kgg6UFqzGn7fp1IsGOMsDDtoO1vcdTQ7OLq6VMLA4vDLyQYNV3MDKviblBb3t1GMtczXrjO
+	xT8URiyzjvfwMUatnJX90pkffZ8OAZOjZv6Wgc07gwdR6wcrftQ2fpHtqY99B5gAS71gnwDAQj0
+	H7rZCc9KmGjk8tkPx0uOOt8joCN7pFu30DG84rgmoCuL2/7aqfF0ujHlcEQ0mH1rwtWsoupQv7l
+	ZNHi5X1Cnol8XduauRmEl5APmO88kEKn4Ij2DVzt3mAqv0ZybkXEuqCL7VDz77+ZgJhhmt/dNXk
+	jlfZ8a6cEcLeBhyFAvZDwseQ2EoayC9QxZrww7IEMfrNGsNLKDbPx4+3XjH+JzN5OfDis=
+X-Received: by 2002:ac8:7f0e:0:b0:505:d171:7e44 with SMTP id d75a77b69052e-505d22dd9efmr158787551cf.81.1770075816093;
+        Mon, 02 Feb 2026 15:43:36 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-162-112-119.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.112.119])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-50337ba4126sm120033811cf.21.2026.02.02.15.43.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 Feb 2026 15:43:35 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1vn3Zu-0000000GNqC-2QL9;
+	Mon, 02 Feb 2026 19:43:34 -0400
+Date: Mon, 2 Feb 2026 19:43:34 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Viktor Kleen <viktor@kleen.org>
+Cc: David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu/vt-d: Treat PAGE_SNOOP and PWSNP separately
+Message-ID: <20260202234334.GM2328995@ziepe.ca>
+References: <20260202192109.1665799-1-viktor@kleen.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20251202230303.1017519-1-skhawaja@google.com> <20260128195943.GY1641016@ziepe.ca>
- <CAAywjhRXwRD7rmZ2DjN2roDMvWCV2772KhM2hox5RE8Prt4nxw@mail.gmail.com> <aYEpHBYxlQxhXrwl@google.com>
-In-Reply-To: <aYEpHBYxlQxhXrwl@google.com>
-From: Samiullah Khawaja <skhawaja@google.com>
-Date: Mon, 2 Feb 2026 15:00:12 -0800
-X-Gm-Features: AZwV_QhLkCbQ7NI8BtH2-_H0kOWcUJfEx3pMqdWvoRmFoEQipvrVTCX9IKISJFE
-Message-ID: <CAAywjhQBS1xCSJeTK-X1ThbAfJ4zW3Kwe7me2Nwt3dmGCEfWEQ@mail.gmail.com>
-Subject: Re: [RFC PATCH v2 00/32] Add live update state preservation
-To: David Matlack <dmatlack@google.com>
-Cc: Jason Gunthorpe <jgg@ziepe.ca>, David Woodhouse <dwmw2@infradead.org>, 
-	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, 
-	Will Deacon <will@kernel.org>, Pasha Tatashin <pasha.tatashin@soleen.com>, iommu@lists.linux.dev, 
-	Robin Murphy <robin.murphy@arm.com>, Pratyush Yadav <pratyush@kernel.org>, 
-	Kevin Tian <kevin.tian@intel.com>, Alex Williamson <alex@shazbot.org>, linux-kernel@vger.kernel.org, 
-	Saeed Mahameed <saeedm@nvidia.com>, Adithya Jayachandran <ajayachandra@nvidia.com>, 
-	Parav Pandit <parav@nvidia.com>, Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>, 
-	Vipin Sharma <vipinsh@google.com>, YiFei Zhu <zhuyifei@google.com>, Chris Li <chrisl@kernel.org>, 
-	praan@google.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260202192109.1665799-1-viktor@kleen.org>
 
-On Mon, Feb 2, 2026 at 2:45=E2=80=AFPM David Matlack <dmatlack@google.com> =
-wrote:
->
-> On 2026-01-28 05:11 PM, Samiullah Khawaja wrote:
-> > On Wed, Jan 28, 2026 at 11:59=E2=80=AFAM Jason Gunthorpe <jgg@ziepe.ca>=
- wrote:
-> > > On Tue, Dec 02, 2025 at 11:02:30PM +0000, Samiullah Khawaja wrote:
->
-> > > Start off by just making the successor kernel fail to accept any
-> > > drivers at all because the iommu_domain was preserved. ie restore the
-> > > domain and set it as the default_domain and then fail in
-> > > iommu_device_use_default_domain() and related functions.
-> >
-> > Right. In this model, the device would remain unusable after
-> > liveupdate as you cannot do session finish. So the only way to recover
-> > would be to do a proper reboot. But I think this is a great
-> > intermediate step.
->
-> This will break the new selftest vfio_pci_liveupdate_kexec_test that is
-> added in the vfio cdev series:
->
->   https://lore.kernel.org/kvm/20260129212510.967611-19-dmatlack@google.co=
-m/
->   https://lore.kernel.org/kvm/20260129212510.967611-23-dmatlack@google.co=
-m/
+On Mon, Feb 02, 2026 at 07:21:05PM +0000, Viktor Kleen wrote:
+> The PASID_FLAG_PAGE_SNOOP and PASID_FLAG_PWSNP constants are identical.
+> This will cause the pasid code to always set both or neither of the
+> PGSNP and PWSNP bits in PASID table entries. However, PWSNP is a
+> reserved bit if SMPWC is not set in the IOMMU's extended capability
+> register, even if SC is supported.
+> 
+> This has resulted in DMAR errors when testing the iommufd code on an
+> Arrow Lake platform. With this patch, those errors disappear and the
+> PASID table entries look correct.
+> 
+> Fixes: 101a2854110fa ("iommu/vt-d: Follow PT_FEAT_DMA_INCOHERENT into the PASID entry")
+> Signed-off-by: Viktor Kleen <viktor@kleen.org>
+> ---
+>  drivers/iommu/intel/pasid.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-Yes. the test will fail to bind with the new iommufd. I will send a
-patch with modifications to the test.
->
-> And having to reboot a machine back to life after every Live Update will
-> be a painful for everyone working on VFIO, PCI, and IOMMU Live Update
-> support.
->
-> I agree with wanting to do incremental steps, but can we target that the
-> intial iommufd series supports an e2e scenario that doesn't leave the
-> host (or its devices) in an unusable state?
+It looks like a typo to me too
 
-Agreed. In that case, I can send a couple of extra patches with phase
-1 to restore iommufd and discard the iommu domain on finish if it has
-no attachments.
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+
+It should also be:
+
+Cc: stable@vger.kernel.org
+
+Jason
