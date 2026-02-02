@@ -1,217 +1,164 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 627AC376BE2;
-	Mon,  2 Feb 2026 15:09:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9043E378D7D
+	for <iommu@lists.linux.dev>; Mon,  2 Feb 2026 15:12:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770044973; cv=none; b=BABt617b+Msb5FAAFczXipQ5yJM4TX8Sv41yD85ETE0IZLtq8FaWIv9MssYXoSN3ZgD5RKkYJKBlURhy3PLm+nK20VWruW2RaXlCNbsG+iPVCOSwcqAVfhF/g65fDWP/XrIlR5wU7wBIWQio+KOymUm7T3BFmoQNT3dzbqo1fgs=
+	t=1770045146; cv=none; b=O7yhgEExD0Tt5gUadrWIzKbe1xN+pip3ar9fkGA4lzdBwv/frnbqCP0gtAafEqtxvt2cnde+oBpIortttJlXtRlthzdFHOT7wUyMP6GZXfL8XIFuhBYuro3ntB0As/LaOsRiBWISyyhLSYBQYS1jJHD+6xzase8vwZA7Lcr1kMo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770044973; c=relaxed/simple;
-	bh=9E/FR4q3vtIyA3a+HHqzla9sze5VoEKNZY/ceoasSoQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=sZHfG3YRK3Hu4k0wiA/PePuXn+cvVRXToBkvhCOHGVWG8cUx11JsiSgYgWY9PHGcvH39GAwzxMtmfWS4nzHEq7MWk1gtRcnShe90gvamqqZIYbDqdStoWK1LKausVAgyqvzQUjhZA+ep+ZUXD+dkz8kSTZHDArxWy35i2kwiPpo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RqNvkwlY; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1770045146; c=relaxed/simple;
+	bh=rQqYEXSh+ob8KxdPcyhxAvs4tWXZTKZFQO51kRUI59c=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=NE8/D4aAd6rFVYcx7KqKZP7E3WF4KVYlqRqujMWxcPncL+Ytfw7mNyuucSJYlHj0a8vOowYGEeJCETIxhIyZQnbJiP8uGT6WVIkKbq/GUtMn7l4MNrd/7P09HjPcbWMU+SXxeHr5btg6p4eT2VvTPoPxnBEXinq6ZaDyXuhvn9A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=X8MTT2Pi; arc=none smtp.client-ip=209.85.160.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RqNvkwlY"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DC77C116C6;
-	Mon,  2 Feb 2026 15:09:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1770044972;
-	bh=9E/FR4q3vtIyA3a+HHqzla9sze5VoEKNZY/ceoasSoQ=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=RqNvkwlYbu8R3ZhmeIcbfdABgYW/Ixgl0H2RCG2H3VCw6+UuLpm4ft8FnJ9aX6XGS
-	 fOyC1KMy9O9ngHbdOVQwrWwoU8vqfjPNgBAnVOTsCw+NXdRfHZCvKho20yQTikW2A1
-	 Ym2mKI9k7MVvpxf7t4uMDH7DsrsnIobTqgGGRPRIjZsuOXp65xsVtHvGCSNYYcyxnl
-	 F40FDv0AHYxu1IyekVSENCaUI5w+QCClD3/4dPLNmeg/PlB54oBT/5mY1HZaZ4sNYb
-	 tUdAg7eMObt+AEi+jb3ZawLbrZQDmbMpdZCoHHvjzWY9ZZUSRQsTkWSX85eysdOLD5
-	 AoCKMqtBuRzgQ==
-Message-ID: <dd36c365-cffb-4fac-bf11-40e4896cbab5@kernel.org>
-Date: Mon, 2 Feb 2026 15:09:26 +0000
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="X8MTT2Pi"
+Received: by mail-qt1-f170.google.com with SMTP id d75a77b69052e-505a1789a27so21659631cf.3
+        for <iommu@lists.linux.dev>; Mon, 02 Feb 2026 07:12:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1770045143; x=1770649943; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=xO0aL+oRN74yVSsHQO79QNqtu9/dj8jxjzC/60StG/Q=;
+        b=X8MTT2PizjjwwBAhepArmSWsKXSqcuYUfBLh1z8A6Fvk9GRmxQocJyc0CRAvinpmEo
+         0U+eQSnOLgdKGQS5wND7ve7psbXSGt5H1YguSCNpH006Q5e3bSR7vy9/hDFa6l+cL13j
+         3wbMdRI1I6jDTfX7mfANRrlLVumNfE0M7sPnkTZPqLoPUKuPUwypxjXtdfF/8CtdoTjF
+         /bysXXbgkT+r1+Oe6xE5HMJuHqtzcSgvubZlmKMwPiRuRlUVmGLsMaiPoAYLDurr2Dn+
+         asbUNc0S1GR5V5lG+ZX0HV8JadxB+g8ldBB/5GD3dMu6m1VFAyVU6jwX1Qw2snHdbNsP
+         lbBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1770045143; x=1770649943;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=xO0aL+oRN74yVSsHQO79QNqtu9/dj8jxjzC/60StG/Q=;
+        b=H/TdvhagG+ICPGnIl96hIdCYTAvS2tF1PO1KKyC/6ODv7/gLWvmgYtYqU/P6/WW7hj
+         griBNibqx97jEyz6X2fcdLrHxqE6Pybfq2KO8d8aI34ra4lneOwEwFeuv2sf7icldZRI
+         8lEF1MF/uPpKl66Sp0BtjdNlLjnKZR9ze6eBYnAxx92DqpPLaDt7BoZNjBt1jtPQll3q
+         pwuRda5rJYplTJJd+eaDAf+E24jd+byFqAIJdU64gxDT9LWDYsKqhe6WeF/kfc3qHnOE
+         MvMLnTYS2wO9Si8UrtzzGZuHpvmM5877XoImla7JAw5OVUA7uMVAUhD+S7izbdHhpNIs
+         1tqQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUjzCZ6Z42+zAHLlGlBUxA+zCNcP9X0/aM8CMOc5+NcJnuQuvCcediG/+/Bwf32265aPw3l7Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxvaxQ7nwYpkJKIhng1uXAJmw6k82/El0v5UGC4x/RdIeU5E6P6
+	11KQ4eATBaSaUP+MMNQWEktz21HGdOuzPTuKnPiZ+z9rfhD0kiSbqXh3eXCBd0j2PoM=
+X-Gm-Gg: AZuq6aKpV6MLDDCQr6e7x0D73MGJ+E3sQVJvSelRAzLVlWRjcSHSez6PO2E6otfveVb
+	asQiWaKvXEPcSjfplqJIpL0bDxKGh1+SpVJIiET6ZTJujOdPreImBz0syRcJ34ZsnPA4B9oa+t9
+	3ioQ6lnjED8q/4fhl64khwTNmhGh1WTZ1gONLKVDrhAqhYNjUuQPfHpvZFeK+8xuu4vFgCnqjZ+
+	SeA/Y0HnE2D+LFYjRZqcSIwJUzgZUrfgBR5BIIXAM/NKoGqRtaosz/7T2qZ0lMIDDpSGcRot2pY
+	zXuopvmdVHkw8pRRd8OXbJ4Td5cXdk6HDvPfk+5lp1TMx9c6ssu8ZfBEKfqc17eRs79El/nIMmG
+	7mDwE1T05xwv1/SmytlbyrrSJSUS39qBAuRQ+WU4r3fcYsSy2W1sT4v7YiLtHAY587YRaUhepx/
+	8xuTdTIHjGXdjjpOE0Dx6+2uVVQb8E1W+xA4erO3JlHDrm4qM0TYssNPmP6c2gXjsHGHQ=
+X-Received: by 2002:a05:622a:1993:b0:4ee:1903:367b with SMTP id d75a77b69052e-505d214ba65mr150834861cf.5.1770045143271;
+        Mon, 02 Feb 2026 07:12:23 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-162-112-119.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.112.119])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-50337bb9d21sm106856261cf.26.2026.02.02.07.12.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 Feb 2026 07:12:22 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1vmvbB-0000000FJuI-3Zxp;
+	Mon, 02 Feb 2026 11:12:21 -0400
+Date: Mon, 2 Feb 2026 11:12:21 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>
+Cc: Leon Romanovsky <leon@kernel.org>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Alex Deucher <alexander.deucher@amd.com>,
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+	Gerd Hoffmann <kraxel@redhat.com>,
+	Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+	Gurchetan Singh <gurchetansingh@chromium.org>,
+	Chia-I Wu <olvaffe@gmail.com>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	Lucas De Marchi <lucas.demarchi@intel.com>,
+	Thomas =?utf-8?Q?Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
+	Rodrigo Vivi <rodrigo.vivi@intel.com>,
+	Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Felix Kuehling <Felix.Kuehling@amd.com>,
+	Alex Williamson <alex@shazbot.org>,
+	Ankit Agrawal <ankita@nvidia.com>,
+	Vivek Kasireddy <vivek.kasireddy@intel.com>,
+	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org,
+	amd-gfx@lists.freedesktop.org, virtualization@lists.linux.dev,
+	intel-xe@lists.freedesktop.org, linux-rdma@vger.kernel.org,
+	iommu@lists.linux.dev, kvm@vger.kernel.org
+Subject: Re: [PATCH v5 4/8] vfio: Wait for dma-buf invalidation to complete
+Message-ID: <20260202151221.GH2328995@ziepe.ca>
+References: <20260124-dmabuf-revoke-v5-0-f98fca917e96@nvidia.com>
+ <20260124-dmabuf-revoke-v5-4-f98fca917e96@nvidia.com>
+ <31872c87-5cba-4081-8196-72cc839c6122@amd.com>
+ <20260130130131.GO10992@unreal>
+ <d25bead8-8372-4791-a741-3371342f4698@amd.com>
+ <20260130135618.GC2328995@ziepe.ca>
+ <d1dce6c1-9a89-4ae4-90eb-7b6d8cdcdd91@amd.com>
+ <20260130144415.GE2328995@ziepe.ca>
+ <c976c33c-4fa7-4350-8dcc-a5c218d1b0d6@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 4/7] media: iris: Switch to hardware mode after firmware
- boot
-To: Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
- Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
- Abhinav Kumar <abhinav.kumar@linux.dev>,
- Mauro Carvalho Chehab <mchehab@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Saravana Kannan <saravanak@kernel.org>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Stefan Schmidt <stefan.schmidt@linaro.org>,
- Hans Verkuil <hverkuil@kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>,
- Vishnu Reddy <busanna.reddy@oss.qualcomm.com>,
- Hans Verkuil <hverkuil+cisco@kernel.org>
-Cc: linux-arm-msm@vger.kernel.org, linux-media@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev, Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-References: <20260126-kaanapali-iris-v1-0-e2646246bfc1@oss.qualcomm.com>
- <fLxe2FUgx2tsLsXWrEdDq_iHxUUnVhy0BT_zzO3t3rmpLau36zhbLaZFyH5tQZJRO-uLVcHm4RsG_x1PEVOnKw==@protonmail.internalid>
- <20260126-kaanapali-iris-v1-4-e2646246bfc1@oss.qualcomm.com>
-From: Bryan O'Donoghue <bod@kernel.org>
-Content-Language: en-US
-In-Reply-To: <20260126-kaanapali-iris-v1-4-e2646246bfc1@oss.qualcomm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <c976c33c-4fa7-4350-8dcc-a5c218d1b0d6@amd.com>
 
-On 26/01/2026 12:25, Vikash Garodia wrote:
-> Currently the driver switches the vcodec GDSC to hardware (HW) mode
-> before firmware load and boot sequence. GDSC can be powered off,
-> keeping in hw mode, thereby the vcodec registers programmed in TrustZone
-> (TZ) carry default (reset) values.
-> Move the transition to HW mode after firmware load and boot sequence.
+On Mon, Feb 02, 2026 at 09:42:22AM +0100, Christian König wrote:
+> On 1/30/26 15:44, Jason Gunthorpe wrote:
+> > On Fri, Jan 30, 2026 at 03:11:48PM +0100, Christian König wrote:
+> >> On 1/30/26 14:56, Jason Gunthorpe wrote:
+> >>> On Fri, Jan 30, 2026 at 02:21:08PM +0100, Christian König wrote:
+> >>>
+> >>>> That would work for me.
+> >>>>
+> >>>> Question is if you really want to do it this way? See usually
+> >>>> exporters try to avoid blocking such functions.
+> >>>
+> >>> Yes, it has to be this way, revoke is a synchronous user space
+> >>> triggered operation around things like FLR or device close. We can't
+> >>> defer it into some background operation like pm.
+> >>
+> >> Yeah, but you only need that in a couple of use cases and not all.
+> > 
+> > Not all, that is why the dma_buf_attach_revocable() is there to
+> > distinguish this case from others.
 > 
-> The bug was exposed with driver configuring different stream ids to
-> different devices via iommu-map. With registers carrying reset values,
-> VPU would not generate desired stream-id, thereby leading to SMMU fault.
+> No, no that's not what I mean.
 > 
-> Fixes: dde659d37036 ("media: iris: Introduce vpu ops for vpu4 with necessary hooks")
-> Co-developed-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-> Signed-off-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-> Signed-off-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
-> ---
->   drivers/media/platform/qcom/iris/iris_core.c       |  4 ++++
->   drivers/media/platform/qcom/iris/iris_hfi_common.c |  4 ++++
->   drivers/media/platform/qcom/iris/iris_vpu2.c       |  1 +
->   drivers/media/platform/qcom/iris/iris_vpu3x.c      |  9 +++-----
->   drivers/media/platform/qcom/iris/iris_vpu4x.c      | 24 ++++++++++++----------
->   drivers/media/platform/qcom/iris/iris_vpu_common.c | 16 +++++++++------
->   drivers/media/platform/qcom/iris/iris_vpu_common.h |  3 +++
->   7 files changed, 38 insertions(+), 23 deletions(-)
+> See on the one hand you have runtime PM which automatically shuts
+> down your device after some time when the last user stops using it.
 > 
-> diff --git a/drivers/media/platform/qcom/iris/iris_core.c b/drivers/media/platform/qcom/iris/iris_core.c
-> index 8406c48d635b6eba0879396ce9f9ae2292743f09..dbaac01eb15a0e622e85635fddd29c1f7fc18662 100644
-> --- a/drivers/media/platform/qcom/iris/iris_core.c
-> +++ b/drivers/media/platform/qcom/iris/iris_core.c
-> @@ -75,6 +75,10 @@ int iris_core_init(struct iris_core *core)
->   	if (ret)
->   		goto error_unload_fw;
+> Then on the other hand you have an intentional revoke triggered by
+> userspace.
 > 
-> +	ret = iris_vpu_switch_to_hwmode(core);
-> +	if (ret)
-> +		goto error_unload_fw;
-> +
->   	ret = iris_hfi_core_init(core);
->   	if (ret)
->   		goto error_unload_fw;
-> diff --git a/drivers/media/platform/qcom/iris/iris_hfi_common.c b/drivers/media/platform/qcom/iris/iris_hfi_common.c
-> index 92112eb16c11048e28230a2926dfb46e3163aada..621c66593d88d47ef3438c98a07cb29421c4e375 100644
-> --- a/drivers/media/platform/qcom/iris/iris_hfi_common.c
-> +++ b/drivers/media/platform/qcom/iris/iris_hfi_common.c
-> @@ -159,6 +159,10 @@ int iris_hfi_pm_resume(struct iris_core *core)
->   	if (ret)
->   		goto err_suspend_hw;
+> As far as I've read up on the code currently both are handled the
+> same way, and that doesn't sound correct to me.
 > 
-> +	ret = iris_vpu_switch_to_hwmode(core);
-> +	if (ret)
-> +		goto err_suspend_hw;
-> +
->   	ret = ops->sys_interframe_powercollapse(core);
->   	if (ret)
->   		goto err_suspend_hw;
-> diff --git a/drivers/media/platform/qcom/iris/iris_vpu2.c b/drivers/media/platform/qcom/iris/iris_vpu2.c
-> index 9c103a2e4e4eafee101a8a9b168fdc8ca76e277d..01ef40f3895743b3784464e2d5ba2de1aeca5a4a 100644
-> --- a/drivers/media/platform/qcom/iris/iris_vpu2.c
-> +++ b/drivers/media/platform/qcom/iris/iris_vpu2.c
-> @@ -44,4 +44,5 @@ const struct vpu_ops iris_vpu2_ops = {
->   	.power_off_controller = iris_vpu_power_off_controller,
->   	.power_on_controller = iris_vpu_power_on_controller,
->   	.calc_freq = iris_vpu2_calc_freq,
-> +	.set_hwmode = iris_vpu_set_hwmode,
->   };
-> diff --git a/drivers/media/platform/qcom/iris/iris_vpu3x.c b/drivers/media/platform/qcom/iris/iris_vpu3x.c
-> index fe4423b951b1e9e31d06dffc69d18071cc985731..3dad47be78b58f6cd5ed6f333b3376571a04dbf0 100644
-> --- a/drivers/media/platform/qcom/iris/iris_vpu3x.c
-> +++ b/drivers/media/platform/qcom/iris/iris_vpu3x.c
-> @@ -234,14 +234,8 @@ static int iris_vpu35_power_on_hw(struct iris_core *core)
->   	if (ret)
->   		goto err_disable_hw_free_clk;
-> 
-> -	ret = dev_pm_genpd_set_hwmode(core->pmdomain_tbl->pd_devs[IRIS_HW_POWER_DOMAIN], true);
-> -	if (ret)
-> -		goto err_disable_hw_clk;
-> -
->   	return 0;
-> 
-> -err_disable_hw_clk:
-> -	iris_disable_unprepare_clock(core, IRIS_HW_CLK);
->   err_disable_hw_free_clk:
->   	iris_disable_unprepare_clock(core, IRIS_HW_FREERUN_CLK);
->   err_disable_axi_clk:
-> @@ -266,6 +260,7 @@ const struct vpu_ops iris_vpu3_ops = {
->   	.power_off_controller = iris_vpu_power_off_controller,
->   	.power_on_controller = iris_vpu_power_on_controller,
->   	.calc_freq = iris_vpu3x_vpu4x_calculate_frequency,
-> +	.set_hwmode = iris_vpu_set_hwmode,
->   };
-> 
->   const struct vpu_ops iris_vpu33_ops = {
-> @@ -274,6 +269,7 @@ const struct vpu_ops iris_vpu33_ops = {
->   	.power_off_controller = iris_vpu33_power_off_controller,
->   	.power_on_controller = iris_vpu_power_on_controller,
->   	.calc_freq = iris_vpu3x_vpu4x_calculate_frequency,
-> +	.set_hwmode = iris_vpu_set_hwmode,
->   };
-> 
->   const struct vpu_ops iris_vpu35_ops = {
-> @@ -283,4 +279,5 @@ const struct vpu_ops iris_vpu35_ops = {
->   	.power_on_controller = iris_vpu35_vpu4x_power_on_controller,
->   	.program_bootup_registers = iris_vpu35_vpu4x_program_bootup_registers,
->   	.calc_freq = iris_vpu3x_vpu4x_calculate_frequency,
-> +	.set_hwmode = iris_vpu_set_hwmode,
->   };
-> diff --git a/drivers/media/platform/qcom/iris/iris_vpu4x.c b/drivers/media/platform/qcom/iris/iris_vpu4x.c
-> index a8db02ce5c5ec583c4027166b34ce51d3d683b4e..02e100a4045fced33d7a3545b632cc5f0955233f 100644
-> --- a/drivers/media/platform/qcom/iris/iris_vpu4x.c
-> +++ b/drivers/media/platform/qcom/iris/iris_vpu4x.c
-> @@ -252,21 +252,10 @@ static int iris_vpu4x_power_on_hardware(struct iris_core *core)
->   		ret = iris_vpu4x_power_on_apv(core);
->   		if (ret)
->   			goto disable_hw_clocks;
-> -
-> -		iris_vpu4x_ahb_sync_reset_apv(core);
->   	}
-> 
-> -	iris_vpu4x_ahb_sync_reset_hardware(core);
-> -
-> -	ret = iris_vpu4x_genpd_set_hwmode(core, true, efuse_value);
-> -	if (ret)
-> -		goto disable_apv_power_domain;
-> -
->   	return 0;
-> 
-> -disable_apv_power_domain:
-> -	if (!(efuse_value & DISABLE_VIDEO_APV_BIT))
-> -		iris_vpu4x_power_off_apv(core);
->   disable_hw_clocks:
->   	iris_vpu4x_disable_hardware_clocks(core, efuse_value);
->   disable_vpp1_power_domain:
-> @@ -359,6 +348,18 @@ static void iris_vpu4x_power_off_hardware(struct iris_core *core)
->   	iris_disable_power_domains(core, core->pmdomain_tbl->pd_devs[IRIS_HW_POWER_DOMAIN]);
->   }
-> 
-> +static int iris_vpu4x_set_hwmode(struct iris_core *core)
-> +{
-> +	u32 efuse_value = readl(core->reg_base + WRAPPER_EFUSE_MONITOR);
-> +
-> +	if (!(efuse_value & DISABLE_VIDEO_APV_BIT))
-> +		iris_vpu4x_ahb_sync_reset_apv(core);
-> +
-> +	iris_vpu4x_ahb_sync_reset_hardware(core);
-> +
-> +	return iris_vpu4x_genpd_set_hwmode(core, true, efuse_value);
-I'd like to see something in the commit log about the efuse value. What 
-is it, why does it appear etc.
+> Runtime PM should *not* trigger automatically when there are still
+> mappings or even DMA-bufs in existence for the VFIO device.
 
-Because just to be difficult you are not doing a 1:1 switch to hw_mode 
-here, you're also introducing contingent logic.
+I'm a little confused why we are talking about runtime PM - are you
+pointing out an issue in VFIO today where it's PM support is not good?
 
----
-bod
+I admit I don't know a lot about VFIO PM support.. Though I thought in
+the VFIO case PM was actually under userspace control as generally the
+PM control is delegated to the VM.
+
+Through that lens, what is happening here is correct. If the VM
+requests to shut down VFIO PM (through a hypervisor vfio ioctl) then
+we do want to revoke the DMABUF so that the VM can't trigger a AER/etc
+by trying to access the sleeping PCI device.
+
+I don't think VFIO uses automatic PM on a timer, that doesn't make
+sense for it's programming model.
+
+Jason
