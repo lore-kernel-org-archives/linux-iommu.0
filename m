@@ -1,326 +1,148 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 306B12BD013
-	for <iommu@lists.linux.dev>; Mon,  2 Feb 2026 16:30:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7E30236C580;
+	Mon,  2 Feb 2026 16:43:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770049852; cv=none; b=FWtJF+immIwbhPYlo/lGti3oxaFwNgFE6jC5pNu2QqvBCnmQyWyX67u1d+LtHWgy8dZXFcKz+H7RN859El0WRfByeLX+35CmDyY9/ExKnwX+hMUV9YfNCCfbqC/jodfb6dvSkLUaQzFdy4wizDJf32Zsdl5slcQt7tacAGBeU6s=
+	t=1770050638; cv=none; b=osfcA7lpEOuIARfzISacE+wLda+LIJkxxO5Z9CowHaN6SYUHtsi+kq9gh4kvjphyR0rD6jYtbXihTBLenus5rpjvbqyMXbEYtheHKf0HIPU3rHpla/MGeMKQKyDei5bGg8zdRV8Ba6wwicQ1Xdj3Dj6UlDFcgEJVAhKoCepxiHo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770049852; c=relaxed/simple;
-	bh=e+sL7xjSdtYMch2wBB4F/TSCcC7Q9ExJNIRdKTYKiZ0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WnxzAZlwGvrgf3qIJgpSaPifyJkSough4Sm8/2+SjAUlvxeS3+Nsbud1UoeBtAtlGD3MWByks9SsQb5PIYn/FTWAzB6TJ6FYSVmrs6fKYM7PlCP1GoItqe58T1yeC3vcZDqHyYFKqaLDpJGw5rrfscXN82HzvWWQ87Tk5w4oobg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=K2mn7P1u; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="K2mn7P1u"
-Received: from skinsburskii.localdomain (unknown [20.236.11.42])
-	by linux.microsoft.com (Postfix) with ESMTPSA id CEDFF20B7168;
-	Mon,  2 Feb 2026 08:30:49 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com CEDFF20B7168
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1770049850;
-	bh=MGEIREbkRORRlX/UFhgD2UbUNLOeroCoAu9upbjPkpI=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=K2mn7P1uS73YAeKCX5WXygKOP+YH3UwkcbARVlYVQuwsmB6ncELtBlgHyJg6WIx/q
-	 KeFgeMai+7k8SaBLb3DmQh0xtupsk+1FyrUE+kZjU4qHokvLw37R0rxcf1/EkULz+R
-	 ufn4U7aokCdFN5YVuOhnQsHuqx1ImSaiyeGqqRIU=
-Date: Mon, 2 Feb 2026 08:30:49 -0800
-From: Stanislav Kinsburskii <skinsburskii@linux.microsoft.com>
-To: Mukesh R <mrathor@linux.microsoft.com>
-Cc: linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
-	kys@microsoft.com, haiyangz@microsoft.com, wei.liu@kernel.org,
-	decui@microsoft.com, longli@microsoft.com, catalin.marinas@arm.com,
-	will@kernel.org, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-	dave.hansen@linux.intel.com, hpa@zytor.com, joro@8bytes.org,
-	lpieralisi@kernel.org, kwilczynski@kernel.org, mani@kernel.org,
-	robh@kernel.org, bhelgaas@google.com, arnd@arndb.de,
-	nunodasneves@linux.microsoft.com, mhklinux@outlook.com
-Subject: Re: [PATCH v0 15/15] mshv: Populate mmio mappings for PCI passthru
-Message-ID: <aYDROXpR5kvlylGG@skinsburskii.localdomain>
-References: <20260120064230.3602565-1-mrathor@linux.microsoft.com>
- <20260120064230.3602565-16-mrathor@linux.microsoft.com>
- <aXAxmYm4zbOzGztz@skinsburskii.localdomain>
- <45e7a4c0-f1d8-b8b4-8c03-56d06845323b@linux.microsoft.com>
- <aXevWXolgNrrLltF@skinsburskii.localdomain>
- <f39a501e-478f-66ff-26c8-229ca3991f4f@linux.microsoft.com>
- <aXkKhGvpaHUGclI-@skinsburskii.localdomain>
- <8d798da6-1720-ceea-f1b0-62ca675085c8@linux.microsoft.com>
+	s=arc-20240116; t=1770050638; c=relaxed/simple;
+	bh=BTN76KA/49NaeAvPfL547VU1S3ArIGKTvCyPtYJdoCQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=eU1hKezabN8V9/69+je08kCUgaJKrMDOi5/cOCMJcCES8tlBZ6A871mgEzrv0Ds3VUChBMC+KnBKIQauDVxdo1dL7SCQZuEKnDaxPXNX6d4KVaalpkxtuaFhrSj1DtVlX35Th8elTR0tR34p2D/4UDPAqSCcUrR7FydjVI4Lqpk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C58D3339;
+	Mon,  2 Feb 2026 08:43:47 -0800 (PST)
+Received: from [10.57.54.50] (unknown [10.57.54.50])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2CC153F778;
+	Mon,  2 Feb 2026 08:43:51 -0800 (PST)
+Message-ID: <794b6121-b66b-4819-b291-9761ed21cd83@arm.com>
+Date: Mon, 2 Feb 2026 16:43:48 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8d798da6-1720-ceea-f1b0-62ca675085c8@linux.microsoft.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 0/5] Convert riscv to use the generic iommu page table
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Vincent Chen <vincent.chen@sifive.com>, Alexandre Ghiti <alex@ghiti.fr>,
+ Albert Ou <aou@eecs.berkeley.edu>, iommu@lists.linux.dev,
+ Joerg Roedel <joro@8bytes.org>, linux-riscv@lists.infradead.org,
+ Palmer Dabbelt <palmer@dabbelt.com>, Paul Walmsley <pjw@kernel.org>,
+ Tomasz Jeznach <tjeznach@rivosinc.com>, Will Deacon <will@kernel.org>,
+ lihangjing@bytedance.com, Xu Lu <luxu.kernel@bytedance.com>,
+ patches@lists.linux.dev, xieyongji@bytedance.com
+References: <0-v2-b11ebca8abb6+c096-iommu_pt_riscv_jgg@nvidia.com>
+ <CABvJ_xiUK9BqUJS9-Sk1sS4vhVhyXN8P8NooZ0t_Zp7ycG0bAw@mail.gmail.com>
+ <20260122153134.GO1134360@nvidia.com>
+ <CABvJ_xgSbK3omxT7XGJ0N7oEva6dQAJwZxRhsBqi44BRNZ3G5Q@mail.gmail.com>
+ <CABvJ_xhY_4ADOsVVbjhkBm8U1mKVOSwzKMfBw5mUsJe=kkUiLg@mail.gmail.com>
+ <20260123135234.GW1134360@nvidia.com>
+ <b1b220be-fd5e-4f83-8f5e-7d5282be39f9@arm.com>
+ <20260131002728.GM2223369@nvidia.com>
+ <8c46864e-4625-49f4-90b3-a7467cec8b7b@arm.com>
+ <20260202143720.GN2223369@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20260202143720.GN2223369@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, Jan 30, 2026 at 02:17:24PM -0800, Mukesh R wrote:
-> On 1/27/26 10:57, Stanislav Kinsburskii wrote:
-> > On Mon, Jan 26, 2026 at 07:07:22PM -0800, Mukesh R wrote:
-> > > On 1/26/26 10:15, Stanislav Kinsburskii wrote:
-> > > > On Fri, Jan 23, 2026 at 06:19:15PM -0800, Mukesh R wrote:
-> > > > > On 1/20/26 17:53, Stanislav Kinsburskii wrote:
-> > > > > > On Mon, Jan 19, 2026 at 10:42:30PM -0800, Mukesh R wrote:
-> > > > > > > From: Mukesh Rathor <mrathor@linux.microsoft.com>
-> > > > > > > 
-> > > > > > > Upon guest access, in case of missing mmio mapping, the hypervisor
-> > > > > > > generates an unmapped gpa intercept. In this path, lookup the PCI
-> > > > > > > resource pfn for the guest gpa, and ask the hypervisor to map it
-> > > > > > > via hypercall. The PCI resource pfn is maintained by the VFIO driver,
-> > > > > > > and obtained via fixup_user_fault call (similar to KVM).
-> > > > > > > 
-> > > > > > > Signed-off-by: Mukesh Rathor <mrathor@linux.microsoft.com>
-> > > > > > > ---
-> > > > > > >     drivers/hv/mshv_root_main.c | 115 ++++++++++++++++++++++++++++++++++++
-> > > > > > >     1 file changed, 115 insertions(+)
-> > > > > > > 
-> > > > > > > diff --git a/drivers/hv/mshv_root_main.c b/drivers/hv/mshv_root_main.c
-> > > > > > > index 03f3aa9f5541..4c8bc7cd0888 100644
-> > > > > > > --- a/drivers/hv/mshv_root_main.c
-> > > > > > > +++ b/drivers/hv/mshv_root_main.c
-> > > > > > > @@ -56,6 +56,14 @@ struct hv_stats_page {
-> > > > > > >     	};
-> > > > > > >     } __packed;
-> > > > > > > +bool hv_nofull_mmio;   /* don't map entire mmio region upon fault */
-> > > > > > > +static int __init setup_hv_full_mmio(char *str)
-> > > > > > > +{
-> > > > > > > +	hv_nofull_mmio = true;
-> > > > > > > +	return 0;
-> > > > > > > +}
-> > > > > > > +__setup("hv_nofull_mmio", setup_hv_full_mmio);
-> > > > > > > +
-> > > > > > >     struct mshv_root mshv_root;
-> > > > > > >     enum hv_scheduler_type hv_scheduler_type;
-> > > > > > > @@ -612,6 +620,109 @@ mshv_partition_region_by_gfn(struct mshv_partition *partition, u64 gfn)
-> > > > > > >     }
-> > > > > > >     #ifdef CONFIG_X86_64
-> > > > > > > +
-> > > > > > > +/*
-> > > > > > > + * Check if uaddr is for mmio range. If yes, return 0 with mmio_pfn filled in
-> > > > > > > + * else just return -errno.
-> > > > > > > + */
-> > > > > > > +static int mshv_chk_get_mmio_start_pfn(struct mshv_partition *pt, u64 gfn,
-> > > > > > > +				       u64 *mmio_pfnp)
-> > > > > > > +{
-> > > > > > > +	struct vm_area_struct *vma;
-> > > > > > > +	bool is_mmio;
-> > > > > > > +	u64 uaddr;
-> > > > > > > +	struct mshv_mem_region *mreg;
-> > > > > > > +	struct follow_pfnmap_args pfnmap_args;
-> > > > > > > +	int rc = -EINVAL;
-> > > > > > > +
-> > > > > > > +	/*
-> > > > > > > +	 * Do not allow mem region to be deleted beneath us. VFIO uses
-> > > > > > > +	 * useraddr vma to lookup pci bar pfn.
-> > > > > > > +	 */
-> > > > > > > +	spin_lock(&pt->pt_mem_regions_lock);
-> > > > > > > +
-> > > > > > > +	/* Get the region again under the lock */
-> > > > > > > +	mreg = mshv_partition_region_by_gfn(pt, gfn);
-> > > > > > > +	if (mreg == NULL || mreg->type != MSHV_REGION_TYPE_MMIO)
-> > > > > > > +		goto unlock_pt_out;
-> > > > > > > +
-> > > > > > > +	uaddr = mreg->start_uaddr +
-> > > > > > > +		((gfn - mreg->start_gfn) << HV_HYP_PAGE_SHIFT);
-> > > > > > > +
-> > > > > > > +	mmap_read_lock(current->mm);
-> > > > > > 
-> > > > > > Semaphore can't be taken under spinlock.
-> > > > 
-> > > > > 
-> > > > > Yeah, something didn't feel right here and I meant to recheck, now regret
-> > > > > rushing to submit the patch.
-> > > > > 
-> > > > > Rethinking, I think the pt_mem_regions_lock is not needed to protect
-> > > > > the uaddr because unmap will properly serialize via the mm lock.
-> > > > > 
-> > > > > 
-> > > > > > > +	vma = vma_lookup(current->mm, uaddr);
-> > > > > > > +	is_mmio = vma ? !!(vma->vm_flags & (VM_IO | VM_PFNMAP)) : 0;
-> > > > > > 
-> > > > > > Why this check is needed again?
-> > > > > 
-> > > > > To make sure region did not change. This check is under lock.
-> > > > > 
-> > > > 
-> > > > How can this happen? One can't change VMA type without unmapping it
-> > > > first. And unmapping it leads to a kernel MMIO region state dangling
-> > > > around without corresponding user space mapping.
-> > > 
-> > > Right, and vm_flags would not be mmio expected then.
-> > > 
-> > > > This is similar to dangling pinned regions and should likely be
-> > > > addressed the same way by utilizing MMU notifiers to destpoy memoty
-> > > > regions is VMA is detached.
-> > > 
-> > > I don't think we need that. Either it succeeds if the region did not
-> > > change at all, or just fails.
-> > > 
-> > 
-> > I'm afraid we do, as if the driver mapped a page with the previous
-> > memory region, and then the region is unmapped, the page will stay
-> > mapped in the hypervisor, but will be considered free by kernel, which
-> > in turn will lead to GPF upn next allocation.
+On 2026-02-02 2:37 pm, Jason Gunthorpe wrote:
+> On Mon, Feb 02, 2026 at 02:00:07PM +0000, Robin Murphy wrote:
 > 
-> There are no ram pages for mmio regions. Also, we don't do much with
-> mmio regions other than tell the hyp about it.
+>>> DMA-FQ requires two functionalites from the page table:
+>>> 1) use gather->freelist to avoid a HW UAF (iommupt always does this)
+>>
+>> Nope, correct DMA API usage would almost never unmap an entire table, so
+>> synchronous non-leaf maintenance in that path still doesn't hurt DMA-FQ
+>> either (e.g. io-pgtable-arm).
 > 
+> Well, it certainly would hurt workloads like IB MR's which can have
+> quite alot of IOVA in a single dma_map_sg() and we do want to see the
+> table levels removed to avoid the waste that Pasha has talked
+> about. Doing single invalidations of potentially a lot of levels in a
+> DMA-FQ environment is unnecessary overhead.
+> 
+> But I get your point that simple, say storage, use of the DMA API
+> wouldn't be bothered by this and you could still get alot of benefit
+> without using the free list.
 
-So, are you saying that the hypervisor does not use these pages and only
-tracks them? That would make things easier.
-However, if we later try to map a GPA that is already mapped, will the
-hypervisor return an error?
+Yeah, users dealing with giant non-physically-contiguous scatterlists
+are the exception (hence "almost"), but such big things are already
+taking the slow path for IOVA allocation/freeing, and they're presumably
+not churning at high frequency, so would stand to see a lot less benefit
+from flush queues in the first place. If anything, having big lumps of
+IOVA space (and pagetable memory) tied up in the queues could even make
+matters worse overall.
+
+>> If a pagetable implementation wanted to refcount and eagerly free empty
+>> tables upon leaf unmaps, then yes it would need deferred freeing, but
+>> frankly it would be better off just not doing that at all for DMA-FQ anyway
+>> (as IOVA caching would make it likely to need to repopulate the same level
+>> of table soon.)
+> 
+> Today it isn't done with refcounts, just if the iova range unmapped
+> fully contains a table level then the table level can go away too. It
+> does trim interior page tables for large IOVA allocations but small
+> ones are unlikely to free anything.
+
+Right, and other than the non-contiguous scatterlist case, anything
+where a dma_unmap_*() might take out a table-sized region at once, the
+corresponding dma_map_*() would have put it down as a block anyway.
+
+>>> The one call to iommu_iotlb_sync() is only for the para-virtualization
+>>> optimization of narrowing invalidations. It would be nonsensical for a
+>>> driver to enable this optimization and offer IOMMU_CAP_DEFERRED_FLUSH.
+>>
+>> Not necessarily - in the PV case it can be desirable to minimise
+>> over-invalidation *if* you're trapping for targeted invalidations in strict
+>> mode. However, depending on the usage pattern it may also be beneficial to
+>> have non-strict let the FQ mechanism batch up work to minimise the number of
+>> traps taken - e.g. s390 is in this situation, and is precisely why we added
+>> IOMMU_DMA_OPTS_SINGLE_QUEUE to help optimise for that.
+> 
+> Okay, so if I understand you right, it should check for
+> iommu_iotlb_gather_queued() and disable PT_FEAT_FLUSH_RANGE_NO_GAPS
+> mode entirely? ie there is no point in doing small invalidations if
+> the caller is going to do a flush all?
+> 
+> This way the user gets to pick using DMA-FQ or DMA-strict ?
+
+Indeed, and furthermore we permit relaxing from DMA to DMA-FQ on a
+live domain, so although a virtualisation-aware driver may use
+PT_FEAT_FLUSH_RANGE_NO_GAPS and also call iommu_set_dma_strict() by
+default, that doesn't mean IOMMU_CAP_DEFERRED_FLUSH can't still be
+brought into play later. So I guess probably something like the below
+(except the other fix just sent breaks the if/else logic, ho hum...)
+
+> Also Intel would probably benefit from .shadow_on_flush too?
+
+I think it mostly depends on how the vIOMMU is implemented. It did seem
+potentially mildly beneficial to virtio at the time, not sure if
+anyone's ever tried it for Intel/AMD.
 
 Thanks,
-Stanislav
+Robin.
 
-> Thanks,
-> -Mukesh
-> 
-> 
-> > With pinned regions we issue is similar but less impacting: pages can't
-> > be released by user space unmapping and thus will be simply leaked, but
-> > the system stays intact.
-> > 
-> > MMIO regions are simila to movable region in this regard: they don't
-> > reference the user pages, and thus this guest region replaement is a
-> > stright wat to kernel panic.
-> > 
-> > > 
-> > > > > > The region type is stored on the region itself.
-> > > > > > And the type is checked on the caller side.
-> > > > > > 
-> > > > > > > +	if (!is_mmio)
-> > > > > > > +		goto unlock_mmap_out;
-> > > > > > > +
-> > > > > > > +	pfnmap_args.vma = vma;
-> > > > > > > +	pfnmap_args.address = uaddr;
-> > > > > > > +
-> > > > > > > +	rc = follow_pfnmap_start(&pfnmap_args);
-> > > > > > > +	if (rc) {
-> > > > > > > +		rc = fixup_user_fault(current->mm, uaddr, FAULT_FLAG_WRITE,
-> > > > > > > +				      NULL);
-> > > > > > > +		if (rc)
-> > > > > > > +			goto unlock_mmap_out;
-> > > > > > > +
-> > > > > > > +		rc = follow_pfnmap_start(&pfnmap_args);
-> > > > > > > +		if (rc)
-> > > > > > > +			goto unlock_mmap_out;
-> > > > > > > +	}
-> > > > > > > +
-> > > > > > > +	*mmio_pfnp = pfnmap_args.pfn;
-> > > > > > > +	follow_pfnmap_end(&pfnmap_args);
-> > > > > > > +d
-> > > > > > > +unlock_mmap_out:
-> > > > > > > +	mmap_read_unlock(current->mm);
-> > > > > > > +unlock_pt_out:
-> > > > > > > +	spin_unlock(&pt->pt_mem_regions_lock);
-> > > > > > > +	return rc;
-> > > > > > > +}
-> > > > > > > +
-> > > > > > > +/*
-> > > > > > > + * At present, the only unmapped gpa is mmio space. Verify if it's mmio
-> > > > > > > + * and resolve if possible.
-> > > > > > > + * Returns: True if valid mmio intercept and it was handled, else false
-> > > > > > > + */
-> > > > > > > +static bool mshv_handle_unmapped_gpa(struct mshv_vp *vp)
-> > > > > > > +{
-> > > > > > > +	struct hv_message *hvmsg = vp->vp_intercept_msg_page;
-> > > > > > > +	struct hv_x64_memory_intercept_message *msg;
-> > > > > > > +	union hv_x64_memory_access_info accinfo;
-> > > > > > > +	u64 gfn, mmio_spa, numpgs;
-> > > > > > > +	struct mshv_mem_region *mreg;
-> > > > > > > +	int rc;
-> > > > > > > +	struct mshv_partition *pt = vp->vp_partition;
-> > > > > > > +
-> > > > > > > +	msg = (struct hv_x64_memory_intercept_message *)hvmsg->u.payload;
-> > > > > > > +	accinfo = msg->memory_access_info;
-> > > > > > > +
-> > > > > > > +	if (!accinfo.gva_gpa_valid)
-> > > > > > > +		return false;
-> > > > > > > +
-> > > > > > > +	/* Do a fast check and bail if non mmio intercept */
-> > > > > > > +	gfn = msg->guest_physical_address >> HV_HYP_PAGE_SHIFT;
-> > > > > > > +	mreg = mshv_partition_region_by_gfn(pt, gfn);
-> > > > > > 
-> > > > > > This call needs to be protected by the spinlock.
-> > > > > 
-> > > > > This is sorta fast path to bail. We recheck under partition lock above.
-> > > > > 
-> > > > 
-> > > > Accessing the list of regions without lock is unsafe.
-> > > 
-> > > I am not sure why? This check is done by a vcpu thread, so regions
-> > > will not have just gone away.
-> > > 
-> > 
-> > This is shared resources. Multiple VP thread get into this function
-> > simultaneously, so there is a race already. But this one we can live
-> > with without locking as they don't mutate the list of the regions.
-> > 
-> > The issue happens when VMM adds or removed another region as it mutates
-> > the list and races with VP threads doing this lookup.
-> > 
-> > Thanks,
-> > Stanislav
-> > 
-> > 
-> > > Thanks,
-> > > -Mukesh
-> > > 
-> > > 
-> > > > Thanks,
-> > > > Stanislav
-> > > > 
-> > > > > Thanks,
-> > > > > -Mukesh
-> > > > > 
-> > > > > 
-> > > > > > Thanks,
-> > > > > > Stanislav
-> > > > > > 
-> > > > > > > +	if (mreg == NULL || mreg->type != MSHV_REGION_TYPE_MMIO)
-> > > > > > > +		return false;
-> > > > > > > +
-> > > > > > > +	rc = mshv_chk_get_mmio_start_pfn(pt, gfn, &mmio_spa);
-> > > > > > > +	if (rc)
-> > > > > > > +		return false;
-> > > > > > > +
-> > > > > > > +	if (!hv_nofull_mmio) {		/* default case */
-> > > > > > > +		gfn = mreg->start_gfn;
-> > > > > > > +		mmio_spa = mmio_spa - (gfn - mreg->start_gfn);
-> > > > > > > +		numpgs = mreg->nr_pages;
-> > > > > > > +	} else
-> > > > > > > +		numpgs = 1;
-> > > > > > > +
-> > > > > > > +	rc = hv_call_map_mmio_pages(pt->pt_id, gfn, mmio_spa, numpgs);
-> > > > > > > +
-> > > > > > > +	return rc == 0;
-> > > > > > > +}
-> > > > > > > +
-> > > > > > >     static struct mshv_mem_region *
-> > > > > > >     mshv_partition_region_by_gfn_get(struct mshv_partition *p, u64 gfn)
-> > > > > > >     {
-> > > > > > > @@ -666,13 +777,17 @@ static bool mshv_handle_gpa_intercept(struct mshv_vp *vp)
-> > > > > > >     	return ret;
-> > > > > > >     }
-> > > > > > > +
-> > > > > > >     #else  /* CONFIG_X86_64 */
-> > > > > > > +static bool mshv_handle_unmapped_gpa(struct mshv_vp *vp) { return false; }
-> > > > > > >     static bool mshv_handle_gpa_intercept(struct mshv_vp *vp) { return false; }
-> > > > > > >     #endif /* CONFIG_X86_64 */
-> > > > > > >     static bool mshv_vp_handle_intercept(struct mshv_vp *vp)
-> > > > > > >     {
-> > > > > > >     	switch (vp->vp_intercept_msg_page->header.message_type) {
-> > > > > > > +	case HVMSG_UNMAPPED_GPA:
-> > > > > > > +		return mshv_handle_unmapped_gpa(vp);
-> > > > > > >     	case HVMSG_GPA_INTERCEPT:
-> > > > > > >     		return mshv_handle_gpa_intercept(vp);
-> > > > > > >     	}
-> > > > > > > -- 
-> > > > > > > 2.51.2.vfs.0.1
-> > > > > > > 
+----->8-----
+diff --git a/drivers/iommu/generic_pt/iommu_pt.h b/drivers/iommu/generic_pt/iommu_pt.h
+index 3327116a441c..b5cc3094f543 100644
+--- a/drivers/iommu/generic_pt/iommu_pt.h
++++ b/drivers/iommu/generic_pt/iommu_pt.h
+@@ -51,7 +51,9 @@ static void gather_range_pages(struct iommu_iotlb_gather *iotlb_gather,
+  		iommu_pages_stop_incoherent_list(free_list,
+  						 iommu_table->iommu_device);
+  
+-	if (pt_feature(common, PT_FEAT_FLUSH_RANGE_NO_GAPS) &&
++	if (iommu_iotlb_gather_queued(iotlb_gather)) {
++		/* No need to bother, FQ will take care of TLBs */
++	} else if (pt_feature(common, PT_FEAT_FLUSH_RANGE_NO_GAPS) &&
+  	    iommu_iotlb_gather_is_disjoint(iotlb_gather, iova, len)) {
+  		iommu_iotlb_sync(&iommu_table->domain, iotlb_gather);
+  		/*
+
