@@ -1,99 +1,155 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B8312395DB6
-	for <iommu@lists.linux.dev>; Tue,  3 Feb 2026 08:29:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6C0830FC1F;
+	Tue,  3 Feb 2026 09:42:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770107385; cv=none; b=ItOIGpXJc5ra9l72FFOLRpWQE2nvOSWwzkvEq9e9A7F93b7jhLE4G4zPXDXSoXO9FV2UAR94FXoQMroOncwIoFQxgPp3th+suC4Y4vDY146SSaXWi6C34bckxuA0HqMtvCbLxgC8hahvk8PKoLWD1W1SCYvnc3Kb4wCH3zz+poQ=
+	t=1770111772; cv=none; b=h0pofVBG80PYKibhrGbfxyk9S8acLEnSU60FXKqD4Cj9ILH0T1zf0e70xGATBVLZH0jslv+Ei8AS1r3BCnq4jKbMGgbovqMrS82U97KsL0NCcNWScDrS1B9832uXcqV4k143Tp5vMldsqn6k12dnn/7uIDzNlR5GsnKJ3MoooJ0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770107385; c=relaxed/simple;
-	bh=tFri8tzFfnfumGHSUEKrXwT2UIb21ehl0seMEFfao58=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=fzv5LbpLfkEIqNgJ7KVP1oq1zikWE4qYCiQZWeRyVIY5NRMhh278JAZR9hPnqYXHBDWpBkUlYpLYXBqP3oHZSfX7qgz4kFBYyu6D2RAjblAftvy27jRMSCzDSXVnM9ZVxiQNNlbJg1bT5FRoUdVcuIaw0TdDx84afE16fprXkFg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=YWu5W+mX; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1770111772; c=relaxed/simple;
+	bh=EP6hebxXuzMwDV5Ffd1p+JjJKhmCyYU4+x3pH8Oyi0Y=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=KVjV1Kq7KCZi5Qk+SqgTMU1sILH28uqgqZmWz1qabv5WwGIi1MToZr/ho6KaJmZGQEZKPXzDi048V7PF7oq0KziXXzkLRox+iRDYXEa/OftwVXZc1aGi96x0wDmAHiZXy50EeUhUprfV6k+E/cKrLdGIj3MPhh/GbMg4ISsaGKI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VeOS6bWy; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="YWu5W+mX"
-Received: from zhangyu-hyperv.mshome.net (unknown [167.220.232.230])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 6952520B716A;
-	Tue,  3 Feb 2026 00:29:36 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 6952520B716A
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1770107378;
-	bh=kjs15QNnVwCtbzOyb92L+we3z4+EWVEXCzG0P6wN5NA=;
-	h=From:To:Cc:Subject:Date:From;
-	b=YWu5W+mXV2Ggm0PoMzR3p7Lu1sHmihNfwaNcy3TdHfUsesiwOE5Nz1/rgVdsgf9UE
-	 cNkIghlRv4oWbgvc+VUhS/Xa1j4sg9JTJ6N+j+alHCn9zrEykl7BJdSbrf0zaU1Su7
-	 vuPouk4egPfbhMBEEH933svCo8xIawX4qm/T7OIc=
-From: Yu Zhang <zhangyu1@linux.microsoft.com>
-To: iommu@lists.linux.dev
-Cc: Jason Gunthorpe <jgg@ziepe.ca>,
-	Jacob Pan <jacob.pan@linux.microsoft.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Samiullah Khawaja <skhawaja@google.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v2] iommupt: Always add IOVA range to iotlb_gather in gather_range_pages()
-Date: Tue,  3 Feb 2026 16:29:34 +0800
-Message-ID: <20260203082934.1270789-1-zhangyu1@linux.microsoft.com>
-X-Mailer: git-send-email 2.52.0
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VeOS6bWy"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05F99C116D0;
+	Tue,  3 Feb 2026 09:42:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1770111772;
+	bh=EP6hebxXuzMwDV5Ffd1p+JjJKhmCyYU4+x3pH8Oyi0Y=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=VeOS6bWySgsnmyAL2gE60kiItsBbikEW4HaTji2zdw1/yQfgGMgkN3s4CcU/ZP2O5
+	 xwuf2pyCDppHMytgjapDGjrVacAEdYxkVh4fXfIdReHQ74m91JKVSJZz7AM3bB3o6t
+	 /S+VNZBCDpS9Gg5w5/4dQ13xuhCVhLn+fzHF3QNtcsF/dzjlMj1QXzo3gykAqQm1sZ
+	 Hx3fRQB101/mv0ubGlf18GNiqgYxchUTkNLshjQRsrKWoGC7CPjH/AYh4YpZBkUI3M
+	 kcRJ05ui4Loy/Bd/AibTffqJCMo8euQlkx5dckb8u/3vvuDFsbicGP1su4Pdaw79IN
+	 yskkh0rPjIlRw==
+Date: Tue, 3 Feb 2026 11:42:47 +0200
+From: Leon Romanovsky <leon@kernel.org>
+To: Keith Busch <kbusch@kernel.org>
+Cc: Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>,
+	Pradeep P V K <pradeep.pragallapati@oss.qualcomm.com>,
+	axboe@kernel.dk, sagi@grimberg.me, linux-nvme@lists.infradead.org,
+	linux-kernel@vger.kernel.org, nitin.rawat@oss.qualcomm.com,
+	Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev
+Subject: Re: [PATCH V1] nvme-pci: Fix NULL pointer dereference in
+ nvme_pci_prp_iter_next
+Message-ID: <20260203094247.GP34749@unreal>
+References: <20260202143548.GA19313@lst.de>
+ <dc34c246-d6ba-4c2e-8593-6fe32a616174@arm.com>
+ <aYDbNC1z81D3lZ2r@kbusch-mbp>
+ <20260202173624.GA32713@lst.de>
+ <aYDz-BeIHMNUMiaF@kbusch-mbp>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <aYDz-BeIHMNUMiaF@kbusch-mbp>
 
-Add current (iova, len) to the iotlb gather, regardless of the setting
-of PT_FEAT_FLUSH_RANGE or PT_FEAT_FLUSH_RANGE_NO_GAPS.
+On Mon, Feb 02, 2026 at 11:59:04AM -0700, Keith Busch wrote:
+> On Mon, Feb 02, 2026 at 06:36:24PM +0100, Christoph Hellwig wrote:
+> > diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+> > index 2a52cf46d960..f944b747e1bd 100644
+> > --- a/drivers/nvme/host/pci.c
+> > +++ b/drivers/nvme/host/pci.c
+> > @@ -816,6 +816,22 @@ static void nvme_unmap_data(struct request *req)
+> >  		nvme_free_descriptors(req);
+> >  }
+> >  
+> > +static bool nvme_pci_alloc_dma_vecs(struct request *req,
+> > +		struct blk_dma_iter *iter)
+> > +{
+> > +	struct nvme_iod *iod = blk_mq_rq_to_pdu(req);
+> > +	struct nvme_queue *nvmeq = req->mq_hctx->driver_data;
+> > +
+> > +	iod->dma_vecs = mempool_alloc(nvmeq->dev->dmavec_mempool,
+> > +			GFP_ATOMIC);
+> > +	if (!iod->dma_vecs)
+> > +		return false;
+> > +	iod->dma_vecs[0].addr = iter->addr;
+> > +	iod->dma_vecs[0].len = iter->len;
+> > +	iod->nr_dma_vecs = 1;
+> > +	return true;
+> > +}
+> > +
+> >  static bool nvme_pci_prp_iter_next(struct request *req, struct device *dma_dev,
+> >  		struct blk_dma_iter *iter)
+> >  {
+> > @@ -826,6 +842,8 @@ static bool nvme_pci_prp_iter_next(struct request *req, struct device *dma_dev,
+> >  	if (!blk_rq_dma_map_iter_next(req, dma_dev, iter))
+> >  		return false;
+> >  	if (!dma_use_iova(&iod->dma_state) && dma_need_unmap(dma_dev)) {
+> > +		if (!iod->nr_dma_vecs && !nvme_pci_alloc_dma_vecs(req, iter))
+> > +			return false;
+> 
+> In the case where this iteration caused dma_need_unmap() to toggle to
+> true, this is the iteration that allocates the dma_vecs, and it
+> initializes the first entry to this iter. But the next lines proceed to
+> the save this iter in the next index, so it's doubly accounted for and
+> will get unmapped twice in the completion.
+> 
+> Also, if the allocation fails, we should set iter->status to
+> BLK_STS_RESOURCE so the callers know why the iteration can't continue.
+> Otherwise, the caller will think the request is badly formed if you
+> return false from here without setting iter->status.
+> 
+> Here's my quick take. Boot tested with swiotlb enabled, but haven't
+> tried to test the changing dma_need_unmap() scenario.
+> ---
+> diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+> index 9fc4a60280a07..233378faab9bd 100644
+> --- a/drivers/nvme/host/pci.c
+> +++ b/drivers/nvme/host/pci.c
+> @@ -816,6 +816,28 @@ static void nvme_unmap_data(struct request *req)
+>  		nvme_free_descriptors(req);
+>  }
+>  
+> +static bool nvme_pci_prp_save_mapping(struct blk_dma_iter *iter,
+> +				      struct request *req)
+> +{
+> +	struct nvme_iod *iod = blk_mq_rq_to_pdu(req);
+> +
+> +	if (!iod->dma_vecs) {
+> +		struct nvme_queue *nvmeq = req->mq_hctx->driver_data;
+> +
+> +		iod->dma_vecs = mempool_alloc(nvmeq->dev->dmavec_mempool,
+> +				GFP_ATOMIC);
+> +		if (!iod->dma_vecs) {
+> +			iter->status = BLK_STS_RESOURCE;
+> +			return false;
+> +		}
+> +	}
+> +
+> +	iod->dma_vecs[iod->nr_dma_vecs].addr = iter->addr;
+> +	iod->dma_vecs[iod->nr_dma_vecs].len = iter->len;
+> +	iod->nr_dma_vecs++;
+> +	return true;
+> +}
+> +
+>  static bool nvme_pci_prp_iter_next(struct request *req, struct device *dma_dev,
+>  		struct blk_dma_iter *iter)
+>  {
+> @@ -825,11 +847,8 @@ static bool nvme_pci_prp_iter_next(struct request *req, struct device *dma_dev,
+>  		return true;
+>  	if (!blk_rq_dma_map_iter_next(req, dma_dev, iter))
+>  		return false;
+> -	if (!dma_use_iova(&iod->dma_state) && dma_need_unmap(dma_dev)) {
+> -		iod->dma_vecs[iod->nr_dma_vecs].addr = iter->addr;
+> -		iod->dma_vecs[iod->nr_dma_vecs].len = iter->len;
+> -		iod->nr_dma_vecs++;
+> -	}
+> +	if (!dma_use_iova(&iod->dma_state) && dma_need_unmap(dma_dev))
 
-In gather_range_pages(), the current IOVA range is only added to
-iotlb_gather when PT_FEAT_FLUSH_RANGE is set. Yet a virtual IOMMU with
-NpCache uses only PT_FEAT_FLUSH_RANGE_NO_GAPS. In that case, iotlb_gather
-will stay empty (start=ULONG_MAX, end=0) after initialization, and the
-current (iova, len) will not be added to the iotlb_gather, causing
-subsequent iommu_iotlb_sync() to perform IOTLB invalidation with wrong
-parameters (e.g., amd_iommu_iotlb_sync() computes size from
-gather->end - gather->start + 1, leading to an invalid range).
+Can dev->dma_skip_sync be modified in parallel with this check?  
+If so, dma_need_unmap() may return different results depending on the  
+time at which it is invoked.
 
-The disjoint check and sync for PT_FEAT_FLUSH_RANGE_NO_GAPS remain
-unchanged: when the new range is disjoint from the existing gather,
-we still sync first and then add the new range, so semantics for
-NO_GAPS are preserved.
+> +		return nvme_pci_prp_save_mapping(iter, req);
 
-Fixes: 7c53f4238aa8 ("iommupt: Add unmap_pages op")
-Cc: stable@vger.kernel.org
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Yu Zhang <zhangyu1@linux.microsoft.com>
----
-v2:
-- Fix grammar and spelling errors in commit message
-- Add "Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>" and
-  "Cc: stable@vger.kernel.org"
-
- drivers/iommu/generic_pt/iommu_pt.h | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/drivers/iommu/generic_pt/iommu_pt.h b/drivers/iommu/generic_pt/iommu_pt.h
-index d575f3ba9d34..3e33fe64feab 100644
---- a/drivers/iommu/generic_pt/iommu_pt.h
-+++ b/drivers/iommu/generic_pt/iommu_pt.h
-@@ -58,10 +58,9 @@ static void gather_range_pages(struct iommu_iotlb_gather *iotlb_gather,
- 		 * Note that the sync frees the gather's free list, so we must
- 		 * not have any pages on that list that are covered by iova/len
- 		 */
--	} else if (pt_feature(common, PT_FEAT_FLUSH_RANGE)) {
--		iommu_iotlb_gather_add_range(iotlb_gather, iova, len);
- 	}
- 
-+	iommu_iotlb_gather_add_range(iotlb_gather, iova, len);
- 	iommu_pages_list_splice(free_list, &iotlb_gather->freelist);
- }
- 
--- 
-2.52.0
-
+Thanks
