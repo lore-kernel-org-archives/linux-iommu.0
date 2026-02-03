@@ -1,158 +1,163 @@
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 626CF39E162
-	for <iommu@lists.linux.dev>; Tue,  3 Feb 2026 13:43:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 270CA394492
+	for <iommu@lists.linux.dev>; Tue,  3 Feb 2026 13:50:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770126238; cv=none; b=U8VMkmvPv70YO/mGVJgcBVHjbPEhp2djetARXt57QRzJQJK5JeeTMf39qIAfKIVK8xOv7k1VqAcRrlcgqKuL6J1bVaFy6GDN5FZ+hOJwdddODd0hMkk8wo+eHAOlacLBozi98FTHECPd8+fzvoN8lw2sVnxg7siG9DcyqVEh9j0=
+	t=1770126619; cv=none; b=Ymk1FHi5C8iTW7RpIb9KL4Ijz3yOoAcxA6jciIgIPYLxQTn9AcAe1S18wzpaSoFKk9Ryi4REaL2+gs+17mXk2k2vD2M0sOEfgArF5pEDsHMI52xPjT02kr8FZZ2hXVPcVlfRUogLlrAPyDq7NGbwXduUqTb6Dl0Fta9fMaNfrX4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770126238; c=relaxed/simple;
-	bh=iQ49VPEpj9S3fP72Kb99rmnq+w1B6dB0pwrT60G2t/k=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rLv+SE1mfke9GDvV/1qLZ8zflJ0KSM5qHtNrGKd2w/g2FnJAOAYsb1QrpTjdN77z68++EfdQJs7HgPM1WYIY8CDObZge8GfvWDGSvHGDlPxlDI3gisLF0asR7VYwEDMafL7KA2CAiMW9q5sPOG++f9WltllzeqDN4DjF/Z4Wdh8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=wxfEAF49; arc=none smtp.client-ip=85.214.250.239
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="wxfEAF49"
-Received: from 8bytes.org (p200300f6af1d96000d555eefe9f0908c.dip0.t-ipconnect.de [IPv6:2003:f6:af1d:9600:d55:5eef:e9f0:908c])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 170B81C1133;
-	Tue,  3 Feb 2026 14:43:55 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1770126235;
-	bh=iQ49VPEpj9S3fP72Kb99rmnq+w1B6dB0pwrT60G2t/k=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=wxfEAF49GAovhQQCEdEnGgBpF04v6EF/rTnUsjBEV2el99puTcE28alTOc0gKE4Nq
-	 erPDgTKARJpxSofqzAywKJMWUuh2nESrkjbtr10DMRqcUowuim6wF8zjftbz4ktABt
-	 FF1kvLbcnchBjJV+JDfKMkyN6E40w44TqFA6xYZSE+X1pW9/Ly52185jUKuGpydIcM
-	 mInmLpMpVCqQ/NM6ItiCoGJmaFrLy4NXW9w4vdlKQmxzQ1BVEeEYTzyb2hwS2mYZ+I
-	 DKu5+8afv5scBgqGJnV7muq7GkXR6mElmaoqFIbYS4xPHcd3qe1DIMS5+eQLo/uolb
-	 xkGlMbx4JiBMw==
-Date: Tue, 3 Feb 2026 14:43:53 +0100
-From: =?utf-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>
-To: Magnus Kalland <magnus@dolphinics.com>
-Cc: vasant.hegde@amd.com, suravee.suthikulpanit@amd.com, 
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	"Tore H . Larsen" <torel@simula.no>, "Lars B . Kristiansen" <larsk@dolphinics.com>, 
-	Jonas Markussen <jonas@dolphinics.com>
-Subject: Re: [PATCH v1] iommu/amd: IRT cache incoherency bug
-Message-ID: <fwtqfdk3m7qrazj4bfutl4grac46agtxztc3p2lqnejt2wyexu@lztyomxrm3pk>
-References: <20260203113209.56978-2-magnus@dolphinics.com>
+	s=arc-20240116; t=1770126619; c=relaxed/simple;
+	bh=Xkt1y50fW8Ao12m72LJhND2tiKseNYuuHguQcakvv8U=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=dPUIhFe8/P61B4kUWupzIP2TQXYvg3Y0jOe+2OkSA0BYYwwlX7BMtVkAl0otc1s7FdpSmxJZSL8/Gfkw2yd1Na20LxSGvM0ds/BynhqPyqbYM51/B7leYuQ+A0rgsZwAwRVXd01w6/mAXB+jt/4WK6ToDyHi6EuOBRA4aCIOnxc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 33860339;
+	Tue,  3 Feb 2026 05:50:10 -0800 (PST)
+Received: from [10.57.54.50] (unknown [10.57.54.50])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8E1E63F632;
+	Tue,  3 Feb 2026 05:50:14 -0800 (PST)
+Message-ID: <4e375e54-e141-473c-ae71-fc013268d057@arm.com>
+Date: Tue, 3 Feb 2026 13:50:12 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260203113209.56978-2-magnus@dolphinics.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH V1] nvme-pci: Fix NULL pointer dereference in
+ nvme_pci_prp_iter_next
+To: Leon Romanovsky <leon@kernel.org>, Keith Busch <kbusch@kernel.org>
+Cc: Christoph Hellwig <hch@lst.de>,
+ Pradeep P V K <pradeep.pragallapati@oss.qualcomm.com>, axboe@kernel.dk,
+ sagi@grimberg.me, linux-nvme@lists.infradead.org,
+ linux-kernel@vger.kernel.org, nitin.rawat@oss.qualcomm.com,
+ Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev
+References: <20260202143548.GA19313@lst.de>
+ <dc34c246-d6ba-4c2e-8593-6fe32a616174@arm.com> <aYDbNC1z81D3lZ2r@kbusch-mbp>
+ <20260202173624.GA32713@lst.de> <aYDz-BeIHMNUMiaF@kbusch-mbp>
+ <20260203094247.GP34749@unreal>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20260203094247.GP34749@unreal>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, Feb 03, 2026 at 12:32:10PM +0100, Magnus Kalland wrote:
-> DMA aliasing causes interrupt remapping table entries (IRTEs) to be shared
-> between multiple device IDs. See commit 3c124435e8dd
-> ("iommu/amd: Support multiple PCI DMA aliases in IRQ Remapping") for more
-> information on this. However, the AMD IOMMU driver currently invalidates
-> IRTE cache entries on a per-device basis whenever an IRTE is updated, not
-> for each alias.
+On 2026-02-03 9:42 am, Leon Romanovsky wrote:
+> On Mon, Feb 02, 2026 at 11:59:04AM -0700, Keith Busch wrote:
+>> On Mon, Feb 02, 2026 at 06:36:24PM +0100, Christoph Hellwig wrote:
+>>> diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+>>> index 2a52cf46d960..f944b747e1bd 100644
+>>> --- a/drivers/nvme/host/pci.c
+>>> +++ b/drivers/nvme/host/pci.c
+>>> @@ -816,6 +816,22 @@ static void nvme_unmap_data(struct request *req)
+>>>   		nvme_free_descriptors(req);
+>>>   }
+>>>   
+>>> +static bool nvme_pci_alloc_dma_vecs(struct request *req,
+>>> +		struct blk_dma_iter *iter)
+>>> +{
+>>> +	struct nvme_iod *iod = blk_mq_rq_to_pdu(req);
+>>> +	struct nvme_queue *nvmeq = req->mq_hctx->driver_data;
+>>> +
+>>> +	iod->dma_vecs = mempool_alloc(nvmeq->dev->dmavec_mempool,
+>>> +			GFP_ATOMIC);
+>>> +	if (!iod->dma_vecs)
+>>> +		return false;
+>>> +	iod->dma_vecs[0].addr = iter->addr;
+>>> +	iod->dma_vecs[0].len = iter->len;
+>>> +	iod->nr_dma_vecs = 1;
+>>> +	return true;
+>>> +}
+>>> +
+>>>   static bool nvme_pci_prp_iter_next(struct request *req, struct device *dma_dev,
+>>>   		struct blk_dma_iter *iter)
+>>>   {
+>>> @@ -826,6 +842,8 @@ static bool nvme_pci_prp_iter_next(struct request *req, struct device *dma_dev,
+>>>   	if (!blk_rq_dma_map_iter_next(req, dma_dev, iter))
+>>>   		return false;
+>>>   	if (!dma_use_iova(&iod->dma_state) && dma_need_unmap(dma_dev)) {
+>>> +		if (!iod->nr_dma_vecs && !nvme_pci_alloc_dma_vecs(req, iter))
+>>> +			return false;
+>>
+>> In the case where this iteration caused dma_need_unmap() to toggle to
+>> true, this is the iteration that allocates the dma_vecs, and it
+>> initializes the first entry to this iter. But the next lines proceed to
+>> the save this iter in the next index, so it's doubly accounted for and
+>> will get unmapped twice in the completion.
+>>
+>> Also, if the allocation fails, we should set iter->status to
+>> BLK_STS_RESOURCE so the callers know why the iteration can't continue.
+>> Otherwise, the caller will think the request is badly formed if you
+>> return false from here without setting iter->status.
+>>
+>> Here's my quick take. Boot tested with swiotlb enabled, but haven't
+>> tried to test the changing dma_need_unmap() scenario.
+>> ---
+>> diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+>> index 9fc4a60280a07..233378faab9bd 100644
+>> --- a/drivers/nvme/host/pci.c
+>> +++ b/drivers/nvme/host/pci.c
+>> @@ -816,6 +816,28 @@ static void nvme_unmap_data(struct request *req)
+>>   		nvme_free_descriptors(req);
+>>   }
+>>   
+>> +static bool nvme_pci_prp_save_mapping(struct blk_dma_iter *iter,
+>> +				      struct request *req)
+>> +{
+>> +	struct nvme_iod *iod = blk_mq_rq_to_pdu(req);
+>> +
+>> +	if (!iod->dma_vecs) {
+>> +		struct nvme_queue *nvmeq = req->mq_hctx->driver_data;
+>> +
+>> +		iod->dma_vecs = mempool_alloc(nvmeq->dev->dmavec_mempool,
+>> +				GFP_ATOMIC);
+>> +		if (!iod->dma_vecs) {
+>> +			iter->status = BLK_STS_RESOURCE;
+>> +			return false;
+>> +		}
+>> +	}
+>> +
+>> +	iod->dma_vecs[iod->nr_dma_vecs].addr = iter->addr;
+>> +	iod->dma_vecs[iod->nr_dma_vecs].len = iter->len;
+>> +	iod->nr_dma_vecs++;
+>> +	return true;
+>> +}
+>> +
+>>   static bool nvme_pci_prp_iter_next(struct request *req, struct device *dma_dev,
+>>   		struct blk_dma_iter *iter)
+>>   {
+>> @@ -825,11 +847,8 @@ static bool nvme_pci_prp_iter_next(struct request *req, struct device *dma_dev,
+>>   		return true;
+>>   	if (!blk_rq_dma_map_iter_next(req, dma_dev, iter))
+>>   		return false;
+>> -	if (!dma_use_iova(&iod->dma_state) && dma_need_unmap(dma_dev)) {
+>> -		iod->dma_vecs[iod->nr_dma_vecs].addr = iter->addr;
+>> -		iod->dma_vecs[iod->nr_dma_vecs].len = iter->len;
+>> -		iod->nr_dma_vecs++;
+>> -	}
+>> +	if (!dma_use_iova(&iod->dma_state) && dma_need_unmap(dma_dev))
 > 
-> This approach leaves stale IRTE cache entries when an IRTE is cached under
-> one DMA alias but later updated and invalidated through a different alias.
-> In such cases, the original device ID is never invalidated, since it is
-> programmed via aliasing.
-> 
-> This incoherency bug has been observed when IRTEs are cached for one
-> Non-Transparent Bridge (NTB) DMA alias, later updated via another.
-> 
-> Fix this by invalidating the interrupt remapping table cache for all DMA
-> aliases when updating an IRTE.
-> 
-> Link to original thread: https://lore.kernel.org/linux-iommu/20251215114952.190550-2-magnus@dolphinics.com/T/#raf80785292deb22aafe6a817424051ea0d1d28f4
-> 
-> Resending for visibility.
-> 
-> Changes since original thread:
->  - Renamed struct pci_dev pointer parameter to unused
->  - Rebased on latest master
-> 
-> Cc: Tore H. Larsen <torel@simula.no>
-> Co-developed-by: Lars B. Kristiansen <larsk@dolphinics.com>
-> Signed-off-by: Lars B. Kristiansen <larsk@dolphinics.com>
-> Co-developed-by: Jonas Markussen <jonas@dolphinics.com>
-> Signed-off-by: Jonas Markussen <jonas@dolphinics.com>
-> Signed-off-by: Magnus Kalland <magnus@dolphinics.com>
-> 
-> ---
->  drivers/iommu/amd/iommu.c | 30 +++++++++++++++++++++++++++---
->  1 file changed, 27 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> index 7c12be1b247f..404afcaf4bc1 100644
-> --- a/drivers/iommu/amd/iommu.c
-> +++ b/drivers/iommu/amd/iommu.c
-> @@ -3103,22 +3103,44 @@ const struct iommu_ops amd_iommu_ops = {
->  static struct irq_chip amd_ir_chip;
->  static DEFINE_SPINLOCK(iommu_table_lock);
->  
-> +static int iommu_flush_dev_irt(struct pci_dev *unused, u16 devid, void *data)
-> +{
-> +	int ret;
-> +	struct iommu_cmd cmd;
-> +	struct amd_iommu *iommu = data;
-> +
-> +	build_inv_irt(&cmd, devid);
-> +	ret = __iommu_queue_command_sync(iommu, &cmd, true);
-> +	return ret;
-> +}
-> +
->  static void iommu_flush_irt_and_complete(struct amd_iommu *iommu, u16 devid)
->  {
->  	int ret;
->  	u64 data;
-> +	int domain = iommu->pci_seg->id;
-> +	unsigned int bus = PCI_BUS_NUM(devid);
-> +	unsigned int devfn = devid & 0xff;
->  	unsigned long flags;
->  	struct iommu_cmd cmd, cmd2;
-> +	struct pci_dev *pdev = NULL;
->  
->  	if (iommu->irtcachedis_enabled)
->  		return;
->  
-> -	build_inv_irt(&cmd, devid);
->  	data = atomic64_inc_return(&iommu->cmd_sem_val);
->  	build_completion_wait(&cmd2, iommu, data);
->  
-> -	raw_spin_lock_irqsave(&iommu->lock, flags);
-> -	ret = __iommu_queue_command_sync(iommu, &cmd, true);
-> +	pdev = pci_get_domain_bus_and_slot(domain, bus, devfn);
-> +	if (pdev) {
-> +		raw_spin_lock_irqsave(&iommu->lock, flags);
+> Can dev->dma_skip_sync be modified in parallel with this check?
+> If so, dma_need_unmap() may return different results depending on the
+> time at which it is invoked.
 
-Move the lock above the if () ...
+It can if another thread is making mappings in parallel, however as 
+things currently stand that would only lead to the current thread 
+thinking it must save the unmap state for the mappings it's already made 
+even if it technically didn't need to.
 
-> +		ret = pci_for_each_dma_alias(pdev, iommu_flush_dev_irt, iommu);
-> +	} else {
-> +		build_inv_irt(&cmd, devid);
-> +		raw_spin_lock_irqsave(&iommu->lock, flags);
-> +		ret = __iommu_queue_command_sync(iommu, &cmd, true);
+In principle it could also change back the other way if another thread 
+reset the device's DMA mask, but doing that with active mappings would 
+fundamentally break things in regard to the dma_skip_sync mechanism anyway.
 
-... and call iommu_flush_dev_irt(NULL, devid, iommu) here.
+Thanks,
+Robin.
 
-> +	}
-> +
->  	if (ret)
->  		goto out;
->  	ret = __iommu_queue_command_sync(iommu, &cmd2, false);
-> @@ -3127,6 +3149,8 @@ static void iommu_flush_irt_and_complete(struct amd_iommu *iommu, u16 devid)
->  	wait_on_sem(iommu, data);
->  out:
->  	raw_spin_unlock_irqrestore(&iommu->lock, flags);
-> +	if (pdev)
-> +		pci_dev_put(pdev);
+> 
+>> +		return nvme_pci_prp_save_mapping(iter, req);
+> 
+> Thanks
 
-This can also be moved to the respective if () branch above, no?
-
--Joerg
