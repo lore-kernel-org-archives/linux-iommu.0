@@ -1,16 +1,16 @@
 Received: from mail.sig21.net (mail.sig21.net [217.197.84.222])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BF161A9F88
-	for <iommu@lists.linux.dev>; Tue,  3 Feb 2026 11:40:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 705CC2D94AF
+	for <iommu@lists.linux.dev>; Tue,  3 Feb 2026 11:49:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.197.84.222
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770118841; cv=none; b=hEb9g6t8auchMDTpH3n4S6PHp3KfGKh2UnNaYiN5QUXUWIFUIddnRoCLcmdA1QIiz9ke4G1vGWD8UgGFBT3sRD1ESn1jp81FiUwl+VeyWkjULW7sj/4kf2sTlztgn0QDj1x0iyfcYVff6Ul3IcwINsUVDZht00cs1AB3AxmxR8c=
+	t=1770119377; cv=none; b=sfEs9G07OxfV0rPBPTvm2iyuNjPjKCtlJ9PQE4hOmflMCd1UwbLe51k0k6czjKYlLH6fa9ezpcK0CVql6icjsCQ6RXZS+EE+HdVF2To4VEmxEBRfm21DwH5ZAM4jqQPw90jcNCpPBEI7AkhZCUm6FtOVnd6b91FBiSuuuraSnQs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770118841; c=relaxed/simple;
-	bh=ClZKWvtrvvhYrD3lLpIAyc2YK96aLcaNRTmd1dJJDfY=;
+	s=arc-20240116; t=1770119377; c=relaxed/simple;
+	bh=zyjPn86MP0jeyGhNhY/sQ5tNYI1Yjng/Q8VYfA8jYkg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=NAtORpujAzdrL18wWbXCFsdDoDOeOQFoe0LTxlYQZrEmElrwpkmaJ6NAP39Q7pc46EKjqdj2mKZsfxCsPSclFtQ7iD1Ijbr1F1Ym2O/temXwxoIy8g9G7vbzqhWpIue/MYYWeYHz/P3/eQ6AzD3NP6VC6CaPvTyhzJVmNStznzc=
+	 Content-Type:Content-Disposition:In-Reply-To; b=fhIWc3xF7E5K1mr8dhPOAM9Jqo+fTj5DcXeCe3N1I1gr5wBMK9+GPeWkBnzdLZpEcUbuMiHf4z4xWVXClq9Q/2FCErfd06xqsKGZhOb2oh+h17t/O7pIIGc4Z3A0E5Pg8Ort6vkfaVtQzP2fQv319Ir6L/LzY5H8FT0W53DhBwA=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sig21.net; spf=pass smtp.mailfrom=sig21.net; arc=none smtp.client-ip=217.197.84.222
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sig21.net
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sig21.net
@@ -18,21 +18,19 @@ Received: from localhorst ([127.0.0.1])
 	 by mail.sig21.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
 	 (Exim 4.94.2)
 	(envelope-from <js@sig21.net>)
-	 id 1vnEli-0003Fn-CV ; Tue, 03 Feb 2026 12:40:30 +0100
+	 id 1vnEuS-0003en-T1 ; Tue, 03 Feb 2026 12:49:32 +0100
 Received: from js by abc.local with local (Exim 4.99.1)
 	(envelope-from <js@sig21.net>)
-	id 1vnElh-000000004K0-47Rl;
-	Tue, 03 Feb 2026 12:40:29 +0100
-Date: Tue, 3 Feb 2026 12:40:29 +0100
+	id 1vnEuS-000000004LT-1hYR;
+	Tue, 03 Feb 2026 12:49:32 +0100
+Date: Tue, 3 Feb 2026 12:49:32 +0100
 From: Johannes Stezenbach <js@sig21.net>
 To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Cc: iommu@lists.linux.dev, "Limonciello, Mario" <Mario.Limonciello@amd.com>
 Subject: Re: AMD IOMMU issue with hibernate on Asrock X600
-Message-ID: <aYHerYcZ-5FOguKY@sig21.net>
+Message-ID: <aYHgzBOyYlG12p5W@sig21.net>
 References: <aXeAOtGQUdlNZF6V@sig21.net>
- <aXnXX0P-XsEFPlJd@sig21.net>
- <52148f32-2348-42d8-95e0-49b30c29da1c@amd.com>
+ <52664ef0-268b-4ffa-a8f5-d2126f95450d@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -41,42 +39,27 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <52148f32-2348-42d8-95e0-49b30c29da1c@amd.com>
+In-Reply-To: <52664ef0-268b-4ffa-a8f5-d2126f95450d@amd.com>
 
-On Tue, Feb 03, 2026 at 11:08:49AM +0530, Vasant Hegde wrote:
-> On 1/28/2026 3:01 PM, Johannes Stezenbach wrote:
-> > 
-> >> [0.000] [  343.790320][ T4340] WARNING: drivers/iommu/amd/init.c:952 at amd_iommu_enable_interrupts+0x4c8/0x550, CPU#0: pm-hibernate/4340
-> > 
-> > - is it Linux or firmware bug?
-> > - if Linux bug: please let me know what to do to help debug it
-> > - if firmware bug: what additional tests to run; how to add a quirk
-> > 
-> > What's the downside of amd_iommu_intr=legacy? Does it only
-> > affect kvm guests? What's the relationship with x2APIC?
+Hi Vasant,
+
+On Tue, Feb 03, 2026 at 10:58:42AM +0530, Vasant Hegde wrote:
+> On 1/26/2026 8:24 PM, Johannes Stezenbach wrote:
+> > hibernate on Asrock Deskmini X600 with Ryzen 7 8700G hangs for
+> > about one minute before the power is turned off. It happens with
+> > older kernels but also still with 6.19.0-rc6-00200-gc072629f05d7.
+> > Sometimes it also hangs for about half a minute after resume from
+> > hibernate.
 > 
-> If you pass `legacy`, then it only affects kvm. It will not accelerate
-> interrupts to guest.
-> 
-> interrupt acceleration has two modes:
->  AVIC works with xAPIC
->  X2AVIC works with X2APIC.
-> 
-> Generally BIOS will automatically enables appropriate acceleration mode.
+> IIUC habernate hangs for sometime , but eventually succeeds. is that correct?
 
-It is strange because dmesg says:
+Correct. There is a ~30 sec timeout in iommu_ga_log_enable()
+(MMIO_STATUS_TIMEOUT=2000000 * udelay(10)). But eventually
+hibernate succeeds.
 
-[    2.647593] [    T1] kvm_amd: AVIC enabled
-[    2.647598] [    T1] kvm_amd: x2AVIC enabled (max 512 vCPUs)
+> Also resume path eventually succeeds. is that correct?
 
-but no message about x2APIC. If I enable x2APIC in BIOS (default
-setting is "auto", other settings are "enable" or "disable") then
-there is a message about x2APIC. So it seems BIOS default is
-to have x2APIC disabled.
-
-> Can you try below patch?
-
-Sadly it doesn't work, same error on hibernate.
+correct
 
 
 Thanks,
