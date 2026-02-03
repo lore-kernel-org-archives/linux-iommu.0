@@ -1,218 +1,257 @@
-Received: from PH7PR06CU001.outbound.protection.outlook.com (mail-westus3azon11010043.outbound.protection.outlook.com [52.101.201.43])
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E72993AA1B4
-	for <iommu@lists.linux.dev>; Tue,  3 Feb 2026 14:33:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.201.43
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770129239; cv=fail; b=S7hVuJ2nIoyPlootcNJwH+WQSS5kOH4Na3ra26ns4URrhWkm7QQnB7vmlqLWq9Oy47laMJdcWvQgh/+TdjwJc7BHUnyecUfuvk3VMKwgzMeq1txqxDGwKZYBeZvhy6Q/U5z3hjeEJCyPDDW+g6yW3O8gaUd+tlq3TNpbYTrWnc8=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770129239; c=relaxed/simple;
-	bh=HUvntLpiK9QBSucUK0c60+XxerPwowMMwJhc++QpEQ4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=rjKURS+mQM+Q2nVtgDT4qdVPEMpyNq7jbTvWXYKEQp4D6+5Q9ELYqAYYHwZURVR4GrYNHjWFUXrb3R8JFrHUf33kr9BwkY+c9CyaMlUL6AELE3kIde4JN+LbQ23laAslT522vdeLGawZCeeCJvTpKsM7T6HjjXfImHPzznTDuRw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=cVAsCpAI; arc=fail smtp.client-ip=52.101.201.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0ED822EFD9E
+	for <iommu@lists.linux.dev>; Tue,  3 Feb 2026 15:52:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1770133970; cv=none; b=HPr3kbSoAoVATqNA8iuvnFfd104tMs0ZlBvulzlViVuhVnq8NzbKtH5EOLSSaNyjrpt4D7bh3mM7/plafiqofWGEpsswTUxAnBTbfdz34jFWmU9Ci7d5WQRdiQHPDHHwNOWV4rkfJ/FtEUmsU8BBv6qyx9Xehx0gdb0krjOZw+k=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1770133970; c=relaxed/simple;
+	bh=jrRTZcyBcrvN7sMJWqW04sU/onDh3CMwQpJikxoq5no=;
+	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
+	 In-Reply-To:Content-Type; b=QnjtzNlLJW4AdlqlHk4TDwoz7YL3NtBxDU436UtJ3A286PQIpudS+p9LQnMWyQ9EQ8Ga7qoCHM+LT0tOhZQjglA/+NCFWwZQqetI8eHeb06ZJdMM3n/2wUOjoS1MyOVtyylX0CH2zflgdT4dXFXIjCX/90OaAVE0qzUbLtCM2Ic=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=lF/e/bwL; arc=none smtp.client-ip=148.163.158.5
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="cVAsCpAI"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Us0RRVibIkCjrkOQstR9yw5hBxkNy+F9ZH5R/Ep1yU9GjjDzVmIhi7BCB82iIlXzM/ILkYisLMZB0P+wiZYA6yUA/Q7mvUerHO4sWi7dzdDdAltE8bBDrhsG1kGxPoO8kyw4m1rKmbY0pSCjs87U4YTen6Eud4cBbsstX2HAysJF+r64BQT1EbDNDVvARRfWXnZKSBU1poOOSESqvKWsjAnwDvMVdD+9xYiocFrCp7u+eW879zLS3LIHKSDSbtBVBDP0TZwFRr1nGxAuiJmCbAYNaNBqONCJbt7zUul+ZfnT+kRXadY+GqDba98FIHpoavfGq+IOecvz2LObEYIeDw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=DX8uB0OhR8lrxHTCcqmh2aIrK2vYNI+yqaFWxSs1AyQ=;
- b=V8oa8ysu3rJzky2jccX4nAR7A9rjqWdWo7/pDa8X0y62cOLH5MjFVKp6QWowJ6XQEjrhu6JbHjOeR3E9nHkKx/nXJGIeKnw1nHskToGmSqVUId6JgS2iw6xUnuPw8g1XLiUoX7zw3KGi26RZFShpPKGU00FlJHFfnwvAQ1qfQRL1xfUWtFOhuk7v9PP7AC1+HTwB86gjTFZgIwhATTnpfxDWrAnuXbkHHulb0X5NlVf+TMc8fYNwzZ85YtJPThRDcWNLo1Wl68lMfJHmaxoa+MROp8VrBj7NfFQ1+WRq84suovFEee6e38kzthTuzP3kC1bS2D3nyaoYRy12W/RzaA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DX8uB0OhR8lrxHTCcqmh2aIrK2vYNI+yqaFWxSs1AyQ=;
- b=cVAsCpAITEhr1/kDx+yCFAn07LwXo3WX9iG9UQe8g5Ajc2AzaGB44Fm7aRwJ99FU12QCmCxHkqn40foIgDc7ItukA1MiCJW1xPQTdJCFJUrIps1SrM9T9rKYkUt6pqqJhslcIiEIS2OZoUfFrBKFqdf+gy28DNAvq29yd0DBjXpwrJuIlspRL1wV8jSYdi4z8ryvr0iH7gZhPTWZLTWJynThRP1UMSJOEjRacHwEfYh0gbEk4o2qImKsbzNvfrD3Ls09+s4298Eq5bStxCBg4BKKugvpiJ8teOSVCENXjYAsy6qwjs21nnMGWH1GdcEQxwJv9VOXyBXIEpGgXbjfDw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
- by DS0PR12MB7780.namprd12.prod.outlook.com (2603:10b6:8:152::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9587.12; Tue, 3 Feb
- 2026 14:33:49 +0000
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528%5]) with mapi id 15.20.9587.010; Tue, 3 Feb 2026
- 14:33:49 +0000
-Date: Tue, 3 Feb 2026 10:33:48 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: dan.j.williams@intel.com, "Tian, Kevin" <kevin.tian@intel.com>,
-	Jonathan Cameron <jonathan.cameron@huawei.com>,
-	"will@kernel.org" <will@kernel.org>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"bhelgaas@google.com" <bhelgaas@google.com>,
-	"joro@8bytes.org" <joro@8bytes.org>,
-	"praan@google.com" <praan@google.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
-	"miko.lenczewski@arm.com" <miko.lenczewski@arm.com>,
-	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-	"linux-cxl@vger.kernel.org" <linux-cxl@vger.kernel.org>
-Subject: Re: [PATCH RFCv1 1/3] PCI: Allow ATS to be always on for CXL.cache
- capable devices
-Message-ID: <20260203143348.GA3931454@nvidia.com>
-References: <20260121100307.00004e60@huawei.com>
- <20260121130315.GE1134360@nvidia.com>
- <6971b9406d069_1d33100df@dwillia2-mobl4.notmuch>
- <20260122131432.GJ1134360@nvidia.com>
- <69727e7ded712_3095100ab@dwillia2-mobl4.notmuch>
- <BN9PR11MB527649A0049CA195E7BCF9218C90A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20260127150440.GF1134360@nvidia.com>
- <69795d0366a9_1d33100d3@dwillia2-mobl4.notmuch>
- <20260128130520.GV1134360@nvidia.com>
- <aYGEDv86r4a6l2Dv@Asurada-Nvidia>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aYGEDv86r4a6l2Dv@Asurada-Nvidia>
-X-ClientProxiedBy: BLAP220CA0019.NAMP220.PROD.OUTLOOK.COM
- (2603:10b6:208:32c::24) To LV8PR12MB9620.namprd12.prod.outlook.com
- (2603:10b6:408:2a1::19)
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="lF/e/bwL"
+Received: from pps.filterd (m0356516.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 6138iuEk007530;
+	Tue, 3 Feb 2026 15:52:24 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=pp1; bh=+IN/rZ
+	S09RmqSJcz3mq9tilgotyCw9gelQNf+laH/bg=; b=lF/e/bwLVDpBaBIxq5Z2WT
+	OJQu1UhMylC8zjsI5XF3dVOp3jlVhvu9c2Qw9vAlFUQMstadl1j7mW3I6Plr+wJJ
+	ofZ9XWpRlvOm3ADpZpdbdt4cHXsuN6jihSBd/a3Jt4wRMR1YlMp/nKQv6K2YAaVe
+	wXG92UUZkyOfG4MtmKmwwMo2kvNzJstdVKZBUWq7fQwwSp7dCmL6ptTmVygpsVJ1
+	vIRV+SeHLBEA0pEYuKSBFAr2sr9sn62GZE5Vh0VEKQE07rbFsIZvVDDaUk+SENFx
+	o81BcpOkE3CV48P2eHw5c58mklQrRww5AdGtlt6Uc5Xo0teAHExCNSyMSTc0Qdaw
+	==
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4c175mv106-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 03 Feb 2026 15:52:24 +0000 (GMT)
+Received: from m0356516.ppops.net (m0356516.ppops.net [127.0.0.1])
+	by pps.reinject (8.18.1.12/8.18.0.8) with ESMTP id 613FqO3v028480;
+	Tue, 3 Feb 2026 15:52:24 GMT
+Received: from ppma21.wdc07v.mail.ibm.com (5b.69.3da9.ip4.static.sl-reverse.com [169.61.105.91])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4c175mv104-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 03 Feb 2026 15:52:24 +0000 (GMT)
+Received: from pps.filterd (ppma21.wdc07v.mail.ibm.com [127.0.0.1])
+	by ppma21.wdc07v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 613FMTfX025706;
+	Tue, 3 Feb 2026 15:52:23 GMT
+Received: from smtprelay07.fra02v.mail.ibm.com ([9.218.2.229])
+	by ppma21.wdc07v.mail.ibm.com (PPS) with ESMTPS id 4c1w2msqka-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 03 Feb 2026 15:52:23 +0000
+Received: from smtpav02.fra02v.mail.ibm.com (smtpav02.fra02v.mail.ibm.com [10.20.54.101])
+	by smtprelay07.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 613FqI9e50463178
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 3 Feb 2026 15:52:18 GMT
+Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 7F5ED20043;
+	Tue,  3 Feb 2026 15:52:18 +0000 (GMT)
+Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id BFDCA20040;
+	Tue,  3 Feb 2026 15:52:14 +0000 (GMT)
+Received: from [9.39.23.245] (unknown [9.39.23.245])
+	by smtpav02.fra02v.mail.ibm.com (Postfix) with ESMTP;
+	Tue,  3 Feb 2026 15:52:14 +0000 (GMT)
+Message-ID: <2127b181-2c3a-4470-9b79-b508a18275c9@linux.ibm.com>
+Date: Tue, 3 Feb 2026 21:22:13 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|DS0PR12MB7780:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7eeeabc9-b6ba-4ac4-3469-08de63313ea0
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|7416014|376014|366016|7053199007;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?0ZIOWPr6Ogki/ex2qnL2fX3GDtgPFxWPYs8RwMsMEMPxHSoXN4eyZie8uFcD?=
- =?us-ascii?Q?x20iVd9Ap7Cj6kegPKsYcrDc/7usOJvIRz7gBl2lZ4BDJwszO2dNHXFyUNNa?=
- =?us-ascii?Q?rBN37b2X93ziwX/U20MQVROvMNJVxi+3MQAXQ+bb5+h0gYocJX0cyGzndNxp?=
- =?us-ascii?Q?osxOnmAVoL4nUQaUaUyO72MiC0SKu0PDW0VBg/AaW2g4j1/7BcwHkaDzu9ZQ?=
- =?us-ascii?Q?9q7tQiFXpMOzduav6evqLwCbMJZYl26A/zzpW7XfbI0CDxNy8dl6eqZvtUBH?=
- =?us-ascii?Q?U+U5v4K55f96CUpdJ0kZxeh4VqXAoMedSyVWe5YcE9qGSV+EDPBGaw3luoto?=
- =?us-ascii?Q?I7sRL1UgBS1dHnhdRJB9O0kwpLqq4PxnLScClXzhoOGNOD4Gahama1/DGX07?=
- =?us-ascii?Q?zUrJYJbbIJz6kLR0B4oAqaDGRrv7QQXI16SHjdfNJ1/XSh+5hkVwTDOS/vF4?=
- =?us-ascii?Q?zKYMjuVNlxXyGg9l0qRB+mtfyMqfAQy0O871RMOQjE2YF/CalLE9ENNsTS13?=
- =?us-ascii?Q?NYQTor0JDsqjwrVH0UmSXsEKcGOg58vaiYJvhK/WgLzE49rH+1hdnWmEfHkx?=
- =?us-ascii?Q?FPQ4Tuuz/FVt4hIfocPQPvhF/V+dGVqeTaweyDJouSshuSJbJOFSPN2Ex1L2?=
- =?us-ascii?Q?hjaMqsr+Hmi6ecVrjTfyTAxJZmifASAWlUWETBaflpG5wOr2Uv90BEhUj9p3?=
- =?us-ascii?Q?HF0KQFxn5r02l3xK5lvRAkDqsfz5MX6qO85qiivTNd0z0Rs4UuPjvZV9T5uJ?=
- =?us-ascii?Q?CwdtPTj0ieyDuEJMhcRr356Yq9NuuyFNUn3Z8cpCEnryNQRhW8MrxRGvHyfA?=
- =?us-ascii?Q?LI9ehtr1HPVVPz3SpHYBOtyQ0od+yi5YHvsIJlebJnF2n97vs0FN/fgtVo7S?=
- =?us-ascii?Q?3ZcqUn3hPNOod+MyjgI67HfAUjmPARqI9CPyyLc/Iv4OPUJ+PMo7eQojJJi+?=
- =?us-ascii?Q?HRhSZqrpcbPyXEvS/SwsMDOH0qFlblxS8m2nKw+4/gvZQpRPxQUy0KxuVGOJ?=
- =?us-ascii?Q?ps+FpNTpvERAKxM0XWAGIPr714fSmL0d+rBzBj70Xxd9L3YUenMqhK5cUXOT?=
- =?us-ascii?Q?2x38/0z3qxA1vGgqcHCamnEyIVDd/F+jdw+mllDRSy6smfBagqDzfITOeJeQ?=
- =?us-ascii?Q?tIryBtvtdwJ2tAx3k9McCVbMuhbtYVUOGkR6rb6SNQaJxZf7MMNGx8K0oMuk?=
- =?us-ascii?Q?bgHPbcw4uhf8or1pMVbiO6qsaHtg8cPeT3CJXYZslPUlqWfFiwdOfT3/ug2s?=
- =?us-ascii?Q?mizI071+VlIKjeQaS5McHPEIdUEp1NgHrA18MXSg6h73Ck4wC42vBK5G+GCQ?=
- =?us-ascii?Q?sUz/f0VmpiEa+xivrLLE/wUO/qHX2lqy9Bmy4Sx2x9+HjYi29K1Iuz6Dn74c?=
- =?us-ascii?Q?9UbofiF0OF7jAmoKetYq6Rjqlo57iO/RCYed9IqlF14mEzPhJi2qggq9dAmv?=
- =?us-ascii?Q?rq2hbwyTMvjlqW6u5sSFhqq996aCYJ0Ljc56ZYFj9WA5rzMSQjgyjNsxS7Wr?=
- =?us-ascii?Q?uLThssmQKwENKUwKdkqrcV24stwU7smcXmc7h8sZzS0d8CTgW21mfE+s4L9X?=
- =?us-ascii?Q?2jz+vBmaXzDEK/xWJcM=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(376014)(366016)(7053199007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?Ff5QlxBCs8ldZ59u1SA4g2Y4YV5uu7dmJzf7/RVh1rUE1rCGpXjn48R7g3rW?=
- =?us-ascii?Q?1u32MV08eZffHi5c1PTp7t1n+khD8Idi0nRsMQdQ3JJZTox1s2SNysEmkUMg?=
- =?us-ascii?Q?dqD8s4bSv8OalP5Ztos0qkiSLQj/FHHV1ZUmwglfVDNm8PS29qdtzBO1nFQ5?=
- =?us-ascii?Q?bAziDV7+SzoJMoUqJf5YdpSoLQMg0bHMoudaCNBwhjHzzwMZKWZWcEw/etwc?=
- =?us-ascii?Q?9v8Rqm3Qz73OqzyvY8+sX4iOkyOT+W7HABn8UneDzvHAprBk34mmfP1nJAs+?=
- =?us-ascii?Q?WC8/N9xfaNt7raitd+9Sln4ZSWjhiMyb+y2SrXLNucMp4o35Pe58VAjr6Wqv?=
- =?us-ascii?Q?kHEyBRkgC7dNN41RKW8zVMNp+QeqhZ5NohGVPNBfPXkoVy5R+y7pNVfWl0/C?=
- =?us-ascii?Q?K9VWr2QZR+liDc+/4waap/GxM42bhpdgdZN8MCxRmhC95Rk8GHbiiA+cv1Jz?=
- =?us-ascii?Q?mgkK9dmDe/iHnIoAt4viTmh/V2B34dZlCrpP3Q+6zqyFGe1zKOJtlnEQNXgG?=
- =?us-ascii?Q?CGnWEzfqrQWxj5PbZqKfZPTmFJ/gLdexa+VKx3iAGWdA5indYuzYOZSSJmRf?=
- =?us-ascii?Q?5suePRXlAls2vcarD4CXnukGSoHIIydUWispO7hSpauCWE6eemibm+Awl2Va?=
- =?us-ascii?Q?Gzt+fyd0UlvR6c09/loCicKt6r4vHZ+bJ475N6j7IbrY6xEh2pE5GPhU0GVY?=
- =?us-ascii?Q?MaFoVgVBCPowXgD3eykzspN/uxy5TiOamGYPfSBNDjV89UQptctYy7E/SwU6?=
- =?us-ascii?Q?OZ8Z2EbFzjJcjjBpIGWD87Iy99DOywpjxVAJIBuVbKpQNWZGzzGNgMxFDFGK?=
- =?us-ascii?Q?IlbbIRnMQleLgbwc9oQiRAjaxU3j8kw4b6DBgIRel7BOKnxZAYYAw7HU9lBP?=
- =?us-ascii?Q?d+uVSKiTvZxDuGSfcgh5bBzROKZK3ZZb9YWkWvVO/xEa8HSe/at2/sJvE/FW?=
- =?us-ascii?Q?WlYozQ5vrIgwhpeVhV7H4UoqgvG8Aqhmx5rZf3KuZy+sNtLmqZ4bnpFvbgsD?=
- =?us-ascii?Q?ln23UcAoSnb95q5E9e/88RsO6zsbMhnAZaq850pm5l6RC6/qL3ghwGbnhgiN?=
- =?us-ascii?Q?6QqgkvlZ9Pjt9L22h+r0AB1oopqnRhg1LihVPSRHCpEFVAetOG2OjN78WeWU?=
- =?us-ascii?Q?C6lln9Du0mCl6i9qqqq5qX/gP2gbqQg98Ej6oXPX/sweIqQ86iQ1SWLd2VsY?=
- =?us-ascii?Q?hnfuG/nbvUtGlhGhe1v87KxbHsGmTOn/z3pkurXo2eD8QhMNcbVdsccd2ZCG?=
- =?us-ascii?Q?q21Gra0F/hp2libiOSGyafwwGYCVveNlFSiWu496Fy6K3P3noto1j9qIZMSE?=
- =?us-ascii?Q?9UD/im0JwomODHq8fhPdzxx3wPuUBv/8xvjzZ+u+K2jupQPPTCaaU2ncNnWH?=
- =?us-ascii?Q?O+lhffgPEGN66MwSh/Sg/IWqO8em2albYMnByAWA0eY/1435Q6RnMI5DJk1g?=
- =?us-ascii?Q?1wRSImQzNQYyxQMqAKfL5wT3lAwL0pDlCiRdvOwCkhE4G3R2Upsd49rsS3GM?=
- =?us-ascii?Q?EYf6CB5gOBGaUpV1k7/MAHyaPHnUvPLgrjrKLMYFyv84dnITzrcB7j3h8/2P?=
- =?us-ascii?Q?3LJrNJ+5450bHUQVZdAHVolaf/bYIusNMUPavDadoVN6uNONYjDTm0LnF/Xr?=
- =?us-ascii?Q?U3cO9rw9Jx+bjhluKFETTXCvy/OPAiqays41JLRezFwv1djzJkUbsL+SnT+u?=
- =?us-ascii?Q?w+Smu9HsuvVFOzGziN+yhmzZUwdxqUjkIqH7QnWXLUWUtwtH5a1tJxcxomqW?=
- =?us-ascii?Q?niueL6FYGQ=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7eeeabc9-b6ba-4ac4-3469-08de63313ea0
-X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Feb 2026 14:33:49.0756
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ZT4HZTdYGStjloUWA+B6DUdCcirsLyyxiJ18lPGbNy5exXvLy0+OSL+gMQ6mHXLm
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB7780
+User-Agent: Mozilla Thunderbird
+From: Shivaprasad G Bhat <sbhat@linux.ibm.com>
+Subject: Re: [RFC PATCH] powerpc: iommu: Initial IOMMUFD support for PPC64
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        kvm@vger.kernel.org, iommu@lists.linux.dev, chleroy@kernel.org,
+        mpe@ellerman.id.au, maddy@linux.ibm.com, npiggin@gmail.com,
+        alex@shazbot.org, joerg.roedel@amd.com, kevin.tian@intel.com,
+        gbatra@linux.ibm.com, clg@kaod.org, vaibhav@linux.ibm.com,
+        brking@linux.vnet.ibm.com, nnmlinux@linux.ibm.com,
+        amachhiw@linux.ibm.com, tpearson@raptorengineering.com
+References: <176953894915.725.1102545144304639827.stgit@linux.ibm.com>
+ <20260127191643.GQ1134360@nvidia.com>
+Content-Language: en-US
+In-Reply-To: <20260127191643.GQ1134360@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: pWb_DcVWnKcehlEza_1Eg7EunqW9zHFk
+X-Authority-Analysis: v=2.4 cv=VcX6/Vp9 c=1 sm=1 tr=0 ts=698219b8 cx=c_pps
+ a=GFwsV6G8L6GxiO2Y/PsHdQ==:117 a=GFwsV6G8L6GxiO2Y/PsHdQ==:17
+ a=IkcTkHD0fZMA:10 a=HzLeVaNsDn8A:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=QKzg-OcEkSzzUhcykKgA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+X-Proofpoint-GUID: WqHfrzIaLJB0eb712i9ZnJpDaRgynrjK
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjAzMDEyMyBTYWx0ZWRfX8hSWMsUf6TZA
+ cJA/2Ti1RfFBzsi2+8VKb9ioe4oBfl6/3kmn8TkWIzIIWvRYbqxSQAxbSfHca4quSPe672aCZwS
+ +/ZCPOjf/r0NzHC+PtEYs7PHi2Fw8icoFXD4GX+jJtGH5sxmKs3R5dRo2f7V+U5zibHRO2TGJMy
+ PCaARCFiNpvoEPRAtimrOZnfXjJju52Lcj/nT2edErYOJ+bRANYL3/fpPj15JiyWyq9TTPxuvMe
+ YprzV2er9pLSx+04UPaO0lKyMD1ywJ2Mo3ZiiKslUtQIeXHXrsRun6eRCXipafHnQI+RWOJx3UB
+ qNd2YYO5B9O7ERkzEOFAMehFCbrrFm0v/cj58t7wGJds8Xhixfr5H6+TM3U0J404Oz/DOdYHKP7
+ iZXv5h5qXsuQxQ8Zkw4EOkTdijtejFHrHrQw6Gmh091uNOLr7euureQXcJho5CfPvJhyWqOq00w
+ 0gS9Lm7w2T34tgGAY1g==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-02-03_04,2026-02-02_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ priorityscore=1501 malwarescore=0 suspectscore=0 spamscore=0 adultscore=0
+ bulkscore=0 phishscore=0 lowpriorityscore=0 impostorscore=0 clxscore=1015
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.19.0-2601150000 definitions=main-2602030123
 
-On Mon, Feb 02, 2026 at 09:13:50PM -0800, Nicolin Chen wrote:
-> On Wed, Jan 28, 2026 at 09:05:20AM -0400, Jason Gunthorpe wrote:
-> > On Tue, Jan 27, 2026 at 04:49:07PM -0800, dan.j.williams@intel.com wrote:
-> > > > Yes, ARM took the position that ATS should be left disabled for
-> > > > IDENTITY both because of SMMU constraints and also because it made
-> > > > some sense that you wouldn't want ATS overhead just to get a 1:1
-> > > > translation.
-> > > 
-> > > Does this mean that ARM already today does not enable ATS until driver
-> > > attach, or is incremental work needed for that capability?
-> > 
-> > All of the iommu drivers setup an iommu translation and enable ATS
-> > before any driver is bound.
-> > 
-> > We would need to do more work in the core to leave the translation
-> > blocked when there is no driver. I don't think it is that difficult
-> 
-> Hmm, not sure if we could use group->domain=NULL as "blocked..
+Hi Jason,
 
-Definately not, we need to use a proper blocked domain.
 
-> @@ -437,8 +437,6 @@ static int driver_sysfs_add(struct device *dev)
->  {
->  	int ret;
->  
-> -	bus_notify(dev, BUS_NOTIFY_BIND_DRIVER);
-> -
->  	ret = sysfs_create_link(&dev->driver->p->kobj, &dev->kobj,
->  				kobject_name(&dev->kobj));
->  	if (ret)
-> @@ -638,10 +636,12 @@ static int really_probe(struct device *dev, const struct device_driver *drv)
->  	if (ret)
->  		goto pinctrl_bind_failed;
->  
-> +	bus_notify(dev, BUS_NOTIFY_BIND_DRIVER);
-> +
->  	if (dev->bus->dma_configure) {
->  		ret = dev->bus->dma_configure(dev);
->  		if (ret)
-> -			goto pinctrl_bind_failed;
-> +			goto bus_notify_bind_failed;
->  	}
+Thanks for reviewing this patch.
 
-We shouldn't need any of these? The dma_configure callback already
-gets into the iommu code to validate the domain and restrict VFIO,
-no further callbacks should be needed.
 
-When the iommu driver is probed to the device we can assume no driver
-is bound and immediately attach the blocked domain.
+On 1/28/26 12:46 AM, Jason Gunthorpe wrote:
+> On Tue, Jan 27, 2026 at 06:35:56PM +0000, Shivaprasad G Bhat wrote:
+>> The RFC attempts to implement the IOMMUFD support on PPC64 by
+>> adding new iommu_ops for paging domain. The existing platform
+>> domain continues to be the default domain for in-kernel use.
+> It would be nice to see the platform domain go away and ppc use the
+> normal dma-iommu.c stuff, but I don't think it is critical to making
+> it work with iommufd.
 
-Jason
+
+I agree. I have started on this. I will send incremental changes
+
+as follow-up after this.
+
+
+>> On PPC64, IOVA ranges are based on the type of the DMA window
+>> and their properties. Currently, there is no way to expose the
+>> attributes of the non-default 64-bit DMA window, which the platform
+>> supports. The platform allows the operating system to select the
+>> starting offset(at 4GiB or 512PiB default offset), pagesize and
+>> window size for the non-default 64-bit DMA window. For example,
+>> with VFIO, this is handled via VFIO_IOMMU_SPAPR_TCE_GET_INFO
+>> and VFIO_IOMMU_SPAPR_TCE_CREATE|REMOVE ioctls. While I am exploring
+>> the ways to expose and configure these DMA window attributes as
+>> per user input, any suggestions in this regard will be very helpful.
+> You can pass in driver specific information during HWPT creation, so
+> any properties you need can be specified there.
+
+
+Sure. I think IOMMU_GET_HW_INFO would be useful for getting the
+
+platform supported configuration in this case.
+
+
+> Then you'd want to introduce a new domain op to get the apertures
+> instead of the single range hard coded into the domain struct. The new
+> op would be able to return a list. We can use this op to return
+> apertures for sign extension page tables too.
+>
+> Update iommufd to calculate the reserved regions by evaluating the
+> whole list.
+>
+> I think you'll find this pretty straight forward, I'd do it as a
+> followup patch to this one.
+
+
+Thanks. I will wait for that patch.
+
+
+>
+>> Currently existing vfio type1 specific vfio-compat driver even
+>> with this patch will not work for PPC64. I believe we need to have
+>> a separate "vfio-spapr-compat" driver to make it work.
+> Yes, vfio-compat doesn't support the special spapr ioctls.
+>
+> I don't think you need a new driver, just implement whatever they do
+> with the existing interfaces, probably in its own .c file though.
+
+There are ioctl number conflicts like
+
+# grep -n "VFIO_BASE + 1[89]" include/uapi/linux/vfio.h | grep define
+940:#defineVFIO_DEVICE_BIND_IOMMUFD_IO(VFIO_TYPE, VFIO_BASE + 18)
+976:#defineVFIO_DEVICE_ATTACH_IOMMUFD_PT_IO(VFIO_TYPE, VFIO_BASE + 19)
+1833:#defineVFIO_IOMMU_SPAPR_UNREGISTER_MEMORY_IO(VFIO_TYPE, VFIO_BASE + 18)
+1856:#defineVFIO_IOMMU_SPAPR_TCE_CREATE_IO(VFIO_TYPE, VFIO_BASE + 19)
+# grep -n "VFIO_BASE + 20" include/uapi/linux/vfio.h | grep define
+999:#defineVFIO_DEVICE_DETACH_IOMMUFD_PT_IO(VFIO_TYPE, VFIO_BASE + 20)
+1870:#defineVFIO_IOMMU_SPAPR_TCE_REMOVE_IO(VFIO_TYPE, VFIO_BASE + 20)
+
+> However, I have no idea what is required to implement those ops, or if
+> it is even possible.. It may be easier to just leave the old vfio
+> stuff around instead of trying to compat it. The purpose of compat was
+> to be able to build kernels without type1 at all. It isn't necessary
+> to start using iommufd in new apps with the new interfaces.
+>
+> Given you are mainly looking at a VMM that already will have iommufd
+> support it may not be worthwhile.
+
+
+You are right. We do have some use cases beyond VMM, I will consider 
+compat driver
+
+only if it is helpful there.
+
+
+>> @@ -1201,7 +1201,15 @@ spapr_tce_blocked_iommu_attach_dev(struct iommu_domain *platform_domain,
+>>   	 * also sets the dma_api ops
+>>   	 */
+>>   	table_group = iommu_group_get_iommudata(grp);
+>> +
+>> +	if (old && old->type == IOMMU_DOMAIN_DMA) {
+> I'm trying to delete IOMMU_DOMAIN_DMA please don't use it in
+> drivers.
+Sure.
+>>   static const struct iommu_ops spapr_tce_iommu_ops = {
+>>   	.default_domain = &spapr_tce_platform_domain,
+>>   	.blocked_domain = &spapr_tce_blocked_domain,
+>> @@ -1267,6 +1436,14 @@ static const struct iommu_ops spapr_tce_iommu_ops = {
+>>   	.probe_device = spapr_tce_iommu_probe_device,
+>>   	.release_device = spapr_tce_iommu_release_device,
+>>   	.device_group = spapr_tce_iommu_device_group,
+>> +	.domain_alloc_paging = spapr_tce_domain_alloc_paging,
+>> +	.default_domain_ops = &(const struct iommu_domain_ops) {
+>> +		.attach_dev     = spapr_tce_iommu_attach_device,
+>> +		.map_pages      = spapr_tce_iommu_map_pages,
+>> +		.unmap_pages    = spapr_tce_iommu_unmap_pages,
+>> +		.iova_to_phys   = spapr_tce_iommu_iova_to_phys,
+>> +		.free           = spapr_tce_domain_free,
+>> +	}
+> Please don't use default_domain_ops in a driver that is supporting
+> multiple domain types and platform, it becomes confusing to guess
+> which domain type those ops are linked to.
+
+
+Sure.
+
+
+> You should also implement the BLOCKING domain type to make VFIO work
+> better
+
+
+I am not sure how this could help making VFIO better. May be, I am not able
+
+to imagine the advantages with the current platform domain approach
+
+in place. Could you please elaborate more on this?
+
+
+> I wouldn't try to guess if this is right or not, but it looks pretty
+> reasonable as a first start.
+
+
+Thanks, I will iterate this as RFC till i get to reasonable shape.
+
+
+Regards,
+
+Shivaprasad
+
+> Jason
