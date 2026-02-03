@@ -1,54 +1,54 @@
 Received: from mail-pl1-f202.google.com (mail-pl1-f202.google.com [209.85.214.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CCC1376BFF
-	for <iommu@lists.linux.dev>; Tue,  3 Feb 2026 22:09:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36887378831
+	for <iommu@lists.linux.dev>; Tue,  3 Feb 2026 22:09:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.202
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770156600; cv=none; b=BxI3FYW/7zp9N6JyawpXttgjmlqaWi0UgqUU73LCiIoHEa7x5IUL8ZpJUVbGPNEKd0tZH48fGLHJmmj9f9tvH+P8bRKe+Hl5e0/VmlOhyNa0GfQSwruDpuxh7CkS45AtxMj/rcPDOLa65ERZWag9ZzI1fbAozxWlsR8m9658v0k=
+	t=1770156600; cv=none; b=bnEnEAAfcHVcCnAZcg/T2Eme9FqZ7m5cZDe/AO6k4T9dMY8NeFnyqg0Ohth5WpdoBoTZPtCyjAHWVGe4LwbSfo312lIHVdQpXMKJOVWZt1gx75QawNJyUMDIP4Jz2pab76Pgw6jBrLxJZMdY2obj99PTMZpa9c+HRjM44JOqlUY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1770156600; c=relaxed/simple;
-	bh=5oimeBpjR9ySAyBwN7duv7K3nB4HOiM5cRVJaWv274o=;
+	bh=XmH949+cFNYEHjPb6Flo1g0WANgdqrWkFIs/6XqOnbo=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=PNp73IhyZyZZHMUopXf0ZScZHiKYGdnzoA2zqwofQpsErupx3B4H72kb13cZhH4gC0kAEJyZKIaoRSAEFuzztu2U36N2FTYORi4hNTpUDn56CorYXylORvMxNOBqYdAXOliE/dF3SSsT/fX5LJ+SKKHNrEPt/rybpJ7jL03/VPc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=32/TSImf; arc=none smtp.client-ip=209.85.214.202
+	 To:Cc:Content-Type; b=c+J4Br+ZfuKtRPdjnTongQmEI+zPgdNqiYKe2BNAMAI8yOcL84PF9NY03ryZ91Wpz7WYfkf5Szqz28na/UCQ36UteZ5ajEaj9Uj91lhEZVrmNCYNZwfe/nyHKIE4YFudPdF/W33QBrF6r4y84GP0p1i/bvedXnJ5L5sQp8gZ1sQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=C5Ryh5Q/; arc=none smtp.client-ip=209.85.214.202
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="32/TSImf"
-Received: by mail-pl1-f202.google.com with SMTP id d9443c01a7336-2a76f2d7744so60077135ad.3
-        for <iommu@lists.linux.dev>; Tue, 03 Feb 2026 14:09:57 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="C5Ryh5Q/"
+Received: by mail-pl1-f202.google.com with SMTP id d9443c01a7336-2a8c273332cso159217265ad.1
+        for <iommu@lists.linux.dev>; Tue, 03 Feb 2026 14:09:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1770156597; x=1770761397; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1770156598; x=1770761398; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Lp/+9SAp3L8mfYjwbkh3T/evpw/YswqyzsO+xOxb2eg=;
-        b=32/TSImf2Cvu+5nxazQBQNwLiPIgFhiiwjwMtS2BAoO6a5DLJrUkyBRV9NnoVjKNkl
-         /OcfEdpbYiiz8L0XI8KQAea8ySDIQ8t8e9xOCEgoWLIuIrWOKS90aO6gzx+FQ7SRJfXy
-         BzGS3CtnJSyVb+kCWd4WAHCj2BC4Popds2xeRwWkrZwbCPFrzkCD9R8bXeXW5ACPiWg+
-         GcMVcSODlf5RHzxMA29VQNXuujXoIrpyhXgWWQOAIIIS0fNAGBPDoSH+1kd3bh8/NuUj
-         vI2ojY6PwFw0I7DRaZ6ydFzjH+yViKeGtAjEcVfn1JebVHuK8CgeaQtWnFmMkaraMwx+
-         fNQQ==
+        bh=yiKJgtR9ONUoXQPN4oexiJxFq7KWJtr+8+pAjx8UEac=;
+        b=C5Ryh5Q/703wCRvErBXlDWvgJvWAbgxM/eL3+77z/wwavLrDjoOjf8W+itE0ffeG6i
+         iHiPaJ1w6Cztpc2k/oeagadHvkj+kzqZNVbbtCcfHghSLYI8NQ8nCnB9yTh8Tvn2Ucu0
+         E40H4WAMj15EnRCCJv4qAlt0v/Ne9uPeRJYobqUbuOssvZ4DRapLFywEiEYbmkRruOHI
+         ErVX7FDv+yUNmFuyObRPnQ1JgRXevUqNoLLt381sQ+EdbcQBoiITb5N4cK0Xzg9gAL2+
+         KS/wx44j1fM36vn1eDbgVaU37ok1OYLtppu2+5tuYdJyAonGwdad23RdqJAmCN9H6Wm7
+         l3SA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770156597; x=1770761397;
+        d=1e100.net; s=20230601; t=1770156598; x=1770761398;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Lp/+9SAp3L8mfYjwbkh3T/evpw/YswqyzsO+xOxb2eg=;
-        b=babX/sPpWWgIM80inW4VXym4cIrv/0mhrIfTe5QkCinenq5HEO4jX8yLIrLp61p0Ue
-         sumlT5B2ba5/g3et/fex9uMp2HYFQSDtHSTy9CHAH8E5ek8hruKdKMhnuySgX0hdpoSW
-         pRp+G8EPI/cKLMYVHlS9Ihw8U5pQREVWO+2NAo3jdYHCkBcOSQZgy/gL8SlN8KodobZy
-         l6vI1ON2V5DSudMct+aaiaHqkRIRnANZpkOjb3M4lXNNRp8Mi6CZSHnNZGI+z5oMIGgI
-         eqSInwG6EbWAQQyUcoHLSmRrCIIGWjdu5oZtYgTzHXthfpUkoTqpLt5JSjTAKyF3NJbm
-         io8Q==
-X-Forwarded-Encrypted: i=1; AJvYcCUKyDkHinnAujQYaL29q5i7W66uaceB4I7k6Hqzy1sDBIM0GecwG7atuOcWVSKT9x+x7edIcw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyyC508TgsTuNK0tWR/cbcxr2MrT4g3xhtvWotgYMM0HxMTpKB8
-	OcizFVc10WJuiEtbGbGsjcmjCoNGFdsTGB6wphBdfuGa26dGv2VKIozmt1wKUdNJEyHP2wg/u5v
-	q1JgTlzM/Iv5bJA==
-X-Received: from plbmf3.prod.google.com ([2002:a17:902:fc83:b0:2a1:1c0e:70b9])
+        bh=yiKJgtR9ONUoXQPN4oexiJxFq7KWJtr+8+pAjx8UEac=;
+        b=sBgiilhr+EcAt3uYqgusDt10tB9wZroDjesiAvNnfN/JNdQ9oPDAapfxeBCgilhRwu
+         kI+eP9MyrrCtU/CnHcont5s98aWL71C/kBosROjkRUZ0RcU3AsZP0tXFKF+RTwMGeUo7
+         5z+tkwlLZ/7M3mWj2eg69YGwAfdOIKKuzj8vpwloP2i2aj1dFTM26WOlCZ+krokeRQrr
+         tZncc/ouQi0+WVbZWxrE7inVGfp8rtakRcn2oqO62nIpHPQAUdGiOz1aNw+/dFFUXPcr
+         8mEkVv8eelmhy7XlODLGAj2mk/+HcJ83/ensfwUl3HbHQfnL4VHIJ9LP0Zz9Cu0SZKIB
+         CjZg==
+X-Forwarded-Encrypted: i=1; AJvYcCX6fXNsavW/mU/3x3v+SmxJ5p7jHb/WC1VUwVfYirbacpVF9JZnCwhBPnOL9f9OC1Cl2a3+iQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwzEmU9Ssspn0ptmTG9FWRk944IcLk/GQ4LqNxnkdtXalbAysdl
+	WSzs9yB1RhOTbXnS1XVIzreq+5YQZFw+8opHWhjawJLbEcVEb2+WbPdqyLnfig8EEXcUI+ILXgQ
+	KPWjUuxVy+ZTFRg==
+X-Received: from plgz17.prod.google.com ([2002:a17:903:191:b0:2a7:8c71:aa97])
  (user=skhawaja job=prod-delivery.src-stubby-dispatcher) by
- 2002:a17:902:c411:b0:295:b46f:a6c2 with SMTP id d9443c01a7336-2a933fba80bmr6525215ad.37.1770156597010;
- Tue, 03 Feb 2026 14:09:57 -0800 (PST)
-Date: Tue,  3 Feb 2026 22:09:38 +0000
+ 2002:a17:903:1ac3:b0:2a0:d629:9035 with SMTP id d9443c01a7336-2a933bbe729mr7724415ad.3.1770156598471;
+ Tue, 03 Feb 2026 14:09:58 -0800 (PST)
+Date: Tue,  3 Feb 2026 22:09:39 +0000
 In-Reply-To: <20260203220948.2176157-1-skhawaja@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -58,9 +58,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20260203220948.2176157-1-skhawaja@google.com>
 X-Mailer: git-send-email 2.53.0.rc2.204.g2597b5adb4-goog
-Message-ID: <20260203220948.2176157-5-skhawaja@google.com>
-Subject: [PATCH 04/14] iommu/pages: Add APIs to preserve/unpreserve/restore
- iommu pages
+Message-ID: <20260203220948.2176157-6-skhawaja@google.com>
+Subject: [PATCH 05/14] iommupt: Implement preserve/unpreserve/restore callbacks
 From: Samiullah Khawaja <skhawaja@google.com>
 To: David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
 	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>
@@ -75,149 +74,159 @@ Cc: Samiullah Khawaja <skhawaja@google.com>, Robin Murphy <robin.murphy@arm.com>
 	YiFei Zhu <zhuyifei@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-IOMMU pages are allocated/freed using APIs using struct ioptdesc. For
-the proper preservation and restoration of ioptdesc add helper
-functions.
+Implement the iommu domain ops for presevation, unpresevation and
+restoration of iommu domains for liveupdate. Use the existing page
+walker to preserve the ioptdesc of the top_table and the lower tables.
+Preserve the top_level also so it can be restored during boot.
 
 Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
 ---
- drivers/iommu/iommu-pages.c | 74 +++++++++++++++++++++++++++++++++++++
- drivers/iommu/iommu-pages.h | 30 +++++++++++++++
- 2 files changed, 104 insertions(+)
+ drivers/iommu/generic_pt/iommu_pt.h | 96 +++++++++++++++++++++++++++++
+ include/linux/generic_pt/iommu.h    | 10 +++
+ 2 files changed, 106 insertions(+)
 
-diff --git a/drivers/iommu/iommu-pages.c b/drivers/iommu/iommu-pages.c
-index 3bab175d8557..588a8f19b196 100644
---- a/drivers/iommu/iommu-pages.c
-+++ b/drivers/iommu/iommu-pages.c
-@@ -6,6 +6,7 @@
- #include "iommu-pages.h"
- #include <linux/dma-mapping.h>
- #include <linux/gfp.h>
-+#include <linux/kexec_handover.h>
- #include <linux/mm.h>
- 
- #define IOPTDESC_MATCH(pg_elm, elm)                    \
-@@ -131,6 +132,79 @@ void iommu_put_pages_list(struct iommu_pages_list *list)
+diff --git a/drivers/iommu/generic_pt/iommu_pt.h b/drivers/iommu/generic_pt/iommu_pt.h
+index 3327116a441c..0a1adb6312dd 100644
+--- a/drivers/iommu/generic_pt/iommu_pt.h
++++ b/drivers/iommu/generic_pt/iommu_pt.h
+@@ -921,6 +921,102 @@ int DOMAIN_NS(map_pages)(struct iommu_domain *domain, unsigned long iova,
  }
- EXPORT_SYMBOL_GPL(iommu_put_pages_list);
+ EXPORT_SYMBOL_NS_GPL(DOMAIN_NS(map_pages), "GENERIC_PT_IOMMU");
  
-+#if IS_ENABLED(CONFIG_IOMMU_LIVEUPDATE)
-+void iommu_unpreserve_page(void *virt)
++/**
++ * unpreserve() - Unpreserve page tables and other state of a domain.
++ * @domain: Domain to unpreserve
++ */
++void DOMAIN_NS(unpreserve)(struct iommu_domain *domain, struct iommu_domain_ser *ser)
 +{
-+	kho_unpreserve_folio(ioptdesc_folio(virt_to_ioptdesc(virt)));
++	struct pt_iommu *iommu_table =
++		container_of(domain, struct pt_iommu, domain);
++	struct pt_common *common = common_from_iommu(iommu_table);
++	struct pt_range range = pt_all_range(common);
++	struct pt_iommu_collect_args collect = {
++		.free_list = IOMMU_PAGES_LIST_INIT(collect.free_list),
++	};
++
++	iommu_pages_list_add(&collect.free_list, range.top_table);
++	pt_walk_range(&range, __collect_tables, &collect);
++
++	iommu_unpreserve_pages(&collect.free_list, -1);
 +}
-+EXPORT_SYMBOL_GPL(iommu_unpreserve_page);
++EXPORT_SYMBOL_NS_GPL(DOMAIN_NS(unpreserve), "GENERIC_PT_IOMMU");
 +
-+int iommu_preserve_page(void *virt)
++/**
++ * preserve() - Preserve page tables and other state of a domain.
++ * @domain: Domain to preserve
++ *
++ * Returns: -ERRNO on failure, on success.
++ */
++int DOMAIN_NS(preserve)(struct iommu_domain *domain, struct iommu_domain_ser *ser)
 +{
-+	return kho_preserve_folio(ioptdesc_folio(virt_to_ioptdesc(virt)));
-+}
-+EXPORT_SYMBOL_GPL(iommu_preserve_page);
-+
-+void iommu_unpreserve_pages(struct iommu_pages_list *list, int count)
-+{
-+	struct ioptdesc *iopt;
-+
-+	if (!count)
-+		return;
-+
-+	/* If less than zero then unpreserve all pages. */
-+	if (count < 0)
-+		count = 0;
-+
-+	list_for_each_entry(iopt, &list->pages, iopt_freelist_elm) {
-+		kho_unpreserve_folio(ioptdesc_folio(iopt));
-+		if (count > 0 && --count ==  0)
-+			break;
-+	}
-+}
-+EXPORT_SYMBOL_GPL(iommu_unpreserve_pages);
-+
-+void iommu_restore_page(u64 phys)
-+{
-+	struct ioptdesc *iopt;
-+	struct folio *folio;
-+	unsigned long pgcnt;
-+	unsigned int order;
-+
-+	folio = kho_restore_folio(phys);
-+	BUG_ON(!folio);
-+
-+	iopt = folio_ioptdesc(folio);
-+
-+	order = folio_order(folio);
-+	pgcnt = 1UL << order;
-+	mod_node_page_state(folio_pgdat(folio), NR_IOMMU_PAGES, pgcnt);
-+	lruvec_stat_mod_folio(folio, NR_SECONDARY_PAGETABLE, pgcnt);
-+}
-+EXPORT_SYMBOL_GPL(iommu_restore_page);
-+
-+int iommu_preserve_pages(struct iommu_pages_list *list)
-+{
-+	struct ioptdesc *iopt;
-+	int count = 0;
++	struct pt_iommu *iommu_table =
++		container_of(domain, struct pt_iommu, domain);
++	struct pt_common *common = common_from_iommu(iommu_table);
++	struct pt_range range = pt_all_range(common);
++	struct pt_iommu_collect_args collect = {
++		.free_list = IOMMU_PAGES_LIST_INIT(collect.free_list),
++	};
 +	int ret;
 +
-+	list_for_each_entry(iopt, &list->pages, iopt_freelist_elm) {
-+		ret = kho_preserve_folio(ioptdesc_folio(iopt));
-+		if (ret) {
-+			iommu_unpreserve_pages(list, count);
-+			return ret;
-+		}
++	iommu_pages_list_add(&collect.free_list, range.top_table);
++	pt_walk_range(&range, __collect_tables, &collect);
 +
-+		++count;
-+	}
++	ret = iommu_preserve_pages(&collect.free_list);
++	if (ret)
++		return ret;
++
++	ser->top_table = virt_to_phys(range.top_table);
++	ser->top_level = range.top_level;
 +
 +	return 0;
 +}
-+EXPORT_SYMBOL_GPL(iommu_preserve_pages);
++EXPORT_SYMBOL_NS_GPL(DOMAIN_NS(preserve), "GENERIC_PT_IOMMU");
 +
-+#endif
++static int __restore_tables(struct pt_range *range, void *arg,
++			    unsigned int level, struct pt_table_p *table)
++{
++	struct pt_state pts = pt_init(range, level, table);
++	int ret;
 +
- /**
-  * iommu_pages_start_incoherent - Setup the page for cache incoherent operation
-  * @virt: The page to setup
-diff --git a/drivers/iommu/iommu-pages.h b/drivers/iommu/iommu-pages.h
-index ae9da4f571f6..bd336fb56b5f 100644
---- a/drivers/iommu/iommu-pages.h
-+++ b/drivers/iommu/iommu-pages.h
-@@ -53,6 +53,36 @@ void *iommu_alloc_pages_node_sz(int nid, gfp_t gfp, size_t size);
- void iommu_free_pages(void *virt);
- void iommu_put_pages_list(struct iommu_pages_list *list);
++	for_each_pt_level_entry(&pts) {
++		if (pts.type == PT_ENTRY_TABLE) {
++			iommu_restore_page(virt_to_phys(pts.table_lower));
++			ret = pt_descend(&pts, arg, __restore_tables);
++			if (ret)
++				return ret;
++		}
++	}
++	return 0;
++}
++
++/**
++ * restore() - Restore page tables and other state of a domain.
++ * @domain: Domain to preserve
++ *
++ * Returns: -ERRNO on failure, on success.
++ */
++int DOMAIN_NS(restore)(struct iommu_domain *domain, struct iommu_domain_ser *ser)
++{
++	struct pt_iommu *iommu_table =
++		container_of(domain, struct pt_iommu, domain);
++	struct pt_common *common = common_from_iommu(iommu_table);
++	struct pt_range range = pt_all_range(common);
++
++	iommu_restore_page(ser->top_table);
++
++	/* Free new table */
++	iommu_free_pages(range.top_table);
++
++	/* Set the restored top table */
++	pt_top_set(common, phys_to_virt(ser->top_table), ser->top_level);
++
++	/* Restore all pages*/
++	range = pt_all_range(common);
++	return pt_walk_range(&range, __restore_tables, NULL);
++}
++EXPORT_SYMBOL_NS_GPL(DOMAIN_NS(restore), "GENERIC_PT_IOMMU");
++
+ struct pt_unmap_args {
+ 	struct iommu_pages_list free_list;
+ 	pt_vaddr_t unmapped;
+diff --git a/include/linux/generic_pt/iommu.h b/include/linux/generic_pt/iommu.h
+index 9eefbb74efd0..b824a8642571 100644
+--- a/include/linux/generic_pt/iommu.h
++++ b/include/linux/generic_pt/iommu.h
+@@ -13,6 +13,7 @@ struct iommu_iotlb_gather;
+ struct pt_iommu_ops;
+ struct pt_iommu_driver_ops;
+ struct iommu_dirty_bitmap;
++struct iommu_domain_ser;
  
-+#if IS_ENABLED(CONFIG_IOMMU_LIVEUPDATE)
-+int iommu_preserve_page(void *virt);
-+void iommu_unpreserve_page(void *virt);
-+int iommu_preserve_pages(struct iommu_pages_list *list);
-+void iommu_unpreserve_pages(struct iommu_pages_list *list, int count);
-+void iommu_restore_page(u64 phys);
-+#else
-+static inline int iommu_preserve_page(void *virt)
-+{
-+	return -EOPNOTSUPP;
-+}
-+
-+static inline void iommu_unpreserve_page(void *virt)
-+{
-+}
-+
-+static inline int iommu_preserve_pages(struct iommu_pages_list *list)
-+{
-+	return -EOPNOTSUPP;
-+}
-+
-+static inline void iommu_unpreserve_pages(struct iommu_pages_list *list, int count)
-+{
-+}
-+
-+static inline void iommu_restore_page(u64 phys)
-+{
-+}
-+#endif
-+
  /**
-  * iommu_pages_list_add - add the page to a iommu_pages_list
-  * @list: List to add the page to
+  * DOC: IOMMU Radix Page Table
+@@ -198,6 +199,12 @@ struct pt_iommu_cfg {
+ 				       unsigned long iova, phys_addr_t paddr,  \
+ 				       size_t pgsize, size_t pgcount,          \
+ 				       int prot, gfp_t gfp, size_t *mapped);   \
++	int pt_iommu_##fmt##_preserve(struct iommu_domain *domain,             \
++				      struct iommu_domain_ser *ser);           \
++	void pt_iommu_##fmt##_unpreserve(struct iommu_domain *domain,          \
++					 struct iommu_domain_ser *ser);        \
++	int pt_iommu_##fmt##_restore(struct iommu_domain *domain,              \
++				     struct iommu_domain_ser *ser);            \
+ 	size_t pt_iommu_##fmt##_unmap_pages(                                   \
+ 		struct iommu_domain *domain, unsigned long iova,               \
+ 		size_t pgsize, size_t pgcount,                                 \
+@@ -224,6 +231,9 @@ struct pt_iommu_cfg {
+ #define IOMMU_PT_DOMAIN_OPS(fmt)                        \
+ 	.iova_to_phys = &pt_iommu_##fmt##_iova_to_phys, \
+ 	.map_pages = &pt_iommu_##fmt##_map_pages,       \
++	.preserve = &pt_iommu_##fmt##_preserve,		\
++	.unpreserve = &pt_iommu_##fmt##_unpreserve,	\
++	.restore = &pt_iommu_##fmt##_restore,		\
+ 	.unmap_pages = &pt_iommu_##fmt##_unmap_pages
+ #define IOMMU_PT_DIRTY_OPS(fmt) \
+ 	.read_and_clear_dirty = &pt_iommu_##fmt##_read_and_clear_dirty
 -- 
 2.53.0.rc2.204.g2597b5adb4-goog
 
