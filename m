@@ -1,30 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3B43299927;
-	Tue,  3 Feb 2026 16:24:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A98E3C1961;
+	Tue,  3 Feb 2026 16:24:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770135854; cv=none; b=igKL1bu2HUOo+V/i2/D73j0B81PsDfqbt3qu5Ix2WCmnhULrFh+2cJTgpijdR94+RNk28fknfRZ5DSBKojgi41rFuF1Qpam870kbFRBZtYgWZuokmzveTzJkfGZBquKl9do4ptTkItL9v6kteeh1v7uB8F0bFmuV13PSxkj4P9E=
+	t=1770135865; cv=none; b=rkOVbmNwCZEbtk2IkaYpmu7IfRUJjGXpB1Hc39aaabh9TMWSBNGiZDU3MU8U0un1xz/jQgKVaJaVWS4I3BzoOaa0Oo/VTEfBe+7may28yy8VAkqlD6f+WQ612PTdP+6S4WLXxIG2MLAAd/r0nhvPVzJz5YNoWKIdpmR4E0HXlk4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770135854; c=relaxed/simple;
-	bh=3aWB9czdX77ko627FLVQ27Wjd4hw35wKPWJ59FT1Nc8=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=fw+2b7l67OLCasC/u6HtgZKa6MwjsoElDgO94BqNjN/Mx9+bQsKUPhi/uN6XqfwzGr+WiaIU0LbE0brPacGJSc2Ya4AjNPqADbzZ2m3giKVJyZV/ZhAb2yggUs9SFPJnkNAsvTcUZR0Ld0/qB8yIZvU2CPW8M1wuE271jUFFSTQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VEoKDQcS; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1770135865; c=relaxed/simple;
+	bh=8NKPdRGnNXMEdz6SK51aPIBdadbt+NTxQ5tH5rjBnLo=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=lO3qu7JCLE66+XEVxVvRX00DGpJvR7iMVdfyf54n7wmiscbywo7VwmuG2V0HP0FYQemguOMu87cMpEXnjva7SF0ECGkM8b0WN/myipmb2BKQa9oZFhchHDpvax7xFhV63UCcYF7sSDXesVaDfuj9mkfU9ijo+Qwiv5BvzAqXcP0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MaUjymV4; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VEoKDQcS"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38322C116D0;
-	Tue,  3 Feb 2026 16:24:12 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MaUjymV4"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67218C16AAE;
+	Tue,  3 Feb 2026 16:24:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1770135854;
-	bh=3aWB9czdX77ko627FLVQ27Wjd4hw35wKPWJ59FT1Nc8=;
-	h=From:To:Cc:Subject:Date:From;
-	b=VEoKDQcSOZMiRh7FM1iEhhRu5QbWSUeI7ZduuVBt7+h6MKTUV1peDI5N7SUYtjOve
-	 5sKwd/aFYFzW9gHn5KtTmYOHBWo2FabQdNkrvF9HIo3FbARyx+7G0mWZ9kvjrdhNLj
-	 vm0icwyb1WptXgOTyZtI8grYrK0iaffW6tPoF/X0CPCzmmm6cR3ax8ge+hcQy7CzRg
-	 4KyDqET42t87Ufjq01zYu6QDyLP7xu6u9tEfyckoh0c5uTf7nwe3zni4O8sVIC1k85
-	 GqnGpWs9wTmgX8egAXDRdZbWmRzuuVc9Gbbn4m152LHuq7dur6RXPO070iOliwNX0e
-	 sRdYOZHhplnew==
+	s=k20201202; t=1770135865;
+	bh=8NKPdRGnNXMEdz6SK51aPIBdadbt+NTxQ5tH5rjBnLo=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=MaUjymV4lKdPf0XW+6SntLKjqRu0SDylDV87yaAezrkqan0kKNSBHX779dFlqpeQH
+	 FYhIfLq5kq5KszvVkPnx0PHf3l15PcMZIVUgs0J6Yq+4d+hAtwCy0yj00Mw4kuIf3c
+	 kNVfliAXcz4lqQSy32MHVXv7mwLZWtGN6hVn6imLl9F6pUW+ExsN3UrvXI/Bn6UtWK
+	 DSHsp6w8Z9Xsh6QPHfipea6LeSd4dZh7u3TVVsZeyljiBZhTf3H8xZUPYfCfb2nbQN
+	 2FfoIUVILOtvCm9ceEcjJgtGjp8HPYY2hFXlmeSA+X5SHOE8cbIZtle9RYq7ivoNqd
+	 PtWit4mC/NaAQ==
 From: Arnd Bergmann <arnd@kernel.org>
 To: Will Deacon <will@kernel.org>,
 	Robin Murphy <robin.murphy@arm.com>,
@@ -34,12 +35,13 @@ To: Will Deacon <will@kernel.org>,
 Cc: linux-arm-kernel@lists.infradead.org,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
-	Arnd Bergmann <arnd@arndb.de>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH 1/2] [RFC] debugobjects: avoid gcc-16.0.1 section mismatch
-Date: Tue,  3 Feb 2026 17:23:59 +0100
-Message-Id: <20260203162406.2215716-1-arnd@kernel.org>
+	Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH 2/2] [RFC] iommu: io-pgtable-arm-v7s: avoid gcc-16.0.1 section mismatch
+Date: Tue,  3 Feb 2026 17:24:00 +0100
+Message-Id: <20260203162406.2215716-2-arnd@kernel.org>
 X-Mailer: git-send-email 2.39.5
+In-Reply-To: <20260203162406.2215716-1-arnd@kernel.org>
+References: <20260203162406.2215716-1-arnd@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -51,39 +53,59 @@ Content-Transfer-Encoding: 8bit
 From: Arnd Bergmann <arnd@arndb.de>
 
 gcc-16 has gained some more advanced inlining techniques that enable
-it to inline the is_static_object() function pointer into a specialized
-version of lookup_object_or_alloc:
+it to inline the dummy_tlb_add_page() and dummy_tlb_flush() function
+pointers into a specialized version of __arm_v7s_unmap:
 
-WARNING: modpost: vmlinux: section mismatch in reference: lookup_object_or_alloc.part.0+0x1ac (section: .text) -> is_static_object (section: .init.text)
+WARNING: modpost: vmlinux: section mismatch in reference: __arm_v7s_unmap+0x2cc (section: .text) -> dummy_tlb_add_page (section: .init.text)
 
 From what I can tell, the transformation is correct, as this
-is only called when lookup_object_or_alloc() is called from
-debug_objects_selftest(), which is also __init.
+is only called when __arm_v7s_unmap() is called from
+arm_v7s_do_selftests(), which is also __init.
 
 I have not come up with a good workaround, so this simply marks
-is_static_object() as not __init. Since there are currently only two
+dummy_tlb_add_page() as not __init. Since there are currently only two
 files where this happens, that may be an easy way out.
 
 If anyone has a better idea for how to deal with that, let me know!
 
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- lib/debugobjects.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/io-pgtable-arm-v7s.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/lib/debugobjects.c b/lib/debugobjects.c
-index 89a1d6745dc2..056957c4e52f 100644
---- a/lib/debugobjects.c
-+++ b/lib/debugobjects.c
-@@ -1195,7 +1195,7 @@ struct self_test {
+diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
+index 523355e91a2c..705885924afb 100644
+--- a/drivers/iommu/io-pgtable-arm-v7s.c
++++ b/drivers/iommu/io-pgtable-arm-v7s.c
+@@ -775,23 +775,23 @@ struct io_pgtable_init_fns io_pgtable_arm_v7s_init_fns = {
  
- static __initconst const struct debug_obj_descr descr_type_test;
+ #ifdef CONFIG_IOMMU_IO_PGTABLE_ARMV7S_SELFTEST
  
--static bool __init is_static_object(void *addr)
-+static bool is_static_object(void *addr)
+-static struct io_pgtable_cfg *cfg_cookie __initdata;
++static struct io_pgtable_cfg *cfg_cookie;
+ 
+ static void __init dummy_tlb_flush_all(void *cookie)
  {
- 	struct self_test *obj = addr;
+ 	WARN_ON(cookie != cfg_cookie);
+ }
  
+-static void __init dummy_tlb_flush(unsigned long iova, size_t size,
++static void dummy_tlb_flush(unsigned long iova, size_t size,
+ 				   size_t granule, void *cookie)
+ {
+ 	WARN_ON(cookie != cfg_cookie);
+ 	WARN_ON(!(size & cfg_cookie->pgsize_bitmap));
+ }
+ 
+-static void __init dummy_tlb_add_page(struct iommu_iotlb_gather *gather,
+-				      unsigned long iova, size_t granule,
+-				      void *cookie)
++static void dummy_tlb_add_page(struct iommu_iotlb_gather *gather,
++			       unsigned long iova, size_t granule,
++			       void *cookie)
+ {
+ 	dummy_tlb_flush(iova, granule, granule, cookie);
+ }
 -- 
 2.39.5
 
