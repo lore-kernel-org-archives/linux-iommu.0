@@ -1,115 +1,161 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CCAC340A46;
-	Wed,  4 Feb 2026 17:38:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 711C33A7834;
+	Wed,  4 Feb 2026 17:42:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770226702; cv=none; b=n3elXQspQ/o9oo4cCgHvGDtLhXEitBrcIobVdbijNxzwz+deoDNjMIlJVWyg6e0wOMroFywDrMmw5Zy/i5BNRNdPi9kEbJraaFQQoE8NiMjp1W6K5W4jwbEQhp3wy4tqP3Y9e6EcxtdsQp9jIeF21m05BBwDEamU0M/3yIhWNeM=
+	t=1770226923; cv=none; b=THcUyAUjHejffvhIg/pTJcFHeqUO39oJ1QfIs+Qx56aBkb69BhokjkhG/TvkddwSUwqPv8bEwMtEXhGM32x8lKlMFi5jN2Yz/xUswc6ODyqXTS077jtmSR5Dfew7zrJd3LiT/lCwsWlyfUMpNR/QSKt86F4IEdVVohevQtf1Zhw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770226702; c=relaxed/simple;
-	bh=szEiRqNQBmBl7xB3+WCKENyasS6skJktBrmm9AAZG38=;
+	s=arc-20240116; t=1770226923; c=relaxed/simple;
+	bh=p787FwvtGxpTW7O+BZ6Vp7w3LWjZ2nLdxL1PN/deDRo=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Yz8YrnBdgBm2Cw0n7bn1w0f3yEjEpxp0A99u2G1XLofa+xHrU3BPpMEQQCzqkJncCap3IYQIWKnPv3O7iq88p26+qXcaqMJmiXIjj866r2F8EhI1qHsRGbVbTbTKWijrVFDw9Ce4w4JG1Q28XpPYRelA1HOCRchNvCGpwBHBkvs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OK7mxYwl; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=QgKoU7/kpi8gLctsDnT5NcBgGNPPjhyDz3Io+how6t4ohpNX0jx6bVQ8BefeUyCq0aAea6U5Nfo2BRiagn0PC8G0dl3pPyAinBDtFEirhYSWD1ALV66ISPQWz22A3E37VW/Q+B0lBdms6fEN8cFhxb3aJ1AVqvjAs0g7ASb3MFg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Y5sNk7Yo; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OK7mxYwl"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13636C4CEF7;
-	Wed,  4 Feb 2026 17:38:17 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Y5sNk7Yo"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4ABA4C116C6;
+	Wed,  4 Feb 2026 17:42:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1770226701;
-	bh=szEiRqNQBmBl7xB3+WCKENyasS6skJktBrmm9AAZG38=;
+	s=k20201202; t=1770226923;
+	bh=p787FwvtGxpTW7O+BZ6Vp7w3LWjZ2nLdxL1PN/deDRo=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=OK7mxYwl5E5s94aPs5ejbwJwn+I0fRMo+pjfbWuEl14jpm/cuNrxDl6nLpp90CEg4
-	 33XUY3dbyIFmQtbo6TJYO+zr5ppcsJbkWWIxWcKxs9J0ZK8ix5Vp0/WedbhUpQsccb
-	 9DuUEZudveuh5ObbojfrsmnZP5QDZ4hsD6/cX4Jt8ODok+fwbWHVKm4S5WpFs37lPJ
-	 U3DGGW2XCWjaLiIO8Qea9A7RTF4iUsOiPD3VvKtwn49l4LYQBQauSb7f3S+vlWjvU6
-	 KmeAvb9OPMU/bHH/1GWkpkFGhlq5yEOpCaNTMirEGJOc/fl+9AqLIDRxALp03Se55B
-	 owkMaQ9Waz6Tg==
-Date: Wed, 4 Feb 2026 17:38:15 +0000
-From: Conor Dooley <conor@kernel.org>
-To: Lv Zheng <lv.zheng@linux.spacemit.com>
-Cc: Tomasz Jeznach <tjeznach@rivosinc.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Paul Walmsley <pjw@kernel.org>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>,
-	Jingyu Li <joey.li@spacemit.com>,
-	Zhijian Chen <zhijian@spacemit.com>, iommu@lists.linux.dev,
-	linux-perf-users@vger.kernel.org, linux-riscv@lists.infradead.org,
-	spacemit@lists.linux.dev, devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 8/8] perf vendor events riscv:: Add support for
- spacemit,riscv-iommu HPM aliasing
-Message-ID: <20260204-suds-shush-d85872589cb3@spud>
-References: <cover.1769562575.git.lv.zheng@spacemit.com>
- <cover.1770195980.git.lv.zheng@linux.spacemit.com>
- <5242DDF0A783AF08+e141f1898581018f8dd0723cb5c870c23ec679d6.1770195980.git.lv.zheng@linux.spacemit.com>
+	b=Y5sNk7YoVaiqLlGkRnVYCRSjbVUtYvArX7zLCO0dq9LARndPLPkwL0xKjxvhVq2pl
+	 pgr4rff3JEaU3JLLY7edp68Rr5VjQNRFRIZw6ETH1AWCgHbDlIgcwwCbRdGpZq90He
+	 UBGguXZpA1L9b22GpsmfUiUI6FVFJHrnHxBSkzjTXt8+gPdExzOi/eNdc/MOnPKf+Q
+	 Aqee+/IUEM/rzCbcV2pID1uVCuOkkwM8e3efDB9obdYx+OCQEmWJ2i50cYE/5zVVM8
+	 c8QctwcWyxr4Q1eq9txWCJRRhfIJWW7V5DaeHqHDoUVdtavrJVOMe40HRuZ2LaARJz
+	 CejQKWN5h2JEg==
+Date: Wed, 4 Feb 2026 19:41:57 +0200
+From: Leon Romanovsky <leon@kernel.org>
+To: Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>
+Cc: Sumit Semwal <sumit.semwal@linaro.org>,
+	Alex Deucher <alexander.deucher@amd.com>,
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+	Gerd Hoffmann <kraxel@redhat.com>,
+	Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+	Gurchetan Singh <gurchetansingh@chromium.org>,
+	Chia-I Wu <olvaffe@gmail.com>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	Lucas De Marchi <lucas.demarchi@intel.com>,
+	Thomas =?iso-8859-1?Q?Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>,
+	Rodrigo Vivi <rodrigo.vivi@intel.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Felix Kuehling <Felix.Kuehling@amd.com>,
+	Alex Williamson <alex@shazbot.org>,
+	Ankit Agrawal <ankita@nvidia.com>,
+	Vivek Kasireddy <vivek.kasireddy@intel.com>,
+	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org,
+	amd-gfx@lists.freedesktop.org, virtualization@lists.linux.dev,
+	intel-xe@lists.freedesktop.org, linux-rdma@vger.kernel.org,
+	iommu@lists.linux.dev, kvm@vger.kernel.org
+Subject: Re: [PATCH v7 7/8] vfio: Permit VFIO to work with pinned importers
+Message-ID: <20260204174157.GA12201@unreal>
+References: <20260131-dmabuf-revoke-v7-0-463d956bd527@nvidia.com>
+ <20260131-dmabuf-revoke-v7-7-463d956bd527@nvidia.com>
+ <fb9bf53a-7962-451a-bac2-c61eb52c7a0f@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="iqh0NaWGo05RcNxz"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <5242DDF0A783AF08+e141f1898581018f8dd0723cb5c870c23ec679d6.1770195980.git.lv.zheng@linux.spacemit.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <fb9bf53a-7962-451a-bac2-c61eb52c7a0f@amd.com>
 
+On Wed, Feb 04, 2026 at 05:21:45PM +0100, Christian König wrote:
+> On 1/31/26 06:34, Leon Romanovsky wrote:
+> > From: Leon Romanovsky <leonro@nvidia.com>
+> > 
+> > Till now VFIO has rejected pinned importers, largely to avoid being used
+> > with the RDMA pinned importer that cannot handle a move_notify() to revoke
+> > access.
+> > 
+> > Using dma_buf_attach_revocable() it can tell the difference between pinned
+> > importers that support the flow described in dma_buf_invalidate_mappings()
+> > and those that don't.
+> > 
+> > Thus permit compatible pinned importers.
+> > 
+> > This is one of two items IOMMUFD requires to remove its private interface
+> > to VFIO's dma-buf.
+> > 
+> > Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> > Reviewed-by: Alex Williamson <alex@shazbot.org>
+> > Reviewed-by: Christian König <christian.koenig@amd.com>
+> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> > ---
+> >  drivers/vfio/pci/vfio_pci_dmabuf.c | 15 +++------------
+> >  1 file changed, 3 insertions(+), 12 deletions(-)
+> > 
+> > diff --git a/drivers/vfio/pci/vfio_pci_dmabuf.c b/drivers/vfio/pci/vfio_pci_dmabuf.c
+> > index 78d47e260f34..a5fb80e068ee 100644
+> > --- a/drivers/vfio/pci/vfio_pci_dmabuf.c
+> > +++ b/drivers/vfio/pci/vfio_pci_dmabuf.c
+> > @@ -22,16 +22,6 @@ struct vfio_pci_dma_buf {
+> >  	u8 revoked : 1;
+> >  };
+> >  
+> > -static int vfio_pci_dma_buf_pin(struct dma_buf_attachment *attachment)
+> > -{
+> > -	return -EOPNOTSUPP;
+> > -}
+> > -
+> > -static void vfio_pci_dma_buf_unpin(struct dma_buf_attachment *attachment)
+> > -{
+> > -	/* Do nothing */
+> > -}
+> > -
+> 
+> This chunk here doesn't want to apply to drm-misc-next, my educated guess is that the patch adding those lines is missing in that tree.
+> 
+> How should we handle that? Patches 1-3 have already been pushed to drm-misc-next and I would rather like to push patches 4-6 through that branch as well.
 
---iqh0NaWGo05RcNxz
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+There is no need for a backmerge; it should go in through the shared
+branch. Alex has created the tag vfio-v6.19-rc8, which is v6.19-rc6 plus
+the VFIO pin patch.
 
-On Wed, Feb 04, 2026 at 05:09:52PM +0800, Lv Zheng wrote:
-> Add JSON HPM event aliases for SpacemiT distributed IOMMU (T100) which is
-> general and compatible for all SpacemiT RISC-V SoCs.
->=20
-> Signed-off-by: Lv Zheng <lv.zheng@linux.spacemit.com>
-> Signed-off-by: Jingyu Li <joey.li@spacemit.com>
-> ---
->  MAINTAINERS                                   |   3 +
->  .../arch/riscv/spacemit/iommu/sys/ioatc.json  |  30 ++++
->  .../arch/riscv/spacemit/iommu/sys/ioats.json  | 163 ++++++++++++++++++
->  3 files changed, 196 insertions(+)
->  create mode 100644 tools/perf/pmu-events/arch/riscv/spacemit/iommu/sys/i=
-oatc.json
->  create mode 100644 tools/perf/pmu-events/arch/riscv/spacemit/iommu/sys/i=
-oats.json
->=20
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 7c50701b6001..4d91f99aa742 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -22459,12 +22459,15 @@ K:	riscv
-> =20
->  RISC-V IOMMU
->  M:	Tomasz Jeznach <tjeznach@rivosinc.com>
-> +M:	Lv Zheng <lv.zheng@linux.spacemit.com>
-> +M:	Jingyu Li <joey.li@spacemit.com>
+You need to merge this tag into drm-misc-next. That will ensure that
+Linus, DRM, and VFIO all see the same SHA-1, and that patches 5–6 can be
+applied afterward.
 
-To be frank, this looks misguided, or at least premature, to me, given the
-state of the patchset.
+Thanks
 
->  L:	iommu@lists.linux.dev
->  L:	linux-riscv@lists.infradead.org
->  S:	Maintained
->  T:	git git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git
->  F:	Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
->  F:	drivers/iommu/riscv/
-> +F:	tools/perf/pmu-events/arch/riscv/spacemit/iommu/
-
---iqh0NaWGo05RcNxz
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaYOEBwAKCRB4tDGHoIJi
-0rAbAP9BQO+rmDwgyVtdWWl0COzirfBZ1h1MHPLEsDSPOC3q8AEAkAY/lFFX/2Ft
-ThczQMoz8DL7QCbK+gjE+pWs9vdsNwE=
-=n4nj
------END PGP SIGNATURE-----
-
---iqh0NaWGo05RcNxz--
+> 
+> I can request a backmerge from the drm-misc-next maintainers, but then we clearly don't get that upstream this week.
+> 
+> Regards,
+> Christian.
+> 
+> >  static int vfio_pci_dma_buf_attach(struct dma_buf *dmabuf,
+> >  				   struct dma_buf_attachment *attachment)
+> >  {
+> > @@ -43,6 +33,9 @@ static int vfio_pci_dma_buf_attach(struct dma_buf *dmabuf,
+> >  	if (priv->revoked)
+> >  		return -ENODEV;
+> >  
+> > +	if (!dma_buf_attach_revocable(attachment))
+> > +		return -EOPNOTSUPP;
+> > +
+> >  	return 0;
+> >  }
+> >  
+> > @@ -107,8 +100,6 @@ static void vfio_pci_dma_buf_release(struct dma_buf *dmabuf)
+> >  }
+> >  
+> >  static const struct dma_buf_ops vfio_pci_dmabuf_ops = {
+> > -	.pin = vfio_pci_dma_buf_pin,
+> > -	.unpin = vfio_pci_dma_buf_unpin,
+> >  	.attach = vfio_pci_dma_buf_attach,
+> >  	.map_dma_buf = vfio_pci_dma_buf_map,
+> >  	.unmap_dma_buf = vfio_pci_dma_buf_unmap,
+> > 
+> 
+> 
