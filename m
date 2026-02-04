@@ -1,348 +1,246 @@
-Received: from mail.sig21.net (mail.sig21.net [217.197.84.222])
+Received: from SEYPR02CU001.outbound.protection.outlook.com (mail-koreacentralazolkn19013074.outbound.protection.outlook.com [52.103.74.74])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F79F42189F
-	for <iommu@lists.linux.dev>; Wed,  4 Feb 2026 15:17:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.197.84.222
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770218222; cv=none; b=bfRBI6c4zrOesmiKDsxERaneHHli9XO1SRyKqvTzFaEQfH/sbOSB4Z0qxHWgWOaXhSINF3+UiQmFpCv315mxMwdj/QbsAiwNSZ13DEBOO8VNgsOeN7jSaTd9BmMwP7ge+hfotbPGTc/QGgOA5iO3Mg3ItWqQks+jj05Ht2BWvaA=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770218222; c=relaxed/simple;
-	bh=7ZJX60M6bJBie/C2r3F4ujQ9zLB64zQivIj8S6zy6WE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VkInA0zd1TLQEV541C5g6Z/YSczAhosP1DFspd+aipxKoH8p5/YxY8ToV70YcCLrYHYzEMm44Myg7QafvOtTNTgZXX+Qz73GLmcJkf/xpqozjUBdAVQAJ1G5tbOIXQa8NPprvdUzwK//nvmPz701Y1E7bDU9tzHjOgnYF3AIjr4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sig21.net; spf=pass smtp.mailfrom=sig21.net; arc=none smtp.client-ip=217.197.84.222
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sig21.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sig21.net
-Received: from localhorst ([127.0.0.1])
-	 by mail.sig21.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-	 (Exim 4.94.2)
-	(envelope-from <js@sig21.net>)
-	 id 1vnecd-0007Sm-PO ; Wed, 04 Feb 2026 16:16:51 +0100
-Received: from js by abc.local with local (Exim 4.99.1)
-	(envelope-from <js@sig21.net>)
-	id 1vnecd-000000004Ny-30aT;
-	Wed, 04 Feb 2026 16:16:51 +0100
-Date: Wed, 4 Feb 2026 16:16:51 +0100
-From: Johannes Stezenbach <js@sig21.net>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Subject: Re: AMD IOMMU issue with hibernate on Asrock X600
-Message-ID: <aYNi4yYA2_Cu359Z@sig21.net>
-References: <aXeAOtGQUdlNZF6V@sig21.net>
- <aXnXX0P-XsEFPlJd@sig21.net>
- <52148f32-2348-42d8-95e0-49b30c29da1c@amd.com>
- <aYHerYcZ-5FOguKY@sig21.net>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 453A12D8771
+	for <iommu@lists.linux.dev>; Wed,  4 Feb 2026 15:17:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.103.74.74
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1770218237; cv=fail; b=hyWZTw2oAB36UH314jzIAXgNpihNLORTXqhNa0b3yB/M0jsb0D6lLP03QfrCSePHbyLLDh4av+0fBj79Zftc6n5+96vAvR4G1KeEymw9YavCrQdNGRcETv+uOoIIW1ZukEtVnuWJ6X6nfh0mJGHql7ZHBeb3uMPuFYbWh+dmrbk=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1770218237; c=relaxed/simple;
+	bh=JobukY723ouN/zKSnH/2wz3SIseTLCTQRlgFOKyrnnM=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=c7+oEDvREE456ADVLYfA49UTA2soiv6kjwODQuvdZlEVolXdPymgaIE/aVmOJkiUNTh+osuvbj5SFFBQ2PFP4vIKO/Z2hg8qvIpn4vO1pGU2o1j2VrLlWl2IuAcr6xhEoQeoAOqqEffQ6Q2a6uBi5e19tsvJqTWXGOX/W1DsNg4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hotmail.com; spf=pass smtp.mailfrom=hotmail.com; dkim=pass (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b=YayZP95S; arc=fail smtp.client-ip=52.103.74.74
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hotmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b="YayZP95S"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=ZHFGEUihPpnu/OiO93qbAOQm50YO7eAGx4mUF1rSUp601pBb11B1KCdqwsIItlFTdAYFOyXRTRodxwqCcDlns0pUxUddzJ5Q7OuLQN+ko6xaf3vP7xfE0Y2JRQRka+SakfNOB9/qRK97Nc37dZi9HIIZ1gi7drtBozcFTIhskeFuvs2v2X5xSym1X/MjAE+1oqgKPSc5W+7zAZSh9S8tysd3Wp6hE+2zG43UM7uV8l0s+kaz5dHLYJiiD43d2Lfxh3PPZxghvgFLJWIWplogAb+9ivprkuBMwmoVVZSe5t+s8EqksHnE6Ql21f709+W0XyN3WN/H1QBUVMZAtsp/Dw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=MdFRxRIBxBJhTuC5usbw+uIa6paWWPZTfKVoGxe+ujE=;
+ b=DYnJGaDKkw0XCXr++yY3MnmqmVslvbakTDyoVHLHqhKXd9859B1p+jho7ACzN5rYbBiMB2CDgxWk8vGriLVr2DY8RDmmdgAyKkpPRduOCeP9cMTBaba2u1zRZFUVAl8HRFbMxM+iW8pkw8QOSgAfVGDiBL+Zp/5u2N7LuAe8pDHaQlld9PqBGVhELlTCkfYPcKUa+s10Oy5IQXj7mWc0HmDSRljYoKtXvyCm69R6q4P3Jw+rsY6xTzn9U7vEF6VsoRJRncjJ3FNPBqxG0A9VC/KzUyMr+B4Lqly/tut5E3x/c83g4VXK4SYNl5wQ89EdJytH+qRdqdpWgRWncLfnEQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hotmail.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=MdFRxRIBxBJhTuC5usbw+uIa6paWWPZTfKVoGxe+ujE=;
+ b=YayZP95SzEnCOh1lyPeRBvEvwes13ncs8WwHd1msYw3pdgqH9FhBbZu31hIdGrf3jNw5lX3uz36b2uRaLpgEJgLuSOH63dgO6FBzhDmxwuwq+ChFICE4SA/ioZpZzYQcTBcV4ILZkIanhRmskttknjFCaKUcwthATIoJhmrfsAg2yx6bwEZZssV4gkzSh7GGtkNY64F/cnT5D99MDjfJos8MAVoFsrtbJoAjOwugV8ygfIVKuYC/v9NWU9Mu7mi4Uo3HeejcIMjQ0ieXlAee+SVe8e1Oqw03by38yFt72AlGudLW6QSAWylbClrB8qVsdeB6GpOrhJGdNKeLH54V3g==
+Received: from SI2PR01MB4393.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:1b0::7) by TYZPR01MB5352.apcprd01.prod.exchangelabs.com
+ (2603:1096:400:33a::6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9564.16; Wed, 4 Feb
+ 2026 15:17:12 +0000
+Received: from SI2PR01MB4393.apcprd01.prod.exchangelabs.com
+ ([fe80::c735:fab8:6e3d:6d1c]) by SI2PR01MB4393.apcprd01.prod.exchangelabs.com
+ ([fe80::c735:fab8:6e3d:6d1c%4]) with mapi id 15.20.9564.016; Wed, 4 Feb 2026
+ 15:17:12 +0000
+Message-ID:
+ <SI2PR01MB43930D9F3195452DD6BC4C69DC98A@SI2PR01MB4393.apcprd01.prod.exchangelabs.com>
+Date: Wed, 4 Feb 2026 23:16:23 +0800
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 2/2] vfio/type1: Set IOMMU_MMIO in dma->prot for
+ MMIO-backed addresses
+To: jgg@nvidia.com, kevin.tian@intel.com, alex@shazbot.org, joro@8bytes.org,
+ thomas.lendacky@amd.com, vasant.hegde@amd.com,
+ suravee.suthikulpanit@amd.com, aik@amd.com
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <SI2PR01MB4393C9B731ABDA050A336166DC88A@SI2PR01MB4393.apcprd01.prod.exchangelabs.com>
+ <SI2PR01MB4393E7518DD5EB5839AD136DDC88A@SI2PR01MB4393.apcprd01.prod.exchangelabs.com>
+Content-Language: en-US
+From: Wei Wang <wei.w.wang@hotmail.com>
+In-Reply-To: <SI2PR01MB4393E7518DD5EB5839AD136DDC88A@SI2PR01MB4393.apcprd01.prod.exchangelabs.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: TY4P286CA0135.JPNP286.PROD.OUTLOOK.COM
+ (2603:1096:405:37f::18) To SI2PR01MB4393.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:1b0::7)
+X-Microsoft-Original-Message-ID:
+ <2f6c5bb8-015e-449b-89cc-70993a2a54ac@hotmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="GTulLJWUtxNbtxgt"
-Content-Disposition: inline
-In-Reply-To: <aYHerYcZ-5FOguKY@sig21.net>
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SI2PR01MB4393:EE_|TYZPR01MB5352:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1b3e2ccb-7b73-464c-61d5-08de6400789b
+X-MS-Exchange-SLBlob-MailProps:
+	suo+AMQROd7KWLzCSB/8AXewUiiF+4xJTEp92lagfCazz65i3PwK9c8AiEetquOINXguw3f54+peS9lxTHzg1Lu4ePbBtfBWwUAp/qAl1Pw+Kmf0dbfaLlcNo7lptsEDSkP5dGBKOoV9hLWR62cy5X9kBn5cTwBQrB8cQcn9XmydCnsMuPz6CXRWeLZyuPKHdzxQVmZnkJPIWS0gexZxQ4Wd/JBxZPBf478d3Km3abLUbINgaX1EQJ1bxK2JWEWWJamqeKxuPGfaHKbu45Kbx3I1vWtndmYzHg+Bu3lhX4dyTR1pLA6JODySnhUrl6P57RBI0BtyqqhyszD4Y8JZencuCYw4JMDia7nV5KHTwfnbkANnW8o9hJvYYGSqb85o9cb3HW7U6SNNXEa8JFrevw9TKGxSZ+VBt/0uTQtVsYN9xZZGzmCUTXG96EV6KbTuM0dtjrSeBzR0HxinZe14lwsb+sED4gPw9iE2WR1BsR62qIxPCBCetYJsMw4gUX5kBpY0uULLgxYQ/KP+nS3JyQk/vWKfufkmSsjVlECYQrFp8cholWIweGVfzrEO1tcL+faaKPC9E/0VgMX6P3YFmtBjNRuS++9/1/hBNroOINgEGxa456Ay8GWi78eV2LJoOHlWjjT2SbHHUhkMl7Y4GovT6EQARK0ZCDPtvacm/oaUb7wqBdLVMnA22c9XXaGHfjg4SQC6HmfJLTE6JtUp23KtFzhBr1zmR/TfQW2zMm3sQNuKoxudb6cfCg+hO+X8C2cuY5f1xtJL5m5YGiUcfKYIUiKLJ2la6iQbxnSnHn6ZialdDyJQIixfTqnmzzhITH0HFLpXmx2Lqk7ddJU+OQ==
+X-Microsoft-Antispam:
+	BCL:0;ARA:14566002|19110799012|51005399006|37102599003|8060799015|6090799003|23021999003|41001999006|5072599009|15080799012|461199028|1602099012|13041999003|440099028|4302099013|3412199025|10035399007|40105399003;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?NmZENVZtR2RYM1EvUVBPa2RPa2FOQ1Q2WVY0Yko2SmUwUXVBWGg1alduWVhF?=
+ =?utf-8?B?V3JPRENsZ1lQcytKeTl1MDdVaXB4UThzUE9Vbktla05oZmIzUjliTGdKNWdY?=
+ =?utf-8?B?MUZFT25IQzBRb3QyVUt4U2pRRTVGZE4vZjBmVTRCODdZa2owM3VlZW5hZzd0?=
+ =?utf-8?B?azlIY0RvK3UxNXhYN1hsZUtsYVE5VEV2dnQ5SGZERHdVZm5pci8zWlczOUhU?=
+ =?utf-8?B?c2dsUzVma1Q3SkJDRm4vZ2FoUE53cnh2S25aUEwvOEtOd1R5N0FjSHA5K3p5?=
+ =?utf-8?B?UGxveDVEUittUzF4ZTVVcWlsbTUxZDBFaVJIcEJ2N1NPOUpWbVAybk9vRUh1?=
+ =?utf-8?B?WjVQamsveU9iS1FacUovVndDVUxVV2tiL0VqVmdmb2dIVXJYR2J0Wm9KRURn?=
+ =?utf-8?B?cHZ2YXpNSHhLTUlBam5mbzkwSUhiNUpJQzV5bXg1R0ZEMnZ5RXFpK3JrMHR2?=
+ =?utf-8?B?WHpidldBYmFGQ0F2UlJ1anZqN3ZvNm9aYlV0YldWbmpMdUcrakJCYSt5UDV0?=
+ =?utf-8?B?aitQNzc4T3pNbmpFQzNSSTVDSVN5U3JxZGNYSkIxU3ArbFBjanIxQWdxME5a?=
+ =?utf-8?B?QXNUaEkxQzlKYitJUW5SNm5leE1CV3NkTGdKSDNSQnNwa3pOcUNNTjgzaDBD?=
+ =?utf-8?B?Y1RVQ1ZQeW95eFB4dkc5bEg1L2ZzODBYdXhqakVoVFFTZG5hQXBBaThHM0JN?=
+ =?utf-8?B?VzF5T3M0bjU0M2grUlNZVlBTbkVzWnRmK0pFUFlBTHZud2tDeU5FTFFVaVFj?=
+ =?utf-8?B?M2Q4ZzlYR3BpZUxOeHRoZUF3Ni9FTzByZUNzYjJHQThoWDFLSjZDRldYUXo4?=
+ =?utf-8?B?b2x1NHV6VXR3Yy8xS2x4WnIvd1ErQVdkYXJVY3NiUUc4V0VvTG5GTlFOaWEr?=
+ =?utf-8?B?WDViNkM1REF0Q0lLYkVDVTJML0J5SnR6cEJSTWZ2Z05oY3kzWW5WTjBMZnZ2?=
+ =?utf-8?B?OFUyQVVTZVlvSFpBbzZrelJhM2hQYnlMSGhCd1h0NytYREVBT2E3ck1JS2Fq?=
+ =?utf-8?B?L3ZlMjFFbWlFRnoxQ2h4NWVGeHhmS1Y5bWJrMHFRajVpb21IeUw2TDBRZjlG?=
+ =?utf-8?B?YmlDNnlHanJnYkZ5L2pKQXltcHJlVlFpeGNhejBCR2FBVm5MZjUwSVJ5TzdD?=
+ =?utf-8?B?MEppL2lrbmJqZ29NUWpBQVZQVkZkZHlydEhXQk9tZE9pZWVuZjBUeExQb1lr?=
+ =?utf-8?B?dXoydzNRZ1JHZTRBNWtFbjRTR1JmaE4xMFhLakdvaVo5QlM2VHVJeHk0MnhY?=
+ =?utf-8?B?bk1Pa2x1NEtnd3dydER6enVUdXZHaERpZDBEamZyRHZjaThpclE0dzkwOEcz?=
+ =?utf-8?B?YWFJTXljVCtocTZ5T1FlbW1pNnhmc08wbGc4Z05wVEkzakYyTGU2ZFArQjBO?=
+ =?utf-8?B?VEQxaklMZERUVWNsc2ROeHl3ZjFhdEwxSE1DWmo4R1pka1hFUTJQUldKYlBs?=
+ =?utf-8?B?OFRGTTh3QmNKbHMwQVl6THRBcWVlb29FSkU3T0M5ZWVFbkxjdXFMSHVCYmN3?=
+ =?utf-8?B?bG1CNG1CdHBHRGxmYlZNbGJSNG1ubU1HV1lYRmFrYXdhM05TTTdpWlcyZHln?=
+ =?utf-8?B?dkdVem5tNUh0TXlEZkQ3Zm9OVStmUGhPaU1IQkJyQUY4NHBJbUtRYS9veVVP?=
+ =?utf-8?B?QTdTemsrTGhZc29jUldZMS91VjgzWW9SSjZTUXVXM01IWEw1LzRRSmdnWEFl?=
+ =?utf-8?B?YkVLbXJQV2pvTExRTGlZdm42eHFTQnJCbkdhMHNhbzJRSkE5d3Y0WjRqTnBh?=
+ =?utf-8?B?ak9DWWZLV2JWWGR2dXpQcndYSFcrbHV0T0JPMGMvaWRwTTUyZDVMOXQydmVt?=
+ =?utf-8?B?QmpZYTQyMDE1TVF0dm5Sc1VHdVZ6UmtRZkJ5TitrRERYOHhHelByWHBIMFNZ?=
+ =?utf-8?B?Tm52TTJPUGYxck4zUmp1WnloYjNzZWF6ZVVBVWNZeTVwaWR6UElZeTBRZlpu?=
+ =?utf-8?Q?jLcLunrRKwW22UxaZf2JSmg34/+ddENr?=
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?MHdPME5XZU9qRE9vVW9Pd0QyY0pTMUNaOGhWMHVkL05RbThwUnF4RS85aURJ?=
+ =?utf-8?B?cWRzTjZ6UUJueDBZNDFqU0QrMnFRN0Fkb1gxb05Rc0JUZWt0RitIYjc5Ynpp?=
+ =?utf-8?B?ZlN1eGdjdE9QdkZndFhnZmowaTR0UjIzR0NIZlR1TTBLUVpQWnlaWGtmYjFC?=
+ =?utf-8?B?emVhTWJCUzYzRjZqOEw4SmM1cWg5NWtGbExzWEJyTHIvTGZzL2wrY2lmSzFX?=
+ =?utf-8?B?WUpEMGE0SEx1REYrTkFKdEFVQ1NEWFFpN3Y0TWdyamhyNkEwMVdrTlo4NE41?=
+ =?utf-8?B?d0wxNVdObGZ2T2ZPK3NhNGMwczFLb3lqZ2ozTW94NWk2TGxNQmFPcVVkbUdV?=
+ =?utf-8?B?RWE3SVdVelI5ZmJHcDhyR2V4S0VUQ1RnWkhRWnd5TXh0LzYzNHhnQzgzTlRn?=
+ =?utf-8?B?cW5WM0tXck11VSsydEFRZHMvSmtnM3k2RU9FVEN3V21USTNUc3ZlYlZwemI3?=
+ =?utf-8?B?NHVJN0VBbXc5WEs3blZrLzRsVE9nVW1oRmpGWmZ2SkdRTzV0QUViZlYxNFZq?=
+ =?utf-8?B?bVlIalpmVEJ2ME9LRWp3alRGR3V4dlQxNmhhZ2JBcXZFVU5KcFpMK0VUWmxU?=
+ =?utf-8?B?eDk4RUlzUVBrSGd5ek9HZ25PWFlqa3RWeUFPVGp5dDgxem8yem9UU3BERkVG?=
+ =?utf-8?B?ai9oRFJJM3NIbEw2dW15clVNSDdQRlJMTUJtVmtBQjV2TllBMmgyOVpCMDhh?=
+ =?utf-8?B?SFYxUjd0eWdld0ZOYnY3enQzZGVNOWJ4WlQ2NTlDbVNGbWJ5MlVDVDVJVkt1?=
+ =?utf-8?B?UDc3L3RTL29mZ1ozd0dtZFhISHBGK2dDRVhlYk9TSElGQ0swbkgxTHVNdGlB?=
+ =?utf-8?B?RWkyVUpiT2NLYnpSM2ZqS2lTbU9kRkdoeDZzM1hrZ1E0eHVXYXYzUXZ2ZmxW?=
+ =?utf-8?B?S08rcGxuTFpaS1Z6TEV3cVVHMkFGOWlGNitFZHpWdVYrWjljVlVDRi9EZ1M0?=
+ =?utf-8?B?eXRwVjlocGlJUGlOZ0x5SWZYbS9yLzE4MU9BWUZVa041MmdPTENkQk5KZEM2?=
+ =?utf-8?B?cVEvYVFMTEpDZmJ0dUlmOHN0QXB5RnBRNFk3aFE2QzdvN1JJSzBUOEw4NU54?=
+ =?utf-8?B?amwwZlVpdHhSZmdjQ1oxeTloY3h1TTZLdjlFcmxlaGJyVHF3aHJUbG1mNjMx?=
+ =?utf-8?B?cWFkcHR4K3RCV3JoYWxEQW9lNkJEdTBaOEVvTWsvZjVGVTBPZkljaEZXOThJ?=
+ =?utf-8?B?Z2JqZ1Q2WWlvRzRKQ2lpSmFhcFFCNmF3b0RUcGpDWU5MRkYyNTNCYWk5NTRT?=
+ =?utf-8?B?QTNrK1IxL2JsNmVndnRBNFVHVGRJYXkyNXZiY25TbiszWmg3QktSOGl6M1FO?=
+ =?utf-8?B?ZStna0FFUU0rc202d0YyLzI0T1NXSUhGeUs4ZGE2T043UmNtRFhXbzZwYkRs?=
+ =?utf-8?B?TGw1alpYR2dYTzR5anFlQWEvdFkzc3ZGU0V1dU1NcDBiTUNabmhrMFVydEUr?=
+ =?utf-8?B?VkpYKzFIUmxqMDkrUHJHWlg2a3lFWkI2T1JvSFdNb1h1Vzc2VDdwSjVjazlk?=
+ =?utf-8?B?NXEyQ0dYM0tHSVVTQVF2NmwrM0U1dTJYYWJjQzdKNCs0ZUFDS2c3QjZEaE9l?=
+ =?utf-8?B?WklkeE96K09DK1kzZmROSGpjSnRaZDVVY0lRUkltYis5UGtCSEpTYVV5ODRq?=
+ =?utf-8?B?akVqZlQ3UGw5UnBKSHlCMHZHUUtZMkVkQUxSVHp1YkZVSzNoYktxT2RhL001?=
+ =?utf-8?B?eXNWOFFBRWM0cjlLVzFxSzYvUEkvV2k1MXEvZzFGZElCYmd0SGNJVnZnRUdM?=
+ =?utf-8?B?d2RZeHA1dEJrQlV0SE15RVo5TG5GVFZwbWlacVR2YWxmWXFYUzYzaTN1OUdB?=
+ =?utf-8?B?OVBkbFZnQkIyUjJhWGxLaUE4eVJJRURVMmEwOXgydEpLbjZzK0pMQkZMT0tZ?=
+ =?utf-8?Q?xeuutxgHsHU3C?=
+X-OriginatorOrg: sct-15-20-9412-4-msonline-outlook-5f51e.templateTenant
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1b3e2ccb-7b73-464c-61d5-08de6400789b
+X-MS-Exchange-CrossTenant-AuthSource: SI2PR01MB4393.apcprd01.prod.exchangelabs.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Feb 2026 15:17:12.7542
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
+	00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYZPR01MB5352
 
-
---GTulLJWUtxNbtxgt
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-On Tue, Feb 03, 2026 at 12:40:30PM +0100, Johannes Stezenbach wrote:
-> On Tue, Feb 03, 2026 at 11:08:49AM +0530, Vasant Hegde wrote:
-> > Can you try below patch?
+On 1/26/26 3:19 AM, Wei Wang wrote:
+> Before requesting the IOMMU driver to map an IOVA to a physical address,
+> set the IOMMU_MMIO flag in dma->prot when the physical address corresponds
+> to MMIO. This allows the IOMMU driver to handle MMIO mappings specially.
+> For example, on AMD CPUs with SME enabled, the IOMMU driver avoids setting
+> the C-bit if iommu_map() is called with IOMMU_MMIO set in prot. This
+> prevents issues with PCIe P2P communication when IOVA is used.
 > 
-> Sadly it doesn't work, same error on hibernate.
+> Signed-off-by: Wei Wang <wei.w.wang@hotmail.com>
+> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> ---
+>   drivers/vfio/vfio_iommu_type1.c | 15 ++++++++++-----
+>   1 file changed, 10 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+> index 5167bec14e36..9fbd2ba519ca 100644
+> --- a/drivers/vfio/vfio_iommu_type1.c
+> +++ b/drivers/vfio/vfio_iommu_type1.c
+> @@ -583,7 +583,7 @@ static int follow_fault_pfn(struct vm_area_struct *vma, struct mm_struct *mm,
+>    * returned initial pfn are provided; subsequent pfns are contiguous.
+>    */
+>   static long vaddr_get_pfns(struct mm_struct *mm, unsigned long vaddr,
+> -			   unsigned long npages, int prot, unsigned long *pfn,
+> +			   unsigned long npages, int *prot, unsigned long *pfn,
+>   			   struct vfio_batch *batch)
+>   {
+>   	unsigned long pin_pages = min_t(unsigned long, npages, batch->capacity);
+> @@ -591,7 +591,7 @@ static long vaddr_get_pfns(struct mm_struct *mm, unsigned long vaddr,
+>   	unsigned int flags = 0;
+>   	long ret;
+>   
+> -	if (prot & IOMMU_WRITE)
+> +	if (*prot & IOMMU_WRITE)
+>   		flags |= FOLL_WRITE;
+>   
+>   	mmap_read_lock(mm);
+> @@ -615,7 +615,7 @@ static long vaddr_get_pfns(struct mm_struct *mm, unsigned long vaddr,
+>   		unsigned long addr_mask;
+>   
+>   		ret = follow_fault_pfn(vma, mm, vaddr, pfn, &addr_mask,
+> -				       prot & IOMMU_WRITE);
+> +				       *prot & IOMMU_WRITE);
+>   		if (ret == -EAGAIN)
+>   			goto retry;
+>   
+> @@ -623,6 +623,9 @@ static long vaddr_get_pfns(struct mm_struct *mm, unsigned long vaddr,
+>   			if (is_invalid_reserved_pfn(*pfn)) {
+>   				unsigned long epfn;
+>   
+> +				if (vma->vm_flags & VM_IO)
+> +					*prot |= IOMMU_MMIO;
+> +
+>   				epfn = (*pfn | (~addr_mask >> PAGE_SHIFT)) + 1;
+>   				ret = min_t(long, npages, epfn - *pfn);
+>   			} else {
+> @@ -709,7 +712,7 @@ static long vfio_pin_pages_remote(struct vfio_dma *dma, unsigned long vaddr,
+>   			cond_resched();
+>   
+>   			/* Empty batch, so refill it. */
+> -			ret = vaddr_get_pfns(mm, vaddr, npage, dma->prot,
+> +			ret = vaddr_get_pfns(mm, vaddr, npage, &dma->prot,
+>   					     &pfn, batch);
+>   			if (ret < 0)
+>   				goto unpin_out;
+> @@ -792,6 +795,8 @@ static long vfio_pin_pages_remote(struct vfio_dma *dma, unsigned long vaddr,
+>   
+>   out:
+>   	dma->has_rsvd |= rsvd;
+> +	if (!rsvd)
+> +		dma->prot &= ~IOMMU_MMIO;
+>   	ret = vfio_lock_acct(dma, lock_acct, false);
+>   
+>   unpin_out:
+> @@ -850,7 +855,7 @@ static int vfio_pin_page_external(struct vfio_dma *dma, unsigned long vaddr,
+>   
+>   	vfio_batch_init_single(&batch);
+>   
+> -	ret = vaddr_get_pfns(mm, vaddr, 1, dma->prot, pfn_base, &batch);
+> +	ret = vaddr_get_pfns(mm, vaddr, 1, &dma->prot, pfn_base, &batch);
+>   	if (ret != 1)
+>   		goto out;
+>   
 
-In case it helps, I booted with amd_iommu_dump=1 and got this:
+Hi Alexey,
 
-[    0.108593] [    T0] AMD-Vi: Using IVHD type 0x11
-[    0.108594] [    T0] AMD-Vi: device: 0000:00:00.2 cap: 0040 flags: 30 info 0000
-[    0.108596] [    T0] AMD-Vi:        mmio-addr: 00000000f7500000
-[    0.108600] [    T0] AMD-Vi: PCI segment : 0x0, last bdf : 0xffff
-[    0.108623] [    T0] AMD-Vi:   DEV_SELECT_RANGE_START        devid: 0000:00:00.3 flags: 0x0
-[    0.108625] [    T0] AMD-Vi:   DEV_RANGE_END         devid: 0000:ff:1f.6
-[    0.108706] [    T0] AMD-Vi:   DEV_ALIAS_RANGE               devid: 0000:ff:00.0 flags: 0x0 devid_to: 0000:00:14.5
-[    0.108708] [    T0] AMD-Vi:   DEV_RANGE_END         devid: 0000:ff:1f.7
-[    0.108710] [    T0] AMD-Vi:   DEV_SPECIAL(HPET[0])          devid: 0000:00:14.0, flags: 0x0
-[    0.108712] [    T0] AMD-Vi:   DEV_SPECIAL(IOAPIC[32])               devid: 0000:00:14.0, flags: 0xd7
-[    0.108715] [    T0] AMD-Vi:   DEV_SPECIAL(IOAPIC[33])               devid: 0000:00:00.1, flags: 0x0
-[    0.108717] [    T0] AMD-Vi: Using global IVHD EFR:0x246577efa2254afa, EFR2:0x0
-...
-[    2.617032] [    T1] AMD-Vi: Extended features (0x246577efa2254afa, 0x0): PPR NX GT [5] IA GA PC GA_vAPIC
-[    2.617045] [    T1] AMD-Vi: Interrupt remapping enabled
-[    2.640571] [    T1] AMD-Vi: Virtual APIC enabled
+Just checking in — do you have any further comments on this patch?
 
-I'm also attaching the ACPI IVRS table.
-
-Side note: I wanted to check AMD documents at https://docs.amd.com/
-but the "Create Account" button doesn't work. :-(
-(And why do they require an account anyway, Intel and ARM don't...)
-
-
-Best Regards,
-Johannes
-
---GTulLJWUtxNbtxgt
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: attachment; filename="ivrs.dsl"
-
-/*
- * Intel ACPI Component Architecture
- * AML/ASL+ Disassembler version 20251212 (64-bit version)
- * Copyright (c) 2000 - 2025 Intel Corporation
- * 
- * Disassembly of ivrs.dat
- *
- * ACPI Data Table [IVRS]
- *
- * Format: [HexOffset DecimalOffset ByteLength]  FieldName : FieldValue (in hex)
- */
-
-[000h 0000 004h]                   Signature : "IVRS"    [I/O Virtualization Reporting Structure]
-[004h 0004 004h]                Table Length : 000000C8
-[008h 0008 001h]                    Revision : 02
-[009h 0009 001h]                    Checksum : 6D
-[00Ah 0010 006h]                      Oem ID : "AMD  "
-[010h 0016 008h]                Oem Table ID : "AmdTable"
-[018h 0024 004h]                Oem Revision : 00000001
-[01Ch 0028 004h]             Asl Compiler ID : "AMD "
-[020h 0032 004h]       Asl Compiler Revision : 00000001
-
-[024h 0036 004h]         Virtualization Info : 00203041
-[028h 0040 008h]                    Reserved : 0000000000000000
-
-[030h 0048 001h]               Subtable Type : 10 [Hardware Definition Block (IVHD)]
-[031h 0049 001h]       Flags (decoded below) : B0
-                                     HtTunEn : 0
-                                      PassPW : 0
-                                   ResPassPW : 0
-                                Isoc Control : 0
-                               Iotlb Support : 1
-                                    Coherent : 1
-                            Prefetch Support : 0
-                                 PPR Support : 1
-[032h 0050 002h]                      Length : 0044
-[034h 0052 002h]                    DeviceId : 0002
-[036h 0054 002h]           Capability Offset : 0040
-[038h 0056 008h]                Base Address : 00000000F7500000
-[040h 0064 002h]           PCI Segment Group : 0000
-[042h 0066 002h]         Virtualization Info : 0000
-[044h 0068 004h]           Feature Reporting : 80048F6E
-
-[048h 0072 001h]               Subtable Type : 03 [Device Entry: Start of Range]
-[049h 0073 002h]                   Device ID : 0003
-[04Bh 0075 001h] Data Setting (decoded below) : 00
-                                    INITPass : 0
-                                    EIntPass : 0
-                                     NMIPass : 0
-                                    Reserved : 0
-                                 System MGMT : 0
-                                  LINT0 Pass : 0
-                                  LINT1 Pass : 0
-
-[04Ch 0076 001h]               Subtable Type : 04 [Device Entry: End of Range]
-[04Dh 0077 002h]                   Device ID : FFFE
-[04Fh 0079 001h] Data Setting (decoded below) : 00
-                                    INITPass : 0
-                                    EIntPass : 0
-                                     NMIPass : 0
-                                    Reserved : 0
-                                 System MGMT : 0
-                                  LINT0 Pass : 0
-                                  LINT1 Pass : 0
-
-[050h 0080 001h]               Subtable Type : 43 [Device Entry: Alias Start of Range]
-[051h 0081 002h]                   Device ID : FF00
-[053h 0083 001h] Data Setting (decoded below) : 00
-                                    INITPass : 0
-                                    EIntPass : 0
-                                     NMIPass : 0
-                                    Reserved : 0
-                                 System MGMT : 0
-                                  LINT0 Pass : 0
-                                  LINT1 Pass : 0
-[054h 0084 001h]                    Reserved : 00
-[055h 0085 002h]       Source Used Device ID : 00A5
-[057h 0087 001h]                    Reserved : 00
-
-[058h 0088 001h]               Subtable Type : 04 [Device Entry: End of Range]
-[059h 0089 002h]                   Device ID : FFFF
-[05Bh 0091 001h] Data Setting (decoded below) : 00
-                                    INITPass : 0
-                                    EIntPass : 0
-                                     NMIPass : 0
-                                    Reserved : 0
-                                 System MGMT : 0
-                                  LINT0 Pass : 0
-                                  LINT1 Pass : 0
-
-[05Ch 0092 001h]               Subtable Type : 48 [Device Entry: Special Device]
-[05Dh 0093 002h]                   Device ID : 0000
-[05Fh 0095 001h] Data Setting (decoded below) : 00
-                                    INITPass : 0
-                                    EIntPass : 0
-                                     NMIPass : 0
-                                    Reserved : 0
-                                 System MGMT : 0
-                                  LINT0 Pass : 0
-                                  LINT1 Pass : 0
-[060h 0096 001h]                      Handle : 00
-[061h 0097 002h]       Source Used Device ID : 00A0
-[063h 0099 001h]                     Variety : 02
-
-[064h 0100 001h]               Subtable Type : 48 [Device Entry: Special Device]
-[065h 0101 002h]                   Device ID : 0000
-[067h 0103 001h] Data Setting (decoded below) : D7
-                                    INITPass : 1
-                                    EIntPass : 1
-                                     NMIPass : 1
-                                    Reserved : 0
-                                 System MGMT : 1
-                                  LINT0 Pass : 1
-                                  LINT1 Pass : 1
-[068h 0104 001h]                      Handle : 20
-[069h 0105 002h]       Source Used Device ID : 00A0
-[06Bh 0107 001h]                     Variety : 01
-
-[06Ch 0108 001h]               Subtable Type : 48 [Device Entry: Special Device]
-[06Dh 0109 002h]                   Device ID : 0000
-[06Fh 0111 001h] Data Setting (decoded below) : 00
-                                    INITPass : 0
-                                    EIntPass : 0
-                                     NMIPass : 0
-                                    Reserved : 0
-                                 System MGMT : 0
-                                  LINT0 Pass : 0
-                                  LINT1 Pass : 0
-[070h 0112 001h]                      Handle : 21
-[071h 0113 002h]       Source Used Device ID : 0001
-[073h 0115 001h]                     Variety : 01
-
-[074h 0116 001h]               Subtable Type : 11 [Hardware Definition Block (IVHD)]
-[075h 0117 001h]       Flags (decoded below) : 30
-                                     HtTunEn : 0
-                                      PassPW : 0
-                                   ResPassPW : 0
-                                Isoc Control : 0
-                               Iotlb Support : 1
-                                    Coherent : 1
-                            Prefetch Support : 0
-                                 PPR Support : 0
-[076h 0118 002h]                      Length : 0054
-[078h 0120 002h]                    DeviceId : 0002
-[07Ah 0122 002h]           Capability Offset : 0040
-[07Ch 0124 008h]                Base Address : 00000000F7500000
-[084h 0132 002h]           PCI Segment Group : 0000
-[086h 0134 002h]         Virtualization Info : 0000
-[088h 0136 004h]                  Attributes : 00048000
-[08Ch 0140 008h]                   EFR Image : 246577EFA2254AFA
-[094h 0148 008h]                    Reserved : 0000000000000000
-
-[09Ch 0156 001h]               Subtable Type : 03 [Device Entry: Start of Range]
-[09Dh 0157 002h]                   Device ID : 0003
-[09Fh 0159 001h] Data Setting (decoded below) : 00
-                                    INITPass : 0
-                                    EIntPass : 0
-                                     NMIPass : 0
-                                    Reserved : 0
-                                 System MGMT : 0
-                                  LINT0 Pass : 0
-                                  LINT1 Pass : 0
-
-[0A0h 0160 001h]               Subtable Type : 04 [Device Entry: End of Range]
-[0A1h 0161 002h]                   Device ID : FFFE
-[0A3h 0163 001h] Data Setting (decoded below) : 00
-                                    INITPass : 0
-                                    EIntPass : 0
-                                     NMIPass : 0
-                                    Reserved : 0
-                                 System MGMT : 0
-                                  LINT0 Pass : 0
-                                  LINT1 Pass : 0
-
-[0A4h 0164 001h]               Subtable Type : 43 [Device Entry: Alias Start of Range]
-[0A5h 0165 002h]                   Device ID : FF00
-[0A7h 0167 001h] Data Setting (decoded below) : 00
-                                    INITPass : 0
-                                    EIntPass : 0
-                                     NMIPass : 0
-                                    Reserved : 0
-                                 System MGMT : 0
-                                  LINT0 Pass : 0
-                                  LINT1 Pass : 0
-[0A8h 0168 001h]                    Reserved : 00
-[0A9h 0169 002h]       Source Used Device ID : 00A5
-[0ABh 0171 001h]                    Reserved : 00
-
-[0ACh 0172 001h]               Subtable Type : 04 [Device Entry: End of Range]
-[0ADh 0173 002h]                   Device ID : FFFF
-[0AFh 0175 001h] Data Setting (decoded below) : 00
-                                    INITPass : 0
-                                    EIntPass : 0
-                                     NMIPass : 0
-                                    Reserved : 0
-                                 System MGMT : 0
-                                  LINT0 Pass : 0
-                                  LINT1 Pass : 0
-
-[0B0h 0176 001h]               Subtable Type : 48 [Device Entry: Special Device]
-[0B1h 0177 002h]                   Device ID : 0000
-[0B3h 0179 001h] Data Setting (decoded below) : 00
-                                    INITPass : 0
-                                    EIntPass : 0
-                                     NMIPass : 0
-                                    Reserved : 0
-                                 System MGMT : 0
-                                  LINT0 Pass : 0
-                                  LINT1 Pass : 0
-[0B4h 0180 001h]                      Handle : 00
-[0B5h 0181 002h]       Source Used Device ID : 00A0
-[0B7h 0183 001h]                     Variety : 02
-
-[0B8h 0184 001h]               Subtable Type : 48 [Device Entry: Special Device]
-[0B9h 0185 002h]                   Device ID : 0000
-[0BBh 0187 001h] Data Setting (decoded below) : D7
-                                    INITPass : 1
-                                    EIntPass : 1
-                                     NMIPass : 1
-                                    Reserved : 0
-                                 System MGMT : 1
-                                  LINT0 Pass : 1
-                                  LINT1 Pass : 1
-[0BCh 0188 001h]                      Handle : 20
-[0BDh 0189 002h]       Source Used Device ID : 00A0
-[0BFh 0191 001h]                     Variety : 01
-
-[0C0h 0192 001h]               Subtable Type : 48 [Device Entry: Special Device]
-[0C1h 0193 002h]                   Device ID : 0000
-[0C3h 0195 001h] Data Setting (decoded below) : 00
-                                    INITPass : 0
-                                    EIntPass : 0
-                                     NMIPass : 0
-                                    Reserved : 0
-                                 System MGMT : 0
-                                  LINT0 Pass : 0
-                                  LINT1 Pass : 0
-[0C4h 0196 001h]                      Handle : 21
-[0C5h 0197 002h]       Source Used Device ID : 0001
-[0C7h 0199 001h]                     Variety : 01
-
-Raw Table Data: Length 200 (0xC8)
-
-    0000: 49 56 52 53 C8 00 00 00 02 6D 41 4D 44 20 20 00  // IVRS.....mAMD  .
-    0010: 41 6D 64 54 61 62 6C 65 01 00 00 00 41 4D 44 20  // AmdTable....AMD 
-    0020: 01 00 00 00 41 30 20 00 00 00 00 00 00 00 00 00  // ....A0 .........
-    0030: 10 B0 44 00 02 00 40 00 00 00 50 F7 00 00 00 00  // ..D...@...P.....
-    0040: 00 00 00 00 6E 8F 04 80 03 03 00 00 04 FE FF 00  // ....n...........
-    0050: 43 00 FF 00 00 A5 00 00 04 FF FF 00 48 00 00 00  // C...........H...
-    0060: 00 A0 00 02 48 00 00 D7 20 A0 00 01 48 00 00 00  // ....H... ...H...
-    0070: 21 01 00 01 11 30 54 00 02 00 40 00 00 00 50 F7  // !....0T...@...P.
-    0080: 00 00 00 00 00 00 00 00 00 80 04 00 FA 4A 25 A2  // .............J%.
-    0090: EF 77 65 24 00 00 00 00 00 00 00 00 03 03 00 00  // .we$............
-    00A0: 04 FE FF 00 43 00 FF 00 00 A5 00 00 04 FF FF 00  // ....C...........
-    00B0: 48 00 00 00 00 A0 00 02 48 00 00 D7 20 A0 00 01  // H.......H... ...
-    00C0: 48 00 00 00 21 01 00 01                          // H...!...
-
---GTulLJWUtxNbtxgt--
+For reference, the previous discussion is here:
+https://lore.kernel.org/lkml/SI2PR01MB439311868FBFB7DDAD19692CDCB4A@SI2PR01MB4393.apcprd01.prod.exchangelabs.com/
