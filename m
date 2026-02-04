@@ -1,63 +1,261 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from fout-b6-smtp.messagingengine.com (fout-b6-smtp.messagingengine.com [202.12.124.149])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B06713F0773;
-	Wed,  4 Feb 2026 14:27:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6761327FD56;
+	Wed,  4 Feb 2026 14:48:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.149
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770215272; cv=none; b=JR+RbvA1g762S9pzUXZ6iXD0omb6rpvOKWoyJigkg1Armuv5pYl3bS3mz1Gv87oh8NW8hjxIfU8Pt5TrNdwGJQ4oBVtaQW7/oocYHB6tFSHZSRsAo3GRNvgG86HCvWRo0Vq6X/P4edbO+tdn+YJRT3V4AjnAn6rOQu30Ix8i3JA=
+	t=1770216488; cv=none; b=Td3iNlPcmuQeFThy7cXwmYMhj5iFjGd87dEjQR4TRqYfwY+6EI3E7XeyKs2YYIjRoUaheqt9afS//+RLeTMQpomZS8myI5f8nmogtDJpGA5A0SgNG4cEi/qxmlWU5lCvtS8pisWe/vdmIRC+h/cqNkLOXD2Ge84Tyez0V1orq7Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770215272; c=relaxed/simple;
-	bh=bHTzhkxGlaYvoHferihGs6XUw4hXEp48K4M0bawC+zU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=pHEw8VDwrpDI1SnCaDqsYcwEcshbh+2L8D4d8psTTy1HNBVYudTWcMiVNuXwDYjzPl+5P0vvMGVIiQYA2BhIuiGseII5obInge5oR7Zp/h4FUvm+1jK8DTLzK6jUfaGOW/oRFeBUIqY1Jnz8LCLR80E8lwuVPiQnGMSwc9ZlaQU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GkpgufGw; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1770216488; c=relaxed/simple;
+	bh=ukFfnHNJ5St3Rj6hRUImngtiQiwt7CXxdu0IEyYKDrw=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=LfxRs5/2G0/9qAJrt8Y4E24AVmWY3M+OC5Jq8N8mUc3Fp3pdo1gyPduh51yuodalFyW3udkNPsF9qdYE4zZ38WG/bOznRw58oVSOCafEhMCXqa32NCz+n1N7QkqATe8/vvuUunzh4MIXZ/LrF8xlGOqFDNB+fODhpEgqaC6NByo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=shazbot.org; spf=pass smtp.mailfrom=shazbot.org; dkim=pass (2048-bit key) header.d=shazbot.org header.i=@shazbot.org header.b=0o8WaWC+; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=jzmMz8cj; arc=none smtp.client-ip=202.12.124.149
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=shazbot.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=shazbot.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GkpgufGw"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B34DBC4CEF7;
-	Wed,  4 Feb 2026 14:27:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1770215272;
-	bh=bHTzhkxGlaYvoHferihGs6XUw4hXEp48K4M0bawC+zU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=GkpgufGwl/iuwN7lb8qU2AMlPNNy4tRtgXBoWjHkuQEC/nB/Ta4cafuOA1HmWjtvo
-	 kZ3F5CQJtfto/dPD7FusyFK98+bt3Qa7aFpArfws624QtwI2CRJcfgmTAIrZENkBO1
-	 mov13e4eCJCVoirnSw2W6t6SP94dcnDmq93zOw/fhWxnB4Y+8JJ6F3g4Yw2yH3BGK7
-	 3KhGL1ZDu6JenXB7LLPxvfZVzqM3naOVjJiEV9BPgZ6Ozu75Gxneadx4cDGRrTnZJe
-	 1YlPhdWdWmJ48U9XAH5WsjyJreqCDQVWFGJWgRdl0gwzieVd3EZrtnMPVjJ2o1H8CI
-	 gYJTvm3PSCPBQ==
-Date: Wed, 4 Feb 2026 07:27:49 -0700
-From: Keith Busch <kbusch@kernel.org>
-To: Pradeep Pragallapati <pradeep.pragallapati@oss.qualcomm.com>
-Cc: Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>,
-	axboe@kernel.dk, sagi@grimberg.me, linux-nvme@lists.infradead.org,
-	linux-kernel@vger.kernel.org, nitin.rawat@oss.qualcomm.com,
-	Leon Romanovsky <leon@kernel.org>,
-	Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev
-Subject: Re: [PATCH V1] nvme-pci: Fix NULL pointer dereference in
- nvme_pci_prp_iter_next
-Message-ID: <aYNXZTu_L5AcFj3i@kbusch-mbp>
-References: <20260202143548.GA19313@lst.de>
- <dc34c246-d6ba-4c2e-8593-6fe32a616174@arm.com>
- <aYDbNC1z81D3lZ2r@kbusch-mbp>
- <20260202173624.GA32713@lst.de>
- <aYDz-BeIHMNUMiaF@kbusch-mbp>
- <20260203052756.GA15839@lst.de>
- <79034c4c-ba06-4961-b41b-a43e5f5946af@oss.qualcomm.com>
- <563080fc-e5b3-4ff3-9c27-74a167246544@oss.qualcomm.com>
+	dkim=pass (2048-bit key) header.d=shazbot.org header.i=@shazbot.org header.b="0o8WaWC+";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="jzmMz8cj"
+Received: from phl-compute-04.internal (phl-compute-04.internal [10.202.2.44])
+	by mailfout.stl.internal (Postfix) with ESMTP id 459111D00099;
+	Wed,  4 Feb 2026 09:48:05 -0500 (EST)
+Received: from phl-frontend-03 ([10.202.2.162])
+  by phl-compute-04.internal (MEProxy); Wed, 04 Feb 2026 09:48:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=shazbot.org; h=
+	cc:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to; s=fm2; t=1770216485;
+	 x=1770302885; bh=OAqECMTNWylYMxvQZWo48cfQCG+FzsGTUnm7TRzruJc=; b=
+	0o8WaWC+JS0r9CyNO/nTgXfRQDJ56/yoy70axLrKphXjIXJxrk75jlyRIc0mFozg
+	Lk9yZLXvit+j0LAW6FO4NKvl1M/1uw0AqI/Kv0zLHGMB4xaXYj7dVhwRDcsAdFbe
+	XldCsL0y3BWhA1RU+xIRj0DlrCxgJ+y9G+eS5tdLTz/xq9KeKueV28uAkNWAkYki
+	JFt10+lcANDhqdHiJ+aWcx0rZPmqY4AcPIAS78Sywq78D8ETU6OsQVbv4v/NDVLx
+	tcRW2AWOeJfeGEo9hYpBcCvKQi7VmCM0uEGGCIeEXOrD7uBLnfVA8mCfURXdb+Zo
+	0O72ph1Y+QfDvfTonvb22Q==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1770216485; x=
+	1770302885; bh=OAqECMTNWylYMxvQZWo48cfQCG+FzsGTUnm7TRzruJc=; b=j
+	zmMz8cjFVoG/rsm+0syFV2GjH1G9Jl5OSmRwqy86uRGwWgXestcZk51Jl2OtfOhi
+	5dT2To2mQwZKbEcO3KiJ6YVzN/OWqj+r5xAY4f4Pcl47DGV+vjJCwJT82kWxuiYI
+	U3D3g6AIwCcaYR2plHhaB4epoyk0ucC5lxbtg6+tuSzhDaJBG2MwMz5qymt6du14
+	u5x4iw9+Urw3wJMot+A2nGSTxrNjdniDBsJvL0IV/uztGqUeYAV7FueJ6jd7hMI2
+	V0Qujs8/84hPQEZQbg81ddFd/smKComYzHat9t/3Z/A9zAv532+oJhyaXykyLIuz
+	/MklR4ShSvjuoAZODm5ow==
+X-ME-Sender: <xms:JFyDabc3NtC5x9d-S5b8xgv_nBJstlaRTFKO2hRPyja2VYX4o8sNZQ>
+    <xme:JFyDaTGLxs7JuKE4V_IA9P4W29Q7v5RsliDeybttbvBXmlhQwQJ1WPvXOy_ADVtQJ
+    e5mu5eIf2Mw1llgw8EuXb9IOb9VYfiAv1zqZFzzC2PoRDuwWF_R>
+X-ME-Received: <xmr:JFyDaZKGg0VtncgyvA-_AYz2KWPpimcRT69PBe7Nym3aMVuNqRimo99sgsg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefgedrtddtgddukedvjedvucetufdoteggodetrf
+    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfurfetoffkrfgpnffqhgenuceu
+    rghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujf
+    gurhepfffhvfevuffkjghfofggtgfgsehtjeertdertddvnecuhfhrohhmpeetlhgvgicu
+    hghilhhlihgrmhhsohhnuceorghlvgigsehshhgriigsohhtrdhorhhgqeenucggtffrrg
+    htthgvrhhnpedvkeefjeekvdduhfduhfetkedugfduieettedvueekvdehtedvkefgudeg
+    veeuueenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
+    grlhgvgiesshhhrgiisghothdrohhrghdpnhgspghrtghpthhtohepfeegpdhmohguvgep
+    shhmthhpohhuthdprhgtphhtthhopehlvghonheskhgvrhhnvghlrdhorhhgpdhrtghpth
+    htohepshhumhhithdrshgvmhifrghlsehlihhnrghrohdrohhrghdprhgtphhtthhopegt
+    hhhrihhsthhirghnrdhkohgvnhhighesrghmugdrtghomhdprhgtphhtthhopegrlhgvgi
+    grnhguvghrrdguvghutghhvghrsegrmhgurdgtohhmpdhrtghpthhtoheprghirhhlihgv
+    ugesghhmrghilhdrtghomhdprhgtphhtthhopehsihhmohhnrgesfhhffihllhdrtghhpd
+    hrtghpthhtohepkhhrrgigvghlsehrvgguhhgrthdrtghomhdprhgtphhtthhopegumhhi
+    thhrhidrohhsihhpvghnkhhosegtohhllhgrsghorhgrrdgtohhmpdhrtghpthhtohepgh
+    hurhgthhgvthgrnhhsihhnghhhsegthhhrohhmihhumhdrohhrgh
+X-ME-Proxy: <xmx:JFyDabfA6AFufRXzaJSlKz-2t1bgQfl_-vcdUPLYedDqqhfQtD0F4g>
+    <xmx:JFyDaXvtfjlvHHOBDbzIpiei4TfKRK6qgjSvLo_n98W07rjE3fSC_w>
+    <xmx:JFyDaXtAyHrtabg5GCKcPsYXr1EXU3FQH7-j2yI9cGuotG8BnRMRyA>
+    <xmx:JFyDaW-L9op9ODgl26-U7zgoSReG5Hb16hvQv5SKv36wBdcXrSzLXQ>
+    <xmx:JVyDacEzOan8IdGoHVZJwVYbWkrRfU2u-Tob81oE2TJvkvib1I9BFGdR>
+Feedback-ID: i03f14258:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 4 Feb 2026 09:48:01 -0500 (EST)
+Date: Wed, 4 Feb 2026 07:47:59 -0700
+From: Alex Williamson <alex@shazbot.org>
+To: Leon Romanovsky <leon@kernel.org>
+Cc: Sumit Semwal <sumit.semwal@linaro.org>,
+ Christian =?UTF-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+ Alex Deucher <alexander.deucher@amd.com>,
+ David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+ Gerd Hoffmann <kraxel@redhat.com>,
+ Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+ Gurchetan Singh <gurchetansingh@chromium.org>,
+ Chia-I Wu <olvaffe@gmail.com>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>,
+ Thomas Zimmermann <tzimmermann@suse.de>,
+ Lucas De Marchi <lucas.demarchi@intel.com>,
+ Thomas =?UTF-8?B?SGVsbHN0csO2bQ==?= <thomas.hellstrom@linux.intel.com>,
+ Rodrigo Vivi <rodrigo.vivi@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+ Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Felix Kuehling <Felix.Kuehling@amd.com>,
+ Ankit Agrawal <ankita@nvidia.com>,
+ Vivek Kasireddy <vivek.kasireddy@intel.com>, linux-media@vger.kernel.org,
+ dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+ linux-kernel@vger.kernel.org, amd-gfx@lists.freedesktop.org,
+ virtualization@lists.linux.dev, intel-xe@lists.freedesktop.org,
+ linux-rdma@vger.kernel.org, iommu@lists.linux.dev, kvm@vger.kernel.org
+Subject: Re: [PATCH v7 4/8] vfio: Wait for dma-buf invalidation to complete
+Message-ID: <20260204074759.108f579e@shazbot.org>
+In-Reply-To: <20260131-dmabuf-revoke-v7-4-463d956bd527@nvidia.com>
+References: <20260131-dmabuf-revoke-v7-0-463d956bd527@nvidia.com>
+	<20260131-dmabuf-revoke-v7-4-463d956bd527@nvidia.com>
+X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <563080fc-e5b3-4ff3-9c27-74a167246544@oss.qualcomm.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Wed, Feb 04, 2026 at 07:34:42PM +0530, Pradeep Pragallapati wrote:
-> I ran testing for over 20 hours and did not observe the issue on my setup.
-> It appears to be helping.
+On Sat, 31 Jan 2026 07:34:14 +0200
+Leon Romanovsky <leon@kernel.org> wrote:
 
-Thanks for for the test! I'll put a real patch together with Christoph's
-suggestions folded in.
+> From: Leon Romanovsky <leonro@nvidia.com>
+> 
+> dma-buf invalidation is handled asynchronously by the hardware, so VFIO
+> must wait until all affected objects have been fully invalidated.
+> 
+> In addition, the dma-buf exporter is expecting that all importers unmap any
+> buffers they previously mapped.
+> 
+> Fixes: 5d74781ebc86 ("vfio/pci: Add dma-buf export support for MMIO regions")
+> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> ---
+>  drivers/vfio/pci/vfio_pci_dmabuf.c | 61 +++++++++++++++++++++++++++++++++++---
+>  1 file changed, 57 insertions(+), 4 deletions(-)
+
+Reviewed-by: Alex Williamson <alex@shazbot.org>
+
+> 
+> diff --git a/drivers/vfio/pci/vfio_pci_dmabuf.c b/drivers/vfio/pci/vfio_pci_dmabuf.c
+> index d8ceafabef48..78d47e260f34 100644
+> --- a/drivers/vfio/pci/vfio_pci_dmabuf.c
+> +++ b/drivers/vfio/pci/vfio_pci_dmabuf.c
+> @@ -17,6 +17,8 @@ struct vfio_pci_dma_buf {
+>  	struct dma_buf_phys_vec *phys_vec;
+>  	struct p2pdma_provider *provider;
+>  	u32 nr_ranges;
+> +	struct kref kref;
+> +	struct completion comp;
+>  	u8 revoked : 1;
+>  };
+>  
+> @@ -44,27 +46,46 @@ static int vfio_pci_dma_buf_attach(struct dma_buf *dmabuf,
+>  	return 0;
+>  }
+>  
+> +static void vfio_pci_dma_buf_done(struct kref *kref)
+> +{
+> +	struct vfio_pci_dma_buf *priv =
+> +		container_of(kref, struct vfio_pci_dma_buf, kref);
+> +
+> +	complete(&priv->comp);
+> +}
+> +
+>  static struct sg_table *
+>  vfio_pci_dma_buf_map(struct dma_buf_attachment *attachment,
+>  		     enum dma_data_direction dir)
+>  {
+>  	struct vfio_pci_dma_buf *priv = attachment->dmabuf->priv;
+> +	struct sg_table *ret;
+>  
+>  	dma_resv_assert_held(priv->dmabuf->resv);
+>  
+>  	if (priv->revoked)
+>  		return ERR_PTR(-ENODEV);
+>  
+> -	return dma_buf_phys_vec_to_sgt(attachment, priv->provider,
+> -				       priv->phys_vec, priv->nr_ranges,
+> -				       priv->size, dir);
+> +	ret = dma_buf_phys_vec_to_sgt(attachment, priv->provider,
+> +				      priv->phys_vec, priv->nr_ranges,
+> +				      priv->size, dir);
+> +	if (IS_ERR(ret))
+> +		return ret;
+> +
+> +	kref_get(&priv->kref);
+> +	return ret;
+>  }
+>  
+>  static void vfio_pci_dma_buf_unmap(struct dma_buf_attachment *attachment,
+>  				   struct sg_table *sgt,
+>  				   enum dma_data_direction dir)
+>  {
+> +	struct vfio_pci_dma_buf *priv = attachment->dmabuf->priv;
+> +
+> +	dma_resv_assert_held(priv->dmabuf->resv);
+> +
+>  	dma_buf_free_sgt(attachment, sgt, dir);
+> +	kref_put(&priv->kref, vfio_pci_dma_buf_done);
+>  }
+>  
+>  static void vfio_pci_dma_buf_release(struct dma_buf *dmabuf)
+> @@ -287,6 +308,9 @@ int vfio_pci_core_feature_dma_buf(struct vfio_pci_core_device *vdev, u32 flags,
+>  		goto err_dev_put;
+>  	}
+>  
+> +	kref_init(&priv->kref);
+> +	init_completion(&priv->comp);
+> +
+>  	/* dma_buf_put() now frees priv */
+>  	INIT_LIST_HEAD(&priv->dmabufs_elm);
+>  	down_write(&vdev->memory_lock);
+> @@ -331,9 +355,33 @@ void vfio_pci_dma_buf_move(struct vfio_pci_core_device *vdev, bool revoked)
+>  
+>  		if (priv->revoked != revoked) {
+>  			dma_resv_lock(priv->dmabuf->resv, NULL);
+> -			priv->revoked = revoked;
+> +			if (revoked)
+> +				priv->revoked = true;
+>  			dma_buf_invalidate_mappings(priv->dmabuf);
+> +			dma_resv_wait_timeout(priv->dmabuf->resv,
+> +					      DMA_RESV_USAGE_BOOKKEEP, false,
+> +					      MAX_SCHEDULE_TIMEOUT);
+>  			dma_resv_unlock(priv->dmabuf->resv);
+> +			if (revoked) {
+> +				kref_put(&priv->kref, vfio_pci_dma_buf_done);
+> +				wait_for_completion(&priv->comp);
+> +			} else {
+> +				/*
+> +				 * Kref is initialize again, because when revoke
+> +				 * was performed the reference counter was decreased
+> +				 * to zero to trigger completion.
+> +				 */
+> +				kref_init(&priv->kref);
+> +				/*
+> +				 * There is no need to wait as no mapping was
+> +				 * performed when the previous status was
+> +				 * priv->revoked == true.
+> +				 */
+> +				reinit_completion(&priv->comp);
+> +				dma_resv_lock(priv->dmabuf->resv, NULL);
+> +				priv->revoked = false;
+> +				dma_resv_unlock(priv->dmabuf->resv);
+> +			}
+>  		}
+>  		fput(priv->dmabuf->file);
+>  	}
+> @@ -354,7 +402,12 @@ void vfio_pci_dma_buf_cleanup(struct vfio_pci_core_device *vdev)
+>  		priv->vdev = NULL;
+>  		priv->revoked = true;
+>  		dma_buf_invalidate_mappings(priv->dmabuf);
+> +		dma_resv_wait_timeout(priv->dmabuf->resv,
+> +				      DMA_RESV_USAGE_BOOKKEEP, false,
+> +				      MAX_SCHEDULE_TIMEOUT);
+>  		dma_resv_unlock(priv->dmabuf->resv);
+> +		kref_put(&priv->kref, vfio_pci_dma_buf_done);
+> +		wait_for_completion(&priv->comp);
+>  		vfio_device_put_registration(&vdev->vdev);
+>  		fput(priv->dmabuf->file);
+>  	}
+> 
+
