@@ -1,139 +1,169 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from smtpbgbr2.qq.com (smtpbgbr2.qq.com [54.207.22.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB4CD1D63F0;
-	Wed,  4 Feb 2026 08:56:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 475AC38F229;
+	Wed,  4 Feb 2026 09:09:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=54.207.22.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770195371; cv=none; b=Cn1MpzkQ6aHwO01ZaszC7iQ7QMqWuDpTT8HAXLAmJMYJLDX5SQvs3NxUUpuvAwU0Ju964uFgBtdm18LppXCRD9FiEmfIr2Ogt9++5EKrdkrgxOy3u1X78A54a9JNa0IY314nhy+IS+bnN+cz4OuFKxnUVdxsdpPxfDxT1XCxC8w=
+	t=1770196162; cv=none; b=rX4pLb+EXOhLxr+bZ5NekkAuY7115xhRsTeaJYoqV/Z/iid0kg6iBa/qqdQL7/ABzLekiJWcN6qlV4MdqG6cdIYUaFla8Zh9MEm226QrNGcMg8hCKkpCX+m+BPZ8odfdFgjnjThxZjBcSTTJ1OK+jAmP8sIYDJLlWCZxl1fbIDo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770195371; c=relaxed/simple;
-	bh=7OhNdyQd9Hj4JZ3WwzaaVRughLWneBid2/id9k15jgM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=tCjnXeO6edTc6IH/YPy/kARgcXI+9G4w48iifL+KDtrObNgPgFjNsueT6esY9kJvd9kXWc8LH5GgxrCzDrGCVYwonG80w+0yJiOBTRwfajCsBf8yh7iD6WZWbQaX1Cbx1FFxu/u4nZUrBRF/6WIf/FjrLOqvL9NvS7Z+zqL94ys=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=V7pTqA4L; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1770196162; c=relaxed/simple;
+	bh=UDJKu6TLZFsNvK/qJEvfwJi1S+NJR8Fs9OkuI3hLRcs=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=NaflzeVMeaRlXGtgJPJ4LJ9cfyQrraeCPH5O9nqpjiiCxbKduBC3LEzTZDLvb4ChXU4Nn7t6OE0HzSeEIfzKMJXKFWEhxg0hFkL3E56gKztXKSvHQJ6IbxiHwU4zxl0UTfJTQJaFTN4coz87x/6wMgc1/WFr10NDLIXNTkCzvr8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux.spacemit.com; spf=none smtp.mailfrom=linux.spacemit.com; dkim=pass (1024-bit key) header.d=linux.spacemit.com header.i=@linux.spacemit.com header.b=U/RFvZO4; arc=none smtp.client-ip=54.207.22.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux.spacemit.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.spacemit.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="V7pTqA4L"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBAFAC4CEF7;
-	Wed,  4 Feb 2026 08:56:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1770195371;
-	bh=7OhNdyQd9Hj4JZ3WwzaaVRughLWneBid2/id9k15jgM=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=V7pTqA4L9gw8RLNHTPQ3c3PmSmPUJN8CJLkSplhC/tA6rLyNs/ON8PEJ77FghkrYL
-	 7YC7kC+vzUJczQux8gMcjkSltXZByy2k3Y/tn+IZTssRYphrNHoXV/inmhMNPSeTpq
-	 /EElHDk0r2Fud4Ow8YLv+QLv1E77BycSs/6TXoM2dUc9VjGtgSPDYwYm8Ej4MLTHbO
-	 elG6nwpwLEFKKVyCeZfL3VndxYrhjKHWPJEgy+OWK/3jRcIHqHo7MMa8eGJO5MfqPJ
-	 iaudGOxgyj2Q+GiGdIWm2eFONDY0yvSNQsmD2v7LsLyMzax1HMUELlY3ibNKbudFUm
-	 17VPZKFF1DiPg==
-Date: Wed, 4 Feb 2026 09:56:08 +0100
-From: Maxime Ripard <mripard@kernel.org>
-To: Leon Romanovsky <leon@kernel.org>
-Cc: Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>, 
-	Sumit Semwal <sumit.semwal@linaro.org>, Alex Deucher <alexander.deucher@amd.com>, 
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
-	Gerd Hoffmann <kraxel@redhat.com>, Dmitry Osipenko <dmitry.osipenko@collabora.com>, 
-	Gurchetan Singh <gurchetansingh@chromium.org>, Chia-I Wu <olvaffe@gmail.com>, 
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Thomas Zimmermann <tzimmermann@suse.de>, 
-	Lucas De Marchi <lucas.demarchi@intel.com>, 
-	Thomas =?utf-8?Q?Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>, Rodrigo Vivi <rodrigo.vivi@intel.com>, 
-	Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>, 
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Felix Kuehling <Felix.Kuehling@amd.com>, 
-	Alex Williamson <alex@shazbot.org>, Ankit Agrawal <ankita@nvidia.com>, 
-	Vivek Kasireddy <vivek.kasireddy@intel.com>, linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org, 
-	linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org, amd-gfx@lists.freedesktop.org, 
-	virtualization@lists.linux.dev, intel-xe@lists.freedesktop.org, linux-rdma@vger.kernel.org, 
-	iommu@lists.linux.dev, kvm@vger.kernel.org
-Subject: Re: [PATCH v7 0/8] dma-buf: Use revoke mechanism to invalidate
- shared buffers
-Message-ID: <20260204-icy-classic-crayfish-68da6d@houat>
-References: <20260131-dmabuf-revoke-v7-0-463d956bd527@nvidia.com>
- <20260202160425.GO34749@unreal>
- <20260204081630.GA6771@unreal>
+	dkim=pass (1024-bit key) header.d=linux.spacemit.com header.i=@linux.spacemit.com header.b="U/RFvZO4"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.spacemit.com;
+	s=mxsw2412; t=1770196117;
+	bh=7ZuMw0aQly17hASOLNtnfsuLRFEAsjJjbUhrNvIUsVY=;
+	h=From:To:Subject:Date:Message-ID:MIME-Version;
+	b=U/RFvZO4HG6wBmETcvb3+jPzNigmYwBRloHG6fqG8Hsdzscy1jBPqVKf0Ge02Z9WK
+	 b8kSmlc5oDXqk0r/5Ya929qHvI8Eh6c/geFYHqyWP/o9Z7BO2ExPNfcPMzqibKK6G1
+	 d8Z+69MAW/lhsdkMBf/RdNGci1eiztRoN21jtTZ4=
+X-QQ-mid: esmtpsz16t1770196115t30b0e720
+X-QQ-Originating-IP: B58uKBjvV/rf2o6+mC3RVsaz6JIpIozYKaP2j7Fq5yo=
+Received: from SurfaceBook2-B.localdomain ( [101.70.125.34])
+	by bizesmtp.qq.com (ESMTP) with 
+	id ; Wed, 04 Feb 2026 17:08:31 +0800 (CST)
+X-QQ-SSF: 0000000000000000000000000000000
+X-QQ-GoodBg: 0
+X-BIZMAIL-ID: 2290105156502900697
+EX-QQ-RecipientCnt: 19
+From: Lv Zheng <lv.zheng@linux.spacemit.com>
+To: Tomasz Jeznach <tjeznach@rivosinc.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Paul Walmsley <pjw@kernel.org>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Albert Ou <aou@eecs.berkeley.edu>,
+	Alexandre Ghiti <alex@ghiti.fr>
+Cc: Jingyu Li <joey.li@spacemit.com>,
+	Lv Zheng <lv.zheng@linux.spacemit.com>,
+	Zhijian Chen <zhijian@spacemit.com>,
+	iommu@lists.linux.dev,
+	linux-perf-users@vger.kernel.org,
+	linux-riscv@lists.infradead.org,
+	spacemit@lists.linux.dev,
+	devicetree@vger.kernel.org
+Subject: [PATCH v3 0/8] iommu/riscv: Add HPM support for RISC-V IOMMU
+Date: Wed,  4 Feb 2026 17:08:19 +0800
+Message-ID: <F9748E3984D2A6F9+cover.1770195980.git.lv.zheng@linux.spacemit.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <cover.1769562575.git.lv.zheng@spacemit.com>
+References: <cover.1769562575.git.lv.zheng@spacemit.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha384;
-	protocol="application/pgp-signature"; boundary="md2hsdfsayzd7ozo"
-Content-Disposition: inline
-In-Reply-To: <20260204081630.GA6771@unreal>
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: esmtpsz:linux.spacemit.com:qybglogicsvrgz:qybglogicsvrgz5b-1
+X-QQ-XMAILINFO: NYlggeZuI0UG/KlMlGBUTrf77Lgf/zsjGw76oNLG6XNRXDUfkhzJl9D3
+	guMM4f3/Q6CqEP+N8NhTXSJgNBDbZVLpW05tUY4im5HEouteKRRHDkCvY0ISinGDiLWQbqV
+	nie+vb5VTVRzkHg0o3QqSiAQ34sf8JP76goCOszAeFiQPlFC7EItyEbP1kJVzLUH1n9t+5Y
+	IWgG9/3Od7N5KMTj3bULPZr54hJHQfqL8pn7xM0BYqNj5tGE0GjpSypN6XPhaRJT7N6ivlj
+	wUutk8IYA4AyHAP0k1YIHHWcNWRd4LDogKYMhf6jznpMEqNHoAKBqXadomn+lLytVPiVRGt
+	hq3vmRgL9eMnr99sNaFNqd9VnueKq29o4hkwvMLReh3m8ISZNKlpP7zB5BNV5x/u6Wl61B9
+	p3Sx+AJgWuXWI+soTlu3xVayjOnix32SNP9sGLKFOLHIyoqs8YzzJ5+pxAymQv9BmK9NHdp
+	ZiuNuJHRBHo0yBHLqC7EwTZW2yE80X3tibNxfSpYpWiegKpqHJIEcP1f+Lf1xnkRDzFFBLX
+	/nwgU1MsNQ0Ux1al+nKJnlyYzioeEYJzUUPTgR2ZI5Jlv5WGo2Qjw8NY9j17ooNIQDsyrv8
+	dulcWygrRmiizQHuPE/BlKIqYWJw96ENbmFo9JbeHiMgHbpT9IO+6Ssr5LZKINeMCbvYhU3
+	Ekxn8+XGddq9gr6PUJG53Eef529BjpkvQdJe3j5rNyBPdjRxod5DVhzUesasCwiw5tipymA
+	VPXxXfnoRs+VUi8fE9UA1/ik1O+cedENUgh+YrXo6JSwdErs324aWqzUBSJQOI2EK4S+7Ot
+	Hc03OSyOCJPgrY9Yv9ghDwZ6YQ05nRLmBzfh0Gq1BJZExhdKgRBHqeQKNCG35AsR+D3S8Th
+	/AVS3F2frAc1DG0O8a00se4IYxrf78PHPDVPnOKkZC4RxKLe2yoTlx2jRnA9Ypg/7gNbuXj
+	GS6SWkr1HHi4G2bfKGgDZNkmohJs6MUhgaKCpdA2yt7y/dwVAuYbLlfkY
+X-QQ-XMRINFO: MPJ6Tf5t3I/ylTmHUqvI8+Wpn+Gzalws3A==
+X-QQ-RECHKSPAM: 0
 
+Includes HPM support for RISC-V IOMMU. The HPM hardware mechanism can be
+found in the recent announced SpacemiT SoCs (K3, V100), where T100
+(SpacemiT distributed IOMMU) is shipped. 
 
---md2hsdfsayzd7ozo
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH v7 0/8] dma-buf: Use revoke mechanism to invalidate
- shared buffers
-MIME-Version: 1.0
+Revisions:
+v1
+ Initial release.
+v2 (sent as v1.1)
+ Split and cleanup DT-bindings.
+v3
+ Refactor using vendor specific compatible.
 
-On Wed, Feb 04, 2026 at 10:16:30AM +0200, Leon Romanovsky wrote:
-> On Mon, Feb 02, 2026 at 06:04:25PM +0200, Leon Romanovsky wrote:
-> > On Sat, Jan 31, 2026 at 07:34:10AM +0200, Leon Romanovsky wrote:
-> > > Changelog:
-> > > v7:
-> >=20
-> > <...>
-> >=20
-> > > Leon Romanovsky (8):
-> > >       dma-buf: Rename .move_notify() callback to a clearer identifier
-> > >       dma-buf: Rename dma_buf_move_notify() to dma_buf_invalidate_map=
-pings()
-> > >       dma-buf: Always build with DMABUF_MOVE_NOTIFY
-> > >       vfio: Wait for dma-buf invalidation to complete
-> > >       dma-buf: Make .invalidate_mapping() truly optional
-> > >       dma-buf: Add dma_buf_attach_revocable()
-> > >       vfio: Permit VFIO to work with pinned importers
-> > >       iommufd: Add dma_buf_pin()
-> > >=20
-> > >  drivers/dma-buf/Kconfig                     | 12 -----
-> > >  drivers/dma-buf/dma-buf.c                   | 69 +++++++++++++++++++=
-+-----
-> > >  drivers/gpu/drm/amd/amdgpu/amdgpu_dma_buf.c | 14 ++---
-> > >  drivers/gpu/drm/amd/amdgpu/amdgpu_object.c  |  2 +-
-> > >  drivers/gpu/drm/amd/amdkfd/Kconfig          |  2 +-
-> > >  drivers/gpu/drm/virtio/virtgpu_prime.c      |  2 +-
-> > >  drivers/gpu/drm/xe/tests/xe_dma_buf.c       |  7 ++-
-> > >  drivers/gpu/drm/xe/xe_bo.c                  |  2 +-
-> > >  drivers/gpu/drm/xe/xe_dma_buf.c             | 14 ++---
-> > >  drivers/infiniband/core/umem_dmabuf.c       | 13 -----
-> > >  drivers/infiniband/hw/mlx5/mr.c             |  2 +-
-> > >  drivers/iommu/iommufd/pages.c               | 11 +++-
-> > >  drivers/iommu/iommufd/selftest.c            |  2 +-
-> > >  drivers/vfio/pci/vfio_pci_dmabuf.c          | 80 +++++++++++++++++++=
-+++-------
-> > >  include/linux/dma-buf.h                     | 17 +++---
-> > >  15 files changed, 153 insertions(+), 96 deletions(-)
-> >=20
-> > Christian,
-> >=20
-> > Given the ongoing discussion around patch v5, I'm a bit unclear on the
-> > current state. Is the series ready for merging, or do you need me to
-> > rework anything further?
->=20
-> Christian,
->=20
-> Let's not miss the merge window for work that is already ready.
+The tested result can be found as follows:
 
-The cutoff date for the merge window was on 25/1, so it was already
-missed by the time you sent your series.
+ root@sdfirm:~# perf stat --timeout 5000 -a -e spacemit_ioats_hpm_00/dd_walk,config1=0x20c0010000000000/ dmatest; sleep 1
+ [  145.630224] dmatest: Started 1 threads using dma0chan0
+ [  145.644896] dmatest: dma0chan0-copy0: summary 1 tests, 0 failures 123.60 iops 123 KB/s (0)
 
-Maxime
+  Performance counter stats for 'system wide':
 
---md2hsdfsayzd7ozo
-Content-Type: application/pgp-signature; name="signature.asc"
+                  3      spacemit_ioats_hpm_00/dd_walk,config1=0x20c0010000000000/                                      
 
------BEGIN PGP SIGNATURE-----
+        0.193108000 seconds time elapsed
 
-iJUEABMJAB0WIQTkHFbLp4ejekA/qfgnX84Zoj2+dgUCaYMJowAKCRAnX84Zoj2+
-djVFAX4o65eZLnv9pSuBC/f19F9Wa+5AV3tbnVDyNWy7aEVTPVlpkwyBh3kSx24f
-CiGuWJUBgMDxh0mGTwKw1M4dapaGNtVEhWvE/mj7fWyRzk3l536hontO+fVSQspp
-IjEjywqm8A==
-=TNrj
------END PGP SIGNATURE-----
+ root@sdfirm:~# echo dma0chan1 > /sys/module/dmatest/parameters/channel 
+ [  327.001820] dmatest: Added 1 threads using dma0chan1
+ root@sdfirm:~# perf stat --timeout 5000 -a -e spacemit_ioats_hpm_00/s_walk,config1=0x20c0011000000000/ dmatest; sleep 1
+ [  484.037180] dmatest: Started 1 threads using dma0chan1
+ [  484.048832] dmatest: dma0chan1-copy0: summary 1 tests, 0 failures 172.11 iops 172 KB/s (0)
 
---md2hsdfsayzd7ozo--
+  Performance counter stats for 'system wide':
+
+                  6      spacemit_ioats_hpm_00/s_walk,config1=0x20c0011000000000/                                      
+
+        0.191970000 seconds time elapsed
+
+ root@sdfirm:~# perf stat --timeout 5000 -a -e spacemit_ioatc_hpm_0003/tlb_mis,config1=0x20c0011000000000/ dmatest; sleep 1
+ [  546.332494] dmatest: No channels configured, continue with any
+ [  546.363062] dmatest: Added 1 threads using dma0chan1
+ [  546.377994] dmatest: Started 1 threads using dma0chan1
+ [  546.388376] dmatest: dma0chan1-copy0: summary 1 tests, 0 failures 213.94 iops 213 KB/s (0)
+
+  Performance counter stats for 'system wide':
+
+                  3      spacemit_ioatc_hpm_0003/tlb_mis,config1=0x20c0011000000000/                                      
+
+        0.225062000 seconds time elapsed
+
+Jingyu Li (3):
+  iommu/riscv: Enable IOMMU DMA mapping support
+  iommu/riscv: Fix WSI mode IRQ number handling
+  iommu/riscv: Add HPM support for performance monitoring
+
+Lv Zheng (5):
+  dt-bindings: iommu: Add spacemit/t100 features
+  riscv/iommu: Add vendor event support for RISC-V IOMMU HPM
+  spacemit/t100: Add global filter awareness for RISC-V IOMMU HPM
+  spacemit/t100: Add SpacemiT T100 IOATC HPM support
+  perf vendor events riscv:: Add support for spacemit,riscv-iommu HPM
+    aliasing
+
+ .../bindings/iommu/riscv,iommu.yaml           |   37 +
+ MAINTAINERS                                   |    3 +
+ drivers/iommu/Kconfig                         |    2 +-
+ drivers/iommu/riscv/Kconfig                   |    9 +
+ drivers/iommu/riscv/Makefile                  |    1 +
+ drivers/iommu/riscv/iommu-bits.h              |   18 +
+ drivers/iommu/riscv/iommu-hpm.c               | 1122 +++++++++++++++++
+ drivers/iommu/riscv/iommu-pci.c               |   13 +-
+ drivers/iommu/riscv/iommu-platform.c          |   12 +-
+ drivers/iommu/riscv/iommu.c                   |   25 +-
+ drivers/iommu/riscv/iommu.h                   |   46 +-
+ .../arch/riscv/spacemit/iommu/sys/ioatc.json  |   30 +
+ .../arch/riscv/spacemit/iommu/sys/ioats.json  |  163 +++
+ 13 files changed, 1469 insertions(+), 12 deletions(-)
+ create mode 100644 drivers/iommu/riscv/iommu-hpm.c
+ create mode 100644 tools/perf/pmu-events/arch/riscv/spacemit/iommu/sys/ioatc.json
+ create mode 100644 tools/perf/pmu-events/arch/riscv/spacemit/iommu/sys/ioats.json
+
+-- 
+2.43.0
+
