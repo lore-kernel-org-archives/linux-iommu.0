@@ -1,336 +1,228 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BBF462F83A2
-	for <iommu@lists.linux.dev>; Wed,  4 Feb 2026 22:52:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AE20B665;
+	Wed,  4 Feb 2026 23:33:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770245576; cv=none; b=ODY1Dhk9OplT1lx8Z9plXldRFgfMUKJh4USneriBWDnF11CFljR3rZRAHuiqOcTS2jM+ojdTg6pfXKgz7Dqa6hHMFYkcxk1+gk22cY8xbuaxeuBL1W62VCldNQmpHSo7c5M+J1JlGHU6aCkk4BkUOcDWndbMUrufdBdhqSd0JhI=
+	t=1770248012; cv=none; b=NPONQETmW5O3rdKWTuFdO6H+vDfnzGl0ZpjRx+HjTvPns6NxMe6+OG43iGT3kCJTPMVwId2mb87s8PIYMlI3yi0B4zvIe2UF+eF7txgfuhvVHcZpafz1vrjECrXoRkWHm/ntSs5lGs+ZLfPy4RDwr3LeF4kTn701Y+6PSLlbYBY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770245576; c=relaxed/simple;
-	bh=ftUtmsJ9Q5hpWfJkx+uWmMz4M7B1LmLSVmrZMNUPDLM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=WNsaMc56Tr0EXLutPatnpoDy4DLnolRr1C2+Zr5M4CLuMDF9N7+BA93Rtk3NvG1ZlyWJ7JL3Kl0b8rA+iqqgjjDV6IDyyBn7MxwmqIPB8kkERaLSiSrcIOXON5odlj2ctJCnKNxpkQD+FEJL3Sk6OWzCLh9KhuUz/O5VojpRgoQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=WRTdZ9uJ; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1770248012; c=relaxed/simple;
+	bh=7RVE6LPpaYNX/NcZNtijcrH+6VNmpkiJ02OZxGxkzwo=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To; b=k2le24ERxw/VSEHCo5fK2vRED3OlDbMfihsL3OCZ+7GI+eptcnnW39cexozqC+2xVkdAeB3lNEKJKJf68Mfzp6qiDUyVdLNhWAg/NFVjtEo1L1HwU79rLFZZumZiEUZDeW1mdQCwosVNHjRHxxPZCbMM7CxMW48hSG+mTROuYRg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=C1FQq5qS; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="WRTdZ9uJ"
-Received: from [192.168.0.88] (192-184-212-33.fiber.dynamic.sonic.net [192.184.212.33])
-	by linux.microsoft.com (Postfix) with ESMTPSA id DEE1A20B7165;
-	Wed,  4 Feb 2026 14:52:54 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com DEE1A20B7165
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1770245576;
-	bh=Z5UzvzLmALW/J/GE++S3i6d2Iky9+XfaKNKG7mM9WtE=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=WRTdZ9uJTVLymkfOfIxV/mdTmRbSBVGTmX/jmPPeEgCSDSMH26Wilz0a29fQ/3wuF
-	 26O87PUBnkruF1dKfqxHH2BIxDaX71xJllhukTXd6Mau/w0rxZIJGj7z8MlW8YNMoU
-	 mMKyyrmq2O3XbDNK0EssAoX5zLZd7QsVX4EGmAzo=
-Message-ID: <596c9549-9edc-91f3-7473-e206ddc68e76@linux.microsoft.com>
-Date: Wed, 4 Feb 2026 14:52:54 -0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="C1FQq5qS"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7AA5C4CEF7;
+	Wed,  4 Feb 2026 23:33:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1770248012;
+	bh=7RVE6LPpaYNX/NcZNtijcrH+6VNmpkiJ02OZxGxkzwo=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:From;
+	b=C1FQq5qSrF6DE3dIAeFDUAKMb11ujUCueCcbQvmkuwxQw5k0cmxSl2wQzi2JkF7F1
+	 SitYUdv8waMEC/4Qz6FLH023MTlWrqNgE8KdptLcwtMVBrEliQnrfuvhSao92frx7n
+	 ZKH++pn+BCSElZmwqUpHUB+e7i9ipLGO2nRCtFl+UiaCCUz0Dm48lvbv8IIe9oQqDR
+	 +bPsuNybl4ARdwi9/tUubv08mcYRk4bcDkHTOAVnFltGJwr6ET0DsRTjgxMDwW+kLf
+	 75aAkEAN5bB3rjXRmThneCdyrgBQvw8MOnngedTfPvffmFaylImunXGTUGFOQXX8P6
+	 PUGY8grvI7lMg==
+Date: Wed, 4 Feb 2026 17:33:30 -0600
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	Naresh Kamboju <naresh.kamboju@linaro.org>,
+	Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
+	Xingang Wang <wangxingang5@huawei.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Manivannan Sadhasivam <mani@kernel.org>
+Subject: Re: [PATCH v3 1/4] PCI: Enable ACS only after configuring IOMMU for
+ OF platforms
+Message-ID: <20260204233330.GA22347@bhelgaas>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.1
-Subject: Re: [PATCH v0 15/15] mshv: Populate mmio mappings for PCI passthru
-Content-Language: en-US
-To: Stanislav Kinsburskii <skinsburskii@linux.microsoft.com>
-Cc: linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- linux-pci@vger.kernel.org, linux-arch@vger.kernel.org, kys@microsoft.com,
- haiyangz@microsoft.com, wei.liu@kernel.org, decui@microsoft.com,
- longli@microsoft.com, catalin.marinas@arm.com, will@kernel.org,
- tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
- dave.hansen@linux.intel.com, hpa@zytor.com, joro@8bytes.org,
- lpieralisi@kernel.org, kwilczynski@kernel.org, mani@kernel.org,
- robh@kernel.org, bhelgaas@google.com, arnd@arndb.de,
- nunodasneves@linux.microsoft.com, mhklinux@outlook.com
-References: <20260120064230.3602565-1-mrathor@linux.microsoft.com>
- <20260120064230.3602565-16-mrathor@linux.microsoft.com>
- <aXAxmYm4zbOzGztz@skinsburskii.localdomain>
- <45e7a4c0-f1d8-b8b4-8c03-56d06845323b@linux.microsoft.com>
- <aXevWXolgNrrLltF@skinsburskii.localdomain>
- <f39a501e-478f-66ff-26c8-229ca3991f4f@linux.microsoft.com>
- <aXkKhGvpaHUGclI-@skinsburskii.localdomain>
- <8d798da6-1720-ceea-f1b0-62ca675085c8@linux.microsoft.com>
- <aYDROXpR5kvlylGG@skinsburskii.localdomain>
-From: Mukesh R <mrathor@linux.microsoft.com>
-In-Reply-To: <aYDROXpR5kvlylGG@skinsburskii.localdomain>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260102-pci_acs-v3-1-72280b94d288@oss.qualcomm.com>
 
-On 2/2/26 08:30, Stanislav Kinsburskii wrote:
-> On Fri, Jan 30, 2026 at 02:17:24PM -0800, Mukesh R wrote:
->> On 1/27/26 10:57, Stanislav Kinsburskii wrote:
->>> On Mon, Jan 26, 2026 at 07:07:22PM -0800, Mukesh R wrote:
->>>> On 1/26/26 10:15, Stanislav Kinsburskii wrote:
->>>>> On Fri, Jan 23, 2026 at 06:19:15PM -0800, Mukesh R wrote:
->>>>>> On 1/20/26 17:53, Stanislav Kinsburskii wrote:
->>>>>>> On Mon, Jan 19, 2026 at 10:42:30PM -0800, Mukesh R wrote:
->>>>>>>> From: Mukesh Rathor <mrathor@linux.microsoft.com>
->>>>>>>>
->>>>>>>> Upon guest access, in case of missing mmio mapping, the hypervisor
->>>>>>>> generates an unmapped gpa intercept. In this path, lookup the PCI
->>>>>>>> resource pfn for the guest gpa, and ask the hypervisor to map it
->>>>>>>> via hypercall. The PCI resource pfn is maintained by the VFIO driver,
->>>>>>>> and obtained via fixup_user_fault call (similar to KVM).
->>>>>>>>
->>>>>>>> Signed-off-by: Mukesh Rathor <mrathor@linux.microsoft.com>
->>>>>>>> ---
->>>>>>>>      drivers/hv/mshv_root_main.c | 115 ++++++++++++++++++++++++++++++++++++
->>>>>>>>      1 file changed, 115 insertions(+)
->>>>>>>>
->>>>>>>> diff --git a/drivers/hv/mshv_root_main.c b/drivers/hv/mshv_root_main.c
->>>>>>>> index 03f3aa9f5541..4c8bc7cd0888 100644
->>>>>>>> --- a/drivers/hv/mshv_root_main.c
->>>>>>>> +++ b/drivers/hv/mshv_root_main.c
->>>>>>>> @@ -56,6 +56,14 @@ struct hv_stats_page {
->>>>>>>>      	};
->>>>>>>>      } __packed;
->>>>>>>> +bool hv_nofull_mmio;   /* don't map entire mmio region upon fault */
->>>>>>>> +static int __init setup_hv_full_mmio(char *str)
->>>>>>>> +{
->>>>>>>> +	hv_nofull_mmio = true;
->>>>>>>> +	return 0;
->>>>>>>> +}
->>>>>>>> +__setup("hv_nofull_mmio", setup_hv_full_mmio);
->>>>>>>> +
->>>>>>>>      struct mshv_root mshv_root;
->>>>>>>>      enum hv_scheduler_type hv_scheduler_type;
->>>>>>>> @@ -612,6 +620,109 @@ mshv_partition_region_by_gfn(struct mshv_partition *partition, u64 gfn)
->>>>>>>>      }
->>>>>>>>      #ifdef CONFIG_X86_64
->>>>>>>> +
->>>>>>>> +/*
->>>>>>>> + * Check if uaddr is for mmio range. If yes, return 0 with mmio_pfn filled in
->>>>>>>> + * else just return -errno.
->>>>>>>> + */
->>>>>>>> +static int mshv_chk_get_mmio_start_pfn(struct mshv_partition *pt, u64 gfn,
->>>>>>>> +				       u64 *mmio_pfnp)
->>>>>>>> +{
->>>>>>>> +	struct vm_area_struct *vma;
->>>>>>>> +	bool is_mmio;
->>>>>>>> +	u64 uaddr;
->>>>>>>> +	struct mshv_mem_region *mreg;
->>>>>>>> +	struct follow_pfnmap_args pfnmap_args;
->>>>>>>> +	int rc = -EINVAL;
->>>>>>>> +
->>>>>>>> +	/*
->>>>>>>> +	 * Do not allow mem region to be deleted beneath us. VFIO uses
->>>>>>>> +	 * useraddr vma to lookup pci bar pfn.
->>>>>>>> +	 */
->>>>>>>> +	spin_lock(&pt->pt_mem_regions_lock);
->>>>>>>> +
->>>>>>>> +	/* Get the region again under the lock */
->>>>>>>> +	mreg = mshv_partition_region_by_gfn(pt, gfn);
->>>>>>>> +	if (mreg == NULL || mreg->type != MSHV_REGION_TYPE_MMIO)
->>>>>>>> +		goto unlock_pt_out;
->>>>>>>> +
->>>>>>>> +	uaddr = mreg->start_uaddr +
->>>>>>>> +		((gfn - mreg->start_gfn) << HV_HYP_PAGE_SHIFT);
->>>>>>>> +
->>>>>>>> +	mmap_read_lock(current->mm);
->>>>>>>
->>>>>>> Semaphore can't be taken under spinlock.
->>>>>
->>>>>>
->>>>>> Yeah, something didn't feel right here and I meant to recheck, now regret
->>>>>> rushing to submit the patch.
->>>>>>
->>>>>> Rethinking, I think the pt_mem_regions_lock is not needed to protect
->>>>>> the uaddr because unmap will properly serialize via the mm lock.
->>>>>>
->>>>>>
->>>>>>>> +	vma = vma_lookup(current->mm, uaddr);
->>>>>>>> +	is_mmio = vma ? !!(vma->vm_flags & (VM_IO | VM_PFNMAP)) : 0;
->>>>>>>
->>>>>>> Why this check is needed again?
->>>>>>
->>>>>> To make sure region did not change. This check is under lock.
->>>>>>
->>>>>
->>>>> How can this happen? One can't change VMA type without unmapping it
->>>>> first. And unmapping it leads to a kernel MMIO region state dangling
->>>>> around without corresponding user space mapping.
->>>>
->>>> Right, and vm_flags would not be mmio expected then.
->>>>
->>>>> This is similar to dangling pinned regions and should likely be
->>>>> addressed the same way by utilizing MMU notifiers to destpoy memoty
->>>>> regions is VMA is detached.
->>>>
->>>> I don't think we need that. Either it succeeds if the region did not
->>>> change at all, or just fails.
->>>>
->>>
->>> I'm afraid we do, as if the driver mapped a page with the previous
->>> memory region, and then the region is unmapped, the page will stay
->>> mapped in the hypervisor, but will be considered free by kernel, which
->>> in turn will lead to GPF upn next allocation.
->>
->> There are no ram pages for mmio regions. Also, we don't do much with
->> mmio regions other than tell the hyp about it.
->>
+On Fri, Jan 02, 2026 at 09:04:47PM +0530, Manivannan Sadhasivam wrote:
+> For enabling ACS without the cmdline params, the platform drivers are
+> expected to call pci_request_acs() API which sets a static flag,
+> 'pci_acs_enable' in drivers/pci/pci.c. And this flag is used to enable ACS
+> in pci_enable_acs() helper, which gets called during pci_acs_init(), as per
+> this call stack:
 > 
-> So, are you saying that the hypervisor does not use these pages and only
-> tracks them? That would make things easier.
-> However, if we later try to map a GPA that is already mapped, will the
-> hypervisor return an error?
-
-Hypervisor does not return an error.
-
-
-
-> Thanks,
-> Stanislav
+> -> pci_device_add()
+> 	-> pci_init_capabilities()
+> 		-> pci_acs_init()
+> 			/* check for pci_acs_enable */
+> 			-> pci_enable_acs()
 > 
->> Thanks,
->> -Mukesh
->>
->>
->>> With pinned regions we issue is similar but less impacting: pages can't
->>> be released by user space unmapping and thus will be simply leaked, but
->>> the system stays intact.
->>>
->>> MMIO regions are simila to movable region in this regard: they don't
->>> reference the user pages, and thus this guest region replaement is a
->>> stright wat to kernel panic.
->>>
->>>>
->>>>>>> The region type is stored on the region itself.
->>>>>>> And the type is checked on the caller side.
->>>>>>>
->>>>>>>> +	if (!is_mmio)
->>>>>>>> +		goto unlock_mmap_out;
->>>>>>>> +
->>>>>>>> +	pfnmap_args.vma = vma;
->>>>>>>> +	pfnmap_args.address = uaddr;
->>>>>>>> +
->>>>>>>> +	rc = follow_pfnmap_start(&pfnmap_args);
->>>>>>>> +	if (rc) {
->>>>>>>> +		rc = fixup_user_fault(current->mm, uaddr, FAULT_FLAG_WRITE,
->>>>>>>> +				      NULL);
->>>>>>>> +		if (rc)
->>>>>>>> +			goto unlock_mmap_out;
->>>>>>>> +
->>>>>>>> +		rc = follow_pfnmap_start(&pfnmap_args);
->>>>>>>> +		if (rc)
->>>>>>>> +			goto unlock_mmap_out;
->>>>>>>> +	}
->>>>>>>> +
->>>>>>>> +	*mmio_pfnp = pfnmap_args.pfn;
->>>>>>>> +	follow_pfnmap_end(&pfnmap_args);
->>>>>>>> +d
->>>>>>>> +unlock_mmap_out:
->>>>>>>> +	mmap_read_unlock(current->mm);
->>>>>>>> +unlock_pt_out:
->>>>>>>> +	spin_unlock(&pt->pt_mem_regions_lock);
->>>>>>>> +	return rc;
->>>>>>>> +}
->>>>>>>> +
->>>>>>>> +/*
->>>>>>>> + * At present, the only unmapped gpa is mmio space. Verify if it's mmio
->>>>>>>> + * and resolve if possible.
->>>>>>>> + * Returns: True if valid mmio intercept and it was handled, else false
->>>>>>>> + */
->>>>>>>> +static bool mshv_handle_unmapped_gpa(struct mshv_vp *vp)
->>>>>>>> +{
->>>>>>>> +	struct hv_message *hvmsg = vp->vp_intercept_msg_page;
->>>>>>>> +	struct hv_x64_memory_intercept_message *msg;
->>>>>>>> +	union hv_x64_memory_access_info accinfo;
->>>>>>>> +	u64 gfn, mmio_spa, numpgs;
->>>>>>>> +	struct mshv_mem_region *mreg;
->>>>>>>> +	int rc;
->>>>>>>> +	struct mshv_partition *pt = vp->vp_partition;
->>>>>>>> +
->>>>>>>> +	msg = (struct hv_x64_memory_intercept_message *)hvmsg->u.payload;
->>>>>>>> +	accinfo = msg->memory_access_info;
->>>>>>>> +
->>>>>>>> +	if (!accinfo.gva_gpa_valid)
->>>>>>>> +		return false;
->>>>>>>> +
->>>>>>>> +	/* Do a fast check and bail if non mmio intercept */
->>>>>>>> +	gfn = msg->guest_physical_address >> HV_HYP_PAGE_SHIFT;
->>>>>>>> +	mreg = mshv_partition_region_by_gfn(pt, gfn);
->>>>>>>
->>>>>>> This call needs to be protected by the spinlock.
->>>>>>
->>>>>> This is sorta fast path to bail. We recheck under partition lock above.
->>>>>>
->>>>>
->>>>> Accessing the list of regions without lock is unsafe.
->>>>
->>>> I am not sure why? This check is done by a vcpu thread, so regions
->>>> will not have just gone away.
->>>>
->>>
->>> This is shared resources. Multiple VP thread get into this function
->>> simultaneously, so there is a race already. But this one we can live
->>> with without locking as they don't mutate the list of the regions.
->>>
->>> The issue happens when VMM adds or removed another region as it mutates
->>> the list and races with VP threads doing this lookup.
->>>
->>> Thanks,
->>> Stanislav
->>>
->>>
->>>> Thanks,
->>>> -Mukesh
->>>>
->>>>
->>>>> Thanks,
->>>>> Stanislav
->>>>>
->>>>>> Thanks,
->>>>>> -Mukesh
->>>>>>
->>>>>>
->>>>>>> Thanks,
->>>>>>> Stanislav
->>>>>>>
->>>>>>>> +	if (mreg == NULL || mreg->type != MSHV_REGION_TYPE_MMIO)
->>>>>>>> +		return false;
->>>>>>>> +
->>>>>>>> +	rc = mshv_chk_get_mmio_start_pfn(pt, gfn, &mmio_spa);
->>>>>>>> +	if (rc)
->>>>>>>> +		return false;
->>>>>>>> +
->>>>>>>> +	if (!hv_nofull_mmio) {		/* default case */
->>>>>>>> +		gfn = mreg->start_gfn;
->>>>>>>> +		mmio_spa = mmio_spa - (gfn - mreg->start_gfn);
->>>>>>>> +		numpgs = mreg->nr_pages;
->>>>>>>> +	} else
->>>>>>>> +		numpgs = 1;
->>>>>>>> +
->>>>>>>> +	rc = hv_call_map_mmio_pages(pt->pt_id, gfn, mmio_spa, numpgs);
->>>>>>>> +
->>>>>>>> +	return rc == 0;
->>>>>>>> +}
->>>>>>>> +
->>>>>>>>      static struct mshv_mem_region *
->>>>>>>>      mshv_partition_region_by_gfn_get(struct mshv_partition *p, u64 gfn)
->>>>>>>>      {
->>>>>>>> @@ -666,13 +777,17 @@ static bool mshv_handle_gpa_intercept(struct mshv_vp *vp)
->>>>>>>>      	return ret;
->>>>>>>>      }
->>>>>>>> +
->>>>>>>>      #else  /* CONFIG_X86_64 */
->>>>>>>> +static bool mshv_handle_unmapped_gpa(struct mshv_vp *vp) { return false; }
->>>>>>>>      static bool mshv_handle_gpa_intercept(struct mshv_vp *vp) { return false; }
->>>>>>>>      #endif /* CONFIG_X86_64 */
->>>>>>>>      static bool mshv_vp_handle_intercept(struct mshv_vp *vp)
->>>>>>>>      {
->>>>>>>>      	switch (vp->vp_intercept_msg_page->header.message_type) {
->>>>>>>> +	case HVMSG_UNMAPPED_GPA:
->>>>>>>> +		return mshv_handle_unmapped_gpa(vp);
->>>>>>>>      	case HVMSG_GPA_INTERCEPT:
->>>>>>>>      		return mshv_handle_gpa_intercept(vp);
->>>>>>>>      	}
->>>>>>>> -- 
->>>>>>>> 2.51.2.vfs.0.1
->>>>>>>>
+> For the OF platforms, pci_request_acs() is called during
+> of_iommu_configure() during device_add(), as per this call stack:
+> 
+> -> device_add()
+> 	-> iommu_bus_notifier()
+> 		-> iommu_probe_device()
+> 			-> pci_dma_configure()
+> 				-> of_dma_configure()
+> 					-> of_iommu_configure()
+> 						/* set pci_acs_enable */
+> 						-> pci_request_acs()
+> 
+> As seen from both call stacks, pci_enable_acs() is called way before the
+> invocation of pci_request_acs() for the OF platforms. This means,
+> pci_enable_acs() will not enable ACS for the first device that gets
+> enumerated, which is usally the Root Port device. But since the static
+> flag, 'pci_acs_enable' is set *afterwards*, ACS will be enabled for the
+> ACS capable devices enumerated later.
+> 
+> To fix this issue, do not call pci_enable_acs() from pci_acs_init(), but
+> only from pci_dma_configure() after calling of_dma_configure(). This makes
+> sure that pci_enable_acs() only gets called after the IOMMU framework has
+> called pci_request_acs(). The ACS enablement flow now looks like:
+> 
+> -> pci_device_add()
+> 	-> pci_init_capabilities()
+> 		/* Just store the ACS cap */
+> 		-> pci_acs_init()
+> 	-> device_add()
+> 		...
+> 		-> pci_dma_configure()
+> 			-> of_dma_configure()
+> 				-> pci_request_acs()
+> 			-> pci_enable_acs()
+> 
+> For the ACPI platforms, pci_request_acs() is called during ACPI
+> initialization time itself, independent of the IOMMU framework.
 
+I don't think cmdline params are relevant, since I don't see any that
+set pci_acs_enable or call pci_request_acs().
+
+I propose a longer but combined call chain in the commit log to show
+the old sequence vs the new one.  I do notice the double call of
+pci_enable_acs() (along with dev->bus->dma_configure()), which all
+looks odd, but maybe it will be rationalized someday:
+
+    PCI: Enable ACS after configuring IOMMU for OF platforms
+    
+    Platform, ACPI, or IOMMU drivers call pci_request_acs(), which sets
+    'pci_acs_enable' to request that ACS be enabled for any devices enumerated
+    in the future.
+    
+    OF platforms called pci_enable_acs() for the first device before
+    of_iommu_configure() called pci_request_acs(), so ACS was never enabled for
+    that device (typically a Root Port).
+    
+    Call pci_enable_acs() later, from pci_dma_configure(), after
+    of_dma_configure() has had a chance to call pci_request_acs().
+    
+    Here's the call path, showing the move of pci_enable_acs() from
+    pci_acs_init() to pci_dma_configure(), where it always happens after
+    pci_request_acs():
+    
+        pci_device_add
+          pci_init_capabilities
+            pci_acs_init
+     -        pci_enable_acs
+     -          if (pci_acs_enable)                <-- previous test
+     -            ...
+          device_add
+            bus_notify(BUS_NOTIFY_ADD_DEVICE)
+              iommu_bus_notifier
+                iommu_probe_device
+                  iommu_init_device
+                    dev->bus->dma_configure
+                      pci_dma_configure            # pci_bus_type.dma_configure
+                        of_dma_configure
+                          of_iommu_configure
+                            pci_request_acs
+                              pci_acs_enable = 1   <-- set
+     +                  pci_enable_acs
+     +                    if (pci_acs_enable)      <-- new test
+     +                      ...
+            bus_probe_device
+              device_initial_probe
+                ...
+                  really_probe
+                    dev->bus->dma_configure
+                      pci_dma_configure            # pci_bus_type.dma_configure
+                        ...
+                          pci_enable_acs
+    
+    Note that we will now call pci_enable_acs() twice for every device, first
+    from the iommu_probe_device() path and again from the really_probe() path.
+    Presumably that's not an issue since we also call dev->bus->dma_configure()
+    twice.
+    
+    For the ACPI platforms, pci_request_acs() is called during ACPI
+    initialization time itself, independent of the IOMMU framework.
+
+> Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> Tested-by: Naresh Kamboju <naresh.kamboju@linaro.org>
+> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+> ---
+>  drivers/pci/pci-driver.c | 8 ++++++++
+>  drivers/pci/pci.c        | 8 --------
+>  drivers/pci/pci.h        | 1 +
+>  3 files changed, 9 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
+> index 7c2d9d596258..301a9418e38e 100644
+> --- a/drivers/pci/pci-driver.c
+> +++ b/drivers/pci/pci-driver.c
+> @@ -1650,6 +1650,14 @@ static int pci_dma_configure(struct device *dev)
+>  		ret = acpi_dma_configure(dev, acpi_get_dma_attr(adev));
+>  	}
+>  
+> +	/*
+> +	 * Attempt to enable ACS regardless of capability because some Root
+> +	 * Ports (e.g. those quirked with *_intel_pch_acs_*) do not have
+> +	 * the standard ACS capability but still support ACS via those
+> +	 * quirks.
+> +	 */
+> +	pci_enable_acs(to_pci_dev(dev));
+> +
+>  	pci_put_host_bridge_device(bridge);
+>  
+>  	/* @drv may not be valid when we're called from the IOMMU layer */
+> diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+> index 13dbb405dc31..2c3d0a2d6973 100644
+> --- a/drivers/pci/pci.c
+> +++ b/drivers/pci/pci.c
+> @@ -3648,14 +3648,6 @@ bool pci_acs_path_enabled(struct pci_dev *start,
+>  void pci_acs_init(struct pci_dev *dev)
+>  {
+>  	dev->acs_cap = pci_find_ext_capability(dev, PCI_EXT_CAP_ID_ACS);
+> -
+> -	/*
+> -	 * Attempt to enable ACS regardless of capability because some Root
+> -	 * Ports (e.g. those quirked with *_intel_pch_acs_*) do not have
+> -	 * the standard ACS capability but still support ACS via those
+> -	 * quirks.
+> -	 */
+> -	pci_enable_acs(dev);
+>  }
+>  
+>  /**
+> diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
+> index 0e67014aa001..4592ede0ebcc 100644
+> --- a/drivers/pci/pci.h
+> +++ b/drivers/pci/pci.h
+> @@ -939,6 +939,7 @@ static inline resource_size_t pci_resource_alignment(struct pci_dev *dev,
+>  }
+>  
+>  void pci_acs_init(struct pci_dev *dev);
+> +void pci_enable_acs(struct pci_dev *dev);
+>  #ifdef CONFIG_PCI_QUIRKS
+>  int pci_dev_specific_acs_enabled(struct pci_dev *dev, u16 acs_flags);
+>  int pci_dev_specific_enable_acs(struct pci_dev *dev);
+> 
+> -- 
+> 2.48.1
+> 
