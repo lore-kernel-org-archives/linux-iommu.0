@@ -1,260 +1,182 @@
-Received: from SA9PR02CU001.outbound.protection.outlook.com (mail-southcentralusazon11013001.outbound.protection.outlook.com [40.93.196.1])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D86C427A07;
-	Wed,  4 Feb 2026 16:22:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.196.1
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770222120; cv=fail; b=EOu8d9OhKnTHR59ge+WejlL7zy94vJXaQZgOzKxPfvzZGxMBgMecgGuB53COoN5Ot+KJkYilPVEF4h7KvOYJP+Vra6OiJqV1w0ImbyRa9Qx+QK/8+hSJ8YFXRzdsLPCQXpGxlbZsFy0B7BZThqnNPj3HeiEyQ0iyslYYXRqhcCI=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770222120; c=relaxed/simple;
-	bh=gmotv6V6sXj+y5H7bikYziowjusveCVnK5GPT+spOTI=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=qFBdgfjRCNpyt0t2lwt6T322PQbbh7A+tWjD0UUmIVCnv6Ot4SONC3qxkYbfB6DiCUJz58OgCos4MMgJZGySBjeBALbMRNUX7VsYfVceX4xV/foY2GIXu9+EZcozBFKiAtgIdZUzZsDzDLgF+wphy+V06/NJVCMUkHqgAHUTMw8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=dw10h5er; arc=fail smtp.client-ip=40.93.196.1
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 703382F3601
+	for <iommu@lists.linux.dev>; Wed,  4 Feb 2026 16:32:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1770222754; cv=none; b=Yuz4pB3P5tMvJD2loXJpcoZdSenhcp2TZj5aRNWD6qAh2QDenfiPDzfNfaA1caz1+WjkizamRLnKsOlh16egEvdZRFVwDfNyOC/KGHOIqmInhVrEonYVtdttDDz3yrcVu+7e8cFBfP7SVLTG7qOVFnqneC4xrRPGolNmzjUekRE=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1770222754; c=relaxed/simple;
+	bh=tC0iPn0gVF6ar/L5b9qrFh7coBiWmg18UfsKp1j9LYs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=I4dccXLqOrBy+yxxZ/p8f3TfqCD8jbwkxqhrdTDCmk6qjx33t5+pR2lBv/17v15TY0hOe/iSaBpwGjwhaUGqLkBeNKwrTJrDt3Ad53gLw6biR2baS/rDgDVI1kPdFQhyc37fesWVCWgV9ORx2irfIftHQE+wb88hld3E5xYBhj4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=B1AEzZ1U; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=iNA0xuyp; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="dw10h5er"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=C5K24x3TjAR4QcyEqR9Rr6MyMVRl01zPDe+HfO3GWYGJgYDKeNj6nqjkmmO/0Lv00M0vq/Lz9ZaVO9V2C4SmD6SYyPZOCK7ysY95NNCIVN2jGEV9iXWYtVwnLuLE8Q+eAApn/UQopS1cBJgq+WabGWlAQsOjWt7lRdyid/DQAv3Tjw7xIW+uN4feZAmnJzmjRZEPrw5K9c3k/J5Rkc615kEIVOsM2H1Xmx/5fLRFyPSfD4q1YEhtYpDxMOUDO/fAXIEM/diQBHVeABoWXHRlDYliAPEenk/0zKD/eS8bKGjzzACrNd3YXC9H/rAwO/yhaD04KhTJDytn9YTH0pFVbg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Rm3DWcke8SB4n13gY+v4wuFPjMZQKZyLvLnh5u9elGw=;
- b=JjsuyQEUJY44zfL8tdbXPvM1OjmFBcmj6pCuVYqT4nvz6AeRRyP6kfvnTfyShf2XeSMDbBSgw5bXxAX0Ym0AQ+dG1exE7EC3WWg1zceQ3xu68bxFV/AJKvzle6Fy5gEq3pGDtULjLWP5wlPtyFbR6qcBx/VxIoZXVTm7J+ffSDcq+9v6ulyAaihpXxN48LynUA0ALtlqB7K7xLgcC1zoaLr6sJakNqpPX2bkg7BPuxpwf3vSQx1ffNho+9ln9+nFbbYx84aL2yjRy9zYlm3kXYgmUaPC/IRlZdS/Q+G7nFHlIxOEzCAQpeilp+MP6+j5j7q85L7Jk86RY/Hy2oFgow==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Rm3DWcke8SB4n13gY+v4wuFPjMZQKZyLvLnh5u9elGw=;
- b=dw10h5eruIfdxeozKYB6HqcxBW48A8dWWZ3aZNxwTuOpBhg5hh88qUrHqSuaO6rARjjKaq0arbQVqAbz3odR7ia9zPetdPHuPmlBF4KvfuDyzVIFI1MdOHA7h5ryHPMfJpxF1SRJ/knd3GA8dMbqN5eT9cDG9DkWOiJc8ModDbo=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from PH7PR12MB5685.namprd12.prod.outlook.com (2603:10b6:510:13c::22)
- by MW4PR12MB5601.namprd12.prod.outlook.com (2603:10b6:303:168::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9587.13; Wed, 4 Feb
- 2026 16:21:53 +0000
-Received: from PH7PR12MB5685.namprd12.prod.outlook.com
- ([fe80::ce69:cfae:774d:a65c]) by PH7PR12MB5685.namprd12.prod.outlook.com
- ([fe80::ce69:cfae:774d:a65c%5]) with mapi id 15.20.9587.010; Wed, 4 Feb 2026
- 16:21:53 +0000
-Message-ID: <fb9bf53a-7962-451a-bac2-c61eb52c7a0f@amd.com>
-Date: Wed, 4 Feb 2026 17:21:45 +0100
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v7 7/8] vfio: Permit VFIO to work with pinned importers
-To: Leon Romanovsky <leon@kernel.org>, Sumit Semwal
- <sumit.semwal@linaro.org>, Alex Deucher <alexander.deucher@amd.com>,
- David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
- Gerd Hoffmann <kraxel@redhat.com>,
- Dmitry Osipenko <dmitry.osipenko@collabora.com>,
- Gurchetan Singh <gurchetansingh@chromium.org>, Chia-I Wu
- <olvaffe@gmail.com>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
- Lucas De Marchi <lucas.demarchi@intel.com>,
- =?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
- Rodrigo Vivi <rodrigo.vivi@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
- Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Felix Kuehling <Felix.Kuehling@amd.com>, Alex Williamson <alex@shazbot.org>,
- Ankit Agrawal <ankita@nvidia.com>,
- Vivek Kasireddy <vivek.kasireddy@intel.com>
-Cc: linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
- linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org,
- amd-gfx@lists.freedesktop.org, virtualization@lists.linux.dev,
- intel-xe@lists.freedesktop.org, linux-rdma@vger.kernel.org,
- iommu@lists.linux.dev, kvm@vger.kernel.org
-References: <20260131-dmabuf-revoke-v7-0-463d956bd527@nvidia.com>
- <20260131-dmabuf-revoke-v7-7-463d956bd527@nvidia.com>
-Content-Language: en-US
-From: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
-In-Reply-To: <20260131-dmabuf-revoke-v7-7-463d956bd527@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: FR4P281CA0446.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:c6::12) To PH7PR12MB5685.namprd12.prod.outlook.com
- (2603:10b6:510:13c::22)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="B1AEzZ1U";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="iNA0xuyp"
+Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 614CIOmX1245881
+	for <iommu@lists.linux.dev>; Wed, 4 Feb 2026 16:32:33 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-type:date:from:in-reply-to:message-id:mime-version
+	:references:subject:to; s=qcppdkim1; bh=Ot0UHj52m/IAOkUIkudhskal
+	lh3JrxoSMHxt2SdBTMM=; b=B1AEzZ1U9pPgEWTPnBotUvorfF4OHQZIz8ESDF2i
+	iGWhYvGcDsS17S9D/f9yBZZDHmWo7AQcBa1dH449yO1PBSzvtsBry2y2rLv9rE1M
+	VsLvJhuWq7GOQVHT/VAFB+5T9wzMMXk0dAWXH+U3tsO0j6Y5OgqBPhm+ciSJXlme
+	D0mXt2T83yUhl0tFEANOTD+6eV7mwwQ3Awr/gWLeMCGBx+HibBpWzyquhuBTBCpq
+	ud8UFJCOGoyUjkDTrDLLZFmB1HDDcg60e1O9/N1XF09eBkYONjJgEbbjNAJIX32f
+	EOCKp29yLl9MpI1W4Yj4Sa9xBPYdNUj/ayZjrIsB8MCG0Q==
+Received: from mail-dy1-f199.google.com (mail-dy1-f199.google.com [74.125.82.199])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4c3ru9b8w1-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Wed, 04 Feb 2026 16:32:33 +0000 (GMT)
+Received: by mail-dy1-f199.google.com with SMTP id 5a478bee46e88-2b71c5826fbso7888768eec.1
+        for <iommu@lists.linux.dev>; Wed, 04 Feb 2026 08:32:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1770222753; x=1770827553; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=Ot0UHj52m/IAOkUIkudhskallh3JrxoSMHxt2SdBTMM=;
+        b=iNA0xuypqUDdyvzDt54VIxbkRjBPGaaQqeXypTblfwW3nlBHARMFmDnmThYSCqj3mo
+         axeJ5/9/I5d6r5RnlSWIT3nE4/RYFU7sktdYK4xOqW/wqcIiejUi60CxfgdNnyYRh/4U
+         9whsIBfX+P6Fl4OPFkAB6Oewa1X6VSAnmK8zzKpjXStujjyls6a0dvSmcNYJrG1aCEP8
+         jjxgALuAWWHz7Z+OaoVoHTq6enw8aOZSL7IkdeHqQwI2megQuyFTklVKALbQjSMmgjYd
+         CtDHTxHaLSbUQxYV++XCnNPaGjHCZTPp5dF2KHvwZvbu+skJcilKEx8rr0LMmEy7ewxq
+         fM5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1770222753; x=1770827553;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Ot0UHj52m/IAOkUIkudhskallh3JrxoSMHxt2SdBTMM=;
+        b=eykVRDAe50WzOYyf5raxkKMu9P0nerJB9a8299n39R3QHRAni89FHLYiHo+shDYzdz
+         uyc+JwpPhKtCOdEFd2tiO6YYakhxKpdUt6Bv98xKdnivuIUE3M+7RijoV7X98/ugfi0N
+         dgXWwG1ZF0F/mAUZXUK4jJqTxBqiLA1+35XjtCqnwTNJ7wfyBnmrWSczwu8IGsN3SXlQ
+         UabbdNCpv5fiDcebq7VKlwgUMNuWxqgLGCPhqM9+aRzgxJIZbJpJE9HsTpuMClaTXtzQ
+         tZeP/1FXbmjIDJtwPHs327WDihGDgVshnlEwZW/YJVeelVQYlZJDBLS+jLM+u2ZN57Ra
+         wRyw==
+X-Forwarded-Encrypted: i=1; AJvYcCVaT7U4rQ01cfYO1fRN0hqlc5KAXLIK4nu2IvR7xxMWFlG5ptKQnWhDQ49ZJ2q4YLjAP9YNlQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzFs6itJjY7TNouUi8Ipj44O+iy0VQEpwNS1ZZkMb/F1uZFgUQN
+	GIMw9kIb/s+269MpqJdw1Gw/04K7smCCo/0+T0VSE3xDZMqE/k7vJrdBu7KdeUH8RwEAn701bKi
+	VCvOJn6e4z2yygGcXGj4e6woipxwDnH4dbMD1ih5Q70bBacbXZqk+6dIrcw==
+X-Gm-Gg: AZuq6aKAEFUmBDvlcatFEV2Zz7j1Pz349K9DfMxUGy7gRwarUsCEa+lnIG8u7SNZnLL
+	OtNUiMXHg8fVMtoO0q6UhGwp18d1NTf8vBRn57M2B2sZNSGs/Xsg4jE+8RDgAe+kew++tYCMazK
+	LBlM60maa4ws6hUs/Dcw7DUTH/+XBhv2JLBl5CVYjA/+j/BVmtJvva0rl5jBdklw3yWPk08+8Lp
+	QG2UcaTRl9NDqfABU16uo40ZAEyjvc7ze49mnFMbw6kpTTzBMGAccBg75PJWE7cHZEkybobIK3K
+	XvBGdcI5E5DzpGgWJlV9Vcd4auarxpMbxLjuEq0CFl911LxVNEjyMF8q6VAyvUldu41BcODHae1
+	LcG6WWuP/NiNvoElYuNQ=
+X-Received: by 2002:a05:7301:9f0c:b0:2b8:2748:1337 with SMTP id 5a478bee46e88-2b83291a20emr1556938eec.7.1770222752716;
+        Wed, 04 Feb 2026 08:32:32 -0800 (PST)
+X-Received: by 2002:a05:7301:9f0c:b0:2b8:2748:1337 with SMTP id 5a478bee46e88-2b83291a20emr1556923eec.7.1770222752116;
+        Wed, 04 Feb 2026 08:32:32 -0800 (PST)
+Received: from localhost ([140.82.166.162])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2b832fe59fasm1711886eec.34.2026.02.04.08.32.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 Feb 2026 08:32:31 -0800 (PST)
+Date: Wed, 4 Feb 2026 10:32:30 -0600
+From: Andrew Jones <andrew.jones@oss.qualcomm.com>
+To: Yaxing Guo <guoyaxing@bosc.ac.cn>
+Cc: tjeznach@rivosinc.com, joro@8bytes.org, will@kernel.org,
+        robin.murphy@arm.com, pjw@kernel.org, palmer@dabbelt.com,
+        aou@eecs.berkeley.edu, alex@ghiti.fr, iommu@lists.linux.dev,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1] iommu/riscv: Skip IRQ count check when using MSI
+ interrupts
+Message-ID: <2u46b5uue3jbim7u5c5p3oi7pgkq6vv2q7w3bkzvt3iatwredq@35o6g2rbyheb>
+References: <20260130065420.16811-1-guoyaxing@bosc.ac.cn>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH7PR12MB5685:EE_|MW4PR12MB5601:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4cf6377c-c49a-44b6-bc3e-08de640981f5
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|7416014|376014|366016|921020;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?L253RXhGZ01YRmxHN3NpNi9CWUY1eW02OFdvUDQ3Ryt1R1p1d3JUOEVxOENu?=
- =?utf-8?B?Z0pzdXJHejRRQUl2Q2Q3aDJ1cm9qY1RtYmwrUmNRUnhqemJmKzZLR0h0TERl?=
- =?utf-8?B?QVVwRnRwQXpSVjBrWngrTVFRTEp1TUdwZWppUXdCVzkwU2J6TVJkVk9wNXR6?=
- =?utf-8?B?ZlZ3UFV6SFd2STZUTFp3SnllOEFmZ2xKTVZHZFZBbURBYTJ2Vjlvc3FyenZh?=
- =?utf-8?B?K2gvSkZXNkdZZE9aV3JjWWlobnhyM0VTcjNVK1VYVXdYVkVRSktMSGJaTVpn?=
- =?utf-8?B?bjlON1dpTm1ZVHkvZXRHMGovRTI4T0JGZkJVOTd3TDdqb2c1MGdhVzNIYVpR?=
- =?utf-8?B?bW1CQWNpU2FjYW1DTFBpQm00MHFUK1BsRXE5bU5DOVFzSDRabjk0VjRRVkQz?=
- =?utf-8?B?WHV2b0NERy9CdUFTT3QzNjZuK0VYdS9FVmhZL0ZMUnMrRGZFUGVBZXhHcEdu?=
- =?utf-8?B?ZzRsWEhBNGNLNFNtYjRPZnlQSEhaMkxOSitVaUJQcjl1N2hnbEIrREhPMHcy?=
- =?utf-8?B?WlBQMmwxUGkyUHNDdnRDKzZsaGg0Qk14WERmSy9qSUdkYnQ2QXhreEJZVGZG?=
- =?utf-8?B?ellQcS9zaTk0T2NpWFNQTlZYRUY5OWxSaUFWbnp1NTdWVlV6T3J4bi9IM2pi?=
- =?utf-8?B?Y1F0QjMzWGVHalFMRkR5V05uQ2IyQTk0QWcxVVE4WmdZZlZPaDZ0OU5pc2Y4?=
- =?utf-8?B?MnZiNkIveTlyS2VzTGRjTHdmaWdydGVKcm00VUpGTEUrNzdja29HblM3SG1M?=
- =?utf-8?B?OTB3bzZqZHRyWTRvc1RWTzl1MGVqQ0ZscXpyOTMrMW85OFV5WXpNSEZNQkM0?=
- =?utf-8?B?MzQzSlRoYTRPUTJwRmpjcGMrbExnc0hnb0pBNG14TUUyampoczVtYzNubXNa?=
- =?utf-8?B?blo5NjdJSHRRcncwS3QzZnB4ak15S2JyZFkvSjF3V1RjdWNIRmhnYVlOd0hu?=
- =?utf-8?B?V1hqRWFwK0JNcEFhOUpQckVuMXBzU05UZGVpRG14NkRHMFhVdDhzZDlHVWhp?=
- =?utf-8?B?YmtGSDBJZWtoZDFKTWZKTnp5Wk5Uc2cvQzdyd1JENUNtcFhEV0JqYWRTdlAy?=
- =?utf-8?B?K3ZVMFQzTXJnNEF2UitZMmZidGRRbXhUQzdEaFZORE1XODc3emJuM3JNcGVp?=
- =?utf-8?B?UTVWY29TODZ4bG9JNmQ3aE9KeVFiZUFIZkhjSUhHWk9sMWVwS295azliM1dR?=
- =?utf-8?B?eFExOVAzbjdoVTRjQ0EzaWRFcnVLb0p2Z3BMNVVwOERCZGRSSFhnejZZVWtr?=
- =?utf-8?B?MktPcWc2UnRBdEwxTUVsMTQzeW5uakhrTGYwZ0E5U0lva3F4ZTJvbUQ4VlZz?=
- =?utf-8?B?Rk1ONTVrZlNSdk5aWHYwWFRhblhZYksranRSSmt4OXFoTmRPODMwdTAvdGt1?=
- =?utf-8?B?OU9Ub3MwWk44VEFKTWcxMU5YcFhsYnZwMVhrY3FPQm44YWMwR1VEMncxeERv?=
- =?utf-8?B?Mld3MmhPcm95eFdxbnc2THJsK1N5bTg1bmZXSnlFWWFDZGswQmI0ZTJOZHB6?=
- =?utf-8?B?WVp1YlJTVjNadC8wb014aHMvVDdxRFNmUXZmckV2TlJOL2JBaklWaDgwL005?=
- =?utf-8?B?SVpZTW8vaFlDUXVUelZBaEZXeExES3ZQVkliZzNlQnVrWDFmc1lsNG82NlFz?=
- =?utf-8?B?L1FDOGg1QlhZQkU1SkRKc2Vxd1pYNGtQVjlYQzUvbTI2NFVWSE9XRTR0V0JJ?=
- =?utf-8?B?R01jMzY2ZmVQZE8yNHh1RTREY0JweVplbkI3NnRZN0RjdXBuVld3MitZVDlH?=
- =?utf-8?B?T1U4Wk5iK1gzRVVRL1ZRRVpmQmcwbkczcnNScU13Njd1NUFxT1V1Rk10OE5w?=
- =?utf-8?B?ZkpvbmNYVWgzOHErWUlXTGRvZm1OVnRBa2QzSFJtWWZNZmQvUUhuNWMyUW1H?=
- =?utf-8?B?VDczdEN4K0dJellIdFkxbFZFaDZKd3lOVE4wcG1SR1FKU1pDWWRsUVhiam5v?=
- =?utf-8?B?SVFpZjZRbVNQdnZKNW81YWtDUTg3ZGdOVXJGR1R4VVFPTTdmNjVKNU5ULzVu?=
- =?utf-8?B?eXNGUFlGb3MyMTlZWDNDUk1lYXRWMllQZlplU0pHOEtYVHNwcCtwOXlkbkV6?=
- =?utf-8?B?RVE4L0s4bFhDK25rekQ1TkR5TCtCbFVTVUdTOGprRE4vRWNvNDAwRnBiNzA0?=
- =?utf-8?B?MmR4TmIvTEk5Ykp0dEV2dzRVUHkxZ2x2YzBkZjJNUVFLaHFKM2hvMnRZeVA2?=
- =?utf-8?B?RGc9PQ==?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5685.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(376014)(366016)(921020);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?K1NLQ3d1OFloZVRVdTBEUU9zNXZCUXc4RzROMWF1QUM2SzJsMC9MTzZKWTJU?=
- =?utf-8?B?QkVBckVpU2kyeWk2ZVUxZ0NIYU5ZcGk3QnhEOGQ0ZnZGTWdqMWpxRmV3WGZY?=
- =?utf-8?B?c01XckZ0SGN3L29TcVgvSFA3b2k3OVBiUmpFOGsvVXVLU3NnSFc1b0hpNm1N?=
- =?utf-8?B?aXdYcHdVNnhENFRtZEJjSFRvbXRYRDhRTGZSTXMvUG5LZWVxcUplNUxyK2dU?=
- =?utf-8?B?cFFIV3Q5QTlpcnhJNVBDbTFLZE9WNHBYMWxwWlQrZXIrSzR2c1FQN3lsVlor?=
- =?utf-8?B?NnBFaFBEaHFENm42TzZoMUZMQ2JUQWRRci9ZN0JtR2QvL2pkNkVGYUZSM25G?=
- =?utf-8?B?T1lTRXBhNG5jTEVNRDFiaHNXYkpNejBhNkR2ZmV1WVZXSldiQ2owUnNrRmJt?=
- =?utf-8?B?b1ZzcGNDbS9vODlKNE1YMmZnaEZFN0RObzZLN0I5MVR3dDJoOStNcWExdG5R?=
- =?utf-8?B?ZHVPK1o3dUhUeVpDN21jQkxSRzZnMlVVKzBHM2k5ajBrVTRQMzZMZHBPaEg0?=
- =?utf-8?B?K0V1RDV2S21qbW9xbU1JYXJsQlAxMHpYMU04Y0ZQT3FtQVI2cm5OREovTEZ0?=
- =?utf-8?B?Z2JURTg1NG1SK1VZZmRTYS9sYmhrVm9VZDVlbno2VVlUQ05wUUxBTVIxWTQv?=
- =?utf-8?B?b05yUHJWU0pHVjJVY0tKbHNwdm1HVmpWd1BVK0RVd1hvS2l2TGFmZTh5djZt?=
- =?utf-8?B?Zm5yOU1lNlpvMTlKS1lnRkRETGZzMDduMVpmaDJYMXh0MDA3d2I3TkNkS3VR?=
- =?utf-8?B?V2tDd0NVOHJCSnRpVjl2RzNjeDZGZnIzMmZWNUUzQzhqZU5CRHplMjByZ2xD?=
- =?utf-8?B?bmpMbjZlU2NSaW9jSDBBS3NzTTJoNnd4N1dXRERFVWVVTXMzNk1sZDliNm9X?=
- =?utf-8?B?bVlGL3VSNGZzUkpMbEdKUFlYOUpORnV6SUVROWlpRENZeDJ0RU9BRUF3Y2hK?=
- =?utf-8?B?N2RpRjBiMW1QdThBTkZnQVRjMTh2WDY1VDdNa0NaRUxxN3l0TWwvY3hQR01U?=
- =?utf-8?B?NkhPb0hIOHErRm9ibkZFMEVScDBNRVl5SlpBS21mN2kwOWliVDlsUndON21q?=
- =?utf-8?B?c0FOSHN6UHg5OTJpOW9BZ2NRalYrLytCY1h2S1BRUlNDSHpDaW1MVDMxVTlK?=
- =?utf-8?B?YmdGOVZtK1V6a3NuS1VrL1Z3cnFjRWdIUHo3VUhlaXZJU3dKTmdsWFFFckQr?=
- =?utf-8?B?ZVlQSFZhdkRkTFJvQldSN3BDenJKYzk5Rlh3cFprUXA2NlpRdHM4dldLdVIy?=
- =?utf-8?B?bGZCQnVlSU5NYXdzM2pWNGpYUnNFZVlpbTBUckZEdW8vR1R2Rm1jMFZOelJI?=
- =?utf-8?B?aERrMGNsTHlaQno2QWFzN0x0RHUyVDA3Z0pVSTFCM1M0a1BiVmdzRkxzeTI5?=
- =?utf-8?B?TzVNMjdrVlRUZERaSnlXOUhIRDJ2RjNGekcza0pnZllKdm5uRkhlZVlYclZ2?=
- =?utf-8?B?YlBIcnZYMEluRjYwamRORnl0TDJ3czNpWkV4UEpmVjhPMEt1MU80T0t2NUV4?=
- =?utf-8?B?WXFnemwxdGpYVG01N1ZHc0kzM21ENGJsYi9hNTFnMmJrKzVYYkgySUlia0dY?=
- =?utf-8?B?UEczWlRUU2hYYlQ3S3BjMjZvbkV1Q2sxTG5PRk13cE0rN1lGazlUZDhEcXJ5?=
- =?utf-8?B?OGV2dkNCRjVkUXdkVXR2N0ZjT3BPd1NYbGlyQmNYVXZSS0psVExjejhQUUNO?=
- =?utf-8?B?RTkwMzNaUm54SHJldjl0V1VDOUxoSG1yaW5BbHo3M01TNjVxcGJRUXdHMUNQ?=
- =?utf-8?B?d3Qyb2l2QThteHEzWFlyUUtPSHNzWjlYb3hPQ2xqYXo5b2k4WlFuTnRMTndj?=
- =?utf-8?B?QXJVOVlXMkVicCt0eGdLQi8wWSt4M2hwY1dxV1F4UjVEamNIR3JKZVo2MWdr?=
- =?utf-8?B?TDF3RGFJT0JzYmkvL3VkOVZIV0wwNzBXSG9OSUk5QXMwdUtCMDZsbndTWlNW?=
- =?utf-8?B?UTIvZjVMOHJSeFlaNU9FY2RPdFVmWSt0Nm95Y0wzNGk2ZExQUmk1VVhGbEdt?=
- =?utf-8?B?bGJka1pxSXZLWlNRMG1vQjcyRDB6dmtsVEpuYUI5NzFiZjhXREptdmVuaEdX?=
- =?utf-8?B?MGJBcmJBRE5EVHRXWU9Pa0s2T2w2V09GMjZpY1RidW0xa3RhSkw5OFpTREx0?=
- =?utf-8?B?a3ptOFVzRW4yWmExTCtaL2FJby9saTVlbHBteGlzQUY3ZDhlVGZsaDV4Z29B?=
- =?utf-8?B?ZHpONERmWFlDdklUalZueXBLQlBlM2RFanFUY0o1T2ZIdXNNRkhDb0dLUTYv?=
- =?utf-8?B?L2hWaGRWTWFBYnhLTW9CdkRlYmlMVTN1aEM4aUNaWlhOdVA2bFNST3p3dW5v?=
- =?utf-8?Q?Hqox3iWGa+M6LUTCvW?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4cf6377c-c49a-44b6-bc3e-08de640981f5
-X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5685.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Feb 2026 16:21:53.3750
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ggWSSFPIlWl82N4LfQAblC16qbnUgaNii+P4OIVW0JKD8VwkqIetY/sh8TadadM9
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB5601
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260130065420.16811-1-guoyaxing@bosc.ac.cn>
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjA0MDEyNiBTYWx0ZWRfX5hKqtFvmkEKR
+ 9oUEN7Ovdv3OOp/+YiaPGB7qDpYuo1m1sJv8tuSLf1sJOxdGxSL0EDNWyRpTCPo+hgpNG4lQtG+
+ SMadCMKQ7NSgO9G12rK+IMzkrev1fXyRgZ10KLVIyOuEmsWPHU/2ZobEny/3IAlagQFohc3B/Qn
+ OeNwI1fp4NbtzHRc+Y6jOf8DAjWFUTuFEdUSJL67iSerEbIQIMG1IB1ADZJQ1Iauk+gXEoeN2dm
+ ENgm2KVKciOV6md32MJ7lprE+OV/fVbFsh29+/zHL0lceqe/Ih1r+Zzqa0ZAyOA+JZuLn34S2j7
+ txRYUyxoQ4p8y1Xx5OMO4/GSfpTvIMLf41Ywfj/fJGi/N61hJSFqaKyFVhkmjpxxbPtLAGkXg0H
+ wgx45QdUypTdyefK7Lko23SJn0hwVPrLxWEh85yPhzYuBUcsCUuKK73sJHPgcJ7jkT+o+9nqBeK
+ opgIK10LGNJiT7Xpjdg==
+X-Authority-Analysis: v=2.4 cv=IJoPywvG c=1 sm=1 tr=0 ts=698374a1 cx=c_pps
+ a=cFYjgdjTJScbgFmBucgdfQ==:117 a=cvcws7F5//HeuvjG1O1erQ==:17
+ a=kj9zAlcOel0A:10 a=HzLeVaNsDn8A:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=EUspDBNiAAAA:8 a=KTr5YeW84r-woyCYTtQA:9
+ a=CjuIK1q_8ugA:10 a=scEy_gLbYbu1JhEsrz4S:22
+X-Proofpoint-GUID: 9FkvoJYuWMvdNctv999VpdZ4ZmEY9tFu
+X-Proofpoint-ORIG-GUID: 9FkvoJYuWMvdNctv999VpdZ4ZmEY9tFu
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-02-04_05,2026-02-04_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ suspectscore=0 lowpriorityscore=0 phishscore=0 clxscore=1015 impostorscore=0
+ spamscore=0 bulkscore=0 malwarescore=0 priorityscore=1501 adultscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2601150000 definitions=main-2602040126
 
-On 1/31/26 06:34, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
+On Fri, Jan 30, 2026 at 02:54:20PM +0800, Yaxing Guo wrote:
+> In RISC-V IOMMU platform devices that use MSI interrupts (indicated by the
+> presence of 'msi-parent' in the device tree), there are no wired interrupt
+> lines, so calling platform_get_irq_count() returns 0 or -ENXIO, causing the
+> driver to fail during probe.
 > 
-> Till now VFIO has rejected pinned importers, largely to avoid being used
-> with the RDMA pinned importer that cannot handle a move_notify() to revoke
-> access.
+> However, MSI interrupts are allocated dynamically via the MSI subsystem and
+> do not appear in the device tree 'interrupts' property. Therefore, the
+> driver should not require a non-zero IRQ count when 'msi-parent' is present.
 > 
-> Using dma_buf_attach_revocable() it can tell the difference between pinned
-> importers that support the flow described in dma_buf_invalidate_mappings()
-> and those that don't.
+> This patch fixes the bug where probe fails when using MSI interrupts
+>  (which do not have an 'interrupts' property in the device tree)..
 > 
-> Thus permit compatible pinned importers.
+> Fixes: <d5f88acdd6ff> ("iommu/riscv: Add support for platform msi")
 > 
-> This is one of two items IOMMUFD requires to remove its private interface
-> to VFIO's dma-buf.
-> 
-> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-> Reviewed-by: Alex Williamson <alex@shazbot.org>
-> Reviewed-by: Christian König <christian.koenig@amd.com>
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> Signed-off-by: Yaxing Guo <guoyaxing@bosc.ac.cn>
 > ---
->  drivers/vfio/pci/vfio_pci_dmabuf.c | 15 +++------------
->  1 file changed, 3 insertions(+), 12 deletions(-)
+>  drivers/iommu/riscv/iommu-platform.c | 14 ++++++++------
+>  1 file changed, 8 insertions(+), 6 deletions(-)
 > 
-> diff --git a/drivers/vfio/pci/vfio_pci_dmabuf.c b/drivers/vfio/pci/vfio_pci_dmabuf.c
-> index 78d47e260f34..a5fb80e068ee 100644
-> --- a/drivers/vfio/pci/vfio_pci_dmabuf.c
-> +++ b/drivers/vfio/pci/vfio_pci_dmabuf.c
-> @@ -22,16 +22,6 @@ struct vfio_pci_dma_buf {
->  	u8 revoked : 1;
->  };
+> diff --git a/drivers/iommu/riscv/iommu-platform.c b/drivers/iommu/riscv/iommu-platform.c
+> index 83a28c83f991..8f15b06e8499 100644
+> --- a/drivers/iommu/riscv/iommu-platform.c
+> +++ b/drivers/iommu/riscv/iommu-platform.c
+> @@ -68,12 +68,7 @@ static int riscv_iommu_platform_probe(struct platform_device *pdev)
+>  	iommu->caps = riscv_iommu_readq(iommu, RISCV_IOMMU_REG_CAPABILITIES);
+>  	iommu->fctl = riscv_iommu_readl(iommu, RISCV_IOMMU_REG_FCTL);
 >  
-> -static int vfio_pci_dma_buf_pin(struct dma_buf_attachment *attachment)
-> -{
-> -	return -EOPNOTSUPP;
-> -}
-> -
-> -static void vfio_pci_dma_buf_unpin(struct dma_buf_attachment *attachment)
-> -{
-> -	/* Do nothing */
-> -}
-> -
-
-This chunk here doesn't want to apply to drm-misc-next, my educated guess is that the patch adding those lines is missing in that tree.
-
-How should we handle that? Patches 1-3 have already been pushed to drm-misc-next and I would rather like to push patches 4-6 through that branch as well.
-
-I can request a backmerge from the drm-misc-next maintainers, but then we clearly don't get that upstream this week.
-
-Regards,
-Christian.
-
->  static int vfio_pci_dma_buf_attach(struct dma_buf *dmabuf,
->  				   struct dma_buf_attachment *attachment)
->  {
-> @@ -43,6 +33,9 @@ static int vfio_pci_dma_buf_attach(struct dma_buf *dmabuf,
->  	if (priv->revoked)
->  		return -ENODEV;
+> -	iommu->irqs_count = platform_irq_count(pdev);
+> -	if (iommu->irqs_count <= 0)
+> -		return dev_err_probe(dev, -ENODEV,
+> -				     "no IRQ resources provided\n");
+> -	if (iommu->irqs_count > RISCV_IOMMU_INTR_COUNT)
+> -		iommu->irqs_count = RISCV_IOMMU_INTR_COUNT;
+> +	iommu->irqs_count = RISCV_IOMMU_INTR_COUNT;
 >  
-> +	if (!dma_buf_attach_revocable(attachment))
-> +		return -EOPNOTSUPP;
+>  	igs = FIELD_GET(RISCV_IOMMU_CAPABILITIES_IGS, iommu->caps);
+>  	switch (igs) {
+> @@ -120,6 +115,13 @@ static int riscv_iommu_platform_probe(struct platform_device *pdev)
+>  		fallthrough;
+>  
+>  	case RISCV_IOMMU_CAPABILITIES_IGS_WSI:
+> +		iommu->irqs_count = platform_irq_count(pdev);
+> +		if (iommu->irqs_count <= 0)
+> +			return dev_err_probe(dev, -ENODEV,
+> +					     "no IRQ resources provided\n");
+> +		if (iommu->irqs_count > RISCV_IOMMU_INTR_COUNT)
+> +			iommu->irqs_count = RISCV_IOMMU_INTR_COUNT;
 > +
->  	return 0;
->  }
+>  		for (vec = 0; vec < iommu->irqs_count; vec++)
+>  			iommu->irqs[vec] = platform_get_irq(pdev, vec);
 >  
-> @@ -107,8 +100,6 @@ static void vfio_pci_dma_buf_release(struct dma_buf *dmabuf)
->  }
->  
->  static const struct dma_buf_ops vfio_pci_dmabuf_ops = {
-> -	.pin = vfio_pci_dma_buf_pin,
-> -	.unpin = vfio_pci_dma_buf_unpin,
->  	.attach = vfio_pci_dma_buf_attach,
->  	.map_dma_buf = vfio_pci_dma_buf_map,
->  	.unmap_dma_buf = vfio_pci_dma_buf_unmap,
-> 
+> -- 
+> 2.34.1
+>
 
+Reviewed-by: Andrew Jones <andrew.jones@oss.qualcomm.com>
+
+Thanks,
+drew
