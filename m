@@ -1,241 +1,200 @@
-Received: from SVZP279CU002.outbound.protection.outlook.com (mail-norwaywestazon11020099.outbound.protection.outlook.com [52.101.180.99])
+Received: from mail.sig21.net (mail.sig21.net [217.197.84.222])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CE6A3EDADD
-	for <iommu@lists.linux.dev>; Thu,  5 Feb 2026 14:01:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.180.99
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770300115; cv=fail; b=EgEMPBz/CTnnAk8ocLm43fUmn2DmYF6NGbC2qWS3VfqeIs26KzWCfP8Bzqt4BKRyzkYSftLOLeol8d8egSHrB/PFY3V5OdhplXoJT7YjO1Fo99hXj7gkZEnxizqzgr4mUcwt0z8nhXL1+a7Vj/Ar6EXv93wbinvBvPIcNg2Vyzc=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770300115; c=relaxed/simple;
-	bh=aclHUhR6fOuqM9XNMU9y+LDn+oulBvqdqJwmS1jE+/Y=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=DxJV3k9E5/J+OrbH1NdDf5ga7wdKbDzqF48XrwwH6KJRalykG3NKev5ymrwwVquGZm/GRJWUK3r4Vx0ZDrWSWtknpLyGY/Sgdpoz9tbZ79i9V/svxFrTw7S4qKcgg9dbhLx+fSBhvbnQiAZw2hyUSfiflW2PTpscqHAEFAetm8I=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=dolphinics.com; spf=pass smtp.mailfrom=dolphinics.com; dkim=pass (2048-bit key) header.d=dolphinics.com header.i=@dolphinics.com header.b=soKTKpD0; arc=fail smtp.client-ip=52.101.180.99
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=dolphinics.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=dolphinics.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=dolphinics.com header.i=@dolphinics.com header.b="soKTKpD0"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Ia1xrV0qBC1OESknujALPNvfz+z9tzVOlwwdxita+t/hZcRyPFdfK43NX5YYYNmCcV6Mj0W4HSzrnjqIPSP1CNM6xcVeARQk+pE+xSKy/i+JUI1OTbYGLxoAGMtz+OHGrWOT+v23XZGensfBY2s0p6ilqy1HKH/j1xT6OPNgkWvHfp54mSaDnKgZNzSBCy1gXRT0fMQOPIW9EdNmyvMKESI9jkexD0XcI6XgaG5CLUgd8pjAceW6p9RwglJx3NeRDm8+gqAJ6aM+OJ9y3PcROFOkbesC0oRirIWniHCsJ+8AHh8yDO/4uyQrTwCAWDgg4lKZ24kh9LmYnmVwGnCjtw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=t5GB6KgSeCAbNE8aDRB3jeW/P0OMDqkzX6KtU+mgm8g=;
- b=nExudTjilLnuY4WKLFzExvIKLA6YBULFoyVVkqFV0qFzGMUAMxgBCV3p46g7858t0xFOFG9ApAy40g+s2E8pIPLmjyQWSKyHrHjFjyODae9V0rwG+DQ2YE0rOzNAflWhqn520MyzMCby6D+ecwKscRhYU0HfgU5ehTBofFlw3CBox/qEDfw6lvBNuC4MIN5GdmC5gB8uaIZGYT91NspvcreAkMKnJKMfgRmdW6qmG7d1CdECLLOnSmhY6MSftEU8a3AyA8HzMun/xc4wjkuhRbbSaoPYNbwz0iU0SJnctC5H6o0e3GRbFBFqToGxYRXntKPW/4InsbK9HvxtVUfv+w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=dolphinics.com; dmarc=pass action=none
- header.from=dolphinics.com; dkim=pass header.d=dolphinics.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dolphinics.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=t5GB6KgSeCAbNE8aDRB3jeW/P0OMDqkzX6KtU+mgm8g=;
- b=soKTKpD0pl2DiP33/du+B1CVpNPh3IJ0MbvTjtfupGWWbJzGAYMRug1AFyFm5pzZfOq66AJjCeseJcZQ5lHdHLomnqUYI901OYjZhWkvmv6fsA3Pv8XV1D13aLksSp9VED9JdWFQNu2UnHbr6QcWbrraGorFtJonwZJ+mpSCXPxt+HeVgtRDseWUl/VSR9YImdeUlYfRVZ2M2EOFUqdjXrTzSS9Q+mvo7kJr1Rv/me52/bs5iuCd8E9mU67iEyeXgf7v6/tycq2A60DKOm5P02YeruMK84aAturmSh9P5MuSTNnujC0R087ujLavDMGTi4XDUnrpWDZ/LhUbrPWCZA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=dolphinics.com;
-Received: from OLAP279MB0055.NORP279.PROD.OUTLOOK.COM (2603:10a6:e10:2::7) by
- OSEP279MB1243.NORP279.PROD.OUTLOOK.COM (2603:10a6:e10:78::9) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9587.14; Thu, 5 Feb 2026 14:01:50 +0000
-Received: from OLAP279MB0055.NORP279.PROD.OUTLOOK.COM
- ([fe80::c82b:8ba6:653a:2875]) by OLAP279MB0055.NORP279.PROD.OUTLOOK.COM
- ([fe80::c82b:8ba6:653a:2875%3]) with mapi id 15.20.9587.013; Thu, 5 Feb 2026
- 14:01:50 +0000
-From: Magnus Kalland <magnus@dolphinics.com>
-To: joro@8bytes.org
-Cc: iommu@lists.linux.dev,
-	jonas@dolphinics.com,
-	larsk@dolphinics.com,
-	linux-kernel@vger.kernel.org,
-	magnus@dolphinics.com,
-	suravee.suthikulpanit@amd.com,
-	torel@simula.no,
-	vasant.hegde@amd.com
-Subject: [PATCH v2] iommu/amd: Invalidate IRT cache for DMA aliases
-Date: Thu,  5 Feb 2026 15:01:00 +0100
-Message-ID: <20260205140059.11857-2-magnus@dolphinics.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <fwtqfdk3m7qrazj4bfutl4grac46agtxztc3p2lqnejt2wyexu@lztyomxrm3pk>
-References: <fwtqfdk3m7qrazj4bfutl4grac46agtxztc3p2lqnejt2wyexu@lztyomxrm3pk>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: OL1P279CA0044.NORP279.PROD.OUTLOOK.COM
- (2603:10a6:e10:14::13) To OLAP279MB0055.NORP279.PROD.OUTLOOK.COM
- (2603:10a6:e10:2::7)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 228E73EF0C3
+	for <iommu@lists.linux.dev>; Thu,  5 Feb 2026 14:05:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.197.84.222
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1770300327; cv=none; b=mZjCGMXHiCLrBUiBtn7K7srFvhK94/kDkLuAwFFAellU0Z/O+bB8mdCFwGfei96Ez9ofRPC73RubhimyREJnq+BqKhAHdTBWYxXNBP0wyIh/J/IrcEHYiYLfNg/Z9KSMCqY3HR8aZUJxFdHf9zigXQ2SzTpqM1IpPNiYzCAPi9Y=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1770300327; c=relaxed/simple;
+	bh=OviBRzvDsv3X2xltqOIL7ZKF4dOtOuGr50O8D5gqaUA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=TddI3ag1XwST6+/huMQLV/SlYmWcgAN9sVtY7kGNazalk7DAbPngq0i2ueMufAJbLn/oo/HMtO425tjVK9gUOnWPDMPcB9vBO3TG7DItdo2QqpbFROv6W9YvM1pzIohW/4z1aCOizVTDgT0EtvDLmnSmvgUHYXGPMgu+1BXQi8o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sig21.net; spf=pass smtp.mailfrom=sig21.net; arc=none smtp.client-ip=217.197.84.222
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sig21.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sig21.net
+Received: from localhorst ([127.0.0.1])
+	 by mail.sig21.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+	 (Exim 4.94.2)
+	(envelope-from <js@sig21.net>)
+	 id 1vnzz0-0002Gy-4f ; Thu, 05 Feb 2026 15:05:22 +0100
+Received: from js by abc.local with local (Exim 4.99.1)
+	(envelope-from <js@sig21.net>)
+	id 1vnzyz-000000001ji-123l;
+	Thu, 05 Feb 2026 15:05:21 +0100
+Date: Thu, 5 Feb 2026 15:05:21 +0100
+From: Johannes Stezenbach <js@sig21.net>
+To: Vasant Hegde <vasant.hegde@amd.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Subject: Re: AMD IOMMU issue with hibernate on Asrock X600
+Message-ID: <aYSjoRjnR3N3D8lD@sig21.net>
+References: <aXeAOtGQUdlNZF6V@sig21.net>
+ <aXnXX0P-XsEFPlJd@sig21.net>
+ <52148f32-2348-42d8-95e0-49b30c29da1c@amd.com>
+ <aYHerYcZ-5FOguKY@sig21.net>
+ <aYNi4yYA2_Cu359Z@sig21.net>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: OLAP279MB0055:EE_|OSEP279MB1243:EE_
-X-MS-Office365-Filtering-Correlation-Id: b87b354d-d0e8-446a-df30-08de64bf1ba6
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?CIQwBwDS2QSPOxRSYc7//+1n5w6NiwuoepXLwSw/AYpiiZ7V5Nqp8P5CCO7g?=
- =?us-ascii?Q?Sr8dtKRMsW0APhcch/ix+MUHusAZf4GBeiVpP+NxRiu0U8sXB6q1zLHo7B1i?=
- =?us-ascii?Q?oURGIILV9rWeSNaCnwPtVNhFyJvRmY8NyfjcfXvNQXfXqIjQdxhbsFixXmh6?=
- =?us-ascii?Q?8yp60+j3FcFN/PSCSb+467sCWBD0Pk6wTK36drf1QxkucE93nWIMdGoxUIts?=
- =?us-ascii?Q?z/F+/XNcYUwS8TMjgN+q4gi8T+Wyti87M55JL5J1P3KCdV138cxV/uIZncXd?=
- =?us-ascii?Q?+d+XtNpnIYVnA/GW4b3HJGakUSFz184H7bYyyeKjGz2GQfu65wR5RYi727j2?=
- =?us-ascii?Q?J1gDja46Ux4wEIVUawRZX29qS+lcZuAyEn963pFhof7kMMy74YLg9KzGfjKn?=
- =?us-ascii?Q?VqZ8ah3pFK53nXBSOZqSe/A9YlpmCtq1yw8g0fGWdrLB/BVu/LLmwvuIb503?=
- =?us-ascii?Q?iIH/95yBPz8LGgsVHGWxfgfRaTOyxWPoTADqMryoOfypAQ+E1DECMxIRmQpR?=
- =?us-ascii?Q?xjEBi1oi06UWn9M10sv9dvrdWrBiT4sBuo3wF1TsINv5LfZQMVo3VjLVXe6+?=
- =?us-ascii?Q?6VlXCJqtoz9D5LVrMG+Q0Qz4nqQv4g8lPsfd/7RYaKjtZW5kO2hwTxsJTGi3?=
- =?us-ascii?Q?cez92r+QDqaaEUhgYzldOLI4ceYwyF/gLURXi1YG2rY4pVPQlo6DMr6imftO?=
- =?us-ascii?Q?XCs8pOsN8nPA2T99tnD/+a+s5F1toRlOubNmBwEwgytoge4zmO8uCqnB2+IS?=
- =?us-ascii?Q?wMfS03LTJeefzrrF2eXSTsmMdlb280bkmrFlVULrF6GgIF++t0Jy6FoStZl6?=
- =?us-ascii?Q?mRMObJNpoxdrFe3uuYY7XCEziHPW6OwAEAr18OqcuxtMTc/ovT3WGrFWuKAX?=
- =?us-ascii?Q?UjPeaIVglpHrrK/Otne2OqAJne7q3nG7U0/oEweKXSD+Q3san3HMK2YLhgDm?=
- =?us-ascii?Q?K74O/frYanNNZi9hzWQln+c1bG+mdHu/ssVmak3FtjI+fIZlvFGGZ1UD+JAE?=
- =?us-ascii?Q?e3okhI35f6/82Dek3Ra79fFiPsgaaR2BbgVXEO5bqtiUUarTgVxlwtz0/Xwh?=
- =?us-ascii?Q?22KtggJr1yivbVEceX63EEAMn1oBWoXZ9mF5R45V08jTvkfGUJ+HsoIPaycB?=
- =?us-ascii?Q?4UuxClAGLUIJcO1jcutsi055jRktGKAMJ7BAHAxLQfL3wRKkLIYOKDCviejT?=
- =?us-ascii?Q?Y608LWoHzQXPHXqdAa2O77I1yuxu29AGRmTjeE29H37r6vPWQ/N/BeiK/uAb?=
- =?us-ascii?Q?NPGbEcwLOdTaboHXbQ/cBuoBWiU98C4+AF2pblU1sfg4zNb+QjRslAWSBhYp?=
- =?us-ascii?Q?Xrb3xGb/OCQ1noM1tjLxkdlm4Zk06iOEsk4Votz3vooNVgphFnPiEm73qU8x?=
- =?us-ascii?Q?bqlra8crQ84MjJr9NTVcvbj6EBWRMryoIAk1ZzEMNRzKzbeem0GBQDqla+Ae?=
- =?us-ascii?Q?TmWWwti++pVPBK7CSynu1+SNNhRrVhT5iy6reyu/QpQolYFD23hfIIfV2ATJ?=
- =?us-ascii?Q?3fVhdNHtIY2dH2jiqX1gqMjQQ4WXTB4TxKl2LY2yVbq0o2ssmXPb2/qwGPBZ?=
- =?us-ascii?Q?ZrG8vqqO0fjFXgVs3EM=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OLAP279MB0055.NORP279.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?MB2uJOok0q7tobvuakiifLUoN3tBstYA1r5Sng/LXlDa300y3NENRW0TyEzq?=
- =?us-ascii?Q?yLmBtiYrsrnxPTgmBB8FQysimRA5275ue9LWwZQsLxHMqOkgkSJpx07JFQje?=
- =?us-ascii?Q?uRoM7wx43t1LOICj+Ri803a7Omwoo4SxN6+Fb5fW8WReIt0gShdioHoEA1lU?=
- =?us-ascii?Q?GDg0bREZqabK7SIeMBiFynrOB0Dgb3TIx+WMVc4sDI4Bw86BmfWLpNto6dsL?=
- =?us-ascii?Q?bdw1gG43/xLAsN5sM1OEZJKVCu586Z8sjo9b0ipVPZOLg6pwmxqH8+kaKe8P?=
- =?us-ascii?Q?FM3QHWq8EIWtZGYcSRvxlTvYGxiaE8E+Go4UqlOedgoTsmxjGtzMZ3nVvkHO?=
- =?us-ascii?Q?wcYmQznNBwzp6uEPPmEuDpIIVfD7uvK4k3uPuFDOgP7xesiNs9sQafN+TZpj?=
- =?us-ascii?Q?hede85Mrqq2alZ63Y8P0DNmWV9K0pBS9wtUtPqdFdrAHjWeK8LIZk/10cRbL?=
- =?us-ascii?Q?b62EzqZxNng8o3JuZi0M1n+eVEQ6f7wep14AhFQWLpQD4//Mha41NXWEHZmt?=
- =?us-ascii?Q?SHSyG1tJ3l33DQnyIDOZoHJxM4cOIwQS9ce8MQwyRi/0kUs72w3FTIE/g1FJ?=
- =?us-ascii?Q?1PDeD9FjoRW5lqZ3ba8CyiCtELmYcPl786SUaJE10FwHztOI042yB/YkKq1A?=
- =?us-ascii?Q?i7EaI9hCiArFCm4LUg+KcbOZ2lc2PAzmFuS5VlDSGFlA1qnvJ7DmY3pbeQya?=
- =?us-ascii?Q?rpkw+dXUOf+Udbtdo/WCapUQJSZxN0J7ENtkklhIgauP/UmLELfB6QGmSQ3J?=
- =?us-ascii?Q?FaUc6HZh8p9hbams7uXgLmCvRrSQtpeti6019ckMaHrSFgmKa4ScRaLc1Jp4?=
- =?us-ascii?Q?qLGNc9kJCJhUtIzhRoUJ47ZPlCKBXeZS6/yeLxS5EFyR7SJBAoh0l55NHiCL?=
- =?us-ascii?Q?Flrs99QXJdw3uRPHuPcMIxSjCmbuu5LlX57ACIMnoiyNgcvPy4HU+aRsfPQH?=
- =?us-ascii?Q?yg8kfDAiT6V04F/sjgL7mHQ5iDGqIvapfXuWqHcqOo5QMXH+vSDIiefXeLXv?=
- =?us-ascii?Q?PQIY7ao6ZPCIBK1Jk52eP6aMHPjXd9jzR3JU5yxtUCBqWVyAhl4e03H6roxg?=
- =?us-ascii?Q?P3yGkvDkFYxuHdiBTMI0F6IlxN5eJAgXVrYDR2GrJBS+7eS1876qHxKFlnyV?=
- =?us-ascii?Q?jzWpWvTnD8pI9NI5EHymNDQOsgG9kN+1MDao0eQ7YMT7VhqhsOGahkVLKCnw?=
- =?us-ascii?Q?HPLc139iuTKItX5WT/ZPW0AMRA0KDHTf8CxdJbetAQFMqhV3gzZVdkfUx7EV?=
- =?us-ascii?Q?j8mAqq1sTKUtWDHunjFE3ovdN9ofahUxs+gxu7Z6GhS3CCu3YO03qRlTr89+?=
- =?us-ascii?Q?279qwYIagwr8S34FIO4T01AXujM7ohhP9D172j4sgNbcYDe8734Xiv3CkFaG?=
- =?us-ascii?Q?PkCK5THeXJvJuThtc3N0ucIjnRXxsZLTAUapdmSLzx0FZxnwwxetci7inyre?=
- =?us-ascii?Q?J4prRf3VaPzuylj2VyEhXdD0vWDOmxg1KhxpgLpxhTqsOCViywA1Qh+KDrdx?=
- =?us-ascii?Q?jwfyIlVRDJp2g3OoPaBbxZsNl05DPSIdjNUhLam5GmI23CfUzwIue40mdBxC?=
- =?us-ascii?Q?rp8RIY/f/GWtxzNFMNrWxyH4VGo5d1cm8+SCrBNhJVWCAQlbwl8jNf16ad6e?=
- =?us-ascii?Q?9WsVoftsCOJ4fZyFj/uXbHpxGt8t5Jxu45BgC4xx52DcVTz/jWjVf3wVZlOU?=
- =?us-ascii?Q?jhA5esZM2dc3N6QkKuv2UGxDq7iCJscq0q+gP8uaDeo7rFfR8zinfUPfI0s9?=
- =?us-ascii?Q?HemDgyzONg=3D=3D?=
-X-OriginatorOrg: dolphinics.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b87b354d-d0e8-446a-df30-08de64bf1ba6
-X-MS-Exchange-CrossTenant-AuthSource: OLAP279MB0055.NORP279.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Feb 2026 14:01:50.0070
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 7fb89e52-625c-45cc-a50c-adf3af1b0a6c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: /AH86ugSHWzEdQXk6r5+m7NTh68GEtwVGg2bP3uVJnAKR2WC2AYDSA7n3LQrYGIXVyykdm4sWevi2fR8DxSevg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSEP279MB1243
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <aYNi4yYA2_Cu359Z@sig21.net>
 
-DMA aliasing causes interrupt remapping table entries (IRTEs) to be shared
-between multiple device IDs. See commit 3c124435e8dd
-("iommu/amd: Support multiple PCI DMA aliases in IRQ Remapping") for more
-information on this. However, the AMD IOMMU driver currently invalidates
-IRTE cache entries on a per-device basis whenever an IRTE is updated, not
-for each alias.
+On Wed, Feb 04, 2026 at 04:16:51PM +0100, Johannes Stezenbach wrote:
+> I'm also attaching the ACPI IVRS table.
+> 
+> Side note: I wanted to check AMD documents at https://docs.amd.com/
+> but the "Create Account" button doesn't work. :-(
+> (And why do they require an account anyway, Intel and ARM don't...)
 
-This approach leaves stale IRTE cache entries when an IRTE is cached under
-one DMA alias but later updated and invalidated through a different alias.
-In such cases, the original device ID is never invalidated, since it is
-programmed via aliasing.
+Eventually I could download the "AMD I/O Virtualization Technology
+(IOMMU) Specification" document (link on https://uefi.org/acpi
+is stale, BTW).
 
-This incoherency bug has been observed when IRTEs are cached for one
-Non-Transparent Bridge (NTB) DMA alias, later updated via another.
+> [074h 0116 001h]               Subtable Type : 11 [Hardware Definition Block (IVHD)]
+> [075h 0117 001h]       Flags (decoded below) : 30
+>                                      HtTunEn : 0
+>                                       PassPW : 0
+>                                    ResPassPW : 0
+>                                 Isoc Control : 0
+>                                Iotlb Support : 1
+>                                     Coherent : 1
+>                             Prefetch Support : 0
+>                                  PPR Support : 0
+> [076h 0118 002h]                      Length : 0054
+> [078h 0120 002h]                    DeviceId : 0002
+> [07Ah 0122 002h]           Capability Offset : 0040
+> [07Ch 0124 008h]                Base Address : 00000000F7500000
+> [084h 0132 002h]           PCI Segment Group : 0000
+> [086h 0134 002h]         Virtualization Info : 0000
+> [088h 0136 004h]                  Attributes : 00048000
+> [08Ch 0140 008h]                   EFR Image : 246577EFA2254AFA
+> [094h 0148 008h]                    Reserved : 0000000000000000
 
-Fix this by invalidating the interrupt remapping table cache for all DMA
-aliases when updating an IRTE.
+So the platform doesn't support x2APIC, but it's no problem.
+GALog should be supported.
 
-Link: https://lore.kernel.org/linux-iommu/fwtqfdk3m7qrazj4bfutl4grac46agtxztc3p2lqnejt2wyexu@lztyomxrm3pk/
-Signed-off-by: Magnus Kalland <magnus@dolphinics.com>
+I added a printk for the MMIO_STATUS_OFFSET register after
+the wait loop, and a WARN_ON(1) at the end of
+iommu_ga_log_enable() to find all call chains.
+Below are the important parts of the log, it shows on resume
+iommu_ga_log_enable() is called twice:
 
----
+1. from lapic_resume() syscore_ops via
+   irq_remapping_reenable() -> amd_iommu_reenable()
 
-v2:
- - Move the lock acquire before branching
- - Call iommu_flush_dev_irt() when pdev is null
- - Handle pdev refcount in correct branch
+2. from amd_iommu_resume() syscore_ops
 
- drivers/iommu/amd/iommu.c | 32 +++++++++++++++++++++++++++-----
- 1 file changed, 27 insertions(+), 5 deletions(-)
+The first time works, the second time fails.
+amd_iommu_resume() calls early_enable_iommu() -> iommu_disable(),
+maybe this double enable+disable in quick succession triggers
+the problem?
 
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 2e1865daa1ce..b5256b28b0c8 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -3077,25 +3077,47 @@ const struct iommu_ops amd_iommu_ops = {
- static struct irq_chip amd_ir_chip;
- static DEFINE_SPINLOCK(iommu_table_lock);
- 
-+static int iommu_flush_dev_irt(struct pci_dev *unused, u16 devid, void *data)
-+{
-+	int ret;
-+	struct iommu_cmd cmd;
-+	struct amd_iommu *iommu = data;
-+
-+	build_inv_irt(&cmd, devid);
-+	ret = __iommu_queue_command_sync(iommu, &cmd, true);
-+	return ret;
-+}
-+
- static void iommu_flush_irt_and_complete(struct amd_iommu *iommu, u16 devid)
- {
- 	int ret;
- 	u64 data;
-+	int domain = iommu->pci_seg->id;
-+	unsigned int bus = PCI_BUS_NUM(devid);
-+	unsigned int devfn = devid & 0xff;
- 	unsigned long flags;
--	struct iommu_cmd cmd, cmd2;
-+	struct iommu_cmd cmd;
-+	struct pci_dev *pdev = NULL;
- 
- 	if (iommu->irtcachedis_enabled)
- 		return;
- 
--	build_inv_irt(&cmd, devid);
- 	data = atomic64_inc_return(&iommu->cmd_sem_val);
--	build_completion_wait(&cmd2, iommu, data);
-+	build_completion_wait(&cmd, iommu, data);
- 
-+	pdev = pci_get_domain_bus_and_slot(domain, bus, devfn);
- 	raw_spin_lock_irqsave(&iommu->lock, flags);
--	ret = __iommu_queue_command_sync(iommu, &cmd, true);
-+	if (pdev) {
-+		ret = pci_for_each_dma_alias(pdev, iommu_flush_dev_irt, iommu);
-+		pci_dev_put(pdev);
-+	} else {
-+		ret = iommu_flush_dev_irt(NULL, devid, iommu);
-+	}
-+
- 	if (ret)
- 		goto out;
--	ret = __iommu_queue_command_sync(iommu, &cmd2, false);
-+
-+	ret = __iommu_queue_command_sync(iommu, &cmd, false);
- 	if (ret)
- 		goto out;
- 	wait_on_sem(iommu, data);
--- 
-2.43.0
+BTW, iommu_init_ga_log() is called everytime in
+enable_iommus_vapic() and allocates new ga_log
+and ga_log_tail buffers, but the previous allocation
+is never freed.
+
+
+Best Regards,
+Johannes
+
+
+
+Log excerpts:
+At bootup:
+
+[    2.609023] [    T1] AMD-Vi: Extended features (0x246577efa2254afa, 0x0): PPR NX GT [5] IA GA PC GA_vAPIC
+[    2.609036] [    T1] AMD-Vi: Interrupt remapping enabled
+[    2.643865] [    T1] AMD-Vi: iommu_ga_log_enable status 00000118
+
+[    2.643887] [    T1] WARNING: drivers/iommu/amd/init.c:956 at amd_iommu_enable_interrupts.cold+0xf/0x9d, CPU#4: swapper/0/1
+[    2.644009] [    T1] Call Trace:
+[    2.644015] [    T1]  <TASK>
+[    2.644021] [    T1]  iommu_go_to_state+0xb20/0x1830
+[    2.644031] [    T1]  ? __pfx_pci_iommu_init+0x10/0x10
+[    2.644039] [    T1]  pci_iommu_init+0x15/0x40
+[    2.644047] [    T1]  do_one_initcall+0x5b/0x310
+
+[    2.644137] [    T1] AMD-Vi: Virtual APIC enabled
+
+
+S3 suspend + resume:
+
+[   55.915000] [ T3615] ACPI: PM: Low-level resume complete
+[   55.915029] [ T3615] ACPI: PM: Restoring platform NVS memory
+[   58.883988] [ T3615] AMD-Vi: iommu_ga_log_enable status 00000118
+
+[   58.883997] [ T3615] WARNING: drivers/iommu/amd/init.c:956 at amd_iommu_enable_interrupts.cold+0xf/0x9d, CPU#0: pm-suspend/3615
+
+[   58.884026] [ T3615] Call Trace:
+[   58.884028] [ T3615]  <TASK>
+[   58.884030] [ T3615]  amd_iommu_reenable+0x57/0x70
+[   58.884034] [ T3615]  lapic_resume+0x176/0x260
+[   58.884038] [ T3615]  syscore_resume+0x5c/0x190
+[   58.884040] [ T3615]  suspend_devices_and_enter+0x752/0x870
+[   58.884044] [ T3615]  pm_suspend.cold+0x2e1/0x35f
+
+[   58.884167] [ T3615] AMD-Vi: Virtual APIC enabled
+[   63.874343] [ T3615] AMD-Vi: iommu_ga_log_enable status 00000118
+
+[   63.874351] [ T3615] WARNING: drivers/iommu/amd/init.c:956 at amd_iommu_enable_interrupts.cold+0xf/0x9d, CPU#0: pm-suspend/3615
+
+[   63.874382] [ T3615] Call Trace:
+[   63.874384] [ T3615]  <TASK>
+[   63.874386] [ T3615]  syscore_resume+0x5c/0x190
+[   63.874388] [ T3615]  suspend_devices_and_enter+0x752/0x870
+[   63.874391] [ T3615]  pm_suspend.cold+0x2e1/0x35f
+[   63.874394] [ T3615]  state_store+0x6b/0xd0
+[   63.874398] [ T3615]  kernfs_fop_write_iter+0x159/0x210
+[   63.874401] [ T3615]  vfs_write+0x270/0x4c0
+[   63.874407] [ T3615]  ksys_write+0x73/0xf0
+
+[   63.874563] [ T3615] AMD-Vi: Virtual APIC enabled
+
+
+S4 hibernate + resume:
+
+[  113.664694] [ T4023] PM: hibernation: Normal pages needed: 594162 + 1024, available pages: 15549652
+[  114.020974] [ T4023] PM: hibernation: free pages cleared after restore
+[  114.020993] [ T4023] ACPI: PM: Restoring platform NVS memory
+[  115.909880] [ T4023] AMD-Vi: iommu_ga_log_enable status 00000118
+
+[  115.909892] [ T4023] WARNING: drivers/iommu/amd/init.c:956 at amd_iommu_enable_interrupts.cold+0xf/0x9d, CPU#0: pm-hibernate/4023
+
+[  115.909926] [ T4023] Call Trace:
+[  115.909928] [ T4023]  <TASK>
+[  115.909931] [ T4023]  amd_iommu_reenable+0x57/0x70
+[  115.909936] [ T4023]  lapic_resume+0x176/0x260
+[  115.909940] [ T4023]  syscore_resume+0x5c/0x190
+[  115.909943] [ T4023]  hibernation_snapshot+0x292/0x590
+[  115.909947] [ T4023]  hibernate.cold+0x110/0x491
+[  115.909950] [ T4023]  state_store+0xce/0xd0
+[  115.909954] [ T4023]  kernfs_fop_write_iter+0x159/0x210
+[  115.909958] [ T4023]  vfs_write+0x270/0x4c0
+[  115.909964] [ T4023]  ksys_write+0x73/0xf0
+
+[  115.910063] [ T4023] AMD-Vi: Virtual APIC enabled
+[  142.633907] [ T4023] AMD-Vi: iommu_ga_log_enable status 00000018
+[  142.633912] [ T4023] ------------[ cut here ]------------
+[  142.633912] [ T4023] i >= MMIO_STATUS_TIMEOUT
+[  142.633913] [ T4023] WARNING: drivers/iommu/amd/init.c:953 at amd_iommu_enable_interrupts+0x4d2/0x500, CPU#0: pm-hibernate/4023
+
+[  142.633937] [ T4023] Call Trace:
+[  142.633938] [ T4023]  <TASK>
+[  142.633939] [ T4023]  syscore_resume+0x5c/0x190
+[  142.633941] [ T4023]  hibernation_snapshot+0x292/0x590
+[  142.633943] [ T4023]  hibernate.cold+0x110/0x491
+[  142.633945] [ T4023]  state_store+0xce/0xd0
+[  142.633948] [ T4023]  kernfs_fop_write_iter+0x159/0x210
+[  142.633950] [ T4023]  vfs_write+0x270/0x4c0
+[  142.633955] [ T4023]  ksys_write+0x73/0xf0
+
+[  142.634072] [ T4023] LVT offset 0 assigned for vector 0x400
+[  142.634583] [ T4023] Enabling non-boot CPUs ...
 
