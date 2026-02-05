@@ -1,147 +1,220 @@
-Received: from sender4-of-o55.zoho.com (sender4-of-o55.zoho.com [136.143.188.55])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B82B62ED844
-	for <iommu@lists.linux.dev>; Thu,  5 Feb 2026 18:49:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.55
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770317381; cv=pass; b=LY9eYqH5mZfMAl0gtlZ4mJsZhWD4moYGofYcFOpxbyN/bpu3n19n8+kYxsy1r3ygy7/0HQy5Vw9FtaS75gn58jGkeL1/Ka3ME8nede9udZguDk1OrSXbUx3hmSYf8RvVjFlxQ3Z4ELL9RTVdUHU2tHeHZdmMgt5yrxDEz/GciUw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770317381; c=relaxed/simple;
-	bh=ebQfONrzVZnk56V1w8DGKsIG66VsIGGNTmswm/SYNUo=;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 015652FC893
+	for <iommu@lists.linux.dev>; Thu,  5 Feb 2026 21:52:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1770328323; cv=none; b=K0JDq9TqVz4sjQuZXRNv6ydUVesxLRbnKpZvylOZmBYWJPAPycig/v0LFAtS9cQb0/SEyAj7DItIuPSUiPDWUlqj50pjI9qKE4bO0QceNLgeOtMJgPe1fyQ+c+nDUpLdijXksA17qTgNXurOA8xR38AhWhipBq769ZMuYPL4Qo8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1770328323; c=relaxed/simple;
+	bh=F3aKZ/fCnbB9EJmonJjgo8SU4XqpJqBtz1yAs+j9ReM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Ze3zXvWKQm9M9t0zd/caX6/PWDUPm/SPLpsKuXrKdmdZfWeWCm2s+rk9VgbN12lcypNQgSS4mnaOMPRC+HOrOUiu9pIX2HBN1LagGAhV1DEynPqPNR8dIKBScnWLbcO0DjUh8AER/kP2KA50kpH9FgA+N/znm1OdqZs+dBfPxsA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=anirudhrb.com; spf=pass smtp.mailfrom=anirudhrb.com; dkim=pass (1024-bit key) header.d=anirudhrb.com header.i=anirudh@anirudhrb.com header.b=zJELxluK; arc=pass smtp.client-ip=136.143.188.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=anirudhrb.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=anirudhrb.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=HQy07cWOzcRvwqIkxTlwcBQZo5M2mqMoMAs37bQnMFUlu1jblKiuYEWT/CG7l8pdGgZKoPhvbKRSNlV/FfqwaX7FymfA3GfueXJF7JtDvXxRxvXvwlpMtMDvU+VRAuPKbb8XQ7KGv8WXz6iXyWQZDOzdlSwBxK8IgG90B30JOuA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=o0xN1Fka; arc=none smtp.client-ip=209.85.214.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=anirudhrb.com header.i=anirudh@anirudhrb.com header.b="zJELxluK"
-ARC-Seal: i=1; a=rsa-sha256; t=1770317326; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=DLjgTy2wycUhNlMH3U19kIj6Pw/2ydCYHIl9vZTP7LPpf8mXzsOifu6giHW/ehqqYejFF8hNUztBGkMvfG3gnPdwXF7xAmCLOy0m3cWe8Sb2mt+8kNwXRVcNuoNhh0n6UFkak8SOpXnvnwcuCoPkNHS/QYRt+EkEIRHTUcUXVjc=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1770317326; h=Content-Type:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=RJdbNFsY9TlOa05vzFHONREoEz/o2CSPjvLyu9KhCYc=; 
-	b=C2h8MkmruQAlRleDlRtFISSjbIMlmMEVEFnSjLKnMXeFBiDtWYuFtgiJ7L5qjJ52ClIgGQ4Nz/G8h7abgSs8Bm9ImfDjyG7IeU18fLYKp6I6Q6F94rTxI/Q+lrts+NnpeYm6KqtEXUn8Bl4QRR9Tzjz5IMm6h30mYhPL4snfdsI=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=anirudhrb.com;
-	spf=pass  smtp.mailfrom=anirudh@anirudhrb.com;
-	dmarc=pass header.from=<anirudh@anirudhrb.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1770317326;
-	s=zoho; d=anirudhrb.com; i=anirudh@anirudhrb.com;
-	h=Date:Date:From:From:To:To:Cc:Cc:Subject:Subject:Message-ID:References:MIME-Version:Content-Type:In-Reply-To:Message-Id:Reply-To;
-	bh=RJdbNFsY9TlOa05vzFHONREoEz/o2CSPjvLyu9KhCYc=;
-	b=zJELxluK7gj9saqdX+6tFXDkCkEScqN7AkKaoIUhtO4Hq5bsmyRuGmhqZvZsjDXK
-	3yhV7O73n1cS0lMPeXSnbbRrgzwaxWp14SUP3XOyQ4uWp/RNV8T0/heFwrBkAcMrDdR
-	LeMmcSn10zrVK2IGSRCamsedJZH6dpdb0gz/z8C4=
-Received: by mx.zohomail.com with SMTPS id 1770317322465939.1179981344242;
-	Thu, 5 Feb 2026 10:48:42 -0800 (PST)
-Date: Fri, 6 Feb 2026 00:18:31 +0530
-From: Anirudh Rayabharam <anirudh@anirudhrb.com>
-To: Mukesh R <mrathor@linux.microsoft.com>
-Cc: linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, linux-pci@vger.kernel.org, 
-	linux-arch@vger.kernel.org, kys@microsoft.com, haiyangz@microsoft.com, wei.liu@kernel.org, 
-	decui@microsoft.com, longli@microsoft.com, catalin.marinas@arm.com, will@kernel.org, 
-	tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com, 
-	hpa@zytor.com, joro@8bytes.org, lpieralisi@kernel.org, kwilczynski@kernel.org, 
-	mani@kernel.org, robh@kernel.org, bhelgaas@google.com, arnd@arndb.de, 
-	nunodasneves@linux.microsoft.com, mhklinux@outlook.com, romank@linux.microsoft.com
-Subject: Re: [PATCH v0 01/15] iommu/hyperv: rename hyperv-iommu.c to
- hyperv-irq.c
-Message-ID: <ekeis5txhdipwwjlgywonvi43rbut2szihvzl4wkrdqkmh5mlt@udamdt7ff3vo>
-References: <20260120064230.3602565-1-mrathor@linux.microsoft.com>
- <20260120064230.3602565-2-mrathor@linux.microsoft.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="o0xN1Fka"
+Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-2a8a7269547so12601045ad.0
+        for <iommu@lists.linux.dev>; Thu, 05 Feb 2026 13:52:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1770328322; x=1770933122; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=kGsy+6Drt04/pl8yx93tFPhkkWQllmpTFtK5bY5HHKI=;
+        b=o0xN1FkaKnfC5k6oBG8LmgUEIJS47b+YtyhAkGefWimr90qfLsG1FHxWUwMBGhfThE
+         WjrmRJtZIYbd71Zfg16Z1UzP4swcziZKXJ2y/1OU2ZfS2DF6ulzypVeH6IdBl19mk0e9
+         wQGZqfq7KvePNMbWYFJWiZcdPuY/pooqGdv15f5TKHR4Xur6um4zixAuPi/jaNJ2Rndw
+         /zZ90vJXU3RAEbeEEWLMv3NIxmyRiCfL5ZtIa/7wzu6hbvTG9nkx3AXe/DIpzqu5VdE3
+         ACKNjt8IgTeVm9YoKf1HS96x+4vCSaaRfAw0YRa9IoDI7JIx6sYfC7FEV5kehG9UVuo5
+         tymA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1770328322; x=1770933122;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=kGsy+6Drt04/pl8yx93tFPhkkWQllmpTFtK5bY5HHKI=;
+        b=T9KIu47OFulJmamcUgUfjemwu3fwyPzQfhogsfvyYwSzTjLmHgXjol2z929t3SaLAO
+         G/PIrOf/o6bQDTJJGU90FPH2i20zbZ0xpsRmOaKgj1uoq5DhVGDAaYTQaQrGzo5ES6FB
+         wFz/xY0BFX4eIgfynEC4GRVA9tF9Pbo/pFYyeL0XbN2l0MgCPTtl2Yu+rB/sOFAPeHhu
+         laGxaUiZGxY2iBdWPCcCBsqtTYrGLzXJOPF+XlnJW0qzXyr3f8/9IVTTcoMCaEeZwZzZ
+         CLsD4ieSZs6nnGNNhwMUJ/UBd/qgrbQqJOAyNi2yeDEhx/4DgvKPHn6QhRQth4vvzr8/
+         o9Ew==
+X-Forwarded-Encrypted: i=1; AJvYcCWLVhHnNLkDdk4J3ROP3lS4B4dX8iUJ1WiHY38Ej2jlkPTvhn5lS+V+VWlbBBA3//EDIYHcWQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0Ywe+f1Kq6UtTMEiLvRAdN5vrzWzSNXhznL9yR7X+RWUqhdhpAtp
+	aXbtgwF4NFDI4TuiIkZWJM9684mcZLbzzCIgCSISQt7DBwKEOKYVBELnwshVa++esA==
+X-Gm-Gg: AZuq6aLLaLit0JtNXw65dvvmKyeDr2IXr0UFWK6OwiAQ5vOeuYibcNLz6BskvpEBkJ9
+	vxCqJiaxcGvc3uDCRA7E+A0TH7cedkwfdQsNaizn+yQrOIvVOAfNJ+E48+mqxk6/vzB4NJCoewJ
+	BADOVhKEdBsF78mJwaCKJMstkwrlLUjP85UU2txYtW4Ux0bYS+Kb7aQIGouNZMICmv4hHIQ59+9
+	iR4PE/R7/lqbz0uz8NupwgTSovTe75/H/UzFy2KVeEDDhNb0X1MPsPwW4RMfuhXZnsO5c5NDUNj
+	cHDbJHMhQfyTLkzVcAEd9UP9XjfelDQyq08LInnEdM9nQI/8xxYXebQYuUhkvDUvcLsQjglME5L
+	4r87F+PIW0lEdSmXOFAO7qA7Jm9J3TBTwYLcJH1Hiz6rYvixahfJPSNE4Fqs+3D3Gf5eyaU2SoN
+	Oh6XMjo4m8v/K5+xbk/05HpR06NSOl9FzAcCf/ztLMACZNA01Nfg==
+X-Received: by 2002:a17:902:c94b:b0:2a1:deb:c460 with SMTP id d9443c01a7336-2a9516d3e0cmr5394585ad.33.1770328321980;
+        Thu, 05 Feb 2026 13:52:01 -0800 (PST)
+Received: from google.com (79.217.168.34.bc.googleusercontent.com. [34.168.217.79])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2a9521b9f5esm3197445ad.51.2026.02.05.13.52.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 Feb 2026 13:52:01 -0800 (PST)
+Date: Thu, 5 Feb 2026 21:51:56 +0000
+From: David Matlack <dmatlack@google.com>
+To: Raghavendra Rao Ananta <rananta@google.com>
+Cc: Alex Williamson <alex@shazbot.org>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Josh Hilke <jrhilke@google.com>, kvm@vger.kernel.org,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
+	David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Samiullah Khawaja <skhawaja@google.com>
+Subject: Re: [PATCH v2 6/6] vfio: selftests: Add tests to validate SR-IOV UAPI
+Message-ID: <aYUQ_HkDJU9kjsUl@google.com>
+References: <20251210181417.3677674-1-rananta@google.com>
+ <20251210181417.3677674-7-rananta@google.com>
+ <aUSNoBzvybi24SUD@google.com>
+ <CAJHc60zAB8pyc7=ca=eOf+SEEvnZ3JxVEnZoOtgj+mX1GQiALw@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260120064230.3602565-2-mrathor@linux.microsoft.com>
-X-ZohoMailClient: External
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAJHc60zAB8pyc7=ca=eOf+SEEvnZ3JxVEnZoOtgj+mX1GQiALw@mail.gmail.com>
 
-On Mon, Jan 19, 2026 at 10:42:16PM -0800, Mukesh R wrote:
-> From: Mukesh Rathor <mrathor@linux.microsoft.com>
-> 
-> This file actually implements irq remapping, so rename to more appropriate
-> hyperv-irq.c. A new file named hyperv-iommu.c will be introduced later.
-> Also, move CONFIG_IRQ_REMAP out of the file and add to Makefile.
-> 
-> Signed-off-by: Mukesh Rathor <mrathor@linux.microsoft.com>
+On 2026-01-06 11:47 AM, Raghavendra Rao Ananta wrote:
+> On Thu, Dec 18, 2025 at 3:26 PM David Matlack <dmatlack@google.com> wrote:
+> >
+> > On 2025-12-10 06:14 PM, Raghavendra Rao Ananta wrote:
+> > > Add a selfttest, vfio_pci_sriov_uapi_test.c, to validate the
+> > > SR-IOV UAPI, including the following cases, iterating over
+> > > all the IOMMU modes currently supported:
+> > >  - Setting correct/incorrect/NULL tokens during device init.
+> > >  - Close the PF device immediately after setting the token.
+> > >  - Change/override the PF's token after device init.
+> > >
+> > > Signed-off-by: Raghavendra Rao Ananta <rananta@google.com>
+> >
+> > I hit the following kernel NULL pointer dereference after running the
+> > new test a few times (nice!).
+> >
+> > Repro:
+> >
+> >   $ tools/testing/selftests/vfio/scripts/setup.sh 0000:16:00.1
+> >   $ tools/testing/selftests/vfio/vfio_pci_sriov_uapi_test 0000:16:00.1
+> >   $ tools/testing/selftests/vfio/scripts/cleanup.sh
+> >   ... repeat ...
+> >
+> > The panic:
+> >
+> > [  553.245784][T27601] vfio-pci 0000:1a:00.0: probe with driver vfio-pci failed with error -22
+> > [  553.256622][T27601] vfio-pci 0000:1a:00.0: probe with driver vfio-pci failed with error -22
+> > [  574.857650][T27935] BUG: kernel NULL pointer dereference, address: 0000000000000008
+> > [  574.865322][T27935] #PF: supervisor read access in kernel mode
+> > [  574.871175][T27935] #PF: error_code(0x0000) - not-present page
+> > [  574.877021][T27935] PGD 4116e63067 P4D 40fb0a3067 PUD 409597f067 PMD 0
+> > [  574.883654][T27935] Oops: Oops: 0000 [#1] SMP NOPTI
+> > [  574.888551][T27935] CPU: 100 UID: 0 PID: 27935 Comm: vfio_pci_sriov_ Tainted: G S      W           6.18.0-smp-DEV #1 NONE
+> > [  574.899600][T27935] Tainted: [S]=CPU_OUT_OF_SPEC, [W]=WARN
+> > [  574.905104][T27935] Hardware name: Google Izumi-EMR/izumi, BIOS 0.20250801.2-0 08/25/2025
+> > [  574.913289][T27935] RIP: 0010:rb_insert_color+0x44/0x110
+> > [  574.918623][T27935] Code: cc cc 48 89 cf 48 83 cf 01 48 89 3a 48 89 38 48 8b 01 48 89 cf 48 83 e0 fc 48 89 01 74 d7 48 8b 08 f6 c1 01 0f 85 c1 00 00 00 <48> 8b 51 08 48 39 c2 74 0c 48 85 d2 74 4f f6 02 01 74 c5 eb 48 48
+> > [  574.938080][T27935] RSP: 0018:ff85113dcdd6bb08 EFLAGS: 00010046
+> > [  574.944013][T27935] RAX: ff3f257594a99e80 RBX: ff3f25758af490c0 RCX: 0000000000000000
+> > [  574.951857][T27935] RDX: 0000000000001a00 RSI: ff3f25360038eb70 RDI: ff3f2536658bbee0
+> > [  574.959702][T27935] RBP: ff3f25360038ea00 R08: 0000000000000002 R09: ff85113dcdd6badc
+> > [  574.967544][T27935] R10: ff3f257590ab8000 R11: ffffffffa78210a0 R12: ff3f2536658bbea0
+> > [  574.975387][T27935] R13: 0000000000000286 R14: ff3f25758af49000 R15: ff3f25360038eb78
+> > [  574.983230][T27935] FS:  00000000223403c0(0000) GS:ff3f25b4d4d83000(0000) knlGS:0000000000000000
+> > [  574.992032][T27935] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > [  574.998488][T27935] CR2: 0000000000000008 CR3: 00000040fa254005 CR4: 0000000000f71ef0
+> > [  575.006332][T27935] PKRU: 55555554
+> > [  575.009753][T27935] Call Trace:
+> > [  575.012919][T27935]  <TASK>
+> > [  575.015730][T27935]  intel_iommu_probe_device+0x4c9/0x7b0
+> > [  575.021153][T27935]  __iommu_probe_device+0x101/0x4c0
+> > [  575.026231][T27935]  iommu_bus_notifier+0x37/0x100
+> > [  575.031046][T27935]  blocking_notifier_call_chain+0x53/0xd0
+> > [  575.036634][T27935]  bus_notify+0x99/0xc0
+> > [  575.040666][T27935]  device_add+0x252/0x470
+> > [  575.044872][T27935]  pci_device_add+0x414/0x5c0
+> > [  575.049429][T27935]  pci_iov_add_virtfn+0x2f2/0x3e0
+> > [  575.054326][T27935]  sriov_add_vfs+0x33/0x70
+> > [  575.058613][T27935]  sriov_enable+0x2fc/0x490
+> > [  575.062992][T27935]  vfio_pci_core_sriov_configure+0x16c/0x210
+> > [  575.068843][T27935]  sriov_numvfs_store+0xc4/0x190
+> > [  575.073652][T27935]  kernfs_fop_write_iter+0xfe/0x180
+> > [  575.078724][T27935]  vfs_write+0x2d0/0x430
+> > [  575.082846][T27935]  ksys_write+0x7f/0x100
+> > [  575.086965][T27935]  do_syscall_64+0x6f/0x940
+> > [  575.091339][T27935]  ? arch_exit_to_user_mode_prepare+0x9/0xb0
+> > [  575.097193][T27935]  entry_SYSCALL_64_after_hwframe+0x76/0x7e
 
-Reviewed-by: Anirudh Rayabharam (Microsoft) <anirudh@anirudhrb.com>
+I think this is a use-after-free.
 
-> ---
->  MAINTAINERS                                    | 2 +-
->  drivers/iommu/Kconfig                          | 1 +
->  drivers/iommu/Makefile                         | 2 +-
->  drivers/iommu/{hyperv-iommu.c => hyperv-irq.c} | 4 ----
->  4 files changed, 3 insertions(+), 6 deletions(-)
->  rename drivers/iommu/{hyperv-iommu.c => hyperv-irq.c} (99%)
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 5b11839cba9d..381a0e086382 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -11741,7 +11741,7 @@ F:	drivers/hid/hid-hyperv.c
->  F:	drivers/hv/
->  F:	drivers/infiniband/hw/mana/
->  F:	drivers/input/serio/hyperv-keyboard.c
-> -F:	drivers/iommu/hyperv-iommu.c
-> +F:	drivers/iommu/hyperv-irq.c
->  F:	drivers/net/ethernet/microsoft/
->  F:	drivers/net/hyperv/
->  F:	drivers/pci/controller/pci-hyperv-intf.c
-> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> index 99095645134f..b4cc2b42b338 100644
-> --- a/drivers/iommu/Kconfig
-> +++ b/drivers/iommu/Kconfig
-> @@ -355,6 +355,7 @@ config HYPERV_IOMMU
->  	bool "Hyper-V IRQ Handling"
->  	depends on HYPERV && X86
->  	select IOMMU_API
-> +	select IRQ_REMAP
->  	default HYPERV
->  	help
->  	  Stub IOMMU driver to handle IRQs to support Hyper-V Linux
-> diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-> index 8e8843316c4b..598c39558e7d 100644
-> --- a/drivers/iommu/Makefile
-> +++ b/drivers/iommu/Makefile
-> @@ -30,7 +30,7 @@ obj-$(CONFIG_TEGRA_IOMMU_SMMU) += tegra-smmu.o
->  obj-$(CONFIG_EXYNOS_IOMMU) += exynos-iommu.o
->  obj-$(CONFIG_FSL_PAMU) += fsl_pamu.o fsl_pamu_domain.o
->  obj-$(CONFIG_S390_IOMMU) += s390-iommu.o
-> -obj-$(CONFIG_HYPERV_IOMMU) += hyperv-iommu.o
-> +obj-$(CONFIG_HYPERV_IOMMU) += hyperv-irq.o
->  obj-$(CONFIG_VIRTIO_IOMMU) += virtio-iommu.o
->  obj-$(CONFIG_IOMMU_SVA) += iommu-sva.o
->  obj-$(CONFIG_IOMMU_IOPF) += io-pgfault.o
-> diff --git a/drivers/iommu/hyperv-iommu.c b/drivers/iommu/hyperv-irq.c
-> similarity index 99%
-> rename from drivers/iommu/hyperv-iommu.c
-> rename to drivers/iommu/hyperv-irq.c
-> index 0961ac805944..1944440a5004 100644
-> --- a/drivers/iommu/hyperv-iommu.c
-> +++ b/drivers/iommu/hyperv-irq.c
-> @@ -24,8 +24,6 @@
->  
->  #include "irq_remapping.h"
->  
-> -#ifdef CONFIG_IRQ_REMAP
-> -
->  /*
->   * According 82093AA IO-APIC spec , IO APIC has a 24-entry Interrupt
->   * Redirection Table. Hyper-V exposes one single IO-APIC and so define
-> @@ -330,5 +328,3 @@ static const struct irq_domain_ops hyperv_root_ir_domain_ops = {
->  	.alloc = hyperv_root_irq_remapping_alloc,
->  	.free = hyperv_root_irq_remapping_free,
->  };
-> -
-> -#endif
-> -- 
-> 2.51.2.vfs.0.1
-> 
+The VF used in this test matches quirk_intel_e2000_no_ats() which means
+that ATS gets disabled (pdev->ats_cap = 0) via quirk after the device is
+set up.
+
+ drivers/pci/quirks.c:
+
+ 5651 DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_INTEL, 0x1457, quirk_intel_e2000_no_ats);
+
+The issue is this quirk is applied after the Intel IOMMU driver is
+notified about the device.
+
+So during intel_iommu_probe_device(), the Intel IOMMU driver sees that
+ATS is enabled, and adds the device to the device rbtree:
+
+ drivers/iommu/intel/iommu.c:
+
+ 3765 static struct iommu_device *intel_iommu_probe_device(struct device *dev)
+ 3766 {
+ ...
+ 3826         if (pdev && pci_ats_supported(pdev)) {
+ 3827                 pci_prepare_ats(pdev, VTD_PAGE_SHIFT);
+ 3828                 ret = device_rbtree_insert(iommu, info);
+ 3829                 if (ret)
+ 3830                         goto free;
+ 3831         }
+ ...
+ 3858 }
+
+
+Then ATS is disabled via quirk:
+
+ drivers/pci/iov.c:
+
+ 346 int pci_iov_add_virtfn(struct pci_dev *dev, int id)
+ 347 {
+ ...
+ 383
+ 384         pci_device_add(virtfn, virtfn->bus);  <======= notifies Intel IOMMU
+ 385         rc = pci_iov_sysfs_link(dev, virtfn, id);
+ 386         if (rc)
+ 387                 goto failed1;
+ 388
+ 389         pci_bus_add_device(virtfn);  <==== Disables ATS via pci_fixup_final
+ 390
+ 391         return 0;
+ ...
+ 401 }
+
+Then later when the VF is destroyed (SR-IOV disabled on the PF), the
+Intel IOMMU sees that ATS is disabled and does not remove the device
+from its rbtree.
+
+ drivers/iommu/intel/iommu.c:
+
+ 3889 static void intel_iommu_release_device(struct device *dev)
+ 3890 {
+ ...
+ 3903         if (dev_is_pci(dev) && pci_ats_supported(to_pci_dev(dev)))
+ 3904                 device_rbtree_remove(info);
+ ...
+ 3913         kfree(info);   <======= info is still reachable from device rbtree
+ 3914 }
