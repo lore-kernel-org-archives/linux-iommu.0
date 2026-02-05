@@ -1,85 +1,222 @@
-Received: from sgoci-sdnproxy-4.icoremail.net (sgoci-sdnproxy-4.icoremail.net [129.150.39.64])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AE270396B67
-	for <iommu@lists.linux.dev>; Thu,  5 Feb 2026 09:34:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=129.150.39.64
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770284049; cv=none; b=uGtMO5kDYNT4f4lDlRqHiBbqhPaTzC3/rO17TYVBWL2jKlUD/tzInTWBkZ8knO87k1+JkTo+v9Y8lBm3Vc0/9ewMfBRjTrcvmmOTRFQWGaohxK/nYhQqEFKRhg2GxgKGyy4Ob8rSNYl6ddQE81P2CCOJ/S//+eONqlianQlpFyY=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770284049; c=relaxed/simple;
-	bh=L8+8hHtf/3VrVO55nqtF5hrOPfzu68DB6z4ykUnqtcg=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=RYcPlm8DOR6UrD32bU2j10XvPQqjhNRdDaYfjYXW0DmVqhRC7Ay3jkwkTQyj3t4fJBW+AqZt5RNVWMv7vAIUT+Q/SnddhniLV3io9elYN83sL8LlYw+1lEXBiJ9IYCoddKPpRyYReskrlRA5vhBiJjCr6XxBpeWiT7qNTK/XwKA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=phytium.com.cn; spf=pass smtp.mailfrom=phytium.com.cn; arc=none smtp.client-ip=129.150.39.64
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=phytium.com.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=phytium.com.cn
-Received: from prodtpl.icoremail.net (unknown [10.12.1.20])
-	by hzbj-icmmx-6 (Coremail) with SMTP id AQAAfwCnr9MNZIRpxAQgAA--.13992S2;
-	Thu, 05 Feb 2026 17:34:05 +0800 (CST)
-Received: from localhost.localdomain (unknown [219.142.137.151])
-	by mail (Coremail) with SMTP id AQAAfwBXse4HZIRpuDMZAA--.29205S2;
-	Thu, 05 Feb 2026 17:34:00 +0800 (CST)
-From: Zhiyuan Dai <daizhiyuan@phytium.com.cn>
-To: will@kernel.org,
-	joro@8bytes.org
-Cc: robin.murphy@arm.com,
-	linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Zhiyuan Dai <daizhiyuan@phytium.com.cn>
-Subject: [PATCH] iommu/arm-smmu-v3: Restrict MMU-700 errata 2268618 and 2812531 to affected
-Date: Thu,  5 Feb 2026 17:33:56 +0800
-Message-ID: <20260205093356.4328-1-daizhiyuan@phytium.com.cn>
-X-Mailer: git-send-email 2.43.0
+Received: from CY3PR05CU001.outbound.protection.outlook.com (mail-westcentralusazon11013014.outbound.protection.outlook.com [40.93.201.14])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E74722301;
+	Thu,  5 Feb 2026 09:43:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.201.14
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1770284601; cv=fail; b=pLYmdYVHViy33dZZY/D1RfRlI3+U8BngdYNpuaRKu1czLhEghOUhZCO9TonUI1CJXYb+96+oA7InrWS8Za82u5wMxQiRLPHDEJWBB+uP6Pn7m2BeuwPv/mFfA22fP/p6oOEeOgfNj5UKSjbqEtfUyfkIrm8YSsCPpg3ia/d5WTI=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1770284601; c=relaxed/simple;
+	bh=WwC840YdWY3M/smJKYSENqL5nSBYdAuxBASBWKyszjM=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=jhSuv6jtH58KVhjvpS0f/Teo0wu/TyCoaSID5BwG8soVapn3HOaERfnBCvkzraKHubhayhWpADihCa7xTVeK5KiotD+jbw6p+mKr5epTQ+jS5qvpriTWchAiv3Wa2HICuFFpsBQjtzxpklwMsAw0RMPYeoxDFcV/Xrjnl5IVP4k=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=rYiTvBRy; arc=fail smtp.client-ip=40.93.201.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="rYiTvBRy"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=zBzqpQrwW93Xx/ujw4RWa0j7BY8DiIvUAdjrUwSsDJ+P0eIIB9cVY4FhDN8Etutnn+RsR3ioOCaUrwZX3IlRdN2RYjDqbopU4Z8u8OIZR7RlBwYHYljREjE7gWM1nzJAiu7BFn4246WqUZbZ59EENV8oTwdSEbvNxmiq/ZhUMTirHJ74dWb8BIyzOEv1C+y1jl53t8r7uI4O5VSFwdPlYOKlArRvpA1gG+55XwwEoxVaXzdiTx5CsO9lt54gom2zCIXv0Pq05GmNefF62wBT98eNpy4V+H9scp3wLb7YIZfe2FDitlcAA2jnLcaciB2uruGtyXxzxwd/iRy0MakmUQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=HEnn+viOKUyIwgcL6tEv7DLf/bXVt+Vs5axH08IEoFA=;
+ b=goFTIhRK6LvBMpjrNIB2ezOcctospT6n3js96zDyPuhxt3zt/xu+V9HGeqyvWZs13cegTkXPY67Ui+JRb2cAhSxi2/uO3Pn7Rf2QB82g+k7IwtaMpDr6mDmJSg9gjTbhv1dus8cqOIl2Vx1DwiIcHHEphzcrGEZFI2Qdc1+WEe5WAlAtRJZQuysjXVE6SesLcZ0kCcQTY8RXtUwAfeRp/VYqIMdqfKYgUth+V5SHZO6F/QaK84t30qzdeOEUPxnQ3ilb7FamRjxaY2+6WW0A+S10WcBtnL3WTUFD+8AahRR5HAUWPvn0LiQz9uhNf7lwBpnTjXfxTBSxqD6PtlLtfw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HEnn+viOKUyIwgcL6tEv7DLf/bXVt+Vs5axH08IEoFA=;
+ b=rYiTvBRyn9pH36jblZQpREu56I1wdTwC9IBDiDTFmJt2jgamRFR0bX8/y7Gm1gkw1l5/hYcbWHpOQwE2wBaTmZapoN4yQoTDIVBd7m8jdvn2Kju5SRd6CFS8tPSCCS0O5SHnGgXDgnwG23cxBhelXTLUq9OmLypU2cAmciidQg4=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from PH7PR12MB5685.namprd12.prod.outlook.com (2603:10b6:510:13c::22)
+ by SN7PR12MB6813.namprd12.prod.outlook.com (2603:10b6:806:267::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9587.12; Thu, 5 Feb
+ 2026 09:43:18 +0000
+Received: from PH7PR12MB5685.namprd12.prod.outlook.com
+ ([fe80::ce69:cfae:774d:a65c]) by PH7PR12MB5685.namprd12.prod.outlook.com
+ ([fe80::ce69:cfae:774d:a65c%5]) with mapi id 15.20.9587.013; Thu, 5 Feb 2026
+ 09:43:18 +0000
+Message-ID: <ac33ad1a-330c-4ab5-bb98-4a4dedccf0da@amd.com>
+Date: Thu, 5 Feb 2026 10:43:08 +0100
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v7 7/8] vfio: Permit VFIO to work with pinned importers
+To: Alex Williamson <alex@shazbot.org>, Simona Vetter <simona@ffwll.ch>,
+ Jani Nikula <jani.nikula@intel.com>,
+ Lucas De Marchi <lucas.demarchi@intel.com>
+Cc: Leon Romanovsky <leon@kernel.org>, Sumit Semwal
+ <sumit.semwal@linaro.org>, Alex Deucher <alexander.deucher@amd.com>,
+ David Airlie <airlied@gmail.com>, Gerd Hoffmann <kraxel@redhat.com>,
+ Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+ Gurchetan Singh <gurchetansingh@chromium.org>, Chia-I Wu
+ <olvaffe@gmail.com>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
+ Lucas De Marchi <lucas.demarchi@intel.com>,
+ =?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
+ Rodrigo Vivi <rodrigo.vivi@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+ Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Felix Kuehling <Felix.Kuehling@amd.com>, Ankit Agrawal <ankita@nvidia.com>,
+ Vivek Kasireddy <vivek.kasireddy@intel.com>, linux-media@vger.kernel.org,
+ dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+ linux-kernel@vger.kernel.org, amd-gfx@lists.freedesktop.org,
+ virtualization@lists.linux.dev, intel-xe@lists.freedesktop.org,
+ linux-rdma@vger.kernel.org, iommu@lists.linux.dev, kvm@vger.kernel.org
+References: <20260131-dmabuf-revoke-v7-0-463d956bd527@nvidia.com>
+ <20260131-dmabuf-revoke-v7-7-463d956bd527@nvidia.com>
+ <fb9bf53a-7962-451a-bac2-c61eb52c7a0f@amd.com>
+ <20260204095659.5a983af2@shazbot.org>
+Content-Language: en-US
+From: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
+In-Reply-To: <20260204095659.5a983af2@shazbot.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BN0PR04CA0074.namprd04.prod.outlook.com
+ (2603:10b6:408:ea::19) To PH7PR12MB5685.namprd12.prod.outlook.com
+ (2603:10b6:510:13c::22)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:AQAAfwBXse4HZIRpuDMZAA--.29205S2
-X-CM-SenderInfo: hgdl6xpl1xt0o6sk53xlxphulrpou0/
-Authentication-Results: hzbj-icmmx-6; spf=neutral smtp.mail=daizhiyuan
-	@phytium.com.cn;
-X-Coremail-Antispam: 1Uk129KBjvJXoW7Kw4UAr47Kry3tw43tFW5KFg_yoW8GrW8p3
-	Z5G3sY93s8WF1fAa9rJ3yDZw15Gas5Aa15Jay5u390gryDKry5GryxKayjgF4kCrWUXF1f
-	AF1vq3y5CF15ArJanT9S1TB71UUUUUDqnTZGkaVYY2UrUUUUj1kv1TuYvTs0mT0YCTnIWj
-	DUYxn0WfASr-VFAU7a7-sFnT9fnUUIcSsGvfJ3UbIYCTnIWIevJa73UjIFyTuYvj4RJUUU
-	UUUUU
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH7PR12MB5685:EE_|SN7PR12MB6813:EE_
+X-MS-Office365-Filtering-Correlation-Id: 40ac9e62-858b-47d3-6e8f-08de649afdd4
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|7416014|1800799024|366016;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?R2NDTllDUTNNUXl0RTBIZFhUODNKRlR4U3NuTzBjdEthVVFiTllKK3EzOVBC?=
+ =?utf-8?B?T1ZCbzhlY3F2bCtRbElOakNyMi9adWFyRnhlY3QzWSs3OGNjeU5YamduckZL?=
+ =?utf-8?B?L3ByWmN6RHRTNE82OEorM2I4TS9oK1NOUTdsV0gzQmRYVFBPSDNtZ0FJbTlt?=
+ =?utf-8?B?d2ZpN2tiNld2aGdVbnp4cThoNkhBUHNsYTVoSDZVL0luSTJYT0JDRDRjeWpp?=
+ =?utf-8?B?bnZXVDZRUFk0SWdja3laTXlxSWRKTC85Ymhndk85NDNxU2g5QmRmNUFWZjc0?=
+ =?utf-8?B?cmNNclZ2c3ptN3EwZU1uK2cyRDN3a3JSalZnQ3RLZmxWN3Bwemd1Vk8xVzB1?=
+ =?utf-8?B?c2VlajBjRVQyVkNJVTB0YWdycFFMbm9xZ2htL2ZKSFo0ZmdaVkFqRG5RM3h5?=
+ =?utf-8?B?SHZodnV2V1JkaFVqNFdUTmI3REI1TndQYTJ1bXdKL1BuMkxDcWpISEJESlpH?=
+ =?utf-8?B?a2cyV01WWUhoZVkwUHRCTXVCOFRIQmRpQWVIa0NSUkE1bkpyZXZ5ckJqSXB1?=
+ =?utf-8?B?aCtRMXpuV3JRS1dTY29PWWE2SGVNVWRwaUQ0SmZRbEo2RkV4Q0NwdDREUnJK?=
+ =?utf-8?B?dFNXWjdxdlR3d1BQZWdLNjd0N3RsbzRpVnc1b1JyMlhqL1hDZFh4UDNFV0VJ?=
+ =?utf-8?B?UXJkSGxmd0R3OGQ0ZkljSWhOelJMeFVSenVQSFAxeGVEU1RVSFY4bmVZSzNo?=
+ =?utf-8?B?bmR2VmZHbllaSCt0cGFhY2k1U1JTNTI1TlJld0JzeTdMTVhkdDhzVk91M3Ba?=
+ =?utf-8?B?UUczT0NNV3RqVmlNV2hBM2N3VDIxU0tFeWpjck90bjlVQUttckRCOVNZK3dj?=
+ =?utf-8?B?NW5ybDhzVWlaZmNXVEtVL2xOTi9HYmp5aGtiWm9uazNzcGRDQzdTREpORnhK?=
+ =?utf-8?B?bXAwRjJvQXJJTHp3d0lmRWcwRGd3Q0xvTTI0T2VFZ2dhL0Rwdmt3KzFqZGxB?=
+ =?utf-8?B?akhLMUdUTlQyVkk2M1hOMlVZWWordDRDcFVGWldJaEpmSmJUeEJsMElwa3VS?=
+ =?utf-8?B?VDlpelVKZUgrUFFMc3RLNlpxQjlBV2tNUS9CY05qMHBYazF6SHE3SGhrbjZs?=
+ =?utf-8?B?VGI3MHpkdmJFN0FoMWtrck5wSTB2OFd3S2ZFUnJpdmh1TWZIaWVnazdSL3k4?=
+ =?utf-8?B?YmtUa1Z0cE5lOWYrVGovS3dLaVVWMzJBWTFrcGNrODZmSE1nOEYzSC9tZUI1?=
+ =?utf-8?B?YktZcUdhb2VhaGJXUDd2ZitJc1FXTVdIRWxnTSt1SmpaVXV2QzlVRjRuYmJ5?=
+ =?utf-8?B?RlVRcU81TUVJQnJxVzQ3VnVRMHdVSnFjWDdQSjdTKzNQb0JtdDlhZHlUNDlF?=
+ =?utf-8?B?N3I1dzlGVmZXZ2JJbGxxUGYvRk85TlZjTjRCVG5hNCs1T1p5YTVLdE9TQ1M0?=
+ =?utf-8?B?OXlueFA4UXNqQUp6VHZicGNhVld1QXFFbVZicW5LRHF0cjZJUVRnTzErSVNE?=
+ =?utf-8?B?UHJocFFIcVJlWkhIVHVRYyt2WTFQUWJuMEpTU3JtaURHMS9OU1hDSVJsU3ZV?=
+ =?utf-8?B?UGF2SXZsWjVsaXp4aWJkVENHeHNjeU1qUStNTWF1c0ZVRkdEbEJzdDJIUHQy?=
+ =?utf-8?B?eWQzaDhaMGhMYlpsVENWZU5WOTlsR054d1g2bVVNay9ycFludUtGZ1Rsb0FY?=
+ =?utf-8?B?ejRyY3c2c1RGTkhiYzgrUk1DaHU3dVpnSWtqYlhrZzQrMW9keWxRUnl1SmN4?=
+ =?utf-8?B?WUlkb3JvU1ZacUNqOE9kb3Y2ZzFnMWpwWS9yN21jbHF5ckdJZHJJeHJIZXBF?=
+ =?utf-8?B?aXRzOGIxR2l4OUd6d1VUTWVCY2p2c3h1YjJ3UHluR0p5bGZiTWxlcjhOTTF6?=
+ =?utf-8?B?dG9SQXkrZWxwRm5zUDI5aDVlRzROSXA2K0V1QlQ5M3BwMUxUMXBwSk1wOWdZ?=
+ =?utf-8?B?Zlczbjl5b2pYU1Z5RnljTDRxQXNWYlAwZTVtaW52WEJrbzcyTk42RVdUL1dB?=
+ =?utf-8?B?VkZRSml5MXBmZFQ2MmJiejJVOVF6T2ZFZzIrMlIrL01odXhhdnBqVy9VV0Ew?=
+ =?utf-8?B?UEFmN3pRbkplbGg5eGIzSW1YTFNxSHhwTHpQTUFUUkR6cXB6WFVoTnl3bGJ3?=
+ =?utf-8?Q?JbrR07?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5685.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(1800799024)(366016);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?U1dYM0V5WHEwNTJFbVhNS01zOThrVVFKaXRqNk9TR3FlUVhBRzhvbTUweitQ?=
+ =?utf-8?B?a0hIQjBDbUdodnZMRWdvUTlrQVIrU2MraDJzV0JIbmNnM1o3a21LVmpudVVV?=
+ =?utf-8?B?cWxkNkpuMnlSZnNZeFVhOC84TmMvK2hVV1U5cEdaYUpCRnA2UHo2WGpyeERP?=
+ =?utf-8?B?VGhuYWFTWXdsSXJLelUxT0ZpdkNGZHpKbk9oaitHVkZQQzVYandDQVhweDlu?=
+ =?utf-8?B?NWt5VG02b3ozWXBJcy9TVzZCZ0tzWi9MVEJ1bVZRcTVpZnZHN04xQjN2R0JC?=
+ =?utf-8?B?eGRqZUh3SGVpTlArTHFweHdyWC9LeHhzb1paZEJyZEc1TFVHUHdoV2o2Sk1K?=
+ =?utf-8?B?K2VqVDVid2ZsUFJTZ0hST1pFNlI4dUVPSEtlTnVHSW5xcjZROHRYa2lwbS9q?=
+ =?utf-8?B?NVhvRnprUlRaam9CdTY1VWlMRTFDOFIyVVNieDFERnhHZFMvVytuU3FpR0Nm?=
+ =?utf-8?B?bUIwSnVIajRzT0JhdEVKN05BYVNKejdWWHE5Q3dYZVFrOTZDZ05EREk3Z0ww?=
+ =?utf-8?B?RkRGRmhpemozeTF0SjVWbXBadUd1RkhlNHdVNVY3R2dsYWc0eVplYURKcmQ5?=
+ =?utf-8?B?Tnhkak1zU0Z5MzUxZDBYRU1CbytnTW8zaE43Z2c1OUo4OW9WRVZsQlZzaERm?=
+ =?utf-8?B?bjRTV2RnWWZWd3l3SWFpUEg1RkRyckJka3dKSU1lNnI2UmpuTUJGRU16QTNO?=
+ =?utf-8?B?S3pHb2JQYUpUNFNjbmE1SUIybmN2NTM5RnFkUXUxRmxvSndXQXNkWXJqaXUv?=
+ =?utf-8?B?YUYwN1lTSGxlWEVoVGdLQXBFSkVIdFJEVDgzTGIrYW9nM1JWVGZtU1dMZUVW?=
+ =?utf-8?B?RnAvODFZOVNWWjRSUlM5UkorWjkzbDE0cXRLM0FCNVk4NGdBaTBhZ2NIZTg0?=
+ =?utf-8?B?R2Q5Uk9OK0owS0oxcUY1cDlLc1YyRWlpRlFxYWJCeGJUMUtSZzBlUUFjY243?=
+ =?utf-8?B?ZlNuREpCMmo4QS9SeEI1WVhzK2YxWkRycWtidWpzNkVvK0JmazRFZjFnTWdx?=
+ =?utf-8?B?M2pCdGpwNXRaci82dlVwVDZuZUloOGtBVDR5ZTR4M1FtN054djEzaGhQd0dH?=
+ =?utf-8?B?ZExpTjRHU3pkZ2JYQTNhWEozRzEvbk9HZENHcXJnNUUxRHQ0aTU3VG1HZHhs?=
+ =?utf-8?B?V3plczlJOG81eEdJZUJzZmNRVCtxNWtqRllVTlRURTVKT2pzSnJuLzhHaFZO?=
+ =?utf-8?B?eExLTGhLT3JCcDhabkdPdm56bFJWYmowT3BZd0VWU0MwQUpLM25BeFFZMW1m?=
+ =?utf-8?B?Z1l5bU15aWFZZ1p6aGdUbTdFdzdvcUFOQ1RuNWY3Q2NMaHZDTHJHOVlpMW00?=
+ =?utf-8?B?Z251RmwwZDdGZUowcjJsU2dBUUh5Y0R2VkM2YVdCUHlIbUlKeWlDZmpTYlVr?=
+ =?utf-8?B?T3gxZmpUdzhlMjdveEsrV2tzcjc2RzV5Sm9QY29wT0FXYU5yZWlhcngvMkxB?=
+ =?utf-8?B?dUZSMS9paVc2UDRYYzJvNnh1VjJMdTFzaGpBTHYwRzFDRkNab0xLVDAreit6?=
+ =?utf-8?B?enVYQjlJbFI4SzNvT053eVdkR1ZPYzAxMDkyT3RUU1ZaOVBUeEtjeEpKNWpI?=
+ =?utf-8?B?R3A3VFVpaEhCNmRNNWJ4dTBtQnY2RThtVFJGS3J2K3pyZExyR3hrYUhmOGE5?=
+ =?utf-8?B?NkpBSjZDRXppRW14NFdmVnlmVTRPVjN2NTZDSW1qM0xhOGZnWEgwNkJVaERZ?=
+ =?utf-8?B?Z3dLWnhFYlZvc2c2QUZxMTZaQzRsR216NFdqV1dGcVFCcStjRk1SdlF6M3Vy?=
+ =?utf-8?B?MzJMWk1TZHl4S1RtT1ZwSWFLUnZLYmxtQjRGbzI3M2FINVhSQUZPdHJ0YTF0?=
+ =?utf-8?B?VVBnT2h6dVJZdG5pU1d3VWIxSUY0b1prdnlzb1ZVejY2UkRQNWRzSXJwbFJB?=
+ =?utf-8?B?anZRMTJWbGhLZjE3UzVQYjYweEVmem9KY3FONXRaNTdWa3YvMkMwUTNiSmhY?=
+ =?utf-8?B?ZHlTQUpIb2oyZmROb2U1b0VPaGVhdTJ4bEhaZjNQbFpXSHlMSVo4cWJZNW1T?=
+ =?utf-8?B?V2ZjVUdQeVI0bGIzZGlYdVFweUU4TWlkR2U3UU5nN3llcFBhdVZ6YUZuWjBF?=
+ =?utf-8?B?M3lWajUrVlZpM3MvR1NGUXV6RXNlblhZQjhKcEJucmhoOURmZm8zZ3dXdTNL?=
+ =?utf-8?B?SysrRmM5MHpQa3Vha3lkdmJxZ2l2Y3lIaHp4MGlUa2FjYm5IMy9vSjhkR1N6?=
+ =?utf-8?B?V2ZjWFFjUXoyemNtci9zaUJtSW9qTEJtS1dmMkIvaTdlTDdvaGFEUGpDSGVX?=
+ =?utf-8?B?cDc0R3JpUjVGcXhIclp0U3pQNUE1SkYvbG01alRlU2FBYzZqK2tVaS9NUkI5?=
+ =?utf-8?Q?PVBogPGWCaEGndmeQ3?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 40ac9e62-858b-47d3-6e8f-08de649afdd4
+X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5685.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Feb 2026 09:43:18.1143
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 8xgVj4ibwsWQujklbn13dQ2gem2W83eFgr7rbVdkEzMADhPONSq3GHv7YPfVc1NM
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB6813
 
-According to SDEN-1786925, Arm errata 2268618 and 2812531 are present in
-r0p0, r0p1, and r1p0, and fixed in r1p1.
+On 2/4/26 17:56, Alex Williamson wrote:
+...
+>>
+>> This chunk here doesn't want to apply to drm-misc-next, my educated
+>> guess is that the patch adding those lines is missing in that tree.
+>>
+>> How should we handle that? Patches 1-3 have already been pushed to
+>> drm-misc-next and I would rather like to push patches 4-6 through
+>> that branch as well.
+>>
+>> I can request a backmerge from the drm-misc-next maintainers, but
+>> then we clearly don't get that upstream this week.
+> 
+> Hmm, drm-next already has a backmerge up to v6.19-rc7, the patch here is
+> based on a commit merged in rc8.  The tag for that change was based on
+> rc6.  It can be found here:
+> 
+> https://github.com/awilliam/linux-vfio.git tags/vfio-v6.19-rc8
+> 
+> As the same tag Linus merged in:
+> 
+> 1f97d9dcf536 ("Merge tag 'vfio-v6.19-rc8' of https://github.com/awilliam/linux-vfio")
+> 
+> drm-misc-next only seems to be based on v6.19-rc1 though, so I don't
+> know that any of that helps.  Thanks,
 
-Introduce this patch to avoid performance degradation caused by
-restricting features on unaffected revisions.
+Thanks Alex, that was indeed helpful.
 
-Signed-off-by: Zhiyuan Dai <daizhiyuan@phytium.com.cn>
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+Simona, Jani and Lucas can we do a backmerge of 6.19-rc8 into drm-misc-next or does that completely breaks the flow?
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index d16d35c78c06..7eadb27eb9be 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -4272,11 +4272,13 @@ static void arm_smmu_device_iidr_probe(struct arm_smmu_device *smmu)
- 				smmu->features &= ~ARM_SMMU_FEAT_NESTING;
- 			break;
- 		case IIDR_PRODUCTID_ARM_MMU_700:
--			/* Arm erratum 2812531 */
--			smmu->features &= ~ARM_SMMU_FEAT_BTM;
--			smmu->options |= ARM_SMMU_OPT_CMDQ_FORCE_SYNC;
--			/* Arm errata 2268618, 2812531 */
--			smmu->features &= ~ARM_SMMU_FEAT_NESTING;
-+			if (variant <= 1 && revision < 0) {
-+				/* Arm erratum 2812531 */
-+				smmu->features &= ~ARM_SMMU_FEAT_BTM;
-+				smmu->options |= ARM_SMMU_OPT_CMDQ_FORCE_SYNC;
-+				/* Arm errata 2268618, 2812531 */
-+				smmu->features &= ~ARM_SMMU_FEAT_NESTING;
-+			}
- 			break;
- 		}
- 		break;
--- 
-2.51.0
+If it's not possible immediately then I will do the merge next week or so when the final 6.19 is out and everything merged back into the drm-misc trees.
 
+Leon the flow of patches through the DRM subsystem is documented here: https://drm.pages.freedesktop.org/maintainer-tools/repositories/drm-misc.html#merge-timeline
+
+Thanks,
+Christian.
+
+> 
+> Alex
