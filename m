@@ -1,38 +1,86 @@
-Received: from smtpbgau1.qq.com (smtpbgau1.qq.com [54.206.16.166])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A57817BED0;
-	Thu,  5 Feb 2026 06:12:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=54.206.16.166
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D123E35A95B
+	for <iommu@lists.linux.dev>; Thu,  5 Feb 2026 08:10:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770271946; cv=none; b=Vd8Wp2Flc1MUWEcXKblLeo0v4E+gRiFd05Uhab/Jyhl6wCBdERqvUJIikploKh0VHi7pbfUXGBpmFA0V34ZrIIdAjd2e6lxJeFq+Zj10aSWq+LC2SBgk72RW5Q+ZK6/6hbST/ZAjSpTc5H6xTrA/coSZJCOaDw+Awi71mWOr0J4=
+	t=1770279005; cv=none; b=j2IeoCOypq2+1I/+rlBiQQjV+PdYjYSUdL+FDhpMTqHEw2oNFMH/7QFE+5qzHIbXIqZU2w0vh7xpzq3yx67UFGlpviDNT3yh5ziCVp5gBc2uKkLLNM2BV4NlO2I2ibb17v9o2p5v39fQBsgZyjZPqNjZ7PYnbHu8CGef6m3Hh24=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770271946; c=relaxed/simple;
-	bh=uZpneSQWAnsGaiDthCUuC/HDbbKtK6rBmlvSADRD3Z4=;
+	s=arc-20240116; t=1770279005; c=relaxed/simple;
+	bh=31BKYP0Nlhr52tfXs2A8uGkTeifCfvGi22PcYSAYp/o=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=oQKfN8c7229MQcNl2j4pDmmGk3I/zOqQNZJWmifzV6WswvmgSIu0wJMdHa8kfvUuN3OaqdjYqozErb+A5sX1Kih+A/cZVeRtzbqRmA1+iISXIl3cQxo625/b/stFD48fQcxjVBNkBOFUfLXZWF4qSHF5ahcz1XmmfX1L5t1TcRQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux.spacemit.com; spf=none smtp.mailfrom=linux.spacemit.com; dkim=pass (1024-bit key) header.d=linux.spacemit.com header.i=@linux.spacemit.com header.b=xUGscN53; arc=none smtp.client-ip=54.206.16.166
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux.spacemit.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.spacemit.com
+	 In-Reply-To:Content-Type; b=dLwrO8+Od+yCnyUDSD8Fyoo/c16Y9OCVh/3qMG2zijrOexs75STNp/FprWzIVxEfp9cGErYfsAr6Qcc2/+4rAshYtRAvkiNxqmU/au1RUvJgZehuVMfw9VCQad7UhYBD/H8nnW3EDxfiYqUhDgjgDMsNLXqdGA9BIl4XlH90yow=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=iEUiPBrO; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=Oxj7OE+q; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.spacemit.com header.i=@linux.spacemit.com header.b="xUGscN53"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.spacemit.com;
-	s=mxsw2412; t=1770271914;
-	bh=tDgt6vZpYx+8Gxn4WiLvnLAeS2beozPCKmdyy780RYY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:From;
-	b=xUGscN53mHEDl3yC3r+TmbaLbq0Wz/U52w7ruz0VsD5ArhG8XFRk88CWhXKbsabsr
-	 qKkAQAJXr7YqIJJvw/IB1VCV08hat8gvsJZGvnXFSccsnPiwV/C7z8ZOTmtuO/Vbr3
-	 WkFY8vsjCoD4JTfg06xuJocwhNGpE/DMOTrss7t0=
-X-QQ-mid: zesmtpsz3t1770271912t7844f74a
-X-QQ-Originating-IP: sH+CVXzMSrAXjiTiHvm7S7Z4jmFxT90oqobPcqXkkTs=
-Received: from [10.3.91.191] ( [101.70.125.34])
-	by bizesmtp.qq.com (ESMTP) with 
-	id ; Thu, 05 Feb 2026 14:11:48 +0800 (CST)
-X-QQ-SSF: 0000000000000000000000000000000
-X-QQ-GoodBg: 0
-X-BIZMAIL-ID: 6470129798004699414
-Message-ID: <6C65A3873186B07C+29da5dbd-ed27-4ace-a5ca-355b3983d60c@linux.spacemit.com>
-Date: Thu, 5 Feb 2026 14:11:48 +0800
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="iEUiPBrO";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="Oxj7OE+q"
+Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6153dlxX3031034
+	for <iommu@lists.linux.dev>; Thu, 5 Feb 2026 08:10:04 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	a8rDuGUPyagZOfVWM+f/BrTixnTf4NeRHC5TK7Tyqkw=; b=iEUiPBrO91RmrhUa
+	NgQ2fl6CgspcdHcFktP7O8JSlhyMfMc11W4F/N03QNnaHvC20g3Zl2YdhuVGkPBj
+	7o0YC8drrm7VbWw9gWSeQUrK7SkC16k5FEeo34GPlpMfOcts4CSgvlbqp2tbCfRf
+	FLQCG8wnorn6YwH5CWUl6ZQGdZs98X48tAE0vqWbtsz2Jo0AT4Gv10yldJLolAUT
+	jCUNOO7Ke2AIwOCiioRA2Yaq3HAs8JEiUzp/LS3qsIro7WB9i94i7uPVtWjX8See
+	OdZiqA41kskQnR352Apb1tX6f/cBtrPiloUCJYZTd2N0QLiA84ozIY0XI0rajO5a
+	Tu+Vpg==
+Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com [209.85.216.69])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4c4a7tjc6j-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Thu, 05 Feb 2026 08:10:04 +0000 (GMT)
+Received: by mail-pj1-f69.google.com with SMTP id 98e67ed59e1d1-35301003062so1693208a91.2
+        for <iommu@lists.linux.dev>; Thu, 05 Feb 2026 00:10:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1770279003; x=1770883803; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=a8rDuGUPyagZOfVWM+f/BrTixnTf4NeRHC5TK7Tyqkw=;
+        b=Oxj7OE+q1YqFNl1eQOyBUp4ze60hQAVpUREnWISHOpKcW20m/JHEZFv3kP4AeLwbT/
+         nH49iQs2tYuLRDEMSwZFtCj5ljezGmPbEUG5BEJSPnUxW28xGAztC8mYl6B8eyYWwV2C
+         SUYFsJ8P0ze8WY6HiKCbxyfHeCktmg0fszpshKW6U4G5ehcPOVsR82z3PK1jeBKrNQQJ
+         LzsrM7MQHl6BjztUM2NyOJGRMd62h2gZtZc+jJjlDPz1Jw0dzXYy3Kcpm2vHLrBy6ycW
+         iE7O6j7kCdC518cFaF8NhCSmM7ogeHNghS8XLLthrSZwjaBuoSVg2D2x87DnXo5MUVu7
+         XjyA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1770279003; x=1770883803;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=a8rDuGUPyagZOfVWM+f/BrTixnTf4NeRHC5TK7Tyqkw=;
+        b=iWUvARcehc4ib2e4v8FLaG8TEjOqiwI8tM6JqzWo3E4T0vikjv5XKAoDl1xMU0TLQF
+         mFaqI0QRTVd9CnoOW7ysYvEDcueCv28kH7/4JacvkwkRxlQVVI4D4zI4TW8kJv4MfXgJ
+         kPBwXSHkWR36rIKRCNpl6aElj81xXURbX25VafiPf55ZmRDTj1BdDD7lvlhl6Z4KhfLK
+         uCAvaTNczTGTIVjWFDq62si+S17s0fHtgnw98LdIGNYh917lluqlgrV9/TwQtwg3+WnZ
+         Sxmqp9vb/MM6HZ+mac7FlMrmi32cEbjWj9HnZoMxJksROoEMn1sw/5llajq1g5yiQXLk
+         qKxQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXlgUfKRgY0RAEubtglGFY51CcbP+CRTd3Qhr4Tf5CEW7H+l05WZIqKKEs0paf3NN7uT2Axzw==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yw2QcDC1sA8XQqkjz9w7DZ5+c3EvGcLE1+JStwfHUpAxGSpCTrI
+	A6AoBaNal8pkXzxgEPiKk6d9Pyj3QNv6k3XrshUQA9Yq76MH13Sqqeu8A1E/pBhJADy9tW7wohR
+	Z41W2pzul9XiN5XiiiKrT4EtREQwOs7DKlM9Wgu5iEkYDzgyTqQ/L5QkDAQ==
+X-Gm-Gg: AZuq6aIOLNRmjKSdb3MetgRIs3gP1f9KlzOfdIYj1kecrs3Wb4dz6xxWWq325/lVcjW
+	uYoD+hTZuPpb2dYVO72CRg9KY81nngi7deDjQjHK/hDt9BYhTMOZ+uRFRR3ulMzhME12e05oImp
+	pO/YidHVe+4SxIBgFy+V4I2eKzf6hgO1ws0WO1TDrqYWIOuj0z2wnlHlyPmjAHpczKAOuz7+wVT
+	MQCdzYE/My3XwXaeJLXwZcTY0JMwWInKe+DgXaSiyS7DkepJD4CMf7Acssty/eSgAlcf4eZftXk
+	MY7TNJ7RAwbN06ArSkjaA9y8P1anDz25YZKAKuXK2IAQzi/Z5K+mtR2r7yXWZvYB4I0E1sxCL1l
+	SBcXAKBM/sQ7slGSnbOTV4ddZa6FrIWF68GPxemEu0Svx
+X-Received: by 2002:a17:90b:1643:b0:345:badf:f1b7 with SMTP id 98e67ed59e1d1-354871db4e8mr4514481a91.28.1770279003364;
+        Thu, 05 Feb 2026 00:10:03 -0800 (PST)
+X-Received: by 2002:a17:90b:1643:b0:345:badf:f1b7 with SMTP id 98e67ed59e1d1-354871db4e8mr4514452a91.28.1770279002912;
+        Thu, 05 Feb 2026 00:10:02 -0800 (PST)
+Received: from [10.219.57.109] ([202.46.23.19])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3549c09adffsm1642267a91.4.2026.02.05.00.09.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 05 Feb 2026 00:10:02 -0800 (PST)
+Message-ID: <4835d0b0-06c2-42d1-aa33-34daa0e7a8e7@oss.qualcomm.com>
+Date: Thu, 5 Feb 2026 13:39:54 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -40,132 +88,106 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 3/8] iommu/riscv: Add HPM support for performance
- monitoring
-To: Zong Li <zong.li@sifive.com>
-Cc: Andrew Jones <andrew.jones@oss.qualcomm.com>,
- Tomasz Jeznach <tjeznach@rivosinc.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Paul Walmsley <pjw@kernel.org>,
- Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>,
- Alexandre Ghiti <alex@ghiti.fr>, Jingyu Li <joey.li@spacemit.com>,
- iommu@lists.linux.dev, linux-perf-users@vger.kernel.org,
- linux-riscv@lists.infradead.org, spacemit@lists.linux.dev,
- devicetree@vger.kernel.org
-References: <cover.1769562575.git.lv.zheng@spacemit.com>
- <cover.1770195980.git.lv.zheng@linux.spacemit.com>
- <9C0A2AD4850D179B+524146e74e808db90d5f28fcb6ee791cf1d1bfaa.1770195980.git.lv.zheng@linux.spacemit.com>
- <p74snip7yykhogvzqld4gyjlygmd2z4kqnat7w3qj63fwebnmm@dlz6tloevgbs>
- <4D87481E9AABE2C6+72d18f72-9407-4d68-8195-edc6c171df14@linux.spacemit.com>
- <CANXhq0q8N5eHx9ytabZR97Y7AULKwgS2-uEGhcaOOGp9mvbtRQ@mail.gmail.com>
+Subject: Re: [PATCH 2/7] of: factor out of_map_id() code
+To: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+Cc: Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
+        Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
+        Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
+        Abhinav Kumar <abhinav.kumar@linux.dev>,
+        Bryan O'Donoghue <bod@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley
+ <conor+dt@kernel.org>,
+        Saravana Kannan <saravanak@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Stefan Schmidt <stefan.schmidt@linaro.org>,
+        Hans Verkuil <hverkuil@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Vishnu Reddy <busanna.reddy@oss.qualcomm.com>,
+        Hans Verkuil <hverkuil+cisco@kernel.org>,
+        linux-arm-msm@vger.kernel.org, linux-media@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        iommu@lists.linux.dev,
+        Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
+References: <20260126-kaanapali-iris-v1-0-e2646246bfc1@oss.qualcomm.com>
+ <20260126-kaanapali-iris-v1-2-e2646246bfc1@oss.qualcomm.com>
+ <47fbba15-6375-40fc-bd2c-8ebf2788837e@linaro.org>
+ <7d1b5897-8f17-4213-b893-d99d96afef94@oss.qualcomm.com>
+ <j6euiso3pcg7nvewscsfjkqyfl55ajxxybf2pib3622uontj2y@aqj4satyf7b7>
 Content-Language: en-US
-From: Lv Zheng <lv.zheng@linux.spacemit.com>
-In-Reply-To: <CANXhq0q8N5eHx9ytabZR97Y7AULKwgS2-uEGhcaOOGp9mvbtRQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: zesmtpsz:linux.spacemit.com:qybglogicsvrgz:qybglogicsvrgz5b-1
-X-QQ-XMAILINFO: MTI/6z+04aqCmKtOooE8Ec8p6bzHjOcrb9ijGprdxfZjLV+1DnWF1w6F
-	KgSdvHq29w6GBLYtahni+uA0YOQl1KnLM5xYcU7YPiUANN782jlv+Fawbw/Y/eV1lq20GHH
-	paJ/jE2nX/3tfa1R6XUTleXCK1sF8LERhvx0B+lTrEjzHhBF9kQoRxfgcL8+etiP0UcOYSX
-	l8N0s9qU/WI5vQb5PlWc4nFT8wht06g9hvYN2C3QivJSBTRdj7ouISlvnvRI9rYmjvl7lX1
-	FwfoxUeNSKouIHNvjexGVQJO+jmOXgTCU5MVD5G17AbbB3/9tFS1LP6WiXhsz4XuDWoz9cI
-	/pk0m4ivI2UkcbMRX7o6rxgUeG5Vh/vc4TsygpKU/Ypw2R/ufu5CXwvLrJtb/RatOxDeEzN
-	CSFHbauT/5tU0JI0NpdFDixI/+dqZCUhVfCnRVSypgksvICptFbWp7j0WrRBdAYr3GfrH7r
-	8/SbLin974hlZGtQH1rvh/hOQEsyi93hkO8fR9tHWplLzx7RLWmkkWuiTZcSK1tQXyOw7ay
-	S+M9AFp7+Go49KU0/pwWOHGjhaiSp85lE5YKhbkQa5kHfigzFPC7Q6xut1lyTcF37eUQVk5
-	oYKDs8vtB8qBcfL6Yti05CE4CTizojkWIYNNIsG5BV8ArDnqXO2p63RIQ6LEAuD1Cjcv7Uc
-	bvedWzwtLodcxAS2Bt0e46pTZxWfYvZL8T0EicIKP4MTimCUGjJkGZ3ELZU/yFLl1nGvptE
-	3lT8t2qAZGkWrFM2nGh6eeSgESZfx6CGveKJSggD5nuBBW/6RBWH/OSW6w78D2zSZsgoay4
-	WC0JiAujUnGV/LksKQ+Ce7aQM9225H4KBE8Po+vrnXPOKNjHKbexFM6qKe+ONblLTgqhVqZ
-	atZ0vUCljpERjslYGBHHAwfCbKTFWKzkGHHRQ83wOtzDB4Hj3E3MqXX/QLdn1vn4YylYQKP
-	8FGHIK+CwnKgO5abEm68MdxIafphY2UGxGLv1B4TuHSM0of+7I3tMKJGVeMZK6VW2abGq/D
-	teQc+xKj+ED3h2RyZ1P2DigPuqNZbXAa2COUuBg7v7UyzS98ZD
-X-QQ-XMRINFO: Mp0Kj//9VHAxzExpfF+O8yhSrljjwrznVg==
-X-QQ-RECHKSPAM: 0
+From: Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
+In-Reply-To: <j6euiso3pcg7nvewscsfjkqyfl55ajxxybf2pib3622uontj2y@aqj4satyf7b7>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-ORIG-GUID: ZgPb6mjmbFhLvsNh1OrguLM7jI1td_1j
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjA1MDA1NyBTYWx0ZWRfXwMsNS9I8akUZ
+ o/DuHIWhPRfebJWYdGON/HzAbCzcsI+itHgmRBR+qk6bYKgL5688tzbcZDjq4Qitd8c1p0sN0Jt
+ BO0gm4wQvQcRvhekH/mXnqhlaHadPa2hc+tNLoOdn8UMIFiJ1wRknx1qZ/BD1bYWLz7F44AAYw0
+ wbtBrydGYuGwBK+LC8oA/AqUjvftO62y3NIhcpwZPl0BuVv69SUIZ5WfIDn1MV4AOXyLSYtW7Aq
+ lC5W41yjVZrzZvj7SVsgSr2qyGe0/ICFRMzmYZLogWjLqxhpBJfxG7fWcmFcTLp7eWccwOPoD9e
+ ru2eG1QvQPJKwJZoEZLhBGMxjjROFm8aYjuV77Dwfhtk5c9TAJhB70rc0VUywZ1HunLYeoNxT9P
+ xMKtQtlNkXOTdM8g2FMVYzn2/RYw0op8jwRvyfN4j0DOiVIqTpg2sbXqIy2ciGQ/x2H/9WSo15W
+ FXxGZEj69eELfNlPZxQ==
+X-Proofpoint-GUID: ZgPb6mjmbFhLvsNh1OrguLM7jI1td_1j
+X-Authority-Analysis: v=2.4 cv=QaVrf8bv c=1 sm=1 tr=0 ts=6984505c cx=c_pps
+ a=vVfyC5vLCtgYJKYeQD43oA==:117 a=j4ogTh8yFefVWWEFDRgCtg==:17
+ a=IkcTkHD0fZMA:10 a=HzLeVaNsDn8A:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=EUspDBNiAAAA:8 a=SBgkrO22ZELSIJHh4VIA:9
+ a=QEXdDO2ut3YA:10 a=rl5im9kqc5Lf4LNbBjHf:22
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-02-05_01,2026-02-05_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ priorityscore=1501 spamscore=0 bulkscore=0 adultscore=0 impostorscore=0
+ lowpriorityscore=0 clxscore=1015 malwarescore=0 phishscore=0 suspectscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2601150000 definitions=main-2602050057
 
-On 2/5/2026 11:47 AM, Zong Li wrote:
-> On Thu, Feb 5, 2026 at 11:35 AM Lv Zheng <lv.zheng@linux.spacemit.com> wrote:
+
+
+On 2/4/2026 6:41 AM, Dmitry Baryshkov wrote:
+> On Tue, Feb 03, 2026 at 03:43:58PM +0530, Vijayanand Jitta wrote:
 >>
->> On 2/5/2026 2:39 AM, Andrew Jones wrote:
->>> How does this relate to
+>>
+>> On 2/2/2026 8:22 PM, Bryan O'Donoghue wrote:
+>>> On 26/01/2026 12:25, Vikash Garodia wrote:
+>>>> From: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
 >>>
->>> https://lore.kernel.org/all/20250115030306.29735-1-zong.li@sifive.com/
+>>> This commit message is confusing and inaccurate.
 >>>
->>>   From a quick skim it looks like there's plenty of overlap.
+>>> First up, you're not factoring _out_ of_map_id() - factor out of_map_id() means to remove of_map_id() - you are refactoring of_map_id().
+>>>
+>>> Your patch title should be something like "refactor of_map_id() to prepare for mapping of multiple IDs to a single device"
+>>>
 >>
->> We developed the driver in 2024 and demonstrated it in China summit. We
->> didn't notice that a patch is on-going now in the community.
+>> Sure, will update the commit.
 >>
->> Now it looks our approach solved more issues, and we'll check and update
->> if there are any community concerns still not addressed in this patchset.
+>>>> Linux interprets multiple mappings for the same input ID as a set of
+>>>> equivalent choices to pick one. There exists usecases where these set
+>>>> must be maintained in parallel, ex: on ARM, a dynamically created child
+>>>> device(s) is referencing multiple input id's in parent iommu-map.
+>>>>
+>>>> Factor out the code where multiple mappings needs to be maintained in
+>>>> parallel can be achieved through callback from this factored out code.
+>>>
+>>> Which callback ? There is no ->function(pointer, here...); ?!
+>>>
+>>> Just make some plain and straightforward statements about what you are doing and why. There's no need to resort to dissertation-speak.
+>>>
 >>
->> We can add Reviewed-by/Tested-by and Signed-off-by of Zong Li to this
->> patch if he wishes.
->>
->> Thanks,
->> Lv
->>
+>> The callback in introduced in patch 2 of this series. will update the commit descripition as suggested.
 > 
-> Perhaps I can first post my next revision to the mailing list (hope it
-> won't waste the community resource), so that you could have a chance
-> to review it and see whether that version is architecturally closer to
-> what the community is looking for, while also addressing your issue.
-> If you also feel that my next revision meets your needs, perhaps you
-> could append your additional implementations on top of it.
->
-
-It seems we all composed the RISC-V iommu HPM support by referencing 
-drivers/perf/arm_smmuv3_pmu.
-
-Robin's comments should all be addressed IMHO.
-
-> Of course, if the community would prefer to go your version, I’m
-> perfectly fine with that as well.
-
-OK. If we send a next version, we will add your SOB and please help to 
-review and test.
-
-Thanks in advance,
-Lv
-
+> I think, the callback was NAKed already.
 > 
->>>
->>> Thanks,
->>> drew
->>>
->>>
->>> On Wed, Feb 04, 2026 at 05:09:01PM +0800, Lv Zheng wrote:
->>>> From: Jingyu Li <joey.li@spacemit.com>
->>>>
->>>> Introduces perf-based HPM driver for RISC-V IOMMU, enabling performance
->>>> monitoring capabilities.
->>>>
->>>> Note that the RISC-V IOMMU HPM module uses COUNTER_MAX-1 as a static
->>>> counter index of HPMCYCLES, and 0~COUNTER_MAX-2 as the dynamic counter
->>>> indexes of other HPMEVENTS in order to correctly index into IOHPMEVT and
->>>> IOHPMCTR registers that have already been defined in the iommu-bits.h.
->>>> However the users treat 0 as the index of HPMCYCLES and 1~COUNTER_MAX-1 as
->>>> the indexes of other HPMEVENTS, thus care should be taken in dealing with
->>>> counter indexes between userspace and kernel space.
->>>>
->>>> Signed-off-by: Jingyu Li <joey.li@spacemit.com>
->>>> Signed-off-by: Lv Zheng <lv.zheng@linux.spacemit.com>
->>>> Link: https://github.com/riscv-non-isa/riscv-iommu
->>>> ---
->>>>    drivers/iommu/riscv/Kconfig          |   9 +
->>>>    drivers/iommu/riscv/Makefile         |   1 +
->>>>    drivers/iommu/riscv/iommu-bits.h     |   6 +
->>>>    drivers/iommu/riscv/iommu-hpm.c      | 843 +++++++++++++++++++++++++++
->>>>    drivers/iommu/riscv/iommu-pci.c      |  13 +-
->>>>    drivers/iommu/riscv/iommu-platform.c |   8 +-
->>>>    drivers/iommu/riscv/iommu.h          |  42 ++
->>>>    7 files changed, 919 insertions(+), 3 deletions(-)
->>>>    create mode 100644 drivers/iommu/riscv/iommu-hpm.c
->>>>
->>>
->>
 > 
 
+I'll remove the callback and update change such that all entries of iommu-map are always scanned.
+This would handle the video usecase ( i.e; same input id's mapping to different SIDs ) and in other
+cases it would result in few additional scans in iommu-map compared to existing implementation (where
+it just returns after first input id match) , does this look fine ?
+
+Thanks,
+Vijay
 
