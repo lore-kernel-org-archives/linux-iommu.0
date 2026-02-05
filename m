@@ -1,148 +1,95 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEB6A3D34A8;
-	Thu,  5 Feb 2026 12:19:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9E54C4414
+	for <iommu@lists.linux.dev>; Thu,  5 Feb 2026 13:05:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770293990; cv=none; b=m/3okCR0hOAtmAFuTUF3Wup/QONi07/9tEhdiUu6UvUhm/CbIhCa+HC356mXlQINSD5T9P8LDPaIqSWkpl9vyq6CAbpspdHrPusco/hQBiICa/0UGjwluSpqu6qYDXuEXXmZBVG9KgLtBgOZHb2O3l1FSij3mZu8aGZK4s9kDYY=
+	t=1770296729; cv=none; b=gPi7Y3rHdVCZi8eeQPf0qQG7E0q3hQnIm6M2ZSm/4sm2FvVnp4+GddHu3+o/yGDWkJq3Ctk2TMbVah9CauIzUINlZoszuWE19ev6W+zvrRaxW3IQBH+muTvJt3+Pe581HXvUkJVhQw2kEWIGyWbvj10txsAx/hzA9kjW81e5tGA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770293990; c=relaxed/simple;
-	bh=jDVAIy0un6bKwi7cwnpyXpEFdjN35m4ddNYoOutYhhg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=s5NSrb7PbejR3WVIxIMxCXYZHpJf7xZ2TWQrVZRd27ynK6zAKlbBN/Fz/f8cjUUlfZlQP08K7WJqrSQQBR2SMbSU/s6KMHZd2D7iJDJRjPgcMb/Q7yykT1SeBownEeCoH2Jc/1uIcKCQbFiscAEgwneaBEDhgBLXnvkfP2bjEW4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=i8xsIjDR; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="i8xsIjDR"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24EA5C16AAE;
-	Thu,  5 Feb 2026 12:19:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1770293989;
-	bh=jDVAIy0un6bKwi7cwnpyXpEFdjN35m4ddNYoOutYhhg=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=i8xsIjDRjR/7Rs5Naa0Zy2HxOGqc5prWf5cwXS/H3radpAqh/avw9U+IxguyWKA8y
-	 huFln+oJd1vu7ldLn6LNYkQ6RJxjWsoJ5eS3hT0tMYh4dmMUdxahfCEdqFj5VXkqpT
-	 9ddi8EzI4CBmF7r3/HIXROK8jlpHjEAdgQe9URyey+9Vwp7WQHQV8s4nvLC46FZ6a2
-	 c9HMUyfFhI1lUXLb8Xb4BXpe77RU5uB+OQv6MQF6rYrWjvvFziYpPIuIRa15haC6F5
-	 k9QrwVZPhPwCYG1uDdQYVzTA2Sbfz33PJKtJRXrvJXZ7pvFO9um7Ecx+7L4LAFSQPe
-	 OpIywz7bjpfXA==
-Date: Thu, 5 Feb 2026 14:19:45 +0200
-From: Leon Romanovsky <leon@kernel.org>
-To: Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>
-Cc: Alex Williamson <alex@shazbot.org>, Simona Vetter <simona@ffwll.ch>,
-	Jani Nikula <jani.nikula@intel.com>,
-	Lucas De Marchi <lucas.demarchi@intel.com>,
-	Sumit Semwal <sumit.semwal@linaro.org>,
-	Alex Deucher <alexander.deucher@amd.com>,
-	David Airlie <airlied@gmail.com>, Gerd Hoffmann <kraxel@redhat.com>,
-	Dmitry Osipenko <dmitry.osipenko@collabora.com>,
-	Gurchetan Singh <gurchetansingh@chromium.org>,
-	Chia-I Wu <olvaffe@gmail.com>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	Thomas =?iso-8859-1?Q?Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>,
-	Rodrigo Vivi <rodrigo.vivi@intel.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Felix Kuehling <Felix.Kuehling@amd.com>,
-	Ankit Agrawal <ankita@nvidia.com>,
-	Vivek Kasireddy <vivek.kasireddy@intel.com>,
-	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
-	linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org,
-	amd-gfx@lists.freedesktop.org, virtualization@lists.linux.dev,
-	intel-xe@lists.freedesktop.org, linux-rdma@vger.kernel.org,
-	iommu@lists.linux.dev, kvm@vger.kernel.org
-Subject: Re: [PATCH v7 7/8] vfio: Permit VFIO to work with pinned importers
-Message-ID: <20260205121945.GC12824@unreal>
-References: <20260131-dmabuf-revoke-v7-0-463d956bd527@nvidia.com>
- <20260131-dmabuf-revoke-v7-7-463d956bd527@nvidia.com>
- <fb9bf53a-7962-451a-bac2-c61eb52c7a0f@amd.com>
- <20260204095659.5a983af2@shazbot.org>
- <ac33ad1a-330c-4ab5-bb98-4a4dedccf0da@amd.com>
+	s=arc-20240116; t=1770296729; c=relaxed/simple;
+	bh=/szC6wM1aBy7BZ3w1y4J06ChwF+L2TbPiaAbVGSKvUQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=WycQxMquXjbh4f4dCFCTsnXAf/XA+ElLCjuZG4JEYl8uf490MdV+dMFa7bYwMHQFin9bHpV7fVHnrQpsyU4oLm4fyCMqEu89pMhT8pOBDCsbQUospPWh45iZAkMVrjjP09cFcuEDtANFz8VjH8+bbWOPNoF4DiGoVF4WYKViWwE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B9112339;
+	Thu,  5 Feb 2026 05:05:21 -0800 (PST)
+Received: from [10.1.196.85] (e121345-lin.cambridge.arm.com [10.1.196.85])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8FC983F778;
+	Thu,  5 Feb 2026 05:05:26 -0800 (PST)
+Message-ID: <3f22f7b8-449c-40d9-b4c8-fff3e520d563@arm.com>
+Date: Thu, 5 Feb 2026 13:05:24 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <ac33ad1a-330c-4ab5-bb98-4a4dedccf0da@amd.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Restrict MMU-700 errata 2268618 and
+ 2812531 to affected
+To: Zhiyuan Dai <daizhiyuan@phytium.com.cn>, will@kernel.org, joro@8bytes.org
+Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <20260205093356.4328-1-daizhiyuan@phytium.com.cn>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20260205093356.4328-1-daizhiyuan@phytium.com.cn>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Thu, Feb 05, 2026 at 10:43:08AM +0100, Christian König wrote:
-> On 2/4/26 17:56, Alex Williamson wrote:
-> ...
-> >>
-> >> This chunk here doesn't want to apply to drm-misc-next, my educated
-> >> guess is that the patch adding those lines is missing in that tree.
-> >>
-> >> How should we handle that? Patches 1-3 have already been pushed to
-> >> drm-misc-next and I would rather like to push patches 4-6 through
-> >> that branch as well.
-> >>
-> >> I can request a backmerge from the drm-misc-next maintainers, but
-> >> then we clearly don't get that upstream this week.
-> > 
-> > Hmm, drm-next already has a backmerge up to v6.19-rc7, the patch here is
-> > based on a commit merged in rc8.  The tag for that change was based on
-> > rc6.  It can be found here:
-> > 
-> > https://github.com/awilliam/linux-vfio.git tags/vfio-v6.19-rc8
-> > 
-> > As the same tag Linus merged in:
-> > 
-> > 1f97d9dcf536 ("Merge tag 'vfio-v6.19-rc8' of https://github.com/awilliam/linux-vfio")
-> > 
-> > drm-misc-next only seems to be based on v6.19-rc1 though, so I don't
-> > know that any of that helps.  Thanks,
+On 05/02/2026 9:33 am, Zhiyuan Dai wrote:
+> According to SDEN-1786925, Arm errata 2268618 and 2812531 are present in
+> r0p0, r0p1, and r1p0, and fixed in r1p1.
+
+This is a bit fiddly, since these workarounds also overlap some other 
+errata that IIRC were *not* fixed in r1p1 - it's been on my to-do list 
+to figure this out for a while now, sorry I haven't had a chance to get 
+to it.
+
+> Introduce this patch to avoid performance degradation caused by
+> restricting features on unaffected revisions.
+
+I'm curious, can you clarify the performance impact? At the time I was 
+pretty sure that the ARM_SMMU_OPT_CMDQ_FORCE_SYNC was just for safety 
+and never likely to be hit in practice, since with range invalidations 
+any unmap should never end up with anywhere near 16 TLBIs in a single 
+batch anyway. Is that no longer the case?
+
+> Signed-off-by: Zhiyuan Dai <daizhiyuan@phytium.com.cn>
+> ---
+>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 12 +++++++-----
+>   1 file changed, 7 insertions(+), 5 deletions(-)
 > 
-> Thanks Alex, that was indeed helpful.
-> 
-> Simona, Jani and Lucas can we do a backmerge of 6.19-rc8 into drm-misc-next or does that completely breaks the flow?
-> 
-> If it's not possible immediately then I will do the merge next week or so when the final 6.19 is out and everything merged back into the drm-misc trees.
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index d16d35c78c06..7eadb27eb9be 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -4272,11 +4272,13 @@ static void arm_smmu_device_iidr_probe(struct arm_smmu_device *smmu)
+>   				smmu->features &= ~ARM_SMMU_FEAT_NESTING;
+>   			break;
+>   		case IIDR_PRODUCTID_ARM_MMU_700:
+> -			/* Arm erratum 2812531 */
+> -			smmu->features &= ~ARM_SMMU_FEAT_BTM;
+> -			smmu->options |= ARM_SMMU_OPT_CMDQ_FORCE_SYNC;
+> -			/* Arm errata 2268618, 2812531 */
+> -			smmu->features &= ~ARM_SMMU_FEAT_NESTING;
+> +			if (variant <= 1 && revision < 0) {
 
-Christian,
+revision is unsigned, it cannot be < 0. This just breaks the workarounds 
+entirely.
 
-You don't need any backmerge, SHA-1 version of vfio-v6.19-rc8 tag is the
-same as in Linus's tree, so the flow is:
+Thanks,
+Robin.
 
-➜  kernel git:(wip/leon-for-next) git remote update drm-misc
-Fetching drm-misc
-remote: Enumerating objects: 32768, done.
-remote: Counting objects: 100% (21620/21620), done.
-remote: Compressing objects: 100% (4620/4620), done.
-remote: Total 18154 (delta 14789), reused 16751 (delta 13519), pack-reused 0
-Receiving objects: 100% (18154/18154), 4.33 MiB | 4.30 MiB/s, done.
-Resolving deltas: 100% (14789/14789), completed with 1564 local objects.
-From https://anongit.freedesktop.org/git/drm/drm-misc
- * [new branch]                drm-misc-fixes                                           -> drm-misc/drm-misc-fixes
- * [new branch]                drm-misc-next                                            -> drm-misc/drm-misc-next
-...
-➜  kernel git:(wip/leon-for-next) git checkout -b drm-misc-next drm-misc/drm-misc-next
-Switched to a new branch 'drm-misc-next'
-HEAD is now at 2bcbc706dfa0 dma-buf: add dma_fence_was_initialized function v2
-➜  kernel git:(drm-misc-next) git merge vfio-v6.19-rc8 
-Auto-merging drivers/vfio/pci/vfio_pci_dmabuf.c
-Merge made by the 'ort' strategy.
- drivers/vfio/pci/vfio_pci_dmabuf.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
-➜  kernel git:(drm-misc-next) git l -2
-f6e4419050ce (HEAD -> drm-misc-next) Merge tag 'vfio-v6.19-rc8' into drm-misc-next
-2bcbc706dfa0 (drm-misc/drm-misc-next, drm-misc/HEAD) dma-buf: add dma_fence_was_initialized function v2
+> +				/* Arm erratum 2812531 */
+> +				smmu->features &= ~ARM_SMMU_FEAT_BTM;
+> +				smmu->options |= ARM_SMMU_OPT_CMDQ_FORCE_SYNC;
+> +				/* Arm errata 2268618, 2812531 */
+> +				smmu->features &= ~ARM_SMMU_FEAT_NESTING;
+> +			}
+>   			break;
+>   		}
+>   		break;
 
-And after that you can apply rest of dma-buf patches.
-
-Thanks
-
-> 
-> Leon the flow of patches through the DRM subsystem is documented here: https://drm.pages.freedesktop.org/maintainer-tools/repositories/drm-misc.html#merge-timeline
-> 
-> Thanks,
-> Christian.
-> 
-> > 
-> > Alex
