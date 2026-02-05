@@ -1,171 +1,192 @@
-Received: from fhigh-b3-smtp.messagingengine.com (fhigh-b3-smtp.messagingengine.com [202.12.124.154])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44F9A407586;
-	Thu,  5 Feb 2026 14:42:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.154
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 841D73D3D19
+	for <iommu@lists.linux.dev>; Thu,  5 Feb 2026 14:53:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770302532; cv=none; b=qJfWBwQmrAPIwXEr7t7jYNcELMo964M9GV9cw9HG11qOqO3DdJKrf8WE6R8oTMOd8Y6IsQx0yqls3I7XRaaLrEN913KSZLl8G9iqqf/0QEs3Yf+QHTyhjSuZtdIAgMjBRkBV0mtaQzB0NTOEbBsvma0kpTyyofAqGoDtK7fbjPY=
+	t=1770303233; cv=none; b=YkARJ3Mj6PDJqraBAr5n5yVqV36NNlr20iQfVRyemRdTkjhVeL4XJ0p+PiVW+oWOQ/ersgHyVvlUacWNyoZtEE4Inyl01ImI3A5MdkcG41ofYXEBZJRkllfXuYoDW1VyNMjAkNRa00lY6+12sbVwRP9l71po3TRLKRU0jUtfrkg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770302532; c=relaxed/simple;
-	bh=+irZfXnbAyb6yWhUVT9uTx9aYPDMtL/nMFsGsY93TDg=;
-	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
-	 Subject:Content-Type; b=kMEiQBB07YzZIrH4X8N0UBIVAIgYrXYWwoHg+bh/SKQv15OHL56tmLkMQGnCaHpm7F4yofBN3Ocol63yoPfSzyCQrL2TQSHX/RJg9tvUgn/7pWJ6fBJsSLWsh0wJxZvqKxW85lFTOk0Htq6Af5z2Jp9fnaFP85vGFHDGRiZX1Xg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=shazbot.org; spf=pass smtp.mailfrom=shazbot.org; dkim=pass (2048-bit key) header.d=shazbot.org header.i=@shazbot.org header.b=FEf0h2Bc; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=fVLT4mfc; arc=none smtp.client-ip=202.12.124.154
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=shazbot.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=shazbot.org
+	s=arc-20240116; t=1770303233; c=relaxed/simple;
+	bh=ZwTws5Wp3s/3u+wvh0h7sn7pKfDk+8i3+HfkFTjhvSs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=HrFQUwsPkV+t2S9RgrjXN7PnnjsIdx82Fw+XnW31x44J3mzbFjs6gngOd/Yk5vr7sf5dhXwMV+32iIXNx7zFyIkV2ORJN+cqzqobVzQbaSQDXUmlZbVmSajZcDaex7foo9J1juZJCWzOclItmEYoiBTMxyX4tko8QQ+ITvF1LYw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=j48/J2jw; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=YLOchVea; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=shazbot.org header.i=@shazbot.org header.b="FEf0h2Bc";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="fVLT4mfc"
-Received: from phl-compute-02.internal (phl-compute-02.internal [10.202.2.42])
-	by mailfhigh.stl.internal (Postfix) with ESMTP id F0A547A0066;
-	Thu,  5 Feb 2026 09:42:08 -0500 (EST)
-Received: from phl-imap-18 ([10.202.2.89])
-  by phl-compute-02.internal (MEProxy); Thu, 05 Feb 2026 09:42:10 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=shazbot.org; h=
-	cc:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm2; t=1770302528;
-	 x=1770388928; bh=c2sWSFRwhN1ePbWw0hSzzDPUGT+PUV51S0w9MOaIyks=; b=
-	FEf0h2BcDcZm7G7BDIUK2ADItpwlJ8hNuUMLpKhFD6n01D8okyPnIkq6p81we7L2
-	gIGJ48i+i29M8SF5Umc+j2/hErScJ0HodPUYKew263UE3GLZrJ7hD+mpi7tA1tUX
-	CroIkGk60T8vo4V9I7Cfhb2SMhUSeAwP0kh/1pkZh1xJdlexYo0FdJ5ZcBnF22Gt
-	PcO5FnudagrbQTbq0nW/uUj4MwbWv0LJvy4TiBkSF9/3dPJ/dW8TAz3yrrKGyEcx
-	SXgih4Qq3eCnWAJL/lyYSLwmbXucwl6AUKa54xqHfBzVVIvuk+of2gbkMwwAHZlf
-	LV4/00+M10ZETI1nm733Ig==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1770302528; x=
-	1770388928; bh=c2sWSFRwhN1ePbWw0hSzzDPUGT+PUV51S0w9MOaIyks=; b=f
-	VLT4mfcVhduoy9qAwuHpxbxsvmL9WGkexpwwI35BBhmw8JlDnXBk4zHMMQX1hHA6
-	4z5QJMxDN/5SU6v2/oB5bORew2XZ927YqZSyGTD1rcl9RdbaPe9yUSI2BgRvAFmc
-	BzOn8OvFG5gzR5jsTizMM+6Q1M4c3zFzIFNxlcJnGt15yhJ9kNlOoAJxgBhI4IXo
-	HYOdBlgGo0Cb+dwdnPpC3xPczHpGadbVzQgJTrwGwpj8XbRm5Jx/FcIuWT1z2tvu
-	m1hBZ0WCbh+BnVOK3X+cMcFnDmQXkToA8t1ygsnVaHAwifuFcHKpaN9hF3Ey5zw0
-	8BX3dnHzbNHviUYX1vBgw==
-X-ME-Sender: <xms:P6yEadwgIGLmdLTZFzYjRQJOhCyboUfHxc2oeaANaZcpJ6heSz2grA>
-    <xme:P6yEaYF5kpO1z-_A41E_Z7SIL7zoEKRjHdReP7Sy2d9f3QP-wHzYia1OmKJT2l7Wh
-    9s2PLYWhd_ZREldE3WJ6Z3I6M3gecVVIbKvRc9oK4rNhKUGcY1k1j0>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefgedrtddtgddukeehheeiucetufdoteggodetrf
-    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfurfetoffkrfgpnffqhgenuceu
-    rghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujf
-    gurhepofggfffhvfevkfgjfhfutgfgsehtqhertdertdejnecuhfhrohhmpedftehlvgig
-    ucghihhllhhirghmshhonhdfuceorghlvgigsehshhgriigsohhtrdhorhhgqeenucggtf
-    frrghtthgvrhhnpefgleegjeehkeefkefhkeetjedugfdvtdduveehledtteeltedtveff
-    ffegheelffenucffohhmrghinhepfhhrvggvuggvshhkthhophdrohhrghenucevlhhush
-    htvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegrlhgvgiesshhhrgii
-    sghothdrohhrghdpnhgspghrtghpthhtohepfeehpdhmohguvgepshhmthhpohhuthdprh
-    gtphhtthhopehjohhroheskegshihtvghsrdhorhhgpdhrtghpthhtohepfhgvlhhigidr
-    khhuvghhlhhinhhgsegrmhgurdgtohhmpdhrtghpthhtoheprghlvgigrghnuggvrhdrug
-    gvuhgthhgvrhesrghmugdrtghomhdprhgtphhtthhopegthhhrihhsthhirghnrdhkohgv
-    nhhighesrghmugdrtghomhdprhgtphhtthhopehrohgsihhnrdhmuhhrphhhhiesrghrmh
-    drtghomhdprhgtphhtthhopehguhhrtghhvghtrghnshhinhhghhestghhrhhomhhiuhhm
-    rdhorhhgpdhrtghpthhtohepughmihhtrhihrdhoshhiphgvnhhkohestgholhhlrggsoh
-    hrrgdrtghomhdprhgtphhtthhopehsihhmohhnrgesfhhffihllhdrtghhpdhrtghpthht
-    oheprghirhhlihgvugesghhmrghilhdrtghomh
-X-ME-Proxy: <xmx:P6yEafGe2iZwOtoy1QIujx9JKcXQzVBHGIr7FCMNM53dR4SA7uoFPQ>
-    <xmx:P6yEaeY4v6aLwSLaI-5cCVbJkfoaGXLUwMVMRnaHKWdyT5nGKisVzQ>
-    <xmx:P6yEabMl_SdUrT753Jz4Iu8zYXeBk5mOIBISChHExnjKF4ONkrV_hA>
-    <xmx:P6yEaXzKVHf1zwRQ33ST0VoEQ8N5wtThWPkF8uM3zAbRNMiwOEPh3w>
-    <xmx:QKyEaQhAhMewyYq6yCQSoIXvkGVUwlZLw6u6ZWNTBxx4oxvqxJ3bHWjK>
-Feedback-ID: i03f14258:Fastmail
-Received: by mailuser.phl.internal (Postfix, from userid 501)
-	id A92B615C0090; Thu,  5 Feb 2026 09:42:07 -0500 (EST)
-X-Mailer: MessagingEngine.com Webmail Interface
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="j48/J2jw";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="YLOchVea"
+Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 615EOIhP4126293
+	for <iommu@lists.linux.dev>; Thu, 5 Feb 2026 14:53:52 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-type:date:from:in-reply-to:message-id:mime-version
+	:references:subject:to; s=qcppdkim1; bh=3zdqUJw9qtQU1loPiEvujh90
+	oDIRx6jke/+KDijdHPk=; b=j48/J2jwaL8GuMAL7XIaV/2wrifuuuZlbBV2O7Dk
+	4Q95eKsO3sRpl5R0Kr+e6Nkzi+QrPIrW9dw0QQvkIyjusSTkvFw251lf3WN34PRv
+	YhoNJJAw5o/Fcz/8BOQdvVVj8RC/duuQLAINukC88Ve+mHlu4C1ETenxW117jp3W
+	vQyrXHIpkBGvkEbUzxwoYLpPK3DTI9LSWUqU/7r60yWTqeAoaArgIDiS3NQZBteM
+	BtdG2VHynHWRnA/HygnyOgg5Lam0oUy/EV9ans8tVkJXVqvizSjH84n0TUo/KkTv
+	W6raBkfxCJ442Od+YjsAtMZoVfhIjZcL9Njlgik+I34fUg==
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com [209.85.222.197])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4c4vxhr2nh-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Thu, 05 Feb 2026 14:53:52 +0000 (GMT)
+Received: by mail-qk1-f197.google.com with SMTP id af79cd13be357-8c538971a16so255697485a.1
+        for <iommu@lists.linux.dev>; Thu, 05 Feb 2026 06:53:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1770303232; x=1770908032; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=3zdqUJw9qtQU1loPiEvujh90oDIRx6jke/+KDijdHPk=;
+        b=YLOchVeao2D59nIyQpEmd28ANT/xwrud/EKGgobAT0v7M7tcZcx8iTH8keSoUwMgX+
+         paSQIjDPFKjyyvBV2CySahrNURnyEwhDCFo3IUWX5qHPdULe8rYSPIMJ8jEUo2H9Ys98
+         DU3dgma5MJljg/Ls2q+B19G1NeqzW3h3uNfXqh0+HcP5F6DckXJrVMAqE7n9q95Vd5ZA
+         9INfdQty+yfcxPBT+QSdIf8b8djNicIFkBuCMr6sSPKOX2v967II1UdcE3vfzkrhj/VG
+         oQJOdMODGwUm2qcgo90wpnOUHgxk/MYXzGR9c4QMHcbq1qRTHjfpstiuyLZqQey8VnoX
+         kRGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1770303232; x=1770908032;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=3zdqUJw9qtQU1loPiEvujh90oDIRx6jke/+KDijdHPk=;
+        b=aIhZj8LZ1QGACNkgdlWuGbgnmwfBIifXTrlCGdsGrK5OFPLA5lfx4RvC2lYm2y+425
+         Xc502U33kz1XcrL4E6demOhY/66jxocG2m8ybj0RmUF8xd0eP8XDRv2ySTKLysrRzXKd
+         1BmY+jLCBL/8xo1qrv0RbgeEeXVQM9ILRO1qa9qWzEAcKFfH/hiaVXT5R+eloonhAw5Z
+         AhBdKeWIPDdUsrgqecItYa3cDfGvdPvO9uVXaqredyuw6ibMA8qk6musYsXR1G20zEfX
+         GGFa3P4osAP4ltO9K63cLaqpO/CQ2BQWE+dO/16LJXF+6m+PfhKmc5PhrE2vQaB2dGnR
+         k+8g==
+X-Forwarded-Encrypted: i=1; AJvYcCWZdjoyBOaStA54jbBwINV39OuM6qppfS7Pf+Csjk7454KX7WjhnAdIKsEiCCvife6noFFoQw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwX08WTqCpS3J+joa+jw0Rwo/4UgLVx9HzdKwgQzseo56SHFLEV
+	saR6Qgu98FXF8106mCDyVqEZ4B3ldK2Fec9Ow7faXjejpTZI4ONhU0jio/O2UakmCnBa2tR/cmm
+	9vpjTp/wroyCSV73Ajv6Q48ImkjbUKfDVylm4HwIzk439m3bleYeJf6Y1fg==
+X-Gm-Gg: AZuq6aIM6jAS2V41MvBRoy9MlbLtLHjX8on4PKXOwCzw7h+3y5gs1Fn8yMfwp3VFSqL
+	RN1DpqIbDNsu/qwDhxHfudc7r9QFTq071VbD9xUmL3W3UHQnuzuPmzUpv6xF1MvVYZEuEN5vYLt
+	OxWVSEhSlNb5fuM7mMZ3WqH7WGOOLIOlkpQ53fYTu44iKjXREVCA+vagXCyslBmwcQ/nSFiYy8M
+	Ev0d3Nf3AkzvTry2LS73mX04wwUDZyx+iWiAO8WA0ttZp0CJ/WZaeNDqv2uYb21sgVRGcpKOEOC
+	7slx2XjvAOUnsCI5z8SXEClVDpxdbS49ZQnwuCqlMSdhkFQl8/VJdzh+TljaOn7ALsuNLMINQyO
+	3/wuGIbQm/luJgkGi0DG4PO2MK+nqSt3g8mZw1jFjnTTWlTcdxMzofI1aTP6WWxtCmvNuM2MGpW
+	cOTfY7LhrbMv7dIkvSnoZY2WY=
+X-Received: by 2002:a05:620a:17a9:b0:8c6:b14e:655d with SMTP id af79cd13be357-8ca2fa75386mr869026985a.74.1770303226688;
+        Thu, 05 Feb 2026 06:53:46 -0800 (PST)
+X-Received: by 2002:a05:620a:17a9:b0:8c6:b14e:655d with SMTP id af79cd13be357-8ca2fa75386mr869022885a.74.1770303226121;
+        Thu, 05 Feb 2026 06:53:46 -0800 (PST)
+Received: from umbar.lan (2001-14ba-a073-af00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a073:af00:264b:feff:fe8b:be8a])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-59e3881b1a1sm1467745e87.61.2026.02.05.06.53.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 Feb 2026 06:53:45 -0800 (PST)
+Date: Thu, 5 Feb 2026 16:53:43 +0200
+From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+To: Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
+Cc: Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
+        Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
+        Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
+        Abhinav Kumar <abhinav.kumar@linux.dev>,
+        Bryan O'Donoghue <bod@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Saravana Kannan <saravanak@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Stefan Schmidt <stefan.schmidt@linaro.org>,
+        Hans Verkuil <hverkuil@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Vishnu Reddy <busanna.reddy@oss.qualcomm.com>,
+        Hans Verkuil <hverkuil+cisco@kernel.org>,
+        linux-arm-msm@vger.kernel.org, linux-media@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        iommu@lists.linux.dev,
+        Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
+Subject: Re: [PATCH 2/7] of: factor out of_map_id() code
+Message-ID: <zz7n3x7e7dsqgfw7qgppeaqnb3uz3i5bzd3tybzbv6q7zmdcgk@pojvxhui7q4v>
+References: <20260126-kaanapali-iris-v1-0-e2646246bfc1@oss.qualcomm.com>
+ <20260126-kaanapali-iris-v1-2-e2646246bfc1@oss.qualcomm.com>
+ <47fbba15-6375-40fc-bd2c-8ebf2788837e@linaro.org>
+ <7d1b5897-8f17-4213-b893-d99d96afef94@oss.qualcomm.com>
+ <j6euiso3pcg7nvewscsfjkqyfl55ajxxybf2pib3622uontj2y@aqj4satyf7b7>
+ <4835d0b0-06c2-42d1-aa33-34daa0e7a8e7@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-ThreadId: ATdnKwv6RJ4o
-Date: Thu, 05 Feb 2026 07:41:11 -0700
-From: "Alex Williamson" <alex@shazbot.org>
-To: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
- "Jason Gunthorpe" <jgg@ziepe.ca>, "Leon Romanovsky" <leon@kernel.org>
-Cc: "Simona Vetter" <simona@ffwll.ch>, "Jani Nikula" <jani.nikula@intel.com>,
- "Lucas De Marchi" <lucas.demarchi@intel.com>,
- "Sumit Semwal" <sumit.semwal@linaro.org>,
- "Alex Deucher" <alexander.deucher@amd.com>,
- "David Airlie" <airlied@gmail.com>, "Gerd Hoffmann" <kraxel@redhat.com>,
- "Dmitry Osipenko" <dmitry.osipenko@collabora.com>,
- "Gurchetan Singh" <gurchetansingh@chromium.org>,
- "Chia-I Wu" <olvaffe@gmail.com>,
- "Maarten Lankhorst" <maarten.lankhorst@linux.intel.com>,
- "Maxime Ripard" <mripard@kernel.org>,
- "Thomas Zimmermann" <tzimmermann@suse.de>,
- =?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
- "Rodrigo Vivi" <rodrigo.vivi@intel.com>,
- "Kevin Tian" <kevin.tian@intel.com>, "Joerg Roedel" <joro@8bytes.org>,
- "Will Deacon" <will@kernel.org>, "Robin Murphy" <robin.murphy@arm.com>,
- "Felix Kuehling" <Felix.Kuehling@amd.com>,
- "Ankit Agrawal" <ankita@nvidia.com>,
- "Vivek Kasireddy" <vivek.kasireddy@intel.com>,
- linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
- linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org,
- amd-gfx@lists.freedesktop.org, virtualization@lists.linux.dev,
- intel-xe@lists.freedesktop.org, linux-rdma@vger.kernel.org,
- iommu@lists.linux.dev, kvm@vger.kernel.org
-Message-Id: <1b7ee5ad-6dde-415a-8e06-93daddc9bcef@app.fastmail.com>
-In-Reply-To: <f27ad57b-d935-4ffa-a65c-9f6b5d9a1f9a@amd.com>
-References: <20260131-dmabuf-revoke-v7-0-463d956bd527@nvidia.com>
- <20260131-dmabuf-revoke-v7-7-463d956bd527@nvidia.com>
- <fb9bf53a-7962-451a-bac2-c61eb52c7a0f@amd.com>
- <20260204095659.5a983af2@shazbot.org>
- <ac33ad1a-330c-4ab5-bb98-4a4dedccf0da@amd.com>
- <20260205121945.GC12824@unreal> <20260205142111.GK2328995@ziepe.ca>
- <f27ad57b-d935-4ffa-a65c-9f6b5d9a1f9a@amd.com>
-Subject: Re: [PATCH v7 7/8] vfio: Permit VFIO to work with pinned importers
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4835d0b0-06c2-42d1-aa33-34daa0e7a8e7@oss.qualcomm.com>
+X-Authority-Analysis: v=2.4 cv=GLoF0+NK c=1 sm=1 tr=0 ts=6984af00 cx=c_pps
+ a=50t2pK5VMbmlHzFWWp8p/g==:117 a=xqWC_Br6kY4A:10 a=kj9zAlcOel0A:10
+ a=HzLeVaNsDn8A:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=EUspDBNiAAAA:8 a=8BOpGF2gbpNt03PPG4cA:9 a=CjuIK1q_8ugA:10
+ a=IoWCM6iH3mJn3m4BftBB:22
+X-Proofpoint-GUID: vw_1qIo6p5qMyLTvgy6Gc2kAi3yW1Wcf
+X-Proofpoint-ORIG-GUID: vw_1qIo6p5qMyLTvgy6Gc2kAi3yW1Wcf
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjA1MDExMiBTYWx0ZWRfX/finqAh+w6Gm
+ Ps0CM/9nYrmXCIRxH7aDGB1q3H2Z41VmD3p4MuRUtJTk6xplThk0PTziiQeW2qrlbbZbfllLM2A
+ vZp9hR6Dve5DowYwTArOxj6629U165weQHmuPeCQ+yCBTCleaSP0KacA41KLXQbX+HmrYuy3A4+
+ Xuy3wx32aigTkSvQkGKLV0znmUmxoOWEBOrYGu5L81E3PisisDXslQLZ6DVeuzoozQFSMEhN6Jp
+ zjYyMP9ya4HQh+KL6pDEG3tqqm5PgDgmby+knxAN9Gn66DM3zrocpqg4H1FbxX5kpHuLSCDCDFi
+ /oX4bmsjoShqrwEM5hlJxaPOWVhe+KE9pigs25L9XvP+H8kQKQZxZ7XbT0mVxy0TSP51Sy1n/ww
+ jkmif8aGm6gGT44T8/5t7XmLEF09sUBi0jQh0brDXBDf8YTwaKcx+LITi0WUGDJOvoWgabHvWpN
+ liqnCAYg6qqgJXDnOqQ==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-02-05_03,2026-02-05_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ spamscore=0 suspectscore=0 priorityscore=1501 lowpriorityscore=0 bulkscore=0
+ malwarescore=0 clxscore=1015 impostorscore=0 adultscore=0 phishscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2601150000 definitions=main-2602050112
 
+On Thu, Feb 05, 2026 at 01:39:54PM +0530, Vijayanand Jitta wrote:
+> 
+> 
+> On 2/4/2026 6:41 AM, Dmitry Baryshkov wrote:
+> > On Tue, Feb 03, 2026 at 03:43:58PM +0530, Vijayanand Jitta wrote:
+> >>
+> >>
+> >> On 2/2/2026 8:22 PM, Bryan O'Donoghue wrote:
+> >>> On 26/01/2026 12:25, Vikash Garodia wrote:
+> >>>> From: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
+> >>>
+> >>> This commit message is confusing and inaccurate.
+> >>>
+> >>> First up, you're not factoring _out_ of_map_id() - factor out of_map_id() means to remove of_map_id() - you are refactoring of_map_id().
+> >>>
+> >>> Your patch title should be something like "refactor of_map_id() to prepare for mapping of multiple IDs to a single device"
+> >>>
+> >>
+> >> Sure, will update the commit.
+> >>
+> >>>> Linux interprets multiple mappings for the same input ID as a set of
+> >>>> equivalent choices to pick one. There exists usecases where these set
+> >>>> must be maintained in parallel, ex: on ARM, a dynamically created child
+> >>>> device(s) is referencing multiple input id's in parent iommu-map.
+> >>>>
+> >>>> Factor out the code where multiple mappings needs to be maintained in
+> >>>> parallel can be achieved through callback from this factored out code.
+> >>>
+> >>> Which callback ? There is no ->function(pointer, here...); ?!
+> >>>
+> >>> Just make some plain and straightforward statements about what you are doing and why. There's no need to resort to dissertation-speak.
+> >>>
+> >>
+> >> The callback in introduced in patch 2 of this series. will update the commit descripition as suggested.
+> > 
+> > I think, the callback was NAKed already.
+> > 
+> > 
+> 
+> I'll remove the callback and update change such that all entries of iommu-map are always scanned.
+> This would handle the video usecase ( i.e; same input id's mapping to different SIDs ) and in other
+> cases it would result in few additional scans in iommu-map compared to existing implementation (where
+> it just returns after first input id match) , does this look fine ?
 
+This probably means that we can also drop of_map_args.
 
-On Thu, Feb 5, 2026, at 7:28 AM, Christian K=C3=B6nig wrote:
-> On 2/5/26 15:21, Jason Gunthorpe wrote:
->> On Thu, Feb 05, 2026 at 02:19:45PM +0200, Leon Romanovsky wrote:
->>> You don't need any backmerge, SHA-1 version of vfio-v6.19-rc8 tag is=
- the
->>> same as in Linus's tree, so the flow is:
->>=20
->> I'm confused what is the problem here?
->>=20
->> From https://anongit.freedesktop.org/git/drm/drm-misc
->>  * branch                          drm-misc-next -> FETCH_HEAD
->>=20
->> $ git show FETCH_HEAD
->> commit 779ec12c85c9e4547519e3903a371a3b26a289de
->> Author: Alexander Konyukhov <Alexander.Konyukhov@kaspersky.com>
->> Date:   Tue Feb 3 16:48:46 2026 +0300
->>=20
->>     drm/komeda: fix integer overflow in AFBC framebuffer size check
->>=20
->> $ git merge-base  FETCH_HEAD 61ceaf236115f20f4fdd7cf60f883ada1063349a
->> 24d479d26b25bce5faea3ddd9fa8f3a6c3129ea7
->> $ git describe --contains 24d479d26b25bce5faea3ddd9fa8f3a6c3129ea7
->> v6.19-rc6^0
->>=20
->> $ git log --oneline 61ceaf236115f20f4fdd7cf60f883ada1063349a ^FETCH_H=
-EAD
->> 61ceaf236115f2 vfio: Prevent from pinned DMABUF importers to attach t=
-o VFIO DMABUF
->>=20
->> Just pull Alex's tree, the drm-misc-next tree already has v6.19-rc6,
->> so all they will see is one extra patch from Alex in your PR.
->>=20
->> No need to backmerge, this is normal git stuff and there won't be
->> conflicts when they merge a later Linus tag.
->
-> Correct, but that would merge the same patch through two different=20
-> trees. That is usually a pretty big no-go.
-
-Applying the patch through two different trees is a no-go, but merging t=
-he same commit from a shared branch or tag is very common and acceptable=
-.  It's the same commit after all, there is no conflict, no duplicate co=
-mmit.  When the trees are merged, the commit will exist once in the log.=
-  Thanks,
-
-Alex
+-- 
+With best wishes
+Dmitry
