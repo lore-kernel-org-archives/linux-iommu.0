@@ -1,38 +1,38 @@
-Received: from smtpbg154.qq.com (smtpbg154.qq.com [15.184.224.54])
+Received: from smtpbgau1.qq.com (smtpbgau1.qq.com [54.206.16.166])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90B1C13B293;
-	Thu,  5 Feb 2026 03:53:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=15.184.224.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A57817BED0;
+	Thu,  5 Feb 2026 06:12:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=54.206.16.166
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770263619; cv=none; b=Q43BHcq5njSS5WTG/tFTGm13KXurmWtJ8FU5KPsIR3zEY03GfxbBfbp0lcsQRXKF0Msd6pBD4QJMINP47DDaIxToN2S65WKtil8yLIg/cs6m3RTu5mD5DoAqu0yD4/7BoYoj9TV4oRyanURpD8mNxdiBKm4hypPrp0RWosFGVs0=
+	t=1770271946; cv=none; b=Vd8Wp2Flc1MUWEcXKblLeo0v4E+gRiFd05Uhab/Jyhl6wCBdERqvUJIikploKh0VHi7pbfUXGBpmFA0V34ZrIIdAjd2e6lxJeFq+Zj10aSWq+LC2SBgk72RW5Q+ZK6/6hbST/ZAjSpTc5H6xTrA/coSZJCOaDw+Awi71mWOr0J4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770263619; c=relaxed/simple;
-	bh=j576Tw3IZWEMhrM/QWalhIW+vLOaGfIzwjuYc2xooXY=;
+	s=arc-20240116; t=1770271946; c=relaxed/simple;
+	bh=uZpneSQWAnsGaiDthCUuC/HDbbKtK6rBmlvSADRD3Z4=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=KWbSFZ6lXl0wcIgoMv5TMRnO7AfZ7U1ZnTgKNoKzVuJ/fEW+6KO/B9vMrMiElagJvneWED6XDuucJCp57aOCUUhd0H+JPP7cTb5+QjEO4Uu2FoCNt++5HFg/5urml3+QZTTciCpSlbkr+gBMA7JMKVyUZdov5c5dz0Nju6zLB6c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux.spacemit.com; spf=none smtp.mailfrom=linux.spacemit.com; dkim=pass (1024-bit key) header.d=linux.spacemit.com header.i=@linux.spacemit.com header.b=XlenU/tt; arc=none smtp.client-ip=15.184.224.54
+	 In-Reply-To:Content-Type; b=oQKfN8c7229MQcNl2j4pDmmGk3I/zOqQNZJWmifzV6WswvmgSIu0wJMdHa8kfvUuN3OaqdjYqozErb+A5sX1Kih+A/cZVeRtzbqRmA1+iISXIl3cQxo625/b/stFD48fQcxjVBNkBOFUfLXZWF4qSHF5ahcz1XmmfX1L5t1TcRQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux.spacemit.com; spf=none smtp.mailfrom=linux.spacemit.com; dkim=pass (1024-bit key) header.d=linux.spacemit.com header.i=@linux.spacemit.com header.b=xUGscN53; arc=none smtp.client-ip=54.206.16.166
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux.spacemit.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.spacemit.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.spacemit.com header.i=@linux.spacemit.com header.b="XlenU/tt"
+	dkim=pass (1024-bit key) header.d=linux.spacemit.com header.i=@linux.spacemit.com header.b="xUGscN53"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.spacemit.com;
-	s=mxsw2412; t=1770263587;
-	bh=wm69aKVjK11vnsxnHJGFhJ/kRVDFOCLUX2gZdnB/g8I=;
+	s=mxsw2412; t=1770271914;
+	bh=tDgt6vZpYx+8Gxn4WiLvnLAeS2beozPCKmdyy780RYY=;
 	h=Message-ID:Date:MIME-Version:Subject:To:From;
-	b=XlenU/tt4yQUCIrJDC+2/APViDsEw4d00JQvlV0iwlZ2uuiQF7lDbo9uSlSRCNFMr
-	 hEMphAOcNd3dtaQbzJ6dxTmO5C9wxtItD+Dxi1uG5bdof0ukAqUOE0EGOupBOvGYLM
-	 9iREnwjbv5GQyB688icYQeuRrZkl5gB3n1B6tTnc=
-X-QQ-mid: zesmtpgz9t1770263580t421bb8f8
-X-QQ-Originating-IP: EPC+6trZL3LdU7ynQgp73ZdxqgtF89P3sFaSDK6EZQ0=
+	b=xUGscN53mHEDl3yC3r+TmbaLbq0Wz/U52w7ruz0VsD5ArhG8XFRk88CWhXKbsabsr
+	 qKkAQAJXr7YqIJJvw/IB1VCV08hat8gvsJZGvnXFSccsnPiwV/C7z8ZOTmtuO/Vbr3
+	 WkFY8vsjCoD4JTfg06xuJocwhNGpE/DMOTrss7t0=
+X-QQ-mid: zesmtpsz3t1770271912t7844f74a
+X-QQ-Originating-IP: sH+CVXzMSrAXjiTiHvm7S7Z4jmFxT90oqobPcqXkkTs=
 Received: from [10.3.91.191] ( [101.70.125.34])
 	by bizesmtp.qq.com (ESMTP) with 
-	id ; Thu, 05 Feb 2026 11:52:57 +0800 (CST)
+	id ; Thu, 05 Feb 2026 14:11:48 +0800 (CST)
 X-QQ-SSF: 0000000000000000000000000000000
 X-QQ-GoodBg: 0
-X-BIZMAIL-ID: 1569306416083050966
-Message-ID: <927D288E956D61AD+d1488c72-afff-49d2-bb6b-5ef5ea08b627@linux.spacemit.com>
-Date: Thu, 5 Feb 2026 11:52:57 +0800
+X-BIZMAIL-ID: 6470129798004699414
+Message-ID: <6C65A3873186B07C+29da5dbd-ed27-4ace-a5ca-355b3983d60c@linux.spacemit.com>
+Date: Thu, 5 Feb 2026 14:11:48 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -40,9 +40,11 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 2/8] iommu/riscv: Fix WSI mode IRQ number handling
-To: Andrew Jones <andrew.jones@oss.qualcomm.com>
-Cc: Tomasz Jeznach <tjeznach@rivosinc.com>, Joerg Roedel <joro@8bytes.org>,
+Subject: Re: [PATCH v3 3/8] iommu/riscv: Add HPM support for performance
+ monitoring
+To: Zong Li <zong.li@sifive.com>
+Cc: Andrew Jones <andrew.jones@oss.qualcomm.com>,
+ Tomasz Jeznach <tjeznach@rivosinc.com>, Joerg Roedel <joro@8bytes.org>,
  Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
  Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
  Conor Dooley <conor+dt@kernel.org>, Paul Walmsley <pjw@kernel.org>,
@@ -53,107 +55,117 @@ Cc: Tomasz Jeznach <tjeznach@rivosinc.com>, Joerg Roedel <joro@8bytes.org>,
  devicetree@vger.kernel.org
 References: <cover.1769562575.git.lv.zheng@spacemit.com>
  <cover.1770195980.git.lv.zheng@linux.spacemit.com>
- <F77F878EF7C59BD3+a9078997d97dacd05d1271a5390dfd08a402b325.1770195980.git.lv.zheng@linux.spacemit.com>
- <2ueryrki7uzpjn6rbqz7scy46sjhw76jjilddz2naslz3eyfdp@ycwf42eaw5yy>
+ <9C0A2AD4850D179B+524146e74e808db90d5f28fcb6ee791cf1d1bfaa.1770195980.git.lv.zheng@linux.spacemit.com>
+ <p74snip7yykhogvzqld4gyjlygmd2z4kqnat7w3qj63fwebnmm@dlz6tloevgbs>
+ <4D87481E9AABE2C6+72d18f72-9407-4d68-8195-edc6c171df14@linux.spacemit.com>
+ <CANXhq0q8N5eHx9ytabZR97Y7AULKwgS2-uEGhcaOOGp9mvbtRQ@mail.gmail.com>
 Content-Language: en-US
 From: Lv Zheng <lv.zheng@linux.spacemit.com>
-In-Reply-To: <2ueryrki7uzpjn6rbqz7scy46sjhw76jjilddz2naslz3eyfdp@ycwf42eaw5yy>
+In-Reply-To: <CANXhq0q8N5eHx9ytabZR97Y7AULKwgS2-uEGhcaOOGp9mvbtRQ@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 X-QQ-SENDSIZE: 520
-Feedback-ID: zesmtpgz:linux.spacemit.com:qybglogicsvrgz:qybglogicsvrgz5b-1
-X-QQ-XMAILINFO: NkcbD1JCaMYVot0ytSeIR7Dz6bzvlckuXTyS4hOhnUigvUCllm6MGiMN
-	/BLUvEGgC1Stx1pm62pHC8S4zCGpznfJSMRS2ZTrFHXc+6cFN7T6uDveXanpClvzm6K5r/C
-	lmi7fSEfffeQANGGKdohROR+rcsxANxbe6YCgPA8MXWcpM2QfuLD69VWe8NkGBgQQMLXo+A
-	5jqITmrz5dQXSKWZP1dN/X5kU0RyUqoKcWdhDzz/vp1HgKXmvS5s7Yukx8QWgSz/EIN1fAW
-	KDlepZO49gPVFCu1IC3GX/lVjAG09kSTDXjmMOjxjJ7VeaEHZ9Sm1WFFyfacKHynV0wjIcf
-	s2j1uUNvIAh7Oz1QM6y5cEfs8ZBGHcb7yZLB9WK+WwrqDKH3iACiH9nfzZZW1TjPNF3GH5g
-	EnHgsuZPx8Xs8axjTAKSgA8b7Ywf/4iZyMNf3aw3qzOx8RZ3F0bpl6MyVzjW2KoeS0R9i0V
-	ce409LN0yXuVNpElzLmWY5vxRC7CnEi6cKrF+Pf1wjzAMbhTcAbAf22QuVTdmGwZ0trTp1C
-	hVbr+lTcNhRIE6GARbcftpOadWOM7nLwuZKDq8Gdtnhyw8O+73KxKP7fqKF29ByVc8nIWWw
-	ZP1UidPBfBXc9fp04xDVq2JPSOmycZUaQ3Ii3jSBB8TzNa50Kh8ygSpaN/Db1YJwAQWE4uO
-	K8wjJF7DJ6ienD/rVR5GxWsb/RGRp3of3EQMG4k1nmFEOlt6nmhl5ibqJe313ohvquujU6d
-	zDz7QGrCDzMzntK5Txt1fcLvaNPvkLN2c6+Awu4zPWm/TZFg40rOyvtc879pNpqL/dzGvVW
-	TNfCNqcL4z/gBRs8j622dAN+YTldYaW3F6gkPVZf66nsSja9NOecU6GBFYvWvQEIH78B30F
-	eoXInXTP7yVfImX4YrVBgUD1HhPQrTUGEDUFgXnay6nQLS3bpcLT9yfIojkqQL1BE6/lVSK
-	nfw2aXh/Mu0BCtcT4cTGcQVt/8h/wJFvnuuKJw96M/AIsyluDvL2cx1/0mzVkl3hNw4xlFo
-	Kbo3xJVdfAeKtUunaOU86X2n4F9AMZjh3P5Van4bd2c2vTRcNC
-X-QQ-XMRINFO: NyFYKkN4Ny6FuXrnB5Ye7Aabb3ujjtK+gg==
+Feedback-ID: zesmtpsz:linux.spacemit.com:qybglogicsvrgz:qybglogicsvrgz5b-1
+X-QQ-XMAILINFO: MTI/6z+04aqCmKtOooE8Ec8p6bzHjOcrb9ijGprdxfZjLV+1DnWF1w6F
+	KgSdvHq29w6GBLYtahni+uA0YOQl1KnLM5xYcU7YPiUANN782jlv+Fawbw/Y/eV1lq20GHH
+	paJ/jE2nX/3tfa1R6XUTleXCK1sF8LERhvx0B+lTrEjzHhBF9kQoRxfgcL8+etiP0UcOYSX
+	l8N0s9qU/WI5vQb5PlWc4nFT8wht06g9hvYN2C3QivJSBTRdj7ouISlvnvRI9rYmjvl7lX1
+	FwfoxUeNSKouIHNvjexGVQJO+jmOXgTCU5MVD5G17AbbB3/9tFS1LP6WiXhsz4XuDWoz9cI
+	/pk0m4ivI2UkcbMRX7o6rxgUeG5Vh/vc4TsygpKU/Ypw2R/ufu5CXwvLrJtb/RatOxDeEzN
+	CSFHbauT/5tU0JI0NpdFDixI/+dqZCUhVfCnRVSypgksvICptFbWp7j0WrRBdAYr3GfrH7r
+	8/SbLin974hlZGtQH1rvh/hOQEsyi93hkO8fR9tHWplLzx7RLWmkkWuiTZcSK1tQXyOw7ay
+	S+M9AFp7+Go49KU0/pwWOHGjhaiSp85lE5YKhbkQa5kHfigzFPC7Q6xut1lyTcF37eUQVk5
+	oYKDs8vtB8qBcfL6Yti05CE4CTizojkWIYNNIsG5BV8ArDnqXO2p63RIQ6LEAuD1Cjcv7Uc
+	bvedWzwtLodcxAS2Bt0e46pTZxWfYvZL8T0EicIKP4MTimCUGjJkGZ3ELZU/yFLl1nGvptE
+	3lT8t2qAZGkWrFM2nGh6eeSgESZfx6CGveKJSggD5nuBBW/6RBWH/OSW6w78D2zSZsgoay4
+	WC0JiAujUnGV/LksKQ+Ce7aQM9225H4KBE8Po+vrnXPOKNjHKbexFM6qKe+ONblLTgqhVqZ
+	atZ0vUCljpERjslYGBHHAwfCbKTFWKzkGHHRQ83wOtzDB4Hj3E3MqXX/QLdn1vn4YylYQKP
+	8FGHIK+CwnKgO5abEm68MdxIafphY2UGxGLv1B4TuHSM0of+7I3tMKJGVeMZK6VW2abGq/D
+	teQc+xKj+ED3h2RyZ1P2DigPuqNZbXAa2COUuBg7v7UyzS98ZD
+X-QQ-XMRINFO: Mp0Kj//9VHAxzExpfF+O8yhSrljjwrznVg==
 X-QQ-RECHKSPAM: 0
 
-On 2/5/2026 1:20 AM, Andrew Jones wrote:
-> On Wed, Feb 04, 2026 at 05:08:52PM +0800, Lv Zheng wrote:
->> From: Jingyu Li <joey.li@spacemit.com>
+On 2/5/2026 11:47 AM, Zong Li wrote:
+> On Thu, Feb 5, 2026 at 11:35 AM Lv Zheng <lv.zheng@linux.spacemit.com> wrote:
 >>
->> In WSI mode, ICVEC doesn't exist, thus reading it returns 0, which
->> causes IOMMU driver to fail to find IRQ numbers from device tree
->> IRQ arrary. The issue is fixed by applying icvec indexes of WSI IRQs.
-> 
-> ICVEC always exists, however it may be hardwired to zero when an
-> implementation only supports a single vector. But, that has nothing
-> to do with whether wired interrupts or MSIs are used.
-> 
-> If ICVEC on this IOMMU is always reading as zero, even when 0xf is
-> written to it first, then it should be interpreted as there only
-> being a single vector (or that the IOMMU's ICVEC is broken, if the
-> number of sources is known to be more).
-> 
+>> On 2/5/2026 2:39 AM, Andrew Jones wrote:
+>>> How does this relate to
+>>>
+>>> https://lore.kernel.org/all/20250115030306.29735-1-zong.li@sifive.com/
+>>>
+>>>   From a quick skim it looks like there's plenty of overlap.
 >>
->> Signed-off-by: Jingyu Li <joey.li@spacemit.com>
->> Signed-off-by: Lv Zheng <lv.zheng@linux.spacemit.com>
->> ---
->>   drivers/iommu/riscv/iommu.c | 25 ++++++++++++++++++++-----
->>   1 file changed, 20 insertions(+), 5 deletions(-)
+>> We developed the driver in 2024 and demonstrated it in China summit. We
+>> didn't notice that a patch is on-going now in the community.
 >>
->> diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
->> index d9429097a2b5..26630979473b 100644
->> --- a/drivers/iommu/riscv/iommu.c
->> +++ b/drivers/iommu/riscv/iommu.c
->> @@ -1593,11 +1593,26 @@ static int riscv_iommu_init_check(struct riscv_iommu_device *iommu)
->>   		       FIELD_PREP(RISCV_IOMMU_ICVEC_PMIV, 3 % iommu->irqs_count);
->>   	riscv_iommu_writeq(iommu, RISCV_IOMMU_REG_ICVEC, iommu->icvec);
->>   	iommu->icvec = riscv_iommu_readq(iommu, RISCV_IOMMU_REG_ICVEC);
->> -	if (max(max(FIELD_GET(RISCV_IOMMU_ICVEC_CIV, iommu->icvec),
->> -		    FIELD_GET(RISCV_IOMMU_ICVEC_FIV, iommu->icvec)),
->> -		max(FIELD_GET(RISCV_IOMMU_ICVEC_PIV, iommu->icvec),
->> -		    FIELD_GET(RISCV_IOMMU_ICVEC_PMIV, iommu->icvec))) >= iommu->irqs_count)
->> -		return -EINVAL;
->> +	/*
->> +	 * In WSI mode, ICVEC may read as zero. Only validate if using MSI.
->> +	 * Check if FCTL.WSI is set to determine interrupt mode.
->> +	 */
->> +	if (!(iommu->fctl & RISCV_IOMMU_FCTL_WSI)) {
+>> Now it looks our approach solved more issues, and we'll check and update
+>> if there are any community concerns still not addressed in this patchset.
+>>
+>> We can add Reviewed-by/Tested-by and Signed-off-by of Zong Li to this
+>> patch if he wishes.
+>>
+>> Thanks,
+>> Lv
+>>
 > 
-> The behavior of ICVEC does not depend on FCTL.WSI
-> 
->> +		if (max(max(FIELD_GET(RISCV_IOMMU_ICVEC_CIV, iommu->icvec),
->> +			    FIELD_GET(RISCV_IOMMU_ICVEC_FIV, iommu->icvec)),
->> +			max(FIELD_GET(RISCV_IOMMU_ICVEC_PIV, iommu->icvec),
->> +			    FIELD_GET(RISCV_IOMMU_ICVEC_PMIV, iommu->icvec))) >= iommu->irqs_count)
->> +			return -EINVAL;
->> +	} else {
->> +		/*
->> +		 * WSI mode: ICVEC is not used. Set to identity mapping for
->> +		 * riscv_iommu_queue_vec() to work correctly.
->> +		 */
->> +		iommu->icvec = FIELD_PREP(RISCV_IOMMU_ICVEC_CIV, 0) |
->> +			       FIELD_PREP(RISCV_IOMMU_ICVEC_FIV, 1) |
->> +			       FIELD_PREP(RISCV_IOMMU_ICVEC_PIV, 2) |
->> +			       FIELD_PREP(RISCV_IOMMU_ICVEC_PMIV, 3);
-> 
-> It's certainly not correct to set iommu->icvec to anything that can't be
-> written to the IOMMU's WARL ICVEC fields and read back again.
+> Perhaps I can first post my next revision to the mailing list (hope it
+> won't waste the community resource), so that you could have a chance
+> to review it and see whether that version is architecturally closer to
+> what the community is looking for, while also addressing your issue.
+> If you also feel that my next revision meets your needs, perhaps you
+> could append your additional implementations on top of it.
+>
 
-Indeed.
-It looks I can keep icvec returned for WSI and keeps the write-and-read 
-check logic only for MSI.
+It seems we all composed the RISC-V iommu HPM support by referencing 
+drivers/perf/arm_smmuv3_pmu.
 
-Thanks,
+Robin's comments should all be addressed IMHO.
+
+> Of course, if the community would prefer to go your version, I’m
+> perfectly fine with that as well.
+
+OK. If we send a next version, we will add your SOB and please help to 
+review and test.
+
+Thanks in advance,
 Lv
 
 > 
-> Thanks,
-> drew
+>>>
+>>> Thanks,
+>>> drew
+>>>
+>>>
+>>> On Wed, Feb 04, 2026 at 05:09:01PM +0800, Lv Zheng wrote:
+>>>> From: Jingyu Li <joey.li@spacemit.com>
+>>>>
+>>>> Introduces perf-based HPM driver for RISC-V IOMMU, enabling performance
+>>>> monitoring capabilities.
+>>>>
+>>>> Note that the RISC-V IOMMU HPM module uses COUNTER_MAX-1 as a static
+>>>> counter index of HPMCYCLES, and 0~COUNTER_MAX-2 as the dynamic counter
+>>>> indexes of other HPMEVENTS in order to correctly index into IOHPMEVT and
+>>>> IOHPMCTR registers that have already been defined in the iommu-bits.h.
+>>>> However the users treat 0 as the index of HPMCYCLES and 1~COUNTER_MAX-1 as
+>>>> the indexes of other HPMEVENTS, thus care should be taken in dealing with
+>>>> counter indexes between userspace and kernel space.
+>>>>
+>>>> Signed-off-by: Jingyu Li <joey.li@spacemit.com>
+>>>> Signed-off-by: Lv Zheng <lv.zheng@linux.spacemit.com>
+>>>> Link: https://github.com/riscv-non-isa/riscv-iommu
+>>>> ---
+>>>>    drivers/iommu/riscv/Kconfig          |   9 +
+>>>>    drivers/iommu/riscv/Makefile         |   1 +
+>>>>    drivers/iommu/riscv/iommu-bits.h     |   6 +
+>>>>    drivers/iommu/riscv/iommu-hpm.c      | 843 +++++++++++++++++++++++++++
+>>>>    drivers/iommu/riscv/iommu-pci.c      |  13 +-
+>>>>    drivers/iommu/riscv/iommu-platform.c |   8 +-
+>>>>    drivers/iommu/riscv/iommu.h          |  42 ++
+>>>>    7 files changed, 919 insertions(+), 3 deletions(-)
+>>>>    create mode 100644 drivers/iommu/riscv/iommu-hpm.c
+>>>>
+>>>
+>>
 > 
 
 
