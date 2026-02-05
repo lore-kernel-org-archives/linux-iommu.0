@@ -1,102 +1,123 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9A2E36E48C
-	for <iommu@lists.linux.dev>; Thu,  5 Feb 2026 08:52:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1230635E534;
+	Thu,  5 Feb 2026 09:09:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770281524; cv=none; b=YkLsKCAOkhpKKOZy26+RMEiuuwhEIaQVPW5Y1VOK1aT91jGe3bYx92PVTmuZ8I7CcoLYxeFxEF/pDBD0ptPGZuBYRfVCs2Av4W7N9DJaFXtKAQQfHQbG0KHVcfvUmlmZLk4EcCvHswtF+XO6yKMMnJL97IF2PJdiMmKyw86LA7c=
+	t=1770282583; cv=none; b=QOAUDSPE2vsHZ7SSEp4hXfMGhuNNy50LGOhHfcVhSmh7OwQDLo5CcUHG86lYDNavazBbNYceL7v0HTIVkVioa5p87Nxj021QuG+dzGfREyTqj4j5J+fieZrZItwaTYVWb6f0tfM4kpYeSV6csg2raeY2bAwRHlujyZB48Vq99s0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770281524; c=relaxed/simple;
-	bh=BICD/36k+pC1OlBLC4/zRhXAakMkN8TFncwB090TR58=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=phr+Hq2Kg6EEmKNC6qKkVRJOa7bWqS/lodM7abZHiy1ziS0JTbxxXp2X0FSbrWwoaav/AQimdX4r+lSRs+ET205F7EU7GBFGZgLjWkfcs0ccytG5/55fUNqnpZQwzAg1TjbksloRMfKQ91ckM4u8zYqh8nDJ+5ZN05Sm8QYoj6s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Tpp6MLKZ; arc=none smtp.client-ip=192.198.163.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1770282583; c=relaxed/simple;
+	bh=zl4sbHSqQvdTaC6HnQvBhEdXXeHWBp1tuYx5j590apM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=PlhgNj+n6y6eTGzFhkgXgR2WubeEsDGv0SoYo5Zso0+uF8i8nXtyEPAf4VC51bbCWWw4vVCi0cxO6zOGPC8w9BGmBGBXbfeGnfmfIuNF/F7gwYQ1Z1mH8fX781Guaig13SdKgyjO0adLceo7EoqiN8Cmib9/vie0RngFjX+sOjA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=t3Do5o/M; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Tpp6MLKZ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1770281525; x=1801817525;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=BICD/36k+pC1OlBLC4/zRhXAakMkN8TFncwB090TR58=;
-  b=Tpp6MLKZ0poF23mqXLnHZbiJ6kLZySFr+ZTXio9mKLCtH0astogoqmsM
-   tE0cSWSq8wrdbYIJTWWjJO/mpyttAYkG6QrxiAl18bXKYoD5ZwkQEZ4W3
-   nHzMzQRfaykA2wngHoBGxvmZ1Hu/PzWQpkID7LRfwVWhlccTF2MEHJ/7W
-   +3w+g3S+HKQq5eLBupGM6kse6wkHIvGcZVb0OVYmeIaBcLau9u0SVZAnj
-   N3jJBONTfaXGEGi/8lZdsdRdBI69DPc7M7X/K8/t8ul7iIkGzrQ99R7OX
-   hb6ejcfP58C9gjvkzY/ooW+IrOUBRPNOvAQthfUqTj9tMJXU1RKFLP3H7
-   g==;
-X-CSE-ConnectionGUID: NJunpDLzQzqBXfEa66xUJA==
-X-CSE-MsgGUID: fSMbb/hZRwWzlO0p6gNpKg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11691"; a="71372074"
-X-IronPort-AV: E=Sophos;i="6.21,274,1763452800"; 
-   d="scan'208";a="71372074"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2026 00:52:05 -0800
-X-CSE-ConnectionGUID: ikqDyeXATF6+MHV9CbtbUg==
-X-CSE-MsgGUID: u53dqf3tQnOjy9znwk+eTA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,274,1763452800"; 
-   d="scan'208";a="210391638"
-Received: from allen-box.sh.intel.com ([10.239.159.52])
-  by fmviesa010.fm.intel.com with ESMTP; 05 Feb 2026 00:52:03 -0800
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Viktor Kleen <viktor@kleen.org>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH 1/1] iommu/vt-d: Treat PAGE_SNOOP and PWSNP separately
-Date: Thu,  5 Feb 2026 16:49:41 +0800
-Message-ID: <20260205084941.3982847-2-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260205084941.3982847-1-baolu.lu@linux.intel.com>
-References: <20260205084941.3982847-1-baolu.lu@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="t3Do5o/M"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32E74C4CEF7;
+	Thu,  5 Feb 2026 09:09:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1770282582;
+	bh=zl4sbHSqQvdTaC6HnQvBhEdXXeHWBp1tuYx5j590apM=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=t3Do5o/MafD9ehMBYLDcL6lkwnhLhq7e7CmVmXfx/72tZJIqUv0eb4X4EeXtXm6vR
+	 RW63+1NuIBUrTq/eu2tKZJX7YOLZ4jCHshKJiDziCMI7d2kSZoMljOFXHIhL8er+PL
+	 W0NP4t1bUDCB0r4tjLPDezoShXIZBslt6MlSwgXiNS/TfvuBrka/LlOGHMCiUg0J9B
+	 I9/4K4mDBsgkY5QtcDjK1pxQyBBpl88WhiQ93+9sO1V7VsPbg0yxw4A8X9M0dD8+E7
+	 ny/rIA++tFugaFGRpyADPPMod8asmBnydKD5SndU2jZkxE+f+ci7rQ0voN9C2YD9CD
+	 IoEXJlcdZHU+A==
+Date: Thu, 5 Feb 2026 10:09:40 +0100
+From: Maxime Ripard <mripard@kernel.org>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Leon Romanovsky <leon@kernel.org>, 
+	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>, Sumit Semwal <sumit.semwal@linaro.org>, 
+	Alex Deucher <alexander.deucher@amd.com>, David Airlie <airlied@gmail.com>, 
+	Simona Vetter <simona@ffwll.ch>, Gerd Hoffmann <kraxel@redhat.com>, 
+	Dmitry Osipenko <dmitry.osipenko@collabora.com>, Gurchetan Singh <gurchetansingh@chromium.org>, 
+	Chia-I Wu <olvaffe@gmail.com>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+	Thomas Zimmermann <tzimmermann@suse.de>, Lucas De Marchi <lucas.demarchi@intel.com>, 
+	Thomas =?utf-8?Q?Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>, Rodrigo Vivi <rodrigo.vivi@intel.com>, 
+	Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Felix Kuehling <Felix.Kuehling@amd.com>, 
+	Alex Williamson <alex@shazbot.org>, Ankit Agrawal <ankita@nvidia.com>, 
+	Vivek Kasireddy <vivek.kasireddy@intel.com>, linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org, 
+	linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org, amd-gfx@lists.freedesktop.org, 
+	virtualization@lists.linux.dev, intel-xe@lists.freedesktop.org, linux-rdma@vger.kernel.org, 
+	iommu@lists.linux.dev, kvm@vger.kernel.org
+Subject: Re: [PATCH v7 0/8] dma-buf: Use revoke mechanism to invalidate
+ shared buffers
+Message-ID: <20260205-nocturnal-poetic-chamois-f566ad@houat>
+References: <20260131-dmabuf-revoke-v7-0-463d956bd527@nvidia.com>
+ <20260202160425.GO34749@unreal>
+ <20260204081630.GA6771@unreal>
+ <20260204-icy-classic-crayfish-68da6d@houat>
+ <20260204115212.GG6771@unreal>
+ <20260204-clever-butterfly-of-mastery-0cdc19@houat>
+ <20260204121354.GH6771@unreal>
+ <20260204-bloodhound-of-major-realization-9852ab@houat>
+ <20260204135657.GE2328995@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha384;
+	protocol="application/pgp-signature"; boundary="tnyg2jepdblvcibb"
+Content-Disposition: inline
+In-Reply-To: <20260204135657.GE2328995@ziepe.ca>
 
-From: Viktor Kleen <viktor@kleen.org>
 
-The PASID_FLAG_PAGE_SNOOP and PASID_FLAG_PWSNP constants are identical.
-This will cause the pasid code to always set both or neither of the
-PGSNP and PWSNP bits in PASID table entries. However, PWSNP is a
-reserved bit if SMPWC is not set in the IOMMU's extended capability
-register, even if SC is supported.
+--tnyg2jepdblvcibb
+Content-Type: text/plain; protected-headers=v1; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH v7 0/8] dma-buf: Use revoke mechanism to invalidate
+ shared buffers
+MIME-Version: 1.0
 
-This has resulted in DMAR errors when testing the iommufd code on an
-Arrow Lake platform. With this patch, those errors disappear and the
-PASID table entries look correct.
+On Wed, Feb 04, 2026 at 09:56:57AM -0400, Jason Gunthorpe wrote:
+> On Wed, Feb 04, 2026 at 02:44:42PM +0100, Maxime Ripard wrote:
+> > > From what I have seen, subsystems such as netdev, the block layer, an=
+d RDMA continue
+> > > to accept code that is ready for merging, especially when it has been=
+ thoroughly
+> > > reviewed by multiple maintainers across different subsystems.
+> >=20
+> > He said it multiple times, but here's one of such examples:
+> >=20
+> > https://lore.kernel.org/all/CA+55aFwdd30eBsnMLB=3DncExY0-P=3DeAsxkn_O6i=
+r10JUyVSYdhA@mail.gmail.com/
+>=20
+> Woah, nobody is saying to skip linux-next. It is Wednesday, if it
+> lands in the public tree today it will be in linux next probably for a
+> week before a PR is sent. This is a fairly normal thing for many trees
+> in Linux.
+>=20
+> Linus is specifically complaining about people *entirely* skipping
+> linux-next.
+>=20
+> > So, yeah, we can make exceptions. But you should ask and justify for
+> > one, instead of expecting us to pick up a patch submission that was
+> > already late.
+>=20
+> I think Leon is only pointing out that a hard cut off two weeks before
+> the merge window even opens is a DRMism, not a kernel wide convention.
 
-Fixes: 101a2854110fa ("iommu/vt-d: Follow PT_FEAT_DMA_INCOHERENT into the PASID entry")
-Cc: stable@vger.kernel.org
-Signed-off-by: Viktor Kleen <viktor@kleen.org>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Link: https://lore.kernel.org/r/20260202192109.1665799-1-viktor@kleen.org
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel/pasid.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+arm-soc has had the same kind of rule since pretty much forever too.
 
-diff --git a/drivers/iommu/intel/pasid.h b/drivers/iommu/intel/pasid.h
-index c3c8c907983e..48d3bb6b68de 100644
---- a/drivers/iommu/intel/pasid.h
-+++ b/drivers/iommu/intel/pasid.h
-@@ -24,7 +24,7 @@
- 
- #define PASID_FLAG_NESTED		BIT(1)
- #define PASID_FLAG_PAGE_SNOOP		BIT(2)
--#define PASID_FLAG_PWSNP		BIT(2)
-+#define PASID_FLAG_PWSNP		BIT(3)
- 
- /*
-  * The PASID_FLAG_FL5LP flag Indicates using 5-level paging for first-
--- 
-2.43.0
+Maxime
 
+--tnyg2jepdblvcibb
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iJUEABMJAB0WIQTkHFbLp4ejekA/qfgnX84Zoj2+dgUCaYReTwAKCRAnX84Zoj2+
+dplgAX9hHIFQbqLK+fxvL0TIdlxKHnC96b/mM0HwLMbHd0IAQvPbbGrZJ2/A2X06
+zK51PYIBgNEjofrl7KBPxkMocbEwYn4jvc85iFf17a3flZDzCXRl//ksV9ObDYVt
+vXboJHIz/Q==
+=MSKg
+-----END PGP SIGNATURE-----
+
+--tnyg2jepdblvcibb--
