@@ -1,368 +1,248 @@
-Received: from smtpbg154.qq.com (smtpbg154.qq.com [15.184.224.54])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E2DC239099;
-	Fri,  6 Feb 2026 03:43:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=15.184.224.54
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770349401; cv=none; b=EgdI6yY7mTwPvdjNG38pS7cbP0uBXKpS0Tcsg4z6cJU3QSwzVc8rWARi02UcPLLDlVgNhBtNUaBJwWr4ATug/HB1cX/rTjxfggDVnd5OFaFkR8uv9lf+pZbUNu+2Obb1h5gK2P7MFLjaqyENwy0FAZYmmV1UuwkX5/GaHo6kb9U=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770349401; c=relaxed/simple;
-	bh=CpYn3Lmhwy+KIIrfqIsv0YXqk9uf6dCLHRdZyrulKPY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=EmLchHrR0eh2Zwdp2Jg2PCIjdQIbxr+yoF/XiE8YLOtmsOorj75MhRvKbNg8mHADqHrbqPvH6AZS4duod9/xuDyPTmU/AaC0MPjVhpNjMWUIrp6s965vTpsx9DmxwbufSiYoOY2suA2li4tqf0F0/i7kaeKHqGYzFmfiS1dIpWw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux.spacemit.com; spf=none smtp.mailfrom=linux.spacemit.com; dkim=pass (1024-bit key) header.d=linux.spacemit.com header.i=@linux.spacemit.com header.b=oulkjrot; arc=none smtp.client-ip=15.184.224.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux.spacemit.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.spacemit.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 711382E6116
+	for <iommu@lists.linux.dev>; Fri,  6 Feb 2026 03:44:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.18
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1770349466; cv=fail; b=s8mpxnToNBhvjp+7X48bgJqIkq7Pw2gBI44uk6dp99hGmgtBtuhvIZ0IRpp3LIkOvpLBRRqTaZseL0m3Tnq6oNqDzFIiEmIneY4HXkSwblgVB1ZCLk05mKo19CgqA4cCGHdIoW/rDW3tHRyEDARq/x1S2wVR6RvJU569JrlERpw=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1770349466; c=relaxed/simple;
+	bh=azqWwSf9BGm7yZ9A9d1jVwX/YKl2lhz1XndrdfGfkTg=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=J1Mtra2JaCrGvY5Dvch4Yg8wCsaAmwt3nUDigH6b2yxXK1fpWjmuagfIBzW1fUuTsP118ZY7VPZ8I8D0eYm6LhyM3UjvwbtSR6F7qy4M8zxa/ZiuzDiO2kOWByuh4fLR3zg+K8/8Qvk3CHsEbSObMgk0kdtWyPVx5rmjyK4h3+s=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=b2QF5+ZB; arc=fail smtp.client-ip=198.175.65.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.spacemit.com header.i=@linux.spacemit.com header.b="oulkjrot"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.spacemit.com;
-	s=mxsw2412; t=1770349365;
-	bh=dKq7u7TVKmzLjYmab7Qq2COrl18pEr8pQsUYQyol7Bo=;
-	h=Message-ID:Date:MIME-Version:Subject:To:From;
-	b=oulkjrote9Q96y0/gmM+/DtP0XAyWj7VrXMUPyw6Gg9uhuo7r0NeM392AX0dVtpnT
-	 KirAuW8TGxaVqUBF1I/4Swwuqxn4EBzLjUyskTetf23vxHYcaiPI6izzd+QkDIDnTK
-	 lSRzTI1hhoUB4vXvCmSUy6ZdyfiiR2/A3gfgD9bM=
-X-QQ-mid: esmtpsz11t1770349363t2f031b48
-X-QQ-Originating-IP: uvLdIVcoRo1MHH/2UymnvA60Oq4oJs+mqA1/5VSDqh8=
-Received: from [10.3.91.191] ( [101.70.125.34])
-	by bizesmtp.qq.com (ESMTP) with 
-	id ; Fri, 06 Feb 2026 11:42:39 +0800 (CST)
-X-QQ-SSF: 0000000000000000000000000000000
-X-QQ-GoodBg: 0
-X-BIZMAIL-ID: 5996589195195940344
-Message-ID: <752514AD54FA2A1B+513d6894-b3bf-44f3-bcc1-7d30f2642cc2@linux.spacemit.com>
-Date: Fri, 6 Feb 2026 11:42:39 +0800
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="b2QF5+ZB"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1770349466; x=1801885466;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=azqWwSf9BGm7yZ9A9d1jVwX/YKl2lhz1XndrdfGfkTg=;
+  b=b2QF5+ZBslrdu17aI66gjh/BpeLQ7ioFYq+VRNXKBycu/IgRPNrtee7K
+   oAiUWXBU2MJdStojRfp8qBYzNsYpqAGp1v+Qw0UiBWdUMS1kxLiNd/B/M
+   pxl+zCUuwySN9RPvMXCRnJ1Nagd0C+3aNcRbvf0AQSlOADQ6A+Uz64C5W
+   fxAnwhgdJIFhNKpB4ZIYEVGtdEzFA5YvjTeFTOGHW3tHaOdPWCivcAcdY
+   FqoNwHTjNx/zIjUq5EZbaadlEb2xkBTQ2oDwuWuxIbrsjN0VDR+OuZ+0V
+   32+1X/i1uhMlfk/xFHbTAtyMsAIJNUQPLiU+++nj/406zVAQ73+63b795
+   Q==;
+X-CSE-ConnectionGUID: o4UT7XxNQX6Bv6qK4OkDGw==
+X-CSE-MsgGUID: +W+VK5V8SeGVmYlh7nHYUA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11692"; a="71596182"
+X-IronPort-AV: E=Sophos;i="6.21,275,1763452800"; 
+   d="scan'208";a="71596182"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2026 19:44:26 -0800
+X-CSE-ConnectionGUID: ghW/313kRQmuxgRnmx897Q==
+X-CSE-MsgGUID: 8wLA4IK1R7Oje9hZdDjBLg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,275,1763452800"; 
+   d="scan'208";a="215340289"
+Received: from orsmsx901.amr.corp.intel.com ([10.22.229.23])
+  by fmviesa004.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2026 19:44:26 -0800
+Received: from ORSMSX901.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.35; Thu, 5 Feb 2026 19:44:25 -0800
+Received: from ORSEDG901.ED.cps.intel.com (10.7.248.11) by
+ ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.35 via Frontend Transport; Thu, 5 Feb 2026 19:44:25 -0800
+Received: from PH7PR06CU001.outbound.protection.outlook.com (52.101.201.30) by
+ edgegateway.intel.com (134.134.137.111) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.35; Thu, 5 Feb 2026 19:44:25 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=OL/HZVZMf9kvpIY7jJV0rpB9h+ikH+cSRECV+pD242PZCi8d3H1zS8ZFlXN95GYHzT1izHI/RNTVhbDkRLCzCXX7YPi9dykcjEnljIeUlxPXH0Tb2ekespB/4ZjAtnHdtmyuYhpj+wtOHZ1dieQVDZ1b0dix86U+hZxqfKxyOqbDRPRpZgkHZUYsFY2CgOngFABtrWUcKPVuN/Kf0KN+Yfs4VDvBGCPcOHxNxuaTkcvJxFDAdSGgnmfeb5H8q3ldCRZP9Fa6qB9DChcfgnCfjvKQBWVxcqNK2cccWnNv4KtknX0QWUdoGGESACvVc/EIQB9Bt9b64/mBY/7C8QBVSg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=JD/Gg//SsKvK/g7+xnQdoKN6GBb6CjQ8ZPJTT1rEMpI=;
+ b=YndDeGBt+CgivbH1cXr5ll3dAwW5xsatLXQOj3PqK/X5LfPkYIU88Z4SAIibcCrx+auxCKnldromO6Fnq0Q1u6KZpuIIQJIXWPVxVMetJigoAjsR8lWReyyQcTRsR8M2ppuVncYqBKdKRlBinA4JjF3cdU6382GsmQ1Qn8KyiHxIVbVgCi38t04KYS0nYjS8KQcDNp3Kadn38dv+10vKtdEld632EWC+JiADW6q2UaJ9g+0VUQ/6Xmg0/I/ttTQpdbrFkYBITMULEu8KSSjX1vSSwLTe81vReI7wAwAvrhSChi2kJKF1+Gfwhq/sUVPfRqE+5HumgO4f0v8SNbMgMw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from IA3PR11MB9136.namprd11.prod.outlook.com (2603:10b6:208:574::12)
+ by PH8PR11MB6660.namprd11.prod.outlook.com (2603:10b6:510:1c3::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9587.15; Fri, 6 Feb
+ 2026 03:44:23 +0000
+Received: from IA3PR11MB9136.namprd11.prod.outlook.com
+ ([fe80::37b4:37a9:4f3:518b]) by IA3PR11MB9136.namprd11.prod.outlook.com
+ ([fe80::37b4:37a9:4f3:518b%5]) with mapi id 15.20.9587.013; Fri, 6 Feb 2026
+ 03:44:22 +0000
+From: "Duan, Zhenzhong" <zhenzhong.duan@intel.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, "dwmw2@infradead.org"
+	<dwmw2@infradead.org>, "baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
+	"joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>, "Tian, Kevin"
+	<kevin.tian@intel.com>
+Subject: RE: [PATCH 0/3] iommupt/vtd: Support dirty tracking on PASID
+Thread-Topic: [PATCH 0/3] iommupt/vtd: Support dirty tracking on PASID
+Thread-Index: AQHclkfxNsmY1XUSU0OoVQI0Ea3M6rV01qSAgAAnsdA=
+Date: Fri, 6 Feb 2026 03:44:22 +0000
+Message-ID: <IA3PR11MB9136AFF8794A8A2018E008179266A@IA3PR11MB9136.namprd11.prod.outlook.com>
+References: <20260205023405.41583-1-zhenzhong.duan@intel.com>
+ <20260206004325.GB943673@ziepe.ca>
+In-Reply-To: <20260206004325.GB943673@ziepe.ca>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: IA3PR11MB9136:EE_|PH8PR11MB6660:EE_
+x-ms-office365-filtering-correlation-id: ad8fea2e-c1b6-4128-e306-08de65320454
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;ARA:13230040|366016|376014|1800799024|38070700021;
+x-microsoft-antispam-message-info: =?us-ascii?Q?PsEsbgjl3n7TK6OsF/rYg8ZX7EWzWtWdeRhfCv3MsnlaqjdKo3/Bk2vFINSg?=
+ =?us-ascii?Q?3SRRKRaADEdf4CZ9p33j3CcPhhTkHMbPYFA+Druocl6jOjW8m+3IiOlRKuP5?=
+ =?us-ascii?Q?YhF4FAFI37EagseinfPACWLXSTFNCOKu8Um27Ti+catc8HwssHx+qryi9kHj?=
+ =?us-ascii?Q?DgJvzFVCLR2HcKri1NUEmQV28OSmeiDwFUU+HnAn7nqzw7vqWxICL5JK6I5I?=
+ =?us-ascii?Q?Uc5rEuU0/f54KSbKVewnHLahh7BijSD4r3cxQslAO6KT/H0z9F2Q0tJU0Xfn?=
+ =?us-ascii?Q?bl0Aygp3I5CAA52BaAnJvq869LRdE+QzvdUJyLe7ZpDycMZfxDZ53mVKEbMR?=
+ =?us-ascii?Q?hgn+VYz6aRSCjh58D1LXAltBv20iIWsrjyD5ESJEPcVKJcY8vJJz1Xou3zet?=
+ =?us-ascii?Q?TbOiNaqcNBIlPsdKN2XdctEvG5hwBtK1WD6+icpQjD1lcjLRzOy8O/dOm/sG?=
+ =?us-ascii?Q?LHvUNiJJ0fR0XfIrdRhLAI3VVBeYBMKcuHFaHvKULq9miGa/tKrP0Y6TO8Az?=
+ =?us-ascii?Q?U+Wm+zvHhdQ1qG5sY6b+m4dhyzLATKcms6mlcPgcAOHZpv4pAmYOkwtBaovD?=
+ =?us-ascii?Q?drZS1z7CAY56YknbN+EU6vh/3u2eWyuoC3G211OGhR4cWmWIe4PQ5E+nAJf8?=
+ =?us-ascii?Q?Jauk6lB50DxkFqvPaMrsL/gx5MKK2n+1u/OFGAbPMiMELf7bGHA8KtLNPsa2?=
+ =?us-ascii?Q?rHlrtHkvcl1apu4E5EdJGB9tiQx7rMYlA92U47hqSXE7NtHUMpK4NymLC8e5?=
+ =?us-ascii?Q?2RgTf7VErsSfBWpbFejv9U8oMC3TOAPTM3UNs1BAY0/4z8ojKSRt5Gayskc1?=
+ =?us-ascii?Q?F7cSLSigjFw6R/4kACqHzY7qAf5lxWSeVJxR5vDdkxrhw2pIJkX55gryZGbB?=
+ =?us-ascii?Q?ycbqBK0zO38jVm7DC7U2OIq8CgWq+dmzNU06euNJb/UUR9CXQyFEqzuKvdV9?=
+ =?us-ascii?Q?ymdxRzxZL0B8tJZfpy4u8aN/pomtVMkyKIiDe3tDjWZLGukT+L2wJj/D8GaS?=
+ =?us-ascii?Q?nAJequ/tkf8xnKZWfOLUi7IxjKHcALfR9KP4PRY0d3dxhlyfp5LTMQ/m+Jol?=
+ =?us-ascii?Q?fmvOP1SH1ti9MA1RGWhX5S/5AUXxYVbQh7lFHV3NmMrPvw0o6PeXltEl3Tkz?=
+ =?us-ascii?Q?lacqCrjG5fngRTKODurfP7RP+8V2Xa5Gv7oqItCuyRN6GZ2jjlG5m/Bxtmbb?=
+ =?us-ascii?Q?YxEFClW+H8BPLT560lL0mYm8qvYgaMXKzZEdfh4U5itjARDX05FFNpdYD1FX?=
+ =?us-ascii?Q?YQ26EhxIYKwx+emo2G6cEOPG0KV878Wx/DT7PsBodIfSrz2zZMArKxFt06ei?=
+ =?us-ascii?Q?Qroumn/UwsRM+VRggqPBmyMblfX9lt5umQ16akJXbi7OyR7cI++hKW/Homiu?=
+ =?us-ascii?Q?puvfHAn0/0IrmBfhlvFwSSatbbUkDHJBQq4j6mr/q3RS/ftkiqUcdsahmser?=
+ =?us-ascii?Q?uxnYrk4fdrr4MT+KqrbCsoW7s0M+UHmzEo8eWf0hdFWFv7W9MvfXhELZiCf5?=
+ =?us-ascii?Q?ZuiQ4FH0ns4EXB/+iMfdUCxnfWU6qqFSBRnzLmRSFsik04UXlNr/9D1znZyB?=
+ =?us-ascii?Q?o3baMcA2RFj47RWMRHiU8njRz7b/qZk5dr5ORe7UqyGJZb3alO+r2Ds3tPbT?=
+ =?us-ascii?Q?yu69W0oqhRPDhuRVdpa92QA=3D?=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA3PR11MB9136.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024)(38070700021);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?mAN74sXokUfUr3sy6fNGKCzgOqUxs1hA1rodsHEIvgTxjASQ3IZSQXKjKpQx?=
+ =?us-ascii?Q?r9VE9+GGHU4sVaOjojhbU8Q97dJW1AFacK1O7DNvxb3TgFJZ1J4BUwJeJGvM?=
+ =?us-ascii?Q?Oty/B87rtgq21sBr47yh1UqiDziG/iS/YjYN6Eg8XtGI4QLOP9fcRpm3DerY?=
+ =?us-ascii?Q?ORQ9AA48IahGLHtsWi3KmUrzdpxUloesnX+W1r/WRYDiiM+lDk38Q9pAuK2S?=
+ =?us-ascii?Q?+yAL1U76bchpyzp8DbnaXq87ISpSeC+tm78ft4cM06gb4kPQ/1Q0FNHmqgb9?=
+ =?us-ascii?Q?5VlgsQ/QAvGupkEAed3y2AIpWy0GEU7pxUgS0OpeoMnCyPaUj8QyPpVlHQgf?=
+ =?us-ascii?Q?6lHud0AZtzF8/A4hCdRUuv0JKVV5Ed1wwLFxJ/ac2anS2WE+Sh2I8p5YLach?=
+ =?us-ascii?Q?rMw+N0jRwQG8sxIwzg9U9WFqNx/fTaREZ1tLRBluKIf7bfVPB0quzPKK7bwZ?=
+ =?us-ascii?Q?3SDwRQqooINiaIVHSp2kEbxtHRw99fAuaAUxE03AYTyarRp0IGULf8sG46rE?=
+ =?us-ascii?Q?eSsLaX7mhVgmg+iRca9FDGfOsQtnQgG7m/89K1FbppSFe1xGwA+BIY/w2m/E?=
+ =?us-ascii?Q?tQrpLbaKCJ7WvbLn4Nn0QhOjd2v53hTcbngREyH6GKIvl6hCoSAdocxpv6ji?=
+ =?us-ascii?Q?IW4LP0cCImZyFScxFN2Y5B1Zm1M8COb7T3kW0jK8QiNQTFvJvuOD3uyf/4xI?=
+ =?us-ascii?Q?vZmFwzepXsS4Yxdw9KMRpVdbVB+LIhjJ7aI3PMPaeim44I9C29T4Gw6PaIAR?=
+ =?us-ascii?Q?EC5hE/ETWcxSoA0ixq4E1POm1G1i4U5ENAD5AwOcRUcf63Mdo514t+7QcTvN?=
+ =?us-ascii?Q?AM9eGxkiB4tIkHeLaUFiGSeskT/Gvtc4u45IHBmsmSLQhEiq9Pb0I2jGRx+g?=
+ =?us-ascii?Q?WHZ8wuvuapAu13LWdmktyrM/uCAaxawWPQteGHVv7hMKjXzcc1VBE/f6engM?=
+ =?us-ascii?Q?41HOwo9llu/TI5jVR5fCSd95ns0UGEuqfeW81l4OSu6azuq+oGiJo3B/p0P0?=
+ =?us-ascii?Q?iNx5HTkVh13u0450zuRXHDCcOoi8+BcR0v6jsCrfzgDtiEX3ImItm2Hjosi+?=
+ =?us-ascii?Q?4hfLGaoSrpeyil9P2S0YHZvCYBRK+tHSGCOxoqKkHwksl7JcjwHaH1Tylcpz?=
+ =?us-ascii?Q?Y7I0YFHR1ZKecRoTHBKPzFEkOfWTiviLAeuWQ59J5g4B7DaY+xwhi0xqCAKY?=
+ =?us-ascii?Q?qqJ3zUS+RoNCtR0C+RKkGatkkcI+S4pNXovBSysGeX1zxZK1uRWP7D2ffM7k?=
+ =?us-ascii?Q?wB/AtQXG0+oS07s/Vmt59JePkQawFG7kUH+PKDfsa7Ba7bCLJOcnxxpfyG/G?=
+ =?us-ascii?Q?KgG4VT5OvFN5MzoZBGauvyyMPGbKOfb2XadkS/g0LwE7cqWbbYk9GIAJs818?=
+ =?us-ascii?Q?mJMgcPq59gzTYER+9SqM2qOJB5XcQEp3ra6b+JCmLM3VMO2i23Dr1jFx0/Ou?=
+ =?us-ascii?Q?HRu41TLWPpLna+LMabxH2FkKbK2zwmVoiGwyXo3K8oDp0e0dZDxD8RGSzthx?=
+ =?us-ascii?Q?2fKFMLiXDZB2YMDrfLZkbpMbpfHuIbp0Ays48HAFANUpFrT0ikV/tQUyAtQR?=
+ =?us-ascii?Q?bdb+EQyEtlbq0efi1Nh7ZmH02Na/rNZUur1Trk3Ym5ct6h7Ux79qVodB+cI9?=
+ =?us-ascii?Q?nItI/CgopoQLIAnzsJE6kserKuJWb+7T+mi5HvgSYMxeqc0xfibYIfhIvHjj?=
+ =?us-ascii?Q?jZJwP1rPGfWsgH6pbAn5cu0r8ijtiItpNeiUa/RfbCtUVPBGuyrJJ3Qnd6hu?=
+ =?us-ascii?Q?fz1rATYkkA=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 3/8] iommu/riscv: Add HPM support for performance
- monitoring
-To: Andrew Jones <andrew.jones@oss.qualcomm.com>
-Cc: Zong Li <zong.li@sifive.com>, Tomasz Jeznach <tjeznach@rivosinc.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Paul Walmsley <pjw@kernel.org>,
- Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>,
- Alexandre Ghiti <alex@ghiti.fr>, Jingyu Li <joey.li@spacemit.com>,
- iommu@lists.linux.dev, linux-perf-users@vger.kernel.org,
- linux-riscv@lists.infradead.org, spacemit@lists.linux.dev,
- devicetree@vger.kernel.org
-References: <cover.1769562575.git.lv.zheng@spacemit.com>
- <cover.1770195980.git.lv.zheng@linux.spacemit.com>
- <9C0A2AD4850D179B+524146e74e808db90d5f28fcb6ee791cf1d1bfaa.1770195980.git.lv.zheng@linux.spacemit.com>
- <p74snip7yykhogvzqld4gyjlygmd2z4kqnat7w3qj63fwebnmm@dlz6tloevgbs>
- <4D87481E9AABE2C6+72d18f72-9407-4d68-8195-edc6c171df14@linux.spacemit.com>
- <CANXhq0q8N5eHx9ytabZR97Y7AULKwgS2-uEGhcaOOGp9mvbtRQ@mail.gmail.com>
- <6C65A3873186B07C+29da5dbd-ed27-4ace-a5ca-355b3983d60c@linux.spacemit.com>
- <zzbwkazzgeovgmbvg4qnibipzsldqcjnw4axnxlamhgvcld4hs@4m4cc2ctuuvf>
-Content-Language: en-US
-From: Lv Zheng <lv.zheng@linux.spacemit.com>
-In-Reply-To: <zzbwkazzgeovgmbvg4qnibipzsldqcjnw4axnxlamhgvcld4hs@4m4cc2ctuuvf>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: esmtpsz:linux.spacemit.com:qybglogicsvrgz:qybglogicsvrgz5b-1
-X-QQ-XMAILINFO: McJfg7Aee/FZyhhtIPyvEocNxm6JejMTUNCvzP1NZK3H2G1LD0Pp7/Vd
-	3Um6+DiBhA6MIAO41u7NyxwenNjjMscjOkS3xLD+2QqaKpb1oWnsP7fpQqNN2VnjALLA0vd
-	9BfMAWuPGou0j8W/Yeia6bK/hpF+yRe2n2jeSDbxwEpC4/FkQmnbpdohzX+EN3c8uW61azT
-	AMQC1zR5k722Kb2R34A40Bxgfo9EKkHileELw/dfMYMexpydfwwxpd/sWcf8ZzzkEz9vT3Y
-	RZjWZMGyzxhj/8jnl5cWrKCbGbGS2BBB6GUmohOtJgC93aSGtUAtFd1elzXfoX2Avom8E6/
-	LIz89ALwmNAcPISVZu9qCk9gFTuwB5Xx6WmK7OMkIOsZxtuLjECOlUQw98/1xFjGawxyEJG
-	p4amUc6eecTMP3y+gzwi4ZPC9wLyoZfhpUHQX9l6N5OHW3dBFJXc++lAbn3x//OYlYKfBvY
-	+tKHMZ+6pb3pKu1wSA1bpPYd649EXL2rH0W9UQi9TPq3/f/Nfc5ZWI0STjX7maEOaGn4A2c
-	wRsrX3txox0jvHFDtJr6853AIq0gDjBZdOfOpgOTzHnwuJhEziV3TlRBG8v++ncH3YQnvC7
-	QtLOO48SSZL+PHVuaODU8Z5Hd4Bf3crn4xjSjbMm5NM1/LuPLZWA0oi3Hm+CpcOl1insyOp
-	l9EyCDSv19jtQeUO9OUmH7G2l5pYEZXpoCD+I+7dHs3X4dsnCjG2PcKpBaFt9UqW7DY0v78
-	rHYEAjydRoAnmMNp7xqNLiB61Vt/3xRLf0zNqupxYZJWLFJ1nskcxf1ECwX8lQYunxGAU4h
-	C2ou4vsD9z59wjkSRRKtqUNCMnVpgxmle248czo/tFjjKjmdJAhdnn7ib+GZ4oPkgI1BztQ
-	am3MH7YNN/YWZTCjGrbQdMqxlrfXEVzDUs9Tl8PwkqIAp+YZBAwbP0J/9AGZYwYly5V1iq/
-	57D7HmfyaHvBQWHKDH+YZvHze2X2hRXWyYfhDLwnF4HKbtvDw1v2OCvGaxH8wJBeeIj3gqU
-	a0v7F2Ib1ucUNuvEz3W18nheU5W4lxGkcrN103kh0U9Vubi0HM
-X-QQ-XMRINFO: M/715EihBoGS47X28/vv4NpnfpeBLnr4Qg==
-X-QQ-RECHKSPAM: 0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: IA3PR11MB9136.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ad8fea2e-c1b6-4128-e306-08de65320454
+X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Feb 2026 03:44:22.7927
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: NX2s1Fd5mD32UgNwll/NB3FBrz6sz5ewrbd9Lu9N86al0sJnTVWIHKTOt7kuE9tq5+tr6uf2OKE0Yspsc4Lo3BqZMtpQxZo/dZSiS4DW4+M=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR11MB6660
+X-OriginatorOrg: intel.com
 
-On 2/5/2026 11:23 PM, Andrew Jones wrote:
-> On Thu, Feb 05, 2026 at 02:11:48PM +0800, Lv Zheng wrote:
->> On 2/5/2026 11:47 AM, Zong Li wrote:
->>> On Thu, Feb 5, 2026 at 11:35 AM Lv Zheng <lv.zheng@linux.spacemit.com> wrote:
->>>>
->>>> On 2/5/2026 2:39 AM, Andrew Jones wrote:
->>>>> How does this relate to
->>>>>
->>>>> https://lore.kernel.org/all/20250115030306.29735-1-zong.li@sifive.com/
->>>>>
->>>>>    From a quick skim it looks like there's plenty of overlap.
->>>>
->>>> We developed the driver in 2024 and demonstrated it in China summit. We
->>>> didn't notice that a patch is on-going now in the community.
->>>>
->>>> Now it looks our approach solved more issues, and we'll check and update
->>>> if there are any community concerns still not addressed in this patchset.
->>>>
->>>> We can add Reviewed-by/Tested-by and Signed-off-by of Zong Li to this
->>>> patch if he wishes.
->>>>
->>>> Thanks,
->>>> Lv
->>>>
->>>
->>> Perhaps I can first post my next revision to the mailing list (hope it
->>> won't waste the community resource), so that you could have a chance
->>> to review it and see whether that version is architecturally closer to
->>> what the community is looking for, while also addressing your issue.
->>> If you also feel that my next revision meets your needs, perhaps you
->>> could append your additional implementations on top of it.
->>>
+
+
+>-----Original Message-----
+>From: Jason Gunthorpe <jgg@ziepe.ca>
+>Subject: Re: [PATCH 0/3] iommupt/vtd: Support dirty tracking on PASID
+>
+>On Wed, Feb 04, 2026 at 09:34:01PM -0500, Zhenzhong Duan wrote:
+>> Hi,
 >>
->> It seems we all composed the RISC-V iommu HPM support by referencing
->> drivers/perf/arm_smmuv3_pmu.
+>> When we add pasid support in QEMU for passthrough device, we found
+>> PASID attachment to a nested parent domain with dirty tracking failed.
 >>
->> Robin's comments should all be addressed IMHO.
+>> It's because PASID-level dirty tracking is not there yet, by adding it,
+>> we can enable PASID attachment to such domain.
 >>
->>> Of course, if the community would prefer to go your version, I’m
->>> perfectly fine with that as well.
+>> Thanks
+>> Zhenzhong
 >>
->> OK. If we send a next version, we will add your SOB and please help to
->> review and test.
-> 
-> Zong Li's SOB should only be on the patches he authored. Don't put
-> anybody's SOB on patches they haven't been involved in. See
-> Documentation/process/submitting-patches.rst
-> """
-> The Signed-off-by: tag indicates that the signer was involved in the
-> development of the patch, or that he/she was in the patch's delivery path.
-> """
-> 
- > Since Zong Li's patches were already on the list then your 
-serieswould> at least discuss them in the cover letter, explaining why 
-you've opted
-> not to adopt them. But, most likely some of the patches can be adopted,
-> so those should be extracted from Zong Li's work (with authorship
-> preserved) and based upon in order to respect that prior work.
-> 
+>>
+>> Zhenzhong Duan (3):
+>>   iommupt/vtd: Pass dmar_domain pointer to device_set_dirty_tracking()
+>>   iommupt/vtd: Support dirty tracking on PASID
+>>   iommufd/selftest: Test dirty tracking on PASID
+>
+>I'm not sure why you marked this s iommupt? It isn't right?
 
-You can see we have contacted each other in community, and decided to
-cooperate in this way to honor his contribution. But final decision is
-left for the community to decide:
+Oops, should be iommu/vtd.
 
- From Zong Li:
- >> Of course, if the community would prefer to go your version, I’m
- >> perfectly fine with that as well.
+>
+>Also only the second stage table supports dirty tracking so I'm
+>confused what is the issue? Is it trying to say that if a second stage
+>is written to a pasid entry on a !=3D0 pasid path it doesn't work right?
 
-We respect all contributions, We'll add the link in cover letter to the
-follow-up revisions, let me know if anything else should be done to the
-new revisions.
+Yes, more strictly, if a second stage domain flagged with
+IOMMU_HWPT_ALLOC_DIRTY_TRACKING is written to a pasid entry
+on a !=3D0 pasid, it's not allowed currently, by below check:
 
---------------------------------------------------------------------
+static int intel_iommu_set_dev_pasid()
+{
+...
+        if (domain->dirty_ops)
+                return -EINVAL;
 
-And let me describe in details to compare the functionalities and
-addressed comments between what is provided by Joey and by Zong:
 
-https://lore.kernel.org/all/20250115030306.29735-1-zong.li@sifive.com/
+>But it does work on a 0 pasid?
 
-There is no missing functionalities between the two approaches, I also
-checked the original Robin's comments, let me describe them in details:
+More strictly, it works on IOMMU_NO_PASID.
+For IOMMU_NO_PASID, we trigger attach_dev(), for other pasids,
+We trigger set_dev_pasid().
 
-1. The following comments require a split CYCLES implementation:
+>
+>Huh?
+>
+>That sounds like a systemic problem, the two flows shouldn't actually
+>be any different.
 
-comment 1:
- >> Why not use an extra config bit to encode cycles events completely
- >> independently of the regular eventID space? Or even just use 0 since
- >> by definition that cannot overlap a valid eventID?
+Yes, just because we have code to setup dirty tracking on 0 pasid entry
+but lack the same code for !=3D0 pasid entry in VTD.
 
-comment 2:
- >> It's also horribly confusing to use GENMASK for something which is
- >> not actually a mask at all.
+0 pasid is special that it can also be IOMMU_NO_PASID if PASID isn't suppor=
+ted.
 
-comment 3:
- >> Hmm, from experience I would expect these variables to be
- >> number-of-counters related, but I guess there must be some special
- >> cleverness going on since that number-of-counters looking
- >> RISCV_IOMMU_HPM_COUNTER_NUM definition is conspicuously not used,
- >> so it must be significant that these are instead related to the
- >> number of...
- >>
- >> [ goes off to search code... ]
- >>
- >> ...event selectors? But with a magic +1 for reasons so obvious they
- >> clearly don't need explaining.
-
-comment 4:
- >> One of those conditions is literally impossible, the other should
- >> already be avoided by construction.
-
-comment 5:
- >> I don't think you need this - as best I can tell, you never
- >> initialise a counter without also (re)enabling the interrupt (which
- >> is logical), so since "value" for the cycle counter should always
- >> implicitly have OF=0 anyway, it should work to just write it like the
- >> other counters.
-
-comment 6:
- >> Is RISCV_IOMMU_IOHPMCTR_COUNTER honestly useful? Or is it actively
- >> hurting readability by obfuscating that we are in fact just using the
- >> full 64-bit value in all those places?
-
-comment 7:
- >> And that's a very creative way to spell "if (idx == 0)".
-
-comment 8:
- >> (and as above, I think you can make this a no-op for the cycle
- >> counter)
-
-These comments require a software architecture change to handle CYCLES
-in a neat way. CYCLES is split and handled in the clean way in
-iommu-hpm.
-
-2. The following comments require an uncore non-sampling mechanism:
-
-comment 1:
- >> You also need a "cpumask" attribute to tell userspace this is a
- >> system/uncore PMU.
-
-comment 2:
- >> None of this is relevant or necessary. This is not a CPU PMU, so it
- >> can't support sampling because it doesn't have a meaningful context
- >> to sample.
-
-comment 3:
- >> You first need to validate that the event is for this PMU at all,
- >> and return -ENOENT if not.
-
-comment 4:
- >> As above, you can't support sampling events anyway, so you should
- >> reject them with -EINVAL.
- >>
- >> You also need to validate event groups to ensure they don't contain
- >> more events than could ever be scheduled at once.
-
-comment 5:
- >> This will never do anything, since even if we could ever get here,
- >> it would not be at a time when there are any active events.
- >> Unregistering an in-use PMU does not end well (hence why standalone
- >> PMU drivers need to use suppress_bind_attrs)...
-
-Here, Joey does check PMU type, does not include sampling event stuffs,
-and cpuhp is handled in a fine grained locking way. And since locking is
-handled correctly, it's safe to keep iommu-hpm as tristate.
-The new approach requires more system software architecture techniques.
-
-3. The following comments require a IRQ handling improvement:
-
-comment 1:
- >> TBH I'd be inclined to just leave out all the dead cleanup code if
- >> the  PMU driver is tied to the IOMMU driver and can never
- >> realistically be removed.
-
-comment 2:
- >> Surely this should only touch the counter(s) that overflowed and
- >> have been handled? It might be cleaner to keep that within the IRQ
- >> handler itself.
-
-comment 3:
- >> This needs to start all active counters together, not one-by-one.
-
-comment 4:
- >> This does nothing, since set_event has just implicitly written
- >> OF=0.
- >>
- >> ...unless, that is, the user was mischievous and also set bit 63
- >> in event->attr.config, since you never sanitised the input ;)
-
-comment 5:
- >> What do these regs represent? If you look at the perf_event_open
- >> ABI, you'll see that events can target various combinations of CPU
- >> and/or pid, but there is no encoding for "whichever CPU takes the
- >> IOMMU PMU interrupt". Thus whatever you get here is more than likely
- >> not what the user asked for, and this is why non-CPU PMUs cannot
- >> reasonably support sampling ;)
-
-comment 6:
- >> You still need to handle counter rollover for all events, otherwise
- >> they can start losing counts and rapidly turn to nonsense. Admittedly
- >> it's largely theoretical with full 64-bit counters, but still...
-
-comment 7:
- >> Hmm, shared interrupts are tricky for PMUs, since perf requires any
- >> IRQ handler touching a PMU is running on pmu->cpu, so you have to be
- >> very careful about maintaining affinity and not letting anyone else
- >> change it behind your back.
- >>
- >> The other thing is that if it really is shared, at this point you
- >> could now be in riscv_iommu_pmu_handle_irq() dereferencing NULL.
-
-comment 8:
- >> In general it's not a great idea to register an IRQ handler before
- >> the data passed to that handler is initialised. What is pointed to by
- >> (&iommu->pmu)->reg + RISCV_IOMMU_REG_IOCOUNTOVF if the IRQ fires
- >> right now (and/or if CONFIG_DEBUG_SHIRQ ever gets fixed)? ;)
- >>
- >> (OK, it's not *literally* NULL, but hey...)
-
-Here OVF interrupt is handled as a standalone threaded per-cpu shared
-IRQ in iommu-hpm.c and iocountinh register is not used as OVF interrupt
-is always enabled and overflows is stored to software counters. The new
-approach passed testings.
-
-4. Other programming style fixes, they are all not in this patch.
-
-comment 1:
- >> sysfs_emit()
-
-No such problem here.
-
-comment 2:
- >> Might be worth leaving a comment just in case anyone does try to
- >> enable this for 32-bit that the io-64-nonatomic readq() isn't enough
- >> to work properly here.
-
-Not addressed in v3 and v4. And probably not necessary.
-
-comment 3:
- >> That's a wonderfully expensive way to spell
- >> "pmu->events[idx]->hw.config"...
-
-No such problem here, get_event() is used.
-
-comment 4:
- >> Initially this looks weird - why bother storing constants in memory
- >> if they're constant? - but I see the spec implies they are not
- >> necessarily fixed, and we can only actually assume at least one
- >> counter at least 32 bits wide, so I guess this is really more of
- >> a placeholder? Is there a well-defined way we're supposed to be able
- >> to discover these, like some more ID register fields somewhere, or
- >> writing all 1s to various registers to see what sticks, or is it
- >> liable to be a mess of just having to know what each implementation
- >> has by matching DT compatibles and/or PCI IDs?
-
-Here WARL registers are handled in RISC-V programming style.
-
-comment 5:
- >> The new thing is that you can now set pmu.parent to the IOMMU device
- >> so their relationship is clear in sysfs, rather than having to play
- >> tricks with the PMU name.
-
-Not addressed here but addressed in v4.
-
-IMO, the Joey's approach addressed issue 1, 2 and 3, which does require
-more software architecture changes. Her contribution and authorship
-might also be honored.
-
---------------------------------------------------------------------
-
-Am I missing something in the above list? Robin might help to confirm if
-the new approach has addressed all his comments.
-
-Thanks and best regards,
-Lv
-
-> Thanks,
-> drew
-> 
-
+Thanks
+Zhenzhong
