@@ -1,38 +1,50 @@
-Received: from smtpbgbr1.qq.com (smtpbgbr1.qq.com [54.207.19.206])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0BDA6212566;
-	Fri,  6 Feb 2026 01:37:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=54.207.19.206
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 979CE296BDA
+	for <iommu@lists.linux.dev>; Fri,  6 Feb 2026 02:55:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770341863; cv=none; b=bnbiFsVI2hLjpgPnv5YeeBzCBGTRof0SggEwjl/49IC48jdUy/GBr8gbUretbJ64nTBnDXbgwCy2dr5EruU3IMn+UILXLEqTZZYIZZHvgf0GloORHGMSG5rPzOTIfg00p0IkIr6igQMIUYaeX7blavt/2taTt3LaDQ9LT/+p+Ro=
+	t=1770346547; cv=none; b=YbyCxD84H/bkjtVMjx6k6VPpJ6DPwAj6T+mh3BY3eMrA1mkYdAcw388NBzRqK2sqzwiAczdWhK8ElmirI1NndZf+gK5J8aih1cqOmvYJsrszmjTLcDSThGCCwq/inX19YQ+PcjwkEcu3I40QoyE2/Nro2651TGKYAHewdaVaXCY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770341863; c=relaxed/simple;
-	bh=fvvrcLmcigdavzznPtYsGheTPDtg54an1PXGs4+TFC0=;
+	s=arc-20240116; t=1770346547; c=relaxed/simple;
+	bh=yiSl2WFrsPJ6WkTi8vj2cQHDh/2j1YfyfpPz6+AdYzo=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=smjddPeMES438hYk35O16BAf6C1sdNxqX3hWjTdNZAUiesjQHPEcLhIHq5oc1uJV1yWpYBOprid36kL3x62HZPHJJ/3J4yiwiw8iJOHU9bCPLLJRXuR9FvULGd3M/B/a4j98eEgPAxgzdGHE7Ah0kN8U8Q/W8I4c7ws7Fp87KBA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux.spacemit.com; spf=none smtp.mailfrom=linux.spacemit.com; dkim=pass (1024-bit key) header.d=linux.spacemit.com header.i=@linux.spacemit.com header.b=o7FOpGgv; arc=none smtp.client-ip=54.207.19.206
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux.spacemit.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.spacemit.com
+	 In-Reply-To:Content-Type; b=g45VL3POEWlnnRujjH5Idju6JVoFG96GIB3o3EFimgQ9uz4wOZinyvou50CI26YHsEAzmSDajA3V+qFsTxcEv1sRHJMgvOCeBdzIrkZfyrvnUVyWNsWDfkaOdyKMfSWkWkMfYiiIveUWCP/4RdpynOwSQUgqOHAthbc1lfijLBA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XFTs/q9V; arc=none smtp.client-ip=198.175.65.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.spacemit.com header.i=@linux.spacemit.com header.b="o7FOpGgv"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.spacemit.com;
-	s=mxsw2412; t=1770341830;
-	bh=u66lDzn3W+s9lLSBjCrJQz3iX/gWLeceviCCn8xnhQA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:From;
-	b=o7FOpGgvbX0PXyChaED76RZzeiQ+/8zcCtx7IfhWZhp6y77Ilgp4g/zIEItxdwDmU
-	 czrJOl+77F6gCpZQYY1TgYg60PZDfPuteadl32mITjL2sFEtPghYMGtwke7UYMKBNJ
-	 pwX5TOjpZ9Vr3iPxRvZntppt49IB7Nsv4EyietG4=
-X-QQ-mid: zesmtpsz7t1770341822t19d1032a
-X-QQ-Originating-IP: iIAeuwskNV4ojOYuV3Noln3ZDwxd2URhMw6INSSJBQ8=
-Received: from [10.3.91.191] ( [101.70.125.34])
-	by bizesmtp.qq.com (ESMTP) with 
-	id ; Fri, 06 Feb 2026 09:36:59 +0800 (CST)
-X-QQ-SSF: 0000000000000000000000000000000
-X-QQ-GoodBg: 0
-X-BIZMAIL-ID: 18048956717111257135
-Message-ID: <6139284F36497822+1b579565-0f44-46b8-aa46-00258b40e0e4@linux.spacemit.com>
-Date: Fri, 6 Feb 2026 09:36:59 +0800
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XFTs/q9V"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1770346547; x=1801882547;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=yiSl2WFrsPJ6WkTi8vj2cQHDh/2j1YfyfpPz6+AdYzo=;
+  b=XFTs/q9VzOabl0X2ldjilVxd9lK1AHj9b1SmxMQnCZgw263yUd/Wy3VM
+   HhpZg/MzPQzqFf7+Z2qOal0yIkCRFlIkYlE4MIF3ugqBrUykMrmRbwePT
+   Yb4r8c2kuO0V7GphpZNRPv6YPK4O3cHpGV8iftDquLVUcV9UWzVA95uXc
+   KaqkqV4EYAKFXvbUPKDaANMKHVIFBZlBMUv4JnDHixctaLdJSP5PgFAtq
+   J3dcuwsZK6JVUltV+MLGOA7VEph+N7xdFtiNBq8uy9fdOaLH12nBZx4p+
+   MvjaWA3JskqMhk2Hg4vvp31oyK/ht7kqKz0898uAnkHjgw2JN8MCbNqbI
+   g==;
+X-CSE-ConnectionGUID: 1U0E0M6/SHe5i2Ns1HrXCA==
+X-CSE-MsgGUID: 45TBOd0BT2aeR1MIdevlsg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11692"; a="94202409"
+X-IronPort-AV: E=Sophos;i="6.21,275,1763452800"; 
+   d="scan'208";a="94202409"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2026 18:55:47 -0800
+X-CSE-ConnectionGUID: DfroXyZpQYmoCv8MvQfibg==
+X-CSE-MsgGUID: xhCFIq3USk60Lnm4zJsuXA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,275,1763452800"; 
+   d="scan'208";a="210794197"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2026 18:55:45 -0800
+Message-ID: <f8e35741-6b4c-4e14-a0a5-2c3176840242@linux.intel.com>
+Date: Fri, 6 Feb 2026 10:55:12 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -40,114 +52,144 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 2/8] iommu/riscv: Fix WSI mode IRQ number handling
-To: Andrew Jones <andrew.jones@oss.qualcomm.com>
-Cc: Tomasz Jeznach <tjeznach@rivosinc.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Paul Walmsley <pjw@kernel.org>,
- Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>,
- Alexandre Ghiti <alex@ghiti.fr>, Jingyu Li <joey.li@spacemit.com>,
- iommu@lists.linux.dev, linux-perf-users@vger.kernel.org,
- linux-riscv@lists.infradead.org, spacemit@lists.linux.dev,
- devicetree@vger.kernel.org
-References: <cover.1769562575.git.lv.zheng@spacemit.com>
- <cover.1770195980.git.lv.zheng@linux.spacemit.com>
- <F77F878EF7C59BD3+a9078997d97dacd05d1271a5390dfd08a402b325.1770195980.git.lv.zheng@linux.spacemit.com>
- <2ueryrki7uzpjn6rbqz7scy46sjhw76jjilddz2naslz3eyfdp@ycwf42eaw5yy>
- <927D288E956D61AD+d1488c72-afff-49d2-bb6b-5ef5ea08b627@linux.spacemit.com>
- <qlnntgtoaatvdpyvusjhe2y3hickopigwf3sobtnsfwpfhwjiu@zi4auf65eepa>
+Subject: Re: [PATCH] iommu/vt-d: fix intel iommu iotlb sync hardlockup & retry
+To: "guanghuifeng@linux.alibaba.com" <guanghuifeng@linux.alibaba.com>,
+ dwmw2@infradead.org, joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Cc: xunlei <xlpang@linux.alibaba.com>
+References: <20260202020920.3557883-1-guanghuifeng@linux.alibaba.com>
+ <086971f2-cec7-414d-8cc9-01836ef7259a@linux.intel.com>
+ <ebd62398-342f-4b28-8c7e-ce0ec8dd8889@linux.alibaba.com>
 Content-Language: en-US
-From: Lv Zheng <lv.zheng@linux.spacemit.com>
-In-Reply-To: <qlnntgtoaatvdpyvusjhe2y3hickopigwf3sobtnsfwpfhwjiu@zi4auf65eepa>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <ebd62398-342f-4b28-8c7e-ce0ec8dd8889@linux.alibaba.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: zesmtpsz:linux.spacemit.com:qybglogicsvrgz:qybglogicsvrgz5b-1
-X-QQ-XMAILINFO: MFZ9kh0LMtuH0AU9pAK9/PazOypgIKoQg76nLcge23gYkiXS8HdxXEce
-	xTe3LiYcAFT9/BtDhydb42SrASmK84yFYudwg0EftdMHoO1+xfE2+Qd+NwpOysRJzkGUgNK
-	DgrFwkzTC+Z5hnW2yRrA4vNmQ2WRJ4VlmjUUXlatjnOHHkG6ol9Fmlo5yGcRb/vvRxbNH+F
-	nzoCsbbv2lnEvLMDUwr1luDeDmlMThOjBreO6zriEX2cwFaL0OBqsYRMnkB8qvKRnzkN37+
-	FOCYXjeX+8EBYutxLfIl1H7OYOgVM+9nTMzXn6B9Z6QhKO/OfVDvTWbFz2ELqUaTQjJy1XD
-	Ok92U/YCMZLcBMKxBuVgsZWpDOL3O4hEKQKAnHYr0mncz1nqezJ735nMOHiv9odNYM3G6Kg
-	MhxwXqG8XG7mM7sfj8jBzOafce4WkQKhKuqTe2rBi+3hHAD1OAVzdrourSs+u1kVp/aIGjv
-	IReVBIUD575mw3J1zpjePh6i2feHzzhxDJZxnYlJD01X0CXr1VwkMQ17RK3QoL3Zp3bYJvl
-	M9rF0XRAdz3ub/JTb2sHoYyugjGcLqpGF/dkGl49nrFoZyJ39lC9HgREwiDUhDm9bY8fYC4
-	oPVA2d46sHgMTutJkJI06TdOpri6Vztwjz1sflTrYIzGmcphgzyUlZufCo2MEoskXQQRrz4
-	YshVPH3eMvPyXs13PkaTVfYAvIVSO/AFkgWLJAIwQg8d5CcS7CirnnQHFOsS6C36zdZpzEz
-	KevYGs1tgRC5TRbzIheyf1sEitY02OIe08z2cTDzUqHKns3rarqmrbzYsOFvL7XoeeqtgLl
-	u6vl3Tj/yyqwyVGt5iP59rNGU0hExuos43NcclhqrebJhSj9U+8WxKw5gx3o38ufF+UFcR1
-	qBgCdxXzSX/4sFJc5Ci2+we+i+4kNNTtmvm1UBfUtDqUvTB01V0tDFmDpu//JqcI9UsR9v9
-	iIUKvjaJTTkcKRdPu/urRLGoi00jp4xPzg+TTzkvI9mZf6rWTBbqQOF6Qo9CgT379OQUcl6
-	8oq/Utqo9w71/prjkm
-X-QQ-XMRINFO: NI4Ajvh11aEjEMj13RCX7UuhPEoou2bs1g==
-X-QQ-RECHKSPAM: 0
+Content-Transfer-Encoding: 8bit
 
-On 2/5/2026 11:04 PM, Andrew Jones wrote:
-> On Thu, Feb 05, 2026 at 11:52:57AM +0800, Lv Zheng wrote:
->> On 2/5/2026 1:20 AM, Andrew Jones wrote:
->>> On Wed, Feb 04, 2026 at 05:08:52PM +0800, Lv Zheng wrote:
-> ...
->>>> diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
->>>> index d9429097a2b5..26630979473b 100644
->>>> --- a/drivers/iommu/riscv/iommu.c
->>>> +++ b/drivers/iommu/riscv/iommu.c
->>>> @@ -1593,11 +1593,26 @@ static int riscv_iommu_init_check(struct riscv_iommu_device *iommu)
->>>>    		       FIELD_PREP(RISCV_IOMMU_ICVEC_PMIV, 3 % iommu->irqs_count);
->>>>    	riscv_iommu_writeq(iommu, RISCV_IOMMU_REG_ICVEC, iommu->icvec);
->>>>    	iommu->icvec = riscv_iommu_readq(iommu, RISCV_IOMMU_REG_ICVEC);
->>>> -	if (max(max(FIELD_GET(RISCV_IOMMU_ICVEC_CIV, iommu->icvec),
->>>> -		    FIELD_GET(RISCV_IOMMU_ICVEC_FIV, iommu->icvec)),
->>>> -		max(FIELD_GET(RISCV_IOMMU_ICVEC_PIV, iommu->icvec),
->>>> -		    FIELD_GET(RISCV_IOMMU_ICVEC_PMIV, iommu->icvec))) >= iommu->irqs_count)
->>>> -		return -EINVAL;
->>>> +	/*
->>>> +	 * In WSI mode, ICVEC may read as zero. Only validate if using MSI.
->>>> +	 * Check if FCTL.WSI is set to determine interrupt mode.
->>>> +	 */
->>>> +	if (!(iommu->fctl & RISCV_IOMMU_FCTL_WSI)) {
+On 2/5/26 18:28, guanghuifeng@linux.alibaba.com wrote:
+> 
+> 在 2026/2/4 17:32, Baolu Lu 写道:
+>> On 2/2/2026 10:09 AM, Guanghui Feng wrote:
+>>> Device-TLB Invalidation Response Time-out (ITE) handling was added in
+>>> commit: 6ba6c3a4cacfd68bf970e3e04e2ff0d66fa0f695.
 >>>
->>> The behavior of ICVEC does not depend on FCTL.WSI
+>>> When an ITE occurs, iommu will sets the ITE (Invalidation Time-out
+>>> Error) field in the Fault Status Register. No new descriptors are
+>>> fetched from the Invalidation Queue until software clears the ITE field
+>>> in the Fault Status Register. Tail pointer Register updates by software
+>>> while the ITE field is Set does not cause descriptor fetches by
+>>> hardware. At the time ITE field is Set, hardware aborts any
+>>> inv_wait_dsc commands pending in hardware and does not increment
+>>> the Invalidation Queue Head register. When software clears the
+>>> ITE field in the Fault Status Register, hardware fetches
+>>> descriptor pointed by the Invalidation Queue Head register.
 >>>
->>>> +		if (max(max(FIELD_GET(RISCV_IOMMU_ICVEC_CIV, iommu->icvec),
->>>> +			    FIELD_GET(RISCV_IOMMU_ICVEC_FIV, iommu->icvec)),
->>>> +			max(FIELD_GET(RISCV_IOMMU_ICVEC_PIV, iommu->icvec),
->>>> +			    FIELD_GET(RISCV_IOMMU_ICVEC_PMIV, iommu->icvec))) >= iommu->irqs_count)
->>>> +			return -EINVAL;
->>>> +	} else {
->>>> +		/*
->>>> +		 * WSI mode: ICVEC is not used. Set to identity mapping for
->>>> +		 * riscv_iommu_queue_vec() to work correctly.
->>>> +		 */
->>>> +		iommu->icvec = FIELD_PREP(RISCV_IOMMU_ICVEC_CIV, 0) |
->>>> +			       FIELD_PREP(RISCV_IOMMU_ICVEC_FIV, 1) |
->>>> +			       FIELD_PREP(RISCV_IOMMU_ICVEC_PIV, 2) |
->>>> +			       FIELD_PREP(RISCV_IOMMU_ICVEC_PMIV, 3);
->>>
->>> It's certainly not correct to set iommu->icvec to anything that can't be
->>> written to the IOMMU's WARL ICVEC fields and read back again.
+>>> But in the qi_check_fault process, it is implemented by default
+>>> according to the 2009 commit: 6ba6c3a4cacfd68bf970e3e04e2ff0d66fa0f695,
+>>> that is, only one struct qi_desc is submitted at a time. A qi_desc 
+>>> request is
+>>> immediately followed by a wait_desc/QI_IWD_TYPE for
+>>> synchronization. Therefore, the IOMMU driver implementation
+>>> considers invalid queue entries at odd positions to be
+>>> wait_desc. After ITE is set, hardware aborts any pending
+>>> inv_wait_dsc commands in hardware. Therefore, qi_check_fault
+>>> iterates through odd-position as wait_desc entries and sets
+>>> desc_status to QI_ABORT. However, the current implementation
+>>> allows multiple struct qi_desc to be submitted simultaneously,
+>>> followed by one wait_desc, so it's no longer guaranteed that
+>>> odd-position entries will be wait_desc. When the number of submitted
+>>> struct qi_desc is even, wait_desc's desc_status will not be set to 
+>>> QI_ABORT,
+>>> qi_check_fault will return 0, and qi_submit_sync will then
+>>> execute in an infinite loop and cause a hard lockup when
+>>> interrupts are disabled and the PCIe device does not respond to
+>>> Device-TLB Invalidation requests.
 >>
->> Indeed.
->> It looks I can keep icvec returned for WSI and keeps the write-and-read
->> check logic only for MSI.
+>> Yes. This appears a real software bug.
 >>
+>>>
+>>> Additionally, if the device remains online and an IOMMU ITE
+>>> occurs, simply returning -EAGAIN is sufficient. When processing
+>>> the -EAGAIN result, qi_submit_sync will automatically reclaim
+>>> all submitted struct qi_desc and resubmit the requests.
+>>>
+>>> Through this modification:
+>>> 1. Correctly triggers the resubmission of struct qi_desc when
+>>> an ITE occurs.
+>>> 2. Prevents the IOMMU driver from disabling interrupts and
+>>> executing in an infinite loop within qi_submit_sync when an
+>>> ITE occurs, avoiding hardlockup.
+>>
+>> But I think this fix changes the behavior of the driver.
+>>
+>> Previously, when an ITE error was detected, it cleared the ITE so that
+>> hardware could keep going, aborted all wait-descriptors that were being
+>> handled by hardware, and returned -EAGAIN if its own wait-descriptor was
+>> impacted.
+>>
+>> This patch changes the behavior; it returns -EAGAIN directly whenever it
+>> detects an ITE error, regardless of whether its wait-desc is impacted.
+>> In the single-threaded case, it works as expected, but race condition
+>> might occur when qi_submit_sync() is called in multiple threads at the
+>> same time.
+>>
+>>>
+>>> Signed-off-by: Guanghui Feng<guanghuifeng@linux.alibaba.com>
+>>> ---
+>>>   drivers/iommu/intel/dmar.c | 18 +++---------------
+>>>   1 file changed, 3 insertions(+), 15 deletions(-)
+>>
+>> Have you tried to fix it by dropping the "odd position" assumption? For
+>> example, removing "head |= 1" and decrementing by 1 instead of 2 in the
+>> loop?
+>>
+>>      do {
+>>              if (qi->desc_status[head] == QI_IN_USE)
+>>                      qi->desc_status[head] = QI_ABORT;
+>>              head = (head - 2 + QI_LENGTH) % QI_LENGTH;
+>>      } while (head != tail);
+>>
+>> Thanks,
+>> baolu
 > 
-> You shouldn't need to touch this code at all. I don't see anything to fix
-> wrt the spec. As I said, if iommu->irqs_count is known to be greater than
-> one but you're getting zero back from ICVEC even after writing 0xffff to
-> it first, then ICVEC on your IOMMU is broken. Once you've confirmed that,
-> then the best you can do is add some workaround for your specific IOMMU
-> here.
+> Thank you for your reply.
 > 
-> Thanks,
-> drew
+> There are a few points that need clarification:
+> The descriptors between head and tail are requests that have not been 
+> fetched and executed.
 > 
+> 
+> Regarding the requests before the head:
+> Method 1: Does the IOMMU update the head address register immediately 
+> after fetching the descriptor?
+> Method 2: Or does the IOMMU update the head register only after fetching 
+> and executing the request?
+> 
+> The current Intel IOMMU VT-d specification does not describe this 
+> behavior in detail.
+> Does the IOMMU currently use Method 1?
+> 
+> Therefore, after an ITE timeout, it's necessary to resend the requests 
+> before the head index
 
-This patch is an approach trying to give PMIV a standalone wired IRQ#
-which is required by pre-silicon spacemit T100 RTLs when it is
-configured to report both MSI/WSI caps. However there is no such real
-product on the market, I just drop it it in the next version.
+An obvious race that I can think of is something like this:
+
+Thread A placed a dev-tlb-inv-desc in the invalidation queue. After
+that, thread B placed an iotlb-inv-desc in the queue. Now the requests
+in the queue look like this:
+
+     dev-tlb-inv-desc for A
+     iotlb-inv-desc for B
+
+Then a device TLB invalidation timeout error happens and triggers the
+ITE bit to be set in the fault register. Thread B sees this in its
+qi_check_fault(), clears the ITE bit, and returns -EAGAIN. Then thread A
+will loop infinitely waiting for DONE in its wait-desc.
+
+The qi_submit_sync() logic has been there for years. Changing its
+behavior without enough validation on real hardware will cause
+unexpected issues. The better approach I would suggest is to fix the
+outdated logic.
 
 Thanks,
-Lv
-
+baolu
