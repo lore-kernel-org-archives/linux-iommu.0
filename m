@@ -1,68 +1,86 @@
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
+Received: from mail-qk1-f182.google.com (mail-qk1-f182.google.com [209.85.222.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC726367F56
-	for <iommu@lists.linux.dev>; Fri,  6 Feb 2026 13:38:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4D7E3EF0A1
+	for <iommu@lists.linux.dev>; Fri,  6 Feb 2026 14:30:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770385125; cv=none; b=VYzUWfLrcKB8vR+r5P+mWC7cMmWj0EZXtb4T6/GCje8865PilS66pnbPslRkbkvcxHk0PheVVF3HXY1OAploUnE3FM/ztPK1a5leP+9J4zV9P/WS+c6kwwj6Ma1F9KVqhi9BXpDe6IxIGuul9WgXIqZ6Joz77OpYvHaZ7UtRRmk=
+	t=1770388216; cv=none; b=fvW2HXlfcvlddJKoKXpxZQeGs/SSr7kgyUJO5KmpLeO91N8hkXnDShJkkC9u6IXPfKUUXHOWG6KeO3/POByYl/C6obyF/JVR66X+EH2dgm3TbTTZgz+km8DZFm63jRDatWRDPq5EFu7pxvgVHXF5pfGjKdpARxonbGkCjSPmiZU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770385125; c=relaxed/simple;
-	bh=KU1YABdNd+/uaBrnrntgbyAveorJ8ZAcuiJrd0CgtMU=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To; b=U6YpdyfYAS8tXQAQ9cFIhInxAlqBsk5iIOWYDu+aPeDI49Wqghrn9tkoWz7eumSHV5p31H+jDmiXw7qnxwhaLIxlmZukrtq/yeg5xa2N5eYWG6kBPHweacofRedq8QfzmpErnn9vP/sNVfuGKRIQVjcSybq9gk8C+JM3anW4Omg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=okkYD6Da; arc=none smtp.client-ip=209.85.128.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1770388216; c=relaxed/simple;
+	bh=VJUJxiaiSyjn06mFjR9T+fjRixI6F335byZ5Sx4J6MA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=pW5qoPBjl99YMNQGQACdXa5MTd1SwVakAI25fWNX+B1DfSc1JaCoyDy6Cpx2hiEuusQ+PbqV36o7aiZeIDa2PHxR5Ueg4IJB+C3+1pgqs5f+S0uzWziLz+hz5glBIh3QYC5+8uaNorYWaKjr4WNwGh2Q/4nV3uB6hDsjcK2bCew=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=fc6MPKxP; arc=none smtp.client-ip=209.85.222.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="okkYD6Da"
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-48329eb96a7so850205e9.3
-        for <iommu@lists.linux.dev>; Fri, 06 Feb 2026 05:38:44 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="fc6MPKxP"
+Received: by mail-qk1-f182.google.com with SMTP id af79cd13be357-8c70ab3b5fcso100649285a.2
+        for <iommu@lists.linux.dev>; Fri, 06 Feb 2026 06:30:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1770385123; x=1770989923; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:message-id:subject:cc
-         :to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=gMr4rK4OUpc4zqGvHkqL1hsf5l7NXMQg7IzIbQkdIAI=;
-        b=okkYD6Dao9UCHdUeLrLQjyjUkeKRs9j0I8z2ib/nizBQC684FY2tyJA6TgYETA4ALb
-         872erhHSB7N1R8WKTBGeWlq8ZLzHbmUvYIr85NzhAbdTqWv4Au5TUDC93ktOLnmVNtX6
-         5h++aKEDf1ml0uDauzwbh5cSVQcEuFTX+M6ExHMCtlynRvJDwG2+V2Y6WNwc5JXOOkWK
-         K4F0PBfwDCs3ZO0J47GOLyOhucstf5JeVQRA+A7/K2/ysVZb/XG9d3JvihJa+o1idp98
-         ztohbMgOlL7NshJGQNUw4tPXPZfdaRXq5aIqLnqg61nxeb6iPBISNA509q9U7Cto3Ob1
-         Z2qA==
+        d=ziepe.ca; s=google; t=1770388215; x=1770993015; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=THMhyPMr7sNTge9zhp9X3LUNdQ3UJ8Jh3cljXKT38Os=;
+        b=fc6MPKxP/wWEE4d6y3e6prxntIbGSORt6NanIcABiQcY9/HIGW9PkBXeicU9qD6tSy
+         z3Bdzuukd6hHQ0kJ5ovil6KvGcUBZauTYPnb4RmAwYWKo+uj4zJSVYVwNNQUEGS6eSYm
+         YNhc/p5Mg+FYL8hffenazdtxFi+AMbryDbMregEqOZ5JeVKr/StU29lGrra7Mqj+4aQy
+         nQvdXDEKrigaIQejwhjmDZgoxgCcuENtMAU9r57lQJWIoRqJViAR//VPiRPPhR16/DVA
+         dlv0LnjCnQHQVd1yhZyFPZQGyU5WqNQnIyxDKqCYJEUMXWDDDUxwDDBGqWP9pZPxujEK
+         R4tw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770385123; x=1770989923;
-        h=in-reply-to:content-disposition:mime-version:message-id:subject:cc
-         :to:from:date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=gMr4rK4OUpc4zqGvHkqL1hsf5l7NXMQg7IzIbQkdIAI=;
-        b=UMcwkMDvI7YJc3Tln1hq6mworQmKqc9mhUFZEiLujiCQneZ+EuLZVZ6pb880utCzsG
-         Jk1mdtLEBb+DiL7swBprnWivtHntBIY5AS/r8eudIkmAmcQc3w5IMjM4UFBCgTXw/IkB
-         e9irlffpsitpcRxyQS2eNn/4adCY2TAIYQohBaVdzn8pZMLfchBzhsU2xCVVcup+yGRB
-         e0hHOFLHzFyDYwr3ZwwF5qZshqUwOANCYQUO5NJVA103XxLkcKdkKxadBkjmvqHMZGJ2
-         nI+H+2dqduHkSAkK9ARTXJqJ+GuWGRatDJUlfPeJtEZAbEI8GbTpjs8EzFeVuKnihuHI
-         VLPg==
-X-Gm-Message-State: AOJu0YxXKRG7caR+8k59IPcMWY/tXIHMqD7G/LXQQ258P4A5vQ3d7Kcy
-	2FQ23b0uVfpTN44FyZ2xVBSXthhUSddW9Iqt5y7ffU+7ZmpTIxS+C6i7EId2QwdV6lY=
-X-Gm-Gg: AZuq6aJx5hi0F1rxPffN6iYnQ6UG2kzeo/Av7JzFo1mDYetmGDDCyVbHvjOTTEP8idF
-	9vxRIsg7A5d4sXZ2T4DZ6ft19iaoSgqq2iRKFZ1Uax9Bb515976BGgM5/o5DTJaErebgo3YKRIQ
-	huiWMb6sDGyIDnpJXpk4/ocGgUvWon+gMqfHkhYD0WYTOC/sy+CElOHQXvtt97jbBURKVQzQkSZ
-	2MByAi3hTWMvlY+5E0VEW+mzqOBAyDxMj/hRAscILZrX+Cr7OG+VDeQbP7wqKi1aV/wzDNh+m54
-	JhiH4o2D3F81My/nDeHhxWb0+ZFwLy/nnZb+BQAe7DDmit23Yd0Tc1B8YREy9udbAJoO1/nnYwV
-	kYsRaLkPXPdhWzawbBOnCCQ2bWcH4XNHpqjNTaGhEk9TxSV+L1lk4197YYy7pxrUnGzTzpvVvt9
-	qR/NYDhpPMCMDNEAOw
-X-Received: by 2002:a05:600c:19d1:b0:477:9a28:b09a with SMTP id 5b1f17b1804b1-483208b9470mr34995085e9.0.1770385122950;
-        Fri, 06 Feb 2026 05:38:42 -0800 (PST)
-Received: from localhost ([196.207.164.177])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48323c12d74sm28249815e9.2.2026.02.06.05.38.42
+        d=1e100.net; s=20230601; t=1770388215; x=1770993015;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=THMhyPMr7sNTge9zhp9X3LUNdQ3UJ8Jh3cljXKT38Os=;
+        b=D+nv28aSqB52mc6wINdURMwG46j07soi/GyXRYiP6bGdWwSqUMZ13NZjFDBrNFkINh
+         zESTTaUvTVodHqTkRSbcM5Jj1kb1yKszVUsmsqddesGG5SHGU7SJnVLsFzUhx9+2PrZa
+         YM798yJP9YTPZyRdfFpN+Ktf1FtL1stEtx+wdjmeC0guCDGbgtlUcAN7fTq2FQjfvZ8C
+         OZ3seetBi67JR7UBrOUQmeTeyjkfycwAtZsknCzKOvfwiww1fBHoLoPveMN7woiomWVS
+         thsYNLwIHCyCQnouoJcvCcdJwdkL20UnTkrsDiZsWpoIMUMtAkpP4if/UTAb3imGG+BE
+         Zssg==
+X-Forwarded-Encrypted: i=1; AJvYcCVHi9WDXyS+1eDli62Yk2Va9aO9CymfFHBVg+07A79RrN6uFob1RaXoOeEGpxpoWFIHgr04oQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yx1UfV7oWDHKTklS5MS9Sp/wsfHKHrezcwi1TT7RRjsp7onhrIK
+	C/AL2epG5C9sP+FBf51nCSHqJGVF+m3mnWoWJSuIAAR9KotouXxZl7+ceFfrmF1unV8=
+X-Gm-Gg: AZuq6aILKIKFs8AAaNQbK37Eh1CT4eM07QXPbqEOUh3j6X7cf7MlHChoIuiPugKAomX
+	uZGyDXFVaVTpuX/a/S+usgNxm+brqPsgGmie93LTFRDueoS6/F/Lp2EtD3GS9erBB/2esQMVkIF
+	AnEtPoGm0vHjQVSkpEJP4PNQqkPVWxEMQ9KZvrTfTYd7vc0dv5fncHCECkH0L3/XkPbORcK8R2c
+	ajl4kqoJjtmqop6v7jrWqGN1ybvhowY/CndGq5eB6+gX2e5egUnkKPi94CtgRXyv8+Zu2PeF4jk
+	/IErTuPODZBskxNBX1cVIiNNkK8PlF/d5YKkV2f+wnq2zAP98NxsycZGbYRBGEkXUIyd7c/mTtx
+	5MRPzXOxssxpCwXWzFUR+C1iyZpNgme0WEG8dytx4EJaBUoJiIsgFJS3J8t556UThUx1NFGUO8N
+	6OgHfUgpdBywYHeij5rlrclPDEqmJQ8KFEfZzyUiGsputde6KRrEiNIh4tquy8PhDKPM8=
+X-Received: by 2002:a05:620a:448c:b0:8c9:737e:3840 with SMTP id af79cd13be357-8caf130a55emr392847185a.67.1770388215425;
+        Fri, 06 Feb 2026 06:30:15 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-162-112-119.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.112.119])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-8caf77f6badsm160617385a.11.2026.02.06.06.30.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Feb 2026 05:38:42 -0800 (PST)
-Date: Fri, 6 Feb 2026 16:38:39 +0300
-From: Dan Carpenter <dan.carpenter@linaro.org>
-To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Cc: iommu@lists.linux.dev, linux-kernel <linux-kernel@vger.kernel.org>
-Subject: [bug report] iommu/amd: Introduce gDomID-to-hDomID Mapping and
- handle parent domain invalidation
-Message-ID: <aYXu33WW8EqbXTlb@stanley.mountain>
+        Fri, 06 Feb 2026 06:30:14 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1voMqc-00000008O8R-0VMF;
+	Fri, 06 Feb 2026 10:30:14 -0400
+Date: Fri, 6 Feb 2026 10:30:14 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Manivannan Sadhasivam <mani@kernel.org>
+Cc: Bjorn Helgaas <helgaas@kernel.org>,
+	Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>,
+	Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	Naresh Kamboju <naresh.kamboju@linaro.org>,
+	Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
+	Xingang Wang <wangxingang5@huawei.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Alex Williamson <alex@shazbot.org>,
+	James Puthukattukaran <james.puthukattukaran@oracle.com>
+Subject: Re: [PATCH v3 3/4] PCI: Disable ACS SV capability for the broken IDT
+ switches
+Message-ID: <20260206143014.GH943673@ziepe.ca>
+References: <20260102-pci_acs-v3-3-72280b94d288@oss.qualcomm.com>
+ <20260205233920.GA17083@bhelgaas>
+ <ga5ro3nvrbmbjubtk6xnozzc6exqq5vnkmp2pfuhtnzmpsuogz@lcycdoxtu2k4>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -71,47 +89,26 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <caa37f28-a2e8-4e0a-a9ce-a365ce805e4b@stanley.mountain>
+In-Reply-To: <ga5ro3nvrbmbjubtk6xnozzc6exqq5vnkmp2pfuhtnzmpsuogz@lcycdoxtu2k4>
 
-[ Smatch checking is paused while we raise funding.  #SadFace
-  https://lore.kernel.org/all/aTaiGSbWZ9DJaGo7@stanley.mountain/ -dan ]
+On Fri, Feb 06, 2026 at 02:41:36PM +0530, Manivannan Sadhasivam wrote:
+> > It'd be worth expanding on this and what the effect of avoiding ACS SV
+> > is.  Does this change which devices can be safely passed through to
+> > virtual guests?  Does it give up isolation that users expect?
+> > 
+> 
+> IMO, ACS SV is somewhat broken on this switch. But we can still passthrough the
+> downstream devices to the guests. There won't be ACS SV apparently, but that's
+> what users will get with broken hw.
 
-Hello Suravee Suthikulpanit,
+I agree with this, the HW is very broken, let's have it at least work
+properly in Linux on bare metal out of the box.
 
-Commit 757d2b1fdf5b ("iommu/amd: Introduce gDomID-to-hDomID Mapping
-and handle parent domain invalidation") from Jan 15, 2026
-(linux-next), leads to the following Smatch static checker warning:
+If someone really insists they need virtualization with narrow groups
+on this HW then they need to come with a more complete fix. Using VFIO
+is going to open up the reset flows that are problematic with the
+current solution, so it isn't like that is already working fully.
 
-	drivers/iommu/amd/nested.c:161 amd_iommu_alloc_domain_nested()
-	warn: 'gdom_info->hdom_id' unsigned <= 0
+Somehow I suspect nobody would use this switch for virtualization :)
 
-drivers/iommu/amd/nested.c
-    148         /* Check if gDomID exist */
-    149         if (refcount_inc_not_zero(&gdom_info->users)) {
-    150                 ndom->gdom_info = gdom_info;
-    151                 xa_unlock(&aviommu->gdomid_array);
-    152 
-    153                 pr_debug("%s: Found gdom_id=%#x, hdom_id=%#x\n",
-    154                           __func__, ndom->gdom_id, gdom_info->hdom_id);
-    155 
-    156                 return &ndom->domain;
-    157         }
-    158 
-    159         /* The gDomID does not exist. We allocate new hdom_id */
-    160         gdom_info->hdom_id = amd_iommu_pdom_id_alloc();
---> 161         if (gdom_info->hdom_id <= 0) {
-
-gdom_info->hdom_id is unsigned.  amd_iommu_pdom_id_alloc() can't return
-zero.  It either returns negatives or 1-65535.
-
-    162                 __xa_cmpxchg(&aviommu->gdomid_array,
-    163                              ndom->gdom_id, gdom_info, NULL, GFP_ATOMIC);
-    164                 xa_unlock(&aviommu->gdomid_array);
-    165                 ret = -ENOSPC;
-    166                 goto out_err_gdom_info;
-    167         }
-    168 
-    169         ndom->gdom_info = gdom_info;
-
-regards,
-dan carpenter
+Jason
