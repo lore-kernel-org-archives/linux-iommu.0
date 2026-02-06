@@ -1,154 +1,81 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E2A3337692;
-	Fri,  6 Feb 2026 18:32:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A4C0C6F2F2
+	for <iommu@lists.linux.dev>; Fri,  6 Feb 2026 22:50:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770402742; cv=none; b=HsiEbq0RSBhscdpyFFNAIAcKkM5btyvp7CakVh55C3sMfuxqpRAzL9r6+4aBXL9avJ25q8udfl8T4DBsU3OeSVCaQeGMmdoM1CC7ZYE3crA7jkUgGauEQ3HB6JFgI8mRpiu4UPWWyi8X0lOn7m6jcYlNA+TWe/5wsI7A7qL3CCg=
+	t=1770418207; cv=none; b=snhc9s35mkq74f88a3EmLWGnlSm8kIFZTcd9JGRJHftxd7v4P5kBIBqd30yaKO0VqHuoF4up4Bl3U3e1V3YbqHoL2g6JHc9XhqfMCAFfe0GepBcOg0ynon6BCTFjXFm7wT1DWxeQh9ktuUamZ71EPJMLSJbKIWbLTw1PWs1JDOc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770402742; c=relaxed/simple;
-	bh=SyviauEqzGRNgMKFKUSriULfbguERUdTF3gSkStiiws=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To; b=bXySCnukE4/fLp6pxb3j3J1Mo75kk5nagmvSnNstrpy0qZB6h7pHvBpZpScqM+4Ud8hIUSQ/dy0U9trEgNnbKo+4clqBP2bAvojlsbosORhtYerNaJitejF0os/JuNDUhzB3NMF53Y593P4brY3//Yxwf43j5wDTMjYIKYjmNhc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jx75DmQR; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1770418207; c=relaxed/simple;
+	bh=0doznwWaTBKB1Oq1Cn7pPgAAOnrOE+ul24LXxLy2K0U=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=jtMPIZrqwQFVqN5iGnJ8/ndr8C5IhwVbAMKROX/6ZPHlzvgepoHosfHaqGaOnIo1Gj1XM/Z+FaiG4YIh1HdHyOIXgkJyvTcoesADV9Ggq9H7fV59yPHhzLj9JQwA2crJwi+ouu7KMsmC8SzEpOpO7t1CpyGDdA0fE2PIrkjhu5s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=RHijLKuC; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jx75DmQR"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC446C116C6;
-	Fri,  6 Feb 2026 18:32:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1770402742;
-	bh=SyviauEqzGRNgMKFKUSriULfbguERUdTF3gSkStiiws=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:From;
-	b=jx75DmQR8I+p5N8nTPmep6m7pQrPyLCtGEQbcUh6UZDGHUYRXvSROJNjMbb/APGhk
-	 ca8FQXwV0t4cEUI6gxduTER+tdagta359GW0RbAo3HFwqxVKKSdiCH5do/HLbBAQYC
-	 lMNYxgkjdAmLEWDth5tM960THxnc+foLrNWVXYAOP+PJBRvXRRb4nuZb3f9JYItwm0
-	 YVRu+TEg/ovKAVFJFsuc3w5B8wSRNPG3Jha4pgah9L93rTany8uL0m1aLouyR3Op5C
-	 fFUBumVDIXubV/3yeQjnA5m8a8kHd7fXSiBGS62PT3I01M7F3ycQRUc0QVofa0gbAq
-	 cGE7DH5uErqcQ==
-Date: Fri, 6 Feb 2026 12:32:20 -0600
-From: Bjorn Helgaas <helgaas@kernel.org>
-To: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
-Cc: Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	Naresh Kamboju <naresh.kamboju@linaro.org>,
-	Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
-	Xingang Wang <wangxingang5@huawei.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Manivannan Sadhasivam <mani@kernel.org>
-Subject: Re: [PATCH v3 0/4] PCI: Fix ACS enablement for Root Ports in OF
- platforms
-Message-ID: <20260206183220.GA70809@bhelgaas>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="RHijLKuC"
+Received: from localhost (unknown [20.236.11.185])
+	by linux.microsoft.com (Postfix) with ESMTPSA id E6FF620B7168;
+	Fri,  6 Feb 2026 14:50:06 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com E6FF620B7168
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1770418207;
+	bh=d4e76b1QrUgVe+CeuBIDfBj7PX3PWaO84rFgyvlBBNM=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=RHijLKuCMnShBxLcc9/aL8I1bNMT6VGG4Bf/LQ42CJv2kN1tOkbWnKYfmuvhwZjFl
+	 Z2f7xhPtn505VM/do8B/QSDccHbZsabFbqUtuHgwCFBz4fXa9EU/fMT8FxtYV5b9QS
+	 1+hvJZT57VyRosxgsHMbR3THgLg5+XW11Ge5h224=
+Date: Fri, 6 Feb 2026 14:50:04 -0800
+From: Jacob Pan <jacob.pan@linux.microsoft.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: linux-kernel@vger.kernel.org, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>, Alex Williamson <alex.williamson@redhat.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
+ <robin.murphy@arm.com>, Nicolin Chen <nicolinc@nvidia.com>, "Tian, Kevin"
+ <kevin.tian@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
+ skhawaja@google.com, pasha.tatashin@soleen.com, Zhang Yu
+ <zhangyu1@linux.microsoft.com>, Jean Philippe-Brucker
+ <jean-philippe@linaro.org>, David Matlack <dmatlack@google.com>
+Subject: Re: [RFC 0/8] iommufd: Enable noiommu mode for cdev
+Message-ID: <20260206145004.000010e1@linux.microsoft.com>
+In-Reply-To: <20260130193529.GJ2223369@nvidia.com>
+References: <20251201173012.18371-1-jacob.pan@linux.microsoft.com>
+	<20260130193529.GJ2223369@nvidia.com>
+Organization: LSG
+X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260102-pci_acs-v3-0-72280b94d288@oss.qualcomm.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Fri, Jan 02, 2026 at 09:04:46PM +0530, Manivannan Sadhasivam wrote:
-> Hi,
-> 
-> This series fixes the long standing issue with ACS in OF platforms. There are
-> two fixes in this series, both fixing independent issues on their own, but both
-> are needed to properly enable ACS on OF platforms.
-> 
-> Issue(s) background
-> ===================
-> 
-> Back in 2021, Xingang Wang first noted a failure in attaching the HiSilicon SEC
-> device to QEMU ARM64 pci-root-port device [1]. He then tracked down the issue to
-> ACS not being enabled for the QEMU Root Port device and he proposed a patch to
-> fix it [2].
-> 
-> Once the patch got applied, people reported PCIe issues with linux-next on the
-> ARM Juno Development boards, where they saw failure in enumerating the endpoint
-> devices [3][4]. So soon, the patch got dropped, but the actual issue with the
-> ARM Juno boards was left behind.
-> 
-> Fast forward to 2024, Pavan resubmitted the same fix [5] for his own usecase,
-> hoping that someone in the community would fix the issue with ARM Juno boards.
-> But the patch was rightly rejected, as a patch that was known to cause issues
-> should not be merged to the kernel. But again, no one investigated the Juno
-> issue and it was left behind again.
-> 
-> Now it ended up in my plate and I managed to track down the issue with the help
-> of Naresh who got access to the Juno boards in LKFT. The Juno issue was with the
-> PCIe switch from Microsemi/IDT, which triggers ACS Source Validation error on
-> Completions received for the Configuration Read Request from a device connected
-> to the downstream port that has not yet captured the PCIe bus number. As per the
-> PCIe spec r6.0 sec 2.2.6.2, "Functions must capture the Bus and Device Numbers
-> supplied with all Type 0 Configuration Write Requests completed by the Function
-> and supply these numbers in the Bus and Device Number fields of the Requester ID
-> for all Requests". So during the first Configuration Read Request issued by the
-> switch downstream port during enumeration (for reading Vendor ID), Bus and
-> Device numbers will be unknown to the device. So it responds to the Read Request
-> with Completion having Bus and Device number as 0. The switch interprets the
-> Completion as an ACS Source Validation error and drops the completion, leading
-> to the failure in detecting the endpoint device. Though the PCIe spec r6.0, sec
-> 6.12.1.1, states that "Completions are never affected by ACS Source Validation".
-> This behavior is in violation of the spec.
-> 
-> Solution
-> ========
-> 
-> In September, I submitted a series [6] to fix both issues. For the IDT issue,
-> I reused the existing quirk in the PCI core which does a dummy config write
-> before issuing the first config read to the device. And for the ACS enablement
-> issue, I just resubmitted the original patch from Xingang which called
-> pci_request_acs() from devm_of_pci_bridge_init().
-> 
-> But during the review of the series, several comments were received and they
-> required the series to be reworked completely. Hence, in this version, I've
-> incorported the comments as below:
-> 
-> 1. For the ACS enablement issue, I've moved the pci_enable_acs() call from
-> pci_acs_init() to pci_dma_configure().
-> 
-> 2. For the IDT issue, I've cached the ACS capabilities (RO) in 'pci_dev',
-> and disabled the broken capability for the IDT switches in the cache. This also
-> allowed to get rid of the earlier workaround for the switch.
-> 
-> [1] https://lore.kernel.org/all/038397a6-57e2-b6fc-6e1c-7c03b7be9d96@huawei.com
-> [2] https://lore.kernel.org/all/1621566204-37456-1-git-send-email-wangxingang5@huawei.com
-> [3] https://lore.kernel.org/all/01314d70-41e6-70f9-e496-84091948701a@samsung.com
-> [4] https://lore.kernel.org/all/CADYN=9JWU3CMLzMEcD5MSQGnaLyDRSKc5SofBFHUax6YuTRaJA@mail.gmail.com
-> [5] https://lore.kernel.org/linux-pci/20241107-pci_acs_fix-v1-1-185a2462a571@quicinc.com
-> [6] https://lore.kernel.org/linux-pci/20250910-pci-acs-v1-0-fe9adb65ad7d@oss.qualcomm.com
-> 
-> Changes in v3:
-> - Dropped the 'acs_broken_cap' field and directly called the quirk from
->   pci_acs_init()
-> - Collected tags. Since the delta between v2 and v3 is minimal, I've kept them.
-> - Rebased on top of v6.19-rc1 
-> - Link to v2: https://lore.kernel.org/r/20251202-pci_acs-v2-0-5d2759a71489@oss.qualcomm.com
-> 
-> Changes in v2:
-> 
-> * Reworked the patches completely as mentioned above.
-> * Rebased on top of v6.18-rc7
-> 
-> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
-> ---
-> Manivannan Sadhasivam (4):
->       PCI: Enable ACS only after configuring IOMMU for OF platforms
->       PCI: Cache ACS capabilities
->       PCI: Disable ACS SV capability for the broken IDT switches
->       PCI: Extend the pci_disable_broken_acs_cap() quirk for one more IDT switch
-> 
->  drivers/pci/pci-driver.c |  8 +++++++
->  drivers/pci/pci.c        | 33 ++++++++++++--------------
->  drivers/pci/pci.h        |  4 +++-
->  drivers/pci/probe.c      | 12 ----------
->  drivers/pci/quirks.c     | 62 ++++++++++++------------------------------------
->  include/linux/pci.h      |  1 +
->  6 files changed, 42 insertions(+), 78 deletions(-)
-> ---
-> base-commit: 8f0b4cce4481fb22653697cced8d0d04027cb1e8
-> change-id: 20251201-pci_acs-b15aa3947289
+Hi Jason,
 
-Applied to pci/virtualization for v6.20, thanks!
+On Fri, 30 Jan 2026 15:35:29 -0400
+Jason Gunthorpe <jgg@nvidia.com> wrote:
+
+> On Mon, Dec 01, 2025 at 09:30:04AM -0800, Jacob Pan wrote:
+> > VFIO's unsafe_noiommu_mode has long provided a way for userspace
+> > drivers to operate on platforms lacking a hardware IOMMU. Today,
+> > IOMMUFD also supports No-IOMMU mode for group based devices under
+> > vfio_compat mode. However, IOMMUFD's native character device (cdev)
+> > does not yet implement No-IOMMU mode, which is the purpose of this
+> > patch. In summary, we have:  
+> 
+> I tried to build this without the fake iommu driver and it worked out
+> OK:
+> 
+> https://github.com/jgunthorpe/linux/commits/iommufd_noiommu/
+> 
+> Needs a little more checking than I might have done, but can you take
+> that and try for a submission?
+> 
+Will look into it.
+
+Thanks
+
+Jacob
+
