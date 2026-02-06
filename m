@@ -1,81 +1,63 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A4C0C6F2F2
-	for <iommu@lists.linux.dev>; Fri,  6 Feb 2026 22:50:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71EFD3115B1;
+	Fri,  6 Feb 2026 23:10:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770418207; cv=none; b=snhc9s35mkq74f88a3EmLWGnlSm8kIFZTcd9JGRJHftxd7v4P5kBIBqd30yaKO0VqHuoF4up4Bl3U3e1V3YbqHoL2g6JHc9XhqfMCAFfe0GepBcOg0ynon6BCTFjXFm7wT1DWxeQh9ktuUamZ71EPJMLSJbKIWbLTw1PWs1JDOc=
+	t=1770419406; cv=none; b=UHvT2qeYqKFb8GUKk1yi7yjB4HzAf2eDgSSw4TTzsFYsxR/K62EIZkS3t01wepKVj8Qg6yqh5zDikYskv9gKKYAkdsmPVbF/UxBHMdqqJSG+azrmwIFN8f3bfyRWGAhqRg1V+QhnONLsGz9MVDOhv+X4QhBX4KPt4P6vjCTGFsg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770418207; c=relaxed/simple;
-	bh=0doznwWaTBKB1Oq1Cn7pPgAAOnrOE+ul24LXxLy2K0U=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=jtMPIZrqwQFVqN5iGnJ8/ndr8C5IhwVbAMKROX/6ZPHlzvgepoHosfHaqGaOnIo1Gj1XM/Z+FaiG4YIh1HdHyOIXgkJyvTcoesADV9Ggq9H7fV59yPHhzLj9JQwA2crJwi+ouu7KMsmC8SzEpOpO7t1CpyGDdA0fE2PIrkjhu5s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=RHijLKuC; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1770419406; c=relaxed/simple;
+	bh=np8IMM6o6puZ09ILkDbt0uPEl9Eb6b6qgfnv6gFErbg=;
+	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=uNMFMYtkesxgGYLEFdvt5xDfhtgXGYX7wgwob44pOOAIzddvWoMOSRl9H18kYZaguQEI2Nr0lcrV4Ufle616rwruYsoa2HseJek2ExSJ5/wShyMBji4t7HZRDo3ofLmoOKqTHDLcgJp93WgUvnLW//6CS1wtAHBUWlraHqUks1s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=s+vlbnMV; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="RHijLKuC"
-Received: from localhost (unknown [20.236.11.185])
-	by linux.microsoft.com (Postfix) with ESMTPSA id E6FF620B7168;
-	Fri,  6 Feb 2026 14:50:06 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com E6FF620B7168
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1770418207;
-	bh=d4e76b1QrUgVe+CeuBIDfBj7PX3PWaO84rFgyvlBBNM=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=RHijLKuCMnShBxLcc9/aL8I1bNMT6VGG4Bf/LQ42CJv2kN1tOkbWnKYfmuvhwZjFl
-	 Z2f7xhPtn505VM/do8B/QSDccHbZsabFbqUtuHgwCFBz4fXa9EU/fMT8FxtYV5b9QS
-	 1+hvJZT57VyRosxgsHMbR3THgLg5+XW11Ge5h224=
-Date: Fri, 6 Feb 2026 14:50:04 -0800
-From: Jacob Pan <jacob.pan@linux.microsoft.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: linux-kernel@vger.kernel.org, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>, Alex Williamson <alex.williamson@redhat.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
- <robin.murphy@arm.com>, Nicolin Chen <nicolinc@nvidia.com>, "Tian, Kevin"
- <kevin.tian@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
- skhawaja@google.com, pasha.tatashin@soleen.com, Zhang Yu
- <zhangyu1@linux.microsoft.com>, Jean Philippe-Brucker
- <jean-philippe@linaro.org>, David Matlack <dmatlack@google.com>
-Subject: Re: [RFC 0/8] iommufd: Enable noiommu mode for cdev
-Message-ID: <20260206145004.000010e1@linux.microsoft.com>
-In-Reply-To: <20260130193529.GJ2223369@nvidia.com>
-References: <20251201173012.18371-1-jacob.pan@linux.microsoft.com>
-	<20260130193529.GJ2223369@nvidia.com>
-Organization: LSG
-X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="s+vlbnMV"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E2DAC19423;
+	Fri,  6 Feb 2026 23:10:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1770419406;
+	bh=np8IMM6o6puZ09ILkDbt0uPEl9Eb6b6qgfnv6gFErbg=;
+	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+	b=s+vlbnMVOxI8pZS8thp5jdPmySjMM7eWIKjfQSogER/njbUEDurC7YEr04UGaTsO6
+	 kPWGKagfxfVxAX4MJyBco/SUPsovFlA68F1VjsINQJ5K1bv97GqWnZRCsK6wxvqxjr
+	 hTipEIgFDs+3bRnatlO8EKsZQH0nU71qn9IhnT+/qJuJhuhXx8Kq24ifD5njoxfHz2
+	 1vUHT4MPjh9KlYFtxWwUOab0Y2okWHIY6Fz6z3UFEqjkGUmbGkLyQZeJVWgLn1jcfg
+	 J20B0scV1Pdbm4rCkCxKMNf1YHULartcOxl+AwKTl5kCFNzK5ANG1zD8LWPrXP3nCs
+	 +cQhY7Tmfs1dA==
+Received: from [10.30.226.235] (localhost [IPv6:::1])
+	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id 8528F3809A17;
+	Fri,  6 Feb 2026 23:10:04 +0000 (UTC)
+Subject: Re: [git pull] IOMMU Fixes for Linux v6.19-rc8
+From: pr-tracker-bot@kernel.org
+In-Reply-To: <6yetluqpicwgoocksffij2mc22gjw7xqmlfsliq2eipmmnw2zk@5ihrvupht7yw>
+References: <6yetluqpicwgoocksffij2mc22gjw7xqmlfsliq2eipmmnw2zk@5ihrvupht7yw>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <6yetluqpicwgoocksffij2mc22gjw7xqmlfsliq2eipmmnw2zk@5ihrvupht7yw>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git tags/iommu-fix-v6.19-rc8
+X-PR-Tracked-Commit-Id: 02f9d76a76adb5ea16b4e3b403496c42033f8fd1
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: fe70b3260e39ce4915a01cf3556a3ffe5b7f8817
+Message-Id: <177041940314.1109628.6485530434654389930.pr-tracker-bot@kernel.org>
+Date: Fri, 06 Feb 2026 23:10:03 +0000
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
 
-Hi Jason,
+The pull request you sent on Fri, 6 Feb 2026 11:19:15 +0100:
 
-On Fri, 30 Jan 2026 15:35:29 -0400
-Jason Gunthorpe <jgg@nvidia.com> wrote:
+> git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git tags/iommu-fix-v6.19-rc8
 
-> On Mon, Dec 01, 2025 at 09:30:04AM -0800, Jacob Pan wrote:
-> > VFIO's unsafe_noiommu_mode has long provided a way for userspace
-> > drivers to operate on platforms lacking a hardware IOMMU. Today,
-> > IOMMUFD also supports No-IOMMU mode for group based devices under
-> > vfio_compat mode. However, IOMMUFD's native character device (cdev)
-> > does not yet implement No-IOMMU mode, which is the purpose of this
-> > patch. In summary, we have:  
-> 
-> I tried to build this without the fake iommu driver and it worked out
-> OK:
-> 
-> https://github.com/jgunthorpe/linux/commits/iommufd_noiommu/
-> 
-> Needs a little more checking than I might have done, but can you take
-> that and try for a submission?
-> 
-Will look into it.
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/fe70b3260e39ce4915a01cf3556a3ffe5b7f8817
 
-Thanks
+Thank you!
 
-Jacob
-
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
