@@ -1,114 +1,166 @@
-Received: from mail-qt1-f179.google.com (mail-qt1-f179.google.com [209.85.160.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtpbgeu2.qq.com (smtpbgeu2.qq.com [18.194.254.142])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6FAC0238D27
-	for <iommu@lists.linux.dev>; Fri,  6 Feb 2026 00:43:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9409D1DE8BF;
+	Fri,  6 Feb 2026 01:33:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=18.194.254.142
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770338607; cv=none; b=KWzl+jLJjyFNweADtFx5Uko2pAQG2QFQ+Nnt+oJB8487SWlatVi7wAErq+Sl9MM0Eg86Kb66Uul5kThittcGEeKb1RovEtUA2h5nAJAbKGaG0X2atTrZMu8g1EQQSKFLGYQ7J1PlbPBPQgqupFI7IRpkEcD1Keq01ECXPT4q2Mo=
+	t=1770341638; cv=none; b=CF+TIFUYKS35qTqExw+JE9W5SoxJg/QF8MyOT227wMSqmPIa+elXio7v8nhrw77DFzvVtoaWhmAG6NxLsapSR91/ad1JX4UlyxSVGYPAkMoUKsRcH7nSejHoWu8tdOwMzcdG1gVe6jUL/691u8L+dpp7h/vsab0ual+ZFigkXfE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770338607; c=relaxed/simple;
-	bh=wP2wJ4Peje13tQ+dX5JV8k8WR+XuFtICLvRq3t64aCI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=EJG09pg/9Vh1pTZRE6D1PZ3FJjWAYqy7RaFfw8IASVlYs84UVXDQDpyRyisl0/8XLjlKHblzxr9+8R/3FC5cEvpD4ZpKa8eXDjAg0cPTjQLSiev26oxeN+cQkUSxh+s+Yx9f0ohuNttA1LQyrf3g2fZQEfk5fcKglCn5UkoloKU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=ohFRWi0F; arc=none smtp.client-ip=209.85.160.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1770341638; c=relaxed/simple;
+	bh=fFxcGT+L+JV19ydZ/XgG+QQkeU9MT4E1xbVZAmElpX8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Iyw2OKPSaYd7V/DunUGU84gw3F61mQJ2dbywKhBGuLPeLXqc12TClxi+BSsLWMUugthpvnOT8B9mh2UpmlvaIGmSLleEafWfxa0qsW29JapGvyDPVIOZ4tKJoHEeJBOmKs3Y803TCikZ82tU40u0EQjQJAu+8VKJqZmrf7kJuUM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux.spacemit.com; spf=none smtp.mailfrom=linux.spacemit.com; dkim=pass (1024-bit key) header.d=linux.spacemit.com header.i=@linux.spacemit.com header.b=QD07RnPO; arc=none smtp.client-ip=18.194.254.142
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux.spacemit.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.spacemit.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="ohFRWi0F"
-Received: by mail-qt1-f179.google.com with SMTP id d75a77b69052e-506362ac5f7so1504761cf.1
-        for <iommu@lists.linux.dev>; Thu, 05 Feb 2026 16:43:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1770338606; x=1770943406; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Uha6Xzj/9DIc/gHRHtkT3Z8tZYXd7dAwhOd20ha2Sqk=;
-        b=ohFRWi0F61xW8lVQzkwALZzdvV21kanBAjZMPzq1IEHV3loyU7MK0jBQPn2tSlvW6K
-         maJYqhMOGXlyPSrImO+TjtckF8Z0LkS99uMphN8ClWOuLHWztcLtoeEl2eV2hK2KhEB7
-         WkVYfeBqYKod7AGjpIUahbf2silT3ZIrKa9GkRNxuLQBkA2DqY/UvrSeVmet5E51LRkh
-         wNHAFZWXQCSeKBaZftAF/sIReWTAY/BX1oFHT/N4kci35x2yrVxOR3M6Wg5vfr8uYyL7
-         TXJHFWgG8mqEvoHy5oaVIpnZ2Rw78vSHFM1XG3MM3Ui9pitqV/OpBqusib0wn96LASPt
-         PVWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770338606; x=1770943406;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Uha6Xzj/9DIc/gHRHtkT3Z8tZYXd7dAwhOd20ha2Sqk=;
-        b=i0Mwy3qJTUpzYD14QmPhI3qhcxEOg+wmgHHp9Wsp+JsXy1AIic+igOcnpYAPWS6S41
-         LcktM6Cp4Xw1zit0XedG1+c2AXWv8UnB6l3xIcyyhrnYn69iMlIKy0/IMVakEu/QJ33D
-         cAeOcDKEz7x4kDttFXTY9+WBusnpBTKf6IBKJPfmTHsZEbGdmdA8ZbFPsHxkSTOS+45v
-         zGk56m8XaImiMhFchMVuV2NNv0SkK5H0LglxVEd1l9WmddDtK/HGHkFczg/QDRMM6Pyj
-         0sdYiprsir4vJ7usX0yv4GfNZnC5tqZEDAnULurCe63Rx5eAps5CocFfxBAxYWFuEe1P
-         +G4w==
-X-Forwarded-Encrypted: i=1; AJvYcCVCA38a8zcBiRH9i7UP7Ea4VUVH8wmN1uv8NCe8BtdDAJIgISJAV2nlCTS8AbqGPSwXUd7Rbw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxleVqHChPAPq/ip1ylvptm3gS+hSuHT1yspq9aktP8asYZWA3t
-	onTaR0oiDhol3w1OpfmpAWqLDg++pzlorcl+XTaVsyGhXPLgT5vFOl/2GY0dTtbmCYYoDII/foB
-	sr/xe
-X-Gm-Gg: AZuq6aLs1CoYW4Wzt5oBwr6UL8PjqN7+t9dB+aOWdV3UMijEBtexAffFeWTivuEhHuZ
-	nViK/cdsCyNfSUP0SY+Pm/oY7XDeNBuQXD/zhLPz/fk7RFGpnoyRsa78mdcpYJ0lUpBnjMHNbAV
-	7kz6mJ9bTAT8FaenmDqtjaT177CwLIJC9/9HwkvsxLh7oUDaM0ZGb1UEbUoQ4BzhFAKv3X2BcVS
-	1/LnHAYLTBtGtN16cfWotWgl4GfUGv0PLhEjM62DTXlCzRFHNeQW+pd+ruy8pxWml+wUWIe6Qlp
-	+d4n5u6qUuq/caIrtfTnPoeytbscF27Y3rqNiksaLDwFaRwReZJ3kI7BV/i1Y2FILvAlqo3ysJm
-	w+cJTHVk0JtnbdxfYtvwC7O0rDbZrZS/l1ydDqzoLkpLT+zeKGu9YO4w3+eLk8v1th6IaFEK2RA
-	AWqagRwk6+c5S/wlIi2UMYEUvcD7etWMEuNo8kMAH7EHxLr10d4e+bt477uZ6ZyEfCfyc=
-X-Received: by 2002:a05:622a:1890:b0:502:9b1f:ca3d with SMTP id d75a77b69052e-50639a2cd04mr14827901cf.78.1770338606358;
-        Thu, 05 Feb 2026 16:43:26 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-162-112-119.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.112.119])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-8953c057751sm6602716d6.43.2026.02.05.16.43.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Feb 2026 16:43:25 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1vo9wT-000000041DZ-0JDt;
-	Thu, 05 Feb 2026 20:43:25 -0400
-Date: Thu, 5 Feb 2026 20:43:25 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Zhenzhong Duan <zhenzhong.duan@intel.com>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	dwmw2@infradead.org, baolu.lu@linux.intel.com, joro@8bytes.org,
-	will@kernel.org, robin.murphy@arm.com, kevin.tian@intel.com
-Subject: Re: [PATCH 0/3] iommupt/vtd: Support dirty tracking on PASID
-Message-ID: <20260206004325.GB943673@ziepe.ca>
-References: <20260205023405.41583-1-zhenzhong.duan@intel.com>
+	dkim=pass (1024-bit key) header.d=linux.spacemit.com header.i=@linux.spacemit.com header.b="QD07RnPO"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.spacemit.com;
+	s=mxsw2412; t=1770341599;
+	bh=omyy70O3OuJ3VKPU2PzEKTpT9f6MeOhreIgYvWT0TaY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:From;
+	b=QD07RnPOCILFHz50XHH5mqEvGqH4YyF8vrjecOwWB9+UQtVrpJr7beu84OBiXP2cI
+	 m/IZF0D+KARp95TSv69fwBIkHd3T3sgzCDeNPqDVk3zp+wc5dkp7+9U00mP4wyd4GP
+	 NiyZfimfKhs0dCNNloCHqaFY28tN9qX/gS/MjyeI=
+X-QQ-mid: zesmtpsz2t1770341592t1b2531e8
+X-QQ-Originating-IP: IGc2qSSjBPifceWa0Fo5f41QcQ3coZKZBB3/OIZklF4=
+Received: from [10.3.91.191] ( [101.70.125.34])
+	by bizesmtp.qq.com (ESMTP) with 
+	id ; Fri, 06 Feb 2026 09:33:09 +0800 (CST)
+X-QQ-SSF: 0000000000000000000000000000000
+X-QQ-GoodBg: 0
+X-BIZMAIL-ID: 3718362222748311692
+Message-ID: <B8005DB6301AACB4+374512e1-f561-4d2f-afd6-7a4b51012501@linux.spacemit.com>
+Date: Fri, 6 Feb 2026 09:33:09 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260205023405.41583-1-zhenzhong.duan@intel.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 4/8] dt-bindings: iommu: Add spacemit/t100 features
+To: Conor Dooley <conor@kernel.org>
+Cc: Tomasz Jeznach <tjeznach@rivosinc.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Paul Walmsley <pjw@kernel.org>,
+ Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>,
+ Alexandre Ghiti <alex@ghiti.fr>, Jingyu Li <joey.li@spacemit.com>,
+ iommu@lists.linux.dev, linux-perf-users@vger.kernel.org,
+ linux-riscv@lists.infradead.org, spacemit@lists.linux.dev,
+ devicetree@vger.kernel.org
+References: <cover.1769562575.git.lv.zheng@spacemit.com>
+ <cover.1770195980.git.lv.zheng@linux.spacemit.com>
+ <A0E91F323138E92F+a27d73b00f3324f0d3885128f5596230b3f1370b.1770195980.git.lv.zheng@linux.spacemit.com>
+ <20260204-primer-wrought-6f64b14bf152@spud>
+ <53171BEB06F43599+7c1f54bc-e72d-4cbd-9d10-194ae6b13744@linux.spacemit.com>
+ <20260205-attitude-customer-129fe2bd5dc7@spud>
+Content-Language: en-US
+From: Lv Zheng <lv.zheng@linux.spacemit.com>
+In-Reply-To: <20260205-attitude-customer-129fe2bd5dc7@spud>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: zesmtpsz:linux.spacemit.com:qybglogicsvrgz:qybglogicsvrgz5b-1
+X-QQ-XMAILINFO: NpfbsqbTlzxUCzfq5/Ht/zQVJr3Bf4NUwUOdJ0yKuokkmbVjA4paMjQL
+	4P+y5Sb/x2r4ENt8IPN+u1sNaRtD6J0QQprHOFmsn/aDCg61UG9d/e8vgplO24EYYmzrD1K
+	8LkWC6kRc1rTWVDJIs7IZp9cdyOYkmsxQIzj9qpVLUlySQkio9Epye1AyvWYDx5DN3lvyv7
+	gexLk6MLENDqFrrGFMmwxDruTGzgB54S6dn9Nyb9MLNRaDtFZFCjGh8g1apqmYothR39zN4
+	OARlarPovAHNEYhFw6g9r1aac5Cn/SqpieglMBygIUdmBBQZzCREDp4e/0cNyPssA3Fed8n
+	MELiOn1wvmuNLDe8If8RsHOfPs6638OrIrAOYkSnfhc5tqwBjaBseuImDZl16NaU/ktFqXt
+	pZ5BarfNsWr+z0rSmzah3bUJEH+uqXdMx5hK+wXI2p6NZoy8oeTnp0TzqO8RwlyrB+JQ3LC
+	tzc4fFgJKLFODbWTMqwhj21nq3+08mVZzsyKnlO6L64avZNCqlfATYSkkAOX0M99ADxvcX6
+	mAPgVbvzt5dV1AAsJFRGGQHeVWoNbtc0zqPCy7iDugjqwQi5VkUhjHbXijy/Eg3YmmeRl4R
+	L7MLtzN8w4llS/srGye5InBXNbv0q+urusZJvd9jahfsKGJSlzUSLT37mQjXXMVt6ueGbou
+	kdzg4tj7xX9PO9HwHLWof65dC4Km6ziD+hOVCAYL88QPAwZZvBkcRVWb1KRFdWcxJAoMrWz
+	ghWrlscjUfb5Q8HUhGWUsXhNHDNJUREyDD3/pNf/DbgQhYFcjpUMcwb1DG+dVy9YG0lfnWc
+	Z49zEUvc1j7ZECtJD+F2fyWrs8t2gUromBwZtCD0CuB7z9HCzNxj+btctKZkCgNFEdeAFfe
+	i3fud1EWG3g5qZN94w3KIHl2heZMI826kPInG+0OKlIfpqOy4BRP8qh2Iev2PU9ZcUrsRd8
+	6/LpRAdtAXORLMEfNhghXSHzMdH6HtAhMhjDYPCPv14B65LC57k8QaiFO1HCq52woYqEiZ0
+	GcxksBJfeocoJz+3xw/aprWTNHdYU=
+X-QQ-XMRINFO: OD9hHCdaPRBwH5bRRRw8tsiH4UAatJqXfg==
+X-QQ-RECHKSPAM: 0
 
-On Wed, Feb 04, 2026 at 09:34:01PM -0500, Zhenzhong Duan wrote:
-> Hi,
+On 2/6/2026 2:24 AM, Conor Dooley wrote:
+> On Thu, Feb 05, 2026 at 11:11:51AM +0800, Lv Zheng wrote:
+>> On 2/5/2026 1:37 AM, Conor Dooley wrote:
+>>> On Wed, Feb 04, 2026 at 05:09:12PM +0800, Lv Zheng wrote:
+>>>> Adds device tree bindings for SpacemiT T100 specific features by
+>>>> introducing spacemit,100 compatible. T100 contains distributed IOATCs,
+>>>> each of which exposes pmiv interrupt.
+>>>>
+>>>> Signed-off-by: Lv Zheng <lv.zheng@linux.spacemit.com>
+>>>> Signed-off-by: Jingyu Li <joey.li@spacemit.com>
+>>>> ---
+>>>>    .../bindings/iommu/riscv,iommu.yaml           | 37 +++++++++++++++++++
+>>>>    1 file changed, 37 insertions(+)
+>>>>
+>>>> diff --git a/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml b/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
+>>>> index d4838c3b3741..2da3456e7402 100644
+>>>> --- a/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
+>>>> +++ b/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
+>>>> @@ -32,6 +32,12 @@ properties:
+>>>>      # should be specified along with 'reg' property providing MMIO location.
+>>>>      compatible:
+>>>>        oneOf:
+>>>> +      - description: SpacemiT distributed IOMMUs
+>>>> +        items:
+>>>> +          - enum:
+>>>> +              - spacemit,t100
+>>>> +          - const: spacemit,riscv-iommu
+>>>
+>>> What actually is the t100? Is it an SoC or is it the name of the core
+>>> complex IP that spacemit is using in multiple SoCs?
+>>
+>> T100 is the name of the IOMMU IP developed by SpacemiT, announced in RISC-V
+>> 2024 China Summit:
+>> https://www.bilibili.com/video/BV1DNtCeiEBk/
+>> It's world first server SPEC IOMMU in RISC-V, supports IOTLB placed in
+>> adjacent to the DMA masters and supports PCIe ATS and PRI.
+>> You can find it shipped in the recent publicly purchasable SoC SpacemiT K3.
 > 
-> When we add pasid support in QEMU for passthrough device, we found
-> PASID attachment to a nested parent domain with dirty tracking failed.
+> Right, then what you need here is something like:
 > 
-> It's because PASID-level dirty tracking is not there yet, by adding it,
-> we can enable PASID attachment to such domain.
+> items:
+>    - enum:
+>        - spacemit,k3-iommu
+>    - spacemit,t100-iommu
+>    - riscv,iommu
 > 
-> Thanks
-> Zhenzhong
+> Driver can then match on spacemit,t100-iommu - but you need to have
+> soc-specific compatibles.
+> I'm not convinced that riscv,iommu is suitable here though, does the
+> driver work on your platform without the portions of code that are added
+> by this series and enabled by your new compatible? If not, the I don't
+> think the riscv,iommu fallback should be here.
 > 
+> Additionally, please stop sending new versions so frequently and in
+> response to earlier submissions. I have a v4 in my inbox while we are
+> still discussing v3.
+
+SpacemiT provides RISC-V IOMMU implementation, T100 is the first
+generation of the this IP product line, we have plan to develop T200,
+T300, etc., with more features introduced to be adoptive to new
+RISC-V IOMMU specifications.
+Besides, T100 is not only shipped in K3, but also shipped in V100 and
+the follow-up SoCs, like Kn, Vn00, they will likely use the same
+synthesis result of T100 RTLs.
+
+ From SpacemiT's point of view, we need a common sense of this IP
+series for something like IOATCs, that's why spacemit,riscv-iommu
+(this is same like qemu,riscv-iommu) is introduced. And a common sense
+of T100 for all SoCs shipped T100 (like global filters, vendor events
+and etc.,).
+
+IMO, the current compatible is proper to reflect these concerns.
+What do you think?
+
+Cheers,
+Lv
+
 > 
-> Zhenzhong Duan (3):
->   iommupt/vtd: Pass dmar_domain pointer to device_set_dirty_tracking()
->   iommupt/vtd: Support dirty tracking on PASID
->   iommufd/selftest: Test dirty tracking on PASID
+> Cheers,
+> Conor.
 
-I'm not sure why you marked this s iommupt? It isn't right?
-
-Also only the second stage table supports dirty tracking so I'm
-confused what is the issue? Is it trying to say that if a second stage
-is written to a pasid entry on a !=0 pasid path it doesn't work right?
-But it does work on a 0 pasid?
-
-Huh?
-
-That sounds like a systemic problem, the two flows shouldn't actually
-be any different.
-
-Jason
