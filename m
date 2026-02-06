@@ -1,121 +1,101 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD77722301;
-	Fri,  6 Feb 2026 10:46:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D4A332ED3A
+	for <iommu@lists.linux.dev>; Fri,  6 Feb 2026 11:53:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770374772; cv=none; b=L4XkBR80rews93VxnMkoVtGPKzJ88nrMR3HYCnlau0WLNHQCOV+AdphXiLmBsdeCHsgKkEr0Gpl71U7G5mi9T1ocw7unaDWP2hqtacXaBq3cKBUNBum2CHLVRTGJUXFGDrNuglffMK4Ugc5iMzwwY75a5xOLwDet31QLbVh3aWE=
+	t=1770378814; cv=none; b=KxWmdTWHY9khsbcvroEzP0kVbAMVe9OKhx4Qi//iFLRP+Y0o/nJP1c2muXa2tZrwlfKq2SBUxg0G2F2V5YdvnfzOm9kYL3GTCoskRub2SxttO2WwBv/nO86TslmP4Gag9IScZnAh1mhivgjmNfL4n1XbMd19Br5sn+VK4co0YZg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770374772; c=relaxed/simple;
-	bh=SgH3PVl9XDWqTOthcj1dd9B7pnDKtSF9D1Mzvlb6naM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=sOX2Gd7gqF9bRoBelOKExCNA655mq4GG+XienmPpWupSd4fm9T17TlZJksseI3DzmP/ynSEuAlLQ1/z7smWxUvwfx0eL6tuTXPZ2rtiuIB9zmzL8PpLMW72UVZxqaU23kxwGPe4o7KAq6hoaEWDcDObO91+cV8K0ewC0nEycY9s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VDADRuAe; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1770378814; c=relaxed/simple;
+	bh=1GQAloioJH5GHKYZMm3wH6x/zPBThuZb8H5FzCo+RG8=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type:
+	 References; b=pKZnF7xaLFRqFzy257/EEpVLgiim0PR9zsQt2rHQwfS5jVMU4VLnUFy8qaz1pyuQaKjvF0XnWutg/UfZebIwmuWk2CqwyItryD51IlLEow84B7j+2Y1ZA1NrhwKlPh3ZNCsLckyVxvy7ZjyMyGiWr5LPORlGxTZiI/k1Gk9lMiE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=KrTzfUN+; arc=none smtp.client-ip=210.118.77.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VDADRuAe"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D3C9C116C6;
-	Fri,  6 Feb 2026 10:46:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1770374772;
-	bh=SgH3PVl9XDWqTOthcj1dd9B7pnDKtSF9D1Mzvlb6naM=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=VDADRuAevPHEdEW3GWQ43kfKSftvTf7AR1gxZPVv6oP8X1og6EmSKbbn4h69GQPYD
-	 GfKxebuiyV34DIZ5liyCXRULlULtRB/2rHSxEaCMY717d4HS0RVfE/N4F57tZtg2ci
-	 h2eKgKzxEIlWTVm7IePjtOppaoRbBYLJH6wb50boZnxNTYGunou1G8sFFBJIPVPGeC
-	 rpBXFYGZXV5iGfCIVnTih3GQXPDAQEBSqdWKK/PrZrh/59Nh2LWWhwvMUxvHfwMJX2
-	 ZNF2DH2V1JoV85XUMWmjqXGVkM4syvam4aA4mehrkObV9squ215mMCRrbwsPZnu3Xt
-	 F7ukv50++cP/A==
-Message-ID: <2ca4a5c1-9267-4177-b339-e1ac28812c46@kernel.org>
-Date: Fri, 6 Feb 2026 11:46:06 +0100
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="KrTzfUN+"
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20260206115325euoutp016148b7661535f0bbad517db4f4ed98b4~RpiTomiwq1454214542euoutp01Q
+	for <iommu@lists.linux.dev>; Fri,  6 Feb 2026 11:53:25 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20260206115325euoutp016148b7661535f0bbad517db4f4ed98b4~RpiTomiwq1454214542euoutp01Q
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1770378806;
+	bh=NDi2MT8eDCq6+gCmNsV9BLUErb1OUeengVwmvhQ9FaY=;
+	h=From:To:Cc:Subject:Date:References:From;
+	b=KrTzfUN+WiigFx8tca9OYz3pHgsDFYjUjiRt8nBdQ3L/EmfZpHr1h+jusOps9tlkR
+	 Sc78w8EFnrJH07UQak+jShEZs6a8LGQrj/LTIaSamOro9yWhzB10cy7QgVlYXlrokz
+	 krJAmohGsCOmdWkZVFF8Gzwt682o5YRY04FkfOQQ=
+Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+	20260206115325eucas1p10b41056830dfac249ffc9e1603de43da~RpiTUptEq0146401464eucas1p1R;
+	Fri,  6 Feb 2026 11:53:25 +0000 (GMT)
+Received: from AMDC4653.digital.local (unknown [106.120.51.32]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20260206115325eusmtip29826b16d22fe9f60de23e8e32d33fd0a~RpiS5Ry4I1272112721eusmtip2R;
+	Fri,  6 Feb 2026 11:53:25 +0000 (GMT)
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, Marek Szyprowski
+	<m.szyprowski@samsung.com>, Christoph Hellwig <hch@lst.de>, Robin Murphy
+	<robin.murphy@arm.com>, Shanker Donthineni <sdonthineni@nvidia.com>,
+	Deepanshu Kartikey <kartikey406@gmail.com>
+Subject: [GIT PULL] more last minute dma-mapping fixes for Linux 6.19
+Date: Fri,  6 Feb 2026 12:53:13 +0100
+Message-Id: <20260206115313.3169749-1-m.szyprowski@samsung.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 0/7] iommu/riscv: Add HPM support for RISC-V IOMMU
-To: Lv Zheng <lv.zheng@linux.spacemit.com>,
- Tomasz Jeznach <tjeznach@rivosinc.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Paul Walmsley <pjw@kernel.org>,
- Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>,
- Alexandre Ghiti <alex@ghiti.fr>
-Cc: Jingyu Li <joey.li@spacemit.com>, Zhijian Chen <zhijian@spacemit.com>,
- iommu@lists.linux.dev, linux-perf-users@vger.kernel.org,
- linux-riscv@lists.infradead.org, spacemit@lists.linux.dev,
- devicetree@vger.kernel.org
-References: <cover.1769562575.git.lv.zheng@spacemit.com>
- <DACC013F46A47459+cover.1770281596.git.lv.zheng@linux.spacemit.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 a/A=
-In-Reply-To: <DACC013F46A47459+cover.1770281596.git.lv.zheng@linux.spacemit.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-CMS-MailID: 20260206115325eucas1p10b41056830dfac249ffc9e1603de43da
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20260206115325eucas1p10b41056830dfac249ffc9e1603de43da
+X-EPHeader: CA
+X-CMS-RootMailID: 20260206115325eucas1p10b41056830dfac249ffc9e1603de43da
+References: <CGME20260206115325eucas1p10b41056830dfac249ffc9e1603de43da@eucas1p1.samsung.com>
 
-On 05/02/2026 10:09, Lv Zheng wrote:
-> Includes HPM support for RISC-V IOMMU. The HPM hardware mechanism can be
-> found in the recent announced SpacemiT SoCs (K3, V100), where T100
-> (SpacemiT distributed IOMMU) is shipped. 
-> 
-> Revisions:
-> v1
->  Initial release.
-> v2 (sent as v1.1)
->  Split and cleanup DT-bindings.
-> v3
->  1. Refactor using vendor specific compatible.
->  2. Implement vendor events with a userspace identifier.
-> v4
+The following changes since commit 56c430c7f06d838fe3b2077dbbc4cc0bf992312b:
 
-And now also v4 is in the same thread? This is total mess!
+  dma/pool: distinguish between missing and exhausted atomic pools (2026-01-29 10:23:45 +0100)
 
-How tools are supposed to handle this?
+are available in the Git repository at:
 
-Best regards,
-Krzysztof
+  https://git.kernel.org/pub/scm/linux/kernel/git/mszyprowski/linux.git tags/dma-mapping-6.19-2026-02-06
+
+for you to fetch changes up to c33efdfcfa6f80e05ce1ee33694c1bad4994cd78:
+
+  dma: contiguous: Check return value of dma_contiguous_reserve_area() (2026-02-02 09:20:32 +0100)
+
+----------------------------------------------------------------
+dma-mapping fixes for Linux 6.19
+
+Two minor fixes for DMA-mapping subsystem:
+- check for the rare case of the allocation failure of the global CMA pool
+  (Shanker Donthineni)
+- avoid perf buffer overflow when tracing large scatter-gather lists
+  (Deepanshu Kartikey)
+
+----------------------------------------------------------------
+Deepanshu Kartikey (1):
+      tracing/dma: Cap dma_map_sg tracepoint arrays to prevent buffer overflow
+
+Shanker Donthineni (1):
+      dma: contiguous: Check return value of dma_contiguous_reserve_area()
+
+ include/trace/events/dma.h | 25 +++++++++++++++++++------
+ kernel/dma/contiguous.c    | 10 ++++++----
+ 2 files changed, 25 insertions(+), 10 deletions(-)
+
+----------------------------------------------------------------
+
+Thanks!
+
+Best regards
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
