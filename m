@@ -1,166 +1,368 @@
-Received: from mail-pl1-f179.google.com (mail-pl1-f179.google.com [209.85.214.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtpbg154.qq.com (smtpbg154.qq.com [15.184.224.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 356372EF660
-	for <iommu@lists.linux.dev>; Fri,  6 Feb 2026 03:07:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E2DC239099;
+	Fri,  6 Feb 2026 03:43:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=15.184.224.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770347246; cv=none; b=S9MnhFfX9dHw/8Q0JXI3T7pLl6bswL6jw295K6da6aFkBraQRbkarABMcHH3oKyrDD0CqJKaurqI2aDj8WgUn8vqorimNlng1ljUI3XZhiKFUevdnayJWjYs6096BGwlyHWKAtsKU632XLF7YtaDFqNWHTvdNL98kJmAUB5zFi8=
+	t=1770349401; cv=none; b=EgdI6yY7mTwPvdjNG38pS7cbP0uBXKpS0Tcsg4z6cJU3QSwzVc8rWARi02UcPLLDlVgNhBtNUaBJwWr4ATug/HB1cX/rTjxfggDVnd5OFaFkR8uv9lf+pZbUNu+2Obb1h5gK2P7MFLjaqyENwy0FAZYmmV1UuwkX5/GaHo6kb9U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770347246; c=relaxed/simple;
-	bh=p4tkB2ZlK2UsmWYUfM+N0mNovdhusjrLeAlSeh8H1k8=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Usx0vi0LNQLQ0XtIE4Y0Jafc2vW6yLhpT+HjrlMb8fPwpQDuSmY/3FPS0YvpIu5oVyXo63xfg1xDPa9/PugI65rf3YwB6LX99v3I5LGqWDHuFX8+ejNl9OA88ODjJyelnZPW0TCLrdZ7dNC7Ggg/9vCXnCayQAmpdC28j7CQ134=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=WIgcttSy; arc=none smtp.client-ip=209.85.214.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1770349401; c=relaxed/simple;
+	bh=CpYn3Lmhwy+KIIrfqIsv0YXqk9uf6dCLHRdZyrulKPY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=EmLchHrR0eh2Zwdp2Jg2PCIjdQIbxr+yoF/XiE8YLOtmsOorj75MhRvKbNg8mHADqHrbqPvH6AZS4duod9/xuDyPTmU/AaC0MPjVhpNjMWUIrp6s965vTpsx9DmxwbufSiYoOY2suA2li4tqf0F0/i7kaeKHqGYzFmfiS1dIpWw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux.spacemit.com; spf=none smtp.mailfrom=linux.spacemit.com; dkim=pass (1024-bit key) header.d=linux.spacemit.com header.i=@linux.spacemit.com header.b=oulkjrot; arc=none smtp.client-ip=15.184.224.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux.spacemit.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.spacemit.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WIgcttSy"
-Received: by mail-pl1-f179.google.com with SMTP id d9443c01a7336-2a7a23f5915so11860575ad.2
-        for <iommu@lists.linux.dev>; Thu, 05 Feb 2026 19:07:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1770347245; x=1770952045; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=vTLlWgup/boAOL11HN9YevGJP11uRzIBi2lM6iUJUmI=;
-        b=WIgcttSy/LG/2RQu56hgrmWict7y5X8BctzXdjyK2I0ma4PUL8eLiWObSCsStSabWz
-         UYzpWzNGYD13IQtdHqn0IGQ5rrBKIE8gufGcKn2MNgkxLFL4bXTLBje+k6jJOU85tqQn
-         h84t/ldSH2FUMfPbYO1qQiutvA0Uxtf5j2x1PfCC4tTU7n8Xa+HOnmAiU7FJl14XBJQq
-         s387jtRi5a9Ot/Oy162a5ychfaWbpH26rrQq0Y5D3t03/wwpdx4Po0RYq8/Vcb9VEPor
-         bZ4fkVnvgCDIdht+lwLajqbq0B59XOLTc0KpNfCrNOrdepkIeZDk6veE1WiE8yFBcqYb
-         AU8g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770347245; x=1770952045;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=vTLlWgup/boAOL11HN9YevGJP11uRzIBi2lM6iUJUmI=;
-        b=X1IzZjoLYY9S+E85c+QLycNRuYG2f04QZLlztDd62cGNrlJnuFQkEOtFOQ2fFS8Ow3
-         q09hzFxzFByXECpelok5CRuPlaYA+vXUxXVcQg646sY+OZWrti42auZtMP5/mn9pYNIK
-         BF64/okI1UvWkfqErtlW/QqmgHg8gP/C+dxLVn7NxOEZXrbL+yvnMa4bsgGM0jULOu9s
-         KMy3R1b0vTGtNEEqFoX2vhNRD7cF6bOAXnUZqnBWTzi3EnSpad8Wj876zVAwL7Wj5MnZ
-         3gTObV9w7lYf/RiIVXT9tlYv+RpsOz7s+I050OodWL1rXK9jLAoZ+tdJ6RKj/oJ1aI7g
-         jDeg==
-X-Forwarded-Encrypted: i=1; AJvYcCWeISqerX5UUnZGpp8E4nLvAMKnAv45Q4vcQ8VQQZrc4AD9/XmEyvk59Pd51dTl+NcE/cdV0A==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxS2T8UHGCS31h4gpFUlwaN1OTHQKONW250RcEaWHmbslq6hgTG
-	qWY3gVp77GhvQ1Ti1G0IbZuOd/laaGlkbl2cEiOsTH1fLeP4O/yc331o
-X-Gm-Gg: AZuq6aIQbZ6sOqxSkDvQOkRmL8Kps3huMzr1wxpw7v0c5bOcLh+CyE6MqSufsnLoOEs
-	GLHtB0BEa76JAeXbc+YzCveKOQlgc3WImctJY6CPssx1+nVjx6WG6We+KxPNqUahnOfzo/HADZD
-	ByacgB80eIbXFaQS80ZYwex7q7hKGCMpCYvIp3Us9BLUf7D2rh7azbNzHRk8kGHndh1eVb+ntX7
-	i/Qk8nWxbIdRMoDvl1CkdWlGg6PWA6i1TEtaPIykazYXoUIsZPCJlNmBgQ6JhxwVzTIMrCIfm2x
-	2vWJqMU5K4ddpLCYSLbRLYyj32/ibr1uldrnKmIwd6Gj2+6V99jJNjL76BjqWtulPFIOUJ746Mj
-	C3+QKgULCVvAxTDUmm4AQ1hTEh0/RSQ6GLlr7aVnhvb7KlmiW/Ud2nsmU5G3+a5w4yOXvUXEMn2
-	zXvGrfwn6JwiuS/TmBO5eR9RPze8B6p38AC46DsciqmI4=
-X-Received: by 2002:a17:902:db08:b0:2a7:d42f:7065 with SMTP id d9443c01a7336-2a9521689bbmr13706725ad.27.1770347245440;
-        Thu, 05 Feb 2026 19:07:25 -0800 (PST)
-Received: from localhost ([101.44.82.58])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2a9521b9bebsm7512525ad.56.2026.02.05.19.07.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Feb 2026 19:07:25 -0800 (PST)
-Date: Fri, 6 Feb 2026 11:06:57 +0800
-From: DaiZhiyuan <jerry.zhiyuan.dai@gmail.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Zhiyuan Dai <daizhiyuan@phytium.com.cn>, will@kernel.org,
- joro@8bytes.org, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Restrict MMU-700 errata 2268618 and
- 2812531 to affected
-Message-ID: <20260206110657.000043f7@gmail.com>
-In-Reply-To: <3f22f7b8-449c-40d9-b4c8-fff3e520d563@arm.com>
-References: <20260205093356.4328-1-daizhiyuan@phytium.com.cn>
-	<3f22f7b8-449c-40d9-b4c8-fff3e520d563@arm.com>
-X-Mailer: Claws Mail 4.3.0 (GTK 3.24.42; x86_64-w64-mingw32)
+	dkim=pass (1024-bit key) header.d=linux.spacemit.com header.i=@linux.spacemit.com header.b="oulkjrot"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.spacemit.com;
+	s=mxsw2412; t=1770349365;
+	bh=dKq7u7TVKmzLjYmab7Qq2COrl18pEr8pQsUYQyol7Bo=;
+	h=Message-ID:Date:MIME-Version:Subject:To:From;
+	b=oulkjrote9Q96y0/gmM+/DtP0XAyWj7VrXMUPyw6Gg9uhuo7r0NeM392AX0dVtpnT
+	 KirAuW8TGxaVqUBF1I/4Swwuqxn4EBzLjUyskTetf23vxHYcaiPI6izzd+QkDIDnTK
+	 lSRzTI1hhoUB4vXvCmSUy6ZdyfiiR2/A3gfgD9bM=
+X-QQ-mid: esmtpsz11t1770349363t2f031b48
+X-QQ-Originating-IP: uvLdIVcoRo1MHH/2UymnvA60Oq4oJs+mqA1/5VSDqh8=
+Received: from [10.3.91.191] ( [101.70.125.34])
+	by bizesmtp.qq.com (ESMTP) with 
+	id ; Fri, 06 Feb 2026 11:42:39 +0800 (CST)
+X-QQ-SSF: 0000000000000000000000000000000
+X-QQ-GoodBg: 0
+X-BIZMAIL-ID: 5996589195195940344
+Message-ID: <752514AD54FA2A1B+513d6894-b3bf-44f3-bcc1-7d30f2642cc2@linux.spacemit.com>
+Date: Fri, 6 Feb 2026 11:42:39 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 3/8] iommu/riscv: Add HPM support for performance
+ monitoring
+To: Andrew Jones <andrew.jones@oss.qualcomm.com>
+Cc: Zong Li <zong.li@sifive.com>, Tomasz Jeznach <tjeznach@rivosinc.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Paul Walmsley <pjw@kernel.org>,
+ Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>,
+ Alexandre Ghiti <alex@ghiti.fr>, Jingyu Li <joey.li@spacemit.com>,
+ iommu@lists.linux.dev, linux-perf-users@vger.kernel.org,
+ linux-riscv@lists.infradead.org, spacemit@lists.linux.dev,
+ devicetree@vger.kernel.org
+References: <cover.1769562575.git.lv.zheng@spacemit.com>
+ <cover.1770195980.git.lv.zheng@linux.spacemit.com>
+ <9C0A2AD4850D179B+524146e74e808db90d5f28fcb6ee791cf1d1bfaa.1770195980.git.lv.zheng@linux.spacemit.com>
+ <p74snip7yykhogvzqld4gyjlygmd2z4kqnat7w3qj63fwebnmm@dlz6tloevgbs>
+ <4D87481E9AABE2C6+72d18f72-9407-4d68-8195-edc6c171df14@linux.spacemit.com>
+ <CANXhq0q8N5eHx9ytabZR97Y7AULKwgS2-uEGhcaOOGp9mvbtRQ@mail.gmail.com>
+ <6C65A3873186B07C+29da5dbd-ed27-4ace-a5ca-355b3983d60c@linux.spacemit.com>
+ <zzbwkazzgeovgmbvg4qnibipzsldqcjnw4axnxlamhgvcld4hs@4m4cc2ctuuvf>
+Content-Language: en-US
+From: Lv Zheng <lv.zheng@linux.spacemit.com>
+In-Reply-To: <zzbwkazzgeovgmbvg4qnibipzsldqcjnw4axnxlamhgvcld4hs@4m4cc2ctuuvf>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: esmtpsz:linux.spacemit.com:qybglogicsvrgz:qybglogicsvrgz5b-1
+X-QQ-XMAILINFO: McJfg7Aee/FZyhhtIPyvEocNxm6JejMTUNCvzP1NZK3H2G1LD0Pp7/Vd
+	3Um6+DiBhA6MIAO41u7NyxwenNjjMscjOkS3xLD+2QqaKpb1oWnsP7fpQqNN2VnjALLA0vd
+	9BfMAWuPGou0j8W/Yeia6bK/hpF+yRe2n2jeSDbxwEpC4/FkQmnbpdohzX+EN3c8uW61azT
+	AMQC1zR5k722Kb2R34A40Bxgfo9EKkHileELw/dfMYMexpydfwwxpd/sWcf8ZzzkEz9vT3Y
+	RZjWZMGyzxhj/8jnl5cWrKCbGbGS2BBB6GUmohOtJgC93aSGtUAtFd1elzXfoX2Avom8E6/
+	LIz89ALwmNAcPISVZu9qCk9gFTuwB5Xx6WmK7OMkIOsZxtuLjECOlUQw98/1xFjGawxyEJG
+	p4amUc6eecTMP3y+gzwi4ZPC9wLyoZfhpUHQX9l6N5OHW3dBFJXc++lAbn3x//OYlYKfBvY
+	+tKHMZ+6pb3pKu1wSA1bpPYd649EXL2rH0W9UQi9TPq3/f/Nfc5ZWI0STjX7maEOaGn4A2c
+	wRsrX3txox0jvHFDtJr6853AIq0gDjBZdOfOpgOTzHnwuJhEziV3TlRBG8v++ncH3YQnvC7
+	QtLOO48SSZL+PHVuaODU8Z5Hd4Bf3crn4xjSjbMm5NM1/LuPLZWA0oi3Hm+CpcOl1insyOp
+	l9EyCDSv19jtQeUO9OUmH7G2l5pYEZXpoCD+I+7dHs3X4dsnCjG2PcKpBaFt9UqW7DY0v78
+	rHYEAjydRoAnmMNp7xqNLiB61Vt/3xRLf0zNqupxYZJWLFJ1nskcxf1ECwX8lQYunxGAU4h
+	C2ou4vsD9z59wjkSRRKtqUNCMnVpgxmle248czo/tFjjKjmdJAhdnn7ib+GZ4oPkgI1BztQ
+	am3MH7YNN/YWZTCjGrbQdMqxlrfXEVzDUs9Tl8PwkqIAp+YZBAwbP0J/9AGZYwYly5V1iq/
+	57D7HmfyaHvBQWHKDH+YZvHze2X2hRXWyYfhDLwnF4HKbtvDw1v2OCvGaxH8wJBeeIj3gqU
+	a0v7F2Ib1ucUNuvEz3W18nheU5W4lxGkcrN103kh0U9Vubi0HM
+X-QQ-XMRINFO: M/715EihBoGS47X28/vv4NpnfpeBLnr4Qg==
+X-QQ-RECHKSPAM: 0
 
-On Thu, 5 Feb 2026 13:05:24 +0000
-Robin Murphy <robin.murphy@arm.com> wrote:
-
-> On 05/02/2026 9:33 am, Zhiyuan Dai wrote:
-> > According to SDEN-1786925, Arm errata 2268618 and 2812531 are
-> > present in r0p0, r0p1, and r1p0, and fixed in r1p1.  
+On 2/5/2026 11:23 PM, Andrew Jones wrote:
+> On Thu, Feb 05, 2026 at 02:11:48PM +0800, Lv Zheng wrote:
+>> On 2/5/2026 11:47 AM, Zong Li wrote:
+>>> On Thu, Feb 5, 2026 at 11:35 AM Lv Zheng <lv.zheng@linux.spacemit.com> wrote:
+>>>>
+>>>> On 2/5/2026 2:39 AM, Andrew Jones wrote:
+>>>>> How does this relate to
+>>>>>
+>>>>> https://lore.kernel.org/all/20250115030306.29735-1-zong.li@sifive.com/
+>>>>>
+>>>>>    From a quick skim it looks like there's plenty of overlap.
+>>>>
+>>>> We developed the driver in 2024 and demonstrated it in China summit. We
+>>>> didn't notice that a patch is on-going now in the community.
+>>>>
+>>>> Now it looks our approach solved more issues, and we'll check and update
+>>>> if there are any community concerns still not addressed in this patchset.
+>>>>
+>>>> We can add Reviewed-by/Tested-by and Signed-off-by of Zong Li to this
+>>>> patch if he wishes.
+>>>>
+>>>> Thanks,
+>>>> Lv
+>>>>
+>>>
+>>> Perhaps I can first post my next revision to the mailing list (hope it
+>>> won't waste the community resource), so that you could have a chance
+>>> to review it and see whether that version is architecturally closer to
+>>> what the community is looking for, while also addressing your issue.
+>>> If you also feel that my next revision meets your needs, perhaps you
+>>> could append your additional implementations on top of it.
+>>>
+>>
+>> It seems we all composed the RISC-V iommu HPM support by referencing
+>> drivers/perf/arm_smmuv3_pmu.
+>>
+>> Robin's comments should all be addressed IMHO.
+>>
+>>> Of course, if the community would prefer to go your version, I’m
+>>> perfectly fine with that as well.
+>>
+>> OK. If we send a next version, we will add your SOB and please help to
+>> review and test.
 > 
-> This is a bit fiddly, since these workarounds also overlap some other 
-> errata that IIRC were *not* fixed in r1p1 - it's been on my to-do
-> list to figure this out for a while now, sorry I haven't had a chance
-> to get to it.
-
-While checking the documentation, I noticed that in SDEN-1786925, 
-document version 19.0 describes the errata as fixed in r1p1.
-
+> Zong Li's SOB should only be on the patches he authored. Don't put
+> anybody's SOB on patches they haven't been involved in. See
+> Documentation/process/submitting-patches.rst
+> """
+> The Signed-off-by: tag indicates that the signer was involved in the
+> development of the patch, or that he/she was in the patch's delivery path.
+> """
 > 
-> > Introduce this patch to avoid performance degradation caused by
-> > restricting features on unaffected revisions.  
-> 
-> I'm curious, can you clarify the performance impact? At the time I
-> was pretty sure that the ARM_SMMU_OPT_CMDQ_FORCE_SYNC was just for
-> safety and never likely to be hit in practice, since with range
-> invalidations any unmap should never end up with anywhere near 16
-> TLBIs in a single batch anyway. Is that no longer the case?
+ > Since Zong Li's patches were already on the list then your 
+serieswould> at least discuss them in the cover letter, explaining why 
+you've opted
+> not to adopt them. But, most likely some of the patches can be adopted,
+> so those should be extracted from Zong Li's work (with authorship
+> preserved) and based upon in order to respect that prior work.
 > 
 
-Based on the mailing list, the SMMUv3 implementation now fully supports 
-the Broadcast TLB Maintenance (BTM) feature as part of the Distributed 
-Virtual Memory (DVM) protocol. This allows CPU TLB invalidation instructions 
-to be received by the SMMUv3, which is highly beneficial when the SMMUv3 
-shares page tables with the CPU (e.g., in Guest SVA use cases).
+You can see we have contacted each other in community, and decided to
+cooperate in this way to honor his contribution. But final decision is
+left for the community to decide:
 
-Additionally, while this aligns with the SDEN documentation, 
-please note that we do not have actual benchmark data at this time.
+ From Zong Li:
+ >> Of course, if the community would prefer to go your version, I’m
+ >> perfectly fine with that as well.
 
-> > Signed-off-by: Zhiyuan Dai <daizhiyuan@phytium.com.cn>
-> > ---
-> >   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 12 +++++++-----
-> >   1 file changed, 7 insertions(+), 5 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c index
-> > d16d35c78c06..7eadb27eb9be 100644 ---
-> > a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c +++
-> > b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c @@ -4272,11 +4272,13
-> > @@ static void arm_smmu_device_iidr_probe(struct arm_smmu_device
-> > *smmu) smmu->features &= ~ARM_SMMU_FEAT_NESTING; break;
-> >   		case IIDR_PRODUCTID_ARM_MMU_700:
-> > -			/* Arm erratum 2812531 */
-> > -			smmu->features &= ~ARM_SMMU_FEAT_BTM;
-> > -			smmu->options |=
-> > ARM_SMMU_OPT_CMDQ_FORCE_SYNC;
-> > -			/* Arm errata 2268618, 2812531 */
-> > -			smmu->features &= ~ARM_SMMU_FEAT_NESTING;
-> > +			if (variant <= 1 && revision < 0) {  
-> 
-> revision is unsigned, it cannot be < 0. This just breaks the
-> workarounds entirely.
-> 
+We respect all contributions, We'll add the link in cover letter to the
+follow-up revisions, let me know if anything else should be done to the
+new revisions.
 
-Logic error: if (variant <= 1 && revision < 0) should be updated to revision < 1.
+--------------------------------------------------------------------
 
+And let me describe in details to compare the functionalities and
+addressed comments between what is provided by Joey and by Zong:
+
+https://lore.kernel.org/all/20250115030306.29735-1-zong.li@sifive.com/
+
+There is no missing functionalities between the two approaches, I also
+checked the original Robin's comments, let me describe them in details:
+
+1. The following comments require a split CYCLES implementation:
+
+comment 1:
+ >> Why not use an extra config bit to encode cycles events completely
+ >> independently of the regular eventID space? Or even just use 0 since
+ >> by definition that cannot overlap a valid eventID?
+
+comment 2:
+ >> It's also horribly confusing to use GENMASK for something which is
+ >> not actually a mask at all.
+
+comment 3:
+ >> Hmm, from experience I would expect these variables to be
+ >> number-of-counters related, but I guess there must be some special
+ >> cleverness going on since that number-of-counters looking
+ >> RISCV_IOMMU_HPM_COUNTER_NUM definition is conspicuously not used,
+ >> so it must be significant that these are instead related to the
+ >> number of...
+ >>
+ >> [ goes off to search code... ]
+ >>
+ >> ...event selectors? But with a magic +1 for reasons so obvious they
+ >> clearly don't need explaining.
+
+comment 4:
+ >> One of those conditions is literally impossible, the other should
+ >> already be avoided by construction.
+
+comment 5:
+ >> I don't think you need this - as best I can tell, you never
+ >> initialise a counter without also (re)enabling the interrupt (which
+ >> is logical), so since "value" for the cycle counter should always
+ >> implicitly have OF=0 anyway, it should work to just write it like the
+ >> other counters.
+
+comment 6:
+ >> Is RISCV_IOMMU_IOHPMCTR_COUNTER honestly useful? Or is it actively
+ >> hurting readability by obfuscating that we are in fact just using the
+ >> full 64-bit value in all those places?
+
+comment 7:
+ >> And that's a very creative way to spell "if (idx == 0)".
+
+comment 8:
+ >> (and as above, I think you can make this a no-op for the cycle
+ >> counter)
+
+These comments require a software architecture change to handle CYCLES
+in a neat way. CYCLES is split and handled in the clean way in
+iommu-hpm.
+
+2. The following comments require an uncore non-sampling mechanism:
+
+comment 1:
+ >> You also need a "cpumask" attribute to tell userspace this is a
+ >> system/uncore PMU.
+
+comment 2:
+ >> None of this is relevant or necessary. This is not a CPU PMU, so it
+ >> can't support sampling because it doesn't have a meaningful context
+ >> to sample.
+
+comment 3:
+ >> You first need to validate that the event is for this PMU at all,
+ >> and return -ENOENT if not.
+
+comment 4:
+ >> As above, you can't support sampling events anyway, so you should
+ >> reject them with -EINVAL.
+ >>
+ >> You also need to validate event groups to ensure they don't contain
+ >> more events than could ever be scheduled at once.
+
+comment 5:
+ >> This will never do anything, since even if we could ever get here,
+ >> it would not be at a time when there are any active events.
+ >> Unregistering an in-use PMU does not end well (hence why standalone
+ >> PMU drivers need to use suppress_bind_attrs)...
+
+Here, Joey does check PMU type, does not include sampling event stuffs,
+and cpuhp is handled in a fine grained locking way. And since locking is
+handled correctly, it's safe to keep iommu-hpm as tristate.
+The new approach requires more system software architecture techniques.
+
+3. The following comments require a IRQ handling improvement:
+
+comment 1:
+ >> TBH I'd be inclined to just leave out all the dead cleanup code if
+ >> the  PMU driver is tied to the IOMMU driver and can never
+ >> realistically be removed.
+
+comment 2:
+ >> Surely this should only touch the counter(s) that overflowed and
+ >> have been handled? It might be cleaner to keep that within the IRQ
+ >> handler itself.
+
+comment 3:
+ >> This needs to start all active counters together, not one-by-one.
+
+comment 4:
+ >> This does nothing, since set_event has just implicitly written
+ >> OF=0.
+ >>
+ >> ...unless, that is, the user was mischievous and also set bit 63
+ >> in event->attr.config, since you never sanitised the input ;)
+
+comment 5:
+ >> What do these regs represent? If you look at the perf_event_open
+ >> ABI, you'll see that events can target various combinations of CPU
+ >> and/or pid, but there is no encoding for "whichever CPU takes the
+ >> IOMMU PMU interrupt". Thus whatever you get here is more than likely
+ >> not what the user asked for, and this is why non-CPU PMUs cannot
+ >> reasonably support sampling ;)
+
+comment 6:
+ >> You still need to handle counter rollover for all events, otherwise
+ >> they can start losing counts and rapidly turn to nonsense. Admittedly
+ >> it's largely theoretical with full 64-bit counters, but still...
+
+comment 7:
+ >> Hmm, shared interrupts are tricky for PMUs, since perf requires any
+ >> IRQ handler touching a PMU is running on pmu->cpu, so you have to be
+ >> very careful about maintaining affinity and not letting anyone else
+ >> change it behind your back.
+ >>
+ >> The other thing is that if it really is shared, at this point you
+ >> could now be in riscv_iommu_pmu_handle_irq() dereferencing NULL.
+
+comment 8:
+ >> In general it's not a great idea to register an IRQ handler before
+ >> the data passed to that handler is initialised. What is pointed to by
+ >> (&iommu->pmu)->reg + RISCV_IOMMU_REG_IOCOUNTOVF if the IRQ fires
+ >> right now (and/or if CONFIG_DEBUG_SHIRQ ever gets fixed)? ;)
+ >>
+ >> (OK, it's not *literally* NULL, but hey...)
+
+Here OVF interrupt is handled as a standalone threaded per-cpu shared
+IRQ in iommu-hpm.c and iocountinh register is not used as OVF interrupt
+is always enabled and overflows is stored to software counters. The new
+approach passed testings.
+
+4. Other programming style fixes, they are all not in this patch.
+
+comment 1:
+ >> sysfs_emit()
+
+No such problem here.
+
+comment 2:
+ >> Might be worth leaving a comment just in case anyone does try to
+ >> enable this for 32-bit that the io-64-nonatomic readq() isn't enough
+ >> to work properly here.
+
+Not addressed in v3 and v4. And probably not necessary.
+
+comment 3:
+ >> That's a wonderfully expensive way to spell
+ >> "pmu->events[idx]->hw.config"...
+
+No such problem here, get_event() is used.
+
+comment 4:
+ >> Initially this looks weird - why bother storing constants in memory
+ >> if they're constant? - but I see the spec implies they are not
+ >> necessarily fixed, and we can only actually assume at least one
+ >> counter at least 32 bits wide, so I guess this is really more of
+ >> a placeholder? Is there a well-defined way we're supposed to be able
+ >> to discover these, like some more ID register fields somewhere, or
+ >> writing all 1s to various registers to see what sticks, or is it
+ >> liable to be a mess of just having to know what each implementation
+ >> has by matching DT compatibles and/or PCI IDs?
+
+Here WARL registers are handled in RISC-V programming style.
+
+comment 5:
+ >> The new thing is that you can now set pmu.parent to the IOMMU device
+ >> so their relationship is clear in sysfs, rather than having to play
+ >> tricks with the PMU name.
+
+Not addressed here but addressed in v4.
+
+IMO, the Joey's approach addressed issue 1, 2 and 3, which does require
+more software architecture changes. Her contribution and authorship
+might also be honored.
+
+--------------------------------------------------------------------
+
+Am I missing something in the above list? Robin might help to confirm if
+the new approach has addressed all his comments.
+
+Thanks and best regards,
+Lv
 
 > Thanks,
-> Robin.
-> 
-> > +				/* Arm erratum 2812531 */
-> > +				smmu->features &=
-> > ~ARM_SMMU_FEAT_BTM;
-> > +				smmu->options |=
-> > ARM_SMMU_OPT_CMDQ_FORCE_SYNC;
-> > +				/* Arm errata 2268618, 2812531 */
-> > +				smmu->features &=
-> > ~ARM_SMMU_FEAT_NESTING;
-> > +			}
-> >   			break;
-> >   		}
-> >   		break;  
-> 
+> drew
 > 
 
-Best regards,
-
-JerryDai.
