@@ -1,102 +1,75 @@
-Received: from smtpbguseast3.qq.com (smtpbguseast3.qq.com [54.243.244.52])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A175A24291E;
-	Fri,  6 Feb 2026 03:45:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=54.243.244.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40F043EBF05;
+	Fri,  6 Feb 2026 06:11:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770349525; cv=none; b=t5EFdN9Jx0qSoDxg/cMtloX9DeudPBePrT9fZ437Q9QMedoDm1TGXKjyUfDxGKpp77lHugP0AD6i9TEDpx0l1vcN4JLi7bEum1vQHYOozJ1vQGX3SoKNQLUY928G9ULBlZJnEH3cQW25rHuiTP6/Da4DYOYEry0KVgXANaKOOjE=
+	t=1770358301; cv=none; b=K+BKFD8VJtIkJ8ShFaam+rN4ElOVwGKEinoGe3XpVJ1Bc3C7OG0tznAfo68kqIpCbHPciDmUcvzyYUuDOGg62iT06+OM42wKKWqOIrseC1tRhrKF1n6O/VdTbu/bwNVa0CMrQkwJYkLv9HObF+xbNe65tVYp7RyfwsYmG5OCB4Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770349525; c=relaxed/simple;
-	bh=8QaIt52NdvFuErUCHtvnmmLagd++MM0S9WAKEKHGAHQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=MNH9P/ekViRWsfasCLCh1iB4eyL+HLIxpTvSUqgdHOCQDl4FXsX7MKMbv26iPOqwEgb7W4A2s6vFR7YUTTrBPlB1omHb8MO4VG+YKtJ6xig0XqONWx+vfydv41rTtTuU8rm886ZC149nVOtcde1eR+mOTkpUgJDBh9BOdlkMxK0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux.spacemit.com; spf=none smtp.mailfrom=linux.spacemit.com; dkim=pass (1024-bit key) header.d=linux.spacemit.com header.i=@linux.spacemit.com header.b=kWNfDtDV; arc=none smtp.client-ip=54.243.244.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux.spacemit.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.spacemit.com
+	s=arc-20240116; t=1770358301; c=relaxed/simple;
+	bh=xQSKwhkANWN8IwjK9ckDxM334/zoJ+AcdEkWuOlyze4=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=WW69H6v0nO23IDKySgA9+GMzW99BeTSyJwaT74fBVercXH0FqNCn+d0hcwE84qPDPtHpSgaILntLyZXfj/yU7jrUGopWQ1ZNhSu/o1MOEGbIwmDAnNmwIQqthmjseuAYIXgz2n/NUAn4agPd4gSq/7eKJiDqvJk2qfNktX+95hE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bPsGU1LJ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.spacemit.com header.i=@linux.spacemit.com header.b="kWNfDtDV"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.spacemit.com;
-	s=mxsw2412; t=1770349479;
-	bh=I3g42yJH0JWKICHWbMZxYhHhJBEDjcyHd4q+GXqrC5c=;
-	h=Message-ID:Date:MIME-Version:Subject:To:From;
-	b=kWNfDtDVpRh1Z4iPqAGXTZTRl0Sv8lQc4KYpySBId31LsUFlNWHCZMh+O0GLeQ9m9
-	 dVSmn9P2exs+fQ/hzbZfUmUxBr6CRvY8bc4ItS+s9rXbPZS/0Oi84o9XDCZ6E3WCbJ
-	 N7eTETKxnv5zi30r2znlo79ijHFAswdIJpkP1xFY=
-X-QQ-mid: zesmtpsz4t1770349470tb06b5594
-X-QQ-Originating-IP: GNClnZ5B0uToiIZaeP+3CrWjtBWwxgmqPCTChay5LDo=
-Received: from [10.3.91.191] ( [101.70.125.34])
-	by bizesmtp.qq.com (ESMTP) with 
-	id ; Fri, 06 Feb 2026 11:44:27 +0800 (CST)
-X-QQ-SSF: 0000000000000000000000000000000
-X-QQ-GoodBg: 0
-X-BIZMAIL-ID: 13007171727628371130
-Message-ID: <049320517C0CBAC7+22eb4b3a-821c-4ae0-8bf8-be7455289929@linux.spacemit.com>
-Date: Fri, 6 Feb 2026 11:44:27 +0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bPsGU1LJ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2709C116C6;
+	Fri,  6 Feb 2026 06:11:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1770358301;
+	bh=xQSKwhkANWN8IwjK9ckDxM334/zoJ+AcdEkWuOlyze4=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+	b=bPsGU1LJrFqeLArNybkaNfr/lVd5ZdvZFwss0zlO1bkv6QAcNoTkRln2gPQdfBc8P
+	 v9jsoEj15xJNX22uEts8ki7IRrdXusX7r3tya+jqqU5sBHRU/rFJ97C1COKah5dA0Z
+	 fDRMu3kM9h9nxKtwmQr8rqeDbVoT0o615FzVew/jA5gomL8EE5vGvNyd8GmK1eGGyq
+	 7DLLTyTW049d2U3uUgaRG8URQmt6gC9nU2BmAkQmQe7HZGu8EFcoJVmtZ882vh04s4
+	 RnT5WJ7LPnuttQxFOC/yxAXEzpt9fBkgb46ibM3Ec1A6esdPs8VI0DL6KPpjZwptGu
+	 sqGvrg8kvJc9A==
+X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: Catalin Marinas <catalin.marinas@arm.com>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, Will Deacon <will@kernel.org>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>, suzuki.poulose@arm.com,
+	steven.price@arm.com
+Subject: Re: [PATCH] arm64: swiotlb: =?utf-8?Q?Don=E2=80=99t?= shrink
+ default buffer when bounce
+ is forced
+In-Reply-To: <aYOVf066Fdr9L-nw@arm.com>
+References: <20260120070102.182977-1-aneesh.kumar@kernel.org>
+ <aYOVf066Fdr9L-nw@arm.com>
+Date: Fri, 06 Feb 2026 11:41:33 +0530
+Message-ID: <yq5a8qd6iep6.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 3/7] dt-bindings: iommu: Add spacemit/t100 features
-To: Conor Dooley <conor@kernel.org>
-Cc: Tomasz Jeznach <tjeznach@rivosinc.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Paul Walmsley <pjw@kernel.org>,
- Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>,
- Alexandre Ghiti <alex@ghiti.fr>, Jingyu Li <joey.li@spacemit.com>,
- Zhijian Chen <zhijian@spacemit.com>, iommu@lists.linux.dev,
- linux-perf-users@vger.kernel.org, linux-riscv@lists.infradead.org,
- spacemit@lists.linux.dev, devicetree@vger.kernel.org
-References: <cover.1769562575.git.lv.zheng@spacemit.com>
- <cover.1770281596.git.lv.zheng@linux.spacemit.com>
- <B1AEE717CF03B1BB+22fe4be0d3c8d2c6b4c5d3c19736c937cbed3c0d.1770281596.git.lv.zheng@linux.spacemit.com>
- <20260205-presoak-reshape-9465d18bca4a@spud>
-Content-Language: en-US
-From: Lv Zheng <lv.zheng@linux.spacemit.com>
-In-Reply-To: <20260205-presoak-reshape-9465d18bca4a@spud>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: zesmtpsz:linux.spacemit.com:qybglogicsvrgz:qybglogicsvrgz5b-1
-X-QQ-XMAILINFO: NOIkHYnr7Vzd/QBa0AWyODA7TWoJiYyxcdouM/QFsngOoMMS8QhO7hoR
-	2RVY2ZSFpqbIEvpo0Udmo2zGonRo1pkXxoelsvMm13DWpcKYIk4Mh85CQ0MNBV6Mw8F5iO/
-	I626Vbj5KGT0STSvbDTPvom4JIcE8cGZiohau9eMBrpxAH8RyM9Mfes8TJ40ljsJZ/vQ/S5
-	Saeeq8/80JLVG7ajEoFF+TvGIQNps5Hhtf7lHptYJCtFaoC7dVmq7qi2hAaGsm6pR2SglIE
-	pU1rfKuufJKBISCYrQ5uqKCK0wiKqVgDS6C3PNdzBUa34zbcEjjeYcl0WqDrpUS/WAziw4w
-	RW2yVrxPh+xEQhkIBFhfmTzqAr1PFrlDn/lWa0fq4Lj7IGDXaDBB/mEyzo5OpeOrzhH66pz
-	Df1xuS2Qr7iLWTsKny3ZqbEJRI41yHOaghhJjS8X+j4zFY0d2aeAGtc74QodB1b9eiyo6N/
-	Nxwh6ek7P6xQGa/9X/RRz92ZNxE5Al2HxsFHHEf4nF6eKq28GQpEAm7b7qGmHy/uI1IS0OU
-	K8+/eGk1F9gn2zRBzPQsMAvCXI8bYPnfF7jKfoNtsqAyJNwxxw//EgRli7gcZBbQFCOWNhL
-	zrmj41PQ0aLYE84NZ2ZtRmabDIVpRucPJGJes5I8TZ6UDOtxzzbQPGLhFvD6cQQk10cFT62
-	dgh7cNEtU+1pg6lq5xZIHoX0u5vyV1PCrubfrI4bR9fI+HztxqyYK5zCCFdpGS1W5lM1nV1
-	S3BCUWF2uiCX0ORcJDd7ZCpmGTqm+Pj2li2RnMmFYfHTCbTAlG5mPrRvdMsim5iz2hRgUpJ
-	Kg7k+JQagM1Wod3sXsnPF+5ttgof2nOIRJEPyDdBt3jG62c+q/kloDHAAXmXI3iRTZ0TWDN
-	OJ6ISUPTUo5I6omZ/kXeCsszPJsYyhY2fpOyf24kSBRHdJ+7aozUH+8bdwis324HAQq7hDb
-	WJjUMzfr60PGQS00pxUa6tmoK6KiddBnhItL6o8Kqg3MNVzIEvwcJBX31QY+Ah4DTZ8yDA6
-	41g8F0LgXXBfJ5LiTXT4lSEm00Qy2HxNnj5Ap3Vw==
-X-QQ-XMRINFO: OWPUhxQsoeAVwkVaQIEGSKwwgKCxK/fD5g==
-X-QQ-RECHKSPAM: 0
+Content-Type: text/plain
 
-On 2/6/2026 2:26 AM, Conor Dooley wrote:
-> On Thu, Feb 05, 2026 at 05:10:43PM +0800, Lv Zheng wrote:
->> Adds device tree bindings for SpacemiT T100 specific features by
->> introducing spacemit,100 compatible. T100 contains distributed IOATCs,
->> each of which exposes pmiv interrupt.
->>
->> Signed-off-by: Lv Zheng <lv.zheng@linux.spacemit.com>
->> Signed-off-by: Jingyu Li <joey.li@spacemit.com>
-> 
-> Please wait until discussion has finished on prior versions before
-> sending more. The merge window opens next week, so there's absolutely no
-> rush with this series, there's weeks before anything could happen with
-> it.
+Catalin Marinas <catalin.marinas@arm.com> writes:
 
-Sure, thanks for the help.
+> On Tue, Jan 20, 2026 at 12:31:02PM +0530, Aneesh Kumar K.V (Arm) wrote:
+>> arm64 reduces the default swiotlb size (for unaligned kmalloc()
+>> bouncing) when it detects that no swiotlb bouncing is needed.
+>> 
+>> If swiotlb bouncing is explicitly forced via the command line
+>> (swiotlb=force), this heuristic must not apply. Add a swiotlb helper to
+>> query the forced-bounce state and use it to skip the resize when
+>> bouncing is forced.
+>
+> I think the logic you proposed in reply to Robin might work better but
+> have you actually hit a problem that triggered this patch? Do people
+> passing swiotlb=force expect a specific size for the buffer?
+>
 
-Cheers,
-Lv
+This issue was observed while implementing swiotlb for a trusted device.
+I was testing the protected swiotlb space using the swiotlb=force
+option, which causes the device to use swiotlb even in protected mode.
+As per Robin, an end user using the swiotlb=force option will also
+specify a custom swiotlb size
 
+-aneesh
