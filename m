@@ -1,195 +1,166 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f179.google.com (mail-pl1-f179.google.com [209.85.214.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 979CE296BDA
-	for <iommu@lists.linux.dev>; Fri,  6 Feb 2026 02:55:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 356372EF660
+	for <iommu@lists.linux.dev>; Fri,  6 Feb 2026 03:07:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770346547; cv=none; b=YbyCxD84H/bkjtVMjx6k6VPpJ6DPwAj6T+mh3BY3eMrA1mkYdAcw388NBzRqK2sqzwiAczdWhK8ElmirI1NndZf+gK5J8aih1cqOmvYJsrszmjTLcDSThGCCwq/inX19YQ+PcjwkEcu3I40QoyE2/Nro2651TGKYAHewdaVaXCY=
+	t=1770347246; cv=none; b=S9MnhFfX9dHw/8Q0JXI3T7pLl6bswL6jw295K6da6aFkBraQRbkarABMcHH3oKyrDD0CqJKaurqI2aDj8WgUn8vqorimNlng1ljUI3XZhiKFUevdnayJWjYs6096BGwlyHWKAtsKU632XLF7YtaDFqNWHTvdNL98kJmAUB5zFi8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770346547; c=relaxed/simple;
-	bh=yiSl2WFrsPJ6WkTi8vj2cQHDh/2j1YfyfpPz6+AdYzo=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=g45VL3POEWlnnRujjH5Idju6JVoFG96GIB3o3EFimgQ9uz4wOZinyvou50CI26YHsEAzmSDajA3V+qFsTxcEv1sRHJMgvOCeBdzIrkZfyrvnUVyWNsWDfkaOdyKMfSWkWkMfYiiIveUWCP/4RdpynOwSQUgqOHAthbc1lfijLBA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XFTs/q9V; arc=none smtp.client-ip=198.175.65.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1770347246; c=relaxed/simple;
+	bh=p4tkB2ZlK2UsmWYUfM+N0mNovdhusjrLeAlSeh8H1k8=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=Usx0vi0LNQLQ0XtIE4Y0Jafc2vW6yLhpT+HjrlMb8fPwpQDuSmY/3FPS0YvpIu5oVyXo63xfg1xDPa9/PugI65rf3YwB6LX99v3I5LGqWDHuFX8+ejNl9OA88ODjJyelnZPW0TCLrdZ7dNC7Ggg/9vCXnCayQAmpdC28j7CQ134=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=WIgcttSy; arc=none smtp.client-ip=209.85.214.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XFTs/q9V"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1770346547; x=1801882547;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=yiSl2WFrsPJ6WkTi8vj2cQHDh/2j1YfyfpPz6+AdYzo=;
-  b=XFTs/q9VzOabl0X2ldjilVxd9lK1AHj9b1SmxMQnCZgw263yUd/Wy3VM
-   HhpZg/MzPQzqFf7+Z2qOal0yIkCRFlIkYlE4MIF3ugqBrUykMrmRbwePT
-   Yb4r8c2kuO0V7GphpZNRPv6YPK4O3cHpGV8iftDquLVUcV9UWzVA95uXc
-   KaqkqV4EYAKFXvbUPKDaANMKHVIFBZlBMUv4JnDHixctaLdJSP5PgFAtq
-   J3dcuwsZK6JVUltV+MLGOA7VEph+N7xdFtiNBq8uy9fdOaLH12nBZx4p+
-   MvjaWA3JskqMhk2Hg4vvp31oyK/ht7kqKz0898uAnkHjgw2JN8MCbNqbI
-   g==;
-X-CSE-ConnectionGUID: 1U0E0M6/SHe5i2Ns1HrXCA==
-X-CSE-MsgGUID: 45TBOd0BT2aeR1MIdevlsg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11692"; a="94202409"
-X-IronPort-AV: E=Sophos;i="6.21,275,1763452800"; 
-   d="scan'208";a="94202409"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2026 18:55:47 -0800
-X-CSE-ConnectionGUID: DfroXyZpQYmoCv8MvQfibg==
-X-CSE-MsgGUID: xhCFIq3USk60Lnm4zJsuXA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,275,1763452800"; 
-   d="scan'208";a="210794197"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2026 18:55:45 -0800
-Message-ID: <f8e35741-6b4c-4e14-a0a5-2c3176840242@linux.intel.com>
-Date: Fri, 6 Feb 2026 10:55:12 +0800
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WIgcttSy"
+Received: by mail-pl1-f179.google.com with SMTP id d9443c01a7336-2a7a23f5915so11860575ad.2
+        for <iommu@lists.linux.dev>; Thu, 05 Feb 2026 19:07:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1770347245; x=1770952045; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=vTLlWgup/boAOL11HN9YevGJP11uRzIBi2lM6iUJUmI=;
+        b=WIgcttSy/LG/2RQu56hgrmWict7y5X8BctzXdjyK2I0ma4PUL8eLiWObSCsStSabWz
+         UYzpWzNGYD13IQtdHqn0IGQ5rrBKIE8gufGcKn2MNgkxLFL4bXTLBje+k6jJOU85tqQn
+         h84t/ldSH2FUMfPbYO1qQiutvA0Uxtf5j2x1PfCC4tTU7n8Xa+HOnmAiU7FJl14XBJQq
+         s387jtRi5a9Ot/Oy162a5ychfaWbpH26rrQq0Y5D3t03/wwpdx4Po0RYq8/Vcb9VEPor
+         bZ4fkVnvgCDIdht+lwLajqbq0B59XOLTc0KpNfCrNOrdepkIeZDk6veE1WiE8yFBcqYb
+         AU8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1770347245; x=1770952045;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=vTLlWgup/boAOL11HN9YevGJP11uRzIBi2lM6iUJUmI=;
+        b=X1IzZjoLYY9S+E85c+QLycNRuYG2f04QZLlztDd62cGNrlJnuFQkEOtFOQ2fFS8Ow3
+         q09hzFxzFByXECpelok5CRuPlaYA+vXUxXVcQg646sY+OZWrti42auZtMP5/mn9pYNIK
+         BF64/okI1UvWkfqErtlW/QqmgHg8gP/C+dxLVn7NxOEZXrbL+yvnMa4bsgGM0jULOu9s
+         KMy3R1b0vTGtNEEqFoX2vhNRD7cF6bOAXnUZqnBWTzi3EnSpad8Wj876zVAwL7Wj5MnZ
+         3gTObV9w7lYf/RiIVXT9tlYv+RpsOz7s+I050OodWL1rXK9jLAoZ+tdJ6RKj/oJ1aI7g
+         jDeg==
+X-Forwarded-Encrypted: i=1; AJvYcCWeISqerX5UUnZGpp8E4nLvAMKnAv45Q4vcQ8VQQZrc4AD9/XmEyvk59Pd51dTl+NcE/cdV0A==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxS2T8UHGCS31h4gpFUlwaN1OTHQKONW250RcEaWHmbslq6hgTG
+	qWY3gVp77GhvQ1Ti1G0IbZuOd/laaGlkbl2cEiOsTH1fLeP4O/yc331o
+X-Gm-Gg: AZuq6aIQbZ6sOqxSkDvQOkRmL8Kps3huMzr1wxpw7v0c5bOcLh+CyE6MqSufsnLoOEs
+	GLHtB0BEa76JAeXbc+YzCveKOQlgc3WImctJY6CPssx1+nVjx6WG6We+KxPNqUahnOfzo/HADZD
+	ByacgB80eIbXFaQS80ZYwex7q7hKGCMpCYvIp3Us9BLUf7D2rh7azbNzHRk8kGHndh1eVb+ntX7
+	i/Qk8nWxbIdRMoDvl1CkdWlGg6PWA6i1TEtaPIykazYXoUIsZPCJlNmBgQ6JhxwVzTIMrCIfm2x
+	2vWJqMU5K4ddpLCYSLbRLYyj32/ibr1uldrnKmIwd6Gj2+6V99jJNjL76BjqWtulPFIOUJ746Mj
+	C3+QKgULCVvAxTDUmm4AQ1hTEh0/RSQ6GLlr7aVnhvb7KlmiW/Ud2nsmU5G3+a5w4yOXvUXEMn2
+	zXvGrfwn6JwiuS/TmBO5eR9RPze8B6p38AC46DsciqmI4=
+X-Received: by 2002:a17:902:db08:b0:2a7:d42f:7065 with SMTP id d9443c01a7336-2a9521689bbmr13706725ad.27.1770347245440;
+        Thu, 05 Feb 2026 19:07:25 -0800 (PST)
+Received: from localhost ([101.44.82.58])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2a9521b9bebsm7512525ad.56.2026.02.05.19.07.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 Feb 2026 19:07:25 -0800 (PST)
+Date: Fri, 6 Feb 2026 11:06:57 +0800
+From: DaiZhiyuan <jerry.zhiyuan.dai@gmail.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Zhiyuan Dai <daizhiyuan@phytium.com.cn>, will@kernel.org,
+ joro@8bytes.org, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Restrict MMU-700 errata 2268618 and
+ 2812531 to affected
+Message-ID: <20260206110657.000043f7@gmail.com>
+In-Reply-To: <3f22f7b8-449c-40d9-b4c8-fff3e520d563@arm.com>
+References: <20260205093356.4328-1-daizhiyuan@phytium.com.cn>
+	<3f22f7b8-449c-40d9-b4c8-fff3e520d563@arm.com>
+X-Mailer: Claws Mail 4.3.0 (GTK 3.24.42; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommu/vt-d: fix intel iommu iotlb sync hardlockup & retry
-To: "guanghuifeng@linux.alibaba.com" <guanghuifeng@linux.alibaba.com>,
- dwmw2@infradead.org, joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Cc: xunlei <xlpang@linux.alibaba.com>
-References: <20260202020920.3557883-1-guanghuifeng@linux.alibaba.com>
- <086971f2-cec7-414d-8cc9-01836ef7259a@linux.intel.com>
- <ebd62398-342f-4b28-8c7e-ce0ec8dd8889@linux.alibaba.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <ebd62398-342f-4b28-8c7e-ce0ec8dd8889@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On 2/5/26 18:28, guanghuifeng@linux.alibaba.com wrote:
+On Thu, 5 Feb 2026 13:05:24 +0000
+Robin Murphy <robin.murphy@arm.com> wrote:
+
+> On 05/02/2026 9:33 am, Zhiyuan Dai wrote:
+> > According to SDEN-1786925, Arm errata 2268618 and 2812531 are
+> > present in r0p0, r0p1, and r1p0, and fixed in r1p1.  
 > 
-> 在 2026/2/4 17:32, Baolu Lu 写道:
->> On 2/2/2026 10:09 AM, Guanghui Feng wrote:
->>> Device-TLB Invalidation Response Time-out (ITE) handling was added in
->>> commit: 6ba6c3a4cacfd68bf970e3e04e2ff0d66fa0f695.
->>>
->>> When an ITE occurs, iommu will sets the ITE (Invalidation Time-out
->>> Error) field in the Fault Status Register. No new descriptors are
->>> fetched from the Invalidation Queue until software clears the ITE field
->>> in the Fault Status Register. Tail pointer Register updates by software
->>> while the ITE field is Set does not cause descriptor fetches by
->>> hardware. At the time ITE field is Set, hardware aborts any
->>> inv_wait_dsc commands pending in hardware and does not increment
->>> the Invalidation Queue Head register. When software clears the
->>> ITE field in the Fault Status Register, hardware fetches
->>> descriptor pointed by the Invalidation Queue Head register.
->>>
->>> But in the qi_check_fault process, it is implemented by default
->>> according to the 2009 commit: 6ba6c3a4cacfd68bf970e3e04e2ff0d66fa0f695,
->>> that is, only one struct qi_desc is submitted at a time. A qi_desc 
->>> request is
->>> immediately followed by a wait_desc/QI_IWD_TYPE for
->>> synchronization. Therefore, the IOMMU driver implementation
->>> considers invalid queue entries at odd positions to be
->>> wait_desc. After ITE is set, hardware aborts any pending
->>> inv_wait_dsc commands in hardware. Therefore, qi_check_fault
->>> iterates through odd-position as wait_desc entries and sets
->>> desc_status to QI_ABORT. However, the current implementation
->>> allows multiple struct qi_desc to be submitted simultaneously,
->>> followed by one wait_desc, so it's no longer guaranteed that
->>> odd-position entries will be wait_desc. When the number of submitted
->>> struct qi_desc is even, wait_desc's desc_status will not be set to 
->>> QI_ABORT,
->>> qi_check_fault will return 0, and qi_submit_sync will then
->>> execute in an infinite loop and cause a hard lockup when
->>> interrupts are disabled and the PCIe device does not respond to
->>> Device-TLB Invalidation requests.
->>
->> Yes. This appears a real software bug.
->>
->>>
->>> Additionally, if the device remains online and an IOMMU ITE
->>> occurs, simply returning -EAGAIN is sufficient. When processing
->>> the -EAGAIN result, qi_submit_sync will automatically reclaim
->>> all submitted struct qi_desc and resubmit the requests.
->>>
->>> Through this modification:
->>> 1. Correctly triggers the resubmission of struct qi_desc when
->>> an ITE occurs.
->>> 2. Prevents the IOMMU driver from disabling interrupts and
->>> executing in an infinite loop within qi_submit_sync when an
->>> ITE occurs, avoiding hardlockup.
->>
->> But I think this fix changes the behavior of the driver.
->>
->> Previously, when an ITE error was detected, it cleared the ITE so that
->> hardware could keep going, aborted all wait-descriptors that were being
->> handled by hardware, and returned -EAGAIN if its own wait-descriptor was
->> impacted.
->>
->> This patch changes the behavior; it returns -EAGAIN directly whenever it
->> detects an ITE error, regardless of whether its wait-desc is impacted.
->> In the single-threaded case, it works as expected, but race condition
->> might occur when qi_submit_sync() is called in multiple threads at the
->> same time.
->>
->>>
->>> Signed-off-by: Guanghui Feng<guanghuifeng@linux.alibaba.com>
->>> ---
->>>   drivers/iommu/intel/dmar.c | 18 +++---------------
->>>   1 file changed, 3 insertions(+), 15 deletions(-)
->>
->> Have you tried to fix it by dropping the "odd position" assumption? For
->> example, removing "head |= 1" and decrementing by 1 instead of 2 in the
->> loop?
->>
->>      do {
->>              if (qi->desc_status[head] == QI_IN_USE)
->>                      qi->desc_status[head] = QI_ABORT;
->>              head = (head - 2 + QI_LENGTH) % QI_LENGTH;
->>      } while (head != tail);
->>
->> Thanks,
->> baolu
+> This is a bit fiddly, since these workarounds also overlap some other 
+> errata that IIRC were *not* fixed in r1p1 - it's been on my to-do
+> list to figure this out for a while now, sorry I haven't had a chance
+> to get to it.
+
+While checking the documentation, I noticed that in SDEN-1786925, 
+document version 19.0 describes the errata as fixed in r1p1.
+
 > 
-> Thank you for your reply.
+> > Introduce this patch to avoid performance degradation caused by
+> > restricting features on unaffected revisions.  
 > 
-> There are a few points that need clarification:
-> The descriptors between head and tail are requests that have not been 
-> fetched and executed.
+> I'm curious, can you clarify the performance impact? At the time I
+> was pretty sure that the ARM_SMMU_OPT_CMDQ_FORCE_SYNC was just for
+> safety and never likely to be hit in practice, since with range
+> invalidations any unmap should never end up with anywhere near 16
+> TLBIs in a single batch anyway. Is that no longer the case?
+> 
+
+Based on the mailing list, the SMMUv3 implementation now fully supports 
+the Broadcast TLB Maintenance (BTM) feature as part of the Distributed 
+Virtual Memory (DVM) protocol. This allows CPU TLB invalidation instructions 
+to be received by the SMMUv3, which is highly beneficial when the SMMUv3 
+shares page tables with the CPU (e.g., in Guest SVA use cases).
+
+Additionally, while this aligns with the SDEN documentation, 
+please note that we do not have actual benchmark data at this time.
+
+> > Signed-off-by: Zhiyuan Dai <daizhiyuan@phytium.com.cn>
+> > ---
+> >   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 12 +++++++-----
+> >   1 file changed, 7 insertions(+), 5 deletions(-)
+> > 
+> > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> > b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c index
+> > d16d35c78c06..7eadb27eb9be 100644 ---
+> > a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c +++
+> > b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c @@ -4272,11 +4272,13
+> > @@ static void arm_smmu_device_iidr_probe(struct arm_smmu_device
+> > *smmu) smmu->features &= ~ARM_SMMU_FEAT_NESTING; break;
+> >   		case IIDR_PRODUCTID_ARM_MMU_700:
+> > -			/* Arm erratum 2812531 */
+> > -			smmu->features &= ~ARM_SMMU_FEAT_BTM;
+> > -			smmu->options |=
+> > ARM_SMMU_OPT_CMDQ_FORCE_SYNC;
+> > -			/* Arm errata 2268618, 2812531 */
+> > -			smmu->features &= ~ARM_SMMU_FEAT_NESTING;
+> > +			if (variant <= 1 && revision < 0) {  
+> 
+> revision is unsigned, it cannot be < 0. This just breaks the
+> workarounds entirely.
+> 
+
+Logic error: if (variant <= 1 && revision < 0) should be updated to revision < 1.
+
+
+> Thanks,
+> Robin.
+> 
+> > +				/* Arm erratum 2812531 */
+> > +				smmu->features &=
+> > ~ARM_SMMU_FEAT_BTM;
+> > +				smmu->options |=
+> > ARM_SMMU_OPT_CMDQ_FORCE_SYNC;
+> > +				/* Arm errata 2268618, 2812531 */
+> > +				smmu->features &=
+> > ~ARM_SMMU_FEAT_NESTING;
+> > +			}
+> >   			break;
+> >   		}
+> >   		break;  
 > 
 > 
-> Regarding the requests before the head:
-> Method 1: Does the IOMMU update the head address register immediately 
-> after fetching the descriptor?
-> Method 2: Or does the IOMMU update the head register only after fetching 
-> and executing the request?
-> 
-> The current Intel IOMMU VT-d specification does not describe this 
-> behavior in detail.
-> Does the IOMMU currently use Method 1?
-> 
-> Therefore, after an ITE timeout, it's necessary to resend the requests 
-> before the head index
 
-An obvious race that I can think of is something like this:
+Best regards,
 
-Thread A placed a dev-tlb-inv-desc in the invalidation queue. After
-that, thread B placed an iotlb-inv-desc in the queue. Now the requests
-in the queue look like this:
-
-     dev-tlb-inv-desc for A
-     iotlb-inv-desc for B
-
-Then a device TLB invalidation timeout error happens and triggers the
-ITE bit to be set in the fault register. Thread B sees this in its
-qi_check_fault(), clears the ITE bit, and returns -EAGAIN. Then thread A
-will loop infinitely waiting for DONE in its wait-desc.
-
-The qi_submit_sync() logic has been there for years. Changing its
-behavior without enough validation on real hardware will cause
-unexpected issues. The better approach I would suggest is to fix the
-outdated logic.
-
-Thanks,
-baolu
+JerryDai.
