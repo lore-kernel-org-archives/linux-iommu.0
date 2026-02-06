@@ -1,75 +1,97 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40F043EBF05;
-	Fri,  6 Feb 2026 06:11:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from zg8tmtyylji0my4xnjqumte4.icoremail.net (zg8tmtyylji0my4xnjqumte4.icoremail.net [162.243.164.118])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 280CA381AF
+	for <iommu@lists.linux.dev>; Fri,  6 Feb 2026 08:18:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.164.118
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770358301; cv=none; b=K+BKFD8VJtIkJ8ShFaam+rN4ElOVwGKEinoGe3XpVJ1Bc3C7OG0tznAfo68kqIpCbHPciDmUcvzyYUuDOGg62iT06+OM42wKKWqOIrseC1tRhrKF1n6O/VdTbu/bwNVa0CMrQkwJYkLv9HObF+xbNe65tVYp7RyfwsYmG5OCB4Q=
+	t=1770365893; cv=none; b=euBluj1xiz84nBDQadHJ3YFBUhKq1W5xItSlXMPlc+qsxmrlOBocHxvfw3r51msMciO1oBeStFWW4GBCsHNKxfLiAr1NkqKDwvFWh0Z4M3JnQ1h6+VlasPFo4IaKNY3L6IcQ4H7PF/VrP4PvrDBR1C9H434Db4GL/EMCsOBRQbI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770358301; c=relaxed/simple;
-	bh=xQSKwhkANWN8IwjK9ckDxM334/zoJ+AcdEkWuOlyze4=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=WW69H6v0nO23IDKySgA9+GMzW99BeTSyJwaT74fBVercXH0FqNCn+d0hcwE84qPDPtHpSgaILntLyZXfj/yU7jrUGopWQ1ZNhSu/o1MOEGbIwmDAnNmwIQqthmjseuAYIXgz2n/NUAn4agPd4gSq/7eKJiDqvJk2qfNktX+95hE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bPsGU1LJ; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bPsGU1LJ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2709C116C6;
-	Fri,  6 Feb 2026 06:11:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1770358301;
-	bh=xQSKwhkANWN8IwjK9ckDxM334/zoJ+AcdEkWuOlyze4=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=bPsGU1LJrFqeLArNybkaNfr/lVd5ZdvZFwss0zlO1bkv6QAcNoTkRln2gPQdfBc8P
-	 v9jsoEj15xJNX22uEts8ki7IRrdXusX7r3tya+jqqU5sBHRU/rFJ97C1COKah5dA0Z
-	 fDRMu3kM9h9nxKtwmQr8rqeDbVoT0o615FzVew/jA5gomL8EE5vGvNyd8GmK1eGGyq
-	 7DLLTyTW049d2U3uUgaRG8URQmt6gC9nU2BmAkQmQe7HZGu8EFcoJVmtZ882vh04s4
-	 RnT5WJ7LPnuttQxFOC/yxAXEzpt9fBkgb46ibM3Ec1A6esdPs8VI0DL6KPpjZwptGu
-	 sqGvrg8kvJc9A==
-X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
-From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
-To: Catalin Marinas <catalin.marinas@arm.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, Will Deacon <will@kernel.org>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>, suzuki.poulose@arm.com,
-	steven.price@arm.com
-Subject: Re: [PATCH] arm64: swiotlb: =?utf-8?Q?Don=E2=80=99t?= shrink
- default buffer when bounce
- is forced
-In-Reply-To: <aYOVf066Fdr9L-nw@arm.com>
-References: <20260120070102.182977-1-aneesh.kumar@kernel.org>
- <aYOVf066Fdr9L-nw@arm.com>
-Date: Fri, 06 Feb 2026 11:41:33 +0530
-Message-ID: <yq5a8qd6iep6.fsf@kernel.org>
+	s=arc-20240116; t=1770365893; c=relaxed/simple;
+	bh=Ex4Ji1Zkbq1Lnk5f9Set2/Yh8dH5fqfBHOmXHOHtIDA=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=LGAu7WLXLeS3U5p4gLBEOnYFX5/3PBRIAXslQ53UhznWJLRJbcaVoD1xSqB8/MAr42GAtMDTVJvuckg7/n9O+4FIdDCl3/3/e4Yljr6z/47d7eABYYSTTddmCfwDswrzzq4uHHaKJ6CpEQh3HV1v9xt9asFZ3gDqn3j4doaKa+g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=phytium.com.cn; spf=pass smtp.mailfrom=phytium.com.cn; arc=none smtp.client-ip=162.243.164.118
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=phytium.com.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=phytium.com.cn
+Received: from prodtpl.icoremail.net (unknown [10.12.1.20])
+	by hzbj-icmmx-7 (Coremail) with SMTP id AQAAfwB3fJjBo4VpZnzWBg--.604S2;
+	Fri, 06 Feb 2026 16:18:09 +0800 (CST)
+Received: from [127.0.0.1] (unknown [219.142.137.151])
+	by mail (Coremail) with SMTP id AQAAfwDXLeu9o4VpOmwZAA--.29724S3;
+	Fri, 06 Feb 2026 16:18:05 +0800 (CST)
+From: Zhiyuan Dai <daizhiyuan@phytium.com.cn>
+Date: Fri, 06 Feb 2026 16:18:05 +0800
+Subject: [PATCH v2] iommu/arm-smmu-v3: Restrict MMU-700 errata 2268618 and
+ 2812531 to affected
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260206-smmuv3-v2-1-f381a2125392@phytium.com.cn>
+X-B4-Tracking: v=1; b=H4sIALyjhWkC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyjHQUlJIzE
+ vPSU3UzU4B8JSMDIzMDIwMz3eLc3NIyY91ECwtzcyNjc/NkIwMloOKCotS0zAqwQdGxtbUAqH5
+ JqFgAAAA=
+To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+ Joerg Roedel <joro@8bytes.org>
+Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
+ linux-kernel@vger.kernel.org, Zhiyuan Dai <daizhiyuan@phytium.com.cn>
+X-Mailer: b4 0.13.0
+X-CM-TRANSID:AQAAfwDXLeu9o4VpOmwZAA--.29724S3
+X-CM-SenderInfo: hgdl6xpl1xt0o6sk53xlxphulrpou0/
+Authentication-Results: hzbj-icmmx-7; spf=neutral smtp.mail=daizhiyuan
+	@phytium.com.cn;
+X-Coremail-Antispam: 1Uk129KBjvJXoW7Kw1DCF17CFy7ZFy3KF1kGrg_yoW8Aryrpa
+	n3Gwn5uw1UWF1fZa9Fv39rZF15Ga4kAFWFqF4UWa90gw1qkry3GryIgFWYgF4kCrWUZF1f
+	ZF1vqrW5CF1UArJanT9S1TB71UUUUUDqnTZGkaVYY2UrUUUUj1kv1TuYvTs0mT0YCTnIWj
+	DUYxn0WfASr-VFAU7a7-sFnT9fnUUIcSsGvfJ3UbIYCTnIWIevJa73UjIFyTuYvj4RJUUU
+	UUUUU
 
-Catalin Marinas <catalin.marinas@arm.com> writes:
+According to SDEN-1786925, Arm errata 2268618 and 2812531 are present in
+r0p0, r0p1, and r1p0, and fixed in r1p1.
 
-> On Tue, Jan 20, 2026 at 12:31:02PM +0530, Aneesh Kumar K.V (Arm) wrote:
->> arm64 reduces the default swiotlb size (for unaligned kmalloc()
->> bouncing) when it detects that no swiotlb bouncing is needed.
->> 
->> If swiotlb bouncing is explicitly forced via the command line
->> (swiotlb=force), this heuristic must not apply. Add a swiotlb helper to
->> query the forced-bounce state and use it to skip the resize when
->> bouncing is forced.
->
-> I think the logic you proposed in reply to Robin might work better but
-> have you actually hit a problem that triggered this patch? Do people
-> passing swiotlb=force expect a specific size for the buffer?
->
+Introduce this patch to avoid performance degradation caused by
+restricting features on unaffected revisions.
 
-This issue was observed while implementing swiotlb for a trusted device.
-I was testing the protected swiotlb space using the swiotlb=force
-option, which causes the device to use swiotlb even in protected mode.
-As per Robin, an end user using the swiotlb=force option will also
-specify a custom swiotlb size
+Signed-off-by: Zhiyuan Dai <daizhiyuan@phytium.com.cn>
+---
+Changelog:
+- Change the revision threshold from < 0 to < 1 to correctly.
+- Link to v1: https://lore.kernel.org/linux-iommu/3f22f7b8-449c-40d9-b4c8-fff3e520d563@arm.com/raw
+---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
--aneesh
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index d16d35c78c06..d5c35be5c858 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -4272,11 +4272,13 @@ static void arm_smmu_device_iidr_probe(struct arm_smmu_device *smmu)
+ 				smmu->features &= ~ARM_SMMU_FEAT_NESTING;
+ 			break;
+ 		case IIDR_PRODUCTID_ARM_MMU_700:
+-			/* Arm erratum 2812531 */
+-			smmu->features &= ~ARM_SMMU_FEAT_BTM;
+-			smmu->options |= ARM_SMMU_OPT_CMDQ_FORCE_SYNC;
+-			/* Arm errata 2268618, 2812531 */
+-			smmu->features &= ~ARM_SMMU_FEAT_NESTING;
++			if (variant <= 1 && revision < 1) {
++				/* Arm erratum 2812531 */
++				smmu->features &= ~ARM_SMMU_FEAT_BTM;
++				smmu->options |= ARM_SMMU_OPT_CMDQ_FORCE_SYNC;
++				/* Arm errata 2268618, 2812531 */
++				smmu->features &= ~ARM_SMMU_FEAT_NESTING;
++			}
+ 			break;
+ 		}
+ 		break;
+
+---
+base-commit: b7ff7151e653aa296ab6c5495b2c1ab7c21eb250
+change-id: 20260206-smmuv3-a88772377c20
+
+Best regards,
+-- 
+Zhiyuan Dai <daizhiyuan@phytium.com.cn>
+
