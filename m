@@ -1,100 +1,154 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 64CF6231842
-	for <iommu@lists.linux.dev>; Fri,  6 Feb 2026 17:36:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E2A3337692;
+	Fri,  6 Feb 2026 18:32:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770399369; cv=none; b=PEeztd5234UjLx5M56Hmj0TcikWEgSz35fWzsIpiK0wxTomSrlLQP5BE6gZi2gFsC0xXO3Vp0iCG5jkae7IE0n1jzxSOH6F/OMInBffXrU9ANQK/T9+G/X9z1SUwD3s3BxOUd3ATP1TSZSl1/jvJLnYrR2OXulfLkWXFOYxd9Gg=
+	t=1770402742; cv=none; b=HsiEbq0RSBhscdpyFFNAIAcKkM5btyvp7CakVh55C3sMfuxqpRAzL9r6+4aBXL9avJ25q8udfl8T4DBsU3OeSVCaQeGMmdoM1CC7ZYE3crA7jkUgGauEQ3HB6JFgI8mRpiu4UPWWyi8X0lOn7m6jcYlNA+TWe/5wsI7A7qL3CCg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770399369; c=relaxed/simple;
-	bh=vfmXj24uN06y/FV/u4F7dOzRzFvyFmbgX5UlVHxmbYQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=MrUUJAG0m1mjk4sAHnQ6ACcxgB9hCTMNcFdelTV3pEbb8XqADGTtO6vNtMufeUSRAqJnIjp0hnu3TDMGDc0U9LVxN6Pzrmh/E1Ja1qRErrehAFoiRYhehF5uyOIl0SCu/E8+mUBkLRnzdOPLVCt+tmigT9cYj+Oa5AECdF7HGx0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4D352339;
-	Fri,  6 Feb 2026 09:36:01 -0800 (PST)
-Received: from [10.57.54.83] (unknown [10.57.54.83])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9DB4E3F778;
-	Fri,  6 Feb 2026 09:36:06 -0800 (PST)
-Message-ID: <9c15f736-9737-400f-a757-2640d07ba551@arm.com>
-Date: Fri, 6 Feb 2026 17:36:04 +0000
+	s=arc-20240116; t=1770402742; c=relaxed/simple;
+	bh=SyviauEqzGRNgMKFKUSriULfbguERUdTF3gSkStiiws=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To; b=bXySCnukE4/fLp6pxb3j3J1Mo75kk5nagmvSnNstrpy0qZB6h7pHvBpZpScqM+4Ud8hIUSQ/dy0U9trEgNnbKo+4clqBP2bAvojlsbosORhtYerNaJitejF0os/JuNDUhzB3NMF53Y593P4brY3//Yxwf43j5wDTMjYIKYjmNhc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jx75DmQR; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jx75DmQR"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC446C116C6;
+	Fri,  6 Feb 2026 18:32:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1770402742;
+	bh=SyviauEqzGRNgMKFKUSriULfbguERUdTF3gSkStiiws=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:From;
+	b=jx75DmQR8I+p5N8nTPmep6m7pQrPyLCtGEQbcUh6UZDGHUYRXvSROJNjMbb/APGhk
+	 ca8FQXwV0t4cEUI6gxduTER+tdagta359GW0RbAo3HFwqxVKKSdiCH5do/HLbBAQYC
+	 lMNYxgkjdAmLEWDth5tM960THxnc+foLrNWVXYAOP+PJBRvXRRb4nuZb3f9JYItwm0
+	 YVRu+TEg/ovKAVFJFsuc3w5B8wSRNPG3Jha4pgah9L93rTany8uL0m1aLouyR3Op5C
+	 fFUBumVDIXubV/3yeQjnA5m8a8kHd7fXSiBGS62PT3I01M7F3ycQRUc0QVofa0gbAq
+	 cGE7DH5uErqcQ==
+Date: Fri, 6 Feb 2026 12:32:20 -0600
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	Naresh Kamboju <naresh.kamboju@linaro.org>,
+	Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
+	Xingang Wang <wangxingang5@huawei.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Manivannan Sadhasivam <mani@kernel.org>
+Subject: Re: [PATCH v3 0/4] PCI: Fix ACS enablement for Root Ports in OF
+ platforms
+Message-ID: <20260206183220.GA70809@bhelgaas>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] iommu/arm-smmu-v3: Restrict MMU-700 errata 2268618 and
- 2812531 to affected
-To: Zhiyuan Dai <daizhiyuan@phytium.com.cn>, Will Deacon <will@kernel.org>,
- Joerg Roedel <joro@8bytes.org>
-Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-References: <20260206-smmuv3-v2-1-f381a2125392@phytium.com.cn>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20260206-smmuv3-v2-1-f381a2125392@phytium.com.cn>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260102-pci_acs-v3-0-72280b94d288@oss.qualcomm.com>
 
-On 2026-02-06 8:18 am, Zhiyuan Dai wrote:
-> According to SDEN-1786925, Arm errata 2268618 and 2812531 are present in
-> r0p0, r0p1, and r1p0, and fixed in r1p1.
+On Fri, Jan 02, 2026 at 09:04:46PM +0530, Manivannan Sadhasivam wrote:
+> Hi,
 > 
-> Introduce this patch to avoid performance degradation caused by
-> restricting features on unaffected revisions.
+> This series fixes the long standing issue with ACS in OF platforms. There are
+> two fixes in this series, both fixing independent issues on their own, but both
+> are needed to properly enable ACS on OF platforms.
 > 
-> Signed-off-by: Zhiyuan Dai <daizhiyuan@phytium.com.cn>
+> Issue(s) background
+> ===================
+> 
+> Back in 2021, Xingang Wang first noted a failure in attaching the HiSilicon SEC
+> device to QEMU ARM64 pci-root-port device [1]. He then tracked down the issue to
+> ACS not being enabled for the QEMU Root Port device and he proposed a patch to
+> fix it [2].
+> 
+> Once the patch got applied, people reported PCIe issues with linux-next on the
+> ARM Juno Development boards, where they saw failure in enumerating the endpoint
+> devices [3][4]. So soon, the patch got dropped, but the actual issue with the
+> ARM Juno boards was left behind.
+> 
+> Fast forward to 2024, Pavan resubmitted the same fix [5] for his own usecase,
+> hoping that someone in the community would fix the issue with ARM Juno boards.
+> But the patch was rightly rejected, as a patch that was known to cause issues
+> should not be merged to the kernel. But again, no one investigated the Juno
+> issue and it was left behind again.
+> 
+> Now it ended up in my plate and I managed to track down the issue with the help
+> of Naresh who got access to the Juno boards in LKFT. The Juno issue was with the
+> PCIe switch from Microsemi/IDT, which triggers ACS Source Validation error on
+> Completions received for the Configuration Read Request from a device connected
+> to the downstream port that has not yet captured the PCIe bus number. As per the
+> PCIe spec r6.0 sec 2.2.6.2, "Functions must capture the Bus and Device Numbers
+> supplied with all Type 0 Configuration Write Requests completed by the Function
+> and supply these numbers in the Bus and Device Number fields of the Requester ID
+> for all Requests". So during the first Configuration Read Request issued by the
+> switch downstream port during enumeration (for reading Vendor ID), Bus and
+> Device numbers will be unknown to the device. So it responds to the Read Request
+> with Completion having Bus and Device number as 0. The switch interprets the
+> Completion as an ACS Source Validation error and drops the completion, leading
+> to the failure in detecting the endpoint device. Though the PCIe spec r6.0, sec
+> 6.12.1.1, states that "Completions are never affected by ACS Source Validation".
+> This behavior is in violation of the spec.
+> 
+> Solution
+> ========
+> 
+> In September, I submitted a series [6] to fix both issues. For the IDT issue,
+> I reused the existing quirk in the PCI core which does a dummy config write
+> before issuing the first config read to the device. And for the ACS enablement
+> issue, I just resubmitted the original patch from Xingang which called
+> pci_request_acs() from devm_of_pci_bridge_init().
+> 
+> But during the review of the series, several comments were received and they
+> required the series to be reworked completely. Hence, in this version, I've
+> incorported the comments as below:
+> 
+> 1. For the ACS enablement issue, I've moved the pci_enable_acs() call from
+> pci_acs_init() to pci_dma_configure().
+> 
+> 2. For the IDT issue, I've cached the ACS capabilities (RO) in 'pci_dev',
+> and disabled the broken capability for the IDT switches in the cache. This also
+> allowed to get rid of the earlier workaround for the switch.
+> 
+> [1] https://lore.kernel.org/all/038397a6-57e2-b6fc-6e1c-7c03b7be9d96@huawei.com
+> [2] https://lore.kernel.org/all/1621566204-37456-1-git-send-email-wangxingang5@huawei.com
+> [3] https://lore.kernel.org/all/01314d70-41e6-70f9-e496-84091948701a@samsung.com
+> [4] https://lore.kernel.org/all/CADYN=9JWU3CMLzMEcD5MSQGnaLyDRSKc5SofBFHUax6YuTRaJA@mail.gmail.com
+> [5] https://lore.kernel.org/linux-pci/20241107-pci_acs_fix-v1-1-185a2462a571@quicinc.com
+> [6] https://lore.kernel.org/linux-pci/20250910-pci-acs-v1-0-fe9adb65ad7d@oss.qualcomm.com
+> 
+> Changes in v3:
+> - Dropped the 'acs_broken_cap' field and directly called the quirk from
+>   pci_acs_init()
+> - Collected tags. Since the delta between v2 and v3 is minimal, I've kept them.
+> - Rebased on top of v6.19-rc1 
+> - Link to v2: https://lore.kernel.org/r/20251202-pci_acs-v2-0-5d2759a71489@oss.qualcomm.com
+> 
+> Changes in v2:
+> 
+> * Reworked the patches completely as mentioned above.
+> * Rebased on top of v6.18-rc7
+> 
+> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
 > ---
-> Changelog:
-> - Change the revision threshold from < 0 to < 1 to correctly.
-> - Link to v1: https://lore.kernel.org/linux-iommu/3f22f7b8-449c-40d9-b4c8-fff3e520d563@arm.com/raw
+> Manivannan Sadhasivam (4):
+>       PCI: Enable ACS only after configuring IOMMU for OF platforms
+>       PCI: Cache ACS capabilities
+>       PCI: Disable ACS SV capability for the broken IDT switches
+>       PCI: Extend the pci_disable_broken_acs_cap() quirk for one more IDT switch
+> 
+>  drivers/pci/pci-driver.c |  8 +++++++
+>  drivers/pci/pci.c        | 33 ++++++++++++--------------
+>  drivers/pci/pci.h        |  4 +++-
+>  drivers/pci/probe.c      | 12 ----------
+>  drivers/pci/quirks.c     | 62 ++++++++++++------------------------------------
+>  include/linux/pci.h      |  1 +
+>  6 files changed, 42 insertions(+), 78 deletions(-)
 > ---
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 12 +++++++-----
->   1 file changed, 7 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index d16d35c78c06..d5c35be5c858 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -4272,11 +4272,13 @@ static void arm_smmu_device_iidr_probe(struct arm_smmu_device *smmu)
->   				smmu->features &= ~ARM_SMMU_FEAT_NESTING;
->   			break;
->   		case IIDR_PRODUCTID_ARM_MMU_700:
-> -			/* Arm erratum 2812531 */
-> -			smmu->features &= ~ARM_SMMU_FEAT_BTM;
-> -			smmu->options |= ARM_SMMU_OPT_CMDQ_FORCE_SYNC;
-> -			/* Arm errata 2268618, 2812531 */
-> -			smmu->features &= ~ARM_SMMU_FEAT_NESTING;
-> +			if (variant <= 1 && revision < 1) {
+> base-commit: 8f0b4cce4481fb22653697cced8d0d04027cb1e8
+> change-id: 20251201-pci_acs-b15aa3947289
 
-This still breaks r0p1, and you've not addressed the other point I made...
-
-I've now dug up the old branch where I started my own patch (back in May 
-2024, yikes!), and gone through the newer errata for MMU-700 plus the 
-newer MMU S3 and MMU L1 products that have also inherited some of its 
-bugs - I'll finish writing up a cover letter for that and share it on 
-Monday.
-
-Thanks,
-Robin.
-
-> +				/* Arm erratum 2812531 */
-> +				smmu->features &= ~ARM_SMMU_FEAT_BTM;
-> +				smmu->options |= ARM_SMMU_OPT_CMDQ_FORCE_SYNC;
-> +				/* Arm errata 2268618, 2812531 */
-> +				smmu->features &= ~ARM_SMMU_FEAT_NESTING;
-> +			}
->   			break;
->   		}
->   		break;
-> 
-> ---
-> base-commit: b7ff7151e653aa296ab6c5495b2c1ab7c21eb250
-> change-id: 20260206-smmuv3-a88772377c20
-> 
-> Best regards,
-
+Applied to pci/virtualization for v6.20, thanks!
