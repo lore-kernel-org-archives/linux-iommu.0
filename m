@@ -1,203 +1,139 @@
-Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
+Received: from smtpbgsg1.qq.com (smtpbgsg1.qq.com [54.254.200.92])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A30E435A937
-	for <iommu@lists.linux.dev>; Sun,  8 Feb 2026 14:42:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.132
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 517511EFF9B
+	for <iommu@lists.linux.dev>; Mon,  9 Feb 2026 01:41:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=54.254.200.92
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770561752; cv=none; b=m40mtmVzV6Nf3NMKXxLR/uSVRNzFgHAKN4hODMLM35NRjDvkAMdhntXVR1fiQoAmWP3W5+/3cUNf/9VYWZUUeLHpfZxjAKzpeBFM2zghNiNooS/yAxetfTvuoBEhnBznR0r9EJSam2sTcAkw918s6m7SxMdmDA36qWn7Z/ukGVI=
+	t=1770601280; cv=none; b=sBBj23NXXun6f/C7p9aXXNIBvRQt/U6ybOQVAm3OI3Q3RPFM1mPCwde5/CrPBFqb/FvolDF6xkfgR03Jti0kGQGjY1VYoHRcZqCoqehSgBEa+8tTSm583pCnhT/AvtBoEowh788SNOawehSZihp+UjxCgNRC8MWClaUKHHRNpxg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770561752; c=relaxed/simple;
-	bh=Df6xI1i0LwF6dItD+EnIg+S7lMjydVSa2v73XfQ3nrA=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=TP41R1BZ0Iy/9FWqRYcaUYv6+BugUBrijVftisWlKAzJhiSrh24Qnmcx+wlh+w1ny0RkdA06VhGsIoXigByLucNTUiq4idUK2i+8JY+gB72ObTRSoMp/3qaab+6WpjMX53+yDLSpwuHapPg2Z5lxzsxkz9XHLwK+XBngi0rrMMI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=gHydBux5; arc=none smtp.client-ip=115.124.30.132
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
+	s=arc-20240116; t=1770601280; c=relaxed/simple;
+	bh=fq0+sgLvoHAmySSuL1KwqA52RlDiwWzflVq1Wzg1Ueo=;
+	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=jXScu2mBMAjDlOPzwGL32CLfuf/JbwIX5EnX2tcvdngkPBoEuNSTFgvV4ET8W4ceMVSLqfD6VgZLWiD4CvrLoFqwCgaFDuucQWEuy9UIU0lNHrw7iIRmOptJXJhOCLUiyo/ZdmyWCsFg/TZVc5YlPuA8PKlhsFMIy79+wwa+SvM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux.spacemit.com; spf=none smtp.mailfrom=linux.spacemit.com; dkim=pass (1024-bit key) header.d=linux.spacemit.com header.i=@linux.spacemit.com header.b=ZZJp0z2y; arc=none smtp.client-ip=54.254.200.92
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux.spacemit.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.spacemit.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="gHydBux5"
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux.alibaba.com; s=default;
-	t=1770561748; h=From:To:Subject:Date:Message-Id:MIME-Version;
-	bh=a7cRGNrOwnSEMVTnWHlQkoIS4hluf6bSkDbchWo+rq0=;
-	b=gHydBux5u8/R67wp2ecCInIHy0rUHM1GQ69n99USloKo4du+QKEbBjd3DH4KfONIXPtA+A64K80HOC4rbjiy1oTgc0Wv3VDuw8nnXT/bG9GxTuavTHwibI3KaESrZPFBw8I+5V/IdbeGjRaYNA5J/MmSSSOCYw4UPIooBqm5Xo4=
-Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0WylHpD3_1770561745 cluster:ay36)
-          by smtp.aliyun-inc.com;
-          Sun, 08 Feb 2026 22:42:27 +0800
-From: fangyu.yu@linux.alibaba.com
-To: tjeznach@rivosinc.com,
-	joro@8bytes.org,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	pjw@kernel.org,
-	palmer@dabbelt.com,
-	aou@eecs.berkeley.edu,
-	alex@ghiti.fr,
-	andrew.jones@oss.qualcomm.com
-Cc: guoren@kernel.org,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	linux-riscv@lists.infradead.org,
-	Fangyu Yu <fangyu.yu@linux.alibaba.com>
-Subject: [PATCH 2/2] iommu/riscv: Add non-leaf invalidation support
-Date: Sun,  8 Feb 2026 22:42:13 +0800
-Message-Id: <20260208144213.94856-3-fangyu.yu@linux.alibaba.com>
-X-Mailer: git-send-email 2.39.3 (Apple Git-146)
-In-Reply-To: <20260208144213.94856-1-fangyu.yu@linux.alibaba.com>
-References: <20260208144213.94856-1-fangyu.yu@linux.alibaba.com>
+	dkim=pass (1024-bit key) header.d=linux.spacemit.com header.i=@linux.spacemit.com header.b="ZZJp0z2y"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.spacemit.com;
+	s=mxsw2412; t=1770601229;
+	bh=gnfNs4/9cLlWmPGt8Fa1E39h7Z4Yp+IEQtuArbh/oqo=;
+	h=Message-ID:Date:MIME-Version:Subject:To:From;
+	b=ZZJp0z2yzDEeEdOXnqdxjTD3iMToP9mi8dRcb7hck3kQ7PzyTqssDx/3+5iGK4PTN
+	 7LOSRxdPDeZV+jjUjyCjOeESD5oge0tVOEDXyilSjAjXfcYU51oc45aSn6FrLcprtO
+	 K0Tx/9ugHJjcX7nCHBvUDuBvkXCKJKcaeppGWy7I=
+X-QQ-mid: zesmtpip2t1770601227t5789b7a5
+X-QQ-Originating-IP: Fgum11MpPBfMD+2TeTN+QJgyfNJ/OPyr9gudRkHI6cU=
+Received: from [IPV6:2409:8a1e:3015:50f0:24fb: ( [localhost])
+	by bizesmtp.qq.com (ESMTP) with 
+	id ; Mon, 09 Feb 2026 09:40:23 +0800 (CST)
+X-QQ-SSF: 0000000000000000000000000000000
+X-QQ-GoodBg: 0
+X-BIZMAIL-ID: 10450036312532359646
+Message-ID: <D8C71AE40393A6FD+89365591-f896-4609-8b0f-8dffe85b5828@linux.spacemit.com>
+Date: Mon, 9 Feb 2026 09:40:24 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 0/2] RISC-V IOMMU HPM support
+To: Zong Li <zong.li@sifive.com>, tjeznach@rivosinc.com, joro@8bytes.org,
+ will@kernel.org, robin.murphy@arm.com, robh@kernel.org, pjw@kernel.org,
+ palmer@dabbelt.com, aou@eecs.berkeley.edu, alex@ghiti.fr,
+ mark.rutland@arm.com, conor+dt@kernel.org, krzk@kernel.org,
+ guoyaxing@bosc.ac.cn, luxu.kernel@bytedance.com,
+ andrew.jones@oss.qualcomm.com, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev, linux-riscv@lists.infradead.org,
+ linux-perf-users@vger.kernel.org
+References: <20260208063848.3547817-1-zong.li@sifive.com>
+Content-Language: en-US
+From: Lv Zheng <lv.zheng@linux.spacemit.com>
+In-Reply-To: <20260208063848.3547817-1-zong.li@sifive.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: zesmtpip:linux.spacemit.com:qybglogicsvrgz:qybglogicsvrgz5b-1
+X-QQ-XMAILINFO: NhdiEwnVOUqE7/ZiXFyay4uZd7dt6upjd5Apw3lr1qC2Vb9gX2pHLkpw
+	xM87noh5AaVuyCoreKbC5uZPjCv5dRV/gVNnE0dOSP0WX2mfLjdkDnMZMa/DRT7n3SBEk6r
+	0wz5/uKyVVIsvuX1bfFPd2POVL9CRaxO1qrep2hrrv7go/48boEgODmVs+TbJ/8PqJFpxwx
+	bzH3oAtq7T26N/bE5wLRFhGfpW1bgnjxo4pTrku8TKCEQjyT//4t6ftJ4A1YOB4lbbkJW+5
+	du6ZghNw7c/DdkR3LmoP+Wjp8bETue5bi+8mdleV1Ui/6f3iamG8nNgJVQSWLaKkPizdc3W
+	YxKMoiXeWMTJk9eZHqdiJiFJPvaB7PElR08MVZjIhzmPhXmiH8HYnH6mmHmstLAfcTcjRj6
+	NvwxA+zEj5jHxfx0vERa9CqrXjOrpEF7Sdt6+z6nFS+hLaA3QgU2H0L1kXIRlaKhiPEYhAJ
+	a52NToUFyQqomifL88sUoZ8SC4QhSIo6wdEOlifpUeGLbs6++zQtqW85sKfcqQlzIvQ1ay2
+	ZLUoqh4n/tMmwtvR7GWYz1qRxnY1tQRfkseroiBorgKjWjxgR5vQAfFt8Vp7D3uisHTTpYK
+	zOKdwGLIbfpVXtzQALiVrf/3vv0t9OLTcK1e00P3N3ytaWXqXxdVfwd4z6GDgOo3qtgB40O
+	XAuwwJyP8g7XjgaBYJEzBMRnc7zNY2bQPo6NIeUyexHREqN6Ow9xdUNPq/FOkpRNkL7lD5u
+	k5fltsaZBIexczPepCesBP0BoYHIo3AF3fIi262E9Z4OicWcGGOO6RUERD+nRcD5QAkZN8k
+	u8fELiS4SrSap7/7hVOJGIt4LNHWQtn0CaT1wF9LBIOSRy5eWEAAXjXG9XJXShm2Fuc4qS3
+	rEA/RzyKgnZKSTZ3NmB18jbJVD9Tojrh9pEZzVZPAHiKSXdk92PunPhdExltAOM6h0aEL2F
+	/V7nDYQ/S+o7iZNh7d4u1ZBoQu1lz1M5agXHSDIFxG3X6DJjNr7rYzb5FlkSg7+69Nz9l4L
+	aFwDnS52aih+GdnUeK6CFfclHX2xF2ST9UPJYuEw==
+X-QQ-XMRINFO: Mp0Kj//9VHAxzExpfF+O8yhSrljjwrznVg==
+X-QQ-RECHKSPAM: 0
 
-From: Fangyu Yu <fangyu.yu@linux.alibaba.com>
+On 2/8/2026 2:38 PM, Zong Li wrote:
+> This series implements support for the RISC-V IOMMU hardware performance
+> monitor.
+> 
+> The RISC-V IOMMU PMU driver is implemented as an auxiliary device driver
+> created by the parent RISC-V IOMMU driver. The child driver can obtain
+> resources and information from the parent device, such as the MMIO base
+> address and IRQ number.
+> 
+> Custom event support is not included in this series and will be submitted
+> as a separate series. The idea is that custom events will be defined
+> through the driver data of the auxiliary driver. When the parent IOMMU
+> driver creates the auxiliary device, it should pass a vendor-specific
+> name as the device name in order to match the corresponding auxiliary
+> device ID.
+> 
+> After my initial RFC and the v1 patch series were posted, similar patch
+> series also appeared on the mailing list.
+> 
+> One was from Yaxing Guo:
+> https://lore.kernel.org/all/20250915020911.1313-1-guoyaxing@bosc.ac.cn/
+> 
+> and another from Lv Zheng:
+> https://lore.kernel.org/all/30C7AD351DB55276+a8b03dac-c5af-4034-8631-ac1c352a469f@linux.spacemit.com/
 
-The RISC-V IOMMU v1.0.1 spec adds the Non-leaf PTE Invalidation extension
-(capabilities.NL) which allows IOTINVAL.VMA to invalidate cached non-leaf
-PTE information when performing address-specific invalidations.
+Please do not forget to Cc:
+Jingyu Li <joey.li@spacemit.com>
+I only provided T100 specific support in the posted series, and the
+new approach of the HPM driver in the same series is composed by her.
 
-Add the NL capability bit definition and the IOTINVAL.VMA NL operand bit,
-and provide a helper to set NL in an invalidation command.
+> 
+> Yaxing has agreed to pause his series, as discussed here:
+> https://lore.kernel.org/linux-iommu/2ce9d8be-10b3-48dd-b99e-7358347fc171@bosc.ac.cn/
+> 
+> The motivation for sending this v2 version is not only to address the
+> feedback and suggestions from the previous round, but also to introduce
+> a major structural change: the PMU driver has been moved under
+> drivers/perf/, which has been mentioned repeatedly by several people.
+> This results in a different driver structure compared to my earlier
+> version and the other two series, and I'd like to gather feedback and
+> suggestions from the community on this approach. If the community would
+> prefer to go with Lv Zheng’s version instead, I am perfectly fine with
+> that as well.
 
-Extend the internal IOTLB invalidation helpers to optionally request non-
-leaf invalidation and, when mapping replaces non-leaf page-table entries
-(freelist is not empty), invalidate the affected IOVA range with non-leaf
-semantics instead of falling back to invalidate-all.
+We'd like to know if there's any comments related to putting IOMMU HPM
+driver into drivers/perf folder and want to know if this is necessary.
+We also hesitated if riscv iommu hpm should be put into drivers/perf,
+and according to the followings, we finally decided to keep it in
+drivers/iommu:
+1. drivers/iommu has already a folder maintaining all IOMMU stuffs.
+2. drivers/iommu has already defined HPM related registers.
+3. Unlike PMCG of SMMU which is located in a separate namespace, RISC-V
+    IOMMU only defines 5 registers in the same address space as its
+    translation schemes.
+4. For HPM schemes that is not a standalone device, Intel has put its
+    perf driver under drivers/iommu/intel/perfmon.c.
 
-This reduces the scope of invalidations while keeping compatibility with
-implementations that do not support the NL extension.
+Cheers,
+Lv
 
-Signed-off-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
----
- drivers/iommu/riscv/iommu-bits.h |  7 +++++++
- drivers/iommu/riscv/iommu.c      | 29 +++++++++++++++++++++++------
- 2 files changed, 30 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/iommu/riscv/iommu-bits.h b/drivers/iommu/riscv/iommu-bits.h
-index 0d1f8813ae31..35bb9eaa5214 100644
---- a/drivers/iommu/riscv/iommu-bits.h
-+++ b/drivers/iommu/riscv/iommu-bits.h
-@@ -62,6 +62,7 @@
- #define RISCV_IOMMU_CAPABILITIES_PD8		BIT_ULL(38)
- #define RISCV_IOMMU_CAPABILITIES_PD17		BIT_ULL(39)
- #define RISCV_IOMMU_CAPABILITIES_PD20		BIT_ULL(40)
-+#define RISCV_IOMMU_CAPABILITIES_NL		BIT_ULL(42)
- #define RISCV_IOMMU_CAPABILITIES_S		BIT_ULL(43)
- 
- /**
-@@ -473,6 +474,7 @@ struct riscv_iommu_command {
- #define RISCV_IOMMU_CMD_IOTINVAL_PSCV		BIT_ULL(32)
- #define RISCV_IOMMU_CMD_IOTINVAL_GV		BIT_ULL(33)
- #define RISCV_IOMMU_CMD_IOTINVAL_GSCID		GENMASK_ULL(59, 44)
-+#define RISCV_IOMMU_CMD_IOTINVAL_NL		BIT_ULL(34)
- #define RISCV_IOMMU_CMD_IOTINVAL_S		BIT_ULL(9)
- /* dword1[61:10] is the 4K-aligned page address */
- #define RISCV_IOMMU_CMD_IOTINVAL_ADDR		GENMASK_ULL(61, 10)
-@@ -732,6 +734,11 @@ static inline void riscv_iommu_cmd_inval_set_addr(struct riscv_iommu_command *cm
- 	cmd->dword0 |= RISCV_IOMMU_CMD_IOTINVAL_AV;
- }
- 
-+static inline void riscv_iommu_cmd_inval_set_nonleaf(struct riscv_iommu_command *cmd)
-+{
-+	cmd->dword0 |= RISCV_IOMMU_CMD_IOTINVAL_NL;
-+}
-+
- static inline void riscv_iommu_cmd_inval_set_pscid(struct riscv_iommu_command *cmd,
- 						   int pscid)
- {
-diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
-index ae48409a052a..acc82c8626ce 100644
---- a/drivers/iommu/riscv/iommu.c
-+++ b/drivers/iommu/riscv/iommu.c
-@@ -933,7 +933,8 @@ static unsigned long range_encode(unsigned long start, unsigned long size)
- }
- static void riscv_iommu_iotlb_inval_range(struct riscv_iommu_domain *domain,
- 					  struct riscv_iommu_device *iommu,
--					  unsigned long start, unsigned long end)
-+					  unsigned long start, unsigned long end,
-+					  bool non_leaf)
- {
- 	struct riscv_iommu_command cmd;
- 	unsigned long len = end - start + 1;
-@@ -962,6 +963,16 @@ static void riscv_iommu_iotlb_inval_range(struct riscv_iommu_domain *domain,
- 	limit = PAGE_ALIGN(end + 1);
- 	cur = page_start;
- 
-+	if (non_leaf) {
-+		if (!!(iommu->caps & RISCV_IOMMU_CAPABILITIES_NL)) {
-+			riscv_iommu_cmd_inval_set_nonleaf(&cmd);
-+		} else {
-+			/* Falls back to whole address space invalidation */
-+			riscv_iommu_cmd_send(iommu, &cmd);
-+			return;
-+		}
-+	}
-+
- 	while (cur < limit) {
- 		max_range = 0;
- 
-@@ -1004,7 +1015,8 @@ static void riscv_iommu_iotlb_inval_range(struct riscv_iommu_domain *domain,
- #define RISCV_IOMMU_IOTLB_INVAL_LIMIT	(2 << 20)
- 
- static void riscv_iommu_iotlb_inval(struct riscv_iommu_domain *domain,
--				    unsigned long start, unsigned long end)
-+				    unsigned long start, unsigned long end,
-+				    bool non_leaf)
- {
- 	struct riscv_iommu_bond *bond;
- 	struct riscv_iommu_device *iommu, *prev;
-@@ -1052,8 +1064,11 @@ static void riscv_iommu_iotlb_inval(struct riscv_iommu_domain *domain,
- 			continue;
- 
- 		if (!!(iommu->caps & RISCV_IOMMU_CAPABILITIES_S)) {
--			riscv_iommu_iotlb_inval_range(domain, iommu, start, end);
-+			riscv_iommu_iotlb_inval_range(domain, iommu, start, end, non_leaf);
- 			continue;
-+		} else if (non_leaf) {
-+			/* Falls back to whole address space invalidation */
-+			len = ULONG_MAX;
- 		}
- 
- 		riscv_iommu_cmd_inval_vma(&cmd);
-@@ -1155,7 +1170,7 @@ static void riscv_iommu_iotlb_flush_all(struct iommu_domain *iommu_domain)
- {
- 	struct riscv_iommu_domain *domain = iommu_domain_to_riscv(iommu_domain);
- 
--	riscv_iommu_iotlb_inval(domain, 0, ULONG_MAX);
-+	riscv_iommu_iotlb_inval(domain, 0, ULONG_MAX, false);
- }
- 
- static void riscv_iommu_iotlb_sync(struct iommu_domain *iommu_domain,
-@@ -1163,7 +1178,7 @@ static void riscv_iommu_iotlb_sync(struct iommu_domain *iommu_domain,
- {
- 	struct riscv_iommu_domain *domain = iommu_domain_to_riscv(iommu_domain);
- 
--	riscv_iommu_iotlb_inval(domain, gather->start, gather->end);
-+	riscv_iommu_iotlb_inval(domain, gather->start, gather->end, false);
- }
- 
- #define PT_SHIFT (PAGE_SHIFT - ilog2(sizeof(pte_t)))
-@@ -1284,6 +1299,7 @@ static int riscv_iommu_map_pages(struct iommu_domain *iommu_domain,
- 	unsigned long pte, old, pte_prot;
- 	int rc = 0;
- 	struct iommu_pages_list freelist = IOMMU_PAGES_LIST_INIT(freelist);
-+	unsigned long inval_start = iova;
- 
- 	if (!(prot & IOMMU_WRITE))
- 		pte_prot = _PAGE_BASE | _PAGE_READ;
-@@ -1322,7 +1338,8 @@ static int riscv_iommu_map_pages(struct iommu_domain *iommu_domain,
- 		 * This will be updated with hardware support for
- 		 * capability.NL (non-leaf) IOTINVAL command.
- 		 */
--		riscv_iommu_iotlb_inval(domain, 0, ULONG_MAX);
-+		riscv_iommu_iotlb_inval(domain, inval_start,
-+					inval_start + size - 1, true);
- 		iommu_put_pages_list(&freelist);
- 	}
- 
--- 
-2.50.1
 
