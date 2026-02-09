@@ -1,63 +1,63 @@
-Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
+Received: from mail-wm1-f66.google.com (mail-wm1-f66.google.com [209.85.128.66])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3829837FF50
-	for <iommu@lists.linux.dev>; Mon,  9 Feb 2026 15:38:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66CD537FF7B
+	for <iommu@lists.linux.dev>; Mon,  9 Feb 2026 15:38:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.66
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770651494; cv=none; b=W8dbf4aVuctUfOs59pu4KcjAqMMlVR9bEsIypXBSjeLiP6xWZF4mDGn6ljS7gUDq4mBnl42d2ovlCI17iHEjvtgD0xhyIqSY2haFh7G9ksX8X0N+Sun4dsqr7XToprMmEKdz9wV5Ztjuq9A7t1/o5OYTNRCH2WXQvJNVQ4QEseU=
+	t=1770651495; cv=none; b=MVs0hClCFqW2SJpoIpw58gkjfwyZPRF4FaH60CczE5Epcr70eTJ4PilyeZNpaFS67fQ8Qo6VUauprcTxC9liLerNlJUcBy5QroLF6RDet2VRfh9OQ/x5Z4EQD2OgnsSTqordHVo8aLkJaoGjVFZ2ViTMtbkKWRR3YR4HUN+2TuQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770651494; c=relaxed/simple;
-	bh=ntpJZbbpBAGBfrW0cjUkMTCbCe6n90bP2ZCU7ZGm4GQ=;
+	s=arc-20240116; t=1770651495; c=relaxed/simple;
+	bh=4+KS84gkU8a/qj/+caCigpMBaF9Inx8ny9YhQVJcbQI=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=iMTcLQFk3rCLHuXuNMLlF3Q6HMwYZcP82lReYy6b85CavhO1Jj7rLSAVEQZt1y7dRPMozB6sJxX2olojqRHfmDQR3/NHgshrwW5/SnPIXeeKrsoLSx/WWfD/kI3jeMrg+ZDt57h3Fk8ynFH7DyhDwPLctZMgWii709vTkRfaSAk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=resnulli.us; spf=none smtp.mailfrom=resnulli.us; dkim=pass (2048-bit key) header.d=resnulli-us.20230601.gappssmtp.com header.i=@resnulli-us.20230601.gappssmtp.com header.b=lZlxXMTF; arc=none smtp.client-ip=209.85.221.51
+	 MIME-Version; b=QTJQFLVV/l4OHUUuqU/yXcIOdhWGgKO5VMmnYgJyHYCZhXj6HNN7x7u7RNH4O57Jps5/Mu9euySfS5hyNuB3EBtGFxTzp7j84heHnsl3G/COE6hTjLTlJPdPC4STsu81SoRFTpMAVntTtAL6Y3QWLn3MzhWxAtKHBapdO96yTqg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=resnulli.us; spf=none smtp.mailfrom=resnulli.us; dkim=pass (2048-bit key) header.d=resnulli-us.20230601.gappssmtp.com header.i=@resnulli-us.20230601.gappssmtp.com header.b=HPLQgGgJ; arc=none smtp.client-ip=209.85.128.66
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=resnulli.us
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=resnulli.us
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=resnulli-us.20230601.gappssmtp.com header.i=@resnulli-us.20230601.gappssmtp.com header.b="lZlxXMTF"
-Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-4359228b7c6so1952867f8f.2
-        for <iommu@lists.linux.dev>; Mon, 09 Feb 2026 07:38:14 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=resnulli-us.20230601.gappssmtp.com header.i=@resnulli-us.20230601.gappssmtp.com header.b="HPLQgGgJ"
+Received: by mail-wm1-f66.google.com with SMTP id 5b1f17b1804b1-47edd9024b1so39133075e9.3
+        for <iommu@lists.linux.dev>; Mon, 09 Feb 2026 07:38:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20230601.gappssmtp.com; s=20230601; t=1770651493; x=1771256293; darn=lists.linux.dev;
+        d=resnulli-us.20230601.gappssmtp.com; s=20230601; t=1770651494; x=1771256294; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=10eo7Xx3UsXznodXP/t6JgtysFzGllvuxfjnxVYXEzw=;
-        b=lZlxXMTFw7xNO/ElxRDZnqSDaWtcqeCDNkuDs1i2DabDOy5NJ0MRIgRsIHXE570H2G
-         HHWrHPI02SWPbyfNcqgV11NAmPquZmit32/rPPHCk+6KibLRiNCrGdCSPhGPTBOFkw0E
-         67ABy52m8/yVvcV6H+5kIgab3Pz1qs+UX116fCTjfBN5JVzA17OVl9r6iiklq5AfndV6
-         1lnvinwWOKPnXasOYjTrfnvkCEKZEpgE9DbRib6WmNxSb6MQuHC9vV+aUlz/6dD9tau5
-         9nr8+/YkxbdWKD0uoZ6P34s/428A0g2q6Y3nPT9gE5eSWiwFiBe70njDBPFLcTDbTTEq
-         XqiA==
+        bh=xCp//tMOTqGacLZXvOrrIiaVx7JZ5khmQmJbVkzQNLk=;
+        b=HPLQgGgJUB9MBPmh1Feluy+XWLeVC4Pkc0KiP9QiQ4JADz/RWZIqRZZFjRmYSE9O53
+         dyZiPmI9EkIyNLwlfPgOxf4WwhLCty7UsrsywUDDPisixuD5OqddttaAtb0ZrfXlajcK
+         ioyF61ygTOt/Zjz4v6YzQYht8atmwACzcocE9pYO/fojUdnNhxDQtRJiSXh8KWXtnVwE
+         E96x30fvNSCVa4qbkyJ9+Pv4wmkOKJ9H4c7Uprt/hQeb7vLTP7Iu9wJoPsscsTwWBlS4
+         96Vo5vUQG9JuTd56UvIKaG4g0uuGPp4cAn5/oiANJJ+TDv2aY1DgzfO66dj85PsZyFpk
+         YYGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770651493; x=1771256293;
+        d=1e100.net; s=20230601; t=1770651494; x=1771256294;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=10eo7Xx3UsXznodXP/t6JgtysFzGllvuxfjnxVYXEzw=;
-        b=wAIIlXFRBegCx4Nrjaya0b1FQI/adou3gH2/XcU5kf1u9Tdv+caGs8/BLMIsngaQcR
-         FroFeph0H8eBvWfZmGq5NGtywaM03DBn6c16QJ3G+rH4HOqHl1W2Agbe77vGdrlzJ6s8
-         8e7EfxH8tbUW8xShFZzTWU0bgwtfY+tzPuXpmQZBoTV0B+a+oca1G6E07OiY+Snsvs3Z
-         uF7qLaonCD8Qjyh3SqHLVoQcPe/pfQu3BU3dbUIVrahnZFlhPMPEZbUozolxkPRHVwpy
-         mh1XIsq8lHdPhvs6NCcCNnFbX5ZjcRI1kvG7cSLl7JUWwOpPQtdDkFzMgAksyR1UT0Xt
-         04EA==
-X-Forwarded-Encrypted: i=1; AJvYcCXvoeyXPMyklWz6rrOfezF2qs8C+/SLdqTnaHQg7bf56FvL+J16KrT0tcWyIlCn64YG7/ECfg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzVqFTGPtDvIUD4AaQUN3VkEvuxWwpoedJTkSr2bIVdzuuESlMn
-	G2O//phLDp2wt3SrnvPX5Ucfi9NuSF/bY07C3+2r60fVDjyqiCVAsKFidCGTB6u/REQ=
-X-Gm-Gg: AZuq6aIdYZE60KdNMXUxuWnO68nMYXPSc+4ZKapAg6LC40eUgbTcck3UzyL/Zl/cq++
-	8MHN2pnNgJA2DsHwnVdQb6CLwtV7m/09JsToco5IzDuYIpsvl9yEuw76+Zn+0EK7FutIlGrGOZm
-	Epm2D2V+3iGj4hoy8axuOxVh3PdHi3yC1L37rrBEdHusYmW66NhXVDSSBztzQjyvrNe441MsQev
-	231FjekQPyTX/8d0PdeDVi8LpknnNThlPdMbaMUnmB31nnV33fCOBAwQF6ASnp2vpwKZHZKl3hb
-	xnUwjiCTD/TP7BaN9fnwNjnomjkXoT/bajPDrmfGFZQKJmbCTdHiqtcDtXLFrMbLCxdcI8wpMQA
-	i4dD6C3QaVzuQ+Faj0WhQr3TTyOcQ9EyRLs2UB/EZCUgUOblygAK/fu+5+TdTwPkK5YmkSYjWSF
-	Bqzw==
-X-Received: by 2002:a05:6000:4211:b0:435:b755:c67e with SMTP id ffacd0b85a97d-4362938a453mr16934813f8f.49.1770651492550;
-        Mon, 09 Feb 2026 07:38:12 -0800 (PST)
+        bh=xCp//tMOTqGacLZXvOrrIiaVx7JZ5khmQmJbVkzQNLk=;
+        b=eQSsrZwoWD6GrVnOberaYVeT/WrSFPDy/tIYJXLy6uub7gJOROJNGbGOzFqg9K0oFr
+         TsonwI1EmFwVy3EoUiEmAkDAvPbPvRG7H0JT8CqYZCo47TxQ2HIghSBvj4R3owA1ZUgd
+         J1KT/WCXitmGxu5dSBMWbJUEeCgfYgOz/I3vdjcsTTUxuldZg3Yxlf9yU5/0xUpLsDqG
+         fqmmoAVWpGyGbUobG5zlEIYG3Zs7G0LEVw5DshSSVngzRy+vElHAagmpBGdpki8e6VLC
+         V2fsdbo0AKVtRU5pXEWu33Kbx9X6byCQTZBJ83OFLkCJLGwwsNTNtf7irJHgkKas5aTz
+         k2hw==
+X-Forwarded-Encrypted: i=1; AJvYcCWpHCelSVrVl5C6VnSKPW2yjN+o3BYtxNbrEDNYmWmH9g88fPAWQ3jSG8TeiA1IbR0ehIYbcQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yz16nHDEgTkpFzqtcoymaBOcd49btfU3jaUmMtaaOTlaPi2BKX3
+	symLJ/gXBQJ33A6aW9gUk1ykAM17++aq1LJBmNI0ZFXSoeS1UdeUXynFqXQKawM9Ilw=
+X-Gm-Gg: AZuq6aKFJ1Wcq9iFDTij2SFd2ST3lLdgk85P6Hn09Ibsb2WKXgtIlk5CVwPBA9F+YKA
+	SWHV6MIBDiqpVbIQAgU/+nDc4wMdbapyflAbl30hNjHduYXNHypcgl0cFnx41LJQPA1bL4rpWpq
+	FEsY4OUfS++TdkHIitCgbiwxj2qTML/N0gaKIOdQ6WmfuWbpVHxpv5o463IdjxOIKhuUVLsILTi
+	n7oqwhxDTf8TKLDu5KHLkOyJU4aESLwa4mvXQPVRi/EHkIJ0mc3bvC1Je3iAfcKN+GIf3/iRomY
+	4eABeK0pZFMbNzXIHGI7bHXop+Utjd7bIdugjbZBsQ7M3VyoU6SJZenuFd5MGj4orOWeKLXW0ew
+	EbGk8mfutQ8vFjefpQSablT3diNXeABSK6h6BQ6cF7cPi96bCs7ZE0ngftU7JxxTLIyMT6pewtI
+	tYUA==
+X-Received: by 2002:a05:600c:c16a:b0:475:dcbb:7903 with SMTP id 5b1f17b1804b1-483201e1895mr157429035e9.9.1770651493820;
+        Mon, 09 Feb 2026 07:38:13 -0800 (PST)
 Received: from localhost ([85.163.81.98])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-436296bd4a1sm27481147f8f.17.2026.02.09.07.38.11
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-483206b8ebbsm382402735e9.1.2026.02.09.07.38.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Feb 2026 07:38:12 -0800 (PST)
+        Mon, 09 Feb 2026 07:38:13 -0800 (PST)
 From: Jiri Pirko <jiri@resnulli.us>
 To: dri-devel@lists.freedesktop.org,
 	linaro-mm-sig@lists.linaro.org,
@@ -84,9 +84,9 @@ Cc: sumit.semwal@linaro.org,
 	ashish.kalra@amd.com,
 	suravee.suthikulpanit@amd.com,
 	linux-coco@lists.linux.dev
-Subject: [PATCH 2/5] dma-mapping: introduce DMA_ATTR_CC_DECRYPTED for pre-decrypted memory
-Date: Mon,  9 Feb 2026 16:38:06 +0100
-Message-ID: <20260209153809.250835-3-jiri@resnulli.us>
+Subject: [PATCH 3/5] dma-buf: heaps: use designated initializer for exp_info
+Date: Mon,  9 Feb 2026 16:38:07 +0100
+Message-ID: <20260209153809.250835-4-jiri@resnulli.us>
 X-Mailer: git-send-email 2.51.1
 In-Reply-To: <20260209153809.250835-1-jiri@resnulli.us>
 References: <20260209153809.250835-1-jiri@resnulli.us>
@@ -100,93 +100,63 @@ Content-Transfer-Encoding: 8bit
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-This is only relevant inside confidential computing (CoCo) virtual
-machines, not on the hypervisor side.
-
-Current CoCo designs don't place a vIOMMU in front of untrusted devices.
-Instead, the DMA API forces all untrusted device DMA through swiotlb
-bounce buffers (is_swiotlb_force_bounce()) which copies data into
-decrypted memory on behalf of the device.
-
-When a caller has already arranged for the memory to be decrypted
-via set_memory_decrypted(), the DMA API needs to know so it can map
-directly using the unencrypted physical address rather than bounce
-buffering. Following the pattern of DMA_ATTR_MMIO, add
-DMA_ATTR_CC_DECRYPTED for this purpose. Like the MMIO case, only the
-caller knows what kind of memory it has and must inform the DMA API
-for it to work correctly.
+Use designated initializer for dma_heap_export_info instead of
+separate field assignments and avoid the need to explicitly
+zero fields in preparation to follow-up patch.
 
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 ---
- include/linux/dma-mapping.h |  7 +++++++
- include/trace/events/dma.h  |  3 ++-
- kernel/dma/direct.h         | 14 +++++++++++---
- 3 files changed, 20 insertions(+), 4 deletions(-)
+ drivers/dma-buf/heaps/cma_heap.c    | 7 ++++---
+ drivers/dma-buf/heaps/system_heap.c | 9 ++++-----
+ 2 files changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index aa36a0d1d9df..052235feb853 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -78,6 +78,13 @@
-  */
- #define DMA_ATTR_MMIO		(1UL << 10)
+diff --git a/drivers/dma-buf/heaps/cma_heap.c b/drivers/dma-buf/heaps/cma_heap.c
+index 42f88193eab9..d12c98be7fa9 100644
+--- a/drivers/dma-buf/heaps/cma_heap.c
++++ b/drivers/dma-buf/heaps/cma_heap.c
+@@ -388,7 +388,10 @@ static const struct dma_heap_ops cma_heap_ops = {
  
-+/*
-+ * DMA_ATTR_CC_DECRYPTED: Indicates memory that has been explicitly decrypted
-+ * (shared) for confidential computing guests. The caller must have
-+ * called set_memory_decrypted(). A struct page is required.
-+ */
-+#define DMA_ATTR_CC_DECRYPTED	(1UL << 11)
-+
- /*
-  * A dma_addr_t can hold any valid DMA or bus address for the platform.  It can
-  * be given to a device to use as a DMA source or target.  It is specific to a
-diff --git a/include/trace/events/dma.h b/include/trace/events/dma.h
-index b3fef140ae15..b3c2cee8841a 100644
---- a/include/trace/events/dma.h
-+++ b/include/trace/events/dma.h
-@@ -32,7 +32,8 @@ TRACE_DEFINE_ENUM(DMA_NONE);
- 		{ DMA_ATTR_ALLOC_SINGLE_PAGES, "ALLOC_SINGLE_PAGES" }, \
- 		{ DMA_ATTR_NO_WARN, "NO_WARN" }, \
- 		{ DMA_ATTR_PRIVILEGED, "PRIVILEGED" }, \
--		{ DMA_ATTR_MMIO, "MMIO" })
-+		{ DMA_ATTR_MMIO, "MMIO" }, \
-+		{ DMA_ATTR_CC_DECRYPTED, "CC_DECRYPTED" })
+ static int __init __add_cma_heap(struct cma *cma, const char *name)
+ {
+-	struct dma_heap_export_info exp_info;
++	struct dma_heap_export_info exp_info = {
++		.name = name,
++		.ops = &cma_heap_ops,
++	};
+ 	struct cma_heap *cma_heap;
  
- DECLARE_EVENT_CLASS(dma_map,
- 	TP_PROTO(struct device *dev, phys_addr_t phys_addr, dma_addr_t dma_addr,
-diff --git a/kernel/dma/direct.h b/kernel/dma/direct.h
-index 62f0d9d0ba02..ae5bc1919e1c 100644
---- a/kernel/dma/direct.h
-+++ b/kernel/dma/direct.h
-@@ -87,16 +87,24 @@ static inline dma_addr_t dma_direct_map_phys(struct device *dev,
- 	dma_addr_t dma_addr;
+ 	cma_heap = kzalloc(sizeof(*cma_heap), GFP_KERNEL);
+@@ -396,8 +399,6 @@ static int __init __add_cma_heap(struct cma *cma, const char *name)
+ 		return -ENOMEM;
+ 	cma_heap->cma = cma;
  
- 	if (is_swiotlb_force_bounce(dev)) {
--		if (attrs & DMA_ATTR_MMIO)
--			return DMA_MAPPING_ERROR;
-+		if (!(attrs & DMA_ATTR_CC_DECRYPTED)) {
-+			if (attrs & DMA_ATTR_MMIO)
-+				return DMA_MAPPING_ERROR;
+-	exp_info.name = name;
+-	exp_info.ops = &cma_heap_ops;
+ 	exp_info.priv = cma_heap;
  
--		return swiotlb_map(dev, phys, size, dir, attrs);
-+			return swiotlb_map(dev, phys, size, dir, attrs);
-+		}
-+	} else if (attrs & DMA_ATTR_CC_DECRYPTED) {
-+		return DMA_MAPPING_ERROR;
- 	}
+ 	cma_heap->heap = dma_heap_add(&exp_info);
+diff --git a/drivers/dma-buf/heaps/system_heap.c b/drivers/dma-buf/heaps/system_heap.c
+index 4c782fe33fd4..124dca56e4d8 100644
+--- a/drivers/dma-buf/heaps/system_heap.c
++++ b/drivers/dma-buf/heaps/system_heap.c
+@@ -427,13 +427,12 @@ static const struct dma_heap_ops system_heap_ops = {
  
- 	if (attrs & DMA_ATTR_MMIO) {
- 		dma_addr = phys;
- 		if (unlikely(!dma_capable(dev, dma_addr, size, false)))
- 			goto err_overflow;
-+	} else if (attrs & DMA_ATTR_CC_DECRYPTED) {
-+		dma_addr = phys_to_dma_unencrypted(dev, phys);
-+		if (unlikely(!dma_capable(dev, dma_addr, size, false)))
-+			goto err_overflow;
- 	} else {
- 		dma_addr = phys_to_dma(dev, phys);
- 		if (unlikely(!dma_capable(dev, dma_addr, size, true)) ||
+ static int __init system_heap_create(void)
+ {
+-	struct dma_heap_export_info exp_info;
++	struct dma_heap_export_info exp_info = {
++		.name = "system",
++		.ops = &system_heap_ops,
++	};
+ 	struct dma_heap *sys_heap;
+ 
+-	exp_info.name = "system";
+-	exp_info.ops = &system_heap_ops;
+-	exp_info.priv = NULL;
+-
+ 	sys_heap = dma_heap_add(&exp_info);
+ 	if (IS_ERR(sys_heap))
+ 		return PTR_ERR(sys_heap);
 -- 
 2.51.1
 
