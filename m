@@ -1,92 +1,141 @@
-Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D26FF295DAC
-	for <iommu@lists.linux.dev>; Mon,  9 Feb 2026 15:35:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.251.105.195
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40F5737FF54
+	for <iommu@lists.linux.dev>; Mon,  9 Feb 2026 15:38:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770651342; cv=none; b=PRkUOgnVDQaPSrQzieDpCFyksGuID/VKEbGRGa0Nvli4aGSndSNsCAzuY6dqeSG0PDs3nv7ra3bSp2rY2gQAjusD1Vsdpv4eJ+GLSsVDd3wGtALMGRaMbMHD98j2LIoT1qBGMJOIu6kOgy70DamQHNVBO0uMxPe2fNaJNP+e12w=
+	t=1770651493; cv=none; b=beaPebM+FGR0Tv0U/M40tLoSY01zxhp3mH1c5GKuiBxJXV/5LfeM9KzVkUoKA0dNau407dVBJV+S2XUlq50YDTNgBxtXVfBkKtl60yWO+B/1MUYuGvHV+noQKPPHv9r+OLV29FOxNE7xlyHI100/12ngrqJcoekXpY3z5M+Edps=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770651342; c=relaxed/simple;
-	bh=U15/F91JTKEekYShyiR6dUHXzcOCFPKVIlg/bRPTaAI=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=f22YGEh6/xobCZycQiNMPr+Tdmd0Vhp9lgYvskRZZHWgP8OpwLMk/S/etOWcAWNipxysMmVZLh+N5qjaJcQDgIDXPm5m8rlFEoe/tXxNSD+XGPsYPCNSLQJ7qlL+rCUAN2ewgH0a9bBDs2ShSAumKUkp1Hxzoq5VXw45D8fUIOo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=BZAfX8oe; arc=none smtp.client-ip=148.251.105.195
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	s=arc-20240116; t=1770651493; c=relaxed/simple;
+	bh=ls9T1LlIM3oO6+LZXE2PlgRVjxyYDS9g9pq/cPHMgtY=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=r7/l0YfZVNaHNYmLF8jf5qPrqSIgilxMCeHA6ZtMt69SV8XHsUOogvcgt9iuK1jDE/2lLJtET/q645LNjpmieLXKqqaCclZM2i42Ypp5Wcd9wi+mg2dNZKdRgz838GWZyl89fGa5k8C1fkN4zn6ELZKmSl4G/IY3ZhcdAizsfTc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=resnulli.us; spf=none smtp.mailfrom=resnulli.us; dkim=pass (2048-bit key) header.d=resnulli-us.20230601.gappssmtp.com header.i=@resnulli-us.20230601.gappssmtp.com header.b=CLgqw1E2; arc=none smtp.client-ip=209.85.128.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=resnulli.us
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=resnulli.us
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="BZAfX8oe"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1770651340;
-	bh=U15/F91JTKEekYShyiR6dUHXzcOCFPKVIlg/bRPTaAI=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=BZAfX8oeM74obJfB9jbkW5ibDvMSdYszm/4kicoQIfE7r7NQx378ig4ngcSNN7OQF
-	 NJaoHq6H56xEzf0KJYHWe8CzU2T7owLlCNGO2zINtknrR81jP7rW2gw8sX9WzqpECc
-	 u+gz4Cxq6w38fmMg3/gzFnYCHEeaSgHlWiBedFn0jtw8O5LC2d4LWXOaDskn5VUZ5f
-	 ojRlSJL2jT95WK4kG4Ipg3n3eGwBlHX8XRpweiulTl1BLWNA+SYZWMAt1q6sP5oCQx
-	 xjdUNiThoYONG4rCZO6J29fEqsqYyprXGK+IJvzvlOTwBcXq9aGAGxsNpMZvc+U0X9
-	 82mMJKT+6bLVg==
-Received: from fedora (unknown [IPv6:2a01:e0a:2c:6930:d919:a6e:5ea1:8a9f])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	(Authenticated sender: bbrezillon)
-	by bali.collaboradmins.com (Postfix) with ESMTPSA id A441117E0699;
-	Mon,  9 Feb 2026 16:35:39 +0100 (CET)
-Date: Mon, 9 Feb 2026 16:35:34 +0100
-From: Boris Brezillon <boris.brezillon@collabora.com>
-To: Liviu Dudau <liviu.dudau@arm.com>
-Cc: Steven Price <steven.price@arm.com>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Rob
- Clark <robin.clark@oss.qualcomm.com>, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev, dri-devel@lists.freedesktop.org,
- linux-kernel@vger.kernel.org, Karunika Choo <karunika.choo@arm.com>, Liviu
- Dudau <liviu@dudau.co.uk>
-Subject: Re: [RFC PATCH] iommu/io-pgtable: Add support for Arm Mali v10+
- GPUs page table format
-Message-ID: <20260209163534.45b0ec7a@fedora>
-In-Reply-To: <aYn7obNImaI72MhK@e142607>
-References: <20260209112542.194140-1-liviu.dudau@arm.com>
-	<0af5b5f3-912a-4f16-a68b-032617576537@arm.com>
-	<aYngwtq_GtBYGjOC@e142607>
-	<ac5c3df0-1d94-4a1c-9eec-a359096cfce5@arm.com>
-	<aYn7obNImaI72MhK@e142607>
-Organization: Collabora
-X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-redhat-linux-gnu)
+	dkim=pass (2048-bit key) header.d=resnulli-us.20230601.gappssmtp.com header.i=@resnulli-us.20230601.gappssmtp.com header.b="CLgqw1E2"
+Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-4806dffc64cso39710605e9.1
+        for <iommu@lists.linux.dev>; Mon, 09 Feb 2026 07:38:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20230601.gappssmtp.com; s=20230601; t=1770651490; x=1771256290; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=BiucukKgd6A5IEwlte0sQaw8GOuaez4s0BdPuzMpI0U=;
+        b=CLgqw1E2CVxbmeFJeAsMZWgwxAveYW2GR/7KiUHgopx2yrRhyjdksUwR9CAs0sdYGu
+         tGlmk7rwU5ybXCayh1LTShgLMr3Ze595x2rylA1ADeMXuV1ozvpqQpGjizkt9ueaa/bh
+         EwmJvUn3too5SXdCyI/VNkpTuyRjR3HY459YEEKr0oQZfzcWnraIeOBbs9JsnObHesiZ
+         1YA1oSK+OH+cSsL564isQ3SIvr0y3dm3Fpi4g4hvlI1uNxK6cKei5BCwMnA0xTVbedGh
+         Uuo839+UCcMaMN+x+I86nSrWYgl+kvxwQeZdoTkReHDKuUgH6IpdaQiQr8xo3/+7jGrQ
+         UcrA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1770651490; x=1771256290;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=BiucukKgd6A5IEwlte0sQaw8GOuaez4s0BdPuzMpI0U=;
+        b=V656946RqQPCenx6L4r9IPa/8+2f/FZhjkBelH1dx8fpZcndz9uOLS3cvZFVXhJq7p
+         1Kg+ayTGYURDJaLFtv2aW6f+ihlxzjfnIKZ+5So6hMkdbqQS0AJzqA32xExkZQ6VsGVD
+         y3snypcpkvQSqEL/o3jMwl4ILLvx+l8xDFLY0oOc+6Mx7twweabxw67Rsoe67SnlqhAN
+         yRPQurXq03lxicaUNa1pPQ0d2DFcunrJFMaPbNw7pZdq4k8ZTDeZeAau3JNtlBUMitGD
+         2uNtEa+hntoQq+eDjg4QoeDAxYn9Pag905aZ32BDjZ+Z57/VkKA/m7I0eTPuXa5lwW2w
+         Z97Q==
+X-Forwarded-Encrypted: i=1; AJvYcCVuuw14CQATS0WMZPrjiJeH3eIqkkJzppreFJ8hRJb6ua1mHDIa6WonGu6AEKJiAk8XyBT//w==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzB6VXDQyOcNJ8miR01FoWRcll0Y5YaQzukVFyotAUkVD+iz0XY
+	mjl2Ik2kHS+KVO53XkBqTNog0js4jpILQPjZmBrjE6bubhCkHCpMdI0v8MUnArtel48=
+X-Gm-Gg: AZuq6aJtWkD38wlqhPUccb2KdQXGTfyNPDz+2xNIV0C/ID2YS7AP5wPklbzl/NZABhf
+	u8GExlSFDlUdzdLmwq9tb3vSxAQJr85iulght72s9HewUBW0sJ7cqMbZsbmuboswKlwXpJ92G4l
+	AvgRMyUnv/skZaUWIB5jITPXuOaLiqTZM+QO5yQ10nZH5gJWBWKMQ3eCgfzrgs/nM/tQUU6fMLB
+	qzK2/2eWgxYpIM3ljwJ2TBHluIQsV8ADDy5G4rH59q0wEFWKHHtm8/4rmsgQYkLowFgIhQY2RRa
+	fVf2xegIRNp07Mf0peawNs0Uzv3NFo5FFZlnq1lG5/mPg1cXSC3fQaF0DnB89XbnMFUtwArCetg
+	mjpTtRS2CQ6AQQFrZTC8T1WTga4Dr89ubdZfLyAp+SepnPXJKcjaRrCtEVCnDNdJFAS3jl8QUuA
+	rbJYtyIId2JfyA
+X-Received: by 2002:a05:600c:621a:b0:480:6852:8d94 with SMTP id 5b1f17b1804b1-4832097e2b0mr178535855e9.27.1770651490292;
+        Mon, 09 Feb 2026 07:38:10 -0800 (PST)
+Received: from localhost ([85.163.81.98])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48317d8341csm329338275e9.13.2026.02.09.07.38.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Feb 2026 07:38:09 -0800 (PST)
+From: Jiri Pirko <jiri@resnulli.us>
+To: dri-devel@lists.freedesktop.org,
+	linaro-mm-sig@lists.linaro.org,
+	iommu@lists.linux.dev,
+	linux-media@vger.kernel.org
+Cc: sumit.semwal@linaro.org,
+	benjamin.gaignard@collabora.com,
+	Brian.Starkey@arm.com,
+	jstultz@google.com,
+	tjmercier@google.com,
+	christian.koenig@amd.com,
+	m.szyprowski@samsung.com,
+	robin.murphy@arm.com,
+	jgg@ziepe.ca,
+	leon@kernel.org,
+	sean.anderson@linux.dev,
+	ptesarik@suse.com,
+	catalin.marinas@arm.com,
+	aneesh.kumar@kernel.org,
+	suzuki.poulose@arm.com,
+	steven.price@arm.com,
+	thomas.lendacky@amd.com,
+	john.allen@amd.com,
+	ashish.kalra@amd.com,
+	suravee.suthikulpanit@amd.com,
+	linux-coco@lists.linux.dev
+Subject: [PATCH 0/5] dma-buf: heaps: system: add an option to allocate explicitly decrypted memory
+Date: Mon,  9 Feb 2026 16:38:04 +0100
+Message-ID: <20260209153809.250835-1-jiri@resnulli.us>
+X-Mailer: git-send-email 2.51.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On Mon, 9 Feb 2026 15:22:09 +0000
-Liviu Dudau <liviu.dudau@arm.com> wrote:
+From: Jiri Pirko <jiri@nvidia.com>
 
-> > > Ultimately the role of this RFC is to start a discussion and to figure out a path
-> > > forward for CSF GPUs where we want now to tighen a bit the formats we support and
-> > > add PBHA and in the future we want to add support for v15+ page formats.  
-> > 
-> > PBHA is definitely an area for discussion. AIUI there are out-of-tree
-> > patches floating about for CPU support, but it hasn't been upstreamed. I
-> > don't know if any serious attempt has been made to push it upstream, but
-> > it's tricky because the architecture basically just says "IMPLEMENTATION
-> > DEFINED" which means you are no longer coding to the architecture but a
-> > specific implementation - and there's remarkably little documentation
-> > about what PBHA is used for in practice.
-> > 
-> > I haven't looked into the GPU situation with PBHA - again it would be
-> > good to have more details on how the bits would be set.  
-> 
-> I have a patch series that adds support in Panthor to apply some PBHA bits defined
-> in the DT based on an ID also defined in the DT and passed along as a VM_BIND parameter
-> if you want to play with it. However I have no direct knowledge on which PBHA values
-> would make a difference on the supported platforms (RK3xxx for example).
+Confidential computing (CoCo) VMs/guests, such as AMD SEV and Intel TDX,
+run with encrypted/protected memory which creates a challenge
+for devices that do not support DMA to it (no TDISP support).
 
-I don't know if that's what it's going be used for, but one very
-specific use case I'd like to see this PBHA extension backed by is
-"read-zero/write-discard" behavior that's needed for sparse bindings.
-Unfortunately, I've not heard on any HW-support for that in older
-gens...
+For kernel-only DMA operations, swiotlb bounce buffering provides a
+transparent solution by copying data through decrypted memory.
+However, the only way to get this memory into userspace is via the DMA
+API's dma_alloc_pages()/dma_mmap_pages() type interfaces which limits
+the use of the memory to a single DMA device, and is incompatible with
+pin_user_pages().
+
+These limitations are particularly problematic for the RDMA subsystem
+which makes heavy use of pin_user_pages() and expects flexible memory
+usage between many different DMA devices.
+
+This patch series enables userspace to explicitly request decrypted
+(shared) memory allocations from the dma-buf system heap.
+Userspace can mmap this memory and pass the dma-buf fd to other
+existing importers such as RDMA or DRM devices to access the
+memory. The DMA API is improved to allow the dma heap exporter to DMA
+map the shared memory to each importing device.
+
+Jiri Pirko (5):
+  dma-mapping: avoid random addr value print out on error path
+  dma-mapping: introduce DMA_ATTR_CC_DECRYPTED for pre-decrypted memory
+  dma-buf: heaps: use designated initializer for exp_info
+  dma-buf: heaps: allow heap to specify valid heap flags
+  dma-buf: heaps: system: add an option to allocate explicitly decrypted
+    memory
+
+ drivers/dma-buf/dma-heap.c          |  5 +-
+ drivers/dma-buf/heaps/cma_heap.c    |  7 ++-
+ drivers/dma-buf/heaps/system_heap.c | 96 ++++++++++++++++++++++++++---
+ include/linux/dma-heap.h            |  3 +
+ include/linux/dma-mapping.h         |  7 +++
+ include/trace/events/dma.h          |  3 +-
+ include/uapi/linux/dma-heap.h       | 12 +++-
+ kernel/dma/direct.h                 | 14 ++++-
+ 8 files changed, 128 insertions(+), 19 deletions(-)
+
+-- 
+2.51.1
+
