@@ -1,125 +1,142 @@
-Received: from mail-qk1-f194.google.com (mail-qk1-f194.google.com [209.85.222.194])
+Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DFCA25A2A2
-	for <iommu@lists.linux.dev>; Tue, 10 Feb 2026 13:02:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.194
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FDA814B977
+	for <iommu@lists.linux.dev>; Tue, 10 Feb 2026 13:15:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770728545; cv=none; b=MEhvTMTOQWSc6uAfhmUkfNJBf2SUjodtpDo4zExk9du+tDbRUynq6zKA6V7ocmz0W2ErbwmxRN46Fn4cPDNtd9nWAWEwkpJSoN6WAGtjMnK9iZsojdclmS7a1+xtJPrfLlSDGy2J/KptrCJK/k63SoOv7M+qHbiZiAlsx+wLTtE=
+	t=1770729329; cv=none; b=EWvUXZtH4LfyjivCGMjxNGKPoOPQ3/1LpUw6zznOBmw7gcyRhe/ZGXWlqg8p2pMoKHe7CexrmDUelH9rqQ781PGnspaYoUskrBpF+RqGm0t135frs6CxWYGVR5NhtJ9Owde/3LJfqHgaIYwY5xCh9VO1KWO9nUBRMaiNDAzthAQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770728545; c=relaxed/simple;
-	bh=+wmk6A0SSJQS90x9QvNwHXEyptqKAuBqDDTv/ioQHhg=;
+	s=arc-20240116; t=1770729329; c=relaxed/simple;
+	bh=F8w4PX3YR2LBUt2iuysbbtlPZH7MbKvPtV4LF1y5x4I=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=fW4fYwmg3uOfpBWeU8ASoF2JrSFKJb4U5aigK7oQLEJsh7bDEJFTyV4hyt68DNCririJPmGk4yBwK/F3Wx5iErOfWviFAmRWTYMyF3GUOMrncfM/+3o+yFOoQmis6/WJJTeIsVgefkrwINO4wE4kPVOwYpyZ1nuG2mfmdw9JPj8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=KV6A6i7q; arc=none smtp.client-ip=209.85.222.194
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	 Content-Type:Content-Disposition:In-Reply-To; b=DSWMeIVgdte4qkPLHUYjvUeVJFwXFpRDnaveuGLWAv0GLrDg78ctcS5YQ+u/Z2jB+a6jGAPFnCzjX/O9LNpmsTXNXr4jb5y3v4EB61WhBNzY0xAN+iIEbVyCTPdT/Nl3qsB7pD0ErQPdTDpWzYAKO6u6+ADshNBN0iVkOGplphU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=0/LX8pyQ; arc=none smtp.client-ip=209.85.214.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="KV6A6i7q"
-Received: by mail-qk1-f194.google.com with SMTP id af79cd13be357-8c6a50c17fdso413000085a.2
-        for <iommu@lists.linux.dev>; Tue, 10 Feb 2026 05:02:23 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="0/LX8pyQ"
+Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-2a76b39587aso72505ad.0
+        for <iommu@lists.linux.dev>; Tue, 10 Feb 2026 05:15:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1770728543; x=1771333343; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=CukWcBoPz7v4d6E1diLj/dADiY14CHwtYahwJE8UFu0=;
-        b=KV6A6i7ql6RvjfIy5dqC5et7Iierkjm8uuHeGCVaJbS3nCBmKqpTtFqQu+x8V4cYvQ
-         IFA4uIORRfEyBVNUEHrOTzgrgSQZGNPWdzfOnhSerEn4cFHk79z60Y74GAvDaHTAovpW
-         67dc9ShAPfqTPOAyqQZf3Jmj5pZCf+E4eMb9FL1PS5D7GTQ8RRf87B26FyP6UjtnHfK1
-         ZwSmGf/AbkwcJDKcsXwfjbr5t3N+Cr7zi/Jhh6baUDLV2zCMosm2rdtpEG/FAMbOGBrQ
-         7jy8FogNPScwIp2+C4vZ1QzYYwKVw4MK+U+Gwl9QKWsPeYui/QgSjhcbGUPx3+WOvqmk
-         G+Ig==
+        d=google.com; s=20230601; t=1770729328; x=1771334128; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=RX56B6Pzw6O0Q1rKBSh+0V8lVIPD4tWbCrOnzMgOsgU=;
+        b=0/LX8pyQbYy496grothoCm39DRSG6dN3Y6l2rqUo+e01GxfZ5k3/h9bWLjO9Lza1PI
+         zhi86NqRKDdmX3Xl5ZdK8YPnk907SQooj0AhGZE67Yg45yBF5SLEIRCoB0bEMuhAh95K
+         lNRx7refFKFX9NOoBZpcol3Sv3HuDVg23sGJx2BZ7trXeF8tQec70HAg+Q06zdwY5+ZG
+         S1/pNpAE8cUguLW/B4ADHmzMNZUlgxro1UsGpKVabHzQlom2fyklDyX5KoVF9TZdI0Nl
+         wxfAw6jCjal8vNR3JdlJszzFIKdqnPwxlG3oGDOZ5dxhzayqM9mv8I2wLLuJ3maFTbUd
+         jCsw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770728543; x=1771333343;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=CukWcBoPz7v4d6E1diLj/dADiY14CHwtYahwJE8UFu0=;
-        b=w5VULeOE1debcgHa14BJC4TdiUzJrh073lH9QUJj/Jr6ootUBeq21+CjxA8kKvk72C
-         2Lnkw4mKtpWdElA7oBGGE7mOydz6+Uu8YN97CviTrrKbXfMZ34/6I7SUKRhwx59fkPJ+
-         Mj92nRJ7fOa90oGKJAZbCSEgkOEfU1D11DZGej0Nyjxga0QPgtPSARFlLoS3k/qKg0BJ
-         yZYIEHZA3dvmYRJwjW/PqdEhzu1C/3IsIy1thtEJMb8+08m7lUf5MQA0qZ3cZuI/hbRb
-         Tk52ok71DIFgbm1pmhFO2Iwo0yvud9XNMtJUChRcO/nGDRO6Qub4bVH+Np6TQHY9phqV
-         SSRg==
-X-Forwarded-Encrypted: i=1; AJvYcCUnDU8v+Pj77B96MVatvyz9IebbLcK4FOyJp1oepyxxEWauPo5rRc70i22JM9hVMUekfhfRwQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxjNFOwEsByavcpWFPzu367WS83DbeCq++aRy1f+j8/aZL4/cnn
-	V4kLM782LE/IIMPb/OB4ICHNdLjXx0X8o+z9t9l5xICEInLBXkcwYi+BAF7+x3suSkZGy62DYuU
-	RjfjA
-X-Gm-Gg: AZuq6aJOhtVFaXjDi7Rd5vMmDgH1tn/lauN7UZshyG9Y/NF9Xe51HyUWQS+fOu+5Gp6
-	YyjjK5h12Kb9lH8dneRVoqvBkPTZrlJADCf3rZT2Tztf5vTD/2m7nRIH7WueWcE5dAyCH+540er
-	IKnVQvoshP2/UsQxJBt1AibPCbAsn4lW8OUgcMd36ARtchw+eV+v0v6FXJBJUC3fqa4sKHirHUG
-	Zb91iI3eTUMtVXzi4G8srxKla999wcdbx6g3pt5B1vPwF3kq3YUsPFpQj2k1qjZqxw8js1QKkT9
-	f2E0s8PIK6aAmgtOK1aI384Ce3Y7NB3tHRtY4iSRYp5HLa4e2wiBGGK4emjLXl9wi6QCHQvbiRk
-	gGtm3c1lftvo4jfit8UPyxXz4NzUeZBeuAE+iNwT7jNKOBW81IV0o2a+TPmKTZLLJ2hWs/xhZI+
-	1/MXfOB281bEqDmRcGum7Okpm5b4M3fYG6JB522E/cP2LyRAgmcqa+4vs0jxFMtIaYUVvmvc/3+
-	mSmsSQ=
-X-Received: by 2002:a05:620a:4006:b0:8b5:9f45:cce3 with SMTP id af79cd13be357-8caf13078ecmr1893502485a.69.1770728542911;
-        Tue, 10 Feb 2026 05:02:22 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-162-112-119.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.112.119])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-8caf9ee8662sm1119957785a.37.2026.02.10.05.02.21
+        d=1e100.net; s=20230601; t=1770729328; x=1771334128;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=RX56B6Pzw6O0Q1rKBSh+0V8lVIPD4tWbCrOnzMgOsgU=;
+        b=bbBtLLp9HQH/NHmX6yeX4ZG64/xCYwe2QfecaN48CAgKhwrZetaG89cG66LEZICCM6
+         GkXSpptPdNpkxTc3+nOxBuuj+IVN3OCdNajg+hlz2OG9+lw0f5jPBmrsm48lYkNou//5
+         Wv5w4YagjxkTOvJEdVUq9gCiZFMG57lOCD2YSd/JQFF3tZbjmLGtcrLwmjkvjE6y2+WZ
+         rT2x2wT6YVRmwnWxIAopUt0qIRnKTAT+FfhXP5KanMJJswPf+lI6BLyI8sODY+/cyB2l
+         RxXhwZ9wLQlUk+0ehG5SBuTgpuq20TxVMTFxx3VljQenJyAa6LvCePrIBr2wJSvlOmMA
+         vr/w==
+X-Forwarded-Encrypted: i=1; AJvYcCWXf6pxfXAc/ZLaA43XAGJTDYowr4+Mj7bnUChnmRkrcyDlF5AiHngXgDij3lqu+jekyBnl1g==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxXT3mIBjb5308KRRtzjfJ/ZJqy4OggavkA/eiN3doPsFXtxBnU
+	IQUntd2V5harjS0HDZF6O3c2u4d/unNl02x9Qy7davpoJEJC9PlvIUH/g8IKMy+4yg==
+X-Gm-Gg: AZuq6aI0FoscKW9A+fsihe0ksdnFWsHXaBMbDJM6+gjip6OjV0QSsBBuJcEI6vRkDEu
+	4/+aclcl0uXmgF9YiIRwP908H8X+Y6Bc8gja40Q30WnfHcm0z2NimMeVkYctpaQ3doMZLvnqugg
+	Vtz/7h7GhwJiXFu99wnvAO64J4kFYdK/5j2eIR9biZfbLYJ1vJgyHY54Pv+K7lLePqeT4WmDCG5
+	rqgOb+fqUoC9Szx3YBz0jbpWOMDWYNS8NcyGUQWGmFzHiOIFQGlC9Y0urcJwG/BFoFg9DzGPZRJ
+	TgHFY5b0Lea6ESyVoAASFLFdyoqmDKI7jP3u/utClq7W4TTyfnh9epvPsu3fW/7SdCByEC7vdfh
+	ftGNJxQkPcrta4hqxzQFL94FOFadJxRbg4mbr76L4Zvt0k+FSjODDqq6Zo6mKUWkeV1gtIgZuQH
+	AVHu/fF2tMhxjpzTIAmGvnq7bqAUShJwnc69jVvigw+5dfEz3A8xxDL2CMBHbU
+X-Received: by 2002:a17:903:32cf:b0:2a7:d266:d84a with SMTP id d9443c01a7336-2ab10104509mr2092735ad.17.1770729327080;
+        Tue, 10 Feb 2026 05:15:27 -0800 (PST)
+Received: from google.com (222.245.187.35.bc.googleusercontent.com. [35.187.245.222])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-824418dd7a2sm13128886b3a.59.2026.02.10.05.15.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Feb 2026 05:02:22 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1vpnNl-00000003784-1qfn;
-	Tue, 10 Feb 2026 09:02:21 -0400
-Date: Tue, 10 Feb 2026 09:02:21 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: fangyu.yu@linux.alibaba.com
-Cc: tjeznach@rivosinc.com, joro@8bytes.org, will@kernel.org,
-	robin.murphy@arm.com, pjw@kernel.org, palmer@dabbelt.com,
-	aou@eecs.berkeley.edu, alex@ghiti.fr, andrew.jones@oss.qualcomm.com,
-	guoren@kernel.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
-Subject: Re: [PATCH 0/2] iommu/riscv: support range and non-leaf IOTLB
- invalidation
-Message-ID: <20260210130221.GE943673@ziepe.ca>
-References: <20260208144213.94856-1-fangyu.yu@linux.alibaba.com>
+        Tue, 10 Feb 2026 05:15:26 -0800 (PST)
+Date: Tue, 10 Feb 2026 13:15:21 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Prakash Gupta <prakash.gupta@oss.qualcomm.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+	Joerg Roedel <joro@8bytes.org>,
+	Rob Clark <robin.clark@oss.qualcomm.com>,
+	Connor Abbott <cwabbott0@gmail.com>, linux-arm-msm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Akhil P Oommen <akhilpo@oss.qualcomm.com>,
+	Pratyush Brahma <pratyush.brahma@oss.qualcomm.com>
+Subject: Re: [PATCH] iommu/arm-smmu: Use pm_runtime in fault handlers
+Message-ID: <aYsvacmKoLroXlrZ@google.com>
+References: <20260127-smmu-rpm-v1-1-2ef2f4c85305@oss.qualcomm.com>
+ <9fb8f661-a235-4f86-bc10-f80a21a8fa9d@arm.com>
+ <00fcbcf2-3f48-410d-88a3-88dc834c1ed7@oss.qualcomm.com>
+ <d6bc7f38-b41d-4e89-b484-0e699981b8b4@arm.com>
+ <aYEFop8CJiLYzhLw@google.com>
+ <7720d215-9f92-4f0f-83af-c992e1cbe531@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260208144213.94856-1-fangyu.yu@linux.alibaba.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <7720d215-9f92-4f0f-83af-c992e1cbe531@oss.qualcomm.com>
 
-On Sun, Feb 08, 2026 at 10:42:11PM +0800, fangyu.yu@linux.alibaba.com wrote:
-> From: Fangyu Yu <fangyu.yu@linux.alibaba.com>
+On Tue, Feb 10, 2026 at 04:39:56PM +0530, Prakash Gupta wrote:
 > 
-> This series adds support for two RISC-V IOMMU v1.0.1 invalidation extensions in
-> the RISC-V IOMMU driver:
 > 
->   - Address Range Invalidation (capabilities.S), which allows encoding a NAPOT
->     address range in the IOTINVAL.{VMA,GVMA} ADDR operand when the S bit is set,
->     reducing the number of invalidation commands for large or superpage-backed
->     mappings.
+> On 2/3/2026 1:44 AM, Pranjal Shrivastava wrote:
+> > On Wed, Jan 28, 2026 at 06:44:35PM +0000, Robin Murphy wrote:
+> >> [ +Pranjal as this might matter for v3 too... ]
+> >>
+> > 
+> > Hi Robin,
+> > 
+> > To weigh in from the arm-smmu-v3 side, we’ve attempted to address the
+> > "can of worms" regarding power races by leaning on these differences:
+> > 
+> >  - Threaded IRQs for PRI/Events: In the recent series[1], the PRI and
+> >    event handlers are fully threaded. This allows us to call 
+> >    arm_smmu_rpm_get() safely, as the handler can sleep while waiting for
+> >    the hardware to resume.
+> > 
+> >  - GERROR Handling: Since GERROR remains a hard IRQ, we handle any
+> >    pending gerrors in the suspend callback before the SMMU actually
+> >    powers down. Any GERROR interrupts received while the device was
+> >    suspended are treated as spurious and ignored.
+> > 
+> > Thanks,
+> > Praan
 > 
->   - Non-leaf PTE Invalidation (capabilities.NL), which allows IOTINVAL.VMA with
->     AV=1 and NL=1 to invalidate cached non-leaf PTE information for the given
->     IOVA, addressing cases where updating mappings replaces a non-leaf entry.
+> [1] refer to case where SMMU state is not retained during smmu device
+> power down, this I think is equally applicable for both context and
+> global faults.
 > 
-> Patch 1 introduces the missing capability/operand definitions and switches the
-> IOTLB invalidation path to use NAPOT range invalidations when supported.
-> 
-> Patch 2 adds the NL capability/operand definitions and extends the invalidation
-> path to optionally request non-leaf invalidation. When map_pages() replaces
-> non-leaf page-table entries, the driver invalidates the affected IOVA range with
-> non-leaf semantics.
-> 
-> No functional changes are expected on hardware that does not advertise these
-> capabilities; the driver continues to fall back to the existing invalidation
-> behavior.
-> 
-> Fangyu Yu (2):
->   iommu/riscv: Add NAPOT range invalidation support for IOTINVAL
->   iommu/riscv: Add non-leaf invalidation support
+> Since the ARM SMMU runtime resume triggers a device reset, any pending
+> faults would be cleared during resume. Here the solution can be to
+> handle both global and context faults before allowing the SMMU device to
+> suspend.
+> With this approach, any hard or threaded IRQ scheduled after the SMMU
+> device has suspended can be safely ignored.
+> One concern I see is iommu fault reporting to clients while handling
+> fault during smmu device suspend.
 
-These will need to be redone on top of the new page table code for riscv:
+I believe by the time we've reached suspend it's safe to assume that all
+clients have been suspended. Thus, we could simply not report the error
+and instead scream by having a dev_warn_ratelimited about the situation.
 
-https://patch.msgid.link/r/0-v3-9dbf0a72a51c+302-iommu_pt_riscv_jgg@nvidia.com
+Thanks,
+Praan
 
-It should get picked up early in the next cycle
-
-Jason
+> 
+> Thanks,
+> Prakash
+> 
+> [1] https://lore.kernel.org/all/20260126151157.3418145-9-praan@google.com/
+> 
