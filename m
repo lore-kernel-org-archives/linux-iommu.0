@@ -1,71 +1,89 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f178.google.com (mail-qk1-f178.google.com [209.85.222.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19632319858;
-	Tue, 10 Feb 2026 12:02:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8F871D9663
+	for <iommu@lists.linux.dev>; Tue, 10 Feb 2026 12:43:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770724969; cv=none; b=PfNrYGcVBXWR4cXg9SaeXgUmLpp+LF3vhc0Up9vrjnrz1B1bej4VIdZ+tLb4ePAMdLJ5iLgzBHsyFoSr9GpES3YSJJQYQp7TF15nA12Ba6RC2X/9Zemui+SIVYk0P+cKVDCK6b6bZ1U5h+d4Xc7fTU3AU405Q+3lWR32EsMEbYQ=
+	t=1770727440; cv=none; b=G6nyOd8zmel+tT+/rHq33ykVNRZj3daPo1qY3ABzOOY0r3l+QPVWp8LMcTOAoWm2S3z9TUl3DTH3Wdm9/XG1okXoahDH0K0snfxvyfnzRSK65dOymDQ0H3XFBDWvmN5K/aTWcL7UgYVZSlen55D6+t0nXxPi2B6BzLCDx6KwvlQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770724969; c=relaxed/simple;
-	bh=kAPSTtOVfJfIS9jV+CgJZlMJ295jsAmJD3EnF4QdBNw=;
+	s=arc-20240116; t=1770727440; c=relaxed/simple;
+	bh=xonj/+koAdun2zKMmTEgycmII1nNMKC1m2Fb9Sy9enE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=TYeTqtMX5PL2p4v79K3DPVCaBqqlXgRluYsfk299Y/gcrAZo53qRapOqDZMKpj8cASKjfrLX3VxajfFBqlluVXyfaA2CQRRnLJ5VXsGAMKw87P+sfEG9hTyq9mNNjDtgNZtW+LrAwSAPymX0SubUFq26Sc+DDxTrfhkpbqlxcog=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=V3iQOMrL; arc=none smtp.client-ip=198.175.65.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=kD0J/CrcXhekQPVWkw8FWtIWf1qZNSplA1dIO/2Bb43YxwF3QFE31UITnqFewsd0c3p/HMPAdyicAMXJ8jNqteux6o7KLMmu60Gv3sKvK6g0jZeg8swI+xFUiYqL7q26X3iUVv44/bD2VMx0Cue/CbhJTMzH6fGxL9KlUjdkGVk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=kbA4nn+f; arc=none smtp.client-ip=209.85.222.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="V3iQOMrL"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1770724968; x=1802260968;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=kAPSTtOVfJfIS9jV+CgJZlMJ295jsAmJD3EnF4QdBNw=;
-  b=V3iQOMrLYI6PkDk+WaE4GsLHxw/oHdsQ6fXkUHsKpuHeP9Z0GEWUWPbc
-   /5Xn1s1LiSdwggCOKYv+Bfyxy4T8XCfLN5jmJFgTPKp+KiTIi1fv6xg92
-   7Vm7y9UefK6KCuJHpBmVdikjQyYdTnFbUYYiKvONn+GewPmgYXvZcJ7vn
-   IDQVKAiXh/gAg8uicfvdGrn8TIilac4z076YyoYDTCsLaK+Kyr8ipASYp
-   Lo+7ufvvLQkFcYXxUMvn3+T8ZLJVdhbX56h1MuV+3Y4D0sc/F+d1/nP5O
-   mPNFy2ES1VR1BFZv5BVzz/YVB7vafIjVT6N/lJ4DQiXhWA+p1Nywu0YGI
-   Q==;
-X-CSE-ConnectionGUID: +Av3pbyFSNqcEzQJa339Kg==
-X-CSE-MsgGUID: WwRcVaa6RZq3t6RlCzfRKA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11696"; a="71893908"
-X-IronPort-AV: E=Sophos;i="6.21,283,1763452800"; 
-   d="scan'208";a="71893908"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2026 04:02:48 -0800
-X-CSE-ConnectionGUID: FHhtlCbwTlSbN4KSJ4eG9Q==
-X-CSE-MsgGUID: ouaiq7hVRwuooZ1RvfqwTw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,283,1763452800"; 
-   d="scan'208";a="211003400"
-Received: from lkp-server01.sh.intel.com (HELO 765f4a05e27f) ([10.239.97.150])
-  by orviesa006.jf.intel.com with ESMTP; 10 Feb 2026 04:02:40 -0800
-Received: from kbuild by 765f4a05e27f with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1vpmRw-00000000oyu-1ZR6;
-	Tue, 10 Feb 2026 12:02:36 +0000
-Date: Tue, 10 Feb 2026 20:02:02 +0800
-From: kernel test robot <lkp@intel.com>
-To: Jiri Pirko <jiri@resnulli.us>, dri-devel@lists.freedesktop.org,
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="kbA4nn+f"
+Received: by mail-qk1-f178.google.com with SMTP id af79cd13be357-8ca3807494eso53728685a.2
+        for <iommu@lists.linux.dev>; Tue, 10 Feb 2026 04:43:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1770727438; x=1771332238; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=N5ebXMgdbEnP2n7MqO77VYCN9M2l8thAEykxr97Y/HU=;
+        b=kbA4nn+fum5ZXp23MLDiJ4ZZY0SQscENZhB0Dc8mZ8zlU3aLb7q3SrGrlAWjvOCQDp
+         WD1ZrcIEZO69h6dKJbBADzvNFftiYSuOp2Ie3ENuNsWx8E6H8cj801h1sS8jyrK0ut9Z
+         PzYuKm5ZL+REB8bL7g2eUK2i1NVwEHRvT4cKNxovS7A0WGwJfPV1LAU9ujd+ApJokpBI
+         52vBcxn1uCmERjefVYewVgw4EXb0P/ptW1eN6G5DlbQKcK2NYhMWJYFp3IePPRbrGPC8
+         Bcq7JkHnzK/mWMUpXCTogWNfKbxcr1ZASioWBu0PtwweOj0/74gwO1xKraWP5EESS8oa
+         +4xA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1770727438; x=1771332238;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=N5ebXMgdbEnP2n7MqO77VYCN9M2l8thAEykxr97Y/HU=;
+        b=cJEzKwjdMnkMNLwZ/grRwOH1r2pBXUX6BQwocuoPF5H9XZg9fOWbrxC9nfTxs8e4rD
+         7XuZWcyyAllrOeLrJC1p/nuU1PMlwJ7GyvWrUkEVyxkFZjlj12WzL9ouErzY0wS4Ph/+
+         5aNTZa6qiz5UbAzYpY9sJD3NGwDUwLVgX1H6QOvf9kseqZrag3sFn2K76ebAvgQ5DRib
+         cHDxjIdoYkO47b5NGJhNetgLa0yjec0gJBO+M+XadkXBg+YaiOLahbMWw5owXCNp47lT
+         hwckL7lgzRTCV17DbwntV5biIpT03+FJc9U2meAoi2SBJR5ZkHlSko6j8OPbb5oxczBP
+         U4/Q==
+X-Forwarded-Encrypted: i=1; AJvYcCUGRBeVTyQQmY8wFZbcslqPqc1OydnUJuQnd6An8NzRgVeuyuv7B8Ul3zle/00mGjSowD/90w==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzkRhPwgEG53lLARGZdDWjZFu0+qkDKoDI3JTBIbm61ZrRZEXLu
+	qrTdHnpMl5dpcmq5guNPSQMQ3g+A00G6fWvLZxivQljQtFal6wRs9qDofH+iG20l9kQ=
+X-Gm-Gg: AZuq6aJYasnRucEHEvNDH009NTqgTjmG6bVo0DTYnROr+JC9YZlLkgR/Ff7AGn8mwav
+	p/OD3X2+7iOQQFCXyrJOPztBL3ZqYp77DwnSpZofwOwoUT8x113if7vYOXs/m49y05EAO1LePZU
+	EQsJ1tR9paKAMj8uq7QoUmiMl2tauLw3BEspz5Zb+fFm+fvFk30weziLO/o3Sk+q8nTASjbFpjE
+	VQgcVhxg6PvtIGDgK8VVzPHEFdD0FIxwVdBKX7ux51baWPURYk+equ2RlSelb7sbQwf6al5fDw4
+	hDFYrq7BJ+RSHcOgHq6y4t3irhpVvdqurBK7pjbKtUFmM0wB3euVGwHMg7Ldkj6KFZZwCAwbQ6V
+	ommuhV23itd9yoQyTPsjgT4MFxWysoagXk1lRfuFqshjoLQtha/E/XYm4ldn7eqN3CZD3OHfFLr
+	Vl9gEke8jfJfMH30BW7pBO2oJssohHVz7MtV0uVm1I78Gi3WJwO6dEF/GEy/S+XO/XveOSygi4G
+	e6FIKI=
+X-Received: by 2002:a05:620a:40c7:b0:8ca:55:ac60 with SMTP id af79cd13be357-8caf16ec83amr1829777785a.78.1770727438524;
+        Tue, 10 Feb 2026 04:43:58 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-162-112-119.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.112.119])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-8caf9ee8593sm1019180385a.36.2026.02.10.04.43.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 Feb 2026 04:43:57 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1vpn5x-0000000315A-13dh;
+	Tue, 10 Feb 2026 08:43:57 -0400
+Date: Tue, 10 Feb 2026 08:43:57 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Jiri Pirko <jiri@resnulli.us>
+Cc: John Stultz <jstultz@google.com>, dri-devel@lists.freedesktop.org,
 	linaro-mm-sig@lists.linaro.org, iommu@lists.linux.dev,
-	linux-media@vger.kernel.org
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-	sumit.semwal@linaro.org, benjamin.gaignard@collabora.com,
-	Brian.Starkey@arm.com, jstultz@google.com, tjmercier@google.com,
-	christian.koenig@amd.com, m.szyprowski@samsung.com,
-	robin.murphy@arm.com, jgg@ziepe.ca, leon@kernel.org,
+	linux-media@vger.kernel.org, sumit.semwal@linaro.org,
+	benjamin.gaignard@collabora.com, Brian.Starkey@arm.com,
+	tjmercier@google.com, christian.koenig@amd.com,
+	m.szyprowski@samsung.com, robin.murphy@arm.com, leon@kernel.org,
 	sean.anderson@linux.dev, ptesarik@suse.com, catalin.marinas@arm.com,
 	aneesh.kumar@kernel.org, suzuki.poulose@arm.com,
 	steven.price@arm.com, thomas.lendacky@amd.com, john.allen@amd.com,
 	ashish.kalra@amd.com, suravee.suthikulpanit@amd.com,
 	linux-coco@lists.linux.dev
-Subject: Re: [PATCH 5/5] dma-buf: heaps: system: add an option to allocate
- explicitly decrypted memory
-Message-ID: <202602101926.lsquJdb1-lkp@intel.com>
-References: <20260209153809.250835-6-jiri@resnulli.us>
+Subject: Re: [PATCH 4/5] dma-buf: heaps: allow heap to specify valid heap
+ flags
+Message-ID: <20260210124357.GD943673@ziepe.ca>
+References: <20260209153809.250835-1-jiri@resnulli.us>
+ <20260209153809.250835-5-jiri@resnulli.us>
+ <CANDhNCoHEZsNRmU+3z5AbeAy05H7PTtUdTq1apNd5k0f9hWW8A@mail.gmail.com>
+ <20260210002927.GC943673@ziepe.ca>
+ <tgvdjszwxggr53digbmddcbxvupzl4xcoprofkgrs2kgf6rknx@44ebljjpghjm>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -74,75 +92,19 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260209153809.250835-6-jiri@resnulli.us>
+In-Reply-To: <tgvdjszwxggr53digbmddcbxvupzl4xcoprofkgrs2kgf6rknx@44ebljjpghjm>
 
-Hi Jiri,
+On Tue, Feb 10, 2026 at 10:14:08AM +0100, Jiri Pirko wrote:
 
-kernel test robot noticed the following build errors:
+> >I'd advocate that the right design is for userspace to positively
+> >signal via this flag that it wants/accepts shared memory and without
+> >the flag shared memory should never be returned.
+> 
+> We can have the same behaviour with the separate heap, can't we?
+> Userpace positively signals it wants/accepts the shared memory by
+> choosing "system_cc_decrypted" heap name.
 
-[auto build test ERROR on drm-misc/drm-misc-next]
-[also build test ERROR on drm-tip/drm-tip trace/for-next linus/master v6.19]
-[cannot apply to next-20260209]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+So what do the other heap names do? Always private? Do you ever get
+heaps that are unknowably private or shared (eg MMIO backed?)
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Jiri-Pirko/dma-mapping-avoid-random-addr-value-print-out-on-error-path/20260209-234013
-base:   https://gitlab.freedesktop.org/drm/misc/kernel.git drm-misc-next
-patch link:    https://lore.kernel.org/r/20260209153809.250835-6-jiri%40resnulli.us
-patch subject: [PATCH 5/5] dma-buf: heaps: system: add an option to allocate explicitly decrypted memory
-config: s390-allmodconfig (https://download.01.org/0day-ci/archive/20260210/202602101926.lsquJdb1-lkp@intel.com/config)
-compiler: clang version 18.1.8 (https://github.com/llvm/llvm-project 3b5b5c1ec4a3095ab096dd780e84d7ab81f3d7ff)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260210/202602101926.lsquJdb1-lkp@intel.com/reproduce)
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202602101926.lsquJdb1-lkp@intel.com/
-
-All errors (new ones prefixed by >>):
-
->> drivers/dma-buf/heaps/system_heap.c:66:8: error: call to undeclared function 'set_memory_decrypted'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-      66 |         ret = set_memory_decrypted(addr, nr_pages);
-         |               ^
->> drivers/dma-buf/heaps/system_heap.c:80:8: error: call to undeclared function 'set_memory_encrypted'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-      80 |         ret = set_memory_encrypted(addr, nr_pages);
-         |               ^
-   2 errors generated.
-
-
-vim +/set_memory_decrypted +66 drivers/dma-buf/heaps/system_heap.c
-
-    59	
-    60	static int system_heap_set_page_decrypted(struct page *page)
-    61	{
-    62		unsigned long addr = (unsigned long)page_address(page);
-    63		unsigned int nr_pages = 1 << compound_order(page);
-    64		int ret;
-    65	
-  > 66		ret = set_memory_decrypted(addr, nr_pages);
-    67		if (ret)
-    68			pr_warn_ratelimited("dma-buf system heap: failed to decrypt page at %p\n",
-    69					    page_address(page));
-    70	
-    71		return ret;
-    72	}
-    73	
-    74	static int system_heap_set_page_encrypted(struct page *page)
-    75	{
-    76		unsigned long addr = (unsigned long)page_address(page);
-    77		unsigned int nr_pages = 1 << compound_order(page);
-    78		int ret;
-    79	
-  > 80		ret = set_memory_encrypted(addr, nr_pages);
-    81		if (ret)
-    82			pr_warn_ratelimited("dma-buf system heap: failed to re-encrypt page at %p, leaking memory\n",
-    83					    page_address(page));
-    84	
-    85		return ret;
-    86	}
-    87	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Jason
