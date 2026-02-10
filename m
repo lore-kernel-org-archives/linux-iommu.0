@@ -1,164 +1,146 @@
-Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6290932C33E
-	for <iommu@lists.linux.dev>; Tue, 10 Feb 2026 16:18:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01BFA319850;
+	Tue, 10 Feb 2026 18:03:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770740295; cv=none; b=rIHXpufFjAYrqJXlWJWZmOAT5zyZ7fHi8GpHKwY5L6WEo6CiX3meLdZct0wVlxlaEs5LkwUQYcuiHMvaGNVrPO4OWs6pY0RopXAvzTd4FvAtnimwbXDYGv/Ldvgd9SZM8Z3drjUDE0t2wISmqKGLxV4I1S7b4pxSVAWpqnzaey8=
+	t=1770746640; cv=none; b=fP31hBezpuq+WyrbAHOp86peHvN3u1AJgOUkIDI9+ggTzRIbDLyjbFMwGJHjrxJ2Q+oqvvIa2BhTGSCnVRY188RFQp2k7lzRtgTQLY+SrkA2j93FbkpEVz9WpSsuKHV+/oO+MUPagQxxgltm5qewHqZaPW/PmaHIYKtmfxmVfJA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770740295; c=relaxed/simple;
-	bh=VRL/E7nK1fyZMX83uu6bt4FiGrPrpeuaTEztrOQsu9U=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=VTd60vNaH0HrCkrvafnfoKfNmPYIq4lmNaiVDg1XbMlAgUX1ZIgaIUfbxfjdm6Ph3Yi4b8XDqXsH/06oMDYDBYsoaofEevs2z0q1NWd8UCci/UigVV38merUqIpVfFQ48oFooeunvzGHD0mxuPYQw0MsGPJEJ7V4BgAck6YxpHw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=irhEEEoy; arc=none smtp.client-ip=209.85.221.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1770746640; c=relaxed/simple;
+	bh=RCF0n7XHDUGKM+cjf33SZOFc4i4PkHY0jF5mOX8LCFE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=CKpoqNPILaKezeS3jKPCiolCWU7z1TRAil3FAk/2SOcU4JJ/J0a3Md68u3F67xyq3Oe+16USu9mPJR/TGvJfyzvw72S52W/Qxx+c9g9X+I3AeqUBeoWTYcVK+ZLZUVIATt/hqVdMvh98wlgh8vbszPp1nXQB4MstGdpk8y2rqxE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hMXifKy9; arc=none smtp.client-ip=198.175.65.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="irhEEEoy"
-Received: by mail-wr1-f49.google.com with SMTP id ffacd0b85a97d-4377174e1ebso1551842f8f.3
-        for <iommu@lists.linux.dev>; Tue, 10 Feb 2026 08:18:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1770740292; x=1771345092; darn=lists.linux.dev;
-        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
-         :date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=L3mzE9q9JZeLiz5qheXEKidJ4W/5JZW1PBYdqCp5RPU=;
-        b=irhEEEoyLDCn/xWpEaAuHGfJXWQYHMB8JKuTSBeR6OX620PMS6gf/ialWYWzFTqd8S
-         FxckSp0GlaRoAoHg+lbuGTbT81o3WPtUHWIlQjy6uNocwW5TfTHhcD7+4hA74sm1TIjf
-         ciFGLTshrPHb1uE7R4wNf0xf8MYLCj718zF+Lq70oml10F3Qev6jqpDZjYcSCVG/Rfzk
-         NaW5akdKtLAEgvsL5FUn2tEB1YpZIBkBQ9iOSZeF6MZCanTb4BglItWRgzJT6MfstRjD
-         pj7sZYTuDmPjs3MLKH3TpNBNRTrBDBOi5jnMa+zew8l2Hpfo9izglxe3bVq3gmoZ/ZYW
-         N9Vw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770740292; x=1771345092;
-        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
-         :date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=L3mzE9q9JZeLiz5qheXEKidJ4W/5JZW1PBYdqCp5RPU=;
-        b=mAhd94XJKpNC0OSE8GKcNUPlsYwNJO7xyPeaRzYZuBdl9qpg4VLUdO4nD+8zZy4dIm
-         7AdNKoO3C7uSLBjWn7RVjRbrtSQ/cXfjOWW6s5+qllFdrZRT3gLDytpUlb7GiQm67tox
-         GEwt+YBNek0wRPOo6bMF8PNNFcXSKOsuviXj70AwY6tFBdLflBAUNyoj2OGrfrCB/b3z
-         IPPzBBiduSWT7+eJC3QxaWPCIs8BiV+XVn3cqVT7eU1JzA++dS0joZ8auQJvX3WxKKGz
-         eWrxZeuvUtAr3mo3cd1BA/clx1U10bx8iujBVlH0UzwfXaakBMAHYZeMTWthasfW/J9o
-         tujw==
-X-Gm-Message-State: AOJu0YzCqy9B/bCXhrA3j7h7FbwNFbWVZojWhYV7E/xB6AFhcGDcGnrM
-	BzQ05vSzs/vq7RDHt53yifGuApHTdloe0eIKKaSutVDkYDUBb5Id4Bg=
-X-Gm-Gg: AZuq6aIwVLhmquwCo7issa2Bqe3OSa0wO8KJM8jecq2b+brUWkmC5HUMiZYUFKxMEOh
-	OpHqNlc0j6JvXccpjLTCAaQyTrfvQbGn4+pA+W1oUPGxa3x3xJBmRJ3exajH3eQuFAOr4zThyFW
-	xjpt9jvDx3wSUc+jh3xl/+A9YyaVrPXpSMyEZNvkUasy4QyYIihWpn+mEnPbcz77e4V9QLOEKcV
-	oXg8k6D8A1AUzYwlZKUSx6i3AO6bUihcy6oKFOX52FKfK0aTupgxBeNyj/dcPZuyce6HVkEm1lj
-	gbpW6QSRdlogX29JRpJPARL/uZQVq14TuSj/YD9Fs9ifHrKhHIwxtpL3v0EafRGTNmTnjsAizw3
-	QFm41euHU8V7Cc89P7NxbrHJkkmma4VPUY1zvTjsi3ZdbDhvFT/LQeTDGosYU/KYMoijCtThewM
-	NgsrTC9c09Dky4gLGmMyElTyL6pmTeIfi3qrc5GTjjP9Czc+XIo/Q4Whqw3hF9L5znjDrrev28z
-	i1d92n34Yd2kw==
-X-Received: by 2002:a5d:5f54:0:b0:435:9ce0:f93c with SMTP id ffacd0b85a97d-4362969509amr24592397f8f.62.1770740291496;
-        Tue, 10 Feb 2026 08:18:11 -0800 (PST)
-Received: from [192.168.1.17] (host-79-19-172-190.retail.telecomitalia.it. [79.19.172.190])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4362972fa41sm39165771f8f.23.2026.02.10.08.18.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Feb 2026 08:18:10 -0800 (PST)
-From: Anna Maniscalco <anna.maniscalco2000@gmail.com>
-Date: Tue, 10 Feb 2026 17:17:38 +0100
-Subject: [PATCH] iommu: arm-smmu-qcom: Ensure smmu is powered up in
- set_ttbr0_cfg
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hMXifKy9"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1770746638; x=1802282638;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=RCF0n7XHDUGKM+cjf33SZOFc4i4PkHY0jF5mOX8LCFE=;
+  b=hMXifKy9/4SQOzymUlvohR5vdNAbCI4mOmkNl22JoiYWqiyw+T3vhcxF
+   Mzgq1N01Bz4+fVYVJ+ScXLy5GvYbtnahf9iUEw3ORuWQ2rq8bPsZbRsuV
+   IDrr189WtjNnypWhg7trcHpHEjoV3256hwPI67TyPRGLlSixQrijd2Y7e
+   3DFS0Dj5pSTZ8v2aADSErNFLBoEOZ3FvcHtIcQJVk9SBm7UmydZT2HX9L
+   Sczy+nd0Z6WD0mtHWcGYLQxo3X24rbUZM6ZDNN4FLNqkLtv+x3jCzHaXi
+   Cdog2lfydHkspxIs6XcsP6ps56MGZX+GElbm2UEnWYXTRg8GqrGpUlNMA
+   w==;
+X-CSE-ConnectionGUID: meOjuHjkQaK5At1B/tlgyw==
+X-CSE-MsgGUID: CnrNALMjT4yJ42H7uw7VYw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11697"; a="75728596"
+X-IronPort-AV: E=Sophos;i="6.21,283,1763452800"; 
+   d="scan'208";a="75728596"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2026 10:03:57 -0800
+X-CSE-ConnectionGUID: zOeotsxLRKmN8lqHs702VQ==
+X-CSE-MsgGUID: 7I9nDF1BShClWzSGAashTg==
+X-ExtLoop1: 1
+Received: from lkp-server01.sh.intel.com (HELO 765f4a05e27f) ([10.239.97.150])
+  by fmviesa003.fm.intel.com with ESMTP; 10 Feb 2026 10:03:51 -0800
+Received: from kbuild by 765f4a05e27f with local (Exim 4.98.2)
+	(envelope-from <lkp@intel.com>)
+	id 1vps5V-00000000pHk-2Bfq;
+	Tue, 10 Feb 2026 18:03:49 +0000
+Date: Wed, 11 Feb 2026 02:03:06 +0800
+From: kernel test robot <lkp@intel.com>
+To: Jiri Pirko <jiri@resnulli.us>, dri-devel@lists.freedesktop.org,
+	linaro-mm-sig@lists.linaro.org, iommu@lists.linux.dev,
+	linux-media@vger.kernel.org
+Cc: oe-kbuild-all@lists.linux.dev, sumit.semwal@linaro.org,
+	benjamin.gaignard@collabora.com, Brian.Starkey@arm.com,
+	jstultz@google.com, tjmercier@google.com, christian.koenig@amd.com,
+	m.szyprowski@samsung.com, robin.murphy@arm.com, jgg@ziepe.ca,
+	leon@kernel.org, sean.anderson@linux.dev, ptesarik@suse.com,
+	catalin.marinas@arm.com, aneesh.kumar@kernel.org,
+	suzuki.poulose@arm.com, steven.price@arm.com,
+	thomas.lendacky@amd.com, john.allen@amd.com, ashish.kalra@amd.com,
+	suravee.suthikulpanit@amd.com, linux-coco@lists.linux.dev
+Subject: Re: [PATCH 5/5] dma-buf: heaps: system: add an option to allocate
+ explicitly decrypted memory
+Message-ID: <202602110149.tBUPP0bh-lkp@intel.com>
+References: <20260209153809.250835-6-jiri@resnulli.us>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260210-qcom_smmu_pmfix-v1-1-78b7143ac053@gmail.com>
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/x2MQQqAIBAAvyJ7TtAlOvSVCDHdag9aKUUg/j3pO
- AMzBTIlpgyjKJDo4cxHbKA7AW63cSPJvjGgwkGhVvJyRzA5hNucYeVXoiXrcbE9oYJWnYma/o/
- TXOsHqLYDBGEAAAA=
-X-Change-ID: 20260210-qcom_smmu_pmfix-2aead2ba4e20
-To: Rob Clark <robin.clark@oss.qualcomm.com>, Will Deacon <will@kernel.org>, 
- Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org, 
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
- Anna Maniscalco <anna.maniscalco2000@gmail.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1770740289; l=2426;
- i=anna.maniscalco2000@gmail.com; s=20240815; h=from:subject:message-id;
- bh=VRL/E7nK1fyZMX83uu6bt4FiGrPrpeuaTEztrOQsu9U=;
- b=3pZgXNEhwfzftk2Cfw8XXJ8nneEtPReIYQm7FPKnhsBaAF4wvq6oc6yGwv56OjIaVfHmJkCqc
- mZihmSR2ywFBaJPn3/li3OAgz3sQw2TocZC9SOPytLYad1lKiiWdrfF
-X-Developer-Key: i=anna.maniscalco2000@gmail.com; a=ed25519;
- pk=0zicFb38tVla+iHRo4kWpOMsmtUrpGBEa7LkFF81lyY=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260209153809.250835-6-jiri@resnulli.us>
 
-Previously the device was being accessed while potentially in a
-suspended state.
+Hi Jiri,
 
-Signed-off-by: Anna Maniscalco <anna.maniscalco2000@gmail.com>
----
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 27 +++++++++++++++++++++------
- 1 file changed, 21 insertions(+), 6 deletions(-)
+kernel test robot noticed the following build errors:
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-index 573085349df3..ca34b7a141e6 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-@@ -231,16 +231,27 @@ static int qcom_adreno_smmu_set_ttbr0_cfg(const void *cookie,
- 	struct io_pgtable *pgtable = io_pgtable_ops_to_pgtable(smmu_domain->pgtbl_ops);
- 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
- 	struct arm_smmu_cb *cb = &smmu_domain->smmu->cbs[cfg->cbndx];
-+	int ret;
-+
-+	ret = pm_runtime_resume_and_get(smmu_domain->smmu->dev);
-+	if (ret < 0) {
-+		dev_err(smmu_domain->smmu->dev, "failed to get runtime PM: %d\n", ret);
-+		return -ENODEV;
-+	}
- 
- 	/* The domain must have split pagetables already enabled */
--	if (cb->tcr[0] & ARM_SMMU_TCR_EPD1)
--		return -EINVAL;
-+	if (cb->tcr[0] & ARM_SMMU_TCR_EPD1) {
-+		ret = -EINVAL;
-+		goto out;
-+	}
- 
- 	/* If the pagetable config is NULL, disable TTBR0 */
- 	if (!pgtbl_cfg) {
- 		/* Do nothing if it is already disabled */
--		if ((cb->tcr[0] & ARM_SMMU_TCR_EPD0))
--			return -EINVAL;
-+		if ((cb->tcr[0] & ARM_SMMU_TCR_EPD0)) {
-+			ret = -EINVAL;
-+			goto out;
-+		}
- 
- 		/* Set TCR to the original configuration */
- 		cb->tcr[0] = arm_smmu_lpae_tcr(&pgtable->cfg);
-@@ -249,8 +260,10 @@ static int qcom_adreno_smmu_set_ttbr0_cfg(const void *cookie,
- 		u32 tcr = cb->tcr[0];
- 
- 		/* Don't call this again if TTBR0 is already enabled */
--		if (!(cb->tcr[0] & ARM_SMMU_TCR_EPD0))
--			return -EINVAL;
-+		if (!(cb->tcr[0] & ARM_SMMU_TCR_EPD0)) {
-+			ret = -EINVAL;
-+			goto out;
-+		}
- 
- 		tcr |= arm_smmu_lpae_tcr(pgtbl_cfg);
- 		tcr &= ~(ARM_SMMU_TCR_EPD0 | ARM_SMMU_TCR_EPD1);
-@@ -262,6 +275,8 @@ static int qcom_adreno_smmu_set_ttbr0_cfg(const void *cookie,
- 
- 	arm_smmu_write_context_bank(smmu_domain->smmu, cb->cfg->cbndx);
- 
-+out:
-+	pm_runtime_put_autosuspend(smmu_domain->smmu->dev);
- 	return 0;
- }
- 
+[auto build test ERROR on drm-misc/drm-misc-next]
+[also build test ERROR on drm-tip/drm-tip trace/for-next linus/master v6.19]
+[cannot apply to next-20260209]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
----
-base-commit: 50c4a49f7292b33b454ea1a16c4f77d6965405dc
-change-id: 20260210-qcom_smmu_pmfix-2aead2ba4e20
+url:    https://github.com/intel-lab-lkp/linux/commits/Jiri-Pirko/dma-mapping-avoid-random-addr-value-print-out-on-error-path/20260209-234013
+base:   https://gitlab.freedesktop.org/drm/misc/kernel.git drm-misc-next
+patch link:    https://lore.kernel.org/r/20260209153809.250835-6-jiri%40resnulli.us
+patch subject: [PATCH 5/5] dma-buf: heaps: system: add an option to allocate explicitly decrypted memory
+config: s390-allyesconfig (https://download.01.org/0day-ci/archive/20260211/202602110149.tBUPP0bh-lkp@intel.com/config)
+compiler: s390-linux-gcc (GCC) 15.2.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260211/202602110149.tBUPP0bh-lkp@intel.com/reproduce)
 
-Best regards,
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202602110149.tBUPP0bh-lkp@intel.com/
+
+All errors (new ones prefixed by >>):
+
+   drivers/dma-buf/heaps/system_heap.c: In function 'system_heap_set_page_decrypted':
+>> drivers/dma-buf/heaps/system_heap.c:66:15: error: implicit declaration of function 'set_memory_decrypted' [-Wimplicit-function-declaration]
+      66 |         ret = set_memory_decrypted(addr, nr_pages);
+         |               ^~~~~~~~~~~~~~~~~~~~
+   drivers/dma-buf/heaps/system_heap.c: In function 'system_heap_set_page_encrypted':
+>> drivers/dma-buf/heaps/system_heap.c:80:15: error: implicit declaration of function 'set_memory_encrypted' [-Wimplicit-function-declaration]
+      80 |         ret = set_memory_encrypted(addr, nr_pages);
+         |               ^~~~~~~~~~~~~~~~~~~~
+
+
+vim +/set_memory_decrypted +66 drivers/dma-buf/heaps/system_heap.c
+
+    59	
+    60	static int system_heap_set_page_decrypted(struct page *page)
+    61	{
+    62		unsigned long addr = (unsigned long)page_address(page);
+    63		unsigned int nr_pages = 1 << compound_order(page);
+    64		int ret;
+    65	
+  > 66		ret = set_memory_decrypted(addr, nr_pages);
+    67		if (ret)
+    68			pr_warn_ratelimited("dma-buf system heap: failed to decrypt page at %p\n",
+    69					    page_address(page));
+    70	
+    71		return ret;
+    72	}
+    73	
+    74	static int system_heap_set_page_encrypted(struct page *page)
+    75	{
+    76		unsigned long addr = (unsigned long)page_address(page);
+    77		unsigned int nr_pages = 1 << compound_order(page);
+    78		int ret;
+    79	
+  > 80		ret = set_memory_encrypted(addr, nr_pages);
+    81		if (ret)
+    82			pr_warn_ratelimited("dma-buf system heap: failed to re-encrypt page at %p, leaking memory\n",
+    83					    page_address(page));
+    84	
+    85		return ret;
+    86	}
+    87	
+
 -- 
-Anna Maniscalco <anna.maniscalco2000@gmail.com>
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
