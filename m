@@ -1,106 +1,125 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f194.google.com (mail-qk1-f194.google.com [209.85.222.194])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 518722EA754;
-	Tue, 10 Feb 2026 12:48:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DFCA25A2A2
+	for <iommu@lists.linux.dev>; Tue, 10 Feb 2026 13:02:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.194
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770727704; cv=none; b=HUi0gQz7cQjXfAqaGMkw9iYel9cQyFJLqMqnSkZxTEOioaAqNrMAYUIqXvyJ9vLYNnMZuQHHgFTtZw5U05hBOd8KUrxmHHLsGlB8IJkaIYNJiVnmC7btLT7ckuHdEIGYlB8RxdxvwsopZz00NziWOiJaOJZkD/RlCi68Eb4hKvY=
+	t=1770728545; cv=none; b=MEhvTMTOQWSc6uAfhmUkfNJBf2SUjodtpDo4zExk9du+tDbRUynq6zKA6V7ocmz0W2ErbwmxRN46Fn4cPDNtd9nWAWEwkpJSoN6WAGtjMnK9iZsojdclmS7a1+xtJPrfLlSDGy2J/KptrCJK/k63SoOv7M+qHbiZiAlsx+wLTtE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770727704; c=relaxed/simple;
-	bh=f9Hioy1nBNAN6Nj6FmxHzvPM8qjWxbtxXn6ma/BOEN4=;
+	s=arc-20240116; t=1770728545; c=relaxed/simple;
+	bh=+wmk6A0SSJQS90x9QvNwHXEyptqKAuBqDDTv/ioQHhg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=bLjlAd8pZq0BjUhkI8oEbd0KDsT5gdjpx0hfLkyp4ng1SxVvksP6nykT//pkH7Y5+xkBaAAx8DlvWHwsT97mTOtXPFGN26DMbeMbdkOW50sAYKrO4Qds0uyrW2KHUzkndrII4nC3wNwGW4rtZBd3PF0pGicSM8PdR91QWraVouE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Omxd9ntP; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=fW4fYwmg3uOfpBWeU8ASoF2JrSFKJb4U5aigK7oQLEJsh7bDEJFTyV4hyt68DNCririJPmGk4yBwK/F3Wx5iErOfWviFAmRWTYMyF3GUOMrncfM/+3o+yFOoQmis6/WJJTeIsVgefkrwINO4wE4kPVOwYpyZ1nuG2mfmdw9JPj8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=KV6A6i7q; arc=none smtp.client-ip=209.85.222.194
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Omxd9ntP"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AAD6C116C6;
-	Tue, 10 Feb 2026 12:48:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1770727704;
-	bh=f9Hioy1nBNAN6Nj6FmxHzvPM8qjWxbtxXn6ma/BOEN4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Omxd9ntPib7buprI2avF9vcC5Snk52LrNPhoNyFSO+Pp/RnFY9OpJi8PDjJVaxHmb
-	 JXUYYvf8mDOqJL00C/SA5U6DUzy7M/eEd+7C4i1SVv3A4qZh92mM5Rm14mro68cR2t
-	 6h0t8AeSTNBPNmliXeDF6glQjfeed1kx5MhPTPGFC1WpXrv0JLEgHiJbUaah2n5b5Z
-	 gAdRG3klf2YYAP5MWPc6bLxDm6TKYyUEZQvEGN2z5fMUW9rlSD2hezSOCJvY1XcU/+
-	 BRxCvbm1bcNecNnEBO0TGKpRpqR28vrU2kjBTA1jfqTtyRVkkCx0KnIFJBp3Nan0jG
-	 VoQHRcdYSklIg==
-Date: Tue, 10 Feb 2026 14:48:19 +0200
-From: Leon Romanovsky <leon@kernel.org>
-To: Jiri Pirko <jiri@resnulli.us>
-Cc: John Stultz <jstultz@google.com>, dri-devel@lists.freedesktop.org,
-	linaro-mm-sig@lists.linaro.org, iommu@lists.linux.dev,
-	linux-media@vger.kernel.org, sumit.semwal@linaro.org,
-	benjamin.gaignard@collabora.com, Brian.Starkey@arm.com,
-	tjmercier@google.com, christian.koenig@amd.com,
-	m.szyprowski@samsung.com, robin.murphy@arm.com, jgg@ziepe.ca,
-	sean.anderson@linux.dev, ptesarik@suse.com, catalin.marinas@arm.com,
-	aneesh.kumar@kernel.org, suzuki.poulose@arm.com,
-	steven.price@arm.com, thomas.lendacky@amd.com, john.allen@amd.com,
-	ashish.kalra@amd.com, suravee.suthikulpanit@amd.com,
-	linux-coco@lists.linux.dev
-Subject: Re: [PATCH 4/5] dma-buf: heaps: allow heap to specify valid heap
- flags
-Message-ID: <20260210124819.GC12887@unreal>
-References: <20260209153809.250835-1-jiri@resnulli.us>
- <20260209153809.250835-5-jiri@resnulli.us>
- <CANDhNCoHEZsNRmU+3z5AbeAy05H7PTtUdTq1apNd5k0f9hWW8A@mail.gmail.com>
- <hwdezwktndbm6hoko3rz5lffgfljodegcygzf6rbdf2ferokj6@ftk2uk3rqfdq>
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="KV6A6i7q"
+Received: by mail-qk1-f194.google.com with SMTP id af79cd13be357-8c6a50c17fdso413000085a.2
+        for <iommu@lists.linux.dev>; Tue, 10 Feb 2026 05:02:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1770728543; x=1771333343; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=CukWcBoPz7v4d6E1diLj/dADiY14CHwtYahwJE8UFu0=;
+        b=KV6A6i7ql6RvjfIy5dqC5et7Iierkjm8uuHeGCVaJbS3nCBmKqpTtFqQu+x8V4cYvQ
+         IFA4uIORRfEyBVNUEHrOTzgrgSQZGNPWdzfOnhSerEn4cFHk79z60Y74GAvDaHTAovpW
+         67dc9ShAPfqTPOAyqQZf3Jmj5pZCf+E4eMb9FL1PS5D7GTQ8RRf87B26FyP6UjtnHfK1
+         ZwSmGf/AbkwcJDKcsXwfjbr5t3N+Cr7zi/Jhh6baUDLV2zCMosm2rdtpEG/FAMbOGBrQ
+         7jy8FogNPScwIp2+C4vZ1QzYYwKVw4MK+U+Gwl9QKWsPeYui/QgSjhcbGUPx3+WOvqmk
+         G+Ig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1770728543; x=1771333343;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=CukWcBoPz7v4d6E1diLj/dADiY14CHwtYahwJE8UFu0=;
+        b=w5VULeOE1debcgHa14BJC4TdiUzJrh073lH9QUJj/Jr6ootUBeq21+CjxA8kKvk72C
+         2Lnkw4mKtpWdElA7oBGGE7mOydz6+Uu8YN97CviTrrKbXfMZ34/6I7SUKRhwx59fkPJ+
+         Mj92nRJ7fOa90oGKJAZbCSEgkOEfU1D11DZGej0Nyjxga0QPgtPSARFlLoS3k/qKg0BJ
+         yZYIEHZA3dvmYRJwjW/PqdEhzu1C/3IsIy1thtEJMb8+08m7lUf5MQA0qZ3cZuI/hbRb
+         Tk52ok71DIFgbm1pmhFO2Iwo0yvud9XNMtJUChRcO/nGDRO6Qub4bVH+Np6TQHY9phqV
+         SSRg==
+X-Forwarded-Encrypted: i=1; AJvYcCUnDU8v+Pj77B96MVatvyz9IebbLcK4FOyJp1oepyxxEWauPo5rRc70i22JM9hVMUekfhfRwQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxjNFOwEsByavcpWFPzu367WS83DbeCq++aRy1f+j8/aZL4/cnn
+	V4kLM782LE/IIMPb/OB4ICHNdLjXx0X8o+z9t9l5xICEInLBXkcwYi+BAF7+x3suSkZGy62DYuU
+	RjfjA
+X-Gm-Gg: AZuq6aJOhtVFaXjDi7Rd5vMmDgH1tn/lauN7UZshyG9Y/NF9Xe51HyUWQS+fOu+5Gp6
+	YyjjK5h12Kb9lH8dneRVoqvBkPTZrlJADCf3rZT2Tztf5vTD/2m7nRIH7WueWcE5dAyCH+540er
+	IKnVQvoshP2/UsQxJBt1AibPCbAsn4lW8OUgcMd36ARtchw+eV+v0v6FXJBJUC3fqa4sKHirHUG
+	Zb91iI3eTUMtVXzi4G8srxKla999wcdbx6g3pt5B1vPwF3kq3YUsPFpQj2k1qjZqxw8js1QKkT9
+	f2E0s8PIK6aAmgtOK1aI384Ce3Y7NB3tHRtY4iSRYp5HLa4e2wiBGGK4emjLXl9wi6QCHQvbiRk
+	gGtm3c1lftvo4jfit8UPyxXz4NzUeZBeuAE+iNwT7jNKOBW81IV0o2a+TPmKTZLLJ2hWs/xhZI+
+	1/MXfOB281bEqDmRcGum7Okpm5b4M3fYG6JB522E/cP2LyRAgmcqa+4vs0jxFMtIaYUVvmvc/3+
+	mSmsSQ=
+X-Received: by 2002:a05:620a:4006:b0:8b5:9f45:cce3 with SMTP id af79cd13be357-8caf13078ecmr1893502485a.69.1770728542911;
+        Tue, 10 Feb 2026 05:02:22 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-162-112-119.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.112.119])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-8caf9ee8662sm1119957785a.37.2026.02.10.05.02.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 Feb 2026 05:02:22 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1vpnNl-00000003784-1qfn;
+	Tue, 10 Feb 2026 09:02:21 -0400
+Date: Tue, 10 Feb 2026 09:02:21 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: fangyu.yu@linux.alibaba.com
+Cc: tjeznach@rivosinc.com, joro@8bytes.org, will@kernel.org,
+	robin.murphy@arm.com, pjw@kernel.org, palmer@dabbelt.com,
+	aou@eecs.berkeley.edu, alex@ghiti.fr, andrew.jones@oss.qualcomm.com,
+	guoren@kernel.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
+Subject: Re: [PATCH 0/2] iommu/riscv: support range and non-leaf IOTLB
+ invalidation
+Message-ID: <20260210130221.GE943673@ziepe.ca>
+References: <20260208144213.94856-1-fangyu.yu@linux.alibaba.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <hwdezwktndbm6hoko3rz5lffgfljodegcygzf6rbdf2ferokj6@ftk2uk3rqfdq>
+In-Reply-To: <20260208144213.94856-1-fangyu.yu@linux.alibaba.com>
 
-On Tue, Feb 10, 2026 at 10:05:14AM +0100, Jiri Pirko wrote:
-> Mon, Feb 09, 2026 at 09:08:03PM +0100, jstultz@google.com wrote:
-> >On Mon, Feb 9, 2026 at 7:38 AM Jiri Pirko <jiri@resnulli.us> wrote:
-> >>
-> >> From: Jiri Pirko <jiri@nvidia.com>
-> >>
-> >> Currently the flags, which are unused, are validated for all heaps.
-> >> Since the follow-up patch introduces a flag valid for only one of the
-> >> heaps, allow to specify the valid flags per-heap.
-> >
-> >I'm not really in this space anymore, so take my feedback with a grain of salt.
-> >
-> >While the heap allocate flags argument is unused, it was intended to
-> >be used for generic allocation flags that would apply to all or at
-> >least a wide majority of heaps.
-> >
-> >It was definitely not added to allow for per-heap or heap specific
-> >flags (as this patch tries to utilize it). That was the mess we had
-> >with ION driver that we were trying to avoid.
-> >
-> >The intent of dma-buf heaps is to try to abstract all the different
-> >device memory constraints so there only needs to be a [usage] ->
-> >[heap] mapping, and otherwise userland can be generalized so that it
-> >doesn't need to be re-written to work with different devices/memory
-> >types.  Adding heap-specific allocation flags prevents that
-> >generalization.
-> >
-> >So instead of adding heap specific flags, the general advice has been
-> >to add a separate heap name for the flag property.
+On Sun, Feb 08, 2026 at 10:42:11PM +0800, fangyu.yu@linux.alibaba.com wrote:
+> From: Fangyu Yu <fangyu.yu@linux.alibaba.com>
 > 
-> Right, my original idea was to add a separate heap. Then I spotted the
-> flags and seemed like a great fit. Was not aware or the history or
-> original intention. Would be probably good to document it for
-> future generations.
+> This series adds support for two RISC-V IOMMU v1.0.1 invalidation extensions in
+> the RISC-V IOMMU driver:
 > 
-> So instead of flag, I will add heap named something
-> like "system_cc_decrypted" to implement this.
-
-It is problematic to expose a user‑visible API that depends on a name.
-Such a design limits our ability to extend the functionality in the
-future, should new use cases arise.
-
-Thanks
-
+>   - Address Range Invalidation (capabilities.S), which allows encoding a NAPOT
+>     address range in the IOTINVAL.{VMA,GVMA} ADDR operand when the S bit is set,
+>     reducing the number of invalidation commands for large or superpage-backed
+>     mappings.
 > 
-> Thanks!
+>   - Non-leaf PTE Invalidation (capabilities.NL), which allows IOTINVAL.VMA with
+>     AV=1 and NL=1 to invalidate cached non-leaf PTE information for the given
+>     IOVA, addressing cases where updating mappings replaces a non-leaf entry.
+> 
+> Patch 1 introduces the missing capability/operand definitions and switches the
+> IOTLB invalidation path to use NAPOT range invalidations when supported.
+> 
+> Patch 2 adds the NL capability/operand definitions and extends the invalidation
+> path to optionally request non-leaf invalidation. When map_pages() replaces
+> non-leaf page-table entries, the driver invalidates the affected IOVA range with
+> non-leaf semantics.
+> 
+> No functional changes are expected on hardware that does not advertise these
+> capabilities; the driver continues to fall back to the existing invalidation
+> behavior.
+> 
+> Fangyu Yu (2):
+>   iommu/riscv: Add NAPOT range invalidation support for IOTINVAL
+>   iommu/riscv: Add non-leaf invalidation support
+
+These will need to be redone on top of the new page table code for riscv:
+
+https://patch.msgid.link/r/0-v3-9dbf0a72a51c+302-iommu_pt_riscv_jgg@nvidia.com
+
+It should get picked up early in the next cycle
+
+Jason
