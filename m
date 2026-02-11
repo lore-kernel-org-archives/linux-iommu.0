@@ -1,147 +1,92 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from outbound.baidu.com (mx22.baidu.com [220.181.50.185])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6BF8E336EE7;
-	Tue, 10 Feb 2026 23:39:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 038D026F288
+	for <iommu@lists.linux.dev>; Wed, 11 Feb 2026 03:59:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.181.50.185
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770766754; cv=none; b=LLgFWH60SYLFWN+d+BKT85nWEaJAMLo6JxSdLAArSp4eZn5BmudFARVAMgTuUcSUv9C1v3Py2LEi9lWvL6do2OVVS1YE1XO7lH//eWJ4q0i9rycgP0+NZ3x1d/bubKSWE5va15z8ArW138GF265ldEYvQlZhrdeDsKhJCB5FSNc=
+	t=1770782376; cv=none; b=ePzGvDOuFHroifkwzWl4VRG5nB1jbeBrf9ds6Uw5wofbPtpRco+2YLFdjLl7rqwVW6c/N4t77Rz6No+rbkANZoq03yZljDQp1foWcm4CvjR+oVOtBHBwccMJHC6f8C0JZpZTkMLOh0tEbMBezUOTHmY/mZj6E8O1eHBIgv1mAxw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770766754; c=relaxed/simple;
-	bh=l40g5XI76/xjtVu1Jy+IaqFzXlkV1FpHj5AiocgwbO8=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To; b=aJEmwfLZ5plYhouPko/vQTLCsSrbvMlMGWo1/efdZw/covQAKvBo2SFXJmHKSleYABRx0wx5eyYvxQP6usM2EfMS9cCO9zyRvqzKrKL0EHLImbSqXNk0BXc6Za/uyf/UW4m3Rq+rdazUpS0gGvAElEjNWIjuHofi0zrrWH6tgQU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jZJihtdu; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jZJihtdu"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2503C116C6;
-	Tue, 10 Feb 2026 23:39:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1770766754;
-	bh=l40g5XI76/xjtVu1Jy+IaqFzXlkV1FpHj5AiocgwbO8=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:From;
-	b=jZJihtdu138tStN5TC6+zNiXMs6e6OsK5vCJ57kpp0QTfjhvVtjevVk1jo1h7SDV5
-	 612nz8Gqrzdnipw0K3meJ7Rb9qxC8DPC3FpID2GXrjImserEwTHvaX+ahhrelsZg08
-	 33pKH3lZVtMIVauguNwwSu3nBNz113j0Xyh5Coy75w+PwMhYvpZK6JzoHXMnDcI5fz
-	 BGKjVfF+cWlO3YWZ3JDIRzJwmD+QCeJbDOSdq5U+Qssbs8Oxikz6lLjwND6wBC6wWL
-	 hyjhLMR0vHidMKkptqn+vmnpfXpkfYTVxa/nJ7fQfI7P8OanFUYh9WIJ4Mt5eWRxd3
-	 N2AmndRMXtdkg==
-Date: Tue, 10 Feb 2026 17:39:12 -0600
-From: Bjorn Helgaas <helgaas@kernel.org>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: Baolu Lu <baolu.lu@linux.intel.com>,
-	"Guo, Jinhui" <guojinhui.liam@bytedance.com>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	"dwmw2@infradead.org" <dwmw2@infradead.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"joro@8bytes.org" <joro@8bytes.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"stable@vger.kernel.org" <stable@vger.kernel.org>,
-	"will@kernel.org" <will@kernel.org>,
-	Alex Williamson <alex@shazbot.org>
-Subject: Re: [PATCH v2 2/2] iommu/vt-d: Flush dev-IOTLB only when PCIe device
- is accessible in scalable mode
-Message-ID: <20260210233912.GA93504@bhelgaas>
+	s=arc-20240116; t=1770782376; c=relaxed/simple;
+	bh=T3EHwisaN29K6tSBJMpUEWqvevQc4pDn691tjJXoyEU=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=Eg4UxOBUHYvEC9Sdee/2eEE6NtjCHLDPf1xswx4XrJwUtS8UMKqyf1Gcp3JIZrUrBO+951CKs/DpBb2T4nC2MzDHBMhGQYe5UqWjmUobQYBNRT3XFlKEzUBuFUVFta4fdpJhWOiUfPqMLJX/eoWId/0gTM4R2a2XM8AHC11KNCU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=baidu.com; spf=pass smtp.mailfrom=baidu.com; arc=none smtp.client-ip=220.181.50.185
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=baidu.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baidu.com
+From: lirongqing <lirongqing@baidu.com>
+To: Joerg Roedel <joro@8bytes.org>, Suravee Suthikulpanit
+	<suravee.suthikulpanit@amd.com>, Will Deacon <will@kernel.org>, Robin Murphy
+	<robin.murphy@arm.com>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>
+CC: Li RongQing <lirongqing@baidu.com>
+Subject: [PATCH] iommu/amd: Add NUMA node affinity for IOMMU log buffers
+Date: Tue, 10 Feb 2026 22:58:39 -0500
+Message-ID: <20260211035839.1970-1-lirongqing@baidu.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <BN9PR11MB5276FCF5D751DE7432A32BBB8CB2A@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain
+X-ClientProxiedBy: bjhj-exc6.internal.baidu.com (172.31.3.16) To
+ bjkjy-exc3.internal.baidu.com (172.31.50.47)
+X-FEAS-Client-IP: 172.31.50.47
+X-FE-Policy-ID: 52:10:53:SYSTEM
 
-[+cc Alex, beginning of thread:
-https://lore.kernel.org/all/20251211035946.2071-1-guojinhui.liam@bytedance.com/]
+From: Li RongQing <lirongqing@baidu.com>
 
-On Wed, Dec 24, 2025 at 03:08:49AM +0000, Tian, Kevin wrote:
-> +Bjorn for guidance.
+Currently, PPR Log and GA logs for AMD IOMMU are allocated using
+iommu_alloc_pages_sz(), which does not account for NUMA affinity. This can
+lead to remote memory access latencies if the memory is allocated on a
+different node than the IOMMU hardware.
 
-Sorry for the late response.
+Switch to iommu_alloc_pages_node_sz() to ensure that these data structures
+are allocated on the same NUMA node as the IOMMU device. If the node
+information is unavailable, it defaults to NUMA_NO_NODE.
 
-> quick context - previously intel-iommu driver fixed a lockup issue in surprise
-> removal, by checking pci_dev_is_disconnected(). But Jinhui still observed the
-> lockup issue in a setup where no interrupt is raised to pci core upon surprise
-> removal (so pci_dev_is_disconnected() is false), hence suggesting to replace
-> the check with pci_device_is_present() instead.
+Signed-off-by: Li RongQing <lirongqing@baidu.com>
+---
+ drivers/iommu/amd/init.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-I think checking pci_dev_is_disconnected() or pci_device_is_present()
-in drivers is usually bad practice because it's always racy, as you've
-already pointed out.
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index 384c90b..721d9d0 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -851,10 +851,11 @@ static void __init free_command_buffer(struct amd_iommu *iommu)
+ void *__init iommu_alloc_4k_pages(struct amd_iommu *iommu, gfp_t gfp,
+ 				  size_t size)
+ {
++	int nid = iommu->dev ? dev_to_node(&iommu->dev->dev) : NUMA_NO_NODE;
+ 	void *buf;
+ 
+ 	size = PAGE_ALIGN(size);
+-	buf = iommu_alloc_pages_sz(gfp, size);
++	buf = iommu_alloc_pages_node_sz(nid, gfp, size);
+ 	if (!buf)
+ 		return NULL;
+ 	if (check_feature(FEATURE_SNP) &&
+@@ -957,14 +958,16 @@ static int iommu_ga_log_enable(struct amd_iommu *iommu)
+ 
+ static int iommu_init_ga_log(struct amd_iommu *iommu)
+ {
++	int nid = iommu->dev ? dev_to_node(&iommu->dev->dev) : NUMA_NO_NODE;
++
+ 	if (!AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir))
+ 		return 0;
+ 
+-	iommu->ga_log = iommu_alloc_pages_sz(GFP_KERNEL, GA_LOG_SIZE);
++	iommu->ga_log = iommu_alloc_pages_node_sz(nid, GFP_KERNEL, GA_LOG_SIZE);
+ 	if (!iommu->ga_log)
+ 		goto err_out;
+ 
+-	iommu->ga_log_tail = iommu_alloc_pages_sz(GFP_KERNEL, 8);
++	iommu->ga_log_tail = iommu_alloc_pages_node_sz(nid, GFP_KERNEL, 8);
+ 	if (!iommu->ga_log_tail)
+ 		goto err_out;
+ 
+-- 
+2.9.4
 
-I don't think it's possible to avoid Invalidate Completion Timeouts in
-general, so I think the real solution is to figure out how to
-gracefully handle them without running into the lockup detection.
-
-I assume the lockup is the loop in qi_submit_sync() where we wait for
-QI_DONE with interrupts disabled.  Maybe we need something like
-watchdog_hardlockup_touch_cpu() there, along with a timeout in that
-loop?
-
-The PCIe r7.0, sec 10.3.1, implementation note suggests the timeout
-might be in the 1-2 minute range, which is pretty extreme, but if we
-can at least handle timeouts gracefully, we can think about ways to
-make them less likely, e.g., by coordinating with FLR and VFIO detach
-(maybe the sort of thing Alex alluded to at
-https://lore.kernel.org/all/20251223153534.0968cc15.alex@shazbot.org).
-
-> Bjorn, is it a common practice to fix it directly/only in drivers or should the
-> pci core be notified e.g. simulating a late removal event? By searching the
-> code looks it's the former, but better confirm with you before picking this
-> fix...
-
-I don't know exactly what it would look like to simulate a late
-removal event, but it sounds like some kind of complicated
-infrastructure that would still be only a 90% solution, which I
-wouldn't recommend.
-
-> > From: Baolu Lu <baolu.lu@linux.intel.com>
-> > Sent: Tuesday, December 23, 2025 12:06 PM
-> > 
-> > On 12/22/25 19:19, Jinhui Guo wrote:
-> > > On Thu, Dec 18, 2025 08:04:20AM +0000, Tian, Kevin wrote:
-> > >>> From: Jinhui Guo<guojinhui.liam@bytedance.com>
-> > >>> Sent: Thursday, December 11, 2025 12:00 PM
-> > >>>
-> > >>> Commit 4fc82cd907ac ("iommu/vt-d: Don't issue ATS Invalidation
-> > >>> request when device is disconnected") relies on
-> > >>> pci_dev_is_disconnected() to skip ATS invalidation for
-> > >>> safely-removed devices, but it does not cover link-down caused
-> > >>> by faults, which can still hard-lock the system.
-> > >> According to the commit msg it actually tries to fix the hard lockup
-> > >> with surprise removal. For safe removal the device is not removed
-> > >> before invalidation is done:
-> > >>
-> > >> "
-> > >>      For safe removal, device wouldn't be removed until the whole software
-> > >>      handling process is done, it wouldn't trigger the hard lock up issue
-> > >>      caused by too long ATS Invalidation timeout wait.
-> > >> "
-> > >>
-> > >> Can you help articulate the problem especially about the part
-> > >> 'link-down caused by faults"? What are those faults? How are
-> > >> they different from the said surprise removal in the commit
-> > >> msg to not set pci_dev_is_disconnected()?
-> > >>
-> > > Hi, kevin, sorry for the delayed reply.
-> > >
-> > > A normal or surprise removal of a PCIe device on a hot-plug port normally
-> > > triggers an interrupt from the PCIe switch.
-> > >
-> > > We have, however, observed cases where no interrupt is generated when
-> > the
-> > > device suddenly loses its link; the behaviour is identical to setting the
-> > > Link Disable bit in the switch’s Link Control register (offset 10h). Exactly
-> > > what goes wrong in the LTSSM between the PCIe switch and the endpoint
-> > remains
-> > > unknown.
-> > 
-> > In this scenario, the hardware has effectively vanished, yet the device
-> > driver remains bound and the IOMMU resources haven't been released. I’m
-> > just curious if this stale state could trigger issues in other places
-> > before the kernel fully realizes the device is gone? I’m not objecting
-> > to the fix. I'm just interested in whether this 'zombie' state creates
-> > risks elsewhere.
-> > 
