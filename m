@@ -1,238 +1,124 @@
-Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from stravinsky.debian.org (stravinsky.debian.org [82.195.75.108])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F25B119E819
-	for <iommu@lists.linux.dev>; Wed, 11 Feb 2026 13:34:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FF772D061D;
+	Wed, 11 Feb 2026 15:13:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=82.195.75.108
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770816845; cv=none; b=WJtPrsJGRQPBklEeblu8DHM4F6d9Rax+JZEjaLnDIoB2gltOA/gRGLg8a6Erqpbi36n2DHGXNuyl/VnvEg05ks1xn20UPC8WMywOFsC9Wj8dCJvDih0Vd38SByZZ17W3rYbr9pjnvAzSvc+DEWZPwh4DJ1GA8vRqqAF6odlgPkw=
+	t=1770822806; cv=none; b=BQVv+4E17DLQ9qYEgkXBYjLa9TtSe+h5LC/BmFTy3tWiExSbYG0Ss6CsQnloKht45ANxRIK4cUY93wjgk3w14zTK28wd0Yyjr2Q35js2vS2BD1vQB1xm3LB9rXNfCgqAy8ZHF9Cm8OLb2CV9nnFDZD5DqGsxPdbfShdu4BsZYYg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770816845; c=relaxed/simple;
-	bh=rmNvQT2QG7gG48+T4V+IGfOdF4/NtEXv28tfbs7HCU8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=pH58x47VG4olSUbgaHolpoQ8oDzeHtxcTLJTJ7q6FaDoaTiS5NhPZsENaay6GN7KmsbABzNuLgYPEvDreLjSOXMCQ3V51QM0MATEApiHAHluLFj/uwZSOl+ivCfAun4G6HPuG1GSZPMI4Atz2jI5mwISYtQyJAPyURCAGPXaUQE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=e+qos58o; arc=none smtp.client-ip=209.85.214.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1770822806; c=relaxed/simple;
+	bh=BDt70VS0gj39ZE/mzTwLE1Inrng5CJZFq1et97efOT0=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=fzL6Ip1CEYHYGm+kSB4+3DjdZxsWiLrMpECtpvLCrgKaS7XXa6mzz/6O1kBbvgUmdV43tK6bCKMzT90OzywbM8nCs/lTQslUGsI8xLgvIcAOQIwGzMXKPj9T0PDqFzfH2GvutiN+EmHkD87/q++GbQIcTpqA6o8UuEoBAiUQVqs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=debian.org; spf=none smtp.mailfrom=debian.org; dkim=pass (2048-bit key) header.d=debian.org header.i=@debian.org header.b=MidDK7rT; arc=none smtp.client-ip=82.195.75.108
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=debian.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=debian.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="e+qos58o"
-Received: by mail-pl1-f177.google.com with SMTP id d9443c01a7336-2a964077671so75935ad.0
-        for <iommu@lists.linux.dev>; Wed, 11 Feb 2026 05:34:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1770816843; x=1771421643; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=+MpH4N8jYjyoMkqt5JqaZ+3caBW09Fyf22uQvva/iOM=;
-        b=e+qos58oV9ArST0wrnPQBS8erKC9uYg7L4t/uzgxCXRU9gDlaqN4aj56eDMiIhppLY
-         RH9GFSzmuJcBkNERAQMNke4wC+iDpOMzN5uxtKFu1djx3xJrk2m+D9UT0PWsVpBeOZbt
-         aEPKM4/Kkp9nLV21zTG3Q6OHvxEbbHyjSSYYlbp+ysaq9AmZ/NdqQytmZm9zTfGNoLbE
-         MEwR6tIuyOTvFInloyaRIdx0sag5BRIia+zb8UwMfYweDS9zpvmzrCk6DyGLa/7ipxeT
-         SmvkQmPbQwCZmkXU+s9qc4g8kAGO1Fcm+4PeljaCOkawLuJ0ZALj41CgwaCjNWCSbhBT
-         M03A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770816843; x=1771421643;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=+MpH4N8jYjyoMkqt5JqaZ+3caBW09Fyf22uQvva/iOM=;
-        b=RJEPkax/NCiFd0qvmlsi1FXGULVYysnXxSm7aGyeag0dcuchohYEGWguSeVPMK4xKE
-         Qd5MNjgr9D3wK1gPeRUwQicWfb/zL5izuEIRIKgjGEDOkvu5pXiPLKRbjTKg405Px6m8
-         DnSw2SUf/FFTcoPX/AOZqKG7J9lNngQjIVlAJvgtGyhVMV8hIuWWDlcDOXEDSVnTl///
-         KZ2m3i29LA/6fTpFfYfD5rNwewrO5vDx8s0yBWgr8R66+5JEZJEIHllJEnBZ3BG+YOI2
-         OGAExia1ElVYsCEuEaaA740eoekCeoKYyC1RGxUJ4bDLZwn2R/gnTnnMjsCv/qWVeL4P
-         lBNw==
-X-Gm-Message-State: AOJu0YwvQpFfKqSgQpYedJYjGp9GHQb3PJfWXHnY5mZAc0WWckQ8CCOc
-	HgBWdyxTMqpN0nEM/+QLwOtU7Z4z4DfvptRuSzJQeIBi2Vv2JUHKgeNhK3+tmz0mqPS+3uRSjPe
-	ZJAFJqA==
-X-Gm-Gg: AZuq6aJRwGh3XiAoP3MwCxfE0f9EgkLLrFC4WNaGr8o/QibwIm3VNiDLDRHsWUDfRMB
-	rd1x3lImhacYNwoEEZjfztNyhz3ylgCdjhnVMsL1gNN8lJHGEPvKKxc0TZF/kHmxLLm4Kmnioz1
-	DSvm0SqeCpZT/VJop6hPP5Fn1iHlsPsBtRQ9vJvVA1cs/W71xA8vGzvvPy4Eab2fDcsiB5jW20F
-	kCj887qPcpfm7FgaVWEF/HQ6fchVUvqnYO/8SdDWJNx8wlCMEDPoP12X0wLPAhT0TN/sYX8M2UA
-	bhmiHn1Mrao3fhPutcufs1r6FsxmYHv/5knKkkFEnJ31d9j/8NVt8foPtsrtIsQeOSdvJUnx+2h
-	LBNdnfwNM6JUDleRPQM50gIOi6vkPVX6E34FN6bLuKIRGIpeST+OPuL/tLhfIxzSfxt7kanptxd
-	u9cbiEPjeBAsIY/48SGp4+utVHQN4Umd+Nt0DfMFCZq3MAegKIxz/ubz0bM4ze
-X-Received: by 2002:a17:903:1b46:b0:299:c368:6b1f with SMTP id d9443c01a7336-2ab28250f85mr3213795ad.18.1770816842752;
-        Wed, 11 Feb 2026 05:34:02 -0800 (PST)
-Received: from google.com (222.245.187.35.bc.googleusercontent.com. [35.187.245.222])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-8249e816fbbsm2073200b3a.49.2026.02.11.05.34.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Feb 2026 05:34:02 -0800 (PST)
-Date: Wed, 11 Feb 2026 13:33:57 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Ashish Mhetre <amhetre@nvidia.com>
-Cc: iommu@lists.linux.dev, Will Deacon <will@kernel.org>,
-	Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Daniel Mentz <danielmentz@google.com>,
-	Sairaj Kodilkar <sarunkod@amd.com>
-Subject: Re: [PATCH v5 00/10] iommu/arm-smmu-v3: Implement Runtime/System
- Sleep ops
-Message-ID: <aYyFRa4ZtQGlNQ2t@google.com>
-References: <20260126151157.3418145-1-praan@google.com>
- <5a69ec64-87ed-4b62-97c1-94ddd4ae1553@nvidia.com>
+	dkim=pass (2048-bit key) header.d=debian.org header.i=@debian.org header.b="MidDK7rT"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=debian.org;
+	s=smtpauto.stravinsky; h=X-Debian-User:Cc:To:Message-Id:
+	Content-Transfer-Encoding:Content-Type:MIME-Version:Subject:Date:From:
+	Reply-To:Content-ID:Content-Description:In-Reply-To:References;
+	bh=u5FSJJSbZqmk4MvjnrE7nlyprOC+aW9hoQNy9WAvwng=; b=MidDK7rTgp14lyq8Q0IjGwdINI
+	CpuJ6ic0KCqULXNzyIY3rFdoi/9A03UyPZ2UkKTUwEEt4AAZdrFems/RYduEgEWigJ9+0KZu2Doat
+	aJxBkNsc+MDfZT6ISfgD2kRgUaDLOzCsNDfGiSsrGRqCh0kZGO9Ez79uhcOOvg1/Bm41NpGG9168C
+	On2XKrdLEGWJ0pAmdaELmyMT1ysg1INqeNWkDz0KXSpptoIG2DJqqXVFn8+aLVtlOSrsqa34TxQTg
+	o7egdX2BqJfka/h/eqaJ9LvqB6EPEbOMq9oAEn+I1aLq+FTDaVbSk/Go/i5+4CPoWiy72fczFj6gS
+	7EjGWC6Q==;
+Received: from authenticated user
+	by stravinsky.debian.org with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+	(Exim 4.94.2)
+	(envelope-from <leitao@debian.org>)
+	id 1vqBu4-00B7Re-Ms; Wed, 11 Feb 2026 15:13:21 +0000
+From: Breno Leitao <leitao@debian.org>
+Date: Wed, 11 Feb 2026 07:13:03 -0800
+Subject: [PATCH] iommu/dma: Rate-limit WARN in iommu_dma_unmap_phys()
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5a69ec64-87ed-4b62-97c1-94ddd4ae1553@nvidia.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260211-dma_io_mmu-v1-1-cf89e24437af@debian.org>
+X-B4-Tracking: v=1; b=H4sIAH+cjGkC/yXMTQqDMBAG0KsM39qAk9iquYoU8WdqpxCVpJaCe
+ Hdpu3ybtyNJVEnwtCPKW5MuMzxxRhge3TyJ0RGeYHN7zS2zGUPX6tKGsJkL133p6qpiVyAjrFH
+ u+vllze3vtPVPGV7fAcdxAmaaJ59uAAAA
+X-Change-ID: 20260211-dma_io_mmu-519b73988134
+To: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, 
+ Will Deacon <will@kernel.org>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+ ttoukan.linux@gmail.com, netdev@vger.kernel.org, kbusch@kernel.org, 
+ Breno Leitao <leitao@debian.org>
+X-Mailer: b4 0.15-dev-f4305
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2142; i=leitao@debian.org;
+ h=from:subject:message-id; bh=BDt70VS0gj39ZE/mzTwLE1Inrng5CJZFq1et97efOT0=;
+ b=owEBbQKS/ZANAwAIATWjk5/8eHdtAcsmYgBpjJyMwMucrgj50E/0kcvc/1AJxnwFwoYu/h5Eq
+ 4lXg1Cl8X+JAjMEAAEIAB0WIQSshTmm6PRnAspKQ5s1o5Of/Hh3bQUCaYycjAAKCRA1o5Of/Hh3
+ bd19D/4hDJnTw/fQYRbZnT627yXhU80lxul3ZB90ALN2r6/yOVrm/kuM9CwyAtphg/lUK8a5NiF
+ JXGSO9eKHwkS7JzQhY92AkramHvrmS75vdrCMDGKoHJpFxnwjEFLt8t5UbE/UFsHIpvvTUSOYuT
+ 28Sun095fLEf3X5e3oT7H7q79yVxux9ywRazp3vnPPZEDYD3wB4pZbfLJOG37E59aB7vjK6JOZ+
+ CQv+TiugkeKCD06uinkvRuUuJq4F4DciLn/5oty49SbcwbFDHhLk1ZCFmfwCPSBZ78nSo9ibo9x
+ ru+HW6TMwKRp7oIAFVbhsgsCUIX2F7g+K2Hptff+purStLNQdwsoL+2tHNDazG8UUdd+gJZhVHq
+ BvdRp5Plcp31E52PmInpiXRfI8HldZnSlTkQ6LrlZh5vzL7fAboQJclEygXNk6StpEpxfl4YM2d
+ 1a5oPrGVhjmFPVlTsfcqaPMz7uJjd57yjr2tDmYHLPeyKfsDyT/92O3LIVnhqGCcDSkhWR/+8gy
+ T+yzDigd7P6znTpZMT/Kg13i44rOU4QyO/lVwJpquwXi8U3cD7oDB3Jz/fg6lA5zq0tJrtxHvBe
+ pJFFs6YG6Kn6k2J/A/S6pIqJloGVZezhJcdv7wNnYOWyax/pVmINViM8/unCmzEJkRgOISqOpOR
+ u6j2VEAiSXkoTgQ==
+X-Developer-Key: i=leitao@debian.org; a=openpgp;
+ fpr=AC8539A6E8F46702CA4A439B35A3939FFC78776D
+X-Debian-User: leitao
 
-On Fri, Feb 06, 2026 at 09:18:06PM +0530, Ashish Mhetre wrote:
-> 
-> 
-> On 1/26/2026 8:41 PM, Pranjal Shrivastava wrote:
-> > External email: Use caution opening links or attachments
-> > 
-> > 
-> > As arm-smmu-v3 rapidly finds its way into SoCs designed for hand-held
-> > devices, power management capabilities, similar to its predecessors, are
-> > crucial for these applications. This series introduces power management
-> > support for the arm-smmu-v3 driver.
-> > 
-> > Design
-> > =======
-> > The arm-smmu-v3 primarily operates with in-memory data structures
-> > through HW registers pointing to these data structures. The proposed design
-> > makes use of this fact for implementing suspend and resume ops, centered
-> > around a driver-specific biased usage counter.
-> > 
-> > 1. Biased Usage Counter
-> > To safely manage runtime PM state, this series introduces an atomic
-> > `nr_cmdq_users` counter. This counter is "biased" by being initialized to
-> > 1, representing an "idle but active" state.
-> > 
-> > The suspend callback waits for this counter to be exactly 1 and then
-> > atomically transitions it to 0, signifying a "suspended" state. Any
-> > other value indicates that the command queue is in use, and the suspend
-> > operation is aborted.
-> > 
-> > Code paths that submit commands to the hardware (the "fast path") use
-> > `atomic_inc_not_zero()` to acquire a reference. This operation only
-> > succeeds if the counter is not zero (i.e., not suspended), effectively
-> > gating hardware access. The reference is dropped using
-> > `atomic_dec_return_release()` after the hardware interaction is
-> > complete.
-> > 
-> > 2. Suspend / Resume Flow
-> > The "suspend" op now polls for a short period (100us) for the usage
-> > counter to become 1. Once successful, it configures the GBPA register
-> > to abort new transactions and disables the SMMU, EVTQ, and PRIQ, leaving
-> > only the CMDQ enabled to drain any in-flight commands.
-> > 
-> > The "resume" operation uses the `arm_smmu_device_reset` function, which
-> > re-initializes the HW using the SW-copies maintained by the driver
-> > (e.g., prod/cons pointers, queue base addresses) and clears all cached
-> > configurations.
-> > 
-> > 3. Guarding Hardware Access
-> > Instead of eliding operations, the driver now ensures the SMMU is active
-> > before any hardware access. This is managed by `arm_smmu_rpm_get()` and
-> > `arm_smmu_rpm_put()` helpers, which wrap the standard runtime PM calls.
-> > These wrappers are now used throughout the driver in interrupt handlers,
-> > TLB invalidation paths, and any other function that touches hardware
-> > registers. This ensures that operations are implicitly queued until the
-> > device resumes.
-> > 
-> > 4. Interrupt Re-config
-> > a. Wired irqs: The series refactors the `arm_smmu_setup_irqs` to be
-> > able to enable/disable irqs and install their handlers separately to
-> > help with the re-initialization of the interrupts correctly.
-> > 
-> > b. MSIs: The series relies on caching the `msi_msg` and retrieving it
-> > through a newly introduced helper `arm_smmu_resume_msis()` which
-> > re-configures the *_IRQ_CFGn registers by writing back the cached msi_msg.
-> > 
-> > Call for review
-> > Any insights/comments on the proposed changes are appreciated,
-> > especially in areas related to locking, atomic contexts, and potential
-> > optimizations.
-> > 
-> > Note: The series isn't tested with MSIs and is weakly tested for PCIe
-> > clients. The same holds true for tegra241_cmdv changes. Any help in
-> > reviewing and testing these parts is much appreciated.
-> > 
-> > [v5]
-> >   - Refactored GERROR handling into a helper function and invoked it during
-> >     runtime suspend after disabling the SMMU to capture any late-breaking
-> >     gerrors as suggested by Jason.
-> >   - Updated `arm_smmu_page_response` to be power-state aware and drop
-> >     page faults received while suspended.
-> >   - Included a patch from Ashish to correctly restore PROD and CONS
-> >     indices for tegra241-cmdqv after a hardware reset.
-> >   - Collected Reviewed-bys from Mostafa and Nicolin.
-> > 
-> > [v4]
-> >   - https://lore.kernel.org/all/20251117191433.3360130-1-praan@google.com/
-> >   - Dropped the `pm_runtime_get_if_not_suspended()` API in favor of a
-> >     simpler, driver-specific biased counter (`nr_cmdq_users`) to manage
-> >     runtime PM state.
-> >   - Reworked the suspend callback to poll on the biased counter before
-> >     disabling the SMMU.
-> >   - Addressed comments for the MSI refactor.
-> > 
-> > [v3]
-> >   - https://lore.kernel.org/all/20250616203149.2649118-1-praan@google.com/
-> >   - Introduced `pm_runtime_get_if_not_suspended` API to avoid races due
-> >     to bouncing RPM states while eliding TLBIs as pointed out by Daniel.
-> >   - Addressed Nicolin's comments regarding msi_resume and CMDQV flush
-> >   - Addressed Daniel's comments about CMDQ locking and draining
-> >   - Addressed issues related to draining the evtq and priq
-> >   - Dropped the code to identify and track user-space attachments
-> > 
-> > [v2]
-> >   - https://lore.kernel.org/all/20250418233409.3926715-1-praan@google.com/
-> >   - Introduced `arm_smmu_rpm_get_if_active` for eliding TLBIs & CFGIs
-> >   - Updated the rpm helper invocation strategy.
-> >   - Drained all queues in suspend callback (including tegra241-cmdv)
-> >   - Cache and restore msi_msg instead of free-ing realloc-ing on resume
-> >   - Added support to identify and track user-space attachments
-> >   - Fixed the setup_irqs as per Nicolin & Mostafa's suggestions
-> >   - Used force_runtime_suspend/resume instead as per Mostafa's suggestion.
-> >   - Added "Reviewed-by" line from Mostafa on an unchanged patch
-> > 
-> > [v1]
-> >   - https://lore.kernel.org/all/20250319004254.2547950-1-praan@google.com/
-> > 
-> > Ashish Mhetre (1):
-> >    iommu/tegra241-cmdqv: Restore PROD and CONS after resume
-> > 
-> > Pranjal Shrivastava (9):
-> >    iommu/arm-smmu-v3: Refactor arm_smmu_setup_irqs
-> >    iommu/arm-smmu-v3: Add a helper to drain cmd queues
-> >    iommu/tegra241-cmdqv: Add a helper to drain VCMDQs
-> >    iommu/arm-smmu-v3: Cache and restore MSI config
-> >    iommu/arm-smmu-v3: Add a usage counter for cmdq
-> >    iommu/arm-smmu-v3: Implement pm_runtime & system sleep ops
-> >    iommu/arm-smmu-v3: Handle gerror during suspend
-> >    iommu/arm-smmu-v3: Enable pm_runtime and setup devlinks
-> >    iommu/arm-smmu-v3: Invoke pm_runtime before hw access
-> > 
-> >   .../arm/arm-smmu-v3/arm-smmu-v3-iommufd.c     |  10 +-
-> >   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 429 ++++++++++++++++--
-> >   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  13 +
-> >   .../iommu/arm/arm-smmu-v3/tegra241-cmdqv.c    |  29 ++
-> >   4 files changed, 445 insertions(+), 36 deletions(-)
-> > 
-> > --
-> > 2.52.0.457.g6b5491de43-goog
-> > 
-> 
-> Hi Pranjal,
-> 
-> I have pulled this series and tested on Tegra264 with CMDQV enabled
-> and 16 vcmdqs assigned to guest. I ran multiple iterations of system
-> suspend and resume with each iteration following by SMMU tests for
-> multiple client devices. Everything worked as expected and tests
-> were passing.
-> 
-> Tested-by: Ashish Mhetre <amhetre@nvidia.com>
-> 
+When a PCI error (e.g. AER error or DPC containment) marks the PCI
+channel as frozen or permanently failed, the IOMMU mappings for the
+device may already be torn down. If a driver continues processing
+completions in this state, every call to dma_unmap_page() triggers a
+WARN_ON in iommu_dma_unmap_phys().
 
-Thanks a lot for helping test this, Ashish, especially on Tegra CMDQV!
+In a real-world crash scenario on an NVIDIA Grace (ARM64) platform, a
+DPC event froze the PCI channel and the mlx5 NAPI poll continued
+processing error CQEs, calling dma_unmap for each pending WQE. With
+dozens of pending WQEs, the resulting WARN_ON storm monopolized the CPU
+in softirq context for over 23 seconds, triggering a soft lockup panic.
 
-Regards,
-Praan
+Replace WARN_ON(!phys) with WARN_RATELIMIT() to cap the warning output
+at the kernel's default rate limit (10 messages per 5 seconds), while
+still providing visibility into the failure with the device name in the
+message.
+
+Signed-off-by: Breno Leitao <leitao@debian.org>
+Fixes: 82612d66d51d ("iommu: Allow the dma-iommu api to use bounce buffers")
+---
+I initially attempted to fix this in the driver itself, but that approach
+doesn't appear to be optimal, given the mappings can go away at any
+time, which is impossible to check at any time. Please see the discussion at:
+
+https://lore.kernel.org/all/20260209-mlx5_iommu-v1-1-b17ae501aeb2@debian.org/
+---
+ drivers/iommu/dma-iommu.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index c92088855450a..3cb5948eafe86 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -1239,7 +1239,8 @@ void iommu_dma_unmap_phys(struct device *dev, dma_addr_t dma_handle,
+ 	}
+ 
+ 	phys = iommu_iova_to_phys(iommu_get_dma_domain(dev), dma_handle);
+-	if (WARN_ON(!phys))
++	if (WARN_RATELIMIT(!phys, "iova_to_phys translation failed for dev %s\n",
++			   dev_name(dev)))
+ 		return;
+ 
+ 	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) && !dev_is_dma_coherent(dev))
+
+---
+base-commit: f884ff9142ee4b741a88030d77feede84f51fd4f
+change-id: 20260211-dma_io_mmu-519b73988134
+
+Best regards,
+--  
+Breno Leitao <leitao@debian.org>
+
