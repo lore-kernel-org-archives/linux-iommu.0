@@ -1,104 +1,221 @@
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from sender4-of-o50.zoho.com (sender4-of-o50.zoho.com [136.143.188.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E5603587A2
-	for <iommu@lists.linux.dev>; Thu, 12 Feb 2026 12:52:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770900773; cv=none; b=jWKRLWycW8EhnGNSt3Tb57GcOFRfRpWgde3exe1WeIjDM9guOVmhmztmXjNp7bmA/bqIf4622LYCvZzYj3tYWZ88H8vUwXhZcz8Sst0TiMc17ErtNy2viFinMrYkgVHugGMzxsiby+wWC24473norGOQt1If86y0Q8CfGN/UiB8=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770900773; c=relaxed/simple;
-	bh=A6eR9jmubTwZTsglZ3EF+v1WhQDWA7ai1B1AUDDvFE4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=vEbaGyICptnfrFDU3RkSzYqxUzI6erUN4cTHRs4PtHxVCwPoOVh+b1FTgQpynfc9V60gxq+HjwyN385bMocrqnW5Gp8rWIpnzpg2gFjltLNiz3qWEVACmesonnvjW9G1RU05FNHLTJ7NjUah3C0DqWr73VzBOff7XNtVHC7zioE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=resnulli.us; spf=none smtp.mailfrom=resnulli.us; dkim=pass (2048-bit key) header.d=resnulli-us.20230601.gappssmtp.com header.i=@resnulli-us.20230601.gappssmtp.com header.b=Q6zuLI7q; arc=none smtp.client-ip=209.85.128.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=resnulli.us
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=resnulli.us
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3DFCB1519AC
+	for <iommu@lists.linux.dev>; Thu, 12 Feb 2026 19:50:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.50
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1770925814; cv=pass; b=HEH/Yqzav3UiwW3GljBdxF89gNb/Go40ya/E0MfTTSkiRQeWeqjIIQVXPSwdwtEOpieFx5O1qwFEEfhjkPgZ9/PTsphT6shfzrCfnKRNYN09eO+NzNsX9KqzzLnYgO6zheN8aERlhquaKOPqnRL3VHPSc3+s9+R1QRRWAcV3H6M=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1770925814; c=relaxed/simple;
+	bh=mWESc47AJA+lHjf4Pyt7BlLH+EidFtKQ5OpkN7dFCVI=;
+	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
+	 In-Reply-To:Content-Type; b=V0YPvKagAj4YNSvgua6tKDbJZt3+jUhh9kfNeXdnUJasUr6gHkq8vRvzN1aU1qi8dE8OTSIOiaWyCwkiB7Fnrf8WJaiRgTCpSAE2VFRXki5f7Uy1sQrCwIT1/wAvMRpwjMtZttpJLGIFp7WONIekHCOIZvyOqxWR4DNcexIANZw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=apertussolutions.com; spf=pass smtp.mailfrom=apertussolutions.com; dkim=pass (1024-bit key) header.d=apertussolutions.com header.i=dpsmith@apertussolutions.com header.b=h5+avsIC; arc=pass smtp.client-ip=136.143.188.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=apertussolutions.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=apertussolutions.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=resnulli-us.20230601.gappssmtp.com header.i=@resnulli-us.20230601.gappssmtp.com header.b="Q6zuLI7q"
-Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-48327b8350dso58692575e9.1
-        for <iommu@lists.linux.dev>; Thu, 12 Feb 2026 04:52:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20230601.gappssmtp.com; s=20230601; t=1770900768; x=1771505568; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=4Kxk/oZj66kgQZma0vQzJuBIOHCjFotulhU3mIzhZds=;
-        b=Q6zuLI7qUd5eDvN5zNwwv8sFRp6BdCwZZ8Ou1tzA2UOcWmz+3gRvQhaTHkIV62EidA
-         tEjtoSg/m/JlnX4f+hn1iBF9HVIK60p5r0bGCi+pRh3DlghrV9bsLTbYv79Ly/nY1O4Z
-         WAZI+doHT0/CC4KfymqKkubgdsd7xkXCmne9pxEC57pq4qB6pT0xTmPFDCCpA04fKDZu
-         Sexrz7p8hpU/due9IHiuLtYWN6Wz4mrFhTn7gt8HeUyCM4plNYILUwE0FReo4+/ehLGk
-         quMOhRfFBfFlBbgRzy5AIxkq8HjFaMb+jefCrCX1Z7QTqyd5901MGYcvKaOO1S+8P6fg
-         D68A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770900768; x=1771505568;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=4Kxk/oZj66kgQZma0vQzJuBIOHCjFotulhU3mIzhZds=;
-        b=rWMucWpQWbSVw35gHlE+2VTAgibc4twbUAV8aC84TXAE7hD6skWpt1b55XLm0dAPA1
-         Y27KjbN9z2LJczOmxQie/whLKkWJI/QctwP8613d3rDtB00e6sq9EybPgsVh9QFhbRl8
-         9sFcOhJ/IkCmidISiwuh/M0M865d4MndRNud/Q7WJNTKW/9HW+FA5WUE5ljpwJw8RcCF
-         hCXgAizmtRNCNGQzIHWEjy6m/Jr7LwzuqYPuMC9qTJbtuaPz0P5C0XibX3WZ9SE5zmuP
-         UzbpIqxaTs3/3E/icKFF88/vsVkk6V1IrkrdYYW6KwLzQryQtFqYRbm0EuplC+I14Yqr
-         ++8w==
-X-Forwarded-Encrypted: i=1; AJvYcCVEwwXqn2UWs9iDcN3dCYSP3p+IhaUSCe9k2MP/KPtWh2C+nSDJgZZ542ahZpEMUiL9Frj+Jw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzwtNG7kMRvg23xUcsNFwoj4Wk4+klmcT5r7qLBukKde+sSr93/
-	psSzU2x7jhtKn5KsWxB+5bYQJ5ul4hAZDdcB/SGBjdQ3uxAjBRE+3LDuwDXEAAzoArQ=
-X-Gm-Gg: AZuq6aLztKbWl/PegqsRfFM6nbCHzXUfefSiGJyeIByJWEpe5ZomKtL2mFVQrgNVzBF
-	j6HD3cWMhMQ5eD3W2JYkXtMElsZbQSCks6wpCnuYat6NSET4HpFNPQxtP6C19I4RofWdc2O+bfB
-	BJGyNsXjSPryHQ5knkNYxkTgcwqFPTKk5MRJKzTbiVKIYiQ6ti2Gxv94vPmyonH7p58b/Y0JeDA
-	djA6V63nNYAlAdstvVy7pxcqu19q317MK0mCPrD36EEaxaqa9vpUYRc2l2UifAkSDhE7OtMWvgw
-	fD/XKJfXWBwEY+hF6WGS15QJRkabsLRPOzSJiLWb1kwwDq3CpgZzkiXdVpiRfE+5zwL1uKwfKnQ
-	+4ej2hNzG4D4/q8a6twAXoGbwE/Biqo8DI2IHnKzJEsw1+Ooe+cPeJilYdJJi9GBSdixJsuhd7R
-	xC7Do0dWRsqsP2zj+1EusbxhH3osqDxSY=
-X-Received: by 2002:a05:600c:348d:b0:475:dd9a:f791 with SMTP id 5b1f17b1804b1-48365716704mr34218785e9.28.1770900768396;
-        Thu, 12 Feb 2026 04:52:48 -0800 (PST)
-Received: from FV6GYCPJ69 ([208.127.45.21])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4835ba7b8d9sm40786535e9.15.2026.02.12.04.52.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Feb 2026 04:52:47 -0800 (PST)
-Date: Thu, 12 Feb 2026 13:52:44 +0100
-From: Jiri Pirko <jiri@resnulli.us>
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, 
-	iommu@lists.linux.dev, linux-media@vger.kernel.org, sumit.semwal@linaro.org, 
-	benjamin.gaignard@collabora.com, Brian.Starkey@arm.com, jstultz@google.com, tjmercier@google.com, 
-	christian.koenig@amd.com, robin.murphy@arm.com, jgg@ziepe.ca, leon@kernel.org, 
-	sean.anderson@linux.dev, ptesarik@suse.com, catalin.marinas@arm.com, 
-	aneesh.kumar@kernel.org, suzuki.poulose@arm.com, steven.price@arm.com, 
-	thomas.lendacky@amd.com, john.allen@amd.com, ashish.kalra@amd.com, 
-	suravee.suthikulpanit@amd.com, linux-coco@lists.linux.dev
-Subject: Re: [PATCH 1/5] dma-mapping: avoid random addr value print out on
- error path
-Message-ID: <magsa5bqxraftni5z7ixrwfojh3htpws7bhiebj4rdtqn4ewce@rnf2rzfelqim>
-References: <20260209153809.250835-1-jiri@resnulli.us>
- <CGME20260209153816eucas1p22befaa2c5ef3c6d5e67956eea08424ed@eucas1p2.samsung.com>
- <20260209153809.250835-2-jiri@resnulli.us>
- <621783e8-d77d-4f29-bda0-ef487dd27b5b@samsung.com>
+	dkim=pass (1024-bit key) header.d=apertussolutions.com header.i=dpsmith@apertussolutions.com header.b="h5+avsIC"
+ARC-Seal: i=1; a=rsa-sha256; t=1770925777; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=ekcngpQ7NDkJ36AcYIWdWlZ1fnNZ2sBsMVqKfQdPEAq58d7uMUtli6X+0bwOeui8WnB1pIqRwn71DQN7aam7YVAhb3unullQN1FZ6dpqtrJiMEcoV5P74qWTGdr10ySbJK53R619BDyXoz26vuQ4fhObiFvFGltRtylIVBXPB3Q=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1770925777; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=Q5f0KQ4HpmngY/cB/yWwkzlIghghBJhp3nW+USmOVik=; 
+	b=OIRmMZhuRv8EZPoPzI7yEywLPwm+gEF6hQf8YhVXec3TUKj8kphv8Bok1BkrKY6kg8Zds4WaDKCRwojR09EbV9nzUmCmlI7JwpCXrxbFUB9tqh4FSyAMnsF7QU130EX88bKnzzIFVJNQ0tqew2FndgXupSdn4mE9HtTlfHpV1vI=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=apertussolutions.com;
+	spf=pass  smtp.mailfrom=dpsmith@apertussolutions.com;
+	dmarc=pass header.from=<dpsmith@apertussolutions.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1770925777;
+	s=zoho; d=apertussolutions.com; i=dpsmith@apertussolutions.com;
+	h=Message-ID:Date:Date:MIME-Version:From:From:Subject:Subject:To:To:Cc:Cc:References:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+	bh=Q5f0KQ4HpmngY/cB/yWwkzlIghghBJhp3nW+USmOVik=;
+	b=h5+avsIC4D+GQntqrkrmOIS0ovmvmsYj1+nhBO/DqWIV6Bykd4KyYsWXp8F/SUiR
+	ZU2xI9FpC0N5mPDGNqVAd8YQbXOK9S591m6BI5Y1JzLXv23Ed2xfUL3cUmcVA0Cmv4h
+	L2Mmf0cjD7KzvGdsop+j+QLY5Uf5ACm56YBFzmKU=
+Received: by mx.zohomail.com with SMTPS id 1770925773787976.3595214538861;
+	Thu, 12 Feb 2026 11:49:33 -0800 (PST)
+Message-ID: <1ffd3cb5-2c76-4371-a067-3e4849907d80@apertussolutions.com>
+Date: Thu, 12 Feb 2026 14:49:31 -0500
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <621783e8-d77d-4f29-bda0-ef487dd27b5b@samsung.com>
+User-Agent: Mozilla Thunderbird
+From: "Daniel P. Smith" <dpsmith@apertussolutions.com>
+Subject: Re: [PATCH v15 00/28] x86: Secure Launch support for Intel TXT
+To: Ard Biesheuvel <ardb@kernel.org>,
+ Ross Philipson <ross.philipson@oracle.com>, linux-kernel@vger.kernel.org,
+ x86@kernel.org, linux-integrity@vger.kernel.org, linux-doc@vger.kernel.org,
+ linux-crypto@vger.kernel.org, kexec@lists.infradead.org,
+ linux-efi@vger.kernel.org, iommu@lists.linux.dev, dave.hansen@linux.intel.com
+Cc: Thomas Gleixner <tglx@linutronix.de>, mingo@redhat.com, bp@alien8.de,
+ "H . Peter Anvin" <hpa@zytor.com>, mjg59@srcf.ucam.org,
+ James.Bottomley@hansenpartnership.com, peterhuewe@gmx.de, jarkko@kernel.org,
+ jgg@ziepe.ca, luto@amacapital.net, nivedita@alum.mit.edu,
+ herbert@gondor.apana.org.au, davem@davemloft.net, corbet@lwn.net,
+ ebiederm@xmission.com, dwmw2@infradead.org, baolu.lu@linux.intel.com,
+ kanth.ghatraju@oracle.com, andrew.cooper3@citrix.com,
+ trenchboot-devel@googlegroups.com
+References: <20251215233316.1076248-1-ross.philipson@oracle.com>
+ <b5f2b5a5-b984-4ed3-a023-c06d634f9146@app.fastmail.com>
+Content-Language: en-US
+Autocrypt: addr=dpsmith@apertussolutions.com; keydata=
+ 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
+In-Reply-To: <b5f2b5a5-b984-4ed3-a023-c06d634f9146@app.fastmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ZohoMailClient: External
 
-Thu, Feb 12, 2026 at 12:03:49PM +0100, m.szyprowski@samsung.com wrote:
->On 09.02.2026 16:38, Jiri Pirko wrote:
->> From: Jiri Pirko <jiri@nvidia.com>
+On 2/9/26 09:04, Ard Biesheuvel wrote:
+> On Tue, 16 Dec 2025, at 00:32, Ross Philipson wrote:
+>> Secure Launch is a vendor-neutral approach to implementing TGC Dynamic
+>> Root of Trust (DRTM) support in the kernel. This is complementary to
+>> better known Static Root of Trust (SRTM) schemes such as UEFI SecureBoot.
 >>
->> dma_addr is unitialized in dma_direct_map_phys() when swiotlb is forced
->> and DMA_ATTR_MMIO is set which leads to random value print out in
->> warning. Fix that by just returning DMA_MAPPING_ERROR.
+>> This series provides the common infrastructure along with Intel TXT
+>> support, without needing the tboot exokernel. Support for AMD SKINIT is
+>> pending the common infrastructure getting nailed down, and ARM are
+>> looking to build on it too.
 >>
->> Fixes: e53d29f957b3 ("dma-mapping: convert dma_direct_*map_page to be phys_addr_t based")
->> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+>> Originally, tboot were approached to see if they'd take support for
+>> other vendors, but they elected not to. Hence this approach instead.
+>>
+>> Work is being coordinated by the Trenchboot project,
+>> https://trenchboot.org/,
+>> organising Secure Launch support for upstream open source projects
+>> including
+>> Grub, iPXE and Xen. The goal of the Trenchboot project is to make DTRM
+>> easy
+>> to use.  e.g. for Grub, it's simply adding "slaunch" as a command in
+>> the boot
+>> stanza.  See
+>> https://trenchboot.org/user-docs/QUICKSTART/#linux-quick-start-guide
+>> for more details
+>>
+>> Patch set based on commit:
+>> torvalds/master/fd57572253bc356330dbe5b233c2e1d8426c66fd
+>>
+>> Depends on v3 of the following TPM patch set (note this patch
+>> set is being actively worked on separately):
+>> [PATCH v3 00/10]  tpm: Decouple Trenchboot dependencies
+>> Message ID: 20250929194832.2913286-1-jarkko@kernel.org
+>>
+>> Finally we would like to thank everyone for their input and
+>> assistance. It has all been very helpful in improving the quality of
+>> our solution and in reviewing/strengthening our security posture.
+>>
+> 
+> Hi Daniel and Ross,
+> 
+> I have finally gotten around to getting the right hardware and building GRUB and Linux with your patches, and I have managed to get them running on an old Skylake HP laptop successfully.
+
+That is great to hear!
+
+> Surprisingly, even when doing a secure launch, the EFI runtime services still work happily, which means (AIUI) that code that was excluded from the D-RTM TCB is still being executed at ring 0? Doesn't this defeat D-RTM entirely in the case some exploit is hidden in the EFI runtime code? Should we measure the contents of EfiRuntimeServicesCode regions too?
+
+Yes, in fact in the early days I specifically stated that we should 
+provide for the ability to measure the RS blocks. Particularly if you 
+are not in an environment where you can isolate the calls to RS from the 
+TCB. While the RS can pose runtime corruption risks, the larger concern 
+is integrating the D-RTM validation of the Intel System Resources 
+Defense (ISRD), aka SMI isolation/SMM Supervisor, provided by the Intel 
+System Security Report (ISSR). Within the ISSR is a list of memory 
+regions which the SMM Policy Shim (SPS) restricts a SMI handler's access 
+when running. This allows a kernel to restrict what access a SMI handler 
+are able to reach, thus allowing them to be removed from the TCB when 
+the appropriate guards are put in place.
+
+If you are interested in understanding these further, Satoshi Tanda has 
+probably the best technical explanation without Intel market speak.
+
+ISRD: https://tandasat.github.io/blog/2024/02/29/ISRD.html
+ISSR: https://tandasat.github.io/blog/2024/03/18/ISSR.html
+
+> In any case, I am aware that upstreaming this work has been a painful experience so far. Unfortunately, I don't think we're quite there yet.
 >
->I will take this patch when v7.0-rc1 is out, as this fix definitely has 
->to be applied regardless of the discussion about the remaining patches.
+> The way the work is divided between GRUB and Linux seems to be predicated entirely (at least originally) on the idea that the GRUB->Linux handover and the secure launch should be one and the same. I.e., GRUB sets the stage, pokes the ACM, which returns to the loaded linux image and boots it. This requires a lot of coordination, e.g., putting a MLE header in the kernel image and exposing it to GRUB in a certain manner, resource tables and other things that have to remain in sync between both sides.
 
-Makes sense. Thanks!
+I would add one clarification, where you say GRUB, we would say any 
+bootloader and where you say Linux, we would say any kernel that could 
+be started with D-RTM. While you all care about Linux specifically, the 
+goal for TrenchBoot is to build a common approach that we can implement
+across any other open source OS.
+
+> There also appears to be an assumption that the fact that the ACM returns to the loaded image in 32-bit mode requires a round trip through the decompressor, which may relocate itself in memory and do other things that the slaunch code then has to work around again.
+> 
+> Due to the changes to the EFI boot path, this design has been watered down a bit already, in the sense that GRUB invokes the EFI entry point as usual, and only later, the pivot via the ACM is made.
+> 
+> Other than the SHA-1 debate [*], the main issue I have with this approach is that it adds things to the boot ABI that are closely tied to TXT on the one hand, and bzImage oddities on the other (kernel_info, setup block etc). IOW, the complete lack of abstractions is going to make this a maintenance burden going forward.
+> 
+> I've had a stab at implementing all of this in a manner that is more idiomatic for EFI boot:
+> 
+> - GRUB does minimal TXT related preparation upfront, and exposes the remaining functionality via a protocol that is attached to the loaded image by GRUB
+> - The SL stub is moved to the core kernel, with some startup code added to pivot to long mode
+> - the EFI stub executes and decompresses the kernel as usual
+> - if the protocol is present, the EFI stub calls it to pass the bootparams pointer, the base and size of the MLE and the header offset back to the GRUB code
+> - after calling ExitBootServices(), it calls another protocol method to trigger the secure launch.
+> 
+> The only pre-launch ABI that is being added here is a GRUB-specific protocol that is not necessarily tied to TXT. (For legacy boot, it should be feasible to call back into GRUB too, although it would be more of a ad-hoc construction, via the SLR table perhaps.) But no kernel_info and MLE headers etc being added to the ABI surface. Also, there is no longer a need for the GRUB code to understand how the decompressor is constructed, with a setup block etc, or take special care to perform PMR checks when its moves itself around in memory.
+
+> [*] which I still don't get: why is it fine to cap other banks with a single 0x1 byte [as the ACM does too, apparently], but do we require an SHA-1 implementation for capping the SHA-1 banks? Also, the TXT spec dropped all support for TPM1.2 so I wonder if that should be dropped from this series as well.
+
+I think this is a great approach for UEFI, though we need to reconcile 
+this with non-UEFI situations such as booting under coreboot. The one 
+concern we have before committing to yet another rework is to get 
+confirmation from the x86 maintainers. Would they be okay with a new 
+entry point into the mainline kernel, or any other major sticking points 
+they might see from this approach?
+
+Dave Hansen, since you have been helping us as an x86 maintainer, would 
+be willing to provide feedback on our concerns moving forward with the 
+above proposal?
+
+> Code can be found here:
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/ardb/grub.git/log/?h=sl-v2
+> https://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git/log/?h=x86-slaunch
+> 
+> I am aware that this is not the feedback you are waiting for at this point, given that we're at v15 already. But there are some warts in the current design that really need to be addressed before we can proceed with this IMHO.
+>
+
+V/r,
+DPS
+
+
+
+
+
+
