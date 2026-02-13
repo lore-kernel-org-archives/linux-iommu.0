@@ -1,158 +1,94 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62EC8326951;
-	Thu, 12 Feb 2026 20:40:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA13E2D47F1;
+	Fri, 13 Feb 2026 11:23:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770928817; cv=none; b=u1+kgN0G9MoJbEsqIR5eTp9+XaM2pYo1YBKisdans/n+kPFYb5o+LiRP2jOVCLzyrqjCCSHiYAwtCNKVbDQEPallQTq4dK2GHUWlvWWjXC0W5OJCBVzcCVnQEs2F6WeOLU9YUIbC8FVfQiwOyi6fNx5Hjei1TsFL5X6myh7w22U=
+	t=1770981839; cv=none; b=CnzmEzkFcgUz6l3TWhkVNZB5zAh1Xb0KXVShgLH3/wT4eJbbgx1k0yHTj9zduDhxOVa2z9ex/b6jvm1j1ebo8LZ+Ak3/qm3YgmdL8YGDolKewPZjl3k05o/6v8QV00vV9vEYQH8Pg1Kfo2vFSsIsCeGjo9Dtpf40aLs7mr7NmQU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770928817; c=relaxed/simple;
-	bh=9Gc0/ilN7j5yF1KCkiGbXMqDqnOtVI+V0w9htJ9T/qI=;
-	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
-	 Subject:Content-Type; b=qCWvvv1SEC4cMy31y/YJl+ZLYKS/a6HEXxaekgNW+LSkWKe7UP3UHOFCtnzWn365CWy3zDEncDZTDriPGl2jNGkcj3SAnobKhHY2ZOmqOmDnsteGaj2TuKiUDz9/r8nI8aXQBj7EfTkCjWbWva5MTW++4LYDKWtHJwqIhAMzpHQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Q8YjkqXJ; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1770981839; c=relaxed/simple;
+	bh=eOUAluewwLteHnOQwgwF1FEmOzAaV27vBmh3LDI7F80=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=m0I58+FTiZEnrwXz8WZXnkujgNdZy3IMLCixtIFnT5VqAXIkZ8s+SD1JWj0uUvFkPmfa1TXE2jEhk8aCUDRunrvT1vGtoZdr0UG0/cVjJVrO2aqJiRnhQJoaoB8rs3d9PEPdXVb1XvGx335dD8kOQpCbdLbSRbXT1jgU4uLzDAM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AbKsoDW7; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Q8YjkqXJ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2CB4C16AAE;
-	Thu, 12 Feb 2026 20:40:15 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AbKsoDW7"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2AD3C4AF0B;
+	Fri, 13 Feb 2026 11:23:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1770928817;
-	bh=9Gc0/ilN7j5yF1KCkiGbXMqDqnOtVI+V0w9htJ9T/qI=;
-	h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
-	b=Q8YjkqXJDD5HSOHy5mSgIMixKpZNuoEO9D3A2rc3Z0lqKtg67BCJjikGH8RP0EDAH
-	 Y2wpmaG6Q/Ur4Qgqzwy2Ye0grkEzxjeK4GJ4zuZ6FhbZ6L1Pkk6dfm+0KDs9ej9lH8
-	 fD5Un3GVf7DuqF2yU2nwci0cIBe4J8Ll5QIBWPCZHQ4p5wLtlaE/+dOjpO4l+BXXLf
-	 E3hw0CKn5t0NN2czazw5Z00x9yDozDtbIdrxTHBXXSPne+kFMWye8Ww8pCSn2rrqjg
-	 NdAiQ5tIwdpNCyfT+2gnIFlgFg75KjWln4J/9riV+HyLiqY0MbXmacQ4BhPjIGxkz0
-	 9pwWurobMIFuQ==
-Received: from phl-compute-01.internal (phl-compute-01.internal [10.202.2.41])
-	by mailfauth.phl.internal (Postfix) with ESMTP id AE1FCF4006C;
-	Thu, 12 Feb 2026 15:40:14 -0500 (EST)
-Received: from phl-imap-02 ([10.202.2.81])
-  by phl-compute-01.internal (MEProxy); Thu, 12 Feb 2026 15:40:14 -0500
-X-ME-Sender: <xms:rjqOaX0QLjTIfy27c3wPaNPIRvNddaaHAuyOUVu65QyF9gEOyAs6zg>
-    <xme:rjqOaQ4nOA_FKbInLAEV68q_4hRhnK5woPvU4rhlsRJsEeBhoAP1d3gKSotK4yszU
-    diS42BC7lux8IKxLTptldNVApg6wW4ayjZ8Tsqczw3Wf-rNLaD_vxBU>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefgedrtddtgddvtdeifeehucetufdoteggodetrf
-    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfurfetoffkrfgpnffqhgenuceu
-    rghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnegouf
-    hushhpvggtthffohhmrghinhculdegledmnecujfgurhepofggfffhvfevkfgjfhfutgfg
-    sehtjeertdertddtnecuhfhrohhmpedftehrugcuuehivghshhgvuhhvvghlfdcuoegrrh
-    gusgeskhgvrhhnvghlrdhorhhgqeenucggtffrrghtthgvrhhnpeefieefjeetgefhieff
-    vdekkeduvdejvddtgfduteehgeefjeekudeltefhkeeugeenucffohhmrghinhepghhith
-    hhuhgsrdhiohenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhr
-    ohhmpegrrhguodhmvghsmhhtphgruhhthhhpvghrshhonhgrlhhithihqdduieejtdehtd
-    dtjeelqdeffedvudeigeduhedqrghruggspeepkhgvrhhnvghlrdhorhhgseifohhrkhho
-    fhgrrhgurdgtohhmpdhnsggprhgtphhtthhopeefuddpmhhouggvpehsmhhtphhouhhtpd
-    hrtghpthhtohepsghpsegrlhhivghnkedruggvpdhrtghpthhtohepnhhivhgvughithgr
-    segrlhhumhdrmhhithdrvgguuhdprhgtphhtthhopehluhhtohesrghmrggtrghpihhtrg
-    hlrdhnvghtpdhrtghpthhtohepughpshhmihhthhesrghpvghrthhushhsohhluhhtihho
-    nhhsrdgtohhmpdhrtghpthhtoheprghnughrvgifrdgtohhophgvrhefsegtihhtrhhigi
-    drtghomhdprhgtphhtthhopegurghvvghmsegurghvvghmlhhofhhtrdhnvghtpdhrtghp
-    thhtohepphgvthgvrhhhuhgvfigvsehgmhigrdguvgdprhgtphhtthhopehhvghrsggvrh
-    htsehgohhnughorhdrrghprghnrgdrohhrghdrrghupdhrtghpthhtohepthhrvghntghh
-    sghoohhtqdguvghvvghlsehgohhoghhlvghgrhhouhhpshdrtghomh
-X-ME-Proxy: <xmx:rjqOadtbwIiIHCnUd_j9VP7bPDaeG7coXIhqRD0RRlF78n6PWXxVDA>
-    <xmx:rjqOaauqeXbCkuhSUhTE9F-LaZrj4ZUdQ7dIm_TxvXkV89BcojG4Kw>
-    <xmx:rjqOadsEr2p-s1zIBvnLMZp83TwcrlzaN8RCINinXrErvtqAAuGemQ>
-    <xmx:rjqOaS5UVfIV_ibP30J--5sFuG6QylqzdCiG0GQBcc3n12cZjFu8gw>
-    <xmx:rjqOaYB2PGF9YI179RUmYGnz5ol4bRje39RPhYrrBFzGH_3ioDmVMikp>
-Feedback-ID: ice86485a:Fastmail
-Received: by mailuser.phl.internal (Postfix, from userid 501)
-	id 7FC76700065; Thu, 12 Feb 2026 15:40:14 -0500 (EST)
-X-Mailer: MessagingEngine.com Webmail Interface
+	s=k20201202; t=1770981839;
+	bh=eOUAluewwLteHnOQwgwF1FEmOzAaV27vBmh3LDI7F80=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=AbKsoDW7MkOiqdBAbDsWAYwpy+2QC7aBgjexszdf70rQ3aWIHWTk/hK1Gcbm3O5fh
+	 dWtYhdMBma4bd+q/gMchIV99jxaGZSBXx8ZyNsGNOzAtKvVxi0fTvnZV8KS3Gj3tLM
+	 PNKto9qQ1qam8aW7D8d1q6rfs+RapaRqWD1cYi+YzzEK2KVq+PxPt/meqGINKV3Heu
+	 CBh3DCRyU62dA54K/FFpQ/gVz9OPLag3PBp/0oU+UxuLV8autQNxAjP0q0T/rHJSNx
+	 WZPJ8XBYkE9zuEWwUfeRV1ByUmOZDm0oYCRItDnDKUsS8uWRGrxG3dDulaYh3yyLCK
+	 eUmihMge7C2mQ==
+Date: Fri, 13 Feb 2026 13:23:55 +0200
+From: Leon Romanovsky <leon@kernel.org>
+To: Breno Leitao <leitao@debian.org>
+Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, ttoukan.linux@gmail.com,
+	netdev@vger.kernel.org, kbusch@kernel.org,
+	Gal Pressman <gal@nvidia.com>, Tariq Toukan <tariqt@nvidia.com>
+Subject: Re: [PATCH] iommu/dma: Rate-limit WARN in iommu_dma_unmap_phys()
+Message-ID: <20260213112355.GP12887@unreal>
+References: <20260211-dma_io_mmu-v1-1-cf89e24437af@debian.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-ThreadId: AAnEvm6syrbF
-Date: Thu, 12 Feb 2026 21:39:53 +0100
-From: "Ard Biesheuvel" <ardb@kernel.org>
-To: "Daniel P. Smith" <dpsmith@apertussolutions.com>,
- "Ross Philipson" <ross.philipson@oracle.com>, linux-kernel@vger.kernel.org,
- x86@kernel.org, linux-integrity@vger.kernel.org, linux-doc@vger.kernel.org,
- linux-crypto@vger.kernel.org, kexec@lists.infradead.org,
- linux-efi@vger.kernel.org, iommu@lists.linux.dev, dave.hansen@linux.intel.com
-Cc: "Thomas Gleixner" <tglx@linutronix.de>, "Ingo Molnar" <mingo@redhat.com>,
- "Borislav Petkov" <bp@alien8.de>, "H . Peter Anvin" <hpa@zytor.com>,
- mjg59@srcf.ucam.org, James.Bottomley@hansenpartnership.com,
- peterhuewe@gmx.de, "Jarkko Sakkinen" <jarkko@kernel.org>, jgg@ziepe.ca,
- luto@amacapital.net, nivedita@alum.mit.edu,
- "Herbert Xu" <herbert@gondor.apana.org.au>, davem@davemloft.net,
- corbet@lwn.net, ebiederm@xmission.com, dwmw2@infradead.org,
- baolu.lu@linux.intel.com, kanth.ghatraju@oracle.com,
- andrew.cooper3@citrix.com, trenchboot-devel@googlegroups.com
-Message-Id: <49d169bf-0ad2-49be-b7d7-fceb9e7f831a@app.fastmail.com>
-In-Reply-To: <1ffd3cb5-2c76-4371-a067-3e4849907d80@apertussolutions.com>
-References: <20251215233316.1076248-1-ross.philipson@oracle.com>
- <b5f2b5a5-b984-4ed3-a023-c06d634f9146@app.fastmail.com>
- <1ffd3cb5-2c76-4371-a067-3e4849907d80@apertussolutions.com>
-Subject: Re: [PATCH v15 00/28] x86: Secure Launch support for Intel TXT
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260211-dma_io_mmu-v1-1-cf89e24437af@debian.org>
 
-On Thu, 12 Feb 2026, at 20:49, Daniel P. Smith wrote:
-> On 2/9/26 09:04, Ard Biesheuvel wrote:
-...
->> Surprisingly, even when doing a secure launch, the EFI runtime services still work happily, which means (AIUI) that code that was excluded from the D-RTM TCB is still being executed at ring 0? Doesn't this defeat D-RTM entirely in the case some exploit is hidden in the EFI runtime code? Should we measure the contents of EfiRuntimeServicesCode regions too?
->
-> Yes, in fact in the early days I specifically stated that we should 
-> provide for the ability to measure the RS blocks. Particularly if you 
-> are not in an environment where you can isolate the calls to RS from the 
-> TCB. While the RS can pose runtime corruption risks, the larger concern 
-> is integrating the D-RTM validation of the Intel System Resources 
-> Defense (ISRD), aka SMI isolation/SMM Supervisor, provided by the Intel 
-> System Security Report (ISSR). Within the ISSR is a list of memory 
-> regions which the SMM Policy Shim (SPS) restricts a SMI handler's access 
-> when running. This allows a kernel to restrict what access a SMI handler 
-> are able to reach, thus allowing them to be removed from the TCB when 
-> the appropriate guards are put in place.
->
-> If you are interested in understanding these further, Satoshi Tanda has 
-> probably the best technical explanation without Intel market speak.
->
-> ISRD: https://tandasat.github.io/blog/2024/02/29/ISRD.html
-> ISSR: https://tandasat.github.io/blog/2024/03/18/ISSR.html
->
+On Wed, Feb 11, 2026 at 07:13:03AM -0800, Breno Leitao wrote:
+> When a PCI error (e.g. AER error or DPC containment) marks the PCI
+> channel as frozen or permanently failed, the IOMMU mappings for the
+> device may already be torn down. If a driver continues processing
+> completions in this state, every call to dma_unmap_page() triggers a
+> WARN_ON in iommu_dma_unmap_phys().
+> 
+> In a real-world crash scenario on an NVIDIA Grace (ARM64) platform, a
+> DPC event froze the PCI channel and the mlx5 NAPI poll continued
+> processing error CQEs, calling dma_unmap for each pending WQE. With
+> dozens of pending WQEs, the resulting WARN_ON storm monopolized the CPU
+> in softirq context for over 23 seconds, triggering a soft lockup panic.
+> 
+> Replace WARN_ON(!phys) with WARN_RATELIMIT() to cap the warning output
+> at the kernel's default rate limit (10 messages per 5 seconds), while
+> still providing visibility into the failure with the device name in the
+> message.
+> 
+> Signed-off-by: Breno Leitao <leitao@debian.org>
+> Fixes: 82612d66d51d ("iommu: Allow the dma-iommu api to use bounce buffers")
+> ---
+> I initially attempted to fix this in the driver itself, but that approach
+> doesn't appear to be optimal, given the mappings can go away at any
+> time, which is impossible to check at any time. Please see the discussion at:
+> 
+> https://lore.kernel.org/all/20260209-mlx5_iommu-v1-1-b17ae501aeb2@debian.org/
+> ---
+>  drivers/iommu/dma-iommu.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
 
-Thanks, I'll take a look at those.
+We have similar failure in our regression and the proposal fix is below,
+can you please try if it fixes your issue too?
 
-But would it be better to disable the runtime services by default when doing a secure launch? PREEMPT_RT already does the same.
-
-> While you all care about Linux specifically, the 
-> goal for TrenchBoot is to build a common approach that we can implement
-> across any other open source OS.
->
-
-I'd argue that relying on things like setup_header, boot_params and kernel_info is not a great way to achieve that. The reason I care about this is that you are relying on those things even when doing EFI boot, which makes your approach highly Linux/x86 specific.
-
-Given that arm64 has no decompressor at all, it is highly likely (and acceptable) that only EFI boot can do a secure launch. It also implies that the core kernel is the only place where we can put the pieces that execute afterwards. So adopting a model now for x86 that we know does not generalize well across other architectures is something I am not keen on.
-
-...
->> I've had a stab at implementing all of this in a manner that is more idiomatic for EFI boot:
->> 
->> - GRUB does minimal TXT related preparation upfront, and exposes the remaining functionality via a protocol that is attached to the loaded image by GRUB
->> - The SL stub is moved to the core kernel, with some startup code added to pivot to long mode
->> - the EFI stub executes and decompresses the kernel as usual
->> - if the protocol is present, the EFI stub calls it to pass the bootparams pointer, the base and size of the MLE and the header offset back to the GRUB code
->> - after calling ExitBootServices(), it calls another protocol method to trigger the secure launch.
->> 
-...
->
-> I think this is a great approach for UEFI, though we need to reconcile 
-> this with non-UEFI situations such as booting under coreboot.
-
-There are two approaches that I think are feasible for coreboot in this model:
-
-- just unpack the ELF and boot that - there is already prior art for that with Xen. We can stick the MLE header offset in an ELF note where any loader can find it.
-
-- stick with the current approach as much as possible, i.e., disable physical KASLR so that the decompressed kernel will end up right where the decompressor was loaded, which allows much of the secure launch preparation to be done as before. Only the final bits (including the call into the ACM itself) need to be deferred, and we can propose a generic mechanism for that via boot_params.
-
-I'm working on a prototype of the latter, but GRUB is an odd beast and my x86 fu is weak.
-
-I'd be happy to have a call to compare notes and see if we can come up with something we can all agree on (modulo the SHA-1 :-))
-
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
+index 9e2cf191ed30..ac64a64e0565 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
+@@ -44,7 +44,6 @@ static void mlx5e_reset_txqsq_cc_pc(struct mlx5e_txqsq *sq)
+                  "SQ 0x%x: cc (0x%x) != pc (0x%x)\n",
+                  sq->sqn, sq->cc, sq->pc);
+        sq->cc = 0;
+-       sq->dma_fifo_cc = 0;
+        sq->pc = 0;
+ }
 
