@@ -1,63 +1,104 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f202.google.com (mail-pg1-f202.google.com [209.85.215.202])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B23C13EBF2A;
-	Fri, 13 Feb 2026 23:53:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB63B217F27
+	for <iommu@lists.linux.dev>; Sat, 14 Feb 2026 08:09:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.202
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771026817; cv=none; b=e4q1yAga0A6QhzqIMk8F7VDXrqk1fQrX+ueHJtdBPjG2gXAJaHOwn7YeLFrxX2Sn2jcZ2DdEThT2ELCbQkH9hMIv9fST76vv7ofYte3CvXgvGTr2/EORmMTZR+D9soQSwi6wzD+FyJIUfKV3FQPODDZM2wesxqZwSyR17ArbFX8=
+	t=1771056595; cv=none; b=bQaA1zBzQFUcBGBX2evkNaOCAakwrEY439ofOA7rlM5dCfUtvLln3B/dIze1rvG//Bt8uzcYIy2ZjwExCu+706ZT3ZW6KS2OuMiofZ+zzfsJLbO8zeLZmKKGTMaGp3kAp6iDeHyBT/FMxZHMuQPsOuOBCJ2TQnzDeyN+l7RA8/M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771026817; c=relaxed/simple;
-	bh=/200HuJEVOe9Dd63n9cYwaK6WUDsoKxsdMGX9AeuC6s=;
-	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=hJgyIPOXFIWO5CDG9bsu3o3Eip7XYW9GQUFTFDJztkPFNVLBFdtSoE4xd8QR4wzUvca9EmZ1zPdkEfIpgJoHcwRm/2prXJRvMPNj1yHR8LOXDWQHlzD8/KrRAbxv7HG/lDhm+txanvXCu6IYfeB+CshoUHE1LPzk7dHq4xrTXs4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PnM9k86m; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1771056595; c=relaxed/simple;
+	bh=yZJwP+nsAfnT8DMGk/jL6ONa/8beKhsUbC/4OfiH+UI=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=fWE5EZ9ppx/DgF26Ddw9PPMK0hBleqGpWX+QooR75RDL+10pUOVg94knRIIU2UpjYHLi5M+Mmk8nxjwGiptJhpMDCep+ISUjGXSzyyBgzFVroBHnstB7NCnnRaW8DUO7Lx9WgsN4P/gZ9gZCRBrIZlFBrrfFA+41SNNdorL8j7k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--liulynn.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=0RAowLXZ; arc=none smtp.client-ip=209.85.215.202
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--liulynn.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PnM9k86m"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95070C116C6;
-	Fri, 13 Feb 2026 23:53:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771026817;
-	bh=/200HuJEVOe9Dd63n9cYwaK6WUDsoKxsdMGX9AeuC6s=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-	b=PnM9k86mg2KVz0B/fAXHfyR4KnW1Q9QxwRRlr+lUsIVhy/75E9PKuvgOA5DO5h5y3
-	 suZV6xdJRcv526y/x+u8Orp6/Gnn/3AWGF4EWJnZ8rFYW+SCA1doiAH50baf7yBsaH
-	 sT/iBxfcne6XLkPZVVt9CQnNyrhKbI+j+7xC91x3IsjUkA/NnuH6bVyU3XMhu5oNb3
-	 7Atpj5PsqgIO1p0Wbb1VfgNtb10vj2NPU/8NywkjAm1oKo+TsAIhJjHsNA0F75PlUq
-	 DxDNoH+zV+yTR/b28/STRrT451xJp+/RRHtGclaiCt7LspdNb0FbEBfRno7Nv2xCIg
-	 OREodw8if9sNQ==
-Received: from [10.30.226.235] (localhost [IPv6:::1])
-	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id 853AA3811A44;
-	Fri, 13 Feb 2026 23:53:32 +0000 (UTC)
-Subject: Re: [GIT PULL] dma-mapping update for Linux 7.0
-From: pr-tracker-bot@kernel.org
-In-Reply-To: <20260213143104.473529-1-m.szyprowski@samsung.com>
-References: <CGME20260213143112eucas1p150d4777d55a1e013b0e21d5ea7bae16c@eucas1p1.samsung.com> <20260213143104.473529-1-m.szyprowski@samsung.com>
-X-PR-Tracked-List-Id: <iommu.lists.linux.dev>
-X-PR-Tracked-Message-Id: <20260213143104.473529-1-m.szyprowski@samsung.com>
-X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/mszyprowski/linux.git tags/dma-mapping-7.0-2026-02-13
-X-PR-Tracked-Commit-Id: 8a840ab0567ff2b7d382694ba24a58a893d2c7af
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 72f05009d804c7ec92459da94ccc9ccb77686950
-Message-Id: <177102681108.2616894.5941818050956998355.pr-tracker-bot@kernel.org>
-Date: Fri, 13 Feb 2026 23:53:31 +0000
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="0RAowLXZ"
+Received: by mail-pg1-f202.google.com with SMTP id 41be03b00d2f7-c6e1e748213so1086029a12.2
+        for <iommu@lists.linux.dev>; Sat, 14 Feb 2026 00:09:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1771056594; x=1771661394; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=JJxsPsPKNTjfv6PsB/f5RXxGICW3iUFDwWM6i7w1qdo=;
+        b=0RAowLXZCNHuDV5YLv0rwe7PTTwcOD9Hey3nsZvYMNiABIGpjD350Q7vb+z2U/Vyya
+         5Lf2FzXZpNyv1n87RP7CQjoN5yE1PQXnobqMQJejTT5cR27t/C6wp60ahHsxf+9AE6tt
+         kQwNOcQIr8PryohzRcMUNFyIAPnVxSkXy++K8XKTGQHtbmE/kHsgiZqUpuABXyyN2Igw
+         41HL+okzBmyK2AwwwPrA+ucCcjPlPUwKg9U0hNpxZnd+rE/pLhQkWdjHqXvTAW/awwlA
+         hJLBzqEb7PGDS0E+aokNJJRLeVz7UQOX065Elur2zhlMfmq3hgq5GxrAzaH+M2peC/CO
+         rGvA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1771056594; x=1771661394;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=JJxsPsPKNTjfv6PsB/f5RXxGICW3iUFDwWM6i7w1qdo=;
+        b=rlK8xv21JuxAKvLbi+GkXtkwd+aFC7QK/FXz2Rze4XDk2kG6E7wXuzW0h3/ZCZBXQI
+         9/9KIks0QoEgU441i27uymX5oi1Gahd0lEmoMcLkzw69fmD6/06Wu+qy2bkoRA10sBhN
+         +ZmNQxsVZb1R3bpiI8KSoWaX/pyaa0Fn+Jsud/qZ9CIdOsjVu0d2i58l1n01C5BOHAul
+         j8uAGN0lejZ8gMgGhmiJ7KcpquHEZ1HAyQQX9c0JXArBAYuoCR5JwCtZXzuSj7yLHC3W
+         mOnMg/Wk4xEazBEWdHBAgoLmrIJYLBzs/47n+m6vRwj3hzPayBUKmYIKAYhnmt1G8hsw
+         yYXQ==
+X-Gm-Message-State: AOJu0YxN+Da7mXF2qZmnkVLsnP3kqTCYq561pZUjOHSqA8qocn3mMLj4
+	PwXohbl/UCS9jfyAJx+cY8PcRvDaoswemXn/gCTxn4Et9wo00uBWSQyvB6rRAUhaofam4Xu+uz6
+	TXoFZJ3GM6A==
+X-Received: from pgcv9.prod.google.com ([2002:a05:6a02:5309:b0:bd9:a349:94a3])
+ (user=liulynn job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a21:9148:b0:37e:4319:d7c9
+ with SMTP id adf61e73a8af0-3946c911088mr4095339637.77.1771056593999; Sat, 14
+ Feb 2026 00:09:53 -0800 (PST)
+Date: Sat, 14 Feb 2026 08:09:19 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.53.0.273.g2a3d683680-goog
+Message-ID: <20260214080919.390846-1-liulynn@google.com>
+Subject: [PATCH] iommu/iova: Add NULL check in iova_magazine_free()
+From: Lynn Liu <liulynn@google.com>
+To: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	lynn <liulynn@google.com>
+Content-Type: text/plain; charset="UTF-8"
 
-The pull request you sent on Fri, 13 Feb 2026 15:31:04 +0100:
+From: lynn <liulynn@google.com>
 
-> https://git.kernel.org/pub/scm/linux/kernel/git/mszyprowski/linux.git tags/dma-mapping-7.0-2026-02-13
+When iova_domain_init_rcaches() fails to allocate an iova_magazine
+during the initialization of per-cpu rcaches, it jumps to out_err and
+calls free_iova_rcaches() for cleanup.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/72f05009d804c7ec92459da94ccc9ccb77686950
+In free_iova_rcaches(), the code iterates through all possible CPUs to
+free both cpu_rcache->loaded and cpu_rcache->prev. However, if the
+original allocation failed mid-way through the CPU loop, the pointers
+for the remaining CPUs remain NULL.
 
-Thank you!
+Since kmem_cache_free() does not explicitly handle NULL pointers like
+kfree() does, passing these NULL pointers leads to a kernel paging
+request fault.
 
+Add a NULL check in iova_magazine_free() to safely handle partially
+initialized rcaches in error paths.
+
+Signed-off-by: lynn <liulynn@google.com>
+---
+ drivers/iommu/iova.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index 18f839721813..e026be5e068b 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -611,7 +611,8 @@ static struct iova_magazine *iova_magazine_alloc(gfp_t flags)
+ 
+ static void iova_magazine_free(struct iova_magazine *mag)
+ {
+-	kmem_cache_free(iova_magazine_cache, mag);
++	if (mag)
++		kmem_cache_free(iova_magazine_cache, mag);
+ }
+ 
+ static void
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+2.53.0.273.g2a3d683680-goog
+
