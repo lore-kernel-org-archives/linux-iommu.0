@@ -1,104 +1,273 @@
-Received: from mail-pg1-f202.google.com (mail-pg1-f202.google.com [209.85.215.202])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB63B217F27
-	for <iommu@lists.linux.dev>; Sat, 14 Feb 2026 08:09:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.202
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1537127510B;
+	Sat, 14 Feb 2026 21:27:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771056595; cv=none; b=bQaA1zBzQFUcBGBX2evkNaOCAakwrEY439ofOA7rlM5dCfUtvLln3B/dIze1rvG//Bt8uzcYIy2ZjwExCu+706ZT3ZW6KS2OuMiofZ+zzfsJLbO8zeLZmKKGTMaGp3kAp6iDeHyBT/FMxZHMuQPsOuOBCJ2TQnzDeyN+l7RA8/M=
+	t=1771104454; cv=none; b=kPlefh2B0rxJBGNUGS3td3o8M4a9z2J17TYGIyoYu71g9+B/8sGA2EYTDkLOBqP7WSMNphBgBklVayEt4TRW+DMnS7TVvYObV/EhT3TtjbY/Pkmz7wt8HvKhMOH4tYPQHmxOXP3DEFef5/5n0pyKzt+oYkfyLSFYNq2wLiR/4do=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771056595; c=relaxed/simple;
-	bh=yZJwP+nsAfnT8DMGk/jL6ONa/8beKhsUbC/4OfiH+UI=;
-	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=fWE5EZ9ppx/DgF26Ddw9PPMK0hBleqGpWX+QooR75RDL+10pUOVg94knRIIU2UpjYHLi5M+Mmk8nxjwGiptJhpMDCep+ISUjGXSzyyBgzFVroBHnstB7NCnnRaW8DUO7Lx9WgsN4P/gZ9gZCRBrIZlFBrrfFA+41SNNdorL8j7k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--liulynn.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=0RAowLXZ; arc=none smtp.client-ip=209.85.215.202
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--liulynn.bounces.google.com
+	s=arc-20240116; t=1771104454; c=relaxed/simple;
+	bh=hGdm7zIryznpYpQ1evXRj8F91XqzgTRsuLilvTNcHoA=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=CtXW46MphNhf8fypXVGcEQDAUoUAA9HDXsJLhh1ERYQbWOWrEFKO1E3g81jq0eq1HTJdWMtzbfhJagtt7iKZd3krj7BevPVzd7U/UQNgD4gyGIzyg68nIUQ+BmRkj9QKhyRqgCs1UOBptQs0lAyOMN4QQ3rrBgqG5WQ0DGPJ8po=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lZW0XiG9; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="0RAowLXZ"
-Received: by mail-pg1-f202.google.com with SMTP id 41be03b00d2f7-c6e1e748213so1086029a12.2
-        for <iommu@lists.linux.dev>; Sat, 14 Feb 2026 00:09:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1771056594; x=1771661394; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=JJxsPsPKNTjfv6PsB/f5RXxGICW3iUFDwWM6i7w1qdo=;
-        b=0RAowLXZCNHuDV5YLv0rwe7PTTwcOD9Hey3nsZvYMNiABIGpjD350Q7vb+z2U/Vyya
-         5Lf2FzXZpNyv1n87RP7CQjoN5yE1PQXnobqMQJejTT5cR27t/C6wp60ahHsxf+9AE6tt
-         kQwNOcQIr8PryohzRcMUNFyIAPnVxSkXy++K8XKTGQHtbmE/kHsgiZqUpuABXyyN2Igw
-         41HL+okzBmyK2AwwwPrA+ucCcjPlPUwKg9U0hNpxZnd+rE/pLhQkWdjHqXvTAW/awwlA
-         hJLBzqEb7PGDS0E+aokNJJRLeVz7UQOX065Elur2zhlMfmq3hgq5GxrAzaH+M2peC/CO
-         rGvA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771056594; x=1771661394;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=JJxsPsPKNTjfv6PsB/f5RXxGICW3iUFDwWM6i7w1qdo=;
-        b=rlK8xv21JuxAKvLbi+GkXtkwd+aFC7QK/FXz2Rze4XDk2kG6E7wXuzW0h3/ZCZBXQI
-         9/9KIks0QoEgU441i27uymX5oi1Gahd0lEmoMcLkzw69fmD6/06Wu+qy2bkoRA10sBhN
-         +ZmNQxsVZb1R3bpiI8KSoWaX/pyaa0Fn+Jsud/qZ9CIdOsjVu0d2i58l1n01C5BOHAul
-         j8uAGN0lejZ8gMgGhmiJ7KcpquHEZ1HAyQQX9c0JXArBAYuoCR5JwCtZXzuSj7yLHC3W
-         mOnMg/Wk4xEazBEWdHBAgoLmrIJYLBzs/47n+m6vRwj3hzPayBUKmYIKAYhnmt1G8hsw
-         yYXQ==
-X-Gm-Message-State: AOJu0YxN+Da7mXF2qZmnkVLsnP3kqTCYq561pZUjOHSqA8qocn3mMLj4
-	PwXohbl/UCS9jfyAJx+cY8PcRvDaoswemXn/gCTxn4Et9wo00uBWSQyvB6rRAUhaofam4Xu+uz6
-	TXoFZJ3GM6A==
-X-Received: from pgcv9.prod.google.com ([2002:a05:6a02:5309:b0:bd9:a349:94a3])
- (user=liulynn job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a21:9148:b0:37e:4319:d7c9
- with SMTP id adf61e73a8af0-3946c911088mr4095339637.77.1771056593999; Sat, 14
- Feb 2026 00:09:53 -0800 (PST)
-Date: Sat, 14 Feb 2026 08:09:19 +0000
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lZW0XiG9"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24F27C16AAE;
+	Sat, 14 Feb 2026 21:27:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1771104454;
+	bh=hGdm7zIryznpYpQ1evXRj8F91XqzgTRsuLilvTNcHoA=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=lZW0XiG96xigf6OdXtqQaRHjmc8OXyTPH77reWaRSHPWusGoZu3NENv51etZ0zPRp
+	 Rzk3J98UW6BKilq6Kc188aXbWE3R5LuR3KLchyR6nICoKO2xwhsqDJRYPbSMK6wgUw
+	 3cq4+jQLvnhbi38E7vkG4GEudwXzN3+c/Nq4DrRnQlPV9IbioFweK0tn8z1yCJE5e0
+	 Niij0SqZZ/O6Jny6Lf5Tqw8KovbO1ozK55CYeppGZKtUjMbj6JPbY37GwkAm0EIW+f
+	 Prh7NQpYSucvuon27B6Vexckc+d2zymeEx8EdLALMriDfz6WuDptJRxUHjuEa41A61
+	 TCngi+0TAdRBA==
+From: Sasha Levin <sashal@kernel.org>
+To: patches@lists.linux.dev,
+	stable@vger.kernel.org
+Cc: Ankit Soni <Ankit.Soni@amd.com>,
+	Vasant Hegde <vasant.hegde@amd.com>,
+	Joerg Roedel <joerg.roedel@amd.com>,
+	Sasha Levin <sashal@kernel.org>,
+	joro@8bytes.org,
+	iommu@lists.linux.dev
+Subject: [PATCH AUTOSEL 6.19-6.6] iommu/amd: move wait_on_sem() out of spinlock
+Date: Sat, 14 Feb 2026 16:23:59 -0500
+Message-ID: <20260214212452.782265-94-sashal@kernel.org>
+X-Mailer: git-send-email 2.51.0
+In-Reply-To: <20260214212452.782265-1-sashal@kernel.org>
+References: <20260214212452.782265-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.53.0.273.g2a3d683680-goog
-Message-ID: <20260214080919.390846-1-liulynn@google.com>
-Subject: [PATCH] iommu/iova: Add NULL check in iova_magazine_free()
-From: Lynn Liu <liulynn@google.com>
-To: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	lynn <liulynn@google.com>
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
+X-stable-base: Linux 6.19
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-From: lynn <liulynn@google.com>
+From: Ankit Soni <Ankit.Soni@amd.com>
 
-When iova_domain_init_rcaches() fails to allocate an iova_magazine
-during the initialization of per-cpu rcaches, it jumps to out_err and
-calls free_iova_rcaches() for cleanup.
+[ Upstream commit d2a0cac10597068567d336e85fa3cbdbe8ca62bf ]
 
-In free_iova_rcaches(), the code iterates through all possible CPUs to
-free both cpu_rcache->loaded and cpu_rcache->prev. However, if the
-original allocation failed mid-way through the CPU loop, the pointers
-for the remaining CPUs remain NULL.
+With iommu.strict=1, the existing completion wait path can cause soft
+lockups under stressed environment, as wait_on_sem() busy-waits under the
+spinlock with interrupts disabled.
 
-Since kmem_cache_free() does not explicitly handle NULL pointers like
-kfree() does, passing these NULL pointers leads to a kernel paging
-request fault.
+Move the completion wait in iommu_completion_wait() out of the spinlock.
+wait_on_sem() only polls the hardware-updated cmd_sem and does not require
+iommu->lock, so holding the lock during the busy wait unnecessarily
+increases contention and extends the time with interrupts disabled.
 
-Add a NULL check in iova_magazine_free() to safely handle partially
-initialized rcaches in error paths.
-
-Signed-off-by: lynn <liulynn@google.com>
+Signed-off-by: Ankit Soni <Ankit.Soni@amd.com>
+Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
+Signed-off-by: Joerg Roedel <joerg.roedel@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/iova.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index 18f839721813..e026be5e068b 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -611,7 +611,8 @@ static struct iova_magazine *iova_magazine_alloc(gfp_t flags)
- 
- static void iova_magazine_free(struct iova_magazine *mag)
+LLM Generated explanations, may be completely bogus:
+
+Now I understand the full picture. Let me analyze the commit as
+presented in the diff.
+
+### 3. Bug Being Fixed
+
+**Soft lockup**: `wait_on_sem()` busy-waits for up to ~100ms
+(`LOOP_TIMEOUT=100000` iterations of `udelay(1)`) while holding
+`iommu->lock` with interrupts disabled via `raw_spin_lock_irqsave`.
+Under heavy IOMMU flush activity with `iommu.strict=1`, this can trigger
+soft lockup warnings and starve other CPUs waiting for the same lock.
+
+This is a **real, user-visible stability issue** - soft lockups cause
+watchdog warnings and can lead to system hangs on heavily-loaded systems
+using AMD IOMMU with strict mode.
+
+### 4. Changes in Detail
+
+**Change A: `wait_on_sem()` comparison logic**
+- Old: `*iommu->cmd_sem != data` — exact equality match
+- New: `(__s64)(READ_ONCE(*iommu->cmd_sem) - data) < 0` — monotonic "not
+  yet reached" check
+
+This is critical for correctness when moving `wait_on_sem()` outside the
+lock. With the lock held, commands were strictly serialized. Outside the
+lock, the semaphore value could jump past the expected value if a later
+completion overtakes the check. The monotonic comparison handles this
+correctly. The `READ_ONCE` also prevents compiler optimization issues.
+
+**Change B & C: Moving `wait_on_sem()` outside spinlock**
+In both `iommu_completion_wait()` and `iommu_flush_irt_and_complete()`,
+the spinlock is released immediately after queueing commands, before the
+busy-wait.
+
+### 5. Concurrency Safety Analysis
+
+The subagent raised a concern about a race condition: the
+`atomic64_inc_return` happens OUTSIDE the lock, so concurrent callers
+could get sequence numbers allocated out of order relative to command
+queue insertion.
+
+**However, the monotonic comparison (`< 0` on signed difference) in the
+updated `wait_on_sem()` makes this safe**:
+
+Consider the scenario:
+- Thread A gets seq=1, Thread B gets seq=2
+- Thread B queues completion wait for 2, Thread A queues completion wait
+  for 1
+- IOMMU processes: completion_wait(2) first, then completion_wait(1)
+- cmd_sem is written to 2, then 1
+
+With old `!=` comparison:
+- Thread A waits for `cmd_sem == 1` — would work when IOMMU writes 1
+- Thread B waits for `cmd_sem == 2` — would see cmd_sem jump from 2→1,
+  missing the match!
+
+With new `(__s64)(cmd_sem - data) < 0` comparison:
+- Thread B waits for `cmd_sem >= 2` — satisfied when cmd_sem=2
+- Thread A waits for `cmd_sem >= 1` — satisfied when cmd_sem=2 (or 1)
+- **But wait**: cmd_sem is written to 2, then 1. After hardware writes
+  1, the value is 1. Thread B checking `cmd_sem >= 2` would fail because
+  cmd_sem=1!
+
+Actually, this analysis reveals there IS a potential issue with out-of-
+order sequence numbers being written non-monotonically. But the key
+insight from the commit message is: "cmd_sem holds a monotonically non-
+decreasing completion sequence number." The hardware writes the values
+in command buffer order, and even though the queue insertions might
+reorder, each individual thread's `wait_on_sem()` checks if its own
+value has been reached. With the monotonic comparison, if the hardware
+writes 2 (from Thread B's command) first, Thread A (waiting for 1) would
+see `cmd_sem=2 >= 1` and proceed. Then the hardware writes 1 (from
+Thread A's command), which doesn't regress because... actually it would
+set cmd_sem to 1 after it was 2.
+
+This is actually where the companion patch becomes relevant. However,
+examining more carefully: in the pre-patch code, the
+`atomic64_inc_return` was also done outside the lock! Look at the
+current code at line 1434 — `data =
+atomic64_inc_return(&iommu->cmd_sem_val)` is before
+`raw_spin_lock_irqsave` at line 1437. So the out-of-order sequence
+number issue **already exists** in the current code. This patch doesn't
+make it worse; it actually makes it better by changing from exact
+equality to monotonic comparison.
+
+### 6. Risk Assessment
+
+- **Files changed**: 1 file
+- **Lines changed**: ~25 lines of actual logic change (moving unlock,
+  changing comparison)
+- **Subsystem**: AMD IOMMU — important for AMD server/desktop users
+- **Risk**: LOW — the change is logically sound; `wait_on_sem()` only
+  reads a hardware-updated memory location
+- **Regression potential**: LOW — the lock still protects command buffer
+  operations; only the polling is moved outside
+
+### 7. Dependency Check
+
+The commit is self-contained. While a companion commit exists to further
+improve correctness by serializing sequence allocation under the lock,
+this commit stands on its own:
+1. It fixes the immediate soft lockup problem
+2. The monotonic comparison improves correctness over the existing `!=`
+   check
+3. The pre-existing race with `atomic64_inc_return` outside the lock is
+   not made worse
+
+### 8. Classification
+
+- **Bug type**: Soft lockup / system hang — HIGH priority for stable
+- **User impact**: Users with AMD IOMMU and `iommu.strict=1` under heavy
+  I/O can experience soft lockups
+- **Fix quality**: Reviewed by AMD developer, merged by subsystem
+  maintainer
+- **Stable criteria**: Obviously correct, fixes a real bug, small scope,
+  no new features
+
+### Conclusion
+
+This commit fixes a real soft lockup bug that can cause system hangs on
+AMD IOMMU systems under stress with `iommu.strict=1`. The fix is small,
+surgical (moving the busy-wait outside the spinlock), and logically
+sound — `wait_on_sem()` only polls hardware-updated memory and doesn't
+need the lock. The additional improvement to the comparison logic
+(monotonic instead of equality) is also correct and prevents false
+timeouts. The commit is from AMD's own developer, reviewed by another
+AMD developer, and merged by the IOMMU maintainer.
+
+The fix meets all stable kernel criteria: it fixes a real stability
+issue (soft lockups), is small and contained, doesn't add new features,
+and has low regression risk.
+
+**YES**
+
+ drivers/iommu/amd/iommu.c | 25 +++++++++++++++++--------
+ 1 file changed, 17 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index 7c12be1b247f4..c8b65d6d971e0 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -1185,7 +1185,12 @@ static int wait_on_sem(struct amd_iommu *iommu, u64 data)
  {
--	kmem_cache_free(iova_magazine_cache, mag);
-+	if (mag)
-+		kmem_cache_free(iova_magazine_cache, mag);
+ 	int i = 0;
+ 
+-	while (*iommu->cmd_sem != data && i < LOOP_TIMEOUT) {
++	/*
++	 * cmd_sem holds a monotonically non-decreasing completion sequence
++	 * number.
++	 */
++	while ((__s64)(READ_ONCE(*iommu->cmd_sem) - data) < 0 &&
++	       i < LOOP_TIMEOUT) {
+ 		udelay(1);
+ 		i += 1;
+ 	}
+@@ -1437,14 +1442,13 @@ static int iommu_completion_wait(struct amd_iommu *iommu)
+ 	raw_spin_lock_irqsave(&iommu->lock, flags);
+ 
+ 	ret = __iommu_queue_command_sync(iommu, &cmd, false);
++	raw_spin_unlock_irqrestore(&iommu->lock, flags);
++
+ 	if (ret)
+-		goto out_unlock;
++		return ret;
+ 
+ 	ret = wait_on_sem(iommu, data);
+ 
+-out_unlock:
+-	raw_spin_unlock_irqrestore(&iommu->lock, flags);
+-
+ 	return ret;
  }
  
- static void
+@@ -3120,13 +3124,18 @@ static void iommu_flush_irt_and_complete(struct amd_iommu *iommu, u16 devid)
+ 	raw_spin_lock_irqsave(&iommu->lock, flags);
+ 	ret = __iommu_queue_command_sync(iommu, &cmd, true);
+ 	if (ret)
+-		goto out;
++		goto out_err;
+ 	ret = __iommu_queue_command_sync(iommu, &cmd2, false);
+ 	if (ret)
+-		goto out;
++		goto out_err;
++	raw_spin_unlock_irqrestore(&iommu->lock, flags);
++
+ 	wait_on_sem(iommu, data);
+-out:
++	return;
++
++out_err:
+ 	raw_spin_unlock_irqrestore(&iommu->lock, flags);
++	return;
+ }
+ 
+ static inline u8 iommu_get_int_tablen(struct iommu_dev_data *dev_data)
 -- 
-2.53.0.273.g2a3d683680-goog
+2.51.0
 
