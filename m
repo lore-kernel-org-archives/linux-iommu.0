@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A972F330B15;
-	Mon, 16 Feb 2026 15:32:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 987B2330661;
+	Mon, 16 Feb 2026 15:33:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771255948; cv=none; b=BKsRk3qAw0jziYresyASgIbDSEzfxCyBCYXANJ/lQf87+0kYPo9PkHg08UWfH3rG0nfXiBttet1qzak42tD+AN2De8bW0wYVpmQ06HYrdRlX3siof0nTOr6gg4hUZhjR/BGKfmzz9yc9MvcvHMBzlLyDLc550x0BfurKrOZJA+k=
+	t=1771256012; cv=none; b=CXS6zt/Vme60Ow8cBlyQsTUY3cRVKWonD+vqOISAop5F3LPw2+5ei2iOeZoHN9ZK2CaamhYf4jTNdSTBVoHCpUS/tLJCQkiAueO/3XIqwE81w28seQ+vYnCnNSsYgUrTCCZqu4LohkyrK30TpwmkBR2m7yP0MO4mATh7+YikomE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771255948; c=relaxed/simple;
-	bh=7sRFqvjn3E+nvWZqWiYbrCnM/0H2C7500YPYQf5MdUw=;
+	s=arc-20240116; t=1771256012; c=relaxed/simple;
+	bh=61uYWKiO7+LywWObabpStY25JntBKV1HX3TroV33siM=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=jlyaqKD1MADvRXshSHGtmE+X4n8Dl+ZGj+0wPhGFAKyw4yX5qiHX2qnNcDA+nBjBntAM9N7njcD8f/wlYpkZWkBgHV0SX7D6x5Wd6P7ipuz6q0dEYolGM0G2PYb3rV60h+q4+0OgyfqMNMUet+MryWKOwM2+oAqpO9XJxg3/Z2w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mFNV879S; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=ijSqag8SptXQwX1SfvB/bBRWrYHI7b8NRQAPOYZsOCKADYuv3aY0H+25BINZVO7jefWi3yxXJwHcX+dONlo6Is+0Q7AbsvWztFbmRN9uQpVk2d89DUmY/hlwho3pucnX0Q2he4EBAbXgrEf5n5uOFTNW/wyYNmhKrBxDfYY+zbA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=e8GivwXE; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mFNV879S"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B15E2C19423;
-	Mon, 16 Feb 2026 15:32:24 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="e8GivwXE"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2C11C116C6;
+	Mon, 16 Feb 2026 15:33:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771255948;
-	bh=7sRFqvjn3E+nvWZqWiYbrCnM/0H2C7500YPYQf5MdUw=;
+	s=k20201202; t=1771256012;
+	bh=61uYWKiO7+LywWObabpStY25JntBKV1HX3TroV33siM=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=mFNV879SEjrojsot7pd6RHAXpCv0ObK4N9FaCpjv4dK59fg7DIukGosv0++Uac8hV
-	 eLhgE5dwlyGsva6hw2ypv+UP+GwkC1hAR4gHurA6GrjkxUOfMYhSc73urEHhXmPufP
-	 jimSyceyqBtBtkFL0q8HX2d2rS6zNOkCnD2o0TrQHqE2l54OYscOZkEHBaWsVxFome
-	 2GSiZ/624D4qCIT0gIV1OrmjZ5HTJE2+NJ53ceDV8X3SBsCgCHIk7OEItyWUdnczxB
-	 El9yvNlUAIueVW2VMRgRNNmWqTqTxl7GOIc+LC+I0exE/JoCWh/0HkQYVnu9BQzBdk
-	 uG7P/vlwXuOmA==
-Message-ID: <867cd496-0b7b-4a99-97e1-5926ffaa5eed@kernel.org>
-Date: Mon, 16 Feb 2026 16:32:23 +0100
+	b=e8GivwXEdlBa/Teuzah3FojvquEgo1U/gIiXt156s6ndwyMgTMvmwAmBTjdexA8s7
+	 nDn/srx6/4CQr85xw2WHCyWJT8UzQkPyYjd4R4tC7ICjXUob5kXNGZbcnYr75WNVn5
+	 ndVkZ2qG0GpuI32ruKW1XV2/kLUUTB1bnKGIn53Gtz1X6sF4hBcW/AJkSUfcbJ3cBc
+	 i2PiMf6oERjwl+QFRooOVkv1DAMP+LPz6o1URr1IUoGLy2VlcA28Mv6FSyKgzwEGwV
+	 Dg1EFqLHYEtcH6keB69DzdU7fBX4blMVFMzEgb35R5626/4WS2yUcYPvJ392odOh5C
+	 peKkcZodaCwnQ==
+Message-ID: <75b60a26-5a3e-4db7-accd-994c8de427b7@kernel.org>
+Date: Mon, 16 Feb 2026 16:33:27 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -46,8 +46,6 @@ Cc: iommu@lists.linux.dev, devicetree@vger.kernel.org,
  linux-rockchip@lists.infradead.org, linux-media@vger.kernel.org
 References: <20260216095144.107356-1-benjamin.gaignard@collabora.com>
  <20260216095144.107356-7-benjamin.gaignard@collabora.com>
- <07b62f39-d27b-4439-a60e-42fd47f49b13@kernel.org>
- <16e32780-07bb-42c9-a5c8-aa61f2366efa@collabora.com>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -93,26 +91,17 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  jWt87ecuHlpL3uuQ0ZZNWqHgZoQLXoqC2ZV5KrtKWb/jyiFX/sxSrodALf0zf+tfHv0FZWT2
  zHjUqd0t4njD/UOsuIMOQn4Ig0SdivYPfZukb5cdasKJukG1NOpbW7yRNivaCnfZz6dTawXw
  XRIV/KDsHQiyVxKvN73bThKhONkcX2LWuD928tAR6XMM2G5ovxLe09vuOzzfTWQDsm++9UKF a/A=
-In-Reply-To: <16e32780-07bb-42c9-a5c8-aa61f2366efa@collabora.com>
+In-Reply-To: <20260216095144.107356-7-benjamin.gaignard@collabora.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-On 16/02/2026 16:30, Benjamin Gaignard wrote:
-> 
-> Le 16/02/2026 à 16:16, Krzysztof Kozlowski a écrit :
->> On 16/02/2026 10:51, Benjamin Gaignard wrote:
->>> Enable Verisilicon IOMMU used by Rockchip RK3588 AV1 hardware codec.
->>> This hardware block could be found in Radxa Rock 5B board.
->> I could not find such board. I even git grepped for some variants... It
->> seems you are adding it earlier to a known DTSI, so it will reach some
->> board, so the point is to use here REAL name of the board we do support.
-> 
-> Any rk3558 based board have this hardware block
-> and arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts describes Radxa Rock 5B board.
-> 
-> But maybe I miss understood your point ?
+On 16/02/2026 10:51, Benjamin Gaignard wrote:
+> Enable Verisilicon IOMMU used by Rockchip RK3588 AV1 hardware codec.
+> This hardware block could be found in Radxa Rock 5B board.
 
-Please use greppable names, so name is ROCK, not Rock. :/
+After correcting this to Radxa ROCK 5B, as written in DTS and bindings:
+
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 
 Best regards,
 Krzysztof
