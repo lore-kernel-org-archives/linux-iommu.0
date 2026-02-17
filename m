@@ -1,204 +1,584 @@
-Received: from BL2PR02CU003.outbound.protection.outlook.com (mail-eastusazon11011053.outbound.protection.outlook.com [52.101.52.53])
+Received: from outpost1.zedat.fu-berlin.de (outpost1.zedat.fu-berlin.de [130.133.4.66])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CCBD31A55B;
-	Tue, 17 Feb 2026 09:52:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.52.53
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771321961; cv=fail; b=mJndsmSNjQM4XhbPLSLvJHXEBVPyBZgkvQ/9RY6CFDtRIOk2DGnpY3vw7jRn4Qtk2tq1HL5LSHgL+ay+SOaTDJYeADoFqbdCzvcC1ajSWrNzE0C6JRoHg4pBega+oXnYSeznPOdEHU4vSJQIeJYoqWWu8U2Ve5QK0bjaYCjDtUQ=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771321961; c=relaxed/simple;
-	bh=BJMUB0XUj6l+N/Q5bvr6KWw0fsXHZyMh4xMcZjGp2EM=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=VwyHg7MkJYCwvhQdS55GtXwl56jWHSx4FJyrKtA/aExcMsZDz3X0i/qK/b+hZUWd47/n0m7TbIIpgQ7jrcGdk7+xOXIZjfLzJ05475JYZRvi4JoZxNLxX0R6+KEiuyWOZxag0+K+qXZopLRJS3jd3r2JH9oYrmgUC/rUbLmsrqc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=ESHq+4wT; arc=fail smtp.client-ip=52.101.52.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D2EE339857;
+	Tue, 17 Feb 2026 12:28:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=130.133.4.66
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1771331285; cv=none; b=cj+xw5Jfin3fGHJureuHwXNONZ1hai93T9zlxHDwodnBjoHsA6AulPTVd0jY9zJ7faRjjHgNoTCEBH9Gs9V60z1C9ToNh6z0p1fRuen/oGKUsoji8FIO65Ql4oTHxLsUT4LDwGOSrQHtyF+FxtRPMlftbudZJDpbAcBwLI5sTgw=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1771331285; c=relaxed/simple;
+	bh=x5mwaKBJUqIpc9PhTyh0AynW+X/MFT2GS+eNTqpZtxI=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=d23KFs+AmCEsVpRzQy0KMCzj3MwH5bkQFgtvanGJjZDazVzmOdOEO8xf2FY+9kJoZK33yW97EeVkbKND7XsyroLYnJFWBFjU3rO9FADLRzGnKRJ3okeT5Pg1Nck01tANTcefiLKjbxDBqwbWBSZHHhGRArIxUh8sZ4t9Mpql/rI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=physik.fu-berlin.de; spf=pass smtp.mailfrom=zedat.fu-berlin.de; dkim=pass (2048-bit key) header.d=fu-berlin.de header.i=@fu-berlin.de header.b=I6pIRqsN; arc=none smtp.client-ip=130.133.4.66
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=physik.fu-berlin.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zedat.fu-berlin.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="ESHq+4wT"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=lgt3ApHVgXrMimv7toOMJIXMOy9427ixiqgrZ2FDaFAWrWMSK+M1nfgijjmjR4r33pa9+K/ff88fJA5Fl0M80QKL+JqPI+KMYs+u28aIuMx+FKVyXlf29WkEjvA00xqHrHcdcUBRGzyTvQ/mwt3gXcz3F1D3r5uGWn++gBL4dJxUo7FGoCJhDSgY/xPUjF5schp3g5wGHN84YyjwH4dRd5EJut41F/u8OHCl3klgC9awGUSveL4eYiotgY7EtLdyXEmFWbGckj9RrpbPpYtrUWcf9tw93/08isNcTpSL3TqVIdQ0MPeHzyttZvSjw0ibC9JrxU6UG/RvxFi1nrv+aw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=p//N4G0Wn8uuX8gbFSUtGmW3yTk9hr7sN6oQ4alXK2E=;
- b=G7Q9OSz53cXIPbkbIkfEo3k+rBWpvNwHxCCMpfjQVe5rhMV8xXUdLmcXjCxUnw8Eg0pEzAi9B4c5S7iggfrkN8U/IjHwmFhbb7Bre1bzUK8hfi4RJH72CxYZNo3nk/fm3ldO8si25KYypIfse+pMJGlNCLMOc4Bqk88FOdgIhVNevyxubBMGj05d1hyKN+i+C7wXuIXgF3D8/kRm2esZOp6RBr7mekNakjrLvA5ASRVvkrBASDJqVcBTUxGa110l9owHOXjmCphm/rhetPLc1CNNna25gdnZD7/OYQuNm0G53BPKJjDTdC12MK+wuwPnko8reLl5A/wfV5/g3X+ahA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=p//N4G0Wn8uuX8gbFSUtGmW3yTk9hr7sN6oQ4alXK2E=;
- b=ESHq+4wTk9BHIKutNyeLOS8lwuCRKPGdKJAZ76TnZkGq4915A7wrTg0FKhRMB8dFZ5jb+LGxVqzYbgUTi6UgwJCdtfvttXyqnaWskRKjmmJHIWKvVPcub3WqZYM6dph5ofRaw8el2qZlMY/rBoiIfDPGhFF8gXEKTFY2F1X+Sag=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from PH7PR12MB5685.namprd12.prod.outlook.com (2603:10b6:510:13c::22)
- by PH7PR12MB5806.namprd12.prod.outlook.com (2603:10b6:510:1d2::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9611.16; Tue, 17 Feb
- 2026 09:52:36 +0000
-Received: from PH7PR12MB5685.namprd12.prod.outlook.com
- ([fe80::ce69:cfae:774d:a65c]) by PH7PR12MB5685.namprd12.prod.outlook.com
- ([fe80::ce69:cfae:774d:a65c%5]) with mapi id 15.20.9611.008; Tue, 17 Feb 2026
- 09:52:36 +0000
-Message-ID: <0aa8147c-254d-4a1c-89ee-9dc4d4b6b022@amd.com>
-Date: Tue, 17 Feb 2026 10:52:25 +0100
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v7 0/8] dma-buf: Use revoke mechanism to invalidate shared
- buffers
-To: Leon Romanovsky <leon@kernel.org>, David Airlie <airlied@gmail.com>
-Cc: Sumit Semwal <sumit.semwal@linaro.org>,
- Alex Deucher <alexander.deucher@amd.com>, Simona Vetter <simona@ffwll.ch>,
- Gerd Hoffmann <kraxel@redhat.com>,
- Dmitry Osipenko <dmitry.osipenko@collabora.com>,
- Gurchetan Singh <gurchetansingh@chromium.org>, Chia-I Wu
- <olvaffe@gmail.com>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
- Lucas De Marchi <lucas.demarchi@intel.com>,
- =?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
- Rodrigo Vivi <rodrigo.vivi@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
- Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Felix Kuehling <Felix.Kuehling@amd.com>, Alex Williamson <alex@shazbot.org>,
- Ankit Agrawal <ankita@nvidia.com>,
- Vivek Kasireddy <vivek.kasireddy@intel.com>, linux-media@vger.kernel.org,
- dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
- linux-kernel@vger.kernel.org, amd-gfx@lists.freedesktop.org,
- virtualization@lists.linux.dev, intel-xe@lists.freedesktop.org,
- linux-rdma@vger.kernel.org, iommu@lists.linux.dev, kvm@vger.kernel.org
-References: <20260131-dmabuf-revoke-v7-0-463d956bd527@nvidia.com>
- <20260217080206.GJ12989@unreal>
-Content-Language: en-US
-From: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
-In-Reply-To: <20260217080206.GJ12989@unreal>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: YT3PR01CA0076.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b01:84::19) To PH7PR12MB5685.namprd12.prod.outlook.com
- (2603:10b6:510:13c::22)
+	dkim=pass (2048-bit key) header.d=fu-berlin.de header.i=@fu-berlin.de header.b="I6pIRqsN"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=fu-berlin.de; s=fub01; h=MIME-Version:Content-Transfer-Encoding:
+	Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:From:
+	Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+	Content-Transfer-Encoding:Content-ID:Content-Description:In-Reply-To:
+	References; bh=M8vjpXwBYqHTGgLeO7mfZbw/zRtPy35wLTMbPEUqNJY=; t=1771331282;
+	x=1771936082; b=I6pIRqsNGUc0r8IwEBkaG/oBTV6kEQoc+iGycMe8JWMz7XGdUj3Wb1KQDt7xd
+	MIOQWEH9X38VmJ0gs2FgFov0cEhH9CEZxDuika+vuKL9CsufgmkNwt5d2OcAjmBIPJ1wf2WKCVjOF
+	oziSrNkZyU1io1LdjnaiSlJ7qzuUDfpVqtEPfAl1QrB5TqMhyFpm/2qsihqoG7HiQ/zaz8EVqHCWn
+	9iNDCkbOiaiydOtVcc/XPmqrVfW3YEWek6cbS1a10Um9xu3iMX98iP76NG2XvjNdUwF4bbULuN2RJ
+	yijp8GKxrnweeFQagVHvV7YC+0xMxzE6EVL/xdoFfmCoFo/VPg==;
+Received: from inpost2.zedat.fu-berlin.de ([130.133.4.69])
+          by outpost.zedat.fu-berlin.de (Exim 4.99)
+          with esmtps (TLS1.3)
+          tls TLS_AES_256_GCM_SHA384
+          (envelope-from <glaubitz@zedat.fu-berlin.de>)
+          id 1vsKAq-00000002WEs-0TOS; Tue, 17 Feb 2026 13:27:28 +0100
+Received: from p5dc55f29.dip0.t-ipconnect.de ([93.197.95.41] helo=[192.168.178.61])
+          by inpost2.zedat.fu-berlin.de (Exim 4.99)
+          with esmtpsa (TLS1.3)
+          tls TLS_AES_256_GCM_SHA384
+          (envelope-from <glaubitz@physik.fu-berlin.de>)
+          id 1vsKAp-000000026vw-3EPk; Tue, 17 Feb 2026 13:27:27 +0100
+Message-ID: <e294484787a5032c531dcd40071b22362bddcad4.camel@physik.fu-berlin.de>
+Subject: Re: [PATCH v5 11/14] sparc: Use physical address DMA mapping
+From: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+To: Leon Romanovsky <leon@kernel.org>, Marek Szyprowski	
+ <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Russell
+ King	 <linux@armlinux.org.uk>, Juergen Gross <jgross@suse.com>, Stefano
+ Stabellini	 <sstabellini@kernel.org>, Oleksandr Tyshchenko
+ <oleksandr_tyshchenko@epam.com>,  Richard Henderson
+ <richard.henderson@linaro.org>, Matt Turner <mattst88@gmail.com>, Thomas
+ Bogendoerfer	 <tsbogend@alpha.franken.de>, "James E.J. Bottomley"	
+ <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, 
+ Madhavan Srinivasan	 <maddy@linux.ibm.com>, Michael Ellerman
+ <mpe@ellerman.id.au>, Nicholas Piggin	 <npiggin@gmail.com>, Christophe
+ Leroy <christophe.leroy@csgroup.eu>, Geoff Levand <geoff@infradead.org>,
+ "David S. Miller" <davem@davemloft.net>, Andreas Larsson	
+ <andreas@gaisler.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar	
+ <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Dave Hansen	
+ <dave.hansen@linux.intel.com>, x86@kernel.org, "H. Peter Anvin"
+ <hpa@zytor.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, xen-devel@lists.xenproject.org, 
+	linux-alpha@vger.kernel.org, linux-mips@vger.kernel.org, 
+	linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, sparclinux
+	 <sparclinux@vger.kernel.org>
+Date: Tue, 17 Feb 2026 13:27:26 +0100
+In-Reply-To: <20251015-remove-map-page-v5-11-3bbfe3a25cdf@kernel.org>
+References: <20251015-remove-map-page-v5-0-3bbfe3a25cdf@kernel.org>
+	 <20251015-remove-map-page-v5-11-3bbfe3a25cdf@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.58.3 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH7PR12MB5685:EE_|PH7PR12MB5806:EE_
-X-MS-Office365-Filtering-Correlation-Id: 527060c9-33c9-481f-d635-08de6e0a4740
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|7416014|376014|366016;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?WW1Keis0TjZ2K3hpcUNpZXJnNkFnOGh0TG91UDFqODJNRVpONlV3TGF6Y0ZM?=
- =?utf-8?B?Rm95ZE55S3JDUTlRbzRtYXdCTmZ5eXdTU1ZOL2tWRDRqbE5rWklFUWlVOCtx?=
- =?utf-8?B?Mks3dWg2S3poWjU4QWVQRjZCY0xtb0V0ZTJuRkdnYTFRdEJMWFZVVUYyeTN4?=
- =?utf-8?B?bkcyaVVSRmlVRjFYSlFZY3dKUFd3ak5DZTJPVmdzeUZ1R2oyTW0xOENCSmsw?=
- =?utf-8?B?MlYyNXd2dkZLMEUvN2pxWFFtUDQwQ2VhRUNRQ0t1bi85Wnp2d2dtZHliMmMr?=
- =?utf-8?B?b0hFYlNQTCt5N3NXZzVBd0Jtcm91d1dUNUZPQmx0UXNwbWlhSTZVZE1tejIv?=
- =?utf-8?B?Tk5SZE94Y3VQNHR2L1h5Sm9lRzN4bUFwZCtwdU5FNDZrVHNtbmhyUHo1bUdj?=
- =?utf-8?B?anpmc0E3NE1iSUM3bm9vMzl6S1BEUXE4aVRXU2R4ZkhCUGNTTU0zd0RPN3cy?=
- =?utf-8?B?UTJ0b1NTZnVZNHdxcmxNYkNROHN3eDJ3eW5aV1VPK1NHWS9zYTcwQk9GZGRQ?=
- =?utf-8?B?dk0wdUYzbVFWMzduRlVzQWVpSllES29RTEFuZjRrQ28vUGtDYmtNYytIdlFP?=
- =?utf-8?B?eDdseXlXblJqdkRTVUNrTFdEL29KR1o5cG50eFRjNVptZzBNSDRQK2NmSlk1?=
- =?utf-8?B?VDB5OXFGYng5VllmNXJEd3pxallOMlpiNFBDVndXU2M4bnNiWmlOMzN1bWdQ?=
- =?utf-8?B?dTUvdElkc1Rxc3gxeFMxZUFTSEMxdUwvTVdrYnhpelRrSmphV0N4eXQrQll0?=
- =?utf-8?B?YmlTS1g3MDRHdDUyY2VEZTMreWVlNWk1YVJCMGdaNGN6R1Uzelc0dnV5aDMv?=
- =?utf-8?B?cnVudGxuMTZhNzkyNlpCb2ROdDZWWUwzTE5TSzVQVHVaakN5aWlyNDhxbWEz?=
- =?utf-8?B?TE1wZ09EVHgvZ0pzT2pkVEtnNEtRaFJ2WlI3VkNFWTNLVWtuR3BQQnRrZzJV?=
- =?utf-8?B?cHJqdWpFQmJVM3F6Wk95UTFBekhWZHBwTEgzSlp5d1VONXpiaWR5b1VOV0tx?=
- =?utf-8?B?MXJHNmJVM0pkcnpaUnpncVBIeTJQUWVXSUhrWmxEZFZERFRQeUdyS09VTkx5?=
- =?utf-8?B?a3lpYjRhRS9hajhMdmVFVkJaMXI4UUtwR0xiV3grMHdwVWU5MjNsTGR4cVI1?=
- =?utf-8?B?MlVKUjNrSnkzVml5WU96YXRJUm5ScWtodlg1ZGVHQTMxNUM2aW5mUUFvT09o?=
- =?utf-8?B?dENQNVVPVHZOOW10V1YwNHlVc2wzZnpXU0JjVWk4cXQyY01NUWFKT1ZxdnRy?=
- =?utf-8?B?WHN1Z0FBamUxckNqa01ETW9IOUJCWG5OU3lhNTRPNWR6YUJFbWRmZElsL2dR?=
- =?utf-8?B?Z1hHNk1WSmhvMFRpeXFLNHo5azEzUENieTYvSXZwWGpRQU9jcmVseDlPU3hm?=
- =?utf-8?B?L3d5ZzdsMnlmVjlJSzFUZkFUZHR5Qk1GdFlLYytLSUUxK0JpaElETXcxWm53?=
- =?utf-8?B?cFJtbDZkN2NhVHF0MUg0MEtvNE5LSGY2amxsTmRoeWVoQWdaeVFMSFptd0lK?=
- =?utf-8?B?M3ArR3NMNmlOU3ptTWhObGpmdDlUNkY4Q3dlM0tucFJhWlhRQm5LV1R4R2ZB?=
- =?utf-8?B?MEZrYkU1ZU5TSzNmTnVHMzRLVjd3aFQ2VnAwTGhRbU5ScXlQMDdidWdBTGR5?=
- =?utf-8?B?amVvZEZoa3UydDNoano2djRJbXJqZmVKSTZUZklMMFVOZ2lINjZUSFdGSldu?=
- =?utf-8?B?YUJYZ2hWMmVMb3MrSVMxTlFUSHFKUG1SM1VUa3U2SUI0enZRd2d4QThMWDlN?=
- =?utf-8?B?YklFT2xFOWlLcDAzYWFqVkxKbFJLdHY4U0szZTk4aE1CV3AvbENJU2gxRUMx?=
- =?utf-8?B?TGlUZ21XMWw4bmRxTy9wWlJoL2pjRnpWRmxuTHIwZ25FblVteDgxU2h3K0tG?=
- =?utf-8?B?NjJ1aUtuNlJibHBkY1ZpdGZySFZZeUxxYy91MlVPWHk1c1poT2hDUWd5YW9R?=
- =?utf-8?B?aHZEMkVBUktyb1dOMUIwOXNNVjhzRnhHcFVGSkZNZVhudlhkRTB5c1dGR0Zs?=
- =?utf-8?B?akh4YUpPdUtvT3JKTnRDZkNRaEVIYmkxaEdVSlErTDVmNml1MEV5VmR3SDgx?=
- =?utf-8?B?Z0Q4T0xiQWt1SStvb2QzVFVKTUQ3NmtGcGZDMFQ3OEFGdlRUT2MrSElNbitN?=
- =?utf-8?Q?SYvU=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5685.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(376014)(366016);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?M0Rjc2xYL3pWRXl4OXpHcG43Y05xWnZOVnFEOW1UdUtyRGlEdTJBeHBwUzBD?=
- =?utf-8?B?dDVVMzlKRXc0akVNR3ZSc1phYy9PVDBzYzhVUEtFYlBRVGJQL3Z3Zytnc0Vv?=
- =?utf-8?B?K09INmpUdmduSVN0Yy9NRkdwUWFkSW9xSkNVdDhtM3dybHhOOEU0TExtS1BN?=
- =?utf-8?B?SVcwZ1JMb3dVM3dmdEh4M1dLWUowN21jaDhCbVdBdzM1MFZHR2lRTXNCZm1W?=
- =?utf-8?B?akF3ZWd4ZmZxUFlwK1hlYnBlN0h4VTkxU0puQXJTZ1c5cUovQWdWS09RUzAw?=
- =?utf-8?B?MndoTkJVc1AvUnJTVkZRUzVleXNWTXg5WUttY3FZRjdhL3dMWlhuQjlOQnFq?=
- =?utf-8?B?WVFaa1JuaEVvaVFSaTdTU0VubUE1SDlSTTQzRHFlajlSWFIwbUhzMUxYWDMx?=
- =?utf-8?B?TGxIY2djVm5NTGd6ZWxOOUI2bkdsUjlOZUJld0pDSXNwS2laU0ZlZzNqc3JQ?=
- =?utf-8?B?ZFVDbVc2YmR6WktZOFIvVFNMTUU5VDFCMzhzKzBPQURnQWRqcGswWjRsejk1?=
- =?utf-8?B?Z0JqTEFBNWtaekJ5aE5aNS95Ukl4c3p5eHVYU0lFSFIwZzhjd05TVXVPeWJK?=
- =?utf-8?B?S0hwMzQ2M1hQVWZ2eGNYeW1OekRTZ29qYS9BK2Q5UFZlcEEweWRmSldDdXF4?=
- =?utf-8?B?ZEZVVWc3eHNIblFmNVVKclN3ZEJhZWNwWEJiSlhtVkVLQ0Z6UDZHdXRteGsv?=
- =?utf-8?B?amhkTi96S0lvbnozc3pqVDZkY3g5aC9ZWFF3emR3NmI0MStCSndRRHBOR1E1?=
- =?utf-8?B?RGtEcklac1Z4c2ViYnRnL0Y0ZnJ0RlNod0cxMGlMWjd4dWJrQ0dkazZhZ3pQ?=
- =?utf-8?B?ZTN1RitmSXVleVBDZGNLQXBMVmJCTGU1cGJlNHhDcS9aVU9lQkgvaUhVMU8w?=
- =?utf-8?B?aWluSG9pQzVnQjRRWjVMV0VISXhZU0FpVHA4U2JZbWVDOWJtZE9QR2g4V3Bu?=
- =?utf-8?B?dEhsTUl0Ky81dWlPN3RVRUUvUGVTT2lORlRhV01JTklzQnFmRU1BMkl2YnBM?=
- =?utf-8?B?MGRZbm9DaFJKSmFrdDg4K0l6b3ZqTnZ2QWtKa01XZEg1MmJMeUI1c0NnSmps?=
- =?utf-8?B?UzJvdUsxTU8rU1JCQkhzT3lkdW5MUUY5NGNQZEdsRmZXZlNSdkxabEpVbUIv?=
- =?utf-8?B?NDNtZi9SanRGR1ppRUpuYUdsM2luYjIyTTQxSU14MVB1WFR3ZXhOUkFvMllP?=
- =?utf-8?B?NHFOVkd3T01PanJvb3pWRFQ1VEFzU1VYZlJYZERIclViV3MybHZXTFMranRv?=
- =?utf-8?B?ZHZidDg2M0JlN3Q4NFl1Tnl6bS9GWnJIbEdPNkF2SUNlTVQ5Y0hIdEh1S0Nk?=
- =?utf-8?B?T2pyd3B4cXBLYTd6MDNLZGdSenFudTE0dEYvTyt5WHFuK1Uwb1ZvV250L0VT?=
- =?utf-8?B?NWVFQ2R0am5RZW1yRENUVTgwbXZob2xwZ0dqOFhvbFRzcEVrdWlQbklNT01D?=
- =?utf-8?B?QVVKM2ExRzg0d1JRY0ZWRmlWT0hqbmlhc1UzcTIzOVZ0a2NtYlRCYmJvbVF0?=
- =?utf-8?B?dWhQT0pZUWJGRDdpRHEvRGdsOUxKY0hQaWw2bzFFUzRjRTJNbG1JcFBtd1J5?=
- =?utf-8?B?R0JmRUlRT1dNMW5NMElJQllFSGQyNVhEd3drWFFOSm1MbnRRZXR4RHRHOGpu?=
- =?utf-8?B?RFpvZjFtbW9jV25jZjA3cVgrRkk3T3RmNVdxbFk4dWZIaHI4OTVIdWZkb1hw?=
- =?utf-8?B?S1IzTUNJTmltM083elJXdmNSbVBsTkVrVXF6TGxDa2hKdjA3WVVWbk9lOEo1?=
- =?utf-8?B?MWM2U0dZZnVGNzF1a2Jva1BGQWltUlhzNk1kYXBBVUlIcXFRc2kreG4yeUp3?=
- =?utf-8?B?cndWZTZOWVpBUnNPU2FpVHRLNDJHUGp2V0N1cWxsM2Z1SFlqNWVjbGpYNGpR?=
- =?utf-8?B?SDZsenpIdENiMkNmUEJ6NHpveGludEhQb3RaSzk0QmtDeTdnOWxCZ0lHYmV3?=
- =?utf-8?B?aE1KNnJxaHRwa09rMGZTVmJhbnNTclhoMTNzcDUxZXBHUitmS0J5cGVieGcx?=
- =?utf-8?B?RUNaV0FMaEp2REZVdWxsRW5nMEN6ZjVjSzBQc0Z4QjY0YnphT1F0VVlhUVpV?=
- =?utf-8?B?UVUyK2RDMFowV01iWGxSMVlMZ1kyRVJpaVJ0SnpvM0FBYW4vYVJjaUxZU04w?=
- =?utf-8?B?eFVqRXd1emxQOEo2MnZQVlRxQ2pnSzh4OWxoaktkMUVJZUVtdWdDUUgyMVRm?=
- =?utf-8?B?K3p1NVlDZjUvbDRkSHNqWHp2RjVwRWRmUlEwbkNUUG1uRzZUTy80QXF6VFkr?=
- =?utf-8?B?bzNJTlpUcmxxM0lpc2JjUUxNbTBMcjZhRlhHOWU1eTdjSHlaMUVDd1BpWkVn?=
- =?utf-8?Q?7okPGCHrs8NPesyjlK?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 527060c9-33c9-481f-d635-08de6e0a4740
-X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5685.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Feb 2026 09:52:35.9201
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: RGGjcgu+EvjxLbcEw7qdJEsFzNBu3OgNERcY6SrD2IRZa/IJAAPd1ofCEQ47GdsE
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB5806
+X-Original-Sender: glaubitz@physik.fu-berlin.de
+X-ZEDAT-Hint: PO
 
-On 2/17/26 09:02, Leon Romanovsky wrote:
-> On Sat, Jan 31, 2026 at 07:34:10AM +0200, Leon Romanovsky wrote:
->> Changelog:
->> v7:
->>  * Fixed messed VFIO patch due to rebase.
-> 
-> <...>
-> 
-> Christian,
-> 
-> What should be my next step? Should I resubmit it?
+Hello Leon,
 
-No, the patches are fine as they are. I'm just waiting for the backmerge of upstream to apply them.
+On Wed, 2025-10-15 at 12:12 +0300, Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@nvidia.com>
+>=20
+> Convert sparc architecture DMA code to use .map_phys callback.
+>=20
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> ---
+>  arch/sparc/kernel/iommu.c     | 30 +++++++++++++++++-----------
+>  arch/sparc/kernel/pci_sun4v.c | 31 ++++++++++++++++++-----------
+>  arch/sparc/mm/io-unit.c       | 38 ++++++++++++++++++-----------------
+>  arch/sparc/mm/iommu.c         | 46 ++++++++++++++++++++++---------------=
+------
+>  4 files changed, 82 insertions(+), 63 deletions(-)
+>=20
+> diff --git a/arch/sparc/kernel/iommu.c b/arch/sparc/kernel/iommu.c
+> index da0363692528..46ef88bc9c26 100644
+> --- a/arch/sparc/kernel/iommu.c
+> +++ b/arch/sparc/kernel/iommu.c
+> @@ -260,26 +260,35 @@ static void dma_4u_free_coherent(struct device *dev=
+, size_t size,
+>  		free_pages((unsigned long)cpu, order);
+>  }
+> =20
+> -static dma_addr_t dma_4u_map_page(struct device *dev, struct page *page,
+> -				  unsigned long offset, size_t sz,
+> -				  enum dma_data_direction direction,
+> +static dma_addr_t dma_4u_map_phys(struct device *dev, phys_addr_t phys,
+> +				  size_t sz, enum dma_data_direction direction,
+>  				  unsigned long attrs)
+>  {
+>  	struct iommu *iommu;
+>  	struct strbuf *strbuf;
+>  	iopte_t *base;
+>  	unsigned long flags, npages, oaddr;
+> -	unsigned long i, base_paddr, ctx;
+> +	unsigned long i, ctx;
+>  	u32 bus_addr, ret;
+>  	unsigned long iopte_protection;
+> =20
+> +	if (unlikely(attrs & DMA_ATTR_MMIO))
+> +		/*
+> +		 * This check is included because older versions of the code
+> +		 * lacked MMIO path support, and my ability to test this path
+> +		 * is limited. However, from a software technical standpoint,
+> +		 * there is no restriction, as the following code operates
+> +		 * solely on physical addresses.
+> +		 */
+> +		goto bad_no_ctx;
+> +
+>  	iommu =3D dev->archdata.iommu;
+>  	strbuf =3D dev->archdata.stc;
+> =20
+>  	if (unlikely(direction =3D=3D DMA_NONE))
+>  		goto bad_no_ctx;
+> =20
+> -	oaddr =3D (unsigned long)(page_address(page) + offset);
+> +	oaddr =3D (unsigned long)(phys_to_virt(phys));
+>  	npages =3D IO_PAGE_ALIGN(oaddr + sz) - (oaddr & IO_PAGE_MASK);
+>  	npages >>=3D IO_PAGE_SHIFT;
+> =20
+> @@ -296,7 +305,6 @@ static dma_addr_t dma_4u_map_page(struct device *dev,=
+ struct page *page,
+>  	bus_addr =3D (iommu->tbl.table_map_base +
+>  		    ((base - iommu->page_table) << IO_PAGE_SHIFT));
+>  	ret =3D bus_addr | (oaddr & ~IO_PAGE_MASK);
+> -	base_paddr =3D __pa(oaddr & IO_PAGE_MASK);
+>  	if (strbuf->strbuf_enabled)
+>  		iopte_protection =3D IOPTE_STREAMING(ctx);
+>  	else
+> @@ -304,8 +312,8 @@ static dma_addr_t dma_4u_map_page(struct device *dev,=
+ struct page *page,
+>  	if (direction !=3D DMA_TO_DEVICE)
+>  		iopte_protection |=3D IOPTE_WRITE;
+> =20
+> -	for (i =3D 0; i < npages; i++, base++, base_paddr +=3D IO_PAGE_SIZE)
+> -		iopte_val(*base) =3D iopte_protection | base_paddr;
+> +	for (i =3D 0; i < npages; i++, base++, phys +=3D IO_PAGE_SIZE)
+> +		iopte_val(*base) =3D iopte_protection | phys;
+> =20
+>  	return ret;
+> =20
+> @@ -383,7 +391,7 @@ static void strbuf_flush(struct strbuf *strbuf, struc=
+t iommu *iommu,
+>  		       vaddr, ctx, npages);
+>  }
+> =20
+> -static void dma_4u_unmap_page(struct device *dev, dma_addr_t bus_addr,
+> +static void dma_4u_unmap_phys(struct device *dev, dma_addr_t bus_addr,
+>  			      size_t sz, enum dma_data_direction direction,
+>  			      unsigned long attrs)
+>  {
+> @@ -753,8 +761,8 @@ static int dma_4u_supported(struct device *dev, u64 d=
+evice_mask)
+>  static const struct dma_map_ops sun4u_dma_ops =3D {
+>  	.alloc			=3D dma_4u_alloc_coherent,
+>  	.free			=3D dma_4u_free_coherent,
+> -	.map_page		=3D dma_4u_map_page,
+> -	.unmap_page		=3D dma_4u_unmap_page,
+> +	.map_phys		=3D dma_4u_map_phys,
+> +	.unmap_phys		=3D dma_4u_unmap_phys,
+>  	.map_sg			=3D dma_4u_map_sg,
+>  	.unmap_sg		=3D dma_4u_unmap_sg,
+>  	.sync_single_for_cpu	=3D dma_4u_sync_single_for_cpu,
+> diff --git a/arch/sparc/kernel/pci_sun4v.c b/arch/sparc/kernel/pci_sun4v.=
+c
+> index b720b21ccfbd..791f0a76665f 100644
+> --- a/arch/sparc/kernel/pci_sun4v.c
+> +++ b/arch/sparc/kernel/pci_sun4v.c
+> @@ -352,9 +352,8 @@ static void dma_4v_free_coherent(struct device *dev, =
+size_t size, void *cpu,
+>  		free_pages((unsigned long)cpu, order);
+>  }
+> =20
+> -static dma_addr_t dma_4v_map_page(struct device *dev, struct page *page,
+> -				  unsigned long offset, size_t sz,
+> -				  enum dma_data_direction direction,
+> +static dma_addr_t dma_4v_map_phys(struct device *dev, phys_addr_t phys,
+> +				  size_t sz, enum dma_data_direction direction,
+>  				  unsigned long attrs)
+>  {
+>  	struct iommu *iommu;
+> @@ -362,18 +361,27 @@ static dma_addr_t dma_4v_map_page(struct device *de=
+v, struct page *page,
+>  	struct iommu_map_table *tbl;
+>  	u64 mask;
+>  	unsigned long flags, npages, oaddr;
+> -	unsigned long i, base_paddr;
+> -	unsigned long prot;
+> +	unsigned long i, prot;
+>  	dma_addr_t bus_addr, ret;
+>  	long entry;
+> =20
+> +	if (unlikely(attrs & DMA_ATTR_MMIO))
+> +		/*
+> +		 * This check is included because older versions of the code
+> +		 * lacked MMIO path support, and my ability to test this path
+> +		 * is limited. However, from a software technical standpoint,
+> +		 * there is no restriction, as the following code operates
+> +		 * solely on physical addresses.
+> +		 */
+> +		goto bad;
+> +
+>  	iommu =3D dev->archdata.iommu;
+>  	atu =3D iommu->atu;
+> =20
+>  	if (unlikely(direction =3D=3D DMA_NONE))
+>  		goto bad;
+> =20
+> -	oaddr =3D (unsigned long)(page_address(page) + offset);
+> +	oaddr =3D (unsigned long)(phys_to_virt(phys));
+>  	npages =3D IO_PAGE_ALIGN(oaddr + sz) - (oaddr & IO_PAGE_MASK);
+>  	npages >>=3D IO_PAGE_SHIFT;
+> =20
+> @@ -391,7 +399,6 @@ static dma_addr_t dma_4v_map_page(struct device *dev,=
+ struct page *page,
+> =20
+>  	bus_addr =3D (tbl->table_map_base + (entry << IO_PAGE_SHIFT));
+>  	ret =3D bus_addr | (oaddr & ~IO_PAGE_MASK);
+> -	base_paddr =3D __pa(oaddr & IO_PAGE_MASK);
+>  	prot =3D HV_PCI_MAP_ATTR_READ;
+>  	if (direction !=3D DMA_TO_DEVICE)
+>  		prot |=3D HV_PCI_MAP_ATTR_WRITE;
+> @@ -403,8 +410,8 @@ static dma_addr_t dma_4v_map_page(struct device *dev,=
+ struct page *page,
+> =20
+>  	iommu_batch_start(dev, prot, entry);
+> =20
+> -	for (i =3D 0; i < npages; i++, base_paddr +=3D IO_PAGE_SIZE) {
+> -		long err =3D iommu_batch_add(base_paddr, mask);
+> +	for (i =3D 0; i < npages; i++, phys +=3D IO_PAGE_SIZE) {
+> +		long err =3D iommu_batch_add(phys, mask);
+>  		if (unlikely(err < 0L))
+>  			goto iommu_map_fail;
+>  	}
+> @@ -426,7 +433,7 @@ static dma_addr_t dma_4v_map_page(struct device *dev,=
+ struct page *page,
+>  	return DMA_MAPPING_ERROR;
+>  }
+> =20
+> -static void dma_4v_unmap_page(struct device *dev, dma_addr_t bus_addr,
+> +static void dma_4v_unmap_phys(struct device *dev, dma_addr_t bus_addr,
+>  			      size_t sz, enum dma_data_direction direction,
+>  			      unsigned long attrs)
+>  {
+> @@ -686,8 +693,8 @@ static int dma_4v_supported(struct device *dev, u64 d=
+evice_mask)
+>  static const struct dma_map_ops sun4v_dma_ops =3D {
+>  	.alloc				=3D dma_4v_alloc_coherent,
+>  	.free				=3D dma_4v_free_coherent,
+> -	.map_page			=3D dma_4v_map_page,
+> -	.unmap_page			=3D dma_4v_unmap_page,
+> +	.map_phys			=3D dma_4v_map_phys,
+> +	.unmap_phys			=3D dma_4v_unmap_phys,
+>  	.map_sg				=3D dma_4v_map_sg,
+>  	.unmap_sg			=3D dma_4v_unmap_sg,
+>  	.dma_supported			=3D dma_4v_supported,
+> diff --git a/arch/sparc/mm/io-unit.c b/arch/sparc/mm/io-unit.c
+> index d8376f61b4d0..d409cb450de4 100644
+> --- a/arch/sparc/mm/io-unit.c
+> +++ b/arch/sparc/mm/io-unit.c
+> @@ -94,13 +94,14 @@ static int __init iounit_init(void)
+>  subsys_initcall(iounit_init);
+> =20
+>  /* One has to hold iounit->lock to call this */
+> -static unsigned long iounit_get_area(struct iounit_struct *iounit, unsig=
+ned long vaddr, int size)
+> +static dma_addr_t iounit_get_area(struct iounit_struct *iounit,
+> +				  phys_addr_t phys, int size)
+>  {
+>  	int i, j, k, npages;
+>  	unsigned long rotor, scan, limit;
+>  	iopte_t iopte;
+> =20
+> -        npages =3D ((vaddr & ~PAGE_MASK) + size + (PAGE_SIZE-1)) >> PAGE=
+_SHIFT;
+> +	npages =3D (offset_in_page(phys) + size + (PAGE_SIZE - 1)) >> PAGE_SHIF=
+T;
+> =20
+>  	/* A tiny bit of magic ingredience :) */
+>  	switch (npages) {
+> @@ -109,7 +110,7 @@ static unsigned long iounit_get_area(struct iounit_st=
+ruct *iounit, unsigned long
+>  	default: i =3D 0x0213; break;
+>  	}
+>  =09
+> -	IOD(("iounit_get_area(%08lx,%d[%d])=3D", vaddr, size, npages));
+> +	IOD(("%s(%pa,%d[%d])=3D", __func__, &phys, size, npages));
+>  =09
+>  next:	j =3D (i & 15);
+>  	rotor =3D iounit->rotor[j - 1];
+> @@ -124,7 +125,8 @@ nexti:	scan =3D find_next_zero_bit(iounit->bmap, limi=
+t, scan);
+>  		}
+>  		i >>=3D 4;
+>  		if (!(i & 15))
+> -			panic("iounit_get_area: Couldn't find free iopte slots for (%08lx,%d)=
+\n", vaddr, size);
+> +			panic("iounit_get_area: Couldn't find free iopte slots for (%pa,%d)\n=
+",
+> +			      &phys, size);
+>  		goto next;
+>  	}
+>  	for (k =3D 1, scan++; k < npages; k++)
+> @@ -132,30 +134,29 @@ nexti:	scan =3D find_next_zero_bit(iounit->bmap, li=
+mit, scan);
+>  			goto nexti;
+>  	iounit->rotor[j - 1] =3D (scan < limit) ? scan : iounit->limit[j - 1];
+>  	scan -=3D npages;
+> -	iopte =3D MKIOPTE(__pa(vaddr & PAGE_MASK));
+> -	vaddr =3D IOUNIT_DMA_BASE + (scan << PAGE_SHIFT) + (vaddr & ~PAGE_MASK)=
+;
+> +	iopte =3D MKIOPTE(phys & PAGE_MASK);
+> +	phys =3D IOUNIT_DMA_BASE + (scan << PAGE_SHIFT) + offset_in_page(phys);
+>  	for (k =3D 0; k < npages; k++, iopte =3D __iopte(iopte_val(iopte) + 0x1=
+00), scan++) {
+>  		set_bit(scan, iounit->bmap);
+>  		sbus_writel(iopte_val(iopte), &iounit->page_table[scan]);
+>  	}
+> -	IOD(("%08lx\n", vaddr));
+> -	return vaddr;
+> +	IOD(("%pa\n", &phys));
+> +	return phys;
+>  }
+> =20
+> -static dma_addr_t iounit_map_page(struct device *dev, struct page *page,
+> -		unsigned long offset, size_t len, enum dma_data_direction dir,
+> -		unsigned long attrs)
+> +static dma_addr_t iounit_map_phys(struct device *dev, phys_addr_t phys,
+> +		size_t len, enum dma_data_direction dir, unsigned long attrs)
+>  {
+> -	void *vaddr =3D page_address(page) + offset;
+>  	struct iounit_struct *iounit =3D dev->archdata.iommu;
+> -	unsigned long ret, flags;
+> +	unsigned long flags;
+> +	dma_addr_t ret;
+>  =09
+>  	/* XXX So what is maxphys for us and how do drivers know it? */
+>  	if (!len || len > 256 * 1024)
+>  		return DMA_MAPPING_ERROR;
+> =20
+>  	spin_lock_irqsave(&iounit->lock, flags);
+> -	ret =3D iounit_get_area(iounit, (unsigned long)vaddr, len);
+> +	ret =3D iounit_get_area(iounit, phys, len);
+>  	spin_unlock_irqrestore(&iounit->lock, flags);
+>  	return ret;
+>  }
+> @@ -171,14 +172,15 @@ static int iounit_map_sg(struct device *dev, struct=
+ scatterlist *sgl, int nents,
+>  	/* FIXME: Cache some resolved pages - often several sg entries are to t=
+he same page */
+>  	spin_lock_irqsave(&iounit->lock, flags);
+>  	for_each_sg(sgl, sg, nents, i) {
+> -		sg->dma_address =3D iounit_get_area(iounit, (unsigned long) sg_virt(sg=
+), sg->length);
+> +		sg->dma_address =3D
+> +			iounit_get_area(iounit, sg_phys(sg), sg->length);
+>  		sg->dma_length =3D sg->length;
+>  	}
+>  	spin_unlock_irqrestore(&iounit->lock, flags);
+>  	return nents;
+>  }
+> =20
+> -static void iounit_unmap_page(struct device *dev, dma_addr_t vaddr, size=
+_t len,
+> +static void iounit_unmap_phys(struct device *dev, dma_addr_t vaddr, size=
+_t len,
+>  		enum dma_data_direction dir, unsigned long attrs)
+>  {
+>  	struct iounit_struct *iounit =3D dev->archdata.iommu;
+> @@ -279,8 +281,8 @@ static const struct dma_map_ops iounit_dma_ops =3D {
+>  	.alloc			=3D iounit_alloc,
+>  	.free			=3D iounit_free,
+>  #endif
+> -	.map_page		=3D iounit_map_page,
+> -	.unmap_page		=3D iounit_unmap_page,
+> +	.map_phys		=3D iounit_map_phys,
+> +	.unmap_phys		=3D iounit_unmap_phys,
+>  	.map_sg			=3D iounit_map_sg,
+>  	.unmap_sg		=3D iounit_unmap_sg,
+>  };
+> diff --git a/arch/sparc/mm/iommu.c b/arch/sparc/mm/iommu.c
+> index 5a5080db800f..f48adf62724a 100644
+> --- a/arch/sparc/mm/iommu.c
+> +++ b/arch/sparc/mm/iommu.c
+> @@ -181,18 +181,20 @@ static void iommu_flush_iotlb(iopte_t *iopte, unsig=
+ned int niopte)
+>  	}
+>  }
+> =20
+> -static dma_addr_t __sbus_iommu_map_page(struct device *dev, struct page =
+*page,
+> -		unsigned long offset, size_t len, bool per_page_flush)
+> +static dma_addr_t __sbus_iommu_map_phys(struct device *dev, phys_addr_t =
+paddr,
+> +		size_t len, bool per_page_flush, unsigned long attrs)
+>  {
+>  	struct iommu_struct *iommu =3D dev->archdata.iommu;
+> -	phys_addr_t paddr =3D page_to_phys(page) + offset;
+> -	unsigned long off =3D paddr & ~PAGE_MASK;
+> +	unsigned long off =3D offset_in_page(paddr);
+>  	unsigned long npages =3D (off + len + PAGE_SIZE - 1) >> PAGE_SHIFT;
+>  	unsigned long pfn =3D __phys_to_pfn(paddr);
+>  	unsigned int busa, busa0;
+>  	iopte_t *iopte, *iopte0;
+>  	int ioptex, i;
+> =20
+> +	if (unlikely(attrs & DMA_ATTR_MMIO))
+> +		return DMA_MAPPING_ERROR;
+> +
+>  	/* XXX So what is maxphys for us and how do drivers know it? */
+>  	if (!len || len > 256 * 1024)
+>  		return DMA_MAPPING_ERROR;
+> @@ -202,10 +204,10 @@ static dma_addr_t __sbus_iommu_map_page(struct devi=
+ce *dev, struct page *page,
+>  	 * XXX Is this a good assumption?
+>  	 * XXX What if someone else unmaps it here and races us?
+>  	 */
+> -	if (per_page_flush && !PageHighMem(page)) {
+> +	if (per_page_flush && !PhysHighMem(paddr)) {
+>  		unsigned long vaddr, p;
+> =20
+> -		vaddr =3D (unsigned long)page_address(page) + offset;
+> +		vaddr =3D (unsigned long)phys_to_virt(paddr);
+>  		for (p =3D vaddr & PAGE_MASK; p < vaddr + len; p +=3D PAGE_SIZE)
+>  			flush_page_for_dma(p);
+>  	}
+> @@ -231,19 +233,19 @@ static dma_addr_t __sbus_iommu_map_page(struct devi=
+ce *dev, struct page *page,
+>  	return busa0 + off;
+>  }
+> =20
+> -static dma_addr_t sbus_iommu_map_page_gflush(struct device *dev,
+> -		struct page *page, unsigned long offset, size_t len,
+> -		enum dma_data_direction dir, unsigned long attrs)
+> +static dma_addr_t sbus_iommu_map_phys_gflush(struct device *dev,
+> +		phys_addr_t phys, size_t len, enum dma_data_direction dir,
+> +		unsigned long attrs)
+>  {
+>  	flush_page_for_dma(0);
+> -	return __sbus_iommu_map_page(dev, page, offset, len, false);
+> +	return __sbus_iommu_map_phys(dev, phys, len, false, attrs);
+>  }
+> =20
+> -static dma_addr_t sbus_iommu_map_page_pflush(struct device *dev,
+> -		struct page *page, unsigned long offset, size_t len,
+> -		enum dma_data_direction dir, unsigned long attrs)
+> +static dma_addr_t sbus_iommu_map_phys_pflush(struct device *dev,
+> +		phys_addr_t phys, size_t len, enum dma_data_direction dir,
+> +		unsigned long attrs)
+>  {
+> -	return __sbus_iommu_map_page(dev, page, offset, len, true);
+> +	return __sbus_iommu_map_phys(dev, phys, len, true, attrs);
+>  }
+> =20
+>  static int __sbus_iommu_map_sg(struct device *dev, struct scatterlist *s=
+gl,
+> @@ -254,8 +256,8 @@ static int __sbus_iommu_map_sg(struct device *dev, st=
+ruct scatterlist *sgl,
+>  	int j;
+> =20
+>  	for_each_sg(sgl, sg, nents, j) {
+> -		sg->dma_address =3D__sbus_iommu_map_page(dev, sg_page(sg),
+> -				sg->offset, sg->length, per_page_flush);
+> +		sg->dma_address =3D __sbus_iommu_map_phys(dev, sg_phys(sg),
+> +				sg->length, per_page_flush, attrs);
+>  		if (sg->dma_address =3D=3D DMA_MAPPING_ERROR)
+>  			return -EIO;
+>  		sg->dma_length =3D sg->length;
+> @@ -277,7 +279,7 @@ static int sbus_iommu_map_sg_pflush(struct device *de=
+v, struct scatterlist *sgl,
+>  	return __sbus_iommu_map_sg(dev, sgl, nents, dir, attrs, true);
+>  }
+> =20
+> -static void sbus_iommu_unmap_page(struct device *dev, dma_addr_t dma_add=
+r,
+> +static void sbus_iommu_unmap_phys(struct device *dev, dma_addr_t dma_add=
+r,
+>  		size_t len, enum dma_data_direction dir, unsigned long attrs)
+>  {
+>  	struct iommu_struct *iommu =3D dev->archdata.iommu;
+> @@ -303,7 +305,7 @@ static void sbus_iommu_unmap_sg(struct device *dev, s=
+truct scatterlist *sgl,
+>  	int i;
+> =20
+>  	for_each_sg(sgl, sg, nents, i) {
+> -		sbus_iommu_unmap_page(dev, sg->dma_address, sg->length, dir,
+> +		sbus_iommu_unmap_phys(dev, sg->dma_address, sg->length, dir,
+>  				attrs);
+>  		sg->dma_address =3D 0x21212121;
+>  	}
+> @@ -426,8 +428,8 @@ static const struct dma_map_ops sbus_iommu_dma_gflush=
+_ops =3D {
+>  	.alloc			=3D sbus_iommu_alloc,
+>  	.free			=3D sbus_iommu_free,
+>  #endif
+> -	.map_page		=3D sbus_iommu_map_page_gflush,
+> -	.unmap_page		=3D sbus_iommu_unmap_page,
+> +	.map_phys		=3D sbus_iommu_map_phys_gflush,
+> +	.unmap_phys		=3D sbus_iommu_unmap_phys,
+>  	.map_sg			=3D sbus_iommu_map_sg_gflush,
+>  	.unmap_sg		=3D sbus_iommu_unmap_sg,
+>  };
+> @@ -437,8 +439,8 @@ static const struct dma_map_ops sbus_iommu_dma_pflush=
+_ops =3D {
+>  	.alloc			=3D sbus_iommu_alloc,
+>  	.free			=3D sbus_iommu_free,
+>  #endif
+> -	.map_page		=3D sbus_iommu_map_page_pflush,
+> -	.unmap_page		=3D sbus_iommu_unmap_page,
+> +	.map_phys		=3D sbus_iommu_map_phys_pflush,
+> +	.unmap_phys		=3D sbus_iommu_unmap_phys,
+>  	.map_sg			=3D sbus_iommu_map_sg_pflush,
+>  	.unmap_sg		=3D sbus_iommu_unmap_sg,
+>  };
 
-@Dave can we get 6.19 merged into drm-next (and then drm-next into drm-misc-next) ?
+This change has just been reported to cause a regression with the igb
+driver on some SPARC server systems:
 
-Thanks in advance,
-Christian.
+Feb 16 15:20:22 sparcy kernel: igb 0000:0c:00.0 enp12s0f0: igb: enp12s0f0 N=
+IC Link is Up 1000 Mbps Full Duplex, Flow Control: RX/TX=20
+Feb 16 15:20:23 sparcy kernel: iommu_batch_flush: ATU map of [00000400:2:10=
+00000000a7d:1:2736c000] failed with status 8=20
+Feb 16 15:20:23 sparcy kernel: igb 0000:0c:00.0: TX DMA map failed=20
+Feb 16 15:20:23 sparcy kernel: iommu_batch_flush: ATU map of [00000400:2:10=
+00000000a7e:1:2736c000] failed with status 8=20
+Feb 16 15:20:23 sparcy kernel: igb 0000:0c:00.0: TX DMA map failed=20
+Feb 16 15:20:23 sparcy kernel: igb 0000:0c:00.1 enp12s0f1: igb: enp12s0f1 N=
+IC Link is Up 100 Mbps Full Duplex, Flow Control: RX=20
+Feb 16 15:20:23 sparcy kernel: iommu_batch_flush: ATU map of [00000400:2:10=
+000001c02af:1:2736e000] failed with status 8=20
+Feb 16 15:20:23 sparcy kernel: iommu_batch_flush: ATU map of [00000400:2:10=
+0000038009f:1:27390000] failed with status 8=20
+Feb 16 15:20:23 sparcy kernel: igb 0000:0c:00.1: TX DMA map failed=20
+Feb 16 15:20:23 sparcy last message buffered 1 times=20
+Feb 16 15:20:23 sparcy kernel: iommu_batch_flush: ATU map of [00000400:2:10=
+000001c02b1:1:2736e000] failed with status 8=20
+Feb 16 15:20:23 sparcy kernel: igb 0000:0c:00.0: TX DMA map failed=20
+Feb 16 15:20:24 sparcy kernel: iommu_batch_flush: ATU map of [00000400:2:10=
+00000000a80:1:2736c000] failed with status 8=20
+Feb 16 15:20:24 sparcy kernel: igb 0000:0c:00.0: TX DMA map failed=20
+Feb 16 15:20:24 sparcy kernel: iommu_batch_flush: ATU map of [00000400:2:10=
+00000000a81:1:2736c000] failed with status 8=20
+Feb 16 15:20:24 sparcy kernel: igb 0000:0c:00.0: TX DMA map failed=20
+Feb 16 15:20:24 sparcy kernel: iommu_batch_flush: ATU map of [00000400:2:10=
+00000200000:1:2738e000] failed with status 8=20
+Feb 16 15:20:24 sparcy kernel: igb 0000:0c:00.1: TX DMA map failed=20
+Feb 16 15:20:24 sparcy kernel: iommu_batch_flush: ATU map of [00000400:2:10=
+00000000a82:1:2736c000] failed with status 8=20
+Feb 16 15:20:24 sparcy kernel: igb 0000:0c:00.1: TX DMA map failed
 
-> 
-> Thanks
+Please see also the discussion in [1].
 
+Adrian
+
+> [1] https://github.com/sparclinux/issues/issues/75
+
+--=20
+ .''`.  John Paul Adrian Glaubitz
+: :' :  Debian Developer
+`. `'   Physicist
+  `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
