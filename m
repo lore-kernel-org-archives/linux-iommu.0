@@ -1,530 +1,399 @@
-Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com [209.85.160.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from CY3PR05CU001.outbound.protection.outlook.com (mail-westcentralusazon11013018.outbound.protection.outlook.com [40.93.201.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29A3937AA8C
-	for <iommu@lists.linux.dev>; Tue, 17 Feb 2026 23:52:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA5632A1CF
+	for <iommu@lists.linux.dev>; Wed, 18 Feb 2026 00:12:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.201.18
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771372371; cv=pass; b=aruoGyTvtDPp3NAvcobNe4ZncOdlJD7BbliSDowFojtU+yAtMdhRdtHyZ+CqU2cd1hK+iRkIDAqj459IDVvF0Em87r2by8X15SipP+zEMYRuMzMKsY5fWy8tKH5o/xR6IrP8UpqwKp3uiogKrEqLGmZM5cfv+y23W4426Paq1NU=
+	t=1771373524; cv=fail; b=MpFDN8FoF7otR6zzLPvQB9Zdnp8atpD62BVmGU5l29jcF0Ps3yjlxKU6cW6fhhAx+MkQRxvlDqstH7BkrzTIi1Qc6eVvkYa2ZmmtgeK4UB2/fSQlNfBUPnlosqYeEEF48vRP0uMyiTTYanFl/PmSx7AJ2qOPEuJ7AbXQyTTfvKs=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771372371; c=relaxed/simple;
-	bh=OaXFrEgBp5zm30w4sZTssC/84jDhBffTbo4kUzkfT5I=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=GTiPjT89Q3Za/fOw6XLekpsRGJgLPV10AV+oPRa8cvN4L9OqU7CFiaiuRaB3iwhRp1dmrfm1ipVi13iJ13KbmN5bHn4eW+hMPpb3cSsV05OH+Nq4LHakXEUglMMFbW3exd7hFu3f3NKgXcmUcqTi4TIthyWijg8vT+6N52wc2uI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=hLrnjzbT; arc=pass smtp.client-ip=209.85.160.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1771373524; c=relaxed/simple;
+	bh=V1atgaln7DtlYBOvNM8XI43pMERBPpREsPu7/KRIENI=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=k61lmKmIph6DEuj7o2SCj0DAq5DgkKKjxx82YZHgPms1et6w4UwVuqav5Qhc3iKpCeRru+gnuifgWhsEMXQ1S6a89ZzBtDlq3ItWNYxWvYq7g5noxRs8ypV8plMjkducqRwlT6mm/gtN57T16eilh3tPs7S7pFdrx5uQKAsQQs8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=J/k0yGak; arc=fail smtp.client-ip=40.93.201.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="hLrnjzbT"
-Received: by mail-qt1-f180.google.com with SMTP id d75a77b69052e-505d3baf1a7so116111cf.1
-        for <iommu@lists.linux.dev>; Tue, 17 Feb 2026 15:52:49 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1771372369; cv=none;
-        d=google.com; s=arc-20240605;
-        b=jQTwbZDs74ahYvqOq0yBMF+nawVFd4FU6SNLs1Xf9ZjCIvRAjoIKR1at1JaD9Cj8wA
-         /1nwW9TB471lCzlbA77c2U1KsrAHIPoWNzPEG5Z5FOdcFQnnMACjkihqfb2yjZFnNvri
-         OQO1vPcq5du4U9knQut9TBgXQNzaOB/qAVU0A9tHTgSObb4aSBiOdQm+l3T5YhYuPRGq
-         8rjhg3VM1MF+bYAD+sGHppMLT2spDRakzzarzS7V44tJZa7A8z9mrrJQz6nq258Pa9iq
-         CX3NHiFDfG5O2PjcG74ilM2Ke6CLpOFWMe5t0G1A89sWklZlZWdRLB8O4g4W4G5Af1PB
-         pdww==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=0hOj4FBvf5ePTOC1w2mo9g/0cgTA9dvygNb55rf+USA=;
-        fh=RbKMzCHIFX3x8M8JHksnjAapYfmOeRqptXV87bj+6Bs=;
-        b=bmZRSZZj3QhnaLBWpzY9q3HR7u0R9LwWqqsE1hhsWndOGFr4AIn3SJ7umDbaVO4lYI
-         OlEOHpfMvheaX9QOetQw6rCqK5TzDD/iuYxWIWgphzIaYai1gWZ7h8ZpMj2sLbxaxBmo
-         Yl6922bIBjeFEDtfrZEKiEiMkTN+F6zlIskT1gic8sjOFV9spUqHVHjEi6EoiqhBO6zq
-         3a8C7eIn/oOG7nTQQL/dnm8H09aLCr3v93sMwuMa/k+Pai+L/ek+Zu850j3uI4NG760T
-         HIM5skpzV1FCyLd42aWmNuubFNf6PKHfbawZYdHS5yQ7ZiaABG2b08qki6KnKZcjNaDW
-         Ruqg==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1771372369; x=1771977169; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=0hOj4FBvf5ePTOC1w2mo9g/0cgTA9dvygNb55rf+USA=;
-        b=hLrnjzbT55XVH6rXcbPnZ5n2IX2Zjrv2h9tIk/oRYFlTHHrBQNwwSLUdJ5o5am5tK5
-         ZRf93Kp2mcU9nS+hCgZg23J+lQpc5WIsYRgGva2waFv2c0EKgOf01cF9+pI/xPodoYUs
-         d3Qv2itQ2CgKZ3u2lgvSNPXC6QI6I3xzDE+QB2iUMOE6wyK0d5GCGZpBmX69/JplT/QV
-         KkacaZm2voDsltMq/eqQqUlcwGR63ZxeiAEyjIjGh1BgnaUSXXShZ+L1J+AfhcCWd560
-         eqtqdF3UEYTHuOYvkZ/RYzxPpAgTFltYwQfk5mjeKnoViZGkj6+JomXO80PTxgx1LD7r
-         awmA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771372369; x=1771977169;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=0hOj4FBvf5ePTOC1w2mo9g/0cgTA9dvygNb55rf+USA=;
-        b=MNutg3o0CozL2yr6LoNkhCBCKuMQRbmSZ1kvEvAwlZu64qTh5pXUBfjWLO9VSPJB3B
-         JnTTd5ITyGpSSXBP0ImSV80RAs4SbDLMo0sFFS+2FX3ZFHc7Ip73xTG5qzmSRrhRTCbr
-         SU7r+9rZYrnTtze3dc4Zl2N6oFVbuwXf/q2hRQfENDXL7QuL6CooLBsBnnr9KixgKE3C
-         B7u2ETSHwXaV0v4PBevKTpivwzeuZrPbw3DIIwc7mPmHH4ud2LKBSaU9WOTJixHL9+Jx
-         9NM3bkI5/xKFaRhNREqI+zr28zoBFvuEsrKm+cS5S60ELqoYESxaJmixnAU8fACQq/3D
-         2+FA==
-X-Forwarded-Encrypted: i=1; AJvYcCXrNo4+YlWya0XTCXezan6Zk95sN8dbiqVwubn+iYhWtF398iEyYccNyxo/jGcqszHF035Heg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzXl+CUHIw7Jcf3ICiagHfja+Uw2y9yksr6z5t4R8dmDe28VM9S
-	wOCp0W6d2Zeu9LlaiUCKcClSQaUytw0qsNvcNMwSc68bwyday25d6uFuiJ0bH6cGbKEVdh7QW2F
-	SRx3A89LYhd4GInVqkEAoOZAsAPdsGA809arWjuJP
-X-Gm-Gg: AZuq6aIxZ9AvwyphmskRiR6vpDvU/WcNe895UPFqrCgFM23A6fOz/vE3jt9/btrnw+o
-	AsJKcW+9kGEWTlSmTPWf/QPlTlP/tktkRv/JzdkbIsLuJcOcGFF+Q3KAFCl3e/rd+V5aC2H9GES
-	zTcteGZJYXQqbLG8w9vz6KlN3mN5iu9rm5xz4NK9OU80x8OTuslHkc0wzBPe0v2Jaz4Ywxrpof2
-	bq81uKOsrmH9kM9d0zN6YuQxBRSc9FEZnZJhAf0pX8JOx7eNcGmKe38MLa8WptefxXWJB6csE5U
-	kgiMleIm/cA3XYgY7hnE+UEjzci2hAwql41vE0Xw6A==
-X-Received: by 2002:a05:622a:252:b0:4f1:a61a:1e8 with SMTP id
- d75a77b69052e-506e8622c6emr1224561cf.10.1771372368519; Tue, 17 Feb 2026
- 15:52:48 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="J/k0yGak"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=oNNQao48EL7LhuZYyaxlzy8JuhXD9beNkarIRNNJEz3bRGq/s2ezl4YdC0KUChR6KBPWBR+7m6GMEiZ/KnlhqQ6CaT0AVtmR3KtP6Zm9K88Z66+MbZEP0XGVGX8rzS0RNnf5MIHAMLD36a+9VEkDFF8p1jLOyAiPT2fudWQFk6bI515CIiq/V8OGPX3S+rxXbQkZi5sm0MOvEnyhCxonFFL/mOHwVpzuwaFqmKULS+DVXu62vqE1n5gAakRlmi9KvyiMRCPuIfUHhQDzEqFbFmoihW2O1EzH1owGzm+Ym41GKw/GLg+UUN1My4ohoqPONfzXRkYLU9FWGXPjB4wk6Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=JhoUjlDDFS9V07OXf6ARfT6bUHZ1WUKVTyxPoxs/dJw=;
+ b=LyeCWXgpYooXTzjokPYU206eN/K1chb59gSBzSntPT6SMbp1zUSBU+bJe7LUJEjNcQFgq+GH75OwIaeXeamCR5MF919pnhL1qav60hbKdXF8GzT1Bm4EPLXBU7PjMiFdyxWu2CPVoaijHdCOjAa9eZdAmLcsSb/coae6sGWr1hjSIC0x92ONui0dOG/7qNDWsAfmgL63TkPw3uQ7SKVlD4RGtgZbNVA3G6uqIRC3yOSk7ApEZXTaQXRnDGNzDsP1pf8CjVOj/FQotqbGVqsiW7qUbc1BBrdSd386rYAvMz6/WOaSyJs2HDSwCQ1V4r+ZCmKeE2hqnEw4pce4rE1qIQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=JhoUjlDDFS9V07OXf6ARfT6bUHZ1WUKVTyxPoxs/dJw=;
+ b=J/k0yGakQD/L3t8R7I0eNmWHqifvzwLhFOfKYpWfOPQCMwoSyc+KJTnVzbW/EhNfAsWUCBd026kH0dQEbsQvmtd+7FiVac1OpiP82My0MwcXWUVq+RNDsoiFBjLUrv7XJzSIGORc/a7ZjL1KZ5Vz9ud1nHQ0hcosFUfTXJpzYfeMuFVIUguQ8J9ascCpeWcRsc9T9huIZUDcSHTylxIK19qj+kSmSzJPEVon4Oxpq7Aydt5HVnMyfM0z5Hpt/arD8DzRaytQYVEtq1fdislTHAjyvSkbGYt8iLajn4WOYyp/9mPR4VR3/xkciu1vps0F8WAHDEeoFJktiSychosjpQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
+ by IA0PR12MB8421.namprd12.prod.outlook.com (2603:10b6:208:40f::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9611.16; Wed, 18 Feb
+ 2026 00:11:58 +0000
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528%5]) with mapi id 15.20.9611.013; Wed, 18 Feb 2026
+ 00:11:58 +0000
+From: Jason Gunthorpe <jgg@nvidia.com>
+To:
+Cc: Christian Koenig <christian.koenig@amd.com>,
+	Dongwon Kim <dongwon.kim@intel.com>,
+	dri-devel@lists.freedesktop.org,
+	intel-xe@lists.freedesktop.org,
+	iommu@lists.linux.dev,
+	Kevin Tian <kevin.tian@intel.com>,
+	Leon Romanovsky <leonro@nvidia.com>,
+	linaro-mm-sig@lists.linaro.org,
+	linux-media@vger.kernel.org,
+	Matthew Brost <matthew.brost@intel.com>,
+	Simona Vetter <simona.vetter@ffwll.ch>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Thomas Hellstrom <thomas.hellstrom@linux.intel.com>,
+	Vivek Kasireddy <vivek.kasireddy@intel.com>
+Subject: [PATCH RFC 03/26] dma-buf: Add dma_buf_mapping_attach()
+Date: Tue, 17 Feb 2026 20:11:34 -0400
+Message-ID: <3-v1-b5cab63049c0+191af-dmabuf_map_type_jgg@nvidia.com>
+In-Reply-To: <0-v1-b5cab63049c0+191af-dmabuf_map_type_jgg@nvidia.com>
+References:
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: BL1PR13CA0204.namprd13.prod.outlook.com
+ (2603:10b6:208:2be::29) To LV8PR12MB9620.namprd12.prod.outlook.com
+ (2603:10b6:408:2a1::19)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260217214438.3395039-1-bhelgaas@google.com> <20260217214438.3395039-2-bhelgaas@google.com>
-In-Reply-To: <20260217214438.3395039-2-bhelgaas@google.com>
-From: Samiullah Khawaja <skhawaja@google.com>
-Date: Tue, 17 Feb 2026 15:52:37 -0800
-X-Gm-Features: AaiRm53N159S8MCVKRGwqkZK26IYTlciScy9hgzJ4FWQ02r2HrOBnUEV-z49us8
-Message-ID: <CAAywjhQGbyByM8M1aV4NerYsQhNPK9LXOhkBGdok7Nz9RVNWUA@mail.gmail.com>
-Subject: Re: [PATCH v1 1/2] iommu/vt-d: Remove dmar_readl() and dmar_readq()
-To: Bjorn Helgaas <helgaas@kernel.org>
-Cc: David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	Bjorn Helgaas <bhelgaas@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|IA0PR12MB8421:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9d1797bb-3b01-4c36-0366-08de6e825509
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|7416014|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?ogOqL1+4Iy7PgmBzHm6c79E9aM32uCMPI0uqmVjBUYSl41pEtBT5xAFuQd6N?=
+ =?us-ascii?Q?G1eCjfQ/ZzbZcZCG8W/HZTGPYgYFWG2gMLUH5d9aiVfWoy20dweuie8N/IwR?=
+ =?us-ascii?Q?rC0Tac3RDyqhi7O/92fysg0fagwpLJ1IfsPshF2AyYADsEOXWskBvCyCZ+0f?=
+ =?us-ascii?Q?zj9qHz+fPgyhbY1tmu5wiFnjJmMfloe+Q5z26bFNuTC7tBPjnc03tcThYQPl?=
+ =?us-ascii?Q?C6dOkUrkgEM0m++gOlBDw41YY5oyhxGBSlZ6/N0bZ/U/764ssE/nsZx8zUo4?=
+ =?us-ascii?Q?SmjgIwxgfpNmNp2N5q5EJWaj0zZCf574u5p8sB6qk30gqawncdyy5aoHOS/M?=
+ =?us-ascii?Q?9VA6KaNfpKDnlZOdVP+TyZsRfGssJgkeMCy7c+XJw+ACMku3hLoBzGaltxpK?=
+ =?us-ascii?Q?i7O4dmPszqMHRsC81LSrhRQ4971Hla9wASpk1skq3WBS4V2dHj+lIDn76PuC?=
+ =?us-ascii?Q?PmBT4URQRDJg3xKaAX0jG96brIUKbYdcYPClICur3BrX8J1/822txxi9Rsw6?=
+ =?us-ascii?Q?cxYECNcn3JklL7+DLy1IUywbQZzdGccnhIhaDpOUYg/dEW69uakeDiUwXzu8?=
+ =?us-ascii?Q?fpFzg+lQAm3VsbtUIZAZ7vYSHexh4RoQtL+PCbaYI5zllg4bUIqvsWsJRwob?=
+ =?us-ascii?Q?5LCBa2BcioPauC7YfynBW6FLYQWIVz17Bk1gKhzP8LvuBXFKBhxj/vwuxBsd?=
+ =?us-ascii?Q?ra9mc/UH19wQEL1f+0oe31swQokgJvvfc1BX18aLTprAmvrADwT77Gp2OnOQ?=
+ =?us-ascii?Q?7+GSIsv2XrN+HANU6jeVxssnR7N7dJoJhYKMxVCDQEx484pkmjHHKgM3U1KH?=
+ =?us-ascii?Q?z+8uJ6bN1kpGdT47JQ/fYwdBt8O5j/3XzaqVbl0uqh8smcY7NTNxf+G+I1hu?=
+ =?us-ascii?Q?EHkdvoTx4tT3kdQBGgdDNvLX35FJjPfDcop1UI+S5X9cstnShmBqqTE9q4Mx?=
+ =?us-ascii?Q?NGEeTsoiz4pFFYc/yGQoUDp1OIHlqPE9PCJd64GLy5mRjj1+2E7qBw2niEil?=
+ =?us-ascii?Q?DS5vO0gxfWPGKDIM8pbeZ8ICcM6xMbHzHQArYxK2cB237YUgSuZ5xlDOoKbs?=
+ =?us-ascii?Q?ccvUcTHKP+iS/8uRqYs9r5wCrDMRCBVtTNKxrrVbenRd9wHmjQ+9gfE5OjCq?=
+ =?us-ascii?Q?6uSnSQSc6T+fQLHstzbtb6DYEK9cN79e+M1i9/6jSmF73lJ/hyTdL+t2y8Yn?=
+ =?us-ascii?Q?fjZHd8lyCGsNoqxA8UPXNi6y4KCf1W/jeR10AZbdjCvQKnjX/GTsWWg12Snd?=
+ =?us-ascii?Q?jy1ZD/zMwyi7oVvf61hJoPcg0mJT3+KIIUFWOMz00B/uWLX6x2bTga2r4q4g?=
+ =?us-ascii?Q?kWzQ9upXuuhb64x3Ligl18KYoy4XsLYltgkKsTtDMfS48tR3KhvD8Hl532NU?=
+ =?us-ascii?Q?M7hNq69B68Bdrs4ApFQGoZ1REFRYFe402iSSIH+ChCTNnjFe+paQ70bAd0le?=
+ =?us-ascii?Q?PMP5ykroDmxQZJHDWh0TeRUx3iRBiUCq2TIsjeDolnKiCaawMIqyDx7nVBsI?=
+ =?us-ascii?Q?s5OW7b3PY6Z3dRBKLk4ZHX7DfWIFXfVq9VVmAa/FBXn6sGss4t1WYMwHlAg5?=
+ =?us-ascii?Q?1yEKzEKgKEptYeCLJYU=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(7416014)(1800799024);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?FGKIGdPIB5c34bRSfU52Vn0eM+SPHusvzyMgkR+dZeU/5k7lT9J2sSTURxaL?=
+ =?us-ascii?Q?kTiv0u7xEuanGMPfsArK10yuypomiqo61z+sbksGBOy75y1rqg7iWujxDjmM?=
+ =?us-ascii?Q?wC+Fzlo8BV5JrF6gNsqwzRAlogMUzFNTWAX3w+2rYj9OUogOd6wEGpSfEQE3?=
+ =?us-ascii?Q?dHJ0kWQBLzWKWXWkw/R5lyGQv8uTwQ0J76j2m7pwIAjcF4GRRt1FkaiI8+ic?=
+ =?us-ascii?Q?F15LHmsnPjtHo3XDXCDGB1zr4qhqKGElwIE4p9KYWH3fNVtt767FY2MLD4GV?=
+ =?us-ascii?Q?emxuKphd2tNwc13YSpi3sdm6RHtoUftwfld7OZFdUMOeN8TXDba83qSKIdMd?=
+ =?us-ascii?Q?hi/oBlCSlBYh/IvY5tRxzvSg14/20u3yz5ofPtR3nbBJhkNkDoXu3R3AXVap?=
+ =?us-ascii?Q?pSrGDDj9oxNNd0s6m9s36hl8GylwAzFeN8Xqtr9Ae7uyE3pi38twcH80jXra?=
+ =?us-ascii?Q?KHg3ONYNwMA8MVr7hkeYVLaq4Ivbzecjr//fQzkqD8Yl4GmXsyc2YKAyjQLQ?=
+ =?us-ascii?Q?sUFZFqcON9HPviB8QgKkT2G+lziCzPxjnrDc/ohav+dsk2++axHPhR9sF8hy?=
+ =?us-ascii?Q?V9BmRtKA4NvDiTRqLA2Jdx9FBJ8VNpd0uUtpz86r55kT3VrQe2cLBuVFbmEu?=
+ =?us-ascii?Q?/u9Txn+VBoCADkkqUi1IQWZQq/7NPDDU/0cwuFGRL9zoEUsKJSEA5otWEE4g?=
+ =?us-ascii?Q?yZqHhl1Uy0c92Jb31cM7hJ2qFth9wmqGg1L1CUG1wLbiPh4T+OYYBXfcN/jC?=
+ =?us-ascii?Q?XGoi0fsss3fIAYcTB2FMWL8N6u+KGlaVVCjTOXZ5BlYNRC3erGmQtm25Woof?=
+ =?us-ascii?Q?pUZLtrFaT4QI003sNjXL3P3OqFwBP95GQ6DimLRggc9Crq7FI3WRuuDkl4lH?=
+ =?us-ascii?Q?x+hxaEgZQvw5dFR/HU1RQLFFs9lSl0ah42Se0FHHLMjWHFa74qzljHrSLKfg?=
+ =?us-ascii?Q?X5RsKCR0MZKZ1tjamuDp0h1FN5lysvMA23bzxJzJs+KuqE75hw5RZhiSNJ8P?=
+ =?us-ascii?Q?iJwY0LWFPxYwRrL5t3UnUXYjLo7Vc953tDuMl96xj8rqQuX9A9b/PIkyHius?=
+ =?us-ascii?Q?TEG3pPGgLaeJFF30j6dPi9W5Q1ibTNGXAn6OoAvLqBQs1Agl6NCKZ1tRiwao?=
+ =?us-ascii?Q?TbHe0K9mXC35t6edlrDJCkvsEyQMIOQkb17niyIU7zuM4j23CUUhRydxCZSD?=
+ =?us-ascii?Q?SGFZuRfu4Cd9Qlgzaq/0i3CMYNQcTNNP0mYEBWxdNGfqodllHyiQ4gwDwH0n?=
+ =?us-ascii?Q?ZBOgdYc0bXkk5LuzSLesjrO+MXL1h3QX35APzVlzL2YobmBtqGXz1IFCwIHd?=
+ =?us-ascii?Q?ir9Ar5GWD91I1rUqtemWAPm/6kD3pi2HLe4lpo8LiQCxPt/fkvJZmdp8acdO?=
+ =?us-ascii?Q?TFdFXQZRXGiTekJXEpEhMGAT3yfnf4Pxhs/WzzI5A/P/YkuMrGflSl5LsKis?=
+ =?us-ascii?Q?tNcwVF3ZD2zAvcIJYeqxJZdGXYacZnfBgG9sasJUHG/0fwIuC0Shkmrofd3i?=
+ =?us-ascii?Q?m9ccGstVIBMH9NDA8vKsWA/JmdO/C/Yp3YNKrrH4cvXT6qflsQWkBPhMoQS/?=
+ =?us-ascii?Q?MkfxcYQM+WnjFpZeryvfkSwjAxVwrTI4KiQAKRKTAzbTRUfXC9r75OfFeduo?=
+ =?us-ascii?Q?Bsv5jplOZUxMh3mGBOwhLSCkleCkVlNcm8AKdDV+EDLO3TSVsp4cB8tCSS8P?=
+ =?us-ascii?Q?vREMzDcT/TC9u64RBJ5RnSxzBEMFX4XpwwjiKyN7VgZ+uyuoSWUCKBh5fvXn?=
+ =?us-ascii?Q?AihsVrNeHA=3D=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9d1797bb-3b01-4c36-0366-08de6e825509
+X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Feb 2026 00:11:58.7264
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 8R4QvDo29gvQejMwkzR4TLGt91hd8yu3Yl9v30fcEJm2s/hhu+G+UeI6L2VJsjZd
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB8421
 
-On Tue, Feb 17, 2026 at 1:44=E2=80=AFPM Bjorn Helgaas <helgaas@kernel.org> =
-wrote:
->
-> dmar_readl() and dmar_readq() do nothing other than expand to the generic
-> readl() and readq(), and the dmar_read*() wrappers are used inconsistentl=
-y.
->
-> Remove the dmar_read*() wrappers and use readl() and readq() directly.
->
-> Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-> ---
->  drivers/iommu/intel/debugfs.c       | 18 +++++++++---------
->  drivers/iommu/intel/dmar.c          | 22 +++++++++++-----------
->  drivers/iommu/intel/iommu.c         | 10 +++++-----
->  drivers/iommu/intel/iommu.h         |  2 --
->  drivers/iommu/intel/irq_remapping.c |  2 +-
->  drivers/iommu/intel/perfmon.c       | 28 ++++++++++++++--------------
->  drivers/iommu/intel/prq.c           | 12 ++++++------
->  7 files changed, 46 insertions(+), 48 deletions(-)
->
-> diff --git a/drivers/iommu/intel/debugfs.c b/drivers/iommu/intel/debugfs.=
-c
-> index 617fd81a80f0..21e4e465ca58 100644
-> --- a/drivers/iommu/intel/debugfs.c
-> +++ b/drivers/iommu/intel/debugfs.c
-> @@ -133,13 +133,13 @@ static int iommu_regset_show(struct seq_file *m, vo=
-id *unused)
->                  */
->                 raw_spin_lock_irqsave(&iommu->register_lock, flag);
->                 for (i =3D 0 ; i < ARRAY_SIZE(iommu_regs_32); i++) {
-> -                       value =3D dmar_readl(iommu->reg + iommu_regs_32[i=
-].offset);
-> +                       value =3D readl(iommu->reg + iommu_regs_32[i].off=
-set);
->                         seq_printf(m, "%-16s\t0x%02x\t\t0x%016llx\n",
->                                    iommu_regs_32[i].regs, iommu_regs_32[i=
-].offset,
->                                    value);
->                 }
->                 for (i =3D 0 ; i < ARRAY_SIZE(iommu_regs_64); i++) {
-> -                       value =3D dmar_readq(iommu->reg + iommu_regs_64[i=
-].offset);
-> +                       value =3D readq(iommu->reg + iommu_regs_64[i].off=
-set);
->                         seq_printf(m, "%-16s\t0x%02x\t\t0x%016llx\n",
->                                    iommu_regs_64[i].regs, iommu_regs_64[i=
-].offset,
->                                    value);
-> @@ -247,7 +247,7 @@ static void ctx_tbl_walk(struct seq_file *m, struct i=
-ntel_iommu *iommu, u16 bus)
->                 tbl_wlk.ctx_entry =3D context;
->                 m->private =3D &tbl_wlk;
->
-> -               if (dmar_readq(iommu->reg + DMAR_RTADDR_REG) & DMA_RTADDR=
-_SMT) {
-> +               if (readq(iommu->reg + DMAR_RTADDR_REG) & DMA_RTADDR_SMT)=
+Introduce a new attach function that accepts the list of importer
+supported mapping types from the caller. Turn dma_buf_dynamic_attach() and
+dma_buf_attach() into simple wrappers calling this new function with a
+compatibility mapping type list that only includes sgt.
+
+dma_buf_mapping_attach() checks if the exporter is mapping aware and calls
+its ops->match_mapping() function to pick up the exporter match list and
+call dma_buf_match_mapping().
+
+If unaware it will use dma_buf_sgt_exp_compat_match as a compatibility
+matchlist that uses the unaware exporter's dma_buf_ops callbacks.
+
+The resulting match is stored in attach->map_type.
+
+In effect attach->map_type is always available and always makes sense
+regardless of what combination of aware/unaware importer/exporter is used.
+
+For compatibility with unaware drivers copy the sgt matching data into the
+attach->dev and peer2peer.
+
+If the exporter sets exporter_requires_p2p then only the following are
+allowed:
+ - dma_buf_dynamic_attach() with importer_ops->allow_peer2peer = true
+ - dma_buf_mapping_attach() with a
+    DMA_BUF_IMAPPING_SGT(xx, exporter_requires_p2p=true)
+
+Other combinations are blocked.
+
+Exporters that want to behave differently based on the importer's
+capability can declare exporter_requires_p2p=false and check
+attach->map_type.sgt_data.importer_accepts_p2p. Or they can declare two
+SGT exporters with different map/unmap functions.
+
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+---
+ drivers/dma-buf/dma-buf.c | 91 +++++++++++++++++++++++++++++++--------
+ include/linux/dma-buf.h   | 14 ++++++
+ 2 files changed, 87 insertions(+), 18 deletions(-)
+
+diff --git a/drivers/dma-buf/dma-buf.c b/drivers/dma-buf/dma-buf.c
+index edaa9e4ee4aed0..6e89fcfdad3015 100644
+--- a/drivers/dma-buf/dma-buf.c
++++ b/drivers/dma-buf/dma-buf.c
+@@ -14,6 +14,7 @@
+ #include <linux/fs.h>
+ #include <linux/slab.h>
+ #include <linux/dma-buf.h>
++#include <linux/dma-buf-mapping.h>
+ #include <linux/dma-fence.h>
+ #include <linux/dma-fence-unwrap.h>
+ #include <linux/anon_inodes.h>
+@@ -689,11 +690,19 @@ struct dma_buf *dma_buf_export(const struct dma_buf_export_info *exp_info)
+ 	int ret;
+ 
+ 	if (WARN_ON(!exp_info->priv || !exp_info->ops
+-		    || !exp_info->ops->map_dma_buf
+-		    || !exp_info->ops->unmap_dma_buf
+ 		    || !exp_info->ops->release))
+ 		return ERR_PTR(-EINVAL);
+ 
++	if (exp_info->ops->match_mapping) {
++		if (WARN_ON(exp_info->ops->map_dma_buf ||
++			    exp_info->ops->unmap_dma_buf))
++			return ERR_PTR(-EINVAL);
++	} else {
++		if (WARN_ON(!exp_info->ops->map_dma_buf ||
++			    !exp_info->ops->unmap_dma_buf))
++			return ERR_PTR(-EINVAL);
++	}
++
+ 	if (WARN_ON(!exp_info->ops->pin != !exp_info->ops->unpin))
+ 		return ERR_PTR(-EINVAL);
+ 
+@@ -916,9 +925,10 @@ dma_buf_pin_on_map(struct dma_buf_attachment *attach)
+  */
+ 
+ /**
+- * dma_buf_dynamic_attach - Add the device to dma_buf's attachments list
++ * dma_buf_mapping_attach - Add the device to dma_buf's attachments list
+  * @dmabuf:		[in]	buffer to attach device to.
+- * @dev:		[in]	device to be attached.
++ * @importer_matches:	[in]	mapping types supported by the importer
++ * @match_len:		[in]	length of @importer_matches
+  * @importer_ops:	[in]	importer operations for the attachment
+  * @importer_priv:	[in]	importer private pointer for the attachment
+  *
+@@ -934,31 +944,46 @@ dma_buf_pin_on_map(struct dma_buf_attachment *attach)
+  * error code wrapped into a pointer on failure.
+  *
+  * Note that this can fail if the backing storage of @dmabuf is in a place not
+- * accessible to @dev, and cannot be moved to a more suitable place. This is
+- * indicated with the error code -EBUSY.
++ * accessible to any importers, and cannot be moved to a more suitable place.
++ * This is indicated with the error code -EBUSY.
+  */
+-struct dma_buf_attachment *
+-dma_buf_dynamic_attach(struct dma_buf *dmabuf, struct device *dev,
+-		       const struct dma_buf_attach_ops *importer_ops,
+-		       void *importer_priv)
++struct dma_buf_attachment *dma_buf_mapping_attach(
++	struct dma_buf *dmabuf, struct dma_buf_mapping_match *importer_matches,
++	size_t match_len, const struct dma_buf_attach_ops *importer_ops,
++	void *importer_priv)
  {
->                         pasid_dir_ptr =3D context->lo & VTD_PAGE_MASK;
->                         pasid_dir_size =3D get_pasid_dir_size(context);
->                         pasid_dir_walk(m, pasid_dir_ptr, pasid_dir_size);
-> @@ -285,7 +285,7 @@ static int dmar_translation_struct_show(struct seq_fi=
-le *m, void *unused)
->
->         rcu_read_lock();
->         for_each_active_iommu(iommu, drhd) {
-> -               sts =3D dmar_readl(iommu->reg + DMAR_GSTS_REG);
-> +               sts =3D readl(iommu->reg + DMAR_GSTS_REG);
->                 if (!(sts & DMA_GSTS_TES)) {
->                         seq_printf(m, "DMA Remapping is not enabled on %s=
-\n",
->                                    iommu->name);
-> @@ -364,13 +364,13 @@ static int domain_translation_struct_show(struct se=
-q_file *m,
->                 if (seg !=3D iommu->segment)
->                         continue;
->
-> -               sts =3D dmar_readl(iommu->reg + DMAR_GSTS_REG);
-> +               sts =3D readl(iommu->reg + DMAR_GSTS_REG);
->                 if (!(sts & DMA_GSTS_TES)) {
->                         seq_printf(m, "DMA Remapping is not enabled on %s=
-\n",
->                                    iommu->name);
->                         continue;
->                 }
-> -               if (dmar_readq(iommu->reg + DMAR_RTADDR_REG) & DMA_RTADDR=
-_SMT)
-> +               if (readq(iommu->reg + DMAR_RTADDR_REG) & DMA_RTADDR_SMT)
->                         scalable =3D true;
->                 else
->                         scalable =3D false;
-> @@ -538,8 +538,8 @@ static int invalidation_queue_show(struct seq_file *m=
-, void *unused)
->                 raw_spin_lock_irqsave(&qi->q_lock, flags);
->                 seq_printf(m, " Base: 0x%llx\tHead: %lld\tTail: %lld\n",
->                            (u64)virt_to_phys(qi->desc),
-> -                          dmar_readq(iommu->reg + DMAR_IQH_REG) >> shift=
-,
-> -                          dmar_readq(iommu->reg + DMAR_IQT_REG) >> shift=
-);
-> +                          readq(iommu->reg + DMAR_IQH_REG) >> shift,
-> +                          readq(iommu->reg + DMAR_IQT_REG) >> shift);
->                 invalidation_queue_entry_show(m, iommu);
->                 raw_spin_unlock_irqrestore(&qi->q_lock, flags);
->                 seq_putc(m, '\n');
-> @@ -620,7 +620,7 @@ static int ir_translation_struct_show(struct seq_file=
- *m, void *unused)
->                 seq_printf(m, "Remapped Interrupt supported on IOMMU: %s\=
-n",
->                            iommu->name);
->
-> -               sts =3D dmar_readl(iommu->reg + DMAR_GSTS_REG);
-> +               sts =3D readl(iommu->reg + DMAR_GSTS_REG);
->                 if (iommu->ir_table && (sts & DMA_GSTS_IRES)) {
->                         irta =3D virt_to_phys(iommu->ir_table->base);
->                         seq_printf(m, " IR table address:%llx\n", irta);
-> diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-> index ec975c73cfe6..96d9878b9eb6 100644
-> --- a/drivers/iommu/intel/dmar.c
-> +++ b/drivers/iommu/intel/dmar.c
-> @@ -899,8 +899,8 @@ dmar_validate_one_drhd(struct acpi_dmar_header *entry=
-, void *arg)
->                 return -EINVAL;
->         }
->
-> -       cap =3D dmar_readq(addr + DMAR_CAP_REG);
-> -       ecap =3D dmar_readq(addr + DMAR_ECAP_REG);
-> +       cap =3D readq(addr + DMAR_CAP_REG);
-> +       ecap =3D readq(addr + DMAR_ECAP_REG);
->
->         if (arg)
->                 iounmap(addr);
-> @@ -982,8 +982,8 @@ static int map_iommu(struct intel_iommu *iommu, struc=
-t dmar_drhd_unit *drhd)
->                 goto release;
->         }
->
-> -       iommu->cap =3D dmar_readq(iommu->reg + DMAR_CAP_REG);
-> -       iommu->ecap =3D dmar_readq(iommu->reg + DMAR_ECAP_REG);
-> +       iommu->cap =3D readq(iommu->reg + DMAR_CAP_REG);
-> +       iommu->ecap =3D readq(iommu->reg + DMAR_ECAP_REG);
->
->         if (iommu->cap =3D=3D (uint64_t)-1 && iommu->ecap =3D=3D (uint64_=
-t)-1) {
->                 err =3D -EINVAL;
-> @@ -1017,8 +1017,8 @@ static int map_iommu(struct intel_iommu *iommu, str=
-uct dmar_drhd_unit *drhd)
->                 int i;
->
->                 for (i =3D 0; i < DMA_MAX_NUM_ECMDCAP; i++) {
-> -                       iommu->ecmdcap[i] =3D dmar_readq(iommu->reg + DMA=
-R_ECCAP_REG +
-> -                                                      i * DMA_ECMD_REG_S=
-TEP);
-> +                       iommu->ecmdcap[i] =3D readq(iommu->reg + DMAR_ECC=
-AP_REG +
-> +                                                 i * DMA_ECMD_REG_STEP);
->                 }
->         }
->
-> @@ -1239,8 +1239,8 @@ static const char *qi_type_string(u8 type)
->
->  static void qi_dump_fault(struct intel_iommu *iommu, u32 fault)
->  {
-> -       unsigned int head =3D dmar_readl(iommu->reg + DMAR_IQH_REG);
-> -       u64 iqe_err =3D dmar_readq(iommu->reg + DMAR_IQER_REG);
-> +       unsigned int head =3D readl(iommu->reg + DMAR_IQH_REG);
-> +       u64 iqe_err =3D readq(iommu->reg + DMAR_IQER_REG);
->         struct qi_desc *desc =3D iommu->qi->desc + head;
->
->         if (fault & DMA_FSTS_IQE)
-> @@ -1322,7 +1322,7 @@ static int qi_check_fault(struct intel_iommu *iommu=
-, int index, int wait_index)
->                  * SID field is valid only when the ITE field is Set in F=
-STS_REG
->                  * see Intel VT-d spec r4.1, section 11.4.9.9
->                  */
-> -               iqe_err =3D dmar_readq(iommu->reg + DMAR_IQER_REG);
-> +               iqe_err =3D readq(iommu->reg + DMAR_IQER_REG);
->                 ite_sid =3D DMAR_IQER_REG_ITESID(iqe_err);
->
->                 writel(DMA_FSTS_ITE, iommu->reg + DMAR_FSTS_REG);
-> @@ -1981,8 +1981,8 @@ irqreturn_t dmar_fault(int irq, void *dev_id)
->                         source_id =3D dma_frcd_source_id(data);
->
->                         pasid_present =3D dma_frcd_pasid_present(data);
-> -                       guest_addr =3D dmar_readq(iommu->reg + reg +
-> -                                       fault_index * PRIMARY_FAULT_REG_L=
-EN);
-> +                       guest_addr =3D readq(iommu->reg + reg +
-> +                                          fault_index * PRIMARY_FAULT_RE=
-G_LEN);
->                         guest_addr =3D dma_frcd_page_addr(guest_addr);
->                 }
->
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index 705828b06e32..64284938e1ce 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -769,7 +769,7 @@ static void __iommu_flush_context(struct intel_iommu =
-*iommu,
->
->         /* Make sure hardware complete it */
->         IOMMU_WAIT_OP(iommu, DMAR_CCMD_REG,
-> -               dmar_readq, (!(val & DMA_CCMD_ICC)), val);
-> +               readq, (!(val & DMA_CCMD_ICC)), val);
->
->         raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
->  }
-> @@ -811,7 +811,7 @@ void __iommu_flush_iotlb(struct intel_iommu *iommu, u=
-16 did, u64 addr,
->
->         /* Make sure hardware complete it */
->         IOMMU_WAIT_OP(iommu, tlb_offset + 8,
-> -               dmar_readq, (!(val & DMA_TLB_IVT)), val);
-> +               readq, (!(val & DMA_TLB_IVT)), val);
->
->         raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
->
-> @@ -1533,7 +1533,7 @@ static int copy_translation_tables(struct intel_iom=
-mu *iommu)
->         int bus, ret;
->         bool new_ext, ext;
->
-> -       rtaddr_reg =3D dmar_readq(iommu->reg + DMAR_RTADDR_REG);
-> +       rtaddr_reg =3D readq(iommu->reg + DMAR_RTADDR_REG);
->         ext        =3D !!(rtaddr_reg & DMA_RTADDR_SMT);
->         new_ext    =3D !!sm_supported(iommu);
->
-> @@ -4185,7 +4185,7 @@ int ecmd_submit_sync(struct intel_iommu *iommu, u8 =
-ecmd, u64 oa, u64 ob)
->
->         raw_spin_lock_irqsave(&iommu->register_lock, flags);
->
-> -       res =3D dmar_readq(iommu->reg + DMAR_ECRSP_REG);
-> +       res =3D readq(iommu->reg + DMAR_ECRSP_REG);
->         if (res & DMA_ECMD_ECRSP_IP) {
->                 ret =3D -EBUSY;
->                 goto err;
-> @@ -4201,7 +4201,7 @@ int ecmd_submit_sync(struct intel_iommu *iommu, u8 =
-ecmd, u64 oa, u64 ob)
->         dmar_writeq(iommu->reg + DMAR_ECEO_REG, ob);
->         dmar_writeq(iommu->reg + DMAR_ECMD_REG, ecmd | (oa << DMA_ECMD_OA=
-_SHIFT));
->
-> -       IOMMU_WAIT_OP(iommu, DMAR_ECRSP_REG, dmar_readq,
-> +       IOMMU_WAIT_OP(iommu, DMAR_ECRSP_REG, readq,
->                       !(res & DMA_ECMD_ECRSP_IP), res);
->
->         if (res & DMA_ECMD_ECRSP_IP) {
-> diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-> index 599913fb65d5..dbd8d196d154 100644
-> --- a/drivers/iommu/intel/iommu.h
-> +++ b/drivers/iommu/intel/iommu.h
-> @@ -148,9 +148,7 @@
->
->  #define OFFSET_STRIDE          (9)
->
-> -#define dmar_readq(a) readq(a)
->  #define dmar_writeq(a,v) writeq(v,a)
-> -#define dmar_readl(a) readl(a)
->  #define dmar_writel(a, v) writel(v, a)
->
->  #define DMAR_VER_MAJOR(v)              (((v) & 0xf0) >> 4)
-> diff --git a/drivers/iommu/intel/irq_remapping.c b/drivers/iommu/intel/ir=
-q_remapping.c
-> index ecb591e98565..3fce6efea524 100644
-> --- a/drivers/iommu/intel/irq_remapping.c
-> +++ b/drivers/iommu/intel/irq_remapping.c
-> @@ -422,7 +422,7 @@ static int iommu_load_old_irte(struct intel_iommu *io=
-mmu)
->         u64 irta;
->
->         /* Check whether the old ir-table has the same size as ours */
-> -       irta =3D dmar_readq(iommu->reg + DMAR_IRTA_REG);
-> +       irta =3D readq(iommu->reg + DMAR_IRTA_REG);
->         if ((irta & INTR_REMAP_TABLE_REG_SIZE_MASK)
->              !=3D INTR_REMAP_TABLE_REG_SIZE)
->                 return -EINVAL;
-> diff --git a/drivers/iommu/intel/perfmon.c b/drivers/iommu/intel/perfmon.=
-c
-> index 75f493bcb353..30bd684612ad 100644
-> --- a/drivers/iommu/intel/perfmon.c
-> +++ b/drivers/iommu/intel/perfmon.c
-> @@ -307,7 +307,7 @@ static void iommu_pmu_event_update(struct perf_event =
-*event)
->
->  again:
->         prev_count =3D local64_read(&hwc->prev_count);
-> -       new_count =3D dmar_readq(iommu_event_base(iommu_pmu, hwc->idx));
-> +       new_count =3D readq(iommu_event_base(iommu_pmu, hwc->idx));
->         if (local64_xchg(&hwc->prev_count, new_count) !=3D prev_count)
->                 goto again;
->
-> @@ -340,7 +340,7 @@ static void iommu_pmu_start(struct perf_event *event,=
- int flags)
->         hwc->state =3D 0;
->
->         /* Always reprogram the period */
-> -       count =3D dmar_readq(iommu_event_base(iommu_pmu, hwc->idx));
-> +       count =3D readq(iommu_event_base(iommu_pmu, hwc->idx));
->         local64_set((&hwc->prev_count), count);
->
->         /*
-> @@ -496,7 +496,7 @@ static void iommu_pmu_counter_overflow(struct iommu_p=
-mu *iommu_pmu)
->          * Two counters may be overflowed very close. Always check
->          * whether there are more to handle.
->          */
-> -       while ((status =3D dmar_readq(iommu_pmu->overflow))) {
-> +       while ((status =3D readq(iommu_pmu->overflow))) {
->                 for_each_set_bit(i, (unsigned long *)&status, iommu_pmu->=
-num_cntr) {
->                         /*
->                          * Find the assigned event of the counter.
-> @@ -518,7 +518,7 @@ static irqreturn_t iommu_pmu_irq_handler(int irq, voi=
-d *dev_id)
->  {
->         struct intel_iommu *iommu =3D dev_id;
->
-> -       if (!dmar_readl(iommu->reg + DMAR_PERFINTRSTS_REG))
-> +       if (!readl(iommu->reg + DMAR_PERFINTRSTS_REG))
->                 return IRQ_NONE;
->
->         iommu_pmu_counter_overflow(iommu->pmu);
-> @@ -555,7 +555,7 @@ static int __iommu_pmu_register(struct intel_iommu *i=
-ommu)
->  static inline void __iomem *
->  get_perf_reg_address(struct intel_iommu *iommu, u32 offset)
->  {
-> -       u32 off =3D dmar_readl(iommu->reg + offset);
-> +       u32 off =3D readl(iommu->reg + offset);
->
->         return iommu->reg + off;
->  }
-> @@ -574,7 +574,7 @@ int alloc_iommu_pmu(struct intel_iommu *iommu)
->         if (!cap_ecmds(iommu->cap))
->                 return -ENODEV;
->
-> -       perfcap =3D dmar_readq(iommu->reg + DMAR_PERFCAP_REG);
-> +       perfcap =3D readq(iommu->reg + DMAR_PERFCAP_REG);
->         /* The performance monitoring is not supported. */
->         if (!perfcap)
->                 return -ENODEV;
-> @@ -617,8 +617,8 @@ int alloc_iommu_pmu(struct intel_iommu *iommu)
->         for (i =3D 0; i < iommu_pmu->num_eg; i++) {
->                 u64 pcap;
->
-> -               pcap =3D dmar_readq(iommu->reg + DMAR_PERFEVNTCAP_REG +
-> -                                 i * IOMMU_PMU_CAP_REGS_STEP);
-> +               pcap =3D readq(iommu->reg + DMAR_PERFEVNTCAP_REG +
-> +                            i * IOMMU_PMU_CAP_REGS_STEP);
->                 iommu_pmu->evcap[i] =3D pecap_es(pcap);
->         }
->
-> @@ -651,9 +651,9 @@ int alloc_iommu_pmu(struct intel_iommu *iommu)
->          * Width.
->          */
->         for (i =3D 0; i < iommu_pmu->num_cntr; i++) {
-> -               cap =3D dmar_readl(iommu_pmu->cfg_reg +
-> -                                i * IOMMU_PMU_CFG_OFFSET +
-> -                                IOMMU_PMU_CFG_CNTRCAP_OFFSET);
-> +               cap =3D readl(iommu_pmu->cfg_reg +
-> +                           i * IOMMU_PMU_CFG_OFFSET +
-> +                           IOMMU_PMU_CFG_CNTRCAP_OFFSET);
->                 if (!iommu_cntrcap_pcc(cap))
->                         continue;
->
-> @@ -675,9 +675,9 @@ int alloc_iommu_pmu(struct intel_iommu *iommu)
->
->                 /* Override with per-counter event capabilities */
->                 for (j =3D 0; j < iommu_cntrcap_egcnt(cap); j++) {
-> -                       cap =3D dmar_readl(iommu_pmu->cfg_reg + i * IOMMU=
-_PMU_CFG_OFFSET +
-> -                                        IOMMU_PMU_CFG_CNTREVCAP_OFFSET +
-> -                                        (j * IOMMU_PMU_OFF_REGS_STEP));
-> +                       cap =3D readl(iommu_pmu->cfg_reg + i * IOMMU_PMU_=
-CFG_OFFSET +
-> +                                   IOMMU_PMU_CFG_CNTREVCAP_OFFSET +
-> +                                   (j * IOMMU_PMU_OFF_REGS_STEP));
->                         iommu_pmu->cntr_evcap[i][iommu_event_group(cap)] =
-=3D iommu_event_select(cap);
->                         /*
->                          * Some events may only be supported by a specifi=
-c counter.
-> diff --git a/drivers/iommu/intel/prq.c b/drivers/iommu/intel/prq.c
-> index ff63c228e6e1..c28fbd5c14a7 100644
-> --- a/drivers/iommu/intel/prq.c
-> +++ b/drivers/iommu/intel/prq.c
-> @@ -81,8 +81,8 @@ void intel_iommu_drain_pasid_prq(struct device *dev, u3=
-2 pasid)
->          */
->  prq_retry:
->         reinit_completion(&iommu->prq_complete);
-> -       tail =3D dmar_readq(iommu->reg + DMAR_PQT_REG) & PRQ_RING_MASK;
-> -       head =3D dmar_readq(iommu->reg + DMAR_PQH_REG) & PRQ_RING_MASK;
-> +       tail =3D readq(iommu->reg + DMAR_PQT_REG) & PRQ_RING_MASK;
-> +       head =3D readq(iommu->reg + DMAR_PQH_REG) & PRQ_RING_MASK;
->         while (head !=3D tail) {
->                 struct page_req_dsc *req;
->
-> @@ -208,8 +208,8 @@ static irqreturn_t prq_event_thread(int irq, void *d)
->          */
->         writel(DMA_PRS_PPR, iommu->reg + DMAR_PRS_REG);
->
-> -       tail =3D dmar_readq(iommu->reg + DMAR_PQT_REG) & PRQ_RING_MASK;
-> -       head =3D dmar_readq(iommu->reg + DMAR_PQH_REG) & PRQ_RING_MASK;
-> +       tail =3D readq(iommu->reg + DMAR_PQT_REG) & PRQ_RING_MASK;
-> +       head =3D readq(iommu->reg + DMAR_PQH_REG) & PRQ_RING_MASK;
->         handled =3D (head !=3D tail);
->         while (head !=3D tail) {
->                 req =3D &iommu->prq[head / sizeof(*req)];
-> @@ -268,8 +268,8 @@ static irqreturn_t prq_event_thread(int irq, void *d)
->         if (readl(iommu->reg + DMAR_PRS_REG) & DMA_PRS_PRO) {
->                 pr_info_ratelimited("IOMMU: %s: PRQ overflow detected\n",
->                                     iommu->name);
-> -               head =3D dmar_readq(iommu->reg + DMAR_PQH_REG) & PRQ_RING=
-_MASK;
-> -               tail =3D dmar_readq(iommu->reg + DMAR_PQT_REG) & PRQ_RING=
-_MASK;
-> +               head =3D readq(iommu->reg + DMAR_PQH_REG) & PRQ_RING_MASK=
-;
-> +               tail =3D readq(iommu->reg + DMAR_PQT_REG) & PRQ_RING_MASK=
-;
->                 if (head =3D=3D tail) {
->                         iopf_queue_discard_partial(iommu->iopf_queue);
->                         writel(DMA_PRS_PRO, iommu->reg + DMAR_PRS_REG);
-> --
-> 2.51.0
->
->
++	struct dma_buf_match_args match_args = {
++		.dmabuf = dmabuf,
++		.imp_matches = importer_matches,
++		.imp_len = match_len,
++	};
+ 	struct dma_buf_attachment *attach;
+ 	int ret;
+ 
+-	if (WARN_ON(!dmabuf || !dev))
++	if (WARN_ON(!dmabuf))
+ 		return ERR_PTR(-EINVAL);
+ 
+ 	if (WARN_ON(importer_ops && !importer_ops->move_notify))
+ 		return ERR_PTR(-EINVAL);
+ 
++
+ 	attach = kzalloc(sizeof(*attach), GFP_KERNEL);
+ 	if (!attach)
+ 		return ERR_PTR(-ENOMEM);
+ 
+-	attach->dev = dev;
++	match_args.attach = attach;
++	if (dmabuf->ops->match_mapping) {
++		ret = dmabuf->ops->match_mapping(&match_args);
++		if (ret)
++			goto err_attach;
++	} else {
++		ret = dma_buf_match_mapping(&match_args,
++					    &dma_buf_sgt_exp_compat_match, 1);
++		if (ret)
++			goto err_attach;
++	}
++
+ 	attach->dmabuf = dmabuf;
+-	if (importer_ops)
+-		attach->peer2peer = importer_ops->allow_peer2peer;
+ 	attach->importer_ops = importer_ops;
+ 	attach->importer_priv = importer_priv;
+ 
+@@ -977,23 +1002,53 @@ dma_buf_dynamic_attach(struct dma_buf *dmabuf, struct device *dev,
+ 	kfree(attach);
+ 	return ERR_PTR(ret);
+ }
+-EXPORT_SYMBOL_NS_GPL(dma_buf_dynamic_attach, "DMA_BUF");
++EXPORT_SYMBOL_NS_GPL(dma_buf_mapping_attach, "DMA_BUF");
+ 
+ /**
+- * dma_buf_attach - Wrapper for dma_buf_dynamic_attach
++ * dma_buf_attach - Wrapper for dma_buf_mapping_attach
+  * @dmabuf:	[in]	buffer to attach device to.
+  * @dev:	[in]	device to be attached.
+  *
+- * Wrapper to call dma_buf_dynamic_attach() for drivers which still use a static
++ * Wrapper to call dma_buf_mapping_attach() for drivers which still use a static
+  * mapping.
+  */
+ struct dma_buf_attachment *dma_buf_attach(struct dma_buf *dmabuf,
+ 					  struct device *dev)
+ {
+-	return dma_buf_dynamic_attach(dmabuf, dev, NULL, NULL);
++	struct dma_buf_mapping_match sgt_match[] = {
++		DMA_BUF_IMAPPING_SGT(dev, DMA_SGT_NO_P2P),
++	};
++
++	return dma_buf_mapping_attach(dmabuf, sgt_match, ARRAY_SIZE(sgt_match),
++				      NULL, NULL);
+ }
+ EXPORT_SYMBOL_NS_GPL(dma_buf_attach, "DMA_BUF");
+ 
++/**
++ * dma_buf_dynamic_attach - Add the device to dma_buf's attachments list
++ * @dmabuf:		[in]	buffer to attach device to.
++ * @dev:		[in]	device to be attached.
++ * @importer_ops:	[in]	importer operations for the attachment
++ * @importer_priv:	[in]	importer private pointer for the attachment
++ *
++ * Wrapper to call dma_buf_mapping_attach() for drivers which only support SGT.
++ */
++struct dma_buf_attachment *
++dma_buf_dynamic_attach(struct dma_buf *dmabuf, struct device *dev,
++		       const struct dma_buf_attach_ops *importer_ops,
++		       void *importer_priv)
++{
++	struct dma_buf_mapping_match sgt_match[] = {
++		DMA_BUF_IMAPPING_SGT(dev, importer_ops->allow_peer2peer ?
++						  DMA_SGT_IMPORTER_ACCEPTS_P2P :
++						  DMA_SGT_NO_P2P),
++	};
++
++	return dma_buf_mapping_attach(dmabuf, sgt_match, ARRAY_SIZE(sgt_match),
++				      importer_ops, importer_priv);
++}
++EXPORT_SYMBOL_NS_GPL(dma_buf_dynamic_attach, "DMA_BUF");
++
+ /**
+  * dma_buf_detach - Remove the given attachment from dmabuf's attachments list
+  * @dmabuf:	[in]	buffer to detach from.
+diff --git a/include/linux/dma-buf.h b/include/linux/dma-buf.h
+index 3bcd1d6d150188..14d556bb022862 100644
+--- a/include/linux/dma-buf.h
++++ b/include/linux/dma-buf.h
+@@ -29,6 +29,7 @@ struct dma_buf;
+ struct dma_buf_attachment;
+ struct dma_buf_mapping_type;
+ struct dma_buf_mapping_exp_ops;
++struct dma_buf_match_args;
+ 
+ 
+ /*
+@@ -308,6 +309,14 @@ struct dma_buf_ops {
+ 
+ 	int (*vmap)(struct dma_buf *dmabuf, struct iosys_map *map);
+ 	void (*vunmap)(struct dma_buf *dmabuf, struct iosys_map *map);
++
++	/**
++	 * @match_mapping:
++	 *
++	 * Called during attach. Allows the exporter to build its own exporter
++	 * struct dma_buf_mapping_match[] and call dma_buf_match_mapping().
++	 */
++	int (*match_mapping)(struct dma_buf_match_args *args);
+ };
+ 
+ /**
+@@ -619,6 +628,11 @@ struct dma_buf_attachment *
+ dma_buf_dynamic_attach(struct dma_buf *dmabuf, struct device *dev,
+ 		       const struct dma_buf_attach_ops *importer_ops,
+ 		       void *importer_priv);
++struct dma_buf_attachment *dma_buf_mapping_attach(
++	struct dma_buf *dmabuf, struct dma_buf_mapping_match *importer_matches,
++	size_t match_len, const struct dma_buf_attach_ops *importer_ops,
++	void *importer_priv);
++
+ void dma_buf_detach(struct dma_buf *dmabuf,
+ 		    struct dma_buf_attachment *attach);
+ int dma_buf_pin(struct dma_buf_attachment *attach);
+-- 
+2.43.0
 
-Reviewed-by: Samiullah Khawaja <skhawaja@google.com>
