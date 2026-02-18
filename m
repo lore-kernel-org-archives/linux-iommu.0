@@ -1,47 +1,47 @@
-Received: from SA9PR02CU001.outbound.protection.outlook.com (mail-southcentralusazon11013010.outbound.protection.outlook.com [40.93.196.10])
+Received: from CO1PR03CU002.outbound.protection.outlook.com (mail-westus2azon11010034.outbound.protection.outlook.com [52.101.46.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27A3E23A566
-	for <iommu@lists.linux.dev>; Wed, 18 Feb 2026 00:12:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.196.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CF0B242D7B
+	for <iommu@lists.linux.dev>; Wed, 18 Feb 2026 00:12:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.46.34
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771373540; cv=fail; b=B6d25AXUn3MBcJIfOkJYrdyS/GZ2BZWPlfM72WM0/B7Ci3OgSO6nwteGvBvZ384EPfYG1+uORAC6PlN5TPk5a9dC3l8W1sHcb5vpz0ur3bsatlKmgT/dFvgUTj4z6n/a7mfTl/JC5ouYeM2lXcrfZe0MfBDrutWIU1Q7dPAwgPc=
+	t=1771373542; cv=fail; b=SQGUzaeDeejGzjxkOuPd5C+WHW/jwsNqFUjgjndG/JWDM5w37kVp/xUmv96/NmL8sdgIbif+TzgnqxsSyN3Fk0XZkaWvkcXvQCGq5n+7fLdPGP/dXJX7NC9Rf1H1NEp6dZKZER4MrurnmEaY88foOc9k6tnKIGIOAk7vH/OfwbA=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771373540; c=relaxed/simple;
-	bh=G1AVyr5ipBEKhVpP/Ekp4xv2kjDfjD/ycfRxOgJX8Gc=;
+	s=arc-20240116; t=1771373542; c=relaxed/simple;
+	bh=IH8nj0rexZt8QaHDiaTQbrzNwLsXyA+l1ExSWXiPA2E=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=VXGBpf4Z+STHs0fcMwVFjjLdgKiWiahei3iZo4ABzGzM8WNR/giRTuVYCVdoSZ8iTGszRrFHA5CbL/qQqklGJHXMX2h54s9+CrAUPgnSW+n2R2+lZ9pKBB50VfYHl9vcE+p6krozZZj4r57RJc/N1upbDxrxLXYbA9tGsV8/TeE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=PpXAN0Bz; arc=fail smtp.client-ip=40.93.196.10
+	 Content-Type:MIME-Version; b=F7lORIdZSCgEu1qqsAam/aZUqHC6rB6tMMIRqP/oH6buHfHdKrnLS9fhRiM9W3CWOwhBlR7UXtKeYAgUwhFrM1fQPbmJHNa7826crHiFojrM3cwePqWDCV2++be49lEQ+1c3/QG/W8kVi+UM3QUAxQucs5Sgj9/v0HUSESeJcJw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=reJVKQBn; arc=fail smtp.client-ip=52.101.46.34
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="PpXAN0Bz"
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="reJVKQBn"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=GLkQitWyV9yU8vbtg6Ihke2SzaV8R9xkcM6rGYQrAu5bA9rufakiDF3FY31bqzB/JY3ToR/D1ILktM+M/SGZbRybMLDajl1PTGx0tL3y5s4q5cdwCWgJ2H0/ppi0Zn9qbgNrskeUY1zsFbYB2VZOE8bemeaRyb78iVdqRvm7kZkGe6jcI0Y3KpkNm4D+F2eFZ7XiAYliT8nOIo9/K441Y/XkqxJ2TIBnSsYglK5arkku6YGbaDczzdC38wQHW1RHJfo8cYA7yz51/pvsh+0WBJX8wS+XZv06HCMKVp/Zvbkcysgcv3cfQWH8dbHQsQ+DRuevn4tGesslIT5ik6FuDg==
+ b=UAkc4aakQdyObcORL0nJYshEFdpI7HIa5cioOWRbPGhnMrl6+PIr9MmMbCju9pDU2OAC7/quYFLjf7LUWUQAVcvMzD8DbYBrUiPeQUsVIZPDiKw+7niQQgBzUt2nMdr+bSPvzzi5ljvSvm4iBLLfRYAH4VSwAcfcVgCB5LvF1RR9KTfCCVeOSEAt9Dg+bskwPOSkg6DqFeWVLMl0SY436i1EM4SQPWuPCpanPyJX/8NWoo43b6BwZH1OucHgha4gFJMw0s1QfaR0uqlEaLOh1NHwHJS06OUW+sESn5fetCt0VEUjULRb/QTv5+ErUN+dL67sm/YbOVrTBXLYTIqy0g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=EJ97i3Buw8qA15KBdWvUEG5ksKzgeIrPhRBuETTxJXY=;
- b=tMPP2517ZCpDIDe1qSurtwcXdU6UZPY3PivcNi6LDhBMsQwgtv0JwW3JYjbfOIbTtLZRfF5f0Wy7KYT+FExz3DoNAOe5MsH68sApiL8Nuyh4ktMIugIoxr84USPuOiaQ8KAhYtLG2cF6HfF3clKfbpst2tP5VuAg3mfPZI/WIenHErt176GB8/Ik2fV3CjGfuQDcKxpNud6kz4pF/9e8WuDrXU0teQX8pz0LYUEC6KVV0soMqduonD/9xxNa/k8kblZlMjKCdeuR70hKxxruFy8o8lBEcc8XlMlLcO5LfFDyTA5RVzwzjvSBSyHfiMEoUbtXXVQdHA6sUDL2Bm1V4g==
+ bh=5f+CLnGfcFKbQi1kagHlzVy/X+smTIkCD11ZY7RQWjM=;
+ b=u+YRDggsKK9HVwo7IQ6BUsEkG3jmsUhRqUgWnYBgerdm0vcmWSdUS5O8dO9JbyPMkebJVaGeoBLTQnGL6YSxAz6wqT7j0Upa/ZhA0uFjFggOfC5RGIWMglXMtsrvRon/W0ejmguMnZVqXZ9JBShnHbtrSF7v8zKTPUlfIckl8rBpSvQdFHBL7abfI93W78k0nNkH9HZOuE8cD8j5nSZDujQoLe+qdWq6Sx3uKKgyNC6sPKmOyPloxIN4cm7rwztc5lJRDkXcQXQLoF1xEvqKChYQ4ubeeZBdOpXutX0ZeXKUXDvvueU321n4fG59EpCnBoLzjKDmi5LlAmquUjJLNQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EJ97i3Buw8qA15KBdWvUEG5ksKzgeIrPhRBuETTxJXY=;
- b=PpXAN0Bzl9u/z0NFMSkRCaOSZfC7zJFCA3VNL6WIsK7s8yNO2aPB1DpajNHiHSob4RD1Cta9pkaE7onlTQX638Mkexx4pE/Iv0nKyyjsSAAdCAeytzLCRcQSeh73M84qvdfAgtbybvRVue6Fd5gx8nYlKeNqjeELoRe4/SLXre5bZoFiQPOFz0n+IX9x3+k0PCLR3wdna0Kz6iey0o1JIdXjd3p0xuR885KGaxHZAgruakgDxycxtxv63ht7Gen2iyenuFxR4WZNB5FFZkCX/Jd0ExCY+/wcGNvwaSAHlcrCETf1NiwvQBBbHt7lLRLMJxOvJvrhkGQNUZVQT5Fc9g==
+ bh=5f+CLnGfcFKbQi1kagHlzVy/X+smTIkCD11ZY7RQWjM=;
+ b=reJVKQBnaaszqW487KUcR3m4t9BS6g/RE12wJqPEbZFsJncFsUVT0NWXeP7VX0rmC5u1l4pXEfkf+CY/9V7z9orIZWE2sWg9njrk+oVYgLrag1Ls19Zl7r1Aj1YEytV69fTlg/VTWlPz+fmIMojYUoiAQcQASo6JNFtOl9Ux5FDRUTgaIcvKSWSgSAGVxFW7QtdZ+52lJ+wFcYtbzsszdWbP2gQrAP6Datue5oZe7ssl/uDPL1ZvG3SUNToLoyeNDX63OgvF9VerPQbc60M0YBuTduX3kzO+SbDLg8N0g9AVrbOUPN/kQNyMiZo4aeJOZIFINWys546ZxopTA7rfbg==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
  by DS7PR12MB8202.namprd12.prod.outlook.com (2603:10b6:8:e1::13) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9632.14; Wed, 18 Feb
- 2026 00:12:06 +0000
+ 2026 00:12:08 +0000
 Received: from LV8PR12MB9620.namprd12.prod.outlook.com
  ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
  ([fe80::299d:f5e0:3550:1528%5]) with mapi id 15.20.9611.013; Wed, 18 Feb 2026
- 00:12:06 +0000
+ 00:12:08 +0000
 From: Jason Gunthorpe <jgg@nvidia.com>
 To:
 Cc: Christian Koenig <christian.koenig@amd.com>,
@@ -58,15 +58,15 @@ Cc: Christian Koenig <christian.koenig@amd.com>,
 	Sumit Semwal <sumit.semwal@linaro.org>,
 	Thomas Hellstrom <thomas.hellstrom@linux.intel.com>,
 	Vivek Kasireddy <vivek.kasireddy@intel.com>
-Subject: [PATCH RFC 17/26] treewide: Rename dma_buf_map_attachment(_unlocked) to dma_buf_sgt_
-Date: Tue, 17 Feb 2026 20:11:48 -0400
-Message-ID: <17-v1-b5cab63049c0+191af-dmabuf_map_type_jgg@nvidia.com>
+Subject: [PATCH RFC 07/26] dma-buf: Convert all the simple exporters to use SGT mapping type
+Date: Tue, 17 Feb 2026 20:11:38 -0400
+Message-ID: <7-v1-b5cab63049c0+191af-dmabuf_map_type_jgg@nvidia.com>
 In-Reply-To: <0-v1-b5cab63049c0+191af-dmabuf_map_type_jgg@nvidia.com>
 References:
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: BL1P223CA0026.NAMP223.PROD.OUTLOOK.COM
- (2603:10b6:208:2c4::31) To LV8PR12MB9620.namprd12.prod.outlook.com
+X-ClientProxiedBy: BL1PR13CA0202.namprd13.prod.outlook.com
+ (2603:10b6:208:2be::27) To LV8PR12MB9620.namprd12.prod.outlook.com
  (2603:10b6:408:2a1::19)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -76,632 +76,1259 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|DS7PR12MB8202:EE_
-X-MS-Office365-Filtering-Correlation-Id: f3da7c07-d159-4890-b977-08de6e825668
+X-MS-Office365-Filtering-Correlation-Id: 8ba97d4e-8081-43b3-f0cd-08de6e8256c5
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|7416014|376014|366016;
 X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?d1OhFU3fL1Z8Bh5PV7lp7is/K2etn/1/QXeIXVp0gW0+BuaX61/yxC0MQ2Pn?=
- =?us-ascii?Q?rMmitXOgwhYj8ZftQLGFAp4psMAKgk50Yq0GV5Alamq8HCDGtJBwWbaniY9V?=
- =?us-ascii?Q?2h/cHf3qBXm++aztgGjXuWIs82QfkCEvGQtDAZau8w3t3+dc43OhPfc4Sb02?=
- =?us-ascii?Q?DTgOiUk44/VRnZp+6NjZ/XBsozEfCnW7nqxHFHHjVyx17wjNQMaXZ3b8IcE6?=
- =?us-ascii?Q?FSrE+sFjL2Xkl0gxw74Q3AlIBdfglE2OyPnVef1URKfoCi2Anp6i5n9Ivp/V?=
- =?us-ascii?Q?xuH2HL73QioqR3Xz7lOG2IJqrj41Xg8DmlsnkmpFre2gm30HKxBK4lAfpfpx?=
- =?us-ascii?Q?fMeUu/URGAIyx+ETA4vJ70sUpxW4Xpl+UEFORIt2SXcb1CPhwfVhsHvHPvAa?=
- =?us-ascii?Q?WAXP9vF54fEVZu1AJl8mbNPaNPnIzlsOutCwsFGgtFAc5kROR8Nh5v01ibf2?=
- =?us-ascii?Q?dIKoFSIDiOZc6D59tx6jSESSRrSrmhr353ZXn/9NyHxk7VGwC5PO4U82WDjO?=
- =?us-ascii?Q?Z6gLUMukxmeXdRuXFEQGvz07flfn3tYx6WVhk8T3LPfvZ1Jbe2GUNbx1+QlP?=
- =?us-ascii?Q?M7jfcME2lkcoLdVMiRrWWLfzFSdnumNWW22m/myVyVAm/uUkotS013Ev4CAA?=
- =?us-ascii?Q?Ss6C1I+uezL9t4jxaDSWoRPY29Bs30J+7XvZRVuo14Jpf7X4dRSsq3syUCk7?=
- =?us-ascii?Q?xwBFndD9iWcE5T9WHt3yt+ETo3dFaufx9YbJ7vTr22yfyzpY6vuGI92Jfwys?=
- =?us-ascii?Q?HfF4dBgb+ZpvbFo2gVUJcrjDw6jJWw2TdwMcUGW2yhCtEzsgiYQHWN1b33c5?=
- =?us-ascii?Q?CiukVPRq5uEASxhyRWCYhtYOR4+GbMhoUGyAx7pS16bArifHxaFvlhIzdw0+?=
- =?us-ascii?Q?XINiqVdIZgTRQM/ow1yhx4n9hQy+qLQnSUUUcMb2A8SyyI+P4yDYPKYLWBqS?=
- =?us-ascii?Q?D/qws7MlvelOm4lQgsLLs5A1L8KWuCioZ5HpJlOJ8wKm3+pPRTDQ/abNt4dW?=
- =?us-ascii?Q?5cX1rXAlvYXsbErJ3zgjoLgrj2UW7ElE2hsHXeaw/h4WDVEdoMx31wtgy2Pz?=
- =?us-ascii?Q?9jjPkdzsGqFWDStLOzsXtBo0UYZjkhCEKWCvkcv4OY1dz3/IenUBg7/EsVey?=
- =?us-ascii?Q?qvC1RYJFDn2u/ufh3J3u+0Y/jks5hugfQ2cbgmJItxbkLh4EcU7XOrpuX31C?=
- =?us-ascii?Q?g4HbZR2UI3JU29KYt6T7QBzfSisxLorikope1+MFxgsl0Jp3o99sDUM00Acs?=
- =?us-ascii?Q?g8czuKKLZzuWW9A8AbCgxamm8S1k6F7kf6gKyBf8YkVJfU4ZX65t684pCosF?=
- =?us-ascii?Q?qYol45JaCMNSK52PeTpYaekVFFuArAulYFPqDIVu+NunV0UvcEXEeTH6aej7?=
- =?us-ascii?Q?A2uvGDeMGQdvuNwFLozDu9OmH2vkc9IZ0hEBHKSq/vG6nHXLTZypmng8Jq2S?=
- =?us-ascii?Q?H4if6bqILYsB5zplCfXxU6hLrJlXwk5MkAigPQOEWxySNud1tT8Pl76OL6vH?=
- =?us-ascii?Q?Hqy9a7fWmLQ0q8bfPc0jfr5mQRqNw5eMspZbcFgYL6HRQtYb7IGXuGrdROxC?=
- =?us-ascii?Q?ndRrJBGBS3Dm+o2lP3I=3D?=
+	=?utf-8?B?V3hRSDJXUXAwRWxLYU1rR3Y2ZVBVb3R5SEFNNHNuc1hsU0FILzZXWUpPNHdh?=
+ =?utf-8?B?U0NOU3lnQVhnd2Zwb0gwOU1JUTlzdkFmdEZRNXRlcUVTMW5KdnNEWnp3Q0sz?=
+ =?utf-8?B?RFFxT0JmWURIRVNvTVFOUmxad2xBY1ltVjVxdG1xNzRqc1VQQy9nWE9Yb1lJ?=
+ =?utf-8?B?V3J4bm1qZ2xDV3Q0QlkrTWRMbXdMa0VaN0t3NTJSVTR4aDhGZ3JXTTczQzUz?=
+ =?utf-8?B?U3hlYVBvV0FFUmUxOFFvUVh4dFY4WC9NZVY4d1FGNFhUakp0TzNQd2I1Ykha?=
+ =?utf-8?B?MlY1NEgzRCtaR2d6TDBBdkdLSFp1dDVpRXBlQ0dQUldlYjBiTHp0T1JVTHVz?=
+ =?utf-8?B?d1VzcFN4Z1EwMm93TllIaTNTSzNVRDJpVVBqRFdUU3JBRkJhQlB0c2R2UnRv?=
+ =?utf-8?B?ZFBtaXBzajE3NWVRQ0JnRCtrdVBMaldrWldsbkM3MDRyWGVreTZjajhHMHA5?=
+ =?utf-8?B?cExvTG1WU1dHckMzYzVnSHgwdTF3cGxTenpPYkRQb2RqTDhGZGZVMkU3WThv?=
+ =?utf-8?B?SVVwN2JJdmZlWkhaTlNDL0k5YXR1OENUK01HVU9seEN0T0VYU2xwcjNFelU4?=
+ =?utf-8?B?c3J3SUlMUlNCWTNEOFM4S1A4UW81aTNLL0RpMjYxUkd3UXM5TWhDWjNYOHZt?=
+ =?utf-8?B?Zlh0RllQZWl4TE1CdGVPYkFVQktRUVFjbEhlK211WTBRVGtwaW1UOTZuc1px?=
+ =?utf-8?B?aFNrTmxDNkFabXM2TmRQOVZmWmJWZ2ZtdTk3a2Q5a3VTclVZejVwMi9HeEJ4?=
+ =?utf-8?B?RWZtdE5PU3MrL3MyVmJGdGROSDV2NDlTTkJvaG55dTNUeGE2YzNyWkRRZzFj?=
+ =?utf-8?B?OGx2SWk1QlZUY0VKWFUyVkY3WnVKSE1QWWN3cDVFNG8vdkttRTBDQ2o0Yk5I?=
+ =?utf-8?B?NjhVYnFjZXMrMlFTeVRpL2t2T29WZHdxYmRhUWJhelZyVGdyZFVRNlA2ZkVr?=
+ =?utf-8?B?VmhYNmxYZ3FLaEUzZWNTMFgwK2swWC90S1dhK1VaRzkyeWRzWkJmS3hrVThq?=
+ =?utf-8?B?RFhKR0xTRFRNd1l6ZnE2MStnbFBpaHYrTWgxRHQwa1ZVcHJoNEgvQVd6K3Nm?=
+ =?utf-8?B?M3ZHR04yUFNLNjZ6UE0vV0hsWWFUYzY4OStpbEJ0cENmTTR6TllOUkpIMkZN?=
+ =?utf-8?B?V1JGRkFvUmQ2bmNJN2EwZ3d4c3VGZWFJeTlGUHZnZFdLUFFIY2JpSnBSRDZK?=
+ =?utf-8?B?T3FESXpSYWRGNjlvUHk0c2xTdW1uWEczdWdEQzJ5RTZOUUs2V1E5YzAwVlF3?=
+ =?utf-8?B?UGcxUVJFbHg1U05BVlpzY0I5amM3U05nZnVSRjVQblRlSUt1eHpidGFLclJ6?=
+ =?utf-8?B?bGFBbG5TSzNWaFRJayttWWhhaVd6OC9tTjJMa1pocDZwRGtWWmIxczArdjVQ?=
+ =?utf-8?B?MWp4TitVL0NINU1NVWFmMTVnVjA2SkFpaUJ1cmo3VE0vd1RoU1VaRkpOaHIv?=
+ =?utf-8?B?WjFkZTVnUy9PRTFMNVpSMWVENkZTMElFbTUvMEZKNkpHcE1ueWxtRzI2b1Bh?=
+ =?utf-8?B?d2U4aWlMenJLYms4VG5aczlnWTV5Y1F6RmlPazA4dWNoUENiNHhhc3JTcGhV?=
+ =?utf-8?B?QkJRbzBnWG51YmFpVmZxQkl3TmtMUU1YTkxTM3gvdzZnYm5TQi9XejFYWnZH?=
+ =?utf-8?B?OFdsWk1wSnJQZEIrdU1vQUJyWmpDdVZhSzNOQWRKTmdqMGlBVzhoaElYbjR1?=
+ =?utf-8?B?Y1BXY2hlbGN4ckN3NVM2R2JPQ0N4VlFiRWpINjUxcU84K1JaL2wxVnVOMW9i?=
+ =?utf-8?B?OVdBdWxCWjlFM3p2ZGlHamtDczNZMTFTS292Q1JxSGJjYUszNUtua21uTXBO?=
+ =?utf-8?B?b1lNUUtoS0hYY0pZdGVidmFtVTJEWlFtUHczb0EvTjhVNTFvRmRvVG1NYkUw?=
+ =?utf-8?B?TlNUaVBPNldtZUl6Uy9KeDN4N2hVcXZ1WjdvV2pPbGN3cldkenpXeXNQMEZZ?=
+ =?utf-8?B?eE1RVDROWDhVQnhQMURkdXF1ZnBUcTN2YldFTFAzdlVOeC9xZ0NpWlZEcEhY?=
+ =?utf-8?B?cGhScUJNemR0bklSSkMxNlZiQXpZbmdoK3hlWlhvckhjdy9sVWZNSExvV0w4?=
+ =?utf-8?B?QVdXSC9TYjZ5YXlIOGdIa2FXdjBrYnJ6R3dWa1R5SmdaZ3E5aG9CSVNVZkhm?=
+ =?utf-8?Q?1KnQ=3D?=
 X-Forefront-Antispam-Report:
 	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(376014)(366016);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?m+JIiJMzjGnnUD0LP2Fbo0JhShIYKqe3BiNBE+7Q6+EkbKkawKAfR1SKPzl4?=
- =?us-ascii?Q?KsiNZZyYdwCJ+0hcS+kWZbCTIpfGLTcgdBS8okDXA2XSmeD3UcaMO2t3OP7b?=
- =?us-ascii?Q?jAqq8oOsbSsz2bYzKBEv5CDTZdeEcsAkG/OEF52nkXko73mu60+P3RYEkKAo?=
- =?us-ascii?Q?/ikkQTUo1bcNJ9R5TZ8m8/URWRcnztiZ4y9yQaAQnEnDJstStEx4A1IWUgwc?=
- =?us-ascii?Q?6+ab285ZM7pm7FdDdyjuZ01DJXTn0VODb5tunv08mgIKv35bH85s6WmDb4AC?=
- =?us-ascii?Q?2Au8BG/Z9vfVszP0Adc2iNavx5qhO5hBO50tkzmx0WaZ8WGBCnr6FJVy7UMh?=
- =?us-ascii?Q?udg8ewJg1POMEAQ9kqLvgC6BSvo6oUX9oFjUc0iWMylqJa3zcETjYOB7RELj?=
- =?us-ascii?Q?TburAYbDdSQsJ1y49I4oh0Du6NAXr4sPb5U7hhAWMhV0zfySXgk/sNJQPxzD?=
- =?us-ascii?Q?x0sSm318k0hz0Pfr0e9+Z/SSI9IqyoQ9QOYd0fzRAhCLv0TzL+7EW9XwMfqi?=
- =?us-ascii?Q?SPlW6htDSNDeIJJdXeol4f+q9LGGazN5k/6FCBLv5JBQqfbErhWtY0+1KvTj?=
- =?us-ascii?Q?5IEJSJAJ3ZobIQFuKIzAfi/JEM3XSBi0T3T77nizrCP81tkTUe64//kZve//?=
- =?us-ascii?Q?eD72sWXNDvQGATj2JMF1t0ZSwNtls8/k+ss7cRSQA7/yr00UTq4tbsygxkCp?=
- =?us-ascii?Q?g7VLCk8ZHPwOKOn6edR+sJQrhnz6bhxT5QWiVGk2aRzHKJxIOf9Jyd6xiV8H?=
- =?us-ascii?Q?mvAv61bTOFkwoebU9UtBll1Atev7RpcqsG3wSs3iDBBOIKQRRGRSK25sqkLY?=
- =?us-ascii?Q?YZOsJnF7uPphx0dO9LhsELyKaHzUy9bMpSQ5mQtDF8hG/v9+bZ7VU581XKTg?=
- =?us-ascii?Q?6hCn9/qRExsCXxvE68ms977ghWItwTFD57f877sVmu3ecnVBeYAGPkxNszp8?=
- =?us-ascii?Q?UiN7DoW2CDFn87l2dmvpPwLENeYM0MIJrhY96Mk83yqshWLnFzBg2iXbi6/y?=
- =?us-ascii?Q?mBaf7OlUr1E28eZjbeyeMTwrmPIIOVYMdEyhr4pfCKYTonotPUrasAIyh4QN?=
- =?us-ascii?Q?UpK9Bsyq17WYKWKYqp9eTQLjBuQqAYJf+h9nzE/PdZj8ltK7kCjhLw9G95yB?=
- =?us-ascii?Q?vGJ7WqWax209EFItRo3Y2+EnJAgeN7MyGZ8PZnOsKz4gT76W25etyI3jxRgr?=
- =?us-ascii?Q?otwjj8bQxu17/ohYo2Ff2OIWk/jPus1Y2/Vbb01AkO5PDanduf94W5fFIU/q?=
- =?us-ascii?Q?xWH8UunKrHGC58cEFxdKNekcdqMF1JX1TFUijnaXi4bw0/PnvZJ3Ig/JRbs8?=
- =?us-ascii?Q?70PuivRPg/ETHdhKB4ZHEuAzuQ5IYDOajKUarexDzcJjfui18jTna7yzC/zl?=
- =?us-ascii?Q?OIajYbFGbFwt40ghnc0HC79K9h0s95f8UiRT3Z7X3QMnJ0c3mtucssr+XoXp?=
- =?us-ascii?Q?NoG/kS+WLfU22zej2BNSlOyc1OFJqrgB263w1GR+PWd+jD/vNiQeGzA9oW1c?=
- =?us-ascii?Q?h7wdoaR85ZepP5wVcCmk/b3AWwRIw9gpzqVS3MZyAgHvITG09VxiiDgZiAm8?=
- =?us-ascii?Q?aNFhG4vYbutIMmlJAOANchC6SS6jX9lgcqJ+HvJleCXwJwjjV6xJNvSulC+8?=
- =?us-ascii?Q?bnPvdd5LybaVqBUIt0Znx10s6lHK6pFDGFd7JNJJKdiUPi1IX0NUSGw9FsGL?=
- =?us-ascii?Q?QNRNVsLtwTYOcTNRx2Q7f6JF2TnNju4LaGtCvrCx5hcMekoHeuJxJufHBGgB?=
- =?us-ascii?Q?9FgFw42YHw=3D=3D?=
+	=?utf-8?B?UDdKMVJQdmVseGJqeW5GRVJPakVqSkQvKzVhbEFSMGFhS0lrbkxkU3RYMnY2?=
+ =?utf-8?B?ZElVV2V2SjEvR3Bva2c1YU5EdHplNDNiR1B1eVFrUTF4SHJ0QVNCZzZUU0pG?=
+ =?utf-8?B?a2pBR1VPSTdlSkdKSGtHSXhuRE0zVkpLMTFpOUFLTWIwNnBubzU3ZE9oQlM3?=
+ =?utf-8?B?Qm9uTlptOEsrQ05MREs2YTVyVTVweHpjNU9NWnlBZTlVcnY0R29JQnpHWkxl?=
+ =?utf-8?B?S1dQNCs2SVIvSVo1RkwxSktRaDVvcXpTcjB4VWlsUWpOT1FqeWo5S0xBNEpx?=
+ =?utf-8?B?VExMbFNpWm00UFd3eWt5NTNTMzJCRGw1QnU4L2xYTE9GTEdRdkNURGxhaVhX?=
+ =?utf-8?B?eU14OHorVEcwWDR1KzFxNjNlTlkwV1Y3MENlS0NEWENRNVo3eXR4dmlLWjBS?=
+ =?utf-8?B?UU5ucVNOd05mWVBJaXRWN1lCRlU5QXdFQ2FVNjVIVVQwWTZWVDJjamxqUHBC?=
+ =?utf-8?B?NmNzSzlDby9xL29lRmpHQWxYa2NlSmdMTDdJQXZpQkN1NUMwdnV1bkdFejdh?=
+ =?utf-8?B?UG94ZXQza2pKNDFUMjg2U2k2b2tOM1lISFgzOEVtWDN2VkJXZEduWFFzbnZv?=
+ =?utf-8?B?NjhqTmJCMzVobERzVXBHYzd6SVlLb0pkZWxNZTl3d05Pb0tYcktCWnR4YmZM?=
+ =?utf-8?B?UjJkWmkrY1pQRGlRWjdWUWJNM1RoOUFEZDFOeCtBR2NJZS9aNGxnUlYyQmw2?=
+ =?utf-8?B?azJhRXRvY1VyTDJwMUZLVHljSEI3MWRmRVBJOFRCQVVvbzJUMWR5SXVoUjVQ?=
+ =?utf-8?B?TmZnUlFsOEM5RWNkTk9DaVIxdndZaElzWGhQWGl0M215NE1pb2ZOQzc3MHBD?=
+ =?utf-8?B?eGNLZ3QrdEpPNk1YMHoxUDV1emJRMm9QbEFieGNKRFRDRmE3NERjVUM1eFgz?=
+ =?utf-8?B?VHhXK2I4VWY4V2gzRThnU0Z0a1RBSFpEV0VSbDVLdnFlK0s3cjY4dHN0MVFu?=
+ =?utf-8?B?TE5nMzhqeWdZQ3FTbDJRZ1RpcUFNc1pqQW5hazlPcXhoNjM4akdNbDNZTlJs?=
+ =?utf-8?B?RUtaQU1XRFMzTVVqU1pLSWN2VWxQaENkanE3aXRJWHNRVXdqY25qOHZKQWRH?=
+ =?utf-8?B?UzZST0hCWkpkT3k3UVVHa25KaWF2UTJCNnpZMmVLOUNYaElSS2dZcHhYNlYx?=
+ =?utf-8?B?WTN2eHJXVm9VNHRRSjBoUFFCazRPY3drYzF0Tys5aEdRSmlNcXpEREgzNThS?=
+ =?utf-8?B?aFlSQzhaNVFZbmo0aVZiRUhVeU5IeERxaDhxdEdrbEgySmZ4N0pVa0tBKytI?=
+ =?utf-8?B?clIrUHlFZSsrUEVuUVo1VjNSUzJ2MDhIUTlsK1Jxb3JOcVFGUmNDbTJMdTVk?=
+ =?utf-8?B?N0xodFJWNXlPV3hndWVvV3dsK0drMWl1SHdpOEhCNFFoUER4ME5iUnJ3cTYv?=
+ =?utf-8?B?alVIaVlGcWpQamQ1YVVIb3B2YlpxOVBJaE0wQXB3TVdmazMyczg3Um5qV3Nt?=
+ =?utf-8?B?QlAwRVZESlhwMnN6aG0xL2xJaDcwWnlCNndubjkvOWFPYis5ZWt5d09DTm4y?=
+ =?utf-8?B?Wm0vVTFULzFoYkZjMVh3UHRZaDFoeGZaMFdLMXJGYmN1S2g4RTBqSmwrT2NX?=
+ =?utf-8?B?RnNaakxEZ1J2dElWOTZUY2NLLzhhSGEyRnFvVXh5M0ErL1R6QWMwK2ZZWENx?=
+ =?utf-8?B?RnBFbEoxU3Y3SG5xdDJhQkpzQ1RSTjBCWHJXNFBOdW9wZFJGYVpoWFdXei9w?=
+ =?utf-8?B?RnNWWDZUK1BoRzJxSnZxMUtRU1dFSjh3QVBrd1hwRU9QVVB3MFpKMEE3TXVk?=
+ =?utf-8?B?M1lJRER5aUVHK3AxYTdqZG5vUzVzUk1uYWJ4ejhoWUZrTkQwRW5BaGZNYVMy?=
+ =?utf-8?B?a2xHeVRSMHNpZFhvd3pFYjJscUV1UXFJT3VaU2FEQjVDdzlXWmdMSlNNVjFo?=
+ =?utf-8?B?MmgvZnFsODhXM0pIdDgxRXBEbU43cmtTaG1QMjExSmRVcE55TWdNY04vUzRt?=
+ =?utf-8?B?cjF1eFplSlJkemNtUEhWTzFCb2JMb0pTMndSL0tvaVVwV0hKME52aVB6SXV2?=
+ =?utf-8?B?YnVNVkpYWVNhSmJJTFNqSUpQQTJVVDg1c2pGTmdWcUVTQXQwMFdLTlk0My8v?=
+ =?utf-8?B?NW5wNmFhV0ZoY2lRZHV3cW1KQWFNRG4rd3dpd3p3VmZucG5uT0VrMjhUNmFZ?=
+ =?utf-8?B?OHV5dkgvd2pzTmFqUlo4eU5IYk1UNitraHFuNkUvOVFRcUE3U0dCeU41ZU9J?=
+ =?utf-8?B?c1p0VmVnTXFiWGF2VDVHUHM3NE9heHZGZXVqcXRXaDFTM1pvdEFhWEtqRWI2?=
+ =?utf-8?B?OG1KZTBhWHRmaGlpVjZQUGUrKzJ4MThrZjNKbXc3dFZuZmdPQ1J3dDZoU3Zx?=
+ =?utf-8?B?S2k2ZktpaEFQUGxWb0N4Ym5vK0VYN0crNXZUVXVidHpKV3RWd2tkQT09?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f3da7c07-d159-4890-b977-08de6e825668
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8ba97d4e-8081-43b3-f0cd-08de6e8256c5
 X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Feb 2026 00:12:01.1562
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Feb 2026 00:12:01.6343
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: uG3vm12lfUhJC3v2+9n95B8x8JwMCRJjOt/MR1+YQZKTgd8QPujjq6GxEEAgZtie
+X-MS-Exchange-CrossTenant-UserPrincipalName: G223mB0V62YerF1Kp7YeOh2WI7OvfvccGB4OqEXp8bOGTjZfb58/r/3PiJaoZ3do
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB8202
 
-This map function only works with SGT importers.
+Update the exporters to use a SGT mapping type and the new style mapping
+type API. None of these exporters do anything with attach->peer2peer or
+importer_ops->allow_peer2peer and they all follow the same pattern.
+
+Change all the places that need to get the SGT's DMA device for DMA API
+use to use dma_buf_sgt_dma_device().
+
+This is all a mechanical change of moving the map_dma_buf/unmap_dma_buf
+into DMA_BUF_SIMPLE_SGT_EXP_MATCH() arguments and switching
+attach->dev to dma_buf_sgt_dma_device(attach).
 
 Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 ---
- drivers/accel/amdxdna/amdxdna_gem.c           |  2 +-
- drivers/accel/ivpu/ivpu_gem.c                 |  3 +-
- drivers/accel/qaic/qaic_data.c                |  4 +--
- drivers/dma-buf/dma-buf.c                     | 28 +++++++++----------
- drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c       |  3 +-
- drivers/gpu/drm/armada/armada_gem.c           | 14 ++++++----
- drivers/gpu/drm/drm_prime.c                   |  2 +-
- drivers/gpu/drm/i915/gem/i915_gem_dmabuf.c    |  4 +--
- .../drm/i915/gem/selftests/i915_gem_dmabuf.c  |  3 +-
- drivers/gpu/drm/omapdrm/omap_gem_dmabuf.c     |  2 +-
- drivers/gpu/drm/tegra/gem.c                   |  6 ++--
- drivers/gpu/drm/virtio/virtgpu_prime.c        |  2 +-
- drivers/gpu/drm/xe/xe_bo.c                    |  2 +-
- drivers/iio/industrialio-buffer.c             |  2 +-
- drivers/infiniband/core/umem_dmabuf.c         |  4 +--
- .../media/common/videobuf2/videobuf2-core.c   |  2 +-
- .../common/videobuf2/videobuf2-dma-contig.c   |  2 +-
- .../media/common/videobuf2/videobuf2-dma-sg.c |  2 +-
- .../platform/nvidia/tegra-vde/dmabuf-cache.c  |  2 +-
- drivers/misc/fastrpc.c                        |  3 +-
- drivers/usb/gadget/function/f_fs.c            |  2 +-
- drivers/xen/gntdev-dmabuf.c                   |  2 +-
- include/linux/dma-buf-mapping.h               |  4 +--
- include/linux/dma-buf.h                       | 10 +++----
- io_uring/zcrx.c                               |  3 +-
- net/core/devmem.c                             |  4 +--
- 26 files changed, 63 insertions(+), 54 deletions(-)
+ drivers/accel/amdxdna/amdxdna_gem.c           |  5 +++--
+ drivers/accel/amdxdna/amdxdna_ubuf.c          | 10 ++++++----
+ drivers/accel/ivpu/ivpu_gem_userptr.c         | 11 +++++++----
+ drivers/dma-buf/heaps/cma_heap.c              | 12 +++++++-----
+ drivers/dma-buf/heaps/system_heap.c           | 13 ++++++++-----
+ drivers/dma-buf/udmabuf.c                     |  8 ++++----
+ drivers/gpu/drm/armada/armada_gem.c           | 12 +++++++-----
+ drivers/gpu/drm/drm_prime.c                   |  9 +++++----
+ drivers/gpu/drm/i915/gem/i915_gem_dmabuf.c    |  8 +++++---
+ .../gpu/drm/i915/gem/selftests/mock_dmabuf.c  |  8 ++++----
+ drivers/gpu/drm/msm/msm_gem_prime.c           |  7 +++++--
+ drivers/gpu/drm/omapdrm/omap_gem_dmabuf.c     |  5 +++--
+ drivers/gpu/drm/tegra/gem.c                   | 12 +++++++-----
+ drivers/gpu/drm/virtio/virtgpu_prime.c        | 11 +++++++----
+ drivers/iommu/iommufd/selftest.c              | 18 +++---------------
+ .../common/videobuf2/videobuf2-dma-contig.c   | 15 ++++++++-------
+ .../media/common/videobuf2/videobuf2-dma-sg.c | 14 +++++++++-----
+ .../common/videobuf2/videobuf2-vmalloc.c      | 13 ++++++++-----
+ drivers/misc/fastrpc.c                        | 12 +++++++-----
+ drivers/tee/tee_heap.c                        | 13 +++++++------
+ drivers/xen/gntdev-dmabuf.c                   | 19 +++++++++++--------
+ samples/vfio-mdev/mbochs.c                    | 10 +++++-----
+ sound/soc/fsl/fsl_asrc_m2m.c                  | 12 +++++++-----
+ 23 files changed, 143 insertions(+), 114 deletions(-)
 
 diff --git a/drivers/accel/amdxdna/amdxdna_gem.c b/drivers/accel/amdxdna/amdxdna_gem.c
-index fb7c8de960cd2a..ab7610375ad761 100644
+index dfa916eeb2d9c8..fb7c8de960cd2a 100644
 --- a/drivers/accel/amdxdna/amdxdna_gem.c
 +++ b/drivers/accel/amdxdna/amdxdna_gem.c
-@@ -610,7 +610,7 @@ amdxdna_gem_prime_import(struct drm_device *dev, struct dma_buf *dma_buf)
- 		goto put_buf;
+@@ -11,6 +11,7 @@
+ #include <drm/drm_print.h>
+ #include <drm/gpu_scheduler.h>
+ #include <linux/dma-buf.h>
++#include <linux/dma-buf-mapping.h>
+ #include <linux/dma-direct.h>
+ #include <linux/iosys-map.h>
+ #include <linux/pagemap.h>
+@@ -385,12 +386,12 @@ static int amdxdna_gem_dmabuf_mmap(struct dma_buf *dma_buf, struct vm_area_struc
+ static const struct dma_buf_ops amdxdna_dmabuf_ops = {
+ 	.attach = drm_gem_map_attach,
+ 	.detach = drm_gem_map_detach,
+-	.map_dma_buf = drm_gem_map_dma_buf,
+-	.unmap_dma_buf = drm_gem_unmap_dma_buf,
+ 	.release = drm_gem_dmabuf_release,
+ 	.mmap = amdxdna_gem_dmabuf_mmap,
+ 	.vmap = drm_gem_dmabuf_vmap,
+ 	.vunmap = drm_gem_dmabuf_vunmap,
++	DMA_BUF_SIMPLE_SGT_EXP_MATCH(drm_gem_map_dma_buf,
++				     drm_gem_unmap_dma_buf),
+ };
+ 
+ static int amdxdna_gem_obj_vmap(struct amdxdna_gem_obj *abo, void **vaddr)
+diff --git a/drivers/accel/amdxdna/amdxdna_ubuf.c b/drivers/accel/amdxdna/amdxdna_ubuf.c
+index 077b2261cf2a04..ad3c9064f5c5cd 100644
+--- a/drivers/accel/amdxdna/amdxdna_ubuf.c
++++ b/drivers/accel/amdxdna/amdxdna_ubuf.c
+@@ -7,6 +7,7 @@
+ #include <drm/drm_device.h>
+ #include <drm/drm_print.h>
+ #include <linux/dma-buf.h>
++#include <linux/dma-buf-mapping.h>
+ #include <linux/pagemap.h>
+ #include <linux/vmalloc.h>
+ 
+@@ -37,7 +38,8 @@ static struct sg_table *amdxdna_ubuf_map(struct dma_buf_attachment *attach,
+ 		return ERR_PTR(ret);
+ 
+ 	if (ubuf->flags & AMDXDNA_UBUF_FLAG_MAP_DMA) {
+-		ret = dma_map_sgtable(attach->dev, sg, direction, 0);
++		ret = dma_map_sgtable(dma_buf_sgt_dma_device(attach), sg,
++				      direction, 0);
+ 		if (ret)
+ 			return ERR_PTR(ret);
  	}
+@@ -52,7 +54,8 @@ static void amdxdna_ubuf_unmap(struct dma_buf_attachment *attach,
+ 	struct amdxdna_ubuf_priv *ubuf = attach->dmabuf->priv;
  
--	sgt = dma_buf_map_attachment_unlocked(attach, DMA_BIDIRECTIONAL);
-+	sgt = dma_buf_sgt_map_attachment_unlocked(attach, DMA_BIDIRECTIONAL);
- 	if (IS_ERR(sgt)) {
- 		ret = PTR_ERR(sgt);
- 		goto fail_detach;
-diff --git a/drivers/accel/ivpu/ivpu_gem.c b/drivers/accel/ivpu/ivpu_gem.c
-index ece68f570b7ead..850dc82c7857e2 100644
---- a/drivers/accel/ivpu/ivpu_gem.c
-+++ b/drivers/accel/ivpu/ivpu_gem.c
-@@ -54,7 +54,8 @@ static struct sg_table *ivpu_bo_map_attachment(struct ivpu_device *vdev, struct
+ 	if (ubuf->flags & AMDXDNA_UBUF_FLAG_MAP_DMA)
+-		dma_unmap_sgtable(attach->dev, sg, direction, 0);
++		dma_unmap_sgtable(dma_buf_sgt_dma_device(attach), sg, direction,
++				  0);
  
- 	sgt = bo->base.sgt;
- 	if (!sgt) {
--		sgt = dma_buf_map_attachment(bo->base.base.import_attach, DMA_BIDIRECTIONAL);
-+		sgt = dma_buf_sgt_map_attachment(bo->base.base.import_attach,
-+						 DMA_BIDIRECTIONAL);
- 		if (IS_ERR(sgt))
- 			ivpu_err(vdev, "Failed to map BO in IOMMU: %ld\n", PTR_ERR(sgt));
- 		else
-diff --git a/drivers/accel/qaic/qaic_data.c b/drivers/accel/qaic/qaic_data.c
-index 60cb4d65d48ee7..0a7b8b9620bf9a 100644
---- a/drivers/accel/qaic/qaic_data.c
-+++ b/drivers/accel/qaic/qaic_data.c
-@@ -844,7 +844,7 @@ struct drm_gem_object *qaic_gem_prime_import(struct drm_device *dev, struct dma_
+ 	sg_free_table(sg);
+ 	kfree(sg);
+@@ -117,12 +120,11 @@ static void amdxdna_ubuf_vunmap(struct dma_buf *dbuf, struct iosys_map *map)
+ }
  
- 	drm_gem_private_object_init(dev, obj, attach->dmabuf->size);
- 	/*
--	 * skipping dma_buf_map_attachment() as we do not know the direction
-+	 * skipping dma_buf_sgt_map_attachment() as we do not know the direction
- 	 * just yet. Once the direction is known in the subsequent IOCTL to
- 	 * attach slicing, we can do it then.
- 	 */
-@@ -870,7 +870,7 @@ static int qaic_prepare_import_bo(struct qaic_bo *bo, struct qaic_attach_slice_h
- 	struct sg_table *sgt;
+ static const struct dma_buf_ops amdxdna_ubuf_dmabuf_ops = {
+-	.map_dma_buf = amdxdna_ubuf_map,
+-	.unmap_dma_buf = amdxdna_ubuf_unmap,
+ 	.release = amdxdna_ubuf_release,
+ 	.mmap = amdxdna_ubuf_mmap,
+ 	.vmap = amdxdna_ubuf_vmap,
+ 	.vunmap = amdxdna_ubuf_vunmap,
++	DMA_BUF_SIMPLE_SGT_EXP_MATCH(amdxdna_ubuf_map, amdxdna_ubuf_unmap),
+ };
+ 
+ struct dma_buf *amdxdna_get_ubuf(struct drm_device *dev,
+diff --git a/drivers/accel/ivpu/ivpu_gem_userptr.c b/drivers/accel/ivpu/ivpu_gem_userptr.c
+index 25ba606164c03c..32e9a37a15191d 100644
+--- a/drivers/accel/ivpu/ivpu_gem_userptr.c
++++ b/drivers/accel/ivpu/ivpu_gem_userptr.c
+@@ -4,6 +4,7 @@
+  */
+ 
+ #include <linux/dma-buf.h>
++#include <linux/dma-buf-mapping.h>
+ #include <linux/err.h>
+ #include <linux/highmem.h>
+ #include <linux/mm.h>
+@@ -26,7 +27,8 @@ ivpu_gem_userptr_dmabuf_map(struct dma_buf_attachment *attachment,
+ 	struct sg_table *sgt = attachment->dmabuf->priv;
  	int ret;
  
--	sgt = dma_buf_map_attachment(obj->import_attach, hdr->dir);
-+	sgt = dma_buf_sgt_map_attachment(obj->import_attach, hdr->dir);
- 	if (IS_ERR(sgt)) {
- 		ret = PTR_ERR(sgt);
+-	ret = dma_map_sgtable(attachment->dev, sgt, direction, DMA_ATTR_SKIP_CPU_SYNC);
++	ret = dma_map_sgtable(dma_buf_sgt_dma_device(attachment), sgt,
++			      direction, DMA_ATTR_SKIP_CPU_SYNC);
+ 	if (ret)
+ 		return ERR_PTR(ret);
+ 
+@@ -37,7 +39,8 @@ static void ivpu_gem_userptr_dmabuf_unmap(struct dma_buf_attachment *attachment,
+ 					  struct sg_table *sgt,
+ 					  enum dma_data_direction direction)
+ {
+-	dma_unmap_sgtable(attachment->dev, sgt, direction, DMA_ATTR_SKIP_CPU_SYNC);
++	dma_unmap_sgtable(dma_buf_sgt_dma_device(attachment), sgt, direction,
++			  DMA_ATTR_SKIP_CPU_SYNC);
+ }
+ 
+ static void ivpu_gem_userptr_dmabuf_release(struct dma_buf *dma_buf)
+@@ -56,9 +59,9 @@ static void ivpu_gem_userptr_dmabuf_release(struct dma_buf *dma_buf)
+ }
+ 
+ static const struct dma_buf_ops ivpu_gem_userptr_dmabuf_ops = {
+-	.map_dma_buf = ivpu_gem_userptr_dmabuf_map,
+-	.unmap_dma_buf = ivpu_gem_userptr_dmabuf_unmap,
+ 	.release = ivpu_gem_userptr_dmabuf_release,
++	DMA_BUF_SIMPLE_SGT_EXP_MATCH(ivpu_gem_userptr_dmabuf_map,
++				     ivpu_gem_userptr_dmabuf_unmap),
+ };
+ 
+ static struct dma_buf *
+diff --git a/drivers/dma-buf/heaps/cma_heap.c b/drivers/dma-buf/heaps/cma_heap.c
+index 42f88193eab9f8..a1ac415bbc512c 100644
+--- a/drivers/dma-buf/heaps/cma_heap.c
++++ b/drivers/dma-buf/heaps/cma_heap.c
+@@ -14,6 +14,7 @@
+ 
+ #include <linux/cma.h>
+ #include <linux/dma-buf.h>
++#include <linux/dma-buf-mapping.h>
+ #include <linux/dma-buf/heaps/cma.h>
+ #include <linux/dma-heap.h>
+ #include <linux/dma-map-ops.h>
+@@ -87,7 +88,7 @@ static int cma_heap_attach(struct dma_buf *dmabuf,
  		return ret;
-diff --git a/drivers/dma-buf/dma-buf.c b/drivers/dma-buf/dma-buf.c
-index e773441abab65d..73c599f84e121a 100644
---- a/drivers/dma-buf/dma-buf.c
-+++ b/drivers/dma-buf/dma-buf.c
-@@ -653,7 +653,7 @@ static struct file *dma_buf_getfile(size_t size, int flags)
-  *
-  * 3. Once the buffer is attached to all devices userspace can initiate DMA
-  *    access to the shared buffer. In the kernel this is done by calling
-- *    dma_buf_map_attachment() and dma_buf_unmap_attachment().
-+ *    dma_buf_sgt_map_attachment() and dma_buf_unmap_attachment().
-  *
-  * 4. Once a driver is done with a shared buffer it needs to call
-  *    dma_buf_detach() (after cleaning up any mappings) and then release the
-@@ -867,7 +867,7 @@ dma_buf_pin_on_map(struct dma_buf_attachment *attach)
-  *
-  *     - dma_buf_pin()
-  *     - dma_buf_unpin()
-- *     - dma_buf_map_attachment()
-+ *     - dma_buf_sgt_map_attachment()
-  *     - dma_buf_unmap_attachment()
-  *     - dma_buf_vmap()
-  *     - dma_buf_vunmap()
-@@ -885,7 +885,7 @@ dma_buf_pin_on_map(struct dma_buf_attachment *attach)
-  *     - dma_buf_mmap()
-  *     - dma_buf_begin_cpu_access()
-  *     - dma_buf_end_cpu_access()
-- *     - dma_buf_map_attachment_unlocked()
-+ *     - dma_buf_sgt_map_attachment_unlocked()
-  *     - dma_buf_unmap_attachment_unlocked()
-  *     - dma_buf_vmap_unlocked()
-  *     - dma_buf_vunmap_unlocked()
-@@ -1120,7 +1120,7 @@ void dma_buf_unpin(struct dma_buf_attachment *attach)
- EXPORT_SYMBOL_NS_GPL(dma_buf_unpin, "DMA_BUF");
+ 	}
  
- /**
-- * dma_buf_map_attachment - Returns the scatterlist table of the attachment;
-+ * dma_buf_sgt_map_attachment - Returns the scatterlist table of the attachment;
-  * mapped into _device_ address space. Is a wrapper for map_dma_buf() of the
-  * dma_buf_ops.
-  * @attach:	[in]	attachment whose scatterlist is to be returned
-@@ -1140,8 +1140,8 @@ EXPORT_SYMBOL_NS_GPL(dma_buf_unpin, "DMA_BUF");
-  * Important: Dynamic importers must wait for the exclusive fence of the struct
-  * dma_resv attached to the DMA-BUF first.
-  */
--struct sg_table *dma_buf_map_attachment(struct dma_buf_attachment *attach,
--					enum dma_data_direction direction)
-+struct sg_table *dma_buf_sgt_map_attachment(struct dma_buf_attachment *attach,
-+					    enum dma_data_direction direction)
- {
- 	const struct dma_buf_mapping_sgt_exp_ops *sgt_exp_ops =
- 		dma_buf_get_sgt_ops(attach);
-@@ -1213,20 +1213,20 @@ struct sg_table *dma_buf_map_attachment(struct dma_buf_attachment *attach,
+-	a->dev = attachment->dev;
++	a->dev = dma_buf_sgt_dma_device(attachment);
+ 	INIT_LIST_HEAD(&a->list);
+ 	a->mapped = false;
  
- 	return sg_table;
+@@ -121,7 +122,8 @@ static struct sg_table *cma_heap_map_dma_buf(struct dma_buf_attachment *attachme
+ 	struct sg_table *table = &a->table;
+ 	int ret;
+ 
+-	ret = dma_map_sgtable(attachment->dev, table, direction, 0);
++	ret = dma_map_sgtable(dma_buf_sgt_dma_device(attachment), table,
++			      direction, 0);
+ 	if (ret)
+ 		return ERR_PTR(-ENOMEM);
+ 	a->mapped = true;
+@@ -135,7 +137,8 @@ static void cma_heap_unmap_dma_buf(struct dma_buf_attachment *attachment,
+ 	struct dma_heap_attachment *a = attachment->priv;
+ 
+ 	a->mapped = false;
+-	dma_unmap_sgtable(attachment->dev, table, direction, 0);
++	dma_unmap_sgtable(dma_buf_sgt_dma_device(attachment), table, direction,
++			  0);
  }
--EXPORT_SYMBOL_NS_GPL(dma_buf_map_attachment, "DMA_BUF");
-+EXPORT_SYMBOL_NS_GPL(dma_buf_sgt_map_attachment, "DMA_BUF");
  
- /**
-- * dma_buf_map_attachment_unlocked - Returns the scatterlist table of the attachment;
-+ * dma_buf_sgt_map_attachment_unlocked - Returns the scatterlist table of the attachment;
-  * mapped into _device_ address space. Is a wrapper for map_dma_buf() of the
-  * dma_buf_ops.
-  * @attach:	[in]	attachment whose scatterlist is to be returned
-  * @direction:	[in]	direction of DMA transfer
-  *
-- * Unlocked variant of dma_buf_map_attachment().
-+ * Unlocked variant of dma_buf_sgt_map_attachment().
+ static int cma_heap_dma_buf_begin_cpu_access(struct dma_buf *dmabuf,
+@@ -282,14 +285,13 @@ static void cma_heap_dma_buf_release(struct dma_buf *dmabuf)
+ static const struct dma_buf_ops cma_heap_buf_ops = {
+ 	.attach = cma_heap_attach,
+ 	.detach = cma_heap_detach,
+-	.map_dma_buf = cma_heap_map_dma_buf,
+-	.unmap_dma_buf = cma_heap_unmap_dma_buf,
+ 	.begin_cpu_access = cma_heap_dma_buf_begin_cpu_access,
+ 	.end_cpu_access = cma_heap_dma_buf_end_cpu_access,
+ 	.mmap = cma_heap_mmap,
+ 	.vmap = cma_heap_vmap,
+ 	.vunmap = cma_heap_vunmap,
+ 	.release = cma_heap_dma_buf_release,
++	DMA_BUF_SIMPLE_SGT_EXP_MATCH(cma_heap_map_dma_buf, cma_heap_unmap_dma_buf),
+ };
+ 
+ static struct dma_buf *cma_heap_allocate(struct dma_heap *heap,
+diff --git a/drivers/dma-buf/heaps/system_heap.c b/drivers/dma-buf/heaps/system_heap.c
+index 4c782fe33fd497..18c05d2fe27f0b 100644
+--- a/drivers/dma-buf/heaps/system_heap.c
++++ b/drivers/dma-buf/heaps/system_heap.c
+@@ -11,6 +11,7 @@
   */
- struct sg_table *
--dma_buf_map_attachment_unlocked(struct dma_buf_attachment *attach,
--				enum dma_data_direction direction)
-+dma_buf_sgt_map_attachment_unlocked(struct dma_buf_attachment *attach,
-+				    enum dma_data_direction direction)
- {
- 	struct sg_table *sg_table;
  
-@@ -1236,12 +1236,12 @@ dma_buf_map_attachment_unlocked(struct dma_buf_attachment *attach,
- 		return ERR_PTR(-EINVAL);
+ #include <linux/dma-buf.h>
++#include <linux/dma-buf-mapping.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/dma-heap.h>
+ #include <linux/err.h>
+@@ -87,7 +88,7 @@ static int system_heap_attach(struct dma_buf *dmabuf,
+ 		return ret;
+ 	}
  
- 	dma_resv_lock(attach->dmabuf->resv, NULL);
--	sg_table = dma_buf_map_attachment(attach, direction);
-+	sg_table = dma_buf_sgt_map_attachment(attach, direction);
- 	dma_resv_unlock(attach->dmabuf->resv);
+-	a->dev = attachment->dev;
++	a->dev = dma_buf_sgt_dma_device(attachment);
+ 	INIT_LIST_HEAD(&a->list);
+ 	a->mapped = false;
  
- 	return sg_table;
+@@ -121,7 +122,8 @@ static struct sg_table *system_heap_map_dma_buf(struct dma_buf_attachment *attac
+ 	struct sg_table *table = &a->table;
+ 	int ret;
+ 
+-	ret = dma_map_sgtable(attachment->dev, table, direction, 0);
++	ret = dma_map_sgtable(dma_buf_sgt_dma_device(attachment), table,
++			      direction, 0);
+ 	if (ret)
+ 		return ERR_PTR(ret);
+ 
+@@ -136,7 +138,8 @@ static void system_heap_unmap_dma_buf(struct dma_buf_attachment *attachment,
+ 	struct dma_heap_attachment *a = attachment->priv;
+ 
+ 	a->mapped = false;
+-	dma_unmap_sgtable(attachment->dev, table, direction, 0);
++	dma_unmap_sgtable(dma_buf_sgt_dma_device(attachment), table, direction,
++			  0);
  }
--EXPORT_SYMBOL_NS_GPL(dma_buf_map_attachment_unlocked, "DMA_BUF");
-+EXPORT_SYMBOL_NS_GPL(dma_buf_sgt_map_attachment_unlocked, "DMA_BUF");
  
- /**
-  * dma_buf_unmap_attachment - unmaps and decreases usecount of the buffer;might
-@@ -1251,7 +1251,7 @@ EXPORT_SYMBOL_NS_GPL(dma_buf_map_attachment_unlocked, "DMA_BUF");
-  * @sg_table:	[in]	scatterlist info of the buffer to unmap
-  * @direction:  [in]    direction of DMA transfer
-  *
-- * This unmaps a DMA mapping for @attached obtained by dma_buf_map_attachment().
-+ * This unmaps a DMA mapping for @attached obtained by dma_buf_sgt_map_attachment().
-  */
- void dma_buf_unmap_attachment(struct dma_buf_attachment *attach,
- 				struct sg_table *sg_table,
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c
-index 2b931e855abd9d..6c8b2a3dde1f54 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c
-@@ -914,7 +914,8 @@ static int amdgpu_ttm_backend_bind(struct ttm_device *bdev,
- 			struct sg_table *sgt;
+ static int system_heap_dma_buf_begin_cpu_access(struct dma_buf *dmabuf,
+@@ -305,14 +308,14 @@ static void system_heap_dma_buf_release(struct dma_buf *dmabuf)
+ static const struct dma_buf_ops system_heap_buf_ops = {
+ 	.attach = system_heap_attach,
+ 	.detach = system_heap_detach,
+-	.map_dma_buf = system_heap_map_dma_buf,
+-	.unmap_dma_buf = system_heap_unmap_dma_buf,
+ 	.begin_cpu_access = system_heap_dma_buf_begin_cpu_access,
+ 	.end_cpu_access = system_heap_dma_buf_end_cpu_access,
+ 	.mmap = system_heap_mmap,
+ 	.vmap = system_heap_vmap,
+ 	.vunmap = system_heap_vunmap,
+ 	.release = system_heap_dma_buf_release,
++	DMA_BUF_SIMPLE_SGT_EXP_MATCH(system_heap_map_dma_buf,
++				     system_heap_unmap_dma_buf),
+ };
  
- 			attach = gtt->gobj->import_attach;
--			sgt = dma_buf_map_attachment(attach, DMA_BIDIRECTIONAL);
-+			sgt = dma_buf_sgt_map_attachment(attach,
-+							 DMA_BIDIRECTIONAL);
- 			if (IS_ERR(sgt))
- 				return PTR_ERR(sgt);
+ static struct page *alloc_largest_available(unsigned long size,
+diff --git a/drivers/dma-buf/udmabuf.c b/drivers/dma-buf/udmabuf.c
+index 40399c26e6be62..e1b75772df168f 100644
+--- a/drivers/dma-buf/udmabuf.c
++++ b/drivers/dma-buf/udmabuf.c
+@@ -2,6 +2,7 @@
+ #include <linux/cred.h>
+ #include <linux/device.h>
+ #include <linux/dma-buf.h>
++#include <linux/dma-buf-mapping.h>
+ #include <linux/dma-resv.h>
+ #include <linux/highmem.h>
+ #include <linux/init.h>
+@@ -185,14 +186,14 @@ static void put_sg_table(struct device *dev, struct sg_table *sg,
+ static struct sg_table *map_udmabuf(struct dma_buf_attachment *at,
+ 				    enum dma_data_direction direction)
+ {
+-	return get_sg_table(at->dev, at->dmabuf, direction);
++	return get_sg_table(dma_buf_sgt_dma_device(at), at->dmabuf, direction);
+ }
  
+ static void unmap_udmabuf(struct dma_buf_attachment *at,
+ 			  struct sg_table *sg,
+ 			  enum dma_data_direction direction)
+ {
+-	return put_sg_table(at->dev, sg, direction);
++	return put_sg_table(dma_buf_sgt_dma_device(at), sg, direction);
+ }
+ 
+ static void unpin_all_folios(struct udmabuf *ubuf)
+@@ -277,14 +278,13 @@ static int end_cpu_udmabuf(struct dma_buf *buf,
+ }
+ 
+ static const struct dma_buf_ops udmabuf_ops = {
+-	.map_dma_buf	   = map_udmabuf,
+-	.unmap_dma_buf	   = unmap_udmabuf,
+ 	.release	   = release_udmabuf,
+ 	.mmap		   = mmap_udmabuf,
+ 	.vmap		   = vmap_udmabuf,
+ 	.vunmap		   = vunmap_udmabuf,
+ 	.begin_cpu_access  = begin_cpu_udmabuf,
+ 	.end_cpu_access    = end_cpu_udmabuf,
++	DMA_BUF_SIMPLE_SGT_EXP_MATCH(map_udmabuf, unmap_udmabuf),
+ };
+ 
+ #define SEALS_WANTED (F_SEAL_SHRINK)
 diff --git a/drivers/gpu/drm/armada/armada_gem.c b/drivers/gpu/drm/armada/armada_gem.c
-index bf6968b1f22511..21b83b00b68254 100644
+index 35fcfa0d85ff35..bf6968b1f22511 100644
 --- a/drivers/gpu/drm/armada/armada_gem.c
 +++ b/drivers/gpu/drm/armada/armada_gem.c
-@@ -531,7 +531,7 @@ armada_gem_prime_import(struct drm_device *dev, struct dma_buf *buf)
- 	get_dma_buf(buf);
+@@ -4,6 +4,7 @@
+  */
  
- 	/*
--	 * Don't call dma_buf_map_attachment() here - it maps the
-+	 * Don't call dma_buf_sgt_map_attachment() here - it maps the
- 	 * scatterlist immediately for DMA, and this is not always
- 	 * an appropriate thing to do.
- 	 */
-@@ -542,20 +542,22 @@ int armada_gem_map_import(struct armada_gem_object *dobj)
+ #include <linux/dma-buf.h>
++#include <linux/dma-buf-mapping.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/mman.h>
+ #include <linux/shmem_fs.h>
+@@ -387,6 +388,7 @@ static struct sg_table *
+ armada_gem_prime_map_dma_buf(struct dma_buf_attachment *attach,
+ 	enum dma_data_direction dir)
  {
- 	int ret;
++	struct device *dma_dev = dma_buf_sgt_dma_device(attach);
+ 	struct drm_gem_object *obj = attach->dmabuf->priv;
+ 	struct armada_gem_object *dobj = drm_to_armada_gem(obj);
+ 	struct scatterlist *sg;
+@@ -417,7 +419,7 @@ armada_gem_prime_map_dma_buf(struct dma_buf_attachment *attach,
+ 			sg_set_page(sg, page, PAGE_SIZE, 0);
+ 		}
  
--	dobj->sgt = dma_buf_map_attachment_unlocked(dobj->obj.import_attach,
--						    DMA_TO_DEVICE);
-+	dobj->sgt = dma_buf_sgt_map_attachment_unlocked(dobj->obj.import_attach,
-+							DMA_TO_DEVICE);
- 	if (IS_ERR(dobj->sgt)) {
- 		ret = PTR_ERR(dobj->sgt);
- 		dobj->sgt = NULL;
--		DRM_ERROR("dma_buf_map_attachment() error: %d\n", ret);
-+		DRM_ERROR("dma_buf_sgt_map_attachment() error: %d\n", ret);
- 		return ret;
- 	}
- 	if (dobj->sgt->nents > 1) {
--		DRM_ERROR("dma_buf_map_attachment() returned an (unsupported) scattered list\n");
-+		DRM_ERROR(
-+			"dma_buf_sgt_map_attachment() returned an (unsupported) scattered list\n");
- 		return -EINVAL;
- 	}
- 	if (sg_dma_len(dobj->sgt->sgl) < dobj->obj.size) {
--		DRM_ERROR("dma_buf_map_attachment() returned a small buffer\n");
-+		DRM_ERROR(
-+			"dma_buf_sgt_map_attachment() returned a small buffer\n");
- 		return -EINVAL;
- 	}
- 	dobj->dev_addr = sg_dma_address(dobj->sgt->sgl);
+-		if (dma_map_sgtable(attach->dev, sgt, dir, 0))
++		if (dma_map_sgtable(dma_dev, sgt, dir, 0))
+ 			goto release;
+ 	} else if (dobj->page) {
+ 		/* Single contiguous page */
+@@ -426,7 +428,7 @@ armada_gem_prime_map_dma_buf(struct dma_buf_attachment *attach,
+ 
+ 		sg_set_page(sgt->sgl, dobj->page, dobj->obj.size, 0);
+ 
+-		if (dma_map_sgtable(attach->dev, sgt, dir, 0))
++		if (dma_map_sgtable(dma_dev, sgt, dir, 0))
+ 			goto free_table;
+ 	} else if (dobj->linear) {
+ 		/* Single contiguous physical region - no struct page */
+@@ -458,7 +460,7 @@ static void armada_gem_prime_unmap_dma_buf(struct dma_buf_attachment *attach,
+ 	int i;
+ 
+ 	if (!dobj->linear)
+-		dma_unmap_sgtable(attach->dev, sgt, dir, 0);
++		dma_unmap_sgtable(dma_buf_sgt_dma_device(attach), sgt, dir, 0);
+ 
+ 	if (dobj->obj.filp) {
+ 		struct scatterlist *sg;
+@@ -478,10 +480,10 @@ armada_gem_dmabuf_mmap(struct dma_buf *buf, struct vm_area_struct *vma)
+ }
+ 
+ static const struct dma_buf_ops armada_gem_prime_dmabuf_ops = {
+-	.map_dma_buf	= armada_gem_prime_map_dma_buf,
+-	.unmap_dma_buf	= armada_gem_prime_unmap_dma_buf,
+ 	.release	= drm_gem_dmabuf_release,
+ 	.mmap		= armada_gem_dmabuf_mmap,
++	DMA_BUF_SIMPLE_SGT_EXP_MATCH(armada_gem_prime_map_dma_buf,
++				     armada_gem_prime_unmap_dma_buf),
+ };
+ 
+ struct dma_buf *
 diff --git a/drivers/gpu/drm/drm_prime.c b/drivers/gpu/drm/drm_prime.c
-index 0852c60a722b67..c1afb9e0886c4f 100644
+index d093a888b0df8f..94ec2483e40107 100644
 --- a/drivers/gpu/drm/drm_prime.c
 +++ b/drivers/gpu/drm/drm_prime.c
-@@ -1005,7 +1005,7 @@ struct drm_gem_object *drm_gem_prime_import_dev(struct drm_device *dev,
+@@ -693,7 +693,7 @@ struct sg_table *drm_gem_map_dma_buf(struct dma_buf_attachment *attach,
+ 	if (IS_ERR(sgt))
+ 		return sgt;
  
- 	get_dma_buf(dma_buf);
+-	ret = dma_map_sgtable(attach->dev, sgt, dir,
++	ret = dma_map_sgtable(dma_buf_sgt_dma_device(attach), sgt, dir,
+ 			      DMA_ATTR_SKIP_CPU_SYNC);
+ 	if (ret) {
+ 		sg_free_table(sgt);
+@@ -720,7 +720,8 @@ void drm_gem_unmap_dma_buf(struct dma_buf_attachment *attach,
+ 	if (!sgt)
+ 		return;
  
--	sgt = dma_buf_map_attachment_unlocked(attach, DMA_BIDIRECTIONAL);
-+	sgt = dma_buf_sgt_map_attachment_unlocked(attach, DMA_BIDIRECTIONAL);
- 	if (IS_ERR(sgt)) {
- 		ret = PTR_ERR(sgt);
- 		goto fail_detach;
+-	dma_unmap_sgtable(attach->dev, sgt, dir, DMA_ATTR_SKIP_CPU_SYNC);
++	dma_unmap_sgtable(dma_buf_sgt_dma_device(attach), sgt, dir,
++			  DMA_ATTR_SKIP_CPU_SYNC);
+ 	sg_free_table(sgt);
+ 	kfree(sgt);
+ }
+@@ -840,12 +841,12 @@ EXPORT_SYMBOL(drm_gem_dmabuf_mmap);
+ static const struct dma_buf_ops drm_gem_prime_dmabuf_ops =  {
+ 	.attach = drm_gem_map_attach,
+ 	.detach = drm_gem_map_detach,
+-	.map_dma_buf = drm_gem_map_dma_buf,
+-	.unmap_dma_buf = drm_gem_unmap_dma_buf,
+ 	.release = drm_gem_dmabuf_release,
+ 	.mmap = drm_gem_dmabuf_mmap,
+ 	.vmap = drm_gem_dmabuf_vmap,
+ 	.vunmap = drm_gem_dmabuf_vunmap,
++	DMA_BUF_SIMPLE_SGT_EXP_MATCH(drm_gem_map_dma_buf,
++				     drm_gem_unmap_dma_buf),
+ };
+ 
+ /**
 diff --git a/drivers/gpu/drm/i915/gem/i915_gem_dmabuf.c b/drivers/gpu/drm/i915/gem/i915_gem_dmabuf.c
-index a119623aed254b..92e2677eb5a33b 100644
+index f4f1c979d1b9ca..a119623aed254b 100644
 --- a/drivers/gpu/drm/i915/gem/i915_gem_dmabuf.c
 +++ b/drivers/gpu/drm/i915/gem/i915_gem_dmabuf.c
-@@ -242,8 +242,8 @@ static int i915_gem_object_get_pages_dmabuf(struct drm_i915_gem_object *obj)
+@@ -4,6 +4,7 @@
+  */
  
- 	assert_object_held(obj);
- 
--	sgt = dma_buf_map_attachment(obj->base.import_attach,
--				     DMA_BIDIRECTIONAL);
-+	sgt = dma_buf_sgt_map_attachment(obj->base.import_attach,
-+					 DMA_BIDIRECTIONAL);
- 	if (IS_ERR(sgt))
- 		return PTR_ERR(sgt);
- 
-diff --git a/drivers/gpu/drm/i915/gem/selftests/i915_gem_dmabuf.c b/drivers/gpu/drm/i915/gem/selftests/i915_gem_dmabuf.c
-index 2fda549dd82d2b..fcfa819caa389f 100644
---- a/drivers/gpu/drm/i915/gem/selftests/i915_gem_dmabuf.c
-+++ b/drivers/gpu/drm/i915/gem/selftests/i915_gem_dmabuf.c
-@@ -293,7 +293,8 @@ static int igt_dmabuf_import_same_driver(struct drm_i915_private *i915,
- 		goto out_import;
+ #include <linux/dma-buf.h>
++#include <linux/dma-buf-mapping.h>
+ #include <linux/highmem.h>
+ #include <linux/dma-resv.h>
+ #include <linux/module.h>
+@@ -52,7 +53,8 @@ static struct sg_table *i915_gem_map_dma_buf(struct dma_buf_attachment *attach,
+ 		dst = sg_next(dst);
  	}
  
--	st = dma_buf_map_attachment_unlocked(import_attach, DMA_BIDIRECTIONAL);
-+	st = dma_buf_sgt_map_attachment_unlocked(import_attach,
-+						 DMA_BIDIRECTIONAL);
- 	if (IS_ERR(st)) {
- 		err = PTR_ERR(st);
- 		goto out_detach;
+-	ret = dma_map_sgtable(attach->dev, sgt, dir, DMA_ATTR_SKIP_CPU_SYNC);
++	ret = dma_map_sgtable(dma_buf_sgt_dma_device(attach), sgt, dir,
++			      DMA_ATTR_SKIP_CPU_SYNC);
+ 	if (ret)
+ 		goto err_free_sg;
+ 
+@@ -203,14 +205,14 @@ static void i915_gem_dmabuf_detach(struct dma_buf *dmabuf,
+ static const struct dma_buf_ops i915_dmabuf_ops =  {
+ 	.attach = i915_gem_dmabuf_attach,
+ 	.detach = i915_gem_dmabuf_detach,
+-	.map_dma_buf = i915_gem_map_dma_buf,
+-	.unmap_dma_buf = drm_gem_unmap_dma_buf,
+ 	.release = drm_gem_dmabuf_release,
+ 	.mmap = i915_gem_dmabuf_mmap,
+ 	.vmap = i915_gem_dmabuf_vmap,
+ 	.vunmap = i915_gem_dmabuf_vunmap,
+ 	.begin_cpu_access = i915_gem_begin_cpu_access,
+ 	.end_cpu_access = i915_gem_end_cpu_access,
++	DMA_BUF_SIMPLE_SGT_EXP_MATCH(i915_gem_map_dma_buf,
++				     drm_gem_unmap_dma_buf),
+ };
+ 
+ struct dma_buf *i915_gem_prime_export(struct drm_gem_object *gem_obj, int flags)
+diff --git a/drivers/gpu/drm/i915/gem/selftests/mock_dmabuf.c b/drivers/gpu/drm/i915/gem/selftests/mock_dmabuf.c
+index 5cd58e0f0dcf64..93a091280baf9e 100644
+--- a/drivers/gpu/drm/i915/gem/selftests/mock_dmabuf.c
++++ b/drivers/gpu/drm/i915/gem/selftests/mock_dmabuf.c
+@@ -4,6 +4,7 @@
+  * Copyright © 2016 Intel Corporation
+  */
+ 
++#include <linux/dma-buf-mapping.h>
+ #include <linux/vmalloc.h>
+ #include "mock_dmabuf.h"
+ 
+@@ -29,7 +30,7 @@ static struct sg_table *mock_map_dma_buf(struct dma_buf_attachment *attachment,
+ 		sg = sg_next(sg);
+ 	}
+ 
+-	err = dma_map_sgtable(attachment->dev, st, dir, 0);
++	err = dma_map_sgtable(dma_buf_sgt_dma_device(attachment), st, dir, 0);
+ 	if (err)
+ 		goto err_st;
+ 
+@@ -46,7 +47,7 @@ static void mock_unmap_dma_buf(struct dma_buf_attachment *attachment,
+ 			       struct sg_table *st,
+ 			       enum dma_data_direction dir)
+ {
+-	dma_unmap_sgtable(attachment->dev, st, dir, 0);
++	dma_unmap_sgtable(dma_buf_sgt_dma_device(attachment), st, dir, 0);
+ 	sg_free_table(st);
+ 	kfree(st);
+ }
+@@ -88,12 +89,11 @@ static int mock_dmabuf_mmap(struct dma_buf *dma_buf, struct vm_area_struct *vma)
+ }
+ 
+ static const struct dma_buf_ops mock_dmabuf_ops =  {
+-	.map_dma_buf = mock_map_dma_buf,
+-	.unmap_dma_buf = mock_unmap_dma_buf,
+ 	.release = mock_dmabuf_release,
+ 	.mmap = mock_dmabuf_mmap,
+ 	.vmap = mock_dmabuf_vmap,
+ 	.vunmap = mock_dmabuf_vunmap,
++	DMA_BUF_SIMPLE_SGT_EXP_MATCH(mock_map_dma_buf, mock_unmap_dma_buf),
+ };
+ 
+ static struct dma_buf *mock_dmabuf(int npages)
+diff --git a/drivers/gpu/drm/msm/msm_gem_prime.c b/drivers/gpu/drm/msm/msm_gem_prime.c
+index 036d34c674d9a2..ed7a9bfd33c288 100644
+--- a/drivers/gpu/drm/msm/msm_gem_prime.c
++++ b/drivers/gpu/drm/msm/msm_gem_prime.c
+@@ -5,6 +5,7 @@
+  */
+ 
+ #include <linux/dma-buf.h>
++#include <linux/dma-buf-mapping.h>
+ 
+ #include <drm/drm_drv.h>
+ #include <drm/drm_prime.h>
+@@ -54,12 +55,12 @@ static void msm_gem_dmabuf_release(struct dma_buf *dma_buf)
+ static const struct dma_buf_ops msm_gem_prime_dmabuf_ops =  {
+ 	.attach = drm_gem_map_attach,
+ 	.detach = drm_gem_map_detach,
+-	.map_dma_buf = drm_gem_map_dma_buf,
+-	.unmap_dma_buf = drm_gem_unmap_dma_buf,
+ 	.release = msm_gem_dmabuf_release,
+ 	.mmap = drm_gem_dmabuf_mmap,
+ 	.vmap = drm_gem_dmabuf_vmap,
+ 	.vunmap = drm_gem_dmabuf_vunmap,
++	DMA_BUF_SIMPLE_SGT_EXP_MATCH(drm_gem_map_dma_buf,
++				     drm_gem_unmap_dma_buf),
+ };
+ 
+ struct drm_gem_object *msm_gem_prime_import(struct drm_device *dev,
+@@ -132,3 +133,5 @@ void msm_gem_prime_unpin(struct drm_gem_object *obj)
+ 
+ 	msm_gem_unpin_pages_locked(obj);
+ }
++
++MODULE_IMPORT_NS("DMA_BUF");
 diff --git a/drivers/gpu/drm/omapdrm/omap_gem_dmabuf.c b/drivers/gpu/drm/omapdrm/omap_gem_dmabuf.c
-index 23beaeefab67d7..569ee2d3ab6f84 100644
+index 30cf1cdc1aa3c8..23beaeefab67d7 100644
 --- a/drivers/gpu/drm/omapdrm/omap_gem_dmabuf.c
 +++ b/drivers/gpu/drm/omapdrm/omap_gem_dmabuf.c
-@@ -121,7 +121,7 @@ struct drm_gem_object *omap_gem_prime_import(struct drm_device *dev,
+@@ -5,6 +5,7 @@
+  */
  
- 	get_dma_buf(dma_buf);
+ #include <linux/dma-buf.h>
++#include <linux/dma-buf-mapping.h>
+ #include <linux/highmem.h>
  
--	sgt = dma_buf_map_attachment_unlocked(attach, DMA_TO_DEVICE);
-+	sgt = dma_buf_sgt_map_attachment_unlocked(attach, DMA_TO_DEVICE);
- 	if (IS_ERR(sgt)) {
- 		ret = PTR_ERR(sgt);
- 		goto fail_detach;
+ #include <drm/drm_prime.h>
+@@ -69,12 +70,12 @@ static int omap_gem_dmabuf_mmap(struct dma_buf *buffer,
+ }
+ 
+ static const struct dma_buf_ops omap_dmabuf_ops = {
+-	.map_dma_buf = omap_gem_map_dma_buf,
+-	.unmap_dma_buf = omap_gem_unmap_dma_buf,
+ 	.release = drm_gem_dmabuf_release,
+ 	.begin_cpu_access = omap_gem_dmabuf_begin_cpu_access,
+ 	.end_cpu_access = omap_gem_dmabuf_end_cpu_access,
+ 	.mmap = omap_gem_dmabuf_mmap,
++	DMA_BUF_SIMPLE_SGT_EXP_MATCH(omap_gem_map_dma_buf,
++				     omap_gem_unmap_dma_buf),
+ };
+ 
+ struct dma_buf *omap_gem_prime_export(struct drm_gem_object *obj, int flags)
 diff --git a/drivers/gpu/drm/tegra/gem.c b/drivers/gpu/drm/tegra/gem.c
-index 244c01819d56b5..4866d639bbb026 100644
+index 6b14f1e919eb6b..244c01819d56b5 100644
 --- a/drivers/gpu/drm/tegra/gem.c
 +++ b/drivers/gpu/drm/tegra/gem.c
-@@ -86,7 +86,8 @@ static struct host1x_bo_mapping *tegra_bo_pin(struct device *dev, struct host1x_
- 			goto free;
- 		}
+@@ -11,6 +11,7 @@
+  */
  
--		map->sgt = dma_buf_map_attachment_unlocked(map->attach, direction);
-+		map->sgt = dma_buf_sgt_map_attachment_unlocked(map->attach,
-+							       direction);
- 		if (IS_ERR(map->sgt)) {
- 			dma_buf_detach(buf, map->attach);
- 			err = PTR_ERR(map->sgt);
-@@ -477,7 +478,8 @@ static struct tegra_bo *tegra_bo_import(struct drm_device *drm,
+ #include <linux/dma-buf.h>
++#include <linux/dma-buf-mapping.h>
+ #include <linux/iommu.h>
+ #include <linux/module.h>
+ #include <linux/vmalloc.h>
+@@ -635,6 +636,7 @@ static struct sg_table *
+ tegra_gem_prime_map_dma_buf(struct dma_buf_attachment *attach,
+ 			    enum dma_data_direction dir)
+ {
++	struct device *dma_dev = dma_buf_sgt_dma_device(attach);
+ 	struct drm_gem_object *gem = attach->dmabuf->priv;
+ 	struct tegra_bo *bo = to_tegra_bo(gem);
+ 	struct sg_table *sgt;
+@@ -648,12 +650,12 @@ tegra_gem_prime_map_dma_buf(struct dma_buf_attachment *attach,
+ 					      0, gem->size, GFP_KERNEL) < 0)
  			goto free;
- 		}
+ 	} else {
+-		if (dma_get_sgtable(attach->dev, sgt, bo->vaddr, bo->iova,
++		if (dma_get_sgtable(dma_dev, sgt, bo->vaddr, bo->iova,
+ 				    gem->size) < 0)
+ 			goto free;
+ 	}
  
--		bo->sgt = dma_buf_map_attachment_unlocked(attach, DMA_TO_DEVICE);
-+		bo->sgt = dma_buf_sgt_map_attachment_unlocked(attach,
-+							      DMA_TO_DEVICE);
- 		if (IS_ERR(bo->sgt)) {
- 			err = PTR_ERR(bo->sgt);
- 			goto detach;
+-	if (dma_map_sgtable(attach->dev, sgt, dir, 0))
++	if (dma_map_sgtable(dma_dev, sgt, dir, 0))
+ 		goto free;
+ 
+ 	return sgt;
+@@ -672,7 +674,7 @@ static void tegra_gem_prime_unmap_dma_buf(struct dma_buf_attachment *attach,
+ 	struct tegra_bo *bo = to_tegra_bo(gem);
+ 
+ 	if (bo->pages)
+-		dma_unmap_sgtable(attach->dev, sgt, dir, 0);
++		dma_unmap_sgtable(dma_buf_sgt_dma_device(attach), sgt, dir, 0);
+ 
+ 	sg_free_table(sgt);
+ 	kfree(sgt);
+@@ -745,14 +747,14 @@ static void tegra_gem_prime_vunmap(struct dma_buf *buf, struct iosys_map *map)
+ }
+ 
+ static const struct dma_buf_ops tegra_gem_prime_dmabuf_ops = {
+-	.map_dma_buf = tegra_gem_prime_map_dma_buf,
+-	.unmap_dma_buf = tegra_gem_prime_unmap_dma_buf,
+ 	.release = tegra_gem_prime_release,
+ 	.begin_cpu_access = tegra_gem_prime_begin_cpu_access,
+ 	.end_cpu_access = tegra_gem_prime_end_cpu_access,
+ 	.mmap = tegra_gem_prime_mmap,
+ 	.vmap = tegra_gem_prime_vmap,
+ 	.vunmap = tegra_gem_prime_vunmap,
++	DMA_BUF_SIMPLE_SGT_EXP_MATCH(tegra_gem_prime_map_dma_buf,
++				     tegra_gem_prime_unmap_dma_buf),
+ };
+ 
+ struct dma_buf *tegra_gem_prime_export(struct drm_gem_object *gem,
 diff --git a/drivers/gpu/drm/virtio/virtgpu_prime.c b/drivers/gpu/drm/virtio/virtgpu_prime.c
-index d7e1f741f941a3..3dbc1b41052068 100644
+index ce49282198cbf6..d7e1f741f941a3 100644
 --- a/drivers/gpu/drm/virtio/virtgpu_prime.c
 +++ b/drivers/gpu/drm/virtio/virtgpu_prime.c
-@@ -163,7 +163,7 @@ int virtgpu_dma_buf_import_sgt(struct virtio_gpu_mem_entry **ents,
- 	if (ret <= 0)
- 		return ret < 0 ? ret : -ETIMEDOUT;
+@@ -23,6 +23,7 @@
+  */
  
--	sgt = dma_buf_map_attachment(attach, DMA_BIDIRECTIONAL);
-+	sgt = dma_buf_sgt_map_attachment(attach, DMA_BIDIRECTIONAL);
- 	if (IS_ERR(sgt))
- 		return PTR_ERR(sgt);
+ #include <drm/drm_prime.h>
++#include <linux/dma-buf-mapping.h>
+ #include <linux/virtio_dma_buf.h>
  
-diff --git a/drivers/gpu/drm/xe/xe_bo.c b/drivers/gpu/drm/xe/xe_bo.c
-index 71acd45aa33b00..e5e716c5f33fa8 100644
---- a/drivers/gpu/drm/xe/xe_bo.c
-+++ b/drivers/gpu/drm/xe/xe_bo.c
-@@ -764,7 +764,7 @@ static int xe_bo_move_dmabuf(struct ttm_buffer_object *ttm_bo,
- 		ttm_bo->sg = NULL;
+ #include "virtgpu_drv.h"
+@@ -53,7 +54,8 @@ virtgpu_gem_map_dma_buf(struct dma_buf_attachment *attach,
+ 	struct virtio_gpu_object *bo = gem_to_virtio_gpu_obj(obj);
+ 
+ 	if (virtio_gpu_is_vram(bo))
+-		return virtio_gpu_vram_map_dma_buf(bo, attach->dev, dir);
++		return virtio_gpu_vram_map_dma_buf(
++			bo, dma_buf_sgt_dma_device(attach), dir);
+ 
+ 	return drm_gem_map_dma_buf(attach, dir);
+ }
+@@ -66,7 +68,8 @@ static void virtgpu_gem_unmap_dma_buf(struct dma_buf_attachment *attach,
+ 	struct virtio_gpu_object *bo = gem_to_virtio_gpu_obj(obj);
+ 
+ 	if (virtio_gpu_is_vram(bo)) {
+-		virtio_gpu_vram_unmap_dma_buf(attach->dev, sgt, dir);
++		virtio_gpu_vram_unmap_dma_buf(dma_buf_sgt_dma_device(attach),
++					      sgt, dir);
+ 		return;
  	}
  
--	sg = dma_buf_map_attachment(attach, DMA_BIDIRECTIONAL);
-+	sg = dma_buf_sgt_map_attachment(attach, DMA_BIDIRECTIONAL);
- 	if (IS_ERR(sg))
- 		return PTR_ERR(sg);
+@@ -77,12 +80,12 @@ static const struct virtio_dma_buf_ops virtgpu_dmabuf_ops =  {
+ 	.ops = {
+ 		.attach = virtio_dma_buf_attach,
+ 		.detach = drm_gem_map_detach,
+-		.map_dma_buf = virtgpu_gem_map_dma_buf,
+-		.unmap_dma_buf = virtgpu_gem_unmap_dma_buf,
+ 		.release = drm_gem_dmabuf_release,
+ 		.mmap = drm_gem_dmabuf_mmap,
+ 		.vmap = drm_gem_dmabuf_vmap,
+ 		.vunmap = drm_gem_dmabuf_vunmap,
++		DMA_BUF_SIMPLE_SGT_EXP_MATCH(virtgpu_gem_map_dma_buf,
++					     virtgpu_gem_unmap_dma_buf),
+ 	},
+ 	.device_attach = drm_gem_map_attach,
+ 	.get_uuid = virtgpu_virtio_get_uuid,
+diff --git a/drivers/iommu/iommufd/selftest.c b/drivers/iommu/iommufd/selftest.c
+index 550ff36dec3a35..7aa6a58a5705f7 100644
+--- a/drivers/iommu/iommufd/selftest.c
++++ b/drivers/iommu/iommufd/selftest.c
+@@ -6,6 +6,7 @@
+ #include <linux/anon_inodes.h>
+ #include <linux/debugfs.h>
+ #include <linux/dma-buf.h>
++#include <linux/dma-buf-mapping.h>
+ #include <linux/dma-resv.h>
+ #include <linux/fault-inject.h>
+ #include <linux/file.h>
+@@ -1961,17 +1962,6 @@ struct iommufd_test_dma_buf {
+ 	bool revoked;
+ };
  
-diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-index 7daac53c502e50..7556c3c7675c2c 100644
---- a/drivers/iio/industrialio-buffer.c
-+++ b/drivers/iio/industrialio-buffer.c
-@@ -1701,7 +1701,7 @@ static int iio_buffer_attach_dmabuf(struct iio_dev_buffer_pair *ib,
- 	priv->dir = buffer->direction == IIO_BUFFER_DIRECTION_IN
- 		? DMA_FROM_DEVICE : DMA_TO_DEVICE;
+-static int iommufd_test_dma_buf_attach(struct dma_buf *dmabuf,
+-				       struct dma_buf_attachment *attachment)
+-{
+-	return 0;
+-}
+-
+-static void iommufd_test_dma_buf_detach(struct dma_buf *dmabuf,
+-					struct dma_buf_attachment *attachment)
+-{
+-}
+-
+ static struct sg_table *
+ iommufd_test_dma_buf_map(struct dma_buf_attachment *attachment,
+ 			 enum dma_data_direction dir)
+@@ -1994,11 +1984,9 @@ static void iommufd_test_dma_buf_release(struct dma_buf *dmabuf)
+ }
  
--	priv->sgt = dma_buf_map_attachment(attach, priv->dir);
-+	priv->sgt = dma_buf_sgt_map_attachment(attach, priv->dir);
- 	if (IS_ERR(priv->sgt)) {
- 		err = PTR_ERR(priv->sgt);
- 		dev_err(&indio_dev->dev, "Unable to map attachment: %d\n", err);
-diff --git a/drivers/infiniband/core/umem_dmabuf.c b/drivers/infiniband/core/umem_dmabuf.c
-index 0ec2e4120cc94b..aac9f9d12f0f8f 100644
---- a/drivers/infiniband/core/umem_dmabuf.c
-+++ b/drivers/infiniband/core/umem_dmabuf.c
-@@ -29,8 +29,8 @@ int ib_umem_dmabuf_map_pages(struct ib_umem_dmabuf *umem_dmabuf)
- 	if (umem_dmabuf->sgt)
- 		goto wait_fence;
+ static const struct dma_buf_ops iommufd_test_dmabuf_ops = {
+-	.attach = iommufd_test_dma_buf_attach,
+-	.detach = iommufd_test_dma_buf_detach,
+-	.map_dma_buf = iommufd_test_dma_buf_map,
+ 	.release = iommufd_test_dma_buf_release,
+-	.unmap_dma_buf = iommufd_test_dma_buf_unmap,
++	DMA_BUF_SIMPLE_SGT_EXP_MATCH(iommufd_test_dma_buf_map,
++				     iommufd_test_dma_buf_unmap),
+ };
  
--	sgt = dma_buf_map_attachment(umem_dmabuf->attach,
--				     DMA_BIDIRECTIONAL);
-+	sgt = dma_buf_sgt_map_attachment(umem_dmabuf->attach,
-+					 DMA_BIDIRECTIONAL);
- 	if (IS_ERR(sgt))
- 		return PTR_ERR(sgt);
- 
-diff --git a/drivers/media/common/videobuf2/videobuf2-core.c b/drivers/media/common/videobuf2/videobuf2-core.c
-index 2df566f409b65e..4fe30a21e1e687 100644
---- a/drivers/media/common/videobuf2/videobuf2-core.c
-+++ b/drivers/media/common/videobuf2/videobuf2-core.c
-@@ -1470,7 +1470,7 @@ static int __prepare_dmabuf(struct vb2_buffer *vb)
- 			vb->planes[plane].mem_priv = mem_priv;
- 
- 			/*
--			 * This pins the buffer(s) with dma_buf_map_attachment()). It's done
-+			 * This pins the buffer(s) with dma_buf_sgt_map_attachment()). It's done
- 			 * here instead just before the DMA, while queueing the buffer(s) so
- 			 * userspace knows sooner rather than later if the dma-buf map fails.
- 			 */
+ int iommufd_test_dma_buf_iommufd_map(struct dma_buf_attachment *attachment,
 diff --git a/drivers/media/common/videobuf2/videobuf2-dma-contig.c b/drivers/media/common/videobuf2/videobuf2-dma-contig.c
-index 7a3bc31699bb90..de3eb4121aadb0 100644
+index 7123c5fae92cee..7a3bc31699bb90 100644
 --- a/drivers/media/common/videobuf2/videobuf2-dma-contig.c
 +++ b/drivers/media/common/videobuf2/videobuf2-dma-contig.c
-@@ -706,7 +706,7 @@ static int vb2_dc_map_dmabuf(void *mem_priv)
+@@ -11,6 +11,7 @@
+  */
+ 
+ #include <linux/dma-buf.h>
++#include <linux/dma-buf-mapping.h>
+ #include <linux/module.h>
+ #include <linux/refcount.h>
+ #include <linux/scatterlist.h>
+@@ -372,8 +373,8 @@ static void vb2_dc_dmabuf_ops_detach(struct dma_buf *dbuf,
+ 		 * memory locations do not require any explicit cache
+ 		 * maintenance prior or after being used by the device.
+ 		 */
+-		dma_unmap_sgtable(db_attach->dev, sgt, attach->dma_dir,
+-				  DMA_ATTR_SKIP_CPU_SYNC);
++		dma_unmap_sgtable(dma_buf_sgt_dma_device(db_attach), sgt,
++				  attach->dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
+ 	sg_free_table(sgt);
+ 	kfree(attach);
+ 	db_attach->priv = NULL;
+@@ -392,8 +393,8 @@ static struct sg_table *vb2_dc_dmabuf_ops_map(
+ 
+ 	/* release any previous cache */
+ 	if (attach->dma_dir != DMA_NONE) {
+-		dma_unmap_sgtable(db_attach->dev, sgt, attach->dma_dir,
+-				  DMA_ATTR_SKIP_CPU_SYNC);
++		dma_unmap_sgtable(dma_buf_sgt_dma_device(db_attach), sgt,
++				  attach->dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
+ 		attach->dma_dir = DMA_NONE;
  	}
  
- 	/* get the associated scatterlist for this buffer */
--	sgt = dma_buf_map_attachment_unlocked(buf->db_attach, buf->dma_dir);
-+	sgt = dma_buf_sgt_map_attachment_unlocked(buf->db_attach, buf->dma_dir);
- 	if (IS_ERR(sgt)) {
- 		pr_err("Error getting dmabuf scatterlist\n");
- 		return -EINVAL;
+@@ -401,7 +402,7 @@ static struct sg_table *vb2_dc_dmabuf_ops_map(
+ 	 * mapping to the client with new direction, no cache sync
+ 	 * required see comment in vb2_dc_dmabuf_ops_detach()
+ 	 */
+-	if (dma_map_sgtable(db_attach->dev, sgt, dma_dir,
++	if (dma_map_sgtable(dma_buf_sgt_dma_device(db_attach), sgt, dma_dir,
+ 			    DMA_ATTR_SKIP_CPU_SYNC)) {
+ 		pr_err("failed to map scatterlist\n");
+ 		return ERR_PTR(-EIO);
+@@ -462,13 +463,13 @@ static int vb2_dc_dmabuf_ops_mmap(struct dma_buf *dbuf,
+ static const struct dma_buf_ops vb2_dc_dmabuf_ops = {
+ 	.attach = vb2_dc_dmabuf_ops_attach,
+ 	.detach = vb2_dc_dmabuf_ops_detach,
+-	.map_dma_buf = vb2_dc_dmabuf_ops_map,
+-	.unmap_dma_buf = vb2_dc_dmabuf_ops_unmap,
+ 	.begin_cpu_access = vb2_dc_dmabuf_ops_begin_cpu_access,
+ 	.end_cpu_access = vb2_dc_dmabuf_ops_end_cpu_access,
+ 	.vmap = vb2_dc_dmabuf_ops_vmap,
+ 	.mmap = vb2_dc_dmabuf_ops_mmap,
+ 	.release = vb2_dc_dmabuf_ops_release,
++	DMA_BUF_SIMPLE_SGT_EXP_MATCH(vb2_dc_dmabuf_ops_map,
++				     vb2_dc_dmabuf_ops_unmap),
+ };
+ 
+ static struct sg_table *vb2_dc_get_base_sgt(struct vb2_dc_buf *buf)
 diff --git a/drivers/media/common/videobuf2/videobuf2-dma-sg.c b/drivers/media/common/videobuf2/videobuf2-dma-sg.c
-index 03a836dce44f90..ed968d7e326449 100644
+index b3bf2173c14e1b..03a836dce44f90 100644
 --- a/drivers/media/common/videobuf2/videobuf2-dma-sg.c
 +++ b/drivers/media/common/videobuf2/videobuf2-dma-sg.c
-@@ -568,7 +568,7 @@ static int vb2_dma_sg_map_dmabuf(void *mem_priv)
+@@ -10,6 +10,7 @@
+  * the Free Software Foundation.
+  */
+ 
++#include <linux/dma-buf-mapping.h>
+ #include <linux/module.h>
+ #include <linux/mm.h>
+ #include <linux/refcount.h>
+@@ -416,7 +417,8 @@ static void vb2_dma_sg_dmabuf_ops_detach(struct dma_buf *dbuf,
+ 
+ 	/* release the scatterlist cache */
+ 	if (attach->dma_dir != DMA_NONE)
+-		dma_unmap_sgtable(db_attach->dev, sgt, attach->dma_dir, 0);
++		dma_unmap_sgtable(dma_buf_sgt_dma_device(db_attach), sgt,
++				  attach->dma_dir, 0);
+ 	sg_free_table(sgt);
+ 	kfree(attach);
+ 	db_attach->priv = NULL;
+@@ -435,12 +437,14 @@ static struct sg_table *vb2_dma_sg_dmabuf_ops_map(
+ 
+ 	/* release any previous cache */
+ 	if (attach->dma_dir != DMA_NONE) {
+-		dma_unmap_sgtable(db_attach->dev, sgt, attach->dma_dir, 0);
++		dma_unmap_sgtable(dma_buf_sgt_dma_device(db_attach), sgt,
++				  attach->dma_dir, 0);
+ 		attach->dma_dir = DMA_NONE;
  	}
  
- 	/* get the associated scatterlist for this buffer */
--	sgt = dma_buf_map_attachment_unlocked(buf->db_attach, buf->dma_dir);
-+	sgt = dma_buf_sgt_map_attachment_unlocked(buf->db_attach, buf->dma_dir);
- 	if (IS_ERR(sgt)) {
- 		pr_err("Error getting dmabuf scatterlist\n");
- 		return -EINVAL;
-diff --git a/drivers/media/platform/nvidia/tegra-vde/dmabuf-cache.c b/drivers/media/platform/nvidia/tegra-vde/dmabuf-cache.c
-index b34244ea14dd06..595b759de4f939 100644
---- a/drivers/media/platform/nvidia/tegra-vde/dmabuf-cache.c
-+++ b/drivers/media/platform/nvidia/tegra-vde/dmabuf-cache.c
-@@ -102,7 +102,7 @@ int tegra_vde_dmabuf_cache_map(struct tegra_vde *vde,
- 		goto err_unlock;
+ 	/* mapping to the client with new direction */
+-	if (dma_map_sgtable(db_attach->dev, sgt, dma_dir, 0)) {
++	if (dma_map_sgtable(dma_buf_sgt_dma_device(db_attach), sgt, dma_dir,
++			    0)) {
+ 		pr_err("failed to map scatterlist\n");
+ 		return ERR_PTR(-EIO);
+ 	}
+@@ -509,13 +513,13 @@ static int vb2_dma_sg_dmabuf_ops_mmap(struct dma_buf *dbuf,
+ static const struct dma_buf_ops vb2_dma_sg_dmabuf_ops = {
+ 	.attach = vb2_dma_sg_dmabuf_ops_attach,
+ 	.detach = vb2_dma_sg_dmabuf_ops_detach,
+-	.map_dma_buf = vb2_dma_sg_dmabuf_ops_map,
+-	.unmap_dma_buf = vb2_dma_sg_dmabuf_ops_unmap,
+ 	.begin_cpu_access = vb2_dma_sg_dmabuf_ops_begin_cpu_access,
+ 	.end_cpu_access = vb2_dma_sg_dmabuf_ops_end_cpu_access,
+ 	.vmap = vb2_dma_sg_dmabuf_ops_vmap,
+ 	.mmap = vb2_dma_sg_dmabuf_ops_mmap,
+ 	.release = vb2_dma_sg_dmabuf_ops_release,
++	DMA_BUF_SIMPLE_SGT_EXP_MATCH(vb2_dma_sg_dmabuf_ops_map,
++				     vb2_dma_sg_dmabuf_ops_unmap),
+ };
+ 
+ static struct dma_buf *vb2_dma_sg_get_dmabuf(struct vb2_buffer *vb,
+diff --git a/drivers/media/common/videobuf2/videobuf2-vmalloc.c b/drivers/media/common/videobuf2/videobuf2-vmalloc.c
+index 3f777068cd34b7..b98d067acffe5d 100644
+--- a/drivers/media/common/videobuf2/videobuf2-vmalloc.c
++++ b/drivers/media/common/videobuf2/videobuf2-vmalloc.c
+@@ -10,6 +10,7 @@
+  * the Free Software Foundation.
+  */
+ 
++#include <linux/dma-buf-mapping.h>
+ #include <linux/io.h>
+ #include <linux/module.h>
+ #include <linux/mm.h>
+@@ -261,7 +262,8 @@ static void vb2_vmalloc_dmabuf_ops_detach(struct dma_buf *dbuf,
+ 
+ 	/* release the scatterlist cache */
+ 	if (attach->dma_dir != DMA_NONE)
+-		dma_unmap_sgtable(db_attach->dev, sgt, attach->dma_dir, 0);
++		dma_unmap_sgtable(dma_buf_sgt_dma_device(db_attach), sgt,
++				  attach->dma_dir, 0);
+ 	sg_free_table(sgt);
+ 	kfree(attach);
+ 	db_attach->priv = NULL;
+@@ -270,6 +272,7 @@ static void vb2_vmalloc_dmabuf_ops_detach(struct dma_buf *dbuf,
+ static struct sg_table *vb2_vmalloc_dmabuf_ops_map(
+ 	struct dma_buf_attachment *db_attach, enum dma_data_direction dma_dir)
+ {
++	struct device *dma_dev = dma_buf_sgt_dma_device(db_attach);
+ 	struct vb2_vmalloc_attachment *attach = db_attach->priv;
+ 	struct sg_table *sgt;
+ 
+@@ -280,12 +283,12 @@ static struct sg_table *vb2_vmalloc_dmabuf_ops_map(
+ 
+ 	/* release any previous cache */
+ 	if (attach->dma_dir != DMA_NONE) {
+-		dma_unmap_sgtable(db_attach->dev, sgt, attach->dma_dir, 0);
++		dma_unmap_sgtable(dma_dev, sgt, attach->dma_dir, 0);
+ 		attach->dma_dir = DMA_NONE;
  	}
  
--	sgt = dma_buf_map_attachment_unlocked(attachment, dma_dir);
-+	sgt = dma_buf_sgt_map_attachment_unlocked(attachment, dma_dir);
- 	if (IS_ERR(sgt)) {
- 		dev_err(dev, "Failed to get dmabufs sg_table\n");
- 		err = PTR_ERR(sgt);
+ 	/* mapping to the client with new direction */
+-	if (dma_map_sgtable(db_attach->dev, sgt, dma_dir, 0)) {
++	if (dma_map_sgtable(dma_dev, sgt, dma_dir, 0)) {
+ 		pr_err("failed to map scatterlist\n");
+ 		return ERR_PTR(-EIO);
+ 	}
+@@ -326,11 +329,11 @@ static int vb2_vmalloc_dmabuf_ops_mmap(struct dma_buf *dbuf,
+ static const struct dma_buf_ops vb2_vmalloc_dmabuf_ops = {
+ 	.attach = vb2_vmalloc_dmabuf_ops_attach,
+ 	.detach = vb2_vmalloc_dmabuf_ops_detach,
+-	.map_dma_buf = vb2_vmalloc_dmabuf_ops_map,
+-	.unmap_dma_buf = vb2_vmalloc_dmabuf_ops_unmap,
+ 	.vmap = vb2_vmalloc_dmabuf_ops_vmap,
+ 	.mmap = vb2_vmalloc_dmabuf_ops_mmap,
+ 	.release = vb2_vmalloc_dmabuf_ops_release,
++	DMA_BUF_SIMPLE_SGT_EXP_MATCH(vb2_vmalloc_dmabuf_ops_map,
++				     vb2_vmalloc_dmabuf_ops_unmap),
+ };
+ 
+ static struct dma_buf *vb2_vmalloc_get_dmabuf(struct vb2_buffer *vb,
 diff --git a/drivers/misc/fastrpc.c b/drivers/misc/fastrpc.c
-index 2ea57170e56b3e..52abf3290a580f 100644
+index ee652ef01534a8..2ea57170e56b3e 100644
 --- a/drivers/misc/fastrpc.c
 +++ b/drivers/misc/fastrpc.c
-@@ -779,7 +779,8 @@ static int fastrpc_map_attach(struct fastrpc_user *fl, int fd,
- 		goto attach_err;
+@@ -5,6 +5,7 @@
+ #include <linux/completion.h>
+ #include <linux/device.h>
+ #include <linux/dma-buf.h>
++#include <linux/dma-buf-mapping.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/dma-resv.h>
+ #include <linux/idr.h>
+@@ -652,7 +653,8 @@ fastrpc_map_dma_buf(struct dma_buf_attachment *attachment,
+ 
+ 	table = &a->sgt;
+ 
+-	ret = dma_map_sgtable(attachment->dev, table, dir, 0);
++	ret = dma_map_sgtable(dma_buf_sgt_dma_device(attachment), table, dir,
++			      0);
+ 	if (ret)
+ 		table = ERR_PTR(ret);
+ 	return table;
+@@ -662,7 +664,7 @@ static void fastrpc_unmap_dma_buf(struct dma_buf_attachment *attach,
+ 				  struct sg_table *table,
+ 				  enum dma_data_direction dir)
+ {
+-	dma_unmap_sgtable(attach->dev, table, dir, 0);
++	dma_unmap_sgtable(dma_buf_sgt_dma_device(attach), table, dir, 0);
+ }
+ 
+ static void fastrpc_release(struct dma_buf *dmabuf)
+@@ -691,7 +693,7 @@ static int fastrpc_dma_buf_attach(struct dma_buf *dmabuf,
+ 		return -EINVAL;
  	}
  
--	table = dma_buf_map_attachment_unlocked(map->attach, DMA_BIDIRECTIONAL);
-+	table = dma_buf_sgt_map_attachment_unlocked(map->attach,
-+						    DMA_BIDIRECTIONAL);
- 	if (IS_ERR(table)) {
- 		err = PTR_ERR(table);
- 		goto map_err;
-diff --git a/drivers/usb/gadget/function/f_fs.c b/drivers/usb/gadget/function/f_fs.c
-index 5c81ea9afa1249..d5d4bfc390ebc6 100644
---- a/drivers/usb/gadget/function/f_fs.c
-+++ b/drivers/usb/gadget/function/f_fs.c
-@@ -1520,7 +1520,7 @@ static int ffs_dmabuf_attach(struct file *file, int fd)
- 	if (err)
- 		goto err_free_priv;
+-	a->dev = attachment->dev;
++	a->dev = dma_buf_sgt_dma_device(attachment);
+ 	INIT_LIST_HEAD(&a->node);
+ 	attachment->priv = a;
  
--	sg_table = dma_buf_map_attachment(attach, dir);
-+	sg_table = dma_buf_sgt_map_attachment(attach, dir);
- 	dma_resv_unlock(dmabuf->resv);
+@@ -739,11 +741,11 @@ static int fastrpc_mmap(struct dma_buf *dmabuf,
+ static const struct dma_buf_ops fastrpc_dma_buf_ops = {
+ 	.attach = fastrpc_dma_buf_attach,
+ 	.detach = fastrpc_dma_buf_detatch,
+-	.map_dma_buf = fastrpc_map_dma_buf,
+-	.unmap_dma_buf = fastrpc_unmap_dma_buf,
+ 	.mmap = fastrpc_mmap,
+ 	.vmap = fastrpc_vmap,
+ 	.release = fastrpc_release,
++	DMA_BUF_SIMPLE_SGT_EXP_MATCH(fastrpc_map_dma_buf,
++				     fastrpc_unmap_dma_buf),
+ };
  
- 	if (IS_ERR(sg_table)) {
+ static int fastrpc_map_attach(struct fastrpc_user *fl, int fd,
+diff --git a/drivers/tee/tee_heap.c b/drivers/tee/tee_heap.c
+index d8d7735cdffb9b..48948d39b94961 100644
+--- a/drivers/tee/tee_heap.c
++++ b/drivers/tee/tee_heap.c
+@@ -4,6 +4,7 @@
+  */
+ 
+ #include <linux/dma-buf.h>
++#include <linux/dma-buf-mapping.h>
+ #include <linux/dma-heap.h>
+ #include <linux/genalloc.h>
+ #include <linux/module.h>
+@@ -104,7 +105,7 @@ static int tee_heap_attach(struct dma_buf *dmabuf,
+ 		return ret;
+ 	}
+ 
+-	a->dev = attachment->dev;
++	a->dev = dma_buf_sgt_dma_device(attachment);
+ 	attachment->priv = a;
+ 
+ 	return 0;
+@@ -126,8 +127,8 @@ tee_heap_map_dma_buf(struct dma_buf_attachment *attachment,
+ 	struct tee_heap_attachment *a = attachment->priv;
+ 	int ret;
+ 
+-	ret = dma_map_sgtable(attachment->dev, &a->table, direction,
+-			      DMA_ATTR_SKIP_CPU_SYNC);
++	ret = dma_map_sgtable(dma_buf_sgt_dma_device(attachment), &a->table,
++			      direction, DMA_ATTR_SKIP_CPU_SYNC);
+ 	if (ret)
+ 		return ERR_PTR(ret);
+ 
+@@ -142,7 +143,7 @@ static void tee_heap_unmap_dma_buf(struct dma_buf_attachment *attachment,
+ 
+ 	WARN_ON(&a->table != table);
+ 
+-	dma_unmap_sgtable(attachment->dev, table, direction,
++	dma_unmap_sgtable(dma_buf_sgt_dma_device(attachment), table, direction,
+ 			  DMA_ATTR_SKIP_CPU_SYNC);
+ }
+ 
+@@ -160,9 +161,9 @@ static void tee_heap_buf_free(struct dma_buf *dmabuf)
+ static const struct dma_buf_ops tee_heap_buf_ops = {
+ 	.attach = tee_heap_attach,
+ 	.detach = tee_heap_detach,
+-	.map_dma_buf = tee_heap_map_dma_buf,
+-	.unmap_dma_buf = tee_heap_unmap_dma_buf,
+ 	.release = tee_heap_buf_free,
++	DMA_BUF_SIMPLE_SGT_EXP_MATCH(tee_heap_map_dma_buf,
++				     tee_heap_unmap_dma_buf),
+ };
+ 
+ static struct dma_buf *tee_dma_heap_alloc(struct dma_heap *heap,
 diff --git a/drivers/xen/gntdev-dmabuf.c b/drivers/xen/gntdev-dmabuf.c
-index 91a31a22ba98aa..78125cc1aee322 100644
+index 550980dd3b0bc4..91a31a22ba98aa 100644
 --- a/drivers/xen/gntdev-dmabuf.c
 +++ b/drivers/xen/gntdev-dmabuf.c
-@@ -590,7 +590,7 @@ dmabuf_imp_to_refs(struct gntdev_dmabuf_priv *priv, struct device *dev,
+@@ -11,6 +11,7 @@
+ #include <linux/kernel.h>
+ #include <linux/errno.h>
+ #include <linux/dma-buf.h>
++#include <linux/dma-buf-mapping.h>
+ #include <linux/dma-direct.h>
+ #include <linux/slab.h>
+ #include <linux/types.h>
+@@ -242,9 +243,10 @@ static void dmabuf_exp_ops_detach(struct dma_buf *dma_buf,
  
- 	gntdev_dmabuf->u.imp.attach = attach;
+ 		if (sgt) {
+ 			if (gntdev_dmabuf_attach->dir != DMA_NONE)
+-				dma_unmap_sgtable(attach->dev, sgt,
+-						  gntdev_dmabuf_attach->dir,
+-						  DMA_ATTR_SKIP_CPU_SYNC);
++				dma_unmap_sgtable(
++					dma_buf_sgt_dma_device(attach), sgt,
++					gntdev_dmabuf_attach->dir,
++					DMA_ATTR_SKIP_CPU_SYNC);
+ 			sg_free_table(sgt);
+ 		}
  
--	sgt = dma_buf_map_attachment_unlocked(attach, DMA_BIDIRECTIONAL);
-+	sgt = dma_buf_sgt_map_attachment_unlocked(attach, DMA_BIDIRECTIONAL);
- 	if (IS_ERR(sgt)) {
- 		ret = ERR_CAST(sgt);
- 		goto fail_detach;
-diff --git a/include/linux/dma-buf-mapping.h b/include/linux/dma-buf-mapping.h
-index f81e215401b49d..daddf30d0eceae 100644
---- a/include/linux/dma-buf-mapping.h
-+++ b/include/linux/dma-buf-mapping.h
-@@ -101,7 +101,7 @@ int dma_buf_match_mapping(struct dma_buf_match_args *args,
-  *
-  * When this type is matched the map/unmap functions are:
-  *
-- *  dma_buf_map_attachment()
-+ *  dma_buf_sgt_map_attachment()
-  *  dma_buf_unmap_attachment()
-  *
-  * The struct sg_table returned by those functions has only the DMA portions
-@@ -117,7 +117,7 @@ struct dma_buf_mapping_sgt_exp_ops {
- 	/**
- 	 * @map_dma_buf:
- 	 *
--	 * This is called by dma_buf_map_attachment() and is used to map a
-+	 * This is called by dma_buf_sgt_map_attachment() and is used to map a
- 	 * shared &dma_buf into device address space, and it is mandatory. It
- 	 * can only be called if @attach has been called successfully.
- 	 *
-diff --git a/include/linux/dma-buf.h b/include/linux/dma-buf.h
-index 5feab8b8b5d517..1ed50ec261022e 100644
---- a/include/linux/dma-buf.h
-+++ b/include/linux/dma-buf.h
-@@ -475,7 +475,7 @@ struct dma_buf_attach_ops {
-  *
-  * An attachment is created by calling dma_buf_attach(), and released again by
-  * calling dma_buf_detach(). The DMA mapping itself needed to initiate a
-- * transfer is created by dma_buf_map_attachment() and freed again by calling
-+ * transfer is created by dma_buf_sgt_map_attachment() and freed again by calling
-  * dma_buf_unmap_attachment().
-  */
- struct dma_buf_attachment {
-@@ -580,8 +580,8 @@ int dma_buf_fd(struct dma_buf *dmabuf, int flags);
- struct dma_buf *dma_buf_get(int fd);
- void dma_buf_put(struct dma_buf *dmabuf);
+@@ -258,12 +260,13 @@ static struct sg_table *
+ dmabuf_exp_ops_map_dma_buf(struct dma_buf_attachment *attach,
+ 			   enum dma_data_direction dir)
+ {
++	struct device *dma_dev = dma_buf_sgt_dma_device(attach);
+ 	struct gntdev_dmabuf_attachment *gntdev_dmabuf_attach = attach->priv;
+ 	struct gntdev_dmabuf *gntdev_dmabuf = attach->dmabuf->priv;
+ 	struct sg_table *sgt;
  
--struct sg_table *dma_buf_map_attachment(struct dma_buf_attachment *,
--					enum dma_data_direction);
-+struct sg_table *dma_buf_sgt_map_attachment(struct dma_buf_attachment *,
-+					    enum dma_data_direction);
- void dma_buf_unmap_attachment(struct dma_buf_attachment *, struct sg_table *,
- 				enum dma_data_direction);
- void dma_buf_move_notify(struct dma_buf *dma_buf);
-@@ -590,8 +590,8 @@ int dma_buf_begin_cpu_access(struct dma_buf *dma_buf,
- int dma_buf_end_cpu_access(struct dma_buf *dma_buf,
- 			   enum dma_data_direction dir);
- struct sg_table *
--dma_buf_map_attachment_unlocked(struct dma_buf_attachment *attach,
--				enum dma_data_direction direction);
-+dma_buf_sgt_map_attachment_unlocked(struct dma_buf_attachment *attach,
-+				    enum dma_data_direction direction);
- void dma_buf_unmap_attachment_unlocked(struct dma_buf_attachment *attach,
- 				       struct sg_table *sg_table,
- 				       enum dma_data_direction direction);
-diff --git a/io_uring/zcrx.c b/io_uring/zcrx.c
-index b99cf2c6670aa8..3b8c9752208bdf 100644
---- a/io_uring/zcrx.c
-+++ b/io_uring/zcrx.c
-@@ -137,7 +137,8 @@ static int io_import_dmabuf(struct io_zcrx_ifq *ifq,
- 		goto err;
+ 	pr_debug("Mapping %d pages for dev %p\n", gntdev_dmabuf->nr_pages,
+-		 attach->dev);
++		 dma_dev);
+ 
+ 	if (dir == DMA_NONE || !gntdev_dmabuf_attach)
+ 		return ERR_PTR(-EINVAL);
+@@ -282,7 +285,7 @@ dmabuf_exp_ops_map_dma_buf(struct dma_buf_attachment *attach,
+ 	sgt = dmabuf_pages_to_sgt(gntdev_dmabuf->pages,
+ 				  gntdev_dmabuf->nr_pages);
+ 	if (!IS_ERR(sgt)) {
+-		if (dma_map_sgtable(attach->dev, sgt, dir,
++		if (dma_map_sgtable(dma_dev, sgt, dir,
+ 				    DMA_ATTR_SKIP_CPU_SYNC)) {
+ 			sg_free_table(sgt);
+ 			kfree(sgt);
+@@ -293,7 +296,7 @@ dmabuf_exp_ops_map_dma_buf(struct dma_buf_attachment *attach,
+ 		}
  	}
+ 	if (IS_ERR(sgt))
+-		pr_debug("Failed to map sg table for dev %p\n", attach->dev);
++		pr_debug("Failed to map sg table for dev %p\n", dma_dev);
+ 	return sgt;
+ }
  
--	mem->sgt = dma_buf_map_attachment_unlocked(mem->attach, DMA_FROM_DEVICE);
-+	mem->sgt = dma_buf_sgt_map_attachment_unlocked(mem->attach,
-+						       DMA_FROM_DEVICE);
- 	if (IS_ERR(mem->sgt)) {
- 		ret = PTR_ERR(mem->sgt);
- 		mem->sgt = NULL;
-diff --git a/net/core/devmem.c b/net/core/devmem.c
-index ec4217d6c0b4fd..ccdf3f70a4de9b 100644
---- a/net/core/devmem.c
-+++ b/net/core/devmem.c
-@@ -223,8 +223,8 @@ net_devmem_bind_dmabuf(struct net_device *dev,
- 		goto err_free_binding;
- 	}
+@@ -339,9 +342,9 @@ static void dmabuf_exp_ops_release(struct dma_buf *dma_buf)
+ static const struct dma_buf_ops dmabuf_exp_ops =  {
+ 	.attach = dmabuf_exp_ops_attach,
+ 	.detach = dmabuf_exp_ops_detach,
+-	.map_dma_buf = dmabuf_exp_ops_map_dma_buf,
+-	.unmap_dma_buf = dmabuf_exp_ops_unmap_dma_buf,
+ 	.release = dmabuf_exp_ops_release,
++	DMA_BUF_SIMPLE_SGT_EXP_MATCH(dmabuf_exp_ops_map_dma_buf,
++				     dmabuf_exp_ops_unmap_dma_buf),
+ };
  
--	binding->sgt = dma_buf_map_attachment_unlocked(binding->attachment,
--						       direction);
-+	binding->sgt = dma_buf_sgt_map_attachment_unlocked(binding->attachment,
-+							   direction);
- 	if (IS_ERR(binding->sgt)) {
- 		err = PTR_ERR(binding->sgt);
- 		NL_SET_ERR_MSG(extack, "Failed to map dmabuf attachment");
+ struct gntdev_dmabuf_export_args {
+diff --git a/samples/vfio-mdev/mbochs.c b/samples/vfio-mdev/mbochs.c
+index 64ea19253ee3ad..c2eaa14b9ddd64 100644
+--- a/samples/vfio-mdev/mbochs.c
++++ b/samples/vfio-mdev/mbochs.c
+@@ -32,6 +32,7 @@
+ #include <linux/pci.h>
+ #include <linux/dma-buf.h>
+ #include <linux/highmem.h>
++#include <linux/dma-buf-mapping.h>
+ #include <drm/drm_fourcc.h>
+ #include <drm/drm_rect.h>
+ #include <drm/drm_modeset_lock.h>
+@@ -872,7 +873,7 @@ static struct sg_table *mbochs_map_dmabuf(struct dma_buf_attachment *at,
+ 	if (sg_alloc_table_from_pages(sg, dmabuf->pages, dmabuf->pagecount,
+ 				      0, dmabuf->mode.size, GFP_KERNEL) < 0)
+ 		goto err2;
+-	if (dma_map_sgtable(at->dev, sg, direction, 0))
++	if (dma_map_sgtable(dma_buf_sgt_dma_device(at), sg, direction, 0))
+ 		goto err3;
+ 
+ 	return sg;
+@@ -894,7 +895,7 @@ static void mbochs_unmap_dmabuf(struct dma_buf_attachment *at,
+ 
+ 	dev_dbg(dev, "%s: %d\n", __func__, dmabuf->id);
+ 
+-	dma_unmap_sgtable(at->dev, sg, direction, 0);
++	dma_unmap_sgtable(dma_buf_sgt_dma_device(at), sg, direction, 0);
+ 	sg_free_table(sg);
+ 	kfree(sg);
+ }
+@@ -918,11 +919,10 @@ static void mbochs_release_dmabuf(struct dma_buf *buf)
+ 	mutex_unlock(&mdev_state->ops_lock);
+ }
+ 
+-static struct dma_buf_ops mbochs_dmabuf_ops = {
+-	.map_dma_buf	  = mbochs_map_dmabuf,
+-	.unmap_dma_buf	  = mbochs_unmap_dmabuf,
++static const struct dma_buf_ops mbochs_dmabuf_ops = {
+ 	.release	  = mbochs_release_dmabuf,
+ 	.mmap		  = mbochs_mmap_dmabuf,
++	DMA_BUF_SIMPLE_SGT_EXP_MATCH(mbochs_map_dmabuf, mbochs_unmap_dmabuf),
+ };
+ 
+ static struct mbochs_dmabuf *mbochs_dmabuf_alloc(struct mdev_state *mdev_state,
+diff --git a/sound/soc/fsl/fsl_asrc_m2m.c b/sound/soc/fsl/fsl_asrc_m2m.c
+index f46881f71e4307..fef6a57fc7354a 100644
+--- a/sound/soc/fsl/fsl_asrc_m2m.c
++++ b/sound/soc/fsl/fsl_asrc_m2m.c
+@@ -7,6 +7,7 @@
+ 
+ #include <linux/dma/imx-dma.h>
+ #include <linux/dma-buf.h>
++#include <linux/dma-buf-mapping.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/pm_runtime.h>
+ #include <sound/asound.h>
+@@ -411,6 +412,7 @@ static int fsl_asrc_m2m_mmap(struct dma_buf *dmabuf, struct vm_area_struct *vma)
+ static struct sg_table *fsl_asrc_m2m_map_dma_buf(struct dma_buf_attachment *attachment,
+ 						 enum dma_data_direction direction)
+ {
++	struct device *dma_dev = dma_buf_sgt_dma_device(attachment);
+ 	struct snd_dma_buffer *dmab = attachment->dmabuf->priv;
+ 	struct sg_table *sgt;
+ 
+@@ -418,10 +420,10 @@ static struct sg_table *fsl_asrc_m2m_map_dma_buf(struct dma_buf_attachment *atta
+ 	if (!sgt)
+ 		return NULL;
+ 
+-	if (dma_get_sgtable(attachment->dev, sgt, dmab->area, dmab->addr, dmab->bytes) < 0)
++	if (dma_get_sgtable(dma_dev, sgt, dmab->area, dmab->addr, dmab->bytes) < 0)
+ 		goto free;
+ 
+-	if (dma_map_sgtable(attachment->dev, sgt, direction, 0))
++	if (dma_map_sgtable(dma_dev, sgt, direction, 0))
+ 		goto free;
+ 
+ 	return sgt;
+@@ -436,7 +438,7 @@ static void fsl_asrc_m2m_unmap_dma_buf(struct dma_buf_attachment *attachment,
+ 				       struct sg_table *table,
+ 				       enum dma_data_direction direction)
+ {
+-	dma_unmap_sgtable(attachment->dev, table, direction, 0);
++	dma_unmap_sgtable(dma_buf_sgt_dma_device(attachment), table, direction, 0);
+ }
+ 
+ static void fsl_asrc_m2m_release(struct dma_buf *dmabuf)
+@@ -446,9 +448,9 @@ static void fsl_asrc_m2m_release(struct dma_buf *dmabuf)
+ 
+ static const struct dma_buf_ops fsl_asrc_m2m_dma_buf_ops = {
+ 	.mmap = fsl_asrc_m2m_mmap,
+-	.map_dma_buf = fsl_asrc_m2m_map_dma_buf,
+-	.unmap_dma_buf = fsl_asrc_m2m_unmap_dma_buf,
+ 	.release = fsl_asrc_m2m_release,
++	DMA_BUF_SIMPLE_SGT_EXP_MATCH(fsl_asrc_m2m_map_dma_buf,
++				     fsl_asrc_m2m_unmap_dma_buf),
+ };
+ 
+ static int fsl_asrc_m2m_comp_task_create(struct snd_compr_stream *stream,
 -- 
 2.43.0
 
