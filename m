@@ -1,211 +1,184 @@
-Received: from SJ2PR03CU001.outbound.protection.outlook.com (mail-westusazon11012064.outbound.protection.outlook.com [52.101.43.64])
+Received: from mail.zytor.com (terminus.zytor.com [198.137.202.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADC3934CFAB
-	for <iommu@lists.linux.dev>; Thu, 19 Feb 2026 16:53:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.43.64
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771520032; cv=fail; b=F/PKyGpQR7oQPFgG9IABYekDTfGioyAkETbdoCNoN8RuiMR9Op9OqKWB1DltxKQqrSuAawAaEYJEYdPB314o1GsPlOXFMZJDf5+zbPa+dlGP+n0mFKabePpO9GraQ6GZ3Gf2S/nvEiAK0k2p60Vq+fkqWtD7smFbCufpWIKKN04=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771520032; c=relaxed/simple;
-	bh=FnOgwdgtD7jSMzuKhJnBvA6uz7SMpVsSXBLTChmpMb4=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=are9Z8u1iHp9Lmg//07Zwg1RH4xAytl9LO7J/02NONx/G8z/fJP+gz26TE+NHpYXteKjXOHXxgBejNYBmfYKh2+8Ucbw/010VtStQVv7g7ZR9eec/wdw/cgey5vNvbKNJtLWQA/p9SHdVn4CHpw7hjL2Rt9d7vR154+aGcPQh+Y=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=S0RhDY5j; arc=fail smtp.client-ip=52.101.43.64
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5DE034B194
+	for <iommu@lists.linux.dev>; Thu, 19 Feb 2026 17:11:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.136
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1771521065; cv=none; b=JtLmUonSJ/LhYG7nVp8Gtf7jZXDK+PAcuD98iZ7nGp9masPpTnE5Y8LdYdYE8D3jkRy8stWeGfTyHb4ZlW0ADM+fhRxTCyTgXpDqm6M7UrCnPCGW8hhjcy7L/JU/uWopMLIm6ZY8OBRANVPgEPHGsEVx1UsP1iFQ9Pims5k2Ljw=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1771521065; c=relaxed/simple;
+	bh=YsjWyAGSyAzJqcz0jlZAz0lznVHz9OA+6mfXetjPUxQ=;
+	h=Date:From:To:CC:Subject:In-Reply-To:References:Message-ID:
+	 MIME-Version:Content-Type; b=munpFFST0fbWJhWjl4HAD+4wncF2gfH0hq/vquYunrhb/TCmSrFvA4NRdrxXmTVme37k6ZA/sMxp5l70I4oYijg/+c2eMXvJGiuO3FzwR5VVVtBxH463lLjYf+4N6itRFgK4S14wZ+GmkOxW6QuR07sGfS5FTnJQoaBFwOm5smM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zytor.com; spf=pass smtp.mailfrom=zytor.com; dkim=pass (2048-bit key) header.d=zytor.com header.i=@zytor.com header.b=qi9a6aXI; arc=none smtp.client-ip=198.137.202.136
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zytor.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zytor.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="S0RhDY5j"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=U4hcm9eal8mBttY8z62SPYwcYVDT2Psb47feC1QD2pL8Bul0lD/sfeId8PE6+nP6OUGNSDsk/GQW5uKoVdHdc/tn24RHYvpCBpiZGG3MIzFOrqwrGU3M6NQC4LacMQgdrquwk2yr22/oqSnO4nJvvt9b8DGPzJVmovF/Ss7OlE1Nvvw1u71iffa2dt6gSbWLGfyRg18fRXogr6i55kx2yodvQo6MKBGH2B+DO1/D1Mz+Or8S0p+h9rQDdX51Gr7+swAuq6128jvQeWsOs+ShloQu0eKUm2kdmOa18ZqRjFCZ5xo2VAmymoC45N/5zBhXfOLunTFKv2J4L6P16MKBVg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4sL/2bwrtqZhmTX5mVWbCuOi8d8ue4yHY1JqsKLKDpI=;
- b=kGwqSq92VwlVw4HbhcZTRaDFPhbKDZQWv4AOXJopjJc8VupuhLGOGNZPORbAATWNBDrxkCDbJKIUheIMV7ryKiMZyvGlbTMzVnDIEOdBvjbhrFrRCihhyEiG6o9S6gX7FeYXoo0x2omvYSPOULFrqZE30H3zrXFX3tyROUepjdVZZ829izyxtkj4kzJ9yxS3hdQNob/YIIzT2b/UP6LEAKVwzlM6MOgp1VWO0rzV/TGYI2AC3OThycotohgFMwIdxGXM2wIv4fDJpzejU4fnfXGIbdCs0XsqqO7ozPkPcun35UW/VBM7oj1rHqqr9uGL6gclv6FBs4sQ/BexwsuNFw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4sL/2bwrtqZhmTX5mVWbCuOi8d8ue4yHY1JqsKLKDpI=;
- b=S0RhDY5j4FD+DZ1PnfJ2r2mVF/yx6QsNwQNHV8KO6S4b+HSEJ3vrp7M6o+TZAelqddEmnqzuRzyC/p+e/eiNsBN8KC4eUke61D9fC4TBmWCnA+fb38zQWDD3Oe2CODfqTKLtPuyyWbGsiLEINa18jdN6DjnM6h6K8dX+GNkTUsqSEmF4wkiV/c32dmeLNoCEHv8xukF1zf87w9NRDieEtcc/OQLBbVQVxYTSI6cXULMQewX2lm+Zu1Njnm6t35iSa5CVGdTTSaZnm6TxhQx1+BvUNSK4IWWdfkZzKwhgsbsvp6TVAvQ+eLg+iTbn4TNEawf1r+Su1I7GGIJ4yINyxA==
-Received: from CH2PR02CA0019.namprd02.prod.outlook.com (2603:10b6:610:4e::29)
- by MN0PR12MB5929.namprd12.prod.outlook.com (2603:10b6:208:37c::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9632.16; Thu, 19 Feb
- 2026 16:53:42 +0000
-Received: from CH2PEPF0000009E.namprd02.prod.outlook.com
- (2603:10b6:610:4e:cafe::e) by CH2PR02CA0019.outlook.office365.com
- (2603:10b6:610:4e::29) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9632.16 via Frontend Transport; Thu,
- 19 Feb 2026 16:53:41 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- CH2PEPF0000009E.mail.protection.outlook.com (10.167.244.27) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9632.12 via Frontend Transport; Thu, 19 Feb 2026 16:53:41 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Thu, 19 Feb
- 2026 08:53:23 -0800
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail203.nvidia.com
- (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Thu, 19 Feb
- 2026 08:53:22 -0800
-Received: from nvidia.com (10.127.8.14) by mail.nvidia.com (10.129.68.7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
- Transport; Thu, 19 Feb 2026 08:53:20 -0800
-Date: Thu, 19 Feb 2026 08:53:19 -0800
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: <dan.j.williams@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
-	"Jonathan Cameron" <jonathan.cameron@huawei.com>, "will@kernel.org"
-	<will@kernel.org>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"bhelgaas@google.com" <bhelgaas@google.com>, "joro@8bytes.org"
-	<joro@8bytes.org>, "praan@google.com" <praan@google.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
-	"miko.lenczewski@arm.com" <miko.lenczewski@arm.com>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "linux-pci@vger.kernel.org"
-	<linux-pci@vger.kernel.org>, "linux-cxl@vger.kernel.org"
-	<linux-cxl@vger.kernel.org>
-Subject: Re: [PATCH RFCv1 1/3] PCI: Allow ATS to be always on for CXL.cache
- capable devices
-Message-ID: <aZc//6kvH3Eqfwfe@nvidia.com>
-References: <BN9PR11MB527649A0049CA195E7BCF9218C90A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20260127150440.GF1134360@nvidia.com>
- <69795d0366a9_1d33100d3@dwillia2-mobl4.notmuch>
- <20260128130520.GV1134360@nvidia.com>
- <aYGEDv86r4a6l2Dv@Asurada-Nvidia>
- <20260203143348.GA3931454@nvidia.com>
- <aYI0LUdXqrjmRcMo@Asurada-Nvidia>
- <20260203175540.GC3931454@nvidia.com>
- <aZZDo3BeuBKh9q24@nvidia.com>
- <20260219143737.GG723117@nvidia.com>
+	dkim=pass (2048-bit key) header.d=zytor.com header.i=@zytor.com header.b="qi9a6aXI"
+Received: from ehlo.thunderbird.net (c-76-133-66-138.hsd1.ca.comcast.net [76.133.66.138])
+	(authenticated bits=0)
+	by mail.zytor.com (8.18.1/8.17.1) with ESMTPSA id 61JHA6mF061543
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NO);
+	Thu, 19 Feb 2026 09:10:07 -0800
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.zytor.com 61JHA6mF061543
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zytor.com;
+	s=2026012301; t=1771521011;
+	bh=kccVFgKV/Gov4dZzwLE1ZqBthUx7ayVQs5AokW/GCIk=;
+	h=Date:From:To:CC:Subject:In-Reply-To:References:From;
+	b=qi9a6aXIYjVNA1t7lLg6lec45w4xiw/YNvwOXsl/BeUiwX3xR8D9fg6pp9oKGexCZ
+	 6D3eyWIxQARRqjXrLiPOKFSwMuvLa3SxUpYrik5QBcJlaohTjifVD4ietFKfvE7YN0
+	 wGeIqxEW8FdjCO8akb1R+UoMvl4JtQ7/RU8Xif3Ylgo+7pe4T+aNWgPHm1TKvr0DBT
+	 h5QK/ukeiKE88Z1agf+xXaZbQMsQlIdbiodoT0w2TISCu7dIboN8odsnzmqr+SnZuM
+	 duXP5P8r7zdUdBl8CEBY5fTSLz/lMWYG/QiQKEhgKr0CyRp8VCM0Z1hAXRxr36F9Jq
+	 mAhHSoO2EMSOA==
+Date: Thu, 19 Feb 2026 09:10:01 -0800
+From: "H. Peter Anvin" <hpa@zytor.com>
+To: Ard Biesheuvel <ardb@kernel.org>, Andy Lutomirski <luto@amacapital.net>,
+        Simo Sorce <simo@redhat.com>
+CC: "Daniel P. Smith" <dpsmith@apertussolutions.com>,
+        Ross Philipson <ross.philipson@oracle.com>,
+        linux-kernel@vger.kernel.org, x86@kernel.org,
+        linux-integrity@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-crypto@vger.kernel.org, kexec@lists.infradead.org,
+        linux-efi@vger.kernel.org, iommu@lists.linux.dev,
+        dave.hansen@linux.intel.com, Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        mjg59@srcf.ucam.org, James.Bottomley@hansenpartnership.com,
+        peterhuewe@gmx.de, Jarkko Sakkinen <jarkko@kernel.org>, jgg@ziepe.ca,
+        nivedita@alum.mit.edu, Herbert Xu <herbert@gondor.apana.org.au>,
+        davem@davemloft.net, corbet@lwn.net, ebiederm@xmission.com,
+        dwmw2@infradead.org, baolu.lu@linux.intel.com,
+        kanth.ghatraju@oracle.com, andrew.cooper3@citrix.com,
+        trenchboot-devel@googlegroups.com
+Subject: Re: [PATCH v15 00/28] x86: Secure Launch support for Intel TXT
+User-Agent: K-9 Mail for Android
+In-Reply-To: <558d0f28-01fb-4447-891c-2ffbf869c077@app.fastmail.com>
+References: <20251215233316.1076248-1-ross.philipson@oracle.com> <b5f2b5a5-b984-4ed3-a023-c06d634f9146@app.fastmail.com> <1ffd3cb5-2c76-4371-a067-3e4849907d80@apertussolutions.com> <49d169bf-0ad2-49be-b7d7-fceb9e7f831a@app.fastmail.com> <CALCETrUE8c-dxRWhtHKz_PojwZuWMXJSzOsFQf2vt5LS3ATwpA@mail.gmail.com> <1BBD7449-8420-43FD-930B-A4E1BA38FFC6@zytor.com> <CALCETrWzG1Mjb-RcwLQ5-tGFZ15WKHjZbqtLvyif+UPuVKJ_5g@mail.gmail.com> <32e62cef7b89d9691bdd4120388ce752fd041230.camel@redhat.com> <CALCETrUMR0RvOFXGzL7=F4c-3veL+1Sm2xf-BprHTK4=UKw8yA@mail.gmail.com> <558d0f28-01fb-4447-891c-2ffbf869c077@app.fastmail.com>
+Message-ID: <4AF70D88-AD0C-4421-B8D5-2055D6B5E736@zytor.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20260219143737.GG723117@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH2PEPF0000009E:EE_|MN0PR12MB5929:EE_
-X-MS-Office365-Filtering-Correlation-Id: a51f4d2f-276b-4bfc-cf89-08de6fd76fdb
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|82310400026|36860700013|376014|7416014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?VVMPT6bxUBTviGJLZujJAiBt8eW8flFVjlPIXAyRUXIHNlUJNTUiq7ozIqC2?=
- =?us-ascii?Q?GhmZ0hE/gGuWqztnmL19xRRpcTIFyIPNctCJ9OLzmN2XKR13p8vb4qq/MeZH?=
- =?us-ascii?Q?nAI3qbd9lVfUl/aIePfVcFae9c5fSPTTic2c9BNF2DoI16KrVpoem7zeebp5?=
- =?us-ascii?Q?u3tImBUrifpLAy4bOxzlm5/kpCgoQ1HR2sa/wbz0iwSyiu45IvxgvvOzpLc6?=
- =?us-ascii?Q?EnuQv7RMs1XIXx7bx54s6F5HCyaWkPDxaJzTVDz0Ge3PX/Kqs7md6Q+EX1oV?=
- =?us-ascii?Q?GIGlVlJaQIi86mbD821JmQywCl6Xz2LvIiCXOQigCWds4PFqK2GyKKMRx2+C?=
- =?us-ascii?Q?4ZemQYPyZC6ERD5DQ68HgAk/qIeH9NxnaSGFCqcEipoP2Y3ryJ8ZWtyVhSx2?=
- =?us-ascii?Q?X4x0vZM5shpylXS2DwdyUW2Q6zl9UFaoh0nxEFWxjA8GNufY6wgpurZ3caO9?=
- =?us-ascii?Q?p/K0o1DH6Pv4O5Pny+RHz0Pv/IX6h+iTQXaT1w6IvPyhlo2rs+/YMT8V5YFk?=
- =?us-ascii?Q?EgFXgCT0LuuCrUGpEOHZe2Spvc1oEbAJZ0rhHiLcaXPxsOR9VbbqmubFvcmq?=
- =?us-ascii?Q?LTzkBJz7W4bQV/u3ZNazWev57QiuduGWb4TQ421374ZP0nSnsGugHdAKOCgZ?=
- =?us-ascii?Q?Gj1HbWpmZtcUTgsmacqr9bJUhNqwMDsH9HfLmAQVN4N+7Q6Xh/o7xW22xBJL?=
- =?us-ascii?Q?yZPzWpGBe32CPwXOri4iZGVaHCGBR77+wfaPczBGItzfQsGh27z/L42/Arwm?=
- =?us-ascii?Q?zvsckURQSAtkNEmgWC5tmTDt52AquZI1V0NX0UPlHQD+3FXjUDd7p4qr4DkV?=
- =?us-ascii?Q?80e39b6DorlrVAxQAoBlgb/ljJlFnL0JSrKPDyrQER58X177PyRTrEEOePoi?=
- =?us-ascii?Q?a+asGqZHDMNa5cLMYGF4jT2jC1sQyivasUJlVwI1fkt3v/AIwtu6+WIfvxfF?=
- =?us-ascii?Q?1YaLFlwg4ThrsPOvtXNcECr/u5sg900XGpNjiOf8d+BmyawEqi4nisXVfVxZ?=
- =?us-ascii?Q?lnsfgxo23GXFvpIXTNmZ3DbMjXUM/aAm8lBXBDwYgocQ+2Ck2z1tV/h/eTJA?=
- =?us-ascii?Q?nGQBAu96pnQNfvPEiwYrKiKLts1LgyWaif87yvGW8zCTPpXoY88KtqUNY3kh?=
- =?us-ascii?Q?BVFIYytR/7Gc/PfqNDwfnJqUC4o3TtwHB2RkALpjmjeVp15vnHV9TJPimsUb?=
- =?us-ascii?Q?mBDbaAYRTh4cLWCFNmDzMbjYaghrSeJqIbuHCQZtbEnEuXk6mnag7IDibt3Y?=
- =?us-ascii?Q?srqLLfbMtRKQKeU81en+wxW0O1On0xhNf5ELkEPEFEqvjDHDe0bPMRdd4KOa?=
- =?us-ascii?Q?waUKUYDZVkjgzz3nIjlqmwcOTojN4H1t7kdb0DMeB8tDN7cH2FzysYWcKe4X?=
- =?us-ascii?Q?aJ55CKZe00Gu+ewCakYeLSp5wFR+mAE9qzL39yBE78f3kIMia3E4efcxe93+?=
- =?us-ascii?Q?igbXMtXFtY70QyfV9N2LYAvJ1sV6mq5iVAqnMCIRTk0QJNhUGXqFR2phStRB?=
- =?us-ascii?Q?krSlVa9wxprrxub1sxSqE+jwNNYjcCb235xYmSAsxkauXz8Vb12PNB6AG4pN?=
- =?us-ascii?Q?YGX3mDngp1hf7SABNw3qkRhABi0Swvlc4sRJgNIj8jSLsNRFymYTo53NFOc1?=
- =?us-ascii?Q?M+T9LMIQYhRM8OgMalhZ5R73G+4VK2vVc4QAIST7MvMPaZjnz4fyPgSlAbZc?=
- =?us-ascii?Q?H+zKdA=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(82310400026)(36860700013)(376014)(7416014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	3Y3K7sDVYneADcS+mwzWcdAWomna8O6cKrmK2PWKY4aoJzhQX7M5RXBN8mKW9gY1T8rSRbWAfxm0J8GAibVMNVHQErqE28paDTo3xctkxniNsgEZw714ITRynTcINgdWJKWHNgr4iRqnSJHqLEnvpXXZ8g9Wr5UjBECkTzqRPReyKq6XyZ54ji6C4QzHB7imtw9sqEG9RPmjPEo5QgRE/6V7C1VmxoDSQzOHtWIiJJB3YdPVhbjLUHqLirDAXIGfvHnyEv+D6eiRVaXv+DkDQfBdSRzljrbCs2pJutJAN2OPMyphuEmtUAh1DUoi2uCvt0GyPdy4W9E0Vu+Me5Ciwvwl70HhMTSvRADch9szaNxjoruW7EYcA0OJ0tmjJWXKOL/b+LBBnlJGMji7xdNKnUjGD6+o0d6Mxxo3rDoOMzD5fy7RNQMEqg+i9B5iTyRl
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Feb 2026 16:53:41.6944
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: a51f4d2f-276b-4bfc-cf89-08de6fd76fdb
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CH2PEPF0000009E.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB5929
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, Feb 19, 2026 at 10:37:37AM -0400, Jason Gunthorpe wrote:
-> On Wed, Feb 18, 2026 at 02:56:35PM -0800, Nicolin Chen wrote:
-> > On Tue, Feb 03, 2026 at 01:55:40PM -0400, Jason Gunthorpe wrote:
-> > > On Tue, Feb 03, 2026 at 09:45:17AM -0800, Nicolin Chen wrote:
-> > > > Btw, attaching to IOMMU_DOMAIN_BLOCKED/group->blocking_domain is not
-> > > > allowed in general if require_direct=true. I assume this case can be
-> > > > an exception since there's no point in allowing a device that has no
-> > > > driver yet to access any reserved region?
-> > > 
-> > > If require_direct is set then we have to disable this mechanism..
-> > 
-> > I found a corner case, which might be another exception here?
-> 
-> I don't think this blocking security work needs to be part of this
-> series. We just need to disable the mechanism for untrusted devices.
+On February 18, 2026 11:54:55 PM PST, Ard Biesheuvel <ardb@kernel=2Eorg> wr=
+ote:
+>On Wed, 18 Feb 2026, at 22:54, Andy Lutomirski wrote:
+>> On Wed, Feb 18, 2026 at 1:04=E2=80=AFPM Simo Sorce <simo@redhat=2Ecom> =
+wrote:
+>>>
+>>> On Wed, 2026-02-18 at 12:34 -0800, Andy Lutomirski wrote:
+>>> > On Wed, Feb 18, 2026 at 12:29=E2=80=AFPM H=2E Peter Anvin <hpa@zytor=
+=2Ecom> wrote:
+>>> > >
+>>> > > On February 18, 2026 12:03:27 PM PST, Andy Lutomirski <luto@amacap=
+ital=2Enet> wrote:
+>>> > > > On Thu, Feb 12, 2026 at 12:40=E2=80=AFPM Ard Biesheuvel <ardb@ke=
+rnel=2Eorg> wrote:
+>>> > > > >
+>>> > > > > On Thu, 12 Feb 2026, at 20:49, Daniel P=2E Smith wrote:
+>>> > > > > > On 2/9/26 09:04, Ard Biesheuvel wrote:
+>>> > > > > =2E=2E=2E
+>>> > > > > But would it be better to disable the runtime services by defa=
+ult when doing a secure launch? PREEMPT_RT already does the same=2E
+>>> > > >
+>>> > > > So I have a possible way to disable EFI runtime service without =
+losing
+>>> > > > the ability to write EFI vars=2E  We come up with a simple file =
+format
+>>> > > > to store deferred EFI var updates and we come up with a place to=
+ put
+>>> > > > it so that we find it early-ish in boot the next time around=2E =
+ (This
+>>> > > > could be done via integration with systemd-boot or shim some oth=
+er
+>>> > > > boot loader or it could actually be part of the kernel=2E)  And =
+then,
+>>> > > > instead of writing variables directly, we write them to the defe=
+rred
+>>> > > > list and then update them on reboot (before TXT launch, etc)=2E =
+ [0]
+>>> > > > This would be a distincly nontrivial project and would not work =
+for
+>>> > > > all configurations=2E
+>>> > > >
+>>> > > > As a maybe less painful option, we could disable EFI runtime ser=
+vices
+>>> > > > but have a root-writable thing in sysfs that (a) turns them back=
+ on
+>>> > > > but (b) first extends a PCR to say that they're turned back on=
+=2E
+>>> > > >
+>>> > > > (Or someone could try running runtime services at CPL3=2E=2E=2E)
+>>> > > >
+>>> > > > [0] I have thought for years that Intel and AMD should do this o=
+n
+>>> > > > their end, too=2E  Keep the sensitive part of SMI flash entirely=
+ locked
+>>> > > > after boot and, instead of using magic SMM stuff to validate tha=
+t
+>>> > > > write attempts have the appropriate permissions and signatures, =
+queue
+>>> > > > them up as deferred upates and validate the signatures on the ne=
+xt
+>>> > > > boot before locking flash=2E
+>>> > > >
+>>> > >
+>>> > > *If* a physical EFI partition exists there is a lot to be said for=
+ this approach=2E
+>>> > >
+>>> > > The only issue with this that I can see is for things like network=
+ or CD/DVD booting where there isn't necessarily any EFI boot partition, it=
+ might not be writable, or it might not be persistent (e=2Eg=2E http bootin=
+g typically uses a ramdisk, like the old Linux initrd=2E)
+>>> >
+>>> > Hmm, I guess my approach is a 100% complete nonstarter for installin=
+g
+>>> > Linux from a CD, and it's really not awesome for installing Linux fr=
+om
+>>> > a USB stick=2E
+>>>
+>>> Doing any of this on a removable device feels generally like a trap=2E
+>>> You get your USB disk in, try to boot, and it saves vars, but reboot
+>>> fails for whatever reason, you plug it in another machine =2E=2E=2E an=
+d it
+>>> tries to "continue" from there? The amount of validation needed and
+>>> testing for failure modes across reboots sounds really painful=2E
+>>
+>> I kind of stand by my other previous suggestion, though:
+>>
+>> As a maybe less painful option, we could disable EFI runtime services
+>> but have a root-writable thing in sysfs that (a) turns them back on
+>> but (b) first extends a PCR to say that they're turned back on=2E
+>>
+>
+>After setting the EFI boot path to GRUB (or systemd-boot or whatever) at =
+installation time, what other meaningful interactions do we expect with the=
+ EFI runtime services?
+>
+>And given that the secure launch is orchestrated by the bootloader , with=
+ which the kernel has a backchannel via its configuration file, it should b=
+e rather straight-forward to implement the staging of variable updates ther=
+e if we really need it=2E=20
+>
+>Doing any of this at the EFI/spec level might lead to a situation where t=
+he OS now has to guess which of the provided APIs to manipulate variables i=
+s the least broken=2E
+>
+>Of course, for readinf variables, dumping the RT variables into a memory =
+buffer at boot time and exposing it via a EFI config table would be rather =
+straight-forward, but it is also something I feel should be the job of the =
+boot component that takes part in the decision to shield the runtime servic=
+es from the OS=2E
+>
+>
+>
+>
 
-Oh, I thought it should be a prerequisite. I'll separate the patch
-then.
-
-> > Most of dma_configure callback functions don't use default domain
-> > when driver_managed_dma is set. And this breaks MSI on pcieports.
-> 
-> The ARM MSI aperture need is some special case here. Those drivers
-> don't use DMA at all so of course they don't have the DMA API setup,
-> but they do use the MSI aperture on ARM.
-> 
-> Broadly here we were talking about blocked domains for unattached
-> drivers, but an empty DMA domain is the same thing and still continues
-> to allow the MSI vectors to work.
-
-I see.
-
-> So we can reframe this a little bit into more like
-> 
-> if the user requests IDENTITY then the IDENTITY domain is not
-> installed until just before the driver binds. Up until then it is in
-> the DMA domain. Meaning if userspace controls driver binding then
-> unbound drivers have their DMA access blocked by an empty DMA domain.
-
-The thing is that those driver_managed_dma callbacks don't call
-iommu_device_use_default_domain(). So, the iommu core loses the
-trigger to switch domain from BLOCKED/empty-DMA to DMA/IDENTITY.
-
-The pcieports case via pci_dma_configure() is an example.
-
-My previous approach using BUS_NOTIFY could likely work, but it
-needed to adjust the timing between BUS_NOTIFY and dev->driver
-setting.
-
-Thanks
-Nicolin
+The statement "that the kernel has a backchannel to" is *not true in gener=
+al*=2E
