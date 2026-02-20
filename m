@@ -1,56 +1,55 @@
-Received: from mx-rz-1.rrze.uni-erlangen.de (mx-rz-1.rrze.uni-erlangen.de [131.188.11.20])
+Received: from mx-rz-3.rrze.uni-erlangen.de (mx-rz-3.rrze.uni-erlangen.de [131.188.11.22])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C7F135979
-	for <iommu@lists.linux.dev>; Fri, 20 Feb 2026 01:51:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=131.188.11.20
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F1CA1C84C0
+	for <iommu@lists.linux.dev>; Fri, 20 Feb 2026 02:01:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=131.188.11.22
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771552274; cv=none; b=rHVKZ3vdjQ+JukQxtIV5ezSTjfWqjzwfmRbUQ06Ntt3lg0v2BcrUUke8qBXYQxqFB0pXwTuYdl7Xq1dWXxUBtLr1NKWfkNYhAd/cx7Crq0HhWAmsZUfwrLMAJuSHB1zXuBegaqXldnZzXdper+H522muNjKVQKyeGMz5YivjHYU=
+	t=1771552878; cv=none; b=FYBaPdKONaw2J5PwN+zrWFGYkIjtjoCZwnBUqGayOyEVW225ww/l7yN1wpTAzkwrA2v3SVKoD9y1VRLUhlbppuXU3IIhZwxu9aQHEfjWZmQZ8BRYYVHdY7BueD4bZXH+4XDwZxn7yCq091YQFNB7uI/Q2Rg4/EuP092WueTjfh4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771552274; c=relaxed/simple;
+	s=arc-20240116; t=1771552878; c=relaxed/simple;
 	bh=SjreZxgEDQkHyx/PVpEMXYPGrJ3PNf+PWShj9NzXTh8=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=dXJ6aFtPNAfTsApjdUM7i4L3k0EAyfO7jSWuxgpu0Az2Ctqy2Qh8YbbsW8okYIKKecxmLf8z2bcX0NQ6vfhMzQRM4ASVysOafQB9C98qSK2peOZTk2EfvAe5Zrr35rdLLAqFdjdj+sDvCX1glQrVmV5QQg5tpZqmxEgKqQFZFaE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fau.de; spf=pass smtp.mailfrom=fau.de; dkim=pass (2048-bit key) header.d=fau.de header.i=@fau.de header.b=GXNZc5oB; arc=none smtp.client-ip=131.188.11.20
+	 MIME-Version; b=Aby6wfVZ6M/gmWXLakHVmQaYfoiSo9G3eORbVQtiSvX8D17jNiPdJWm6u/qVdNsqvKgWxgFBGuzMVfq5znkkz98aiykUxAm2ZRkbUYSDvv3D3TMtsPdKiqhB8QdfX0GmQRZj403v/aMdfKVzVOsGLj0I4er1EnVinCdifygJof0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fau.de; spf=pass smtp.mailfrom=fau.de; dkim=pass (2048-bit key) header.d=fau.de header.i=@fau.de header.b=mjyjRX+C; arc=none smtp.client-ip=131.188.11.22
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fau.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fau.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=fau.de header.i=@fau.de header.b="GXNZc5oB"
+	dkim=pass (2048-bit key) header.d=fau.de header.i=@fau.de header.b="mjyjRX+C"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fau.de; s=fau-2021;
-	t=1771551896; bh=RYwp0qZ5OBGtM9HrbXRS6kYseYlEG8GcG1ORozzm0g4=;
+	t=1771552371; bh=RYwp0qZ5OBGtM9HrbXRS6kYseYlEG8GcG1ORozzm0g4=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From:To:CC:
 	 Subject;
-	b=GXNZc5oBDnBoHK/8UCjuG/CmfOLdH5Yz8B9woQu1KVKAbg4WfgWRHy/f1jZuIK5uW
-	 QF8MVEtWL6i8hnhTqSFIHn2IuNnER0iFKWKhUyIejxfEelIMFcNxo0D5oRbssQkl82
-	 OPiquwWtXeQQCwsodcXU1VdyrjXss3kT+HcxCo8njKbpIvrEvWlU/nhlfHrMOav0JD
-	 m3aVxonAaDmoASBxrUNJHKlxg4TcLYKojS3QbAlRetMbyGAIgeyirH0exnO5R7M+D/
-	 og8dKKrBAUYpLm72YYlQH1FmIVkxKfgCUWPMTyFkltfGc75hn7x4hQeuLeq5nTYxaJ
-	 bcEyu7nbo/x2w==
+	b=mjyjRX+Cua51tGFyXHC1OTRWnaddm5edNZvLywYtsAvMjH/zPW9wZZO8g/4Wh61XX
+	 rJCNlAopb+5kzhHg6+Ian7yRJQByLSyr+3wpHZd/AZrQFj4eJCy9+KpOYj2wM6zPUB
+	 z7Deb/AZw391I+l6k3CJUOATlyeTWbKe5n6Ck8PoOZUSqJApkhbzoEie7W1XHe5zNv
+	 O9wB+dAZ9COPQHFeKAvqxSSFN+us0XPOWJLppcIx2h6zABCYvJke09DsKWxkCBAafA
+	 N//0fic7MDUlN0u8Gk/jBqaw30hXS2LjbojWpL4zmT188HBcNZuj3OKscnnEsqA+PQ
+	 OQ2ntCoawM1xg==
 Received: from mx-rz-smart.rrze.uni-erlangen.de (mx-rz-smart.rrze.uni-erlangen.de [IPv6:2001:638:a000:1025::1e])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mx-rz-1.rrze.uni-erlangen.de (Postfix) with ESMTPS id 4fHCjh2KcMz8vWP;
-	Fri, 20 Feb 2026 02:44:56 +0100 (CET)
-X-Virus-Scanned: amavisd-new at boeck4.rrze.uni-erlangen.de (RRZE)
+	by mx-rz-3.rrze.uni-erlangen.de (Postfix) with ESMTPS id 4fHCtq63Cvz1xys;
+	Fri, 20 Feb 2026 02:52:51 +0100 (CET)
+X-Virus-Scanned: amavisd-new at boeck5.rrze.uni-erlangen.de (RRZE)
 X-RRZE-Flag: Not-Spam
 X-RRZE-Submit-IP: 80.131.192.251
 Received: from thorium.fritz.box (p5083c0fb.dip0.t-ipconnect.de [80.131.192.251])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
-	(Authenticated sender: U2FsdGVkX19w3y4SByqGtzTX/01hTgwDMB+o+SNGMiM=)
-	by smtp-auth.uni-erlangen.de (Postfix) with ESMTPSA id 4fHCjd2HRJz8vWM;
-	Fri, 20 Feb 2026 02:44:53 +0100 (CET)
+	(Authenticated sender: U2FsdGVkX1857JzXgnV/WGEwzfBXodhxR1lbFMiZ02g=)
+	by smtp-auth.uni-erlangen.de (Postfix) with ESMTPSA id 4fHCtm4YLsz1xyp;
+	Fri, 20 Feb 2026 02:52:48 +0100 (CET)
 From: Ferdinand Schober <ferdinand.schober@fau.de>
-To: jacob.jun.pan@linux.intel.com
+To: linux-kernel@vger.kernel.org
 Cc: ashok.raj@intel.com,
 	baolu.lu@linux.intel.com,
 	dwmw2@infradead.org,
 	iommu@lists.linux.dev,
 	joro@8bytes.org,
 	kevin.tian@intel.com,
-	linux-kernel@vger.kernel.org,
 	robin.murphy@arm.com,
 	sanjay.k.kumar@intel.com,
 	stable@vger.kernel.org,
@@ -58,8 +57,8 @@ Cc: ashok.raj@intel.com,
 	yi.l.liu@intel.com,
 	Ferdinand Schober <ferdinand.schober@fau.de>
 Subject: Re: [PATCH v3] iommu/vt-d: Avoid superfluous IOTLB tracking in lazy mode
-Date: Fri, 20 Feb 2026 02:44:45 +0100
-Message-ID: <20260220014445.374708-1-ferdinand.schober@fau.de>
+Date: Fri, 20 Feb 2026 02:52:39 +0100
+Message-ID: <20260220015239.375598-1-ferdinand.schober@fau.de>
 X-Mailer: git-send-email 2.52.0
 In-Reply-To: <20230209175330.1783556-1-jacob.jun.pan@linux.intel.com>
 References: <20230209175330.1783556-1-jacob.jun.pan@linux.intel.com>
