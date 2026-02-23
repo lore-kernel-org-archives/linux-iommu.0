@@ -1,354 +1,75 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C93B136C58C;
-	Mon, 23 Feb 2026 23:12:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A1BE2749CF
+	for <iommu@lists.linux.dev>; Mon, 23 Feb 2026 23:16:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771888323; cv=none; b=fyuH6FOinTkPT0Y30Az3UyZ5yfYe0xyGeT6U6hcjllm2uqP/IgCpKrFQijWCtgKHNnNAnK22wBDSkNj8fuRUuIVEznBS7sIY6MoZXNofz8MZHqAmdK8VtpcWoIGCu5lOFjCo6CQGnbYyjF2dMA2uYwlKxDL6nta9nI5QLB0cZWA=
+	t=1771888598; cv=none; b=PcVnxlrE87312tdAtRnHUHlALefsarlDXtIQ0kkAvTlB9hWYOC6cdiqydwsTjDQuhNUTkJ4SORmHxGHgWOFMBmNibkwuY57S9VQdDrEcU9VgbXUYXmTA7E/neigVSi6tjTfXBpzA3+WG8WmYdSBhafT62b64GrbzqQNgPI27VgA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771888323; c=relaxed/simple;
-	bh=lfcfBanE3QZv/KHaRe7YkLLvilXJRfDZVBkJNys21gs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=iCEhRUSkOlW3G6Foljrkaszd5ZDX1DlP959YaILfFXIn0uQuovloyOVGjwZAAAE/+3OfBsx1FFvCeAlQdXZnU/ckhb8lyP+n6B2rhrM4qNKgm/ZDBqZMv+j7497+L/Koplv6y5fEhsUQSrZhZsBnPoCbxbnCbTUnu/zvEWTRoXg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=J3NJcoEv; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1771888598; c=relaxed/simple;
+	bh=UUCHpGU8rj7ZCDbb/KvQ81bVmqfcjl1rDIbWLGX8J+U=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=RhMvbeiMNw2kGwuIBDPbVQiGldg8iAeWi962vwHgcKlXf2hopsxSiiKmqlxmvVsO07k66+CTV1lmgl8jKVsAAxmQok+FD18hbwL6Df52yv2PSZMwo/01Jt+4RX9zdZy2vUTRaAuTiPJMCx80QISnz1mDwfXUb0EjMsoz5G18dOE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Gk4UiEKD; arc=none smtp.client-ip=192.198.163.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="J3NJcoEv"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 521FBC116C6;
-	Mon, 23 Feb 2026 23:12:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771888323;
-	bh=lfcfBanE3QZv/KHaRe7YkLLvilXJRfDZVBkJNys21gs=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=J3NJcoEvhADuZ2t3SK40N1ip4xUIagFED/z6EEU6JXd2161HvEGMLzy4oxf2fgFaP
-	 A0650kkRXw2IeZh/8QpdhLmy4dkr9kGtzrAveXbZh/MjUPRydmWEwbod8PlDOgetxu
-	 Kgtpqo3vpbWXitc/1kCKdzHtfp3oaR4CTTCz9pHcZt3XxTF86d4xhOA12lemfeXINZ
-	 JkpU+juQBUDZM7eZTsv3qCk3sMYjAj+6PpacPs7kS0pv+tSGvgE4wGxJwFA9juJeoW
-	 cCt+urQ1mbOaBYD7DX2wQC0aklD94/nNVn5gTAHGmtPa8u3tZaB+7KVr4V9vaBc2ch
-	 b+3SU2HeBtvmg==
-Date: Mon, 23 Feb 2026 17:11:59 -0600
-From: Bjorn Andersson <andersson@kernel.org>
-To: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
-Cc: Oded Gabbay <ogabbay@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
-	Shuah Khan <skhan@linuxfoundation.org>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
-	Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
-	Sumit Semwal <sumit.semwal@linaro.org>, Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>, 
-	dri-devel@lists.freedesktop.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-arm-msm@vger.kernel.org, iommu@lists.linux.dev, linux-media@vger.kernel.org, 
-	linaro-mm-sig@lists.linaro.org, Srinivas Kandagatla <srinivas.kandagatla@oss.qualcomm.com>, 
-	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, Bharath Kumar <quic_bkumar@quicinc.com>, 
-	Chenna Kesava Raju <quic_chennak@quicinc.com>
-Subject: Re: [PATCH RFC 06/18] accel/qda: Add memory manager for CB devices
-Message-ID: <rvi6cqi343yoc3qyabtb72zsedtruktfba6dxstvgw4k7bzyt5@4ofj5pdmkhw6>
-References: <20260224-qda-firstpost-v1-0-fe46a9c1a046@oss.qualcomm.com>
- <20260224-qda-firstpost-v1-6-fe46a9c1a046@oss.qualcomm.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Gk4UiEKD"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1771888597; x=1803424597;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=UUCHpGU8rj7ZCDbb/KvQ81bVmqfcjl1rDIbWLGX8J+U=;
+  b=Gk4UiEKDrVUh0+Ff6xA8y0pvIwllRB9c2s07oeM6zodH1oT7LUzqHVH2
+   Y0FSqbonu0NUSZcJx5jS/AKOWPcjEXsxcN2B4Z5h1kp/XPBVvpSI6Ehn2
+   02Nax3wNkYAYabwZepCTVCxN/YV1D0Ovj7l6ClTGJbGb3lvyfxbYw8418
+   dB8vbeEj4t3z7lKlt6yiOMGxcjzDpgFYs6S9MQ/x6Dh82VLtBxrDA6ekL
+   MOtstj4puKfg0s3hfID4g0MINJqtg+RzXxba5x1ktHUj7d+5787WFzKPU
+   6nV9Wgk6A9xFH3basc30DOGaTcRAjBBLAM2hgETYmJjWSZcttpaUcZwPH
+   A==;
+X-CSE-ConnectionGUID: HK5HnfCPQSK2tUm4i5EpZQ==
+X-CSE-MsgGUID: c9AKrpcmT9atSEvJ5gfGDA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11710"; a="71925185"
+X-IronPort-AV: E=Sophos;i="6.21,307,1763452800"; 
+   d="scan'208";a="71925185"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2026 15:16:37 -0800
+X-CSE-ConnectionGUID: JtC5Z+36S0m1IjPgesHPkg==
+X-CSE-MsgGUID: 670nfBiQQbqlQYJajlTi0Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,307,1763452800"; 
+   d="scan'208";a="214944972"
+Received: from jkrzyszt-mobl2.ger.corp.intel.com ([10.245.246.253])
+  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2026 15:16:35 -0800
+From: Janusz Krzysztofik <janusz.krzysztofik@linux.intel.com>
+To: iommu@lists.linux.dev
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, David Woodhouse <dwmw2@infradead.org>,
+ Lu Baolu <baolu.lu@linux.intel.com>
+Subject: UBSAN: shift-out-of-bounds in drivers/iommu/intel/iommu.h:1101:17
+Date: Tue, 24 Feb 2026 00:16:32 +0100
+Message-ID: <11145826.aFP6jjVeTY@jkrzyszt-mobl2.ger.corp.intel.com>
+Organization: Intel Technology Poland sp. z o.o. - ul. Slowackiego 173,
+ 80-298 Gdansk - KRS 101882 - NIP 957-07-52-316
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260224-qda-firstpost-v1-6-fe46a9c1a046@oss.qualcomm.com>
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="utf-8"
 
-On Tue, Feb 24, 2026 at 12:39:00AM +0530, Ekansh Gupta wrote:
-> Introduce a per-device memory manager for the QDA driver that tracks
-> IOMMU-capable compute context-bank (CB) devices. Each CB device is
-> represented by a qda_iommu_device and registered with a central
-> qda_memory_manager instance owned by qda_dev.
-> 
+Hello,
 
-The name makes me expect that this manages memory, but it seems to
-manage devices and context banks...
+Please have a look at 
+https://gitlab.freedesktop.org/drm/i915/kernel/-/issues/15478
 
-> The memory manager maintains an xarray of devices and assigns a
-> unique ID to each CB. It also provides basic lifetime management
-> and a workqueue for deferred device removal. qda_cb_setup_device()
-> now allocates a qda_iommu_device for each CB and registers it with
-> the memory manager after DMA configuration succeeds.
-> 
-> qda_init_device() is extended to allocate and initialize the memory
-> manager, while qda_deinit_device() will tear it down in later
-> patches.
+For me it looks like an IOMMU issue.  I've added there a comment that 
+summarizes my findings.
 
-"in later patches" makes this extremely hard to review. I had to apply
-the series to try to navigate the code...
+Thanks,
+Janusz
 
-> This prepares the QDA driver for fine-grained memory and
-> IOMMU domain management tied to individual CB devices.
-> 
-> Signed-off-by: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
-[..]
->  obj-$(CONFIG_DRM_ACCEL_QDA_COMPUTE_BUS) += qda_compute_bus.o
-> diff --git a/drivers/accel/qda/qda_cb.c b/drivers/accel/qda/qda_cb.c
-[..]
-> @@ -46,6 +52,18 @@ static int qda_cb_setup_device(struct qda_dev *qdev, struct device *cb_dev)
->  	rc = dma_set_mask(cb_dev, DMA_BIT_MASK(pa_bits));
->  	if (rc) {
->  		qda_err(qdev, "%d bit DMA enable failed: %d\n", pa_bits, rc);
-> +		kfree(iommu_dev);
-> +		return rc;
-> +	}
-> +
-> +	iommu_dev->dev = cb_dev;
-> +	iommu_dev->sid = sid;
-> +	snprintf(iommu_dev->name, sizeof(iommu_dev->name), "qda_iommu_dev_%u", sid);
 
-It's not easy to follow, when you have scattered the code across so many
-patches and so many files. But I don't think iommu_dev->name is ever
-used.
-
-> +
-> +	rc = qda_memory_manager_register_device(qdev->iommu_mgr, iommu_dev);
-> +	if (rc) {
-> +		qda_err(qdev, "Failed to register IOMMU device: %d\n", rc);
-> +		kfree(iommu_dev);
->  		return rc;
->  	}
->  
-> @@ -127,6 +145,8 @@ int qda_create_cb_device(struct qda_dev *qdev, struct device_node *cb_node)
->  void qda_destroy_cb_device(struct device *cb_dev)
->  {
->  	struct iommu_group *group;
-> +	struct qda_iommu_device *iommu_dev;
-> +	struct qda_dev *qdev;
->  
->  	if (!cb_dev) {
->  		qda_dbg(NULL, "NULL CB device passed to destroy\n");
-> @@ -135,6 +155,18 @@ void qda_destroy_cb_device(struct device *cb_dev)
->  
->  	qda_dbg(NULL, "Destroying CB device %s\n", dev_name(cb_dev));
->  
-> +	iommu_dev = dev_get_drvdata(cb_dev);
-
-I'm not sure, but I think cb_dev is the struct device allocated in
-qda_create_cb_device(), but I can not find a place where you set drvdata
-for this device.
-
-> +	if (iommu_dev) {
-> +		if (cb_dev->parent) {
-> +			qdev = dev_get_drvdata(cb_dev->parent);
-> +			if (qdev && qdev->iommu_mgr) {
-> +				qda_dbg(NULL, "Unregistering IOMMU device for %s\n",
-> +					dev_name(cb_dev));
-> +				qda_memory_manager_unregister_device(qdev->iommu_mgr, iommu_dev);
-> +			}
-> +		}
-> +	}
-> +
->  	group = iommu_group_get(cb_dev);
->  	if (group) {
->  		qda_dbg(NULL, "Removing %s from IOMMU group\n", dev_name(cb_dev));
-> diff --git a/drivers/accel/qda/qda_drv.c b/drivers/accel/qda/qda_drv.c
-[..]
-> @@ -25,12 +37,46 @@ static void init_device_resources(struct qda_dev *qdev)
->  	atomic_set(&qdev->removing, 0);
->  }
->  
-> +static int init_memory_manager(struct qda_dev *qdev)
-> +{
-> +	int ret;
-> +
-> +	qda_dbg(qdev, "Initializing IOMMU manager\n");
-> +
-> +	qdev->iommu_mgr = kzalloc_obj(*qdev->iommu_mgr, GFP_KERNEL);
-> +	if (!qdev->iommu_mgr)
-> +		return -ENOMEM;
-> +
-> +	ret = qda_memory_manager_init(qdev->iommu_mgr);
-> +	if (ret) {
-> +		qda_err(qdev, "Failed to initialize memory manager: %d\n", ret);
-
-qda_memory_manager_init() already logged 1 error and 1 debug prints if
-you get here.
-
-> +		kfree(qdev->iommu_mgr);
-> +		qdev->iommu_mgr = NULL;
-
-We're going to fail probe, you shouldn't have to clear this.
-
-> +		return ret;
-> +	}
-> +
-> +	qda_dbg(qdev, "IOMMU manager initialized successfully\n");
-> +	return 0;
-> +}
-> +
->  int qda_init_device(struct qda_dev *qdev)
->  {
-> +	int ret;
-> +
->  	init_device_resources(qdev);
->  
-> +	ret = init_memory_manager(qdev);
-> +	if (ret) {
-> +		qda_err(qdev, "IOMMU manager initialization failed: %d\n", ret);
-
-And now we have 2 debug prints and two error prints in the log.
-
-> +		goto err_cleanup_resources;
-> +	}
-> +
->  	qda_dbg(qdev, "QDA device initialized successfully\n");
-
-Or, if we get here, you have 8 debug prints.
-
-Please learn how to use kprobe/kretprobe instead of reimplementing it
-using printk().
-
->  	return 0;
-> +
-> +err_cleanup_resources:
-> +	cleanup_device_resources(qdev);
-> +	return ret;
->  }
->  
->  static int __init qda_core_init(void)
-> diff --git a/drivers/accel/qda/qda_drv.h b/drivers/accel/qda/qda_drv.h
-> index eb732b7d8091..2cb97e4eafbf 100644
-> --- a/drivers/accel/qda/qda_drv.h
-> +++ b/drivers/accel/qda/qda_drv.h
-> @@ -11,6 +11,7 @@
->  #include <linux/mutex.h>
->  #include <linux/rpmsg.h>
->  #include <linux/xarray.h>
-> +#include "qda_memory_manager.h"
->  
->  /* Driver identification */
->  #define DRIVER_NAME "qda"
-> @@ -23,6 +24,8 @@ struct qda_dev {
->  	struct device *dev;
->  	/* Mutex protecting device state */
->  	struct mutex lock;
-> +	/* IOMMU/memory manager */
-> +	struct qda_memory_manager *iommu_mgr;
->  	/* Flag indicating device removal in progress */
->  	atomic_t removing;
->  	/* Name of the DSP (e.g., "cdsp", "adsp") */
-> diff --git a/drivers/accel/qda/qda_memory_manager.c b/drivers/accel/qda/qda_memory_manager.c
-[..]
-> +int qda_memory_manager_register_device(struct qda_memory_manager *mem_mgr,
-> +				       struct qda_iommu_device *iommu_dev)
-> +{
-> +	int ret;
-> +	u32 id;
-> +
-> +	if (!mem_mgr || !iommu_dev || !iommu_dev->dev) {
-
-How could this happen? You call this function from one place, that looks
-like this:
-
-iommu_dev->dev = cb_dev;
-iommu_dev->sid = sid;
-rc = qda_memory_manager_register_device(qdev->iommu_mgr, iommu_dev);
-
-You just allocated in filled out iommu_dev.
-
-Looking up the callstack, we're coming from qda_rpmsg_probe() which just
-did qda_init_device() which created the qsdev->iommu_mgr.
-
-In other words, these can't possibly be NULL.
-
-> +		qda_err(NULL, "Invalid parameters for device registration\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	init_iommu_device_fields(iommu_dev, mem_mgr);
-> +
-> +	ret = allocate_device_id(mem_mgr, iommu_dev, &id);
-> +	if (ret) {
-> +		qda_err(NULL, "Failed to allocate device ID: %d (sid=%u)\n", ret, iommu_dev->sid);
-> +		return ret;
-> +	}
-> +
-> +	iommu_dev->id = id;
-> +
-> +	qda_dbg(NULL, "Registered device id=%u (sid=%u)\n", id, iommu_dev->sid);
-> +
-> +	return 0;
-> +}
-> +
-> +void qda_memory_manager_unregister_device(struct qda_memory_manager *mem_mgr,
-> +					  struct qda_iommu_device *iommu_dev)
-> +{
-> +	if (!mem_mgr || !iommu_dev) {
-
-The one call to this function is wrapped in:
-
-if (iommu_dev) {
-	if (qdev->iommu_mgr) {
-		qda_dbg(NULL, ...);
-		qda_memory_manager_unregister_device(qdev->iommu_mgr, iommu_dev);
-	}
-}
-
-> +		qda_err(NULL, "Attempted to unregister invalid device/manager\n");
-> +		return;
-> +	}
-> +
-> +	qda_dbg(NULL, "Unregistering device id=%u (refcount=%u)\n", iommu_dev->id,
-> +		refcount_read(&iommu_dev->refcount));
-
-And just before the call to qda_memory_manager_unregister_device() you
-print a debug log, saying you will call this function.
-
-> +
-> +	if (refcount_read(&iommu_dev->refcount) == 0) {
-> +		xa_erase(&mem_mgr->device_xa, iommu_dev->id);
-> +		kfree(iommu_dev);
-> +		return;
-> +	}
-> +
-> +	if (refcount_dec_and_test(&iommu_dev->refcount)) {
-> +		qda_info(NULL, "Device id=%u refcount reached zero, queuing removal\n",
-> +			 iommu_dev->id);
-> +		queue_work(mem_mgr->wq, &iommu_dev->remove_work);
-> +	}
-> +}
-> +
-[..]
-> diff --git a/drivers/accel/qda/qda_memory_manager.h b/drivers/accel/qda/qda_memory_manager.h
-[..]
-> +
-> +/**
-
-This says "kernel-doc"
-
-> + * struct qda_iommu_device - IOMMU device instance for memory management
-> + *
-> + * This structure represents a single IOMMU-enabled device managed by the
-> + * memory manager. Each device can be assigned to a specific process.
-> + */
-> +struct qda_iommu_device {
-> +	/* Unique identifier for this IOMMU device */
-
-But this doesn't follow kernel-doc style.
-
-At the end of the series, 
-
-./scripts/kernel-doc -none -vv -Wall drivers/accel/qda/
-
-reports 270 warnings.
-
-> +	u32 id;
-> +	/* Pointer to the underlying device */
-> +	struct device *dev;
-> +	/* Name for the device */
-> +	char name[32];
-> +	/* Spinlock protecting concurrent access to device */
-> +	spinlock_t lock;
-> +	/* Reference counter for device */
-> +	refcount_t refcount;
-> +	/* Work structure for deferred device removal */
-> +	struct work_struct remove_work;
-> +	/* Stream ID for IOMMU transactions */
-> +	u32 sid;
-> +	/* Pointer to parent memory manager */
-> +	struct qda_memory_manager *manager;
-> +};
-
-Regards,
-Bjorn
