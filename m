@@ -1,518 +1,263 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from sender4-of-o51.zoho.com (sender4-of-o51.zoho.com [136.143.188.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AA3F374759
-	for <iommu@lists.linux.dev>; Mon, 23 Feb 2026 21:23:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771881800; cv=none; b=NbMKxKFuaUjRSRt3DAeqlG09I+gIbUczDimnV1ygXAwPT5yeG7kowkPyueJuptiNutdDbX5ItWNLHwU1XpnxvMmPZmTQHWEOHaZPD/vg5FUxuop59cu7ctMWOPiWy1fCoPXwtiwtG/PlbBD1TVlzBn2tUM72TwdmAdzhJMcAbUQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771881800; c=relaxed/simple;
-	bh=b7cxy0TLQMymvEBqkpS0fgEb3QwwVbrBQBHSafIS+Pw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ByE36mmxANfjDg985Bml/4+YstZrnLkdl3OQ7QSutZA8VIA5kxmQrG8BUr9QMm48InEC7r8HXhRadO1BMrQItG9aowFxP0vsHtFBFhjpFpIHbP4vghrJaihBdIX+bFA3x6t+cQnHDpbPqB32exuD3oWamnZAlVBIawN2xq28lUM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=IqNI42IP; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=Ixr6/Du5; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D742377543
+	for <iommu@lists.linux.dev>; Mon, 23 Feb 2026 21:38:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.51
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1771882725; cv=pass; b=WEvjwYWeb2+XxCKQ9kvXJtunQqaCJW2gwJoA5vrTWKm3EnQqnbTFxfeQo9WZRFBgK5m01fyujSyHybC9a4O5+rvBoLaedtg4eddR2Q5Rd9c8lZOuyFfB5i3HcmafUoT3UDBRebUpyfNARTW2X8KAEWXRojXKrPx8teiXHXmpwq8=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1771882725; c=relaxed/simple;
+	bh=uZGxSgxVWt2XAaBxrM4B4yacmSav+waMJqGMxbIEW+4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=u17zMuJC7tPzNUUrj/gk04PImH6a/YOvCP5TEA0a1SjIJBOxaoC78rhxUnV94G7+SXsKNeHHqOccEidRu7CJLomJB7qrioQhTKAf7mvHxQ0yRydSAwBJAgh+MSHz3VcdKBjqAXTAj7aWdTfYiJeJR6uY0Xwpc6CeQQYohXph4u0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=apertussolutions.com; spf=pass smtp.mailfrom=apertussolutions.com; dkim=pass (1024-bit key) header.d=apertussolutions.com header.i=dpsmith@apertussolutions.com header.b=P7PcAYWe; arc=pass smtp.client-ip=136.143.188.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=apertussolutions.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=apertussolutions.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="IqNI42IP";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="Ixr6/Du5"
-Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 61NICGle3733550
-	for <iommu@lists.linux.dev>; Mon, 23 Feb 2026 21:23:18 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=rHCvAT6pGLEz/0NL/hsRib41
-	8oQJ6Hopoh+QwMfIbuI=; b=IqNI42IPWY0pM0iOT424kudTyoGHsyZ7C26NGHCV
-	RivUhI4dX3hB18HHwU1AvqMEhF/76svauhbQmubh2mMeJhiDoSrqD1qrT2NX1CN/
-	LF8h0+sMpdx97KzqjpDmfa+9JQ3+E9LIdB0y51tASGPK7iWGQfdBaXmfGW3dPyUI
-	tkSSzuPKC3CKqKOtP/ffQIU4TpR6xmGlHRQcRmGWTzATNOFjW8w5fKp40PXLCh8n
-	pLKj3CZqqgdLcyUDd41xPwnRS/MA56dTGiU/4chJcMpgPiXHKs0yMr9f6KO3mHhT
-	gNWzie+xpGCcD2Oou8T4CkjqUnPS4r3dB49qd6C1I+m/gg==
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com [209.85.222.198])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4cgn7t9xp8-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Mon, 23 Feb 2026 21:23:18 +0000 (GMT)
-Received: by mail-qk1-f198.google.com with SMTP id af79cd13be357-8cb706313beso682083685a.3
-        for <iommu@lists.linux.dev>; Mon, 23 Feb 2026 13:23:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1771881797; x=1772486597; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=rHCvAT6pGLEz/0NL/hsRib418oQJ6Hopoh+QwMfIbuI=;
-        b=Ixr6/Du56PMcsSskehIkYBhHErCReHDJ5NvizZGk/8EMMk0Vw49NY+vYshR+OPghXE
-         ODJTT9iWOuBAK57pG1eBa520dJQLmTTxQldcCmWX8Sue+Uy5KkMq99ALLg5CXozxTPmQ
-         Br0DNnyGo/Df+hTs3SNiGg2eO71JJgg1vNGslMgX6cTUbgrfR6VFmXdbiIIjvAn4mUYt
-         6QMaJV2FSm8lEQjkenV2Nz6dsyeGB8V6RGEy8I7Jr3leDE1tWDy2woVczuCd/prNlYFq
-         Ro7joi29UmOgIxECXgdeWNtPp/2zsNumQHaoFF5116lZwHy/9wFhkx6RDcZw40gWRczz
-         MmQw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771881797; x=1772486597;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=rHCvAT6pGLEz/0NL/hsRib418oQJ6Hopoh+QwMfIbuI=;
-        b=MsXHfTnADZG7dgMZdswdCnFgtJbvbITh8o7eOwrRSMFaorQ+MB/K/9ayBf33buVnkw
-         owDN7UnBD9AfSVSkuJiDGtlNDw0HTmW0Pa2yISDXhC1V8vvowx/3CFSbIKMb4A2BQiaz
-         bPhD2XDZimDkDnhfJfOea69XJLS2KL94Z+Ji49bN41NF6VSRUt4V+1LF26EWDzyMtR98
-         xHml6HePFMhHeszD8G5N6hzcr+YzZNtrVRhVwiCKC86rqz0apej/ktN6fYhRvebdyhDU
-         hCL97jeBnlwa3zDDONh8FqA71ATZhIWlGMhGQFz4vwTLV1C/nDrsQDvdg6UHq4wc5d3C
-         XpNw==
-X-Forwarded-Encrypted: i=1; AJvYcCWY7FSr1l9j0VPy19hjiW60hxGjI/E+nRAirQA0qRml8ua5a9Y6/VFiGZWoV0TBz08zAY5wLw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwglYsnektGyEqjVvWOicOCDlHCyqQ8SOGJ5Lz3q+DPUauuT3hf
-	6smTvcBzvK67Jtue+OL6/9Aq0tv79wTQss64a1jQ4R0CqZvQctEgRqpcgVRoORfj4DhtrGXD7Gd
-	FYKetzZNvDYvYDM9I/byr4QfR4PH3MFGPG82JKxag/ww0sHkAQFBQwVgPiw==
-X-Gm-Gg: AZuq6aJEjsVxiAGmZ0elAVWePJfBAacxxcp6a1JKU+L0wZpQclwezYMmRtMQwCBvF4P
-	4b2cTYaXyWiWAQnx5f9FqXB9uxRB+fHK7Bn6E/XpRmxyIh008Kym3qYrVhUKjFT7r7RpReS0+vj
-	Rz54Q2Gssn4X+oI8kBMB/fQE22jD+WCOpdEQ4frsryQ6C9gsxAjRJ/xXqOh8Jr6STSjct/XzV7T
-	zg33x3cQnCtCNyrLnOyzL4uXM9fztaSJ0GjCtMBMvmEMFywVfpYcpxDsyYZ4DxVRfSrjOlwuZWl
-	6jFvljYP3aUer9VH19DvqE6Oxcr2GYPiFJqjESoJoW/sTYwHMtR+t1lK9zydw26BQam8Bo5wtAZ
-	WxVTyrprbA3ZD/7IdhT89YecEW29/l5plvDNWEBSWSWfPULopLwHjIejkfv0pm/ftwgCpbpV4aG
-	KIpSXYU3FoojcJ29RVhcGU8v5ji3JKCNcXnG4=
-X-Received: by 2002:a05:620a:29d1:b0:8c6:a809:862a with SMTP id af79cd13be357-8cb8ca656f6mr1196019885a.45.1771881797426;
-        Mon, 23 Feb 2026 13:23:17 -0800 (PST)
-X-Received: by 2002:a05:620a:29d1:b0:8c6:a809:862a with SMTP id af79cd13be357-8cb8ca656f6mr1196013485a.45.1771881796495;
-        Mon, 23 Feb 2026 13:23:16 -0800 (PST)
-Received: from umbar.lan (2001-14ba-a073-af00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a073:af00:264b:feff:fe8b:be8a])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5a0eeb4cba3sm1754560e87.90.2026.02.23.13.23.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Feb 2026 13:23:15 -0800 (PST)
-Date: Mon, 23 Feb 2026 23:23:13 +0200
-From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-To: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
-Cc: Oded Gabbay <ogabbay@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
-        Shuah Khan <skhan@linuxfoundation.org>, Joerg Roedel <joro@8bytes.org>,
-        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
-        dri-devel@lists.freedesktop.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        iommu@lists.linux.dev, linux-media@vger.kernel.org,
-        linaro-mm-sig@lists.linaro.org,
-        Srinivas Kandagatla <srinivas.kandagatla@oss.qualcomm.com>,
-        Bharath Kumar <quic_bkumar@quicinc.com>,
-        Chenna Kesava Raju <quic_chennak@quicinc.com>
-Subject: Re: [PATCH RFC 03/18] accel/qda: Add RPMsg transport for Qualcomm
- DSP accelerator
-Message-ID: <tqsdbijgjomrn7fq3sdz7v2axwxqvbccpjh4fmvod4kbrq7pod@af3igw5dx66p>
-References: <20260224-qda-firstpost-v1-0-fe46a9c1a046@oss.qualcomm.com>
- <20260224-qda-firstpost-v1-3-fe46a9c1a046@oss.qualcomm.com>
+	dkim=pass (1024-bit key) header.d=apertussolutions.com header.i=dpsmith@apertussolutions.com header.b="P7PcAYWe"
+ARC-Seal: i=1; a=rsa-sha256; t=1771882677; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=ffjYtNOjrVDY85s8H1n2+Y4wa878dKU05XaPBpiQhMjhrkbwRhTcsvhek9WA/vN8ptkYTLjn3ypd8dCSySrh0XT8P/i6R8nunHsBLimTczlL+Ek5eICIVFPgNRrsepAyk10HAydAF5MLLeI1gsErtl0StDUwjMG9hG/FXJrDCb8=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1771882677; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=h8NnLyDahIjYa2r/mE8SrBY5YeZya77iJfvSt7LZAuk=; 
+	b=cWaxR9XlGzKr65BZnm8jUFH1zgUwhL/DodbGfpIZlIM6Ycs+8FSpsYy5EVqYJ8yvKXz4rWeqH9bMtM4ChWBG1gDLNIVVwqqy22uLA4krxCrJCHSW4H9R2d3sp8gUavrTZM7GdIKtQb+BT4CZpCf0bMFzxB+VnXTtLdxgXKmg9Dc=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=apertussolutions.com;
+	spf=pass  smtp.mailfrom=dpsmith@apertussolutions.com;
+	dmarc=pass header.from=<dpsmith@apertussolutions.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1771882677;
+	s=zoho; d=apertussolutions.com; i=dpsmith@apertussolutions.com;
+	h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+	bh=h8NnLyDahIjYa2r/mE8SrBY5YeZya77iJfvSt7LZAuk=;
+	b=P7PcAYWewsxI7zMHuuIOTExnellqQJfITJDN8fsRqp3WdhX/HuQGt6f8wbGjUdM1
+	JnV8NQ1V6ZrXfrsve9kHI39ivmu766uO0AFsZKamepbKgMiMfAH4HyTZfJ7ZQQ9OAZk
+	pfRpttFfJlE5rMuuoCcq3Qcr/SI4uvU8EZarOy3A=
+Received: by mx.zohomail.com with SMTPS id 1771882674971616.8376032703019;
+	Mon, 23 Feb 2026 13:37:54 -0800 (PST)
+Message-ID: <f5323525-493c-4419-8199-d65630fce084@apertussolutions.com>
+Date: Mon, 23 Feb 2026 16:37:51 -0500
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260224-qda-firstpost-v1-3-fe46a9c1a046@oss.qualcomm.com>
-X-Authority-Analysis: v=2.4 cv=c5OmgB9l c=1 sm=1 tr=0 ts=699cc546 cx=c_pps
- a=qKBjSQ1v91RyAK45QCPf5w==:117 a=xqWC_Br6kY4A:10 a=kj9zAlcOel0A:10
- a=HzLeVaNsDn8A:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=u7WPNUs3qKkmUXheDGA7:22 a=yx91gb_oNiZeI1HMLzn7:22 a=EUspDBNiAAAA:8
- a=UyRWXFl-5J4keBKrG3IA:9 a=CjuIK1q_8ugA:10 a=NFOGd7dJGGMPyQGDc5-O:22
-X-Proofpoint-GUID: FPVVQddgmtAaD79yC80CEawrqyJQiLZO
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjIzMDE4NSBTYWx0ZWRfX8gXURDuMhOEI
- HsDhuZwF66PNNIsNq1SWJW8mwUH6IyqZCNxDtO0J8H8Ajq8UImVwzzh3c5o6X6r6okQ92tyIyIr
- 4rhxIAVztS0b6Qv3Ad+0P1a/a8m7YlP6tTq8tBdFgCTT3H8RIv5EUjDxKbfRO0UsQcCzs0B2TTj
- Ht92n27UlfG9V6Y6n+0BQP6cp4Mc8fU5P0Puwl3f9Mlu9vyIs+H6Cd2ZS4bOv5B3DYFjHHCTUhc
- zYN7QdSDoAuOVh84+hVwga3I7nBmu7WrerFkMlXFotZSEVgeCIOatUgar2R5EuaUcPhdQoPHttc
- xhwXIxwvYOOdL3lhsK+cU9Kwxgsr2H+13ymOzELIqbhSlW4kHav8h0amr4hOFpAF5atzbxRFZTE
- y9in6++E4Uh4vxYbHEgnBG2O639TDtlHfmezlukSqSKnB+xiqWHTHn3LkwpJUYEe9AngGB9CVGG
- ZQsZUlPw1APRpkht8qQ==
-X-Proofpoint-ORIG-GUID: FPVVQddgmtAaD79yC80CEawrqyJQiLZO
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-02-23_05,2026-02-23_03,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- phishscore=0 impostorscore=0 malwarescore=0 lowpriorityscore=0 adultscore=0
- clxscore=1015 bulkscore=0 spamscore=0 suspectscore=0 priorityscore=1501
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2602130000 definitions=main-2602230185
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v15 00/28] x86: Secure Launch support for Intel TXT
+Content-Language: en-US
+To: Ard Biesheuvel <ardb@kernel.org>, Andy Lutomirski <luto@amacapital.net>
+Cc: Simo Sorce <simo@redhat.com>, "H . Peter Anvin" <hpa@zytor.com>,
+ Ross Philipson <ross.philipson@oracle.com>, linux-kernel@vger.kernel.org,
+ x86@kernel.org, linux-integrity@vger.kernel.org, linux-doc@vger.kernel.org,
+ linux-crypto@vger.kernel.org, kexec@lists.infradead.org,
+ linux-efi@vger.kernel.org, iommu@lists.linux.dev,
+ dave.hansen@linux.intel.com, Thomas Gleixner <tglx@linutronix.de>,
+ Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+ mjg59@srcf.ucam.org, James.Bottomley@hansenpartnership.com,
+ peterhuewe@gmx.de, Jarkko Sakkinen <jarkko@kernel.org>, jgg@ziepe.ca,
+ nivedita@alum.mit.edu, Herbert Xu <herbert@gondor.apana.org.au>,
+ davem@davemloft.net, corbet@lwn.net, ebiederm@xmission.com,
+ dwmw2@infradead.org, baolu.lu@linux.intel.com, kanth.ghatraju@oracle.com,
+ andrew.cooper3@citrix.com, trenchboot-devel@googlegroups.com
+References: <20251215233316.1076248-1-ross.philipson@oracle.com>
+ <b5f2b5a5-b984-4ed3-a023-c06d634f9146@app.fastmail.com>
+ <1ffd3cb5-2c76-4371-a067-3e4849907d80@apertussolutions.com>
+ <49d169bf-0ad2-49be-b7d7-fceb9e7f831a@app.fastmail.com>
+ <CALCETrUE8c-dxRWhtHKz_PojwZuWMXJSzOsFQf2vt5LS3ATwpA@mail.gmail.com>
+ <1BBD7449-8420-43FD-930B-A4E1BA38FFC6@zytor.com>
+ <CALCETrWzG1Mjb-RcwLQ5-tGFZ15WKHjZbqtLvyif+UPuVKJ_5g@mail.gmail.com>
+ <32e62cef7b89d9691bdd4120388ce752fd041230.camel@redhat.com>
+ <CALCETrUMR0RvOFXGzL7=F4c-3veL+1Sm2xf-BprHTK4=UKw8yA@mail.gmail.com>
+ <558d0f28-01fb-4447-891c-2ffbf869c077@app.fastmail.com>
+ <CALCETrWynypSD7vEjJNLcym3JhBw4k0ovDiR_3YuOHh92TnM=A@mail.gmail.com>
+ <9034c6a1-ebce-40b6-9ac8-0b8cc5a50dd4@app.fastmail.com>
+From: "Daniel P. Smith" <dpsmith@apertussolutions.com>
+Autocrypt: addr=dpsmith@apertussolutions.com; keydata=
+ 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
+In-Reply-To: <9034c6a1-ebce-40b6-9ac8-0b8cc5a50dd4@app.fastmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
 
-On Tue, Feb 24, 2026 at 12:38:57AM +0530, Ekansh Gupta wrote:
-> Extend the Qualcomm DSP accelerator (QDA) driver with an RPMsg-based
-> transport used to discover and manage DSP instances.
+On 2/20/26 03:30, Ard Biesheuvel wrote:
 > 
-> This patch introduces:
 > 
-> - A core qda_dev structure with basic device state (rpmsg device,
->   device pointer, lock, removal flag, DSP name).
-> - Logging helpers that integrate with dev_* when a device is available
->   and fall back to pr_* otherwise.
-> - An RPMsg client driver that binds to the Qualcomm FastRPC service and
->   allocates a qda_dev instance using devm_kzalloc().
-> - Basic device initialization and teardown paths wired into the module
->   init/exit.
+> On Thu, 19 Feb 2026, at 18:34, Andy Lutomirski wrote:
+>> On Wed, Feb 18, 2026 at 11:55 PM Ard Biesheuvel <ardb@kernel.org> wrote:
+>>>
+>>> On Wed, 18 Feb 2026, at 22:54, Andy Lutomirski wrote:
+>>>> On Wed, Feb 18, 2026 at 1:04 PM Simo Sorce <simo@redhat.com> wrote:
+>>>>>
+>>>>> On Wed, 2026-02-18 at 12:34 -0800, Andy Lutomirski wrote:
+>>>>>> On Wed, Feb 18, 2026 at 12:29 PM H. Peter Anvin <hpa@zytor.com> wrote:
+>>>>>>>
+>>>>>>> On February 18, 2026 12:03:27 PM PST, Andy Lutomirski <luto@amacapital.net> wrote:
+>>>>>>>> On Thu, Feb 12, 2026 at 12:40 PM Ard Biesheuvel <ardb@kernel.org> wrote:
+>>>>>>>>>
+>>>>>>>>> On Thu, 12 Feb 2026, at 20:49, Daniel P. Smith wrote:
+>>>>>>>>>> On 2/9/26 09:04, Ard Biesheuvel wrote:
+>>>>>>>>> ...
+>>>>>>>>> But would it be better to disable the runtime services by default when doing a secure launch? PREEMPT_RT already does the same.
+>>>>>>>>
+>>>>>>>> So I have a possible way to disable EFI runtime service without losing
+>>>>>>>> the ability to write EFI vars.  We come up with a simple file format
+>>>>>>>> to store deferred EFI var updates and we come up with a place to put
+>>>>>>>> it so that we find it early-ish in boot the next time around.  (This
+>>>>>>>> could be done via integration with systemd-boot or shim some other
+>>>>>>>> boot loader or it could actually be part of the kernel.)  And then,
+>>>>>>>> instead of writing variables directly, we write them to the deferred
+>>>>>>>> list and then update them on reboot (before TXT launch, etc).  [0]
+>>>>>>>> This would be a distincly nontrivial project and would not work for
+>>>>>>>> all configurations.
+>>>>>>>>
+>>>>>>>> As a maybe less painful option, we could disable EFI runtime services
+>>>>>>>> but have a root-writable thing in sysfs that (a) turns them back on
+>>>>>>>> but (b) first extends a PCR to say that they're turned back on.
+>>>>>>>>
+>>>>>>>> (Or someone could try running runtime services at CPL3...)
+>>>>>>>>
+>>>>>>>> [0] I have thought for years that Intel and AMD should do this on
+>>>>>>>> their end, too.  Keep the sensitive part of SMI flash entirely locked
+>>>>>>>> after boot and, instead of using magic SMM stuff to validate that
+>>>>>>>> write attempts have the appropriate permissions and signatures, queue
+>>>>>>>> them up as deferred upates and validate the signatures on the next
+>>>>>>>> boot before locking flash.
+>>>>>>>>
+>>>>>>>
+>>>>>>> *If* a physical EFI partition exists there is a lot to be said for this approach.
+>>>>>>>
+>>>>>>> The only issue with this that I can see is for things like network or CD/DVD booting where there isn't necessarily any EFI boot partition, it might not be writable, or it might not be persistent (e.g. http booting typically uses a ramdisk, like the old Linux initrd.)
+>>>>>>
+>>>>>> Hmm, I guess my approach is a 100% complete nonstarter for installing
+>>>>>> Linux from a CD, and it's really not awesome for installing Linux from
+>>>>>> a USB stick.
+>>>>>
+>>>>> Doing any of this on a removable device feels generally like a trap.
+>>>>> You get your USB disk in, try to boot, and it saves vars, but reboot
+>>>>> fails for whatever reason, you plug it in another machine ... and it
+>>>>> tries to "continue" from there? The amount of validation needed and
+>>>>> testing for failure modes across reboots sounds really painful.
+>>>>
+>>>> I kind of stand by my other previous suggestion, though:
+>>>>
+>>>> As a maybe less painful option, we could disable EFI runtime services
+>>>> but have a root-writable thing in sysfs that (a) turns them back on
+>>>> but (b) first extends a PCR to say that they're turned back on.
+>>>>
+>>>
+>>> After setting the EFI boot path to GRUB (or systemd-boot or whatever) at installation time, what other meaningful interactions do we expect with the EFI runtime services?
+>>>
+>>> And given that the secure launch is orchestrated by the bootloader , with which the kernel has a backchannel via its configuration file, it should be rather straight-forward to implement the staging of variable updates there if we really need it.
+>>>
+>>> Doing any of this at the EFI/spec level might lead to a situation where the OS now has to guess which of the provided APIs to manipulate variables is the least broken.
+>>>
+>>> Of course, for readinf variables, dumping the RT variables into a memory buffer at boot time and exposing it via a EFI config table would be rather straight-forward, but it is also something I feel should be the job of the boot component that takes part in the decision to shield the runtime services from the OS.
+>>
+>> So there's sort of a usability issue here.  On the one hand, this can
+>> all be orchestrated to work.  We build a kernel, and the kernel
+>> supports secure launch.  Someone makes an installer image, and that
+>> image is configured to skip secure launch, then install to disk, then
+>> program EFI vars, then reboot.  And the installed image is configured
+>> to do the secure launch, and EFI variable writes are turned off.
+>>
+>> On the other hand, this all sucks.  I'm getting sick of having the
+>> kernel tell me that I am not permitted to do things.  I'm sick of
+>> writing software that deals with unnecessary restrictions.  If I were
+>> writing an OS with a USB stick-based installer, I might want to be
+>> able to boot the thing and decide later whether I'm installing an OS
+>> to disk.  (In fact, many USB installers work this way.)  But, in the
+>> model where EFI variable writes are hard-disabled on a secure launch,
+>> the decision to do the secure launch happens before the decision to
+>> install an OS, and we all lose.
+>>
+>> So I'm proposing that EFI variable writes be treated a bit like kexec
+>> [0] -- root (which is already part of the TCB for any practical
+>> purpose) is going to decide, like a grown up, to execute some code
+>> that it doesn't fully trust -- in this case, the EFI variable writes.
+>> And root will coordinate, correctly, with whomever it's busy using the
+>> TPM to coordinate with, and tell it that it's going to do something
+>> that will change its trustworthiness.  So it works like this:
+>>
+>> 1. Secure launch the environment on the stick.  (At this stage,
+>> neither the boot loader nor the kernel has the faintest clue whether
+>> anyone needs that secure launch, but this doesn't matter.)
+>>
+>> 2. The owner of the machine clicks "install".
+>>
+>> 3. The installer makes some partitions and writes some files.
+>>
+>> (Up until now, the security posture of the running environment has not changed.)
+>>
+>> 4. The installer decides that it's now time to do untrustworthy
+>> things, namely writing EFI vars.  So it unmounts anything it mounted
+>> using TPM-sealed keys (or not -- this is between the distro and
+>> whoever trusts the distro), and it does:
+>>
+>> # echo 1 >/sys/.../extend_pcr_and_unlock_efi
+>>
+>> which *first* extends a PCR because we are about to change our
+>> security posture and *second* sets whatever flag permits use of EFI
+>> runtime services.
+>>
+>> 5. The installer writes to EFI variables.  And the installer can no
+>> longer generate attestations to its previous security posture, which
+>> is the correct behavior.  And maybe the user can no longer unlock
+>> their home directory or whatever until they reboot.  Which is not
+>> really a big deal.
+>>
+>> (This is *dynamic* root of trust.  In theory the system could do a
+>> DRTM re-launch and recover its security posture, but I don't think
+>> this is implemented.)
+>>
+>>
+>> One thing I like about this is that it involves very little code.
+>>
 > 
-> The RPMsg driver currently sets the DSP name from a "label" property in
-> the device tree, which will be used by subsequent patches to distinguish
-> between different DSP domains (e.g. ADSP, CDSP).
+> It does seem rather straight-forward, and it doesn't have to be specific to TXT either. I.e., we should probably always measure the runtime enabled/disabled state into the PCRs.
+
+
+As you mentioned, this is not unique to the DRTM case, but allow me to 
+provide our perspective. We would enjoy a sysfs controlled lock that 
+results in a PCR Event. With that said, while it may be getting down 
+into the implementation details, I would like to suggest the PCR be 
+configurable. When under DRTM, it would be desirable to have the ability 
+for the measurement to be extended into a DRTM PCR.
+
+v/r,
+dps
+
+> But given the actual problem at hand (untrustworthy glue code running in ring 3 that does little more than poke SMM, which itself fundamentally remains part of the TCB), it would be nice if we could just sandbox that code using virtualization.
 > 
-> Signed-off-by: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
-> ---
->  drivers/accel/qda/Kconfig     |   1 +
->  drivers/accel/qda/Makefile    |   4 +-
->  drivers/accel/qda/qda_drv.c   |  41 ++++++++++++++-
->  drivers/accel/qda/qda_drv.h   |  91 ++++++++++++++++++++++++++++++++
->  drivers/accel/qda/qda_rpmsg.c | 119 ++++++++++++++++++++++++++++++++++++++++++
->  drivers/accel/qda/qda_rpmsg.h |  17 ++++++
->  6 files changed, 270 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/accel/qda/Kconfig b/drivers/accel/qda/Kconfig
-> index 3c78ff6189e0..484d21ff1b55 100644
-> --- a/drivers/accel/qda/Kconfig
-> +++ b/drivers/accel/qda/Kconfig
-> @@ -7,6 +7,7 @@ config DRM_ACCEL_QDA
->  	tristate "Qualcomm DSP accelerator"
->  	depends on DRM_ACCEL
->  	depends on ARCH_QCOM || COMPILE_TEST
-> +	depends on RPMSG
->  	help
->  	  Enables the DRM-based accelerator driver for Qualcomm's Hexagon DSPs.
->  	  This driver provides a standardized interface for offloading computational
-> diff --git a/drivers/accel/qda/Makefile b/drivers/accel/qda/Makefile
-> index 573711af1d28..e7f23182589b 100644
-> --- a/drivers/accel/qda/Makefile
-> +++ b/drivers/accel/qda/Makefile
-> @@ -5,4 +5,6 @@
->  
->  obj-$(CONFIG_DRM_ACCEL_QDA)	:= qda.o
->  
-> -qda-y := qda_drv.o
-> +qda-y := \
-> +	qda_drv.o \
+> This came up in a separate discussion regarding ACPI PRM (the new dumping ground for evil vendor code now that SMM has gone out of fashion), although there it should be feasible to run it unprivileged, as the spec requires that capability for the PRM payloads.
 
-Squash these parts into the previous patch.
-
-> +	qda_rpmsg.o \
-> diff --git a/drivers/accel/qda/qda_drv.c b/drivers/accel/qda/qda_drv.c
-> index 18b0d3fb1598..389c66a9ad4f 100644
-> --- a/drivers/accel/qda/qda_drv.c
-> +++ b/drivers/accel/qda/qda_drv.c
-> @@ -2,16 +2,53 @@
->  // Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
->  #include <linux/module.h>
->  #include <linux/kernel.h>
-> +#include <linux/atomic.h>
-> +#include "qda_drv.h"
-> +#include "qda_rpmsg.h"
-> +
-> +static void cleanup_device_resources(struct qda_dev *qdev)
-> +{
-> +	mutex_destroy(&qdev->lock);
-> +}
-> +
-> +void qda_deinit_device(struct qda_dev *qdev)
-> +{
-> +	cleanup_device_resources(qdev);
-> +}
-> +
-> +/* Initialize device resources */
-> +static void init_device_resources(struct qda_dev *qdev)
-> +{
-> +	qda_dbg(qdev, "Initializing device resources\n");
-> +
-> +	mutex_init(&qdev->lock);
-> +	atomic_set(&qdev->removing, 0);
-> +}
-> +
-> +int qda_init_device(struct qda_dev *qdev)
-> +{
-> +	init_device_resources(qdev);
-> +
-> +	qda_dbg(qdev, "QDA device initialized successfully\n");
-> +	return 0;
-> +}
->  
->  static int __init qda_core_init(void)
->  {
-> -	pr_info("QDA: driver initialization complete\n");
-> +	int ret;
-> +
-> +	ret = qda_rpmsg_register();
-> +	if (ret)
-> +		return ret;
-> +
-> +	qda_info(NULL, "QDA driver initialization complete\n");
->  	return 0;
->  }
->  
->  static void __exit qda_core_exit(void)
->  {
-> -	pr_info("QDA: driver exit complete\n");
-> +	qda_rpmsg_unregister();
-> +	qda_info(NULL, "QDA driver exit complete\n");
->  }
->  
->  module_init(qda_core_init);
-> diff --git a/drivers/accel/qda/qda_drv.h b/drivers/accel/qda/qda_drv.h
-> new file mode 100644
-> index 000000000000..bec2d31ca1bb
-> --- /dev/null
-> +++ b/drivers/accel/qda/qda_drv.h
-> @@ -0,0 +1,91 @@
-> +/* SPDX-License-Identifier: GPL-2.0-only */
-> +/*
-> + * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
-> + */
-> +
-> +#ifndef __QDA_DRV_H__
-> +#define __QDA_DRV_H__
-> +
-> +#include <linux/device.h>
-> +#include <linux/mutex.h>
-> +#include <linux/rpmsg.h>
-> +#include <linux/xarray.h>
-> +
-> +/* Driver identification */
-> +#define DRIVER_NAME "qda"
-> +
-> +/* struct qda_dev - Main device structure for QDA driver */
-> +struct qda_dev {
-> +	/* RPMsg device for communication with remote processor */
-> +	struct rpmsg_device *rpdev;
-> +	/* Underlying device structure */
-> +	struct device *dev;
-> +	/* Mutex protecting device state */
-> +	struct mutex lock;
-
-Which parts of the state?
-
-> +	/* Flag indicating device removal in progress */
-> +	atomic_t removing;
-
-Why do you need it if we have dev->unplugged and drm_dev_enter() /
-drm_dev_exit()?
-
-> +	/* Name of the DSP (e.g., "cdsp", "adsp") */
-> +	char dsp_name[16];
-
-Please replace with the pointers to the static array.
-
-> +};
-> +
-> +/**
-> + * qda_get_log_device - Get appropriate device for logging
-> + * @qdev: QDA device structure
-> + *
-> + * Returns the most appropriate device structure for logging messages.
-> + * Prefers qdev->dev, or returns NULL if the device is being removed
-> + * or invalid.
-> + */
-> +static inline struct device *qda_get_log_device(struct qda_dev *qdev)
-> +{
-> +	if (!qdev || atomic_read(&qdev->removing))
-> +		return NULL;
-> +
-> +	if (qdev->dev)
-> +		return qdev->dev;
-> +
-> +	return NULL;
-> +}
-> +
-> +/*
-> + * Logging macros
-> + *
-> + * These macros provide consistent logging across the driver with automatic
-> + * function name inclusion. They use dev_* functions when a device is available,
-> + * falling back to pr_* functions otherwise.
-> + */
-> +
-> +/* Error logging - always logs and tracks errors */
-> +#define qda_err(qdev, fmt, ...) do { \
-> +	struct device *__dev = qda_get_log_device(qdev); \
-> +	if (__dev) \
-> +		dev_err(__dev, "[%s] " fmt, __func__, ##__VA_ARGS__); \
-> +	else \
-> +		pr_err(DRIVER_NAME ": [%s] " fmt, __func__, ##__VA_ARGS__); \
-
-What /why? You are under drm, so you can use drm_* helpers instead.
-
-> +} while (0)
-> +
-> +/* Info logging - always logs, can be filtered via loglevel */
-> +#define qda_info(qdev, fmt, ...) do { \
-> +	struct device *__dev = qda_get_log_device(qdev); \
-> +	if (__dev) \
-> +		dev_info(__dev, "[%s] " fmt, __func__, ##__VA_ARGS__); \
-> +	else \
-> +		pr_info(DRIVER_NAME ": [%s] " fmt, __func__, ##__VA_ARGS__); \
-> +} while (0)
-> +
-> +/* Debug logging - controlled via dynamic debug (CONFIG_DYNAMIC_DEBUG) */
-> +#define qda_dbg(qdev, fmt, ...) do { \
-> +	struct device *__dev = qda_get_log_device(qdev); \
-> +	if (__dev) \
-> +		dev_dbg(__dev, "[%s] " fmt, __func__, ##__VA_ARGS__); \
-> +	else \
-> +		pr_debug(DRIVER_NAME ": [%s] " fmt, __func__, ##__VA_ARGS__); \
-> +} while (0)
-> +
-> +/*
-> + * Core device management functions
-> + */
-> +int qda_init_device(struct qda_dev *qdev);
-> +void qda_deinit_device(struct qda_dev *qdev);
-> +
-> +#endif /* __QDA_DRV_H__ */
-> diff --git a/drivers/accel/qda/qda_rpmsg.c b/drivers/accel/qda/qda_rpmsg.c
-> new file mode 100644
-> index 000000000000..a8b24a99ca13
-> --- /dev/null
-> +++ b/drivers/accel/qda/qda_rpmsg.c
-> @@ -0,0 +1,119 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +// Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
-> +#include <linux/module.h>
-> +#include <linux/rpmsg.h>
-> +#include <linux/of_platform.h>
-> +#include <linux/of.h>
-> +#include <linux/of_device.h>
-> +#include "qda_drv.h"
-> +#include "qda_rpmsg.h"
-> +
-> +static int qda_rpmsg_init(struct qda_dev *qdev)
-> +{
-> +	dev_set_drvdata(&qdev->rpdev->dev, qdev);
-> +	return 0;
-> +}
-> +
-> +/* Utility function to allocate and initialize qda_dev */
-> +static struct qda_dev *alloc_and_init_qdev(struct rpmsg_device *rpdev)
-> +{
-> +	struct qda_dev *qdev;
-> +
-> +	qdev = devm_kzalloc(&rpdev->dev, sizeof(*qdev), GFP_KERNEL);
-> +	if (!qdev)
-> +		return ERR_PTR(-ENOMEM);
-> +
-> +	qdev->dev = &rpdev->dev;
-> +	qdev->rpdev = rpdev;
-> +
-> +	qda_dbg(qdev, "Allocated and initialized qda_dev\n");
-> +	return qdev;
-> +}
-> +
-> +static int qda_rpmsg_cb(struct rpmsg_device *rpdev, void *data, int len, void *priv, u32 src)
-> +{
-> +	/* Dummy function for rpmsg driver */
-> +	return 0;
-> +}
-> +
-> +static void qda_rpmsg_remove(struct rpmsg_device *rpdev)
-> +{
-> +	struct qda_dev *qdev = dev_get_drvdata(&rpdev->dev);
-> +
-> +	qda_info(qdev, "Removing RPMsg device\n");
-> +
-> +	atomic_set(&qdev->removing, 1);
-> +
-> +	mutex_lock(&qdev->lock);
-> +	qdev->rpdev = NULL;
-> +	mutex_unlock(&qdev->lock);
-> +
-> +	qda_deinit_device(qdev);
-> +
-> +	qda_info(qdev, "RPMsg device removed\n");
-> +}
-> +
-> +static int qda_rpmsg_probe(struct rpmsg_device *rpdev)
-> +{
-> +	struct qda_dev *qdev;
-> +	int ret;
-> +	const char *label;
-> +
-> +	qda_dbg(NULL, "QDA RPMsg probe starting\n");
-> +
-> +	qdev = alloc_and_init_qdev(rpdev);
-> +	if (IS_ERR(qdev))
-> +		return PTR_ERR(qdev);
-> +
-> +	ret = of_property_read_string(rpdev->dev.of_node, "label", &label);
-> +	if (!ret) {
-> +		strscpy(qdev->dsp_name, label, sizeof(qdev->dsp_name));
-> +	} else {
-> +		qda_info(qdev, "QDA DSP label not found in DT\n");
-> +		return ret;
-> +	}
-> +
-> +	ret = qda_rpmsg_init(qdev);
-> +	if (ret) {
-> +		qda_err(qdev, "RPMsg init failed: %d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	ret = qda_init_device(qdev);
-> +	if (ret)
-> +		return ret;
-> +
-> +	qda_info(qdev, "QDA RPMsg probe completed successfully for %s\n", qdev->dsp_name);
-> +	return 0;
-> +}
-> +
-> +static const struct of_device_id qda_rpmsg_id_table[] = {
-> +	{ .compatible = "qcom,fastrpc" },
-> +	{},
-> +};
-> +MODULE_DEVICE_TABLE(of, qda_rpmsg_id_table);
-> +
-> +static struct rpmsg_driver qda_rpmsg_driver = {
-> +	.probe = qda_rpmsg_probe,
-> +	.remove = qda_rpmsg_remove,
-> +	.callback = qda_rpmsg_cb,
-> +	.drv = {
-> +		.name = "qcom,fastrpc",
-> +		.of_match_table = qda_rpmsg_id_table,
-> +	},
-> +};
-> +
-> +int qda_rpmsg_register(void)
-> +{
-> +	int ret = register_rpmsg_driver(&qda_rpmsg_driver);
-> +
-> +	if (ret)
-> +		qda_err(NULL, "Failed to register RPMsg driver: %d\n", ret);
-> +
-> +	return ret;
-> +}
-> +
-> +void qda_rpmsg_unregister(void)
-> +{
-> +	unregister_rpmsg_driver(&qda_rpmsg_driver);
-> +}
-> diff --git a/drivers/accel/qda/qda_rpmsg.h b/drivers/accel/qda/qda_rpmsg.h
-> new file mode 100644
-> index 000000000000..348827bff255
-> --- /dev/null
-> +++ b/drivers/accel/qda/qda_rpmsg.h
-> @@ -0,0 +1,17 @@
-> +/* SPDX-License-Identifier: GPL-2.0-only */
-> +/*
-> + * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
-> + */
-> +
-> +#ifndef __QDA_RPMSG_H__
-> +#define __QDA_RPMSG_H__
-> +
-> +#include "qda_drv.h"
-> +
-> +/*
-> + * Transport layer registration
-> + */
-> +int qda_rpmsg_register(void);
-> +void qda_rpmsg_unregister(void);
-> +
-> +#endif /* __QDA_RPMSG_H__ */
-> 
-> -- 
-> 2.34.1
-> 
-
--- 
-With best wishes
-Dmitry
