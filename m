@@ -1,101 +1,108 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 745AF346A1D
-	for <iommu@lists.linux.dev>; Mon, 23 Feb 2026 06:19:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 934E034A3BC
+	for <iommu@lists.linux.dev>; Mon, 23 Feb 2026 07:28:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771827599; cv=none; b=TFtLENInQ+0N8DUPRobkU9rmVKiOylFT06bTHmus85O9qjet9ZKxSxTIlz4q1h/wa+tlds8HArnoMItG1JLjB2Mk/R1cXS+2dZKl9xQbMAGL86Fe05qycOAFDVQbWlkzRbTywELjeeBb0LDhObgHo8u3ajf/KZoBj9N9H/IJVCY=
+	t=1771831735; cv=none; b=UhLOl7foAeO6QKuEVVYHVnKJ/rpG68le4XJTXhfgw9uKyAg6MkxidrwNaJXMiAM0lMT/39ZXAqwJNRRsmcP+TNG9+6j74KL3Kcmj7/VMKZbGF2IpvC0sspJ4UsGpUqkvrJj/QmlYDHmHdpCIGUdLG+DIlfmyGXazc5lS3ZbD/BU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771827599; c=relaxed/simple;
-	bh=isejeYtP6L+Irb4cz8lnHOs6dnOxRYT7t5iLrdoypbM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=uBSbO5vKCyoJXqlflpQ1+LIokb8ff39qlIo2QK2WdvymtGBF8bc26JOESzb1wWBl9PA6mJPLIG7YLy4qJ/V4vMkdOEua6lmmOUKN0h6gU7pBAU7yQJHYz8CM5v9tpimpzHPLtcJRjwv53xaOq5ECcbDSEtRvVhz80NtdoyrdERM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=o6IJUvMy; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1771831735; c=relaxed/simple;
+	bh=RSwHrkqjMZnpf4KcuJO3wViQ6uD3lgv4NjJukwJgCBU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
+	 Content-Type:References; b=e7r2WglZEzq3vyUvdoGdJ8CPB1zr+qVgx24z5Mx6r+JNigID91ceyX7LHtaHSOk8AF1VuprNbq/Ze3IGY7/RBIU/hxLthpy2UNZPwJUpiZnR6EgVxv0KasLZOIjCxkYfgSEbO/6TO3UPjsM9Eob6lZmV7UQWFwMuAP6qYBwvrhs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=dxCgZj3E; arc=none smtp.client-ip=210.118.77.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="o6IJUvMy"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C6F0C19421;
-	Mon, 23 Feb 2026 06:19:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771827599;
-	bh=isejeYtP6L+Irb4cz8lnHOs6dnOxRYT7t5iLrdoypbM=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=o6IJUvMyqXpJoQXZG9qx3tQPhIfZxiqH52mJjN7bLEfLXzkTpBxCA8Hq8pEeBiIju
-	 zPRF01VLUebmTvMtneQcU8Ow6qyTP1644I8yckk9MSZXDAQCLwNuco7ZnGSoEaDgna
-	 aJ+VPukp38RiR1rowEkMz3wOIcoY8a/hLFEF5QKJ81RFBtDXA6He49ctlbsmbbOrqf
-	 W3r9r0fsauaCdStR2mfPaQ2kIrj7baj7iZDt0NcpFO4Rxdkb8IPTC66WqTnEao0Zsl
-	 sYN8cR841x/jcMFPcVvzSOsQLT1PuHf/D0i3mYXYV7+CaWT9KlAExQ+V6qKGfWeBD9
-	 i8EihFBPdYqNg==
-Date: Mon, 23 Feb 2026 11:47:09 +0530
-From: Naveen N Rao <naveen@kernel.org>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: Johannes Stezenbach <js@sig21.net>, iommu@lists.linux.dev, 
-	Joerg Roedel <joro@8bytes.org>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, 
-	Mario Limonciello <superm1@kernel.org>
-Subject: Re: AMD IOMMU issue with hibernate on Asrock X600
-Message-ID: <aZvqJVoOpbdkZ5EY@blrnaveerao1>
-References: <aXeAOtGQUdlNZF6V@sig21.net>
- <aXnXX0P-XsEFPlJd@sig21.net>
- <52148f32-2348-42d8-95e0-49b30c29da1c@amd.com>
- <aYHerYcZ-5FOguKY@sig21.net>
- <186731e2-a8f4-4402-9117-fc1dc737cfe9@amd.com>
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="dxCgZj3E"
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20260223072845euoutp010cdbcc6913b509394fa60ab092b73a5e~Wz5EqyhfC1711917119euoutp01g
+	for <iommu@lists.linux.dev>; Mon, 23 Feb 2026 07:28:45 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20260223072845euoutp010cdbcc6913b509394fa60ab092b73a5e~Wz5EqyhfC1711917119euoutp01g
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1771831725;
+	bh=fHwzvy/lJyzDBJ9QYguzkw4r84XxwakyncGKU7DpSRo=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=dxCgZj3EJWyjxlcARoDCZRa2yYKXIbd5WcWfBShCk11DnhMzW21d4gKyt3hItQMBO
+	 1K0FkaIxNrgCgtUlx4/0vY6CG1ndBcvSZCJ6EKkPmqNANPg+pxRuuWSzaizRsM0dYe
+	 iR11kOjlYz3ssGLrjw4z2bgC7Uo7QfBxXzA2gPoI=
+Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20260223072845eucas1p238d8a317d8340fe8e9c8b658727e8ee8~Wz5ESAyjY2513825138eucas1p2J;
+	Mon, 23 Feb 2026 07:28:45 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20260223072842eusmtip2e953ab7b19655f3b5707f07bf625dab3~Wz5Bw0DU62888828888eusmtip2N;
+	Mon, 23 Feb 2026 07:28:42 +0000 (GMT)
+Message-ID: <666eefa7-3e00-4586-a443-1a71dc24e6dd@samsung.com>
+Date: Mon, 23 Feb 2026 08:28:41 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <186731e2-a8f4-4402-9117-fc1dc737cfe9@amd.com>
+User-Agent: Betterbird (Windows)
+Subject: Re: [PATCH 1/5] dma-mapping: avoid random addr value print out on
+ error path
+To: Jiri Pirko <jiri@resnulli.us>, dri-devel@lists.freedesktop.org,
+	linaro-mm-sig@lists.linaro.org, iommu@lists.linux.dev,
+	linux-media@vger.kernel.org
+Cc: sumit.semwal@linaro.org, benjamin.gaignard@collabora.com,
+	Brian.Starkey@arm.com, jstultz@google.com, tjmercier@google.com,
+	christian.koenig@amd.com, robin.murphy@arm.com, jgg@ziepe.ca,
+	leon@kernel.org, sean.anderson@linux.dev, ptesarik@suse.com,
+	catalin.marinas@arm.com, aneesh.kumar@kernel.org, suzuki.poulose@arm.com,
+	steven.price@arm.com, thomas.lendacky@amd.com, john.allen@amd.com,
+	ashish.kalra@amd.com, suravee.suthikulpanit@amd.com,
+	linux-coco@lists.linux.dev
+Content-Language: en-US
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <20260209153809.250835-2-jiri@resnulli.us>
+Content-Transfer-Encoding: 7bit
+X-CMS-MailID: 20260223072845eucas1p238d8a317d8340fe8e9c8b658727e8ee8
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20260209153816eucas1p22befaa2c5ef3c6d5e67956eea08424ed
+X-EPHeader: CA
+X-CMS-RootMailID: 20260209153816eucas1p22befaa2c5ef3c6d5e67956eea08424ed
+References: <20260209153809.250835-1-jiri@resnulli.us>
+	<CGME20260209153816eucas1p22befaa2c5ef3c6d5e67956eea08424ed@eucas1p2.samsung.com>
+	<20260209153809.250835-2-jiri@resnulli.us>
 
-On Sat, Feb 21, 2026 at 06:21:52PM +0530, Vasant Hegde wrote:
-> Hi Johannes,
-> 
-> On 2/3/2026 5:10 PM, Johannes Stezenbach wrote:
-> > On Tue, Feb 03, 2026 at 11:08:49AM +0530, Vasant Hegde wrote:
-> >> On 1/28/2026 3:01 PM, Johannes Stezenbach wrote:
-> >>>
-> >>>> [0.000] [  343.790320][ T4340] WARNING: drivers/iommu/amd/init.c:952 at amd_iommu_enable_interrupts+0x4c8/0x550, CPU#0: pm-hibernate/4340
-> >>>
-> >>> - is it Linux or firmware bug?
-> >>> - if Linux bug: please let me know what to do to help debug it
-> >>> - if firmware bug: what additional tests to run; how to add a quirk
-> >>>
-> >>> What's the downside of amd_iommu_intr=legacy? Does it only
-> >>> affect kvm guests? What's the relationship with x2APIC?
-> >>
-> >> If you pass `legacy`, then it only affects kvm. It will not accelerate
-> >> interrupts to guest.
-> >>
-> >> interrupt acceleration has two modes:
-> >>  AVIC works with xAPIC
-> >>  X2AVIC works with X2APIC.
-> >>
-> >> Generally BIOS will automatically enables appropriate acceleration mode.
-> > 
-> > It is strange because dmesg says:
-> > 
-> > [    2.647593] [    T1] kvm_amd: AVIC enabled
-> > [    2.647598] [    T1] kvm_amd: x2AVIC enabled (max 512 vCPUs)
-> > 
-> > but no message about x2APIC. If I enable x2APIC in BIOS (default
-> > setting is "auto", other settings are "enable" or "disable") then
-> > there is a message about x2APIC. So it seems BIOS default is
-> > to have x2APIC disabled.
+On 09.02.2026 16:38, Jiri Pirko wrote:
+> From: Jiri Pirko <jiri@nvidia.com>
+>
+> dma_addr is unitialized in dma_direct_map_phys() when swiotlb is forced
+> and DMA_ATTR_MMIO is set which leads to random value print out in
+> warning. Fix that by just returning DMA_MAPPING_ERROR.
+>
+> Fixes: e53d29f957b3 ("dma-mapping: convert dma_direct_*map_page to be phys_addr_t based")
+> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 
-That is indeed weird - not really sure why x2APIC isn't enabled by 
-default on that platform, or why amdgpu interrupts don't work with it.
+Applied to dma-mapping-fixes, thanks!
 
-> 
-> Hmmm. This may be OK as AVIC/x2AVIC is used for guest interrupt delivery.
-> 
-> @Naveen, Can you look confirm is this config is fine?
+> ---
+>   kernel/dma/direct.h | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/kernel/dma/direct.h b/kernel/dma/direct.h
+> index da2fadf45bcd..62f0d9d0ba02 100644
+> --- a/kernel/dma/direct.h
+> +++ b/kernel/dma/direct.h
+> @@ -88,7 +88,7 @@ static inline dma_addr_t dma_direct_map_phys(struct device *dev,
+>   
+>   	if (is_swiotlb_force_bounce(dev)) {
+>   		if (attrs & DMA_ATTR_MMIO)
+> -			goto err_overflow;
+> +			return DMA_MAPPING_ERROR;
+>   
+>   		return swiotlb_map(dev, phys, size, dir, attrs);
+>   	}
 
-With respect to x2AVIC, it will be enabled by the kernel as long as the 
-platform says it supports it. It will obviously only kick in for guests 
-running in x2APIC mode.
-
-
-- Naveen
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
