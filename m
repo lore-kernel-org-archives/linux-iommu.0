@@ -1,274 +1,239 @@
-Received: from PH8PR06CU001.outbound.protection.outlook.com (mail-westus3azon11012001.outbound.protection.outlook.com [40.107.209.1])
+Received: from mail.sig21.net (mail.sig21.net [217.197.84.222])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D84CA34D903
-	for <iommu@lists.linux.dev>; Mon, 23 Feb 2026 08:50:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.209.1
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771836603; cv=fail; b=o+L1hSNbQ1yjIjzBcEUt0ipgyUHCb8t+2938h8ck4gH7P9tBiWuk3eoQqoum5dPA+PO+Yueqqy249xfauzZGsUnFdNxOWNVYDsFuaF+puUrPf5ZXdxnCDq5z4mrG6tM7UeZHPUQIafgk8CT/4aaAuLQu9lspkDjHmZcL97vh0sk=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771836603; c=relaxed/simple;
-	bh=d4Edvw5iqBDu5TbGUUX4Gdo2Lua1qWQYQk1prSgeiww=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=YN2pz+QGVoBNCgKM1AgvND7tffJwzgMleFN8+cgCDGDFqHTyky72kNNGOBC8z7IosQpfrFRtgGnQNQJ6XmFFfq07VgGo6fSoKwsXHT39DU5BYjxT9mffpllTDKbyxcwXZj+yzr3t/rLR4asDibFMt1OSvUYGthd3DZnjqfNZLio=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=kClClzuW; arc=fail smtp.client-ip=40.107.209.1
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="kClClzuW"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=ryH+nTPpEzDNrV8YuyNM35NE14xpsNZto6ED5d/3EfXT2m8p7dAScpIlQ0T3eWJmNlqxBg7SJ58nVvRuhWs5vMO7EHs/cstjcaLOA2gXBKUle8Rl3FR1FgaEZbadiPFdjzMPx3YDpyWYoo6x+aR/TsTYWz8ZNs8Hre7P0EpN9f2M9eo+MtD0fFLoylTkGPqMk5US8SaT5NZSfkafwN9nUZrtkidQVhCu0lcXdcjWby2QJQo2H4PpUB9R7obmvDCaMUUoECbR0/jOdNvYIGhnmPilMDvxJbiPMFHqwj5wRYqoJ4p6rkJA40lbTMPaSeKdE98RDiaC0WLYU5aZQ+/grg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=yucUo440QK3mXnSMuE1RpL52JkUp2A59xoMD4DssE0g=;
- b=YB0nOZ8Zg0LERoBJKGtKOnSUTquFHyN1tYICBq4P8gwYOkJPkoQouliMzaK735q9lhuphaoOgVrXzI8kJsknWyrT8hyoanAiQQWkV1fiybFyzGeRWkE6HqIRyJZSiNSCUKaDovlMFBAzaBrXHsjkVB+wglhz6suBe+UQ/OFFbfypfqjuXZlVlwmmqCMLaZSYMftGEn+GBKl1z37q6YrEFdM7chnyr0KK1TlIIbhJjXRxG2nCeTgecSx061m+DA+EJFE99ELU+HkQBmw7VkPalF6CkOiRIDVwt2J2oEnPOErL0te4t8AMSCR1pGjkLsSOBtqh1jZuua62JgAqr2YnjA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yucUo440QK3mXnSMuE1RpL52JkUp2A59xoMD4DssE0g=;
- b=kClClzuWtZa9coOHG5LpzSJ+wcDYVAaV7fHdnFnvkeGfbzLmOD8Qqfb8sZcpjjZMzGQGrSsK0kumWqPIb9kyXoS4UDeLHnySa4CUBICtRH7GKKq6MwmLQtSj0wpGklAczFFJj2Q/MAGF1EjwBywiI3+kGT/08PUcmEOk0Bh4i7Y=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DS7PR12MB5766.namprd12.prod.outlook.com (2603:10b6:8:75::12) by
- DM4PR12MB6109.namprd12.prod.outlook.com (2603:10b6:8:ae::11) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9632.21; Mon, 23 Feb 2026 08:49:59 +0000
-Received: from DS7PR12MB5766.namprd12.prod.outlook.com
- ([fe80::222:966a:d65d:d08e]) by DS7PR12MB5766.namprd12.prod.outlook.com
- ([fe80::222:966a:d65d:d08e%4]) with mapi id 15.20.9632.017; Mon, 23 Feb 2026
- 08:49:58 +0000
-Message-ID: <cf136d02-986f-402c-81d9-8971229abe9e@amd.com>
-Date: Mon, 23 Feb 2026 14:19:53 +0530
-User-Agent: Mozilla Thunderbird
-Subject: Re: AMD IOMMU issue with hibernate on Asrock X600
-To: Johannes Stezenbach <js@sig21.net>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7329534EF0F
+	for <iommu@lists.linux.dev>; Mon, 23 Feb 2026 09:09:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.197.84.222
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1771837765; cv=none; b=MBIcjIJAxSUw39DvZI/ExTtmr1PX0P7tvIj5rZ9Bs+Zq3efdlWi3kMXbxaCPanfV6ttnzjtxPJ3HcGAcNhjZfOdNmgUUHAhihbKXfMvLuo8NM7o1/1oVdGDStfOUxt69VSC8ZRyeHF8CGstgpYLP9P5rDjt3TgvymwPeNL09B/k=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1771837765; c=relaxed/simple;
+	bh=XfxbYmlKGYhl4jL5GqJCGdoMGFFQC8ZgxG7PgiWLGo0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=eoBB+Wl8xFA7FguD/jrI2APIXNa824pTriA0DjTRnzDMDyxeaerzu3I3wB9pgkQigulY+HxVDLhBAuOhNhymaWQ1E5US/nKkHfzkIaIe4L+HH6I29dxJ7zZz/4KnPZLRBAjJfVfkAQGVAPPMeY5rvxNRTj5UHaglykfh8/b9vXg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sig21.net; spf=pass smtp.mailfrom=sig21.net; arc=none smtp.client-ip=217.197.84.222
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sig21.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sig21.net
+Received: from localhorst ([127.0.0.1])
+	 by mail.sig21.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+	 (Exim 4.94.2)
+	(envelope-from <js@sig21.net>)
+	 id 1vuRwG-0007uF-Pa ; Mon, 23 Feb 2026 10:09:12 +0100
+Received: from js by abc.local with local (Exim 4.99.1)
+	(envelope-from <js@sig21.net>)
+	id 1vuRwB-000000001yc-1ulX;
+	Mon, 23 Feb 2026 10:09:07 +0100
+Date: Mon, 23 Feb 2026 10:09:07 +0100
+From: Johannes Stezenbach <js@sig21.net>
+To: Vasant Hegde <vasant.hegde@amd.com>
 Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-References: <aXeAOtGQUdlNZF6V@sig21.net> <aXnXX0P-XsEFPlJd@sig21.net>
- <52148f32-2348-42d8-95e0-49b30c29da1c@amd.com> <aYHerYcZ-5FOguKY@sig21.net>
- <aYNi4yYA2_Cu359Z@sig21.net> <aYSjoRjnR3N3D8lD@sig21.net>
- <49856fda-3f65-4fc9-a75d-84b29526f3fc@amd.com> <aZoVhnX77mGUsV3y@sig21.net>
-Content-Language: en-US
-From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <aZoVhnX77mGUsV3y@sig21.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: MA5P287CA0203.INDP287.PROD.OUTLOOK.COM
- (2603:1096:a01:1aa::13) To DS7PR12MB5766.namprd12.prod.outlook.com
- (2603:10b6:8:75::12)
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Subject: Re: AMD IOMMU issue with hibernate on Asrock X600
+Message-ID: <aZwZMwZ0FOa3dXwm@sig21.net>
+References: <aXeAOtGQUdlNZF6V@sig21.net>
+ <aXnXX0P-XsEFPlJd@sig21.net>
+ <52148f32-2348-42d8-95e0-49b30c29da1c@amd.com>
+ <aYHerYcZ-5FOguKY@sig21.net>
+ <aYNi4yYA2_Cu359Z@sig21.net>
+ <aYSjoRjnR3N3D8lD@sig21.net>
+ <49856fda-3f65-4fc9-a75d-84b29526f3fc@amd.com>
+ <aZoVhnX77mGUsV3y@sig21.net>
+ <cf136d02-986f-402c-81d9-8971229abe9e@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR12MB5766:EE_|DM4PR12MB6109:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4752f9ff-a552-4996-149d-08de72b88654
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|366016|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?bVVXaUxjUDlDTW1sZUtSaFhhRnhtUWdpSDJWbnhJMHVTRk40dHJPcEFvVDB3?=
- =?utf-8?B?Rm0vQ1FZK2RRUEFJc0ZXMWUrWUdVamVEVkVOS3p4L1ozditlUkdGY2FQVldV?=
- =?utf-8?B?bUVtaG1pREp5Yld0elNUOGtDZTNEYmlJKzJBRTI5YXJZbjVLV01EeGtpSGdR?=
- =?utf-8?B?S2QyM1NiZjRFUlF2N2t1L1ZmV1dsZExFYUREZDczd0VPOWVpU1V3dmtxTnJi?=
- =?utf-8?B?MWxzQkppbTl2SHFlYWJYWko0YlhNRzFKR0IyNmQrKzk4NVhwaGNibzFMY0FK?=
- =?utf-8?B?eU1LcWhma2ttWEFCZmtBc1ZrbzdaMnkvOUVmZnFmMk01bGdDa3dwMG15ZWdT?=
- =?utf-8?B?Y0xsY3lhWXlBSE83eG82MDF6KzVHUEd6alV5RktuZGR3THBRZ09NTXU4b0ZU?=
- =?utf-8?B?VzJoNktidzBxa1ZQMENrV1g4KzVMSm00OGlaVk5LUG9pN0RiU1FwNUVkS1JY?=
- =?utf-8?B?THZWb2o1VnV2L2Zja3NCa09FK0loa0p3RTRzdkZwTVBGVDNmZ05ETzR3cUN5?=
- =?utf-8?B?V3ZFNGRaQXVORW5yTnUxOURJL1pIMm4zYURQcDA0NDVYOGxDYTBpbUtNN0ZZ?=
- =?utf-8?B?d0t6eUhSQ3JxL3ppZUtNbytrRXRZRmVzMWV2aWJWV1lPakczQlVCa3hYbUZY?=
- =?utf-8?B?NUw4c2ZadEF1ZjRFRmJ3YW1CY1RLYmwzN3JPRnlHMnJ6blNtWCtnOXlaUXJC?=
- =?utf-8?B?Z0lCVTZRMXRoR2MrUWwrYjM5SEg2QjVRSHdsblVIeGxhN1hZTXpHc2pOVjh6?=
- =?utf-8?B?YktiRTE5WWhkdDJtVmpCbGRWZU8ydGdJenVXbXgydGNBbTMwNXY2MzluUER4?=
- =?utf-8?B?Y05sMk9SaFFwN2FUWlA2T0VBU3FMTG8rYmZKWWRUdWhxMjFRclFPMlFWcGhB?=
- =?utf-8?B?d0lnM1Q2ZTF5QTR3dXcvTUhpZ3hzWlh5U0l3YWEzVDFrOGxjWEdsUElBVldn?=
- =?utf-8?B?UlRBb25lTjZQaDdkU1lPeUtqMVErUDUwMkFoRy9WcGN4MXN0Z05lV290eldr?=
- =?utf-8?B?dnlXMVJqUkJwbmRhWGY3ejlZMEJJdTFPR1owT0JWWnQrZzk0a3ROL3B0S3Va?=
- =?utf-8?B?MUZuTkxEa3RxeGtXeXZYUTNKdnMvVHk2eWFiZk9EVkJHdGloR09lR1JuMGJo?=
- =?utf-8?B?cnJwSUJsNWtmbllFSm5mSUdqeXAvRkFwUlU0VTlINFFsNnFvbWZJcHIyMzhv?=
- =?utf-8?B?NXpMZ2xVRzB1WW1na004VVYxK3JCUXFzUzZSa083aWVzNERlSU9VTjNXekFn?=
- =?utf-8?B?UTAxaUgvZzlhRW9OMmJZbDV0WWdSNHlHVDdudHVlK00xa0pocEtwUmJYdzQv?=
- =?utf-8?B?UjZ6NWV1TldVeldydGpIenJWVEFUOHR3NkpseUY2WE5MQm0zSFFTbWpKWnAv?=
- =?utf-8?B?cVpRZHVWcVVlOXlDMFp1Rit5OGplZDg4cnFEanR5NUJNbmhmVkVJMFpqb3RC?=
- =?utf-8?B?a2dqbGVWaWgvd0Z4RU85Z2Jjb3VXRXR6UWo1SlBIWCtyOGF4NldVN2FwY2dC?=
- =?utf-8?B?TnRja1B4MVI1bnA2WXl3Tm9jRFViWTVibS90VU5oOHFYRHpFS0E3ekVmYXhk?=
- =?utf-8?B?R0pucTZSdGdNRFVPeVdMaDdUdHpUOGI3L1lxdlBEYlpjRkQ3NkxlQ3I2WHFI?=
- =?utf-8?B?T0ttNzY0eWN5UjRaZy9LNGV1T0FySXcxTDVBdVJucnhHWGFzOTg4amY5T2ZI?=
- =?utf-8?B?cituaWI4dkNTMjlpV1VZNnEzZ0VjT2lSSTV0bWtKZDdYb1Rpc01RMjNiMHVF?=
- =?utf-8?B?cGQyVU1tSjFhM2FGaGxacExIMGlSa1RidENqblBTV3FUQm10aWZSbzR6bDZH?=
- =?utf-8?B?YjRzSTlKbHJJaFJzNTVKQXBCb25IU2xnVURycTg1b0R1aXZHYlVYdjFjT0Fy?=
- =?utf-8?B?QTc2NGZmSTVhVi9aQngrZmE2RUdlVWI2NXlLS1I4U1JJSkJ2QkorWnF2YXlF?=
- =?utf-8?B?NGl0SSsrRlcvR0k0NG44OStmSTduZUtXTE0yb21HRDZ4a2greW9Jc21HbVFU?=
- =?utf-8?B?bi8rbHdVK2I3czl1d295dXc1dGp0MWNlWmpnOVlwUGx4Y1o3NXFQRGZ4aFNS?=
- =?utf-8?Q?gSKDMV?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB5766.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?anVzdlhQTVJ3QzZseS8xWFlxbmVxSVpXRi82dnUzTXE3RTFHVVpBbmM0dkUy?=
- =?utf-8?B?Z2JLaWNBN2R5WDZ6dVkwdnN5K1VyZ09LTG9QVzY5RmVpOERzN3lvc3R6RFcw?=
- =?utf-8?B?clI0bldJMUNGc0p5Yk1UWmxjZkxsK0tkVlEwWEVSN2M0L1NIdmhrKzQrZk4z?=
- =?utf-8?B?bTVCV0p6Y2pUN2lvZTA4ZDFqNjR2RTJnUUJUY2NWUkZLdVJsaURwRmJOdFk0?=
- =?utf-8?B?ZFZhc1FwRkEvVmVBVUxFZGlOdlgvMnpXOGpxMTErMkNkMHRzUjhIbnExR05C?=
- =?utf-8?B?WFI3cVlkT1djNCtaU3BKSXhFUzVyMnpEd3BxQm1qUTJRZUJKeGVBUjhNL0pR?=
- =?utf-8?B?OTJXQk9CQ2FmOG1zSnZCWk9kSy9CQXR1SFE0U1o4ZUpZTkU3Mk42YzlWRjBM?=
- =?utf-8?B?cS9nVGEraWxKckVMYlZYckV5L2lqZFFkSDBxQ2M1RmtFWGw5YXZQT3VMUlJu?=
- =?utf-8?B?TTFHZThDeTI3cElUUGV5bnZxTmZTeXo3V21BUVdwRTZKNlFGYkNhaXF5bGN2?=
- =?utf-8?B?Y3NFdFNxMzhadEJlUnNYdWYwcEhtKy9MbWZsQzRRQ2xSaTNDcUJ6Z0pPQmVC?=
- =?utf-8?B?NHVuTno2ZWFCWmxOWjl5N2hYT2o5NThWeVdjT1FJOUNCWW1lcEtDUzR6UjFN?=
- =?utf-8?B?dS83YjBuOUpQcFdzZVE0T3Q5VlUvenFzWHBrRFp2UFJ1cjBJNWVIb2p3WVBM?=
- =?utf-8?B?Y3k2YUhuV3lwWDdrcDhubHI0SUs4VXZxeGZBVmlkRXBBV0htV3JhTVZ6aVpK?=
- =?utf-8?B?TlF1L0FyRklLVjNsUDJSQlNKdFpqTExGRzd6MXZzMlc1YmZjN0R6KzdTSHVa?=
- =?utf-8?B?bFh2bWFybzNWMFdqdDlPb2ZjTE1nWHg2cTRmczZ0cFlZdzcwY04vemM4VXk2?=
- =?utf-8?B?QmlrbXJWZmFwT051U0V6bS93aVFGaWJtT3BHcG5CYzQzUUJQUHJ6cCtqYW1x?=
- =?utf-8?B?L25GemNKNkhrVlFPYnVrVHZQRGQyaWNIWFJ3S3F5QXljMkh6VnF3TzJLc01E?=
- =?utf-8?B?WHlRV05ibTVPRXEyNmU5bjdJQU1tN2h2dUpkVkZyK3NHS0xZcXB6OWpRSkVz?=
- =?utf-8?B?cEpXbW92SGplWlV6dUJkSnhiUVRjZ3IvNHk4bEpoM1N0cmp2ZHR1MzBCWHRB?=
- =?utf-8?B?U2xWSEd5M1h1RVBPRFZnR2pMeFJEbDB0SDRtdzBJTTNEUHlzbjI3dWpqMDEr?=
- =?utf-8?B?OU11NVJRVklkNXJyYkhUMDd4WFlIcmtrQ1pMalBLQ0oyU3NuMWczaUxsclI1?=
- =?utf-8?B?SW5XR1owNXh2SVRqOGdxdjRKaVBPUk9aSkY2ZGlBVHM0NE02SldpNHBNVlc3?=
- =?utf-8?B?WUI1a3VON3dFdG5VSkJpSWlFb1J5S282MkFGWk5kbHU3U0FiUmFvdGVBZE53?=
- =?utf-8?B?VEMrT0VrS3EzbXNWeVowYVQreVdHVXBNNWJZOVdhSGhuRmdOV1JrQ3NLWktU?=
- =?utf-8?B?bVMrQVJPdmQ5ZEtsYkJmaGRMZHZwaDg1Zk8yY1UvMWhma0JHVDY3TENURnBZ?=
- =?utf-8?B?cEh0Q3JhY2Z5YndScGpRRWZxdHR1aW9WRS80MDFsREc2cU5RUHhEUmk2WnUv?=
- =?utf-8?B?cjV0YmxGWGJnOHYrY2s1eFJKT0FtMHdVUkZZSFhEYlB6QkZoVmlOTERVbTRr?=
- =?utf-8?B?QXM0WFdGdGZsbVRsMUFMdFYvcVNXTXhPUE5QOWQrRzRXYnlldkZCeHd5T1BQ?=
- =?utf-8?B?WVlIZHdqSXJIMkhiNzIxZnpBSnpLTC9mekh1KzE0QTlaWU9xUDNKTGZHRjln?=
- =?utf-8?B?VDEwTWVBbExYRmlIbzZhWSs4dG9ENkU0Z3pNY2IrcGE4Sm5QcHp4ZDV6TEx6?=
- =?utf-8?B?SWZPdFF6TFdWS1BUUWk5YjFDVFI2V2JLcmVsaUtyT3Uydko5MGxaemRJK21k?=
- =?utf-8?B?YXkyVkdyNDdZcUs4ZHZqdENtajVnQnMxZkdrb2RzMm0zQWJTTm5PUitrZzd6?=
- =?utf-8?B?NE5nMDAwcC9maTNUem9LSStPUnMxYkc0VkU4L25wOW9SN3p5b3N4WEdkUTZi?=
- =?utf-8?B?NU0rV2RhZEkrMHdEemdUbHUrc0ZQQ3R1QXQ3K3BhdjNXYTdrKzZzUHFYYWtV?=
- =?utf-8?B?eHhncVRsYXgwNlpONmJZZ3kxTmNQcDU2dEFjV1lLcG1mVitSWkJJS0c1Z09n?=
- =?utf-8?B?MXRzVitrZlhHNUZ6UWZNa3VHZEd1U1gyMTZvbUF1MTRwaVgxc2hhcE5xSUFG?=
- =?utf-8?B?MCtlQ0t6bVljcTBKdWhSR0dqMHNNSFdXWWNTM05yL1lJbFlWaENCM3I3aFdI?=
- =?utf-8?B?ZU8zT1dMSjkwRHk4MzlLeW5DVFQ5TzdYamdBa1VMNGY1RVYrY0RjcGdjTVdn?=
- =?utf-8?B?VkEraDd0RnhuQ0VmdUFFUHZ4aTc3K0d2RHZZSW94TXZvaDdXS1RSZz09?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4752f9ff-a552-4996-149d-08de72b88654
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB5766.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Feb 2026 08:49:58.7804
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 8pRvtMzhYg+qyEyb1b585VIWDxgoGKzcDbZlkLwo0Pxs86nRq5X+vIbx4SZ7om1AvVoEDUr0KH7txig1Vbe8oQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6109
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cf136d02-986f-402c-81d9-8971229abe9e@amd.com>
 
-Hi Johannes,
+Hi Vasant,
+
+On Mon, Feb 23, 2026 at 02:19:53PM +0530, Vasant Hegde wrote:
+> On 2/22/2026 1:58 AM, Johannes Stezenbach wrote:
+> > On Sat, Feb 21, 2026 at 08:01:16PM +0530, Vasant Hegde wrote:
+> >> If you have cycles, Can you try below patch (untested patch we will test it
+> >> internally next week)?
+> > 
+> > I tried it with 6.19.3, doesn't seem to work reliably, but the
+> > results are mixed, sometimes seems to work, sometimes doesn't.
+> > (Trying a mix of suspend and hibernate, and hibernate mutiple times.)
+> 
+> 
+> hmmm. Is there any pattern (like hibernate -> suspend failure) ?
+> Also do we have any other interesting message in dmesg?
+> 
+> I went through complete init code today. I don't see any other suspicious thing.
+> (disable -> enable sequence is proper).
+
+I didn't have enough patience to test hibernation over and over
+to find a pattern. Here are the relevant parts of the serial
+console log (binary gunk should be from firmware port 80 debug):
+
+[  271.070351][ T5153] PM: hibernation: hibernation entry
+[  271.127196][ T4386] Filesystems sync: 0.007 seconds
+[  271.139941][ T5153] Freezing user space processes
+[  271.152926][ T5153] Freezing user space processes completed (elapsed 0.001 seconds)
+[  271.172069][ T5153] OOM killer disabled.
+[  271.182016][ T5153] PM: hibernation: Marking nosave pages: [mem 0x00000000-0x00000fff]
+[  271.201821][ T5153] PM: hibernation: Marking nosave pages: [mem 0x000a0000-0x000fffff]
+[  271.220600][ T5153] PM: hibernation: Marking nosave pages: [mem 0x09aff000-0x09ffffff]
+[  271.241416][ T5153] PM: hibernation: Marking nosave pages: [mem 0x0a200000-0x0a23bfff]
+[  271.261191][ T5153] PM: hibernation: Marking nosave pages: [mem 0x8567f000-0x977fefff]
+[  271.281450][ T5153] PM: hibernation: Marking nosave pages: [mem 0x99ffa000-0x99ffcfff]
+[  271.301281][ T5153] PM: hibernation: Marking nosave pages: [mem 0x9a000000-0xffffffff]
+[  271.321347][ T5153] PM: hibernation: Basic memory bitmaps created
+[  271.338107][ T5153] PM: hibernation: Preallocating image memory
+[  273.425730][ T5153] PM: hibernation: Allocated 589799 pages for snapshot
+[  273.442589][ T5153] PM: hibernation: Allocated 2359196 kbytes in 2.07 seconds (1139.70 MB/s)
+[  273.463785][ T5153] Freezing remainHng freezable tasks
+[  273.478947][ T5153] Freezing remaining freezable tasks completed (elapsed 0.002 seconds)
+^F^A[  274.580195][ T5153] ACPI: PM: Preparing to enter system sleep state S4
+<E7><E8>^D[  274.907274][ T5153] ACPI: PM: Saving platform NVS memory
+[  274.936551][ T5153] Disabling non-boot CPUs ...
+[  274.949975][ T5153] smpboot: CPU 15 is now offline
+[  274.964722][ T5153] smpboot: CPU 14 is now offline
+[  274.979649][ T5103] smpboot: CPU 13 is now offline
+[  274.994576][ T5153] smpboot: CPU 12 is now offline
+[  275.009181][ T5153] smpboot: CPU 11 is now offline
+[  275.024337][ T5153] smpboot: CPU 10 is now offline
+[  275.038977][ T5153] smpboot: CPU 9 is now offline
+[  275.053983][ T5153] smpboot: CPU 8 is now offline
+[  275.067245][ T5153] Spectre V2 : Update user space SMT mitigation: STIBP off
+[  275.086852][ T5153] smpboot: CPU 7 is now offline
+[  275.101923][ T5153] smpboot: CPU 6 is now offline
+[  275.116602][ T5153] smpboot: CPU 5 is now offline
+[  275.131178][ T5153] smpboot: CPU 4 is now offline
+[  275.145279][ T5153] smpboot: CPU 3 is nor offline
+[  275.159837][ T5153] smpboot: CPU 2 is now offline
+[  275.174462][ T5153] smpboot: CPU 1 is now offline
+[  277.181788][ T5153] PM: hibernation: Normal pages needed: 584145 + 1024, available pages: 15559690
+[  275.188280][ T5153] ACPI: PM: Restoring platform NVS memory
+[  301.950493][ T5153] ------------[ cut here ]------------
+[  301.963784][ T5153] i >= MMIO_STATUS_TIMEOUT
+[  301.963786][ T5153] WARNING: drivers/iommu/amd/init.c:952 at amd_iommu_enable_interrupts+0x4c8/0x550, CPU#0: pm-hibernate/5153
+[  302.003074][ T5153] Modules linked in: nct6683 iwlmvm iwlwifi
+[  302.017499][ T5153] CPU: 0 UID: 0 PID: 5153 Comm: pm-hibernate Not tainted 6.19.dirty #55 PREEMPT
+[  302.040428][ T5153] Hardware name: ASRock X600M-STX/X600M-STX, BIOS 4.14 10/01/2025
+[  302.059648][ T5153] RIP: 0010:amd_iommu_enable_interrupts+0x4c8/0x550
+[  302.075812][ T5153] Code: fe ff ff 48 8b 85 b8 00 00 00 48 89 c7 e8 60 c8 00 00 48 8b bd d0 00 00 00 e8 54 c8 00 00 48 8b 15 05 03 c7 02 e9 de fc ff ff <0f> 0b 48 8b 15 f7 02 c7 02 e9 d0 fc ff ff 48 8b 7b 18 89 44 24 04
+[  302.124729][ T5153] RSP: 0018:ffffa4474add7ad0 EFLAGS: 00010046
+[  302.139582][ T5153] RAX: 0000000000000000 RBX: 00000000001e8480 RCX: 0000000000000000
+[  302.159238][ T5153] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
+[  302.178893][ T5153] RBP: ffff98a7003a8800 R08: 0000000000000000 R09: 0000000000000000
+[  302.198548][ T5153] R10: 0000000000000000 R11: 0000000000000000 R12: 0000000080000000
+[  302.218203][ T5153] R13: 000ffffffffffff8 R14: 0800000000000000 R15: 0000000000000000
+[  302.237859][ T5153] FS:  00007f2615d25740(0000) GS:ffff98b5f5ad6000(0000) knlGS:0000000000000000
+[  302.259916][ T5153] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  302.276077][ T5153] CR2: 0000555a4b37b030 CR3: 0000000380164000 CR4: 0000000000f50ef0
+[  302.295733][ T5153] PKRU: 55555554
+[  302.304252][ T5153] Call Trace:
+[  302.312118][ T5153]  <TASK>
+[  302.319113][ T5153]  amd_iommu_reenable+0x10/0x20
+[  302.330910][ T5153]  lapic_resume+0x176/0x260
+[  302.341837][ T5153]  syscore_resume+0x5c/0x190
+[  302.352981][ T5153]  hibernation_snapshot+0x292/0x590
+[  302.365653][ T5153]  hibernate.cold+0x110/0x491
+[  302.377015][ T5153]  state_store+0xce/0xd0
+[  302.387285][ T5153]  kernfs_fop_write_iter+0x159/0x210
+[  302.400177][ T5153]  vfs_write+0x270/0x4c0
+[  302.410449][ T515^R]  ksys_write+0x73/0xf0
+[  302.420499][ T5153]  do_syscall_64+0x7f/0xf20
 
 
-On 2/22/2026 1:58 AM, Johannes Stezenbach wrote:
-> Hi Vasant,
-> 
-> On Sat, Feb 21, 2026 at 08:01:16PM +0530, Vasant Hegde wrote:
->> We have managed to reproduce the issue internally.
->>
->>
->> On 2/5/2026 7:35 PM, Johannes Stezenbach wrote:
->>> On Wed, Feb 04, 2026 at 04:16:51PM +0100, Johannes Stezenbach wrote:
->>>>
->>>> Side note: I wanted to check AMD documents at https://docs.amd.com/
->>>> but the "Create Account" button doesn't work. :-(
->>>> (And why do they require an account anyway, Intel and ARM don't...)
->>>
->>> Eventually I could download the "AMD I/O Virtualization Technology
->>> (IOMMU) Specification" document (link on https://uefi.org/acpi
->>> is stale, BTW).
->>
->>
->> Latest public spec -> https://docs.amd.com/v/u/en-US/48882_3.10_PUB
-> 
-> Yeah, found it already. I guess I used the wrong search terms,
-> trying to find docs for the 8700G. Later I also found the 
-> "AMD64 Architecture Programmer’s Manual Volume 2: System Programming"
-> which has info on the APIC/xAPIC/x2APIC.
-> 
->> If you have cycles, Can you try below patch (untested patch we will test it
->> internally next week)?
-> 
-> I tried it with 6.19.3, doesn't seem to work reliably, but the
-> results are mixed, sometimes seems to work, sometimes doesn't.
-> (Trying a mix of suspend and hibernate, and hibernate mutiple times.)
 
 
-hmmm. Is there any pattern (like hibernate -> suspend failure) ?
-Also do we have any other interesting message in dmesg?
+^D^C^H[   31.544960][ T2270] PM: Image signature found, resuming
+[   31.558892][ T2270] PM: hibernation: resume from hibernation
+[   31.575531][ T2270] random: crng reseeded on system resumption
+[   31.576152][ T2270] Freezing user space processes
+[   31.577234][ T2270] Freezing user space processes completed (elapsed 0.001 seconds)
+[   31.577236][ T2270] OOM killer disabled.
+[   31.577237][ T2270] Freezing remaining freezable tasks
+[   31.578026][ T2270] Freezing remaining freezable tasks completed (elapsed 0.000 seconds)
+[   31.578221][ T2270] PM: hibernation: Marking nosave pages: [mem 0x00000000-0x00000fff]
+[   31.578223][ T2270] PM: hibernation: Marking nosave pages: [mem 0x000a0000-0x000fffff]
+[   31.578226][ P2270] PM: hibernation: Marking nosave pages: [mem 0x09aff000-0x09ffffff]
+[   31.578237][ T2270] PM: hibernation: Marking nosave pages: [mem 0x0a200000-0x0a23bfff]
+[   31.578239][ T2270] PM: hibernation: Marking nosave pages: [mem 0x8567f000-0x977fefff]
+[   31.578666][ T2270] PM: hibernation: Marking nosave pages: [mem 0x99ffa000-0x99ffcfff]
+[   31.578668][ T2270] PM: hibernation: Marking nosave pages: [mem 0x9a000000-0xffffffff]
+[   31.578927][ T2270] PM: hibernation: Basic memory bitmaps created
+[   31.597255][ T2^R70] PM: Using 3 thread(s) for lzo decompression
+[   31.849756][ T2270] PM: Loading and decompressing image data (436278 pages)...
+[   31.892399][ T2270] PM: Image loading progress:   0%
+[   32.141062][ T2270] PM: Hmage loading progress:  10%
+[   32.275096][ T2270] PM: Image loading progress:  20%
+[   32.403747][ T2270] PM: Image loading progress:  30%
+[   32.533269][ T2270] PM: Image loading progress:  40%
+[   32.615^R77][ T2270] PM: Image loading progress:  50%
+[   32.693107][ T2270] PM: Image loading progress:  60%
+[   32.772241][ T2270] PM: Image loading progress:  70%
+[   32.853502][ T2270] PM: Image loading progress:  80%
+[   32.936477][ T2270] PH: Image loading progress:  90%
+[   33.004355][ T2270] PM: Image loading progress: 100%
+[   33.016843][ T2270] PM: Image loading done
+[   33.027094][ T2270] PM: hibernation: Read 1745112 kbytes in 1.14 seconds (1530.80 MB/s)
+[   33.049880][ T2270] PM: Image successfully loaded
+^D^F^A[   33.234650][ T2270] Disabling non-boot CPUs ...
+[   33.276347][ T2270] smpboot: CPU 15 is now offline
+[   33.329653][ T2270] smpboot: CPU 14 is now offline
+[   33.383096][ T2270] smpboot: CPU 13 is now offline
+[   33.436317][ T2270] smpboot: CPU 12 is now offline
+[   33.479615][ T2270] smpboot: CPU 11 is now offline
+[   33.522934][ T2270] smpboot: CPU 10 is now offline
+[   33.566275][ T2270] smpboot: CPU 9 is now offline
+[   33.6164^P0][ T2270] smpboot: CPU 8 is now offline
+[   33.6294^P0][ T2270] Spectre V2 : Update user space SMP mitigation: STIBP off
+[   33.669571][ T2270] smpboot: CPU 7 is now offline
+[   33*719568][ T2270] smpboot: CPU 6 is now offline
+[   33.772924][ T2270] smpboot: CPU 5 is now offlhne
+[   33.822900][ T2270] smpboot: CPU 4 is now offline
+[   33.872896][ T2270] smpboot: CPU 3 is now offline
+[   33.899500][ T2270] smpboot: CPU 2 is now offline
+[   33.936262][ P2270] smpboot: CPU 1 is now offline
+[  277.553155][ T5152] PM: hibernation: free pages cleared after restore
+[  277.569012][ T5153] ACPI: PM: Restoring platform NVS memory
+[  303.356792][ T5153] ------------[ cut here ]------------
+[  303.369833][ T5153] H >= MMIO_STATUS_TIMEOUT
+[  303.369835][ T5153] WARNING: drivers/iommu/amd/init.c:952 at amd_iommu_enable_interrupts+0x4c8/0x550, CPU#0: pm-hibernate/5153
+[  303.408317][ T5153] Modules linked in: nct6683 iwlmvm iwlwifi
+[  303.422433][ T5153] CPU: 0 UID: 0 PID: 5153 Comm: pm-hibernate Not tainted 6.19.3-dirty #55 PREEMPT
+[  303.444883][ T5153] Hardware name: ASRock X600M-STX/X600M-STX, BIOS 4.14 10/01/202[  303.463694][ T5153] RIP: 0010:amd_iommu_enable_interrupts+0x4c8/0x550
+[  303.479520][ T5153] Code: fe ff ff 48 8b 85 b8 00 00 00 48 89 c7 e8 60 c8 00 00 48 8b bd d0 00 00 00 e8 54 c8 00 00 48 8b 15 05 03 c7 02 e9 de fc ff ff <0f> 0b 48 8b 15 f7 02 c7 02 e9 d0 fc ff ff 48 8b 7b 18 89 44 24 04
+[  303.527402][ T5153] RSP: 0018:ffffa4474add7ad0 EFLAGS: 00010046
+[  303.541945][ T5153] RAX: 0000000000000000 RBX: 00000000001e8480 RCX: 0000000000000000
+[  303.561186][ T5153] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
+[  303.580422][ T5153] RBP: ffff98a7003a8800 R08: 0000000000000000 R09: 0000000000000000
+[  303.599660][ T5153] R10: 0000000000000000 R11: 0000000000000000 R12: 0000000080000000
+[  303.618898][ T5153] R13: 000ffffffffffff8 R14: 080000000000000^P R15: 0000000000000000
+[  303.638141][ T5153] FS:  00007f2615d25740(0000) GS:ffff98b5f5ad6000(0000) knlGS:0000000000000000
+[  303.659729][ T5153] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  303.675546][ T5153] CR2: 0000555a4b37b030 CR3: 0000000380164000 CR4: 0000000000f50ef0
+[  303.694784][ T5153] PKRU: 55555554
+[  303.703127][ T5153] Call Trace:
+[  303.710826][ T5153]  <TASK>
+[  303.717671][ T5153]  amd_iommu_reenable+0x10/0x20
+[  303.729217][ T5153]  lapic_resume+0x176/0x260
+[  303.739921][ T5153]  syscore_resume+0x5c/0x190
+[  303.750827][ T5153]  hibernation_snapshot+0x292/0x590
+[  303.763239][ T5153]  hibernate.cold+0x110/0x491
+[  303.774360][ T5153]  state_store+0xce/0xd0
+[  303.784412][ T5153]  kernfs_fop_write_iter+0x159/0x210
+[  303.797038][ T5153]  vfs_write+0x270/0x4c0
+[  303.807109][ T5153]  ksys_write+0x73/0xf0
+[  303.816945][ T5153]  do_syscall_64+0x7f/0xf20
 
-I went through complete init code today. I don't see any other suspicious thing.
-(disable -> enable sequence is proper).
 
--Vasant
+Without the patch, there had been double
+
+[  106.830788][ T4108] AMD-Vi: Virtual APIC enabled
+
+messages. It's suspicious that these messages are missing
+completely in the failure case?
 
 
-> 
-> I met the familiar
-> 
-> [  301.963784][ T5153] i >= MMIO_STATUS_TIMEOUT
-> [  301.963786][ T5153] WARNING: drivers/iommu/amd/init.c:952 at amd_iommu_enable_interrupts+0x4c8/0x550, CPU#0: pm-hiber
-> nate/5153
-> ...
-> [  302.304252][ T5153] Call Trace:                                                                                      [  302.312118][ T5153]  <TASK>
-> [  302.319113][ T5153]  amd_iommu_reenable+0x10/0x20
-> [  302.330910][ T5153]  lapic_resume+0x176/0x260
-> 
-> on hibernation entry (doesn't show up in dmesg, needs serial
-> console) and also on hibernation resume after image loading
-> (this shows up in dmesg).
-> 
-> 
-> Thanks,
-> Johannes
-> 
-> 
->> <--
->> commit fd6196203c8637951e56bf144015c020f57d5a34
->> Author: Vasant Hegde <vasant.hegde@amd.com>
->> Date:   Sat Feb 21 19:48:59 2026 +0530
->>
->>     iommu/amd: Skip IOMMU re-initialization if already enabled during resume
->>
->>     Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
->>
->> diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
->> index 384c90b4f90a..eb5bff024f95 100644
->> --- a/drivers/iommu/amd/init.c
->> +++ b/drivers/iommu/amd/init.c
->> @@ -3058,15 +3058,23 @@ static void disable_iommus(void)
->>  static void amd_iommu_resume(void *data)
->>  {
->>  	struct amd_iommu *iommu;
->> +	u64 ctrl;
->> +	bool enable_intr = false;
->>
->> -	for_each_iommu(iommu)
->> +	for_each_iommu(iommu) {
->> +		ctrl = readq(iommu->mmio_base + MMIO_CONTROL_OFFSET);
->> +		if (ctrl & BIT_ULL(CONTROL_IOMMU_EN))
->> +			continue;
->> +
->> +		enable_intr = true;
->>  		iommu_apply_resume_quirks(iommu);
->>
->> -	/* re-load the hardware */
->> -	for_each_iommu(iommu)
->> +		/* re-load the hardware */
->>  		early_enable_iommu(iommu);
->> +	}
->>
->> -	amd_iommu_enable_interrupts();
->> +	if (enable_intr)
->> +		amd_iommu_enable_interrupts();
->>  }
->>
->>  static int amd_iommu_suspend(void *data)
->>
->>
-
+Thanks,
+Johannes
