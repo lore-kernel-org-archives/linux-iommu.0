@@ -1,268 +1,144 @@
-Received: from MW6PR02CU001.outbound.protection.outlook.com (mail-westus2azon11012032.outbound.protection.outlook.com [52.101.48.32])
+Received: from relay10.grserver.gr (relay10.grserver.gr [37.27.248.198])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A74A303A07
-	for <iommu@lists.linux.dev>; Tue, 24 Feb 2026 09:12:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.48.32
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771924371; cv=fail; b=hhsxv8Yd1gwfdg0mBqCnkZJ+oMxBnNtxMi7pDLgmFsr8gL0IFWIVAx+fQpanQyeRi5FU+qe0zCDkhGMjG5DvzVfz3DPjAzN4foQFlzxGQw0/B+ZvRRQMwYY9dN9o/Y59M2795QXvH04yaudCP5TqZjUVK2JWddjnJA65N688pb8=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771924371; c=relaxed/simple;
-	bh=yLAPZkIq8g+2cz+aXaJqzDz55pOJqgQP9WCoHLbygi4=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=oEM9Oh2YdNSCMRYF10unNI6V1rRZ0ibQSD1y2zOzQwyHWOpjm9TtuM69IZgaltzJpvr8dFXoNuv41G/WMw9HSXS4rNgKzD3Xh/XqyeH7TdE8wB0vb7Z1/vyj9RpEBrycoaUUFzqFJYnu5nGkr9tv8hrgJxQ6ZuiSdhabqRADDpg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=Ksu6xFpK; arc=fail smtp.client-ip=52.101.48.32
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6942236AB50
+	for <iommu@lists.linux.dev>; Tue, 24 Feb 2026 09:17:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=37.27.248.198
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1771924638; cv=none; b=BC6N5FZ0jflYAKjmYv2g2646pqqYCRUhlxm+BJfbSHgaA9n5GwYHWgD386tGKc/RV8IQqosNAo3lzEYgpRgr8NGknfwcOKntY9uh71NRC5Mn468horQ0+k0JPMWB4jZcA0q3TmcKhS28rbn8O/tCiD9LLKFsMgMdp+UR7v6/z+k=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1771924638; c=relaxed/simple;
+	bh=gUfxd8tUCsH4Ri8OdkJTpFcmS3niEQjFV9nJtdcbiWo=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=rDpyK5C3RER/n6zamZjTTCgUEmCF+gLLEs5iwN8pzhwavdJPEsf0V8Hff+U0moeExeKrdVzQSpjWPIL4U2LBDpqCD1QICulDSYLFBJtrj8eer/VTUyqH4HoqMKJ5lI+tkt2nrKq0DtaMTEK8ifAd+DUVgpUgXUHjCsj0vSukZZo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=antheas.dev; spf=pass smtp.mailfrom=antheas.dev; dkim=pass (2048-bit key) header.d=antheas.dev header.i=@antheas.dev header.b=E5J0Z1sb; arc=none smtp.client-ip=37.27.248.198
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=antheas.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=antheas.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="Ksu6xFpK"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Xu+zRHon8C3PLvjEaPPs2zmavI+/0dVzvImCHgFOhWUxri6Ubbl25ERYwf5b2ICliq0v5Xgr+va96lKiPDVi3mUdHS50taxg+n85UdGLv/wYxfgKkAZQ1nitdYA1QT0mw4rFqI1YojDrb9OI1aHgY36+tPEUGkRAOn067N1FGtG/AWDuPzBxACaeTKoDncZdH6PC5JLddgUUrdTDdbPBHjucSB2LPfupWfDDys9rZLZKS4h/D8BEto//wzFn2LV405ocgEdNvm3HjSb66K6wRH7R85rSGUdFcQq3sB34xQu14kN9UacXiIXwBoidY31ZzcYerCFPxW1tl/zX59Yt+Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ufXzMOHWxUJ0luDL7bPzACkdeeYGPmoemAe4BDfcByw=;
- b=o0I+3/ld58zW9r+SOuqZx8kqwIPNZ1Uxw7a9MkeBjO8UYxw3y+8dvMeUTc52m1UYHw/o03I8tOJVrh3AY3IUMAFM/KreZBekn3bHvf8pzTYTwyzYN6KM1jb/dCksZOWJv8FS63dph0ce2ngbfVxX5ULNwIBGoVqjT8bpMwAMWY5I83mo84ewT+9QBAwVRnMzPlGgN7oM/OXu6yi/cnal7F8l1IEQh6sPpnHeipif+6I0ullqgfhc1HEh5zcpTR/RdUvucC51c+Vv/8sscTNgq8HGggAND3aFaH7z/E3uYGZzIROeILVsUYPNtVzzjpnCj9hIZd1/BQpGImy3UK8UTA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ufXzMOHWxUJ0luDL7bPzACkdeeYGPmoemAe4BDfcByw=;
- b=Ksu6xFpKNVDwnT0JxwWDAnnwtXryiPfTRdt68XJhTRzX/cIBzxZ6Gz1QbK8PP9IdFWZvMZBsMxaz6/5XKsk9FagmIYDiqsqUOQCXtLiC4k2g248ZbKxzc0q5kS2yMf/u4SYqvKWcyPOjmFjNzKm3yewGCuAQa9WbRpipZOI6HP4=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from PH7PR12MB5685.namprd12.prod.outlook.com (2603:10b6:510:13c::22)
- by DS0PR12MB7780.namprd12.prod.outlook.com (2603:10b6:8:152::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9632.21; Tue, 24 Feb
- 2026 09:12:45 +0000
-Received: from PH7PR12MB5685.namprd12.prod.outlook.com
- ([fe80::ce69:cfae:774d:a65c]) by PH7PR12MB5685.namprd12.prod.outlook.com
- ([fe80::ce69:cfae:774d:a65c%5]) with mapi id 15.20.9632.017; Tue, 24 Feb 2026
- 09:12:45 +0000
-Message-ID: <e87c0c1d-82f1-4a03-9a56-9bf3e03273cf@amd.com>
-Date: Tue, 24 Feb 2026 10:12:31 +0100
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFC 12/18] accel/qda: Add PRIME dma-buf import support
-To: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>,
- Oded Gabbay <ogabbay@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
- Shuah Khan <skhan@linuxfoundation.org>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
- David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
- Sumit Semwal <sumit.semwal@linaro.org>
-Cc: dri-devel@lists.freedesktop.org, linux-doc@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
- iommu@lists.linux.dev, linux-media@vger.kernel.org,
- linaro-mm-sig@lists.linaro.org,
- Srinivas Kandagatla <srinivas.kandagatla@oss.qualcomm.com>,
- Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
- Bharath Kumar <quic_bkumar@quicinc.com>,
- Chenna Kesava Raju <quic_chennak@quicinc.com>
-References: <20260224-qda-firstpost-v1-0-fe46a9c1a046@oss.qualcomm.com>
- <20260224-qda-firstpost-v1-12-fe46a9c1a046@oss.qualcomm.com>
-Content-Language: en-US
-From: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
-In-Reply-To: <20260224-qda-firstpost-v1-12-fe46a9c1a046@oss.qualcomm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: FR4P281CA0260.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:e8::7) To PH7PR12MB5685.namprd12.prod.outlook.com
- (2603:10b6:510:13c::22)
+	dkim=pass (2048-bit key) header.d=antheas.dev header.i=@antheas.dev header.b="E5J0Z1sb"
+Received: from relay10 (localhost.localdomain [127.0.0.1])
+	by relay10.grserver.gr (Proxmox) with ESMTP id 2FC1F40198
+	for <iommu@lists.linux.dev>; Tue, 24 Feb 2026 11:17:13 +0200 (EET)
+Received: from linux3247.grserver.gr (linux3247.grserver.gr [213.158.90.240])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by relay10.grserver.gr (Proxmox) with ESMTPS id 1E9774011C
+	for <iommu@lists.linux.dev>; Tue, 24 Feb 2026 11:17:12 +0200 (EET)
+Received: from mail-pj1-f50.google.com (mail-pj1-f50.google.com [209.85.216.50])
+	by linux3247.grserver.gr (Postfix) with ESMTPSA id 68F82200C40
+	for <iommu@lists.linux.dev>; Tue, 24 Feb 2026 11:17:11 +0200 (EET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=antheas.dev;
+	s=default; t=1771924631;
+	bh=DCWq/DDh+AXkwTRVoyWYR0FL/5/cERzM1sSm2MabZXo=;
+	h=Received:From:Subject:To;
+	b=E5J0Z1sb001wTO+zCTwbX4nN/N9gXJLmEhXLeRk0VrFIPkEw4R42jHVed4yiMAPBj
+	 7/rrRKj/EzFV7HdHlfqWhiVMU/ayHrqoj6l2/LqxTIcjMd1BZcfQr+5enaTItqzErd
+	 ABTfV7JOY64mA0mtKaEBF7MDNM9eoSlG0E13yIzLJH6DfLcPK3hwVQYjo567BgtMqO
+	 KhGnw+UvOipth7lasv7pX0iHkIqGq2EiDPpnILzzBe8U22RfGo8cBEd/3GASPK9CtC
+	 NqAboX9xGzmtwxXiWUr9crtJDMf/VDOk04Wv+RxzbZDfvbDKqz43z0cVupbiGkfIam
+	 Pv4sIvt/LxyHQ==
+Authentication-Results: linux3247.grserver.gr;
+        spf=pass (sender IP is 209.85.216.50) smtp.mailfrom=lkml@antheas.dev smtp.helo=mail-pj1-f50.google.com
+Received-SPF: pass (linux3247.grserver.gr: connection is authenticated)
+Received: by mail-pj1-f50.google.com with SMTP id
+ 98e67ed59e1d1-3566af9900eso2888122a91.2
+        for <iommu@lists.linux.dev>; Tue, 24 Feb 2026 01:17:11 -0800 (PST)
+X-Gm-Message-State: AOJu0YzZvXcHSzmFmlMRGf/Z0rqK46Ua0mpfm2KzSzuC4d7n+Lfwhcn1
+	2/O8MMiBva3fmkRiGPLYdHggr2enX+u1eTHAPAUZSc6b899Om8GFTJNz2P6jNSbFDgzCLYPQdMf
+	DjGNi04OUzwX5nMbLBqTBmG53hZp4dwA=
+X-Received: by 2002:a17:90b:5646:b0:354:7be4:a241 with SMTP id
+ 98e67ed59e1d1-358ae81e3d4mr8436472a91.15.1771924629987; Tue, 24 Feb 2026
+ 01:17:09 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH7PR12MB5685:EE_|DS0PR12MB7780:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3087b48c-007d-4800-db5a-08de7384df4d
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|7416014|376014|366016|921020|7053199007;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?U2hOTXpBWXYwVXVuRE9hNXEwK3gySi9VcFhDcFFtWjRUWVdldE5OWFZyM0hm?=
- =?utf-8?B?OUtIUGU4SnM5QkhpMlJuYlBEbzNnMEo3NHE0KzZZdllXTUlCVnI0T2J5MTRQ?=
- =?utf-8?B?Um16YzJNSmZOY0FDN1dXclg2WUFRQ2tLem1pL3pYNlBKbmhWbEVDaHZ0UjBw?=
- =?utf-8?B?S3I3MDZ1a05xMmNLa1lRencyRG5FUjdhSURqZXlxNFBvZzZPZ0JyOXZiQ01N?=
- =?utf-8?B?eXRCZkdqc05DenZVVkdIUFZBMllBdEo5QVBXWkhCTzk2NEdMWEZtNDUvdEVY?=
- =?utf-8?B?ejFVcjU0azhvL09yalBuMzFYRlUrVmdpZisyS1c3My9DOFJkNlcwL1JhS0x1?=
- =?utf-8?B?cnZ6WVlxMFhoK3Y1aUp6QkcrUW5ZVitIU0E2V1hLZXlDUkkzTGJBZE5LQ1NS?=
- =?utf-8?B?TFZEL1orbWpUcnZXY1l0eWdHam91Rm53c04vdGlEN2xqYzkyWTBYem1RU0Ru?=
- =?utf-8?B?akVtMDNZV1hQaTloVUg0b1B2TFNiR3RwSlRpYVVlVGNOdDB3TkxOdkZ6MTZr?=
- =?utf-8?B?bVlOakd2SWJUcWYwWm5meTVuY3ZyMWhxc2lHUEVndWIweXM1bmJ2RHEvdVRJ?=
- =?utf-8?B?dG5RbDU2NDR1RmdJNVhrNUFxQjM2c00rOTQ2U3ZQdEhaVTRGZlpKVkFiMzhv?=
- =?utf-8?B?UUtaQ3dtd0pDOGR3Zm9XYXJYa0tlVE9YZVozLzBpMWd0THVrOFllY2RacDJz?=
- =?utf-8?B?U3UwaTJXeW1iSHJQRkhjZHFpN2tUY1ZDbUVGdnBzNDVKV0NZU2NqdXprQnNu?=
- =?utf-8?B?RGZIOTdubVlKcFNjcHAzZHhJZW14UjJtb01Lamx2cG5mNjhDNkpPUDVLSjlC?=
- =?utf-8?B?eG5KdEhkWmw5cE5Id0d1ZEJKR1RZY0VOS2xKaE56bWdGckpJTloxZk9Bc0NG?=
- =?utf-8?B?dXhBR1JMTVZSTTd1SU9oM0doVWl3eE1yVzArV2lqNDRDTm1RbC95VWdmLzho?=
- =?utf-8?B?LzNhMnVaeTRLa3BNaGxSRmt6NXl3bk5aMElZVUpvekRmeUdBcjA3eTZkaW1F?=
- =?utf-8?B?eGdxcjAwWEl2OXNYdkJ2RzhkMjI5S1A4ZEdmYkZGcU9kQWw4aExoZ2o3SDFG?=
- =?utf-8?B?cGtZd29GMUJTMXlhYTkzdjd4WHlPSVZrbFZLeFkrdnQ4OUtOL012UmVBSC9t?=
- =?utf-8?B?cFN4ZFFTRjVKRFhkQkg3Vkw0ZjFXOVRXQ3dPdmNKaE9zVmQ4QXIrNkhlWUQ1?=
- =?utf-8?B?Nmp4cXI2UVcvWGwrMHNIbUhwSHI0bVBZdnFLc1RrT2UzS3l2YmpNUDZOd3Ur?=
- =?utf-8?B?elNMQ1NaOU03T0N0VE1pM0V4dFFMc2NEMVh1RUZwRS9ta3RtYUFLN2c4N0pk?=
- =?utf-8?B?R2lEQUpVd1B4bk5td0swV1Z6THVtY2Q5MnVZOXIxUC9xZVllRVRpK2kzUFYw?=
- =?utf-8?B?TE1QY2FVYjF0TCtobWNTOEdPWThYUENCTDBMWHFKVG9JVGlHQkJNaEZHS0Yz?=
- =?utf-8?B?bXFSWk5HQVR4QUhjNncrY1d0SGFNUmlnT3NaOHFTeUZQcE5hSE1jc2xBSDlD?=
- =?utf-8?B?OEpqTUhYbmFwbFRkYUpjdzdVWS84cGdrWUsrTDlKM0ZmOWpHMlFXeVBjVUJ6?=
- =?utf-8?B?K3NRWjJGSUxRTUY4S21ReldORUVXMjlPZ0d0eUJjODlrMDQyWjRtTUxxQysz?=
- =?utf-8?B?b0x6YWJLQTNJYUlsVnh4aDhhcVhSM0l1U0ZNQkFqVFFaUE1YMjlSMFhtOTNI?=
- =?utf-8?B?S3lmV1VzZkxYbmtIdFN5R2pxQjlPUHU4WDlTLytGT2d0OUlHNk9tTllIYytu?=
- =?utf-8?B?Sm9rQXBibkFQNEdxdC9yczg0SkZvYVdjRCswMW9zOUwxMUc4VW9RTEZROXVI?=
- =?utf-8?B?MFJ2eUdqQ1lQa2xETW9mQ0tDdzd1VlhzaVUzM0orQytWUGFYMHZYMjJrcmxu?=
- =?utf-8?B?M200MGppdTF2eC9hT2hJVy92R0dHOGhnYlZrc0s3bWVFVnlzZGI3UGRBOERr?=
- =?utf-8?B?blJiYkk5bnd6SnJXbGo2KytSR3JDSSt3Z2Rpb25TMkppa09PRHVKbEo1MDNC?=
- =?utf-8?B?SVdiajlEV3BjUW1aTm9JQ1k4VGNPeHYwVzRQZHJVUHA3QnoxZStzQUV1L01P?=
- =?utf-8?B?dXM4MjE2Z2lMMzBDNXpoZjRzVU1hWVlKVjJyMXZFdTVVQTNRN1o0U3lJWmc3?=
- =?utf-8?B?Y1B0V1dtVzd3RnIrdnZlb2xHYjNFUnAzVm00dkVBK1huK0RBWktzbXBmbUd2?=
- =?utf-8?B?cEE9PQ==?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5685.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(376014)(366016)(921020)(7053199007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?OE1jUXVSMVdnd2V6SzFZSkUxVU44M0hpQnZmOHlTL0sybW0wWmU4WExLelF0?=
- =?utf-8?B?UHM2OUtxTVJHV2dtTXlDZ3lDYzRLV1dQMTUyb2RyRFJ2QkErK29kWkFVdjlY?=
- =?utf-8?B?cUVSczlrOVBHQmIxeEVLWW9tWUJmQjhBbW5rZ2N0YUwvOHN6anViUjZHblky?=
- =?utf-8?B?VUJhejVmQ0NvcDdOMUFwc1VvMDhBcnRiakVtemJQcmNKWS9TWCtSTDZmaUVU?=
- =?utf-8?B?S3lUSCtOMUhKRGkxbTNsYUdRYzNGNU1zU29QNUkwaVhobHI0UDd3VUNsekNy?=
- =?utf-8?B?VTl4YUFqKy9GTktqODc5Y1V1cCtEc2tUUXZEWmxEMjVkL1JWcTZSbG0vQlRo?=
- =?utf-8?B?SHBiTjFLbElRbWxGUndIb3BBUkdXWEZ0L01Hc2tiNUQ5bmNPL09Nc3BiMXlz?=
- =?utf-8?B?TDBMY3FmeHNQODBnT3BEK2Jnd1ZwcFlzN0tVNDlhNll1NXFtK3MwMlpxd1Rn?=
- =?utf-8?B?NkFhVXp0U1kxc1VHR3U2L0hzeVBGYmJPMm5VcS80MGxwcUZpN0cxQWdTWEpu?=
- =?utf-8?B?Q2tDbXZsQmhieVhERUNKVVdGQUY2RjFiRUFVdERXNFd6eHpNM2FTenZuc3hK?=
- =?utf-8?B?ZWlZdktuRE5FSFp6K1drRFRMMjB2am1uL2hYZFB3UmdGQysxemZaUTBML3Zo?=
- =?utf-8?B?Z0NmcGJwMmFabWEwZkRJSVU2WXd6RGRTZzFLb3dCMHpLL1pabUZHaHRJdUYw?=
- =?utf-8?B?d0FGbnBCU1JCTXg1dThEZVpUeXM1RkxzNU9rSG93THNIUlh5cndQNlpwZGR4?=
- =?utf-8?B?SHNzT3lFdWNMVE5EQnIyaXhiZDNSV29vQk1Sd0kxemtGcGh0aXNLNkdOYzM3?=
- =?utf-8?B?WEV1QkJZbEdOd25NSlF5SEYrRmVyb2hISms5dk1XVmtLSGdQMWUxVUpOck9P?=
- =?utf-8?B?R2g1c3dBenBXZEltdXp4c3JTMWFPSTlsM29ZQnRNZk5zdFBzSXgzWXBBYWdM?=
- =?utf-8?B?c0N4d28yODhvQSthRXhnRTVjQXJ0TjBiYTVpdjJ5cjR1aHN5NlJhWHBvcGM3?=
- =?utf-8?B?S3VmV0RjdHNSN3o0bUVmbUtaUGVudU5Ici9TTlVocVc4MmZtWENPQkc5bzBN?=
- =?utf-8?B?bVZhdmFoMUVXaDVVQ2hCRXZLdDliQ3BmZlFMVk9PakNtTkVxVjF5ZHNqTDBn?=
- =?utf-8?B?RCtXWkdudmxxK2sxVTdpSTNyVUhXaU5jTGtqZ0NqdU1hT0Y2R3hvWlBpQWdJ?=
- =?utf-8?B?RWQyZnFoT3AwME5oNXZuL1ppMDJQeE5iN3RTeTA3ZTI1S2pPSml0SEZYWm1L?=
- =?utf-8?B?dGN0OVBqTFZ0T0RnNHozZ3picFUrYVNQN3BtQVpMRHAreVV4ZlladHpTaFhB?=
- =?utf-8?B?c0RaQVJwTVZXY0hQeXV0MFdqUVU3NmZjZS9Dak9yd3RFTHR1V2FpMXdNYjA4?=
- =?utf-8?B?NEVzU0duc2VrTFFZZFhKRXh4ekhpT3h0U01pdGo0bVRkQUpoa1BSWldOYVJk?=
- =?utf-8?B?VU4wS3ZURUpobUgwUmZwME5zMDhjUXdzQi9aNm9haTl0WWg1S3U3WjNFbGcr?=
- =?utf-8?B?aWZVakpVOHpRdHM0YWJiT1hGdzZJYmswb2tHNUZKbnNURkFiY2FqbDVLdTg4?=
- =?utf-8?B?d1N4SlY4ZzAzMWY4L0lpQkx4MGhRMHgwQjRPT3JZVGI3RzZoc21jR0VIbnlK?=
- =?utf-8?B?TC9iTzhTbGIzQlMyZzVoVDRoNGxLTGsvaGRFVTRwek8vSnVEbW5tZG0wV2R4?=
- =?utf-8?B?aFRFN2dXWDErNlpkRUlxSXJBWFNEUFE4Sm1OYytBWXpXaGlibkR4QmlEeHM5?=
- =?utf-8?B?K3I2bTMzK25BNXEvZy90V05VVktQYnhkTXliT01yTEYwSWFLd1ByVDlsNmVy?=
- =?utf-8?B?aXA0aUVsd0JWVWdHa2UzK0VZemw1VW50anBpK2xvb3g2SU1mV0N4YlRyallZ?=
- =?utf-8?B?RjNuOWpBYlhUZFFWd0RvL3l6L0ovWnhuTXhWeGorcjRUem0zdGdZeUhIeXdE?=
- =?utf-8?B?NmNsODlXalluY09JS2xPdTJFWnNkRHQ2dFR1VWN5bFREay9FWHR5dENLcUxl?=
- =?utf-8?B?VlJGTGpKZmpacWVKUkE1QjJ1NHZCNXBQTXdHV3lUYXArOTN5Z1lmMGJyUWpM?=
- =?utf-8?B?SHRKUFRlb3pEanN6V2pTV1lxWHh5QW4wK2dvV3Rmc2hROGtNVkpCMlpNUFRj?=
- =?utf-8?B?V0E2QWJ2UG1XQ04zUTlwQlNtUkZucEQrL0F4MVB1clA0UUJKOTNDSjFqVXpL?=
- =?utf-8?B?ODVyR2x3WHE3WUV1OEZlWWxlTHRXNGpTekNzNHBWUC84bHBvQWIxVUgzMEVk?=
- =?utf-8?B?NWVxUXlpaFkwdlpRb0xhTUFzZVczS1Y1SFdSNVZjb28wVWcrZVZmbWtDb0Mv?=
- =?utf-8?Q?aXudlNRcegXfr2L2P5?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3087b48c-007d-4800-db5a-08de7384df4d
-X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5685.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Feb 2026 09:12:45.4844
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: pThJ454xjrTKAvNLyN2kpz9PJ548iMi8kzcnY9B/V2EOQWZklJ586CP/5LaZrE18
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB7780
+References: <20260221235050.2558321-1-lkml@antheas.dev>
+ <a847533d-2488-46a6-9f32-79309d7525ce@amd.com>
+ <CAGwozwEe_B6uQPoyz=xXzsi_oYAtyFcLNSOQZ6=kNm3gz8QowQ@mail.gmail.com>
+ <131bfe2b-51b1-4235-87a2-ac00a464064a@amd.com>
+In-Reply-To: <131bfe2b-51b1-4235-87a2-ac00a464064a@amd.com>
+From: Antheas Kapenekakis <lkml@antheas.dev>
+Date: Tue, 24 Feb 2026 10:16:58 +0100
+X-Gmail-Original-Message-ID: 
+ <CAGwozwGVoxqbN0XXzHf-73b7jPmjH-wS0YtvG+HFRzezmaNX9Q@mail.gmail.com>
+X-Gm-Features: AaiRm52qsmjYAJc589vMWFKY545isPM5A4AdGsBKyxQXsac478C4LVxfuw9RTiE
+Message-ID: 
+ <CAGwozwGVoxqbN0XXzHf-73b7jPmjH-wS0YtvG+HFRzezmaNX9Q@mail.gmail.com>
+Subject: Re: [PATCH v1] iommu: Skip mapping at address 0x0 if it already
+ exists
+To: Vasant Hegde <vasant.hegde@amd.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+ Alejandro Jimenez <alejandro.j.jimenez@oracle.com>, dnaim@cachyos.org,
+	Mario.Limonciello@amd.com
+Content-Type: text/plain; charset="UTF-8"
+X-PPP-Message-ID: 
+ <177192463163.119179.2572184556551421044@linux3247.grserver.gr>
+X-PPP-Vhost: antheas.dev
+X-Virus-Scanned: clamav-milter 1.4.3 at linux3247.grserver.gr
+X-Virus-Status: Clean
 
-On 2/23/26 20:09, Ekansh Gupta wrote:
-> [Sie erhalten nicht häufig E-Mails von ekansh.gupta@oss.qualcomm.com. Weitere Informationen, warum dies wichtig ist, finden Sie unter https://aka.ms/LearnAboutSenderIdentification ]
-> 
-> Add PRIME dma-buf import support for QDA GEM buffer objects and integrate
-> it with the existing per-process memory manager and IOMMU device model.
-> 
-> The implementation extends qda_gem_obj to represent imported dma-bufs,
-> including dma_buf references, attachment state, scatter-gather tables
-> and an imported DMA address used for DSP-facing book-keeping. The
-> qda_gem_prime_import() path handles reimports of buffers originally
-> exported by QDA as well as imports of external dma-bufs, attaching them
-> to the assigned IOMMU device
+On Tue, 24 Feb 2026 at 09:26, Vasant Hegde <vasant.hegde@amd.com> wrote:
+>
+> Hi Antheas,
+>
+> On 2/23/2026 1:16 PM, Antheas Kapenekakis wrote:
+> > [You don't often get email from lkml@antheas.dev. Learn why this is important at https://aka.ms/LearnAboutSenderIdentification ]
+> >
+> > On Mon, 23 Feb 2026 at 07:02, Vasant Hegde <vasant.hegde@amd.com> wrote:
+> >>
+> >> Antheas,
+> >>
+> >> On 2/22/2026 5:20 AM, Antheas Kapenekakis wrote:
+> >>> Commit 789a5913b29c ("iommu/amd: Use the generic iommu page table")
+> >>> introduces the shared iommu page table for AMD IOMMU. Some bioses
+> >>> contain an identity mapping for address 0x0, which is not parsed
+> >>> properly (e.g., certain Strix Halo devices). This causes the DMA
+> >>> components of the device to fail to initialize (e.g., the NVMe SSD
+> >>> controller), leading to a failed post.
+> >>>
+> >>> The failure is caused by iommu_create_device_direct_mappings(), which
+> >>> is the new mapping implementation. In it, address aliasing is handled
+> >>> via the following check:
+> >>>
+> >>> ```
+> >>> phys_addr = iommu_iova_to_phys(domain, addr);
+> >>> if (!phys_addr) {
+> >>>         map_size += pg_size;
+> >>>         continue;
+> >>> }
+> >>> ````
+> >>
+> >> Thanks for debugging and fixing it . Just wondering why can't we replace replace
+> >> above check with pfn_valid() ?
+> >>
+> >
+> > Hi Vasant,
+> > I can check later today
+> >
+> > From a cursory glance though, it does not seem very suitable... Can you expand?
+>
+> Looking into the details, you are right. It won't work for direct_mapping().
+>
+>
+> May be we can have this patch for now, but I think on long run we should update
+> iova_to_phys() ops.
 
-That is usually an absolutely clear NO-GO for DMA-bufs. Where exactly in the code is that?
+Agreed. This commit can be backported so I would like to see it merged.
 
-> and mapping them through the memory manager
-> for DSP access. The GEM free path is updated to unmap and detach
-> imported buffers while preserving the existing behaviour for locally
-> allocated memory.
-> 
-> The PRIME fd-to-handle path is implemented in qda_prime_fd_to_handle(),
-> which records the calling drm_file in a driver-private import context
-> before invoking the core DRM helpers. The GEM import callback retrieves
-> this context to ensure that an IOMMU device is assigned to the process
-> and that imported buffers follow the same per-process IOMMU selection
-> rules as natively allocated GEM objects.
-> 
-> This patch prepares the driver for interoperable buffer sharing between
-> QDA and other dma-buf capable subsystems while keeping IOMMU mapping and
-> lifetime handling consistent with the existing GEM allocation flow.
-> 
-> Signed-off-by: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
+When you move forward with the refactor, feel free to cc for me to test
 
-...
+Best,
+Antheas
 
-> @@ -15,23 +16,29 @@ static int validate_gem_obj_for_mmap(struct qda_gem_obj *qda_gem_obj)
->                 qda_err(NULL, "Invalid GEM object size\n");
->                 return -EINVAL;
->         }
-> -       if (!qda_gem_obj->iommu_dev || !qda_gem_obj->iommu_dev->dev) {
-> -               qda_err(NULL, "Allocated buffer missing IOMMU device\n");
-> -               return -EINVAL;
-> -       }
-> -       if (!qda_gem_obj->iommu_dev->dev) {
-> -               qda_err(NULL, "Allocated buffer missing IOMMU device\n");
-> -               return -EINVAL;
-> -       }
-> -       if (!qda_gem_obj->virt) {
-> -               qda_err(NULL, "Allocated buffer missing virtual address\n");
-> -               return -EINVAL;
-> -       }
-> -       if (qda_gem_obj->dma_addr == 0) {
-> -               qda_err(NULL, "Allocated buffer missing DMA address\n");
-> -               return -EINVAL;
-> +       if (qda_gem_obj->is_imported) {
+> -Vasant
+>
+>
+>
 
-Absolutely clear NAK to that. Imported buffers *can't* be mmaped through the importer!
-
-Userspace needs to mmap() them through the exporter.
-
-If you absolutely have to map them through the importer for uAPI backward compatibility then there is dma_buf_mmap() for that, but this is clearly not the case here.
-
-...
-> +static int qda_memory_manager_map_imported(struct qda_memory_manager *mem_mgr,
-> +                                          struct qda_gem_obj *gem_obj,
-> +                                          struct qda_iommu_device *iommu_dev)
-> +{
-> +       struct scatterlist *sg;
-> +       dma_addr_t dma_addr;
-> +       int ret = 0;
-> +
-> +       if (!gem_obj->is_imported || !gem_obj->sgt || !iommu_dev) {
-> +               qda_err(NULL, "Invalid parameters for imported buffer mapping\n");
-> +               return -EINVAL;
-> +       }
-> +
-> +       gem_obj->iommu_dev = iommu_dev;
-> +
-> +       sg = gem_obj->sgt->sgl;
-> +       if (sg) {
-> +               dma_addr = sg_dma_address(sg);
-> +               dma_addr += ((u64)iommu_dev->sid << 32);
-> +
-> +               gem_obj->imported_dma_addr = dma_addr;
-
-Well that looks like you are only using the first DMA address from the imported sgt. What about the others?
-
-Regards,
-Christian.
