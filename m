@@ -1,114 +1,110 @@
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC7FE3783A0
-	for <iommu@lists.linux.dev>; Tue, 24 Feb 2026 12:06:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CD57225791;
+	Tue, 24 Feb 2026 12:32:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771934782; cv=none; b=DywOaM08jvo3Eg6niDAxezzcNumQ8LR5jEriXepqLSJnAkS5DjXu1rrm9UIxibkX6Ikv+Mr2xdEaRqVfSCxvpT/Iq7XTpsbK1dnEAmrR/ni+IOyfbvmNnBWkiqdUDajril5T2ToHIQ2qvyprAjRijb9m1gRkxZBtsXN9d3KlYQQ=
+	t=1771936346; cv=none; b=Qi/Q+m2gizpqrQarRK+66I2K8hHRXKO7BVQgvM0IJcw/LW3sjXk/rpifcH/ptOre12K4APmq88yQ4NLC7XoegBBbzG25DcK8cnfouNMUZeb7DO03+T24UgSWyihZrZ3ifnB0SYAIMYkr3CDLmyP9iDE+AyHJPVX+6WRjCk5VWp0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771934782; c=relaxed/simple;
-	bh=QxllERUzHwOPwlHsC7EYkE7GrjX59tt0xvN6u0A1JUE=;
-	h=Date:From:To:CC:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=etv0rUXX09v9d+zVRiIrtH74/MiLjbtnOdTsZQy+KolQ8reu28kctVntCItM1mH5dr5IJ9MQw3lQDYqTYlaIWIzt2AFlHngUs7LxZvHT5jw5EBXaVawoFhCYhSW9x4n0SGCVBXXD8u4LdbVtNN26sdzYD1XMvMs5n8GczPx48xQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.18.224.150])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTPS id 4fKxJN1R30zJ46fX;
-	Tue, 24 Feb 2026 20:05:56 +0800 (CST)
-Received: from dubpeml500005.china.huawei.com (unknown [7.214.145.207])
-	by mail.maildlp.com (Postfix) with ESMTPS id B598340539;
-	Tue, 24 Feb 2026 20:06:17 +0800 (CST)
-Received: from localhost (10.203.177.15) by dubpeml500005.china.huawei.com
- (7.214.145.207) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.11; Tue, 24 Feb
- 2026 12:06:16 +0000
-Date: Tue, 24 Feb 2026 12:06:15 +0000
-From: Jonathan Cameron <jonathan.cameron@huawei.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-CC: <jgg@nvidia.com>, <will@kernel.org>, <robin.murphy@arm.com>,
-	<bhelgaas@google.com>, <joro@8bytes.org>, <praan@google.com>,
-	<baolu.lu@linux.intel.com>, <kevin.tian@intel.com>,
-	<miko.lenczewski@arm.com>, <linux-arm-kernel@lists.infradead.org>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-	<linux-pci@vger.kernel.org>, <dan.j.williams@intel.com>
-Subject: Re: [PATCH v2 3/3] iommu/arm-smmu-v3: Allow ATS to be always on
-Message-ID: <20260224120615.00003ad9@huawei.com>
-In-Reply-To: <bdeebd35e81cfa5f76d16706a775b23ee1f01fdd.1771886695.git.nicolinc@nvidia.com>
-References: <cover.1771886695.git.nicolinc@nvidia.com>
-	<bdeebd35e81cfa5f76d16706a775b23ee1f01fdd.1771886695.git.nicolinc@nvidia.com>
-X-Mailer: Claws Mail 4.3.0 (GTK 3.24.42; x86_64-w64-mingw32)
+	s=arc-20240116; t=1771936346; c=relaxed/simple;
+	bh=0+tv1fGyJ3vKJDUwYgmcVIbgQI2yBZ21qKKCF7hk3tE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=PGXja55kPLoB7fLxO8iaOwVjnCLppV2BCX4JOzXd1nlVcZmKYu5TvEL3LsXrKIq0hL9x8P/oDqwHwWj9owLmhXA85Z0LX2F+nf8/dB7JSqtLmOTfbcqKxiMmkUZnHdzbEjUbQ//FXG9/nZSNL/X5zr//ZTRf7Mb1EG8w38jkEJg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=q8sabCLe; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="q8sabCLe"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BB4EC116D0;
+	Tue, 24 Feb 2026 12:32:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1771936345;
+	bh=0+tv1fGyJ3vKJDUwYgmcVIbgQI2yBZ21qKKCF7hk3tE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=q8sabCLeN3RQP50LrUxVvoRQ419ZlmhvBKe3rb2cVvRV9zYN6MjfUkrgWxXAgW32w
+	 JUdik2kbnh97vtouJVQ2CMWcng75erc8Ef9zQmCKPkmT4KBSy4RA4ZfaMacdGtYIPf
+	 NdO4vi5wZGo+Oeoj09w1ZLTduvhETIgUbDdZ/gHPW+8I6q9sQ21VChq/9RC4Bx9opj
+	 lttYP2YJ6929m8SfG47wb6Z0bccV6xehtZ80J+3sDJpzmPTLFeDzaHMcRn3Rtght0X
+	 6ZPudHlq3ZoVjI6JIu9SOJviUor+FzDFavWePJBJXslxia5tuLFd9GHF2NETSTVPY6
+	 5Q1JhBLnJtJnA==
+Date: Tue, 24 Feb 2026 14:32:21 +0200
+From: Leon Romanovsky <leon@kernel.org>
+To: Ashish Mhetre <amhetre@nvidia.com>
+Cc: robin.murphy@arm.com, joro@8bytes.org, will@kernel.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	linux-tegra@vger.kernel.org
+Subject: Re: [PATCH RFC] iommu/dma: Validate page before accessing P2PDMA
+ state
+Message-ID: <20260224123221.GM10607@unreal>
+References: <20260224104257.1641429-1-amhetre@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: lhrpeml500009.china.huawei.com (7.191.174.84) To
- dubpeml500005.china.huawei.com (7.214.145.207)
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260224104257.1641429-1-amhetre@nvidia.com>
 
-On Mon, 23 Feb 2026 14:52:22 -0800
-Nicolin Chen <nicolinc@nvidia.com> wrote:
+On Tue, Feb 24, 2026 at 10:42:57AM +0000, Ashish Mhetre wrote:
+> When mapping scatter-gather entries that reference reserved
+> memory regions without struct page backing (e.g., bootloader created
+> carveouts), is_pci_p2pdma_page() dereferences the page pointer
+> returned by sg_page() without first verifying its validity.
 
-> When a device's default substream attaches to an identity domain, the SMMU
-> driver currently sets the device's STE between two modes:
-> 
->   Mode 1: Cfg=Translate, S1DSS=Bypass, EATS=1
->   Mode 2: Cfg=bypass (EATS is ignored by HW)
-> 
-> When there is an active PASID (non-default substream), mode 1 is used. And
-> when there is no PASID support or no active PASID, mode 2 is used.
-> 
-> The driver will also downgrade an STE from mode 1 to mode 2, when the last
-> active substream becomes inactive.
-> 
-> However, there are PCIe devices that demand ATS to be always on. For these
-> devices, their STEs have to use the mode 1 as HW ignores EATS with mode 2.
-> 
-> Change the driver accordingly:
->   - always use the mode 1
->   - never downgrade to mode 2
->   - allocate and retain a CD table (see note below)
-> 
-> Note that these devices might not support PASID, i.e. doing non-PASID ATS.
-> In such a case, the ssid_bits is set to 0. However, s1cdmax must be set to
-> a !0 value in order to keep the S1DSS field effective. Thus, when a master
-> requires ats_always_on, set its s1cdmax to minimal 1, meaning the CD table
-> will have a dummy entry (SSID=1) that will be never used.
-> 
-> Now, for these device, arm_smmu_cdtab_allocated() will always return true,
-> v.s. false prior to this change. When its default substream is attached to
-> an IDENTITY domain, its first CD is NULL in the table, which is a totally
-> valid case. Thus, add "!master->ats_always_on" to the condition.
-> 
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+I believe this behavior started after commit 88df6ab2f34b  
+("mm: add folio_is_pci_p2pdma()"). Prior to that change, the
+is_zone_device_page(page) check would return false when given a
+non‑existent page pointer.
 
-In my head at least, it would be nice if a driver had to explicitly opt in
-to this behavior. The presence of CXL.cache support for instance doesn't
-actually mean the driver is going to enable it.  However it is probably
-harmless so lets go with this as path of least resistance.
+If any fix is needed, the is_pci_p2pdma_page() must be changed and not iommu.
 
-One trivial thing inline (ignore if you like!) Otherwise LGTM
-Reviewed-by: Jonathan Cameron <jonathan.cameron@huawei.com>
+Thanks
 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 4d00d796f0783..69d40918bc22f 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-
-> @@ -3274,7 +3294,10 @@ static void arm_smmu_attach_dev_ste(struct iommu_domain *domain,
->  		.old_domain = old_domain,
->  		.ssid = IOMMU_NO_PASID,
->  	};
-> +	bool ats_always_on = false;
+> 
+> This causes a kernel paging fault when CONFIG_PCI_P2PDMA is enabled
+> and dma_map_sg_attrs() is called for memory regions that have no
+> associated struct page:
+> 
+> Unable to handle kernel paging request at virtual address fffffc007d100000
+>   ...
+>   Call trace:
+>    iommu_dma_map_sg+0x118/0x414
+>    dma_map_sg_attrs+0x38/0x44
+> 
+> Fix this by adding a pfn_valid() check before calling
+> is_pci_p2pdma_page(). If the page frame number is invalid, skip the
+> P2PDMA check entirely as such memory cannot be P2PDMA memory anyway.
+> 
+> Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
+> ---
+>  drivers/iommu/dma-iommu.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index 5dac64be61bb..5f45f33b23c2 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -1423,6 +1423,9 @@ int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg, int nents,
+>  		size_t s_length = s->length;
+>  		size_t pad_len = (mask - iova_len + 1) & mask;
 >  
-> +	if (master->ats_always_on && s1dss != STRTAB_STE_1_S1DSS_TERMINATE)
-> +		ats_always_on = true;
-Maybe flatten this to not do the off then on dance.
-
-	bool ats_always_on = master->ats_always_on && s1dss != STRTAB_STE_1_S1DSS_TERMINATE;
-
-
+> +		if (!pfn_valid(page_to_pfn(sg_page(s))))
+> +			goto post_pci_p2pdma;
+> +
+>  		switch (pci_p2pdma_state(&p2pdma_state, dev, sg_page(s))) {
+>  		case PCI_P2PDMA_MAP_THRU_HOST_BRIDGE:
+>  			/*
+> @@ -1449,6 +1452,7 @@ int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg, int nents,
+>  			goto out_restore_sg;
+>  		}
+>  
+> +post_pci_p2pdma:
+>  		sg_dma_address(s) = s_iova_off;
+>  		sg_dma_len(s) = s_length;
+>  		s->offset -= s_iova_off;
+> -- 
+> 2.25.1
+> 
+> 
