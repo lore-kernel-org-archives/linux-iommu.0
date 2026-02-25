@@ -1,192 +1,135 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7027F3D3487
-	for <iommu@lists.linux.dev>; Wed, 25 Feb 2026 14:20:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1FA72392800;
+	Wed, 25 Feb 2026 15:12:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772029229; cv=none; b=D5467gAd4NqvLOHs5bEw/sb6+4JgCT1MFWTQ+cYq2/NzcEK/apn6BAyjGgwd3XwTYvEpDu1S3g/cIQtDasOsCu75uiqenhl2YGKcNO3ZK8V4qWD68Drmtk/xjSDyrCYL8Aj71FYSwFGLpOiX1D4EYLYCQ/+r7nUcM3Pz+84Hk/g=
+	t=1772032371; cv=none; b=Y/TiUNJ4/KfWFn3y+55dksVkBgWbdfGhZMJIwj256yV6LG+S6rWRTnkkW2XD3qz8kHj0s6s/0RkHvuBDVpsk7TLIoEf8L0JAdZ34El+ELMpCeVz9tNMEL80SBKFRDtxYrnab3/gmS3e/Q9o6WXebKe/+u/tsSsit1xyL3sCmw+I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772029229; c=relaxed/simple;
-	bh=HoX+77Ou1KVRWuj52NLOpoMqo5t3Lt0ZrveaYtMn2MI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=YqGYWFMP9KU0fcnYwnk4Mz72Js4PLFR6S01ciUVnyHH4zJwplGbMChn1+R6KbFS9rfMag+AZ4fFp43p0YYfFHouqwlYqIYJXuYrlxMx1nlSBjGHZAsTIcU1yEGLGRz16Km1nqO67414Guu2V+p1x2/bbVZ+NM0nULownFhsrF7Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=lCLZuHlf; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=W+SbBRtZ; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1772032371; c=relaxed/simple;
+	bh=WBE2By5FzkP5SLbnPSG3o0NgugwGTYXwxmVW/sbRDIw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=f5rVnAgp/XPYlGqbeWC5ssrEAJ7YQc6ougQaNQBmpVM3INZ9ULwunvYd3sh/SDBQzCqnNiEj6Rab5scednPm8ABIW8xDbYbkai6cCSJa6xCG03gDb2wke820TKmNnTmsz15msA8lgJIu8ZrgXRZDBaPQoczNHNXaaSxCyXDC7yQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=olWIYesR; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="lCLZuHlf";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="W+SbBRtZ"
-Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 61P9SCcA806692
-	for <iommu@lists.linux.dev>; Wed, 25 Feb 2026 14:20:27 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	EtyOE2hUVljy+kbFE5PibxyFcc/R7aXCK4PQrjUFn2o=; b=lCLZuHlf8TyAjJm3
-	u3rme9fFAEMEi7u536FDPUL5nlAy5jiQp4VpF1GwY2/RJhELgyk1DwwPJRciUo9f
-	G6UtslgOw5RylV8+vIzZxzMkscSgIcWthwhfKep4VCv3qiZH2jlFNOMtWoa46lcX
-	6KcSkfDa2N+ZoxRrbkVfKOoXzCQaocEd0HhJDFA+sXLsHChPj9nrDPFepT1nqWVI
-	IZ36rErEHBHfnY7GWhBi1tYt4FOiBTs7/fvZPcQLxGXvO1vVknuj6NlwUVlasWB5
-	3wFujOQ6K2RIpoDNlYCvW7z0Q1Es0jss86QZ/6e/PluRBy/m1UvZ3r/40OqsZ3/M
-	2XHL/g==
-Received: from mail-pl1-f197.google.com (mail-pl1-f197.google.com [209.85.214.197])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4chr5p9vgp-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Wed, 25 Feb 2026 14:20:27 +0000 (GMT)
-Received: by mail-pl1-f197.google.com with SMTP id d9443c01a7336-2aaf2ce5d81so87051085ad.1
-        for <iommu@lists.linux.dev>; Wed, 25 Feb 2026 06:20:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1772029226; x=1772634026; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=EtyOE2hUVljy+kbFE5PibxyFcc/R7aXCK4PQrjUFn2o=;
-        b=W+SbBRtZlS46EyL2BlB6VyuKlGnlG5R8tICF5xjp9cUZLwGCDremLAAw7aeaQAdWbx
-         vxhf3ja+OzbL/7rwI0LKcoysK2kAJprAR4OAKAv3iQ97pDl0705LWi6JEFZ9+L6KbCej
-         ojLk8sGYVQkeq3XD5WtfV84Cg1V7n7NggYxsZWxPEcstnKHrRucclPNcYTs4oUFJEupJ
-         mUUcbpVFn08jp7ptLJuBYZqYESlIeHIuiABoziSVQ9CUcKcePZmpGBC/U2uUX01lY7C1
-         YybWXPl5/SRMrxBfDQFBQk5RpxXyWkYGGCYw5i3poaU/fxTcN4sOoefDgLfQzHWie+Nx
-         0BWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772029226; x=1772634026;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=EtyOE2hUVljy+kbFE5PibxyFcc/R7aXCK4PQrjUFn2o=;
-        b=TjTXyBMGkTm24BgQhCYZTVAi2MpWIR9b3WLhlqNLVvhvFJQnbMhmo0UyI/9hoXpogf
-         tIFdkoc+DazolKM0EjhngKfhs9m/AbmsHTHv2qT2xlt4Xmp79y6XZsKGL6s9lgi0k/w1
-         mEqqqxCe/3xn4kkaMGCHfw1LiGV3rXdAYsyl1BcSvk2D4MFzYLU6qY7OiQIzA/iCB7NX
-         A3ZUelvreKn3pRvHuN9un6LQGaER7nsLmxPxSWXazJlxGx+Ujm4A27vp40RA0TpGU04U
-         AsOh5n8qvQKGflVAlMSUv/26rCcn6QuCtPPlq212mA4NPEJdc443wO1RpVZGqnD0T3N/
-         gxfw==
-X-Forwarded-Encrypted: i=1; AJvYcCX6lXno+loCUf3qSGYiXAxjbLNR+ez2qeB+kZ42F/O/fUgMXdz2xRezhBRVbz2xMeRLeMA/Tg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yz9L+qe8QKVUFAU97V9UHqsRdpYa5wiIacKMWFjIS2Zv58QjMPK
-	8ZHkthVOiJ2WJJcMLLpOz409IhYXSV+rA+io2IuAj0v5nKF2JH/P2jLU+h/lSV9rPoWJUyxjkV0
-	+H9jx0Oqo0jw0vL9onwuaACeROhsvfyYiZW8NXpRo6BL4YwmpbPekuMlhBQ==
-X-Gm-Gg: ATEYQzwTir+70aSeK7zTT+pHQihSFwM0FYmJLoK8Xesb+yAvdSEnmSF/P6ttF5qGK1l
-	xixfFmBPB042RW5D0m1E8iW6hys7JyhemAg4gE8+ayvKYMbO/kGwXQ//2Q0jgjcpkLj+HDapjS0
-	F6N+Mmim47QIJhe48rv58S+5CMU86mkXxG2jYFYDxqDSohpVLe/41kqlSbBeSEvX4pPuBpHrQDY
-	YFe1B2l4RdwcazwnSnLCNAVOKRUAp/pU3JDjutSl2MCS/cx0/WBKCBIByELs/6bHDnEiMMYOz0r
-	fzhRHjSOSIu17Tdn6W7pOd0vMX/GJ1QKfNuQirhT+7G/NzJGdeeFgWeg8mUVIBv3yhTeUI00Ekk
-	r4/ulbqy/UvTfN3zmq9+E8FTbsb4HI9lJQdyjSQgHdUrTA6MdfsM=
-X-Received: by 2002:a17:902:d485:b0:2a9:2ab2:e50d with SMTP id d9443c01a7336-2ade9aa21a7mr3608435ad.51.1772029226464;
-        Wed, 25 Feb 2026 06:20:26 -0800 (PST)
-X-Received: by 2002:a17:902:d485:b0:2a9:2ab2:e50d with SMTP id d9443c01a7336-2ade9aa21a7mr3608015ad.51.1772029225935;
-        Wed, 25 Feb 2026 06:20:25 -0800 (PST)
-Received: from [192.168.1.5] ([171.61.227.247])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ad74f5e55dsm142051345ad.30.2026.02.25.06.20.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 25 Feb 2026 06:20:25 -0800 (PST)
-Message-ID: <b6519bfc-7931-4985-aaf1-1aaf1fe5aa88@oss.qualcomm.com>
-Date: Wed, 25 Feb 2026 19:50:17 +0530
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="olWIYesR"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73BEFC116D0;
+	Wed, 25 Feb 2026 15:12:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1772032370;
+	bh=WBE2By5FzkP5SLbnPSG3o0NgugwGTYXwxmVW/sbRDIw=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=olWIYesRWiw65xkODMWGjed+aMm2qj32u6gVvmfLAViXpgfQ1gV5euIFOYqvzyXKS
+	 1oBjv1D1FTk1wR7rMSeAmVBJmSYp1VZMujILP/lxeKQLisP+WFoCBJSvHgrg3aUY3G
+	 o55VFauH6L5QLsO4DYrMf5yk93ODqho4R4lpocJaU2wzmq0zPxpd0cTDezXbJtbtdP
+	 /OJCdoFKX0X5bkE917xIuyjMETyXUBUHJ86z0zVUQQOfhQ0d3fwlrlGb+29Bjbz5N6
+	 c7uzqpRNp6BBV/ZOpgHGboQQIXulvsYguBBOqtlXiUDdZB9VHUdXaViALWDNYzYiOp
+	 VtX+a33PmtVOA==
+Date: Wed, 25 Feb 2026 09:12:46 -0600
+From: Bjorn Andersson <andersson@kernel.org>
+To: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
+Cc: Trilok Soni <trilokkumar.soni@oss.qualcomm.com>, 
+	Oded Gabbay <ogabbay@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
+	Shuah Khan <skhan@linuxfoundation.org>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+	Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
+	Sumit Semwal <sumit.semwal@linaro.org>, Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>, 
+	dri-devel@lists.freedesktop.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-arm-msm@vger.kernel.org, iommu@lists.linux.dev, linux-media@vger.kernel.org, 
+	linaro-mm-sig@lists.linaro.org, Srinivas Kandagatla <srinivas.kandagatla@oss.qualcomm.com>, 
+	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, Bharath Kumar <quic_bkumar@quicinc.com>, 
+	Chenna Kesava Raju <quic_chennak@quicinc.com>
+Subject: Re: [PATCH RFC 01/18] accel/qda: Add Qualcomm QDA DSP accelerator
+ driver docs
+Message-ID: <opjniedtfhkv7vlb57g3xyikcfkxelthx3lmspmypws4vxz4oc@4uypmmf4t6fb>
+References: <20260224-qda-firstpost-v1-0-fe46a9c1a046@oss.qualcomm.com>
+ <20260224-qda-firstpost-v1-1-fe46a9c1a046@oss.qualcomm.com>
+ <e94ce683-d47c-4c8e-8b26-cd327c891cc8@oss.qualcomm.com>
+ <5a278b02-f2ad-408b-b0ad-f2297817bd7e@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFC 02/18] accel/qda: Add Qualcomm DSP accelerator driver
- skeleton
-To: Bjorn Andersson <andersson@kernel.org>
-Cc: Oded Gabbay <ogabbay@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
-        Shuah Khan <skhan@linuxfoundation.org>, Joerg Roedel <joro@8bytes.org>,
-        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        dri-devel@lists.freedesktop.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        iommu@lists.linux.dev, linux-media@vger.kernel.org,
-        linaro-mm-sig@lists.linaro.org,
-        Srinivas Kandagatla <srinivas.kandagatla@oss.qualcomm.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
-        Bharath Kumar <quic_bkumar@quicinc.com>,
-        Chenna Kesava Raju <quic_chennak@quicinc.com>
-References: <20260224-qda-firstpost-v1-0-fe46a9c1a046@oss.qualcomm.com>
- <20260224-qda-firstpost-v1-2-fe46a9c1a046@oss.qualcomm.com>
- <elu44euja7d7nnnhdmdqgof76646b3m3isjmws5pr274gqhy2a@dbeq4hk74ebo>
-Content-Language: en-US
-From: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
-In-Reply-To: <elu44euja7d7nnnhdmdqgof76646b3m3isjmws5pr274gqhy2a@dbeq4hk74ebo>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjI1MDEzNyBTYWx0ZWRfXwJEmglslOmz4
- cwxvc8ont6/SMyFbduOYFfCvdys8FK/lVnKy28tpXliMgzyUxczmFbGiiRogD/fcVfSQTLyxb9d
- UjXZSTUCjU0kInZ5Ajy5e2gfn/tjfAMuPzS5+WLe4666WzfA4pxEv2GCUNJq9r3dtzOmKg/a9Ef
- EiAzsquLzwul0vvg8+iyotPotzCW1PetrRLGC4evXatIhgcvMcw9Ijtw3Ku/tGAZywRitUl2eEc
- uX8TSIykb1TXhU0XfOb6X5CN2zB4cCMX5zpFj8ncMyQdw8sjJlEqSprqDBy7Ogm7z65l8rEntJH
- bV40daJNnNxjum0Zkknf/32PegHDv6eLKnD0o0FtNGmoqkRzG395CugPEPmmnvcgfg1KbSYEQxy
- gsXpaKV6yrI4ajMxkNmfJ0AjhI+GyDx2/L3FR7LnwHRd1f6+tdRyIuQmbi9XhKzJb5WzsjN34DL
- wmT4WzZKoi4UHfacUDw==
-X-Authority-Analysis: v=2.4 cv=GstPO01C c=1 sm=1 tr=0 ts=699f052b cx=c_pps
- a=cmESyDAEBpBGqyK7t0alAg==:117 a=CLJ8B99oKJtQbdnoKiLypA==:17
- a=IkcTkHD0fZMA:10 a=HzLeVaNsDn8A:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=3WHJM1ZQz_JShphwDgj5:22
- a=tV0izz4fD985yFSgC6wA:9 a=QEXdDO2ut3YA:10 a=1OuFwYUASf3TG4hYMiVC:22
-X-Proofpoint-GUID: v4qSkzdMaCUMiq-JHmxcJ3u2_w53vLPy
-X-Proofpoint-ORIG-GUID: v4qSkzdMaCUMiq-JHmxcJ3u2_w53vLPy
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-02-25_01,2026-02-25_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- bulkscore=0 suspectscore=0 priorityscore=1501 malwarescore=0 impostorscore=0
- phishscore=0 adultscore=0 lowpriorityscore=0 clxscore=1015 spamscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2602130000 definitions=main-2602250137
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <5a278b02-f2ad-408b-b0ad-f2297817bd7e@oss.qualcomm.com>
 
+On Wed, Feb 25, 2026 at 07:47:08PM +0530, Ekansh Gupta wrote:
+> 
+> 
+> On 2/24/2026 9:03 AM, Trilok Soni wrote:
+> > On 2/23/2026 11:08 AM, Ekansh Gupta wrote:
+> >> Add initial documentation for the Qualcomm DSP Accelerator (QDA) driver
+> >> integrated in the DRM accel subsystem.
+> >>
+> >> The new docs introduce QDA as a DRM/accel-based implementation of
+> >> Hexagon DSP offload that is intended as a modern alternative to the
+> >> legacy FastRPC driver in drivers/misc. The text describes the driver
+> >> motivation, high-level architecture and interaction with IOMMU context
+> >> banks, GEM-based buffer management and the RPMsg transport.
+> >>
+> >> The user-space facing section documents the main QDA IOCTLs used to
+> >> establish DSP sessions, manage GEM buffer objects and invoke remote
+> >> procedures using the FastRPC protocol, along with a typical lifecycle
+> >> example for applications.
+> >>
+> >> Finally, the driver is wired into the Compute Accelerators
+> >> documentation index under Documentation/accel, and a brief debugging
+> >> section shows how to enable dynamic debug for the QDA implementation.
+> > So existing applications written over character device UAPI needs to be
+> > rewritten over new UAPI and it will be broken once this driver gets
+> > merged? Are we going to keep both the drivers in the Linux kernel
+> > and not deprecate the /char device one? 
+> >
+> > Is Qualcomm going to provide the wrapper library in the userspace
+> > so that existing applications by our customers and developers
+> > keep working w/ the newer kernel if the char interface based
+> > driver gets deprecated? It is not clear from your text above. 
+> Thanks for raising this, Trilok.
+> 
+> This is one of the open items that I have. I'm not exactly sure what would be the
+> acceptable way for this. 
+> 
+> As you mentioned, applications that rely on /dev/fastrpc* might not work on QDA
+> without modification.
+> 
+> I was thinking in the same lines as you have mentioned and  having some shim/compat
+> driver to translate FastRPC UAPI to QDA. The compat driver would expose the existing
+> character devices and route the calls to QDA. The compat driver could be built via Kconfig.
+> 
 
+This is a fundamental requirement, you need to address this in order for
+this to move forward.
 
-On 2/24/2026 3:22 AM, Bjorn Andersson wrote:
-> On Tue, Feb 24, 2026 at 12:38:56AM +0530, Ekansh Gupta wrote:
-> [..]
->> diff --git a/drivers/accel/qda/qda_drv.c b/drivers/accel/qda/qda_drv.c
->> new file mode 100644
->> index 000000000000..18b0d3fb1598
->> --- /dev/null
->> +++ b/drivers/accel/qda/qda_drv.c
->> @@ -0,0 +1,22 @@
->> +// SPDX-License-Identifier: GPL-2.0-only
->> +// Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
->> +#include <linux/module.h>
->> +#include <linux/kernel.h>
->> +
->> +static int __init qda_core_init(void)
->> +{
->> +	pr_info("QDA: driver initialization complete\n");
-> This print is useless as soon as you make the driver do anything, please
-> don't include developmental debug logs.
->
->
-> In fact, this patch doesn't actually do anything, please squash things a
-> bit to give it some meat.
->
-> Regards,
-> Bjorn
-Ack, will squash the next commit with this one.
->
->> +	return 0;
->> +}
->> +
->> +static void __exit qda_core_exit(void)
->> +{
->> +	pr_info("QDA: driver exit complete\n");
->> +}
->> +
->> +module_init(qda_core_init);
->> +module_exit(qda_core_exit);
->> +
->> +MODULE_AUTHOR("Qualcomm AI Infra Team");
->> +MODULE_DESCRIPTION("Qualcomm DSP Accelerator Driver");
->> +MODULE_LICENSE("GPL");
->>
->> -- 
->> 2.34.1
->>
->>
+Which makes me wonder if it would be possible to reach an accel driver
+through incremental transition of the current driver, instead of just
+dropping in a few thousand lines of new code/design.
 
+> However, I haven’t encountered an example of such a UAPI‑translation driver in the kernel
+> before, so I would want guidance from maintainers on whether this is an acceptable
+> model or not.
+> 
+> Regarding your question about library, all the APIs exposed by github/fastrpc library are kept
+> unchanged in terms of definitions and expectation. The same project can be build for both
+> FastRPC and QDA based on configure options. So, the applications using github/fastrpc should
+> not face any problem if the libs is built with proper configure options.
+> 
+
+You're assuming that the kernel and userspace are a unified piece of
+software, they are not. It must be possible for me to install a new
+kernel package without having to replace the userspace libraries.
+
+Regards,
+Bjorn
+
+> I have noted your point regarding the doc not providing clear details, I have added interface
+> compatibility information in cover letter and will try pulling the same to Doc.
+> >
+> > ---Trilok Soni
+> 
+> 
