@@ -1,50 +1,46 @@
-Received: from canpmsgout09.his.huawei.com (canpmsgout09.his.huawei.com [113.46.200.224])
+Received: from canpmsgout10.his.huawei.com (canpmsgout10.his.huawei.com [113.46.200.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6AD738F24D
-	for <iommu@lists.linux.dev>; Wed, 25 Feb 2026 09:38:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=113.46.200.224
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FF1338F22F
+	for <iommu@lists.linux.dev>; Wed, 25 Feb 2026 09:38:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=113.46.200.225
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772012290; cv=none; b=HrLbOJCj349aNXNpzxeeAc4R0el6Xde++YViz8KiHwJtunf/EOC1rv7J6FuID6IRY0rHY/m3A0BlKZKdU48mBzGSuLBw4vjvmAI8WXNwRVGATM52l9jP0JGwdE2X8wGfVYuxdp8wFnf9r6BwBaz67RIwoGVD42I+fqDsUKFT/x8=
+	t=1772012290; cv=none; b=j5Hps26it+ZYqr4eAskMxUN+Urahb71Btk3qhliipdk0K65GgFREjSpG9n6AvpOTi8O78YhUj8Wa7FbHLpiihmIeLwB9DQWMzSbwtPLwgy8pFB0RM1ze74DZK0HfeovuySltIlFfCdwKE4PPDUEi+F+saIGAtCAq2bGGg79uvXk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1772012290; c=relaxed/simple;
-	bh=R0p8ZDtnVZWhxVB3tLzEgFsUm7vWVf7THSJrFmMmZBw=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=tqsk4xyi4VJeC2ZQi+/7kb+Yov0CuaA4IJMcrtLwbL42mfgRyvIhjufmvV/pp7ooNM3Y2QImEwGV3PbB6AurJ+Idhk0mzUzsJz9ycNItrO43paY9OfVCvsSFT13IXMxJpqDUsUCLdr2M/LfJUwGBB1FF9b+acynpYo6xx5OC978=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b=4frp8evp; arc=none smtp.client-ip=113.46.200.224
+	bh=sBPJTclpO4ljkonZpXg43TeBIfOkZrvH43vkF/8LyQk=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=Ow5qyXn3y2lRV15edtk/TEwzt8jT1KJ3LuBoL/lllElidKmnqujn7FmWTsxi0RhAwUIzHOS1daUntsPoHGkHk0lreYCvuaDmzmuweA55xKhVsfyEDTIeJXt01UFzi27P8kcecsiOOiCsuMtNzr0FAlridVeP+ZNNbQbIlR2EHFU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b=ug+43P3X; arc=none smtp.client-ip=113.46.200.225
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b="4frp8evp"
+	dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b="ug+43P3X"
 dkim-signature: v=1; a=rsa-sha256; d=huawei.com; s=dkim;
 	c=relaxed/relaxed; q=dns/txt;
 	h=From;
-	bh=ceBSUYKPURfAelglxNaTud0/6wBpMSFng0bM50WzPXY=;
-	b=4frp8evp5XffaTdKMY8mkN8aCLygalhBuhmLq5SZ3xyAKuYzvleZh7p9rpqZBWvJG1ibZD7W4
-	6vRBn6aMeIVBrneIT/DcehLCzDlEenO7AdGc+zEbtGkY8Pxsm8F84hr+muCz1dbOUwNCfwP6l5m
-	eTdzx9m5ipb8RfQzmP2NFDE=
-Received: from mail.maildlp.com (unknown [172.19.162.92])
-	by canpmsgout09.his.huawei.com (SkyGuard) with ESMTPS id 4fLTsp49Qrz1cyQp;
-	Wed, 25 Feb 2026 17:33:18 +0800 (CST)
+	bh=09W6D/jMs6O1nkVVYiJFg6hsNahknxjfCtmESXdHLHA=;
+	b=ug+43P3XXZH7Mlo6eYL/li1xvvDxIYFedDeoMTbkqYmiWa/LQyh9YR3nNZYbXVXAcaHkbMqeO
+	kcAeXPQJbc3IDD7dBWNCURDRuT9yAmZlP5NbxE/5wSv5UqiBC4V5Bx5epUjBu+hhVEnLs4QjdK7
+	26Qta3R0RghI3/b5nU4ei/I=
+Received: from mail.maildlp.com (unknown [172.19.163.15])
+	by canpmsgout10.his.huawei.com (SkyGuard) with ESMTPS id 4fLTsq2D0gz1K96m;
+	Wed, 25 Feb 2026 17:33:19 +0800 (CST)
 Received: from kwepemj200003.china.huawei.com (unknown [7.202.194.15])
-	by mail.maildlp.com (Postfix) with ESMTPS id 2BFB740562;
-	Wed, 25 Feb 2026 17:38:05 +0800 (CST)
+	by mail.maildlp.com (Postfix) with ESMTPS id C92094056E;
+	Wed, 25 Feb 2026 17:38:03 +0800 (CST)
 Received: from localhost.huawei.com (10.90.31.46) by
  kwepemj200003.china.huawei.com (7.202.194.15) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.11; Wed, 25 Feb 2026 17:38:04 +0800
+ 15.2.1544.11; Wed, 25 Feb 2026 17:38:03 +0800
 From: Qinxin Xia <xiaqinxin@huawei.com>
 To: <21cnbao@gmail.com>, <jonathan.cameron@huawei.com>,
 	<wangzhou1@hisilicon.com>, <xiaqinxin@huawei.com>
 CC: <iommu@lists.linux.dev>, <prime.zeng@huawei.com>, <fanghao11@huawei.com>,
-	<linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>, Barry Song
-	<baohua@kernel.org>
-Subject: [PATCH v7 1/3] dma-mapping: benchmark: modify the framework to adapt to more map modes
-Date: Wed, 25 Feb 2026 17:37:58 +0800
-Message-ID: <20260225093800.3625054-2-xiaqinxin@huawei.com>
+	<linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>
+Subject: [PATCH v7 0/3] dma-mapping: benchmark: Add support for dma_map_sg
+Date: Wed, 25 Feb 2026 17:37:57 +0800
+Message-ID: <20260225093800.3625054-1-xiaqinxin@huawei.com>
 X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20260225093800.3625054-1-xiaqinxin@huawei.com>
-References: <20260225093800.3625054-1-xiaqinxin@huawei.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -56,230 +52,60 @@ Content-Type: text/plain
 X-ClientProxiedBy: kwepems500001.china.huawei.com (7.221.188.70) To
  kwepemj200003.china.huawei.com (7.202.194.15)
 
-This patch adjusts the DMA map benchmark framework to make the DMA
-map benchmark framework more flexible and adaptable to other mapping
-modes in the future. By abstracting the framework into five interfaces:
-prepare, unprepare, initialize_data, do_map, and do_unmap.
-The new map schema can be introduced more easily
-without major modifications to the existing code structure.
+Modify the framework to adapt to more map modes, add benchmark
+support for dma_map_sg, and add support sg map mode in ioctl.
+ 
+The result:
+[root@localhost]# ./dma_map_benchmark -m 1 -g 8 -t 8 -s 30 -d 2
+dma mapping benchmark(SG_MODE): threads:8 seconds:30 node:-1 dir:FROM_DEVICE granule/sg_nents: 8
+average map latency(us):1.4 standard deviation:0.3
+average unmap latency(us):1.3 standard deviation:0.3
+[root@localhost]# ./dma_map_benchmark -m 0 -g 8 -t 8 -s 30 -d 2
+dma mapping benchmark(SINGLE_MODE): threads:8 seconds:30 node:-1 dir:FROM_DEVICE granule/sg_nents: 8
+average map latency(us):1.0 standard deviation:0.3
+average unmap latency(us):1.3 standard deviation:0.5 
 
-Reviewed-by: Barry Song <baohua@kernel.org>
-Signed-off-by: Qinxin Xia <xiaqinxin@huawei.com>
 ---
- include/uapi/linux/map_benchmark.h |   8 +-
- kernel/dma/map_benchmark.c         | 131 ++++++++++++++++++++++++-----
- 2 files changed, 115 insertions(+), 24 deletions(-)
+Changes since V6:
+- Address the comments from Barry, update the comment of the granule.
+- Link: https://lore.kernel.org/lkml/20260112093436.3456315-1-xiaqinxin@huawei.com/
 
-diff --git a/include/uapi/linux/map_benchmark.h b/include/uapi/linux/map_benchmark.h
-index c2d91088a40d..e076748f2120 100644
---- a/include/uapi/linux/map_benchmark.h
-+++ b/include/uapi/linux/map_benchmark.h
-@@ -17,6 +17,11 @@
- #define DMA_MAP_TO_DEVICE       1
- #define DMA_MAP_FROM_DEVICE     2
- 
-+enum {
-+	DMA_MAP_BENCH_SINGLE_MODE,
-+	DMA_MAP_BENCH_MODE_MAX
-+};
-+
- struct map_benchmark {
- 	__u64 avg_map_100ns; /* average map latency in 100ns */
- 	__u64 map_stddev; /* standard deviation of map latency */
-@@ -29,7 +34,8 @@ struct map_benchmark {
- 	__u32 dma_dir; /* DMA data direction */
- 	__u32 dma_trans_ns; /* time for DMA transmission in ns */
- 	__u32 granule;  /* how many PAGE_SIZE will do map/unmap once a time */
--	__u8 expansion[76]; /* For future use */
-+	__u8 map_mode;  /* the mode of dma map */
-+	__u8 expansion[75]; /* For future use */
- };
- 
- #endif /* _UAPI_DMA_BENCHMARK_H */
-diff --git a/kernel/dma/map_benchmark.c b/kernel/dma/map_benchmark.c
-index 0f33b3ea7daf..312e7060c7a9 100644
---- a/kernel/dma/map_benchmark.c
-+++ b/kernel/dma/map_benchmark.c
-@@ -5,6 +5,7 @@
- 
- #define pr_fmt(fmt)	KBUILD_MODNAME ": " fmt
- 
-+#include <linux/cleanup.h>
- #include <linux/debugfs.h>
- #include <linux/delay.h>
- #include <linux/device.h>
-@@ -31,17 +32,105 @@ struct map_benchmark_data {
- 	atomic64_t loops;
- };
- 
-+struct map_benchmark_ops {
-+	void *(*prepare)(struct map_benchmark_data *map);
-+	void (*unprepare)(void *mparam);
-+	void (*initialize_data)(void *mparam);
-+	int (*do_map)(void *mparam);
-+	void (*do_unmap)(void *mparam);
-+};
-+
-+struct dma_single_map_param {
-+	struct device *dev;
-+	dma_addr_t addr;
-+	void *xbuf;
-+	u32 npages;
-+	u32 dma_dir;
-+};
-+
-+static void *dma_single_map_benchmark_prepare(struct map_benchmark_data *map)
-+{
-+	struct dma_single_map_param *params __free(kfree) = kzalloc(sizeof(*params),
-+								    GFP_KERNEL);
-+	if (!params)
-+		return NULL;
-+
-+	params->npages = map->bparam.granule;
-+	params->dma_dir = map->bparam.dma_dir;
-+	params->dev = map->dev;
-+	params->xbuf = alloc_pages_exact(params->npages * PAGE_SIZE, GFP_KERNEL);
-+	if (!params->xbuf)
-+		return NULL;
-+
-+	return_ptr(params);
-+}
-+
-+static void dma_single_map_benchmark_unprepare(void *mparam)
-+{
-+	struct dma_single_map_param *params = mparam;
-+
-+	free_pages_exact(params->xbuf, params->npages * PAGE_SIZE);
-+	kfree(params);
-+}
-+
-+static void dma_single_map_benchmark_initialize_data(void *mparam)
-+{
-+	struct dma_single_map_param *params = mparam;
-+
-+	/*
-+	 * for a non-coherent device, if we don't stain them in the
-+	 * cache, this will give an underestimate of the real-world
-+	 * overhead of BIDIRECTIONAL or TO_DEVICE mappings;
-+	 * 66 means everything goes well! 66 is lucky.
-+	 */
-+	if (params->dma_dir != DMA_FROM_DEVICE)
-+		memset(params->xbuf, 0x66, params->npages * PAGE_SIZE);
-+}
-+
-+static int dma_single_map_benchmark_do_map(void *mparam)
-+{
-+	struct dma_single_map_param *params = mparam;
-+
-+	params->addr = dma_map_single(params->dev, params->xbuf,
-+				      params->npages * PAGE_SIZE, params->dma_dir);
-+	if (unlikely(dma_mapping_error(params->dev, params->addr))) {
-+		pr_err("dma_map_single failed on %s\n", dev_name(params->dev));
-+		return -ENOMEM;
-+	}
-+
-+	return 0;
-+}
-+
-+static void dma_single_map_benchmark_do_unmap(void *mparam)
-+{
-+	struct dma_single_map_param *params = mparam;
-+
-+	dma_unmap_single(params->dev, params->addr,
-+			 params->npages * PAGE_SIZE, params->dma_dir);
-+}
-+
-+static struct map_benchmark_ops dma_single_map_benchmark_ops = {
-+	.prepare = dma_single_map_benchmark_prepare,
-+	.unprepare = dma_single_map_benchmark_unprepare,
-+	.initialize_data = dma_single_map_benchmark_initialize_data,
-+	.do_map = dma_single_map_benchmark_do_map,
-+	.do_unmap = dma_single_map_benchmark_do_unmap,
-+};
-+
-+static struct map_benchmark_ops *dma_map_benchmark_ops[DMA_MAP_BENCH_MODE_MAX] = {
-+	[DMA_MAP_BENCH_SINGLE_MODE] = &dma_single_map_benchmark_ops,
-+};
-+
- static int map_benchmark_thread(void *data)
- {
--	void *buf;
--	dma_addr_t dma_addr;
- 	struct map_benchmark_data *map = data;
--	int npages = map->bparam.granule;
--	u64 size = npages * PAGE_SIZE;
-+	__u8 map_mode = map->bparam.map_mode;
- 	int ret = 0;
- 
--	buf = alloc_pages_exact(size, GFP_KERNEL);
--	if (!buf)
-+	struct map_benchmark_ops *mb_ops = dma_map_benchmark_ops[map_mode];
-+	void *mparam = mb_ops->prepare(map);
-+
-+	if (!mparam)
- 		return -ENOMEM;
- 
- 	while (!kthread_should_stop())  {
-@@ -49,23 +138,12 @@ static int map_benchmark_thread(void *data)
- 		ktime_t map_stime, map_etime, unmap_stime, unmap_etime;
- 		ktime_t map_delta, unmap_delta;
- 
--		/*
--		 * for a non-coherent device, if we don't stain them in the
--		 * cache, this will give an underestimate of the real-world
--		 * overhead of BIDIRECTIONAL or TO_DEVICE mappings;
--		 * 66 means evertything goes well! 66 is lucky.
--		 */
--		if (map->dir != DMA_FROM_DEVICE)
--			memset(buf, 0x66, size);
--
-+		mb_ops->initialize_data(mparam);
- 		map_stime = ktime_get();
--		dma_addr = dma_map_single(map->dev, buf, size, map->dir);
--		if (unlikely(dma_mapping_error(map->dev, dma_addr))) {
--			pr_err("dma_map_single failed on %s\n",
--				dev_name(map->dev));
--			ret = -ENOMEM;
-+		ret = mb_ops->do_map(mparam);
-+		if (ret)
- 			goto out;
--		}
-+
- 		map_etime = ktime_get();
- 		map_delta = ktime_sub(map_etime, map_stime);
- 
-@@ -73,7 +151,8 @@ static int map_benchmark_thread(void *data)
- 		ndelay(map->bparam.dma_trans_ns);
- 
- 		unmap_stime = ktime_get();
--		dma_unmap_single(map->dev, dma_addr, size, map->dir);
-+		mb_ops->do_unmap(mparam);
-+
- 		unmap_etime = ktime_get();
- 		unmap_delta = ktime_sub(unmap_etime, unmap_stime);
- 
-@@ -108,7 +187,7 @@ static int map_benchmark_thread(void *data)
- 	}
- 
- out:
--	free_pages_exact(buf, size);
-+	mb_ops->unprepare(mparam);
- 	return ret;
- }
- 
-@@ -209,6 +288,12 @@ static long map_benchmark_ioctl(struct file *file, unsigned int cmd,
- 
- 	switch (cmd) {
- 	case DMA_MAP_BENCHMARK:
-+		if (map->bparam.map_mode < 0 ||
-+		    map->bparam.map_mode >= DMA_MAP_BENCH_MODE_MAX) {
-+			pr_err("invalid map mode\n");
-+			return -EINVAL;
-+		}
-+
- 		if (map->bparam.threads == 0 ||
- 		    map->bparam.threads > DMA_MAP_MAX_THREADS) {
- 			pr_err("invalid thread number\n");
+Changes since V5:
+- Address the comments from Barry, the incorrect and unnecessary 'prepare_data' judgment
+  is deleted and renamed 'prepare_data()' to 'initialize_data()'. The mode and
+  other parameters in the output print are placed in the same print. In addition, the incorrect
+  map_mode judgment in ioctrl and the wrong path in sg:prepare() does not release 'params' is fixed.
+- Link: https://lore.kernel.org/all/20251222153246.2220659-1-xiaqinxin@huawei.com/
+
+Changes since V4:
+- Address the comments from Barry and Jonathan, irrelevant patches are deleted and
+  the original cache processing logic is restored with add prepare_data().
+- Link: https://lore.kernel.org/all/20250614143454.2927363-3-xiaqinxin@huawei.com/
+
+Changes since V3:
+- Address the comments from Barry, change mode to a more specific namespace.
+- Link: https://lore.kernel.org/all/20250509020238.3378396-1-xiaqinxin@huawei.com/
+
+Changes since V2:
+- Address the comments from Barry and ALOK, some commit information and function
+  input parameter names are modified to make them more accurate.
+- Link: https://lore.kernel.org/all/20250506030100.394376-1-xiaqinxin@huawei.com/
+
+Changes since V1:
+- Address the comments from Barry, added some comments and changed the unmap type to void.
+- Link: https://lore.kernel.org/lkml/20250212022718.1995504-1-xiaqinxin@huawei.com/
+
+Qinxin Xia (3):
+  dma-mapping: benchmark: modify the framework to adapt to more map
+    modes
+  dma-mapping: benchmark: add support for dma_map_sg
+  tools/dma: Add dma_map_sg support
+
+ include/uapi/linux/map_benchmark.h |  13 +-
+ kernel/dma/map_benchmark.c         | 246 ++++++++++++++++++++++++++---
+ tools/dma/dma_map_benchmark.c      |  23 ++-
+ 3 files changed, 254 insertions(+), 28 deletions(-)
+
 -- 
 2.33.0
 
