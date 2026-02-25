@@ -1,131 +1,167 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from OS8PR02CU002.outbound.protection.outlook.com (mail-japanwestazolkn19012063.outbound.protection.outlook.com [52.103.66.63])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 215B930E852;
-	Wed, 25 Feb 2026 07:56:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772006173; cv=none; b=T+j0dXQ2mDM00tNpHWFWQWYMEGWyQJWVlXT3oidHbMpdJXMXjUSmonWfXm/NY6u0PfNZmL2xcB4eJWM+JE0cQfoivm1l8t0pxH/cBDszc/JbQO6PK8O27rIlbqE/40gtSciOm+hWdP7NXqJ5Wok+XYMO/bBZ391r8wjEul/YcTk=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772006173; c=relaxed/simple;
-	bh=JqFR4U/I4MB+SKLFl9OdO6R2LAzf+H3aHpw6oWSGOSY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ToIkXnv2Wp6Hveg29+xiW1yv2xO0JAHvdpYGph+0rxMgGkxP57lbcVDKkTeYSBXQeQREhBZXRBs8H7puksBxa6EpjeLlxdVyGsc4jXjPMf3odW26O7vahGmAipqunDoQqIjvSqEuf0gYIKyD0DpRG9jnBQJLJYmqmxAWmBH/4mk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jfqiLdX+; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2B49277007
+	for <iommu@lists.linux.dev>; Wed, 25 Feb 2026 08:46:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.103.66.63
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1772009168; cv=fail; b=dFcILnDgGc8Klj6qcDvAlnHbZ/n4ISa6ZyoOP/QLdHiDHz38XtcFHfr9OluUGc7ig0K9g7CNySkPAkvCmnb1MULhV4Ccq+BYFIPPC87ABwRhndy5XD1jNv/j5R9AGk6qb22p8+xlviQMvX4LmzRk4LXhIajX+QYM37dtyN1OSn0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1772009168; c=relaxed/simple;
+	bh=kwEmDK9Z415OvoagePdCs+s+TVxlJW1/tUazUNmcZkc=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=lY0DB+Jhoo093+WNULdFmKDMvoQaewVHZ7273ykEd8k9XT7qtr5hsWVRyAc0J3gTM376PKIvU3Z8F+hMl4Mci4O5qGqe7sGk3GOl1Yxaqg41oPDubFPCyuCPoRmvdlH8t+k7Q2fq60cDXT+wrRDqaQN5Scx0DO5Hp0EvyuQTNhY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hotmail.com; spf=pass smtp.mailfrom=hotmail.com; dkim=pass (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b=V09S0OqG; arc=fail smtp.client-ip=52.103.66.63
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hotmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jfqiLdX+"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40F4DC4AF09;
-	Wed, 25 Feb 2026 07:56:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772006172;
-	bh=JqFR4U/I4MB+SKLFl9OdO6R2LAzf+H3aHpw6oWSGOSY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=jfqiLdX+BCpABsbWe3Of/Ix1OstPBdj3NaP2fSQoptwGjcCv92DCb4bZNJpkWAbrB
-	 GdByBXHvlt3lsF9GnscNYZmYGViRi1UTL+6MJaoTUsTeJxpK8yhXYZda4si1PIf01f
-	 +gq6VibJdxGU0azGnJCqmiVSPtMEsb5IvgV8MU4zat+Ee+UiSb+CbRHa2UdsUlJBPG
-	 pe5CLE1sb1k0PpDsH54Y+4AIOLN9cPnBlI//Q8vkZ+PTvIulR7AERM4leQLrQG3D7r
-	 gfJQXnBOK/9bVEuzILpbV4uyPiS9uue5gLCuKIJmJAdJs0tx0mBcWDe/J/wqh9moMy
-	 zIQ3VRCVdJqww==
-Date: Wed, 25 Feb 2026 09:56:09 +0200
-From: Leon Romanovsky <leon@kernel.org>
-To: Ashish Mhetre <amhetre@nvidia.com>
-Cc: Pranjal Shrivastava <praan@google.com>, robin.murphy@arm.com,
-	joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org,
-	linux-mm@kvack.org
-Subject: Re: [PATCH RFC] iommu/dma: Validate page before accessing P2PDMA
- state
-Message-ID: <20260225075609.GB9541@unreal>
-References: <20260224104257.1641429-1-amhetre@nvidia.com>
- <20260224123221.GM10607@unreal>
- <aZ4Q1HA9q1ojsVYY@google.com>
- <9d01b4e3-be5b-4c9c-8088-1d10f67f1fd8@nvidia.com>
+	dkim=pass (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b="V09S0OqG"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=S5UXkMySMRNKbzXe5tz4yBTtPdhkhmd4+F9ySZQAMCMi0tKiT2D4rpuWryzVwwEK4vKnK80sHFbAwtKwMiWA9G42DPW0vsV07n9uq1x3Qb6vSnDCAqpeG1oJ7hEsnVSc+andkBD2mt6cxXe61L5bzBcHiiAVVV2n+leL/MxCcNV/NIJzg3ihmuEH4xnGyvAOz0Ws5aU8DUZ5SzuF05PXIC32fcdrvBlV3Z7CgiREpQwroljpxoIosZvOBf7PJvWK+B5ZNk9XIxFQbDbe1Au9Cvs19Xcbum6tfzCVXeOKpayav2PN+XDyJUGZCJYbZ80gsHmbwACenjXAm7ZJmwAvTg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=bKmYU0c0Q3+TqUEwMsVxf0VBg7lJcMGWpt0Z9eGytn8=;
+ b=MLOa/G26SN6Sh5jcwc5CU5d/EIBoprfwOo+AepFPCsN/jtc6bFcFzIhY0IHw+9YPZT0mVwyuoNfeBfnuktW0SNPzn9tPNVZWNF6QHQwGvbHIhTnrmiw5Qs4JLvTRhjV1JhkyTt6TuXXQxhk9HrdoSXZ8WQlTmbrvLGf22N8MZH2mxe1yBw3ZcsBCEj7TgYQWYDvU/W1IeiI1HKXc46KYBXGpr0+81+tAIP8FE6h9pqpmjosQrNimxJZ9rUShCeJGPwx4ExhfB4qWEVwFkoRnPpbO+/gCaSfYbWS6KK1zxrdS0iObqe+VFu9RfdRGBOwcOQ068G3rfSzhv7SX0LU3sQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hotmail.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bKmYU0c0Q3+TqUEwMsVxf0VBg7lJcMGWpt0Z9eGytn8=;
+ b=V09S0OqG/HfS1wBjcf9S6Yvd77f7TYqiH74SCp2q8jhtwJQn8+xXY8lzZOua9/Dq32Jdz+kZK3nxiLXCfJYv+DAmXO+WT70wV+URFLcbmbQITBPEotqWsaZ9+5hUhkawnNdS0+uaC+gOcQAaPJ1oq670WhkI2wfntHSN3ICY/PUfsKyaS/WMLlxuW7oax9S7N0phFt61g/E3+BS80z7CO/wByfcJTcxIkcIFCb99Y6GBC8QRmbf/7WVWD/r7IvI8mgJimfs2cllayDBChjGT2IQEejSGydmnuMCyPaDSmToXYXo/4S3paVUV5nup7dBWHErnconmkV38WjeP/RY1sw==
+Received: from SI2PR01MB4393.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:1b0::7) by SEZPR01MB6008.apcprd01.prod.exchangelabs.com
+ (2603:1096:101:221::10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9632.23; Wed, 25 Feb
+ 2026 08:46:02 +0000
+Received: from SI2PR01MB4393.apcprd01.prod.exchangelabs.com
+ ([fe80::c735:fab8:6e3d:6d1c]) by SI2PR01MB4393.apcprd01.prod.exchangelabs.com
+ ([fe80::c735:fab8:6e3d:6d1c%4]) with mapi id 15.20.9632.010; Wed, 25 Feb 2026
+ 08:46:01 +0000
+Message-ID:
+ <SI2PR01MB4393798BDE4F80A0B4B07A1CDC75A@SI2PR01MB4393.apcprd01.prod.exchangelabs.com>
+Date: Wed, 25 Feb 2026 16:45:07 +0800
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 2/2] vfio/type1: Set IOMMU_MMIO in dma->prot for
+ MMIO-backed addresses
+To: jgg@nvidia.com, kevin.tian@intel.com, alex@shazbot.org, joro@8bytes.org,
+ thomas.lendacky@amd.com, vasant.hegde@amd.com,
+ suravee.suthikulpanit@amd.com, aik@amd.com
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <SI2PR01MB4393C9B731ABDA050A336166DC88A@SI2PR01MB4393.apcprd01.prod.exchangelabs.com>
+ <SI2PR01MB4393E7518DD5EB5839AD136DDC88A@SI2PR01MB4393.apcprd01.prod.exchangelabs.com>
+Content-Language: en-US
+From: Wei Wang <wei.w.wang@hotmail.com>
+In-Reply-To: <SI2PR01MB4393E7518DD5EB5839AD136DDC88A@SI2PR01MB4393.apcprd01.prod.exchangelabs.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: TPYP295CA0036.TWNP295.PROD.OUTLOOK.COM (2603:1096:7d0:7::8)
+ To SI2PR01MB4393.apcprd01.prod.exchangelabs.com (2603:1096:4:1b0::7)
+X-Microsoft-Original-Message-ID:
+ <0b44f257-01c8-4729-8c13-836f7ccd12b2@hotmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <9d01b4e3-be5b-4c9c-8088-1d10f67f1fd8@nvidia.com>
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SI2PR01MB4393:EE_|SEZPR01MB6008:EE_
+X-MS-Office365-Filtering-Correlation-Id: 29b1bcce-41bf-4763-7696-08de744a4d4a
+X-MS-Exchange-SLBlob-MailProps:
+	qdrM8TqeFBv5zL3Pq3ogIg0sNnRYStpoMQ4oDPIOV2XGUJTwK2CmvBslkEzOZ8eEOMFoE0iDsYg1AKpUH0TwVuhJXgI8MPkKFjqF7gc9MR9M5M6nIIsz4SmzuwEzfpvRJg+LgVm+HaLQOGmpocRRcitiSWYYJXDCqiy+ZaAz+YdB6vXubffYBo821F4JI3LMLyjgLt/CTN8gpqarKwOXUnsis7N2P+7PnP7Itpidhn2YaGZh/uEzKVMkADVjNLDz5q2anMyCTICN6mlgR43c5WzwAG8l5jtXezsAzvVfkBQjkYiNVn/EzCN+zzq0R6hVqpyN+mJWBRanXpJboHHJC+ck95lP1zIrL80KtqhfbhHkJix5PkGqMmjo5aWgXIot+c73TDuWBqWNvAYYIJ/sQIzFLsv/w3q7EbrJzKfl2HvNXB9cpV/4OkeaMIYTzYQmUiYYXOHMnAPxKinbQUnerL8teNe0VXd0jJtv4Z5B62eiMEBqRDaUvwJrW4KkWsrr01ZwGVORfANZVtVPdfo1r+nW8nhSKrckqDySgfxxwCivwr2vXZQgbyf9eOWijINNuXMerrB1JSfSayJrxv4kPKqJYatqLKvnCkxRKNPsK+jNC1MmsBaAeECLutDlLEFOgNP0LE0n0d8DOWmTkfBGUFv8E2rQnl8opxc7oxcpvnELXrhha3BsOCFqsP0/J8xDPptcMNjgOAR8qeKCfUAHlq4pPoL5aG0UqoTuou0qEkgQD6ALsUD8qL0WyzhAAqyXHcjQ6gfFWlHtEDjpupUNEDX+5DPEyvsu
+X-Microsoft-Antispam:
+	BCL:0;ARA:14566002|6090799003|37102599003|461199028|51005399006|12121999013|23021999003|41001999006|15080799012|8060799015|5072599009|19110799012|13041999003|40105399003|440099028|3412199025;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?SG5vamQvVmMya1dEZUc0emdURitsNGRubzNTRWt4dlI2VVVONmg4emtVUzZt?=
+ =?utf-8?B?SHNnSUhhOW5hTzhFRVBuQTUwSi82eGZUcnFTMVZZUXVSRHc0ZFlXUmNuREts?=
+ =?utf-8?B?WS96TDFyMVhOTmdMMzZxYmM5VkRlMlRDUWpVU1BUWktNNW1MU3FBRy9FZEsx?=
+ =?utf-8?B?U1VkdWRJZDNGVXcwbkFGaXYvRlgvYndxcWpJVytmL2dkaFl6NnRTb3RWUUl4?=
+ =?utf-8?B?VUtxSS9GVGlkYnhEbGNFSmEzbUR6Yjl2ckx0aUx4V3NsUkE2V0dodG52ZDhj?=
+ =?utf-8?B?NGMySGhkWFFvSHBxMU9jWEdseDdManhPNjdGdUxDdVNZVEIzMFFnQVZDVDNI?=
+ =?utf-8?B?Zk9rTVdaOHJNSDNpUlF3Mk5XUEw5YlNEOGJPY080K3BvM2hRMVowdE03Y1Z1?=
+ =?utf-8?B?Q3RjRjdMTXNpejZJcnJ2MldWdW9nOXc2NTJzODk2aXM3RGk1dU9reUE0RllS?=
+ =?utf-8?B?YkJ3ajRKdzJWVVh0cG5QVTNpVERSTjFuUXJRREo0WjNpSHNwZDdDMGkvMFNo?=
+ =?utf-8?B?YVhWaEFyOFJjWnBBVG9rZ0pHd3ZKVEdPcTg0WVg2VkZmeWpjY1NkTTRQSG1k?=
+ =?utf-8?B?dy9TazIzZi9IV0REb1BjT2VQamhFNHpoMlBkSkp0K3V4d3l2VlB4ZytIRTBZ?=
+ =?utf-8?B?VUxjMEFPVVh0MVAyUUJjNkxkMXlKaWlNcmhaL0ZXMU50L0YwK1NYeUh2azdq?=
+ =?utf-8?B?MHpGSlBYRUV1Qzg2UDdrMmVMSHNheFBOdUdNTmFER2tTNjg0Nm1CN1kybEFO?=
+ =?utf-8?B?VDBpSlRtQ3FKRG8xc0ZKaU1aT0x2L1pqRUxuZkxieDV3eEJXODloekE0RDBF?=
+ =?utf-8?B?WWd4c3RURDNyVXZWL082WmtVSmVuVzVlNVFUWU5yaTRrYTBiSnEzTTZJVnVG?=
+ =?utf-8?B?UEpaZUJYeTZsdXc1WjFaTGY3TWpPQVdtRWhqeWdhWVVXUHMyYTlERDZXY085?=
+ =?utf-8?B?eWJMb1IzQndaUVI1NVJtVnBUa1VMNTVYM2VtNmJzb3d0RFVCcHE3SWZKOHNW?=
+ =?utf-8?B?RndOemt3dzZuK3lTWUM0U1cwUnp0dzE1ZFp5SUJBeVYwS1lBNmQyNGFHcm9Q?=
+ =?utf-8?B?SngzaVdmKzRDbEJnUTAvY0Z0a1FPcTI2MEtUS1JzcWNYc0M2bXFnQXBRTjIz?=
+ =?utf-8?B?WDIvZFkxRnFNdE9udmkxTlVzK3FxQU9HbUdnanZHaDNBSmhOMDE2OHhWbFht?=
+ =?utf-8?B?NS9FM2t0SHU4dlZFSkZaQkJYZGRmd0c1c2lGcDlZL3hWdzhNeFA4RmwybDNi?=
+ =?utf-8?B?WVh3U2pML1ZTc2QzT3VhYUtkTkRVanFyRUZXYVVJTkRGa3VadDlCZW5NSGR0?=
+ =?utf-8?B?eWRjQlFlNkR0Vm5vL3k3YzdzbXZueHJ6bmFMTnZDQkUzeERGVVp0MlJYeDJ2?=
+ =?utf-8?B?VzhLRUU5U2ZmWGhoNlcvQmhNeDBUV1VKSWJrWTJXbWd4NWc4OEJScHo3TENz?=
+ =?utf-8?Q?l5BSW1RM?=
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?ak55bHFsbkNsSEJaYkd4dFUrQytPUjh4OU84YU5SaG1vK2lZQmtrcmluMEtU?=
+ =?utf-8?B?Qjl3WG1jZjN5WStOZkZEZXA3MTVkblN5eFE0V0dKT211Z043dTkwSkFNMUwz?=
+ =?utf-8?B?czBsWHMrcHVBbHprb0RCK1lyenM0MDdpVzgyZEhNeFVZNE56U3FpSjBEMGRw?=
+ =?utf-8?B?cW1jSjJiOWRKSDVmODF3ekJydzdCWXNOMmJBOGVXY3lpeWhLMVFRZHAybnJE?=
+ =?utf-8?B?ekNKamkyUXRKMnNlQWxOQ3hIL2Y3UHQzeVozYnFyV09qYmR2WWtScy9zWHBv?=
+ =?utf-8?B?cWJkZzlpMDFRc2hacEFtUnFzMk8wUVdVaFdQNENyZjNnU2E0dzhuTjJ0cWZo?=
+ =?utf-8?B?aEFUSjdLWUxxYUkvTTlwRUprRnp3d3E3ai91bkh5a1phTnZHb0o3Y1N3bm8x?=
+ =?utf-8?B?LzhFb2xLSlVtazhZUjdEem9mOU1JUUpmSU5iZXplZ3NOLzdOdzFFdEtpckhQ?=
+ =?utf-8?B?TmE0TVBrL0daaEYrSFlVWTc0cUluVmI2ZGM4eVdhc1ByVXdGemp0T2FsNDlX?=
+ =?utf-8?B?VkR5Rmw1cFltV2NjRXRQdXFtRnZYSWcvT2VicFVsK2ltc2FhbVZZelUrZW5B?=
+ =?utf-8?B?T0NTSjRnSXJJVDNhVHJVMWRDVFo4SGc3L2JjeWhPRjhDaE5XZVIzWlp1NWxU?=
+ =?utf-8?B?anRnWmtkRnRiTmVwMys4dEd2dzhGT3Y3ZTRReGpOQ1FGNENJUzZyZ0dJeDVM?=
+ =?utf-8?B?b0xzQkh2eUVFK1BKSnNSQ1NoSkRLUmkvajlxUmRud0pabUEvd2xoU29RS25a?=
+ =?utf-8?B?ZW9rejRHTE5pT21oS0ErcTZhb281TEYyYW9BaklKa3E4WmdwWlpKWHdYZmpW?=
+ =?utf-8?B?Wmd3YytUNnF2NkdKNS9jYU9Vd1NFQ2ZhT2VYYXVUeUZkZXNHWCswTEhvMWJV?=
+ =?utf-8?B?TDFlUk92TVEzblJMTEFZWkFoYUdneUpTMEVDVFk0NEJteHo4eUF2ZlZZUjR1?=
+ =?utf-8?B?eWZ6dWhwNUN6bWZyYU1Td3crU0tMVTlRZjhVL0xIVjRxTFI0NG9VenBzT3RV?=
+ =?utf-8?B?YTVWcDZFVEhTNWFZVU1tMXMwQzhCdkpoMHUrRVFjMTMxT1FGMnFyOUNFcFBi?=
+ =?utf-8?B?OXVrTGVCYlZxdmNWQk8wSG4wRGx1T2FKVXJ6ZnNqMVhZcEtEU1hzTlF2STZT?=
+ =?utf-8?B?QzhhOVBCckp0UXA3OXNIVk1KcjgvRnpmMjVjem11SzBNVUVnRVE1K3dGK1RU?=
+ =?utf-8?B?WFRTb00wNlVtcEQvaHhKbVJJMUNuUmFVL3cxNHcxZ2VLNEZ3MlYwdFhaaWNU?=
+ =?utf-8?B?elM3dzJrSDAvbWJKS0MreUtCUXhqUFFuSTFTQWZ6UnMrVk50aWx3OFlVVkxP?=
+ =?utf-8?B?SHpIYVJ5M2hyRjZkUnMveThzdU5vb3E5NzNEb3pheHZIc1JpbFhnaFI4M3gw?=
+ =?utf-8?B?MWNRWFE1VXVmRmVudVdPREFGVmlRRGVaODdQN2IxOVNKMitlTmxtTWppMkdt?=
+ =?utf-8?B?ejk2V3QzRnVZbzQ5QlRoUmxlZG9tdEVocmREbU53T2pWc0lYcC9NbzFNZkpk?=
+ =?utf-8?B?dW9OUm1rUW4vRmZNNUdoYzdhMTNERnAvcjZ4NGpJRFh0QXVLcFRFblJhcCtB?=
+ =?utf-8?B?REpyMFB6ckk5Y3YydGtVTVZaaDdXMEZNTUNMRzgwamlQMXF4QWRaTCsxR0xv?=
+ =?utf-8?B?ZXloT1phMU1MNHBydVVRdURvN05HVDZhTUFaTVlMQkFNUmlzZ0txcG9NZGNq?=
+ =?utf-8?B?Z2g0M0c1Sk9jMHY1eDhWeFMrdGJsNmdBRSt5eXpXVUNkRTRCK2cvWTZBL0dR?=
+ =?utf-8?B?S2JwZDlRN2xCS2htcW16QmpibmsxMDV2alFGenI5Y1dkOXlwOWVEWlg4aVF4?=
+ =?utf-8?B?a2dFRXRCU0wxSXlqR0V2Yi9Id09nWTYvZWNyeitwWUJJbG0yczJIekN2UTRU?=
+ =?utf-8?Q?fPvdG3DFyYStl?=
+X-OriginatorOrg: sct-15-20-9412-4-msonline-outlook-3e488.templateTenant
+X-MS-Exchange-CrossTenant-Network-Message-Id: 29b1bcce-41bf-4763-7696-08de744a4d4a
+X-MS-Exchange-CrossTenant-AuthSource: SI2PR01MB4393.apcprd01.prod.exchangelabs.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Feb 2026 08:46:01.7967
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
+	00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SEZPR01MB6008
 
-On Wed, Feb 25, 2026 at 10:19:41AM +0530, Ashish Mhetre wrote:
+On 1/26/26 3:19 AM, Wei Wang wrote:
+> Before requesting the IOMMU driver to map an IOVA to a physical address,
+> set the IOMMU_MMIO flag in dma->prot when the physical address corresponds
+> to MMIO. This allows the IOMMU driver to handle MMIO mappings specially.
+> For example, on AMD CPUs with SME enabled, the IOMMU driver avoids setting
+> the C-bit if iommu_map() is called with IOMMU_MMIO set in prot. This
+> prevents issues with PCIe P2P communication when IOVA is used.
 > 
-> 
-> On 2/25/2026 2:27 AM, Pranjal Shrivastava wrote:
-> > External email: Use caution opening links or attachments
-> > 
-> > 
-> > On Tue, Feb 24, 2026 at 02:32:21PM +0200, Leon Romanovsky wrote:
-> > > On Tue, Feb 24, 2026 at 10:42:57AM +0000, Ashish Mhetre wrote:
-> > > > When mapping scatter-gather entries that reference reserved
-> > > > memory regions without struct page backing (e.g., bootloader created
-> > > > carveouts), is_pci_p2pdma_page() dereferences the page pointer
-> > > > returned by sg_page() without first verifying its validity.
-> > > I believe this behavior started after commit 88df6ab2f34b
-> > > ("mm: add folio_is_pci_p2pdma()"). Prior to that change, the
-> > > is_zone_device_page(page) check would return false when given a
-> > > non‑existent page pointer.
-> > > 
-> 
-> Thanks Leon for the review. This crash started after commit 30280eee2db1
-> ("iommu/dma: support PCI P2PDMA pages in dma-iommu map_sg").
-> 
-> > Doesn't folio_is_pci_p2pdma() also check for zone device?
-> > I see[1] that it does:
-> > 
-> > static inline bool folio_is_pci_p2pdma(const struct folio *folio)
-> > {
-> >          return IS_ENABLED(CONFIG_PCI_P2PDMA) &&
-> >                  folio_is_zone_device(folio) &&
-> >                  folio->pgmap->type == MEMORY_DEVICE_PCI_P2PDMA;
-> > }
-> > 
-> > I believe the problem arises due to the page_folio() call in
-> > folio_is_pci_p2pdma(page_folio(page)); within is_pci_p2pdma_page().
-> > page_folio() assumes it has a valid struct page to work with. For these
-> > carveouts, that isn't true.
-> > 
-> > Potentially something like the following would stop the crash:
-> > 
-> > diff --git a/include/linux/memremap.h b/include/linux/memremap.h
-> > index e3c2ccf872a8..e47876021afa 100644
-> > --- a/include/linux/memremap.h
-> > +++ b/include/linux/memremap.h
-> > @@ -197,7 +197,8 @@ static inline void folio_set_zone_device_data(struct folio *folio, void *data)
-> > 
-> >   static inline bool is_pci_p2pdma_page(const struct page *page)
-> >   {
-> > -       return IS_ENABLED(CONFIG_PCI_P2PDMA) &&
-> > +       return IS_ENABLED(CONFIG_PCI_P2PDMA) && page &&
-> > +               pfn_valid(page_to_pfn(page)) &&
-> >                  folio_is_pci_p2pdma(page_folio(page));
-> >   }
-> > 
-> 
-> Yes, this will also fix the crash.
-> 
-> > But my broader question is: why are we calling a page-based API like
-> > is_pci_p2pdma_page() on non-struct-page memory in the first place?
-> > Could we instead add a helper to verify if the sg_page() return value
-> > is actually backed by a struct page? If it isn't, we should arguably
-> > skip the P2PDMA logic entirely and fall back to a dma_map_phys style
-> > path. Isn't handling these "pageless" physical ranges the primary reason
-> > dma_map_phys exists?
-> 
-> Thanks for the feedback, Pranjal.
-> 
-> To clarify: are you suggesting we handle non-page-backed mappings inside
-> iommu_dma_map_sg (within dma-iommu), or that callers should detect
-> non-page-backed memory and use dma_map_phys instead of dma_map_sg?
+> Signed-off-by: Wei Wang <wei.w.wang@hotmail.com>
+> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> ---
+>   drivers/vfio/vfio_iommu_type1.c | 15 ++++++++++-----
+>   1 file changed, 10 insertions(+), 5 deletions(-)
+Hi Alex W,
 
-The latter one.
-
-> Former approach sounds better so that existing iommu_dma_map_sg callers
-> don't need changes, but I'd like to confirm your preference.
-
-The bug is in callers which used wrong API, they need to be adapted.
-
-Thanks
+The first patch in this series (the IOMMU part) has been merged and 
+queued for stable. I haven’t seen further comments on the VFIO patch,
+so I wanted to check whether you have any feedback or concerns about
+it. Thanks.
