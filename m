@@ -1,93 +1,93 @@
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 462A5314B6D
-	for <iommu@lists.linux.dev>; Wed, 25 Feb 2026 19:52:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0236D3DA7C7
+	for <iommu@lists.linux.dev>; Wed, 25 Feb 2026 19:53:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.43
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772049149; cv=pass; b=oqo6GVH8CyoHfoCLtbpvKLPRWNo3hkXZ37jHJIs/WIyjyxDI9aVqSiojd2u8jS3oMwM4mjnTFI1I0bPoZC747jNwQl/o2+IGVSBgw7Y2IzjBcYfhwQaf3LvetoX1WOfSxCoGDOPkKFs4LuzYNS1ks46LnnYIKCiHkYPagBk64W0=
+	t=1772049197; cv=pass; b=As5bkKvsaA/mSc3WgyjhiGN0KItvnHn8g8GYpU6BJbxOAQYxXmzrZQafpPj+3fdmvMst29KYo/tJhAH/1A+cWFdgXk3heqEY+/N7bdDy1sapq3wabrrJ0b9qMNrN1toer240jLFe0MiTGkH6BpfSIkxxBFXe+lK3m1DCTAjKcOU=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772049149; c=relaxed/simple;
-	bh=GOCqpqP4xulPNkLV+0mavDjGZp2jPKuE2l1wLsJLWlw=;
+	s=arc-20240116; t=1772049197; c=relaxed/simple;
+	bh=hACZJJD++mSXl52TK006Yejdc4mpWUq5FI/WaqBAg/g=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=ZkCZ2h83xO81uhFyDCQ+LPd6Ayblu3h5yeh+Pv56is7HA+y+roxYBkcjQE8FmCSln/8arJaY0Z+u/fOAF3T71SE/7kpIWiTVJcRhC2iZWza7hvJPn0HsZlU/hLOKdzt1xUmBcItTvJ3oZgQtaCdnjoVoKTbQ9kvFjkGI7iammYM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=QUaHB9wY; arc=pass smtp.client-ip=209.85.128.50
+	 To:Cc:Content-Type; b=na1YCO+39Z/sas9ZeR/LN99RUUJdv81Prne84bTserrhp1d7Wut/dxb/6YDb9hov4jYHHJmA5mGBywZ9ba5HRDAbE6nNu7tzOa1WvCtQk8rMwpxxrXsyvKbphNY9YP1wZY9zFUcGtLANc8GjmlZ2mbK6llZeqpmqS6JSeg4oTpQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=UrINBSWS; arc=pass smtp.client-ip=209.85.128.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="QUaHB9wY"
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-48373ad38d2so15825e9.0
-        for <iommu@lists.linux.dev>; Wed, 25 Feb 2026 11:52:28 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1772049147; cv=none;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="UrINBSWS"
+Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-4806b0963a9so14315e9.0
+        for <iommu@lists.linux.dev>; Wed, 25 Feb 2026 11:53:15 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1772049194; cv=none;
         d=google.com; s=arc-20240605;
-        b=cfUxF4QgTT9oMximxVsgpsGfcgr2n2+JheDuDIlMrrbHFLq/OQ1En+u4o15z8H0Qkt
-         Bg7ScrnN3vo+7a3NfMTfzSan8umH4aDyMNJPr8pKH++jES+utSELR2Du2WF2ueMRo+wf
-         ehuj522JYfQimcW2jN+uPwO+5KMK/MMt/IThFiUXioKPzNfHr168/ua+YvoajHt5VKau
-         hjusK3oDGHz7aQLbhxubIXndn6qrKzWHm5y3EJf2PpwfrngAxVDpQPTY2lW4M49uHC0K
-         0dRXqk2HeBCQjNSnCLDAiouDmOzbLy2fe94a9cWRVMJ0yNeen/dLvmjG9YKSfYBhnbM8
-         2ngA==
+        b=lj6Vmau73lWvGQHcFdxFGXr6DIg7CdVRkGAeUltPVl4We2RnJzmxQtKbQOhDDaq6Q8
+         P4RZfW8kJd3RsFcsNh4mMAGUdf5blPSym6+DuO6obFUtsbGQWWOx9Ly4Pt413Np9bIjj
+         Fw3Ch/jzJ7jisjq1usiJYp7VQTnvuW06aA2M5J+BtPx5Zk+GqO7FeZTzfSjyHKsss8Y1
+         RVvpnsHt4PxN/Lwba7t8riUWzCMAe3SWjKJsdosa45OGrUckQZ4TY3uMSgNRJniNjPTO
+         K0MBIT9q7yrPARCy6mTQXriN3Hjb2PDsKr078DOLRk+/LOfHLcE4tOonNohQUupkoxJ9
+         lKpg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=GOCqpqP4xulPNkLV+0mavDjGZp2jPKuE2l1wLsJLWlw=;
-        fh=1Y0tfkBVg79esKXX4sBqeksqF3UQfJrnBqTs4FHJfLY=;
-        b=KMBju9M1sG9GprYLh0zJCph81ecn3cJjTRf0nnVvHl32e6I/tRbMGliQHmexMoayWK
-         +HKssFPV6xpShhvpXcpRP9uyj87MNECUZUvgqLJ1IfYIaISfab/LfGMhwYq4VJEi1b5q
-         GZgDnkqcb++wbNaV+H1W0xDyLKv5L3kDcJM/k4Mhk7Cy6bdUstlTSVn+aEUy3PiA4K0t
-         yVid8E6tFXHlUBmmJ5ev4jyPHngdu0oRvcAqFsqbYwV68Nhf/fTYvIaMFEJFiaYCFIuG
-         chNPOeazb54MB+pxCSYB/dsG06xWWPInkE3u7PZZRgyn5W0jkR4HZgqrae34OBR2x6bo
-         x8YQ==;
+        bh=hACZJJD++mSXl52TK006Yejdc4mpWUq5FI/WaqBAg/g=;
+        fh=vfcFlo6xtfvTrqmk/bqPAFZw18eGdW9Da7cv40gnrK4=;
+        b=c9ZlfoDFwRGyTWRnsd45nkU7cSluT9vYPrAmkxXr5s66IEsh8J9Xk/s0HA5C2m/H73
+         Kjc4CZv19S+BrYNA914YJV1FseYk8iHgjvg8e3fWtf4qCVPTfpLhzzNcyE0yNhFxwpOw
+         tWOrgdRfVV+UfZrpW+mNBSRASJDt9XleDfd20OsOcY7B8ENU35b1voVrzZbmFKZNQa1k
+         /jk6acBULAzy2UybhyvgUJofQHgQ8LX+EwNBliLzk6+F8VD+lmwCFPZJLqqeB915lEVr
+         Acw0FR22G9iIoDBwP6WV/ATjoDgXFRLdogJU+j0eMWq9cXiDfCnLqeMVvak+3xQB8iMx
+         mSJg==;
         darn=lists.linux.dev
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1772049147; x=1772653947; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1772049194; x=1772653994; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=GOCqpqP4xulPNkLV+0mavDjGZp2jPKuE2l1wLsJLWlw=;
-        b=QUaHB9wYYnQawUUkQhyL9Hzp0l1LD5C4ylmGxNMdexI2I/jbw94zwqmC9VHjAdz5Dx
-         Nb9BX/hMJOXzWhH6QoKfDcUrYHTIaQ0w2KYQihkl/URxUCe0jn3oyWaN2TJ90FkC/Ojs
-         SGMVHWZBhhTUN7fxyRaA5eEZF9305CE73k2yFhkplGaIrhfQJYfwKQCwE99MUueF7gfs
-         YIUMc5Jf05Ev9xO5dkIZtGvUyMWZBbTjrvRntaTk8usKI1wy5XG5jK+F6L8GzPCVFBtF
-         2wHeaswgbrnkC0HNZ7yt2jk3pUINek99gicswIAM8ptHOd8yP6jYqe3RVVRnUcc4V0Ly
-         TaJQ==
+        bh=hACZJJD++mSXl52TK006Yejdc4mpWUq5FI/WaqBAg/g=;
+        b=UrINBSWSGbqLkfj/CfiyxcwQEWdiacWpaMiXyvQC/fesP0LQoAcngfLDL35vhFM60q
+         K41BFIztTpZC0g+Sn4/LY4s0r1gh8wkkWCbAdwr1mnjLpi4uhfw+pUp4KniNr7eQrDtY
+         PvVvYOS8IQRsEibI+Eoj3p3uSs5WE1sGuL5qkE6K11bWJtzx2SbvJqzlfJjeDAtbG/04
+         qSZnwuidiYASHb3zVEdyJVqayq6tMiPlH6niFSt4vJ+TRd82DdsZ1fOC9SAMSvq/Q20p
+         xhILlrMPgtzYBqJXV1RK6aBCf+LkrFaMogzglHhmh01r6z9vkhgcNBKVRqPMMTJv05kE
+         Hx5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772049147; x=1772653947;
+        d=1e100.net; s=20230601; t=1772049194; x=1772653994;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=GOCqpqP4xulPNkLV+0mavDjGZp2jPKuE2l1wLsJLWlw=;
-        b=fJa3VBGiTkZLAh8bgYJ1UmvVK1+HNQ6kkrqMXOWGh5fsry8Lbc4bOHwGsCDGVe/i4i
-         FnMHztlB44Seo6te3oJwL5HgZBcnFvH2KajpXImVBbCUqeLR3r9VlCqL1RVKzns+cvwb
-         HUQFdXv633WIFf7PLQY/bB9xKmLLeGpRGXPUPR6KChWM4ZdO1/YNeCDdS9lOtlEpZTGt
-         65RiWkb9nenC7I4wRe6iMZw3d1+Pn6+12KOgPTQNpeYaZrkU6Hwoh40N9lOroUuzCcSk
-         u9iRs1C09Rsx8dVGXr4yQkPgG5rvdFKRvnseCxDY19eRPVkq1TrHSocx55Nixrkh71wA
-         x74w==
-X-Forwarded-Encrypted: i=1; AJvYcCXQsvlhKYxBKFxX08MTE/BVpSfXt4lXu7M5NwB9MYzgOOg4BfdA2mZ+j/4eGnIxjdczNoUclA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzohAgG5S3fmxLegXlDhhIF9pIHcNGRBQuyBcSZJWFER2G2HnFY
-	PxiJiIV32imiDHWClhboYYQGG5wzeYZUGy3XohzKVO+qL9NHLcpKfEW3aJBGJc7YBBWo1HM9x6Y
-	fE5ODoh76am6JkQpbaO0YQlQVphBkFxAHMA7RtFio
-X-Gm-Gg: ATEYQzyWQoEAYo19IGPr40NxlS/Ro5zPxUV2EtW4AHPxYgxFrX8yLYUBHWLKd+915gF
-	dfnXOQXt7K8PrxBMUcvt9AeV+3fAYebiFyyFkVfXyy8qvAiC+NbnDTkgUvUUCCwjzhjgzwU9kY0
-	kngfYMy8vtgTfzOVBf7APeOx5Q4WAKy1/E1G0nkKOTq/sxn3hXJV0fd7yRcA/iNVFZC+GW//yew
-	ZxVCXfnxNs313u3DfeUq0I67lfKHJgiFH8D5spWthPWennc5HvZsVYc9eOW+28GcfxioLLHedn9
-	OVmCUj29mkM1Q0Mfkc42fSLkSEXqRArZQK+c+WAHJL7CpNTrJNRP6G0Qe6tR2/1Ovuao1w==
-X-Received: by 2002:a05:600c:5702:b0:477:95a8:3805 with SMTP id
- 5b1f17b1804b1-483c31cfb56mr70235e9.15.1772049146264; Wed, 25 Feb 2026
- 11:52:26 -0800 (PST)
+        bh=hACZJJD++mSXl52TK006Yejdc4mpWUq5FI/WaqBAg/g=;
+        b=R9f/L7VXYfUvbmFJEwqB7WkWU131gRfc7+2sREhbVfl3EJyBXgL0Dpo24TA4PrH297
+         N65b3RRDMZHiOhQp22IRpk2qufjERgViTD7qQ17sC4EPGuvPZqC2hE6hMqcyppNwinsW
+         FOzBKXyHzhzfnZBVUcfrXbKmVeIR9eigczlHqEJwfVyXkc/tw/yJDWLQ3s00+ZCvXXnO
+         RU0671IDJyxwJtsoLALKLx6L1jVhP6QhOcdn+7RJ/XvMqUB/4+Y1/AzsPovWhqRQLVKX
+         n4D+hr+xodi1v0axFbvkiYCU3VpdJaARD3liQLtZpoe2qU70XqWuAhhvba9Vyu+o8eBr
+         xC5g==
+X-Forwarded-Encrypted: i=1; AJvYcCVx7UJzKTcVFILiOF53kI+wWbczUristba6NxF6tM/5HMwhyiuvDloxBhITS4OdUM/gi9SnnQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwEBVRgRi1VLa3uyNBAxUsrfdZUhVCLyfX+7BECFEkTBilcXtKq
+	wFozWHRjuMQq5TxPquK+TBmV/2kJNwSujV3gnJkq9MPzDkvvbQ9zfgj3wHse/UubIYDisN3ZMgv
+	BoFhZ2Dqbv2JL3v5PcgAKfjaDBwF9EjVWn8YGURfo
+X-Gm-Gg: ATEYQzz/dX6C6+d+H/l5PSQ0RCaqcHV5HRhHy5nE+A4dQ4kjt2B0Iqa1hncx0rBj8EQ
+	5O8doZWEyKS6eRX2X1cLT2ghYESPzvf9DprLVioDWNylfUBdJy2AzppnSaPjo5b+eiaZ1c4N3Nk
+	pFeuCqgMQpEIEa+hajfeJdNflTpPd1+CJGO7RaUrB2c+5PBJf1p1HRL7yYmQvVxKzny/clM37sK
+	yblQPpFRlPsgXF2aFkCv+0WOoW74DmBBhjYwSMA0vmW8o1x3vol4kwcaJ+lR0egtWuB7DoxQ2Bh
+	BV5QRTPLY/zt/rv3LVSYaCDgiwONjZytOk+VtMJQMPyiycMgB39jMcFxJpg2WAM5Tae6XA==
+X-Received: by 2002:a05:600c:214:b0:480:683f:743d with SMTP id
+ 5b1f17b1804b1-483c318c6b5mr64755e9.14.1772049193912; Wed, 25 Feb 2026
+ 11:53:13 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260225-dma-buf-heaps-as-modules-v1-0-2109225a090d@kernel.org> <20260225-dma-buf-heaps-as-modules-v1-4-2109225a090d@kernel.org>
-In-Reply-To: <20260225-dma-buf-heaps-as-modules-v1-4-2109225a090d@kernel.org>
+References: <20260225-dma-buf-heaps-as-modules-v1-0-2109225a090d@kernel.org> <20260225-dma-buf-heaps-as-modules-v1-5-2109225a090d@kernel.org>
+In-Reply-To: <20260225-dma-buf-heaps-as-modules-v1-5-2109225a090d@kernel.org>
 From: "T.J. Mercier" <tjmercier@google.com>
-Date: Wed, 25 Feb 2026 11:52:13 -0800
-X-Gm-Features: AaiRm517LrodfDPDmk8aF233zMemSo71i-_zn9eOj5ImN-lsr29tVaebY-ntsoQ
-Message-ID: <CABdmKX1piZByQvx0sYbO4R=f1rdZKmYS5R0EcChBv22cAUvCUQ@mail.gmail.com>
-Subject: Re: [PATCH 4/7] mm: cma: Export dma_contiguous_default_area
+Date: Wed, 25 Feb 2026 11:53:01 -0800
+X-Gm-Features: AaiRm53o2gSjT2_weYbg6Rd6sN6ASK7REyXNCnGoEQl1VXmkJdy1tVVm-ZBs7YY
+Message-ID: <CABdmKX2KfL6q2nNAkZJ3r-Pp5JPq-sj2VpQp5bU5Hct68bedwg@mail.gmail.com>
+Subject: Re: [PATCH 5/7] dma-buf: heaps: Export mem_accounting parameter
 To: Maxime Ripard <mripard@kernel.org>
 Cc: Sumit Semwal <sumit.semwal@linaro.org>, 
 	Benjamin Gaignard <benjamin.gaignard@collabora.com>, Brian Starkey <Brian.Starkey@arm.com>, 
@@ -105,16 +105,11 @@ Content-Transfer-Encoding: quoted-printable
 On Wed, Feb 25, 2026 at 8:42=E2=80=AFAM Maxime Ripard <mripard@kernel.org> =
 wrote:
 >
-> The CMA dma-buf heap uses the dev_get_cma_area() inline function that
-> would either return the content of device.cma_area or the content of
-> dma_contiguous_default_area.
+> The mem_accounting kernel parameter is used by heaps to know if they
+> should account allocations in their respective cgroup controllers.
 >
-> The latter holds a pointer to the default CMA region, and is stored in a
-> public variable. However, that variable isn't exported which prevents to
-> use dev_get_cma_area() in modules.
->
-> Since we want to turn the CMA heap into a module, let's export
-> dma_contiguous_default_area to allow modules to use dev_get_cma_area().
+> Since we're going to allow heaps to compile as modules, we need to
+> export that variable.
 >
 > Signed-off-by: Maxime Ripard <mripard@kernel.org>
 
