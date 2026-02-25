@@ -1,222 +1,206 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+Received: from relay12.grserver.gr (relay12.grserver.gr [88.99.38.195])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79B4130E847;
-	Wed, 25 Feb 2026 21:35:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.11
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772055337; cv=fail; b=CtpQfYAnI1JjnX0Qae9tj06a3obYJYaYTeT5h0JkD1NSTOAyd5ncf3xMbBAOeDzlPGikmRVAOKAQOpSI7l8dCsHUmy/gVq4Hfd2aPfAS3lkSxLqlQNYIR7hNflm0Tmq6lvoX6iB5p0wFbUqbgQziCTrnTRdEFzIJLnqpu0Fe2bM=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772055337; c=relaxed/simple;
-	bh=IBrnBGOoTW4ToUbPRLtd/NuO5SEBZ6WzAJZoTl1J228=;
-	h=From:Date:To:CC:Message-ID:In-Reply-To:References:Subject:
-	 Content-Type:MIME-Version; b=qkH7YDNUrBC8YpQuzTEx92QXP9/kncChU7JcNsD6OBbH5m53vSKNebJHnEzgY1MwHgv/f9RZxm9iI/VfnIo9oKSeeYtMA/Vr1nstCbgow3aszojNC4kEbdSbR51WkdAi7KsJDnb4ybP7ljLnYrweTq1Fg4kjViKcmRdmm7SDGvU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lD7pE4TF; arc=fail smtp.client-ip=198.175.65.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96CE430F53C
+	for <iommu@lists.linux.dev>; Wed, 25 Feb 2026 22:05:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=88.99.38.195
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1772057148; cv=none; b=SzlLHzfUxVkq50bw4P3VcD1dMZBXX+AcyhePgjJAzZA60OEIwPnX+/9PJ2bTE7beXeHTfl82YzegPViF9iuPvTgbcU8LefAufTBW+tVOdHnTUfbda/rJ5sEmT8qp69NAqv5tyhSVrFGM5mTEc77J8ZFPW08wwGXBz2iQFYsV/qM=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1772057148; c=relaxed/simple;
+	bh=gaonBbWB6aciek/UeRzwWDDUKe76MOnfwPSpoaiUJaA=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=FFeV3pgu5M4cz9+5jSMr5gFnPHeFdJ1uObN7xiRKDgGKO1YR/ffMWd1M7Ebup2e6zQLqBbjF7EH+emAf5k3J55JgZ4M2sCye9xI6iOehajlnmXySbwfBJIwGm4/YKnFI09UkoHv8uwgIWqTVImCej9vIUrzsPykJgZUK9GDlO1U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=antheas.dev; spf=pass smtp.mailfrom=antheas.dev; dkim=pass (2048-bit key) header.d=antheas.dev header.i=@antheas.dev header.b=ci56dBE5; arc=none smtp.client-ip=88.99.38.195
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=antheas.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=antheas.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lD7pE4TF"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1772055336; x=1803591336;
-  h=from:date:to:cc:message-id:in-reply-to:references:
-   subject:content-transfer-encoding:mime-version;
-  bh=IBrnBGOoTW4ToUbPRLtd/NuO5SEBZ6WzAJZoTl1J228=;
-  b=lD7pE4TFNAEBNHA6x5wwEnOVCdap+oila6AxvydOC+AKcXea8My7dzVs
-   zVoaETBjtMVWLyD6poLrz1YF4nhSb/tp85d4HDexGAbVnxDmeXr5W1sdh
-   a9czAViOD7rEOL/2F70NoeUXVzx+KdUolAvLjzvSZQQ1oeB0jYlK4VUZg
-   8kiniitpNirBdUu5WLPME/WNJDykviylXLFGUF4XHKJHRrFn7MiQ0ux1x
-   HvS1LA8qbH8llmFjiKcEVyvamiKo6aiRRg+xZxvLkqYCP9XGk1ihhwXcX
-   XhjhqR+q3+4xUeLBt96K380VHJ2HCffo/PCv/3v0HC7tbqNu1sY27APkF
-   A==;
-X-CSE-ConnectionGUID: T4TUwMszRKW5HDePUjrYHQ==
-X-CSE-MsgGUID: h3L/bbxBSAiXjDTP3YqPIg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11712"; a="83438671"
-X-IronPort-AV: E=Sophos;i="6.21,311,1763452800"; 
-   d="scan'208";a="83438671"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2026 13:35:35 -0800
-X-CSE-ConnectionGUID: pdnLTzmLRX26ZSCLbCKtfw==
-X-CSE-MsgGUID: n3w5P7qnRHieUlFtx3Si9w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,311,1763452800"; 
-   d="scan'208";a="216496674"
-Received: from fmsmsx903.amr.corp.intel.com ([10.18.126.92])
-  by orviesa007.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2026 13:35:34 -0800
-Received: from FMSMSX903.amr.corp.intel.com (10.18.126.92) by
- fmsmsx903.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.35; Wed, 25 Feb 2026 13:35:33 -0800
-Received: from fmsedg902.ED.cps.intel.com (10.1.192.144) by
- FMSMSX903.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.35 via Frontend Transport; Wed, 25 Feb 2026 13:35:33 -0800
-Received: from CY7PR03CU001.outbound.protection.outlook.com (40.93.198.37) by
- edgegateway.intel.com (192.55.55.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.35; Wed, 25 Feb 2026 13:35:32 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Ea3AjjnJOyS6FF9XI80v8E5Mj7joQPiSjYAeAciZga4vOhH+ml2qpSVJ36rrdhzShBzQT0Q+7LfmByg8Ra4rAa19d5a74CG8trVsQ6qoHcnk1XGIWtdpbe93msLQd9lwWWGDam12wWgdex5AeqVV8s/xlWkj1d8aRMw/jsE9UEh+FOyQIH+4jiiNeAgFlA5jash2cdUaVnn+0k28L7hv8Qde2OTBEQq/c/jyFqUrAcvuda8rLlInnHKbTPkPt0v1kzZKp32YPN4m7Z/iqTAc6LvQodvLb5rrfyf0pzekTlmwr9WiaD8nEMSP7NsKrmlxfTJIx3ByzxoizkQpL8QQtg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/s6RnTeNZdZ0H4PRllfMgkUcWCxR2VYnlAq05zp63Q4=;
- b=NwAi4BeiWOyZMyecRlqtvJP5Lr6GcdtbGG9fmUDx4plACNu5KVt8qgpPS7sOH7SSBWhGx/FoZG1mHE9tGyJwwKtqrQDx1XfKzrwjwG3CAscGRIUAAmAR2HZ2mhtReLUDjEOYYMrzb7aO7a/dHOWCAXKbvSIgt0YXhUGOa7lA1OoGESndaCXzjUDAl/awd7zzrR1UfhtrW9HgxQ0jpD+lIpJeEW1sP8GatqjFctnbJkt3QpXAFMEnQi5v/glvnm4iZtJRjGAZkFCjDFcYn5UdjY7Pdm/4jEa9p9DJ0e5nDpB1/m4oFE59uvWzBFIBiLBdwNJzJcDFuxe44x4Uhum9Mw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from PH8PR11MB8107.namprd11.prod.outlook.com (2603:10b6:510:256::6)
- by SA3PR11MB8047.namprd11.prod.outlook.com (2603:10b6:806:2fc::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9632.22; Wed, 25 Feb
- 2026 21:35:25 +0000
-Received: from PH8PR11MB8107.namprd11.prod.outlook.com
- ([fe80::1ff:1e09:994b:21ff]) by PH8PR11MB8107.namprd11.prod.outlook.com
- ([fe80::1ff:1e09:994b:21ff%5]) with mapi id 15.20.9632.017; Wed, 25 Feb 2026
- 21:35:25 +0000
-From: <dan.j.williams@intel.com>
-Date: Wed, 25 Feb 2026 13:35:22 -0800
-To: Robin Murphy <robin.murphy@arm.com>, Alexey Kardashevskiy <aik@amd.com>,
-	<x86@kernel.org>
-CC: <linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>,
-	<linux-pci@vger.kernel.org>, Thomas Gleixner <tglx@linutronix.de>, "Ingo
- Molnar" <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Dave Hansen
-	<dave.hansen@linux.intel.com>, "H. Peter Anvin" <hpa@zytor.com>, "Sean
- Christopherson" <seanjc@google.com>, Paolo Bonzini <pbonzini@redhat.com>,
-	"Andy Lutomirski" <luto@kernel.org>, Peter Zijlstra <peterz@infradead.org>,
-	"Bjorn Helgaas" <bhelgaas@google.com>, Dan Williams
-	<dan.j.williams@intel.com>, "Marek Szyprowski" <m.szyprowski@samsung.com>,
-	Andrew Morton <akpm@linux-foundation.org>, Catalin Marinas
-	<catalin.marinas@arm.com>, Michael Ellerman <mpe@ellerman.id.au>, Mike
- Rapoport <rppt@kernel.org>, "Tom Lendacky" <thomas.lendacky@amd.com>, Ard
- Biesheuvel <ardb@kernel.org>, "Neeraj Upadhyay" <Neeraj.Upadhyay@amd.com>,
-	Ashish Kalra <ashish.kalra@amd.com>, Stefano Garzarella
-	<sgarzare@redhat.com>, Melody Wang <huibo.wang@amd.com>, Seongman Lee
-	<augustus92@kaist.ac.kr>, Joerg Roedel <joerg.roedel@amd.com>, Nikunj A
- Dadhania <nikunj@amd.com>, Michael Roth <michael.roth@amd.com>, Suravee
- Suthikulpanit <suravee.suthikulpanit@amd.com>, Andi Kleen
-	<ak@linux.intel.com>, Kuppuswamy Sathyanarayanan
-	<sathyanarayanan.kuppuswamy@linux.intel.com>, Tony Luck
-	<tony.luck@intel.com>, David Woodhouse <dwmw@amazon.co.uk>, "Greg
- Kroah-Hartman" <gregkh@linuxfoundation.org>, Denis Efremov
-	<efremov@linux.com>, Geliang Tang <geliang@kernel.org>, Piotr Gregor
-	<piotrgregor@rsyncme.org>, "Michael S. Tsirkin" <mst@redhat.com>, "Alex
- Williamson" <alex@shazbot.org>, Arnd Bergmann <arnd@arndb.de>, Jesse Barnes
-	<jbarnes@virtuousgeek.org>, Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	Yinghai Lu <yinghai@kernel.org>, Kevin Brodsky <kevin.brodsky@arm.com>,
-	Jonathan Cameron <jonathan.cameron@huawei.com>, "Aneesh Kumar K.V (Arm)"
-	<aneesh.kumar@kernel.org>, Xu Yilun <yilun.xu@linux.intel.com>, Herbert Xu
-	<herbert@gondor.apana.org.au>, Kim Phillips <kim.phillips@amd.com>, "Konrad
- Rzeszutek Wilk" <konrad.wilk@oracle.com>, Stefano Stabellini
-	<sstabellini@kernel.org>, Claire Chang <tientzu@chromium.org>,
-	<linux-coco@lists.linux.dev>, <iommu@lists.linux.dev>
-Message-ID: <699f6b1ad77cd_1cc51005d@dwillia2-mobl4.notmuch>
-In-Reply-To: <d8102507-e537-4e7c-8137-082a43fd270d@arm.com>
-References: <20260225053806.3311234-1-aik@amd.com>
- <20260225053806.3311234-7-aik@amd.com>
- <d8102507-e537-4e7c-8137-082a43fd270d@arm.com>
-Subject: Re: [PATCH kernel 6/9] x86/dma-direct: Stop changing encrypted page
- state for TDISP devices
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SJ0PR05CA0148.namprd05.prod.outlook.com
- (2603:10b6:a03:33d::33) To PH8PR11MB8107.namprd11.prod.outlook.com
- (2603:10b6:510:256::6)
+	dkim=pass (2048-bit key) header.d=antheas.dev header.i=@antheas.dev header.b="ci56dBE5"
+Received: from relay12 (localhost [127.0.0.1])
+	by relay12.grserver.gr (Proxmox) with ESMTP id 99EFEBC116
+	for <iommu@lists.linux.dev>; Thu, 26 Feb 2026 00:05:38 +0200 (EET)
+Received: from linux3247.grserver.gr (linux3247.grserver.gr [213.158.90.240])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by relay12.grserver.gr (Proxmox) with ESMTPS id C425DBBF9D
+	for <iommu@lists.linux.dev>; Thu, 26 Feb 2026 00:05:37 +0200 (EET)
+Received: from mail-pj1-f50.google.com (mail-pj1-f50.google.com [209.85.216.50])
+	by linux3247.grserver.gr (Postfix) with ESMTPSA id 214D7200D9E
+	for <iommu@lists.linux.dev>; Thu, 26 Feb 2026 00:05:37 +0200 (EET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=antheas.dev;
+	s=default; t=1772057137;
+	bh=WCZ2kw4ioGx3baaqiShPefS2CvpysAqnRpPqMUnWWNY=;
+	h=Received:From:Subject:To;
+	b=ci56dBE5kZgUMHCuSVr98C1dWgYAKRNMm3YV7bVejvwRPcX8Dw/sHuw8x1BQ8YAky
+	 ZK/JJCzsnCdO0rg+B2XnX74YcU29/McwzixfabhVlec7BKeEK199GgZMclh4V2GwPB
+	 HCUzJzuPDTFFN/q7wXqguHwPNtJsGLngwK1j/m2tZz10AZEeF0liDQV7ea/rMOvO80
+	 bol9bTHprpxf8bhxGbCy1rTe1YbRaWWzdLKLuMPeTzK4ulb7pY2V+1G7wIWM5yjP9o
+	 BrbwLcmjTdCgIRPi8ZuVSQDRfiMDZ2TtaF0GEzgW+YGiMh14W95VYbo43jH1PSJL+m
+	 husUsyWdhmcjA==
+Authentication-Results: linux3247.grserver.gr;
+        spf=pass (sender IP is 209.85.216.50) smtp.mailfrom=lkml@antheas.dev smtp.helo=mail-pj1-f50.google.com
+Received-SPF: pass (linux3247.grserver.gr: connection is authenticated)
+Received: by mail-pj1-f50.google.com with SMTP id
+ 98e67ed59e1d1-35621ce8a9cso20269a91.1
+        for <iommu@lists.linux.dev>; Wed, 25 Feb 2026 14:05:37 -0800 (PST)
+X-Forwarded-Encrypted: i=1;
+ AJvYcCW4yBfdo6MtLoxbHvplo5anW4YxwmxgItib6CpX+Car1O8QzUtmRGPfXzckT5yK7sOjO1NN3Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzHwRYmFkuoO3tcZQf6b5wBGVC033+M0BxtQACZ+0cq8+YAF/6G
+	Pgq+UtXviT7M935fYmxkKOqT6CxFY1dnHP2Oy4EyRl7AYZjq5DHK+DMtE7mfCeOjebstgF6KX38
+	LQLBSptBroJ4cKinrWD4XXZQacQqtKQE=
+X-Received: by 2002:a17:90b:17d2:b0:356:93c2:3f5 with SMTP id
+ 98e67ed59e1d1-359288dbe99mr1667646a91.0.1772057135610; Wed, 25 Feb 2026
+ 14:05:35 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH8PR11MB8107:EE_|SA3PR11MB8047:EE_
-X-MS-Office365-Filtering-Correlation-Id: b2a50f56-1d8d-4dee-5c5d-08de74b5c92f
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|7416014|366016;
-X-Microsoft-Antispam-Message-Info: 5D3urZwrm6b+JKBj9oqAGE/OOEXneEkX2gF+sQtN2lyGQkobNVl1xQs7Aqi2vPigujPYlVh1zEIKM7fdJJNBeYp516gYiwimYPS/JTfBlMXjaHAWMfi5cohLut6iDAQ01FiRsM1l5v1ra12H2ICOA2ZfCzjRDMMKUK35lIXqHHvAB9kg4eEIxKP2CgH3ZQQC3q+oS95vnmT6yw40dph7OPUJ6zUmVbHMOrOHqkZmU2MotIcypg2zAHDaOhhvH0f9ps14bqedAXVJOGJYiLQpr6ApBJ9AtMEFI4onNxOSNLjx2stUhjMRVzfp7tAROIyVRSX+pg+Pehhs2E1b0MCXJis31k1zvPecL6WitszWFEwA067u/3Vf2nF4dTw3PY6V18DqPtANkEkSgtBqbuyyJGV9HKWdYGHj6OpdvTssNXdQ5hsY1JfsEerHBVKy+E9XfqdqQAgDdMS/Z6jWLXwi6Me7GmTz4G6mUq/5aPnHwzu/uh+k1UbsU3nizFrQUh8wpygZK85uNVVwUHmRR7JBz+XWw1qMxNKYIh0nPtBqcmb4GIS9H7DdJdsfqM6F0+pOWcqj0BtmJhhicIl2/vQ9XQkw+ttN89TJ61V0OiFg+NW5dDaN25zBRgqeexio7uyzr+mXcPbbluLoF7hUmgWiVURb7jGTgPSjw/vg6MOHNJd2/Aphj7FhfAZv22sLTfmlOrtZDxgDqmmlb7+aPqirvN9YcWhUmtupph88h/WfTG4=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB8107.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(7416014)(366016);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?UUJ6UHFlUGZ6UCtPUkxWSjRFZFNtQ090cjJtM21yZ0tWUVB3dzVLczhCeTVt?=
- =?utf-8?B?S1R6RjY4K0IvM2xOcWZ2OWtmNGZwUy9nS0pReU1BT1RabnZSelNpMm1ZWlhK?=
- =?utf-8?B?b3huUnY0MmVPbVA1cVF1UDhRMWlXNytEQVNYWkZzWmhsSzNBUE44N01UWlIr?=
- =?utf-8?B?OUZjcW41cTlTeUU2Si9NbXhFSWRhcmVOZGh2VGFpYmZ4TjhIWW02QkFxNVFD?=
- =?utf-8?B?b0V3blhTZzBWMGZLeFh6Q202U3NpSytqRmZiZjAvNnhsb2NCWTY2SXVVaTA2?=
- =?utf-8?B?c0YyUjZ3ZlhCVHJrdnNMWnRSM1FRWkx3V2F4bUorRUdiWlo1SE5pcGRRZjJT?=
- =?utf-8?B?WFBJVEtVdlluSW8zWFdrM1ZqRTVHUlArYjlBUzlWWEViS01JMkMzRytBOWl0?=
- =?utf-8?B?WmNHbVpDYWkzeVBFRFdZZGVwbnlHSFJ4cDJXMThFa2t5YUtzM2tlNGVGanRF?=
- =?utf-8?B?UlFxcU0zaGV1QUN4aGlTS3JsaGZWTmptSTFZK2E2NS8yWGVmV05WMVFKcmlZ?=
- =?utf-8?B?aHpuVXhMNzZUY2xCRE8xaEtVaHJHQXlCWkhRL2hLM291dVZvaERNazRZT0VX?=
- =?utf-8?B?U052Z2UwZ2dqMGt1UmV5V1RpcHhkM2FkODRLOEJJdWVNblltQkd0QnhkbHdp?=
- =?utf-8?B?Z2M1QU9WOEJ6TE5sRGdyYXJuQ0R2R3lSVDFBM1hHUWlrWStlT2ZIYzVoaXFR?=
- =?utf-8?B?YjhFMkMvU2M1VUtQcmY0aFkzZGxEdytNQXpLVXN5QU1FeWdqMHN6YkpESjhl?=
- =?utf-8?B?cytvWmhrdnptUUpvb2NNRDJ3T1VIQ2FnSmpZcXYxQXZFS3lBdG1JTnNUVm9D?=
- =?utf-8?B?dVp2TFpXRkV5eVVMR3VIU0dtVUQycHhGZUdsRzZUQ0wrK2h1TVpPYUxFaFZM?=
- =?utf-8?B?UlA4N0VxdzRQMTRUZ0xTclBGYVU5M2xRMEVhejVTY2VwQUQzOUVpaUNmSmZp?=
- =?utf-8?B?VElvVWFrVEJqbWFXQmFzaytkZGN2Z2hhbHlKb3Z0SFNQdG9MaWNsSFZhS04v?=
- =?utf-8?B?ejVZdUdLMWVRSVBGN0x4Z21ZMDRGZmY0QlBWNVZJdVZXa016WE9pN3AxZXR3?=
- =?utf-8?B?OGhHbGExTXZ0cmxFUUExVWtqVlk3V2FUb1J4dVM5WTFJOEVsSjAya3BNYyt6?=
- =?utf-8?B?NDZXV2FKTDlBcml6VlU3SUpGVkU1eTh6TDcrWmVJU09lM0QzRG80WmtrR25T?=
- =?utf-8?B?Qkd2eENkT1NNYlRwMUVUckQvYk1yUlVJbzcxc0xXQjkxWk1BWGR3dzVmeEo3?=
- =?utf-8?B?SnEvUkI0eU8vQmpmaU1EdGFhN2lhbkFDL20vbDl3OUVJSEFwMGthUkZVTGVn?=
- =?utf-8?B?N0lZNkhWb1Ztd2c0OWtBa0lQZWkyK1ZkSTArM3dxWEQ1VU1sSm5MRUtCaDFJ?=
- =?utf-8?B?NC83Q2dpeUtqaXZGU3RBVjRCRW1qNnEyOUZibnZ3QVFHV0tsdjBBZTZuT1pX?=
- =?utf-8?B?d3dRdHE2R1gwQlBWL3E5a0cxaGhJbUJXQStURjUwaWE4K0YwdXF4L2FqY2Nk?=
- =?utf-8?B?WTFBbUNIZlN3OWFqcXhaU1FqTXlEMEVnRyt1VjA5THVXdmtMNmhvQXBrWnNt?=
- =?utf-8?B?QnJMMWtCQk91YUhMS0pONXlvWStTK2tNcWZuWVJyNXdMblMvaGkrU2Vwb3Qr?=
- =?utf-8?B?NUF0a2tiSXFQcTFycDhxaWVyK0dOSzl3M21wV3pESy9ndkxwTE1qSy9Tc0Jx?=
- =?utf-8?B?WXNrbmh6NnFlYnlNSGdnbll6bzA5TXBGZFFoQjdXY2tTcmZwMTFNd3FCek9V?=
- =?utf-8?B?VHBOOWI3bnFoaDY2UFcvYlArUVA5TFlvYUVXM2Y4RVRLSk9jZFB0Y2lXR1Jk?=
- =?utf-8?B?QkJ5VTRMNDMyMjRZaWZkUS9BOHpnQVhVZlhPU0p6QWQ1b04wVWwvNXVqWXBv?=
- =?utf-8?B?Ry84OHdKTG5MOEdNemxHaytFZE8rK3ViMzhFSytGUEpaYm9ERVB6WWxEMFAy?=
- =?utf-8?B?NGpDNXIyNFk0b21paWlVaDBVVVNLTjk3eWN5L2c4QlZZMGFuTDRNcXl5bWV5?=
- =?utf-8?B?VkdlUElLUDlwRUhralJHbXZLZXFwdWQ5S0ZhcHlRcUExRCtRWnhsYjRMVXE5?=
- =?utf-8?B?eFdRVWJXTU15N2xCeGwrd09TRlphWDVvNGZUVGJqWm9HL04yZVZGNGR3elZI?=
- =?utf-8?B?SHpTbGlnZ0Ezb1RSVzZPaXFSQ1N3b3lvVitFM2RsQzhGV3lBYU9pREEwQnpx?=
- =?utf-8?B?eVNQOHZmMjBzb3VXbTNLRDArVzdEbTc5NXJCZlFYOFBCc08xVk9oMjZMZm1v?=
- =?utf-8?B?KzdHRElTV01hRmNTQml6UkMwZ1BJUEdPWS9MSFZZcnZpSjFaa3ZoL2g1VGhr?=
- =?utf-8?B?ejdHVHlCRFVNNS82dFFYaDI2YnQydjVRcjdiS3I2RE9GaEtCbzl6MlVKaUhk?=
- =?utf-8?Q?x2JD/3MzTddzZMUU=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: b2a50f56-1d8d-4dee-5c5d-08de74b5c92f
-X-MS-Exchange-CrossTenant-AuthSource: PH8PR11MB8107.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Feb 2026 21:35:24.9415
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: EY8vf1F+QWkIzGNea7xQBnp6cQnuZuXCwPE/FgUz1azreItRYiiqqrIO01ijFX9FS5vfX9rj72nExz1ZAJ/WQAPoMRnyLDE8VvOrdZHnjZU=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR11MB8047
-X-OriginatorOrg: intel.com
+References: <20260221235050.2558321-1-lkml@antheas.dev>
+ <aZ36tRwNP8cRRX1l@ziepe.ca>
+ <CAGwozwFPLLFfKP90fFrt-QC1rKPRCVo_iHuLm4roHX7erQ=Y5Q@mail.gmail.com>
+ <aZ3/W8sw+gW5aTA5@ziepe.ca>
+ <CAGwozwFKTeXW7_tPcUw8pYvNSoS9860mNJ=OUKCt2vEawYVOJA@mail.gmail.com>
+ <6bac3817-9652-4146-ab44-2a9518c3b339@arm.com>
+In-Reply-To: <6bac3817-9652-4146-ab44-2a9518c3b339@arm.com>
+From: Antheas Kapenekakis <lkml@antheas.dev>
+Date: Wed, 25 Feb 2026 23:05:24 +0100
+X-Gmail-Original-Message-ID: 
+ <CAGwozwGXpVZ1ctUyZ79itwcX7RPjeLebFPWDVpNMq6-f_UtF3A@mail.gmail.com>
+X-Gm-Features: AaiRm508pMPw8vfGkCnOkZfOZoRuup-uGhueV3C2d7F_gPZ0NmCDvx3MHsLQLL0
+Message-ID: 
+ <CAGwozwGXpVZ1ctUyZ79itwcX7RPjeLebFPWDVpNMq6-f_UtF3A@mail.gmail.com>
+Subject: Re: [PATCH v1] iommu: Skip mapping at address 0x0 if it already
+ exists
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Vasant Hegde <vasant.hegde@amd.com>,
+	Alejandro Jimenez <alejandro.j.jimenez@oracle.com>, dnaim@cachyos.org,
+	Mario.Limonciello@amd.com
+Content-Type: text/plain; charset="UTF-8"
+X-PPP-Message-ID: 
+ <177205713739.696825.1519517618367033158@linux3247.grserver.gr>
+X-PPP-Vhost: antheas.dev
+X-Virus-Scanned: clamav-milter 1.4.3 at linux3247.grserver.gr
+X-Virus-Status: Clean
 
-Robin Murphy wrote:
-> On 2026-02-25 5:37 am, Alexey Kardashevskiy wrote:
-> > TDISP devices operate in CoCo VMs only and capable of accessing
-> > encrypted guest memory.
-> > 
-> > Currently when SME is on, the DMA subsystem forces the SME mask in
-> > DMA handles in phys_to_dma() which assumes IOMMU pass through
-> > which is never the case with CoCoVM running with a TDISP device.
-> > 
-> > Define X86's version of phys_to_dma() to skip leaking SME mask to
-> > the device.
-> > 
-> > Signed-off-by: Alexey Kardashevskiy <aik@amd.com>
-> > ---
-> > 
-> > Doing this in the generic version breaks ARM which uses
-> > the SME mask in DMA handles, hence ARCH_HAS_PHYS_TO_DMA.
-> 
-> That smells a bit off... In CCA we should be in the same boat, wherein a 
-> trusted device can access memory at a DMA address based on its "normal" 
-> (private) GPA, rather than having to be redirected to the shared alias 
-> (it's really not an "SME mask" in that sense at all).
+On Wed, 25 Feb 2026 at 19:27, Robin Murphy <robin.murphy@arm.com> wrote:
+>
+> On 2026-02-24 7:51 pm, Antheas Kapenekakis wrote:
+> > On Tue, 24 Feb 2026 at 20:43, Jason Gunthorpe <jgg@ziepe.ca> wrote:
+> >>
+> >> On Tue, Feb 24, 2026 at 08:33:50PM +0100, Antheas Kapenekakis wrote:
+> >>> On Tue, 24 Feb 2026 at 20:23, Jason Gunthorpe <jgg@ziepe.ca> wrote:
+> >>>>
+> >>>> On Sun, Feb 22, 2026 at 12:50:50AM +0100, Antheas Kapenekakis wrote:
+> >>>>> Commit 789a5913b29c ("iommu/amd: Use the generic iommu page table")
+> >>>>> introduces the shared iommu page table for AMD IOMMU. Some bioses
+> >>>>> contain an identity mapping for address 0x0, which is not parsed
+> >>>>> properly (e.g., certain Strix Halo devices). This causes the DMA
+> >>>>> components of the device to fail to initialize (e.g., the NVMe SSD
+> >>>>> controller), leading to a failed post.
+> >>>>
+> >>>> I'm trying to understand the issue here, is it that the old AMD code
+> >>>> incorrectly succeeded iommu_map() on top of an existing mapping while
+> >>>> the new code returns -EADDRINUSE?
+> >>>>
+> >>>> Then the existing guard for double mapping doesn't work since 0 is an
+> >>>> ambiguous return?
+> >>>
+> >>> Hi Jason,
+> >>>
+> >>> It seems like the previous code correctly handled the 0 case, and the
+> >>> new code does not due to the ambiguous return.
+> >>
+> >> I checked the old AMD driver it is definately returning 0 from
+> >> iommu_iova_to_phys(), so that hasn't changed.
+> >>
+> >>>> reasonabe. Just please clean up the commit message to be a bit clearer
+> >>>> on what caused this regression and add a short comment above the new if:
+> >>>>
+> >>>>   0 return from iommu_iova_to_phys() is ambiguous, it could mean a
+> >>>>   present mapping. EADDRINUSE is reliable when supported, it means the
+> >>>>   IOVA is already mapped, so ignore it to resolve the ambiguity.
+> >>>
+> >>> If you think that this patch is a long term solution, I can drop the
+> >>> print, the addr == 0 check, add a comment on top, then repost a V2
+> >>> with an updated description to be more concrete.
+> >>
+> >> I think it is a good solution as-is, I just want clarity on what
+> >> actually regressed here, and I think it is that iommu_map() behavior
+> >> changed.
+> >
+> > Reverting 789a5913b29c ("iommu/amd: Use the generic iommu page table")
+> > plus two follow-up fixes also worked.
+> >
+> > Looking through it, the removed amd_iommu_map_pages() /
+> > amd_iommu_iova_to_phys() in the previous ops might have behaved
+> > differently.
+>
+> Yes, the old AMD code would happily replace an existing mapping without
+> question (but whether it would correctly invalidate TLBs if just
+> replacing a leaf entry with a different leaf entry at the same level
+> I'm not entirely sure...)
+>
+> However, waiting for a mapping to fail (which may scream its own
+> warning) and then attempting to paper over it seems like an awful bodge.
+> Why not just do something like this?
+>
+> Cheers,
+> Robin.
+>
+> ----->8-----
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 35db51780954..682e95c94236 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -1212,8 +1212,11 @@ static int iommu_create_device_direct_mappings(struct iommu_domain *domain,
+>
+>                         if (addr == end)
+>                                 goto map_end;
+> -
+> -                       phys_addr = iommu_iova_to_phys(domain, addr);
+> +                       /*
+> +                        * Check for existing translations using an offset, to
+> +                        * distinguish a mapping of the page at PA 0 from none.
+> +                        */
+> +                       phys_addr = iommu_iova_to_phys(domain, addr + 1);
 
-Not quite, no, CCA *is* in the same boat as TDX, not SEV-SNP. Only
-SEV-SNP has this concept that the DMA handle for private memory is the
-dma_addr_unencrypted() conversion (C-bit masked) of the CPU physical
-address. For CCA and TDX the typical expectation of dma_addr_encrypted()
-for accepted devices holds. It just so happens that dma_addr_encrypted()
-does not munge the address on  is a nop conversion for CCA and TDX.
+Hi Robin,
+Assuming pg_size != 1, which it seems to always be due to `1UL <<
+__ffs(domain->pgsize_bitmap)` is an interesting solution. Then again,
+it assumes that the underlying implementations for iommu_iova_to_phys
+would respect translating unaligned addresses. I cannot comment on
+that.
+
+I would tend to consider both solutions not ideal, and edge towards
+Jason's suggestion of universally ignoring EADDRINUSE without an
+error. However, I am not an absolutist in that regard.
+
+I am on a business trip and do not have the SMTP credentials with me
+for git, so I will send a V2 tomorrow. I already drafted it. I will
+make sure to cc new participants on this thread if not already
+included.
+
+As an aside, it seems that the issue fixed by this patch is not the
+only one introduced in 6.19, with [1] having users where this patch
+does not help. It seems there are additional issues with thunderbolt
+docks. iommu_map could be the culprit and perhaps forceful remapping,
+as was done previously for AMD would be a more universal solution.
+This way, EADDRINUSE stops being an error.
+
+Best,
+Antheas
+
+[1] https://github.com/CachyOS/linux-cachyos/issues/704
+
+>                         if (!phys_addr) {
+>                                 map_size += pg_size;
+>                                 continue;
+>
+>
+
