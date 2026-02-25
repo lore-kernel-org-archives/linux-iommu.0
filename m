@@ -1,116 +1,174 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F092C79CD
-	for <iommu@lists.linux.dev>; Wed, 25 Feb 2026 19:56:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.51
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772049368; cv=pass; b=jLxASAcGWh0Ac7CWV2lC+kWRLViJldq8WQdccF/GlJY7w0eL5oXd5sS/lPmlvrYKgFOXrlmPOWgWaLemY8PxZ9g7KY8F2oxe/jejF7oTSqF/aWUlFRr00GCXsjOFtD79Olf7aYGlaiYq2julXB+VAV8dBemuOcQ85xnMkIgv2JM=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772049368; c=relaxed/simple;
-	bh=HRL6lEk8UXTpub6PekQgYs2cjNTKn63oRhQdj5ExDbk=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=USy1TQeRrAiTTGLWXNK2yS7IRApqJMau+Qw+4nv3eL6OT+W8B39JCRVaVvdO9r9vvT0WkDw+aTGH26ZxmQkg4cFqtpUZTTBfAqxJXiAOgQUG8seLDCwXI93pwz8SL/KC8iPca6nuh3/8KOJsroXWp96y//+dUZI0QOx1MwxgVLk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=qfd7r8Td; arc=pass smtp.client-ip=209.85.128.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63AFD311955
+	for <iommu@lists.linux.dev>; Wed, 25 Feb 2026 20:11:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.171
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1772050296; cv=none; b=CNFdjw3EdUvd20Tai72+ZHwjROC6Rhc1BYY3SLgS7kjayr4YxTsZU482GKP/T8jFSsq9edk7bkrHZ6cvCzAXglZ5zdsfYNqatV8ID/ZyMAIEPDgVizfKxoMmqz4/lJxCBQBhZpyxg3uhjZ0Cmf8jSpkKeHvXrTabb9w2YyT+5yI=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1772050296; c=relaxed/simple;
+	bh=em9/pmP4Zil+1qgnj07w3eGPsU3yjMUlhqOHzAdRYoA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=GsqEsHeSFA9Ey+yw8J1flpOdXvSb77Q3qxPnquKr4D3a+Nkw03pXKu2JA/yaoKgvS2f/Zj9PX3zjbOhN18KDm/M0PQYA2rET67CPpyg+qN+tTMOAjIUpkV6HMP2QNouR1Ofnh5n/S597SAdrSHP1VY66CbP2siQNtMq0ZwGlzBI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=n4dppQfo; arc=none smtp.client-ip=209.85.214.171
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="qfd7r8Td"
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-4806b0963a9so14665e9.0
-        for <iommu@lists.linux.dev>; Wed, 25 Feb 2026 11:56:06 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1772049365; cv=none;
-        d=google.com; s=arc-20240605;
-        b=lRNxTMazpbzxWmwWnyg8IfybzPzkouNB+O99mqHPaVQ+JR+J42LN2QC/0Fa+db3X2u
-         GiL14lvnaYBzmpfeb0MHkMAHiMktnNRSHRyKostHhnOuobXO6Iy3+r3QCArKeQeM7jYO
-         v90kRjIWVusinlYAedEDQnhj6g4N14y3Y3TJsMD0kOouZLWVB46B/lV+zsmB3kaVQtra
-         gm4FtvKM/wUWdewahK7/D2nqGa4EvN4GMbqtNhnedXiYTrjKYORRgVFndIUZeTbVYiFb
-         7O9srVHfNFl+h7CpbThlw0/o1eMYnZjoTHxPOzEHI5MRKvpYrV5I6P1C6Tv4lPi2JTHm
-         T70A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=HRL6lEk8UXTpub6PekQgYs2cjNTKn63oRhQdj5ExDbk=;
-        fh=h8yLmjrernBF1YHXgNk1QFZ2DCb6naIaMkhrqp/uhrg=;
-        b=dWR2gd+9O5GULGZ4HRlYrQFfyTs+MAowvubNAruhiNzciLQ8zfLmqbD3oGrCNSIi2H
-         khXzGs89SjTqxW6rn8RixeRubJEa0Qb7szCciE7J5Hw/K4+CnpR9/vKdkzgyEOJdlxoK
-         8EN8xS/1hJ405FGjI6RauHPPAwTmgpZM5nXyRX8RPSpmLYBdtsS6Fr8ux/pUjeMvZeYm
-         F2jjt74JlvaezEFljpH5eAZzdnYcbQT0r2zJlBkQNJWJ1AzwBZkIBgInw+Bi3gRvWC5A
-         UG7Bpmq8k3LnA3srSY3ldq0srhQeUGpGj/vnAB+0k5mHM6fVHWagClIeijhCRdDfYqRx
-         V6vQ==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="n4dppQfo"
+Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-2adb1c1f9d4so18825ad.0
+        for <iommu@lists.linux.dev>; Wed, 25 Feb 2026 12:11:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1772049365; x=1772654165; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=HRL6lEk8UXTpub6PekQgYs2cjNTKn63oRhQdj5ExDbk=;
-        b=qfd7r8TdMR3dFyU6Ur4f0IioPCMFrbwI5vutUrjwmdDPoeF7skpVZyOfrOJalnW8xl
-         Qjvp2k7amB2L4kJeK6i15E3SeH297MTahLzi71oY3WNkprK/s4PNwp3zcNapEaNL9i5N
-         tSw2C/a9c3So58t0J/mB5yRpN/mqXDiDiD2pDV4qPW9IefMWA2jdspKMVhxzfuel4tNT
-         x/E5r/sx3h6D7E49RljbNvlUPvbE/c8i2OSFMxaECAf6bBNLSjTtJOBK2bTakWCyKn9k
-         6vawzhYdOLZZNC2M/qFI76i5s+kcoMaZIiCHmRXBW/grmJ4RKfJYyqOQ18LZBfDmRHos
-         4H1Q==
+        d=google.com; s=20230601; t=1772050295; x=1772655095; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=2MWFdKV7J70WVUzusLdwzbROOrIDq84oPID02+MRug4=;
+        b=n4dppQfoVMs0pY3EA6MFgalo+E4YUAIPAmdQtFn4MvVuEwkm89Cki/mWAsjG7z8Aen
+         poefMUpirtxjPzQ2wY52FYFCc6z+SJMBlV3TeVutbjxu8MTRBmXxxxCY4mrzfMH4AH/Z
+         rzHT9tD6Q7czPRECIgq0B5htAHWvBgSjvcMrK2/OI5TLuXIegx71EAPRItIQ7LIltyuH
+         d6QjDoWrKXGmWiS1c4bbcNuVHNe8Ts7+AuzHPSHgjKmaKsi3DpXmB39pTN1jb2RgXrp6
+         hMVODYoCNMxKN3fVnrhR+84OqfA+N5nma85UcPnkdnyf462BH4iyUMQlIP3JoFcjpTRt
+         sosw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772049365; x=1772654165;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=HRL6lEk8UXTpub6PekQgYs2cjNTKn63oRhQdj5ExDbk=;
-        b=J0vlstJt8V4XSTi9dAaUc5q5/SNTf0IO97TyHv43kMwbimvC+FdOiM9InOXBePGiwc
-         ORk/gLZcLKqra7sp9vkLiBy/VpW2v80IfAUnIrp7FswDYsvo81GsBz9lRn7/6yywNPGN
-         v7yx9nI5ajxVZGJKOIdXDr2LxT+eTSjz6fLXPAP0ddY/0jvlyd0v0E5BHXw/TCqB4ghO
-         dXLqiDarRYSThEf9GO+YKz27XXAVZ3XI41r6wu8ObJeSPN+/xoe91U8CmcHFQUV9urvI
-         amTpgY19OWBysWUTiYijx8If/8m+Z/EFKOuagrgDNd4lfLTP/RhdNdpX1dpc0wYC1XhZ
-         34ag==
-X-Forwarded-Encrypted: i=1; AJvYcCV2OVG/UMzHRrEidVOjVxSEOAQ7wbOQdtFwK8pScJNcBUSkcF5MtLEoH5KcGq0gD5qqZYInvQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yyx9NeKomyQSSOGw55MH9vRUCXo75tmVXTQ2It9wvFzhyzf/dQS
-	eQFV3wB9ovATRziBHRMq/Vuj5Rkzhj4fwhb8XldK+oOAhBfsx5BqmHJJDzQBO9y7BMd2drzozVv
-	vDHIzt75Y3EAQDvhNxYr6bPbtSWtDs46fsF92yCE9
-X-Gm-Gg: ATEYQzwniDKIlT9XxqNLf03b7uOAP7+gYOyJZd4mIBxC9y6olvFqcmlszWv/wINTcSa
-	4aCkhw2YauHe970ApN5hgHNdm09c6u9pNL2TkeH0gLuszsjgNudhqD2c74P0nrA1NMMSqBUGCMN
-	csO5vQ7gRHv3UzcCPS36exRVVvwKlAESEDjR43jCKcY/PD5UOn36uUPeEwFyeO3YkdVxHsFT/8z
-	YNpI6uMdIdpZIaeS5n5+PkWiYdT2qMMAEh36TH8Ka/se9nJFCtbGDTs21GxYEhINUQ69uiFJlN1
-	hTM65RW/vVs71TU3+PEBESoU/XsHgVZxTuA+W0VwD1UTujETKFoxDRT8infxsVZ2YOrynw==
-X-Received: by 2002:a05:600c:6a8f:b0:477:c5b3:7a9b with SMTP id
- 5b1f17b1804b1-483c3188d68mr92305e9.10.1772049365087; Wed, 25 Feb 2026
- 11:56:05 -0800 (PST)
+        d=1e100.net; s=20230601; t=1772050295; x=1772655095;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=2MWFdKV7J70WVUzusLdwzbROOrIDq84oPID02+MRug4=;
+        b=h1ehF1EnmpgAzyPdGwWM+y2zP6604EazUGVxft1iZOoJCcpJU7DD8sfr2MsIScz5hw
+         vSq5xlquGN8DdH/bfKP6eRbt0VAcYytDTuh7fj993IZQC6kHn2Xqw3lR3mgVPaKIrzbX
+         l6uBMSMPHk036Ss2Db3qr303KinxcgIfE2+z+lmdOsjdzml3I1fMfDO9/Q/ZlQVquxIs
+         jPyEXBaJXqMqjm0P9DWfIuhXvRT7Hdp0zaMHu1KMo+kTIdj/ybhtFavXeIRImgustZ8n
+         nHolqNI5SOea9VepAQTRcPYibMDwpTgqMeXunLCsDKfTNKiDYEXECZxHTwZPgW7oXYTW
+         uyZQ==
+X-Forwarded-Encrypted: i=1; AJvYcCU9vR6R/bYFAABY9/Pg1783NBxd/IKNDmcwV+x1WbCR1TLuIIFppfQGi3h8xkqNxFncyCQguw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwGmbPLH03Zp4Kf62QcuKc6Bk6X3oCQTlfTSIOhkVEiZJB9X0vT
+	/7SaApcnDnKDNEDZkLSRiAs3nke7Nyod9EUM0+3sRm7SvR80VHJBwWKZwOH47CArMD3srLCcyrA
+	bgO+luA==
+X-Gm-Gg: ATEYQzzVZ5OnjljIvEI07YGoIGSceWjcL+zzZInMZyzFx6dZgFkQell6AMKViRiE0nn
+	TiwHnYijbijudJm0uadSvKHvlV9uNkGZlSkqVpCWwW9C86VoQELxq07sBTJHLXeP/oTXcOsVkBh
+	4ttSAVFIA6vXJUMzQ4sBJEMJ1RqNKZRQexj96komW5oYq+h5N5Xy1SCLg9k5BYtl9iIXevvvEMG
+	yS/OCE8ziu2DocFYO2rT0HPoW1/z3LfMVfE60oSDqkEJcS2m/j3tBa9YLoHiqXwuIoYfDdVPWq9
+	EJ3rCOGM7xG69nrfq5cSSs3r64/nYP7OECwiYI3pJV6fxs0CiY5dZLasMarkbR/RF4qtTSlYYIe
+	m3GaKC5Y0PsGcqfHkLbRjRscf68Plw7GoFrgSyC9C1vvga4wO3TGmHG0I9YmwGqe5Cd/QEQ/rth
+	zhD+i0EysK+OELHWVRGGwR06MxeIbaNqJklpiWvm6Lf6SfunYs41AaALjZIAdc
+X-Received: by 2002:a17:902:b688:b0:2a3:ccfa:c41f with SMTP id d9443c01a7336-2adf783d909mr135475ad.1.1772050294261;
+        Wed, 25 Feb 2026 12:11:34 -0800 (PST)
+Received: from google.com (222.245.187.35.bc.googleusercontent.com. [35.187.245.222])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3590203d3edsm3860787a91.9.2026.02.25.12.11.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 Feb 2026 12:11:33 -0800 (PST)
+Date: Wed, 25 Feb 2026 20:11:29 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Leon Romanovsky <leon@kernel.org>
+Cc: Ashish Mhetre <amhetre@nvidia.com>, robin.murphy@arm.com,
+	joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org,
+	linux-mm@kvack.org
+Subject: Re: [PATCH RFC] iommu/dma: Validate page before accessing P2PDMA
+ state
+Message-ID: <aZ9Xccnn7JOikudb@google.com>
+References: <20260224104257.1641429-1-amhetre@nvidia.com>
+ <20260224123221.GM10607@unreal>
+ <aZ4Q1HA9q1ojsVYY@google.com>
+ <9d01b4e3-be5b-4c9c-8088-1d10f67f1fd8@nvidia.com>
+ <20260225075609.GB9541@unreal>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260225-dma-buf-heaps-as-modules-v1-0-2109225a090d@kernel.org> <20260225-dma-buf-heaps-as-modules-v1-7-2109225a090d@kernel.org>
-In-Reply-To: <20260225-dma-buf-heaps-as-modules-v1-7-2109225a090d@kernel.org>
-From: "T.J. Mercier" <tjmercier@google.com>
-Date: Wed, 25 Feb 2026 11:55:53 -0800
-X-Gm-Features: AaiRm50aJvmG-U5wbOHTqLRYSqzdYRLj0K9YYWnCflGgDx3T0BxE0_R2bnIQaGw
-Message-ID: <CABdmKX12GL7gd_TMArPbjGwSOOhu+udFHZ61dDfMwWf3q6cB+w@mail.gmail.com>
-Subject: Re: [PATCH 7/7] dma-buf: heaps: system: Turn the heap into a module
-To: Maxime Ripard <mripard@kernel.org>
-Cc: Sumit Semwal <sumit.semwal@linaro.org>, 
-	Benjamin Gaignard <benjamin.gaignard@collabora.com>, Brian Starkey <Brian.Starkey@arm.com>, 
-	John Stultz <jstultz@google.com>, =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
-	Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, 
-	Andrew Morton <akpm@linux-foundation.org>, David Hildenbrand <david@kernel.org>, 
-	Lorenzo Stoakes <lorenzo.stoakes@oracle.com>, "Liam R. Howlett" <Liam.Howlett@oracle.com>, 
-	Vlastimil Babka <vbabka@suse.cz>, Mike Rapoport <rppt@kernel.org>, Suren Baghdasaryan <surenb@google.com>, 
-	Michal Hocko <mhocko@suse.com>, linux-media@vger.kernel.org, 
-	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, 
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, linux-mm@kvack.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260225075609.GB9541@unreal>
 
-On Wed, Feb 25, 2026 at 8:42=E2=80=AFAM Maxime Ripard <mripard@kernel.org> =
-wrote:
->
-> The system heap can be easily turned into a module by adding the usual
-> MODULE_* macros, importing the proper namespaces and changing the
-> Kconfig symbol to a tristate.
->
-> Signed-off-by: Maxime Ripard <mripard@kernel.org>
+On Wed, Feb 25, 2026 at 09:56:09AM +0200, Leon Romanovsky wrote:
+> On Wed, Feb 25, 2026 at 10:19:41AM +0530, Ashish Mhetre wrote:
+> > 
+> > 
+> > On 2/25/2026 2:27 AM, Pranjal Shrivastava wrote:
+> > > External email: Use caution opening links or attachments
+> > > 
+> > > 
+> > > On Tue, Feb 24, 2026 at 02:32:21PM +0200, Leon Romanovsky wrote:
+> > > > On Tue, Feb 24, 2026 at 10:42:57AM +0000, Ashish Mhetre wrote:
+> > > > > When mapping scatter-gather entries that reference reserved
+> > > > > memory regions without struct page backing (e.g., bootloader created
+> > > > > carveouts), is_pci_p2pdma_page() dereferences the page pointer
+> > > > > returned by sg_page() without first verifying its validity.
+> > > > I believe this behavior started after commit 88df6ab2f34b
+> > > > ("mm: add folio_is_pci_p2pdma()"). Prior to that change, the
+> > > > is_zone_device_page(page) check would return false when given a
+> > > > non‑existent page pointer.
+> > > > 
+> > 
+> > Thanks Leon for the review. This crash started after commit 30280eee2db1
+> > ("iommu/dma: support PCI P2PDMA pages in dma-iommu map_sg").
+> > 
+> > > Doesn't folio_is_pci_p2pdma() also check for zone device?
+> > > I see[1] that it does:
+> > > 
+> > > static inline bool folio_is_pci_p2pdma(const struct folio *folio)
+> > > {
+> > >          return IS_ENABLED(CONFIG_PCI_P2PDMA) &&
+> > >                  folio_is_zone_device(folio) &&
+> > >                  folio->pgmap->type == MEMORY_DEVICE_PCI_P2PDMA;
+> > > }
+> > > 
+> > > I believe the problem arises due to the page_folio() call in
+> > > folio_is_pci_p2pdma(page_folio(page)); within is_pci_p2pdma_page().
+> > > page_folio() assumes it has a valid struct page to work with. For these
+> > > carveouts, that isn't true.
+> > > 
+> > > Potentially something like the following would stop the crash:
+> > > 
+> > > diff --git a/include/linux/memremap.h b/include/linux/memremap.h
+> > > index e3c2ccf872a8..e47876021afa 100644
+> > > --- a/include/linux/memremap.h
+> > > +++ b/include/linux/memremap.h
+> > > @@ -197,7 +197,8 @@ static inline void folio_set_zone_device_data(struct folio *folio, void *data)
+> > > 
+> > >   static inline bool is_pci_p2pdma_page(const struct page *page)
+> > >   {
+> > > -       return IS_ENABLED(CONFIG_PCI_P2PDMA) &&
+> > > +       return IS_ENABLED(CONFIG_PCI_P2PDMA) && page &&
+> > > +               pfn_valid(page_to_pfn(page)) &&
+> > >                  folio_is_pci_p2pdma(page_folio(page));
+> > >   }
+> > > 
+> > 
+> > Yes, this will also fix the crash.
+> > 
+> > > But my broader question is: why are we calling a page-based API like
+> > > is_pci_p2pdma_page() on non-struct-page memory in the first place?
+> > > Could we instead add a helper to verify if the sg_page() return value
+> > > is actually backed by a struct page? If it isn't, we should arguably
+> > > skip the P2PDMA logic entirely and fall back to a dma_map_phys style
+> > > path. Isn't handling these "pageless" physical ranges the primary reason
+> > > dma_map_phys exists?
+> > 
+> > Thanks for the feedback, Pranjal.
+> > 
+> > To clarify: are you suggesting we handle non-page-backed mappings inside
+> > iommu_dma_map_sg (within dma-iommu), or that callers should detect
+> > non-page-backed memory and use dma_map_phys instead of dma_map_sg?
+> 
+> The latter one.
+> 
 
-Same comment about a note about the module being permanent.
+Yup, I meant the latter.
 
-Reviewed-by: T.J. Mercier <tjmercier@google.com>
+> > Former approach sounds better so that existing iommu_dma_map_sg callers
+> > don't need changes, but I'd like to confirm your preference.
+> 
+> The bug is in callers which used wrong API, they need to be adapted.
+
+Yes, the thing is, if the caller already knows that the region to be
+mapped is NOT struct page-backed, then why does it use dma_map_sg
+variants?
+
+Thanks
+Praan
