@@ -1,46 +1,46 @@
 Received: from SVZP279CU002.outbound.protection.outlook.com (mail-norwaywestazon11020130.outbound.protection.outlook.com [52.101.180.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C74230C61B
-	for <iommu@lists.linux.dev>; Wed, 25 Feb 2026 20:23:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3AD830CD81
+	for <iommu@lists.linux.dev>; Wed, 25 Feb 2026 20:23:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.180.130
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772051036; cv=fail; b=NKH5AODwGmp+y6+x4BUrSDUUPFFezbrsprp+Q8taP3jZPIb48Hh+7aW4XgSSx8ijrHAsh6hlKMl7R7ppyLJmWv9OiCeRkVyFEc53PoIHK5atVeAIqjzrqWDARUFwXQbM/J2BnKX3NKdPJ975QeGB11txOCkN8zqgL+Ssmw8swa4=
+	t=1772051038; cv=fail; b=TTQjO7TAe62Tu6lhgmpkOtQPeR5e/5Zre9B1atVPi2Ruo8mzrpEsX8dQ15GsxQHMDFAsmh4DtFl0TtmzOT+wbOUddCJwd5S1cNPg+HnSPCahO6RpKTAogdeirxNPZ7Qglhc/FqZVyMGDwhE3m+7ySD8aPdhAjD1Dx2L8tng0PKI=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772051036; c=relaxed/simple;
-	bh=h3XTxdJHnEXxK43BW2PY8HlvNru6C5VpLLfX5ItlROU=;
+	s=arc-20240116; t=1772051038; c=relaxed/simple;
+	bh=HyCRrRTlGxDh9ke27oQl1QUDkiRxVHcxULjvOtOmrA0=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=DVKcw1/b8A7sl4VkNMXE0XH7qBLnjrHlfgJMCzcX1voLsMp7yOcMxcoK7CWXqDl89tki+5HQSyv5aYRMiRkaKtD7vl0UvE+/QorZdYKqh0S/EBME3kSkSeCigePWIWyzpfv40+Avw0FK2e3NfWm7NOvzmMqoVbYBasaXsfh2MLM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=dolphinics.com; spf=pass smtp.mailfrom=dolphinics.com; dkim=pass (2048-bit key) header.d=dolphinics.com header.i=@dolphinics.com header.b=PBtg/wXt; arc=fail smtp.client-ip=52.101.180.130
+	 Content-Type:MIME-Version; b=cBMGHRAas3izcWsRIm2l7tOlhxHPzcbiRVAicmkKy/mRR7Y9Tzg525WX03WWpXMrkjJGVpCT1W32CPV8dCiF9Bj2wcDFLS1ale+PaGkp66VMyTPtOem3aQT0h2aIcqgPcY2hkl0mONM1Z1B3xQxlQlhhZou7efkEaL8IxdxpL4Q=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=dolphinics.com; spf=pass smtp.mailfrom=dolphinics.com; dkim=pass (2048-bit key) header.d=dolphinics.com header.i=@dolphinics.com header.b=lIESUAqD; arc=fail smtp.client-ip=52.101.180.130
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=dolphinics.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=dolphinics.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=dolphinics.com header.i=@dolphinics.com header.b="PBtg/wXt"
+	dkim=pass (2048-bit key) header.d=dolphinics.com header.i=@dolphinics.com header.b="lIESUAqD"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=fIH2b1R9wSuIg4qmdDOynPbxMJjlQ/uwUCl3vU/HMQGIhc28glIvxGANQbUZ8Nsf8Ea7nzqH3bP04gEZ6r19KGkLx3CvjQYdxlsfB10sixZtR2S081efPT3JL+lIFp0jw8h5WAitscb6baIBCapMF1wO0t8V1wckss7f/EpvJcwLruyRp7TktxU0x4fEJyX6TrZHsaW98NMWZCGIXEuHEEQ6LVZzUT9Y3kMpBcd1qZo9K5IeXOX6f8yPWOi5HBPj/xff4pL8LSXnp6ij+OQEFaZj6VWb3Gn2CX/Z+8yCg2jEUWgKjf54+HY8hgV2SfEKs9RQC03iZy7+lqkIa99tzg==
+ b=SNekTaz+taX+2yuZOQ9PPeaAAsUXpUUgkbPt/4dnVkFlzSWEZs0JvQOutOnXit5EOLzX4M7jkKXFW1v9JrUYHCM6o/J5k3g0Z+cLAvyD2yxRUHtE7y+y/VWgkz58j6QAMsghUeTwil+/XmEcvPyXiPNdwFBbLyf0Qmr2aXzs9nyc8fYTACcgZSBGHaeaceMFBz8dEuV1qHBx/6wPXngGMLI0DzcaSToUTs4tBT0MFze6DqF0h0CaKaarXKEoqwxCawDbU3ziUSJXxJUBrq10QgZXdMHDPK7PqQiPh/stvNPaFuS3dEnqwDhMIAk+l+75mR3sDVvH4Jjjw7N16q3Nxg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6etFIiMllfRhkM+Pu4GgcEgd71w+oLRDTAR19fWzU5Q=;
- b=Frk0kZr21xJt8ORAt1LY/IcTQ4VxeVuxTsbYBgq/KEqKQPc1PdPmKCMSTWyDY30eNsVc/QhrsgDLfJgoaz4YIJWEpbXz0Bh3PpapXEQI4RSaeMpag7E2EA5gjdeCOqCz4y4Ur6L4bSPDRVQ72fuqBumcPSrj4sgM2/8lxLpGkaawkJ88EQL1SWmNujbhcr8EICcvPB+YnRP+qa/eh5QR51iE5kPdKu5RtuJC7Am6VOmfYytkP7IVV9gIMWKHMMcVyHz94RO8C4znKWiuOqARST+heH4roPAHAtURiXzRc4YX/hl2AWyO91ipJtks/LLYGKlh+CvxDVvNKCkJJ5fbFA==
+ bh=07jwDdYluwzdqZ/DsPtnv9xD7UI8CMaPqQoVYi8errQ=;
+ b=eqcycamFO45tny2TqFU3BTBKGV3Yg8F0vTLI0I7PvnpLc7lqrcrM/9hbZJwfkatovBZkjzmYqd5sSnIe6F6Ff2H4sNrxPmb74domNM3T7mcYyKN4VrL99UQqw9+0zi+KyMWuegmopOIZ7srNXhwFjw4VF1SUtd0QgTsLjmbEN5nkFecphHkwJ9rMBEMC6WBGLM/jEUN3OuY7RbVm74zc8QdP5mxe1RBPjye1XMj1InvJHPvqFD2HCR8dED9hXFyv4LVTuKFOQtdCy5s3ZmHZWMW5LI7Az0HPm2QRoa7nqKjqULk9eEZy3xFVleC8OPPPPxxI4b9/5+RwpuoF94PRog==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=dolphinics.com; dmarc=pass action=none
  header.from=dolphinics.com; dkim=pass header.d=dolphinics.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dolphinics.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6etFIiMllfRhkM+Pu4GgcEgd71w+oLRDTAR19fWzU5Q=;
- b=PBtg/wXt+0cZb5JmNiGXK4QhCsItl6JZwQ/l8PPSAZJzxMtJYRlX0+Y6JqUtpPlgJZzbLje+YRHeuPKoDFpmR57AHsOe6b3Drc7i5Ry1bFi+yDE+QCFteugTn7/A5XOQsjDKUOreK6FiYSF+Ov8sliVa1ATUzfSw93VJBjq5D4/gYYn7OblJQ1JUUS0dU2WAO0hz8OY97tibRG2E7EZsQR4w1FtMK8NojmwpA3DjuLteLP0RBei3CWe3v81bVhvlOZjt0Y0EkPikKPUvZN4D9yr1O5JAGCPU1109uqY3NOutZYcGN1Rc9be+mfquXi5PAPJYk03CGpk+hevFMOIApg==
+ bh=07jwDdYluwzdqZ/DsPtnv9xD7UI8CMaPqQoVYi8errQ=;
+ b=lIESUAqD3g9VkcUfWcpaFXM4/wQt3PksDhCaK/5vpo8tEuKW7iEKy0Bai2VFtR/k15Io+I7DU/BAsVFyV+bL6H8S4dswwh4EXGKzQxqJSsvLK+s5jGTOFEVzRnWLLtRnJDPvXW+E54co2pp8Koady0Ai2o1at/R18WKlAQooZnlQ/EWJZdXwZlK8uFOVJ1amT1EJCjvbGNGERFKADDdhhC09Lq7gJXTkIkqjPt7BxO3nIDax2SMWR/IdRABTdJpPkyGJim5KKamc8KweXYnNAOkUAzLJvjKR+wOqv+3c1CUKingYxvdDt8XNU3Ut24oHJ3bPTUSsBgEanzST7+oMFQ==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=dolphinics.com;
 Received: from OLAP279MB0055.NORP279.PROD.OUTLOOK.COM (2603:10a6:e10:2::7) by
  OS5P279MB1039.NORP279.PROD.OUTLOOK.COM (2603:10a6:e10:56::12) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9632.23; Wed, 25 Feb 2026 20:23:47 +0000
+ 15.20.9632.23; Wed, 25 Feb 2026 20:23:50 +0000
 Received: from OLAP279MB0055.NORP279.PROD.OUTLOOK.COM
  ([fe80::c82b:8ba6:653a:2875]) by OLAP279MB0055.NORP279.PROD.OUTLOOK.COM
  ([fe80::c82b:8ba6:653a:2875%3]) with mapi id 15.20.9632.017; Wed, 25 Feb 2026
- 20:23:47 +0000
+ 20:23:50 +0000
 From: Magnus Kalland <magnus@dolphinics.com>
 To: vasant.hegde@amd.com,
 	suravee.suthikulpanit@amd.com,
@@ -48,10 +48,13 @@ To: vasant.hegde@amd.com,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
 Cc: dhsrivas@amd.com,
-	Magnus Kalland <magnus@dolphinics.com>
-Subject: [PATCH v3 2/3] iommu/amd: Track PCIe DMA aliases in set_remap_table_entry_alias
-Date: Wed, 25 Feb 2026 21:23:29 +0100
-Message-ID: <20260225202330.23027-3-magnus@dolphinics.com>
+	Magnus Kalland <magnus@dolphinics.com>,
+	"Lars B . Kristiansen" <larsk@dolphinics.com>,
+	Jonas Markussen <jonas@dolphinics.com>,
+	"Tore H . Larsen" <torel@simula.no>
+Subject: [PATCH v3 3/3] iommu/amd: Invalidate IRT cache for DMA aliases
+Date: Wed, 25 Feb 2026 21:23:30 +0100
+Message-ID: <20260225202330.23027-4-magnus@dolphinics.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260225202330.23027-1-magnus@dolphinics.com>
 References: <20260225202330.23027-1-magnus@dolphinics.com>
@@ -68,87 +71,151 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: OLAP279MB0055:EE_|OS5P279MB1039:EE_
-X-MS-Office365-Filtering-Correlation-Id: b32a8d39-5f10-4416-5531-08de74abc7ef
+X-MS-Office365-Filtering-Correlation-Id: 606480a4-9a37-4c21-16ac-08de74abc948
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|10070799003|376014|366016;
 X-Microsoft-Antispam-Message-Info:
-	8/9/x6aT+/NQ1GGz8Mxw48DUqSVs+Y/JFS5GIQQzweBwdAi/hpy9MyIJuRh911tQWbhneN3/UR06/te2k07a0UueNEukEof+8pfs7tQ/BIPIjxQFsKf9dq5kArVFgYmdKxyAiWgGWpR6LLIB5oJhRp3xr5a9nKWvtupimh+WgvHDWLSbj7E700dzwGIZ91myaH/5kaYiCqoqFfZ6G8tpErsl8SizukaJ90Jt9kBCNgtFBLGRgoHO2LGl4MlhUaBYcgepp19nV6UJnNkfIEl97m2Lkq/7/6nxrET+DxFP258YvxdSN+ph1XBuea292PfcIeOznoUZEmPN3hDIQAV1ogQGW5993H/QkTHNVYPv21cAKkEDu/8QsAbkmzRIVXyah894a5FAhGu1wGTcD7dPtKIb+4W7Iy5SGxUiqldxfLiRFJAbN4WteucOq2ViJoLfRr3A0b2qbfwDIhjBUeOBUdOkpndMuGYtvp0K+2TPB8u2m2Hx8wMuvKVl/1AuBEycpbpD49YfBUrq6I8lhYp1PTGLoh5YBz4YF0qLMOsxLwovSt2SuNTNvRXAV07bfkX5a5EJSZjABqcibswDQ6DRK2tftLD6sJ0Ll4oa7nG3XqLNQz86aCA4EwI9JgdCJIdPugbS6980xGR8Wq2ZWzEk54yIwc2miEW4TNmE2xRHWmP92NQ+X17whs7nBh5dXsU+IuMiGwF9Cq/tEXIf7v+nJrdh1dTTO8PAOALCErHkmOk=
+	+xYUh/jYCJaZk/0mL5B+wW/HeqFp6uu6nQueFZuA1irT0Fsz8ZmJ7uk27SqaaQPejIRqAlsIVg6l/WARiJylzVAI5Mnk8V4W0FDn6XdEVOf8eJlFruE3AY/sdT1hrIdZy0OJR3cMKLz5m3yLIsXAlBDT0Ukr5xOsDd1lXeOgACkR7+0ihE+bfx4zEX66huGE7zrSAhsKFrWHhnVcr3Y1mNVIESllaBEs/sT6uGDQ4S1XV8CJjf8MoA0vAJYhxmwKIKomWb3nLErLoxNwSkoyRFkqTErQjCTids0M1wrktb86fV5oHR/HGrlLgrRu9JDu768K96O6CfpE/ALL8QRugImRsrqNPfikfe/LcVkvta9tEpFyDd36yYM2SzY5mBKD3Jouc7xyPUFZzB/WKm5wWjCCyTGhUNC/z2tlXXYKCG0EnR3kGDRlEhRJZup2d/6UugeiRr+6RkOYmvAoHbjncGuGqZFIwJ5F/Or9jKdQKYIsoEDuDWh5UzH3FWZr1pHUIuL9E84+NzBCsJhGKdbbOfZgpkKtsX48J/BCjDHSMr/H9NxxpHiduRLBuKBMeJO7xgCNpVtgvXjslanyoUk/EDlMSmZZjM7CSs83uk3wxiWFgnTSoN+bZVYCT4wo/EP7XrNZtryb7wMZXxtAkJ2fXnVm5X8GTzqeBB8MCD6m5jquvM3uKC3iYrH1PEXxY8jpWNJT8QaGvpc2j7P3mNMlNVN74813QvCEkXM4Su5lSIU=
 X-Forefront-Antispam-Report:
 	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OLAP279MB0055.NORP279.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(10070799003)(376014)(366016);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?3FcUfs+RKvOH5XATsKrBjE+9VbdAlI9gXhauUwLvHeAFfBNXU6EUQq1oVMHl?=
- =?us-ascii?Q?nLliA+UgxEpyq5q/+zEYlBJufc/pXUnYFRnl517hZjsSnm7V+eJIt8CxLamd?=
- =?us-ascii?Q?FwLLcLB4AYglEMREojr6YyGsuM3mhq3x7ACZZs02mekDApd82CbMALABFmh9?=
- =?us-ascii?Q?cIkUETpFVBfoeLCLM/d6/ZZGUc2iftKVuLTJEA8jLmHwkl9D+6ep+YAULLEE?=
- =?us-ascii?Q?KxHGWz8HMrgADE3uUtvmTtrPbL7tC7Y3m/c3Mjn80j6549T3EMYSZYlajOab?=
- =?us-ascii?Q?jf0FIgEi/04NS4LWYqvWZ/SNv0h1OWHPE3WFGqlE9qK6uBhT0TpF9HuSLhKi?=
- =?us-ascii?Q?rgPMBPv+5l7HahcEuR2Ux9v3TohqNN6UZ80AnmHlJgqKZuPc72+dO1ZIVkB1?=
- =?us-ascii?Q?IRbNGR0hTlg/H9MXyqEK0zTwbRf5zxPoriGRRUqYET5nHeoKOwOZTwOTUm/B?=
- =?us-ascii?Q?6XxuLEiZJ3a5tDd7ai40eUyxq3Jk7Dni3+jAhIovldA/NULLiiCMgTwLk3Xg?=
- =?us-ascii?Q?tFdwdOIheAEUuWsxb3zt8ViZr6tlDkd6dQsDaZrifvq97rD9A6ulFtaM3CtI?=
- =?us-ascii?Q?enW2v6oeJStMUbnZUp26zBLBSeCy0UoE5YfNubYcUTPnJ8jDymdR77LFdUja?=
- =?us-ascii?Q?XtPznSsnsQeJ3wwbfYH+Nk9RZzcKxHQH4nZ7PLhzFXmke1pKB7edeINYaaWC?=
- =?us-ascii?Q?EVMfmRRO0e5HbdLG/hL7PgZn7d2HTpy9m7e0TV3lInl6a8MhCDT6D9UXEdTs?=
- =?us-ascii?Q?q73kRCeWNOPq9FzPCKn5U09xF4bcojRb0JtJay6hjCwiHqiUi2kIEvlfxJjz?=
- =?us-ascii?Q?YpOOaDtxNMpomfy+lSw+7FCs45BJ3EFi+4gfNmwfTVR4WDkbASyXf2Uj2nhu?=
- =?us-ascii?Q?EIHWv29r4NhOpW6qSrphvgrdJwj1hJ/m8zqBEDZGly95h5MJHW904Mbpzw9O?=
- =?us-ascii?Q?yfLAcfBHe9L8g7La/fYSocTkVLGigsaxOfskb65v4qqKUn5JIb01sUjobUf8?=
- =?us-ascii?Q?gnpUOk3zqQynR0S1SLxSI8N3epStr20AhPzueyYJimPILMk7M8NNAZj8CLNG?=
- =?us-ascii?Q?iP9/NW0vzcdeMQfYhl/6H0v6sdNqvqRQfl4Z7n3UKIbj0KNN0xZLO193rZPs?=
- =?us-ascii?Q?PARZFRtsxAV5F/FWHqQ8pghwVXYSoyhzmwm/uKzwLgd7sedPYCUbAFNhOLU/?=
- =?us-ascii?Q?PvfSUCg8YOhzy7xS6CumwIUrLESqxCgUUsIoW93HNDAgJGHlt+0W90Q9Gzsy?=
- =?us-ascii?Q?u/Uof/QD1nAjY2AWg8vr345nxFcvDPjSFM1yUzC69aXc5arX3MW9y590sL1D?=
- =?us-ascii?Q?WXHdbUQZAOG1DvsIS2XpZzYlpITKyU4O+NvB5N1k0HnuLid2L+Cexoih45Oy?=
- =?us-ascii?Q?3sta6JDyAMwav4Ygxh2A6P6taYmA4PmGRiW8/StXHzb+0Bot/7y5jd6cz7LE?=
- =?us-ascii?Q?Jt7/swsoeAfwynDun8rr9IBhA3qL5j4QFDY7yA5RdJYqj55ca7WEmXxBdsVk?=
- =?us-ascii?Q?12GgNtstT57Y9Y2I2YCOdIumZH9rhPAvXYUUT0Nkzo8Gufh76fGuLl6cI+mY?=
- =?us-ascii?Q?hRRNoUi3C6L/odwvD7G7KE44sJ/oO2O9mK53ENILXgbX3/NHVaLdyF12jsfU?=
- =?us-ascii?Q?NaMo4EDC899F5uXN/UFlYG97NJXXwfs+lzCNqchdzEakfmq3hLZgZDi1571W?=
- =?us-ascii?Q?AlArgVCQzomkQ107YNjFn636Ic4Wca9onvO6FHJU6t6n5+vhqTnZ01ZfMBmF?=
- =?us-ascii?Q?fDXg0QnAH6KN69VIYAbr3nGd33wY0tLYhTPUKfhUfgJJwyxZMEW1Lbgij7C0?=
-X-MS-Exchange-AntiSpam-MessageData-1: SCMeQ2ZUHSb7sA==
+	=?us-ascii?Q?2qGvTTEvVQBCSrsLvAqekSwVLA1rAQyuu91yBIdTNqgGZzOGat/fcw84elVr?=
+ =?us-ascii?Q?xGWhHNBrg25B4iAlT0VWovLekjPTJCLCrorE1g+alGulMuAZzDhiUfiNAK2P?=
+ =?us-ascii?Q?avErkB7H5gBHn5YiBYZWT9Rc8pdQeBEjoUwv8JYlgXwkN8qo749Z4lDnEe1O?=
+ =?us-ascii?Q?z7rdxXcEGF32DhjY4O8qnwpY1U/4dqFwRSTb8jj3fa6s7IjX2gdQEk4hXyBo?=
+ =?us-ascii?Q?VvdUlgCiQ4yED3jOXCAf7ViXOPph7gBcGStTL8HGQdpHX5L32ehXjzQaq/Ck?=
+ =?us-ascii?Q?bSsLAGutSvE853DuCY+WpB47GtTDjXK7KIMMAmh3AMSUM+xvQsvVBZS9KEzk?=
+ =?us-ascii?Q?hNA8AnjpxD8ezLC2A6A7OIRZuJ208nWcf1ImARdRkJPmXnqjHV13Wub2Qkmz?=
+ =?us-ascii?Q?QTTseqsynJ3nHNNbujLIMWoO/pEaVWEDv+LL+iDlMKBbz7vYnTkaeWjw/HGc?=
+ =?us-ascii?Q?7Av2AVQpo8GZ16/2VouhSOvslxUM4HuswaPAp9da2QsHtw9nm/fkjt7gKssP?=
+ =?us-ascii?Q?QXtNrF9QhIgS8tfxFbAw29yl3Wo6ptNxp2WWFJ0m3vpeBgWv8KZb2Bxg+OD+?=
+ =?us-ascii?Q?1u1o6BQOVwreiGyzlvV5QQ5empZaRVl3VUY+3NyWQvfWr6BsTzdZCg8CFkAS?=
+ =?us-ascii?Q?ZO7EofSPDr8K8zK0fXFpk25iO+qrhgX2FbtNXhyF0JOZ6NfzYCZRlWttISN6?=
+ =?us-ascii?Q?nDK/8TqsrfDng8uJ7k+9d898drOkhUCLnmKpHIAfctKr1jiaPhzqU/Itnh2d?=
+ =?us-ascii?Q?wDV5AthWYGif4hZ+paz+y1OElIn6iz7Wwo+cC4IhHzfO6qP1oWSOG4YoISpd?=
+ =?us-ascii?Q?N4YQsBUw3o3gjmPaSowhiP66cyZSkmOYnn7MNQENYfpouk0APmqQ+WDzZase?=
+ =?us-ascii?Q?aqJW9PfiKvTt2DfscbytEJSudIaIg6peN0Jw+kOUUcJANQp7pEVF3kpPuYJ+?=
+ =?us-ascii?Q?MATRAhVmHHeMQQfN/oKssIQ/bvAVuBmO1po13FcCLYXu7mwFJYEO7JwOKL/6?=
+ =?us-ascii?Q?Q4449OB/OLyCq+YAKDyv7GzoPs1y2edKTdGJsgNUlE5CQ++drPwRBPGChy2h?=
+ =?us-ascii?Q?zs1ahepyA3M79/+utSDCk6rAAdkFsLIQ4C1NOJv+GeSad2sE4Yfv9hS04Vib?=
+ =?us-ascii?Q?8yQsv0DHSbuOgT4lzE7OHn1x22MDqE8hzv3sVXycmttWUEVPq1ouSeyWK2PK?=
+ =?us-ascii?Q?b7JGUIShI+nhSPW70PNImfFFMH2LEV89OopSoSH70PUcKSGqhV+1IqR2KWBt?=
+ =?us-ascii?Q?W9wVzTeWauHptzPkgus7n94Iiqxp4uweTDnvDwRTNo4UHroKvASTiR7X6n8L?=
+ =?us-ascii?Q?9QYKG5Y0pYQjDKhpDeGm/rcdU4u7I2MB4ePEwUUZZIN3D5wl6n/mdUuqOD0G?=
+ =?us-ascii?Q?0AuEDkkXNB3rFPWqvGdn0U5AmayTas1OGn4+B85lxYJYzOv/g+awjMtcdC1H?=
+ =?us-ascii?Q?E2IGZLf7Lscmw+uiFxnWE+ZIzaHzINBLB2n18KXKMnNU1sA0tT4wz9dAvBga?=
+ =?us-ascii?Q?HKt+07/dqtYyJa+NPu5uOkZ7DLjChUOsOSBqS0BGd1X9oeCrrmz0Qoyo6T0O?=
+ =?us-ascii?Q?tXGciPxPZFWucalpUEhpVyCutqq19ElwUhZxrwIdD5WpIVottDXl5oWEa9XB?=
+ =?us-ascii?Q?NT8SeQc8prp1FyDpVvRTUB+D5Ng9PNE5qBSywchsUL4Ezrb2QWaW4K51uead?=
+ =?us-ascii?Q?72WcgjqKS2d0LNYpf2l0SBlwGwHsTuktF4mJvDPDMNJ36HnIt4Nrmqc5iEvg?=
+ =?us-ascii?Q?dwuvl1ElqjhfaiiNbzjOQLswJ+m2QOI5DNkDiTUPj5zrLpHB+khcnBy5IVDU?=
+X-MS-Exchange-AntiSpam-MessageData-1: bz7xP2kfctuSUg==
 X-OriginatorOrg: dolphinics.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b32a8d39-5f10-4416-5531-08de74abc7ef
+X-MS-Exchange-CrossTenant-Network-Message-Id: 606480a4-9a37-4c21-16ac-08de74abc948
 X-MS-Exchange-CrossTenant-AuthSource: OLAP279MB0055.NORP279.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Feb 2026 20:23:47.7115
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Feb 2026 20:23:49.9699
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 7fb89e52-625c-45cc-a50c-adf3af1b0a6c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 89FG4V8DlsLMT3tHNvA3gHKATNDQTJNm1xImEv9h89+9r6SpOuRI9trIGNS8PYxgvLyFKk8l8FdCr30cvLW+RQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: I+uUPbhZbMX5TrPObmS23NeuBA6o478n+WiNEE3cBrzBJBVBmuUId7oMOYldjsFh9RdlYiHEuKEZdAyKiWYgQA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: OS5P279MB1039
 
-Track PCIe DMA aliases in set_remap_table_entry_alias so that we can
-iterate over shared IRTs by alias in iommu_flush_irt_for_aliases.
+IRTEs may be shared between multiple device IDs when PCIe DMA
+aliasing is in use. The AMD IOMMU driver currently invalidates
+the interrupt remapping table cache only for the device ID used
+to update the IRTE.
 
+If the same IRTE is cached under a different DMA alias, this
+leaves stale cache entries that are never invalidated.
+
+Iterate over all device IDs sharing the same DMA alias and
+invalidate the IRT cache for each of them when an IRTE is updated.
+
+Co-developed-by: Lars B. Kristiansen <larsk@dolphinics.com>
+Signed-off-by: Lars B. Kristiansen <larsk@dolphinics.com>
+Co-developed-by: Jonas Markussen <jonas@dolphinics.com>
+Signed-off-by: Jonas Markussen <jonas@dolphinics.com>
+Co-developed-by: Tore H. Larsen <torel@simula.no>
+Signed-off-by: Tore H. Larsen <torel@simula.no>
 Signed-off-by: Magnus Kalland <magnus@dolphinics.com>
+Link: https://lore.kernel.org/linux-iommu/26cfa307-6c33-41f9-a7a0-fbf202b38a00@amd.com/
 
 ---
- drivers/iommu/amd/iommu.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/iommu/amd/iommu.c | 39 +++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 37 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index f3193c6428c9..5dec3502c8b3 100644
+index 5dec3502c8b3..d9a91d1a083e 100644
 --- a/drivers/iommu/amd/iommu.c
 +++ b/drivers/iommu/amd/iommu.c
-@@ -3280,12 +3280,14 @@ static int set_remap_table_entry_alias(struct pci_dev *pdev, u16 alias,
- 	struct irq_remap_table *table = data;
- 	struct amd_iommu_pci_seg *pci_seg;
- 	struct amd_iommu *iommu = rlookup_amd_iommu(&pdev->dev);
-+	u16 devid = pci_dev_id(pdev);
+@@ -3166,6 +3166,31 @@ const struct iommu_ops amd_iommu_ops = {
+ static struct irq_chip amd_ir_chip;
+ static DEFINE_RAW_SPINLOCK(iommu_table_lock);
  
- 	if (!iommu)
- 		return -EINVAL;
++static int iommu_flush_irt_for_aliases(struct amd_iommu *iommu,
++				       u16 alias)
++{
++	struct amd_iommu_pci_seg *pci_seg = iommu->pci_seg;
++	struct iommu_cmd cmd;
++	unsigned long flags;
++	u32 devid;
++	int ret = 0;
++
++	raw_spin_lock_irqsave(&iommu_table_lock, flags);
++
++	for (devid = 0; devid <= pci_seg->last_bdf; ++devid) {
++		if (pci_seg->alias_table[devid] != alias)
++			continue;
++
++		build_inv_irt(&cmd, devid);
++		ret = __iommu_queue_command_sync(iommu, &cmd, true);
++		if (ret)
++			goto out;
++	}
++
++out:
++	raw_spin_unlock_irqrestore(&iommu_table_lock, flags);
++	return ret;
++}
  
- 	pci_seg = iommu->pci_seg;
- 	pci_seg->irq_lookup_table[alias] = table;
-+	pci_seg->alias_table[alias] = devid;
- 	set_dte_irq_entry(iommu, alias, table);
- 	iommu_flush_dte(pci_seg->rlookup_table[alias], alias);
+ static void iommu_flush_irt_and_complete(struct amd_iommu *iommu, u16 devid)
+ {
+@@ -3173,19 +3198,29 @@ static void iommu_flush_irt_and_complete(struct amd_iommu *iommu, u16 devid)
+ 	u64 data;
+ 	unsigned long flags;
+ 	struct iommu_cmd cmd, cmd2;
++	u16 alias;
  
+ 	if (iommu->irtcachedis_enabled)
+ 		return;
+ 
+-	build_inv_irt(&cmd, devid);
++	raw_spin_lock_irqsave(&iommu_table_lock, flags);
++	alias = iommu->pci_seg->alias_table[devid];
++	raw_spin_unlock_irqrestore(&iommu_table_lock, flags);
+ 
+ 	raw_spin_lock_irqsave(&iommu->lock, flags);
+ 	data = get_cmdsem_val(iommu);
+ 	build_completion_wait(&cmd2, iommu, data);
+ 
+-	ret = __iommu_queue_command_sync(iommu, &cmd, true);
++	if (alias == devid) {
++		build_inv_irt(&cmd, devid);
++		ret = __iommu_queue_command_sync(iommu, &cmd, true);
++	} else {
++		ret = iommu_flush_irt_for_aliases(iommu, alias);
++	}
++
+ 	if (ret)
+ 		goto out_err;
++
+ 	ret = __iommu_queue_command_sync(iommu, &cmd2, false);
+ 	if (ret)
+ 		goto out_err;
 -- 
 2.43.0
 
