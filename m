@@ -1,25 +1,25 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D00992BDC13;
-	Wed, 25 Feb 2026 18:01:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BEBEC2EFD95
+	for <iommu@lists.linux.dev>; Wed, 25 Feb 2026 18:27:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772042469; cv=none; b=JnTNHT3zY7PiNuuat/wE/iiqGxdEF5+zUk0RV1tRXF89ZncrEuoryixUdlvzT63oEp4j2R45B8BvtvLc3jtKpvhnEhVB5pfXcC7zF1jeOZKlvoNr0533ZoXY2XtIauDfZQJZI9J2Fl9MSz/AkJ/mGZWkrUiX153aBRN+WPASaK8=
+	t=1772044036; cv=none; b=El/sMB+vBvcLqHYvMUcnKFaJUAWrwznuaaJnvZ7bPnsxBrnW0s1ynA+6/m21Umg3BECQSZ6Ts1HbXQkUHzN8gzMnEJ1EkX3umdlh23EFvqv0Xh+cVzUT2Q/uTVXO2U/MyWQsHgLgX5WG+zmJe9VrvOA6n0QXl2HYcDBczuntf/0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772042469; c=relaxed/simple;
-	bh=TFbc+GUeADGuSdjbQmqIPxN+gMoOKkRGcSTStzMjyJQ=;
+	s=arc-20240116; t=1772044036; c=relaxed/simple;
+	bh=EkxkOvzKGkGHUAbSsHHto+3gbr95iY7aunDxZfIN8dA=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=kUSFoLSr1YVP/kvSO+traA1Cf2sDE2fQ/nhNLFY3BnVflZynY7PkCpr9bgMe3AdWbI15PYZhgtGXj0KJACKElgXNyV9lMLA0vEcSDve1mz8ivQJkoo2vMAEvd2u+81/DfnejiKn6O4AuBORPBvEGdR9vE+cFk5i2SiPmJr8Tx7I=
+	 In-Reply-To:Content-Type; b=B74x3tbz9m1FMfKyMhzj4iyxyzrKJ8auS+2sD1/Zyilp66Ub356ww8diNGyParL1opelQlFe1Tk3AqdYrAiDThtikPZuYUo0zrq1vJyLZ7LIviWWGSpDhtttPngB1H6jkXcSwUXqCWxO+bUL+aGTQQsXLXEFRox+uBtw8iWpP64=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C2535165C;
-	Wed, 25 Feb 2026 10:01:00 -0800 (PST)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E06F5165C;
+	Wed, 25 Feb 2026 10:27:06 -0800 (PST)
 Received: from [10.57.58.107] (unknown [10.57.58.107])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 162483F62B;
-	Wed, 25 Feb 2026 10:00:57 -0800 (PST)
-Message-ID: <04b06a53-769c-44f1-a157-34591b9f8439@arm.com>
-Date: Wed, 25 Feb 2026 18:00:55 +0000
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 819373F99C;
+	Wed, 25 Feb 2026 10:27:11 -0800 (PST)
+Message-ID: <6bac3817-9652-4146-ab44-2a9518c3b339@arm.com>
+Date: Wed, 25 Feb 2026 18:27:09 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -27,111 +27,105 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH kernel 4/9] dma/swiotlb: Stop forcing SWIOTLB for TDISP
- devices
-To: dan.j.williams@intel.com, Alexey Kardashevskiy <aik@amd.com>,
- x86@kernel.org
-Cc: linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
- linux-pci@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
- Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
- Dave Hansen <dave.hansen@linux.intel.com>, "H. Peter Anvin" <hpa@zytor.com>,
- Sean Christopherson <seanjc@google.com>, Paolo Bonzini
- <pbonzini@redhat.com>, Andy Lutomirski <luto@kernel.org>,
- Peter Zijlstra <peterz@infradead.org>, Bjorn Helgaas <bhelgaas@google.com>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Andrew Morton <akpm@linux-foundation.org>,
- Catalin Marinas <catalin.marinas@arm.com>,
- Michael Ellerman <mpe@ellerman.id.au>, Mike Rapoport <rppt@kernel.org>,
- Tom Lendacky <thomas.lendacky@amd.com>, Ard Biesheuvel <ardb@kernel.org>,
- Neeraj Upadhyay <Neeraj.Upadhyay@amd.com>,
- Ashish Kalra <ashish.kalra@amd.com>, Stefano Garzarella
- <sgarzare@redhat.com>, Melody Wang <huibo.wang@amd.com>,
- Seongman Lee <augustus92@kaist.ac.kr>, Joerg Roedel <joerg.roedel@amd.com>,
- Nikunj A Dadhania <nikunj@amd.com>, Michael Roth <michael.roth@amd.com>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Andi Kleen <ak@linux.intel.com>,
- Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>,
- Tony Luck <tony.luck@intel.com>, David Woodhouse <dwmw@amazon.co.uk>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Denis Efremov <efremov@linux.com>, Geliang Tang <geliang@kernel.org>,
- Piotr Gregor <piotrgregor@rsyncme.org>, "Michael S. Tsirkin"
- <mst@redhat.com>, Alex Williamson <alex@shazbot.org>,
- Arnd Bergmann <arnd@arndb.de>, Jesse Barnes <jbarnes@virtuousgeek.org>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>, Yinghai Lu <yinghai@kernel.org>,
- Kevin Brodsky <kevin.brodsky@arm.com>,
- Jonathan Cameron <jonathan.cameron@huawei.com>,
- "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
- Xu Yilun <yilun.xu@linux.intel.com>, Herbert Xu
- <herbert@gondor.apana.org.au>, Kim Phillips <kim.phillips@amd.com>,
- Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
- Stefano Stabellini <sstabellini@kernel.org>,
- Claire Chang <tientzu@chromium.org>, linux-coco@lists.linux.dev,
- iommu@lists.linux.dev
-References: <20260225053806.3311234-1-aik@amd.com>
- <20260225053806.3311234-5-aik@amd.com>
- <699f238873ae7_1cc5100b6@dwillia2-mobl4.notmuch>
+Subject: Re: [PATCH v1] iommu: Skip mapping at address 0x0 if it already
+ exists
+To: Antheas Kapenekakis <lkml@antheas.dev>, Jason Gunthorpe <jgg@ziepe.ca>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Vasant Hegde <vasant.hegde@amd.com>,
+ Alejandro Jimenez <alejandro.j.jimenez@oracle.com>, dnaim@cachyos.org,
+ Mario.Limonciello@amd.com
+References: <20260221235050.2558321-1-lkml@antheas.dev>
+ <aZ36tRwNP8cRRX1l@ziepe.ca>
+ <CAGwozwFPLLFfKP90fFrt-QC1rKPRCVo_iHuLm4roHX7erQ=Y5Q@mail.gmail.com>
+ <aZ3/W8sw+gW5aTA5@ziepe.ca>
+ <CAGwozwFKTeXW7_tPcUw8pYvNSoS9860mNJ=OUKCt2vEawYVOJA@mail.gmail.com>
 From: Robin Murphy <robin.murphy@arm.com>
 Content-Language: en-GB
-In-Reply-To: <699f238873ae7_1cc5100b6@dwillia2-mobl4.notmuch>
+In-Reply-To: <CAGwozwFKTeXW7_tPcUw8pYvNSoS9860mNJ=OUKCt2vEawYVOJA@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2026-02-25 4:30 pm, dan.j.williams@intel.com wrote:
-> Alexey Kardashevskiy wrote:
->> SWIOTLB is enforced when encrypted guest memory is detected
->> in pci_swiotlb_detect() which is required for legacy devices.
+On 2026-02-24 7:51 pm, Antheas Kapenekakis wrote:
+> On Tue, 24 Feb 2026 at 20:43, Jason Gunthorpe <jgg@ziepe.ca> wrote:
 >>
->> Skip SWIOTLB for TDISP devices.
+>> On Tue, Feb 24, 2026 at 08:33:50PM +0100, Antheas Kapenekakis wrote:
+>>> On Tue, 24 Feb 2026 at 20:23, Jason Gunthorpe <jgg@ziepe.ca> wrote:
+>>>>
+>>>> On Sun, Feb 22, 2026 at 12:50:50AM +0100, Antheas Kapenekakis wrote:
+>>>>> Commit 789a5913b29c ("iommu/amd: Use the generic iommu page table")
+>>>>> introduces the shared iommu page table for AMD IOMMU. Some bioses
+>>>>> contain an identity mapping for address 0x0, which is not parsed
+>>>>> properly (e.g., certain Strix Halo devices). This causes the DMA
+>>>>> components of the device to fail to initialize (e.g., the NVMe SSD
+>>>>> controller), leading to a failed post.
+>>>>
+>>>> I'm trying to understand the issue here, is it that the old AMD code
+>>>> incorrectly succeeded iommu_map() on top of an existing mapping while
+>>>> the new code returns -EADDRINUSE?
+>>>>
+>>>> Then the existing guard for double mapping doesn't work since 0 is an
+>>>> ambiguous return?
+>>>
+>>> Hi Jason,
+>>>
+>>> It seems like the previous code correctly handled the 0 case, and the
+>>> new code does not due to the ambiguous return.
 >>
->> Signed-off-by: Alexey Kardashevskiy <aik@amd.com>
->> ---
->>   include/linux/swiotlb.h | 9 +++++++++
->>   1 file changed, 9 insertions(+)
+>> I checked the old AMD driver it is definately returning 0 from
+>> iommu_iova_to_phys(), so that hasn't changed.
 >>
->> diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
->> index 3dae0f592063..119c25d639a7 100644
->> --- a/include/linux/swiotlb.h
->> +++ b/include/linux/swiotlb.h
->> @@ -173,6 +173,15 @@ static inline bool is_swiotlb_force_bounce(struct device *dev)
->>   {
->>   	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
->>   
->> +	/*
->> +	 * CC_ATTR_GUEST_MEM_ENCRYPT enforces SWIOTLB_FORCE in
->> +	 * swiotlb_init_remap() to allow legacy devices access arbitrary
->> +	 * VM encrypted memory.
->> +	 * Skip it for TDISP devices capable of DMA-ing the encrypted memory.
->> +	 */
->> +	if (device_cc_accepted(dev))
->> +		return false;
+>>>> reasonabe. Just please clean up the commit message to be a bit clearer
+>>>> on what caused this regression and add a short comment above the new if:
+>>>>
+>>>>   0 return from iommu_iova_to_phys() is ambiguous, it could mean a
+>>>>   present mapping. EADDRINUSE is reliable when supported, it means the
+>>>>   IOVA is already mapped, so ignore it to resolve the ambiguity.
+>>>
+>>> If you think that this patch is a long term solution, I can drop the
+>>> print, the addr == 0 check, add a comment on top, then repost a V2
+>>> with an updated description to be more concrete.
+>>
+>> I think it is a good solution as-is, I just want clarity on what
+>> actually regressed here, and I think it is that iommu_map() behavior
+>> changed.
 > 
-> I worry this further muddies the meaning of the swiotlb force option.
-> What if you want to force swiotlb operation on accepted devices?
+> Reverting 789a5913b29c ("iommu/amd: Use the generic iommu page table")
+> plus two follow-up fixes also worked.
+> 
+> Looking through it, the removed amd_iommu_map_pages() /
+> amd_iommu_iova_to_phys() in the previous ops might have behaved
+> differently.
 
-For that we'd need a whole other private SWIOTLB plus the logic to 
-decide which one to use in the first place. And if you really wanted an 
-option to forcibly expose all DMA through shared memory regardless of 
-TDISP and friends, that would logically want to be a higher-level CoCo 
-option rather than belonging to SWIOTLB itself ;)
+Yes, the old AMD code would happily replace an existing mapping without
+question (but whether it would correctly invalidate TLBs if just
+replacing a leaf entry with a different leaf entry at the same level
+I'm not entirely sure...)
 
-Thanks,
+However, waiting for a mapping to fail (which may scream its own
+warning) and then attempting to paper over it seems like an awful bodge.
+Why not just do something like this?
+
+Cheers,
 Robin.
 
-> For example:
-> 
-> @@ -173,7 +176,13 @@ static inline bool is_swiotlb_force_bounce(struct device *dev)
->   {
->          struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
->   
-> -       return mem && mem->force_bounce;
-> +       if (!mem)
-> +               return false;
-> +       if (mem->force_bounce)
-> +               return true;
-> +       if (mem->bounce_unaccepted && !device_cc_accepted(dev))
-> +               return true;
-> +       return false;
->   }
->   
->   void swiotlb_init(bool addressing_limited, unsigned int flags);
+----->8-----
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 35db51780954..682e95c94236 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1212,8 +1212,11 @@ static int iommu_create_device_direct_mappings(struct iommu_domain *domain,
+  
+  			if (addr == end)
+  				goto map_end;
+-
+-			phys_addr = iommu_iova_to_phys(domain, addr);
++			/*
++			 * Check for existing translations using an offset, to
++			 * distinguish a mapping of the page at PA 0 from none.
++			 */
++			phys_addr = iommu_iova_to_phys(domain, addr + 1);
+  			if (!phys_addr) {
+  				map_size += pg_size;
+  				continue;
 
