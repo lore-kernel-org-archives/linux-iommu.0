@@ -1,217 +1,234 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+Received: from canpmsgout09.his.huawei.com (canpmsgout09.his.huawei.com [113.46.200.224])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABFD62DFA4A
-	for <iommu@lists.linux.dev>; Wed, 25 Feb 2026 09:28:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.11
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772011706; cv=fail; b=YafNwLCfhN7/95bsIgJG28xM3Dxrwav4KDEkcitdVWWAbib5s061nfCpt1IDJyVGrmKQrIXC8Fr7oEg3Ok/4kl+TjIV5B/lJIhuIZji7/iwJ2fY5lIfeW/hdG5tITeYcljjTwtb/tpBKJHe0hOPxMov+7OVVMWeIyQVnVjks9rc=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772011706; c=relaxed/simple;
-	bh=1aOqxgYsBx1fGCRdWi4EgQI6TwDvB14USjlfG6U8J9Q=;
-	h=Message-ID:Date:Subject:To:CC:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=OlZFOgZTXUL1BYbREEjYCsIsUgC9jyeAuTY1LWTEOVc2bEVZkdxL0w25yGmxVgsyaLCRE1k7qm+syy7dx4sLCcr18Edr3WB9os1zAJfyMbf9h4eAwjQCjkOHbbp7eVlGn7lSNGFguJ1t5tI+R0+4lskcKvlAA7N8OpijxzxNML0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IrMA+PNp; arc=fail smtp.client-ip=198.175.65.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11B1438F23F
+	for <iommu@lists.linux.dev>; Wed, 25 Feb 2026 09:38:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=113.46.200.224
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1772012289; cv=none; b=jYl2CBboO4SkbnHv5t4n+rF4V+i8FFSBI7aFsvuE8EmbmJvv6G0kFua+nR08uzdLIYW8v6f0VZ9EE2NXdV7TVfdYE1DOXkVC957Hy7eKlDmSF8ySLMd0brfa+Wf+hjN85rjJi2/DjDfF6hbcLNE6jlpcaQq0E+zrLOza4nDdtOU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1772012289; c=relaxed/simple;
+	bh=7hKeXPXAVcEdqySUdhdu1CX5wNLDueYaRZ+rlUSWqu0=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=KFljUp8E69Ssfy7v4dfekQdo329J5CYiOS8ff9nC/ZOXxF9f4K7/bVlO+1lywUJMXBb486z1DjdC44bKoZufckfOaajh1rRgR6ZBxKc62isxi1rRbn7Qw9G5uC6yvsA0wbbd+nPxrZYr0NJEMuzuE/fASyc6ZGZLcDQI6mW89sU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b=CrssyKpN; arc=none smtp.client-ip=113.46.200.224
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IrMA+PNp"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1772011706; x=1803547706;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=1aOqxgYsBx1fGCRdWi4EgQI6TwDvB14USjlfG6U8J9Q=;
-  b=IrMA+PNp1dGTauWARcd2S9YcX2Uua61qEgwLLhu9e97526Oa8t8wKMAY
-   JXJ5NpPR8tazIdKnyAPr7VWO6r9/4F8qgCwmboDAZQpx/6ZtNeROATFjT
-   Y1SlJtkxt3HYWigFoliKR0OFxz0CIhse8E7iV5fTFmHcXTaHpSawryMrm
-   HNz1mLZmKxzYx5AGMNc+Bozc1s4h4gKWXbOWIVPyCm+A0hmATZCtGCWcK
-   FoeVR7P38+qjdi5nzHtd3SylFxLVwHpc0hPpxcmoGc1tR7E9QBcp2nRB5
-   rubw+35w5VS37OXhsvFBueTIquuQcX3E/z1wsOIATrNtxC1RdIJCDj3jE
-   A==;
-X-CSE-ConnectionGUID: hbLrfABPRlOd/UHXfXtKJw==
-X-CSE-MsgGUID: VyfhA8xMRUasItHUWJxH+w==
-X-IronPort-AV: E=McAfee;i="6800,10657,11711"; a="83367988"
-X-IronPort-AV: E=Sophos;i="6.21,310,1763452800"; 
-   d="scan'208";a="83367988"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2026 01:28:26 -0800
-X-CSE-ConnectionGUID: O962knkrRKmCVxaf9+sLgA==
-X-CSE-MsgGUID: 8bONTrUlTGWsUT+raXAh2A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,310,1763452800"; 
-   d="scan'208";a="214317225"
-Received: from fmsmsx903.amr.corp.intel.com ([10.18.126.92])
-  by fmviesa010.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2026 01:28:25 -0800
-Received: from FMSMSX902.amr.corp.intel.com (10.18.126.91) by
- fmsmsx903.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+	dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b="CrssyKpN"
+dkim-signature: v=1; a=rsa-sha256; d=huawei.com; s=dkim;
+	c=relaxed/relaxed; q=dns/txt;
+	h=From;
+	bh=JwtjLw0PDJywja8AdToc9VD5WNrXXmtNvW+lo0FDA5s=;
+	b=CrssyKpNkyAAnjiuPH3xZD4wp6nqLUXQ31UjnAsQdoa5OVP5Ku7aQtr0EuzukNjeS8TGsQNSl
+	sZP99Wj6o6YoYr5C+GtpVgmAQIVPnocIG5bFm+jYR36657zClu+d2cApyyjPWM38HehfwIZb1eB
+	1LkygXTqDatUpISlYWfvUbA=
+Received: from mail.maildlp.com (unknown [172.19.163.163])
+	by canpmsgout09.his.huawei.com (SkyGuard) with ESMTPS id 4fLTsq6YpCz1cyQp;
+	Wed, 25 Feb 2026 17:33:19 +0800 (CST)
+Received: from kwepemj200003.china.huawei.com (unknown [7.202.194.15])
+	by mail.maildlp.com (Postfix) with ESMTPS id 8187D40565;
+	Wed, 25 Feb 2026 17:38:06 +0800 (CST)
+Received: from localhost.huawei.com (10.90.31.46) by
+ kwepemj200003.china.huawei.com (7.202.194.15) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.35; Wed, 25 Feb 2026 01:28:24 -0800
-Received: from fmsedg902.ED.cps.intel.com (10.1.192.144) by
- FMSMSX902.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.35 via Frontend Transport; Wed, 25 Feb 2026 01:28:24 -0800
-Received: from PH0PR06CU001.outbound.protection.outlook.com (40.107.208.36) by
- edgegateway.intel.com (192.55.55.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.35; Wed, 25 Feb 2026 01:28:24 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=EgL8r6mExL6qcqZ+wJVlNjkbShv62/YxjvMEvR558JDdHE7kus7embNVsbiDo5r0UX2rP0aPL2oJ4dFcPqU+IbVwlSHVl7CN/6EvqMxIrsveU56AIhYuJ1/BI3NOrnu4ioICo+qO0k/LMjWYStK5kToOTRWg3ZglIE+dzrDDCJjLzbyOEaLQQXtVh+BQRFzONg3yliku8SOd8x3FfMskyKKFhQYEzQdyBTv8IwGfrC/0D6ou50cz/6of5fh/PhEMsrK6nMCsAAtLmqSmYrnxHAPp5TXARNAxBdLgdHydwlaw9TN8DK7q+ZvO+BAZnszCIpR+wJuqXBLRiVB7Sk05gg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=s/RvdBEKSmgWxvptDCwQx8j85kjeumaZp8i33GxB1Tc=;
- b=lE6J6exFkiHUN8w7aFgyd6a+44HTBLiD/MewnlufN8LKHV5gg7+1HUIZkcrmqBE568tjWz06lMX7TKivvZxgbyJOqfH/1IzMohj8vkz8Etxo508GAGZZKgQtg2obP6grhXQXKsNwmefzOLkh6+S+ofvUjkTdIpEVpynTCv7vd3+Sg4zn2c9uB//Uaado96OPLMxtSZGayZk6h4AnpS/+f/8CY1qGPJdAYdxyUABtsioz+3Juhdzudb30fAlaIvLAgKFPNRGSWSfpSKQsJb5FLeCuuxjk3TQVaB7Quckc0nUsu9RRel+AOzR40Hl67+mB/Zu6FhY6IwcITjH+9tk69Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from LV8PR11MB8509.namprd11.prod.outlook.com (2603:10b6:408:1e6::15)
- by IA0PR11MB8398.namprd11.prod.outlook.com (2603:10b6:208:487::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9632.23; Wed, 25 Feb
- 2026 09:28:23 +0000
-Received: from LV8PR11MB8509.namprd11.prod.outlook.com
- ([fe80::f5bd:4dde:4f2f:20b7]) by LV8PR11MB8509.namprd11.prod.outlook.com
- ([fe80::f5bd:4dde:4f2f:20b7%5]) with mapi id 15.20.9632.017; Wed, 25 Feb 2026
- 09:28:23 +0000
-Message-ID: <1c486a5a-7115-44fc-9705-18b292cb9d00@intel.com>
-Date: Wed, 25 Feb 2026 17:35:15 +0800
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH V1] iommu/sva: Fix crash in iommu_sva_unbind_device()
-To: Lizhi Hou <lizhi.hou@amd.com>, <joro@8bytes.org>, <will@kernel.org>,
-	<robin.murphy@arm.com>
-CC: <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-	<baolu.lu@linux.intel.com>, <vasant.hegde@amd.com>
-References: <20260224183056.2628698-1-lizhi.hou@amd.com>
-Content-Language: en-US
-From: Yi Liu <yi.l.liu@intel.com>
-In-Reply-To: <20260224183056.2628698-1-lizhi.hou@amd.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: TPYP295CA0020.TWNP295.PROD.OUTLOOK.COM
- (2603:1096:7d0:a::10) To LV8PR11MB8509.namprd11.prod.outlook.com
- (2603:10b6:408:1e6::15)
+ 15.2.1544.11; Wed, 25 Feb 2026 17:38:05 +0800
+From: Qinxin Xia <xiaqinxin@huawei.com>
+To: <21cnbao@gmail.com>, <jonathan.cameron@huawei.com>,
+	<wangzhou1@hisilicon.com>, <xiaqinxin@huawei.com>
+CC: <iommu@lists.linux.dev>, <prime.zeng@huawei.com>, <fanghao11@huawei.com>,
+	<linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>, Barry Song
+	<baohua@kernel.org>
+Subject: [PATCH v7 2/3] dma-mapping: benchmark: add support for dma_map_sg
+Date: Wed, 25 Feb 2026 17:37:59 +0800
+Message-ID: <20260225093800.3625054-3-xiaqinxin@huawei.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20260225093800.3625054-1-xiaqinxin@huawei.com>
+References: <20260225093800.3625054-1-xiaqinxin@huawei.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV8PR11MB8509:EE_|IA0PR11MB8398:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0617ffe7-6daf-4e47-7bea-08de7450387d
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|42112799006|1800799024|7053199007;
-X-Microsoft-Antispam-Message-Info: 34nwuqnE9qr6LPXehakTbGLLFh12EUiCHhw6GrPLm2sAMDjSw8gkAp3n2KVz1rtTFZtYJPmljyv4Mvp8jwsbFsphIT6Yc4YmmMODtv0BkcdvqbdAhn61cVgSIMvk2dIkVVTv0MDwelyGNGhenbsG6PhLhgxYhZcgmoPCDtSyGkR6MEhIvlO1T9x832JvYGZm2kHMMimX61y/Cb2z9u8NIRAo6P2GY2A76j17W2p9KGx2watVCcn698poh3o+6vW+UV+1ls0nYKZo+8qaBxxQHFmQnRWzTL8mMAOh/MznCloCk2QY0lR4Z5sAxN/QDZpEYPaH5Z5JZPROaJHbQ+lauJGfNN3V+DGttuZ/ZeaAbBmNC08YYOjSh4jQtjdJ/2kqOaRPpTZFKBcxGZqs2dFNb/tW0jHmnGYR+y46ebcBVwoXZumUSXVeDajhVblFNIUAyNLCFUqbCeHnu5y96UCx/ZOdUp56wHK7gU+RamIh+dOJaK3a8tNZRvnbMozotfhval90x9e2VFEwUU6zCRR1k1j7OvBVoevJtnxrhoh6OOlFU3nWGzEvaJa7KWNW1hX63tUWwfQNn0p6oQA8AMxad5HZujnKj5GOVpkjWI9ypSTINV1sQYn3T8zYaTSQh0tQtupzWM4k9lw4flNsbmeqnmNNA1TCMF5ZzWqNvA9pZfpSDAok2JmMrgFbfAndHDVJgaWMIsk1+ieNuqrmFrCDJ4LesjlmAzT7D8HBIg+jZ/8=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR11MB8509.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(42112799006)(1800799024)(7053199007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Wkg0RHFxdytvNHgvZzd2UllHa0UrMXYxckVnRkw4WVB5SUpWTHc4K002eC96?=
- =?utf-8?B?VFhVMUpsN3VYc3d4R1NOWW8yOUFaWVhnRlZJZnlkUU1MZzNseVZUS3M2eHYz?=
- =?utf-8?B?alMvY01aZXFZbk1RS0xYQmRiZVZjU3ZIT3hzVWFZREVENCs2aFpGNjBraDlZ?=
- =?utf-8?B?TkIvZnBkOE5rNXYxYnlieUFhNjQ1YTdhTXVlYStMdlg2Tzg3bUhRRHZNcWdq?=
- =?utf-8?B?QUc2czVScjM2d3ZzOGpoM1I0Yndnd1llcktiNTIwS0ZMMWRHbEt0UkZ1R1NV?=
- =?utf-8?B?RmdjZ1Radk9FUVlMVjVEdHR4QXRiRW8zczlXSERLd1Q1TzIwbE9RSmpsSU4x?=
- =?utf-8?B?ejZhYlpmeXY4bXFITUFlcXBDR04wUnE2Tzg2VitrWEZNWVMvUGhKcjRZSlZj?=
- =?utf-8?B?angycEdRZjdJODJjVHh6K2d4WmtCTzdlNzBwdlQzVmoyVVZTekhnMTVHSlRp?=
- =?utf-8?B?UmkyR0lSYjdWM0xIZG9mY1BQOENLZyt5aEFxdEh4djNONjhYRSs5aDkweUlx?=
- =?utf-8?B?bTdUZWR4YzBUcHpScXJCblZycXd4TkNpVitQVkxsUmxkSWU2bUpnc1RqaUJJ?=
- =?utf-8?B?UVB5RXhxVGxwSzBLMnJ2dWlyYUE0Yk5zMUJIZklKS2pRdXFkOUNWNXRFNzBi?=
- =?utf-8?B?MElwUktvRkRiNFZrYjlNUmVRVzNhTktRM21OS0E0MThZU1YxS2dwbkpXK1hm?=
- =?utf-8?B?MEcrVHMvN2RaM09XNDdWRllucmtFN1lYZ0ZtREFvZjZHMzNldjFoR2ljTFRa?=
- =?utf-8?B?bHJxSGl0eTdpKzF3NUQ5NkhzZHJpZjFsQkk4ZUU5Sk5jY2Q2bEk5dkpPNm9K?=
- =?utf-8?B?cnNWY2VKTkttNnYrempjMzdJMVhRTEMvSnoxajFoTzFybFNUTFhaeTMrMmJa?=
- =?utf-8?B?eVFpU3VTR0RSK3o4V1hEamhVS1dmaXBWTjIvaktqQkErcThyc3RmRXEvaGNV?=
- =?utf-8?B?OVRkNDlONTZEa1FHbnZ4T1ZJYzcyT1ZLZEhDWEJrQ21HcHg5N3ovOXZ4d3h6?=
- =?utf-8?B?SzZoM1FNRTFNNDA1Mml4Z3RURUc3bWd3cFFpeHBjM0Jkb0o0NGI2Ynh4eUF5?=
- =?utf-8?B?dW9mUTNGNFN0OXZOZEdGeUZuVVpScEFkSFFVcjVDcWVrQkxldjA1NWhkWGp3?=
- =?utf-8?B?dTRMRkplSmlQa0VhVjJrdWpXTUoyNVh5THloMER0dEMyY1AvUTErZ0ZXVmhu?=
- =?utf-8?B?VTdNUWd6dGdYVmNiZ1E3dzYxVHFSVndCSFMwUU51Mk1RUE1SOFJ2ZnloSFQ2?=
- =?utf-8?B?TDhIRHloQ2NqKzRyZHFIKzRReUNRRGltbUQ1Q3lES3JYOS9FR0tjN3hmVmhU?=
- =?utf-8?B?NXhqL2lmbG5JSUJ5YzhqSmFnL080eGNpN2Y3TERkdlh4V3duNU0zamFuYVU5?=
- =?utf-8?B?NkZ1M0paRXZTREIvWTFJUHhMRkMwcDJSeEFleENYT083SjdvQ3hQMDNrSyt2?=
- =?utf-8?B?d0dJbUhhNXVXZDBBM3JLNFk5bDkrMXcyWDNJQkFUTndwR0dqbVI2NjhSYytS?=
- =?utf-8?B?aHBELzF6NWxibW5EejZpaWplTXY3UVVmeVpoVk11c3dpNEphRHdDYnl6a2NS?=
- =?utf-8?B?NjZweVNXSVlMaWVIV0VnR09XSkZ3Mkp4YndoNCtXSFRLa2hoM2xzc3FJNnpT?=
- =?utf-8?B?SXM5c3BxejlRSGg5Yk9tSUlXeW4yODVIOUdRa3lIeTU1TTNiOVFreFJQSm5t?=
- =?utf-8?B?RFVYcEMzR3F1SmYvNERxMFRKdEJ2QkJWaGF5dmxPMG5BMmxuRUFvTVliS0wv?=
- =?utf-8?B?dlVpSWs2WEorZUFUbFhNUEhYZzU0N0g2cTlIUDdCQkJZQWNvWWZxbWxzMjVu?=
- =?utf-8?B?ZFFFT0d2WlZYR0s1M0pWSWVEeFVJVDlCZ21JZys2UmRtR003Tmp2UmRlTTBH?=
- =?utf-8?B?Q0N5aG5EbjZrb25ISmNTRzV0ZVplNmNaSnlMNmxRT29wNUNSUDdaaXZDeHUr?=
- =?utf-8?B?a3J4TlhhMWlXSjZUTjh6dDlzZ1g3Q3M3VENHelZYWjduUXNhOG05NllVaU9H?=
- =?utf-8?B?MEZ6alI5U0YvelNFQXdvbXFEckdjaCtPR0E3Zmo1UVpRTk8yTzB2ck4vcld0?=
- =?utf-8?B?V1BzbzdSVk5Vb2VJdVdqcDd1a0ZqZ3N0ajFEWXlLTmVod0VqZWYzVXZKME4r?=
- =?utf-8?B?OSt0WmU3Rmd1MGc2SjVRVUYwemp2bDQxUUpvOWIwQ1ZGbnhVdnBpbk5kYThw?=
- =?utf-8?B?ZmdJNXUvRW1PRUoxMXU1OFh0M2VtWUM1aDhvOVJkRFp6ekVuL1JRM0VZTkdy?=
- =?utf-8?B?aE4ybTZBSm4vL09FNHRaSU1Gd21ZWDh5MmluaHRWcnpKSFpzSkU3cGJpdUFy?=
- =?utf-8?B?dEltbXF2R3phWGprVThTYmRwZ29QazBibWs1c3dvVkdOSlJYOGFoUT09?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0617ffe7-6daf-4e47-7bea-08de7450387d
-X-MS-Exchange-CrossTenant-AuthSource: LV8PR11MB8509.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Feb 2026 09:28:22.9627
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: UooIrhRNNXMT7waLdD+zcrK2yy6HmMcJi5OLX7jFcK9Rii5/WkLCARNtJ9XE60a/6hEsIbFzWD5eABNW14t/rA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR11MB8398
-X-OriginatorOrg: intel.com
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: kwepems500001.china.huawei.com (7.221.188.70) To
+ kwepemj200003.china.huawei.com (7.202.194.15)
 
-On 2026/2/25 02:30, Lizhi Hou wrote:
-> domain->mm->iommu_mm can be freed by iommu_domain_free():
->    iommu_domain_free()
->      mmdrop()
->        __mmdrop()
->          mm_pasid_drop()
-> After iommu_domain_free() returns, accessing domain->mm->iommu_mm may
-> dereference a freed mm structure, leading to a crash.
-> 
-> Fix this by taking a reference to the mm via mmgrab() before
-> calling iommu_domain_free(), and dropping it with mmdrop() after
-> finishing access to domain->mm->iommu_mm.
+Support for dma scatter-gather mapping and is intended for testing
+mapping performance. It achieves by introducing the dma_sg_map_param
+structure and related functions, which enable the implementation of
+scatter-gather mapping preparation, mapping, and unmapping operations.
+Additionally, the dma_map_benchmark_ops array is updated to include
+operations for scatter-gather mapping. This commit aims to provide
+a wider range of mapping performance test to cater to different scenarios.
 
-need to be more accurate. The issue is that iommu_mm is freed in
-mm_pasid_drop(), so after iommu_domain_free(), the later access to
-iommu_mm is problematic.
+Reviewed-by: Barry Song <baohua@kernel.org>
+Signed-off-by: Qinxin Xia <xiaqinxin@huawei.com>
+---
+ include/uapi/linux/map_benchmark.h |   5 +-
+ kernel/dma/map_benchmark.c         | 115 +++++++++++++++++++++++++++++
+ 2 files changed, 119 insertions(+), 1 deletion(-)
 
-> Fixes: e37d5a2d60a3 ("iommu/sva: invalidate stale IOTLB entries for kernel address space")
-> Signed-off-by: Lizhi Hou <lizhi.hou@amd.com>
-> ---
->   drivers/iommu/iommu-sva.c | 2 ++
->   1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
-> index 07d64908a05f..523b8c65c86f 100644
-> --- a/drivers/iommu/iommu-sva.c
-> +++ b/drivers/iommu/iommu-sva.c
-> @@ -179,6 +179,7 @@ void iommu_sva_unbind_device(struct iommu_sva *handle)
->   		return;
->   	}
->   
-> +	mmgrab(domain->mm);
->   	iommu_detach_device_pasid(domain, dev, iommu_mm->pasid);
->   	if (--domain->users == 0) {
->   		list_del(&domain->next);
-> @@ -190,6 +191,7 @@ void iommu_sva_unbind_device(struct iommu_sva *handle)
->   		if (list_empty(&iommu_sva_mms))
->   			iommu_sva_present = false;
->   	}
-> +	mmdrop(domain->mm);
->   
->   	mutex_unlock(&iommu_sva_lock);
->   	kfree(handle);
+diff --git a/include/uapi/linux/map_benchmark.h b/include/uapi/linux/map_benchmark.h
+index e076748f2120..4b17829a9f17 100644
+--- a/include/uapi/linux/map_benchmark.h
++++ b/include/uapi/linux/map_benchmark.h
+@@ -19,6 +19,7 @@
+ 
+ enum {
+ 	DMA_MAP_BENCH_SINGLE_MODE,
++	DMA_MAP_BENCH_SG_MODE,
+ 	DMA_MAP_BENCH_MODE_MAX
+ };
+ 
+@@ -33,7 +34,9 @@ struct map_benchmark {
+ 	__u32 dma_bits; /* DMA addressing capability */
+ 	__u32 dma_dir; /* DMA data direction */
+ 	__u32 dma_trans_ns; /* time for DMA transmission in ns */
+-	__u32 granule;  /* how many PAGE_SIZE will do map/unmap once a time */
++	__u32 granule;  /* - SINGLE_MODE: number of pages mapped/unmapped per operation
++			 * - SG_MODE: number of scatterlist entries (each maps one page)
++			 */
+ 	__u8 map_mode;  /* the mode of dma map */
+ 	__u8 expansion[75]; /* For future use */
+ };
+diff --git a/kernel/dma/map_benchmark.c b/kernel/dma/map_benchmark.c
+index 312e7060c7a9..e1689fdd3878 100644
+--- a/kernel/dma/map_benchmark.c
++++ b/kernel/dma/map_benchmark.c
+@@ -16,6 +16,7 @@
+ #include <linux/module.h>
+ #include <linux/pci.h>
+ #include <linux/platform_device.h>
++#include <linux/scatterlist.h>
+ #include <linux/slab.h>
+ #include <linux/timekeeping.h>
+ #include <uapi/linux/map_benchmark.h>
+@@ -117,8 +118,122 @@ static struct map_benchmark_ops dma_single_map_benchmark_ops = {
+ 	.do_unmap = dma_single_map_benchmark_do_unmap,
+ };
+ 
++struct dma_sg_map_param {
++	struct sg_table sgt;
++	struct device *dev;
++	void **buf;
++	u32 npages;
++	u32 dma_dir;
++};
++
++static void *dma_sg_map_benchmark_prepare(struct map_benchmark_data *map)
++{
++	struct scatterlist *sg;
++	int i;
++
++	struct dma_sg_map_param *params = kzalloc(sizeof(*params), GFP_KERNEL);
++
++	if (!params)
++		return NULL;
++	/*
++	 * Set the number of scatterlist entries based on the granule.
++	 * In SG mode, 'granule' represents the number of scatterlist entries.
++	 * Each scatterlist entry corresponds to a single page.
++	 */
++	params->npages = map->bparam.granule;
++	params->dma_dir = map->bparam.dma_dir;
++	params->dev = map->dev;
++	params->buf = kmalloc_array(params->npages, sizeof(*params->buf),
++				    GFP_KERNEL);
++	if (!params->buf)
++		goto out;
++
++	if (sg_alloc_table(&params->sgt, params->npages, GFP_KERNEL))
++		goto free_buf;
++
++	for_each_sgtable_sg(&params->sgt, sg, i) {
++		params->buf[i] = (void *)__get_free_page(GFP_KERNEL);
++		if (!params->buf[i])
++			goto free_page;
++
++		sg_set_buf(sg, params->buf[i], PAGE_SIZE);
++	}
++
++	return params;
++
++free_page:
++	while (i-- > 0)
++		free_page((unsigned long)params->buf[i]);
++
++	sg_free_table(&params->sgt);
++free_buf:
++	kfree(params->buf);
++out:
++	kfree(params);
++	return NULL;
++}
++
++static void dma_sg_map_benchmark_unprepare(void *mparam)
++{
++	struct dma_sg_map_param *params = mparam;
++	int i;
++
++	for (i = 0; i < params->npages; i++)
++		free_page((unsigned long)params->buf[i]);
++
++	sg_free_table(&params->sgt);
++
++	kfree(params->buf);
++	kfree(params);
++}
++
++static void dma_sg_map_benchmark_initialize_data(void *mparam)
++{
++	struct dma_sg_map_param *params = mparam;
++	struct scatterlist *sg;
++	int i = 0;
++
++	if (params->dma_dir == DMA_FROM_DEVICE)
++		return;
++
++	for_each_sgtable_sg(&params->sgt, sg, i)
++		memset(params->buf[i], 0x66, PAGE_SIZE);
++}
++
++static int dma_sg_map_benchmark_do_map(void *mparam)
++{
++	struct dma_sg_map_param *params = mparam;
++	int ret = 0;
++
++	int sg_mapped = dma_map_sg(params->dev, params->sgt.sgl,
++				   params->npages, params->dma_dir);
++	if (!sg_mapped) {
++		pr_err("dma_map_sg failed on %s\n", dev_name(params->dev));
++		ret = -ENOMEM;
++	}
++
++	return ret;
++}
++
++static void dma_sg_map_benchmark_do_unmap(void *mparam)
++{
++	struct dma_sg_map_param *params = mparam;
++
++	dma_unmap_sg(params->dev, params->sgt.sgl, params->npages,
++		     params->dma_dir);
++}
++
++static struct map_benchmark_ops dma_sg_map_benchmark_ops = {
++	.prepare = dma_sg_map_benchmark_prepare,
++	.unprepare = dma_sg_map_benchmark_unprepare,
++	.initialize_data = dma_sg_map_benchmark_initialize_data,
++	.do_map = dma_sg_map_benchmark_do_map,
++	.do_unmap = dma_sg_map_benchmark_do_unmap,
++};
++
+ static struct map_benchmark_ops *dma_map_benchmark_ops[DMA_MAP_BENCH_MODE_MAX] = {
+ 	[DMA_MAP_BENCH_SINGLE_MODE] = &dma_single_map_benchmark_ops,
++	[DMA_MAP_BENCH_SG_MODE] = &dma_sg_map_benchmark_ops,
+ };
+ 
+ static int map_benchmark_thread(void *data)
+-- 
+2.33.0
 
-will moving the below hunk in front of iommu_domain_free() simpler?
-Only when (--domain->users == 0), shall the code check if sva_domains
-is empty. right?
-
-         if (list_empty(&iommu_mm->sva_domains)) {
-             list_del(&iommu_mm->mm_list_elm);
-             if (list_empty(&iommu_sva_mms))
-                 iommu_sva_present = false;
-         }
-
-Regards,
-Yi Liu
