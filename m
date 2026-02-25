@@ -1,249 +1,191 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C19D2C08AB;
-	Wed, 25 Feb 2026 06:34:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.9
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772001245; cv=fail; b=LdFCXvbaM82nW6ASVxkGUPy1Wh5vRuLFs10ztUQa2LSB/eCn4PgtjA4zJml+LaC1fYUEf2OBURVJWcUaIgt2XM6aJKIbI+aKAIYQTowrWTVPKT70a6Ck53n1Hxe+vf7zfYIMo00DpiuIywCPvS6Dd5FnmUPGE2zO997Hj9RObQo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772001245; c=relaxed/simple;
-	bh=59xdTgg/eG0KpfZswkihOpxyVDsSHylsPBbfn+sr/SI=;
-	h=From:Date:To:CC:Message-ID:In-Reply-To:References:Subject:
-	 Content-Type:MIME-Version; b=sMlOwAw4y+FeX+/eev0j6DqLFxKD3uQbpLHET2klguZRKa4TWbDpzz9ZccUMWSBpTBN+/pi9xmXzdFFLxlsMXMlzuaZknbMoVPjPflqLjR1WEB+vgzmAdjLLaurJR/yLlVA/GUkUnldRN/BSus2s20hw8KAWnGqGC29QmQncxEs=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=fX5DBgqr; arc=fail smtp.client-ip=198.175.65.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 239831E5B7B;
+	Wed, 25 Feb 2026 07:50:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1772005804; cv=none; b=kFagCkVNWRWsZEAY4t5SNKCBAroCPtVitPl+h+g+q8x3OSxOAEli7UrkFVnReMaMqfdefPe9K9GoW3IAZgM2IlZQENN+lGrt/a1gwFI3qwMusRTshzZRpO1CH5CK0lBQcZib/yyZBjlsTQVQVDRFYOQ3lS0ieiIZdJfm3rbXeWg=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1772005804; c=relaxed/simple;
+	bh=HvGkE+KfnO1/uKHBtgvhjWCUGZzE6KTtQGJZAUqruSc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=VqDZxwYdKk1DRWjP4B1SXTMe4+XvbGXyOIMvjmldMb63c9xJN2hgLJdKzBEMlZjdfZP/6wEuAllpU5DFnF6g7zg+ZyT3hWowL8ce3S1m8HO6im0cXpbbNqBHEbG2XOj7oY1c56bCPW7EXjjeA+omUF3Gg6WS9XZlahszE2PYQiU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fECYUl98; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="fX5DBgqr"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1772001245; x=1803537245;
-  h=from:date:to:cc:message-id:in-reply-to:references:
-   subject:content-transfer-encoding:mime-version;
-  bh=59xdTgg/eG0KpfZswkihOpxyVDsSHylsPBbfn+sr/SI=;
-  b=fX5DBgqrywtdssWrUJnMF921s8mdPW2mgpq46TJ1vNDpTdr8AEqst2Dh
-   z3hNOLd3ydAw2M40bG2ilbe7batKOi5+JvJbo6CFSsFO3D6ujnvzarj8c
-   DcrHlwmF9iavY1vqNazME1lRpDc2m9JnDpz4gmOzaDig8STlo72uFeKDN
-   ykXJ5iQLwLIbdgsXqUWp3yY2WjspE7wSkF8yesAqkXi+3qW3NKUL2fD4d
-   q+wAK2Bb78Aei45Vn12StKzQfIU4e66sCt0jZAEJ/+RHA8SQahHUd4Cp8
-   iDM9gtVWoZKz9el+d8G5n34meAI0slcb8AmkrX6gF3QNFFBdWC3OaWSKF
-   Q==;
-X-CSE-ConnectionGUID: WkUAH5zhSbG2Va01MC1DOA==
-X-CSE-MsgGUID: rbqu1/wxSyqe+3aVEXPVaA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11711"; a="95646971"
-X-IronPort-AV: E=Sophos;i="6.21,310,1763452800"; 
-   d="scan'208";a="95646971"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2026 22:34:04 -0800
-X-CSE-ConnectionGUID: 1n3CEozTQkiFbwF5siRYiw==
-X-CSE-MsgGUID: UNblV44KRGaMpxrIYUIS3Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,310,1763452800"; 
-   d="scan'208";a="213862897"
-Received: from fmsmsx902.amr.corp.intel.com ([10.18.126.91])
-  by fmviesa006.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2026 22:34:03 -0800
-Received: from FMSMSX902.amr.corp.intel.com (10.18.126.91) by
- fmsmsx902.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.35; Tue, 24 Feb 2026 22:34:02 -0800
-Received: from fmsedg901.ED.cps.intel.com (10.1.192.143) by
- FMSMSX902.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.35 via Frontend Transport; Tue, 24 Feb 2026 22:34:02 -0800
-Received: from SN4PR2101CU001.outbound.protection.outlook.com (40.93.195.1) by
- edgegateway.intel.com (192.55.55.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.35; Tue, 24 Feb 2026 22:34:02 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=vSP3/J84MYxeUHP1k0KNzyOWlo70AmxdalGHZC4av6wJbt7b6AtzO0OavOYyatWd23PZYQTQK/CknDHzeG86fKb9anvbZCz5UMvmtOwB5XqroBMAb8JN1EHFmGmmamq6jfVG9uElJKVEAUIAjwos/KRC4IPa55qWA/eFIBBjSOjRtSAox2vGhU6J177iylD9JeErAwCkeG9zIzspd9MShOmYF2UdHL7uD92InINbU0k/bwOcx7B38nF94rn20LpmKuki9+xPab8KreR9rSACOW9p6jrxlHaE0oJKraLXuBnMJ6Zlhm4BDQz7Xz7US/FZkrU711NwhpBKgUULXeo49A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=k9nVs8oQlv/h3M9gGGOmK4wlNugTp/KD5GMFI4OzTLY=;
- b=eYNmizxyJvx2YBL/F0c5UNc8IdDjERy3orRV7OmAeqyihQDZztntrsyk5OkavYUEEJZOdjMYnGQ2J4SbaNBY2Qin9a0zpRSkkrBUu+SHQeVULKdvXB+pb8j/QLbr5Fq20bpAkOd3t1lB+AFH6qHVHm+NcrcXTba5zHaiuljO3u4ty3BJt1YUyxD+flbU8AsAsCZjt9Ca/RY8ECDNBjviU0KIZxVBoUa67kg9VhmcXLYku8ZY+KW7ZT5jkm8JCXar8L/2ogK63soWiG11S2rHThPD2iD5qQNmgh/i0jyFKa+jnb9KvDO+iQOL+XtYd++A8HanCP5rMXMQag1ww/JgsA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from PH8PR11MB8107.namprd11.prod.outlook.com (2603:10b6:510:256::6)
- by DS0PR11MB9477.namprd11.prod.outlook.com (2603:10b6:8:290::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9632.22; Wed, 25 Feb
- 2026 06:34:01 +0000
-Received: from PH8PR11MB8107.namprd11.prod.outlook.com
- ([fe80::1ff:1e09:994b:21ff]) by PH8PR11MB8107.namprd11.prod.outlook.com
- ([fe80::1ff:1e09:994b:21ff%5]) with mapi id 15.20.9632.017; Wed, 25 Feb 2026
- 06:34:00 +0000
-From: <dan.j.williams@intel.com>
-Date: Tue, 24 Feb 2026 22:33:58 -0800
-To: Alexey Kardashevskiy <aik@amd.com>, <x86@kernel.org>
-CC: <linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>,
-	<linux-pci@vger.kernel.org>, Thomas Gleixner <tglx@linutronix.de>, "Ingo
- Molnar" <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Dave Hansen
-	<dave.hansen@linux.intel.com>, "H. Peter Anvin" <hpa@zytor.com>, "Sean
- Christopherson" <seanjc@google.com>, Paolo Bonzini <pbonzini@redhat.com>,
-	"Andy Lutomirski" <luto@kernel.org>, Peter Zijlstra <peterz@infradead.org>,
-	"Bjorn Helgaas" <bhelgaas@google.com>, Dan Williams
-	<dan.j.williams@intel.com>, "Marek Szyprowski" <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>, Andrew Morton
-	<akpm@linux-foundation.org>, Catalin Marinas <catalin.marinas@arm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>, "Mike Rapoport" <rppt@kernel.org>, Tom
- Lendacky <thomas.lendacky@amd.com>, "Ard Biesheuvel" <ardb@kernel.org>,
-	Neeraj Upadhyay <Neeraj.Upadhyay@amd.com>, Ashish Kalra
-	<ashish.kalra@amd.com>, Stefano Garzarella <sgarzare@redhat.com>, Melody Wang
-	<huibo.wang@amd.com>, Seongman Lee <augustus92@kaist.ac.kr>, Joerg Roedel
-	<joerg.roedel@amd.com>, "Nikunj A Dadhania" <nikunj@amd.com>, Michael Roth
-	<michael.roth@amd.com>, "Suravee Suthikulpanit"
-	<suravee.suthikulpanit@amd.com>, Andi Kleen <ak@linux.intel.com>, Kuppuswamy
- Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>, Tony Luck
-	<tony.luck@intel.com>, David Woodhouse <dwmw@amazon.co.uk>, "Greg
- Kroah-Hartman" <gregkh@linuxfoundation.org>, Denis Efremov
-	<efremov@linux.com>, Geliang Tang <geliang@kernel.org>, Piotr Gregor
-	<piotrgregor@rsyncme.org>, "Michael S. Tsirkin" <mst@redhat.com>, "Alex
- Williamson" <alex@shazbot.org>, Arnd Bergmann <arnd@arndb.de>, Jesse Barnes
-	<jbarnes@virtuousgeek.org>, Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	Yinghai Lu <yinghai@kernel.org>, Kevin Brodsky <kevin.brodsky@arm.com>,
-	Jonathan Cameron <jonathan.cameron@huawei.com>, "Aneesh Kumar K.V (Arm)"
-	<aneesh.kumar@kernel.org>, Xu Yilun <yilun.xu@linux.intel.com>, Herbert Xu
-	<herbert@gondor.apana.org.au>, Kim Phillips <kim.phillips@amd.com>, "Konrad
- Rzeszutek Wilk" <konrad.wilk@oracle.com>, Stefano Stabellini
-	<sstabellini@kernel.org>, Claire Chang <tientzu@chromium.org>,
-	<linux-coco@lists.linux.dev>, <iommu@lists.linux.dev>, Alexey Kardashevskiy
-	<aik@amd.com>
-Message-ID: <699e97d6e8be7_1cc51003c@dwillia2-mobl4.notmuch>
-In-Reply-To: <20260225053806.3311234-3-aik@amd.com>
-References: <20260225053806.3311234-1-aik@amd.com>
- <20260225053806.3311234-3-aik@amd.com>
-Subject: Re: [PATCH kernel 2/9] pci/tsm: Add tsm_tdi_status
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BYAPR05CA0079.namprd05.prod.outlook.com
- (2603:10b6:a03:e0::20) To PH8PR11MB8107.namprd11.prod.outlook.com
- (2603:10b6:510:256::6)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fECYUl98"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A2E1C19422;
+	Wed, 25 Feb 2026 07:50:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1772005803;
+	bh=HvGkE+KfnO1/uKHBtgvhjWCUGZzE6KTtQGJZAUqruSc=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=fECYUl984LeA3A2bhWgQE1lfBxon8xIufqg3QpJ5LB7FeVeJ8jWoyNxxeJnjRPa+2
+	 7KVZxytSu4S03dc56kH2QD1bfPMdzlVY/V+5/diI/+WHJg85NCQrxzqDG9vdwREu9W
+	 zWCZqivmboa20fuEtYY1kSMGfg3XiSy6nQCUAdbiPszJQ/KX7NJukb+7UYiyhLJ3c1
+	 /Rd5OsbvT6kruxobHW1o9Ohn82W+slK7Va1y2d+EIEueAh9fu5Umbbnc9bySeLxvqh
+	 8uQAbhYfWkO91t2xAYipJrEdKmh4sgmsZkpzUn0uGQxlCyeIw5u2xKwQUnbvkC5Jh3
+	 cNycjbyFyusWg==
+Date: Wed, 25 Feb 2026 09:50:00 +0200
+From: Leon Romanovsky <leon@kernel.org>
+To: Pranjal Shrivastava <praan@google.com>
+Cc: Ashish Mhetre <amhetre@nvidia.com>, robin.murphy@arm.com,
+	joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org,
+	linux-mm@kvack.org, Christoph Hellwig <hch@lst.de>,
+	Matthew Wilcox <willy@infradead.org>
+Subject: Re: [PATCH RFC] iommu/dma: Validate page before accessing P2PDMA
+ state
+Message-ID: <20260225075000.GA9541@unreal>
+References: <20260224104257.1641429-1-amhetre@nvidia.com>
+ <20260224123221.GM10607@unreal>
+ <aZ4Q1HA9q1ojsVYY@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH8PR11MB8107:EE_|DS0PR11MB9477:EE_
-X-MS-Office365-Filtering-Correlation-Id: f3ac4276-0b49-445c-1d38-08de7437dcb0
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|7416014|366016|7053199007;
-X-Microsoft-Antispam-Message-Info: =?utf-8?B?SWNEak9OTXlydEFsLytjLzFvVHJhbFpZSWR1ZDhUR3RpbmExME1XN3B6SjNy?=
- =?utf-8?B?NjlGa2JFRDV2dEdReVhrQkJPWU91eGJIZG9oakdWUWthQUVTWUZPUFViZUhn?=
- =?utf-8?B?elRUb2lVUVhpVit4NWdCU2JMSkgxVkpnZDVTTDRoeUJydEJGL1dHdktoMWhF?=
- =?utf-8?B?dnpCRFVjbUR3VzBibmJrY1lVTDlaVGZ1bmphWjF1L0MyZWRJY21WZ2JYSXdy?=
- =?utf-8?B?RzIvM0Y4ZjNNelRKc0RSWlNtbEhIVnpKaHl3QXRyaGVJWmg5cGovK2d6R2Jv?=
- =?utf-8?B?WExaa01HOTBZbSsxWThva1BldDZiKzgvY2RRMGR6R25OelNZc3U5cTR6eWNz?=
- =?utf-8?B?dmYvQWdnUTVlUzlrb21KRGp4N2FKRUVMUlEwMjh3YWdEQjJJR1ZuWkxsbkow?=
- =?utf-8?B?NVZUR3FqQmxzZngwZUFiUGJMRjE1Tmo5NFYyeFRibnFQZFAzK2RaQ0NrMVFv?=
- =?utf-8?B?Y0RoL1lsN3F2VFMrTjVhdk9UMVVJQkFsanRZUlFkc2x6YnduZENTKzFtWUhk?=
- =?utf-8?B?bkxwNHR0K3hxdXZMNzgyN2VEUTEvcE1GVUQrazJQZFZJNklwK2RDbEFueGsv?=
- =?utf-8?B?T1pTRHdRM25WdFByRDFMcUx3S0NDdDB6OVZxWUdHWjlVc1d3VXVmc3ZSelVh?=
- =?utf-8?B?MDh3cnlCbzdDM2h6T2hWZWJIQjdRSitMN0pDaGY3UTZBdTJZY2JYVmtHVGJl?=
- =?utf-8?B?NEMrSVJmaENqMzBwSUxmdTNHbDBmcjZNQnNUZzArN2FQZWttZFZ0VmYxdHRB?=
- =?utf-8?B?YzhZMy9Za3BMbFg5VTYzSDN6a2NJbk9qbnJxUnk4ekxHYnJMQmUwL0huSEVo?=
- =?utf-8?B?MzMxa3R4T2pDdFlHUEwwMTNoRTZDMHJ4Zkc5MUhqOWlSUFZUQkpzdHk2c0xa?=
- =?utf-8?B?ZVdkcjV3Z1hMQiszSXlmN2tRS2JDNGR5cnUxVmFRcGk1UTUvUkhXaEtDaGRr?=
- =?utf-8?B?dlJoSGpuSUdOT3hmMTlFcHd5ZVFhVWkwSENUNjZONGx1djJveTVwejVpTkFF?=
- =?utf-8?B?dzBoMk1NNVdDL0JsYWpBKzlzaWVkWHFTMUZmS3hHeDBOQW9mdmJiYjlIeUZm?=
- =?utf-8?B?YmNTeDdvbk40dGE3T2NWbmtnWTlVNWk3cWZha1V0VXJEYmNyL0ptTElSdldo?=
- =?utf-8?B?RlJMeW4wMnRqODhrMVJJVDh6cUo1bUVsMlVmWk14Tm81SC9NRmcvcTNoUXkv?=
- =?utf-8?B?ZWZEQ2JvTmhCQ2RpUGpPRC91UmZTQXBjWkE2ZldSVGtNTEljUTU5SFNXUDlk?=
- =?utf-8?B?NE1mN05NcmR0RTdvQlBEZ284QTdWdUdzdEJPZVM3YlR3MHByRHAxUnVza1VR?=
- =?utf-8?B?NVVoZWxPMjZSdTZydkR3Zm1aUWhOdUNydE16cHZVakx3Mkp3dE1OQzM4TkpE?=
- =?utf-8?B?a1ZnVWt6NlpPQkNVUnpDa2c5cTFOM0lveGZidG9Ld3dzNlg0SVN3VmJ3Z0Zz?=
- =?utf-8?B?VU9sMlZOWmZRaUdxY0NINGdMWjFYV1k5dHdFYlRFWW44NmUwZHJYN21mSE5m?=
- =?utf-8?B?S1draHdia0hRWlB6cjdTUjg3QXhlTk56R1M3am5ZMzFZZW00T3VPeHlybEtQ?=
- =?utf-8?B?aFRLVWpYOUNUNE0vRHFRa1hqUVdCNmt5eFdBQnlYdUVxQzJveS9GdkcyZXk4?=
- =?utf-8?B?R2tnd2xNZGlpOU9iUGI4a2tmejJuL2RRcTdNZDNNRFRhYVRUVFZHaks3MndR?=
- =?utf-8?B?czR3eTZSTkdWU1czUjJDa2NYR1F2bFJQYUEyemt6ajBLMTJXWWFUNTNSL3NU?=
- =?utf-8?B?K3ZKOUlkVVNHOHo1R0dUbnpzbmRlNlF0dkVJbTRiWnRPaHVmS0ZEL0k3amN5?=
- =?utf-8?B?SE1YeVBaYVpSR0I5b3JITGtHOXpzWmdJU0JOdWZuTFRHZ1FqQVFyVmlnd3lU?=
- =?utf-8?B?cVgrS2dkb09ia3R3UXIrbWxKdVd0TUhQcUVmY2dsT1lxYjlhVjlicnBHMWFG?=
- =?utf-8?B?TTY3SmtBRk5lbGZ4Z3V4TUU4ZGhtTCtvMk91ZEVpOTJIWVhBRWZqdXVjVlZu?=
- =?utf-8?B?S1RQb1l4MjI0b2hCa1lxb2ZUV0hoNVg2YnhOM3VyMGMrcUdPVFN0SkliMlRO?=
- =?utf-8?B?VkFheEZacytEUU5tRU9GVkp5KzJvR1huVEExU1N4a0VYTUhFVmNjeGlPeWJi?=
- =?utf-8?Q?DRNM=3D?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB8107.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(7416014)(366016)(7053199007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?MVozTnhNRDdQbVk1TWl6L3ZLN2hOVTFwbVZZQkJVK0NwTFFpVjVTOVpMSWx6?=
- =?utf-8?B?aHZhY2lvWU9MM1lCSkVjbmxZaWlvdFpGdmRodTBScjB0YjdpbUhobUUvTzNm?=
- =?utf-8?B?bkRkeWYvd083b2kycm5sVklJN0FTd0V5T1hQZjhBWHVkWWxOdHBJK01SUEQv?=
- =?utf-8?B?djJZWU0zU1lLU2laM2NTcEc4L2t4WTdMeng3OWVuWWpzQVhLWWE2UzhoT0g0?=
- =?utf-8?B?SExlbXpGRm1TTDNUaVlLaTF6YW9tejg1ZHJMNWNSa0NEOUc2UDBjK3lYb3lB?=
- =?utf-8?B?SWlMSG13NGF3M3NaQ2RZaFdEQTZQeGxYUVNZY1VkbGxPSUJ2R1ArazFzd1VQ?=
- =?utf-8?B?NlRkUlROelYrbUtWSmpjRzhXSGlobHhYZTFTeUphak1KaFZ4cDR1T1ErY2NN?=
- =?utf-8?B?Q083LzYxZ0FVbmxXbWNDbXlIQk96Uk5sNjlCK0NTdmJaMzVVSi9pb1Vwd0gy?=
- =?utf-8?B?UEtWTlgzRmVpZlkwR0p3UGtTZTlMdEtuakJXdVkvWXBwMEhpeU8wcG5pNmNq?=
- =?utf-8?B?dXphRXluSEZWSWEvVW1VVUVUV3FmazNUb0MyZUY4VGF0aWN4UFJMb3dRSjlm?=
- =?utf-8?B?UDVVVnhkWXlSV3Bld1VlSHZiNVVqd2hjRXZtd285MHA5SmwvSklpQXJzTE51?=
- =?utf-8?B?SERTNmZrNmplWDcwcFdiY0dZNGV2T01yRlBqRDlFQ1l0ckpuWVdxbjFPYzBk?=
- =?utf-8?B?cS9OdHRPMnRqekdTV0hKNHlacnFXRzkzb2RUMFlkOHYrU2ZRNUdtYXJiTmk5?=
- =?utf-8?B?c0ZFZWh6TzVyTlJ3eFBLQTZJZnhTMHhXbnN1NUcvSnlvckYrZ2FodHo0bkZw?=
- =?utf-8?B?VDFZczNKMnVXN2xmbmhHczllVmxZWFZpVXM1dGVzSTl0czFXQndEVUluaU9W?=
- =?utf-8?B?RmFFeEczYno4bEZWdXBaSjNYMHdPYmdQZTRLdkx6VjF3U1IzN2huUnVjV3pJ?=
- =?utf-8?B?dnlnaWh5Nk8ralFGeDA3bTk2MXJZNFY3REo1cjNYSEt3TGJTNnRNMWJMb3Fw?=
- =?utf-8?B?alJ1Mk96bnN3d2IyREY5WTJjS3N4ZTZJUHIreHRyYUhwb0NVQkR5eGE1R25p?=
- =?utf-8?B?QmhuM0FUR2toZTFxbTVrd0VXcTRQaDluTmJzL0xEd3NtNW5uOGJidUE3T0Jn?=
- =?utf-8?B?anBkUXFJa0thZWJOY3hTd3NpOFhZdWE2YTEvT2ZNRnFHMEt5RHRvTnEwZzZF?=
- =?utf-8?B?TmROWkVmZ0pMNnU1d1d3M3E1N2I3K05iU3hFSWsvVVN4dS9nV3dWblViMmV0?=
- =?utf-8?B?VHVSSmhWOUFrMldzNHZUOFVlVzNVWUFnaTh1eWRkbjI0bVBCbWlDNUFpT0Rk?=
- =?utf-8?B?VS9wSEx6RHB3b0xEUjR1blBrR2xWOG9QbGt0bGlkcEJrbzNhVzB4elpWWG5q?=
- =?utf-8?B?dWI4R1ZtWm5HeTcwWENJRWNSaHpRNUJTU2RBQVhROFl2cUhySEpCWTAwcVMr?=
- =?utf-8?B?bDJIVUZLZWsxcWk5QzZWL3RKd3ZiZUFwTi9zSjBwSEo1ZmJud2ZJdFk3RVNo?=
- =?utf-8?B?bjlxekpPV0luNkdob3p1NmYyU3c5Rzl5YnRNT0R4ZHZFZzZHa0laUGZpMXFl?=
- =?utf-8?B?YnM0d3JxK0lVVWpnNWNreER3NmkxVnZSMlB0RDNock5DeXdhVUdBUDBzWDY5?=
- =?utf-8?B?b0x3SUE0TStLYXA3a0R4NkZxcXUwQWp0NXdLdG51dXlhdkFNTHI5TWtHNldn?=
- =?utf-8?B?Y0wvS3pucHAzL21ESk0zL0pzMi8wTk1ZdkJuZGEwbkFrZGNZR3lrcTg3Q216?=
- =?utf-8?B?MjM1OVdkV3JvVEU5bzFpRHBmbXNZaVc0TGljQmV3Z3lKakZ4Q2dTYWMyOGhW?=
- =?utf-8?B?NTgyK1ViU3MyNUdkSFBZakN3ZkExbk9JNXlwb3JlRlNQVXMyVHNNWE9Pdk5o?=
- =?utf-8?B?bHRKZFdScHhaemxPSkw2ZE5FL3Y3dkdXNlhiUVN6clhoMkVIRm1HWktDaVhi?=
- =?utf-8?B?aUlqcHdCVkxjdGdMKzRobzEyRC91VDdHTnM5UnZSODJEWUFBUktPVGdTdmJS?=
- =?utf-8?B?YzVZbzB4T0RGb3RzRlNoM3hjSTlJYllqUDY4MGo4cm55Z2pyR1V1MDk2R0FY?=
- =?utf-8?B?eEk4Ym9NdjJhUkppakFxMmp4VkZYMG5mMVlkTnAwZGdMMGROemdxbFpTUVVY?=
- =?utf-8?B?ak9BSVNmWlpHQzJhTzFzOUNhMHVHVTZCdW03LzdqOWxEOThKcVV4QkUwN3hx?=
- =?utf-8?B?WkYvdDhlS2REeDNjLzZQeStlYmEvMUV6eW9UZFZLcFoxdlV0OGUyaFF0ak1t?=
- =?utf-8?B?ZWZ1d2JtRDRNU3Y1UWs4bDQ0Mk1obmVGbVZIQW9MZ29BaVR3Mmtyckc2Y2dY?=
- =?utf-8?B?bW84bFFiOTk3alB3K1dzVXdjeU04cUpPM3NhYTFLZ0FzU2FxRGY3RWt2NkF0?=
- =?utf-8?Q?0Vc7bjADwL3djHEY=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: f3ac4276-0b49-445c-1d38-08de7437dcb0
-X-MS-Exchange-CrossTenant-AuthSource: PH8PR11MB8107.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Feb 2026 06:34:00.8947
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: F+sWmcRc0+MWalM66uik7wEtDnOdpeBEXus9GMA6XRKwbxixFKXLdk0Ef61i3h6ys0cyhto66SLieUx/CJManYFKqYy6MnpuqGPS2gfS6Ww=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR11MB9477
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <aZ4Q1HA9q1ojsVYY@google.com>
 
-Alexey Kardashevskiy wrote:
-> Define a structure with all info about a TDI such as TDISP status,
-> bind state, used START_INTERFACE options and the report digest.
+On Tue, Feb 24, 2026 at 08:57:56PM +0000, Pranjal Shrivastava wrote:
+> On Tue, Feb 24, 2026 at 02:32:21PM +0200, Leon Romanovsky wrote:
+> > On Tue, Feb 24, 2026 at 10:42:57AM +0000, Ashish Mhetre wrote:
+> > > When mapping scatter-gather entries that reference reserved
+> > > memory regions without struct page backing (e.g., bootloader created
+> > > carveouts), is_pci_p2pdma_page() dereferences the page pointer
+> > > returned by sg_page() without first verifying its validity.
+> > 
+> > I believe this behavior started after commit 88df6ab2f34b  
+> > ("mm: add folio_is_pci_p2pdma()"). Prior to that change, the
+> > is_zone_device_page(page) check would return false when given a
+> > non‑existent page pointer.
+> > 
 > 
-> This will be extended and shared to the userspace.
+> Doesn't folio_is_pci_p2pdma() also check for zone device?
+> I see[1] that it does:
 > 
-> Signed-off-by: Alexey Kardashevskiy <aik@amd.com>
-> ---
+> static inline bool folio_is_pci_p2pdma(const struct folio *folio)
+> {
+> 	return IS_ENABLED(CONFIG_PCI_P2PDMA) &&
+> 		folio_is_zone_device(folio) &&
+> 		folio->pgmap->type == MEMORY_DEVICE_PCI_P2PDMA;
+> }
 > 
-> Make it uapi? We might want a sysfs node per a field so probably not.
-> For now its only user is AMD SEV TIO with a plan to expose this struct
-> as a whole via sysfs.
+> I believe the problem arises due to the page_folio() call in
+> folio_is_pci_p2pdma(page_folio(page)); within is_pci_p2pdma_page().
+> page_folio() assumes it has a valid struct page to work with. For these
+> carveouts, that isn't true.
 
-Say more about what this uapi when sysfs already has lock+accept
-indications?
+Yes, i came to the same conclusion, just explained why it worked before.
 
-Or are you just talking about exporting the TDISP report as a binary
-blob?
+> 
+> Potentially something like the following would stop the crash:
+> 
+> diff --git a/include/linux/memremap.h b/include/linux/memremap.h
+> index e3c2ccf872a8..e47876021afa 100644
+> --- a/include/linux/memremap.h
+> +++ b/include/linux/memremap.h
+> @@ -197,7 +197,8 @@ static inline void folio_set_zone_device_data(struct folio *folio, void *data)
+> 
+>  static inline bool is_pci_p2pdma_page(const struct page *page)
+>  {
+> -       return IS_ENABLED(CONFIG_PCI_P2PDMA) &&
+> +       return IS_ENABLED(CONFIG_PCI_P2PDMA) && page &&
+> +               pfn_valid(page_to_pfn(page)) &&
 
-I think the kernel probably wants a generic abstraction for asserting
-that the tsm layer believes the report remains valid between fetch and
-run. In other words I am not sure arch features like intf_report_counter
-ever show up anywhere in uapi outside of debugfs.
+pfn_valid() is a relatively expensive function [1] to invoke in the data path,
+and is_pci_p2pdma_page() ends up being called in these execution flows.
+
+[1] https://elixir.bootlin.com/linux/v6.19.3/source/include/linux/mmzone.h#L2167
+
+>                 folio_is_pci_p2pdma(page_folio(page));
+>  }
+> 
+> 
+> But my broader question is: why are we calling a page-based API like 
+> is_pci_p2pdma_page() on non-struct-page memory in the first place?
+
++1
+
+> Could we instead add a helper to verify if the sg_page() return value
+> is actually backed by a struct page?
+
+According to the SG design, callers should store only struct page pointers.
+There is one known user that violates this requirement: dmabuf, which is
+gradually being migrated away from this behavior [2].
+
+[2] https://lore.kernel.org/all/0-v1-b5cab63049c0+191af-dmabuf_map_type_jgg@nvidia.com/
+
+> If it isn't, we should arguably skip the P2PDMA logic entirely and fall
+> back to a dma_map_phys style path. Isn't handling these "pageless" physical
+> ranges the primary reason dma_map_phys exists?
+
+Right. dma_map_sg() is indeed the wrong API to use for memory that is not
+backed by struct page pointers.
+
+Thanks
+
+> 
+> +mm list
+> 
+> Thanks,
+> Praan
+> 
+> [1] https://elixir.bootlin.com/linux/v6.19.3/source/include/linux/memremap.h#L179
+> 
+> 
+> > If any fix is needed, the is_pci_p2pdma_page() must be changed and not iommu.
+> > 
+> > Thanks
+> > 
+> > > 
+> > > This causes a kernel paging fault when CONFIG_PCI_P2PDMA is enabled
+> > > and dma_map_sg_attrs() is called for memory regions that have no
+> > > associated struct page:
+> > > 
+> > > Unable to handle kernel paging request at virtual address fffffc007d100000
+> > >   ...
+> > >   Call trace:
+> > >    iommu_dma_map_sg+0x118/0x414
+> > >    dma_map_sg_attrs+0x38/0x44
+> > > 
+> > > Fix this by adding a pfn_valid() check before calling
+> > > is_pci_p2pdma_page(). If the page frame number is invalid, skip the
+> > > P2PDMA check entirely as such memory cannot be P2PDMA memory anyway.
+> > > 
+> > > Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
+> > > ---
+> > >  drivers/iommu/dma-iommu.c | 4 ++++
+> > >  1 file changed, 4 insertions(+)
+> > > 
+> > > diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> > > index 5dac64be61bb..5f45f33b23c2 100644
+> > > --- a/drivers/iommu/dma-iommu.c
+> > > +++ b/drivers/iommu/dma-iommu.c
+> > > @@ -1423,6 +1423,9 @@ int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg, int nents,
+> > >  		size_t s_length = s->length;
+> > >  		size_t pad_len = (mask - iova_len + 1) & mask;
+> > >  
+> > > +		if (!pfn_valid(page_to_pfn(sg_page(s))))
+> > > +			goto post_pci_p2pdma;
+> > > +
+> > >  		switch (pci_p2pdma_state(&p2pdma_state, dev, sg_page(s))) {
+> > >  		case PCI_P2PDMA_MAP_THRU_HOST_BRIDGE:
+> > >  			/*
+> > > @@ -1449,6 +1452,7 @@ int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg, int nents,
+> > >  			goto out_restore_sg;
+> > >  		}
+> > >  
+> > > +post_pci_p2pdma:
+> > >  		sg_dma_address(s) = s_iova_off;
+> > >  		sg_dma_len(s) = s_length;
+> > >  		s->offset -= s_iova_off;
+> > > -- 
+> > > 2.25.1
+> > > 
+> > > 
+> > 
