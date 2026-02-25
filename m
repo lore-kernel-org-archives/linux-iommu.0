@@ -1,191 +1,374 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from SJ2PR03CU001.outbound.protection.outlook.com (mail-westusazon11012018.outbound.protection.outlook.com [52.101.43.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 239831E5B7B;
-	Wed, 25 Feb 2026 07:50:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772005804; cv=none; b=kFagCkVNWRWsZEAY4t5SNKCBAroCPtVitPl+h+g+q8x3OSxOAEli7UrkFVnReMaMqfdefPe9K9GoW3IAZgM2IlZQENN+lGrt/a1gwFI3qwMusRTshzZRpO1CH5CK0lBQcZib/yyZBjlsTQVQVDRFYOQ3lS0ieiIZdJfm3rbXeWg=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772005804; c=relaxed/simple;
-	bh=HvGkE+KfnO1/uKHBtgvhjWCUGZzE6KTtQGJZAUqruSc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VqDZxwYdKk1DRWjP4B1SXTMe4+XvbGXyOIMvjmldMb63c9xJN2hgLJdKzBEMlZjdfZP/6wEuAllpU5DFnF6g7zg+ZyT3hWowL8ce3S1m8HO6im0cXpbbNqBHEbG2XOj7oY1c56bCPW7EXjjeA+omUF3Gg6WS9XZlahszE2PYQiU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fECYUl98; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B01AB2FF669;
+	Wed, 25 Feb 2026 07:52:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.43.18
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1772005958; cv=fail; b=fE5Pj4pGZARzFw4O76C/pRzS1fdeERZe10n25Rjn7nPquXz54D7YXOi3nQcB8KxNMFNTh9OMSnecBRKZEX5iHHNbTz55UHkAZvoQG+g0Daiq7GggsWf42xVAY8zEY3ULBM6dACOAtkvQ4hioIzlJleLd2wAjC+2+zEk7tttigFY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1772005958; c=relaxed/simple;
+	bh=iNPWfAbvNi0sSWa3slLyqgZmhtP9fIJo2CWwKvarGC4=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=BfN2HcQvpiX4fJZFItU9a+MQBvEUkhA5CFFK7QuBbAtY9AvbyatyGPgUdmyYoqW2SuH90bVaHltPLIxVQ2xEBvov7UgmY+/03yHwOToEcmVlmXGjIDffjg5u5KlV5Snhv/Jk7aXo1i1UXXHMIdG4DZin5wSpLI+6CBodEGNVp5Q=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=h45s57/C; arc=fail smtp.client-ip=52.101.43.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fECYUl98"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A2E1C19422;
-	Wed, 25 Feb 2026 07:50:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772005803;
-	bh=HvGkE+KfnO1/uKHBtgvhjWCUGZzE6KTtQGJZAUqruSc=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=fECYUl984LeA3A2bhWgQE1lfBxon8xIufqg3QpJ5LB7FeVeJ8jWoyNxxeJnjRPa+2
-	 7KVZxytSu4S03dc56kH2QD1bfPMdzlVY/V+5/diI/+WHJg85NCQrxzqDG9vdwREu9W
-	 zWCZqivmboa20fuEtYY1kSMGfg3XiSy6nQCUAdbiPszJQ/KX7NJukb+7UYiyhLJ3c1
-	 /Rd5OsbvT6kruxobHW1o9Ohn82W+slK7Va1y2d+EIEueAh9fu5Umbbnc9bySeLxvqh
-	 8uQAbhYfWkO91t2xAYipJrEdKmh4sgmsZkpzUn0uGQxlCyeIw5u2xKwQUnbvkC5Jh3
-	 cNycjbyFyusWg==
-Date: Wed, 25 Feb 2026 09:50:00 +0200
-From: Leon Romanovsky <leon@kernel.org>
-To: Pranjal Shrivastava <praan@google.com>
-Cc: Ashish Mhetre <amhetre@nvidia.com>, robin.murphy@arm.com,
-	joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org,
-	linux-mm@kvack.org, Christoph Hellwig <hch@lst.de>,
-	Matthew Wilcox <willy@infradead.org>
-Subject: Re: [PATCH RFC] iommu/dma: Validate page before accessing P2PDMA
- state
-Message-ID: <20260225075000.GA9541@unreal>
-References: <20260224104257.1641429-1-amhetre@nvidia.com>
- <20260224123221.GM10607@unreal>
- <aZ4Q1HA9q1ojsVYY@google.com>
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="h45s57/C"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=S4+9O9iKrW6xB4kYsIP64D1wDNcDcIFKd3KbBt+hJtXq8Uandv3vLg9gT9nMsCENx1FYmACYrH6klbEoBoHSU77U5PZn84n/pDvS7NtSk4Ih/x//xYMKDEge/oLWjaW1nCX3FQXqxvW+vAWB54Asx/bYOASYfYFEQ5tLR/mqYv5bVBvhC5/oYETLIT2hack0a6QjlLXsC6R2K08Gy0Jby5r1dm2wCbLSLPuH4cgcx4+u9lRIX42JuRWA9OOH4sYkW3xZjCyj6jh6WCReXJX6t4pLaNDHkHic2FGPt03iOE5XWN9271Cyqc6y4RFwlxHs5cyvvn3m0/84338lo9WTrg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=W8uOaPMyzcf4fHALNlJb5qM9uxuSYoRNOmYbQ0BL2x0=;
+ b=M4toLzySierkFHzrdLVL7Dl4CuyEEH74fNx0Ybxin2wfrYypdjaS+A1uF5s2lnl5/1UYFgcP2D02ZhMCNFCaNIuSxzhdO26wmPlWvHQg+62dWObUiSu8dQU3VtcKrnha8nCUPPmDX9le1vLKWYC6JYICMW4Q8qs3ZnAbMx4PJiAnantWjwZGVRhW/sk4gNqZLt45fw19CksskmPFMwddA5NoM7Iy2xxvod1pZ3i3qVYR7ozbOeG/h4KYZJKI1WIS4qvWxa//2IujyEA30IiodbDVtGeIeoollqaeDIlUUR705/56LJKKgTCO+nLCZiAo7p8K5fqi+5Uzsruq8gocaA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=W8uOaPMyzcf4fHALNlJb5qM9uxuSYoRNOmYbQ0BL2x0=;
+ b=h45s57/Cg8/+1k5x44FBuGl6FTaREzsdBnLCDZ0vlnUkeBhdjTtqi5LpctrLMy/RpIRpGrjPFsGo7ov+vjzxVIA3y4etZKvaHvS5T9cAFreSBxpNwr/PyLohmeh8O8UQuVE/Bc9JwU6vqGkqbTQDBdPwSh+t1Ip4YF33tk8kz5M=
+Received: from BL0PR1501CA0013.namprd15.prod.outlook.com
+ (2603:10b6:207:17::26) by DS7PR12MB6166.namprd12.prod.outlook.com
+ (2603:10b6:8:99::13) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9632.22; Wed, 25 Feb
+ 2026 07:52:32 +0000
+Received: from BL02EPF0001A106.namprd05.prod.outlook.com
+ (2603:10b6:207:17:cafe::c6) by BL0PR1501CA0013.outlook.office365.com
+ (2603:10b6:207:17::26) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9632.22 via Frontend Transport; Wed,
+ 25 Feb 2026 07:52:38 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
+Received: from satlexmb07.amd.com (165.204.84.17) by
+ BL02EPF0001A106.mail.protection.outlook.com (10.167.241.139) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.9632.12 via Frontend Transport; Wed, 25 Feb 2026 07:52:31 +0000
+Received: from aiemdee.amd.com (10.180.168.240) by satlexmb07.amd.com
+ (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.17; Wed, 25 Feb
+ 2026 01:52:23 -0600
+From: Alexey Kardashevskiy <aik@amd.com>
+To: <linux-kernel@vger.kernel.org>
+CC: <kvm@vger.kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian
+	<kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
+	<will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Paolo Bonzini
+	<pbonzini@redhat.com>, Steve Sistare <steven.sistare@oracle.com>, "Nicolin
+ Chen" <nicolinc@nvidia.com>, <iommu@lists.linux.dev>, Alexey Kardashevskiy
+	<aik@amd.com>, <linux-coco@lists.linux.dev>, Dan Williams
+	<dan.j.williams@intel.com>, Santosh Shukla <santosh.shukla@amd.com>, "Pratik
+ R . Sampat" <prsampat@amd.com>, Ackerley Tng <ackerleytng@google.com>, "Sean
+ Christopherson" <seanjc@google.com>, Fuad Tabba <tabba@google.com>, Xu Yilun
+	<yilun.xu@linux.intel.com>, "Aneesh Kumar K . V" <aneesh.kumar@kernel.org>
+Subject: [RFC PATCH kernel] iommufd: Allow mapping from KVM's guest_memfd
+Date: Wed, 25 Feb 2026 18:52:11 +1100
+Message-ID: <20260225075211.3353194-1-aik@amd.com>
+X-Mailer: git-send-email 2.52.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <aZ4Q1HA9q1ojsVYY@google.com>
+Content-Type: text/plain
+X-ClientProxiedBy: satlexmb07.amd.com (10.181.42.216) To satlexmb07.amd.com
+ (10.181.42.216)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BL02EPF0001A106:EE_|DS7PR12MB6166:EE_
+X-MS-Office365-Filtering-Correlation-Id: 75a7f91a-71da-4a43-1515-08de7442d4c8
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|82310400026|36860700013|376014|7416014|1800799024|13003099007;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?JLPaNDMZYkzRYIGA0FeqorLKsDrRVoDCPbZcQ3FTovZVpUc/pV0ERfN9gBLX?=
+ =?us-ascii?Q?xo5EOnGPciPBBC9hWV0QNiN8LvQxUVz810j3bBYE00y2X2BchHR+ArnDJd4W?=
+ =?us-ascii?Q?P3TLSu5v2ZG8BNiudxq+F8+Qcc/53TixzTy2/EMt6kOgZZrMkVv15T4UG2GN?=
+ =?us-ascii?Q?MZWJsZg62cWvXy1ZpcMeT++lbVWs3VAQhnd00cQrAQe1Zf2TPJai0VxJxHBr?=
+ =?us-ascii?Q?LWCkPV6dvTcDeo02UvgYknM/sFD1+ykNc2ME8RQwE08irBy+03PKy/+X5xLw?=
+ =?us-ascii?Q?nXDKx9lG/JQ+EVtA1XyjwJrJi2adibVSF+FK39+6XEW3wNvq/71Y+upoToQV?=
+ =?us-ascii?Q?EchX8/knbzRIwQWmbAJB4bHsTOi2FSFLnFhI4yozAdRYK2cuyws3O0JpxJ4F?=
+ =?us-ascii?Q?/LN8dqKZPJWvlj5ltyXH82+/JcBtSRK/g1SYSooSG7eQFdAPTNT66qhD3uEP?=
+ =?us-ascii?Q?A/fqr/5kTB02hIPuh6PNGwjkqu/7go49b1MKxCmqKsH1d2P1zGPEOecg8jCC?=
+ =?us-ascii?Q?+gF/gSqozwEPX8g9ENeRSePJzEUCJcWBCQUfnjw+8hYhpDFFHEcgTVbkiPnT?=
+ =?us-ascii?Q?/cG7tW7meyPAumFlFqZ1qr9U+Qhf0kLbxr4L1pNOJLDPS/raakoHILsZAZMQ?=
+ =?us-ascii?Q?OS4nmFxmOxJJAJIqg8Zb4+tvGJd06UXBvj/gCI6F4rlFbyKz6toS1+vAJlLR?=
+ =?us-ascii?Q?SiL5OCS+OF/Fo6uCg/3BmXENjEdpXVnNrgJRwZFWZ0BIzy+KCWH2iKBZxXbc?=
+ =?us-ascii?Q?0N1P0ZU591WWQ8cCysd9Q+1qDr1mFO5GYsxL0SNBg8VC5rh6cRzNyPnsYCFY?=
+ =?us-ascii?Q?WcDRJdpW6g4wXF3Sz9jtJFg2tSnIgtJgv7e0ydMGiZENjZ+Ymx1sHqAV8TCl?=
+ =?us-ascii?Q?DzGFUU+J5KIbVEdaER4KmQaQk25JYOPx9OQAB9sjC9j/fAEcz8ybU4x2P3lk?=
+ =?us-ascii?Q?vSR97Bti0yukqkjrCu3F0ZZyni59nhGgfUABFm2WkaDk4i8ODwzxoQN66ZvF?=
+ =?us-ascii?Q?7qUhh1z9YFwol/woRJUIaict4XGcLQJpWgknUQRU0vgk5tWmzBNk00pfAMF3?=
+ =?us-ascii?Q?ZdJse20QmO4wOxIgSVrnKWClfTVr0q54hOetUIqVS3Fi6I1FalIhLziCkbHp?=
+ =?us-ascii?Q?EA38DZykthjgxn/eKLTdm355YthxEIn26gau0sCq7fdK+O2hiHhJ08Dd6iq9?=
+ =?us-ascii?Q?A32B1Cvfv3ev+wT6pQybgcH7Onb7zNJjdVOa32sInwh1fW6n7n/bQgkJHXzf?=
+ =?us-ascii?Q?iFcnVaT/rBQbwOsp73hvwX/wnqQQKYdH2U/rJS+fLjE/IGlkNUXm/NRfTCqn?=
+ =?us-ascii?Q?/fxAj36yJJeNoCY2dk5Jprs8aMEn7PuKya+pgLVuYntTzeq6xGbqgpEl3wna?=
+ =?us-ascii?Q?hf4/mdFaGduUEO00j32ZFolym8c63wGd4poP8xJtMGq2IMb1NVrkD16/6dqs?=
+ =?us-ascii?Q?idy2OUZjkskvj7Bt3n49SfVdhT31ifjC2W8I79BZ5XTKlkLhPD6k+gsjua/8?=
+ =?us-ascii?Q?dPxGG1hk2pE5B+OiOWXQz8V4pdDU8e0S+b9PTd/j6a9P+k4kNVZAvAOE+xGG?=
+ =?us-ascii?Q?wUK3PMaeBzqgpmmou0WCCW7nudtSTpS0gM/Osx3KzGXjqgoNzAouDVKnWD8Z?=
+ =?us-ascii?Q?RiwaFz0wmOqKR/InqZxD9YhpA06mp58jLXmGp6SbUuHdJQOtylA8bv1ycCMz?=
+ =?us-ascii?Q?W+tHoA=3D=3D?=
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(36860700013)(376014)(7416014)(1800799024)(13003099007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	rCEYdvds6LZ3vctCvc1fjPi7ZBKiMSqhOdmHRyJ/bmHZcJexnQ6ONIu5/Z/8Tv0xNrJxSp993k/a6vPK2kDRt7alMPMZSIf2NZ5axUCF+LpU28/n0XEHNi05QXjaOFl4f9W6mXvUpRpaakqFRviQzjUf7lzcpZpiZyhWvjdMuw/NarQSc36EqCF1s6Ms9HfL5xz8Yh4lbRxm/H3LLZcyfkNmmGHSLyjGLJtOlvwo9HU6g8b/O2qw/rVQJ4OyolFJ/XghQGBLbNgLSegMVXVhMUwAoGyPeteLr2SxJXz+/mnXwHmzq1IDiVis887MK18MITJAFdJHwYHWgz3nT9oaGiAOl6hH47p348GrRA46/z4g1XXrmzdfoAq5siYdTogyAd+HovzuKXCZcJaftCi98IJE6GNx28IBXjzOtt6oZXjOIa0dyxLhbZoc1VUBuAoz
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Feb 2026 07:52:31.9362
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 75a7f91a-71da-4a43-1515-08de7442d4c8
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BL02EPF0001A106.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB6166
 
-On Tue, Feb 24, 2026 at 08:57:56PM +0000, Pranjal Shrivastava wrote:
-> On Tue, Feb 24, 2026 at 02:32:21PM +0200, Leon Romanovsky wrote:
-> > On Tue, Feb 24, 2026 at 10:42:57AM +0000, Ashish Mhetre wrote:
-> > > When mapping scatter-gather entries that reference reserved
-> > > memory regions without struct page backing (e.g., bootloader created
-> > > carveouts), is_pci_p2pdma_page() dereferences the page pointer
-> > > returned by sg_page() without first verifying its validity.
-> > 
-> > I believe this behavior started after commit 88df6ab2f34b  
-> > ("mm: add folio_is_pci_p2pdma()"). Prior to that change, the
-> > is_zone_device_page(page) check would return false when given a
-> > non‑existent page pointer.
-> > 
-> 
-> Doesn't folio_is_pci_p2pdma() also check for zone device?
-> I see[1] that it does:
-> 
-> static inline bool folio_is_pci_p2pdma(const struct folio *folio)
-> {
-> 	return IS_ENABLED(CONFIG_PCI_P2PDMA) &&
-> 		folio_is_zone_device(folio) &&
-> 		folio->pgmap->type == MEMORY_DEVICE_PCI_P2PDMA;
-> }
-> 
-> I believe the problem arises due to the page_folio() call in
-> folio_is_pci_p2pdma(page_folio(page)); within is_pci_p2pdma_page().
-> page_folio() assumes it has a valid struct page to work with. For these
-> carveouts, that isn't true.
+CoCo VMs get their private memory allocated from guest_memfd
+("gmemfd") which is a KVM facility similar to memfd.
+The gmemfds does not allow mapping private memory to the userspace
+so the IOMMU_IOAS_MAP ioctl does not work.
 
-Yes, i came to the same conclusion, just explained why it worked before.
+Use the existing IOMMU_IOAS_MAP_FILE ioctl to allow mapping from
+fd + offset. Detect the gmemfd case in pfn_reader_user_pin().
 
-> 
-> Potentially something like the following would stop the crash:
-> 
-> diff --git a/include/linux/memremap.h b/include/linux/memremap.h
-> index e3c2ccf872a8..e47876021afa 100644
-> --- a/include/linux/memremap.h
-> +++ b/include/linux/memremap.h
-> @@ -197,7 +197,8 @@ static inline void folio_set_zone_device_data(struct folio *folio, void *data)
-> 
->  static inline bool is_pci_p2pdma_page(const struct page *page)
->  {
-> -       return IS_ENABLED(CONFIG_PCI_P2PDMA) &&
-> +       return IS_ENABLED(CONFIG_PCI_P2PDMA) && page &&
-> +               pfn_valid(page_to_pfn(page)) &&
+For the new guest_memfd type, no additional reference is taken as
+pinning is guaranteed by the KVM guest_memfd library.
 
-pfn_valid() is a relatively expensive function [1] to invoke in the data path,
-and is_pci_p2pdma_page() ends up being called in these execution flows.
+There is no KVM-GMEMFD->IOMMUFD direct notification mechanism as
+the assumption is that:
+1) page stage change events will be handled by VMM which is going
+to call IOMMUFD to remap pages;
+2) shrinking GMEMFD equals to VM memory unplug and VMM is going to
+handle it.
 
-[1] https://elixir.bootlin.com/linux/v6.19.3/source/include/linux/mmzone.h#L2167
+Signed-off-by: Alexey Kardashevskiy <aik@amd.com>
+---
 
->                 folio_is_pci_p2pdma(page_folio(page));
->  }
-> 
-> 
-> But my broader question is: why are we calling a page-based API like 
-> is_pci_p2pdma_page() on non-struct-page memory in the first place?
+This is for Trusted IO == TEE-IO == PCIe TDISP, etc.
 
-+1
+Previously posted here:
+https://lore.kernel.org/r/20250218111017.491719-13-aik@amd.com
+The main comment was "what is the lifetime of those folios()" and
+GMEMFD + QEMU should take care of it.
 
-> Could we instead add a helper to verify if the sg_page() return value
-> is actually backed by a struct page?
+And horrendous stuff like this is not really useful:
+https://github.com/AMDESE/linux-kvm/commit/7d73fd2cccb8489b1
 
-According to the SG design, callers should store only struct page pointers.
-There is one known user that violates this requirement: dmabuf, which is
-gradually being migrated away from this behavior [2].
+---
+ include/linux/kvm_host.h      |  4 +
+ drivers/iommu/iommufd/pages.c | 80 ++++++++++++++++++--
+ virt/kvm/guest_memfd.c        | 36 +++++++++
+ 3 files changed, 113 insertions(+), 7 deletions(-)
 
-[2] https://lore.kernel.org/all/0-v1-b5cab63049c0+191af-dmabuf_map_type_jgg@nvidia.com/
+diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
+index 995db7a7ba57..9369cf22b24e 100644
+--- a/include/linux/kvm_host.h
++++ b/include/linux/kvm_host.h
+@@ -2673,4 +2673,8 @@ unsigned long kvm_get_vm_memory_attributes(struct kvm *kvm, gfn_t gfn);
+ int kvm_vm_ioctl_set_mem_attributes(struct kvm *kvm,
+ 					   struct kvm_memory_attributes2 *attrs);
+ 
++bool kvm_is_gmemfd(struct file *file);
++struct folio *kvm_gmemfd_get_pfn(struct file *file, unsigned long index,
++				 unsigned long *pfn, int *max_order);
++
+ #endif
+diff --git a/drivers/iommu/iommufd/pages.c b/drivers/iommu/iommufd/pages.c
+index dbe51ecb9a20..4c07e39e17d0 100644
+--- a/drivers/iommu/iommufd/pages.c
++++ b/drivers/iommu/iommufd/pages.c
+@@ -56,6 +56,9 @@
+ #include <linux/slab.h>
+ #include <linux/sched/mm.h>
+ #include <linux/vfio_pci_core.h>
++#include <linux/pagemap.h>
++#include <linux/memcontrol.h>
++#include <linux/kvm_host.h>
+ 
+ #include "double_span.h"
+ #include "io_pagetable.h"
+@@ -660,7 +663,8 @@ static void batch_from_pages(struct pfn_batch *batch, struct page **pages,
+ }
+ 
+ static int batch_from_folios(struct pfn_batch *batch, struct folio ***folios_p,
+-			     unsigned long *offset_p, unsigned long npages)
++			     unsigned long *offset_p, unsigned long npages,
++			     bool do_pin)
+ {
+ 	int rc = 0;
+ 	struct folio **folios = *folios_p;
+@@ -676,7 +680,7 @@ static int batch_from_folios(struct pfn_batch *batch, struct folio ***folios_p,
+ 
+ 		if (!batch_add_pfn_num(batch, pfn, nr, BATCH_CPU_MEMORY))
+ 			break;
+-		if (nr > 1) {
++		if (nr > 1 && do_pin) {
+ 			rc = folio_add_pins(folio, nr - 1);
+ 			if (rc) {
+ 				batch_remove_pfn_num(batch, nr);
+@@ -697,6 +701,7 @@ static int batch_from_folios(struct pfn_batch *batch, struct folio ***folios_p,
+ static void batch_unpin(struct pfn_batch *batch, struct iopt_pages *pages,
+ 			unsigned int first_page_off, size_t npages)
+ {
++	bool do_unpin = !kvm_is_gmemfd(pages->file);
+ 	unsigned int cur = 0;
+ 
+ 	while (first_page_off) {
+@@ -710,9 +715,12 @@ static void batch_unpin(struct pfn_batch *batch, struct iopt_pages *pages,
+ 		size_t to_unpin = min_t(size_t, npages,
+ 					batch->npfns[cur] - first_page_off);
+ 
+-		unpin_user_page_range_dirty_lock(
+-			pfn_to_page(batch->pfns[cur] + first_page_off),
+-			to_unpin, pages->writable);
++		/* Do nothing for guest_memfd */
++		if (do_unpin)
++			unpin_user_page_range_dirty_lock(
++				pfn_to_page(batch->pfns[cur] + first_page_off),
++				to_unpin, pages->writable);
++
+ 		iopt_pages_sub_npinned(pages, to_unpin);
+ 		cur++;
+ 		first_page_off = 0;
+@@ -872,6 +880,57 @@ static long pin_memfd_pages(struct pfn_reader_user *user, unsigned long start,
+ 	return npages_out;
+ }
+ 
++static long pin_guest_memfd_pages(struct pfn_reader_user *user, loff_t start, unsigned long npages)
++{
++	struct page **upages = user->upages;
++	unsigned long offset = 0;
++	loff_t uptr = start;
++	long rc = 0;
++
++	for (unsigned long i = 0; (uptr - start) < (npages << PAGE_SHIFT); ++i) {
++		unsigned long gfn = 0, pfn = 0;
++		int max_order = 0;
++		struct folio *folio;
++
++		folio = kvm_gmemfd_get_pfn(user->file, uptr >> PAGE_SHIFT, &pfn, &max_order);
++		if (IS_ERR(folio))
++			rc = PTR_ERR(folio);
++
++		if (rc == -EINVAL && i == 0) {
++			pr_err_once("Must be vfio mmio at gfn=%lx pfn=%lx, skipping\n", gfn, pfn);
++			return rc;
++		}
++
++		if (rc) {
++			pr_err("%s: %ld %ld %lx -> %lx\n", __func__,
++			       rc, i, (unsigned long) uptr, (unsigned long) pfn);
++			break;
++		}
++
++		if (i == 0)
++			offset = offset_in_folio(folio, start) >> PAGE_SHIFT;
++
++		user->ufolios[i] = folio;
++
++		if (upages) {
++			unsigned long np = (1UL << (max_order + PAGE_SHIFT)) - offset_in_folio(folio, uptr);
++
++			for (unsigned long j = 0; j < np; ++j)
++				*upages++ = folio_page(folio, offset + j);
++		}
++
++		uptr += (1UL << (max_order + PAGE_SHIFT)) - offset_in_folio(folio, uptr);
++	}
++
++	if (!rc) {
++		rc = npages;
++		user->ufolios_next = user->ufolios;
++		user->ufolios_offset = offset;
++	}
++
++	return rc;
++}
++
+ static int pfn_reader_user_pin(struct pfn_reader_user *user,
+ 			       struct iopt_pages *pages,
+ 			       unsigned long start_index,
+@@ -925,7 +984,13 @@ static int pfn_reader_user_pin(struct pfn_reader_user *user,
+ 
+ 	if (user->file) {
+ 		start = pages->start + (start_index * PAGE_SIZE);
+-		rc = pin_memfd_pages(user, start, npages);
++		if (kvm_is_gmemfd(pages->file)) {
++			rc = pin_guest_memfd_pages(user, start, npages);
++		} else {
++			pr_err("UNEXP PINFD start=%lx sz=%lx file=%lx",
++				start, npages << PAGE_SHIFT, (ulong) pages->file);
++			rc = pin_memfd_pages(user, start, npages);
++		}
+ 	} else if (!remote_mm) {
+ 		uptr = (uintptr_t)(pages->uptr + start_index * PAGE_SIZE);
+ 		rc = pin_user_pages_fast(uptr, npages, user->gup_flags,
+@@ -1221,7 +1286,8 @@ static int pfn_reader_fill_span(struct pfn_reader *pfns)
+ 				 npages);
+ 	else
+ 		rc = batch_from_folios(&pfns->batch, &user->ufolios_next,
+-				       &user->ufolios_offset, npages);
++				       &user->ufolios_offset, npages,
++				       !kvm_is_gmemfd(pfns->pages->file));
+ 	return rc;
+ }
+ 
+diff --git a/virt/kvm/guest_memfd.c b/virt/kvm/guest_memfd.c
+index e4e21068cf2a..2a313888c21b 100644
+--- a/virt/kvm/guest_memfd.c
++++ b/virt/kvm/guest_memfd.c
+@@ -1794,3 +1794,39 @@ void kvm_gmem_exit(void)
+ 	rcu_barrier();
+ 	kmem_cache_destroy(kvm_gmem_inode_cachep);
+ }
++
++bool kvm_is_gmemfd(struct file *file)
++{
++	if (!file)
++		return false;
++
++	if (file->f_op != &kvm_gmem_fops)
++		return false;
++
++	return true;
++}
++EXPORT_SYMBOL_GPL(kvm_is_gmemfd);
++
++struct folio *kvm_gmemfd_get_pfn(struct file *file, unsigned long index,
++				 unsigned long *pfn, int *max_order)
++{
++	struct inode *inode = file_inode(file);
++	struct folio *folio;
++
++	if (!inode || !kvm_is_gmemfd(file))
++		return NULL;
++
++	folio = kvm_gmem_get_folio(inode, index);
++	if (!folio)
++		return NULL;
++
++
++	*pfn = folio_pfn(folio) + (index & (folio_nr_pages(folio) - 1));
++	*max_order = folio_order(folio);
++
++	folio_put(folio);
++	folio_unlock(folio);
++
++	return folio;
++}
++EXPORT_SYMBOL_GPL(kvm_gmemfd_get_pfn);
+-- 
+2.52.0
 
-> If it isn't, we should arguably skip the P2PDMA logic entirely and fall
-> back to a dma_map_phys style path. Isn't handling these "pageless" physical
-> ranges the primary reason dma_map_phys exists?
-
-Right. dma_map_sg() is indeed the wrong API to use for memory that is not
-backed by struct page pointers.
-
-Thanks
-
-> 
-> +mm list
-> 
-> Thanks,
-> Praan
-> 
-> [1] https://elixir.bootlin.com/linux/v6.19.3/source/include/linux/memremap.h#L179
-> 
-> 
-> > If any fix is needed, the is_pci_p2pdma_page() must be changed and not iommu.
-> > 
-> > Thanks
-> > 
-> > > 
-> > > This causes a kernel paging fault when CONFIG_PCI_P2PDMA is enabled
-> > > and dma_map_sg_attrs() is called for memory regions that have no
-> > > associated struct page:
-> > > 
-> > > Unable to handle kernel paging request at virtual address fffffc007d100000
-> > >   ...
-> > >   Call trace:
-> > >    iommu_dma_map_sg+0x118/0x414
-> > >    dma_map_sg_attrs+0x38/0x44
-> > > 
-> > > Fix this by adding a pfn_valid() check before calling
-> > > is_pci_p2pdma_page(). If the page frame number is invalid, skip the
-> > > P2PDMA check entirely as such memory cannot be P2PDMA memory anyway.
-> > > 
-> > > Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
-> > > ---
-> > >  drivers/iommu/dma-iommu.c | 4 ++++
-> > >  1 file changed, 4 insertions(+)
-> > > 
-> > > diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> > > index 5dac64be61bb..5f45f33b23c2 100644
-> > > --- a/drivers/iommu/dma-iommu.c
-> > > +++ b/drivers/iommu/dma-iommu.c
-> > > @@ -1423,6 +1423,9 @@ int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg, int nents,
-> > >  		size_t s_length = s->length;
-> > >  		size_t pad_len = (mask - iova_len + 1) & mask;
-> > >  
-> > > +		if (!pfn_valid(page_to_pfn(sg_page(s))))
-> > > +			goto post_pci_p2pdma;
-> > > +
-> > >  		switch (pci_p2pdma_state(&p2pdma_state, dev, sg_page(s))) {
-> > >  		case PCI_P2PDMA_MAP_THRU_HOST_BRIDGE:
-> > >  			/*
-> > > @@ -1449,6 +1452,7 @@ int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg, int nents,
-> > >  			goto out_restore_sg;
-> > >  		}
-> > >  
-> > > +post_pci_p2pdma:
-> > >  		sg_dma_address(s) = s_iova_off;
-> > >  		sg_dma_len(s) = s_length;
-> > >  		s->offset -= s_iova_off;
-> > > -- 
-> > > 2.25.1
-> > > 
-> > > 
-> > 
