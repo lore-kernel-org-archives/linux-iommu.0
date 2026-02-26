@@ -1,23 +1,23 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 75A00361DB3
-	for <iommu@lists.linux.dev>; Thu, 26 Feb 2026 18:10:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5200D36492F
+	for <iommu@lists.linux.dev>; Thu, 26 Feb 2026 18:10:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772129438; cv=none; b=UCxoUU6Cx5iVMc5Gzr1KDlqx0sDA+9JMOjyHf39lek6tCxRWrbV2Ym4YxYtRS/IUKbDCWkUhnVbz55p872JJuBcLWA+RCZzv1M7LPqXRmBYOMTx7/4hQkaENJmZm9JDoM1IFgINW6R+yB9uTCQFdSN918Sv7mTlRxaoOw1qZaTw=
+	t=1772129438; cv=none; b=G+VeYTIdD2LJfo4qfAuCYoSxhw6Q0gP6QJj4dt6J3ky+3d4SdT854Aseh1FXOItYocO/UCNfSVwZskY7qh7JvOes+0bmjGVePZW6m9AlVHWYFuxvCA+JeCi/1QeDqOZIKjOm5zfRfSfOv2r3KbvhcfYLfP4jiH4UgQB/+xeOGOc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1772129438; c=relaxed/simple;
-	bh=ilYBTXbmpQSxNEh25Ppsgvs0wOlsj2LVh9LftKeKSSw=;
+	bh=lN2ZnhMiPEf+TLSB7jvS5uVTw3/q7Zui+o8BqXUCi0I=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=tkVRbt7nA17EY4ckXJEXwomtFvLJ4xg/G5FYVrPv/Qjt3AGfhHSjBaTKoHygTpXYDXwt/hy1E7MkHsGxj4FEHHycNI81m+Q+i0w6gTMtFaINZv+7zLoMKdRR+onxFfq6KqtBWoTDJEhfQuVKaJXkos3us4+na3zcpcXyWH0kjqE=
+	 MIME-Version; b=CYV8cv1F4GH79MbUx7ZiEZ5ICphuWqCoZZmq/MSe2IMZLho0k0Yhjs0T90ygnfnVUdRbcOMgE/RG4OZn28Nka+wdQ4OYmQPBlknZe8yQyOBgagrJf5pyYyvwWxZenAnO6Cu91VwJ+MzfXC4sLmfZIrnUmlVKzM82TAm4i3CmCsw=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 66A461688;
-	Thu, 26 Feb 2026 10:10:23 -0800 (PST)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DA6841762;
+	Thu, 26 Feb 2026 10:10:24 -0800 (PST)
 Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.85])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 8E2443F73B;
-	Thu, 26 Feb 2026 10:10:28 -0800 (PST)
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 0DC893F73B;
+	Thu, 26 Feb 2026 10:10:29 -0800 (PST)
 From: Robin Murphy <robin.murphy@arm.com>
 To: will@kernel.org,
 	catalin.marinas@arm.com,
@@ -25,9 +25,9 @@ To: will@kernel.org,
 Cc: iommu@lists.linux.dev,
 	linux-arm-kernel@lists.infradead.org,
 	daizhiyuan@phytium.com.cn
-Subject: [PATCH 1/3] arm64: errata: Reformat table for IDs
-Date: Thu, 26 Feb 2026 18:10:20 +0000
-Message-Id: <3adc16d4d035cf76803e706e325822b99c13e977.1772125743.git.robin.murphy@arm.com>
+Subject: [PATCH 2/3] iommu/arm-smmu-v3: Update Arm errata
+Date: Thu, 26 Feb 2026 18:10:21 +0000
+Message-Id: <06b86c11a4642ee64a7735eca02406e43ee2105f.1772125743.git.robin.murphy@arm.com>
 X-Mailer: git-send-email 2.39.2.101.g768bb238c484.dirty
 In-Reply-To: <cover.1772125743.git.robin.murphy@arm.com>
 References: <cover.1772125743.git.robin.murphy@arm.com>
@@ -39,124 +39,76 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-We have some inconsistency where multiple errata for the same component
-share the same Kconfig workaround; some are one ID per line, some are
-smooshed together, and some are entirely separate entries. Standardise
-on the single entry, one ID per line format so that things render nice
-and consistently in the HTML docs, and it's simple and clear to add new
-IDs to existing workarounds without churning the table too much.
+MMU-700 r1p1 has subsequently fixed some of the errata for which we've
+been applying the workarounds unconditionally, so we can now make those
+conditional. However, there have also been some more new cases
+identified where we must rely on range invalidation commands, and thus
+still nominally avoid DVM being inadvertently enabled.
 
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- Documentation/arch/arm64/silicon-errata.rst | 44 ++++++++++++---------
- 1 file changed, 25 insertions(+), 19 deletions(-)
+ Documentation/arch/arm64/silicon-errata.rst | 10 ++++++++--
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 18 ++++++++++++++----
+ 2 files changed, 22 insertions(+), 6 deletions(-)
 
 diff --git a/Documentation/arch/arm64/silicon-errata.rst b/Documentation/arch/arm64/silicon-errata.rst
-index 4c300caad901..2e8f57657de7 100644
+index 2e8f57657de7..745ff25f5854 100644
 --- a/Documentation/arch/arm64/silicon-errata.rst
 +++ b/Documentation/arch/arm64/silicon-errata.rst
-@@ -116,7 +116,8 @@ stable kernels.
+@@ -212,8 +212,14 @@ stable kernels.
+ | ARM            | MMU-600         | #1076982,       | N/A                         |
+ |                |                 | #1209401        |                             |
  +----------------+-----------------+-----------------+-----------------------------+
- | ARM            | Cortex-A73      | #858921         | ARM64_ERRATUM_858921        |
- +----------------+-----------------+-----------------+-----------------------------+
--| ARM            | Cortex-A76      | #1188873,1418040| ARM64_ERRATUM_1418040       |
-+| ARM            | Cortex-A76      | #1188873,       | ARM64_ERRATUM_1418040       |
-+|                |                 | #1418040        |                             |
- +----------------+-----------------+-----------------+-----------------------------+
- | ARM            | Cortex-A76      | #1165522        | ARM64_ERRATUM_1165522       |
- +----------------+-----------------+-----------------+-----------------------------+
-@@ -136,7 +137,8 @@ stable kernels.
- +----------------+-----------------+-----------------+-----------------------------+
- | ARM            | Cortex-A78      | #3324344        | ARM64_ERRATUM_3194386       |
- +----------------+-----------------+-----------------+-----------------------------+
--| ARM            | Cortex-A78C     | #3324346,3324347| ARM64_ERRATUM_3194386       |
-+| ARM            | Cortex-A78C     | #3324346,       | ARM64_ERRATUM_3194386       |
-+|                |                 | #3324347        |                             |
- +----------------+-----------------+-----------------+-----------------------------+
- | ARM            | Cortex-A710     | #2119858        | ARM64_ERRATUM_2119858       |
- +----------------+-----------------+-----------------+-----------------------------+
-@@ -172,11 +174,11 @@ stable kernels.
- +----------------+-----------------+-----------------+-----------------------------+
- | ARM            | Cortex-X925     | #3324334        | ARM64_ERRATUM_3194386       |
- +----------------+-----------------+-----------------+-----------------------------+
--| ARM            | Neoverse-N1     | #1188873,1418040| ARM64_ERRATUM_1418040       |
-+| ARM            | Neoverse-N1     | #1188873,       | ARM64_ERRATUM_1418040       |
-+|                |                 | #1418040        |                             |
- +----------------+-----------------+-----------------+-----------------------------+
--| ARM            | Neoverse-N1     | #1349291        | N/A                         |
--+----------------+-----------------+-----------------+-----------------------------+
--| ARM            | Neoverse-N1     | #1490853        | N/A                         |
-+| ARM            | Neoverse-N1     | #1349291,       | N/A                         |
-+|                |                 | #1490853        |                             |
- +----------------+-----------------+-----------------+-----------------------------+
- | ARM            | Neoverse-N1     | #1542419        | ARM64_ERRATUM_1542419       |
- +----------------+-----------------+-----------------+-----------------------------+
-@@ -202,28 +204,34 @@ stable kernels.
- +----------------+-----------------+-----------------+-----------------------------+
- | ARM            | Neoverse-V3AE   | #3312417        | ARM64_ERRATUM_3194386       |
- +----------------+-----------------+-----------------+-----------------------------+
--| ARM            | MMU-500         | #841119,826419  | ARM_SMMU_MMU_500_CPRE_ERRATA|
--|                |                 | #562869,1047329 |                             |
-+| ARM            | MMU-500         | #562869,        | ARM_SMMU_MMU_500_CPRE_ERRATA|
-+|                |                 | #841119,        |                             |
-+|                |                 | #826419,        |                             |
-+|                |                 | #1047329        |                             |
- +----------------+-----------------+-----------------+-----------------------------+
--| ARM            | MMU-600         | #1076982,1209401| N/A                         |
--+----------------+-----------------+-----------------+-----------------------------+
--| ARM            | MMU-700         | #2268618,2812531| N/A                         |
-+| ARM            | MMU-600         | #1076982,       | N/A                         |
-+|                |                 | #1209401        |                             |
- +----------------+-----------------+-----------------+-----------------------------+
-+| ARM            | MMU-700         | #2268618,       | N/A                         |
-+|                |                 | #2812531        |                             |
+-| ARM            | MMU-700         | #2268618,       | N/A                         |
+-|                |                 | #2812531        |                             |
++| ARM            | MMU-700         | #2133013,       | N/A                         |
++|                |                 | #2268618,       |                             |
++|                |                 | #2812531,       |                             |
++|                |                 | #3777127        |                             |
+++----------------+-----------------+-----------------+-----------------------------+
++| ARM            | MMU L1          | #3878312        | N/A                         |
+++----------------+-----------------+-----------------+-----------------------------+
++| ARM            | MMU S3          | #3995052        | N/A                         |
  +----------------+-----------------+-----------------+-----------------------------+
  | ARM            | GIC-700         | #2941627        | ARM64_ERRATUM_2941627       |
  +----------------+-----------------+-----------------+-----------------------------+
- | ARM            | SI L1           | #4311569        | ARM64_ERRATUM_4311569       |
- +----------------+-----------------+-----------------+-----------------------------+
-++----------------+-----------------+-----------------+-----------------------------+
- | Broadcom       | Brahma-B53      | N/A             | ARM64_ERRATUM_845719        |
- +----------------+-----------------+-----------------+-----------------------------+
- | Broadcom       | Brahma-B53      | N/A             | ARM64_ERRATUM_843419        |
- +----------------+-----------------+-----------------+-----------------------------+
- +----------------+-----------------+-----------------+-----------------------------+
--| Cavium         | ThunderX ITS    | #22375,24313    | CAVIUM_ERRATUM_22375        |
-+| Cavium         | ThunderX ITS    | #22375,         | CAVIUM_ERRATUM_22375        |
-+|                |                 | #24313          |                             |
- +----------------+-----------------+-----------------+-----------------------------+
- | Cavium         | ThunderX ITS    | #23144          | CAVIUM_ERRATUM_23144        |
- +----------------+-----------------+-----------------+-----------------------------+
--| Cavium         | ThunderX GICv3  | #23154,38545    | CAVIUM_ERRATUM_23154        |
-+| Cavium         | ThunderX GICv3  | #23154,         | CAVIUM_ERRATUM_23154        |
-+|                |                 | #38545          |                             |
- +----------------+-----------------+-----------------+-----------------------------+
- | Cavium         | ThunderX GICv3  | #38539          | N/A                         |
- +----------------+-----------------+-----------------+-----------------------------+
-@@ -233,9 +241,8 @@ stable kernels.
- +----------------+-----------------+-----------------+-----------------------------+
- | Cavium         | ThunderX SMMUv2 | #27704          | N/A                         |
- +----------------+-----------------+-----------------+-----------------------------+
--| Cavium         | ThunderX2 SMMUv3| #74             | N/A                         |
--+----------------+-----------------+-----------------+-----------------------------+
--| Cavium         | ThunderX2 SMMUv3| #126            | N/A                         |
-+| Cavium         | ThunderX2 SMMUv3| #74,            | N/A                         |
-+|                |                 | #126            |                             |
- +----------------+-----------------+-----------------+-----------------------------+
- | Cavium         | ThunderX2 Core  | #219            | CAVIUM_TX2_ERRATUM_219      |
- +----------------+-----------------+-----------------+-----------------------------+
-@@ -253,9 +260,8 @@ stable kernels.
- +----------------+-----------------+-----------------+-----------------------------+
- | Hisilicon      | Hip0{5,6,7}     | #161010101      | HISILICON_ERRATUM_161010101 |
- +----------------+-----------------+-----------------+-----------------------------+
--| Hisilicon      | Hip0{6,7}       | #161010701      | N/A                         |
--+----------------+-----------------+-----------------+-----------------------------+
--| Hisilicon      | Hip0{6,7}       | #161010803      | N/A                         |
-+| Hisilicon      | Hip0{6,7}       | #161010701,     | N/A                         |
-+|                |                 | #161010803      |                             |
- +----------------+-----------------+-----------------+-----------------------------+
- | Hisilicon      | Hip07           | #161600802      | HISILICON_ERRATUM_161600802 |
- +----------------+-----------------+-----------------+-----------------------------+
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 4d00d796f078..3d816c67508d 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -4308,6 +4308,8 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu)
+ #define IIDR_IMPLEMENTER_ARM		0x43b
+ #define IIDR_PRODUCTID_ARM_MMU_600	0x483
+ #define IIDR_PRODUCTID_ARM_MMU_700	0x487
++#define IIDR_PRODUCTID_ARM_MMU_L1	0x48a
++#define IIDR_PRODUCTID_ARM_MMU_S3	0x498
+ 
+ static void arm_smmu_device_iidr_probe(struct arm_smmu_device *smmu)
+ {
+@@ -4332,11 +4334,19 @@ static void arm_smmu_device_iidr_probe(struct arm_smmu_device *smmu)
+ 				smmu->features &= ~ARM_SMMU_FEAT_NESTING;
+ 			break;
+ 		case IIDR_PRODUCTID_ARM_MMU_700:
+-			/* Arm erratum 2812531 */
++			/* Many errata... */
++			smmu->features &= ~ARM_SMMU_FEAT_BTM;
++			if (variant < 1 || revision < 1) {
++				/* Arm erratum 2812531 */
++				smmu->options |= ARM_SMMU_OPT_CMDQ_FORCE_SYNC;
++				/* Arm errata 2268618, 2812531 */
++				smmu->features &= ~ARM_SMMU_FEAT_NESTING;
++			}
++			break;
++		case IIDR_PRODUCTID_ARM_MMU_L1:
++		case IIDR_PRODUCTID_ARM_MMU_S3:
++			/* Arm errata 3878312/3995052 */
+ 			smmu->features &= ~ARM_SMMU_FEAT_BTM;
+-			smmu->options |= ARM_SMMU_OPT_CMDQ_FORCE_SYNC;
+-			/* Arm errata 2268618, 2812531 */
+-			smmu->features &= ~ARM_SMMU_FEAT_NESTING;
+ 			break;
+ 		}
+ 		break;
 -- 
 2.39.2.101.g768bb238c484.dirty
 
