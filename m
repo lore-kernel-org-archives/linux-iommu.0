@@ -1,142 +1,194 @@
-Received: from mail-qv1-f51.google.com (mail-qv1-f51.google.com [209.85.219.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 915D944D68D
-	for <iommu@lists.linux.dev>; Thu, 26 Feb 2026 19:27:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.51
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1524A3876A5
+	for <iommu@lists.linux.dev>; Thu, 26 Feb 2026 19:46:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772134028; cv=none; b=LkIm9Tg2i5WJZV2OMKsLP/qr71+e7yxVsyAEW277zg9ylyxFCCO4iOr0c7ktl9PjZjmjW9KTRrbQzf81w+sHN6g4cLeleOhQfEvH9nuRMO7Wgg8QLQhmFF08MsNOYgJwCWV+aJBK+7RbF/Ae5oBM7dqbITfsMpsY4/derWZ0d4U=
+	t=1772135201; cv=none; b=OkcXKanA2p69HyVl+Ann1lxbK7BtPa2NstM2zoxONadLiaA6YDiYoF7sdg6QeXr2rZEXYCsfJUYvpAMpE5EsNDGY6t4rdpMyqNEfXzfBkG9ro6DA+7wAPH7ijACUw/Pi9X7lFhZX2kmQQFUWA6NUVXJ3kmLZxqGoJ7cBvpuKRr4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772134028; c=relaxed/simple;
-	bh=pTOdXcn8havDpB/nGx2tDUoWLjBch4ocjJIaSDJa3XQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=fVLM9wa5vDC+w3wPL6uTFk57Vuay7zdQ8+3txtd/BPfyFHPG9wEx2KOIKHFzCH/Yn3TErJ8z2d73LWZCDo5Sbgs60HkjgNhTsoKD7o9FWpelch+o+b9vQd2MqQlQDblImMdB94zywv18a5xa0ZNrHBbql90Z2gmo/a+o7nurNHE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=D5y6HnJf; arc=none smtp.client-ip=209.85.219.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="D5y6HnJf"
-Received: by mail-qv1-f51.google.com with SMTP id 6a1803df08f44-899c97c5addso12901856d6.3
-        for <iommu@lists.linux.dev>; Thu, 26 Feb 2026 11:27:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1772134022; x=1772738822; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ihQ/rPzUFVaXq5y8xpMnCIhxlDxECF6mdQTm7Xamdb4=;
-        b=D5y6HnJfst8IsN2I1aXn7hvLi1N7+AwQDcrTqg8aZ+Xc+JIwx4WUx6qi+fR7es+4OZ
-         qS80llV9bT8O8/nt0KklPv4lz3u40Zx4bCjqEu0Wip6x3Hgw6xbj8OwfVqSJn5VKhwGB
-         vXzz5Gefe+ueOVyaFWHeKH4xSZL4UAq2sUfkR7GAN2SVio/DnX1wc4WH3av0qKV4vP1b
-         4/qldA9p8jlp3WAcOpj9UB4hyw3bP3+/UL6SemWQpoCEtc2Sc+p23kj19iCSGN5T9v9p
-         vLb4cOINgq++C9MKjM/XUX9KsEvdS0HSs8eZveEHXx8H7J8Qs31zm+lIa4ttEvuac7GQ
-         8oEw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772134022; x=1772738822;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ihQ/rPzUFVaXq5y8xpMnCIhxlDxECF6mdQTm7Xamdb4=;
-        b=bVVKRS3T/dkshgfgLJ8L0dQCLcV4O1h+LmyHW6D8WJncpSRiHEEjBuO04nFlGW3xk5
-         pQUc4Z+gxWrEtUgPd9hgPVGYzo2cnV2Cr3IMECMBI3xSnGltc1QxFVPLRA8KXB9bH+nQ
-         rLkQMDJSRCFaJrrZy4P80OUuQmn6W3GvAJCr8bf5kbnMJ+jrAefwj3pfTzI5xDqcH1y6
-         1fSjF852w6JK9fUaRSno1XnZbF14Ya3pnaMgzqg04TKHSSdznqXjtFMbOs4IvKZK3FQ0
-         rJ7k/CdIv6RPPuZnxHReszpsfus7NCV2AmQHOLLcbsz+NAkz7dlmJ0Kv2Oii1AFZTahV
-         FDoA==
-X-Forwarded-Encrypted: i=1; AJvYcCVqNuAO5chAbyzcIbB/dvgkvwoeH8C4a7T7hTG65KdnHjpxdzhDWZGQin0PhFH2QpRVEFiZVg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwrVb0RxO8RXnK8hZCbwVF1qDs5M0qDdbwCeRWpKVlJzDHsmVMV
-	AViFttEqGmPpHXM5ZEitWPkjYANXPYQOMOomQuCNCiStsccCtfYU7kqz4b8iHTFKyaU=
-X-Gm-Gg: ATEYQzwkOvEAaXC7YxSBbzN/bnTigx7U0w5z2JD97z4gBDxHoFZwcrJx4zpWgsKkRwP
-	U7x2H/cRpwqX6JC94BTWsOayTbWhsTFSndnfL1GBFw2HvIl0ptQwjo0Z0S1LdK7593cr3bjTKSd
-	wEBTU3jy4Sm+EhFNhZDUvtQSq2XOLELBdrtKrVjs59lqX4J+zYDtaWyDl5IFJ105fndzjpmBI1X
-	hCW/BZKgWj6JBMsWVD1HcuEBpEiA1Frd6Ai8hEF00mOKCcFfjePWoniMtw8e/QR7dK3T4hCIWbP
-	4MgNQZA6o/epLJIQQwuA6VaS/h3HvvymFtJISmINVjOEs8fv29hsRtmbtQL4CWl+e27+Lljk/zV
-	4XKgqMA1449cms4jEv1ZAjn0oMgOs9QwE7BQf+Q+S3HYO5Mjq+jiTzHyDM2RmRV1XpH5bR0K0Tu
-	K9vZB3F+NdpEg/g3ZSIWCdUrrXIn+eVdjeoU7Ym9PEqMwjuIYPISxL+YLsyxFT+k6hmMAlih1Rx
-	DfPJYx8
-X-Received: by 2002:ac8:7d90:0:b0:501:17a1:4ccf with SMTP id d75a77b69052e-50752714463mr1505241cf.3.1772134022105;
-        Thu, 26 Feb 2026 11:27:02 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-162-112-119.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.112.119])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-899c73a25e4sm23606076d6.50.2026.02.26.11.27.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Feb 2026 11:27:01 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1vvh0m-00000000ODe-3htA;
-	Thu, 26 Feb 2026 15:27:00 -0400
-Date: Thu, 26 Feb 2026 15:27:00 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Alexey Kardashevskiy <aik@amd.com>
-Cc: Sean Christopherson <seanjc@google.com>, linux-kernel@vger.kernel.org,
-	kvm@vger.kernel.org, Kevin Tian <kevin.tian@intel.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Paolo Bonzini <pbonzini@redhat.com>,
-	Steve Sistare <steven.sistare@oracle.com>,
-	Nicolin Chen <nicolinc@nvidia.com>, iommu@lists.linux.dev,
-	linux-coco@lists.linux.dev, Dan Williams <dan.j.williams@intel.com>,
-	Santosh Shukla <santosh.shukla@amd.com>,
-	"Pratik R . Sampat" <prsampat@amd.com>,
-	Ackerley Tng <ackerleytng@google.com>,
-	Fuad Tabba <tabba@google.com>, Xu Yilun <yilun.xu@linux.intel.com>,
-	"Aneesh Kumar K . V" <aneesh.kumar@kernel.org>
-Subject: Re: [RFC PATCH kernel] iommufd: Allow mapping from KVM's guest_memfd
-Message-ID: <20260226192700.GB44359@ziepe.ca>
-References: <20260225075211.3353194-1-aik@amd.com>
- <aZ7-tTpobKiCFT5L@google.com>
- <fb10affb-40d5-4558-b64b-0ab22659ccf2@amd.com>
+	s=arc-20240116; t=1772135201; c=relaxed/simple;
+	bh=kfB2qjmkbAfdVdR94Cpl4HpOcncVP2aAo5xIWzu4g2A=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ouQxVQtKFDqLjMzicYDTlHOUHYus7WpuKrn68GPE38j6B9kzL0UfRCeSCoHWr8+N+7yZLrWU5wOiwt8bQeq0rSBL2vzbV7sAQl75i4e0Jw2JqfKXK9SqJQ6ftOknhp6NKm+wLTtBO1J+yaulTznRRojUXm8lmzYyt4gqYiATdWQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 032631516;
+	Thu, 26 Feb 2026 11:46:32 -0800 (PST)
+Received: from [10.1.196.85] (e121345-lin.cambridge.arm.com [10.1.196.85])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8E3433F62B;
+	Thu, 26 Feb 2026 11:46:33 -0800 (PST)
+Message-ID: <7e3a1d3c-64cb-43a8-bd2f-05b24a8d1611@arm.com>
+Date: Thu, 26 Feb 2026 19:46:30 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <fb10affb-40d5-4558-b64b-0ab22659ccf2@amd.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v1] iommu: Skip mapping at address 0x0 if it already
+ exists
+To: Antheas Kapenekakis <lkml@antheas.dev>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Vasant Hegde <vasant.hegde@amd.com>,
+ Alejandro Jimenez <alejandro.j.jimenez@oracle.com>, dnaim@cachyos.org,
+ Mario.Limonciello@amd.com
+References: <20260221235050.2558321-1-lkml@antheas.dev>
+ <aZ36tRwNP8cRRX1l@ziepe.ca>
+ <CAGwozwFPLLFfKP90fFrt-QC1rKPRCVo_iHuLm4roHX7erQ=Y5Q@mail.gmail.com>
+ <aZ3/W8sw+gW5aTA5@ziepe.ca>
+ <CAGwozwFKTeXW7_tPcUw8pYvNSoS9860mNJ=OUKCt2vEawYVOJA@mail.gmail.com>
+ <6bac3817-9652-4146-ab44-2a9518c3b339@arm.com>
+ <CAGwozwGXpVZ1ctUyZ79itwcX7RPjeLebFPWDVpNMq6-f_UtF3A@mail.gmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <CAGwozwGXpVZ1ctUyZ79itwcX7RPjeLebFPWDVpNMq6-f_UtF3A@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Thu, Feb 26, 2026 at 05:47:50PM +1100, Alexey Kardashevskiy wrote:
+On 25/02/2026 10:05 pm, Antheas Kapenekakis wrote:
+> On Wed, 25 Feb 2026 at 19:27, Robin Murphy <robin.murphy@arm.com> wrote:
+>>
+>> On 2026-02-24 7:51 pm, Antheas Kapenekakis wrote:
+>>> On Tue, 24 Feb 2026 at 20:43, Jason Gunthorpe <jgg@ziepe.ca> wrote:
+>>>>
+>>>> On Tue, Feb 24, 2026 at 08:33:50PM +0100, Antheas Kapenekakis wrote:
+>>>>> On Tue, 24 Feb 2026 at 20:23, Jason Gunthorpe <jgg@ziepe.ca> wrote:
+>>>>>>
+>>>>>> On Sun, Feb 22, 2026 at 12:50:50AM +0100, Antheas Kapenekakis wrote:
+>>>>>>> Commit 789a5913b29c ("iommu/amd: Use the generic iommu page table")
+>>>>>>> introduces the shared iommu page table for AMD IOMMU. Some bioses
+>>>>>>> contain an identity mapping for address 0x0, which is not parsed
+>>>>>>> properly (e.g., certain Strix Halo devices). This causes the DMA
+>>>>>>> components of the device to fail to initialize (e.g., the NVMe SSD
+>>>>>>> controller), leading to a failed post.
+>>>>>>
+>>>>>> I'm trying to understand the issue here, is it that the old AMD code
+>>>>>> incorrectly succeeded iommu_map() on top of an existing mapping while
+>>>>>> the new code returns -EADDRINUSE?
+>>>>>>
+>>>>>> Then the existing guard for double mapping doesn't work since 0 is an
+>>>>>> ambiguous return?
+>>>>>
+>>>>> Hi Jason,
+>>>>>
+>>>>> It seems like the previous code correctly handled the 0 case, and the
+>>>>> new code does not due to the ambiguous return.
+>>>>
+>>>> I checked the old AMD driver it is definately returning 0 from
+>>>> iommu_iova_to_phys(), so that hasn't changed.
+>>>>
+>>>>>> reasonabe. Just please clean up the commit message to be a bit clearer
+>>>>>> on what caused this regression and add a short comment above the new if:
+>>>>>>
+>>>>>>    0 return from iommu_iova_to_phys() is ambiguous, it could mean a
+>>>>>>    present mapping. EADDRINUSE is reliable when supported, it means the
+>>>>>>    IOVA is already mapped, so ignore it to resolve the ambiguity.
+>>>>>
+>>>>> If you think that this patch is a long term solution, I can drop the
+>>>>> print, the addr == 0 check, add a comment on top, then repost a V2
+>>>>> with an updated description to be more concrete.
+>>>>
+>>>> I think it is a good solution as-is, I just want clarity on what
+>>>> actually regressed here, and I think it is that iommu_map() behavior
+>>>> changed.
+>>>
+>>> Reverting 789a5913b29c ("iommu/amd: Use the generic iommu page table")
+>>> plus two follow-up fixes also worked.
+>>>
+>>> Looking through it, the removed amd_iommu_map_pages() /
+>>> amd_iommu_iova_to_phys() in the previous ops might have behaved
+>>> differently.
+>>
+>> Yes, the old AMD code would happily replace an existing mapping without
+>> question (but whether it would correctly invalidate TLBs if just
+>> replacing a leaf entry with a different leaf entry at the same level
+>> I'm not entirely sure...)
+>>
+>> However, waiting for a mapping to fail (which may scream its own
+>> warning) and then attempting to paper over it seems like an awful bodge.
+>> Why not just do something like this?
+>>
+>> Cheers,
+>> Robin.
+>>
+>> ----->8-----
+>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>> index 35db51780954..682e95c94236 100644
+>> --- a/drivers/iommu/iommu.c
+>> +++ b/drivers/iommu/iommu.c
+>> @@ -1212,8 +1212,11 @@ static int iommu_create_device_direct_mappings(struct iommu_domain *domain,
+>>
+>>                          if (addr == end)
+>>                                  goto map_end;
+>> -
+>> -                       phys_addr = iommu_iova_to_phys(domain, addr);
+>> +                       /*
+>> +                        * Check for existing translations using an offset, to
+>> +                        * distinguish a mapping of the page at PA 0 from none.
+>> +                        */
+>> +                       phys_addr = iommu_iova_to_phys(domain, addr + 1);
 > 
+> Hi Robin,
+> Assuming pg_size != 1, which it seems to always be due to `1UL <<
+> __ffs(domain->pgsize_bitmap)` is an interesting solution. Then again,
+> it assumes that the underlying implementations for iommu_iova_to_phys
+> would respect translating unaligned addresses. I cannot comment on
+> that.
+
+It was a somewhat rhetorical question. We can safely assume that nobody 
+would ever build an IOMMU with a 1-byte page size, and that even if 
+someone was insane enough to do so, Linux would never support using that 
+granularity (since it would be nice to have some memory left for 
+anything other than infinite IOMMU pagetables). It's also indeed not 
+impossible that a driver might have a bug in its iova_to_phys 
+implementation, but then that driver would have a bug that would also 
+break other iova_to_phys users (e.g. iommu-dma) anyway. Every other 
+possible return value from iova_to_phys is unambiguous, and the single 
+one that isn't is trivial to avoid in this case, so why do anything 
+other than avoid it?
+
+> I would tend to consider both solutions not ideal, and edge towards
+> Jason's suggestion of universally ignoring EADDRINUSE without an
+> error. However, I am not an absolutist in that regard.
+
+Relying on magic return values doesn't even work around this issue 
+robustly, since even among the drivers which do treat double-mapping as 
+an error, they do not all use the same error codes, and as mentioned 
+some would already log a visible warning before getting that far. This 
+is some core code not quite working as intended, and that fact that it's 
+apparently only shown up on AMD platforms which also previously happened 
+to hide it hardly makes it right to paper over in a manner that only 
+"works" for a few drivers including AMD, rather than properly fix the 
+root cause and make the initial check consistently work as intended to 
+prevent double-mapping attempts in the first place.
+
+Thanks,
+Robin.
+
+> I am on a business trip and do not have the SMTP credentials with me
+> for git, so I will send a V2 tomorrow. I already drafted it. I will
+> make sure to cc new participants on this thread if not already
+> included.
 > 
-> On 26/2/26 00:55, Sean Christopherson wrote:
-> > On Wed, Feb 25, 2026, Alexey Kardashevskiy wrote:
-> > > For the new guest_memfd type, no additional reference is taken as
-> > > pinning is guaranteed by the KVM guest_memfd library.
-> > > 
-> > > There is no KVM-GMEMFD->IOMMUFD direct notification mechanism as
-> > > the assumption is that:
-> > > 1) page stage change events will be handled by VMM which is going
-> > > to call IOMMUFD to remap pages;
-> > > 2) shrinking GMEMFD equals to VM memory unplug and VMM is going to
-> > > handle it.
-> > 
-> > The VMM is outside of the kernel's effective TCB.  Assuming the VMM will always
-> > do the right thing is a non-starter.
+> As an aside, it seems that the issue fixed by this patch is not the
+> only one introduced in 6.19, with [1] having users where this patch
+> does not help. It seems there are additional issues with thunderbolt
+> docks. iommu_map could be the culprit and perhaps forceful remapping,
+> as was done previously for AMD would be a more universal solution.
+> This way, EADDRINUSE stops being an error.
 > 
-> Right.
+> Best,
+> Antheas
 > 
-> But, say, for 1), VMM does not the right thing and skips on PSC -
-> the AMD host will observe IOMMU fault events - noisy but harmless. I
-> wonder if it is different for others though.
+> [1] https://github.com/CachyOS/linux-cachyos/issues/704
+> 
+>>                          if (!phys_addr) {
+>>                                  map_size += pg_size;
+>>                                  continue;
+>>
+>>
+> 
 
-ARM is also supposed to be safe as GPT faults are contained, IIRC.
-
-However, it is not like AMD in many important ways here. Critically ARM
-has a split guest physical space where the low addresses are all
-private and the upper addresses are all shared.
-
-Thus on Linux the iommu should be programed with the shared pages
-mapped into the shared address range. It would be wasteful to program
-it with large amounts of IOPTEs that are already know to be private.
-
-I think if you are fully doing in-place conversion then you could
-program the entire shared address range to point to the memory pool
-(eg with 1G huge pages) and rely entirely on the GPT to arbitrate
-access. I don't think that is implemented in Linux though?
-
-While on AMD, IIRC, the iommu should be programed with both the shared
-and private pages in the respective GPA locations, but due to the RMP
-matching insanity you have to keep restructuring the IOPTEs to exactly
-match the RMP layout.
-
-I have no idea what Intel needs.
-
-Jason
