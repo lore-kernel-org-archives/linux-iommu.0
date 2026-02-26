@@ -1,231 +1,167 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15F8C28643A;
-	Thu, 26 Feb 2026 21:08:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.12
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772140103; cv=fail; b=vBXeNJKAVU+0gt8zidu13M4KmrlCF5+igw7J5+Pqf+zmT2bsqCr8uqRFsaBroYFHe41kTHeFlxix/DndsMG4r9w3DBjf1GsOryLkoEX/vnzn7641OWtdZAx4X3FCh+w2fGsHpjGVVOEcaisDqGykcZqUo2wkFb3FXd7zjYZ3nfo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772140103; c=relaxed/simple;
-	bh=vw3Y914Y7iJhtDBpadYUxwUcHJ0FXNuHp8CmGHxDL58=;
-	h=From:Date:To:CC:Message-ID:In-Reply-To:References:Subject:
-	 Content-Type:MIME-Version; b=BCvxEWuVVrfpDfYHLotxA4Qv3pu2FVM3+wx8odXUTtAQtjMPt5IzVTroI5olyuEMVbuRH6LjxeQDjhNNcKK+6/hmgtqH+k2209dbO+0yrejMvii9YCkE6gd+sjPz9Qoql1WjR3rcrbFx9LCK/z4YBm5QWJp3o64i9QGsWXKhe0g=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jJgWQu9r; arc=fail smtp.client-ip=198.175.65.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CA18319875;
+	Thu, 26 Feb 2026 22:34:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1772145249; cv=none; b=L4ltaC2eJxleQAUpGx5MG+oYZIaXVksqKMOsRndPiK9dabUZivzBZStCT2AgSl0Y5wri0GGuwo3cp7w1ojBeqBb7SfYmtrpXLSvPOSrotvEKV4vz4q2QsniV9/UFuOTU3SipjKNWM2nRzs/4R4g6reAgDBsQ1go4G4NFENRwYNk=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1772145249; c=relaxed/simple;
+	bh=sqVu4bH4eVU4Te9XYoGx3Yasl2SZId3A32JcMRFb2I0=;
+	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
+	 Subject:Content-Type; b=ZmEB3hLnNmBTBoIY7iSVftpgfHLChEQNuFtJNpR2le0W1+GI8Jact5v5scMWMPbXCeBZeiWjNeY7dA5fKiS3bKMGUXm54QaZTDS1bcE9P+AM/zX6xw870YMEN4S/56IEBv75ay55PNDRGbL35k8SfnyP99ZPhbwlWycOdwu9UlY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YU3W7UWK; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jJgWQu9r"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1772140102; x=1803676102;
-  h=from:date:to:cc:message-id:in-reply-to:references:
-   subject:content-transfer-encoding:mime-version;
-  bh=vw3Y914Y7iJhtDBpadYUxwUcHJ0FXNuHp8CmGHxDL58=;
-  b=jJgWQu9rNQSYT6bEbjh2LUF7AHWXLjAW43BHX1cDuaTzMDTJo8KFxe/V
-   IAVmN2gNeiAEjkXb6TFf0GKSBCOvz2MoSTMoF/P0owmCVG2zYVM85kUfW
-   WPUa/ESBzoKJuG2CY8RL5uBuN5WuwnxnNmNVOLLVy7VUBHdmxasCLP1R2
-   PEJMY1xHAj/f1aUVbQdijxHDdJ0EwpwuHu95TFJVuM0eOmTZezX5dEQOW
-   UKLbcOkcVBg+guH37q3NMiYkH7YtZx17S6Ad+pYaLosaLv4vNI48Izi5y
-   nVxbD2UvHfpCtLqb1P7CA/ug6lAB7PKdM8w1PZxdslIC4QynHCgh2sJkS
-   Q==;
-X-CSE-ConnectionGUID: lrVYrRo3ROSGlTCt+fFBRA==
-X-CSE-MsgGUID: O+SY8Ze2SNmtQ71b9mo+QQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11713"; a="84676634"
-X-IronPort-AV: E=Sophos;i="6.21,312,1763452800"; 
-   d="scan'208";a="84676634"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2026 13:08:21 -0800
-X-CSE-ConnectionGUID: YKPYrapwThm8erg7MgLFUw==
-X-CSE-MsgGUID: WEb1E53qTuGfbL24dmiZkQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,312,1763452800"; 
-   d="scan'208";a="216600026"
-Received: from fmsmsx901.amr.corp.intel.com ([10.18.126.90])
-  by orviesa009.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2026 13:08:20 -0800
-Received: from FMSMSX902.amr.corp.intel.com (10.18.126.91) by
- fmsmsx901.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Thu, 26 Feb 2026 13:08:18 -0800
-Received: from fmsedg901.ED.cps.intel.com (10.1.192.143) by
- FMSMSX902.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37 via Frontend Transport; Thu, 26 Feb 2026 13:08:18 -0800
-Received: from SJ2PR03CU001.outbound.protection.outlook.com (52.101.43.37) by
- edgegateway.intel.com (192.55.55.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Thu, 26 Feb 2026 13:08:18 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=GzfoevCw8bkj3p4InbtwCGSF+K/3kDxeh+hFJ+6kjqFEHkHc8rOFc4oIQEcA5mYjFBXjgEcVr2yU2dCfFTbMRiwO5lxYmxrAFBSjJF6JQy70/Ny/XGcU0LaqHFxXvS3/GuFBbhnD58+iVnZMPvqjV/+qczpf4vXw+j8lpSyzH9fg8ZJVzHPlvndmPNkfhWTiZVw1cIfQ778v6FQmHmLHdX3QCLlv7IlwmTeb5gyxc05lM9+nPVXUvBor3phsd28vww5TLfoxDuN7XCr9UDjuG42bMTEFFLH0ET6XK9WCSkuG+LtmSYbCyq0n9TpPyV5PJ4dkrXrp6p/9uZAeMhtwzA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vw3Y914Y7iJhtDBpadYUxwUcHJ0FXNuHp8CmGHxDL58=;
- b=U2/0wfsTdL2RUMgj8eBAOE0iaz5SbbXYBBvTV71JFnjVBsUpcBzozOk1aVUk8g2eMIpvO7iVM+ikzc/+iIx8Z/rZB8LA7I4U2lYqARgwJhNz5+fjIVWlj4c/4l7pL5u5wPSIKxOpvZ3xm1h5M2Eg2UtznXZHdAtuf8WSOv+z+G8XvzpUnuxoOlhVMUkELXy1esZ3zFz8OllLgQx8He5gpb6b5jFvDjH5olfGGbf4g5JLQDbOgwI4srVMJZs42RTCK0CEAYTiw8pN0WnYLnTQsRrbJBZnJgQd0KK+mEOxuoPkXxk0nyqWtwXpDowQ8ZRgv+wjMaDvY+LAh7RT+oIPdg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from PH8PR11MB8107.namprd11.prod.outlook.com (2603:10b6:510:256::6)
- by MN2PR11MB4744.namprd11.prod.outlook.com (2603:10b6:208:263::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9632.22; Thu, 26 Feb
- 2026 21:08:15 +0000
-Received: from PH8PR11MB8107.namprd11.prod.outlook.com
- ([fe80::1ff:1e09:994b:21ff]) by PH8PR11MB8107.namprd11.prod.outlook.com
- ([fe80::1ff:1e09:994b:21ff%5]) with mapi id 15.20.9654.014; Thu, 26 Feb 2026
- 21:08:15 +0000
-From: <dan.j.williams@intel.com>
-Date: Thu, 26 Feb 2026 13:08:14 -0800
-To: Alexey Kardashevskiy <aik@amd.com>, <dan.j.williams@intel.com>,
-	<x86@kernel.org>
-CC: <linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>,
-	<linux-pci@vger.kernel.org>, Thomas Gleixner <tglx@linutronix.de>, "Ingo
- Molnar" <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Dave Hansen
-	<dave.hansen@linux.intel.com>, "H. Peter Anvin" <hpa@zytor.com>, "Sean
- Christopherson" <seanjc@google.com>, Paolo Bonzini <pbonzini@redhat.com>,
-	"Andy Lutomirski" <luto@kernel.org>, Peter Zijlstra <peterz@infradead.org>,
-	"Bjorn Helgaas" <bhelgaas@google.com>, Marek Szyprowski
-	<m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Andrew
- Morton <akpm@linux-foundation.org>, Catalin Marinas
-	<catalin.marinas@arm.com>, Michael Ellerman <mpe@ellerman.id.au>, Mike
- Rapoport <rppt@kernel.org>, "Tom Lendacky" <thomas.lendacky@amd.com>, Ard
- Biesheuvel <ardb@kernel.org>, "Neeraj Upadhyay" <Neeraj.Upadhyay@amd.com>,
-	Ashish Kalra <ashish.kalra@amd.com>, Stefano Garzarella
-	<sgarzare@redhat.com>, Melody Wang <huibo.wang@amd.com>, Seongman Lee
-	<augustus92@kaist.ac.kr>, Joerg Roedel <joerg.roedel@amd.com>, Nikunj A
- Dadhania <nikunj@amd.com>, Michael Roth <michael.roth@amd.com>, Suravee
- Suthikulpanit <suravee.suthikulpanit@amd.com>, Andi Kleen
-	<ak@linux.intel.com>, Kuppuswamy Sathyanarayanan
-	<sathyanarayanan.kuppuswamy@linux.intel.com>, Tony Luck
-	<tony.luck@intel.com>, David Woodhouse <dwmw@amazon.co.uk>, "Greg
- Kroah-Hartman" <gregkh@linuxfoundation.org>, Denis Efremov
-	<efremov@linux.com>, Geliang Tang <geliang@kernel.org>, Piotr Gregor
-	<piotrgregor@rsyncme.org>, "Michael S. Tsirkin" <mst@redhat.com>, "Alex
- Williamson" <alex@shazbot.org>, Arnd Bergmann <arnd@arndb.de>, Jesse Barnes
-	<jbarnes@virtuousgeek.org>, Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	Yinghai Lu <yinghai@kernel.org>, Kevin Brodsky <kevin.brodsky@arm.com>,
-	Jonathan Cameron <jonathan.cameron@huawei.com>, "Aneesh Kumar K.V (Arm)"
-	<aneesh.kumar@kernel.org>, Xu Yilun <yilun.xu@linux.intel.com>, Herbert Xu
-	<herbert@gondor.apana.org.au>, Kim Phillips <kim.phillips@amd.com>, "Konrad
- Rzeszutek Wilk" <konrad.wilk@oracle.com>, Stefano Stabellini
-	<sstabellini@kernel.org>, Claire Chang <tientzu@chromium.org>,
-	<linux-coco@lists.linux.dev>, <iommu@lists.linux.dev>
-Message-ID: <69a0b63e3e547_1cc5100ae@dwillia2-mobl4.notmuch>
-In-Reply-To: <06aa8d10-766f-45d4-8205-0ffc2f26bfb4@amd.com>
-References: <20260225053806.3311234-1-aik@amd.com>
- <20260225053806.3311234-2-aik@amd.com>
- <699e93db9ad47_1cc510090@dwillia2-mobl4.notmuch>
- <d8fd6e0e-a814-4883-9e58-f1aa501e0d8c@amd.com>
- <699fb11e94082_2f4a1007d@dwillia2-mobl4.notmuch>
- <06aa8d10-766f-45d4-8205-0ffc2f26bfb4@amd.com>
-Subject: Re: [PATCH kernel 1/9] pci/tsm: Add TDISP report blob and helpers to
- parse it
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-X-ClientProxiedBy: BY5PR16CA0011.namprd16.prod.outlook.com
- (2603:10b6:a03:1a0::24) To PH8PR11MB8107.namprd11.prod.outlook.com
- (2603:10b6:510:256::6)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YU3W7UWK"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B077C19423;
+	Thu, 26 Feb 2026 22:34:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1772145248;
+	bh=sqVu4bH4eVU4Te9XYoGx3Yasl2SZId3A32JcMRFb2I0=;
+	h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
+	b=YU3W7UWKVuGCmtKq3kD5uiuPDhrbY/g0MYnlVb1SZl4yRDzPZ/yWrEzO+Q1zq/Atd
+	 l922qO7hg38r2Id5tVg/naKuKeweufyGedUZoHbVuUjRlVIU2HH2xL+UCZuEo5hE/Y
+	 mrvC2o1uPRjgS4+30BAHiQEa4AwM7brCThkWnIotKGxRoHkC+2Mxbzg8cwx3a4ZA0k
+	 nnfl2HuznRm2OUNFnhoLlqkRoyyWirTKBy5YUJaWOACsBIZcRq2jEMsxzt+tUf7lRP
+	 aDQs7todyQvYbgQFOKdEd3E8JJ/Oaky9Pt6p2mb9+EIOHoiTNzWi+y0OoPBcCMs26+
+	 i2C4bp3QrXFJw==
+Received: from phl-compute-01.internal (phl-compute-01.internal [10.202.2.41])
+	by mailfauth.phl.internal (Postfix) with ESMTP id 1BE2DF40070;
+	Thu, 26 Feb 2026 17:34:07 -0500 (EST)
+Received: from phl-imap-02 ([10.202.2.81])
+  by phl-compute-01.internal (MEProxy); Thu, 26 Feb 2026 17:34:07 -0500
+X-ME-Sender: <xms:XsqgaYFayPBqywQPSAayqE2OVLMApPLJKmW31lIYbGsq1JqeNeh-Ww>
+    <xme:XsqgacJCGa88NfDG4sRtPjylUJ8EBO3eG9F8jMkGDmY7eJPXx_CIpRJIRLWzLtKBF
+    1yksO_AEncEVQgm0ZyY403x4yWulBnxCicFS21ZpKRjBEllM2Xpqg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefgedrtddtgddvgeejfedtucetufdoteggodetrf
+    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfurfetoffkrfgpnffqhgenuceu
+    rghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujf
+    gurhepofggfffhvfevkfgjfhfutgfgsehtjeertdertddtnecuhfhrohhmpedftehrugcu
+    uehivghshhgvuhhvvghlfdcuoegrrhgusgeskhgvrhhnvghlrdhorhhgqeenucggtffrrg
+    htthgvrhhnpedvueehiedtvedtleekuddutefgffdtleetfeetveejveejieehfefhjeei
+    jeefudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
+    grrhguodhmvghsmhhtphgruhhthhhpvghrshhonhgrlhhithihqdduieejtdehtddtjeel
+    qdeffedvudeigeduhedqrghruggspeepkhgvrhhnvghlrdhorhhgseifohhrkhhofhgrrh
+    gurdgtohhmpdhnsggprhgtphhtthhopeefuddpmhhouggvpehsmhhtphhouhhtpdhrtghp
+    thhtohepsghpsegrlhhivghnkedruggvpdhrtghpthhtohepnhhivhgvughithgrsegrlh
+    humhdrmhhithdrvgguuhdprhgtphhtthhopehluhhtohesrghmrggtrghpihhtrghlrdhn
+    vghtpdhrtghpthhtohepughpshhmihhthhesrghpvghrthhushhsohhluhhtihhonhhsrd
+    gtohhmpdhrtghpthhtoheprghnughrvgifrdgtohhophgvrhefsegtihhtrhhigidrtgho
+    mhdprhgtphhtthhopegurghvvghmsegurghvvghmlhhofhhtrdhnvghtpdhrtghpthhtoh
+    epphgvthgvrhhhuhgvfigvsehgmhigrdguvgdprhgtphhtthhopehhvghrsggvrhhtsehg
+    ohhnughorhdrrghprghnrgdrohhrghdrrghupdhrtghpthhtohepthhrvghntghhsghooh
+    htqdguvghvvghlsehgohhoghhlvghgrhhouhhpshdrtghomh
+X-ME-Proxy: <xmx:X8qgab_C081BMvaxIo0BzZ-sX_AZdakByebOHAHonhOZKthOofNYdg>
+    <xmx:X8qgab9RXeBduiNjH9ukeTnmcessPmjZE_P_BsB_B3rT4zvP43haPw>
+    <xmx:X8qgaV8gKWfgApMxNXUIy-8AXoKZAbHjsRXX-zZwcEBpHJWpDTdjUQ>
+    <xmx:X8qgaWKju_xbONK3Zq2I1tNt_fC0oFtXwcuR9Tme3zbaJ9rR1f7jDA>
+    <xmx:X8qgaaTn5NUoqETkYMa2Chsu7s32beRqVWFyyUQOMzedJpvBW4TIhqOR>
+Feedback-ID: ice86485a:Fastmail
+Received: by mailuser.phl.internal (Postfix, from userid 501)
+	id E001E700065; Thu, 26 Feb 2026 17:34:06 -0500 (EST)
+X-Mailer: MessagingEngine.com Webmail Interface
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH8PR11MB8107:EE_|MN2PR11MB4744:EE_
-X-MS-Office365-Filtering-Correlation-Id: 95d101f1-4451-4b96-7116-08de757b2882
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|7416014|376014|1800799024|7142099003;
-X-Microsoft-Antispam-Message-Info: MccmB4nJHMzccYSnThwoEv6xhf9H7Spm6cp3rs/LZcf53hJJpYrUiVWCke2hoFVtcOyfkzcFHxQALJLb4OGm344xkt0Gr+5BSS7PIhq7ABlczjXJYgRJ7noY4PuY061TduVvmCuGGrWFXyRsGCK06eY/fbFUo4l02IgQAT1tEfFK6qGKb5rJx/rq6ebogv1zp3XQq7InfFC+rPnWf1jf1Oyotqshe47P9+y71N/Abc2jHMTgLsoHTCuABxS7jHov769f2TPawUsrCHuC85VYqlEqzgxe9KGdlzhpziQ2+WSozj42hvC5DKsy4GhVjIpxuTOKDiRRDitsHeTSbDoSagTGSTbkW3IPfD2K6szHBYpa4nqY/XB54v534ZfvtitEJY3nLwxD80zRviisB19sqkCTnHkZh2XyBCeHAQwX9W5klNoY9UeDJmlMMffEJG4iWsZSadEx6nGmkPuL9fmMW14hINIHwPjprV0NAD2/lymh1DnKmPnqRXCLD4ynOaQZilHtCoxOlAS5DrPe9qPuMjdzD9z/3/5PPFnWwzdDJQkk/qAu3QirUgXBTHv1dBDHB2BMchqh/0y0u/cu3naU9IDKeZfk/28dW6eWui+VD4z7U0ZQ5o4bqPSEtylk7sI04sSMwD1osPw5SLFADQNJ1oBYHPOK+4v9SW2dmZhWdfHxw4K1bsVcu+6qemciThBeJh6Vs2hZhUVhtIRSSbdWvpx4dyAvQWiHIjaEKvyO5Ns=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR11MB8107.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(7416014)(376014)(1800799024)(7142099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?V0hYanMxYnNDL2ZudHlId2xZWi9kTlFKNW5LYzUyckVMZTJjc2NIeUl2WHFO?=
- =?utf-8?B?VTBIc3JON05MRTBxWGdQVzN0dGFMOXoxMWs2RjJJa0MyeWwwa0RkbTNvUlY3?=
- =?utf-8?B?dDJjRDVjY0I0UWxUQzAxcFNWVFhpbGlsYTV5UUN3akFSaHVwbmpvZVIxN3Jj?=
- =?utf-8?B?VXRIWi9tenJUazhLL3V2U2Jkc2s0bTRJcTZIdmVpeHloNXRZSzVSTlZRQTBp?=
- =?utf-8?B?c3huQTZDdGlUYSszcHRGVzI4cnJoOHNERzJKMHYreDl2S29WYXNYQmxUNlNO?=
- =?utf-8?B?dGxiSTNFcjV0c3hnVWdsclUwVlhwU3BhRTkvVTFsSXg3RVdlRlBGaWdkQ3dD?=
- =?utf-8?B?MjdzWjVLbmcyU1lxa0FtRDIxRENaMmhDSDd2eHRWNWVMcDd6Rnk4MnlTUFhh?=
- =?utf-8?B?WFAyQmc5VHE0bHFHUlBTYmZWbUJ2aUlUQWF4ZnYzakR4c1k2TWdBWFJMNVNi?=
- =?utf-8?B?cjNObWJNcUJRMkpJVFAwMzlUMWlEM3ZkYmFNY09LaWxwN2lyR1Z6T1UrR25W?=
- =?utf-8?B?R1hWcXppd1BZY3J3cWlXbmtJUHJZSmdPajhmU1N0ZjVBOUpNczRSNXRhOHZo?=
- =?utf-8?B?QUxvM2xwaVJOMWdQOTF6YzlkQ3g2d1B0K0dWRmJyc0N5OVJNZ3ZpZTdtcWx4?=
- =?utf-8?B?UWVNdTl3ZE4rOTR2RFQ2QUNoS1ZsMzdOVXNxMktnemZ3cllYNUVBMVdZbEVm?=
- =?utf-8?B?MUVJQkRyMGxLSzZVUnY1Z3ppU2RyQ09HVEZFYWpJVUdidTNJd2ovcGxnaytL?=
- =?utf-8?B?emg1d2Zjd3ZsTUQ4UCtDQVluQ3RhNXVIRXFwakFRTVk1c0JpeDRsUHc3T1g4?=
- =?utf-8?B?TFR1cEhhbTNsYmt4dGxDU0Z1dVprVmExeHN5bkZVc2hWVXpJbTZVY2FLNEFa?=
- =?utf-8?B?QW9RWmN3U29SQlJ1aGhubWEwS0FsZ2RMLzVJdE1RdkxJQ1NRbHdnMSswKytY?=
- =?utf-8?B?L0hQQWVvM0duVlk5bzNhbmFKVVRMUEZsN2tvdFNmT0ljQ1VHUFNERVhrRzl1?=
- =?utf-8?B?QWpJY0pTWExJbERha1hVRmJ1TUR1Y2xJZVlDOWQyZWhmVG83WnlMZ2dCOTlz?=
- =?utf-8?B?aHkyRHZkRWg5bGRrVzlycUJDV1N0UEhPWGc5blpxdkVJRmRYMnVKNDFTdC9h?=
- =?utf-8?B?VGtoYmMvTkFSc0dxTmRveG9zdlZNVzZEZ25yR2gyVUd2WTB2R2Q2cEVNY3FX?=
- =?utf-8?B?OHMvQ1ltUjRxY3pjMEhVMmtOcGZPeGl3VFpwVEZOZnVDOHhnOFRrdEpzUDdr?=
- =?utf-8?B?WUlGMit5TEpIY0FqcTMrWmN1OEdGamsxdTIycmtDWUdxY3ZxY0QyN3o5bzhM?=
- =?utf-8?B?VXZTR0xzMitpc2FlaTg4TUFQUkRmL1N0ZDdrekozVFJLaW8wcEw0ek5wQ3E0?=
- =?utf-8?B?YUoyMzFZL0R6bVU5clAvSzU1Qkp4UWMyVm9NLzFBTldTQk5LVkRiL0kzS3N1?=
- =?utf-8?B?a1N3RkVjS090YWlLWHZ3UWVubUY4U2dqeWk1cDlZTzdmK0VSbnhNNHgzYUlo?=
- =?utf-8?B?Z3phc2QyUk9CS25zazBQOXF5QVg3c0pHc3dNWXQxUTZoYWxaL004aVJtcUtH?=
- =?utf-8?B?eXNrZlBDVjArUC9pcjZRdlJad2g5SlZxb2dSNmdWa0sxQnE1a0hLOGpxWUJ5?=
- =?utf-8?B?Ny9ueVFQVDdTL09sSmxFVUQyUEl2UW5jYnliN1VpVXpvZ05FemtDSzhaUFds?=
- =?utf-8?B?L2gvblFpU0pHVXdHUlJDSFRoam5ZTTVMRERuV1c4elBrWkNoWlpXUzlTbk93?=
- =?utf-8?B?ckh6TlFJeWlYcDhYRlRaVnlqMXFxR3JJMnlyN25MZzJURXVCdDFFcmFMclNS?=
- =?utf-8?B?L29yNTVKbXVVNVlIRUNScURGWlpoOXlmY1FFeGJiU2ZsZ3QwRXdSNmU2R0Rr?=
- =?utf-8?B?MVRjMUZnUHJvVkxEb1g3Q2VTTFp0bDVwczUxWTFmUklhSGR6a1pOZnAwWUdm?=
- =?utf-8?B?eGJsNGpXeGxXYkhkVWliWlF0Rjh3UlZtcnlmWlYzQlBCSlEwY3VGUWhROUU2?=
- =?utf-8?B?UTBGei9FWjJiQmxqTHZCSVZOYmt0NEM5Q2xrckRJS0FzZk1QNTlJSXVNU2Ix?=
- =?utf-8?B?RElrN0dOMWRMaTJLekdHNEFKSnI0MU05RFBSRHVvbGZTTjh4ZUk0bGhOSGVt?=
- =?utf-8?B?NkJSSkNhU1RMeExaUGpNL2drL2VTbWJXZ0xNYWpLSUtja3FmRlp4dEdhYVZx?=
- =?utf-8?B?Q0pPWGdFWG9waERYRGlIQVg1YUJzdHBmSndkcGo3SFRjcDh0d0FnckYwT2xu?=
- =?utf-8?B?Z1VKeTRCY1k4V0lJN0dMdThycWxIZWlWdmdlZ2U1QVVuU1UxR254V0tzSTlV?=
- =?utf-8?B?cVFnL1dxYjF2cDNMOGR4dGVFUjFoMFhqaDhmWjJPZmZabDdwNHRzMDlQMEE0?=
- =?utf-8?Q?9Hg8GR5reugL2SuI=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 95d101f1-4451-4b96-7116-08de757b2882
-X-MS-Exchange-CrossTenant-AuthSource: PH8PR11MB8107.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Feb 2026 21:08:15.5551
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: I7Pu0AnlknhwpAIRGYovzqRnhmFpsIuHT70XLj5MGtRU3wexYFd0/SoW82DcJBqG7tToGUmLjJSmJYRqn3kmjwseNvkBooRrHVRLR7WuzrY=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB4744
-X-OriginatorOrg: intel.com
+X-ThreadId: AAnEvm6syrbF
+Date: Thu, 26 Feb 2026 23:33:18 +0100
+From: "Ard Biesheuvel" <ardb@kernel.org>
+To: "Ross Philipson" <ross.philipson@oracle.com>,
+ "Daniel P. Smith" <dpsmith@apertussolutions.com>,
+ linux-kernel@vger.kernel.org, x86@kernel.org,
+ linux-integrity@vger.kernel.org, linux-doc@vger.kernel.org,
+ linux-crypto@vger.kernel.org, kexec@lists.infradead.org,
+ linux-efi@vger.kernel.org, iommu@lists.linux.dev,
+ dave.hansen@linux.intel.com, "H . Peter Anvin" <hpa@zytor.com>
+Cc: "Thomas Gleixner" <tglx@linutronix.de>, "Ingo Molnar" <mingo@redhat.com>,
+ "Borislav Petkov" <bp@alien8.de>, "Matthew Garrett" <mjg59@srcf.ucam.org>,
+ "James Bottomley" <James.Bottomley@hansenpartnership.com>, peterhuewe@gmx.de,
+ "Jarkko Sakkinen" <jarkko@kernel.org>, jgg@ziepe.ca,
+ "Andy Lutomirski" <luto@amacapital.net>, nivedita@alum.mit.edu,
+ "Herbert Xu" <herbert@gondor.apana.org.au>, davem@davemloft.net,
+ corbet@lwn.net, "Eric W. Biederman" <ebiederm@xmission.com>,
+ dwmw2@infradead.org, baolu.lu@linux.intel.com, kanth.ghatraju@oracle.com,
+ "Andrew Cooper" <andrew.cooper3@citrix.com>,
+ trenchboot-devel@googlegroups.com
+Message-Id: <517b0d68-247b-486a-b283-84eac6596017@app.fastmail.com>
+In-Reply-To: <00774604-258c-4e88-80a4-fd8f60fcd0b3@oracle.com>
+References: <20251215233316.1076248-1-ross.philipson@oracle.com>
+ <b5f2b5a5-b984-4ed3-a023-c06d634f9146@app.fastmail.com>
+ <1ffd3cb5-2c76-4371-a067-3e4849907d80@apertussolutions.com>
+ <49d169bf-0ad2-49be-b7d7-fceb9e7f831a@app.fastmail.com>
+ <242a0462-7fc5-4902-b71d-22cf8360239e@app.fastmail.com>
+ <00774604-258c-4e88-80a4-fd8f60fcd0b3@oracle.com>
+Subject: Re: [PATCH v15 00/28] x86: Secure Launch support for Intel TXT
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
 
-Alexey Kardashevskiy wrote:
-[..]
-> > Does the kernel have any use for the footer besides conveying it to
-> > userspace?
->=20
-> PCIe says:
->=20
-> Example of such device specific information include:
-> =E2=80=A2 A network device may include receive-side scaling (RSS) related=
- information such as the RSS hash and
-> mappings to the virtual station interface (VSI) queues, etc.
-> =E2=80=A2 A NVMe device may include information about the associated name=
- spaces, mapping of name space to
-> command queue-pair mappings, etc.
-> =E2=80=A2 Accelerators may report capabilities such as algorithms support=
-ed, queue depths, etc
->=20
->=20
-> Sounds to me like something the device driver would be interested in.
 
-That is not the concern. The concern is how does Linux maintain a
-convention around these use case so that common semantics converge on a
-common implementation expectations.
 
-> >> imho easier on eyes. I can live with either if the majority votes for =
-it. Thanks.
-> >=20
-> > Aneesh also already has 'structs+bitmask', I will switch to that.
->=20
-> oh I just found it, more or less my version :) I can add pci_tdisp_ prefi=
-xes, should I? Thanks,
+On Thu, 26 Feb 2026, at 19:31, ross.philipson@oracle.com wrote:
+> On 2/18/26 9:30 AM, 'Ard Biesheuvel' via trenchboot-devel wrote:
+>> On Thu, 12 Feb 2026, at 21:39, Ard Biesheuvel wrote:
+>>> On Thu, 12 Feb 2026, at 20:49, Daniel P. Smith wrote:
+>>>> On 2/9/26 09:04, Ard Biesheuvel wrote:
+>>> ...
+>>>>> I've had a stab at implementing all of this in a manner that is more idiomatic for EFI boot:
+>>>>>
+>>>>> - GRUB does minimal TXT related preparation upfront, and exposes the remaining functionality via a protocol that is attached to the loaded image by GRUB
+>>>>> - The SL stub is moved to the core kernel, with some startup code added to pivot to long mode
+>>>>> - the EFI stub executes and decompresses the kernel as usual
+>>>>> - if the protocol is present, the EFI stub calls it to pass the bootparams pointer, the base and size of the MLE and the header offset back to the GRUB code
+>>>>> - after calling ExitBootServices(), it calls another protocol method to trigger the secure launch.
+>>>>>
+>>> ...
+>>>>
+>>>> I think this is a great approach for UEFI, though we need to reconcile
+>>>> this with non-UEFI situations such as booting under coreboot.
+>>>
+>>> There are two approaches that I think are feasible for coreboot in this model:
+>>>
+>>> - just unpack the ELF and boot that - there is already prior art for
+>>> that with Xen. We can stick the MLE header offset in an ELF note where
+>>> any loader can find it.
+>>>
+>>> - stick with the current approach as much as possible, i.e., disable
+>>> physical KASLR so that the decompressed kernel will end up right where
+>>> the decompressor was loaded, which allows much of the secure launch
+>>> preparation to be done as before. Only the final bits (including the
+>>> call into the ACM itself) need to be deferred, and we can propose a
+>>> generic mechanism for that via boot_params.
+>>>
+>>> I'm working on a prototype of the latter, but GRUB is an odd beast and
+>>> my x86 fu is weak.
+>>>
+>> 
+>> I've managed to get a working implementation of the legacy entrypoint, by repurposing the dl_handler() entrypoint you added for EFI [which no longer needs it in my version] as a callback for the legacy boot flow. This /should/ work for i386-coreboot too, but I have no way of testing it (I only tried 'slaunch --legacy-linux' using the x86_64-efi build).
+>> 
+>> I've pushed the changes to the branches I mentioned previously in this thread.
+>
+> Hello Ard,
+>
+> I am working on incorporating the changes we have been discussing. So 
+> far everything has been rather smooth. I noticed in the legacy support 
+> you did here, you introduce a new boot_param. This is something that we 
+> tried to do early on but changes to the boot_params layout is rather 
+> frowned upon. We worked with Peter A. on the kernel_info scheme but 
+> this parameter you introduced is not used that way (kernel_info is 
+> meant to be RO after the kernel is built).
 
-I have a patch brewing that moves interface report consumption into
-encrypted resource population for ioremap() to consider. I will send
-that out shortly.=
+Indeed. kernel_info describes the kernel to the bootloader, not the other way around.
+
+There is prior art for adding fields to boot_params for passing data from bootloader to kernel (e.g., ext_ramdisk_image/size, efi_info, cc_blob_address), and I think adding a field for the SLRT is reasonable. Alternatively, we might consider setup_data but I don't see why a field in boot_params would be controversial here.
+
+> I guess my first questions 
+> are whether this will be an acceptable approach (per the x86 
+> maintainers) to add a boot_param and, if so, whether the spot you chose 
+> is reasonable. E.g. will it survive the sanitize boot params step.
+>
+
+I think that is irrelevant tbh. A bootloader is supposed to clear struct boot_params before it copies struct setup_header into it, otherwise sanitize_boot_params() will trigger on a non-zero sentinel field, and clean it up. Given that there is no backwards compatibility concern for trenchboot, we can just stipulate that the SLRT field is only valid if struct boot_params was wiped correctly, and sanitize_boot_params() will be a no-op.
+
+
+
