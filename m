@@ -1,142 +1,140 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 494F03A0E91;
-	Thu, 26 Feb 2026 10:38:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23FF1218AC4;
+	Thu, 26 Feb 2026 10:46:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772102329; cv=none; b=ZuxjZXiPZsEJRTp3RG7aA9xHWkcWyAiskwL2qo5N9lx95HICRlme3gAuYuJYXpcVDFfewe0O4Sc9Ss7Q5uKQtLGHXbU4erpEIdlZvilj+jqktKmx05CEee85gMgPZUdgjxNs6Zy+9d9ANfKnUmq3BWjAZpTxWvQVRyulyvKE5xk=
+	t=1772102785; cv=none; b=UxtLZj2zKb7y9S27pLlpHMFajQ6OEzSbXWhNV9WPoGVtI/5XY3KRx3xyax5OOVGH/0pbT1b2oLCViS3rBeayz/aVqbgN3ToxTdn4gUIwJ8GnN2XyYTkfKPvKqqaa5k6QIgvI3y5kEmYnS+tJbmVfKuMSetcv6OiSONbMzFdMUIM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772102329; c=relaxed/simple;
-	bh=3cOwLR1yuzDPYHdlDaDVoK2pdPAwkELvu6I0P5vN37I=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=AKjx+wp2SV4+gcZzRW4OzGxC9b5uY29qt0qDuskI8YYE8YUZ7ifR4rUBKb+4bX7HCmNMNXJlQ60jX8QZlwJEpaboOKo1cn8kNNkfPZDBBKqMBTKjgskHdqDMhRLJAVjVVdHXweh703Rgo60fgCEc8T8S9krXfFQ8KL2q4fAnUr4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IoUxF9Ix; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1772102785; c=relaxed/simple;
+	bh=RvgwqJ5lHgVsbH3VM1TF53+jbTgfmgEMcEMpt6E6IKc=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=V8jjsDnyDElDbKWc5ui0EWHz3Yc1guGfAHciCtofj6moufK2PGOOV1ISuvuuMi6XvDPQhrc8EAHXzTUdRTyBcOkQT7KHzC7HvJSJW5uiiyd2XiSueyKHUTafg1nfoDGCmz+Q/DkKJlB0jEpnDO9TNljkBKls04sO7YHETrqimIM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Z9W416l3; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IoUxF9Ix"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BD58C116C6;
-	Thu, 26 Feb 2026 10:38:48 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Z9W416l3"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A95DBC116C6;
+	Thu, 26 Feb 2026 10:46:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772102328;
-	bh=3cOwLR1yuzDPYHdlDaDVoK2pdPAwkELvu6I0P5vN37I=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=IoUxF9IxL7VVwAVoDntFnPAkfIWSHLhW91I1Vc9LOXHqb0Uv5XdMWsOeuNxkKOlnd
-	 p3Sff2GOZ5ehabP7i/+BXiG0zYbPB6Arb/3mKU1+a/mWv5bIGqvClieRUtEppXthcQ
-	 0H1WxNy4vKo21HkfKSYGPedzAB3nFwQ5J9qq0GHfEVX3acOJCbuDcs22o9CnL8xt/E
-	 Fu3qNKVpZNdN/+9W8xTGnDVmZijhJcBEN+zPVPD/jByqSvdOseSF8hY0L0kC0Jh1cX
-	 Kwd//qtejF+Wfw2gU6Db0AKwqmLV95mktrlNEV5tSKpS/hpQXsXe73uO29EgtHgVcs
-	 RRhzUDaq86Bvw==
-Date: Thu, 26 Feb 2026 11:38:45 +0100
-From: Maxime Ripard <mripard@kernel.org>
-To: "David Hildenbrand (Arm)" <david@kernel.org>
-Cc: Sumit Semwal <sumit.semwal@linaro.org>, 
-	Benjamin Gaignard <benjamin.gaignard@collabora.com>, Brian Starkey <Brian.Starkey@arm.com>, 
-	John Stultz <jstultz@google.com>, "T.J. Mercier" <tjmercier@google.com>, 
-	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>, Marek Szyprowski <m.szyprowski@samsung.com>, 
-	Robin Murphy <robin.murphy@arm.com>, Andrew Morton <akpm@linux-foundation.org>, 
-	Lorenzo Stoakes <lorenzo.stoakes@oracle.com>, "Liam R. Howlett" <Liam.Howlett@oracle.com>, 
-	Vlastimil Babka <vbabka@suse.cz>, Mike Rapoport <rppt@kernel.org>, 
-	Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>, linux-media@vger.kernel.org, 
-	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-mm@kvack.org
-Subject: Re: [PATCH 2/7] mm: cma: Export cma_alloc and cma_release
-Message-ID: <20260226-impetuous-analytic-jellyfish-d4a86d@penduick>
-References: <20260225-dma-buf-heaps-as-modules-v1-0-2109225a090d@kernel.org>
- <20260225-dma-buf-heaps-as-modules-v1-2-2109225a090d@kernel.org>
- <60ecebf2-a708-4797-bedd-588c3e9931ff@kernel.org>
+	s=k20201202; t=1772102784;
+	bh=RvgwqJ5lHgVsbH3VM1TF53+jbTgfmgEMcEMpt6E6IKc=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=Z9W416l3lvUFB5co/SPsHLWdDZJQ+8I5Yidnhl0eXEvnsYvwK9UAYEMLjW7QOisbO
+	 gLImo1eBRutyFpsEyl1JdxpLbvVfabIctJH1uDQAKVP2K8/6EjSYMVOP+VXZP9v8eR
+	 WCMwZGyx8JnGMMoqYZuKm24QXLxvTwzx8M8zcu774hCEEAVZc1yspD9TUy1brTj1mW
+	 lFe1rjNM74gCva35CPBQhmZ8duAHerJjd4adAxr5MlxpvGd7wutmoZLrYx+1XpunjN
+	 4LLN36el7W/yNaQ15UCG3A0DospBmY+sS26ClVvlt2GSHbRQP4waY5dAtMnoIPWBNk
+	 XwSBJF/hcMmWA==
+Message-ID: <d719b5de-5aa1-4f80-8f19-06b7ed9bc145@kernel.org>
+Date: Thu, 26 Feb 2026 11:46:17 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha384;
-	protocol="application/pgp-signature"; boundary="4m3wi7hiurafpqag"
-Content-Disposition: inline
-In-Reply-To: <60ecebf2-a708-4797-bedd-588c3e9931ff@kernel.org>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RFC 04/18] accel/qda: Add built-in compute CB bus for QDA
+ and integrate with IOMMU
+To: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>,
+ Oded Gabbay <ogabbay@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+ Shuah Khan <skhan@linuxfoundation.org>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
+ David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+ Sumit Semwal <sumit.semwal@linaro.org>,
+ =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
+Cc: dri-devel@lists.freedesktop.org, linux-doc@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+ iommu@lists.linux.dev, linux-media@vger.kernel.org,
+ linaro-mm-sig@lists.linaro.org,
+ Srinivas Kandagatla <srinivas.kandagatla@oss.qualcomm.com>,
+ Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
+ Bharath Kumar <quic_bkumar@quicinc.com>,
+ Chenna Kesava Raju <quic_chennak@quicinc.com>
+References: <20260224-qda-firstpost-v1-0-fe46a9c1a046@oss.qualcomm.com>
+ <20260224-qda-firstpost-v1-4-fe46a9c1a046@oss.qualcomm.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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 a/A=
+In-Reply-To: <20260224-qda-firstpost-v1-4-fe46a9c1a046@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
+On 23/02/2026 20:08, Ekansh Gupta wrote:
+> Introduce a built-in compute context-bank (CB) bus used by the Qualcomm
+> DSP accelerator (QDA) driver to represent DSP CB devices that require
+> IOMMU configuration. This separates the CB bus from the QDA driver and
+> allows QDA to remain a loadable module while the bus is always built-in.
+> 
+> A new bool Kconfig symbol DRM_ACCEL_QDA_COMPUTE_BUS is added and is
+> selected by the main DRM_ACCEL_QDA driver. The parent accel Makefile is
+> updated to descend into the QDA directory for both built-in and module
+> builds so that the CB bus is compiled into vmlinux while the driver
+> remains modular.
+> 
+> The CB bus is registered at postcore_initcall() time and is exposed to
+> the IOMMU core through iommu_buses[] in the same way as the Tegra
+> host1x context-bus. This enables later patches to create CB devices on
+> this bus and obtain IOMMU domains for them.
+> 
+> Signed-off-by: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
+> ---
+>  drivers/accel/Makefile              |  1 +
+>  drivers/accel/qda/Kconfig           |  5 +++++
+>  drivers/accel/qda/Makefile          |  2 ++
+>  drivers/accel/qda/qda_compute_bus.c | 23 +++++++++++++++++++++++
+>  drivers/iommu/iommu.c               |  4 ++++
+>  include/linux/qda_compute_bus.h     | 22 ++++++++++++++++++++++
 
---4m3wi7hiurafpqag
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH 2/7] mm: cma: Export cma_alloc and cma_release
-MIME-Version: 1.0
+Do not combine independent work into one patch.
 
-Hi David,
+Also, your patch has clear patch warnings, so please review it BEFORE
+you send.
 
-On Thu, Feb 26, 2026 at 11:25:24AM +0100, David Hildenbrand (Arm) wrote:
-> On 2/25/26 17:41, Maxime Ripard wrote:
-> > The CMA dma-buf heap uses cma_alloc() and cma_release() to allocate and
-> > free, respectively, its CMA buffers.
-> >=20
-> > However, these functions are not exported. Since we want to turn the CMA
-> > heap into a module, let's export them both.
-> >=20
-> > Signed-off-by: Maxime Ripard <mripard@kernel.org>
-> > ---
-> >  mm/cma.c | 2 ++
-> >  1 file changed, 2 insertions(+)
-> >=20
-> > diff --git a/mm/cma.c b/mm/cma.c
-> > index 94b5da468a7d719e5144d33b06bcc7619c0fbcc9..be142b473f3bd41b9c7d8ba=
-4397f018f6993d962 100644
-> > --- a/mm/cma.c
-> > +++ b/mm/cma.c
-> > @@ -949,10 +949,11 @@ struct page *cma_alloc(struct cma *cma, unsigned =
-long count,
-> >  	if (page)
-> >  		set_pages_refcounted(page, count);
-> > =20
-> >  	return page;
-> >  }
-> > +EXPORT_SYMBOL_GPL(cma_alloc);
-> > =20
-> >  static struct cma_memrange *find_cma_memrange(struct cma *cma,
-> >  		const struct page *pages, unsigned long count)
-> >  {
-> >  	struct cma_memrange *cmr =3D NULL;
-> > @@ -1025,10 +1026,11 @@ bool cma_release(struct cma *cma, const struct =
-page *pages,
-> > =20
-> >  	__cma_release_frozen(cma, cmr, pages, count);
-> > =20
-> >  	return true;
-> >  }
-> > +EXPORT_SYMBOL_GPL(cma_release);
-> > =20
-> >  bool cma_release_frozen(struct cma *cma, const struct page *pages,
-> >  		unsigned long count)
-> >  {
-> >  	struct cma_memrange *cmr;
-> >=20
->=20
-> I'm wondering whether we want to restrict all these exports to the
-> dma-buf module only using EXPORT_SYMBOL_FOR_MODULES().
-
-TIL about EXPORT_SYMBOL_FOR_MODULES, thanks.
-
-> Especially dma_contiguous_default_area() (patch #4), I am not sure
-> whether we want arbitrary modules to mess with that.
-
-Yeah, I wasn't too fond about that one either. Alternatively, I guess we
-could turn dev_get_cma_area into a non-inlined function and export that
-instead?
-
-Or we could do both.
-
-Maxime
-
---4m3wi7hiurafpqag
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iJUEABMJAB0WIQTkHFbLp4ejekA/qfgnX84Zoj2+dgUCaaAitQAKCRAnX84Zoj2+
-dn2RAX40ENhBNNnA9IVK7i0+qn5IsVH8v3M4faEFfo9IBr96Q8kfaeEhQLPJokV5
-OD/rbD0BfA29oWhRpf5wZDuyQy8g1598nXD4qkmluGfS3ZE2BbGta/gjBRP5O3kl
-YIcJ/SmxPQ==
-=LmIK
------END PGP SIGNATURE-----
-
---4m3wi7hiurafpqag--
+Best regards,
+Krzysztof
