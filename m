@@ -1,747 +1,284 @@
-Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from BYAPR05CU005.outbound.protection.outlook.com (mail-westusazon11010041.outbound.protection.outlook.com [52.101.85.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14ABD3859C2
-	for <iommu@lists.linux.dev>; Wed, 25 Feb 2026 23:47:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 794B918C2C;
+	Thu, 26 Feb 2026 00:09:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.85.41
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772063262; cv=pass; b=G8R/5L5Sz++h8qr0SHgQ7cRy5pdF7tcSPisEa97ORZtDZiF79x7yI+a7sBb8xbrpxIy9C24cE+xc7KJnH0hgKxp6X4oHMLKLzUtqxp3sKx99IogfRtJdUVfRxO38prtGFK7DaJeiU1d5Hm1xeduwhn6/T2EKnVaX7gXZUIjepVE=
+	t=1772064583; cv=fail; b=Ixz4nTRvTd/mUQyKkc4+F4Gx0f7RuFTEgHlllP7f693nitZVQsOyDF3d6n7hZajMvAEwtcC2ObBFmBKSXcAqaROx3R61h4O2vTwVvb3dfdYamQXlkjVgLtcpmzyGRpabv9jVLuG55htWU3o4N6HLlOLp9VUvPmp0FHnhz9eLDE8=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772063262; c=relaxed/simple;
-	bh=AT78Wt0eT2zEhvIauIIQBwA2YGKTG+vqCGVD1OoaXIs=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=H2QPwdWs9REWJZ8jrWIL8Ux4x5mhDKPQRuEbmV9GFskoPo9b+dVmF3mE2ouyFvNaiVxFrr/P6uiM/kBFjRF5LpXx2kASVNNcBRBSK3iF50M8XbdfmWGgVuyrWBCucP0vA0/yZ/7kog/aJrg5n3vzl66G+K1E9efDSNkDH0dTJjo=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=sPaDEgHV; arc=pass smtp.client-ip=209.85.160.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1772064583; c=relaxed/simple;
+	bh=g8MPRqsc+Yu2M26EoixHnFh9MdBdZSiuI8ismCNQRuc=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=dxdEkga3Wcci7UmT/1jCMrhS/5p+6s/a1UmRa/K09TJV1ntmxgBxEbcsUAkb9/7GUI0B+LGROyao8i5a92bheNG4UBN66edrhvjSaUtUoKlOxY4o0joBpsNSS38Tcy+E+oQOvtr7RAnFoKiVpvKphZMsorIjYlisfnEcZOlPIS0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=Y9wqBRkp; arc=fail smtp.client-ip=52.101.85.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="sPaDEgHV"
-Received: by mail-qt1-f169.google.com with SMTP id d75a77b69052e-5069a785ed2so119651cf.1
-        for <iommu@lists.linux.dev>; Wed, 25 Feb 2026 15:47:38 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1772063258; cv=none;
-        d=google.com; s=arc-20240605;
-        b=FdnsY2ZJgPqXxZvpVBweC+Z2NvVQ149sWDCUkcZJ5k+CA2HdPCXdwiSL9xOI4dDD+7
-         qvSxiCaTor5Jq+h2ASKVCtDGHkIJ6FzROs42NcNNquoaTm0Ny6RqZwm5Pcj4fr9dV1Fm
-         ixc1BzwV9Erzq9r8phWHHjzxPb3u2yUzyVvF5gxKp1clg5xsFe/MB7ydk9l6aDU2Z4ds
-         Ufc/kW5r/liPqcOHxIbGIBphuMEgB8tM4BRcpCPcM4KP/SjDYEyuJX6bEz1bJl4X7ZCi
-         XGz0HrYk8XR8qJMx0UQ3uNCv3fdx6mlopehVGPIYtQjks6JR7nowkTObl2iEKgGmKRrB
-         Wyog==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=xihrM+qx5MuAAtwb//a3SSpna7Wq86u+HZR71tsZhaw=;
-        fh=OA6FS8wpRQ4mzIS6H8bZ4iLkwya5qDaDyRPAGOSiSCA=;
-        b=EZE9QO5JiYiklh+6wpuPXSRjoZXVep0qBkzgwjGwetB2TbZZ0XpJh7t6clMaC1EFGk
-         zdRBGIUGEm0LXPDJUQ06sfPK3MWi92d8ZPNUT1TzicNb+fBxAGGf//gett+3WEwV5WSa
-         IwOBEhPq2ItnmUfLqcTJEW2pRZ2PYR6KHZTr/J8oWeY0C36EC8tAZ999x7af53ksXNsV
-         JW7IFdOSK9OawHKpi5TmZYq1au7AZA/2i8Nx5O9De0nOKNbbfX4Ogl4IFTMzHOJM0sGK
-         IGNBPs7IoZYrEVlYiJGWryQr7XJ1s+OgcRtY2rCxtXWeKJOU7sNLHn7+3ahhB2hnpSPx
-         uGhg==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1772063258; x=1772668058; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=xihrM+qx5MuAAtwb//a3SSpna7Wq86u+HZR71tsZhaw=;
-        b=sPaDEgHV3O1VBe0lDvUwZ9rpLds+TZdE11lhQmwgw9sHe0AoeonVJICaGZWAY6L5hK
-         R3RnesIJ4QQdoWU0C5drYeLTDLW2ijVf2tgz5eNXB6uWzSqAUZ6buKlVaxtbUi47kWFX
-         Vpv135uGDuskJzkFcR/jOWPBTJ4cxDZXE500EUj78U7mMNSGbd5a5enWxpgNn7R4WzAd
-         l/NgyI2ysKjfGC/f5vGMAvpoXEI3DSkaHAwEJyi8lSxL/vkRLwNAk2cng7f8dU9fmeUZ
-         Bl1nHEeWIFIfo0ld0j6qXiT2jqSpiLo6oUYEHz26WB92rIpbQrxFsuZE3ygIC5U4ha5y
-         HjrQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772063258; x=1772668058;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=xihrM+qx5MuAAtwb//a3SSpna7Wq86u+HZR71tsZhaw=;
-        b=ryXHJMrxl+/yyuzVH+wUGOvBW5nF8G6f4MTfjEkEuCy7upQKGPE5CibeFJj8/e5g7I
-         rX5pLBOC+0QrvygDSitlGE2jd3A7ulrdAFle08uwxB0xcXHTXorc5T5oOmHAFXjN+EET
-         /+orRooSpfYB7+NDO6c9UBUtSH9WaWNBo5DhPCyr/G0xiUk8KEZ0Wo2w4ybRhdK8yC8h
-         pVqjb7Rdb66pS1dAC1Wjp83QpgPxUnLZOf7wTPCDNiCAVlKARHFUMG0nzM+Z+QXz1QM/
-         w3Enjx7SNnwieYha9pCA3HjvzVQ8L92wdt+kZVO3DGBeK+0tegaYKwltY+Veq4G38jW1
-         MySg==
-X-Forwarded-Encrypted: i=1; AJvYcCV088qhuFijw4cL7Vylt+N8Ghb3PUcR4DJX0kPceQERH+EjLbMUGhbVO7FsXEqzyng+uwOMvA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxPvQOXV65Ft8mKrTMBy+mnANMuAm3ZR6RRX6T6VboKCsl8N05p
-	GQmb5igPO04Ypm7tCR4SY9XEBRMTjKDZmyq4zYOvTUkCa7lahnujwVZvjlskBy1SXNLLd0ZNx1I
-	mBcYrWmSnrAQBB5loiNbhMZA2zimd5mzdPXu080DNwDVYSDN7zPoFBxu56zpPCw==
-X-Gm-Gg: ATEYQzxsyZ+PwewbSJ1+2OjKQwOjcogYc7E0p7nV7aeoyfTwiycSFDGYhPjt6xtpP/z
-	wggsXo1b30VYvkwc4HSCr9czXtrEk4+9LDfWNFgHcPlHUkIzOk/A5S0AmvWSn8AuaVf90ypqObO
-	kZM9vQUe2DmSleQWZlEwyI2Pqia2dAVnEXON1GBsQ7LA9sdRkVarOfR3qTPcry4VO45V2dHos3Y
-	hk0fTGBclFoHBIwTAQOJ+iJGiiG5sUrKNnd4BIeyRS7W/iUG4H/T8ko6XkOwsORU2lQ9QBlgEto
-	bOWPR3W3JzhNa+EQWCIJaKKCkdf5a9Vax85aC14H5w==
-X-Received: by 2002:ac8:5f54:0:b0:4ff:bffa:d9e4 with SMTP id
- d75a77b69052e-50745515e41mr2093821cf.13.1772063257216; Wed, 25 Feb 2026
- 15:47:37 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="Y9wqBRkp"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=rYClGokGUB1q/W6zjMbkOGKNCJyzAHOOp3uB0+DpQO4lVkmnmHQ6XR4h0EqSmii2rpemzXcPo9yZo+u7qFmjIF1Ei3j8OFsCHVUt2arM9n/kUfTs9LwwTB2TLMpX4Dtujy/+xooLGAFKmjF44QqjAy3NzZbMF7KUI/b4+0oVyoyK26FsehPL9JcBxoz88tA86LJw+uWg+dyJmgZ6Rjl8liacI4oFvUyqoLqxvayJB27eD7NNG/VKs0VynnGT32JcHoKCgpoLxkpyhz+DtYQ9U4l8q6GJ+U0wA5MRJePRuh9zg6QSiYgHj6IaaXxevL3HCR3cwKiH0x5iS3ps8EiJxQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=jes4leqCxTCiCFuzCU++gW72f0gEYBeaZWmcpoOHG/c=;
+ b=Q4KKdR3Xj6UETzClKgeFtRc61l7oth4QxLuwwyQkrxvEIu43VvLY67gJ/CcQR4MMjDP0c+CSBXN4YkN1Cbatq0Qah2ZRsDcKYfJVlPpiFeNJQKvzC2A4JQcYutVtjCTaF0eeH41HbOn6DMFUbJ9fzpnU7Ar0WM4VDHowmvU9oiEOoebVtMvKFNL85mPPjI7GVxr35QZitQlJ8rugSqE95TdFoIWAEnL9kPXPe+1fleUMWLiGMkAlNxgck2EJ1K4AgV9NvH7xzYONif98pUihKozfGJrsqVzLt7gWSV1gpx9254qbDQTSYBjzHTdPRlp7HBMhLyjD78+YKbpYaMxOzA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jes4leqCxTCiCFuzCU++gW72f0gEYBeaZWmcpoOHG/c=;
+ b=Y9wqBRkpnwBVsClt2pCU26iPS63BWla+LSuzPzlXNJ1gRns5af2WsdVC3GFtVyFpRwL/uxKP3NmthN7ooRhMOHeA78/1Cq9SsgVd9qdegO/tPzFJVHFELjU4PUFPE3IZREzw550MExoZu9vbaLmYlPKksF6bWvXRAjCRaWFKuDk=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from CH3PR12MB9194.namprd12.prod.outlook.com (2603:10b6:610:19f::7)
+ by SA1PR12MB7222.namprd12.prod.outlook.com (2603:10b6:806:2bf::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9632.22; Thu, 26 Feb
+ 2026 00:09:32 +0000
+Received: from CH3PR12MB9194.namprd12.prod.outlook.com
+ ([fe80::1e6b:ca8b:7715:6fee]) by CH3PR12MB9194.namprd12.prod.outlook.com
+ ([fe80::1e6b:ca8b:7715:6fee%4]) with mapi id 15.20.9654.007; Thu, 26 Feb 2026
+ 00:09:32 +0000
+Message-ID: <d8fd6e0e-a814-4883-9e58-f1aa501e0d8c@amd.com>
+Date: Thu, 26 Feb 2026 11:09:11 +1100
+User-Agent: Mozilla Thunderbird Beta
+Subject: Re: [PATCH kernel 1/9] pci/tsm: Add TDISP report blob and helpers to
+ parse it
+To: dan.j.williams@intel.com, x86@kernel.org
+Cc: linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+ linux-pci@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+ Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+ Dave Hansen <dave.hansen@linux.intel.com>, "H. Peter Anvin" <hpa@zytor.com>,
+ Sean Christopherson <seanjc@google.com>, Paolo Bonzini
+ <pbonzini@redhat.com>, Andy Lutomirski <luto@kernel.org>,
+ Peter Zijlstra <peterz@infradead.org>, Bjorn Helgaas <bhelgaas@google.com>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ Catalin Marinas <catalin.marinas@arm.com>,
+ Michael Ellerman <mpe@ellerman.id.au>, Mike Rapoport <rppt@kernel.org>,
+ Tom Lendacky <thomas.lendacky@amd.com>, Ard Biesheuvel <ardb@kernel.org>,
+ Neeraj Upadhyay <Neeraj.Upadhyay@amd.com>,
+ Ashish Kalra <ashish.kalra@amd.com>, Stefano Garzarella
+ <sgarzare@redhat.com>, Melody Wang <huibo.wang@amd.com>,
+ Seongman Lee <augustus92@kaist.ac.kr>, Joerg Roedel <joerg.roedel@amd.com>,
+ Nikunj A Dadhania <nikunj@amd.com>, Michael Roth <michael.roth@amd.com>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Andi Kleen <ak@linux.intel.com>,
+ Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>,
+ Tony Luck <tony.luck@intel.com>, David Woodhouse <dwmw@amazon.co.uk>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Denis Efremov <efremov@linux.com>, Geliang Tang <geliang@kernel.org>,
+ Piotr Gregor <piotrgregor@rsyncme.org>, "Michael S. Tsirkin"
+ <mst@redhat.com>, Alex Williamson <alex@shazbot.org>,
+ Arnd Bergmann <arnd@arndb.de>, Jesse Barnes <jbarnes@virtuousgeek.org>,
+ Jacob Pan <jacob.jun.pan@linux.intel.com>, Yinghai Lu <yinghai@kernel.org>,
+ Kevin Brodsky <kevin.brodsky@arm.com>,
+ Jonathan Cameron <jonathan.cameron@huawei.com>,
+ "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
+ Xu Yilun <yilun.xu@linux.intel.com>, Herbert Xu
+ <herbert@gondor.apana.org.au>, Kim Phillips <kim.phillips@amd.com>,
+ Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+ Stefano Stabellini <sstabellini@kernel.org>,
+ Claire Chang <tientzu@chromium.org>, linux-coco@lists.linux.dev,
+ iommu@lists.linux.dev
+References: <20260225053806.3311234-1-aik@amd.com>
+ <20260225053806.3311234-2-aik@amd.com>
+ <699e93db9ad47_1cc510090@dwillia2-mobl4.notmuch>
+From: Alexey Kardashevskiy <aik@amd.com>
+Content-Language: en-US
+In-Reply-To: <699e93db9ad47_1cc510090@dwillia2-mobl4.notmuch>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SY5P282CA0056.AUSP282.PROD.OUTLOOK.COM
+ (2603:10c6:10:20a::18) To CH3PR12MB9194.namprd12.prod.outlook.com
+ (2603:10b6:610:19f::7)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260203220948.2176157-1-skhawaja@google.com> <20260203220948.2176157-12-skhawaja@google.com>
-In-Reply-To: <20260203220948.2176157-12-skhawaja@google.com>
-From: Samiullah Khawaja <skhawaja@google.com>
-Date: Wed, 25 Feb 2026 15:47:25 -0800
-X-Gm-Features: AaiRm511ZJBpkaV9wmA-RH05nfIWQ50SOIU0KuxecKWG6gusqGy0i7t3N7GbdiA
-Message-ID: <CAAywjhS2pFC01ayqy0VLwPLrw8w8zaFukKMQ+OB09_BSxYOJYw@mail.gmail.com>
-Subject: Re: [PATCH 11/14] iommufd-lu: Persist iommu hardware pagetables for
- live update
-To: David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>
-Cc: YiFei Zhu <zhuyifei@google.com>, Robin Murphy <robin.murphy@arm.com>, 
-	Kevin Tian <kevin.tian@intel.com>, Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>, 
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, kvm@vger.kernel.org, 
-	Saeed Mahameed <saeedm@nvidia.com>, Adithya Jayachandran <ajayachandra@nvidia.com>, 
-	Parav Pandit <parav@nvidia.com>, Leon Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>, 
-	Pratyush Yadav <pratyush@kernel.org>, Pasha Tatashin <pasha.tatashin@soleen.com>, 
-	David Matlack <dmatlack@google.com>, Andrew Morton <akpm@linux-foundation.org>, 
-	Chris Li <chrisl@kernel.org>, Pranjal Shrivastava <praan@google.com>, Vipin Sharma <vipinsh@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR12MB9194:EE_|SA1PR12MB7222:EE_
+X-MS-Office365-Filtering-Correlation-Id: 62eb64fa-c046-4b11-9163-08de74cb5157
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|7416014|376014|366016|1800799024|7053199007;
+X-Microsoft-Antispam-Message-Info:
+	Aqz3hshTMvYw/u+Mxbk17RA4N5CtL9hEBhq407+AMiobkmPQZ96DhQ0eSJQ6alr7JXFO1A7ZZdvFnTLP06YW9/epO0+gViMxKgDEjESSMHaKzFiS3ulrmUj/cqsyjBaZfQQBaJ7cd5n1zZanY1ojXntDK2cAyZLTrsad7AJFo7hUh9ymiCW+8aw7t5hm+xweJ/BIoUNkx0mgmes9ffkUujKLLtL7IcqstV64c6oXPxdbLzkAi+AhZgbO2xQZN+onaDt2LeseXL2+LuQz6sb0Gz3WV+M/cR5BQnKYceIeaJiaizU14iuylzFON6A4gXUIi3YEA0VlepB81bBnr9oewmc1QPwUaxpjYYseaWjzwemkHL45wCmZqrBIGaS62NntE5q30qpYWE8FImDV0fRnfFdFDkAgK66wD+fGrwbMAf+LscQI7iii8hq4NnqyVAbvaNvY3u2w9f7ifvib1xmAr3IZsC8I68bjto2eu/TCz2m7aKSgDasLDe6uejrQhHbKsqViIPz1+w51VU5Tkw8F4SYhaZMryF1JoVlTQoKWLATQ2PK6ZtCpn2pzrp/L80NGFEKb3bJzfbzWP7oIuDPefkb8CqI6mjFHXkDkhpNOFXf+ewma0kBxMd85EuoSNIEhPfAiUnHUR4RLpsUCsJvJyUMrVopdOn2jpPtS9AnbUTMFB314YX0k0OiLtq9+rMgPJadxdpgUa+wMLOqGhMoRrP/q+cYabL8SYRkKCDwbwyQ=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB9194.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(366016)(1800799024)(7053199007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?U0N0NE9Cd0I4R1NxMU1uWnFxdE5zRi95OGVuKzYwcEpQTkRFQmNKdlVWVjgx?=
+ =?utf-8?B?eGNFTkthdmE2RVZkM040VUhONzZkRUVyS2w3di8vUmpsU2I5cSthUUU0UUdQ?=
+ =?utf-8?B?M0c4elc5dFltR0RSVTRUblVsUk9QWTNWbzZqaDV5Z05JcFVsQ2oreW1OM3hr?=
+ =?utf-8?B?MU5yOHhVNjlEdEp3TnN5U3o4Vk9QTGhvT3grZzZaZ0lWR1drRDByS05jU0Y0?=
+ =?utf-8?B?ZFFDM05xMURpaG5zcHBTWjluMG1YTUZ5VFFoN3ExbUdtR1dYVm83MlJqVXVL?=
+ =?utf-8?B?Zm5odGNJdXRxWEE4UCtGc0MyaXdmMFF5ZXZOblNsakI1TGo2czFaK0RHSFdO?=
+ =?utf-8?B?Y2cyZ0k3TFU0OVlzNDJ2Zk1ndzVzQW9yc09tL2VNY3c5WTNiangwNmY0VGll?=
+ =?utf-8?B?M2tXS1l0Y2lyRmlSakN5cDI2WFdXcWRFY1NBZmgzcHRwbzB5YS95NmhjTzgr?=
+ =?utf-8?B?NWsxYzVUbmtYVEszbGFnSkR4SGFIQU8zdVpXN2V5ZEpaMFdUVWJNS2dTVXdE?=
+ =?utf-8?B?SGx0RTVLVGhlNi9PQ1BwS1pYb3d4emt6ZGUycWtXdXFYOUVDL2xvK2tuQ2RW?=
+ =?utf-8?B?MHMvRFF4eEJ6emxGdEtQb1krZ1RKaGJPbWFja1MxVzJRMlZLV1c4M1lqV3ZS?=
+ =?utf-8?B?QnBCTTgxZkFodDRJazh2YnVrSnArSExhRnRiblloeUYxbTg1Tm9YdW9ndDh3?=
+ =?utf-8?B?UGpkQmYxRVFDbkg1TFYvNzZlNkF5czlxZlNSK0UzeU5XaEpXNHMwYzdnR3RZ?=
+ =?utf-8?B?QTdRcHNnb0FHVTlPUmJxdVN6UktTak5sMHl1L0JsR2VINHBNelJFRitGdDBl?=
+ =?utf-8?B?UGQyVHEwYUo2K2JuTzNDYmRDcWltUi9wbGZUU2h2Q205SHFnV2hGM2tvZ3U5?=
+ =?utf-8?B?WUs0T1oyZTVFTTUyc3J1cExyWkRnRVBKNDR6eEVDVjJ4VEkzVkREdU9tM1FG?=
+ =?utf-8?B?Sk5QUDdTNmd4M2pjZEZFMlhqb1VsOWFhajAyREhQcUpRVWxQQ0I3VmtLeFBS?=
+ =?utf-8?B?NDRESm1nblB2OUN0bk55anZIeFZTVWJnY25TQUlSbEFmWk9VTHRTYWg0SVpX?=
+ =?utf-8?B?WFJ4VGtvVHdlZnVPdWwzMS8yMGVpbitQa1liRzg0bHRSTzczYVlxaXN5OEhi?=
+ =?utf-8?B?bFFFQ1dWUXhYUjBUWkpyUE4vZUV0Y0dmKytIWnlpSFV4enl2ODlxSHdmZGpZ?=
+ =?utf-8?B?REhIOGtwV3pZUHZtYW5yY3ZhNHN6NkV2R3pDRmZQWlhpYmc2czBaYm9icjhN?=
+ =?utf-8?B?dWRhRGxnSmVBUWxFN0lKZktIa2gvZHgrbURwSlBrVFgvNlRPQ0dZekZtUkZX?=
+ =?utf-8?B?anM5Sll4d0p3NEE1aDJMU2dnNVBzTlo1NnMySzhSREp6TUh6ZU5XQk5aYmEv?=
+ =?utf-8?B?OUtrRFJqenFvbUxTZGNvWmNoL2Q2OXBZOWcxUkpTUUttT3llRXoxYjdwS0p0?=
+ =?utf-8?B?N2tpVWdubHdtaVljRzVPQ2gzZVUzMXdZckFiTlUveGNZWkxjZ0NYam1hd1ha?=
+ =?utf-8?B?ckY0emEzODRzNGloeHovRHBHMDBveEtCZ3Vhdk5NbFgxNGd1OCtUZVdqL0Nr?=
+ =?utf-8?B?SXY2Uno1VlNtOWtia3Iza05TOGxiNHhEQmtTWWtmUnh0TjJrT1U4YVY4Q1Nr?=
+ =?utf-8?B?eXphR2dTbXZxREtDNTU2amJ0UU54Z1l5ZGNLRlpmZ01UV2VyREp5eEpUaTEw?=
+ =?utf-8?B?eXRPZnZMYXJiR3MwcWNZWEJGYlVYRFFjZmpiYUIwbEthdGhkdGRXbE9uL3or?=
+ =?utf-8?B?ZmpFYUJEa0UvWXBpbWtuWEg3cHJLRmFnaHE5Q2pyZnhiTGl5blVQUitua1o5?=
+ =?utf-8?B?aG1PcU1jOUNkZiszclA5UDhzWEhXSk8xUWwxWFBmSW1SdkJuaDBZNjdSOURj?=
+ =?utf-8?B?TkZqU1pVUE1LTVZGZ0srUmdIc3RUL21ESTVPOE95UmV5cW00V3RxY1I1dzA1?=
+ =?utf-8?B?am55SXpkU0JEL0M0dU5ua3NvOFNSNzYzTE44OWYxSTNQYUw5a1p1NWFQLzgx?=
+ =?utf-8?B?dXE4V0FZdzFOa0R2MjV6QThSeU5rQnU5R09RaW1neHBWSC9nOGJwN2wwQ2w5?=
+ =?utf-8?B?QU9BNy9MSnltQjVsb04zSWhqY0J4UU0vcGFCaUZPaStuV3M0M3psV2tybFhL?=
+ =?utf-8?B?bStIRll2QW1KZE9xeHZIaElhcFdSVExWa0orQmtnRm54RkVDT2gzSFZiK1lw?=
+ =?utf-8?B?NkF1TUZiM2h4YmhHbEhPNVNoTjFrd3lPUHZ1Mmt2cENXeG1Ka0JEK0F6VUN5?=
+ =?utf-8?B?WXBmMDR6R3ZwaWRqc1dCYzZGOHBxTk05c3Zod0ZwYWkrNTdSL01ERXVaTnll?=
+ =?utf-8?B?aDh4OENjbUhhV2FWT290Sk44aHRxVUtzemFIOHAvTC8yQ3ZlMHBZdz09?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 62eb64fa-c046-4b11-9163-08de74cb5157
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB9194.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Feb 2026 00:09:32.7138
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: G6CzmJZDfrhrM1SYImLTvR9B+51336lXAA4lkgxxRpe4pg/UB9kz9Cz6YcP9sRMackSuWz/igyrR96SAIgapKA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB7222
 
-On Tue, Feb 3, 2026 at 2:10=E2=80=AFPM Samiullah Khawaja <skhawaja@google.c=
-om> wrote:
->
-> From: YiFei Zhu <zhuyifei@google.com>
->
-> The caller is expected to mark each HWPT to be preserved with an ioctl
-> call, with a token that will be used in restore. At preserve time, each
-> HWPT's domain is then called with iommu_domain_preserve to preserve the
-> iommu domain.
->
-> The HWPTs containing dma mappings backed by unpreserved memory should
-> not be preserved. During preservation check if the mappings contained in
-> the HWPT being preserved are only file based and all the files are
-> preserved.
->
-> The memfd file preservation check is not enough when preserving iommufd.
-> The memfd might have shrunk between the mapping and memfd preservation.
-> This means that if it shrunk some pages that are right now pinned due to
-> iommu mappings are not preserved with the memfd. Only allow iommufd
-> preservation when all the iopt_pages are file backed and the memory file
-> was seal sealed during mapping. This guarantees that all the pages that
-> were backing memfd when it was mapped are preserved.
->
-> Once HWPT is preserved the iopt associated with the HWPT is made
-> immutable. Since the map and unmap ioctls operates directly on iopt,
-> which contains an array of domains, while each hwpt contains only one
-> domain. The logic then becomes that mapping and unmapping is prohibited
-> if any of the domains in an iopt belongs to a preserved hwpt. However,
-> tracing to the hwpt through the domain is a lot more tedious than
-> tracing through the ioas, so if an hwpt is preserved, hwpt->ioas->iopt
-> is made immutable.
->
-> When undoing this (making the iopts mutable again), there's never
-> a need to make some iopts mutable and some kept immutable, since
-> the undo only happen on unpreserve and error path of preserve.
-> Simply iterate all the ioas and clear the immutability flag on all
-> their iopts.
->
-> Signed-off-by: YiFei Zhu <zhuyifei@google.com>
-> Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
-> ---
->  drivers/iommu/iommufd/io_pagetable.c    |  17 ++
->  drivers/iommu/iommufd/io_pagetable.h    |   1 +
->  drivers/iommu/iommufd/iommufd_private.h |  25 ++
->  drivers/iommu/iommufd/liveupdate.c      | 300 ++++++++++++++++++++++++
->  drivers/iommu/iommufd/main.c            |  14 +-
->  drivers/iommu/iommufd/pages.c           |   8 +
->  include/linux/kho/abi/iommufd.h         |  39 +++
->  7 files changed, 403 insertions(+), 1 deletion(-)
->  create mode 100644 include/linux/kho/abi/iommufd.h
->
-> diff --git a/drivers/iommu/iommufd/io_pagetable.c b/drivers/iommu/iommufd=
-/io_pagetable.c
-> index 436992331111..43e8a2443793 100644
-> --- a/drivers/iommu/iommufd/io_pagetable.c
-> +++ b/drivers/iommu/iommufd/io_pagetable.c
-> @@ -270,6 +270,11 @@ static int iopt_alloc_area_pages(struct io_pagetable=
- *iopt,
->         }
->
->         down_write(&iopt->iova_rwsem);
-> +       if (iopt_lu_map_immutable(iopt)) {
-> +               rc =3D -EBUSY;
-> +               goto out_unlock;
-> +       }
-> +
->         if ((length & (iopt->iova_alignment - 1)) || !length) {
->                 rc =3D -EINVAL;
->                 goto out_unlock;
-> @@ -328,6 +333,7 @@ static void iopt_abort_area(struct iopt_area *area)
->                 WARN_ON(area->pages);
->         if (area->iopt) {
->                 down_write(&area->iopt->iova_rwsem);
-> +               WARN_ON(iopt_lu_map_immutable(area->iopt));
->                 interval_tree_remove(&area->node, &area->iopt->area_itree=
-);
->                 up_write(&area->iopt->iova_rwsem);
->         }
-> @@ -755,6 +761,12 @@ static int iopt_unmap_iova_range(struct io_pagetable=
- *iopt, unsigned long start,
->  again:
->         down_read(&iopt->domains_rwsem);
->         down_write(&iopt->iova_rwsem);
-> +
-> +       if (iopt_lu_map_immutable(iopt)) {
-> +               rc =3D -EBUSY;
-> +               goto out_unlock_iova;
-> +       }
-> +
->         while ((area =3D iopt_area_iter_first(iopt, start, last))) {
->                 unsigned long area_last =3D iopt_area_last_iova(area);
->                 unsigned long area_first =3D iopt_area_iova(area);
-> @@ -1398,6 +1410,11 @@ int iopt_cut_iova(struct io_pagetable *iopt, unsig=
-ned long *iovas,
->         int i;
->
->         down_write(&iopt->iova_rwsem);
-> +       if (iopt_lu_map_immutable(iopt)) {
-> +               up_write(&iopt->iova_rwsem);
-> +               return -EBUSY;
-> +       }
-> +
->         for (i =3D 0; i < num_iovas; i++) {
->                 struct iopt_area *area;
->
-> diff --git a/drivers/iommu/iommufd/io_pagetable.h b/drivers/iommu/iommufd=
-/io_pagetable.h
-> index 14cd052fd320..b64cb4cf300c 100644
-> --- a/drivers/iommu/iommufd/io_pagetable.h
-> +++ b/drivers/iommu/iommufd/io_pagetable.h
-> @@ -234,6 +234,7 @@ struct iopt_pages {
->                 struct {                        /* IOPT_ADDRESS_FILE */
->                         struct file *file;
->                         unsigned long start;
-> +                       u32 seals;
->                 };
->                 /* IOPT_ADDRESS_DMABUF */
->                 struct iopt_pages_dmabuf dmabuf;
-> diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iomm=
-ufd/iommufd_private.h
-> index 6424e7cea5b2..f8366a23999f 100644
-> --- a/drivers/iommu/iommufd/iommufd_private.h
-> +++ b/drivers/iommu/iommufd/iommufd_private.h
-> @@ -94,6 +94,9 @@ struct io_pagetable {
->         /* IOVA that cannot be allocated, struct iopt_reserved */
->         struct rb_root_cached reserved_itree;
->         u8 disable_large_pages;
-> +#ifdef CONFIG_IOMMU_LIVEUPDATE
-> +       bool lu_map_immutable;
-> +#endif
->         unsigned long iova_alignment;
->  };
->
-> @@ -712,12 +715,34 @@ iommufd_get_vdevice(struct iommufd_ctx *ictx, u32 i=
-d)
->  }
->
->  #ifdef CONFIG_IOMMU_LIVEUPDATE
-> +int iommufd_liveupdate_register_lufs(void);
-> +int iommufd_liveupdate_unregister_lufs(void);
-> +
->  int iommufd_hwpt_lu_set_preserve(struct iommufd_ucmd *ucmd);
-> +static inline bool iopt_lu_map_immutable(const struct io_pagetable *iopt=
-)
-> +{
-> +       return iopt->lu_map_immutable;
-> +}
->  #else
-> +static inline int iommufd_liveupdate_register_lufs(void)
-> +{
-> +       return 0;
-> +}
-> +
-> +static inline int iommufd_liveupdate_unregister_lufs(void)
-> +{
-> +       return 0;
-> +}
-> +
->  static inline int iommufd_hwpt_lu_set_preserve(struct iommufd_ucmd *ucmd=
-)
->  {
->         return -ENOTTY;
->  }
-> +
-> +static inline bool iopt_lu_map_immutable(const struct io_pagetable *iopt=
-)
-> +{
-> +       return false;
-> +}
->  #endif
->
->  #ifdef CONFIG_IOMMUFD_TEST
-> diff --git a/drivers/iommu/iommufd/liveupdate.c b/drivers/iommu/iommufd/l=
-iveupdate.c
-> index ae74f5b54735..ec11ae345fe7 100644
-> --- a/drivers/iommu/iommufd/liveupdate.c
-> +++ b/drivers/iommu/iommufd/liveupdate.c
-> @@ -4,9 +4,15 @@
->
->  #include <linux/file.h>
->  #include <linux/iommufd.h>
-> +#include <linux/kexec_handover.h>
-> +#include <linux/kho/abi/iommufd.h>
->  #include <linux/liveupdate.h>
-> +#include <linux/iommu-lu.h>
-> +#include <linux/mm.h>
-> +#include <linux/pci.h>
->
->  #include "iommufd_private.h"
-> +#include "io_pagetable.h"
->
->  int iommufd_hwpt_lu_set_preserve(struct iommufd_ucmd *ucmd)
->  {
-> @@ -47,3 +53,297 @@ int iommufd_hwpt_lu_set_preserve(struct iommufd_ucmd =
-*ucmd)
->         return rc;
->  }
->
-> +static void iommufd_set_ioas_mutable(struct iommufd_ctx *ictx)
-> +{
-> +       struct iommufd_object *obj;
-> +       struct iommufd_ioas *ioas;
-> +       unsigned long index;
-> +
-> +       xa_lock(&ictx->objects);
-> +       xa_for_each(&ictx->objects, index, obj) {
-> +               if (obj->type !=3D IOMMUFD_OBJ_IOAS)
-> +                       continue;
-> +
-> +               ioas =3D container_of(obj, struct iommufd_ioas, obj);
-> +
-> +               /*
-> +                * Not taking any IOAS lock here. All writers take LUO
-> +                * session mutex, and this writer racing with readers is =
-not
-> +                * really a problem.
-> +                */
-> +               WRITE_ONCE(ioas->iopt.lu_map_immutable, false);
-> +       }
-> +       xa_unlock(&ictx->objects);
-> +}
-> +
-> +static int check_iopt_pages_preserved(struct liveupdate_session *s,
-> +                                     struct iommufd_hwpt_paging *hwpt)
-> +{
-> +       u32 req_seals =3D F_SEAL_SEAL | F_SEAL_GROW | F_SEAL_SHRINK;
-> +       struct iopt_area *area;
-> +       int ret;
-> +
-> +       for (area =3D iopt_area_iter_first(&hwpt->ioas->iopt, 0, ULONG_MA=
-X); area;
-> +            area =3D iopt_area_iter_next(area, 0, ULONG_MAX)) {
-> +               struct iopt_pages *pages =3D area->pages;
-> +
-> +               /* Only allow file based mapping */
-> +               if (pages->type !=3D IOPT_ADDRESS_FILE)
-> +                       return -EINVAL;
-> +
-> +               /*
-> +                * When this memory file was mapped it should be sealed a=
-nd seal
-> +                * should be sealed. This means that since mapping was do=
-ne the
-> +                * memory file was not grown or shrink and the pages bein=
-g used
-> +                * until now remain pinnned and preserved.
-> +                */
-> +               if ((pages->seals & req_seals) !=3D req_seals)
-> +                       return -EINVAL;
-> +
-> +               /* Make sure that the file was preserved. */
-> +               ret =3D liveupdate_get_token_outgoing(s, pages->file, NUL=
-L);
-> +               if (ret)
-> +                       return ret;
-> +       }
-> +
-> +       return 0;
-> +}
-> +
-> +static int iommufd_save_hwpts(struct iommufd_ctx *ictx,
-> +                             struct iommufd_lu *iommufd_lu,
-> +                             struct liveupdate_session *session)
-> +{
-> +       struct iommufd_hwpt_paging *hwpt, **hwpts =3D NULL;
-> +       struct iommu_domain_ser *domain_ser;
-> +       struct iommufd_hwpt_lu *hwpt_lu;
-> +       struct iommufd_object *obj;
-> +       unsigned int nr_hwpts =3D 0;
-> +       unsigned long index;
-> +       unsigned int i;
-> +       int rc =3D 0;
-> +
-> +       if (iommufd_lu) {
-> +               hwpts =3D kcalloc(iommufd_lu->nr_hwpts, sizeof(*hwpts),
-> +                               GFP_KERNEL);
-> +               if (!hwpts)
-> +                       return -ENOMEM;
-> +       }
-> +
-> +       xa_lock(&ictx->objects);
-> +       xa_for_each(&ictx->objects, index, obj) {
-> +               if (obj->type !=3D IOMMUFD_OBJ_HWPT_PAGING)
-> +                       continue;
-> +
-> +               hwpt =3D container_of(obj, struct iommufd_hwpt_paging, co=
-mmon.obj);
-> +               if (!hwpt->lu_preserve)
-> +                       continue;
-> +
-> +               if (hwpt->ioas) {
-> +                       /*
-> +                        * Obtain exclusive access to the IOAS and IOPT w=
-hile we
-> +                        * set immutability
-> +                        */
-> +                       mutex_lock(&hwpt->ioas->mutex);
-> +                       down_write(&hwpt->ioas->iopt.domains_rwsem);
-> +                       down_write(&hwpt->ioas->iopt.iova_rwsem);
-> +
-> +                       hwpt->ioas->iopt.lu_map_immutable =3D true;
-> +
-> +                       up_write(&hwpt->ioas->iopt.iova_rwsem);
-> +                       up_write(&hwpt->ioas->iopt.domains_rwsem);
-> +                       mutex_unlock(&hwpt->ioas->mutex);
-> +               }
-> +
-> +               if (!hwpt->common.domain) {
-> +                       rc =3D -EINVAL;
-> +                       xa_unlock(&ictx->objects);
-> +                       goto out;
-> +               }
-> +
-> +               if (!iommufd_lu) {
-> +                       rc =3D check_iopt_pages_preserved(session, hwpt);
-> +                       if (rc) {
-> +                               xa_unlock(&ictx->objects);
-> +                               goto out;
-> +                       }
-> +               } else if (iommufd_lu) {
-> +                       hwpts[nr_hwpts] =3D hwpt;
-> +                       hwpt_lu =3D &iommufd_lu->hwpts[nr_hwpts];
-> +
-> +                       hwpt_lu->token =3D hwpt->lu_token;
-> +                       hwpt_lu->reclaimed =3D false;
-> +               }
-> +
-> +               nr_hwpts++;
-> +       }
-> +       xa_unlock(&ictx->objects);
-> +
-> +       if (WARN_ON(iommufd_lu && iommufd_lu->nr_hwpts !=3D nr_hwpts)) {
-> +               rc =3D -EFAULT;
-> +               goto out;
-> +       }
-> +
-> +       if (iommufd_lu) {
-> +               /*
-> +                * iommu_domain_preserve may sleep and must be called
-> +                * outside of xa_lock
-> +                */
-> +               for (i =3D 0; i < nr_hwpts; i++) {
-> +                       hwpt =3D hwpts[i];
-> +                       hwpt_lu =3D &iommufd_lu->hwpts[i];
-> +
-> +                       rc =3D iommu_domain_preserve(hwpt->common.domain,=
- &domain_ser);
-> +                       if (rc < 0)
-> +                               goto out;
-> +
-> +                       hwpt_lu->domain_data =3D __pa(domain_ser);
-> +               }
-> +       }
-> +
-> +       rc =3D nr_hwpts;
-> +
-> +out:
-> +       kfree(hwpts);
-> +       return rc;
-> +}
-> +
-> +static int iommufd_liveupdate_preserve(struct liveupdate_file_op_args *a=
-rgs)
-> +{
-> +       struct iommufd_ctx *ictx =3D iommufd_ctx_from_file(args->file);
-> +       struct iommufd_lu *iommufd_lu;
-> +       size_t serial_size;
-> +       void *mem;
-> +       int rc;
-> +
-> +       if (IS_ERR(ictx))
-> +               return PTR_ERR(ictx);
-> +
-> +       rc =3D iommufd_save_hwpts(ictx, NULL, args->session);
-> +       if (rc < 0)
-> +               goto err_ioas_mutable;
-> +
-> +       serial_size =3D struct_size(iommufd_lu, hwpts, rc);
-> +
-> +       mem =3D kho_alloc_preserve(serial_size);
-> +       if (!mem) {
-> +               rc =3D -ENOMEM;
-> +               goto err_ioas_mutable;
-> +       }
-> +
-> +       iommufd_lu =3D mem;
-> +       iommufd_lu->nr_hwpts =3D rc;
-> +       rc =3D iommufd_save_hwpts(ictx, iommufd_lu, args->session);
-> +       if (rc < 0)
-> +               goto err_free;
-> +
-> +       args->serialized_data =3D virt_to_phys(iommufd_lu);
-> +       iommufd_ctx_put(ictx);
-> +       return 0;
-> +
-> +err_free:
-> +       kho_unpreserve_free(mem);
-> +err_ioas_mutable:
-> +       iommufd_set_ioas_mutable(ictx);
-> +       iommufd_ctx_put(ictx);
-> +       return rc;
-> +}
-> +
-> +static int iommufd_liveupdate_freeze(struct liveupdate_file_op_args *arg=
-s)
-> +{
-> +       /* No-Op; everything should be made read-only */
-> +       return 0;
-> +}
-> +
-> +static void iommufd_liveupdate_unpreserve(struct liveupdate_file_op_args=
- *args)
-> +{
-> +       struct iommufd_ctx *ictx =3D iommufd_ctx_from_file(args->file);
-> +       struct iommufd_hwpt_paging *hwpt;
-> +       struct iommufd_object *obj;
-> +       unsigned long index;
-> +
-> +       if (WARN_ON(IS_ERR(ictx)))
-> +               return;
-> +
-> +       xa_lock(&ictx->objects);
-> +       xa_for_each(&ictx->objects, index, obj) {
-> +               if (obj->type !=3D IOMMUFD_OBJ_HWPT_PAGING)
-> +                       continue;
-> +
-> +               hwpt =3D container_of(obj, struct iommufd_hwpt_paging, co=
-mmon.obj);
-> +               if (!hwpt->lu_preserve)
-> +                       continue;
-> +               if (!hwpt->common.domain)
-> +                       continue;
-> +
-> +               iommu_domain_unpreserve(hwpt->common.domain);
-> +       }
-> +       xa_unlock(&ictx->objects);
-> +
-> +       kho_unpreserve_free(phys_to_virt(args->serialized_data));
-> +
-> +       iommufd_set_ioas_mutable(ictx);
-> +       iommufd_ctx_put(ictx);
-> +}
-> +
-> +static int iommufd_liveupdate_retrieve(struct liveupdate_file_op_args *a=
-rgs)
-> +{
-> +       return -EOPNOTSUPP;
-> +}
-> +
-> +static bool iommufd_liveupdate_can_finish(struct liveupdate_file_op_args=
- *args)
-> +{
-> +       return false;
-> +}
-> +
-> +static void iommufd_liveupdate_finish(struct liveupdate_file_op_args *ar=
-gs)
-> +{
-> +}
-> +
-> +static bool iommufd_liveupdate_can_preserve(struct liveupdate_file_handl=
-er *handler,
-> +                                           struct file *file)
-> +{
-> +       struct iommufd_ctx *ictx =3D iommufd_ctx_from_file(file);
-> +
-> +       if (IS_ERR(ictx))
-> +               return false;
-> +
-> +       iommufd_ctx_put(ictx);
-> +       return true;
-> +}
-> +
-> +static struct liveupdate_file_ops iommufd_lu_file_ops =3D {
-> +       .can_preserve =3D iommufd_liveupdate_can_preserve,
-> +       .preserve =3D iommufd_liveupdate_preserve,
-> +       .unpreserve =3D iommufd_liveupdate_unpreserve,
-> +       .freeze =3D iommufd_liveupdate_freeze,
-> +       .retrieve =3D iommufd_liveupdate_retrieve,
-> +       .can_finish =3D iommufd_liveupdate_can_finish,
-> +       .finish =3D iommufd_liveupdate_finish,
-> +};
-> +
-> +static struct liveupdate_file_handler iommufd_lu_handler =3D {
-> +       .compatible =3D IOMMUFD_LUO_COMPATIBLE,
-> +       .ops =3D &iommufd_lu_file_ops,
-> +};
-> +
-> +int iommufd_liveupdate_register_lufs(void)
-> +{
-> +       int ret;
-> +
-> +       ret =3D liveupdate_register_file_handler(&iommufd_lu_handler);
-> +       if (ret)
-> +               return ret;
-> +
-> +       ret =3D iommu_liveupdate_register_flb(&iommufd_lu_handler);
-> +       if (ret)
-> +               liveupdate_unregister_file_handler(&iommufd_lu_handler);
-> +
-> +       return ret;
-> +}
-> +
-> +int iommufd_liveupdate_unregister_lufs(void)
-> +{
-> +       WARN_ON(iommu_liveupdate_unregister_flb(&iommufd_lu_handler));
-> +
-> +       return liveupdate_unregister_file_handler(&iommufd_lu_handler);
-> +}
-> diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
-> index e1a9b3051f65..d7683244c67a 100644
-> --- a/drivers/iommu/iommufd/main.c
-> +++ b/drivers/iommu/iommufd/main.c
-> @@ -775,11 +775,21 @@ static int __init iommufd_init(void)
->                 if (ret)
->                         goto err_misc;
->         }
-> +
-> +       if (IS_ENABLED(CONFIG_IOMMU_LIVEUPDATE)) {
-> +               ret =3D iommufd_liveupdate_register_lufs();
 
-Alex Williamson pointed out in the vfio-pci preservation series that
-registering the file handler in module init/exit would make the module
-unloadable as LUO takes a reference on it. That problem will occur
-here also as the registration is being done in module_init. For
-iommufd, the register/unregister can be moved to iommufd open/release.
-Register on first iommufd open and unregister on last iommufd close,
-basically a kref that gets inc/dec on open/release.
 
-https://lore.kernel.org/all/20260225143328.35be89f6@shazbot.org/
-> +               if (ret)
-> +                       goto err_vfio_misc;
-> +       }
-> +
->         ret =3D iommufd_test_init();
->         if (ret)
-> -               goto err_vfio_misc;
-> +               goto err_lufs;
->         return 0;
->
-> +err_lufs:
-> +       if (IS_ENABLED(CONFIG_IOMMU_LIVEUPDATE))
-> +               iommufd_liveupdate_unregister_lufs();
->  err_vfio_misc:
->         if (IS_ENABLED(CONFIG_IOMMUFD_VFIO_CONTAINER))
->                 misc_deregister(&vfio_misc_dev);
-> @@ -791,6 +801,8 @@ static int __init iommufd_init(void)
->  static void __exit iommufd_exit(void)
->  {
->         iommufd_test_exit();
-> +       if (IS_ENABLED(CONFIG_IOMMU_LIVEUPDATE))
-> +               iommufd_liveupdate_unregister_lufs();
->         if (IS_ENABLED(CONFIG_IOMMUFD_VFIO_CONTAINER))
->                 misc_deregister(&vfio_misc_dev);
->         misc_deregister(&iommu_misc_dev);
-> diff --git a/drivers/iommu/iommufd/pages.c b/drivers/iommu/iommufd/pages.=
-c
-> index dbe51ecb9a20..cc0e3265ba4e 100644
-> --- a/drivers/iommu/iommufd/pages.c
-> +++ b/drivers/iommu/iommufd/pages.c
-> @@ -55,6 +55,7 @@
->  #include <linux/overflow.h>
->  #include <linux/slab.h>
->  #include <linux/sched/mm.h>
-> +#include <linux/memfd.h>
->  #include <linux/vfio_pci_core.h>
->
->  #include "double_span.h"
-> @@ -1420,6 +1421,7 @@ struct iopt_pages *iopt_alloc_file_pages(struct fil=
-e *file,
->
->  {
->         struct iopt_pages *pages;
-> +       int seals;
->
->         pages =3D iopt_alloc_pages(start_byte, length, writable);
->         if (IS_ERR(pages))
-> @@ -1427,6 +1429,12 @@ struct iopt_pages *iopt_alloc_file_pages(struct fi=
-le *file,
->         pages->file =3D get_file(file);
->         pages->start =3D start - start_byte;
->         pages->type =3D IOPT_ADDRESS_FILE;
-> +
-> +       pages->seals =3D 0;
-> +       seals =3D memfd_get_seals(file);
-> +       if (seals > 0)
-> +               pages->seals =3D seals;
-> +
->         return pages;
->  }
->
-> diff --git a/include/linux/kho/abi/iommufd.h b/include/linux/kho/abi/iomm=
-ufd.h
-> new file mode 100644
-> index 000000000000..f7393ac78aa9
-> --- /dev/null
-> +++ b/include/linux/kho/abi/iommufd.h
-> @@ -0,0 +1,39 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +
-> +/*
-> + * Copyright (C) 2025, Google LLC
-> + * Author: Samiullah Khawaja <skhawaja@google.com>
-> + */
-> +
-> +#ifndef _LINUX_KHO_ABI_IOMMUFD_H
-> +#define _LINUX_KHO_ABI_IOMMUFD_H
-> +
-> +#include <linux/mutex_types.h>
-> +#include <linux/compiler.h>
-> +#include <linux/types.h>
-> +
-> +/**
-> + * DOC: IOMMUFD Live Update ABI
-> + *
-> + * This header defines the ABI for preserving the state of an IOMMUFD fi=
-le
-> + * across a kexec reboot using LUO.
-> + *
-> + * This interface is a contract. Any modification to any of the serializ=
-ation
-> + * structs defined here constitutes a breaking change. Such changes requ=
-ire
-> + * incrementing the version number in the IOMMUFD_LUO_COMPATIBLE string.
-> + */
-> +
-> +#define IOMMUFD_LUO_COMPATIBLE "iommufd-v1"
-> +
-> +struct iommufd_hwpt_lu {
-> +       u32 token;
-> +       u64 domain_data;
-> +       bool reclaimed;
-> +} __packed;
-> +
-> +struct iommufd_lu {
-> +       unsigned int nr_hwpts;
-> +       struct iommufd_hwpt_lu hwpts[];
-> +};
-> +
-> +#endif /* _LINUX_KHO_ABI_IOMMUFD_H */
-> --
-> 2.53.0.rc2.204.g2597b5adb4-goog
->
+On 25/2/26 17:16, dan.j.williams@intel.com wrote:
+> Alexey Kardashevskiy wrote:
+>> The TDI interface report is defined in PCIe r7.0,
+>> chapter "11.3.11 DEVICE_INTERFACE_REPORT". The report enumerates
+>> MMIO resources and their properties which will take effect upon
+>> transitioning to the RUN state.
+>>
+>> Store the report in pci_tsm.
+>>
+>> Define macros and helpers to parse the binary blob.
+>>
+>> Signed-off-by: Alexey Kardashevskiy <aik@amd.com>
+>> ---
+>>
+>> Probably pci_tsm::report could be struct tdi_report_header*?
+> [..]
+>> +struct tdi_report_header {
+>> +	__u16 interface_info; /* TSM_TDI_REPORT_xxx */
+>> +	__u16 reserved2;
+>> +	__u16 msi_x_message_control;
+>> +	__u16 lnr_control;
+>> +	__u32 tph_control;
+>> +	__u32 mmio_range_count;
+>> +} __packed;
+>> +
+>> +/*
+>> + * Each MMIO Range of the TDI is reported with the MMIO reporting offset added.
+>> + * Base and size in units of 4K pages
+>> + */
+>> +#define TSM_TDI_REPORT_MMIO_MSIX_TABLE		BIT(0)
+>> +#define TSM_TDI_REPORT_MMIO_PBA			BIT(1)
+>> +#define TSM_TDI_REPORT_MMIO_IS_NON_TEE		BIT(2)
+>> +#define TSM_TDI_REPORT_MMIO_IS_UPDATABLE	BIT(3)
+>> +#define TSM_TDI_REPORT_MMIO_RESERVED		GENMASK(15, 4)
+>> +#define TSM_TDI_REPORT_MMIO_RANGE_ID		GENMASK(31, 16)
+>> +
+>> +struct tdi_report_mmio_range {
+>> +	__u64 first_page;		/* First 4K page with offset added */
+>> +	__u32 num;			/* Number of 4K pages in this range */
+>> +	__u32 range_attributes;		/* TSM_TDI_REPORT_MMIO_xxx */
+> 
+> Those should be __le64 and le32, right? 
+
+Oh yes.
+
+> But see below for another
+> option...
+> 
+>> +} __packed;
+>> +
+>> +struct tdi_report_footer {
+>> +	__u32 device_specific_info_len;
+>> +	__u8 device_specific_info[];
+>> +} __packed;
+>> +
+>> +#define TDI_REPORT_HDR(rep)		((struct tdi_report_header *) ((rep)->data))
+>> +#define TDI_REPORT_MR_NUM(rep)		(TDI_REPORT_HDR(rep)->mmio_range_count)
+>> +#define TDI_REPORT_MR_OFF(rep)		((struct tdi_report_mmio_range *) (TDI_REPORT_HDR(rep) + 1))
+>> +#define TDI_REPORT_MR(rep, rangeid)	TDI_REPORT_MR_OFF(rep)[rangeid]
+>> +#define TDI_REPORT_FTR(rep)		((struct tdi_report_footer *) &TDI_REPORT_MR((rep), \
+>> +					TDI_REPORT_MR_NUM(rep)))
+>> +
+> 
+> So we all have a version of a patch like this and the general style
+> suggestion I have is to just parse this layout with typical
+> offsets+bitfield definitions.
+> 
+> This follows the precedent, admittedly tiny, of the DOE definitions in
+> pci_regs.h. See:
+> 
+> 	/* DOE Data Object - note not actually registers */
+> 
+> I have a patch that parses the TDISP report with these defines:
+> 
+> /*
+>   * PCIe ECN TEE Device Interface Security Protocol (TDISP)
+>   *
+>   * Device Interface Report data object layout as defined by PCIe r7.0 section
+>   * 11.3.11
+>   */
+> #define PCI_TSM_DEVIF_REPORT_INFO 0
+> #define PCI_TSM_DEVIF_REPORT_MSIX 4
+> #define PCI_TSM_DEVIF_REPORT_LNR 6
+> #define PCI_TSM_DEVIF_REPORT_TPH 8
+> #define PCI_TSM_DEVIF_REPORT_MMIO_COUNT 12
+> #define  PCI_TSM_DEVIF_REPORT_MMIO_PFN 0 /* An interface report 'pfn' is 4K in size */
+> #define  PCI_TSM_DEVIF_REPORT_MMIO_NR_PFNS 8
+> #define  PCI_TSM_DEVIF_REPORT_MMIO_ATTR 12
+
+
+I cannot easily see from these what the sizes are. And how many of each.
+
+> #define  PCI_TSM_DEVIF_REPORT_MMIO_ATTR_MSIX_TABLE BIT(0)
+> #define  PCI_TSM_DEVIF_REPORT_MMIO_ATTR_MSIX_PBA BIT(1)
+> #define  PCI_TSM_DEVIF_REPORT_MMIO_ATTR_IS_NON_TEE BIT(2)
+> #define  PCI_TSM_DEVIF_REPORT_MMIO_ATTR_IS_UPDATABLE BIT(3)
+> #define  PCI_TSM_DEVIF_REPORT_MMIO_ATTR_RANGE_ID GENMASK(31, 16)
+> #define  PCI_TSM_DEVIF_REPORT_MMIO_SIZE (16)
+> #define PCI_TSM_DEVIF_REPORT_BASE_SIZE(nr_mmio) (16 + nr_mmio * PCI_TSM_DEVIF_REPORT_MMIO_SIZE)
+> 
+> Any strong feelings one way or the other? I have a mild preference for
+> this offset+bitfields approach.
+
+
+My variant is just like this (may be need to put it in the comment):
+
+tdi_report_header
+tdi_report_mmio_range[]
+tdi_report_footer
+
+imho easier on eyes. I can live with either if the majority votes for it. Thanks.
+
+-- 
+Alexey
+
