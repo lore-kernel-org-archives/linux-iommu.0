@@ -1,167 +1,128 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f201.google.com (mail-pl1-f201.google.com [209.85.214.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CA18319875;
-	Thu, 26 Feb 2026 22:34:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 417393A0E94
+	for <iommu@lists.linux.dev>; Thu, 26 Feb 2026 22:40:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772145249; cv=none; b=L4ltaC2eJxleQAUpGx5MG+oYZIaXVksqKMOsRndPiK9dabUZivzBZStCT2AgSl0Y5wri0GGuwo3cp7w1ojBeqBb7SfYmtrpXLSvPOSrotvEKV4vz4q2QsniV9/UFuOTU3SipjKNWM2nRzs/4R4g6reAgDBsQ1go4G4NFENRwYNk=
+	t=1772145653; cv=none; b=VlERAOE93skZqwneq+Z69TDnYBE/zs7BKFIa8Z3HTj0EQ96k1qs6mLDJXnUwsdnNHkk7ObXaMz7/3LPCT3mt4/Pu8a5Rf5OvLVS7q5tn5PPYtkIoUZjCYUygJ1/BBWxyRn1T7++2qSB6tmE4UHj94EQRKVSVI+juXLDzascWqao=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772145249; c=relaxed/simple;
-	bh=sqVu4bH4eVU4Te9XYoGx3Yasl2SZId3A32JcMRFb2I0=;
-	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
-	 Subject:Content-Type; b=ZmEB3hLnNmBTBoIY7iSVftpgfHLChEQNuFtJNpR2le0W1+GI8Jact5v5scMWMPbXCeBZeiWjNeY7dA5fKiS3bKMGUXm54QaZTDS1bcE9P+AM/zX6xw870YMEN4S/56IEBv75ay55PNDRGbL35k8SfnyP99ZPhbwlWycOdwu9UlY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YU3W7UWK; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1772145653; c=relaxed/simple;
+	bh=YJoNV5ibtXK7Fjn1qXoDZbyy5ckBfovJdK/fD1zKydE=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=F8RgpYac82EH0Ljj0ds+WFB0RzWK1ARROT40lhCCspX5jXiR6Vwcd4A8/208nbHRfS6QRT48XY6Y7UrcO+bk1lpbttGkn6Mq1fyhjnInleAqq3b1xobIzKmubz/Pr+0uCEX4ao2UB9wIFaemXsry4YyCljr9KyDbTnWmwxuDQSU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=eWmmioC1; arc=none smtp.client-ip=209.85.214.201
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YU3W7UWK"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B077C19423;
-	Thu, 26 Feb 2026 22:34:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772145248;
-	bh=sqVu4bH4eVU4Te9XYoGx3Yasl2SZId3A32JcMRFb2I0=;
-	h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
-	b=YU3W7UWKVuGCmtKq3kD5uiuPDhrbY/g0MYnlVb1SZl4yRDzPZ/yWrEzO+Q1zq/Atd
-	 l922qO7hg38r2Id5tVg/naKuKeweufyGedUZoHbVuUjRlVIU2HH2xL+UCZuEo5hE/Y
-	 mrvC2o1uPRjgS4+30BAHiQEa4AwM7brCThkWnIotKGxRoHkC+2Mxbzg8cwx3a4ZA0k
-	 nnfl2HuznRm2OUNFnhoLlqkRoyyWirTKBy5YUJaWOACsBIZcRq2jEMsxzt+tUf7lRP
-	 aDQs7todyQvYbgQFOKdEd3E8JJ/Oaky9Pt6p2mb9+EIOHoiTNzWi+y0OoPBcCMs26+
-	 i2C4bp3QrXFJw==
-Received: from phl-compute-01.internal (phl-compute-01.internal [10.202.2.41])
-	by mailfauth.phl.internal (Postfix) with ESMTP id 1BE2DF40070;
-	Thu, 26 Feb 2026 17:34:07 -0500 (EST)
-Received: from phl-imap-02 ([10.202.2.81])
-  by phl-compute-01.internal (MEProxy); Thu, 26 Feb 2026 17:34:07 -0500
-X-ME-Sender: <xms:XsqgaYFayPBqywQPSAayqE2OVLMApPLJKmW31lIYbGsq1JqeNeh-Ww>
-    <xme:XsqgacJCGa88NfDG4sRtPjylUJ8EBO3eG9F8jMkGDmY7eJPXx_CIpRJIRLWzLtKBF
-    1yksO_AEncEVQgm0ZyY403x4yWulBnxCicFS21ZpKRjBEllM2Xpqg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefgedrtddtgddvgeejfedtucetufdoteggodetrf
-    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfurfetoffkrfgpnffqhgenuceu
-    rghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujf
-    gurhepofggfffhvfevkfgjfhfutgfgsehtjeertdertddtnecuhfhrohhmpedftehrugcu
-    uehivghshhgvuhhvvghlfdcuoegrrhgusgeskhgvrhhnvghlrdhorhhgqeenucggtffrrg
-    htthgvrhhnpedvueehiedtvedtleekuddutefgffdtleetfeetveejveejieehfefhjeei
-    jeefudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
-    grrhguodhmvghsmhhtphgruhhthhhpvghrshhonhgrlhhithihqdduieejtdehtddtjeel
-    qdeffedvudeigeduhedqrghruggspeepkhgvrhhnvghlrdhorhhgseifohhrkhhofhgrrh
-    gurdgtohhmpdhnsggprhgtphhtthhopeefuddpmhhouggvpehsmhhtphhouhhtpdhrtghp
-    thhtohepsghpsegrlhhivghnkedruggvpdhrtghpthhtohepnhhivhgvughithgrsegrlh
-    humhdrmhhithdrvgguuhdprhgtphhtthhopehluhhtohesrghmrggtrghpihhtrghlrdhn
-    vghtpdhrtghpthhtohepughpshhmihhthhesrghpvghrthhushhsohhluhhtihhonhhsrd
-    gtohhmpdhrtghpthhtoheprghnughrvgifrdgtohhophgvrhefsegtihhtrhhigidrtgho
-    mhdprhgtphhtthhopegurghvvghmsegurghvvghmlhhofhhtrdhnvghtpdhrtghpthhtoh
-    epphgvthgvrhhhuhgvfigvsehgmhigrdguvgdprhgtphhtthhopehhvghrsggvrhhtsehg
-    ohhnughorhdrrghprghnrgdrohhrghdrrghupdhrtghpthhtohepthhrvghntghhsghooh
-    htqdguvghvvghlsehgohhoghhlvghgrhhouhhpshdrtghomh
-X-ME-Proxy: <xmx:X8qgab_C081BMvaxIo0BzZ-sX_AZdakByebOHAHonhOZKthOofNYdg>
-    <xmx:X8qgab9RXeBduiNjH9ukeTnmcessPmjZE_P_BsB_B3rT4zvP43haPw>
-    <xmx:X8qgaV8gKWfgApMxNXUIy-8AXoKZAbHjsRXX-zZwcEBpHJWpDTdjUQ>
-    <xmx:X8qgaWKju_xbONK3Zq2I1tNt_fC0oFtXwcuR9Tme3zbaJ9rR1f7jDA>
-    <xmx:X8qgaaTn5NUoqETkYMa2Chsu7s32beRqVWFyyUQOMzedJpvBW4TIhqOR>
-Feedback-ID: ice86485a:Fastmail
-Received: by mailuser.phl.internal (Postfix, from userid 501)
-	id E001E700065; Thu, 26 Feb 2026 17:34:06 -0500 (EST)
-X-Mailer: MessagingEngine.com Webmail Interface
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="eWmmioC1"
+Received: by mail-pl1-f201.google.com with SMTP id d9443c01a7336-2adda5a44d8so13477615ad.1
+        for <iommu@lists.linux.dev>; Thu, 26 Feb 2026 14:40:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1772145652; x=1772750452; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=NlR4d3dvmkzYuGlfHJDWO2utwy3AGmj/mSIZB1EeTfU=;
+        b=eWmmioC1VhUaYrppSZRMuNlRJnZnrOdxRIoEy0suCo5LPlIoiVdhSpDSWw0ivDUPa+
+         5CBln78rENGi0/tvrmFza2XZs3LdZRq2eLFbaCNHBNyXni7lfbk+eFXbPkE5fE+AQPMJ
+         CZBT3Az3b6EYFaCBPRAEtrykHtFouDhnJ1fQRDRvlKVb6tBPiLg+ajDrFtWNBQp7bKbD
+         BEkK9GaFtIei9G4tiLwPRQJNjCV8bDJU4/seEzyZpayljb8SSNwRCxt5qb4/AoxYswWd
+         gMVQUt+sNR0VmuOBEvHlwQveNSDkX6AuXcO46q5aB0kM51TzHbEcExNzdMcCvTZLSzfe
+         zIIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772145652; x=1772750452;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=NlR4d3dvmkzYuGlfHJDWO2utwy3AGmj/mSIZB1EeTfU=;
+        b=Ds+uKE1iEEgrhDNfDD1/+r4vybqIcSjY3lUX4EgOMHMYwBH/25/fYy709XfI/SJTAh
+         tqyX3PLKMEHXDOXUIKu8NVehPNFHBGv5VSkOp7kRvHQDmcPh+5cy4367C+74488uTKGu
+         ngtISPDPHDiQO8cX7IEfWCljDypDw1hQW4eU48j4CUuK+xHaZ58x5FmdXGxBa+8jqBIl
+         3yERApJ8knVQVu1BkOMV/qBU5G45BEfxd/fW/Bhtm+pUUlBEE+jt2AF25N5ZL9zbAQmd
+         tPkJfNOpddlOEhr0bXzKTz13AvhzEbfueluO3Ap35aea/zxUG6aBq0JQUwCZN7bZsJth
+         xelA==
+X-Forwarded-Encrypted: i=1; AJvYcCWMgv2Ry/GWlVWQXZbJUlebEyjbn79X/6plWW0QBxhMibFaefkSiUrptD1CUhx+ua/cx9Zq5g==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy53Axecf1xn5PetW+J/1xmip5vBklYZ1IGveJ7QRq6TBUtwDT7
+	h0IkJNW+CW3DpE/OfuvWjyuV0kZ74NlMMcB3eYcIG4Tar3frMI9fR9b5EhaS1ANoVqAvgbbf0hb
+	s5yi6qA==
+X-Received: from plfp5.prod.google.com ([2002:a17:902:e745:b0:2a9:62df:189d])
+ (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a17:903:2450:b0:2ad:e535:36ca
+ with SMTP id d9443c01a7336-2ae2e3e3c85mr5360285ad.12.1772145651270; Thu, 26
+ Feb 2026 14:40:51 -0800 (PST)
+Date: Thu, 26 Feb 2026 14:40:50 -0800
+In-Reply-To: <20260226190757.GA44359@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-X-ThreadId: AAnEvm6syrbF
-Date: Thu, 26 Feb 2026 23:33:18 +0100
-From: "Ard Biesheuvel" <ardb@kernel.org>
-To: "Ross Philipson" <ross.philipson@oracle.com>,
- "Daniel P. Smith" <dpsmith@apertussolutions.com>,
- linux-kernel@vger.kernel.org, x86@kernel.org,
- linux-integrity@vger.kernel.org, linux-doc@vger.kernel.org,
- linux-crypto@vger.kernel.org, kexec@lists.infradead.org,
- linux-efi@vger.kernel.org, iommu@lists.linux.dev,
- dave.hansen@linux.intel.com, "H . Peter Anvin" <hpa@zytor.com>
-Cc: "Thomas Gleixner" <tglx@linutronix.de>, "Ingo Molnar" <mingo@redhat.com>,
- "Borislav Petkov" <bp@alien8.de>, "Matthew Garrett" <mjg59@srcf.ucam.org>,
- "James Bottomley" <James.Bottomley@hansenpartnership.com>, peterhuewe@gmx.de,
- "Jarkko Sakkinen" <jarkko@kernel.org>, jgg@ziepe.ca,
- "Andy Lutomirski" <luto@amacapital.net>, nivedita@alum.mit.edu,
- "Herbert Xu" <herbert@gondor.apana.org.au>, davem@davemloft.net,
- corbet@lwn.net, "Eric W. Biederman" <ebiederm@xmission.com>,
- dwmw2@infradead.org, baolu.lu@linux.intel.com, kanth.ghatraju@oracle.com,
- "Andrew Cooper" <andrew.cooper3@citrix.com>,
- trenchboot-devel@googlegroups.com
-Message-Id: <517b0d68-247b-486a-b283-84eac6596017@app.fastmail.com>
-In-Reply-To: <00774604-258c-4e88-80a4-fd8f60fcd0b3@oracle.com>
-References: <20251215233316.1076248-1-ross.philipson@oracle.com>
- <b5f2b5a5-b984-4ed3-a023-c06d634f9146@app.fastmail.com>
- <1ffd3cb5-2c76-4371-a067-3e4849907d80@apertussolutions.com>
- <49d169bf-0ad2-49be-b7d7-fceb9e7f831a@app.fastmail.com>
- <242a0462-7fc5-4902-b71d-22cf8360239e@app.fastmail.com>
- <00774604-258c-4e88-80a4-fd8f60fcd0b3@oracle.com>
-Subject: Re: [PATCH v15 00/28] x86: Secure Launch support for Intel TXT
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
+Mime-Version: 1.0
+References: <20260225075211.3353194-1-aik@amd.com> <aZ7-tTpobKiCFT5L@google.com>
+ <CAEvNRgEiod74cRoVQVC5LUbWDZf6Wwz1ssjQN0fveN=RBAjsTw@mail.gmail.com> <20260226190757.GA44359@ziepe.ca>
+Message-ID: <aaDL8tYrVCWlQg79@google.com>
+Subject: Re: [RFC PATCH kernel] iommufd: Allow mapping from KVM's guest_memfd
+From: Sean Christopherson <seanjc@google.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Ackerley Tng <ackerleytng@google.com>, Alexey Kardashevskiy <aik@amd.com>, linux-kernel@vger.kernel.org, 
+	kvm@vger.kernel.org, Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>, 
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Paolo Bonzini <pbonzini@redhat.com>, Steve Sistare <steven.sistare@oracle.com>, 
+	Nicolin Chen <nicolinc@nvidia.com>, iommu@lists.linux.dev, linux-coco@lists.linux.dev, 
+	Dan Williams <dan.j.williams@intel.com>, Santosh Shukla <santosh.shukla@amd.com>, 
+	"Pratik R . Sampat" <prsampat@amd.com>, Fuad Tabba <tabba@google.com>, Xu Yilun <yilun.xu@linux.intel.com>, 
+	"Aneesh Kumar K . V" <aneesh.kumar@kernel.org>, michael.roth@amd.com, vannapurve@google.com
+Content-Type: text/plain; charset="us-ascii"
 
+On Thu, Feb 26, 2026, Jason Gunthorpe wrote:
+> On Thu, Feb 26, 2026 at 12:19:52AM -0800, Ackerley Tng wrote:
+> > Sean Christopherson <seanjc@google.com> writes:
+> > 
+> > > On Wed, Feb 25, 2026, Alexey Kardashevskiy wrote:
+> > >> For the new guest_memfd type, no additional reference is taken as
+> > >> pinning is guaranteed by the KVM guest_memfd library.
+> > >>
+> > >> There is no KVM-GMEMFD->IOMMUFD direct notification mechanism as
+> > >> the assumption is that:
+> > >> 1) page stage change events will be handled by VMM which is going
+> > >> to call IOMMUFD to remap pages;
+> > >> 2) shrinking GMEMFD equals to VM memory unplug and VMM is going to
+> > >> handle it.
+> > >
+> > > The VMM is outside of the kernel's effective TCB.  Assuming the VMM will always
+> > > do the right thing is a non-starter.
+> > 
+> > I think looking up the guest_memfd file from the userspace address
+> > (uptr) is a good start
+> 
+> Please no, if we need complicated things like notifiers then it is
+> better to start directly with the struct file interface and get
+> immediately into some guestmemfd API instead of trying to get their
+> from a VMA. A VMA doesn't help in any way and just complicates things.
 
++1000.  Anything that _requires_ a VMA to do something with guest_memfd is broken
+by design.
 
-On Thu, 26 Feb 2026, at 19:31, ross.philipson@oracle.com wrote:
-> On 2/18/26 9:30 AM, 'Ard Biesheuvel' via trenchboot-devel wrote:
->> On Thu, 12 Feb 2026, at 21:39, Ard Biesheuvel wrote:
->>> On Thu, 12 Feb 2026, at 20:49, Daniel P. Smith wrote:
->>>> On 2/9/26 09:04, Ard Biesheuvel wrote:
->>> ...
->>>>> I've had a stab at implementing all of this in a manner that is more idiomatic for EFI boot:
->>>>>
->>>>> - GRUB does minimal TXT related preparation upfront, and exposes the remaining functionality via a protocol that is attached to the loaded image by GRUB
->>>>> - The SL stub is moved to the core kernel, with some startup code added to pivot to long mode
->>>>> - the EFI stub executes and decompresses the kernel as usual
->>>>> - if the protocol is present, the EFI stub calls it to pass the bootparams pointer, the base and size of the MLE and the header offset back to the GRUB code
->>>>> - after calling ExitBootServices(), it calls another protocol method to trigger the secure launch.
->>>>>
->>> ...
->>>>
->>>> I think this is a great approach for UEFI, though we need to reconcile
->>>> this with non-UEFI situations such as booting under coreboot.
->>>
->>> There are two approaches that I think are feasible for coreboot in this model:
->>>
->>> - just unpack the ELF and boot that - there is already prior art for
->>> that with Xen. We can stick the MLE header offset in an ELF note where
->>> any loader can find it.
->>>
->>> - stick with the current approach as much as possible, i.e., disable
->>> physical KASLR so that the decompressed kernel will end up right where
->>> the decompressor was loaded, which allows much of the secure launch
->>> preparation to be done as before. Only the final bits (including the
->>> call into the ACM itself) need to be deferred, and we can propose a
->>> generic mechanism for that via boot_params.
->>>
->>> I'm working on a prototype of the latter, but GRUB is an odd beast and
->>> my x86 fu is weak.
->>>
->> 
->> I've managed to get a working implementation of the legacy entrypoint, by repurposing the dl_handler() entrypoint you added for EFI [which no longer needs it in my version] as a callback for the legacy boot flow. This /should/ work for i386-coreboot too, but I have no way of testing it (I only tried 'slaunch --legacy-linux' using the x86_64-efi build).
->> 
->> I've pushed the changes to the branches I mentioned previously in this thread.
->
-> Hello Ard,
->
-> I am working on incorporating the changes we have been discussing. So 
-> far everything has been rather smooth. I noticed in the legacy support 
-> you did here, you introduce a new boot_param. This is something that we 
-> tried to do early on but changes to the boot_params layout is rather 
-> frowned upon. We worked with Peter A. on the kernel_info scheme but 
-> this parameter you introduced is not used that way (kernel_info is 
-> meant to be RO after the kernel is built).
+> > I didn't think of this before LPC but forcing unmapping during
+> > truncation (aka shrinking guest_memfd) is probably necessary for overall
+> > system stability and correctness, so notifying and having guest_memfd
+> > track where its pages were mapped in the IOMMU is necessary. Whether or
+> > not to unmap during conversions could be a arch-specific thing, but all
+> > architectures would want the memory unmapped if the memory is removed
+> > from guest_memfd ownership.
+> 
+> Things like truncate are a bit easier to handle, you do need a
+> protective notifier, but if it detects truncate while an iommufd area
+> still covers the truncated region it can just revoke the whole
+> area. Userspace made a mistake and gets burned but the kernel is
+> safe. We don't need something complicated kernel side to automatically
+> handle removing just the slice of truncated guestmemfd, for example.
 
-Indeed. kernel_info describes the kernel to the bootloader, not the other way around.
+Yeah, as long as the behavior is well-documented from time zero, we can probably
+get away with fairly draconian behavior.
 
-There is prior art for adding fields to boot_params for passing data from bootloader to kernel (e.g., ext_ramdisk_image/size, efi_info, cc_blob_address), and I think adding a field for the SLRT is reasonable. Alternatively, we might consider setup_data but I don't see why a field in boot_params would be controversial here.
+> If guestmemfd is fully pinned and cannot free memory outside of
+> truncate that may be good enough (though somehow I think that is not
+> the case)
 
-> I guess my first questions 
-> are whether this will be an acceptable approach (per the x86 
-> maintainers) to add a boot_param and, if so, whether the spot you chose 
-> is reasonable. E.g. will it survive the sanitize boot params step.
->
-
-I think that is irrelevant tbh. A bootloader is supposed to clear struct boot_params before it copies struct setup_header into it, otherwise sanitize_boot_params() will trigger on a non-zero sentinel field, and clean it up. Given that there is no backwards compatibility concern for trenchboot, we can just stipulate that the SLRT field is only valid if struct boot_params was wiped correctly, and sanitize_boot_params() will be a no-op.
-
-
-
+With in-place conversion, PUNCH_HOLE and private=>shared conversions are the only
+two ways to partial "remove" memory from guest_memfd, so it may really be that
+simple.
