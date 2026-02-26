@@ -1,168 +1,704 @@
-Received: from PH7PR06CU001.outbound.protection.outlook.com (mail-westus3azon11010013.outbound.protection.outlook.com [52.101.201.13])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 698A03112A1
-	for <iommu@lists.linux.dev>; Thu, 26 Feb 2026 15:10:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.201.13
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772118614; cv=fail; b=CDnPKOD3avQ18pwHcgg5iJEkO1iy5iCP+pIox+7uY7UkRSWmJtb73CfqH69IfFrWLrF++CIL4dkz85Zrq/VQaWXpOrLwVuH+yOx9mYRlveysJBvaRzldW2Ya1aO+/K9cUidefuZziyFlhx1++3vOJeML6WnS6V8oDwjWSi0Tnz0=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772118614; c=relaxed/simple;
-	bh=fA1aJeVW9IWiRlcTMOJOCYcG+7dJBjzVskazbkhBnmA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=tBEBKiRJnTaWoh/LjH2BvplC9dFEDp6N1upSqTObb0LCbJ9v4KFwm2gTBMM0yvcaxT3uhZMBOg104h1t/ecBg6Y7RKd+Fjo4zZoUO2bqTimCzE6HAJUqxW2JKDNmUvf4sIDJcxZXWTd8mStOCkwP0/DGaE618IZAAZmhIoI46Xc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=Gs9nJQ6W; arc=fail smtp.client-ip=52.101.201.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Gs9nJQ6W"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=tutfhDyUVg6RHWRmAZ4hUC+f9ZjBmEGOi0jYWnuNvjSi+t0aBQHfrRludUsu1iG+AUzYvH0mIsD8mUJVX7ghEuNwq9kMexSQ9pDoG6+vkGVkibU8wP6QxYx1mj7awW9rUMB8/IH/a9D57TjzP9EtaIQKBZsG8GC3iVqitRtG/3exX0pXG0KPyn7dCqSPlEShetycAPa2jZutEIDUOqZXtY2nJ1bRcuO8+n4dnimhyBmITrUSWjpta9H7+bwyZekjmNgvJPUEOG53k+hUZrKrNHz+2YqWIHiCHPMqcrCM2N08EqpgyD3QPPBs2OHD+/9lvLd3vEt/8LlRZ5gu/afHWg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9p/rG0mijpIkjwU7PtFF8PynamrpR89pcz/lUO56k6c=;
- b=lTOCh1wvJa2eb2o8p2yVP/hht4QQy2EMaLeMzGEm8y4zb7KALmsi9girxS/L5AlZ762iTU78Jxs0uxPz2LiiicgHjl1dPRlkWJSivBfdP10BS7aFcI11jkJwGeTLvK9st7z8DIAsX7j7TG0y3T9lqPPcMEU8wlHCJzuhacLtaYI2ge/ExPdHMowdRy78FC/Qi93cXiy73rh6S0kghQ5kLZ4XCnq3c30O9VWlvuuxSoqOqdDmuexX3ojSj+aD66MslBvtGmwlh1kQk/klRcPSWlFDW4ZLshU80PDlAnjHv/4q40RYJXCVPfRbBNq0bJxMDvORKEnyQI/hZURpOkR74Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9p/rG0mijpIkjwU7PtFF8PynamrpR89pcz/lUO56k6c=;
- b=Gs9nJQ6W5I+UDaFWIvM7+2bqHPzJw8O+hDhMn7z57UnygHwBSX5TpIXZxYGPoB83iqf+g2Pl4LQAooIfkDf7JLYufQTM2TGBvsDGOBG6JPmOp2PehPFQJzFknGGTZUt9R2sRXKZ2efGsuYGUf1xPAntRhqJLACDvlWkGSIqL90eu/8FtIDpqbFLDUeh3d3V0goH+HpZwZyEPmIUeO1qe12f0uQw0blaR0C2SIsuGmUvRBQTfB+sIxrvzFn31MatLKV/4FAouYAZ1XghljVFnAbcbKf2USp6tyXOtUFgQoMJP9NPzB6AFfLPdaOGH7Re9jN8tU2zLjdjOKtDppF7m9Q==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
- by IA1PR12MB9062.namprd12.prod.outlook.com (2603:10b6:208:3aa::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9654.14; Thu, 26 Feb
- 2026 15:10:09 +0000
-Received: from LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
- ([fe80::299d:f5e0:3550:1528%5]) with mapi id 15.20.9654.014; Thu, 26 Feb 2026
- 15:10:09 +0000
-Date: Thu, 26 Feb 2026 11:10:08 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, dan.j.williams@intel.com,
-	"Tian, Kevin" <kevin.tian@intel.com>,
-	Jonathan Cameron <jonathan.cameron@huawei.com>,
-	"will@kernel.org" <will@kernel.org>,
-	"bhelgaas@google.com" <bhelgaas@google.com>,
-	"joro@8bytes.org" <joro@8bytes.org>,
-	"praan@google.com" <praan@google.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
-	"miko.lenczewski@arm.com" <miko.lenczewski@arm.com>,
-	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-	"linux-cxl@vger.kernel.org" <linux-cxl@vger.kernel.org>
-Subject: Re: [PATCH RFCv1 1/3] PCI: Allow ATS to be always on for CXL.cache
- capable devices
-Message-ID: <20260226151008.GD5933@nvidia.com>
-References: <20260203175540.GC3931454@nvidia.com>
- <aZZDo3BeuBKh9q24@nvidia.com>
- <20260219143737.GG723117@nvidia.com>
- <aZc//6kvH3Eqfwfe@nvidia.com>
- <20260219174139.GI723117@nvidia.com>
- <aZfoqETxb31jp/Pk@nvidia.com>
- <20260220125044.GK723117@nvidia.com>
- <6a842339-3f0a-48db-830a-326add917519@arm.com>
- <20260220135124.GA1894399@nvidia.com>
- <c7cd42ff-f95a-4aaf-ab79-5af476bca894@arm.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c7cd42ff-f95a-4aaf-ab79-5af476bca894@arm.com>
-X-ClientProxiedBy: BL1P221CA0040.NAMP221.PROD.OUTLOOK.COM
- (2603:10b6:208:5b5::15) To LV8PR12MB9620.namprd12.prod.outlook.com
- (2603:10b6:408:2a1::19)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3E59E3F0752
+	for <iommu@lists.linux.dev>; Thu, 26 Feb 2026 15:22:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1772119348; cv=none; b=Vkd+8/59jCrs/odEEkFFp5kGHvJaqQf5/0AaTQccd2C3utxbSmp6X3WU1rT/vFuYl2vblQrGmueC+PtvTI/2vkNRWHh9XNS+CBPgIu06z56GAO3TTyXhJFZJmy4JQxLMm7icVEw5X32vAGvD9aYFBJICNJceGn2aHbFqd7DOVlo=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1772119348; c=relaxed/simple;
+	bh=jzwnEoQ7uCf4EYS/YiGXuMICLEMlGImALnstesHRop4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Q3bOunb0EkqHFEWzleQYLC2FDdg3dHTAf2S+ZwZ8MUFFOGdTZARVV3RhJxIDB6G1wpCitJGi973f9TLr7b5sEhbFg9z985zVdtdo9jszp498o5S2Ods532P9uPkqB54qt4+vrYBdnvEVV/XANgswd9Fh982igNyu7JFFvFokYBo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5E1091516;
+	Thu, 26 Feb 2026 07:22:19 -0800 (PST)
+Received: from [10.1.196.85] (e121345-lin.cambridge.arm.com [10.1.196.85])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C62553F62B;
+	Thu, 26 Feb 2026 07:22:21 -0800 (PST)
+Message-ID: <d05a81ff-c6af-4621-9593-d06f80220e34@arm.com>
+Date: Thu, 26 Feb 2026 15:22:05 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|IA1PR12MB9062:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4f901aba-dfaa-4cd7-765a-08de754921dd
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|7416014|376014|366016|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	cRW/MOwQaMBnBmpWrKRklazIQSq6ec/y5VeE2+Ja9lVTizfQmloYArBlBjX+A/6YF/T6AkP/yjkag+UXzYrKsNzF3Qzq+oMe42dPHOjPV+4GdnQDmFnlALtfDGf4jWZQSqAeKdqW0iq6mZ7Vn9k4Z3wcYPdwRQojE2V5Y36+waOlQqHrmlP7h1Azva8W0ZojkprejXKZSmdVVFPmJJojxO73ZOOdlM+aAueVmH3YqNjnKEdMLkd52jBSHxRfeEZRHpcpx4W30TpxFexZMCmYRKVgL6Cf2jMDoQJ+WuxLI9sVLRoj2EB61rbxRMYerwqWanaBIWRUK0t7bnsOJh65ReS730XhOykBnln2hfzDt3hwRqHH72ZfFCUThhS5rwr+tRC5ry9JWnqYV50/1SWIAWU7uFdEX6lBrvtVUMbuMvuvhE4eAUWO3cPC74hDt0QF0dYmjUwOvPkYNS09aQy/vE39I4gmBnwPGuSfcqWn22CmlsWp85lHPsU278cT6UZpmDV3izesdTRtlh7LEI9WXBF2MgOqj3q+RnkzR/C4d+JyGpJZHO1xQSyD0Yj+ozhGkuQJhjxUv3i2oHQ08k4eDPQFbydtniXpdIy2l8qmhM9wCWp+HHWKghpjNSsOpM2T6XHoPLHDyMfX1tRAg/21Rjk8ADU+NJxAtr7wHEaCRuCroK24zQG0hni+LvJaMTeTQwqE8VRTT1fFbUTT/aX88mIWYBh72GjCYMQSNPzEhHc=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(366016)(1800799024);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?GRPQJr+zZ1ZrvgAe806JpS6mX7UXlkNZcHNyaeASO1QzOpK1Dr9KBI72OLJ7?=
- =?us-ascii?Q?6/vnNWrRacmryXYk3/mQd75VS2ztMbz/YZPlbb3pbE8e9hhJlukE/IIMUCKN?=
- =?us-ascii?Q?EPH6bB6eVcB+FNm1zLzfI5zNpin2P4+yU46ECf7TwFJosrzNtO6ryhY1n3dn?=
- =?us-ascii?Q?ftW8GV2TJ2TvqDJVZ6szJtC/LeEPiCVmQKK/SsCAYUVbQPb+Z1A/L75Xgxdp?=
- =?us-ascii?Q?rPhliWb7CF+6GS1BT40zczLgQe19oNkoc0yVpg7zHA4p7qG/yLsmRZoQlwfL?=
- =?us-ascii?Q?FOYZKgOuxavZ3ZMhCtHawQuToc0OKycVGoYT55RXgiV4gqKj8FirLVC9RiBc?=
- =?us-ascii?Q?ATI34ntm011BC2bJ8yeuZQCdUZt8IgsChE1UzEB7tQ76yjNq+yBxZhOBFAq3?=
- =?us-ascii?Q?OPsznR9f15HbddlRuNSlMu7lOSaG3yvwPDv9b6NQZV3B/Kmtp4bxYaenPsf2?=
- =?us-ascii?Q?+8cTLb4CoLzDmfP8mMrZXkaFH97tDmN7QgRHsqvdbzVpDwFBcOBzAlVoaDC0?=
- =?us-ascii?Q?70MCb8mbGeym9MlsBWnepOQqlinSBeVM3UE4GeFTtifunnSE5zD6j363xyP/?=
- =?us-ascii?Q?BKF5N4qlV0sEwhJsvlc5gsxhbSReBkrUcO/3vRXtFqq40hA9JhW/CJkRJkXu?=
- =?us-ascii?Q?2b8RiKDDGmzQwStW7j69kxFZ7zpFTOHsI2qBs9IekAMSyyU/jaPkDzFgkL2P?=
- =?us-ascii?Q?iBKU1erG57pFqrEqcjDBAFdICIv09Oq7yjEFasXz3PCVff21FTN5+CJPJvel?=
- =?us-ascii?Q?wEi/XjKwIE0XEvCCKXmdxYjlQef2vqwgp7f3TN7YX8oDuL7qCd167V99R1+9?=
- =?us-ascii?Q?pW6lfQzUDV9AkU8J2E8q42TOsp2LlgohcDf4fW+IARLVJ0Oja+oWTc7THrYW?=
- =?us-ascii?Q?HqIphLzfmvVSMoJFRmzBl0AZIuupfrg/xCIFSCy4mr6O+BeA6cFGny0chKBj?=
- =?us-ascii?Q?xGqUZfUOVsMXKBnnD2UrIjD70jxG9wFi22cPCe/FHEC90vn6EHWH/7JyfR9S?=
- =?us-ascii?Q?jtnSa7+vBl/o4S15GcPJrBrQiv5qn85F6BR44G9Z94Mv+lNOhtHsUVyLdDJe?=
- =?us-ascii?Q?9lPHIqIRIjtKzU/H1UUujm9S1G2HKADhUQM5zQO5otry2Bf438fAdXDH4woD?=
- =?us-ascii?Q?6iDuiieMsyROdruj41QZV6Ml9m3FswUup0pWW5m6glIXg1Uini5A2W+8DYdO?=
- =?us-ascii?Q?S1j/2eyBL/1tDIGqFQ8OgPz6V9/wbRTVWxdZx5T66RpWDWzaVH8g4NjXcc6f?=
- =?us-ascii?Q?hYHfpAviJu0wjswpUfWdKGi2vf651cSJ4ORnBm/mvVx2Is9/p3sXj4fhFPwC?=
- =?us-ascii?Q?Ey4o7O3fZ8qgJQ4bqxNrya43/eLkdrm0XxFf+3lqiUdaK65cviKmpiK4K5e1?=
- =?us-ascii?Q?d+IfY+Zx5H7UAV/1hY4Pi1w2FZozIKC4NsBS3FwgCueuzOZ12UocOnS61UYX?=
- =?us-ascii?Q?m6NCLJwvfd9GclQtArJrhVuQ1jIasjyTPdcgD/n3OTwaoC8IMCAf613tGkPj?=
- =?us-ascii?Q?pT/EfkJRCDIPBK/vRG2H6KbD9c8U+QshhsvXyY9OqCepYJEaL92N257yKlXf?=
- =?us-ascii?Q?Vhvk/WEoVXu09u5MgcOM0vGPN3d+ew8VyapdkyfQuYBtXdmqSOty+GFJL1oi?=
- =?us-ascii?Q?1AQ5EeXQIx0QjqelJnj14zWtoSHs1KszqY1ObMLB3FBHPFpYmjNSI9mrYIEb?=
- =?us-ascii?Q?fQnWaR+RNLVm4/ARXY90xCf1IGHTiljFsW6k77KXnbHvgiAc9+7ycHGq1AwT?=
- =?us-ascii?Q?azCvUjFTLA=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4f901aba-dfaa-4cd7-765a-08de754921dd
-X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Feb 2026 15:10:09.6539
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: H9YeU5LdhXEDKYiHP52S4B8ONsQs62HsiYilZgs/w6EbK6C0xx35yEl81ON5M7yR
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB9062
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] dma-buf: heaps: Add Coherent heap to dmabuf heaps
+To: Albert Esteve <aesteve@redhat.com>, Sumit Semwal
+ <sumit.semwal@linaro.org>,
+ Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+ Brian Starkey <Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>,
+ "T.J. Mercier" <tjmercier@google.com>,
+ =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+ Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+ dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+ iommu@lists.linux.dev, echanude@redhat.com, mripard@redhat.com
+References: <20260224-b4-dmabuf-heap-coherent-rmem-v1-1-dffef43298ac@redhat.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20260224-b4-dmabuf-heap-coherent-rmem-v1-1-dffef43298ac@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Fri, Feb 20, 2026 at 02:45:49PM +0000, Robin Murphy wrote:
-> >   The port driver will start first, install the ITS page in the DMA
-> >   domain, VFIO will start second an switch the domain to BLOCKED, then
-> >   to PAGING, and the ITS mapping used by the port driver will be lost.
-> > 
-> > And nobody will notice this has happened because the interrupts in the
-> > port driver are only used for RAS IIRC so the net effect is your
-> > system doesn't print AERs anymore.
+On 24/02/2026 7:57 am, Albert Esteve wrote:
+> Add a dma-buf heap for DT coherent reserved-memory
+> (i.e., 'shared-dma-pool' without 'reusable' property),
+> exposing one heap per region for userspace buffers.
+
+Despite the "shared" naming of the compatible, these kinds of 
+reservations are often for highly device-specific purposes, and 
+sometimes may not even be accessible to other devices at all, so it's 
+far from clear that there's a generic use-case for connecting them to 
+dma-buf. Certainly it doesn't seem like a good idea to unconditionally 
+create heaps for *everyting*, and give userspace free reign to mess with 
+things it doesn't necessarily understand (especially where 
+usage-specific restrictions implied by "no-map" are involved) and which 
+may break drivers.
+
+Most drivers that accomodate a memory-region expect to manage it 
+themselves, so I would think it should be up to the drivers to opt into 
+delegating "their" pool to userspace by registering it as a heap. Or at 
+very worst, at least some additional DT compatible or property to 
+indicate that it really is safe and desirable to use a given pool in a 
+truly shared manner.
+
+Otherwise, If we just present some heaps named "memory@xyz" to userspace 
+(arch/arm64/boot/dts/ti/k3-j784s4-j742s2-ti-ipc-firmware-common.dtsi is 
+a fun example), do we really expect it to maintain exhaustive 
+platform-specific knowledge of which actual device(s) they belong to and 
+what they're for? And if it does try to just mess around and allocate 
+and map stuff, how does the dma-buf layer also have all of that 
+usage-specific detail to know what memory attributes are safe to map 
+with etc.?
+
+Thanks,
+Robin.
+
+> The heap binds a synthetic platform device to each region
+> so coherent allocations use the correct dev->dma_mem,
+> and it defers registration until late_initcall when
+> normal allocator are available.
 > 
-> Indeed VFIO's MSI cookie doesn't inherit any existing mappings from the DMA
-> domain, and that wouldn't work anyway since the IOVAs would almost certainly
-> be different. So we'd have to somehow free any existing AER interrupts
-> before the domain switch, then fully re-request and reprogram them
-> afterwards, in both DMA->UNMANAGED and UNMANAGED->DMA directions. Oof...
+> This patch includes charging of the coherent heap
+> allocator to the dmem cgroup.
+> 
+> Signed-off-by: Albert Esteve <aesteve@redhat.com>
+> ---
+> This patch introduces a new driver to expose DT coherent reserved-memory
+> regions as dma-buf heaps, allowing userspace buffers to be created.
+> 
+> Since these regions are device-dependent, we bind a synthetic platform
+> device to each region so coherent allocations use the correct dev->dma_mem.
+> 
+> Following Eric’s [1] and Maxime’s [2] work on charging DMA buffers
+> allocated from userspace to cgroups (dmem), this patch adds the same
+> charging pattern used by CMA heaps patch. Charging is done only through
+> the dma-buf heap interface so it can be attributed to a userspace allocator.
+> 
+> This allows each device-specific reserved-memory region to enforce its
+> own limits.
+> 
+> [1] https://lore.kernel.org/all/20260218-dmabuf-heap-cma-dmem-v2-0-b249886fb7b2@redhat.com/
+> [2] https://lore.kernel.org/all/20250310-dmem-cgroups-v1-0-2984c1bc9312@kernel.org/
+> ---
+>   drivers/dma-buf/heaps/Kconfig         |  17 ++
+>   drivers/dma-buf/heaps/Makefile        |   1 +
+>   drivers/dma-buf/heaps/coherent_heap.c | 485 ++++++++++++++++++++++++++++++++++
+>   include/linux/dma-heap.h              |  11 +
+>   kernel/dma/coherent.c                 |   9 +
+>   5 files changed, 523 insertions(+)
+> 
+> diff --git a/drivers/dma-buf/heaps/Kconfig b/drivers/dma-buf/heaps/Kconfig
+> index a5eef06c42264..93765dca164e3 100644
+> --- a/drivers/dma-buf/heaps/Kconfig
+> +++ b/drivers/dma-buf/heaps/Kconfig
+> @@ -12,3 +12,20 @@ config DMABUF_HEAPS_CMA
+>   	  Choose this option to enable dma-buf CMA heap. This heap is backed
+>   	  by the Contiguous Memory Allocator (CMA). If your system has these
+>   	  regions, you should say Y here.
+> +
+> +config DMABUF_HEAPS_COHERENT
+> +	bool "DMA-BUF Coherent Reserved-Memory Heap"
+> +	depends on DMABUF_HEAPS && OF_RESERVED_MEM && DMA_DECLARE_COHERENT
+> +	help
+> +	  Choose this option to enable coherent reserved-memory dma-buf heaps.
+> +	  This heap is backed by non-reusable DT "shared-dma-pool" regions.
+> +	  If your system defines coherent reserved-memory regions, you should
+> +	  say Y here.
+> +
+> +config COHERENT_AREAS_DEFERRED
+> +	int "Max deferred coherent reserved-memory regions"
+> +	depends on DMABUF_HEAPS_COHERENT
+> +	default 16
+> +	help
+> +	  Maximum number of coherent reserved-memory regions that can be
+> +	  deferred for later registration during early boot.
+> diff --git a/drivers/dma-buf/heaps/Makefile b/drivers/dma-buf/heaps/Makefile
+> index 974467791032f..96bda7a65f041 100644
+> --- a/drivers/dma-buf/heaps/Makefile
+> +++ b/drivers/dma-buf/heaps/Makefile
+> @@ -1,3 +1,4 @@
+>   # SPDX-License-Identifier: GPL-2.0
+>   obj-$(CONFIG_DMABUF_HEAPS_SYSTEM)	+= system_heap.o
+>   obj-$(CONFIG_DMABUF_HEAPS_CMA)		+= cma_heap.o
+> +obj-$(CONFIG_DMABUF_HEAPS_COHERENT)	+= coherent_heap.o
+> diff --git a/drivers/dma-buf/heaps/coherent_heap.c b/drivers/dma-buf/heaps/coherent_heap.c
+> new file mode 100644
+> index 0000000000000..870b2b89aefcb
+> --- /dev/null
+> +++ b/drivers/dma-buf/heaps/coherent_heap.c
+> @@ -0,0 +1,485 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * DMABUF heap for coherent reserved-memory regions
+> + *
+> + * Copyright (C) 2026 Red Hat, Inc.
+> + * Author: Albert Esteve <aesteve@redhat.com>
+> + *
+> + */
+> +
+> +#include <linux/cgroup_dmem.h>
+> +#include <linux/dma-heap.h>
+> +#include <linux/dma-buf.h>
+> +#include <linux/dma-mapping.h>
+> +#include <linux/err.h>
+> +#include <linux/highmem.h>
+> +#include <linux/iosys-map.h>
+> +#include <linux/of_reserved_mem.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/scatterlist.h>
+> +#include <linux/slab.h>
+> +#include <linux/vmalloc.h>
+> +
+> +#define DEFERRED_AREAS_MAX CONFIG_COHERENT_AREAS_DEFERRED
+> +
+> +/*
+> + * Early init can't use normal memory management yet (memblock is used
+> + * instead), so keep a small deferred list and retry at late_initcall.
+> + */
+> +static struct reserved_mem *rmem_areas_deferred[DEFERRED_AREAS_MAX];
+> +static unsigned int rmem_areas_deferred_num;
+> +
+> +static int coherent_heap_add_deferred(struct reserved_mem *rmem)
+> +{
+> +	if (rmem_areas_deferred_num >= DEFERRED_AREAS_MAX) {
+> +		pr_warn("Deferred heap areas list full, dropping %s\n",
+> +			rmem->name ? rmem->name : "unknown");
+> +		return -EINVAL;
+> +	}
+> +	rmem_areas_deferred[rmem_areas_deferred_num++] = rmem;
+> +	return 0;
+> +}
+> +
+> +struct coherent_heap {
+> +	struct dma_heap *heap;
+> +	struct reserved_mem *rmem;
+> +	char *name;
+> +	struct device *dev;
+> +	struct platform_device *pdev;
+> +#if IS_ENABLED(CONFIG_CGROUP_DMEM)
+> +	struct dmem_cgroup_region *cg;
+> +#endif
+> +};
+> +
+> +struct coherent_heap_buffer {
+> +	struct coherent_heap *heap;
+> +	struct list_head attachments;
+> +	struct mutex lock;
+> +	unsigned long len;
+> +	dma_addr_t dma_addr;
+> +	void *alloc_vaddr;
+> +	struct page **pages;
+> +	pgoff_t pagecount;
+> +	int vmap_cnt;
+> +	void *vaddr;
+> +#if IS_ENABLED(CONFIG_CGROUP_DMEM)
+> +	struct dmem_cgroup_pool_state *pool;
+> +#endif
+> +};
+> +
+> +struct dma_heap_attachment {
+> +	struct device *dev;
+> +	struct sg_table table;
+> +	struct list_head list;
+> +	bool mapped;
+> +};
+> +
+> +static int coherent_heap_attach(struct dma_buf *dmabuf,
+> +				struct dma_buf_attachment *attachment)
+> +{
+> +	struct coherent_heap_buffer *buffer = dmabuf->priv;
+> +	struct dma_heap_attachment *a;
+> +	int ret;
+> +
+> +	a = kzalloc_obj(*a);
+> +	if (!a)
+> +		return -ENOMEM;
+> +
+> +	ret = sg_alloc_table_from_pages(&a->table, buffer->pages,
+> +					buffer->pagecount, 0,
+> +					buffer->pagecount << PAGE_SHIFT,
+> +					GFP_KERNEL);
+> +	if (ret) {
+> +		kfree(a);
+> +		return ret;
+> +	}
+> +
+> +	a->dev = attachment->dev;
+> +	INIT_LIST_HEAD(&a->list);
+> +	a->mapped = false;
+> +
+> +	attachment->priv = a;
+> +
+> +	mutex_lock(&buffer->lock);
+> +	list_add(&a->list, &buffer->attachments);
+> +	mutex_unlock(&buffer->lock);
+> +
+> +	return 0;
+> +}
+> +
+> +static void coherent_heap_detach(struct dma_buf *dmabuf,
+> +				 struct dma_buf_attachment *attachment)
+> +{
+> +	struct coherent_heap_buffer *buffer = dmabuf->priv;
+> +	struct dma_heap_attachment *a = attachment->priv;
+> +
+> +	mutex_lock(&buffer->lock);
+> +	list_del(&a->list);
+> +	mutex_unlock(&buffer->lock);
+> +
+> +	sg_free_table(&a->table);
+> +	kfree(a);
+> +}
+> +
+> +static struct sg_table *coherent_heap_map_dma_buf(struct dma_buf_attachment *attachment,
+> +						  enum dma_data_direction direction)
+> +{
+> +	struct dma_heap_attachment *a = attachment->priv;
+> +	struct sg_table *table = &a->table;
+> +	int ret;
+> +
+> +	ret = dma_map_sgtable(attachment->dev, table, direction, 0);
+> +	if (ret)
+> +		return ERR_PTR(-ENOMEM);
+> +	a->mapped = true;
+> +
+> +	return table;
+> +}
+> +
+> +static void coherent_heap_unmap_dma_buf(struct dma_buf_attachment *attachment,
+> +					struct sg_table *table,
+> +					enum dma_data_direction direction)
+> +{
+> +	struct dma_heap_attachment *a = attachment->priv;
+> +
+> +	a->mapped = false;
+> +	dma_unmap_sgtable(attachment->dev, table, direction, 0);
+> +}
+> +
+> +static int coherent_heap_dma_buf_begin_cpu_access(struct dma_buf *dmabuf,
+> +						  enum dma_data_direction direction)
+> +{
+> +	struct coherent_heap_buffer *buffer = dmabuf->priv;
+> +	struct dma_heap_attachment *a;
+> +
+> +	mutex_lock(&buffer->lock);
+> +	if (buffer->vmap_cnt)
+> +		invalidate_kernel_vmap_range(buffer->vaddr, buffer->len);
+> +
+> +	list_for_each_entry(a, &buffer->attachments, list) {
+> +		if (!a->mapped)
+> +			continue;
+> +		dma_sync_sgtable_for_cpu(a->dev, &a->table, direction);
+> +	}
+> +	mutex_unlock(&buffer->lock);
+> +
+> +	return 0;
+> +}
+> +
+> +static int coherent_heap_dma_buf_end_cpu_access(struct dma_buf *dmabuf,
+> +						enum dma_data_direction direction)
+> +{
+> +	struct coherent_heap_buffer *buffer = dmabuf->priv;
+> +	struct dma_heap_attachment *a;
+> +
+> +	mutex_lock(&buffer->lock);
+> +	if (buffer->vmap_cnt)
+> +		flush_kernel_vmap_range(buffer->vaddr, buffer->len);
+> +
+> +	list_for_each_entry(a, &buffer->attachments, list) {
+> +		if (!a->mapped)
+> +			continue;
+> +		dma_sync_sgtable_for_device(a->dev, &a->table, direction);
+> +	}
+> +	mutex_unlock(&buffer->lock);
+> +
+> +	return 0;
+> +}
+> +
+> +static int coherent_heap_mmap(struct dma_buf *dmabuf, struct vm_area_struct *vma)
+> +{
+> +	struct coherent_heap_buffer *buffer = dmabuf->priv;
+> +	struct coherent_heap *coh_heap = buffer->heap;
+> +
+> +	return dma_mmap_coherent(coh_heap->dev, vma, buffer->alloc_vaddr,
+> +				 buffer->dma_addr, buffer->len);
+> +}
+> +
+> +static void *coherent_heap_do_vmap(struct coherent_heap_buffer *buffer)
+> +{
+> +	void *vaddr;
+> +
+> +	vaddr = vmap(buffer->pages, buffer->pagecount, VM_MAP, PAGE_KERNEL);
+> +	if (!vaddr)
+> +		return ERR_PTR(-ENOMEM);
+> +
+> +	return vaddr;
+> +}
+> +
+> +static int coherent_heap_vmap(struct dma_buf *dmabuf, struct iosys_map *map)
+> +{
+> +	struct coherent_heap_buffer *buffer = dmabuf->priv;
+> +	void *vaddr;
+> +	int ret = 0;
+> +
+> +	mutex_lock(&buffer->lock);
+> +	if (buffer->vmap_cnt) {
+> +		buffer->vmap_cnt++;
+> +		iosys_map_set_vaddr(map, buffer->vaddr);
+> +		goto out;
+> +	}
+> +
+> +	vaddr = coherent_heap_do_vmap(buffer);
+> +	if (IS_ERR(vaddr)) {
+> +		ret = PTR_ERR(vaddr);
+> +		goto out;
+> +	}
+> +
+> +	buffer->vaddr = vaddr;
+> +	buffer->vmap_cnt++;
+> +	iosys_map_set_vaddr(map, buffer->vaddr);
+> +out:
+> +	mutex_unlock(&buffer->lock);
+> +
+> +	return ret;
+> +}
+> +
+> +static void coherent_heap_vunmap(struct dma_buf *dmabuf, struct iosys_map *map)
+> +{
+> +	struct coherent_heap_buffer *buffer = dmabuf->priv;
+> +
+> +	mutex_lock(&buffer->lock);
+> +	if (!--buffer->vmap_cnt) {
+> +		vunmap(buffer->vaddr);
+> +		buffer->vaddr = NULL;
+> +	}
+> +	mutex_unlock(&buffer->lock);
+> +	iosys_map_clear(map);
+> +}
+> +
+> +static void coherent_heap_dma_buf_release(struct dma_buf *dmabuf)
+> +{
+> +	struct coherent_heap_buffer *buffer = dmabuf->priv;
+> +	struct coherent_heap *coh_heap = buffer->heap;
+> +
+> +	if (buffer->vmap_cnt > 0) {
+> +		WARN(1, "%s: buffer still mapped in the kernel\n", __func__);
+> +		vunmap(buffer->vaddr);
+> +		buffer->vaddr = NULL;
+> +		buffer->vmap_cnt = 0;
+> +	}
+> +
+> +	if (buffer->alloc_vaddr)
+> +		dma_free_coherent(coh_heap->dev, buffer->len, buffer->alloc_vaddr,
+> +			       buffer->dma_addr);
+> +	kfree(buffer->pages);
+> +#if IS_ENABLED(CONFIG_CGROUP_DMEM)
+> +	dmem_cgroup_uncharge(buffer->pool, buffer->len);
+> +#endif
+> +	kfree(buffer);
+> +}
+> +
+> +static const struct dma_buf_ops coherent_heap_buf_ops = {
+> +	.attach = coherent_heap_attach,
+> +	.detach = coherent_heap_detach,
+> +	.map_dma_buf = coherent_heap_map_dma_buf,
+> +	.unmap_dma_buf = coherent_heap_unmap_dma_buf,
+> +	.begin_cpu_access = coherent_heap_dma_buf_begin_cpu_access,
+> +	.end_cpu_access = coherent_heap_dma_buf_end_cpu_access,
+> +	.mmap = coherent_heap_mmap,
+> +	.vmap = coherent_heap_vmap,
+> +	.vunmap = coherent_heap_vunmap,
+> +	.release = coherent_heap_dma_buf_release,
+> +};
+> +
+> +static struct dma_buf *coherent_heap_allocate(struct dma_heap *heap,
+> +					      unsigned long len,
+> +					      u32 fd_flags,
+> +					      u64 heap_flags)
+> +{
+> +	struct coherent_heap *coh_heap;
+> +	struct coherent_heap_buffer *buffer;
+> +	DEFINE_DMA_BUF_EXPORT_INFO(exp_info);
+> +	size_t size = PAGE_ALIGN(len);
+> +	pgoff_t pagecount = size >> PAGE_SHIFT;
+> +	struct dma_buf *dmabuf;
+> +	int ret = -ENOMEM;
+> +	pgoff_t pg;
+> +
+> +	coh_heap = dma_heap_get_drvdata(heap);
+> +	if (!coh_heap)
+> +		return ERR_PTR(-EINVAL);
+> +	if (!coh_heap->dev)
+> +		return ERR_PTR(-ENODEV);
+> +
+> +	buffer = kzalloc_obj(*buffer);
+> +	if (!buffer)
+> +		return ERR_PTR(-ENOMEM);
+> +
+> +	INIT_LIST_HEAD(&buffer->attachments);
+> +	mutex_init(&buffer->lock);
+> +	buffer->len = size;
+> +	buffer->heap = coh_heap;
+> +	buffer->pagecount = pagecount;
+> +
+> +#if IS_ENABLED(CONFIG_CGROUP_DMEM)
+> +	if (mem_accounting) {
+> +		ret = dmem_cgroup_try_charge(coh_heap->cg, size,
+> +					     &buffer->pool, NULL);
+> +		if (ret)
+> +			goto free_buffer;
+> +	}
+> +#endif
+> +
+> +	buffer->alloc_vaddr = dma_alloc_coherent(coh_heap->dev, buffer->len,
+> +						 &buffer->dma_addr, GFP_KERNEL);
+> +	if (!buffer->alloc_vaddr) {
+> +		ret = -ENOMEM;
+> +#if IS_ENABLED(CONFIG_CGROUP_DMEM)
+> +		goto uncharge_cgroup;
+> +#else
+> +		goto free_buffer;
+> +#endif
+> +	}
+> +
+> +	buffer->pages = kmalloc_array(pagecount, sizeof(*buffer->pages),
+> +				      GFP_KERNEL);
+> +	if (!buffer->pages) {
+> +		ret = -ENOMEM;
+> +		goto free_dma;
+> +	}
+> +
+> +	for (pg = 0; pg < pagecount; pg++)
+> +		buffer->pages[pg] = virt_to_page((char *)buffer->alloc_vaddr +
+> +						 (pg * PAGE_SIZE));
+> +
+> +	/* create the dmabuf */
+> +	exp_info.exp_name = dma_heap_get_name(heap);
+> +	exp_info.ops = &coherent_heap_buf_ops;
+> +	exp_info.size = buffer->len;
+> +	exp_info.flags = fd_flags;
+> +	exp_info.priv = buffer;
+> +	dmabuf = dma_buf_export(&exp_info);
+> +	if (IS_ERR(dmabuf)) {
+> +		ret = PTR_ERR(dmabuf);
+> +		goto free_pages;
+> +	}
+> +	return dmabuf;
+> +
+> +free_pages:
+> +	kfree(buffer->pages);
+> +free_dma:
+> +	dma_free_coherent(coh_heap->dev, buffer->len, buffer->alloc_vaddr,
+> +			  buffer->dma_addr);
+> +#if IS_ENABLED(CONFIG_CGROUP_DMEM)
+> +uncharge_cgroup:
+> +	dmem_cgroup_uncharge(buffer->pool, size);
+> +#endif
+> +free_buffer:
+> +	kfree(buffer);
+> +	return ERR_PTR(ret);
+> +}
+> +
+> +static const struct dma_heap_ops coherent_heap_ops = {
+> +	.allocate = coherent_heap_allocate,
+> +};
+> +
+> +static int __coherent_heap_register(struct reserved_mem *rmem)
+> +{
+> +	struct dma_heap_export_info exp_info;
+> +	struct coherent_heap *coh_heap;
+> +#if IS_ENABLED(CONFIG_CGROUP_DMEM)
+> +	struct dmem_cgroup_region *region;
+> +#endif
+> +	const char *rmem_name;
+> +	int ret;
+> +
+> +	if (!rmem)
+> +		return -EINVAL;
+> +
+> +	rmem_name = rmem->name ? rmem->name : "unknown";
+> +
+> +	coh_heap = kzalloc_obj(*coh_heap);
+> +	if (!coh_heap)
+> +		return -ENOMEM;
+> +
+> +	coh_heap->name = kasprintf(GFP_KERNEL, "coherent_%s", rmem_name);
+> +	if (!coh_heap->name) {
+> +		ret = -ENOMEM;
+> +		goto free_coherent_heap;
+> +	}
+> +
+> +	coh_heap->rmem = rmem;
+> +
+> +	/* create a platform device per rmem and bind it */
+> +	coh_heap->pdev = platform_device_register_simple("coherent-heap",
+> +							 PLATFORM_DEVID_AUTO,
+> +							 NULL, 0);
+> +	if (IS_ERR(coh_heap->pdev)) {
+> +		ret = PTR_ERR(coh_heap->pdev);
+> +		goto free_name;
+> +	}
+> +
+> +	if (rmem->ops && rmem->ops->device_init) {
+> +		ret = rmem->ops->device_init(rmem, &coh_heap->pdev->dev);
+> +		if (ret)
+> +			goto pdev_unregister;
+> +	}
+> +
+> +	coh_heap->dev = &coh_heap->pdev->dev;
+> +#if IS_ENABLED(CONFIG_CGROUP_DMEM)
+> +	region = dmem_cgroup_register_region(rmem->size, "coh/%s", rmem_name);
+> +	if (IS_ERR(region)) {
+> +		ret = PTR_ERR(region);
+> +		goto pdev_unregister;
+> +	}
+> +	coh_heap->cg = region;
+> +#endif
+> +
+> +	exp_info.name = coh_heap->name;
+> +	exp_info.ops = &coherent_heap_ops;
+> +	exp_info.priv = coh_heap;
+> +
+> +	coh_heap->heap = dma_heap_add(&exp_info);
+> +	if (IS_ERR(coh_heap->heap)) {
+> +		ret = PTR_ERR(coh_heap->heap);
+> +		goto cg_unregister;
+> +	}
+> +
+> +	return 0;
+> +
+> +cg_unregister:
+> +#if IS_ENABLED(CONFIG_CGROUP_DMEM)
+> +	dmem_cgroup_unregister_region(coh_heap->cg);
+> +#endif
+> +pdev_unregister:
+> +	platform_device_unregister(coh_heap->pdev);
+> +	coh_heap->pdev = NULL;
+> +free_name:
+> +	kfree(coh_heap->name);
+> +free_coherent_heap:
+> +	kfree(coh_heap);
+> +
+> +	return ret;
+> +}
+> +
+> +int dma_heap_coherent_register(struct reserved_mem *rmem)
+> +{
+> +	int ret;
+> +
+> +	ret = __coherent_heap_register(rmem);
+> +	if (ret == -ENOMEM)
+> +		return coherent_heap_add_deferred(rmem);
+> +	return ret;
+> +}
+> +
+> +static int __init coherent_heap_register_deferred(void)
+> +{
+> +	unsigned int i;
+> +	int ret;
+> +
+> +	for (i = 0; i < rmem_areas_deferred_num; i++) {
+> +		struct reserved_mem *rmem = rmem_areas_deferred[i];
+> +
+> +		ret = __coherent_heap_register(rmem);
+> +		if (ret) {
+> +			pr_warn("Failed to add coherent heap %s",
+> +				rmem->name ? rmem->name : "unknown");
+> +			continue;
+> +		}
+> +	}
+> +
+> +	return 0;
+> +}
+> +late_initcall(coherent_heap_register_deferred);
+> +MODULE_DESCRIPTION("DMA-BUF heap for coherent reserved-memory regions");
+> diff --git a/include/linux/dma-heap.h b/include/linux/dma-heap.h
+> index 648328a64b27e..e894cfa1ecf1a 100644
+> --- a/include/linux/dma-heap.h
+> +++ b/include/linux/dma-heap.h
+> @@ -9,9 +9,11 @@
+>   #ifndef _DMA_HEAPS_H
+>   #define _DMA_HEAPS_H
+>   
+> +#include <linux/errno.h>
+>   #include <linux/types.h>
+>   
+>   struct dma_heap;
+> +struct reserved_mem;
+>   
+>   /**
+>    * struct dma_heap_ops - ops to operate on a given heap
+> @@ -48,4 +50,13 @@ struct dma_heap *dma_heap_add(const struct dma_heap_export_info *exp_info);
+>   
+>   extern bool mem_accounting;
+>   
+> +#if IS_ENABLED(CONFIG_DMABUF_HEAPS_COHERENT)
+> +int dma_heap_coherent_register(struct reserved_mem *rmem);
+> +#else
+> +static inline int dma_heap_coherent_register(struct reserved_mem *rmem)
+> +{
+> +	return -EOPNOTSUPP;
+> +}
+> +#endif
+> +
+>   #endif /* _DMA_HEAPS_H */
+> diff --git a/kernel/dma/coherent.c b/kernel/dma/coherent.c
+> index 1147497bc512c..f49d13e460e4b 100644
+> --- a/kernel/dma/coherent.c
+> +++ b/kernel/dma/coherent.c
+> @@ -9,6 +9,7 @@
+>   #include <linux/module.h>
+>   #include <linux/dma-direct.h>
+>   #include <linux/dma-map-ops.h>
+> +#include <linux/dma-heap.h>
+>   
+>   struct dma_coherent_mem {
+>   	void		*virt_base;
+> @@ -393,6 +394,14 @@ static int __init rmem_dma_setup(struct reserved_mem *rmem)
+>   	rmem->ops = &rmem_dma_ops;
+>   	pr_info("Reserved memory: created DMA memory pool at %pa, size %ld MiB\n",
+>   		&rmem->base, (unsigned long)rmem->size / SZ_1M);
+> +
+> +	if (IS_ENABLED(CONFIG_DMABUF_HEAPS_COHERENT)) {
+> +		int ret = dma_heap_coherent_register(rmem);
+> +
+> +		if (ret)
+> +			pr_warn("Reserved memory: failed to register coherent heap for %s (%d)\n",
+> +				rmem->name ? rmem->name : "unknown", ret);
+> +	}
+>   	return 0;
+>   }
+>   
+> 
+> ---
+> base-commit: 6de23f81a5e08be8fbf5e8d7e9febc72a5b5f27f
+> change-id: 20260223-b4-dmabuf-heap-coherent-rmem-91fd3926afe9
+> 
+> Best regards,
 
-I'm inclined to say we should disable this VFIO feature if CONFIG_IRQ_MSI_IOMMU
-is enabled... Better to hard fail then silently loose interrutps.
-
-If that causes problems for people then we should investigate how to
-fix the MSI.
-
-It is really hard, but perhaps the most elegant solution would be to
-allow the group members to have unique iommu domains by
-dis-ambiguating the 'grouping for aliasing' and 'grouping for ACS'
-cases. Then the portdrv can stay on its DMA domain and everything
-keeps working for it. That sounds like a monster project...
-
-Jason
