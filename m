@@ -1,491 +1,474 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1EB6C393DD4
-	for <iommu@lists.linux.dev>; Thu, 26 Feb 2026 08:39:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F4BF39C623
+	for <iommu@lists.linux.dev>; Thu, 26 Feb 2026 10:12:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772095151; cv=none; b=izwg4PJ7PLqaEGskaAn/pU6SMQo45ofZZY2lF+Q/AyhYfkDJMz+dicaakXkTlHFWO45C+IyGToCgsbz/uJ9Cgi8E+N0aHa/yDI6Tgqy9hs+9nfHAliPOlRrRpZ+yp3NvX5XnxwWc8u/r1BCRVodJX5IWRoI9MmR/YL0WYT5v0qY=
+	t=1772100741; cv=none; b=Qviw6YuUX/Mxb2czwio0xsnTgpQzkSv1l+c9vIsG4gLRonxQxEtg6C7N/fnd6WD+yxgfESZal2xW7F1hUVMbjAyCS39l42OcMKixktaUpfC6YmVy0/IJ2plSQIcMXdbqmyXMymSA8NwTIIKfX0Rt6uQEun1VIlIX9AR2SRl3bv8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772095151; c=relaxed/simple;
-	bh=R6K4l/PiiRgIwLZgEKR8QRcOzf93V5Fy49QdAdUFsVY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=rED/I7WJoLpwsYN+bYFY5Sw/VZ/i+yMBWsACcMcWbHMh9AxUjoViJZRZkKeshJ5VIxqZ0qr+8TGQZNZoeTTX+anXxQIAf8WEl5DhIMNuKnkcKgMm6a6P37s9oEo2scWKLnIDGZa77MhnGXdgDoVf2XhEH1UzOCkRzKnHwojMfJs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=dACNMrlA; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=KP184s1I; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1772100741; c=relaxed/simple;
+	bh=PidGG9aylNVEgIM8j2SwOA4MdSRASS0a3bhewa0aDpg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=FP/xs4JekmhhcKs+kcg6982wXgXpuEh2VjVWzUF7PvP24tR2OwXP9TBgAmOyLIpyFFi1bABrCETN2nTF/bBFQ4hdMyxtJfpcUfbTk3cxTYTb6JDtkbpSiHNVds8FM1oTwQicOhv1OQOkABKB6Y8Tg584J9f2NK11X1RinNUNyJw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=URiXMj5D; dkim=pass (2048-bit key) header.d=redhat.com header.i=@redhat.com header.b=RtdssF/6; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="dACNMrlA";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="KP184s1I"
-Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 61Q4V5HB2996644
-	for <iommu@lists.linux.dev>; Thu, 26 Feb 2026 08:39:08 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	WAf2lFWJkeZZmog0R5l/0t54shFe/JIkci8HejhVV/E=; b=dACNMrlAA6SnWB49
-	/U85VgY6dPieg8kAp+l733U2BOVsVLzC5aQrlIxGE8UEudM88OioPpNx5wrxMOP2
-	7ZWCSxETgJVWKydVkTt7X5qrSbgCznrokCHzpN4OwFKYVoqyrVAq4oN5byRjPlAZ
-	9TkpwWmw3Z+y21kCyimkHbaUTq9/LQGV/skbMtdBxzugPg5dWcuWwERGdOxXFdHQ
-	O125QlavaJMxj8YN4EYRCoDakbDKrqY8P50e0Y4B+o1bxODioicj65zZWMUqqZ6I
-	zbF6PUGBHDKi47dBsvIQ7BdocAzXHJYsPwg84Kfy1Q2P+WpXPUomxQuzioz5Etnh
-	VSseuQ==
-Received: from mail-pf1-f198.google.com (mail-pf1-f198.google.com [209.85.210.198])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4chyv9khtu-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Thu, 26 Feb 2026 08:39:07 +0000 (GMT)
-Received: by mail-pf1-f198.google.com with SMTP id d2e1a72fcca58-824a8b2fbadso2235891b3a.3
-        for <iommu@lists.linux.dev>; Thu, 26 Feb 2026 00:39:07 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="URiXMj5D";
+	dkim=pass (2048-bit key) header.d=redhat.com header.i=@redhat.com header.b="RtdssF/6"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1772100737;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=gvNRe5YinnGtBsLbQqtbum68D8/4VbQI7D9a9RKn348=;
+	b=URiXMj5DsflC+zgNx7DoAuk9V1WyljEcHwZqsEijmR30IDmcwEsc2PRLF1nwU2zDr8jodL
+	ukdQ5bG+lCelyRmtJS/cL/yq5aAS9jrG1HdBAuaAYBrHw6s2bS9RLD/EUZDYGtdKpqnjAw
+	yb0WXFK/rb89HCYSBk3m0RVRSFl2+xY=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-439-Xh_tqFDkOYOmg6nk6SPJvg-1; Thu, 26 Feb 2026 05:12:15 -0500
+X-MC-Unique: Xh_tqFDkOYOmg6nk6SPJvg-1
+X-Mimecast-MFC-AGG-ID: Xh_tqFDkOYOmg6nk6SPJvg_1772100734
+Received: by mail-wm1-f70.google.com with SMTP id 5b1f17b1804b1-483101623e9so5375095e9.3
+        for <iommu@lists.linux.dev>; Thu, 26 Feb 2026 02:12:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1772095147; x=1772699947; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=WAf2lFWJkeZZmog0R5l/0t54shFe/JIkci8HejhVV/E=;
-        b=KP184s1IV5o02FVFjnf0FweE777adreSYQrVQQ0EZZMYwlm/Cl29rgrkYqyqp1qerf
-         QhAog8YvVfSthDEVBR/Bcy/L6OH5VHIiUoCDqPzTbQR2KiEWkHkH9FSiKe3iJAM4Bd8q
-         BMHUOA3uARKF0QaIGSn/boQLGB+NL36mX0T3gKV796szvqftxObceY5MCIIIHv4LE/Pq
-         XBYZoCz/gIEjtfhONGlPs2ks2Wqs1AwlxhH8LmLnruNZIxttafn9z0dgPAln4eLTDmvU
-         /UBWpC5NnY2cCFz9N4H0LWTCDtgiPo+DFRZrTcpSojmNtCj0IZH113QgVNmLavPfYYzm
-         Z+oQ==
+        d=redhat.com; s=google; t=1772100734; x=1772705534; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=gvNRe5YinnGtBsLbQqtbum68D8/4VbQI7D9a9RKn348=;
+        b=RtdssF/6OdKCTp9u6W17JQZYX9Hw7/IPOJ8YiGPMgVPUGvmZiT/VzG0iYV3rvOnku0
+         hu2crZhUn3rRq/xjqhc6b30nyz/dZ5HWIARm6860P65oZZ4MtASOaeNumbqF20q5APeB
+         Urertrh6qTNcm2lHIG1eY6pikpyi2n1BsRqqXQYqmvo0NLYc6+P1IaPyFLtwkIp8IeoA
+         2IBTxq91rEOjddGOMU3+rOJYzPBzKBSM/xuM4bJgN+kSfYkdNvkAELy04Gz1nD0rMYwV
+         TuehQJ/ub4MlriGoLoMB3yP7pqe4hVn9s/lHWRKVXSUOpu4f+s7Ad8XkYlmJPZJMsTSy
+         5GRQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772095147; x=1772699947;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=WAf2lFWJkeZZmog0R5l/0t54shFe/JIkci8HejhVV/E=;
-        b=Gow0YvqWh+eXp+KH2iaq4IAwcLWkYmIWUHDd5wt7sdu1dBQekHngz9OdWhkoYRbECQ
-         uZaYDC3ifpfVjGqWgcrwmDh4wuZXuFQePOfP6ZnN+FqXgvzRY8c0SE1DVWTOGC1Yazml
-         s1qMZWChz/bmpmwCv/PNhdcFmmlIuns9bKlyJ9UbaNuTWAFoFHSvu4y9pMIscpkuVijB
-         ZTON6IsJkzeNKYcC+VLc/lOl813U+hzd+EU4PR4iOOhUp4+/g6WWWoACRq6zUM6kKKo3
-         B56gs5Zalb+z9MraybUC6Yz/M2Woya1KkaX++wrPhj75BrtIPfOQ092KGdSItCiAw1QM
-         CcXQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUB1iJsKxm1eCWtgl33TuhtBlX34EVB7E3tI6XQowD6iJq0KzaoHqvZU4n/KIaCVjzbgYTqKg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yyo2jP/D4tFcRQ8J/CWRaXgGVytDBuwHtDe6hfKLsvG5tHZY2a/
-	kH1Jfw18kJ4jQERU34w65k4DBZWTsTSamaHdyCgSooY6o0BKrkQvGqpVWRPzYNdpANj9r6ZxmWA
-	T9gv6xSa463FiLdBgPbVwncIDwHhuuBTZvdMJGFouJ5yOtVlak6sj0RHhiQ==
-X-Gm-Gg: ATEYQzx0ifiAEvOmVepnMb0RZVO1NxWZwHaNbfozDCbcDNBcsQHQgowaMSmJiFXeHme
-	8UrvYJ29UI3MgQ5w0YaM/TgelRTDNuB7mCKkY0n904w3x0d8ad401P8CB8ehSoMoZcJNGIdpdGR
-	Tif/38FXxbrHbRMlr7CiO+JijAVIpfKloB70tJZ6g/PUSZI0SEh4S5n9/Fv8OAYXcbOgTKWHCGJ
-	QOBRZOPFWnpYTUznV71kzF1hWUq5yedF1YXrFsjtXm5IRw5vhRm9eMJLt27i7+GfKbtjLlGJEFi
-	uNGDat3sxkWKjEzZuwvvDUfMu7L96v0vHkQajCKRKyFCSg2yFzmk7X2qbyvkioQp1FhoJmqdqc0
-	irFqt+fSYyAyadhZYjE33XbiMgVgAeg3Ll7askPY1RxOQaoXy7g==
-X-Received: by 2002:a05:6a00:3d48:b0:823:1cc6:d60a with SMTP id d2e1a72fcca58-82733672a72mr3351030b3a.2.1772095146919;
-        Thu, 26 Feb 2026 00:39:06 -0800 (PST)
-X-Received: by 2002:a05:6a00:3d48:b0:823:1cc6:d60a with SMTP id d2e1a72fcca58-82733672a72mr3350990b3a.2.1772095146324;
-        Thu, 26 Feb 2026 00:39:06 -0800 (PST)
-Received: from [10.206.99.28] ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-8273a088517sm1538103b3a.65.2026.02.26.00.38.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 26 Feb 2026 00:39:05 -0800 (PST)
-Message-ID: <57937a68-7f22-4ca1-8980-0be12cf06c66@oss.qualcomm.com>
-Date: Thu, 26 Feb 2026 14:08:57 +0530
+        d=1e100.net; s=20230601; t=1772100734; x=1772705534;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=gvNRe5YinnGtBsLbQqtbum68D8/4VbQI7D9a9RKn348=;
+        b=L+xXaTjAecxW4M/hMNWu7sFGTr+3HGRr4RX+BQG4hqnrgYAbUfKF9NF/AdIH94AcU3
+         q4WEvfwZXIXkQs0lG7vTBV/njKnE0Lztafm1VziuLMcidgbhrxeDRGNU3jF3x3nCzjpT
+         PaJQwKqDr2FFNwlQItOrrR/4biF4O3PLBeFmKVAZ2R0Qw+jFR9Bwwt4JDfJG2axhJ4x5
+         HoTXmBppU1SdwaYmqLDaoy35JAmWuSwuoVgFlHgBU/SLTyXe9fubahUk59sm9bmQixtk
+         pcU08l86RMb2AxfEuxQ6Lqoc5NuVOTJkfth7vRUPB4bivpevlAjOY1Nx3c36fxdcfoq0
+         Y5lA==
+X-Forwarded-Encrypted: i=1; AJvYcCW4F1XZbDrhAJMkn63ekDubjawLAlvAO9ZHIuArLPcbTG42LwDV9TvszfiOeds11k5Pm3na5Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzWh0KHT/OCKSriFtT40i4ECL8SfqReZ6JR5hDLpRgl/ZI3ceG/
+	M1xkHl/qS5OHbXDAH+yeptYNv7SdmQDvMOAX7CL9RZEeEMrq3qj5FsMzV6wGBe3EmQlh/s9ivgZ
+	4DobKp7YUqHAZ2hi7Ft36Yi8wK40AfIrpAqWx//WnZGqnETKSyyg2u1N7
+X-Gm-Gg: ATEYQzwnQOOD4KFAP+874Ze0XT+b7Sjuj7eyDUNhnZoU0jJ+aoSusLUjVY0WvouJfTL
+	SBRQtXxITIjcsmPjn0Qh1Nn1sEoFEb+Kcss4hZ+92hoXDS3O9o4ifN8c7QTVFEf531hscEsM3Bq
+	7UpIOJErzEjys8AeKCpZ2e4CnZCJl9RtVTKC3OHPd/F94TsWYvd72NZ/+Qxan5HWvoEf2iPO+Fb
+	hlIjFYCS22/CZn2iaJoj6RAk4g6LxZuR6VJkQnEU4SEOy6c8i3N6Tyz1pbxVJVpKS9npmTgRM4I
+	r2PoGuBJ9vlIQS7OWOodE1bKLb/HfEbW7UYpM9Zz+8sTCHrWlJPhV0n8FcMzmkdKgNP62u0DMFr
+	JgG7f0q+SsnmMPN98
+X-Received: by 2002:a05:600c:5250:b0:483:9139:4c1d with SMTP id 5b1f17b1804b1-483c3db85b0mr26445975e9.14.1772100734215;
+        Thu, 26 Feb 2026 02:12:14 -0800 (PST)
+X-Received: by 2002:a05:600c:5250:b0:483:9139:4c1d with SMTP id 5b1f17b1804b1-483c3db85b0mr26445365e9.14.1772100733586;
+        Thu, 26 Feb 2026 02:12:13 -0800 (PST)
+Received: from localhost ([82.66.159.240])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-483c3b89c99sm33795575e9.15.2026.02.26.02.12.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 Feb 2026 02:12:13 -0800 (PST)
+Date: Thu, 26 Feb 2026 11:12:12 +0100
+From: Maxime Ripard <mripard@redhat.com>
+To: Albert Esteve <aesteve@redhat.com>
+Cc: Sumit Semwal <sumit.semwal@linaro.org>, 
+	Benjamin Gaignard <benjamin.gaignard@collabora.com>, Brian Starkey <Brian.Starkey@arm.com>, 
+	John Stultz <jstultz@google.com>, "T.J. Mercier" <tjmercier@google.com>, 
+	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>, Marek Szyprowski <m.szyprowski@samsung.com>, 
+	Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org, linux-media@vger.kernel.org, 
+	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, iommu@lists.linux.dev, 
+	echanude@redhat.com
+Subject: Re: [PATCH] dma-buf: heaps: Add Coherent heap to dmabuf heaps
+Message-ID: <20260226-smoky-fancy-dachshund-1a2f92@penduick>
+References: <20260224-b4-dmabuf-heap-coherent-rmem-v1-1-dffef43298ac@redhat.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFC 05/18] accel/qda: Create compute CB devices on QDA
- compute bus
-To: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-Cc: Oded Gabbay <ogabbay@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
-        Shuah Khan <skhan@linuxfoundation.org>, Joerg Roedel <joro@8bytes.org>,
-        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        dri-devel@lists.freedesktop.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        iommu@lists.linux.dev, linux-media@vger.kernel.org,
-        linaro-mm-sig@lists.linaro.org,
-        Srinivas Kandagatla <srinivas.kandagatla@oss.qualcomm.com>,
-        Bharath Kumar <quic_bkumar@quicinc.com>,
-        Chenna Kesava Raju <quic_chennak@quicinc.com>
-References: <20260224-qda-firstpost-v1-0-fe46a9c1a046@oss.qualcomm.com>
- <20260224-qda-firstpost-v1-5-fe46a9c1a046@oss.qualcomm.com>
- <x3s26yr7oy2dokp4plsp67yndr7o4ps6nuj7i4zjze77ifljux@ap537se6npfg>
-Content-Language: en-US
-From: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
-In-Reply-To: <x3s26yr7oy2dokp4plsp67yndr7o4ps6nuj7i4zjze77ifljux@ap537se6npfg>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-ORIG-GUID: X9NqK2lHuZMu2ajZRvWv0FtK19DgMzOC
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjI2MDA3NyBTYWx0ZWRfX1L87g9o1FpBd
- /JkfhRj2WwYEnTchUEJS1Ja258C6oEzW4+FQ2Q8d0JddnZQYLqI2z88w/3H4JAuEa+imdG2j/hk
- LO2ipmxWQtL+1rbO6Qyjo61dByA2jNL3rCWcW2KMTDe9Q9MTETSD59A+qqyUK/U/ljVpVBZ+y6N
- XclRgvNFLabowKoowwCNIsEV9LhE9N9Sg3MHbo2afYaMW94RRGd3syMLi6eqqGI/SOrcR2MF3SL
- oQNfRDa1Paqs/QiJCCb4H5dXMBKiO43OD5L5SlmXxHu+ImYfS450eUOow9CeFJtEOGwb4XYJ3Cn
- ycRkSK/Aik8R/QS3j8/j3Ryv8+XvxP1WRLWLnYV4eUkuPaY5fCNk8w9lMJeZGio+pwkoYUWfUY9
- LUT6xRCFYUALJ/uZt1z9ptngdjmCF6nuz/PJANTamXnSjrz3s7N+Lbn709hsSDmkYLtvqXyvNST
- cBdZdaXcHmGwC0U1EUw==
-X-Authority-Analysis: v=2.4 cv=GZwaXAXL c=1 sm=1 tr=0 ts=69a006ab cx=c_pps
- a=m5Vt/hrsBiPMCU0y4gIsQw==:117 a=ZePRamnt/+rB5gQjfz0u9A==:17
- a=IkcTkHD0fZMA:10 a=HzLeVaNsDn8A:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=rJkE3RaqiGZ5pbrm-msn:22
- a=EUspDBNiAAAA:8 a=DUi5Cioa4Bt8-YlJvggA:9 a=QEXdDO2ut3YA:10
- a=IoOABgeZipijB_acs4fv:22
-X-Proofpoint-GUID: X9NqK2lHuZMu2ajZRvWv0FtK19DgMzOC
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-02-25_04,2026-02-25_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- spamscore=0 priorityscore=1501 bulkscore=0 impostorscore=0 lowpriorityscore=0
- malwarescore=0 phishscore=0 suspectscore=0 adultscore=0 clxscore=1015
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2602130000 definitions=main-2602260077
+Content-Type: multipart/signed; micalg=pgp-sha384;
+	protocol="application/pgp-signature"; boundary="myq5wdwgjhmnmvhe"
+Content-Disposition: inline
+In-Reply-To: <20260224-b4-dmabuf-heap-coherent-rmem-v1-1-dffef43298ac@redhat.com>
 
 
+--myq5wdwgjhmnmvhe
+Content-Type: text/plain; protected-headers=v1; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH] dma-buf: heaps: Add Coherent heap to dmabuf heaps
+MIME-Version: 1.0
 
-On 2/24/2026 4:19 AM, Dmitry Baryshkov wrote:
-> On Tue, Feb 24, 2026 at 12:38:59AM +0530, Ekansh Gupta wrote:
->> Add support for creating compute context-bank (CB) devices under
->> the QDA compute bus based on child nodes of the FastRPC RPMsg
->> device tree node. Each DT child with compatible
->> "qcom,fastrpc-compute-cb" is turned into a QDA-owned struct
->> device on qda_cb_bus_type.
->>
->> A new qda_cb_dev structure and cb_devs list in qda_dev track these
->> CB devices. qda_populate_child_devices() walks the DT children
->> during QDA RPMsg probe, creates CB devices, configures their DMA
->> and IOMMU settings using of_dma_configure(), and associates a SID
->> from the "reg" property when present.
->>
->> On RPMsg remove, qda_unpopulate_child_devices() tears down all CB
->> devices, removing them from their IOMMU groups if present and
->> unregistering the devices. This prepares the ground for using CB
->> devices as IOMMU endpoints for DSP compute workloads in later
->> patches.
-> Are we loosing the nsessions support?
-Yes, it's not part of this series. I'll try bringing that as well.
+Hi Albert,
+
+Thanks for your patch!
+
+On Tue, Feb 24, 2026 at 08:57:33AM +0100, Albert Esteve wrote:
+> Add a dma-buf heap for DT coherent reserved-memory
+> (i.e., 'shared-dma-pool' without 'reusable' property),
+> exposing one heap per region for userspace buffers.
+>=20
+> The heap binds a synthetic platform device to each region
+> so coherent allocations use the correct dev->dma_mem,
+> and it defers registration until late_initcall when
+> normal allocator are available.
+>=20
+> This patch includes charging of the coherent heap
+> allocator to the dmem cgroup.
+>=20
+> Signed-off-by: Albert Esteve <aesteve@redhat.com>
+> ---
+> This patch introduces a new driver to expose DT coherent reserved-memory
+> regions as dma-buf heaps, allowing userspace buffers to be created.
+>=20
+> Since these regions are device-dependent, we bind a synthetic platform
+> device to each region so coherent allocations use the correct dev->dma_me=
+m.
+>=20
+> Following Eric=E2=80=99s [1] and Maxime=E2=80=99s [2] work on charging DM=
+A buffers
+> allocated from userspace to cgroups (dmem), this patch adds the same
+> charging pattern used by CMA heaps patch. Charging is done only through
+> the dma-buf heap interface so it can be attributed to a userspace allocat=
+or.
+>=20
+> This allows each device-specific reserved-memory region to enforce its
+> own limits.
+>=20
+> [1] https://lore.kernel.org/all/20260218-dmabuf-heap-cma-dmem-v2-0-b24988=
+6fb7b2@redhat.com/
+> [2] https://lore.kernel.org/all/20250310-dmem-cgroups-v1-0-2984c1bc9312@k=
+ernel.org/
+> ---
+>  drivers/dma-buf/heaps/Kconfig         |  17 ++
+>  drivers/dma-buf/heaps/Makefile        |   1 +
+>  drivers/dma-buf/heaps/coherent_heap.c | 485 ++++++++++++++++++++++++++++=
+++++++
+>  include/linux/dma-heap.h              |  11 +
+>  kernel/dma/coherent.c                 |   9 +
+>  5 files changed, 523 insertions(+)
+>=20
+> diff --git a/drivers/dma-buf/heaps/Kconfig b/drivers/dma-buf/heaps/Kconfig
+> index a5eef06c42264..93765dca164e3 100644
+> --- a/drivers/dma-buf/heaps/Kconfig
+> +++ b/drivers/dma-buf/heaps/Kconfig
+> @@ -12,3 +12,20 @@ config DMABUF_HEAPS_CMA
+>  	  Choose this option to enable dma-buf CMA heap. This heap is backed
+>  	  by the Contiguous Memory Allocator (CMA). If your system has these
+>  	  regions, you should say Y here.
+> +
+> +config DMABUF_HEAPS_COHERENT
+> +	bool "DMA-BUF Coherent Reserved-Memory Heap"
+> +	depends on DMABUF_HEAPS && OF_RESERVED_MEM && DMA_DECLARE_COHERENT
+> +	help
+> +	  Choose this option to enable coherent reserved-memory dma-buf heaps.
+> +	  This heap is backed by non-reusable DT "shared-dma-pool" regions.
+> +	  If your system defines coherent reserved-memory regions, you should
+> +	  say Y here.
+> +
+> +config COHERENT_AREAS_DEFERRED
+> +	int "Max deferred coherent reserved-memory regions"
+> +	depends on DMABUF_HEAPS_COHERENT
+> +	default 16
+> +	help
+> +	  Maximum number of coherent reserved-memory regions that can be
+> +	  deferred for later registration during early boot.
+> diff --git a/drivers/dma-buf/heaps/Makefile b/drivers/dma-buf/heaps/Makef=
+ile
+> index 974467791032f..96bda7a65f041 100644
+> --- a/drivers/dma-buf/heaps/Makefile
+> +++ b/drivers/dma-buf/heaps/Makefile
+> @@ -1,3 +1,4 @@
+>  # SPDX-License-Identifier: GPL-2.0
+>  obj-$(CONFIG_DMABUF_HEAPS_SYSTEM)	+=3D system_heap.o
+>  obj-$(CONFIG_DMABUF_HEAPS_CMA)		+=3D cma_heap.o
+> +obj-$(CONFIG_DMABUF_HEAPS_COHERENT)	+=3D coherent_heap.o
+> diff --git a/drivers/dma-buf/heaps/coherent_heap.c b/drivers/dma-buf/heap=
+s/coherent_heap.c
+> new file mode 100644
+> index 0000000000000..870b2b89aefcb
+> --- /dev/null
+> +++ b/drivers/dma-buf/heaps/coherent_heap.c
+> @@ -0,0 +1,485 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * DMABUF heap for coherent reserved-memory regions
+> + *
+> + * Copyright (C) 2026 Red Hat, Inc.
+> + * Author: Albert Esteve <aesteve@redhat.com>
+> + *
+> + */
+> +
+> +#include <linux/cgroup_dmem.h>
+> +#include <linux/dma-heap.h>
+> +#include <linux/dma-buf.h>
+> +#include <linux/dma-mapping.h>
+> +#include <linux/err.h>
+> +#include <linux/highmem.h>
+> +#include <linux/iosys-map.h>
+> +#include <linux/of_reserved_mem.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/scatterlist.h>
+> +#include <linux/slab.h>
+> +#include <linux/vmalloc.h>
+> +
+> +#define DEFERRED_AREAS_MAX CONFIG_COHERENT_AREAS_DEFERRED
+
+I'm not sure we need to make it configurable. Distros are going to set
+it to the user with the highest number of regions anyway. How about
+using MAX_RESERVED_REGIONS for now?
+
 >
->> Signed-off-by: Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>
->> ---
->>  drivers/accel/qda/Makefile    |   1 +
->>  drivers/accel/qda/qda_cb.c    | 150 ++++++++++++++++++++++++++++++++++++++++++
->>  drivers/accel/qda/qda_cb.h    |  26 ++++++++
->>  drivers/accel/qda/qda_drv.h   |   3 +
->>  drivers/accel/qda/qda_rpmsg.c |  40 +++++++++++
->>  5 files changed, 220 insertions(+)
->>
->> diff --git a/drivers/accel/qda/Makefile b/drivers/accel/qda/Makefile
->> index 242684ef1af7..4aded20b6bc2 100644
->> --- a/drivers/accel/qda/Makefile
->> +++ b/drivers/accel/qda/Makefile
->> @@ -8,5 +8,6 @@ obj-$(CONFIG_DRM_ACCEL_QDA)	:= qda.o
->>  qda-y := \
->>  	qda_drv.o \
->>  	qda_rpmsg.o \
->> +	qda_cb.o \
->>  
->>  obj-$(CONFIG_DRM_ACCEL_QDA_COMPUTE_BUS) += qda_compute_bus.o
->> diff --git a/drivers/accel/qda/qda_cb.c b/drivers/accel/qda/qda_cb.c
->> new file mode 100644
->> index 000000000000..77a2d8cae076
->> --- /dev/null
->> +++ b/drivers/accel/qda/qda_cb.c
->> @@ -0,0 +1,150 @@
->> +// SPDX-License-Identifier: GPL-2.0-only
->> +// Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
->> +#include <linux/dma-mapping.h>
->> +#include <linux/device.h>
->> +#include <linux/of.h>
->> +#include <linux/of_device.h>
->> +#include <linux/iommu.h>
->> +#include <linux/slab.h>
->> +#include "qda_drv.h"
->> +#include "qda_cb.h"
->> +
->> +static void qda_cb_dev_release(struct device *dev)
->> +{
->> +	kfree(dev);
-> Do you need to put the reference on the OF node?
-Reference put is happening as part of qda_destroy_cb_device.
+> [...]
 >
->> +}
->> +
->> +static int qda_configure_cb_iommu(struct device *cb_dev, struct device_node *cb_node)
->> +{
->> +	int ret;
->> +
->> +	qda_dbg(NULL, "Configuring DMA/IOMMU for CB device %s\n", dev_name(cb_dev));
->> +
->> +	/* Use of_dma_configure which handles both DMA and IOMMU configuration */
->> +	ret = of_dma_configure(cb_dev, cb_node, true);
->> +	if (ret) {
->> +		qda_err(NULL, "of_dma_configure failed for %s: %d\n", dev_name(cb_dev), ret);
->> +		return ret;
->> +	}
->> +
->> +	qda_dbg(NULL, "DMA/IOMMU configured successfully for CB device %s\n", dev_name(cb_dev));
->> +	return 0;
->> +}
->> +
->> +static int qda_cb_setup_device(struct qda_dev *qdev, struct device *cb_dev)
->> +{
->> +	int rc;
->> +	u32 sid, pa_bits = 32;
->> +
->> +	qda_dbg(qdev, "Setting up CB device %s\n", dev_name(cb_dev));
->> +
->> +	if (of_property_read_u32(cb_dev->of_node, "reg", &sid)) {
->> +		qda_dbg(qdev, "No 'reg' property found, defaulting SID to 0\n");
->> +		sid = 0;
-> Don't do the job of the schema validator. Are there nodes without reg?
-> No.
-Ack.
+> +struct coherent_heap {
+> +	struct dma_heap *heap;
+> +	struct reserved_mem *rmem;
+> +	char *name;
+> +	struct device *dev;
+> +	struct platform_device *pdev;
+> +#if IS_ENABLED(CONFIG_CGROUP_DMEM)
+> +	struct dmem_cgroup_region *cg;
+> +#endif
+
+We might want to leave the dmem accounting out for now so we can focus
+on the heap itself. That being said, it ended up being pretty trivial
+for CMA, so maybe it's not too much of a concern.
+
 >
->> +	}
->> +
->> +	rc = dma_set_mask(cb_dev, DMA_BIT_MASK(pa_bits));
->> +	if (rc) {
->> +		qda_err(qdev, "%d bit DMA enable failed: %d\n", pa_bits, rc);
->> +		return rc;
->> +	}
->> +
->> +	qda_dbg(qdev, "CB device setup complete - SID: %u, PA bits: %u\n", sid, pa_bits);
->> +
->> +	return 0;
->> +}
->> +
->> +int qda_create_cb_device(struct qda_dev *qdev, struct device_node *cb_node)
->> +{
->> +	struct device *cb_dev;
->> +	int ret;
->> +	u32 sid = 0;
->> +	struct qda_cb_dev *entry;
->> +
->> +	qda_dbg(qdev, "Creating CB device for node: %s\n", cb_node->name);
->> +
->> +	of_property_read_u32(cb_node, "reg", &sid);
->> +
->> +	cb_dev = kzalloc_obj(*cb_dev, GFP_KERNEL);
->> +	if (!cb_dev)
->> +		return -ENOMEM;
->> +
->> +	device_initialize(cb_dev);
->> +	cb_dev->parent = qdev->dev;
->> +	cb_dev->bus = &qda_cb_bus_type; /* Use our custom bus type for IOMMU handling */
->> +	cb_dev->release = qda_cb_dev_release;
->> +	dev_set_name(cb_dev, "qda-cb-%s-%u", qdev->dsp_name, sid);
->> +
->> +	qda_dbg(qdev, "Initialized CB device: %s\n", dev_name(cb_dev));
->> +
->> +	cb_dev->of_node = of_node_get(cb_node);
->> +
->> +	cb_dev->dma_mask = &cb_dev->coherent_dma_mask;
->> +	cb_dev->coherent_dma_mask = DMA_BIT_MASK(32);
->> +
->> +	dev_set_drvdata(cb_dev->parent, qdev);
->> +
->> +	ret = device_add(cb_dev);
->> +	if (ret) {
->> +		qda_err(qdev, "Failed to add CB device for SID %u: %d\n", sid, ret);
->> +		goto cleanup_device_init;
->> +	}
->> +
->> +	qda_dbg(qdev, "CB device added to system\n");
->> +
->> +	ret = qda_configure_cb_iommu(cb_dev, cb_node);
->> +	if (ret) {
->> +		qda_err(qdev, "IOMMU configuration failed: %d\n", ret);
->> +		goto cleanup_device_add;
->> +	}
->> +
->> +	ret = qda_cb_setup_device(qdev, cb_dev);
->> +	if (ret) {
->> +		qda_err(qdev, "CB device setup failed: %d\n", ret);
->> +		goto cleanup_device_add;
->> +	}
->> +
->> +	entry = kzalloc(sizeof(*entry), GFP_KERNEL);
->> +	if (!entry) {
->> +		ret = -ENOMEM;
->> +		goto cleanup_device_add;
->> +	}
->> +
->> +	entry->dev = cb_dev;
->> +	list_add_tail(&entry->node, &qdev->cb_devs);
->> +
->> +	qda_dbg(qdev, "Successfully created CB device for SID %u\n", sid);
->> +	return 0;
->> +
->> +cleanup_device_add:
->> +	device_del(cb_dev);
->> +cleanup_device_init:
->> +	of_node_put(cb_dev->of_node);
->> +	put_device(cb_dev);
->> +	return ret;
->> +}
->> +
->> +void qda_destroy_cb_device(struct device *cb_dev)
->> +{
->> +	struct iommu_group *group;
->> +
->> +	if (!cb_dev) {
->> +		qda_dbg(NULL, "NULL CB device passed to destroy\n");
->> +		return;
->> +	}
->> +
->> +	qda_dbg(NULL, "Destroying CB device %s\n", dev_name(cb_dev));
->> +
->> +	group = iommu_group_get(cb_dev);
->> +	if (group) {
->> +		qda_dbg(NULL, "Removing %s from IOMMU group\n", dev_name(cb_dev));
->> +		iommu_group_remove_device(cb_dev);
->> +		iommu_group_put(group);
->> +	}
->> +
->> +	of_node_put(cb_dev->of_node);
->> +	cb_dev->of_node = NULL;
->> +	device_unregister(cb_dev);
->> +
->> +	qda_dbg(NULL, "CB device %s destroyed\n", dev_name(cb_dev));
->> +}
->> diff --git a/drivers/accel/qda/qda_cb.h b/drivers/accel/qda/qda_cb.h
->> new file mode 100644
->> index 000000000000..a4ae9fef142e
->> --- /dev/null
->> +++ b/drivers/accel/qda/qda_cb.h
->> @@ -0,0 +1,26 @@
->> +/* SPDX-License-Identifier: GPL-2.0-only */
->> +/*
->> + * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
->> + */
->> +
->> +#ifndef __QDA_CB_H__
->> +#define __QDA_CB_H__
->> +
->> +#include <linux/device.h>
->> +#include <linux/of.h>
->> +#include <linux/list.h>
->> +#include <linux/qda_compute_bus.h>
->> +#include "qda_drv.h"
->> +
->> +struct qda_cb_dev {
->> +	struct list_head node;
->> +	struct device *dev;
->> +};
->> +
->> +/*
->> + * Compute bus (CB) device management
->> + */
->> +int qda_create_cb_device(struct qda_dev *qdev, struct device_node *cb_node);
->> +void qda_destroy_cb_device(struct device *cb_dev);
->> +
->> +#endif /* __QDA_CB_H__ */
->> diff --git a/drivers/accel/qda/qda_drv.h b/drivers/accel/qda/qda_drv.h
->> index bec2d31ca1bb..eb732b7d8091 100644
->> --- a/drivers/accel/qda/qda_drv.h
->> +++ b/drivers/accel/qda/qda_drv.h
->> @@ -7,6 +7,7 @@
->>  #define __QDA_DRV_H__
->>  
->>  #include <linux/device.h>
->> +#include <linux/list.h>
->>  #include <linux/mutex.h>
->>  #include <linux/rpmsg.h>
->>  #include <linux/xarray.h>
->> @@ -26,6 +27,8 @@ struct qda_dev {
->>  	atomic_t removing;
->>  	/* Name of the DSP (e.g., "cdsp", "adsp") */
->>  	char dsp_name[16];
->> +	/* Compute context-bank (CB) child devices */
->> +	struct list_head cb_devs;
->>  };
->>  
->>  /**
->> diff --git a/drivers/accel/qda/qda_rpmsg.c b/drivers/accel/qda/qda_rpmsg.c
->> index a8b24a99ca13..5a57384de6a2 100644
->> --- a/drivers/accel/qda/qda_rpmsg.c
->> +++ b/drivers/accel/qda/qda_rpmsg.c
->> @@ -7,6 +7,7 @@
->>  #include <linux/of_device.h>
->>  #include "qda_drv.h"
->>  #include "qda_rpmsg.h"
->> +#include "qda_cb.h"
->>  
->>  static int qda_rpmsg_init(struct qda_dev *qdev)
->>  {
->> @@ -25,11 +26,42 @@ static struct qda_dev *alloc_and_init_qdev(struct rpmsg_device *rpdev)
->>  
->>  	qdev->dev = &rpdev->dev;
->>  	qdev->rpdev = rpdev;
->> +	INIT_LIST_HEAD(&qdev->cb_devs);
->>  
->>  	qda_dbg(qdev, "Allocated and initialized qda_dev\n");
->>  	return qdev;
->>  }
->>  
->> +static void qda_unpopulate_child_devices(struct qda_dev *qdev)
->> +{
->> +	struct qda_cb_dev *entry, *tmp;
->> +
->> +	list_for_each_entry_safe(entry, tmp, &qdev->cb_devs, node) {
->> +		list_del(&entry->node);
->> +		qda_destroy_cb_device(entry->dev);
->> +		kfree(entry);
-> Why can't you embed struct device into a structure together with the
-> list_node (and possibly some other data?)?
-I'll check this.
+> [...]
 >
->> +	}
->> +}
->> +
->> +static int qda_populate_child_devices(struct qda_dev *qdev, struct device_node *parent_node)
->> +{
->> +	struct device_node *child;
->> +	int count = 0, success = 0;
->> +
->> +	for_each_child_of_node(parent_node, child) {
->> +		if (of_device_is_compatible(child, "qcom,fastrpc-compute-cb")) {
->> +			count++;
->> +			if (qda_create_cb_device(qdev, child) == 0) {
->> +				success++;
->> +				qda_dbg(qdev, "Created CB device for node: %s\n", child->name);
->> +			} else {
->> +				qda_err(qdev, "Failed to create CB device for: %s\n", child->name);
-> Don't loose the error code. Instead please return it to the caller.
-Ack.
->
->> +			}
->> +		}
->> +	}
->> +	return success > 0 ? 0 : (count > 0 ? -ENODEV : 0);
->> +}
->> +
->>  static int qda_rpmsg_cb(struct rpmsg_device *rpdev, void *data, int len, void *priv, u32 src)
->>  {
->>  	/* Dummy function for rpmsg driver */
->> @@ -48,6 +80,7 @@ static void qda_rpmsg_remove(struct rpmsg_device *rpdev)
->>  	qdev->rpdev = NULL;
->>  	mutex_unlock(&qdev->lock);
->>  
->> +	qda_unpopulate_child_devices(qdev);
->>  	qda_deinit_device(qdev);
->>  
->>  	qda_info(qdev, "RPMsg device removed\n");
->> @@ -83,6 +116,13 @@ static int qda_rpmsg_probe(struct rpmsg_device *rpdev)
->>  	if (ret)
->>  		return ret;
->>  
->> +	ret = qda_populate_child_devices(qdev, rpdev->dev.of_node);
->> +	if (ret) {
->> +		qda_err(qdev, "Failed to populate child devices: %d\n", ret);
->> +		qda_deinit_device(qdev);
->> +		return ret;
->> +	}
->> +
->>  	qda_info(qdev, "QDA RPMsg probe completed successfully for %s\n", qdev->dsp_name);
->>  	return 0;
->>  }
->>
->> -- 
->> 2.34.1
->>
+> +static int __coherent_heap_register(struct reserved_mem *rmem)
+> +{
+> +	struct dma_heap_export_info exp_info;
+> +	struct coherent_heap *coh_heap;
+> +#if IS_ENABLED(CONFIG_CGROUP_DMEM)
+> +	struct dmem_cgroup_region *region;
+> +#endif
+> +	const char *rmem_name;
+> +	int ret;
+> +
+> +	if (!rmem)
+> +		return -EINVAL;
+> +
+> +	rmem_name =3D rmem->name ? rmem->name : "unknown";
+
+If the reserved region has no name, we probably shouldn't expose it to
+userspace at all. Using unknown will probably create some bugs if you
+have several, but also it's pretty like to have a name at some point and
+thus we wouldn't have a stable name for the uAPI.
+
+> +	coh_heap =3D kzalloc_obj(*coh_heap);
+> +	if (!coh_heap)
+> +		return -ENOMEM;
+> +
+> +	coh_heap->name =3D kasprintf(GFP_KERNEL, "coherent_%s", rmem_name);
+> +	if (!coh_heap->name) {
+> +		ret =3D -ENOMEM;
+> +		goto free_coherent_heap;
+> +	}
+
+Similarly, we shouldn't use the coherent_ prefix for the heap name. If
+the backing allocator ever changes (and between contiguous and coherent,
+the difference is just a single property value in the DT), then the name
+would change and userspace would break. We should directly use the name
+of the region here.
+
+> +	coh_heap->rmem =3D rmem;
+> +
+> +	/* create a platform device per rmem and bind it */
+> +	coh_heap->pdev =3D platform_device_register_simple("coherent-heap",
+> +							 PLATFORM_DEVID_AUTO,
+> +							 NULL, 0);
+> +	if (IS_ERR(coh_heap->pdev)) {
+> +		ret =3D PTR_ERR(coh_heap->pdev);
+> +		goto free_name;
+> +	}
+
+We probably should use a faux_device here instead of a platform_device,
+but more importantly, the heap itself already has a device allocated for
+it (dev_ret in dma_heap_add).
+
+It's not in struct dma_heap yet, but there's a patch that moves it there
+that we should probably carry:
+https://lore.kernel.org/r/20210120210937.15069-2-john.stultz@linaro.org/
+
+> +	if (rmem->ops && rmem->ops->device_init) {
+> +		ret =3D rmem->ops->device_init(rmem, &coh_heap->pdev->dev);
+> +		if (ret)
+> +			goto pdev_unregister;
+> +	}
+
+I'm not really a fan of calling ops directly. Maybe we should create an
+of_reserved_mem_device_init_with_mem function that would do it for us
+(and would be called by of_reserved_mem_device_init_by_idx and the
+likes).
+
+> +	coh_heap->dev =3D &coh_heap->pdev->dev;
+> +#if IS_ENABLED(CONFIG_CGROUP_DMEM)
+> +	region =3D dmem_cgroup_register_region(rmem->size, "coh/%s", rmem_name);
+> +	if (IS_ERR(region)) {
+> +		ret =3D PTR_ERR(region);
+> +		goto pdev_unregister;
+> +	}
+> +	coh_heap->cg =3D region;
+> +#endif
+
+Same comment than for CMA here: it should really be created by the
+coherent memory region itself.
+
+> +	exp_info.name =3D coh_heap->name;
+> +	exp_info.ops =3D &coherent_heap_ops;
+> +	exp_info.priv =3D coh_heap;
+> +
+> +	coh_heap->heap =3D dma_heap_add(&exp_info);
+> +	if (IS_ERR(coh_heap->heap)) {
+> +		ret =3D PTR_ERR(coh_heap->heap);
+> +		goto cg_unregister;
+> +	}
+> +
+> +	return 0;
+> +
+> +cg_unregister:
+> +#if IS_ENABLED(CONFIG_CGROUP_DMEM)
+> +	dmem_cgroup_unregister_region(coh_heap->cg);
+> +#endif
+> +pdev_unregister:
+> +	platform_device_unregister(coh_heap->pdev);
+> +	coh_heap->pdev =3D NULL;
+> +free_name:
+> +	kfree(coh_heap->name);
+> +free_coherent_heap:
+> +	kfree(coh_heap);
+> +
+> +	return ret;
+> +}
+> +
+> +int dma_heap_coherent_register(struct reserved_mem *rmem)
+> +{
+> +	int ret;
+> +
+> +	ret =3D __coherent_heap_register(rmem);
+> +	if (ret =3D=3D -ENOMEM)
+> +		return coherent_heap_add_deferred(rmem);
+> +	return ret;
+> +}
+
+I appreciate you did it like we did for CMA, but if we ever want to make
+that heap a module you'll end up with a dependency from the core kernel
+on a module which doesn't work. The best here might be to wait a bit
+until we have somewhat of an agreement on
+
+https://lore.kernel.org/r/20260225-dma-buf-heaps-as-modules-v1-0-2109225a09=
+0d@kernel.org
+
+> +static int __init coherent_heap_register_deferred(void)
+> +{
+> +	unsigned int i;
+> +	int ret;
+> +
+> +	for (i =3D 0; i < rmem_areas_deferred_num; i++) {
+> +		struct reserved_mem *rmem =3D rmem_areas_deferred[i];
+> +
+> +		ret =3D __coherent_heap_register(rmem);
+> +		if (ret) {
+> +			pr_warn("Failed to add coherent heap %s",
+> +				rmem->name ? rmem->name : "unknown");
+> +			continue;
+> +		}
+> +	}
+> +
+> +	return 0;
+> +}
+> +late_initcall(coherent_heap_register_deferred);
+
+Why do you need a late_initcall here? Isn't module_init enough?
+
+> +MODULE_DESCRIPTION("DMA-BUF heap for coherent reserved-memory regions");
+> diff --git a/include/linux/dma-heap.h b/include/linux/dma-heap.h
+> index 648328a64b27e..e894cfa1ecf1a 100644
+> --- a/include/linux/dma-heap.h
+> +++ b/include/linux/dma-heap.h
+> @@ -9,9 +9,11 @@
+>  #ifndef _DMA_HEAPS_H
+>  #define _DMA_HEAPS_H
+> =20
+> +#include <linux/errno.h>
+>  #include <linux/types.h>
+> =20
+>  struct dma_heap;
+> +struct reserved_mem;
+> =20
+>  /**
+>   * struct dma_heap_ops - ops to operate on a given heap
+> @@ -48,4 +50,13 @@ struct dma_heap *dma_heap_add(const struct dma_heap_ex=
+port_info *exp_info);
+> =20
+>  extern bool mem_accounting;
+> =20
+> +#if IS_ENABLED(CONFIG_DMABUF_HEAPS_COHERENT)
+> +int dma_heap_coherent_register(struct reserved_mem *rmem);
+> +#else
+> +static inline int dma_heap_coherent_register(struct reserved_mem *rmem)
+> +{
+> +	return -EOPNOTSUPP;
+> +}
+> +#endif
+> +
+>  #endif /* _DMA_HEAPS_H */
+> diff --git a/kernel/dma/coherent.c b/kernel/dma/coherent.c
+> index 1147497bc512c..f49d13e460e4b 100644
+> --- a/kernel/dma/coherent.c
+> +++ b/kernel/dma/coherent.c
+> @@ -9,6 +9,7 @@
+>  #include <linux/module.h>
+>  #include <linux/dma-direct.h>
+>  #include <linux/dma-map-ops.h>
+> +#include <linux/dma-heap.h>
+> =20
+>  struct dma_coherent_mem {
+>  	void		*virt_base;
+> @@ -393,6 +394,14 @@ static int __init rmem_dma_setup(struct reserved_mem=
+ *rmem)
+>  	rmem->ops =3D &rmem_dma_ops;
+>  	pr_info("Reserved memory: created DMA memory pool at %pa, size %ld MiB\=
+n",
+>  		&rmem->base, (unsigned long)rmem->size / SZ_1M);
+> +
+> +	if (IS_ENABLED(CONFIG_DMABUF_HEAPS_COHERENT)) {
+> +		int ret =3D dma_heap_coherent_register(rmem);
+> +
+> +		if (ret)
+> +			pr_warn("Reserved memory: failed to register coherent heap for %s (%d=
+)\n",
+> +				rmem->name ? rmem->name : "unknown", ret);
+> +	}
+
+I think this should be split into a patch of its own. It's going to be
+reviewed (and possibly merged) by another maintainer, through another
+tree.
+
+Maxime
+
+--myq5wdwgjhmnmvhe
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iJUEABMJAB0WIQTkHFbLp4ejekA/qfgnX84Zoj2+dgUCaaAcdAAKCRAnX84Zoj2+
+doMtAYDM1DBB7yzRJMjRilWANJNUJzHNeXZViTQsYLixeAxj4iCz3QEqo/8XR6m6
+CoZetNYBgJ0oezkcaikKA6NM6doFtNDG5JMPHUlcVCqYvCWQFWfZQuIvlwJDtvAS
+bdbMnK9X8g==
+=PuJc
+-----END PGP SIGNATURE-----
+
+--myq5wdwgjhmnmvhe--
 
