@@ -1,130 +1,163 @@
-Received: from mail-ot1-f43.google.com (mail-ot1-f43.google.com [209.85.210.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73FE543CEE9
-	for <iommu@lists.linux.dev>; Fri, 27 Feb 2026 14:03:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.43
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D15F312E1DC
+	for <iommu@lists.linux.dev>; Fri, 27 Feb 2026 14:05:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772201013; cv=none; b=Bsx7DHdH523HydmsoaJWVMz469LnK7ZIl83jtB9wttlqt3E7EWL13p6enQWYhFOTWr4b7RkvWSoOFTFqbWvLV+Dk8o/tWdyyJg0+Pc4V5pq5Ty0EMphangrcejEYuaHo1X/CiUi5Nv71i5ZB+Iq7f5fpHWtGKnVRTjqdLRhTXsA=
+	t=1772201107; cv=none; b=ZX4gNV/EV4hJ5OWxzSpERAsoXShxlodNEg29MDseqBZklMJRSu9RJxr90muJQcDioysGlCOTfJvp2buZjSvU8D+q6mBKQGB/UXyf9SxN9hTBXWxzcpVn9FWKqJl7QQE7OvUDrbwSftHNQ85WqUTicquCZww05m7zYZOvggw/9Qs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772201013; c=relaxed/simple;
-	bh=/W505Jzbj5uWoZ/qJ3gNXx9zDJjMXlpnlkd2GeMGH5U=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rWdZA5SzuAUC3JpS1RK4DVSFNxhLmwfjIBCQXCxMCjAyy2g9GpSt3i4g3vsNOqVH0unroMKAFfgPctiYPjJCrEP7RV+d9Io/m9JJ3cHhiOr7bmVEIUtwHV7lVQx8ZRXJd0rsL0OUt82ixmeBJ6u9JBhq321kdpVlHaG8O0Cu578=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=V82jx9l/; arc=none smtp.client-ip=209.85.210.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="V82jx9l/"
-Received: by mail-ot1-f43.google.com with SMTP id 46e09a7af769-7d18d02af68so1681686a34.2
-        for <iommu@lists.linux.dev>; Fri, 27 Feb 2026 06:03:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1772201011; x=1772805811; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=5kyvGGKr8t/91lDXefhAhTqmzrSuKLLo1P9UK6MZn78=;
-        b=V82jx9l/Bk3RAbBHCto8NnKFfuV+SiakbzB1LV0LsqbjVfi/qms9j1p9m6bboKRdik
-         uH9yYfokNH4uqcxwXSskaadCrsxiE+BeR3mUUvm5/43JGBb1KAAjwi/BX0/Ril/esDPW
-         Uvwnuhwpn+f7dchQTwu7cmzs3cmTA+PxR+zi0ZaT9OLn57FI5ZRpNDPnjlAHmO1u8Xfy
-         2N0qZmfEhdKqewvjTftW6XaQ/oxO85iS5NX+a2GMPO0mnRczqwP/dTTnQ3fAzN5FAp98
-         yMUb2gylbit4UAvkYf7I+ZzAzaXGv3AgjtqJckK3nynrUKWbxms4W/OwHUwxY+h5mJFy
-         v0jw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772201011; x=1772805811;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=5kyvGGKr8t/91lDXefhAhTqmzrSuKLLo1P9UK6MZn78=;
-        b=f2yoawOJGcIt+DE7BYxHSMsZ2YVgZKrSYn+NGd2VAvGvgHu5xMBsstx8rvpmv2JhHD
-         2le7+m6wQW7ZFdHX2ShwlXe966gWH6FhZiWniYcDSQmPMyawbCcwYOFPVduvknkCJP5S
-         k5PLsW9rtIHmqBW1H+V+BWxRrYLeCDISYCCWOkGTx/6z3fbeCgEf0rSrcSwJDOgRLN4t
-         WIWAretsQM2xMys6URf2QScKgfK2LBS0P+VRp7+ePaYWDPz3P5Wh/tXRKwSu6Q8A3pWr
-         dZ7st8BswadU/9OOkhV7mbUPVTTy/39Lg2zPaJq18wMOhBpJ5pYEV2kkWuZTGdRsPMkR
-         jdrw==
-X-Gm-Message-State: AOJu0YwD7S4kntcu4NGibo1+Q3uXK/26/dtyzOUE0eNOknPfth7d7Fbh
-	O7jUA9I4i/M8SOuasNVeszHruvksra0UYa0MJCBv6yVen4T2X5RWftqYXYEJW/DHAPQ=
-X-Gm-Gg: ATEYQzwkMEABPRKNkHClZ5f1Mff8bFxWMS6RhxlwUK1h14O/UKy2CT2vpYLyTl1h6Rc
-	DYfX/bEK36RYVA6ud3fZxjPHyfrboqxwOs6EcFPsOuh9zJ697d2TigfmH/ap6IGdxTbVC4STIRf
-	w0DO91YEacdmQX2LpngsMPA/Wo7lkJABVspl7QD7O1CHI0lj3Z8J39Z7T9Gf4/2k7bg+/eE+JZX
-	6T7OE7swQ98mJgIx1iPCU3HtLhpgv54jnQqhYiwUQnIvQeiIe+O8Otd91koyA9Sx/VE3ABpAB4M
-	cCUm+f5zOaIC+nUrqIUoNaqlaikEg8cyIXUAqxToo2Vg+H3O2h68/mQ2EPnxiTK2YLpC8b2vvCW
-	wvgDKjpsa/BBqH9S+oEEJshNovsb8aRdzsy51AJC6ugNHfp7Nok1MBceonRJHOIHgxd9MOsM+ra
-	WEfMjvDaUc2ZSjyXyPgrwPXvmC3FGdHh1ITt1qdj59/p9dEzFpePDzSNRYxEyJvyFORCjXPBZdc
-	sx1Pv+Z
-X-Received: by 2002:a05:6870:9192:b0:3eb:318f:36fb with SMTP id 586e51a60fabf-41626de7bb6mr1591090fac.12.1772201011051;
-        Fri, 27 Feb 2026 06:03:31 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-162-112-119.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.112.119])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-8cbbf6f926csm481207985a.32.2026.02.27.06.03.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Feb 2026 06:03:30 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1vvyRF-00000000vQL-1Fdb;
-	Fri, 27 Feb 2026 10:03:29 -0400
-Date: Fri, 27 Feb 2026 10:03:29 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Antheas Kapenekakis <lkml@antheas.dev>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Vasant Hegde <vasant.hegde@amd.com>,
-	Alejandro Jimenez <alejandro.j.jimenez@oracle.com>,
-	dnaim@cachyos.org, Mario.Limonciello@amd.com
-Subject: Re: [PATCH v3] iommu: Fix mapping check for 0x0 to avoid re-mapping
- it
-Message-ID: <20260227140329.GI44359@ziepe.ca>
-References: <20260227080638.208693-1-lkml@antheas.dev>
+	s=arc-20240116; t=1772201107; c=relaxed/simple;
+	bh=s/z7xAAXncvwUSOTtRLOIOjAzsl8T/73uPy1pjdoxQY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ZMDAdEdzAuAuGjdMCp30npouN3Ryhg9uRAkDjPtkJYO2v5+pmiz/BryVaYDszmimbLyUYP9k7YerQUtQgnl70qokg9CIlQh2yTjwFqInarhdjptpOJG6fKwFeJo6+QMpYdcDowQDYcJj5XUQHBIgDgeI/26GTjOk/31AblVzOTE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BA3EA14BF;
+	Fri, 27 Feb 2026 06:04:58 -0800 (PST)
+Received: from [10.57.55.4] (unknown [10.57.55.4])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B70FC3F62B;
+	Fri, 27 Feb 2026 06:05:03 -0800 (PST)
+Message-ID: <da6db3e2-4d42-41af-b6b5-efa7532ecb7c@arm.com>
+Date: Fri, 27 Feb 2026 14:05:01 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260227080638.208693-1-lkml@antheas.dev>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RFC] iommu/dma: Validate page before accessing P2PDMA
+ state
+To: Ashish Mhetre <amhetre@nvidia.com>, Leon Romanovsky <leon@kernel.org>,
+ Pranjal Shrivastava <praan@google.com>
+Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org, linux-mm@kvack.org
+References: <20260224104257.1641429-1-amhetre@nvidia.com>
+ <20260224123221.GM10607@unreal> <aZ4Q1HA9q1ojsVYY@google.com>
+ <9d01b4e3-be5b-4c9c-8088-1d10f67f1fd8@nvidia.com>
+ <20260225075609.GB9541@unreal> <aZ9Xccnn7JOikudb@google.com>
+ <20260226075806.GE12611@unreal>
+ <58634d52-5d44-4ec9-b1f6-273b5c32b525@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <58634d52-5d44-4ec9-b1f6-273b5c32b525@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Fri, Feb 27, 2026 at 09:06:37AM +0100, Antheas Kapenekakis wrote:
-> Commit 789a5913b29c ("iommu/amd: Use the generic iommu page table")
-> introduces the shared iommu page table for AMD IOMMU. Some bioses
-> contain an identity mapping for address 0x0, which is not parsed
-> properly (e.g., certain Strix Halo devices). This causes the DMA
-> components of the device to fail to initialize (e.g., the NVMe SSD
-> controller), leading to a failed post.
+On 2026-02-27 5:46 am, Ashish Mhetre wrote:
 > 
-> Specifically, on the GPD Win 5, the NVME and SSD GPU fail to mount,
-> making collecting errors difficult. While debugging, it was found that
-> a -EADDRINUSE error was emitted and its source was traced to
-> iommu_iova_to_phys(). After adding some debug prints, it was found that
-> phys_addr becomes 0, which causes the code to try to re-map the 0
-> address and fail, causing a cascade leading to a failed post. This is
-> because the GPD Win 5 contains a 0x0-0x1 identity mapping for DMA
-> devices, causing it to be repeated for each device.
 > 
-> The cause of this failure is the following check in
-> iommu_create_device_direct_mappings(), where address aliasing is handled
-> via the following check:
+> On 2/26/2026 1:28 PM, Leon Romanovsky wrote:
+>> External email: Use caution opening links or attachments
+>>
+>>
+>> On Wed, Feb 25, 2026 at 08:11:29PM +0000, Pranjal Shrivastava wrote:
+>>> On Wed, Feb 25, 2026 at 09:56:09AM +0200, Leon Romanovsky wrote:
+>>>> On Wed, Feb 25, 2026 at 10:19:41AM +0530, Ashish Mhetre wrote:
+>>>>>
+>>>>> On 2/25/2026 2:27 AM, Pranjal Shrivastava wrote:
+>>>>>> External email: Use caution opening links or attachments
+>>>>>>
+>>>>>>
+>>>>>> On Tue, Feb 24, 2026 at 02:32:21PM +0200, Leon Romanovsky wrote:
+>>>>>>> On Tue, Feb 24, 2026 at 10:42:57AM +0000, Ashish Mhetre wrote:
+>>>>>>>> When mapping scatter-gather entries that reference reserved
+>>>>>>>> memory regions without struct page backing (e.g., bootloader 
+>>>>>>>> created
+>>>>>>>> carveouts), is_pci_p2pdma_page() dereferences the page pointer
+>>>>>>>> returned by sg_page() without first verifying its validity.
+>>>>>>> I believe this behavior started after commit 88df6ab2f34b
+>>>>>>> ("mm: add folio_is_pci_p2pdma()"). Prior to that change, the
+>>>>>>> is_zone_device_page(page) check would return false when given a
+>>>>>>> non‑existent page pointer.
+>>>>>>>
+>>>>> Thanks Leon for the review. This crash started after commit 
+>>>>> 30280eee2db1
+>>>>> ("iommu/dma: support PCI P2PDMA pages in dma-iommu map_sg").
+>>>>>
+>>>>>> Doesn't folio_is_pci_p2pdma() also check for zone device?
+>>>>>> I see[1] that it does:
+>>>>>>
+>>>>>> static inline bool folio_is_pci_p2pdma(const struct folio *folio)
+>>>>>> {
+>>>>>>           return IS_ENABLED(CONFIG_PCI_P2PDMA) &&
+>>>>>>                   folio_is_zone_device(folio) &&
+>>>>>>                   folio->pgmap->type == MEMORY_DEVICE_PCI_P2PDMA;
+>>>>>> }
+>>>>>>
+>>>>>> I believe the problem arises due to the page_folio() call in
+>>>>>> folio_is_pci_p2pdma(page_folio(page)); within is_pci_p2pdma_page().
+>>>>>> page_folio() assumes it has a valid struct page to work with. For 
+>>>>>> these
+>>>>>> carveouts, that isn't true.
+>>>>>>
+>>>>>> Potentially something like the following would stop the crash:
+>>>>>>
+>>>>>> diff --git a/include/linux/memremap.h b/include/linux/memremap.h
+>>>>>> index e3c2ccf872a8..e47876021afa 100644
+>>>>>> --- a/include/linux/memremap.h
+>>>>>> +++ b/include/linux/memremap.h
+>>>>>> @@ -197,7 +197,8 @@ static inline void 
+>>>>>> folio_set_zone_device_data(struct folio *folio, void *data)
+>>>>>>
+>>>>>>    static inline bool is_pci_p2pdma_page(const struct page *page)
+>>>>>>    {
+>>>>>> -       return IS_ENABLED(CONFIG_PCI_P2PDMA) &&
+>>>>>> +       return IS_ENABLED(CONFIG_PCI_P2PDMA) && page &&
+>>>>>> +               pfn_valid(page_to_pfn(page)) &&
+>>>>>>                   folio_is_pci_p2pdma(page_folio(page));
+>>>>>>    }
+>>>>>>
+>>>>> Yes, this will also fix the crash.
+>>>>>
+>>>>>> But my broader question is: why are we calling a page-based API like
+>>>>>> is_pci_p2pdma_page() on non-struct-page memory in the first place?
+>>>>>> Could we instead add a helper to verify if the sg_page() return value
+>>>>>> is actually backed by a struct page? If it isn't, we should arguably
+>>>>>> skip the P2PDMA logic entirely and fall back to a dma_map_phys style
+>>>>>> path. Isn't handling these "pageless" physical ranges the primary 
+>>>>>> reason
+>>>>>> dma_map_phys exists?
+>>>>> Thanks for the feedback, Pranjal.
+>>>>>
+>>>>> To clarify: are you suggesting we handle non-page-backed mappings 
+>>>>> inside
+>>>>> iommu_dma_map_sg (within dma-iommu), or that callers should detect
+>>>>> non-page-backed memory and use dma_map_phys instead of dma_map_sg?
+>>>> The latter one.
+>>>>
+>>> Yup, I meant the latter.
+>>>
+>>>>> Former approach sounds better so that existing iommu_dma_map_sg 
+>>>>> callers
+>>>>> don't need changes, but I'd like to confirm your preference.
+>>>> The bug is in callers which used wrong API, they need to be adapted.
+>>> Yes, the thing is, if the caller already knows that the region to be
+>>> mapped is NOT struct page-backed, then why does it use dma_map_sg
+>>> variants?
+>> Before dma_map_phys() was added, there was no reliable way to DMA‑map
+>> such memory, and using dma_map_sg() was a workaround that happened to
+>> work. I'm not sure whether it worked by design or by accident, but the
+>> correct approach now is to use dma_map_phys().
 > 
-> ```
-> phys_addr = iommu_iova_to_phys(domain, addr);
-> if (!phys_addr) {
->         map_size += pg_size;
->         continue;
-> }
-> ````
+> Thanks Leon and Pranjal for the detailed feedback. I'll update our 
+> callers to use
+> dma_map_phys() for non-page-backed buffers.
 > 
-> Obviously, the iommu_iova_to_phys() signature is faulty and aliases
-> unmapped and 0 together, causing the allocation code to try to
-> re-allocate the 0 address per device. However, it has too many
-> instantiations to fix. Therefore, use a ternary so that when addr
-> is 0, the check is done for address 1 instead.
-> 
-> Suggested-by: Robin Murphy <robin.murphy@arm.com>
-> Fixes: 789a5913b29c ("iommu/amd: Use the generic iommu page table")
-> Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
-> 
-> ---
+> One question: would it make sense to add a check in iommu_dma_map_sg to
+> fail gracefully when non-page-backed buffers are passed, instead of 
+> crashing
+> the kernel?
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+No, it is the responsibility of drivers not to abuse kernel APIs 
+inappropriately. Checking for misuse adds overhead that penalises 
+correct users. dma_map_page/sg on non-page-backed memory has never been 
+valid, and it would only have been system-configuration-dependent luck 
+that it wasn't already blowing up before. I guess dma-debug could add 
+additional checks on these APIs similarly to debug_dma_map_single(), but 
+the fact that we've never even considered checking for made-up bogus 
+struct page pointers only goes to show just how wrong a thing to do it is.
 
-Jason
+Thanks,
+Robin.
