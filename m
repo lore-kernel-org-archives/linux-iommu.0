@@ -1,137 +1,143 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f178.google.com (mail-pl1-f178.google.com [209.85.214.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F0EC477E4E;
-	Fri, 27 Feb 2026 20:43:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE508261B71
+	for <iommu@lists.linux.dev>; Fri, 27 Feb 2026 21:02:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772225000; cv=none; b=tmL+PWHxyL0Fgx3jxi04q/UbklPAfBVSRuuWRIhmzv1gghp9Sg5lwiww9FvrkcbC5gpTUbk31yk64OjwLRnpYk1PBuEHcdfv2oWBScZrFxrRDl8YgmFA7A9phK8zA2abBf5Cn/90x5ROToouAYhhKC4z8F+Qb1FQ8/HBzYdNgTg=
+	t=1772226146; cv=none; b=VahdrEM6U+xCg/DWMKeWSjN7BIwxsVaxSq04KcNCot61LJqZAvYR7PWV09jHNL8/YCINIfglHFSCx0Dovph70CURYS5F+96qvhG+ZrGklZB5yriljuPBIaziWDI3FYX8sDtUcbUrFpK488vmWVvEtE7sk659eu03Ng/XbWTYWIY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772225000; c=relaxed/simple;
-	bh=C5BQtFO6OyplUBcKY6HfwUHgCQXnt44u+6kJv+UGBZ0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Ufv+/th3SMAuVdPG1KbSybOy1gsOgb5lrITrxT9idgXMTUc+YHzPO36lmYfiKV3RRVHEuzMK2utlXeXs3S0ecVJHAH40rN/SxN6DKCBXRFaG7w4eg+Ty/AO+kxVQt0j2Y3diSwiSeX+XbTbxDFOmVC+lvSKcUeaIA/jYr67kdNs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZUXdrWcy; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1772226146; c=relaxed/simple;
+	bh=dMaUZ7J6Gnase1ad6aNEBj5E0J3iCuPXIEZCn5Ehmtk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=p0Fq8A4+NTwZeBv/lnfXXtiNGKd2Cuz4mQbjVTqfrV0bgSTmDoO6XxNatN41AkpH3g5/sastD+JamQZ1Z2+05uWAWo9YzDsY5TAIeUci6FGuysaCi3LcaFrFgcpIu31c1UD0Fa5mbTQaSQdSOs6WemvwnIKbS8xU8UQHSj8njL8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Dj9MgT5V; arc=none smtp.client-ip=209.85.214.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZUXdrWcy"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4A74C19423;
-	Fri, 27 Feb 2026 20:43:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772224999;
-	bh=C5BQtFO6OyplUBcKY6HfwUHgCQXnt44u+6kJv+UGBZ0=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=ZUXdrWcycn9HDQGAt6dye4JUyNJBbLMu5XaFxuDIw08FKKSW4VKOKdc3x+Bd3/Uau
-	 IlJFrfPsZot75XBx1PKjmd5nwWgPB3ex6Ex3t3Ehp6vWDzzvn3QeyCclaSvrl2T7F4
-	 tWxoFkYagImEIgDHF3tdL+lGU84oA6uS7SqeMwQpSdwVI2WNUPwoZufWwfDPSktMxM
-	 wnPfATuJVBJ0ze8wVi/VROUhytYoqrvA75fib0rawNsT7hnC//NfRQxqv0ND26d9T0
-	 srY0tY7E0q8QSfFpZ2a/VKR+MWSCImCpNQvFMkeHCGwUJcu2IyugZRiLJiHVBQincx
-	 dAg45c0Z/o9vQ==
-Message-ID: <ca2ada49-08cf-43e6-a857-85994374549d@kernel.org>
-Date: Fri, 27 Feb 2026 21:43:12 +0100
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Dj9MgT5V"
+Received: by mail-pl1-f178.google.com with SMTP id d9443c01a7336-2adb1c1f9d4so19955ad.0
+        for <iommu@lists.linux.dev>; Fri, 27 Feb 2026 13:02:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1772226145; x=1772830945; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=ZresrJtZIiQ6e34UlIzbrUsxenNO/JCWiXnfWRWt66w=;
+        b=Dj9MgT5VXwhSC4Wje7vTSe71PxRQJLYsG6rCDagjcSB87dzcSqyh8l1SiQ936+wCoH
+         zSOWa4y0K+ua2HP4jGByEJ0e/VU9bz+AyvB3BdkBI4s3rTsDqe036YrRA57n4sO88sJI
+         CHF0JjBLBuBJ/YTLVGBe08isXZKPaUpOd3Zpvfw2RkOJQk/hcDGQMwU0J3yKUc+DCAg8
+         iafrfz1ge8c5Vbt2nbmTMOEIh19N4z0oQy/joIW9ZNKmxkhcJINEKZir/zGVgRsnDmi4
+         792fYSEi+Wq+pjHXB/dFEq5sBtUECnDemP6eWbRJsDlNaP6TxgpqC/QqvMGfUwXci6/Z
+         uU0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772226145; x=1772830945;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=ZresrJtZIiQ6e34UlIzbrUsxenNO/JCWiXnfWRWt66w=;
+        b=faKqMZTlzjDffrVGFPVBtbjLwWpKFzfQTFXdkO6bHqFopXU8HvFZ+I164vHQ6Hk8/V
+         gfyQdYubQtZKa/Wor/eLEafvZKIEsouEhXqt/15sgZ+Y8Eepu6xSE97HHeQVl5GXfxM/
+         8e3KkQvN6/PF5irSFL8AumcWCpyOAiI5Eu1FK0eLgUr3rJzoqa6zoUpqbRbaLutv2ljm
+         f/4LRnrGrCeHxB4cteHr3mRJajwr0IgrEWkoxP4UYCl4cLcPhhhCplp32Qsf7NBOFsfw
+         fFSN4A6F98DsAs8nFrG0YMbZTiGtyb/9xquuWdWYds0BwnH9tplV9skhwx3kqaE1bMtg
+         bn7A==
+X-Gm-Message-State: AOJu0Yz13+W49RYpJ1VddsIC1XAcg8uJNu8yYRJwLtqxkX9PnoTH/m4n
+	RNZV3UHCgGqtVf+KwxqWG5UIUwZhbHxdg7gDUefSflVFkuBv5pNMxfu+aCjQ5pzTrw==
+X-Gm-Gg: ATEYQzwulre/ZxffTMUBdm9pE4X79gPWUFu+/RpE1Nx603NDqYBSenUNqJTLhpO1xPF
+	geY2JR3AdtbWAZ7dGCOmNq6ssIPZanAM7urQSnZszpZS4eWr9QLerCa0qW8o7Js1Xku8N7agjbd
+	lOXHVhX1QRHROfW75M78nWIwPleCP5MnqRz0NnKGyWjY8C0T0vEbE5HhjbklziKoYLZcThntLU+
+	azsRpXTOvzhNJ9nvGCFrJlmmFJJH35j0bWfoo8lEbcxOYYRXkC79q4Vds8xHw/s21kxUQgddo6U
+	lB8YUXxgDuPdLgCduIMBiVQ5epmpEmqrGxjucb0BRzC1BDNiMF4mGGjRtL0PrlIl6Eie3gRWvAV
+	P5dnCO5+Y6KMt6jXoFHR0Yzawj5pdVM9mdN1hxyhg2COVazr3uUYGfK0yVg2A70yG2PV6emZfhn
+	hyHT1JWyjrN3PtSLpIMonSckCE4ECSfbUvJfsedurVKOEl6Dh3bzENBRUlAlxStA==
+X-Received: by 2002:a17:903:4b4f:b0:2ad:6f9b:7819 with SMTP id d9443c01a7336-2ae397c5984mr570825ad.24.1772226144535;
+        Fri, 27 Feb 2026 13:02:24 -0800 (PST)
+Received: from google.com (168.136.83.34.bc.googleusercontent.com. [34.83.136.168])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2adfb5b0691sm87042495ad.11.2026.02.27.13.02.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 27 Feb 2026 13:02:23 -0800 (PST)
+Date: Fri, 27 Feb 2026 21:02:20 +0000
+From: Samiullah Khawaja <skhawaja@google.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, 
+	Will Deacon <will@kernel.org>, patches@lists.linux.dev, Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH] iommupt: Optimize the gather processing for DMA-FQ mode
+Message-ID: <vwrkpp2ewff7mw3e7mzmfvrqi3wqobc5wwy4y2vq53ylvteiyf@7lg5lksll32r>
+References: <0-v1-37d146e56632+ce4-iommupt_no_gaps_fq_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 6/9] mm: cma: Export cma_get_name
-To: Maxime Ripard <mripard@kernel.org>, Sumit Semwal
- <sumit.semwal@linaro.org>,
- Benjamin Gaignard <benjamin.gaignard@collabora.com>,
- Brian Starkey <Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>,
- "T.J. Mercier" <tjmercier@google.com>,
- =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Robin Murphy <robin.murphy@arm.com>,
- Andrew Morton <akpm@linux-foundation.org>,
- Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
- "Liam R. Howlett" <Liam.Howlett@oracle.com>, Vlastimil Babka
- <vbabka@suse.cz>, Mike Rapoport <rppt@kernel.org>,
- Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>
-Cc: linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
- linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev, linux-mm@kvack.org
-References: <20260227-dma-buf-heaps-as-modules-v2-0-454aee7e06cc@kernel.org>
- <20260227-dma-buf-heaps-as-modules-v2-6-454aee7e06cc@kernel.org>
-From: "David Hildenbrand (Arm)" <david@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=david@kernel.org; keydata=
- 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
- qIws/H2t
-In-Reply-To: <20260227-dma-buf-heaps-as-modules-v2-6-454aee7e06cc@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <0-v1-37d146e56632+ce4-iommupt_no_gaps_fq_jgg@nvidia.com>
 
-On 2/27/26 14:15, Maxime Ripard wrote:
-> The CMA dma-buf heap uses the cma_get_name() function to get the name of
-> the heap instance it's going to create.
-> 
-> However, this function is not exported. Since we want to turn the CMA
-> heap into a module, let's export it.
-> 
-> Reviewed-by: T.J. Mercier <tjmercier@google.com>
-> Signed-off-by: Maxime Ripard <mripard@kernel.org>
-> ---
->  mm/cma.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/mm/cma.c b/mm/cma.c
-> index be142b473f3bd41b9c7d8ba4397f018f6993d962..550effb9c4e01cc488b5744fe61d55a5b70a6d6c 100644
-> --- a/mm/cma.c
-> +++ b/mm/cma.c
-> @@ -50,10 +50,11 @@ unsigned long cma_get_size(const struct cma *cma)
->  
->  const char *cma_get_name(const struct cma *cma)
->  {
->  	return cma->name;
->  }
-> +EXPORT_SYMBOL_GPL(cma_get_name);
+On Fri, Feb 27, 2026 at 11:27:02AM -0400, Jason Gunthorpe wrote:
+>In PT_FEAT_FLUSH_RANGE mode the gather was accumulated but never flushed
+>and then the accumulated range was discarded by the dma-iommu code in
+>DMA-FQ mode. This is basically optimal.
+>
+>However for PT_FEAT_FLUSH_RANGE_NO_GAPS the page table would push flushes
+>that are redundant with the flush all generated by the DMA-FQ mode.
+>
+>Disable all range accumulation in the gather, and iommu_pt triggered
+>flushing when in iommu_iotlb_gather_queued() indicates it is in DMA-FQ
+>mode.
+>
+>Reported-by: Robin Murphy <robin.murphy@arm.com>
+>Closes: https://lore.kernel.org/r/794b6121-b66b-4819-b291-9761ed21cd83@arm.com
+>Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+>---
+> drivers/iommu/generic_pt/iommu_pt.h | 27 +++++++++++++++++++--------
+> 1 file changed, 19 insertions(+), 8 deletions(-)
+>
+>diff --git a/drivers/iommu/generic_pt/iommu_pt.h b/drivers/iommu/generic_pt/iommu_pt.h
+>index 3e33fe64feab22..9c08bb594e4173 100644
+>--- a/drivers/iommu/generic_pt/iommu_pt.h
+>+++ b/drivers/iommu/generic_pt/iommu_pt.h
+>@@ -51,16 +51,27 @@ static void gather_range_pages(struct iommu_iotlb_gather *iotlb_gather,
+> 		iommu_pages_stop_incoherent_list(free_list,
+> 						 iommu_table->iommu_device);
+>
+>-	if (pt_feature(common, PT_FEAT_FLUSH_RANGE_NO_GAPS) &&
+>-	    iommu_iotlb_gather_is_disjoint(iotlb_gather, iova, len)) {
+>-		iommu_iotlb_sync(&iommu_table->domain, iotlb_gather);
+>-		/*
+>-		 * Note that the sync frees the gather's free list, so we must
+>-		 * not have any pages on that list that are covered by iova/len
+>-		 */
+>+	/*
+>+	 * If running in DMA-FQ mode then the unmap will be followed by an IOTLB
+>+	 * flush all so we need to optimize by never flushing the IOTLB here.
+>+	 *
+>+	 * For NO_GAPS the user gets to pick if flushing all or doing micro
+>+	 * flushes is better for their work load by choosing DMA vs DMA-FQ
+>+	 * operation. Drivers should also see shadow_on_flush.
+>+	 */
+>+	if (!iommu_iotlb_gather_queued(iotlb_gather)) {
+>+		if (pt_feature(common, PT_FEAT_FLUSH_RANGE_NO_GAPS) &&
+>+		    iommu_iotlb_gather_is_disjoint(iotlb_gather, iova, len)) {
+>+			iommu_iotlb_sync(&iommu_table->domain, iotlb_gather);
+>+			/*
+>+			 * Note that the sync frees the gather's free list, so
+>+			 * we must not have any pages on that list that are
+>+			 * covered by iova/len
+>+			 */
+>+		}
+>+		iommu_iotlb_gather_add_range(iotlb_gather, iova, len);
+> 	}
+>
+>-	iommu_iotlb_gather_add_range(iotlb_gather, iova, len);
+> 	iommu_pages_list_splice(free_list, &iotlb_gather->freelist);
+> }
+>
+>
+>base-commit: 851dbe76d47e790db0d6ac5151e7f22be357846a
+>-- 
+>2.43.0
+>
+>
 
-No real reason to not squash this patch into #5, right?
-
--- 
-Cheers,
-
-David
+Reviewed-by: Samiullah Khawaja <skhawaja@google.com>
