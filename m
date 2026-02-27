@@ -1,63 +1,104 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B62A72BE7CD;
-	Fri, 27 Feb 2026 01:56:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3E1023EA92
+	for <iommu@lists.linux.dev>; Fri, 27 Feb 2026 02:23:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772157409; cv=none; b=I/8hKEHqbrj/uAPyUESYRz0KPyPbSy72oCP+yp1qurscwDf5FG9ZS9IHjYTQcOVFaaCoMYC59all0rbd86iZOs2rLr7Kv5J4U2XNdROyKDmj98dApjDz7Fxup0Hszp5Bl1OP/HluQlB8y40teCwyXUN/Et+Bh08vZUMQwHoP7Kw=
+	t=1772159026; cv=none; b=NQz0WtUXgXa21Or72WJASs2Lk/qV9zMoCwKjqjfgCQNuJzG4PPMu/ynpRaGX50x71GNeVgLFSfxLvM7oxtmPqonsS4FMFgtcZ1XkpGGZVSC56cht4gUCFr98UDfY9T8QdyMRk4+uL4RI7oUYieXzGEneVcxYy3h+G4wml63srh8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772157409; c=relaxed/simple;
-	bh=7gh9mn3aQhHYH5M/r9TCovnNwr6iC4wvBKCpbFHUBsk=;
-	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=KWYNnOekUAFj1wh3MLqoGPSzvD6yXi1+fPaDvubVLDizEWEik/0490ApexEuMMTj+3ta4mTDiXtITQ1pK3sJt7mSYer29a77Wshram9k245G3jAqugV2OPdifH+rTAo7PsrWyXUYjOhHzCgSpGl0bejTS5xF65PRvF2ge03d7QE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=F+9WEf5I; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1772159026; c=relaxed/simple;
+	bh=IqH0hcEoWlP5eHsUoZbwB3m+r8sXCdOO5V0jhCXqXfA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=NSJpO9ETro6HPKqk75vxioKgWcmCW3yT/BHOYnLpChBU4YUJCMl3CBU4UzJVmAb1JSNgI8BqIv1ge9rYKDMvbFx2wNFE+l5qFV/uDwGmCA9EFBnOwB89a/yg9+ZfOWAnY13cBz8xICubAJAhvlmjrsNUvYUXZmnEFPZtxM+7nvw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=PGVJ7RdG; arc=none smtp.client-ip=192.198.163.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="F+9WEf5I"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60103C116C6;
-	Fri, 27 Feb 2026 01:56:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772157409;
-	bh=7gh9mn3aQhHYH5M/r9TCovnNwr6iC4wvBKCpbFHUBsk=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-	b=F+9WEf5I+JIF2FB+vVRlLlu+CMm7Oschf49WUh+NDjQoK5FiyCAaV5NCtc7CPGFjx
-	 blT0OXpDTa895JTmFnJ2HbC5th1gc1nip2p+IdFrvCljHG5DiAfPD2WMmOdNC5Vulk
-	 RSz0esSzhsWZhz2+8rNw801hA8uqUYnzuNwXPC9dquS1ie3mWLHoCHEUSpVX08ARnv
-	 Ljn34o1yGeXVrDhShNGLpeSsCGylyjzL/3fXv1UcXCURj8BHQspOvSBKbtQ0PYgoVl
-	 WeUEtSwK6tIaRdDD+3PqNZqgX3SSKPuLr62c+CfcyzjqIve1n2p3TripfSTi3BM2cV
-	 qlVMS6rhp3fKQ==
-Received: from [10.30.226.235] (localhost [IPv6:::1])
-	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id BA017393109B;
-	Fri, 27 Feb 2026 01:56:54 +0000 (UTC)
-Subject: Re: [GIT PULL] dma-mapping fixes for Linux 7.0
-From: pr-tracker-bot@kernel.org
-In-Reply-To: <20260226223620.873540-1-m.szyprowski@samsung.com>
-References: <CGME20260226223635eucas1p25ed99f07826bffde88f607c822ef350a@eucas1p2.samsung.com> <20260226223620.873540-1-m.szyprowski@samsung.com>
-X-PR-Tracked-List-Id: <iommu.lists.linux.dev>
-X-PR-Tracked-Message-Id: <20260226223620.873540-1-m.szyprowski@samsung.com>
-X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/mszyprowski/linux.git tags/dma-mapping-7.0-2026-02-26
-X-PR-Tracked-Commit-Id: d5b5e8149af0f5efed58653cbebf1cb3258ce49a
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 944e15f200475d530096cba489833dc6dcd8d1e1
-Message-Id: <177215741335.1937342.2027273910560365152.pr-tracker-bot@kernel.org>
-Date: Fri, 27 Feb 2026 01:56:53 +0000
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Stian Halseth <stian@itx.no>, Jiri Pirko <jiri@resnulli.us>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PGVJ7RdG"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1772159025; x=1803695025;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=IqH0hcEoWlP5eHsUoZbwB3m+r8sXCdOO5V0jhCXqXfA=;
+  b=PGVJ7RdG002OPZof00gFBo+hsPIhgxf5LbRs6YEHj3FnA6eB60QLOPF1
+   KlwAeXFp2doNn0SXmRUiRLVDb873FCkygVa3AjV1K9WS829IDCIcXMTRc
+   FQ+R220Q5+xNijj7tAIbrq5eBahaPAN5p/Y4M31lXa8VcZ/7le22opXgQ
+   rPOCodzqzzsCEJ6+vPslVl71gzXNq6Gz61G3ViJcYO64YzJAKiIAUskj0
+   FFy4gCxBQZ78h+CPeY3if6BzWoJv2LSq66MYOHYZATijNxPo6SYVVA7Aq
+   p+5Pr3kUc/xHl6OYWXNkmb0w0mkNz2nCCUT3Q8JuHbQ+siUQAe8W07ri1
+   Q==;
+X-CSE-ConnectionGUID: PnBja5WpSKqu/lVJy78MHw==
+X-CSE-MsgGUID: h8U1V4GyQRCN5VvwlP8YVg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11713"; a="84591454"
+X-IronPort-AV: E=Sophos;i="6.21,313,1763452800"; 
+   d="scan'208";a="84591454"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2026 18:23:44 -0800
+X-CSE-ConnectionGUID: noRFRGkWTHOGEzQ8MYP6Rg==
+X-CSE-MsgGUID: Yto6NlIiQ++5zkhqioBREA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,313,1763452800"; 
+   d="scan'208";a="221380703"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2026 18:23:43 -0800
+Message-ID: <d38a2cda-4b29-43ec-ab08-b55c79714810@linux.intel.com>
+Date: Fri, 27 Feb 2026 10:23:01 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: Linux error `[DMA Write NO_PASID] Request device [3c:00.0] fault
+ addr 0x0 [fault reason 0x05] PTE Write access is not set`
+To: Paul Menzel <pmenzel@molgen.mpg.de>, David Woodhouse <dwmw2@infradead.org>
+Cc: iommu@lists.linux.dev, linux-nvme@lists.infradead.org
+References: <88e33b0c-e89f-47a2-9125-d85693d4816f@molgen.mpg.de>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <88e33b0c-e89f-47a2-9125-d85693d4816f@molgen.mpg.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-The pull request you sent on Thu, 26 Feb 2026 23:36:20 +0100:
+On 2/8/26 03:10, Paul Menzel wrote:
+> Dear Linux folks,
+> 
+> 
+> On the Intel Kaby Lake laptop Dell XPS 13 9360, Linux logs the error below:
+> 
+>      [17959.189315] ACPI: EC: event unblocked
+>      [17959.197876] DMAR: DRHD: handling fault status reg 2
+>      [17959.197882] DMAR: [DMA Write NO_PASID] Request device [3c:00.0] 
+> fault addr 0x0 [fault reason 0x05] PTE Write access is not set
+>      [17959.198366] DMAR: DRHD: handling fault status reg 2
+>      [17959.198369] DMAR: [DMA Write NO_PASID] Request device [3c:00.0] 
+> fault addr 0x0 [fault reason 0x05] PTE Write access is not set
+>      [17959.198923] DMAR: DRHD: handling fault status reg 2
+>      [17959.201477] nvme nvme0: 4/0/0 default/read/poll queues
+> 
+> 3c:00.0 is the NVMe controller/device.
+> 
+>      $ lspci -nn -s 3c:00.0
+>      3c:00.0 Non-Volatile memory controller [0108]: SK hynix PC300 NVMe 
+> Solid State Drive 512GB [1c5c:1284]
+> 
+> This seems to happen only *sometimes* when resuming from ACPI S3.
+> 
+> To my knowledge, this is *not* a new problem. Please find the log 
+> messages attached. (Ignore the other DMAR error for now.)
 
-> https://git.kernel.org/pub/scm/linux/kernel/git/mszyprowski/linux.git tags/dma-mapping-7.0-2026-02-26
+These IOMMU DMA faults are triggered when the NVMe controller attempts
+DMA writes to system memory address 0x0. The IOMMU hardware blocked
+these accesses because the system software has not granted the device
+permission to write to this specific address. It's unlikely a bug or
+problem in the iommu driver as far as I can see.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/944e15f200475d530096cba489833dc6dcd8d1e1
+> Kind regards,
+> 
+> Paul
 
-Thank you!
-
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+Thanks,
+baolu
