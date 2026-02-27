@@ -1,100 +1,61 @@
-Received: from out30-124.freemail.mail.aliyun.com (out30-124.freemail.mail.aliyun.com [115.124.30.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC5EC3EF0C5
-	for <iommu@lists.linux.dev>; Fri, 27 Feb 2026 11:26:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.124
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8B5BF2441B8
+	for <iommu@lists.linux.dev>; Fri, 27 Feb 2026 12:45:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772191621; cv=none; b=of4jnVN+vhRXSdgTxh1snCc5vXo8NFPT6ns1WN+hXVVukwKSdij70/2kyGM7851neTvvoE4gK6adVC/LHryFOHFGhr3Lrm0wFetRrGsE53QToYDUhG0E4lJ77D58JgMvS1BPU0Lnxt4EzeQE2+ex/Nw3/lGrTzkbBSFji60OjSQ=
+	t=1772196354; cv=none; b=MTtEJumuMjCxo8Fewh8tLCvkgy+K0YlqXe9Rvo7/btRhiqEwITECcstxCcInLq8TYvKItsXzq1gEAVVOcA7b6ZsD/E7ebU2BgdpQ+AVZYAVM8CgiU9h7K7eT2fRHsiGmJfPl0oocTcjj5wyCEL1HKYa2KQRyIQqCi++wApUkNZw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772191621; c=relaxed/simple;
-	bh=gpMPMbasSK61+jjWHW8SpoJQo2GDlM2bsDGS+tXVBAE=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=fKcHli4ozIuAPZLlh+sx/DJmoMT7nq/60W0L6PTNV/EeLHsI/GZGQHHZbLJ0zK8Gqr5p1jdimzMd5qKv0W3GMWH9kmuRfqQq8bfRiThWQtYkwHaH5UxsvW8GT5s8qhaD55/NBLKn4+MQelaw+vzX0bOhTejp3vs/LyMD/pNAoWA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=rZT54d9s; arc=none smtp.client-ip=115.124.30.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="rZT54d9s"
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux.alibaba.com; s=default;
-	t=1772191612; h=From:To:Subject:Date:Message-Id:MIME-Version;
-	bh=IDOIyRmT6KuqPEPamC/FBdwtm7Gf75eSBm41m3iY6UA=;
-	b=rZT54d9s0As/u5YJsUmAu9fqvho+0sKL9ROHcFx4wv7moTsiuLvROBhnn69gtm3wFlUv6yeOy3DgA1Sif0eNM4ADrhGtNwJctKDM6+9BiX6vbUDtfb0Y7J9CZr41lRNnlSPGcGaphBv8Xka6T2zXbplIn4ncYkc7H2BPRgxAPk4=
-Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0WzuBAQN_1772191610 cluster:ay36)
-          by smtp.aliyun-inc.com;
-          Fri, 27 Feb 2026 19:26:51 +0800
-From: fangyu.yu@linux.alibaba.com
-To: tjeznach@rivosinc.com,
-	joro@8bytes.org,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	pjw@kernel.org,
-	palmer@dabbelt.com,
-	aou@eecs.berkeley.edu,
-	alex@ghiti.fr,
-	andrew.jones@oss.qualcomm.com,
-	baolu.lu@linux.intel.com,
-	zong.li@sifive.com
-Cc: guoren@kernel.org,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	linux-riscv@lists.infradead.org,
-	Fangyu Yu <fangyu.yu@linux.alibaba.com>
-Subject: [PATCH] iommu/riscv: Stop polling when CQCSR reports an error
-Date: Fri, 27 Feb 2026 19:26:40 +0800
-Message-Id: <20260227112640.20197-1-fangyu.yu@linux.alibaba.com>
-X-Mailer: git-send-email 2.39.3 (Apple Git-146)
+	s=arc-20240116; t=1772196354; c=relaxed/simple;
+	bh=XYqiA+MVxyiYqtCjbATwaQe0GRWI8xti11LZmoNBBwA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=dcje/AthSHSJFuJ1C7edSqLCrH0LUwO+fB7DtztCGwJqcu06Y9zhrdcIthz+omNhrzOnx7qI7oY4OM8DqiAHMLToLdm+BiSmE8wUU7JKMr3cQbx3bgN16XiMhjijWqYEtktxB1ZOF7y93toO5ZNt8AcRu+c3o5JTT0Lp/mF4hvM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5079414BF;
+	Fri, 27 Feb 2026 04:45:44 -0800 (PST)
+Received: from arm.com (arrakis.cambridge.arm.com [10.1.197.46])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8C13B3F73B;
+	Fri, 27 Feb 2026 04:45:49 -0800 (PST)
+Date: Fri, 27 Feb 2026 12:45:46 +0000
+From: Catalin Marinas <catalin.marinas@arm.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: will@kernel.org, joro@8bytes.org, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, daizhiyuan@phytium.com.cn
+Subject: Re: [PATCH 0/3] Arm SMMU errata updates
+Message-ID: <aaGR-i8pIO8WYH9E@arm.com>
+References: <cover.1772125743.git.robin.murphy@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1772125743.git.robin.murphy@arm.com>
 
-From: Fangyu Yu <fangyu.yu@linux.alibaba.com>
+On Thu, Feb 26, 2026 at 06:10:19PM +0000, Robin Murphy wrote:
+> As promised (well OK, it's not Monday...), here's a more comprehensive
+> SMMU errata update since I finally found time to pick through all the
+> latest SDENs in detail. Includes some bonus cleanup since I despair at
+> just adding to a messy table, but that could be split up if you have a
+> preference for what to base on what.
+> 
+> Cheers,
+> Robin.
+> 
+> 
+> Robin Murphy (3):
+>   arm64: errata: Reformat table for IDs
+>   iommu/arm-smmu-v3: Update Arm errata
+>   arm64: errata: Sort Arm entries
+> 
+>  Documentation/arch/arm64/silicon-errata.rst | 114 +++++++++++---------
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  18 +++-
+>  2 files changed, 77 insertions(+), 55 deletions(-)
 
-The cmdq wait loop busy-polls the consumer index until it advances
-or the software timeout expires. If the IOMMU has already signaled
-a command queue failure in CQCSR, continuing to poll for progress is
-pointless.
+For the errata doc changes:
 
-Make riscv_iommu_queue_wait() also terminate the poll when any of these
-CQCSR error bits are observed.
-
-This helps the caller return earlier in failure cases and avoids
-spinning until the full timeout interval when the hardware has already
-reported an error. On single-core systems in particular, the current
-busy-wait can delay servicing the command-timeout interrupt until the
-software timeout expires (90s by default).
-
-Fixes: 856c0cfe5c5f ("iommu/riscv: Command and fault queue support")
-Signed-off-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
----
- drivers/iommu/riscv/iommu.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
-index fa2ebfd2f912..5d7e49ef7ebb 100644
---- a/drivers/iommu/riscv/iommu.c
-+++ b/drivers/iommu/riscv/iommu.c
-@@ -368,6 +368,8 @@ static int riscv_iommu_queue_wait(struct riscv_iommu_queue *queue,
- 				  unsigned int timeout_us)
- {
- 	unsigned int cons = atomic_read(&queue->head);
-+	unsigned int flags = RISCV_IOMMU_CQCSR_CQMF | RISCV_IOMMU_CQCSR_CMD_TO |
-+			     RISCV_IOMMU_CQCSR_CMD_ILL;
- 
- 	/* Already processed by the consumer */
- 	if ((int)(cons - index) > 0)
-@@ -375,6 +377,7 @@ static int riscv_iommu_queue_wait(struct riscv_iommu_queue *queue,
- 
- 	/* Monitor consumer index */
- 	return readx_poll_timeout(riscv_iommu_queue_cons, queue, cons,
-+				 (riscv_iommu_readl(queue->iommu, queue->qcr) & flags) ||
- 				 (int)(cons - index) > 0, 0, timeout_us);
- }
- 
--- 
-2.50.1
-
+Acked-by: Catalin Marinas <catalin.marinas@arm.com>
