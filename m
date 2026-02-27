@@ -1,30 +1,30 @@
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2B8283644A7
-	for <iommu@lists.linux.dev>; Fri, 27 Feb 2026 17:52:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C711836605D
+	for <iommu@lists.linux.dev>; Fri, 27 Feb 2026 17:52:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772214776; cv=none; b=oAbAmpMuF293T/4ByPlRM289O9a4yVgQr8P+RoXQYwZx8x1DxeeIlobC/Wa1DiOh/f7gs+MGIAwzj6z+TaTr0mUKGWXKw+VJ1FJPwOhh1S/qozI77Vjh5miB0eWPtmVmWq1smqTUlIzr9ipAHKnzoqBcJxRdRoLTIs7vSqWUO+I=
+	t=1772214776; cv=none; b=pB/LAPcE32U4778NNgUILbLzA6NF3U4PPPD+qMW8thtj4sLcAQTqimKtlgvvdaxV3nCE2vk+5fRt/Gt4VgdSpoB5gtSERLK8HUFkOdtDl7HftUuSrU46IS0MizGwG6zpoEtHa6WIIVGxGGcCvVyF/sBo4EWEAKSQF8sObSU/1sI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1772214776; c=relaxed/simple;
-	bh=xQZojr3GFxPw6/kHY8lEwIocu5M2D6Kr99QXLjDyrug=;
+	bh=xVSDUH51PrQlO9FZjAgm0NH0MdnAZeIcuaw7S9IuRFI=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=CcfT5vUjw1GK4eT1++YmHHNcHeY9b5V6p0DGEJrkrUUDl8K+tONp01rin9+Ld/kqpiEgmwht5PxSL/GL8x+yExB4LpWnB7Mv2rMZeuMsdEFXYTqj0EacGMEaLJL9JPAIMrntJpv1N8zm6XhhlEUPMpEm3/YRfSgeqfcekx10FUk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=YlSGfmft; arc=none smtp.client-ip=13.77.154.182
+	 MIME-Version; b=cKfzO6ltICy5ZZ4Kzae+MMdvYCLqaAsh6skpFxRXXe8BMgBmn4dtu6DQPzBZlCeabttLUxPeRSVx2HBRJjXxcL3CcmYc7Yb/ubCwGcuOt0ast7AJjTb1QEpRiAqMsScj3Wf1REBU8Ef0X6chQpLTY9Qjc8N4MH2PII58+cF1u0Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=g0iPFCKZ; arc=none smtp.client-ip=13.77.154.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="YlSGfmft"
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="g0iPFCKZ"
 Received: from DESKTOP-0403QTC.corp.microsoft.com (unknown [20.236.11.69])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 5203520B6F03;
-	Fri, 27 Feb 2026 09:52:53 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 5203520B6F03
+	by linux.microsoft.com (Postfix) with ESMTPSA id 134AD20B6F02;
+	Fri, 27 Feb 2026 09:52:55 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 134AD20B6F02
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1772214773;
-	bh=FcyuZJLhmRk9Mvmk2JcfREx8/0r88nbmt1CfI0Gl/EM=;
+	s=default; t=1772214775;
+	bh=78agt53msrArRhO0OIzV37Pk6/mDTJ+S/0LVkBcuyc0=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=YlSGfmftimvQCiambMmyx7ij0o13mdAKQrClYzIrRxzgdcA6ycGSk7V02goT85giV
-	 1tyII60TrV/URQLURhRWDQrOrf/DmVG3F+SC0FSdZXC3SRSwQHvc0BDCl6s8R4evLV
-	 kYn2exqqFaHPY+Q72UtV7RUl4cc6z4bjyUF5QxN4=
+	b=g0iPFCKZzCNM6pfmmG8JLx535OxcnVhsxFe7FitX75IzvJ+EQGvAR/BProDFVycI9
+	 1X/RkOrQ02s/vWN/JkqYm/xjcrXXk/ZSnxy934xG0RMzPdUNWg+Mrc4ZelsIVTBrPS
+	 6csyL4+/lD6q4RHlCWBdcejJLJ/IqpJ62TNiiOGM=
 From: Jacob Pan <jacob.pan@linux.microsoft.com>
 To: linux-kernel@vger.kernel.org,
 	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
@@ -41,9 +41,9 @@ Cc: skhawaja@google.com,
 	Jacob Pan <jacob.pan@linux.microsoft.com>,
 	Jean Philippe-Brucker <jean-philippe@linaro.org>,
 	Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH 05/11] vfio: Allow null group for noiommu without containers
-Date: Fri, 27 Feb 2026 09:52:41 -0800
-Message-Id: <20260227175247.26103-6-jacob.pan@linux.microsoft.com>
+Subject: [PATCH 07/11] vfio: Update noiommu device detection logic for cdev
+Date: Fri, 27 Feb 2026 09:52:43 -0800
+Message-Id: <20260227175247.26103-8-jacob.pan@linux.microsoft.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20260227175247.26103-1-jacob.pan@linux.microsoft.com>
 References: <20260227175247.26103-1-jacob.pan@linux.microsoft.com>
@@ -55,91 +55,34 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-In case of noiommu mode is enabled for VFIO cdev without VFIO container
-nor IOMMUFD provided compatibility container, there is no need to
-create a dummy group. Update the group operations to tolerate null group
-pointer.
+Rework vfio_device_is_noiommu() to derive noiommu mode based on device,
+group type, and configurations.
 
 Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
 ---
- drivers/vfio/group.c | 14 ++++++++++++++
- drivers/vfio/vfio.h  | 17 +++++++++++++++++
- 2 files changed, 31 insertions(+)
+ drivers/vfio/vfio.h | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/vfio/group.c b/drivers/vfio/group.c
-index 4f15016d2a5f..98f2a4f2ebff 100644
---- a/drivers/vfio/group.c
-+++ b/drivers/vfio/group.c
-@@ -381,6 +381,9 @@ int vfio_device_block_group(struct vfio_device *device)
- 	struct vfio_group *group = device->group;
- 	int ret = 0;
- 
-+	if (vfio_null_group_allowed() && !group)
-+		return 0;
-+
- 	mutex_lock(&group->group_lock);
- 	if (group->opened_file) {
- 		ret = -EBUSY;
-@@ -398,6 +401,9 @@ void vfio_device_unblock_group(struct vfio_device *device)
- {
- 	struct vfio_group *group = device->group;
- 
-+	if (vfio_null_group_allowed() && !group)
-+		return;
-+
- 	mutex_lock(&group->group_lock);
- 	group->cdev_device_open_cnt--;
- 	mutex_unlock(&group->group_lock);
-@@ -589,6 +595,14 @@ static struct vfio_group *vfio_noiommu_group_alloc(struct device *dev,
- 	struct vfio_group *group;
- 	int ret;
- 
-+	/*
-+	 * With noiommu enabled under cdev interface only, there is no need to
-+	 * create a vfio_group if the group based containers are not enabled.
-+	 * The cdev interface is exclusively used for iommufd.
-+	 */
-+	if (vfio_null_group_allowed())
-+		return NULL;
-+
- 	iommu_group = iommu_group_alloc();
- 	if (IS_ERR(iommu_group))
- 		return ERR_CAST(iommu_group);
 diff --git a/drivers/vfio/vfio.h b/drivers/vfio/vfio.h
-index 50128da18bca..838c08077ce2 100644
+index 838c08077ce2..c5541967ef9b 100644
 --- a/drivers/vfio/vfio.h
 +++ b/drivers/vfio/vfio.h
-@@ -113,6 +113,18 @@ bool vfio_device_has_container(struct vfio_device *device);
- int __init vfio_group_init(void);
- void vfio_group_cleanup(void);
+@@ -127,8 +127,13 @@ static inline bool vfio_null_group_allowed(void)
  
-+/*
-+ * With noiommu enabled and no containers are supported, allow devices that
-+ * don't have a dummy group.
-+ */
-+static inline bool vfio_null_group_allowed(void)
-+{
-+	if (vfio_noiommu && (!IS_ENABLED(CONFIG_VFIO_CONTAINER) && !IS_ENABLED(CONFIG_IOMMUFD_VFIO_CONTAINER)))
-+		return true;
-+
-+	return false;
-+}
-+
  static inline bool vfio_device_is_noiommu(struct vfio_device *vdev)
  {
- 	return IS_ENABLED(CONFIG_VFIO_NOIOMMU) &&
-@@ -189,6 +201,11 @@ static inline void vfio_group_cleanup(void)
- {
+-	return IS_ENABLED(CONFIG_VFIO_NOIOMMU) &&
+-	       vdev->group->type == VFIO_NO_IOMMU;
++	if (!IS_ENABLED(CONFIG_VFIO_NOIOMMU))
++		return false;
++
++	if (vfio_null_group_allowed())
++		return vdev->noiommu;
++
++	return vdev->group->type == VFIO_NO_IOMMU;
  }
- 
-+static inline bool vfio_null_group_allowed(void)
-+{
-+	return false;
-+}
-+
- static inline bool vfio_device_is_noiommu(struct vfio_device *vdev)
- {
- 	return false;
+ #else
+ struct vfio_group;
 -- 
 2.34.1
 
