@@ -1,35 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 835BD17B506;
-	Fri, 27 Feb 2026 13:23:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 347652367D5;
+	Fri, 27 Feb 2026 13:23:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772198603; cv=none; b=SSlXOmV8YWY3oXAJ3bG+ZA4LgW1CtDLvLs4EHL7P4DhLzYVtgXS7hoSPf5iw2ujL0oSSte1yIKEu/hSGm+Dq1JAqHmX2GBZ81yDrzKjC8bAlAjZPYjxnFUtv1N0V9U9Wc+MgZhfE2fGOG2jQPsYAzn8gLo+czT3kzIMO+vv+xuQ=
+	t=1772198606; cv=none; b=QRLWlsluimhl1hFv2R0TwwQUoTChQvqPs4EodevYHAWqEzFC8dV0nDY+G6fEykvMPNFt6jICfEhHv/7VMtXgLXXo/yllf/0DJwC16doi81F9X1CN9qs0awVmmxXUJ+3gF8MdnV0TCKY0onQvUzJXSO/D/TQU2GwGKD3yLbh9fC0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772198603; c=relaxed/simple;
-	bh=ecBBNr07Tr5A8D/sRSoG9EjORGZ7DumNUTGgwyKHMSU=;
+	s=arc-20240116; t=1772198606; c=relaxed/simple;
+	bh=lElZts2cuQOlY9aUjaqr5WZYPDwOSZ2Mb3btADVyBc4=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=D4QVnA+wWGIbZW+JVt2v0iXdSM2JB5MySOLU/rbJT/g7OpNeHwh4l401yYhbb9Wr5WCGPHhwnQIxVg+XdZ/pzZT+5tmxhQrCdx8hdNYtoGWD1TnPWybAX+p9UbHSvCAWw2iHDLikhAZjeMN3XxHHAyTpCmHRo9SDRbLN8uSuVr4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=P/XIt2WI; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=aQgtlCv6/NbQ3qUGHI7xRhGpvAxcsk57H2ZqYob2YeSAKN5ZqqcLl62DDJ6uzqKEdbZ+68FyqiSclUJowNYKauWIoKjdFwX1wiRB1E5Q2XcwID5xGR+JmzeLytCiFs0C0Lv/vraRSuSMDgDPM6+5gUaRPR4Md02NSXuNkTMu6aU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aUnyOF+u; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="P/XIt2WI"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A23EC19423;
-	Fri, 27 Feb 2026 13:23:22 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aUnyOF+u"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C688C116C6;
+	Fri, 27 Feb 2026 13:23:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772198602;
-	bh=ecBBNr07Tr5A8D/sRSoG9EjORGZ7DumNUTGgwyKHMSU=;
+	s=k20201202; t=1772198605;
+	bh=lElZts2cuQOlY9aUjaqr5WZYPDwOSZ2Mb3btADVyBc4=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:From;
-	b=P/XIt2WI/WidM++Hn39WGIZWA7aWF12X5bGXmPZqw+SFEh7isAmWCC3IqBpF5zrke
-	 i0SFNqaKfpB8UymBOh0q5A7MCmkFKYu6JfKvR20UgV9mM/3zK9TgVr1+8BhM365GHE
-	 Ehzws1hufeCM/uQQx3uoNxZ+yrLLzIlDrrCK2kDR6mckl6dyxG9I+vqI4BmjjCRLZw
-	 Kmm2lEmuHqKhynAXUw5231JvjEwVJhlCMv+K7zQg6/KXBSI1NErnHsMxEsyYeiZ/iB
-	 o2zGFJGd4irX/x0j4btOyS4z0j11JSg7seHNwhBkmnH5iM2m2MhDpPpWX5qy68FNHv
-	 56c+LQhawGnbQ==
+	b=aUnyOF+udYtL1ykv8pOFaVslgKP2zD/zeGmvscsz18MoxVEJTPyU/Eg0ACVRF9QE6
+	 7medwVI9oZtGLizGJJid62cpzlYeWZeeHsB/EILoAfnKaXFpI2OdgymgIKmfcilJ2g
+	 pPXs8E/8oU6A5oGe55yuN/LXPwGNvUdlnwCRmwKj7vnBivnaZAZfPGR/WAFiE8dDRV
+	 k3DZiAdx18nlw4LXkryQ7TZ9jGEQFDl6jEva1KamPfBdn6FFEvcaJxr1LnnAwcS6S4
+	 GCFmQZkAfrM9uS0ViCvC5AWBiIHkqFTQWHQUBE65WO7gi0HEV+QoQUXjkK/g9LShWx
+	 E/Ov6rLv/RRuQ==
 From: Maxime Ripard <mripard@kernel.org>
-Date: Fri, 27 Feb 2026 14:15:41 +0100
-Subject: [PATCH v2 2/9] dma: contiguous: Make dev_get_cma_area() a proper
- function
+Date: Fri, 27 Feb 2026 14:15:42 +0100
+Subject: [PATCH v2 3/9] dma: contiguous: Make dma_contiguous_default_area
+ static
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -38,7 +38,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260227-dma-buf-heaps-as-modules-v2-2-454aee7e06cc@kernel.org>
+Message-Id: <20260227-dma-buf-heaps-as-modules-v2-3-454aee7e06cc@kernel.org>
 References: <20260227-dma-buf-heaps-as-modules-v2-0-454aee7e06cc@kernel.org>
 In-Reply-To: <20260227-dma-buf-heaps-as-modules-v2-0-454aee7e06cc@kernel.org>
 To: Sumit Semwal <sumit.semwal@linaro.org>, 
@@ -59,77 +59,59 @@ Cc: linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
  iommu@lists.linux.dev, linux-mm@kvack.org, 
  Maxime Ripard <mripard@kernel.org>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2341; i=mripard@kernel.org;
- h=from:subject:message-id; bh=ecBBNr07Tr5A8D/sRSoG9EjORGZ7DumNUTGgwyKHMSU=;
- b=owGbwMvMwCmsHn9OcpHtvjLG02pJDJkLZ+244WWftFg15Nznw5MXh/93WaX5OcMif+a2y8qp9
- zhDXyd/75jKwiDMySArpsjyRCbs9PL2xVUO9it/wMxhZQIZwsDFKQATidnJWMl4SPHI5Is6cRnF
- 2vtyzyVbt0rVvbi56vAD1WNcqyx2ttY8FN7340HzyWeFR0L9DS+UiDPWmX+c8Fhq3+e5dYun9+7
- RjYhtOiwpPD/lnkhEadFJ6es8y1uUuI4ErhWblnSFsXPG2k9dAA==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1675; i=mripard@kernel.org;
+ h=from:subject:message-id; bh=lElZts2cuQOlY9aUjaqr5WZYPDwOSZ2Mb3btADVyBc4=;
+ b=owGbwMvMwCmsHn9OcpHtvjLG02pJDJkLZ+28vP2r4bSIbPFKU9eDK6yerHZ0etl9+oq6YnHe1
+ ezif3kKHVNZGIQ5GWTFFFmeyISdXt6+uMrBfuUPmDmsTCBDGLg4BWAiRicZ64P0mI/dVJ/oWqo/
+ xejKnMefFux9VLtt8r0gz7ibTL5iLx8t+aNeI8ufstXB7k9C676JKYz1nocPnT6zULJSSWsax5c
+ ilebF9fOD1omJbdd0PvfN50jErN+7Zt8ITNx7xMP66mL21JKnAA==
 X-Developer-Key: i=mripard@kernel.org; a=openpgp;
  fpr=BE5675C37E818C8B5764241C254BCFC56BF6CE8D
 
-As we try to enable dma-buf heaps, and the CMA one in particular, to
-compile as modules, we need to export dev_get_cma_area(). It's currently
-implemented as an inline function that returns either the content of
-device->cma_area or dma_contiguous_default_area.
-
-Thus, it means we need to export dma_contiguous_default_area, which
-isn't really something we want any module to have access to.
-
-Instead, let's make dev_get_cma_area() a proper function we will be able
-to export so we can avoid exporting dma_contiguous_default_area.
+Now that dev_get_cma_area() is no longer inline, we don't have any user
+of dma_contiguous_default_area() outside of contiguous.c so we can make
+it static.
 
 Signed-off-by: Maxime Ripard <mripard@kernel.org>
 ---
- include/linux/dma-map-ops.h | 7 +------
- kernel/dma/contiguous.c     | 8 ++++++++
- 2 files changed, 9 insertions(+), 6 deletions(-)
+ include/linux/dma-map-ops.h | 2 --
+ kernel/dma/contiguous.c     | 2 +-
+ 2 files changed, 1 insertion(+), 3 deletions(-)
 
 diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
-index 3007c68a8ec5b85990d1938d04a2f05c1a71acdb..dc7d54ac5dd66bd22ef868d7894cc1cb2ee4c156 100644
+index dc7d54ac5dd66bd22ef868d7894cc1cb2ee4c156..526c6978a306ffacd5e30387a2fd21af3333cf6c 100644
 --- a/include/linux/dma-map-ops.h
 +++ b/include/linux/dma-map-ops.h
-@@ -91,16 +91,11 @@ static inline void set_dma_ops(struct device *dev,
+@@ -89,12 +89,10 @@ static inline void set_dma_ops(struct device *dev,
+ {
+ }
  #endif /* CONFIG_ARCH_HAS_DMA_OPS */
  
  #ifdef CONFIG_DMA_CMA
- extern struct cma *dma_contiguous_default_area;
- 
--static inline struct cma *dev_get_cma_area(struct device *dev)
--{
--	if (dev && dev->cma_area)
--		return dev->cma_area;
--	return dma_contiguous_default_area;
--}
-+struct cma *dev_get_cma_area(struct device *dev);
+-extern struct cma *dma_contiguous_default_area;
+-
+ struct cma *dev_get_cma_area(struct device *dev);
  
  void dma_contiguous_reserve(phys_addr_t addr_limit);
  int __init dma_contiguous_reserve_area(phys_addr_t size, phys_addr_t base,
  		phys_addr_t limit, struct cma **res_cma, bool fixed);
- 
 diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
-index 14bd54fb758537f01a6fe27318e7b683964e20b1..9a9ed7248fb823105609c5db5a51113e54a40192 100644
+index 9a9ed7248fb823105609c5db5a51113e54a40192..a4279d800d4658bf1c33b9b1da100eee1367d42f 100644
 --- a/kernel/dma/contiguous.c
 +++ b/kernel/dma/contiguous.c
-@@ -99,10 +99,18 @@ early_param("cma", early_cma);
- bool __init cma_skip_dt_default_reserved_mem(void)
- {
- 	return size_cmdline != -1;
- }
+@@ -51,11 +51,11 @@
+ #define CMA_SIZE_MBYTES CONFIG_CMA_SIZE_MBYTES
+ #else
+ #define CMA_SIZE_MBYTES 0
+ #endif
  
-+struct cma *dev_get_cma_area(struct device *dev)
-+{
-+	if (dev && dev->cma_area)
-+		return dev->cma_area;
-+
-+	return dma_contiguous_default_area;
-+}
-+
- #ifdef CONFIG_DMA_NUMA_CMA
+-struct cma *dma_contiguous_default_area;
++static struct cma *dma_contiguous_default_area;
  
- static struct cma *dma_contiguous_numa_area[MAX_NUMNODES];
- static phys_addr_t numa_cma_size[MAX_NUMNODES] __initdata;
- static struct cma *dma_contiguous_pernuma_area[MAX_NUMNODES];
+ /*
+  * Default global CMA area size can be defined in kernel's .config.
+  * This is useful mainly for distro maintainers to create a kernel
+  * that works correctly for most supported systems.
 
 -- 
 2.53.0
