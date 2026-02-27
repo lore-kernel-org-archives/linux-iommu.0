@@ -1,162 +1,130 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f174.google.com (mail-qk1-f174.google.com [209.85.222.174])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A33F242049;
-	Fri, 27 Feb 2026 13:16:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E4731F30A9
+	for <iommu@lists.linux.dev>; Fri, 27 Feb 2026 13:18:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772198207; cv=none; b=m7wDfvbABiWZj91JBrzJKEhsvursf3CCs55W7DtdwhRvy3uyM+tQg5CWIQOS5/Tj6+G9bqmnTsnFCXaYGnmfHeUdosK+nwU31V5mAvCwl6MeUvlSw7cYZLadqjQhH0vPMGCP+WCn1+T+zXPHigZJX4TlSVLCiG+hKd3DXqnX/7o=
+	t=1772198299; cv=none; b=cnJQkB72lt1uDUNS+dKWGSTFv4HcHfYy4z6EclXzsx5IDDtKUqODObPlPztkpRi3CB3tlItBAEH5307BV3TgrxJoGO23Az2Z1lDz/WZh/mrZ1bjg5CGw4zCFqpqN8TVtr+YIT6wOoj4nzn34fIEt8KPxYh42vPdTeaJSdjULDN4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772198207; c=relaxed/simple;
-	bh=egCWlPm1x8iHr9PPIzoYHflwiSm/bh95WCzD6gZYC3c=;
+	s=arc-20240116; t=1772198299; c=relaxed/simple;
+	bh=L/z+htTQOMeMfJb12gYYUmgCXubeh01T5SyfZ35RqHM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=pksUldbtwrZofH4XHdghVoUWGZpc3ex8ggPIsNkcZyKApzrHZM2O0u9HwmHBZlnmJgqs8+/PgBcQYvCk4x3JIVml71PZmfukLXrMO3fK9BmJtgTNSFwXAy1W4QmV7QIZBDrKbP2dRQmBhbqq2Jb3duROE8pvhTiQpgUZ+ccYvxo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=atCPtfbS; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=H2RjAA5w5a3yiVmJp/ZwKsh2zLtk99zjwJycOTuFit7kaq+e5I2RUNIjjGwxNYqWmLgAyA8gjKhwHlFjdlKyUYeNdpEwjSNlH6R1AeL4k9G3zDRwSQWheSi6maVNSuqAW5Mbj5AzhtJ/WKzvi7XIJc9sY86c1GJ501P3YrH88p4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=kxc8UE1a; arc=none smtp.client-ip=209.85.222.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="atCPtfbS"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA494C116C6;
-	Fri, 27 Feb 2026 13:16:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772198207;
-	bh=egCWlPm1x8iHr9PPIzoYHflwiSm/bh95WCzD6gZYC3c=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=atCPtfbSo6Zvk5tUFHE0DZyHYYrtBPlRAIDk2mxNRXEtPE0XaZAfWxmPGH2sW5M6S
-	 eTxLV3zr0Lw2PBwhHycBLW1jVxNqhngWqtqMsPQ18NLiQjbwwCI3UxULojF/uzWeMP
-	 29DUDUetMPpyNPFuJY6WE/1Cy3CdrW4wN7E197m9W5mDYZBwlSKlfiYxDXPNI5Il0F
-	 5YHLwWvg3D5LnI5n9/gwS03rSP9SmZ3R0NmEo54rv7Yy6GfDTWHFKfl25+7ihDwaad
-	 2ogx1sYQqiPPwmqMAny/6zTX+/QzVrDuZsC5Ok3sVSRq/FE+86ymrA83rm6vE87Laa
-	 YWi8qZBOe8nHw==
-Date: Fri, 27 Feb 2026 14:16:44 +0100
-From: Maxime Ripard <mripard@kernel.org>
-To: "T.J. Mercier" <tjmercier@google.com>
-Cc: "David Hildenbrand (Arm)" <david@kernel.org>, 
-	Sumit Semwal <sumit.semwal@linaro.org>, Benjamin Gaignard <benjamin.gaignard@collabora.com>, 
-	Brian Starkey <Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>, 
-	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>, Marek Szyprowski <m.szyprowski@samsung.com>, 
-	Robin Murphy <robin.murphy@arm.com>, Andrew Morton <akpm@linux-foundation.org>, 
-	Lorenzo Stoakes <lorenzo.stoakes@oracle.com>, "Liam R. Howlett" <Liam.Howlett@oracle.com>, 
-	Vlastimil Babka <vbabka@suse.cz>, Mike Rapoport <rppt@kernel.org>, 
-	Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>, linux-media@vger.kernel.org, 
-	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-mm@kvack.org
-Subject: Re: [PATCH 2/7] mm: cma: Export cma_alloc and cma_release
-Message-ID: <20260227-proficient-crazy-dinosaur-d2fb0b@houat>
-References: <20260225-dma-buf-heaps-as-modules-v1-0-2109225a090d@kernel.org>
- <20260225-dma-buf-heaps-as-modules-v1-2-2109225a090d@kernel.org>
- <60ecebf2-a708-4797-bedd-588c3e9931ff@kernel.org>
- <20260226-impetuous-analytic-jellyfish-d4a86d@penduick>
- <CABdmKX0KZLGaJWBoo3tkCxLvby3f4Fn0nMCLyz4a-H-9J_CtPQ@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="kxc8UE1a"
+Received: by mail-qk1-f174.google.com with SMTP id af79cd13be357-8cb7edbcde6so265223385a.3
+        for <iommu@lists.linux.dev>; Fri, 27 Feb 2026 05:18:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1772198297; x=1772803097; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=L/z+htTQOMeMfJb12gYYUmgCXubeh01T5SyfZ35RqHM=;
+        b=kxc8UE1aTJ9C020lgyvkOCD5tGKDVm3gFbmqCWYJRBqi5TFzmPg2wb3DQJN91ucUxG
+         lmJkP5BOyXi3e1Cd/65HpZwv2n6o7/AZHqf+QFLSPa78WxH/JhHcL7g13FnXjN2XJkrG
+         r7a1Nhzp3FhT6PmuStIerJ4GvX3ad5t8aNQXT7EjC1rj2uLRUePRn1Z21tEhQtpA5Ago
+         eoM0ivC+U/3WP5Bqe8jvGAB5W9adZa/V5yvEUU1N6NJQUX9Zx5QdNKqd1XRiZDqcC/Ls
+         FS6ckvKkcJiW8ywXGb0wqpSgJAdhtt2hSNbnv+b8jioLCsT0RxMM+tazDjFEhxqpJ2vo
+         PDdA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772198297; x=1772803097;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=L/z+htTQOMeMfJb12gYYUmgCXubeh01T5SyfZ35RqHM=;
+        b=om94G/XCnKELESh99fdL6daMuEYBc3BJqlEHsEVzW2yvOj6i5VZUscSX8HVsDXKZ+8
+         1gVFdRm5aqfitTuI/ybDYVjGXxGXhSbvg7WRaaWW1vEDqVCCVFPmII/sOYZ5uhs/LodZ
+         ZQ/lAOJabqjJBHOWBhlwCbKycu8ApOZXuPJd0XFoL1qeO/+dO8EqeuZ+Hv87lBLdA6FY
+         Qtu/ZyGXVlEG/OqI6vqTlpTMYwQqZRTj2RGg7lO/UfhGnNcQAMc3cl8g0o8zud/wauSl
+         9ufUi0CWdzFFJ7SdWZDuURq7Gkp5X7ToJADlQ3Tub8UlbYs7T9Y66D7hHV8q/3QTYmms
+         ncYg==
+X-Forwarded-Encrypted: i=1; AJvYcCUu7lKFOGjkLT3euM8JOEMToaO7mo/6UQuisdY9Wp2OAm/gP44BFsxzdp2Ic6JNgBrA2JUs6Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzBT7NA43b681bHVYcBY665NHL48jPR5PIrgNAwIaR8KwT/wQof
+	1eGw7cdmDuF5HPAtLaiQq5sFgYm8uQ+64Xn5HICx1sQ7TW2mOq/O493KCx6L4eyfLyo=
+X-Gm-Gg: ATEYQzyf73kPOXMBYTes6P+gbjtTn5AtoTc0BHTiERLk93BpTXMjx9iH2vFQbgsNuaZ
+	M1SRjT8VxZneWdd2Ildj4iymnQ0QlUxbzK2fTBqWgc7tMJ4DJXc2pJl/fKlPVLtsNuajreu6Hoc
+	hzOpR2iRhO1ZWw7Co83qrWxEvvjXcvJcLzclJmXHgn7hbCWxHXZPBLdCHulYXbQIteorgFsGdg/
+	UHxLFaK93AaXvUe+mDgsvE2eAXivbxbsQsX8alNT1zJahaeB4Hignfpa9LcGzWbl1MebX2fRWLF
+	ncptjYsY0XCfclFYooNmXBWmuJVjos5v9XTWicUoplc4pvgA59kymvsSJ92qkuZu+QmSJ8z+T3w
+	jC2M1ZQg+/0uPMXq5h9X3xokdSfTbd8BZ6AbhBGTm37JIaN5jcT+pzi1hPzGw9/qPjvubXb4xA3
+	dh2EUCPuct2TlREsgYpKcUNz1fgzdsAubLBMAm8aMJhGbRvBxJpEr7+u70yjigoXjpzd6fyogTE
+	tXaMt5ZVWJnJnoMZys=
+X-Received: by 2002:a05:620a:4891:b0:8ca:2a04:3ff3 with SMTP id af79cd13be357-8cbc8e8096amr324078985a.30.1772198296803;
+        Fri, 27 Feb 2026 05:18:16 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-162-112-119.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.112.119])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-899c7193227sm41395436d6.21.2026.02.27.05.18.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 27 Feb 2026 05:18:15 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1vvxjT-00000000uvx-0Dij;
+	Fri, 27 Feb 2026 09:18:15 -0400
+Date: Fri, 27 Feb 2026 09:18:15 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Xu Yilun <yilun.xu@linux.intel.com>
+Cc: Sean Christopherson <seanjc@google.com>,
+	Ackerley Tng <ackerleytng@google.com>,
+	Alexey Kardashevskiy <aik@amd.com>, linux-kernel@vger.kernel.org,
+	kvm@vger.kernel.org, Kevin Tian <kevin.tian@intel.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Paolo Bonzini <pbonzini@redhat.com>,
+	Steve Sistare <steven.sistare@oracle.com>,
+	Nicolin Chen <nicolinc@nvidia.com>, iommu@lists.linux.dev,
+	linux-coco@lists.linux.dev, Dan Williams <dan.j.williams@intel.com>,
+	Santosh Shukla <santosh.shukla@amd.com>,
+	"Pratik R . Sampat" <prsampat@amd.com>,
+	Fuad Tabba <tabba@google.com>,
+	"Aneesh Kumar K . V" <aneesh.kumar@kernel.org>,
+	michael.roth@amd.com, vannapurve@google.com
+Subject: Re: [RFC PATCH kernel] iommufd: Allow mapping from KVM's guest_memfd
+Message-ID: <20260227131815.GG44359@ziepe.ca>
+References: <20260225075211.3353194-1-aik@amd.com>
+ <aZ7-tTpobKiCFT5L@google.com>
+ <CAEvNRgEiod74cRoVQVC5LUbWDZf6Wwz1ssjQN0fveN=RBAjsTw@mail.gmail.com>
+ <20260226190757.GA44359@ziepe.ca>
+ <aaDL8tYrVCWlQg79@google.com>
+ <20260227002105.GC44359@ziepe.ca>
+ <aaDlRdnhIqRXEbPZ@google.com>
+ <20260227010902.GE44359@ziepe.ca>
+ <aaFzgGTpZI0eZWdD@yilunxu-OptiPlex-7050>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha384;
-	protocol="application/pgp-signature"; boundary="5ak2rz3ozdmtomty"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CABdmKX0KZLGaJWBoo3tkCxLvby3f4Fn0nMCLyz4a-H-9J_CtPQ@mail.gmail.com>
+In-Reply-To: <aaFzgGTpZI0eZWdD@yilunxu-OptiPlex-7050>
 
+On Fri, Feb 27, 2026 at 06:35:44PM +0800, Xu Yilun wrote:
 
---5ak2rz3ozdmtomty
-Content-Type: text/plain; protected-headers=v1; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH 2/7] mm: cma: Export cma_alloc and cma_release
-MIME-Version: 1.0
+> Will cause host machine check and host restart, same as host CPU
+> accessing encrypted memory. Intel TDX has no lower level privilege
+> protection table so the wrong accessing will actually impact the
+> memory encryption engine.
 
-On Thu, Feb 26, 2026 at 08:58:51AM -0800, T.J. Mercier wrote:
-> On Thu, Feb 26, 2026 at 2:38=E2=80=AFAM Maxime Ripard <mripard@kernel.org=
-> wrote:
-> >
-> > Hi David,
-> >
-> > On Thu, Feb 26, 2026 at 11:25:24AM +0100, David Hildenbrand (Arm) wrote:
-> > > On 2/25/26 17:41, Maxime Ripard wrote:
-> > > > The CMA dma-buf heap uses cma_alloc() and cma_release() to allocate=
- and
-> > > > free, respectively, its CMA buffers.
-> > > >
-> > > > However, these functions are not exported. Since we want to turn th=
-e CMA
-> > > > heap into a module, let's export them both.
-> > > >
-> > > > Signed-off-by: Maxime Ripard <mripard@kernel.org>
-> > > > ---
-> > > >  mm/cma.c | 2 ++
-> > > >  1 file changed, 2 insertions(+)
-> > > >
-> > > > diff --git a/mm/cma.c b/mm/cma.c
-> > > > index 94b5da468a7d719e5144d33b06bcc7619c0fbcc9..be142b473f3bd41b9c7=
-d8ba4397f018f6993d962 100644
-> > > > --- a/mm/cma.c
-> > > > +++ b/mm/cma.c
-> > > > @@ -949,10 +949,11 @@ struct page *cma_alloc(struct cma *cma, unsig=
-ned long count,
-> > > >     if (page)
-> > > >             set_pages_refcounted(page, count);
-> > > >
-> > > >     return page;
-> > > >  }
-> > > > +EXPORT_SYMBOL_GPL(cma_alloc);
-> > > >
-> > > >  static struct cma_memrange *find_cma_memrange(struct cma *cma,
-> > > >             const struct page *pages, unsigned long count)
-> > > >  {
-> > > >     struct cma_memrange *cmr =3D NULL;
-> > > > @@ -1025,10 +1026,11 @@ bool cma_release(struct cma *cma, const str=
-uct page *pages,
-> > > >
-> > > >     __cma_release_frozen(cma, cmr, pages, count);
-> > > >
-> > > >     return true;
-> > > >  }
-> > > > +EXPORT_SYMBOL_GPL(cma_release);
-> > > >
-> > > >  bool cma_release_frozen(struct cma *cma, const struct page *pages,
-> > > >             unsigned long count)
-> > > >  {
-> > > >     struct cma_memrange *cmr;
-> > > >
-> > >
-> > > I'm wondering whether we want to restrict all these exports to the
-> > > dma-buf module only using EXPORT_SYMBOL_FOR_MODULES().
-> >
-> > TIL about EXPORT_SYMBOL_FOR_MODULES, thanks.
->=20
-> Ohh, ditto.
->=20
-> > > Especially dma_contiguous_default_area() (patch #4), I am not sure
-> > > whether we want arbitrary modules to mess with that.
-> >
-> > Yeah, I wasn't too fond about that one either. Alternatively, I guess we
-> > could turn dev_get_cma_area into a non-inlined function and export that
-> > instead?
->=20
-> I checked the history to see if dev_get_cma_area was converted to
-> inline at some point for performance, but it has always been that way
-> since 3.5. That'd be my only worry with un-inlining and exporting it.
-> EXPORT_SYMBOL_FOR_MODULES sounds like a better way to me.
+Blah, of course it does.
 
-I just realised the new tegra heap is also going to use cma_alloc:
-https://lore.kernel.org/dri-devel/20260122161009.3865888-7-thierry.reding@k=
-ernel.org/
+So Intel needs a two step synchronization to wipe the IOPTEs before
+any shared private conversions and restore the right ones after.
 
-I exported dev_get_cma_area() like we discussed, but kept EXPORT_SYMBOL
-for now in the new version.
+AMD needs a nasty HW synchronization with RMP changes, but otherwise
+wants to map the entire physical space.
 
-Maxime
+ARM doesn't care much, I think it could safely do either approach?
 
---5ak2rz3ozdmtomty
-Content-Type: application/pgp-signature; name="signature.asc"
+These are very different behaviors so I would expect that userspace
+needs to signal which of the two it wants.
 
------BEGIN PGP SIGNATURE-----
+It feels like we need a fairly complex dedicated synchronization logic
+in iommufd coupled to the shared/private machinery in guestmemfd
 
-iJUEABMJAB0WIQTkHFbLp4ejekA/qfgnX84Zoj2+dgUCaaGZOAAKCRAnX84Zoj2+
-dqUlAX0VyCWn5CEtDD/d5NgnlGbw9KsIwryYjK5R5t6xQFatxl8VgXaPSTMj/TUC
-FboTTuYBgI3AtXRp7wzZaBm9GIM0NkjXj8o4AB9rric8F0GeL82ApZqBGuoJreEV
-DfrgHnsiFg==
-=HATT
------END PGP SIGNATURE-----
+Not really sure how to implement the Intel version right now, it is
+sort of like a nasty version of SVA..
 
---5ak2rz3ozdmtomty--
+Jason
