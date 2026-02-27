@@ -1,115 +1,133 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0C37231836;
-	Fri, 27 Feb 2026 13:23:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 113D623A9B3;
+	Fri, 27 Feb 2026 13:30:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772198622; cv=none; b=MAnqzxEMVR6ew3tBPJh51y4L6fnckw4mOnRPDh6y673BgZxV0zvOZwn5Cb28UQufiB2BBC6qVYwQlToAvyb7yv3WMc56jw3XivTOq4PoTLJ6zPYVJQ3PdMYtNKIBdnaUEjAygZN28WNoZrLvIr4iN2EVomvm/h/C0uS2G81bYd8=
+	t=1772199033; cv=none; b=AMp35iJj75je/PM5aePgQAM8UoWs3IoAiCj2se0YF4514Ot1PyE0muPxEluHZIDac5Q4hBlui6TRiBgu/5ncmGxunDSZAbROCOa0gRpfilX0XxCUn3FQ06ieJlf+5W6q6EkLCVfxuIUAWlxSXDWJdOaaCA+/omAQizD81ElBl1E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772198622; c=relaxed/simple;
-	bh=oNUPt44D7xewgXiELSrkzONvN2UIFpJB+B1908QRT5k=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=lTiEKcDmvH3gLMjLba4r0eKFQfT9WD5+nJHacCg1hyKrL6WFrZEwi8iU/OTSEJXsw4FcZVS15wlpsxOZmDfsCbpvcKmwB7jCPreiNeqX/2s35Yebh11xf3X5Xmeg+wbj62wnVpIx8g6XSKX6E1i4CYx3KlFGvdRpPh0pWlPg4So=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=B4LEoRTu; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1772199033; c=relaxed/simple;
+	bh=n4yX5l6q7fUwZBwFYRwfHjLdICdDCZUGrXzVl1z1sXg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=IGJSCArRXC/7aw6CjR4+OWeRjO74NhXB1GVxOSxdMHRbUHS0+XjvoyeH9+1pfi77rTVhUFsxMdZ3vvfl+nsLrrEwpm6KhNyPDnXslWBcFeLbn93fPN9B/moZYjjGfTsQsqF2kQ5239g7mTu5LeSGoMD6zeoSlvoIru6kjgUj2ak=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=F9ZwxSbT; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="B4LEoRTu"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B045C19423;
-	Fri, 27 Feb 2026 13:23:42 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="F9ZwxSbT"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DD5CC116C6;
+	Fri, 27 Feb 2026 13:30:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772198622;
-	bh=oNUPt44D7xewgXiELSrkzONvN2UIFpJB+B1908QRT5k=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:From;
-	b=B4LEoRTuHmJOdNmQe2bAIpTovkzz+vV6SAtOec89drMCy23iGzr9QuUQY90JsnRVD
-	 CJdUJ0W1oXTKFOCST58+C6Y56A2ltlrbqlCTPWSlsipO1vvYzkozxDEJXOzh1o9R2z
-	 /AY4Mq7O2Zam7wrDbiUhvWz750dLAJo+fONPrFFO2CMrcPSL7inQrR2l7BxOz4Ke/I
-	 ybjiA4yI3xDfbKGteRchTz4I3SbHm+g0K+hUy4+GTxBholQEeXptVvlCCv9K7uwiwt
-	 ylTfvfnI+QbMYWT26sOSWsAEGV2RcMgHgm1vgp+Mbd5T//NOwKdDU6EDr9q4Nh6Hp8
-	 IQZK3YvE2AKBA==
+	s=k20201202; t=1772199032;
+	bh=n4yX5l6q7fUwZBwFYRwfHjLdICdDCZUGrXzVl1z1sXg=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=F9ZwxSbTgLHYJpVWUuDP8wbZwcQB05N9yCc139iBS4j42M6KY7s3p9hu4NaBCEhuo
+	 nm64rd+BuFeAnRt6r+oAAilijlNBgCpQX/8Vios1yk4BLbTekn169/1BPUBUTrR+T6
+	 1g+44JrAY8+QcLwWcfR3VxE5sd7R3JpFvEq6uKMV8Bri2YlpIDYwvuMsAwFXM3JWGm
+	 pewISR+4xeDio4bgZyALFItTtDfth0boMVvgA/jMury2H1cdCtzDDjLySkXPykIZDr
+	 GGH1R7bvtv2st3HjQYncwcWM8GG61yNVbeKUuKLEXbAjzt1mCuvoy/MV8W1sqRTXFA
+	 7QBd9EokKi1AA==
+Date: Fri, 27 Feb 2026 14:30:29 +0100
 From: Maxime Ripard <mripard@kernel.org>
-Date: Fri, 27 Feb 2026 14:15:48 +0100
-Subject: [PATCH v2 9/9] dma-buf: heaps: system: Turn the heap into a module
+To: John Stultz <jstultz@google.com>
+Cc: Sumit Semwal <sumit.semwal@linaro.org>, 
+	Benjamin Gaignard <benjamin.gaignard@collabora.com>, Brian Starkey <Brian.Starkey@arm.com>, 
+	"T.J. Mercier" <tjmercier@google.com>, Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, 
+	Andrew Morton <akpm@linux-foundation.org>, David Hildenbrand <david@kernel.org>, 
+	Lorenzo Stoakes <lorenzo.stoakes@oracle.com>, "Liam R. Howlett" <Liam.Howlett@oracle.com>, 
+	Vlastimil Babka <vbabka@suse.cz>, Mike Rapoport <rppt@kernel.org>, 
+	Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>, linux-media@vger.kernel.org, 
+	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org, 
+	iommu@lists.linux.dev, linux-mm@kvack.org
+Subject: Re: [PATCH 0/7] dma-buf: heaps: Turn heaps into modules
+Message-ID: <20260227-psychedelic-tireless-herring-0adfa9@houat>
+References: <20260225-dma-buf-heaps-as-modules-v1-0-2109225a090d@kernel.org>
+ <CANDhNCqk9Uk4aXHhUsL4hR1GHNmWZnH3C9Np-A02wdi+J3D7tA@mail.gmail.com>
+ <20260226-adaptable-vermilion-nautilus-0aa6f0@penduick>
+ <CANDhNCrpNU7QJgu+0CZRvdxLwKp8VNxZoG_zDo7qqxaE0mjoTw@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260227-dma-buf-heaps-as-modules-v2-9-454aee7e06cc@kernel.org>
-References: <20260227-dma-buf-heaps-as-modules-v2-0-454aee7e06cc@kernel.org>
-In-Reply-To: <20260227-dma-buf-heaps-as-modules-v2-0-454aee7e06cc@kernel.org>
-To: Sumit Semwal <sumit.semwal@linaro.org>, 
- Benjamin Gaignard <benjamin.gaignard@collabora.com>, 
- Brian Starkey <Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>, 
- "T.J. Mercier" <tjmercier@google.com>, 
- =?utf-8?q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
- Marek Szyprowski <m.szyprowski@samsung.com>, 
- Robin Murphy <robin.murphy@arm.com>, 
- Andrew Morton <akpm@linux-foundation.org>, 
- David Hildenbrand <david@kernel.org>, 
- Lorenzo Stoakes <lorenzo.stoakes@oracle.com>, 
- "Liam R. Howlett" <Liam.Howlett@oracle.com>, 
- Vlastimil Babka <vbabka@suse.cz>, Mike Rapoport <rppt@kernel.org>, 
- Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>
-Cc: linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org, 
- linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org, 
- iommu@lists.linux.dev, linux-mm@kvack.org, 
- Maxime Ripard <mripard@kernel.org>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1645; i=mripard@kernel.org;
- h=from:subject:message-id; bh=oNUPt44D7xewgXiELSrkzONvN2UIFpJB+B1908QRT5k=;
- b=owGbwMvMwCmsHn9OcpHtvjLG02pJDJkLZ+0WkkzIaZ7AEu++epl1YJcfp6tA5eeDsQcO/e14P
- 5PtauSkjqksDMKcDLJiiixPZMJOL29fXOVgv/IHzBxWJpAhDFycAjCRz88Y6wOci1V2slgKrp6p
- 6hWkevoO57LE4/etK8+tNJYXzX/zb+GCrK/q/odu3diy8djjVHvNy4z1TrNqTjNKGR2+x/BUwb2
- 9vNPvratzb9V1he5Z+TzTVUotd8rOuj1vU6uDgIeJisi7d58B
-X-Developer-Key: i=mripard@kernel.org; a=openpgp;
- fpr=BE5675C37E818C8B5764241C254BCFC56BF6CE8D
+Content-Type: multipart/signed; micalg=pgp-sha384;
+	protocol="application/pgp-signature"; boundary="ybq2aqmqnxghgoih"
+Content-Disposition: inline
+In-Reply-To: <CANDhNCrpNU7QJgu+0CZRvdxLwKp8VNxZoG_zDo7qqxaE0mjoTw@mail.gmail.com>
 
-The system heap can be easily turned into a module by adding the usual
-MODULE_* macros, importing the proper namespaces and changing the
-Kconfig symbol to a tristate.
 
-This heap won't be able to unload though, since we're missing a lot of
-infrastructure to make it safe.
+--ybq2aqmqnxghgoih
+Content-Type: text/plain; protected-headers=v1; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH 0/7] dma-buf: heaps: Turn heaps into modules
+MIME-Version: 1.0
 
-Reviewed-by: T.J. Mercier <tjmercier@google.com>
-Signed-off-by: Maxime Ripard <mripard@kernel.org>
----
- drivers/dma-buf/heaps/Kconfig       | 2 +-
- drivers/dma-buf/heaps/system_heap.c | 5 +++++
- 2 files changed, 6 insertions(+), 1 deletion(-)
+Hi John,
 
-diff --git a/drivers/dma-buf/heaps/Kconfig b/drivers/dma-buf/heaps/Kconfig
-index aed0b9b4febf388376cfc41be9843980d010c4e8..e273fb18feca091ccd9b406e68f86c12efb339e9 100644
---- a/drivers/dma-buf/heaps/Kconfig
-+++ b/drivers/dma-buf/heaps/Kconfig
-@@ -1,7 +1,7 @@
- config DMABUF_HEAPS_SYSTEM
--	bool "DMA-BUF System Heap"
-+	tristate "DMA-BUF System Heap"
- 	depends on DMABUF_HEAPS
- 	help
- 	  Choose this option to enable the system dmabuf heap. The system heap
- 	  is backed by pages from the buddy allocator. If in doubt, say Y.
- 
-diff --git a/drivers/dma-buf/heaps/system_heap.c b/drivers/dma-buf/heaps/system_heap.c
-index b3650d8fd6511a4a755612cfe3a9d9fee796f80e..1957403b0f2ae5e82ab39f5945dfe82808e93964 100644
---- a/drivers/dma-buf/heaps/system_heap.c
-+++ b/drivers/dma-buf/heaps/system_heap.c
-@@ -442,5 +442,10 @@ static int __init system_heap_create(void)
- 		return PTR_ERR(sys_heap);
- 
- 	return 0;
- }
- module_init(system_heap_create);
-+
-+MODULE_DESCRIPTION("DMA-BUF System Heap");
-+MODULE_LICENSE("GPL");
-+MODULE_IMPORT_NS("DMA_BUF");
-+MODULE_IMPORT_NS("DMA_BUF_HEAP");
+On Thu, Feb 26, 2026 at 10:03:21AM -0800, John Stultz wrote:
+> On Thu, Feb 26, 2026 at 2:18=E2=80=AFAM Maxime Ripard <mripard@kernel.org=
+> wrote:
+> > On Wed, Feb 25, 2026 at 10:51:30AM -0800, John Stultz wrote:
+> > > So heaps-as-modules is common in the Android kernels, and was
+> > > attempted to be upstreamed long ago:
+> > >   https://lore.kernel.org/lkml/20191025234834.28214-1-john.stultz@lin=
+aro.org/
+> > >
+> > > And it got a fairly chilly reception, but maybe having the additional
+> > > optee heap (as well as other proposed heaps) might sway folks on this
+> > > now.
+> >
+> > I didn't know that Android was using heap as modules only, but I'd say
+> > that it's even more of a reason to upstream it then.
+> >
+> > > There is also the kref bits you might need (which Android still carri=
+es):
+> > >   https://lore.kernel.org/lkml/20200725032633.125006-1-john.stultz@li=
+naro.org/
+> >
+> > I'm curious about this one though. It looks like you add refcounting,
+> > but never really get the references anywhere. What was your intent, that
+> > on every allocation the buffer would get a reference to the heap so we
+> > avoid removing a heap with allocated buffers?
+>=20
+> Oh, apologies I mixed this up. You can ignore that suggestion.
+>=20
+> In Android, once folks were familiar with thinking about dma-buf
+> heaps, some (out of tree) drivers wanted to be able to internally
+> allocate from a given heap (somewhat of a hold-over from the old ION
+> drivers). So we have a convenience patch to provide that:
+>    https://android.googlesource.com/kernel/common/+/8e1ec97355ef9927e82ec=
+18c98312bdcd80bf289%5E%21/
+>=20
+> And since we return a dma_heap to the driver to allocate against:
+>   https://android.googlesource.com/kernel/common/+/fc1310ebf8fe25ea7b9834=
+00e6fa41f5a6d11966%5E%21/
+>=20
+> The kref bit is to make sure we're doing proper reference counting on
+> that shared pointer.
+>=20
+> This ended up getting bundled together along with the heaps-as-modules
+> changes in our out-of-tree changes, and I just confused its use here.
 
--- 
-2.53.0
+Understood, thanks :)
 
+It looks like there's some people interested in doing what you described
+though, so we might need your patch still.
+
+Maxime
+
+--ybq2aqmqnxghgoih
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iJUEABMJAB0WIQTkHFbLp4ejekA/qfgnX84Zoj2+dgUCaaGcdQAKCRAnX84Zoj2+
+dlInAYDiZPR1HyqxbwSMVJaP54olybYOcsMkzhKqdmUzzyNp1PJL2iscONIeEv0g
+z3hqowsBgJDNhcz09KstrR3FmwlC0rN908FYO2XMXAIcrplcSndu1qOliyhSfM9Z
+3ioBgkbAMA==
+=BqyY
+-----END PGP SIGNATURE-----
+
+--ybq2aqmqnxghgoih--
