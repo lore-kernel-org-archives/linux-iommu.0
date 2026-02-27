@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44442477E2F;
-	Fri, 27 Feb 2026 20:42:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5641C477E48;
+	Fri, 27 Feb 2026 20:42:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772224941; cv=none; b=sotiDHjjPCEOXuCsVBJsf79WGu+CtRSL0Q3q+ZKMaXKxUzb/vBPiEXM144iVC0vyF8tjenhWtAUeigZgpXp9Fz2t8AWN+C7C1W216ZxZ6Xo59bk/tuYHiSpuq/TnipbTHE30b1K8fUdlNcMPAFHAlseg8ZM4IPRJDKYNOqO5+8g=
+	t=1772224949; cv=none; b=KGpuJEWK3T4gl5E6SidgIB/cfzGxri7IC2CgZOLHsSampJr61M80yCB3W1NvYSdHvioKnthhYXkKk3nbb/d7tHYMXpAvNxDE7eoEc+h3BbY9tP+dH51IVLVNxuk1nikFZrKbcdpg+HThih1XvnYvGWpoo631l8CL4lKI9ADo9ps=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772224941; c=relaxed/simple;
-	bh=tF4I9uEanrrL49/IrO6k2ajtwrnArvy+ifACjY+WOKQ=;
+	s=arc-20240116; t=1772224949; c=relaxed/simple;
+	bh=HoDEtvg3GBOF96zWJnOOBK0G0fY86adGkY74DzxijNk=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ahH3tgAT+9zApDn9tDq4q9a/xJTaFjoOM75bOIGPpDu8px+SgJAnINHxgWeY66CzfuDqhKZcPmcxnXUhXzrvHQFzn/tlHGAJpMd1owx3VkTqq3dSzc92qmPYq/3G+Pz3d2R/JV7LtG+O+/MhzA5mChu89AtQ4uebHrzrkYjbag8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EqFMTeCp; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=DVhrfX91xYAEYrcRRU4Vr2aTrZnINqPkrB573AVAUpWJSiAHI+I+9Hq/hBfg3YmwD/uvac5/4BZV0/iehIa3A5egp1uXIJvHRs6qzrvTOMtrXDxQRy3pNe22b+89yh8WvLSJN6Gr9qvxvqFbE494nDVG3pP2vNFiYM3GdptELw4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UhCktEIb; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EqFMTeCp"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85DDFC116C6;
-	Fri, 27 Feb 2026 20:42:15 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UhCktEIb"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C769C19423;
+	Fri, 27 Feb 2026 20:42:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772224940;
-	bh=tF4I9uEanrrL49/IrO6k2ajtwrnArvy+ifACjY+WOKQ=;
+	s=k20201202; t=1772224949;
+	bh=HoDEtvg3GBOF96zWJnOOBK0G0fY86adGkY74DzxijNk=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=EqFMTeCpdccKnHFagxHFbfSZQ7k83CljVOzyZNeUfdyD5/mWD7u8MvVh7fCUgkah6
-	 H5XXuZNBOtuHNKlEiJIXFCilFFUA00P+ElZDSCxcO4Jp176slvu996zA0Y+0qpgWP4
-	 HID/JnTAICa2VPlzJykgPb/KYcRWluRLNPQxRJqB6x5hfiqaQ3DrSRF7nBuIRXkX+u
-	 FkRUS2xrbs9z3+dTD1Armjnrkb5xWJX/bqRAl9/naIpHU1EOr7WOCI/BmmMoSMDMus
-	 q9/iMX+dbLeLlP7ucuiOXbvdtsm1SWAlgb66xTsm1Ty/tVUzd5QQr73g6DGTTIu6/8
-	 QfpgILk9fYYUA==
-Message-ID: <cea5eb0a-6f8d-44e8-b60b-ecd1f7ee059a@kernel.org>
-Date: Fri, 27 Feb 2026 21:42:13 +0100
+	b=UhCktEIbAUDL9Zi2WQd3Bw9EURAPYLxkgEpK+CsepI+fOXULQE8JgHg1vl8KSTp23
+	 BLuUmlh415T01I4XECWLf4lkEYQfVTIHjBO1HWl+Gf1rcinKdsgi9q7UwyEy2uBgBc
+	 hdRSm4apydFPE08ex7f+FZgXbuXgU9FwuiYun8IavC+GtzddnGybOqXkl5ls345ewn
+	 1ojFHG8uNnNykR7DiXj331XVtk2Yj3w9NkeK9R7V6ZwqzrjhjI6ABcik8pxPGllw2/
+	 E+sRfHHAd4s2IFqMfo3SutLJVK9Zai0c+7IyApDHYdVKmZtnH7qYlA0rvLp2XdKx+m
+	 JSQkELTwQxkyQ==
+Message-ID: <8393137b-7eb8-4cfe-8963-ddd5ff75ef4b@kernel.org>
+Date: Fri, 27 Feb 2026 21:42:23 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -35,7 +35,7 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 4/9] mm: cma: Export dev_get_cma_area()
+Subject: Re: [PATCH v2 5/9] mm: cma: Export cma_alloc and cma_release
 To: Maxime Ripard <mripard@kernel.org>, Sumit Semwal
  <sumit.semwal@linaro.org>,
  Benjamin Gaignard <benjamin.gaignard@collabora.com>,
@@ -53,7 +53,7 @@ Cc: linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
  linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org,
  iommu@lists.linux.dev, linux-mm@kvack.org
 References: <20260227-dma-buf-heaps-as-modules-v2-0-454aee7e06cc@kernel.org>
- <20260227-dma-buf-heaps-as-modules-v2-4-454aee7e06cc@kernel.org>
+ <20260227-dma-buf-heaps-as-modules-v2-5-454aee7e06cc@kernel.org>
 From: "David Hildenbrand (Arm)" <david@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=david@kernel.org; keydata=
@@ -100,22 +100,54 @@ Autocrypt: addr=david@kernel.org; keydata=
  3iyY2Nsd7JxfKu1PRhCGwXzRw5TlfEsoRI7V9A8isUCoqE2Dzh3FvYHVeX4Us+bRL/oqareJ
  CIFqgYMyvHj7Q06kTKmauOe4Nf0l0qEkIuIzfoLJ3qr5UyXc2hLtWyT9Ir+lYlX9efqh7mOY
  qIws/H2t
-In-Reply-To: <20260227-dma-buf-heaps-as-modules-v2-4-454aee7e06cc@kernel.org>
+In-Reply-To: <20260227-dma-buf-heaps-as-modules-v2-5-454aee7e06cc@kernel.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 2/27/26 14:15, Maxime Ripard wrote:
-> The CMA dma-buf heap uses the dev_get_cma_area() function to retrieve
-> the default contiguous area.
+> The CMA dma-buf heap uses cma_alloc() and cma_release() to allocate and
+> free, respectively, its CMA buffers.
 > 
-> Now that this function is no longer inlined, and since we want to turn
-> the CMA heap into a module, let's export it.
+> However, these functions are not exported. Since we want to turn the CMA
+> heap into a module, let's export them both.
 > 
+> Reviewed-by: T.J. Mercier <tjmercier@google.com>
 > Signed-off-by: Maxime Ripard <mripard@kernel.org>
 > ---
->  kernel/dma/contiguous.c | 1 +
+>  mm/cma.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/mm/cma.c b/mm/cma.c
+> index 94b5da468a7d719e5144d33b06bcc7619c0fbcc9..be142b473f3bd41b9c7d8ba4397f018f6993d962 100644
+> --- a/mm/cma.c
+> +++ b/mm/cma.c
+> @@ -949,10 +949,11 @@ struct page *cma_alloc(struct cma *cma, unsigned long count,
+>  	if (page)
+>  		set_pages_refcounted(page, count);
+>  
+>  	return page;
+>  }
+> +EXPORT_SYMBOL_GPL(cma_alloc);
+>  
+>  static struct cma_memrange *find_cma_memrange(struct cma *cma,
+>  		const struct page *pages, unsigned long count)
+>  {
+>  	struct cma_memrange *cmr = NULL;
+> @@ -1025,10 +1026,11 @@ bool cma_release(struct cma *cma, const struct page *pages,
+>  
+>  	__cma_release_frozen(cma, cmr, pages, count);
+>  
+>  	return true;
+>  }
+> +EXPORT_SYMBOL_GPL(cma_release);
+>  
+>  bool cma_release_frozen(struct cma *cma, const struct page *pages,
+>  		unsigned long count)
+>  {
+>  	struct cma_memrange *cmr;
+> 
 
-The prefix of the patch should likely not be "mm: cma: " :)
+Acked-by: David Hildenbrand (Arm) <david@kernel.org>
 
 -- 
 Cheers,
