@@ -1,136 +1,163 @@
-Received: from relay12.grserver.gr (relay12.grserver.gr [88.99.38.195])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89626348883
-	for <iommu@lists.linux.dev>; Fri, 27 Feb 2026 16:42:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=88.99.38.195
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 446C733891F
+	for <iommu@lists.linux.dev>; Fri, 27 Feb 2026 16:49:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772210546; cv=none; b=WPlm/x3xMy7sj4LIT8Et5ktjYInOYPolCE/ISLYigCjGyTJazvpHJbvg6En35joMensuxHhRAY6kPuWs9AylIymKdmPq0AKtW1EVfbFXHIpfLCQAXKCR1kLny0kdpElKGIQm534ulJPDY5o3I2cKX9C0v416U9CKfRuivrS8Y3U=
+	t=1772210958; cv=none; b=Wbk0Tcg5gx0XqpAYmWSq50AnwcSbcDg+vQVqE2OxKWegmV6FFQtH4hBtuh2txrMs/6PZ50L4bebJTp2Fu6m/EHfYFLsXq3B1XkjoI9lXJJ4Au8aDjdyQ9IMvWJrBGGTqVHR4IFo/Cq/yR+1OveDLh/uSSh+R0sLIb18wG6Pb1Gs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772210546; c=relaxed/simple;
-	bh=mTOlZWolxOPKTEmb5Kg9IuChpHYErXyJXo1WHJ3yhBA=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=T9U8sl39ZSnduTZVHgG3CHkyX/yk7KN9LRpUmIXvyUu8oGnZJh8+9JrqQsJuzWBHlMQaIE56Y1mwNfrrHSGFd7IzFjGcqm2XvTXVxPrrPWhtljA8felZrxx7AuNq+pBRUP66VZAs0t1aVIcncd/4WVS85EVhbrD11XJCc1dtPSU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=antheas.dev; spf=pass smtp.mailfrom=antheas.dev; dkim=pass (2048-bit key) header.d=antheas.dev header.i=@antheas.dev header.b=GToYy9cO; arc=none smtp.client-ip=88.99.38.195
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=antheas.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=antheas.dev
+	s=arc-20240116; t=1772210958; c=relaxed/simple;
+	bh=qS+jq1JrvcU5hElzUv5cMkCRMKosDacHXQdATwP+kLA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=I1pk8mXcDVjgqHctBPFZcWxafnPuXIPHDZLBazjwnp0pbfnhsy2NfRLCsniUaNW69pImRZjjEk1RNxdgBwkjcObddEIL2FW/NfjmrP/vmLVjzxETkfisSjImYxsNj5vGZSx+ejqO+kLHTQG2mjEO4BjYUkcSx4XeDkuKYXqOZdU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=Htr0BPJy; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=VNvoBn+j; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=antheas.dev header.i=@antheas.dev header.b="GToYy9cO"
-Received: from relay12 (localhost [127.0.0.1])
-	by relay12.grserver.gr (Proxmox) with ESMTP id E5284BC1F0
-	for <iommu@lists.linux.dev>; Fri, 27 Feb 2026 18:42:22 +0200 (EET)
-Received: from linux3247.grserver.gr (linux3247.grserver.gr [213.158.90.240])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by relay12.grserver.gr (Proxmox) with ESMTPS id 5B14ABC196
-	for <iommu@lists.linux.dev>; Fri, 27 Feb 2026 18:42:22 +0200 (EET)
-Received: from mail-pg1-f170.google.com (mail-pg1-f170.google.com [209.85.215.170])
-	by linux3247.grserver.gr (Postfix) with ESMTPSA id D12801FF3C9
-	for <iommu@lists.linux.dev>; Fri, 27 Feb 2026 18:42:21 +0200 (EET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=antheas.dev;
-	s=default; t=1772210542;
-	bh=0V/+Xoff3/8i2t8iZ9fTQ/Sn9o5OSYaFisQTbdQTVJQ=;
-	h=Received:From:Subject:To;
-	b=GToYy9cOf3r+8FJ+NnLp5K0nL4Os8jxM7rPhpQ2M+MFdHCMYI9H9huYtT/kCr+Ka1
-	 ryJ69uRrIFSL0jp1s2LSuafOHBwy1i6N6ZBEKUjVkd+KUSDBx2L5JMoI8rBwQeLKh1
-	 0VOAI1dK+KsWC22w6s/GwuDU9NK69+tfkBaDFmRwdNgWV+KNXGkM1S2dFRneszQTsp
-	 iO5s/4mUwDHhzXbemg8cA07jdTUQrt0nekM3UhE4XgQ/8OtfWfldXHSg4rnYKAeWFL
-	 /cYO+tiHpv+W8+yzf66tKmzS3g7HhzWzTG0eqAo++IHC40zaNuYgex8rtcEruUdhuh
-	 RPfijecXw2LZA==
-Authentication-Results: linux3247.grserver.gr;
-        spf=pass (sender IP is 209.85.215.170) smtp.mailfrom=lkml@antheas.dev smtp.helo=mail-pg1-f170.google.com
-Received-SPF: pass (linux3247.grserver.gr: connection is authenticated)
-Received: by mail-pg1-f170.google.com with SMTP id
- 41be03b00d2f7-c6541e35fc0so1369949a12.3
-        for <iommu@lists.linux.dev>; Fri, 27 Feb 2026 08:42:21 -0800 (PST)
-X-Gm-Message-State: AOJu0Yxnk7bheaqtjH6jIberjedTEMoD5pxV81HvdiXm9G5E7xX3xkn3
-	QU2VMPe3R79ufKt4GwuzwzeXhS6Gd4NNcAEifNOsmaTIRhgtVczinSNev7Rs6Hv8klBaosCJ8mZ
-	+/HrNv1f1znr07GMhnACikuBzYHaGg+g=
-X-Received: by 2002:a17:90a:c88e:b0:359:f22:8879 with SMTP id
- 98e67ed59e1d1-35965ccf137mr2630965a91.22.1772210540446; Fri, 27 Feb 2026
- 08:42:20 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="Htr0BPJy";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="VNvoBn+j"
+Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 61RGjL2Y495097
+	for <iommu@lists.linux.dev>; Fri, 27 Feb 2026 16:49:16 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	GF8gzs0Y2ObftuKtilXKIdvF2o6qLBxvxxDd8LVJ5J8=; b=Htr0BPJyfQzNZWnH
+	KGwS/K4b90TqkpIVkjY0WQe6wv7osT/++zLDbJdsOlQu1wgmilzT7eDC5LNmjtBu
+	IlenPEPLjuXuquEQTglM37TkAYLMnDs4mKZWEg8xDM4bioZKTH3GWGBSwnOg7YyT
+	7w/lZ2t6yKpOev3+azKx/xeNjxEfSRHZmAxuUaJlcYXapHUVVbO4FoOs3OAW0APm
+	mUdv8HKkeat8x4wHvfBDsRCDcApnTWrd1OWtuU6Q3zZ/7d9JCyteLxHjzql7M7e2
+	hL5NP0g0Wal1Areu0rTQ9JeiMT0iYJfEBo18krSVBCKFe7r8wdIqrsoOAVXh+Wkx
+	/OmJjg==
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com [209.85.222.197])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4cjw23bjj6-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Fri, 27 Feb 2026 16:49:16 +0000 (GMT)
+Received: by mail-qk1-f197.google.com with SMTP id af79cd13be357-8cb45a6b860so162584585a.0
+        for <iommu@lists.linux.dev>; Fri, 27 Feb 2026 08:49:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1772210955; x=1772815755; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=GF8gzs0Y2ObftuKtilXKIdvF2o6qLBxvxxDd8LVJ5J8=;
+        b=VNvoBn+jq1Rsxug2bN/x0F9QgvIFmmkO2E+IiZ17zEbbP4yLKFr5i2E3OoN9LMMkwm
+         Ug52GrycSlDnAJKB6V4iqSm/ry7/qxg4wF6GTdmlj3Lfg7Bm67pZaManrKO2dLsndGsi
+         IhIi4uyQco5dv7PexJmZmuJOKT4pS7c//WdsELZtXdwZoQZU5zy4jNrtypAaMMvE/MOf
+         7vZ/6gRer2gzS6iz2FYwZwN5vEYqN132mfR/MzKsaJ5j7Yiz+Btg4A1MxTIkY4pZy8Pd
+         COPkrWZXHTcNjuITmZoNuWUpxLyI5iVy6y6WtVAasc3HVZB5wcWb+L+Uv2RDvnUg15Wq
+         zrNw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772210955; x=1772815755;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=GF8gzs0Y2ObftuKtilXKIdvF2o6qLBxvxxDd8LVJ5J8=;
+        b=T7h3k/PV6vU9434bzNO7SQydN9wFGocPTdI0/tkki0q22b1Emzu9016pkxi0v8WuoV
+         RNMRo7JG6kOqDk2JlwOReMvXltGx1brzV8SUmV5qAy5W9W1iELYTREpMZqGPy4HOBUL6
+         GDRx2d+ee6siteazPHEaDLZBF1v8fBHM7V+dGfY2opkerxl5+lzuFPVZvaDq3WLuXtYQ
+         6jnLntG5Vw2IdqDL8ssnO/m8ZxYXlP+CAM0cNjyWAJeJ/ODPtttpYI8keRTnsxhR8SAh
+         nFnNiHXSRyqDML5BxkRANsP6V52/rR9+qvqKwC5PsQvrW2hxJWmDoisWbCrFinE8Fh1m
+         LNZQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXHns/OQ6Cc+PyU7edvFHnI2snq2ng7bw1yXa8430lVlVej3wusPcaEvS4iZP3oC+A0trlLZQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzsIFQh7PMHQv5BxoDin8F4D6jE+ZyjmBWcLVDn/ijt9VLu2n/9
+	f75GckhSFZpmcsnt71ZQa5FyC84Wn+ocnU3Ad/OzzgTY7Grhth5CU4b3Yf/c8cE0vxhEm2JrmP5
+	cgKxJlW8OnMrLtsWiJ/pAolF4GBOiB5uGOToJAibb7pWnML1+4itO6/vtpg==
+X-Gm-Gg: ATEYQzzuSnd4V14xMMteW0NzsdPcTeCxoodXOkhlLsKM57FLl2PQOHBDegmNDbS+yDp
+	qVe0meKifjaOkP9f2G/BX0bOReZahhixaPjDfaLPXV10IDbRs/wvNEomBIbfM0A80TPz8Y5c15k
+	zhOsyP9tjY36ZGR0jKYJZCOqalfE2NdnZgExysmJbER1OTIbFlBYITPH4WAj8mbOR+go4LivFw0
+	TmVmrG2eTlZvnXNjvPn28lCFjWUGIKBLTe4DOxq+JKGjkQvJJmzNT14tnmb1z0775wvZKrn560d
+	kuBY4sPB9i5jgcE+WdxTU2kMI/vt+l1jbGaxAuyABOzz++NM/+S0Bwy/sStYZ8bTkt0RSXKIez2
+	C5z9OEbEYpiPbvRZyWJQ7RWR0mEm4vMnBBoRjeMXJZ5MlN8NKvyS7f30K6nSEpqBFf0dN8AHTZ8
+	0lsSQ=
+X-Received: by 2002:a05:620a:25c7:b0:8c7:f61:eff8 with SMTP id af79cd13be357-8cbc8f5a1aamr328586885a.10.1772210955371;
+        Fri, 27 Feb 2026 08:49:15 -0800 (PST)
+X-Received: by 2002:a05:620a:25c7:b0:8c7:f61:eff8 with SMTP id af79cd13be357-8cbc8f5a1aamr328583485a.10.1772210954927;
+        Fri, 27 Feb 2026 08:49:14 -0800 (PST)
+Received: from [192.168.119.254] (078088045245.garwolin.vectranet.pl. [78.88.45.245])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b935aec4426sm162355466b.56.2026.02.27.08.49.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 27 Feb 2026 08:49:14 -0800 (PST)
+Message-ID: <6fe3a1a8-46c7-427c-abb5-2e7366a43392@oss.qualcomm.com>
+Date: Fri, 27 Feb 2026 17:49:11 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260227080638.208693-1-lkml@antheas.dev>
- <20260227140329.GI44359@ziepe.ca>
-In-Reply-To: <20260227140329.GI44359@ziepe.ca>
-From: Antheas Kapenekakis <lkml@antheas.dev>
-Date: Fri, 27 Feb 2026 17:42:09 +0100
-X-Gmail-Original-Message-ID: 
- <CAGwozwGfMHDFxqabaikdXyyT0k2N0rjqxk_wf5briV-Gu4GHzg@mail.gmail.com>
-X-Gm-Features: AaiRm50pWEXIo9A9uiQ-tQOIWwbQk0vfxlYqFmrigxOFC68Y4BkGTfo7OLjZANk
-Message-ID: 
- <CAGwozwGfMHDFxqabaikdXyyT0k2N0rjqxk_wf5briV-Gu4GHzg@mail.gmail.com>
-Subject: Re: [PATCH v3] iommu: Fix mapping check for 0x0 to avoid re-mapping
- it
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
-	Vasant Hegde <vasant.hegde@amd.com>,
- Alejandro Jimenez <alejandro.j.jimenez@oracle.com>, dnaim@cachyos.org,
-	Mario.Limonciello@amd.com
-Content-Type: text/plain; charset="UTF-8"
-X-PPP-Message-ID: 
- <177221054204.3065747.3820245311843284418@linux3247.grserver.gr>
-X-PPP-Vhost: antheas.dev
-X-Virus-Scanned: clamav-milter 1.4.3 at linux3247.grserver.gr
-X-Virus-Status: Clean
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 2/7] media: iris: switch to hardware mode after
+ firmware boot
+To: Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
+        Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
+        Abhinav Kumar <abhinav.kumar@linux.dev>,
+        Bryan O'Donoghue <bod@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley
+ <conor+dt@kernel.org>,
+        Saravana Kannan <saravanak@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Stefan Schmidt <stefan.schmidt@linaro.org>,
+        Hans Verkuil <hverkuil@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Vishnu Reddy <busanna.reddy@oss.qualcomm.com>,
+        Hans Verkuil <hverkuil+cisco@kernel.org>
+Cc: linux-arm-msm@vger.kernel.org, linux-media@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        iommu@lists.linux.dev, Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+References: <20260227-kaanapali-iris-v2-0-850043ac3933@oss.qualcomm.com>
+ <20260227-kaanapali-iris-v2-2-850043ac3933@oss.qualcomm.com>
+Content-Language: en-US
+From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+In-Reply-To: <20260227-kaanapali-iris-v2-2-850043ac3933@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-GUID: X0GHggqsF9oTGonagxKogxYUwK-C7vFI
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjI3MDE1MCBTYWx0ZWRfX0eCq/3o7d77E
+ JgobqB9xBmC8d1MusylOrCBwE7YCYQ99Z1DGbPnHcN9i+DKhBIdsHykQFGax1Y88pnIbVf9i9R9
+ bXX3u749CS83mru/FtUJ9iOKPVZZKGSE23oJkKnUZXxTOVV2IUT7lsH2Nt5BqwO03nA7dyBVanX
+ ug+l0CjcuZectM8I2xxc5Fowhp/5N8GtgKRqilvNZQvWG3fHV0TzZlQoItJwFdGkAt0+iHlqWFN
+ EUgUkx40hA56EXPnLnUneAEFgo2Dymg2FJqpMc1UdxNl77WgSJ7R/voFcVc7VjnuxcaB1xJ50eU
+ /Q6l5cBJ6DCegNsEs0YBT/bsY6iiLREQcyWKqE6GN1IhviYLXUFm8+Moh2uK0AAGc2MhlsVghSp
+ yuETwoJoNOrRxNZFnNBLb6C6+4mBRllzCOnplVRac/cCELuVkzr+Mi5iCvrdirJPxEX4rN7lecb
+ VYTMTcKbpRK6Rb2Fzgg==
+X-Authority-Analysis: v=2.4 cv=cJHtc1eN c=1 sm=1 tr=0 ts=69a1cb0c cx=c_pps
+ a=50t2pK5VMbmlHzFWWp8p/g==:117 a=FpWmc02/iXfjRdCD7H54yg==:17
+ a=IkcTkHD0fZMA:10 a=HzLeVaNsDn8A:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=yx91gb_oNiZeI1HMLzn7:22
+ a=uMIPjMpX8He5E15aO8IA:9 a=QEXdDO2ut3YA:10 a=IoWCM6iH3mJn3m4BftBB:22
+X-Proofpoint-ORIG-GUID: X0GHggqsF9oTGonagxKogxYUwK-C7vFI
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-02-27_03,2026-02-27_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ bulkscore=0 impostorscore=0 lowpriorityscore=0 phishscore=0 adultscore=0
+ spamscore=0 clxscore=1015 priorityscore=1501 suspectscore=0 malwarescore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2602130000 definitions=main-2602270150
 
-On Fri, 27 Feb 2026 at 15:03, Jason Gunthorpe <jgg@ziepe.ca> wrote:
->
-> On Fri, Feb 27, 2026 at 09:06:37AM +0100, Antheas Kapenekakis wrote:
-> > Commit 789a5913b29c ("iommu/amd: Use the generic iommu page table")
-> > introduces the shared iommu page table for AMD IOMMU. Some bioses
-> > contain an identity mapping for address 0x0, which is not parsed
-> > properly (e.g., certain Strix Halo devices). This causes the DMA
-> > components of the device to fail to initialize (e.g., the NVMe SSD
-> > controller), leading to a failed post.
-> >
-> > Specifically, on the GPD Win 5, the NVME and SSD GPU fail to mount,
-> > making collecting errors difficult. While debugging, it was found that
-> > a -EADDRINUSE error was emitted and its source was traced to
-> > iommu_iova_to_phys(). After adding some debug prints, it was found that
-> > phys_addr becomes 0, which causes the code to try to re-map the 0
-> > address and fail, causing a cascade leading to a failed post. This is
-> > because the GPD Win 5 contains a 0x0-0x1 identity mapping for DMA
-> > devices, causing it to be repeated for each device.
-> >
-> > The cause of this failure is the following check in
-> > iommu_create_device_direct_mappings(), where address aliasing is handled
-> > via the following check:
-> >
-> > ```
-> > phys_addr = iommu_iova_to_phys(domain, addr);
-> > if (!phys_addr) {
-> >         map_size += pg_size;
-> >         continue;
-> > }
-> > ````
-> >
-> > Obviously, the iommu_iova_to_phys() signature is faulty and aliases
-> > unmapped and 0 together, causing the allocation code to try to
-> > re-allocate the 0 address per device. However, it has too many
-> > instantiations to fix. Therefore, use a ternary so that when addr
-> > is 0, the check is done for address 1 instead.
-> >
-> > Suggested-by: Robin Murphy <robin.murphy@arm.com>
-> > Fixes: 789a5913b29c ("iommu/amd: Use the generic iommu page table")
-> > Signed-off-by: Antheas Kapenekakis <lkml@antheas.dev>
-> >
-> > ---
->
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+On 2/27/26 3:11 PM, Vikash Garodia wrote:
+> Currently the driver switches the vcodec GDSC to hardware (HW) mode
+> before firmware load and boot sequence. GDSC can be powered off, keeping
+> in hw mode, thereby the vcodec registers programmed in TrustZone (TZ)
+> carry default (reset) values.
+> Move the transition to HW mode after firmware load and boot sequence.
+> 
+> The bug was exposed with driver configuring different stream ids to
+> different devices via iommu-map. With registers carrying reset values,
+> VPU would not generate desired stream-id, thereby leading to SMMU fault.
+> 
+> For vpu4, when GDSC is switched to HW mode, there is a need to perform
+> the reset operation. Without reset, there are occassional issues of
+> register corruption observed. Hence the vpu GDSC switch also involves
+> the reset.
 
-Tested. It should be good to merge
+Is that a characteristic of the hardware (e.g. also seen downstream), or
+is that required with upstream iris only?
 
-Antheas
-
-> Jason
->
-
+Konrad
