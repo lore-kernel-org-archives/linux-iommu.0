@@ -1,130 +1,126 @@
-Received: from mail-qk1-f174.google.com (mail-qk1-f174.google.com [209.85.222.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E4731F30A9
-	for <iommu@lists.linux.dev>; Fri, 27 Feb 2026 13:18:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2754117B506;
+	Fri, 27 Feb 2026 13:23:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772198299; cv=none; b=cnJQkB72lt1uDUNS+dKWGSTFv4HcHfYy4z6EclXzsx5IDDtKUqODObPlPztkpRi3CB3tlItBAEH5307BV3TgrxJoGO23Az2Z1lDz/WZh/mrZ1bjg5CGw4zCFqpqN8TVtr+YIT6wOoj4nzn34fIEt8KPxYh42vPdTeaJSdjULDN4=
+	t=1772198595; cv=none; b=uId9uc4ATbLxmA4T449/BWFpfeDDAVd2eSLSULoTuCdezh9AF5VIDVtKARP330tVE93uLtUvORUhmCWkkakHUwAsgRmBFgo2WtWSmEGsAKwcVdvd9vX35aG2/YhzO9VJwmOZWor9J2TNuskl8681RikBvxctj33CCQYEOXVR+zw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772198299; c=relaxed/simple;
-	bh=L/z+htTQOMeMfJb12gYYUmgCXubeh01T5SyfZ35RqHM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=H2RjAA5w5a3yiVmJp/ZwKsh2zLtk99zjwJycOTuFit7kaq+e5I2RUNIjjGwxNYqWmLgAyA8gjKhwHlFjdlKyUYeNdpEwjSNlH6R1AeL4k9G3zDRwSQWheSi6maVNSuqAW5Mbj5AzhtJ/WKzvi7XIJc9sY86c1GJ501P3YrH88p4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=kxc8UE1a; arc=none smtp.client-ip=209.85.222.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1772198595; c=relaxed/simple;
+	bh=mjmT4w11Wfq0ynV+KWTaTpvGkSiB5WiaBYudNN248UY=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=YyINM+hDqBf2LsMPADHiA9t0Oas80N3Nb0Cg94CrCYzSFPa/syP//QPsU+NlDCYspK543G1dkw4KI+DBJ+5l7bur8m0kqvIJnDsT1mH1p+thu12jVVGkOBPGoIUiqItEXsQleNnk8lFdUOfZlORra7T823rJ06wJyME0DjWxdlo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=A0uK8pIA; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="kxc8UE1a"
-Received: by mail-qk1-f174.google.com with SMTP id af79cd13be357-8cb7edbcde6so265223385a.3
-        for <iommu@lists.linux.dev>; Fri, 27 Feb 2026 05:18:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1772198297; x=1772803097; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=L/z+htTQOMeMfJb12gYYUmgCXubeh01T5SyfZ35RqHM=;
-        b=kxc8UE1aTJ9C020lgyvkOCD5tGKDVm3gFbmqCWYJRBqi5TFzmPg2wb3DQJN91ucUxG
-         lmJkP5BOyXi3e1Cd/65HpZwv2n6o7/AZHqf+QFLSPa78WxH/JhHcL7g13FnXjN2XJkrG
-         r7a1Nhzp3FhT6PmuStIerJ4GvX3ad5t8aNQXT7EjC1rj2uLRUePRn1Z21tEhQtpA5Ago
-         eoM0ivC+U/3WP5Bqe8jvGAB5W9adZa/V5yvEUU1N6NJQUX9Zx5QdNKqd1XRiZDqcC/Ls
-         FS6ckvKkcJiW8ywXGb0wqpSgJAdhtt2hSNbnv+b8jioLCsT0RxMM+tazDjFEhxqpJ2vo
-         PDdA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772198297; x=1772803097;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=L/z+htTQOMeMfJb12gYYUmgCXubeh01T5SyfZ35RqHM=;
-        b=om94G/XCnKELESh99fdL6daMuEYBc3BJqlEHsEVzW2yvOj6i5VZUscSX8HVsDXKZ+8
-         1gVFdRm5aqfitTuI/ybDYVjGXxGXhSbvg7WRaaWW1vEDqVCCVFPmII/sOYZ5uhs/LodZ
-         ZQ/lAOJabqjJBHOWBhlwCbKycu8ApOZXuPJd0XFoL1qeO/+dO8EqeuZ+Hv87lBLdA6FY
-         Qtu/ZyGXVlEG/OqI6vqTlpTMYwQqZRTj2RGg7lO/UfhGnNcQAMc3cl8g0o8zud/wauSl
-         9ufUi0CWdzFFJ7SdWZDuURq7Gkp5X7ToJADlQ3Tub8UlbYs7T9Y66D7hHV8q/3QTYmms
-         ncYg==
-X-Forwarded-Encrypted: i=1; AJvYcCUu7lKFOGjkLT3euM8JOEMToaO7mo/6UQuisdY9Wp2OAm/gP44BFsxzdp2Ic6JNgBrA2JUs6Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzBT7NA43b681bHVYcBY665NHL48jPR5PIrgNAwIaR8KwT/wQof
-	1eGw7cdmDuF5HPAtLaiQq5sFgYm8uQ+64Xn5HICx1sQ7TW2mOq/O493KCx6L4eyfLyo=
-X-Gm-Gg: ATEYQzyf73kPOXMBYTes6P+gbjtTn5AtoTc0BHTiERLk93BpTXMjx9iH2vFQbgsNuaZ
-	M1SRjT8VxZneWdd2Ildj4iymnQ0QlUxbzK2fTBqWgc7tMJ4DJXc2pJl/fKlPVLtsNuajreu6Hoc
-	hzOpR2iRhO1ZWw7Co83qrWxEvvjXcvJcLzclJmXHgn7hbCWxHXZPBLdCHulYXbQIteorgFsGdg/
-	UHxLFaK93AaXvUe+mDgsvE2eAXivbxbsQsX8alNT1zJahaeB4Hignfpa9LcGzWbl1MebX2fRWLF
-	ncptjYsY0XCfclFYooNmXBWmuJVjos5v9XTWicUoplc4pvgA59kymvsSJ92qkuZu+QmSJ8z+T3w
-	jC2M1ZQg+/0uPMXq5h9X3xokdSfTbd8BZ6AbhBGTm37JIaN5jcT+pzi1hPzGw9/qPjvubXb4xA3
-	dh2EUCPuct2TlREsgYpKcUNz1fgzdsAubLBMAm8aMJhGbRvBxJpEr7+u70yjigoXjpzd6fyogTE
-	tXaMt5ZVWJnJnoMZys=
-X-Received: by 2002:a05:620a:4891:b0:8ca:2a04:3ff3 with SMTP id af79cd13be357-8cbc8e8096amr324078985a.30.1772198296803;
-        Fri, 27 Feb 2026 05:18:16 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-162-112-119.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.112.119])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-899c7193227sm41395436d6.21.2026.02.27.05.18.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Feb 2026 05:18:15 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1vvxjT-00000000uvx-0Dij;
-	Fri, 27 Feb 2026 09:18:15 -0400
-Date: Fri, 27 Feb 2026 09:18:15 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Xu Yilun <yilun.xu@linux.intel.com>
-Cc: Sean Christopherson <seanjc@google.com>,
-	Ackerley Tng <ackerleytng@google.com>,
-	Alexey Kardashevskiy <aik@amd.com>, linux-kernel@vger.kernel.org,
-	kvm@vger.kernel.org, Kevin Tian <kevin.tian@intel.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Paolo Bonzini <pbonzini@redhat.com>,
-	Steve Sistare <steven.sistare@oracle.com>,
-	Nicolin Chen <nicolinc@nvidia.com>, iommu@lists.linux.dev,
-	linux-coco@lists.linux.dev, Dan Williams <dan.j.williams@intel.com>,
-	Santosh Shukla <santosh.shukla@amd.com>,
-	"Pratik R . Sampat" <prsampat@amd.com>,
-	Fuad Tabba <tabba@google.com>,
-	"Aneesh Kumar K . V" <aneesh.kumar@kernel.org>,
-	michael.roth@amd.com, vannapurve@google.com
-Subject: Re: [RFC PATCH kernel] iommufd: Allow mapping from KVM's guest_memfd
-Message-ID: <20260227131815.GG44359@ziepe.ca>
-References: <20260225075211.3353194-1-aik@amd.com>
- <aZ7-tTpobKiCFT5L@google.com>
- <CAEvNRgEiod74cRoVQVC5LUbWDZf6Wwz1ssjQN0fveN=RBAjsTw@mail.gmail.com>
- <20260226190757.GA44359@ziepe.ca>
- <aaDL8tYrVCWlQg79@google.com>
- <20260227002105.GC44359@ziepe.ca>
- <aaDlRdnhIqRXEbPZ@google.com>
- <20260227010902.GE44359@ziepe.ca>
- <aaFzgGTpZI0eZWdD@yilunxu-OptiPlex-7050>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="A0uK8pIA"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E885C116C6;
+	Fri, 27 Feb 2026 13:23:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1772198594;
+	bh=mjmT4w11Wfq0ynV+KWTaTpvGkSiB5WiaBYudNN248UY=;
+	h=From:Subject:Date:To:Cc:From;
+	b=A0uK8pIA9bybdYhTA2eIMWK2CKAddEEVXTlrKyNUFRgyjp5z61iBDziPXYKWc3qNU
+	 BKreHJgju60WflwCbE6o7xZnoJgE785fP2GlTMNIe/hoRkGCpVXpE6X/O2d4Xcd8qW
+	 juvytmljqRQZwanmzNSRn3oDghJmwgcGws5CRlXfxq2bz0JhKhaz8x0eWDZKMAYUEB
+	 3zV+wWz3V4rR0DZCILuf0cRxPIkbLXFGlq2yQXeTQZAs8ycAW7iB/CsROzKdw8ntut
+	 Q/Gfy3fkymQnzF1med4+NEilU0OpawBfP9Kde+FgZMOsuGeEYJEtroOAl3rbNMzIwN
+	 Weh8sp9K9rpbA==
+From: Maxime Ripard <mripard@kernel.org>
+Subject: [PATCH v2 0/9] dma-buf: heaps: Turn heaps into modules
+Date: Fri, 27 Feb 2026 14:15:39 +0100
+Message-Id: <20260227-dma-buf-heaps-as-modules-v2-0-454aee7e06cc@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aaFzgGTpZI0eZWdD@yilunxu-OptiPlex-7050>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/42NQQ6CMBBFr0Jm7ZjpoCa48h6ERaEDNAIlHSEaw
+ t2tnMDl+/n//Q1UoheFe7ZBlNWrD1MCPmXQ9HbqBL1LDEx8I+YrutFivbTYi50VreIY3DKIoqH
+ 8UufSFC1bSPM5Suvfh7qsEvdeXyF+jqfV/NI/pKtBQjZUpJalgtzjKXGS4RxiB9W+71+k1vmdw
+ QAAAA==
+X-Change-ID: 20260225-dma-buf-heaps-as-modules-1034b3ec9f2a
+To: Sumit Semwal <sumit.semwal@linaro.org>, 
+ Benjamin Gaignard <benjamin.gaignard@collabora.com>, 
+ Brian Starkey <Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>, 
+ "T.J. Mercier" <tjmercier@google.com>, 
+ =?utf-8?q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
+ Marek Szyprowski <m.szyprowski@samsung.com>, 
+ Robin Murphy <robin.murphy@arm.com>, 
+ Andrew Morton <akpm@linux-foundation.org>, 
+ David Hildenbrand <david@kernel.org>, 
+ Lorenzo Stoakes <lorenzo.stoakes@oracle.com>, 
+ "Liam R. Howlett" <Liam.Howlett@oracle.com>, 
+ Vlastimil Babka <vbabka@suse.cz>, Mike Rapoport <rppt@kernel.org>, 
+ Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>
+Cc: linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org, 
+ linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org, 
+ iommu@lists.linux.dev, linux-mm@kvack.org, 
+ Maxime Ripard <mripard@kernel.org>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2081; i=mripard@kernel.org;
+ h=from:subject:message-id; bh=mjmT4w11Wfq0ynV+KWTaTpvGkSiB5WiaBYudNN248UY=;
+ b=owGbwMvMwCmsHn9OcpHtvjLG02pJDJkLZ233vsYj5JpYrLbY+435oV9Ka1gWd/zcdlDWWzTkX
+ NULZadfHVNZGIQ5GWTFFFmeyISdXt6+uMrBfuUPmDmsTCBDGLg4BWAi+88y1hd33xXkmvXP4kfW
+ seOxsrWpzodV8m4dz/OZ3jr3zwQvia6rj09/utFxY/nquMQwkyMPmBnrQ8PrZraVVhxN0j8UNqV
+ J5qXU/XeWsjpCsxZ979Yr+RbSpL3TKIt5Lf+Px3cXcB/ycuYHAA==
+X-Developer-Key: i=mripard@kernel.org; a=openpgp;
+ fpr=BE5675C37E818C8B5764241C254BCFC56BF6CE8D
 
-On Fri, Feb 27, 2026 at 06:35:44PM +0800, Xu Yilun wrote:
+Hi,
 
-> Will cause host machine check and host restart, same as host CPU
-> accessing encrypted memory. Intel TDX has no lower level privilege
-> protection table so the wrong accessing will actually impact the
-> memory encryption engine.
+The recent introduction of heaps in the optee driver [1] made possible
+the creation of heaps as modules.
 
-Blah, of course it does.
+It's generally a good idea if possible, including for the already
+existing system and CMA heaps.
 
-So Intel needs a two step synchronization to wipe the IOPTEs before
-any shared private conversions and restore the right ones after.
+The system one is pretty trivial, the CMA one is a bit more involved,
+especially since we have a call from kernel/dma/contiguous.c to the CMA
+heap code. This was solved by turning the logic around and making the
+CMA heap call into the contiguous DMA code.
 
-AMD needs a nasty HW synchronization with RMP changes, but otherwise
-wants to map the entire physical space.
+Let me know what you think,
+Maxime
 
-ARM doesn't care much, I think it could safely do either approach?
+1: https://lore.kernel.org/dri-devel/20250911135007.1275833-4-jens.wiklander@linaro.org/
 
-These are very different behaviors so I would expect that userspace
-needs to signal which of the two it wants.
+Signed-off-by: Maxime Ripard <mripard@kernel.org>
+---
+Changes in v2:
+- Collect tags
+- Don't export dma_contiguous_default_area anymore, but export
+  dev_get_cma_area instead
+- Mentioned that heap modules can't be removed
+- Link to v1: https://lore.kernel.org/r/20260225-dma-buf-heaps-as-modules-v1-0-2109225a090d@kernel.org
 
-It feels like we need a fairly complex dedicated synchronization logic
-in iommufd coupled to the shared/private machinery in guestmemfd
+---
+Maxime Ripard (9):
+      dma: contiguous: Turn heap registration logic around
+      dma: contiguous: Make dev_get_cma_area() a proper function
+      dma: contiguous: Make dma_contiguous_default_area static
+      mm: cma: Export dev_get_cma_area()
+      mm: cma: Export cma_alloc and cma_release
+      mm: cma: Export cma_get_name
+      dma-buf: heaps: Export mem_accounting parameter
+      dma-buf: heaps: cma: Turn the heap into a module
+      dma-buf: heaps: system: Turn the heap into a module
 
-Not really sure how to implement the Intel version right now, it is
-sort of like a nasty version of SVA..
+ drivers/dma-buf/dma-heap.c          |  1 +
+ drivers/dma-buf/heaps/Kconfig       |  4 ++--
+ drivers/dma-buf/heaps/cma_heap.c    | 21 +++++----------------
+ drivers/dma-buf/heaps/system_heap.c |  5 +++++
+ include/linux/dma-map-ops.h         | 14 ++++++--------
+ kernel/dma/contiguous.c             | 37 ++++++++++++++++++++++++++++++++++---
+ mm/cma.c                            |  3 +++
+ 7 files changed, 56 insertions(+), 29 deletions(-)
+---
+base-commit: 499a718536dc0e1c1d1b6211847207d58acd9916
+change-id: 20260225-dma-buf-heaps-as-modules-1034b3ec9f2a
 
-Jason
+Best regards,
+-- 
+Maxime Ripard <mripard@kernel.org>
+
