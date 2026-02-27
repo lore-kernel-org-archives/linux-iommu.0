@@ -1,30 +1,30 @@
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0F98F36402F
-	for <iommu@lists.linux.dev>; Fri, 27 Feb 2026 17:52:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id ABA21368275
+	for <iommu@lists.linux.dev>; Fri, 27 Feb 2026 17:52:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772214777; cv=none; b=kMFeKORA6gDJNpy3oV4cSr+7fTaNYa1VedDBbWlV+pz7KKLvC0/N5pruyJBo5pJRNkip7s+tj7lZgHIOzNdzlGZeO2AQ8rEQh2RU28l+ba7qhUukSgo0zocmXpTbx3wTNkanBL3JMriOpy05/64Cjm4CREK05avNhfV2Q1q7oUc=
+	t=1772214778; cv=none; b=jMwl2gjN7da9pOvaR4y4oO8MDP4GmI6oW0yhKI3TMUrXCGLBDlqi18gFqS6ce7tzR/YZ6vpLwc7NbEQweB6bbOgfr/IGeAS1cclQZ7wyvKiwpXMx6y+VokZ6VYFKCdeYjVZyzxOwkyYOUrqUYO791gUfV8wMPIMJxJwaA5uHmn0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772214777; c=relaxed/simple;
-	bh=vIsw4yuGQk7MJfcxOGm893uXXqE/sHLD0s/h51EyV40=;
+	s=arc-20240116; t=1772214778; c=relaxed/simple;
+	bh=w09I/Ck0LJgDYaYiNmKZMMfnamaLi7b6pD4Mc2HyqLQ=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=KpPR52FK7hdli2p1J6EWruVOAmKsTw6jqxj5kPaGi9EfLKB+Ikok6CFhRqP8G7kdOry2l9h0fj2cZ9Bt+PcglIh6YoxQ9IJEAnob5I65CfleYm7iym2qy2CzH8QitTgx/6uicFJb3+iU2C3EnYTrGaZBhi0bE+H0dnCk3X5sZWE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=kAzG/3ti; arc=none smtp.client-ip=13.77.154.182
+	 MIME-Version; b=ePrD795JTx1e/HkuArDBlEj9UAnysvn9Fgt/bbcVjGJ+yIp2gT5ZmdxmXEB3hg5J5mI9QAl8GjeJXy1BugoLHw/PZLtmBVZ9pe9GwkZid0y8H0hb7HqvNL2HXzDj6hwObB1HdC3rLXkdGj7rO8eqG+g6dGM4In1jkcPZBWO2W6Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=ISQc11iN; arc=none smtp.client-ip=13.77.154.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="kAzG/3ti"
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="ISQc11iN"
 Received: from DESKTOP-0403QTC.corp.microsoft.com (unknown [20.236.11.69])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 20E9420B6F04;
-	Fri, 27 Feb 2026 09:52:54 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 20E9420B6F04
+	by linux.microsoft.com (Postfix) with ESMTPSA id D62E920B6F09;
+	Fri, 27 Feb 2026 09:52:55 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com D62E920B6F09
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1772214774;
-	bh=W96SnSZLqhLnwJNZa3jg8QlmCEk8GqczL6oQb+wbHn0=;
+	s=default; t=1772214776;
+	bh=zKHy9BfU2gZRVLyDQS4eAjh4gCY7/fWd0ENiHgbZLVA=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=kAzG/3tiWFatrITES0s8oFu1G3B2tQoDTgML+EVOt6BzTMJ4QFSWOdhudKYocBzZT
-	 EmBSuGwAu+XbPhuPXz4cpMqFw2YCYM+b9QKUQvlT+mlUI+n/yZBYpAnTf8XYK6+/v5
-	 570x/3ARs7/GebzhHoJ3TJf7ljcWKfuzEw2AIuO4=
+	b=ISQc11iN1UZ/PlBj47pkFkpwT4iuKMF+hFX4sEbwxEnIoDFPaMDu1CniYwKx56E8y
+	 pfeGLndnzk1jKTVNbSdpdEShCXqS8cq8zNzqlxN+LsfiECuh1HsVqikFfF3D1zm/kA
+	 HIspjGvm1AphRel4bTXk79PRCFUkfowUmKL+eJ18=
 From: Jacob Pan <jacob.pan@linux.microsoft.com>
 To: linux-kernel@vger.kernel.org,
 	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
@@ -41,9 +41,9 @@ Cc: skhawaja@google.com,
 	Jacob Pan <jacob.pan@linux.microsoft.com>,
 	Jean Philippe-Brucker <jean-philippe@linaro.org>,
 	Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH 06/11] vfio: Introduce and set noiommu flag on vfio_device
-Date: Fri, 27 Feb 2026 09:52:42 -0800
-Message-Id: <20260227175247.26103-7-jacob.pan@linux.microsoft.com>
+Subject: [PATCH 08/11] vfio: Enable cdev noiommu mode under iommufd
+Date: Fri, 27 Feb 2026 09:52:44 -0800
+Message-Id: <20260227175247.26103-9-jacob.pan@linux.microsoft.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20260227175247.26103-1-jacob.pan@linux.microsoft.com>
 References: <20260227175247.26103-1-jacob.pan@linux.microsoft.com>
@@ -55,112 +55,178 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-When a VFIO device is added to a noiommu group, set the noiommu flag on
-the vfio_device structure to indicate that the device operates in
-noiommu mode.
+Now that devices under noiommu mode can bind with IOMMUFD and perform
+IOAS operations, lift restrictions on cdev from VFIO side.
 
-Also update function signatures to pass vfio_device instead of device,
-which has the direct access to the noiommu flag.
+No IOMMU cdevs are explicitly named with noiommu prefix. e.g.
+
+    /dev/vfio/
+    |-- 7
+    |-- devices
+    |   `-- noiommu-vfio0
+    `-- vfio
 
 Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
 ---
- drivers/vfio/group.c | 21 +++++++++++----------
- include/linux/vfio.h |  1 +
- 2 files changed, 12 insertions(+), 10 deletions(-)
+ drivers/vfio/Kconfig     |  6 ++++--
+ drivers/vfio/iommufd.c   |  7 -------
+ drivers/vfio/vfio.h      |  8 +-------
+ drivers/vfio/vfio_main.c | 22 +++++++++++++++++++---
+ include/linux/vfio.h     |  9 +++++++++
+ 5 files changed, 33 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/vfio/group.c b/drivers/vfio/group.c
-index 98f2a4f2ebff..6f98c57de9e0 100644
---- a/drivers/vfio/group.c
-+++ b/drivers/vfio/group.c
-@@ -588,7 +588,7 @@ static struct vfio_group *vfio_create_group(struct iommu_group *iommu_group,
- 	return ret;
+diff --git a/drivers/vfio/Kconfig b/drivers/vfio/Kconfig
+index ceae52fd7586..1f3fd7140604 100644
+--- a/drivers/vfio/Kconfig
++++ b/drivers/vfio/Kconfig
+@@ -22,8 +22,7 @@ config VFIO_DEVICE_CDEV
+ 	  The VFIO device cdev is another way for userspace to get device
+ 	  access. Userspace gets device fd by opening device cdev under
+ 	  /dev/vfio/devices/vfioX, and then bind the device fd with an iommufd
+-	  to set up secure DMA context for device access.  This interface does
+-	  not support noiommu.
++	  to set up secure DMA context for device access.
+ 
+ 	  If you don't know what to do here, say N.
+ 
+@@ -63,6 +62,9 @@ endif
+ config VFIO_NOIOMMU
+ 	bool "VFIO No-IOMMU support"
+ 	depends on VFIO_GROUP
++	select GENERIC_PT
++	select IOMMU_PT
++	select IOMMU_PT_AMDV1
+ 	help
+ 	  VFIO is built on the ability to isolate devices using the IOMMU.
+ 	  Only with an IOMMU can userspace access to DMA capable devices be
+diff --git a/drivers/vfio/iommufd.c b/drivers/vfio/iommufd.c
+index a38d262c6028..26c9c3068c77 100644
+--- a/drivers/vfio/iommufd.c
++++ b/drivers/vfio/iommufd.c
+@@ -25,10 +25,6 @@ int vfio_df_iommufd_bind(struct vfio_device_file *df)
+ 
+ 	lockdep_assert_held(&vdev->dev_set->lock);
+ 
+-	/* Returns 0 to permit device opening under noiommu mode */
+-	if (vfio_device_is_noiommu(vdev))
+-		return 0;
+-
+ 	return vdev->ops->bind_iommufd(vdev, ictx, &df->devid);
  }
  
--static struct vfio_group *vfio_noiommu_group_alloc(struct device *dev,
-+static struct vfio_group *vfio_noiommu_group_alloc(struct vfio_device *vdev,
- 		enum vfio_group_type type)
+@@ -58,9 +54,6 @@ void vfio_df_iommufd_unbind(struct vfio_device_file *df)
+ 
+ 	lockdep_assert_held(&vdev->dev_set->lock);
+ 
+-	if (vfio_device_is_noiommu(vdev))
+-		return;
+-
+ 	if (vdev->ops->unbind_iommufd)
+ 		vdev->ops->unbind_iommufd(vdev);
+ }
+diff --git a/drivers/vfio/vfio.h b/drivers/vfio/vfio.h
+index c5541967ef9b..f6262f2cc7a6 100644
+--- a/drivers/vfio/vfio.h
++++ b/drivers/vfio/vfio.h
+@@ -381,19 +381,13 @@ void vfio_init_device_cdev(struct vfio_device *device);
+ 
+ static inline int vfio_device_add(struct vfio_device *device)
  {
- 	struct iommu_group *iommu_group;
-@@ -610,7 +610,7 @@ static struct vfio_group *vfio_noiommu_group_alloc(struct device *dev,
- 	ret = iommu_group_set_name(iommu_group, "vfio-noiommu");
- 	if (ret)
- 		goto out_put_group;
--	ret = iommu_group_add_device(iommu_group, dev);
-+	ret = iommu_group_add_device(iommu_group, vdev->dev);
- 	if (ret)
- 		goto out_put_group;
- 
-@@ -625,7 +625,7 @@ static struct vfio_group *vfio_noiommu_group_alloc(struct device *dev,
- 	return group;
- 
- out_remove_device:
--	iommu_group_remove_device(dev);
-+	iommu_group_remove_device(vdev->dev);
- out_put_group:
- 	iommu_group_put(iommu_group);
- 	return ERR_PTR(ret);
-@@ -646,23 +646,24 @@ static bool vfio_group_has_device(struct vfio_group *group, struct device *dev)
- 	return false;
+-	/* cdev does not support noiommu device */
+-	if (vfio_device_is_noiommu(device))
+-		return device_add(&device->device);
+ 	vfio_init_device_cdev(device);
+ 	return cdev_device_add(&device->cdev, &device->device);
  }
  
--static struct vfio_group *vfio_group_find_or_alloc(struct device *dev)
-+static struct vfio_group *vfio_group_find_or_alloc(struct vfio_device *vdev)
+ static inline void vfio_device_del(struct vfio_device *device)
  {
- 	struct iommu_group *iommu_group;
- 	struct vfio_group *group;
+-	if (vfio_device_is_noiommu(device))
+-		device_del(&device->device);
+-	else
+-		cdev_device_del(&device->cdev, &device->device);
++	cdev_device_del(&device->cdev, &device->device);
+ }
  
--	iommu_group = iommu_group_get(dev);
-+	iommu_group = iommu_group_get(vdev->dev);
- 	if (!iommu_group && vfio_noiommu) {
-+		vdev->noiommu = 1;
- 		/*
- 		 * With noiommu enabled, create an IOMMU group for devices that
- 		 * don't already have one, implying no IOMMU hardware/driver
- 		 * exists.  Taint the kernel because we're about to give a DMA
- 		 * capable device to a user without IOMMU protection.
- 		 */
--		group = vfio_noiommu_group_alloc(dev, VFIO_NO_IOMMU);
-+		group = vfio_noiommu_group_alloc(vdev, VFIO_NO_IOMMU);
- 		if (!IS_ERR(group)) {
- 			add_taint(TAINT_USER, LOCKDEP_STILL_OK);
--			dev_warn(dev, "Adding kernel taint for vfio-noiommu group on device\n");
-+			dev_warn(vdev->dev, "Adding kernel taint for vfio-noiommu group on device\n");
- 		}
- 		return group;
- 	}
-@@ -673,7 +674,7 @@ static struct vfio_group *vfio_group_find_or_alloc(struct device *dev)
- 	mutex_lock(&vfio.group_lock);
- 	group = vfio_group_find_from_iommu(iommu_group);
- 	if (group) {
--		if (WARN_ON(vfio_group_has_device(group, dev)))
-+		if (WARN_ON(vfio_group_has_device(group, vdev->dev)))
- 			group = ERR_PTR(-EINVAL);
- 		else
- 			refcount_inc(&group->drivers);
-@@ -693,9 +694,9 @@ int vfio_device_set_group(struct vfio_device *device,
- 	struct vfio_group *group;
+ int vfio_device_fops_cdev_open(struct inode *inode, struct file *filep);
+diff --git a/drivers/vfio/vfio_main.c b/drivers/vfio/vfio_main.c
+index 742477546b15..099d9b1ade4c 100644
+--- a/drivers/vfio/vfio_main.c
++++ b/drivers/vfio/vfio_main.c
+@@ -331,13 +331,15 @@ static int __vfio_register_dev(struct vfio_device *device,
+ 	if (!device->dev_set)
+ 		vfio_assign_device_set(device, device);
  
- 	if (type == VFIO_IOMMU)
--		group = vfio_group_find_or_alloc(device->dev);
-+		group = vfio_group_find_or_alloc(device);
- 	else
--		group = vfio_noiommu_group_alloc(device->dev, type);
-+		group = vfio_noiommu_group_alloc(device, type);
+-	ret = dev_set_name(&device->device, "vfio%d", device->index);
++	ret = vfio_device_set_group(device, type);
+ 	if (ret)
+ 		return ret;
  
- 	if (IS_ERR(group))
- 		return PTR_ERR(group);
+-	ret = vfio_device_set_group(device, type);
++	/* Just to be safe, expose to user explicitly noiommu cdev node */
++	ret = dev_set_name(&device->device, "%svfio%d",
++					   device->noiommu ? "noiommu-" : "", device->index);
+ 	if (ret)
+-		return ret;
++		goto err_out;
+ 
+ 	/*
+ 	 * VFIO always sets IOMMU_CACHE because we offer no way for userspace to
+@@ -357,6 +359,10 @@ static int __vfio_register_dev(struct vfio_device *device,
+ 	/* Refcounting can't start until the driver calls register */
+ 	refcount_set(&device->refcount, 1);
+ 
++	/* noiommu device w/o container may have NULL group */
++	if (vfio_device_is_noiommu(device) && !vfio_device_has_group(device))
++		return 0;
++
+ 	vfio_device_group_register(device);
+ 	vfio_device_debugfs_init(device);
+ 
+@@ -391,6 +397,16 @@ void vfio_unregister_group_dev(struct vfio_device *device)
+ 	bool interrupted = false;
+ 	long rc;
+ 
++	/*
++	 * For noiommu devices without a container, thus no dummy group,
++	 * simply delete and unregister to balance refcount.
++	 */
++	if (device->noiommu && !vfio_device_has_group(device)) {
++		vfio_device_del(device);
++		vfio_device_put_registration(device);
++		return;
++	}
++
+ 	/*
+ 	 * Prevent new device opened by userspace via the
+ 	 * VFIO_GROUP_GET_DEVICE_FD in the group path.
 diff --git a/include/linux/vfio.h b/include/linux/vfio.h
-index e90859956514..844d14839f96 100644
+index 844d14839f96..775bd4f6bae9 100644
 --- a/include/linux/vfio.h
 +++ b/include/linux/vfio.h
-@@ -72,6 +72,7 @@ struct vfio_device {
- 	u8 iommufd_attached:1;
+@@ -327,6 +327,10 @@ struct iommu_group *vfio_file_iommu_group(struct file *file);
+ #if IS_ENABLED(CONFIG_VFIO_GROUP)
+ bool vfio_file_is_group(struct file *file);
+ bool vfio_file_has_dev(struct file *file, struct vfio_device *device);
++static inline bool vfio_device_has_group(struct vfio_device *device)
++{
++	return device->group;
++}
+ #else
+ static inline bool vfio_file_is_group(struct file *file)
+ {
+@@ -337,6 +341,11 @@ static inline bool vfio_file_has_dev(struct file *file, struct vfio_device *devi
+ {
+ 	return false;
+ }
++
++static inline bool vfio_device_has_group(struct vfio_device *device)
++{
++	return false;
++}
  #endif
- 	u8 cdev_opened:1;
-+	u8 noiommu:1;
- #ifdef CONFIG_DEBUG_FS
- 	/*
- 	 * debug_root is a static property of the vfio_device
+ bool vfio_file_is_valid(struct file *file);
+ bool vfio_file_enforced_coherent(struct file *file);
 -- 
 2.34.1
 
