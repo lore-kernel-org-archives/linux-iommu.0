@@ -1,66 +1,33 @@
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F0F8438FF3
-	for <iommu@lists.linux.dev>; Fri, 27 Feb 2026 15:42:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 743F14418C6;
+	Fri, 27 Feb 2026 15:48:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772206944; cv=none; b=FSZkZB0uyhTaBbL01Qs3WDc6W7geHQgqQrdrhYVd7LgGSPVnLwOQSBXNWOofe0eerwIgenr4yLCq7nap6lqlM4wQy5uUaJReWchAajtN6TSnYg6g8Vq+oVzV1pz1D7Yu89uTSaKU5W4hrUlpFDcqNWygOkKNYPAdUZccQuvtsQo=
+	t=1772207318; cv=none; b=K8EL+EOqJdwphpxFuZoUA/6pb3b0OLKRUB6qvjM3UsQCeEmxKOA1nOI3WOaQDZYEjoejRb3fDJHc281HpNKbQC6meU/GmzaTsrsPSTw/YoPjvGzShH64l4pK4jyRxx4xzEhKjJ0pPqYxUdxbY8EtxJd2ko0XIirwOW7E8gacBhg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772206944; c=relaxed/simple;
-	bh=xHYW3p+5GVfDn8x6oFMyWCK6CrLKRkNsDbg87Yl2z8k=;
+	s=arc-20240116; t=1772207318; c=relaxed/simple;
+	bh=RqzEmGR2ixFrtMDqr07YpJYopfil3fKqLSfNCuT2Q/A=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Olr1X7YZZgEz7cbDADy6eyPjwOkPQUs5hqbIATz4wYRV6UO/zddKVTGyWWegIgnU/FEpvDXrB5psNS9pMIAfHxy+CGog/NKuFhpDvZRQZaO56WmQaQ56ewtD73c3J/60eT4V8CwxB/CCn/Uji/yYACHg7R0sHzvtphsKGHHFC7g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=ikO8IQvQ; arc=none smtp.client-ip=209.85.128.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	 In-Reply-To:Content-Type; b=ulrIMdqu0y66ojCTZp7FuXXuGM+8bzWn3jf99r7AxzeJCnKTW5p7s3lDejXbp4l5YmpGuQwr0Zng3vwy5K9E3H0Q1dj6Ph1Pz3y2vo0attbPDOy7C4r7BDPeONe5+bEdLW6Z3oe3wRmMvZiLI5slYCxDh3ciQVnF4zEWg/4XDrA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MXsA0Dn5; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="ikO8IQvQ"
-Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-4836f363ad2so25320965e9.1
-        for <iommu@lists.linux.dev>; Fri, 27 Feb 2026 07:42:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1772206941; x=1772811741; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:content-language:from
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=9wzqme1k+Wy+/3yspGSINYIH3f7UH5wA3CsIMcq2UIg=;
-        b=ikO8IQvQJXv5bg+qQELTK/EsczJOjD4OLWHNKaAqOh/fHDRcdt1XTrzJt2/QONAqcz
-         D33LzWStoVIkdNgjnawjiob+xVzhy/CJTwDFqdGQNLculXUWMgmP4aPHYyqrqPqNRB3P
-         kyD95Q22DzYNFGRQmRyoW9Jsh9Bfejg4wK55Rmoj9gdH9klwb0vww0nadbpdqxox1z0Y
-         524YmODsw7NOd/ppmKHK3sytXkgLOtt5y+aVaYyGEnvakyldm83zsuuhG110lcm+Iu/y
-         dxQFlU/1XI6UU957o+481CHNijHmNN2EkrxFNY+IKm1RHIWZwGzkG80DjZSgc7XuqksO
-         IQ0w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772206941; x=1772811741;
-        h=content-transfer-encoding:in-reply-to:content-language:from
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=9wzqme1k+Wy+/3yspGSINYIH3f7UH5wA3CsIMcq2UIg=;
-        b=dj3bqqlTpG/oUOG73lu8IlyNFzXQv0BvmRNuL+CrV0Cx0LMECoU01h3ptJ2/rThPOh
-         fO/mju689TMZptQdk84AzDA7KMbfnFHtqugxwpWk2jeNN8+D7Yp5YpUFxaW+vZgfp7OO
-         RzZIdsLp3Mhdhk1WcVRczyU3vvSX/JDm6HXYKtoO6T/tzvlWetAfkYkEzcOAJVYizkTO
-         Xb3whItYi8S8djC9aSW3QB6w3IvUE1J2fuveKnNRWmsokmCVaoWwUxhH60IYb1kCHF/V
-         hiLFk/OMFfWOtIKFsfOjL6USnpMuHduJKLhaXP5J+l8aWNMrhTM5hw/yxMtXDJtT/Jyr
-         Nk5A==
-X-Forwarded-Encrypted: i=1; AJvYcCWB9pjdrq6CsLgAxDrif/4f+AUxBzRDrRByGCAVxRKOGU11R0qfqf0UdEEAjcXdNjvZPTqC7A==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxIksxuOHX/LuQVnYDkXnYdrXh966fY/fvmjHAUCrO7AZClEAu/
-	YQQ97XloziMA672dPoUFaa8qjblE2Nxrs3xljW036fwXdMgAEXJ9A7XttMjiZEulDdc=
-X-Gm-Gg: ATEYQzxEu/Eh1VjH1bn+bBGfe5ZH8DEFT5HBgzsk1gkSeVVsfJsPqj/PxDOEi7HBnsR
-	W2JdICQfCDa6y7xDxavzyJh4rruU27UwDBZKq5lPF3gK75UZqwrSmb3akZL+qH4TJDgns0uFIbc
-	edw/3lDaumeaOeG1+aQbG4004NFg5uOPypikxgslxF5bncJ+j7aqcHh7ujO/vJgaXmPyN1Bn8nL
-	3/XPrWJber779mjZPrK74yOP7mVQVXeUlvC/E3463bVUsc3bQgaZf9uHrW6NCCQTMzWUqmruhs2
-	18CLv1163ux/GmUsQRtTsxK2YsE+LS9GoF9D1hkYQUluDoG4TJzw3zJK28M8iaDmbJ/lmmyCI5H
-	EW4gkIdNNTSwRg8PvmqgJxccfPLoWPHQreoJIB1UDHyidVGKvtxliMB1cdr7RqqDe7F7S4BHz2U
-	zZNMiuKHBsv+ePXFjg1+Ju+j4niNEp3xbR29u3UM69sAz0FV1Mle0VJC/O+EAr91+k
-X-Received: by 2002:a05:600c:c4a6:b0:480:1d0b:2d32 with SMTP id 5b1f17b1804b1-483c9bc0344mr52202975e9.12.1772206940611;
-        Fri, 27 Feb 2026 07:42:20 -0800 (PST)
-Received: from [192.168.0.40] (188-141-3-146.dynamic.upc.ie. [188.141.3.146])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-483bfb77466sm83821705e9.5.2026.02.27.07.42.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 27 Feb 2026 07:42:20 -0800 (PST)
-Message-ID: <c84f0e40-50d9-4c99-92dd-00bcfc554d83@linaro.org>
-Date: Fri, 27 Feb 2026 15:42:17 +0000
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MXsA0Dn5"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C553C116C6;
+	Fri, 27 Feb 2026 15:48:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1772207318;
+	bh=RqzEmGR2ixFrtMDqr07YpJYopfil3fKqLSfNCuT2Q/A=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=MXsA0Dn5tC1VzJbYGZvVSBCjGmKSQoOxk+itebgQUfySNz2jPRdnHaInr4I4YnM9W
+	 kPFEogrVKDd+pL5fLFfacK2zk2oeZOEeVUB8lMbU83zdaTFfe9AaF446IgPGXmVO9k
+	 TdnnptljIKK0ko/lYppo6f2tVj5l1qqb8QTuVUN3FpFvaU5j+TS1+yLzG+FGJABrdK
+	 0Wqaj3QiTfsg1zqoZ1aG4KjdBF/s14D5Pes2kRCcGTaJTaPYtb8ytGSVpnZe8bk1g2
+	 VYWQmcXyqEcKY4gQBxhJRvylaOZWrDGeZnw591DSdgpgPHZxATVB1nNvZI7Jf50tqR
+	 W2EWQav/29IFA==
+Message-ID: <de8879ec-02cb-41d7-a16e-aa6d4aab983d@kernel.org>
+Date: Fri, 27 Feb 2026 16:48:31 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -68,7 +35,7 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 0/7] media: iris: add support for kaanapali platform
+Subject: Re: [PATCH v2 7/7] media: iris: add platform data for kaanapali
 To: Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
  Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
  Abhinav Kumar <abhinav.kumar@linux.dev>, Bryan O'Donoghue <bod@kernel.org>,
@@ -78,44 +45,79 @@ To: Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
  Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
  Robin Murphy <robin.murphy@arm.com>,
  Stefan Schmidt <stefan.schmidt@linaro.org>,
- Hans Verkuil <hverkuil@kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>,
+ Hans Verkuil <hverkuil@kernel.org>,
  Vishnu Reddy <busanna.reddy@oss.qualcomm.com>,
  Hans Verkuil <hverkuil+cisco@kernel.org>
 Cc: linux-arm-msm@vger.kernel.org, linux-media@vger.kernel.org,
  devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev
+ iommu@lists.linux.dev, Bryan O'Donoghue <bryan.odonoghue@linaro.org>
 References: <20260227-kaanapali-iris-v2-0-850043ac3933@oss.qualcomm.com>
-From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+ <20260227-kaanapali-iris-v2-7-850043ac3933@oss.qualcomm.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
-In-Reply-To: <20260227-kaanapali-iris-v2-0-850043ac3933@oss.qualcomm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Autocrypt: addr=krzk@kernel.org; keydata=
+ xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
+ cFgcqTTuNHjAvxtUG8pQgGTHAObYs6xeYJtjUH0ZX6ndJ33FJYf5V3yXqqjcZ30FgHzJCFUu
+ JMp7PSyMPzpUXfU12yfcRYVEMQrmplNZssmYhiTeVicuOOypWugZKVLGNm0IweVCaZ/DJDIH
+ gNbpvVwjcKYrx85m9cBVEBUGaQP6AT7qlVCkrf50v8bofSIyVa2xmubbAwwFA1oxoOusjPIE
+ J3iadrwpFvsZjF5uHAKS+7wHLoW9hVzOnLbX6ajk5Hf8Pb1m+VH/E8bPBNNYKkfTtypTDUCj
+ NYcd27tjnXfG+SDs/EXNUAIRefCyvaRG7oRYF3Ec+2RgQDRnmmjCjoQNbFrJvJkFHlPeHaeS
+ BosGY+XWKydnmsfY7SSnjAzLUGAFhLd/XDVpb1Een2XucPpKvt9ORF+48gy12FA5GduRLhQU
+ vK4tU7ojoem/G23PcowM1CwPurC8sAVsQb9KmwTGh7rVz3ks3w/zfGBy3+WmLg++C2Wct6nM
+ Pd8/6CBVjEWqD06/RjI2AnjIq5fSEH/BIfXXfC68nMp9BZoy3So4ZsbOlBmtAPvMYX6U8VwD
+ TNeBxJu5Ex0Izf1NV9CzC3nNaFUYOY8KfN01X5SExAoVTr09ewARAQABzSVLcnp5c3p0b2Yg
+ S296bG93c2tpIDxrcnprQGtlcm5lbC5vcmc+wsGVBBMBCgA/AhsDBgsJCAcDAgYVCAIJCgsE
+ FgIDAQIeAQIXgBYhBJvQfg4MUfjVlne3VBuTQ307QWKbBQJoF1BKBQkWlnSaAAoJEBuTQ307
+ QWKbHukP/3t4tRp/bvDnxJfmNdNVn0gv9ep3L39IntPalBFwRKytqeQkzAju0whYWg+R/rwp
+ +r2I1Fzwt7+PTjsnMFlh1AZxGDmP5MFkzVsMnfX1lGiXhYSOMP97XL6R1QSXxaWOpGNCDaUl
+ ajorB0lJDcC0q3xAdwzRConxYVhlgmTrRiD8oLlSCD5baEAt5Zw17UTNDnDGmZQKR0fqLpWy
+ 786Lm5OScb7DjEgcA2PRm17st4UQ1kF0rQHokVaotxRM74PPDB8bCsunlghJl1DRK9s1aSuN
+ hL1Pv9VD8b4dFNvCo7b4hfAANPU67W40AaaGZ3UAfmw+1MYyo4QuAZGKzaP2ukbdCD/DYnqi
+ tJy88XqWtyb4UQWKNoQqGKzlYXdKsldYqrLHGoMvj1UN9XcRtXHST/IaLn72o7j7/h/Ac5EL
+ 8lSUVIG4TYn59NyxxAXa07Wi6zjVL1U11fTnFmE29ALYQEXKBI3KUO1A3p4sQWzU7uRmbuxn
+ naUmm8RbpMcOfa9JjlXCLmQ5IP7Rr5tYZUCkZz08LIfF8UMXwH7OOEX87Y++EkAB+pzKZNNd
+ hwoXulTAgjSy+OiaLtuCys9VdXLZ3Zy314azaCU3BoWgaMV0eAW/+gprWMXQM1lrlzvwlD/k
+ whyy9wGf0AEPpLssLVt9VVxNjo6BIkt6d1pMg6mHsUEVzsFNBFVDXDQBEADNkrQYSREUL4D3
+ Gws46JEoZ9HEQOKtkrwjrzlw/tCmqVzERRPvz2Xg8n7+HRCrgqnodIYoUh5WsU84N03KlLue
+ MNsWLJBvBaubYN4JuJIdRr4dS4oyF1/fQAQPHh8Thpiz0SAZFx6iWKB7Qrz3OrGCjTPcW6ei
+ OMheesVS5hxietSmlin+SilmIAPZHx7n242u6kdHOh+/SyLImKn/dh9RzatVpUKbv34eP1wA
+ GldWsRxbf3WP9pFNObSzI/Bo3kA89Xx2rO2roC+Gq4LeHvo7ptzcLcrqaHUAcZ3CgFG88CnA
+ 6z6lBZn0WyewEcPOPdcUB2Q7D/NiUY+HDiV99rAYPJztjeTrBSTnHeSBPb+qn5ZZGQwIdUW9
+ YegxWKvXXHTwB5eMzo/RB6vffwqcnHDoe0q7VgzRRZJwpi6aMIXLfeWZ5Wrwaw2zldFuO4Dt
+ 91pFzBSOIpeMtfgb/Pfe/a1WJ/GgaIRIBE+NUqckM+3zJHGmVPqJP/h2Iwv6nw8U+7Yyl6gU
+ BLHFTg2hYnLFJI4Xjg+AX1hHFVKmvl3VBHIsBv0oDcsQWXqY+NaFahT0lRPjYtrTa1v3tem/
+ JoFzZ4B0p27K+qQCF2R96hVvuEyjzBmdq2esyE6zIqftdo4MOJho8uctOiWbwNNq2U9pPWmu
+ 4vXVFBYIGmpyNPYzRm0QPwARAQABwsF8BBgBCgAmAhsMFiEEm9B+DgxR+NWWd7dUG5NDfTtB
+ YpsFAmgXUF8FCRaWWyoACgkQG5NDfTtBYptO0w//dlXJs5/42hAXKsk+PDg3wyEFb4NpyA1v
+ qmx7SfAzk9Hf6lWwU1O6AbqNMbh6PjEwadKUk1m04S7EjdQLsj/MBSgoQtCT3MDmWUUtHZd5
+ RYIPnPq3WVB47GtuO6/u375tsxhtf7vt95QSYJwCB+ZUgo4T+FV4hquZ4AsRkbgavtIzQisg
+ Dgv76tnEv3YHV8Jn9mi/Bu0FURF+5kpdMfgo1sq6RXNQ//TVf8yFgRtTUdXxW/qHjlYURrm2
+ H4kutobVEIxiyu6m05q3e9eZB/TaMMNVORx+1kM3j7f0rwtEYUFzY1ygQfpcMDPl7pRYoJjB
+ dSsm0ZuzDaCwaxg2t8hqQJBzJCezTOIkjHUsWAK+tEbU4Z4SnNpCyM3fBqsgYdJxjyC/tWVT
+ AQ18NRLtPw7tK1rdcwCl0GFQHwSwk5pDpz1NH40e6lU+NcXSeiqkDDRkHlftKPV/dV+lQXiu
+ jWt87ecuHlpL3uuQ0ZZNWqHgZoQLXoqC2ZV5KrtKWb/jyiFX/sxSrodALf0zf+tfHv0FZWT2
+ zHjUqd0t4njD/UOsuIMOQn4Ig0SdivYPfZukb5cdasKJukG1NOpbW7yRNivaCnfZz6dTawXw
+ XRIV/KDsHQiyVxKvN73bThKhONkcX2LWuD928tAR6XMM2G5ovxLe09vuOzzfTWQDsm++9UKF a/A=
+In-Reply-To: <20260227-kaanapali-iris-v2-7-850043ac3933@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 27/02/2026 14:11, Vikash Garodia wrote:
-> Qualcomm kaanapali platform have a newer generation of video IP iris4.
-> The hardware have evolved mostly with respect to higher number of power
-> domains as well as multiple clock sources.
-> 
-> Considering iris as a client driver, it adds the handling for multiple
-> stream ids from VPU via iommu-map.
-> 
-> This series is depend on the below series:
-> https://lore.kernel.org/all/20260226074245.3098486-1-vijayanand.jitta@oss.qualcomm.com/
-> 
-> Following patches were dropped in v2, as per the comments, and would
-> be posted separately. This series depends on these patches for
-> functionality.
-> - https://lore.kernel.org/all/20260126-kaanapali-iris-v1-2-e2646246bfc1@oss.qualcomm.com/
-> - https://lore.kernel.org/all/20260126-kaanapali-iris-v1-3-e2646246bfc1@oss.qualcomm.com/
-> 
-> Patch #4 is also posted alongwith below series. If the other series is
-> picked earlier, then this patch can be dropped from this series.
-> https://lore.kernel.org/all/20260227-iris_sc7280_gen2_support-v2-1-7e5b13d26542@oss.qualcomm.com/
+On 27/02/2026 15:11, Vikash Garodia wrote:
+> +
+> +#include <dt-bindings/media/qcom,iris.h>
+> +
+> +#define VIDEO_REGION_VM0_SECURE_NP_ID		1
+> +#define VIDEO_REGION_VM0_NONSECURE_NP_ID	5
+> +
+> +static const char *const kaanapali_clk_reset_table[] = {
+> +	"bus0",
+> +	"bus1",
+> +	"core",
+> +	"vcodec0_core",
+> +};
 
-For the record this series is blocked on this:
+How many copies do you want of this? Data definition never goes to
+headers. That's standard C rules.
 
-https://lore.kernel.org/all/20260226074245.3098486-1-vijayanand.jitta@oss.qualcomm.com/ 
-
-
----
-bod
+Best regards,
+Krzysztof
