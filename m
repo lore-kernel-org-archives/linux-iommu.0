@@ -1,36 +1,36 @@
-Received: from smtpbg154.qq.com (smtpbg154.qq.com [15.184.224.54])
+Received: from smtpbg151.qq.com (smtpbg151.qq.com [18.169.211.239])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E49942188B;
-	Sat, 28 Feb 2026 14:45:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=15.184.224.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D14941C2E6;
+	Sat, 28 Feb 2026 14:46:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=18.169.211.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772289953; cv=none; b=d36ZC6QPXw5HQI9vw/RzwG3VFd0wZHYqZOEc6FUge5WHG5uio9DWKK2H7pP/NwN59TWoY9WkInosVZTvbRssP9z1rljnG+4RpOTdwqXmjjyxL9oi+7HpYVtAqx8QXqRCKASr8RTGEbvsggBPXLoojk6f7c63Z3PZAKgxWd15KSc=
+	t=1772289966; cv=none; b=QBp0HNPiiNwgBpsktirhHy56sK6Qu6+VXK+6YLLoEukYX2+L1edQGZxdUTvyyMIVzhxXNk2um75L0l3GQj5jryuYz3zFRcsEtIYAgw1tlet8tpQ4FGlLiulTSSnxFZdXxTXGm5XFInpLf8IrBw9wCaa25/AfnJTnLFnKlwHxyQI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772289953; c=relaxed/simple;
-	bh=EQvkTCMLkJtPAlSbis8SzbcqDnIZa+dfFOonC1ntmPw=;
+	s=arc-20240116; t=1772289966; c=relaxed/simple;
+	bh=I02qRJ6CpvImE+6y6tAC/KFMdUum9tMYeupGFSqc0RM=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=rYLoxy6L68ATWA7Rv99pXfvdSebS86BcwCo8cpPOfdx0dNV4KJAqjgthuD8EPS0g6zicK6dP+Mi2uqm/5xB7N3J+gNbohJlHx7fhZVlT1aKHOvsSSUMZrwW4pu+0ePH1OPLIQldYGpXIgcjTdrEOynpI6xbD42r47W2mvYQwL/0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux.spacemit.com; spf=none smtp.mailfrom=linux.spacemit.com; dkim=pass (1024-bit key) header.d=linux.spacemit.com header.i=@linux.spacemit.com header.b=euAEnLfh; arc=none smtp.client-ip=15.184.224.54
+	 MIME-Version; b=hTGfW0Io2QQ7W2tUVEVsqtYChqR2MFNgldslGKfh7UW6LvkCMB/47nI6IzfB22dcSHlPGvwVtCyRJ2o3MMSPNVz8fgpAWvaZkUEQltmUFqTLg1DwlIISjhvyTNWzptWaQKfOvIaadL4f2MCoTRJ+RfONpAw1F2P1lpAfvvcDsXA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux.spacemit.com; spf=none smtp.mailfrom=linux.spacemit.com; dkim=pass (1024-bit key) header.d=linux.spacemit.com header.i=@linux.spacemit.com header.b=gdSc5HI7; arc=none smtp.client-ip=18.169.211.239
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux.spacemit.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.spacemit.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.spacemit.com header.i=@linux.spacemit.com header.b="euAEnLfh"
+	dkim=pass (1024-bit key) header.d=linux.spacemit.com header.i=@linux.spacemit.com header.b="gdSc5HI7"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.spacemit.com;
-	s=mxsw2412; t=1772289919;
-	bh=yOxXPAZ860TZFdcVWU1J2MnJnut1yaALwmPzJ9AGbwQ=;
+	s=mxsw2412; t=1772289929;
+	bh=GbOAkjn6laTptkSnh6XYJm2aHQrZmXs7grRbKjhgjdw=;
 	h=From:To:Subject:Date:Message-ID:MIME-Version;
-	b=euAEnLfhmgTcWKdfWs4dFIpq9NE2jp47DPGxHkjVT/HOnnrDddaI2Bc4cERjutx22
-	 x9W3NXW3KGrz6Fco9ZKrvSTRfAyx+4fa41LDha6VVPGmMDZ4mbGGdL/w3QzuVPJ6mg
-	 QINQmV6A+Qy85JdeOSUfrsjmsSDYp2zTyWOdYpTA=
-X-QQ-mid: esmtpgz16t1772289917tba247742
-X-QQ-Originating-IP: fjmleJzQ8tZlpEdLnFR4tWVf0dBULQWXhn1c7XZm8ic=
+	b=gdSc5HI7LDK3UoM+wIMhm4LwJknpbJQQHeQrUC2KeFhjfEtum6UiQJiblyk85mXra
+	 4eQuUAc2MWGlAHdHWvS2zB0B4oa5542klzcZRXtnJhVpkLaM+fmAllP0q6Ltysix+2
+	 Y/yxEPI1ZGLpDBhAwna3G65Uyq6UP3tsvoh9F/oM=
+X-QQ-mid: zesmtpgz5t1772289928t9a451ff3
+X-QQ-Originating-IP: 1rBRZBiZfVmJkN3GwwUCdLX2pFtsVXUihEV0i1hxCjE=
 Received: from SurfaceBook2-B.localdomain ( [183.193.112.19])
 	by bizesmtp.qq.com (ESMTP) with 
-	id ; Sat, 28 Feb 2026 22:45:12 +0800 (CST)
+	id ; Sat, 28 Feb 2026 22:45:23 +0800 (CST)
 X-QQ-SSF: 0000000000000000000000000000000
 X-QQ-GoodBg: 0
-X-BIZMAIL-ID: 6367620818006765051
+X-BIZMAIL-ID: 99386155817105120
 EX-QQ-RecipientCnt: 33
 From: Lv Zheng <lv.zheng@linux.spacemit.com>
 To: Tomasz Jeznach <tjeznach@rivosinc.com>,
@@ -66,9 +66,9 @@ Cc: Jingyu Li <joey.li@spacemit.com>,
 	spacemit@lists.linux.dev,
 	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v5 6/8] iommu/riscv: Add SpacemiT T100 IOATC HPM support
-Date: Sat, 28 Feb 2026 22:45:08 +0800
-Message-ID: <5A0B289754F26E1F+94635e48c8e661abefcdeec3271f680c641a14d8.1772289741.git.lv.zheng@linux.spacemit.com>
+Subject: [PATCH v5 7/8] iommu/riscv: Add vendor event support for RISC-V IOMMU HPM
+Date: Sat, 28 Feb 2026 22:45:22 +0800
+Message-ID: <B63F9FC1F921CE76+4772dfad6fadfae95bafccf306187cda595498ce.1772289741.git.lv.zheng@linux.spacemit.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <cover.1772289741.git.lv.zheng@linux.spacemit.com>
 References: <cover.1772289741.git.lv.zheng@linux.spacemit.com>
@@ -80,371 +80,192 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-QQ-SENDSIZE: 520
-Feedback-ID: esmtpgz:linux.spacemit.com:qybglogicsvrgz:qybglogicsvrgz5b-1
-X-QQ-XMAILINFO: ML8hOghqQD+0T0ztYTTMi1QhP8RF3BSJdSrDAOnTgaiY9PXfB8Rx0cY9
-	TZAeSB73XtedEFU3xQkmagtWA2ZDGAnRnlizXqt18t/OIMWENlAAdNGyHPzRTl/QxJlnT49
-	1uX0JKygZNWok8dO0gCHZjn4qKVPTm0Y0q0AtboYecAvVkQo4sNRVoAh+c9IvpQIimotT+R
-	azjUPu7jo8au5z3C87Qrmed80BTju0EBsIWE6Y0d3bvmbsXZcLm5QoFru9Vd5TzkDpS/0bo
-	Vql2KsrLdjlaHAlwDyj2E7mI+g6JrgCoDvjTSl4RV33eNVkJRgalDWFNWW2MgQcljnh8lF/
-	qFsn1JdC/yXYTywC1U6N0eVUuEfiKDIz6vl26kiTI844HnopfNbKX+pf9GY1y18+3Y2GvZR
-	j396+AoWnQY2k2xWDfV0ul/v33qjtFdnD6fD74UGUa4aVC9WBeCbgMV+ZIdb9h1T0FbjtW2
-	4hsf+uX782HB9OCErOPbttEWiu3sz02DHwrMlAGhVzFknRfVf9jUBE33KpLlsDaBf+5Ge3E
-	z7l/izLpqQRWUtsrUfv/HnaxgVOQguff5u+OIpph9kXumeCY3E/GwCTcacAt/NrjLgR6ndD
-	CM1h6NFQdpOJkNO7EtoiCnjude+zcGDBmkQ/65J98++C5m4vA2O+MU89bY0kH1TCZHETMN1
-	gJb5rN2IjvaEMdfTSSXK+4dpa9UNj9nu687nezRj6Hh2yNGWrB11ohZu71OjqNo9T9yFk7M
-	q+w0qvXExfe/Fyp7iRmmyEfjQTqDwEFgH44RrK6PWWvaJM31QB7Tf411Rb+bhX0Mc0poLeq
-	LLR+zsmvPDszZWG+Aqn0LC+V+3aAPAVqYwlZVumzpTWKoerJ+KrAAtauttZCU+FmX8Q6E4h
-	kbZBzWgsAouLXlzEBevIkwWz9ZHA/okVtCR2gN0PRa/H9x4FELEr0OPZ3NRwZM2WHPpOIDK
-	wdr4pPYAYbmKrD4MPVUjjl/6kYype3vvu7RGHyoBTTkb/hasCWUznFoXX2r7bnVnNl2TUzN
-	mQAaPVa6m8bneHc5ukyqjTDLP9h53j47oht0fBmyBi0tSIUoYtY46grgOkRLKJ3yGGRm/E8
-	6qB3v91VSUX
-X-QQ-XMRINFO: NI4Ajvh11aEjEMj13RCX7UuhPEoou2bs1g==
+Feedback-ID: zesmtpgz:linux.spacemit.com:qybglogicsvrgz:qybglogicsvrgz5b-1
+X-QQ-XMAILINFO: Odky5wNUcHo/fvP/5aC0Yt1uajpBQXvRIyb4OVM0bTjQlMHypFWgC+Qs
+	LKhAnpk4iOwlSfvEjCVmLnsE0ZcrRznCoH5TNKm5QEuX487mBC3x3g4N390qIfzJqw3Hvla
+	q2A/0KV+ODyhiYXqAo+Z3zKVTKptLi6fETWNKk63mzE89fvv6DWWUA9+KaakNO7en52EktL
+	RwwM+BXdI5Tui1HSoOE9gtsc9J7uldnhspQrYbNXaY2DzQYtO5Ob97+VBv+L1o4WIKCtpmW
+	4ek8faKVBgkUFXvbdtq9UheshL/uE1l5WRVQ7ILY3o+7V3rWFyJTJyyQvxNgMDT/eM6BZ9F
+	7TLs0kCl6qHaYi68lQFj3Pbcg1QKtT1FVEB35pQ8c0r0G5vVpXATk1Dt7afYW6zu6M01h11
+	Hka7E55EYBSciXOnHIVGd8X9NmxQHSBwfS8cx0lQTGUA2mKDAnsqYQuAC+d59Bp5FpDabt5
+	vijYWx+vnqRk4tzfz2X1V9BKko54//2mJ5iWvgjY0vhsmK6xk3iqI9hitTcoOcDZJwR1OXq
+	2EvGapJo+H9BOQFwI86W9cLQuZK4iNrqt+0Q1ANb0rcDt0To4hccs2uoJh1cg6U8YpyAb9m
+	K18yfknjSZhZVRFCdLedHM2GHMhWN0KeI/t4FulXVht1/SyFYM+d2iUh40szQSPK0w7bJFf
+	XrrarKSopkxZhw0fNH71JyzguxRwf2F9UzBjiob+uq5SXriDWkXS9qZbvdKyTA+xO0C2C1w
+	NIAnR81fO+nF2CXjfkPxZWS8g7HSArl8O9YDYx6S6ZIqnMqnmSVYx10Ukk4SPpjMIPBE3Gb
+	JYLtBsL7lEwC+kttMRpFzLmzqR+gyGCAtEyd+e9IcAEooQnVqTiaPhloXUvQENq6lNawtOD
+	9OL5uT+DeY+ValHFVnq5s4fIsnpHbi3l17ZQGDVjPvgFPZR6cqTqn3HSogc7FEK3Mh5V8L8
+	R4Ft/CsAmgXBVByuEVzSWGRh24BiUyK3oNfpwGTUM/F6iFZHghaKGCkRJmU63Mzs90ZQRJG
+	tv4Rdk1XbLGWDbCZbMks7DBzv5EqdlUXDPB7ogQw==
+X-QQ-XMRINFO: MSVp+SPm3vtSI1QTLgDHQqIV1w2oNKDqfg==
 X-QQ-RECHKSPAM: 0
 
-Add IOATC discovery and HPM support for SpacemiT T100.
-
-SpacemiT T100 supports distributed architecture which allows IOTLBs to be
-cached in adjacent to the DMA masters. Such IOTLB controllers are called
-as IOATCs. Adds distributed HPM support for IOATCs.
+Add a mechanism to allow vendor events to be registered via userspace
+jevents. The PMU exposes an "identifier" sysfs attribute derived from the
+device tree compatible string (e.g. "spacemit,t100" or "riscv,iommu"),
+which perf's jevents uses to match JSON event definitions to the PMU.
 
 Signed-off-by: Lv Zheng <lv.zheng@linux.spacemit.com>
 Signed-off-by: Jingyu Li <joey.li@spacemit.com>
 ---
- drivers/iommu/riscv/iommu-bits.h     |  12 +++
- drivers/iommu/riscv/iommu-platform.c |   4 +-
- drivers/iommu/riscv/iommu.c          | 107 ++++++++++++++++++++++++++-
- drivers/iommu/riscv/iommu.h          |   2 +-
- drivers/perf/riscv_iommu_hpm.c       |  48 +++++++++++-
- include/linux/riscv_iommu.h          |   6 +-
- 6 files changed, 171 insertions(+), 8 deletions(-)
+ drivers/iommu/riscv/iommu.c    | 29 +++++++++++++++++++++++++++++
+ drivers/iommu/riscv/iommu.h    |  2 ++
+ drivers/perf/riscv_iommu_hpm.c | 22 +++++++++++++++++++++-
+ include/linux/riscv_iommu.h    |  2 ++
+ 4 files changed, 54 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/riscv/iommu-bits.h b/drivers/iommu/riscv/iommu-bits.h
-index 98daf0e1a306..c8536c64ef42 100644
---- a/drivers/iommu/riscv/iommu-bits.h
-+++ b/drivers/iommu/riscv/iommu-bits.h
-@@ -278,6 +278,14 @@ enum riscv_iommu_hpmevent_id {
- #define RISCV_IOMMU_ICVEC_PMIV		GENMASK_ULL(11, 8)
- #define RISCV_IOMMU_ICVEC_PIV		GENMASK_ULL(15, 12)
- 
-+/* 5.28 Distributed translation interface status register (dtisr0-3) (4 * 32-bits) */
-+#define RISCV_IOMMU_REG_DTISR_BASE	0x02B0
-+#define RISCV_IOMMU_REG_DTISR(_n)	(RISCV_IOMMU_REG_DTISR_BASE + ((_n) * 0x04))
-+#define RISCV_IOMMU_DTI_STS_SHIFT(_n)	(((_n) % 16) * 2)
-+#define RISCV_IOMMU_DTI_STS_MASK(_n)	(0x3 << RISCV_IOMMU_DTI_STS_SHIFT(_n))
-+#define RISCV_IOMMU_DTI_STS_NONE	0x0
-+#define RISCV_IOMMU_DTI_STS_IOATC	0x1
-+
- /* 5.28 MSI Configuration table (32 * 64bits) */
- #define RISCV_IOMMU_REG_MSI_CFG_TBL	0x0300
- #define RISCV_IOMMU_REG_MSI_CFG_TBL_ADDR(_n) \
-@@ -292,6 +300,10 @@ enum riscv_iommu_hpmevent_id {
- 
- #define RISCV_IOMMU_REG_SIZE	0x1000
- 
-+/* SpacemiT IOMMU IOATC registers */
-+#define MAX_RISCV_IOMMU_IOATC		64
-+#define RISCV_IOMMU_IOATC_BASE(_idx)	(((_idx) + 1) * RISCV_IOMMU_REG_SIZE)
-+
- /*
-  * Chapter 2: Data structures
-  */
-diff --git a/drivers/iommu/riscv/iommu-platform.c b/drivers/iommu/riscv/iommu-platform.c
-index e8e52bca8856..469b8bfd2151 100644
---- a/drivers/iommu/riscv/iommu-platform.c
-+++ b/drivers/iommu/riscv/iommu-platform.c
-@@ -75,8 +75,8 @@ static int riscv_iommu_platform_probe(struct platform_device *pdev)
- 	if (iommu->irqs_count <= 0)
- 		return dev_err_probe(dev, -ENODEV,
- 				     "no IRQ resources provided\n");
--	if (iommu->irqs_count > RISCV_IOMMU_INTR_COUNT)
--		iommu->irqs_count = RISCV_IOMMU_INTR_COUNT;
-+	if (iommu->irqs_count > RISCV_IOMMU_INTR_COUNT + MAX_RISCV_IOMMU_IOATC)
-+		iommu->irqs_count = RISCV_IOMMU_INTR_COUNT + MAX_RISCV_IOMMU_IOATC;
- 
- 	igs = FIELD_GET(RISCV_IOMMU_CAPABILITIES_IGS, iommu->caps);
- 	switch (igs) {
 diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
-index 21ff7e50d115..e10011493228 100644
+index e10011493228..b8a0542ad5d4 100644
 --- a/drivers/iommu/riscv/iommu.c
 +++ b/drivers/iommu/riscv/iommu.c
-@@ -55,9 +55,21 @@ struct riscv_iommu_devres {
- 	void *addr;
- };
+@@ -1664,6 +1664,7 @@ static int riscv_iommu_subdev_add(struct riscv_iommu_device *iommu,
+ 	subdev->base = params->base;
+ 	subdev->iommu = iommu;
+ 	subdev->info = params->info;
++	subdev->identifier = params->identifier;
  
-+static unsigned int riscv_iommu_reg_ipsr(struct riscv_iommu_subdev *subdev)
-+{
-+	struct riscv_iommu_hpm_info *info = subdev->info;
-+	unsigned int offset;
-+
-+	if (info && info->is_ioatc)
-+		offset = RISCV_IOMMU_IOATC_BASE(info->index);
-+	else
-+		offset = 0;
-+	return offset + RISCV_IOMMU_REG_IPSR;
-+}
-+
- bool riscv_iommu_pmip_status(struct riscv_iommu_subdev *subdev)
- {
--	u32 ipsr = riscv_iommu_readl(subdev->iommu, RISCV_IOMMU_REG_IPSR);
-+	u32 ipsr = riscv_iommu_readl(subdev->iommu, riscv_iommu_reg_ipsr(subdev));
- 
- 	return !!(ipsr & RISCV_IOMMU_IPSR_PMIP);
- }
-@@ -65,7 +77,7 @@ EXPORT_SYMBOL_GPL(riscv_iommu_pmip_status);
- 
- void riscv_iommu_clear_pmip(struct riscv_iommu_subdev *subdev)
- {
--	riscv_iommu_writel(subdev->iommu, RISCV_IOMMU_REG_IPSR,
-+	riscv_iommu_writel(subdev->iommu, riscv_iommu_reg_ipsr(subdev),
- 			   RISCV_IOMMU_IPSR_PMIP);
- }
- EXPORT_SYMBOL_GPL(riscv_iommu_clear_pmip);
-@@ -1710,6 +1722,7 @@ static void riscv_iommu_enumerate_hpm(struct riscv_iommu_device *iommu)
- 		return;
- 
- 	hpm_info->irq = irq;
-+	hpm_info->is_ioatc = false;
- 
- 	params = (struct riscv_iommu_subdev_params) {
- 		.name = "riscv_iommu_hpm",
-@@ -1731,6 +1744,95 @@ static void riscv_iommu_enumerate_hpm(struct riscv_iommu_device *iommu)
- 	}
+ 	auxdev = &subdev->auxdev;
+ 	auxdev->name = params->name;
+@@ -1701,6 +1702,32 @@ static int riscv_iommu_subdev_add(struct riscv_iommu_device *iommu,
+ 	return ret;
  }
  
-+struct riscv_iommu_ioatc_desc {
-+	int irq;
-+	u32 index;
++/* Compatible strings that serve as PMU identifier for userspace jevents */
++static const char *const riscv_iommu_hpm_identifiers[] = {
++	"spacemit,t100",
++	"riscv,iommu",
 +};
 +
-+static int riscv_iommu_collect_ioatcs(struct riscv_iommu_device *iommu,
-+				      struct riscv_iommu_ioatc_desc *descs,
-+				      int max_desc)
++static const char *riscv_iommu_get_hpm_identifier(struct device *dev)
 +{
-+	struct device *dev = iommu->dev;
-+	int count, index, i, j;
-+	u32 dtisr, state;
-+	int nr_ioats_irqs, nr_ioatc_irqs;
++	struct device_node *np = dev->of_node;
++	int i, ret;
 +
-+	if (!of_device_is_compatible(dev->of_node, "spacemit,t100"))
-+		return 0;
++	if (!np)
++		return NULL;
 +
-+	if (iommu->fctl & RISCV_IOMMU_FCTL_WSI)
-+		nr_ioats_irqs = 1;
-+	else
-+		nr_ioats_irqs = RISCV_IOMMU_INTR_COUNT;
-+
-+	if (iommu->irqs_count > nr_ioats_irqs)
-+		nr_ioatc_irqs = iommu->irqs_count - nr_ioats_irqs;
-+	else
-+		nr_ioatc_irqs = 0;
-+
-+	count = 0;
-+	for (i = 0; i < 4 && count < max_desc; i++) {
-+		dtisr = riscv_iommu_readl(iommu, RISCV_IOMMU_REG_DTISR(i));
-+		for (j = 0; j < 16 && count < max_desc; j++) {
-+			index = i * 16 + j;
-+			state = (dtisr & RISCV_IOMMU_DTI_STS_MASK(index)) >>
-+				RISCV_IOMMU_DTI_STS_SHIFT(index);
-+			if (state != RISCV_IOMMU_DTI_STS_IOATC)
-+				continue;
-+			descs[count].index = index;
-+			if (count < nr_ioatc_irqs && index < MAX_RISCV_IOMMU_IOATC)
-+				descs[count].irq = iommu->irqs[count + nr_ioats_irqs];
-+			else
-+				descs[count].irq = 0;
-+			count++;
-+		}
++	for (i = 0; i < ARRAY_SIZE(riscv_iommu_hpm_identifiers); i++) {
++		ret = of_property_match_string(np, "compatible",
++					       riscv_iommu_hpm_identifiers[i]);
++		if (ret >= 0)
++			return devm_kstrdup(dev,
++					    riscv_iommu_hpm_identifiers[i],
++					    GFP_KERNEL);
 +	}
-+	return count;
++
++	return NULL;
 +}
 +
-+static void riscv_iommu_enumerate_ioatc(struct riscv_iommu_device *iommu)
-+{
-+	struct riscv_iommu_ioatc_desc ioatcs[MAX_RISCV_IOMMU_IOATC];
-+	struct riscv_iommu_hpm_info *ioatc_info;
-+	struct riscv_iommu_subdev_params params;
-+	void __iomem *base;
-+	int nr_ioatcs, i, ret;
-+
-+	nr_ioatcs = riscv_iommu_collect_ioatcs(iommu, ioatcs, ARRAY_SIZE(ioatcs));
-+	if (nr_ioatcs <= 0)
-+		return;
-+
-+	for (i = 0; i < nr_ioatcs; i++) {
-+		if (ioatcs[i].irq <= 0)
-+			continue;
-+
-+		ioatc_info = kzalloc(sizeof(*ioatc_info), GFP_KERNEL);
-+		if (!ioatc_info)
-+			continue;
-+
-+		ioatc_info->irq = ioatcs[i].irq;
-+		ioatc_info->index = ioatcs[i].index;
-+		ioatc_info->global_filter = true;
-+		ioatc_info->is_ioatc = true;
-+
-+		base = iommu->reg + RISCV_IOMMU_IOATC_BASE(ioatcs[i].index);
-+
-+		params = (struct riscv_iommu_subdev_params) {
-+			.name = "spacemit_ioatc_hpm",
-+			.info = ioatc_info,
-+			.base = base + RISCV_IOMMU_REG_IOCOUNTOVF,
-+		};
-+
-+		ret = riscv_iommu_subdev_add(iommu, &params);
-+		if (ret) {
-+			kfree(ioatc_info);
-+			dev_warn(iommu->dev, "Failed to add IOATC%u: %d\n",
-+				 ioatcs[i].index, ret);
-+		}
-+	}
-+}
-+
- /**
-  * riscv_iommu_subdev_setup - Enumerate auxiliary bus subdevices
-  *
-@@ -1743,6 +1845,7 @@ static void riscv_iommu_enumerate_hpm(struct riscv_iommu_device *iommu)
- void riscv_iommu_subdev_setup(struct riscv_iommu_device *iommu)
+ static void riscv_iommu_enumerate_hpm(struct riscv_iommu_device *iommu)
  {
- 	riscv_iommu_enumerate_hpm(iommu);
-+	riscv_iommu_enumerate_ioatc(iommu);
- }
+ 	struct riscv_iommu_hpm_info *hpm_info;
+@@ -1728,6 +1755,7 @@ static void riscv_iommu_enumerate_hpm(struct riscv_iommu_device *iommu)
+ 		.name = "riscv_iommu_hpm",
+ 		.info = hpm_info,
+ 		.base = iommu->reg + RISCV_IOMMU_REG_IOCOUNTOVF,
++		.identifier = riscv_iommu_get_hpm_identifier(iommu->dev),
+ 	};
  
- /**
+ 	if (of_device_is_compatible(iommu->dev->of_node, "spacemit,t100")) {
+@@ -1822,6 +1850,7 @@ static void riscv_iommu_enumerate_ioatc(struct riscv_iommu_device *iommu)
+ 			.name = "spacemit_ioatc_hpm",
+ 			.info = ioatc_info,
+ 			.base = base + RISCV_IOMMU_REG_IOCOUNTOVF,
++			.identifier = riscv_iommu_get_hpm_identifier(iommu->dev),
+ 		};
+ 
+ 		ret = riscv_iommu_subdev_add(iommu, &params);
 diff --git a/drivers/iommu/riscv/iommu.h b/drivers/iommu/riscv/iommu.h
-index 1296625488ef..f1bb682dd478 100644
+index f1bb682dd478..7f34c1bbfe25 100644
 --- a/drivers/iommu/riscv/iommu.h
 +++ b/drivers/iommu/riscv/iommu.h
-@@ -51,7 +51,7 @@ struct riscv_iommu_device {
- 	u32 fctl;
+@@ -74,11 +74,13 @@ struct riscv_iommu_device {
+  * @name: auxiliary device name
+  * @info: device-specific info, freed in release
+  * @base: PMU register base
++ * @identifier: perf PMU identifier for JSON Compat matching
+  */
+ struct riscv_iommu_subdev_params {
+ 	const char *name;
+ 	void *info;
+ 	void __iomem *base;
++	const char *identifier;
+ };
  
- 	/* available interrupt numbers, MSI or WSI */
--	unsigned int irqs[RISCV_IOMMU_INTR_COUNT];
-+	unsigned int irqs[RISCV_IOMMU_INTR_COUNT + MAX_RISCV_IOMMU_IOATC];
- 	unsigned int irqs_count;
- 	unsigned int icvec;
- 
+ int riscv_iommu_init(struct riscv_iommu_device *iommu);
 diff --git a/drivers/perf/riscv_iommu_hpm.c b/drivers/perf/riscv_iommu_hpm.c
-index efa65caef0dc..b166b3cb6d4f 100644
+index b166b3cb6d4f..fdc18affbe02 100644
 --- a/drivers/perf/riscv_iommu_hpm.c
 +++ b/drivers/perf/riscv_iommu_hpm.c
-@@ -681,6 +681,31 @@ static const struct attribute_group *riscv_iommu_hpm_attr_grps[] = {
+@@ -88,6 +88,7 @@ struct riscv_iommu_hpm {
+ 	unsigned int irq;
+ 	unsigned int on_cpu;
+ 	bool global_filter;
++	const char *identifier;
+ 	struct hlist_node node;
+ 	/*
+ 	 * Layout of events:
+@@ -664,8 +665,24 @@ static ssize_t riscv_iommu_hpm_global_filter_show(struct device *dev,
+ static struct device_attribute riscv_iommu_hpm_global_filter_attr =
+ 	__ATTR(global_filter, 0444, riscv_iommu_hpm_global_filter_show, NULL);
+ 
++static ssize_t riscv_iommu_hpm_identifier_show(struct device *dev,
++					       struct device_attribute *attr,
++					       char *buf)
++{
++	struct riscv_iommu_hpm *hpm = dev_get_drvdata(dev);
++
++	if (!hpm->identifier)
++		return 0;
++
++	return sysfs_emit(buf, "%s\n", hpm->identifier);
++}
++
++static struct device_attribute riscv_iommu_hpm_identifier_attr =
++	__ATTR(identifier, 0444, riscv_iommu_hpm_identifier_show, NULL);
++
+ static struct attribute *riscv_iommu_hpm_vendor_attrs[] = {
+ 	&riscv_iommu_hpm_global_filter_attr.attr,
++	&riscv_iommu_hpm_identifier_attr.attr,
  	NULL
  };
  
-+#define IOMMU_IOATC_EVENT_ATTR(_name, _id) \
-+	PMU_EVENT_ATTR_ID(_name, riscv_iommu_hpm_event_show, _id)
-+
-+static struct attribute *riscv_iommu_hpm_ioatc_events[] = {
-+	IOMMU_IOATC_EVENT_ATTR(cycles, RISCV_IOMMU_HPMEVENT_CYCLES),
-+	IOMMU_IOATC_EVENT_ATTR(untrans_rq, RISCV_IOMMU_HPMEVENT_URQ),
-+	IOMMU_IOATC_EVENT_ATTR(trans_rq, RISCV_IOMMU_HPMEVENT_TRQ),
-+	IOMMU_IOATC_EVENT_ATTR(tlb_mis, RISCV_IOMMU_HPMEVENT_TLB_MISS),
-+	NULL
-+};
-+
-+static const struct attribute_group riscv_iommu_hpm_ioatc_events_group = {
-+	.name = "events",
-+	.attrs = riscv_iommu_hpm_ioatc_events,
-+	.is_visible = riscv_iommu_hpm_event_is_visible,
-+};
-+
-+static const struct attribute_group *riscv_iommu_hpm_ioatc_attr_grps[] = {
-+	&riscv_iommu_hpm_cpumask_group,
-+	&riscv_iommu_hpm_ioatc_events_group,
-+	&riscv_iommu_hpm_format_group,
-+	&riscv_iommu_hpm_vendor_group,
-+	NULL
-+};
-+
- static irqreturn_t riscv_iommu_hpm_handle_irq(int irq_num, void *data)
- {
- 	struct riscv_iommu_hpm *hpm = data;
-@@ -826,6 +851,15 @@ static void riscv_iommu_hpm_set_standard_events(struct riscv_iommu_hpm *hpm)
- 	set_bit(RISCV_IOMMU_HPMEVENT_G_WALKS, hpm->supported_events);
- }
+@@ -891,6 +908,7 @@ static int riscv_iommu_hpm_probe(struct auxiliary_device *auxdev,
  
-+static void riscv_iommu_hpm_set_ioatc_events(struct riscv_iommu_hpm *hpm)
-+{
-+	/* SpacemiT T100 IOATC: subset of events (URQ, TRQ, TLB_MISS) */
-+	set_bit(RISCV_IOMMU_HPMEVENT_CYCLES, hpm->supported_events);
-+	set_bit(RISCV_IOMMU_HPMEVENT_URQ, hpm->supported_events);
-+	set_bit(RISCV_IOMMU_HPMEVENT_TRQ, hpm->supported_events);
-+	set_bit(RISCV_IOMMU_HPMEVENT_TLB_MISS, hpm->supported_events);
-+}
-+
- static int riscv_iommu_hpm_probe(struct auxiliary_device *auxdev,
- 				 const struct auxiliary_device_id *id)
- {
-@@ -834,6 +868,8 @@ static int riscv_iommu_hpm_probe(struct auxiliary_device *auxdev,
- 	struct device *dev = &auxdev->dev;
- 	struct riscv_iommu_hpm_info *info;
- 	const char *hpm_name;
-+	const struct attribute_group **attr_grps;
-+	bool is_ioatc;
- 	u32 val;
- 	int err;
- 
-@@ -858,6 +894,7 @@ static int riscv_iommu_hpm_probe(struct auxiliary_device *auxdev,
+ 	hpm->subdev = subdev;
+ 	hpm->base = subdev->base;
++	hpm->identifier = subdev->identifier;
  	hpm->on_cpu = raw_smp_processor_id();
  	hpm->irq = info->irq;
  	hpm->global_filter = info->global_filter;
-+	is_ioatc = info->is_ioatc;
+@@ -914,7 +932,9 @@ static int riscv_iommu_hpm_probe(struct auxiliary_device *auxdev,
+ 	attr_grps = is_ioatc ? riscv_iommu_hpm_ioatc_attr_grps :
+ 			       riscv_iommu_hpm_attr_grps;
  
- 	bitmap_zero(hpm->used_counters, RISCV_IOMMU_HPMCOUNTER_MAX);
- 	bitmap_zero(hpm->supported_events, RISCV_IOMMU_HPMEVENT_MAX);
-@@ -869,7 +906,13 @@ static int riscv_iommu_hpm_probe(struct auxiliary_device *auxdev,
- 		return -ENODEV;
- 
- 	riscv_iommu_hpm_reset(hpm);
--	riscv_iommu_hpm_set_standard_events(hpm);
-+	if (is_ioatc)
-+		riscv_iommu_hpm_set_ioatc_events(hpm);
-+	else
-+		riscv_iommu_hpm_set_standard_events(hpm);
-+
-+	attr_grps = is_ioatc ? riscv_iommu_hpm_ioatc_attr_grps :
-+			       riscv_iommu_hpm_attr_grps;
- 
- 	hpm_name = devm_kstrdup(dev, dev_name(dev), GFP_KERNEL);
+-	hpm_name = devm_kstrdup(dev, dev_name(dev), GFP_KERNEL);
++	/* jevents name: auxdev->name + "_" + auxdev->id */
++	hpm_name = devm_kasprintf(dev, GFP_KERNEL, "%s_%u", auxdev->name,
++				  auxdev->id);
  	if (!hpm_name)
-@@ -893,7 +936,7 @@ static int riscv_iommu_hpm_probe(struct auxiliary_device *auxdev,
- 		.start = riscv_iommu_hpm_event_start,
- 		.stop = riscv_iommu_hpm_event_stop,
- 		.read = riscv_iommu_hpm_event_update,
--		.attr_groups = riscv_iommu_hpm_attr_grps,
-+		.attr_groups = attr_grps,
- 		.capabilities = PERF_PMU_CAP_NO_EXCLUDE,
- 	};
+ 		return -ENOMEM;
  
-@@ -931,6 +974,7 @@ static void riscv_iommu_hpm_remove(struct auxiliary_device *auxdev)
- static const struct auxiliary_device_id riscv_iommu_hpm_ids[] = {
- 	{ .name = "iommu.riscv_iommu_hpm" },
- 	{ .name = "iommu.spacemit_ioats_hpm" },
-+	{ .name = "iommu.spacemit_ioatc_hpm" },
- 	{}
- };
- MODULE_DEVICE_TABLE(auxiliary, riscv_iommu_hpm_ids);
 diff --git a/include/linux/riscv_iommu.h b/include/linux/riscv_iommu.h
-index 6af592dfaa00..71a961731c22 100644
+index 71a961731c22..d21d89251ed5 100644
 --- a/include/linux/riscv_iommu.h
 +++ b/include/linux/riscv_iommu.h
-@@ -34,13 +34,17 @@ struct riscv_iommu_subdev {
- };
- 
- /**
-- * struct riscv_iommu_hpm_info - HPM info for IOATS (main IOMMU HPM)
-+ * struct riscv_iommu_hpm_info - HPM info for IOATS and IOATC
-  * @irq: interrupt number
-  * @global_filter: true if single global filter
-+ * @is_ioatc: false for IOATS, true for IOATC
-+ * @index: DTISR index for IOATC (0-63), 0 for IOATS
+@@ -24,6 +24,7 @@ struct riscv_iommu_device;
+  * @base: PMU register base
+  * @iommu: parent IOMMU (opaque)
+  * @info: subdevice-specific info, freed in release
++ * @identifier: Vendor identifier for userspace jevent
   */
- struct riscv_iommu_hpm_info {
- 	unsigned int irq;
- 	bool global_filter;
-+	bool is_ioatc;
-+	u8 index;
+ struct riscv_iommu_subdev {
+ 	struct list_head link;
+@@ -31,6 +32,7 @@ struct riscv_iommu_subdev {
+ 	void __iomem *base;
+ 	struct riscv_iommu_device *iommu;
+ 	void *info;
++	const char *identifier;
  };
  
  /**
