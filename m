@@ -1,61 +1,61 @@
-Received: from mail-pf1-f178.google.com (mail-pf1-f178.google.com [209.85.210.178])
+Received: from mail-pj1-f45.google.com (mail-pj1-f45.google.com [209.85.216.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0E12373BEF
-	for <iommu@lists.linux.dev>; Sat, 28 Feb 2026 22:13:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B8076394470
+	for <iommu@lists.linux.dev>; Sat, 28 Feb 2026 22:13:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772316812; cv=none; b=oHWRdjkyP17NsCRmIyBMAgrCSqmTvt6JyyFs7eoY/8c0bMHnAEXy3OmYL3f6PD0WqsHN/di1P/oMn6/u5KX0CBg62LdlFNapzHXAekqo30U9LnDvkDWp6HcycTRnCLktLlpJzsCw3MEDbCrtec6PwP2GkJUvK9cBo22kxC1R/jE=
+	t=1772316832; cv=none; b=J2h6KI2s/ii4teWVeymiPadU4lYGqd2lcRsRt0oM5r4euiYRqHsijSnY4pGpUVayoEheUJKfa7D7vZ49kLJf3vI3Pprw/6WjzItDWIhnH6pjuyz8+VaeWEM4CQGCBuCuYhJWrnIibVpRiBNM+HxLer+KOA7Y9hz2Z+UF68Ojrxo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772316812; c=relaxed/simple;
-	bh=z68hJwId7nj535F94mUhkq1/7jrcgkR9k2aCup2MG0A=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=DRv5aIbsiIlfidTnhGLnyYd0/AYV56F39CV9hxYNlfX+WYAZrt4lk3708TOHzrOeOm1PKW7oQRtOxA0xyACmfziD7/Ygy3Fs8prVKquP9BHFQ6P5rMjdnbyw/jiT6M2GPmjZeLiTwsMJiNQSyyRMtddOa6nWRm1FJBAaCimPdgQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=caQAah2t; arc=none smtp.client-ip=209.85.210.178
+	s=arc-20240116; t=1772316832; c=relaxed/simple;
+	bh=Jac4gfotNi0DAxmvnR0gHDUo2CGlLaT5iQGpBT7GjC4=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=ByEq3Pl2Qg6Yem7xNwPeGIVyV6uq8jJFdG9gZGzPoa3l3a8QB2tB4SFpC+XCvhNzDB6DVoXkv2BYdHPLkvUV6BYXUihjVmZ2vRuswum5ODtLvxc7VSWniB1t08BmQlPEXkPEk+9D1Z42r2beY+hzNZH5oHCZXUMN+qfrz9m375I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=GKU6xDT0; arc=none smtp.client-ip=209.85.216.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="caQAah2t"
-Received: by mail-pf1-f178.google.com with SMTP id d2e1a72fcca58-827270d50d4so3359689b3a.3
-        for <iommu@lists.linux.dev>; Sat, 28 Feb 2026 14:13:30 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GKU6xDT0"
+Received: by mail-pj1-f45.google.com with SMTP id 98e67ed59e1d1-35928defcd0so1906463a91.0
+        for <iommu@lists.linux.dev>; Sat, 28 Feb 2026 14:13:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1772316810; x=1772921610; darn=lists.linux.dev;
+        d=gmail.com; s=20230601; t=1772316830; x=1772921630; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=6awcUYGAdW+BeRy1ycVcTLa+2uO0HwbfVjDnX1T7upc=;
-        b=caQAah2tn0KSiwbJvPWyX9A0XMjRQSQsyO37mhmovVExHV7XqoDp1cDo/XxfN5QEdj
-         F+NbeIxV9XhzGlY+VGR0MBG+KcS78zdo+Y5laWTqjcyqo76nS5nhi6cp3y9PwTCEHQ6R
-         7dIpk8e9Wi2ar+AA3iCN6xa19nv8trsILimbqiQJUjqkjDfHxiTeAZTRthFWFAnJ1e95
-         xy1SiEedrMkwqKgz5x/JBynPbaxzqlqSw2+XRjd63VaboNppQAuINrPhh52MvWz9vJJP
-         7aUdlHb19OaBqhE1QKG150W50x8AS11eaN7Gp86nqN4NngRTcXNJnUc6qhjAogcoTZkj
-         hLrg==
+        bh=DOMW7lLqJkPCgTyPACAEGaBRlsYC7CH2Bm6ysbwwZRI=;
+        b=GKU6xDT0yS48WUqxHM8raiGuaYud6+jNxcIjbXnOYYaCcJkMRKpF3TU0CX7Pn8jCLq
+         EShaXSJfRn88EiugUmeaSGEFR5jdLriigIksnpbQ1V8i3rITwNBLDjbaFmd+q76pC2+v
+         7OqdrymQI0LbLVUKNCUmxhl+yY3IcQNq/Ufkr6FFA5sINzNvkJLcIBNcILyGB6VQvb7/
+         gNoC8LE61/AqYzpSDURT5c6m5Up5jo5lTZhKsME70qCj6hlzrjC77YTvwQeNnuRvWtaL
+         JQREYvvPpaPN2Khpk4GirWWOvRQ5Zo7AgvIr/fivrTO4jF15aMsCWT0u9O/uDdaKcugJ
+         i1LA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772316810; x=1772921610;
+        d=1e100.net; s=20230601; t=1772316830; x=1772921630;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=6awcUYGAdW+BeRy1ycVcTLa+2uO0HwbfVjDnX1T7upc=;
-        b=Xbl0Lq6pTRgzjLFs8lnU0jkjqyYNzmzPW/7qKFgk6vE9TyUpSXpaDamZyktpBdZWWS
-         OkbWiChWw+b+U/c1u7IOd32OlObkf1/w75J0OyXVmtKza3qephk4wBvvxj8E32yFHQim
-         20Q730yhMfFptexnQVy+icAq/lV98PhykSPjxN1BJqqy3L3rf7Gr0yf9z0yRr9S3qQeG
-         ivTjbap5KsTz1x1NSeUvMoYC+FChNb51jGPimi+4latc8UwSk9DF9UheHYNRTcifOryZ
-         gzixHsFTyu2cf1FkHu3bWmA7fq/SthJ9aCkQWEyMmTFt8k/xf7jJPrJANHumAsFDaNnF
-         2Edg==
-X-Forwarded-Encrypted: i=1; AJvYcCWtA0TAKTHk4aWiKBvr/6yWKPMOupyrXi4m7RWQkfD7EHLiPZOM33iQ4ByZXkz5Hew42aFdxw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzYKLfA6ZM7SUggvif1rju4ngZiawQs06zJPIQCoAN2hGPRQiWN
-	quYInT5B9R6ozGY3RbUwTYylgd+pp+DGx5dMDduzb9mxgvsWQ/mrl9Q9
-X-Gm-Gg: ATEYQzyYwc8sAmZUoRoTmHePUyV+FdL60yka9+QmL1KkqQDE32U9eh4SuegMxRyUzXW
-	O79zMRRCvls5BDh0pyN5Eq2gkSR/fAfsSRfs5WJ/Cba0ZHfe26273G6zG9qPsiA9bHj5un1h0dx
-	ttW5LAVcYh8mMve36IbjYALfO6KNUdYAtX33yuMb03iA7DBPgl/5DO0wSPy0b2FSS21sUIq6JrM
-	BjXfOkX+CFWwXCbRIipdiiylnZlEYhylM2TnDHLTxDUi4iDsFkvkM6PbhE4tr4GP50gPK5OEjwD
-	xImuhfGl3yLNhTdxdeKdhKyCP6dk9V+Kekn4Sy9Cx8H7N12b1xBPN9/TNemusllGEpPLbCIxLWA
-	RnxvBkfyDHDaWL1BxSGsnmc07cWC5w4+fk/kVn2ozRMfC93e6miBLlapUzXo+Dk0KET2NweYa9U
-	isCOiqp9fe47wH0VJdviHkih2411z9UIY73x6X
-X-Received: by 2002:a05:6a00:9506:b0:824:b024:93dc with SMTP id d2e1a72fcca58-8274d9f446dmr8368764b3a.35.1772316809892;
-        Sat, 28 Feb 2026 14:13:29 -0800 (PST)
+        bh=DOMW7lLqJkPCgTyPACAEGaBRlsYC7CH2Bm6ysbwwZRI=;
+        b=UgjCDfGEy14zf0efEJTXDUYWWoN4yLGp7KXoMH95htZZXzR7hasQc8G/R8Y6QLqdwG
+         APDpD/cgdaC15vLrZcrH5cM81Y8TTGijO6P0XXFtU+OsWoqCEkhwAsougwTjlRNAbThM
+         qOYjURmw1i/REAk2qjDadIEvM2Z12c8A9QVwxdfCpZYKeget7pQNwdXzpKptBe35547C
+         3Fve/0rYX4KuJPmXFS2YPHcJxXa9IKRs43SX15aQoFQCLGSj3Qvhipkrfp3CZz3hpWui
+         j83FuNEktIurs3xZCGEMjafhOplMzcaOM2mRYmylxWeLIsCEcPp9zj4l3hJhRKXtu9Ea
+         9WKg==
+X-Forwarded-Encrypted: i=1; AJvYcCUvUVJ7i6i2eqN1CYOegTd5/wR1lxvsihX/KhJP3XThvshWeokoEO1fp/L2RdD8L0A6yCsHdg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyxmybxVgq3tBpOmsI8JxI/p5ytda9OI22tTXHm2YYmLpIioQzk
+	lA9MWNv5Zr/2jDySGP/C4G1484j5xM06n2LqfzHqMVZTKTQI+lJsiv9Z
+X-Gm-Gg: ATEYQzzlOg25pb3cBBLxQICsADqHbM2kW71rooeu+JRRz+RrwOWhMwKVzvxofbQCtPp
+	rmpA0HsqkG2augcKxKFViAN7gHO1k1FxHFzWWOxjSnUdYIgFZbIJzZdPAsSV2ItbvO1HiMiCntU
+	HRvoYvOjmQGsSofEdUYyo03J4Zq40bJbcj8LgR8F2AF/b7rS2CRoB1rN127LOOeMnjjhJMYfeym
+	RaEBMOgwRm4KGdr0UYJlEGHHauwUc/+UuwcAWpdi6+sKz92GRq2+MFMMpmIaaXxDP1zgM9sq05T
+	KI2Nliu9T4HZSRqidP6fyzieJcj2QaUOrjwbrKI4d+4IRFpbkYGNu19gTfDmEgZQLjVhMHiaoXH
+	zNSC/bswF9BFcEtzPbjhpcx5RYLu1Xr0abFwAsJhEIMykzyMso6APE+QdnVR5z+CYbyoT92pNvX
+	ApGrT4D4B8D9Lhd0AGAvWVS2LdyABCtAXJgXp3PugDgjFyUTk=
+X-Received: by 2002:a17:90b:1ccc:b0:340:b912:536 with SMTP id 98e67ed59e1d1-35965cec355mr6169958a91.31.1772316829957;
+        Sat, 28 Feb 2026 14:13:49 -0800 (PST)
 Received: from Barrys-MBP.hub ([47.72.129.29])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c70fa806295sm7926589a12.16.2026.02.28.14.13.21
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-35912f87d0csm8275940a91.1.2026.02.28.14.13.43
         (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Sat, 28 Feb 2026 14:13:28 -0800 (PST)
+        Sat, 28 Feb 2026 14:13:49 -0800 (PST)
 From: Barry Song <21cnbao@gmail.com>
 To: catalin.marinas@arm.com,
 	m.szyprowski@samsung.com,
@@ -65,22 +65,18 @@ To: catalin.marinas@arm.com,
 	linux-arm-kernel@lists.infradead.org
 Cc: linux-kernel@vger.kernel.org,
 	Barry Song <baohua@kernel.org>,
-	Leon Romanovsky <leon@kernel.org>,
 	Ada Couprie Diaz <ada.coupriediaz@arm.com>,
 	Ard Biesheuvel <ardb@kernel.org>,
 	Marc Zyngier <maz@kernel.org>,
 	Anshuman Khandual <anshuman.khandual@arm.com>,
 	Ryan Roberts <ryan.roberts@arm.com>,
 	Suren Baghdasaryan <surenb@google.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Stefano Stabellini <sstabellini@kernel.org>,
-	Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
 	Tangquan Zheng <zhengtangquan@oppo.com>,
-	Juergen Gross <jgross@suse.com>,
+	Leon Romanovsky <leon@kernel.org>,
 	Xueyuan Chen <xueyuan.chen21@gmail.com>
-Subject: [PATCH v3 4/5] dma-mapping: Separate DMA sync issuing and completion waiting
-Date: Sun,  1 Mar 2026 06:13:16 +0800
-Message-Id: <20260228221316.59934-1-21cnbao@gmail.com>
+Subject: [PATCH v3 5/5] dma-mapping: Support batch mode for dma_direct_{map,unmap}_sg
+Date: Sun,  1 Mar 2026 06:13:37 +0800
+Message-Id: <20260228221337.59951-1-21cnbao@gmail.com>
 X-Mailer: git-send-email 2.39.3 (Apple Git-146)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -92,23 +88,15 @@ Content-Transfer-Encoding: 8bit
 
 From: Barry Song <baohua@kernel.org>
 
-Currently, arch_sync_dma_for_cpu and arch_sync_dma_for_device
-always wait for the completion of each DMA buffer. That is,
-issuing the DMA sync and waiting for completion is done in a
-single API call.
+Extending these APIs with a flush argument:
+dma_direct_unmap_phys(), dma_direct_map_phys(), and
+dma_direct_sync_single_for_cpu(). For single-buffer cases, flush=true
+would be used, while for SG cases flush=false would be used, followed
+by a single flush after all cache operations are issued in
+dma_direct_{map,unmap}_sg().
 
-For scatter-gather lists with multiple entries, this means
-issuing and waiting is repeated for each entry, which can hurt
-performance. Architectures like ARM64 may be able to issue all
-DMA sync operations for all entries first and then wait for
-completion together.
+This ultimately benefits dma_map_sg() and dma_unmap_sg().
 
-To address this, arch_sync_dma_for_* now batches DMA operations
-and performs a flush afterward. On ARM64, the flush is implemented
-with a dsb instruction in arch_sync_dma_flush(). On other
-architectures, arch_sync_dma_flush() is currently a nop.
-
-Cc: Leon Romanovsky <leon@kernel.org>
 Cc: Catalin Marinas <catalin.marinas@arm.com>
 Cc: Will Deacon <will@kernel.org>
 Cc: Marek Szyprowski <m.szyprowski@samsung.com>
@@ -119,375 +107,162 @@ Cc: Marc Zyngier <maz@kernel.org>
 Cc: Anshuman Khandual <anshuman.khandual@arm.com>
 Cc: Ryan Roberts <ryan.roberts@arm.com>
 Cc: Suren Baghdasaryan <surenb@google.com>
-Cc: Joerg Roedel <joro@8bytes.org>
-Cc: Stefano Stabellini <sstabellini@kernel.org>
-Cc: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
 Cc: Tangquan Zheng <zhengtangquan@oppo.com>
-Reviewed-by: Juergen Gross <jgross@suse.com> # drivers/xen/swiotlb-xen.c
+Reviewed-by: Leon Romanovsky <leon@kernel.org>
 Tested-by: Xueyuan Chen <xueyuan.chen21@gmail.com>
 Signed-off-by: Barry Song <baohua@kernel.org>
 ---
- arch/arm64/Kconfig             |  1 +
- arch/arm64/include/asm/cache.h |  5 +++++
- arch/arm64/mm/dma-mapping.c    |  4 ++--
- drivers/iommu/dma-iommu.c      | 35 ++++++++++++++++++++++++++--------
- drivers/xen/swiotlb-xen.c      | 24 +++++++++++++++--------
- include/linux/dma-map-ops.h    |  6 ++++++
- kernel/dma/Kconfig             |  3 +++
- kernel/dma/direct.c            |  6 +++++-
- kernel/dma/direct.h            |  9 +++++++--
- kernel/dma/swiotlb.c           |  7 ++++++-
- 10 files changed, 78 insertions(+), 22 deletions(-)
+ kernel/dma/direct.c  | 17 +++++++++++++----
+ kernel/dma/direct.h  | 16 ++++++++++------
+ kernel/dma/mapping.c |  6 +++---
+ 3 files changed, 26 insertions(+), 13 deletions(-)
 
-diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 38dba5f7e4d2..ceafaac6532c 100644
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -55,6 +55,7 @@ config ARM64
- 	select ARCH_HAS_STRICT_MODULE_RWX
- 	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
- 	select ARCH_HAS_SYNC_DMA_FOR_CPU
-+	select ARCH_HAS_BATCHED_DMA_SYNC
- 	select ARCH_HAS_SYSCALL_WRAPPER
- 	select ARCH_HAS_TICK_BROADCAST if GENERIC_CLOCKEVENTS_BROADCAST
- 	select ARCH_HAS_ZONE_DMA_SET if EXPERT
-diff --git a/arch/arm64/include/asm/cache.h b/arch/arm64/include/asm/cache.h
-index dd2c8586a725..10a7ffadee3d 100644
---- a/arch/arm64/include/asm/cache.h
-+++ b/arch/arm64/include/asm/cache.h
-@@ -87,6 +87,11 @@ int cache_line_size(void);
- 
- #define dma_get_cache_alignment	cache_line_size
- 
-+static inline void arch_sync_dma_flush(void)
-+{
-+	dsb(sy);
-+}
-+
- /* Compress a u64 MPIDR value into 32 bits. */
- static inline u64 arch_compact_of_hwid(u64 id)
- {
-diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
-index b2b5792b2caa..ae1ae0280eef 100644
---- a/arch/arm64/mm/dma-mapping.c
-+++ b/arch/arm64/mm/dma-mapping.c
-@@ -17,7 +17,7 @@ void arch_sync_dma_for_device(phys_addr_t paddr, size_t size,
- {
- 	unsigned long start = (unsigned long)phys_to_virt(paddr);
- 
--	dcache_clean_poc(start, start + size);
-+	dcache_clean_poc_nosync(start, start + size);
- }
- 
- void arch_sync_dma_for_cpu(phys_addr_t paddr, size_t size,
-@@ -28,7 +28,7 @@ void arch_sync_dma_for_cpu(phys_addr_t paddr, size_t size,
- 	if (dir == DMA_TO_DEVICE)
- 		return;
- 
--	dcache_inval_poc(start, start + size);
-+	dcache_inval_poc_nosync(start, start + size);
- }
- 
- void arch_dma_prep_coherent(struct page *page, size_t size)
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 5dac64be61bb..66fc25bae85b 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -1095,8 +1095,10 @@ void iommu_dma_sync_single_for_cpu(struct device *dev, dma_addr_t dma_handle,
- 		return;
- 
- 	phys = iommu_iova_to_phys(iommu_get_dma_domain(dev), dma_handle);
--	if (!dev_is_dma_coherent(dev))
-+	if (!dev_is_dma_coherent(dev)) {
- 		arch_sync_dma_for_cpu(phys, size, dir);
-+		arch_sync_dma_flush();
-+	}
- 
- 	swiotlb_sync_single_for_cpu(dev, phys, size, dir);
- }
-@@ -1112,8 +1114,10 @@ void iommu_dma_sync_single_for_device(struct device *dev, dma_addr_t dma_handle,
- 	phys = iommu_iova_to_phys(iommu_get_dma_domain(dev), dma_handle);
- 	swiotlb_sync_single_for_device(dev, phys, size, dir);
- 
--	if (!dev_is_dma_coherent(dev))
-+	if (!dev_is_dma_coherent(dev)) {
- 		arch_sync_dma_for_device(phys, size, dir);
-+		arch_sync_dma_flush();
-+	}
- }
- 
- void iommu_dma_sync_sg_for_cpu(struct device *dev, struct scatterlist *sgl,
-@@ -1122,13 +1126,15 @@ void iommu_dma_sync_sg_for_cpu(struct device *dev, struct scatterlist *sgl,
- 	struct scatterlist *sg;
- 	int i;
- 
--	if (sg_dma_is_swiotlb(sgl))
-+	if (sg_dma_is_swiotlb(sgl)) {
- 		for_each_sg(sgl, sg, nelems, i)
- 			iommu_dma_sync_single_for_cpu(dev, sg_dma_address(sg),
- 						      sg->length, dir);
--	else if (!dev_is_dma_coherent(dev))
-+	} else if (!dev_is_dma_coherent(dev)) {
- 		for_each_sg(sgl, sg, nelems, i)
- 			arch_sync_dma_for_cpu(sg_phys(sg), sg->length, dir);
-+		arch_sync_dma_flush();
-+	}
- }
- 
- void iommu_dma_sync_sg_for_device(struct device *dev, struct scatterlist *sgl,
-@@ -1137,14 +1143,16 @@ void iommu_dma_sync_sg_for_device(struct device *dev, struct scatterlist *sgl,
- 	struct scatterlist *sg;
- 	int i;
- 
--	if (sg_dma_is_swiotlb(sgl))
-+	if (sg_dma_is_swiotlb(sgl)) {
- 		for_each_sg(sgl, sg, nelems, i)
- 			iommu_dma_sync_single_for_device(dev,
- 							 sg_dma_address(sg),
- 							 sg->length, dir);
--	else if (!dev_is_dma_coherent(dev))
-+	} else if (!dev_is_dma_coherent(dev)) {
- 		for_each_sg(sgl, sg, nelems, i)
- 			arch_sync_dma_for_device(sg_phys(sg), sg->length, dir);
-+		arch_sync_dma_flush();
-+	}
- }
- 
- static phys_addr_t iommu_dma_map_swiotlb(struct device *dev, phys_addr_t phys,
-@@ -1219,8 +1227,10 @@ dma_addr_t iommu_dma_map_phys(struct device *dev, phys_addr_t phys, size_t size,
- 			return DMA_MAPPING_ERROR;
- 	}
- 
--	if (!coherent && !(attrs & (DMA_ATTR_SKIP_CPU_SYNC | DMA_ATTR_MMIO)))
-+	if (!coherent && !(attrs & (DMA_ATTR_SKIP_CPU_SYNC | DMA_ATTR_MMIO))) {
- 		arch_sync_dma_for_device(phys, size, dir);
-+		arch_sync_dma_flush();
-+	}
- 
- 	iova = __iommu_dma_map(dev, phys, size, prot, dma_mask);
- 	if (iova == DMA_MAPPING_ERROR && !(attrs & DMA_ATTR_MMIO))
-@@ -1242,8 +1252,10 @@ void iommu_dma_unmap_phys(struct device *dev, dma_addr_t dma_handle,
- 	if (WARN_ON(!phys))
- 		return;
- 
--	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) && !dev_is_dma_coherent(dev))
-+	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) && !dev_is_dma_coherent(dev)) {
- 		arch_sync_dma_for_cpu(phys, size, dir);
-+		arch_sync_dma_flush();
-+	}
- 
- 	__iommu_dma_unmap(dev, dma_handle, size);
- 
-@@ -1980,6 +1992,8 @@ int dma_iova_sync(struct device *dev, struct dma_iova_state *state,
- 	dma_addr_t addr = state->addr + offset;
- 	size_t iova_start_pad = iova_offset(iovad, addr);
- 
-+	if (!dev_is_dma_coherent(dev))
-+		arch_sync_dma_flush();
- 	return iommu_sync_map(domain, addr - iova_start_pad,
- 		      iova_align(iovad, size + iova_start_pad));
- }
-@@ -1993,6 +2007,8 @@ static void iommu_dma_iova_unlink_range_slow(struct device *dev,
- 	struct iommu_dma_cookie *cookie = domain->iova_cookie;
- 	struct iova_domain *iovad = &cookie->iovad;
- 	size_t iova_start_pad = iova_offset(iovad, addr);
-+	bool need_sync_dma = !dev_is_dma_coherent(dev) &&
-+			!(attrs & (DMA_ATTR_SKIP_CPU_SYNC | DMA_ATTR_MMIO));
- 	dma_addr_t end = addr + size;
- 
- 	do {
-@@ -2016,6 +2032,9 @@ static void iommu_dma_iova_unlink_range_slow(struct device *dev,
- 		addr += len;
- 		iova_start_pad = 0;
- 	} while (addr < end);
-+
-+	if (need_sync_dma)
-+		arch_sync_dma_flush();
- }
- 
- static void __iommu_dma_iova_unlink(struct device *dev,
-diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
-index ccf25027bec1..b79917e785a5 100644
---- a/drivers/xen/swiotlb-xen.c
-+++ b/drivers/xen/swiotlb-xen.c
-@@ -262,10 +262,12 @@ static dma_addr_t xen_swiotlb_map_phys(struct device *dev, phys_addr_t phys,
- 
- done:
- 	if (!dev_is_dma_coherent(dev) && !(attrs & DMA_ATTR_SKIP_CPU_SYNC)) {
--		if (pfn_valid(PFN_DOWN(dma_to_phys(dev, dev_addr))))
-+		if (pfn_valid(PFN_DOWN(dma_to_phys(dev, dev_addr)))) {
- 			arch_sync_dma_for_device(phys, size, dir);
--		else
-+			arch_sync_dma_flush();
-+		} else {
- 			xen_dma_sync_for_device(dev, dev_addr, size, dir);
-+		}
- 	}
- 	return dev_addr;
- }
-@@ -287,10 +289,12 @@ static void xen_swiotlb_unmap_phys(struct device *hwdev, dma_addr_t dev_addr,
- 	BUG_ON(dir == DMA_NONE);
- 
- 	if (!dev_is_dma_coherent(hwdev) && !(attrs & DMA_ATTR_SKIP_CPU_SYNC)) {
--		if (pfn_valid(PFN_DOWN(dma_to_phys(hwdev, dev_addr))))
-+		if (pfn_valid(PFN_DOWN(dma_to_phys(hwdev, dev_addr)))) {
- 			arch_sync_dma_for_cpu(paddr, size, dir);
--		else
-+			arch_sync_dma_flush();
-+		} else {
- 			xen_dma_sync_for_cpu(hwdev, dev_addr, size, dir);
-+		}
- 	}
- 
- 	/* NOTE: We use dev_addr here, not paddr! */
-@@ -308,10 +312,12 @@ xen_swiotlb_sync_single_for_cpu(struct device *dev, dma_addr_t dma_addr,
- 	struct io_tlb_pool *pool;
- 
- 	if (!dev_is_dma_coherent(dev)) {
--		if (pfn_valid(PFN_DOWN(dma_to_phys(dev, dma_addr))))
-+		if (pfn_valid(PFN_DOWN(dma_to_phys(dev, dma_addr)))) {
- 			arch_sync_dma_for_cpu(paddr, size, dir);
--		else
-+			arch_sync_dma_flush();
-+		} else {
- 			xen_dma_sync_for_cpu(dev, dma_addr, size, dir);
-+		}
- 	}
- 
- 	pool = xen_swiotlb_find_pool(dev, dma_addr);
-@@ -331,10 +337,12 @@ xen_swiotlb_sync_single_for_device(struct device *dev, dma_addr_t dma_addr,
- 		__swiotlb_sync_single_for_device(dev, paddr, size, dir, pool);
- 
- 	if (!dev_is_dma_coherent(dev)) {
--		if (pfn_valid(PFN_DOWN(dma_to_phys(dev, dma_addr))))
-+		if (pfn_valid(PFN_DOWN(dma_to_phys(dev, dma_addr)))) {
- 			arch_sync_dma_for_device(paddr, size, dir);
--		else
-+			arch_sync_dma_flush();
-+		} else {
- 			xen_dma_sync_for_device(dev, dma_addr, size, dir);
-+		}
- 	}
- }
- 
-diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
-index 60b63756df82..8a07df5a9ef6 100644
---- a/include/linux/dma-map-ops.h
-+++ b/include/linux/dma-map-ops.h
-@@ -361,6 +361,12 @@ static inline void arch_sync_dma_for_cpu(phys_addr_t paddr, size_t size,
- }
- #endif /* ARCH_HAS_SYNC_DMA_FOR_CPU */
- 
-+#ifndef CONFIG_ARCH_HAS_BATCHED_DMA_SYNC
-+static inline void arch_sync_dma_flush(void)
-+{
-+}
-+#endif
-+
- #ifdef CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL
- void arch_sync_dma_for_cpu_all(void);
- #else
-diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
-index 159900736f25..bfef21b4a9ae 100644
---- a/kernel/dma/Kconfig
-+++ b/kernel/dma/Kconfig
-@@ -72,6 +72,9 @@ config ARCH_HAS_DMA_PREP_COHERENT
- config ARCH_HAS_FORCE_DMA_UNENCRYPTED
- 	bool
- 
-+config ARCH_HAS_BATCHED_DMA_SYNC
-+	bool
-+
- #
- # Select this option if the architecture assumes DMA devices are coherent
- # by default.
 diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index 8f43a930716d..c7666e5d5e7c 100644
+index c7666e5d5e7c..ec887f443741 100644
 --- a/kernel/dma/direct.c
 +++ b/kernel/dma/direct.c
-@@ -406,6 +406,8 @@ void dma_direct_sync_sg_for_device(struct device *dev,
- 			arch_sync_dma_for_device(paddr, sg->length,
- 					dir);
+@@ -444,14 +444,19 @@ void dma_direct_unmap_sg(struct device *dev, struct scatterlist *sgl,
+ {
+ 	struct scatterlist *sg;
+ 	int i;
++	bool need_sync = false;
+ 
+ 	for_each_sg(sgl,  sg, nents, i) {
+-		if (sg_dma_is_bus_address(sg))
++		if (sg_dma_is_bus_address(sg)) {
+ 			sg_dma_unmark_bus_address(sg);
+-		else
++		} else {
++			need_sync = true;
+ 			dma_direct_unmap_phys(dev, sg->dma_address,
+-					      sg_dma_len(sg), dir, attrs);
++					      sg_dma_len(sg), dir, attrs, false);
++		}
  	}
-+	if (!dev_is_dma_coherent(dev))
++	if (need_sync && !dev_is_dma_coherent(dev))
 +		arch_sync_dma_flush();
  }
  #endif
  
-@@ -427,8 +429,10 @@ void dma_direct_sync_sg_for_cpu(struct device *dev,
- 		swiotlb_sync_single_for_cpu(dev, paddr, sg->length, dir);
+@@ -461,6 +466,7 @@ int dma_direct_map_sg(struct device *dev, struct scatterlist *sgl, int nents,
+ 	struct pci_p2pdma_map_state p2pdma_state = {};
+ 	struct scatterlist *sg;
+ 	int i, ret;
++	bool need_sync = false;
+ 
+ 	for_each_sg(sgl, sg, nents, i) {
+ 		switch (pci_p2pdma_state(&p2pdma_state, dev, sg_page(sg))) {
+@@ -472,8 +478,9 @@ int dma_direct_map_sg(struct device *dev, struct scatterlist *sgl, int nents,
+ 			 */
+ 			break;
+ 		case PCI_P2PDMA_MAP_NONE:
++			need_sync = true;
+ 			sg->dma_address = dma_direct_map_phys(dev, sg_phys(sg),
+-					sg->length, dir, attrs);
++					sg->length, dir, attrs, false);
+ 			if (sg->dma_address == DMA_MAPPING_ERROR) {
+ 				ret = -EIO;
+ 				goto out_unmap;
+@@ -492,6 +499,8 @@ int dma_direct_map_sg(struct device *dev, struct scatterlist *sgl, int nents,
+ 		sg_dma_len(sg) = sg->length;
  	}
  
--	if (!dev_is_dma_coherent(dev))
-+	if (!dev_is_dma_coherent(dev)) {
++	if (need_sync && !dev_is_dma_coherent(dev))
 +		arch_sync_dma_flush();
- 		arch_sync_dma_for_cpu_all();
-+	}
- }
+ 	return nents;
  
- /*
+ out_unmap:
 diff --git a/kernel/dma/direct.h b/kernel/dma/direct.h
-index e89f175e9c2d..cbdbf9ddc8cc 100644
+index cbdbf9ddc8cc..ac8ff3feff51 100644
 --- a/kernel/dma/direct.h
 +++ b/kernel/dma/direct.h
-@@ -60,8 +60,10 @@ static inline void dma_direct_sync_single_for_device(struct device *dev,
- 
- 	swiotlb_sync_single_for_device(dev, paddr, size, dir);
- 
--	if (!dev_is_dma_coherent(dev))
-+	if (!dev_is_dma_coherent(dev)) {
- 		arch_sync_dma_for_device(paddr, size, dir);
-+		arch_sync_dma_flush();
-+	}
+@@ -67,13 +67,15 @@ static inline void dma_direct_sync_single_for_device(struct device *dev,
  }
  
  static inline void dma_direct_sync_single_for_cpu(struct device *dev,
-@@ -71,6 +73,7 @@ static inline void dma_direct_sync_single_for_cpu(struct device *dev,
+-		dma_addr_t addr, size_t size, enum dma_data_direction dir)
++		dma_addr_t addr, size_t size, enum dma_data_direction dir,
++		bool flush)
+ {
+ 	phys_addr_t paddr = dma_to_phys(dev, addr);
  
  	if (!dev_is_dma_coherent(dev)) {
  		arch_sync_dma_for_cpu(paddr, size, dir);
-+		arch_sync_dma_flush();
+-		arch_sync_dma_flush();
++		if (flush)
++			arch_sync_dma_flush();
  		arch_sync_dma_for_cpu_all();
  	}
  
-@@ -106,8 +109,10 @@ static inline dma_addr_t dma_direct_map_phys(struct device *dev,
- 	}
+@@ -82,7 +84,7 @@ static inline void dma_direct_sync_single_for_cpu(struct device *dev,
  
+ static inline dma_addr_t dma_direct_map_phys(struct device *dev,
+ 		phys_addr_t phys, size_t size, enum dma_data_direction dir,
+-		unsigned long attrs)
++		unsigned long attrs, bool flush)
+ {
+ 	dma_addr_t dma_addr;
+ 
+@@ -111,7 +113,8 @@ static inline dma_addr_t dma_direct_map_phys(struct device *dev,
  	if (!dev_is_dma_coherent(dev) &&
--	    !(attrs & (DMA_ATTR_SKIP_CPU_SYNC | DMA_ATTR_MMIO)))
-+	    !(attrs & (DMA_ATTR_SKIP_CPU_SYNC | DMA_ATTR_MMIO))) {
+ 	    !(attrs & (DMA_ATTR_SKIP_CPU_SYNC | DMA_ATTR_MMIO))) {
  		arch_sync_dma_for_device(phys, size, dir);
-+		arch_sync_dma_flush();
-+	}
- 	return dma_addr;
- 
- err_overflow:
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index d8e6f1d889d5..1105db1689d5 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -867,6 +867,9 @@ static void swiotlb_bounce(struct device *dev, phys_addr_t tlb_addr, size_t size
- 	if (orig_addr == INVALID_PHYS_ADDR)
- 		return;
- 
-+	if (dir == DMA_FROM_DEVICE && !dev_is_dma_coherent(dev))
-+		arch_sync_dma_flush();
-+
- 	/*
- 	 * It's valid for tlb_offset to be negative. This can happen when the
- 	 * "offset" returned by swiotlb_align_offset() is non-zero, and the
-@@ -1595,8 +1598,10 @@ dma_addr_t swiotlb_map(struct device *dev, phys_addr_t paddr, size_t size,
- 		return DMA_MAPPING_ERROR;
+-		arch_sync_dma_flush();
++		if (flush)
++			arch_sync_dma_flush();
  	}
- 
--	if (!dev_is_dma_coherent(dev) && !(attrs & DMA_ATTR_SKIP_CPU_SYNC))
-+	if (!dev_is_dma_coherent(dev) && !(attrs & DMA_ATTR_SKIP_CPU_SYNC)) {
- 		arch_sync_dma_for_device(swiotlb_addr, size, dir);
-+		arch_sync_dma_flush();
-+	}
  	return dma_addr;
+ 
+@@ -124,7 +127,8 @@ static inline dma_addr_t dma_direct_map_phys(struct device *dev,
  }
  
+ static inline void dma_direct_unmap_phys(struct device *dev, dma_addr_t addr,
+-		size_t size, enum dma_data_direction dir, unsigned long attrs)
++		size_t size, enum dma_data_direction dir, unsigned long attrs,
++		bool flush)
+ {
+ 	phys_addr_t phys;
+ 
+@@ -134,7 +138,7 @@ static inline void dma_direct_unmap_phys(struct device *dev, dma_addr_t addr,
+ 
+ 	phys = dma_to_phys(dev, addr);
+ 	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
+-		dma_direct_sync_single_for_cpu(dev, addr, size, dir);
++		dma_direct_sync_single_for_cpu(dev, addr, size, dir, flush);
+ 
+ 	swiotlb_tbl_unmap_single(dev, phys, size, dir,
+ 					 attrs | DMA_ATTR_SKIP_CPU_SYNC);
+diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+index 3928a509c44c..78d8b4039c3e 100644
+--- a/kernel/dma/mapping.c
++++ b/kernel/dma/mapping.c
+@@ -166,7 +166,7 @@ dma_addr_t dma_map_phys(struct device *dev, phys_addr_t phys, size_t size,
+ 
+ 	if (dma_map_direct(dev, ops) ||
+ 	    (!is_mmio && arch_dma_map_phys_direct(dev, phys + size)))
+-		addr = dma_direct_map_phys(dev, phys, size, dir, attrs);
++		addr = dma_direct_map_phys(dev, phys, size, dir, attrs, true);
+ 	else if (use_dma_iommu(dev))
+ 		addr = iommu_dma_map_phys(dev, phys, size, dir, attrs);
+ 	else if (ops->map_phys)
+@@ -207,7 +207,7 @@ void dma_unmap_phys(struct device *dev, dma_addr_t addr, size_t size,
+ 	BUG_ON(!valid_dma_direction(dir));
+ 	if (dma_map_direct(dev, ops) ||
+ 	    (!is_mmio && arch_dma_unmap_phys_direct(dev, addr + size)))
+-		dma_direct_unmap_phys(dev, addr, size, dir, attrs);
++		dma_direct_unmap_phys(dev, addr, size, dir, attrs, true);
+ 	else if (use_dma_iommu(dev))
+ 		iommu_dma_unmap_phys(dev, addr, size, dir, attrs);
+ 	else if (ops->unmap_phys)
+@@ -373,7 +373,7 @@ void __dma_sync_single_for_cpu(struct device *dev, dma_addr_t addr, size_t size,
+ 
+ 	BUG_ON(!valid_dma_direction(dir));
+ 	if (dma_map_direct(dev, ops))
+-		dma_direct_sync_single_for_cpu(dev, addr, size, dir);
++		dma_direct_sync_single_for_cpu(dev, addr, size, dir, true);
+ 	else if (use_dma_iommu(dev))
+ 		iommu_dma_sync_single_for_cpu(dev, addr, size, dir);
+ 	else if (ops->sync_single_for_cpu)
 -- 
 2.39.3 (Apple Git-146)
 
