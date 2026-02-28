@@ -1,346 +1,142 @@
-Received: from smtpbgjp3.qq.com (smtpbgjp3.qq.com [54.92.39.34])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f47.google.com (mail-qv1-f47.google.com [209.85.219.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0B0A42B735;
-	Sat, 28 Feb 2026 14:46:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=54.92.39.34
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23E613B3BF3
+	for <iommu@lists.linux.dev>; Sat, 28 Feb 2026 18:29:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772289971; cv=none; b=fyHhAH4KozmSJ/Oy1RDPK9dNMM03s0xkbP5FirDyWdFHcduyBr8ImeDsSU2n69NHkAlGqnSnLME/fSIL5aZgZTwNp09hZb0awtzP9DCMeL3WdgJ0uNvNnVZ1KNLhx4ILa74b2fGO/SEfHHBN6e1F1PLkh5rHha4WpVrLLBbkcSM=
+	t=1772303348; cv=none; b=COP9Cz08cf2gZbx3iUxenebk5OfezDsLfxSOddQttPmvOsT6G3nNGsEvo9E1+pncsnxxfP68jVB0NHq2hzFAy4M0uCfzGqWYNa0PRkDmPUT8Jb4vZfrUGolr41pBb3uXKxVu27jrvbus5w4nqe1fSyxXQBfTmHg9nY6kUaYd0sA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772289971; c=relaxed/simple;
-	bh=BjN/cx+kqElxA6omTzsyPmotz9uuclCSEdzjCPYSUdg=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=LNvA+z+VYSx3FvF2m2HECGNWVfh5ZEhktRuFEnS31XgFRmxoJ+8bovVw7W65vNfylfOvBqb5TJbNjQHZbhATFst4bnKOgRhweEedEHup11eLKRr1b55eTFevQFQ8P45RSgJo8SaPr44xuMaxrBqtIQQYUsSWMSvZsz7xaC/nSDw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux.spacemit.com; spf=none smtp.mailfrom=linux.spacemit.com; dkim=pass (1024-bit key) header.d=linux.spacemit.com header.i=@linux.spacemit.com header.b=fKjI4ptb; arc=none smtp.client-ip=54.92.39.34
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux.spacemit.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.spacemit.com
+	s=arc-20240116; t=1772303348; c=relaxed/simple;
+	bh=rkzmltbCB7oYdQAHuLM1PEc4LQu8jhDMt38DwB5M/W8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Rgu+z5OMp8WSQC387CfYbrwyJ3uLXoYkWY6watTJiLF++8oVxn9oaReDD2U2i5H4XloZG7IkwK6/bVo9lPS5MpORVIoHASYixGa1sgPZRHN4VqiRxo1xo42IgOPiol946eV2SVP5fOtVlxk85U3aTXPzfRDrYW9uDXIvD1g4zkM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=WVPUnm+m; arc=none smtp.client-ip=209.85.219.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.spacemit.com header.i=@linux.spacemit.com header.b="fKjI4ptb"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.spacemit.com;
-	s=mxsw2412; t=1772289940;
-	bh=XGJl3Ebpwjc8XqP0Erp8n5QI4s+vHuY4PwAQnqw3qYc=;
-	h=From:To:Subject:Date:Message-ID:MIME-Version;
-	b=fKjI4ptbqtzYkOyJk63gqDvBMOKrlerjFF/WAvDfGrBv/O5bepM/9mSLaDG66DP3x
-	 gLHzrKhkBSbvc6AEHOz80IyQow9DCEz3LK/oy+BQEZb3Z0pKgwkQyNij4ZMGWohhxG
-	 cI/rvTscCI2ti4HxuCfnpRVsreipcQ7vBDkHrJKE=
-X-QQ-mid: esmtpgz10t1772289938t9eeb1592
-X-QQ-Originating-IP: BFePjrheh1QVANmHt8QhCMjcQXaVFA659BV4XTzO8KE=
-Received: from SurfaceBook2-B.localdomain ( [183.193.112.19])
-	by bizesmtp.qq.com (ESMTP) with 
-	id ; Sat, 28 Feb 2026 22:45:34 +0800 (CST)
-X-QQ-SSF: 0000000000000000000000000000000
-X-QQ-GoodBg: 0
-X-BIZMAIL-ID: 5797566648988719530
-EX-QQ-RecipientCnt: 33
-From: Lv Zheng <lv.zheng@linux.spacemit.com>
-To: Tomasz Jeznach <tjeznach@rivosinc.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="WVPUnm+m"
+Received: by mail-qv1-f47.google.com with SMTP id 6a1803df08f44-899ee491af3so1994666d6.1
+        for <iommu@lists.linux.dev>; Sat, 28 Feb 2026 10:29:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1772303346; x=1772908146; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=htHav7RfCL20FBhzRA0W1wS3HhKQenwSmiA0/DmxMnY=;
+        b=WVPUnm+m1agX39uFZ6UZe4/7wZmebjJKqZt4htUqKvmu7D3/nNQlTVblpskiZ/4e/Y
+         6a7PaukP5+SdbxLKWedUbk73V9nur7HOz/fg1prm51Oj5DGZzv2WMpAogwN3SXWK3esN
+         EfGFzZKVdTYQfLVh6/RjA0W/GC+0shU169goTvOhcHa4SNGA01k4so9vKijP0Bc41b0i
+         gWaCXSllThg0yixgbzmlEuEAGjdEhxzkyzA62titoOlZxm1FdyjD/5O64Geo4vy04EJX
+         9tB5Fs5bPzZp29o6JxpSWC/2Bc2BpoDN9qmgM1pVuFyLiJHInqU7XSAcdMTYX7cVRyxn
+         hAOg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772303346; x=1772908146;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=htHav7RfCL20FBhzRA0W1wS3HhKQenwSmiA0/DmxMnY=;
+        b=cCw1b5OPb2yvDdQ2hbt46IVyNRayuW07yad57YwD4IeJlhTwdzKQfnmfEVjt3jD0Mf
+         JB6jibctC2HdN9WvsmQSTTliMwHJi5P27u3X+5xH56nRdFe1VY9KHdbZf9RHBn8nIoFL
+         sZPdXJKVQcwwRYY8jGm9UiwyiCeBp+TmUpys6hSNOPKKEf3Ua6dJG5Do5A3RWrC25NOp
+         LO8Ohd76zk4F8lg1odwfPUxNxZTNbxgrlrBoUug9AsTNVJ+GqpApnaX9DzJ73AXqlwPN
+         aZYRL5qrr88tIck95ERG/J0QGyj7FN2l+g3hpjnKVjVo9tMLU0U80MivAhOtNJVaAkeA
+         k3gg==
+X-Forwarded-Encrypted: i=1; AJvYcCVQYTbHfx32P9rTrV61FMKLWyPTDyrPGdYm9GJJWeHEk3u2aXJztwZv837/ppAa3SJwhmvMKw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxgqI0P18j6GTeV+bWy+b+McClKd3O9r8cOmp60hbrRMAQ4QHey
+	rGaY+tZK2gyqBRx0d7oDYeeXw0P9WWvm2o9JiWb9P22v393fSQ6VjsAN1qccp2HchyU=
+X-Gm-Gg: ATEYQzxmX8D3/h60JA9ktvzwsD0FKrIX6gVj7MAwaUY7M7u/YrKH0g/dVuHEdBcjJdn
+	3Iiphm4+eDwrdmhn/nv986J2xNJOk7e8NZYq0MxOSeblbd8qEPUTeuK7qEjydps7gK+xScgDL8y
+	VqOOlVF9URhnDJEpquws+Fo066ssvjlBrQfAS6LIrddo6nAAo/p/boBz/a/4WO5cFkKA3zvfZHf
+	s2auqNXvSstG5+Ah/aqGp26UNeKHECVAUn0uTN1ITVqbvDtc+FF9JrDAXZRURZSz7+malwwM7X+
+	E7YyDX5LMY9TzaOnCGBb9hJ41+JXIVMQRAOnzkq5AUOJlaHH/cZIGTusPIdD0RV2wX30bt/phXZ
+	3cj2INveAbQikVj0A8079fiU3HMOAL6iJvspjHJ+YxFvlZKsTeDdi14SctDfXrQNXZ7P7nITLpI
+	daBSSI+ZBv542ejND8ah+LB6CkUmLeFfpGE94oO0uAXEafjlfgO4MwIZcJTdEnA6l6Sns+9YqmE
+	/QZcaik
+X-Received: by 2002:a05:6214:1943:b0:896:fe42:e8a0 with SMTP id 6a1803df08f44-899d1e8b1camr101368936d6.63.1772303346029;
+        Sat, 28 Feb 2026 10:29:06 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-162-112-119.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.112.119])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-899c7376847sm71654726d6.28.2026.02.28.10.29.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 28 Feb 2026 10:29:05 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1vwP3o-0000000250x-2vIE;
+	Sat, 28 Feb 2026 14:29:04 -0400
+Date: Sat, 28 Feb 2026 14:29:04 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Xu Yilun <yilun.xu@linux.intel.com>
+Cc: Sean Christopherson <seanjc@google.com>,
+	Ackerley Tng <ackerleytng@google.com>,
+	Alexey Kardashevskiy <aik@amd.com>, linux-kernel@vger.kernel.org,
+	kvm@vger.kernel.org, Kevin Tian <kevin.tian@intel.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Paul Walmsley <pjw@kernel.org>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>,
-	Alexandre Ghiti <alex@ghiti.fr>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Ingo Molnar <mingo@redhat.com>,
-	Arnaldo Carvalho de Melo <acme@kernel.org>,
-	Namhyung Kim <namhyung@kernel.org>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-	Jiri Olsa <jolsa@kernel.org>,
-	Ian Rogers <irogers@google.com>,
-	Adrian Hunter <adrian.hunter@intel.com>,
-	James Clark <james.clark@linaro.org>,
-	Yixun Lan <dlan@kernel.org>
-Cc: Jingyu Li <joey.li@spacemit.com>,
-	Lv Zheng <lv.zheng@linux.spacemit.com>,
-	Zong Li <zong.li@sifive.com>,
-	Yaxing Guo <guoyaxing@bosc.ac.cn>,
-	Zhijian Chen <zhijian@spacemit.com>,
-	iommu@lists.linux.dev,
-	linux-perf-users@vger.kernel.org,
-	linux-riscv@lists.infradead.org,
-	spacemit@lists.linux.dev,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v5 8/8] perf vendor events riscv: Add SpacemiT T100 HPM event aliases
-Date: Sat, 28 Feb 2026 22:45:32 +0800
-Message-ID: <893875E9335710EF+ccc7125fae0d5d494464c3635004aede679bc4ef.1772289741.git.lv.zheng@linux.spacemit.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <cover.1772289741.git.lv.zheng@linux.spacemit.com>
-References: <cover.1772289741.git.lv.zheng@linux.spacemit.com>
+	Paolo Bonzini <pbonzini@redhat.com>,
+	Steve Sistare <steven.sistare@oracle.com>,
+	Nicolin Chen <nicolinc@nvidia.com>, iommu@lists.linux.dev,
+	linux-coco@lists.linux.dev, Dan Williams <dan.j.williams@intel.com>,
+	Santosh Shukla <santosh.shukla@amd.com>,
+	"Pratik R . Sampat" <prsampat@amd.com>,
+	Fuad Tabba <tabba@google.com>,
+	"Aneesh Kumar K . V" <aneesh.kumar@kernel.org>,
+	michael.roth@amd.com, vannapurve@google.com
+Subject: Re: [RFC PATCH kernel] iommufd: Allow mapping from KVM's guest_memfd
+Message-ID: <20260228182904.GR44359@ziepe.ca>
+References: <aZ7-tTpobKiCFT5L@google.com>
+ <CAEvNRgEiod74cRoVQVC5LUbWDZf6Wwz1ssjQN0fveN=RBAjsTw@mail.gmail.com>
+ <20260226190757.GA44359@ziepe.ca>
+ <aaDL8tYrVCWlQg79@google.com>
+ <20260227002105.GC44359@ziepe.ca>
+ <aaDlRdnhIqRXEbPZ@google.com>
+ <20260227010902.GE44359@ziepe.ca>
+ <aaFzgGTpZI0eZWdD@yilunxu-OptiPlex-7050>
+ <20260227131815.GG44359@ziepe.ca>
+ <aaJroUzTZXZfbRAl@yilunxu-OptiPlex-7050>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: esmtpgz:linux.spacemit.com:qybglogicsvrgz:qybglogicsvrgz5b-1
-X-QQ-XMAILINFO: MUcSNKJIkQ7c5RrhWlfKmtjak3ryOn//OxV2SIED/Nb7n4pj37mp7tWH
-	oBaFwrFA1w3zjUl5vzF2Bt9tp49lL9QXDqz8xMIvpJyXSyxQcfyn6UO1gGeB3KjQsnQ5EEr
-	bibVar10Msg+bhaf4bSXAk3OHemTRNf/lHUICdUM6ChiURqfsHBqFvS8v2P62EimwvG5Qxn
-	RqeK+KbjBiUGfDT/tNPsH7VxWgTLsq+AW859K3j7dQfNP06ehbQjV/m0wZ2ZB5ex8lYrzJB
-	YJmLoRWpYsIph9YSYyYJgrpcYPXEmJ/JTJ6cL3mzdjPZhyPVouXVt2N7tf//0QZ5MBamC4Z
-	2u6Uk+sXHXZLFDmDc7zvS9XjMVr+rQyOv2Vuc234V0fKdxr+2sxLggUBB69xvIVOYzrwNvV
-	lCjJ/LbboeoXpxxeIj8hUaC1/n47/1S76dYjPW7KMDkGKxh2eBPBlYTElR3tlKy1Ze7chYh
-	krBqojzZk2Wi6McSxGOMnb0UJbizk9eIcDhJ0yQKhcdLgOixtJvzor+uiodZsXWmGOpLHNU
-	dMpeQBaIZqwincqOsfGwNzvGMI/8em8W/IC8c6Ga5jEu+vvWf+462U00TilgI2BvExul7kv
-	ONkfRNnued84jZGI0XQ3u9KMkffRf6mr2D6Tl0vVG81ptgn5+n0xVTlUkno/eg0qNRHCNlK
-	1jNrihpzHaCZnnmWzydwjIWyqSn4ytjPwilyQiunq3QIQQlD0jE+UEqdtajyQPbGLaWZtvd
-	8owlEpKjYvEy1us+kCpzrU25Vdiou9GQNvXqPr0MkrRvti4ZAVzMq/BgAZIlmlSkOEuaIun
-	lNtILH/qEkW9CZI1bIKQTtmvBRKv6CqV+SC1GGnvO6UgXDE5FJQ9ocrUtEwFsUBLrNCg3lb
-	AEtebUcOQo3c2Rn+GnQanC0aCq4/xgBC8tolBwN7Krt1ZER8lF+YE07QgsO2r1u82HqGA2L
-	YTLEZHPJ4evobncDvo69dFxSHD0m5NNkYR11PiPm4s4CRf/eFkYk3eVUwJfHWjCPLQwIj8T
-	NZoJfE2ljYmKQEGWSFxT0sSYt1T+BS6+vxjWRUUCuvWRqKl8V2wT7QNaAZLUQJ/uFXvwf0q
-	vogsOhkMXZmm4J+2u/Srak=
-X-QQ-XMRINFO: OD9hHCdaPRBwH5bRRRw8tsiH4UAatJqXfg==
-X-QQ-RECHKSPAM: 0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <aaJroUzTZXZfbRAl@yilunxu-OptiPlex-7050>
 
-Add JSON HPM event aliases for SpacemiT distributed IOMMU (T100) which is
-general and compatible for all SpacemiT RISC-V SoCs.
+On Sat, Feb 28, 2026 at 12:14:25PM +0800, Xu Yilun wrote:
+> On Fri, Feb 27, 2026 at 09:18:15AM -0400, Jason Gunthorpe wrote:
+> > On Fri, Feb 27, 2026 at 06:35:44PM +0800, Xu Yilun wrote:
+> > 
+> > > Will cause host machine check and host restart, same as host CPU
+> > > accessing encrypted memory. Intel TDX has no lower level privilege
+> > > protection table so the wrong accessing will actually impact the
+> > > memory encryption engine.
+> > 
+> > Blah, of course it does.
+> > 
+> > So Intel needs a two step synchronization to wipe the IOPTEs before
+> > any shared private conversions and restore the right ones after.
+> 
+> Mainly about shared IOPTE (for both T=0 table & T=1 table): "unmap
+> before conversion to private" & "map after conversion to shared"
+> 
+> I see there are already some consideration in QEMU to support in-place
+> conversion + shared passthrough [*], using uptr, but seems that's
+> exactly what you are objecting to
 
-Signed-off-by: Lv Zheng <lv.zheng@linux.spacemit.com>
-Signed-off-by: Jingyu Li <joey.li@spacemit.com>
----
- MAINTAINERS                                   |   5 +
- .../arch/riscv/spacemit/iommu/sys/ioatc.json  |  30 ++++
- .../arch/riscv/spacemit/iommu/sys/ioats.json  | 163 ++++++++++++++++++
- 3 files changed, 198 insertions(+)
- create mode 100644 tools/perf/pmu-events/arch/riscv/spacemit/iommu/sys/ioatc.json
- create mode 100644 tools/perf/pmu-events/arch/riscv/spacemit/iommu/sys/ioats.json
+There is some ugly stuff in qemu trying to make this work with VFIO..
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 7c50701b6001..8b6458c1f63a 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -22459,12 +22459,17 @@ K:	riscv
- 
- RISC-V IOMMU
- M:	Tomasz Jeznach <tjeznach@rivosinc.com>
-+M:	Lv Zheng <lv.zheng@linux.spacemit.com>
-+M:	Jingyu Li <joey.li@spacemit.com>
- L:	iommu@lists.linux.dev
- L:	linux-riscv@lists.infradead.org
- S:	Maintained
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git
- F:	Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
- F:	drivers/iommu/riscv/
-+F:	drivers/perf/riscv_iommu_hpm.c
-+F:	include/linux/riscv_iommu.h
-+F:	tools/perf/pmu-events/arch/riscv/spacemit/iommu/
- 
- RISC-V MICROCHIP SUPPORT
- M:	Conor Dooley <conor.dooley@microchip.com>
-diff --git a/tools/perf/pmu-events/arch/riscv/spacemit/iommu/sys/ioatc.json b/tools/perf/pmu-events/arch/riscv/spacemit/iommu/sys/ioatc.json
-new file mode 100644
-index 000000000000..eb2e6fe24c62
---- /dev/null
-+++ b/tools/perf/pmu-events/arch/riscv/spacemit/iommu/sys/ioatc.json
-@@ -0,0 +1,30 @@
-+[
-+  {
-+    "EventName": "mtlb_lkp",
-+    "EventCode": "0x38",
-+    "BriefDescription": "IOATC main TLB (MTLB) lookups",
-+    "Unit": "spacemit_ioatc_hpm",
-+    "Compat": "spacemit,t100"
-+  },
-+  {
-+    "EventName": "mtlb_mis",
-+    "EventCode": "0x39",
-+    "BriefDescription": "IOATC main TLB (MTLB) misses",
-+    "Unit": "spacemit_ioatc_hpm",
-+    "Compat": "spacemit,t100"
-+  },
-+  {
-+    "EventName": "utlb_lkp",
-+    "EventCode": "0x3A",
-+    "BriefDescription": "IOATC micro TLB (uTLB) lookups",
-+    "Unit": "spacemit_ioatc_hpm",
-+    "Compat": "spacemit,t100"
-+  },
-+  {
-+    "EventName": "utlb_mis",
-+    "EventCode": "0x3B",
-+    "BriefDescription": "IOATC micro TLB (uTLB) misses",
-+    "Unit": "spacemit_ioatc_hpm",
-+    "Compat": "spacemit,t100"
-+  }
-+]
-diff --git a/tools/perf/pmu-events/arch/riscv/spacemit/iommu/sys/ioats.json b/tools/perf/pmu-events/arch/riscv/spacemit/iommu/sys/ioats.json
-new file mode 100644
-index 000000000000..709c0a9d2a8e
---- /dev/null
-+++ b/tools/perf/pmu-events/arch/riscv/spacemit/iommu/sys/ioats.json
-@@ -0,0 +1,163 @@
-+[
-+  {
-+    "EventName": "pri_rq",
-+    "EventCode": "0x10",
-+    "BriefDescription": "IOATS PCIe page request interface (PRI) requests",
-+    "Unit": "spacemit_ioats_hpm",
-+    "Compat": "spacemit,t100"
-+  },
-+  {
-+    "EventName": "ptwc_rq",
-+    "EventCode": "0x11",
-+    "BriefDescription": "IOATS page table walk (PTW) cache requests",
-+    "Unit": "spacemit_ioats_hpm",
-+    "Compat": "spacemit,t100"
-+  },
-+  {
-+    "EventName": "dtwc_rq",
-+    "EventCode": "0x12",
-+    "BriefDescription": "IOATS directory table walk (DTW) cache requests",
-+    "Unit": "spacemit_ioats_hpm",
-+    "Compat": "spacemit,t100"
-+  },
-+  {
-+    "EventName": "dtwc_mis",
-+    "EventCode": "0x13",
-+    "BriefDescription": "IOATS directory table walk (DTW) cache misses",
-+    "Unit": "spacemit_ioats_hpm",
-+    "Compat": "spacemit,t100"
-+  },
-+  {
-+    "EventName": "ptwc_mis",
-+    "EventCode": "0x14",
-+    "BriefDescription": "IOATS page table walk (PTW) cache misses",
-+    "Unit": "spacemit_ioats_hpm",
-+    "Compat": "spacemit,t100"
-+  },
-+  {
-+    "EventName": "all_trans_rq",
-+    "EventCode": "0x15",
-+    "BriefDescription": "IOATS all translation requests",
-+    "Unit": "spacemit_ioats_hpm",
-+    "Compat": "spacemit,t100"
-+  },
-+  {
-+    "EventName": "dtwc_lkp",
-+    "EventCode": "0x20",
-+    "BriefDescription": "IOATS directory table walk (DTW) cache lookups",
-+    "Unit": "spacemit_ioats_hpm",
-+    "Compat": "spacemit,t100"
-+  },
-+  {
-+    "EventName": "s0_ptwc_lkp",
-+    "EventCode": "0x28",
-+    "BriefDescription": "IOATS s-stage level-0 PTW cache lookups",
-+    "Unit": "spacemit_ioats_hpm",
-+    "Compat": "spacemit,t100"
-+  },
-+  {
-+    "EventName": "s0_ptwc_mis",
-+    "EventCode": "0x29",
-+    "BriefDescription": "IOATS s-stage level-0 PTW cache misses",
-+    "Unit": "spacemit_ioats_hpm",
-+    "Compat": "spacemit,t100"
-+  },
-+  {
-+    "EventName": "s1_ptwc_lkp",
-+    "EventCode": "0x2A",
-+    "BriefDescription": "IOATS s-stage level-1 PTW cache lookups",
-+    "Unit": "spacemit_ioats_hpm",
-+    "Compat": "spacemit,t100"
-+  },
-+  {
-+    "EventName": "s1_ptwc_mis",
-+    "EventCode": "0x2B",
-+    "BriefDescription": "IOATS s-stage level-1 PTW cache misses",
-+    "Unit": "spacemit_ioats_hpm",
-+    "Compat": "spacemit,t100"
-+  },
-+  {
-+    "EventName": "s2_ptwc_lkp",
-+    "EventCode": "0x2C",
-+    "BriefDescription": "IOATS s-stage level-2 PTW cache lookups",
-+    "Unit": "spacemit_ioats_hpm",
-+    "Compat": "spacemit,t100"
-+  },
-+  {
-+    "EventName": "s2_ptwc_mis",
-+    "EventCode": "0x2D",
-+    "BriefDescription": "IOATS s-stage level-2 PTW cache misses",
-+    "Unit": "spacemit_ioats_hpm",
-+    "Compat": "spacemit,t100"
-+  },
-+  {
-+    "EventName": "s3_ptwc_lkp",
-+    "EventCode": "0x2E",
-+    "BriefDescription": "IOATS s-stage level-3 PTW cache lookups",
-+    "Unit": "spacemit_ioats_hpm",
-+    "Compat": "spacemit,t100"
-+  },
-+  {
-+    "EventName": "s3_ptwc_mis",
-+    "EventCode": "0x2F",
-+    "BriefDescription": "IOATS s-stage level-3 PTW cache misses",
-+    "Unit": "spacemit_ioats_hpm",
-+    "Compat": "spacemit,t100"
-+  },
-+  {
-+    "EventName": "g0_ptwc_lkp",
-+    "EventCode": "0x30",
-+    "BriefDescription": "IOATS g-stage level-0 PTW cache lookups",
-+    "Unit": "spacemit_ioats_hpm",
-+    "Compat": "spacemit,t100"
-+  },
-+  {
-+    "EventName": "g0_ptwc_mis",
-+    "EventCode": "0x31",
-+    "BriefDescription": "IOATS g-stage level-0 PTW cache misses",
-+    "Unit": "spacemit_ioats_hpm",
-+    "Compat": "spacemit,t100"
-+  },
-+  {
-+    "EventName": "g1_ptwc_lkp",
-+    "EventCode": "0x32",
-+    "BriefDescription": "IOATS g-stage level-1 PTW cache lookups",
-+    "Unit": "spacemit_ioats_hpm",
-+    "Compat": "spacemit,t100"
-+  },
-+  {
-+    "EventName": "g1_ptwc_mis",
-+    "EventCode": "0x33",
-+    "BriefDescription": "IOATS g-stage level-1 PTW cache misses",
-+    "Unit": "spacemit_ioats_hpm",
-+    "Compat": "spacemit,t100"
-+  },
-+  {
-+    "EventName": "g2_ptwc_lkp",
-+    "EventCode": "0x34",
-+    "BriefDescription": "IOATS g-stage level-2 PTW cache lookups",
-+    "Unit": "spacemit_ioats_hpm",
-+    "Compat": "spacemit,t100"
-+  },
-+  {
-+    "EventName": "g2_ptwc_mis",
-+    "EventCode": "0x35",
-+    "BriefDescription": "IOATS g-stage level-2 PTW cache misses",
-+    "Unit": "spacemit_ioats_hpm",
-+    "Compat": "spacemit,t100"
-+  },
-+  {
-+    "EventName": "g3_ptwc_lkp",
-+    "EventCode": "0x36",
-+    "BriefDescription": "IOATS g-stage level-3 PTW cache lookups",
-+    "Unit": "spacemit_ioats_hpm",
-+    "Compat": "spacemit,t100"
-+  },
-+  {
-+    "EventName": "g3_ptwc_mis",
-+    "EventCode": "0x37",
-+    "BriefDescription": "IOATS g-stage level-3 PTW cache misses",
-+    "Unit": "spacemit_ioats_hpm",
-+    "Compat": "spacemit,t100"
-+  }
-+]
--- 
-2.43.0
+> Further more, I think "unmap shared IOPTE before conversion to private"
+> may be the only concern to ensure kernel safety, other steps could be
+> fully left to userspace. Hope the downgrading from "remap" to
+> "invalidate" simplifies the notification.
 
+Maybe, but there is still the large issue of how to deal with
+fragmenting the mapping and breaking/re-consolidating huge pages,
+which is not trivial..
+
+To really make this work well we may need iommufd to actively mirror
+the guestmemfd into IOPTEs and dynamically track changes.
+
+I will think about it..
+
+Jason
