@@ -1,39 +1,39 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1D8819F12D;
-	Sun,  1 Mar 2026 01:17:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CEAFD13B7AE;
+	Sun,  1 Mar 2026 01:22:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772327820; cv=none; b=nqpqFFxw+A0MAJYstlhZzDvJFV6NRQmayLFOHadMmL78Kog0xCDzYV0VvcGBEQ/6GFj3U8eTIKbqTBtRtBmJgn7tN2moEYYWNTQwJxpYOAifHxqaPOkNX5l9WY0YeNaua/lONdQhASRB++eMQjsE/lSXIa1D+tQiaxWRLdqWXCw=
+	t=1772328163; cv=none; b=lUYZnXceLpkDO6CpAcy2QFzG90JsLU9xMW6J+aOEru4UpuB1e0p0b6VRf66xAYZQIfYe/Vy4T/M8/fBrcSNk5CmZU/VZnDijhJCHgzRPKQ4bOrq+ExwQ42nnNf4xz0nFl1ihwelpznqPXEfQFFRBZHwEfqDCevJPEhVvdUjs8Ig=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772327820; c=relaxed/simple;
-	bh=X8RQuP12V/n1zRfV2jB/Xn5y4j18/PIJym8g2alYwrw=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=TP9TKmie3Ajc7TGIg+FeJr9p248O+WFATuEih5OrWSPBLeRX3zq7n4JajKZuu92TDAq5dYiAxxvW2KdvG/Z8CWPgNlD93ovG+8ZN5nPhGgAMKLWD42jY2XZBwnah+KCy+oERWIqqae7lYVN0xW6zJ2jQfSGMl61dSObjqPOpWMA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=pzqnSpfn; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1772328163; c=relaxed/simple;
+	bh=huArbaS92nlJQTTNWIyAcrXpMNeOpx6lqUfwgqRBcMM=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=B3MEe8pDzruDCsm7Zt74okqYvsCiuWzNLGNfmcm2+fogO/TmHctpiE8ewxGAHRRN692RcpcZbfNaX2vhaZeb+nA1xDornpXwgL/iDsqT/lqs2gdrvAZAqiJscsnu+K2ht6zWfG16mJEobyvJulk0DFsIIhVzn5Vix2aQpxGv/ck=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=h2kl32YN; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="pzqnSpfn"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9837C19421;
-	Sun,  1 Mar 2026 01:16:59 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="h2kl32YN"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21245C19425;
+	Sun,  1 Mar 2026 01:22:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772327820;
-	bh=X8RQuP12V/n1zRfV2jB/Xn5y4j18/PIJym8g2alYwrw=;
+	s=k20201202; t=1772328163;
+	bh=huArbaS92nlJQTTNWIyAcrXpMNeOpx6lqUfwgqRBcMM=;
 	h=From:To:Cc:Subject:Date:From;
-	b=pzqnSpfnBCmQakH1sFqRsjTT2XnIRnh1Wy4fEEDY+otkP4YRSuodQdi729K4PvbM3
-	 qdhlrETNEaMDWxbgpnr8fJ/WaZ/j8lXrtL88iU+PqwVTXdQEWG6b3BV+3C2M5kJXat
-	 GhxBo3xGzcbCp32jYe/LwMQqP6HwqxoVZXiuwAC/c//EaVYLMF7SeV7W2TrTw9Dg9P
-	 m2rgHNzkvfG0OMJQEWjeRc0rqqsHrASoMBZIzeOZd5M/yhgCYL5hJLG6CWIlXQDSu5
-	 X13y8bWoEuI5gQ7QpNy6eWL8uF+bXyw7EbHM6uv9XBXUHDY54/FmCd1nq6Wht/BEo5
-	 Km9Mqjp0KEG5g==
+	b=h2kl32YNVNx9tCTWJonNvCQ5LeIihX6qPUUd74cu33UMxSvKqL4NAtyeyKsV27t5Z
+	 n4Jk/zgyzZlr+aYpzhPKHnBN+EFH5pQnJq7aZQ5QK7WIS7ebMa6q8OB7uAbCqV3wEw
+	 gRq4Z9r0N1Ntr+wgE11a2p9XSdeHT8DeqVNS7jR8ZAhAxqcW6d7fI5pk0Zhnrlu74t
+	 cIFDEjVTWhu0MxSzBJN1r/pEDRNzf7bPx0YkUwF+3Vtk++/jN4sRkJUIBzybsZ2ZHU
+	 Zb1bjJAXHQm5OIaXO0fSek+CunLvvc6ELCL3oWR8RcTEX8tVYU6aFEFNuV9nLLn0nt
+	 bPRdLzKNRlnHQ==
 From: Sasha Levin <sashal@kernel.org>
 To: stable@vger.kernel.org,
 	guojinhui.liam@bytedance.com
 Cc: Lu Baolu <baolu.lu@linux.intel.com>,
 	Joerg Roedel <joerg.roedel@amd.com>,
 	iommu@lists.linux.dev
-Subject: FAILED: Patch "iommu/vt-d: Skip dev-iotlb flush for inaccessible PCIe device without scalable mode" failed to apply to 6.18-stable tree
-Date: Sat, 28 Feb 2026 20:15:47 -0500
-Message-ID: <20260301011658.1669544-1-sashal@kernel.org>
+Subject: FAILED: Patch "iommu/vt-d: Skip dev-iotlb flush for inaccessible PCIe device without scalable mode" failed to apply to 6.12-stable tree
+Date: Sat, 28 Feb 2026 20:22:41 -0500
+Message-ID: <20260301012242.1679152-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.51.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -46,7 +46,7 @@ X-stable: review
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-The patch below does not apply to the 6.18-stable tree.
+The patch below does not apply to the 6.12-stable tree.
 If someone wants it applied there, or to any other stable or longterm
 tree, then please email the backport, including the original git commit
 id to <stable@vger.kernel.org>.
