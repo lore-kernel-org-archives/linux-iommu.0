@@ -1,138 +1,150 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from CY7PR03CU001.outbound.protection.outlook.com (mail-westcentralusazon11010024.outbound.protection.outlook.com [40.93.198.24])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C0C6330D23;
-	Sun,  1 Mar 2026 14:01:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772373688; cv=none; b=uBrG2uzLnE9iqmpnooyfSaWoJLlcyW0QrWj+sDDoAoSOsme/7JM8Nz7m5uXhDljJf9ZwMuhYVUTwRgmrMER41ALWjWz0RI4dm/mvEdAbKKPH76ffPXas5wJs6AhiJ41uJyuALwNN08QOjMzj8ivVUwH0/uy+5+VD710YIj+1FZA=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772373688; c=relaxed/simple;
-	bh=UkBj1fdmtvPjwtZegWWzCtYjCqUCWuBNOkweq8/Mwi4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rzYhxs6xqC9SBP2PGaerlvAppZIXoICnqkUfYX8oW2FrteXZfMnBye9ZWIEU0OVwsMbEerZ1AoDKSHN9Qed9/XBKTUxJiYF5bui86IoKtDl48V+kIi2Mz+0m/HdIOCcZl9mADTOvg9fQRQokcg16u6oFWG1rdT9HpEHSFt2g1JQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cGXTTNyB; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41244311964
+	for <iommu@lists.linux.dev>; Sun,  1 Mar 2026 19:05:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.198.24
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1772391948; cv=fail; b=m/+IMBI0vggSHya+c60PIC8bjVaK6LrZdmgtSC+lr9Y/uE9vCtY4O6wg9aF/uyLk+tyYUSL32fg7lYj2UoGoSZzLtzvbfMjmE3+xkoWPlMVnwAJw6ySiLzj5AMtM/KZ/NAoO4TZ8cHY4kA5EEfCXBnnyX8gtLjdohTaQ0M+6gpM=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1772391948; c=relaxed/simple;
+	bh=pZEacxvuKCsi2DQ3wn27mVkUTlqqdA1E9qKQKTfcseg=;
+	h=Date:From:To:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=XwS95Vb6Q5am+Cd0srDu00Z/5X7tpoBtAnBKqLG2uNH2cvdd0sWulAPFQAJ0Eb0Ed/EpGSgXjSwhmm202PfQegSx44fJX6C7V6jjvWyP4tyfvp9pXTIfCmwta+MIxPXhCeNm7dlo5uj85oWa3xehchr+XAh+sfDrvxbSpEbgPcU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=PpAKcDjE; arc=fail smtp.client-ip=40.93.198.24
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cGXTTNyB"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E186C116C6;
-	Sun,  1 Mar 2026 14:01:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772373688;
-	bh=UkBj1fdmtvPjwtZegWWzCtYjCqUCWuBNOkweq8/Mwi4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=cGXTTNyBmnlKyu44XrDMcP6siXQEcE1rTkKz44S352nCoKVYzDHTizYoQYkdPaQv7
-	 Tdc2cXxNwYr0PLkwc2wA9iRwLyk2LNzHCmLr1WfErPDg+MSpZGpF0jUmB/Iccm4hln
-	 UKVi/T4tlUzyzAaDFLxxoC+WgQdVPwPyD7al/qmb5gieOo/yrAqDwapzRI5WufVhL5
-	 AXYHoJI+CB0uj7IeiJ7bYqvfZAie0z0Fn5A547Fhp+3QOOIdjmJhgx/0wux4FM0YBe
-	 I1/IYSYfL/mjQMq26y7UsuJYo8je+pofw9d6n3UydO7IaajkA17cj4LYar2gxH5itN
-	 CjQ9MCqPspwDA==
-Date: Sun, 1 Mar 2026 14:01:20 +0000
-From: Conor Dooley <conor@kernel.org>
-To: Lv Zheng <lv.zheng@linux.spacemit.com>
-Cc: Conor Dooley <conor.dooley@microchip.com>,
-	Tomasz Jeznach <tjeznach@rivosinc.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Paul Walmsley <pjw@kernel.org>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Ingo Molnar <mingo@redhat.com>,
-	Arnaldo Carvalho de Melo <acme@kernel.org>,
-	Namhyung Kim <namhyung@kernel.org>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-	Jiri Olsa <jolsa@kernel.org>, Ian Rogers <irogers@google.com>,
-	Adrian Hunter <adrian.hunter@intel.com>,
-	James Clark <james.clark@linaro.org>, Yixun Lan <dlan@kernel.org>,
-	Jingyu Li <joey.li@spacemit.com>, Zong Li <zong.li@sifive.com>,
-	Yaxing Guo <guoyaxing@bosc.ac.cn>, iommu@lists.linux.dev,
-	linux-perf-users@vger.kernel.org, linux-riscv@lists.infradead.org,
-	spacemit@lists.linux.dev, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 4/8] dt-bindings: iommu: Add spacemit/t100 features
-Message-ID: <20260301-acclimate-suburb-fc46da7e0cea@spud>
-References: <cover.1772289741.git.lv.zheng@linux.spacemit.com>
- <D8CE6E5B1001D797+a6f36da0272ac18fff2a992976b1defc3bb01af6.1772289741.git.lv.zheng@linux.spacemit.com>
- <177231592262.848068.18080490567217057666@spud>
- <CAB7A310CE95B577+5f5c0825-25dd-4035-9316-db940c00216b@linux.spacemit.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="PpAKcDjE"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=YS04b4MeXOktTFXdM44FNGU1S06Z4Hfe5eWTu1m3Q9T1Y+CPouoESq+0O8v9RGFUGER02vIAvNZRiKVdd5/iqoJ0zD52e83um4126ZYmJRV1nX0i+b9uR5sUckonD7HIRZm+RL3aZTa3KFH9wjh8Kky2G5+9vNOIIK2NDgWebK0h3fyysUaAsLZqFd5pefzhrIKlMcFTJbGYHd9vGDDEMue5vBR2CZIg9PTREZlwFYTu72RYhwNoyoGgiHJq7EwgPdbByX3gS1Y+ykkmtiQKvQcZFtbMF2C4KQOCrttg0v4nHjz54rLPCghOEF0NtGR/rAj6inuO95MQW5id5+krcg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=gTcGJxcpXK81aXJPeYcwvBcR6Va4VSyOpbXP/adPWRE=;
+ b=LGwIbVFYjsX5NROJUPNBux+dtsy4Lt3abfkCWBdJBL7iok0N2yLD9mTP/mSoX+qgAVpUQVeWjX33XhHD2MYtFC7PYvOPWheCHthCaZQ2BHkRfNm+H4BRF8+UCvwe6ZxCVsFLWIvQcjGAIv2Vh4mfnNyco8H0t9qwAuJVy5n7M0kn8yl9/V3ZJ+xUGqlgAp8j9ItPQ5l5IaBg2aa/CU0JWH0YE99Obdxp7qBza5M55mzSTBB945k32TgQsOcKaaxqFABbbVcmcCjan+wWl04mN1kJ4m3N93SRIxD8w0tr0QynHCqQFXrROeo03rcnVhKUOeNqJZx8Z98AkUCwFqxcYw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=gTcGJxcpXK81aXJPeYcwvBcR6Va4VSyOpbXP/adPWRE=;
+ b=PpAKcDjE7ra4froggO9Pb224HdajFA5E7wWUmNQIud4/mu2JZLjv/KlBxoK0RSZU79YHS80zBzwvZEbzgqpAv4qjCH0IjTYha8tZ+qe99VbqmAksrF2BU2kCNHAXoGVNB6Zq9aX6ptVBSNBgBy7ERbonYCXP+EOtAItUtGdgq3uhjzgSpwh4189kxNSBNFdSiLn/+ff2i6E/Cv06mAn1OEMg96zRA/6t9MfTjcWyuadSCmCOCLAWRwkXyGkqpim44BwjU52JZ/Gpt3aUFa4ZzEKNE/SCauKElLNhEjqt3YeKKAknnKP8M45ZRE7OG/IAR2acDzF1rRUGUiyTiL90EA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com (2603:10b6:408:2a1::19)
+ by BL1PR12MB5993.namprd12.prod.outlook.com (2603:10b6:208:399::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9654.18; Sun, 1 Mar
+ 2026 19:05:44 +0000
+Received: from LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528]) by LV8PR12MB9620.namprd12.prod.outlook.com
+ ([fe80::299d:f5e0:3550:1528%5]) with mapi id 15.20.9654.014; Sun, 1 Mar 2026
+ 19:05:44 +0000
+Date: Sun, 1 Mar 2026 15:05:43 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Christian Koenig <christian.koenig@amd.com>,
+	Dongwon Kim <dongwon.kim@intel.com>,
+	dri-devel@lists.freedesktop.org, intel-xe@lists.freedesktop.org,
+	iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>,
+	Leon Romanovsky <leonro@nvidia.com>, linaro-mm-sig@lists.linaro.org,
+	linux-media@vger.kernel.org,
+	Matthew Brost <matthew.brost@intel.com>,
+	Simona Vetter <simona.vetter@ffwll.ch>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Thomas Hellstrom <thomas.hellstrom@linux.intel.com>,
+	Vivek Kasireddy <vivek.kasireddy@intel.com>
+Subject: Re: [PATCH RFC 00/26] Add DMA-buf mapping types and convert
+ vfio/iommufd to use them
+Message-ID: <20260301190543.GA768004@nvidia.com>
+References: <0-v1-b5cab63049c0+191af-dmabuf_map_type_jgg@nvidia.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0-v1-b5cab63049c0+191af-dmabuf_map_type_jgg@nvidia.com>
+X-ClientProxiedBy: MN0PR03CA0004.namprd03.prod.outlook.com
+ (2603:10b6:208:52f::10) To LV8PR12MB9620.namprd12.prod.outlook.com
+ (2603:10b6:408:2a1::19)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="6IVfBrCiv9PlDrY6"
-Content-Disposition: inline
-In-Reply-To: <CAB7A310CE95B577+5f5c0825-25dd-4035-9316-db940c00216b@linux.spacemit.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV8PR12MB9620:EE_|BL1PR12MB5993:EE_
+X-MS-Office365-Filtering-Correlation-Id: a200f667-22f5-4af1-7048-08de77c589ed
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|7416014|366016|1800799024|921020;
+X-Microsoft-Antispam-Message-Info:
+	FCOjuAQgDqtC51UatFUH/Kd5iO6r3coOY01AW+YuoMzlpPvh4W2W+1eExfjtoRMN9YUr5rL13M5X84ZLC7FrwSpEDDsz7nbVicjQ2KdbRATUt3PA+PwwMRjL/ZFd2xB1ZflsWYGb/9OClMhrvWDEg/kL6+K8eNOx6rV1V7sL/yfJmegMo52h6RQisCtkNZfxMUxZkyQpGmr1jvrQlLSkZn8pxrirBDo32t28Q8Bj5yJO8XUwOD7aoJ6u0hkwL/32KPwr8NYvevVvv1Z9lm412nKpEqCnFCOM+Jg5Pq+fehAoLWtRA6hHHVq+xhm7qNjXN5zWI8o5i5iNA5BUu7Z9roZFg8NOiYZD+9OwRG8F3zKWGXOScjAOyffnY53SntTOAPoLoL7J9VdWgDUDzEkj0rLeyVzSgYAWI7BiUwEO7FGbeLogSh/zvglNEcq9v1W4cRTl8sM/rV65f2HU6C4SJ4UtmGVvXz1087HEHcws5WY87dyfRfgdGX9Hh1iU0sdf8g6GSgROpWZsmhV6jamPgpCnQD0R5eQD82z4oQad4zDWbO/IBdsBw184xWcV4emDv4d6lLCVFnYQftkljGqI2jO5AQ1RJAAma7PW5u4NYSrr/cncLRN6rONcen59k36bWui7fjId23DXEwtR3BTWY0OtsN1s6AtaezmzvbzKsVPUcoZiBldtEhzzfPj5no2/NQTaTsLaZ/NAjA/jvjo6pe44LUIBUg+Dba27hSP5gCD/gYDzniuaRoEvx9rFZ0lx9w1s7C65oRbTai4f3Wpu+/L46kWWPNPdHlcFWHMpdrQ=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR12MB9620.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(366016)(1800799024)(921020);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?BIvUSlKeOs6dElWw5NTwf2/gSW5emGw11fTAV2FhtHDkXSHwN8fRWlEogJH0?=
+ =?us-ascii?Q?c85WvuNglyDlawsVLRAxQhVmAcplE2MF9Ma7RwaZMBVFNdZisd3Fj/doKDrC?=
+ =?us-ascii?Q?H6YjY2IK7jTYf2e7qsv/nHU5kZSGl3EaDNLc5wyeV6z0RcFKAaFA++5ssT0N?=
+ =?us-ascii?Q?WDzIZnZDgIJSaz39Z3x0aU5fFdyswIVM6qOKMh4Eeczz5VozrrBLtv7q2z3T?=
+ =?us-ascii?Q?xdOJ870SAlOgACzugQ+u2vbaFjju/BLOJnVI3DBDR5yQJtLUbtdCqtiQU8iu?=
+ =?us-ascii?Q?7FF2ApvkRWsMuUPM9OoJRnlQRhGLxbonvsxEi6Q8LQ8d2FGLzysyEbgNtFWj?=
+ =?us-ascii?Q?7pxsm1Gq4pIetyBgJH0cs/BUwOL0Y5AeTc5dy4tv0VWBxE0w/scLT9sCLPEn?=
+ =?us-ascii?Q?J3UG+ODa+bapl2Km7FFAnXi5gaSndIeT1xr1TcnQil/tG/jT95Zgfd93j26m?=
+ =?us-ascii?Q?iksZPq6VZOgl6UeUpm8brh3jOS5csB7rJeHEyUo/nvQJfk2T8Jx+pI5J0jaq?=
+ =?us-ascii?Q?7Wmh8LDqCTEMpcrpawFvRnNaRL0JAetoo1dIhC8B3Mb8ND2bH0MJIVaMsHta?=
+ =?us-ascii?Q?5YTyIs0Bu/LmtmKY82njDson4TnKc7+2hmLXQSyOl5cCpqtom1Rn/JJG83ri?=
+ =?us-ascii?Q?Rxw4gVvfyeu3VAQyjB5Utddmp2P1xmITmKx5f0BDxe5WygcvbajB56Gebh7e?=
+ =?us-ascii?Q?revfOuRE0lJa6gwzl7O0ZeUHAJ8iaz3Id48f9vAM+Wf8NIrXWFqAb0mg+ZSw?=
+ =?us-ascii?Q?YdTfQtnbFxlx/kKSgDe6tnfq4GZgee5oE30E67GXuvPLeq67ber9VIc/kcze?=
+ =?us-ascii?Q?FH8+0A7iRLuvBmsYkV81B0K9dND9FPHMKtOmcY0QCp5KFuA3m3wfhckPB55+?=
+ =?us-ascii?Q?ZctuW2nSqF0S8Ch3pHVV6RA6r42WzaC41AyrnCmhiy02E+g74JPj1ldSEqdD?=
+ =?us-ascii?Q?q2QZiBq1YLDWTuhOrbZTIs0ZP+2cmg7gKiMAF+b8Gfme0/gFYLF9Zgkzmnto?=
+ =?us-ascii?Q?A7VlAAOFAPfVk/YD09FmJoldSOR/RF0vvMfCXNO2bJSH6PH45ObzE49q1dI7?=
+ =?us-ascii?Q?BHKEmBq07AR9lwcKwewFAgizxfbbrqpYdfuY+x3USRQb9EF868czw0WePkdi?=
+ =?us-ascii?Q?4ZHC4PIF5HFTkvrL7ALuvRnKYAQ49A08DgVxNFrF4/t1/JDPAyCbLXgnUqCr?=
+ =?us-ascii?Q?b2c0Qv3UtItZ0JqJyVFhdE97NPLk3Ey5rT19orPP9DFZE+6eL6qenSNsrEY2?=
+ =?us-ascii?Q?rdmUa296Co1EDliHIqequPNyyq6x+UHuUm9vDtfxVieXfJC3A0cumFpYc8ZZ?=
+ =?us-ascii?Q?ss2cQzp0dZKCsU8LeevQnkrGOxz+1MPZGnA+Z1Rxo4dWHlCoNzz8yRa95wO5?=
+ =?us-ascii?Q?5v6s4vsA1g/VSEccYWJMGNNvDR4AEEGKRk45OnSIZU9tMYuixH6ydqs73Y5P?=
+ =?us-ascii?Q?yPyDpFC3HF/Y/SaHz3czV+z+94d/FR+RdasjUQesEzHKyBr7qQd/akxolYbw?=
+ =?us-ascii?Q?ayDWfBt57+vpZCyd0XYj/DrA4AoE2o0XyRQEKI6g6vaWV0opqWOSPQoIuiGi?=
+ =?us-ascii?Q?AazP0KHCrC//KgRUfKS7YRhCF3AJb3yGSOIy+jdMmQgVsDeWI6sxkpvFbDp5?=
+ =?us-ascii?Q?N0CyS/qeev5LBDnw5aLR3b6ehnDVuFFNGqYggFWP4vJCrov8SJ7o2C3mA3w7?=
+ =?us-ascii?Q?hR7deJuLaBziMQFNrJ3IlQh+fk+dPunqESJvC8/K/b7ewT//JdX6Fo+cgA49?=
+ =?us-ascii?Q?MdI4MZ/6BA=3D=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a200f667-22f5-4af1-7048-08de77c589ed
+X-MS-Exchange-CrossTenant-AuthSource: LV8PR12MB9620.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Mar 2026 19:05:44.1626
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: gqPLu4L5eKhKrMvWOTnwRSVdeKEUmkWNTJdBqjgTJuUGv80zGODIsdlI6Bo35UzZ
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5993
 
+On Tue, Feb 17, 2026 at 08:11:31PM -0400, Jason Gunthorpe wrote:
+> Jason Gunthorpe (26):
+>   dma-buf: Introduce DMA-buf mapping types
+>   dma-buf: Add the SGT DMA mapping type
+>   dma-buf: Add dma_buf_mapping_attach()
+>   dma-buf: Route SGT related actions through attach->map_type
+>   dma-buf: Allow single exporter drivers to avoid the match_mapping
+>     function
 
---6IVfBrCiv9PlDrY6
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I've rebased my github branch:
 
-On Sun, Mar 01, 2026 at 11:48:37AM +0800, Lv Zheng wrote:
-> On 3/1/2026 5:58 AM, Conor Dooley wrote:
-> > On Sat, 28 Feb 2026 22:44:49 +0800, Lv Zheng <lv.zheng@linux.spacemit.c=
-om> wrote:
-> > > Adds device tree bindings for SpacemiT T100 specific features by
-> > > introducing spacemit,t100 compatible. T100 contains distributed IOATC=
-s,
-> > > each of which exposes pmiv interrupt.
-> > >=20
-> > > Signed-off-by: Lv Zheng <lv.zheng@linux.spacemit.com>
-> > > Signed-off-by: Jingyu Li <joey.li@spacemit.com>
-> >=20
-> > Patch content here is fine, but the signoff chain on this patch is not
-> > right. What did Jingyu do? You're author and submitter so either Jingyu
-> > did nothing and should be removed, or is a co-developer which requires
-> > attribution via the co-developed-by tag. If the latter, their signoff
-> > should be before yours (the submitter is always last).
-> >=20
-> > pw-bot: changes-requested
->=20
-> She is responsible for the common HPM part, and I just gave my comments to
-> help to improve the quality of that implementation.
-> I was just focusing on enabling and maintaining the T100 specific feature=
-s.
->=20
-> Our patches will go each other's local repository, leaving such tracks. T=
-hat
-> means the patch from me is Reviewed-and-tested-by her.
-> And I'm responsible for sending the whole patchset for upstreaming.
+  https://github.com/jgunthorpe/linux/commits/dmabuf_map_type
 
-Then you need to either fix your email setup (because it's not inserting
-=46rom: Jingyu Li <joey.li@spacemit.com>) so that she is marked as the
-author or actually set her to the author in git if you haven't.
-Currently it looks like this when applied:
-commit 872978c875731be43e84bec38798cb8ecd42b7a0
-Author: Lv Zheng <lv.zheng@linux.spacemit.com>
-Date:   Sat Feb 28 22:44:49 2026 +0800
+On to drm-misc-next comit 41dae5ac5e15 ("drm/nouveau: Test for imported
+buffers with drm_gem_is_imported()") and reworked some of the pending
+bits on the VFIO side to accommodate Leon's series.
 
-    dt-bindings: iommu: Add spacemit/t100 features
-   =20
-    Adds device tree bindings for SpacemiT T100 specific features by
-    introducing spacemit,t100 compatible. T100 contains distributed IOATCs,
-    each of which exposes pmiv interrupt.
-   =20
-    Signed-off-by: Lv Zheng <lv.zheng@linux.spacemit.com>
-    Signed-off-by: Jingyu Li <joey.li@spacemit.com>
+Christian/Thomas/Vivek, how are you feeling about this approach? I'd
+like to focus on the above patches, should I post a non-RFC series?
 
-In both cases, you need to change the order of signoffs so that yours is
-last as the submitter.
-
---6IVfBrCiv9PlDrY6
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaaRGlAAKCRB4tDGHoIJi
-0mn2AP9rkEy4Ug5UediDg3aHRB/C9s3CSKAV8D0oiZ4Ym/UFnAD/UGK6en/VYMcZ
-uBeeFSlzBPwP3I39ikzedY+nhp68sQE=
-=VAxN
------END PGP SIGNATURE-----
-
---6IVfBrCiv9PlDrY6--
+Thanks,
+Jason
