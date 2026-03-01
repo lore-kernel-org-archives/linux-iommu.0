@@ -1,39 +1,39 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4A7026FA6F;
-	Sun,  1 Mar 2026 01:43:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C0FB2C032E;
+	Sun,  1 Mar 2026 01:43:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772329382; cv=none; b=BKPU5dp8S8qFpB1lyxjFA+XeTYnThbPWjFREad/oqVbuWZxrDUAeHGTn/tBtKMyt0VnQ58VJJ7VFtQoDec+ufzjFn3W5FjDENWHYVFGFJxIlMK+kWaa07XHdFb8kT7ueUA0a+rPIZSr9hYYjOckNbnYkb70+TAChBulfExAAT6s=
+	t=1772329387; cv=none; b=trr80F5P8CJlwl9qWhUx0FWKyCIqk/eDwXauoKtthN0/Y2co/iBYMVQ6JSVysx3xSZLiMsgtOp7lxc00wlOoIYSTdDAVfCba7lkgpl2HJp1vn/Tx6oJRSLJiCO4sahM546AD6tpyqqB4TM76ulsWjQ5yEvfUgXvskRRZHXnNw9A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772329382; c=relaxed/simple;
-	bh=yz1KDReCXChk/d3BtAkAMYPjYynfLbVLMx2pwaENvJs=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=ofGBXYQnLyFWlVx1+weFBKAvDRBmIAwsg3EvUAo6x5dinrToqyg4Ou6i1iGXHAGKxQpnFaCdSMG0cGpi9WPMK+1Yi19F2tIqc4S82glUF9ZpWnkqYEa+wU21mUDU419NzqM0SIYRZ02UGNNPp08zyHa56GHubn+jn0fIJjwoN6s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SnqLATCE; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1772329387; c=relaxed/simple;
+	bh=rje6XjRMLmMcb2Hv23yjo2sRGpHReMGO+jpNM4Tuz04=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=Mhde9Km3GXEU0y/Fry9jeNGNSBL3SWOqlrN0YnwE20iEMdY6WMwaGUiKARgZNyn1QBP0VfoKR9B6FG+4NnwO3l1aAaGwph7llDazaiCDTFKtaN6At3FWOiaiHbMG4JLpFCH1sTcVDIKPR6Xbg1KgSImSmg6knLcCfwoDV21XJeU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=in7Vh1hA; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SnqLATCE"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C627CC19421;
-	Sun,  1 Mar 2026 01:43:01 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="in7Vh1hA"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E1B9C19421;
+	Sun,  1 Mar 2026 01:43:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772329382;
-	bh=yz1KDReCXChk/d3BtAkAMYPjYynfLbVLMx2pwaENvJs=;
+	s=k20201202; t=1772329386;
+	bh=rje6XjRMLmMcb2Hv23yjo2sRGpHReMGO+jpNM4Tuz04=;
 	h=From:To:Cc:Subject:Date:From;
-	b=SnqLATCE0CVVVfKgjyXpLh9KaAu+XVEABhRuVj9w9/60IaE7G/o7bAK98fb10Dh8S
-	 2PMS9q9iqayjjGPVF19MwpunWsJ7rw7QPWy0N8zA6uNtJnkMk1TmlBoeSBB944kVBH
-	 IZ0tsG8S8MRbULTuFO91w9Xk0dlosKDQMvON3jKg9lKLBAbuoJ7WJa85MWrGMcfOu/
-	 lhA6ZUm8oIVnoCieG2lTcs+oOECOoEx0IAGQMNyCRi4dgbLoLH4ud/kzaw5ivFYqKq
-	 rFh7Fa0RalQNSktTe9XGkVpSP3myAmkneNpcirQDplbKKwHE9w9j5ua8HDZKBWIin1
-	 Ldi98ZlyJFZ1g==
+	b=in7Vh1hA5Dkxri46fAC1nj8hIa8HIDohlmRtPEX+D38u78x6JNggc/BKO4Xt4HROY
+	 cUsJ9aZIJiqR+J8EX5IhrBQl7uCBGrbiuZys1x9ePMh0s+0VPy7nNKvg0Dv2Y8BKnW
+	 oM1vjrvI1fmlTzAO6hBi/OttM82xwMF1UStN/riqlzDArWCp5KG3iG8ZJU4+Qh/7Lv
+	 gLtAKDuBJTzC/Pl/WJXCnLVDAdGUbr0us/qBOoMfcRrHmrDzB5HUVdjkWY1en7Dwlx
+	 QdACfegSu/gVnRVYPAh1J2mtWiAACSz8DnOITLzDSQHrnwwUpg/Nyt3YWAmolsJoCt
+	 aTEWCIcUMlsVA==
 From: Sasha Levin <sashal@kernel.org>
 To: stable@vger.kernel.org,
 	guojinhui.liam@bytedance.com
 Cc: Lu Baolu <baolu.lu@linux.intel.com>,
 	Joerg Roedel <joerg.roedel@amd.com>,
 	iommu@lists.linux.dev
-Subject: FAILED: Patch "iommu/vt-d: Flush dev-IOTLB only when PCIe device is accessible in scalable mode" failed to apply to 6.1-stable tree
-Date: Sat, 28 Feb 2026 20:43:00 -0500
-Message-ID: <20260301014300.1704977-1-sashal@kernel.org>
+Subject: FAILED: Patch "iommu/vt-d: Skip dev-iotlb flush for inaccessible PCIe device without scalable mode" failed to apply to 6.1-stable tree
+Date: Sat, 28 Feb 2026 20:43:04 -0500
+Message-ID: <20260301014305.1705082-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.51.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -56,29 +56,90 @@ Sasha
 
 ------------------ original commit in Linus's tree ------------------
 
-From 10e60d87813989e20eac1f3eda30b3bae461e7f9 Mon Sep 17 00:00:00 2001
+From 42662d19839f34735b718129ea200e3734b07e50 Mon Sep 17 00:00:00 2001
 From: Jinhui Guo <guojinhui.liam@bytedance.com>
-Date: Thu, 22 Jan 2026 09:48:51 +0800
-Subject: [PATCH] iommu/vt-d: Flush dev-IOTLB only when PCIe device is
- accessible in scalable mode
+Date: Thu, 22 Jan 2026 09:48:50 +0800
+Subject: [PATCH] iommu/vt-d: Skip dev-iotlb flush for inaccessible PCIe device
+ without scalable mode
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-Commit 4fc82cd907ac ("iommu/vt-d: Don't issue ATS Invalidation
-request when device is disconnected") relies on
-pci_dev_is_disconnected() to skip ATS invalidation for
-safely-removed devices, but it does not cover link-down caused
-by faults, which can still hard-lock the system.
+PCIe endpoints with ATS enabled and passed through to userspace
+(e.g., QEMU, DPDK) can hard-lock the host when their link drops,
+either by surprise removal or by a link fault.
 
-For example, if a VM fails to connect to the PCIe device,
-"virsh destroy" is executed to release resources and isolate
-the fault, but a hard-lockup occurs while releasing the group fd.
+Commit 4fc82cd907ac ("iommu/vt-d: Don't issue ATS Invalidation
+request when device is disconnected") adds pci_dev_is_disconnected()
+to devtlb_invalidation_with_pasid() so ATS invalidation is skipped
+only when the device is being safely removed, but it applies only
+when Intel IOMMU scalable mode is enabled.
+
+With scalable mode disabled or unsupported, a system hard-lock
+occurs when a PCIe endpoint's link drops because the Intel IOMMU
+waits indefinitely for an ATS invalidation that cannot complete.
 
 Call Trace:
  qi_submit_sync
  qi_flush_dev_iotlb
- intel_pasid_tear_down_entry
+ __context_flush_dev_iotlb.part.0
+ domain_context_clear_one_cb
+ pci_for_each_dma_alias
+ device_block_translation
+ blocking_domain_attach_dev
+ iommu_deinit_device
+ __iommu_group_remove_device
+ iommu_release_device
+ iommu_bus_notifier
+ blocking_notifier_call_chain
+ bus_notify
+ device_del
+ pci_remove_bus_device
+ pci_stop_and_remove_bus_device
+ pciehp_unconfigure_device
+ pciehp_disable_slot
+ pciehp_handle_presence_or_link_change
+ pciehp_ist
+
+Commit 81e921fd3216 ("iommu/vt-d: Fix NULL domain on device release")
+adds intel_pasid_teardown_sm_context() to intel_iommu_release_device(),
+which calls qi_flush_dev_iotlb() and can also hard-lock the system
+when a PCIe endpoint's link drops.
+
+Call Trace:
+ qi_submit_sync
+ qi_flush_dev_iotlb
+ __context_flush_dev_iotlb.part.0
+ intel_context_flush_no_pasid
+ device_pasid_table_teardown
+ pci_pasid_table_teardown
+ pci_for_each_dma_alias
+ intel_pasid_teardown_sm_context
+ intel_iommu_release_device
+ iommu_deinit_device
+ __iommu_group_remove_device
+ iommu_release_device
+ iommu_bus_notifier
+ blocking_notifier_call_chain
+ bus_notify
+ device_del
+ pci_remove_bus_device
+ pci_stop_and_remove_bus_device
+ pciehp_unconfigure_device
+ pciehp_disable_slot
+ pciehp_handle_presence_or_link_change
+ pciehp_ist
+
+Sometimes the endpoint loses connection without a link-down event
+(e.g., due to a link fault); killing the process (virsh destroy)
+then hard-locks the host.
+
+Call Trace:
+ qi_submit_sync
+ qi_flush_dev_iotlb
+ __context_flush_dev_iotlb.part.0
+ domain_context_clear_one_cb
+ pci_for_each_dma_alias
  device_block_translation
  blocking_domain_attach_dev
  __iommu_attach_device
@@ -90,47 +151,45 @@ Call Trace:
  vfio_group_fops_release
  __fput
 
-Although pci_device_is_present() is slower than
-pci_dev_is_disconnected(), it still takes only ~70 µs on a
-ConnectX-5 (8 GT/s, x2) and becomes even faster as PCIe speed
-and width increase.
+pci_dev_is_disconnected() only covers safe-removal paths;
+pci_device_is_present() tests accessibility by reading
+vendor/device IDs and internally calls pci_dev_is_disconnected().
+On a ConnectX-5 (8 GT/s, x2) this costs ~70 µs.
 
-Besides, devtlb_invalidation_with_pasid() is called only in the
-paths below, which are far less frequent than memory map/unmap.
+Since __context_flush_dev_iotlb() is only called on
+{attach,release}_dev paths (not hot), add pci_device_is_present()
+there to skip inaccessible devices and avoid the hard-lock.
 
-1. mm-struct release
-2. {attach,release}_dev
-3. set/remove PASID
-4. dirty-tracking setup
-
-The gain in system stability far outweighs the negligible cost
-of using pci_device_is_present() instead of pci_dev_is_disconnected()
-to decide when to skip ATS invalidation, especially under GDR
-high-load conditions.
-
-Fixes: 4fc82cd907ac ("iommu/vt-d: Don't issue ATS Invalidation request when device is disconnected")
+Fixes: 37764b952e1b ("iommu/vt-d: Global devTLB flush when present context entry changed")
+Fixes: 81e921fd3216 ("iommu/vt-d: Fix NULL domain on device release")
 Cc: stable@vger.kernel.org
 Signed-off-by: Jinhui Guo <guojinhui.liam@bytedance.com>
-Link: https://lore.kernel.org/r/20251211035946.2071-3-guojinhui.liam@bytedance.com
+Link: https://lore.kernel.org/r/20251211035946.2071-2-guojinhui.liam@bytedance.com
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 Signed-off-by: Joerg Roedel <joerg.roedel@amd.com>
 ---
- drivers/iommu/intel/pasid.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/intel/pasid.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
 diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
-index 3f6d78180d799..99692f88b8834 100644
+index 3e2255057079c..3f6d78180d799 100644
 --- a/drivers/iommu/intel/pasid.c
 +++ b/drivers/iommu/intel/pasid.c
-@@ -218,7 +218,7 @@ devtlb_invalidation_with_pasid(struct intel_iommu *iommu,
- 	if (!info || !info->ats_enabled)
+@@ -1102,6 +1102,14 @@ static void __context_flush_dev_iotlb(struct device_domain_info *info)
+ 	if (!info->ats_enabled)
  		return;
  
--	if (pci_dev_is_disconnected(to_pci_dev(dev)))
-+	if (!pci_device_is_present(to_pci_dev(dev)))
- 		return;
++	/*
++	 * Skip dev-IOTLB flush for inaccessible PCIe devices to prevent the
++	 * Intel IOMMU from waiting indefinitely for an ATS invalidation that
++	 * cannot complete.
++	 */
++	if (!pci_device_is_present(to_pci_dev(info->dev)))
++		return;
++
+ 	qi_flush_dev_iotlb(info->iommu, PCI_DEVID(info->bus, info->devfn),
+ 			   info->pfsid, info->ats_qdep, 0, MAX_AGAW_PFN_WIDTH);
  
- 	sid = PCI_DEVID(info->bus, info->devfn);
 -- 
 2.51.0
 
