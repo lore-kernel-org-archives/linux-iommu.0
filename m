@@ -1,191 +1,253 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C64192D9EC2
-	for <iommu@lists.linux.dev>; Sun,  1 Mar 2026 10:59:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BFF4175A7A;
+	Sun,  1 Mar 2026 11:42:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772362771; cv=none; b=ZxyCYu5jDw6y9SmV5loduPUC/kD7Rc2xZqW3eJbd47TIKGEcztNZIVfV5jXz/sDpPiJPDWX76/XJM9SOBo8U8OP6m7ZJme6tuFROjYo9cRV0OG4pXn1ahy16YCFSvNyeaV5O+DYnWw3K9xxiBX1bhMgHIGnQw7MOVn36NuRchmY=
+	t=1772365371; cv=none; b=UKek9uVTBWTSpVjxYJ6dNW60aoHtoaZeKH2DkdQuoO4RQpFVpNboF+eGh67qcV9+7w9d4MthoOSKym+eL2l/xaBazu4dCOybTD1RY8IHOqQ+c5fCSg5dzTQXuzuBpjRoJ+3LISh1/Ixx+Asi28IqTKRsfboHNG0fnHCvSKY0X5Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772362771; c=relaxed/simple;
-	bh=ma5KFEqHslgRuuIwDm092krRisjxb/PVQ/WF+lX7RAM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=fnTvmqHKFZ4Bd9Ew9XxbkWfw6GTnPwdxwVyCII5PRaMzk9AvFHR+6hPAFYMvyvjQ7MUJPtv0Txdiaeo1oZKPR8ZmwRVU2VyjbKdXM2QRjPrhygVQTFvF0J4sRyxcJYrfm2HsQKsuGZXFuoKx/j4tVCimG+mypBIUZ8EetJMQrUo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=ZbRtpKNV; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=HhZem0dd; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1772365371; c=relaxed/simple;
+	bh=pnG7tvFrtdyv3WXvEJzx29lT5AfLh/MG9mcbrHMAO58=;
+	h=Date:Message-ID:From:To:Cc:Subject:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=agBKrUcITDJ1nNT7/ZwOOiTk9u2QO1i+2Tf/wUQMCIlUhLKMSRHNizmqBlU4qw33f3sGaO0xC0vK93W+a5ay3l+dDV1V4MTbzPv+SCGHh0Gfh8HEZaxLNcmhPoVBxb28BcRKQfqdwJCEc52jpIjr+kGqXeFOmgUHay3kjcWvjrU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lyYXU+m2; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="ZbRtpKNV";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="HhZem0dd"
-Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6216bEjl860810
-	for <iommu@lists.linux.dev>; Sun, 1 Mar 2026 10:59:29 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=tWvbzoSirp2+/mfj208EVtuC
-	kSsURTVI0XL++QIzXe8=; b=ZbRtpKNVrLZlATBeln8U+o1HVMJ1NJFODQD2g1Xt
-	5zqmD26FEi7oT89X6dB/3Kf0XkkF6A8sXLJiy6k2cdCfTElYXz+CjMK5FIy3AQPe
-	xpwFsAEbry2aIJz+ovYfTdhNnokCCupYZNrBBmfiE6N5iXxEnaecxqJfkBq7jA6g
-	atxv+7P2SKJ+CThu9PnqyE+e14r5zyxB6+fChJWyb7bmsbhO1nbIl9sdXtyQ92aF
-	9NNtP7wU75FlG/y0oxLuqIE1sXvncry7ovuFrwD64sbYiUvq0bz1X2QeTCCuTyIj
-	PQrXowySKFMO/mebdHFA3zvBB6060oQ2+M3ZZuPrtLkY+g==
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com [209.85.222.199])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4cmgbar8dw-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Sun, 01 Mar 2026 10:59:28 +0000 (GMT)
-Received: by mail-qk1-f199.google.com with SMTP id af79cd13be357-8cb3b0d938dso3401668985a.2
-        for <iommu@lists.linux.dev>; Sun, 01 Mar 2026 02:59:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1772362768; x=1772967568; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=tWvbzoSirp2+/mfj208EVtuCkSsURTVI0XL++QIzXe8=;
-        b=HhZem0dd/R4S3YLBZ9tRzqRxNuw7hyWtdXsFx7LKL8zOicob2fW5NNWkFb46AUiWMB
-         W+Gu41dNQM7q5n/wF/Li+/AwuhOCTQBAmBvaIp5rePUtJ8urkDg880g/Eo1E9V7fDxAm
-         BpfWhS/NFif5wlUjLZ4lvnfJKu5esqYhnXSrr4aycSTClHpxniGrZ7kHySACwMCirxii
-         WH2K9TPvzYvCB4hmk34rcbZnq5EgLzHDVddziaL5r22cTWJJeSAKBdTwBF0Zs9ejNKhe
-         45hdj5RbV5BiaeuWf2UYTMo+Vzg5pzTqqpVWJ//nSuvdXMYI/FjJEdD7Yk3jOTMmGbVS
-         HRjA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772362768; x=1772967568;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=tWvbzoSirp2+/mfj208EVtuCkSsURTVI0XL++QIzXe8=;
-        b=fVYhYZA6H9B0nJYF4FDMdTVZKnqKZBNE36d3Awvz50tT4Dt2jzNNkGFOOtUPTD4Frk
-         LRfTKZV8mEkFLMXCj6YSmdsuE3TRnRgGn5HIC7Jnj6WCV9fRc+bG9cagaUkUcrkXsFvk
-         J63Bq60SoGax0tRdxehadc05EjwpN34KHjgH9ZaeQwtSnj50XpCDODCiUXkwqgVHHLpq
-         9jMh+a3jXHa8yxMY6pNtnjLirfNLG0Ua4ZDE9gLCDIr85W9gFK492SrjhVWJvcannwWt
-         tR9jGZhntu26ConAsQaxDGt1MNesXc/WHU2iyK0FRYREw6XVa++OH4SoID2vQnGsjiMX
-         IdDQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWzxiqG1gSS9N/5SH+2fbJJQOKXfuArQfbaU4utA2o+BZMl934XmSm8FebV0AYGjE5Cgm1MAQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxuFji61AnzCk3Cy7Md44x5idT7ek5TQW8OkLcJGjp0NPyzD4ll
-	fJjsyQuIHIAhl8fLiKzh4zqTF+lNYyHAqmsEuYKZyFu393l8R+ip0QCkDrgXN0WXLDpdhoy4pwK
-	WsknyAeKahy5HSQ36WTm4DgXx6Ml506bFefksYHfZzetTANdbr4oJ+dWIXA==
-X-Gm-Gg: ATEYQzxK9Q6WASuWdLxoyNPIesQttAF6dIy/rsCuKGVaIh8SnNWTL98QhGF7WeDhbWF
-	tK6vwGmj8TPFkb7tXjsWMpGWW/T9CWlXISRQanVWjCNarvIlWObuTBZsWkjTNvyu/NJhFN2SFr3
-	1aM8iHQT1lvwoKPtwATxPEQF/WJm+dZ5IJz54AvJzmaL65qDr0ngl2flwXenjwxNMw5EfQtoQyc
-	JRzbQxukCuW+wNchDcjvv50RXHXSXVDDe//B8ptvfhKcTZ/tV59D7bngXq5kakvrtIqTszI0FVU
-	bNl367L0ISijNdoWcUEia1rwa3JISi8/bzWXUm0iB++XQYbuge2iqcq+FwDe1ukozWt8VwiXjSG
-	p9ttBaoaWVncAPJMRMdpV8HEp/+4DRd81B8b3Src21jRbziPiUYfyiHydo9Asc3RNj1IOYOaLsC
-	FXgD/0LTerO6URjrwIlohRllPtH3ImOfA4D7A=
-X-Received: by 2002:a05:620a:3949:b0:8c7:1b3f:7d0c with SMTP id af79cd13be357-8cbc8e55216mr1090397085a.16.1772362767979;
-        Sun, 01 Mar 2026 02:59:27 -0800 (PST)
-X-Received: by 2002:a05:620a:3949:b0:8c7:1b3f:7d0c with SMTP id af79cd13be357-8cbc8e55216mr1090393285a.16.1772362767407;
-        Sun, 01 Mar 2026 02:59:27 -0800 (PST)
-Received: from umbar.lan (2001-14ba-a073-af00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a073:af00:264b:feff:fe8b:be8a])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5a116de019esm872280e87.3.2026.03.01.02.59.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 01 Mar 2026 02:59:26 -0800 (PST)
-Date: Sun, 1 Mar 2026 12:59:23 +0200
-From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-To: Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
-Cc: Nipun Gupta <nipun.gupta@amd.com>, Nikhil Agarwal <nikhil.agarwal@amd.com>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>, Marc Zyngier <maz@kernel.org>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        Thomas Gleixner <tglx@kernel.org>, Rob Herring <robh@kernel.org>,
-        Saravana Kannan <saravanak@kernel.org>,
-        Richard Zhu <hongxing.zhu@nxp.com>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kwilczynski@kernel.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>, Frank Li <Frank.Li@nxp.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>, Juergen Gross <jgross@suse.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-        Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
-        Bjorn Andersson <bjorn.andersson@oss.qualcomm.com>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Prakash Gupta <prakash.gupta@oss.qualcomm.com>,
-        Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
-        linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-pci@vger.kernel.org, imx@lists.linux.dev,
-        xen-devel@lists.xenproject.org, linux-arm-msm@vger.kernel.org,
-        Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
-Subject: Re: [PATCH v9 2/3] of: factor arguments passed to of_map_id() into a
- struct
-Message-ID: <bo5kb53hrzvl6e5mctvnpqluobdgbpq4x3m5ca7mwtfnl53npw@7axqsph2vyqd>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lyYXU+m2"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 113CAC116C6;
+	Sun,  1 Mar 2026 11:42:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1772365371;
+	bh=pnG7tvFrtdyv3WXvEJzx29lT5AfLh/MG9mcbrHMAO58=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=lyYXU+m2KtoMlQCaYHSTGYS7k3vPg+urdvgKLLe+VN1j5otDmcgzfqS+iLGDgFJzX
+	 jCm7hWoMDFKF2Tln9kI+qBdbepd8+KQENY3/NjjjFYTz+YGvjuP7e4k7wNe3Uk2Zgu
+	 Jr0bPBy+UyNWcQvmQCXzz+KPPnayGZHysd8y7IcOOuHF81+roKEctBCQTqq0NnX+4d
+	 fClOtSBtYojZA6yE8Z6jdIfXQIEaNPa5QpjG5XK3H5qVbVu43by8JChZx1rOYHJHuw
+	 r6L7w1bU0QM7Du1mb7FBQWrad28PDiwEwILS4hk/qRBD+Wu7VA1tNSGsNwyA07oYd8
+	 XzD9ut4GML8xA==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=goblin-girl.misterjones.org)
+	by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.98.2)
+	(envelope-from <maz@kernel.org>)
+	id 1vwfCC-0000000EvkI-1rlx;
+	Sun, 01 Mar 2026 11:42:48 +0000
+Date: Sun, 01 Mar 2026 11:42:47 +0000
+Message-ID: <86zf4r93ns.wl-maz@kernel.org>
+From: Marc Zyngier <maz@kernel.org>
+To: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+Cc: Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>,	Nipun Gupta
+ <nipun.gupta@amd.com>,	Nikhil Agarwal <nikhil.agarwal@amd.com>,	Joerg
+ Roedel <joro@8bytes.org>,	Will Deacon <will@kernel.org>,	Robin Murphy
+ <robin.murphy@arm.com>,	Lorenzo Pieralisi <lpieralisi@kernel.org>,	Thomas
+ Gleixner <tglx@kernel.org>,	Rob Herring <robh@kernel.org>,	Saravana Kannan
+ <saravanak@kernel.org>,	Richard Zhu <hongxing.zhu@nxp.com>,	Lucas Stach
+ <l.stach@pengutronix.de>,	Krzysztof =?UTF-8?B?V2lsY3p5xYRza2k=?=
+ <kwilczynski@kernel.org>,	Manivannan Sadhasivam <mani@kernel.org>,	Bjorn
+ Helgaas <bhelgaas@google.com>,	Frank Li <Frank.Li@nxp.com>,	Sascha Hauer
+ <s.hauer@pengutronix.de>,	Pengutronix Kernel Team <kernel@pengutronix.de>,
+	Fabio Estevam <festevam@gmail.com>,	Juergen Gross <jgross@suse.com>,
+	Stefano Stabellini <sstabellini@kernel.org>,	Oleksandr Tyshchenko
+ <oleksandr_tyshchenko@epam.com>,	Konrad Dybcio
+ <konrad.dybcio@oss.qualcomm.com>,	Bjorn Andersson
+ <bjorn.andersson@oss.qualcomm.com>,	Conor Dooley <conor+dt@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,	Prakash Gupta
+ <prakash.gupta@oss.qualcomm.com>,	Vikash Garodia
+ <vikash.garodia@oss.qualcomm.com>,	linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev,	linux-arm-kernel@lists.infradead.org,
+	devicetree@vger.kernel.org,	linux-pci@vger.kernel.org,	imx@lists.linux.dev,
+	xen-devel@lists.xenproject.org,	linux-arm-msm@vger.kernel.org,	Charan Teja
+ Kalla <charan.kalla@oss.qualcomm.com>
+Subject: Re: [PATCH v9 2/3] of: factor arguments passed to of_map_id() into a struct
+In-Reply-To: <ehhnta6zvfua723llpb52hh3lwqdh4ttomzt7xqrmcjnsslbop@p4w3gjzxp4rn>
 References: <20260301-parse_iommu_cells-v9-0-4d1bceecc5e1@oss.qualcomm.com>
- <20260301-parse_iommu_cells-v9-2-4d1bceecc5e1@oss.qualcomm.com>
+	<20260301-parse_iommu_cells-v9-2-4d1bceecc5e1@oss.qualcomm.com>
+	<861pi3amuu.wl-maz@kernel.org>
+	<ehhnta6zvfua723llpb52hh3lwqdh4ttomzt7xqrmcjnsslbop@p4w3gjzxp4rn>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/30.1
+ (aarch64-unknown-linux-gnu) MULE/6.0 (HANACHIRUSATO)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260301-parse_iommu_cells-v9-2-4d1bceecc5e1@oss.qualcomm.com>
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMzAxMDA5OCBTYWx0ZWRfX5loWIO62xl4j
- 7H+qHxHa2W2j08zHc5n1UvQU7L/jPlbymQ6hShLNs9i+jGYigXzM8UEIU2T0DKm5kbgnEmIkNDs
- a5V1QxB2I5is38K4GFIcb/lKkna1XHU4ZooHOv0SFu8KT7uS2pSnzlU5TH92DfwVlvL2wx7NjdI
- ehdjU0zs3CkyelrgtF+gd9H17yzCtc3RwnicDjkiSlcbg9OItebxeGaJ4Hy39lsXAmZt6cm/1mO
- Xv2ojPpgEPJ4b6HC+JGq55j5xOhF8z3d/tDtApJWB6ZrUt8WoajC9xTEwvELefopwM31kt6iMIy
- DNaUrmiMX2tzcRqL9yxhMcqn7NWinQg06qbw7WukmcP9STrvAZbzk5s5uzCQDUGj4lv3s+OE1Bo
- sjP0IhhbH8C8NtYajJkp9vLWqyqUq3H81e/2jYPF+uqdTSFuKXctXtNjzJD2mJpnqiP+JlltTvP
- efKdYeSFrwvv+ULh0lQ==
-X-Authority-Analysis: v=2.4 cv=QfVrf8bv c=1 sm=1 tr=0 ts=69a41c10 cx=c_pps
- a=HLyN3IcIa5EE8TELMZ618Q==:117 a=xqWC_Br6kY4A:10 a=kj9zAlcOel0A:10
- a=Yq5XynenixoA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=u7WPNUs3qKkmUXheDGA7:22 a=yx91gb_oNiZeI1HMLzn7:22 a=EUspDBNiAAAA:8
- a=VwQbUJbxAAAA:8 a=Dq95N7oyZucg39lo86YA:9 a=CjuIK1q_8ugA:10
- a=bTQJ7kPSJx9SKPbeHEYW:22
-X-Proofpoint-ORIG-GUID: IzOWdrY2hzjPEn5fFO1WTy3F1AQNQCnC
-X-Proofpoint-GUID: IzOWdrY2hzjPEn5fFO1WTy3F1AQNQCnC
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-03-01_01,2026-02-27_03,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- malwarescore=0 priorityscore=1501 spamscore=0 bulkscore=0 clxscore=1015
- adultscore=0 lowpriorityscore=0 phishscore=0 impostorscore=0 suspectscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2602130000 definitions=main-2603010098
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: dmitry.baryshkov@oss.qualcomm.com, vijayanand.jitta@oss.qualcomm.com, nipun.gupta@amd.com, nikhil.agarwal@amd.com, joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, lpieralisi@kernel.org, tglx@kernel.org, robh@kernel.org, saravanak@kernel.org, hongxing.zhu@nxp.com, l.stach@pengutronix.de, kwilczynski@kernel.org, mani@kernel.org, bhelgaas@google.com, Frank.Li@nxp.com, s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com, jgross@suse.com, sstabellini@kernel.org, oleksandr_tyshchenko@epam.com, konrad.dybcio@oss.qualcomm.com, bjorn.andersson@oss.qualcomm.com, conor+dt@kernel.org, krzk+dt@kernel.org, prakash.gupta@oss.qualcomm.com, vikash.garodia@oss.qualcomm.com, linux-kernel@vger.kernel.org, iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-pci@vger.kernel.org, imx@lists.linux.dev, xen-devel@lists.xenproject.org, linux-arm-msm@vger.kernel.org, charan.kalla@oss.qualcomm.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 
-On Sun, Mar 01, 2026 at 02:04:20PM +0530, Vijayanand Jitta wrote:
-> From: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
+On Sun, 01 Mar 2026 10:46:57 +0000,
+Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com> wrote:
 > 
-> Change of_map_id() to take a pointer to struct of_phandle_args
-> instead of passing target device node and translated IDs separately.
-> Update all callers accordingly.
+> On Sun, Mar 01, 2026 at 10:02:49AM +0000, Marc Zyngier wrote:
+> > On Sun, 01 Mar 2026 08:34:20 +0000,
+> > Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com> wrote:
+> > > 
+> > > From: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
+> > > 
+> > > Change of_map_id() to take a pointer to struct of_phandle_args
+> > > instead of passing target device node and translated IDs separately.
+> > > Update all callers accordingly.
+> > > 
+> > > Subsequent patch will make use of the args_count field in
+> > > struct of_phandle_args.
+> > > 
+> > > Suggested-by: Rob Herring (Arm) <robh@kernel.org>
+> > > Signed-off-by: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
+> > > Signed-off-by: Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
+> > > ---
+> > >  drivers/iommu/of_iommu.c              |  2 +-
+> > >  drivers/of/base.c                     | 37 +++++++++++++++++------------------
+> > >  drivers/pci/controller/dwc/pci-imx6.c |  8 +++++++-
+> > >  drivers/pci/controller/pcie-apple.c   |  4 +++-
+> > >  drivers/xen/grant-dma-ops.c           |  2 +-
+> > >  include/linux/of.h                    | 21 +++++++++++++-------
+> > >  6 files changed, 44 insertions(+), 30 deletions(-)
+> > > 
+> > > diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+> > > index a511ecf21fcd..d255d0f58e8c 100644
+> > > --- a/drivers/iommu/of_iommu.c
+> > > +++ b/drivers/iommu/of_iommu.c
+> > > @@ -48,7 +48,7 @@ static int of_iommu_configure_dev_id(struct device_node *master_np,
+> > >  	struct of_phandle_args iommu_spec = { .args_count = 1 };
+> > >  	int err;
+> > >  
+> > > -	err = of_map_iommu_id(master_np, *id, &iommu_spec.np, iommu_spec.args);
+> > > +	err = of_map_iommu_id(master_np, *id, &iommu_spec);
+> > >  	if (err)
+> > >  		return err;
+> > >  
+> > > diff --git a/drivers/of/base.c b/drivers/of/base.c
+> > > index 57420806c1a2..6c3628255908 100644
+> > > --- a/drivers/of/base.c
+> > > +++ b/drivers/of/base.c
+> > > @@ -2102,8 +2102,11 @@ int of_find_last_cache_level(unsigned int cpu)
+> > >   * @id: device ID to map.
+> > >   * @map_name: property name of the map to use.
+> > >   * @map_mask_name: optional property name of the mask to use.
+> > > - * @target: optional pointer to a target device node.
+> > > - * @id_out: optional pointer to receive the translated ID.
+> > > + * @arg: of_phandle_args structure,
+> > > + *	which includes:
+> > > + *	np: pointer to the target device node
+> > > + *	args_count: number of arguments
+> > 
+> > Number of arguments *to what*? Isn't that the size of args[] instead?
 > 
-> Subsequent patch will make use of the args_count field in
-> struct of_phandle_args.
-> 
-> Suggested-by: Rob Herring (Arm) <robh@kernel.org>
-> Signed-off-by: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
-> Signed-off-by: Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
-> ---
->  drivers/iommu/of_iommu.c              |  2 +-
->  drivers/of/base.c                     | 37 +++++++++++++++++------------------
->  drivers/pci/controller/dwc/pci-imx6.c |  8 +++++++-
->  drivers/pci/controller/pcie-apple.c   |  4 +++-
->  drivers/xen/grant-dma-ops.c           |  2 +-
->  include/linux/of.h                    | 21 +++++++++++++-------
->  6 files changed, 44 insertions(+), 30 deletions(-)
-> 
-> diff --git a/drivers/pci/controller/pcie-apple.c b/drivers/pci/controller/pcie-apple.c
-> index a0937b7b3c4d..e1d4b37d200d 100644
-> --- a/drivers/pci/controller/pcie-apple.c
-> +++ b/drivers/pci/controller/pcie-apple.c
-> @@ -755,6 +755,7 @@ static int apple_pcie_enable_device(struct pci_host_bridge *bridge, struct pci_d
->  {
->  	u32 sid, rid = pci_dev_id(pdev);
->  	struct apple_pcie_port *port;
-> +	struct of_phandle_args iommu_spec = { .args_count = 1 };
+> It is a number of values corresponding to the phandle in the DT
+> property.
 
-Hmm, I didn't notice this. Parsing functions are expected to ignore
-of_phandle_args before the parsing. So passing .args_count = 1 is
-strange.
+No. It is what the *caller* expects. Not what is is in the DT, which
+could be (and generally is) a pile of random crap. If the two don't
+match, return an error. But don't randomly overwrite data that is not
+yours.
 
->  	int idx, err;
->  
->  	port = apple_pcie_get_port(pdev);
+[...]
+
+> It might be not obvious here for iommu-maps, but the struct is
+> idiomatic in OF world. Let me quote a (trimmed) example from
+> qcom/sm8650.dtsi (for a different property, but it explains the meaning
+> of the values here):
+> 
+> gem_noc: interconnect@24100000 {
+> 	#interconnect-cells = <2>;
+> };
+> 
+> epss_l3: interconnect@17d90000 {
+> 	#interconnect-cells = <1>;
+> };
+> 
+> interconnects = <&gem_noc MASTER_APPSS_PROC QCOM_ICC_TAG_ACTIVE_ONLY
+> 		 &gem_noc SLAVE_LLCC QCOM_ICC_TAG_ACTIVE_ONLY>,
+> 		<&epss_l3 MASTER_EPSS_L3_APPS
+> 		 &epss_l3 SLAVE_EPSS_L3_SHARED>;
+> /* I skipped the second pair, it adds nothing here */
+> 
+> Here the parsing function for this property (of_icc_get_by_index()) will
+> call of_parse_phandle_with_args() 4 times and it expects to return the
+> following values in the of_phandle_args:
+> 
+> 1. { .np = gem_noc, .args_count = 2, .args = [MASTER_APPSS_PROC,
+>                                               QCOM_ICC_TAG_ACTIVE_ONLY] }
+> 2. { .np = gem_noc, .args_count = 2, .args = [SLAVE_LLCC,
+>                                               QCOM_ICC_TAG_ACTIVE_ONLY] }
+> 3. { .np = epss_l3, .args_count = 1, .args = [MASTER_EPSS_L3_APPS] }
+> 4. { .np = epss_l3, .args_count = 1, .args = [SLAVE_EPSS_L3_SHARED] }
+> 
+> The whole of_phandle_args is then typically passed to the corresponding
+> xlate function, specific to the paricular .np ('provider'), which will
+> use #args_count values from the #args array to return the object from
+> the provider.
+> 
+> Now let's see iommu-maps (again, qcom/sm8650.dtsi):
+> 
+> apps_smmu: iommu@15000000 {
+> 	#iommu-cells = <2>;
+> };
+> 
+> iommu-map = <0     &apps_smmu 0x1400 0x1>,
+> 	    <0x100 &apps_smmu 0x1401 0x1>;
+> 
+> The property matches current definition at [1], however this spec
+> doesn't match the DT practice. It forces that the property should use 1
+> cell for identifying the "object" in the IOMMU provider, even if the
+> provider expects to use 2 cells (two args).
+> 
+> The correct property should look like:
+> 
+> iommu-map = <0     &apps_smmu 0x1400 0x0 0x1>,
+> 	    <0x100 &apps_smmu 0x1401 0x0 0x1>;
+> 
+> [1] https://github.com/devicetree-org/dt-schema/blob/main/dtschema/schemas/pci/pci-iommu.yaml
+> 
+> > 
+> > > + *	args[]: array to receive the translated ID(s).
+> > >   *
+> > >   * Given a device ID, look up the appropriate implementation-defined
+> > >   * platform ID and/or the target device which receives transactions on that
+> > > @@ -2117,21 +2120,21 @@ int of_find_last_cache_level(unsigned int cpu)
+> > >   */
+> > >  int of_map_id(const struct device_node *np, u32 id,
+> > >  	       const char *map_name, const char *map_mask_name,
+> > > -	       struct device_node **target, u32 *id_out)
+> > > +	       struct of_phandle_args *arg)
+> > >  {
+> > >  	u32 map_mask, masked_id;
+> > >  	int map_len;
+> > >  	const __be32 *map = NULL;
+> > >  
+> > > -	if (!np || !map_name || (!target && !id_out))
+> > > +	if (!np || !map_name || !arg)
+> > >  		return -EINVAL;
+> > >  
+> > >  	map = of_get_property(np, map_name, &map_len);
+> > >  	if (!map) {
+> > > -		if (target)
+> > > +		if (arg->np)
+> > >  			return -ENODEV;
+> > >  		/* Otherwise, no map implies no translation */
+> > > -		*id_out = id;
+> > > +		arg->args[0] = id;
+> > 
+> > What if args_count is 0? Given that you place no restriction on the
+> > way this can be called, that'd be entirely legitimate, and you'd
+> > corrupt something you're not supposed to touch.
+> 
+> args is an array (not a pointer) in of_phandle_args. As such we know
+> that args[0] is legit.
+
+Again, no. The caller is telling you what it expects. This is strictly
+equivalent to:
+
+	void func(void *blah[], int sz);
+
+func() is not supposed to look beyond sz. As it stands, this change in
+not acceptable.
+
+	M.
 
 -- 
-With best wishes
-Dmitry
+Without deviation from the norm, progress is not possible.
