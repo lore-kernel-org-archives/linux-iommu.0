@@ -1,38 +1,66 @@
-Received: from smtpbgsg2.qq.com (smtpbgsg2.qq.com [54.254.200.128])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f194.google.com (mail-pg1-f194.google.com [209.85.215.194])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B0851CEADB;
-	Sun,  1 Mar 2026 03:49:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=54.254.200.128
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A716311C27
+	for <iommu@lists.linux.dev>; Sun,  1 Mar 2026 03:50:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.194
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772336970; cv=none; b=DvTZ6iGXC/Zu9Jpc2RmIyriTt/c2aykk6JLfp5mJzLkYE1fgWEmpDnnA8OUKtJ+gxXLd9kVPEgCbhlNA3sLHOYfNo0O8PMaO6KOooDiK5oEeZsyE93cL8av85DfYU47lj6RtPeE6wQ8aczr4BmLoSSqSgz17iKza+KSmZOZ8Lng=
+	t=1772337057; cv=none; b=tjzvCTv+SC6u2dVKfGpSVlfXRnLluEneziNyX3tezU6JN+SvHqEW8mrGNEvXa+zOXh1KHqcLteMx8opNQ9bP89UkHrpnaRnaeHdNcI8eJ9ZaD3UNFL1mhEThreBxsWvT00KOK0lC9pgv6WW3i7BStf2KLNtOteoMuIX0Fv8JtRg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772336970; c=relaxed/simple;
-	bh=0biuHdQGGXz3nlAL4YNA5zSzBrIJomDwasqnGb1N2J4=;
+	s=arc-20240116; t=1772337057; c=relaxed/simple;
+	bh=dMPwz83V0EGBSQGUv+05EFSISdqfMRyZjBUGlzSck3U=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=OzL3J7Nuz35tWgan/wmLMZXr0hR9vTWQRLshstBY2ofkdRUTAnKdJAxdYqpXn8I7g0Nn295JYvYaTK7P+8T+No39pvD5/qB2vRsMChd06Hl81zngmyJiflmJ8/uyOeZfNA28RJoATG5DsTjVZMViHB5k6x4DqSz3kWeYqRN+0eU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux.spacemit.com; spf=none smtp.mailfrom=linux.spacemit.com; dkim=pass (1024-bit key) header.d=linux.spacemit.com header.i=@linux.spacemit.com header.b=eD1/LXtf; arc=none smtp.client-ip=54.254.200.128
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux.spacemit.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.spacemit.com
+	 In-Reply-To:Content-Type; b=bwsWMvv4uDyIIUyt/GTvBVPgU2N1UbrEATBymjByIZJWVmH3nyhgvzHJpz4osRPHrfaSoMZ4FAxqEzhqt4umnj5o4TtHX2/n+vQyo8SrflTXm03gGNkVfWrT/mwBqZgahdyTMz3K5Ph1QAJHGwi6CloXpVhJ8Mg6Rql0TwRNPBE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dYkgv0Rm; arc=none smtp.client-ip=209.85.215.194
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.spacemit.com header.i=@linux.spacemit.com header.b="eD1/LXtf"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.spacemit.com;
-	s=mxsw2412; t=1772336933;
-	bh=+5paHRPZZrBh/NKD6TDbxyoYm3rv+54rwhY/Og8SU+Q=;
-	h=Message-ID:Date:MIME-Version:Subject:To:From;
-	b=eD1/LXtfe3Cen80ukqTkFd7ujacjfmC3VaTsMJTD1LPGJX3RSaypP2Dc+LR6AU4NN
-	 hwRYbxLDP+MR9qXiFr98UsMezjvf8jUZnoqqXvFGU6r6w8+u4OH6reXa5Atd3wFxzg
-	 3VvMzE66lXFnETHClOJWTyWh/y67zPGulJHFN6fE=
-X-QQ-mid: zesmtpip4t1772336923tc5040b5f
-X-QQ-Originating-IP: hkJyYHD8Fmt2mknEqNTEkP9Ut4PKZmIXRumoHQA1hJk=
-Received: from [IPV6:2409:8a1e:2ff0:1c00:c54c: ( [localhost])
-	by bizesmtp.qq.com (ESMTP) with 
-	id ; Sun, 01 Mar 2026 11:48:39 +0800 (CST)
-X-QQ-SSF: 0000000000000000000000000000000
-X-QQ-GoodBg: 0
-X-BIZMAIL-ID: 12201496879087410398
-Message-ID: <CAB7A310CE95B577+5f5c0825-25dd-4035-9316-db940c00216b@linux.spacemit.com>
-Date: Sun, 1 Mar 2026 11:48:37 +0800
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dYkgv0Rm"
+Received: by mail-pg1-f194.google.com with SMTP id 41be03b00d2f7-c70fb6aa323so1103113a12.3
+        for <iommu@lists.linux.dev>; Sat, 28 Feb 2026 19:50:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1772337055; x=1772941855; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=+WmlZ9Q2/zs3s/Gu9x2MdBKtAiPtvLREfo+aflS322E=;
+        b=dYkgv0RmBdCbokJapt/sif0vQMqzCwd37U+ebrHhwqRFnMHJNROxZZeo0or2gkMHxi
+         wukBh6T5dnm3vyEHZpOrVFpzHPK+peYUWUgPEfRuNuziBu4hF3E7+gD8VJhyg4y7pb9U
+         nltUqYF0uFTtYyWBkMRMuWqO8+U/avDvd+UJ/yexVwL05D94wQZShz4LDDnMZkw+iKLN
+         tUROnQPOCjXiLzF/FlnRIbYUlrbFdDi5PpipNL3njN1r1pChJOYqbpSx8FD3sBJ3ZlFA
+         VL0sW2spvk029nedZqcYoBhcz/ueYvYWwiSlC1ZRJyxnISrZgVHQ3ZEXWkyxOXTJsdwp
+         /KGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772337055; x=1772941855;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=+WmlZ9Q2/zs3s/Gu9x2MdBKtAiPtvLREfo+aflS322E=;
+        b=BEKhlE0djU9k1WAdv4PbFFlCyq2tXDpIr0+BmM8JviKwtFnaddgg6NsCUHDSfpo4d0
+         dgJi0V7uC8gtTq6AY8j96b8UX885d6riCb/pzMfy0WOjIuCLaJ9nLEAk1nG4HeWZquHz
+         6fJiCAaSKbgOUhEVxFkh/MOcpNwf1sjk2oIOOCcLQ5+d8oCba/2ej3xmODXIVJvTfqlY
+         zg8f1x1AGV3ikhHlB8n4JPXxiJbwVg6RKNPrgfjGrHGKoBx3QRdqLWxkKUIRvMChUnLc
+         WOlC/cGXqx9U9OLZrUdrO9ZhYzkNUxlzsGB+UhpsemHzD4PpqmwD4OgqFpzvk+JzsMr8
+         WPwg==
+X-Gm-Message-State: AOJu0Yw1L7smFAolbPPL0Bgpd1p0MI0ldWoKug7/xsLa+OPnbdxMY30d
+	KxwYAK+T1PIc+g6U4buBzYTb6vL6JTz1HVsDAMlYYnsKcLNJ/6mXbYu6R9jme/Vo0PQ=
+X-Gm-Gg: ATEYQzxY5ySPoTF5E7dNu/Gysr2UZCU/6G4wRCwj61XAlfNdFr4A7wVM+qIgjTCE08c
+	YQr2APe3t30VfQ06rornso04UnzzECQMXErAmc4n/dDCrau0kxrvfsaBdGrblDKWF91OeOB/Hx+
+	1puKBNSNtY0akWp0t7g52/F9BpLfws4FtN+4Umm8SSjX0eK60gSYiIQe1M1A0ytcQQrYr8DTSDR
+	HAVMA5OIngAdkivtOaVzXjKHLfjo6Ui5AbrTzoiYf8P7DrCuaXPecCiqPVKvX1od5x/pvAv4Ehb
+	qVAIcXOv+mHKYxDEje0r0qIRcM/+Bpx+uH7CysWawbQa09teoj1g+JPXmb+pwZu4+7wn/i26/Ug
+	lVxSCzrRrl2TsG+eNMbLCZUmbHwHc7juSbQ1KfrxSoagFUDUjOi1WjU9s0uQ8N73cijbJK+H3w+
+	Ji/lCmu7THmkXDDfXSOFzVbxqSPUMsY5rDEnIxwvCWX3uAqJMqaZ4I1jme63JZa9EC5xVfykIWC
+	JQZc2zmp8T+Fj9FFYGILw4=
+X-Received: by 2002:a05:6a00:4503:b0:827:3b1b:43e6 with SMTP id d2e1a72fcca58-8274d94caf9mr6631233b3a.21.1772337055416;
+        Sat, 28 Feb 2026 19:50:55 -0800 (PST)
+Received: from [26.26.26.1] (107.153.212.35.bc.googleusercontent.com. [35.212.153.107])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-82739d4d880sm9534477b3a.7.2026.02.28.19.50.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 28 Feb 2026 19:50:55 -0800 (PST)
+Message-ID: <0a506efc-a06d-4523-b149-eb74eb5df067@gmail.com>
+Date: Sun, 1 Mar 2026 11:50:51 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -40,84 +68,124 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 4/8] dt-bindings: iommu: Add spacemit/t100 features
-To: Conor Dooley <conor.dooley@microchip.com>
-Cc: Tomasz Jeznach <tjeznach@rivosinc.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Paul Walmsley <pjw@kernel.org>,
- Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>,
- Alexandre Ghiti <alex@ghiti.fr>, Peter Zijlstra <peterz@infradead.org>,
- Ingo Molnar <mingo@redhat.com>, Arnaldo Carvalho de Melo <acme@kernel.org>,
- Namhyung Kim <namhyung@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
- Alexander Shishkin <alexander.shishkin@linux.intel.com>,
- Jiri Olsa <jolsa@kernel.org>, Ian Rogers <irogers@google.com>,
- Adrian Hunter <adrian.hunter@intel.com>, James Clark
- <james.clark@linaro.org>, Yixun Lan <dlan@kernel.org>,
- Jingyu Li <joey.li@spacemit.com>, Zong Li <zong.li@sifive.com>,
- Yaxing Guo <guoyaxing@bosc.ac.cn>, iommu@lists.linux.dev,
- linux-perf-users@vger.kernel.org, linux-riscv@lists.infradead.org,
- spacemit@lists.linux.dev, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-References: <cover.1772289741.git.lv.zheng@linux.spacemit.com>
- <D8CE6E5B1001D797+a6f36da0272ac18fff2a992976b1defc3bb01af6.1772289741.git.lv.zheng@linux.spacemit.com>
- <177231592262.848068.18080490567217057666@spud>
+Subject: Re: [PATCH v2 0/2] iommu/vt-d: Skip dev-iotlb flush for inaccessible
+ PCIe device
+To: Jinhui Guo <guojinhui.liam@bytedance.com>, dwmw2@infradead.org,
+ baolu.lu@linux.intel.com, joro@8bytes.org, will@kernel.org
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ stable@vger.kernel.org
+References: <20251211035946.2071-1-guojinhui.liam@bytedance.com>
 Content-Language: en-US
-From: Lv Zheng <lv.zheng@linux.spacemit.com>
-In-Reply-To: <177231592262.848068.18080490567217057666@spud>
+From: Ethan Zhao <etzhao1900@gmail.com>
+In-Reply-To: <20251211035946.2071-1-guojinhui.liam@bytedance.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: zesmtpip:linux.spacemit.com:qybglogicsvrgz:qybglogicsvrgz5b-1
-X-QQ-XMAILINFO: M+DG/l9YxNXYmabmMRMls1lbrfJ4T+/KYUogo7rrBzWN1EzsTJENjweJ
-	sToqhOMu0z+KnyBg+FPGqd0857FgapFn9F0mZW4hl1C899Q/dy5n9WyYcCe4sZXOZ1c7UrF
-	PbHBimn5ACcOIc9Nu9gSVAx2v9mj47mkniUq/1lnUl9vglG/CuF9YRoIOZCMh/nl3hxUmrd
-	C6fo985s6yI9ZwqngDDEqkeLvj4m/iS7xGsJPssVZRamFkfu2pr7up3995hNiYJMamGkthY
-	YXEJ0T0kjH7Nlx/XJQE1pLfNUz4XL4kpy7gAc8srCglzgyFCSxipP0TPOGeHTDPb8k++q05
-	Pd6zUq4Tf7jhYXEWciODD3PjDpaKf5e8MbuvRMZpP8fMHRYXR2OUi+abE75zc6MkmaVmsf7
-	SPZ6+jljyEHkNztoy2lP0Ar0YXQBz3e4qbGbXGXw2OfBfzOvfpRPKXzk6Rgwklzgju6IglP
-	ljMZmC9C9C4iHgThR5Vq7jHmdClGFz32MLL0uFEinkhJ1QuPaW0MwiQPFiEcsAYC7Os1iHU
-	wSJhmWFmAp0FVOK2RgYR9TsnV5MSD02w6MrLDXYEOyXtaulhfzozq5Q874VfF5rnwMb5r/H
-	oWHY8QkIyank5gH7JGwSbEJvn3hVQcHVZOnIjoC34iXv4cyyt5vFq6N8pWe8McjCIYXnLZL
-	zeGoNE2NL4UvO3yG8nnpnduRZ5FX0vsaQ5qZVygwh8lZ1+C72UXoZLiF+qqDhxW+2eqznnP
-	3gsyz3fEDJK5tBT6DPjcpMn5wXpx1IWoUOFz911OpbRVbPvUUgJVb1EJoC0ktZRml8+Vb/R
-	76tnd9U7vr9smo8iaZJVTBFS0DXXofoaueeG3xbj5bYoLQbWglliMpPmRD1EiBJrHOhRjoe
-	aECSqjpWyQc8TnpuNB8ncCxsv0Qy4IwoQZcSLbIEG6zulNf65MChFO1Bf3fUo4cirL/IoBx
-	19Vf4Z0bDAYM9I9tSkklzM9HsYkm8u60yLETCiVed3tDQ85psNLiJmVZSXmxQ46fckQLur2
-	/hrhlmkhk7usGJSZxxQlLC70J3QxCmST4DItZEA9gAVryEAtiEMGFNNZB0Sxk=
-X-QQ-XMRINFO: Mp0Kj//9VHAxzExpfF+O8yhSrljjwrznVg==
-X-QQ-RECHKSPAM: 0
 
-On 3/1/2026 5:58 AM, Conor Dooley wrote:
-> On Sat, 28 Feb 2026 22:44:49 +0800, Lv Zheng <lv.zheng@linux.spacemit.com> wrote:
->> Adds device tree bindings for SpacemiT T100 specific features by
->> introducing spacemit,t100 compatible. T100 contains distributed IOATCs,
->> each of which exposes pmiv interrupt.
->>
->> Signed-off-by: Lv Zheng <lv.zheng@linux.spacemit.com>
->> Signed-off-by: Jingyu Li <joey.li@spacemit.com>
+
+
+On 12/11/2025 11:59 AM, Jinhui Guo wrote:
+> Hi, all
 > 
-> Patch content here is fine, but the signoff chain on this patch is not
-> right. What did Jingyu do? You're author and submitter so either Jingyu
-> did nothing and should be removed, or is a co-developer which requires
-> attribution via the co-developed-by tag. If the latter, their signoff
-> should be before yours (the submitter is always last).
+> We hit hard-lockups when the Intel IOMMU waits indefinitely for an ATS invalidation
+> that cannot complete, especially under GDR high-load conditions.
 > 
-> pw-bot: changes-requested
+> 1. Hard-lock when a passthrough PCIe NIC with ATS enabled link-down in Intel IOMMU
+>     non-scalable mode. Two scenarios exist: NIC link-down with an explicit link-down
+>     event and link-down without any event.
+> 
+>     a) NIC link-down with an explicit link-dow event.
+>        Call Trace:
+>         qi_submit_sync
+>         qi_flush_dev_iotlb
+>         __context_flush_dev_iotlb.part.0
+>         domain_context_clear_one_cb
+>         pci_for_each_dma_alias
+>         device_block_translation
+>         blocking_domain_attach_dev
+>         iommu_deinit_device
+>         __iommu_group_remove_device
+>         iommu_release_device
+>         iommu_bus_notifier
+>         blocking_notifier_call_chain
+>         bus_notify
+>         device_del
+>         pci_remove_bus_device
+>         pci_stop_and_remove_bus_device
+>         pciehp_unconfigure_device
+>         pciehp_disable_slot
+>         pciehp_handle_presence_or_link_change
+>         pciehp_ist
+> 
+>     b) NIC link-down without an event - hard-lock on VM destroy.
+>        Call Trace:
+>         qi_submit_sync
+>         qi_flush_dev_iotlb
+>         __context_flush_dev_iotlb.part.0
+>         domain_context_clear_one_cb
+>         pci_for_each_dma_alias
+>         device_block_translation
+>         blocking_domain_attach_dev
+>         __iommu_attach_device
+>         __iommu_device_set_domain
+>         __iommu_group_set_domain_internal
+>         iommu_detach_group
+>         vfio_iommu_type1_detach_group
+>         vfio_group_detach_container
+>         vfio_group_fops_release
+>         __fput
+> 
+> 2. Hard-lock when a passthrough PCIe NIC with ATS enabled link-down in Intel IOMMU
+>     scalable mode; NIC link-down without an event hard-locks on VM destroy.
+>     Call Trace:
+>      qi_submit_sync
+>      qi_flush_dev_iotlb
+>      intel_pasid_tear_down_entry
+>      device_block_translation
+>      blocking_domain_attach_dev
+>      __iommu_attach_device
+>      __iommu_device_set_domain
+>      __iommu_group_set_domain_internal
+>      iommu_detach_group
+>      vfio_iommu_type1_detach_group
+>      vfio_group_detach_container
+>      vfio_group_fops_release
+>      __fput
+> 
+> Fix both issues with two patches:
+> 1. Skip dev-IOTLB flush for inaccessible devices in __context_flush_dev_iotlb() using
+>     pci_device_is_present().
+> 2. Use pci_device_is_present() instead of pci_dev_is_disconnected() to decide when to
+>     skip ATS invalidation in devtlb_invalidation_with_pasid().
+If what I remembered right, using pci_device_is_present() to replace
+pci_device_is_disconnected() might not be the correct choice against
+link down case, you might misunderstand the function of pci_device_is
+_present() when device is there but link is not up. if you want to check
+link status, just check link status.
 
-She is responsible for the common HPM part, and I just gave my comments 
-to help to improve the quality of that implementation.
-I was just focusing on enabling and maintaining the T100 specific features.
+Bjorn, correct me if I am wrong.
 
-Our patches will go each other's local repository, leaving such tracks. 
-That means the patch from me is Reviewed-and-tested-by her.
-And I'm responsible for sending the whole patchset for upstreaming.
+Thanks,
+Ethan
 
-Cheers,
-Lv
 
 > 
-> Cheers,
-> Conor.
+> Best Regards,
+> Jinhui
+> 
+> ---
+> v1: https://lore.kernel.org/all/20251210171431.1589-1-guojinhui.liam@bytedance.com/
+> 
+> Changelog in v1 -> v2 (suggested by Baolu Lu)
+>   - Simplify the pci_device_is_present() check in __context_flush_dev_iotlb().
+>   - Add Cc: stable@vger.kernel.org to both patches.
+> 
+> Jinhui Guo (2):
+>    iommu/vt-d: Skip dev-iotlb flush for inaccessible PCIe device without
+>      scalable mode
+>    iommu/vt-d: Flush dev-IOTLB only when PCIe device is accessible in
+>      scalable mode
+> 
+>   drivers/iommu/intel/pasid.c | 11 ++++++++++-
+>   1 file changed, 10 insertions(+), 1 deletion(-)
 > 
 
