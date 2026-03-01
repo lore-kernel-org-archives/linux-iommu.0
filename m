@@ -1,39 +1,39 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE01A2DCBFA;
-	Sun,  1 Mar 2026 01:34:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4A7026FA6F;
+	Sun,  1 Mar 2026 01:43:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772328843; cv=none; b=bQKOPUS2xx6aTNXAxhfPcX5lpSOpbbKzQf79/lma5o/F0kZTYFCW4JX0PO2xgdiGWoO7bNcgDdczKzzAaM0JuqrWvqhwgpbpGXgwYGcIAK6H2RuummGfNiSaUvhNrfIQ03fc6h0fShlp20DPAlmU5EW/NUbOcCtZpbMJHYEke+s=
+	t=1772329382; cv=none; b=BKPU5dp8S8qFpB1lyxjFA+XeTYnThbPWjFREad/oqVbuWZxrDUAeHGTn/tBtKMyt0VnQ58VJJ7VFtQoDec+ufzjFn3W5FjDENWHYVFGFJxIlMK+kWaa07XHdFb8kT7ueUA0a+rPIZSr9hYYjOckNbnYkb70+TAChBulfExAAT6s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772328843; c=relaxed/simple;
-	bh=0Q276LfkLkXsD1NaLQlf+Wme6Karbo2sw89fG6cvPwA=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=ptKabo5P5EZDuyyIBPQg/bWK+K65oBceTqVq+NZgFuu1iMy+OTkXXFJ5h/cxU9z8MGDfsVbmaTo++aoblBBgVoDaI4Y7lMzLUOddjkU7eryWTiVm9+R0fmCMLWz0MZIIBDZHedX/jU2SmDSsRguQxYyARXw6M6JSdpSVworigGk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=b0iF91X1; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1772329382; c=relaxed/simple;
+	bh=yz1KDReCXChk/d3BtAkAMYPjYynfLbVLMx2pwaENvJs=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=ofGBXYQnLyFWlVx1+weFBKAvDRBmIAwsg3EvUAo6x5dinrToqyg4Ou6i1iGXHAGKxQpnFaCdSMG0cGpi9WPMK+1Yi19F2tIqc4S82glUF9ZpWnkqYEa+wU21mUDU419NzqM0SIYRZ02UGNNPp08zyHa56GHubn+jn0fIJjwoN6s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SnqLATCE; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="b0iF91X1"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20A84C19421;
-	Sun,  1 Mar 2026 01:34:03 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SnqLATCE"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C627CC19421;
+	Sun,  1 Mar 2026 01:43:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772328843;
-	bh=0Q276LfkLkXsD1NaLQlf+Wme6Karbo2sw89fG6cvPwA=;
+	s=k20201202; t=1772329382;
+	bh=yz1KDReCXChk/d3BtAkAMYPjYynfLbVLMx2pwaENvJs=;
 	h=From:To:Cc:Subject:Date:From;
-	b=b0iF91X1vLA6kAbjGd6cMgdTZ27YmEv4NYrXcriFDBplTY6LXZ+zvXaRG+HHHSYuF
-	 j8u03oIx7e61TSc32rABcxDKb65p2AnhL3thdG+bx//XKdxzK5z3EEBLmtAbkVIo8m
-	 MEev4T3EyPuG0uEnmYzjFpA0T94hPliIFN25iSjctGUTS8ogDHB4mNfnnlQc7vilea
-	 AGnxA5/5F06TvVLPNfaNiL2Qy1OZcSIDqJemMhLkkm5ijlusiNUvwob0FYCqWUsBMQ
-	 vZnSz8HFoC105MHRSHC8t8za9+3WqJOiDgeY9fC7oIKWYi2TTscIuHq9q5HSxuIDqJ
-	 rgON0Ash0x+xQ==
+	b=SnqLATCE0CVVVfKgjyXpLh9KaAu+XVEABhRuVj9w9/60IaE7G/o7bAK98fb10Dh8S
+	 2PMS9q9iqayjjGPVF19MwpunWsJ7rw7QPWy0N8zA6uNtJnkMk1TmlBoeSBB944kVBH
+	 IZ0tsG8S8MRbULTuFO91w9Xk0dlosKDQMvON3jKg9lKLBAbuoJ7WJa85MWrGMcfOu/
+	 lhA6ZUm8oIVnoCieG2lTcs+oOECOoEx0IAGQMNyCRi4dgbLoLH4ud/kzaw5ivFYqKq
+	 rFh7Fa0RalQNSktTe9XGkVpSP3myAmkneNpcirQDplbKKwHE9w9j5ua8HDZKBWIin1
+	 Ldi98ZlyJFZ1g==
 From: Sasha Levin <sashal@kernel.org>
 To: stable@vger.kernel.org,
 	guojinhui.liam@bytedance.com
 Cc: Lu Baolu <baolu.lu@linux.intel.com>,
 	Joerg Roedel <joerg.roedel@amd.com>,
 	iommu@lists.linux.dev
-Subject: FAILED: Patch "iommu/vt-d: Flush dev-IOTLB only when PCIe device is accessible in scalable mode" failed to apply to 6.6-stable tree
-Date: Sat, 28 Feb 2026 20:34:01 -0500
-Message-ID: <20260301013401.1693386-1-sashal@kernel.org>
+Subject: FAILED: Patch "iommu/vt-d: Flush dev-IOTLB only when PCIe device is accessible in scalable mode" failed to apply to 6.1-stable tree
+Date: Sat, 28 Feb 2026 20:43:00 -0500
+Message-ID: <20260301014300.1704977-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.51.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -46,7 +46,7 @@ X-stable: review
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-The patch below does not apply to the 6.6-stable tree.
+The patch below does not apply to the 6.1-stable tree.
 If someone wants it applied there, or to any other stable or longterm
 tree, then please email the backport, including the original git commit
 id to <stable@vger.kernel.org>.
