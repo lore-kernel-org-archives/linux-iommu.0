@@ -1,234 +1,249 @@
-Received: from BYAPR05CU005.outbound.protection.outlook.com (mail-westusazon11010008.outbound.protection.outlook.com [52.101.85.8])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 503D833263A
-	for <iommu@lists.linux.dev>; Mon,  2 Mar 2026 10:39:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.85.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1D8435AC34
+	for <iommu@lists.linux.dev>; Mon,  2 Mar 2026 10:57:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.21
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772447970; cv=fail; b=JVHqGVJO6jfjZlt8J1+FUU4zQVjCQcFSqV9bnSWODsKgZJVBQMWPiYe8YTWC3o0+aMP/IMZ1IYsD6bL3PunJl1/ewWkgnxJAdTZ4ereSVZIDTTeRKnkdPziuN8voUtBzPvaeXXHDbdyG5h/tl5pDUGPuAvA0TM3oKj93v0ugdr4=
+	t=1772449026; cv=fail; b=LAf+7zy4rggNsG+lzAp72wPbmJY9Xj+cn0dOAjz6nj+hx7nCe6VH+dciB7kPI5La2gr0TUTvSs5kcpvBah9e7vxCeD2ey+93pR0wAZYCQQ4tMQpKrY/vwowwpSLnEk0qyX8Iq9xkP7sJPsfpdM57N8dppEAZcudResOZ57w4s9Y=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772447970; c=relaxed/simple;
-	bh=E0FTIRB4aTdPk/Bu+b3hLUKI5SWd1gJu2qy4NaGxbCo=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=iqRsdLSP4ZGzUv13yUCjXunJzp72CVLKrXMt1TWUDI20OwZUQxYu8rTWyy/1G/yIj7TjxxfsB8j7R+VwC2OIGZx7S/0xjGo/EGjcWfQF4oHuJWsJ+vS4S8acp4DZkV9uqZ354qWj+vLuMY4SNOBctDgHXKJPBOOvVzHaCQSMrzs=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=1tTbRH70; arc=fail smtp.client-ip=52.101.85.8
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	s=arc-20240116; t=1772449026; c=relaxed/simple;
+	bh=fLWIIhAMqLi/nzrnJAYeat3BICsRQ8HX7Lxgqc7uHek=;
+	h=Message-ID:Date:Subject:To:CC:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=ioj5DwaVNEzJmMzXTC3PNtSZxd/yga89Eury/RrqSIK8Jru5L/14aTVMkxM8necF8gBxmTAfbQerOVEI2X3k2Zrj0UGZyuxO5AgDVVArmev4Qh15Q1/SM8wUY3/xvmsBCTqlwc/RRYGzVQ10twVnmfPvw1PmBGxMk+mBAIk2Hyw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SJR6n6Z0; arc=fail smtp.client-ip=198.175.65.21
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="1tTbRH70"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SJR6n6Z0"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1772449025; x=1803985025;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=fLWIIhAMqLi/nzrnJAYeat3BICsRQ8HX7Lxgqc7uHek=;
+  b=SJR6n6Z02VsKJyPoqAbaUzrvgOllkOmDSH7DgapefpmmS9Z96wyowb8w
+   LEiNvnn2WuEOpQvNbNtC09o6bcsTBxIC9+Gb4uYrpMB7tK1au9t9tGsFg
+   MH/OSmPGMJ1djZKwO2WG+EHhuVDHeUvJG/1zR/a9GASk1IIOu2k722UWB
+   xE+Lqx3SGHsHQTEDQW/VLOrIxMNhIP5WdxCPONObojVzozMH/GX+s5wpL
+   EY7Vut1RfriziZQdYwGxTVVZfPoU0uSVmB09JvHpuQYmXTbJJXr32FdYY
+   H2La6Fd7eB7NZR6CzoZW6hAnZP137EZkQC1CPGk/drG+NbmTTqEWqPj8Z
+   Q==;
+X-CSE-ConnectionGUID: zyQ9QsqiQha3aDxg7SnIkg==
+X-CSE-MsgGUID: x9RbE4IMQfm410ahtuOpoQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11716"; a="73320865"
+X-IronPort-AV: E=Sophos;i="6.21,319,1763452800"; 
+   d="scan'208";a="73320865"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2026 02:57:04 -0800
+X-CSE-ConnectionGUID: aqWLEeMJTu2EkAYOqGL+Yw==
+X-CSE-MsgGUID: 2xLnTDRdS9yWpIx7JHUmRQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,319,1763452800"; 
+   d="scan'208";a="216845411"
+Received: from fmsmsx903.amr.corp.intel.com ([10.18.126.92])
+  by orviesa010.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2026 02:57:04 -0800
+Received: from FMSMSX901.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx903.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.37; Mon, 2 Mar 2026 02:57:03 -0800
+Received: from fmsedg903.ED.cps.intel.com (10.1.192.145) by
+ FMSMSX901.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.37 via Frontend Transport; Mon, 2 Mar 2026 02:57:03 -0800
+Received: from BN1PR04CU002.outbound.protection.outlook.com (52.101.56.57) by
+ edgegateway.intel.com (192.55.55.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.37; Mon, 2 Mar 2026 02:57:03 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=F5DAqQRQZD5gEXH7WxEr3RNQI+zQ30NtQACSEOhKzzzO5Egag8g0zxNgdjYZKfHbYEe8D6ivU9RPEl8xwkt0aJl32SsoJZTIeLRW9CK+MeA06HU6kCDyAOTc+ETOxyqScw4kwsQyKbrsKTieXh6AcrPteUbmXZpijBd3AsxzTKgS20oW/XI9uMaGTtKtwbrLjvgSk1JG5QvmpB7gQjLqN65x+cqO29OPXJJvBa8zTgLbdtXwvO1GvC+cuImhzBjRv6wo37yG8gOWRu3aNLEXBoIwJ6Hv6R3KC/laWQfXdKtIo0cWILhoWInCnlggXCSEQkmKJuIChEpFnkX52UUafg==
+ b=MtN7v82+xqoXlIh+qJX87nascKRSaqoeorJEPf+qWXWCRm742Zfadbo+bYKSKcFEcUPUyU8VDz6nGxIKyolSohP9iPZWwAkj6Nj/xBnHwAw53tivBvS8f0Mm6GEJCmKmO1VLpvFe45ksSDEx0Pev0+SGz+uhMjIos5ZXBi96R4u3TrgOW2HrHSGX4KBq93/95oCU9m3mgQ0bAglU86Yt9QMm/l+bafD5orX/f0evOiDD/mapKoH2wmo4I8OexFLA/SCa/4szn3s8o5+4+b+PH2n2spxbBEtorjss2zfn/FYtkCGYPt9+vg9ojoAk3zACIz5wVBKfYBolX7v4S8Ylbw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gSoCL605tK1IDIth4UrRL9N0xQePhXBnOrCxRyaDd8E=;
- b=KysdWHx0kiqtYMNUeTKEvzdDP6VUi6YhW0u0uIdm6DqldSq3XCo074FNhJLCkt/lrHqkDpSFxGtaGQJdDdbR/9gfWjQwqIkyJEaa5ACKS29TGrL7c/n/KQouNl5+lsWquE0bXEuTUSW7ZNb8fHbBA6vE91P+KAe3WCHvNpeHxKiUwOF/EbliaKPHGRb4N5U42zJsMrc4TW895xHb7tDS1aE7MLprUeQ9IgZ274A3vJSLLELppO1IA8+erHe2xxK4duKRAjoDTUomDSl8b+Tet4sIabEZrQDsMjOdDvTXotYMtK4NoImspNOl3+0c98STfOzl08qfh54kdBV/YnZ63Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gSoCL605tK1IDIth4UrRL9N0xQePhXBnOrCxRyaDd8E=;
- b=1tTbRH70ee/Tj36yN3RpJd68+Rh1Ozpgbia53i3Iix8A9Nt5RqEnKpOgVOlXuHlMTyW4QFqZQAEjXFrTAuehYfq+avlNFyY5Q4G4cEE1CLSXiWfX0FxQs2OIqR7eMA/d0Q9kaM0gwEjvXkzw4NfobxYCP5EKBKUuaAZXp+Tkuos=
-Received: from DM6PR13CA0006.namprd13.prod.outlook.com (2603:10b6:5:bc::19) by
- PH7PR12MB7379.namprd12.prod.outlook.com (2603:10b6:510:20e::10) with
+ bh=/C3viPE5ljkxH86jL8ryOvH9Y9GLdYsDacCoQ5EQjYI=;
+ b=KSmqFxwBwar98be4XS/x0sBTnuavvfFrmua+y03Sy1M26asQcVShxkfPzj2cCegI/y/87sdv+1bTvXSISi6Th/AshFdrQ5bEFSCQLLGmAHKOEShGqWFtVlyo0jBBcuiRARjkeix42+0e+wMzI9VFuiz51Cp0SR2cLnYuWn52298K0mCZx/TctL04Iny2b1Ouk0qqlszpaHi37k8HMU5pVG2XRuOkkltDxUz47DyHo7tgDbROdk2X3U6VcMY5EO5ZztN66JIYSQW3AAaBNl9JI5NIaSoeA3gn8DqN31SvCOse91qinM54YZW6Vcmcs5syvwSEtJNrS/DVyXHIYyLsTw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from LV8PR11MB8509.namprd11.prod.outlook.com (2603:10b6:408:1e6::15)
+ by SJ2PR11MB8370.namprd11.prod.outlook.com (2603:10b6:a03:540::20) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9654.21; Mon, 2 Mar
- 2026 10:39:24 +0000
-Received: from CY4PEPF0000FCC3.namprd03.prod.outlook.com
- (2603:10b6:5:bc:cafe::4a) by DM6PR13CA0006.outlook.office365.com
- (2603:10b6:5:bc::19) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9654.20 via Frontend Transport; Mon,
- 2 Mar 2026 10:39:25 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
-Received: from satlexmb07.amd.com (165.204.84.17) by
- CY4PEPF0000FCC3.mail.protection.outlook.com (10.167.242.105) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9654.16 via Frontend Transport; Mon, 2 Mar 2026 10:39:24 +0000
-Received: from BLRANKISONI.xilinx.com (10.180.168.240) by satlexmb07.amd.com
- (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.17; Mon, 2 Mar
- 2026 04:39:20 -0600
-From: Ankit Soni <Ankit.Soni@amd.com>
-To: <iommu@lists.linux.dev>
-CC: <vasant.hegde@amd.com>, <suravee.suthikulpanit@amd.com>,
-	<joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>,
-	<linux-kernel@vger.kernel.org>
-Subject: [PATCH v2] iommu/amd: Adhere to IVINFO[VASIZE] for address limits
-Date: Mon, 2 Mar 2026 10:39:10 +0000
-Message-ID: <c719abc28a9ee724228656d2523e3ca43340696c.1772433878.git.Ankit.Soni@amd.com>
-X-Mailer: git-send-email 2.43.0
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9654.11; Mon, 2 Mar
+ 2026 10:57:01 +0000
+Received: from LV8PR11MB8509.namprd11.prod.outlook.com
+ ([fe80::f5bd:4dde:4f2f:20b7]) by LV8PR11MB8509.namprd11.prod.outlook.com
+ ([fe80::f5bd:4dde:4f2f:20b7%5]) with mapi id 15.20.9654.014; Mon, 2 Mar 2026
+ 10:57:00 +0000
+Message-ID: <98f392c8-cd64-486b-9ab0-d04c786ed39b@intel.com>
+Date: Mon, 2 Mar 2026 19:04:44 +0800
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH V1] iommu/sva: Fix crash in iommu_sva_unbind_device()
+To: Baolu Lu <baolu.lu@linux.intel.com>, Lizhi Hou <lizhi.hou@amd.com>,
+	<joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>
+CC: <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+	<vasant.hegde@amd.com>
+References: <20260224183056.2628698-1-lizhi.hou@amd.com>
+ <0833d160-9659-4140-b775-a0ab0c17a451@linux.intel.com>
+Content-Language: en-US
+From: Yi Liu <yi.l.liu@intel.com>
+In-Reply-To: <0833d160-9659-4140-b775-a0ab0c17a451@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: SI2PR02CA0008.apcprd02.prod.outlook.com
+ (2603:1096:4:194::12) To LV8PR11MB8509.namprd11.prod.outlook.com
+ (2603:10b6:408:1e6::15)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: satlexmb07.amd.com (10.181.42.216) To satlexmb07.amd.com
- (10.181.42.216)
-X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000FCC3:EE_|PH7PR12MB7379:EE_
-X-MS-Office365-Filtering-Correlation-Id: c4bf4f98-2eb8-48a7-6964-08de7847f8ae
+X-MS-TrafficTypeDiagnostic: LV8PR11MB8509:EE_|SJ2PR11MB8370:EE_
+X-MS-Office365-Filtering-Correlation-Id: 264e7e86-2725-457d-30d3-08de784a6e2e
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|376014|1800799024|36860700013;
-X-Microsoft-Antispam-Message-Info:
-	5L2S5t4HoSm4NOkUcqVsnQbH3/s2cVoZHPU7883W4EBLaNW64kU43kMnZqZ6Zd0a5TGMsBq+fy27l0lP3gCWSNcx8Qz55Yb/4V9EhJGm3iFXg6MFj5j80i2SR08U30HApyX+UHFBZ4LhMitSGT+yOaNp7Oot9FNowpKP0xWKD37jBbhr/fRQOSlVQa4Zd7FtK0mgTWZCOMJfugarsCgyChJ1yvGYubUEucrnaJzu6KHmZUbZyjEXIKzzWdvelPkgxa7O4TB4Nj0oiTj1B3Mcg83CF5vZhPCohrHAVqfdmq/x2fQOVkyAb2ko4GoROpZtA9OSntiQ1Qf1s9gHV8ttAqyop0cE9udn8ZAW6HS/8P3ejElZEtQ1uhllpDXnTSL3+6Ylw6uohBvHDimhMyyJHnN5ZkMBCHCsnWpCTsmnCETOwJvPF30E9ASjS3PyC2wjqvw9hhdwXsJ4HO3eNYCA9/nUlcJd/8HCPMsyfwP772LV5cDXB7Eho9bVvaMnM+S/1H23z2Xr+qCpefYPjRKEDvD1AZVHV2LEwbDw+HzZ9Tn70EJ+El+rLSQX5wLK7Q+bXZ4XMBAK1DS39wwwYA48Ea5BZVnUa02Z7A3cYVnblpmSgPsnM097SqZYM8avsdsbGAilHrl3UvNYXp4VHhWVQ9693E+8G1u1yNwr6p80cQYzchgHJMv3Tyn4gHOiDsChjrHlI+1A63k7UPw3oElrM6mwjtgrr+VhUwOAyxizELauFDckxQijDk4QBlhCW8QaaNNbvtaH1k3m7DrpzNXqmY05i3ccJe79gckr0xHA3jBbvWoA3cjKUCBDKcUbRomKWVJC3JPtnvTIDZ5CONo97g==
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(376014)(1800799024)(36860700013);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|1800799024|42112799006|366016;
+X-Microsoft-Antispam-Message-Info: DuuhVarb1kYKkBdzEhbC5IfIuU8jEdhvjzoUzvSBX1FlCkvRut9cnqlvoSkwxQzc7dAhBHZtpz8HaJyhOasG2YeiDqFNZXsI2RLI1DjC5K/4S4v8qs2c/HVH1yqhJMWlSpsNfSWX2cCCjoON0cEstZ7Ilvsd/uir7+SrBBwEhwUxL4ZCudTBpzzHWhHAi9OHPK74Vc1ammkGWHOl2/guco3RYHJMK6HHGiNOesp5jfFYuKlZjV9L0UkAfYXxLBgjnjCUg9ffg7vVs63rm9tM/tLECQO07k1zliVqDueZmD3XJZNppl0HrVRxa9hyUfzlJnStkjgDWJEYmzeFkW4s43mnTVf/Q+ciQ20I8DG+TyUjjIlaVM4aE8KBnDB4wf7+qZJiYBnvWjfhWUgPI1uonE9PvwcmIRgXV+n6sCTEWFVPF1FUTGWE8WX+G46kNpyE/1NlMN+L5vmvjj30jK5C1Fd2DAoQv2wkNMDGUDCj9rksU5Gtb85FwLRYzAed7SRN5DlK9ZcsDGZ5HVhNtEThdsIsy9W2Xk/GiYALz+KCQWtGyweGbhIt0y23KI7Ric4h97W86JKPb1tnwF29lvt+jIW1fBTg6ivA/7hnRQvh7tRdl3QjnFjYEP0v/b6lDMwb+boyXWUUdtMQowobvtOlQbSE0o+MNiR0SNlUUGxpTxTn40IUr+xFj0nSPZUCuCEG7cpKYZs2CIG2BVaGtP7TDHSTa00CpS/Xr1NjrLGRcJM=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR11MB8509.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(42112799006)(366016);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	+k95LVxkK5WQx6rP/S+R5BwLWZs87R4+8Qbf3XSKa8OLfc+l4j7dLdF4zJxmmkMwV39VYfQXZC6Zmh8QAyT33yDdgRQw4TV5Ipj2IqDGzzYVdNK2GvfWGtZX5evVCzQoec6Gu79yWU4vLyfj9DCm6csVnsISMcFgqi3PKcsV1xrkT77SA9pR3lXdNx3RnjTo9lZqyBUGNqJKsU2FK6qmOtDX0Zg5IYn2MacQnlyRM9e2KZaH+u7T1I1lgBny9IhPCcAyZ+wufiyHHkwtx0ITU6GTDEk6buJVIYFXyi9xMq77+CzIQooOn+KBRZg/69qrFYrHU6UyqAQA6eMMcEd2USo5mwgR3Uih9gUiao+1zQ89Qd2KTGrxm5P0BQJUdCa1vgaSInI8wzvHdydcE0kUnCuaB775W8V4ecYvzUn144EMS40v8Pe8cRDhYm0owwvE
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Mar 2026 10:39:24.2541
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?d1Q2SUswamJ2MHBtNHlLY2J0WEJYU2ZJVGMxWmV1eWI2TW9CSnZhQi9wU1pz?=
+ =?utf-8?B?SmkxaTVobVdGeW1PWTRKcERqbUJZcGFPQkVJRnE2Nk9VREUvWnNBY3R2Qm4y?=
+ =?utf-8?B?dUxna29kVlc5eFd0Y0hnMitkbjF0cG40VWtyNEMyYWR3UklBM09PeDBtbEN3?=
+ =?utf-8?B?MXlwbEtnZVdvT2hZVnNvaTVnYlRGS0lTSUZkVy9rTDlBMUVOU1BSMjZFWVJx?=
+ =?utf-8?B?VG5aZUJ3bEMxUDlBQkUrUFd4ZWIzSVJ6VzNBbklkM2FDNUN0ck50bXhtVktC?=
+ =?utf-8?B?TUloWk5HTHgwcUorUm8wZHE2cHUrNkRvVS9YRWd6U2pJWllJQnVtbm1xeG0w?=
+ =?utf-8?B?ckV6M0ppZkx0UzdsN2JlWWoxMXVxdnRBWFZFWUNReGlxVGpuUjUweUV6UjR5?=
+ =?utf-8?B?K09iTGVzeXlBRnlwZ1AwK3YzSktiRzhnSTgvNVdEcUhxellzUk02Z1hGQmg1?=
+ =?utf-8?B?Rm44YkhXMnlScVYwNE9QSzJQSmxRWHB0aVFOVHBqVExGRVlZSy9PZkc3L2R2?=
+ =?utf-8?B?Z0VsUzNVL05ESC90VHpxRklVbG5mUXVIdm4rZ0VmTDVLd2pLaGdVR2xsMU5Z?=
+ =?utf-8?B?UFpQQWRqUnJTK2ZWM1lqek5UaGJZR0NxMHExVG9lS2NaT3phOEJIeEJFVmRS?=
+ =?utf-8?B?TFZoUnBvR05PQlN6NENmY0N1YTZhTEV1b3FQTlhUVGFaVzVRU1VpcllzaWNO?=
+ =?utf-8?B?SVpaZStzRmRLVDZuTk5PckVpUCtlTWpUeUlzQ0FGUVd2RFV3Y1llUmpvSzZT?=
+ =?utf-8?B?c0Jkc1FFOWliNWpTZFMzMno0clI1eG5oUnJ4VTlWZnJ1UGhlUG01REFCQXlQ?=
+ =?utf-8?B?aExWMkVUQU5MMk52bm12ZzRCbSszdWREcTM3RGFzU0xwcFg2ZTdHbHJJU3N5?=
+ =?utf-8?B?S1hmVUdtY0FuQTBPOTZsV3BVSHlrbC9vY3VTRk1vOGs5T25yR09NMzYydS9K?=
+ =?utf-8?B?dWpuaEtFTkhjWDVpVUE1SjBJUDhLR2VJbzUwQ3dhUEFtMVQvYkpTYUsrcmQ1?=
+ =?utf-8?B?K0NrVXdkUHNXUEE4ZnQ3T1RVT2laeE1WQkRINnhiaGh5QVA2QVFWcGpaOGFv?=
+ =?utf-8?B?d2tONXZSellpNmp1eGJsZWllY0pxc0cyNkVCMmE5eTBOMmRObVZZTEZhejRG?=
+ =?utf-8?B?bWI1VEZYQmk1NnhOcUo1YklBbjJ1MnpqbksxZDkxQmZzZjFnbXJKdDdpQ3k1?=
+ =?utf-8?B?U2t0VEpCMXBkeGNuNFZXdVNLSy9kQ3VFSkpaSzU4b1lla3BPcXVjb1NDdDFB?=
+ =?utf-8?B?cUljV0FGNHgzYi9zUGQ2Mk5HNWluOHJRcGZWK0h1dmI1bjhJSmpkQWd2ZTg4?=
+ =?utf-8?B?ZFp5MElCbTVlTlZsbFVqWnFWRkl4Tzk1clRCNk5oUnhYUDdzMmpTUXQ4c0tK?=
+ =?utf-8?B?QndtTmgzUFdxWEU2UjZWWWc4Z3BZbUJSaTRIcXF3Um5hSVNtb0s3aUJyRzVP?=
+ =?utf-8?B?dWd6QzdXclEvWlpMRTBTMGpxenppUE4weURMQ2xtOHZ3YWltOU5JdmluNE9j?=
+ =?utf-8?B?blh3YWxHTW9Cb0VOQzBtRGNyN2RNMi9xN3IvcEtISysrWHdjOTRCMURXUU0r?=
+ =?utf-8?B?c0VnNnJMWit6YWV3YXh2RWU3MWM3aUlzdDlHQUlUbm1xT290RVE0YUV2VTlh?=
+ =?utf-8?B?cndRMFJXaVZVaCtOTjlVWnRYQmgvNHZDdUhRR2tTK3NmbXpMSmp2RFlhdDF2?=
+ =?utf-8?B?SUMvSUFGQStrdUIwam0yZjhqZmhISEl1bEVlS2VOUlNkN2xHY05VRFF6Zkhx?=
+ =?utf-8?B?SkFROUJCQlViYk9GOVc1MUhWNkVhWnNWNkpsdDg5UXc2b1lrejdMcjRBSXdi?=
+ =?utf-8?B?NVhwa25sWmpFNjQwYzFWNmlvM0l0SzNrK2REUURCNGtxY0J1WnZyT25hcnpM?=
+ =?utf-8?B?eTRUM0lvUFhoS3lDU1ZhRmNqQyswNVI0NjhjWU1Hazd6V3E0QU1SUW81cit3?=
+ =?utf-8?B?QzUrTmp5S0NlOHZGYjNnRVpvWWtvTlRPMTRaNVJ5b1E0V0gvWXZ6VFlJN0NH?=
+ =?utf-8?B?UDA5NUFPUEZTYkJGY1NlZ29hVlRXSEdNTUJ6ajAyN0VTbXc4MmhUeGQyZ2U1?=
+ =?utf-8?B?MmZxN0V2SEhDSG5EUFVmSktnZk9QNzRJVHFwQ0RFbmw0aUlITW8vUGp4a3Iz?=
+ =?utf-8?B?YlRDMzV0NmRpRUdiYkhJdE92OUkrL2hNZ1BJSTduZytNa2xEVVpybmZwcVMx?=
+ =?utf-8?B?eVdLeEwvOGFBSk5VY1JHL0swT2F1d0xSNThqdForcko0ai9RQlBRc3NxZXhq?=
+ =?utf-8?B?Q3poZGVucFhMZ3BMSjJpelVuU0k2WmYyaFc1aXJRNDZRVmZFN2o4VkZZOGdt?=
+ =?utf-8?B?akZYTEZYM2ZwdTFHS1VLRkJjUW8xNUt1YlFkV042dEJaRDhJQTFxQT09?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 264e7e86-2725-457d-30d3-08de784a6e2e
+X-MS-Exchange-CrossTenant-AuthSource: LV8PR11MB8509.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Mar 2026 10:57:00.7147
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: c4bf4f98-2eb8-48a7-6964-08de7847f8ae
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CY4PEPF0000FCC3.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB7379
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: xKb59u4aVGzhO/vrxhgzOPhMivPdI2raA80LS82BiwDKRh9fvlLyb44yIIYtSKvnyZQItt2ZBa1p6D68RbB61w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR11MB8370
+X-OriginatorOrg: intel.com
 
-ACPI IVRS IVHD’s IVINFO field reports the maximum virtual address
-size (VASIZE) supported by the IOMMU. The AMD IOMMU driver currently
-caps this with pagetable level reported by EFR[HATS] when configuring
-paging domains (hw_max_vasz_lg2). On systems where firmware or VM
-advertises smaller or different limits, the driver may over-advertise
-capabilities and create domains outside the hardware’s actual bounds.
+On 3/2/26 14:50, Baolu Lu wrote:
+> On 2/25/26 02:30, Lizhi Hou wrote:
+>> domain->mm->iommu_mm can be freed by iommu_domain_free():
+>>    iommu_domain_free()
+>>      mmdrop()
+>>        __mmdrop()
+>>          mm_pasid_drop()
+>> After iommu_domain_free() returns, accessing domain->mm->iommu_mm may
+>> dereference a freed mm structure, leading to a crash.
+>>
+>> Fix this by taking a reference to the mm via mmgrab() before
+>> calling iommu_domain_free(), and dropping it with mmdrop() after
+>> finishing access to domain->mm->iommu_mm.
+>>
+>> Fixes: e37d5a2d60a3 ("iommu/sva: invalidate stale IOTLB entries for 
+>> kernel address space")
+>> Signed-off-by: Lizhi Hou<lizhi.hou@amd.com>
+>> ---
+>>   drivers/iommu/iommu-sva.c | 2 ++
+>>   1 file changed, 2 insertions(+)
+>>
+>> diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
+>> index 07d64908a05f..523b8c65c86f 100644
+>> --- a/drivers/iommu/iommu-sva.c
+>> +++ b/drivers/iommu/iommu-sva.c
+>> @@ -179,6 +179,7 @@ void iommu_sva_unbind_device(struct iommu_sva 
+>> *handle)
+>>           return;
+>>       }
+>> +    mmgrab(domain->mm);
+>>       iommu_detach_device_pasid(domain, dev, iommu_mm->pasid);
+>>       if (--domain->users == 0) {
+>>           list_del(&domain->next);
+>> @@ -190,6 +191,7 @@ void iommu_sva_unbind_device(struct iommu_sva 
+>> *handle)
+>>           if (list_empty(&iommu_sva_mms))
+>>               iommu_sva_present = false;
+>>       }
+>> +    mmdrop(domain->mm);
+>>       mutex_unlock(&iommu_sva_lock);
+>>       kfree(handle);
 
-Reported-by: kernel test robot <lkp@intel.com>
-Closes: https://lore.kernel.org/oe-kbuild-all/202602281837.QQl5six6-lkp@intel.com/
-Signed-off-by: Ankit Soni <Ankit.Soni@amd.com>
----
-v2: Mark ivinfo_vasize_bits() as __init.
+Hi Baolu,
 
- drivers/iommu/amd/amd_iommu.h       |  2 +-
- drivers/iommu/amd/amd_iommu_types.h |  1 +
- drivers/iommu/amd/init.c            | 32 +++++++++++++++++++++++++----
- drivers/iommu/amd/iommu.c           |  3 +--
- 4 files changed, 31 insertions(+), 7 deletions(-)
+> How about making the iommu_mm structure itself an owner of the mm_struct
+> lifetime? Does something like the following work?
 
-diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
-index 1342e764a548..f915938a3a08 100644
---- a/drivers/iommu/amd/amd_iommu.h
-+++ b/drivers/iommu/amd/amd_iommu.h
-@@ -41,7 +41,7 @@ int amd_iommu_enable_faulting(unsigned int cpu);
- extern int amd_iommu_guest_ir;
- extern enum protection_domain_mode amd_iommu_pgtable;
- extern int amd_iommu_gpt_level;
--extern u8 amd_iommu_hpt_level;
-+extern u8 amd_iommu_hpt_vasize;
- extern unsigned long amd_iommu_pgsize_bitmap;
- extern bool amd_iommu_hatdis;
- 
-diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index c685d3771436..6a85a38d34bd 100644
---- a/drivers/iommu/amd/amd_iommu_types.h
-+++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -395,6 +395,7 @@
- #define IOMMU_IVINFO_OFFSET     36
- #define IOMMU_IVINFO_EFRSUP     BIT(0)
- #define IOMMU_IVINFO_DMA_REMAP  BIT(1)
-+#define IOMMU_IVINFO_VASIZE	GENMASK_ULL(21, 15)
- 
- /* IOMMU Feature Reporting Field (for IVHD type 10h */
- #define IOMMU_FEAT_GASUP_SHIFT	6
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index f3fd7f39efb4..c16d3ddf68ba 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -152,8 +152,8 @@ bool amd_iommu_dump;
- bool amd_iommu_irq_remap __read_mostly;
- 
- enum protection_domain_mode amd_iommu_pgtable = PD_MODE_V1;
--/* Host page table level */
--u8 amd_iommu_hpt_level;
-+/* Virtual address size */
-+u8 amd_iommu_hpt_vasize;
- /* Guest page table level */
- int amd_iommu_gpt_level = PAGE_MODE_4_LEVEL;
- 
-@@ -3156,6 +3156,27 @@ static void __init ivinfo_init(void *ivrs)
- 	amd_iommu_ivinfo = *((u32 *)(ivrs + IOMMU_IVINFO_OFFSET));
- }
- 
-+static u8 __init ivinfo_vasize_bits(void)
-+{
-+	u8 vasize;
-+
-+	vasize = FIELD_GET(IOMMU_IVINFO_VASIZE, amd_iommu_ivinfo);
-+
-+	/*
-+	 * IVINFO[VASIZE] encodes the log2 of the maximum virtual address
-+	 * processed by the IOMMU.
-+	 */
-+	switch (vasize) {
-+	case 32:
-+	case 40:
-+	case 48:
-+	case 64:
-+		return vasize;
-+	default:
-+		return 64;
-+	}
-+}
-+
- /*
-  * This is the hardware init function for AMD IOMMU in the system.
-  * This function is called either from amd_iommu_init or from the interrupt
-@@ -3188,7 +3209,7 @@ static int __init early_amd_iommu_init(void)
- 	struct acpi_table_header *ivrs_base;
- 	int ret;
- 	acpi_status status;
--	u8 efr_hats;
-+	u8 efr_hats, max_vasize;
- 
- 	if (!amd_iommu_detected)
- 		return -ENODEV;
-@@ -3218,6 +3239,8 @@ static int __init early_amd_iommu_init(void)
- 
- 	ivinfo_init(ivrs_base);
- 
-+	max_vasize = ivinfo_vasize_bits();
-+
- 	amd_iommu_target_ivhd_type = get_highest_supported_ivhd_type(ivrs_base);
- 	DUMP_printk("Using IVHD type %#x\n", amd_iommu_target_ivhd_type);
- 
-@@ -3240,7 +3263,8 @@ static int __init early_amd_iommu_init(void)
- 		 * efr[HATS] bits specify the maximum host translation level
- 		 * supported, with LEVEL 4 being initial max level.
- 		 */
--		amd_iommu_hpt_level = efr_hats + PAGE_MODE_4_LEVEL;
-+		amd_iommu_hpt_vasize = min(max_vasize,
-+					   (efr_hats + PAGE_MODE_4_LEVEL - 1) * 9 + 21);
- 	} else {
- 		pr_warn_once(FW_BUG "Disable host address translation due to invalid translation level (%#x).\n",
- 			     efr_hats);
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 81c4d7733872..e8d15ac9b2bd 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -2712,8 +2712,7 @@ static struct iommu_domain *amd_iommu_domain_alloc_paging_v1(struct device *dev,
- 	else
- 		cfg.common.features |= BIT(PT_FEAT_FLUSH_RANGE);
- 
--	cfg.common.hw_max_vasz_lg2 =
--		min(64, (amd_iommu_hpt_level - 1) * 9 + 21);
-+	cfg.common.hw_max_vasz_lg2 = amd_iommu_hpt_vasize;
- 	cfg.common.hw_max_oasz_lg2 = 52;
- 	cfg.starting_level = 2;
- 	domain->domain.ops = &amdv1_ops;
--- 
-2.43.0
+According to the call stack in the commit message, mm_pasid_drop() is
+triggered when the mm_count reaches 0.
+
+ >>      mmdrop()
+ >>        __mmdrop()
+ >>          mm_pasid_drop()
+
+So I see a deadlock issue with the below change. The problem is:
+
+mmgrab(mm) in iommu_alloc_mm_data() increases mm_count. But 
+mm_pasid_drop() calls mmdrop(mm) to decrease mm_count. This creates a
+circular dependency: __mmdrop() waits for mm_count to be 0, but mm_count
+can only reach 0 after __mmdrop() calls mm_pasid_drop().
+
+> diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
+> index 07d64908a05f..9c56c2222617 100644
+> --- a/drivers/iommu/iommu-sva.c
+> +++ b/drivers/iommu/iommu-sva.c
+> @@ -47,6 +47,7 @@ static struct iommu_mm_data 
+> *iommu_alloc_mm_data(struct mm_struct *mm, struct de
+>          iommu_mm->pasid = pasid;
+>          iommu_mm->mm = mm;
+>          INIT_LIST_HEAD(&iommu_mm->sva_domains);
+> +       mmgrab(mm);
+>          /*
+>           * Make sure the write to mm->iommu_mm is not reordered in 
+> front of
+>           * initialization to iommu_mm fields. If it does, readers may 
+> see a
+> @@ -212,6 +213,8 @@ void mm_pasid_drop(struct mm_struct *mm)
+>                  return;
+> 
+>          iommu_free_global_pasid(iommu_mm->pasid);
+> +       mm->iommu_mm = NULL;
+> +       mmdrop(mm);
+
+
+Regards,
+Yi Liu
 
