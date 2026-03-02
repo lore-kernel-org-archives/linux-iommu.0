@@ -1,205 +1,221 @@
-Received: from BN1PR04CU002.outbound.protection.outlook.com (mail-eastus2azon11010066.outbound.protection.outlook.com [52.101.56.66])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com [209.85.160.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4A3A41754;
-	Mon,  2 Mar 2026 00:03:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.56.66
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772409785; cv=fail; b=bY1uHxDHu6lBepv7EKTtkfCh0IoYXXZ7OrYLWXM/c7yA41BPHHtdvr3k/9o1gombc54avJzMRSeAiJQh7o3vBGN2ry8BwxSdNUj2N+KhZ3fCjzLP/THzwgB7t68Wi4l2Y4780HDXNZ6reSG0FMiVQUx1SoSFU5S5xK4rHyzS1RI=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772409785; c=relaxed/simple;
-	bh=SJiEMUiibg2rjpZ+42NEbGNoKHrNaDKwsVe9+plTFQw=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=RynB1Zk945o58XyrpfMZC4YWcD6UIXnGdw9i44mc4bZEBjDe3HG4oDWI9xhyYnsuDlAWCG/nGvHts4RQwysGAAMKPKYnjKeUUXbzXZfzSFc9Md3D+Vk+bCXxg5gkRRIdaZ1e2EPGjPFFJB7myZlkhXIpSkbkmVz7d+FVUKIgGCc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=T+Mu2tEC; arc=fail smtp.client-ip=52.101.56.66
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D70A186353
+	for <iommu@lists.linux.dev>; Mon,  2 Mar 2026 00:35:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.175
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1772411739; cv=none; b=sWwiA1gUpZSg69yYkTauMtO+jRzmi/5JnHJY4DNBRa3vCHQXrr8F7xF3hofuikKkYSsYPhby41FEQgdQev27I/vE+JaLeMnaWhjlw7MIGAfsCqpJYjCePKPNMcysr4cPbq/T17k4Kmpms8aFdSarg7R1Bodi9zmaAfuvCWNPhxU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1772411739; c=relaxed/simple;
+	bh=/8Q5HAtX/+HdAMu3qfOsE6Byu7Fj2sbAW7cC8DqRGz4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=QkpoUnPSnHMAmP9IaSFxM4CgxR1EaQenb6yh3rE9FH2LmL7spU/+ZyW2CJu/Y4l/whoNb9UTp6vQhplmoQXH3je/Je1o9v+gjPx5OFzb2RSztTXDligUjlCKPS/AfUlahf3zOQ/J2TPzuszPvK2Bl44x+S75sMOksJ9/ZUjpCf0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=bOMOinXG; arc=none smtp.client-ip=209.85.160.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="T+Mu2tEC"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=f8/waD+d8IPSJrTt5/X2gB49IW9tsSxKr98G2wVUcNe7xKZHtcP2csMoFtASK8HiZxhTzSAZuGlQhl5/N1kklf6e5vdcIna/hUiCmu4Ewm1ROHcg4b7wakCkDLOWjRzfYKPW9VG/Uqlb3/bUt0Yif2RIGXqJV2jb2ChuVDt6C1akZnikiMee7qZ+F8+tWfWJJccoOkCBq47a8pgAHcUiNpPJRLb6KzsyYuFa4imlB1igYYyBA8KeVQu/wWjOo7B7+NOWnhc4PXtwxQAzOoqXotVzQo/Y+aev5I7BQ44m84+ktarRIkQ12ottXHc6597ZbZL2blJANEFtCz3sFMb75w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=DFL7mUJMJe9wehFdmFeA0YgCwUMyKFyEjmxDQGkriZY=;
- b=xN7NYzMlIYzdv/64hXcnbJKg+/Mdq1TseyI7oBQnaxJiCxRwJHiylFEbEbDCUnwoEkOVhMcnmMv7S0wnwmlIlrwpu081h3ocqerg7UCZZiQahTBGVBnoRGRz9+WyPYNdiv8HM047YthlVdfcQWCKFDeNOqwFotvzbf2mmZplFS85FZMYu98JfZD4wUJ8dtm3FhkZA1zIMUvCvEOSt012MS64HUv0hdpKrlf5DJ5eTljOmrmUDhWufwiZc1Lll47Druxmus2OgXQfUqtSM40vTDHqOT5NbCcfltcSeEMDvSdIjQclRPNosD5Il1fEeCUS1tPQ61y8+lN1d25hOeElHw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DFL7mUJMJe9wehFdmFeA0YgCwUMyKFyEjmxDQGkriZY=;
- b=T+Mu2tECRqWKTMs6xrWv8Yo9m/wEy9Gu0ZsysrKiEsSysmMrnJznT3cpiT9bTfSlwowCfSqvkH8wCoGGSqcEO8yI7OordAL3huUSv3X8f68uM4alpP4zxwbeQaJLvbdYS0/ZumdLuCWl9R6OoiKyXc0FcberVloyYm4SOR9qoFQ=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from CH3PR12MB9194.namprd12.prod.outlook.com (2603:10b6:610:19f::7)
- by DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9654.18; Mon, 2 Mar 2026 00:03:00 +0000
-Received: from CH3PR12MB9194.namprd12.prod.outlook.com
- ([fe80::1e6b:ca8b:7715:6fee]) by CH3PR12MB9194.namprd12.prod.outlook.com
- ([fe80::1e6b:ca8b:7715:6fee%4]) with mapi id 15.20.9654.015; Mon, 2 Mar 2026
- 00:03:00 +0000
-Message-ID: <8f734d5d-7d18-4b65-a058-32088353e13e@amd.com>
-Date: Mon, 2 Mar 2026 11:02:48 +1100
-User-Agent: Mozilla Thunderbird Beta
-Subject: Re: [PATCH v8 07/15] iommupt: Add map_pages op
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Alexandre Ghiti <alex@ghiti.fr>, Anup Patel <anup@brainfault.org>,
- Albert Ou <aou@eecs.berkeley.edu>, Jonathan Corbet <corbet@lwn.net>,
- iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
- Justin Stitt <justinstitt@google.com>, linux-doc@vger.kernel.org,
- linux-kselftest@vger.kernel.org, linux-riscv@lists.infradead.org,
- llvm@lists.linux.dev, Bill Wendling <morbo@google.com>,
- Nathan Chancellor <nathan@kernel.org>,
- Nick Desaulniers <nick.desaulniers+lkml@gmail.com>,
- Miguel Ojeda <ojeda@kernel.org>, Palmer Dabbelt <palmer@dabbelt.com>,
- Paul Walmsley <pjw@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Shuah Khan <shuah@kernel.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Will Deacon <will@kernel.org>,
- Alejandro Jimenez <alejandro.j.jimenez@oracle.com>,
- James Gowans <jgowans@amazon.com>, Kevin Tian <kevin.tian@intel.com>,
- Michael Roth <michael.roth@amd.com>,
- Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
- Samiullah Khawaja <skhawaja@google.com>, Vasant Hegde <vasant.hegde@amd.com>
-References: <7-v8-d50aeee4481d+55efb-iommu_pt_jgg@nvidia.com>
- <fc4f0354-4e6d-452d-abfb-fe24e53253a2@amd.com>
- <20260117154347.GF1134360@nvidia.com>
- <bc6817bd-4aa5-4033-b89d-88fef637de65@amd.com>
- <20260226150440.GB5933@nvidia.com>
- <c6ac32f2-2531-4bd0-abaf-ff76e9cc864e@amd.com>
- <20260227134805.GJ5933@nvidia.com>
-From: Alexey Kardashevskiy <aik@amd.com>
-Content-Language: en-US
-In-Reply-To: <20260227134805.GJ5933@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SY5P282CA0162.AUSP282.PROD.OUTLOOK.COM
- (2603:10c6:10:24a::8) To CH3PR12MB9194.namprd12.prod.outlook.com
- (2603:10b6:610:19f::7)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="bOMOinXG"
+Received: by mail-qt1-f175.google.com with SMTP id d75a77b69052e-507373bffd9so36082921cf.2
+        for <iommu@lists.linux.dev>; Sun, 01 Mar 2026 16:35:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1772411737; x=1773016537; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=x93JARsR/b1GWJu5c67Wr5QInQyireDDX7UuillpK/I=;
+        b=bOMOinXGXHp/5dEANQWDkfwVLiQJEtzQttr/J7bXBbNPyx86NvCaw+Xrik0extC3mT
+         xBEztlWerwQ6qnbrKESSJgzN4yfJ25Q9mgIXx9Yt4Qz4DSQC1/sHSXuhLIPDTaNE+fHU
+         aiDViy9FFLqfauBVUeqNvWbjVMsX4cUKNvf/EJ332Rw2q6Hmd/MyXMVgu4drHXIwQTdV
+         HM3oKY1ujcZFFDT2xYh3zNh0XIHtAeaaiI8N6wi2RMqIRTpDwpF+h+Kikij4JKfyDSk9
+         3oivwOHxJX+vJPhHkMdXVjaYnM0hWUYRrmm1oLAcorkwjVsMHfcHPgl65/th78Bdo1Sn
+         TXkQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772411737; x=1773016537;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=x93JARsR/b1GWJu5c67Wr5QInQyireDDX7UuillpK/I=;
+        b=eQQE/5RI7oIXAlYLdbnbx3axrBTZLRFEJk1e8BOhaUqLAS9IxLfCS9L3zc8eV2JjC9
+         LCIYrev4KoPUz0psKFdlmRgSb+WBg7t/nXJCXt/y+DwYmJ/pPsaXXFhxhsJkwUuN4UdU
+         4zScmsJ36MuLzd5/hHTrIsAQ1xxoRDS8N6SHDK01GNBVkora9RdIZlL4OT+jhG5W59Cs
+         TZk8VN+e5PexKavNQZTnZZQRJXEGWOLTF1hN2Un1oxkUYhPnlFNDUETCVCddDi65sQ/3
+         SF2afVMTqCZ8+mIQG2AV3PgpI4JuNo+nJV6uR5lLXwk6XbRg47iuWQpsUsOFYj4MOVDn
+         uS+Q==
+X-Forwarded-Encrypted: i=1; AJvYcCVqZKLwPzHQaDgIQot7lhZOqos/Ft8SIBkuvZvRcPbWh8dWYqoNHjKHuiUU7qV9CHX7c5GtFw==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yw4dyuzDdjpSsumlguWgfKgUn+l0MWAJd0ivqWI5fotoO6401Uo
+	+iI6BWTHD5E+2vQUCrw07xr4wCQPPsyEEZJPFgELRhnzyfzgr1TsImeG6b/GQG9BTlY=
+X-Gm-Gg: ATEYQzyYGvxZW4O+Ja8iJmFdwjBs38TfRT9DHfh+ZeQqnRywBayEJb0LgTM2lT4nRYc
+	WsHsFx1vxlhszO5Tz3KCLHDkmigWG+qEhNVdPWCpjDG1XAXJXubzdYQqvN4iN/jWJXTukWXupTk
+	hoXauO5XZKSDckNm9zQr3VBOvIcvmYcVS9zr/t2pdqTkKjzfGs3QAoARZoUKm0bY+pfYzLSM+Jw
+	qi/36B6yIrTnPiSKXQUvrRXVOx8wVh/jk6rcAEKDJNH2ZD9zt/aIj/Jr36R7QJsg0kdjvBg/9bQ
+	BP9SoU1hTeI43NUWWv7NRo1x8c0uf2VJl00jCFIGt/zKSQhp/q21gdedFF+Ht2Rv3FScDEYQbqA
+	5ku4HlFuic7oQdzTQ1FEjemAtCWiYCJcDF6+CzULDrLmFSudr7bzjz4UYI+YWWap4FAxsRh/wh7
+	YPuJesbIBIqc/KZu68ooXMpdECJDJgQlDWw733uiYLD54GtIiQxKQUaL2giHDt3R3nvmf5HyL+Y
+	oUCOHA7
+X-Received: by 2002:a05:622a:1806:b0:501:47c4:a4a3 with SMTP id d75a77b69052e-507528842d9mr140037701cf.10.1772411736639;
+        Sun, 01 Mar 2026 16:35:36 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-162-112-119.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.112.119])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-5074481c0e5sm109231221cf.0.2026.03.01.16.35.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 01 Mar 2026 16:35:35 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1vwrG3-00000003Z8Q-0shL;
+	Sun, 01 Mar 2026 20:35:35 -0400
+Date: Sun, 1 Mar 2026 20:35:35 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Alexey Kardashevskiy <aik@amd.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, x86@kernel.org,
+	linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+	linux-pci@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	"H. Peter Anvin" <hpa@zytor.com>,
+	Sean Christopherson <seanjc@google.com>,
+	Paolo Bonzini <pbonzini@redhat.com>,
+	Andy Lutomirski <luto@kernel.org>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Mike Rapoport <rppt@kernel.org>,
+	Tom Lendacky <thomas.lendacky@amd.com>,
+	Ard Biesheuvel <ardb@kernel.org>,
+	Neeraj Upadhyay <Neeraj.Upadhyay@amd.com>,
+	Ashish Kalra <ashish.kalra@amd.com>,
+	Stefano Garzarella <sgarzare@redhat.com>,
+	Melody Wang <huibo.wang@amd.com>,
+	Seongman Lee <augustus92@kaist.ac.kr>,
+	Joerg Roedel <joerg.roedel@amd.com>,
+	Nikunj A Dadhania <nikunj@amd.com>,
+	Michael Roth <michael.roth@amd.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Andi Kleen <ak@linux.intel.com>,
+	Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>,
+	Tony Luck <tony.luck@intel.com>,
+	David Woodhouse <dwmw@amazon.co.uk>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Denis Efremov <efremov@linux.com>,
+	Geliang Tang <geliang@kernel.org>,
+	Piotr Gregor <piotrgregor@rsyncme.org>,
+	"Michael S. Tsirkin" <mst@redhat.com>,
+	Alex Williamson <alex@shazbot.org>, Arnd Bergmann <arnd@arndb.de>,
+	Jesse Barnes <jbarnes@virtuousgeek.org>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	Yinghai Lu <yinghai@kernel.org>,
+	Kevin Brodsky <kevin.brodsky@arm.com>,
+	Jonathan Cameron <jonathan.cameron@huawei.com>,
+	"Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
+	Xu Yilun <yilun.xu@linux.intel.com>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	Kim Phillips <kim.phillips@amd.com>,
+	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+	Stefano Stabellini <sstabellini@kernel.org>,
+	Claire Chang <tientzu@chromium.org>, linux-coco@lists.linux.dev,
+	iommu@lists.linux.dev, Jiri Pirko <jiri@resnulli.us>
+Subject: Re: [PATCH kernel 6/9] x86/dma-direct: Stop changing encrypted page
+ state for TDISP devices
+Message-ID: <20260302003535.GU44359@ziepe.ca>
+References: <20260225053806.3311234-1-aik@amd.com>
+ <20260225053806.3311234-7-aik@amd.com>
+ <d8102507-e537-4e7c-8137-082a43fd270d@arm.com>
+ <20260228000630.GN44359@ziepe.ca>
+ <2a5b2d8c-7359-42bd-9e8e-2c3efacee747@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB9194:EE_|DS7PR12MB6048:EE_
-X-MS-Office365-Filtering-Correlation-Id: 57870d0f-5929-45cc-71aa-08de77ef1111
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014|7416014;
-X-Microsoft-Antispam-Message-Info:
-	dQrtr4cZfarD0hSl/WO0+9ft05J3OGQodE/XCKLmDLJ6Ptu8U1ROUSX+xFLWCXLAGGtJc3+2hDyBQ51MVxDT1MlSmc7lr1Ou0y+KAhKP/yVtQw1dVRtHAojloq1gbh7YzIt/Mh+5ecibHb5cQ+iqidLhu5M/VlxPuQzFqyUIO7K2SMBk9TpzBTRoyA4PQSCN+8Bth19/oYti4T80QF6cwkq6sguqTgnEY5dsqI6Dq7kVge0qNJlrkuXQsA56mI8juXOufoBGPOBkUBZ1oQdaUsS/6JnXmCA3lK/3j7dazneXE0K28iS7GrTnqNIC+raZqoQjq/wdZ/vkoH3aR4eWRBSE+UflLCBExGp+lvw2KZZ+BdRcPggwwnurstvjZmXi0qBhddY27D37vEVEaSIsmuJYUSkRSvrpJY5oANrjP8EbZH5taCLMWxS9h6lv+y3IYVO/uKmrrwrvz2Ke1JO9/tCOG2vP5CDTTHCk4liqF/4V0YIKz7koTylhuEMlMRS+ls+h6JIxvJ9DO5x/BEtBA77nRcDUfY2EMcVM5reK7WobxGbjIOSJAd+nz/yvFwvXwhcTC3zaLdUeT96e90Ckhe4DUvUJkWrb5y9zsKI5GZ47PonAgFLSHj2jd4fupqnOZm9YRqnJA6zYgMdDNx4/GebQjm4IqxewmmG/nYCoYrIvLwKv3LKk1/GAWJFPZj5BBYXBozStCCHzcQtJx1PHYYqIt1ngQ/rVG7REQLrDepk=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB9194.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(7416014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?ZmF6bGhOVkVHY25FdVVUeCtBbllLN1VLOFVKTURNbUdhbEFPS3orRHpzdFY2?=
- =?utf-8?B?VDMrWE0zT3Bna05BTXc4Mzl2bVpSTWFyYXUyU2xkRmhreS84aUpQWFY4UWRK?=
- =?utf-8?B?TUU3V2Yrb1ptdTNBV2MrSWc0Q2pZWjFFNlFwdWRGUjVaZC9KVWZsSzZ4eFNJ?=
- =?utf-8?B?b252L3ZUT2V5bHJ2Z3VoSWFFZERDdm1oSEdEZ2dvdFA5K25ORW5qYmk0MU5m?=
- =?utf-8?B?OFRTemdQS1Vpa0hFaHI5QTZBY2JIcVNsdU1LTEZaMU5DeE1vblBSRUNOWHFx?=
- =?utf-8?B?anNwZVBIY2VoelBiOXJYL3Y1ekRFTzZQcC9RaDB2VG9WWGZSLy8rSy90NmR5?=
- =?utf-8?B?bFZYeURyQzVEeThJb0ZaeEpPY2pQamE2Ryswb2hXM0xUdjlDd2VYSG9LcEh3?=
- =?utf-8?B?cHN6MHM5eUg4TVk3ZFI2K3dFVWxOVDhIRHI0Sllqa3FIbzJ1SVVhUVAzaFpp?=
- =?utf-8?B?UWJxaWQzR3U3T3d2NWN4OVhkVWRRRkFxU2RQMXFxaWFnd0Qza29GUTZla2hk?=
- =?utf-8?B?RDVoamxLUlQ3blRERktSL1VUZmZkRE5ld2hJVlVLelh2eHNVY3g3RXZvTGxB?=
- =?utf-8?B?ZWIzaWJRRnpORUYrM0hmRDBRWHd3WS9FNkhhaDE0VHM0ci9QbUJsOVU3UCtO?=
- =?utf-8?B?Mmo0Q0JlZkV3bG1KSFpNUGpSeGpxeEkyRVRFdndOaUtoNzlHU2lIQjdodEM5?=
- =?utf-8?B?akhoaitvV2dGL2hCa3o2S2w3QSt5WHh2djZrM0pZVWZTeURvTWcwa3l5Qkww?=
- =?utf-8?B?QVk5dGpqT1ZWeTl3RjBLdG9UM00vM2xTUmNnSzJYeVYrL0ZDU09EQTJnRVVJ?=
- =?utf-8?B?T1VGdnM0TEdLQVE3TWQzZm8vSWRFRlVpK2k2WHpwNVN1OFdYOGV0bjhyR2Ju?=
- =?utf-8?B?blhJUEd5Ly91aFphdDJwaUxGK1lyU1pCYnpoSmdhSnlMa1VkUkxUblhzcFN2?=
- =?utf-8?B?VTlLbnpFZng5YzJ0dTkxczd3MWVwelJEZjQxOFJ2V1pGUk1sQmVsUk4rSk9H?=
- =?utf-8?B?aG9rTWU1cWRYY3pBamI3WTduZzNabGdSM3JnTHUwbWthdTBzVExNd2ROQ2VX?=
- =?utf-8?B?dG90Q0Q4NVh5NmRyZGlxWU9jYWx6TGFNaGZUK2kydC9UUEVTSnp3RVdIb28w?=
- =?utf-8?B?YXNONU5laENmM3QzSFJqWHdQL1djb3VSbVJ1eHZ4UGtQMklTZUY5WlZYbzkv?=
- =?utf-8?B?VnVlZEFBL1BRVGQvNXVOQzhUZlltdHAwZk83NnlHZ2dudUY4N01RenV0NU1B?=
- =?utf-8?B?R21yNkpjOHJRWDNIeFNXMU5VTDNkdGRwK01OQlpVeHBzcXlmV2FEVDNObXBK?=
- =?utf-8?B?T2dRT1RRNC9ad1FSeTBJbTZkMVNQc1hlUk8zeGZSRVZHdE5NRGlRaEhpTnUy?=
- =?utf-8?B?MHJleVVVRjBBZlB2R2NNZFp6MmZla2pJTEhOUEtGQStCdlpyVDFFb3RRNHFR?=
- =?utf-8?B?OXVySGhXZ2pVYlErT1pvK0N6LzRHdzdHZ3JXei9LRzM4Y003Rjc5V09VTVNx?=
- =?utf-8?B?ak40S2pzWDczaEp6OUlSb0J2K2dNUURrQ09GNnYwNXM1bUtpT2NQWlNRdXVT?=
- =?utf-8?B?c0JUbzNMQlNyVGRNRWt4aWxTb25aV3h5emNwOEk1eVZOeHdteit2Z3VvL3hq?=
- =?utf-8?B?bkhZeXc1S2J6M3pWK1h0V2Q5SXZSRjVxeTVzbEFadklJclk3UDlNNm9BaVRl?=
- =?utf-8?B?dGo0R0N3ejBWRWNnUVppWEt5TXYzMDJaSWVRUm1iaWYvdkVxdUJjUXBOYnRG?=
- =?utf-8?B?anEvdGhXNS9CaTkzSW9oenZBVkVmbDlXYjhVdTVkZUtFTC9Xc2hXaE1xNEhY?=
- =?utf-8?B?TGhrbGpPekNxSE1ZWlNnUDlUWG8vTERnQ1paSEs3MnZYQ2V6YzlYZldxSzN2?=
- =?utf-8?B?OTg4VFRpamFSMGRmWmZlWDRyTm9ZSjRnQU5GdXhMTmZFYTllNXFyem43Tmkv?=
- =?utf-8?B?anVVdHdyN1ZLT1RhcUt2aGlLSDhvcTduSE5yZkdkNCtNUUJrSzBSL1hIYzZ3?=
- =?utf-8?B?MG5hMUdxMER5a2VJUkZjU1NyMHRTUXBidE92amVQVk1PKzlLVUxOdjhjalBy?=
- =?utf-8?B?d1hTOUhURG9LNG9rQjVwdE51Ui9BTytaZytBR1k4ZTlRQm1XNGc4aWNKM0tT?=
- =?utf-8?B?KzB2RVVFR0h2TkhtVVNsOTVVcEIwaWhKSlRoQ2tVSzdDZ2tlRkwyMWdyM0lp?=
- =?utf-8?B?ejlPdW1VOEpQeFpKNTVjbFpIVUlSc1hVZFI4UWpORHdET0FIRXNMNTl5UGM0?=
- =?utf-8?B?bzcvelBsbFlqbkVmenRxS0ZUVWRZeVpSbk0rajAvdXhxazV4ekFNa2JNb3BU?=
- =?utf-8?Q?6+aicMleS0SclHdgl4?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 57870d0f-5929-45cc-71aa-08de77ef1111
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB9194.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Mar 2026 00:03:00.3637
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ZbedsQqnKIsoTqLolpTgJ1oEcsZZbbM0c4h1QUVmpm06M4wjAXO77JrzkxKFcrCO5cEUwy1kH6j6qmj8fFUOaA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB6048
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2a5b2d8c-7359-42bd-9e8e-2c3efacee747@amd.com>
 
-
-
-On 28/2/26 00:48, Jason Gunthorpe wrote:
-> On Fri, Feb 27, 2026 at 12:39:28PM +1100, Alexey Kardashevskiy wrote:
->>
->>
->> On 27/2/26 02:04, Jason Gunthorpe wrote:
->>> On Thu, Feb 26, 2026 at 10:11:56AM +1100, Alexey Kardashevskiy wrote:
->>>>> The flow would be some thing like..
->>>>>     1) Create an IOAS
->>>>>     2) Create a HWPT. If there is some known upper bound on RMP/etc page
->>>>>        size then limit the HWPT page size to the upper bound
->>>>>     3) Map stuff into the ioas
->>>>>     4) Build the RMP/etc and map ranges of page granularity
->>>>>     5) Call iommufd to adjust the page size within ranges
->>>>
->>>> I am about to try this approach now. 5) means splitting bigger pages
->>>> to smaller and I remember you working on that hitless IO PDEs
->>>> smashing, do you have something to play with? I could not spot
->>>> anything on github but do not want to reinvent. Thanks,
->>>
->>> I thought this thread had concluded you needed to use the HW engines
->>
->> The HW engine has to be used for smashing while DMAing to 2M page
->> being smashed. It is not needed when the insecure->trusted switch
->> happens and IOMMU now needs to match already configured RMP.
+On Mon, Mar 02, 2026 at 11:01:24AM +1100, Alexey Kardashevskiy wrote:
 > 
-> Oh? I'm surprised shared->private is different that private->shared..
-
-Well, I rather meant "statistically". Confidential VMs are all private with occasional sharing so shared->private normally means there was a recent private->shared which did the smashing. And there is also "unsmash_io" in that HW engine which I am not touching yet (but keep it in mind).
-
-> Regardless, I think if you go this path you have to stick to 4k IOPTEs
-> and avoid the HW engine. Maybe that is good enough to start.
-
-This is the current plan.
-
->>> for this and if so then KVM should maintain the IOMMU S2 where it can
->>> synchronize things and access the HW engines?
->>
->> I want to explore the idea of using the gmemfd->iommufd notification
->> mechanism for smashing too (as these smashes are always the result
->> of page state changes and this requires a notification on its own as
->> we figured out) and plumb that HW engine to the IOMMU side,
->> somewhere in the AMD IOMMU driver. Hard to imagine KVM learning
->> about IOMMU.
 > 
-> Equally hard to imagine IOMMU changing the RMP.. Since you explained
-> the HW engine changes both I don't know what you will do.>> Maybe guestmemfd needs to own the RMP updates and it can somehow
-> invoke the HW engine and co-ordinate all the parts. This sounds very
-> hard as well, so IDK.
+> On 28/2/26 11:06, Jason Gunthorpe wrote:
+> > On Wed, Feb 25, 2026 at 05:08:37PM +0000, Robin Murphy wrote:
+> > 
+> > > I guess this comes back to the point I just raised on the previous patch -
+> > > the current assumption is that devices cannot access private memory at all,
+> > > and thus phys_to_dma() is implicitly only dealing with the mechanics of how
+> > > the given device accesses shared memory. Once that no longer holds, I don't
+> > > see how we can find the right answer without also consulting the relevant
+> > > state of paddr itself, and that really *should* be able to be commonly
+> > > abstracted across CoCo environments.
+> > 
+> > Definately, I think building on this is a good place to start
+> > 
+> > https://lore.kernel.org/all/20260223095136.225277-2-jiri@resnulli.us/
+> 
+> cool, thanks for the pointer.
+> 
+> > Probably this series needs to take DMA_ATTR_CC_DECRYPTED and push it
+> > down into the phys_to_dma() and make the swiotlb shared allocation
+> > code force set it.
+> > 
+> > But what value is stored in the phys_addr_t for shared pages on the
+> > three arches? Does ARM and Intel set the high GPA/IPA bit in the
+> > phys_addr or do they set it through the pgprot? What does AMD do?
+> > ie can we test a bit in the phys_addr_t to reliably determine if it is
+> > shared or private?
+> 
+> Without secure vIOMMU, no Cbit in the S2 table (==host) for any
+> VM. SDTE (==IOMMU) decides on shared/private for the device,
+> i.e. (device_cc_accepted()?private:shared).
 
-The latter is worth exploring. Thanks,
+Is this "Cbit" part of the CPU S2 page table address space or is it
+actually some PTE bit that says it is "encrypted" ?
 
--- 
-Alexey
+It is confusing when you say it would start working with a vIOMMU.
 
+If 1<<51 is a valid IOPTE, and it is an actually address, then it
+should be mapped into the IOMMU S2, shouldn't it? If it is in the
+IOMMU S2 then shouldn't it work as a dma_addr_t?
+
+If the HW is treating 1<<51 special in some way and not reflecting it
+into a S2 lookup then it isn't an address bit but an IOPTE flag.
+IMHO is really dangerous to intermix PTE flags into phys_addr_t, I
+hope that is not what is happening.
+
+> > Does AMD have the shared/private GPA split like ARM and Intel do? Ie
+> > shared is always at a high GPA? What is the SME mask?
+> 
+> sorry but I do not follow this entirely.
+> 
+> In general, GPA != DMA handle. Cbit (bit51) is not an address bit in a GPA but it is a DMA handle so I mask it there.
+> 
+> With one exception - 1) host 2) mem_encrypt=on 3) iommu=pt, but we default to IOMMU in the case of host+mem_encrypt=on and don't have Cbit in host's DMA handles.
+> 
+> For CoCoVM, I could map everything again at the 1<<51 offset in the same S2 table to leak Cbit to the bus (useless though).
+
+Double map is what ARM does at least. I don't know it is a good
+choice, but it means that phys_addr_t can have a shared/private bit
+(eg your Cbit at 51) and both the CPU and IOMMU S2 have legitimate
+mappings. ie it is a *true* address bit.
+
+Given AMD has only a single IOMMO for T=0 and 1 it would make sense to
+me if AMD always remove the C bit and there is always a uniform IOVA
+mapping from 0 -> vTOM.
+
+But in this case I would expect the vIOMMU to also use the same GPA
+space starting from 0 and also remove the C bit, as the S2 shouldn't
+have mappings starting at 1<<51.
+
+> There is vTOM in SDTE which is "every phys_addr_t above vTOM is no
+> Cbit, below - with Cbit" (and there is the same thing for the CPU
+> side in SEV) but this not it, right?
+
+That seems like the IOMMU HW is specially handling the address bits in
+some way? At least ARM doesn't have anything like that, address bits
+are address bits, they don't get overloaded with secondary mechanisms.
+
+> AMD's SME mask for shared is 0, for private - 1<<51.
+
+ARM is the inverse of this (private is at 0), but the same idea.
+
+Jason
