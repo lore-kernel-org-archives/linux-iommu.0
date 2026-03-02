@@ -1,124 +1,150 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+Received: from smtpbg154.qq.com (smtpbg154.qq.com [15.184.224.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4323020E702;
-	Mon,  2 Mar 2026 00:52:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0ED0FAD24;
+	Mon,  2 Mar 2026 01:43:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=15.184.224.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772412737; cv=none; b=ohx5Y80k+TuAfBzCAgi7Lt3oSv9IjdpoKDiC6vdks1JMMieROQASB+Dvu7vJcgfkBKsVpXgKQlADanbWzDOCjppPKjAsD9BvG698j9NxMudzy6upCDp6as2ECH6/9tIc8vdHT9iNxtuQW7dG0XYG36DMcEi1hSdW2CG7jEjPQZM=
+	t=1772415799; cv=none; b=ir/siyZ0cmYXPXMQt1zoMhXyjaKTdh6dlk/A8etccntrZ/MghSWpO6jVNhajTTZouzTvJjXWuJAofXPqVTvdeAjE1Efb+TuPHx0PL8ZaQWSORwJLyziD7CvQgmPOZdYchgQUrQ2cu4ONfu+NTaYVW6tVvyYMLGvVeV8x28u82JM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772412737; c=relaxed/simple;
-	bh=bC2vR9ifrjZc6eBj+IWF1AgtnBUsKzzG3Lc2wWC2N5o=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=N47ocVl64ogxNQnDpOeZAYVI/r9h62gR34SMptYyAydLXvOcHw89aUXhoPC6oDeVU13CuRCF2pbLrC5+H2iu206Kjad5/n/WlvLIAQskZG1JeGrRwCM8LwlScuuOpAOFWzMLoztzBedmp39Iowjj3PpQT53465o00wwtNdtjwlE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=byvklFmX; arc=none smtp.client-ip=198.137.202.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
+	s=arc-20240116; t=1772415799; c=relaxed/simple;
+	bh=vUOHHdyEXrPGEk8AvCusVmyfpwCI2ekAWq+T8PVRPV0=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=HfVtGxXIhYN7J54YA9/9/VdKbwYS9YyBwFNzqvUqTXgZlU1PU4G+cKorPvZ6nwEOYskqZxOEDKKIBLhCGggBvfKfsK8Z/tSuTiCNj3y6nFyWD5RqNCxddQ0Wrmp+zIZ4cCbXAnloKEIjchS8Wkl3O6J+02+JJn1jOjz7uUQRNLU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux.spacemit.com; spf=none smtp.mailfrom=linux.spacemit.com; dkim=pass (1024-bit key) header.d=linux.spacemit.com header.i=@linux.spacemit.com header.b=TdUlJrRe; arc=none smtp.client-ip=15.184.224.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux.spacemit.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.spacemit.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="byvklFmX"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-	MIME-Version:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
-	Content-ID:Content-Description:In-Reply-To:References;
-	bh=czYfRHe2VQYfMvy2Qre6JJeW6OQg299AeQ3LrrXs7Ew=; b=byvklFmXKfsJjZc64x1sK5TimJ
-	zn5RSuHfQK0Nkd7R+CERu69v9+OwpjYDXuEoTH0gI2kgi86M54KbXKTCQMp0ncSyFf6qIeglnlHFq
-	7dAHTuY1ZH2+M7lkes1Y9nGJLyeLoUZNqB3cnMUCt5s4wG1ZEgU9+G6yQBVMDgtZGuyJ6rgYMuPzH
-	70IKi6Z4ESq5X/VflWalzzWiGMvGHD3ntV9oWMeXB7icChRxdoMGQSIZdmWvvuBIf2hsT+fFhxEGq
-	3Ekwpj6N/GgHea6t/F74T8WzrTTRZjpgNxjAquWlIj7vyBUroWG2iLve1B4Y5WjIn6+9+PLPnipwj
-	0re6NdzA==;
-Received: from [50.53.43.113] (helo=bombadil.infradead.org)
-	by bombadil.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
-	id 1vwrWB-0000000C282-0yEF;
-	Mon, 02 Mar 2026 00:52:15 +0000
-From: Randy Dunlap <rdunlap@infradead.org>
-To: linux-kernel@vger.kernel.org
-Cc: Randy Dunlap <rdunlap@infradead.org>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev
-Subject: [PATCH] iommu/io-pgtable: fix all kernel-doc warnings in io-pgtable.h
-Date: Sun,  1 Mar 2026 16:52:14 -0800
-Message-ID: <20260302005214.3469521-1-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.53.0
+	dkim=pass (1024-bit key) header.d=linux.spacemit.com header.i=@linux.spacemit.com header.b="TdUlJrRe"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.spacemit.com;
+	s=mxsw2412; t=1772415732;
+	bh=kRDQRl2R+LRWm2HggZ4Cj1vYHy4GXuClk7m0o1am4dw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:From;
+	b=TdUlJrRe6KoS6xPDpC5kBRbyw/L7QLvDkZ3u7sTb103KPWW+/AUiz8x8gpJKwKhio
+	 YjlQsoU5WuN5BNeDdoIi6Mo+ph6AI+Ub6XhcA/hWiJSgvLK9CZ9b9BTRE1KUX+y0Qo
+	 QUofJeo6ADr9uUNBnRLOCXxScSqsNYBheuMm9VlY=
+X-QQ-mid: zesmtpsz8t1772415723tcf6f7fb4
+X-QQ-Originating-IP: w6IfNoMZkeVc0lyzIsKr9uYgMmtkBko/Qpg4ezv6sio=
+Received: from [10.2.99.140] ( [116.237.103.163])
+	by bizesmtp.qq.com (ESMTP) with 
+	id ; Mon, 02 Mar 2026 09:41:59 +0800 (CST)
+X-QQ-SSF: 0000000000000000000000000000000
+X-QQ-GoodBg: 0
+X-BIZMAIL-ID: 4156359098192319691
+Message-ID: <B8675026D2F6DF58+946ff82a-2e2e-4abb-a3c4-26fe67c43ab8@linux.spacemit.com>
+Date: Mon, 2 Mar 2026 09:41:55 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 4/8] dt-bindings: iommu: Add spacemit/t100 features
+To: Conor Dooley <conor@kernel.org>
+Cc: Conor Dooley <conor.dooley@microchip.com>,
+ Tomasz Jeznach <tjeznach@rivosinc.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Paul Walmsley <pjw@kernel.org>,
+ Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>,
+ Alexandre Ghiti <alex@ghiti.fr>, Peter Zijlstra <peterz@infradead.org>,
+ Ingo Molnar <mingo@redhat.com>, Arnaldo Carvalho de Melo <acme@kernel.org>,
+ Namhyung Kim <namhyung@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
+ Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+ Jiri Olsa <jolsa@kernel.org>, Ian Rogers <irogers@google.com>,
+ Adrian Hunter <adrian.hunter@intel.com>, James Clark
+ <james.clark@linaro.org>, Yixun Lan <dlan@kernel.org>,
+ Jingyu Li <joey.li@spacemit.com>, Zong Li <zong.li@sifive.com>,
+ Yaxing Guo <guoyaxing@bosc.ac.cn>, iommu@lists.linux.dev,
+ linux-perf-users@vger.kernel.org, linux-riscv@lists.infradead.org,
+ spacemit@lists.linux.dev, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <cover.1772289741.git.lv.zheng@linux.spacemit.com>
+ <D8CE6E5B1001D797+a6f36da0272ac18fff2a992976b1defc3bb01af6.1772289741.git.lv.zheng@linux.spacemit.com>
+ <177231592262.848068.18080490567217057666@spud>
+ <CAB7A310CE95B577+5f5c0825-25dd-4035-9316-db940c00216b@linux.spacemit.com>
+ <20260301-acclimate-suburb-fc46da7e0cea@spud>
+Content-Language: en-US
+From: Lv Zheng <lv.zheng@linux.spacemit.com>
+In-Reply-To: <20260301-acclimate-suburb-fc46da7e0cea@spud>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: zesmtpsz:linux.spacemit.com:qybglogicsvrgz:qybglogicsvrgz5b-1
+X-QQ-XMAILINFO: NTHY/YkN8c+xXjKPQhQQ8z6eRFGBjzhi4ywoP07wySu7NtbvDlHpINhr
+	Pz71ihPECjDvoVUYu4bOJShhop0qXeO/e6VWR2mxAL1OJdgg8SyQl4r89L9NDQW36IrH1tf
+	9LIDObU06QeBqm2idDg5fkfpi8mcQB7amzlQ9ANNVR34Zc0UKkYDzsjfQjX1t3sakX9NMV3
+	7GrTFziluMK8RXcwGIgyEOjrnhdlqLV04/4ldNa+x9XiMlRLdyBg4Vwzyt2I7PTGBBB4MLd
+	FwBZMC0DWuU/7ko5WKERfFXndmdrz1ny4rIaeACrDVBG8ylt91hIr+7lEK6XkeHhn9sncJI
+	PkUvLVI4qI3yi1BtHE80IJn/II1474R+ro+5hBacLeQK7n1+LErbRuoky8CXCzrA1OADUhQ
+	V4hiYkwB9jiAzLTeaA78rQ+KNS2zNikOTtAAqHOv2PK24+aqs9Xmx18JwSj+V7rKIHug1CX
+	ZyK0t/Z4wdhB+3uVhTzQzNo7tSfC8kmh59B79rL+ATK77H8P6kq581THWQpcQxalCj+Qq3u
+	xu40K/MKx45Rumf9pe0hdNAj9Z9CZtoEx9jq42y1WE9sgyHnV6UV1DGMUrUOUXEBpgX/BZN
+	CuJ23Gmw+zwNeW0nJLeGCFRDmPnlMGkM8sheofomhz//A3Wh9q4XyKPrAcXftBbrMj0ZeoS
+	+LWA/0FChficDcMmeYQbO2JiVeDY8jVD1syWj0sMsrEI4o25OeQHXMSBdKfFqGCetBglK4x
+	NbbvDJFwYNNduH8hINU3P5UQu9lmLpNHoAmIj9jm5WLizfBu7PpllOxeOrHFsGyK7/gfHDt
+	oWnSrK3a1HpTaAy4VhEgiDqFhcZpnCEBMPRQu6aG/8PNPe2jdLJr0QXfumC37HFsVRAwI4U
+	o8302hBghm68Fp6cndgbo3kTwGzraWx8VjXIn9L/Ju/vY8Pt+rKrX06qINnZmkO3tB2bVVH
+	3zFj1G9owW9FlGYH120cZcBLFyhsIa1GrHCyZ8Be0Nak0vcYCRt0jOd7QuupyWMDQnMErCX
+	kD0Agjj0aDeXlrE22d
+X-QQ-XMRINFO: M/715EihBoGS47X28/vv4NpnfpeBLnr4Qg==
+X-QQ-RECHKSPAM: 0
 
-Avoid kernel-doc warnings in io-pgtable.h:
-- use the correct struct member names or kernel-doc format
-- add a missing struct member description
-- add a missing function return comment section
+On 3/1/2026 10:01 PM, Conor Dooley wrote:
+> On Sun, Mar 01, 2026 at 11:48:37AM +0800, Lv Zheng wrote:
+>> On 3/1/2026 5:58 AM, Conor Dooley wrote:
+>>> On Sat, 28 Feb 2026 22:44:49 +0800, Lv Zheng <lv.zheng@linux.spacemit.com> wrote:
+>>>> Adds device tree bindings for SpacemiT T100 specific features by
+>>>> introducing spacemit,t100 compatible. T100 contains distributed IOATCs,
+>>>> each of which exposes pmiv interrupt.
+>>>>
+>>>> Signed-off-by: Lv Zheng <lv.zheng@linux.spacemit.com>
+>>>> Signed-off-by: Jingyu Li <joey.li@spacemit.com>
+>>>
+>>> Patch content here is fine, but the signoff chain on this patch is not
+>>> right. What did Jingyu do? You're author and submitter so either Jingyu
+>>> did nothing and should be removed, or is a co-developer which requires
+>>> attribution via the co-developed-by tag. If the latter, their signoff
+>>> should be before yours (the submitter is always last).
+>>>
+>>> pw-bot: changes-requested
+>>
+>> She is responsible for the common HPM part, and I just gave my comments to
+>> help to improve the quality of that implementation.
+>> I was just focusing on enabling and maintaining the T100 specific features.
+>>
+>> Our patches will go each other's local repository, leaving such tracks. That
+>> means the patch from me is Reviewed-and-tested-by her.
+>> And I'm responsible for sending the whole patchset for upstreaming.
+> 
+> Then you need to either fix your email setup (because it's not inserting
+> From: Jingyu Li <joey.li@spacemit.com>) so that she is marked as the
+> author or actually set her to the author in git if you haven't.
+> Currently it looks like this when applied:
+> commit 872978c875731be43e84bec38798cb8ecd42b7a0
+> Author: Lv Zheng <lv.zheng@linux.spacemit.com>
+> Date:   Sat Feb 28 22:44:49 2026 +0800
+> 
+>      dt-bindings: iommu: Add spacemit/t100 features
+>      
+>      Adds device tree bindings for SpacemiT T100 specific features by
+>      introducing spacemit,t100 compatible. T100 contains distributed IOATCs,
+>      each of which exposes pmiv interrupt.
+>      
+>      Signed-off-by: Lv Zheng <lv.zheng@linux.spacemit.com>
+>      Signed-off-by: Jingyu Li <joey.li@spacemit.com>
+> 
+> In both cases, you need to change the order of signoffs so that yours is
+> last as the submitter.
 
-Warning: include/linux/io-pgtable.h:187 struct member 'coherent_walk' not
- described in 'io_pgtable_cfg'
-Warning: include/linux/io-pgtable.h:187 struct member 'arm_lpae_s1_cfg' not
- described in 'io_pgtable_cfg'
-Warning: include/linux/io-pgtable.h:187 struct member 'arm_lpae_s2_cfg' not
- described in 'io_pgtable_cfg'
-Warning: include/linux/io-pgtable.h:187 struct member 'arm_v7s_cfg' not
- described in 'io_pgtable_cfg'
-Warning: include/linux/io-pgtable.h:187 struct member 'arm_mali_lpae_cfg'
- not described in 'io_pgtable_cfg'
-Warning: include/linux/io-pgtable.h:187 struct member 'apple_dart_cfg' not
- described in 'io_pgtable_cfg'
-Warning: include/linux/io-pgtable.h:187 struct member 'amd' not described
- in 'io_pgtable_cfg'
-Warning: include/linux/io-pgtable.h:223 struct member
- 'read_and_clear_dirty' not described in 'io_pgtable_ops'
-Warning: include/linux/io-pgtable.h:237 No description found for return
- value of 'alloc_io_pgtable_ops'
+OK.
 
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
----
-Cc: Joerg Roedel <joro@8bytes.org>
-Cc: Will Deacon <will@kernel.org>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: iommu@lists.linux.dev
+BTW, since this version of this patch has been worked out all due your 
+constructive feedback and suggestions. Now that it has functionally 
+converged to what the community requested, can I add "Reviewed-by: Conor 
+Dooley <conor@kernel.org>" for its next version?
 
- include/linux/io-pgtable.h |   10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+Best regards,
+Lv
 
---- linux-next-20260227.orig/include/linux/io-pgtable.h
-+++ linux-next-20260227/include/linux/io-pgtable.h
-@@ -53,7 +53,7 @@ struct iommu_flush_ops {
-  *                 tables.
-  * @ias:           Input address (iova) size, in bits.
-  * @oas:           Output address (paddr) size, in bits.
-- * @coherent_walk  A flag to indicate whether or not page table walks made
-+ * @coherent_walk: A flag to indicate whether or not page table walks made
-  *                 by the IOMMU are coherent with the CPU caches.
-  * @tlb:           TLB management callbacks for this set of tables.
-  * @iommu_dev:     The device representing the DMA configuration for the
-@@ -136,6 +136,7 @@ struct io_pgtable_cfg {
- 	void (*free)(void *cookie, void *pages, size_t size);
- 
- 	/* Low-level data specific to the table format */
-+	/* private: */
- 	union {
- 		struct {
- 			u64	ttbr;
-@@ -203,6 +204,9 @@ struct arm_lpae_io_pgtable_walk_data {
-  * @unmap_pages:  Unmap a range of virtually contiguous pages of the same size.
-  * @iova_to_phys: Translate iova to physical address.
-  * @pgtable_walk: (optional) Perform a page table walk for a given iova.
-+ * @read_and_clear_dirty: Record dirty info per IOVA. If an IOVA is dirty,
-+ *			  clear its dirty state from the PTE unless the
-+ *			  IOMMU_DIRTY_NO_CLEAR flag is passed in.
-  *
-  * These functions map directly onto the iommu_ops member functions with
-  * the same names.
-@@ -231,7 +235,9 @@ struct io_pgtable_ops {
-  *          the configuration actually provided by the allocator (e.g. the
-  *          pgsize_bitmap may be restricted).
-  * @cookie: An opaque token provided by the IOMMU driver and passed back to
-- *          the callback routines in cfg->tlb.
-+ *          the callback routines.
-+ *
-+ * Returns: Pointer to the &struct io_pgtable_ops for this set of page tables.
-  */
- struct io_pgtable_ops *alloc_io_pgtable_ops(enum io_pgtable_fmt fmt,
- 					    struct io_pgtable_cfg *cfg,
