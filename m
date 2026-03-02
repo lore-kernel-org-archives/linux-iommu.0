@@ -1,132 +1,139 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC2991E8320
-	for <iommu@lists.linux.dev>; Mon,  2 Mar 2026 06:51:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88443201004;
+	Mon,  2 Mar 2026 06:58:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772434265; cv=none; b=IWlp4aFFdmF6BWCC5tyMm+TZ2rwpqt5Muj9+JJqXAvUIx4Yk3A/RZdAZvE9MhYAZm5tnu8c8XqqvfwEjHEgUzCj+9MGyQNmrgjKOqnNfBEzqQvZQ2mMz5/NWRmMv2Dwet86W6BInUon2nf+8qGXPRlj6qax8M8U989EPEHLB7q8=
+	t=1772434708; cv=none; b=rB5NahE+KADceT2E33rv8vFJc1O6RQAqH5KyPUwJUj/wYiV2JBK+RWVnM9dk+rUstZbJtVVkQMoDFH7Qx5FTI9WTUZvc+LfzcCuW4hx7u0P8u2hwXfPnTrxSD0edK+D6mJ2Sex9EK9msFmXA2hdJ7c9yutpwA0GzU4Vnsx8f7dE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772434265; c=relaxed/simple;
-	bh=KfxHlb9EGa7F1zrztk6hQklz/axGIsGm0xY/noQxqKk=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=XJ91E7bCfL1Hcu0GYvWYkQmK/415mKN2fnjhA8v62uFIfQEdrvhX+rLt2P0I4eMVEkpX7ecvb9jon2kiP9A/DDboYrWk0M9iqmoRIZRHYh58zNXJML5Fx6h8hWNsvGshIaJLa3KU1OJukxaMxw2g6LxoKXPGPpziYEW26kTmf6E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SIN1Pu3L; arc=none smtp.client-ip=198.175.65.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1772434708; c=relaxed/simple;
+	bh=QuE/TCSzAlqPVDJUGj0JHRDKd+76fYi6RJN1xDSWzNc=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=rEB7H2CgED9CkeIpCDuZ+Dcz0niVr5M/NTqmCYnuUqPx5miXWdkEB7WFoWoEkuT4suqhkGDc32gJHwZ/hSwZSjM+hvNHuhLzmyzl615L60q2/KS0g9+rHpQ6fczoJUJkiTkjvh4PAg3T4XD9yaU+Pl1FPoQRBAVo9y1/lRMguZo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OZifj2He; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SIN1Pu3L"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1772434264; x=1803970264;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=KfxHlb9EGa7F1zrztk6hQklz/axGIsGm0xY/noQxqKk=;
-  b=SIN1Pu3Lj+tNl2Fu+lICJd8sfq9qtTniG6GuYVI7ZdLSphytFnfZ3Ti/
-   mbeBneofnrQFqtqbPpCkTxxDW7iBM0CtG57la2Et7QPQx7KP76939VfoS
-   rSxSzTC1TuWkgtyX5eT8Gso/xsOOW81H8GzuJH1VgydzWyVwcGPMuv9Tf
-   Ped7HNhMO/Aa+6TCFIvADV2bGOQ36xi2p4eozeM7w0sIVeMQaZ6fFTJYo
-   hWOuuUViSIIEm2HOIfEuySTMGizM72aBxmPGnMmR+xwdqYNQdfmqnp6c+
-   naqJ5Fpe0FvMZjrYviSQoqkTSYBCHHNFLlQFw2a3lovJDy5wY9eGNFoPo
-   A==;
-X-CSE-ConnectionGUID: y9xQDsmPSue9vce92uNzhA==
-X-CSE-MsgGUID: v04A2tdgTFixtMgIRMUk3A==
-X-IronPort-AV: E=McAfee;i="6800,10657,11716"; a="83769655"
-X-IronPort-AV: E=Sophos;i="6.21,319,1763452800"; 
-   d="scan'208";a="83769655"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2026 22:51:03 -0800
-X-CSE-ConnectionGUID: 2wALsoscR9KplylpdI+CaA==
-X-CSE-MsgGUID: PBWDd3vhTzWQ6IDy8N1ASw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,319,1763452800"; 
-   d="scan'208";a="248059039"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2026 22:51:02 -0800
-Message-ID: <0833d160-9659-4140-b775-a0ab0c17a451@linux.intel.com>
-Date: Mon, 2 Mar 2026 14:50:27 +0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OZifj2He"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D62BC19423;
+	Mon,  2 Mar 2026 06:58:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1772434708;
+	bh=QuE/TCSzAlqPVDJUGj0JHRDKd+76fYi6RJN1xDSWzNc=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+	b=OZifj2Heh2DmSYpOSLto0qL7rXlaSTJ2G5yJ2ss4heuQdoO4Twftcgmr3l8y9BiTZ
+	 AelS3AWCJQazEYl4vnWh6Q4bBV60oiOcTrTzTs9tKS17WNqcGyjsp9p2ba447pJ2VC
+	 a+GzTYsuhU+KXm6ktaBKunKT7j5Bq56zQWvtGJkdTBpvnK4esZdvHuBSF00rZl14Q7
+	 fS4JccZPf3vKR0DLFGJAqT06mJDDLYMAuJO+BdB09PWjvw9569MYO36qqmIAtniuwV
+	 E7bHSSXILvQWuPXEwgXKHjLGReLpiqSAzAYfmkzbIdaZgkCTSGjS7Fjp78ffZwSi55
+	 7W8/TZCIyMb5A==
+X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: dan.j.williams@intel.com, Alexey Kardashevskiy <aik@amd.com>,
+	x86@kernel.org
+Cc: linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+	linux-pci@vger.kernel.org,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	"H. Peter Anvin" <hpa@zytor.com>,
+	Sean Christopherson <seanjc@google.com>,
+	Paolo Bonzini <pbonzini@redhat.com>,
+	Andy Lutomirski <luto@kernel.org>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Mike Rapoport <rppt@kernel.org>,
+	Tom Lendacky <thomas.lendacky@amd.com>,
+	Ard Biesheuvel <ardb@kernel.org>,
+	Neeraj Upadhyay <Neeraj.Upadhyay@amd.com>,
+	Ashish Kalra <ashish.kalra@amd.com>,
+	Stefano Garzarella <sgarzare@redhat.com>,
+	Melody Wang <huibo.wang@amd.com>,
+	Seongman Lee <augustus92@kaist.ac.kr>,
+	Joerg Roedel <joerg.roedel@amd.com>,
+	Nikunj A Dadhania <nikunj@amd.com>,
+	Michael Roth <michael.roth@amd.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Andi Kleen <ak@linux.intel.com>,
+	Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>,
+	Tony Luck <tony.luck@intel.com>,
+	David Woodhouse <dwmw@amazon.co.uk>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Denis Efremov <efremov@linux.com>,
+	Geliang Tang <geliang@kernel.org>,
+	Piotr Gregor <piotrgregor@rsyncme.org>,
+	"Michael S. Tsirkin" <mst@redhat.com>,
+	Alex Williamson <alex@shazbot.org>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Jesse Barnes <jbarnes@virtuousgeek.org>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	Yinghai Lu <yinghai@kernel.org>,
+	Kevin Brodsky <kevin.brodsky@arm.com>,
+	Jonathan Cameron <jonathan.cameron@huawei.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	Kim Phillips <kim.phillips@amd.com>,
+	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+	Stefano Stabellini <sstabellini@kernel.org>,
+	Claire Chang <tientzu@chromium.org>,
+	linux-coco@lists.linux.dev, iommu@lists.linux.dev,
+	Alexey Kardashevskiy <aik@amd.com>
+Subject: Re: [PATCH kernel 2/9] pci/tsm: Add tsm_tdi_status
+In-Reply-To: <699e97d6e8be7_1cc51003c@dwillia2-mobl4.notmuch>
+References: <20260225053806.3311234-1-aik@amd.com>
+ <20260225053806.3311234-3-aik@amd.com>
+ <699e97d6e8be7_1cc51003c@dwillia2-mobl4.notmuch>
+Date: Mon, 02 Mar 2026 12:28:10 +0530
+Message-ID: <yq5afr6iu399.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH V1] iommu/sva: Fix crash in iommu_sva_unbind_device()
-To: Lizhi Hou <lizhi.hou@amd.com>, joro@8bytes.org, will@kernel.org,
- robin.murphy@arm.com
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, vasant.hegde@amd.com
-References: <20260224183056.2628698-1-lizhi.hou@amd.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20260224183056.2628698-1-lizhi.hou@amd.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 
-On 2/25/26 02:30, Lizhi Hou wrote:
-> domain->mm->iommu_mm can be freed by iommu_domain_free():
->    iommu_domain_free()
->      mmdrop()
->        __mmdrop()
->          mm_pasid_drop()
-> After iommu_domain_free() returns, accessing domain->mm->iommu_mm may
-> dereference a freed mm structure, leading to a crash.
-> 
-> Fix this by taking a reference to the mm via mmgrab() before
-> calling iommu_domain_free(), and dropping it with mmdrop() after
-> finishing access to domain->mm->iommu_mm.
-> 
-> Fixes: e37d5a2d60a3 ("iommu/sva: invalidate stale IOTLB entries for kernel address space")
-> Signed-off-by: Lizhi Hou<lizhi.hou@amd.com>
-> ---
->   drivers/iommu/iommu-sva.c | 2 ++
->   1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
-> index 07d64908a05f..523b8c65c86f 100644
-> --- a/drivers/iommu/iommu-sva.c
-> +++ b/drivers/iommu/iommu-sva.c
-> @@ -179,6 +179,7 @@ void iommu_sva_unbind_device(struct iommu_sva *handle)
->   		return;
->   	}
->   
-> +	mmgrab(domain->mm);
->   	iommu_detach_device_pasid(domain, dev, iommu_mm->pasid);
->   	if (--domain->users == 0) {
->   		list_del(&domain->next);
-> @@ -190,6 +191,7 @@ void iommu_sva_unbind_device(struct iommu_sva *handle)
->   		if (list_empty(&iommu_sva_mms))
->   			iommu_sva_present = false;
->   	}
-> +	mmdrop(domain->mm);
->   
->   	mutex_unlock(&iommu_sva_lock);
->   	kfree(handle);
+<dan.j.williams@intel.com> writes:
 
-How about making the iommu_mm structure itself an owner of the mm_struct
-lifetime? Does something like the following work?
+> Alexey Kardashevskiy wrote:
+>> Define a structure with all info about a TDI such as TDISP status,
+>> bind state, used START_INTERFACE options and the report digest.
+>> 
+>> This will be extended and shared to the userspace.
+>> 
+>> Signed-off-by: Alexey Kardashevskiy <aik@amd.com>
+>> ---
+>> 
+>> Make it uapi? We might want a sysfs node per a field so probably not.
+>> For now its only user is AMD SEV TIO with a plan to expose this struct
+>> as a whole via sysfs.
+>
+> Say more about what this uapi when sysfs already has lock+accept
+> indications?
+>
+> Or are you just talking about exporting the TDISP report as a binary
+> blob?
+>
+> I think the kernel probably wants a generic abstraction for asserting
+> that the tsm layer believes the report remains valid between fetch and
+> run. In other words I am not sure arch features like intf_report_counter
+> ever show up anywhere in uapi outside of debugfs.
+>
 
-diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
-index 07d64908a05f..9c56c2222617 100644
---- a/drivers/iommu/iommu-sva.c
-+++ b/drivers/iommu/iommu-sva.c
-@@ -47,6 +47,7 @@ static struct iommu_mm_data 
-*iommu_alloc_mm_data(struct mm_struct *mm, struct de
-         iommu_mm->pasid = pasid;
-         iommu_mm->mm = mm;
-         INIT_LIST_HEAD(&iommu_mm->sva_domains);
-+       mmgrab(mm);
-         /*
-          * Make sure the write to mm->iommu_mm is not reordered in front of
-          * initialization to iommu_mm fields. If it does, readers may see a
-@@ -212,6 +213,8 @@ void mm_pasid_drop(struct mm_struct *mm)
-                 return;
+Agreed. For CCA, we use rsi_vdev_info, but we need a generic mechanism
+to associate this with the report that the guest has attested.
 
-         iommu_free_global_pasid(iommu_mm->pasid);
-+       mm->iommu_mm = NULL;
-+       mmdrop(mm);
-         kfree(iommu_mm);
-  }
+In CCA, we call rsi_vdev_get_info(vdev_id, dev_info) and later use that
+information in rsi_vdev_enable_dma(vdev_id, dev_info).
 
-Thanks,
-baolu
+Perhaps we could add a generation number (or meas_nonce) to the TSM
+netlink response and use it when accepting the device, so we can
+reliably bind the device measurement to the attested one?
+
+-aneesh
