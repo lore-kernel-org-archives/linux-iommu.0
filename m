@@ -1,161 +1,113 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DCE330BBB8;
-	Mon,  2 Mar 2026 17:53:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 582BD314B8C;
+	Mon,  2 Mar 2026 19:53:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772474002; cv=none; b=BDAGQrmgq+9swOJSRCDNSTriUBGvhT7ZX5MIOTDr0G55FWs7bdocuZ83U3OL59tI5qmnVZvmNtw86NciEdIqHsKB2wH3zJHIP2ikbwMoTUIXPlpflVJ1cYJZd997l/ae4T/WtssXpBvHeyfwSfIthWqDtISPxzNxuczS5rAMbb4=
+	t=1772481216; cv=none; b=eVqHgZAVKRIaaGdECR3cyljQRzvUwqSMy3M1cn2d5D1zL8LujP5/79tEH2koVP3jeSAF1LSeR8fxFTf3M3JaX8RCSJgRnIVVf16zK1Ku4iG34Sf+VoL11IuJsEYWzWQX7iLoEoFv3fRQrixfKdmvnB+aMeVPKac2GcNmF2G/k14=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772474002; c=relaxed/simple;
-	bh=vhDHla+zJiCxWn7+ZSZE11bQ1FNt76Ap+xB09PlL9cw=;
+	s=arc-20240116; t=1772481216; c=relaxed/simple;
+	bh=iHd9xTb08uobwrAOBK6bO4QNR4IAuCt806zIdYOX5us=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=SORjDYhZLVKRYzssuxQMNFS2mi7wuJ6acQazAuyi3Y5xq02o0genu2srbswIjL7ztB+xYOT99U8TIX1ohp9VV5hRROhcrdyHmF3FqFwCM5sLZ4/D8dvXjgGar2sBdtirnlhuy2HRXZnCuasCDOHUNrG0oo9o5EnPeKqXW/RRGak=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=o+AEWwv+; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=lmhjq9l5R72AAhikoAJmllG5P1yw0jz1lDYXdXqeAvZhqVDJd2/AUtneQB0LzrJV/z3JBy+F73z5vGixHeB03cRBLRuuejPPC+REt/BjxTdVPnvr0vKyLRbRpOObr/sMlGJixjU6A/BYWE2stq0g/Kakr1vRTLihp63+TElY43Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=S/dJT0zy; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="o+AEWwv+"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61DCCC19423;
-	Mon,  2 Mar 2026 17:53:16 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="S/dJT0zy"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 633BEC19423;
+	Mon,  2 Mar 2026 19:53:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772474002;
-	bh=vhDHla+zJiCxWn7+ZSZE11bQ1FNt76Ap+xB09PlL9cw=;
+	s=k20201202; t=1772481216;
+	bh=iHd9xTb08uobwrAOBK6bO4QNR4IAuCt806zIdYOX5us=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=o+AEWwv+jmzgY1erzPnHWxkX3AlnObHZo5pe1wzC5RmpeQHAvqUg/Lsy7SjWk7qTO
-	 7syyv87bwfpmtUFjdF86NQGqR8d7SF0YHRnk2pK4wXJMcGBvjXj4NuEWzAWJrkDFPe
-	 BGVQgvtg+Q1xuibe1C46QzpnqlpcUOgd5T/rCca7k2mP8070Bd2cNwwjMrImOdbEY5
-	 i2uvePt+G4BgarGffz5JzPiBl979bOcBt0dFrOyMDn5XVxzui5u4WMA752C75SN0RF
-	 xrne9rRo80jLSQTD8A5E7W60PU5YZ9SeeMjSvzquU3WYyXBzBsg6lieDQhW15q4nqT
-	 bqkp3jzTJupnA==
-Date: Mon, 2 Mar 2026 17:53:13 +0000
-From: Conor Dooley <conor@kernel.org>
-To: Lv Zheng <lv.zheng@linux.spacemit.com>
-Cc: Conor Dooley <conor.dooley@microchip.com>,
-	Tomasz Jeznach <tjeznach@rivosinc.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Paul Walmsley <pjw@kernel.org>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Ingo Molnar <mingo@redhat.com>,
-	Arnaldo Carvalho de Melo <acme@kernel.org>,
-	Namhyung Kim <namhyung@kernel.org>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-	Jiri Olsa <jolsa@kernel.org>, Ian Rogers <irogers@google.com>,
-	Adrian Hunter <adrian.hunter@intel.com>,
-	James Clark <james.clark@linaro.org>, Yixun Lan <dlan@kernel.org>,
-	Jingyu Li <joey.li@spacemit.com>, Zong Li <zong.li@sifive.com>,
-	Yaxing Guo <guoyaxing@bosc.ac.cn>, iommu@lists.linux.dev,
-	linux-perf-users@vger.kernel.org, linux-riscv@lists.infradead.org,
-	spacemit@lists.linux.dev, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 4/8] dt-bindings: iommu: Add spacemit/t100 features
-Message-ID: <20260302-constrain-untrue-71626a545008@spud>
-References: <cover.1772289741.git.lv.zheng@linux.spacemit.com>
- <D8CE6E5B1001D797+a6f36da0272ac18fff2a992976b1defc3bb01af6.1772289741.git.lv.zheng@linux.spacemit.com>
- <177231592262.848068.18080490567217057666@spud>
- <CAB7A310CE95B577+5f5c0825-25dd-4035-9316-db940c00216b@linux.spacemit.com>
- <20260301-acclimate-suburb-fc46da7e0cea@spud>
- <B8675026D2F6DF58+946ff82a-2e2e-4abb-a3c4-26fe67c43ab8@linux.spacemit.com>
+	b=S/dJT0zySAqwi8FaZNed1bZHgZoUCgkvtEoN8t/qyxZFp4cdB5l4QCVShqLeQMGVe
+	 rRPW0Y3cs4dBSlhGNTkgQg/LYvrMJYcaWCCWfoOUveyHYK9JvZQGSYvyb702arb/ea
+	 mbb3qgrBoqHQHfWLA8bq5WvBMzRmeNSQ8woJOAhXYpaXIvvhpUM1npi9Clw4oTIdA0
+	 YcoCj5pjyU5NRwaWwqatyon0UBxknUprtI9HCyltId6WEljYAa6ne6Sr5pLHyPMo3q
+	 khGXgG+xXggQ6qmt1ilyq3HDMADuB/j+MgYxCkEX2+8kWdr8QjQM9CzSEetoFBMZa2
+	 LUQYeASDCnoZg==
+Date: Mon, 2 Mar 2026 21:53:32 +0200
+From: Leon Romanovsky <leon@kernel.org>
+To: Barry Song <21cnbao@gmail.com>
+Cc: catalin.marinas@arm.com, m.szyprowski@samsung.com, robin.murphy@arm.com,
+	will@kernel.org, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	Barry Song <baohua@kernel.org>,
+	Ada Couprie Diaz <ada.coupriediaz@arm.com>,
+	Ard Biesheuvel <ardb@kernel.org>, Marc Zyngier <maz@kernel.org>,
+	Anshuman Khandual <anshuman.khandual@arm.com>,
+	Ryan Roberts <ryan.roberts@arm.com>,
+	Suren Baghdasaryan <surenb@google.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Stefano Stabellini <sstabellini@kernel.org>,
+	Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+	Tangquan Zheng <zhengtangquan@oppo.com>,
+	Juergen Gross <jgross@suse.com>,
+	Xueyuan Chen <xueyuan.chen21@gmail.com>
+Subject: Re: [PATCH v3 4/5] dma-mapping: Separate DMA sync issuing and
+ completion waiting
+Message-ID: <20260302195332.GV12611@unreal>
+References: <20260228221316.59934-1-21cnbao@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="bIo31++ptAE9jI+O"
-Content-Disposition: inline
-In-Reply-To: <B8675026D2F6DF58+946ff82a-2e2e-4abb-a3c4-26fe67c43ab8@linux.spacemit.com>
-
-
---bIo31++ptAE9jI+O
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20260228221316.59934-1-21cnbao@gmail.com>
 
-On Mon, Mar 02, 2026 at 09:41:55AM +0800, Lv Zheng wrote:
-> On 3/1/2026 10:01 PM, Conor Dooley wrote:
-> > On Sun, Mar 01, 2026 at 11:48:37AM +0800, Lv Zheng wrote:
-> > > On 3/1/2026 5:58 AM, Conor Dooley wrote:
-> > > > On Sat, 28 Feb 2026 22:44:49 +0800, Lv Zheng <lv.zheng@linux.spacem=
-it.com> wrote:
-> > > > > Adds device tree bindings for SpacemiT T100 specific features by
-> > > > > introducing spacemit,t100 compatible. T100 contains distributed I=
-OATCs,
-> > > > > each of which exposes pmiv interrupt.
-> > > > >=20
-> > > > > Signed-off-by: Lv Zheng <lv.zheng@linux.spacemit.com>
-> > > > > Signed-off-by: Jingyu Li <joey.li@spacemit.com>
-> > > >=20
-> > > > Patch content here is fine, but the signoff chain on this patch is =
-not
-> > > > right. What did Jingyu do? You're author and submitter so either Ji=
-ngyu
-> > > > did nothing and should be removed, or is a co-developer which requi=
-res
-> > > > attribution via the co-developed-by tag. If the latter, their signo=
-ff
-> > > > should be before yours (the submitter is always last).
-> > > >=20
-> > > > pw-bot: changes-requested
-> > >=20
-> > > She is responsible for the common HPM part, and I just gave my commen=
-ts to
-> > > help to improve the quality of that implementation.
-> > > I was just focusing on enabling and maintaining the T100 specific fea=
-tures.
-> > >=20
-> > > Our patches will go each other's local repository, leaving such track=
-s. That
-> > > means the patch from me is Reviewed-and-tested-by her.
-> > > And I'm responsible for sending the whole patchset for upstreaming.
-> >=20
-> > Then you need to either fix your email setup (because it's not inserting
-> > From: Jingyu Li <joey.li@spacemit.com>) so that she is marked as the
-> > author or actually set her to the author in git if you haven't.
-> > Currently it looks like this when applied:
-> > commit 872978c875731be43e84bec38798cb8ecd42b7a0
-> > Author: Lv Zheng <lv.zheng@linux.spacemit.com>
-> > Date:   Sat Feb 28 22:44:49 2026 +0800
-> >=20
-> >      dt-bindings: iommu: Add spacemit/t100 features
-> >      Adds device tree bindings for SpacemiT T100 specific features by
-> >      introducing spacemit,t100 compatible. T100 contains distributed IO=
-ATCs,
-> >      each of which exposes pmiv interrupt.
-> >      Signed-off-by: Lv Zheng <lv.zheng@linux.spacemit.com>
-> >      Signed-off-by: Jingyu Li <joey.li@spacemit.com>
-> >=20
-> > In both cases, you need to change the order of signoffs so that yours is
-> > last as the submitter.
->=20
-> BTW, since this version of this patch has been worked out all due your
-> constructive feedback and suggestions. Now that it has functionally
-> converged to what the community requested, can I add "Reviewed-by: Conor
-> Dooley <conor@kernel.org>" for its next version?
+On Sun, Mar 01, 2026 at 06:13:16AM +0800, Barry Song wrote:
+> From: Barry Song <baohua@kernel.org>
+> 
+> Currently, arch_sync_dma_for_cpu and arch_sync_dma_for_device
+> always wait for the completion of each DMA buffer. That is,
+> issuing the DMA sync and waiting for completion is done in a
+> single API call.
+> 
+> For scatter-gather lists with multiple entries, this means
+> issuing and waiting is repeated for each entry, which can hurt
+> performance. Architectures like ARM64 may be able to issue all
+> DMA sync operations for all entries first and then wait for
+> completion together.
+> 
+> To address this, arch_sync_dma_for_* now batches DMA operations
+> and performs a flush afterward. On ARM64, the flush is implemented
+> with a dsb instruction in arch_sync_dma_flush(). On other
+> architectures, arch_sync_dma_flush() is currently a nop.
+> 
+> Cc: Leon Romanovsky <leon@kernel.org>
+> Cc: Catalin Marinas <catalin.marinas@arm.com>
+> Cc: Will Deacon <will@kernel.org>
+> Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> Cc: Ada Couprie Diaz <ada.coupriediaz@arm.com>
+> Cc: Ard Biesheuvel <ardb@kernel.org>
+> Cc: Marc Zyngier <maz@kernel.org>
+> Cc: Anshuman Khandual <anshuman.khandual@arm.com>
+> Cc: Ryan Roberts <ryan.roberts@arm.com>
+> Cc: Suren Baghdasaryan <surenb@google.com>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: Stefano Stabellini <sstabellini@kernel.org>
+> Cc: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+> Cc: Tangquan Zheng <zhengtangquan@oppo.com>
+> Reviewed-by: Juergen Gross <jgross@suse.com> # drivers/xen/swiotlb-xen.c
+> Tested-by: Xueyuan Chen <xueyuan.chen21@gmail.com>
+> Signed-off-by: Barry Song <baohua@kernel.org>
+> ---
+>  arch/arm64/Kconfig             |  1 +
+>  arch/arm64/include/asm/cache.h |  5 +++++
+>  arch/arm64/mm/dma-mapping.c    |  4 ++--
+>  drivers/iommu/dma-iommu.c      | 35 ++++++++++++++++++++++++++--------
+>  drivers/xen/swiotlb-xen.c      | 24 +++++++++++++++--------
+>  include/linux/dma-map-ops.h    |  6 ++++++
+>  kernel/dma/Kconfig             |  3 +++
+>  kernel/dma/direct.c            |  6 +++++-
+>  kernel/dma/direct.h            |  9 +++++++--
+>  kernel/dma/swiotlb.c           |  7 ++++++-
+>  10 files changed, 78 insertions(+), 22 deletions(-)
+> 
 
-No, as I said the previous time you asked, I will provide one when I am
-happy with the patch. I have not yet reached a point with you were I am
-comfortable providing tags with the assumption that you will make the
-correct changes. There's no need to hassle me for one at this point
-anyway, because you have to send a v6 anyway. If v6 is satisfactory to
-the maintainers, they'll grab my tag when they apply the series.
-
-Cheers,
-Conor.
-
---bIo31++ptAE9jI+O
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaaXOiQAKCRB4tDGHoIJi
-0poHAQDxsjjLOPKOtb2IC4WJzgt1JbGia7F26+iLWwTvK6+FLwEAzjWz3FACYBYP
-Z2zqTAghSNd/jVb4Yr4Ozyd2TMj26Ao=
-=tGDQ
------END PGP SIGNATURE-----
-
---bIo31++ptAE9jI+O--
+Thanks,
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
