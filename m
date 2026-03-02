@@ -1,35 +1,34 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88443201004;
-	Mon,  2 Mar 2026 06:58:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 947863859FD;
+	Mon,  2 Mar 2026 07:55:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772434708; cv=none; b=rB5NahE+KADceT2E33rv8vFJc1O6RQAqH5KyPUwJUj/wYiV2JBK+RWVnM9dk+rUstZbJtVVkQMoDFH7Qx5FTI9WTUZvc+LfzcCuW4hx7u0P8u2hwXfPnTrxSD0edK+D6mJ2Sex9EK9msFmXA2hdJ7c9yutpwA0GzU4Vnsx8f7dE=
+	t=1772438107; cv=none; b=YISyDgbjQ2CqtkH7y53mfyDwogzS2tkHCtOseaZ+Y2y6Ibc1DsryCaUVW2VV+ZskI9BxwDH4KOXgykPGDhtulqCrnD9Lq2T32dLs3yWUzwoegx0Y8ez15HgJPmhH/j/3+DLh37Jqc+YYkDIbewuQm0Ul+vv6URd0mdfcXdwukWA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772434708; c=relaxed/simple;
-	bh=QuE/TCSzAlqPVDJUGj0JHRDKd+76fYi6RJN1xDSWzNc=;
+	s=arc-20240116; t=1772438107; c=relaxed/simple;
+	bh=TpSHHOMB+i4iaPaUlJVmKGcvqLj7+j67v8W16M22Nc4=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=rEB7H2CgED9CkeIpCDuZ+Dcz0niVr5M/NTqmCYnuUqPx5miXWdkEB7WFoWoEkuT4suqhkGDc32gJHwZ/hSwZSjM+hvNHuhLzmyzl615L60q2/KS0g9+rHpQ6fczoJUJkiTkjvh4PAg3T4XD9yaU+Pl1FPoQRBAVo9y1/lRMguZo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OZifj2He; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=t1rngud9hBaL4lgt/vCV+727eb6KPrLlDtjqB46cQ0mN1+c6eLfky7TQWA0A6HIu8l+jhiW+S/pCODgCGoXiXTqAx4sucKd6SnQYX4B1UC8PKnC5WJSW/Lt8IQu+kiJu4tCQGsR1bmRhfRbGz3+6J8jO/U4qHd8ATK7Pj4haXUE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ImjHKrId; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OZifj2He"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D62BC19423;
-	Mon,  2 Mar 2026 06:58:13 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ImjHKrId"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8181C19423;
+	Mon,  2 Mar 2026 07:54:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772434708;
-	bh=QuE/TCSzAlqPVDJUGj0JHRDKd+76fYi6RJN1xDSWzNc=;
+	s=k20201202; t=1772438107;
+	bh=TpSHHOMB+i4iaPaUlJVmKGcvqLj7+j67v8W16M22Nc4=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=OZifj2Heh2DmSYpOSLto0qL7rXlaSTJ2G5yJ2ss4heuQdoO4Twftcgmr3l8y9BiTZ
-	 AelS3AWCJQazEYl4vnWh6Q4bBV60oiOcTrTzTs9tKS17WNqcGyjsp9p2ba447pJ2VC
-	 a+GzTYsuhU+KXm6ktaBKunKT7j5Bq56zQWvtGJkdTBpvnK4esZdvHuBSF00rZl14Q7
-	 fS4JccZPf3vKR0DLFGJAqT06mJDDLYMAuJO+BdB09PWjvw9569MYO36qqmIAtniuwV
-	 E7bHSSXILvQWuPXEwgXKHjLGReLpiqSAzAYfmkzbIdaZgkCTSGjS7Fjp78ffZwSi55
-	 7W8/TZCIyMb5A==
+	b=ImjHKrIdoo15tSikWAsezZ9zmWHDO6VGBVoSqiP2coKiypFMXFUQjAF0i2d1xi4xN
+	 tRzNS4Sg4dyzE1mz6b9uakWZPbSJcKcl77IgnWyH5mvWK9ZC+UKn73Aq3zx9NSGUVY
+	 HrVcG87kXYw0i6utiq7NHNfuLgg2sP6vGGnpGzvzK/UqkE3oxrZcMzQ6+zeOrMDIn+
+	 V7VOirFzBKNg39OpP4HUx6sPZl5IpXLNBCpbPqOjYGh0NarJUr0jwW7yV8qjcatDOY
+	 lvFN5ONLkqbjf7w612WT58JnVSiSzOf+21r2l8ww3pC8D7brwNZq5A5+oUQZm9TYfm
+	 nNmRGvVyzcvxA==
 X-Mailer: emacs 30.2 (via feedmail 11-beta-1 I)
 From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
-To: dan.j.williams@intel.com, Alexey Kardashevskiy <aik@amd.com>,
-	x86@kernel.org
+To: Alexey Kardashevskiy <aik@amd.com>, x86@kernel.org
 Cc: linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
 	linux-pci@vger.kernel.org,
 	Thomas Gleixner <tglx@linutronix.de>,
@@ -84,56 +83,144 @@ Cc: linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
 	Claire Chang <tientzu@chromium.org>,
 	linux-coco@lists.linux.dev, iommu@lists.linux.dev,
 	Alexey Kardashevskiy <aik@amd.com>
-Subject: Re: [PATCH kernel 2/9] pci/tsm: Add tsm_tdi_status
-In-Reply-To: <699e97d6e8be7_1cc51003c@dwillia2-mobl4.notmuch>
+Subject: Re: [PATCH kernel 4/9] dma/swiotlb: Stop forcing SWIOTLB for TDISP
+ devices
+In-Reply-To: <20260225053806.3311234-5-aik@amd.com>
 References: <20260225053806.3311234-1-aik@amd.com>
- <20260225053806.3311234-3-aik@amd.com>
- <699e97d6e8be7_1cc51003c@dwillia2-mobl4.notmuch>
-Date: Mon, 02 Mar 2026 12:28:10 +0530
-Message-ID: <yq5afr6iu399.fsf@kernel.org>
+ <20260225053806.3311234-5-aik@amd.com>
+Date: Mon, 02 Mar 2026 13:24:47 +0530
+Message-ID: <yq5acy1mu0mw.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-<dan.j.williams@intel.com> writes:
+Alexey Kardashevskiy <aik@amd.com> writes:
 
-> Alexey Kardashevskiy wrote:
->> Define a structure with all info about a TDI such as TDISP status,
->> bind state, used START_INTERFACE options and the report digest.
->> 
->> This will be extended and shared to the userspace.
->> 
->> Signed-off-by: Alexey Kardashevskiy <aik@amd.com>
->> ---
->> 
->> Make it uapi? We might want a sysfs node per a field so probably not.
->> For now its only user is AMD SEV TIO with a plan to expose this struct
->> as a whole via sysfs.
+> SWIOTLB is enforced when encrypted guest memory is detected
+> in pci_swiotlb_detect() which is required for legacy devices.
 >
-> Say more about what this uapi when sysfs already has lock+accept
-> indications?
+> Skip SWIOTLB for TDISP devices.
 >
-> Or are you just talking about exporting the TDISP report as a binary
-> blob?
+> Signed-off-by: Alexey Kardashevskiy <aik@amd.com>
+> ---
+>  include/linux/swiotlb.h | 9 +++++++++
+>  1 file changed, 9 insertions(+)
 >
-> I think the kernel probably wants a generic abstraction for asserting
-> that the tsm layer believes the report remains valid between fetch and
-> run. In other words I am not sure arch features like intf_report_counter
-> ever show up anywhere in uapi outside of debugfs.
->
+> diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+> index 3dae0f592063..119c25d639a7 100644
+> --- a/include/linux/swiotlb.h
+> +++ b/include/linux/swiotlb.h
+> @@ -173,6 +173,15 @@ static inline bool is_swiotlb_force_bounce(struct de=
+vice *dev)
+>  {
+>  	struct io_tlb_mem *mem =3D dev->dma_io_tlb_mem;
+>=20=20
+> +	/*
+> +	 * CC_ATTR_GUEST_MEM_ENCRYPT enforces SWIOTLB_FORCE in
+> +	 * swiotlb_init_remap() to allow legacy devices access arbitrary
+> +	 * VM encrypted memory.
+> +	 * Skip it for TDISP devices capable of DMA-ing the encrypted memory.
+> +	 */
+> +	if (device_cc_accepted(dev))
+> +		return false;
+> +
+>  	return mem && mem->force_bounce;
+>  }
+>=20=20
 
-Agreed. For CCA, we use rsi_vdev_info, but we need a generic mechanism
-to associate this with the report that the guest has attested.
 
-In CCA, we call rsi_vdev_get_info(vdev_id, dev_info) and later use that
-information in rsi_vdev_enable_dma(vdev_id, dev_info).
+I=E2=80=99m wondering whether we need more than that. Perhaps we could start
+with a simpler assumption: a TDISP-capable device will never require
+SWIOTLB bouncing. That would significantly simplify the DMA allocation
+path for T=3D1.
 
-Perhaps we could add a generation number (or meas_nonce) to the TSM
-netlink response and use it when accepting the device, so we can
-reliably bind the device measurement to the attested one?
+Without this assumption, we might need to implement a private
+io_tlb_mem.
 
--aneesh
+We should also avoid supporting TDISP mode on devices that require
+things like restricted-memory SWIOTLB pool.
+
+Something like:
+
+modified   arch/arm64/mm/mem_encrypt.c
+@@ -18,6 +18,7 @@
+ #include <linux/err.h>
+ #include <linux/mm.h>
+ #include <linux/mem_encrypt.h>
++#include <linux/device.h>
+=20
+ static const struct arm64_mem_crypt_ops *crypt_ops;
+=20
+@@ -53,3 +54,12 @@ int set_memory_decrypted(unsigned long addr, int numpage=
+s)
+ 	return crypt_ops->decrypt(addr, numpages);
+ }
+ EXPORT_SYMBOL_GPL(set_memory_decrypted);
++
++bool force_dma_unencrypted(struct device *dev)
++{
++	if (device_cc_accepted(dev))
++		return false;
++
++	return is_realm_world();
++}
++EXPORT_SYMBOL_GPL(force_dma_unencrypted);
+modified   include/linux/swiotlb.h
+@@ -173,6 +173,11 @@ static inline bool is_swiotlb_force_bounce(struct devi=
+ce *dev)
+ {
+ 	struct io_tlb_mem *mem =3D dev->dma_io_tlb_mem;
+=20
++	if (device_cc_accepted(dev)) {
++		dev_warn_once(dev, "(TIO) Disable SWIOTLB");
++		return false;
++	}
++
+ 	return mem && mem->force_bounce;
+ }
+=20
+@@ -287,6 +292,9 @@ bool swiotlb_free(struct device *dev, struct page *page=
+, size_t size);
+=20
+ static inline bool is_swiotlb_for_alloc(struct device *dev)
+ {
++	if (device_cc_accepted(dev))
++		return false;
++
+ 	return dev->dma_io_tlb_mem->for_alloc;
+ }
+ #else
+modified   kernel/dma/direct.c
+@@ -159,6 +159,14 @@ static struct page *__dma_direct_alloc_pages(struct de=
+vice *dev, size_t size,
+  */
+ static bool dma_direct_use_pool(struct device *dev, gfp_t gfp)
+ {
++	/*
++	 * Atomic pools are marked decrypted and are used if we require require
++	 * updation of pfn mem encryption attributes or for DMA non-coherent
++	 * device allocation. Both is not true for trusted device.
++	 */
++	if (device_cc_accepted(dev))
++		return false;
++
+ 	return !gfpflags_allow_blocking(gfp) && !is_swiotlb_for_alloc(dev);
+ }
+=20
+modified   kernel/dma/swiotlb.c
+@@ -1643,6 +1643,9 @@ bool is_swiotlb_active(struct device *dev)
+ {
+ 	struct io_tlb_mem *mem =3D dev->dma_io_tlb_mem;
+=20
++	if (device_cc_accepted(dev))
++		return false;
++
+ 	return mem && mem->nslabs;
+ }
+=20
+
