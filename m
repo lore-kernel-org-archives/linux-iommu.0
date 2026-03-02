@@ -1,249 +1,196 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f53.google.com (mail-qv1-f53.google.com [209.85.219.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1D8435AC34
-	for <iommu@lists.linux.dev>; Mon,  2 Mar 2026 10:57:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.21
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772449026; cv=fail; b=LAf+7zy4rggNsG+lzAp72wPbmJY9Xj+cn0dOAjz6nj+hx7nCe6VH+dciB7kPI5La2gr0TUTvSs5kcpvBah9e7vxCeD2ey+93pR0wAZYCQQ4tMQpKrY/vwowwpSLnEk0qyX8Iq9xkP7sJPsfpdM57N8dppEAZcudResOZ57w4s9Y=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772449026; c=relaxed/simple;
-	bh=fLWIIhAMqLi/nzrnJAYeat3BICsRQ8HX7Lxgqc7uHek=;
-	h=Message-ID:Date:Subject:To:CC:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=ioj5DwaVNEzJmMzXTC3PNtSZxd/yga89Eury/RrqSIK8Jru5L/14aTVMkxM8necF8gBxmTAfbQerOVEI2X3k2Zrj0UGZyuxO5AgDVVArmev4Qh15Q1/SM8wUY3/xvmsBCTqlwc/RRYGzVQ10twVnmfPvw1PmBGxMk+mBAIk2Hyw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SJR6n6Z0; arc=fail smtp.client-ip=198.175.65.21
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0ACDA430B96
+	for <iommu@lists.linux.dev>; Mon,  2 Mar 2026 13:35:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.53
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1772458531; cv=none; b=ICkuRd7qP1Np8o/7haw6rH/V/Rmm50sSBWcCTf5ykuJmmumdwgZZGuX2M6/xx1ygJRNUEpf5NHLRnJgnx/6N8N36gYlGxEJF0uJuuZ5JdjlzhxLYZhrTzLT8ORRfyTmBrLDiUStjLKu2CiMcGBUPQDr8UosTUX8jMkBQfoWiaZo=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1772458531; c=relaxed/simple;
+	bh=FbvCdNY37UamTN31SSyauOm8sq3E53gqKRjT2KA5HYc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=gQRkVqR29Df6FPd76/Pb4n3hCWYJj5h6/yLJAy9j/hBdmPt0D053wSJAcWz0dAMSIJN6geD4inG2vwsthx5StyipDB3YJbASbMGpClJcAh9lESldNNkGC/1M5tsNTwbLaCb06k6og/f58T/GWjheevmaDsdApxdlKiTzU/YDsKw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=U4bw/Upu; arc=none smtp.client-ip=209.85.219.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SJR6n6Z0"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1772449025; x=1803985025;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=fLWIIhAMqLi/nzrnJAYeat3BICsRQ8HX7Lxgqc7uHek=;
-  b=SJR6n6Z02VsKJyPoqAbaUzrvgOllkOmDSH7DgapefpmmS9Z96wyowb8w
-   LEiNvnn2WuEOpQvNbNtC09o6bcsTBxIC9+Gb4uYrpMB7tK1au9t9tGsFg
-   MH/OSmPGMJ1djZKwO2WG+EHhuVDHeUvJG/1zR/a9GASk1IIOu2k722UWB
-   xE+Lqx3SGHsHQTEDQW/VLOrIxMNhIP5WdxCPONObojVzozMH/GX+s5wpL
-   EY7Vut1RfriziZQdYwGxTVVZfPoU0uSVmB09JvHpuQYmXTbJJXr32FdYY
-   H2La6Fd7eB7NZR6CzoZW6hAnZP137EZkQC1CPGk/drG+NbmTTqEWqPj8Z
-   Q==;
-X-CSE-ConnectionGUID: zyQ9QsqiQha3aDxg7SnIkg==
-X-CSE-MsgGUID: x9RbE4IMQfm410ahtuOpoQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11716"; a="73320865"
-X-IronPort-AV: E=Sophos;i="6.21,319,1763452800"; 
-   d="scan'208";a="73320865"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2026 02:57:04 -0800
-X-CSE-ConnectionGUID: aqWLEeMJTu2EkAYOqGL+Yw==
-X-CSE-MsgGUID: 2xLnTDRdS9yWpIx7JHUmRQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,319,1763452800"; 
-   d="scan'208";a="216845411"
-Received: from fmsmsx903.amr.corp.intel.com ([10.18.126.92])
-  by orviesa010.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2026 02:57:04 -0800
-Received: from FMSMSX901.amr.corp.intel.com (10.18.126.90) by
- fmsmsx903.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Mon, 2 Mar 2026 02:57:03 -0800
-Received: from fmsedg903.ED.cps.intel.com (10.1.192.145) by
- FMSMSX901.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37 via Frontend Transport; Mon, 2 Mar 2026 02:57:03 -0800
-Received: from BN1PR04CU002.outbound.protection.outlook.com (52.101.56.57) by
- edgegateway.intel.com (192.55.55.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.37; Mon, 2 Mar 2026 02:57:03 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=MtN7v82+xqoXlIh+qJX87nascKRSaqoeorJEPf+qWXWCRm742Zfadbo+bYKSKcFEcUPUyU8VDz6nGxIKyolSohP9iPZWwAkj6Nj/xBnHwAw53tivBvS8f0Mm6GEJCmKmO1VLpvFe45ksSDEx0Pev0+SGz+uhMjIos5ZXBi96R4u3TrgOW2HrHSGX4KBq93/95oCU9m3mgQ0bAglU86Yt9QMm/l+bafD5orX/f0evOiDD/mapKoH2wmo4I8OexFLA/SCa/4szn3s8o5+4+b+PH2n2spxbBEtorjss2zfn/FYtkCGYPt9+vg9ojoAk3zACIz5wVBKfYBolX7v4S8Ylbw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/C3viPE5ljkxH86jL8ryOvH9Y9GLdYsDacCoQ5EQjYI=;
- b=KSmqFxwBwar98be4XS/x0sBTnuavvfFrmua+y03Sy1M26asQcVShxkfPzj2cCegI/y/87sdv+1bTvXSISi6Th/AshFdrQ5bEFSCQLLGmAHKOEShGqWFtVlyo0jBBcuiRARjkeix42+0e+wMzI9VFuiz51Cp0SR2cLnYuWn52298K0mCZx/TctL04Iny2b1Ouk0qqlszpaHi37k8HMU5pVG2XRuOkkltDxUz47DyHo7tgDbROdk2X3U6VcMY5EO5ZztN66JIYSQW3AAaBNl9JI5NIaSoeA3gn8DqN31SvCOse91qinM54YZW6Vcmcs5syvwSEtJNrS/DVyXHIYyLsTw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from LV8PR11MB8509.namprd11.prod.outlook.com (2603:10b6:408:1e6::15)
- by SJ2PR11MB8370.namprd11.prod.outlook.com (2603:10b6:a03:540::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9654.11; Mon, 2 Mar
- 2026 10:57:01 +0000
-Received: from LV8PR11MB8509.namprd11.prod.outlook.com
- ([fe80::f5bd:4dde:4f2f:20b7]) by LV8PR11MB8509.namprd11.prod.outlook.com
- ([fe80::f5bd:4dde:4f2f:20b7%5]) with mapi id 15.20.9654.014; Mon, 2 Mar 2026
- 10:57:00 +0000
-Message-ID: <98f392c8-cd64-486b-9ab0-d04c786ed39b@intel.com>
-Date: Mon, 2 Mar 2026 19:04:44 +0800
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH V1] iommu/sva: Fix crash in iommu_sva_unbind_device()
-To: Baolu Lu <baolu.lu@linux.intel.com>, Lizhi Hou <lizhi.hou@amd.com>,
-	<joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>
-CC: <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-	<vasant.hegde@amd.com>
-References: <20260224183056.2628698-1-lizhi.hou@amd.com>
- <0833d160-9659-4140-b775-a0ab0c17a451@linux.intel.com>
-Content-Language: en-US
-From: Yi Liu <yi.l.liu@intel.com>
-In-Reply-To: <0833d160-9659-4140-b775-a0ab0c17a451@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: SI2PR02CA0008.apcprd02.prod.outlook.com
- (2603:1096:4:194::12) To LV8PR11MB8509.namprd11.prod.outlook.com
- (2603:10b6:408:1e6::15)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="U4bw/Upu"
+Received: by mail-qv1-f53.google.com with SMTP id 6a1803df08f44-899e43ae2e1so14097316d6.2
+        for <iommu@lists.linux.dev>; Mon, 02 Mar 2026 05:35:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1772458529; x=1773063329; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=o+HFg2ochnrDtRr4Pe6iIPk9bCWPHCXlKNRCptQLo7I=;
+        b=U4bw/Upu7yVBgtP5AWDqggoOxhGd3M24rlRpMvzzXy08y7dawgC9irW/q266yizPCS
+         Vt3ATdOZuBXqGHDyxo7TWWeD375/UvKwKggGE+bIXT5Xv4KobFjU26UFdwpbg1FwEu2M
+         4tpijnL7yYu15KLe1MQQa3kwMu8LosROPllyEjGffRZA4C3K8sDxXUhgTWZxMZawg0l+
+         rwbj0OIpOFWYd/2Q9kqTK5m5u0pmG4vtf2aQrHqIrnUo4ASbQrcyHpv8koMD+Li+OmQX
+         Hm5ispgO51yiSab3urqjFSl007b/Sk0CPDj7epgKmmOGfMi0I6TpyqZMCx0SEXEZSRV7
+         ylBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772458529; x=1773063329;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=o+HFg2ochnrDtRr4Pe6iIPk9bCWPHCXlKNRCptQLo7I=;
+        b=BVstL3y6/jpLa5a/ty2X8nFNHW7FHGGbr5uJXIbPRB0ryvjqSFozkLnTW+RU405XbW
+         QbaB8XretdiufFNSxWonFqVbQQmwAhO55zJhOSKmtva/kcQFa8aDYWBC6jK6xO+0iY81
+         MpgRsx9YKPWtXUHlvRHsiiutRgTuijkGirxNnPLgL2sZXFM5f+AShENOG33OV8v+eEmG
+         LhoA0xT/ZbAIAxZDl+6NOj+iy2dLA1bge4UmyMNs9/0aiVyGBj/bEhGTSIMbQjpLwUyD
+         bNon5Mj3x4EoJ0MzGxnkuWRiL+ug/f1wd3dkdj7WkWxGe/PpkQ1RxrvBB7u3VAjUxRX2
+         E1uA==
+X-Forwarded-Encrypted: i=1; AJvYcCUWRKats/2zk0RlpyFMtgarY0k8pVUVUTe2aWunziViIFF8Ky3sc2hacYZ5udj0hd0VkJYoJA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yw+0BXfiax4xbxOEaOzW/EbAVH3b0QLk6nr7tzOH6cBDB1Ybbrj
+	5fqI3tCLNUn+0bXix4Iu5q1yA4R1ad0VwMB20XZvzTYUBa7abhWtaV/3kgmvURJvHPc=
+X-Gm-Gg: ATEYQzzYUQq1eOC97eU2KGPAW889vWb8W6gpFrz+7a/KddPue2C/7lWswcpLj3sY24b
+	v7rVC/vCojT5sYY+bc9hr0FJax+u7JTtJuhhSHcGHc8XofIPmFysiRTKzfzhGcbzxpScuQOaQM8
+	4Dmr9Meg9kvuL1HzPez0kK+Z4LadzvGs/tbu8zPPXATEnxMaBhOTgt8AoAvIsLBH81OMgv2g5Xw
+	MdIqA7HeyfR7RO3vu9PxwDlDRm2pm+n2upwkLI0L1/ya7eLPWfl5purDwh/8tAMDDz6S3ihLUw+
+	/AlY4mNfpG01yioI2Aa9c/ucSE+Qqog1wPb91pWHT2fHgWEVfPr/PZxJ1Dk3gruRXnmVxWYPNst
+	0UuPLf8A+y/QLFk8JVWAYSaPU0n41grjuJYxgj0tq8uy4qmU0Ma49JfXxrJXW+7PbwyV+IbYMOL
+	iISsnmSg0t2+MwoOGSVI9u7NjhdfCFXrViRN5iAzMc+k3W91gauXkQrSpkRSaL37zlAKUCo2Whv
+	aEOMujF
+X-Received: by 2002:a05:6214:21e1:b0:895:4b4f:133a with SMTP id 6a1803df08f44-899d1d8459dmr178895326d6.5.1772458528769;
+        Mon, 02 Mar 2026 05:35:28 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-162-112-119.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.112.119])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-899f4fb208dsm35628906d6.28.2026.03.02.05.35.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 Mar 2026 05:35:28 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1vx3Ql-00000003fNz-1MAa;
+	Mon, 02 Mar 2026 09:35:27 -0400
+Date: Mon, 2 Mar 2026 09:35:27 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Alexey Kardashevskiy <aik@amd.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, x86@kernel.org,
+	linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+	linux-pci@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	"H. Peter Anvin" <hpa@zytor.com>,
+	Sean Christopherson <seanjc@google.com>,
+	Paolo Bonzini <pbonzini@redhat.com>,
+	Andy Lutomirski <luto@kernel.org>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Mike Rapoport <rppt@kernel.org>,
+	Tom Lendacky <thomas.lendacky@amd.com>,
+	Ard Biesheuvel <ardb@kernel.org>,
+	Neeraj Upadhyay <Neeraj.Upadhyay@amd.com>,
+	Ashish Kalra <ashish.kalra@amd.com>,
+	Stefano Garzarella <sgarzare@redhat.com>,
+	Melody Wang <huibo.wang@amd.com>,
+	Seongman Lee <augustus92@kaist.ac.kr>,
+	Joerg Roedel <joerg.roedel@amd.com>,
+	Nikunj A Dadhania <nikunj@amd.com>,
+	Michael Roth <michael.roth@amd.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Andi Kleen <ak@linux.intel.com>,
+	Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>,
+	Tony Luck <tony.luck@intel.com>,
+	David Woodhouse <dwmw@amazon.co.uk>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Denis Efremov <efremov@linux.com>,
+	Geliang Tang <geliang@kernel.org>,
+	Piotr Gregor <piotrgregor@rsyncme.org>,
+	"Michael S. Tsirkin" <mst@redhat.com>,
+	Alex Williamson <alex@shazbot.org>, Arnd Bergmann <arnd@arndb.de>,
+	Jesse Barnes <jbarnes@virtuousgeek.org>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	Yinghai Lu <yinghai@kernel.org>,
+	Kevin Brodsky <kevin.brodsky@arm.com>,
+	Jonathan Cameron <jonathan.cameron@huawei.com>,
+	"Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
+	Xu Yilun <yilun.xu@linux.intel.com>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	Kim Phillips <kim.phillips@amd.com>,
+	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+	Stefano Stabellini <sstabellini@kernel.org>,
+	Claire Chang <tientzu@chromium.org>, linux-coco@lists.linux.dev,
+	iommu@lists.linux.dev, Jiri Pirko <jiri@resnulli.us>
+Subject: Re: [PATCH kernel 6/9] x86/dma-direct: Stop changing encrypted page
+ state for TDISP devices
+Message-ID: <20260302133527.GV44359@ziepe.ca>
+References: <20260225053806.3311234-1-aik@amd.com>
+ <20260225053806.3311234-7-aik@amd.com>
+ <d8102507-e537-4e7c-8137-082a43fd270d@arm.com>
+ <20260228000630.GN44359@ziepe.ca>
+ <2a5b2d8c-7359-42bd-9e8e-2c3efacee747@amd.com>
+ <20260302003535.GU44359@ziepe.ca>
+ <500e3174-9aa1-464a-b933-f0bcc2ddde68@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV8PR11MB8509:EE_|SJ2PR11MB8370:EE_
-X-MS-Office365-Filtering-Correlation-Id: 264e7e86-2725-457d-30d3-08de784a6e2e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|1800799024|42112799006|366016;
-X-Microsoft-Antispam-Message-Info: DuuhVarb1kYKkBdzEhbC5IfIuU8jEdhvjzoUzvSBX1FlCkvRut9cnqlvoSkwxQzc7dAhBHZtpz8HaJyhOasG2YeiDqFNZXsI2RLI1DjC5K/4S4v8qs2c/HVH1yqhJMWlSpsNfSWX2cCCjoON0cEstZ7Ilvsd/uir7+SrBBwEhwUxL4ZCudTBpzzHWhHAi9OHPK74Vc1ammkGWHOl2/guco3RYHJMK6HHGiNOesp5jfFYuKlZjV9L0UkAfYXxLBgjnjCUg9ffg7vVs63rm9tM/tLECQO07k1zliVqDueZmD3XJZNppl0HrVRxa9hyUfzlJnStkjgDWJEYmzeFkW4s43mnTVf/Q+ciQ20I8DG+TyUjjIlaVM4aE8KBnDB4wf7+qZJiYBnvWjfhWUgPI1uonE9PvwcmIRgXV+n6sCTEWFVPF1FUTGWE8WX+G46kNpyE/1NlMN+L5vmvjj30jK5C1Fd2DAoQv2wkNMDGUDCj9rksU5Gtb85FwLRYzAed7SRN5DlK9ZcsDGZ5HVhNtEThdsIsy9W2Xk/GiYALz+KCQWtGyweGbhIt0y23KI7Ric4h97W86JKPb1tnwF29lvt+jIW1fBTg6ivA/7hnRQvh7tRdl3QjnFjYEP0v/b6lDMwb+boyXWUUdtMQowobvtOlQbSE0o+MNiR0SNlUUGxpTxTn40IUr+xFj0nSPZUCuCEG7cpKYZs2CIG2BVaGtP7TDHSTa00CpS/Xr1NjrLGRcJM=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV8PR11MB8509.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(42112799006)(366016);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?d1Q2SUswamJ2MHBtNHlLY2J0WEJYU2ZJVGMxWmV1eWI2TW9CSnZhQi9wU1pz?=
- =?utf-8?B?SmkxaTVobVdGeW1PWTRKcERqbUJZcGFPQkVJRnE2Nk9VREUvWnNBY3R2Qm4y?=
- =?utf-8?B?dUxna29kVlc5eFd0Y0hnMitkbjF0cG40VWtyNEMyYWR3UklBM09PeDBtbEN3?=
- =?utf-8?B?MXlwbEtnZVdvT2hZVnNvaTVnYlRGS0lTSUZkVy9rTDlBMUVOU1BSMjZFWVJx?=
- =?utf-8?B?VG5aZUJ3bEMxUDlBQkUrUFd4ZWIzSVJ6VzNBbklkM2FDNUN0ck50bXhtVktC?=
- =?utf-8?B?TUloWk5HTHgwcUorUm8wZHE2cHUrNkRvVS9YRWd6U2pJWllJQnVtbm1xeG0w?=
- =?utf-8?B?ckV6M0ppZkx0UzdsN2JlWWoxMXVxdnRBWFZFWUNReGlxVGpuUjUweUV6UjR5?=
- =?utf-8?B?K09iTGVzeXlBRnlwZ1AwK3YzSktiRzhnSTgvNVdEcUhxellzUk02Z1hGQmg1?=
- =?utf-8?B?Rm44YkhXMnlScVYwNE9QSzJQSmxRWHB0aVFOVHBqVExGRVlZSy9PZkc3L2R2?=
- =?utf-8?B?Z0VsUzNVL05ESC90VHpxRklVbG5mUXVIdm4rZ0VmTDVLd2pLaGdVR2xsMU5Z?=
- =?utf-8?B?UFpQQWRqUnJTK2ZWM1lqek5UaGJZR0NxMHExVG9lS2NaT3phOEJIeEJFVmRS?=
- =?utf-8?B?TFZoUnBvR05PQlN6NENmY0N1YTZhTEV1b3FQTlhUVGFaVzVRU1VpcllzaWNO?=
- =?utf-8?B?SVpaZStzRmRLVDZuTk5PckVpUCtlTWpUeUlzQ0FGUVd2RFV3Y1llUmpvSzZT?=
- =?utf-8?B?c0Jkc1FFOWliNWpTZFMzMno0clI1eG5oUnJ4VTlWZnJ1UGhlUG01REFCQXlQ?=
- =?utf-8?B?aExWMkVUQU5MMk52bm12ZzRCbSszdWREcTM3RGFzU0xwcFg2ZTdHbHJJU3N5?=
- =?utf-8?B?S1hmVUdtY0FuQTBPOTZsV3BVSHlrbC9vY3VTRk1vOGs5T25yR09NMzYydS9K?=
- =?utf-8?B?dWpuaEtFTkhjWDVpVUE1SjBJUDhLR2VJbzUwQ3dhUEFtMVQvYkpTYUsrcmQ1?=
- =?utf-8?B?K0NrVXdkUHNXUEE4ZnQ3T1RVT2laeE1WQkRINnhiaGh5QVA2QVFWcGpaOGFv?=
- =?utf-8?B?d2tONXZSellpNmp1eGJsZWllY0pxc0cyNkVCMmE5eTBOMmRObVZZTEZhejRG?=
- =?utf-8?B?bWI1VEZYQmk1NnhOcUo1YklBbjJ1MnpqbksxZDkxQmZzZjFnbXJKdDdpQ3k1?=
- =?utf-8?B?U2t0VEpCMXBkeGNuNFZXdVNLSy9kQ3VFSkpaSzU4b1lla3BPcXVjb1NDdDFB?=
- =?utf-8?B?cUljV0FGNHgzYi9zUGQ2Mk5HNWluOHJRcGZWK0h1dmI1bjhJSmpkQWd2ZTg4?=
- =?utf-8?B?ZFp5MElCbTVlTlZsbFVqWnFWRkl4Tzk1clRCNk5oUnhYUDdzMmpTUXQ4c0tK?=
- =?utf-8?B?QndtTmgzUFdxWEU2UjZWWWc4Z3BZbUJSaTRIcXF3Um5hSVNtb0s3aUJyRzVP?=
- =?utf-8?B?dWd6QzdXclEvWlpMRTBTMGpxenppUE4weURMQ2xtOHZ3YWltOU5JdmluNE9j?=
- =?utf-8?B?blh3YWxHTW9Cb0VOQzBtRGNyN2RNMi9xN3IvcEtISysrWHdjOTRCMURXUU0r?=
- =?utf-8?B?c0VnNnJMWit6YWV3YXh2RWU3MWM3aUlzdDlHQUlUbm1xT290RVE0YUV2VTlh?=
- =?utf-8?B?cndRMFJXaVZVaCtOTjlVWnRYQmgvNHZDdUhRR2tTK3NmbXpMSmp2RFlhdDF2?=
- =?utf-8?B?SUMvSUFGQStrdUIwam0yZjhqZmhISEl1bEVlS2VOUlNkN2xHY05VRFF6Zkhx?=
- =?utf-8?B?SkFROUJCQlViYk9GOVc1MUhWNkVhWnNWNkpsdDg5UXc2b1lrejdMcjRBSXdi?=
- =?utf-8?B?NVhwa25sWmpFNjQwYzFWNmlvM0l0SzNrK2REUURCNGtxY0J1WnZyT25hcnpM?=
- =?utf-8?B?eTRUM0lvUFhoS3lDU1ZhRmNqQyswNVI0NjhjWU1Hazd6V3E0QU1SUW81cit3?=
- =?utf-8?B?QzUrTmp5S0NlOHZGYjNnRVpvWWtvTlRPMTRaNVJ5b1E0V0gvWXZ6VFlJN0NH?=
- =?utf-8?B?UDA5NUFPUEZTYkJGY1NlZ29hVlRXSEdNTUJ6ajAyN0VTbXc4MmhUeGQyZ2U1?=
- =?utf-8?B?MmZxN0V2SEhDSG5EUFVmSktnZk9QNzRJVHFwQ0RFbmw0aUlITW8vUGp4a3Iz?=
- =?utf-8?B?YlRDMzV0NmRpRUdiYkhJdE92OUkrL2hNZ1BJSTduZytNa2xEVVpybmZwcVMx?=
- =?utf-8?B?eVdLeEwvOGFBSk5VY1JHL0swT2F1d0xSNThqdForcko0ai9RQlBRc3NxZXhq?=
- =?utf-8?B?Q3poZGVucFhMZ3BMSjJpelVuU0k2WmYyaFc1aXJRNDZRVmZFN2o4VkZZOGdt?=
- =?utf-8?B?akZYTEZYM2ZwdTFHS1VLRkJjUW8xNUt1YlFkV042dEJaRDhJQTFxQT09?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 264e7e86-2725-457d-30d3-08de784a6e2e
-X-MS-Exchange-CrossTenant-AuthSource: LV8PR11MB8509.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Mar 2026 10:57:00.7147
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: xKb59u4aVGzhO/vrxhgzOPhMivPdI2raA80LS82BiwDKRh9fvlLyb44yIIYtSKvnyZQItt2ZBa1p6D68RbB61w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR11MB8370
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <500e3174-9aa1-464a-b933-f0bcc2ddde68@amd.com>
 
-On 3/2/26 14:50, Baolu Lu wrote:
-> On 2/25/26 02:30, Lizhi Hou wrote:
->> domain->mm->iommu_mm can be freed by iommu_domain_free():
->>    iommu_domain_free()
->>      mmdrop()
->>        __mmdrop()
->>          mm_pasid_drop()
->> After iommu_domain_free() returns, accessing domain->mm->iommu_mm may
->> dereference a freed mm structure, leading to a crash.
->>
->> Fix this by taking a reference to the mm via mmgrab() before
->> calling iommu_domain_free(), and dropping it with mmdrop() after
->> finishing access to domain->mm->iommu_mm.
->>
->> Fixes: e37d5a2d60a3 ("iommu/sva: invalidate stale IOTLB entries for 
->> kernel address space")
->> Signed-off-by: Lizhi Hou<lizhi.hou@amd.com>
->> ---
->>   drivers/iommu/iommu-sva.c | 2 ++
->>   1 file changed, 2 insertions(+)
->>
->> diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
->> index 07d64908a05f..523b8c65c86f 100644
->> --- a/drivers/iommu/iommu-sva.c
->> +++ b/drivers/iommu/iommu-sva.c
->> @@ -179,6 +179,7 @@ void iommu_sva_unbind_device(struct iommu_sva 
->> *handle)
->>           return;
->>       }
->> +    mmgrab(domain->mm);
->>       iommu_detach_device_pasid(domain, dev, iommu_mm->pasid);
->>       if (--domain->users == 0) {
->>           list_del(&domain->next);
->> @@ -190,6 +191,7 @@ void iommu_sva_unbind_device(struct iommu_sva 
->> *handle)
->>           if (list_empty(&iommu_sva_mms))
->>               iommu_sva_present = false;
->>       }
->> +    mmdrop(domain->mm);
->>       mutex_unlock(&iommu_sva_lock);
->>       kfree(handle);
+On Mon, Mar 02, 2026 at 04:26:58PM +1100, Alexey Kardashevskiy wrote:
 
-Hi Baolu,
-
-> How about making the iommu_mm structure itself an owner of the mm_struct
-> lifetime? Does something like the following work?
-
-According to the call stack in the commit message, mm_pasid_drop() is
-triggered when the mm_count reaches 0.
-
- >>      mmdrop()
- >>        __mmdrop()
- >>          mm_pasid_drop()
-
-So I see a deadlock issue with the below change. The problem is:
-
-mmgrab(mm) in iommu_alloc_mm_data() increases mm_count. But 
-mm_pasid_drop() calls mmdrop(mm) to decrease mm_count. This creates a
-circular dependency: __mmdrop() waits for mm_count to be 0, but mm_count
-can only reach 0 after __mmdrop() calls mm_pasid_drop().
-
-> diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
-> index 07d64908a05f..9c56c2222617 100644
-> --- a/drivers/iommu/iommu-sva.c
-> +++ b/drivers/iommu/iommu-sva.c
-> @@ -47,6 +47,7 @@ static struct iommu_mm_data 
-> *iommu_alloc_mm_data(struct mm_struct *mm, struct de
->          iommu_mm->pasid = pasid;
->          iommu_mm->mm = mm;
->          INIT_LIST_HEAD(&iommu_mm->sva_domains);
-> +       mmgrab(mm);
->          /*
->           * Make sure the write to mm->iommu_mm is not reordered in 
-> front of
->           * initialization to iommu_mm fields. If it does, readers may 
-> see a
-> @@ -212,6 +213,8 @@ void mm_pasid_drop(struct mm_struct *mm)
->                  return;
+> > > Without secure vIOMMU, no Cbit in the S2 table (==host) for any
+> > > VM. SDTE (==IOMMU) decides on shared/private for the device,
+> > > i.e. (device_cc_accepted()?private:shared).
+> > 
+> > Is this "Cbit" part of the CPU S2 page table address space or is it
+> > actually some PTE bit that says it is "encrypted" ?
+> > 
+> > It is confusing when you say it would start working with a vIOMMU.
 > 
->          iommu_free_global_pasid(iommu_mm->pasid);
-> +       mm->iommu_mm = NULL;
-> +       mmdrop(mm);
+> When I mention vIOMMU, I mean the S1 table which is guest owned and
+> which has Cbit in PTEs.
 
+Yes, I understand this.
 
-Regards,
-Yi Liu
+It seems from your email that the CPU S2 has the Cbit as part of the
+address and the S1 feeds it through to the S2, so it is genuinely has
+two addres spaces?
 
+While the IOMMU S1 does not and instead needs a PTE bit which is
+emphatically not an address bit because it does not feed through the
+S2?
+
+> > If 1<<51 is a valid IOPTE, and it is an actually address, then it
+> > should be mapped into the IOMMU S2, shouldn't it? If it is in the
+> > IOMMU S2 then shouldn't it work as a dma_addr_t?
+> 
+> It should (and checked with the HW folks), I just have not tried it  as, like, whyyy.
+
+Well, I think things work more sensibly if you don't have to mangle
+the address..
+
+> > But in this case I would expect the vIOMMU to also use the same GPA
+> > space starting from 0 and also remove the C bit, as the S2 shouldn't
+> > have mappings starting at 1<<51.
+> 
+> How would then IOMMU know if DMA targets private or shared memory?
+> The Cbit does not participate in the S2 translation as an address
+> bit but IOMMU still knows what it is.
+
+Same way it knows if there is no S1? Why does the S1 change anything?
+
+> > > There is vTOM in SDTE which is "every phys_addr_t above vTOM is no
+> > > Cbit, below - with Cbit" (and there is the same thing for the CPU
+> > > side in SEV) but this not it, right?
+> > 
+> > That seems like the IOMMU HW is specially handling the address bits in
+> > some way?
+> 
+> Yeah there is this capability. Except everything below vTOM is
+> private and every above is shared so SME mask for it would be
+> reverse than the CPU SME mask :) Not using this thing though (not
+> sure why we have it). Thanks,
+
+Weird!!
+
+Jason
