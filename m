@@ -1,247 +1,200 @@
-Received: from BN8PR05CU002.outbound.protection.outlook.com (mail-eastus2azon11011017.outbound.protection.outlook.com [52.101.57.17])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4BCF30E0CC
-	for <iommu@lists.linux.dev>; Tue,  3 Mar 2026 05:56:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.57.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1051E30B514
+	for <iommu@lists.linux.dev>; Tue,  3 Mar 2026 07:07:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.7
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772517396; cv=fail; b=l8GGEzP77RFVuFXTvyIdmhCyN/e1z7oRTfhRf3ksGL1p/QSg0F1X1lR94wHz3GsWP95bNKluPNUwUIwKfB+vLkYo0gxlMPWhgwTgdECqE1/x/BJMmR5WfgLkDmUNqrX8FwViEk44hn27th0AbMFQIEIzGbJSV3pr8mQ3S1Ynyyw=
+	t=1772521647; cv=fail; b=rVhjsLzsSp+el6UmaFEiLpRofDb4gtVKtLzq8dA9t6wOPLZqQ1bKBiB6c1xlgmJP1hJzkOA9E7+bzkbjZA4/cXsm/dsGFA2OothFb1cBe7uvxOl460Xj+WPayWPMo84w73ue8wuGw1RHWgoN5vbhKeNbVT00oqmuvYS2JK0odFs=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772517396; c=relaxed/simple;
-	bh=P+cueaHNdJ9Fv0TiMLn+Al6VTGwFwyeMJCVsq5usS7o=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VSaTFfySs1StrO2lN9GYEJIH1yXR4kDq9iEUt5QRAJtkQ62l2b0c2Xq6Ab1MHfqNZVzki+iabFif2aBLniIk0ONQdGLhvBe9iBrfGCRNRAHeha78M3LEygCwwI1Q0ir4DKJCSaR0pWQtpFyiAu6Eck87VTaB7q+Iq4iBi26BRes=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=zd2Onk3c; arc=fail smtp.client-ip=52.101.57.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	s=arc-20240116; t=1772521647; c=relaxed/simple;
+	bh=6sHNW2XZgAG5yKxgywPE2oa+SOneY1Jjz0RGLnsm6GA=;
+	h=From:To:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=NaU9x2tFECskEDGyKr0lpGKEAMd/Qr3OpdA+f/Ozg/72uV8QpxNZ/2BALt39hedvlURvsR994RvltELoyRzZIPippDMplDRCK7RTeguXHs10PKkIVt7qiGLHfVgfLmmtNW9/46ieK7rqdc42XoXVBaKCAKJ1re0F/xXWtnDh2N4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=fcAK7UdR; arc=fail smtp.client-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="zd2Onk3c"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="fcAK7UdR"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1772521644; x=1804057644;
+  h=from:to:subject:date:message-id:references:in-reply-to:
+   content-transfer-encoding:mime-version;
+  bh=6sHNW2XZgAG5yKxgywPE2oa+SOneY1Jjz0RGLnsm6GA=;
+  b=fcAK7UdRqMvGi8eoh8P+DkodSOWYi6ytwyEH2XFxNDcYr+eIApfd3h0K
+   bzyrT3NpnRd0rEhtgmyXjcA79ls26xdr8jl+rj1y2CXhwnVVukQL+AGI5
+   xcbhBE59uKrEmt81RfocC1EWxxn6LG0z+ERcRgxO40EI2mKjlZwn62BMw
+   XhmS6z5nbD8j4jixlJPIqGob5qnk0PhqlQTJI5cYRfx071x0FEPyOcbug
+   jz5BEogfgWHrlkp3XhQTZcDkHlg6hIp/dDMfsK/TwGXHZPrjHxy55mGYD
+   T/UT5slpaVKPUELkFNK7dUhnF8aR0uQqIbbnWru5pyTx9m3MP1E2Y5AY6
+   g==;
+X-CSE-ConnectionGUID: riQbCetKQ32lkxWsCF/OXg==
+X-CSE-MsgGUID: umlYpoY3R+ixiENQgYfTpg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11717"; a="99022570"
+X-IronPort-AV: E=Sophos;i="6.21,321,1763452800"; 
+   d="scan'208";a="99022570"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2026 23:07:23 -0800
+X-CSE-ConnectionGUID: wvv8aaxdSsG1hzCYGRyQQA==
+X-CSE-MsgGUID: H5zPQTTaTR+IqzHzLXx8uA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,321,1763452800"; 
+   d="scan'208";a="217134243"
+Received: from fmsmsx901.amr.corp.intel.com ([10.18.126.90])
+  by orviesa010.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2026 23:07:23 -0800
+Received: from FMSMSX902.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx901.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.37; Mon, 2 Mar 2026 23:07:22 -0800
+Received: from fmsedg902.ED.cps.intel.com (10.1.192.144) by
+ FMSMSX902.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.37 via Frontend Transport; Mon, 2 Mar 2026 23:07:22 -0800
+Received: from DM5PR21CU001.outbound.protection.outlook.com (52.101.62.66) by
+ edgegateway.intel.com (192.55.55.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.37; Mon, 2 Mar 2026 23:07:22 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=rUW2E92djHrUjnICnx6npQc/R8SHAxos/terHk2QrzYacyP1sSkNvduxx+8I+jG3nD7IMOc3DgkbrJTt70JPsbl1Lq7+iYBMnPnByYRxIMMynhTYcLhcuLW1J9kTI87FbE1WhE5lEIEV6OVQNCOdqJ3Dz437T7GLsC07Hovru/Kmr2CORj4YkEOZS9n+cG8RHRm4DyyUBHIGWTwpPStUrp4jYLbyuGy601j3vv7L/4/aBRm0HnL03rTyxBY3bNY5O0P93fThqKY1YDYW24LJuOrfnxpCVwzlme7dyKTo5CaNt/Zl/StAYxa3UbccSw8Giibr96XYtBHcyBYqbV0GyQ==
+ b=Jn6FjfjrqQYfInD+GF/uORED8eTNWq3UVWey2CKUjrsfEKdfaDpE979fk5IzkvTWife3+KeJiEZF6bEnmhJqQVmWXM24W3B3cX8gazNcUxZuLf2cmhDNxr7jHw0ajRI6xo/VmmerFz5qr2+BposUUZfvq2Kyl92FRf8hs8hPIRrtfJBCOIufQPdEQ/bxJoMQquVA4mh1FT2F9UsbzSBpIewO60rQ0hoBnfX+Z9YCW+YwoakGCbQw5f2zSwGtc2OBzzy0xc1PHZEFxKrcYpjYkJ4t6zmIcnZxS+TkRXgy3oZUtkGa0F7RxjuL8S4ko/7P+SRbnb6+rMIKutCfYTwKTw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=l8SwI+etXmOsXFVfevdv320UYC88Ne135YZPJUsGFe8=;
- b=YY/xAqC8Y0O44HSEHxz03h7cCkufC4KV4JA7QPA0FSHsj5y1MVdj912O0mjjK6lXjU2NfxV0Mt911kUCEeoA57of+0kPB1wUxL4TgVhpQNTUs9diTEhDYXg3PXg5jddN6erl3oQ0qQIDOqt/9zrqpz47TjcKxYwrwCSnEomVsQaB/hkO2lB0iNvmMqE98juE4zG5ptOPKfFJ0JOg8Yce4Nq4SZNN8dymaRGZcZ3xyQWSD9ka9yMgLi3JynSnzCGyhUdoA0tdsePCrNnMioKqyKnblu06OSEiB+b6/1+aU7ugoxCCj+hmNdHxC0KBnGlCCDZGGugdq31aQ3CNYiJS6Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=google.com smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=l8SwI+etXmOsXFVfevdv320UYC88Ne135YZPJUsGFe8=;
- b=zd2Onk3cqt1H3GAK2TP69QiJDu3VuYBJX6PrVrvl0b+X2VHJBE4H+syqkrk3KhswRTCDNdUabD9KK68w/oemfJh5oOY8OywzB0A7ONd3yCL4N59q7IwXfNGG43gtoMPwi/5PIca+4WHu6oBflywsAXFyh8VAFAXaEDHRRZwXL+M=
-Received: from DM6PR07CA0120.namprd07.prod.outlook.com (2603:10b6:5:330::10)
- by DM4PR12MB5817.namprd12.prod.outlook.com (2603:10b6:8:60::21) with
+ bh=1Q5YHi2JmIadEhj2dFIvbdMz5BUSKxqJ5lwwGyuOtJc=;
+ b=H8neXg81JrDFOYthOMKrYgBaH5dK9mwX+SOfos7PcWfrlPSP993Pi9wvdWMwiBgt2DCiX+9FLlZ8SY5ptAbzCBDU3lEcR1FPUaP0ptqTnEXi54kt08jJXa5OZyBEcKQSd7TqR13BJBJeot8s5NXYHgtPvNRJv5bdv0cKPXFYlWOg6qqp1Ujs7aZ/T9G14ksOsB6nQcTsVncveyQ0ZCRG0YPnyzBaV/foeVWbo4gymmjlWf85MySPyKs5xP4d7QAg4tvVByjXAl/kZaKVJTXfXuGrUPotN7Nq/zu+0DKvajR9CGEi+ySuLbfJ7ZPGXVAKA+LFmmRCC2N1dtcsrr7Fgg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from CH3PR11MB7177.namprd11.prod.outlook.com (2603:10b6:610:153::8)
+ by SN7PR11MB7589.namprd11.prod.outlook.com (2603:10b6:806:34a::14) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9654.22; Tue, 3 Mar
- 2026 05:56:28 +0000
-Received: from DS1PEPF00017097.namprd05.prod.outlook.com
- (2603:10b6:5:330:cafe::8) by DM6PR07CA0120.outlook.office365.com
- (2603:10b6:5:330::10) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9654.21 via Frontend Transport; Tue,
- 3 Mar 2026 05:56:27 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
-Received: from satlexmb07.amd.com (165.204.84.17) by
- DS1PEPF00017097.mail.protection.outlook.com (10.167.18.101) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9654.16 via Frontend Transport; Tue, 3 Mar 2026 05:56:28 +0000
-Received: from satlexmb08.amd.com (10.181.42.217) by satlexmb07.amd.com
- (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.17; Mon, 2 Mar
- 2026 23:56:27 -0600
-Received: from amd.com (10.180.168.240) by satlexmb08.amd.com (10.181.42.217)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.17 via Frontend
- Transport; Mon, 2 Mar 2026 23:56:21 -0600
-Date: Tue, 3 Mar 2026 05:56:15 +0000
-From: Ankit Soni <Ankit.Soni@amd.com>
-To: Samiullah Khawaja <skhawaja@google.com>
-CC: David Woodhouse <dwmw2@infradead.org>, Lu Baolu
-	<baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
-	<will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>, YiFei Zhu
-	<zhuyifei@google.com>, Robin Murphy <robin.murphy@arm.com>, Kevin Tian
-	<kevin.tian@intel.com>, Alex Williamson <alex@shazbot.org>, Shuah Khan
-	<shuah@kernel.org>, <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-	<kvm@vger.kernel.org>, Saeed Mahameed <saeedm@nvidia.com>, Adithya
- Jayachandran <ajayachandra@nvidia.com>, Parav Pandit <parav@nvidia.com>, Leon
- Romanovsky <leonro@nvidia.com>, William Tu <witu@nvidia.com>, Pratyush Yadav
-	<pratyush@kernel.org>, Pasha Tatashin <pasha.tatashin@soleen.com>, David
- Matlack <dmatlack@google.com>, Andrew Morton <akpm@linux-foundation.org>,
-	Chris Li <chrisl@kernel.org>, Pranjal Shrivastava <praan@google.com>, Vipin
- Sharma <vipinsh@google.com>
-Subject: Re: [PATCH 11/14] iommufd-lu: Persist iommu hardware pagetables for
- live update
-Message-ID: <srgagoecgejftgvvqstjiwazi6blsljqyae3v5dlyj7nlv5lii@rjigll2eosuj>
-References: <20260203220948.2176157-1-skhawaja@google.com>
- <20260203220948.2176157-12-skhawaja@google.com>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9654.20; Tue, 3 Mar
+ 2026 07:07:19 +0000
+Received: from CH3PR11MB7177.namprd11.prod.outlook.com
+ ([fe80::b997:e226:4979:c035]) by CH3PR11MB7177.namprd11.prod.outlook.com
+ ([fe80::b997:e226:4979:c035%5]) with mapi id 15.20.9654.022; Tue, 3 Mar 2026
+ 07:07:18 +0000
+From: "Kasireddy, Vivek" <vivek.kasireddy@intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>, Christian Koenig
+	<christian.koenig@amd.com>, "Kim, Dongwon" <dongwon.kim@intel.com>,
+	"dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+	"intel-xe@lists.freedesktop.org" <intel-xe@lists.freedesktop.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, "Tian, Kevin"
+	<kevin.tian@intel.com>, Leon Romanovsky <leonro@nvidia.com>,
+	"linaro-mm-sig@lists.linaro.org" <linaro-mm-sig@lists.linaro.org>,
+	"linux-media@vger.kernel.org" <linux-media@vger.kernel.org>, "Brost, Matthew"
+	<matthew.brost@intel.com>, Simona Vetter <simona.vetter@ffwll.ch>, "Sumit
+ Semwal" <sumit.semwal@linaro.org>, Thomas Hellstrom
+	<thomas.hellstrom@linux.intel.com>
+Subject: RE: [PATCH RFC 00/26] Add DMA-buf mapping types and convert
+ vfio/iommufd to use them
+Thread-Topic: [PATCH RFC 00/26] Add DMA-buf mapping types and convert
+ vfio/iommufd to use them
+Thread-Index: AQHcoGtCf9ua8bJZokKhC0c/o24ZWrWaG/eAgAGkw+A=
+Date: Tue, 3 Mar 2026 07:07:18 +0000
+Message-ID: <CH3PR11MB7177124A1305900DC0F16D70F87FA@CH3PR11MB7177.namprd11.prod.outlook.com>
+References: <0-v1-b5cab63049c0+191af-dmabuf_map_type_jgg@nvidia.com>
+ <20260301190543.GA768004@nvidia.com>
+In-Reply-To: <20260301190543.GA768004@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: CH3PR11MB7177:EE_|SN7PR11MB7589:EE_
+x-ms-office365-filtering-correlation-id: 77c48c53-494c-4885-c0a7-08de78f38202
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;ARA:13230040|1800799024|366016|376014|7416014|38070700021|921020;
+x-microsoft-antispam-message-info: wY0eYu8ScALAXOKwyO2Q/8aHw4ZpAYCuQlg4vsfb06UVqrjhCMoe1FhKe1bCrE5+zsMLSeEVH3Nan99wrK2KHcqXdjirSgfCr+aDgI83FZYPXoVg3iBePM6WOqq1xx4twbGCvRAsukOSHu97z5p3qBI7EFjX4EvJS+naW96TZ6JZoGqFkLBLOTv7HBudycU0vEanqGC6Gh1Io+4QfrAA6YM1NzD1eO69cLYJ+O2vNXBOk7vzm6ODU7c6gB74ew7NNE1MDVGDxmd+/y3Ek5FfYeO58ykyKdsZAXH8zXzW7+hG9xwS/6iL25B3Kfb6WwAbXQ0dGtvFFfyYQihT8dCdCzZDbYWh7ngSvAQNKoDfFkEz38EwJLOb8rE4ewaArn4z7tpQMdMkJ15P13yDbntIDBwhW+miycdM6WonTwkKghTVdt+hWTuxXm/3O5kb/86dNH0i5wko7bJAXVRm9MaZ6aCqNLZL5f1YhFKqq5OW6VF0s5TVhqLaXH9ogHiPG2gzRIDtICNpGzk4zbkgBxDieTnvwU1TpOoAWUIvfhXTfh84kXJJw6pUB1VT2zv+5KAWKsBTMd0X6bO0EtSqQAXDzacpR5/F6lUd2fX6uIH5pp26aQwk3cupH/ja644IdZ2OoYy3Lt4JpBVk6Y7Dc6qwa4OFbzsRy74Ua5bd3+s/5QqGaTe9eYEO/VbjnN8ce+dmAd/f/2JvcVLoIw7DRdFfJA8K76t5wWB54t186OzkRWURbct+8py31bZO+u7loMXeVZrO1VeEHMS3lSvY4Ej6F+gGnaCvmJsR/E10UztcO9WOf3HffDWMRYVeEWbe7Axj
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR11MB7177.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(7416014)(38070700021)(921020);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?f42m2G+N68Q/n1SELBEbtrDARTb7n36ZbuwQEQCNT5yNp92AHYR7yH2U4q99?=
+ =?us-ascii?Q?WdyLhrPNjtu2JhtJyvaKkGxbosOO19VxCQLBfSdTn2VjF4m87zNY/suzV3nq?=
+ =?us-ascii?Q?hMWPvtqq7UrSE0mpQyRkW5NZPHn9o/v2v+j+msPygRiwDtW1r3aJQkCasKm3?=
+ =?us-ascii?Q?OO5q0CsLPyKfM1yv9BjPde02P9/m3AE6AZJoL0V7qXCWGMejzdrIgHbbFkXh?=
+ =?us-ascii?Q?5+4A5gx5XruiD94LLShC5r2Q548mbFODnnXuk/oj+kBk7nBOAUZtlSKnsrYx?=
+ =?us-ascii?Q?llhVFrNygJKxEAQ3FPNDVxbngpaoofg4TbnlZKrcO1H4uwYjOu/EwFkj+oJS?=
+ =?us-ascii?Q?ycO/mYy8wK2WRGu1TBKMgra1reVjHZO/H75Hx2eljEtQfylzpUUQnTB07CYi?=
+ =?us-ascii?Q?pIFMaVcr63lzInyN5/CN80gy8XkgmLZ/+mz6E1c77OBGIuDlYzoexEsu2ObZ?=
+ =?us-ascii?Q?yVcwv/uh9mSMqezqzeHe2ANGGSfFi7eLHAnqcNwK07slnS5qxArV5PcQgxQk?=
+ =?us-ascii?Q?40lHaa/FiLiZbHkRLXpjIM4WMSQ3HENxVvRJzWn9A2ZkffEMnYxTZT7ytkQm?=
+ =?us-ascii?Q?BKx5OCmjeFQof+y7PE2sFCntC23AEixbh95H6L+5zJ3+M1CG5wBu0qspElGC?=
+ =?us-ascii?Q?s1yCXEpmJiIckM/jv0gZv+A7HS510pXbTSqQoYyVXH1WGAXeK5nuVkJN7IWE?=
+ =?us-ascii?Q?KQjnQjqveF5Unh99kmCc+XQSP1GU88wmb01UFAG6gWx5AqJnMpAR5kKfD3HV?=
+ =?us-ascii?Q?CVCYuPJrpYr/NlS+qYATXZDUV4jrokb6sUVcVDuZlBp89bn8aZApcr/IzZpk?=
+ =?us-ascii?Q?JDSccVbSEjI1tcIxknmmQ21/EN23H4H9ehCSRaEjAoRQbQZ3pIXhgCWTq95n?=
+ =?us-ascii?Q?H/48nZT6DoM9b2eK+36i8O4KQDA0PfCzl3gLIXmh3saN4UsH6qAmtSkhSYwx?=
+ =?us-ascii?Q?TtkMFU3G++6vznNobm7W/qaFJcmkXghT7QcjWYOFNUwER/9+1LxZ37rCOs9y?=
+ =?us-ascii?Q?6PTGggrEdffmYMJPH8f0hLtzzcNeNWg2i0SFPSAaxL5u1L+cr8uQ/2S+m+0y?=
+ =?us-ascii?Q?zz72/EuakxjvHBbfGpEbZUbHF7ChiqtAeSdFVku2t0bQ+nYMMvQ+sCEf674F?=
+ =?us-ascii?Q?cpOoIDCemfw0d8DViTII5CuU3JN4aHZjKCsX9uiLb311OAyu6AJTKZpgM4KO?=
+ =?us-ascii?Q?s31ctWyFgF57m1LmC4CFippGcHJQldMNva5zI2OiKEkIR8yGx/uDSuQCEeM+?=
+ =?us-ascii?Q?yfRBwoDUgqqEo5FdXH72rdYEpIXYD8g4R5HFeSvtPETthvdZ+q4FEXkTobjo?=
+ =?us-ascii?Q?GDiBuERWvCKShcULfP9vWJtVMPP9BZGO/vvT+z6XZg12+eO1eV7XvmailLR1?=
+ =?us-ascii?Q?ge+4Vv7S6oTyfFGTv90vO1HCSbzltPoFdlQRPnHpIjy2mH/EBgHqwVHCq5dz?=
+ =?us-ascii?Q?e2c+jGi0Ywpb/piH/jNaEcDBGZEZkvwXMkYsI5rUo7Be/W40mb5ksibzzS9P?=
+ =?us-ascii?Q?axsnLX+nvuasUPOCjJ18298/0Z+zwaLB6u8HZaMH2d1G+mSrNt8zX+FsNd84?=
+ =?us-ascii?Q?3wp4GBsaf2xNeP7ToqJXvj84mNE40usWKTO5ZFwHEoGPZblfs+E6+CHSiFiN?=
+ =?us-ascii?Q?nX3qaKrRISDGg8yCefTwxVMmQxciOyWz9ejqpIyGhasePQvcJNmqLrPsPVYM?=
+ =?us-ascii?Q?FbJFfunjW99K/5YXz57iHGPIS6hQzK0DuwA4PoUQG/ftX97UiiijATyzGGKG?=
+ =?us-ascii?Q?OiYxbDgaFg=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20260203220948.2176157-12-skhawaja@google.com>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS1PEPF00017097:EE_|DM4PR12MB5817:EE_
-X-MS-Office365-Filtering-Correlation-Id: 277bf52d-f91f-4c13-a90b-08de78e99ccc
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|7416014|376014|1800799024|82310400026|36860700013|7142099003|7053199007;
-X-Microsoft-Antispam-Message-Info:
-	bqGjA3hse0838WnFy+g4MvXAB9gAfpNjFssaqPM/bpDXoFgd3WL++Oc/iZokDrwRkYa0x4XES/ZH991HFVVcKdKPXi21x5yMketM+K+L/3sSp2hpRAU8SrTXh08uxVlsLiNSMofqx0n6MdL2Aeyo8khQBU8njrWw7IOzjXPb9979xZ3o7sdt/Fa3pzSoWxzSg4vLLghisXNnW92+z8g5XcKNGaBITu+XbGNE67b4SBI1khvu024S2rrU89oKQ98nY8pF5Y4dWfLx+LTEAtjxLgQF1DN6lvObryEOP8jWJsSHpRTGCi92Zw+/vkdKcMHR+2mgvRRYO/tv11p6VGD3E6pn42UsbSM3WCOaPl09pc+qj6ILqfXnX6EzAxB+o+G6VLGYIMTObTYGYCCUVXkIdXrlkHxDQl9Q+YLI7OYKkH3JiPznzOZQJehZG5qQ3JPkIlcLFp2yGG+GBB8T7hmNVMDa5qukaxXPeReWBovbxcV6+XgW3ljJi1UCt4fRXUAfgeQEzxIIYi7Kfb+my07YiHrOTn75Qo5JOmGlUjlFvkFLmpOhJl5C6nK4CmGUrLkJ2kC/9+kHGVqzqh+o/ltYafBBCU5NA04V1xLVOAqecmucJPxL1dfUf7Je5qPKes1QxI8gFgBn10QQVwrKoPKmg3Ct7AUSw8FcBvOl2AGN2tIf8ZkPHAJaQo+48rO43zfv8TPAKMRMtlfEIskU0e8R/qrvfCd2ZT6HAaS8r7FRBKsz+0kDFZ6pU26pWeqr/m3zzb3Jf6TEfVnRH18ayAt+ikXQAiU1N14h4zET7+54ZxrSo2OjSFUxUebtdR60m0Rbi9Juxcye6c0n8yqi5NN8qg==
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(7416014)(376014)(1800799024)(82310400026)(36860700013)(7142099003)(7053199007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	XRG0MPLgMC6OyPJDnV5ZFXC8a1Z72onuGrYpcKLtuZ6C/3/jmPsyBJKys1/9RHJFw/+Fq4QZQGY+eMaCDtY5nQOfx8yNbOnDalEcxuAKCM340uV82kuhGUAmH/pMmKuh0hezOs+qDs97J7vSl4EVrBT/q++5S01CTd+LigAwtl9S2+ZidAV+m0YFSao4HRqOpfz4MkGzn2F1qZacbajlY1mAtXAhcMM/2N9yUXk8DZpnpiL9V+bkJAu+U1ncfa1eY40NVgcycrQEOcoW4j627x8E67ANqkDBe+UKHp4aH3KfIAQPT/PeUEbSGC55v7lqUZ8s0wTtL2gigR8nRBh5CuPMsd7ZS93cLvmUHYFhLzGB+vhmg9Qbscd4i58P/ZbenhQ8SMaocanybiHj/K3SSiGvwusaXwzoOWB6bOvAvp3h5VloXRIIeQcLrvE8dHvt
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Mar 2026 05:56:28.6001
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR11MB7177.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 77c48c53-494c-4885-c0a7-08de78f38202
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Mar 2026 07:07:18.6491
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 277bf52d-f91f-4c13-a90b-08de78e99ccc
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DS1PEPF00017097.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5817
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 9V5HzoeXOZ2ohIP5SOtYAd9DQwmg0gHFPLbgxfzkZR1tD/6S9b/iEfrZC65BW13ZNdJJuK9e2Wgtfr5U/RjZYzZ/VGflvHXIJ01saMMs6+M=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR11MB7589
+X-OriginatorOrg: intel.com
 
-Hi,
+Hi Jason,
 
-On Tue, Feb 03, 2026 at 10:09:45PM +0000, Samiullah Khawaja wrote:
-> From: YiFei Zhu <zhuyifei@google.com>
-> 
-> The caller is expected to mark each HWPT to be preserved with an ioctl
-> call, with a token that will be used in restore. At preserve time, each
-> HWPT's domain is then called with iommu_domain_preserve to preserve the
-> iommu domain.
-> 
-> The HWPTs containing dma mappings backed by unpreserved memory should
-> not be preserved. During preservation check if the mappings contained in
-> the HWPT being preserved are only file based and all the files are
-> preserved.
-> 
-> The memfd file preservation check is not enough when preserving iommufd.
-> The memfd might have shrunk between the mapping and memfd preservation.
-> This means that if it shrunk some pages that are right now pinned due to
-> iommu mappings are not preserved with the memfd. Only allow iommufd
-> preservation when all the iopt_pages are file backed and the memory file
-> was seal sealed during mapping. This guarantees that all the pages that
-> were backing memfd when it was mapped are preserved.
-> 
-> Once HWPT is preserved the iopt associated with the HWPT is made
-> immutable. Since the map and unmap ioctls operates directly on iopt,
-> which contains an array of domains, while each hwpt contains only one
-> domain. The logic then becomes that mapping and unmapping is prohibited
-> if any of the domains in an iopt belongs to a preserved hwpt. However,
-> tracing to the hwpt through the domain is a lot more tedious than
-> tracing through the ioas, so if an hwpt is preserved, hwpt->ioas->iopt
-> is made immutable.
-> 
-> When undoing this (making the iopts mutable again), there's never
-> a need to make some iopts mutable and some kept immutable, since
-> the undo only happen on unpreserve and error path of preserve.
-> Simply iterate all the ioas and clear the immutability flag on all
-> their iopts.
-> 
-> Signed-off-by: YiFei Zhu <zhuyifei@google.com>
-> Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
-> ---
->  drivers/iommu/iommufd/io_pagetable.c    |  17 ++
->  drivers/iommu/iommufd/io_pagetable.h    |   1 +
->  drivers/iommu/iommufd/iommufd_private.h |  25 ++
->  drivers/iommu/iommufd/liveupdate.c      | 300 ++++++++++++++++++++++++
->  drivers/iommu/iommufd/main.c            |  14 +-
->  drivers/iommu/iommufd/pages.c           |   8 +
->  include/linux/kho/abi/iommufd.h         |  39 +++
->  7 files changed, 403 insertions(+), 1 deletion(-)
->  create mode 100644 include/linux/kho/abi/iommufd.h
-> 
-> +
-> +static int iommufd_save_hwpts(struct iommufd_ctx *ictx,
-> +			      struct iommufd_lu *iommufd_lu,
-> +			      struct liveupdate_session *session)
-> +{
-> +	struct iommufd_hwpt_paging *hwpt, **hwpts = NULL;
-> +	struct iommu_domain_ser *domain_ser;
-> +	struct iommufd_hwpt_lu *hwpt_lu;
-> +	struct iommufd_object *obj;
-> +	unsigned int nr_hwpts = 0;
-> +	unsigned long index;
-> +	unsigned int i;
-> +	int rc = 0;
-> +
-> +	if (iommufd_lu) {
-> +		hwpts = kcalloc(iommufd_lu->nr_hwpts, sizeof(*hwpts),
-> +				GFP_KERNEL);
-> +		if (!hwpts)
-> +			return -ENOMEM;
-> +	}
-> +
-> +	xa_lock(&ictx->objects);
-> +	xa_for_each(&ictx->objects, index, obj) {
-> +		if (obj->type != IOMMUFD_OBJ_HWPT_PAGING)
-> +			continue;
-> +
-> +		hwpt = container_of(obj, struct iommufd_hwpt_paging, common.obj);
-> +		if (!hwpt->lu_preserve)
-> +			continue;
-> +
-> +		if (hwpt->ioas) {
-> +			/*
-> +			 * Obtain exclusive access to the IOAS and IOPT while we
-> +			 * set immutability
-> +			 */
-> +			mutex_lock(&hwpt->ioas->mutex);
-> +			down_write(&hwpt->ioas->iopt.domains_rwsem);
-> +			down_write(&hwpt->ioas->iopt.iova_rwsem);
+> Subject: Re: [PATCH RFC 00/26] Add DMA-buf mapping types and
+> convert vfio/iommufd to use them
+>=20
+> On Tue, Feb 17, 2026 at 08:11:31PM -0400, Jason Gunthorpe wrote:
+> > Jason Gunthorpe (26):
+> >   dma-buf: Introduce DMA-buf mapping types
+> >   dma-buf: Add the SGT DMA mapping type
+> >   dma-buf: Add dma_buf_mapping_attach()
+> >   dma-buf: Route SGT related actions through attach->map_type
+> >   dma-buf: Allow single exporter drivers to avoid the match_mapping
+> >     function
+>=20
+> I've rebased my github branch:
+>=20
+>   https://github.com/jgunthorpe/linux/commits/dmabuf_map_type
+>=20
+> On to drm-misc-next comit 41dae5ac5e15 ("drm/nouveau: Test for
+> imported
+> buffers with drm_gem_is_imported()") and reworked some of the
+> pending
+> bits on the VFIO side to accommodate Leon's series.
+>=20
+> Christian/Thomas/Vivek, how are you feeling about this approach? I'd
+> like to focus on the above patches, should I post a non-RFC series?
+The approach looks good to me. One particular idea that you have added,
+that is new is finish_match(), which I think is very useful. Hopefully, thi=
+s series
+is on Christian and Thomas' TODO list and they can do an in-depth review
+soon.
 
-Taking mutex/rwsem under spin-lock is not a good idea.
-
-> +
-> +			hwpt->ioas->iopt.lu_map_immutable = true;
-> +
-> +			up_write(&hwpt->ioas->iopt.iova_rwsem);
-> +			up_write(&hwpt->ioas->iopt.domains_rwsem);
-> +			mutex_unlock(&hwpt->ioas->mutex);
-> +		}
-> +
-> +		if (!hwpt->common.domain) {
-> +			rc = -EINVAL;
-> +			xa_unlock(&ictx->objects);
-> +			goto out;
-> +		}
-> +
-> +		if (!iommufd_lu) {
-> +			rc = check_iopt_pages_preserved(session, hwpt);
-> +			if (rc) {
-> +				xa_unlock(&ictx->objects);
-> +				goto out;
-> +			}
-> +		} else if (iommufd_lu) {
-
-Redundant else_if().
-
--Ankit
-
-> +			hwpts[nr_hwpts] = hwpt;
-> +			hwpt_lu = &iommufd_lu->hwpts[nr_hwpts];
-> +
-> +			hwpt_lu->token = hwpt->lu_token;
-> +			hwpt_lu->reclaimed = false;
-> +		}
-> +
-> +		nr_hwpts++;
-> +	}
-> +	xa_unlock(&ictx->objects);
-> +
+Thanks,
+Vivek
+>=20
+> Thanks,
+> Jason
