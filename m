@@ -1,34 +1,78 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from CO1PR03CU002.outbound.protection.outlook.com (mail-westus2azon11010060.outbound.protection.outlook.com [52.101.46.60])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48355398906;
-	Tue,  3 Mar 2026 10:13:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772532821; cv=none; b=RdCiADiwyzLPY4uUD/Tv/pLEjwGVKuiaH0DINUJaU2xIwectUo40Gd37fiChISqGGa3sdwLSq5yc6Pp4t1Hw5Ip0GF6jywWneximj1DId/OSdZJBLTNQGfGCDGA4NbQxyyd3/TVOygWoQx6N08kVMskMugJdilC5e+NDl+27Afs=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772532821; c=relaxed/simple;
-	bh=oNUPt44D7xewgXiELSrkzONvN2UIFpJB+B1908QRT5k=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=MvqaXD+HxAUJnr7CFshKydfUh/6ZSlBrtrCYax4LB2B/rRTT68+iCc9tpwxWnSusLqqsLic1H65i/QlqF2DDAXYUVMwnvcQXORENpkB68vyUQUa+sLX+lNEmJtktlugBkOvbSHbqMkZ6Owpa+t96xS9UD5kkAVhWwyz22V4Ckoo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ADpL3jIO; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66111337B8F
+	for <iommu@lists.linux.dev>; Tue,  3 Mar 2026 11:47:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.46.60
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1772538455; cv=fail; b=BgtSNdXcjwRyxMmdsvH8VP65LoNdsjVIgsPJh2rKRTzflRQ5iB0A7VCIr//3mqK2Ksu/orakprluXlODtZ/oPUtsTUZAatBHTEQnDyd0PDm+A44ogXcpjLbUrFKTVcWFbtA3HHZyO4LII3BI8xStsO+d8fvKARSmY8qzlVNDW9k=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1772538455; c=relaxed/simple;
+	bh=R8P1IfQ4YQ4IME6nMTHBHk30FxyOBg7lvKDm7lTW7/M=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=NTiNjN/y7jSrBrPnm3bpl3cMQDfpHPts2jx/GzK14KpzesJYfjCeAmdPoy0BV3N48yA/ZU3WKSgg9NcOlaK7J0YA4dV36pL9QmkQbjQpy8mjq4XsjlHM0mMhbZceSnSzv4Vtkb21XyTWp2jRRzh5lX7yox5oE4jDuwQuDSvkAc8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=gKiII/Q1; arc=fail smtp.client-ip=52.101.46.60
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ADpL3jIO"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86090C116C6;
-	Tue,  3 Mar 2026 10:13:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772532820;
-	bh=oNUPt44D7xewgXiELSrkzONvN2UIFpJB+B1908QRT5k=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:From;
-	b=ADpL3jIOp1uDm7HSfLQGSaxxoDKfYlUUC08JfjkT40HIv1kDS6uscZlg/RFCc2D3i
-	 vyua0nD6EbOGZLWlIbC3nGpLFAAD9kZSZODn1YsjjXKvYLt1HSQZiK3J2GmjdZ/VJt
-	 u0AUVs22fHYQBvmXX+UTxO1B15J4umInL4/FFUCoWOXTCOZsN8Lh6llVp84TelzZa8
-	 ZafeIsMhpE3tmLoC9PQPOY/NBEWCdu8a7lxDxfu/YO+KPLWrhd9hB/6z7/P7hrm9LT
-	 vvcJBOJ1Nfq+VVBen0KRd+bRSAAlmFLTA8hkquNtNt1lMRPCipCoubmNKTWqTf2wZR
-	 LO7hJLS1IUF0Q==
-From: Maxime Ripard <mripard@kernel.org>
-Date: Tue, 03 Mar 2026 11:13:11 +0100
-Subject: [PATCH v3 8/8] dma-buf: heaps: system: Turn the heap into a module
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="gKiII/Q1"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=d4cIi//BQWsHbJdBEdU0MZgVLmeaaQ5SCqz0IZL4ECUYR+nLRbEoDFkEMr2xjEiy3gLoxxdVvQdGV6lZc5KtEKzxxKi483bJcZVRz7lYbSsFJfwKTjXX8Gu+swTXF1BDUq5iaDomp7L0/w7ktiUT2GCpl42qBn7uvuDLJeJvoxAtOxqCjbdrps5AYWv2JttWQ8RaMlWhn2U7q+89Luk2oSm59FHnMfzOtNA/iGO7aQfNDgPfa+oohsYg73PakrFSIiBvxrjGIYIgDuMb9/jeGWbZ13u+BgULFWlCYJw9fS59baCp7FiYkHzBNsFHqUQ6mwEoAeyE818fcX5e0DLTeg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=nLK9648rHaPEHnRrzGChUFuO0WeHJ7nMqbiaC1EDLwE=;
+ b=BHnUUd1+u7xMeOtg3nP4/Eipn50RSMawaYQsHQQtmT1H4WDRS9QusVtka04CNYYCid+AoMydSOHtJQjaOyrMLfQuUsOT4cvG3k50McHN30uJlMLzK7hYsaa679LGP2Nv5yyxO/orFsk6zzlmceJGS7B/sO8KKU/fLhG8v9fpde97DOZ8NheNMSGm70EMf6zVfxoxsMhHXWaT+3IrjKG8/BaBJVdpScX3pDMQTh/i9MX6zj4OODAKOkOPAb0d1ahGKcviEM77ka3oWnLoVD+AmI039ITrVdJHytkLJmrk8PdgdM45im7cOZseqX9v1cUAib09MxvU+QcmYw+X5PF52Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=ziepe.ca smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nLK9648rHaPEHnRrzGChUFuO0WeHJ7nMqbiaC1EDLwE=;
+ b=gKiII/Q1t3VAaOtbsdhjjXgIa5eox8w3adzYYBeVrtLH+Z2kQg54MXhxWP1imrNSoICLOvAxMbE2pUuvL1p+YIUV4Kq/6BwgpEHB6Ty9poeERcw9kbXzJFeJMjnu2rTlvkCax+vbSBTStNdT/Kh0gm3sDyDcWw9DJNnl4vAqhdI=
+Received: from SJ0PR13CA0210.namprd13.prod.outlook.com (2603:10b6:a03:2c3::35)
+ by BL3PR12MB6403.namprd12.prod.outlook.com (2603:10b6:208:3b3::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9654.22; Tue, 3 Mar
+ 2026 11:47:30 +0000
+Received: from SJ1PEPF0000231D.namprd03.prod.outlook.com
+ (2603:10b6:a03:2c3:cafe::6c) by SJ0PR13CA0210.outlook.office365.com
+ (2603:10b6:a03:2c3::35) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9654.19 via Frontend Transport; Tue,
+ 3 Mar 2026 11:47:27 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
+Received: from satlexmb07.amd.com (165.204.84.17) by
+ SJ1PEPF0000231D.mail.protection.outlook.com (10.167.242.234) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.9654.16 via Frontend Transport; Tue, 3 Mar 2026 11:47:30 +0000
+Received: from Satlexmb09.amd.com (10.181.42.218) by satlexmb07.amd.com
+ (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.17; Tue, 3 Mar
+ 2026 05:47:29 -0600
+Received: from satlexmb08.amd.com (10.181.42.217) by satlexmb09.amd.com
+ (10.181.42.218) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.17; Tue, 3 Mar
+ 2026 03:47:28 -0800
+Received: from amd.com (10.180.168.240) by satlexmb08.amd.com (10.181.42.217)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.17 via Frontend
+ Transport; Tue, 3 Mar 2026 05:47:26 -0600
+Date: Tue, 3 Mar 2026 11:47:21 +0000
+From: Ankit Soni <Ankit.Soni@amd.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+CC: <iommu@lists.linux.dev>, <vasant.hegde@amd.com>,
+	<suravee.suthikulpanit@amd.com>, <joro@8bytes.org>, <will@kernel.org>,
+	<robin.murphy@arm.com>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] iommu/amd: Adhere to IVINFO[VASIZE] for address limits
+Message-ID: <mqobyculj4g3mv2ipf2rbacbw62ew2utq2kini5hql5r22khhc@btukh6fex6zb>
+References: <cf1a1e3d96c3571ac5caa528caa84751d40be1bc.1772208939.git.Ankit.Soni@amd.com>
+ <20260302235715.GY44359@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -36,80 +80,91 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260303-dma-buf-heaps-as-modules-v3-8-24344812c707@kernel.org>
-References: <20260303-dma-buf-heaps-as-modules-v3-0-24344812c707@kernel.org>
-In-Reply-To: <20260303-dma-buf-heaps-as-modules-v3-0-24344812c707@kernel.org>
-To: Sumit Semwal <sumit.semwal@linaro.org>, 
- Benjamin Gaignard <benjamin.gaignard@collabora.com>, 
- Brian Starkey <Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>, 
- "T.J. Mercier" <tjmercier@google.com>, 
- =?utf-8?q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
- Marek Szyprowski <m.szyprowski@samsung.com>, 
- Robin Murphy <robin.murphy@arm.com>, 
- Andrew Morton <akpm@linux-foundation.org>, 
- David Hildenbrand <david@kernel.org>, 
- Lorenzo Stoakes <lorenzo.stoakes@oracle.com>, 
- "Liam R. Howlett" <Liam.Howlett@oracle.com>, 
- Vlastimil Babka <vbabka@suse.cz>, Mike Rapoport <rppt@kernel.org>, 
- Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>
-Cc: Albert Esteve <aesteve@redhat.com>, linux-media@vger.kernel.org, 
- dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, 
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev, linux-mm@kvack.org, 
- Maxime Ripard <mripard@kernel.org>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1645; i=mripard@kernel.org;
- h=from:subject:message-id; bh=oNUPt44D7xewgXiELSrkzONvN2UIFpJB+B1908QRT5k=;
- b=owGbwMvMwCmsHn9OcpHtvjLG02pJDJnLtpjLhZrIvOCLmau/886knTHtqxv8n09Nyyx+oDj3r
- ut8JWuVjqksDMKcDLJiiixPZMJOL29fXOVgv/IHzBxWJpAhDFycAjCR9M+MDZfKNSakNHG2Pu2p
- 1td90Ci2e9fvDWuKXH86fq/Yk+12TfOj9j8bR+VVB078FfeZUh1bwdjQcu2u7Sxvppnmbie/7F0
- uZi/gaby1/Lhe87FY2drnoSW6kjGxWf3566oM18xsCS2xLwEA
-X-Developer-Key: i=mripard@kernel.org; a=openpgp;
- fpr=BE5675C37E818C8B5764241C254BCFC56BF6CE8D
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260302235715.GY44359@ziepe.ca>
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SJ1PEPF0000231D:EE_|BL3PR12MB6403:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7f0731d8-c4b1-4dcb-6962-08de791aa662
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|376014|36860700013|82310400026;
+X-Microsoft-Antispam-Message-Info:
+	spmvXCFTIYna+y2gH+XOLqENbswMPXSAsL7DVHulqfU8gjbJ8k5G1wNjpEsOeXKJbYVYPK6RMEiJrxcr0Aiy1wZkJuLBn7oGlmYLv9CcSY3MJNdlRuAGYADOmseitn34pldaBX8Qgr4OqgiJwUpoGfoE9zOjHMbO+WMPZz3TzoJFSxqvZSJl0rJKair6AYyEBhiRtQStMy/KFVCzGTikUX1WwVlPpZtFbpJCwwy7TUSUXVZYgJD+6+rz/YYEd0f+JNdv08jelt0f3d6MRDPL10rbhx60NPa7wsTY9O9sPR/zn0nFSFBRYhwpldey6W0LEMHtmNjBdav0oz21jmCXOmeoRO7bDUQrEGHLYVXl9v4/pP5/L2CNrPxgUgkiNzCaMcOwDtedbCpQ4qt+LFArInkGkGk37YL57MoPdXIQ0bPNndQNPZX6vHTaYTPjh1dj1P7O9VDzMZT34dspI+cTSwyOQ3dogKnAvN7SrzGNDJWjay7/h/mpP+rnHFKekZEWJZyWqiXogWsdCFprnlmEhWzEVGswzpzYfv8or5jewoK7020qOpacgSK9pCc3I5tJ66s3M1PWXVPK5E4gInvyurAHt48zFFU3eID290jtvxEDFUfdExH5tD+KKRw7ruChve12i/9futLFFon+cPEA3gr9LgniqivID/2PbPbnFr2VsniDyEdjfgvmKZHtrcThBmMVUcdA8U69KiMdrZmLVkdzzjjVlfi3OnPswJiWQ4FwF1D0/v/3OWQhPhfT8b4rMjuHC56D1kRJHqi6GSSjAXVreErMd0u+Q25uZMj1SZ8HC+xek2LttwZ2qiXT5MSL0i/wNAyTE/8G7vgMzDHshw==
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(376014)(36860700013)(82310400026);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	qS7rormsXWZ2kWTuHRRw8ipX18faibvBbvu26EMVKEqcevpWza5f6tZoBX0nyRfh9UoHjydngb2WmCcHls8aMvUYUSprNshHB3P1o0xEWGZ5ok7AuvNJogUeafbY/73DWZaMO54d005E10ErrqzowPrm2xplqLlHdAR3dTxREF3zPGG6LnvmUvIgWJZoO7I4bsBh9F15Sic6SbvCd20SsAwKJNkRiONyyx8wbXIlYI6Uq3MNS7OVCb6y589zS4ByXZrLbChMnCGzYINh6lsbwifGrFL88GLXCVTq3GBLyCxJk+xN0gdTrSDqWolOBwIpRXCTu/X6XXsb0+kzh/Dwev8HzfkBnNbRuHc3O+qmH4SQQ5q4Kb7x6LjNixYv1+BVcW5QcCMB+vXUTo9nafr8154sNOMXc/ki2gnukbSB/xLTgBmWDR0S7OE9jzffCn/d
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Mar 2026 11:47:30.0103
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7f0731d8-c4b1-4dcb-6962-08de791aa662
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SJ1PEPF0000231D.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL3PR12MB6403
 
-The system heap can be easily turned into a module by adding the usual
-MODULE_* macros, importing the proper namespaces and changing the
-Kconfig symbol to a tristate.
+Hi,
 
-This heap won't be able to unload though, since we're missing a lot of
-infrastructure to make it safe.
+On Mon, Mar 02, 2026 at 07:57:15PM -0400, Jason Gunthorpe wrote:
+> On Fri, Feb 27, 2026 at 04:58:04PM +0000, Ankit Soni wrote:
+> > +static u8 ivinfo_vasize_bits(void)
+> > +{
+> > +	u8 vasize;
+> > +
+> > +	vasize = FIELD_GET(IOMMU_IVINFO_VASIZE, amd_iommu_ivinfo);
+> > +
+> > +	/*
+> > +	 * IVINFO[VASIZE] encodes the log2 of the maximum virtual address
+> > +	 * processed by the IOMMU.
+> > +	 */
+> > +	switch (vasize) {
+> > +	case 32:
+> > +	case 40:
+> > +	case 48:
+> > +	case 64:
+> > +		return vasize;
+> > +	default:
+> > +		pr_warn_once("IVRS: IVINFO[VASIZE]=0x%x is invalid, defaulting to 64‑bit VA\n",
+> > +			     vasize);
+> > +		return 64;
+> 
+> Why check and limit it like this? 
+> 
 
-Reviewed-by: T.J. Mercier <tjmercier@google.com>
-Signed-off-by: Maxime Ripard <mripard@kernel.org>
----
- drivers/dma-buf/heaps/Kconfig       | 2 +-
- drivers/dma-buf/heaps/system_heap.c | 5 +++++
- 2 files changed, 6 insertions(+), 1 deletion(-)
+I’ll replace this with a macro and send that in v3. If you have other suggestions,
+I’m happy to incorporate.
 
-diff --git a/drivers/dma-buf/heaps/Kconfig b/drivers/dma-buf/heaps/Kconfig
-index aed0b9b4febf388376cfc41be9843980d010c4e8..e273fb18feca091ccd9b406e68f86c12efb339e9 100644
---- a/drivers/dma-buf/heaps/Kconfig
-+++ b/drivers/dma-buf/heaps/Kconfig
-@@ -1,7 +1,7 @@
- config DMABUF_HEAPS_SYSTEM
--	bool "DMA-BUF System Heap"
-+	tristate "DMA-BUF System Heap"
- 	depends on DMABUF_HEAPS
- 	help
- 	  Choose this option to enable the system dmabuf heap. The system heap
- 	  is backed by pages from the buddy allocator. If in doubt, say Y.
- 
-diff --git a/drivers/dma-buf/heaps/system_heap.c b/drivers/dma-buf/heaps/system_heap.c
-index b3650d8fd6511a4a755612cfe3a9d9fee796f80e..1957403b0f2ae5e82ab39f5945dfe82808e93964 100644
---- a/drivers/dma-buf/heaps/system_heap.c
-+++ b/drivers/dma-buf/heaps/system_heap.c
-@@ -442,5 +442,10 @@ static int __init system_heap_create(void)
- 		return PTR_ERR(sys_heap);
- 
- 	return 0;
- }
- module_init(system_heap_create);
-+
-+MODULE_DESCRIPTION("DMA-BUF System Heap");
-+MODULE_LICENSE("GPL");
-+MODULE_IMPORT_NS("DMA_BUF");
-+MODULE_IMPORT_NS("DMA_BUF_HEAP");
+> > -	cfg.common.hw_max_vasz_lg2 =
+> > -		min(64, (amd_iommu_hpt_level - 1) * 9 + 21);
+> > +	cfg.common.hw_max_vasz_lg2 = amd_iommu_hpt_vasize;
+> 
+> This has no restriction, you can send it whatever size you want.
+> 
 
--- 
-2.53.0
+The intent is for the kernel to respect what the VM advertises in IVINFO.
+If we ignore IVINFO[VASIZE] and use a larger limit (i.e. from EFR only),
+driver can exceed vasize what the VM allows and break the guest.
+
+> Shouldn't the v2 side respect this too? If there is some reason why
+> not it would be good to include it in a comment.
+> 
+> Jason
+
+For the v2 page table, GVASize is derived from the page table level already
+advertised in EFR, so it matches what is reported and driver don’t need an
+extra IVINFO-based check for v2.
+For the v1 path, the effective VASize can differ from what EFR implies
+(i.e. VM can report a smaller limit), so driver should respect IVINFO[VASIZE].
+
+I’ll add a short comment in the code explaining this so the v2 behaviour is clear.
+
+Thanks,
+Ankit
 
