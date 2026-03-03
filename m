@@ -1,28 +1,28 @@
-Received: from BN8PR05CU002.outbound.protection.outlook.com (mail-eastus2azon11011010.outbound.protection.outlook.com [52.101.57.10])
+Received: from PH0PR06CU001.outbound.protection.outlook.com (mail-westus3azon11011061.outbound.protection.outlook.com [40.107.208.61])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5507743D4F7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9082D47DD76
 	for <iommu@lists.linux.dev>; Tue,  3 Mar 2026 15:04:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.57.10
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.208.61
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772550293; cv=fail; b=JeKtChzwc8vN8NMSlDpIAQ+5u7Dg2Wnqrn+AaCh9lc0BOzz3igW4bNARXyhu6DLiytB0dI4xsZOR2DrmB+vpdQhpj5d78mBF1Qh6tn03bu9qhkO9bPKOHVTPmdAxfZKRs+QTVGUOjJdhcVFWlbqWxbHVoxUx1V0Xa2pZPjQ+fYA=
+	t=1772550294; cv=fail; b=PTQksKHzCwEvkPiEgrFUAQOlCkDEFQ3wTgZL11q1DdInVtoi7T2nxwu7dQThb1iGPcuZDxguV60ICe0pd0ZFEkpxR4lM64fTMmmgotUYxooStHBW98H/x9G3+HVOY9FsZEsXIFz1B1e5ssbK7FULay5debogYBX4zoL4yx3vfQc=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772550293; c=relaxed/simple;
-	bh=BNLvb0mKKYSfnVPfhTArPD0diWgHL7C0nZ8s4lNfQow=;
+	s=arc-20240116; t=1772550294; c=relaxed/simple;
+	bh=0JZAnHgRKHIwx5Tj74wt32pD4VM52h1SSrBYMMsrWI0=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=dvQsU60zQEt3wZIbaRhapGcxRswyX4/c6QhoLppk8OuS+LvVLgLUmIV5Gy/76G5tRfAkcJPm0oNeC5mDP8ZdQqHwFMH8wVywHQ8/V6IKrfVHXpNugZV0SGyGSvI0jACPi/Sq1rVGdVmkwwqkOav5Y57TPKJ+1LVmhPGJCoIM3Lg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=Pf6xHI+E; arc=fail smtp.client-ip=52.101.57.10
+	 MIME-Version:Content-Type; b=i8VYTMKlWaBkGSaFzJkUEZrsuUS6pNEDsZuYtA+eN3RPQfOvhwTplAo5uTQJE2Bn41ofvthtBUjJhBi5Nv8LNToVjizUOd1KPI37Lj+uLQTjAWTLH8R2z2pKJzqlsGOm9U9Dcyxp3vW82+3JtwyawaRF+K+2ra1eMLhYfFqei/M=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=H78ikMTI; arc=fail smtp.client-ip=40.107.208.61
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Pf6xHI+E"
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="H78ikMTI"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Gv2wEwt0TKnUHeD4fDCmIBCxFBHTuxHtoTN8unNk6sxsvO8hw92dtMEYO4EjJWvQx2t6VJ6gd5u448FxEe0NAOnaAXRfaanyuv5SUC06DLdG24olZ4QvggUxtLAkOjkej7STzHuhiUUoSvs1mC0rkQG4maNJgVcZO0wy/wogR3exLlx6Rd6zaF8HbNqzSvrbSxxkejgbiUkQFVV3YLslurXNtM/e9EWDNYkxm6aT+qJ4y4Yp5elYvfKUJgmY31o05I7T6n5+DNYCG4SSnwJQuewuoBvsAYpz9qCRiZz8zFpySim73QXT6TBmGjT66yImZUtBRHW+UUXMcNc5KkBEIA==
+ b=lPYcYfdGbhOCUlqlXkf1sqz6mwc5vSqugykv1lcCM3uYrY7FDwA1kkbyKcUJTaNZJ6RDIJ1zcZUFq5kzU6UOw6+ZUEtfitwMNHv7onPs0hK9fRChRt2OMVT+qf7p7k6IQ26T7R6pCWhXa7ETb9Pf6osEiutu7gaRlnP4YIEMvKUvZCuiLWJBOTEpN28UAIK5rB30V+GP6k8G6FC9if5AreKi4/RepqxM2Ck93i/TlrSWAdA+9hibdn7EZiC61mlR2JsxjdQLkJshVAKdk9wvVYbhgVGInVi+46Jdq5nnb+EeUbR4ZUE6OepAMsyysWjwxlwQY0KQhNUjFltqKLkc9A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=GVwpuds9aRQqsefS+/gLjIDxQezrnMBRg4Tkx7TSQPM=;
- b=Cxqf+kfLCISrrfaOcFcuv/TmTqqVqd9/RzEnTiyRivqCmc2EY0p2/s8nHM04gEZnbyxa2moc5f7y6we3H8ttsd2Cz7jz/3McwGA0zbtnJwtUXXvW2s0QAFzVIfBeZt1K472iKbEfv5SwIETVNHy8+3bhCia43TE0FJdmgneOpuLjom4XaviWBWdFF3eCuur5sZoBVQq4OfIaeWAGpw4yGQDipC08SB+MKCsTlpa5y5zFOqAIR2H7JguGbiMcr1ryn+u7PyK6g71LzAcKShd/1URZwgkXnCVUiHRpdpeJw6FhsnjYo5WAphkZzKqdjyp6rZNea7mXHg9SU8oT33MRIQ==
+ bh=WawexHCp6M4IVssFew2mOmlhQljst41kVLreL4jnZF0=;
+ b=v32KD0n3KFTf2TOYtGSswqs8JTO3QW5iDSD9cBisvddvymRlCZ0IdCUOug2VxVCDIg1kaq3mbtnLbey11dhRPd8Ayukdc0FrC6nNc9bSwqoyvQopvI4hBGPCaLyx5CyAJmOPyTbWU/Bhd5iqHzRnLTn5tvigQ5Ru0wkCFzZw3M35VKmfwSWiBEAQOiIDGWy3DWw4HuNpftZ04rLsChJfhL9+S34W89CSTcjAdoJr8M+uG7+TFzaSiHncdCPJ2GoPCmoD/WZAos8/+bNvmdhSdtYxEojY1r/Pg9HJdmo1w2A21UF6nHmyChU4F5LBp8M7LApkmTk3Y+MWCWAR39Z1rw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.117.161) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
@@ -30,18 +30,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GVwpuds9aRQqsefS+/gLjIDxQezrnMBRg4Tkx7TSQPM=;
- b=Pf6xHI+ExY3tzP52U6D3wbfSG5a2X0zDcL3gmr7Ir/1FbZ076hhDCPm8Fo3UqVMJBYgQ2UWukgCKVlzIpSIAX9fSDLmkAuMoTJNpls+a41+/kbhP6dWCj84JyH84XibGObM5lM0L8SXedSMelfL+xeL8nXtlvFNlTRY0I3iCFGRRub1xk2hm4gTlhPyBqWBheNHQY2vPhwmfBWZjrwoAjMqx/dJ5YXIt/8pG6rWkgYCcLpbBf5YGvVinTavBepXKZcama4TNvcd7GA+5XN+cflLevuuWFZPGYo20SA/grXT+nBhdhuV4JnqgvrC3g/kcknyi+YO/YapiMTO8+WBA1g==
-Received: from SJ0PR13CA0183.namprd13.prod.outlook.com (2603:10b6:a03:2c3::8)
- by CH3PR12MB9196.namprd12.prod.outlook.com (2603:10b6:610:197::6) with
+ bh=WawexHCp6M4IVssFew2mOmlhQljst41kVLreL4jnZF0=;
+ b=H78ikMTItp9e1bGdAc+uEEpAn6JXUzJRtd7hivmcJbhZXtBQXNmX8OuiicnVU7467x+OiHLi0fDuhFret1OdbbEWQ0znz8DMwUaW2+KtLoAosO41kz7ra7A1KdmSwBUCOE5GkvBTR69Q8ytA3ZwSNedGbaeANk1DKvAbGoemow1ur8oa1ovxNZ8ihasYnZcHg67HE8HvdDH4jW7Trr90F+7Q0rUbzfkLR3BWH03FyQURrEKAsv6hujJZ0qd5eZwAM91ScQeYoIxZbAFrZCVrn1NG9ed3ivGiD6UbQmX/t19BbGMkAajlxFJlBqIm0c7vrsnV63bGwoqK8lY0uBCtVQ==
+Received: from BYAPR05CA0021.namprd05.prod.outlook.com (2603:10b6:a03:c0::34)
+ by LV2PR12MB5893.namprd12.prod.outlook.com (2603:10b6:408:175::14) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9654.22; Tue, 3 Mar
- 2026 15:04:47 +0000
-Received: from SJ1PEPF00002317.namprd03.prod.outlook.com
- (2603:10b6:a03:2c3:cafe::4c) by SJ0PR13CA0183.outlook.office365.com
- (2603:10b6:a03:2c3::8) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9654.21 via Frontend Transport; Tue,
- 3 Mar 2026 15:04:31 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9654.19; Tue, 3 Mar
+ 2026 15:04:44 +0000
+Received: from SJ1PEPF00002315.namprd03.prod.outlook.com
+ (2603:10b6:a03:c0:cafe::be) by BYAPR05CA0021.outlook.office365.com
+ (2603:10b6:a03:c0::34) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9654.18 via Frontend Transport; Tue,
+ 3 Mar 2026 15:04:44 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
@@ -49,26 +49,26 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
  216.228.117.161 as permitted sender) receiver=protection.outlook.com;
  client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
 Received: from mail.nvidia.com (216.228.117.161) by
- SJ1PEPF00002317.mail.protection.outlook.com (10.167.242.171) with Microsoft
+ SJ1PEPF00002315.mail.protection.outlook.com (10.167.242.169) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9654.16 via Frontend Transport; Tue, 3 Mar 2026 15:04:46 +0000
+ 15.20.9654.16 via Frontend Transport; Tue, 3 Mar 2026 15:04:43 +0000
 Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
  (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Tue, 3 Mar
- 2026 07:04:24 -0800
+ 2026 07:04:20 -0800
 Received: from NV-2Y5XW94.nvidia.com (10.126.230.35) by rnnvmail201.nvidia.com
  (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Tue, 3 Mar
- 2026 07:04:21 -0800
+ 2026 07:04:17 -0800
 From: Shameer Kolothum <skolothumtho@nvidia.com>
 To: <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
 CC: <joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>,
 	<baolu.lu@linux.intel.com>, <jgg@ziepe.ca>, <kevin.tian@intel.com>,
 	<nicolinc@nvidia.com>, <nathanc@nvidia.com>, <mochs@nvidia.com>,
-	<kjaju@nvidia.com>
-Subject: [PATCH 2/2] iommufd: Report ATS not supported status via IOMMU_GET_HW_INFO
-Date: Tue, 3 Mar 2026 15:03:48 +0000
-Message-ID: <20260303150348.233997-3-skolothumtho@nvidia.com>
+	<kjaju@nvidia.com>, Jason Gunthorpe <jgg@nvidia.com>
+Subject: [PATCH 1/2] iommu: Add device ATS not supported capability
+Date: Tue, 3 Mar 2026 15:03:47 +0000
+Message-ID: <20260303150348.233997-2-skolothumtho@nvidia.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260303150348.233997-1-skolothumtho@nvidia.com>
 References: <20260303150348.233997-1-skolothumtho@nvidia.com>
@@ -84,76 +84,118 @@ X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
  rnnvmail201.nvidia.com (10.129.68.8)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ1PEPF00002317:EE_|CH3PR12MB9196:EE_
-X-MS-Office365-Filtering-Correlation-Id: 844b287c-d64a-4e89-46f9-08de793635ab
+X-MS-TrafficTypeDiagnostic: SJ1PEPF00002315:EE_|LV2PR12MB5893:EE_
+X-MS-Office365-Filtering-Correlation-Id: cef46c12-bbca-4d7f-7ca4-08de793633e7
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|1800799024|82310400026|36860700013;
+	BCL:0;ARA:13230040|1800799024|36860700013|376014|82310400026;
 X-Microsoft-Antispam-Message-Info:
-	YA9DEsIzzDqOtSrvVX6TZ6CohmmAAOr46RM+2hOTLefjEZ6ibF4u7ZIbq4aNLBhhpfgFq5PkL2UGsaAtNgsEw6hljoYdPd/Wq/NjKhizTPuaOcoDJnpVu/KuA72NhofBfpNC4tQ+jkw02aZIGmkeUD14Hk60goSa4ErE80mo9h7IT84Zcl86s0ns3J3KhO+vk9lai1jKtPdXe4R6A2faCR6SFOHpvxuT5AijvTUGjKBrwPvLu2SUAkAphRpyjUElYOT7yi5w6dGQ8MY7ObQsw4jVxJlujmHQZoA+eZ6Hauv5sN6qMZtu4CP+6fp+y1aoUQmxGc+uwm5KhE9fZ96rQwZ0laEcOuOKfvTs4JNTTITAVj3hSoSIVh9m7afNwx+4ICosV3ez40h2F9X6KUobNAvzdWNA4wpEDBVht4o7X/4FfvsQln6HwapeRefpMfNot8yudeYJr/oVaGN8dXgtG2JVRMlC9F4P8XitpxpsrfHGxsymiC2QuAPO0dV7TfOEOsjorKItvC+H9N1KHCBvEzYjw0/Ejj+FSFqPD35QdAOsDkztcIF9+pelTn1PECzf8AuDXLzkEX3dWUCACz0t6pT1iGWD0Ifm1tsbiTJB02qUkIbcolQm8jE5x56ycSiV/rN5o6rcs8kAlWe2MMIvEaJGCnXiYGhrZg8P3M8fSPxaZmPssT7o5VYeFWFlAaSpwZgYdZ5CQw+ZDweXYnkQxQDyDafLvNWQNFZTfpWNAT0VbW9F8gmMcjAyQOWbcej3ChO69neBriSw6pOBgPKPpL4bi9mPFEnZDFUCCR8wNJaRh638z+lS0BJavRt2Dai5Nokojv1P4brDGYO9DqKQcg==
+	dmUbNYpL9dFagv4Txm+u8IrquM+ojueGqismJrrpLiM8af78crzeQW6X5CrdeoTpN0MTsekU31U86APHgRNgrAO06l5DxfMY9VNBDIpKWwet7x7iQdCgIO5CVngrH5CEsznYm3HbhAA65VR9KAQvcK3hDKZYYrP8u6N1BZabfTA6vorYqLcWX5IunpWJ8mdwRj0DMKHchesdbyvmk1V9wpfwrbcc9wzK18a0iFiUduFj4s3BJsGg+OaiRkQj/06fb+jbzohXZmgvLBk3eUO7+FxKEUEdri2KjMZBIxCxl2zkIOuuKjNXOjQI4q6LxHKPsfVN1g86wn3y6pEpxOiCxJmyVS8DOiIjTyjqp8UpM8IYc7uryM1PKhpqjJbvNASzb6jsahq/F5qkGVm1MysLYJ/80zrIk/074vR8EWg/y3vWUlkIwxh4kyh693J/Gogjv6ZMe/MSWjMSo+lBMs/I7oHEcP2kCU8OS7HLoNfQCF+C7gSv4isG93HQiGVk2X7oV0owrLNAMNdhPh+x2FaEMXXj9ynufQjGCJVHOsLLxVFkboylcbAKtnZYNAt+afaf2W+U5lJkSCR+5b3X1ZAd3PkXaemUByVBCVziyrxk8yHNrqIeW208Fd4NqTsexHTrU4ChTVQNKPnp5RV2CzVNMNiGwQ8K1kZC2rZGAMSclXd/umoVjdLJl4BnwDci8AvFYzQipc6TSKf/dgWVhAU3vbbd67+uo6TiauC9rB6XxYyWBrLyiW3UHDShcivaE/G5fsGGu76pg5UMTrPdxfpFsOGGXRoq0qHD/p9dk7qdqhQfUC0b9fekHREcJItrgx9ohtQRoD10ezo2tx+f1QyHow==
 X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(376014)(1800799024)(82310400026)(36860700013);DIR:OUT;SFP:1101;
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(36860700013)(376014)(82310400026);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	TuCMfDA/TvJzQoa13rI3DeNhfosnY9fHWuuoaZuOhhq1g3OyRaUHwxktaPeywTTiMgNJ4fC9Ubh3JZv8yn1QiVcrT+RF/UZDD3ekg7M4y1XZDvzD0gH9bYO1bhf1d8uzgNJf9SFgmAAeZShkOZICZKvas+qEdYBmdG3A23PocHenMLRbOkdEzTA7a538G1eqSJmupUgRt0BzxbL3a37oFJlczXBh8OPxIDCPNZ//dS2zM7TrSTQfHJJdY31oI18G3OApFtjOpVY8MbX7sbrtUvLVNosirjqiuRiKzV32zmh2neNzdO0ONbgZILWjXy2jjy2FyCkCLyfve4juJUCP+yYz22QhyPJEkQ7/BuFUdaym4xNfMjGDDVnKu4IQyFLHAUh3hIA+2C2wPDdnhZEEFYFHm3HL2RbDbewSY31p2PCx98GbIPwg35Yjsg7CWaLD
+	WCIGUxV8GYjpvLE8UjuSeuoJPHE9sv3sOSLD+DgpR1gfNCNGtDtVcoJEbXms67CcajXQOZwKRame5EMO7iF4/QLUBuSIHhSwXmmQltTYmC73Z5KQSAD+gWZdyWTMCLQYyPmcERdGux6UxVB9cBmfSKP8B7y6YbHLComI2HS8g4WSY0BZaIJVKe3IKYhqsnnfdP8KOx3C4vXeJtVvVEenJQyBcdti0kY8ZR/xPJPhwi50w6OEG7Ds/Dy8puz5fpdwo6EUoGp1/jqOxJmM4IDc1wZrk/KQlGWXriZ1oI/EhtVnXT5n1A6Hpklc7z29/XEXk6X+vCvOr6uHZ4Gnevb4I/DLnWzY2OT8tz16/hfwc6BLpp4TPcFz+e+z2VamqJkBIGZT6GfPpdI/277p/a8gqYMZCeoo2Yn49HY12tp1gkYQNF2los78Hu50fB0ScKFf
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Mar 2026 15:04:46.7462
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Mar 2026 15:04:43.8092
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 844b287c-d64a-4e89-46f9-08de793635ab
+X-MS-Exchange-CrossTenant-Network-Message-Id: cef46c12-bbca-4d7f-7ca4-08de793633e7
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	SJ1PEPF00002317.namprd03.prod.outlook.com
+	SJ1PEPF00002315.namprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB9196
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV2PR12MB5893
 
-If the IOMMU driver reports that ATS is not supported for a device, set
-the IOMMU_HW_CAP_PCI_ATS_NOT_SUPPORTED flag in the returned hardware
-capabilities.
+PCIe ATS may be disabled by platform firmware, root complex limitations,
+or kernel policy even when a device advertises the ATS capability in its
+PCI configuration space.
 
-When this flag is set, ATS is not supported and not used for the device.
+Add a new IOMMU_CAP_PCI_ATS_NOT_SUPPORTED capability to allow IOMMU
+drivers to report the effective ATS decision for a device.
 
+When this capability is returned true for a device, ATS is not
+supported and not used for that device, regardless of the presence
+of the PCI ATS capability.
+
+A subsequent patch will extend iommufd to expose the effective ATS
+status to userspace.
+
+Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Shameer Kolothum <skolothumtho@nvidia.com>
 ---
- include/uapi/linux/iommufd.h   | 3 +++
- drivers/iommu/iommufd/device.c | 3 +++
- 2 files changed, 6 insertions(+)
+ include/linux/iommu.h                       | 2 ++
+ drivers/iommu/amd/iommu.c                   | 6 ++++++
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 3 +++
+ drivers/iommu/intel/iommu.c                 | 2 ++
+ 4 files changed, 13 insertions(+)
 
-diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-index 1dafbc552d37..d85a2d3e1b40 100644
---- a/include/uapi/linux/iommufd.h
-+++ b/include/uapi/linux/iommufd.h
-@@ -695,11 +695,14 @@ enum iommu_hw_info_type {
-  * @IOMMU_HW_CAP_PCI_PASID_PRIV: Privileged Mode Supported, user ignores it
-  *                               when the struct
-  *                               iommu_hw_info::out_max_pasid_log2 is zero.
-+ * @IOMMU_HW_CAP_PCI_ATS_NOT_SUPPORTED: ATS is not supported and not used on
-+ *                                      this device.
-  */
- enum iommufd_hw_capabilities {
- 	IOMMU_HW_CAP_DIRTY_TRACKING = 1 << 0,
- 	IOMMU_HW_CAP_PCI_PASID_EXEC = 1 << 1,
- 	IOMMU_HW_CAP_PCI_PASID_PRIV = 1 << 2,
-+	IOMMU_HW_CAP_PCI_ATS_NOT_SUPPORTED = 1 << 3,
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 54b8b48c762e..f40ecdc5d761 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -271,6 +271,8 @@ enum iommu_cap {
+ 	 */
+ 	IOMMU_CAP_DEFERRED_FLUSH,
+ 	IOMMU_CAP_DIRTY_TRACKING,	/* IOMMU supports dirty tracking */
++	/* ATS is not supported and not used on this device */
++	IOMMU_CAP_PCI_ATS_NOT_SUPPORTED,
  };
  
- /**
-diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
-index 344d620cdecc..2e98818806c0 100644
---- a/drivers/iommu/iommufd/device.c
-+++ b/drivers/iommu/iommufd/device.c
-@@ -1624,6 +1624,9 @@ int iommufd_get_hw_info(struct iommufd_ucmd *ucmd)
- 	if (device_iommu_capable(idev->dev, IOMMU_CAP_DIRTY_TRACKING))
- 		cmd->out_capabilities |= IOMMU_HW_CAP_DIRTY_TRACKING;
+ /* These are the possible reserved region types */
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index 81c4d7733872..aa4399b6b6db 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -2985,6 +2985,12 @@ static bool amd_iommu_capable(struct device *dev, enum iommu_cap cap)
  
-+	if (device_iommu_capable(idev->dev, IOMMU_CAP_PCI_ATS_NOT_SUPPORTED))
-+		cmd->out_capabilities |= IOMMU_HW_CAP_PCI_ATS_NOT_SUPPORTED;
+ 		return amd_iommu_hd_support(iommu);
+ 	}
++	case IOMMU_CAP_PCI_ATS_NOT_SUPPORTED: {
++		struct iommu_dev_data *dev_data = dev_iommu_priv_get(dev);
 +
- 	cmd->out_max_pasid_log2 = 0;
- 	/*
- 	 * Currently, all iommu drivers enable PASID in the probe_device()
++		return !(amd_iommu_iotlb_sup &&
++			 (dev_data->flags & AMD_IOMMU_DEVICE_FLAG_ATS_SUP));
++	}
+ 	default:
+ 		break;
+ 	}
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 4d00d796f078..c20d2454ca14 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -107,6 +107,7 @@ static const char * const event_class_str[] = {
+ };
+ 
+ static int arm_smmu_alloc_cd_tables(struct arm_smmu_master *master);
++static bool arm_smmu_ats_supported(struct arm_smmu_master *master);
+ 
+ static void parse_driver_options(struct arm_smmu_device *smmu)
+ {
+@@ -2494,6 +2495,8 @@ static bool arm_smmu_capable(struct device *dev, enum iommu_cap cap)
+ 		return true;
+ 	case IOMMU_CAP_DIRTY_TRACKING:
+ 		return arm_smmu_dbm_capable(master->smmu);
++	case IOMMU_CAP_PCI_ATS_NOT_SUPPORTED:
++		return !arm_smmu_ats_supported(master);
+ 	default:
+ 		return false;
+ 	}
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index ef7613b177b9..0be69695e88a 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -3220,6 +3220,8 @@ static bool intel_iommu_capable(struct device *dev, enum iommu_cap cap)
+ 		return ecap_sc_support(info->iommu->ecap);
+ 	case IOMMU_CAP_DIRTY_TRACKING:
+ 		return ssads_supported(info->iommu);
++	case IOMMU_CAP_PCI_ATS_NOT_SUPPORTED:
++		return !info->ats_supported;
+ 	default:
+ 		return false;
+ 	}
 -- 
 2.43.0
 
