@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 156CD37DE92
-	for <iommu@lists.linux.dev>; Tue,  3 Mar 2026 03:18:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0574374E53;
+	Tue,  3 Mar 2026 03:56:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772507933; cv=none; b=WlA2F3JVHnddutQ/etuWYe+V0xPMNsyiPhyoHDr+1zzysmXMqlLrldm/tq5pa187gOF64oBpcCn3dNEo+WNoo9XSDdGYSY/sNNHwsgev8/50yzJPgrEFyVpDuVqUJtpsh2IsUSDMz65mhxB6kHE+UiesD/eHU18g2oBAtv2KA+I=
+	t=1772510173; cv=none; b=ug3ttUSNEcU013uDOXNDkWew+EeDrZwDgVee6LYF1R6kXfS3R3lwAanABnL1bb49FReYf1yZbBS5fcZ66+ql3p7Tv+CXYuvQuShREnrtXALDzDuyoM5ddptGwsrM818kynfElMwOsas0+QuF2DXcdW9qZUUU4tq89/CfhfZzh1Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772507933; c=relaxed/simple;
-	bh=l923nHARXvxldp8HwLbBb+URjQ2HlXto05e/xD5h+m8=;
+	s=arc-20240116; t=1772510173; c=relaxed/simple;
+	bh=pTRMXOqv/m12tVZf+EaPFgocMeBqJC8gRpiDEzFf+h4=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=A1OQGkh0W9fgCVFFs0vJhQjZ+sIicLf1maMbpDrT+IgftVXZ5Uq9y/N3YQZ0FAD9BZJpvsYaD7DMuB85ZddRVy/JCRMp2wjmQoQhyaMPD+i48z+0zEDzaKkbRJc+m2yp78WXFmMAHbymzmtZvokVSRqb27n1kPbt0w0vohmf8vo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=H9dgVrvd; arc=none smtp.client-ip=192.198.163.13
+	 In-Reply-To:Content-Type; b=I6r6kJz5+Rk/XniBTohApGyXwXlgFhQUWyqiANcr+eVp72xNDs+GQwhJ3y2CdzTjyV0y2czU8aS5yMP6APoELlHr2Q2mnwOv9j7jeeX6o24uqhwd+3L6UkfBEH7xvCKpqCZONkESEHHdeBo1aRkuNccIeVLgJTj/kZNIIUG7+ds=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=PVRMNQZo; arc=none smtp.client-ip=192.198.163.19
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="H9dgVrvd"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PVRMNQZo"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1772507931; x=1804043931;
+  t=1772510172; x=1804046172;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=l923nHARXvxldp8HwLbBb+URjQ2HlXto05e/xD5h+m8=;
-  b=H9dgVrvde99pIyBAfutMFjULS+MN67K6L+Q/PC4k4kdG5UcJjDlGGmVU
-   eoLIcIgS26nddL302pZUuu2OH2qiI12nc0/kBePp+5X2OaXYl6mIz5YIm
-   R4sGMAIBIpOrCNquvsQlKZW8sX+VvERwhav++Vx+9BpNrBV0Qe0uQt/BI
-   19e2WZmnoiNrL0WSVjmX/rSh36n4YYsuA36MsM+QnzPatqRVcqfmMkOPo
-   P969EuhzC/jqqvZCRdZgRhtIHbkItMpY/V3DGjoPLaOLGOcV9wTeLyqq6
-   hqpoteEMVH0KT2JOHmkyQOvRmLLB904s+k1IwTjUFp6xNbVGwQ59GgPps
-   w==;
-X-CSE-ConnectionGUID: rOvU06U6RkucFrRcahJXVw==
-X-CSE-MsgGUID: 8LBhDaLSQVutkSWyeWSYaw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11717"; a="76133322"
+  bh=pTRMXOqv/m12tVZf+EaPFgocMeBqJC8gRpiDEzFf+h4=;
+  b=PVRMNQZoTH4XRRtrLeFrElVWm0sz8I1TMV7I/bpGOrNx72N5ITQTpsQD
+   J1uea6J+1PWlydhTqaUAPUDMZIAITOUCMAH14/Vsgus5IypDtZcpK3XGN
+   kNF8xlsbPeDGvlBN6C5iEBiMpfP7N134GkTJGCa83Fcmqbei16hNXzEd6
+   EbfSggud0q3cE5MgREDbemZmqxqdK2jeurZyXnK7JRn+SqN0bd2Srld2m
+   RaMp6RHSzpxlmddbXaoPrLIv+LXpUbjiD6WcdL8Vu/UHGzzPTlE9o/Fb9
+   0I54i8eZUtru+aNlIvzrqxgPPoEP3dgj68G0R8fpZErIRiZy19dQRjMh2
+   A==;
+X-CSE-ConnectionGUID: QLBhrd+6RzqUURN5q6iX4w==
+X-CSE-MsgGUID: K0X+SfajRKm1H/BBngqdgQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11717"; a="72561674"
 X-IronPort-AV: E=Sophos;i="6.21,321,1763452800"; 
-   d="scan'208";a="76133322"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2026 19:18:50 -0800
-X-CSE-ConnectionGUID: /tj9ZBAGRyubWi/4mV50Tg==
-X-CSE-MsgGUID: 0WZfaMdQTba8MPCUc9GxOQ==
+   d="scan'208";a="72561674"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2026 19:56:11 -0800
+X-CSE-ConnectionGUID: 3D73I5kTRS+Fznyg54sTTQ==
+X-CSE-MsgGUID: yHUzzBkqTQOFvHOdoLI3/A==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,321,1763452800"; 
-   d="scan'208";a="222839607"
+   d="scan'208";a="217858409"
 Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2026 19:18:46 -0800
-Message-ID: <102ceb37-c89d-4bb0-a471-42ccffb40c34@linux.intel.com>
-Date: Tue, 3 Mar 2026 11:18:10 +0800
+  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2026 19:56:09 -0800
+Message-ID: <d1a49e84-9829-41ef-88df-c7f7a30aa2ae@linux.intel.com>
+Date: Tue, 3 Mar 2026 11:55:33 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,48 +52,34 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 1/3] PCI: Allow ATS to be always on for CXL.cache
- capable devices
-To: Nicolin Chen <nicolinc@nvidia.com>, jgg@nvidia.com, will@kernel.org,
- robin.murphy@arm.com, bhelgaas@google.com
-Cc: joro@8bytes.org, praan@google.com, kevin.tian@intel.com,
- miko.lenczewski@arm.com, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- linux-pci@vger.kernel.org, dan.j.williams@intel.com,
- jonathan.cameron@huawei.com
-References: <cover.1771886695.git.nicolinc@nvidia.com>
- <ad4efe2f85958ee1ab0673a1ceb0db5141852732.1771886695.git.nicolinc@nvidia.com>
+Subject: Re: [PATCH] iommupt: Optimize the gather processing for DMA-FQ mode
+To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
+Cc: patches@lists.linux.dev, Robin Murphy <robin.murphy@arm.com>
+References: <0-v1-37d146e56632+ce4-iommupt_no_gaps_fq_jgg@nvidia.com>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <ad4efe2f85958ee1ab0673a1ceb0db5141852732.1771886695.git.nicolinc@nvidia.com>
+In-Reply-To: <0-v1-37d146e56632+ce4-iommupt_no_gaps_fq_jgg@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2/24/26 06:52, Nicolin Chen wrote:
-> +/**
-> + * pci_ats_always_on - Whether the PCI device requires ATS to be always enabled
-> + * @pdev: the PCI device
-> + *
-> + * Returns true, if the PCI device requires non-PASID ATS function on an IOMMU
-> + * bypassed configuration.
+On 2/27/26 23:27, Jason Gunthorpe wrote:
+> In PT_FEAT_FLUSH_RANGE mode the gather was accumulated but never flushed
+> and then the accumulated range was discarded by the dma-iommu code in
+> DMA-FQ mode. This is basically optimal.
+> 
+> However for PT_FEAT_FLUSH_RANGE_NO_GAPS the page table would push flushes
+> that are redundant with the flush all generated by the DMA-FQ mode.
+> 
+> Disable all range accumulation in the gather, and iommu_pt triggered
+> flushing when in iommu_iotlb_gather_queued() indicates it is in DMA-FQ
+> mode.
+> 
+> Reported-by: Robin Murphy<robin.murphy@arm.com>
+> Closes:https://lore.kernel.org/r/794b6121-b66b-4819-b291-9761ed21cd83@arm.com
+> Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
+> ---
+>   drivers/iommu/generic_pt/iommu_pt.h | 27 +++++++++++++++++++--------
+>   1 file changed, 19 insertions(+), 8 deletions(-)
 
-Including iommu-specific policies and configurations here might cause
-confusion. How about making it simply as: "Returns true if the PCI
-device requires ATS to be enabled for functional operation"?
-
-> + */
-> +bool pci_ats_always_on(struct pci_dev *pdev)
-> +{
-> +	if (pci_ats_disabled() || !pci_ats_supported(pdev))
-> +		return false;
-> +
-> +	/* A VF inherits its PF's requirement for ATS function */
-> +	if (pdev->is_virtfn)
-> +		pdev = pci_physfn(pdev);
-> +
-> +	return pci_cxl_ats_always_on(pdev);
-> +}
-> +EXPORT_SYMBOL_GPL(pci_ats_always_on);
-
-Thanks,
-baolu
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
