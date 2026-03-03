@@ -1,460 +1,163 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from PH8PR06CU001.outbound.protection.outlook.com (mail-westus3azon11012023.outbound.protection.outlook.com [40.107.209.23])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FB86396580
-	for <iommu@lists.linux.dev>; Tue,  3 Mar 2026 19:16:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772565400; cv=none; b=hxI8hachiHc45ATFnEKc3l2xkUkPye0wuC3IS8z75j6nNIm6CCaz20LvcLZuEIUhXlI+FIiicttSccyk7kAV8I/R5r4kO9mtjnxEUtNpRwqtfoKCU4EFiA+DITi6sW2udmRSprQ/8iFp4vzoFHgM2MXNRcEX3mpxKZS0UJMDTZs=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772565400; c=relaxed/simple;
-	bh=UBT35nY6GKDuTiVu0BhklVZrCznrQJ6RhL3ZL2qeeC0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=BgRmUfXZJ2WupS63UKiFwszWfQcgiP0jlK1Cly9mgoQM7HDgWgXcL5hl5g76eGRmIyJMd3ji1uETWTHdoQ2cdx/lnKxDfvzVRLxJB65tfa133dR+awcK7JlBHBdyMMDlQcuVyjfpCmrTSRSXmVfIjfY2wo149h/U4HsdpPoudNY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=jMV6qzmv; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=QrknFPVa; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86D2A391825
+	for <iommu@lists.linux.dev>; Tue,  3 Mar 2026 20:13:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.209.23
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1772568833; cv=fail; b=juTT7G+Iq3HrnzjOtNrurnd3gSU6bvdG2HAxR45f0VWhl16fxKUOe5kqPJPgDtHdWvMqlQvj501WyAJ6MhB00ge8i+xpzVmQSmRllB7iIVvSvFK2oGF2yvH38XqBMH7X8+nJBXRLrkHExjqJLon6MhTjqS7HB6ifawHFzeug3l8=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1772568833; c=relaxed/simple;
+	bh=QbTc3pNeII7bXA4eAg7BaDa+lqJcMS0W8Us237vB2A4=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=R2eWAh2qXA99wFmX90GcQKFnaxknnEBCQWciv/PSr+Ag0C74jIPj5J9wn6nv7R/kP98+M4/ENDzpH/ulUl8H8A9JBkd6Yehq9tXeO58eEtcVgsecH/sPMEsw35CDHis8fnJMaDVTW8n6k+8O0fBUz2zVAEp1gGe5bjwOFnpl9is=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=D6SqDmGY; arc=fail smtp.client-ip=40.107.209.23
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="jMV6qzmv";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="QrknFPVa"
-Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 623H0Pes3708671
-	for <iommu@lists.linux.dev>; Tue, 3 Mar 2026 19:16:38 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	x7nDgycG81om+0Zg7sH3cMCeC5SiOTz3dDIdtVP2WdE=; b=jMV6qzmv88L4Gclk
-	Z0mXv+HV8iC6NeCTEmk8swqIFfwdsbXZsolgxP30irqEM7mMgTPJDC6RMPQiv1jX
-	YJJ3cTfKBc1gMXic8P17HCmv0sjUs0V0Nr+Scejq4sOWxo8ggZwZe8GLkiIT+F6H
-	4BcgdH4ngc8Uv5ONrcj9w7h5FDtnb89Ng/2r5yLZ45Eaa3mO2ArTnEZPGCGn+kup
-	+CnxnQXLRzM0PGN1z3QF7v3MrPpt4cXNQuiv1DLrC8Z2aJXh/GXqitmaSpYG2qhh
-	H9rH8g4TkAbpvDap0aSDaesc5tYeDVk59bSJ/RxaRbcCe8YVOIUdkK4VvwmLGQFk
-	X+IHfQ==
-Received: from mail-pf1-f197.google.com (mail-pf1-f197.google.com [209.85.210.197])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4cnsjm2s0f-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Tue, 03 Mar 2026 19:16:38 +0000 (GMT)
-Received: by mail-pf1-f197.google.com with SMTP id d2e1a72fcca58-82739095656so2321643b3a.3
-        for <iommu@lists.linux.dev>; Tue, 03 Mar 2026 11:16:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1772565398; x=1773170198; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=x7nDgycG81om+0Zg7sH3cMCeC5SiOTz3dDIdtVP2WdE=;
-        b=QrknFPVaPIHszam/kjh2QDfgQZjgWLtEQMH9sQgPqnRjPhI8mO8IE9QF1MMLdWe4/M
-         owGo0B+ZigwaJgcPG9lCe6GgRkY4a+hSkaZl6Bo8N9pG2Fh761UT6zjI3Xo/3dLyz8vy
-         yQg6b/CClhQ2MIo6YbtUQH3Fwwk0nLBCdo0nb6oFLWk0p+7l39VtU1vnksshzXnFQ4i3
-         NEHgPIYqTFLfgjLd4NBdB92Ws0YxDQvCVwEIEERYjEGxZeFz0fsbDBWw6lgSpF4eBbzT
-         P679U+fGthyLT35zrdwS4OrQJYVhlX8iP6SF26tFmn/VBCqopeCJeU1T5GpyhauptFU+
-         1uRA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772565398; x=1773170198;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=x7nDgycG81om+0Zg7sH3cMCeC5SiOTz3dDIdtVP2WdE=;
-        b=pZgrnYif3x/XYA4ntjCFh7neW+HKj/Cs9s9rqHolAelmfG/2rrT0ifq2Bk/u3RKKfJ
-         NSxCfLwn6bMF8cq4pXMoiz4S0D5SpRythvrP06P01SCfQZMUGTLFv9fZZiRa8lY9NWkR
-         Qi850/m4kAAijqPeN/dSyhkHvNQ+70cZaAv2J7lx/twl3quIbCddcuU6uhWAFVVlPDz5
-         cHBR8UUNf63mgbTiVf+7PmGqrWPNQBiBmLXxbVh7tWjhlT6d1rUlrx4+EPBCI035k2/X
-         SQSw5n3DEd9+VDoS67tuMLQaXv9ghyYh0QaXgvH+edhSOrU0jUcfEFofXStDmtZNxc6j
-         rD+g==
-X-Forwarded-Encrypted: i=1; AJvYcCWstNsi5XfUN3mlAekuireLAaJhftjI2eXM+mQwE/OApODIc6zgWrL2azkI0CAukC7Md5l52A==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwR//YNCk1rkQIF+ptFwuCYxNiVg+dCWwjqYe8mKUJ9g88DOPaq
-	fZ35qcacbboHGsEvUPGMxNQ3UmKQKerKcLAgULo1Drh3UdcOEFMGlrfjIKZ9TuGD1tqzTPe/wSx
-	NTFGH/twARYcVbAUvDGliB+oMpPRWhjqM5jJUxSaly+BAFrSJFggVViPAzQ==
-X-Gm-Gg: ATEYQzxeOm0q/RtFZJYzwge3qJu/8Cmy+FiCK6oFc1t1CRd+U1uHABhd6t/5tyodsuK
-	DTiFhzCV2L7zIhS3My/MR5Lknpw7QLki8PwuhI4Noonjm+vzbcpLIbu2lZGLcpl1pmEWhoXs5am
-	k0svLKiifB0cn7+CmYYNwu0fFJFOnajGRv0vmnSJ/hOf2n5eqNT39oXTLATpxrKR4koB3tpoRR3
-	Iyj12zxEj3BKqkZQhKeClLPoukJFnxxlzm1zVHVeS0b0yeULdkdT7AtCH2gPZMht4eFE0Yz4vlx
-	3im59bNKgFPqSbUubNNw3McM3dB7vBe17EBNBXV9oM+RVysIeiQBlOciKN9T+IyEt1Dex3UvkKm
-	piNbyYQKIeM6C3z7WR3Rr98p1k4NV73xRzwnXWx29qq9avuauu76owoU=
-X-Received: by 2002:a05:6a00:4214:b0:81f:4675:c2a6 with SMTP id d2e1a72fcca58-8274d93b0a7mr15489755b3a.2.1772565397214;
-        Tue, 03 Mar 2026 11:16:37 -0800 (PST)
-X-Received: by 2002:a05:6a00:4214:b0:81f:4675:c2a6 with SMTP id d2e1a72fcca58-8274d93b0a7mr15489736b3a.2.1772565396593;
-        Tue, 03 Mar 2026 11:16:36 -0800 (PST)
-Received: from [192.168.0.172] ([49.205.248.49])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-8273a01aa09sm19638827b3a.48.2026.03.03.11.16.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 Mar 2026 11:16:36 -0800 (PST)
-Message-ID: <1dc86b00-9a18-482c-94b1-96692c1dd530@oss.qualcomm.com>
-Date: Wed, 4 Mar 2026 00:46:27 +0530
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="D6SqDmGY"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=spMJjIPdT+Cyz17y9OBwtIkgoRlGN3q3eKfc+I8OgzZcB37gyDDjzx7z3eAeS7PcFIQAII68M1tHe8s2MJLKGH1KM4AdzdEGPnOF3ejqeGZdVM15hwcyNrv8tMEbW8wPNDl12rR9wZdGXnJwBJD/VV/o69M9jl+M0Uy2K9EPKN8SjY8iwhiIP8q3pdkyymXye38j866BxKlVRvlLhV4NZcrjKu7J4zZdh195waAn43HDfWOdrkSmV7r7x9KjOgDOsY/IEhvMmgMTvluE8BAl2ZbXSzqSwMGjkeYKm5KSZuEGbb9imqPaoxCH7+ruh4lymI2NumNWSobjDcyzhSmbfg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=VipprFJAxSItjGuUwxDmhU/95+2yKmVk0VXAe6BeanY=;
+ b=mBa7+yuwkSuAR/Jr1WMJ35l0ZNdlbO2iTUe277i+e/dqZF8/Bkj9Anb9nv8Xs5StoILQIYMZn9C3+QtkyPYtGcfeCiduFn+KnWG8QenYhEwU7rilibEX1MXa0w5UuppAtY93AgMzs2Z/hZhLbhXgckSHcKKqcJ2tc6SVp+npFSW6Cgejb7dw8unp6hy+w0+aBHN19UWG1Lmv5hEyAR1r7dJ15uUL/6kyHojFstuQJZGf+dRruJi41p/Y7MFQG7rKX8z2Uj+Y+hoGv0wRfAdMsD0hrG1Trlbk6cHfRMwpXUtqIv20EsQHDThND6lm2vVCmgjZKS8qTTdvCgstRG17Ow==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=VipprFJAxSItjGuUwxDmhU/95+2yKmVk0VXAe6BeanY=;
+ b=D6SqDmGYY5NONocQJLSevLqcLCFPBrCs41kNqH/w4nfNVa4kyOlkwIzkKiDqyOV0mu9r1V9/LlOIPCtccuqlqi4ersrEBCUv8Yfr4JqJmLdr0/VakNHCOVSlgG27YU/iEe0QPBRC69MnCdNeF9G5USspoerGmKU5UeX5YrlsIoV40RzNR23Fid0GM+4bmOofOkd25YL1QnEg/GZOkNQJVeILbqPF9J9oiD8O26bqlmALfeSGcRQ8KHpZsE/pefyXR3GjiWnnCTSAfYa0cMFZSYj74i0KgutGlulB7fvyxpkwKrD3VZHNST8SqviVnQ6HVR5fTGNMQjtamJhI3/yRzg==
+Received: from BL1PR13CA0187.namprd13.prod.outlook.com (2603:10b6:208:2be::12)
+ by DS5PPF7856D51FE.namprd12.prod.outlook.com (2603:10b6:f:fc00::654) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9654.22; Tue, 3 Mar
+ 2026 20:13:43 +0000
+Received: from BL6PEPF00020E62.namprd04.prod.outlook.com
+ (2603:10b6:208:2be:cafe::6c) by BL1PR13CA0187.outlook.office365.com
+ (2603:10b6:208:2be::12) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9654.22 via Frontend Transport; Tue,
+ 3 Mar 2026 20:13:38 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ BL6PEPF00020E62.mail.protection.outlook.com (10.167.249.23) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.9654.16 via Frontend Transport; Tue, 3 Mar 2026 20:13:42 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Tue, 3 Mar
+ 2026 12:13:21 -0800
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail202.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Tue, 3 Mar
+ 2026 12:13:21 -0800
+Received: from Asurada-Nvidia.nvidia.com (10.127.8.10) by mail.nvidia.com
+ (10.129.68.10) with Microsoft SMTP Server id 15.2.2562.20 via Frontend
+ Transport; Tue, 3 Mar 2026 12:13:20 -0800
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: <will@kernel.org>, <robin.murphy@arm.com>, <jgg@nvidia.com>
+CC: <joro@8bytes.org>, <praan@google.com>, <mmarrid@nvidia.com>,
+	<kees@kernel.org>, <Alexander.Grest@microsoft.com>,
+	<baolu.lu@linux.intel.com>, <smostafa@google.com>,
+	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>
+Subject: [PATCH RFTv1 1/3] iommu/arm-smmu-v3: Drain in-flight fault handlers
+Date: Tue, 3 Mar 2026 12:13:05 -0800
+Message-ID: <c8075912c23542c9e9872408658dc496063ee3a3.1772568590.git.nicolinc@nvidia.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <cover.1772568590.git.nicolinc@nvidia.com>
+References: <cover.1772568590.git.nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 5/7] media: iris: add helper to select context bank
- device
-To: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-Cc: Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
-        Abhinav Kumar <abhinav.kumar@linux.dev>,
-        Bryan O'Donoghue <bod@kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley
- <conor+dt@kernel.org>,
-        Saravana Kannan <saravanak@kernel.org>, Joerg Roedel <joro@8bytes.org>,
-        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Stefan Schmidt <stefan.schmidt@linaro.org>,
-        Hans Verkuil <hverkuil@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Vishnu Reddy <busanna.reddy@oss.qualcomm.com>,
-        Hans Verkuil <hverkuil+cisco@kernel.org>,
-        linux-arm-msm@vger.kernel.org, linux-media@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        iommu@lists.linux.dev, Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-References: <20260227-kaanapali-iris-v2-0-850043ac3933@oss.qualcomm.com>
- <20260227-kaanapali-iris-v2-5-850043ac3933@oss.qualcomm.com>
- <bi3i37ho3ppzlgdx264ohxpcem3nwumjelzckf4x5uzdj5rt7a@2y2jrilmfimj>
-Content-Language: en-US
-From: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
-In-Reply-To: <bi3i37ho3ppzlgdx264ohxpcem3nwumjelzckf4x5uzdj5rt7a@2y2jrilmfimj>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-GUID: fZWjhoDwxOQAH_WjBxZ2x19tcQy2cDOQ
-X-Authority-Analysis: v=2.4 cv=GIUF0+NK c=1 sm=1 tr=0 ts=69a73396 cx=c_pps
- a=rEQLjTOiSrHUhVqRoksmgQ==:117 a=KPiuay1jFzAquJblYynD6w==:17
- a=IkcTkHD0fZMA:10 a=Yq5XynenixoA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=yOCtJkima9RkubShWh1s:22
- a=EUspDBNiAAAA:8 a=zVNvaYjD9Rq9sQCc3cMA:9 a=QEXdDO2ut3YA:10
- a=2VI0MkxyNR6bbpdq8BZq:22
-X-Proofpoint-ORIG-GUID: fZWjhoDwxOQAH_WjBxZ2x19tcQy2cDOQ
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMzAzMDE1NiBTYWx0ZWRfX5WmUty2Q6dQz
- T4+7HOYHo2yWUqFmymfOMASyXdgBXHpMEKvFa2U3CyA8d/T33WS1mPUa3ZLdmKw01knXwSq8TXh
- xJshwrPUxLX1+JBKdHgGPHPbO6CDoMGDY3JckAbyLmeY9hpv8ki3vrF8ZSunkn5xZ3Un8l/nULV
- pfvSi2hVGHWx4J/fx9fCDfXgt9XZNeyDbrZDvlNkDGDpYwobnquKmmbo82erDbPlQclS9Dbo3zJ
- pZW/811RF9p7NO5BgqBuFghDngyMwNeNpfxbU4bjqPP5/6/49HgSH6Br2gulgm3gB3ArBMwiV/I
- LYB7kLFlfLAyRFYjItey281wljOKvn6pBZS9lquKv7WAObi5d2L6+gO8gaWV5nreC+87iOIejVK
- 0S6tRrD75ONF2xIM0/qmObbF47Kge6QHC6NZEGLQ2AuzXLhaqDcaQahT3CZI+XMM1udQUbapomN
- dsD+elKOADWRkyO+d1A==
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-03-03_02,2026-03-03_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- bulkscore=0 impostorscore=0 priorityscore=1501 clxscore=1015 malwarescore=0
- suspectscore=0 spamscore=0 phishscore=0 lowpriorityscore=0 adultscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2602130000 definitions=main-2603030156
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BL6PEPF00020E62:EE_|DS5PPF7856D51FE:EE_
+X-MS-Office365-Filtering-Correlation-Id: 45576ffe-04ba-4a6a-4576-08de79615e22
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|7416014|1800799024|82310400026|36860700013;
+X-Microsoft-Antispam-Message-Info:
+	ZoLmfj/wrm4iKoEEXq5UM/Befu5SgQf/330FIpB34QqQSfiXcnVZZeKoGe+9SxN5+2xJ/YPkTj0lSajwYx3V20WZp5Q+a07ACmwIhOzKBKzwNhmixQ6qw6IRywU1Ainr4rD/aErnMoAY+e4+LsjZXbqPEE0B3bd2rmGKjg64U63Doo9evUz2KSrTnfz2isupEcw/otQQQV1oRg6r13Xs0WjtJb32PLyR/RTdN93laA6wNqP+yjPyQgIBURh59uE8LFbzuGeioKGEN/6Zxtjm7gUnOQQ2OM1HAm5jxjg5Mo79n0U3VZxVfToQHza0Rluk774ftyVbb1UlMYq6RZC/O2OjFOhbDTvZhLrevhF0S9klLo/ipg74j2uRhjksm83Z6QDGdhermjDCuFFvnxkYUXK/kuUfUxCnZtyiQP8iDLRsleT0CYbsTLFl03QeZ5Bl6Z+9f7en9C3l8+OgYPG+KHNv6Dw3ra9NOngihFDoQg9bTV6zilC6qDHXczIScHB+PLDGApsBHRzDDKq9Hbmlrs8/E+ZJe7y+PFFsQJFgOfFNq7JAQwx+8xQLjp1Krjj/lzZAFItQTME3mxVyik94VfNdCUgNnzuk7YlZfLS/7vBrNZOWRxVTd186xS9yQHodJ1BN6islDDzMCPNX6evpZXzlX6Ad4k/PeqNcgqccMLEGuuFxErlzDPSY0OAVhwfk4vIKZLX3iJg6F6meob2bgAHF9NU6JIaX6QuasvDKYCOYvK0U7zSxDsda4x+Aqym2lh1pQkia0+A/FnVaXot8zUP9VJz4gN563iEFgfe/BSwVTo6zXU37pEXDNugEpzAHTI8d9BDiipTrsNgRFTHEEw==
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(376014)(7416014)(1800799024)(82310400026)(36860700013);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	8cjJkGMvAmWT2Uz1typy5p1XuWci5n6HcXkPpv9G13iA9N8Jrn3hD7COpRYKnHnZwAzKrwycXgufQHLlhFkkcr8yniWIcGm5UH1/U+p6MEgaiskSF3yIDW2T1wLnQ/ui/2HkftJfVAffuu5BH3VE+P+vuUqNQLcz4NnO3mI6TTqQNGdVRdxESRxQ99nJITY7k44F1EmQgaJdnq5OLw3j/nEUXKIz/ngTLJ/Rjn99WGqpg/kFbEtfhZonk2fp2LZcWkBhb7G7xVIw5GTbMSLljELIU+n9qYh5F05hq4Nc3Txyg3uGybK2Q71EVhr+dDSPv1O3Ed+R+Xzby30pdUPP8ZLB3Lg667qHmbXK3YWWv+oyzbalfcyF6Op+SB3Wo4Uy1wr52bpJxMI7PBtDwmS+iQwp9EqhKK3tlp0624iTnblRZTUwfqP/SNLEsagIMkcZ
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Mar 2026 20:13:42.9357
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 45576ffe-04ba-4a6a-4576-08de79615e22
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BL6PEPF00020E62.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS5PPF7856D51FE
 
+From: Malak Marrid <mmarrid@nvidia.com>
 
+When a device is switching away from a domain, either through a detach or a
+replace operation, it must drain its IOPF queue that only contains the page
+requests for the old domain.
 
-On 2/28/2026 1:57 AM, Dmitry Baryshkov wrote:
-> On Fri, Feb 27, 2026 at 07:41:21PM +0530, Vikash Garodia wrote:
->> Depending on the buffer type (input, output, internal and interface
->> queues), associated context bank is selected, if available. Fallback to
->> parent device for backward compatibility.
->>
->> Co-developed-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
->> Signed-off-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
->> Signed-off-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
->> ---
->>   drivers/media/platform/qcom/iris/iris_buffer.c    |  7 +--
->>   drivers/media/platform/qcom/iris/iris_buffer.h    |  2 +
->>   drivers/media/platform/qcom/iris/iris_hfi_queue.c | 16 +++---
->>   drivers/media/platform/qcom/iris/iris_resources.c | 60 +++++++++++++++++++++++
->>   drivers/media/platform/qcom/iris/iris_resources.h |  2 +
->>   drivers/media/platform/qcom/iris/iris_vidc.c      |  4 +-
->>   6 files changed, 79 insertions(+), 12 deletions(-)
->>
->> diff --git a/drivers/media/platform/qcom/iris/iris_buffer.c b/drivers/media/platform/qcom/iris/iris_buffer.c
->> index 9151f43bc6b9c2c34c803de4231d1e6de0bec6c4..95962c19c334f08a74c5b7e8ba978ab631a65e9c 100644
->> --- a/drivers/media/platform/qcom/iris/iris_buffer.c
->> +++ b/drivers/media/platform/qcom/iris/iris_buffer.c
->> @@ -335,8 +335,8 @@ void iris_get_internal_buffers(struct iris_inst *inst, u32 plane)
->>   static int iris_create_internal_buffer(struct iris_inst *inst,
->>   				       enum iris_buffer_type buffer_type, u32 index)
->>   {
->> +	struct device *dev = iris_get_cb_dev(inst->core, inst, buffer_type);
->>   	struct iris_buffers *buffers = &inst->buffers[buffer_type];
->> -	struct iris_core *core = inst->core;
->>   	struct iris_buffer *buffer;
->>   
->>   	if (!buffers->size)
->> @@ -352,7 +352,7 @@ static int iris_create_internal_buffer(struct iris_inst *inst,
->>   	buffer->buffer_size = buffers->size;
->>   	buffer->dma_attrs = DMA_ATTR_WRITE_COMBINE | DMA_ATTR_NO_KERNEL_MAPPING;
->>   
->> -	buffer->kvaddr = dma_alloc_attrs(core->dev, buffer->buffer_size,
->> +	buffer->kvaddr = dma_alloc_attrs(dev, buffer->buffer_size,
->>   					 &buffer->device_addr, GFP_KERNEL, buffer->dma_attrs);
->>   	if (!buffer->kvaddr) {
->>   		kfree(buffer);
->> @@ -490,9 +490,10 @@ int iris_queue_internal_buffers(struct iris_inst *inst, u32 plane)
->>   int iris_destroy_internal_buffer(struct iris_inst *inst, struct iris_buffer *buffer)
->>   {
->>   	struct iris_core *core = inst->core;
->> +	struct device *dev = iris_get_cb_dev(core, inst, buffer->type);
->>   
->>   	list_del(&buffer->list);
->> -	dma_free_attrs(core->dev, buffer->buffer_size, buffer->kvaddr,
->> +	dma_free_attrs(dev, buffer->buffer_size, buffer->kvaddr,
->>   		       buffer->device_addr, buffer->dma_attrs);
->>   	kfree(buffer);
->>   
->> diff --git a/drivers/media/platform/qcom/iris/iris_buffer.h b/drivers/media/platform/qcom/iris/iris_buffer.h
->> index 75bb767761824c4c02e0df9b765896cc093be333..9520aa290b44f06ed2004ad89940c19d1c08a3d2 100644
->> --- a/drivers/media/platform/qcom/iris/iris_buffer.h
->> +++ b/drivers/media/platform/qcom/iris/iris_buffer.h
->> @@ -28,6 +28,7 @@ struct iris_inst;
->>    * @BUF_SCRATCH_2: buffer to store encoding context data for HW
->>    * @BUF_VPSS: buffer to store VPSS context data for HW
->>    * @BUF_PARTIAL: buffer for AV1 IBC data
->> + * @BUF_HFI_QUEUE: buffer for hardware firmware interface queue
-> 
-> Separate commit?
+Co-developed-by: Barak Biber <bbiber@nvidia.com>
+Signed-off-by: Barak Biber <bbiber@nvidia.com>
+Co-developed-by: Stefan Kaestle <skaestle@nvidia.com>
+Signed-off-by: Stefan Kaestle <skaestle@nvidia.com>
+Signed-off-by: Malak Marrid <mmarrid@nvidia.com>
+Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-sure, introducing the HFI_QUEUE buffer type can be made into a separate 
-patch.
-
-> 
->>    * @BUF_TYPE_MAX: max buffer types
->>    */
->>   enum iris_buffer_type {
->> @@ -44,6 +45,7 @@ enum iris_buffer_type {
->>   	BUF_SCRATCH_2,
->>   	BUF_VPSS,
->>   	BUF_PARTIAL,
->> +	BUF_HFI_QUEUE,
->>   	BUF_TYPE_MAX,
->>   };
->>   
->> diff --git a/drivers/media/platform/qcom/iris/iris_hfi_queue.c b/drivers/media/platform/qcom/iris/iris_hfi_queue.c
->> index b3ed06297953b902d5ea6c452385a88d5431ac66..c1241fb8dc6519020a063cbba87aed665701d7ae 100644
->> --- a/drivers/media/platform/qcom/iris/iris_hfi_queue.c
->> +++ b/drivers/media/platform/qcom/iris/iris_hfi_queue.c
->> @@ -245,25 +245,26 @@ static void iris_hfi_queue_deinit(struct iris_iface_q_info *iface_q)
->>   
->>   int iris_hfi_queues_init(struct iris_core *core)
->>   {
->> +	struct device *dev = iris_get_cb_dev(core, NULL, BUF_HFI_QUEUE);
->>   	struct iris_hfi_queue_table_header *q_tbl_hdr;
->>   	u32 queue_size;
->>   
->>   	/* Iris hardware requires 4K queue alignment */
->>   	queue_size = ALIGN((sizeof(*q_tbl_hdr) + (IFACEQ_QUEUE_SIZE * IFACEQ_NUMQ)), SZ_4K);
->> -	core->iface_q_table_vaddr = dma_alloc_attrs(core->dev, queue_size,
->> +	core->iface_q_table_vaddr = dma_alloc_attrs(dev, queue_size,
->>   						    &core->iface_q_table_daddr,
->>   						    GFP_KERNEL, DMA_ATTR_WRITE_COMBINE);
->>   	if (!core->iface_q_table_vaddr) {
->> -		dev_err(core->dev, "queues alloc and map failed\n");
->> +		dev_err(dev, "queues alloc and map failed\n");
->>   		return -ENOMEM;
->>   	}
->>   
->> -	core->sfr_vaddr = dma_alloc_attrs(core->dev, SFR_SIZE,
->> +	core->sfr_vaddr = dma_alloc_attrs(dev, SFR_SIZE,
->>   					  &core->sfr_daddr,
->>   					  GFP_KERNEL, DMA_ATTR_WRITE_COMBINE);
->>   	if (!core->sfr_vaddr) {
->> -		dev_err(core->dev, "sfr alloc and map failed\n");
->> -		dma_free_attrs(core->dev, sizeof(*q_tbl_hdr), core->iface_q_table_vaddr,
->> +		dev_err(dev, "sfr alloc and map failed\n");
->> +		dma_free_attrs(dev, sizeof(*q_tbl_hdr), core->iface_q_table_vaddr,
->>   			       core->iface_q_table_daddr, DMA_ATTR_WRITE_COMBINE);
->>   		return -ENOMEM;
->>   	}
->> @@ -291,6 +292,7 @@ int iris_hfi_queues_init(struct iris_core *core)
->>   
->>   void iris_hfi_queues_deinit(struct iris_core *core)
->>   {
->> +	struct device *dev = iris_get_cb_dev(core, NULL, BUF_HFI_QUEUE);
->>   	u32 queue_size;
->>   
->>   	if (!core->iface_q_table_vaddr)
->> @@ -300,7 +302,7 @@ void iris_hfi_queues_deinit(struct iris_core *core)
->>   	iris_hfi_queue_deinit(&core->message_queue);
->>   	iris_hfi_queue_deinit(&core->command_queue);
->>   
->> -	dma_free_attrs(core->dev, SFR_SIZE, core->sfr_vaddr,
->> +	dma_free_attrs(dev, SFR_SIZE, core->sfr_vaddr,
->>   		       core->sfr_daddr, DMA_ATTR_WRITE_COMBINE);
->>   
->>   	core->sfr_vaddr = NULL;
->> @@ -309,7 +311,7 @@ void iris_hfi_queues_deinit(struct iris_core *core)
->>   	queue_size = ALIGN(sizeof(struct iris_hfi_queue_table_header) +
->>   		(IFACEQ_QUEUE_SIZE * IFACEQ_NUMQ), SZ_4K);
->>   
->> -	dma_free_attrs(core->dev, queue_size, core->iface_q_table_vaddr,
->> +	dma_free_attrs(dev, queue_size, core->iface_q_table_vaddr,
->>   		       core->iface_q_table_daddr, DMA_ATTR_WRITE_COMBINE);
->>   
->>   	core->iface_q_table_vaddr = NULL;
->> diff --git a/drivers/media/platform/qcom/iris/iris_resources.c b/drivers/media/platform/qcom/iris/iris_resources.c
->> index be58e8620086d0f82c2c2bda29247483f5c56d79..65544cb0fa8fc4b250b0a0be1bb900d74b999d35 100644
->> --- a/drivers/media/platform/qcom/iris/iris_resources.c
->> +++ b/drivers/media/platform/qcom/iris/iris_resources.c
->> @@ -13,6 +13,7 @@
->>   #include <linux/reset.h>
->>   
->>   #include "iris_core.h"
->> +#include "iris_instance.h"
->>   #include "iris_resources.h"
->>   
->>   #define BW_THRESHOLD 50000
->> @@ -177,3 +178,62 @@ int iris_create_child_device_and_map(struct iris_core *core, struct iris_context
->>   
->>   	return 0;
->>   }
->> +
->> +static enum iris_buffer_region iris_get_region(struct iris_inst *inst,
->> +					       enum iris_buffer_type buffer_type)
->> +{
->> +	switch (buffer_type) {
->> +	case BUF_INPUT:
->> +		if (inst && inst->domain == ENCODER)
-> 
-> Can inst be NULL here?
-
-during queues init/deinit, instances are not created.
-
-> 
->> +			return IRIS_PIXEL_REGION;
->> +		else if (inst && inst->domain == DECODER)
->> +			return IRIS_BITSTREAM_REGION;
-> 
-> Are there any other possibilities than encoder and decoder?
-
-will simplify it as
-
-if (inst) {
-     if (inst->domain == ENCODER)
-         return IRIS_PIXEL_REGION;
-     else
-         return IRIS_BITSTREAM_REGION;
-}
-> 
->> +		break;
->> +	case BUF_OUTPUT:
->> +		if (inst && inst->domain == ENCODER)
->> +			return IRIS_BITSTREAM_REGION;
->> +		else if (inst && inst->domain == DECODER)
->> +			return IRIS_PIXEL_REGION;
->> +		break;
->> +	case BUF_BIN:
->> +		return IRIS_BITSTREAM_REGION;
->> +	case BUF_DPB:
->> +	case BUF_PARTIAL:
->> +	case BUF_SCRATCH_2:
->> +	case BUF_VPSS:
->> +		return IRIS_PIXEL_REGION;
->> +	case BUF_ARP:
->> +	case BUF_COMV:
->> +	case BUF_HFI_QUEUE:
->> +	case BUF_LINE:
->> +	case BUF_NON_COMV:
->> +	case BUF_PERSIST:
->> +		return IRIS_NON_PIXEL_REGION;
->> +	default:
->> +		return 0;
-> 
-> dev_err(dev, "unsupported buffer type %x\n", buffer_type)
-> return -EINVAL;
-
-these are bit fields, returning -EINVAL would still match some bits and 
-can make the logic as true. 0 can be defined as IRIS_UNKNOWN_REGION
-
-> 
->> +	}
->> +
->> +	return 0;
-> 
-> Drop
-> 
-
-Ack
-
->> +}
->> +
->> +struct device *iris_get_cb_dev(struct iris_core *core, struct iris_inst *inst,
->> +			       enum iris_buffer_type buffer_type)
->> +{
->> +	enum iris_buffer_region region;
->> +	struct device *dev = NULL;
->> +	int i;
->> +
->> +	region = iris_get_region(inst, buffer_type);
->> +
->> +	for (i = 0; i < core->iris_platform_data->cb_data_size; i++) {
->> +		if (core->iris_platform_data->cb_data[i].region & region) {
->> +			dev = core->iris_platform_data->cb_data[i].dev;
->> +			break;
->> +		}
-> 
-> You really seem to overcomplicate things. Replace array search with the
-> indexed array access. Much easier and much better.
-> 
-> enum iris_buffer_region {
-> 	IRIS_PIXEL_REGION,
-> 	IRIS_BITSTREAM_REGION,
-> 	IRIS_NON_PIXEL_REGION,
-> 	// add more when necessary
-> 	IRIS_NUM_REGIONS,
-> };
-> 
-> struct iris_core {
-> 	struct iris_cb_device cb_devices[IRIS_NUM_REGIONS];
-> };
-> 
-> region = iris_get_region(inst, buffer_type);
-> dev = core->cb_devices[region];
-
-all the regions may/may not be present in all SOC
-
-> if (!dev)
-> 	dev = core->dev;
-> 
-> 
->> +	}
->> +
->> +	if (!dev)
->> +		dev = core->dev;
->> +
->> +	return dev;
->> +}
->> diff --git a/drivers/media/platform/qcom/iris/iris_resources.h b/drivers/media/platform/qcom/iris/iris_resources.h
->> index b7efe15facb203eea9ae13d5f0abdcc2ea718b4d..ea31726f1789130fccf6b24540a62b86cb3c36ac 100644
->> --- a/drivers/media/platform/qcom/iris/iris_resources.h
->> +++ b/drivers/media/platform/qcom/iris/iris_resources.h
->> @@ -16,5 +16,7 @@ int iris_set_icc_bw(struct iris_core *core, unsigned long icc_bw);
->>   int iris_disable_unprepare_clock(struct iris_core *core, enum platform_clk_type clk_type);
->>   int iris_prepare_enable_clock(struct iris_core *core, enum platform_clk_type clk_type);
->>   int iris_create_child_device_and_map(struct iris_core *core, struct iris_context_bank *cb);
->> +struct device *iris_get_cb_dev(struct iris_core *core, struct iris_inst *inst,
->> +			       enum iris_buffer_type buffer_type);
->>   
->>   #endif
->> diff --git a/drivers/media/platform/qcom/iris/iris_vidc.c b/drivers/media/platform/qcom/iris/iris_vidc.c
->> index bd38d84c9cc79d15585ed5dd5f905a37521cb6dc..b61d7941d88662f34a9d2ab3b6c5bd9acf4b5df5 100644
->> --- a/drivers/media/platform/qcom/iris/iris_vidc.c
->> +++ b/drivers/media/platform/qcom/iris/iris_vidc.c
->> @@ -107,7 +107,7 @@ iris_m2m_queue_init(void *priv, struct vb2_queue *src_vq, struct vb2_queue *dst_
->>   	src_vq->drv_priv = inst;
->>   	src_vq->buf_struct_size = sizeof(struct iris_buffer);
->>   	src_vq->min_reqbufs_allocation = MIN_BUFFERS;
->> -	src_vq->dev = inst->core->dev;
->> +	src_vq->dev = iris_get_cb_dev(inst->core, inst, BUF_INPUT);
->>   	src_vq->lock = &inst->ctx_q_lock;
->>   	ret = vb2_queue_init(src_vq);
->>   	if (ret)
->> @@ -121,7 +121,7 @@ iris_m2m_queue_init(void *priv, struct vb2_queue *src_vq, struct vb2_queue *dst_
->>   	dst_vq->drv_priv = inst;
->>   	dst_vq->buf_struct_size = sizeof(struct iris_buffer);
->>   	dst_vq->min_reqbufs_allocation = MIN_BUFFERS;
->> -	dst_vq->dev = inst->core->dev;
->> +	dst_vq->dev = iris_get_cb_dev(inst->core, inst, BUF_OUTPUT);
->>   	dst_vq->lock = &inst->ctx_q_lock;
->>   
->>   	return vb2_queue_init(dst_vq);
->>
->> -- 
->> 2.34.1
->>
-> 
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 4d00d796f0783..2176ee8bec767 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -2843,6 +2843,12 @@ static int arm_smmu_enable_iopf(struct arm_smmu_master *master,
+ 	if (master->iopf_refcount) {
+ 		master->iopf_refcount++;
+ 		master_domain->using_iopf = true;
++		/*
++		 * If the device is already on the IOPF queue (domain replace),
++		 * drain in-flight fault handlers so nothing will hold the old
++		 * domain when the core switches the attach handle.
++		 */
++		iopf_queue_flush_dev(master->dev);
+ 		return 0;
+ 	}
+ 
+@@ -2866,8 +2872,11 @@ static void arm_smmu_disable_iopf(struct arm_smmu_master *master,
+ 		return;
+ 
+ 	master->iopf_refcount--;
+-	if (master->iopf_refcount == 0)
++	if (master->iopf_refcount == 0) {
++		/* Drain in-flight fault handlers before removing device */
++		iopf_queue_flush_dev(master->dev);
+ 		iopf_queue_remove_device(master->smmu->evtq.iopf, master->dev);
++	}
+ }
+ 
+ static void arm_smmu_remove_master_domain(struct arm_smmu_master *master,
+-- 
+2.43.0
 
