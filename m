@@ -1,101 +1,98 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 850D135F17E;
-	Tue,  3 Mar 2026 12:53:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from stravinsky.debian.org (stravinsky.debian.org [82.195.75.108])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A7E2423149;
+	Tue,  3 Mar 2026 13:02:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=82.195.75.108
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772542419; cv=none; b=rpUaux8rdB8Ljy3P3nxEmgCGA7SiR4o3j/pO7x0ZT4LD7BuVMJSPQfxNrlYgVLtHPjYsmjRC6jZhhpmzAGgFEa5gxdTg1zwEoo5k9rGdnt1iyW1q4mwSG985nqA5FPEzeDxDpwCDOa0OYP+//oNawzcCznFIIW1FSYV+djecIEE=
+	t=1772542968; cv=none; b=BxRExdYuCoPRDO+NtKsatruohykPgTMeyKr08b5I4d/e/iOgic/GgL4TZAIlC7ragC6jCcAKlkodQctR9fhvJZ2aHYOUHWBazI91BPEz5XrrLzzSB9tcJbl9Kk6hza/Uz+ZfXRAcrQqLeoYJaVWD354bYImChcsYEYUf3f2n9Lw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772542419; c=relaxed/simple;
-	bh=3VZUa3Z3I4IvtbEVs+gHsiaoPffVUCSkCeCxStE5bd8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=dKp9dBokDvDzt5iaCrwfSctcM97Y0LN3n/fraBqILe1XjmgNBneyqka6wvFe96m3y9KnLvbMpDxOgIzx3FpmwSikbaVAZOiF1vA1TQSRadbaCV+K+MKge6psRAdmnT8bCCUhKfk7Yp3p01uzFJLs8PmwhUv0t43o20DogEp7U5I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 883E1497;
-	Tue,  3 Mar 2026 04:53:30 -0800 (PST)
-Received: from [10.57.56.165] (unknown [10.57.56.165])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C67CF3F7BD;
-	Tue,  3 Mar 2026 04:53:34 -0800 (PST)
-Message-ID: <13e28ac2-a4d6-466a-aef2-7b3d7d9167bd@arm.com>
-Date: Tue, 3 Mar 2026 12:53:28 +0000
+	s=arc-20240116; t=1772542968; c=relaxed/simple;
+	bh=nbMLQsjDZkCUDwUT+GwGHmBHBs1qTAJm1jRsNfWwmoA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=JvhqCkujohAr+zIYEbnXCdTbO6AGUkQpKayDAdycTSyDWeFtA6KpDc+qVQB2/+PUZM3SHQGpqtoBRUTa/ZU2fxrTCplJt63C2zum0nn97JCMcK3nUoMuep+An50ULW0VaDyVBYhaXL1LAxKEGlBfN8AgjOAh+LLHNhJiIC93CVI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=debian.org; spf=none smtp.mailfrom=debian.org; dkim=pass (2048-bit key) header.d=debian.org header.i=@debian.org header.b=NsjNPIOk; arc=none smtp.client-ip=82.195.75.108
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=debian.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=debian.org
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=debian.org header.i=@debian.org header.b="NsjNPIOk"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=debian.org;
+	s=smtpauto.stravinsky; h=X-Debian-User:In-Reply-To:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=JjP44SBlkIUEEU7UZs1N7B9Mcuoc4Tdde0t8mN1Kmx8=; b=NsjNPIOkDmPH5OoXUbe5VuwOSP
+	Y1OBjUQ5SXr9ZBK/1gU7+YSKJV5oLafmmGoZjJvAuOM1gwkLbX2EtC+rnDqKYAu+iQZ+0PFoIPIHt
+	jFxa5fcDIsbdy2ujO7zJGeHzcEoAozoPllWmBhA8tuM5XIaOXhNAtIDfEi+BO44jc8+KaAxs3wegV
+	EoAt4dY1EzLs1+C15nDxWSSMBlqxEiG5QnYSEbVz2iJS7HWnEm5SUOZYVyrCeCbGZujv2Upuwld1X
+	DqHhT5NnJSpJ2XuBoEkhK44koPuAZhdD7mDoIq+zS8+csFbo/r2XM6VHqtrsx7wmoAqsW/F4X6XMY
+	40iRT4LA==;
+Received: from authenticated user
+	by stravinsky.debian.org with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+	(Exim 4.94.2)
+	(envelope-from <leitao@debian.org>)
+	id 1vxPOU-00FCOc-1h; Tue, 03 Mar 2026 13:02:34 +0000
+Date: Tue, 3 Mar 2026 05:02:29 -0800
+From: Breno Leitao <leitao@debian.org>
+To: Leon Romanovsky <leon@kernel.org>
+Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, 
+	Will Deacon <will@kernel.org>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	ttoukan.linux@gmail.com, netdev@vger.kernel.org, kbusch@kernel.org, 
+	Gal Pressman <gal@nvidia.com>, Tariq Toukan <tariqt@nvidia.com>
+Subject: Re: [PATCH] iommu/dma: Rate-limit WARN in iommu_dma_unmap_phys()
+Message-ID: <aabbv39ZqJud9m1g@gmail.com>
+References: <20260211-dma_io_mmu-v1-1-cf89e24437af@debian.org>
+ <20260213112355.GP12887@unreal>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH rc 1/2] iommu: Do not call drivers for empty gathers
-To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
-Cc: Alejandro Jimenez <alejandro.j.jimenez@oracle.com>,
- Janusz Krzysztofik <janusz.krzysztofik@linux.intel.com>,
- Joerg Roedel <joerg.roedel@amd.com>, Kevin Tian <kevin.tian@intel.com>,
- Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
- Samiullah Khawaja <skhawaja@google.com>, stable@vger.kernel.org
-References: <1-v1-13a02eb0e031+a5-iommu_gather_jgg@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <1-v1-13a02eb0e031+a5-iommu_gather_jgg@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260213112355.GP12887@unreal>
+X-Debian-User: leitao
 
-On 2026-03-02 10:22 pm, Jason Gunthorpe wrote:
-> An empty gather is coded with start=U64_MAX, end=0 and several drivers go
-> on to convert that to a size with:
+hello Leon,
+
+On Fri, Feb 13, 2026 at 01:23:55PM +0200, Leon Romanovsky wrote:
+> On Wed, Feb 11, 2026 at 07:13:03AM -0800, Breno Leitao wrote:
+> > When a PCI error (e.g. AER error or DPC containment) marks the PCI
+> > channel as frozen or permanently failed, the IOMMU mappings for the
+> > device may already be torn down. If a driver continues processing
+> > completions in this state, every call to dma_unmap_page() triggers a
+> > WARN_ON in iommu_dma_unmap_phys().
+> > 
+> > In a real-world crash scenario on an NVIDIA Grace (ARM64) platform, a
+> > DPC event froze the PCI channel and the mlx5 NAPI poll continued
+> > processing error CQEs, calling dma_unmap for each pending WQE. With
+> > dozens of pending WQEs, the resulting WARN_ON storm monopolized the CPU
+> > in softirq context for over 23 seconds, triggering a soft lockup panic.
+> > 
+> > Replace WARN_ON(!phys) with WARN_RATELIMIT() to cap the warning output
+> > at the kernel's default rate limit (10 messages per 5 seconds), while
+> > still providing visibility into the failure with the device name in the
+> > message.
+> > 
+> > Signed-off-by: Breno Leitao <leitao@debian.org>
+> > Fixes: 82612d66d51d ("iommu: Allow the dma-iommu api to use bounce buffers")
+> > ---
+> > I initially attempted to fix this in the driver itself, but that approach
+> > doesn't appear to be optimal, given the mappings can go away at any
+> > time, which is impossible to check at any time. Please see the discussion at:
+> > 
+> > https://lore.kernel.org/all/20260209-mlx5_iommu-v1-1-b17ae501aeb2@debian.org/
+> > ---
+> >  drivers/iommu/dma-iommu.c | 3 ++-
+> >  1 file changed, 2 insertions(+), 1 deletion(-)
 > 
->   end - start + 1
-> 
-> Which gives 2 for an empty gather. This then causes Weird Stuff to
-> happen (for example an UBSAN splat in VT-d) that is hopefully harmless,
-> but maybe not.
-> 
-> Prevent drivers from being called right in iommu_iotlb_sync().
-> 
-> Auditing shows that AMD, Intel, Mediatek and RSIC-V drivers all do things
-> on these empty gathers.
-> 
-> Further, there are several callers that can trigger empty gathers,
-> especially in unusual conditions. For example iommu_map_nosync() will call
-> a 0 size unmap on some error paths. Also in VFIO, iommupt and other
-> places.
+> We have similar failure in our regression and the proposal fix is below,
+> can you please try if it fixes your issue too?
 
-My instinct is still to tidy up the 0-length unmap case(s), but I guess 
-iommu_iotlb_sync() is itself also a public API where being more robust 
-against erroneous usage is no bad thing. With one minor nit below,
+This is not a trivial test to run, but, the early tested showed some good
+results.
 
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+I will report back if I find regressions later,
 
-> Cc: stable@vger.kernel.org
-> Reported-by: Janusz Krzysztofik <janusz.krzysztofik@linux.intel.com>
-> Closes: https://lore.kernel.org/r/11145826.aFP6jjVeTY@jkrzyszt-mobl2.ger.corp.intel.com
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->   include/linux/iommu.h | 3 ++-
->   1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 54b8b48c762e88..555597b54083cd 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -980,7 +980,8 @@ static inline void iommu_flush_iotlb_all(struct iommu_domain *domain)
->   static inline void iommu_iotlb_sync(struct iommu_domain *domain,
->   				  struct iommu_iotlb_gather *iotlb_gather)
->   {
-> -	if (domain->ops->iotlb_sync)
-> +	if (domain->ops->iotlb_sync &&
-> +	    likely(iotlb_gather->start < iotlb_gather->end))
-
-Elsewhere we just use "gather->end != 0" as the "non-empty" condition; 
-how concerned are we about defending against more-intentionally 
-malformed gathers here?
-
-Thanks,
-Robin.
-
->   		domain->ops->iotlb_sync(domain, iotlb_gather);
->   
->   	iommu_iotlb_gather_init(iotlb_gather);
-
+Thanks for the fix,
+--breno
