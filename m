@@ -1,180 +1,271 @@
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+Received: from SA9PR02CU001.outbound.protection.outlook.com (mail-southcentralusazon11013019.outbound.protection.outlook.com [40.93.196.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 845114F7969
-	for <iommu@lists.linux.dev>; Tue,  3 Mar 2026 16:33:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772555625; cv=none; b=kPa+8+h8xo4NnTA4v1UrtCJpE3AjqZGsf/aLoUiSQzNRRflz42KCdavGJs3cU1In+P9sGcyU/nWkdTYjfVIcSaM3wIVsdlGFyEM1mLLvq46e3GNlIIB1FEkAuJQbj4tClEwyM2zeJup6d19hd3e0J1UnqPPtp5toNoyM4UvJfWw=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772555625; c=relaxed/simple;
-	bh=BEvSQ4sJbmadIM7wlvK6w2JxDCh6PTtlZhQBCz94OiI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
-	 Content-Type:References; b=mnQ+eLh0htWXz7h3gkqh6jAuRjzIMgwcJeCvMtnzJEjT9W1UaUdsmwMw+x4vFuMbg3+d7lSNKuf87ouu3nehtKM9LdELJkME9kAAeymnOZzgBflIuxwNctLxq7w2PuPBVuZggMcmgQLG7uIEhtJg+FCdOBo8r6AbVf6IMB7lAvg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=YUe+Za49; arc=none smtp.client-ip=210.118.77.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E51B8370D6C
+	for <iommu@lists.linux.dev>; Tue,  3 Mar 2026 16:42:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.196.19
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1772556145; cv=fail; b=DUamzpcy7kgaaIjd5zxSMIQ0puWwWrsTF7MTANWQYOYg0v9I+2TeXFthv4NjoFKD6GCX9i2XeJXjGwSIB7FmFfh9+MfmeQvy/ajn4a11CMpswKQlD4p32shllrmNrTAUUGbvcw7PpiVvGcBU1mbYTwF0vk1uHhadqvNmqnzbuQ4=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1772556145; c=relaxed/simple;
+	bh=qY+Or/Pj8WA85HJxwU6gZr6gOCBm+SSCrnU/Be6H3Tc=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=jWTW/Co2Ub26kNsyPxluLHLiJ402hR6mCmDWyiBHgld0xXZEYXZpidmBleZUe82biJ8iSO3GFNuztqOVGEOA5wojhMAyPQsvFxPdUZu2uwsXSKdiHC5WeEWOueh/ahaypPjMA+1qNW4937+hA3lORAKmPzDBfZXjLCHcr3PsDec=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=3NGumcdE; arc=fail smtp.client-ip=40.93.196.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="YUe+Za49"
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20260303163340euoutp01d78540033f5cc14bf96bde1117516c80~ZYfIXU_5C1585615856euoutp014
-	for <iommu@lists.linux.dev>; Tue,  3 Mar 2026 16:33:40 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20260303163340euoutp01d78540033f5cc14bf96bde1117516c80~ZYfIXU_5C1585615856euoutp014
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1772555620;
-	bh=JvN6j8wU9zM77atlq+FD8qGOACA5TsD/SoRj5ZTahzg=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=YUe+Za49ig+DGc1U0Fb2742N3pNwHgR+kQozsfTPu6ds6K4p4TNzjKQ6thGpoOcZ6
-	 Tbqspbs3cmIXNcgU1mZf/q1SjpPj9q35zhS0pzx0QXptI2B5VGk0YX4+e3Nx9pL3Hy
-	 mEq6adR56QF2Q2EnQl5fd7H2AYoQHuIs6es6YtpM=
-Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20260303163340eucas1p198411742f93caae84e07182e4c58ee55~ZYfH5vbBl1139311393eucas1p1W;
-	Tue,  3 Mar 2026 16:33:40 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20260303163338eusmtip1e4021c2cdb48747497661a6110830024~ZYfF5s5260803808038eusmtip1R;
-	Tue,  3 Mar 2026 16:33:38 +0000 (GMT)
-Message-ID: <3ece80c7-697e-4d46-a6f8-49c07b0117a1@samsung.com>
-Date: Tue, 3 Mar 2026 17:33:37 +0100
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="3NGumcdE"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=oST6ZB/zoPLYoSCJoT90sz+JkOhJaPB2ZIBLnqczpi+GZ52yzHcy1eLU6qcBLD5aIOVXpN9jUnNcIA3M7/6rYpvCJtAqTskSl1FoC8FmrhORuGtM5mUyikMVPwDmkzGOxksBnfHVbcWe6+rteg3XlLkWs1WPPs3aldtE5jbHL5Tm2Ja+yXq7HYz0xTv/2RidNiMJN98Uu4K5LuEMG9PKt4w53gWxt9VhJG2D4wexa68SB/YjsHlm+h+JAkuEl3jB0ZPU1ndyQLfyqcVbeOweFxND0MAggBPo2AynZJSpH9LR/qhb5NTI2YPAOSClRT7kmOpj64NtKBiYyiXSoch+cg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=iHvvu0150biblmBk70w45Y2vFVJIq/GGU4ywCPnhD5A=;
+ b=IZ8xtRa+kTKFNNarLzx/tw734EeRq3oT32NwwToyFU9ZvwGDC0bWH2yOwEirB233IBaeMc/E2GETdT6+PewiK/cQzY/X49XQKXtasRn8zA8vcG46Z42x/VZPNsdTME/Lh1clQQdWVSLW/JtleDg4vZUo0kMjLBXMOb/uYk4bMGcxFmQhBMuibdno6MzYhCa4a1QzycTZaVepq6W9ui58ZqsHItPjcY+ku293rWFK9mNzeLV4lnd1q037qDPrFrbVFd0QjpSi11RCWnYDpndDnAM4nXHTdTrWL0Y6l2/a7RGr7zVpzR5m1t0nO/iebqotSA6WsYYnMt9DbNnSlaBnYQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=google.com smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=iHvvu0150biblmBk70w45Y2vFVJIq/GGU4ywCPnhD5A=;
+ b=3NGumcdEIawJsKg5C2SiV3r+QansUer+pi7939eaFse+bgx/rNv57RKErtoaYtpr3jexpoevDHQZ1a+r3pv9jhSF/0nw/giHftxAtDMQi/U3N58FIkrrKTATyX32un6//WwmKzlWtgMqEQsltnl23DvPHHgsf1MbwOUgCQDgZd0=
+Received: from CYXP220CA0005.NAMP220.PROD.OUTLOOK.COM (2603:10b6:930:ee::9) by
+ SA0PR12MB4400.namprd12.prod.outlook.com (2603:10b6:806:95::13) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.9654.11; Tue, 3 Mar 2026 16:42:19 +0000
+Received: from CY4PEPF0000EE30.namprd05.prod.outlook.com
+ (2603:10b6:930:ee:cafe::33) by CYXP220CA0005.outlook.office365.com
+ (2603:10b6:930:ee::9) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9654.22 via Frontend Transport; Tue,
+ 3 Mar 2026 16:42:27 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
+Received: from satlexmb07.amd.com (165.204.84.17) by
+ CY4PEPF0000EE30.mail.protection.outlook.com (10.167.242.36) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.9654.16 via Frontend Transport; Tue, 3 Mar 2026 16:42:18 +0000
+Received: from Satlexmb09.amd.com (10.181.42.218) by satlexmb07.amd.com
+ (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.17; Tue, 3 Mar
+ 2026 10:42:16 -0600
+Received: from satlexmb07.amd.com (10.181.42.216) by satlexmb09.amd.com
+ (10.181.42.218) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.17; Tue, 3 Mar
+ 2026 08:42:15 -0800
+Received: from amd.com (10.180.168.240) by satlexmb07.amd.com (10.181.42.216)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.17 via Frontend
+ Transport; Tue, 3 Mar 2026 10:42:08 -0600
+Date: Tue, 3 Mar 2026 16:42:02 +0000
+From: Ankit Soni <Ankit.Soni@amd.com>
+To: Samiullah Khawaja <skhawaja@google.com>
+CC: David Woodhouse <dwmw2@infradead.org>, Lu Baolu
+	<baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
+	<will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>, Robin Murphy
+	<robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>, Alex Williamson
+	<alex@shazbot.org>, Shuah Khan <shuah@kernel.org>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>, Saeed Mahameed
+	<saeedm@nvidia.com>, Adithya Jayachandran <ajayachandra@nvidia.com>, "Parav
+ Pandit" <parav@nvidia.com>, Leon Romanovsky <leonro@nvidia.com>, William Tu
+	<witu@nvidia.com>, Pratyush Yadav <pratyush@kernel.org>, Pasha Tatashin
+	<pasha.tatashin@soleen.com>, David Matlack <dmatlack@google.com>, "Andrew
+ Morton" <akpm@linux-foundation.org>, Chris Li <chrisl@kernel.org>, "Pranjal
+ Shrivastava" <praan@google.com>, Vipin Sharma <vipinsh@google.com>, YiFei Zhu
+	<zhuyifei@google.com>
+Subject: Re: [PATCH 04/14] iommu/pages: Add APIs to
+ preserve/unpreserve/restore iommu pages
+Message-ID: <d3wmnc43r3mir2emoitj432j3bfdw362dqmkvywa2qvu5tskb4@oqjkseil5i54>
+References: <20260203220948.2176157-1-skhawaja@google.com>
+ <20260203220948.2176157-5-skhawaja@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH v3 0/5] dma-mapping: arm64: support batched cache sync
-To: Barry Song <21cnbao@gmail.com>, catalin.marinas@arm.com,
-	robin.murphy@arm.com, will@kernel.org, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org
-Cc: linux-kernel@vger.kernel.org, Barry Song <baohua@kernel.org>, Leon
-	Romanovsky <leon@kernel.org>, Ada Couprie Diaz <ada.coupriediaz@arm.com>,
-	Ard Biesheuvel <ardb@kernel.org>, Marc Zyngier <maz@kernel.org>, Anshuman
-	Khandual <anshuman.khandual@arm.com>, Ryan Roberts <ryan.roberts@arm.com>,
-	Suren Baghdasaryan <surenb@google.com>, Joerg Roedel <joro@8bytes.org>,
-	Juergen Gross <jgross@suse.com>, Stefano Stabellini
-	<sstabellini@kernel.org>, Oleksandr Tyshchenko
-	<oleksandr_tyshchenko@epam.com>, Tangquan Zheng <zhengtangquan@oppo.com>,
-	Huacai Zhou <zhouhuacai@oppo.com>, Xueyuan Chen <xueyuan.chen21@gmail.com>
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <20260228221125.59863-1-21cnbao@gmail.com>
-Content-Transfer-Encoding: 8bit
-X-CMS-MailID: 20260303163340eucas1p198411742f93caae84e07182e4c58ee55
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20260228221143eucas1p12a276d4216b6ce0f3c374b093f73acd5
-X-EPHeader: CA
-X-CMS-RootMailID: 20260228221143eucas1p12a276d4216b6ce0f3c374b093f73acd5
-References: <CGME20260228221143eucas1p12a276d4216b6ce0f3c374b093f73acd5@eucas1p1.samsung.com>
-	<20260228221125.59863-1-21cnbao@gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20260203220948.2176157-5-skhawaja@google.com>
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CY4PEPF0000EE30:EE_|SA0PR12MB4400:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7e56f276-48c8-4664-1dd6-08de7943d5d1
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|7416014|1800799024|376014|82310400026|36860700013|7053199007;
+X-Microsoft-Antispam-Message-Info:
+	+Ti0W6qV0MAaBzRg6A291zKOQ79kusEdovl1EPX7zYLeQQytYkW9xDPEVzQlIXtCYag5TOnorzLxXC28Nx3EOyhwQqJXxGaHMddxKduU4pr62kcogwVDrybI7avm04CTYv+FYcvdrPAZuCHATOD9dri2+XGUAiyuVwhmxys7WX7pqGdKq/bG1Fc+YGRc8Mh/eodANgiEBaaH3gJjp9Ho2OVODs3YC2YTITdpMIMqW+x0hLU740lJ8g0c9wwY18VrkedpMkG0JwPYs1G+ZgHAbqhYXLlAYUPqUUOiRV/KS1W9qMYA3FG0/U/HiVuYm6l+bv/EjpqzAu8Bva8fC6I9WFEKbHuU9hObmaFrnSkVsKDsdHux5CU5EvNnCDzP/5hOmuPkZDV+7kgHTZ7AbxzhUeQG73SJS45xGIwp5MWHd1k8Hv9rLrqIOhu0wBs3wk90IoHO9VqBtdtc8mI1YSdcZwoZpLz6VkludZstbAf5Bfn1VPsl5dYSwwPuJQm455WajKg9yq9zediUIJrHH4w1gago97h3UpbEMLOJ9qJYcc4MlEhj5OnZTqbvGb95JLQIaAUkugbpbdS26XVTeuqp6N7yX3QphZO4emXWua3MKFJjqTBJQpMsr4BQvf1FhyQT5xOcKrfgyHJn831kICRdNSC4VnR+0IcB1TqXjwRPEHZw6N2axjnRX/D54eOlYSPmzR2s3oemYqdHYxR78LD5U9L5U6VKhDAot6g1pIE4k8oTr4X0Ygv4AXo3SbKTABD9VZ7UY2AeLWv2WPe34l5ZfKo1Ytgv4kWnntQVwYe5mhD+gnhOpHxePHIX+N5zQn1vEAYe3+TP5SCOoPHdlE6bsQ==
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(7416014)(1800799024)(376014)(82310400026)(36860700013)(7053199007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	o0djPpce7WhHxJQzzXR50czY4+zRQFbUhvUgdX3JWaHKv5VnIfZYSEhiu46QitprbP3plGNsQ9SsaJq3gxdWbud7MoBtGUcUtGDOAvn1Xz+7zJu79CbG509S12l7AUg5Opb+/HDjM0ZEWcByIZWab9WQU50fIoU6fjIjIgfCSIPYQ1MIVq1OBifvXFP/DHtBQNilwbrZxitKHvkaBUPGHA88O/TmtWX9vBVhc9JVBoFLQjfUq+KpIv78Njv09l2c2k19HkPVn0mK1oYOn1+k1DExodhETMCo7Tt02DU1mdqFYhSwDJNOR6hYFCWDBCNndcsnmaA4BylQrqZaRn0hfVrFTTtKmBMBTHmjV01rScpQuZJOU39oWGhKog37vkFr2QIsDlW5vyEQOSNT556FaoYdjUuWHmHn2Q949dpXoJcq5P0W52N358sg8GFrai5B
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Mar 2026 16:42:18.9709
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7e56f276-48c8-4664-1dd6-08de7943d5d1
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CY4PEPF0000EE30.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR12MB4400
 
-On 28.02.2026 23:11, Barry Song wrote:
-> From: Barry Song <baohua@kernel.org>
->
-> Many embedded ARM64 SoCs still lack hardware cache coherency support, which
-> causes DMA mapping operations to appear as hotspots in on-CPU flame graphs.
->
-> For an SG list with *nents* entries, the current dma_map/unmap_sg() and DMA
-> sync APIs perform cache maintenance one entry at a time. After each entry,
-> the implementation synchronously waits for the corresponding region’s
-> D-cache operations to complete. On architectures like arm64, efficiency can
-> be improved by issuing all entries’ operations first and then performing a
-> single batched wait for completion.
->
-> Tangquan's results show that batched synchronization can reduce
-> dma_map_sg() time by 64.61% and dma_unmap_sg() time by 66.60% on an MTK
-> phone platform (MediaTek Dimensity 9500). The tests were performed by
-> pinning the task to CPU7 and fixing the CPU frequency at 2.6 GHz,
-> running dma_map_sg() and dma_unmap_sg() on 10 MB buffers (10 MB / 4 KB
-> sg entries per buffer) for 200 iterations and then averaging the
-> results.
->
-> Thanks to Xueyuan for volunteering to take on the testing tasks. He
-> put significant effort into validating paths such as IOVA link/unlink
-> and SWIOTLB on RK3588 boards with NVMe.
+On Tue, Feb 03, 2026 at 10:09:38PM +0000, Samiullah Khawaja wrote:
+> IOMMU pages are allocated/freed using APIs using struct ioptdesc. For
+> the proper preservation and restoration of ioptdesc add helper
+> functions.
+> 
+> Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
+> ---
+>  drivers/iommu/iommu-pages.c | 74 +++++++++++++++++++++++++++++++++++++
+>  drivers/iommu/iommu-pages.h | 30 +++++++++++++++
+>  2 files changed, 104 insertions(+)
+> 
+> diff --git a/drivers/iommu/iommu-pages.c b/drivers/iommu/iommu-pages.c
+> index 3bab175d8557..588a8f19b196 100644
+> --- a/drivers/iommu/iommu-pages.c
+> +++ b/drivers/iommu/iommu-pages.c
+> @@ -6,6 +6,7 @@
+>  #include "iommu-pages.h"
+>  #include <linux/dma-mapping.h>
+>  #include <linux/gfp.h>
+> +#include <linux/kexec_handover.h>
+>  #include <linux/mm.h>
+>  
+>  #define IOPTDESC_MATCH(pg_elm, elm)                    \
+> @@ -131,6 +132,79 @@ void iommu_put_pages_list(struct iommu_pages_list *list)
+>  }
+>  EXPORT_SYMBOL_GPL(iommu_put_pages_list);
+>  
+> +#if IS_ENABLED(CONFIG_IOMMU_LIVEUPDATE)
+> +void iommu_unpreserve_page(void *virt)
+> +{
+> +	kho_unpreserve_folio(ioptdesc_folio(virt_to_ioptdesc(virt)));
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_unpreserve_page);
+> +
+> +int iommu_preserve_page(void *virt)
+> +{
+> +	return kho_preserve_folio(ioptdesc_folio(virt_to_ioptdesc(virt)));
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_preserve_page);
+> +
+> +void iommu_unpreserve_pages(struct iommu_pages_list *list, int count)
+> +{
+> +	struct ioptdesc *iopt;
+> +
+> +	if (!count)
+> +		return;
+> +
+> +	/* If less than zero then unpreserve all pages. */
+> +	if (count < 0)
+> +		count = 0;
+> +
+> +	list_for_each_entry(iopt, &list->pages, iopt_freelist_elm) {
+> +		kho_unpreserve_folio(ioptdesc_folio(iopt));
+> +		if (count > 0 && --count ==  0)
+> +			break;
+> +	}
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_unpreserve_pages);
+> +
+> +void iommu_restore_page(u64 phys)
+> +{
+> +	struct ioptdesc *iopt;
+> +	struct folio *folio;
+> +	unsigned long pgcnt;
+> +	unsigned int order;
+> +
+> +	folio = kho_restore_folio(phys);
+> +	BUG_ON(!folio);
+> +
+> +	iopt = folio_ioptdesc(folio);
 
-Catalin, Will, I would like to merge this to dma-mapping tree, give Your 
-ack or comment if You are okay with ARM64 related parts.
+iopt->incoherent = false; should be here?
 
-
-> v3:
->   * Fold patches 5/8, 7/8, and 8/8 into patch 4/8 as suggested by Leon,
->     reducing the series from 8 patches to 5;
->   * Fix the SWIOTLB path by ensuring a sync is issued before memcpy;
->   * Add ARCH_HAS_BATCHED_DMA_SYNC Kconfig as suggested by Leon;
->   * Collect Reviewed-by tags from Leon and Juergen. Leon's tag is not
->     added to patch 4 since it has changed significantly since v2 and
->     requires re-review;
->   * Rename some asm macros and functions as suggested by Will;
->   * Add Xueyuan's Tested-by. His help is greatly appreciated!
->   v2 link:
->   https://lore.kernel.org/lkml/20251226225254.46197-1-21cnbao@gmail.com/
->
-> v2:
->   * Refine a large amount of arm64 asm code based on feedback from
->     Robin, thanks!
->   * Drop batch_add APIs and always use arch_sync_dma_for_* + flush,
->     even for a single buffer, based on Leon’s suggestion, thanks!
->   * Refine a large amount of code based on feedback from Leon, thanks!
->   * Also add batch support for iommu_dma_sync_sg_for_{cpu,device}
-> v1 link:
->   https://lore.kernel.org/lkml/20251219053658.84978-1-21cnbao@gmail.com/
->
-> v1, diff with RFC:
->   * Drop a large number of #ifdef/#else/#endif blocks based on feedback
->     from Catalin and Marek, thanks!
->   * Also add batched iova link/unlink support, marked as RFC since I lack
->     the required hardware. This was suggested by Marek, thanks!
-> RFC link:
->   https://lore.kernel.org/lkml/20251029023115.22809-1-21cnbao@gmail.com/
->
-> Barry Song (5):
->    arm64: Provide dcache_by_myline_op_nosync helper
->    arm64: Provide dcache_clean_poc_nosync helper
->    arm64: Provide dcache_inval_poc_nosync helper
->    dma-mapping: Separate DMA sync issuing and completion waiting
->    dma-mapping: Support batch mode for dma_direct_{map,unmap}_sg
->
->   arch/arm64/Kconfig                  |  1 +
->   arch/arm64/include/asm/assembler.h  | 25 ++++++++++---
->   arch/arm64/include/asm/cache.h      |  5 +++
->   arch/arm64/include/asm/cacheflush.h |  2 +
->   arch/arm64/kernel/relocate_kernel.S |  3 +-
->   arch/arm64/mm/cache.S               | 57 +++++++++++++++++++++++------
->   arch/arm64/mm/dma-mapping.c         |  4 +-
->   drivers/iommu/dma-iommu.c           | 35 ++++++++++++++----
->   drivers/xen/swiotlb-xen.c           | 24 ++++++++----
->   include/linux/dma-map-ops.h         |  6 +++
->   kernel/dma/Kconfig                  |  3 ++
->   kernel/dma/direct.c                 | 23 +++++++++---
->   kernel/dma/direct.h                 | 21 ++++++++---
->   kernel/dma/mapping.c                |  6 +--
->   kernel/dma/swiotlb.c                |  7 +++-
->   15 files changed, 171 insertions(+), 51 deletions(-)
->
-> Cc: Leon Romanovsky <leon@kernel.org>
-> Cc: Marek Szyprowski <m.szyprowski@samsung.com>
-> Cc: Catalin Marinas <catalin.marinas@arm.com>
-> Cc: Will Deacon <will@kernel.org>
-> Cc: Ada Couprie Diaz <ada.coupriediaz@arm.com>
-> Cc: Ard Biesheuvel <ardb@kernel.org>
-> Cc: Marc Zyngier <maz@kernel.org>
-> Cc: Anshuman Khandual <anshuman.khandual@arm.com>
-> Cc: Ryan Roberts <ryan.roberts@arm.com>
-> Cc: Suren Baghdasaryan <surenb@google.com>
-> Cc: Robin Murphy <robin.murphy@arm.com>
-> Cc: Joerg Roedel <joro@8bytes.org>
-> Cc: Juergen Gross <jgross@suse.com>
-> Cc: Stefano Stabellini <sstabellini@kernel.org>
-> Cc: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
-> Cc: Tangquan Zheng <zhengtangquan@oppo.com>
-> Cc: Huacai Zhou <zhouhuacai@oppo.com>
-> Cc: Xueyuan Chen <xueyuan.chen21@gmail.com>
-
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
-
+> +
+> +	order = folio_order(folio);
+> +	pgcnt = 1UL << order;
+> +	mod_node_page_state(folio_pgdat(folio), NR_IOMMU_PAGES, pgcnt);
+> +	lruvec_stat_mod_folio(folio, NR_SECONDARY_PAGETABLE, pgcnt);
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_restore_page);
+> +
+> +int iommu_preserve_pages(struct iommu_pages_list *list)
+> +{
+> +	struct ioptdesc *iopt;
+> +	int count = 0;
+> +	int ret;
+> +
+> +	list_for_each_entry(iopt, &list->pages, iopt_freelist_elm) {
+> +		ret = kho_preserve_folio(ioptdesc_folio(iopt));
+> +		if (ret) {
+> +			iommu_unpreserve_pages(list, count);
+> +			return ret;
+> +		}
+> +
+> +		++count;
+> +	}
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_preserve_pages);
+> +
+> +#endif
+> +
+>  /**
+>   * iommu_pages_start_incoherent - Setup the page for cache incoherent operation
+>   * @virt: The page to setup
+> diff --git a/drivers/iommu/iommu-pages.h b/drivers/iommu/iommu-pages.h
+> index ae9da4f571f6..bd336fb56b5f 100644
+> --- a/drivers/iommu/iommu-pages.h
+> +++ b/drivers/iommu/iommu-pages.h
+> @@ -53,6 +53,36 @@ void *iommu_alloc_pages_node_sz(int nid, gfp_t gfp, size_t size);
+>  void iommu_free_pages(void *virt);
+>  void iommu_put_pages_list(struct iommu_pages_list *list);
+>  
+> +#if IS_ENABLED(CONFIG_IOMMU_LIVEUPDATE)
+> +int iommu_preserve_page(void *virt);
+> +void iommu_unpreserve_page(void *virt);
+> +int iommu_preserve_pages(struct iommu_pages_list *list);
+> +void iommu_unpreserve_pages(struct iommu_pages_list *list, int count);
+> +void iommu_restore_page(u64 phys);
+> +#else
+> +static inline int iommu_preserve_page(void *virt)
+> +{
+> +	return -EOPNOTSUPP;
+> +}
+> +
+> +static inline void iommu_unpreserve_page(void *virt)
+> +{
+> +}
+> +
+> +static inline int iommu_preserve_pages(struct iommu_pages_list *list)
+> +{
+> +	return -EOPNOTSUPP;
+> +}
+> +
+> +static inline void iommu_unpreserve_pages(struct iommu_pages_list *list, int count)
+> +{
+> +}
+> +
+> +static inline void iommu_restore_page(u64 phys)
+> +{
+> +}
+> +#endif
+> +
+>  /**
+>   * iommu_pages_list_add - add the page to a iommu_pages_list
+>   * @list: List to add the page to
+> -- 
+> 2.53.0.rc2.204.g2597b5adb4-goog
+> 
