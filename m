@@ -1,57 +1,58 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7BC43469F6
-	for <iommu@lists.linux.dev>; Tue,  3 Mar 2026 12:34:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B4FE347502
+	for <iommu@lists.linux.dev>; Tue,  3 Mar 2026 12:34:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772541273; cv=none; b=dW2lqp4mB85fHGi0td3MaBQSY6NFYAs9RhnQieYuGaiAdOJMvwPjHUujLQakL4xG6VAUnEMxzz2qx76cC83qsWBPNo4qAQOC9SImCJux1rOigzMEeLq1zDbhXGMmcuCVwXTC3R+O81IiXjjx0foGp2W5w1m/PCIrOMR9xm8Guto=
+	t=1772541280; cv=none; b=J1N0D65CjZHsaQCMVkGvem8npY3gvvJLmXNTYBlIk8YxK6UFQX7jPH7fbryrSZkChDobWMD3NN/SDaQKqlu5PFf7yD4egCbg9bMjir1aA3IGzZzUA0zmBwYmwmiLy/TE2QNf+8mKd2WViyHgO22ZUaWTfwSMRJFyhSuVZUJ7M/U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772541273; c=relaxed/simple;
-	bh=rT4eCrjoQu7EvTeC9Zi2EQ7EHm1V9wN2D3i4WLgOBL8=;
+	s=arc-20240116; t=1772541280; c=relaxed/simple;
+	bh=Oiyav+nKn59PGwnJ/kuaw2S3AHX/9+uyerzkejMZoD4=;
 	h=From:Date:Subject:MIME-Version:Message-Id:References:In-Reply-To:
-	 To:Cc:Content-Type; b=A5TWP4mZrZiRWZCYqkcyWbu6INXNKtxD1cCOPJBaBCBlOhImRqsDKzPyt5ki3FDLamII75UDCcWgdJ65J6EzTvFSljTmpci/fIH/rt/fl4N3JqDOjkM+vKH6wPc+iIc+Z8uLb7mRAXdxSmCPBoJd5TyPsW0AzbQzuXoSk6OIJfc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=c1lajcJv; arc=none smtp.client-ip=170.10.133.124
+	 To:Cc:Content-Type; b=ZkRnwuOFgoHdITA3UmxnN2NrfbJy+Fl3qRkCTgD9NAIL7IHqTRjpDpEPV5icR8AOq8Tgo6ef8fyxLyCfuvnE8nem1Fk5uY0/zjroLMw86ICe87eF5a2wMFz1tEspo1VNYB4uGhhF5LpPziIT1jo1v1kM8N6kSzugW2P2AWhzjTw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=ZalmtWO7; arc=none smtp.client-ip=170.10.129.124
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="c1lajcJv"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="ZalmtWO7"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1772541269;
+	s=mimecast20190719; t=1772541277;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=L2WQTNBlzMDcavmEhhF5QEatl1tMG2I69r3hsa4655g=;
-	b=c1lajcJvvvFl8nm63JWZAIAqYnoHaONNIphkpT3R1/yZixWLGk/cn0wvne4qK47fJfXg9z
-	MrFVj2fVj/zo623Vq6JPjYbwF01fU8ECqO9sUI0CCnTq+2CwUtHOCHlFlvgd3ks59IwrHV
-	93UErwGcGQObmGigf2TzGHvVGZvjoXM=
+	bh=2Eja0IKLWM7TXMINx19h4PVbisMkWsGrNkIdZK4d0xk=;
+	b=ZalmtWO70PhE/tok8fIcWjTJyVCw48Z7ckbH3u0XzmaxmGkwYZir6+YNr/Bn0pNyWqyMER
+	ieUJ+cSQBgQd5hETQI15Q2hzU7Xyw5iJzaLDKhKFfUo37b35gyXZxqcieNCvluT6NfPsBB
+	oPkUcl7GyMczl7UiBYN/t1HGgBZW5ps=
 Received: from mx-prod-mc-06.mail-002.prod.us-west-2.aws.redhat.com
  (ec2-35-165-154-97.us-west-2.compute.amazonaws.com [35.165.154.97]) by
  relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
- cipher=TLS_AES_256_GCM_SHA384) id us-mta-564-N7OrLEwtNuGjw09bCTBezQ-1; Tue,
- 03 Mar 2026 07:34:26 -0500
-X-MC-Unique: N7OrLEwtNuGjw09bCTBezQ-1
-X-Mimecast-MFC-AGG-ID: N7OrLEwtNuGjw09bCTBezQ_1772541264
+ cipher=TLS_AES_256_GCM_SHA384) id us-mta-609-P4LtvZmcMl2bsCgGydgWWQ-1; Tue,
+ 03 Mar 2026 07:34:32 -0500
+X-MC-Unique: P4LtvZmcMl2bsCgGydgWWQ-1
+X-Mimecast-MFC-AGG-ID: P4LtvZmcMl2bsCgGydgWWQ_1772541270
 Received: from mx-prod-int-01.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-01.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.4])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mx-prod-mc-06.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 15B2C1800464;
-	Tue,  3 Mar 2026 12:34:24 +0000 (UTC)
+	by mx-prod-mc-06.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 847961800365;
+	Tue,  3 Mar 2026 12:34:30 +0000 (UTC)
 Received: from [192.168.1.153] (unknown [10.44.32.231])
-	by mx-prod-int-01.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id BBEC730001BF;
-	Tue,  3 Mar 2026 12:34:17 +0000 (UTC)
+	by mx-prod-int-01.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id A0A7330001B9;
+	Tue,  3 Mar 2026 12:34:24 +0000 (UTC)
 From: Albert Esteve <aesteve@redhat.com>
-Date: Tue, 03 Mar 2026 13:33:45 +0100
-Subject: [PATCH v2 2/6] dma-buf: dma-heap: split dma_heap_add
+Date: Tue, 03 Mar 2026 13:33:46 +0100
+Subject: [PATCH v2 3/6] of_reserved_mem: add a helper for rmem device_init
+ op
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Message-Id: <20260303-b4-dmabuf-heap-coherent-rmem-v2-2-65a4653b3378@redhat.com>
+Message-Id: <20260303-b4-dmabuf-heap-coherent-rmem-v2-3-65a4653b3378@redhat.com>
 References: <20260303-b4-dmabuf-heap-coherent-rmem-v2-0-65a4653b3378@redhat.com>
 In-Reply-To: <20260303-b4-dmabuf-heap-coherent-rmem-v2-0-65a4653b3378@redhat.com>
 To: Sumit Semwal <sumit.semwal@linaro.org>, 
@@ -66,234 +67,105 @@ Cc: linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
  dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, 
  iommu@lists.linux.dev, devicetree@vger.kernel.org, 
  Albert Esteve <aesteve@redhat.com>, echanude@redhat.com, mripard@redhat.com
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1772541243; l=6736;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1772541243; l=3269;
  i=aesteve@redhat.com; s=20260303; h=from:subject:message-id;
- bh=rT4eCrjoQu7EvTeC9Zi2EQ7EHm1V9wN2D3i4WLgOBL8=;
- b=WyYJMMZjafvKEln5EMzK35BIFWIKyBwZjgKRJeKr/K5sa3XEXqCBPwD2HOUyxnOKeDhqy32W0
- LDiUoTUFgtwD0jNccSayx+CrlCFk5prI74Zg2anYbmnK0Ya+AYBc6Ry
+ bh=Oiyav+nKn59PGwnJ/kuaw2S3AHX/9+uyerzkejMZoD4=;
+ b=i3wbq5E4k9VfhS9W3iaMgYMRMa0WY56H+E6aqqEhiNhouFoq+Q7bGPoRNT8RSld0ItGC3n+Mo
+ VBn/S9AJdEHB91d8iZ3E61e216OnDtU3RjkvsWWVtnZ0J+Hin44U7YH
 X-Developer-Key: i=aesteve@redhat.com; a=ed25519;
  pk=YSFz6sOHd2L45+Fr8DIvHTi6lSIjhLZ5T+rkxspJt1s=
 X-Scanned-By: MIMEDefang 3.4.1 on 10.30.177.4
-X-Mimecast-MFC-PROC-ID: G8AQ5ftAqMotAy99LgN-Oq0l8FJzNSlCWcplqdJB1jg_1772541264
+X-Mimecast-MFC-PROC-ID: py7su5usY7qp_mEVIXlvDOV5BDiYa1C15OrbeM8avKU_1772541270
 X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 
-Split dma_heap_add() into creation and registration
-phases while preserving the ordering between
-cdev_add() and device_add(), and ensuring all
-device fields are initialised.
+Add a helper function wrapping internal reserved memory
+device_init call and expose it externally.
 
-This will allow to access the heap_dev before
-it is registered and becomes available to
-userspace, making error handling easier.
+Use the new helper function within of_reserved_mem_device_init_by_idx().
 
 Signed-off-by: Albert Esteve <aesteve@redhat.com>
 ---
- drivers/dma-buf/dma-heap.c | 126 +++++++++++++++++++++++++++++++++++----------
- include/linux/dma-heap.h   |   3 ++
- 2 files changed, 103 insertions(+), 26 deletions(-)
+ drivers/of/of_reserved_mem.c    | 27 +++++++++++++++++++++++----
+ include/linux/of_reserved_mem.h |  8 ++++++++
+ 2 files changed, 31 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/dma-buf/dma-heap.c b/drivers/dma-buf/dma-heap.c
-index 1124d63eb1398..88189d4e48561 100644
---- a/drivers/dma-buf/dma-heap.c
-+++ b/drivers/dma-buf/dma-heap.c
-@@ -238,15 +238,30 @@ struct device *dma_heap_get_dev(struct dma_heap *heap)
- }
- EXPORT_SYMBOL_NS_GPL(dma_heap_get_dev, "DMA_BUF_HEAP");
+diff --git a/drivers/of/of_reserved_mem.c b/drivers/of/of_reserved_mem.c
+index 1fd28f8056108..3a350bef8f11e 100644
+--- a/drivers/of/of_reserved_mem.c
++++ b/drivers/of/of_reserved_mem.c
+@@ -605,6 +605,28 @@ struct rmem_assigned_device {
+ static LIST_HEAD(of_rmem_assigned_device_list);
+ static DEFINE_MUTEX(of_rmem_assigned_device_mutex);
  
-+static void dma_heap_dev_release(struct device *dev)
++/**
++ * of_reserved_mem_device_init_with_mem() - assign reserved memory region to
++ *					    given device
++ * @dev:	Pointer to the device to configure
++ * @rmem:	Reserved memory region to assign
++ *
++ * This function assigns respective DMA-mapping operations based on the
++ * reserved memory region already provided in @rmem to the @dev device,
++ * without walking DT nodes.
++ *
++ * Returns error code or zero on success.
++ */
++int of_reserved_mem_device_init_with_mem(struct device *dev,
++					 struct reserved_mem *rmem)
 +{
-+	struct dma_heap *heap;
++	if (!dev || !rmem || !rmem->ops || !rmem->ops->device_init)
++		return -EINVAL;
 +
-+	pr_debug("heap device: '%s': %s\n", dev_name(dev), __func__);
-+	heap = dev_get_drvdata(dev);
-+	kfree(heap->name);
-+	kfree(heap);
-+	kfree(dev);
++	return rmem->ops->device_init(rmem, dev);
 +}
++EXPORT_SYMBOL_GPL(of_reserved_mem_device_init_with_mem);
 +
  /**
-- * dma_heap_add - adds a heap to dmabuf heaps
-- * @exp_info: information needed to register this heap
-+ * dma_heap_create() - allocate and initialize a heap object
-+ * @exp_info: information needed to create a heap
-+ *
-+ * Creates a heap instance but does not register it or create device nodes.
-+ * Use dma_heap_register() to make it visible to userspace, or
-+ * dma_heap_destroy() to release it.
-+ *
-+ * Returns a heap on success or ERR_PTR(-errno) on failure.
-  */
--struct dma_heap *dma_heap_add(const struct dma_heap_export_info *exp_info)
-+struct dma_heap *dma_heap_create(const struct dma_heap_export_info *exp_info)
+  * of_reserved_mem_device_init_by_idx() - assign reserved memory region to
+  *					  given device
+@@ -643,14 +665,11 @@ int of_reserved_mem_device_init_by_idx(struct device *dev,
+ 	rmem = of_reserved_mem_lookup(target);
+ 	of_node_put(target);
+ 
+-	if (!rmem || !rmem->ops || !rmem->ops->device_init)
+-		return -EINVAL;
+-
+ 	rd = kmalloc_obj(struct rmem_assigned_device);
+ 	if (!rd)
+ 		return -ENOMEM;
+ 
+-	ret = rmem->ops->device_init(rmem, dev);
++	ret = of_reserved_mem_device_init_with_mem(dev, rmem);
+ 	if (ret == 0) {
+ 		rd->dev = dev;
+ 		rd->rmem = rmem;
+diff --git a/include/linux/of_reserved_mem.h b/include/linux/of_reserved_mem.h
+index f573423359f48..12f7ddb7ee61f 100644
+--- a/include/linux/of_reserved_mem.h
++++ b/include/linux/of_reserved_mem.h
+@@ -32,6 +32,8 @@ typedef int (*reservedmem_of_init_fn)(struct reserved_mem *rmem);
+ #define RESERVEDMEM_OF_DECLARE(name, compat, init)			\
+ 	_OF_DECLARE(reservedmem, name, compat, init, reservedmem_of_init_fn)
+ 
++int of_reserved_mem_device_init_with_mem(struct device *dev,
++					 struct reserved_mem *rmem);
+ int of_reserved_mem_device_init_by_idx(struct device *dev,
+ 				       struct device_node *np, int idx);
+ int of_reserved_mem_device_init_by_name(struct device *dev,
+@@ -51,6 +53,12 @@ int of_reserved_mem_region_count(const struct device_node *np);
+ #define RESERVEDMEM_OF_DECLARE(name, compat, init)			\
+ 	_OF_DECLARE_STUB(reservedmem, name, compat, init, reservedmem_of_init_fn)
+ 
++static inline int of_reserved_mem_device_init_with_mem(struct device *dev,
++						       struct reserved_mem *rmem)
++{
++	return -EOPNOTSUPP;
++}
++
+ static inline int of_reserved_mem_device_init_by_idx(struct device *dev,
+ 					struct device_node *np, int idx)
  {
--	struct dma_heap *heap, *h, *err_ret;
--	unsigned int minor;
--	int ret;
-+	struct dma_heap *heap;
- 
- 	if (!exp_info->name || !strcmp(exp_info->name, "")) {
- 		pr_err("dma_heap: Cannot add heap without a name\n");
-@@ -265,13 +280,41 @@ struct dma_heap *dma_heap_add(const struct dma_heap_export_info *exp_info)
- 	heap->name = exp_info->name;
- 	heap->ops = exp_info->ops;
- 	heap->priv = exp_info->priv;
-+	heap->heap_dev = kzalloc_obj(*heap->heap_dev);
-+	if (!heap->heap_dev) {
-+		kfree(heap);
-+		return ERR_PTR(-ENOMEM);
-+	}
-+
-+	device_initialize(heap->heap_dev);
-+	dev_set_drvdata(heap->heap_dev, heap);
-+
-+	dev_set_name(heap->heap_dev, heap->name);
-+	heap->heap_dev->class = dma_heap_class;
-+	heap->heap_dev->release = dma_heap_dev_release;
-+
-+	return heap;
-+}
-+EXPORT_SYMBOL_NS_GPL(dma_heap_create, "DMA_BUF_HEAP");
-+
-+/**
-+ * dma_heap_register() - register a heap with the dma-heap framework
-+ * @heap: heap instance created with dma_heap_create()
-+ *
-+ * Registers the heap, creating its device node and adding it to the heap
-+ * list. Returns 0 on success or a negative error code on failure.
-+ */
-+int dma_heap_register(struct dma_heap *heap)
-+{
-+	struct dma_heap *h;
-+	unsigned int minor;
-+	int ret;
- 
- 	/* Find unused minor number */
- 	ret = xa_alloc(&dma_heap_minors, &minor, heap,
- 		       XA_LIMIT(0, NUM_HEAP_MINORS - 1), GFP_KERNEL);
- 	if (ret < 0) {
- 		pr_err("dma_heap: Unable to get minor number for heap\n");
--		err_ret = ERR_PTR(ret);
- 		goto err0;
- 	}
- 
-@@ -282,42 +325,34 @@ struct dma_heap *dma_heap_add(const struct dma_heap_export_info *exp_info)
- 	ret = cdev_add(&heap->heap_cdev, heap->heap_devt, 1);
- 	if (ret < 0) {
- 		pr_err("dma_heap: Unable to add char device\n");
--		err_ret = ERR_PTR(ret);
- 		goto err1;
- 	}
- 
--	heap->heap_dev = device_create(dma_heap_class,
--				       NULL,
--				       heap->heap_devt,
--				       NULL,
--				       heap->name);
--	if (IS_ERR(heap->heap_dev)) {
--		pr_err("dma_heap: Unable to create device\n");
--		err_ret = ERR_CAST(heap->heap_dev);
-+	heap->heap_dev->devt = heap->heap_devt;
-+
-+	ret = device_add(heap->heap_dev);
-+	if (ret) {
-+		pr_err("dma_heap: Unable to add device\n");
- 		goto err2;
- 	}
- 
- 	mutex_lock(&heap_list_lock);
- 	/* check the name is unique */
- 	list_for_each_entry(h, &heap_list, list) {
--		if (!strcmp(h->name, exp_info->name)) {
-+		if (!strcmp(h->name, heap->name)) {
- 			mutex_unlock(&heap_list_lock);
- 			pr_err("dma_heap: Already registered heap named %s\n",
--			       exp_info->name);
--			err_ret = ERR_PTR(-EINVAL);
-+			       heap->name);
-+			ret = -EINVAL;
- 			goto err3;
- 		}
- 	}
- 
--	/* Make sure it doesn't disappear on us */
--	heap->heap_dev = get_device(heap->heap_dev);
--
--
- 	/* Add heap to the list */
- 	list_add(&heap->list, &heap_list);
- 	mutex_unlock(&heap_list_lock);
- 
--	return heap;
-+	return 0;
- 
- err3:
- 	device_destroy(dma_heap_class, heap->heap_devt);
-@@ -326,8 +361,47 @@ struct dma_heap *dma_heap_add(const struct dma_heap_export_info *exp_info)
- err1:
- 	xa_erase(&dma_heap_minors, minor);
- err0:
--	kfree(heap);
--	return err_ret;
-+	dma_heap_destroy(heap);
-+	return ret;
-+}
-+EXPORT_SYMBOL_NS_GPL(dma_heap_register, "DMA_BUF_HEAP");
-+
-+/**
-+ * dma_heap_destroy() - release a heap created by dma_heap_create()
-+ * @heap: heap instance to release
-+ *
-+ * Drops the heap device reference; the heap and its device are freed in the
-+ * device release path when the last reference is gone.
-+ */
-+void dma_heap_destroy(struct dma_heap *heap)
-+{
-+	put_device(heap->heap_dev);
-+}
-+EXPORT_SYMBOL_NS_GPL(dma_heap_destroy, "DMA_BUF_HEAP");
-+
-+/**
-+ * dma_heap_add - adds a heap to dmabuf heaps
-+ * @exp_info: information needed to register this heap
-+ */
-+struct dma_heap *dma_heap_add(const struct dma_heap_export_info *exp_info)
-+{
-+	struct dma_heap *heap;
-+	int ret;
-+
-+	heap = dma_heap_create(exp_info);
-+	if (IS_ERR(heap)) {
-+		pr_err("dma_heap: failed to create heap (%d)\n", PTR_ERR(heap));
-+		return PTR_ERR(heap);
-+	}
-+
-+	ret = dma_heap_register(heap);
-+	if (ret) {
-+		pr_err("dma_heap: failed to register heap (%d)\n", ret);
-+		dma_heap_destroy(heap);
-+		return ERR_PTR(ret);
-+	}
-+
-+	return heap;
- }
- EXPORT_SYMBOL_NS_GPL(dma_heap_add, "DMA_BUF_HEAP");
- 
-diff --git a/include/linux/dma-heap.h b/include/linux/dma-heap.h
-index 493085e69b70e..1b0ea43ba66c3 100644
---- a/include/linux/dma-heap.h
-+++ b/include/linux/dma-heap.h
-@@ -46,6 +46,9 @@ void *dma_heap_get_drvdata(struct dma_heap *heap);
- const char *dma_heap_get_name(struct dma_heap *heap);
- struct device *dma_heap_get_dev(struct dma_heap *heap);
- 
-+struct dma_heap *dma_heap_create(const struct dma_heap_export_info *exp_info);
-+int dma_heap_register(struct dma_heap *heap);
-+void dma_heap_destroy(struct dma_heap *heap);
- struct dma_heap *dma_heap_add(const struct dma_heap_export_info *exp_info);
- 
- extern bool mem_accounting;
 
 -- 
 2.52.0
