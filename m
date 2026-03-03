@@ -1,161 +1,416 @@
-Received: from SA9PR02CU001.outbound.protection.outlook.com (mail-southcentralusazon11013064.outbound.protection.outlook.com [40.93.196.64])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A60D63AE188
-	for <iommu@lists.linux.dev>; Tue,  3 Mar 2026 17:11:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.196.64
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772557882; cv=fail; b=k7a1wSMzddydNgbRVhwbnZsj2bDzbAb0CalWKr1AITaPYF8qNVWlhgev51pH7TBJHV81PqQY31q1q+nzcWlQvWKC2eCbL0N9i7RrP6pTj3bFuU63FI3vuaHOehp3YW4mU9YqJdkToUO0McrnVRWbl8nhFEUZy8Zz6VQB6gjBrm8=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772557882; c=relaxed/simple;
-	bh=2WT03fNuhgf2nC5vKbjwozAZuHok1tOfvj7KUBmi70w=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=OkYI8vX6Deafj3/AW9xR1bIKHVn/ycikVer6sTsmmBbbisiCLe7I9v6HJtikstZfNnwJXvIruvrZPGN3wSGVchvnV0bQ+cWj1/wtW1ZvSynp5h/Yy+uSMaaccAc+kHcRRo7iLeRkSNto9gmZS4d2FRAHjJuiBivULammwlTFSKI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=n7jhvn5K; arc=fail smtp.client-ip=40.93.196.64
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CF98381B0A
+	for <iommu@lists.linux.dev>; Tue,  3 Mar 2026 18:10:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1772561417; cv=none; b=dGLkRyS0k82aIkWGIM0+YJOz60qbQpkZhSrSIHZfh+0s6uY3aPtoluO69fM1mOlZ5Pb6qX+WefNj5pdkLau0gSkehBxGQAXagzUYxnqPDxFA+DnVDWTaHT/Br+zOWH5f+TSpxpirXA9+OAv/BWhRIAcgc2n2czg28kzN6vXnS88=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1772561417; c=relaxed/simple;
+	bh=FFoN68FK2ZgHq38RAJl5rll2EWC7yTlem6G5chWZ5fw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=oGIGvhGwRg4QLFiK4vgwSASpfJbt/K61efPnWbC+shq/unXEqM9Yk5ox4wdwtctLS9M5Y6MNiitv+PPLMmNoobMhqW/nodGrmzYAg3qbNNnBEUJdfY5tX8qeY6Uiinru+8KXMuK75gTdacLEpBQ66R9vbd0/tP9GYxd0N17jPpE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=JGuQZDgK; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=kDUDfCBu; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="n7jhvn5K"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=ZsJzczl1ORq3lpQOhaUBUkvPMNFxQ4pmH2yjZaybm2uUs5mxYnoKeOCcI3HfhI9ZQDPXO3Pcg2WJgMC4sBi2axH5qlerAx3kdbDm3Nhq7Djo6nvQ7fna5II/kZFKrkln2qN89zUOV/J4uWfSDHEl2FHoTfcfnLXtvvHegmPOLCDcL4CvGd14NpxGOvNkgY0pRZzRk3OPrOifINmqxQb2c5/JdUbuWCKQHlsanEwk+xxmeUaZIByt5bt3q/NIGI23cMqv0zxgfWmqfqy6grI2vzlgb/rQhhyzucSZF+y++CEHy/Xmhj9ohO9HWCNpufc4O+nvs34A0Gkikcl9wFkkMw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=AUp8wdD+a5KE9ujMhisIpEu7Vz5H5PkA7GinCmI6hKo=;
- b=ANevP6PBjzY1WBrpYg3jwvZOcW+sVDf2pc1zeE2dO3uyBiGQZwSMPt1aVrvZ1a917tiubum/qUYHO7OAx80uTrx8bte3jcXEoyTXOXez1ZWEwQ7NqceMIhDPIHv/kpJtea0a3hYtOaLwXvt+PkLnIp3/+MVQKo1DTGzr2MAyRVjXRjhr9UI0MCaWrwq0vAcb8cfyQJits/ymHPiMcB9Iem8XTNEXQR6LNeU7CS1d2SoIQTaILmGbmAjmLMAhm1B5d42IJkaBAI4nWVMWvGyeSALdnmWVLNP4C5lmwncQbIsGqC1th1OSrgEEBSFursmebFinV5ovor8IqKFMGqIzgw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=ziepe.ca smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=AUp8wdD+a5KE9ujMhisIpEu7Vz5H5PkA7GinCmI6hKo=;
- b=n7jhvn5KRsdRwX1jEXMxmb6b+TxmbenxZtpyXyZAGRnAaHezUceAQXQN2t2SeG739bwLQFjtdl5wTGP1g7Nfkskm6w7eN5rBjazuE4bG072E26guIwzj6GMORv5ncwIpg82wskjF76QRA1aoki/YsY4ak3plMjCbOK1N6qmg7W0=
-Received: from BN9P222CA0026.NAMP222.PROD.OUTLOOK.COM (2603:10b6:408:10c::31)
- by IA0PR12MB7721.namprd12.prod.outlook.com (2603:10b6:208:433::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9654.22; Tue, 3 Mar
- 2026 17:11:16 +0000
-Received: from BN2PEPF00004FBF.namprd04.prod.outlook.com
- (2603:10b6:408:10c:cafe::7d) by BN9P222CA0026.outlook.office365.com
- (2603:10b6:408:10c::31) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9654.21 via Frontend Transport; Tue,
- 3 Mar 2026 17:11:04 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=satlexmb08.amd.com; pr=C
-Received: from satlexmb08.amd.com (165.204.84.17) by
- BN2PEPF00004FBF.mail.protection.outlook.com (10.167.243.185) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9654.16 via Frontend Transport; Tue, 3 Mar 2026 17:11:16 +0000
-Received: from SATLEXMB04.amd.com (10.181.40.145) by satlexmb08.amd.com
- (10.181.42.217) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.2.2562.17; Tue, 3 Mar
- 2026 11:11:15 -0600
-Received: from satlexmb08.amd.com (10.181.42.217) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Tue, 3 Mar
- 2026 11:11:15 -0600
-Received: from amd.com (10.180.168.240) by satlexmb08.amd.com (10.181.42.217)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.17 via Frontend
- Transport; Tue, 3 Mar 2026 11:11:12 -0600
-Date: Tue, 3 Mar 2026 17:11:07 +0000
-From: Ankit Soni <Ankit.Soni@amd.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-CC: <iommu@lists.linux.dev>, <vasant.hegde@amd.com>,
-	<suravee.suthikulpanit@amd.com>, <joro@8bytes.org>, <will@kernel.org>,
-	<robin.murphy@arm.com>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] iommu/amd: Adhere to IVINFO[VASIZE] for address limits
-Message-ID: <4yddupv5soxmatbmcqqs4ndsffbls4r6eagoiaebalnlikx2jw@wtdby7qs6nz6>
-References: <cf1a1e3d96c3571ac5caa528caa84751d40be1bc.1772208939.git.Ankit.Soni@amd.com>
- <20260302235715.GY44359@ziepe.ca>
- <mqobyculj4g3mv2ipf2rbacbw62ew2utq2kini5hql5r22khhc@btukh6fex6zb>
- <20260303120554.GC964116@ziepe.ca>
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="JGuQZDgK";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="kDUDfCBu"
+Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 623H0gco1511901
+	for <iommu@lists.linux.dev>; Tue, 3 Mar 2026 18:10:15 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	OqKZbzoaKqu/DQPtebCD+srV1gUBvacqae16bbDlquM=; b=JGuQZDgKDJvT3u9Z
+	8nj1D3c5fL6gmvVLgNmgo6brJ8C8g6e8N5OaSmMbuxLzzEH0I8b9bMBw7vD2bX7n
+	w9WVhkgtxNwAeRplmxBEt/ehUpL1UWJC8TQFuIdk8Dq0VnsEjs+3YhoH/kGL+AZe
+	Xnh5CwHq5rwi38/GXCu4RROuY2psQp1vviRIG/iH+nxAYx2O12E3g+8GD7Hb38ZA
+	jh+Jsva+1g91dFX2swog539RonY335jmTAJdXS3c92l6K1K0kggK3CkqgehxpZOv
+	1jMmf8U6NyocXLYrVRTJ4O4I3BnHfoRkHm4RVuS4B3bRpdfSkGevLwqeoVhHwAiG
+	ukmnGQ==
+Received: from mail-pg1-f200.google.com (mail-pg1-f200.google.com [209.85.215.200])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4cnh6uc2k9-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Tue, 03 Mar 2026 18:10:15 +0000 (GMT)
+Received: by mail-pg1-f200.google.com with SMTP id 41be03b00d2f7-c6e1d32a128so3562404a12.3
+        for <iommu@lists.linux.dev>; Tue, 03 Mar 2026 10:10:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1772561415; x=1773166215; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=OqKZbzoaKqu/DQPtebCD+srV1gUBvacqae16bbDlquM=;
+        b=kDUDfCBuSpgZnY0yVX1n9Ra8V0PYv19+SdZuZStJs/ubVaol49hgbbn4QtslYWfB8I
+         LSa+ho7ETqiM2YD5I1khtQIDmCHeKpf/W/JgeUi80Ke2rgtMwFq8ftf3LO4Idnh4IB7Q
+         nno2tsNLH+5m92apstsL7e1Yz1Rl+Eo5gltL05pm4NUAinIkEeLk+7Lq4WzfnwJt1J40
+         kJxEaCcj5uJdtVM+7Q12qJUxkYuiNf5XP2simY3ULYTwCUbYAhErAgSshTXqS3oXX3Us
+         3Z5V6A9fT4s8JfTJM9bBE9RPk3FTZd8c9qGo9NJ1jAfyo+E/oEtaJE1a1rhlkW63VPyz
+         uAMg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772561415; x=1773166215;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=OqKZbzoaKqu/DQPtebCD+srV1gUBvacqae16bbDlquM=;
+        b=vTss2vYL/fxzBerAOhGa3Pa/Y++Mx1qG7WvFR39fJFW5wQH1YMGQSRK15aopjt+3RE
+         rpNHZ/b1IhBSal+AgqoDygnSYbjZO7iK4BLdmdu2YZqYCP5vl1TVIouXJvvodqbrBg+J
+         Vte5gXbCPIF12/QaBLB3vyxg8CctJZ+1Z31hyFsnMHmKcP2mmwnZZMherHX6N6qJFnVY
+         clF3OyNrHL2k2vQwoyoh/Tv2Lvo/RNBJAX89JfpDOfll8Xbow8p8dfnZpHeEpJRxXbRm
+         TEISz2gxv7KP8FlnOYGoH7MWm/zmzLjiXhbGPzyixU6sflmwjcoxgD8InEtC/jxuG3/0
+         3oqQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVOE5Br6X/Y3nwTqB7gosApAGzftynWGMY92dhiwJ/ER4C/0bRs/Z1xllqowwQgDSDwJPkT3w==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzzZE5tEhuPRaJC18413Xb1C8CHAKrpKDqDVBHuZ8446QpQLglt
+	16SrpN1/BTHNvwhNt18ncR8v8UVeFK8qAU1OveAQX5Cob4WDPnQAG3eNkTC2XKr7z7Atbj5u42f
+	35fx05blK+ZOBK58gzALPnLqwQ5l3CV/ufU0UCIpuUjjP3c5YLIq2AAnBag==
+X-Gm-Gg: ATEYQzxDq9qvxoQGG1xoOme659ISZ10wUvKnRUvzRlWjrLWJmW1bOgkGLjLRSOK2aNK
+	WvXoUmcRdD+K/TqFTcseioNiga0TcFhJAxqtM23D9AwjA8iCABPvejZ3GEV0RR6el3dVpnkFlLC
+	Bf8P5cc0UrZvd/Pqjwh+/Xy7+z0I8iW9+5QQ7ddBj/4msCNcBp/aUiWVFCt06PPf/nQfAPmObfD
+	ig6aaspjQ77dP/leOZzyrnDRQTMnbuaXaH3K7RJBetA8Rb4EBHVMabOpnGHF32k8U3xwBU2dajL
+	X5uoG5y2ld8lSyr5aKw7w+Kd8Tz3MWGmVlx9D6x9/UU5G4VrmDIEUcjVhlL5nj21hS7HzPNCL9Q
+	FsdTaUzdGP1FBQcFb6lfwELttPEL3Afg6SKWOlTklG2Quui02ufyd2ww=
+X-Received: by 2002:a05:6a20:3d06:b0:394:2fbb:bc6b with SMTP id adf61e73a8af0-395c3ac7773mr17211489637.46.1772561414401;
+        Tue, 03 Mar 2026 10:10:14 -0800 (PST)
+X-Received: by 2002:a05:6a20:3d06:b0:394:2fbb:bc6b with SMTP id adf61e73a8af0-395c3ac7773mr17211445637.46.1772561413784;
+        Tue, 03 Mar 2026 10:10:13 -0800 (PST)
+Received: from [192.168.0.172] ([49.205.248.49])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c70fa61fcdesm13583925a12.11.2026.03.03.10.10.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 Mar 2026 10:10:13 -0800 (PST)
+Message-ID: <68db6d61-640b-4eef-8ccd-ab2fbcb58427@oss.qualcomm.com>
+Date: Tue, 3 Mar 2026 23:40:04 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260303120554.GC964116@ziepe.ca>
-Received-SPF: None (SATLEXMB04.amd.com: Ankit.Soni@amd.com does not designate
- permitted sender hosts)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN2PEPF00004FBF:EE_|IA0PR12MB7721:EE_
-X-MS-Office365-Filtering-Correlation-Id: 462bc566-b4a0-41fc-c7ac-08de7947e13f
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|376014|82310400026|36860700013;
-X-Microsoft-Antispam-Message-Info:
-	o5UXmdlQuRcJBkJPjC9KqoyEW86R4qkIKxLBRbR/uTOETrK1T5UxkKejDXtBo/Wix4zAbjR819RGj/48q5amfzAgZTzvafKC7gQ/2zaxA9M1Upwy1UqXXBJoATGvYj2pxA7Aaz+IGvaYyAVvKxZw1YGiLBuHqPAazOfWL3Sr6KxdwR8aUDscxpC5Uj2W5doMRv8JrW5/2pkypBp9QY126o0WdMmw90pXFGS/TEhMG8xm+Pf5E3thf63ylaam7tI1iGZ6anjcy7ckn74XdmwRya76IrBbmlKGKrCgQaghc5bvQy2+81k7BNuVtOJzyFkstox09rMoQBm4j451MA41W9POpQMsXvQ/mCPP70GlbL6apr+9JuWwFwon8+2ihx17hw9IrZWnxvVahZ/oOKRMW5l3ahlPcQ9GiOJ64pz6MYnwCXJlhOONjYhRvB5002lXU+PI/55wak4aMJjMLWk2Z+x2ZFphIjk2MuDrOmnzJx8bMglAU0LPpBGQQu2JWrCxf3pae1NaaY3BKHF5BOKK2TX2wBhzbOavYYSRk9kseV2D8D7MBp4si5WFmFgciOncUy5qvy1/ZFHnD4pSJrRUadfiykxkpJxMUaliuRFtO8oU1LGE/3sLdNvBK99YyRxcbBPM4jvdiY21ZeyWKOk714pktQExlCsBQpk5QboHU8R+OjN5ajT5YgREgQ0m4pIG8nClc9nsmAQvGZAssvrG4wAxDr/SzIPRyNdF/yVbkOTpaKAw/McdlsDGhWEh3Uhq6wzedhleuC6WmwrmU3RSRxod+AQi7xBci2RQboXp6I2OkHMLFXthdGHcC4w57GCv8CssxjFS50u88c1P52dhUA==
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb08.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(376014)(82310400026)(36860700013);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	iUI9IF5UonhH0TFXK2cWGMCRr8xJMNiXOWjWot94OwyGdx4viM9kbQwwZGqBmnIMWTX0NpQQpNNwvvDwmffTWJkeiKlWn+/ovGoJfear3q3HHGOqX+FNkB2uPpCVhqIUx4gwXTknPTwSQK/GVHMAeiFpe3jriBtn7Fn0+xMJSvuFTDjhIFuT7NNFowwkH11kuj3Gsl1E5AxZL6Io8nSEfX80ZukNWtYSgsl/qFj2MbRVOP29FR3WPyeYmIMBmfC0wQLIFPhh/34z7TuCK75pUps1Sza7OBYG3AHJRcgPuaXxX2hQhLc+WCy5YJjVAAVcqmexqs8/hHorYgTWuMZftyplDJo9zN8gSDTh8ADG/3WWNtTAP0ZWkTvIq8T/isqHlEvcDYNZWRvlTFGV2GveQ8UQs7u+/wUIun+KE+H/ne0UVteZ4lfWiK2j2TYr59W2
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Mar 2026 17:11:16.1437
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 462bc566-b4a0-41fc-c7ac-08de7947e13f
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb08.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN2PEPF00004FBF.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB7721
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 1/7] media: dt-bindings: qcom-kaanapali-iris: Add
+ kaanapali video codec binding
+To: Krzysztof Kozlowski <krzk@kernel.org>,
+        Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
+        Abhinav Kumar <abhinav.kumar@linux.dev>,
+        Bryan O'Donoghue <bod@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley
+ <conor+dt@kernel.org>,
+        Saravana Kannan <saravanak@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Stefan Schmidt <stefan.schmidt@linaro.org>,
+        Hans Verkuil <hverkuil@kernel.org>,
+        Vishnu Reddy <busanna.reddy@oss.qualcomm.com>,
+        Hans Verkuil <hverkuil+cisco@kernel.org>
+Cc: linux-arm-msm@vger.kernel.org, linux-media@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        iommu@lists.linux.dev, Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+References: <20260227-kaanapali-iris-v2-0-850043ac3933@oss.qualcomm.com>
+ <20260227-kaanapali-iris-v2-1-850043ac3933@oss.qualcomm.com>
+ <4dcbbd06-18eb-46c6-a52c-07a4b17205cd@kernel.org>
+Content-Language: en-US
+From: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
+In-Reply-To: <4dcbbd06-18eb-46c6-a52c-07a4b17205cd@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMzAzMDE0NiBTYWx0ZWRfX9XJ7JiNri0Rr
+ 4RWaIGwqStjC48IyhjyFBX/hCkkdXKly/OzrfpHVxL7ZZg4KFA4UhRFOFjvqXrjvWZ2vSfX1zAp
+ hfAfLMcUfkEMvZZnaC8TLwU3Sf1Zh26ReZpT/R5NcTtp/98L76xWnxFDqvLrjmR/oXeKbZ+nYjN
+ fsvF4PvVDgftD5pAIQ8iMfkAbvrCIHMhOycuQZabxO4bCkvfjL9BH6ARhS6VkmwrvEYm/TvPMPg
+ inMBtrcSKONU7reWFMvadLUZZC++qhGb6CnCFnRWNCSrGA+AQ6j3WH9/CqSj3DIz/jofRaKcofH
+ vbgiPyb8A+D43Jp4IQVDedVZTtBj13/5wJjj1A0eUjmRc720hoxdQejSpKnoEYHcEd4wxCIHR7C
+ ufTwcnl5hUQHEKh/PA++wpg6wCnas2qWfUg8zhb1v3VvYhz+SNUBsTx5jEr1rUNlHOrg9KBFFC9
+ 4E26K2Y2xuy/YuW81Iw==
+X-Authority-Analysis: v=2.4 cv=MuhfKmae c=1 sm=1 tr=0 ts=69a72407 cx=c_pps
+ a=oF/VQ+ItUULfLr/lQ2/icg==:117 a=KPiuay1jFzAquJblYynD6w==:17
+ a=IkcTkHD0fZMA:10 a=Yq5XynenixoA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=_K5XuSEh1TEqbUxoQ0s3:22
+ a=NEAV23lmAAAA:8 a=gEfo2CItAAAA:8 a=EUspDBNiAAAA:8 a=G49KJ_XMRW11ds8oWG8A:9
+ a=QEXdDO2ut3YA:10 a=3WC7DwWrALyhR5TkjVHa:22 a=sptkURWiP4Gy88Gu7hUp:22
+X-Proofpoint-ORIG-GUID: U59pA-rIechSS5KGm7t1Nd4Lpt-Mj_1E
+X-Proofpoint-GUID: U59pA-rIechSS5KGm7t1Nd4Lpt-Mj_1E
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-03-03_02,2026-03-03_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ priorityscore=1501 phishscore=0 bulkscore=0 lowpriorityscore=0 adultscore=0
+ impostorscore=0 suspectscore=0 malwarescore=0 clxscore=1015 spamscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2602130000 definitions=main-2603030146
 
-On Tue, Mar 03, 2026 at 08:05:54AM -0400, Jason Gunthorpe wrote:
-> On Tue, Mar 03, 2026 at 11:47:21AM +0000, Ankit Soni wrote:
-> 
-> > > > +	/*
-> > > > +	 * IVINFO[VASIZE] encodes the log2 of the maximum virtual address
-> > > > +	 * processed by the IOMMU.
-> > > > +	 */
-> > > > +	switch (vasize) {
-> > > > +	case 32:
-> > > > +	case 40:
-> > > > +	case 48:
-> > > > +	case 64:
-> > > > +		return vasize;
-> > > > +	default:
-> > > > +		pr_warn_once("IVRS: IVINFO[VASIZE]=0x%x is invalid, defaulting to 64‑bit VA\n",
-> > > > +			     vasize);
-> > > > +		return 64;
-> > > 
-> > > Why check and limit it like this? 
-> > > 
-> > 
-> > I’ll replace this with a macro and send that in v3. If you have other suggestions,
-> > I’m happy to incorporate.
-> > 
-> > > > -	cfg.common.hw_max_vasz_lg2 =
-> > > > -		min(64, (amd_iommu_hpt_level - 1) * 9 + 21);
-> > > > +	cfg.common.hw_max_vasz_lg2 = amd_iommu_hpt_vasize;
-> > > 
-> > > This has no restriction, you can send it whatever size you want.
-> > > 
-> > 
-> > The intent is for the kernel to respect what the VM advertises in IVINFO.
-> > If we ignore IVINFO[VASIZE] and use a larger limit (i.e. from EFR only),
-> > driver can exceed vasize what the VM allows and break the guest.
-> 
-> I mean if FIELD_GET(IOMMU_IVINFO_VASIZE, amd_iommu_ivinfo) is 35 why
-> not just pass it to hw_max_vasz_lg2 and be done with it? What is the
-> point of limiting to only a few values?
-> 
-> Jason
 
-I got your point, i added the check to match the spec, which defines valid
-values are only 32, 40, 48, and 64.
+On 2/27/2026 9:20 PM, Krzysztof Kozlowski wrote:
+> On 27/02/2026 15:11, Vikash Garodia wrote:
+>> Kaanapali SOC brings in the new generation of video IP i.e iris4. When
+>> compared to previous generation, iris3x, it has,
+>> - separate power domains for stream and pixel processing hardware blocks
+>>    (bse and vpp).
+>> - additional power domain for apv codec.
+>> - power domains for individual pipes (VPPx).
+>> - different clocks and reset lines.
+>>
+>> iommu-map include all the different stream-ids which can be possibly
+>> generated by vpu4 hardware as below,
+>> bitstream stream from vcodec
+>> non-pixel stream from vcodec
+>> non-pixel stream from tensilica
+>> pixel stream from vcodec
+>> secure bitstream stream from vcodec
+>> secure non-pixel stream from vcodec
+>> secure non-pixel stream from tensilica
+>> secure pixel stream from vcodec
+>> firmware stream from tensilica (might be handled by the TZ / hyp)
+> 
+> I cannot really parse above.
 
-Ankit
+I think its better to drop this aspect from commit message, as the patch 
+precisely describes them.
+
+> 
+>>
+>> This patch is depend on the below dt-schema patch.
+>> Link: https://github.com/devicetree-org/dt-schema/pull/184/changes/d341298d62805bc972dfba691da6b3b62aa3ff15
+>> Signed-off-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
+>> ---
+>>   .../bindings/media/qcom,kaanapali-iris.yaml        | 261 +++++++++++++++++++++
+>>   include/dt-bindings/media/qcom,iris.h              |  18 ++
+>>   2 files changed, 279 insertions(+)
+>>
+>> diff --git a/Documentation/devicetree/bindings/media/qcom,kaanapali-iris.yaml b/Documentation/devicetree/bindings/media/qcom,kaanapali-iris.yaml
+>> new file mode 100644
+>> index 0000000000000000000000000000000000000000..db734c664a0417d8f5ea55b066f63f42583b1c14
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/media/qcom,kaanapali-iris.yaml
+>> @@ -0,0 +1,261 @@
+>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+>> +%YAML 1.2
+>> +---
+>> +$id: http://devicetree.org/schemas/media/qcom,kaanapali-iris.yaml#
+>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>> +
+>> +title: Qualcomm Kaanapali Iris video encoder and decoder
+>> +
+>> +maintainers:
+>> +  - Vikash Garodia <vikash.garodia@oss.qualcomm.com>
+>> +  - Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>
+>> +
+>> +description:
+>> +  The iris video processing unit is a video encode and decode accelerator
+>> +  present on Qualcomm Kaanapali SoC.
+>> +
+>> +definitions:
+>> +  iommu-types:
+>> +    items:
+>> +      - description: Function ID
+>> +      - description: Phandle to IOMMU
+>> +      - description: IOMMU stream ID base
+>> +      - description: IOMMU stream ID mask
+>> +      - description: Number of stream IDs
+> 
+> You don't need definitions.
+
+Ack, this can be dropped altogether.
+
+> 
+>> +
+>> +properties:
+>> +  compatible:
+>> +    const: qcom,kaanapali-iris
+>> +
+>> +  reg:
+>> +    maxItems: 1
+>> +
+>> +  clocks:
+>> +    maxItems: 10
+>> +
+>> +  clock-names:
+>> +    items:
+>> +      - const: iface
+>> +      - const: core
+>> +      - const: vcodec0_core
+>> +      - const: iface1
+>> +      - const: core_freerun
+>> +      - const: vcodec0_core_freerun
+>> +      - const: vcodec_bse
+>> +      - const: vcodec_vpp0
+>> +      - const: vcodec_vpp1
+>> +      - const: vcodec_apv
+>> +
+>> +  dma-coherent: true
+>> +
+>> +  firmware-name:
+>> +    maxItems: 1
+>> +
+>> +  interconnects:
+>> +    maxItems: 2
+>> +
+>> +  interconnect-names:
+>> +    items:
+>> +      - const: cpu-cfg
+>> +      - const: video-mem
+>> +
+>> +  interrupts:
+>> +    maxItems: 1
+>> +
+>> +  iommu-map:
+>> +    description: |
+>> +        - bitstream stream from vcodec
+>> +        - non-pixel stream from vcodec
+>> +        - non-pixel stream from tensilica
+>> +        - pixel stream from vcodec
+>> +        - secure bitstream stream from vcodec
+>> +        - secure non-pixel stream from vcodec
+>> +        - secure non-pixel stream from tensilica
+>> +        - secure pixel stream from vcodec
+>> +        # firmware might be handled by the TZ / hyp
+>> +        - firmware stream from tensilica
+> 
+> Drop description, pointless. How does it help anyhow in writing DTS?
+> 
+>> +    $ref: /schemas/types.yaml#/definitions/uint32-matrix
+>> +    items:
+>> +      $ref: '#/definitions/iommu-types'
+>> +      minItems: 5
+>> +    minItems: 8
+>> +    maxItems: 9
+> 
+> This solves nothing from the discussions we had. I re-iterated multiple
+> times, plus there were internal threads doing the same, that you need to
+> define the items to have strict order.
+> 
+
+describing them as a list of items, please review.
+
+iommu-map:
+     $ref: /schemas/types.yaml#/definitions/uint32-matrix
+     items:
+       - description: bitstream stream from vcodec
+         items:
+           - description: Function ID
+           - description: Phandle to IOMMU
+           - description: IOMMU stream ID base
+           - description: IOMMU stream ID mask
+           - description: Number of stream IDs
+       - description: non-pixel stream from vcodec
+       - description: non-pixel stream from tensilica
+       - description: pixel stream from vcodec
+       - description: secure bitstream stream from vcodec
+       - description: secure non-pixel stream from vcodec
+       - description: secure non-pixel stream from tensilica
+       - description: secure pixel stream from vcodec
+       # firmware might be handled by the TZ / hyp
+       - description: firmware stream from tensilica
+     minItems: 8
+
+
+>> +
+>> +  memory-region:
+>> +    maxItems: 1
+>> +
+>> +  operating-points-v2: true
+>> +  opp-table:
+>> +    type: object
+>> +
+>> +  power-domains:
+>> +    maxItems: 7
+>> +
+>> +  power-domain-names:
+>> +    items:
+>> +      - const: venus
+>> +      - const: vcodec0
+>> +      - const: mxc
+>> +      - const: mmcx
+>> +      - const: vpp0
+>> +      - const: vpp1
+>> +      - const: apv
+>> +
+>> +  resets:
+>> +    maxItems: 4
+>> +
+>> +  reset-names:
+>> +    items:
+>> +      - const: bus0
+>> +      - const: bus1
+>> +      - const: core
+>> +      - const: vcodec0_core
+>> +
+> 
+> I assume you checked and used last SoC order of all the entries here.
+
+yes, order is followed as used in earlier SOC.
+
+> 
+> 
+>> +required:
+>> +  - compatible
+>> +  - reg
+>> +  - clocks
+>> +  - clock-names
+>> +  - dma-coherent
+>> +  - interconnects
+>> +  - interconnect-names
+>> +  - interrupts
+>> +  - iommu-map
+>> +  - memory-region
+>> +  - power-domains
+>> +  - power-domain-names
+>> +  - resets
+>> +  - reset-names
+>> +
+>> +unevaluatedProperties: false
+> 
+> additionalprops, see writing schema for explanation.
+> 
+
+I do not see this being added in qcom,sm8750-iris.yaml as well. Since 
+you made that schema, i generally follow that as reference.
+
+> 
+> ...
+> 
+>> +    };
+>> diff --git a/include/dt-bindings/media/qcom,iris.h b/include/dt-bindings/media/qcom,iris.h
+> 
+> Filename must match binding/compatible. I asked for this multiple times.
+> 
+
+in this case, its applicable for other platforms as well. Naming it as 
+qcom,kaanapali-iris.h would make it look like kaanapali specific.
+
+>> new file mode 100644
+>> index 0000000000000000000000000000000000000000..beb244289466ca938c7e5fe5cf15526f606a3a6c
+>> --- /dev/null
+>> +++ b/include/dt-bindings/media/qcom,iris.h
+>> @@ -0,0 +1,18 @@
+>> +/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
+>> +/*
+>> + * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+>> + */
+>> +
+>> +#ifndef _DT_BINDINGS_MEDIA_QCOM_IRIS_H
+>> +#define _DT_BINDINGS_MEDIA_QCOM_IRIS_H
+>> +
+>> +/* Function identifiers for iommu-map to attach for the context bank devices */
+>> +#define IRIS_BITSTREAM		0x100
+>> +#define IRIS_NON_PIXEL		0x101
+>> +#define IRIS_PIXEL		0x102
+>> +#define IRIS_SECURE_BITSTREAM	0x200
+>> +#define IRIS_SECURE_NON_PIXEL	0x201
+>> +#define IRIS_SECURE_PIXEL	0x202
+>> +#define IRIS_FIRMWARE		0x300
+>> +
+> 
+> Abstract identifiers for ABI start with 0 or 1 and are incremented by 1,
+> not 0x100. There are also decimal, not hex.
+
+Ack.
+
+> 
+> Best regards,
+> Krzysztof
+
+Regards,
+Vikash
