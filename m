@@ -1,161 +1,131 @@
-Received: from SA9PR02CU001.outbound.protection.outlook.com (mail-southcentralusazon11013065.outbound.protection.outlook.com [40.93.196.65])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84EE9387570;
-	Tue,  3 Mar 2026 09:09:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.196.65
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772528944; cv=fail; b=RmduXaoKVIetEahfyWMVp127a1cXq4yMb8K6FcT+dMCsNQeCrUpn7htEX1NKMSVWS4Xcind9QKgR+HR8sG8vqqQ7wwlxLowheY9Rb/TjvGCroD8NzjHATbGSB/NnCGL8lepMHb+Jau0dmj90kZ1octtOjoUsp/ppzJ8HxqeE5bU=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772528944; c=relaxed/simple;
-	bh=HofrrtrBxooxQoto40CZxCUAa5rIBkYIfeadAq3P0kk=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=iH2TkSTQVs1xkSFb7mZ7n2YESmLf72GmqrbGaMNligttXwzvTsqj+fjVwz7dTCi3VHXkhrHhpZSuW2MAKbOEfURS7ehDTroHS6m0EpiHcAoZn4SwOWcODzTovhcIaK22WhgEAhe+zvlXYc3amRhXN2GYQXLLcU5XX1IAAI++KC4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=06lMb3gQ; arc=fail smtp.client-ip=40.93.196.65
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 009873822A3;
+	Tue,  3 Mar 2026 10:13:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1772532797; cv=none; b=S08fRK6YkzdYqKRiwLcPabrWRgEfoUy4xF1XYjpd9ILzEnfZSOcfx1AYnYhaRa1DEz/C5YYQDP8RLpvGjc6D25QQoZy27EVmZcf+HWFoI16Cptkx7U1svbrM8R8HJj198LEkvOMU4un8c0XfeFZzIooDTvDmsnHZ1Xfe7fDYpEw=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1772532797; c=relaxed/simple;
+	bh=huH+jTTc4+4vRctajrY9Qj1iPUcQ4Rh9vy/rLperoFM=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=n5b0HkStb5i46s4MPqsnKIeZuIDQOMzKkvZY45El+q230QRlEMQGUJzfu5E57tRJx5Krg3jB9xkKnhl+ruE5Fqj/NnBj98tHkZnHU4gXsD2EvHCydjWldLfbXjxGsJn1X29N7RO0zSqyW26TA2JU6EgVr6Ri8+aCm6YGQGJtGKA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nAC+WnmK; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="06lMb3gQ"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=H3yJq+ZD/dvUfwpwbHAE5q3zPyCVa+jcJrRfs2itH17A26uHmI0e2ojP0+3K3qC70v+r7gsOsfx0fJWaWX5Op0R/R/i34TvZW+zhJWTPpkmnbeXK3efUxrVR2n8lwsmyzqHzjrXuzjF63IFnNsYRcxOy4li+fzqACfrTxTiRebz5GxDL77svqGSEaWmrgi8Y88VeoTJKnMM1tpp5GUW1sWmrrNNM7Td6znSU9kNoMfpx72dK4Tyrb2ykAcLKgmB+KsolI3x8ovlQ/M15E7OSCJylVnKWpxlGbrulYbHt9PcrFvmDxIG3vs8B6GND7ZkJNqBXoCPjB/N83ARe4YIcxg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XUEv4TUhuJllRuD+Fh6KHKOIQfl5iR2UMzsgG5Lgt58=;
- b=VZbLeS+E/HAi2+omlnVh7MvMMmsTWIRaosF9RnIIFSDWmolXDIkvyMHTjaThqz/Q7RoiIgR9zNBySXKSc5H51paWxkwo/rsMPhn5wVhmxo+mbmdacJnSH4TBHFah745O85TQAAPccoR1r2aUWcTvPtZ2uiMf+72hje1CBxl3Dz4wKUB6dZBYNrb895dL7EDwMInOo0oUHWDGwHcjn2+0oUXnWQxmZr6G0LdAnPvr8BuA/ktdI9usbBgnXii5pbTXgb9a67yle/ncBQfUlLYbXbhHtGJLBhKP0Rq5yUaVCArFZETxsqdk6BpzkBHBXVc8Q5JW++HHHK6oWLyR8ULirA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XUEv4TUhuJllRuD+Fh6KHKOIQfl5iR2UMzsgG5Lgt58=;
- b=06lMb3gQcPIN70efwlcvkmNAzIKSbsLXoNRMAt/db+/nqWlyDdwoOcumMHgc6eWCcA/1RJ5P/mcIh0D9uSrZhFi1F0agfZFN+n1OtwFytW2YqKnRM42smGrRn6fAr8t/bnJ6Q3GBc87MAxhGbobdJcTYr4ugG/ZZ0haNlM3kgbU=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from MN0PR12MB5761.namprd12.prod.outlook.com (2603:10b6:208:374::6)
- by MW6PR12MB8833.namprd12.prod.outlook.com (2603:10b6:303:23f::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9654.21; Tue, 3 Mar
- 2026 09:09:00 +0000
-Received: from MN0PR12MB5761.namprd12.prod.outlook.com
- ([fe80::b0f2:27be:4ba6:3288]) by MN0PR12MB5761.namprd12.prod.outlook.com
- ([fe80::b0f2:27be:4ba6:3288%4]) with mapi id 15.20.9654.015; Tue, 3 Mar 2026
- 09:09:00 +0000
-Message-ID: <91d17b5e-af1c-43e8-9e61-ebd608f67bea@amd.com>
-Date: Tue, 3 Mar 2026 14:38:53 +0530
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH rc 2/2] iommupt: Fix short gather if the unmap goes into a
- large mapping
-To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
- Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
- Will Deacon <will@kernel.org>
-Cc: Alejandro Jimenez <alejandro.j.jimenez@oracle.com>,
- Janusz Krzysztofik <janusz.krzysztofik@linux.intel.com>,
- Joerg Roedel <joerg.roedel@amd.com>, Kevin Tian <kevin.tian@intel.com>,
- Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
- Samiullah Khawaja <skhawaja@google.com>, stable@vger.kernel.org
-References: <2-v1-13a02eb0e031+a5-iommu_gather_jgg@nvidia.com>
-Content-Language: en-US
-From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <2-v1-13a02eb0e031+a5-iommu_gather_jgg@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MA5P287CA0210.INDP287.PROD.OUTLOOK.COM
- (2603:1096:a01:1ab::16) To MN0PR12MB5761.namprd12.prod.outlook.com
- (2603:10b6:208:374::6)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nAC+WnmK"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15A26C116C6;
+	Tue,  3 Mar 2026 10:13:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1772532796;
+	bh=huH+jTTc4+4vRctajrY9Qj1iPUcQ4Rh9vy/rLperoFM=;
+	h=From:Subject:Date:To:Cc:From;
+	b=nAC+WnmKRlfMtbZ9K5XQk5snQ+o5BtHQCeb/WYovJVKV6u1w0MD/D9C60ZmDCnvp8
+	 Idh0WQT4VmNxjNDmBH3C+rPsSIQI8EXk56wKu72Adu7B/lajCv8ty24wikx6XGaujz
+	 FWLTDibVetz8Yd5d44OoxxIaDHl6G9Ys/KNgf8fN5u2vhEmuWneaXZ1DKn1saHKAlz
+	 212l02YMYaM6LC2c6ujcRdMKTMONjm7PxX1t/S4+rUL427Kk8tFpdHTR23k3ULKvvc
+	 ryk5kevylRq+/6MZmpYbUeLGPqW7fmTQf//AZtfUmNK8ddzspIVOcRzfj7pWI5dcBP
+	 ELhw+Vd8I8yqA==
+From: Maxime Ripard <mripard@kernel.org>
+Subject: [PATCH v3 0/8] dma-buf: heaps: Turn heaps into modules
+Date: Tue, 03 Mar 2026 11:13:03 +0100
+Message-Id: <20260303-dma-buf-heaps-as-modules-v3-0-24344812c707@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MN0PR12MB5761:EE_|MW6PR12MB8833:EE_
-X-MS-Office365-Filtering-Correlation-Id: b6c3f8cf-e598-4d0b-f758-08de790481ee
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|366016|376014|7416014|7053199007;
-X-Microsoft-Antispam-Message-Info:
-	L+jBVPgJVrx9+SS4rPd5/cpvvyJOCDtuqK9vLPFtpxI/9Xh/mGJNialMJbUW61+OTh/DXtsrc+i+8AFvrTedCbn1B6LdlVezFKkEXAjaVsZgTzbaPDx0bvf9QSniBEsxjXO/ZqciTmV4fN93u7VemcJPkOt+TQcfUpOTbDeaQu572pZhr8jCUD8Y8Z8bWCGfh4zw1t6jNbKnnx7tTMv+rEZ3etQrbzrbxnrEZ7zwL8lnoD7CWdIr5oYsd6g05Ct0mi5er09iW6HdX/+zaCf1LdrzOTh2R14yvrbki+kjYkUnJXVjc/2Vd8Kou5lc5icZECyYB88bB3YvFX66vLF0TGiu+RXBQIUfz4oj/Mt7A6iBq2RRS2wxzGGgUtQhChHpqnEz8793817lxtAU5cZtDMvALpbHAgPxjyVXICxnv8nQOV1NMWw8/h9jXs+qpzwisoMyGJyNp1x9qc6AvG0sqOgxk7J9YpZvELa0+NDv2k3dv1PbZHeE4y57DugYOD+LcJtqiFcd+LrO1RQ6PBpZ5RCl/ViPgTdLVxrBZMdi1XaGx+oLkID1tykyYxk5A+nY/dogoYEQzNC+RAWwEHRpAn6uvahOTda2iDlNp6Kmk7DkLcQ0HdBSqKUX5DcnVcGB03eib/IZ04RNTyJU5QgegcFK2PCLp0gsdlb3iOdwRMijoxGWWnZiT/lWIAoeB6J4TnYcyGODNthlPtKHNLjbKvz+KC/JyFEPKodq2HdMZYM=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN0PR12MB5761.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(7416014)(7053199007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?cXhMOXV4Q2tPcnN1cDgzbysvTHhSVFlsam1oYVBGVnNhZ1Vid3F5YjA5dkNU?=
- =?utf-8?B?YnNRU3pnaVZBemJ1MW5BMVQyaktuQUJGaCtON2dYb2VVMVJ6ZktIcEJKTXdu?=
- =?utf-8?B?Slh1V0NlcXZBbzNNU21IQUtrUXJidlI1aWp6QSs2MFR0RGMzRW1NQzJjbzBh?=
- =?utf-8?B?MDBURmxMV3h2OWJqUjlCYmlKamUzczZRNHFFV0xWeGNXSFpzTGRpR3RSOGRM?=
- =?utf-8?B?cDcwMC9QNnI1SjhnamY4T01hTFRRQkxyVVpoeUVla3R0ckhTVmlycXBQYnZZ?=
- =?utf-8?B?ek9FQ21vaS8zbXhGV0RuZzNsb3B3NSs2SGRLQld3WmE1ekl3MEUxTTl4eEpl?=
- =?utf-8?B?bkc4MXJNUGtQbUVsVE1hWlJSdDVneUNaSkc5Q3VMNi80eFQ5SWFmUlNTL0dL?=
- =?utf-8?B?aklLV2UzZllaZmpSb002KzBCNmMvY1RlM0ROaEtKMS8yTG5YcHNzeDc1OUxH?=
- =?utf-8?B?YmhPWXJDUXd4aStHd2pCVTRZY1c3TXZCSUlaOXBUb2VTV1Z1TnI2Q1lITTFC?=
- =?utf-8?B?a0x2aHdORWlVanhUbkVTR2RNdlVpTjZTWWR1a1V4ay8yMTZGU3VxUXVBM1lp?=
- =?utf-8?B?OHlMMkdLSStrWUREVTIvaUFVT2JsbzhGaThiTzc0Z2VveDB6NDQ3M0FRUk5K?=
- =?utf-8?B?R2x0MmJmdWV2eW1HOURLVTZNaXIwblp3ZGFCODUrY3BPbGN4Q1NaTGUxOG9x?=
- =?utf-8?B?OWN6QzhaR0xSMzFPTG0xYVljbGh5SEN6MElac3VCME0wZDY3aWo4dktJdnhr?=
- =?utf-8?B?Slplb1NWWmUzYVM0WjdCdGo4QzVDaFE4SnhheUZ5K0JvSjhxeGNkWkhHaExj?=
- =?utf-8?B?N1BQRVMzd2lZVlBzNGdPaWZHNm1PVG8vVlFibUl5M0Q1VTgybUpZbTNPT3FJ?=
- =?utf-8?B?cWp6U0NjU1JXZEcwazhEa0poNWVoK3dWRHUvTVJZTFVvcTVwdnE2VWxGejE3?=
- =?utf-8?B?aU0vNEZUZGhVcDRicEtkQ3hpdi9LSUEzRU5CY1ZWY0todzlXTDYzSDFZcFQw?=
- =?utf-8?B?UGxaeEdWWm1Za0JHNll5SVlxb1k3bDhiNmhUWllBblFINThpTjVldWJLdWVB?=
- =?utf-8?B?TjNoc3RINEgxR1J4MFp6L0VVWmh4SVc5SWpYWnR6ZGVydjBwTStLbVZEQXlw?=
- =?utf-8?B?bTF1MUFhVUpIeXZpelZtWEtZbHFEbEEwM29jNThNY09Ubkt4eVpIdkZUb0h3?=
- =?utf-8?B?Si9mRGhrc3p2U21QTENJTS9qOGV5WDgrRUIzSG1aRHRLQnhCSlZUNEZ3NW5l?=
- =?utf-8?B?czh0YzJNSEVLZHlWYytjTmJ2SFdWQVlHeVVvTUlJNithM2pVTGRuamVESVho?=
- =?utf-8?B?N2FQdk9JMXdpNVpLbitxS3JXWjZwbVFoTDh5ZW40MTlmamxqQzk2cVFjRUc5?=
- =?utf-8?B?b1BuWmNkY1ZVbTMyTFkvUTEzK1l2eGdMcnI3amlDcGpLUnRVYlZxdjNMMUc1?=
- =?utf-8?B?MDkzTVFNWFFWT2pEVXJNY0ptbkIvUmJKK242ZURoYWlPYVd5bjMyTyszcXV5?=
- =?utf-8?B?clpNZWtUN1dGR0NEYjlVenBuOFpRMU9zSlRkUUFRVmZlcEw5OHBpTzdGZ1U5?=
- =?utf-8?B?RFkvVjFQVnpnSzFYckhkM1RkaDlxTkNwbTRUZ0l5UGZjcGFUK1JZeGpBRHNh?=
- =?utf-8?B?Nk9BYm8ySm9zdUlaNHkwUm9lTTEzbmpZNjJyMmZ5ZjUwVEFGeHNHZjhaN1hp?=
- =?utf-8?B?Z2ttRnhRQ21sQ3pGTThmZmxTNHo4b3V2VU5lUlhLVlppTm94ZEY4QS91Qk16?=
- =?utf-8?B?bHdhSEwrcmhJUTdwRW1ncSsxQ2Z1NExSWUJZOHdLRjdWcGpxUGdFSUpqTGxr?=
- =?utf-8?B?SHJ5LzJNZEtpZEppSXpkdlQvWVdZQStFcTRTMFFZRXcxNUxXakw1cVg1c3dR?=
- =?utf-8?B?eWJrOUJSN3hrUG9UaG1rSE1UQklmR3liODJ6Ty95WjVkMXJna1pwY1hiUHdL?=
- =?utf-8?B?SWpNZjJBZW4ydWZCdThnNHN6SUJkUjJyL1RETHJKallINncybXhJUWZtZDlo?=
- =?utf-8?B?RnRpTmt6dkJ5L1M3WWYyOWxySTVUVUhVQzcySUhFQjhCdm9SeEkyVUMvaVkw?=
- =?utf-8?B?SzVWZkEvTndGWUxWYjBXMUlNWDU5S3N3NWFIdzlzb2c5Y3c0VWNqdVhVTWg3?=
- =?utf-8?B?ZE45RlcvWU1zUjZaeVZmNjRLQmJSZnhnNGFoSGM2L2p0a2d3eXZqcEFHcGJW?=
- =?utf-8?B?U1haaXNwSTZ4OERMTyt1T0ZDOHBOTFNVMGtMSWNrNHlaODNBdnB4TSt6ZDJP?=
- =?utf-8?B?THZIVURGT2FoS3owNkh0NHRJNmxXQXAzT3A0TnZwVFk2YldCUXl3NXlNTXUx?=
- =?utf-8?B?UGxQV1FQT2JGNGJ0M0szQkVGTzIxeEZxT0RWTkxGaXhQNVpRVGJydz09?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b6c3f8cf-e598-4d0b-f758-08de790481ee
-X-MS-Exchange-CrossTenant-AuthSource: MN0PR12MB5761.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Mar 2026 09:09:00.3062
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: TQcsqF3ouj+zvr+pdJ9oUQcxXvJCC9M93nuTJ9Ldu3DkKySlHt6+j2FmO6A5E6cwPNwIyj1wthRvhdDNQU/LFg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW6PR12MB8833
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/43NzQ6CMAzA8VchO1tTylfw5HsYD2MrsgiMbLJoC
+ O/u4KQX4/HftL8uwrMz7MUpWYTjYLyxY4zskAjVyfHGYHRsQUglEhWgBwnN3ELHcvIgPQxWzz1
+ 7SDHLm4xV3ZIU8Xxy3JrnTl+usTvjH9a99k8h3aZ/oCEFBEqxjlsSa9TnO7uR+6N1N7GpgT6l6
+ odEUcqLXDJXjKVSX9K6rm9FgDArCwEAAA==
+X-Change-ID: 20260225-dma-buf-heaps-as-modules-1034b3ec9f2a
+To: Sumit Semwal <sumit.semwal@linaro.org>, 
+ Benjamin Gaignard <benjamin.gaignard@collabora.com>, 
+ Brian Starkey <Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>, 
+ "T.J. Mercier" <tjmercier@google.com>, 
+ =?utf-8?q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
+ Marek Szyprowski <m.szyprowski@samsung.com>, 
+ Robin Murphy <robin.murphy@arm.com>, 
+ Andrew Morton <akpm@linux-foundation.org>, 
+ David Hildenbrand <david@kernel.org>, 
+ Lorenzo Stoakes <lorenzo.stoakes@oracle.com>, 
+ "Liam R. Howlett" <Liam.Howlett@oracle.com>, 
+ Vlastimil Babka <vbabka@suse.cz>, Mike Rapoport <rppt@kernel.org>, 
+ Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>
+Cc: Albert Esteve <aesteve@redhat.com>, linux-media@vger.kernel.org, 
+ dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, 
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev, linux-mm@kvack.org, 
+ Maxime Ripard <mripard@kernel.org>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2374; i=mripard@kernel.org;
+ h=from:subject:message-id; bh=huH+jTTc4+4vRctajrY9Qj1iPUcQ4Rh9vy/rLperoFM=;
+ b=owGbwMvMwCmsHn9OcpHtvjLG02pJDJnLthir7uE4qVs1b+HWQ8xse5JMMoO7Z06K39+59fuUt
+ T5zOg9YdUxlYRDmZJAVU2R5IhN2enn74ioH+5U/YOawMoEMYeDiFICJtFxhbNizsavS6vYL7u75
+ dS9Uv5xu7ta92yehqLe3YvaBq1waPHHOxSnfVk+z1mVb/Vsi2Tr0KWND+2btP29FZ0306P726AB
+ vToXZnYrXB2MElk+5+9H5ifzjrVtW8lyaLbyvmWGWzD6238WrAA==
+X-Developer-Key: i=mripard@kernel.org; a=openpgp;
+ fpr=BE5675C37E818C8B5764241C254BCFC56BF6CE8D
 
-On 3/3/2026 3:52 AM, Jason Gunthorpe wrote:
-> unmap has the odd behavior that it can unmap more than requested if the
-> ending point lands within the middle of a large or contiguous IOPTE.
-> 
-> In this case the gather should flush everything unmapped which can be
-> larger than what was requested to be unmapped. The gather was only
-> flushing the range requested to be unmapped, not extending to the extra
-> range, resulting in a short invalidation if the caller hits this special
-> condition.
-> 
-> This was found by the new invalidation/gather test I am adding in
-> preparation for ARMv8. Claude deduced the root cause.
-> 
-> As far as I remember nothing relies on unmapping a large entry, so this is
-> likely not a triggerable bug.
-> 
-> Cc: stable@vger.kernel.org
-> Fixes: 7c53f4238aa8 ("iommupt: Add unmap_pages op")
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Hi,
 
+The recent introduction of heaps in the optee driver [1] made possible
+the creation of heaps as modules.
 
-Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
+It's generally a good idea if possible, including for the already
+existing system and CMA heaps.
 
--Vasant
+The system one is pretty trivial, the CMA one is a bit more involved,
+especially since we have a call from kernel/dma/contiguous.c to the CMA
+heap code. This was solved by turning the logic around and making the
+CMA heap call into the contiguous DMA code.
 
+Let me know what you think,
+Maxime
+
+1: https://lore.kernel.org/dri-devel/20250911135007.1275833-4-jens.wiklander@linaro.org/
+
+Signed-off-by: Maxime Ripard <mripard@kernel.org>
+---
+Changes in v3:
+- Squashed cma_get_name and cma_alloc/release patches
+- Fixed typo in Export dev_get_cma_area commit title
+- Fixed compilation failure with DMA_CMA but not OF_RESERVED_MEM
+- Link to v2: https://lore.kernel.org/r/20260227-dma-buf-heaps-as-modules-v2-0-454aee7e06cc@kernel.org
+
+Changes in v2:
+- Collect tags
+- Don't export dma_contiguous_default_area anymore, but export
+  dev_get_cma_area instead
+- Mentioned that heap modules can't be removed
+- Link to v1: https://lore.kernel.org/r/20260225-dma-buf-heaps-as-modules-v1-0-2109225a090d@kernel.org
+
+---
+Maxime Ripard (8):
+      dma: contiguous: Turn heap registration logic around
+      dma: contiguous: Make dev_get_cma_area() a proper function
+      dma: contiguous: Make dma_contiguous_default_area static
+      dma: contiguous: Export dev_get_cma_area()
+      mm: cma: Export cma_alloc(), cma_release() and cma_get_name()
+      dma-buf: heaps: Export mem_accounting parameter
+      dma-buf: heaps: cma: Turn the heap into a module
+      dma-buf: heaps: system: Turn the heap into a module
+
+ drivers/dma-buf/dma-heap.c          |  1 +
+ drivers/dma-buf/heaps/Kconfig       |  4 ++--
+ drivers/dma-buf/heaps/cma_heap.c    | 21 +++++----------------
+ drivers/dma-buf/heaps/system_heap.c |  5 +++++
+ include/linux/dma-map-ops.h         | 18 ++++++++++--------
+ kernel/dma/contiguous.c             | 37 ++++++++++++++++++++++++++++++++++---
+ mm/cma.c                            |  3 +++
+ 7 files changed, 60 insertions(+), 29 deletions(-)
+---
+base-commit: 499a718536dc0e1c1d1b6211847207d58acd9916
+change-id: 20260225-dma-buf-heaps-as-modules-1034b3ec9f2a
+
+Best regards,
+-- 
+Maxime Ripard <mripard@kernel.org>
 
