@@ -1,174 +1,125 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f202.google.com (mail-pl1-f202.google.com [209.85.214.202])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB878382F29
-	for <iommu@lists.linux.dev>; Wed,  4 Mar 2026 07:58:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1367238C2C3
+	for <iommu@lists.linux.dev>; Wed,  4 Mar 2026 08:07:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.202
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772611140; cv=none; b=jQPxlT8jYOWOsissnOVppic1HhkZxL1xaSui6BQi5qQfutcifrxl1HezeD2OoihrbW5pJAmZFwnuRM5F2+0hidLxb8jpf1dhlRyQQrUcHGUHI+369pZ0dKXyzMUvBkYIdlxw5SAEThT01H6U27KfFET089U4T9RHcBQa3LXFwtE=
+	t=1772611644; cv=none; b=I5MtNfiqXRl+qMgPAAGtNMudw2i5BocJSyzHxB+F3Ybk2oBIW/0m49hyuFsHHU+APQCj6ipzvbbD7EX7LXg7XQPhz6Xm0GQjCoU8EbpCN3TiflQJEn9AUEPqxWe+ApGNrg4CwYcPnytAZDhZGKUNYfdUfUsP32NgSvRALUEcqkQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772611140; c=relaxed/simple;
-	bh=7DX6Xti3V185YiZv0qsnJejX66rVhLRc4dUIutVTUlA=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=G9zXZ5btMCpmCmD0JYSH/4Z84NFD1tMPV3Sq9XTQiHjnW893KY0GbBOleViSjKP+iqqm/gvTPsKVOsUSzvoXzy5M1GzswodLcOfynOKsM/s3CaqhSS1C3XfkKcFPpsxAWOtipsFbgs5cggiVu4dm6SkzIprSsVxBVJ2i0PRocic=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=VW0X/hp4; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1772611644; c=relaxed/simple;
+	bh=ECZkvFYUed+381xaLK5V5ceV1IEVrr/yAiQkDAC7vwc=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=Sxds7oULsmgMH5VZLqChkKL6CpUXW8xgd4LgqCVlZhQPgwDX9KFhcm9e/mlfU+7C9v6T/Mjj/L6iEqnBFCWBSdBnqY9xTSWqSmUrjmk/Mvtb0YGjqqaxPUKkKPPVielrehs9PKYxgmvdvF5VUh5S02Wgyd1+s/ZTRXDTSnnA6do=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--liulynn.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=KkBBc9TS; arc=none smtp.client-ip=209.85.214.202
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--liulynn.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="VW0X/hp4"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1772611135;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=wcqpRt8jvMP8XWtSPkO4bteIZfJG5tmplM3Y6kGZdoo=;
-	b=VW0X/hp4O1IQo+Lv3+QFu2uH75QK0Ag2xrWlbtJRpOEknfg2vibGbb3Lb+qcEbPOBbtPXI
-	MS6bgpIqBeai4zzshIsP5diS0Hhe/bPbrBr5bykJpj6zP5UZoQMuXGdHPKk5hAlqXEOaJW
-	IK2yfCXgJ4JY+eYSGSoDRsRTZ8XCboU=
-Received: from mail-yx1-f71.google.com (mail-yx1-f71.google.com
- [74.125.224.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-358-TwNEySkaMh6DwW9fOGQA7Q-1; Wed, 04 Mar 2026 02:58:54 -0500
-X-MC-Unique: TwNEySkaMh6DwW9fOGQA7Q-1
-X-Mimecast-MFC-AGG-ID: TwNEySkaMh6DwW9fOGQA7Q_1772611134
-Received: by mail-yx1-f71.google.com with SMTP id 956f58d0204a3-64ca5bae25aso10353670d50.3
-        for <iommu@lists.linux.dev>; Tue, 03 Mar 2026 23:58:54 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="KkBBc9TS"
+Received: by mail-pl1-f202.google.com with SMTP id d9443c01a7336-2ae47b3adacso31427555ad.3
+        for <iommu@lists.linux.dev>; Wed, 04 Mar 2026 00:07:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1772611642; x=1773216442; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=49qpq9KbDR/+8tqM5T7B4wKYI1YtV2DTAFLCoKtW5+0=;
+        b=KkBBc9TSVimlBBsvuI3+IzncboToZinzlLWV1OnG5iBLMoeUSG+I3lCAkapg+KN8WI
+         LBPTcSINdqzzFHWKTfIl4+9FwJPHp42dGH1xSk9UDyBq6EVGqsapwCZu5eLIHFPPzy2Z
+         jiC9YqVX73JLsHtFkjys9dQsEnIyuVxuaoYAqqiTg2Ah3tJqKdEkzGSWwubSLceDLNFG
+         21ELqVyDdKaRggD9kpYYhEinPvyLIFb5IFqP098G4OOBNk3LnNNFeY2pNjCe6ReDgt8X
+         nejIw7ABeCS5y60qEVmys3k/bqA+dQYtIqZ5nVnTVnjAHuOmgBpYU4T8NDFz4ODOMZGp
+         LaoQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772611134; x=1773215934;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=wcqpRt8jvMP8XWtSPkO4bteIZfJG5tmplM3Y6kGZdoo=;
-        b=w1vfsB/uXa6ex2S1Qop/Ke1U3yv0XHsPZXqQrxgWOy8v6mUiyabc9rHVFcq7tbAqnr
-         V9o0pAGb5BFNeOIKnoNXzEEZrHguE/5cF5b+R0y/8t4lLi44lOUL0B0K09iDjp5caA50
-         hmgyxiMoVtAOiIWuYSRJTa/5UPIoQZn8LumxS1HagMGnTqGogEb4cPDw06Al8woNF6Aj
-         Zk+UATJI3BRLNLi37qmlsM+AJFrWG/ljPB31DDNUBXl5pjAxStUDNzjJRszbmE3oR5X/
-         gS40sbu21wpRxJoKP6XwdXhC0Mw+OUQ8HimxxJS1EQdl5R9snB27ojvNW1LbkwyHoOlK
-         xUtQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUPuiFt0by1FRAXOcnJwMiGxadbfz7K2rtgJBaeOr99v2ee3dAxPFQNOagLKTTZzTfD44gNmg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yyp6JvRZVDZ3AE4lofIFtf5Ml3VrT9ZPgj6CEeJX22uz/oPAWZf
-	XIa88GpiPdCSMaq9Bk2enGULDNoYHiKPDgLjLSXvFTXL8V7BRooccqhJD0br1RWJmv4MlnSicQj
-	o5tZSGMPG7ENfkpyeO7/OadjWOGrqsJpUBs72BSEoWFImh20IJfDHqAvfC7BY1wPqlkiXnYWWwk
-	gQfbwBSSytP88HAloWRds0eEAhkaysRTI=
-X-Gm-Gg: ATEYQzx9EfAddohcENO1MkktkOxUXQGKztxyNvAv8YXYas8wMDdgxQGWna1azMC2Ia1
-	x/jFD9l8U9p0iEo7pxys+xUKsHTnUJ/wLVwmSlhlbXdTtGFt0qGkREXfSLwEbvYl10v6lf1O55o
-	LNlH+tmNcGIXWNfM8zrieGs7cmn2AyhCWZfv2r1s7bsl/tYeAAgRV2HOcHnwOBsuCE/laKxyw9U
-	Q==
-X-Received: by 2002:a53:ee53:0:b0:649:b04c:25c3 with SMTP id 956f58d0204a3-64cf9c1872amr761655d50.62.1772611134101;
-        Tue, 03 Mar 2026 23:58:54 -0800 (PST)
-X-Received: by 2002:a53:ee53:0:b0:649:b04c:25c3 with SMTP id
- 956f58d0204a3-64cf9c1872amr761636d50.62.1772611133749; Tue, 03 Mar 2026
- 23:58:53 -0800 (PST)
+        d=1e100.net; s=20230601; t=1772611642; x=1773216442;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=49qpq9KbDR/+8tqM5T7B4wKYI1YtV2DTAFLCoKtW5+0=;
+        b=NheFl9P+/gXjYZPLTLTdj8q05GUADsEqQXMPXWwUwBf8IHDHJ8J7oB5xTsfFuqfgdZ
+         1D8Is3hvQ+P9viDEgoT9zx41NyltzEl3XZpqLLrdJXSZwbvDOhZS+seKd7iUBqoj4e9V
+         0QPn0+dCvbIIjv0D55MbqQdQPG1gwQb9M+cixXElO7uqlzJVYXB8XRvPkFoJNQ0/1DUN
+         Ab6vSZvVfK/aHWg7PbIJhKdCCUJo6aisXTNJLKenedu+paL0oV+6TI1CUh+YOXgRYhhG
+         ZQPdd74V615HDPgejftBQQiq/DFKk2TlQlA3ZdbOmmoDUOevxBFqF1qqLQ3Vej1QzK/a
+         i9rw==
+X-Gm-Message-State: AOJu0YwlV2nulPmSMiQ4YY6fXgswSUkicKpvkfQGjs8CUiOYjqlCKCkq
+	C9cnPCOO3AgWh5620mpSjFVauZPDtnuxVNswRlum38rhsrUtUvA74O6Gzvj2eoAcbVjrKBcY8hz
+	P2+rpS+c+8g==
+X-Received: from pldd2.prod.google.com ([2002:a17:902:c182:b0:2ad:8161:bc65])
+ (user=liulynn job=prod-delivery.src-stubby-dispatcher) by 2002:a17:902:db0f:b0:2a9:622e:fd3e
+ with SMTP id d9443c01a7336-2ae6aa04cecmr13694195ad.4.1772611642026; Wed, 04
+ Mar 2026 00:07:22 -0800 (PST)
+Date: Wed,  4 Mar 2026 08:06:36 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-References: <20260303-b4-dmabuf-heap-coherent-rmem-v2-0-65a4653b3378@redhat.com>
- <20260303-b4-dmabuf-heap-coherent-rmem-v2-3-65a4653b3378@redhat.com> <20260303-weightless-crafty-hyrax-bdf1ca@houat>
-In-Reply-To: <20260303-weightless-crafty-hyrax-bdf1ca@houat>
-From: Albert Esteve <aesteve@redhat.com>
-Date: Wed, 4 Mar 2026 08:58:42 +0100
-X-Gm-Features: AaiRm50vjbd8iZF9aZq1Cno_RqIuyn0PYTIuzz9Iq5d5rpEaa4iOCaZKKjWryT4
-Message-ID: <CADSE00LodeTg8Xfvo4VOZDvHh25=8+Jsqq+V8iynmpYx2bBRjA@mail.gmail.com>
-Subject: Re: [PATCH v2 3/6] of_reserved_mem: add a helper for rmem device_init op
-To: Maxime Ripard <mripard@redhat.com>
-Cc: Sumit Semwal <sumit.semwal@linaro.org>, 
-	Benjamin Gaignard <benjamin.gaignard@collabora.com>, Brian Starkey <Brian.Starkey@arm.com>, 
-	John Stultz <jstultz@google.com>, "T.J. Mercier" <tjmercier@google.com>, 
-	=?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
-	Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, 
-	Rob Herring <robh@kernel.org>, Saravana Kannan <saravanak@kernel.org>, linux-kernel@vger.kernel.org, 
-	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org, 
-	linaro-mm-sig@lists.linaro.org, iommu@lists.linux.dev, 
-	devicetree@vger.kernel.org, echanude@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: AKQJwxETKe7_-MTTd_sGJOQbO9Ihe0jMsbOJ2fwXdlU_1772611134
-X-Mimecast-Originator: redhat.com
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.53.0.473.g4a7958ca14-goog
+Message-ID: <20260304080636.167426-1-liulynn@google.com>
+Subject: [PATCH v2] iommu/iova: Add NULL check in iova_magazine_free()
+From: Lynn Liu <liulynn@google.com>
+To: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	Lynn Liu <liulynn@google.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-On Tue, Mar 3, 2026 at 2:13=E2=80=AFPM Maxime Ripard <mripard@redhat.com> w=
-rote:
->
-> On Tue, Mar 03, 2026 at 01:33:46PM +0100, Albert Esteve wrote:
-> > Add a helper function wrapping internal reserved memory
-> > device_init call and expose it externally.
-> >
-> > Use the new helper function within of_reserved_mem_device_init_by_idx()=
-.
-> >
-> > Signed-off-by: Albert Esteve <aesteve@redhat.com>
-> > ---
-> >  drivers/of/of_reserved_mem.c    | 27 +++++++++++++++++++++++----
-> >  include/linux/of_reserved_mem.h |  8 ++++++++
-> >  2 files changed, 31 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/drivers/of/of_reserved_mem.c b/drivers/of/of_reserved_mem.=
-c
-> > index 1fd28f8056108..3a350bef8f11e 100644
-> > --- a/drivers/of/of_reserved_mem.c
-> > +++ b/drivers/of/of_reserved_mem.c
-> > @@ -605,6 +605,28 @@ struct rmem_assigned_device {
-> >  static LIST_HEAD(of_rmem_assigned_device_list);
-> >  static DEFINE_MUTEX(of_rmem_assigned_device_mutex);
-> >
-> > +/**
-> > + * of_reserved_mem_device_init_with_mem() - assign reserved memory reg=
-ion to
-> > + *                                       given device
-> > + * @dev:     Pointer to the device to configure
-> > + * @rmem:    Reserved memory region to assign
-> > + *
-> > + * This function assigns respective DMA-mapping operations based on th=
-e
-> > + * reserved memory region already provided in @rmem to the @dev device=
-,
-> > + * without walking DT nodes.
-> > + *
-> > + * Returns error code or zero on success.
-> > + */
-> > +int of_reserved_mem_device_init_with_mem(struct device *dev,
-> > +                                      struct reserved_mem *rmem)
-> > +{
-> > +     if (!dev || !rmem || !rmem->ops || !rmem->ops->device_init)
-> > +             return -EINVAL;
-> > +
-> > +     return rmem->ops->device_init(rmem, dev);
-> > +}
-> > +EXPORT_SYMBOL_GPL(of_reserved_mem_device_init_with_mem);
-> > +
-> >  /**
-> >   * of_reserved_mem_device_init_by_idx() - assign reserved memory regio=
-n to
-> >   *                                     given device
-> > @@ -643,14 +665,11 @@ int of_reserved_mem_device_init_by_idx(struct dev=
-ice *dev,
-> >       rmem =3D of_reserved_mem_lookup(target);
-> >       of_node_put(target);
-> >
-> > -     if (!rmem || !rmem->ops || !rmem->ops->device_init)
-> > -             return -EINVAL;
-> > -
-> >       rd =3D kmalloc_obj(struct rmem_assigned_device);
-> >       if (!rd)
-> >               return -ENOMEM;
-> >
-> > -     ret =3D rmem->ops->device_init(rmem, dev);
-> > +     ret =3D of_reserved_mem_device_init_with_mem(dev, rmem);
-> >       if (ret =3D=3D 0) {
-> >               rd->dev =3D dev;
-> >               rd->rmem =3D rmem;
->
-> I think you need to take the allocation of rd, and everything below.
-> Otherwise, your device, despite being attechd, wouldn't be listed
-> anywhere.
+When iova_domain_init_rcaches() fails to allocate an iova_magazine
+during the initialization of per-cpu rcaches, it jumps to out_err and
+calls free_iova_rcaches() for cleanup.
 
-True, I did not pay enough attention to that part. I will fix it in
-the next version.
+In free_iova_rcaches(), the code iterates through all possible CPUs to
+free both cpu_rcache->loaded and cpu_rcache->prev. However, if the
+original allocation failed mid-way through the CPU loop, the pointers
+for the remaining CPUs remain NULL.
 
->
-> Maxime
+Since kmem_cache_free() does not explicitly handle NULL pointers like
+kfree() does, passing these NULL pointers leads to a kernel paging
+request fault.
+
+The crash can be observed when fault injection triggers a failure in
+iova_magazine_alloc():
+
+pc : _compound_head include/linux/page-flags.h:251 [inline]
+pc : virt_to_folio include/linux/mm.h:1395 [inline]
+pc : virt_to_slab mm/slab.h:215 [inline]
+pc : kmem_cache_free+0x90/0x5c4 mm/slub.c:4769
+...
+Call trace:
+ trace_kmem_cache_free include/trace/events/kmem.h:114 [inline]
+ kmem_cache_free+0x90/0x5c4 mm/slub.c:4768
+ iova_magazine_free drivers/iommu/iova.c:623 [inline]
+ free_iova_rcaches+0x114/0x344 drivers/iommu/iova.c:894
+ iova_domain_init_rcaches drivers/iommu/iova.c:762 [inline]
+ iova_domain_init_rcaches+0x3d0/0x528 drivers/iommu/iova.c:717
+
+Add a NULL check in iova_magazine_free() to safely handle partially
+initialized rcaches in error paths.
+
+Fixes: 84e6f56be9c6 ("iommu/iova: use named kmem_cache for iova magazines")
+Signed-off-by: Lynn Liu <liulynn@google.com>
+---
+v1: https://lore.kernel.org/linux-iommu/20260214080919.390846-1-liulynn@google.com/T/#u
+Changelog in v1 -> v2:
+ - Update author name to full name.
+ - Add Fixes tag.
+ - Include the Call trace from the kernel crash.
+
+ drivers/iommu/iova.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index 18f839721813..e026be5e068b 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -611,7 +611,8 @@ static struct iova_magazine *iova_magazine_alloc(gfp_t flags)
+ 
+ static void iova_magazine_free(struct iova_magazine *mag)
+ {
+-	kmem_cache_free(iova_magazine_cache, mag);
++	if (mag)
++		kmem_cache_free(iova_magazine_cache, mag);
+ }
+ 
+ static void
+-- 
+2.53.0.473.g4a7958ca14-goog
 
