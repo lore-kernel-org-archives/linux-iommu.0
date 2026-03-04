@@ -1,86 +1,86 @@
 Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2BC1A33C52F
-	for <iommu@lists.linux.dev>; Wed,  4 Mar 2026 15:29:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BFD1634BA53
+	for <iommu@lists.linux.dev>; Wed,  4 Mar 2026 15:40:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772638176; cv=none; b=YetvShd331EE70qidcEMUlsiTLRaoWKiA3oml63D9vHoJQRH0ZMdFrLy/4BBbT26ftOqVqM1ZYG2ocVBgPEZy7EM1tWAeWEQHuEfFpfPFz5rcz1BUE1eP0stHsOa8GB6XW/Mz1hODx8gqLB3SrdSnPABumOzNvyT2LuujaTJV28=
+	t=1772638844; cv=none; b=pRRB0qIqAO+RJkywVxO5dN20kU/0jSwCIZ6jha7FYhr5Zt+SQGsUnl/17KeIPWgrW35OHUaOBt4gCYTnYC2l4ESfI2l8RvK8eomHTAxq/XrpPBiEzWDc/FQgXIQe7SgGtc7TzVVSclb1SxgLId54T6+xUbeMnpG8B3pdPEaDBfo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772638176; c=relaxed/simple;
-	bh=J2pHDqkcI5jgiqu24QsunAV3h4H2fOr3FdQWGJTAODc=;
+	s=arc-20240116; t=1772638844; c=relaxed/simple;
+	bh=PMGzy0QIhL0vRpNSRHs+DPTQgWtI6ilhEm2+hq5tQXc=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=AHl2LWTLX0j74asDbDlTxLTZGRO3430QlmFL+cPTurbfDxEZI0m2y3zgukYXE+S0mo4LyaiOOWTlmj7j8P9TnaiyulJ+tVVWhT21rTpxcLXTpJahVwBe5ehnBz+SwYXDo1x9Lz6B+6EwVlWvb8teDxpRX2IcNvJ5yIP6m6fnuAA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=Q1inYt1P; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=MDC3SpGF; arc=none smtp.client-ip=205.220.168.131
+	 In-Reply-To:Content-Type; b=RXWnI743ppANe6kITBGyNDLqM6K/u45dZ6l5Ake79rRQakYP8ZEvahULd9VSNwxQZ6RQ0ZnNeU7TgvrNTUAI1UN+3wf00HRYMXXWvSAGv+re2MwSwUSuZE8yxbNCdARjx3sIwtktdMF2d9CSt751ruNH524M6FuZtUIfsPwwfiE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=jhhJxPqt; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=QCWUeaud; arc=none smtp.client-ip=205.220.168.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="Q1inYt1P";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="MDC3SpGF"
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="jhhJxPqt";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="QCWUeaud"
 Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 624CWSh1153117
-	for <iommu@lists.linux.dev>; Wed, 4 Mar 2026 15:29:34 GMT
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 624CJfLS152844
+	for <iommu@lists.linux.dev>; Wed, 4 Mar 2026 15:40:43 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
 	cc:content-transfer-encoding:content-type:date:from:in-reply-to
 	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	S7C3ZGxT6MAy3b00eY/LGUqY8Jlj5bg+7oTeA1mEoGE=; b=Q1inYt1P8vbSvquh
-	RbvN1tXFxrQ7WBO3jZeuKtTjeAdNz4ed30cG+G58sHStPLRsDwStQPGQs1dKktMm
-	oJLDvRMSjLmHEww6yy+apcHIz4RMoGWyCBlp5LE+GYdW6c3jGs6VkyZPZyypEeSw
-	WngbUHpGtG1e2KHcRMRUs18ACkBa+1iML/MCIgto3Bgoa9RSbmmaDGcQst1S+ZFB
-	45FSzvD9ZpzFF6UskSy+MK3gXph4vfIwm/md0q+Vz/2kO7KSp3NJ5AMGDsn/Jj0W
-	1UKHCydobH6Js0BBYNHw5s10R0Zo6ro7QjZYup1+K2sB6cNbJUxZBK9qhpjPdBv2
-	4ThEWQ==
-Received: from mail-pg1-f199.google.com (mail-pg1-f199.google.com [209.85.215.199])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4cp3tvm4j2-1
+	BseyVlfG6qNLJh0pukGQEsnvFe0Y0lazqGGE1966Oz4=; b=jhhJxPqtA5CNygZ1
+	hhZPBB3+4LkVrZ/2IrBlz01xpPZcQf7s7oC6SjIYsfGt8t75ZU9MVDVsyiG9iTuQ
+	bKbHZHBud3w8ByFGzdYcbYGOD224Zhax+1lNSdGpV9M5OM3uB9CEl3/pbRnTjw6k
+	2q1h7PP0/lRyiPHDH6ny9TD6TtNPsEmKMT6dzB3SuT2MiED3CnhKb9ZdTb9gJfFi
+	DswqfsBt+T0jxAjHZYnGTIMWJ1zmZmvATvbSZDU80IpF8t37TWHENSC94fqaUHHx
+	omg7a7zBtVUVXRqvPFp/z5iSGrjmLH1fH1UTplpGUVFFHhPepOMafiP5CNI/1/Zh
+	kTEgsg==
+Received: from mail-pl1-f199.google.com (mail-pl1-f199.google.com [209.85.214.199])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4cp3tvm5wj-1
 	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Wed, 04 Mar 2026 15:29:34 +0000 (GMT)
-Received: by mail-pg1-f199.google.com with SMTP id 41be03b00d2f7-c738662b963so221478a12.0
-        for <iommu@lists.linux.dev>; Wed, 04 Mar 2026 07:29:34 -0800 (PST)
+	for <iommu@lists.linux.dev>; Wed, 04 Mar 2026 15:40:43 +0000 (GMT)
+Received: by mail-pl1-f199.google.com with SMTP id d9443c01a7336-2ae50463ba8so156774225ad.0
+        for <iommu@lists.linux.dev>; Wed, 04 Mar 2026 07:40:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1772638174; x=1773242974; darn=lists.linux.dev;
+        d=oss.qualcomm.com; s=google; t=1772638842; x=1773243642; darn=lists.linux.dev;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=S7C3ZGxT6MAy3b00eY/LGUqY8Jlj5bg+7oTeA1mEoGE=;
-        b=MDC3SpGFxcMNjLtLwEEhNhi9T2wsXQktxsGeIddmEmJ/0jwxaMINfk7Wps1+pKyfwL
-         EFNtx6cCrsgASTsDHy1KZ2zWT134bkLLZ782lDdA30CObsDAw9pu6LY/SCaNB8apLUqU
-         0AFoRUWfpJgXvf/kRkCHFBwrHPrz0INSeJIkYz3tQW0qsAa+y0AuKiXBjQ2bmsrDIW6D
-         90UZNy1P2EmNhwETnZqvDbkIVWzX43NOwpyKXs73ps4CbiOiuaWnP7I7ptIguJoN0sw0
-         XNHijaymI6Xfghv6fe8RgbZV/6qV2r6rktJY1A44FfK5kT8CE1Ts00ibXFhABurATkZv
-         byBQ==
+        bh=BseyVlfG6qNLJh0pukGQEsnvFe0Y0lazqGGE1966Oz4=;
+        b=QCWUeaud6/AAnNivORjoR3odQugYJVIzjeJv+pq9Lo9H0kWJ8h7aTuUqoFmlLWhlpt
+         27N1kgdZ3pHkFscjVSIjUOsEW1J1LJsW+TDiAPvxIsHyoPletr6ypXkOMDQ2GuexYyHa
+         YnhS2x65afP4JS0as8OsBSg/EKWZ1N9ZC9TwWfh1X0qsBjO4y5Yiyg754CLxtujjNq68
+         +0PyJZCAYkgQbcJuP7s9l9zyH+3et50fpPHhidWPhSLn0af6bEg3t+5Rh9aQZEJTM3KJ
+         7lJyYplPzNNNlydM8fZCvm2Pq0LayrZBo3hBek9O2fXQs7xfsCN60pZVFYFx/vuiYdlz
+         tzcA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772638174; x=1773242974;
+        d=1e100.net; s=20230601; t=1772638842; x=1773243642;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=S7C3ZGxT6MAy3b00eY/LGUqY8Jlj5bg+7oTeA1mEoGE=;
-        b=b754bjw2vDPtTYp4rNOF578Gl1FGbrWm+GZtmp9fyMGzO2KPHBIWFikm/18nq1r6hQ
-         Pn5DZCc6R2BxImHrv1fhlMTkr2MM05ZyIOT8vecOHrSTPutYGRbN/wa2k3Zw2bMuOpJu
-         xnBfGjxfPOWBxlEvoCKZ4W3tIdHnGSl1LLUAVf96Kbl+MD+HnFTXBv6nN1M7d73bpenG
-         7TH3F8uTjThozzQO5BwyCLAYadwQVVE8ZWxFq+eebPxaAOzQwT46ejeOs+K0KfoYZR+T
-         0BQSmJrb8aS6BhDD1/l2sQ+pOZxH3RQX75nZLlFgTo3EVq6vFXRo+sDsA5aZY0E1Tm3t
-         VcHw==
-X-Forwarded-Encrypted: i=1; AJvYcCV5sKqLSgUubavjELprPLzdYfKqtCaAc8eXqeQBnralzwfQlZzj7BlgYBQjhoLybbux7xiekA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzH7S31yi7hg/DSOtuGj0rQKyMTnHI4a2mUsAva3VwxCksKk4aP
-	Uk3V+vXeQC1O/wOhbneWZAlKC/GqOm9VIV7zCJmgZa2mkAtjrYmtipmaZrUV2FlGFjh9PFTFbDb
-	F7fVKWV8lAxsN7H1I490OJieeh0rRi5I6vZirku/NWyWIaVasRopcxtZSkQ==
-X-Gm-Gg: ATEYQzxCboDZHf6QCe10UFwtW0an0hdPySHs3v+dSxij/gxTqvoKbpY+ajU/N03RPLO
-	6PBREoF8Zw8Jk5cknG8GXiD3XrPGouwLYZLZg+pgOQ4tim1k/gITnYYZLopkGa9eMXGzIyHXNBU
-	bRLGQ1GEmRbwY5VChG1uWzIbg53FZBvaPwVfHQNyy583S4mCGbsvNV+C+Hi4sBsKwPHvWeQ3Vxp
-	RJQPi4dCfWBt/bGazC4Ry42IJDklBuKPRxR4ua6+2qEb1L+dzWLCfkDSr+jT9+nClXX1lJuLbKc
-	qt6JX66B1gbvmFMeW8n0gAUNT1e9wuPE8RMvfKjrlOgF4P0EDs/UnPYDynC6Egh1DMJtG+hj9dN
-	Exeki3KCy6uGX2gY9xMII9VD29o1dnBuklAysDXGkdBMdrRRc/wIgZA==
-X-Received: by 2002:a05:6a21:1f89:b0:38b:d9b0:e943 with SMTP id adf61e73a8af0-3982e1fe150mr2227254637.38.1772638173482;
-        Wed, 04 Mar 2026 07:29:33 -0800 (PST)
-X-Received: by 2002:a05:6a21:1f89:b0:38b:d9b0:e943 with SMTP id adf61e73a8af0-3982e1fe150mr2227236637.38.1772638172953;
-        Wed, 04 Mar 2026 07:29:32 -0800 (PST)
+        bh=BseyVlfG6qNLJh0pukGQEsnvFe0Y0lazqGGE1966Oz4=;
+        b=EbEyo63DZ0Bk0CwJo0nOMKUGUY6bN0eadGOh8EmE/iFiDz/Qylmvoz5h7CUeCj5kQM
+         KT8enzSyvsp3NgHsOS0HxX3z/4JxlehLaTW/Bz8B1WL+q8LrRhwbanFH6XG2TsLuA2Im
+         YaqmJRO50nHYRBkKD0HrsshW5zNyrvuecYV2ZZJHS4MOGelIoz+snIKr1/DDZstXcjyO
+         gCNWBxfTYyMP99Ff6x0xrPffSvzVajLjGeK9ZD3i8b+S5IVU/25aw9ahRPnr2sA06XW3
+         n/V2szLYKQ8ZmIa4ENXng2jbLrkriSzR05+AK28vnAPYH42LVpoglsnbAEtA9ANcugHN
+         g7IQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXo+i9+tFIDfXXmJ3vYHDDbfYbzj3Hm37UI2gzKLlG8z6OAqQaRBN3vlnPUvb62OXLzvnG7ag==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yxm6rvHPkDzvnbJDv0QdieTZak3cgzXJ+p7jJ3IRfddskcYDre9
+	xD2mz/7PWEWJ2+3+aQvTCCc+j2Vac8gPGh/k+y/I9LNgv59tntxFq5O1IRfAE6rsUsRV/LkwyuN
+	FDYKmqsISGSlX267xLFt1uPDdBOwpg7o9p68lYo4pSJwXZ3KBbhmMP/ZKWA==
+X-Gm-Gg: ATEYQzz1AZkIjVuMDh2MTyPunzFRbOoVKvluqe8Y8+J0UlPLzN//oNXAo8Tm4Vphmg3
+	ORytj1miipuYEfLpZlr42iv+21wVaNeTONmqscASCyl/RJcHxr59aQP8gOkKexi9LYwy3XtY/As
+	pi0uyEcJLq/QxcJrt3WeOqck49VDRoOM/vSa9pEefSSJlrBM5KU2ozZrgZaUCU4DRdfmFp+UjXW
+	rC8PvzLh+QX8VhbAruKDpna1xEZSwkyXENO8D1DjhR0uFbV/IOGVQ8KTxOy/JR2fb4X7ezAcu6E
+	iMzEiO4/XIF7S9vMvQTQGeOSO62RkWC5xFKAJYCLHTQq4C0XfLb9aEvMyN5edblDEqrzoyNxcN/
+	XeWBBg3uvKegz1/sW6jS62acMXPKaaSUpXlfDPMWBfEWCqozdVPIzMQ==
+X-Received: by 2002:a17:902:f790:b0:2ae:4c9f:4a5a with SMTP id d9443c01a7336-2ae6aa01e74mr24774515ad.6.1772638842220;
+        Wed, 04 Mar 2026 07:40:42 -0800 (PST)
+X-Received: by 2002:a17:902:f790:b0:2ae:4c9f:4a5a with SMTP id d9443c01a7336-2ae6aa01e74mr24774095ad.6.1772638841774;
+        Wed, 04 Mar 2026 07:40:41 -0800 (PST)
 Received: from [10.204.101.56] ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c70fa61a19bsm17288234a12.9.2026.03.04.07.29.26
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2adfb6df578sm202097025ad.81.2026.03.04.07.40.35
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 04 Mar 2026 07:29:32 -0800 (PST)
-Message-ID: <22b3e2e9-b855-487e-868f-e72fcbbb22cd@oss.qualcomm.com>
-Date: Wed, 4 Mar 2026 20:59:24 +0530
+        Wed, 04 Mar 2026 07:40:41 -0800 (PST)
+Message-ID: <22534cad-8940-43c5-a7b9-01d002943093@oss.qualcomm.com>
+Date: Wed, 4 Mar 2026 21:10:33 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -88,8 +88,8 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 5/7] media: iris: add helper to select context bank
- device
+Subject: Re: [PATCH v2 6/7] media: iris: add iris4 specific H265 line buffer
+ calculation
 To: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
 Cc: Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
         Abhinav Kumar <abhinav.kumar@linux.dev>,
@@ -110,31 +110,31 @@ Cc: Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         iommu@lists.linux.dev, Bryan O'Donoghue <bryan.odonoghue@linaro.org>
 References: <20260227-kaanapali-iris-v2-0-850043ac3933@oss.qualcomm.com>
- <20260227-kaanapali-iris-v2-5-850043ac3933@oss.qualcomm.com>
- <bi3i37ho3ppzlgdx264ohxpcem3nwumjelzckf4x5uzdj5rt7a@2y2jrilmfimj>
- <1dc86b00-9a18-482c-94b1-96692c1dd530@oss.qualcomm.com>
- <jgygscmwovezkytizhh54cmmu5etgv23bgopfqrql3qj7zlhxh@adxo2b7izlrc>
+ <20260227-kaanapali-iris-v2-6-850043ac3933@oss.qualcomm.com>
+ <cbwz5wtd55enswdi2zvvy3d66nsxlemyzdypheibvljnewmkax@kybx63aveepn>
+ <ce80e60e-90ca-415d-83af-4fe2e86ffd91@oss.qualcomm.com>
+ <hrjwyqz4r6usqvxhnsvtap4byfu2zvumji6whudda55vuym5yk@u6s4heswm4rc>
 Content-Language: en-US
 From: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
-In-Reply-To: <jgygscmwovezkytizhh54cmmu5etgv23bgopfqrql3qj7zlhxh@adxo2b7izlrc>
+In-Reply-To: <hrjwyqz4r6usqvxhnsvtap4byfu2zvumji6whudda55vuym5yk@u6s4heswm4rc>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMzA0MDEyNiBTYWx0ZWRfX3LVre28B4w2x
- anGMUTFVtpc8I2Q6jcsZBR2YiO/oMGjhjUyejPsOdmJi53+QOhIn2vqLPUmzTxwe/up1WokwNov
- /M/KORO9ds/kf3dI8YMjckceu8dkz5zCUsneKKaljRYxdIiBP/excNDbl4PNx+n3Epz/PIgAizl
- mxmRFDZ8zeflt2axFJLT/T+lreFZQcWq/2f1r5GnRI/9oca4GphFXe1MkBggVoM0nUZCRxsRuK3
- 1af5n/1fKHsKnhMEm96w/4MnsIRD+hFcNJVWZLECe7421ZLeqQVSbibgdboppqI+WgrcrRaOMxk
- 5uU2VCfC+Xs8sIqJoFcX9MtJW0EELlXZrxDjExgF8Pbw5oYtNhj+VyyOr9rsarYtMrn/VZRbKCD
- Ql/X7N7HeZJM05/r87ftvUMPwqdCHB4nwfcSnP+zoyfyegmlEQhUk6PrZ55Mufik9+yf+X/Hj7B
- V6MggjFlyUtB671fOFw==
-X-Authority-Analysis: v=2.4 cv=VYv6/Vp9 c=1 sm=1 tr=0 ts=69a84fde cx=c_pps
- a=Oh5Dbbf/trHjhBongsHeRQ==:117 a=ZePRamnt/+rB5gQjfz0u9A==:17
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMzA0MDEyNiBTYWx0ZWRfX2Fz/mCp3sEO+
+ 4pvpznVF4JKHB7GLPiVkrEWQkqKdYV1lSzJkzvRI+KRgTXHt8e5XoRJrNEYey/Irg9xe4y3wszH
+ c5LzfPRITyqudVrqZjgLxYU7QSS230HBsn+dkOnafw3sYBDNz/Uc8mlqfi3LxObQvZqjM6ueXCE
+ iKL9Np33NST74cmu5aOv3riI2Atq7vKk/oA9Y0fB8DoFLpSOJlG8NwChR+I9MJEWwtzPtPRNZWg
+ TVVay/iKZVFpyi3yF9e23aQuoothSa8ZBQjC1aIg9LxM9BLiog9f6Xg0UoYLuCPwqtLcUTPazlr
+ K2clogkKWVQXr8SNAhy9LEmD54KtNs9oI97FLAdV6k1rlpQyW9xrh4uC+poIUnvQ5judcUeXwog
+ gOSXduTontCs/OjGUzuTfmD06SUkoOzB/G/VC7WwYkrCCZ1U8mx5iYp2EDkEO0qRgo+MLfTJMCC
+ wNoOMy4rNSIOYho03tg==
+X-Authority-Analysis: v=2.4 cv=VYv6/Vp9 c=1 sm=1 tr=0 ts=69a8527b cx=c_pps
+ a=JL+w9abYAAE89/QcEU+0QA==:117 a=ZePRamnt/+rB5gQjfz0u9A==:17
  a=IkcTkHD0fZMA:10 a=Yq5XynenixoA:10 a=s4-Qcg_JpJYA:10
  a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=YMgV9FUhrdKAYTUUvYB2:22
- a=EUspDBNiAAAA:8 a=aBrO_zpjTiySyTrMC9oA:9 a=QEXdDO2ut3YA:10
- a=_Vgx9l1VpLgwpw_dHYaR:22
-X-Proofpoint-GUID: uZyel_16T-XCeI2cvwK-jSpwp2-82D-D
-X-Proofpoint-ORIG-GUID: uZyel_16T-XCeI2cvwK-jSpwp2-82D-D
+ a=P-IC7800AAAA:8 a=EUspDBNiAAAA:8 a=_JvEU8PJbtvYPaoBJaoA:9 a=QEXdDO2ut3YA:10
+ a=324X-CrmTo6CU4MGRt3R:22 a=d3PnA9EDa4IxuAV0gXij:22
+X-Proofpoint-GUID: 6DGJoxNR0qE-pIs8HDUcwFtiNpLqcV8T
+X-Proofpoint-ORIG-GUID: 6DGJoxNR0qE-pIs8HDUcwFtiNpLqcV8T
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
  definitions=2026-03-04_06,2026-03-03_01,2025-10-01_01
@@ -145,152 +145,43 @@ X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
  reason=mlx scancount=1 engine=8.22.0-2602130000 definitions=main-2603040126
 
 
-On 3/4/2026 3:57 AM, Dmitry Baryshkov wrote:
-> On Wed, Mar 04, 2026 at 12:46:27AM +0530, Vikash Garodia wrote:
+On 3/4/2026 3:58 AM, Dmitry Baryshkov wrote:
+> On Wed, Mar 04, 2026 at 12:18:58AM +0530, Vikash Garodia wrote:
 >>
+>> On 2/28/2026 1:58 AM, Dmitry Baryshkov wrote:
+>>> On Fri, Feb 27, 2026 at 07:41:22PM +0530, Vikash Garodia wrote:
+>>>> The H265 decoder line buffer size calculation for iris4 (VPU4) was
+>>>> previously reusing the iris3 formula. While this works for most
+>>>> resolutions, certain configurations require a larger buffer size on
+>>>> iris4, causing firmware errors during decode. This resolves firmware
+>>>> failures seen with specific test vectors on kaanapali (iris4), and fixes
+>>>> the following failing fluster tests
+>>>> - PICSIZE_C_Bossen_1
+>>>> - WPP_E_ericsson_MAIN_2
+>>>
+>>> This reminds me of the commit fixing SC7280 support. Should SC7280 or
+>>> all VPU2.0 platforms also use separate formula?
+>>>
+>> for vpu2, there is already a separate formula
+> 
+> It was more of "do we need separate formulas within vpu2".
+
+vpu2/3 uses the same one currently here [1].
+
+vpu4 seems to be using quite a different formula to consider it within 
+vpu2/3.
+
+[1]https://elixir.bootlin.com/linux/v6.19.3/source/drivers/media/platform/qcom/iris/iris_vpu_buffer.c#L313
+
+> 
 >>
->> On 2/28/2026 1:57 AM, Dmitry Baryshkov wrote:
->>> On Fri, Feb 27, 2026 at 07:41:21PM +0530, Vikash Garodia wrote:
->>>> Depending on the buffer type (input, output, internal and interface
->>>> queues), associated context bank is selected, if available. Fallback to
->>>> parent device for backward compatibility.
 >>>>
 >>>> Co-developed-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
 >>>> Signed-off-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
 >>>> Signed-off-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
 >>>> ---
->>>>    drivers/media/platform/qcom/iris/iris_buffer.c    |  7 +--
->>>>    drivers/media/platform/qcom/iris/iris_buffer.h    |  2 +
->>>>    drivers/media/platform/qcom/iris/iris_hfi_queue.c | 16 +++---
->>>>    drivers/media/platform/qcom/iris/iris_resources.c | 60 +++++++++++++++++++++++
->>>>    drivers/media/platform/qcom/iris/iris_resources.h |  2 +
->>>>    drivers/media/platform/qcom/iris/iris_vidc.c      |  4 +-
->>>>    6 files changed, 79 insertions(+), 12 deletions(-)
+>>>>    drivers/media/platform/qcom/iris/iris_vpu_buffer.c | 51 +++++++++++++++++++++-
+>>>>    1 file changed, 50 insertions(+), 1 deletion(-)
 >>>>
->>>> @@ -177,3 +178,62 @@ int iris_create_child_device_and_map(struct iris_core *core, struct iris_context
->>>>    	return 0;
->>>>    }
->>>> +
->>>> +static enum iris_buffer_region iris_get_region(struct iris_inst *inst,
->>>> +					       enum iris_buffer_type buffer_type)
->>>> +{
->>>> +	switch (buffer_type) {
->>>> +	case BUF_INPUT:
->>>> +		if (inst && inst->domain == ENCODER)
->>>
->>> Can inst be NULL here?
->>
->> during queues init/deinit, instances are not created.
-> 
-> Is this function being called during queues init?
-
-yes, via iris_get_cb_dev()
-
-> 
->>
->>>
->>>> +			return IRIS_PIXEL_REGION;
->>>> +		else if (inst && inst->domain == DECODER)
->>>> +			return IRIS_BITSTREAM_REGION;
->>>
->>> Are there any other possibilities than encoder and decoder?
->>
->> will simplify it as
->>
->> if (inst) {
->>      if (inst->domain == ENCODER)
->>          return IRIS_PIXEL_REGION;
->>      else
->>          return IRIS_BITSTREAM_REGION;
->> }
->>>
->>>> +		break;
->>>> +	case BUF_OUTPUT:
->>>> +		if (inst && inst->domain == ENCODER)
->>>> +			return IRIS_BITSTREAM_REGION;
->>>> +		else if (inst && inst->domain == DECODER)
->>>> +			return IRIS_PIXEL_REGION;
->>>> +		break;
->>>> +	case BUF_BIN:
->>>> +		return IRIS_BITSTREAM_REGION;
->>>> +	case BUF_DPB:
->>>> +	case BUF_PARTIAL:
->>>> +	case BUF_SCRATCH_2:
->>>> +	case BUF_VPSS:
->>>> +		return IRIS_PIXEL_REGION;
->>>> +	case BUF_ARP:
->>>> +	case BUF_COMV:
->>>> +	case BUF_HFI_QUEUE:
->>>> +	case BUF_LINE:
->>>> +	case BUF_NON_COMV:
->>>> +	case BUF_PERSIST:
->>>> +		return IRIS_NON_PIXEL_REGION;
->>>> +	default:
->>>> +		return 0;
->>>
->>> dev_err(dev, "unsupported buffer type %x\n", buffer_type)
->>> return -EINVAL;
->>
->> these are bit fields, returning -EINVAL would still match some bits and can
->> make the logic as true. 0 can be defined as IRIS_UNKNOWN_REGION
-> 
-> Yes, sounds good.
-> 
->>
->>>
->>>> +	}
->>>> +
->>>> +	return 0;
->>>
->>> Drop
->>>
->>
->> Ack
->>
->>>> +}
->>>> +
->>>> +struct device *iris_get_cb_dev(struct iris_core *core, struct iris_inst *inst,
->>>> +			       enum iris_buffer_type buffer_type)
->>>> +{
->>>> +	enum iris_buffer_region region;
->>>> +	struct device *dev = NULL;
->>>> +	int i;
->>>> +
->>>> +	region = iris_get_region(inst, buffer_type);
->>>> +
->>>> +	for (i = 0; i < core->iris_platform_data->cb_data_size; i++) {
->>>> +		if (core->iris_platform_data->cb_data[i].region & region) {
->>>> +			dev = core->iris_platform_data->cb_data[i].dev;
->>>> +			break;
->>>> +		}
->>>
->>> You really seem to overcomplicate things. Replace array search with the
->>> indexed array access. Much easier and much better.
->>>
->>> enum iris_buffer_region {
->>> 	IRIS_PIXEL_REGION,
->>> 	IRIS_BITSTREAM_REGION,
->>> 	IRIS_NON_PIXEL_REGION,
->>> 	// add more when necessary
->>> 	IRIS_NUM_REGIONS,
->>> };
->>>
->>> struct iris_core {
->>> 	struct iris_cb_device cb_devices[IRIS_NUM_REGIONS];
->>> };
->>>
->>> region = iris_get_region(inst, buffer_type);
->>> dev = core->cb_devices[region];
->>
->> all the regions may/may not be present in all SOC
-> 
-> You can check for dev != NULL afterwards.
-
-with one CB to multiple region mapping, this logic would not work.
-
-Regards,
-Vikash
-
-> 
 > 
 
