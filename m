@@ -1,75 +1,73 @@
-Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
+Received: from mail-pl1-f182.google.com (mail-pl1-f182.google.com [209.85.214.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27F4214A60C
-	for <iommu@lists.linux.dev>; Wed,  4 Mar 2026 00:14:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C14C51ACEDE
+	for <iommu@lists.linux.dev>; Wed,  4 Mar 2026 00:17:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772583273; cv=none; b=PejVYmJe4dtxM5vJS77czdw+J9hW/La3e1Pf7HYSGZGq+g5pSrHivW8S1SCO6u8Ar3C4WZSJcBrOdf/zpaHpIkC9xQqr11wuXhNyp8MhFkAQUeOa2Nh+D0m93D9+Ox23Pt0R03Z9M8cEL1cvYqBkR0ecrKk8ECIfcPHYO+yZ1Kk=
+	t=1772583426; cv=none; b=LWaXSALdiIWp+rdlt/u+BWsRvNimLrNPg1BRDkPbleVkRNvU0a7Am/OayfSkXmhAogUPN1AMnEb/5rqMWXYLzMwzISGZt8I8sCEULKUGZeziaLihp+fh7umfgJzmQml1W7xu2f7b8w0t5uU/XA0+u2vuPNBo5vFXQMRBYBPss5I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772583273; c=relaxed/simple;
-	bh=U9UXIdLU8BvUztKsPeUE+y0UZ++d8vQWu2zD6G/4zOs=;
+	s=arc-20240116; t=1772583426; c=relaxed/simple;
+	bh=X6C/76WEw4vUdc/hkKIY4lH8TczRDzHUm4gqTQ/U1lU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Xc6NFVstBQF58eDU7h0AH9WXnDcr1v9Kaa3RBPKpQgpEIp3e872es/QoLe9skN1wUsACtUqqArVBCTwE/sS4XoBg0fpqg6estR6OjSrIk13a6OZEayVOdmATkoaVW4wNQve0gi2sb952KTJ6xIcOV7eteF3eUc8CnLZmmn8eEjc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=N5sJoLQC; arc=none smtp.client-ip=209.85.214.177
+	 Content-Type:Content-Disposition:In-Reply-To; b=gxHP+z2LjZ6K1gNyUrX+2/+nhaZjsmbOZypvgtHrJzUrHqxbims17SqIo4VrJKfxRGlgCQ4eLPiDa+DDJBJVLryAvswV+dMCO6WjqQXKL4s41cel3oCPyHELTObAaDlW6fsWyEVnlf9loSyldNLmEkJ4Y9aaljoQ4PUGPLru1yo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=nst4mYx1; arc=none smtp.client-ip=209.85.214.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="N5sJoLQC"
-Received: by mail-pl1-f177.google.com with SMTP id d9443c01a7336-2ae3f822163so119895ad.0
-        for <iommu@lists.linux.dev>; Tue, 03 Mar 2026 16:14:32 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="nst4mYx1"
+Received: by mail-pl1-f182.google.com with SMTP id d9443c01a7336-2ae49120e97so120335ad.0
+        for <iommu@lists.linux.dev>; Tue, 03 Mar 2026 16:17:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1772583271; x=1773188071; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1772583425; x=1773188225; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=U9UXIdLU8BvUztKsPeUE+y0UZ++d8vQWu2zD6G/4zOs=;
-        b=N5sJoLQCQ8QDErvWBKvGqepnhqaIQ+4+6lnACriCwhtrQq7TXnyAjvPdtQ3KUeBdaW
-         DqKRuh4cjPc68dUh6YdDLEAdllq03uTsfdEDyRK4xj8ZIFVHlqEG4NSqjNVOWZnDyCfz
-         cZBVR1mA13VSqFAIYxjz4S2Blh0MRf/1Ance3Cogx9bWST/T3t9dpboTjXsbrQky9AXr
-         xRs8qDcMVg0VA6Ky6Wrl0i2pTzps+ZZCpTwD1k8nrjCQeCcpzTnzQz8WBV6nwmHJ2EGD
-         ds+6RF+t/tpFyjgzzySnAYvR7xaQKOeqY/UvQ2WRSAq7hjgs67ClJqUJY/d1erPafIFH
-         E/CA==
+        bh=ye6hh9uo+WbVhBDIVb1s+VZOu40x4wcR8cEKrSMNyN0=;
+        b=nst4mYx1nMTYA9X5KC6AA0VtWEaUezIox8t7vvpxI1iVTQHAB5cT/7m902+0oiRgnx
+         xCNBhE+QUa/vFVklgVbqlcgKpwzSTEyF7B21J5mVF3mvdvby5SX/tzgF+fo2/53E/09G
+         mWi4dI4y9y8LjJPgudwm8b/fu9YqekWNB1MgqG2VzGV+H3yZj7TxAFtEJqRC0k8+wyoE
+         Ri3yK27eqtQPE7pFrKUFyhYm+ACf89sKTU7/aQw2cPbKJdl7P8CjwxOQKihxiqQlvGsq
+         ePzLQkDsNZsqJLyX5HWLrCylzmsOysftVfgMUcSuHGoYAhwXsuB6opvZjX4tbM6Hg1Zi
+         566w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772583271; x=1773188071;
+        d=1e100.net; s=20230601; t=1772583425; x=1773188225;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=U9UXIdLU8BvUztKsPeUE+y0UZ++d8vQWu2zD6G/4zOs=;
-        b=fHNI1oB8zRDa/EBoR51D4BRBQRed4bDmTtqCSgyAEPSppaGNx85ovDpRpDYfT2IsoM
-         ukFvEBas5JTnUvE+UjWwJI0q4JmtoZrThX4d2QTiTynZ4pTQtAWDPTy0zWnXiur08x5M
-         4olVSFn6tWlmxWFPN02LvmCN5BPq+rwigBkp2r4p1nTlTZcbclaA63FjurC0awqc1mA2
-         dJSojNZR8nG9Z8dQDiLMH5csgQeoJNOK3f1AGogNqqN6dAnXBxW+W+CgX4WooB+AfeDQ
-         +ckS1LkzR09/pDJogfJc0yIvc1gEuDcpe43518nR0Mg8/wnhg2K2eELULZMqeg+sHRZp
-         D6rQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVtwpNnFeZHnE5iSPgz2aHcS7GA91ZoPH/2pHYQYHpZhOIaJ8hSuCLTD+IQ6TlVqNSVJguGyw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yzl7IEeIcklraHejbBo+xZPBlvYCl7doCnFHKhYxl4vyqrrvchu
-	QbG1N0Ny40yTuJ2kHi38L3fkKg0gvPgKUXuWcgoEOK5gf/emrUfQAP1FyHX0OvKDRw==
-X-Gm-Gg: ATEYQzzeI9nDD8VVChxgHtccxpYsGH1it2asXFf2z1ciruR+MqY11q9rKgk20GgUma5
-	QgyCscJWm0WgEZF8biurvGMbagzKMnpWOU9KZj4dk5phVW90cuNZElogQYOVFxP9KoQ+zKJoAVv
-	7kNdy3HivU13uw6hWy5d4+DJyTbdl24lLS6wFhBkeWXbyWSOkPW44icMsBhN6nNK1gB3+i1F+J1
-	lj9qO65q0awcd/LMK6O53j5WkbkkJT41tXZpYw3xbqUxXHEPsU27GWfnVtr9AFrzwb+4lZ31DqC
-	JIKIGKGTRxKnJha/SfQFUefi6PoBETg1X0R993wjrqpJH5cEq7fAmrmBUQp5WNIvALqL1plSDdX
-	3dtz9vn6ZalWY5XACpZ/wl7nLrjtibuSA+CRAhjJrsJVnVu38xZL843G+Y2d/PG37ZjlEeFi9K7
-	ELuaMzKTtvnnt4m0jETh1rkPk2gjqs4rvVc8JzcryotoOUR4T3p9JXIlLO5ZhCS+RPf1YCEFkL
-X-Received: by 2002:a17:903:3848:b0:2a0:89b0:71d7 with SMTP id d9443c01a7336-2ae3b50ac0dmr8356425ad.13.1772583271061;
-        Tue, 03 Mar 2026 16:14:31 -0800 (PST)
+        bh=ye6hh9uo+WbVhBDIVb1s+VZOu40x4wcR8cEKrSMNyN0=;
+        b=fcG2CGJ9t836rgy8MnVguMraze8UNrz5zZlx6zkfsmrv0Q0yojpJbO8hznjigk2jk+
+         OTWqpPP291Yvtjw3sIxiPi/gBtmZRBZozJzBZcyzqOcqlt7uk7s3Kt3kQuG3dfVJHuvT
+         JCiTbfBzkAcUHdHFE0kN6g+5+Up7169ZgNr+XAyyTjr3AIvti1v5+mmQRK/UPry8smB7
+         K7bWxz6v8Zyj/okO76btSEYhfZll2cc1yWGUPp3h+XBy4VL+tLHc7PM8AGYTFJ7V3WyP
+         Jd+zAukbRaLVJPmZLzetr2gmQ81JOLfQf3qss2AIAtsOEXfIOQcwNd5jX0G06+dlJm24
+         p53A==
+X-Gm-Message-State: AOJu0Yx3phhygEdQ7lKk6BndMX9Qjg+EDFWc6AaifDfrPEWYzCKk6Tqr
+	IUzNPtwqfdBxqXAOE8Qd01Tavee5t+FcMXm45mTV+vLD8nEOL5RmQLkmzYZ6JGxq7g==
+X-Gm-Gg: ATEYQzxc8cYUwSN65px8I9jFLxWzt9pECkr54Bk6rS8vHB5mpuypOcrcmOyM8APL7Tb
+	VHNCyQeNcArLh7ki3NYFNfcm2eiXNBhvUT4Dy3d4CRWHBzFGbV5WMQ3RyMC1JkCmb51gioCwcs5
+	lJtJyobSNlbX1ShiGPaUCkGGjFVzcDOHpces2gVXU6MwuzgtRj6tpeG+gW9C1HuoiXYk1H0X4Lp
+	ZUAyhAbU3XcxF7K0yasFsvkAySFpw1N/8/NFOzE3OcJyB1d0l1IB6omZ2H+hSggEa6XYMttOWIY
+	fdTMPPosnF78HoJNVps9BJFPwBm21okwUT4z3LCY1pjKUHpGN7MDtPGg5t2jK6ymO6yd4Y1cB9I
+	CJPwzROg1dirAx9N/vZ1Ut1DcyOcChwYDZVlIYzm/8ME5bX3ugQT/m3DIlh0F5rK071LD/pmCQi
+	EaSfgStcw7atofA73XHUOTjM/cTDbhBAJzu4WwFyAQWYtFwhBlHWKPjIxOZQiJog==
+X-Received: by 2002:a17:902:f712:b0:2ae:4f95:df55 with SMTP id d9443c01a7336-2ae4f95e48dmr5854175ad.25.1772583424491;
+        Tue, 03 Mar 2026 16:17:04 -0800 (PST)
 Received: from google.com (168.136.83.34.bc.googleusercontent.com. [34.83.136.168])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2adfb69fa4fsm179957995ad.45.2026.03.03.16.14.30
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3599c49eb5bsm3255616a91.11.2026.03.03.16.17.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Mar 2026 16:14:30 -0800 (PST)
-Date: Wed, 4 Mar 2026 00:14:26 +0000
+        Tue, 03 Mar 2026 16:17:03 -0800 (PST)
+Date: Wed, 4 Mar 2026 00:17:00 +0000
 From: Samiullah Khawaja <skhawaja@google.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Shameer Kolothum <skolothumtho@nvidia.com>, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, 
-	baolu.lu@linux.intel.com, kevin.tian@intel.com, nicolinc@nvidia.com, nathanc@nvidia.com, 
-	mochs@nvidia.com, kjaju@nvidia.com
-Subject: Re: [PATCH 1/2] iommu: Add device ATS not supported capability
-Message-ID: <icbrt7x3wfqa4wavppqevqrljra65koxun55gqjasv4cda7r57@ataukpekm7zs>
+To: Shameer Kolothum <skolothumtho@nvidia.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, joro@8bytes.org, 
+	will@kernel.org, robin.murphy@arm.com, baolu.lu@linux.intel.com, jgg@ziepe.ca, 
+	kevin.tian@intel.com, nicolinc@nvidia.com, nathanc@nvidia.com, mochs@nvidia.com, 
+	kjaju@nvidia.com
+Subject: Re: [PATCH 2/2] iommufd: Report ATS not supported status via
+ IOMMU_GET_HW_INFO
+Message-ID: <lfsrujftxeqtidal4q6x5pxmoxdhlid7lgiwm4b3g2vorju6cj@ajwaqo3wv57n>
 References: <20260303150348.233997-1-skolothumtho@nvidia.com>
- <20260303150348.233997-2-skolothumtho@nvidia.com>
- <p435ycx3b27d5gpzcli2kbp4eh36fq2ufgkft3hf3rqgqfx7i6@oql6hovzwkju>
- <20260303232835.GI972761@nvidia.com>
+ <20260303150348.233997-3-skolothumtho@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -78,34 +76,57 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20260303232835.GI972761@nvidia.com>
+In-Reply-To: <20260303150348.233997-3-skolothumtho@nvidia.com>
 
-On Tue, Mar 03, 2026 at 07:28:35PM -0400, Jason Gunthorpe wrote:
->On Tue, Mar 03, 2026 at 10:42:48PM +0000, Samiullah Khawaja wrote:
->> On Tue, Mar 03, 2026 at 03:03:47PM +0000, Shameer Kolothum wrote:
->> > PCIe ATS may be disabled by platform firmware, root complex limitations,
->> > or kernel policy even when a device advertises the ATS capability in its
->> > PCI configuration space.
->> >
->> > Add a new IOMMU_CAP_PCI_ATS_NOT_SUPPORTED capability to allow IOMMU
->> > drivers to report the effective ATS decision for a device.
->>
->> nit: Maybe have IOMMU_CAP_PCI_ATS_SUPPORTED instead of the negative
->> variant of the capability. As this will affect only new users who might
->> check this capability so this does not really have to be negative.
+On Tue, Mar 03, 2026 at 03:03:48PM +0000, Shameer Kolothum wrote:
+>If the IOMMU driver reports that ATS is not supported for a device, set
+>the IOMMU_HW_CAP_PCI_ATS_NOT_SUPPORTED flag in the returned hardware
+>capabilities.
 >
->It is deliberately negative for UAPI reasons.
+>When this flag is set, ATS is not supported and not used for the device.
 >
->Currently all userspace should assume ATS is supported.
+>Signed-off-by: Shameer Kolothum <skolothumtho@nvidia.com>
+>---
+> include/uapi/linux/iommufd.h   | 3 +++
+> drivers/iommu/iommufd/device.c | 3 +++
+> 2 files changed, 6 insertions(+)
 >
->The negative means new userspace that is sensitive will still work
->correctly on old and new kernels that both return 0 as meaning ATS is
->supported.
+>diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
+>index 1dafbc552d37..d85a2d3e1b40 100644
+>--- a/include/uapi/linux/iommufd.h
+>+++ b/include/uapi/linux/iommufd.h
+>@@ -695,11 +695,14 @@ enum iommu_hw_info_type {
+>  * @IOMMU_HW_CAP_PCI_PASID_PRIV: Privileged Mode Supported, user ignores it
+>  *                               when the struct
+>  *                               iommu_hw_info::out_max_pasid_log2 is zero.
+>+ * @IOMMU_HW_CAP_PCI_ATS_NOT_SUPPORTED: ATS is not supported and not used on
+>+ *                                      this device.
+>  */
+> enum iommufd_hw_capabilities {
+> 	IOMMU_HW_CAP_DIRTY_TRACKING = 1 << 0,
+> 	IOMMU_HW_CAP_PCI_PASID_EXEC = 1 << 1,
+> 	IOMMU_HW_CAP_PCI_PASID_PRIV = 1 << 2,
+>+	IOMMU_HW_CAP_PCI_ATS_NOT_SUPPORTED = 1 << 3,
+> };
+>
+> /**
+>diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
+>index 344d620cdecc..2e98818806c0 100644
+>--- a/drivers/iommu/iommufd/device.c
+>+++ b/drivers/iommu/iommufd/device.c
+>@@ -1624,6 +1624,9 @@ int iommufd_get_hw_info(struct iommufd_ucmd *ucmd)
+> 	if (device_iommu_capable(idev->dev, IOMMU_CAP_DIRTY_TRACKING))
+> 		cmd->out_capabilities |= IOMMU_HW_CAP_DIRTY_TRACKING;
+>
+>+	if (device_iommu_capable(idev->dev, IOMMU_CAP_PCI_ATS_NOT_SUPPORTED))
+>+		cmd->out_capabilities |= IOMMU_HW_CAP_PCI_ATS_NOT_SUPPORTED;
+>+
+> 	cmd->out_max_pasid_log2 = 0;
+> 	/*
+> 	 * Currently, all iommu drivers enable PASID in the probe_device()
+>-- 
+>2.43.0
+>
+>
 
-Ah yes, for old userspace missing cap means ATS is supported.
->
->Perhaps this should be touched on in the commit message.
-
-+1
->
->Jason
+Reviewed-by: Samiullah Khawaja <skhawaja@google.com>
