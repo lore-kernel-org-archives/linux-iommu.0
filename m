@@ -1,125 +1,108 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1DFA334A78F
-	for <iommu@lists.linux.dev>; Wed,  4 Mar 2026 16:08:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 140213AE19D
+	for <iommu@lists.linux.dev>; Wed,  4 Mar 2026 18:41:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772640519; cv=none; b=KEUiQXWQcplxZl6uxp9MCyQxl8d8P//jL2zvfBbU3Fm12S9V3/DaJhq1vXAe33dSx7+TZwc4faBzw0SSjxlTvaz/othUbGznTKkIW9LOapjfHOrnWiyRgIH26+swDqC3NXW28ehC1gV4FNeUTCAxkjWVgoRaXq4jdFjuzyuDdy0=
+	t=1772649710; cv=none; b=Cbs2jQF5du0syMREwTKJiOUmRmc8/TQ6gkjm4uGU8O1uNQzxpek3V99/miHcD0CjY0L2K3ZqK9wdRFZ9b+QFa3al1pvRdahg3VgezO0mg8avJbdm1JmISFIO7ubOr/C1X8jOYlaWPPEzBKk4t8gjxv+6rUBZxjzCFka5Z5PyfBk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772640519; c=relaxed/simple;
-	bh=XuIJEyuPZseimNyB1dClJ9+gsbn4gJI4NK41evppQNk=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=BC2huksc+eS8SiOj+ftoJv32CBddqWgD4BY/vCKBAuvd0vdojAab1K1REzeyqLsJLM9QimDz6qCU2BeUtJF5E1Zyvd2U9ohbqwK4OkpHV5vRq+CwmoStbrFeA7J3N0sXby3KT3pesHVa6yEdnHDDm1tYFUPDcHPeqjCQoJsKvkw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=ct9G1qwy; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="ct9G1qwy"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1772640513;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=XuIJEyuPZseimNyB1dClJ9+gsbn4gJI4NK41evppQNk=;
-	b=ct9G1qwyXb6Qu9SaTz9/l9IoD9eMtqV3ykvPYkw3n9QLfiPK4++z3nMw003XneUp+pSNNW
-	YxFIZcKdapRxHrOTG+s5a+s+HEj1ZbBprVso7HGRXaxp5PERbyRoVZJ5xHIomHvjwOXqYz
-	X+eNHwiPuibk9/sCri/XD97z/9YDTtM=
-Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com
- [209.85.161.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-694-fs_igGG2MNS5hv2Lub2hzA-1; Wed, 04 Mar 2026 11:08:12 -0500
-X-MC-Unique: fs_igGG2MNS5hv2Lub2hzA-1
-X-Mimecast-MFC-AGG-ID: fs_igGG2MNS5hv2Lub2hzA_1772640490
-Received: by mail-oo1-f69.google.com with SMTP id 006d021491bc7-679a409a175so122876589eaf.1
-        for <iommu@lists.linux.dev>; Wed, 04 Mar 2026 08:08:11 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772640486; x=1773245286;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=XuIJEyuPZseimNyB1dClJ9+gsbn4gJI4NK41evppQNk=;
-        b=DivgA4b3LVVE/tgiaKVTwM5q9h6IyWlM8xY2EZuow2+v5t31PXpecG8va5uPYgQo2h
-         hQBtADl5rgIq77BRsLzdu7v+7PGlzqEkZVP2bBnhEzLeWG5cXCZYbFpi+WluV4PRIX62
-         AKMvb65qEuTHWOMA2TzyhljdjiI9xq4eUphQxIZRz9Nqjw+XjaBx8x2jnAO+un6MqMtd
-         YJQ7XqmEKeIGkJXyiB6DmNCCAd4hLPDsjYaDDQZfZTW9V/1YkQh4v7nfnmfUNTphPIqw
-         cHolGm2vPrp42CbSEd/aMom9W7syiUnd700lCepHkzF5iEC333O5JhlNPEzRin4q58eW
-         DDLw==
-X-Forwarded-Encrypted: i=1; AJvYcCVGxUv2iY6tRQMlflsoI/si8WF3ii/pSdgqVSlIMosTxsvPTY1Hl8eTXM53FYIxqnL0YvcQNQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yzt6OD+et2aiLLdkmoIlfa5ey74KGVyU0H27AjTzeNOPgYFMgmC
-	3ppkcbpAER6441WRXq/d6WHY2ilsq///rdy1MYVpkQ8s5liSSjCaVMpHtbGYL+T+BmqL1dGTojB
-	wqLyv/KT/lldn5Ox9PBkxYQjR7fvYLHyry7bX2FOco9rEr4n+lP4a1EiNn0hiyc53hYEi+rPHs7
-	j9ZM7nVnBoRRhr6x8tXA7ti1rq6vX/154=
-X-Gm-Gg: ATEYQzwDJwBewgfJTlyPtZ+J/PrOkhmfRP1pa1y/EBFKotD9/PuLKag/llWJtEH0AQU
-	ILKoDF2KcweSs1VVsgwYqFRelqkZt3IsD5wVRfypPnkx58OHC3LUlQdMANdh70Tiwk0O3sI4NBz
-	VC3KWucFsgPw0/QigidzXd/U+SiBDjqepSZUJko73NYXxwcQvNLsYgvorfgV3yCzCvyfALAA9l6
-	g==
-X-Received: by 2002:a05:6820:1ca4:b0:679:e68b:f95d with SMTP id 006d021491bc7-67b1776bde5mr1385791eaf.53.1772640486022;
-        Wed, 04 Mar 2026 08:08:06 -0800 (PST)
-X-Received: by 2002:a05:6820:1ca4:b0:679:e68b:f95d with SMTP id
- 006d021491bc7-67b1776bde5mr1385781eaf.53.1772640485669; Wed, 04 Mar 2026
- 08:08:05 -0800 (PST)
+	s=arc-20240116; t=1772649710; c=relaxed/simple;
+	bh=nM9PKWzGnDcGXYElv74S2uG/vUXsk74rknYOJmrstKY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=iK0PUR5oSMs0sk3wGYwOf4jBdFHTrfZLZi3ndvtUxG0eGLMUSfVf+4h+cX+CwNHZb9uMacG35Ua7HBgJOv7uSS6qR4U3zn9VosN0s//IyizgzjCgxk6gb+8UHbfkA+tXaqCENPwJo8x+cosWQvKoYGiIh7fDJT8lCRwlt/X8iro=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 19534339;
+	Wed,  4 Mar 2026 10:41:41 -0800 (PST)
+Received: from [10.57.57.167] (unknown [10.57.57.167])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 711053F836;
+	Wed,  4 Mar 2026 10:41:46 -0800 (PST)
+Message-ID: <116b79a2-fadb-4796-8cb7-9c2dfde54999@arm.com>
+Date: Wed, 4 Mar 2026 18:41:44 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260303-b4-dmabuf-heap-coherent-rmem-v2-0-65a4653b3378@redhat.com>
- <CANDhNCrVVGsxEjgRcVJSn_E9WPUVY_9zpd+t0X_Jy7JqbcHDqA@mail.gmail.com>
-In-Reply-To: <CANDhNCrVVGsxEjgRcVJSn_E9WPUVY_9zpd+t0X_Jy7JqbcHDqA@mail.gmail.com>
-From: Albert Esteve <aesteve@redhat.com>
-Date: Wed, 4 Mar 2026 17:07:54 +0100
-X-Gm-Features: AaiRm51Q5GvpC48eWrWjCC8xCsFxsretWrNgIwHjulMNxRdjdZzE0CFF6Jj-oi0
-Message-ID: <CADSE00KqF-7m+ZMYLzzgL3FzZv3P_G-v8ycYdXBj_WE4=P2_jw@mail.gmail.com>
-Subject: Re: [PATCH v2 0/6] dma-buf: heaps: add coherent reserved-memory heap
-To: John Stultz <jstultz@google.com>
-Cc: Sumit Semwal <sumit.semwal@linaro.org>, 
-	Benjamin Gaignard <benjamin.gaignard@collabora.com>, Brian Starkey <Brian.Starkey@arm.com>, 
-	"T.J. Mercier" <tjmercier@google.com>, =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
-	Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, 
-	Rob Herring <robh@kernel.org>, Saravana Kannan <saravanak@kernel.org>, linux-kernel@vger.kernel.org, 
-	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org, 
-	linaro-mm-sig@lists.linaro.org, iommu@lists.linux.dev, 
-	devicetree@vger.kernel.org, echanude@redhat.com, mripard@redhat.com, 
-	John Stultz <john.stultz@linaro.org>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: qsDA2CBMp_D2L7wx7_XqNW1mvr4dpnl6MQekI_w6VLA_1772640490
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] iommu/iova: Add NULL check in iova_magazine_free()
+To: Lynn Liu <liulynn@google.com>, joro@8bytes.org, will@kernel.org
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20260304080636.167426-1-liulynn@google.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20260304080636.167426-1-liulynn@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, Mar 3, 2026 at 9:55=E2=80=AFPM John Stultz <jstultz@google.com> wro=
-te:
->
-> On Tue, Mar 3, 2026 at 4:34=E2=80=AFAM Albert Esteve <aesteve@redhat.com>=
- wrote:
-> >
-> > This patch introduces a new heap driver to expose DT non=E2=80=91reusab=
-le
-> > "shared-dma-pool" coherent regions as dma-buf heaps, so userspace can
-> > allocate buffers from each reserved, named region.
->
-> Just a nit here: Might be good to provide some higher level context as
-> to why this is wanted, and what it enables.
->
-> Also, "shared-dma-pool" is also used for CMA regions, so it might be
-> unclear initially how this is different from the CMA heap (you do
-> mention non-reusable, but that's a prettty subtle detail).
+On 2026-03-04 8:06 am, Lynn Liu wrote:
+> When iova_domain_init_rcaches() fails to allocate an iova_magazine
+> during the initialization of per-cpu rcaches, it jumps to out_err and
+> calls free_iova_rcaches() for cleanup.
+> 
+> In free_iova_rcaches(), the code iterates through all possible CPUs to
+> free both cpu_rcache->loaded and cpu_rcache->prev. However, if the
+> original allocation failed mid-way through the CPU loop, the pointers
+> for the remaining CPUs remain NULL.
+> 
+> Since kmem_cache_free() does not explicitly handle NULL pointers like
+> kfree() does, passing these NULL pointers leads to a kernel paging
+> request fault.
+> 
+> The crash can be observed when fault injection triggers a failure in
+> iova_magazine_alloc():
+> 
+> pc : _compound_head include/linux/page-flags.h:251 [inline]
+> pc : virt_to_folio include/linux/mm.h:1395 [inline]
+> pc : virt_to_slab mm/slab.h:215 [inline]
+> pc : kmem_cache_free+0x90/0x5c4 mm/slub.c:4769
+> ...
+> Call trace:
+>   trace_kmem_cache_free include/trace/events/kmem.h:114 [inline]
+>   kmem_cache_free+0x90/0x5c4 mm/slub.c:4768
+>   iova_magazine_free drivers/iommu/iova.c:623 [inline]
+>   free_iova_rcaches+0x114/0x344 drivers/iommu/iova.c:894
+>   iova_domain_init_rcaches drivers/iommu/iova.c:762 [inline]
+>   iova_domain_init_rcaches+0x3d0/0x528 drivers/iommu/iova.c:717
+> 
+> Add a NULL check in iova_magazine_free() to safely handle partially
+> initialized rcaches in error paths.
 
-Sure, I will expand this for the next revision and try to clarify the
-points you mentioned here (and add these points to the relevant
-patch).
+Wouldn't it be even better to just break the for_each_possible_cpu() 
+loop in free_iova_rcaches() on the first NULL, much like the outer 
+rcache->cpu_rcaches condition? Since the cleanup is already trying to be 
+symmetric to the allocation, I'd rather fix that than add a blanket 
+check that's redundant for every other caller.
 
-BR,
-Albert
+Thanks,
+Robin.
 
->
-> Might be good to add some of the rationale to the patch adding the
-> heap implementation as well so it makes it into the git history.
->
-> thanks
-> -john
->
+> Fixes: 84e6f56be9c6 ("iommu/iova: use named kmem_cache for iova magazines")
+> Signed-off-by: Lynn Liu <liulynn@google.com>
+> ---
+> v1: https://lore.kernel.org/linux-iommu/20260214080919.390846-1-liulynn@google.com/T/#u
+> Changelog in v1 -> v2:
+>   - Update author name to full name.
+>   - Add Fixes tag.
+>   - Include the Call trace from the kernel crash.
+> 
+>   drivers/iommu/iova.c | 3 ++-
+>   1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+> index 18f839721813..e026be5e068b 100644
+> --- a/drivers/iommu/iova.c
+> +++ b/drivers/iommu/iova.c
+> @@ -611,7 +611,8 @@ static struct iova_magazine *iova_magazine_alloc(gfp_t flags)
+>   
+>   static void iova_magazine_free(struct iova_magazine *mag)
+>   {
+> -	kmem_cache_free(iova_magazine_cache, mag);
+> +	if (mag)
+> +		kmem_cache_free(iova_magazine_cache, mag);
+>   }
+>   
+>   static void
 
