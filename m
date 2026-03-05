@@ -1,94 +1,77 @@
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCE9539E18B
-	for <iommu@lists.linux.dev>; Thu,  5 Mar 2026 12:36:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2484F39F167
+	for <iommu@lists.linux.dev>; Thu,  5 Mar 2026 12:40:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772714210; cv=none; b=B87aHTP+uFrpVSCMYf7SAAdLnzQvyfl1SWDtxiGYWRVsUW740efdnUHFLWiA5YS5SEeb9HabY4IxQ3Jd5wWQOfT3H3g0CDvZ1WyFwlnhcVoysUuofLVcIIeSuyhOi3KHwWBxBVg7g+ff48CeZ/bu/Wud3bDItsF0pxfjrpWCXLM=
+	t=1772714421; cv=none; b=pKwVS2FjjtTYngUYPImCyBUGRaDNjOrwuYV63q3XebD+264kkoZ3QP5cTtZM8f04I9/AIbNNhwv6cR0rYH1ZlxWsqJdBiMDRE2Y9kfPyZfjEG9dXRReaSTjkur7UETqa784GakEEyGFw67ukY6R7bqfulDCa3XW1UG5XQOyejHY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772714210; c=relaxed/simple;
-	bh=hL1KRdcUkqD5m38qDR44cdwSUdn+MD14fevRfOfX13o=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=pdI9w61OWuZ3R1bHvY+Sj6m5aHF8XV4DpG3otgFGCHaRqVrIPXCxcndB02UsPwclQyxgwhDjKLuFPWcdqdvKUn6kXZ+LrMCc4pFo6OKNYXH8u39bi08Jz3vOmNOMHL09yE2xP175B6CvtL0J83NFzVe4NIIkWb4RkCPlnNtzhTQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=resnulli.us; spf=none smtp.mailfrom=resnulli.us; dkim=pass (2048-bit key) header.d=resnulli-us.20230601.gappssmtp.com header.i=@resnulli-us.20230601.gappssmtp.com header.b=o4aKOjJy; arc=none smtp.client-ip=209.85.128.44
+	s=arc-20240116; t=1772714421; c=relaxed/simple;
+	bh=vEuPDSsDt//wtmzfe9Xu8GSe0LEcvi4euzHg4drb0UE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=kvrnB8FHH3aupQYdgH4TvQqAiynIiusVGQtb/JzX9p9GLusN9o9QkqG98OMpCceC2Ki7b2VDLr5gbPpEBAeJVV84kWPCUz3mxeZWNQSfpcmgs7FbaIqaDhAkqsMoWPveR2bG1mbCXz3cpEFC6ADogGc9mBYDQDJmFKOs4yUfVC0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=resnulli.us; spf=none smtp.mailfrom=resnulli.us; dkim=pass (2048-bit key) header.d=resnulli-us.20230601.gappssmtp.com header.i=@resnulli-us.20230601.gappssmtp.com header.b=pOv+/2RU; arc=none smtp.client-ip=209.85.221.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=resnulli.us
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=resnulli.us
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=resnulli-us.20230601.gappssmtp.com header.i=@resnulli-us.20230601.gappssmtp.com header.b="o4aKOjJy"
-Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-483703e4b08so77547785e9.1
-        for <iommu@lists.linux.dev>; Thu, 05 Mar 2026 04:36:45 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=resnulli-us.20230601.gappssmtp.com header.i=@resnulli-us.20230601.gappssmtp.com header.b="pOv+/2RU"
+Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-439aeed8a5bso5094231f8f.3
+        for <iommu@lists.linux.dev>; Thu, 05 Mar 2026 04:40:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20230601.gappssmtp.com; s=20230601; t=1772714204; x=1773319004; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=jZyzh76/vi/WA0Mw21DKfbc+O5VrV1Ds2EV/BZWk6NE=;
-        b=o4aKOjJybP2eRVcfy2qCW2kCsjr0v5YHHLmaj4lOhLf0B+tZ2iKZD+rPsySAVo/NHO
-         qwud85T5TDuYCRaCQZ8OVc3QZ7GeGZo7O42nkJPfiD9ZpkYR2DdSRPdNmKlsq/8YvuGn
-         udiV7nNuaFPbaZah7nw1RGsKYAYOYkpeuMzNZW0WhH9u+Qvfbtn4/H1/GM6zJVXTOS2M
-         d5S6GAvzwRN8HvLnGEYXEb16g0s+5pfBft5uZ9jKWG8O8oHd2n4f3kJkMS58YN7oDhLy
-         fZ+h/ps97DYK3ymmzesFhPG50PlN71yRLbmZx3zOHYomfbMCJlyn6cxaOUMCyv8qZ7+2
-         YcQA==
+        d=resnulli-us.20230601.gappssmtp.com; s=20230601; t=1772714418; x=1773319218; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=vEuPDSsDt//wtmzfe9Xu8GSe0LEcvi4euzHg4drb0UE=;
+        b=pOv+/2RU35bJrOFIGfg6h/pv3HESCAgZcaod0Cix/Cm4J2JnAYfwbr8/TRx4bZXCIY
+         Pqu9sz8VVGYb/sfiI3snqtWl2NebdPy9GbiheC1VznwmqS8NiBBj5fbvKgZHW3WhKyi8
+         n4xG2ZD0KxEx3iLc0mPzJeltKB6d2yu/8kG0+MDxnt0kv3y+6Ldoi8dfsHo+ZbsBTl4a
+         lFq54cdp2jzhCxHvp5TVW0aHiRSzFrNYWiHYYPTLh2DBY/qTfUz5vvv5CQVQJ60+Uc26
+         AfBp/W5uGLzfxvuKAKI82QJWjl7FklW/5eJ/zCPXsSaw9NktBUAP6Pu7Q6zH6VVVJuJU
+         vDoA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772714204; x=1773319004;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=jZyzh76/vi/WA0Mw21DKfbc+O5VrV1Ds2EV/BZWk6NE=;
-        b=Z+qctvrh9T/NxjlYBW+vP2N1a9Wiv01atXJvmHiilsjSZCho/UFkoYvlNYg7FjsTAT
-         r7Hy1wj+UE3c15g6K9n2n5sgqILia6FFHBGUQ+NwDM3evhrp1IoADZsixrjNqNHFwd9K
-         cOv3FMETrS/PUa6FGCkD7WV2xHUiNoAWLQoApACjYVMnPTAkUiR7YDeChXvnM4szMbKB
-         XsuYPwMXfobukpdMAzWXCkpFhRyQc4lNnwaO36ul0YjvKb0oXuOO3kMVPaAPFWnrL/WB
-         iQioLYjiagschCXy6NuXHiW6qm8KbzlRtlXMAb/p8tlVNnP8CpvIifKhz0V6seQqtKNt
-         qBHw==
-X-Forwarded-Encrypted: i=1; AJvYcCVfD6kZ0T9mSXM2nluwNNbBm+ojkHZB0pkBreZwarnsottUdOSWVF8cHPRHoQA2aGrP/oD1xQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxlmrlzNR8wg+b3o9K6ES3ivu8VBE5i3NklsAGmYaPQ9Yvscp7B
-	iGqiLTpGVvSphjLTOvoXnpR2P9rcrPzrddNDWilieswClXEImHrpAOgNp8eJn0gG6TY=
-X-Gm-Gg: ATEYQzy5XZsbuwVpM5DR4zpF+PzNcMA7u9j3SMcyipNEMd/M/Rvn+NYE+2xkP5VkHUe
-	lK47SmjYLBtUbuabtJnnihfyxKe80t3l2qCFYzKaHvDTXE6OX1EEdXeXqLuc5BV7cMGrZUmfNpY
-	YH5JrSmtSxxzWXVGrs/a60W0lbT4DEUpAPKuz6cFpf/W6E/E6YcHE+SY/u6nH3ugaCiMeIZO8pd
-	jsV1q52DB+69hzEkh9lFDcVhHva3bmWKL/2lQOsUeFS5jHxSFExEziOyuerFDwc4d7w3dcchQmm
-	7BT58Mg2pPN3pghXjHPk2QcdxpIz76FzX9VOkzRjQdFLZsNFtJFRGeiv609/Dlg8yhgdVdWlKuR
-	P6qJELUqQZbs6P9VlrWWq8TI0a9jr9iQ4gEJRXGap/q+TVImHJtDarX5Igl0IXJhI7TytZeU26o
-	t2VGii2+I0dovHlA==
-X-Received: by 2002:a05:600d:15:b0:477:9a61:fd06 with SMTP id 5b1f17b1804b1-4851ee7bfc7mr38207005e9.8.1772714204144;
-        Thu, 05 Mar 2026 04:36:44 -0800 (PST)
-Received: from localhost ([85.163.81.98])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-439b55d15besm37523468f8f.30.2026.03.05.04.36.43
+        d=1e100.net; s=20230601; t=1772714418; x=1773319218;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=vEuPDSsDt//wtmzfe9Xu8GSe0LEcvi4euzHg4drb0UE=;
+        b=E5ADWZ1gqRC+zd2htPi9jg5pTs7/WDjVmyZmHeEDItK3MbHHFAAZy5tuCR4ff0O7UV
+         CYewtzI25Q1qmvSy9IsmdVi6l0YTj+JwjkJRZLrMP361aTtavRVYMXqK3F+YJLmAQgE0
+         JyZwPMuv4GKIT+bg0rzFRSzpuUHIBR06JLFx8ty91MSHZBdY5Nbg38OsVMxg07zoyftn
+         i4aO7e0EJVgBQ5fr7BcAWPT5URw5jWw1deBLuKUadmtT4Jk26LpqO1zEQJvMg9c9Sg6x
+         4oSZr3kyt3afrGf3TnjI5NTRVxWNtfv1HurXqC+oB/zaJTQwfLkqdPMPDC5bV7Er1NBZ
+         dQwg==
+X-Forwarded-Encrypted: i=1; AJvYcCUM3K63YAZrlDd2i8TLU+Wf2ZXGpBU59wuaXE0v8+92H2H3eQGdyF5qZBKVqWUJsqJ8eSwiSA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzQyeQhTxwZZMoRNlbxuuAg+Zd0Qq2NrftbdW8T2j2H9xVnFD72
+	QqAqtyKjrUdQA8vFOruMngQbR4aFCeBaNe1mWTK8w1mMSyF3CiXNhGYFiEw4pV1Ldxk5o62OHPp
+	g+cotukGc+w==
+X-Gm-Gg: ATEYQzw6n2apwtC536iww3FYhtesoSl9cWjFVmyXRA3Eqz+0ulxeKp4Z6jg/2FpxyZx
+	6p7KOq+ty/B7os4eYeqfbhIDsYDWQ4Mz6kyT1kBMFi/9v0qRlCW7Zb9QTHDoXWrxCB3foCkgSF6
+	X0IldWyvvQp8AsN5yez0Qe9PYJe4KvBRUqyaensMq5yRrSgf/swkip286FXQp+nzFgVdBdcP7oI
+	ySLaiHdozRlKDwFrP8H3EJMGTahkREZmrjaavVachWPGEBtUcliyzkFJ2nj/Qa1EHdHbylQC+Br
+	HVe07LAbwMxhXJiMIxUw+zIzHdiVeZmZtwoz+R6vtkeWOecxitoGcodv19pKccdlJhFJr7UTNoU
+	1I+2fRnajuL3Cs5B3xkSNzYJGxNlAJqj5pvkPEt2AY4n9wJNSSFEgV864k63wVBjXs4Iq1h2IxJ
+	O7h3bLrVXWXljlV6fnR4USrXhGQEiqfTM=
+X-Received: by 2002:a05:6000:2510:b0:439:cd10:a1f9 with SMTP id ffacd0b85a97d-439cd10a224mr6376565f8f.54.1772714418526;
+        Thu, 05 Mar 2026 04:40:18 -0800 (PST)
+Received: from FV6GYCPJ69 ([85.163.81.98])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-439b503425asm33480811f8f.25.2026.03.05.04.40.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Mar 2026 04:36:43 -0800 (PST)
+        Thu, 05 Mar 2026 04:40:18 -0800 (PST)
+Date: Thu, 5 Mar 2026 13:40:16 +0100
 From: Jiri Pirko <jiri@resnulli.us>
-To: dri-devel@lists.freedesktop.org,
-	linaro-mm-sig@lists.linaro.org,
-	iommu@lists.linux.dev,
-	linux-media@vger.kernel.org
-Cc: sumit.semwal@linaro.org,
-	benjamin.gaignard@collabora.com,
-	Brian.Starkey@arm.com,
-	jstultz@google.com,
-	tjmercier@google.com,
-	christian.koenig@amd.com,
-	m.szyprowski@samsung.com,
-	robin.murphy@arm.com,
-	jgg@ziepe.ca,
-	leon@kernel.org,
-	sean.anderson@linux.dev,
-	ptesarik@suse.com,
-	catalin.marinas@arm.com,
-	aneesh.kumar@kernel.org,
-	suzuki.poulose@arm.com,
-	steven.price@arm.com,
-	thomas.lendacky@amd.com,
-	john.allen@amd.com,
-	ashish.kalra@amd.com,
-	suravee.suthikulpanit@amd.com,
-	linux-coco@lists.linux.dev
-Subject: [PATCH net-next v3 1/2] dma-mapping: introduce DMA_ATTR_CC_DECRYPTED for pre-decrypted memory
-Date: Thu,  5 Mar 2026 13:36:40 +0100
-Message-ID: <20260305123641.164164-2-jiri@resnulli.us>
-X-Mailer: git-send-email 2.51.1
-In-Reply-To: <20260305123641.164164-1-jiri@resnulli.us>
+To: dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, 
+	iommu@lists.linux.dev, linux-media@vger.kernel.org
+Cc: sumit.semwal@linaro.org, benjamin.gaignard@collabora.com, 
+	Brian.Starkey@arm.com, jstultz@google.com, tjmercier@google.com, 
+	christian.koenig@amd.com, m.szyprowski@samsung.com, robin.murphy@arm.com, jgg@ziepe.ca, 
+	leon@kernel.org, sean.anderson@linux.dev, ptesarik@suse.com, 
+	catalin.marinas@arm.com, aneesh.kumar@kernel.org, suzuki.poulose@arm.com, 
+	steven.price@arm.com, thomas.lendacky@amd.com, john.allen@amd.com, 
+	ashish.kalra@amd.com, suravee.suthikulpanit@amd.com, linux-coco@lists.linux.dev
+Subject: Re: [PATCH net-next v3 0/2] dma-buf: heaps: system: add an option to
+ allocate explicitly decrypted memory
+Message-ID: <yyb5ozsxnfcuzo5rzpg64hgj4rtxz6glpqf5fpkhp4zrwdgted@izdksr4b3vte>
 References: <20260305123641.164164-1-jiri@resnulli.us>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -96,96 +79,9 @@ List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260305123641.164164-1-jiri@resnulli.us>
 
-From: Jiri Pirko <jiri@nvidia.com>
-
-Current CC designs don't place a vIOMMU in front of untrusted devices.
-Instead, the DMA API forces all untrusted device DMA through swiotlb
-bounce buffers (is_swiotlb_force_bounce()) which copies data into
-decrypted memory on behalf of the device.
-
-When a caller has already arranged for the memory to be decrypted
-via set_memory_decrypted(), the DMA API needs to know so it can map
-directly using the unencrypted physical address rather than bounce
-buffering. Following the pattern of DMA_ATTR_MMIO, add
-DMA_ATTR_CC_DECRYPTED for this purpose. Like the MMIO case, only the
-caller knows what kind of memory it has and must inform the DMA API
-for it to work correctly.
-
-Signed-off-by: Jiri Pirko <jiri@nvidia.com>
----
-v1->v2:
-- rebased on top of recent dma-mapping-fixes
----
- include/linux/dma-mapping.h |  6 ++++++
- include/trace/events/dma.h  |  3 ++-
- kernel/dma/direct.h         | 14 +++++++++++---
- 3 files changed, 19 insertions(+), 4 deletions(-)
-
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index 29973baa0581..ae3d85e494ec 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -85,6 +85,12 @@
-  * a cacheline must have this attribute for this to be considered safe.
-  */
- #define DMA_ATTR_CPU_CACHE_CLEAN	(1UL << 11)
-+/*
-+ * DMA_ATTR_CC_DECRYPTED: Indicates memory that has been explicitly decrypted
-+ * (shared) for confidential computing guests. The caller must have
-+ * called set_memory_decrypted(). A struct page is required.
-+ */
-+#define DMA_ATTR_CC_DECRYPTED	(1UL << 12)
- 
- /*
-  * A dma_addr_t can hold any valid DMA or bus address for the platform.  It can
-diff --git a/include/trace/events/dma.h b/include/trace/events/dma.h
-index 33e99e792f1a..b8082d5177c4 100644
---- a/include/trace/events/dma.h
-+++ b/include/trace/events/dma.h
-@@ -32,7 +32,8 @@ TRACE_DEFINE_ENUM(DMA_NONE);
- 		{ DMA_ATTR_ALLOC_SINGLE_PAGES, "ALLOC_SINGLE_PAGES" }, \
- 		{ DMA_ATTR_NO_WARN, "NO_WARN" }, \
- 		{ DMA_ATTR_PRIVILEGED, "PRIVILEGED" }, \
--		{ DMA_ATTR_MMIO, "MMIO" })
-+		{ DMA_ATTR_MMIO, "MMIO" }, \
-+		{ DMA_ATTR_CC_DECRYPTED, "CC_DECRYPTED" })
- 
- DECLARE_EVENT_CLASS(dma_map,
- 	TP_PROTO(struct device *dev, phys_addr_t phys_addr, dma_addr_t dma_addr,
-diff --git a/kernel/dma/direct.h b/kernel/dma/direct.h
-index e89f175e9c2d..c047a9d0fda3 100644
---- a/kernel/dma/direct.h
-+++ b/kernel/dma/direct.h
-@@ -84,16 +84,24 @@ static inline dma_addr_t dma_direct_map_phys(struct device *dev,
- 	dma_addr_t dma_addr;
- 
- 	if (is_swiotlb_force_bounce(dev)) {
--		if (attrs & DMA_ATTR_MMIO)
--			return DMA_MAPPING_ERROR;
-+		if (!(attrs & DMA_ATTR_CC_DECRYPTED)) {
-+			if (attrs & DMA_ATTR_MMIO)
-+				return DMA_MAPPING_ERROR;
- 
--		return swiotlb_map(dev, phys, size, dir, attrs);
-+			return swiotlb_map(dev, phys, size, dir, attrs);
-+		}
-+	} else if (attrs & DMA_ATTR_CC_DECRYPTED) {
-+		return DMA_MAPPING_ERROR;
- 	}
- 
- 	if (attrs & DMA_ATTR_MMIO) {
- 		dma_addr = phys;
- 		if (unlikely(!dma_capable(dev, dma_addr, size, false)))
- 			goto err_overflow;
-+	} else if (attrs & DMA_ATTR_CC_DECRYPTED) {
-+		dma_addr = phys_to_dma_unencrypted(dev, phys);
-+		if (unlikely(!dma_capable(dev, dma_addr, size, false)))
-+			goto err_overflow;
- 	} else {
- 		dma_addr = phys_to_dma(dev, phys);
- 		if (unlikely(!dma_capable(dev, dma_addr, size, true)) ||
--- 
-2.51.1
-
+The "net-next" in [PATCH] brackets is obviously incorrect, ignore
+this bad string please.
