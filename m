@@ -1,328 +1,220 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from BN1PR04CU002.outbound.protection.outlook.com (mail-eastus2azon11010070.outbound.protection.outlook.com [52.101.56.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CA0839D6F6
-	for <iommu@lists.linux.dev>; Thu,  5 Mar 2026 18:32:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772735575; cv=none; b=WmJRVMnIgocgzskZfJK9dOqQGgQYXNAaxWdBKgdUF/Eu5zl2FXSAzcLOxWKYRY4jCB6VrYizEkSBYCnZLlL6Bx+4nQHr902JAvnf+Hkah7APq8najPYO23YlO6vyK90jAug9z5X5U7+o9VjkVj9WW428q5SY/szyvsAwn3atPG8=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772735575; c=relaxed/simple;
-	bh=aB68XFFYRLmpoGqMlKRzfQZGNFVqrsQlDdc5m1k/3bw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=RDcHcSnJ7ONLnN0k2fHTsyac8dgmVo4Bhkw0jgvbu3dBxlG2GufylO8/jLBY6lNLa7dxaffwbzFxazEjbn+NiRIsTPyG8Fo30l/DK6FwLHYWc5WBz+SN+zrbp8RQ6c8G83/ka54aA0otFn1g0DqPz6gRg/NfqPaVNaLXniGKbGw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=nEUsnEwO; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=cZGO8A/y; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4D1334EEE7
+	for <iommu@lists.linux.dev>; Thu,  5 Mar 2026 21:06:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.56.70
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1772744811; cv=fail; b=rx+4uc47bGkI6oE5Qf7etCS+e6m4G4eoCFCOEjKvVx9J4A6tL7I9900ll473QDb4LcLn1udNOJRF6a3gSMxrUHvv2KBRRxNXqWtwLABtSHjXuFPsZ1ui0kl3sB68OQJYbk3CDPtt888QsoRVAvdZH36wnKf1q/AIc4fbBk3nTV8=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1772744811; c=relaxed/simple;
+	bh=EVIwxwXhlx7fwJKe+Mx0EGz+n8KWD5ARw8bY95C6AfQ=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=HhYwKLrMc5GUdzwUHoq4AKTH72kYCE0AmTxO3ogEX1pakqnBQYx/IdC61XWYMOA8uIUMuqMyTen+E3htIuGSGa2n1Jk+KLTXT3aPlchKCUQE1WCkfe9nR1y8dDqysEyYtXBQT/UdR+1dJ5bxil765xe3PUf5+QGZ4dc4dtB7z9E=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=ZQP7CIlt; arc=fail smtp.client-ip=52.101.56.70
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="nEUsnEwO";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="cZGO8A/y"
-Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 625HUOrm935974
-	for <iommu@lists.linux.dev>; Thu, 5 Mar 2026 18:32:53 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=07iZIVXXI08IOJ8ob15wib1I
-	ig3A0HI31MaQUD8/wgo=; b=nEUsnEwO10p5nKkvA04KFppEgTdvmETK6h2DN6EQ
-	YQdgzUi+6E4wNOMzHkUgJAEabU7RD3CKmCifr5fAC0dceijwhCTFcx/J1dojrYMP
-	yNvtl98hxJwVsPyj6AcOGxDYYFh3ZztUoxvHCnGAzwtTXyJyZtELwRKJ3t1p8Pr1
-	mcz35WTJrnN26xJAmlm2vfKU9eL9vOZIgkwwwYbWZ3L6bmRoLDICVRjxri/sS375
-	35GNLjUgZ39AAsEs4kZiQdzWYdrOB8sSCHeu12PKADVnJCIIsnUn0rgxmgKQ59+H
-	TZmghTm5bcZKbzkxfn/6EwQsjbtb34iT7kvEFrLbP27Cww==
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com [209.85.222.199])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4cq04u3bhj-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Thu, 05 Mar 2026 18:32:53 +0000 (GMT)
-Received: by mail-qk1-f199.google.com with SMTP id af79cd13be357-8c71156fe09so4755818985a.0
-        for <iommu@lists.linux.dev>; Thu, 05 Mar 2026 10:32:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1772735572; x=1773340372; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=07iZIVXXI08IOJ8ob15wib1Iig3A0HI31MaQUD8/wgo=;
-        b=cZGO8A/yT3DXf6YxrSSB1iPFdVnVd6fdT4VLsGkopTZyCBHhmW1RMEKivrKAfcvSrh
-         wYsLpOLaGlVBCcaH1UJ80NbgDtNfkkcg4QaIV2naG+HnRVWUBuNK2nWfzyz3yPV8dzkJ
-         4E3hEduLxx636eZZS/INXjjgodPMBfM5LxZH+mADWu+CSGdKwV2LPbbMOnGDLhiEPIFH
-         UVR5P4Xya2bnr/fhVQwytCYoUzexIrzS2woNrZpt31bkqk8Ajg49BaNv5454USDxGvgm
-         3VyBEjeeQBrTpidTRWFVSNmitIrlyS+8JdYlhqB/93wNcHLGTzrFXQiVx/yc1R3AV/op
-         z2WQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772735572; x=1773340372;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=07iZIVXXI08IOJ8ob15wib1Iig3A0HI31MaQUD8/wgo=;
-        b=sKsZgYzi1Gb6ved+k2lbwd5+V+Id2QsTnwT6ga2o79EKcVxHWfzXSfK/oZptFaAuqO
-         U4SLNTwMru6QXDYGUImRXWpKlEhnlKJoHSvBjSrA8TUNeQJQWS7QBIC6xxdJSxaGcqg3
-         ut9j8YreJ6s6snAYOKxaA4rpxnn5sW36ds3jKRCgwGUcEMO324eWhDViAzdg/SlqIFXf
-         2nMov/BPkXwEK/ImJHs9kz5amXXQkPiXPjjFY3hDvtD1ohOxJZSlCz7XWYcAm4nXJ2tK
-         z8x640eOVOYObTQPqzZtJc21E8ARm8haL+y0rZ/9ORA4ixRFlaEbHKWH2mS9Nx+COsYm
-         md3A==
-X-Forwarded-Encrypted: i=1; AJvYcCXXDTAmcTnl7s+drLGXPQZCyDDZUHXBn/N1YjQ216/ENzRZWU+dyjXH9EXVlhZPLXJUU8kBPw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yxo/S5e+URUkdsiOi1sF8cEv6UgBqj3Z5VHNVe1OlBtc45FRzZ+
-	suRaz86Q9+BPSiEI0eM3zEpbRv8T9YH59qPYCGw1dTsKU8Dqb0xPrMC8A+rW21v3R8cCCgnGWwE
-	fs+kh1AKl5JS6GwcTmJC4u4rRwvY2VrDN4/xMK/iS8wZjIfKVpiT+WEN0og==
-X-Gm-Gg: ATEYQzwsFC2dXV2amamV7zCGc+F65ou0r5RJI45/lXWkI4mTpvR68KF7Z/tTbbIOT8L
-	RhdvrGqxWo92KNVq4WxNj1mCT7FNlHHSlMUgJ/PK0dTAn9OLoxuZNeUQre7KqttHNe/yEYZKVxh
-	TEWlGel947qCBlI1fspEVsuZuW+C7dJFekuvvGJ/FzX4zcNNvs5SK6ZbfQzzKjnXNoyXV9bVFHe
-	0FgpygLZWqQ09NG8Ijbd6IM6h+hSyMfiiWcIyQZ8/RUCJKRnDpe7S92CbFqxPMbzhX3WYYstZuE
-	SZuX/FpCky9Jj1yK3ix7JGIGgMHhsbyTMtZc4rqTk6uYEUlmHv6r+66UQoK9uA80CBjSKINMdaW
-	zIC1nGFuUv2Lnte1g1J2/p8CtzD06u359yGTfrW1X0PvU5qT9TBmupB186L3mEA3KPxcEjfmrd5
-	QN8DkKxlYY94/18ziktBRQ4TO2sHLTHnZ/sME=
-X-Received: by 2002:a05:620a:31a4:b0:8cb:4c79:b44f with SMTP id af79cd13be357-8cd5af81919mr927054985a.51.1772735572211;
-        Thu, 05 Mar 2026 10:32:52 -0800 (PST)
-X-Received: by 2002:a05:620a:31a4:b0:8cb:4c79:b44f with SMTP id af79cd13be357-8cd5af81919mr927050185a.51.1772735571621;
-        Thu, 05 Mar 2026 10:32:51 -0800 (PST)
-Received: from umbar.lan (2001-14ba-a073-af00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a073:af00:264b:feff:fe8b:be8a])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5a12a6ddd3bsm1366694e87.0.2026.03.05.10.32.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Mar 2026 10:32:50 -0800 (PST)
-Date: Thu, 5 Mar 2026 20:32:48 +0200
-From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-To: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
-Cc: Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
-        Abhinav Kumar <abhinav.kumar@linux.dev>,
-        Bryan O'Donoghue <bod@kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Saravana Kannan <saravanak@kernel.org>, Joerg Roedel <joro@8bytes.org>,
-        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Stefan Schmidt <stefan.schmidt@linaro.org>,
-        Hans Verkuil <hverkuil@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Vishnu Reddy <busanna.reddy@oss.qualcomm.com>,
-        Hans Verkuil <hverkuil+cisco@kernel.org>,
-        linux-arm-msm@vger.kernel.org, linux-media@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        iommu@lists.linux.dev, Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-Subject: Re: [PATCH v2 4/7] media: iris: add context bank devices using
- iommu-map
-Message-ID: <7wvdcjajf7ro3c4y7jq6tmbxfg7kfvdpmyfzqm4vgjw5wly4zu@jcjqudf7vrgd>
-References: <20260227-kaanapali-iris-v2-0-850043ac3933@oss.qualcomm.com>
- <20260227-kaanapali-iris-v2-4-850043ac3933@oss.qualcomm.com>
- <rzi7qmzsofocwcqxhsqz3f3tl4ahqnwn34of6qcc54odpben5d@7okuqabxgdqh>
- <e12da06d-cad5-4967-af07-64c7c6e540f4@oss.qualcomm.com>
- <vi5v5bczg2wx2adfpr6ppqcad76oecitoyc7zd2i4lahla4buw@mqnppboxcyrs>
- <6553cfcb-9399-4d17-a529-b07b421ed7e8@oss.qualcomm.com>
- <mqyg7cebyahkrngvnxcrenkdd3dybpnkecago4lqonfwqzize7@yawbtcsli3vi>
- <1d2b55d9-42e3-4459-971b-e276a87fb843@oss.qualcomm.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="ZQP7CIlt"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=geM6CfonyePPkHgXejDbROHz1TMUOjecyxNg3Mir66/i67bNhkc+4NCiwDT3ZTe80j4NzCoEkNQ8rvcT3jJReW18v0Bemb0iM5CodusNvz5pL1iglSGDgDiVdLAHidWDE4T/bCUySAaDioShLIT9MgRxVXndrvlfb+Q+LlCDJp6Zx64aNkhpbx5UMJ7u0I+YOCMAQVM1iYLrWGPlw8nJdYB/d3Lqw7U3RNBArECYiJg1vk831i+1XBuzI8HfK5co0g6Y4gyyde1sqXkJQ343CcZhntFvLB5vsHTIxsWxfbceaGtAH9zgqSgdKmtoUc8Tz1aeI/Ol9wmqvQV3WMQCyg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=3EctW3jvFPsOk0/EIuOkO1Vp33FB79drmL8T3kLvsdo=;
+ b=kU0JmV1R4r9N+anQeJsesP0FbrcOcRrPLy59jV31gM4d7HM/l+vNF/kQC293Y+aqSPhmcCW0WvQQIni7hA+jURqnDcVDp+RAQ01ijl8iLfunDJyp1+ZnA5dviUyMIjoa1mFClKomDteEYQhFwFsIKifWov4T//LWwggFEnpXOp05I0c6cYcmOYDftv2KYkZJ1ZN+wtNO1GtcEUYAXnxFPcmcme74U/qp4odTVFlh04u3y3ntVLRfGFbBX1nxigjDQ1OqqGT/tVbY/XjY7SWxCnIrk5ESObps4jkESIRxdaOh1XKJXwkdLR/Ar4XpAT8DwQGfLax2/Ld61BCPEbmeLw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=arm.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3EctW3jvFPsOk0/EIuOkO1Vp33FB79drmL8T3kLvsdo=;
+ b=ZQP7CIltNjnXeu6DG15s/AUlh2NdAx4F5YAqIj7I3/6FheVwXXAXBFlK0BucVtT66AhjvgvpPCHvUFu7oQVOlkH5E295XrC+uAgJ3TGADJnvtW0y9G7XpW7sOdmuyRtPTVq5ffhdL1yX7buI5666lHsK4b1pkswuCm/QY7nzRv4tQXFBmKz7e2QWQk35MGtsZoLFG1wKFtkNe9d1GEJ+3uQZ+YfX9+A2XiG5IkL+pzudzOL2Zg0JC9rpSreJqf5yQZV5oUd7NUL95tNwMHNKbzOp03NrTvtMF+Mn4xdtPXTlGLw02jodQ5fVymEPEg2mOwaLrS0Xg+PCoVQufValiQ==
+Received: from BYAPR05CA0107.namprd05.prod.outlook.com (2603:10b6:a03:e0::48)
+ by LV3PR12MB9411.namprd12.prod.outlook.com (2603:10b6:408:215::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9678.17; Thu, 5 Mar
+ 2026 21:06:43 +0000
+Received: from SJ5PEPF000001E9.namprd05.prod.outlook.com
+ (2603:10b6:a03:e0:cafe::27) by BYAPR05CA0107.outlook.office365.com
+ (2603:10b6:a03:e0::48) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9678.13 via Frontend Transport; Thu,
+ 5 Mar 2026 21:06:43 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ SJ5PEPF000001E9.mail.protection.outlook.com (10.167.242.197) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.9678.18 via Frontend Transport; Thu, 5 Mar 2026 21:06:41 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Thu, 5 Mar
+ 2026 13:06:24 -0800
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Thu, 5 Mar
+ 2026 13:06:24 -0800
+Received: from Asurada-Nvidia (10.127.8.10) by mail.nvidia.com (10.129.68.6)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
+ Transport; Thu, 5 Mar 2026 13:06:22 -0800
+Date: Thu, 5 Mar 2026 13:06:21 -0800
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Robin Murphy <robin.murphy@arm.com>
+CC: <will@kernel.org>, <joro@8bytes.org>, <bhelgaas@google.com>,
+	<jgg@nvidia.com>, <rafael@kernel.org>, <lenb@kernel.org>, <praan@google.com>,
+	<kees@kernel.org>, <baolu.lu@linux.intel.com>, <smostafa@google.com>,
+	<Alexander.Grest@microsoft.com>, <kevin.tian@intel.com>,
+	<miko.lenczewski@arm.com>, <linux-arm-kernel@lists.infradead.org>,
+	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+	<linux-acpi@vger.kernel.org>, <linux-pci@vger.kernel.org>,
+	<vsethi@nvidia.com>
+Subject: Re: [PATCH v1 2/2] iommu/arm-smmu-v3: Recover ATC invalidate timeouts
+Message-ID: <aanwTQtMMplXY3du@Asurada-Nvidia>
+References: <cover.1772686998.git.nicolinc@nvidia.com>
+ <ca7ab934bf0f433b62a5c15d42241632c4cb9366.1772686998.git.nicolinc@nvidia.com>
+ <a5ff7a43-ea52-462d-a316-d3a6c08410e0@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <1d2b55d9-42e3-4459-971b-e276a87fb843@oss.qualcomm.com>
-X-Proofpoint-GUID: VCz8kf0IxO3_nAMlcBZ64-s10Vk-lLpH
-X-Authority-Analysis: v=2.4 cv=eqTSD4pX c=1 sm=1 tr=0 ts=69a9cc55 cx=c_pps
- a=HLyN3IcIa5EE8TELMZ618Q==:117 a=xqWC_Br6kY4A:10 a=kj9zAlcOel0A:10
- a=Yq5XynenixoA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=u7WPNUs3qKkmUXheDGA7:22 a=yOCtJkima9RkubShWh1s:22 a=EUspDBNiAAAA:8
- a=k2QkBiQWYh7aNo2zAsoA:9 a=CjuIK1q_8ugA:10 a=bTQJ7kPSJx9SKPbeHEYW:22
-X-Proofpoint-ORIG-GUID: VCz8kf0IxO3_nAMlcBZ64-s10Vk-lLpH
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMzA1MDE1MyBTYWx0ZWRfX5Tlnbu/ionhs
- jpcgZc0s+Dk/VY9mStRHHKx57N7yKlZP0njy3hH+ycfiglOCcr4BI38nz/6FZ0+oZohYjg9Nb+L
- A+x1ojoBFI7YYV0kERhce5shfJmy8/d+9dyUMFA5Itma4Q6xiF/K93BpJW5RUXVfPenzOyBm5xm
- CDKdDOFF8btEd81Ns10zGBJdalC3ybryeIytKVa7Cw9HkzkWCBil4batGEpsBlOHagxRN9uCSKH
- xtSnVCpK0+sYsPIrTK0Q0rqfSyduNvN/PTyNsSLl0uBI746VhczGQ6OZuXNi0UAi4sim2lg+SH3
- 9zyKNNP/Ezjr9L8R+oi5tPyH8CWo7bUX/TY9VtCslkJLInR9Dg2kYtfFQEY0df9HJnVtjS2sbuo
- jDqSja8Q1YfOKnPhxCqEGVVxWyVP/eaaKRa7nz9byco6ygkXVXuYfm3kcLVKkz82y1iHgM+jF/h
- 6uDAQjzIJ5Oh7TKBabQ==
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-03-05_05,2026-03-04_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- suspectscore=0 bulkscore=0 clxscore=1015 priorityscore=1501 malwarescore=0
- lowpriorityscore=0 spamscore=0 impostorscore=0 adultscore=0 phishscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2602130000 definitions=main-2603050153
+In-Reply-To: <a5ff7a43-ea52-462d-a316-d3a6c08410e0@arm.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SJ5PEPF000001E9:EE_|LV3PR12MB9411:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3249b412-e9f9-42e5-b1ab-08de7afb1992
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|7416014|376014|82310400026|1800799024|36860700016;
+X-Microsoft-Antispam-Message-Info:
+	XRO11fukPD1iR7ofjLJmhx2e8R9JHGNVYuXPICMRXUFhcrHeLXuCA7rNaTX49LIp2nGCEEimlrJp1oRyIUaGHYF55SXtnFVkZzFlL2Hgg4eBNQTvBhUeAMMElWio610B/onFXzrtd+90zyjOxCFvY8xVEE2LYDDrq2mEXMuJXhYRq853TNJozeDXsXC2xbQYjiGT/6Fbe7amWxlJcoQ5FnI6uzoZpWDhuBri5T5SmOB2rn4G6b1hILMJJJ87RIISQ41dDVcEXjIq21vyOCCg9dJlc6GD9hBHeQXo6enRidNFJ+affICOFIff10SwiANzLbGz8f4i9ZhOEyZvL9YcrSew+06PC9vCq+T9j66y81luUPY6nC+q7yZWdvIB8hs3LWgNMNMyMeZGb2sQlk5Td1DE/w9d2i/fYsNhbGapPOfZ4SKcW+lMvxP971VRzLVsxjvwUrfzZWeL7/uDcecQ9QuYpBfjEtnFA1OxRY52H9TBxdXcMKrzMjX5dLpmSxa+3Q7dxEKKp0kzQ/JssN8JJxHFGLlHu40SAZk9DDFaHeOOqaXAi8N2C/Eewm1LImxFhK/7+fFUqoyKORBl7/sECfMVv63n2MBeSRSaKQF687TiYsYm7iBH93AU1O3H9HPX4KrgddJs/NY8K2tp3pQp1GGjgysq0LKFDBMKrLI+Or+0B4Hz0aydqtaRb9QLqJgLj5ghCAbXnHvCg7gnAmkRFji1Z1TrlqBcFuskdL4es5BM2yljLWkYdZBzu/QP8jGsbC/y74ILuYKcYX35yJw1AQ==
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(7416014)(376014)(82310400026)(1800799024)(36860700016);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	UK4muLFlfujQWqLkNF1/Gyc+tL6pRRhKhhlb6/W9JzaTtW7WrIYl+/hTFvk4X+5PVzxaWIN0YgOIyLgKJ4NsXq4FbI8sXupn/0aj3cS0/KMcHzdRJLhN6F/XFNg2n2UsGN4vTyqdj0UBh7v4oNaBH5HO1qw5TqQZiCxIA7hC99II4g8QvvxdMWvvbkPlJtp0Va+IaSXOpCrkcFfbhZU80In9fMJ3n1ibOxtjd4bfkMMjghortMiAR+0W94gA0ch+HzUrOySb8rq8ueRca1w+axogwoQHIj70iCXjMWVytmhbXIQ3a6Wu9D/X/H0WAVIfbMeHiLPpLV4QoYqQ7tECWAVdo1wmmDMIWtObMlWk/wdC0SjsStPPA9nM967NpoMrSWvqSALwH8aTHJnBeYNJxy3vy8SEtaE9U+SIHKbUHocAwnBjDBQfcVgTm3wiKXg6
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Mar 2026 21:06:41.7282
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3249b412-e9f9-42e5-b1ab-08de7afb1992
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SJ5PEPF000001E9.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV3PR12MB9411
 
-On Thu, Mar 05, 2026 at 10:56:40PM +0530, Vikash Garodia wrote:
+On Thu, Mar 05, 2026 at 03:24:30PM +0000, Robin Murphy wrote:
+> On 2026-03-05 5:21 am, Nicolin Chen wrote:
+> > Though it'd be ideal to block it immediately in the ISR, it cannot be done
+> > because an STE update would require another CFIG_STE command that couldn't
+> > finish in the context of an ISR handling a CMDQ error.
 > 
-> On 3/5/2026 7:51 PM, Dmitry Baryshkov wrote:
-> > On Thu, Mar 05, 2026 at 06:19:52PM +0530, Vikash Garodia wrote:
-> > > 
-> > > On 3/4/2026 3:55 AM, Dmitry Baryshkov wrote:
-> > > > On Wed, Mar 04, 2026 at 12:16:50AM +0530, Vikash Garodia wrote:
-> > > > > 
-> > > > > On 2/28/2026 1:50 AM, Dmitry Baryshkov wrote:
-> > > > > > On Fri, Feb 27, 2026 at 07:41:20PM +0530, Vikash Garodia wrote:
-> > > > > > > Introduce different context banks(CB) and the associated buffer region.
-> > > > > > > Different stream IDs from VPU would be associated to one of these CB.
-> > > > > > > Multiple CBs are needed to increase the IOVA for the video usecases like
-> > > > > > > higher concurrent sessions.
-> > > > > > > 
-> > > > > > > Co-developed-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-> > > > > > > Signed-off-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-> > > > > > > Signed-off-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
-> > > > > > > ---
-> > > > > > >     .../platform/qcom/iris/iris_platform_common.h      | 18 +++++++
-> > > > > > >     drivers/media/platform/qcom/iris/iris_probe.c      | 60 ++++++++++++++++++++--
-> > > > > > >     drivers/media/platform/qcom/iris/iris_resources.c  | 36 +++++++++++++
-> > > > > > >     drivers/media/platform/qcom/iris/iris_resources.h  |  1 +
-> > > > > > >     4 files changed, 111 insertions(+), 4 deletions(-)
-> > > > > > > 
-> > > > > > > diff --git a/drivers/media/platform/qcom/iris/iris_platform_common.h b/drivers/media/platform/qcom/iris/iris_platform_common.h
-> > > > > > > index 5a489917580eb10022fdcb52f7321a915e8b239d..03c50d6e54853fca34d7d32f65d09eb80945fcdd 100644
-> > > > > > > --- a/drivers/media/platform/qcom/iris/iris_platform_common.h
-> > > > > > > +++ b/drivers/media/platform/qcom/iris/iris_platform_common.h
-> > > > > > > @@ -204,6 +204,22 @@ struct icc_vote_data {
-> > > > > > >     	u32 fps;
-> > > > > > >     };
-> > > > > > > +enum iris_buffer_region {
-> > > > > > > +	IRIS_BITSTREAM_REGION		= BIT(0),
-> > > > > > > +	IRIS_NON_PIXEL_REGION		= BIT(1),
-> > > > > > > +	IRIS_PIXEL_REGION		= BIT(2),
-> > > > > > > +	IRIS_SECURE_BITSTREAM_REGION	= BIT(3),
-> > > > > > > +	IRIS_SECURE_NON_PIXEL_REGION	= BIT(4),
-> > > > > > > +	IRIS_SECURE_PIXEL_REGION	= BIT(5),
-> > > > > > 
-> > > > > > Can a context bank belong to multiple regions at the same time?
-> > > > > 
-> > > > > yes, they would.
-> > > > 
-> > > > How? Each set of CBs is defined by a separate function in the DT. How
-> > > > can CB belong to multiple regions? Could you please provide an example?
-> > > 
-> > > SM8550 would have same stream id for VPU hardwares (tensilica and vcodec)
-> > > accessing bitstream and non pixel regions. Thereby non_pixel and bitstream
-> > > regions would map to one CB.
-> > 
-> > In my opinion it means only one thing: you will have two CBs (one for
-> > non_pixel and one for bitstream) having the same SIDs. An alternative
-> > would be to define fallback rules (if CB foo doesn't exist, use CB bar).
-> > 
-> > > While kaanapali would have different stream id for tensilica accessing non
-> > > pixel region and vcodec accessing bitstream region, thereby having different
-> > > CB.
-> > > 
-> > > > 
-> > > > > 
-> > > > > > 
-> > > > > > > +};
-> > > > > > > +
-> > > > > > > +struct iris_context_bank {
-> > > > > > > +	struct device *dev;
-> > > > > > 
-> > > > > > Separate data and the actual device. Define a wrapper around struct
-> > > > > > device for the actual runtime usage.
-> > > > > 
-> > > > > we still have to store the list of dynamically created device. Name can be
-> > > > > used to fetch the device from the list, i think the existing approach is
-> > > > > simpler ?
-> > > > 
-> > > > You don't need a list. You have an array of the size, which is known and
-> > > > fixed. You have at most 9 functions, which means less than 9 devices.
-> > > > 
-> > > 
-> > > as mentioned above, its not the same for all platforms to have one to one
-> > > mapping between CBs and buffer region. Thereby indexing based on array would
-> > > be an issue here
-> > > It would end up something like this, considering [dev region] array,
-> > > 
-> > > SM8550
-> > > non_pixel_device  non_pixel_region
-> > > non_pixel_device  bitstream_region
-> > > pixel_device      pixel_region
-> > > 
-> > > kaanapali
-> > > non_pixel_device  non_pixel_region
-> > > bitstream_device  bitstream_region
-> > > pixel_device      pixel_region
-> > 
-> > I'm sorry, I'm not sure I follow here. Could you please explain? Maybe
-> > by explititly mapping DT function values to iris_buffer_region values?
-> > 
+> Why not? As soon as we've acked GERRORN.CMDQ_ERR, command consumption will
+> resume and we're free to do whatever we fancy. Admittedly this probably
+> represents more work than we *want* to be doing in the SMMU's IRQ handler
+> (arguably even in a thread, since all the PCI housekeeping isn't really the
+> SMMU driver's own problem), but I would say the workqueue is a definite
+> design choice, not a functional requirement.
+
+Hmm, you are right, after writel(gerror, ARM_SMMU_GERRORN), it
+would be doable.
+
+Though SID->pdev conversion requires streams_mutex, which can't
+happen in ISR?
+
+> > +static void arm_smmu_atc_recovery_worker(struct work_struct *work)
+> > +{
+> > +	struct arm_smmu_atc_recovery_param *param =
+> > +		container_of(work, struct arm_smmu_atc_recovery_param, work);
+> > +	struct pci_dev *pdev;
+> > +
+> > +	scoped_guard(mutex, &param->smmu->streams_mutex) {
+> > +		struct arm_smmu_master *master;
+> > +
+> > +		master = arm_smmu_find_master(param->smmu, param->sid);
 > 
-> Kaanapali
-> IRIS_BITSTREAM IRIS_BITSTREAM_REGION
-> IRIS_NON_PIXEL IRIS_NON_PIXEL_REGION	
-> IRIS_PIXEL     IRIS_PIXEL_REGION
+> The only thing SMMU-specific about this seems to be the use of
+> arm_smmu_find_master() to resolve the device, which could just as well be
+> done upon submission anyway - why isn't this a generic IOMMU/IOPF mechanism?
+
+You mean treating this as a page fault? That's an interesting idea.
+
+So, the IOMMU-level fence could be done in arm_smmu_page_response().
+
+> > +static int arm_smmu_sched_atc_recovery(struct arm_smmu_device *smmu, u32 sid)
+> > +{
+> > +	struct arm_smmu_atc_recovery_param *param;
+> > +
+> > +	param = kzalloc_obj(*param, GFP_ATOMIC);
+> > +	if (!param)
+> > +		return -ENOMEM;
+> > +	param->smmu = smmu;
+> > +	param->sid = sid;
+> > +
+> > +	INIT_WORK(&param->work, arm_smmu_atc_recovery_worker);
+> > +	queue_work(system_unbound_wq, &param->work);
 > 
-> SM8550
-> IRIS_NON_PIXEL IRIS_NON_PIXEL_REGION | IRIS_BITSTREAM_REGION
-> IRIS_PIXEL     IRIS_PIXEL_REGION
+> Might it make more sense to have a single work item associated with the
+> list_head and use the latter as an actual queue, such that the work runs
+> until the list is empty, then here at submisison time we do the list_add()
+> and schedule_work()? That could perhaps even be a global queue, since ATS
+> timeouts can hardly be expected to be a highly-contended high-perfoamnce
+> concern.
 
-So, why not:
+That sounds like the IOPF implementation. Maybe inventing another
+IOMMU_FAULT_ATC_TIMEOUT to reuse the existing infrastructure would
+make things cleaner.
 
-Kaanapali:
+> Right now it seems the list is barely doing anything - a "deduplication"
+> mechanism that only works if multiple resets for the same device happen to
+> have their work scheduled concurrently seems pretty ineffective.
 
-iris_cb_dev_bs = iris_cb_dev_alloc(IRIS_BITSTREAM];
-iris_cb_dev_np = iris_cb_dev_alloc(IRIS_NON_PIXEL];
-iris_cb_dev_px = iris_cb_dev_alloc(IRIS_PIXEL];
+From my testing results, it does effectively block duplications, so
+I think it's somehow meaningful.
 
-core->cb_devs = {
-	[IRIS_BITSTREAM_REGION] = iris_cb_dev_bs,
-	[IRIS_NON_PIXEL_REGION] = iris_cb_dev_np,
-	[IRIS_PIXEL_REGION] = iris_cb_dev_px;
-};
+If I wasn't wrong, the duplicated ATC timeout might come from this
+exact reset thread, as it did a CMDQ_OP_CFGI_STE while the CONS was
+still pointing to previous CMDQ_OP_ATC_INV.
 
-SM8550:
+IIUIC, the IOPF queue doesn't expect duplicated PRI events. So, it
+might invoke the handler twice if there is a duplication. The core
+handling list_add() might need a deduplication.
 
-iris_cb_dev_np = iris_cb_dev_alloc(IRIS_NON_PIXEL];
-iris_cb_dev_px = iris_cb_dev_alloc(IRIS_PIXEL];
-
-core->cb_devs = {
-	[IRIS_BITSTREAM_REGION] = iris_cb_dev_np,
-	[IRIS_NON_PIXEL_REGION] = iris_cb_dev_np,
-	[IRIS_PIXEL_REGION] = iris_cb_dev_px;
-};
-
-
-Yes, it would require coding of those functions, however afterwards you
-can access necessary CB device simply by doing core->cb_devs[region].
-
-I think current code is overcomplicated for the sake of having the
-platform flexibility expressed as data.
-
+> > @@ -456,6 +555,27 @@ void __arm_smmu_cmdq_skip_err(struct arm_smmu_device *smmu,
+> >   	 * not to touch any of the shadow cmdq state.
+> >   	 */
+> >   	queue_read(cmd, Q_ENT(q, cons), q->ent_dwords);
+> > +
+> > +	if (idx == CMDQ_ERR_CERROR_ATC_INV_IDX) {
+> > +		/*
+> > +		 * Since commands can be issued in batch making it difficult to
+> > +		 * identify which CMDQ_OP_ATC_INV actually timed out, the driver
+> > +		 * must ensure only CMDQ_OP_ATC_INV commands for the same device
+> > +		 * can be batched.
 > 
-> > > 
-> > > 
-> > > > > 
-> > > > > > 
-> > > > > > > +	const char *name;
-> > > > > > > +	const u32 f_id;
-> > > > > > > +	const enum iris_buffer_region region;
-> > > > > > > +};
-> > > > > > > +
-> > > > > > >     enum platform_pm_domain_type {
-> > > > > > >     	IRIS_CTRL_POWER_DOMAIN,
-> > > > > > >     	IRIS_HW_POWER_DOMAIN,
-> > > > > > > @@ -246,6 +262,8 @@ struct iris_platform_data {
-> > > > > > >     	u32 inst_fw_caps_enc_size;
-> > > > > > >     	const struct tz_cp_config *tz_cp_config_data;
-> > > > > > >     	u32 tz_cp_config_data_size;
-> > > > > > > +	struct iris_context_bank *cb_data;
-> > > > > > > +	u32 cb_data_size;
-> > > > > > 
-> > > > > > Do they differ from platform to platform?
-> > > > > Yes
-> > > > > 
-> > > > > > Mark them as const, it should be data only.
-> > > > > 
-> > > > > cb_data_size can be marked as const
-> > > > 
-> > > > Why is cb_data non-const?
-> > > 
-> > > dev is being updated once created dynamically.
-> > 
-> > That's a bad idea. Please make the platform description constant.
-> > 
-> 
-> I can give it a try to move CBs in core struct out of platform data and have
-> a buffer region based lookup array to fetch the device.
+> But this *is* "the driver" - arm_smmu_atc_inv_domain() is literally further
+> down this same C file, and does not do what this comment is saying it must
+> do, so how are you expecting this to work correctly?
 
-It might be easier to express that as a callback, filling core->cb_devs
-with struct device pointers, as I wrote above.
+Oh, that's a big miss..
 
-> 
-> Regards,
-> Vikash
+I imaged these changes to be based on the arm_smmu_invs series,
+where it could break the ATC in the batching function. Here, it
+should have made some change to arm_smmu_atc_inv_domain().
 
--- 
-With best wishes
-Dmitry
+Thanks
+Nicolin
