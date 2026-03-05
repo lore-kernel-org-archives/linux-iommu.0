@@ -1,285 +1,139 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from PH7PR06CU001.outbound.protection.outlook.com (mail-westus3azon11010048.outbound.protection.outlook.com [52.101.201.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E46F371054
-	for <iommu@lists.linux.dev>; Thu,  5 Mar 2026 12:50:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772715056; cv=none; b=ofzdNg/Hs+ekJv4sTmKBXBb0n9Dd5s9qsF+2HZijLkb6reN9MOWpE83gvEEFrkUL29w/79BAHDmHsiyDuPYpohZIxZ1FTTpuVmclUoP+nAPSxU0gCoPafMhDpJtO098k42fIL1hElMm3KfUybjBl+LNWMUiYyrNNJP8yBi0jONk=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772715056; c=relaxed/simple;
-	bh=/PAlgOnQ/jejanH9Gll9iSda9UAkKTHJRugY2qJVQ+I=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=apAlFGgKdIxf2AtKX53GOP1w/cm1m87EYH//L4/oYKNN+8mVjFnq81qbhVl2Kv9sUC7mDuHSlhAirhLYyGx5X+4y6qbnpnIGAw2sx9DdyDpXoXjJ6meoPqyN6Tu/pehzlMmdbPWziGwD7tcwq/mXRD5bzjbf+DdAaVTIrYRo6oM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=hAk8h0LN; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44D0A306B1B
+	for <iommu@lists.linux.dev>; Thu,  5 Mar 2026 13:51:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.201.48
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1772718707; cv=fail; b=iREO6NeHPLZzLFM7GWoLXdnlSr3uJKWLVLLv+RDWPEAGvHat3pv+9p/9tMKzBnr0oWCaCvLCCp31/2AjqNtzUQEzDA8fCjxFYz63hcXmQ0SlrefgM0naIroZSOm+KgRc1sns0kpM/nUR90/2BPXo9wDHDTMCLl0VHaco+qJOwd0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1772718707; c=relaxed/simple;
+	bh=rqhID+5JwDlc3MiOgTz8Los8R3O/xaY6ClgIYFygTa8=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=UruqQbQVv+RapR3eCcGkTYyxKx72s/NEiNtmD9CwMOzNb3X2+5On8y9W+Xc4yoBEk1ODW4osFflbIPvJO04/hBnaqQtvp+W2gFpfeFBSZ4ahH2GruTqj9axUwE3st81WiFpuxPbOg4ejsu0bLnuZ3CmaNDdg3nAQTOzWaTfL/lI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=Kp2MCKdW; arc=fail smtp.client-ip=52.101.201.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="hAk8h0LN"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1772715052;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=mGQD+cOc++KkO42kzws1oQJrJ/tIu6r6dd9H8Ca4j6g=;
-	b=hAk8h0LN1V0U9yxkzJ64iijEr3Vw7dbSm9mD5x6VgyaR5GJecl2OQRp46BTHUmHMLhtHup
-	MGQ36vBmlTDnTWlmhImYdOfoGri6MB8+Oa5iVBFgIRgmZ7X1iapVuQU2lCuVJ3aMctWr38
-	63aNhNxUoYbpIsooUPszFdzBvwY3alU=
-Received: from mail-yx1-f69.google.com (mail-yx1-f69.google.com
- [74.125.224.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-104-9OlcYP93NvaO6S8YfCIECQ-1; Thu, 05 Mar 2026 07:50:51 -0500
-X-MC-Unique: 9OlcYP93NvaO6S8YfCIECQ-1
-X-Mimecast-MFC-AGG-ID: 9OlcYP93NvaO6S8YfCIECQ_1772715051
-Received: by mail-yx1-f69.google.com with SMTP id 956f58d0204a3-64ad18e7ffaso9753301d50.2
-        for <iommu@lists.linux.dev>; Thu, 05 Mar 2026 04:50:51 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772715051; x=1773319851;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=mGQD+cOc++KkO42kzws1oQJrJ/tIu6r6dd9H8Ca4j6g=;
-        b=YRkuxJ5Oy83xp4B/TveWtVF6WPWiFPpNfI/YOdbBEfTeREAT+RynWHd8Bui4D57m/F
-         Zbv9wajQzSGFjI4WQUsNlDaDZpn0BgzrUdcs3aILJzwtP00Sx/1eUqGOqGiClUPidDcb
-         Pmx316UVhnNaIHdnAZsEEVmEIJYL9oHcICxu7dZ9CFmo/UwdCJsP5sCvaQwz3VoLfpwf
-         zQ7f/DHqjG1gpyJVrzFQjF71kydva9YbXnbJ7rByo+iJc2RB1DOB5y0NyOWknDkZlzzu
-         9T2bNligUFFFJQaMvkgQ65YT3SbobKJ363TtX9q7NdvIZPNdZGJtwzthVh3jrHdST53v
-         USuQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWiMYOV7hkB+GIDp6IlTHJMPj+wyFNK2wCQzPXInto1yTxjkJwEiy8K0LV0KqyZpDmd8lsomg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzaPE6TL5cI86yPvN0HUSvvaQlOnP4ndZApASkyTU/m3ZgjufV0
-	AsjAwH/yyVllCTxXCQPO6ND0AAMGpM7NbJRlkhKALqRy6G8t6yzdBvYqKor2oSNEM/8PIUxPhgK
-	QhdVob5Drtt6sXY6xQj+RXEo7wS3TUQ2Iu0ebO76RVdsKYDkk0Hwp32LCj4bS2pmzu1Ndu6nLSy
-	FQrmmQrkNh3tKaOHACjRLz+fb7rmekuik=
-X-Gm-Gg: ATEYQzwKKqd+FPd08YnEvJ92T1Nh+IAAbuy6V5M4aRmsimtUAJPsB8Skd0KK6e1+bse
-	9ATw4RfKvqFvkTP+luIPhg+e7/zwkAe9ItotLdVSlsLHYt3uZ7m6rWB1GcHycowx1ZiAOLCDF8a
-	GeU3dSuAQn6BqSzjhLSZwCnKwOmZkqHPEpGnGuiLfDY357mfNSthuChT5PhoS57/oTs+C+6gslF
-	Q==
-X-Received: by 2002:a05:690e:b4d:b0:64c:e7a0:7eb8 with SMTP id 956f58d0204a3-64cf9b4e46dmr4272164d50.24.1772715050868;
-        Thu, 05 Mar 2026 04:50:50 -0800 (PST)
-X-Received: by 2002:a05:690e:b4d:b0:64c:e7a0:7eb8 with SMTP id
- 956f58d0204a3-64cf9b4e46dmr4272126d50.24.1772715050349; Thu, 05 Mar 2026
- 04:50:50 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="Kp2MCKdW"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=y5YlVRwgmb9+YOO9EkK+mllOtUBBZg1SYcBWBOJyHk+U75s4sCX2twHJTJDIkKXOFNfrGDJG43W7wvVoPujvhmk6GrFVxKjtEsILIoV2Ok58ZCal2AdAPG8A6b4ZaVtyOaGd0fZJ7tzogQF+RQ6yiJ7AgcylnocGUhSS2Lzol3vqsmQ9y755D2j0pF3F9UmUMD3UX2APSjV6ruBYX2rbUhwCuLMH7d5ZKr1l/icvmnjP/pr73H+OnC9gGYTdxh/MYGqaMsWmdeebcwDr5w3f88CIiozs94vvkoium92nkT0JQn/A2VNw0OS9oXd/WKcI064NzcbkwF3BykGiarTMyA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=jhWAfizkYKxPFPUQeHl2DTtc5ukM8CfaCBbJFYPj9gs=;
+ b=nssRxQx0VK/DCHkCp+U+6c1LGXvreDEQ5JZQzjwxdQ1LIMWXeCQjIVHjZgY4WNkgvB0e34hMRq+Ps66qzuWFTtdu6DYRaC9paTHAabwGXlTmv+cAONJFQA53qnJn/Y8gBoZ7JFCkiCOCdal80Kgt5G3o7HFMnQCjyEVx0BwtAUvqF5WbKVUwfe+d09HN0XhxlxKhj3mkdvWZQiEFT6VbxMBFI81tHpBiQlTk5qVcLCmVpsQ7eJ08F5AjEtPZTHdx8aj/Pi3gVaA86QuoRdBB3POG4bwdIAZdGb9hf4z91Sss8B/1+PwKjYbSf1NGaYlkaE1x/yQ+ww0cUzGer5yCjQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=ziepe.ca smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jhWAfizkYKxPFPUQeHl2DTtc5ukM8CfaCBbJFYPj9gs=;
+ b=Kp2MCKdW7RQg+oitdtov+F4bsq5aCLhyTjy0s5xEIyu4+PO57/jCezDNB+ruugqiZaelD5zv2EjHgV/hwYyXtq2pGhxHUwTiN+GzYm3fc/bShKjGhJVBVLYOsK27hu1qSuSWDlYvuTnZjRcjMm360IenO2Pb3xrVL968HJ7GVIs=
+Received: from BN9PR03CA0310.namprd03.prod.outlook.com (2603:10b6:408:112::15)
+ by PH0PR12MB8798.namprd12.prod.outlook.com (2603:10b6:510:28d::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9678.18; Thu, 5 Mar
+ 2026 13:51:37 +0000
+Received: from BN2PEPF00004FBB.namprd04.prod.outlook.com
+ (2603:10b6:408:112:cafe::a1) by BN9PR03CA0310.outlook.office365.com
+ (2603:10b6:408:112::15) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9654.23 via Frontend Transport; Thu,
+ 5 Mar 2026 13:51:09 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
+Received: from satlexmb07.amd.com (165.204.84.17) by
+ BN2PEPF00004FBB.mail.protection.outlook.com (10.167.243.181) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.9678.18 via Frontend Transport; Thu, 5 Mar 2026 13:51:37 +0000
+Received: from satlexmb10.amd.com (10.181.42.219) by satlexmb07.amd.com
+ (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.17; Thu, 5 Mar
+ 2026 07:51:37 -0600
+Received: from satlexmb07.amd.com (10.181.42.216) by satlexmb10.amd.com
+ (10.181.42.219) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.17; Thu, 5 Mar
+ 2026 07:51:36 -0600
+Received: from amd.com (10.180.168.240) by satlexmb07.amd.com (10.181.42.216)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.17 via Frontend
+ Transport; Thu, 5 Mar 2026 07:51:34 -0600
+Date: Thu, 5 Mar 2026 13:51:23 +0000
+From: Ankit Soni <Ankit.Soni@amd.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+CC: <iommu@lists.linux.dev>, <vasant.hegde@amd.com>,
+	<suravee.suthikulpanit@amd.com>, <joro@8bytes.org>, <will@kernel.org>,
+	<robin.murphy@arm.com>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] iommu/amd: Adhere to IVINFO[VASIZE] for address limits
+Message-ID: <ntvzxmou7p3gt5t6en2yglip5l7bdjpktt2frdujnkrio2nhva@gqktfooo247c>
+References: <cf1a1e3d96c3571ac5caa528caa84751d40be1bc.1772208939.git.Ankit.Soni@amd.com>
+ <20260302235715.GY44359@ziepe.ca>
+ <mqobyculj4g3mv2ipf2rbacbw62ew2utq2kini5hql5r22khhc@btukh6fex6zb>
+ <20260303120554.GC964116@ziepe.ca>
+ <4yddupv5soxmatbmcqqs4ndsffbls4r6eagoiaebalnlikx2jw@wtdby7qs6nz6>
+ <20260303181753.GE964116@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260303-b4-dmabuf-heap-coherent-rmem-v2-0-65a4653b3378@redhat.com>
- <20260303-b4-dmabuf-heap-coherent-rmem-v2-4-65a4653b3378@redhat.com>
- <20260303-rigorous-cow-of-saturation-23f87b@houat> <CADSE00+jCZSHi=OLbmOebBwnue5tjG7AFPKN76CbYDWYBcP+AA@mail.gmail.com>
- <20260305-antique-flying-gopher-4cbe34@houat>
-In-Reply-To: <20260305-antique-flying-gopher-4cbe34@houat>
-From: Albert Esteve <aesteve@redhat.com>
-Date: Thu, 5 Mar 2026 13:50:39 +0100
-X-Gm-Features: AaiRm520Qsz-JqgW5810FPhKu21ZofkmrOtPWlvIEAnCY9wjM-bxXO9YQ-thsLs
-Message-ID: <CADSE00K2PnP-AwS3Ad3UCrQd_ZG7a1L70i1+6EdQsrg0QM3OSA@mail.gmail.com>
-Subject: Re: [PATCH v2 4/6] dma-buf: heaps: Add Coherent heap to dmabuf heaps
-To: Maxime Ripard <mripard@redhat.com>
-Cc: Sumit Semwal <sumit.semwal@linaro.org>, 
-	Benjamin Gaignard <benjamin.gaignard@collabora.com>, Brian Starkey <Brian.Starkey@arm.com>, 
-	John Stultz <jstultz@google.com>, "T.J. Mercier" <tjmercier@google.com>, 
-	=?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
-	Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, 
-	Rob Herring <robh@kernel.org>, Saravana Kannan <saravanak@kernel.org>, linux-kernel@vger.kernel.org, 
-	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org, 
-	linaro-mm-sig@lists.linaro.org, iommu@lists.linux.dev, 
-	devicetree@vger.kernel.org, echanude@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: 5XJRhPHPFqo095BYKgMd6AQ7Tgj28eIBeMEdTNgAMvE_1772715051
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20260303181753.GE964116@ziepe.ca>
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN2PEPF00004FBB:EE_|PH0PR12MB8798:EE_
+X-MS-Office365-Filtering-Correlation-Id: 78e08f0f-059a-4b7a-21ec-08de7abe5220
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|82310400026|1800799024|376014|36860700016;
+X-Microsoft-Antispam-Message-Info:
+	czH7upWqh34YdaztnO+JGJ8lz/+uDln+2hhSXF4X2zPBjN3RpxWORwje+/wcEz8ug+MoX/oIJxnqta7e33Jo8MGrdk8eTwVJOTrpsX3Ktu/9gyiGVqDPhwrLmudQbuXYdLPg39rqm2zogn/zZ18tJuMJHoMor6EfQbVDhmxinfL7mTAkdyZC7Kx/A6QIzQSTbO+eL3pPuVnrWxEV+YOx2rLu4hqxPw3ZwJEbP3Etrj20+Yu8cDqfxcKyUXDT6F6+RhJr81cZnNG0AYD/TUCRWBSTvMetIr1/c4OYi0qaqhxaCzynD0GSnjseTGUEXt0ILGadZvKBWZd1JJJxuRjjqIClycTv8JbC53tZ4bUY4TR6WlmTJ2SQlmxwYFskOwVWMKdhR/GdOUB5zwndM076T2olZN8TL2GXwClrYMa/6aRGYSZ6kOaGzMWUzO4iiw9CsbjsGd/YQRZFln9wXTfGc03GXTU/nG59OtJQNAYrgl6Er2uJZmiDmLY2SysRYoOVCAxUV6JrnjAlrZptGDWJBsYyXYho4ezRGLbJ55pfK+PaIqIGv4SCybDZ9bKdq0BGUW5QFHJMAHD67mb5s2b4Fs5xGNyXRy96B5vaCFEnGXcxwy8qfaXwEv5nhDfc0SgZNvON7I1/VDRaCvbqKhXmFSzMmHBJOK2rHynyRIEHWW3qQzcWwP1+bZAxOfXhmN7bnkH4+W1jo1CjltDT8ci1ZAKM8ksrAUr/o9rqfwTQLo6GSD1dxKmiWBXjM5WuIElL5B/k15WN7D5Z0t8FrSlpsQ==
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(1800799024)(376014)(36860700016);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	S0bO77mHDhAK+rmMaxygQPq/r+03pzFrhZDrCEZJsW/YwzE9gvK6WqB7Zc7y7kFJzxr7m38VyVjY9Nh5nDolJOMD6nM62i+pj9m7GxQ6w8vkDWVlyhjvORUIwxErl8ji+AHJx6VKzyqEagZ0hUrb8cQ7V19cwCfkX8hZ2ZQxgQaUWbB+XkdyTRZUcWW9boUUbLZ9MGGydYt7lDY2IWsnODSgY5ndPUbZCFHmC1SgcYGJtLXHQWxYrOW4VyVhxPYjcDK91GZ9yuuPQpbBxhM4tm6zBs/4njVkstrTR9cuuL7sLNZW48h0+tHeThgPdVux/r2d9iMoDkNzWdnZuZCxlT72GWeyJvhsUIqz/eddievZ3wI6ymCeCLCrbcbeuEJWx7ZkUs0AGtdhof+soL0vt3iVKA1+enH7aT/loP3YMO1720SykgtBleCE5TqPPZyR
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Mar 2026 13:51:37.2939
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 78e08f0f-059a-4b7a-21ec-08de7abe5220
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN2PEPF00004FBB.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB8798
 
-On Thu, Mar 5, 2026 at 1:30=E2=80=AFPM Maxime Ripard <mripard@redhat.com> w=
-rote:
->
-> On Tue, Mar 03, 2026 at 03:47:14PM +0100, Albert Esteve wrote:
-> > On Tue, Mar 3, 2026 at 2:20=E2=80=AFPM Maxime Ripard <mripard@redhat.co=
-m> wrote:
-> > > On Tue, Mar 03, 2026 at 01:33:47PM +0100, Albert Esteve wrote:
-> > > > Add a dma-buf heap for DT coherent reserved-memory
-> > > > (i.e., 'shared-dma-pool' without 'reusable' property),
-> > > > exposing one heap per region for userspace buffers.
-> > > >
-> > > > The heap binds the heap device to each memory region so
-> > > > coherent allocations use the correct dev->dma_mem, and
-> > > > it defers registration until module_init when normal
-> > > > allocators are available.
-> > > >
-> > > > Signed-off-by: Albert Esteve <aesteve@redhat.com>
-> > > > ---
-> > > >  drivers/dma-buf/dma-heap.c            |   4 +-
-> > > >  drivers/dma-buf/heaps/Kconfig         |   9 +
-> > > >  drivers/dma-buf/heaps/Makefile        |   1 +
-> > > >  drivers/dma-buf/heaps/coherent_heap.c | 426 ++++++++++++++++++++++=
-++++++++++++
-> > > >  include/linux/dma-heap.h              |  11 +
-> > > >  include/linux/dma-map-ops.h           |   7 +
-> > > >  6 files changed, 456 insertions(+), 2 deletions(-)
-> > > >
-> > > > diff --git a/drivers/dma-buf/dma-heap.c b/drivers/dma-buf/dma-heap.=
-c
-> > > > index 88189d4e48561..ba87e5ac16ae2 100644
-> > > > --- a/drivers/dma-buf/dma-heap.c
-> > > > +++ b/drivers/dma-buf/dma-heap.c
-> > > > @@ -390,8 +390,8 @@ struct dma_heap *dma_heap_add(const struct dma_=
-heap_export_info *exp_info)
-> > > >
-> > > >       heap =3D dma_heap_create(exp_info);
-> > > >       if (IS_ERR(heap)) {
-> > > > -             pr_err("dma_heap: failed to create heap (%d)\n", PTR_=
-ERR(heap));
-> > > > -             return PTR_ERR(heap);
-> > > > +             pr_err("dma_heap: failed to create heap (%ld)\n", PTR=
-_ERR(heap));
-> > > > +             return ERR_CAST(heap);
-> > >
-> > > This looks unrelated and should possibly be squashed into the previou=
-s
-> > > patch that introduces dma_heap_create()?
-> > >
-> > > > +static int coherent_heap_init_dma_mask(struct device *dev)
-> > > > +{
-> > > > +     int ret;
-> > > > +
-> > > > +     ret =3D dma_coerce_mask_and_coherent(dev, DMA_BIT_MASK(64));
-> > > > +     if (!ret)
-> > > > +             return 0;
-> > > > +
-> > > > +     /* Fallback to 32-bit DMA mask */
-> > > > +     return dma_coerce_mask_and_coherent(dev, DMA_BIT_MASK(32));
-> > > > +}
-> > >
-> > > Why do you need to mess with the DMA mask? I'd expect that device to =
-be
-> > > able to access everything.
-> >
-> > When I tested I was getting: "reserved memory is beyond device's set
-> > DMA address range", so I tested if it was fixed with
-> > dma_coerce_mask_and_coherent() and/or dma_set_mask_coherent(). I did
-> > not debug the value of coherent_dma_mask, but given the error I assume
-> > it was not set properly? Ultimately, using the 64 bit mask fixed it,
-> > and I added a 32-bit fallback to ensure support for 32-bit systems.
->
-> So you don't need to handle the fallback because
-> dma_coerce_mask_and_coherent will truncate the generated mask to
-> dma_addr_t, which is 64bits on 64 bits platforms, and 32 bits on 32 bits
-> platforms.
->
-> https://elixir.bootlin.com/linux/v6.19.3/source/kernel/dma/mapping.c#L908
+On Tue, Mar 03, 2026 at 02:17:53PM -0400, Jason Gunthorpe wrote:
+> On Tue, Mar 03, 2026 at 05:11:07PM +0000, Ankit Soni wrote:
+> > > I mean if FIELD_GET(IOMMU_IVINFO_VASIZE, amd_iommu_ivinfo) is 35 why
+> > > not just pass it to hw_max_vasz_lg2 and be done with it? What is the
+> > > point of limiting to only a few values?
+> > > 
+> > > Jason
+> > 
+> > I got your point, i added the check to match the spec, which defines valid
+> > values are only 32, 40, 48, and 64.
+> 
+> I don't think you should do that.. The valid values are the only ones
+> a hypervisor should install, but the kernel should be permissive and
+> accept everything..
+> 
 
-Good! I didn't realise that. I will remove it for the next revision.
+Agreed, will change in v3 and send.
 
->
-> But I think my point was more than there's nothing specific to the
-> coherent heap itself: the device allocated for the heap should have the
-> right mask for any heap, so it's something I'd rather put in
-> dma_heap_add.
+-Ankit
 
-That was my first take too. But when I checked, I did not see
-dma_heap_add() doing anything to dev->coherent_dma_mask. So I assumed
-the problem relates to the rmem being bound, which triggers the check
-to ensure the memory pool is within boundaries. That's a specific
-issue with the coherent heap, so it sounds like it would be better
-handled here in the heap-specific code rather than in
-`dma_heap_add()`, which would affect all the dmabuf heaps.
-
-That being said, setting the mask is probably(?) harmless for the
-other heaps anyway, so I would be fine with moving it -- to
-dma_heap_create() to be more specific.
-
-BR,
-Albert.
-
->
-> > > > +static int __coherent_heap_register(struct reserved_mem *rmem)
-> > > > +{
-> > > > +     struct dma_heap_export_info exp_info;
-> > > > +     struct coherent_heap *coh_heap;
-> > > > +     struct device *heap_dev;
-> > > > +     int ret;
-> > > > +
-> > > > +     if (!rmem || !rmem->name)
-> > > > +             return -EINVAL;
-> > > > +
-> > > > +     coh_heap =3D kzalloc_obj(*coh_heap);
-> > > > +     if (!coh_heap)
-> > > > +             return -ENOMEM;
-> > > > +
-> > > > +     coh_heap->rmem =3D rmem;
-> > > > +     coh_heap->name =3D kstrdup(rmem->name, GFP_KERNEL);
-> > > > +     if (!coh_heap->name) {
-> > > > +             ret =3D -ENOMEM;
-> > > > +             goto free_coherent_heap;
-> > > > +     }
-> > > > +
-> > > > +     exp_info.name =3D coh_heap->name;
-> > > > +     exp_info.ops =3D &coherent_heap_ops;
-> > > > +     exp_info.priv =3D coh_heap;
-> > > > +
-> > > > +     coh_heap->heap =3D dma_heap_create(&exp_info);
-> > > > +     if (IS_ERR(coh_heap->heap)) {
-> > > > +             ret =3D PTR_ERR(coh_heap->heap);
-> > > > +             goto free_name;
-> > > > +     }
-> > > > +
-> > > > +     heap_dev =3D dma_heap_get_dev(coh_heap->heap);
-> > > > +     ret =3D coherent_heap_init_dma_mask(heap_dev);
-> > > > +     if (ret) {
-> > > > +             pr_err("coherent_heap: failed to set DMA mask (%d)\n"=
-, ret);
-> > > > +             goto destroy_heap;
-> > > > +     }
-> > > > +
-> > > > +     ret =3D of_reserved_mem_device_init_with_mem(heap_dev, rmem);
-> > > > +     if (ret) {
-> > > > +             pr_err("coherent_heap: failed to initialize memory (%=
-d)\n", ret);
-> > > > +             goto destroy_heap;
-> > > > +     }
-> > > > +
-> > > > +     ret =3D dma_heap_register(coh_heap->heap);
-> > > > +     if (ret) {
-> > > > +             pr_err("coherent_heap: failed to register heap (%d)\n=
-", ret);
-> > > > +             goto destroy_heap;
-> > > > +     }
-> > >
-> > > I guess it's more of a comment about your previous patch, but it's no=
-t
-> > > clear to me why you needed to split dma_heap_add into dma_heap_create=
- /
-> > > _register. Can you expand a bit?
-> >
-> > So first I tried to just use dma_heap_add() and then use the heap_dev
-> > afterward to call of_reserved_mem_device_init_with_mem(), but if that
-> > call failed, the error path required some kind dma_heap_remove()
-> > function as the heap was already registered by then.
-> >
-> > In the CMA heap for example, dma_heap_add() is invoked at the end of
-> > the `init` function. Therefore, you do not have this issue, if it
-> > failed it means the heap was not added and you just need to clean
-> > everything else.
-> >
-> > However, performing a remove() does not sound like something that can
-> > be done safely. I've spent some time thinking on alternatives, but
-> > splitting felt the best pattern.
-> >
-> > This way I can:
-> > 1. Create the device
-> > 2. Call of_reserved_mem_device_init_with_mem
-> > 3. Register the heap
-> >
-> > This places registration at the end, making every error path and
-> > cleanup easy to handle.
-> >
-> > Also, the `dma_heap_add()` code already seemed to handle these two
-> > parts/phases implicitly with device_create(), so splitting felt
-> > architecturally sound.
->
-> That makes sense, thanks!
->
-> Maxime
-
+> Certainly it makes little sense to get something like 35 and expand it
+> to 64.
+> 
+> Jason
