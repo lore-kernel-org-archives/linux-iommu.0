@@ -1,54 +1,54 @@
-Received: from mail-ej1-f73.google.com (mail-ej1-f73.google.com [209.85.218.73])
+Received: from mail-wm1-f73.google.com (mail-wm1-f73.google.com [209.85.128.73])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3E3633E7
-	for <iommu@lists.linux.dev>; Thu,  5 Mar 2026 17:03:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.73
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2979C3DEAF6
+	for <iommu@lists.linux.dev>; Thu,  5 Mar 2026 17:03:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.73
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772730235; cv=none; b=JwYgHUkTnGVbpcsVh/Fy1oxGaQqzr9CzHLUkvhs3IjW3rsABQahnlV8ITiDY/f6jZgLW+gd00ABmDedooq5tMnw2CwoDgoI8u1DCoIivj+ZUHjLdOz93fL7YE+3Ruh/1kFLoH9b38igO3cyvheVqFRtNipNUz72tSC8miEF/7zY=
+	t=1772730236; cv=none; b=d7SfDaJ21U4O4Q+ckRtrrsbZoV2R8bs+lA0WN0PFsviAw9YSs7EShXhdt350RnolMtr6MRdRdSlpcBLXySuNLj5AhbqsGNk/3eZs7LgOjsbu2/w3zeXZoo5c3OqF/lChbkhKkl1s/QeWzD+Yve7/WJc3mYn4IFPkEyJqVo/rHvw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772730235; c=relaxed/simple;
-	bh=JDueDHhsxXmc1y6n5S4DYcGj2eQqYmuSsuhRKPpQiKg=;
+	s=arc-20240116; t=1772730236; c=relaxed/simple;
+	bh=ehXww4EBP5o9XNrGQRSCbBb/4KpkUed7aGW0wp59lFw=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=G4wgffqWLj81+zO1KBXASM6g1ky00dtDiodOpgw4Pm7IlI/R/2r21G+nkmM0kkc9zXQop3YSZuCPv0oaeWnTParoxT5YsrE95xtBIAedv4/TZ7IB6ZsTUgNDEtJxcTSG9uPRa736rYlZPAB7f+r/Wra0l34bvRBYIU00buSROTE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=W+Vl9tjf; arc=none smtp.client-ip=209.85.218.73
+	 To:Cc:Content-Type; b=RPbKjmtWYkJfbMbt3phD54joXpXTIsslvQjhyCL2UnEQa0EYk1PH8R/xJOriTIwvd8xUj8ipH9bxIMFOYH8qRrhn+VXs47tC5Ssv6QqEziri95YWOembgqlIzd8ouK88wyI+j9fJd6FNYXK0T1N3eCJ/dDn6QXwnaTE0qi85L1k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=0cIcBKwo; arc=none smtp.client-ip=209.85.128.73
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="W+Vl9tjf"
-Received: by mail-ej1-f73.google.com with SMTP id a640c23a62f3a-b9419d9d0d6so73165966b.3
-        for <iommu@lists.linux.dev>; Thu, 05 Mar 2026 09:03:53 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="0cIcBKwo"
+Received: by mail-wm1-f73.google.com with SMTP id 5b1f17b1804b1-4837246211bso106052615e9.0
+        for <iommu@lists.linux.dev>; Thu, 05 Mar 2026 09:03:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1772730232; x=1773335032; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1772730233; x=1773335033; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Z0p6wM34Mfv4MrdThZ0NuNbl/BQ6PjSinfQE/9xPBxo=;
-        b=W+Vl9tjf0WEbzXt7ps5V3xWQILzEkJCFDcobUyuD/fSTl8XgYR+DoKBtZSBndvYP1v
-         qyBGDiFDqKWTqAjVIjN4cdg52UroeTBAvFJPO0kliunSp0gNFpavvsJA8mxbkk2tulmf
-         P4W/6+iP0U/uwt+cNy990RQdx2XoJVvDDzUargutCWx+n4FiwJQuaJ9YtJzRyioiLAUI
-         UWCcwBpmM4Wp7WLgquo1fqx5mIBqtx+EdQAlau9hZIOdBnG/pEuyMG5ITnV6YT5YgyO+
-         JIFTU5ModdtRSfb2SckABUmPfLYtm/wSuafDzSpznBWg2EquJd4eRMgktPe0I8FdrMAX
-         jgCg==
+        bh=fS2TCdg+GqqKaNVQW4sApbDZr60XuAkM6k9PmxbMvJo=;
+        b=0cIcBKwo4IhCYwoBfermdi6OqqLmm6zqeNxZOjPgomc9RdfX6OBecmL3/v2RsDdNj4
+         4bcs1TSJ3L0WqOHXQP+P4c1zAkIh6wYbLd2LDE/e10bH9G2oN09RUXqODhEyBbNv+zS6
+         pvbYWlEzCMQtdxpMuAEQVFHUne7vfjUOBW2DwgeB0LgLvqXsdTyJoTiwue3/QMhONGMM
+         Rs1YwCC7igMulwwlH02S9P0L1ialfm8uTcRz8bBq83B4R2viFdzdOfcqo9AVeZyfGWa/
+         VQykgNyMNveitkqBz8WQGUYZEFha0fBRh14qPBudN5YW6r0aZyRTsEFVafe9+iytVL4I
+         OYGw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772730232; x=1773335032;
+        d=1e100.net; s=20230601; t=1772730233; x=1773335033;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Z0p6wM34Mfv4MrdThZ0NuNbl/BQ6PjSinfQE/9xPBxo=;
-        b=U9E4zeiv2CD6KiIoTZaQvGbISYkG41GX3WiYgSI/db9rezTwFyCYwoYSjaqUMvqN8C
-         S4TyqdgXg/copLfjYikbul7o17YchW90AkBJjkKzoxEldtPZRA61uOelwU1L1qYHAJNe
-         H2S0pGXONzqIbzpu44rHqX+30X2Po2Lipyyq4QVBOPS0lyFr+o31CCPF/stbHJN62eLm
-         y24FafPcEfsohoa0IKwhu5faBIpx0eJEflxRJVW3cBsugkBVmlm5M5EDifA657T6s34L
-         gqjtQKXvKDaqyBrZV1/0ORnm1WcQOyv5WfMYjMTxHoMVHI3ovCp4cCOMGEE9mzPpC6AH
-         PqNA==
-X-Gm-Message-State: AOJu0YxMZ1OsZo3Eda9q+XN769wRTGFgz6Ivf05fg0/y6pEqh9K3s2Hc
-	aDCPjP5sdwr0/MarfPE3XF9GrS2t76Ev9RCWY+M3CzrXPNV+mPg4Rj9AIiDrlULWEQZIjw0KrWe
-	BF28y9qiaBTDO+xkwwCB6Jysotyj1kOyie9sABp10VdeME0CKp+zihOeNC0hlLwCpy56I+6Bexa
-	oj3GlwwUXkIcNjGHqOsbe4q6BPteKt4sD4gkwwlaQ+6VPKQQ==
-X-Received: from ejgi22.prod.google.com ([2002:a17:906:3c56:b0:b93:eebb:ad41])
+        bh=fS2TCdg+GqqKaNVQW4sApbDZr60XuAkM6k9PmxbMvJo=;
+        b=GPelVRuuoFuheM8+8k9giuoT3WoihezaijED6Y4a1J8YTfVyTXVMugs6PJ1GoewA3c
+         RmgmxoBA/xFNQ8yoGOs/LZXqxvE9u19QLkWjsiieh8JkPdZINAEPCQaOsXEd0ycN/Ye8
+         o8OoVeKyk+Tjai6DGMiLtl/VTshgIM5SPFobMiYmTth4iRe16NaTpdwRq2wRkB+BNT34
+         esQW496JuKsaSOOtvFkn2WSbWpfVbaMgK4CXOxtVPpLR0CpTVdKPEhAjfrObi2eccjfk
+         yYcrsFkFaaWySGMx4VOUzbX7r6hArapBtqFYWK+k+B3cKuoe1tV3Jdac//uwHO+dHwl7
+         x/nw==
+X-Gm-Message-State: AOJu0Yx/2EjHHZVAvlwlXuKfp8xhcHcrGWL8cJ48Dy6USQSbGjunlQaR
+	3xvMIhxZFQXHrgrKNxTYIPJIOYDun2IxrppuXmE5mmZkH686f1SPuKxURchboBXGNyNG8MSUBxw
+	w3O7N0Y2gZraRsx+QzZ92hevC298EBv7Tk1LH8se0aQ95aNDn94l4YyGbXCIYgg8wZDHFcvunUl
+	05GEephy8pxkgtZUxBD0HuHV1+Sbtx3ovyuN5DreszzPDlow==
+X-Received: from wmbgy7.prod.google.com ([2002:a05:600c:8807:b0:483:6e65:5bb9])
  (user=smostafa job=prod-delivery.src-stubby-dispatcher) by
- 2002:a17:907:2d8d:b0:b8f:e424:ae56 with SMTP id a640c23a62f3a-b9422a20e24mr21885266b.44.1772730231858;
- Thu, 05 Mar 2026 09:03:51 -0800 (PST)
-Date: Thu,  5 Mar 2026 17:03:34 +0000
+ 2002:a05:600c:6098:b0:483:71f7:2782 with SMTP id 5b1f17b1804b1-485235bc44emr2834755e9.12.1772730233280;
+ Thu, 05 Mar 2026 09:03:53 -0800 (PST)
+Date: Thu,  5 Mar 2026 17:03:35 +0000
 In-Reply-To: <20260305170335.963568-1-smostafa@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -58,8 +58,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20260305170335.963568-1-smostafa@google.com>
 X-Mailer: git-send-email 2.53.0.473.g4a7958ca14-goog
-Message-ID: <20260305170335.963568-2-smostafa@google.com>
-Subject: [RFC PATCH 1/2] dma-mapping: Avoid double decrypting with DMA_RESTRICTED_POOL
+Message-ID: <20260305170335.963568-3-smostafa@google.com>
+Subject: [RFC PATCH 2/2] dma-mapping: Use the correct phys_to_dma() for DMA_RESTRICTED_POOL
 From: Mostafa Saleh <smostafa@google.com>
 To: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
 Cc: robin.murphy@arm.com, m.szyprowski@samsung.com, will@kernel.org, 
@@ -67,53 +67,32 @@ Cc: robin.murphy@arm.com, m.szyprowski@samsung.com, will@kernel.org,
 	Mostafa Saleh <smostafa@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-In case a device have a restricted DMA pool, it will be decrypted.
-However, in the path of dma_direct_alloc() memory can be allocated
-from this pool using, __dma_direct_alloc_pages() =>
-dma_direct_alloc_swiotlb()
+As restricted dma pools are always decrypted, in swiotlb.c it uses
+phys_to_dma_unencrypted() for address conversion.
 
-After that from the same function, it will attempt to decrypt it
-using dma_set_decrypted() if force_dma_unencrypted().
-
-Which results in the memory being decrypted twice.
-
-It's not clear how the does realm world/hypervisors deal with that,
-for example:
-- Clear a bit in the page table and call realm IPA_STATE_SET
-- TDX: Seems to issue a hypercall also.
-- pKVM: Which doesn't implement force_dma_unencrypted() at the moment,
-  uses a share hypercall which is definitely not Idempotent.
-
-This patch will only encrypt/decrypt memory that are not allocated
-form the restricted dma pools.
+However, in DMA-direct, calls to phys_to_dma_direct() with
+force_dma_unencrypted() returning false, will fallback to
+phys_to_dma() which is inconsistent for memory allocated from
+restricted dma pools.
 
 Signed-off-by: Mostafa Saleh <smostafa@google.com>
 ---
- kernel/dma/direct.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ kernel/dma/direct.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index 8f43a930716d..27d804f0473f 100644
+index 27d804f0473f..1a402bb956d9 100644
 --- a/kernel/dma/direct.c
 +++ b/kernel/dma/direct.c
-@@ -79,7 +79,7 @@ bool dma_coherent_ok(struct device *dev, phys_addr_t phys, size_t size)
- 
- static int dma_set_decrypted(struct device *dev, void *vaddr, size_t size)
+@@ -26,7 +26,7 @@ u64 zone_dma_limit __ro_after_init = DMA_BIT_MASK(24);
+ static inline dma_addr_t phys_to_dma_direct(struct device *dev,
+ 		phys_addr_t phys)
  {
--	if (!force_dma_unencrypted(dev))
-+	if (!force_dma_unencrypted(dev) || is_swiotlb_for_alloc(dev))
- 		return 0;
- 	return set_memory_decrypted((unsigned long)vaddr, PFN_UP(size));
+-	if (force_dma_unencrypted(dev))
++	if (force_dma_unencrypted(dev) || is_swiotlb_for_alloc(dev))
+ 		return phys_to_dma_unencrypted(dev, phys);
+ 	return phys_to_dma(dev, phys);
  }
-@@ -88,7 +88,7 @@ static int dma_set_encrypted(struct device *dev, void *vaddr, size_t size)
- {
- 	int ret;
- 
--	if (!force_dma_unencrypted(dev))
-+	if (!force_dma_unencrypted(dev) || is_swiotlb_for_alloc(dev))
- 		return 0;
- 	ret = set_memory_encrypted((unsigned long)vaddr, PFN_UP(size));
- 	if (ret)
 -- 
 2.53.0.473.g4a7958ca14-goog
 
