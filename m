@@ -1,120 +1,117 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com [209.85.128.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5379533DECD
-	for <iommu@lists.linux.dev>; Fri,  6 Mar 2026 03:23:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772767419; cv=none; b=XBsiD4A0WrWtpep+y3PD/9GXPcTta0bdLsR6nzmGhq81kOA8spU+k4//pDPdetXAAPjKRFpEvTVjnM6CJ8ccPqsDYtS8S44+ZxXTBLBFIeVzqswvepAbu8n5GHAQ6jyizNCvHllA4FH71nHFb0a2EfbIhAZjw+aOY/alwoZ9X+k=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772767419; c=relaxed/simple;
-	bh=tA9L12xlCsrK8dz+Fq8CyoLAozPl60QyKkM4A17q6sA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=soGaHBlzHmcUoiW/f0OofXE0htijnZkVjfb+MgfhHCDKEii/+BgUlkv2g5p8DmqHHrwEaemuJbBpa5wmKCtBq4r9GHdYrPHuyN5j53BfAL2L3dGNNv1aubL43iVv//+FuMFNFpGIlxVh8YEomJlOz5KYWk4SvRoshAf5YjHM+8Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XhO4g1Px; arc=none smtp.client-ip=192.198.163.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB87030E838
+	for <iommu@lists.linux.dev>; Fri,  6 Mar 2026 03:49:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.178
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1772768943; cv=pass; b=Tmkyf2IweGF6nIHVFlRWJFvPbz2bPiZ7n+fN9t7JpwYNz0SOh+6mYNg70dx8KGZM+sZHGrXZcgi4m6F/7cQcue8ItFsTGY92QasBIHHyJTXkQTl9ErJBmvU3539LcdmLf/4EWJWjY37gaS6CO6cUKlm4l8n8nR1PDM84tmnhp2I=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1772768943; c=relaxed/simple;
+	bh=dNUpHR0oTQwJy+ecOBEV2Ruj/VUmFxhcmOhLjQeHLXI=;
+	h=MIME-Version:From:Date:Message-ID:Subject:To:Cc:Content-Type; b=SWhLlkQpJpC6VTvIfwAA8LrOa9a9e38wbUDXjpOvK5PrmFI4Jwcj+4zWiljRlLcZdAD3Gs/Mp2yZjHxgfzO2vwnncBf4TUoqAfbolKNxWKek2Yhl8f89Cp0LrDrkrU6sCcwh1pdXh1aQluXAKXgS9yRU45ok889KZkhYjK25cEE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PaElZWyR; arc=pass smtp.client-ip=209.85.128.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XhO4g1Px"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1772767418; x=1804303418;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=tA9L12xlCsrK8dz+Fq8CyoLAozPl60QyKkM4A17q6sA=;
-  b=XhO4g1PxV4DIs7shKiRk7kywQ1zR1eT+KOkbZOotLwJ2rq/twk8ORfOl
-   bhv1Rg/N4KrtQKvOHb7ATJnjtQ6dBoX+xof5pnQeL2OYd3Yrjt4Wefor+
-   L7hx6OXdruDNEMt+lY5L/dj+Cy96quPwTj97PN81SWskW3oib/OsWk7yE
-   PVrAOwlxsvqVftKyYHnWGPL6pkK38tLwGblotekdKPZ6rOrYydiNokMDJ
-   fNDOzTKY3XbBxcRna1O5XQ9OaL5jhbq2+WlI9AnqLpm5fO56Ap90J8UOe
-   FMESXdnq5FFo5bMYJrO8+Fb4WTeeZ6l5OouJq6yrWAV1qm2VpT7qMCgMg
-   w==;
-X-CSE-ConnectionGUID: LLF7e2YxRcOOE6bSjDD87Q==
-X-CSE-MsgGUID: ssG1cSZYSJSJEWAYjI54Lw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11720"; a="61446877"
-X-IronPort-AV: E=Sophos;i="6.23,104,1770624000"; 
-   d="scan'208";a="61446877"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Mar 2026 19:23:38 -0800
-X-CSE-ConnectionGUID: jD6OhW6aQNqpuQRqlhrT5g==
-X-CSE-MsgGUID: ucmj+6C0SJKG4sfPqTw1Ug==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,104,1770624000"; 
-   d="scan'208";a="223016462"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Mar 2026 19:23:34 -0800
-Message-ID: <6416b7fe-0190-4c7b-9a62-5da7d5eea794@linux.intel.com>
-Date: Fri, 6 Mar 2026 11:22:52 +0800
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PaElZWyR"
+Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-7982c3b7da9so82133137b3.1
+        for <iommu@lists.linux.dev>; Thu, 05 Mar 2026 19:49:02 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1772768942; cv=none;
+        d=google.com; s=arc-20240605;
+        b=Jmq5OSAA7wNQ+sJ2veS5xqbQSQydi/UP0lmk1EPpO2qb/NFJ9cvYbUVQEYwcftWGcp
+         ppRONoHtCGVucdvcCH66Wp59/COX55t5rmvPx5W96Z+659WJtHzTznNJX43vmW/QTWNq
+         PmBUJu/4wS7lEBuBWSNOP2jPhWtrW484gbP6BruTWxPBXa+Eq+vSoKRtkSPlzs3Q2W1O
+         GMYuUwNfAwpomPdgIQfJBw3EgJclIA3I0lH6JEMH8GCFycx/UqzdOZ1iqzmuf/Y/+DC9
+         eU1lxuwBzbADOKBMOcu8fjOjcDfVY1c72Ism3oWYlTUoN2LUTS2JgjRvZuaz8jpLNbzf
+         nYmg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:mime-version:dkim-signature;
+        bh=+3KVfu4YF0iDe9x9XbVLpDOnpHDuNLpZRAeCr26k+RA=;
+        fh=1j6noa+dFau8KMEBsmGG1lDhgsbJhESMIT+xii9vSxY=;
+        b=EBgMzZyUqnhaCoLMMMJJaUrqQUzuLk1EXP1vzbBYnvbJlWncEF5Ua6upbgu3rEW7bZ
+         qDeS0IMsDO9/WzCliahmFNZbotG11tKTesY0LWllBQz6emyeRxmyLddXO2Q6HYZEHr9Y
+         eSQVOGuH/Ec5onQ3hMtyOhtH8nPjAanuzZUdLCZLfmVxpZxgPRXu2ez6CZF3PAFy416/
+         1x2QS2mHdclslAvMmBGKBc73YjGxtzxpd027J6YQV1CY/xos2GggrTFhCnD6q0JucsFy
+         6f1aAz4xzWeHqzpMIaOMq0Di9qxVz4TaBBblIf7UpvlbLuwL9KshRouf7GpZdqONijWG
+         pV7g==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1772768942; x=1773373742; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=+3KVfu4YF0iDe9x9XbVLpDOnpHDuNLpZRAeCr26k+RA=;
+        b=PaElZWyRTSeKrhE1uVJTkzjymbnlqgtzmRxm7k/ybkXl4ioO2P0maCsEuRYsPP6Bmo
+         uGsVsgqwv7EBZCfLKmOYakvcymG71V2CB64DezCzwD8OTQMaViEbw+7jyiR1U8mbViAd
+         sEA41THHGryjXIweynQp2JmPdoLBF/c4rmsMp7DWetEl0r+7iHd0D2MwQNtpwfHtpi3P
+         cKAGYRu4ay5gsJBZRaAE58iJ/TwqXPYxhr1stdkbQYOPOOT9cAJU6TN3TrUSoIzUzSiW
+         nFlmgPOTuh3lcmaW2on7/XBpqFd0A2lgyNUaJw9SciwmjSHev/BM2AYKLk+C40bZYKvS
+         rptQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772768942; x=1773373742;
+        h=cc:to:subject:message-id:date:from:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=+3KVfu4YF0iDe9x9XbVLpDOnpHDuNLpZRAeCr26k+RA=;
+        b=Y7Ue/sVz2PBE+8DQErd/yrniqKQZwM4kc3v3/xmrNoFINRI2BtlZbactgMAR+R7c92
+         r1c1pHjWWSfGoeAoQ3C0o1JYbDCN6DAoQHPMbiM523U/9JIzxgrvVtVcBXggjlysoWYC
+         UtyTGKQDRKbGH6Ov7gsJF13bNV/lgS4lIAWnyuRujm6BsCfneD0go9N50+hCdNABkV1c
+         eH5V68DOJJ/7w5YxLiocECVtOfRbQN0htpxy7Tyvm7XNveOmIUjeRFY2os++SLYeBJYK
+         X220e8PD9ru/LU4hyFYLtn4fdUK1iumicldOzSyQAvjBizumFCL/63yx+M0LivXT5FqP
+         Wq5Q==
+X-Gm-Message-State: AOJu0Yx51pUAV4rVNe8flyVbTHeHnwUaacR1ojGglq4+YaMQYo6XvX8q
+	47AyIP+7Cct6gvQ1YWcKJzyLTnFPqda3ziMbekQ9BX7QD7NjuEi1x3ZcLOOgIB7cieqxA6hdf+C
+	/m+sTgXrSdSmgOgchiM0WqH9UsN0jLWc=
+X-Gm-Gg: ATEYQzw25MHHS+4fNxmuMYpUa7avvVDB3bD2H4xUgzy+FuHGuEh8nrcVXdwgpXV+twa
+	2jeS9KFfOZxmehqgFk31wjkF3eS87vsX1nVrxWl+JZOatZMVrr81bDBwgZMrWwhc7lFHr4H4UIy
+	nWjyi+ZSChxjzvGk0EHMm8mps5gsKrqGIT0onllmRvgjtHiT1YpVRJ+O7msIlvMsu3QgsQpNjdg
+	dioLtHjlCn/EXSAthQRHE/mtaOghJ8RqdwUTiHtrqjIV8G2VB+pLNNtPKjMtVh/bkmen8JJR06t
+	wnTuVH81LQ==
+X-Received: by 2002:a05:690c:d8a:b0:794:ecaf:c501 with SMTP id
+ 00721157ae682-798dd787623mr6124827b3.46.1772768941686; Thu, 05 Mar 2026
+ 19:49:01 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1 2/2] iommu/arm-smmu-v3: Recover ATC invalidate timeouts
-To: Jason Gunthorpe <jgg@nvidia.com>, Nicolin Chen <nicolinc@nvidia.com>
-Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
- bhelgaas@google.com, rafael@kernel.org, lenb@kernel.org, praan@google.com,
- kees@kernel.org, smostafa@google.com, Alexander.Grest@microsoft.com,
- kevin.tian@intel.com, miko.lenczewski@arm.com,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
- linux-pci@vger.kernel.org, vsethi@nvidia.com
-References: <cover.1772686998.git.nicolinc@nvidia.com>
- <ca7ab934bf0f433b62a5c15d42241632c4cb9366.1772686998.git.nicolinc@nvidia.com>
- <20260305153911.GT972761@nvidia.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20260305153911.GT972761@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+From: Owens James <hechushiguitu666@gmail.com>
+Date: Fri, 6 Mar 2026 11:48:49 +0800
+X-Gm-Features: AaiRm52csMwF0QK4pgCSSR3OS4LQ5YiTwX8PFjLU0ZrSNYhf25gvuUCbgnI340M
+Message-ID: <CAEZ4rQ8xmmw8sQ9UX7y3iyE0-UVLEHa10vJwxcajfzcqp2SaYA@mail.gmail.com>
+Subject: [PATCH] iommu: tegra-smmu: Fix spacing around operators
+To: thierry.reding@gmail.com
+Cc: iommu@lists.linux.dev, linux-tegra@vger.kernel.org, 
+	LKML <linux-kernel@vger.kernel.org>, joro@8bytes.org
+Content-Type: text/plain; charset="UTF-8"
 
-On 3/5/26 23:39, Jason Gunthorpe wrote:
-> On Wed, Mar 04, 2026 at 09:21:42PM -0800, Nicolin Chen wrote:
->> +	/*
->> +	 * ATC timeout indicates the device has stopped responding to coherence
->> +	 * protocol requests. The only safe recovery is a reset to flush stale
->> +	 * cached translations. Note that pci_reset_function() internally calls
->> +	 * pci_dev_reset_iommu_prepare/done() as well and ensures to block ATS
->> +	 * if PCI-level reset fails.
->> +	 */
->> +	if (!pci_reset_function(pdev)) {
->> +		/*
->> +		 * If reset succeeds, set BME back. Otherwise, fence the system
->> +		 * from a faulty device, in which case user will have to replug
->> +		 * the device to invoke pci_set_master().
->> +		 */
->> +		pci_dev_lock(pdev);
->> +		pci_set_master(pdev);
->> +		pci_dev_unlock(pdev);
->> +	}
-> I thought we talked about this, the iommu driver cannot just blindly
-> issue a reset like this, the reset has to come from the actual device
-> driver through the AERish mechanism. Otherwise the driver RAS is going
-> to explode.
-> 
-> The smmu driver should immediately block the STE (reject translated
-> requests) to protect the system before resuming whatever command
-> submissio n has encountered the error.
-> 
-> You could delegate the STE change to the interrupted command
-> submission to avoid doing it from a ISR, that makes alot of sense
-> because the submission thread is already operating a cmdq so it could
-> stick in a STE invalidation command, possibly even in place of the
-> failed ATC command.
-> 
-> I think I'd break this up into smaller steps, just focus on this STE
-> mechanism at start and have any future attach callback fix the STE.
-> 
-> Then we can talk about how to properly trigger the PCI RAS flow and so
-> on.
+From 976ec7e6ca46a3f9f6031b74e2e88f630ae709c2 Mon Sep 17 00:00:00 2001
+From: "haoyu.lu" <hechushiguitu666@gmail.com>
+Date: Fri, 6 Mar 2026 11:36:52 +0800
+Subject: [PATCH] iommu: tegra-smmu: Fix spacing around operators
 
-I believe this issue is not unique to the arm-smmu-v3 driver. Device ATC
-invalidation timeout is a generic challenge across all IOMMU
-architectures that support PCI ATS. Would it be feasible to implement a
-common 'fencing and recovery' mechanism in the IOMMU core so that all
-IOMMU drivers could benefit?
+Fix checkpatch.pl warning for missing space around operator:
+- SMMU_SIZE_PT-1 -> SMMU_SIZE_PT - 1
 
-Thanks,
-baolu
+Signed-off-by: haoyu.lu <hechushiguitu666@gmail.com>
+---
+ drivers/iommu/tegra-smmu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+index 67e7a7b925f0..58ccaa74475b 100644
+--- a/drivers/iommu/tegra-smmu.c
++++ b/drivers/iommu/tegra-smmu.c
+@@ -137,7 +137,7 @@ static inline u32 smmu_readl(struct tegra_smmu
+*smmu, unsigned long offset)
+ #define SMMU_PDE_SHIFT 22
+ #define SMMU_PTE_SHIFT 12
+
+-#define SMMU_PAGE_MASK (~(SMMU_SIZE_PT-1))
++#define SMMU_PAGE_MASK (~(SMMU_SIZE_PT - 1))
+ #define SMMU_OFFSET_IN_PAGE(x) ((unsigned long)(x) & ~SMMU_PAGE_MASK)
+ #define SMMU_PFN_PHYS(x) ((phys_addr_t)(x) << SMMU_PTE_SHIFT)
+ #define SMMU_PHYS_PFN(x) ((unsigned long)((x) >> SMMU_PTE_SHIFT))
+-- 
+2.53.0.windows.1
