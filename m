@@ -1,169 +1,161 @@
-Received: from SA9PR02CU001.outbound.protection.outlook.com (mail-southcentralusazon11013030.outbound.protection.outlook.com [40.93.196.30])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A02B4370D50
-	for <iommu@lists.linux.dev>; Fri,  6 Mar 2026 20:18:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.196.30
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772828336; cv=fail; b=A8OciumU54dGLb6h9x22c5PsD+S8Y/XOGHP7eeewUWc3tnT6QP0GiIUTiF1kjVH0DcaXNJGuOI59bTQGkJJ2nj30VcxMjzN5FzbfmhiVwxaGj69XXbZMWDb1hO17bRWue3aN2aQ7b+simg2gmJ008v+fNrDf1HfbSKaDtGRV+gA=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772828336; c=relaxed/simple;
-	bh=X+2aIw/WQ47/BEBk/Sha6dZODVlQw7vue4eEUxYLA3M=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=eQXnYhCkp331MBqY/3T4Ufx/mimZWKiNgKgmhEQKCttjQ8+8PyJ8CwV19hMt+77mfZwBIK+edmStGujumLCH4buQPXBFXZy6L5T11VBX+/6E1M1Gh73deB2C2499ZVUKIQzvOq6kRcChK/HsaotMbZ2hvz+j27E6Pkps8xLahyU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=L6QEx1Q4; arc=fail smtp.client-ip=40.93.196.30
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B49A45BD5E
+	for <iommu@lists.linux.dev>; Fri,  6 Mar 2026 20:22:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.181
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1772828535; cv=none; b=HpbwOcEc8DwyN9YdJSWhNpFmgrb7hlNS4aOY7i4Ta2cfWPtP/hggQNTOI+pg28xqNM4cJF1vx+snQ5D5YjH5Splx0a5NvUzFO1b6K/lWxDphtZ+sqbZpw4xckS7j6ZCLqeoDKHYdbbxiHJZKz0Zlm/Kbtbl15Y1O+TMpbq8PQOI=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1772828535; c=relaxed/simple;
+	bh=N/ru0EOFkc3AcpS21XeyDwquZX7JMKMkovV4eRQ1jis=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=E7VrOaG1EKIkD3/yxG7QhdxGTClZFxSmhr+pG5FpNZoRM2l9Yo3SiVmn+HlaBh1sX+ZcZtEvc4EsWhuSGDv241hlWtlbg5E+hZrIfZYet6xztAVgQ8CO5InNzIs5AyNHfM/yepEkuN+stssPFeJBCiyMXYqnnnBNCUjgMKhSo+M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=dVDOpG+o; arc=none smtp.client-ip=209.85.214.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="L6QEx1Q4"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=wIDJtyeFXlMbtX30BxMLI+733IP6U8nv6ipCRDMRvFXbwlPZVLLuyg0hH2J/sstmJ3n0I3FuPM+C+LZX6sjye1PaRWj0VlZTeee5DsXrk3WVRYzLNzRcsGRceZcWVtOlJg25qBqsGz5nyaWzdttxogBjzM3JtK9/nVgwfyQt8mkvSZo3AB/KsAQJpMSjRzOhjr0VKvVT9MaOJwyiET3LR5CshuGYIJjDl3J9rDqnw1G54F9omurv7htr1BxY9PcTuZSV9FWs2/CHmOrlXWeUXgZgP+MQl8FO/gSiPK+AnnKmnYQu0cmRKQRG6mjtj76HbsaZK+9OjF1kBsGh8jMsyw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5wQRgVzOHKbSno0+gTSSZ1eLOZzfc5dxI+Csjpl5omQ=;
- b=ABeTufe38vF1G+laoujnr+PYUEH9uVF8iYoMF5tJd9x+uUoIw5meqFnr5sZuRDOMYxvULQXfK9dJJCcQw79PcvOHE4cMhzDymQkFE+DJXIw7W6zEOsmRwY2F9Aee0wk5hbvN+8Akty6+NRr3/iYYSHKF48C74Jpv/MMIvgUxEM189ztwd5RnV04o+2iJwQbMWPR05Vs6df1jMWT5ojAzSIEocUFhRelzejfm97ufKM6JYHh6RZV9uWRAKCDFqcVUvDliqoDrjtkroEVAKqqMPQ+imISpxBpi7M775duIOvLyfGGNej/gRbG1DA5xlaNI3Tq+G83e3wgZnQHQnlwMSg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5wQRgVzOHKbSno0+gTSSZ1eLOZzfc5dxI+Csjpl5omQ=;
- b=L6QEx1Q4WMETqK4J+WPkbXDdDFu6bv4C2RbkY5F7pINoKVGHi+Mp7lPpi2UeU+rrydhZTblRw3wmSx6n7wV2OvSLnFR79LmglepWnXxUXGfhEiJ7BRLW7G0dkUknVeoxuJLMeG6IVZoivqp0b55d8+AulExcesgCisAWJYo/zyijIYUyudk1dAPhsa9kDeHCfUFu0w2HxwEES7l7iy9xy4GR9NyZ5wya+w/jd6FRdVQABHC+wYdbbavZ299crZ4S4ikd5Hr0a6e0eeIggzs10y23fxBezVpw871I9lkx0VwlaNdbBmxVJaTIry24uUU9xikjpT+fGHp0NAv0KaXIOQ==
-Received: from MN2PR14CA0026.namprd14.prod.outlook.com (2603:10b6:208:23e::31)
- by LVUPR12MB999160.namprd12.prod.outlook.com (2603:10b6:408:3a4::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9700.5; Fri, 6 Mar
- 2026 20:18:48 +0000
-Received: from BL02EPF00021F6E.namprd02.prod.outlook.com
- (2603:10b6:208:23e:cafe::dc) by MN2PR14CA0026.outlook.office365.com
- (2603:10b6:208:23e::31) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9678.18 via Frontend Transport; Fri,
- 6 Mar 2026 20:18:40 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- BL02EPF00021F6E.mail.protection.outlook.com (10.167.249.10) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9678.18 via Frontend Transport; Fri, 6 Mar 2026 20:18:47 +0000
-Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Fri, 6 Mar
- 2026 12:18:26 -0800
-Received: from drhqmail201.nvidia.com (10.126.190.180) by
- drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.20; Fri, 6 Mar 2026 12:18:26 -0800
-Received: from Asurada-Nvidia (10.127.8.10) by mail.nvidia.com
- (10.126.190.180) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
- Transport; Fri, 6 Mar 2026 12:18:25 -0800
-Date: Fri, 6 Mar 2026 12:18:24 -0800
-From: Nicolin Chen <nicolinc@nvidia.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="dVDOpG+o"
+Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-2ae3f822163so13505ad.0
+        for <iommu@lists.linux.dev>; Fri, 06 Mar 2026 12:22:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1772828534; x=1773433334; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=N/ru0EOFkc3AcpS21XeyDwquZX7JMKMkovV4eRQ1jis=;
+        b=dVDOpG+oSre0uzNAh68vapV9+wPvKjhWdYLxkxQ1VqEqGB50DZyxiEi2Hxo6smudfZ
+         NBAX0aBx7QfB/XhFB6Et3nxPl9WNLq2U3BpK8W7OdupLKS9YiW1hL4mOKKPD4s08/1WD
+         lBayYwW+sxM9PMWqmBg3Hf1Nag2AMvoLfgXczPapKJVfr1gKFoX2nNOqTymgNLPBdlam
+         VzsLyZIfi0t7AUfeF/LWJjOyWRtW+f7qGl+SzrlKdf8mqXBeRJYdpE2hhBXaeBunla8S
+         I72IlYCFb+csiRhsLWfgxwNZMSdjXSscCiM15u8geWMG7Oj7zlRfIHpIr1t3XYZmEBff
+         WsCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772828534; x=1773433334;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=N/ru0EOFkc3AcpS21XeyDwquZX7JMKMkovV4eRQ1jis=;
+        b=gTXPYUD1686iT6dRhcWSX6W2Lnb4yKe9SSLcr3ONB15PPXP4d1cZM8M+FQR8PbkXTx
+         o8SOBycXgB2v/CH5JJm+n2TwIjrhcmYK/aCpxEx+zl4if0tTUbz9sreL+TL7KyiO6Xny
+         Wdv5qj2n6BzTE1lvz0kcG7Ab1Vt61Tzxntd9RtTtwTZV4hKhrECLD7cAbwICR2zgk/YF
+         wEjtlxB3jCF+P7I+hExr5oPoVkvbtkLKmAn7rHBtZ2lvD92KJaLgmjoXLLnAToboY+Qb
+         GJTsPFC7kWvqM3x7aRD2+eyCnwO1matmvqyn5+4UAgeXpJZ1if4EtWrRE8ntpnGOEnW9
+         /rRA==
+X-Forwarded-Encrypted: i=1; AJvYcCVI5Dk6XQ+Q9Td7P8JwT1Yt2BG0W7rxkVHn0GwJztgzoc8LDFQomwTlTYDYCLZI6toleWcwpA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyZjzadrIvURaQsAifRE8b7SJoFrsJvSi4ygg31nTyacJLgO1xC
+	cgqbYPvFTshyMINk3orL0fanlq1zFtDfC33B+edtay4BqDQOck/jsbhZL0GHaUTFyw==
+X-Gm-Gg: ATEYQzwsjLZM6e9lgR+wtvue/YeNHqg6fIoOiC3ayfdHiKGyzqg88fbUo2XlfA41+IZ
+	Xn3lNFgQ4yTSo2U61g+UxxFdPdM7jlhkDfCa5fRdrDnjfAlFdS5hUR+TYksi9XJ2KCAqU7hZOIe
+	wZSJElKJvchF3/JKtBBc/KLH18O9v3nmEva3SZCsyME9WEEFSaYuBjeNzaczDEvIOjbQ6Eq01z4
+	IdJTKM8dap1rSjKj3MbcCPayMACNcB+b6M27zk6eQlkUAb7svMFLHKhRUiVb1ALgTvHv9uNS5sb
+	AINp4w0d350462ygKsxTbFnDadkzUOKNW/9QgO/KzgDx6+jTet4hEsqO5SR3UIqcqmAY6zcqxLy
+	FH6r1bMBUkRT8ssC1zq4Y1YGV2VWQP3wkhMVqkv3kr8F9iaiJJ17fUEh+p7uSXyj4SrnweLRI9Q
+	0+HK1mYF+U9v8ao5JP0qeOYT8sptthkhZERUJMnjmoZYfZOqIOBhWpafOzana5ZA==
+X-Received: by 2002:a17:902:e84b:b0:2aa:d604:62f3 with SMTP id d9443c01a7336-2ae8ad1ceb3mr443415ad.10.1772828533274;
+        Fri, 06 Mar 2026 12:22:13 -0800 (PST)
+Received: from google.com (168.136.83.34.bc.googleusercontent.com. [34.83.136.168])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ae83f7837bsm28280845ad.48.2026.03.06.12.22.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 06 Mar 2026 12:22:12 -0800 (PST)
+Date: Fri, 6 Mar 2026 20:22:08 +0000
+From: Samiullah Khawaja <skhawaja@google.com>
 To: Jason Gunthorpe <jgg@nvidia.com>
-CC: Robin Murphy <robin.murphy@arm.com>, <will@kernel.org>, <joro@8bytes.org>,
-	<bhelgaas@google.com>, <rafael@kernel.org>, <lenb@kernel.org>,
-	<praan@google.com>, <kees@kernel.org>, <baolu.lu@linux.intel.com>,
-	<smostafa@google.com>, <Alexander.Grest@microsoft.com>,
-	<kevin.tian@intel.com>, <miko.lenczewski@arm.com>,
-	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <linux-acpi@vger.kernel.org>,
-	<linux-pci@vger.kernel.org>, <vsethi@nvidia.com>
+Cc: Baolu Lu <baolu.lu@linux.intel.com>, 
+	Nicolin Chen <nicolinc@nvidia.com>, will@kernel.org, robin.murphy@arm.com, joro@8bytes.org, 
+	bhelgaas@google.com, rafael@kernel.org, lenb@kernel.org, praan@google.com, 
+	kees@kernel.org, smostafa@google.com, Alexander.Grest@microsoft.com, 
+	kevin.tian@intel.com, miko.lenczewski@arm.com, linux-arm-kernel@lists.infradead.org, 
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org, 
+	linux-pci@vger.kernel.org, vsethi@nvidia.com
 Subject: Re: [PATCH v1 2/2] iommu/arm-smmu-v3: Recover ATC invalidate timeouts
-Message-ID: <aas2kHcjJPYFbKSD@Asurada-Nvidia>
+Message-ID: <aas0dLwKmZyL_iOL@google.com>
 References: <cover.1772686998.git.nicolinc@nvidia.com>
  <ca7ab934bf0f433b62a5c15d42241632c4cb9366.1772686998.git.nicolinc@nvidia.com>
  <20260305153911.GT972761@nvidia.com>
- <aanygWWZLA1htDdQ@Asurada-Nvidia>
- <20260305234158.GB1651202@nvidia.com>
- <60d77adc-d5a6-40e2-a497-a57004f23e7e@arm.com>
- <20260306140115.GH1651202@nvidia.com>
+ <6416b7fe-0190-4c7b-9a62-5da7d5eea794@linux.intel.com>
+ <20260306130006.GF1651202@nvidia.com>
+ <aasmWvA-sqi0KJwO@google.com>
+ <20260306194312.GL1651202@nvidia.com>
+ <aasv1HYOKuuJyi1k@google.com>
+ <20260306200321.GN1651202@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20260306140115.GH1651202@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL02EPF00021F6E:EE_|LVUPR12MB999160:EE_
-X-MS-Office365-Filtering-Correlation-Id: 92d62d8b-bf8c-4e84-14b2-08de7bbd9315
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|7416014|1800799024|82310400026|36860700016;
-X-Microsoft-Antispam-Message-Info:
-	9ZBg86uxa+qzYxOFgFi/iX02Z2CB/snhBlTAk5CZkojXZgYzRhGTgIAwcQ44xYZKQpzoIyBoV4XOCbGau2iL2O8/beT5pSYvKw2hkOPMz2ADnb7Y/O+nOhwTWg5MR7R5vFZLbnEMNccAZFfLvqDrsuYU1Rc7VeOLW+7Jyz808mxlTWNjsuXF7jCGudHpa/vbhk0xgsODHKNU064YSYNXQYpYYA8811KadKOy103p4UvkktBg5bPW0QrxJ2z/GRjPbns6fZLf9kZXTXWIxCgfR8SMOfPyBQFY4i2+EvcRS4ApkIwvA2U10b6ln9AqIX3w+YpqWfbqw6e0Oeqd3tSDP28Zzhey8hZ3dXFjWCVEvOZKmT9I3LeO4kpdO8k6Guff2G3NpFiQP6bBOBg2nKko8v/4J/W+xAbq3Mt6uIlCBflb+5Cz1kjGskCFgnhDGb10rl9V6j+t6eEKqBIhag53aFIXi/lJj/taHEdvIaFwht2laAFRCMLr5SGP+ZqZVXEUrNrWkxAu+o/7ybc7lENorGJ371W3qflHgmhWCnl8kotRHHeBDp8Ye3oTsDxq3mvO9xNh+pwmKzgBj6AMmX5YDT3r3rDsN79utecczgLdg+Gy6865cVyj4t6oRgr8FTFH5xVQYywy2lnoVERkunZfGsLOcY6pJGnQIW6F6/QB/EiTs+P+S1cYo2/0hjq60PWex4bdUtf4Q1BYj7i0fu6L4j4eP3IQ4mcDNJr6tMTqAp7werX5CUFmK54pqR2ObsVf65jiXH3t9KVJYGcAoO6NZw==
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230040)(376014)(7416014)(1800799024)(82310400026)(36860700016);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	uWEm9Fw9p3E8tGgi1yaPJHl4SnAd02EwdNKbbdTrjXtQ5QGUJh+2qjIbCXI6sONF69q5epdZnhXuq2hQ8KohDXGYzh6cVpWratTlAyuEdY+noYXQbtB0Sb5wr+hmznPVdE+pAOlFQ2Th5w8tEBjdadBrrsp4vEqxhn6u4eah/ZLS1LwPYE9doqYV7uQuBxNo/HUrny99MtFuw+OJQMb7a4jBgZ3QulK06hErTUCZLHUNHIXzoXNIh51HsbHy4ZmQQPW0DabwHdIoP6TXJon+iZ+Nhxqbsqg77ZMsWNd6dtWSVNTMmrhTAsNjgwk+iYni4N13qfi20i6L3hdmlar32NTpwdCXIY0QVyX+bhpnMSh8TV5MnJkSkgHiEpdjegkAdigqhcy1aeSvljbIcR4MA8rFE2FP8WKq8qEiX12rCeoMlHsuZEUas4vIqN535zgK
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Mar 2026 20:18:47.7864
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 92d62d8b-bf8c-4e84-14b2-08de7bbd9315
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BL02EPF00021F6E.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LVUPR12MB999160
+In-Reply-To: <20260306200321.GN1651202@nvidia.com>
 
-On Fri, Mar 06, 2026 at 10:01:15AM -0400, Jason Gunthorpe wrote:
-> On Fri, Mar 06, 2026 at 01:22:11PM +0000, Robin Murphy wrote:
-> > On 2026-03-05 11:41 pm, Jason Gunthorpe wrote:
-> > > On Thu, Mar 05, 2026 at 01:15:45PM -0800, Nicolin Chen wrote:
-> > > 
-> > > > You mean in arm_smmu_cmdq_issue_cmdlist() that issued the timed
-> > > > out ATC command?
-> > > 
-> > > Yes, it was my off hand thought.
-> > > 
-> > > > So my test case was to trigger a device fault followed by an ATC
-> > > > command. But, I found that the ATC command submission returned 0
-> > > > while only the ISR received:
-> > > >      CMDQ error (cons 0x03000003): ATC invalidate timeout
-> > > >      arm_smmu_debugfs_atc_write: ATC_INV ret=0
-> > > > 
-> > > > It seems difficult to insert a CMDQ_OP_CFGI_STE in the submission
-> > > > thread?
-> > > 
-> > > I didn't look, but I thought the CMDQ stops on the ATC invalidation,
-> > > flags the error and the ISR NOP's the failing CMDQ entry and restarts
-> > > it to resume the thread? Is that something else?
-> > > 
-> > > If so you could insert the STE flush instead of a NOP
-> > 
-> > Nope, sadly the timeout is asynchronous, and CERROR_ATC_INV_SYNC is only
-> > reported on the *next* CMD_SYNC - it can't even tell us which CMD_ATC_INV(s)
-> > had a problem.
-> 
-> !! That's a good point! The new invalidation code runs many ATC
-> invalidations under one sync to optimize for SVA performance so we
-> have no idea what devices need to be reset :(
-> 
-> So we really do need to signal to the issuing thread and it will have
-> to go back and check how many ATC invalidations are under this sync
-> and re-issue one by one to isolate the error then issue the STE change
-> and sync. Nothing from an ISR then..
+On Fri, Mar 06, 2026 at 04:03:21PM -0400, Jason Gunthorpe wrote:
+>On Fri, Mar 06, 2026 at 07:59:33PM +0000, Samiullah Khawaja wrote:
+>> On Fri, Mar 06, 2026 at 03:43:12PM -0400, Jason Gunthorpe wrote:
+>> > On Fri, Mar 06, 2026 at 07:35:19PM +0000, Samiullah Khawaja wrote:
+>> > > On Fri, Mar 06, 2026 at 09:00:06AM -0400, Jason Gunthorpe wrote:
+>> > > > On Fri, Mar 06, 2026 at 11:22:52AM +0800, Baolu Lu wrote:
+>> > > > > I believe this issue is not unique to the arm-smmu-v3 driver. Device ATC
+>> > > > > invalidation timeout is a generic challenge across all IOMMU
+>> > > > > architectures that support PCI ATS. Would it be feasible to implement a
+>> > > > > common 'fencing and recovery' mechanism in the IOMMU core so that all
+>> > > > > IOMMU drivers could benefit?
+>> > > >
+>> > > > I think yes, for parts, but the driver itself has to do something deep
+>> > > > inside it's invalidation to allow the flush to complete without
+>> > > > exposing the system to memory corruption - meaning it has to block
+>> > > > translated requests before completing the flush
+>> > >
+>> > > Yes and currently the underlying drivers have software timeouts
+>> > > (AMD=100millisecond, arm-smmu-v3=1second) defined which could timeout
+>> > > before the actual ATC invalidation timeout occurs. Do you think maybe
+>> > > the timeout needs to be propagated to the caller (flush callback) so the
+>> > > memory/IOVA is not allocated to something else?
+>> >
+>> > No, definitely not, that's basically impossible, so many callers just
+>> > can't handle such an idea, and you can't ever fully recover from such
+>> > a thing.
+>> >
+>>
+>> Agreed.
+>> > > Or blocking translated requests for such devices should be enough?
+>> >
+>> > Yes, we have to fence the hardware and then allow the existing SW
+>> > stack to continue without any fear of UAF from the broken HW.
+>>
+>> And this applies to software timeout also I think, since both have same
+>> end result.
+>
+>Any situation where the ATC flush doesn't get a positive response from
+>the HW must fence the HW before continuing to avoid UAF bugs.
+>
+>Obviously today we just succeed the flush anyhow and hope for the
+>best, and I think that is a good starting point for VT-d. We need at
+>least that to build anything more complex on to.
+>
+>Fencing the device also has to come with a full RAS flow to eventually
+>unfence it, so I wouldn't do it in isolation.
 
-IIUIC, we would have two timeouts to identify the device(s), so we
-wouldn't need to give away the optimization of batching ATCI cmds?
+But do you think doing the timeout logic without fencing would be good
+enough? Currently VT-d blocks itself, until it gets an Invalidation
+Timeout from HW, and system ends up in a hardlockup since interrupts are
+disabled.
 
-Will letting a faulty device time out once again give it a window
-to corrupt the memory?
+Are you concerned that if fencing is done without an RAS flow, the
+device might not be able to detect the failure (if it really needs ATS
+to work)?
 
-Thanks
-Nicolin
+I am thinking, we can do translated fence and timeout change for VT-d.
+And the device can use existing RAS mechanism to recover itself. This
+way we atleast make sure that caller of flush can reuse the memory/IOVAs
+without UAFs.
+>
+>I would like the unfence to be done with a fresh domain attach (or
+>re-attach I guess) that just rewrites the context entry with the
+>correct one.
+
+Agreed.
+>
+>For VT-d that probably also means it will need all the domain attach
+>fixing we've talked about as a precondition too.
+>
+>Jason
