@@ -1,77 +1,82 @@
-Received: from canpmsgout02.his.huawei.com (canpmsgout02.his.huawei.com [113.46.200.217])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1BA8229B32
-	for <iommu@lists.linux.dev>; Sat,  7 Mar 2026 07:46:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=113.46.200.217
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5BB7329E57;
+	Sat,  7 Mar 2026 16:50:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772869612; cv=none; b=FhmhdXLcLOTGCX3unfIRrRQbrKF4m4VnJ1nloLqZJ+nUJaTA0I84zScc4h6+GWvt2H/FXHiMDfcoeYSgkQQGgQejrCVPTyo1E4p9k7yoEbo/t9qhLkapdKFMb6Lrdeia5t06/sRjQVOZqkFaPi2126/JuAzu4rqcOQ98Bhf1jJQ=
+	t=1772902205; cv=none; b=FuC2+x6PYtm1YKnRTWEXIwEjimt+5WQTJOwCuBvnPJ2VR0QFbu2gNQndtEUoHmLxOZ+ioobK+HzqMACxGucvilK+Wp0bG4PpBCrSD/3KxdeB6vJkUWB03FTgfIMCiQWlgN1LtxjuqfAhHFvrsFBS6k0C7Sqp3FKBpMiNsrcA+YQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772869612; c=relaxed/simple;
-	bh=bPpi0Ac1dTXFTtdR7uIbt2TUoFrKuXxslz+hrO+SujA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=QO2neYedwTozwwa2ddQ+l8pL/yZ9RpyZc2wo9s+4RksA/F0O6+xkYa8Ku2GsA0UR749Up0BZtW8v9T9eoS8fO2EWwCxAPMiv5LEYWzSKbKehmDF7TSb9/LZi8Ocr4YrJYlYr+xh1DI422DdjeX/FBf+wLNlIUadyPGWCkrMCmmI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b=hw3u5z4b; arc=none smtp.client-ip=113.46.200.217
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+	s=arc-20240116; t=1772902205; c=relaxed/simple;
+	bh=NhYjs89oiB+jBKV/WkSpGD3/bAZw/xiURHFubpOufaA=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=h8OMVD34OP1wN7rWZ335qQ5I+usCBCtMd0UziGZiVbsRQNWgmEUhJ5eyI2lYPKPTb2nmFyyhBoCtbvtHJDLx7Tgkai+NYnzngxNanoCBHZBQx8Sd49dmLA1YyZMO2xnTA+eyFwc7LUs4XZeG+LeV8/6TbMgBjSq7uw54rRdkXTU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AjH4Se18; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b="hw3u5z4b"
-dkim-signature: v=1; a=rsa-sha256; d=huawei.com; s=dkim;
-	c=relaxed/relaxed; q=dns/txt;
-	h=From;
-	bh=k0QEdgjhJkm/CMI479cw5fiGJIjNaAVlkS2BTDuWhwA=;
-	b=hw3u5z4bDYPzQunjt4AOQOx1aNaLBO0iYeWToN3fAHRcha0xO/1AyxTs3hmC39YVw8vI3Cxfn
-	hZ7Fi1nKWyn1HO+GOzQmSz2VSNDUxaBttpxB4mY6k5gkeVnLAaIvGoFKORMYHrbSCkRkdMfnV1V
-	sv4iBVrvjCCP6F71NKYytNg=
-Received: from mail.maildlp.com (unknown [172.19.163.104])
-	by canpmsgout02.his.huawei.com (SkyGuard) with ESMTPS id 4fSZw054Npzcb0l;
-	Sat,  7 Mar 2026 15:41:20 +0800 (CST)
-Received: from kwepemj200003.china.huawei.com (unknown [7.202.194.15])
-	by mail.maildlp.com (Postfix) with ESMTPS id 995F8404AD;
-	Sat,  7 Mar 2026 15:46:39 +0800 (CST)
-Received: from [10.67.120.170] (10.67.120.170) by
- kwepemj200003.china.huawei.com (7.202.194.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.11; Sat, 7 Mar 2026 15:46:39 +0800
-Message-ID: <2030b7da-8638-4f61-a4c0-193975da858f@huawei.com>
-Date: Sat, 7 Mar 2026 15:46:38 +0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AjH4Se18"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EA98C19422;
+	Sat,  7 Mar 2026 16:50:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1772902205;
+	bh=NhYjs89oiB+jBKV/WkSpGD3/bAZw/xiURHFubpOufaA=;
+	h=From:To:Cc:Subject:Date:From;
+	b=AjH4Se18sfvo0497Yw1VCVR+g0VtaRyMZAGqOl8RnF7y+kEKGz6UKUTYHQbFmYbZ2
+	 r8JNQs6ed5mI5R3qGB+y4qk1hRv/+9IqDvqv0fDh4+NmcJoYHH+Oe+RX0eqqG2mK0q
+	 oWWMEBu4PLBn1ya2mFqqWVeDGPj8A5Ac2YtK1N7hNVirZg4Xiwy6zHC38Ch6fQHNWy
+	 mn7k2tXNYedKGiuPG+p7ivW5tp1Aav16fDufcjkNQVYohvKyLepgMkcGD1Rx6yBKQs
+	 PUMAVozN7LFr7YFaaqkIUoywyLZDbjJUZoVJDqz0yx8D3AV64tvz9YRV+bS5e7PVd2
+	 vrq60OPaMT4Pw==
+From: Leon Romanovsky <leon@kernel.org>
+To: Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	"Michael S. Tsirkin" <mst@redhat.com>,
+	Petr Tesarik <ptesarik@suse.com>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Jason Wang <jasowang@redhat.com>,
+	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+	=?utf-8?q?Eugenio_P=C3=A9rez?= <eperezma@redhat.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Leon Romanovsky <leon@kernel.org>
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	linux-doc@vger.kernel.org,
+	virtualization@lists.linux.dev,
+	linux-rdma@vger.kernel.org
+Subject: [PATCH 0/3] RDMA: Enable runs with DMA debug enabled
+Date: Sat,  7 Mar 2026 18:49:54 +0200
+Message-ID: <20260307-dma-debug-overlap-v1-0-c034c38872af@nvidia.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v7 0/3] dma-mapping: benchmark: Add support for dma_map_sg
-To: Marek Szyprowski <m.szyprowski@samsung.com>, <21cnbao@gmail.com>,
-	<jonathan.cameron@huawei.com>, <wangzhou1@hisilicon.com>
-CC: <iommu@lists.linux.dev>, <prime.zeng@huawei.com>, <fanghao11@huawei.com>,
-	<linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>
-References: <20260225093800.3625054-1-xiaqinxin@huawei.com>
- <CGME20260306085057eucas1p176a39f28514d3c7481f5813d597086ca@eucas1p1.samsung.com>
- <a55de232-4355-4fae-85c6-b4bbebdf345d@samsung.com>
-From: Qinxin Xia <xiaqinxin@huawei.com>
-In-Reply-To: <a55de232-4355-4fae-85c6-b4bbebdf345d@samsung.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: kwepems200002.china.huawei.com (7.221.188.68) To
- kwepemj200003.china.huawei.com (7.202.194.15)
+Content-Type: text/plain; charset="utf-8"
+X-Change-ID: 20260305-dma-debug-overlap-21487c3fa02c
+X-Mailer: b4 0.15-dev-18f8f
+Content-Transfer-Encoding: 8bit
 
+Fix dma-debug to allow RDMA to run in that mode too.
 
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+---
+Leon Romanovsky (3):
+      dma-debug: Allow multiple invocations of overlapping entries
+      dma-mapping: Clarify valid conditions for CPU cache line overlap
+      RDMA/umem: Tell DMA debug that cacheline overlap is expected
 
-On 2026/3/6 16:50:56, Marek Szyprowski <m.szyprowski@samsung.com> wrote:
->> dma mapping benchmark(SG_MODE): threads:8 seconds:30 node:-1 dir:FROM_DEVICE granule/sg_nents: 8
->> average map latency(us):1.4 standard deviation:0.3
->> average unmap latency(us):1.3 standard deviation:0.3
->> [root@localhost]# ./dma_map_benchmark -m 0 -g 8 -t 8 -s 30 -d 2
->> dma mapping benchmark(SINGLE_MODE): threads:8 seconds:30 node:-1 dir:FROM_DEVICE granule/sg_nents: 8
->> average map latency(us):1.0 standard deviation:0.3
->> average unmap latency(us):1.3 standard deviation:0.5
-> Applied to dma-mapping-next. Thanks! Next time please CC: me directly.
-Thank you for applying the patch. I apologize for not CC-ing you
-directly earlier; I'll make sure to do so next time.:-)
+ Documentation/core-api/dma-attributes.rst | 26 ++++++++++++++++++--------
+ drivers/infiniband/core/umem.c            |  2 +-
+ drivers/virtio/virtio_ring.c              |  4 ++--
+ include/linux/dma-mapping.h               |  8 ++++----
+ kernel/dma/debug.c                        |  8 ++++----
+ 5 files changed, 29 insertions(+), 19 deletions(-)
+---
+base-commit: 11439c4635edd669ae435eec308f4ab8a0804808
+change-id: 20260305-dma-debug-overlap-21487c3fa02c
 
--- 
-Thanks,
-Qinxin
+Best regards,
+--  
+Leon Romanovsky <leonro@nvidia.com>
 
