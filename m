@@ -1,49 +1,86 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f179.google.com (mail-qk1-f179.google.com [209.85.222.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2F891D5147;
-	Sun,  8 Mar 2026 10:19:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B311330BB97
+	for <iommu@lists.linux.dev>; Sun,  8 Mar 2026 18:19:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772965192; cv=none; b=Bb9PEFSNeWc4ozn/4fVSO1mp+Z+hQ7v+cZEq2anLXOlJU4vizq1AUfJmxuIRr3JTlQ6CTi9/R2URzyRthEAb08mhJRFIjv+DIFEXq0xsVsQFS5UFX9lN7t+kQVnd31DX+J1xKa0GV1QwFBshr+tossLIklagpsnd9FkTjcdHBKU=
+	t=1772993964; cv=none; b=DV1cZbzAf7QQeY9OJOWktZyPTZqCFh2gjX0TQp8jqPCEtmkqwEkDSqZVjweabyaletTBqMqru3RcFF89yRFDWwa5mDfuw9L1gncfD1rm4/TJ+wn9LdL6ZLkKAd/TmnBLhWT/D/0f5qLMpYJC2QLz7UGL8iJLfP7qDMyGcFxSv00=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772965192; c=relaxed/simple;
-	bh=2rFD7sDu1Wtasy0MSqFkcujG/V06Q4133pzep9gFi5Q=;
+	s=arc-20240116; t=1772993964; c=relaxed/simple;
+	bh=RFwQC+ynapVSJqHtn5HxtDxJR3xhkceo/7GA/6B7F8o=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=F1TvCuuLmsfooaVwNqlwz+l+HOTQgSdKMQz538ctYdHJrTQ7uSe+6FnPpaHh3zkkwluKCzXF2sW6bU0rnSJjDVdW79bvBNgXIl7S/d2RxWwHp0xBjwXbql1xTFhwD1AuKNg8bfDvoN/BPBESw72I9sCXl9aWD+PnBv01/otlwYE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=F2DwgKES; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=XhBnbJjj4XYb+I/g6fJD0QAehajVv/vknyi0nKtOSWDu/A6n1HtoibdBNg+tnIinLy+XEj+Gg32TlAfuLpQfQ5abSux1aj0mI87obVRYOmX93eaNwwohlxYsU+ua9GsrukZYj1RbxGcTDEhctdG35OuUph1hxyIV+0OcXZlKhJM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=m4eM8tpo; arc=none smtp.client-ip=209.85.222.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="F2DwgKES"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B329DC116C6;
-	Sun,  8 Mar 2026 10:19:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772965192;
-	bh=2rFD7sDu1Wtasy0MSqFkcujG/V06Q4133pzep9gFi5Q=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=F2DwgKESqYEHeq6xbQ9Y/4KnjfpT9egAUca/+6XgnSqcnIp+Laiy1Uwm+N8V9voBd
-	 fxcBXtB0ojzfBqRoHjyYn+btN53hl1eP2g+Jl3kEAF3iW/kTPJAKlqcJdjkY40fWj3
-	 BOVCrPGvleJYYxoXLHmOtzNbV7f0JY0Da4oaPUzLgTxfaDgwKlmmaF61Wrr9kkBIv/
-	 +9eat2/GKxxXdtyHMLFC0ycpvww03vxshsMyR+WyUIwUJgGYDRlp3Fc/rw0s5sAkSm
-	 +iRAx6RP4744nYEW727O46BGo4mqK33oWMhfaNBeKUFxhH4f8WJbCe/hP0cnU9rYOF
-	 QhjHbo17LHl1w==
-Date: Sun, 8 Mar 2026 12:19:48 +0200
-From: Leon Romanovsky <leon@kernel.org>
-To: Jiri Pirko <jiri@resnulli.us>
-Cc: dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
-	iommu@lists.linux.dev, linux-media@vger.kernel.org,
-	sumit.semwal@linaro.org, benjamin.gaignard@collabora.com,
-	Brian.Starkey@arm.com, jstultz@google.com, tjmercier@google.com,
-	christian.koenig@amd.com, m.szyprowski@samsung.com,
-	robin.murphy@arm.com, jgg@ziepe.ca, sean.anderson@linux.dev,
-	ptesarik@suse.com, catalin.marinas@arm.com, aneesh.kumar@kernel.org,
-	suzuki.poulose@arm.com, steven.price@arm.com,
-	thomas.lendacky@amd.com, john.allen@amd.com, ashish.kalra@amd.com,
-	suravee.suthikulpanit@amd.com, linux-coco@lists.linux.dev
-Subject: Re: [PATCH net-next v3 1/2] dma-mapping: introduce
- DMA_ATTR_CC_DECRYPTED for pre-decrypted memory
-Message-ID: <20260308101948.GO12611@unreal>
-References: <20260305123641.164164-1-jiri@resnulli.us>
- <20260305123641.164164-2-jiri@resnulli.us>
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="m4eM8tpo"
+Received: by mail-qk1-f179.google.com with SMTP id af79cd13be357-8cd81963e73so67928985a.2
+        for <iommu@lists.linux.dev>; Sun, 08 Mar 2026 11:19:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1772993962; x=1773598762; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=8l9HCiIJk8f6YJBdD7T3EgoBIxuKKvMDtuYccvH3ixY=;
+        b=m4eM8tpofeGk2S+laJgQCpr+3JN2+Xqh92Yx5XkaKjpsG8LyZF12hvhcfCevEIQPee
+         i1y+eNvnPT78s0dymmqNMC1KRQRi/Q6xUzGAC96f+KQRh8f7xU5cLcQQZImo4lQEax5x
+         KBrDZSBJHLa+Ioid6YD5De4Lgg28PbA02RAnNZccBbsGtYKJegASU15PNGVhB/Ssrfbe
+         WAogb36/Id3OGbcyP4uSVDX7iVkAtU/+0ceDhWzzbTDlnIZl04/OSnfLvZu3/80B83fu
+         kr5X42c0SxkKKxpwFNzVBDclT73X94LCOILOimoj70EwClJk3xb5olWalYZueTCodw/m
+         wEuA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772993962; x=1773598762;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=8l9HCiIJk8f6YJBdD7T3EgoBIxuKKvMDtuYccvH3ixY=;
+        b=TsggsB2gfQMB46IUSCF/IP6G+rQwcMWfO38GC+GZc3pCwfqnUCglKK6g/QSGM5RYaG
+         Q8kV3z3s4szqy7GjL57i4m97t/T0Y4DLtAETJpNk4+d4N8NCQzTGuS4PqHkxBnbvxUBv
+         CPRcIw54teemC+kuYHbY7JiMsy7nCpB8GunnIBZ819SPMwxv41eahxDbeNfuyH1/XIG6
+         6BbuPR6b0jRQcXgOkZfLtUCfHBH0IsTLdcuu20yMPLnRY2G7/tJ56awxPslPIhgeiGj7
+         U1PS/7OcZMRvxuQT+i7+NlJUoCXF2dk/l0m2Lz8RjkjpkUcUX0ZfrQf7Ka0JQsD2rcM/
+         oq6Q==
+X-Forwarded-Encrypted: i=1; AJvYcCVZLt6deCvdhbehNX48a1nZ9rN9IbWPlfRkFpcxe2vqMrxmEUVcx4WqtgxrRhSP3JSH0CHyKw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzV5DLgSu0jDSgTiPSlI/zvLpxn5X4FeNBjaiUjcbv6K0bHVoBu
+	mZEd5RVJIrrlZsMxWdtkCE2HI/gJuTPPijj3bwlxyNm/4Z/B4Pl6FxvCqGy+CU/MzVg=
+X-Gm-Gg: ATEYQzw4dwt/BzjKWPC32LcIGgvAqADNsUiR7hRa2SfGwVjiuQ72VbmNkTdSaJcCLib
+	zIpp5PGRiRW/eoavoBEtYwV6wl2RWNSx+YSVx5oAzWnVZpXvQaFgGqF7Twl8kPYbdCmGPu1sfsS
+	iiI8hivBTx80NVeIFUPUz1xGqffITybamwmqkT4i3ZJNOHxCWrQUBJJuji64MoyKltignhn6LOC
+	WivMHdck0RI1VcEhQOz9YEdxXnIAf33fUCgpeyx+vm/Q52OQMy/dd5wGzg9Fph595eu6dHvjVp4
+	ZKVJpxy/Cwjr2oz2kpVA/SJZtq9PTY1b9+o/mQK/j1WIovT5ya2yXGa0X+wLF5tvAM0NolIoVLX
+	c/JJwhWESGqGEKNTKbE3Nc4rTv9kAwNai/MPznn58eqWpD1rt+PvfA1lYx8YzEx3we4aXC/9L0o
+	t4HsR1nKMTXz1jF0AbciEOUHBNLzzWPl9X/Y95SDCdqQ4NdQpOGdWpHENh7PN81rifEiLmNIk6r
+	hsz2seNZCxcN5FqsIw=
+X-Received: by 2002:ac8:574b:0:b0:506:534b:7871 with SMTP id d75a77b69052e-508f496e9b7mr109431651cf.46.1772993962390;
+        Sun, 08 Mar 2026 11:19:22 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-162-112-119.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.112.119])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-508f653c566sm48622921cf.8.2026.03.08.11.19.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 08 Mar 2026 11:19:21 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1vzIim-0000000AbBt-0YB7;
+	Sun, 08 Mar 2026 15:19:20 -0300
+Date: Sun, 8 Mar 2026 15:19:20 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Leon Romanovsky <leon@kernel.org>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	"Michael S. Tsirkin" <mst@redhat.com>,
+	Petr Tesarik <ptesarik@suse.com>, Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Jason Wang <jasowang@redhat.com>,
+	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+	Eugenio =?utf-8?B?UMOpcmV6?= <eperezma@redhat.com>,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	linux-doc@vger.kernel.org, virtualization@lists.linux.dev,
+	linux-rdma@vger.kernel.org
+Subject: Re: [PATCH 2/3] dma-mapping: Clarify valid conditions for CPU cache
+ line overlap
+Message-ID: <20260308181920.GH1687929@ziepe.ca>
+References: <20260307-dma-debug-overlap-v1-0-c034c38872af@nvidia.com>
+ <20260307-dma-debug-overlap-v1-2-c034c38872af@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,52 +89,45 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260305123641.164164-2-jiri@resnulli.us>
+In-Reply-To: <20260307-dma-debug-overlap-v1-2-c034c38872af@nvidia.com>
 
-On Thu, Mar 05, 2026 at 01:36:40PM +0100, Jiri Pirko wrote:
-> From: Jiri Pirko <jiri@nvidia.com>
-> 
-> Current CC designs don't place a vIOMMU in front of untrusted devices.
-> Instead, the DMA API forces all untrusted device DMA through swiotlb
-> bounce buffers (is_swiotlb_force_bounce()) which copies data into
-> decrypted memory on behalf of the device.
-> 
-> When a caller has already arranged for the memory to be decrypted
-> via set_memory_decrypted(), the DMA API needs to know so it can map
-> directly using the unencrypted physical address rather than bounce
-> buffering. Following the pattern of DMA_ATTR_MMIO, add
-> DMA_ATTR_CC_DECRYPTED for this purpose. Like the MMIO case, only the
-> caller knows what kind of memory it has and must inform the DMA API
-> for it to work correctly.
-> 
-> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
-> ---
-> v1->v2:
-> - rebased on top of recent dma-mapping-fixes
-> ---
->  include/linux/dma-mapping.h |  6 ++++++
->  include/trace/events/dma.h  |  3 ++-
->  kernel/dma/direct.h         | 14 +++++++++++---
->  3 files changed, 19 insertions(+), 4 deletions(-)
-> 
-> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-> index 29973baa0581..ae3d85e494ec 100644
-> --- a/include/linux/dma-mapping.h
-> +++ b/include/linux/dma-mapping.h
-> @@ -85,6 +85,12 @@
->   * a cacheline must have this attribute for this to be considered safe.
->   */
->  #define DMA_ATTR_CPU_CACHE_CLEAN	(1UL << 11)
-> +/*
-> + * DMA_ATTR_CC_DECRYPTED: Indicates memory that has been explicitly decrypted
-> + * (shared) for confidential computing guests. The caller must have
-> + * called set_memory_decrypted(). A struct page is required.
-> + */
-> +#define DMA_ATTR_CC_DECRYPTED	(1UL << 12)
+On Sat, Mar 07, 2026 at 06:49:56PM +0200, Leon Romanovsky wrote:
 
-While adding the new attribute is fine, I would expect additional checks in
-dma_map_phys() to ensure the attribute cannot be misused. For example,
-WARN_ON(attrs & (DMA_ATTR_CC_DECRYPTED | DMA_ATTR_MMIO)), along with a check
-that we are taking the direct path only.
+> -This attribute indicates the CPU will not dirty any cacheline overlapping this
+> -DMA_FROM_DEVICE/DMA_BIDIRECTIONAL buffer while it is mapped. This allows
+> -multiple small buffers to safely share a cacheline without risk of data
+> -corruption, suppressing DMA debug warnings about overlapping mappings.
+> -All mappings sharing a cacheline should have this attribute.
+> +DMA_ATTR_CPU_CACHE_OVERLAP
 
-Thanks
+This is a very specific and well defined use case that allows some cache
+flushing behaviors to work only under the promise that the CPU doesn't
+touch the memory to cause cache inconsistencies.
+
+> +Another valid use case is on systems that are CPU-coherent and do not use
+> +SWIOTLB, where the caller can guarantee that no cache maintenance operations
+> +(such as flushes) will be performed that could overwrite shared cache lines.
+
+This is something completely unrelated. 
+
+What I would really like is a new DMA_ATTR_REQUIRE_COHERENT which
+fails any mappings requests that would use any SWIOTLB or cache
+flushing.
+
+It should only be used by callers like RDMA/DRM/etc where they have
+historical uAPI that has never supported incoherent DMA operation and
+are an exception to the normal DMA API requirements.
+
+The problem is to limit the use of that flag to only a few approved
+places. I fear adding such a flag wide open would open the door to
+widespread driver abuse. These days we have 'export symbol for module'
+so maybe there is a way to do it with safety?
+
+I'd really like this right now because CC systems are forcing SWIOTLB
+and things like RDMA userspace are unfixably broken with SWIOTLB. The
+uAPI it has simply cannot work with it. I'd much rather to immediate
+fail than suffer data corruption. Jiri was looking at adding some
+hacky "is cc" check, but I'd far prefer a proper flag that covered all
+the uAPI breaking cases.
+
+Jason
