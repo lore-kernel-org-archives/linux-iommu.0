@@ -1,229 +1,287 @@
-Received: from PH0PR06CU001.outbound.protection.outlook.com (mail-westus3azon11011008.outbound.protection.outlook.com [40.107.208.8])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f181.google.com (mail-qt1-f181.google.com [209.85.160.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86284351C12
-	for <iommu@lists.linux.dev>; Sun,  8 Mar 2026 20:54:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.208.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98C3E321445
+	for <iommu@lists.linux.dev>; Sun,  8 Mar 2026 21:23:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.181
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773003293; cv=fail; b=OGswoLKvYzkW4OHsMnUm91KnWD5z6maa5hkTRWueDgED9HLy8cF1DQN0SLwFYst0ueNTxJvgsyLEhbGklU5Lb3WMPqqheKj2PdT8tkBKLVvPjDJN5UdSZxl2OyPZV1h3O6O4/AQuzh3rSDJerSSqw9ArF5LHgDyZFJ2eXMM2fd8=
+	t=1773004997; cv=pass; b=jm38vGePJa4AYxBkaRuVVp0Y+RYdYIN64dF+S9oyXEsuTuleEI06mk896y25zSh2AtfLXAq47Db7+gL+X/4L4wR8PBcvtia3lAMOTQrXFJpKRLIJ2pp3z5r8RODbK3keO8zaI0iJyOF7ctunDc15ehIQco1K/2uqldEFVtGOl0o=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773003293; c=relaxed/simple;
-	bh=4a8OyHDDXOBqq6SwB6EScQsM03fb2t4lNGovUtiOnlE=;
-	h=Message-ID:Date:MIME-Version:Subject:From:To:CC:References:
-	 In-Reply-To:Content-Type; b=COdFEaTrBzgo7pan8Dn+BpMWMdvNjR1exrpXb/F4yrK40Cqde7A07lPJiVKP3VHStcVmN3e8KgBH+UmHjn6QIaxV+GeVQjUb2Vm+CvtXs/x/faWhHSVEBZIU1EZpPlx0wWGDD0VSLwOgjek2hm7IsdnjCQQnQXxCAt9wDvS0Mgo=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=c+8500Wu; arc=fail smtp.client-ip=40.107.208.8
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	s=arc-20240116; t=1773004997; c=relaxed/simple;
+	bh=+gmK1RHreyPnC5Wj/huNh/Yd1F9ZC5bCPIkEgz+fvas=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=b+AoauYjb2B58mkKaglzQ1XPeiaLTRPxs/VkpWTajhb5VPauZH2wXuP/uN7BQ1huvDpDzs4zCP+cEEclJc6Lmo7603tVg6m7IegcgOPWiy0KZEnAfcAhpO2x69ZGGk5X405jS+rSbGRmfb98YmIZ1wKYWjdnx/ZHg5qdlPWMxv8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=E/F+iV3X; arc=pass smtp.client-ip=209.85.160.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="c+8500Wu"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=tKhanG3cHuMl7wxxYr1gCqgCq4dC7PBXHpplmId5iucQ7BNWgtwMoW7tE0XVasnI4nB1L0kBYzfATymmE99haEzmkpL7sEbRdtrOVlSEJd2USWH6oQiEOV0ArwvsCT2nvJGEELtUM4wOw5Xo4thon/jh2MLYSTz7ONeo7PWSox4m7Oie98UJKGIz3+NlyD5GHlFX/ACCC1WkrOdyUV86MeJaCNVZ2lpowAgNMo3BJXZbOoq89Lj2hLx8Bcn0zBf0e5G7m5fbZG8Obje7IoWjImxwgZCsXC4xyEtIMsdLDbbOhRHBVKOD/vy7Ch0vgwuymte+IDbi7cuHWpDd5QnhMA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=FBUrHeN7pt7If3s/g1D19NPCVcCwFWVOjJ7so+/1iBA=;
- b=mMRNNbdTiAc5YCQNAs+BT95nXa8Kk2/dxqZDjKjat/BJZUylBJUi175WkTu8B8h8zvwYLTFjLeMAQn/GuBHxe2PN1bAEexq9pQflqV0DdXJvPFT4LO9v1FxXHyG+qCplAAaP4hcABfVtMfpdVj5GkxiOSzdDmg3ruvRW7TCjkResyudaQSERcSruAdyKlH4mS9XwDoFUMJ7A5si1NTlfgPJ4UFoG8vCM6fw7ZoSILbGbZxmLFgYlEZjZWJxVEYvvNE7XeSPdPC8guiftx1H3M/uAIDxH6qveVZyevfPgo1NsoC4NbrhNakowyDH1J2A/3CIy80I+mQlNndlbgyiAYg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=huawei.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FBUrHeN7pt7If3s/g1D19NPCVcCwFWVOjJ7so+/1iBA=;
- b=c+8500Wua19fGBdv12kAyc4TiNChpzToqCouBp3wVKnnV0KCHcDlT6o+JlbPlJ7QCGi9Ykc0jQZ+dNSyYJcsDB3o2vTp7dkf5tjHMVQOnbJgXUV+8knT2Ukk9Twq6LuaArpkKbxWFDDCUKk752aI8JzfRVNEr4wHNOYNyQQt0QpX4583I2OP+f7xpNq1P4vOYW0XctZxKs6NXGwXaaYkGv6u5bnmYlO+S/HE8xab4tlo/GO1BYeHV88n7y8VTbIQlITu+h8j3QaQ67tChLBCsB10C6qXMEPnOLVoXbvRoYl67GBEv8plMwWhwR+A+IO9p0ZkVk5sKGBtCOYyRnGcpA==
-Received: from PH7P223CA0029.NAMP223.PROD.OUTLOOK.COM (2603:10b6:510:338::30)
- by DS5PPF5A66AFD1C.namprd12.prod.outlook.com (2603:10b6:f:fc00::64d) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9700.8; Sun, 8 Mar
- 2026 20:54:46 +0000
-Received: from SN1PEPF00036F41.namprd05.prod.outlook.com
- (2603:10b6:510:338:cafe::6c) by PH7P223CA0029.outlook.office365.com
- (2603:10b6:510:338::30) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9632.26 via Frontend Transport; Sun,
- 8 Mar 2026 20:54:32 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- SN1PEPF00036F41.mail.protection.outlook.com (10.167.248.25) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9678.18 via Frontend Transport; Sun, 8 Mar 2026 20:54:44 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Sun, 8 Mar
- 2026 13:54:34 -0700
-Received: from [10.221.136.116] (10.126.231.35) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Sun, 8 Mar
- 2026 13:54:30 -0700
-Message-ID: <3d8f1e72-6098-43e8-aefa-e60f07bb81e7@nvidia.com>
-Date: Sun, 8 Mar 2026 21:54:22 +0100
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="E/F+iV3X"
+Received: by mail-qt1-f181.google.com with SMTP id d75a77b69052e-50906a98ffeso531201cf.0
+        for <iommu@lists.linux.dev>; Sun, 08 Mar 2026 14:23:15 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1773004994; cv=none;
+        d=google.com; s=arc-20240605;
+        b=L6kMF6EhqQKD/D+3XudR3Ur3rgSiVBm/oS3oGRSnfK1SeLuSkFbpJNoveWWMegGQiz
+         Topbyk0rtFXA8Lw6BPKrESYzCEzEyPT8eVpP7tvv0Mc8DJ1RAO8D0wFTkNg4GL7r8axC
+         709OkvODndpoqxBdmgEKxYi2BFc6SVTRuZ2an1F2T1kcqi0Ofv3BDkB/pFMQEe3cATXU
+         334wyVplXtRfrOxYFoS81Zqvqpgjgd/+MtofjnDgrz0LLfnm0zj9+6jjRMWUbqXE07ji
+         wjPQ7v8CdfupL4tmsh/RCD+TfUfTors5vbQO4AlJIEgkIcol0IC2WWGZrZmqlLszXHEl
+         h4pg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=RRrMk2uGdvPoJJ9zAyHNkeP9uYA/6EODOGDOAZl+U1Y=;
+        fh=Cr9Gz+4KxVp4Ci1moPY7g4WpWFGCr0a9bcVWr63STi0=;
+        b=OeyT0EiNHrGpJzEqZdlAy1Vzzm4Uwg99G8kZ648kCmj62D/iPi2oeMQ1tqkoyyIro0
+         vODWysHNSxyHTwWMI7zb0VTdAPeZFjI71uBvlLDVwYNkozZmRSoTexqKMTewF/QgXohu
+         0dDLijqyGxRBxjaTgNAsVuIhb2qYDGw8Japiz0+0gKriEcA340W1dEiwS6f79U+r3SPd
+         /9bjqc9Yysi0eQGTK5xrDdqD2dwac+pj8iaG6k+KcOBgzFMO9CDB6Sq/GAqc9628cswd
+         tRZJzbuqGD8L8xsH7V/ZwfJCCUcp5hhHHS5eGApLnoBEbtfKSHgfwebDSN/2VEz4Lhjs
+         wH3g==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1773004994; x=1773609794; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=RRrMk2uGdvPoJJ9zAyHNkeP9uYA/6EODOGDOAZl+U1Y=;
+        b=E/F+iV3XgHSOt8S/iRv25HMvuObhS7M95PH3JQ7fnxA0sEAVPhBnfOpUOR24CtANAo
+         3+rCwm/EwnSbhd1Wtt3HWUFqsEi5nItAL1c+R3OBoSVC2ObZW/plHrv2cWSxekUq32Go
+         H5w6JDLQXPDJgEsem+5psTlQGjraoZhp5EQvls0yzqMq/J8W0Wrk0f6mvqwvkYADD9+Z
+         6iXPOLtIi6RRjVmWrLUFX+YwVBjT8j2XlCj0Z+v3LmuSiakB/UQB7ZPuWXgdPyfoDU5e
+         BNxO70WKi5WUp5oHdrg9GxnGf7KwIzRffxKNh+yHANl+7ubCw40ktLF8K8DujpHfb6Ys
+         OYAQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1773004994; x=1773609794;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=RRrMk2uGdvPoJJ9zAyHNkeP9uYA/6EODOGDOAZl+U1Y=;
+        b=L/Yx4JOykUf+lixE9/aSdTDPORpQ2wVZ8Sj7LQE7tVhbdkHP3vCiY+PR1vRG1Kk77z
+         /W2HdUlAvxP3hBBmSgQevVMVyaqVw9bGjM9XnecySheZIjgS7Oq0oCz3JgZf1W0sO8k3
+         Mma/GUj/PkfN5n6t6jpWHtfGWenVm4NZgtFPHMUdxaVfy+j0NTGt/NsMIUugqP2n0fi+
+         9F/bsvJ5Oy8n98Uh6ocVve9qsfkDjhmIRXkACcoOr/QMt5xq8vSoWgB0In3tmoEhu7bh
+         2HwoToyfEyP8nnkJWkzQdqhJe2UnSlbvhNV6fhoU6Qxfb1p4Dka2P2qaWLm7TXLmOHZ5
+         tB2Q==
+X-Gm-Message-State: AOJu0YzvOpcWEGOWqdRu8SbDE6IX7+6xXmZiO4SsKslsEm/VvPkm0HiS
+	gEAICAaxxog+s1kz2gTPBd42sdVsA6gVUb4Oc9SCa9j9rU/Te/mS3wv9/bi0hepY3QRxO9ffJIv
+	/aBUZHXU8BPRXsMJtu3o33LEcMOe5c+XrcaRTtvD1
+X-Gm-Gg: ATEYQzxICnTB90RmBQGmb0cS7ZEP3ltIjKOwOHrQ916N8oD5Ek2hVZ6JPenZjNxoutg
+	jInNbsrxEMKIa5028aJu8rkGeieQxh/CtqWvGvPB8TNMaExLOBproEjOBbtscp0vfzfUhuQFDtJ
+	NIhCphSWxglMgXymauixUHS2GR94e77AThNkbCrNj+v0GFH+GgnODnTZtp5gauUzfoByUTWYRNR
+	05NIdG8eOKzJj5r8Uuchm6T3onphmXbKljr9unnims0OU4pnjYSYtjyVXhrzWJhE+ByDZnopxk0
+	d4EJ
+X-Received: by 2002:a05:622a:1915:b0:506:a3c8:d44d with SMTP id
+ d75a77b69052e-50902b99912mr14868301cf.9.1773004994063; Sun, 08 Mar 2026
+ 14:23:14 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 2/3] PCI: Allow ATS to be always on for pre-CXL devices
-From: Nirmoy Das <nirmoyd@nvidia.com>
-To: Nicolin Chen <nicolinc@nvidia.com>, <jgg@nvidia.com>, <will@kernel.org>,
-	<robin.murphy@arm.com>, <bhelgaas@google.com>
-CC: <joro@8bytes.org>, <praan@google.com>, <baolu.lu@linux.intel.com>,
-	<kevin.tian@intel.com>, <miko.lenczewski@arm.com>,
-	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <linux-pci@vger.kernel.org>,
-	<dan.j.williams@intel.com>, <jonathan.cameron@huawei.com>,
-	<vsethi@nvidia.com>, <linux-cxl@vger.kernel.org>
-References: <cover.1772833963.git.nicolinc@nvidia.com>
- <c715b10b49d50eea5429454108d4221c1a78efaf.1772833963.git.nicolinc@nvidia.com>
- <50281260-62e4-427f-bd66-e8be58062a03@nvidia.com>
-Content-Language: en-US
-In-Reply-To: <50281260-62e4-427f-bd66-e8be58062a03@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: rnnvmail201.nvidia.com (10.129.68.8) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SN1PEPF00036F41:EE_|DS5PPF5A66AFD1C:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4b5d2a7a-d26e-4db6-432d-08de7d54ed47
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|82310400026|36860700016|7416014|376014;
-X-Microsoft-Antispam-Message-Info:
-	XBwDY31l9UqNH9zjG+csORGDNY5NIEaX+Ad2XzxAlHB9hXj8vkNaorf8ABiUYQw2+Lkdo0JTKsCH6Qpnfk+4mgIWyVXbwH+9mB+viVNy0eJrW5kNU7mE9Kj6PV/IELbRMTuvPTb/j+V9jXlqnr4r4+rhHuuPNnARL/ngZZy0LaZ6CE9UBnTCVz+jaMO1SpaKLYTrNeNYrSV8qSHM2/GGNGPY2eSI6vWn9SJRqanjRdXuQcdnmSYpw9tvAxHqtYVuEyu+YB3TpUdPBhQ/ph7ssDKvJvKA2zeaY7x0QyoIpkIirMhpVOvs0NHg0U67Xg7EjFWQTeZrt8oZ3mkghgCwGNl6EwuWktuJ1xp6vdwBS99wVH+io+YP3NZTn7F/omPBdl0ejrmkOWv6DhvQqXjlHkKfHpeHHCkbjNRZwDChOC9fTezBDzJQ5m5K6m4jnxeT88uVI6UmCXIYa+jU8UDWsJi5FXb6v8jEa6ucDfI4WW/xpmZFyFWBKMdqcgI/OkapvPZNJci3TcIRRDZp4gLcdnEj2JBcBdKZHVi06ydK3hUb4bD4Ep9a9nvJzFjgd6Q38TS9dADzv75mQ1hvLqTxtbMxCo6Kt3EHSnG7/Jc+XC+LyO3shdfDvckjvdHhXexqnzriEaOMrMcLKzZ/cOZQAT2lZWBJkV7NjtaleSrT8300x9yM3xyVcN8UmakQmcDH25LF67eMfV+p2DOOKuTNAIrp7I07TXPRjG7wf8wCLPjbqybGJBUC38VNhFKIGolfNatNhAXfYUoDjDhHnPC74g==
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(82310400026)(36860700016)(7416014)(376014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	xkvd0rUeDMEd6cYnPCLgpvoUdgwJExNQDGpaLuhWuJvABgRu5+0C5lbCWDbK//E3mIDOq8L8KaiVcTQxn5STowAkqO+W3/zbXK4oOFq688HTrWwuRTO7wONjzC4WGaaJ+rUBeTTy8tWklUSzCi/gUsE7GpS7aqCOZ/nioOvo5kNIHrWtvuhr4e2wuNfbfnEazlbo8jyMcSbujtTSY7TWxyc2ZmFl631/bS10LSl1hALJtLZU0ArL+BcNlGCYQUfN0NA9wncGd/+U8Emer3izGmT9dqJ7JWRf/WbJLtib3WJ9adKGxIFEKqB54V7ZWZbXGpDUF7u/gmejLIjNhDmyt3avlDekI39rRAmRomQIk17DGUleVwGtRMZsCOCJVFmGxCKA0ae/PX8+ntAsFk1NG+ZkRJW0bwhDyRjGYzbgDA98NX8ZBETsneLIoOLuqFYO
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Mar 2026 20:54:44.3399
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4b5d2a7a-d26e-4db6-432d-08de7d54ed47
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SN1PEPF00036F41.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS5PPF5A66AFD1C
+References: <20260126151157.3418145-1-praan@google.com> <20260126151157.3418145-7-praan@google.com>
+In-Reply-To: <20260126151157.3418145-7-praan@google.com>
+From: Daniel Mentz <danielmentz@google.com>
+Date: Sun, 8 Mar 2026 14:23:03 -0700
+X-Gm-Features: AaiRm53CvmSMwN51gw08zMTIs5bVLwZOm58RWeTwUF--hfOJ8wl1gSs6h4igamk
+Message-ID: <CAE2F3rD0aoTXJBnS4SPHLEEst6cTvoUxNywRZ1RhdgwNA_0JTA@mail.gmail.com>
+Subject: Re: [PATCH v5 06/10] iommu/arm-smmu-v3: Add a usage counter for cmdq
+To: Pranjal Shrivastava <praan@google.com>
+Cc: iommu@lists.linux.dev, Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>, 
+	Nicolin Chen <nicolinc@nvidia.com>, Ashish Mhetre <amhetre@nvidia.com>, 
+	Sairaj Kodilkar <sarunkod@amd.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
+On Mon, Jan 26, 2026 at 7:12=E2=80=AFAM Pranjal Shrivastava <praan@google.c=
+om> wrote:
+>
+> Introduce a biased counter to track the number of active cmdq owners as
+> a preparatory step for the runtime PM implementation.
 
-On 08.03.26 21:50, Nirmoy Das wrote:
->
-> On 07.03.26 00:41, Nicolin Chen wrote:
->> Some NVIDIA GPU/NIC devices, although don't implement the CXL config 
->> space,
->> they have many CXL-like properties. Call this kind "pre-CXL".
->>
->> Similar to CXL.cache capaiblity, these pre-CXL devices also require 
->> the ATS
->> function even when their RIDs are IOMMU bypassed, i.e. keep ATS 
->> "always on"
->> v.s. "on demand" when a non-zero PASID line gets enabled in SVA use 
->> cases.
->>
->> Introduce pci_dev_specific_ats_always_on() quirk function to scan a 
->> list of
->> IDs for these device. Then, include it pci_ats_always_on().
->>
->> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
->> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
->
-> Tested-by: Nirmoy Das <nirmoyd@nvidia.com>
->
-> Reviewed-by: Nirmoy Das <nirmoy@nvidia.com>
+Non-owners waiting for their CMD_SYNC to be consumed also appear to
+increase this counter.
 
-
-Sent with wrong email address
-
-Reviewed-by: Nirmoy Das <nirmoyd@nvidia.com>
 >
->> ---
->>   drivers/pci/pci.h    |  9 +++++++++
->>   drivers/pci/ats.c    |  3 ++-
->>   drivers/pci/quirks.c | 26 ++++++++++++++++++++++++++
->>   3 files changed, 37 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
->> index 13d998fbacce6..13fa71f965900 100644
->> --- a/drivers/pci/pci.h
->> +++ b/drivers/pci/pci.h
->> @@ -1150,6 +1150,15 @@ static inline int 
->> pci_dev_specific_reset(struct pci_dev *dev, bool probe)
->>   }
->>   #endif
->>   +#if defined(CONFIG_PCI_QUIRKS) && defined(CONFIG_PCI_ATS)
->> +bool pci_dev_specific_ats_always_on(struct pci_dev *dev);
->> +#else
->> +static inline bool pci_dev_specific_ats_always_on(struct pci_dev *dev)
->> +{
->> +    return false;
->> +}
->> +#endif
->> +
->>   #if defined(CONFIG_PCI_QUIRKS) && defined(CONFIG_ARM64)
->>   int acpi_get_rc_resources(struct device *dev, const char *hid, u16 
->> segment,
->>                 struct resource *res);
->> diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
->> index cf262eb6e6890..e6995b536ad4c 100644
->> --- a/drivers/pci/ats.c
->> +++ b/drivers/pci/ats.c
->> @@ -243,7 +243,8 @@ bool pci_ats_always_on(struct pci_dev *pdev)
->>       if (pdev->is_virtfn)
->>           pdev = pci_physfn(pdev);
->>   -    return pci_cxl_ats_always_on(pdev);
->> +    return pci_cxl_ats_always_on(pdev) ||
->> +           pci_dev_specific_ats_always_on(pdev);
->>   }
->>   EXPORT_SYMBOL_GPL(pci_ats_always_on);
->>   diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
->> index 48946cca4be72..21451e62f284e 100644
->> --- a/drivers/pci/quirks.c
->> +++ b/drivers/pci/quirks.c
->> @@ -5714,6 +5714,32 @@ DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_INTEL, 
->> 0x1457, quirk_intel_e2000_no_ats);
->>   DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_INTEL, 0x1459, 
->> quirk_intel_e2000_no_ats);
->>   DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_INTEL, 0x145a, 
->> quirk_intel_e2000_no_ats);
->>   DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_INTEL, 0x145c, 
->> quirk_intel_e2000_no_ats);
->> +
->> +static const struct pci_dev_ats_always_on {
->> +    u16 vendor;
->> +    u16 device;
->> +} pci_dev_ats_always_on[] = {
->> +    /* NVIDIA GPUs */
->> +    { PCI_VENDOR_ID_NVIDIA, 0x2e12, },
->> +    { PCI_VENDOR_ID_NVIDIA, 0x2e2a, },
->> +    { PCI_VENDOR_ID_NVIDIA, 0x2e2b, },
->> +    /* NVIDIA CX10 Family NVlink-C2C */
->> +    { PCI_VENDOR_ID_MELLANOX, 0x2101, },
->> +    { 0 }
->> +};
->> +
->> +/* Some pre-CXL devices require ATS on the RID when it is 
->> IOMMU-bypassed */
->> +bool pci_dev_specific_ats_always_on(struct pci_dev *pdev)
->> +{
->> +    const struct pci_dev_ats_always_on *i;
->> +
->> +    for (i = pci_dev_ats_always_on; i->vendor; i++) {
->> +        if (i->vendor == pdev->vendor && i->device == pdev->device)
->> +            return true;
->> +    }
->> +
->> +    return false;
->> +}
->>   #endif /* CONFIG_PCI_ATS */
->>     /* Freescale PCIe doesn't support MSI in RC mode */
+> The counter will be used to gate command submission, preventing the
+> submission of new commands while the device is suspended and deferring
+> suspend while the command submissions are in-flight.
+
+What does command submission mean in this context? I understand that
+commands are still added to the queue (until the queue is full). It's
+only the producer index that is not advanced.
+
 >
+> The counter is biased to a value of 1 during device reset. A cmdq owner
+> or a thread issuing cmds with sync, increment it before accessing HW
+> registers and decrements it with release semantics afterwards.
+>
+> A value of 1 represents an idle (but active) state. A suspend operation
+> will set it to from 1 -> 0 representing the suspended state.
+>
+> Signed-off-by: Pranjal Shrivastava <praan@google.com>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 65 +++++++++++++++++----
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  3 +
+>  2 files changed, 57 insertions(+), 11 deletions(-)
+>
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/=
+arm/arm-smmu-v3/arm-smmu-v3.c
+> index 91edcd8922a7..3a8d3c2a8d69 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -805,7 +805,7 @@ int arm_smmu_cmdq_issue_cmdlist(struct arm_smmu_devic=
+e *smmu,
+>         u64 cmd_sync[CMDQ_ENT_DWORDS];
+>         u32 prod;
+>         unsigned long flags;
+> -       bool owner;
+> +       bool owner, has_ref =3D false;
+>         struct arm_smmu_ll_queue llq, head;
+>         int ret =3D 0;
+>
+> @@ -819,8 +819,15 @@ int arm_smmu_cmdq_issue_cmdlist(struct arm_smmu_devi=
+ce *smmu,
+>
+>                 while (!queue_has_space(&llq, n + sync)) {
+>                         local_irq_restore(flags);
+> +
+> +                       if (!atomic_inc_not_zero(&smmu->nr_cmdq_users))
+> +                               /* Device is suspended, don't wait for sp=
+ace */
+> +                               return 0;
+> +
+
+Does this mean that we still accumulate commands until the queue is
+full while in the suspended state and then have SMMU excecute all of
+these (now irrelevant) commands when the command queue is re-enabled?
+One might argue that this is wasteful, but I guess it might be
+technically correct, because it doesn't hurt either.
+
+>                         if (arm_smmu_cmdq_poll_until_not_full(smmu, cmdq,=
+ &llq))
+>                                 dev_err_ratelimited(smmu->dev, "CMDQ time=
+out\n");
+> +
+> +                       atomic_dec_return_release(&smmu->nr_cmdq_users);
+>                         local_irq_save(flags);
+>                 }
+>
+> @@ -879,10 +886,35 @@ int arm_smmu_cmdq_issue_cmdlist(struct arm_smmu_dev=
+ice *smmu,
+>                 arm_smmu_cmdq_poll_valid_map(cmdq, llq.prod, prod);
+>
+>                 /*
+> -                * d. Advance the hardware prod pointer
+> +                * d. Advance the hardware prod pointer (if smmu is still=
+ active)
+
+Consider "(if command queue is still enabled)". Otherwise, what does
+"active" mean? SMMU and/or command queue enabled?
+
+>                  * Control dependency ordering from the entries becoming =
+valid.
+>                  */
+> -               writel_relaxed(prod, cmdq->q.prod_reg);
+> +               if (atomic_inc_not_zero(&smmu->nr_cmdq_users)) {
+> +                       writel_relaxed(prod, cmdq->q.prod_reg);
+> +
+> +                       if (sync) {
+> +                               has_ref =3D true;
+> +                       } else {
+> +                               /*
+> +                                * Use release semantics to enforce order=
+ing without a full barrier.
+> +                                * This ensures the prior writel_relaxed(=
+) is ordered/visible
+> +                                * before the refcount decrement, avoidin=
+g the heavy pipeline
+> +                                * stall of a full wmb().
+> +                                *
+> +                                * We need the atomic_dec_return_release(=
+) below and the
+> +                                * atomic_set_release() in step (e) below=
+ doesn't suffice.
+> +                                *
+> +                                * Specifically, without release semantic=
+s on the decrement,
+> +                                * the CPU is free to reorder the indepen=
+dent atomic_dec_relaxed()
+> +                                * before the writel_relaxed().
+> +                                *
+> +                                * If this happens, the refcount could dr=
+op to zero, allowing the PM
+> +                                * suspend path (running on another CPU) =
+to disable the SMMU before
+> +                                * the register write completes, resultin=
+g in a bus fault.
+> +                                */
+> +                               atomic_dec_return_release(&smmu->nr_cmdq_=
+users);
+> +                       }
+> +               }
+>
+>                 /*
+>                  * e. Tell the next owner we're done
+> @@ -894,14 +926,19 @@ int arm_smmu_cmdq_issue_cmdlist(struct arm_smmu_dev=
+ice *smmu,
+>
+>         /* 5. If we are inserting a CMD_SYNC, we must wait for it to comp=
+lete */
+>         if (sync) {
+> -               llq.prod =3D queue_inc_prod_n(&llq, n);
+> -               ret =3D arm_smmu_cmdq_poll_until_sync(smmu, cmdq, &llq);
+> -               if (ret) {
+> -                       dev_err_ratelimited(smmu->dev,
+> -                                           "CMD_SYNC timeout at 0x%08x [=
+hwprod 0x%08x, hwcons 0x%08x]\n",
+> -                                           llq.prod,
+> -                                           readl_relaxed(cmdq->q.prod_re=
+g),
+> -                                           readl_relaxed(cmdq->q.cons_re=
+g));
+> +
+> +               /* If we are not the owner, check if we're suspended */
+> +               if (has_ref || atomic_inc_not_zero(&smmu->nr_cmdq_users))=
+ {
+
+Can there be a situation, where we execute this branch and the
+hardware prod pointer has not been updated, in which case
+arm_smmu_cmdq_poll_until_sync will wait forever (well, actually, until
+it times out). Imagine the following series of events:
+ * nr_cmdq_users=3D=3D0
+ * hardware prod pointer update is skipped
+ * nr_cmdq_users becomes 1
+ * arm_smmu_cmdq_poll_until_sync waits but commands are not executed
+by SMMU because hardware prod pointer update wasn't updated
+ * arm_smmu_device_reset() tries to submit CMDQ_OP_CFGI_ALL, but gets
+stuck because the queue is full.
+ * cmdq->q.llq.cons is never updated because the shared lock is held.
+queue_has_space() returns false, and
+arm_smmu_cmdq_poll_until_not_full() can't get the exclusive lock
+
+> +                       has_ref =3D true;
+> +                       llq.prod =3D queue_inc_prod_n(&llq, n);
+> +                       ret =3D arm_smmu_cmdq_poll_until_sync(smmu, cmdq,=
+ &llq);
+
+If you skip arm_smmu_cmdq_poll_until_sync() in the nr_cmdq_users=3D=3D0
+case, I'm thinking that llq.cons is not updated. If this is the case,
+is the subsequent WRITE_ONCE(cmdq->q.llq.cons, llq.cons); potentially
+incorrect?
+
+I'm still trying to get my head around this algorithm, but accorrding
+to my current understanding, the following rule applies:
+
+Only the cmdq owner may update the hardware prod pointer, and only
+after arm_smmu_cmdq_poll_valid_map() returned for the relevant range.
+Does the following instruction in arm_smmu_device_reset() violate this
+rule?
+
+writel_relaxed(smmu->cmdq.q.llq.prod, smmu->base + ARM_SMMU_CMDQ_PROD);
+
+I'm wondering if we should just set ARM_SMMU_CMDQ_PROD to
+smmu->cmdq.q.llq.cons and then have the next owner update the hardware
+prod pointer.
