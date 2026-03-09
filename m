@@ -1,47 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 424B134DCEE
-	for <iommu@lists.linux.dev>; Mon,  9 Mar 2026 06:09:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 705C934F270
+	for <iommu@lists.linux.dev>; Mon,  9 Mar 2026 06:09:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773036585; cv=none; b=TELMkEFIKkA39i6qEKtY0mLHJAwMaZ3Lo+qg2iZflUTYPprmLZaoSqgQ0dehW1y+B9Ta3hGeUy/NWwnB3Aeks12ui5tBZsPup7txQnUTEruDJwxzaKys28+IxlHRTcyPbWR3jw60+DDpnbvvY1Y3btkA1KwotIYNhe7EqrTmaG4=
+	t=1773036587; cv=none; b=nEGHZcqWSwWmKdotcKKyJLJabNiED1xNIiY3j5ToDUkq7fpi0HsdJIiDV2JbCq54+ZbPeIacB17nZDF/hytyO3JtwpXaVc3ZvRZ7HojljZfWFOpUe1CmdPYTgE6VPY0IQ8+Eqoee2SkwWUFlCF0Au5d9lUMPGBM+YXl9NN2rhZA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773036585; c=relaxed/simple;
-	bh=za/KzXncnf3ekLHTTMTOlXck5K85rJ7moEnNC5SF2Bk=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=QiX/0Nq+PHxjL69mowd12Yqz608nutntH0AsqkiAEwyujZcEYht/5cUf88E19/OAdpiSH9KQriUA0C7Kot0k2mulY235cEoNJWl4JfGlXcQhSNLKfY7gUeHQs9pEqHtNIt7/nDsojVU82IbmyZgx2Sec1+/+whiufn5mTqCm1yY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=AaRUHyAc; arc=none smtp.client-ip=192.198.163.18
+	s=arc-20240116; t=1773036587; c=relaxed/simple;
+	bh=qRczGGjS+jvqacQKx+rqpEi2IjosIQiGr3i5T7Gla+o=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=TUXFp588Mpw5tPhuGDpRh6dyrlqe0ARNhotWF+/nDBY3siGt7QBOPTPyQeEB4x6ruZSlit5E56FsImeS98F/1YMOxRPv+/mQw150S5xEMqeHWC1AJT41xD72SdZ9Eci3j1lLAmcfQOYcfADB5N3CMCLndD8NO5KfgQgZLttkPi8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ireEgxg9; arc=none smtp.client-ip=192.198.163.18
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AaRUHyAc"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ireEgxg9"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1773036583; x=1804572583;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=za/KzXncnf3ekLHTTMTOlXck5K85rJ7moEnNC5SF2Bk=;
-  b=AaRUHyAc3Hh2XlUmNjRdDeuB2oy+nUx/EtAkWGpEyaZVpC2dGmoIRd2X
-   nby2baL0riaw1yWAKe5r2IVo03AF217dE0zcxrP0mrbd1KD5Fs6Xek5iv
-   6o+v8CvPesBSbmHRoMPemTBHH9vVZ1VqmGjyAmtaMW/Ye1PI25gAJup+S
-   fPvsRk1ilvO+gBPmNrECZ2GfThz5LtwRXjzB1x2UjjKHojH5vs5LbWNp4
-   p+WyTafEPnQoRHX4Vfc5xIX9QLyXoEmwOaHjQgVzbJAEDNUOi4+6cBKgf
-   PfkP4PQk4pDw0l89Z19c4R4bMR2d5SkSbdeb/lxpwZDKXOnFV1baGQF/r
-   w==;
-X-CSE-ConnectionGUID: ARUcw+U4QsyvvrAoWNi4pQ==
-X-CSE-MsgGUID: 0thaX+5hSNy3PYz9f8sFbQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11723"; a="73248236"
+  t=1773036586; x=1804572586;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=qRczGGjS+jvqacQKx+rqpEi2IjosIQiGr3i5T7Gla+o=;
+  b=ireEgxg9RPBdNWHh608gimj9kpJtgu5T9VsqU1c2rJF02cYvK4LVPJdP
+   jSS+ZAFd8L2/ZpRmCsni149sbVR8JPOew+Z5YWlINuaykBECsGVIb7mWg
+   fWWHbbz5GL1fyPrpwlYVNs2nWSiZG9/o7wAstFH12qAQv+UOaT/dBQ8R7
+   2KQLp1K+G6RwE832US/RGLfwpp6PxC0blCCMy6+32TC1QxCYMWW3OYqG7
+   TqYHju9tKeJ7KZzXwBmaPoEQYmUXJNbm6iL4TKtuikJS7dxFXyMJln5j0
+   dE6OJXuRODKAXXq85p5dNDGr4+rflSHIuKbkDe/xabm3PjSJZFLoO56sU
+   g==;
+X-CSE-ConnectionGUID: IZlAf8ZdT7S/daM8hgJ4yg==
+X-CSE-MsgGUID: 0XItgKiESg6xV1Etxaw0pg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11723"; a="73248245"
 X-IronPort-AV: E=Sophos;i="6.23,109,1770624000"; 
-   d="scan'208";a="73248236"
+   d="scan'208";a="73248245"
 Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2026 23:09:43 -0700
-X-CSE-ConnectionGUID: 5pG1FFv3RxGg51LzTUn0ew==
-X-CSE-MsgGUID: Hln5txkjSgqK3tgd2YN78Q==
+  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2026 23:09:45 -0700
+X-CSE-ConnectionGUID: 0ypo218yQ8y3N/Lk6tDKPw==
+X-CSE-MsgGUID: Y+jAYJVjRmilEC4UAr0NNA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,109,1770624000"; 
-   d="scan'208";a="245669155"
+   d="scan'208";a="245669158"
 Received: from allen-box.sh.intel.com ([10.239.159.52])
-  by fmviesa001.fm.intel.com with ESMTP; 08 Mar 2026 23:09:40 -0700
+  by fmviesa001.fm.intel.com with ESMTP; 08 Mar 2026 23:09:43 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>,
@@ -53,10 +54,12 @@ Cc: Dmytro Maluka <dmaluka@chromium.org>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
 	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH 0/8] iommu/vt-d: Hitless PASID updates via entry_sync
-Date: Mon,  9 Mar 2026 14:06:40 +0800
-Message-ID: <20260309060648.276762-1-baolu.lu@linux.intel.com>
+Subject: [PATCH 1/8] iommu: Lift and generalize the STE/CD update code from SMMUv3
+Date: Mon,  9 Mar 2026 14:06:41 +0800
+Message-ID: <20260309060648.276762-2-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20260309060648.276762-1-baolu.lu@linux.intel.com>
+References: <20260309060648.276762-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -65,61 +68,375 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This is a follow-up to recent discussions on the iommu community mailing
-list [1] [2] regarding potential race conditions in table entry updates.
-After addressing atomicity in context and PASID entry updates [3], this
-series modernizes Intel IOMMU driver by introducing a "hitless" update
-mechanism.
+From: Jason Gunthorpe <jgg@nvidia.com>
 
-The core of this series lifts the synchronization logic originally found
-in the ARM SMMUv3 driver into a generic IOMMU library (entry_sync) and
-plumbs it into the Intel IOMMU driver.
+Many IOMMU implementations store data structures in host memory that can
+be quite big. The iommu is able to DMA read the host memory using an
+atomic quanta, usually 64 or 128 bits, and will read an entry using
+multiple quanta reads.
 
-Traditionally, updating a PASID table entry while the hardware is
-performing DMA required a disruptive "clear-then-update" sequence. By
-analyzing "used bits" and enforcing 128-bit atomicity via CMPXCHG16B,
-this library allows the driver to transition between translation modes
-hitlessly whenever possible.
+Updating the host memory datastructure entry while the HW is concurrently
+DMA'ing it is a little bit involved, but if you want to do this hitlessly,
+while never making the entry non-valid, then it becomes quite complicated.
 
-[1] https://lore.kernel.org/linux-iommu/20251227175728.4358-1-dmaluka@chromium.org/
-[2] https://lore.kernel.org/linux-iommu/20260107201800.2486137-1-skhawaja@google.com/
-[3] https://lore.kernel.org/linux-iommu/20260120061816.2132558-1-baolu.lu@linux.intel.com/
+entry_sync is a library to handle this task. It works on the notion of
+"used bits" which reflect which bits the HW is actually sensitive to and
+which bits are ignored by hardware. Many hardware specifications say
+things like 'if mode is X then bits ABC are ignored'.
 
-This series is also available on github:
-[4] https://github.com/LuBaolu/intel-iommu/commits/pasid-entry-sync-v1
+Using the ignored bits entry_sync can often compute a series of ordered
+writes and flushes that will allow the entry to be updated while keeping
+it valid. If such an update is not possible then entry will be made
+temporarily non-valid.
 
-Best regards,
-baolu
+A 64 and 128 bit quanta version is provided to support existing iommus.
 
-Jason Gunthorpe (1):
-  iommu: Lift and generalize the STE/CD update code from SMMUv3
-
-Lu Baolu (7):
-  iommu/vt-d: Add entry_sync support for PASID entry updates
-  iommu/vt-d: Require CMPXCHG16B for PASID support
-  iommu/vt-d: Add trace events for PASID entry sync updates
-  iommu/vt-d: Use intel_pasid_write() for first-stage setup
-  iommu/vt-d: Use intel_pasid_write() for second-stage setup
-  iommu/vt-d: Use intel_pasid_write() for pass-through setup
-  iommu/vt-d: Use intel_pasid_write() for nested setup
-
- drivers/iommu/Kconfig               |  14 ++
- drivers/iommu/intel/Kconfig         |   4 +-
+Co-developed-by: Lu Baolu <baolu.lu@linux.intel.com>
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+---
+ drivers/iommu/Kconfig               |  14 +++
  drivers/iommu/Makefile              |   1 +
- drivers/iommu/entry_sync.h          |  66 +++++++
- drivers/iommu/entry_sync_template.h | 143 ++++++++++++++
- drivers/iommu/intel/iommu.h         |   8 +-
- drivers/iommu/intel/trace.h         | 107 ++++++++++
- drivers/iommu/entry_sync.c          |  68 +++++++
- drivers/iommu/intel/iommu.c         |  51 ++---
- drivers/iommu/intel/nested.c        |  13 +-
- drivers/iommu/intel/pasid.c         | 291 +++++++++++++++++++---------
- drivers/iommu/intel/svm.c           |   5 +-
- 12 files changed, 620 insertions(+), 151 deletions(-)
+ drivers/iommu/entry_sync.h          |  66 +++++++++++++
+ drivers/iommu/entry_sync_template.h | 143 ++++++++++++++++++++++++++++
+ drivers/iommu/entry_sync.c          |  68 +++++++++++++
+ 5 files changed, 292 insertions(+)
  create mode 100644 drivers/iommu/entry_sync.h
  create mode 100644 drivers/iommu/entry_sync_template.h
  create mode 100644 drivers/iommu/entry_sync.c
 
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index f86262b11416..2650c9fa125b 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -145,6 +145,20 @@ config IOMMU_DEFAULT_PASSTHROUGH
+ 
+ endchoice
+ 
++config IOMMU_ENTRY_SYNC
++	bool
++	default n
++
++config IOMMU_ENTRY_SYNC64
++	bool
++	select IOMMU_ENTRY_SYNC
++	default n
++
++config IOMMU_ENTRY_SYNC128
++	bool
++	select IOMMU_ENTRY_SYNC
++	default n
++
+ config OF_IOMMU
+ 	def_bool y
+ 	depends on OF && IOMMU_API
+diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+index 0275821f4ef9..bd923995497a 100644
+--- a/drivers/iommu/Makefile
++++ b/drivers/iommu/Makefile
+@@ -10,6 +10,7 @@ obj-$(CONFIG_IOMMU_API) += iommu-traces.o
+ obj-$(CONFIG_IOMMU_API) += iommu-sysfs.o
+ obj-$(CONFIG_IOMMU_DEBUGFS) += iommu-debugfs.o
+ obj-$(CONFIG_IOMMU_DMA) += dma-iommu.o
++obj-$(CONFIG_IOMMU_ENTRY_SYNC) += entry_sync.o
+ obj-$(CONFIG_IOMMU_IO_PGTABLE) += io-pgtable.o
+ obj-$(CONFIG_IOMMU_IO_PGTABLE_ARMV7S) += io-pgtable-arm-v7s.o
+ obj-$(CONFIG_IOMMU_IO_PGTABLE_LPAE) += io-pgtable-arm.o
+diff --git a/drivers/iommu/entry_sync.h b/drivers/iommu/entry_sync.h
+new file mode 100644
+index 000000000000..004d421c71c0
+--- /dev/null
++++ b/drivers/iommu/entry_sync.h
+@@ -0,0 +1,66 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/*
++ * Many IOMMU implementations store data structures in host memory that can be
++ * quite big. The iommu is able to DMA read the host memory using an atomic
++ * quanta, usually 64 or 128 bits, and will read an entry using multiple quanta
++ * reads.
++ *
++ * Updating the host memory datastructure entry while the HW is concurrently
++ * DMA'ing it is a little bit involved, but if you want to do this hitlessly,
++ * while never making the entry non-valid, then it becomes quite complicated.
++ *
++ * entry_sync is a library to handle this task. It works on the notion of "used
++ * bits" which reflect which bits the HW is actually sensitive to and which bits
++ * are ignored by hardware. Many hardware specifications say things like 'if
++ * mode is X then bits ABC are ignored'.
++ *
++ * Using the ignored bits entry_sync can often compute a series of ordered
++ * writes and flushes that will allow the entry to be updated while keeping it
++ * valid. If such an update is not possible then entry will be made temporarily
++ * non-valid.
++ *
++ * A 64 and 128 bit quanta version is provided to support existing iommus.
++ */
++#ifndef IOMMU_ENTRY_SYNC_H
++#define IOMMU_ENTRY_SYNC_H
++
++#include <linux/types.h>
++#include <linux/compiler.h>
++#include <linux/bug.h>
++
++/* Caller allocates a stack array of this length to call entry_sync_write() */
++#define ENTRY_SYNC_MEMORY_LEN(writer) ((writer)->num_quantas * 3)
++
++struct entry_sync_writer_ops64;
++struct entry_sync_writer64 {
++	const struct entry_sync_writer_ops64 *ops;
++	size_t num_quantas;
++	size_t vbit_quanta;
++};
++
++struct entry_sync_writer_ops64 {
++	void (*get_used)(const __le64 *entry, __le64 *used);
++	void (*sync)(struct entry_sync_writer64 *writer);
++};
++
++void entry_sync_write64(struct entry_sync_writer64 *writer, __le64 *entry,
++			const __le64 *target, __le64 *memory,
++			size_t memory_len);
++
++struct entry_sync_writer_ops128;
++struct entry_sync_writer128 {
++	const struct entry_sync_writer_ops128 *ops;
++	size_t num_quantas;
++	size_t vbit_quanta;
++};
++
++struct entry_sync_writer_ops128 {
++	void (*get_used)(const u128 *entry, u128 *used);
++	void (*sync)(struct entry_sync_writer128 *writer);
++};
++
++void entry_sync_write128(struct entry_sync_writer128 *writer, u128 *entry,
++			 const u128 *target, u128 *memory,
++			 size_t memory_len);
++
++#endif
+diff --git a/drivers/iommu/entry_sync_template.h b/drivers/iommu/entry_sync_template.h
+new file mode 100644
+index 000000000000..646f518b098e
+--- /dev/null
++++ b/drivers/iommu/entry_sync_template.h
+@@ -0,0 +1,143 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++#include "entry_sync.h"
++#include <linux/args.h>
++#include <linux/bitops.h>
++
++#ifndef entry_sync_writer
++#define entry_sync_writer entry_sync_writer64
++#define quanta_t __le64
++#define NS(name) CONCATENATE(name, 64)
++#endif
++
++/*
++ * Figure out if we can do a hitless update of entry to become target. Returns a
++ * bit mask where 1 indicates that a quanta word needs to be set disruptively.
++ * unused_update is an intermediate value of entry that has unused bits set to
++ * their new values.
++ */
++static u8 NS(entry_quanta_diff)(struct entry_sync_writer *writer,
++				const quanta_t *entry, const quanta_t *target,
++				quanta_t *unused_update, quanta_t *memory)
++{
++	quanta_t *target_used = memory + writer->num_quantas * 1;
++	quanta_t *cur_used = memory + writer->num_quantas * 2;
++	u8 used_qword_diff = 0;
++	unsigned int i;
++
++	writer->ops->get_used(entry, cur_used);
++	writer->ops->get_used(target, target_used);
++
++	for (i = 0; i != writer->num_quantas; i++) {
++		/*
++		 * Check that masks are up to date, the make functions are not
++		 * allowed to set a bit to 1 if the used function doesn't say it
++		 * is used.
++		 */
++		WARN_ON_ONCE(target[i] & ~target_used[i]);
++
++		/* Bits can change because they are not currently being used */
++		unused_update[i] = (entry[i] & cur_used[i]) |
++				   (target[i] & ~cur_used[i]);
++		/*
++		 * Each bit indicates that a used bit in a qword needs to be
++		 * changed after unused_update is applied.
++		 */
++		if ((unused_update[i] & target_used[i]) != target[i])
++			used_qword_diff |= 1 << i;
++	}
++	return used_qword_diff;
++}
++
++/*
++ * Update the entry to the target configuration. The transition from the current
++ * entry to the target entry takes place over multiple steps that attempts to
++ * make the transition hitless if possible. This function takes care not to
++ * create a situation where the HW can perceive a corrupted entry. HW is only
++ * required to have a quanta-bit atomicity with stores from the CPU, while
++ * entries are many quanta bit values big.
++ *
++ * The difference between the current value and the target value is analyzed to
++ * determine which of three updates are required - disruptive, hitless or no
++ * change.
++ *
++ * In the most general disruptive case we can make any update in three steps:
++ *  - Disrupting the entry (V=0)
++ *  - Fill now unused quanta words, except qword 0 which contains V
++ *  - Make qword 0 have the final value and valid (V=1) with a single 64
++ *    bit store
++ *
++ * However this disrupts the HW while it is happening. There are several
++ * interesting cases where a STE/CD can be updated without disturbing the HW
++ * because only a small number of bits are changing (S1DSS, CONFIG, etc) or
++ * because the used bits don't intersect. We can detect this by calculating how
++ * many 64 bit values need update after adjusting the unused bits and skip the
++ * V=0 process. This relies on the IGNORED behavior described in the
++ * specification.
++ */
++void NS(entry_sync_write)(struct entry_sync_writer *writer, quanta_t *entry,
++			  const quanta_t *target, quanta_t *memory,
++			  size_t memory_len)
++{
++	quanta_t *unused_update = memory + writer->num_quantas * 0;
++	u8 used_qword_diff;
++
++	if (WARN_ON(memory_len !=
++		    ENTRY_SYNC_MEMORY_LEN(writer) * sizeof(*memory)))
++		return;
++
++	used_qword_diff = NS(entry_quanta_diff)(writer, entry, target,
++						unused_update, memory);
++	if (hweight8(used_qword_diff) == 1) {
++		/*
++		 * Only one quanta needs its used bits to be changed. This is a
++		 * hitless update, update all bits the current entry is ignoring
++		 * to their new values, then update a single "critical quanta"
++		 * to change the entry and finally 0 out any bits that are now
++		 * unused in the target configuration.
++		 */
++		unsigned int critical_qword_index = ffs(used_qword_diff) - 1;
++
++		/*
++		 * Skip writing unused bits in the critical quanta since we'll
++		 * be writing it in the next step anyways. This can save a sync
++		 * when the only change is in that quanta.
++		 */
++		unused_update[critical_qword_index] =
++			entry[critical_qword_index];
++		NS(entry_set)(writer, entry, unused_update, 0,
++			      writer->num_quantas);
++		NS(entry_set)(writer, entry, target, critical_qword_index, 1);
++		NS(entry_set)(writer, entry, target, 0, writer->num_quantas);
++	} else if (used_qword_diff) {
++		/*
++		 * At least two quantas need their inuse bits to be changed.
++		 * This requires a breaking update, zero the V bit, write all
++		 * qwords but 0, then set qword 0
++		 */
++		unused_update[writer->vbit_quanta] = 0;
++		NS(entry_set)(writer, entry, unused_update, writer->vbit_quanta, 1);
++
++		if (writer->vbit_quanta != 0)
++			NS(entry_set)(writer, entry, target, 0,
++				      writer->vbit_quanta - 1);
++		if (writer->vbit_quanta != writer->num_quantas)
++			NS(entry_set)(writer, entry, target,
++				      writer->vbit_quanta,
++				      writer->num_quantas - 1);
++
++		NS(entry_set)(writer, entry, target, writer->vbit_quanta, 1);
++	} else {
++		/*
++		 * No inuse bit changed. Sanity check that all unused bits are 0
++		 * in the entry. The target was already sanity checked by
++		 * entry_quanta_diff().
++		 */
++		WARN_ON_ONCE(NS(entry_set)(writer, entry, target, 0,
++					   writer->num_quantas));
++	}
++}
++EXPORT_SYMBOL(NS(entry_sync_write));
++
++#undef entry_sync_writer
++#undef quanta_t
++#undef NS
+diff --git a/drivers/iommu/entry_sync.c b/drivers/iommu/entry_sync.c
+new file mode 100644
+index 000000000000..48d31270dbba
+--- /dev/null
++++ b/drivers/iommu/entry_sync.c
+@@ -0,0 +1,68 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Helpers for drivers to update multi-quanta entries shared with HW without
++ * races to minimize breaking changes.
++ */
++#include "entry_sync.h"
++#include <linux/kconfig.h>
++#include <linux/atomic.h>
++
++#if IS_ENABLED(CONFIG_IOMMU_ENTRY_SYNC64)
++static bool entry_set64(struct entry_sync_writer64 *writer, __le64 *entry,
++			const __le64 *target, unsigned int start,
++			unsigned int len)
++{
++	bool changed = false;
++	unsigned int i;
++
++	for (i = start; len != 0; len--, i++) {
++		if (entry[i] != target[i]) {
++			WRITE_ONCE(entry[i], target[i]);
++			changed = true;
++		}
++	}
++
++	if (changed)
++		writer->ops->sync(writer);
++	return changed;
++}
++
++#define entry_sync_writer entry_sync_writer64
++#define quanta_t __le64
++#define NS(name) CONCATENATE(name, 64)
++#include "entry_sync_template.h"
++#endif
++
++#if IS_ENABLED(CONFIG_IOMMU_ENTRY_SYNC128)
++static bool entry_set128(struct entry_sync_writer128 *writer, u128 *entry,
++			 const u128 *target, unsigned int start,
++			 unsigned int len)
++{
++	bool changed = false;
++	unsigned int i;
++
++	for (i = start; len != 0; len--, i++) {
++		if (entry[i] != target[i]) {
++			/*
++			 * Use cmpxchg128 to generate an indivisible write from
++			 * the CPU to DMA'able memory. This must ensure that HW
++			 * sees either the new or old 128 bit value and not
++			 * something torn. As updates are serialized by a
++			 * spinlock, we use the local (unlocked) variant to
++			 * avoid unnecessary bus locking overhead.
++			 */
++			cmpxchg128_local(&entry[i], entry[i], target[i]);
++			changed = true;
++		}
++	}
++
++	if (changed)
++		writer->ops->sync(writer);
++	return changed;
++}
++
++#define entry_sync_writer entry_sync_writer128
++#define quanta_t u128
++#define NS(name) CONCATENATE(name, 128)
++#include "entry_sync_template.h"
++#endif
 -- 
 2.43.0
 
