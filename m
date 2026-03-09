@@ -1,149 +1,146 @@
-Received: from mail-pl1-f201.google.com (mail-pl1-f201.google.com [209.85.214.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from CH5PR02CU005.outbound.protection.outlook.com (mail-northcentralusazon11012010.outbound.protection.outlook.com [40.107.200.10])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A5013E9588
-	for <iommu@lists.linux.dev>; Mon,  9 Mar 2026 18:41:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773081713; cv=none; b=gZC29ObIdhJ6z3mWQ+u6y1nSlWtnPlYt9XzR8yn88vSU5TzbAH/JEyTG4EReOyPxG1K91qT/11Srv0yeb7FC4BZUt4EQZwM3aBao1TLpjFB0Ut/iZVBX4ty0gwk4uO35a1lE5hAXMfMGxQBNrMNX1mhUSmQlPvhPBZ2ktnE7rms=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773081713; c=relaxed/simple;
-	bh=7N1fI8PqA8FJAPjT4sPdXU28pehg/xUAbFEayCIIGBM=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=kDSmWrNi9T8Zqsz/34IPjsvKtr/vv8pJO7Khlio4rzOFtFGW6NWlB7IvwgxvifCfHSRfZQSQZi5RH6xyQv+0PAmHGZ2O7v1289m3qwh9Lp8SkGSaBsU0bDC/b06BgIdevASw81M8IzKP45HMNpr+ld3epXjwFeeayI/EbNGsvds=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--liulynn.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=a5QXnDG3; arc=none smtp.client-ip=209.85.214.201
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--liulynn.bounces.google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD04F354ADB
+	for <iommu@lists.linux.dev>; Mon,  9 Mar 2026 18:49:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.200.10
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1773082159; cv=fail; b=rDzeh3jkM5XWDuDJ9GT0o0+RZfqgfcLmdrMIAKGdc96YF7YoNw+1p9TVj4jZZ29kBlmkZmgifzL+XSfuVbm8qTmQFu2qeFbFw4DTNJ8zRqL4gWoYE1iqKNzlXkRODXR8LceH4Gq5NWOzY4lrZg3B2SFnXr4sftjxcgipF9PrAtM=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1773082159; c=relaxed/simple;
+	bh=pFT8VNwztPTwX29mvoAw+VXWN1OFF2bexMb9V+4KlS8=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=jtLb/N9RCnlDLi7CQVFLUSSPlK1jZDg3WoGbR3DRlkEjPMPrJ1g1Hj5NHRLWscJRNxUoP580YcR2o9yTixE1nRSgxT+SVlca3lNFCu8nea45ruHA33n3o1u9PM6ILlFzH/sPEi+NxfK2nrc+3IW4zw2jHpxRqWxJQ316No+KlxU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=ZsJ8aav8; arc=fail smtp.client-ip=40.107.200.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="a5QXnDG3"
-Received: by mail-pl1-f201.google.com with SMTP id d9443c01a7336-2ae467f128fso83613495ad.1
-        for <iommu@lists.linux.dev>; Mon, 09 Mar 2026 11:41:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1773081710; x=1773686510; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=hz64vv1silEx2K5G0qlx0K9YkRrg4DOJtsc274SDqRk=;
-        b=a5QXnDG3KLRqICai0GvP+QMY1JrJhmxLmbY5ySB54v5ffqy6BP0U+8+O4mtUifTig/
-         gQx7AtUE9NpwULdgk2309YTWr7aDBRW3SS2t4wa9K/0vLUt4/LZ3WKlYXn20m29+0A/4
-         XpE3N5eSz0lNx0vGKPpxr+JjCZjcSQP5n8rx+NFV+GcrvQ46i6JZipsCPCUhLX1AuTRS
-         NDDIY8W+S9m92AtLGI6yDushX4PfEuOVXD4eYBD8JsR1X5leKRHXXjN3vxs1Whqp0B8L
-         +KMeYeiKLYlOcdcLf3/IY/il8ZgV8o4Iw0uXOeWysa8E2hqM+F/8WiN4TEv25Ec6A5QF
-         pEeA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1773081710; x=1773686510;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=hz64vv1silEx2K5G0qlx0K9YkRrg4DOJtsc274SDqRk=;
-        b=GJIV6cUJuWXwnuaY0NLjPUSgViuQBcFm6LzecJNwXY167ct+YFuLcR6/+82pu4HPVI
-         KkfCVrv8u4c50lV9nm9Euyum+DDwL5Q1NXYOkmElwB7uZw7DPfTOdWBQLTzZl0N0SIeV
-         RR/ecL5zy33bYBp9Jiji7FDNzJ2bgQAFl6FV1XSLfpM9g13HGzenDvVf0qgAmv+H8meT
-         krwLMIESUbIimX9MsiEGfKwyDvWOluzM/Uweq+a3HkjE4b3xyprLz8Ax0QcV1Y4cieCb
-         N4+QvgXuTmNWSaIGH1cHNK5KXE11FWe0EcqfZYLzu6WwPJ/d7WgNXMIS3lNIRWhD6Skw
-         mkOg==
-X-Gm-Message-State: AOJu0YwKOg6Dyd80dDAvvCNNMJmGxZjmrFR7C/vX1yT7mip5criEvHKb
-	Pb+E3kZwF1/PcRh0WtjLUpVPZXjM3IyRulHmdwfqbUqsirTEvZUTsNPjASGs9EmCWfOhPWJIw+c
-	qmp4fL3R53w==
-X-Received: from plhz1.prod.google.com ([2002:a17:902:d9c1:b0:2a9:6267:c081])
- (user=liulynn job=prod-delivery.src-stubby-dispatcher) by 2002:a17:903:4585:b0:2ae:50ec:fa27
- with SMTP id d9443c01a7336-2ae825300d4mr137272155ad.45.1773081710404; Mon, 09
- Mar 2026 11:41:50 -0700 (PDT)
-Date: Mon,  9 Mar 2026 18:41:04 +0000
-In-Reply-To: <116b79a2-fadb-4796-8cb7-9c2dfde54999@arm.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="ZsJ8aav8"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=UcdDikIVAyvkgxz13LIXq7Ofg6PiWP6niKfnI7AfLe/zqxUTE/So8QIz4pQzEoscL/gsVq+z0orS1wWQFt0HZlr29YjUffZy8GxBGwVOqmjkpbhcfQfiG5Uel2sy2rbOdGEZe0xgl9mWFclU8psSk+9XCrN1A9gb0AuizYkvjJ+NPeBg4ITlep3A23rboFam19LyleoLlWq/i7E8yJMes3sjYfiKIsoVjwpG0LBMH2P7yAUFZDq+vzdC0q5Rc2m4/rBBaelY/JzkUDJaiPQjG3tumigTj70wqgxc4TrOb77db4D8KIQEyEt69YRTcoz+eBK6nC43tyTBxENlsxmUKg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=/C5HOj4s+f4jjC2DV4VfpU7e2N9FV8RIJSj9kyBzMOs=;
+ b=Lnuno2hFWznVSab0tKvXX8CLO7GL8gnCtOGRe47uObONszsXjTUAyWfFqd3iDkMjGN6UoaJXEWGkH8GOQsTHTqQKiEOi8puy0rKVf7z3eiFgpkMLFcnlt2L3r0GW89Dw24tGRzIK2AqVD2YbpkdEUVL5rZ/1MbWMj/gW9SZGQF8A0p2QMhSxZEg5ZkOvFtuyoag8BLNMDV59D6VVZXx4Taq0s+Xfhlt9muWT0QoVOY1wLnb0uY1X/2oGjMKLxdl1Kbs9oQ+3AudHc32rPeOtmMwRmyFCv24J3gUUxfNdSKPPuy+ZW74ccxMyZ2T4gCgJYD8abB0ymJMdvJruXmKvkQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=linux.ibm.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/C5HOj4s+f4jjC2DV4VfpU7e2N9FV8RIJSj9kyBzMOs=;
+ b=ZsJ8aav8oOhQHuOimZXV2EPxEUZGrSQ/XrE04TZDllw0nUdR13aKQv/BnUCcV77+iKk0Rm2O+2cOvpsSNJ9q9fDitx4Tp2+lWbEglTfrNy5rLXVrxSe01mrqMkYQ1jR83dZvs22s63cyAZ6Yeu28DIU1nlJKuD6XPO78Vfp8Ox+n5xPWzZ2AdB8B9cOvWNLuP1keo0yn7sfxvQvtKuEiSkpOKtGI2rFhyEmXVqOpRDSQIMkjsJcbHIavIh5m0VPB6UMMW2bIQpUxZuqgoSajTVOV5VWzpFDPc1BT4XOMsE0skYO7KNXFsC6kdNrgP8wgeYhqYtzNAWhHY0WpNXNOfA==
+Received: from BN1PR14CA0022.namprd14.prod.outlook.com (2603:10b6:408:e3::27)
+ by DS0PR12MB8501.namprd12.prod.outlook.com (2603:10b6:8:15d::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9700.11; Mon, 9 Mar
+ 2026 18:49:11 +0000
+Received: from BN3PEPF0000B36F.namprd21.prod.outlook.com (2603:10b6:408:e3::4)
+ by BN1PR14CA0022.outlook.office365.com (2603:10b6:408:e3::27) with Microsoft
+ SMTP Server (version=TLS1_3, cipher=TLS_AES_256_GCM_SHA384) id 15.20.9678.25
+ via Frontend Transport; Mon, 9 Mar 2026 18:48:54 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ BN3PEPF0000B36F.mail.protection.outlook.com (10.167.243.166) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.9723.1 via Frontend Transport; Mon, 9 Mar 2026 18:49:11 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Mon, 9 Mar
+ 2026 11:48:46 -0700
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail202.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Mon, 9 Mar
+ 2026 11:48:46 -0700
+Received: from Asurada-Nvidia (10.127.8.14) by mail.nvidia.com (10.129.68.8)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
+ Transport; Mon, 9 Mar 2026 11:48:45 -0700
+Date: Mon, 9 Mar 2026 11:48:44 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Nilay Shroff <nilay@linux.ibm.com>
+CC: <iommu@lists.linux.dev>, <linuxppc-dev@lists.ozlabs.org>,
+	<joerg.roedel@amd.com>, <jgg@nvidia.com>, <baolu.lu@linux.intel.com>,
+	<kevin.tian@intel.com>, Madhavan Srinivasan <maddy@linux.ibm.com>,
+	<sbhat@linux.ibm.com>
+Subject: Re: [bug report]: iommu WARNING is observed on powerpc system during
+ pci enumeration at boot up
+Message-ID: <aa8WDIhPyPU45VKB@Asurada-Nvidia>
+References: <d5c834ff-4c95-44dd-8bef-57242d63aeee@linux.ibm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <116b79a2-fadb-4796-8cb7-9c2dfde54999@arm.com>
-X-Mailer: git-send-email 2.53.0.473.g4a7958ca14-goog
-Message-ID: <20260309184104.2321071-1-liulynn@google.com>
-Subject: [PATCH v3] iommu/iova: Add NULL check in iova_magazine_free()
-From: Lynn Liu <liulynn@google.com>
-To: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	Lynn Liu <liulynn@google.com>
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <d5c834ff-4c95-44dd-8bef-57242d63aeee@linux.ibm.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN3PEPF0000B36F:EE_|DS0PR12MB8501:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7b9a4d43-8144-46e9-c220-08de7e0c8d81
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|36860700016|376014|82310400026;
+X-Microsoft-Antispam-Message-Info:
+	5KwmfQ+0N/wztVMQzA6ShIjEDD8yvtm5gMZq+iX2pjAa6kVcBlM9QSuVNLXjUJNVTrKZ/1k4yPVBgl/VK8HFXwsglwOJgfZVhcywC8cokiXG6l/MtXeWoZH6scVqMvNPVErABU+I5zJPFFh9eTQ+6IR0QysB/cXjXMUKUA7FzcqeHOWoVNh171E/EQCpLbDdb6v7ByGDsnQTc+2LWi2DF5EvHJ4BaZQzeDButVXGXOVtK+k//z3dhXJykVH12rXcQ9EBgPviiQm1tzaIHf4eQ7vOZRD4l9MUN0w4DyLqeH9T7+BSJz80uOHokmQhqkXDzAWUzDciwFgSMoSn56sCkiixOtmKSe5O72NmcpiaC8RwPLjW4US+ZcnpxiVTsdsSQqiM5kFJvIv6l2wD2UB1THfqQJPiNPZD5f/ws1FCsFInjgYNkCcUYVwy14vn9dqjdk0TsgFKiUUsATEuCzrKXck0S0uHPtU7PjP57lbsbl1VkrSAC0X1o77HU+goJbEwyp7XxrredNxgHk5JUPQqEKUBAqZtKc2VLj0Q9HPtGqHznR4JuLUj0D+oip6eotSXOWr7NCCDgxqy9o7tpSdfsfJ/Al1cDHNSrw3/0p7A5IPjWMfXIn0RwdlDkWD57MSTZKwx/gnuuAoGDIMfQNUDkOD6KGumlGqapS3ySJXTrqAAf4BgTxsv4lQfDg2kfYNGbHBjklDwlJt6ugRNFBlcXDXQKduJUxkxVuuCslC9FylHBPQJsMF3kMR/Fu17QpYXDjc3aVwjh2B7UyEAE8Xv+w==
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(36860700016)(376014)(82310400026);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	Ej0mGbkk5nMX7LTaRHprkqtjHnwT45j8n4GLv1V4PzfLFGN4qfIh1mYqfeKifesyvJ2gJYLUwIqXKspW71HGFxVyIluWGFkLmXMxtTBTgobbo5a3mCgvbIuMPPWy59O02/4WPbpyrvST73F5ZzICVg15H9pit8bOfUJYJ+mRlNYjbNHCbTNNIvBJuzkClZGq+k6AYcuXHZUfFxw4+VOMQf+xEH+9Q3HueoS7JpBW7moTdCMB28Dj5ZkeDLlFcP1soMMQ1CxqC9DCR1jS6BI9jqoY2iUykdixbmnyhpFrKAYAxbh6l9XIB0Dat3mksHM5Kln74GOQni5IFZ1yC/LxqQ2Nf7VtUu7fUbHWT9OdEt1gqXBEBRFow9gpWdqy4Fs2ev9KihAOvtRIWup2r169RFBS9G1T25gwvvy9QLdQUvqjvUDXvQg0HVnwuPIaoB41
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Mar 2026 18:49:11.0200
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7b9a4d43-8144-46e9-c220-08de7e0c8d81
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN3PEPF0000B36F.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB8501
 
-In iova_domain_init_rcaches(), when an iova_magazine allocation fails,
-the code jumps to the error path and calls free_iova_rcaches().
+On Mon, Mar 09, 2026 at 11:27:42PM +0530, Nilay Shroff wrote:
+> Looking at the warning it seems that this is a regression caused due to
+> commit a75b2be249d6 ("iommu: Add iommu_driver_get_domain_for_dev() helper").
+> 
+> Any help from the iommu expert would be appreciated. Though I am not expert,
+> it seems the following patch help fix this warning (I encourage the iommu
+> developers to confirm and/or take this forward) :
+> 
+> diff --git a/arch/powerpc/kernel/iommu.c b/arch/powerpc/kernel/iommu.c
+> index 0ce71310b7d9..d122e8447831 100644
+> --- a/arch/powerpc/kernel/iommu.c
+> +++ b/arch/powerpc/kernel/iommu.c
+> @@ -1159,7 +1159,7 @@ spapr_tce_platform_iommu_attach_dev(struct iommu_domain *platform_domain,
+>                                     struct device *dev,
+>                                     struct iommu_domain *old)
+>  {
+> -       struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
+> +       struct iommu_domain *domain = iommu_driver_get_domain_for_dev(dev);
+>         struct iommu_table_group *table_group;
+>         struct iommu_group *grp;
+> 
+> 
+> Please let me know if any further information is needed.
 
-In free_iova_rcaches(), the code iterates through all possible CPUs to
-free both cpu_rcache->loaded and cpu_rcache->prev. However, if the
-original allocation failed mid-way through the CPU loop, the pointers
-for the remaining CPUs remain NULL. free_iova_rcaches() then blindly
-attempts to free these NULL pointers, which causes a kernel paging
-request fault in kmem_cache_free().
+Yea, that should be the fix.
 
-The crash can be observed when fault injection triggers a failure in
-iova_magazine_alloc():
+Please submit a "PATCH rc" with:
 
-pc : _compound_head include/linux/page-flags.h:251 [inline]
-pc : virt_to_folio include/linux/mm.h:1395 [inline]
-pc : virt_to_slab mm/slab.h:215 [inline]
-pc : kmem_cache_free+0x90/0x5c4 mm/slub.c:4769
-...
-Call trace:
- trace_kmem_cache_free include/trace/events/kmem.h:114 [inline]
- kmem_cache_free+0x90/0x5c4 mm/slub.c:4768
- iova_magazine_free drivers/iommu/iova.c:623 [inline]
- free_iova_rcaches+0x114/0x344 drivers/iommu/iova.c:894
- iova_domain_init_rcaches drivers/iommu/iova.c:762 [inline]
- iova_domain_init_rcaches+0x3d0/0x528 drivers/iommu/iova.c:717
+Fixes: a75b2be249d6 ("iommu: Add iommu_driver_get_domain_for_dev() helper")
+Cc: stable@vger.kernel.org
 
-These changes update iova_domain_init_rcaches() to check for allocation
-failure immediately after each individual magazine allocation.
-Correspondingly, update free_iova_rcaches() to break the cleanup loop
-when it encounters a NULL pointer, ensuring only successfully allocated
-resources are processed.
-
-Fixes: 84e6f56be9c6 ("iommu/iova: use named kmem_cache for iova magazines")
-Signed-off-by: Lynn Liu <liulynn@google.com>
----
-v3:
- - Split magazine allocation checks in iova_domain_init_rcaches().
- - Add early breaks in free_iova_rcaches() to safely handle partial allocations as suggested.
- Link to v2: https://lore.kernel.org/linux-iommu/116b79a2-fadb-4796-8cb7-9c2dfde54999@arm.com/T/#t
-
-v2:
- - Update author name to full name.
- - Add Fixes tag.
- - Include the Call trace from the kernel crash.
- Link to v1: https://lore.kernel.org/linux-iommu/20260214080919.390846-1-liulynn@google.com/T/#u
-
- drivers/iommu/iova.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index 18f839721813..cf6cd9f23b97 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -740,8 +740,12 @@ int iova_domain_init_rcaches(struct iova_domain *iovad)
- 
- 			spin_lock_init(&cpu_rcache->lock);
- 			cpu_rcache->loaded = iova_magazine_alloc(GFP_KERNEL);
-+			if (!cpu_rcache->loaded) {
-+				ret = -ENOMEM;
-+				goto out_err;
-+			}
- 			cpu_rcache->prev = iova_magazine_alloc(GFP_KERNEL);
--			if (!cpu_rcache->loaded || !cpu_rcache->prev) {
-+			if (!cpu_rcache->prev) {
- 				ret = -ENOMEM;
- 				goto out_err;
- 			}
-@@ -886,7 +890,11 @@ static void free_iova_rcaches(struct iova_domain *iovad)
- 			break;
- 		for_each_possible_cpu(cpu) {
- 			cpu_rcache = per_cpu_ptr(rcache->cpu_rcaches, cpu);
-+			if (!cpu_rcache->loaded)
-+				break;
- 			iova_magazine_free(cpu_rcache->loaded);
-+			if (!cpu_rcache->prev)
-+				break;
- 			iova_magazine_free(cpu_rcache->prev);
- 		}
- 		free_percpu(rcache->cpu_rcaches);
--- 
-2.53.0.473.g4a7958ca14-goog
-
+Thanks!
+Nicolin
