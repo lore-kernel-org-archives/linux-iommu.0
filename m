@@ -1,429 +1,270 @@
-Received: from OSPPR02CU001.outbound.protection.outlook.com (mail-norwayeastazon11013046.outbound.protection.outlook.com [40.107.159.46])
+Received: from PH8PR06CU001.outbound.protection.outlook.com (mail-westus3azon11012065.outbound.protection.outlook.com [40.107.209.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 092312EBBA4;
-	Mon,  9 Mar 2026 10:51:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.159.46
-ARC-Seal:i=3; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773053514; cv=fail; b=G0OG4FGWtKRBlO4m1U3QT0QBcp70sLdZnlRn0nHE82+S/IRy/jHhM9BPDtt0+BYFzKm7zz0uhO5G2iN48GcB9wy/m7ZORO7BGZWe4Fevag1jPOPxpquUscGtHKJLf0omZs8zNYoUayXw56NryhKaGiIflSOPIeWRRRQzJawhWG0=
-ARC-Message-Signature:i=3; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773053514; c=relaxed/simple;
-	bh=zfA+J8QaoShCqyUsJoOhT5tmn7dZLfyfGLZR7oT4X7s=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=FRShZsbzshzpSVxutLyyqp/mONxemzTiZVRxRG46o5VaHuk82s6RBfVxvR5dHeTPy8MN19RFnmxt/C3UftHwatyURgpfDMWVcJ9cEJwOfRz/H+z1c6gKggYY6uPJtcCw3RsZEuo4KINIczeDduMDhhye798bYdUPZb9/jnPhwug=
-ARC-Authentication-Results:i=3; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=qlo6e/ek; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=qlo6e/ek; arc=fail smtp.client-ip=40.107.159.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5AF021A682D
+	for <iommu@lists.linux.dev>; Mon,  9 Mar 2026 11:04:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.209.65
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1773054276; cv=fail; b=ZCcN3assuQeWOQDuomqQJu53lNNVoJo+1Js7cfjlYH6jgV0X5AVqxa3Dyh+moUUfoIgxXMUIcYkyRH6uzYsWmGmchlP8av0chHC6AEkmiSzz+iNv4Qfywx+GhIbOeUoc+am7/NG2jbhQpLcto0FoG7A8mZeBeWo0JH34ufiMjpg=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1773054276; c=relaxed/simple;
+	bh=+O/wCauoXbcWsAjrL2fra6Qhx8VeQOilqU7Kvzxn/rw=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=oZIFP5zCLvgZy25z7EtrTB7GohPdcqACTy8NfqAYMBhIsYdNkzOabmZzS00VyRyxYNMIi0qCBSn5Ca4vJerryFtDHePZr+oDGedRaW3Hbm8xDalO7Mzbth8FQCXKZhzWN25tLmda9QnqLg7WyEVlq2LhL4PAcaUVwYDsG8IHAao=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=YN5WaKrh; arc=fail smtp.client-ip=40.107.209.65
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="qlo6e/ek";
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="qlo6e/ek"
-ARC-Seal: i=2; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=pass;
- b=v1mwg3MTMBROVsl1kwaem3/LYq5pSFUzQZo7ma320u8Sg9c9h4kXQ0XswZ5aN8+UtuAGMFAUN5PQDiFZSlRhNDI70BK6uaxwCLxjDgEjJ3Ie3YHGQg6r4nR+GYHNLFLmbxa8zSBEPmKtqO11QtTn4kUy9qYD1SDcTeNv5VA78RJVQRUGOCS83VN/TYqdIRVIjLhR6mQSxgVfXHEy2ZRJ+MmHKRY7tUOdf9nwP8N9xrBQm3yYeEUPwXri9wihbWdTnZsnNInJWuprPOhExalNCjrD5Lm11yHnKEXw+u7NfOKgU39iF/1Cwhj0CsWSU6l6JU1Bg3+7os9wdm1Vc/lVzA==
-ARC-Message-Signature: i=2; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=kSr+ISUjhyY647e53JhkotixEBm++WU/2UZRlXF4DdA=;
- b=lAZq4vI8LD3eu3X3n9bGPUF0vnAKGEwSnGOBlFG/m4a8OuZstoBqEp0dkZTdDgdjw6dqIFmnktKyZBQI8b7qyNmEHVGCpZJlygvIz4nB1jN7uxaFcnqPiCV6C/NBKY6lR6BoTGlEVIzZLV0Hyqf1gTHydREaIy3DImfa8uUBe30boYLxVOo9qV1uLMc9gJ+WbX03UxgZPFFjRfLW1GrbQOGwPYolJl0avbUNbSaaYsVTBRWm5T7lt8XRwfvwd5IrpcuNdhbV+woVWt8DM5ih0JkC/HLo0IQh+7X5SwcL0+ZeFcARcXHPUoxEvTfQUPRp6ULJ5pMGt4S8MKa1L2prFw==
-ARC-Authentication-Results: i=2; mx.microsoft.com 1; spf=pass (sender ip is
- 4.158.2.129) smtp.rcpttodomain=kernel.org smtp.mailfrom=arm.com; dmarc=pass
- (p=none sp=none pct=100) action=none header.from=arm.com; dkim=pass
- (signature was verified) header.d=arm.com; arc=pass (0 oda=1 ltdi=1
- spf=[1,1,smtp.mailfrom=arm.com] dkim=[1,1,header.d=arm.com]
- dmarc=[1,1,header.from=arm.com])
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arm.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kSr+ISUjhyY647e53JhkotixEBm++WU/2UZRlXF4DdA=;
- b=qlo6e/eksXOzRbnFv4eCps1bZCQWCofFTaw1iulKNOzU7gim1W/fU90vPbGuOi56SCw5joInQQMzHmRw7yEp+1gwIKcAPcmHs7Hs0j1d89HKiIvknNq13Za5VV74VOpQKL2czUcxU6OxE/JiqLiq2eWlXS900snzo1xOhmMamSM=
-Received: from DU2P250CA0006.EURP250.PROD.OUTLOOK.COM (2603:10a6:10:231::11)
- by AS2PR08MB9872.eurprd08.prod.outlook.com (2603:10a6:20b:593::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9678.22; Mon, 9 Mar
- 2026 10:51:47 +0000
-Received: from DB5PEPF00014B9D.eurprd02.prod.outlook.com
- (2603:10a6:10:231:cafe::67) by DU2P250CA0006.outlook.office365.com
- (2603:10a6:10:231::11) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9678.24 via Frontend Transport; Mon,
- 9 Mar 2026 10:51:42 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 4.158.2.129)
- smtp.mailfrom=arm.com; dkim=pass (signature was verified)
- header.d=arm.com;dmarc=pass action=none header.from=arm.com;
-Received-SPF: Pass (protection.outlook.com: domain of arm.com designates
- 4.158.2.129 as permitted sender) receiver=protection.outlook.com;
- client-ip=4.158.2.129; helo=outbound-uk1.az.dlp.m.darktrace.com; pr=C
-Received: from outbound-uk1.az.dlp.m.darktrace.com (4.158.2.129) by
- DB5PEPF00014B9D.mail.protection.outlook.com (10.167.8.164) with Microsoft
- SMTP Server (version=TLS1_3, cipher=TLS_AES_256_GCM_SHA384) id 15.20.9678.18
- via Frontend Transport; Mon, 9 Mar 2026 10:51:46 +0000
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="YN5WaKrh"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=EhpIGvAn0JthGCPOGdRUaHZx200NNBKGnLNYKLyUCDHcQbl8M/aYScjsOn3tmY55N2ea+kG2NJ901gZ8PDMSTv6GJESeHyHT5moVYUkEi4FMnut5NYXL/Q/+pOQMJ+EA07kXk/I3BWM8Mx2HxnuvmPNfsrqDfaXZmSp0HjXdHGoSLpF9NuPc1N7poHjmHOy3HwzWu39h79ONvZeh2mDMl9yQM6R+X1BN9sYGETv3Fa7Taa+p3l9HAy55IEE6S1veOxbKXWTBTpIL2CsLnZt2Lz+OJ1o232a/K4cTljoiEd3QET17EI7y8qBWBa26BMO8dvr5dnd5EZRxpGvo03dv3w==
+ b=WtWTKZWz/pOpu5/HOdZHHa18tr2hMrebrb6MqbpYrdsZYNtrgt1Kme0Earam2uy3Au2yjSGV1kEXfH2Ej8P/0S3Qsg7WQxFOyCp7uQbQI7CUcPLKRRAL4F4kmCY1LXACqz+wBpbQncdyYiQs1fxarL/5fMTyr4oAShQ+cx6ulF5fQdkHckYyWeKMcnd+s0g9g619AF8MqCGxlI4Kc5SpTgWX8XPuYb8CxHWd0EvG4Lu28u+xCcyCHLKRxGWX5RDDp6zVE8NRgfaWy7Sjw0+ouOpdGTC+GRzycBJbfZ75HEU7sh1KyIM/YgLjR4kVhxx0zYsXWLdjuZ2/gmqvDCzn8w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=kSr+ISUjhyY647e53JhkotixEBm++WU/2UZRlXF4DdA=;
- b=P3uCNB3ssfF7oqGr9gSrcKKRVhhX1icIBIYglMt2eCUk32sUVPwyQ5SYX/CsqdrNtoPJ26sD568ZY421VV/nmvE7HX0LtxNfElcGUVvztMVEDo+7FvHyfBJAECVH3ZZs+8a19u3FLvEgGK06bSWww18oK7POONUa44TaQFFyCpVwt8e1qqr7AjUBFnuSra5AQMJ4YnrFN2SLlVTzb/GHHZMpKMoLtQCmgaxYOQSEV95Lh+kib2HvQE3AsxEmP+qdtbejbhOeFaY6tF/yFL9RtbXpuN2xk2a7WSRHw3DWzJPhXPy026bD9SjMLC0Bpawol0cGxJB8u8eicgxe5CtZeg==
+ bh=Lqy+tVKeznLZ4ZTjU0oHoJOvy81ubQBonnOA40JWL18=;
+ b=x5kLUfBMczpoj22w4dUFBwkY78U0b+AX/9+OQoU56RctO+3l0fW+kMtfeMjb4iiRzRvh4B9DMW3RtIQ9y43MPG2iKe0oy89KG+o99qD+KPX/wTklFwZr9s+oY4CXri8ZS0odseo3q7dnJX/KvHwap5Hky7kWAwD0MHTjGmaSPNL9XzIcEDguaOD+AwyZbOK/olpa2/qpSKXQZJS71pfV/Fvj32I33iQUW7uGzWNNVCzHNAZCPskCs+uhs7RYtDRUaS/CSdI4w82Gc1cTfN2M5TvBKgRem/gH6+TQXDlM5NRrUts34mfHewMTqJZz0GK1Af2OMAxjVcfnLXlxwxlFzw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=arm.com; dmarc=pass action=none header.from=arm.com; dkim=pass
- header.d=arm.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arm.com; s=selector1;
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kSr+ISUjhyY647e53JhkotixEBm++WU/2UZRlXF4DdA=;
- b=qlo6e/eksXOzRbnFv4eCps1bZCQWCofFTaw1iulKNOzU7gim1W/fU90vPbGuOi56SCw5joInQQMzHmRw7yEp+1gwIKcAPcmHs7Hs0j1d89HKiIvknNq13Za5VV74VOpQKL2czUcxU6OxE/JiqLiq2eWlXS900snzo1xOhmMamSM=
-Authentication-Results-Original: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=arm.com;
-Received: from AM0PR08MB11754.eurprd08.prod.outlook.com (2603:10a6:20b:743::9)
- by DB9PR08MB6538.eurprd08.prod.outlook.com (2603:10a6:10:23d::15) with
+ bh=Lqy+tVKeznLZ4ZTjU0oHoJOvy81ubQBonnOA40JWL18=;
+ b=YN5WaKrhxt2E5aHKIqdP2SctpbIBerjMifXUYedgiFtqddX9rjMjxKQZz4LwTFe9ndEN6g2uCHtzfavaHsU6+90sGlAbJ0iRHrSekOn0joNY1wk+Q8OTBqohUKp7YFO3s8ocj6maF4tg4YX8OGWnG3RJy3NhfjKAuPaBqcfA/cg1LGhioxb/YvH4gxfY552izyok8sJKMkwIxafFeJFE9HGL+zklJA5BFoHLNRqE2wK1rzFQMmv5vyT5oCvMgLAzA1ra1ABunHLb4YWlZFH6bVbFg5SJHp8rzt1rtfRlKbAdAwBjtHaNtvF1WOI2Vq04Yb7Hw6smaPSeIjyxffcJ2A==
+Received: from CH3PR12MB7548.namprd12.prod.outlook.com (2603:10b6:610:144::12)
+ by BL4PR12MB9535.namprd12.prod.outlook.com (2603:10b6:208:591::21) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9678.25; Mon, 9 Mar
- 2026 10:50:43 +0000
-Received: from AM0PR08MB11754.eurprd08.prod.outlook.com
- ([fe80::3427:f97c:862d:1850]) by AM0PR08MB11754.eurprd08.prod.outlook.com
- ([fe80::3427:f97c:862d:1850%4]) with mapi id 15.20.9678.017; Mon, 9 Mar 2026
- 10:50:43 +0000
-Message-ID: <c25f3615-c835-493d-8262-ff5541dee4e0@arm.com>
-Date: Mon, 9 Mar 2026 10:50:42 +0000
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 3/3] coco: guest: arm64: Add Realm Host Interface and
- hostconf RHI
-To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
- linux-coco@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
- kvmarm@lists.linux.dev
-Cc: Marc Zyngier <maz@kernel.org>, Thomas Gleixner <tglx@kernel.org>,
- Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>,
- Jason Gunthorpe <jgg@ziepe.ca>, Marek Szyprowski <m.szyprowski@samsung.com>,
- Robin Murphy <robin.murphy@arm.com>, Steven Price <steven.price@arm.com>
-References: <20260309102625.2315725-1-aneesh.kumar@kernel.org>
- <20260309102625.2315725-4-aneesh.kumar@kernel.org>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9700.11; Mon, 9 Mar
+ 2026 11:04:31 +0000
+Received: from CH3PR12MB7548.namprd12.prod.outlook.com
+ ([fe80::b710:d6a1:ab16:76de]) by CH3PR12MB7548.namprd12.prod.outlook.com
+ ([fe80::b710:d6a1:ab16:76de%5]) with mapi id 15.20.9700.010; Mon, 9 Mar 2026
+ 11:04:31 +0000
+From: Shameer Kolothum Thodi <skolothumtho@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>, "will@kernel.org" <will@kernel.org>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>, Jason Gunthorpe
+	<jgg@nvidia.com>
+CC: "joro@8bytes.org" <joro@8bytes.org>, "praan@google.com"
+	<praan@google.com>, Malak Marrid <mmarrid@nvidia.com>, "kees@kernel.org"
+	<kees@kernel.org>, "Alexander.Grest@microsoft.com"
+	<Alexander.Grest@microsoft.com>, "baolu.lu@linux.intel.com"
+	<baolu.lu@linux.intel.com>, "smostafa@google.com" <smostafa@google.com>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH RFTv1 3/3] iommu/arm-smmu-v3: Support PRI Page Request
+Thread-Topic: [PATCH RFTv1 3/3] iommu/arm-smmu-v3: Support PRI Page Request
+Thread-Index: AQHcq0phSJcd79qivU2bpTB/nvPNkrWmEFKQ
+Date: Mon, 9 Mar 2026 11:04:31 +0000
+Message-ID:
+ <CH3PR12MB7548107B5BF7ACF4C0568B26AB79A@CH3PR12MB7548.namprd12.prod.outlook.com>
+References: <cover.1772568590.git.nicolinc@nvidia.com>
+ <ae9a953251b46b49bb0ca4289d1f3b614ba5d6d7.1772568590.git.nicolinc@nvidia.com>
+In-Reply-To:
+ <ae9a953251b46b49bb0ca4289d1f3b614ba5d6d7.1772568590.git.nicolinc@nvidia.com>
+Accept-Language: en-US, en-GB
 Content-Language: en-US
-From: Suzuki K Poulose <suzuki.poulose@arm.com>
-In-Reply-To: <20260309102625.2315725-4-aneesh.kumar@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: LO4P123CA0662.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:316::18) To AM0PR08MB11754.eurprd08.prod.outlook.com
- (2603:10a6:20b:743::9)
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: CH3PR12MB7548:EE_|BL4PR12MB9535:EE_
+x-ms-office365-filtering-correlation-id: 6e3226eb-f223-4bcf-0e7b-08de7dcba3b9
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam:
+ BCL:0;ARA:13230040|366016|376014|7416014|1800799024|38070700021|7053199007;
+x-microsoft-antispam-message-info:
+ 7wlBJ9VAonWKy96IxMIPFlVka7LelVji4sErwqHBZIDAOW6ymCJJz5FMkcIkBzi5NXWdi4EFeurvaCYRTCISJ79HxlbbMtjEO9R6C8jguzkACgjjRSHaG0FWJJnBBv+AHJwBFokqX0HhAR6eymx4Bf/w94uoPtybcvvjMk6Q1MSh+7yqa5tZdXCeD27rT7uAIWB6BXekdS3B2aJEsp8mv/yKe+CmExV/4B3gYwMopcNEIPqb/wcxAo8mwjwrf7Z7RgNltU6PcNGZ3ocRlUANyeX6fkxpPf4e3TAhzS/lMOWOVLKJlKUebHIuBP+NjXasmcRn2YNtm3TtKlhUBKikKmdwM2jxXpHE8Q4UKXvy4XGw9SbTs8ExhcXY3EQVVoYCiOhLBQSAv3wgB0tRSc16GVzU9bgl7sUAH6/PaLw7YhCItnGr5a8FfZIdmWOQdNrBO7NEF38s9ikScFQsNIvgX+zhqkbMaNerBUIFmk0+og92BJ8UL61CGEh40hY2TuHlWyinsSwBC6uIfKWNaAe4Ioh6xtZH8qk+jsFOblXE/zzho4HmbgQ3aBbpKc1ii/QgPrXOIHFwqhcqO8Lh2Lm/nGyWYpsGXqskguQPeQGHKQkSVlcmoL4kaC4BaLAVHfgubJi68mf/oAkmsXr5KumUcTIzwSQWuNKswLjulfWpRvv4QKYLobJG0JIi+VfMltkaU8fe1L67vEAjGdrBMjoAVAccPtcqeuW0bLEYjfEbvRitypZ5+cc23Lf0KQEqkcaefUpAeGJ1eWyULTGXE5Zj5uH+CM705ckMkJe402ZYaWA=
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB7548.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(7416014)(1800799024)(38070700021)(7053199007);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?Y9bsQmFZfUKQIlExrWz3fxGKY1+Txlw5T8LEk4KysyjnkItSH4VHnWCYWbn3?=
+ =?us-ascii?Q?qqzeKqDttqvEkhgOs9GQ5ywGrXo4c0eMe3KdodX6cleXMup75nicD2335YpT?=
+ =?us-ascii?Q?qSVoaBZBA/PcJgHhXF9KCLqEwac3/Ui1nJoPbB2AkMN2uS8L8JIfrG7/KZGX?=
+ =?us-ascii?Q?xUk+7ngL1e2gLWZOo5IldxKoSuG2ClrvZRJCiMSIRWUlxudMfqemQKHkg3Fa?=
+ =?us-ascii?Q?OnWwrEp2AKAN3kcKFVuUKzdnQHTHRIxWzljGzRz0TFqo1zNLu628TYRI0plu?=
+ =?us-ascii?Q?qZsBHYymi5QA9LFBw9rqG2OuiPTza5nB2dLL8Eu9kM8Px/KBzdPm2vUaGz52?=
+ =?us-ascii?Q?2DBRDY62o0whqzQ8CX86OSGXzJ3N6PwUtIXG65YU5nGVUopLetktfSa0oadB?=
+ =?us-ascii?Q?s2+XD5txlysxqMaD39eJFgug5yR4GnLc7jBxABAbalImUV+h0ttAXWSeE7qM?=
+ =?us-ascii?Q?aG+0+w0pnC0blPX+85LsaeQk3EghCKHzdaaQaOC1yeA9s/7YmdPYHogeVX20?=
+ =?us-ascii?Q?MXh4xtk7ptOsc+LSEaVvjKZFegzI8/rvMZekopApaUSvzjOXmPXoDGAXVBhb?=
+ =?us-ascii?Q?tWNWeTCeKRus/w4OGcauOHYulb0yF42Ly1LIpOvexiy87aCiOwn6u+6nV5iq?=
+ =?us-ascii?Q?wGgv2Q/4hqkvajKYZOZzq6UjTn8nHXMwg1fjs+5//2l+avzk7xSomkkWDlMH?=
+ =?us-ascii?Q?sVz8ZxX4zo5prSpWEIDTLdiMbE6Jjsm005pxaNFsC/WlIrX2Bencq1+FzD9p?=
+ =?us-ascii?Q?3+Tr5LtX4qMkMd/He3yOKm9RfDClZfcIcZ3tEhGQNjzhOo71GamgVn6hK15g?=
+ =?us-ascii?Q?qc4xon3sWzNnGrNKwLJ4lVNoL7YAcp3zozlPE87U/3WSka2v7AkCTkdfbvf0?=
+ =?us-ascii?Q?DO/44Cwcnw+iPAKUdWqHC+G7moP4daaiz0llelrdxPA47/Ijq5xuF7OjreE/?=
+ =?us-ascii?Q?a3TBjFF/I65mHImOPfBKXvjqQLos+F9/lxwqGphy5T8aitpuYxVy8ZzP6bt8?=
+ =?us-ascii?Q?Q0yZYG69butbkDopBPCEdkQU//Mla5AYfiScGKlTMysR6UEcxw3R981FXhkb?=
+ =?us-ascii?Q?dWBLC45Wh3Nzqb21QszJcMhnrhxXSadeyKvtW6/rHhK5DuPVRDBYBQUFIVX9?=
+ =?us-ascii?Q?QoDsVT9niGTMw4sJN8CQ3p894Q9h3Dv+b7+pKqIR5RbTBFKVHFXeVMTWV5Fp?=
+ =?us-ascii?Q?A433s+4xolAQRkeoevCAOSf5ICAsISR/IOPADvBpLDw/8tptJAFCX8QJSO4b?=
+ =?us-ascii?Q?8rzwVRsfHFbnspNg6f4k89fRJ8y/hbOZmKEY5KXfSyp4zv/dEHYLkjrcuyh0?=
+ =?us-ascii?Q?z81cmeu6d6wzi22VqJJkKC5q0rRCxOH2i0yVJ9UTWQr009TbSA9w5dXGlqrf?=
+ =?us-ascii?Q?Ahx4EWdSIbSs5WCH9H76tXOELuPgk0YrevaMLDWg4MA8AzP2GjMg9OjsMVul?=
+ =?us-ascii?Q?PwoVKaei6vlr/pqHjaJKOLeO7/4VEUoiIL7FzvxcPT6IrYmaV2zplI6d3gaa?=
+ =?us-ascii?Q?L0rLRC1ZdSZgDsPtddvM7CV5oWqdhzrt0qFdQXU6w6sppKapS5xMfbOAhgbV?=
+ =?us-ascii?Q?VOXvWcWWNO7H3Mn9bTuppeuutwHETYlWhR1a1ML0gKnOvJaGr3dUXreK2ZgN?=
+ =?us-ascii?Q?QmLoNV+RZjHItsjiwdOX5R7d84GKTmIaYGcY+8W78Ne15EZKTGJEaxXCY7/X?=
+ =?us-ascii?Q?0tNUD/ZBFddL+pNClaJQxi6nT+nYvdeUetz89vSSWBznQ97aQzYwr7h+WJSg?=
+ =?us-ascii?Q?qtmnbXHogA=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-TrafficTypeDiagnostic:
-	AM0PR08MB11754:EE_|DB9PR08MB6538:EE_|DB5PEPF00014B9D:EE_|AS2PR08MB9872:EE_
-X-MS-Office365-Filtering-Correlation-Id: 548e42ac-720c-49bd-ed51-08de7dc9dc1a
-x-checkrecipientrouted: true
-NoDisclaimer: true
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam-Untrusted:
- BCL:0;ARA:13230040|7416014|376014|366016|1800799024|7053199007;
-X-Microsoft-Antispam-Message-Info-Original:
- weQkGPxCK7YWzkEobu5oHXByGMkFSVSKUcii6z7+tAMvCDE2Ur75B2KZ2GI2r/V9SjSUHyatmf5lbsmYNizxeEleQXRFTWzVrdDPRdRmQLG8xJicKxRK/thwqK4FpGvNAXa/ngf24Cz71bVSJhFLzw8clS/o2SHmJQsmTK1t42V/bbIY1jY98VZYp1/5Z2G/NB0MgpnnDkMcRNpx70dByQEY7DMvhIqQZKVixbqfFmHs4VTP448gcsCCh37wgIvaQIRS65gYYrqQG7iig1p0/Uv3dlXW7MR7+Zhzy/4lxvwGheySpQNTj2QexEK/HbD2nVM8qxa+ajsHTgumVLKUZ4RHMYx/bDg3dhY+YVXIcBqy+roTl4vXBjsGfAoEkbj5U/dntrvQsPBPxo1ZMJnwuVLRnQgbSvZRlUW9Gp8qgBI9OGn6HWnuj5bqEWZBoGfkCz9KQhd709gJnHVWkta7HSHC3T8A8a8Aj+O9s1ZhoXTsyJdkegRzw0GTzWO1og3YgnaTlihCV87XNjke0SV8+SaW6CEmEL8gLuXiDVMRhqH8TWGpH/I7E3VjmShslS1x1y3KfGgK1uGJBixUwFTJpIbpGelHikkiHkQqA3SSxzSiX/C54FxX4OUW6uerM83067jOqk3C1O1Uyro1+iNsEdNSCDej3FSbO474YeijpNboXp9/BX4abYnWdZa6Npxn30RFlnJRP/533S4qaLZkysSe9lZv7N1rS5U/fbGtFg8=
-X-Forefront-Antispam-Report-Untrusted:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR08MB11754.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(366016)(1800799024)(7053199007);DIR:OUT;SFP:1101;
-X-Exchange-RoutingPolicyChecked:
- ZFVkFXPKpREDKe4NBimosTJITlbQPJrCySKiXOkQZweK8/ZlZ+Fyvfipy0XcuBQFyjXppOXJXJd6KUM4xX31o5I1G2Je2QBs1UscV/8rlFhqWEMbMXMDcawLhRUzNaydV6c5woYa/8l1WQZ+cmFqongkeFmz+Z3m/i7rtRUB3eL56ndpXTgLNZ4jhkS9kTHQTO+VWG9es/Q484R81MssADHjO0DgjMc8g1SocOd5URS/Qg59OAEtFhBazs0z0P2t+c68xSICUeIo0O29Rc8+S3ksG0+cZBQw9U6/UGv1n0dIjeAHGebui4uRK5xiDXdti5zHs/Qs1mFtl1TeNd+vxg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR08MB6538
-X-EOPAttributedMessage: 0
-X-MS-Exchange-Transport-CrossTenantHeadersStripped:
- DB5PEPF00014B9D.eurprd02.prod.outlook.com
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id-Prvs:
-	a7194dc9-6204-4512-c8f2-08de7dc9b621
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|7416014|376014|14060799003|82310400026|35042699022|36860700016|7053199007;
-X-Microsoft-Antispam-Message-Info:
-	tV/jK0sA5KTIMAD3lfGlkBC31kggv4JsI25x7qkNac4WsrGsYyldMWwDm3TTLFcM1ShyS6l64eWONmlkbcdO7NavY0+n6NndgPQEKJEFxlQYDbVbocAoa22mtk5l1IpuklZaShp5FL9p/ZKqDV8cPdQRooqL4G3fVRXrt6/VbxCZeztLBtGlQYICnRbiUwzbxvL/N+Wo0VzGw6K03zsqhoOJLCn00mplBYSffgpxR/HlnawAcEabdVVf0Pxwy3lNJhYS75y/bsvS0cF2FJ9L5oiuJryZT19/ORrETYqgViKCQoTmySjKIwGHZcpFwJAgknKJHdoDsbLUoDqLN7D9RwaQB8dAng2v6GKYY0CH8lpg6KnL+142MUS7zkSSxJOJjuzDkFnYLLO9FmZMvHmNyRAvSn0egKsyYVdAfQfB+cm0IAN6cZhNSsYBybUvHtZbGozBEmX+fLkqPttIG8ewpvd/EW5Rh8GljNClT3HGcdkKTzrtOUn/4GdHoc8C0OevmyvCIK2Xx1X7Vc8SfKgk3Wk8CrkrPC0nrtVdNE8xhbEpD99qc14P6YyV9tnTAHFMgHYNtJY7Gn1kfFOjNUVr0l0rHAYmJ454tmT6jHjeuTrFZEjOXhJLwrW3UrNBCedH55AIaAuu4/DZI8pQ5LNUrIPDdKgcoQAid5sIISK6OJBThhKHUBYgBKs+Y3uh22OizBw4pXp+K984HF+BPlZq3zH9uLvIP9ybePtNKCMVPyKnFkKDxOVi74ZprjDsygj6UfZc4GhgkwqBrfAyex0oFA==
-X-Forefront-Antispam-Report:
-	CIP:4.158.2.129;CTRY:GB;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:outbound-uk1.az.dlp.m.darktrace.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(376014)(14060799003)(82310400026)(35042699022)(36860700016)(7053199007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	NF8ShY/43xUKWWY+9iuRHbI4MeySAz4axsbv/dcsJ6RzJWV8TUILw3Q0mhL9FjA5pUY0n1F71wwA2xPsC+bD0KVz0O4SjPHFUCMVVPW+h9tmxrvkEZE34VeCcQUTyUxyOrQYq/nELAztIVKykQGuvwLezFWCguK/uhUqgLpNgpb8sQzbpUYwV6+1h8y6mLfnK7WtqORbfYfFglJeQ3+5Eg/NYdi6A0l0PVfiNeqBVw8URpNZ0Bh6TfvemAVPhxmZp1WNTF5UsVurlvlTTjokY+vQ8EyZNSbtryN0heaanBai6Xv3W0ASLHrobsthcokxUNexfHbK9JowpjxykFXnojEWsIhfBKPwuP51pSB9Gh9em+oBisfp3mOf/4nSoumndCly7ZdRAdnRd11Z6W7lfAgaNcOLvnkM1TM1doplMoPOhIyWJ9ZVkKDLPi4FAPdr
-X-OriginatorOrg: arm.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Mar 2026 10:51:46.6599
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB7548.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6e3226eb-f223-4bcf-0e7b-08de7dcba3b9
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Mar 2026 11:04:31.1605
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 548e42ac-720c-49bd-ed51-08de7dc9dc1a
-X-MS-Exchange-CrossTenant-Id: f34e5979-57d9-4aaa-ad4d-b122a662184d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=f34e5979-57d9-4aaa-ad4d-b122a662184d;Ip=[4.158.2.129];Helo=[outbound-uk1.az.dlp.m.darktrace.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DB5PEPF00014B9D.eurprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS2PR08MB9872
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 1ZGkAsBtRGKttvMo3ujNcsQVEhSyvY8JPt7+tTX+P5T8V/ZWbka9DpM+h6t9wEezG5Bl6bVdGvbVRdfznLDDrg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL4PR12MB9535
 
-Hi Aneesh
 
-On 09/03/2026 10:26, Aneesh Kumar K.V (Arm) wrote:
-> - describe the Realm Host Interface SMC IDs and result codes in a new
->    asm/rhi.h header
-> - expose struct rsi_host_call plus an rsi_host_call() helper so we can
->    invoke SMC_RSI_HOST_CALL from C code
->   - add RHI hostconf SMC IDs and helper to query version, features, and IPA
->     change alignment
->   - derive the realm hypervisor page size during init and abort realm setup
->     on invalid alignment
-> 
-> This provides the host page-size discovery needed by previous patch that
-> align shared buffer allocation/decryption to host requirements.
-> 
-> Cc: Marc Zyngier <maz@kernel.org>
-> Cc: Thomas Gleixner <tglx@kernel.org>
-> Cc: Catalin Marinas <catalin.marinas@arm.com>
-> Cc: Will Deacon <will@kernel.org>
-> Cc: Jason Gunthorpe <jgg@ziepe.ca>
-> Cc: Marek Szyprowski <m.szyprowski@samsung.com>
-> Cc: Robin Murphy <robin.murphy@arm.com>
-> Cc: Steven Price <steven.price@arm.com>
-> Cc: Suzuki K Poulose <suzuki.poulose@arm.com>
-> Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
+
+> -----Original Message-----
+> From: Nicolin Chen <nicolinc@nvidia.com>
+> Sent: 03 March 2026 20:13
+> To: will@kernel.org; robin.murphy@arm.com; Jason Gunthorpe
+> <jgg@nvidia.com>
+> Cc: joro@8bytes.org; praan@google.com; Malak Marrid
+> <mmarrid@nvidia.com>; kees@kernel.org; Alexander.Grest@microsoft.com;
+> baolu.lu@linux.intel.com; smostafa@google.com; linux-arm-
+> kernel@lists.infradead.org; iommu@lists.linux.dev; linux-
+> kernel@vger.kernel.org
+> Subject: [PATCH RFTv1 3/3] iommu/arm-smmu-v3: Support PRI Page Request
+>=20
+> External email: Use caution opening links or attachments
+>=20
+>=20
+> From: Malak Marrid <mmarrid@nvidia.com>
+>=20
+> Now, arm_smmu_page_response() can issue CMDQ_OP_PRI_RESP for page
+> requests
+> from the IOPF infrastructure. Decode the page requests from the PRI queue=
+,
+> and report it to the IOPF infrastructure.
+>=20
+> This fills the final piece for PRI support.
+
+Do we also need pci_reset_pri()/pci_enable_pri() to enable PRI on the
+device side?
+
+Also, is there a check that the device advertises PCI PRI capability
+before calling iopf_queue_add_device()?
+
+Thanks,
+Shameer
+
+> Co-developed-by: Barak Biber <bbiber@nvidia.com>
+> Signed-off-by: Barak Biber <bbiber@nvidia.com>
+> Co-developed-by: Stefan Kaestle <skaestle@nvidia.com>
+> Signed-off-by: Stefan Kaestle <skaestle@nvidia.com>
+> Signed-off-by: Malak Marrid <mmarrid@nvidia.com>
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 > ---
->   arch/arm64/include/asm/mem_encrypt.h |  3 ++
->   arch/arm64/include/asm/rhi.h         | 24 +++++++++++++
->   arch/arm64/include/asm/rsi.h         |  2 ++
->   arch/arm64/include/asm/rsi_cmds.h    | 10 ++++++
->   arch/arm64/include/asm/rsi_smc.h     |  7 ++++
->   arch/arm64/kernel/Makefile           |  2 +-
->   arch/arm64/kernel/rhi.c              | 53 ++++++++++++++++++++++++++++
->   arch/arm64/kernel/rsi.c              | 13 +++++++
->   arch/arm64/mm/mem_encrypt.c          |  8 +++++
->   9 files changed, 121 insertions(+), 1 deletion(-)
->   create mode 100644 arch/arm64/include/asm/rhi.h
->   create mode 100644 arch/arm64/kernel/rhi.c
-> 
-> diff --git a/arch/arm64/include/asm/mem_encrypt.h b/arch/arm64/include/asm/mem_encrypt.h
-> index 314b2b52025f..5541911eb028 100644
-> --- a/arch/arm64/include/asm/mem_encrypt.h
-> +++ b/arch/arm64/include/asm/mem_encrypt.h
-> @@ -16,6 +16,9 @@ int arm64_mem_crypt_ops_register(const struct arm64_mem_crypt_ops *ops);
->   int set_memory_encrypted(unsigned long addr, int numpages);
->   int set_memory_decrypted(unsigned long addr, int numpages);
->   
-> +#define mem_decrypt_granule_size mem_decrypt_granule_size
-> +size_t mem_decrypt_granule_size(void);
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 65 +++++++++++------
+> ----
+>  1 file changed, 33 insertions(+), 32 deletions(-)
+>=20
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index 055dde5367131..277d753c7675c 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -2061,40 +2061,41 @@ static irqreturn_t arm_smmu_evtq_thread(int
+> irq, void *dev)
+>=20
+>  static void arm_smmu_handle_ppr(struct arm_smmu_device *smmu, u64
+> *evt)
+>  {
+> -       u32 sid, ssid;
+> -       u16 grpid;
+> -       bool ssv, last;
+> -
+> -       sid =3D FIELD_GET(PRIQ_0_SID, evt[0]);
+> -       ssv =3D FIELD_GET(PRIQ_0_SSID_V, evt[0]);
+> -       ssid =3D ssv ? FIELD_GET(PRIQ_0_SSID, evt[0]) : IOMMU_NO_PASID;
+> -       last =3D FIELD_GET(PRIQ_0_PRG_LAST, evt[0]);
+> -       grpid =3D FIELD_GET(PRIQ_1_PRG_IDX, evt[1]);
+> -
+> -       dev_info(smmu->dev, "unexpected PRI request received:\n");
+> -       dev_info(smmu->dev,
+> -                "\tsid 0x%08x.0x%05x: [%u%s] %sprivileged %s%s%s access =
+at iova
+> 0x%016llx\n",
+> -                sid, ssid, grpid, last ? "L" : "",
+> -                evt[0] & PRIQ_0_PERM_PRIV ? "" : "un",
+> -                evt[0] & PRIQ_0_PERM_READ ? "R" : "",
+> -                evt[0] & PRIQ_0_PERM_WRITE ? "W" : "",
+> -                evt[0] & PRIQ_0_PERM_EXEC ? "X" : "",
+> -                evt[1] & PRIQ_1_ADDR_MASK);
+> -
+> -       if (last) {
+> -               struct arm_smmu_cmdq_ent cmd =3D {
+> -                       .opcode                 =3D CMDQ_OP_PRI_RESP,
+> -                       .substream_valid        =3D ssv,
+> -                       .pri                    =3D {
+> -                               .sid    =3D sid,
+> -                               .ssid   =3D ssid,
+> -                               .grpid  =3D grpid,
+> -                               .resp   =3D PRI_RESP_DENY,
+> -                       },
+> -               };
+> +       u32 sid =3D FIELD_GET(PRIQ_0_SID, evt[0]);
+> +       struct iopf_fault iopf_fault =3D {0};
+> +       struct iommu_fault *fault =3D &iopf_fault.fault;
+> +       struct arm_smmu_master *master;
 > +
->   int realm_register_memory_enc_ops(void);
->   
->   static inline bool force_dma_unencrypted(struct device *dev)
-> diff --git a/arch/arm64/include/asm/rhi.h b/arch/arm64/include/asm/rhi.h
-> new file mode 100644
-> index 000000000000..0895dd92ea1d
-> --- /dev/null
-> +++ b/arch/arm64/include/asm/rhi.h
-> @@ -0,0 +1,24 @@
-> +/* SPDX-License-Identifier: GPL-2.0-only */
-> +/*
-> + * Copyright (C) 2026 ARM Ltd.
-> + */
+> +       INIT_LIST_HEAD(&iopf_fault.list);
+>=20
+> -               arm_smmu_cmdq_issue_cmd(smmu, &cmd);
+> +       fault->type =3D IOMMU_FAULT_PAGE_REQ;
 > +
-> +#ifndef __ASM_RHI_H_
-> +#define __ASM_RHI_H_
+> +       if (FIELD_GET(PRIQ_0_PRG_LAST, evt[0]))
+> +               fault->prm.flags |=3D IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE;
+> +       if (FIELD_GET(PRIQ_0_SSID_V, evt[0])) {
+> +               fault->prm.flags |=3D IOMMU_FAULT_PAGE_REQUEST_PASID_VALI=
+D;
+> +               fault->prm.pasid =3D FIELD_GET(PRIQ_0_SSID, evt[0]);
+>         }
 > +
-> +#include <linux/types.h>
+> +       fault->prm.grpid =3D FIELD_GET(PRIQ_1_PRG_IDX, evt[1]);
 > +
-> +#define SMC_RHI_CALL(func)				\
-> +	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,		\
-> +			   ARM_SMCCC_SMC_64,		\
-> +			   ARM_SMCCC_OWNER_STANDARD_HYP,\
-> +			   (func))
+> +       if (evt[0] & PRIQ_0_PERM_READ)
+> +               fault->prm.perm |=3D IOMMU_FAULT_PERM_READ;
+> +       if (evt[0] & PRIQ_0_PERM_WRITE)
+> +               fault->prm.perm |=3D IOMMU_FAULT_PERM_WRITE;
+> +       if (evt[0] & PRIQ_0_PERM_EXEC)
+> +               fault->prm.perm |=3D IOMMU_FAULT_PERM_EXEC;
+> +       if (evt[0] & PRIQ_0_PERM_PRIV)
+> +               fault->prm.perm |=3D IOMMU_FAULT_PERM_PRIV;
 > +
-> +unsigned long rhi_get_ipa_change_alignment(void);
-> +#define RHI_HOSTCONF_VER_1_0		0x10000
-> +#define RHI_HOSTCONF_VERSION		SMC_RHI_CALL(0x004E)
+> +       fault->prm.addr =3D FIELD_GET(PRIQ_1_ADDR_MASK, evt[1]) << 12;
 > +
-> +#define __RHI_HOSTCONF_GET_IPA_CHANGE_ALIGNMENT BIT(0)
-> +#define RHI_HOSTCONF_FEATURES		SMC_RHI_CALL(0x004F)
-> +#define RHI_HOSTCONF_GET_IPA_CHANGE_ALIGNMENT	SMC_RHI_CALL(0x0050)
-> +#endif
-> diff --git a/arch/arm64/include/asm/rsi.h b/arch/arm64/include/asm/rsi.h
-> index 88b50d660e85..ae54fb3b1429 100644
-> --- a/arch/arm64/include/asm/rsi.h
-> +++ b/arch/arm64/include/asm/rsi.h
-> @@ -67,4 +67,6 @@ static inline int rsi_set_memory_range_shared(phys_addr_t start,
->   	return rsi_set_memory_range(start, end, RSI_RIPAS_EMPTY,
->   				    RSI_CHANGE_DESTROYED);
->   }
-> +
-> +unsigned long realm_get_hyp_pagesize(void);
->   #endif /* __ASM_RSI_H_ */
-> diff --git a/arch/arm64/include/asm/rsi_cmds.h b/arch/arm64/include/asm/rsi_cmds.h
-> index 2c8763876dfb..a341ce0eeda1 100644
-> --- a/arch/arm64/include/asm/rsi_cmds.h
-> +++ b/arch/arm64/include/asm/rsi_cmds.h
-> @@ -159,4 +159,14 @@ static inline unsigned long rsi_attestation_token_continue(phys_addr_t granule,
->   	return res.a0;
->   }
->   
-> +static inline unsigned long rsi_host_call(struct rsi_host_call *rhi_call)
-> +{
-> +	phys_addr_t addr = virt_to_phys(rhi_call);
-> +	struct arm_smccc_res res;
-> +
-> +	arm_smccc_1_1_invoke(SMC_RSI_HOST_CALL, addr, &res);
-> +
-> +	return res.a0;
-> +}
-> +
->   #endif /* __ASM_RSI_CMDS_H */
-> diff --git a/arch/arm64/include/asm/rsi_smc.h b/arch/arm64/include/asm/rsi_smc.h
-> index e19253f96c94..9ee8b5c7612e 100644
-> --- a/arch/arm64/include/asm/rsi_smc.h
-> +++ b/arch/arm64/include/asm/rsi_smc.h
-> @@ -182,6 +182,13 @@ struct realm_config {
->    */
->   #define SMC_RSI_IPA_STATE_GET			SMC_RSI_FID(0x198)
->   
-> +struct rsi_host_call {
-> +	union {
-> +		u16 imm;
-> +		u64 padding0;
-> +	};
-> +	u64 gprs[31];
-> +} __aligned(0x100);
->   /*
->    * Make a Host call.
->    *
-> diff --git a/arch/arm64/kernel/Makefile b/arch/arm64/kernel/Makefile
-> index 76f32e424065..fcb67f50ea89 100644
-> --- a/arch/arm64/kernel/Makefile
-> +++ b/arch/arm64/kernel/Makefile
-> @@ -34,7 +34,7 @@ obj-y			:= debug-monitors.o entry.o irq.o fpsimd.o		\
->   			   cpufeature.o alternative.o cacheinfo.o		\
->   			   smp.o smp_spin_table.o topology.o smccc-call.o	\
->   			   syscall.o proton-pack.o idle.o patching.o pi/	\
-> -			   rsi.o jump_label.o
-> +			   rsi.o jump_label.o rhi.o
->   
->   obj-$(CONFIG_COMPAT)			+= sys32.o signal32.o			\
->   					   sys_compat.o
-> diff --git a/arch/arm64/kernel/rhi.c b/arch/arm64/kernel/rhi.c
-> new file mode 100644
-> index 000000000000..d2141b5283e1
-> --- /dev/null
-> +++ b/arch/arm64/kernel/rhi.c
-> @@ -0,0 +1,53 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * Copyright (C) 2026 ARM Ltd.
-> + */
-> +
-> +#include <asm/rsi.h>
-> +#include <asm/rhi.h>
-> +
-> +/* we need an aligned rhicall for rsi_host_call. slab is not yet ready */
-> +static struct rsi_host_call hyp_pagesize_rhicall;
-> +unsigned long rhi_get_ipa_change_alignment(void)
-> +{
-> +	long ret;
-> +	unsigned long ipa_change_align;
-> +
-> +	hyp_pagesize_rhicall.imm = 0;
-> +	hyp_pagesize_rhicall.gprs[0] = RHI_HOSTCONF_VERSION;
-> +	ret = rsi_host_call(&hyp_pagesize_rhicall);
-> +	if (ret != RSI_SUCCESS)
-> +		goto err_out;
-> +
-> +	if (hyp_pagesize_rhicall.gprs[0] != RHI_HOSTCONF_VER_1_0)
-> +		goto err_out;
-> +
-> +	hyp_pagesize_rhicall.imm = 0;
-> +	hyp_pagesize_rhicall.gprs[0] = RHI_HOSTCONF_FEATURES;
-> +	ret = rsi_host_call(&hyp_pagesize_rhicall);
-> +	if (ret != RSI_SUCCESS)
-> +		goto err_out;
-> +
-> +	if (!(hyp_pagesize_rhicall.gprs[0] & __RHI_HOSTCONF_GET_IPA_CHANGE_ALIGNMENT))
-> +		goto err_out;
-> +
-> +	hyp_pagesize_rhicall.imm = 0;
-> +	hyp_pagesize_rhicall.gprs[0] = RHI_HOSTCONF_GET_IPA_CHANGE_ALIGNMENT;
-> +	ret = rsi_host_call(&hyp_pagesize_rhicall);
-> +	if (ret != RSI_SUCCESS)
-> +		goto err_out;
-> +
-> +	ipa_change_align = hyp_pagesize_rhicall.gprs[0];
-> +	/* This error needs special handling in the caller */
-> +	if (ipa_change_align & (SZ_4K - 1))
-> +		return 0;
-> +
-> +	return ipa_change_align;
-> +
-> +err_out:
-> +	/*
-> +	 * For failure condition assume host is built with 4K page size
-> +	 * and hence ipa change alignment can be guest PAGE_SIZE.
-> +	 */
-> +	return PAGE_SIZE;
-> +}
-> diff --git a/arch/arm64/kernel/rsi.c b/arch/arm64/kernel/rsi.c
-> index c64a06f58c0b..6e35cb947745 100644
-> --- a/arch/arm64/kernel/rsi.c
-> +++ b/arch/arm64/kernel/rsi.c
-> @@ -13,8 +13,10 @@
->   #include <asm/io.h>
->   #include <asm/mem_encrypt.h>
->   #include <asm/rsi.h>
-> +#include <asm/rhi.h>
->   
->   static struct realm_config config;
-> +static unsigned long ipa_change_alignment = PAGE_SIZE;
->   
->   unsigned long prot_ns_shared;
->   EXPORT_SYMBOL(prot_ns_shared);
-> @@ -138,6 +140,11 @@ static int realm_ioremap_hook(phys_addr_t phys, size_t size, pgprot_t *prot)
->   	return 0;
->   }
->   
-> +unsigned long realm_get_hyp_pagesize(void)
-> +{
-> +	return ipa_change_alignment;
-> +}
-> +
->   void __init arm64_rsi_init(void)
->   {
->   	if (arm_smccc_1_1_get_conduit() != SMCCC_CONDUIT_SMC)
-> @@ -146,6 +153,12 @@ void __init arm64_rsi_init(void)
->   		return;
->   	if (WARN_ON(rsi_get_realm_config(&config)))
->   		return;
-> +
-> +	ipa_change_alignment = rhi_get_ipa_change_alignment();
-
-minor nit: We reset the alignment to 0 if this fails. see below.
-
-> +	/* If we don't get a correct alignment response, don't enable realm */
-
-Do we need to enforce this ? If the Host doesn't implement this, we 
-could proceed and the guest might encounter failures in "sharing" in
-the worst case. Otherwise, it could proceed. Eitherway, RMM guarantees
-that the "state" of the PFNs are stable as reported by the RSI
-calls and the Guest knows exactly what has happened.
-
-Suzuki
-
-
-> +	if (!ipa_change_alignment)
-> +		return;
-> +
-
-
-
->   	prot_ns_shared = BIT(config.ipa_bits - 1);
->   
->   	if (arm64_ioremap_prot_hook_register(realm_ioremap_hook))
-> diff --git a/arch/arm64/mm/mem_encrypt.c b/arch/arm64/mm/mem_encrypt.c
-> index 38c62c9e4e74..f5d64bc29c20 100644
-> --- a/arch/arm64/mm/mem_encrypt.c
-> +++ b/arch/arm64/mm/mem_encrypt.c
-> @@ -59,3 +59,11 @@ int set_memory_decrypted(unsigned long addr, int numpages)
->   	return crypt_ops->decrypt(addr, numpages);
->   }
->   EXPORT_SYMBOL_GPL(set_memory_decrypted);
-> +
-> +size_t mem_decrypt_granule_size(void)
-> +{
-> +	if (is_realm_world())
-> +		return max(PAGE_SIZE, realm_get_hyp_pagesize());
-> +	return PAGE_SIZE;
-> +}
-> +EXPORT_SYMBOL_GPL(mem_decrypt_granule_size);
+> +       guard(mutex)(&smmu->streams_mutex);
+> +       master =3D arm_smmu_find_master(smmu, sid);
+> +       if (master)
+> +               iommu_report_device_fault(master->dev, &iopf_fault);
+> +       else
+> +               dev_warn(smmu->dev, "PPR: unrecognized StreamID 0x%x\n", =
+sid);
+>  }
+>=20
+>  static irqreturn_t arm_smmu_priq_thread(int irq, void *dev)
+> --
+> 2.43.0
+>=20
 
