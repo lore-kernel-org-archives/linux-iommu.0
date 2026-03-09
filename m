@@ -1,121 +1,180 @@
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9AEA30101F
-	for <iommu@lists.linux.dev>; Mon,  9 Mar 2026 17:51:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 866523EDAD9
+	for <iommu@lists.linux.dev>; Mon,  9 Mar 2026 17:57:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773078690; cv=none; b=VBoKGqEpPdeXB979714VxMytg1Ryva7OfDxfpyWHA8NNdRlFfh8mMgd9RYNhgVPVJrUq5cOHz81xR4BZ3ZGLTsTuU1+VyqJngVsqYaPGgStz4E70HNGjWRTajD6LAHDFtbrQdjksp7iAQXCHT1YRZR+h9/MMBczqGTkeQy1rq4k=
+	t=1773079082; cv=none; b=X/eaCqVsqOeirC1YUSURNTHOthxk9Wa16d7zwi6WTpZm3sFoSE2llZKbz6lvItvlmwZQboeagm28rSlfr5gXuoygGbzuZu9Yk+f680G/FOa/LQc6dtd+ZH7YQyv2r/Y0iQbKgwfqTi5Y48DtbqiA1qD6PDx+f9lktAH0V4k8gNE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773078690; c=relaxed/simple;
-	bh=3aAI8WLDhwMQMlGaUhMuyZUWlilFZJY6aa0zFeBAhhw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nmG2azgj1V1SPE9XqA3rrnOeNLXNnYPwJnYz/U0mTIV2qx8WKmx9kNDNmeZYVz3NuoRK9dhc3g+Kvsg7qo+xGWE6bIxXpfCOq0w1YzBLGNTVTxCDxV/XErwLLq5tkX9q6rZH71Jux7MlRqJ5QG+QfO4mWRaF14lJ+T5Drub1x2E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=resnulli.us; spf=none smtp.mailfrom=resnulli.us; dkim=pass (2048-bit key) header.d=resnulli-us.20230601.gappssmtp.com header.i=@resnulli-us.20230601.gappssmtp.com header.b=kHgZ6TRy; arc=none smtp.client-ip=209.85.128.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=resnulli.us
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=resnulli.us
+	s=arc-20240116; t=1773079082; c=relaxed/simple;
+	bh=oBWqDKglTyXm8I7zMlcNgnLLC41GncbRUgQWh2nFVDg=;
+	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:Content-Type; b=D/dCcU92VMWXbW1ww/yXMm1n4h1AO6kCBgqKV8K8TAFhjsDm/H2/1et2OHbUmnlZOky70o4lWq7R1WHpbTKfZHRg9102Jhtspb7avsZNyGgEJa0QYT4O2HjE0IqwaCFOkq+4Fv9hMTMvwQ9xqrADW24y6Stbeim6O3Xq0MH1x3Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=Iu7aeDWT; arc=none smtp.client-ip=148.163.158.5
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=resnulli-us.20230601.gappssmtp.com header.i=@resnulli-us.20230601.gappssmtp.com header.b="kHgZ6TRy"
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-48529c325f0so22160855e9.0
-        for <iommu@lists.linux.dev>; Mon, 09 Mar 2026 10:51:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20230601.gappssmtp.com; s=20230601; t=1773078685; x=1773683485; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Ix+vqdOy5SvfTABiwCl1s7T3mrppwl4vO9UcVMmB22w=;
-        b=kHgZ6TRyDBXPzmJGXVC9t6Dk9vF74oAs0qr6bMl/2Dd1dunGcSwcWHYLnI5qEOcHs8
-         Qn9ozXkI7J/upUX+729lm0jfiC3pCHvt2o7vZly7vOtssReOWdb046HOs5dvlN3sCi7b
-         MHHMM232cetR7o7jZ12dOSWWf131zVfL8yZGOF5rJPPaXEQcVigjVuwWeivzF41AisQL
-         HGdkpmYX31dFdzmhU+MW6n8Hu5/VPzgAM+8CQaOhtWBgMsFnRiKLNVQBj0Mm6v67uQjb
-         /PRg7mDRXb13j68H8aW+VA9G5XBBICLySpjhtxaegzfTCJwiqHdEkn7xJ3HI2uXZwNr5
-         B2JQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1773078685; x=1773683485;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Ix+vqdOy5SvfTABiwCl1s7T3mrppwl4vO9UcVMmB22w=;
-        b=VMoaj1msWO0ySeFLv8KYb8EsjPECPlguysqx+DvNZU06t02Whfr5YzPGKaHYziDbGA
-         XZf3a+eT7TUwV+9xF3hgT0laTQvNymreVqxJBkqhM7QEsYV48ff4F6u1semfMSkgOs8E
-         r/ZJat0EnjZYFMCPOdTFo5ypAQXop8P+eTXWwmWhOCZwiP2o7YeiVQj7/IypkaGqp2Dn
-         5SPUkUkMRTuYC9rZ+Xk73qAMbB/IeWYoLi/G0lkxEJeDAKk7Pq0y5QrBbo/wUvu1iY0E
-         rz3kJihVmXSsQeabUYhXv0SSf0fc1HO+o40t24AIWNR1FUv+USByfvKfOto2NgKE2Vbx
-         0IWw==
-X-Forwarded-Encrypted: i=1; AJvYcCUXlkLC0GLRSxpnNrBxDULSuLmq8ZZb4shA0n593wOOiYgKN/QLDgQafJEPEoADNv+0/XRQAw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxGrvJQRt2u2p/x6CIixDshPDjH/l7pEQG/wix5X+R5HH1zVj08
-	nD0RhZpU2+kNJK3IAaaiZsyePLnxrSv6ReQhkbi8Zz2D075eCOtV1hUljG9tmdzxwX3xEv086aI
-	U03EzVZ0=
-X-Gm-Gg: ATEYQzwnwElCKXFO5zMD9MOwB+DdBXnOFRYd8ihENtmJlka6NVJSEYVSxfDuOE28wXv
-	FzqhaviuRjVHTYoh8EOuHxhicCYVdm5vvDOcYISb0AMe2aVeVZ60bLT076hShmhr+EljAfTVQHB
-	FIC2O2We078hfEqftNxuk8b5pCRVynv9YvY+une4MAEnHztQTe3vXZMyGzaSZt/RhCU8QXkxH1n
-	L21rGlDdIaAtCi6Ul2XZyY2CGFyLARinNrUtSMhU6gETF39PZ8ifvoOLxE+tjHcyrMq89cHQcV6
-	yMz9NR94/GATZOvoVPjVKeZD6ziL9BdyBej0PDiQtKhcolXWfblirpTusxWzWke1x+/l0xloG/L
-	T8nOSIDVdxv8vLgMgsjPSpBWBZVq0rbCmhqT7W/mLFH7i1wll7tULtq5hqVVr2xy6gQChVLxKh2
-	FSQTVQ0Jso3ZUdmLQnI20mB5r52VTB05s=
-X-Received: by 2002:a05:600c:5250:b0:485:2fe9:3375 with SMTP id 5b1f17b1804b1-4852fe93587mr147475155e9.15.1773078684896;
-        Mon, 09 Mar 2026 10:51:24 -0700 (PDT)
-Received: from FV6GYCPJ69 ([208.127.45.21])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-439dadac2a7sm28642353f8f.15.2026.03.09.10.51.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Mar 2026 10:51:24 -0700 (PDT)
-Date: Mon, 9 Mar 2026 18:51:21 +0100
-From: Jiri Pirko <jiri@resnulli.us>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Leon Romanovsky <leon@kernel.org>, dri-devel@lists.freedesktop.org, 
-	linaro-mm-sig@lists.linaro.org, iommu@lists.linux.dev, linux-media@vger.kernel.org, 
-	sumit.semwal@linaro.org, benjamin.gaignard@collabora.com, Brian.Starkey@arm.com, 
-	jstultz@google.com, tjmercier@google.com, christian.koenig@amd.com, 
-	m.szyprowski@samsung.com, robin.murphy@arm.com, sean.anderson@linux.dev, ptesarik@suse.com, 
-	catalin.marinas@arm.com, aneesh.kumar@kernel.org, suzuki.poulose@arm.com, 
-	steven.price@arm.com, thomas.lendacky@amd.com, john.allen@amd.com, 
-	ashish.kalra@amd.com, suravee.suthikulpanit@amd.com, linux-coco@lists.linux.dev
-Subject: Re: [PATCH net-next v3 1/2] dma-mapping: introduce
- DMA_ATTR_CC_DECRYPTED for pre-decrypted memory
-Message-ID: <phry3e2dtgxzxdqvrnqfuskangp4al64f2auithwme5kwkgepe@7qtftrhgv4l7>
-References: <20260305123641.164164-1-jiri@resnulli.us>
- <20260305123641.164164-2-jiri@resnulli.us>
- <20260308101948.GO12611@unreal>
- <20260309131530.GJ1687929@ziepe.ca>
- <20260309140233.GW12611@unreal>
- <20260309151857.GO1687929@ziepe.ca>
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="Iu7aeDWT"
+Received: from pps.filterd (m0360072.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 629FORXb1502518;
+	Mon, 9 Mar 2026 17:57:49 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=pp1; bh=Lg6QT/ciwQ8IaXNDewQrJalQh2ls
+	ehd22aTbQ2/Kb+o=; b=Iu7aeDWTcj8+79T05DPGcv92DL6zSS2EMJkHuJ45k6kL
+	k3UD0yem6lpDssPdqmSDZR/kg1HXoPQdWbP7SM8iRMTnw2xumLOknEo4TkZcwVWD
+	uDA7jzpQiYGKVejMS4292egirmFfHikiXRjxsEx6Ak5MG0x7Povmxd3xRWLSZnp+
+	ZCwryc3p9/KwCO+MlBLJooWCeoGywzl/N88SarcsXuPUEewR9qEkIz4Y4kfS1lMz
+	QCjYsZQAAwtdOmcEOiCcpm/d5+tPu1Bai3w6rQmfT5VvW6LzBItEqmdkw0vcvk9J
+	V1rk5xFTLQN4Cvl5viQ7dwT/vsadHLeaXLk9bvxyBQ==
+Received: from ppma12.dal12v.mail.ibm.com (dc.9e.1632.ip4.static.sl-reverse.com [50.22.158.220])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4crcvr7jsa-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 09 Mar 2026 17:57:49 +0000 (GMT)
+Received: from pps.filterd (ppma12.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma12.dal12v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 629DT6gA021168;
+	Mon, 9 Mar 2026 17:57:48 GMT
+Received: from smtprelay03.dal12v.mail.ibm.com ([172.16.1.5])
+	by ppma12.dal12v.mail.ibm.com (PPS) with ESMTPS id 4crxbsp4tx-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 09 Mar 2026 17:57:48 +0000
+Received: from smtpav06.wdc07v.mail.ibm.com (smtpav06.wdc07v.mail.ibm.com [10.39.53.233])
+	by smtprelay03.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 629Hvl6G29033094
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Mon, 9 Mar 2026 17:57:47 GMT
+Received: from smtpav06.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 5EF725804E;
+	Mon,  9 Mar 2026 17:57:47 +0000 (GMT)
+Received: from smtpav06.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id EBAF958054;
+	Mon,  9 Mar 2026 17:57:43 +0000 (GMT)
+Received: from [9.39.22.83] (unknown [9.39.22.83])
+	by smtpav06.wdc07v.mail.ibm.com (Postfix) with ESMTP;
+	Mon,  9 Mar 2026 17:57:43 +0000 (GMT)
+Message-ID: <d5c834ff-4c95-44dd-8bef-57242d63aeee@linux.ibm.com>
+Date: Mon, 9 Mar 2026 23:27:42 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260309151857.GO1687929@ziepe.ca>
+User-Agent: Mozilla Thunderbird
+Content-Language: en-US
+From: Nilay Shroff <nilay@linux.ibm.com>
+Subject: [bug report]: iommu WARNING is observed on powerpc system during pci
+ enumeration at boot up
+To: iommu@lists.linux.dev, linuxppc-dev@lists.ozlabs.org
+Cc: joerg.roedel@amd.com, nicolinc@nvidia.com, jgg@nvidia.com,
+        baolu.lu@linux.intel.com, kevin.tian@intel.com,
+        Madhavan Srinivasan <maddy@linux.ibm.com>, sbhat@linux.ibm.com
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMzA5MDE1OCBTYWx0ZWRfX/uHsxPjfoTBg
+ W+53DYHieojF/XQ+Tnelm+cwhWufdnwBLpIG65p81gs4NyFcWcokYU8H2pTznUt8DH+kdXtGrzW
+ X84T64lwOySH74Pz6NJNBEfv9F0RIETnEPgGqgOierf0QBDHI9HnOOPxBUwmjVak+PMD1dQJHz3
+ SGaJBhuFqFzJhyZlT08xmgEAeQlrIKgbARzvWGQ923D8n03QT26Yf545gAzrbyK3kCm3dGooKPn
+ 0bpp2vXTz0ixuWXlL5UtZpXh6HuNuduGWzMB1nURLPUwbr7cLgoqGnpJd3Fdl4/31kLFxwYSvR9
+ UA3bIiVHTfKSPv2JECFF1U2o5I/ip1sizXrAQx519x5tnqzjN5J7sTFg9u7kW5WpOh5TwDamIm+
+ plmOZ6C1TNLdDIzkzOG1wKKnn0g4+RQLUMvzU6/6HVyUSMFUCshr8JAgaqgNTTYD4+s5xBWuZ9w
+ TSFxsThV8NEX+u68/dg==
+X-Proofpoint-GUID: etO3V_SMkZy-_0DEyGofkhY9ePNtoxKy
+X-Proofpoint-ORIG-GUID: etO3V_SMkZy-_0DEyGofkhY9ePNtoxKy
+X-Authority-Analysis: v=2.4 cv=QoFTHFyd c=1 sm=1 tr=0 ts=69af0a1d cx=c_pps
+ a=bLidbwmWQ0KltjZqbj+ezA==:117 a=bLidbwmWQ0KltjZqbj+ezA==:17
+ a=IkcTkHD0fZMA:10 a=Yq5XynenixoA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=RnoormkPH1_aCDwRdu11:22 a=RzCfie-kr_QcCd8fBx8p:22 a=j26iQA2w5fMJB5oFc84A:9
+ a=QEXdDO2ut3YA:10
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-03-09_04,2026-03-09_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ impostorscore=0 spamscore=0 priorityscore=1501 phishscore=0
+ lowpriorityscore=0 adultscore=0 clxscore=1011 malwarescore=0 suspectscore=0
+ bulkscore=0 classifier=typeunknown authscore=0 authtc= authcc= route=outbound
+ adjust=0 reason=mlx scancount=1 engine=8.22.0-2602130000
+ definitions=main-2603090158
 
-Mon, Mar 09, 2026 at 04:18:57PM +0100, jgg@ziepe.ca wrote:
->On Mon, Mar 09, 2026 at 04:02:33PM +0200, Leon Romanovsky wrote:
->> On Mon, Mar 09, 2026 at 10:15:30AM -0300, Jason Gunthorpe wrote:
->> > On Sun, Mar 08, 2026 at 12:19:48PM +0200, Leon Romanovsky wrote:
->> > 
->> > > > +/*
->> > > > + * DMA_ATTR_CC_DECRYPTED: Indicates memory that has been explicitly decrypted
->> > > > + * (shared) for confidential computing guests. The caller must have
->> > > > + * called set_memory_decrypted(). A struct page is required.
->> > > > + */
->> > > > +#define DMA_ATTR_CC_DECRYPTED	(1UL << 12)
->> > > 
->> > > While adding the new attribute is fine, I would expect additional checks in
->> > > dma_map_phys() to ensure the attribute cannot be misused. For example,
->> > > WARN_ON(attrs & (DMA_ATTR_CC_DECRYPTED | DMA_ATTR_MMIO)), along with a check
->> > > that we are taking the direct path only.
->> > 
->> > DECRYPYED and MMIO is something that needs to work, VFIO (inside a
->> > TVM) should be using that combination.
->> 
->> So this sentence "A struct page is required" from the comment above is
->> not accurate.
->
->It would be clearer to say "Unless DMA_ATTR_MMIO is provided a struct
->page is required"
->
->We need to audit if that works properly, IIRC it does, but I don't
->remember.. Jiri?
 
-How can you do set_memory_decrypted if you don't have page/folio ?
+Hi,
+
+The following iommu WARNING is observed on powerpc system during pci enumeration at boot up using recent
+upstream kernel:
+
+pci 0048:01:00.0: Adding to iommu group 0
+------------[ cut here ]------------
+WARNING: drivers/iommu/iommu.c:2252 at iommu_get_domain_for_dev+0x38/0x80, CPU#2: swapper/0/1
+Modules linked in:
+CPU: 2 UID: 0 PID: 1 Comm: swapper/0 Not tainted 7.0.0-rc2+ #35 PREEMPT
+Hardware name: IBM,9105-22A Power11 (architected) 0x820200 0xf000007 of:IBM,FW1120.00 (RB1120_115) hv:phyp pSeries
+NIP:  c000000000c244c4 LR: c00000000005b5a4 CTR: c00000000005b578
+REGS: c00000000a7bf280 TRAP: 0700   Not tainted  (7.0.0-rc2+)
+MSR:  8000000002029033 <SF,VEC,EE,ME,IR,DR,RI,LE>  CR: 22004422  XER: 0000000a
+CFAR: c000000000c24508 IRQMASK: 0
+GPR00: c00000000005b5a4 c00000000a7bf520 c000000001dc8100 0000000000000001
+GPR04: c00000000f972f10 0000000000000000 0000000000000000 0000000000000001
+GPR08: 0000001ffbc60000 0000000000000001 0000000000000000 0000000000000000
+GPR12: c00000000005b578 c000001fffffe480 c000000000011618 0000000000000000
+GPR16: 0000000000000000 0000000000000000 0000000000000000 0000000000000000
+GPR20: ffffffffffffefff 0000000000000000 c000000002d30eb0 0000000000000001
+GPR24: c0000000017881f8 0000000000000000 0000000000000001 c00000000f972e00
+GPR28: c00000000bbba0d0 0000000000000000 c00000000bbba0d0 c00000000f972e00
+NIP [c000000000c244c4] iommu_get_domain_for_dev+0x38/0x80
+LR [c00000000005b5a4] spapr_tce_platform_iommu_attach_dev+0x2c/0x98
+Call Trace:
+[c00000000a7bf520] [c000000000c244f4] iommu_get_domain_for_dev+0x68/0x80 (unreliable)
+[c00000000a7bf550] [c00000000005b5a4] spapr_tce_platform_iommu_attach_dev+0x2c/0x98
+[c00000000a7bf580] [c000000000c27518] __iommu_attach_device+0x44/0x220
+[c00000000a7bf610] [c000000000c277e8] __iommu_device_set_domain+0xf4/0x194
+[c00000000a7bf6a0] [c000000000c27974] __iommu_group_set_domain_internal+0xec/0x228
+[c00000000a7bf700] [c000000000c2a3a0] iommu_setup_default_domain+0x5f4/0x6a4
+[c00000000a7bf7d0] [c000000000c2b09c] __iommu_probe_device+0x674/0x724
+[c00000000a7bf890] [c000000000c2b228] iommu_probe_device+0x50/0xb4
+[c00000000a7bf8d0] [c00000000005b3a0] iommu_add_device+0x48/0x198
+[c00000000a7bf940] [c000000000102498] pci_dma_dev_setup_pSeriesLP+0x198/0x4f0
+[c00000000a7bfa30] [c000000000078f30] pcibios_bus_add_device+0x80/0x464
+[c00000000a7bfae0] [c000000000af3c90] pci_bus_add_device+0x40/0x100
+[c00000000a7bfb20] [c000000000af3da4] pci_bus_add_devices+0x54/0xb0
+[c00000000a7bfb60] [c00000000201b2c8] pcibios_init+0xd8/0x140
+[c00000000a7bfbe0] [c000000000010f04] do_one_initcall+0x8c/0x598
+[c00000000a7bfcd0] [c0000000020065ac] kernel_init_freeable+0x3ec/0x850
+[c00000000a7bfde0] [c000000000011644] kernel_init+0x34/0x270
+[c00000000a7bfe50] [c00000000000dd3c] ret_from_kernel_user_thread+0x14/0x1c
+---- interrupt: 0 at 0x0
+Code: 7c0802a6 60000000 fbe1fff8 f821ffd1 ebe30480 2c3f0000 41820020 3d2200f7 39298db0 81290000 2c090000 40820020 <0b090000> ebff0170 38210030 7fe3fb78
+irq event stamp: 422464
+hardirqs last  enabled at (422463): [<c00000000024d838>] __up_console_sem+0xd4/0x110
+hardirqs last disabled at (422464): [<c00000000002ab50>] interrupt_enter_prepare+0x88/0x260
+softirqs last  enabled at (422062): [<c00000000016ad7c>] handle_softirqs+0x688/0x6a0
+softirqs last disabled at (422007): [<c000000000018970>] do_softirq_own_stack+0x40/0x54
+---[ end trace 0000000000000000 ]---
+pci 0048:01:00.1: Adding to iommu group 0
+------------[ cut here ]------------
+
+Looking at the warning it seems that this is a regression caused due to
+commit a75b2be249d6 ("iommu: Add iommu_driver_get_domain_for_dev() helper").
+
+Any help from the iommu expert would be appreciated. Though I am not expert,
+it seems the following patch help fix this warning (I encourage the iommu
+developers to confirm and/or take this forward) :
+
+diff --git a/arch/powerpc/kernel/iommu.c b/arch/powerpc/kernel/iommu.c
+index 0ce71310b7d9..d122e8447831 100644
+--- a/arch/powerpc/kernel/iommu.c
++++ b/arch/powerpc/kernel/iommu.c
+@@ -1159,7 +1159,7 @@ spapr_tce_platform_iommu_attach_dev(struct iommu_domain *platform_domain,
+                                     struct device *dev,
+                                     struct iommu_domain *old)
+  {
+-       struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
++       struct iommu_domain *domain = iommu_driver_get_domain_for_dev(dev);
+         struct iommu_table_group *table_group;
+         struct iommu_group *grp;
+
+
+Please let me know if any further information is needed.
+
+Thanks,
+--Nilay
 
