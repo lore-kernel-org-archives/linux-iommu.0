@@ -1,71 +1,139 @@
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9C5D363C67
-	for <iommu@lists.linux.dev>; Mon,  9 Mar 2026 11:50:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC14523E35F
+	for <iommu@lists.linux.dev>; Mon,  9 Mar 2026 12:30:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773057013; cv=none; b=YV/7PgmiZeUFCA2IUvZ8SY1nSfuN67fEiBAEbuAemo2BGrVTJxisq5OOaSomkBJvOpcod5/rLvEjoL1pqgtB+hYcIO+tgzJbYqLLjQe3gPDBEgGOGclnLO4isTM25r6W0NNXrthpRzFZHJo8f1QSJ0f3Q2F9eMMpNpdDkauuzL8=
+	t=1773059435; cv=none; b=FccXqDqFc0Ak/oRh1/7isWOcJgpOI2gkepY1uQdxfeB+NIEqCZG2p8CKsfwH+X8vhTB0oaoromossCHZobRHJkYcghJaQpHWIwn9xn4rmka3nwCuAptfOzLZZwXiQPS87kOz9TSqjHgoaiwx61nBWe+f8mNMj0fD8cAu3BODSlI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773057013; c=relaxed/simple;
-	bh=YDUAj5DnhBo8lDRaOq0/tLtvkwQZJRcm8wLa3h04nVk=;
-	h=Date:From:To:CC:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=KPv7s7bnE8n1+SYqq5yQYB/VPixkKY0F019FZ5VGsHh/nlwGnySbwMcAnv9m0ayQIhLPgRF4bRy5bzZvuU/InLHTCKhJqvtUWM5UIzkoqDsXmRlLzfnLoH5iKStjz6BLNUzDbh8oT9ifzIGPYM0azpiQXn5qdiii6Y5WTwHNXHI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.18.224.107])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTPS id 4fTwKL3ygXzJ46C2;
-	Mon,  9 Mar 2026 19:49:26 +0800 (CST)
-Received: from dubpeml500005.china.huawei.com (unknown [7.214.145.207])
-	by mail.maildlp.com (Postfix) with ESMTPS id 69ABF40584;
-	Mon,  9 Mar 2026 19:50:09 +0800 (CST)
-Received: from localhost (10.203.177.15) by dubpeml500005.china.huawei.com
- (7.214.145.207) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.11; Mon, 9 Mar
- 2026 11:50:08 +0000
-Date: Mon, 9 Mar 2026 11:50:07 +0000
-From: Jonathan Cameron <jonathan.cameron@huawei.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-CC: <jgg@nvidia.com>, <will@kernel.org>, <robin.murphy@arm.com>,
-	<bhelgaas@google.com>, <joro@8bytes.org>, <praan@google.com>,
-	<baolu.lu@linux.intel.com>, <kevin.tian@intel.com>,
-	<miko.lenczewski@arm.com>, <linux-arm-kernel@lists.infradead.org>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-	<linux-pci@vger.kernel.org>, <dan.j.williams@intel.com>, <vsethi@nvidia.com>,
-	<linux-cxl@vger.kernel.org>
-Subject: Re: [PATCH v3 2/3] PCI: Allow ATS to be always on for pre-CXL
- devices
-Message-ID: <20260309115007.00005442@huawei.com>
-In-Reply-To: <c715b10b49d50eea5429454108d4221c1a78efaf.1772833963.git.nicolinc@nvidia.com>
-References: <cover.1772833963.git.nicolinc@nvidia.com>
-	<c715b10b49d50eea5429454108d4221c1a78efaf.1772833963.git.nicolinc@nvidia.com>
-X-Mailer: Claws Mail 4.3.0 (GTK 3.24.42; x86_64-w64-mingw32)
+	s=arc-20240116; t=1773059435; c=relaxed/simple;
+	bh=Atjx7GL+YNwbnYSuuJvvyi/2Xx/LTpvi9huTzoYuERw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
+	 Content-Type:References; b=OkdXA584vG/3b5lns4sh+n5jaaPsBHUycy+2AiPQvOyMHmQFHllm7F3Fq3rPeHwEGC4IwsgQLS3FYsj8bZzZQZ6taqi5N4oG5O6B6HXue/6xWhWlpjrZhkwnMTyEDg5P54lPbsfILnhO2Xx0QNXPWcDF9/Rqi/dpt7ubZrTpTnE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=ZHEYuoVE; arc=none smtp.client-ip=210.118.77.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="ZHEYuoVE"
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20260309123026euoutp0122628284c4a0f40f8f361aa9a6e9354a~bLCeGWP_D3018530185euoutp01J
+	for <iommu@lists.linux.dev>; Mon,  9 Mar 2026 12:30:26 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20260309123026euoutp0122628284c4a0f40f8f361aa9a6e9354a~bLCeGWP_D3018530185euoutp01J
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1773059426;
+	bh=gp98JWQznNkZR98zt3gnsF+GVRheVa4QaSz8tPoGX4A=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=ZHEYuoVENPNznd0xqoljK61UHKR3Hw36bx/GKYTBnu1Us7nFDI8Up96iFqiq8oROY
+	 pfLEU5iHAKMwbW1m8NX8yv5QNOoIrcakV5Aaa9smsGUU2cMxFu1/e51fxPC6K3YijR
+	 v7YhHKq3PlBrYH8w3DotscIKEAjnxh+MXlMzpaBk=
+Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20260309123026eucas1p218b4b7e463c3f96e1a48eca954009827~bLCd364Di0084200842eucas1p2W;
+	Mon,  9 Mar 2026 12:30:26 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20260309123025eusmtip2240c0ac5f812e2669c819f74be51bf3c~bLCdK_wth2997829978eusmtip2R;
+	Mon,  9 Mar 2026 12:30:25 +0000 (GMT)
+Message-ID: <c1d058f3-f864-4ed7-9f7a-683d6f4bf1ce@samsung.com>
+Date: Mon, 9 Mar 2026 13:30:24 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
+User-Agent: Betterbird (Windows)
+Subject: Re: [PATCH 2/3] dma-mapping: Clarify valid conditions for CPU cache
+ line overlap
+To: Leon Romanovsky <leon@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Robin Murphy <robin.murphy@arm.com>, "Michael S. Tsirkin"
+	<mst@redhat.com>, Petr Tesarik <ptesarik@suse.com>, Jonathan Corbet
+	<corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>, Jason Wang
+	<jasowang@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+	=?UTF-8?Q?Eugenio_P=C3=A9rez?= <eperezma@redhat.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+	virtualization@lists.linux.dev, linux-rdma@vger.kernel.org
+Content-Language: en-US
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <20260309090342.GS12611@unreal>
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: lhrpeml500012.china.huawei.com (7.191.174.4) To
- dubpeml500005.china.huawei.com (7.214.145.207)
+X-CMS-MailID: 20260309123026eucas1p218b4b7e463c3f96e1a48eca954009827
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20260309090352eucas1p283a75c78cac495b5ad87df74c79aab07
+X-EPHeader: CA
+X-CMS-RootMailID: 20260309090352eucas1p283a75c78cac495b5ad87df74c79aab07
+References: <20260307-dma-debug-overlap-v1-0-c034c38872af@nvidia.com>
+	<20260307-dma-debug-overlap-v1-2-c034c38872af@nvidia.com>
+	<20260308181920.GH1687929@ziepe.ca> <20260308184902.GR12611@unreal>
+	<20260308230916.GI1687929@ziepe.ca>
+	<CGME20260309090352eucas1p283a75c78cac495b5ad87df74c79aab07@eucas1p2.samsung.com>
+	<20260309090342.GS12611@unreal>
 
-On Fri, 6 Mar 2026 15:41:16 -0800
-Nicolin Chen <nicolinc@nvidia.com> wrote:
+On 09.03.2026 10:03, Leon Romanovsky wrote:
+> On Sun, Mar 08, 2026 at 08:09:16PM -0300, Jason Gunthorpe wrote:
+>> On Sun, Mar 08, 2026 at 08:49:02PM +0200, Leon Romanovsky wrote:
+>>> On Sun, Mar 08, 2026 at 03:19:20PM -0300, Jason Gunthorpe wrote:
+>>>> On Sat, Mar 07, 2026 at 06:49:56PM +0200, Leon Romanovsky wrote:
+>>>>
+>>>>> -This attribute indicates the CPU will not dirty any cacheline overlapping this
+>>>>> -DMA_FROM_DEVICE/DMA_BIDIRECTIONAL buffer while it is mapped. This allows
+>>>>> -multiple small buffers to safely share a cacheline without risk of data
+>>>>> -corruption, suppressing DMA debug warnings about overlapping mappings.
+>>>>> -All mappings sharing a cacheline should have this attribute.
+>>>>> +DMA_ATTR_CPU_CACHE_OVERLAP
+>>>> This is a very specific and well defined use case that allows some cache
+>>>> flushing behaviors to work only under the promise that the CPU doesn't
+>>>> touch the memory to cause cache inconsistencies.
+>>>>
+>>>>> +Another valid use case is on systems that are CPU-coherent and do not use
+>>>>> +SWIOTLB, where the caller can guarantee that no cache maintenance operations
+>>>>> +(such as flushes) will be performed that could overwrite shared cache lines.
+>>>> This is something completely unrelated.
+>>> I disagree. The situation is equivalent in that callers guarantee the
+>>> CPU cache will not be overwritten.
+>> The RDMA callers do no such thing, they just don't work at all if
+>> there is non-coherence in the mapping which is why it is not a bug.
+>>
+>> virtio looks like it does actually keep the caches clean for different
+>> mappings (and probably also in practice forced coherent as well given
+>> qemu is coherent with the VM and VFIO doesn't allow non-coherent DMA
+>> devices)
+>>
+>>>> What I would really like is a new DMA_ATTR_REQUIRE_COHERENT which
+>>>> fails any mappings requests that would use any SWIOTLB or cache
+>>>> flushing.
+>>> You are proposing something orthogonal that operates at a different layer
+>>> (DMA mapping). However, for DMA debugging, your new attribute will be
+>>> equivalent to DMA_ATTR_CPU_CACHE_OVERLAP.
+>> DMA_ATTR is a dma mapping flag, if you want some weird dma debugging
+>> flag it should be called DMA_ATTR_DEBUGGING_IGNORE_CACHELINES with
+>> some kind of statement at the user why it is OK.
+> And this is the issue: the existing DMA_ATTR_CPU_CACHE_CLEAN is essentially
+> a debug-oriented attribute. The upper layers are already handled through
+> __dma_from_device_group_begin()/end(), which pad cache lines on
+> non-coherent systems.
+>
+> Marek,
+>
+> What do you see as the right path forward here? RDMA has a legitimate use
+> case where CPU cache lines may overlap. The underlying reason differs from
+> VirtIO, but the outcome is the same. Should I keep the current name? Should
+> we rename it to the proposed DMA_ATTR_CPU_CACHE_OVERLAP or
+> DMA_ATTR_DEBUGGING_IGNORE_CACHELINES? Should we introduce a new
+> DMA_ATTR_REQUIRE_COHERENT attribute instead? Or do you have another
+> recommendation?
 
-> Some NVIDIA GPU/NIC devices, although don't implement the CXL config space,
-> they have many CXL-like properties. Call this kind "pre-CXL".
-> 
-> Similar to CXL.cache capaiblity, these pre-CXL devices also require the ATS
-> function even when their RIDs are IOMMU bypassed, i.e. keep ATS "always on"
-> v.s. "on demand" when a non-zero PASID line gets enabled in SVA use cases.
-> 
-> Introduce pci_dev_specific_ats_always_on() quirk function to scan a list of
-> IDs for these device. Then, include it pci_ats_always_on().
-> 
-> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-Seems like a reasonably tidy quirk.
-Reviewed-by: Jonathan Cameron <jonathan.cameron@huawei.com>
+My question here is if RDMA works on any non-coherent DMA systems? If 
+not then it should fail early (during init or probe?) to avoid potential 
+data corruption and new DMA attributes won't help it. On the other hand, 
+theDMA_ATTR_CPU_CACHE_OVERLAP attribute is a bit more descriptive to me 
+than DMA_ATTR_CPU_CACHE_CLEAN, but this indeed looks like a separate 
+issue from the RDMA case.
+
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
+
